@@ -57,5 +57,14 @@ class TagTest extends BaseLivewireTest
 			->assertOk()
 			->call('submit')
 			->assertDispatched('reloadPage');
+
+		Livewire::actingAs($this->userMayUpload1)->test(Tag::class, ['params' => [Params::ALBUM_ID => $this->album1->id, Params::PHOTO_ID => $this->subPhoto1->id]])
+			->assertOk()
+			->assertViewIs('livewire.forms.photo.tag')
+			->set('tag', $this->album2->title)
+			->set('shall_override', true)
+			->assertOk()
+			->call('submit')
+			->assertDispatched('reloadPage');
 	}
 }
