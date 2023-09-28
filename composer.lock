@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8d127dc651188fa9dd6e1aca3eba577c",
+    "content-hash": "a870a8505fa06ef897104fd5c258c0c0",
     "packages": [
         {
             "name": "bepsvpt/secure-headers",
@@ -3045,46 +3045,6 @@
                 "issues": "https://github.com/LycheeOrg/php-exif/issues"
             },
             "time": "2023-04-11T11:03:27+00:00"
-        },
-        {
-            "name": "lychee-org/php-flickr-justified-layout",
-            "version": "v1.1.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/LycheeOrg/php-flickr-justified-layout.git",
-                "reference": "aab36fcb3704e2f956fb232503a06223a85f76ae"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/LycheeOrg/php-flickr-justified-layout/zipball/aab36fcb3704e2f956fb232503a06223a85f76ae",
-                "reference": "aab36fcb3704e2f956fb232503a06223a85f76ae",
-                "shasum": ""
-            },
-            "require": {
-                "illuminate/collections": "^10.10"
-            },
-            "require-dev": {
-                "lychee-org/phpstan-lychee": "^v1.0.1",
-                "phpunit/phpunit": "^10.2@dev",
-                "symfony/var-dumper": "6.3.x-dev"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Tests\\": "tests/",
-                    "LycheeOrg\\PhpFlickrJustifiedLayout\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "description": "Port of the famous flikr justified layout JS gallery to php for serverside computation",
-            "support": {
-                "issues": "https://github.com/LycheeOrg/php-flickr-justified-layout/issues",
-                "source": "https://github.com/LycheeOrg/php-flickr-justified-layout/tree/v1.1.0"
-            },
-            "time": "2023-05-14T18:34:08+00:00"
         },
         {
             "name": "maennchen/zipstream-php",

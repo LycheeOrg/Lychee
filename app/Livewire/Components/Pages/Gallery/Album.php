@@ -4,7 +4,6 @@ namespace App\Livewire\Components\Pages\Gallery;
 
 use App\Contracts\Livewire\Reloadable;
 use App\Contracts\Models\AbstractAlbum;
-use App\Enum\AlbumLayoutType;
 use App\Enum\SizeVariantType;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Factories\AlbumFactory;
@@ -29,8 +28,6 @@ use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use LycheeOrg\PhpFlickrJustifiedLayout\DTO\Geometry;
-use LycheeOrg\PhpFlickrJustifiedLayout\LayoutConfig;
-use LycheeOrg\PhpFlickrJustifiedLayout\LayoutJustify;
 
 /**
  * Album sub module.
@@ -126,26 +123,6 @@ class Album extends Component implements Reloadable
 		if (Auth::check() && !$this->flags->is_accessible && !$this->flags->is_password_protected) {
 			$this->redirect(route('livewire-gallery'));
 		}
-	}
-
-	/**
-	 * Album property to support the multiple type.
-	 *
-	 * @return Geometry|null
-	 */
-	final public function getGeometryProperty(): ?Geometry
-	{
-		if ($this->flags->layout !== AlbumLayoutType::JUSTIFIED->value) {
-			return null;
-		}
-
-		$justify = new LayoutJustify();
-		$layoutConfig = new LayoutConfig(
-			containerWidth: $this->width,
-			containerPadding: 0,
-		);
-
-		return $justify->compute($this->getPhotosProperty(), $layoutConfig);
 	}
 
 	/**

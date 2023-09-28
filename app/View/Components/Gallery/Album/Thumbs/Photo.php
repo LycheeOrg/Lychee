@@ -14,7 +14,6 @@ use App\Models\SizeVariant;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\URL;
 use Illuminate\View\Component;
-use LycheeOrg\PhpFlickrJustifiedLayout\DTO\Item;
 
 class Photo extends Component
 {
@@ -41,9 +40,6 @@ class Photo extends Component
 	public int $_w = 200;
 	public int $_h = 200;
 
-	/** Use by the Justified layout */
-	public string $style = '';
-
 	/**
 	 * Create a new component instance.
 	 *
@@ -51,7 +47,7 @@ class Photo extends Component
 	 *
 	 * @throws ConfigurationKeyMissingException
 	 */
-	public function __construct(ModelsPhoto $data, string $albumId, Item|null $geometry = null, AlbumLayoutType $layout)
+	public function __construct(ModelsPhoto $data, string $albumId, AlbumLayoutType $layout)
 	{
 		$this->layout = $layout;
 		$date_format = Configs::getValueAsString('date_format_photo_thumb');
@@ -62,7 +58,6 @@ class Photo extends Component
 		$this->taken_at = $data->taken_at?->format($date_format) ?? '';
 		$this->created_at = $data->created_at->format($date_format);
 		$this->is_starred = $data->is_starred;
-		$this->style = $geometry?->toCSS() ?? '';
 		$this->is_video = $data->isVideo();
 
 		$this->is_cover_id = $data->album?->cover_id === $data->id;

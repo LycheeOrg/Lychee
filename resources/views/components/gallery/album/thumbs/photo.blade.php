@@ -1,5 +1,4 @@
 <a wire:navigate href="{{ route('livewire-gallery-photo',['albumId'=>$album_id, 'photoId' => $photo_id]) }}"
-	style="{{ $style }}"
 	@class([
 		'photo group shadow-md shadow-black/25 animate-zoomIn',
 		'absolute' => $layout === \App\Enum\AlbumLayoutType::JUSTIFIED,
