@@ -402,6 +402,7 @@ return [
 	'LAYOUT_TYPE' => 'Affichage des photos :',
 	'LAYOUT_SQUARES' => 'Miniatures carrées',
 	'LAYOUT_JUSTIFIED' => 'En proportions, justifiées',
+	'LAYOUT_MASONRY' => 'En proportion, Maçonnerie',
 	'LAYOUT_UNJUSTIFIED' => 'En proportions, non-justifiées',
 	'SET_LAYOUT' => 'Changer l’affichage',
 

@@ -402,6 +402,7 @@ return [
 	'LAYOUT_TYPE' => 'Vzhled fotografií:',
 	'LAYOUT_SQUARES' => 'Čtvercové náhledy',
 	'LAYOUT_JUSTIFIED' => 'V poměru stran, zarovnáno',
+	'LAYOUT_MASONRY' => 'V poměru stran, masonry',
 	'LAYOUT_UNJUSTIFIED' => 'V poměru stran, nezarovnáno',
 	'SET_LAYOUT' => 'Změnit vzhled',
 

@@ -400,6 +400,7 @@ return [
 	'LAYOUT_TYPE' => 'Fényképek elrendezése:',
 	'LAYOUT_SQUARES' => 'Négyzet alakú bélyegképek',
 	'LAYOUT_JUSTIFIED' => 'Képaránnyal, igazított',
+	'LAYOUT_MASONRY' => 'Képaránnyal, masonry',
 	'LAYOUT_UNJUSTIFIED' => 'Képaránnyal, igazítatlan',
 	'SET_LAYOUT' => 'Elrendezés megváltoztatása',
 

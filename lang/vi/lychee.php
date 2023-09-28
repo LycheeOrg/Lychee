@@ -402,6 +402,7 @@ return [
 	'LAYOUT_TYPE' => 'Cách trình bày hình ảnh:',
 	'LAYOUT_SQUARES' => 'Ô vuông hình nhỏ',
 	'LAYOUT_JUSTIFIED' => 'Theo tỷ lệ hình, canh đều hai bên',
+	'LAYOUT_MASONRY' => 'Theo tỷ lệ hình, masonry',
 	'LAYOUT_UNJUSTIFIED' => 'Theo tỷ lệ hình, không canh đều hai bên',
 	'SET_LAYOUT' => 'Thay đổi cách trình bày',
 

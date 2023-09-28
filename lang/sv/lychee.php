@@ -402,6 +402,7 @@ return [
 	'LAYOUT_TYPE' => 'Layout of photos:',
 	'LAYOUT_SQUARES' => 'Square thumbnails',
 	'LAYOUT_JUSTIFIED' => 'With aspect, justified',
+	'LAYOUT_MASONRY' => 'With aspect, masonry',
 	'LAYOUT_UNJUSTIFIED' => 'With aspect, unjustified',
 	'SET_LAYOUT' => 'Change layout',
 

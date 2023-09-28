@@ -402,6 +402,7 @@ return [
 	'LAYOUT_TYPE' => 'Układ zdjęć:',
 	'LAYOUT_SQUARES' => 'Kwadratowe miniaturki',
 	'LAYOUT_JUSTIFIED' => 'Aspekt, wyrównane',
+	'LAYOUT_MASONRY' => 'Aspekt, masonry',
 	'LAYOUT_UNJUSTIFIED' => 'Aspekt, bez wyrównania',
 	'SET_LAYOUT' => 'Zmień układ',
 

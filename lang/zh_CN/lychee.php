@@ -402,6 +402,7 @@ return [
 	'LAYOUT_TYPE' => '照片布局：',
 	'LAYOUT_SQUARES' => '方形缩略图',
 	'LAYOUT_JUSTIFIED' => '保持长宽比，两端对齐',
+	'LAYOUT_MASONRY' => '保持长宽比, masonry',
 	'LAYOUT_UNJUSTIFIED' => '保持长宽比，不对齐',
 	'SET_LAYOUT' => '更改布局',
 

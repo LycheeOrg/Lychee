@@ -402,6 +402,7 @@ return [
 	'LAYOUT_TYPE' => 'Διάταξη φωτογραφιών:',
 	'LAYOUT_SQUARES' => 'Τετράγωνες μικρογραφίες',
 	'LAYOUT_JUSTIFIED' => 'Με ίσες αναλογίες',
+	'LAYOUT_MASONRY' => 'With aspect, masonry',
 	'LAYOUT_UNJUSTIFIED' => 'Με άνισες αναλογίες',
 	'SET_LAYOUT' => 'Αλλαγή διάταξης',
 

@@ -402,6 +402,7 @@ return [
 	'LAYOUT_TYPE' => 'Diseño de fotos:',
 	'LAYOUT_SQUARES' => 'Miniaturas cuadradas',
 	'LAYOUT_JUSTIFIED' => 'Con aspecto justificado',
+	'LAYOUT_MASONRY' => 'Con aspecto, masonry',
 	'LAYOUT_UNJUSTIFIED' => 'Con aspecto, injustificado',
 	'SET_LAYOUT' => 'Cambia el diseño',
 
