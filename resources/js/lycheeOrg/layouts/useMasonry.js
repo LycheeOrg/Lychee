@@ -2,15 +2,15 @@ export default { useMasonry };
 
 export function useMasonry(el) {
 	const gridItems = [...el.childNodes].filter((gridItem) => gridItem.nodeType === 1);
-	const grid_widths = getComputedStyle(el).gridTemplateColumns.split(" ")
+	const grid_widths = getComputedStyle(el).gridTemplateColumns.split(" ");
 	const gap = parseInt(getComputedStyle(el).gap);
 
 	const perChunk = grid_widths.length;
 	const width = parseInt(grid_widths[0]);
 
 	// Remove class grid because it is going to be annoying later: we use absolute coordinates.
-	el.classList.remove('grid')
-	 
+	el.classList.remove("grid");
+
 	// Compute ratio of each item.
 	const ratio = gridItems.map(function (_photo) {
 		const height = _photo.dataset.height;
@@ -18,8 +18,9 @@ export function useMasonry(el) {
 		return height > 0 ? width / height : 1;
 	});
 
-	let columns = Array.from({length: perChunk}, (_, idx) => { return { height: 0, left: (gap + width) * idx }; });
-	// console.log(columns);
+	let columns = Array.from({ length: perChunk }, (_, idx) => {
+		return { height: 0, left: (gap + width) * idx };
+	});
 	gridItems.forEach(function (e, i) {
 		let idx = findSmallestIdx(columns);
 		let column = columns[idx];
@@ -42,15 +43,12 @@ function findSmallestIdx(columns) {
 	let idx = 0;
 	let smallest = NaN;
 	columns.forEach((col, i) => {
-		console.log(col, i, smallest);
 		if (isNaN(smallest)) {
-			console.log('NAN');
 			smallest = col.height;
 			idx = i;
 		} else if (col.height < smallest) {
 			smallest = col.height;
 			idx = i;
-			console.log('smallest!');
 		}
 	});
 	return idx;
@@ -62,7 +60,7 @@ function getMaxHeight(columns) {
 		if (isNaN(highest)) {
 			highest = col.height;
 		} else if (col.height > highest) {
-			highest = col.height; 
+			highest = col.height;
 		}
 	});
 
