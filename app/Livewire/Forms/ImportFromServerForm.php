@@ -61,6 +61,9 @@ class ImportFromServerForm extends Form
 		// drop first element: matched elements start at index 1
 		// array_shift($matches);
 		$this->paths = array_map(fn ($v) => str_replace('\\ ', ' ', $v), $matches);
+
+		// Remove empty elements
+		$this->paths = array_filter($this->paths, fn ($v) => $v === '');
 	}
 
 	/**

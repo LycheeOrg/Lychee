@@ -3,6 +3,7 @@
 namespace App\Livewire\Components\Forms\Add;
 
 use App\Contracts\Livewire\Params;
+use App\Contracts\Models\AbstractAlbum;
 use App\Enum\Livewire\FileStatus;
 use App\Exceptions\PhotoSkippedException;
 use App\Facades\Helpers;
@@ -10,8 +11,11 @@ use App\Image\Files\NativeLocalFile;
 use App\Image\Files\ProcessableJobFile;
 use App\Jobs\ProcessImageJob;
 use App\Livewire\Traits\InteractWithModal;
+use App\Models\Album;
 use App\Models\Configs;
+use App\Policies\AlbumPolicy;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Livewire\Component;
@@ -49,6 +53,9 @@ class Upload extends Component
 	public function mount(array $params = ['parentID' => null]): void
 	{
 		$this->albumId = $params[Params::PARENT_ID] ?? null;
+		$album = $this->albumId === null ? null : Album::findOrFail($this->albumId);
+		Gate::authorize(AlbumPolicy::CAN_UPLOAD, [AbstractAlbum::class, $album]);
+
 		$this->chunkSize = self::getUploadLimit();
 		$this->parallelism = Configs::getValueAsInt('upload_processing_limit');
 	}
@@ -69,19 +76,24 @@ class Upload extends Component
 		$keys = explode('.', $key);
 		$index = intval($keys[0]);
 		$attribute = $keys[1] ?? null;
-		if ($attribute === 'fileChunk') {
-			$fileDetails = $this->uploads[$index];
 
+		if ($attribute === 'fileName') {
+			$fileDetails = $this->uploads[$index];
 			// Initialize data if not existing.
 			$fileDetails['extension'] ??= '.' . pathinfo($fileDetails['fileName'], PATHINFO_EXTENSION);
 			$fileDetails['uuidName'] ??= strtr(base64_encode(random_bytes(12)), '+/', '-_') . $fileDetails['extension'];
-			$fileDetails['stage'] ??= FileStatus::UPLOADING->value;
 
-			// Refresh uploads
+			// Ensure data are set
 			$this->uploads[$index]['extension'] = $fileDetails['extension'];
 			$this->uploads[$index]['uuidName'] = $fileDetails['uuidName'];
-			$this->uploads[$index]['stage'] = $fileDetails['stage'];
+			$this->uploads[$index]['stage'] = $fileData['stage'] ??= FileStatus::UPLOADING->value;
+			$this->uploads[$index]['progress'] = $fileData['progress'] ??= 0;
+		}
 
+		if ($attribute === 'fileChunk') {
+			$fileDetails = $this->uploads[$index];
+
+			dump($this->uploads);
 			/** @var TemporaryUploadedFile $chunkFile */
 			$chunkFile = $fileDetails['fileChunk'];
 			$final = new NativeLocalFile(Storage::path('/livewire-tmp/' . $fileDetails['uuidName']));
@@ -96,11 +108,12 @@ class Upload extends Component
 			}
 		}
 
-		$this->triggerProcessing();
+		// $this->triggerProcessing();
 	}
 
 	public function triggerProcessing(): void
 	{
+		dump($this->uploads);
 		foreach ($this->uploads as $idx => $fileData) {
 			if ($fileData['stage'] === FileStatus::READY->value) {
 				$uploadedFile = new NativeLocalFile(Storage::path('/livewire-tmp/' . $fileData['uuidName']));
