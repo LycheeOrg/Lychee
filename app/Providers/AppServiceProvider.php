@@ -11,6 +11,7 @@ use App\Contracts\Models\SizeVariantFactory;
 use App\Factories\AlbumFactory;
 use App\Image\SizeVariantDefaultFactory;
 use App\Image\StreamStatFilter;
+use App\Livewire\Synth\AlbumFlagsSynth;
 use App\Livewire\Synth\AlbumSynth;
 use App\Livewire\Synth\PhotoSynth;
 use App\Livewire\Synth\SessionFlagsSynth;
@@ -87,6 +88,7 @@ class AppServiceProvider extends ServiceProvider
 		AlbumSynth::class,
 		PhotoSynth::class,
 		SessionFlagsSynth::class,
+		AlbumFlagsSynth::class,
 	];
 
 	/**

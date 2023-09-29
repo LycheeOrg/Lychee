@@ -55,12 +55,44 @@
             @if ($num_children > 0 && $num_photos > 0)
                 <x-gallery.divider title="{{ __('lychee.PHOTOS') }}" />
             @endif
+                <div class="relative w-full h-0 -translate-y-5 text-right pr-7" x-data="{ layout: $wire.entangle('flags.layout') }" >
+                    <a class="flex-shrink-0 px-1 cursor-pointer group" x-on:click="layout = 'square'"
+                    title="{{ __('lychee.LAYOUT_SQUARES') }}" >
+                        <x-icons.iconic class="my-0 w-5 h-5 mr-0 ml-0 transition-all duration-300
+                        group-hover:scale-150 group-hover:stroke-white"
+                        fill="" icon="squares"
+                        x-bind:class="layout === 'square' ? 'stroke-sky-400' : 'stroke-neutral-400'" 
+                        />
+                    </a>
+                    <a class="flex-shrink-0 px-1 cursor-pointer group" x-on:click="layout = 'justified'"
+                    title="{{ __('lychee.LAYOUT_JUSTIFIED') }}" >
+                        <x-icons.iconic class="my-0 w-5 h-5 mr-0 ml-0 transition-all duration-300
+                        group-hover:scale-150 group-hover:fill-white"
+                        fill="" icon="justified"
+                        x-bind:class="layout === 'justified' ? 'fill-sky-400' : 'fill-neutral-400'" 
+                        />
+                    </a>
+                    <a class="flex-shrink-0 px-1 cursor-pointer group" x-on:click="layout = 'masonry'"
+                    title="{{ __('lychee.LAYOUT_MASONRY') }}" >
+                        <x-icons.iconic class="my-0 w-5 h-5 mr-0 ml-0 transition-all duration-300
+                        group-hover:scale-150 group-hover:stroke-white"
+                        fill="" icon="masonry"
+                        x-bind:class="layout === 'masonry' ? 'stroke-sky-400' : 'stroke-neutral-400'" 
+                         />
+                    </a>
+                    <a class="flex-shrink-0 px-1 cursor-pointer group" x-on:click="layout = 'grid'"
+                    title="{{ __('lychee.LAYOUT_GRID') }}" >
+                        <x-icons.iconic class="my-0 w-5 h-5 mr-0 ml-0 transition-all duration-300
+                        group-hover:scale-150 group-hover:stroke-white"
+                        fill="" icon="grid"
+                        x-bind:class="layout === 'grid' ? 'stroke-sky-400' : 'stroke-neutral-400'" 
+                         />
+                    </a>
+                </div>
                 <div @class([
                     'relative w-full',
                     'm-4 flex flex-wrap' => $flags->layout() === \App\Enum\AlbumLayoutType::SQUARE,
-                    'm-7' => $flags->layout() === \App\Enum\AlbumLayoutType::JUSTIFIED,
-                    'm-7 grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4' =>
-                        $flags->layout() === \App\Enum\AlbumLayoutType::MASONRY || $flags->layout() === \App\Enum\AlbumLayoutType::GRID,
+                    'm-7 grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4' => $flags->layout() !== \App\Enum\AlbumLayoutType::SQUARE
                 ])
                 @if ($flags->layout() === AlbumLayoutType::JUSTIFIED)
                     x-justify

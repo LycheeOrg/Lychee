@@ -3,14 +3,10 @@
 namespace App\Livewire\DTO;
 
 use App\Enum\AlbumLayoutType;
-use App\Livewire\Traits\UseWireable;
 use App\Models\Configs;
-use Livewire\Wireable;
 
-class AlbumFlags implements Wireable
+class AlbumFlags
 {
-	use UseWireable;
-
 	public function __construct(
 		public bool $is_accessible = false,
 		public bool $is_password_protected = false,

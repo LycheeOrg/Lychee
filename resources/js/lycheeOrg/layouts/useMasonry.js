@@ -7,9 +7,6 @@ export function useMasonry(el) {
 	const grid_width = parseInt(grid_widths[0]);
 	const grid_gap = parseInt(getComputedStyle(el).gap);
 
-	// Remove class grid because it is going to be annoying later: we use absolute coordinates.
-	el.classList.remove("grid");
-
 	// Compute ratio of each item.
 	const ratio = gridItems.map(function (_photo) {
 		const height = _photo.dataset.height;
@@ -25,9 +22,9 @@ export function useMasonry(el) {
 	gridItems.forEach(function (e, i) {
 		idx = findSmallestIdx(columns);
 		let column = columns[idx];
-		const height = width / ratio[i];
+		const height = grid_width / ratio[i];
 		e.style.top = column.height + "px";
-		e.style.width = width + "px";
+		e.style.width = grid_width + "px";
 		e.style.height = height + "px";
 		e.style.left = column.left + "px";
 		column.height = column.height + height + grid_gap;

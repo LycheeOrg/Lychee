@@ -7,9 +7,6 @@ export function useGrid(el) {
 	const grid_width = parseInt(grid_widths[0]);
 	const grid_gap = parseInt(getComputedStyle(el).gap);
 
-	// Remove class grid because it is going to be annoying later: we use absolute coordinates.
-	el.classList.remove("grid");
-
 	// Compute ratio of each item.
 	const ratio = gridItems.map(function (_photo) {
 		const height = _photo.dataset.height;
