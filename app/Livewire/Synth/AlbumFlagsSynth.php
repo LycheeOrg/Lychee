@@ -57,7 +57,7 @@ class AlbumFlagsSynth extends Synth
 
 	/**
 	 * @param AlbumFlags $target
-	 * @param string       $key
+	 * @param string     $key
 	 *
 	 * @return string
 	 */
@@ -68,8 +68,8 @@ class AlbumFlagsSynth extends Synth
 
 	/**
 	 * @param AlbumFlags $target
-	 * @param string       $key
-	 * @param bool         $value
+	 * @param string     $key
+	 * @param bool       $value
 	 *
 	 * @return void
 	 */
