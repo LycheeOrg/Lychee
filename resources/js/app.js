@@ -8,6 +8,7 @@ import { albumView } from "./lycheeOrg/albumView.js";
 import { photoView } from "./lycheeOrg/photoView.js";
 import { justify } from "./lycheeOrg/layouts/justifyLayout.js";
 import { masonry } from "./lycheeOrg/layouts/masonryLayout.js";
+import { grid } from "./lycheeOrg/layouts/gridLayout.js";
 
 // Keyboard
 Mousetrap.addKeycodes({
@@ -25,6 +26,7 @@ document.addEventListener("alpine:init", () => {
 	Alpine.data("photoView", photoView);
 	Alpine.directive("masonry", masonry);
 	Alpine.directive("justify", justify);
+	Alpine.directive("grid", grid);
 });
 
 // Mousetrap

@@ -1,15 +1,14 @@
 <a wire:navigate href="{{ route('livewire-gallery-photo',['albumId'=>$album_id, 'photoId' => $photo_id]) }}"
 	@class([
 		'photo group shadow-md shadow-black/25 animate-zoomIn',
-		'absolute' => $layout === \App\Enum\AlbumLayoutType::JUSTIFIED,
-		'absolute' => $layout === \App\Enum\AlbumLayoutType::MASONRY,
+		'block absolute' => $layout !== AlbumLayoutType::SQUARE,
 		'relative aspect-square
 		ml-1 mt-1
 		sm:ml-2 sm:mt-2
 		md:ml-4 md:mt-4
 		lg:ml-5 lg:mt-5
 		xl:ml-6 xl:mt-6
-		w-52 2xl:ml-7 2xl:mt-7' => $layout === \App\Enum\AlbumLayoutType::SQUARE,
+		w-52 2xl:ml-7 2xl:mt-7' => $layout === AlbumLayoutType::SQUARE,
 		])
 	data-album-id='{{ $album_id }}'
 	data-width='{{ $_w }}'

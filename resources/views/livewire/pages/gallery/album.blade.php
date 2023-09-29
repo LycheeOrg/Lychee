@@ -57,16 +57,17 @@
             @endif
                 <div @class([
                     'relative w-full',
-                    'm-4 flex flex-wrap' =>
-                        $flags->layout() === \App\Enum\AlbumLayoutType::SQUARE,
+                    'm-4 flex flex-wrap' => $flags->layout() === \App\Enum\AlbumLayoutType::SQUARE,
                     'm-7' => $flags->layout() === \App\Enum\AlbumLayoutType::JUSTIFIED,
-                    'm-7 grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4' => $flags->layout() === \App\Enum\AlbumLayoutType::MASONRY,
-                    'grid' => $flags->layout() === \App\Enum\AlbumLayoutType::GRID,
+                    'm-7 grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4' =>
+                        $flags->layout() === \App\Enum\AlbumLayoutType::MASONRY || $flags->layout() === \App\Enum\AlbumLayoutType::GRID,
                 ])
-                @if ($flags->layout() === \App\Enum\AlbumLayoutType::JUSTIFIED)
+                @if ($flags->layout() === AlbumLayoutType::JUSTIFIED)
                     x-justify
-                @elseif ($flags->layout() === \App\Enum\AlbumLayoutType::MASONRY)
+                @elseif ($flags->layout() === AlbumLayoutType::MASONRY)
                     x-masonry
+                @elseif ($flags->layout() === AlbumLayoutType::GRID)
+                    x-grid
                 @endif
                 >
                 @foreach ($this->album->photos as $photo)

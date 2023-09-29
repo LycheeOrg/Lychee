@@ -403,6 +403,7 @@ return [
 	'LAYOUT_SQUARES' => 'Miniature Quadrate',
 	'LAYOUT_JUSTIFIED' => 'Relativo all’aspetto, giustificate',
 	'LAYOUT_MASONRY' => 'Relativo all’aspetto, masonry',
+	'LAYOUT_GRID' => 'Relativo all’aspetto, grid',
 	'LAYOUT_UNJUSTIFIED' => 'Relativo all’aspetto, non giustificate',
 	'SET_LAYOUT' => 'Cambia layout',
 

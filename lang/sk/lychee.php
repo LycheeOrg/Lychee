@@ -403,6 +403,7 @@ return [
 	'LAYOUT_SQUARES' => 'Štvorcové náhľady',
 	'LAYOUT_JUSTIFIED' => 'Zachovaný pomer strán, zarovnané',
 	'LAYOUT_MASONRY' => 'Zachovaný pomer strán, masonry',
+	'LAYOUT_GRID' => 'Zachovaný pomer strán, grid',
 	'LAYOUT_UNJUSTIFIED' => 'Zachovaný pomer strán, nezarovnané',
 	'SET_LAYOUT' => 'Zmeniť rozmiestnenie',
 

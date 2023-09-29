@@ -403,6 +403,7 @@ return [
 	'LAYOUT_SQUARES' => 'Miniaturas quadradas',
 	'LAYOUT_JUSTIFIED' => 'Com formatação, justificada',
 	'LAYOUT_MASONRY' => 'Com formatação, masonry',
+	'LAYOUT_GRID' => 'Com formatação, grid',
 	'LAYOUT_UNJUSTIFIED' => 'Com formatação, não justificada',
 	'SET_LAYOUT' => 'Alterar disposição',
 

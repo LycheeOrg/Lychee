@@ -30,8 +30,10 @@ export function useJustify(el) {
 			// Race condition in search.find -- window content
 			// and `photos` can get out of sync as search
 			// query is being modified.
+			console.log("race!");
 			return false;
 		}
+
 		e.style.top = layoutGeometry.boxes[i].top + "px";
 		e.style.width = layoutGeometry.boxes[i].width + "px";
 		e.style.height = layoutGeometry.boxes[i].height + "px";

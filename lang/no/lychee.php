@@ -403,6 +403,7 @@ return [
 	'LAYOUT_SQUARES' => 'Kvadratiske miniatyrbilder',
 	'LAYOUT_JUSTIFIED' => 'Med aspektratio, justert',
 	'LAYOUT_MASONRY' => 'Med aspektratio, masonry',
+	'LAYOUT_GRID' => 'Med aspektratio, grid',
 	'LAYOUT_UNJUSTIFIED' => 'Med aspektratio, ikke justert',
 	'SET_LAYOUT' => 'Lagre oppsett',
 

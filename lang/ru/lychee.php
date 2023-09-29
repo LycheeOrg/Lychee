@@ -403,6 +403,7 @@ return [
 	'LAYOUT_SQUARES' => 'Квадратные превью',
 	'LAYOUT_JUSTIFIED' => 'По формату, выровнять',
 	'LAYOUT_MASONRY' => 'По формату, masonry',
+	'LAYOUT_GRID' => 'По формату, grid',
 	'LAYOUT_UNJUSTIFIED' => 'По формату, не выравнивать',
 	'SET_LAYOUT' => 'Изменить компоновку',
 

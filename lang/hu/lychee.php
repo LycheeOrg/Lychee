@@ -401,6 +401,7 @@ return [
 	'LAYOUT_SQUARES' => 'Négyzet alakú bélyegképek',
 	'LAYOUT_JUSTIFIED' => 'Képaránnyal, igazított',
 	'LAYOUT_MASONRY' => 'Képaránnyal, masonry',
+	'LAYOUT_GRID' => 'Képaránnyal, grid',
 	'LAYOUT_UNJUSTIFIED' => 'Képaránnyal, igazítatlan',
 	'SET_LAYOUT' => 'Elrendezés megváltoztatása',
 

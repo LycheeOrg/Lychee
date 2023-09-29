@@ -403,6 +403,7 @@ return [
 	'LAYOUT_SQUARES' => 'Kwadratowe miniaturki',
 	'LAYOUT_JUSTIFIED' => 'Aspekt, wyrównane',
 	'LAYOUT_MASONRY' => 'Aspekt, masonry',
+	'LAYOUT_GRID' => 'Aspekt, grid',
 	'LAYOUT_UNJUSTIFIED' => 'Aspekt, bez wyrównania',
 	'SET_LAYOUT' => 'Zmień układ',
 

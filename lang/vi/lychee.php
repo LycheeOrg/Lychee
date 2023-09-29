@@ -403,6 +403,7 @@ return [
 	'LAYOUT_SQUARES' => 'Ô vuông hình nhỏ',
 	'LAYOUT_JUSTIFIED' => 'Theo tỷ lệ hình, canh đều hai bên',
 	'LAYOUT_MASONRY' => 'Theo tỷ lệ hình, masonry',
+	'LAYOUT_GRID' => 'Theo tỷ lệ hình, grid',
 	'LAYOUT_UNJUSTIFIED' => 'Theo tỷ lệ hình, không canh đều hai bên',
 	'SET_LAYOUT' => 'Thay đổi cách trình bày',
 

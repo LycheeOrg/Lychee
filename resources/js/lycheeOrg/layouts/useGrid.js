@@ -1,6 +1,6 @@
-export default { useMasonry };
+export default { useGrid };
 
-export function useMasonry(el) {
+export function useGrid(el) {
 	const gridItems = [...el.childNodes].filter((gridItem) => gridItem.nodeType === 1);
 	const grid_widths = getComputedStyle(el).gridTemplateColumns.split(" ");
 	const perChunk = grid_widths.length;
@@ -23,36 +23,26 @@ export function useMasonry(el) {
 
 	let idx = 0;
 	gridItems.forEach(function (e, i) {
-		idx = findSmallestIdx(columns);
+		if (idx % perChunk === 0) {
+			const newTop = Math.max(...columns.map((column) => column.height));
+			columns.forEach((column) => (column.height = newTop));
+		}
+
 		let column = columns[idx];
-		const height = width / ratio[i];
+		const height = Math.floor(grid_width / ratio[i]);
 		e.style.top = column.height + "px";
-		e.style.width = width + "px";
+		e.style.width = grid_width + "px";
 		e.style.height = height + "px";
 		e.style.left = column.left + "px";
 		column.height = column.height + height + grid_gap;
 
 		// update
 		columns[idx] = column;
+		idx = (idx + 1) % perChunk;
 	});
 
 	const height = getMaxHeight(columns);
 	el.style.height = height + "px";
-}
-
-function findSmallestIdx(columns) {
-	let idx = 0;
-	let smallest = NaN;
-	columns.forEach((col, i) => {
-		if (isNaN(smallest)) {
-			smallest = col.height;
-			idx = i;
-		} else if (col.height < smallest) {
-			smallest = col.height;
-			idx = i;
-		}
-	});
-	return idx;
 }
 
 function getMaxHeight(columns) {

@@ -403,6 +403,7 @@ return [
 	'LAYOUT_SQUARES' => '方形縮略圖',
 	'LAYOUT_JUSTIFIED' => '有方面，有道理',
 	'LAYOUT_MASONRY' => '有方面, masonry',
+	'LAYOUT_GRID' => '有方面, grid',
 	'LAYOUT_UNJUSTIFIED' => '有方面，沒有道理',
 	'SET_LAYOUT' => '變更版面',
 

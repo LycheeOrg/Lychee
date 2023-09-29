@@ -403,6 +403,7 @@ return [
 	'LAYOUT_SQUARES' => 'Čtvercové náhledy',
 	'LAYOUT_JUSTIFIED' => 'V poměru stran, zarovnáno',
 	'LAYOUT_MASONRY' => 'V poměru stran, masonry',
+	'LAYOUT_GRID' => 'V poměru stran, grid',
 	'LAYOUT_UNJUSTIFIED' => 'V poměru stran, nezarovnáno',
 	'SET_LAYOUT' => 'Změnit vzhled',
 
