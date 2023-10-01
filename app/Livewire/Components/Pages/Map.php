@@ -57,17 +57,24 @@ class Map extends Component
 		$this->sessionFlags = SessionFlags::get();
 	}
 
+	/**
+	 * @return array
+	 */
 	public function getDataProperty(): array
 	{
-		// Hacky to avoid modifying the response of the front-end:
-		/** @var array{id:null,title:null,photos:array,track_url:null} */
 		if ($this->albumId === null) {
-			return $this->rootPositionData->do()->toArray(request());
+			/** @var array $ret */
+			$ret = $this->rootPositionData->do()->toArray(request());
+
+			return $ret;
 		}
 
 		$includeSubAlbums = Configs::getValueAsBool('map_include_subalbums');
 
-		return $this->albumPositionData->get($this->album, $includeSubAlbums)->toArray(request());
+		/** @var array $ret */
+		$ret = $this->albumPositionData->get($this->album, $includeSubAlbums)->toArray(request());
+
+		return $ret;
 	}
 
 	public function boot(): void
