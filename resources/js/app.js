@@ -6,6 +6,7 @@ import { loginWebAuthn, registerWebAuthn } from "./lycheeOrg/webauthn.js";
 import { upload } from "./lycheeOrg/upload.js";
 import { albumView } from "./lycheeOrg/albumView.js";
 import { photoView } from "./lycheeOrg/photoView.js";
+import { mapView } from "./lycheeOrg/mapView.js";
 import { justify } from "./lycheeOrg/layouts/justifyLayout.js";
 import { masonry } from "./lycheeOrg/layouts/masonryLayout.js";
 import { grid } from "./lycheeOrg/layouts/gridLayout.js";
@@ -24,6 +25,7 @@ document.addEventListener("alpine:init", () => {
 	Alpine.data("upload", upload);
 	Alpine.data("albumView", albumView);
 	Alpine.data("photoView", photoView);
+	Alpine.data("mapView", mapView);
 	Alpine.directive("masonry", masonry);
 	Alpine.directive("justify", justify);
 	Alpine.directive("grid", grid);

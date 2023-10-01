@@ -6,6 +6,7 @@ use App\Livewire\Components\Pages\AllSettings;
 use App\Livewire\Components\Pages\Diagnostics;
 use App\Livewire\Components\Pages\Gallery\Album;
 use App\Livewire\Components\Pages\Gallery\Albums;
+use App\Livewire\Components\Pages\Map;
 use App\Livewire\Components\Pages\Gallery\Photo;
 use App\Livewire\Components\Pages\Jobs;
 use App\Livewire\Components\Pages\Landing;
@@ -44,7 +45,8 @@ Route::middleware(['installation:complete', 'migration:complete'])
 			Route::get('/sharing', Sharing::class)->name('sharing');
 			Route::get('/jobs', Jobs::class)->name('jobs');
 			Route::get('/diagnostics', Diagnostics::class)->name('diagnostics');
-			Route::get('/gallery/', Albums::class)->name('livewire-gallery');
+			Route::get('/map', Map::class)->name('livewire-map');
+			Route::get('/gallery', Albums::class)->name('livewire-gallery');
 			Route::get('/gallery/{albumId}/', Album::class)->name('livewire-gallery-album');
 			Route::get('/gallery/{albumId}/{photoId}', Photo::class)->name('livewire-gallery-photo');
 			Route::get('/', function () {
