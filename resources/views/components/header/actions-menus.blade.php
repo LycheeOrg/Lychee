@@ -3,7 +3,8 @@
 	App\Models\Configs::getValueAsBool('map_display') &&
 	(Auth::check() || App\Models\Configs::getValueAsBool('map_display_public'))
 	)
-	<x-header.button href="{{ route('livewire-map') }}" wire:navigate icon="map" />
+	{{-- TODO: make this more resistant - Only display if there are actual geo data in the pictures. --}}
+	<x-header.button href="{{ route('livewire-map', ['albumId' => $this->albumId]) }}" wire:navigate icon="map" />
 @endif
 {{-- No selection --}}
 @can(App\Policies\AlbumPolicy::CAN_UPLOAD, [App\Contracts\Models\AbstractAlbum::class, $this->album ?? null])
