@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enum\LicenseType;
+use App\Enum\MapProviders;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\InvalidConfigOption;
 use App\Exceptions\Internal\LycheeAssertionError;
@@ -61,6 +62,7 @@ class Configs extends Model
 	protected const TERNARY = '0|1|2';
 	protected const DISABLED = '';
 	protected const LICENSE = 'license';
+	protected const MAP_PROVIDER = 'map_provider';
 
 	/**
 	 * The attributes that are mass assignable.
@@ -132,6 +134,11 @@ class Configs extends Model
 			case self::LICENSE:
 				if (LicenseType::tryFrom($candidateValue) === null) {
 					$message = sprintf($message_template, 'a valid license');
+				}
+				break;
+			case self::MAP_PROVIDER:
+				if (MapProviders::tryFrom($candidateValue) === null) {
+					$message = sprintf($message_template, 'a valid map provider');
 				}
 				break;
 			default:
