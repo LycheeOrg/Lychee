@@ -2,7 +2,8 @@
 
 namespace App\Http\Requests\Settings;
 
-use Illuminate\Validation\Rule;
+use App\Enum\MapProviders;
+use Illuminate\Validation\Rules\Enum;
 
 class SetMapProviderSettingRequest extends AbstractSettingRequest
 {
@@ -11,19 +12,13 @@ class SetMapProviderSettingRequest extends AbstractSettingRequest
 	public function rules(): array
 	{
 		return [
-			self::ATTRIBUTE => ['required', 'string', Rule::in([
-				'Wikimedia',
-				'OpenStreetMap.org',
-				'OpenStreetMap.de',
-				'OpenStreetMap.fr',
-				'RRZE',
-			])],
+			self::ATTRIBUTE => ['required', new Enum(MapProviders::class)],
 		];
 	}
 
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		$this->name = self::ATTRIBUTE;
-		$this->value = $values[self::ATTRIBUTE];
+		$this->value = MapProviders::from($values[self::ATTRIBUTE]);
 	}
 }

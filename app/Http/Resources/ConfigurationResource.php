@@ -10,6 +10,7 @@ use App\Enum\AlbumLayoutType;
 use App\Enum\DefaultAlbumProtectionType;
 use App\Enum\ImageOverlayType;
 use App\Enum\LicenseType;
+use App\Enum\MapProviders;
 use App\Enum\ThumbAlbumSubtitleType;
 use App\Exceptions\Handler;
 use App\Metadata\Versions\InstalledVersion;
@@ -147,7 +148,7 @@ class ConfigurationResource extends JsonResource
 			'map_display_direction' => Configs::getValueAsString('map_display_direction'),
 			'map_display_public' => Configs::getValueAsBool('map_display_public'),
 			'map_include_subalbums' => Configs::getValueAsBool('map_include_subalbums'),
-			'map_provider' => Configs::getValueAsString('map_provider'),
+			'map_provider' => Configs::getValueAsEnum('map_provider', MapProviders::class),
 			'mod_frame_enabled' => Configs::getValueAsBool('mod_frame_enabled'),
 			'mod_frame_refresh' => Configs::getValueAsInt('mod_frame_refresh'),
 			'new_photos_notification' => Configs::getValueAsBool('new_photos_notification'),
