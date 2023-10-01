@@ -2,31 +2,25 @@
 
 namespace App\Livewire\Components\Pages;
 
-use App\Actions\Albums\Top;
-use App\Contracts\Livewire\Reloadable;
+use App\Actions\Album\PositionData as AlbumPositionData;
+use App\Actions\Albums\PositionData as RootPositionData;
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\MapProviders;
-use App\Enum\SmartAlbumType;
-use App\Http\Resources\Collections\TopAlbumsResource;
+use App\Factories\AlbumFactory;
 use App\Livewire\DTO\AlbumsFlags;
 use App\Livewire\DTO\SessionFlags;
-use App\Livewire\Traits\AlbumsPhotosContextMenus;
-use App\Livewire\Traits\SilentUpdate;
 use App\Models\Configs;
 use Illuminate\Contracts\Container\BindingResolutionException;
-use Illuminate\Support\Collection;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
-use Livewire\Attributes\On;
 use Livewire\Component;
 
-/**
- * This is the "start" page of the gallery
- * Integrate the list of all albums at top level.
- */
 class Map extends Component
 {
-	private TopAlbumsResource $topAlbums;
+	private RootPositionData $rootPositionData;
+	private AlbumPositionData $albumPositionData;
+	private AlbumFactory $albumFactory;
+	private ?AbstractAlbum $album = null;
 
 	#[Locked] public string $title;
 	/** @var array<int,string> */
@@ -34,7 +28,7 @@ class Map extends Component
 	#[Locked] public ?string $albumId = null;
 	public AlbumsFlags $flags;
 	public SessionFlags $sessionFlags;
-	public MapProviders $mapProviders;
+	public MapProviders $mapProvider;
 
 	/**
 	 * Render component.
@@ -46,31 +40,46 @@ class Map extends Component
 	public function render(): View
 	{
 		$this->flags = new AlbumsFlags();
-		$this->albumIDs = $this->topAlbums->albums->map(fn ($v, $k) => $v->id)->all();
-		$this->mapProviders = Configs::getValueAsEnum('map_provider', MapProviders::class);
+		$this->mapProvider = Configs::getValueAsEnum('map_provider', MapProviders::class);
 
 		return view('livewire.pages.gallery.map');
 	}
 
-	public function mount(): void
+	public function mount(?string $albumId = null): void
 	{
+		if ($albumId !== null) {
+			$this->album = $this->albumFactory->findAbstractAlbumOrFail($this->albumId);
+			$this->title = $this->album->title;
+		}
+
+		// TODO: authorization.
+		$this->albumId = $albumId;
 		$this->sessionFlags = SessionFlags::get();
 	}
 
-	#[On('reloadPage')]
-	public function reloadPage(): void
+	public function getDataProperty(): array
 	{
-		$this->topAlbums = resolve(Top::class)->get();
+		// Hacky to avoid modifying the response of the front-end:
+		/** @var array{id:null,title:null,photos:array,track_url:null} */
+		if ($this->albumId === null) {
+			return $this->rootPositionData->do()->toArray(request());
+		}
+
+		$includeSubAlbums = Configs::getValueAsBool('map_include_subalbums');
+
+		return $this->albumPositionData->get($this->album, $includeSubAlbums)->toArray(request());
 	}
 
 	public function boot(): void
 	{
-		$this->topAlbums = resolve(Top::class)->get();
+		$this->albumFactory = resolve(AlbumFactory::class);
+		$this->rootPositionData = resolve(RootPositionData::class);
+		$this->albumPositionData = resolve(AlbumPositionData::class);
 		$this->title = Configs::getValueAsString('site_title');
 	}
 
-	public function getAlbumsProperty(): Collection
+	public function back(): mixed
 	{
-		return $this->topAlbums->albums;
+		return $this->redirect(route('livewire-gallery'), true);
 	}
 }

@@ -1,4 +1,10 @@
 <div class='flex-shrink-0 w-24 flex justify-end' >
+@if(
+	App\Models\Configs::getValueAsBool('map_display') &&
+	(Auth::check() || App\Models\Configs::getValueAsBool('map_display_public'))
+	)
+	<x-header.button href="{{ route('livewire-map') }}" wire:navigate icon="map" />
+@endif
 {{-- No selection --}}
 @can(App\Policies\AlbumPolicy::CAN_UPLOAD, [App\Contracts\Models\AbstractAlbum::class, $this->album ?? null])
 <x-header.button x-show='selectedPhotos.length === 0 && selectedAlbums.length === 0 ' wire:click='openContextMenu' icon='plus' />
