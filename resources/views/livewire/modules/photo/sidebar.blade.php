@@ -90,10 +90,22 @@
             <h2 class="col-span-2 text-neutral-400 font-bold px-3 pt-4 pb-3">
                 {{ __('lychee.PHOTO_LOCATION') }}
             </h2>
+            @if ($is_map_accessible)
+            <div x-data="sidebarView(
+                @js($map_provider->getLayer()),
+                @js($map_provider->getAtributionHtml()),
+                @js($latitude),
+                @js($longitude),
+                @js($img_direction),
+                @js(URL::asset('/'))
+            )"
+            x-init="displayOnMap()"
+            id="leaflet_map_single_photo" class="col-span-2 h-48 bg-red-500 my-0.5 mx-3"></div>
+            @endif
             <span class="py-0.5 pl-3 text-sm">{{ __('lychee.PHOTO_LATITUDE') }}</span>
-            <span class="py-0.5 pl-0 text-sm">{{ $latitude }}</span>
+            <span class="py-0.5 pl-0 text-sm">{{ $latitude_formatted }}</span>
             <span class="py-0.5 pl-3 text-sm">{{ __('lychee.PHOTO_LONGITUDE') }}</span>
-            <span class="py-0.5 pl-0 text-sm">{{ $longitude }}</span>
+            <span class="py-0.5 pl-0 text-sm">{{ $longitude_formatted }}</span>
             <span class="py-0.5 pl-3 text-sm">{{ __('lychee.PHOTO_ALTITUDE') }}</span>
             <span class="py-0.5 pl-0 text-sm">{{ $altitude }}</span>
             @if ($location != null)

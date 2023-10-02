@@ -1,5 +1,3 @@
-// import Livewire from
-
 export default { photoView };
 
 export function photoView(detailsOpen_val, isFullscreen_val, has_description_val, overlayType_val, canEdit_val = false) {

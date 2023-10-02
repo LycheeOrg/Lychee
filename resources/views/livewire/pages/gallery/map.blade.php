@@ -1,7 +1,7 @@
 <div class="w-full" x-data="
     mapView(
-    @js($mapProvider->getLayer()),
-    @js($mapProvider->getAtributionHtml()),
+    @js($map_provider->getLayer()),
+    @js($map_provider->getAtributionHtml()),
     '{{ __('lychee.CAMERA_DATE') }}',
     @js($this->data),
     )"

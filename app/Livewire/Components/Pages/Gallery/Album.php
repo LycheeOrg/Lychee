@@ -26,7 +26,6 @@ use Illuminate\View\View;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
 use Livewire\Component;
-use LycheeOrg\PhpFlickrJustifiedLayout\DTO\Geometry;
 
 /**
  * Album sub module.

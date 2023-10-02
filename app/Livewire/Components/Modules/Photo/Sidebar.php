@@ -3,11 +3,13 @@
 namespace App\Livewire\Components\Modules\Photo;
 
 use App\Enum\LicenseType;
+use App\Enum\MapProviders;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Facades\Helpers;
 use App\Models\Configs;
 use App\Models\Photo as PhotoModel;
 use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
@@ -45,11 +47,17 @@ class Sidebar extends Component
 	#[Locked] public string $shutter;
 	#[Locked] public ?string $taken_at;
 	#[Locked] public bool $has_location = false;
-	#[Locked] public string $latitude;
-	#[Locked] public string $longitude;
+	#[Locked] public ?float $latitude;
+	#[Locked] public string $latitude_formatted;
+	#[Locked] public ?float $longitude;
+	#[Locked] public string $longitude_formatted;
 	#[Locked] public string $altitude;
 	#[Locked] public ?string $location;
 	#[Locked] public ?float $img_direction;
+	// map stuff
+	public bool $is_map_accessible;
+	public MapProviders $map_provider;
+
 	/**
 	 * Given a photo model extract all the information.
 	 * ! It is possible that we may need to extract those in a similar fashion as with Album.
@@ -62,6 +70,11 @@ class Sidebar extends Component
 	 */
 	public function mount(PhotoModel $photo): void
 	{
+		$this->map_provider = Configs::getValueAsEnum('map_provider', MapProviders::class);
+		$this->is_map_accessible = Configs::getValueAsBool('map_display');
+		$this->is_map_accessible = $this->is_map_accessible &&
+			(Auth::check() || Configs::getValueAsBool('map_display_public'));
+
 		$date_format_uploaded = Configs::getValueAsString('date_format_sidebar_uploaded');
 		$date_format_taken_at = Configs::getValueAsString('date_format_sidebar_taken_at');
 
@@ -98,11 +111,13 @@ class Sidebar extends Component
 
 		$this->has_location = $this->has_location($photo);
 		if ($this->has_location) {
-			$this->latitude = $this->decimalToDegreeMinutesSeconds($photo->latitude, true);
-			$this->longitude = $this->decimalToDegreeMinutesSeconds($photo->longitude, false);
+			$this->latitude = $photo->latitude;
+			$this->longitude = $photo->longitude;
+			$this->latitude_formatted = $this->decimalToDegreeMinutesSeconds($photo->latitude, true);
+			$this->longitude_formatted = $this->decimalToDegreeMinutesSeconds($photo->longitude, false);
 			$this->altitude = round($photo->altitude, 1) . 'm';
 			$this->location = $photo->location;
-			$this->img_direction = $photo->img_direction;
+			$this->img_direction = Configs::getValueAsBool('map_display_direction') ? $photo->img_direction : null;
 		}
 	}
 

@@ -24,7 +24,7 @@ class Map extends Component
 
 	#[Locked] public string $title;
 	#[Locked] public ?string $albumId = null;
-	public MapProviders $mapProvider;
+	public MapProviders $map_provider;
 
 	/**
 	 * Render component.
@@ -36,7 +36,7 @@ class Map extends Component
 	public function render(): View
 	{
 		// $this->flags = new AlbumsFlags();
-		$this->mapProvider = Configs::getValueAsEnum('map_provider', MapProviders::class);
+		$this->map_provider = Configs::getValueAsEnum('map_provider', MapProviders::class);
 
 		return view('livewire.pages.gallery.map');
 	}
