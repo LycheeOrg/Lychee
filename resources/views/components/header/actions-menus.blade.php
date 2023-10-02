@@ -1,9 +1,5 @@
 <div class='flex-shrink-0 w-24 flex justify-end' >
-@if(
-	App\Models\Configs::getValueAsBool('map_display') &&
-	(Auth::check() || App\Models\Configs::getValueAsBool('map_display_public'))
-	)
-	{{-- TODO: make this more resistant - Only display if there are actual geo data in the pictures. --}}
+@if($this->flags->is_map_accessible)
 	<x-header.button href="{{ route('livewire-map', ['albumId' => $this->albumId]) }}" wire:navigate icon="map" />
 @endif
 {{-- No selection --}}

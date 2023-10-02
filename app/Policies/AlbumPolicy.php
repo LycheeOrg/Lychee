@@ -23,6 +23,7 @@ class AlbumPolicy extends BasePolicy
 	public const IS_OWNER = 'isOwner';
 	public const CAN_SEE = 'canSee';
 	public const CAN_ACCESS = 'canAccess';
+	public const CAN_ACCESS_MAP = 'canAccessMap';
 	public const CAN_DOWNLOAD = 'canDownload';
 	public const CAN_DELETE = 'canDelete';
 	public const CAN_UPLOAD = 'canUpload';
@@ -118,6 +119,30 @@ class AlbumPolicy extends BasePolicy
 		}
 
 		return false;
+	}
+
+	/**
+	 * Check if user can access the map.
+	 * Note that this is not used to determine the visibility of the header button because
+	 * 1. Admin will always return true.
+	 * 2. We also check if there are pictures with location data to be display in the album.
+	 *
+	 * @param User|null          $user
+	 * @param AbstractAlbum|null $album
+	 *
+	 * @return bool
+	 */
+	public function canAccessMap(?User $user, ?AbstractAlbum $album): bool
+	{
+		if (!Configs::getValueAsBool('map_display')) {
+			return false;
+		}
+
+		if ($user === null && !Configs::getValueAsBool('map_display_public')) {
+			return false;
+		}
+
+		return $this->canAccess($user, $album);
 	}
 
 	/**

@@ -85,6 +85,15 @@ class Album extends Component implements Reloadable
 			$this->header_url ??= $this->fetchHeaderUrl()?->url;
 			$this->num_children = $this->album instanceof ModelsAlbum ? $this->album->children->count() : 0;
 			$this->num_photos = $this->album->photos->count();
+
+			$is_latitude_longitude_found = false;
+			if ($this->album instanceof ModelsAlbum) {
+				$is_latitude_longitude_found = $this->album->all_photos()->whereNotNull('latitude')->whereNotNull('longitude')->count() > 0;
+			} else {
+				$is_latitude_longitude_found = $this->album->photos()->whereNotNull('latitude')->whereNotNull('longitude')->count() > 0;
+			}
+			// Only display if there are actual data
+			$this->flags->is_map_accessible = $this->flags->is_map_accessible && $is_latitude_longitude_found;
 		}
 
 		return view('livewire.pages.gallery.album');

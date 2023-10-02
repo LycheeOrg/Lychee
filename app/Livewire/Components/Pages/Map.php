@@ -7,10 +7,10 @@ use App\Actions\Albums\PositionData as RootPositionData;
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\MapProviders;
 use App\Factories\AlbumFactory;
-use App\Livewire\DTO\AlbumsFlags;
-use App\Livewire\DTO\SessionFlags;
 use App\Models\Configs;
+use App\Policies\AlbumPolicy;
 use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
@@ -23,11 +23,7 @@ class Map extends Component
 	private ?AbstractAlbum $album = null;
 
 	#[Locked] public string $title;
-	/** @var array<int,string> */
-	#[Locked] public array $albumIDs;
 	#[Locked] public ?string $albumId = null;
-	public AlbumsFlags $flags;
-	public SessionFlags $sessionFlags;
 	public MapProviders $mapProvider;
 
 	/**
@@ -39,7 +35,7 @@ class Map extends Component
 	 */
 	public function render(): View
 	{
-		$this->flags = new AlbumsFlags();
+		// $this->flags = new AlbumsFlags();
 		$this->mapProvider = Configs::getValueAsEnum('map_provider', MapProviders::class);
 
 		return view('livewire.pages.gallery.map');
@@ -47,14 +43,14 @@ class Map extends Component
 
 	public function mount(?string $albumId = null): void
 	{
+		$this->albumId = $albumId;
+
 		if ($albumId !== null) {
 			$this->album = $this->albumFactory->findAbstractAlbumOrFail($this->albumId);
 			$this->title = $this->album->title;
 		}
 
-		// TODO: authorization.
-		$this->albumId = $albumId;
-		$this->sessionFlags = SessionFlags::get();
+		Gate::authorize(AlbumPolicy::CAN_ACCESS_MAP, [AbstractAlbum::class, $this->album]);
 	}
 
 	/**
@@ -87,6 +83,10 @@ class Map extends Component
 
 	public function back(): mixed
 	{
-		return $this->redirect(route('livewire-gallery'), true);
+		if ($this->albumId === null) {
+			return $this->redirect(route('livewire-gallery'), true);
+		} else {
+			return $this->redirect(route('livewire-gallery-album', ['albumId' => $this->albumId]), true);
+		}
 	}
 }
