@@ -6,7 +6,7 @@
 		@if(Configs::getValueAsString('dropbox_key') !== '')
 		<x-context-menu.item icon='dropbox' icon_class="ionicons">{{ __('lychee.IMPORT_DROPBOX') }}</x-context-menu.item>
 		@endif
-	{{-- <x-context-menu.item wire:click='openImportFromServerModal' icon='terminal'>{{ __('lychee.IMPORT_SERVER') }}</x-context-menu.item> --}}
+	<x-context-menu.item wire:click='openImportFromServerModal' icon='terminal'>{{ __('lychee.IMPORT_SERVER') }}</x-context-menu.item>
 	@endcan
 	<x-context-menu.separator />
 	<x-context-menu.item wire:click='openAlbumCreateModal' icon='folder'>{{ __('lychee.NEW_ALBUM') }}</x-context-menu.item>
