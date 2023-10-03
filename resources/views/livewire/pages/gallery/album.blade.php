@@ -89,6 +89,7 @@
                          />
                     </a>
                 </div>
+                @if($num_photos > 0)
                 <div @class([
                     'relative w-full',
                     'm-4 flex flex-wrap' => $flags->layout() === \App\Enum\AlbumLayoutType::SQUARE,
@@ -102,6 +103,7 @@
                     x-grid
                 @endif
                 >
+                @endif
                 @foreach ($this->album->photos as $photo)
                     <x-gallery.album.thumbs.photo :data="$photo" albumId="{{ $albumId }}" :layout="$flags->layout()" />
                 @endforeach
