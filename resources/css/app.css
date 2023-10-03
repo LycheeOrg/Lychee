@@ -162,4 +162,8 @@
 	::-webkit-calendar-picker-indicator {
 		filter: invert(54%) sepia(85%) saturate(2054%) hue-rotate(166deg) brightness(93%) contrast(97%);
 	}
+
+	.drop-shadow-black {
+		--tw-drop-shadow: drop-shadow(0 0 1px rgba(0, 0, 0, 0.3)) drop-shadow(0 0 10px rgba(0, 0, 0, 0.3));
+	}
 }

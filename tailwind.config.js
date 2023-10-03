@@ -20,6 +20,7 @@ module.exports = {
     extend: {
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+        'noise': "url('../img/noise.png')"
       },
       dropShadow: {
         '3xl': '0 20px 20px rgba(0, 0, 0, 1)',

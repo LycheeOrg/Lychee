@@ -76,18 +76,17 @@ class Upload extends Component
 		$keys = explode('.', $key);
 		$index = intval($keys[0]);
 		$attribute = $keys[1] ?? null;
-		if ($attribute === 'fileName') {
-			$fileDetails = $this->uploads[$index];
-			// Initialize data if not existing.
-			$fileDetails['extension'] ??= '.' . pathinfo($fileDetails['fileName'], PATHINFO_EXTENSION);
-			$fileDetails['uuidName'] ??= strtr(base64_encode(random_bytes(12)), '+/', '-_') . $fileDetails['extension'];
 
-			// Ensure data are set
-			$this->uploads[$index]['extension'] = $fileDetails['extension'];
-			$this->uploads[$index]['uuidName'] = $fileDetails['uuidName'];
-			$this->uploads[$index]['stage'] = $fileDetails['stage'] ?? FileStatus::UPLOADING->value;
-			$this->uploads[$index]['progress'] = $fileDetails['progress'] ?? 0;
-		}
+		$fileDetails = $this->uploads[$index];
+		// Initialize data if not existing.
+		$fileDetails['extension'] ??= '.' . pathinfo($fileDetails['fileName'], PATHINFO_EXTENSION);
+		$fileDetails['uuidName'] ??= strtr(base64_encode(random_bytes(12)), '+/', '-_') . $fileDetails['extension'];
+
+		// Ensure data are set
+		$this->uploads[$index]['extension'] = $fileDetails['extension'];
+		$this->uploads[$index]['uuidName'] = $fileDetails['uuidName'];
+		$this->uploads[$index]['stage'] = $fileDetails['stage'] ?? FileStatus::UPLOADING->value;
+		$this->uploads[$index]['progress'] = $fileDetails['progress'] ?? 0;
 
 		if ($attribute === 'fileChunk') {
 			$fileDetails = $this->uploads[$index];

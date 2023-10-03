@@ -1,19 +1,10 @@
 <?php
 
-namespace App\Livewire;
+namespace App\Livewire\Components\Pages;
 
-use App\Livewire\Components\Pages\AllSettings;
-use App\Livewire\Components\Pages\Diagnostics;
 use App\Livewire\Components\Pages\Gallery\Album;
 use App\Livewire\Components\Pages\Gallery\Albums;
 use App\Livewire\Components\Pages\Gallery\Photo;
-use App\Livewire\Components\Pages\Jobs;
-use App\Livewire\Components\Pages\Landing;
-use App\Livewire\Components\Pages\Map;
-use App\Livewire\Components\Pages\Profile;
-use App\Livewire\Components\Pages\Settings;
-use App\Livewire\Components\Pages\Sharing;
-use App\Livewire\Components\Pages\Users;
 use App\Models\Configs;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
@@ -46,6 +37,7 @@ Route::middleware(['installation:complete', 'migration:complete'])
 			Route::get('/jobs', Jobs::class)->name('jobs');
 			Route::get('/diagnostics', Diagnostics::class)->name('diagnostics');
 			Route::get('/map/{albumId?}', Map::class)->name('livewire-map');
+			Route::get('/frame/{albumId?}', Frame::class)->name('livewire-frame');
 			Route::get('/gallery', Albums::class)->name('livewire-gallery');
 			Route::get('/gallery/{albumId}/', Album::class)->name('livewire-gallery-album');
 			Route::get('/gallery/{albumId}/{photoId}', Photo::class)->name('livewire-gallery-photo');

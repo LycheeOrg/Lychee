@@ -103,7 +103,7 @@ parameters:
 
 		# TESTS
 		- 
-			message: '#Dynamic call to static method Illuminate\\Testing\\TestResponse::assert(Forbidden|ViewIs|Unauthorized|Ok)#'
+			message: '#Dynamic call to static method Illuminate\\Testing\\TestResponse::assert(Forbidden|ViewIs|Unauthorized|Ok|Status)#'
 			paths:
 				- tests
 		- 

@@ -1,6 +1,9 @@
 <div class='flex-shrink-0 w-24 flex justify-end' >
 @if($this->flags->is_map_accessible)
-	<x-header.button href="{{ route('livewire-map', ['albumId' => $this->albumId]) }}" wire:navigate icon="map" />
+	<x-header.button href="{{ route('livewire-map', ['albumId' => $this->albumId]) }}" wire:navigate icon="globe" />
+@endif
+@if(App\Models\Configs::getValueAsBool('mod_frame_enabled'))
+	<x-header.button href="{{ route('livewire-frame', ['albumId' => $this->albumId]) }}" wire:navigate icon="monitor" />
 @endif
 {{-- No selection --}}
 @can(App\Policies\AlbumPolicy::CAN_UPLOAD, [App\Contracts\Models\AbstractAlbum::class, $this->album ?? null])
