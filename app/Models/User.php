@@ -211,7 +211,6 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 		}
 
 		AccessPermission::query()->where(APC::USER_ID, '=', $this->id)->delete();
-		// $this->shared()->delete();
 		WebAuthnCredential::query()->where('authenticatable_id', '=', $this->id)->delete();
 
 		return $this->parentDelete();
