@@ -45,7 +45,7 @@ class IniSettingsCheck implements DiagnosticPipe
 		if (!extension_loaded('imagick')) {
 			// @codeCoverageIgnoreStart
 			$data[] = 'Warning: Pictures that are rotated lose their metadata! Please install Imagick to avoid that.';
-			// @codeCoverageIgnoreEnd
+		// @codeCoverageIgnoreEnd
 		} else {
 			if (!isset($settings['imagick'])) {
 				// @codeCoverageIgnoreStart
