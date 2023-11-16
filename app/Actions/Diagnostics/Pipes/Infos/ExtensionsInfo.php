@@ -32,7 +32,7 @@ class ExtensionsInfo implements DiagnosticPipe
 		if (!isset($imagickVersion, $imagickVersion['versionNumber'])) {
 			// @codeCoverageIgnoreStart
 			$imagickVersion = '-';
-			// @codeCoverageIgnoreEnd
+		// @codeCoverageIgnoreEnd
 		} else {
 			$imagickVersion = $imagickVersion['versionNumber'];
 		}

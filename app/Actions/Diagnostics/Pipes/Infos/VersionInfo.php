@@ -35,7 +35,7 @@ class VersionInfo implements DiagnosticPipe
 			$fileVersion->hydrate(false, false);
 
 			$lycheeInfoString = $fileVersion->getVersion()->toString();
-			// @codeCoverageIgnoreEnd
+		// @codeCoverageIgnoreEnd
 		} else {
 			$gitHubFunctions = resolve(GitHubVersion::class);
 			$gitHubFunctions->hydrate();
