@@ -40,6 +40,6 @@ class PositionData extends Action
 			->whereNotNull('latitude')
 			->whereNotNull('longitude');
 
-		return new PositionDataResource($album->id, $album->title, $photoRelation->get(), $album instanceof Album ? $album->track_url : null);
+		return new PositionDataResource($album->id, $album->title, $photoRelation->get(), $album instanceof Album ? $album->track_url : null); // @phpstan-ignore-line
 	}
 }

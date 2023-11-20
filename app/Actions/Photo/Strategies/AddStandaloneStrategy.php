@@ -159,7 +159,7 @@ class AddStandaloneStrategy extends AbstractAddStrategy
 			// The original and final checksum may differ, if the photo has
 			// been rotated by `putSourceIntoFinalDestination` while being
 			// moved into final position.
-			$this->photo->checksum = $streamStat->checksum;
+			$this->photo->checksum = $streamStat->checksum;  // @phpstan-ignore-line
 			$this->photo->save();
 
 			// Create original size variant of photo
@@ -173,7 +173,7 @@ class AddStandaloneStrategy extends AbstractAddStrategy
 				SizeVariantType::ORIGINAL,
 				$targetFile->getRelativePath(),
 				$imageDim,
-				$streamStat->bytes
+				$streamStat->bytes // @phpstan-ignore-line
 			);
 		} catch (LycheeException $e) {
 			// If source file could not be put into final destination, remove

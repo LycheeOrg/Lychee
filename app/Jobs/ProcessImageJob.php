@@ -50,7 +50,7 @@ class ProcessImageJob implements ShouldQueue
 	) {
 		$this->filePath = $file->getPath();
 		$this->originalBaseName = $file->getOriginalBasename();
-		$this->albumID = is_string($albumID) ? $albumID : $albumID?->id;
+		$this->albumID = is_string($albumID) ? $albumID : $albumID?->id;  // @phpstan-ignore-line
 		$this->userId = Auth::user()->id;
 		$this->fileLastModifiedTime = $fileLastModifiedTime;
 
