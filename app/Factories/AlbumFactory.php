@@ -21,21 +21,12 @@ use Illuminate\Support\Collection;
 
 class AlbumFactory
 {
-	// PHP 8.2
-	// public const BUILTIN_SMARTS_CLASS = [
-	// 	SmartAlbumType::UNSORTED->value => UnsortedAlbum::class,
-	// 	SmartAlbumType::STARRED->value => StarredAlbum::class,
-	// 	SmartAlbumType::PUBLIC->value => PublicAlbum::class,
-	// 	SmartAlbumType::RECENT->value => RecentAlbum::class,
-	// 	SmartAlbumType::ON_THIS_DAY->value => OnThisDayAlbum::class,
-	// ];
-
 	public const BUILTIN_SMARTS_CLASS = [
-		'unsorted' => UnsortedAlbum::class,
-		'starred' => StarredAlbum::class,
-		'public' => PublicAlbum::class,
-		'recent' => RecentAlbum::class,
-		'on_this_day' => OnThisDayAlbum::class,
+		SmartAlbumType::UNSORTED->value => UnsortedAlbum::class,
+		SmartAlbumType::STARRED->value => StarredAlbum::class,
+		SmartAlbumType::PUBLIC->value => PublicAlbum::class,
+		SmartAlbumType::RECENT->value => RecentAlbum::class,
+		SmartAlbumType::ON_THIS_DAY->value => OnThisDayAlbum::class,
 	];
 
 	/**

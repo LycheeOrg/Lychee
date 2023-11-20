@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "faedff743ded3608ec8c9f03fd8c2e13",
+    "content-hash": "0b0490a24daef4882569ab35a34aeae4",
     "packages": [
         {
             "name": "bepsvpt/secure-headers",
@@ -11363,32 +11363,29 @@
         },
         {
             "name": "slam/phpstan-extensions",
-            "version": "v6.0.0",
+            "version": "v6.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Slamdunk/phpstan-extensions.git",
-                "reference": "ddc65c09426b6a9d752c200f33d676caab53ca6d"
+                "reference": "0aa043e2d306566b132bb39ddecd209afa5065a7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Slamdunk/phpstan-extensions/zipball/ddc65c09426b6a9d752c200f33d676caab53ca6d",
-                "reference": "ddc65c09426b6a9d752c200f33d676caab53ca6d",
+                "url": "https://api.github.com/repos/Slamdunk/phpstan-extensions/zipball/0aa043e2d306566b132bb39ddecd209afa5065a7",
+                "reference": "0aa043e2d306566b132bb39ddecd209afa5065a7",
                 "shasum": ""
             },
             "require": {
-                "nikic/php-parser": "^v4.13.1",
-                "php": ">=8.0",
-                "phpstan/phpstan": "^1.1.1"
+                "nikic/php-parser": "^4.17.1",
+                "php": "~8.2.0 || ~8.3.0",
+                "phpstan/phpstan": "^1.10.44"
             },
             "require-dev": {
-                "malukenho/mcbumpface": "^1.1.5",
-                "nette/di": "^v3.0.11",
-                "nette/neon": "^v3.3.1",
-                "phpstan/phpstan-php-parser": "^1.0.0",
-                "phpstan/phpstan-phpunit": "^1.0.0",
-                "phpunit/phpunit": "^9.5.10",
-                "slam/php-cs-fixer-extensions": "^v3.1.0",
-                "slam/php-debug-r": "^v1.7.0"
+                "nette/di": "^3.1.8",
+                "nette/neon": "^3.4.1",
+                "phpstan/phpstan-phpunit": "^1.3.15",
+                "phpunit/phpunit": "^10.4.2",
+                "slam/php-cs-fixer-extensions": "^3.10.0"
             },
             "type": "phpstan-extension",
             "extra": {
@@ -11417,7 +11414,7 @@
             "description": "Slam extension of phpstan",
             "support": {
                 "issues": "https://github.com/Slamdunk/phpstan-extensions/issues",
-                "source": "https://github.com/Slamdunk/phpstan-extensions/tree/v6.0.0"
+                "source": "https://github.com/Slamdunk/phpstan-extensions/tree/v6.1.0"
             },
             "funding": [
                 {
@@ -11429,7 +11426,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2021-11-09T11:27:16+00:00"
+            "time": "2023-11-22T06:48:27+00:00"
         },
         {
             "name": "squizlabs/php_codesniffer",
@@ -12010,7 +12007,7 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": "^8.1",
+        "php": "^8.2",
         "ext-bcmath": "*",
         "ext-ctype": "*",
         "ext-exif": "*",
@@ -12029,7 +12026,7 @@
         "ext-zip": "*"
     },
     "platform-overrides": {
-        "php": "8.1"
+        "php": "8.2"
     },
     "plugin-api-version": "2.3.0"
 }
