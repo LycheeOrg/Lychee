@@ -1,6 +1,6 @@
 <?php
 
-use Opcodes\LogViewer\Level;
+use Opcodes\LogViewer\LogLevels\LevelClass;
 
 return [
 	/*
@@ -195,7 +195,7 @@ return [
 			 * $matches[7] - the log text, the rest of the text.
 			 */
 			'log_parsing_regex' => '/^\[(\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}\.?(\d{6}([\+-]\d\d:\d\d)?)?)\](.*?(\w+)\.|.*?)('
-				. implode('|', array_filter(Level::caseValues()))
+				. implode('|', array_filter(LevelClass::caseValues()))
 				. ')?: (.*?)( in [\/].*?:[0-9]+)?$/is',
 		],
 	],
