@@ -17,8 +17,13 @@ else
         echo "composer install"
         composer install
         if command -v npm > /dev/null; then
-        	echo "npm install --no-audit --no-fund"
-        	npm install --no-audit --no-fund
+            printf "\n${ORANGE}npm detected${NO_COLOR}\n"
+            if  [ -f "package.json" ]; then
+                echo "npm install --no-audit --no-fund"
+                npm install --no-audit --no-fund
+            else
+                printf "${GREEN}no package.json found${NO_COLOR}\n"
+            fi
         fi
     else
         printf "\n${ORANGE}--no-dev mode detected${NO_COLOR}\n"
