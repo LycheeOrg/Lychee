@@ -23,14 +23,15 @@ class OptimizeTables
 			default => 'Warning:Unknown DBMS; doing nothing.',
 		};
 
+		/** @var string|null $sql */
 		$sql = match ($driverName) {
 			'mysql' => 'ANALYZE TABLE ',
 			'pgsql' => 'ANALYZE ',
 			'sqlite' => 'ANALYZE ',
-			default => 'NOTHING',
+			default => null,
 		};
 
-		if ($sql === 'NOTHING') {
+		if ($sql === null) {
 			return $ret;
 		}
 
