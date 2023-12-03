@@ -35,3 +35,6 @@ Route::get('/Permissions', [DiagnosticsController::class, 'getFullAccessPermissi
 Route::get('/Diagnostics', [DiagnosticsController::class, 'view']);
 
 Route::get('/Update', [UpdateController::class, 'view']);
+
+Route::get('/Optimize', [OptimizeController::class, 'view']);
+
