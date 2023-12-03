@@ -2,32 +2,21 @@
 
 namespace App\Actions\Db;
 
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
+use App\Enum\DbDriverType;
 
-class OptimizeTables
+class OptimizeTables extends BaseOptimizer
 {
 	public function do(): array
 	{
 		$ret = ['Optimizing tables.'];
-
-		$connection = Schema::connection(null)->getConnection();
-		$tables = $connection->getDoctrineSchemaManager()->listTableNames();
-
-		$driverName = $connection->getDriverName();
-
-		$ret[] = match ($driverName) {
-			'mysql' => 'MySql/MariaDB detected.',
-			'pgsql' => 'PostgreSQL detected.',
-			'sqlite' => 'SQLite detected.',
-			default => 'Warning:Unknown DBMS; doing nothing.',
-		};
+		$driverName = $this->getDriverType($ret);
+		$tables = $this->getTables();
 
 		/** @var string|null $sql */
 		$sql = match ($driverName) {
-			'mysql' => 'ANALYZE TABLE ',
-			'pgsql' => 'ANALYZE ',
-			'sqlite' => 'ANALYZE ',
+			DbDriverType::MYSQL => 'ANALYZE TABLE ',
+			DbDriverType::PGSQL => 'ANALYZE ',
+			DbDriverType::SQLITE => 'ANALYZE ',
 			default => null,
 		};
 
@@ -36,13 +25,7 @@ class OptimizeTables
 		}
 
 		foreach ($tables as $table) {
-			try {
-				DB::statement($sql . $table);
-				$ret[] = $table . ' analyzed.';
-			} catch (\Throwable $th) {
-				$ret[] = 'Error: could not analyze ' . $table . '.';
-				$ret[] = 'Error: ' . $th->getMessage();
-			}
+			$this->execStatement($sql . $table, $table . ' analyzed.', $ret);
 		}
 
 		return $ret;

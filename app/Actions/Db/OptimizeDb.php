@@ -2,56 +2,30 @@
 
 namespace App\Actions\Db;
 
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
+use App\Enum\DbDriverType;
 
-class OptimizeDb
+class OptimizeDb extends BaseOptimizer
 {
 	public function do(): array
 	{
 		$ret = ['Optimizing Database.'];
-
-		$connection = Schema::connection(null)->getConnection();
-		$driverName = $connection->getDriverName();
-		$tables = $connection->getDoctrineSchemaManager()->listTableNames();
-
-		$ret[] = match ($driverName) {
-			'mysql' => 'MySql/MariaDB detected.',
-			'pgsql' => 'PostgreSQL detected.',
-			'sqlite' => 'SQLite detected.',
-			default => 'Warning:Unknown DBMS; doing nothing.',
-		};
+		$driverName = $this->getDriverType($ret);
+		$tables = $this->getTables();
 
 		/** @var string|null $sql */
 		$sql = match ($driverName) {
-			'mysql' => 'OPTIMIZE TABLE ',
-			'pgsql' => 'VACUUM(FULL, ANALYZE)',
-			'sqlite' => 'VACUUM',
+			DbDriverType::MYSQL => 'OPTIMIZE TABLE ',
+			DbDriverType::PGSQL => 'VACUUM(FULL, ANALYZE)',
+			DbDriverType::SQLITE => 'VACUUM',
 			default => null,
 		};
 
-		if ($sql === null) {
-			return $ret;
-		}
-
-		if ($driverName === 'mysql') {
+		if ($driverName === DbDriverType::MYSQL) {
 			foreach ($tables as $table) {
-				try {
-					DB::statement($sql . $table);
-					$ret[] = $table . ' optimized.';
-				} catch (\Throwable $th) {
-					$ret[] = 'Error: could not optimize ' . $table . '.';
-					$ret[] = 'Error: ' . $th->getMessage();
-				}
+				$this->execStatement($sql . $table, $table . ' optimized.', $ret);
 			}
-		} else {
-			try {
-				DB::statement($sql);
-				$ret[] = 'DB optimized.';
-			} catch (\Throwable $th) {
-				$ret[] = 'Error: could not optimize DB.';
-				$ret[] = 'Error: ' . $th->getMessage();
-			}
+		} elseif ($driverName !== null) {
+			$this->execStatement($sql, 'DB optimized.', $ret);
 		}
 
 		return $ret;
