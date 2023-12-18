@@ -158,8 +158,7 @@ class ConfigurationResource extends JsonResource
 			'nsfw_warning' => Configs::getValueAsBool('nsfw_warning'),
 			'nsfw_warning_admin' => Configs::getValueAsBool('nsfw_warning_admin'),
 			'photos_wraparound' => Configs::getValueAsBool('photos_wraparound'),
-			'public_photos_hidden' => Configs::getValueAsBool('public_photos_hidden'),
-			'public_search' => Configs::getValueAsBool('public_search'),
+			'public_search' => Configs::getValueAsBool('search_public'), // legacy
 			'rss_enable' => Configs::getValueAsBool('rss_enable'),
 			'rss_max_items' => Configs::getValueAsInt('rss_max_items'),
 			'rss_recent_days' => Configs::getValueAsInt('rss_recent_days'),
