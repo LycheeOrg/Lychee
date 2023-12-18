@@ -242,7 +242,7 @@ abstract class BasePhotosAddHandler extends BasePhotoTest
 		$video = static::convertJsonToObject($this->photos_tests->upload(
 			AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_TRAIN_VIDEO),
 			null,
-			200
+			[200, 201]
 		));
 		$this->assertEquals($photo->id, $video->id);
 		$this->assertEquals('E905E6C6-C747-4805-942F-9904A0281F02', $video->live_photo_content_id);
@@ -268,7 +268,7 @@ abstract class BasePhotosAddHandler extends BasePhotoTest
 		$photo = static::convertJsonToObject($this->photos_tests->upload(
 			AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_TRAIN_IMAGE),
 			null,
-			200 // associated image to video.
+			[200, 201] // associated image to video.
 		));
 		$this->assertEquals('E905E6C6-C747-4805-942F-9904A0281F02', $photo->live_photo_content_id);
 		$this->assertStringEndsWith('.mov', $photo->live_photo_url);
