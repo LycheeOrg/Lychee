@@ -150,7 +150,7 @@ class PhotosOperationsTest extends BasePhotoTest
 			'album_id' => null,
 			'id' => $id,
 			'created_at' => $updated_taken_at->setTimezone('UTC')->format('Y-m-d\TH:i:sP'),
-			'license' => 'All Rights Reserved',
+			'license' => 'reserved',
 			'is_public' => true,
 			'is_starred' => true,
 			'tags' => ['night', 'trees'],
@@ -190,7 +190,7 @@ class PhotosOperationsTest extends BasePhotoTest
 				'focal' => '16 mm',
 				'iso' => '1250',
 				'lens' => 'EF16-35mm f/2.8L USM',
-				'license' => 'All Rights Reserved',
+				'license' => 'reserved',
 				'make' => 'Canon',
 				'model' => 'Canon EOS R',
 				'is_public' => true,
@@ -547,7 +547,7 @@ class PhotosOperationsTest extends BasePhotoTest
 		$this->photos_tests->upload(
 			self::createUploadedFile(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE),
 			albumID: null,
-			expectedStatusCode: 201,
+			expectedStatusCodes: 201,
 			assertSee: null,
 			fileLastModifiedTime: null);
 	}
