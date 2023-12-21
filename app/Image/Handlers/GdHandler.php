@@ -22,7 +22,6 @@ use function Safe\imageflip;
 use function Safe\imagegif;
 use function Safe\imagejpeg;
 use function Safe\imagepng;
-use function Safe\imagerotate;
 use function Safe\imagesx;
 use function Safe\imagesy;
 use function Safe\imagewebp;
@@ -280,7 +279,7 @@ class GdHandler extends BaseImageHandler
 			};
 
 			if ($angle !== 0) {
-				$this->gdImage = imagerotate($this->gdImage, $angle, 0);
+				$this->gdImage = $this->imagerotate($this->gdImage, $angle, 0);
 			}
 
 			if ($flip !== 0) {
@@ -374,7 +373,7 @@ class GdHandler extends BaseImageHandler
 	public function rotate(int $angle): ImageDimension
 	{
 		try {
-			$this->gdImage = imagerotate($this->gdImage, -$angle, 0);
+			$this->gdImage = $this->imagerotate($this->gdImage, -$angle, 0);
 
 			return $this->getDimensions();
 		} catch (\ErrorException $e) {
@@ -454,5 +453,36 @@ class GdHandler extends BaseImageHandler
 	public function isLoaded(): bool
 	{
 		return $this->gdImageType !== 0 && $this->gdImage !== null;
+	}
+
+	/**
+	 * CORRECTED from Safe/imagerotate.
+	 *
+	 * Rotates the image image using the given
+	 * angle in degrees.
+	 *
+	 * The center of rotation is the center of the image, and the rotated
+	 * image may have different dimensions than the original image.
+	 *
+	 * @param \GdImage $image            a GdImage object, returned by one of the image creation functions,
+	 *                                   such as imagecreatetruecolor
+	 * @param float    $angle            Rotation angle, in degrees. The rotation angle is interpreted as the
+	 *                                   number of degrees to rotate the image anticlockwise.
+	 * @param int      $background_color Specifies the color of the uncovered zone after the rotation
+	 *
+	 * @return \GdImage returns an image object for the rotated image
+	 *
+	 * @throws ImageException
+	 */
+	private function imagerotate($image, float $angle, int $background_color)
+	{
+		error_clear_last();
+		// @phpstan-ignore-next-line
+		$safeResult = \imagerotate($image, $angle, $background_color);
+		if ($safeResult === false) {
+			throw ImageException::createFromPhpError();
+		}
+
+		return $safeResult;
 	}
 }
