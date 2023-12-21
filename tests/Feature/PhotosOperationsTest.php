@@ -320,7 +320,6 @@ class PhotosOperationsTest extends BasePhotoTest
 	public function testThumbnailsInsideHiddenAlbum(): void
 	{
 		$isRecentPublic = RecentAlbum::getInstance()->public_permissions() !== null;
-		$arePublicPhotosHidden = Configs::getValueAsBool(TestConstants::CONFIG_PUBLIC_HIDDEN);
 		$isPublicSearchEnabled = Configs::getValueAsBool(TestConstants::CONFIG_PUBLIC_SEARCH);
 		$albumSortingColumn = Configs::getValueAsString(TestConstants::CONFIG_ALBUMS_SORTING_COL);
 		$albumSortingOrder = Configs::getValueAsString(TestConstants::CONFIG_ALBUMS_SORTING_ORDER);
@@ -330,7 +329,6 @@ class PhotosOperationsTest extends BasePhotoTest
 		try {
 			Auth::loginUsingId(1);
 			RecentAlbum::getInstance()->setPublic();
-			Configs::set(TestConstants::CONFIG_PUBLIC_HIDDEN, false);
 			Configs::set(TestConstants::CONFIG_PUBLIC_SEARCH, true);
 			Configs::set(TestConstants::CONFIG_ALBUMS_SORTING_COL, 'title');
 			Configs::set(TestConstants::CONFIG_ALBUMS_SORTING_ORDER, 'ASC');
@@ -452,7 +450,6 @@ class PhotosOperationsTest extends BasePhotoTest
 			Configs::set(TestConstants::CONFIG_ALBUMS_SORTING_ORDER, $albumSortingOrder);
 			Configs::set(TestConstants::CONFIG_PHOTOS_SORTING_COL, $photoSortingColumn);
 			Configs::set(TestConstants::CONFIG_PHOTOS_SORTING_ORDER, $photoSortingOrder);
-			Configs::set(TestConstants::CONFIG_PUBLIC_HIDDEN, $arePublicPhotosHidden);
 			Configs::set(TestConstants::CONFIG_PUBLIC_SEARCH, $isPublicSearchEnabled);
 			if ($isRecentPublic) {
 				RecentAlbum::getInstance()->setPublic();
@@ -550,7 +547,7 @@ class PhotosOperationsTest extends BasePhotoTest
 		$this->photos_tests->upload(
 			self::createUploadedFile(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE),
 			albumID: null,
-			expectedStatusCode: 201,
+			expectedStatusCodes: 201,
 			assertSee: null,
 			fileLastModifiedTime: null);
 	}

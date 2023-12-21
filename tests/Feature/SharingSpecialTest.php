@@ -12,7 +12,6 @@
 
 namespace Tests\Feature;
 
-use App\Models\Configs;
 use App\SmartAlbums\OnThisDayAlbum;
 use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\StarredAlbum;
@@ -36,8 +35,6 @@ class SharingSpecialTest extends BaseSharingTest
 	protected ?string $photoID5 = null;
 	protected ?string $photoID6 = null;
 
-	protected bool $arePublicPhotosHidden = false;
-
 	public function setUp(): void
 	{
 		parent::setUp();
@@ -55,14 +52,10 @@ class SharingSpecialTest extends BaseSharingTest
 		$this->photoID4 = null;
 		$this->photoID5 = null;
 		$this->photoID6 = null;
-
-		$this->arePublicPhotosHidden = Configs::getValueAsBool(TestConstants::CONFIG_PUBLIC_HIDDEN);
-		Configs::set(TestConstants::CONFIG_PUBLIC_HIDDEN, false);
 	}
 
 	public function tearDown(): void
 	{
-		Configs::set(TestConstants::CONFIG_PUBLIC_HIDDEN, $this->arePublicPhotosHidden);
 		parent::tearDown();
 	}
 

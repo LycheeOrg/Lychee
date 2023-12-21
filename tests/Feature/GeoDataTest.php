@@ -191,7 +191,6 @@ class GeoDataTest extends AbstractTestCase
 	public function testThumbnailsInsideHiddenAlbum(): void
 	{
 		$isRecentPublic = RecentAlbum::getInstance()->public_permissions() !== null;
-		$arePublicPhotosHidden = Configs::getValueAsBool(TestConstants::CONFIG_PUBLIC_HIDDEN);
 		$isPublicSearchEnabled = Configs::getValueAsBool(TestConstants::CONFIG_PUBLIC_SEARCH);
 		$displayMap = Configs::getValueAsBool(TestConstants::CONFIG_MAP_DISPLAY);
 		$displayMapPublicly = Configs::getValueAsBool(TestConstants::CONFIG_MAP_DISPLAY_PUBLIC);
@@ -200,7 +199,6 @@ class GeoDataTest extends AbstractTestCase
 		try {
 			Auth::loginUsingId(1);
 			RecentAlbum::getInstance()->setPublic();
-			Configs::set(TestConstants::CONFIG_PUBLIC_HIDDEN, false);
 			Configs::set(TestConstants::CONFIG_PUBLIC_SEARCH, true);
 			Configs::set(TestConstants::CONFIG_MAP_DISPLAY, true);
 			Configs::set(TestConstants::CONFIG_MAP_DISPLAY_PUBLIC, true);
@@ -314,7 +312,6 @@ class GeoDataTest extends AbstractTestCase
 				$response->assertJsonMissing(['id' => $id]);
 			}
 		} finally {
-			Configs::set(TestConstants::CONFIG_PUBLIC_HIDDEN, $arePublicPhotosHidden);
 			Configs::set(TestConstants::CONFIG_PUBLIC_SEARCH, $isPublicSearchEnabled);
 			if ($isRecentPublic) {
 				RecentAlbum::getInstance()->setPublic();

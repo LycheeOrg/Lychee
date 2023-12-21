@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Traits;
 
+use Illuminate\Testing\Assert as PHPUnit;
 use Illuminate\Testing\TestResponse;
 
 /**
@@ -17,7 +18,7 @@ trait CatchFailures
 	 */
 	private array $catchFailureSilence = ["App\Exceptions\MediaFileOperationException"];
 
-	protected function assertStatus(TestResponse $response, int $expectedStatusCode): void
+	protected function assertStatus(TestResponse $response, int|array $expectedStatusCode): void
 	{
 		if ($response->getStatusCode() === 500) {
 			$exception = $response->json();
@@ -27,13 +28,16 @@ trait CatchFailures
 			$this->trimException($exception);
 			dump($exception);
 		}
+		$expectedStatusCodeArray = is_int($expectedStatusCode) ? [$expectedStatusCode] : $expectedStatusCode;
+
 		// We remove 204 as it does not have content
-		if (!in_array($response->getStatusCode(), [204, 302, $expectedStatusCode], true)) {
+		// We remove 302 because it does not have json data.
+		if (!in_array($response->getStatusCode(), [204, 302, ...$expectedStatusCodeArray], true)) {
 			$exception = $response->json();
 			$this->trimException($exception);
 			dump($exception);
 		}
-		$response->assertStatus($expectedStatusCode);
+		PHPUnit::assertContains($response->getStatusCode(), $expectedStatusCodeArray);
 	}
 
 	/**
@@ -80,5 +84,15 @@ trait CatchFailures
 	protected function assertNoContent(TestResponse $response): void
 	{
 		$this->assertStatus($response, 204);
+	}
+
+	protected function assertRedirect(TestResponse $response): void
+	{
+		$this->assertStatus($response, 302);
+	}
+
+	protected function assertNotFound(TestResponse $response): void
+	{
+		$this->assertStatus($response, 404);
 	}
 }

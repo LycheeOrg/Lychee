@@ -40,7 +40,7 @@ class PhotosUnitTest
 	public function upload(
 		UploadedFile $file,
 		?string $albumID = null,
-		int $expectedStatusCode = 201,
+		int|array $expectedStatusCodes = 201,
 		?string $assertSee = null,
 		?int $fileLastModifiedTime = 1678824303000
 	): TestResponse {
@@ -59,8 +59,7 @@ class PhotosUnitTest
 				'Accept' => 'application/json',
 			]
 		);
-
-		$this->assertStatus($response, $expectedStatusCode);
+		$this->assertStatus($response, $expectedStatusCodes);
 		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}

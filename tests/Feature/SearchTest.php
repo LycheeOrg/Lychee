@@ -206,10 +206,8 @@ class SearchTest extends BasePhotoTest
 
 	public function testSearchAlbumByTitleWithAnonUser(): void
 	{
-		$arePublicPhotosHidden = Configs::getValueAsBool(TestConstants::CONFIG_PUBLIC_HIDDEN);
 		$isPublicSearchEnabled = Configs::getValueAsBool(TestConstants::CONFIG_PUBLIC_SEARCH);
 		try {
-			Configs::set(TestConstants::CONFIG_PUBLIC_HIDDEN, false);
 			Configs::set(TestConstants::CONFIG_PUBLIC_SEARCH, true);
 
 			$albumID1 = $this->albums_tests->add(null, 'Matching private album')->offsetGet('id');
@@ -239,19 +237,16 @@ class SearchTest extends BasePhotoTest
 			$response->assertJsonMissing(['id' => $albumID2]);
 			$response->assertJsonMissing(['id' => $albumID4]);
 		} finally {
-			Configs::set(TestConstants::CONFIG_PUBLIC_HIDDEN, $arePublicPhotosHidden);
 			Configs::set(TestConstants::CONFIG_PUBLIC_SEARCH, $isPublicSearchEnabled);
 		}
 	}
 
 	public function testSearchAlbumByTitleWithNonAdminUser(): void
 	{
-		$arePublicPhotosHidden = Configs::getValueAsBool(TestConstants::CONFIG_PUBLIC_HIDDEN);
 		$isPublicSearchEnabled = Configs::getValueAsBool(TestConstants::CONFIG_PUBLIC_SEARCH);
 		$albumSortingColumn = Configs::getValueAsString(TestConstants::CONFIG_ALBUMS_SORTING_COL);
 		$albumSortingOrder = Configs::getValueAsString(TestConstants::CONFIG_ALBUMS_SORTING_ORDER);
 		try {
-			Configs::set(TestConstants::CONFIG_PUBLIC_HIDDEN, false);
 			Configs::set(TestConstants::CONFIG_PUBLIC_SEARCH, true);
 			Configs::set(TestConstants::CONFIG_ALBUMS_SORTING_COL, 'title');
 			Configs::set(TestConstants::CONFIG_ALBUMS_SORTING_ORDER, 'ASC');
@@ -287,7 +282,6 @@ class SearchTest extends BasePhotoTest
 		} finally {
 			Configs::set(TestConstants::CONFIG_ALBUMS_SORTING_COL, $albumSortingColumn);
 			Configs::set(TestConstants::CONFIG_ALBUMS_SORTING_ORDER, $albumSortingOrder);
-			Configs::set(TestConstants::CONFIG_PUBLIC_HIDDEN, $arePublicPhotosHidden);
 			Configs::set(TestConstants::CONFIG_PUBLIC_SEARCH, $isPublicSearchEnabled);
 		}
 	}

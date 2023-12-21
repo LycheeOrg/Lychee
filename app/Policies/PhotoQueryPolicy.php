@@ -7,7 +7,6 @@ use App\Eloquent\FixedQueryBuilder;
 use App\Exceptions\Internal\InvalidQueryModelException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Album;
-use App\Models\Configs;
 use App\Models\Photo;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as BaseBuilder;
@@ -158,7 +157,6 @@ class PhotoQueryPolicy
 	public function appendSearchabilityConditions(BaseBuilder $query, int|string|null $originLeft, int|string|null $originRight): BaseBuilder
 	{
 		$userId = Auth::id();
-		$maySearchPublic = !Configs::getValueAsBool('public_photos_hidden');
 
 		try {
 			// there must be no unreachable album between the origin and the photo
@@ -178,9 +176,6 @@ class PhotoQueryPolicy
 			//      allowed to access an album, they may also see its content)
 			$query->whereNotNull('photos.album_id');
 
-			if ($maySearchPublic) {
-				$query->orWhere('photos.is_public', '=', true);
-			}
 			if ($userId !== null) {
 				$query->orWhere('photos.owner_id', '=', $userId);
 			}
