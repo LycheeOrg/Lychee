@@ -22,6 +22,7 @@ parameters:
 		- phpstan/stubs/imageexception.stub
 	ignoreErrors:
 		# False positive php8.2 + phpstan on interface @property
+		- '#Access to an undefined property App\\Contracts\\Models\\AbstractAlbum::\$id#'
 		- '#Access to an undefined property App\\Contracts\\Models\\AbstractAlbum::\$title#'
 		- '#Access to an undefined property App\\Contracts\\Models\\AbstractAlbum::\$photos#'
 		- '#Access to an undefined property App\\Contracts\\Image\\StreamStats::\$checksum#'
