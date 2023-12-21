@@ -30,7 +30,7 @@ jobs:
           access_token: ${{ github.token }}
 
   php_syntax_errors:
-    name: 1️⃣ PHP 8.1 - Syntax errors
+    name: 1️⃣ PHP 8.2 - Syntax errors
     runs-on: ubuntu-latest
     needs:
       - kill_previous
@@ -38,7 +38,7 @@ jobs:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.1
+          php-version: 8.2
 
       - name: Checkout code
         uses: actions/checkout@v3
@@ -50,7 +50,7 @@ jobs:
         run: vendor/bin/parallel-lint --exclude .git --exclude vendor .
 
   code_style_errors:
-    name: 2️⃣ PHP 8.1 - Code Style errors
+    name: 2️⃣ PHP 8.2 - Code Style errors
     runs-on: ubuntu-latest
     needs:
       - php_syntax_errors
@@ -58,7 +58,7 @@ jobs:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.1
+          php-version: 8.2
 
       - name: Checkout code
         uses: actions/checkout@v3
@@ -70,7 +70,7 @@ jobs:
         run: PHP_CS_FIXER_IGNORE_ENV=1 vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --verbose --diff --dry-run
 
   phpstan:
-    name: 2️⃣ PHP 8.1 - PHPStan
+    name: 2️⃣ PHP 8.2 - PHPStan
     runs-on: ubuntu-latest
     needs:
       - php_syntax_errors
@@ -81,7 +81,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.1
+          php-version: 8.2
           coverage: none
 
       - name: Install Composer dependencies
@@ -98,8 +98,8 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - 8.1
           - 8.2
+          - 8.3
         sql-versions:
           - mariadb
           - postgresql
@@ -181,7 +181,7 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - 8.1
+          - 8.2
         sql-versions:
           - mariadb
           - postgresql
@@ -273,7 +273,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.1
+          php-version: 8.2
           extensions: ${{ env.extensions }}
           coverage: none
 

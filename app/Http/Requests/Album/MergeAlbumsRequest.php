@@ -35,14 +35,14 @@ class MergeAlbumsRequest extends BaseApiRequest implements HasAlbum, HasAlbums
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->album = Album::query()->findOrFail($values[RequestAttribute::ALBUM_ID_ATTRIBUTE]);
-		// `findOrFail` returns a union type, but we know that it returns the
-		// correct collection in this case
-		// TODO: As part of our `FixedQueryBuilder` we should also consider adding a method `findManyOrFail` which does not return an union type, but only a `Collection`.
-		// This would avoid using phpstan-ignore-next-line here and in many similar cases.
+		/** @var string $id */
+		$id = $values[RequestAttribute::ALBUM_ID_ATTRIBUTE];
+		/** @var array<int,string> $ids */
+		$ids = $values[RequestAttribute::ALBUM_IDS_ATTRIBUTE];
+		$this->album = Album::query()->findOrFail($id);
 		// @phpstan-ignore-next-line
 		$this->albums = Album::query()
 			->with(['children'])
-			->findOrFail($values[RequestAttribute::ALBUM_IDS_ATTRIBUTE]);
+			->findOrFail($ids);
 	}
 }

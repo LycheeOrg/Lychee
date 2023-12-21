@@ -13,9 +13,7 @@ use Illuminate\Support\Carbon;
 class OnThisDayAlbum extends BaseSmartAlbum
 {
 	private static ?self $instance = null;
-	// PHP 8.2
-	// public const ID = SmartAlbumType::ON_THIS_DAY->value;
-	public const ID = 'on_this_day';
+	public const ID = SmartAlbumType::ON_THIS_DAY->value;
 
 	/**
 	 * @throws InvalidFormatException

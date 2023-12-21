@@ -27,9 +27,7 @@ use Illuminate\Database\Eloquent\Builder;
 class PublicAlbum extends BaseSmartAlbum
 {
 	private static ?self $instance = null;
-	// PHP 8.2
-	// public const ID = SmartAlbumType::PUBLIC->value;
-	public const ID = 'public';
+	public const ID = SmartAlbumType::PUBLIC->value;
 
 	/**
 	 * Constructor.
