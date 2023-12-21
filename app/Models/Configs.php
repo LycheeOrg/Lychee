@@ -56,6 +56,7 @@ class Configs extends Model
 	use ThrowsConsistentExceptions;
 
 	protected const INT = 'int';
+	protected const POSTIIVE = 'positive';
 	protected const STRING = 'string';
 	protected const STRING_REQ = 'string_required';
 	protected const BOOL = '0|1';
@@ -122,7 +123,12 @@ class Configs extends Model
 			case self::INT:
 				// we make sure that we only have digits in the chosen value.
 				if (!ctype_digit(strval($candidateValue))) {
-					$message = sprintf($message_template, 'positive integer');
+					$message = sprintf($message_template, 'positive integer or 0');
+				}
+				break;
+			case self::POSTIIVE:
+				if (!ctype_digit(strval($candidateValue)) || intval($candidateValue, 10) === 0) {
+					$message = sprintf($message_template, 'strictly positive integer');
 				}
 				break;
 			case self::BOOL:
