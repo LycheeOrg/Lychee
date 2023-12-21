@@ -107,7 +107,7 @@ class RotateStrategy
 
 		// The checksum has been changed due to rotation.
 		$oldChecksum = $this->photo->checksum;
-		$this->photo->checksum = $streamStat->checksum; // @phpstan-ignore-line
+		$this->photo->checksum = $streamStat->checksum;
 		$this->photo->save();
 
 		// Re-create original size variant of photo
@@ -115,7 +115,7 @@ class RotateStrategy
 			SizeVariantType::ORIGINAL,
 			$targetFile->getRelativePath(),
 			$image->getDimensions(),
-			$streamStat->bytes // @phpstan-ignore-line
+			$streamStat->bytes
 		);
 
 		// Re-create remaining size variants

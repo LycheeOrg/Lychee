@@ -35,8 +35,7 @@ class ForeignKeyListInfo implements DiagnosticPipe
 		$fks = DB::select("SELECT m.name , p.* FROM sqlite_master m JOIN pragma_foreign_key_list(m.name) p ON m.name != p.\"table\" WHERE m.type = 'table' ORDER BY m.name;");
 
 		foreach ($fks as $fk) {
-			/** @phpstan-ignore-next-line */
-			$data[] = sprintf('Foreign key: %-30s → %-20s : %s', $fk->name . '.' . $fk->from, $fk->table . '.' . $fk->to, $fk->on_update);
+			$data[] = sprintf('Foreign key: %-30s → %-20s : %s', $fk->name . '.' . $fk->from, $fk->table . '.' . $fk->to, strval($fk->on_update));
 		}
 	}
 
@@ -51,11 +50,10 @@ group by fks.constraint_schema, fks.table_name, fks.unique_constraint_schema, fk
 order by fks.constraint_schema, fks.table_name;
 ');
 		foreach ($fks as $fk) {
-			/** @phpstan-ignore-next-line */
 			$data[] = sprintf('Foreign key: %-30s → %-20s : %s',
 				$fk->TABLE_NAME . '.' . $fk->COLUMN_NAME,
 				$fk->REFERENCED_TABLE_NAME . '.' . $fk->REFERENCED_COLUMN_NAME,
-				$fk->UPDATE_RULE);
+				strval($fk->UPDATE_RULE));
 		}
 	}
 

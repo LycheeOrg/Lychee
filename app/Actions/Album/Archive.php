@@ -179,14 +179,14 @@ class Archive extends Action
 			return;
 		}
 
-		$fullNameOfDirectory = $this->makeUnique(self::createValidTitle($album->title), $usedDirNames); // @phpstan-ignore-line
+		$fullNameOfDirectory = $this->makeUnique(self::createValidTitle($album->title), $usedDirNames);
 		if ($fullNameOfParent !== '') {
 			$fullNameOfDirectory = $fullNameOfParent . '/' . $fullNameOfDirectory;
 		}
 
 		$usedFileNames = [];
 		// TODO: Ensure that the size variant `original` for each photo is eagerly loaded as it is needed below. This must be solved in close coordination with `ArchiveAlbumRequest`.
-		$photos = $album->photos; // @phpstan-ignore-line
+		$photos = $album->photos;
 
 		/** @var Photo $photo */
 		foreach ($photos as $photo) {
