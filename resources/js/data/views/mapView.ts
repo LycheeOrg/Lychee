@@ -56,25 +56,34 @@ export const mapView = (Alpine: Alpine) =>
 						name: e.layer.photo.name,
 						url: e.layer.photo.url,
 						url2x: e.layer.photo.url2x,
-						taken_at: lychee.locale.printDateTime(e.layer.photo.taken_at),
+						taken_at: e.layer.photo.taken_at,
 					};
 					let template = "";
 
 					// Retina version if available
 					if (photo.url2x !== "") {
 						template = template.concat(
-							'<img class="image-leaflet-popup" src="{url}" ',
-							'srcset="{url} 1x, {url2x} 2x" ',
-							'data-album-id="{albumID}" data-id="{photoID}"/><div><h1>{name}</h1><span title="' + this.camera_date + '">',
-							build.iconic("camera-slr"),
-							"</span><p>{taken_at}</p></div>",
+							'<img class=" w-full h-auto" src="{url}" srcset="{url} 1x, {url2x} 2x" data-album-id="{albumID}" data-id="{photoID}"/>',
+							'<div class=" pointer-events-none absolute w-full bottom-0 m-0 bg-gradient-to-t from-[#00000066]" style="width:401px; bottom: 13px;">',
+							'<h1 class=" min-h-[19px] mt-3 mb-1 ml-3 text-text-main-0 text-base font-bold overflow-hidden whitespace-nowrap text-ellipsis">{name}</h1>',
+							'<p class="block mt-0 mr-0 mb-2 ml-3 text-2xs text-text-main-200">',
+							'<span class="inline-block mx-3" title="' + this.camera_date + '">',
+							'<svg class="inline-block h-4 w-4 fill-neutral-400"><use xlink:href="#camera-slr" /></svg>',
+							"</span>",
+							"{taken_at}</p>",
+							"</div>",
 						);
 					} else {
 						template = template.concat(
-							'<img class="image-leaflet-popup" src="{url}" ',
-							'data-album-id="{albumID}" data-id="{photoID}"/><div><h1>{name}</h1><span title="' + this.camera_date + '">',
-							build.iconic("camera-slr"),
-							"</span><p>{taken_at}</p></div>",
+							'<img class=" w-full h-auto" src="{url}" data-album-id="{albumID}" data-id="{photoID}"/>',
+							'<div class=" pointer-events-none absolute w-full bottom-0 m-0 bg-gradient-to-t from-[#00000066]" style="width:401px; bottom: 13px;">',
+							'<h1 class=" min-h-[19px] mt-3 mb-1 ml-3 text-text-main-0 text-base font-bold overflow-hidden whitespace-nowrap text-ellipsis">{name}</h1>',
+							'<p class="block mt-0 mr-0 mb-2 ml-3 text-2xs text-text-main-200">',
+							'<span class="inline-block mx-3" title="' + this.camera_date + '">',
+							'<svg class="inline-block h-4 w-4 fill-neutral-400"><use xlink:href="#camera-slr" /></svg>',
+							"</span>",
+							"{taken_at}</p>",
+							"</div>",
 						);
 					}
 
@@ -102,15 +111,16 @@ export const mapView = (Alpine: Alpine) =>
 
 				this.data.photos.forEach(function (element: Photo) {
 					if (element.latitude || element.longitude) {
+						console.log(element);
 						photos.push({
 							lat: element.latitude,
 							lng: element.longitude,
-							thumbnail: element.size_variants.thumb !== null ? element.size_variants.thumb.url : "img/placeholder.png",
-							thumbnail2x: element.size_variants.thumb2x !== null ? element.size_variants.thumb2x.url : null,
-							url: element.size_variants.small !== null ? element.size_variants.small.url : element.url,
-							url2x: element.size_variants.small2x !== null ? element.size_variants.small2x.url : null,
+							thumbnail: element.size_variants.thumb?.url ?? "img/placeholder.png",
+							thumbnail2x: element.size_variants.thumb2x?.url,
+							url: element.size_variants.small?.url ?? element.url,
+							url2x: element.size_variants.small2x?.url ?? "",
 							name: element.title,
-							taken_at: element.taken_at,
+							taken_at: element.preformatted.taken_at,
 							albumID: element.album_id,
 							photoID: element.id,
 						});
