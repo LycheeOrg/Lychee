@@ -87,8 +87,6 @@ class Create extends Component
 		$create = new AlbumCreate($ownerId);
 		$new_album = $create->create($this->title, $parentAlbum);
 
-		// Do we want refresh or direcly open newly created Album ?
-		$this->close();
 		$this->redirect(route('livewire-gallery-album', ['albumId' => $new_album->id]), true);
 	}
 
