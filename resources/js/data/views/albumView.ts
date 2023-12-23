@@ -232,6 +232,7 @@ export const albumView = (Alpine: Alpine) =>
 			},
 
 			goTo(photoId: string | null): void {
+				this.albumFlags.isDetailsOpen = false;
 				const elder_id = this.parent_id ?? (this.$store.photo as Photo | null)?.album_id;
 
 				if (photoId === null) {
