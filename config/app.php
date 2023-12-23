@@ -40,7 +40,7 @@ return [
 	|
 	*/
 
-	'livewire' => (bool) env('LIVEWIRE_ENABLED', false),
+	'livewire' => (bool) env('LIVEWIRE_ENABLED', true),
 
 	/*
 	|--------------------------------------------------------------------------
