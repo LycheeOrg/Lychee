@@ -39,9 +39,11 @@
                 <x-gallery.album.details x-show="! albumFlags.isDetailsOpen" />
             @endif
             @if ($num_albums === 0 && $num_photos === 0)
-                <span class="mt-[33%] w-full text-center text-xl text-text-main-400 align-middle">
+                <div class="flex w-full h-full items-center justify-center text-xl text-text-main-400">
+                    <span class="block">
                     {{ $this->noImagesAlbumsMessage }}
-                </span>
+                    </span>
+                </div>
             @endif
             @if ($num_albums > 0 && $num_photos > 0)
                 <x-gallery.divider title="{{ __('lychee.ALBUMS') }}" />
