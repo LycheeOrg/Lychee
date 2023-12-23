@@ -11,7 +11,8 @@
 				x-bind:class="isFullscreen ? 'opacity-0 hover:opacity-100' : 'opacity-100 h-14'"
 				>
 			<div class="flex w-full items-center box-border">
-				<x-header.back x-on:click="goTo(null)" />
+				<x-header.back x-on:click="goTo(null)" x-bind:class="!photoFlags.isEditOpen ? '' : 'hidden'" />
+				<x-header.back x-on:click="photoFlags.isEditOpen = false" x-bind:class="!photoFlags.isEditOpen ? 'hidden' : ''" />
 				<x-header.title />
 				@can($this->rights->can_download)
 					<x-header.button x-on:click="downloadPhoto()"
