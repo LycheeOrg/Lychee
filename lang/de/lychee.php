@@ -7,6 +7,7 @@ return [
 	'PASSWORD' => 'Kennwort',
 	'ENTER' => 'Eingabe',
 	'CANCEL' => 'Abbrechen',
+	'CONFIRM' => 'Confirm',
 	'SIGN_IN' => 'Anmelden',
 	'CLOSE' => 'Schließen',
 	'SETTINGS' => 'Einstellungen',
@@ -16,6 +17,7 @@ return [
 	'GALLERY' => 'Gallerie',
 
 	'USERS' => 'Benutzer',
+	'PROFILE' => 'Profile',
 	'CREATE' => 'Erstellen',
 	'REMOVE' => 'Entfernen',
 	'SHARE' => 'Freigeben',
@@ -28,6 +30,7 @@ return [
 	'ABOUT_LYCHEE' => 'Über Lychee',
 	'DIAGNOSTICS' => 'Diagnose',
 	'DIAGNOSTICS_GET_SIZE' => 'Speicherplatz-Nutzung abrufen',
+	'JOBS' => 'Show job history',
 	'LOGS' => 'Logs anzeigen',
 	'SIGN_OUT' => 'Abmelden',
 	'UPDATE_AVAILABLE' => 'Update verfügbar!',
@@ -280,6 +283,7 @@ return [
 	'ERROR_MAP_DEACTIVATED' => 'Karten sind unter Einstellungen deaktiviert worden.',
 	'ERROR_SEARCH_DEACTIVATED' => 'Suchfunktion wurde unter Einstellungen deaktiviert.',
 	'SUCCESS' => 'OK',
+	'CHANGE_SUCCESS' => 'Change successful.',
 	'RETRY' => 'Noch einmal versuchen',
 	'OVERRIDE' => 'Überschreiben',
 	'TAGS_OVERRIDE_INFO' => 'Wenn das nicht aktiviert ist, werden die Tags zu den vorhandenen Tags des Fotos hinzugefügt.',
@@ -398,6 +402,8 @@ return [
 	'LAYOUT_TYPE' => 'Layout des Fotos:',
 	'LAYOUT_SQUARES' => 'Quadratische Miniaturansichten',
 	'LAYOUT_JUSTIFIED' => 'Seitenverhältnis beibehalten, Blocksatz',
+	'LAYOUT_MASONRY' => 'Seitenverhältnis beibehalten, masonry',
+	'LAYOUT_GRID' => 'Seitenverhältnis beibehalten, grid',
 	'LAYOUT_UNJUSTIFIED' => 'Seitenverhältnis beibehalten, Flattersatz',
 	'SET_LAYOUT' => 'Ausgerichtetes Layout benutzen:',
 
@@ -406,6 +412,9 @@ return [
 	'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Standardmäßige Sichtbarkeit wurde erfolgreich geändert.',
 
 	'NSFW_BANNER' => '<h1>Krititscher Inhalt</h1><p>Diese Album enthält krititsche Inhalte, die manche Personen anstößig oder verstörend finden könnten.</p><p>Zur Einwilligung klicken.</p>',
+	'NSFW_HEADER' => 'Krititscher Inhalt',
+	'NSFW_EXPLANATION' => 'Diese Album enthält krititsche Inhalte, die manche Personen anstößig oder verstörend finden könnten.',
+	'TAP_CONSENT' => 'Zur Einwilligung klicken.',
 
 	'VIEW_NO_RESULT' => 'Keine Ergebnisse',
 	'VIEW_NO_PUBLIC_ALBUMS' => 'Keine öffentlichen Alben',

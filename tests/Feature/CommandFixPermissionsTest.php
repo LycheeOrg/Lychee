@@ -27,7 +27,7 @@ class CommandFixPermissionsTest extends Base\BasePhotoTest
 	 */
 	public function testFixPermissions(): void
 	{
-		if (config('filesystems.images.visibility', 'public') !== 'public') {
+		if (config('filesystems.disks.images.visibility', 'public') !== 'public') {
 			static::markTestSkipped('Wrong setting in .env file or configuration');
 		}
 
@@ -38,7 +38,7 @@ class CommandFixPermissionsTest extends Base\BasePhotoTest
 			static::createUploadedFile(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE)
 		));
 
-		$filePath = public_path($photo->size_variants->original->url);
+		$filePath = public_path($this->dropUrlPrefix($photo->size_variants->original->url));
 		$dirPath = pathinfo($filePath, PATHINFO_DIRNAME);
 
 		static::skipIfNotFileOwner($filePath);

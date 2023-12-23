@@ -24,6 +24,7 @@ use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\ToArrayThrowsNotImplemented;
 use App\Models\Extensions\UTCBasedTimes;
 use App\Relations\HasManySizeVariants;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
@@ -122,6 +123,7 @@ use function Safe\preg_match;
  */
 class Photo extends Model
 {
+	use HasFactory;
 	use UTCBasedTimes;
 	use HasAttributesPatch;
 	use HasRandomIDAndLegacyTimeBasedID;
@@ -292,6 +294,16 @@ class Photo extends Model
 		}
 
 		return Configs::getValueAsEnum('default_license', LicenseType::class);
+	}
+
+	/**
+	 * This is to avoid loading the license from configs & albums.
+	 *
+	 * @return ?string
+	 */
+	public function getOriginalLicense(): ?string
+	{
+		return $this->attributes['license'];
 	}
 
 	/**

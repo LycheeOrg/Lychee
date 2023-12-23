@@ -4,6 +4,8 @@ namespace App\Actions\Diagnostics\Pipes\Infos;
 
 use App\Actions\Diagnostics\Diagnostics;
 use App\Contracts\DiagnosticPipe;
+use App\Facades\Helpers;
+use App\Livewire\Components\Forms\Add\Upload;
 use Carbon\CarbonTimeZone;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
@@ -53,10 +55,18 @@ class SystemInfo implements DiagnosticPipe
 		$data[] = Diagnostics::line('Timezone:', ($timeZone !== false ? $timeZone : null)?->getName());
 		$data[] = Diagnostics::line('Max uploaded file size:', ini_get('upload_max_filesize'));
 		$data[] = Diagnostics::line('Max post size:', ini_get('post_max_size'));
+		$this->getUploadLimit($data);
 		$data[] = Diagnostics::line('Max execution time: ', ini_get('max_execution_time'));
 		$data[] = Diagnostics::line($dbtype . ' Version:', $dbver);
 		$data[] = '';
 
 		return $next($data);
+	}
+
+	private function getUploadLimit(array &$data): void
+	{
+		$size = Upload::getUploadLimit();
+
+		$data[] = Diagnostics::line('Livewire chunk size:', Helpers::getSymbolByQuantity($size));
 	}
 }

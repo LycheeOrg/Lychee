@@ -16,6 +16,8 @@ return new class() extends Migration {
 		'swipe_tolerance_x',
 		'swipe_tolerance_y',
 		'log_max_num_line',
+		'search_pagination_limit',
+		'search_minimum_length_required',
 	];
 
 	/**

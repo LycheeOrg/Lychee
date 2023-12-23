@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static bool   isExecAvailable()
  * @method static string secondsToHMS(int|float $d)
  * @method static int    convertSize(string $size)
+ * @method static string decimalToDegreeMinutesSeconds(float $decimal, bool $type)
  */
 class Helpers extends Facade
 {

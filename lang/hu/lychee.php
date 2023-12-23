@@ -5,6 +5,7 @@ return [
 	'PASSWORD' => 'Jelszó',
 	'ENTER' => 'Belépés',
 	'CANCEL' => 'Mégse',
+	'CONFIRM' => 'Confirm',
 	'SIGN_IN' => 'Bejelentkezés',
 	'CLOSE' => 'Bezárás',
 	'SETTINGS' => 'Beállítások',
@@ -14,6 +15,7 @@ return [
 	'GALLERY' => 'Galéria',
 
 	'USERS' => 'Felhasználók',
+	'PROFILE' => 'Profile',
 	'CREATE' => 'Létrehozás',
 	'REMOVE' => 'Törlés',
 	'SHARE' => 'Megosztás',
@@ -26,6 +28,7 @@ return [
 	'ABOUT_LYCHEE' => 'A Lychee-ről',
 	'DIAGNOSTICS' => 'Diagnosztika',
 	'DIAGNOSTICS_GET_SIZE' => 'Térhasználat lekérése',
+	'JOBS' => 'Show job history',
 	'LOGS' => 'Naplók megtekintése',
 	'SIGN_OUT' => 'Kijelentkezés',
 	'UPDATE_AVAILABLE' => 'Frissítés elérhető!',
@@ -278,6 +281,7 @@ return [
 	'ERROR_MAP_DEACTIVATED' => 'Térkép funkció letiltva a beállításokban.',
 	'ERROR_SEARCH_DEACTIVATED' => 'Keresési funkció letiltva a beállításokban.',
 	'SUCCESS' => 'Rendben',
+	'CHANGE_SUCCESS' => 'Change successful.',
 	'RETRY' => 'Újra',
 	'OVERRIDE' => 'Felülbírálás',
 	'TAGS_OVERRIDE_INFO' => 'Ha ez nincs bejelölve, a címkéket hozzáadják a fénykép meglévő címkéihez.',
@@ -396,6 +400,8 @@ return [
 	'LAYOUT_TYPE' => 'Fényképek elrendezése:',
 	'LAYOUT_SQUARES' => 'Négyzet alakú bélyegképek',
 	'LAYOUT_JUSTIFIED' => 'Képaránnyal, igazított',
+	'LAYOUT_MASONRY' => 'Képaránnyal, masonry',
+	'LAYOUT_GRID' => 'Képaránnyal, grid',
 	'LAYOUT_UNJUSTIFIED' => 'Képaránnyal, igazítatlan',
 	'SET_LAYOUT' => 'Elrendezés megváltoztatása',
 
@@ -404,6 +410,9 @@ return [
 	'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Az alapértelmezett érzékeny album láthatósága sikeresen frissítve.',
 
 	'NSFW_BANNER' => '<h1>Érzékeny tartalom</h1><p>Ez az album érzékeny tartalmat tartalmaz, amit néhány ember zavaró vagy zavarba ejtő lehet. Tapintson az engedélyezéshez.</p>',
+	'NSFW_HEADER' => 'Érzékeny tartalom',
+	'NSFW_EXPLANATION' => 'Ez az album érzékeny tartalmat tartalmaz, amit néhány ember zavaró vagy zavarba ejtő lehet.',
+	'TAP_CONSENT' => 'Tapintson az engedélyezéshez.',
 
 	'VIEW_NO_RESULT' => 'Nincs találat',
 	'VIEW_NO_PUBLIC_ALBUMS' => 'Nincsenek nyilvános albumok',

@@ -44,8 +44,8 @@ return [
 		// Lychee uses the disk "images" to store the media files
 		'images' => [
 			'driver' => 'local',
-			'root' => env('LYCHEE_UPLOADS', public_path('uploads/')),
-			'url' => env('LYCHEE_UPLOADS_URL', 'uploads/'),
+			'root' => env('LYCHEE_UPLOADS', public_path(env('LYCHEE_UPLOADS_DIR', 'uploads/'))),
+			'url' => env('LYCHEE_UPLOADS_URL', env('APP_URL', 'http://localhost') . '/' . env('LYCHEE_UPLOADS_DIR', 'uploads/')),
 			'visibility' => env('LYCHEE_IMAGE_VISIBILITY', 'public'),
 			'directory_visibility' => env('LYCHEE_IMAGE_VISIBILITY', 'public'),
 			'permissions' => [
@@ -98,6 +98,12 @@ return [
 			'root' => env('LYCHEE_SYM', public_path('sym')),
 			'url' => env('LYCHEE_SYM_URL', 'sym'),
 			'visibility' => 'public',
+		],
+
+		'tmp-for-tests' => [
+			'driver' => 'local',
+			'root' => storage_path('image-tmp/'),
+			'visibility' => 'private',
 		],
 	],
 ];

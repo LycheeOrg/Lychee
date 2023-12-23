@@ -8,6 +8,7 @@ use App\Eloquent\FixedQueryBuilder;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\Photo;
 use App\Policies\PhotoQueryPolicy;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
 class PhotoSearch
@@ -20,9 +21,27 @@ class PhotoSearch
 	}
 
 	/**
+	 * Apply search directly.
+	 *
 	 * @throws InternalLycheeException
 	 */
 	public function query(array $terms): Collection
+	{
+		$query = $this->sqlQuery($terms);
+		$sorting = PhotoSortingCriterion::createDefault();
+
+		return (new SortingDecorator($query))
+			->orderBy($sorting->column, $sorting->order)->get();
+	}
+
+	/**
+	 * Create the query manually.
+	 *
+	 * @param array $terms
+	 *
+	 * @return Builder
+	 */
+	public function sqlQuery(array $terms): Builder
 	{
 		$query = $this->photoQueryPolicy->applySearchabilityFilter(
 			Photo::query()->with(['album', 'size_variants', 'size_variants.sym_links'])
@@ -40,10 +59,6 @@ class PhotoSearch
 			);
 		}
 
-		$sorting = PhotoSortingCriterion::createDefault();
-
-		return (new SortingDecorator($query))
-			->orderBy($sorting->column, $sorting->order)
-			->get();
+		return $query;
 	}
 }

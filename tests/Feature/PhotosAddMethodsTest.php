@@ -35,7 +35,12 @@ class PhotosAddMethodsTest extends BasePhotoTest
 	{
 		// import the photo
 		copy(base_path(TestConstants::SAMPLE_FILE_NIGHT_IMAGE), static::importPath('night.jpg'));
-		$this->photos_tests->importFromServer(static::importPath(), null, true, false, false);
+		$this->photos_tests->importFromServer(
+			path: static::importPath(),
+			album_id: null,
+			delete_imported: true,
+			skip_duplicates: false,
+			import_via_symlink: false);
 
 		// check if the file has been moved
 		$this->assertEquals(false, file_exists(static::importPath('night.jpg')));
@@ -45,7 +50,12 @@ class PhotosAddMethodsTest extends BasePhotoTest
 	{
 		// import the photo
 		copy(base_path(TestConstants::SAMPLE_FILE_NIGHT_IMAGE), static::importPath('night.jpg'));
-		$this->photos_tests->importFromServer(static::importPath(), null, false, false, false);
+		$this->photos_tests->importFromServer(
+			path: static::importPath(),
+			album_id: null,
+			delete_imported: false,
+			skip_duplicates: false,
+			import_via_symlink: false);
 
 		// check if the file is still there
 		$this->assertEquals(true, file_exists(static::importPath('night.jpg')));
@@ -67,7 +77,7 @@ class PhotosAddMethodsTest extends BasePhotoTest
 		$photo_id = $ids_after->diff($ids_before)->first();
 		/** @var \App\Models\Photo $photo */
 		$photo = static::convertJsonToObject($this->photos_tests->get($photo_id));
-		$symlink_path = public_path($photo->size_variants->original->url);
+		$symlink_path = public_path($this->dropUrlPrefix($photo->size_variants->original->url));
 		$this->assertEquals(true, is_link($symlink_path));
 	}
 
@@ -190,8 +200,8 @@ class PhotosAddMethodsTest extends BasePhotoTest
 		$this->assertEquals(pathinfo($photo->live_photo_url, PATHINFO_FILENAME), pathinfo($photo->size_variants->original->url, PATHINFO_FILENAME));
 
 		// get the paths of the original size variant and the live photo and check whether they are truly symbolic links
-		$symlink_path1 = public_path($photo->size_variants->original->url);
-		$symlink_path2 = public_path($photo->live_photo_url);
+		$symlink_path1 = public_path($this->dropUrlPrefix($photo->size_variants->original->url));
+		$symlink_path2 = public_path($this->dropUrlPrefix($photo->live_photo_url));
 		$this->assertEquals(true, is_link($symlink_path1));
 		$this->assertEquals(true, is_link($symlink_path2));
 	}

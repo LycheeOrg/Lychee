@@ -7,6 +7,7 @@ return [
 	'PASSWORD' => 'Κωδικός πρόσβασης',
 	'ENTER' => 'Είσοδος',
 	'CANCEL' => 'Άκυρο',
+	'CONFIRM' => 'Confirm',
 	'SIGN_IN' => 'Συνδεθείτε',
 	'CLOSE' => 'Κλείσιμο',
 	'SETTINGS' => 'Ρυθμίσεις',
@@ -16,6 +17,7 @@ return [
 	'GALLERY' => 'Gallery',
 
 	'USERS' => 'Χρήστες',
+	'PROFILE' => 'Profile',
 	'CREATE' => 'Create',
 	'REMOVE' => 'Remove',
 	'SHARE' => 'Share',
@@ -28,6 +30,7 @@ return [
 	'ABOUT_LYCHEE' => 'Περί Lychee',
 	'DIAGNOSTICS' => 'Διαγνωστικά',
 	'DIAGNOSTICS_GET_SIZE' => 'Request space usage',
+	'JOBS' => 'Show job history',
 	'LOGS' => 'Εμφάνιση Καταγραφών',
 	'SIGN_OUT' => 'Αποσύνδεση',
 	'UPDATE_AVAILABLE' => 'Διαθέσιμη Ενημέρωση!',
@@ -280,6 +283,7 @@ return [
 	'ERROR_MAP_DEACTIVATED' => 'Map functionality has been deactivated under settings.',
 	'ERROR_SEARCH_DEACTIVATED' => 'Search functionality has been deactivated under settings.',
 	'SUCCESS' => 'OK',
+	'CHANGE_SUCCESS' => 'Change successful.',
 	'RETRY' => 'Προσπάθεια ξανά',
 	'OVERRIDE' => 'Override',
 	'TAGS_OVERRIDE_INFO' => 'If this is unchecked, the tags will be added to the existing tags of the photo.',
@@ -398,6 +402,8 @@ return [
 	'LAYOUT_TYPE' => 'Διάταξη φωτογραφιών:',
 	'LAYOUT_SQUARES' => 'Τετράγωνες μικρογραφίες',
 	'LAYOUT_JUSTIFIED' => 'Με ίσες αναλογίες',
+	'LAYOUT_MASONRY' => 'Με ίσες masonry',
+	'LAYOUT_GRID' => 'Με ίσες grid',
 	'LAYOUT_UNJUSTIFIED' => 'Με άνισες αναλογίες',
 	'SET_LAYOUT' => 'Αλλαγή διάταξης',
 
@@ -406,6 +412,9 @@ return [
 	'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Default sensitive album visibility updated with success.',
 
 	'NSFW_BANNER' => '<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>',
+	'NSFW_HEADER' => 'Sensitive content',
+	'NSFW_EXPLANATION' => 'This album contains sensitive content which some people may find offensive or disturbing.',
+	'TAP_CONSENT' => 'Tap to consent.',
 
 	'VIEW_NO_RESULT' => 'Κανένα αποτέλεσμα',
 	'VIEW_NO_PUBLIC_ALBUMS' => 'Κανένα δημόσιο λεύκωμα',

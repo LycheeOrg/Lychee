@@ -1,0 +1,44 @@
+{
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "check": "tsc --noEmit",
+        "dev": "vite",
+        "build": "vite build",
+        "check-formatting": "prettier --check resources/js/ resources/css/",
+        "format": "prettier --write resources/js/ resources/css/"
+    },
+    "devDependencies": {
+        "@lychee-org/leaflet.photo": "^1.0.0",
+        "@types/alpinejs": "^3.13.5",
+        "@types/leaflet": "^1.9.8",
+        "@types/leaflet-rotatedmarker": "^0.2.5",
+        "@types/leaflet.markercluster": "^1.5.4",
+        "@types/mousetrap": "^1.6.15",
+        "@types/photoswipe": "^4.1.6",
+        "@types/qrcode": "^1.5.5",
+        "@types/tailwindcss": "^3.1.0"
+    },
+    "dependencies": {
+        "autoprefixer": "^10.4.16",
+        "justified-layout": "^4.1.0",
+        "laravel-vite-plugin": "^0.8.1",
+        "lazysizes": "^5.3.2",
+        "leaflet": "^1.9.4",
+        "leaflet-gpx": "^1.7.0",
+        "leaflet-rotatedmarker": "^0.2.0",
+        "leaflet.markercluster": "^1.4.1",
+        "postcss": "^8.4.32",
+        "prettier": "^3.1.1",
+        "qrcode": "^1.5.3",
+        "tailwindcss": "^3.3.6",
+        "ts-loader": "^9.5.1",
+        "typescript": "^5.3.3",
+        "vite": "^4.5.1",
+        "vite-plugin-checker": "^0.6.2",
+        "vite-plugin-commonjs": "^0.10.0"
+    },
+    "browserslist": [
+        "defaults and fully supports es6-module"
+    ]
+}

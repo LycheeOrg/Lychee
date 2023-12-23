@@ -9,21 +9,20 @@ parameters:
 		- app
 		- scripts
 		- lang
-		- database
+		- database/migrations
 		- tests
 	excludePaths:
-		- app/View/*
-		- app/Http/Livewire/*
-		- database/factories/*
 		- database/migrations/2021_12_04_181200_refactor_models.php
 	stubFiles:
 		# these can be removed after https://github.com/thecodingmachine/safe/issues/283 has been merged
+		- phpstan/stubs/Wireable.stub
 		- phpstan/stubs/image.stub
 		- phpstan/stubs/imageexception.stub
 	ignoreErrors:
 		# False positive php8.2 + phpstan on interface @property
 		- '#Access to an undefined property App\\Contracts\\Models\\AbstractAlbum::\$id#'
 		- '#Access to an undefined property App\\Contracts\\Models\\AbstractAlbum::\$title#'
+		- '#Access to an undefined property App\\Contracts\\Models\\AbstractAlbum::\$thumb#'
 		- '#Access to an undefined property App\\Contracts\\Models\\AbstractAlbum::\$photos#'
 		- '#Access to an undefined property App\\Contracts\\Image\\StreamStats::\$checksum#'
 		- '#Access to an undefined property App\\Contracts\\Image\\StreamStats::\$bytes#'
@@ -40,12 +39,16 @@ parameters:
 		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder)(<.*>)?::where(Not)?(Null|In|Between|Exists|Column|Year|Month|Day)?\(\).#'
 		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder)(<.*>)?::delete\(\)#'
 		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder)(<.*>)?::without\(\)#'
+		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder)(<.*>)?::with\(\)#'
 		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder)(<.*>)?::count\(\).#'
 		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder)(<.*>)?::update\(\).#'
+		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder)(<.*>)?::inRandomOrder\(\).#'
 		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder)(<.*>)?::groupBy\(\).#'
 		- '#Dynamic call to static method App\\Models\\Builders\\.*::orderByDesc\(\).#'
 		- '#Call to an undefined method Illuminate\\Database\\Eloquent\\.*::update\(\)#'
 		- '#Call to an undefined method Illuminate\\Database\\Eloquent\\.*::with(Only)?\(\)#'
+		- '#Call to an undefined method App\\Relations\\HasManyPhotosRecursively::whereNotNull\(\)#'
+		- '#Call to an undefined method Illuminate\\Database\\Eloquent\\Builder|Illuminate\\Database\\Eloquent\\Relations\\Relation::whereNotNull\(\).#'
 		- '#Call to private method latest\(\) of parent class Illuminate\\Database\\Eloquent\\Relations\\HasMany<Illuminate\\Database\\Eloquent\\Model>#'
 		- '#Call to protected method asDateTime\(\) of class Illuminate\\Database\\Eloquent\\Model.#'
 
@@ -73,27 +76,51 @@ parameters:
 
 
 		- '#Property .* \(App\\Models\\.*(\|null)?\) does not accept (Illuminate\\Database\\Eloquent\\Collection<int, Illuminate\\Database\\Eloquent\\Model>\|)?Illuminate\\Database\\Eloquent\\Model(\|null)?.#'
+		- '#Access to an undefined property Laragear\\WebAuthn\\Models\\WebAuthnCredential::\$authenticatable_id#'
 
 		# False positive as stub code for PHP has not yet been updated to 2nd parameter, see https://github.com/php/doc-en/issues/1529 and https://www.php.net/imagick.writeimagefile
 		- '#Method Imagick::writeImageFile\(\) invoked with 2 parameters, 1 required#'
+
+		# Synth
+		-
+			message: '#Variable property access on .*#'
+			paths:
+				- app/Livewire/Synth 
+
+		-
+			message: '#Parameter .* of method App\\Livewire\\Synth\\.* should be contravariant with parameter .* of method Livewire\\Mechanisms\\HandleComponents\\Synthesizers\\Synth::.*#'
+			paths:
+				- app/Livewire/Synth 
 
 		# Migrations
 		-
 			message: '#Function define is unsafe to use.#'
 			paths:
-				- database
+				- database/migrations
 		-
 			message: '#Variable property access on (mixed|object).#'
 			paths:
-				- database
+				- database/migrations
 		-
 			message: '#Access to an undefined property object::\$value.#'
 			paths:
-				- database
+				- database/migrations
 
 		# TESTS
+		- 
+			message: '#Dynamic call to static method Illuminate\\Testing\\TestResponse::assert(Forbidden|ViewIs|Unauthorized|Ok|Status)#'
+			paths:
+				- tests
+		- 
+			message: '#Call to an undefined method Illuminate\\Testing\\TestResponse::(assert)?(SeeLivewire|dispatch|call|Set|Count)#'
+			paths:
+				- tests
+		- 
+			message: '#Call to an undefined method Livewire\\Features\\SupportTesting\\Testable::test\(\)#'
+			paths:
+				- tests
 		-
-			message: '#Dynamic call to static method PHPUnit\\Framework\\Assert::assert(Is)?(Not)?(True|False|Equals|Int|Null|Empty)\(\)#'
+			message: '#Dynamic call to static method PHPUnit\\Framework\\Assert::assert(Is)?(Not)?(True|False|Equals|Int|Null|Empty|Count)\(\)#'
 			paths:
 				- tests
 		-
@@ -113,10 +140,11 @@ parameters:
 			paths:
 				- tests
 		-
-			message: '#Access to private property App\\Models\\Extensions\\SizeVariants::\$(original|thumb|small|medium)(2x)?#'
+			message: '#Cannot call method .* on Illuminate\\Testing\\PendingCommand\|int.#'
 			paths:
 				- tests
+
 		-
-			message: '#Cannot call method .* on Illuminate\\Testing\\PendingCommand\|int.#'
+			message: '#Access to private property App\\Models\\Extensions\\SizeVariants::\$(original|small(2x)?|thumb(2x)?|medium(2x)?)#'
 			paths:
 				- tests

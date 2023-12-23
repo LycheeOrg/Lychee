@@ -47,7 +47,7 @@ class CommandTakeDateTest extends BasePhotoTest
 		/** @var \App\Models\Photo */
 		$photo = static::convertJsonToObject($this->photos_tests->get($id));
 
-		$file_time = \Safe\filemtime(public_path($photo->size_variants->original->url));
+		$file_time = \Safe\filemtime(public_path($this->dropUrlPrefix($photo->size_variants->original->url)));
 		$carbon = new Carbon($photo->created_at);
 
 		$this->assertEquals($file_time, $carbon->getTimestamp());

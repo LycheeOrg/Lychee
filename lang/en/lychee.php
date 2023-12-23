@@ -7,6 +7,7 @@ return [
 	'PASSWORD' => 'Password',
 	'ENTER' => 'Enter',
 	'CANCEL' => 'Cancel',
+	'CONFIRM' => 'Confirm',
 	'SIGN_IN' => 'Sign In',
 	'CLOSE' => 'Close',
 	'SETTINGS' => 'Settings',
@@ -16,6 +17,7 @@ return [
 	'GALLERY' => 'Gallery',
 
 	'USERS' => 'Users',
+	'PROFILE' => 'Profile',
 	'CREATE' => 'Create',
 	'REMOVE' => 'Remove',
 	'SHARE' => 'Share',
@@ -28,6 +30,7 @@ return [
 	'ABOUT_LYCHEE' => 'About Lychee',
 	'DIAGNOSTICS' => 'Diagnostics',
 	'DIAGNOSTICS_GET_SIZE' => 'Request space usage',
+	'JOBS' => 'Show job history',
 	'LOGS' => 'Show Logs',
 	'SIGN_OUT' => 'Sign Out',
 	'UPDATE_AVAILABLE' => 'Update available!',
@@ -280,6 +283,7 @@ return [
 	'ERROR_MAP_DEACTIVATED' => 'Map functionality has been deactivated under settings.',
 	'ERROR_SEARCH_DEACTIVATED' => 'Search functionality has been deactivated under settings.',
 	'SUCCESS' => 'OK',
+	'CHANGE_SUCCESS' => 'Change successful.',
 	'RETRY' => 'Retry',
 	'OVERRIDE' => 'Override',
 	'TAGS_OVERRIDE_INFO' => 'If this is unchecked, the tags will be added to the existing tags of the photo.',
@@ -352,7 +356,7 @@ return [
 	'SORT_CHANGE' => 'Change Sorting',
 
 	'DROPBOX_TITLE' => 'Set Dropbox Key',
-	'DROPBOX_TEXT' => "In order to import photos from your Dropbox, you need a valid drop-ins app key from <a href='https://www.dropbox.com/developers/apps/create'>their website</a>. Generate yourself a personal key and enter it below:",
+	'DROPBOX_TEXT' => "In order to import photos from your Dropbox, you need a valid drop-ins app key from <a href='https://www.dropbox.com/developers/apps/create' class='text-neutral-200 border-b border-dashed border-neutral-400'>their website</a>. Generate yourself a personal key and enter it below:",
 
 	'LANG_TEXT' => 'Change Lychee language for:',
 	'LANG_TITLE' => 'Change Language',
@@ -398,6 +402,8 @@ return [
 	'LAYOUT_TYPE' => 'Layout of photos:',
 	'LAYOUT_SQUARES' => 'Square thumbnails',
 	'LAYOUT_JUSTIFIED' => 'With aspect, justified',
+	'LAYOUT_MASONRY' => 'With aspect, masonry',
+	'LAYOUT_GRID' => 'With aspect, grid',
 	'LAYOUT_UNJUSTIFIED' => 'With aspect, unjustified',
 	'SET_LAYOUT' => 'Change layout',
 
@@ -406,6 +412,9 @@ return [
 	'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Default sensitive album visibility updated with success.',
 
 	'NSFW_BANNER' => '<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>',
+	'NSFW_HEADER' => 'Sensitive content',
+	'NSFW_EXPLANATION' => 'This album contains sensitive content which some people may find offensive or disturbing.',
+	'TAP_CONSENT' => 'Tap to consent.',
 
 	'VIEW_NO_RESULT' => 'No results',
 	'VIEW_NO_PUBLIC_ALBUMS' => 'No public albums',

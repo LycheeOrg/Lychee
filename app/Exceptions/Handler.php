@@ -10,10 +10,12 @@ use App\Exceptions\Handlers\AdminSetterHandler;
 use App\Exceptions\Handlers\InstallationHandler;
 use App\Exceptions\Handlers\MigrationHandler;
 use App\Exceptions\Handlers\NoEncryptionKey;
+use App\Exceptions\Handlers\ViteManifestNotFoundHandler;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Foundation\ViteManifestNotFoundException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -95,6 +97,22 @@ class Handler extends ExceptionHandler
 		TokenMismatchException::class,
 		SessionExpiredException::class,
 		NoWriteAccessOnLogsExceptions::class,
+		ViteManifestNotFoundException::class,
+	];
+
+	/** @var array<int,class-string<HttpExceptionHandler>> */
+	protected $exception_checks = [
+		NoEncryptionKey::class,
+		AccessDBDenied::class,
+		InstallationHandler::class,
+		AdminSetterHandler::class,
+		MigrationHandler::class,
+		ViteManifestNotFoundHandler::class,
+	];
+
+	/** @var array<int,class-string<\Throwable>> */
+	protected $force_exception_to_http = [
+		ViteManifestNotFoundException::class,
 	];
 
 	/**
@@ -226,16 +244,39 @@ class Handler extends ExceptionHandler
 	 */
 	protected function prepareResponse($request, \Throwable $e): RedirectResponse|Response
 	{
-		if (!$this->isHttpException($e) && config('app.debug') === true) {
-			return $this->toIlluminateResponse($this->convertExceptionToResponse($e), $e);
-		}
-
 		if (!$this->isHttpException($e)) {
-			$e = new HttpException(500, $e->getMessage(), $e);
+			if ($this->mustForceToHttpException($e) || config('app.debug') !== true) {
+				$e = new HttpException(500, $e->getMessage(), $e);
+			} else {
+				return $this->toIlluminateResponse($this->convertExceptionToResponse($e), $e);
+			}
 		}
 
 		/** @var HttpExceptionInterface $e */
 		return $this->toIlluminateResponse($this->renderHttpException($e), $e);
+	}
+
+	/**
+	 * Check if the exception must be converted to HttpException.
+	 *
+	 * @param \Throwable $e to check
+	 *
+	 * @return bool true if conversion is required
+	 */
+	protected function mustForceToHttpException(\Throwable $e): bool
+	{
+		// This loop order is more efficient:
+		// We take the first layer of the exception, check if match any of the forced conversion
+		// then the next layer etc...
+		do {
+			foreach ($this->force_exception_to_http as $exception) {
+				if ($e instanceof $exception) {
+					return true;
+				}
+			}
+		} while ($e = $e->getPrevious());
+
+		return false;
 	}
 
 	/**
@@ -280,13 +321,9 @@ class Handler extends ExceptionHandler
 		// We check, if any of our special handlers wants to do something.
 
 		/** @var HttpExceptionHandler[] $checks */
-		$checks = [
-			new NoEncryptionKey(),
-			new AccessDBDenied(),
-			new InstallationHandler(),
-			new AdminSetterHandler(),
-			new MigrationHandler(),
-		];
+		$checks = collect($this->exception_checks)
+			->map(fn ($c) => new $c())
+			->toArray();
 
 		foreach ($checks as $check) {
 			if ($check->check($e)) {

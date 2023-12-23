@@ -489,7 +489,7 @@ abstract class BasePhotosAddHandler extends BasePhotoTest
 			'title' => 'fin de journée',
 			'description' => null,
 			'tags' => [],
-			'license' => 'None',
+			'license' => 'none',
 			'is_public' => false,
 			'is_starred' => false,
 			'iso' => '400',

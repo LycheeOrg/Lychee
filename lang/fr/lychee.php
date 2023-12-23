@@ -7,6 +7,7 @@ return [
 	'PASSWORD' => 'Mot de passe',
 	'ENTER' => 'OK',
 	'CANCEL' => 'Annuler',
+	'CONFIRM' => 'Confirmer',
 	'SIGN_IN' => 'Connexion',
 	'CLOSE' => 'Fermer',
 	'SETTINGS' => 'Paramètres',
@@ -16,6 +17,7 @@ return [
 	'GALLERY' => 'Gallery',
 
 	'USERS' => 'Utilisateurs',
+	'PROFILE' => 'Profil',
 	'CREATE' => 'Créer',
 	'REMOVE' => 'Retirer',
 	'SHARE' => 'Partager',
@@ -28,6 +30,7 @@ return [
 	'ABOUT_LYCHEE' => 'À propos de Lychee',
 	'DIAGNOSTICS' => 'Diagnostiques',
 	'DIAGNOSTICS_GET_SIZE' => 'Calculer l’espace utilisé',
+	'JOBS' => 'Afficher l’historique des Jobs',
 	'LOGS' => 'Afficher les logs',
 	'SIGN_OUT' => 'Déconnexion',
 	'UPDATE_AVAILABLE' => 'Une mise-à-jour est disponible !',
@@ -280,6 +283,7 @@ return [
 	'ERROR_MAP_DEACTIVATED' => 'La carte a été désactivée dans les paramètres.',
 	'ERROR_SEARCH_DEACTIVATED' => 'La recherche a été désactivée dans les paramètres.',
 	'SUCCESS' => 'OK',
+	'CHANGE_SUCCESS' => 'Changement réussi.',
 	'RETRY' => 'Réessayer',
 	'OVERRIDE' => 'Override',
 	'TAGS_OVERRIDE_INFO' => 'If this is unchecked, the tags will be added to the existing tags of the photo.',
@@ -398,6 +402,8 @@ return [
 	'LAYOUT_TYPE' => 'Affichage des photos :',
 	'LAYOUT_SQUARES' => 'Miniatures carrées',
 	'LAYOUT_JUSTIFIED' => 'En proportions, justifiées',
+	'LAYOUT_MASONRY' => 'En proportion, Maçonnerie',
+	'LAYOUT_GRID' => 'En proportion, Grille',
 	'LAYOUT_UNJUSTIFIED' => 'En proportions, non-justifiées',
 	'SET_LAYOUT' => 'Changer l’affichage',
 
@@ -406,6 +412,9 @@ return [
 	'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Visibilé par default des albums sensible mis à jour.',
 
 	'NSFW_BANNER' => '<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>',
+	'NSFW_HEADER' => 'Contenu Sensible',
+	'NSFW_EXPLANATION' => 'Cet album contient des contenus sensible que certaine personnes peuvent trouver chocant ou troublant.',
+	'TAP_CONSENT' => 'Tap pour consentir.',
 
 	'VIEW_NO_RESULT' => 'Aucun résultat',
 	'VIEW_NO_PUBLIC_ALBUMS' => 'Aucun album public',

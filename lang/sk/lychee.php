@@ -7,6 +7,7 @@ return [
 	'PASSWORD' => 'Heslo',
 	'ENTER' => 'Zadať',
 	'CANCEL' => 'Prerušiť',
+	'CONFIRM' => 'Confirm',
 	'SIGN_IN' => 'Prihlásiť',
 	'CLOSE' => 'Zatvoriť',
 	'SETTINGS' => 'Nastavenia',
@@ -16,6 +17,7 @@ return [
 	'GALLERY' => 'Gallery',
 
 	'USERS' => 'Užívatelia',
+	'PROFILE' => 'Profile',
 	'CREATE' => 'Create',
 	'REMOVE' => 'Remove',
 	'SHARE' => 'Share',
@@ -28,6 +30,7 @@ return [
 	'ABOUT_LYCHEE' => 'O Lychee',
 	'DIAGNOSTICS' => 'Diagnostika',
 	'DIAGNOSTICS_GET_SIZE' => 'Request space usage',
+	'JOBS' => 'Show job history',
 	'LOGS' => 'Protokoly',
 	'SIGN_OUT' => 'Odhlásiť',
 	'UPDATE_AVAILABLE' => 'Update je k dispozícii!',
@@ -280,6 +283,7 @@ return [
 	'ERROR_MAP_DEACTIVATED' => 'Map functionality has been deactivated under settings.',
 	'ERROR_SEARCH_DEACTIVATED' => 'Search functionality has been deactivated under settings.',
 	'SUCCESS' => 'OK',
+	'CHANGE_SUCCESS' => 'Change successful.',
 	'RETRY' => 'Opakovať',
 	'OVERRIDE' => 'Override',
 	'TAGS_OVERRIDE_INFO' => 'If this is unchecked, the tags will be added to the existing tags of the photo.',
@@ -398,6 +402,8 @@ return [
 	'LAYOUT_TYPE' => 'Rozmiestnenie obrázkov:',
 	'LAYOUT_SQUARES' => 'Štvorcové náhľady',
 	'LAYOUT_JUSTIFIED' => 'Zachovaný pomer strán, zarovnané',
+	'LAYOUT_MASONRY' => 'Zachovaný pomer strán, masonry',
+	'LAYOUT_GRID' => 'Zachovaný pomer strán, grid',
 	'LAYOUT_UNJUSTIFIED' => 'Zachovaný pomer strán, nezarovnané',
 	'SET_LAYOUT' => 'Zmeniť rozmiestnenie',
 
@@ -406,6 +412,9 @@ return [
 	'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Default sensitive album visibility updated with success.',
 
 	'NSFW_BANNER' => '<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>',
+	'NSFW_HEADER' => 'Sensitive content',
+	'NSFW_EXPLANATION' => 'This album contains sensitive content which some people may find offensive or disturbing.',
+	'TAP_CONSENT' => 'Tap to consent.',
 
 	'VIEW_NO_RESULT' => 'Žiadny výsledok',
 	'VIEW_NO_PUBLIC_ALBUMS' => 'Žiadne verejné albumy',
