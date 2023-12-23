@@ -1,4 +1,5 @@
 import { ChildNodeWithDataStyle } from "./types";
+import createJustifiedLayout from "justified-layout";
 
 export function useJustify(el: HTMLElement, photoDefaultHeight: number = 320) {
 	const view = document.getElementById("lychee_view_content");
@@ -17,7 +18,7 @@ export function useJustify(el: HTMLElement, photoDefaultHeight: number = 320) {
 		const width = _photo.dataset.width;
 		return height > 0 ? width / height : 1;
 	});
-	const layoutGeometry = require("justified-layout")(ratio, {
+	const layoutGeometry = createJustifiedLayout(ratio, {
 		containerWidth: containerWidth,
 		containerPadding: 0,
 		targetRowHeight: photoDefaultHeight,

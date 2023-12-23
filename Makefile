@@ -5,7 +5,11 @@ composer:
 	composer install --prefer-dist --no-dev
 	php artisan vendor:publish --tag=log-viewer-asset
 
-dist-gen: clean composer
+npm-build:
+	rm -r public/build 2> /dev/null || true
+	npm run build
+
+dist-gen: clean composer npm-build
 	@echo "packaging..."
 	@mkdir Lychee
 	@mkdir Lychee/public
@@ -19,6 +23,7 @@ dist-gen: clean composer
 	@cp -r config                           Lychee
 	@cp -r composer-cache                   Lychee
 	@cp -r database                         Lychee
+	@cp -r public/build                     Lychee/public
 	@cp -r public/dist                      Lychee/public
 	@cp -r public/vendor                    Lychee/public
 	@cp -r public/installer                 Lychee/public
@@ -46,6 +51,7 @@ dist-gen: clean composer
 	@cp -r version.md                       Lychee
 	@touch Lychee/storage/logs/laravel.log
 	@touch Lychee/public/dist/user.css
+	@touch Lychee/public/dist/custom.js
 	@touch Lychee/public/uploads/import/index.html
 	@touch Lychee/public/sym/index.html
 
