@@ -16,8 +16,7 @@
         "@types/leaflet.markercluster": "^1.5.4",
         "@types/mousetrap": "^1.6.15",
         "@types/photoswipe": "^4.1.6",
-        "@types/qrcode": "^1.5.5",
-        "@types/tailwindcss": "^3.1.0"
+        "@types/qrcode": "^1.5.5"
     },
     "dependencies": {
         "@types/justified-layout": "^4.1.4",
