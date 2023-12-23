@@ -9,7 +9,7 @@
     >
     <!-- toolbar -->
     <x-header.bar>
-        <x-header.back @keydown.escape.window="$wire.back();" />
+        <x-header.back @keydown.escape.window="$wire.back();" wire:click="back" />
         <x-header.title>{{ $title }}</x-header.title>
     </x-header.bar>
     <!-- maps -->
