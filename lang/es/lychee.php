@@ -7,6 +7,7 @@ return [
 	'PASSWORD' => 'Contraseña',
 	'ENTER' => 'Entrar',
 	'CANCEL' => 'Cancelar',
+	'CONFIRM' => 'Confirm',
 	'SIGN_IN' => 'Iniciar sesión',
 	'CLOSE' => 'Cerrar',
 	'SETTINGS' => 'Configuraciones',
@@ -16,6 +17,7 @@ return [
 	'GALLERY' => 'Galería',
 
 	'USERS' => 'Usuarios',
+	'PROFILE' => 'Profile',
 	'CREATE' => 'Crear',
 	'REMOVE' => 'Remove',
 	'SHARE' => 'Share',
@@ -28,6 +30,7 @@ return [
 	'ABOUT_LYCHEE' => 'Acerca de Lychee',
 	'DIAGNOSTICS' => 'Diagnóstico',
 	'DIAGNOSTICS_GET_SIZE' => 'Pedir uso de espacio',
+	'JOBS' => 'Show job history',
 	'LOGS' => 'Mostrar Registros',
 	'SIGN_OUT' => 'Cerrar Sesión',
 	'UPDATE_AVAILABLE' => '¡Actualización disponible!',
@@ -280,6 +283,7 @@ return [
 	'ERROR_MAP_DEACTIVATED' => 'La funcionalidad del mapa se ha desactivado en la configuración.',
 	'ERROR_SEARCH_DEACTIVATED' => 'La función de búsqueda se ha desactivado en la configuración.',
 	'SUCCESS' => 'Vale',
+	'CHANGE_SUCCESS' => 'Change successful.',
 	'RETRY' => 'Procesar de nuevo',
 	'OVERRIDE' => 'Override',
 	'TAGS_OVERRIDE_INFO' => 'If this is unchecked, the tags will be added to the existing tags of the photo.',
@@ -398,6 +402,8 @@ return [
 	'LAYOUT_TYPE' => 'Diseño de fotos:',
 	'LAYOUT_SQUARES' => 'Miniaturas cuadradas',
 	'LAYOUT_JUSTIFIED' => 'Con aspecto justificado',
+	'LAYOUT_MASONRY' => 'Con aspecto, masonry',
+	'LAYOUT_GRID' => 'Con aspecto, grid',
 	'LAYOUT_UNJUSTIFIED' => 'Con aspecto, injustificado',
 	'SET_LAYOUT' => 'Cambia el diseño',
 
@@ -406,6 +412,9 @@ return [
 	'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Visibilidad predeterminada del álbum sensible actualizada con éxito.',
 
 	'NSFW_BANNER' => '<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>',
+	'NSFW_HEADER' => 'Sensitive content',
+	'NSFW_EXPLANATION' => 'This album contains sensitive content which some people may find offensive or disturbing.',
+	'TAP_CONSENT' => 'Tap to consent.',
 
 	'VIEW_NO_RESULT' => 'No hay resultados',
 	'VIEW_NO_PUBLIC_ALBUMS' => 'Sin álbumes públicos',

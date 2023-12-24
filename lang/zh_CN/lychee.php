@@ -7,6 +7,7 @@ return [
 	'PASSWORD' => '密码',
 	'ENTER' => '确定',
 	'CANCEL' => '取消',
+	'CONFIRM' => 'Confirm',
 	'SIGN_IN' => '登录',
 	'CLOSE' => '关闭',
 	'SETTINGS' => '设置',
@@ -16,6 +17,7 @@ return [
 	'GALLERY' => 'Gallery',
 
 	'USERS' => '用户',
+	'PROFILE' => 'Profile',
 	'CREATE' => 'Create',
 	'REMOVE' => 'Remove',
 	'SHARE' => 'Share',
@@ -28,6 +30,7 @@ return [
 	'ABOUT_LYCHEE' => '关于 Lychee',
 	'DIAGNOSTICS' => '诊断',
 	'DIAGNOSTICS_GET_SIZE' => '请求空间占用信息',
+	'JOBS' => 'Show job history',
 	'LOGS' => '查看日志',
 	'SIGN_OUT' => '注销登录',
 	'UPDATE_AVAILABLE' => '可用更新！',
@@ -280,6 +283,7 @@ return [
 	'ERROR_MAP_DEACTIVATED' => '地图功能已在设置中停用。',
 	'ERROR_SEARCH_DEACTIVATED' => '搜索功能已在设置中停用。',
 	'SUCCESS' => 'OK',
+	'CHANGE_SUCCESS' => 'Change successful.',
 	'RETRY' => '重试',
 	'OVERRIDE' => 'Override',
 	'TAGS_OVERRIDE_INFO' => 'If this is unchecked, the tags will be added to the existing tags of the photo.',
@@ -398,6 +402,8 @@ return [
 	'LAYOUT_TYPE' => '照片布局：',
 	'LAYOUT_SQUARES' => '方形缩略图',
 	'LAYOUT_JUSTIFIED' => '保持长宽比，两端对齐',
+	'LAYOUT_MASONRY' => '保持长宽比, masonry',
+	'LAYOUT_GRID' => '保持长宽比, grid',
 	'LAYOUT_UNJUSTIFIED' => '保持长宽比，不对齐',
 	'SET_LAYOUT' => '更改布局',
 
@@ -406,6 +412,9 @@ return [
 	'SETTINGS_SUCCESS_NSFW_VISIBLE' => '敏感相册的默认可见性成功更新。',
 
 	'NSFW_BANNER' => '<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>',
+	'NSFW_HEADER' => 'Sensitive content',
+	'NSFW_EXPLANATION' => 'This album contains sensitive content which some people may find offensive or disturbing.',
+	'TAP_CONSENT' => 'Tap to consent.',
 
 	'VIEW_NO_RESULT' => '无结果',
 	'VIEW_NO_PUBLIC_ALBUMS' => '没有公开相册',

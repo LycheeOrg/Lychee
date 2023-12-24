@@ -7,6 +7,7 @@ return [
 	'PASSWORD' => 'Heslo',
 	'ENTER' => 'Vložit',
 	'CANCEL' => 'Storno',
+	'CONFIRM' => 'Confirm',
 	'SIGN_IN' => 'Příhlásit se',
 	'CLOSE' => 'Zavřít',
 	'SETTINGS' => 'Nastavení',
@@ -16,6 +17,7 @@ return [
 	'GALLERY' => 'Gallery',
 
 	'USERS' => 'Uživatelé',
+	'PROFILE' => 'Profile',
 	'CREATE' => 'Create',
 	'REMOVE' => 'Remove',
 	'SHARE' => 'Share',
@@ -28,6 +30,7 @@ return [
 	'ABOUT_LYCHEE' => 'O Lychee',
 	'DIAGNOSTICS' => 'Diagnostika',
 	'DIAGNOSTICS_GET_SIZE' => 'Request space usage',
+	'JOBS' => 'Show job history',
 	'LOGS' => 'Protokoly',
 	'SIGN_OUT' => 'Odhlásit se',
 	'UPDATE_AVAILABLE' => 'Update je k dispozici!',
@@ -280,6 +283,7 @@ return [
 	'ERROR_MAP_DEACTIVATED' => 'Funkce Mapy byla v nastavení deaktivována.',
 	'ERROR_SEARCH_DEACTIVATED' => 'Funkce hledání byla v nastavení deaktivována.',
 	'SUCCESS' => 'OK',
+	'CHANGE_SUCCESS' => 'Change successful.',
 	'RETRY' => 'Opakovat',
 	'OVERRIDE' => 'Override',
 	'TAGS_OVERRIDE_INFO' => 'If this is unchecked, the tags will be added to the existing tags of the photo.',
@@ -398,6 +402,8 @@ return [
 	'LAYOUT_TYPE' => 'Vzhled fotografií:',
 	'LAYOUT_SQUARES' => 'Čtvercové náhledy',
 	'LAYOUT_JUSTIFIED' => 'V poměru stran, zarovnáno',
+	'LAYOUT_MASONRY' => 'V poměru stran, masonry',
+	'LAYOUT_GRID' => 'V poměru stran, grid',
 	'LAYOUT_UNJUSTIFIED' => 'V poměru stran, nezarovnáno',
 	'SET_LAYOUT' => 'Změnit vzhled',
 
@@ -406,6 +412,9 @@ return [
 	'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Default sensitive album visibility updated with success.',
 
 	'NSFW_BANNER' => '<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>',
+	'NSFW_HEADER' => 'Sensitive content',
+	'NSFW_EXPLANATION' => 'This album contains sensitive content which some people may find offensive or disturbing.',
+	'TAP_CONSENT' => 'Tap to consent.',
 
 	'VIEW_NO_RESULT' => 'Bez výsledku',
 	'VIEW_NO_PUBLIC_ALBUMS' => 'Veřejná alba nejsou k dispozici',

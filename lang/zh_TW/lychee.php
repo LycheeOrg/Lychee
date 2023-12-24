@@ -7,6 +7,7 @@ return [
 	'PASSWORD' => '密碼',
 	'ENTER' => '確定',
 	'CANCEL' => '取消',
+	'CONFIRM' => 'Confirm',
 	'SIGN_IN' => '登入',
 	'CLOSE' => '關閉',
 	'SETTINGS' => '設定',
@@ -16,6 +17,7 @@ return [
 	'GALLERY' => 'Gallery',
 
 	'USERS' => '使用者',
+	'PROFILE' => 'Profile',
 	'CREATE' => 'Create',
 	'REMOVE' => 'Remove',
 	'SHARE' => 'Share',
@@ -28,6 +30,7 @@ return [
 	'ABOUT_LYCHEE' => '關於Lychee',
 	'DIAGNOSTICS' => '診斷',
 	'DIAGNOSTICS_GET_SIZE' => '請求空間使用',
+	'JOBS' => 'Show job history',
 	'LOGS' => '查看日誌',
 	'SIGN_OUT' => '登出',
 	'UPDATE_AVAILABLE' => '可用更新！',
@@ -280,6 +283,7 @@ return [
 	'ERROR_MAP_DEACTIVATED' => '地圖功能已被設為停用。',
 	'ERROR_SEARCH_DEACTIVATED' => '搜索功能已在設為停用。',
 	'SUCCESS' => '好',
+	'CHANGE_SUCCESS' => 'Change successful.',
 	'RETRY' => '重試',
 	'OVERRIDE' => 'Override',
 	'TAGS_OVERRIDE_INFO' => 'If this is unchecked, the tags will be added to the existing tags of the photo.',
@@ -398,6 +402,8 @@ return [
 	'LAYOUT_TYPE' => '照片佈局:',
 	'LAYOUT_SQUARES' => '方形縮略圖',
 	'LAYOUT_JUSTIFIED' => '有方面，有道理',
+	'LAYOUT_MASONRY' => '有方面, masonry',
+	'LAYOUT_GRID' => '有方面, grid',
 	'LAYOUT_UNJUSTIFIED' => '有方面，沒有道理',
 	'SET_LAYOUT' => '變更版面',
 
@@ -406,6 +412,9 @@ return [
 	'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Default sensitive album visibility updated with success.',
 
 	'NSFW_BANNER' => '<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>',
+	'NSFW_HEADER' => 'Sensitive content',
+	'NSFW_EXPLANATION' => 'This album contains sensitive content which some people may find offensive or disturbing.',
+	'TAP_CONSENT' => 'Tap to consent.',
 
 	'VIEW_NO_RESULT' => '無結果',
 	'VIEW_NO_PUBLIC_ALBUMS' => '沒有公開相簿',

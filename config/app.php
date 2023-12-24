@@ -32,6 +32,18 @@ return [
 
 	/*
 	|--------------------------------------------------------------------------
+	| Application Environment
+	|--------------------------------------------------------------------------
+	|
+	| This value determines whether livewire front-end is enabled as it is
+	| currently under development.
+	|
+	*/
+
+	'livewire' => (bool) env('LIVEWIRE_ENABLED', true),
+
+	/*
+	|--------------------------------------------------------------------------
 	| Application Debug Mode
 	|--------------------------------------------------------------------------
 	|
@@ -243,5 +255,16 @@ return [
 	'aliases' => Facade::defaultAliases()->merge([
 		'DebugBar' => Barryvdh\Debugbar\Facades\Debugbar::class,
 		'Helpers' => App\Facades\Helpers::class,
+		// Aliases for easier access in the blade templates
+		'Configs' => App\Models\Configs::class,
+		'AlbumPolicy' => App\Policies\AlbumPolicy::class,
+		'PhotoPolicy' => App\Policies\PhotoPolicy::class,
+		'SettingsPolicy' => App\Policies\SettingsPolicy::class,
+		'UserPolicy' => App\Policies\UserPolicy::class,
+		'User' => App\Models\User::class,
+		'SizeVariantType' => App\Enum\SizeVariantType::class,
+		'FileStatus' => App\Enum\Livewire\FileStatus::class,
+		'Params' => App\Contracts\Livewire\Params::class,
+		'PhotoLayoutType' => \App\Enum\PhotoLayoutType::class,
 	])->toArray(),
 ];

@@ -3,9 +3,7 @@
 namespace App\Http\Requests\WebAuthn;
 
 use App\Http\Requests\AbstractEmptyRequest;
-use App\Models\User;
-use App\Policies\UserPolicy;
-use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Auth;
 
 class ListCredentialsRequest extends AbstractEmptyRequest
 {
@@ -14,6 +12,6 @@ class ListCredentialsRequest extends AbstractEmptyRequest
 	 */
 	public function authorize(): bool
 	{
-		return Gate::check(UserPolicy::CAN_USE_2FA, [User::class]);
+		return Auth::check();
 	}
 }

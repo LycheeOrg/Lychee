@@ -73,6 +73,13 @@ class RedirectController extends Controller
 				$this->unlock->do($album, $request['password']);
 			}
 
+			// If we are using livewire by default, we redirect to Livewire url intead.
+			if (config('app.livewire') === true) {
+				return $photoID === null ?
+					redirect(route('livewire-gallery-album', ['albumId' => $albumID])) :
+					redirect(route('livewire-gallery-photo', ['albumId' => $albumID, 'photoId' => $photoID]));
+			}
+
 			return $photoID === null ?
 				redirect('gallery#' . $albumID) :
 				redirect('gallery#' . $albumID . '/' . $photoID);

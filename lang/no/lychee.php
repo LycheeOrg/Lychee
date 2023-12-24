@@ -7,6 +7,7 @@ return [
 	'PASSWORD' => 'Passord',
 	'ENTER' => 'Stig inn',
 	'CANCEL' => 'Avbryt',
+	'CONFIRM' => 'Confirm',
 	'SIGN_IN' => 'Logg inn',
 	'CLOSE' => 'Lukk',
 	'SETTINGS' => 'Innstillinger',
@@ -16,6 +17,7 @@ return [
 	'GALLERY' => 'Gallery',
 
 	'USERS' => 'Brukere',
+	'PROFILE' => 'Profile',
 	'CREATE' => 'Create',
 	'REMOVE' => 'Remove',
 	'SHARE' => 'Share',
@@ -28,6 +30,7 @@ return [
 	'ABOUT_LYCHEE' => 'Om Lychee',
 	'DIAGNOSTICS' => 'Diagnostikk',
 	'DIAGNOSTICS_GET_SIZE' => 'Hent diskbruk',
+	'JOBS' => 'Show job history',
 	'LOGS' => 'Vis Logg',
 	'SIGN_OUT' => 'Logg Ut',
 	'UPDATE_AVAILABLE' => 'Oppdatering er tilgjengelig!',
@@ -280,6 +283,7 @@ return [
 	'ERROR_MAP_DEACTIVATED' => 'Kartfunksjoner har blitt deaktivert under innstillinger',
 	'ERROR_SEARCH_DEACTIVATED' => 'Søkefunksjoner har blitt deaktivert under innstillinger',
 	'SUCCESS' => 'OK',
+	'CHANGE_SUCCESS' => 'Change successful.',
 	'RETRY' => 'Prøv igjen',
 	'OVERRIDE' => 'Override',
 	'TAGS_OVERRIDE_INFO' => 'If this is unchecked, the tags will be added to the existing tags of the photo.',
@@ -398,6 +402,8 @@ return [
 	'LAYOUT_TYPE' => 'Oppsett for bilder:',
 	'LAYOUT_SQUARES' => 'Kvadratiske miniatyrbilder',
 	'LAYOUT_JUSTIFIED' => 'Med aspektratio, justert',
+	'LAYOUT_MASONRY' => 'Med aspektratio, masonry',
+	'LAYOUT_GRID' => 'Med aspektratio, grid',
 	'LAYOUT_UNJUSTIFIED' => 'Med aspektratio, ikke justert',
 	'SET_LAYOUT' => 'Lagre oppsett',
 
@@ -406,6 +412,9 @@ return [
 	'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Default sensitive album visibility updated with success.',
 
 	'NSFW_BANNER' => '<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>',
+	'NSFW_HEADER' => 'Sensitive content',
+	'NSFW_EXPLANATION' => 'This album contains sensitive content which some people may find offensive or disturbing.',
+	'TAP_CONSENT' => 'Tap to consent.',
 
 	'VIEW_NO_RESULT' => 'Ingen resultater',
 	'VIEW_NO_PUBLIC_ALBUMS' => 'Ingen offentlige album',

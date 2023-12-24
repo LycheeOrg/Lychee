@@ -25,7 +25,7 @@ class SizeVariantResource extends JsonResource
 	 *
 	 * @return SizeVariantResource
 	 */
-	public function noUrl(bool $noUrl): self
+	public function setNoUrl(bool $noUrl): self
 	{
 		$this->noUrl = $noUrl;
 

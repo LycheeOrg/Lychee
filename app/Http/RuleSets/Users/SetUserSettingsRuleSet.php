@@ -17,7 +17,7 @@ class SetUserSettingsRuleSet implements RuleSet
 	{
 		return [
 			RequestAttribute::ID_ATTRIBUTE => ['required', new IntegerIDRule(false)],
-			RequestAttribute::USERNAME_ATTRIBUTE => ['required', new UsernameRule()],
+			RequestAttribute::USERNAME_ATTRIBUTE => ['required', new UsernameRule(), 'min:1'],
 			RequestAttribute::PASSWORD_ATTRIBUTE => ['sometimes', new PasswordRule(false)],
 			RequestAttribute::MAY_UPLOAD_ATTRIBUTE => 'present|boolean',
 			RequestAttribute::MAY_EDIT_OWN_SETTINGS_ATTRIBUTE => 'present|boolean',

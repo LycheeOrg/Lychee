@@ -217,4 +217,52 @@ class Helpers
 
 		return $size;
 	}
+
+	/**
+	 * Converts a decimal degree into integer degree, minutes and seconds.
+	 *
+	 * @param float|null $decimal
+	 * @param bool       $type    - indicates if the passed decimal indicates a
+	 *                            latitude (`true`) or a longitude (`false`)
+	 *
+	 * @returns string
+	 */
+	public function decimalToDegreeMinutesSeconds(float|null $decimal, bool $type): null|string
+	{
+		if ($decimal === null) {
+			return null;
+		}
+
+		$d = abs($decimal);
+
+		// absolute value of decimal must be smaller than 180;
+		if ($d > 180) {
+			return '';
+		}
+
+		// set direction; north assumed
+		if ($type && $decimal < 0) {
+			$direction = 'S';
+		} elseif (!$type && $decimal < 0) {
+			$direction = 'W';
+		} elseif (!$type) {
+			$direction = 'E';
+		} else {
+			$direction = 'N';
+		}
+
+		// get degrees
+		$degrees = floor($d);
+
+		// get seconds
+		$seconds = ($d - $degrees) * 3600;
+
+		// get minutes
+		$minutes = floor($seconds / 60);
+
+		// reset seconds
+		$seconds = floor($seconds - $minutes * 60);
+
+		return $degrees . '° ' . $minutes . "' " . $seconds . '" ' . $direction;
+	}
 }

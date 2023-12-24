@@ -7,6 +7,7 @@ return [
 	'PASSWORD' => 'Пароль',
 	'ENTER' => 'Enter',
 	'CANCEL' => 'Отмена',
+	'CONFIRM' => 'Confirm',
 	'SIGN_IN' => 'Вход',
 	'CLOSE' => 'Закрыть',
 	'SETTINGS' => 'Параметры',
@@ -16,6 +17,7 @@ return [
 	'GALLERY' => 'Gallery',
 
 	'USERS' => 'Пользователи',
+	'PROFILE' => 'Profile',
 	'CREATE' => 'Create',
 	'REMOVE' => 'Remove',
 	'SHARE' => 'Share',
@@ -28,6 +30,7 @@ return [
 	'ABOUT_LYCHEE' => 'О Lychee',
 	'DIAGNOSTICS' => 'Диагностика',
 	'DIAGNOSTICS_GET_SIZE' => 'Request space usage',
+	'JOBS' => 'Show job history',
 	'LOGS' => 'Логи',
 	'SIGN_OUT' => 'Выход',
 	'UPDATE_AVAILABLE' => 'Доступно обновление!',
@@ -280,6 +283,7 @@ return [
 	'ERROR_MAP_DEACTIVATED' => 'Map functionality has been deactivated under settings.',
 	'ERROR_SEARCH_DEACTIVATED' => 'Search functionality has been deactivated under settings.',
 	'SUCCESS' => 'Ок',
+	'CHANGE_SUCCESS' => 'Change successful.',
 	'RETRY' => 'Повторить',
 	'OVERRIDE' => 'Override',
 	'TAGS_OVERRIDE_INFO' => 'If this is unchecked, the tags will be added to the existing tags of the photo.',
@@ -398,6 +402,8 @@ return [
 	'LAYOUT_TYPE' => 'Компоновка фото:',
 	'LAYOUT_SQUARES' => 'Квадратные превью',
 	'LAYOUT_JUSTIFIED' => 'По формату, выровнять',
+	'LAYOUT_MASONRY' => 'По формату, masonry',
+	'LAYOUT_GRID' => 'По формату, grid',
 	'LAYOUT_UNJUSTIFIED' => 'По формату, не выравнивать',
 	'SET_LAYOUT' => 'Изменить компоновку',
 
@@ -406,6 +412,9 @@ return [
 	'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Default sensitive album visibility updated with success.',
 
 	'NSFW_BANNER' => '<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>',
+	'NSFW_HEADER' => 'Sensitive content',
+	'NSFW_EXPLANATION' => 'This album contains sensitive content which some people may find offensive or disturbing.',
+	'TAP_CONSENT' => 'Tap to consent.',
 
 	'VIEW_NO_RESULT' => 'Не найдено',
 	'VIEW_NO_PUBLIC_ALBUMS' => 'Нет публичных альбомов',

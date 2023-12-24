@@ -19,6 +19,10 @@
       <exclude>./tests/Feature/LibUnitTests/SharingUnitTest.php</exclude>
       <exclude>./tests/Feature/LibUnitTests/UsersUnitTest.php</exclude>
     </testsuite>
+    <testsuite name="Livewire">
+      <directory suffix="Test.php">./tests/Livewire</directory>
+      <exclude>./tests/Livewire/Base/BaseLivewireTest.php</exclude>
+    </testsuite>
   </testsuites>
   <extensions>
     <bootstrap class="Tests\BootExtension"/>

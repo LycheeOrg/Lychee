@@ -49,9 +49,11 @@
         "doctrine/dbal": "^3.1",
         "geocoder-php/cache-provider": "^4.3",
         "geocoder-php/nominatim-provider": "^5.5",
+        "graham-campbell/markdown": "^15.0",
         "laminas/laminas-text": "^2.9",
         "laragear/webauthn": "^1.2.0",
         "laravel/framework": "^10.0",
+        "livewire/livewire": "^3.0",
         "lychee-org/nestedset": "^8.0",
         "lychee-org/php-exif": "^1.0.0",
         "maennchen/zipstream-php": "^3.1",
@@ -79,7 +81,8 @@
         "mockery/mockery": "^1.5",
         "larastan/larastan": "^2.0",
         "php-parallel-lint/php-parallel-lint": "^1.3",
-        "phpunit/phpunit": "^10.0"
+        "phpunit/phpunit": "^10.0",
+        "fakerphp/faker": "^1.23.0"
     },
     "autoload": {
         "classmap": [

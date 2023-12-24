@@ -7,6 +7,7 @@ return [
 	'PASSWORD' => 'Mật khẩu',
 	'ENTER' => 'Ok',
 	'CANCEL' => 'Bỏ',
+	'CONFIRM' => 'Confirm',
 	'SIGN_IN' => 'Đăng nhập',
 	'CLOSE' => 'Đóng',
 	'SETTINGS' => 'Cài đặt',
@@ -16,6 +17,7 @@ return [
 	'GALLERY' => 'Gallery',
 
 	'USERS' => 'Người dùng',
+	'PROFILE' => 'Profile',
 	'CREATE' => 'Tạo',
 	'REMOVE' => 'Remove',
 	'SHARE' => 'Share',
@@ -28,6 +30,7 @@ return [
 	'ABOUT_LYCHEE' => 'Giới thiệu Lychee',
 	'DIAGNOSTICS' => 'Thông tin hệ thống',
 	'DIAGNOSTICS_GET_SIZE' => 'Xem dung lượng đã dùng',
+	'JOBS' => 'Show job history',
 	'LOGS' => 'Xem nhật ký thay đổi',
 	'SIGN_OUT' => 'Thoát',
 	'UPDATE_AVAILABLE' => 'Có phiên bản mới!',
@@ -280,6 +283,7 @@ return [
 	'ERROR_MAP_DEACTIVATED' => 'Tính năng hiển thị bản đồ đã tắt trong phần cài đặt.',
 	'ERROR_SEARCH_DEACTIVATED' => 'Tính năng tìm kiếm đã tắt trong phần cài đặt',
 	'SUCCESS' => 'OK',
+	'CHANGE_SUCCESS' => 'Change successful.',
 	'RETRY' => 'Thử lại',
 	'OVERRIDE' => 'Override',
 	'TAGS_OVERRIDE_INFO' => 'If this is unchecked, the tags will be added to the existing tags of the photo.',
@@ -398,6 +402,8 @@ return [
 	'LAYOUT_TYPE' => 'Cách trình bày hình ảnh:',
 	'LAYOUT_SQUARES' => 'Ô vuông hình nhỏ',
 	'LAYOUT_JUSTIFIED' => 'Theo tỷ lệ hình, canh đều hai bên',
+	'LAYOUT_MASONRY' => 'Theo tỷ lệ hình, masonry',
+	'LAYOUT_GRID' => 'Theo tỷ lệ hình, grid',
 	'LAYOUT_UNJUSTIFIED' => 'Theo tỷ lệ hình, không canh đều hai bên',
 	'SET_LAYOUT' => 'Thay đổi cách trình bày',
 
@@ -406,6 +412,9 @@ return [
 	'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Chế độ hiển thị album nhạy cảm được cập nhật thành công.',
 
 	'NSFW_BANNER' => '<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>',
+	'NSFW_HEADER' => 'Sensitive content',
+	'NSFW_EXPLANATION' => 'This album contains sensitive content which some people may find offensive or disturbing.',
+	'TAP_CONSENT' => 'Tap to consent.',
 
 	'VIEW_NO_RESULT' => 'Không có kết quả nào',
 	'VIEW_NO_PUBLIC_ALBUMS' => 'Chưa có album chia sẻ công cộng nào',

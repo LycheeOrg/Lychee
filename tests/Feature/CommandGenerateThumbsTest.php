@@ -51,7 +51,7 @@ class CommandGenerateThumbsTest extends BasePhotoTest
 		));
 
 		// Remove the size variant "small" from disk and from DB
-		unlink(public_path($photo1->size_variants->small->url));
+		unlink(public_path($this->dropUrlPrefix($photo1->size_variants->small->url)));
 		DB::table('size_variants')
 			->where('photo_id', '=', $photo1->id)
 			->where('type', '=', SizeVariantType::SMALL)
@@ -67,6 +67,6 @@ class CommandGenerateThumbsTest extends BasePhotoTest
 		$this->assertNotNull($photo2->size_variants->small);
 		$this->assertEquals($photo1->size_variants->small->width, $photo2->size_variants->small->width);
 		$this->assertEquals($photo1->size_variants->small->height, $photo2->size_variants->small->height);
-		$this->assertFileExists(public_path($photo2->size_variants->small->url));
+		$this->assertFileExists(public_path($this->dropUrlPrefix($photo2->size_variants->small->url)));
 	}
 }

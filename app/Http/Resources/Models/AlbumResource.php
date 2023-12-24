@@ -3,6 +3,7 @@
 namespace App\Http\Resources\Models;
 
 use App\DTO\AlbumProtectionPolicy;
+use App\Http\Resources\Collections\AlbumCollectionResource;
 use App\Http\Resources\Collections\PhotoCollectionResource;
 use App\Http\Resources\Rights\AlbumRightsResource;
 use App\Http\Resources\Traits\WithStatus;
@@ -46,7 +47,7 @@ class AlbumResource extends JsonResource
 			// children
 			'parent_id' => $this->resource->parent_id,
 			'has_albums' => !$this->resource->isLeaf(),
-			'albums' => AlbumResource::collection($this->whenLoaded('children')),
+			'albums' => AlbumCollectionResource::make($this->whenLoaded('children')),
 			'photos' => PhotoCollectionResource::make($this->whenLoaded('photos')),
 			'num_subalbums' => $this->resource->num_children,
 			'num_photos' => $this->resource->num_photos,
