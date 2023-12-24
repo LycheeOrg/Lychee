@@ -403,7 +403,7 @@ return [
 	'LAYOUT_SQUARES' => 'Quadratische Miniaturansichten',
 	'LAYOUT_JUSTIFIED' => 'Seitenverhältnis beibehalten, Blocksatz',
 	'LAYOUT_MASONRY' => 'Seitenverhältnis beibehalten, masonry',
-	'LAYOUT_GRID' => 'Seitenverhältnis beibehalten, grid',
+	'LAYOUT_GRID' => 'Seitenverhältnis beibehalten, Gitter',
 	'LAYOUT_UNJUSTIFIED' => 'Seitenverhältnis beibehalten, Flattersatz',
 	'SET_LAYOUT' => 'Ausgerichtetes Layout benutzen:',
 
