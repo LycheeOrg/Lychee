@@ -207,11 +207,17 @@ export const albumView = (Alpine: Alpine) =>
 			starPhotos() {
 				// @ts-ignore
 				this.$wire.setStar(this.select.selectedPhotos);
+				this.select.selectedPhotos.forEach((photo_id) => {
+					(Selection.getPhoto(photo_id) as Photo).is_starred = true;
+				});
 			},
 
 			unstarPhotos() {
 				// @ts-ignore
 				this.$wire.unsetStar(this.select.selectedPhotos);
+				this.select.selectedPhotos.forEach((photo_id) => {
+					(Selection.getPhoto(photo_id) as Photo).is_starred = false;
+				});
 			},
 
 			setCover() {

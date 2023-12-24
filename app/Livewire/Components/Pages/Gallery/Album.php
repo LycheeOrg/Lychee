@@ -27,6 +27,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 use Livewire\Attributes\On;
+use Livewire\Attributes\Renderless;
 
 /**
  * Album sub module.
@@ -187,6 +188,7 @@ class Album extends BaseAlbumComponent implements Reloadable
 		return $this->album->title;
 	}
 
+	#[Renderless]
 	public function setCover(?string $photoID): void
 	{
 		if (!$this->album instanceof ModelsAlbum) {

@@ -234,12 +234,7 @@ export default class Selection {
 	areSelectedPhotosAllStarred(): boolean {
 		let allStarred = true;
 		this.selectedPhotos.forEach((v) => {
-			let photo: HTMLElement | null = document.querySelector("[data-id='" + v + "']");
-			if (photo === null || photo === undefined) {
-				console.log(v + " not found!");
-			} else {
-				allStarred = allStarred && photo.dataset.starred === "1";
-			}
+			allStarred = allStarred && (Selection.getPhoto(v) as Photo).is_starred;
 		});
 
 		return allStarred;

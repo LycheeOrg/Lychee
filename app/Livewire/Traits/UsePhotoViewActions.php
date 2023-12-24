@@ -122,6 +122,7 @@ trait UsePhotoViewActions
 	 *
 	 * @return void
 	 */
+	#[Renderless]
 	public function setStar(array $photoIDs): void
 	{
 		Gate::authorize(PhotoPolicy::CAN_EDIT_ID, [Photo::class, $photoIDs]);
@@ -135,6 +136,7 @@ trait UsePhotoViewActions
 	 *
 	 * @return void
 	 */
+	#[Renderless]
 	public function unsetStar(array $photoIDs): void
 	{
 		Gate::authorize(PhotoPolicy::CAN_EDIT_ID, [Photo::class, $photoIDs]);
