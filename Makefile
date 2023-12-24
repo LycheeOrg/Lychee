@@ -71,6 +71,12 @@ dist: dist-clean
 clean:
 	@rm build/* 2> /dev/null || true
 	@rm -r Lychee 2> /dev/null || true
+	@rm -r public/build 2> /dev/null || true
+	@rm -r node_modules 2> /dev/null || true
+	@rm -r vendor  2> /dev/null || true
+
+install: composer npm-build
+	php artisan migrate
 
 test:
 	@if [ -x "vendor/bin/phpunit" ]; then \
@@ -98,6 +104,7 @@ formatting:
 phpstan:
 	vendor/bin/phpstan analyze
 
+# Generating new versions
 gen_minor:
 	php scripts/gen_release.php
 	git add database
@@ -113,6 +120,8 @@ gen_major:
 
 release_major: gen_major
 	git commit -m "bump to version $(shell cat version.md)"
+
+# Building tests 1 by 1
 
 TESTS_PHP := $(shell find tests/Feature -name "*Test.php" -printf "%f\n")
 TEST_DONE := $(addprefix build/,$(TESTS_PHP:.php=.done))

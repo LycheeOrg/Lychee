@@ -2,7 +2,6 @@
 
 namespace App\Livewire\Traits;
 
-use Barryvdh\Debugbar\Facades\Debugbar;
 use Livewire\Attributes\On;
 
 /**
@@ -21,7 +20,6 @@ trait UseOpenable
 	#[On('open')]
 	public function open(): void
 	{
-		Debugbar::info('request to open.');
 		$this->isOpen = true;
 	}
 
@@ -33,7 +31,6 @@ trait UseOpenable
 	#[On('close')]
 	public function close(): void
 	{
-		Debugbar::info('request to close.');
 		$this->isOpen = false;
 	}
 
@@ -45,7 +42,6 @@ trait UseOpenable
 	#[On('toggle')]
 	public function toggle(): void
 	{
-		Debugbar::info('toggle.');
 		$this->isOpen = !$this->isOpen;
 	}
 }
