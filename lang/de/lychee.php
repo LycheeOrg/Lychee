@@ -30,7 +30,7 @@ return [
 	'ABOUT_LYCHEE' => 'Über Lychee',
 	'DIAGNOSTICS' => 'Diagnose',
 	'DIAGNOSTICS_GET_SIZE' => 'Speicherplatz-Nutzung abrufen',
-	'JOBS' => 'Show job history',
+	'JOBS' => 'Job-Verlauf anzeigen',
 	'LOGS' => 'Logs anzeigen',
 	'SIGN_OUT' => 'Abmelden',
 	'UPDATE_AVAILABLE' => 'Update verfügbar!',
