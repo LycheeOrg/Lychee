@@ -17,7 +17,7 @@ return [
 	'GALLERY' => 'Gallerie',
 
 	'USERS' => 'Benutzer',
-	'PROFILE' => 'Profile',
+	'PROFILE' => 'Profil',
 	'CREATE' => 'Erstellen',
 	'REMOVE' => 'Entfernen',
 	'SHARE' => 'Freigeben',
