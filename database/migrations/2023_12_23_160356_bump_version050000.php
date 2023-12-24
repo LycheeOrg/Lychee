@@ -10,6 +10,7 @@ return new class() extends Migration {
 	public function up(): void
 	{
 		DB::table('configs')->where('key', 'version')->update(['value' => '050000']);
+		DB::table('configs')->where('value', '=', 'Lychee v4')->update(['value' => 'Lychee v5']);
 	}
 
 	/**
@@ -18,5 +19,6 @@ return new class() extends Migration {
 	public function down(): void
 	{
 		DB::table('configs')->where('key', 'version')->update(['value' => '041300']);
+		DB::table('configs')->where('value', '=', 'Lychee v5')->update(['value' => 'Lychee v4']);
 	}
 };
