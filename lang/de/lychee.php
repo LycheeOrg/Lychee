@@ -7,7 +7,7 @@ return [
 	'PASSWORD' => 'Kennwort',
 	'ENTER' => 'Eingabe',
 	'CANCEL' => 'Abbrechen',
-	'CONFIRM' => 'Confirm',
+	'CONFIRM' => 'Bestätigen',
 	'SIGN_IN' => 'Anmelden',
 	'CLOSE' => 'Schließen',
 	'SETTINGS' => 'Einstellungen',
