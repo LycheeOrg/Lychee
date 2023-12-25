@@ -28,7 +28,7 @@ class AlbumsFlags implements Wireable
 		$this->is_map_accessible = $this->is_map_accessible && (Auth::check() || Configs::getValueAsBool('map_display_public'));
 		$this->is_mod_frame_enabled = Configs::getValueAsBool('mod_frame_enabled');
 		$this->can_use_2fa = !Auth::check() && (WebAuthnCredential::query()->whereNull('disabled_at')->count() > 0);
-		$this->can_edit = Gate::check(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class]);
+		$this->can_edit = Gate::check(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, null]);
 		$this->is_search_accessible = Auth::check() || Configs::getValueAsBool('search_public');
 	}
 }
