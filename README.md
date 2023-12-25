@@ -36,9 +36,11 @@ To run Lychee, everything you need is a web-server with PHP 8.2 or later and a d
 
 1. Clone this repo to your server and set the web root to `lychee/public`
 2. Run `composer install --no-dev` to install dependencies
-3. Copy `.env.example` as `.env` and edit it to match your parameters
-4. Generate your secret key with `php artisan key:generate`
-5. Migrate your database with `php artisan migrate` to create a new database or migrate an existing Lychee installation to the latest framework.
+3. Run `npm install` to install node dependencies
+4. Run `npm run build` to build the front-end
+5. Copy `.env.example` as `.env` and edit it to match your parameters
+6. Generate your secret key with `php artisan key:generate`
+7. Migrate your database with `php artisan migrate` to create a new database or migrate an existing Lychee installation to the latest framework.
 
 See detailed instructions on the [Installation](https://lycheeorg.github.io/docs/installation.html) page of our documentation.
 
