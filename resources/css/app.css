@@ -120,4 +120,14 @@
 	.drop-shadow-black {
 		--tw-drop-shadow: drop-shadow(0 0 1px rgba(0, 0, 0, 0.3)) drop-shadow(0 0 10px rgba(0, 0, 0, 0.3));
 	}
+
+	.blurred span {
+		overflow: hidden;
+	}
+
+	.blurred img {
+		/* Safari 6.0 - 9.0 */
+		-webkit-filter: blur(5px);
+		filter: blur(5px);
+	}
 }
