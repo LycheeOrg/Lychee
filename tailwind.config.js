@@ -1,5 +1,13 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  safelist: [
+    'opacity-0',
+    'group-hover:opacity-100',
+    'transition-all',
+    'ease-out',
+    'hidden',
+    
+  ],
   content: [
     "./resources/**/*.blade.php",
     "./resources/**/*.js",
