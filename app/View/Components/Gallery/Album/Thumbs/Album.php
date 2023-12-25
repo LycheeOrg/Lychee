@@ -5,6 +5,7 @@ namespace App\View\Components\Gallery\Album\Thumbs;
 use App\Contracts\Models\AbstractAlbum;
 use App\DTO\AlbumProtectionPolicy;
 use App\Enum\ThumbAlbumSubtitleType;
+use App\Enum\ThumbOverlayVisibilityType;
 use App\Models\Album as AlbumModel;
 use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
@@ -30,6 +31,8 @@ class Album extends Component
 	public bool $is_cover_id;
 	public bool $has_subalbum;
 
+	public string $css_overlay;
+
 	public string $created_at = '';
 	public ?string $min_taken_at = null;
 	public ?string $max_taken_at = null;
@@ -38,6 +41,7 @@ class Album extends Component
 	{
 		$date_format = Configs::getValueAsString('date_format_album_thumb');
 
+		$displayOverlay = Configs::getValueAsEnum('display_thumb_album_overlay', ThumbOverlayVisibilityType::class);
 		$this->subType = Configs::getValueAsEnum('album_subtitle_type', ThumbAlbumSubtitleType::class)->value;
 
 		$this->id = $data->id;
@@ -53,6 +57,12 @@ class Album extends Component
 			$this->created_at = $data->created_at->format($date_format);
 			$policy = AlbumProtectionPolicy::ofBaseAlbum($data);
 		}
+
+		$this->css_overlay = match ($displayOverlay) {
+			ThumbOverlayVisibilityType::NEVER => 'hidden',
+			ThumbOverlayVisibilityType::HOVER => 'opacity-0 group-hover:opacity-100 transition-all ease-out',
+			default => '',
+		};
 
 		$this->is_nsfw = $policy->is_nsfw;
 		$this->is_nsfw_blurred = $this->is_nsfw && Configs::getValueAsBool('nsfw_blur');

@@ -3,6 +3,7 @@
 namespace App\View\Components\Gallery\Album\Thumbs;
 
 use App\Enum\SizeVariantType;
+use App\Enum\ThumbOverlayVisibilityType;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\InvalidSizeVariantException;
 use App\Models\Configs;
@@ -28,6 +29,8 @@ class Photo extends Component
 	public string $created_at;
 	public bool $is_cover_id = false;
 
+	public string $css_overlay;
+
 	public string $src = '';
 	public string $srcset = '';
 	public string $srcset2x = '';
@@ -46,6 +49,7 @@ class Photo extends Component
 	{
 		$this->idx = $idx;
 		$date_format = Configs::getValueAsString('date_format_photo_thumb');
+		$displayOverlay = Configs::getValueAsEnum('display_thumb_photo_overlay', ThumbOverlayVisibilityType::class);
 
 		$this->album_id = $albumId;
 		$this->photo_id = $data->id;
@@ -56,6 +60,12 @@ class Photo extends Component
 		$this->is_video = $data->isVideo();
 		$this->is_livephoto = $data->live_photo_url !== null;
 		$this->is_cover_id = $data->album?->cover_id === $data->id;
+
+		$this->css_overlay = match ($displayOverlay) {
+			ThumbOverlayVisibilityType::NEVER => 'hidden',
+			ThumbOverlayVisibilityType::HOVER => 'opacity-0 group-hover:opacity-100 transition-all ease-out',
+			default => '',
+		};
 
 		$thumb = $data->size_variants->getSizeVariant(SizeVariantType::THUMB);
 		$thumb2x = $data->size_variants->getSizeVariant(SizeVariantType::THUMB2X);
