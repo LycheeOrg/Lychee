@@ -20,9 +20,11 @@
                     {{ __('lychee.USERS') }}
                 </x-leftbar.leftbar-item>
             @endcan
+            @can(UserPolicy::CAN_EDIT, [App\Models\User::class])
             <x-leftbar.leftbar-item href="{{ route('profile') }}" wire:navigate icon="key">
                 {{ __('lychee.U2F') }}
             </x-leftbar.leftbar-item>
+            @endcan
             @can(AlbumPolicy::CAN_SHARE_WITH_USERS, [App\Contracts\Models\AbstractAlbum::class, null])
                 <x-leftbar.leftbar-item href="{{ route('sharing') }}" wire:navigate icon="cloud">
                     {{ __('lychee.SHARING') }}</x-leftbar.leftbar-item>
