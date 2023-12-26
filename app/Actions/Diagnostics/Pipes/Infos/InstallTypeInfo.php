@@ -28,6 +28,7 @@ class InstallTypeInfo implements DiagnosticPipe
 		$data[] = Diagnostics::line('composer install:', $this->installedVersion->isDev() ? 'dev' : '--no-dev');
 		$data[] = Diagnostics::line('APP_ENV:', Config::get('app.env')); // check if production
 		$data[] = Diagnostics::line('APP_DEBUG:', Config::get('app.debug') === true ? 'true' : 'false'); // check if debug is on (will help in case of error 500)
+		$data[] = Diagnostics::line('APP_URL:', Config::get('app.url') !== 'http://localhost' ? 'set' : 'default'); // Some people leave that value by default... It is now breaking their visual.
 		$data[] = '';
 
 		return $next($data);
