@@ -69,8 +69,8 @@ class IniSettingsCheck implements DiagnosticPipe
 		if (extension_loaded('xdebug')) {
 			// @codeCoverageIgnoreStart
 			$msg = config('app.debug') !== true
-			? 'Errror: xdebug is enabled although Lychee is not in debug mode. Outside of debugging, xdebug may generate significant slowdown on your application.'
-			: 'Warning: xdebug is enabled. This may generate significant slowdown on your application.';
+			? 'Errror: xdebug is enabled although Lychee is not in debug mode. Outside of debugging, xdebug will generate significant slowdown on your application.'
+			: 'Warning: xdebug is enabled. This will generate significant slowdown on your application.';
 			$data[] = $msg;
 			// @codeCoverageIgnoreEnd
 		}
@@ -89,6 +89,26 @@ class IniSettingsCheck implements DiagnosticPipe
 
 		if (ini_get('zend.assertions') !== '1' && config('app.debug') === true) {
 			$data[] = 'Warning: zend.assertions is disabled although Lychee is in debug mode. For easier debugging code generation for assertions should be enabled.';
+		}
+
+		$disabledFunctions = explode(',', ini_get('disable_functions'));
+		$tmpfileExists = function_exists('tmpfile') && !in_array('tmpfile', $disabledFunctions, true);
+		if ($tmpfileExists !== true) {
+			// @codeCoverageIgnoreStart
+			$data[] = 'Error: tmpfile() is disabled, this will prevent you from uploading pictures.';
+			// @codeCoverageIgnoreEnd
+		}
+
+		$path = sys_get_temp_dir();
+		if (!is_writable($path)) {
+			// @codeCoverageIgnoreStart
+			$data[] = 'Error: sys_get_temp_dir() is not writable, this will prevent you from uploading pictures.';
+			// @codeCoverageIgnoreEnd
+		}
+		if (!is_readable($path)) {
+			// @codeCoverageIgnoreStart
+			$data[] = 'Error: sys_get_temp_dir() is not readable, this will prevent you from uploading pictures.';
+			// @codeCoverageIgnoreEnd
 		}
 
 		return $next($data);
