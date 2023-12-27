@@ -34,6 +34,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Livewire\Livewire;
@@ -103,6 +104,13 @@ class AppServiceProvider extends ServiceProvider
 		 * We disable that.
 		 */
 		JsonResource::withoutWrapping();
+
+		/**
+		 * We force URL to HTTPS if requested in .env via APP_FORCE_HTTPS.
+		 */
+		if (config('app.force_https') === true) {
+			URL::forceScheme('https');
+		}
 
 		if (config('database.db_log_sql', false) === true) {
 			DB::listen(fn ($q) => $this->logSQL($q));

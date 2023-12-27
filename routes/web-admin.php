@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Administration;
 
 use App\Http\Controllers\IndexController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\URL;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,11 +15,6 @@ use Illuminate\Support\Facades\URL;
 | contains the "admin" middleware group. Now create something great!
 |
 */
-
-if (config('app.force_https')) {
-	URL::forceScheme('https');
-}
-
 Route::get('/phpinfo', [IndexController::class, 'phpinfo']);
 
 Route::get('/Jobs', [JobController::class, 'view']);
