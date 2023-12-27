@@ -18,12 +18,10 @@ else
         composer install
         if command -v npm > /dev/null; then
             printf "\n${ORANGE}npm detected${NO_COLOR}\n"
-            if  [ -f "package.json" ]; then
-                echo "npm install --no-audit --no-fund"
-                npm install --no-audit --no-fund
-            else
-                printf "${GREEN}no package.json found${NO_COLOR}\n"
-            fi
+            echo "npm install --no-audit --no-fund"
+            npm install --no-audit --no-fund
+        else
+            echo "npm not found. Development will likely not be possible."
         fi
     else
         printf "\n${ORANGE}--no-dev mode detected${NO_COLOR}\n"
@@ -31,14 +29,12 @@ else
         composer install --no-dev --prefer-dist
         if command -v npm > /dev/null; then
             printf "\n${ORANGE}npm detected${NO_COLOR}\n"
-            if  [ -f "package.json" ]; then
-                echo "npm install --no-audit --no-fund"
-                npm install --no-audit --no-fund
-                echo "npm run build"
-                npm run build
-            else
-                printf "${GREEN}no package.json found${NO_COLOR}\n"
-            fi
+            echo "npm install --no-audit --no-fund"
+            npm install --no-audit --no-fund
+            echo "npm run build"
+            npm run build
+        else
+            echo "npm not found, front-end couldn't be built."
         fi
     fi
     if [ -f ".env" ]; then
