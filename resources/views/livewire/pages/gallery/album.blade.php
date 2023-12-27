@@ -24,7 +24,7 @@
         @endif
     </x-header.bar>
     @if ($flags->is_password_protected)
-        <livewire:gallery.album.unlock albumID="$albumId" />
+        <livewire:forms.album.unlock-album :albumID="$albumId" />
     @elseif(!$flags->is_accessible)
         <x-gallery.album.login-dialog />
     @else
