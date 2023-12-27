@@ -43,6 +43,7 @@ class Kernel extends HttpKernel
 			\App\Http\Middleware\VerifyCsrfToken::class,
 			\Illuminate\Routing\Middleware\SubstituteBindings::class,
 			\App\Http\Middleware\DisableCSP::class,
+			\App\Http\Middleware\QueryStringFixer::class,
 		],
 
 		'web-admin' => [
