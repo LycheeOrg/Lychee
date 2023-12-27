@@ -13,12 +13,17 @@ console_command = "php /var/www/html/artisan tinker"
     PHP_VERSION = "8.2"
 
 [env]
-  APP_ENV = "production"
+  APP_URL = "https://lychee-demo.fly.dev/"
+  APP_ENV = "dev"
+  DB_CONNECTION = "sqlite"
   LOG_CHANNEL = "stderr"
   LOG_LEVEL = "info"
   LOG_STDERR_FORMATTER = "Monolog\\Formatter\\JsonFormatter"
-  SESSION_DRIVER = "cookie"
+  SESSION_DRIVER = "file"
+  SESSION_LIFETIME=5
   SESSION_SECURE_COOKIE = "true"
+  TRUSTED_PROXIES = "*"
+  APP_FORCE_HTTPS = "true"
 
 [http_service]
   internal_port = 8080
