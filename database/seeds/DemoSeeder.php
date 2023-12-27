@@ -15,7 +15,6 @@ class DemoSeeder extends Seeder
 	 */
 	public function run(): void
 	{
-
 		$setProtections = new SetProtectionPolicy();
 
 		$tulipsProtectionPolicy = new AlbumProtectionPolicy(
@@ -30,7 +29,7 @@ class DemoSeeder extends Seeder
 		$tulipAlbum = Album::query()
 			->select(['albums.*'])
 			->join('base_albums', 'base_albums.id', '=', 'albums.id')
-			->where('title','=','Tulips')->first();
+			->where('title', '=', 'Tulips')->first();
 		$setProtections->do($tulipAlbum, $tulipsProtectionPolicy, false, null);
 
 		$catProtectionPolicy = new AlbumProtectionPolicy(
@@ -45,7 +44,7 @@ class DemoSeeder extends Seeder
 		$catAlbum = Album::query()
 			->select(['albums.*'])
 			->join('base_albums', 'base_albums.id', '=', 'albums.id')
-			->where('title','=','Cat')->first();
+			->where('title', '=', 'Cat')->first();
 		$setProtections->do($catAlbum, $catProtectionPolicy, false, null);
 
 		Configs::set('nsfw_banner_blur_backdrop', true);
