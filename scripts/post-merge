@@ -1,5 +1,6 @@
 #!/bin/sh
 NO_COLOR="\033[0m"
+RED="\033[38;5;009m"
 GREEN="\033[38;5;010m"
 ORANGE="\033[38;5;214m"
 
@@ -21,7 +22,7 @@ else
             echo "npm install --no-audit --no-fund"
             npm install --no-audit --no-fund
         else
-            echo "npm not found. Development will likely not be possible."
+            printf "\n${RED}npm not found. Development will likely not be possible${NO_COLOR}\n"
         fi
     else
         printf "\n${ORANGE}--no-dev mode detected${NO_COLOR}\n"
@@ -34,7 +35,7 @@ else
             echo "npm run build"
             npm run build
         else
-            echo "npm not found, front-end couldn't be built."
+            printf "\n${RED}npm not found, front-end coul not be built.${NO_COLOR}\n"
         fi
     fi
     if [ -f ".env" ]; then
