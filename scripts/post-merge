@@ -1,5 +1,6 @@
 #!/bin/sh
 NO_COLOR="\033[0m"
+RED="\033[38;5;009m"
 GREEN="\033[38;5;010m"
 ORANGE="\033[38;5;214m"
 
@@ -18,17 +19,24 @@ else
         composer install
         if command -v npm > /dev/null; then
             printf "\n${ORANGE}npm detected${NO_COLOR}\n"
-            if  [ -f "package.json" ]; then
-                echo "npm install --no-audit --no-fund"
-                npm install --no-audit --no-fund
-            else
-                printf "${GREEN}no package.json found${NO_COLOR}\n"
-            fi
+            echo "npm install --no-audit --no-fund"
+            npm install --no-audit --no-fund
+        else
+            printf "\n${RED}npm not found. Development will likely not be possible${NO_COLOR}\n"
         fi
     else
         printf "\n${ORANGE}--no-dev mode detected${NO_COLOR}\n"
         echo "composer install --no-dev --prefer-dist"
         composer install --no-dev --prefer-dist
+        if command -v npm > /dev/null; then
+            printf "\n${ORANGE}npm detected${NO_COLOR}\n"
+            echo "npm install --no-audit --no-fund"
+            npm install --no-audit --no-fund
+            echo "npm run build"
+            npm run build
+        else
+            printf "\n${RED}npm not found, front-end coul not be built.${NO_COLOR}\n"
+        fi
     fi
     if [ -f ".env" ]; then
         echo "php artisan optimize --clever --dont-confirm=assume-no"
