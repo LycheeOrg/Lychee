@@ -15,11 +15,6 @@ use Illuminate\Support\Facades\URL;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
-if (config('app.force_https')) {
-	URL::forceScheme('https');
-}
-
 Route::feeds();
 
 // If we are using Livewire by default, we no longer need those routes.

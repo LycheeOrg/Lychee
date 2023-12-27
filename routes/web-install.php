@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Install;
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\URL;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,11 +14,6 @@ use Illuminate\Support\Facades\URL;
 | contains the "install" middleware group. Now create something great!
 |
 */
-
-if (config('app.force_https')) {
-	URL::forceScheme('https');
-}
-
 Route::get('install/', [WelcomeController::class, 'view'])->name('install-welcome');
 Route::get('install/req', [RequirementsController::class, 'view'])->name('install-req');
 Route::get('install/perm', [PermissionsController::class, 'view'])->name('install-perm');

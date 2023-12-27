@@ -7,7 +7,6 @@ use App\Livewire\Components\Pages\Gallery\Albums;
 use App\Livewire\Components\Pages\Gallery\Search;
 use App\Models\Configs;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\URL;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,11 +18,6 @@ use Illuminate\Support\Facades\URL;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
-if (config('app.force_https')) {
-	URL::forceScheme('https');
-}
-
 Route::middleware(['installation:complete', 'migration:complete'])
 	->group(function () {
 		Route::prefix(config('app.livewire') === true ? '' : 'livewire')
