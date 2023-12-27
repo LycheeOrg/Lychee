@@ -77,6 +77,11 @@ class Album extends BaseAlbumComponent implements Reloadable
 			$this->num_albums = $this->album instanceof ModelsAlbum ? $this->album->children->count() : 0;
 			$this->num_photos = $this->album->photos->count();
 
+			// No photos, no frame
+			if ($this->num_photos === 0) {
+				$this->flags->is_mod_frame_enabled = false;
+			}
+
 			$is_latitude_longitude_found = false;
 			if ($this->album instanceof ModelsAlbum) {
 				$is_latitude_longitude_found = $this->album->all_photos()->whereNotNull('latitude')->whereNotNull('longitude')->count() > 0;
