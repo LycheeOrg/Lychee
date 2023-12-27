@@ -1,10 +1,5 @@
 @props(['is_next'])
-<div @class([
-    'absolute w-1/5 h-full top-0 group',
-    'right-0' => $is_next,
-    'left-0' => !$is_next,
-])
-x-cloak >
+<div class="absolute w-1/6 h-1/2 top-1/2 -translate-y-1/2 group {{ $is_next ? 'right-0' : 'left-0' }}" x-cloak >
     <a 
     {{-- href="{{ route('livewire-gallery-photo', ['albumId' => $albumId, 'photoId' => $photo->id]) }}"  --}}
         id="{{ $is_next ? 'nextButton' : 'previousButton'}}"
