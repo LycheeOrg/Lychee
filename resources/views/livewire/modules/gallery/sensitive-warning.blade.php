@@ -1,7 +1,8 @@
 <div id="sensitive_warning" class="
 	{{ $isBlurred ? 'backdrop-blur-lg' : 'bg-red-950' }}
 	{{ $isOpen ? 'flex' : 'hidden' }}
-	flex-col align-middle justify-center text-center text-text-main-0 absolute top-0 left-0 h-full w-full"
+	fixed
+	flex-col align-middle justify-center text-center text-text-main-0 top-14 left-0 h-full w-full"
 	wire:click="close">
 	@if($text === '')
 	<div class="w-full flex justify-center">
