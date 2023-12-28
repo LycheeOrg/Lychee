@@ -2,7 +2,7 @@
     <div class="p-9" x-data="upload({{ $chunkSize }}, {{ $parallelism }})" x-on:drop="isDropping = false"
         x-on:drop.prevent="($event) => {
         if ($event.dataTransfer.files.length > 0) {
-            fileList = $event.dataTransfer.files;
+            fileList = [...$event.dataTransfer.files];
             fileList.forEach((file, index) => {
                 @this.set('uploads.' + index + '.fileName', file.name);
                 @this.set('uploads.' + index + '.fileSize', file.size);
