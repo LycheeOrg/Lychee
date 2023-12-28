@@ -96,10 +96,10 @@
                                 @foreach ($this->userList as $result)
                                     <li class="border-b border-neutral-700 cursor-pointer transition-all ease-in-out duration-300
 							hover:bg-gradient-to-b hover:from-primary-500 hover:to-primary-600 hover:text-text-main-0"
-                                        wire:click="select('{{ $result['id'] }}','{{ $result['username'] }}')">
+                                        wire:click="select('{{ $result['id'] }}',@js($result['username']))">
                                         <a class="px-1 py-1 flex items-center"
                                             @if ($loop->last) @keydown.tab="isSearchUserOpen = false" @endif>
-                                            <span class="ml-4 text-left">{{ $result['username'] }}</span>
+                                            <span class="ml-4 text-left">{{ ($result['username']) }}</span>
                                         </a>
                                     </li>
                                 @endforeach

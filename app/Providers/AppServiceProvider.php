@@ -223,7 +223,7 @@ class AppServiceProvider extends ServiceProvider
 
 		$sql_with_bindings = Str::replaceArray('?', $bindings, $query->sql);
 
-		$explain = DB::select('EXPLAIN ' . $sql_with_bindings);
+		$explain = DB::select('EXPLAIN ' . $query->sql, $query->bindings);
 		$renderer = new ArrayToTextTable();
 		$renderer->setIgnoredKeys(['possible_keys', 'key_len', 'ref']);
 
