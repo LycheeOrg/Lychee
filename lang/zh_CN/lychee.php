@@ -206,6 +206,8 @@ return [
 	'ALBUM_RESERVED' => '所有权利保留',
 	'ALBUM_SET_ORDER' => '设置排序',
 	'ALBUM_ORDERING' => '排序依据',
+	'ALBUM_PHOTO_ORDERING' => 'Order photos by',
+	'ALBUM_CHILDREN_ORDERING' => 'Order albums by',
 	'ALBUM_OWNER' => 'Owner',
 
 	'PHOTO_ABOUT' => '关于',

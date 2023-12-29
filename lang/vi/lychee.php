@@ -206,6 +206,8 @@ return [
 	'ALBUM_RESERVED' => 'Toàn Quyền Bảo Lưu',
 	'ALBUM_SET_ORDER' => 'Chỉnh thứ tự',
 	'ALBUM_ORDERING' => 'Sắp xếp thứ tự hình ảnh',
+	'ALBUM_PHOTO_ORDERING' => 'Order photos by',
+	'ALBUM_CHILDREN_ORDERING' => 'Order albums by',
 	'ALBUM_OWNER' => 'Chủ sở hữu',
 
 	'PHOTO_ABOUT' => 'Giới thiệu',

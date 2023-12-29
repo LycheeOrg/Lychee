@@ -33,6 +33,10 @@ class RequestAttribute
 
 	public const SORTING_COLUMN_ATTRIBUTE = 'sorting_column';
 	public const SORTING_ORDER_ATTRIBUTE = 'sorting_order';
+	public const PHOTO_SORTING_COLUMN_ATTRIBUTE = 'photo_sorting_column';
+	public const PHOTO_SORTING_ORDER_ATTRIBUTE = 'photo_sorting_order';
+	public const ALBUM_SORTING_COLUMN_ATTRIBUTE = 'album_sorting_column';
+	public const ALBUM_SORTING_ORDER_ATTRIBUTE = 'album_sorting_order';
 
 	public const IS_NSFW_ATTRIBUTE = 'is_nsfw';
 	public const IS_PUBLIC_ATTRIBUTE = 'is_public';

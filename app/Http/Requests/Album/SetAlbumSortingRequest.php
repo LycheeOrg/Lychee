@@ -12,7 +12,7 @@ use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\Authorize\AuthorizeCanEditAlbumTrait;
 use App\Http\Requests\Traits\HasBaseAlbumTrait;
 use App\Http\Requests\Traits\HasSortingCriterionTrait;
-use App\Http\RuleSets\Album\SetAlbumSortingRuleSet;
+use App\Http\RuleSets\Album\SetAlbumSortingRuleSetLegacy;
 
 class SetAlbumSortingRequest extends BaseApiRequest implements HasBaseAlbum, HasSortingCriterion
 {
@@ -25,7 +25,7 @@ class SetAlbumSortingRequest extends BaseApiRequest implements HasBaseAlbum, Has
 	 */
 	public function rules(): array
 	{
-		return SetAlbumSortingRuleSet::rules();
+		return SetAlbumSortingRuleSetLegacy::rules();
 	}
 
 	/**

@@ -11,9 +11,14 @@
             <x-forms.error-message field='description' />
         </div>
         <div class="mt-4 h-10">
-            <span class="font-bold">{{ __('lychee.ALBUM_ORDERING') }}</span>
-            <x-forms.dropdown class="mx-2" :options="$this->photoSortingColumns" id="sorting_dialog_column_select" wire:model='sorting_column'/>
-            <x-forms.dropdown class="mx-2" :options="$this->sortingOrders" id="sorting_dialog_order_select" wire:model='sorting_order'/>
+            <span class="font-bold">{{ __('lychee.ALBUM_PHOTO_ORDERING') }}</span>
+            <x-forms.dropdown class="mx-2" :options="$this->photoSortingColumns" id="sorting_dialog_column_select" wire:model='photo_sorting_column'/>
+            <x-forms.dropdown class="mx-2" :options="$this->sortingOrders" id="sorting_dialog_order_select" wire:model='photo_sorting_order'/>
+        </div>
+        <div class="mb-4 h-10">
+            <span class="font-bold">{{ __('lychee.ALBUM_CHILDREN_ORDERING') }}</span>
+            <x-forms.dropdown class="mx-2" :options="$this->albumSortingColumns" id="sorting_dialog_column_select" wire:model='album_sorting_column'/>
+            <x-forms.dropdown class="mx-2" :options="$this->sortingOrders" id="sorting_dialog_order_select" wire:model='album_sorting_order'/>
         </div>
         <div class="h-10">
             <span class="font-bold">{{ __('lychee.ALBUM_SET_LICENSE') }}</span>

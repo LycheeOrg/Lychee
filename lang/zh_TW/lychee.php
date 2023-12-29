@@ -206,6 +206,8 @@ return [
 	'ALBUM_RESERVED' => '版權所有',
 	'ALBUM_SET_ORDER' => '設定排序方式',
 	'ALBUM_ORDERING' => '排序方式',
+	'ALBUM_PHOTO_ORDERING' => 'Order photos by',
+	'ALBUM_CHILDREN_ORDERING' => 'Order albums by',
 	'ALBUM_OWNER' => 'Owner',
 
 	'PHOTO_ABOUT' => '關於',

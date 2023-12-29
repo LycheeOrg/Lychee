@@ -4,13 +4,16 @@ namespace App\Livewire\Components\Forms\Album;
 
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Contracts\Models\AbstractAlbum;
+use App\DTO\AlbumSortingCriterion;
 use App\DTO\PhotoSortingCriterion;
+use App\Enum\ColumnSortingAlbumType;
 use App\Enum\ColumnSortingPhotoType;
 use App\Enum\LicenseType;
 use App\Enum\OrderSortingType;
 use App\Factories\AlbumFactory;
 use App\Http\RuleSets\Album\SetAlbumDescriptionRuleSet;
 use App\Http\RuleSets\Album\SetAlbumSortingRuleSet;
+use App\Http\RuleSets\Album\SetPhotoSortingRuleSet;
 use App\Livewire\Traits\Notify;
 use App\Livewire\Traits\UseValidator;
 use App\Models\Album as ModelsAlbum;
@@ -33,12 +36,11 @@ class Properties extends Component
 	#[Locked] public string $albumID;
 	public string $title; // ! wired
 	public string $description; // ! wired
-	public string $sorting_column = ''; // ! wired
-	public string $sorting_order = ''; // ! wired
+	public string $photo_sorting_column = ''; // ! wired
+	public string $photo_sorting_order = ''; // ! wired
+	public string $album_sorting_column = ''; // ! wired
+	public string $album_sorting_order = ''; // ! wired
 	public string $license = 'none';
-
-	public array $sorting_columns;
-	public array $sorting_orders;
 
 	/**
 	 * This is the equivalent of the constructor for Livewire Components.
@@ -54,10 +56,12 @@ class Properties extends Component
 		$this->albumID = $album->id;
 		$this->title = $album->title;
 		$this->description = $album->description ?? '';
-		$this->sorting_column = $album->photo_sorting?->column->value ?? '';
-		$this->sorting_order = $album->photo_sorting?->order->value ?? '';
+		$this->photo_sorting_column = $album->photo_sorting?->column->value ?? '';
+		$this->photo_sorting_order = $album->photo_sorting?->order->value ?? '';
 		if ($album instanceof ModelsAlbum) {
 			$this->license = $album->license->value;
+			$this->album_sorting_column = $album->album_sorting?->column->value ?? '';
+			$this->album_sorting_order = $album->album_sorting?->order->value ?? '';
 		}
 	}
 
@@ -80,6 +84,7 @@ class Properties extends Component
 			RequestAttribute::TITLE_ATTRIBUTE => ['required', new TitleRule()],
 			RequestAttribute::LICENSE_ATTRIBUTE => ['required', new Enum(LicenseType::class)],
 			...SetAlbumDescriptionRuleSet::rules(),
+			...SetPhotoSortingRuleSet::rules(),
 			...SetAlbumSortingRuleSet::rules(),
 		];
 
@@ -94,14 +99,18 @@ class Properties extends Component
 		$baseAlbum->description = $this->description;
 
 		// Not super pretty but whatever.
-		$column = ColumnSortingPhotoType::tryFrom($this->sorting_column);
-		$order = OrderSortingType::tryFrom($this->sorting_order);
-		$sortingCriterion = $column === null ? null : new PhotoSortingCriterion($column->toColumnSortingType(), $order);
-
-		$baseAlbum->photo_sorting = $sortingCriterion;
+		$column = ColumnSortingPhotoType::tryFrom($this->photo_sorting_column);
+		$order = OrderSortingType::tryFrom($this->photo_sorting_order);
+		$photoSortingCriterion = $column === null ? null : new PhotoSortingCriterion($column->toColumnSortingType(), $order);
+		$baseAlbum->photo_sorting = $photoSortingCriterion;
 
 		if ($baseAlbum instanceof ModelsAlbum) {
 			$baseAlbum->license = LicenseType::from($this->license);
+
+			$column = ColumnSortingAlbumType::tryFrom($this->album_sorting_column);
+			$order = OrderSortingType::tryFrom($this->album_sorting_order);
+			$albumSortingCriterion = $column === null ? null : new AlbumSortingCriterion($column->toColumnSortingType(), $order);
+			$baseAlbum->album_sorting = $albumSortingCriterion;
 		}
 
 		$this->notify(__('lychee.CHANGE_SUCCESS'));
@@ -117,6 +126,17 @@ class Properties extends Component
 	{
 		// ? Dark magic: The ... will expand the array.
 		return ['' => '-', ...ColumnSortingPhotoType::localized()];
+	}
+
+	/**
+	 * Return computed property so that it does not stay in memory.
+	 *
+	 * @return array column sorting
+	 */
+	final public function getAlbumSortingColumnsProperty(): array
+	{
+		// ? Dark magic: The ... will expand the array.
+		return ['' => '-', ...ColumnSortingAlbumType::localized()];
 	}
 
 	/**
