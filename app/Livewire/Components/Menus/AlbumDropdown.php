@@ -3,6 +3,7 @@
 namespace App\Livewire\Components\Menus;
 
 use App\Contracts\Livewire\Params;
+use App\Livewire\Components\Pages\Gallery\Album;
 use App\Livewire\Traits\InteractWithContextMenu;
 use App\Livewire\Traits\InteractWithModal;
 use Illuminate\Contracts\View\View;
@@ -57,5 +58,11 @@ class AlbumDropdown extends Component
 	{
 		$this->closeContextMenu();
 		$this->redirect(route('download', ['albumIDs' => $this->params[Params::ALBUM_ID]]));
+	}
+
+	public function setAsCover(): void
+	{
+		$this->closeContextMenu();
+		$this->dispatch('setAsCover', $this->params[Params::ALBUM_ID])->to(Album::class);
 	}
 }
