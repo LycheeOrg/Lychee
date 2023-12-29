@@ -140,7 +140,7 @@ class Album extends BaseAlbumComponent implements Reloadable
 	public function getAlbumsProperty(): Collection|null
 	{
 		if ($this->album instanceof ModelsAlbum) {
-			return $this->album->children;
+			return $this->album->children()->getResults();
 		}
 
 		return null;

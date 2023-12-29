@@ -398,13 +398,13 @@ class Album extends BaseAlbum implements Node
 		$this->save();
 	}
 
-	protected function getAlbumSortingAttribute(): AlbumSortingCriterion
+	protected function getAlbumSortingAttribute(): ?AlbumSortingCriterion
 	{
 		$sortingColumn = $this->attributes['album_sorting_col'];
 		$sortingOrder = $this->attributes['album_sorting_order'];
 
 		return ($sortingColumn === null || $sortingOrder === null) ?
-			AlbumSortingCriterion::createDefault() :
+			null :
 			new AlbumSortingCriterion(
 				ColumnSortingType::from($sortingColumn),
 				OrderSortingType::from($sortingOrder));
