@@ -212,6 +212,25 @@ class Album extends BaseAlbumComponent implements Reloadable
 		$this->notify(__('lychee.CHANGE_SUCCESS'));
 	}
 
+	#[Renderless]
+	#[On('setAsCover')]
+	public function setAsCover(string $albumID): void
+	{
+		if (!$this->album instanceof ModelsAlbum) {
+			return;
+		}
+
+		Gate::authorize(AlbumPolicy::CAN_EDIT_ID, [AbstractAlbum::class, $this->album]);
+		// We are freezing this cover to the album and to the child.
+
+		/** @var ModelsAlbum $child */
+		$child = $this->albumFactory->findAbstractAlbumOrFail($albumID);
+
+		$this->album->cover_id = ($this->album->cover_id === $child->thumb->id) ? null : $child->thumb->id;
+		$this->album->save();
+		$this->notify(__('lychee.CHANGE_SUCCESS'));
+	}
+
 	public function getAlbumFormattedProperty(): AlbumFormatted
 	{
 		return new AlbumFormatted($this->album, $this->fetchHeaderUrl()?->url);
