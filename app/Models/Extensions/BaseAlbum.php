@@ -34,7 +34,7 @@ use Illuminate\Support\Carbon;
  * @property Collection<int,AccessPermission> $access_permissions
  * @property Carbon|null                      $min_taken_at
  * @property Carbon|null                      $max_taken_at
- * @property PhotoSortingCriterion|null       $sorting
+ * @property PhotoSortingCriterion|null       $photo_sorting
  * @property BaseAlbumImpl                    $base_class
  */
 abstract class BaseAlbum extends Model implements AbstractAlbum, HasRandomID
@@ -122,8 +122,8 @@ abstract class BaseAlbum extends Model implements AbstractAlbum, HasRandomID
 	 *
 	 * @return PhotoSortingCriterion the attribute acc. to which **photos** inside the album shall be sorted
 	 */
-	public function getEffectiveSorting(): PhotoSortingCriterion
+	public function getEffectivePhotoSorting(): PhotoSortingCriterion
 	{
-		return $this->sorting ?? PhotoSortingCriterion::createDefault();
+		return $this->photo_sorting ?? PhotoSortingCriterion::createDefault();
 	}
 }

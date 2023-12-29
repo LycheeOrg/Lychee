@@ -54,8 +54,8 @@ class Properties extends Component
 		$this->albumID = $album->id;
 		$this->title = $album->title;
 		$this->description = $album->description ?? '';
-		$this->sorting_column = $album->sorting?->column->value ?? '';
-		$this->sorting_order = $album->sorting?->order->value ?? '';
+		$this->sorting_column = $album->photo_sorting?->column->value ?? '';
+		$this->sorting_order = $album->photo_sorting?->order->value ?? '';
 		if ($album instanceof ModelsAlbum) {
 			$this->license = $album->license->value;
 		}
@@ -98,7 +98,7 @@ class Properties extends Component
 		$order = OrderSortingType::tryFrom($this->sorting_order);
 		$sortingCriterion = $column === null ? null : new PhotoSortingCriterion($column->toColumnSortingType(), $order);
 
-		$baseAlbum->sorting = $sortingCriterion;
+		$baseAlbum->photo_sorting = $sortingCriterion;
 
 		if ($baseAlbum instanceof ModelsAlbum) {
 			$baseAlbum->license = LicenseType::from($this->license);

@@ -99,7 +99,7 @@ use Illuminate\Support\Facades\Auth;
  * @property bool                             $is_nsfw
  * @property Collection                       $shared_with
  * @property int|null                         $shared_with_count
- * @property PhotoSortingCriterion|null       $sorting
+ * @property PhotoSortingCriterion|null       $photo_sorting
  * @property string|null                      $sorting_col
  * @property string|null                      $sorting_order
  * @property Collection<int,AccessPermission> $access_permissions
@@ -265,7 +265,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		return $this->access_permissions->first(fn (AccessPermission $p) => $p->user_id === null);
 	}
 
-	protected function getSortingAttribute(): ?PhotoSortingCriterion
+	protected function getPhotoSortingAttribute(): ?PhotoSortingCriterion
 	{
 		$sortingColumn = $this->attributes['sorting_col'];
 		$sortingOrder = $this->attributes['sorting_order'];
@@ -277,7 +277,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 				OrderSortingType::from($sortingOrder));
 	}
 
-	protected function setSortingAttribute(?PhotoSortingCriterion $sorting): void
+	protected function setPhotoSortingAttribute(?PhotoSortingCriterion $sorting): void
 	{
 		$this->attributes['sorting_col'] = $sorting?->column->value;
 		$this->attributes['sorting_order'] = $sorting?->order->value;
