@@ -8,9 +8,10 @@
 			<pre style="font-size: 16px; display:inline-block; margin: 0;">APP_URL=https://lychee.example.com</pre>
 		</li>
 		<li style="font-size: 20px; margin-bottom: 10px;">if you are working behind a reverse proxy, that
-			<pre style="font-size: 16px; display:inline-block; margin: 0;">TRUSTED_PROXIES</pre> is set.<br>
+			<pre style="font-size: 16px; display:inline-block; margin: 0;">TRUSTED_PROXIES</pre> is set to the forwarding ip.<br>
 			For example:
-			<pre style="font-size: 16px; display:inline-block; margin: 0;">TRUSTED_PROXIES=*</pre>.
+			<pre style="font-size: 16px; display:inline-block; margin: 0;">TRUSTED_PROXIES=*</pre><br>
+			Note that the wildcard value (<pre style="font-size: 16px; display:inline-block; margin: 0;">*</pre>) is a very <b>insecure</b> option and not recommended.
 		</li>
 		<li style="font-size: 20px; margin-bottom: 10px;">if you are working behind an apache reverse proxy, that
 			the forwarding headers are properly set.<br>
