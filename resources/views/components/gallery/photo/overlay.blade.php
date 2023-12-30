@@ -1,7 +1,7 @@
 <div id="image_overlay" class="absolute bottom-7 left-7 text-text-main-0 text-shadow text-white"
     x-show="photoFlags.overlayType !== 'none'" x-cloak>
     <h1 class=" text-3xl" x-text="photo.title" ></h1>
-    <p class="mt-1 text-xl" x-show="photoFlags.overlayType === 'description'" x-text="photo.description" />
+    <p class="mt-1 text-xl" x-show="photoFlags.overlayType === 'desc'" x-text="photo.description" />
     <p class="mt-1 text-xl" x-show="photoFlags.overlayType === 'date'">
         <span x-show="photo.precomputed.is_camera_date">
             <x-icons.iconic class="w-4 h-4 fill-white m-0 mr-1 -mt-1" icon='camera-slr' /></span>

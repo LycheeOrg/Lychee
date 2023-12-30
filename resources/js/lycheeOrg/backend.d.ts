@@ -13,7 +13,7 @@ export type Version = {
 	patch: number;
 };
 
-export type OverlayTypes = "none" | "exif" | "date" | "description";
+export type OverlayTypes = "none" | "exif" | "date" | "desc";
 
 export type PhotoLayoutType = "square" | "justified" | "unjustified" | "masonry" | "grid";
 
