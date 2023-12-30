@@ -6,7 +6,10 @@ module.exports = {
     'transition-all',
     'ease-out',
     'hidden',
-    
+    'aspect-2x3',
+    'aspect-3x2',
+    'aspect-square', // 1x1
+    'aspect-video'   // 16x9
   ],
   content: [
     "./resources/**/*.blade.php",

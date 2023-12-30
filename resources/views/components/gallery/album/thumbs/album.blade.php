@@ -1,16 +1,13 @@
 <a wire:navigate href="{{ route('livewire-gallery-album', ['albumId' => $id]) }}"
-	@class([
-	"album-thumb block relative aspect-square
+	class="album-thumb block relative aspect-square
 	w-[calc(33vw-9px-4px)] ml-1 mt-1
 	sm:w-[calc(25vw-9px-10px)] sm:ml-2 sm:mt-2
 	md:w-[calc(20vw-9px-18px)] md:ml-4 md:mt-4
 	lg:w-[calc(16vw-9px-15px)] lg:ml-5 lg:mt-5
 	xl:w-[calc(14vw-9px-22px)] xl:ml-6 xl:mt-6
 	2xl:w-52 2xl:ml-7 2xl:mt-7
-	animate-zoomIn
-	group",
-	"blurred" => $is_nsfw_blurred
-	])
+	animate-zoomIn group {{ $is_nsfw_blurred ? 'blurred' : '' }}
+	"
 	{{-- if it is NOT nsfw => display Otherwise check nsfwAlbumsVisible alpine value --}}
 	{{-- This would be better if livewire did not add comments around @if --}}
 	x-show="{{ !$is_nsfw ? 'true' : 'false' }} || albumFlags.areNsfwVisible"
