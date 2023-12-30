@@ -206,8 +206,8 @@ return [
 	'ALBUM_RESERVED' => 'Alle Rechte vorbehalten',
 	'ALBUM_SET_ORDER' => 'Reihenfolge festlegen',
 	'ALBUM_ORDERING' => 'Sortieren nach',
-	'ALBUM_PHOTO_ORDERING' => 'Order photos by',
-	'ALBUM_CHILDREN_ORDERING' => 'Order albums by',
+	'ALBUM_PHOTO_ORDERING' => 'Fotos sortieren nach',
+	'ALBUM_CHILDREN_ORDERING' => 'Alben sortieren nach',
 	'ALBUM_OWNER' => 'Besitzer',
 
 	'PHOTO_ABOUT' => 'Über',
