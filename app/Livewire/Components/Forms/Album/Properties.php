@@ -34,6 +34,7 @@ class Properties extends Component
 	use Notify;
 
 	#[Locked] public string $albumID;
+	#[Locked] public bool $is_model_album;
 	public string $title; // ! wired
 	public string $description; // ! wired
 	public string $photo_sorting_column = ''; // ! wired
@@ -53,12 +54,14 @@ class Properties extends Component
 	{
 		Gate::authorize(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $album]);
 
+		$this->is_model_album = $album instanceof ModelsAlbum;
+
 		$this->albumID = $album->id;
 		$this->title = $album->title;
 		$this->description = $album->description ?? '';
 		$this->photo_sorting_column = $album->photo_sorting?->column->value ?? '';
 		$this->photo_sorting_order = $album->photo_sorting?->order->value ?? '';
-		if ($album instanceof ModelsAlbum) {
+		if ($this->is_model_album) {
 			$this->license = $album->license->value;
 			$this->album_sorting_column = $album->album_sorting?->column->value ?? '';
 			$this->album_sorting_order = $album->album_sorting?->order->value ?? '';
@@ -104,7 +107,7 @@ class Properties extends Component
 		$photoSortingCriterion = $column === null ? null : new PhotoSortingCriterion($column->toColumnSortingType(), $order);
 		$baseAlbum->photo_sorting = $photoSortingCriterion;
 
-		if ($baseAlbum instanceof ModelsAlbum) {
+		if ($this->is_model_album) {
 			$baseAlbum->license = LicenseType::from($this->license);
 
 			$column = ColumnSortingAlbumType::tryFrom($this->album_sorting_column);
