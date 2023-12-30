@@ -4,6 +4,7 @@ namespace App\Livewire\Components\Pages\Gallery;
 
 use App\Contracts\Livewire\Reloadable;
 use App\Contracts\Models\AbstractAlbum;
+use App\Enum\AspectRatioType;
 use App\Enum\SizeVariantType;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Factories\AlbumFactory;
@@ -85,6 +86,8 @@ class Album extends BaseAlbumComponent implements Reloadable
 			$is_latitude_longitude_found = false;
 			if ($this->album instanceof ModelsAlbum) {
 				$is_latitude_longitude_found = $this->album->all_photos()->whereNotNull('latitude')->whereNotNull('longitude')->count() > 0;
+				$aspectRatio = $this->album->album_thumb_aspect_ratio ?? Configs::getValueAsEnum('default_album_thumb_aspect_ratio', AspectRatioType::class);
+				$this->flags->album_thumb_css_aspect_ratio = $aspectRatio->css();
 			} else {
 				$is_latitude_longitude_found = $this->album->photos()->whereNotNull('latitude')->whereNotNull('longitude')->count() > 0;
 			}

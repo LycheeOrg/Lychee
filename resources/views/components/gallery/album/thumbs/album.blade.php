@@ -1,5 +1,5 @@
 <a wire:navigate href="{{ route('livewire-gallery-album', ['albumId' => $id]) }}"
-	class="album-thumb block relative aspect-square
+	class="album-thumb block relative {{ $aspect_ratio_class }}
 	w-[calc(33vw-9px-4px)] ml-1 mt-1
 	sm:w-[calc(25vw-9px-10px)] sm:ml-2 sm:mt-2
 	md:w-[calc(20vw-9px-18px)] md:ml-4 md:mt-4

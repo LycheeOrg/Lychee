@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Actions\Album\Delete;
 use App\DTO\AlbumSortingCriterion;
 use App\Enum\ColumnSortingType;
+use App\Enum\AspectRatioType;
 use App\Enum\LicenseType;
 use App\Enum\OrderSortingType;
 use App\Exceptions\ConfigurationKeyMissingException;
@@ -36,14 +37,15 @@ use Kalnoy\Nestedset\NodeTrait;
  * @property string|null           $parent_id
  * @property Album|null            $parent
  * @property Collection<int,Album> $children
- * @property int                   $num_children     The number of children.
+ * @property int                   $num_children             The number of children.
  * @property Collection<int,Photo> $all_photos
- * @property int                   $num_photos       The number of photos in this album (excluding photos in subalbums).
+ * @property int                   $num_photos               The number of photos in this album (excluding photos in subalbums).
  * @property LicenseType           $license
  * @property string|null           $cover_id
  * @property Photo|null            $cover
  * @property string|null           $track_short_path
  * @property string|null           $track_url
+ * @property AspectRatioType|null  $album_thumb_aspect_ratio
  * @property int                   $_lft
  * @property int                   $_rgt
  * @property BaseAlbumImpl         $base_class
@@ -142,6 +144,7 @@ class Album extends BaseAlbum implements Node
 		'parent_id' => null,
 		'license' => 'none',
 		'cover_id' => null,
+		'album_thumb_aspect_ratio' => null,
 		'_lft' => null,
 		'_rgt' => null,
 		'album_sorting_col' => null,
@@ -156,6 +159,7 @@ class Album extends BaseAlbum implements Node
 		'max_taken_at' => 'datetime',
 		'num_children' => 'integer',
 		'num_photos' => 'integer',
+		'album_thumb_aspect_ratio' => AspectRatioType::class,
 		'_lft' => 'integer',
 		'_rgt' => 'integer',
 	];
@@ -336,6 +340,28 @@ class Album extends BaseAlbum implements Node
 	public function newEloquentBuilder($query): AlbumBuilder
 	{
 		return new AlbumBuilder($query);
+	}
+
+	/**
+	 * Defines accessor for the Aspect Ratio.
+	 *
+	 * @return AspectRatioType|null
+	 */
+	protected function getAlbumThumbAspectRatioAttribute(): ?AspectRatioType
+	{
+		return AspectRatioType::tryFrom($this->attributes['album_thumb_aspect_ratio']);
+	}
+
+	/**
+	 * Defines setter for Aspect Ratio.
+	 *
+	 * @param AspectRatioType|null $aspectRatio
+	 *
+	 * @return void
+	 */
+	protected function setAlbumThumbAspectRatioAttribute(?AspectRatioType $aspectRatio): void
+	{
+		$this->attributes['album_thumb_aspect_ratio'] = $aspectRatio?->value;
 	}
 
 	/**

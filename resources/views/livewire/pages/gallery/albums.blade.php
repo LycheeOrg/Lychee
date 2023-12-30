@@ -37,7 +37,7 @@
                 @if ($this->smartAlbums->count() > 0)
                     <x-gallery.divider title="{{ __('lychee.SMART_ALBUMS') }}" />
                     @foreach ($this->smartAlbums as $album)
-                        <x-gallery.album.thumbs.album :data="$album" />
+                        <x-gallery.album.thumbs.album :data="$album" :strAspectRatioClass="$flags->album_thumb_css_aspect_ratio" />
                     @endforeach
                     @if ($this->albums->count() > 0)
                         <x-gallery.divider title="{{ __('lychee.ALBUMS') }}" />
@@ -46,14 +46,14 @@
 
                 @if ($this->albums->count() > 0)
                     @foreach ($this->albums as $album)
-                        <x-gallery.album.thumbs.album :data="$album" />
+                        <x-gallery.album.thumbs.album :data="$album" :strAspectRatioClass="$flags->album_thumb_css_aspect_ratio" />
                     @endforeach
                 @endif
 
                 @if ($this->sharedAlbums->count() > 0)
                     <x-gallery.divider title="{{ __('lychee.SHARED_ALBUMS') }}" />
                     @foreach ($this->sharedAlbums as $album)
-                        <x-gallery.album.thumbs.album :data="$album" />
+                        <x-gallery.album.thumbs.album :data="$album" :strAspectRatioClass="$flags->album_thumb_css_aspect_ratio" />
                     @endforeach
                 @endif
             </div>

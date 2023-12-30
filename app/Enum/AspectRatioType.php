@@ -9,18 +9,39 @@ namespace App\Enum;
  */
 enum AspectRatioType: string
 {
-	case _3x2 = '3x2';
-	case _1x1 = '1x1';
-	case _2x3 = '2x3';
-	case _16x9 = '16x9';
+	case aspect5by4 = '5/4';
+	case aspect3by2 = '3/2';
+	case aspect1by1 = '1/1';
+	case aspect2by3 = '2/3';
+	case aspect4by5 = '4/5';
+	case aspect1byx9 = '16/9';
 
 	public function css(): string
 	{
 		return match ($this) {
-			self::_3x2 => 'ready',
-			self::_1x1 => 'aspect-square',
-			self::_2x3 => 'ready',
-			self::_16x9 => 'aspect-video',
+			self::aspect5by4 => 'aspect-5/4',
+			self::aspect4by5 => 'aspect-4/5',
+			self::aspect3by2 => 'aspect-3/2',
+			self::aspect1by1 => 'aspect-square',
+			self::aspect2by3 => 'aspect-2/3',
+			self::aspect1byx9 => 'aspect-video',
 		};
+	}
+
+	/**
+	 * Convert the enum into it's translated format.
+	 *
+	 * @return array<string,string>
+	 */
+	public static function localized(): array
+	{
+		return [
+			self::aspect5by4->value => '5/4 (instagram portrait)',
+			self::aspect4by5->value => '4/5 (instagram landscape)',
+			self::aspect2by3->value => '2/3 (portrait)',
+			self::aspect3by2->value => '3/2 (landscape)',
+			self::aspect1by1->value => 'square',
+			self::aspect1byx9->value => '16/9 (landscape)',
+		];
 	}
 }

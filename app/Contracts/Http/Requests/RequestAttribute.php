@@ -25,6 +25,8 @@ class RequestAttribute
 	public const DATE_ATTRIBUTE = 'date';
 	public const DESCRIPTION_ATTRIBUTE = 'description';
 	public const LICENSE_ATTRIBUTE = 'license';
+	public const ASPECT_RATIO_ATTRIBUTE = 'aspect_ratio';
+	public const ALBUM_ASPECT_RATIO_ATTRIBUTE = 'album_aspect_ratio';
 
 	public const USERNAME_ATTRIBUTE = 'username';
 

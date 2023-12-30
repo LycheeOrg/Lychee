@@ -37,8 +37,12 @@ class Album extends Component
 	public ?string $min_taken_at = null;
 	public ?string $max_taken_at = null;
 
-	public function __construct(AbstractAlbum $data)
+	public string $aspect_ratio_class;
+
+	public function __construct(AbstractAlbum $data, string $strAspectRatioClass)
 	{
+		$this->aspect_ratio_class = $strAspectRatioClass;
+
 		$date_format = Configs::getValueAsString('date_format_album_thumb');
 
 		$displayOverlay = Configs::getValueAsEnum('display_thumb_album_overlay', ThumbOverlayVisibilityType::class);

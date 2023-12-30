@@ -6,8 +6,10 @@ module.exports = {
     'transition-all',
     'ease-out',
     'hidden',
-    'aspect-2x3',
-    'aspect-3x2',
+    'aspect-4/5',
+    'aspect-5/4',
+    'aspect-2/3',
+    'aspect-3/2',
     'aspect-square', // 1x1
     'aspect-video'   // 16x9
   ],
@@ -189,7 +191,13 @@ module.exports = {
         'ladningAnimateDown': 'animateDown 1s 3.1s forwards ease-in-out', 
         'ladningAnimateUp': 'animateUp 1s 3.1s forwards ease-in-out',
         'delayedFadeOut': 'fadeOut 2s 2s forwards ease-in-out'
-      }
+      },
+      aspectRatio: {
+        '4/5': '4 / 5',
+        '5/4': '5 / 4',
+        '2/3': '2 / 3',
+        '3/2': '3 / 2',
+      },
     },
   },
   plugins: [],

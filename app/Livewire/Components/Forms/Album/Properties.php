@@ -7,6 +7,7 @@ use App\Contracts\Models\AbstractAlbum;
 use App\DTO\AlbumSortingCriterion;
 use App\DTO\PhotoSortingCriterion;
 use App\Enum\ColumnSortingAlbumType;
+use App\Enum\AspectRatioType;
 use App\Enum\ColumnSortingPhotoType;
 use App\Enum\LicenseType;
 use App\Enum\OrderSortingType;
@@ -41,7 +42,8 @@ class Properties extends Component
 	public string $photo_sorting_order = ''; // ! wired
 	public string $album_sorting_column = ''; // ! wired
 	public string $album_sorting_order = ''; // ! wired
-	public string $license = 'none';
+	public string $album_aspect_ratio = ''; // ! wired
+	public string $license = 'none'; // ! wired
 
 	/**
 	 * This is the equivalent of the constructor for Livewire Components.
@@ -66,6 +68,7 @@ class Properties extends Component
 			$this->license = $album->license->value;
 			$this->album_sorting_column = $album->album_sorting?->column->value ?? '';
 			$this->album_sorting_order = $album->album_sorting?->order->value ?? '';
+			$this->album_aspect_ratio = $album->album_thumb_aspect_ratio?->value ?? '';
 		}
 	}
 
@@ -90,6 +93,7 @@ class Properties extends Component
 			...SetAlbumDescriptionRuleSet::rules(),
 			...SetPhotoSortingRuleSet::rules(),
 			...SetAlbumSortingRuleSet::rules(),
+			RequestAttribute::ALBUM_ASPECT_RATIO_ATTRIBUTE => ['present', 'nullable', new Enum(AspectRatioType::class)],
 		];
 
 		if (!$this->areValid($rules)) {
@@ -116,6 +120,7 @@ class Properties extends Component
 			$order = OrderSortingType::tryFrom($this->album_sorting_order);
 			$albumSortingCriterion = $column === null ? null : new AlbumSortingCriterion($column->toColumnSortingType(), $order);
 			$baseAlbum->album_sorting = $albumSortingCriterion;
+			$baseAlbum->album_thumb_aspect_ratio = AspectRatioType::tryFrom($this->album_aspect_ratio);
 		}
 
 		$this->notify(__('lychee.CHANGE_SUCCESS'));
@@ -153,6 +158,17 @@ class Properties extends Component
 	{
 		// ? Dark magic: The ... will expand the array.
 		return ['' => '-', ...OrderSortingType::localized()];
+	}
+
+	/**
+	 * Return computed property so that it does not stay in memory.
+	 *
+	 * @return array order
+	 */
+	final public function getAspectRatiosProperty(): array
+	{
+		// ? Dark magic: The ... will expand the array.
+		return ['' => '-', ...AspectRatioType::localized()];
 	}
 
 	final public function getLicensesProperty(): array

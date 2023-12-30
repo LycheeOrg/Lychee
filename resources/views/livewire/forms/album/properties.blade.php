@@ -25,6 +25,10 @@
             <span class="font-bold">{{ __('lychee.ALBUM_SET_LICENSE') }}</span>
             <x-forms.dropdown class="mx-2" :options="$this->licenses" id="license_dialog_select" wire:model='license'/>
         </div>
+        <div class="h-10">
+            <span class="font-bold">Set album thumbs aspect ratio</span>
+            <x-forms.dropdown class="mx-2" :options="$this->aspectRatios" id="aspect_ratio_dialog_select" wire:model='album_aspect_ratio'/>
+        </div>
         @endif
         <x-forms.buttons.action class="rounded w-full" wire:click='submit' >
             {{ __('lychee.SAVE') }}
