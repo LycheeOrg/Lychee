@@ -4,8 +4,8 @@ namespace App\Models;
 
 use App\Actions\Album\Delete;
 use App\DTO\AlbumSortingCriterion;
-use App\Enum\ColumnSortingType;
 use App\Enum\AspectRatioType;
+use App\Enum\ColumnSortingType;
 use App\Enum\LicenseType;
 use App\Enum\OrderSortingType;
 use App\Exceptions\ConfigurationKeyMissingException;
