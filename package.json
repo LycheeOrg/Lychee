@@ -33,6 +33,7 @@
         "prettier": "^3.1.1",
         "qrcode": "^1.5.3",
         "tailwindcss": "^3.3.6",
+        "tinygesture": "^3.0.0",
         "ts-loader": "^9.5.1",
         "typescript": "^5.3.3",
         "vite": "^4.5.1",
