@@ -206,6 +206,8 @@ return [
 	'ALBUM_RESERVED' => 'Tutti i Diritti Riservati',
 	'ALBUM_SET_ORDER' => 'Set Order',
 	'ALBUM_ORDERING' => 'Order by',
+	'ALBUM_PHOTO_ORDERING' => 'Order photos by',
+	'ALBUM_CHILDREN_ORDERING' => 'Order albums by',
 	'ALBUM_OWNER' => 'Owner',
 
 	'PHOTO_ABOUT' => 'Informazioni',

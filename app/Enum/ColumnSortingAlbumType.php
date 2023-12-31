@@ -39,8 +39,8 @@ enum ColumnSortingAlbumType: string
 			self::CREATED_AT->value => __('lychee.SORT_ALBUM_SELECT_1'),
 			self::TITLE->value => __('lychee.SORT_ALBUM_SELECT_2'),
 			self::DESCRIPTION->value => __('lychee.SORT_ALBUM_SELECT_3'),
-			self::MIN_TAKEN_AT->value => __('lychee.SORT_ALBUM_SELECT_5'),
-			self::MAX_TAKEN_AT->value => __('lychee.SORT_ALBUM_SELECT_6'),
+			self::MIN_TAKEN_AT->value => __('lychee.SORT_ALBUM_SELECT_6'),
+			self::MAX_TAKEN_AT->value => __('lychee.SORT_ALBUM_SELECT_5'),
 		];
 	}
 }

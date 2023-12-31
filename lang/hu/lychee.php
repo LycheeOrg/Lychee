@@ -204,6 +204,8 @@ return [
 	'ALBUM_RESERVED' => 'Minden jog fenntartva',
 	'ALBUM_SET_ORDER' => 'Sorrend beállítása',
 	'ALBUM_ORDERING' => 'Sorrend:',
+	'ALBUM_PHOTO_ORDERING' => 'Order photos by',
+	'ALBUM_CHILDREN_ORDERING' => 'Order albums by',
 	'ALBUM_OWNER' => 'Tulajdonos',
 
 	'PHOTO_ABOUT' => 'Névjegy',

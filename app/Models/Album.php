@@ -3,7 +3,10 @@
 namespace App\Models;
 
 use App\Actions\Album\Delete;
+use App\DTO\AlbumSortingCriterion;
+use App\Enum\ColumnSortingType;
 use App\Enum\LicenseType;
+use App\Enum\OrderSortingType;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\MediaFileOperationException;
@@ -141,6 +144,8 @@ class Album extends BaseAlbum implements Node
 		'cover_id' => null,
 		'_lft' => null,
 		'_rgt' => null,
+		'album_sorting_col' => null,
+		'album_sorting_order' => null,
 	];
 
 	/**
@@ -391,5 +396,23 @@ class Album extends BaseAlbum implements Node
 		Storage::delete($this->track_short_path);
 		$this->track_short_path = null;
 		$this->save();
+	}
+
+	protected function getAlbumSortingAttribute(): ?AlbumSortingCriterion
+	{
+		$sortingColumn = $this->attributes['album_sorting_col'];
+		$sortingOrder = $this->attributes['album_sorting_order'];
+
+		return ($sortingColumn === null || $sortingOrder === null) ?
+			null :
+			new AlbumSortingCriterion(
+				ColumnSortingType::from($sortingColumn),
+				OrderSortingType::from($sortingOrder));
+	}
+
+	protected function setAlbumSortingAttribute(?AlbumSortingCriterion $sorting): void
+	{
+		$this->attributes['album_sorting_col'] = $sorting?->column->value;
+		$this->attributes['album_sorting_order'] = $sorting?->order->value;
 	}
 }
