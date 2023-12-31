@@ -21,12 +21,12 @@ export default class PhotoFlags {
 				break;
 			case "date":
 				if (photo.description !== "") {
-					this.overlayType = "description";
+					this.overlayType = "desc";
 				} else {
 					this.overlayType = "none";
 				}
 				break;
-			case "description":
+			case "desc":
 				this.overlayType = "none";
 				break;
 			default:
