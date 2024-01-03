@@ -170,6 +170,10 @@ class Album extends BaseAlbumComponent implements Reloadable
 	 */
 	private function fetchHeaderUrl(): SizeVariant|null
 	{
+		if (Configs::getValueAsBool('use_album_compact_header')) {
+			return null;
+		}
+
 		if ($this->album->photos->isEmpty()) {
 			return null;
 		}
