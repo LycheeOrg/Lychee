@@ -107,6 +107,7 @@ class Configs extends Model
 	{
 		$message = '';
 		$val_range = [
+			self::BOOL_STRING => ['0', '1'],
 			self::BOOL => explode('|', self::BOOL),
 			self::TERNARY => explode('|', self::TERNARY),
 		];
