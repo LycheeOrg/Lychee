@@ -96,7 +96,7 @@ return [
 		'symbolic' => [
 			'driver' => 'local',
 			'root' => env('LYCHEE_SYM', public_path('sym')),
-			'url' => env('LYCHEE_SYM_URL', 'sym'),
+			'url' => rtrim(env('LYCHEE_SYM_URL', rtrim(env('APP_URL', 'http://localhost'), '/') . '/sym'), '/'),
 			'visibility' => 'public',
 		],
 
