@@ -60,6 +60,7 @@ class Configs extends Model
 	protected const STRING = 'string';
 	protected const STRING_REQ = 'string_required';
 	protected const BOOL = '0|1';
+	protected const BOOL_STRING = 'bool';
 	protected const TERNARY = '0|1|2';
 	protected const DISABLED = '';
 	protected const LICENSE = 'license';
@@ -131,6 +132,7 @@ class Configs extends Model
 					$message = sprintf($message_template, 'strictly positive integer');
 				}
 				break;
+			case self::BOOL_STRING:
 			case self::BOOL:
 			case self::TERNARY:
 				if (!in_array($candidateValue, $val_range[$this->type_range], true)) { // BOOL or TERNARY

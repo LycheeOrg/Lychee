@@ -4,7 +4,7 @@ use App\Models\Extensions\BaseConfigMigration;
 
 return new class() extends BaseConfigMigration {
 	public const GALLERY = 'Gallery';
-	public const BOOL = 'bool';
+	public const BOOL = '0|1';
 
 	public function getConfigs(): array
 	{
