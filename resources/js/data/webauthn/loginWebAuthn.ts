@@ -14,6 +14,7 @@ type LoginWebAuthn = AlpineComponent<{
 	userId: number | null;
 	isWebAuthnUnavailable: () => boolean;
 	login: () => void;
+	handleKeyUp: (event: KeyboardEvent) => void;
 }>;
 
 export const loginWebAuthn = (Alpine: Alpine) =>
@@ -27,11 +28,11 @@ export const loginWebAuthn = (Alpine: Alpine) =>
 			username: null,
 			userId: 1,
 
-			isWebAuthnUnavailable() {
+			isWebAuthnUnavailable(): boolean {
 				return !window.isSecureContext && window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1";
 			},
 
-			login() {
+			login(): void {
 				// work around because this does not refer to alpine anymore when inside WebAuthn then context.
 				const alpine = this;
 				const params: LoginParam = {};
@@ -47,6 +48,30 @@ export const loginWebAuthn = (Alpine: Alpine) =>
 						window.location.reload();
 					})
 					.catch(() => alpine.$dispatch("notify", [{ type: "error", msg: this.error_msg }]));
+			},
+
+			handleKeyUp(event: KeyboardEvent): void {
+				const skipped = ["TEXTAREA", "INPUT", "SELECT"];
+
+				if (document.activeElement !== null && skipped.includes(document.activeElement.nodeName)) {
+					console.log("WAuthn skipped: " + document.activeElement.nodeName);
+					return;
+				}
+
+				if (event.key === "Escape") {
+					this.webAuthnOpen = false;
+					return;
+				}
+
+				if (event.key === "k") {
+					this.webAuthnOpen = true;
+					return;
+				}
+
+				if (event.key === "Enter" && this.webAuthnOpen === true) {
+					this.login();
+					return;
+				}
 			},
 		}),
 	);

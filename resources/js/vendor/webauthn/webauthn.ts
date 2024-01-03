@@ -153,7 +153,7 @@ export default class WebAuthn {
 		// When we send back the value to the server as part of an AJAX request,
 		// Laravel expects an unpadded value.
 		// Hence, we must remove the `%3D`.
-		return cookie ? cookie.split("=")[1].trim().replace("/%3D/g", "") : null;
+		return cookie ? cookie.split("=")[1].trim().replace(/%3D/g, "") : null;
 	}
 
 	/**
@@ -161,7 +161,6 @@ export default class WebAuthn {
 	 */
 	#fetch(data: object, route: string, headers: {} = {}): Promise<Response> {
 		const url = new URL(route, window.location.origin).href;
-
 		return fetch(url, {
 			method: "POST",
 			credentials: this.#includeCredentials ? "include" : "same-origin",
