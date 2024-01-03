@@ -315,6 +315,7 @@ return [
 	'U2F_AUTHENTIFICATION_SUCCESS' => '¡Autenticación correcta!',
 	'U2F_CREDENTIALS' => 'Credenciales',
 	'U2F_CREDENTIALS_DELETED' => '¡Credenciales eliminadas!',
+	'U2F_LOGIN' => 'Login with WebAuthn',
 
 	'NEW_PHOTOS_NOTIFICATION' => 'Enviar correos electrónicos de notificación de nuevas fotos.',
 	'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'Notificación de nuevas fotos actualizada',

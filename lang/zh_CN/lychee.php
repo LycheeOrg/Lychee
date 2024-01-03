@@ -315,6 +315,7 @@ return [
 	'U2F_AUTHENTIFICATION_SUCCESS' => '认证成功！',
 	'U2F_CREDENTIALS' => '认证信息',
 	'U2F_CREDENTIALS_DELETED' => '认证信息已删除！',
+	'U2F_LOGIN' => 'Login with WebAuthn',
 
 	'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
 	'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
