@@ -474,8 +474,7 @@ return [
 	'UPLOAD_IMPORT_CANCELLED' => 'Import cancelled',
 
 	'ABOUT_SUBTITLE' => 'Self-hosted photo-management done right',
-	'ABOUT_DESCRIPTION' => "<a target=\'_blank\' href=\'%s\'>Lychee</a> - это бесплатный фотоменеджер для Вашего сервера или хостинга. Установка занимает считанные секунды. Загружайте, редактируйте и делитесь фотографиями как в любимом приложении! Lychee обеспечит Вас всем необходимым, включая безопасность хранения Ваших фотографий! На русский язык перевёл Евгений Лебедев.",
-	'FOOTER_COPYRIGHT' => 'All images on this website are subject to copyright by %1$s © %2$s',
+	'ABOUT_DESCRIPTION' => "<a target='_blank' href='%s'>Lychee</a> - это бесплатный фотоменеджер для Вашего сервера или хостинга. Установка занимает считанные секунды. Загружайте, редактируйте и делитесь фотографиями как в любимом приложении! Lychee обеспечит Вас всем необходимым, включая безопасность хранения Ваших фотографий! На русский язык перевёл Евгений Лебедев.",
 	'HOSTED_WITH_LYCHEE' => 'Hosted with Lychee',
 
 	'URL_COPY_TO_CLIPBOARD' => 'Copy to clipboard',
