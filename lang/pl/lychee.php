@@ -315,7 +315,7 @@ return [
 	'U2F_AUTHENTIFICATION_SUCCESS' => 'Autoryzacja pomyślna!',
 	'U2F_CREDENTIALS' => 'Dane uwierzytelniające',
 	'U2F_CREDENTIALS_DELETED' => 'Usunięto dane uwierzytelniające!',
-	'U2F_LOGIN' => 'Login with WebAuthn',
+	'U2F_LOGIN' => 'Log in with WebAuthn',
 
 	'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
 	'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
