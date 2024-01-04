@@ -20,6 +20,7 @@ class AppUrlMatchCheck implements DiagnosticPipe
 	public function handle(array &$data, \Closure $next): array
 	{
 		$config_url = config('app.url');
+		$dir_url = config('app.dir_url');
 		if (config('app.url') === 'http://localhost') {
 			$data[] = 'Warning: APP_URL is still set to default, this will break access to all your images and assets if you are using Lychee behind a sub-domain.';
 		}
@@ -29,6 +30,16 @@ class AppUrlMatchCheck implements DiagnosticPipe
 		$censored_bad = $this->censor($bad);
 		$censored_app_url = $this->getCensorAppUrl();
 		$censored_current = $this->getCensorCurrentUrl();
+
+		if ($bad !== '') {
+			$data[] = sprintf(
+				'Error: APP_URL (%s) contains a sub-path (%s). Instead set APP_DIR to (%s) and APP_URL to (%s) in your .env',
+				$censored_app_url,
+				$censored_bad,
+				$censored_bad,
+				$censored_current,
+			);
+		}
 
 		if ($bad !== '') {
 			$data[] = sprintf(
@@ -46,13 +57,10 @@ class AppUrlMatchCheck implements DiagnosticPipe
 		}
 
 		$config_url_imgage = config('filesystems.disks.images.url');
-		if ($config_url_imgage === '') {
-			$data[] = 'Error: LYCHEE_UPLOADS_URL is set and empty. This will prevent images to be displayed. Remove the line from your .env';
-		}
 
-		if (($config_url . '/uploads/') === $config_url_imgage && !$this->checkUrlMatchCurrentHost()) {
+		if (($config_url . $dir_url . '/uploads') === $config_url_imgage && !$this->checkUrlMatchCurrentHost()) {
 			$data[] = sprintf(
-				'Error: APP_URL (%s) does not match the current url (%s). This will prevent images to be properly displayed.',
+				'Error: APP_URL (%s) does not match the current url (%s). This will prevent images from being properly displayed.',
 				$censored_app_url,
 				$censored_current);
 		}
