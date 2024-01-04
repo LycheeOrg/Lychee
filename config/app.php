@@ -1,7 +1,21 @@
 <?php
 
 use Illuminate\Support\Facades\Facade;
+use function Safe\date;
 use function Safe\scandir;
+
+/**
+ * Given a .env config constant, retrieve the env value and remove any trailing /.
+ *
+ * @param string      $cst     constant to fetch
+ * @param string|null $default default value if does not exists
+ *
+ * @return string trimmed result
+ */
+function renv(string $cst, ?string $default = null): string
+{
+	return rtrim(env($cst, $default) ?? '', '/');
+}
 
 return [
 	/*
@@ -64,9 +78,15 @@ return [
 	| the Artisan command line tool. You should set this to the root of
 	| your application so that it is used when running Artisan tasks.
 	|
+	| url : the base url of your Lychee install up to the tld
+	| dir_url : the path of your Lychee install from the tld, MUST CONTAIN / if not left empty
+	|
+	| asset_url : should be left to default (null).
 	*/
 
-	'url' => env('APP_URL', 'http://localhost'),
+	'url' => renv('APP_URL', 'http://localhost'),
+
+	'dir_url' => env('APP_DIR', '') === '' ? '' : ('/' . trim(env('APP_DIR'), '/')),
 
 	'asset_url' => null,
 
