@@ -76,13 +76,19 @@ In order to use the Dropbox import from your server, you need a valid drop-ins a
 
 Lychee supports [Twitter Cards](https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/abouts-cards) and [Open Graph](http://opengraphprotocol.org) for shared images (not albums). In order to use Twitter Cards you need to request an approval for your domain. Simply share an image with Lychee, copy its link and paste it in [Twitter's Card Validator](https://cards-dev.twitter.com/validator).
 
-### Imagick
+### ImageMagick
 
-Lychee uses [Imagick](https://www.imagemagick.org) when installed on your server. In this case you will benefit from a faster processing of your uploads, better looking thumbnails and intermediate sized images for small screen devices. You can disable the usage of [Imagick](https://www.imagemagick.org) in the [settings][1].
+Lychee uses [ImageMagick](https://www.imagemagick.org) when installed on your server. In this case you will benefit from a faster processing of your uploads, better looking thumbnails and intermediate sized images for small screen devices. You can disable the usage of [ImageMagick](https://www.imagemagick.org) in the [settings][1].
 
 ### New Photos Email Notification
 
 In order to use the new photos email notification you will need to have configured the **MAIL_** variables in your .env to your mail provider & [setup cron](https://laravel.com/docs/scheduling#running-the-scheduler). Once that is complete you then toggle **Send new photos notification emails** in the [settings][1]. Your users will be able to opt-in to the email notifications by entering their email address in the **Notifications** setting in the sidebar. Photo notifications will be grouped and sent out once a week to the site admin, album owner & anyone who the album is shared with, if their email has been added. The admin or user who added the photo to an album, will not receive a email notification for the photos they added.
+
+## Customizing
+
+You can customize lychee with your own css code. Here you can find a list of available themes.
+
+- [lychee-flat-white-theme](https://github.com/Renset/lychee-flat-white-theme)
 
 ## Troubleshooting
 
