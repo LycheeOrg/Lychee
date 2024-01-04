@@ -3,7 +3,7 @@
     data-closable="true"
     x-data="loginWebAuthn('{{ __("lychee.U2F_AUTHENTIFICATION_SUCCESS") }}', '{{ __("lychee.ERROR_TEXT") }}')"
     @keyup.window="handleKeyUp(event)"
-    x-on:webauthn-open.document="webAuthnOpen = true; console.log('open')"
+    x-on:webauthn-open.document="webAuthnOpen = true"
     x-cloak
     x-show="webAuthnOpen">
     <div class="basicModal transition-opacity ease-in duration-1000

@@ -54,7 +54,6 @@ export const loginWebAuthn = (Alpine: Alpine) =>
 				const skipped = ["TEXTAREA", "INPUT", "SELECT"];
 
 				if (document.activeElement !== null && skipped.includes(document.activeElement.nodeName)) {
-					console.log("WAuthn skipped: " + document.activeElement.nodeName);
 					return;
 				}
 
