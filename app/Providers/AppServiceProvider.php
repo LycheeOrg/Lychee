@@ -34,6 +34,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
@@ -164,6 +165,16 @@ class AppServiceProvider extends ServiceProvider
 		foreach ($this->livewireSynth as $synth) {
 			Livewire::propertySynthesizer($synth);
 		}
+
+		$dir_url = config('app.dir_url') === '' ? '' : (config('app.dir_url') . '/');
+
+		Livewire::setScriptRoute(function ($handle) use ($dir_url) {
+			return Route::get($dir_url . 'livewire/livewire.js', $handle);
+		});
+
+		Livewire::setUpdateRoute(function ($handle) use ($dir_url) {
+			return Route::post($dir_url . 'livewire/update', $handle)->middleware('web');
+		});
 	}
 
 	/**
