@@ -11,6 +11,7 @@ parameters:
 		- lang
 		- database/migrations
 		- tests
+		- config
 	excludePaths:
 		- database/migrations/2021_12_04_181200_refactor_models.php
 	stubFiles:
@@ -105,6 +106,12 @@ parameters:
 			message: '#Access to an undefined property object::\$value.#'
 			paths:
 				- database/migrations
+
+		# Configs
+		-
+			message: '#Cast to bool is forbidden.#'
+			paths:
+				- config
 
 		# TESTS
 		- 

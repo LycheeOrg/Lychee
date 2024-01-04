@@ -126,7 +126,7 @@ return [
 			'driver' => 'local',
 			'root' => env('LYCHEE_SYM', public_path('sym')),
 			'url' => env('LYCHEE_SYM_URL', '') !== '' ? env('LYCHEE_SYM_URL') :
-				(renv('APP_URL', 'http://localhost') . renv_cond('APP_DIR', '') . '/sym'),
+				(renv('APP_URL', 'http://localhost') . renv_cond('APP_DIR') . '/sym'),
 			'visibility' => 'public',
 		],
 
