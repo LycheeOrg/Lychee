@@ -37,7 +37,7 @@ class DisableCSP
 			config(['secure-headers.csp.enable' => false]);
 		}
 
-		if ($request->getRequestUri() === '/' . config('log-viewer.route_path', 'Logs')) {
+		if ($request->getRequestUri() === config('app.dir_url') . '/' . config('log-viewer.route_path', 'Logs')) {
 			// We must disable unsafe-eval because vue3 used by log-viewer requires it.
 			// We must disable unsafe-inline (and hashes) because log-viewer uses inline script with parameter to boot.
 			// Those parameters are not know by Lychee if someone modifies the config.
