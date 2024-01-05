@@ -54,7 +54,7 @@ class AppUrlMatchCheck implements DiagnosticPipe
 				$censored_app_url,
 				$censored_bad
 			);
-			$data[] = self::INVISIBLE_WARNING .'This may impact your WebAuthn authentication.';
+			$data[] = self::INVISIBLE_WARNING . 'This may impact your WebAuthn authentication.';
 		}
 
 		if (!$this->checkUrlMatchCurrentHost()) {
