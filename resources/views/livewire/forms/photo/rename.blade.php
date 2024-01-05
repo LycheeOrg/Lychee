@@ -1,6 +1,6 @@
 <div>
     <div class="p-9">
-        <p class="mb-5 text-neutral-200 text-sm/4">
+        <p class="mb-5 text-text-main-200 text-sm/4">
             {{ $num === 1 ? __('lychee.PHOTO_NEW_TITLE') : sprintf(__('lychee.PHOTOS_NEW_TITLE'), $num) }}
         </p>
         <form>

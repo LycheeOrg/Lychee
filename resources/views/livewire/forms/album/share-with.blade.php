@@ -1,20 +1,20 @@
-<div class="text-neutral-200 text-sm p-9 sm:p-4 xl:px-9 max-sm:w-full sm:min-w-[40rem] flex-shrink-0">
+<div class="text-text-main-200 text-sm p-9 sm:p-4 xl:px-9 max-sm:w-full sm:min-w-[40rem] flex-shrink-0">
     <div class="flex flex-col">
         <div class="w-full flex my-1 relative">
             <div class="absolute top-0 right-0 peer">
-                <x-icons.iconic class=" text-neutral-200 px-0.5 w-4 h-4 mb-1" icon="question-mark" />
+                <x-icons.iconic class=" text-text-main-200 px-0.5 w-4 h-4 mb-1" icon="question-mark" />
             </div>
             <ul
                 class="mt-1 p-4 peer-hover:block hidden top-4 right-4 absolute border-neutral-600 border border-solid bg-bg-700 z-20 drop-shadow">
-                <li class=""><x-icons.iconic class=" text-neutral-200 px-0.5 w-4 h-4 mb-1" icon="fullscreen-enter" />
+                <li class=""><x-icons.iconic class=" text-text-main-200 px-0.5 w-4 h-4 mb-1" icon="fullscreen-enter" />
                     : grants full photo access</li>
-                <li class=""><x-icons.iconic class=" text-neutral-200 px-0.5 w-4 h-4 mb-1"
+                <li class=""><x-icons.iconic class=" text-text-main-200 px-0.5 w-4 h-4 mb-1"
                         icon="data-transfer-download" /> : grants download</li>
-                <li class=""><x-icons.iconic class=" text-neutral-200 px-0.5 w-4 h-4 mb-1"
+                <li class=""><x-icons.iconic class=" text-text-main-200 px-0.5 w-4 h-4 mb-1"
                         icon="data-transfer-upload" /> : grants upload</li>
-                <li class=""><x-icons.iconic class=" text-neutral-200 px-0.5 w-4 h-4 mb-1" icon="pencil" />
+                <li class=""><x-icons.iconic class=" text-text-main-200 px-0.5 w-4 h-4 mb-1" icon="pencil" />
                     : grants edit</li>
-                <li class=""><x-icons.iconic class=" text-neutral-200 px-0.5 w-4 h-4 mb-1" icon="trash" />
+                <li class=""><x-icons.iconic class=" text-text-main-200 px-0.5 w-4 h-4 mb-1" icon="trash" />
                     : grants delete</li>
             </ul>
         </div>
@@ -23,11 +23,11 @@
                 <p class="w-full flex align-middle">
                     <span class="h-4 w-56 inline-block mt-2.5">{{ __('lychee.USERNAME') }}</span>
                     <span class="h-4 w-56 inline-block text-center">
-                        <x-icons.iconic class=" text-neutral-200 px-2 w-8 h-8 mb-2" icon="fullscreen-enter" />
-                        <x-icons.iconic class=" text-neutral-200 px-2 w-8 h-8 mb-2" icon="data-transfer-download" />
-                        <x-icons.iconic class=" text-neutral-200 px-2 w-8 h-8 mb-2" icon="data-transfer-upload" />
-                        <x-icons.iconic class=" text-neutral-200 px-2 w-8 h-8 mb-2" icon="pencil" />
-                        <x-icons.iconic class=" text-neutral-200 px-2 w-8 h-8 mb-2" icon="trash" />
+                        <x-icons.iconic class=" text-text-main-200 px-2 w-8 h-8 mb-2" icon="fullscreen-enter" />
+                        <x-icons.iconic class=" text-text-main-200 px-2 w-8 h-8 mb-2" icon="data-transfer-download" />
+                        <x-icons.iconic class=" text-text-main-200 px-2 w-8 h-8 mb-2" icon="data-transfer-upload" />
+                        <x-icons.iconic class=" text-text-main-200 px-2 w-8 h-8 mb-2" icon="pencil" />
+                        <x-icons.iconic class=" text-text-main-200 px-2 w-8 h-8 mb-2" icon="trash" />
                     </span>
                 </p>
             </div>
@@ -44,11 +44,11 @@
                     <p class="w-full flex align-middle">
                         <span class="h-4 w-56 inline-block mt-2.5"></span>
                         <span class="h-4 w-56 inline-block text-center">
-                            <x-icons.iconic class=" text-neutral-200 px-2 w-8 h-8 mb-2" icon="fullscreen-enter" />
-                            <x-icons.iconic class=" text-neutral-200 px-2 w-8 h-8 mb-2" icon="data-transfer-download" />
-                            <x-icons.iconic class=" text-neutral-200 px-2 w-8 h-8 mb-2" icon="data-transfer-upload" />
-                            <x-icons.iconic class=" text-neutral-200 px-2 w-8 h-8 mb-2" icon="pencil" />
-                            <x-icons.iconic class=" text-neutral-200 px-2 w-8 h-8 mb-2" icon="trash" />
+                            <x-icons.iconic class=" text-text-main-200 px-2 w-8 h-8 mb-2" icon="fullscreen-enter" />
+                            <x-icons.iconic class=" text-text-main-200 px-2 w-8 h-8 mb-2" icon="data-transfer-download" />
+                            <x-icons.iconic class=" text-text-main-200 px-2 w-8 h-8 mb-2" icon="data-transfer-upload" />
+                            <x-icons.iconic class=" text-text-main-200 px-2 w-8 h-8 mb-2" icon="pencil" />
+                            <x-icons.iconic class=" text-text-main-200 px-2 w-8 h-8 mb-2" icon="trash" />
                         </span>
                     </p>
                 </div>

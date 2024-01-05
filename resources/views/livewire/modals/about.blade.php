@@ -1,4 +1,4 @@
-<div class="p-9 text-neutral-200">
+<div class="p-9 text-text-main-200">
 	<h1 class="mb-6 text-center text-xl font-bold text-text-main-0">
 		Lychee
 		<span class="version-number">{{ $version }}</span>

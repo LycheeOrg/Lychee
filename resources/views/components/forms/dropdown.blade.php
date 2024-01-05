@@ -4,7 +4,7 @@ after:content-['≡'] after:absolute after:text-primary-400 after:right-2 after:
 after:pointer-events-none {{ $class }}">
     <select class="m-0 py-1 w-[120%] text-text-main-0 bg-transparent text-2xs px-2" {{ $attributes }}>
     @foreach($options as $key => $option)
-        <option class="text-neutral-800"
+        <option class="text-text-main-800"
             @if (is_string($key)) value="{{ $key }}" @endif>{{ $option }}
         </option>
     @endforeach

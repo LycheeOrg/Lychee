@@ -1,4 +1,4 @@
-<div class="text-neutral-200 text-sm p-9 text-center max-w-3xl">
+<div class="text-text-main-200 text-sm p-9 text-center max-w-3xl">
 	<p class="mb-4 text-center">{{ sprintf("Are you sure you want to transfer the ownership of album “%s” and all the photos in contains?
 	You access to this album and will be lost.", $title) }}<br>{{ "This action can’t be undone!" }}</p>
 	<div class="mt-4 h-12">

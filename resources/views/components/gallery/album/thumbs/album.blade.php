@@ -28,7 +28,7 @@
 	<div class="overlay absolute mb-[1px] mx-[1px] p-0 border-0 w-[calc(100%-2px)] bottom-0 bg-gradient-to-t from-[#00000099] text-shadow-sm {{ $css_overlay }}">
 		<h1 class="w-full pt-3 pb-1 pr-1 pl-4 text-sm text-text-main-0 font-bold text-ellipsis whitespace-nowrap overflow-x-hidden"
 			title='{{ $title }}'>{{ $title }}</h1>
-		<span class="block mt-0 mr-0 mb-3 ml-4 text-2xs text-neutral-300">
+		<span class="block mt-0 mr-0 mb-3 ml-4 text-2xs text-text-main-300">
 			@switch($subType)
 				@case('description')
 					{{ Str::limit($description, 100) }}

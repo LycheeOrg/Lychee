@@ -39,7 +39,9 @@ module.exports = {
           0: 'var(--text-main-0)',
           100: 'var(--text-main-100)',
           200: 'var(--text-main-200)',
+          300: 'var(--text-main-300)',
           400: 'var(--text-main-400)',
+          800: 'var(--text-main-800)',
         },
         'text-hover': 'var(--text-hover)',
         bg: {
