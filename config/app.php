@@ -12,9 +12,11 @@ use function Safe\scandir;
  *
  * @return string trimmed result
  */
-function renv(string $cst, ?string $default = null): string
-{
-	return rtrim(env($cst, $default) ?? '', '/');
+if (!function_exists('renv')) {
+	function renv(string $cst, ?string $default = null): string
+	{
+		return rtrim(env($cst, $default) ?? '', '/');
+	}
 }
 
 return [

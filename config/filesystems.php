@@ -22,9 +22,11 @@ if (!function_exists('renv')) {
  *
  * @return string '' or env value postfixed with '/'
  */
-function renv_cond(string $cst): string
-{
-	return env($cst, '') === '' ? '' : ('/' . trim(env($cst), '/'));
+if (!function_exists('renv_cond')) {
+	function renv_cond(string $cst): string
+	{
+		return env($cst, '') === '' ? '' : ('/' . trim(env($cst), '/'));
+	}
 }
 
 return [
