@@ -114,6 +114,6 @@ return [
 				'info.php',
 				'phpinfo.php',
 			],
-		]
+		],
 	],
 ];
