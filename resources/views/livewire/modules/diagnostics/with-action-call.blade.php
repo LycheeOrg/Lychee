@@ -1,8 +1,8 @@
 <div class="select-none">
 @if($can)
 <pre class="font-mono">
-    {{ $title }}
-    {{ str_repeat('-', Str::length($title)) }}
+    {{ $this->title }}
+    {{ str_repeat('-', Str::length($this->title)) }}
 @if(count($result) > 0)@foreach ($result as $resultLine)
         {{ $resultLine }}
 @endforeach

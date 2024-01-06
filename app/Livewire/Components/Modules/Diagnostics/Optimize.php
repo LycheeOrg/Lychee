@@ -13,7 +13,6 @@ use Livewire\Component;
 
 class Optimize extends Component
 {
-	#[Locked] public string $title = 'Optimize DB';
 	#[Locked] public array $result = [];
 	#[Locked] public string $action;
 	#[Locked] public bool $can;
@@ -26,6 +25,11 @@ class Optimize extends Component
 		$this->optimizeTables = resolve(OptimizeTables::class);
 		$this->action = 'Optimize!';
 		$this->can = Gate::check(SettingsPolicy::CAN_SEE_DIAGNOSTICS, Configs::class);
+	}
+
+	public function getTitleProperty(): string
+	{
+		return 'Optimize DB';
 	}
 
 	/**

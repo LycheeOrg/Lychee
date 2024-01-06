@@ -14,7 +14,6 @@ use Livewire\Component;
  */
 abstract class AbstractPreSection extends Component
 {
-	#[Locked] public string $title;
 	#[Locked] public bool $can;
 	final public function boot(): void
 	{
@@ -34,7 +33,14 @@ abstract class AbstractPreSection extends Component
 	/**
 	 * Defined the data to be displayed.
 	 *
-	 * @return array
+	 * @return array<int,string>
 	 */
 	abstract public function getDataProperty(): array;
+
+	/**
+	 * Defined the title to be displayed.
+	 *
+	 * @return string
+	 */
+	abstract public function getTitleProperty(): string;
 }
