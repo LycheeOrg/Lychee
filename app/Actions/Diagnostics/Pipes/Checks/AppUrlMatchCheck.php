@@ -3,6 +3,7 @@
 namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
+use App\Facades\Helpers;
 use Safe\Exceptions\PcreException;
 use function Safe\preg_match;
 
@@ -31,7 +32,7 @@ class AppUrlMatchCheck implements DiagnosticPipe
 
 		$bad = $this->splitUrl($config_url)[3];
 
-		$censored_bad = $this->censor($bad);
+		$censored_bad = Helpers::censor($bad);
 		$censored_app_url = $this->getCensorAppUrl();
 		$censored_current = $this->getCensorCurrentUrl();
 
@@ -48,7 +49,7 @@ class AppUrlMatchCheck implements DiagnosticPipe
 			);
 		}
 
-		if ($bad === '') {
+		if ($bad !== '') {
 			$data[] = sprintf(
 				'Warning: APP_URL (%s) contains a sub-path (%s).',
 				$censored_app_url,
@@ -84,27 +85,6 @@ class AppUrlMatchCheck implements DiagnosticPipe
 	}
 
 	/**
-	 * Censore a word by replacing half of its character by stars.
-	 *
-	 * @param string $string
-	 *
-	 * @return string
-	 */
-	private function censor(string $string): string
-	{
-		$strLength = strlen($string);
-		if ($strLength === 0) {
-			return '';
-		}
-
-		$length = $strLength - (int) floor($strLength / 2);
-		$start = (int) floor($length / 2);
-		$replacement = str_repeat('*', $length);
-
-		return substr_replace($string, $replacement, $start, $length);
-	}
-
-	/**
 	 * Split url into 3 parts: http(s), host, path.
 	 *
 	 * @param string $url
@@ -133,7 +113,7 @@ class AppUrlMatchCheck implements DiagnosticPipe
 		$current_url = request()->schemeAndHttpHost();
 		[$full, $prefix, $good, $bad] = $this->splitUrl($current_url);
 
-		return $prefix . $this->censor($good) . $this->censor($bad);
+		return $prefix . Helpers::censor($good) . Helpers::censor($bad);
 	}
 
 	/**
@@ -146,7 +126,7 @@ class AppUrlMatchCheck implements DiagnosticPipe
 		$config_url = config('app.url');
 		[$full, $prefix, $good, $bad] = $this->splitUrl($config_url);
 
-		return $prefix . $this->censor($good) . $this->censor($bad);
+		return $prefix . Helpers::censor($good) . Helpers::censor($bad);
 	}
 
 	/**

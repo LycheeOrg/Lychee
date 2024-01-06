@@ -2,6 +2,9 @@
 
 namespace App\Livewire\Components\Modules\Diagnostics;
 
+use App\Models\Configs;
+use App\Policies\SettingsPolicy;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
@@ -12,6 +15,12 @@ use Livewire\Component;
 abstract class AbstractPreSection extends Component
 {
 	#[Locked] public string $title;
+	#[Locked] public bool $can;
+	final public function boot(): void
+	{
+		$this->can = Gate::check(SettingsPolicy::CAN_SEE_DIAGNOSTICS, Configs::class);
+	}
+
 	/**
 	 * Rendering of the front-end.
 	 *
@@ -28,14 +37,4 @@ abstract class AbstractPreSection extends Component
 	 * @return array
 	 */
 	abstract public function getDataProperty(): array;
-
-	/**
-	 * Return error message because we don't want this serialized.
-	 *
-	 * @return string
-	 */
-	public function getErrorMessageProperty(): string
-	{
-		return 'Error: You must have administrator rights to see this.';
-	}
 }

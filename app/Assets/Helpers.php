@@ -265,4 +265,30 @@ class Helpers
 
 		return $degrees . '° ' . $minutes . "' " . $seconds . '" ' . $direction;
 	}
+
+	/**
+	 * Censor a word by replacing half of its character by stars.
+	 *
+	 * @param string $string         to censor
+	 * @param float  $percentOfClear the amount of the original string that remains untouched. The lower the value, the higher the censoring.
+	 *
+	 * @return string
+	 */
+	public function censor(string $string, float $percentOfClear = 1 / 2): string
+	{
+		$strLength = strlen($string);
+		if ($strLength === 0) {
+			return '';
+		}
+
+		// Length of replacement
+		$censored_length = $strLength - (int) floor($strLength * $percentOfClear);
+
+		// we leave half the space in front and behind.
+		$start = (int) floor(($strLength - $censored_length) / 2);
+
+		$replacement = str_repeat('*', $censored_length);
+
+		return substr_replace($string, $replacement, $start, $censored_length);
+	}
 }

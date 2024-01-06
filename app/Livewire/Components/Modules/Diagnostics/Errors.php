@@ -12,14 +12,15 @@ class Errors extends Component
 {
 	#[Locked] public string $title = 'Diagnostics';
 	#[Locked] public string $error_msg = 'No critical problems found. Lychee should work without problems!';
+	#[Locked] public bool $can = true;
 	public function placeholder(): string
 	{
-		return '<p class="font-mono">
+		return '<div><pre class="font-mono">
 	Diagnostics
 	-----------
 	<span class="text-primary-500 font-bold">    ' . __('lychee.LOADING') . ' ...</span>
-</p>
-';
+</pre>
+</div>';
 	}
 
 	/**

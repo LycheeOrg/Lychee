@@ -1,5 +1,5 @@
 <aside id="default-sidebar" x-data="{ leftMenuOpen: @entangle('isOpen') }" x-bind:class="!leftMenuOpen ? '' : 'w-full sm:w-[250px]'"
-    class="z-40 w-0 h-screen transition-width duration-500" aria-label="Sidebar">
+    class="z-40 w-0 h-screen transition-width duration-500 select-none" aria-label="Sidebar">
     <div class="h-full py-4 overflow-y-auto bg-bg-900">
         <ul class="space-y-0.5">
             <x-leftbar.leftbar-item x-on:click="leftMenuOpen = ! leftMenuOpen" icon="chevron-left">
@@ -30,9 +30,15 @@
                     {{ __('lychee.SHARING') }}</x-leftbar.leftbar-item>
             @endcan
             @can(SettingsPolicy::CAN_SEE_LOGS, [App\Models\Configs::class])
+                @if($has_log_viewer)
                 <x-leftbar.leftbar-item href="{{ route('log-viewer.index') }}" icon="excerpt">
                     {{ __('lychee.LOGS') }}
                 </x-leftbar.leftbar-item>
+                @else
+                <x-leftbar.disabled-leftbar-item icon="excerpt">
+                    {{ __('lychee.LOGS') }}
+                </x-leftbar.disabled-leftbar-item>
+                @endif
                 <x-leftbar.leftbar-item href="{{ route('jobs') }}" wire:navigate icon="project">
                     {{ __('lychee.JOBS') }}
                 </x-leftbar.leftbar-item>

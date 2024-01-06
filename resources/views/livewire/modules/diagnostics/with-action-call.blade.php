@@ -1,4 +1,6 @@
-<div><p class="font-mono">
+<div class="select-none">
+@if($can)
+<pre class="font-mono">
     {{ $title }}
     {{ str_repeat('-', Str::length($title)) }}
 @if(count($result) > 0)@foreach ($result as $resultLine)
@@ -13,4 +15,5 @@
 ">{{ $action }}</a><span wire:loading class="text-primary-500 font-bold">{{ __('lychee.LOADING') }} ...</span>
 @endif
 </p>
+@endif
 </div>

@@ -15,12 +15,14 @@ class Space extends Component
 	#[Locked] public string $title = 'Space Usage';
 	#[Locked] public array $result = [];
 	#[Locked] public string $action;
+	#[Locked] public bool $can;
 	private DiagnosticsSpace $diagnostics;
 
 	public function boot(): void
 	{
 		$this->diagnostics = resolve(DiagnosticsSpace::class);
 		$this->action = __('lychee.DIAGNOSTICS_GET_SIZE');
+		$this->can = Gate::check(SettingsPolicy::CAN_SEE_DIAGNOSTICS, Configs::class);
 	}
 
 	/**
@@ -30,10 +32,6 @@ class Space extends Component
 	 */
 	public function render(): View
 	{
-		if (!Gate::check(SettingsPolicy::CAN_SEE_DIAGNOSTICS, Configs::class)) {
-			$this->result[] = 'Error: You must have administrator rights to see this.';
-		}
-
 		return view('livewire.modules.diagnostics.with-action-call');
 	}
 
