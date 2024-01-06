@@ -41,14 +41,6 @@ class RouteServiceProvider extends ServiceProvider
 		// "catch all" route and the routes are considered in a "first match"
 		// fashion.
 		$this->routes(function () {
-			Route::middleware(config('log-viewer.api_middleware'))
-				->prefix(config('log-viewer.route_path', 'Logs') . '/api')
-				->group(base_path('routes/log-viewer-api.php'));
-			// dd(config('log-viewer.middleware'));
-			Route::middleware(config('log-viewer.middleware'))
-				->prefix(config('log-viewer.route_path', 'Logs'))
-				->group(base_path('routes/log-viewer-web.php'));
-
 			Route::middleware('api')
 				->prefix('api')
 				->group(base_path('routes/api.php'));
