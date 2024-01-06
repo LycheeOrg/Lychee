@@ -274,7 +274,7 @@ class Helpers
 	 *
 	 * @return string
 	 */
-	public function censor(string $string, float $percentOfClear = 1 / 2): string
+	public function censor(string $string, float $percentOfClear = 0.5): string
 	{
 		$strLength = strlen($string);
 		if ($strLength === 0) {
