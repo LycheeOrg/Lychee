@@ -21,7 +21,7 @@ class SharingLinks extends Component
 		$raw_title = rawurlencode($album->title);
 		$this->twitter_link = 'https://twitter.com/share?url=' . $this->rawUrl;
 		$this->facebook_link = 'https://www.facebook.com/sharer.php?u=' . $this->rawUrl . '?t=' . $raw_title;
-		$this->mailTo_link = 'mailto:?subject=' . $raw_title . '&' . $this->rawUrl;
+		$this->mailTo_link = 'mailto:?subject=' . $raw_title . '&body=' . $this->rawUrl;
 	}
 
 	public function render(): View
