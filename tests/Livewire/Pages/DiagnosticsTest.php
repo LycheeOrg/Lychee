@@ -15,6 +15,7 @@ namespace Tests\Livewire\Pages;
 use App\Livewire\Components\Modules\Diagnostics\Configurations;
 use App\Livewire\Components\Modules\Diagnostics\Errors;
 use App\Livewire\Components\Modules\Diagnostics\Infos;
+use App\Livewire\Components\Modules\Diagnostics\Optimize;
 use App\Livewire\Components\Modules\Diagnostics\Space;
 use App\Livewire\Components\Pages\Diagnostics;
 use Livewire\Livewire;
@@ -26,24 +27,28 @@ class DiagnosticsTest extends BaseLivewireTest
 	{
 		Livewire::test(Diagnostics::class)
 			->assertViewIs('livewire.pages.diagnostics')
+			->assertSeeLivewire(Errors::class)
 			->assertSeeLivewire(Configurations::class)
 			->assertSeeLivewire(Space::class)
+			->assertSeeLivewire(Optimize::class)
 			->assertSeeLivewire(Infos::class)
-			->assertSeeInOrder([
-				'Error: You must have administrator rights to see this.',
-				'Error: You must have administrator rights to see this.',
-				'Error: You must have administrator rights to see this.']);
+			->assertSee('Diagnostics')
+			->assertDontSee('System Information')
+			->assertDontSee('Space Usage')
+			->assertDontSee('Optimize DB')
+			->assertDontSee('Config Information');
 	}
 
 	public function testDiagnosticsLogged(): void
 	{
 		$diagnostics = Livewire::actingAs($this->admin)->test(Diagnostics::class, ['lazy' => false])
 			->assertViewIs('livewire.pages.diagnostics')
-			->assertSeeLivewire(Configurations::class)
 			->assertSeeLivewire(Errors::class)
+			->assertSeeLivewire(Configurations::class)
 			->assertSeeLivewire(Space::class)
+			->assertSeeLivewire(Optimize::class)
 			->assertSeeLivewire(Infos::class)
-			->assertDontSee('Error: You must have administrator rights to see this.');
+			->assertSeeInOrder(['Diagnostics', 'System Information', 'Space Usage', 'Optimize DB', 'Config Information']);
 
 		$diagnostics->dispatch('reloadPage')
 			->assertStatus(200);

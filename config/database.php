@@ -205,5 +205,6 @@ return [
 		],
 	],
 
-	'list_foreign_keys' => env('DB_LIST_FOREIGN_KEYS', false),
+	// Only list fk keys in debug mode.
+	'list_foreign_keys' => (bool) env('DB_LIST_FOREIGN_KEYS', false) && (bool) env('APP_DEBUG', false),
 ];

@@ -34,7 +34,7 @@ class SpaceTest extends BaseLivewireTest
 	{
 		Livewire::test($this->component)
 			->assertViewIs('livewire.modules.diagnostics.with-action-call')
-			->assertSee('Error: You must have administrator rights to see this.')
+			->assertSet('can', false)
 			->assertOk();
 	}
 
@@ -42,10 +42,9 @@ class SpaceTest extends BaseLivewireTest
 	{
 		Livewire::actingAs($this->admin)->test($this->component)
 			->assertViewIs('livewire.modules.diagnostics.with-action-call')
-			->assertDontSee('Error: You must have administrator rights to see this.')
+			->assertSet('can', true)
 			->assertOk()
 			->call('do')
-			->assertOk()
-			->assertDontSee('Error: You must have administrator rights to see this.');
+			->assertOk();
 	}
 }

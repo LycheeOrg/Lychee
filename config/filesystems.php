@@ -1,5 +1,34 @@
 <?php
 
+/**
+ * Given a .env config constant, retrieve the env value and remove any trailing /.
+ *
+ * @param string      $cst     constant to fetch
+ * @param string|null $default default value if does not exists
+ *
+ * @return string trimmed result
+ */
+if (!function_exists('renv')) {
+	function renv(string $cst, ?string $default = null): string
+	{
+		return rtrim(env($cst, $default) ?? '', '/');
+	}
+}
+
+/**
+ * Allow to conditionally append an env value.
+ *
+ * @param string $cst constant to fetch
+ *
+ * @return string '' or env value prefixed with '/'
+ */
+if (!function_exists('renv_cond')) {
+	function renv_cond(string $cst): string
+	{
+		return env($cst, '') === '' ? '' : ('/' . trim(env($cst), '/'));
+	}
+}
+
 return [
 	/*
 	|--------------------------------------------------------------------------
@@ -45,7 +74,9 @@ return [
 		'images' => [
 			'driver' => 'local',
 			'root' => env('LYCHEE_UPLOADS', public_path(env('LYCHEE_UPLOADS_DIR', 'uploads/'))),
-			'url' => env('LYCHEE_UPLOADS_URL', env('APP_URL', 'http://localhost') . '/' . env('LYCHEE_UPLOADS_DIR', 'uploads/')),
+			'url' => env('LYCHEE_UPLOADS_URL', '') !== '' ? renv('LYCHEE_UPLOADS_URL')
+				: (renv('APP_URL', 'http://localhost') . renv_cond('APP_DIR') . '/' .
+					renv('LYCHEE_UPLOADS_DIR', 'uploads')),
 			'visibility' => env('LYCHEE_IMAGE_VISIBILITY', 'public'),
 			'directory_visibility' => env('LYCHEE_IMAGE_VISIBILITY', 'public'),
 			'permissions' => [
@@ -96,7 +127,8 @@ return [
 		'symbolic' => [
 			'driver' => 'local',
 			'root' => env('LYCHEE_SYM', public_path('sym')),
-			'url' => rtrim(env('LYCHEE_SYM_URL', rtrim(env('APP_URL', 'http://localhost'), '/') . '/sym'), '/'),
+			'url' => env('LYCHEE_SYM_URL', '') !== '' ? renv('LYCHEE_SYM_URL') :
+				(renv('APP_URL', 'http://localhost') . renv_cond('APP_DIR') . '/sym'),
 			'visibility' => 'public',
 		],
 

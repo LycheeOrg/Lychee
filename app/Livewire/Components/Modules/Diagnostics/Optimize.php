@@ -13,9 +13,9 @@ use Livewire\Component;
 
 class Optimize extends Component
 {
-	#[Locked] public string $title = 'Optimize DB';
 	#[Locked] public array $result = [];
 	#[Locked] public string $action;
+	#[Locked] public bool $can;
 	private OptimizeDb $optimizeDb;
 	private OptimizeTables $optimizeTables;
 
@@ -24,6 +24,12 @@ class Optimize extends Component
 		$this->optimizeDb = resolve(OptimizeDb::class);
 		$this->optimizeTables = resolve(OptimizeTables::class);
 		$this->action = 'Optimize!';
+		$this->can = Gate::check(SettingsPolicy::CAN_SEE_DIAGNOSTICS, Configs::class);
+	}
+
+	public function getTitleProperty(): string
+	{
+		return 'Optimize DB';
 	}
 
 	/**
@@ -33,10 +39,6 @@ class Optimize extends Component
 	 */
 	public function render(): View
 	{
-		if (!Gate::check(SettingsPolicy::CAN_SEE_DIAGNOSTICS, Configs::class)) {
-			$this->result[] = 'Error: You must have administrator rights to see this.';
-		}
-
 		return view('livewire.modules.diagnostics.with-action-call');
 	}
 

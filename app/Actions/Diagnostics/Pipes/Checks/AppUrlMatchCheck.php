@@ -3,11 +3,15 @@
 namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
+use App\Facades\Helpers;
 use Safe\Exceptions\PcreException;
 use function Safe\preg_match;
 
 class AppUrlMatchCheck implements DiagnosticPipe
 {
+	public const INVISIBLE_ERROR = '      ';
+	public const INVISIBLE_WARNING = '        ';
+
 	/**
 	 * We check:
 	 * 1. if APP_URL is even set.
@@ -20,29 +24,47 @@ class AppUrlMatchCheck implements DiagnosticPipe
 	public function handle(array &$data, \Closure $next): array
 	{
 		$config_url = config('app.url');
+		$dir_url = config('app.dir_url');
 		if (config('app.url') === 'http://localhost') {
-			$data[] = 'Warning: APP_URL is still set to default, this will break access to all your images and assets if you are using Lychee behind a sub-domain.';
+			$data[] = 'Warning: APP_URL is still set to default, this will break access to all your images';
+			$data[] = self::INVISIBLE_WARNING . 'and assets if you are using Lychee behind a sub-domain.';
 		}
 
 		$bad = $this->splitUrl($config_url)[3];
 
-		$censored_bad = $this->censor($bad);
+		$censored_bad = Helpers::censor($bad);
 		$censored_app_url = $this->getCensorAppUrl();
 		$censored_current = $this->getCensorCurrentUrl();
 
 		if ($bad !== '') {
 			$data[] = sprintf(
-				'Warning: APP_URL (%s) contains a sub-path (%s). This may impact your WebAuthn authentication.',
+				'Error: APP_URL (%s) contains a sub-path (%s).',
 				$censored_app_url,
-				$censored_bad);
+				$censored_bad,
+			);
+			$data[] = sprintf(
+				self::INVISIBLE_ERROR . 'Instead set APP_DIR to (%s) and APP_URL to (%s) in your .env',
+				$censored_bad,
+				$censored_current,
+			);
+		}
+
+		if ($bad !== '') {
+			$data[] = sprintf(
+				'Warning: APP_URL (%s) contains a sub-path (%s).',
+				$censored_app_url,
+				$censored_bad
+			);
+			$data[] = self::INVISIBLE_WARNING . 'This may impact your WebAuthn authentication.';
 		}
 
 		if (!$this->checkUrlMatchCurrentHost()) {
 			$data[] = sprintf(
-				'Error: APP_URL (%s) does not match the current url (%s). This will break WebAuthn authentication.',
+				'Error: APP_URL (%s) does not match the current url (%s).',
 				$censored_app_url,
 				$censored_current,
 			);
+			$data[] = self::INVISIBLE_ERROR . 'This will break WebAuthn authentication.';
 		}
 
 		$config_url_imgage = config('filesystems.disks.images.url');
@@ -50,35 +72,16 @@ class AppUrlMatchCheck implements DiagnosticPipe
 			$data[] = 'Error: LYCHEE_UPLOADS_URL is set and empty. This will prevent images to be displayed. Remove the line from your .env';
 		}
 
-		if (($config_url . '/uploads/') === $config_url_imgage && !$this->checkUrlMatchCurrentHost()) {
+		if (($config_url . $dir_url . '/uploads/') === $config_url_imgage && !$this->checkUrlMatchCurrentHost()) {
 			$data[] = sprintf(
-				'Error: APP_URL (%s) does not match the current url (%s). This will prevent images to be properly displayed.',
+				'Error: APP_URL (%s) does not match the current url (%s).',
 				$censored_app_url,
-				$censored_current);
+				$censored_current
+			);
+			$data[] = self::INVISIBLE_ERROR . 'This will prevent images from being properly displayed.';
 		}
 
 		return $next($data);
-	}
-
-	/**
-	 * Censore a word by replacing half of its character by stars.
-	 *
-	 * @param string $string
-	 *
-	 * @return string
-	 */
-	private function censor(string $string): string
-	{
-		$strLength = strlen($string);
-		if ($strLength === 0) {
-			return '';
-		}
-
-		$length = $strLength - (int) floor($strLength / 2);
-		$start = (int) floor($length / 2);
-		$replacement = str_repeat('*', $length);
-
-		return substr_replace($string, $replacement, $start, $length);
 	}
 
 	/**
@@ -110,7 +113,7 @@ class AppUrlMatchCheck implements DiagnosticPipe
 		$current_url = request()->schemeAndHttpHost();
 		[$full, $prefix, $good, $bad] = $this->splitUrl($current_url);
 
-		return $prefix . $this->censor($good) . $this->censor($bad);
+		return $prefix . Helpers::censor($good) . Helpers::censor($bad);
 	}
 
 	/**
@@ -123,7 +126,7 @@ class AppUrlMatchCheck implements DiagnosticPipe
 		$config_url = config('app.url');
 		[$full, $prefix, $good, $bad] = $this->splitUrl($config_url);
 
-		return $prefix . $this->censor($good) . $this->censor($bad);
+		return $prefix . Helpers::censor($good) . Helpers::censor($bad);
 	}
 
 	/**
