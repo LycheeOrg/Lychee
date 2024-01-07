@@ -80,8 +80,8 @@ return [
 	| the Artisan command line tool. You should set this to the root of
 	| your application so that it is used when running Artisan tasks.
 	|
-	| url : the base url of your Lychee install up to the tld
-	| dir_url : the path of your Lychee install from the tld, MUST CONTAIN / if not left empty
+	| url : the base url of your Lychee install up to the tld (end '/' will be trimmed)
+	| dir_url : the path of your Lychee install from the tld (will be prefixed by '/' and end '/' will be trimmed)
 	|
 	| asset_url : should be left to default (null).
 	*/
