@@ -2,7 +2,7 @@
 <div class="w-full flex justify-center flex-wrap flex-row-reverse" x-cloak x-show="albumFlags.isDetailsOpen" x-collapse.duration.300ms >
     <ul class="
         sm:mt-7 sm:px-7 mb-4
-        text-neutral-200 text-sm w-full xl:w-1/6 xl:px-9
+        text-text-main-200 text-sm w-full xl:w-1/6 xl:px-9
         max-xl:w-full max-xl:flex max-xl:justify-center
         ">
         <x-gallery.album.menu.item tab='0' >{{ __('lychee.ABOUT_ALBUM') }}</x-gallery.album.menu.item>

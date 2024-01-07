@@ -1,4 +1,4 @@
-<div class="text-neutral-200 text-sm p-9 sm:p-4 xl:px-9 max-sm:w-full sm:min-w-[32rem] flex-shrink-0">
+<div class="text-text-main-200 text-sm p-9 sm:p-4 xl:px-9 max-sm:w-full sm:min-w-[32rem] flex-shrink-0">
 	<form>
         <div class="mb-4 h-12">
             <p class="font-bold">{{ __('lychee.ALBUM_TITLE') }}:</p>

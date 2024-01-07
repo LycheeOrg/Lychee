@@ -12,7 +12,7 @@
 			<livewire:forms.settings.set-lang-setting />
 			<livewire:forms.settings.set-license-default-setting />
 			<div class="mb-4 -mt-4"><p>
-				<a href="https://creativecommons.org/choose/" class="text-neutral-200 hover:text-text-main-0 border-b border-dashed border-neutral-400" target="_blank">{{ __('lychee.ALBUM_LICENSE_HELP') }}</a>
+				<a href="https://creativecommons.org/choose/" class="text-text-main-200 hover:text-text-main-0 border-b border-dashed border-neutral-400" target="_blank">{{ __('lychee.ALBUM_LICENSE_HELP') }}</a>
 			</p></div>
 			<livewire:forms.settings.set-layout-setting />
 			<livewire:forms.settings.base.boolean-setting key="set-public_search"

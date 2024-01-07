@@ -18,7 +18,7 @@
 					 />
 			</div>
 		</form>
-		<p class="version text-xs text-right text-neutral-200">
+		<p class="version text-xs text-right text-text-main-200">
 			Lychee
 			@if($version !== null) <span class="version-number">{{ $version }}</span> @endif
 			@if($is_new_release_available) <x-update-status href="https://github.com/LycheeOrg/Lychee/releases" />

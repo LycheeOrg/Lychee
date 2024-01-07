@@ -3,7 +3,7 @@
         <label for="token-dialog-token">Token</label>
         <input @disabled($isDisabled) class="mx-2 w-2/3 bg-transparent pt-1 pb-0 px-0.5 h-7
             border-b border-b-solid focus:border-b-primary-400 border-b-neutral-800
-             disabled:italic disabled:text-center text-neutral-200 disabled:text-text-main-400
+             disabled:italic disabled:text-center text-text-main-200 disabled:text-text-main-400
             " value="{{ $token }}" @readonly(true) type="text" />
 
         <div class="inline">
