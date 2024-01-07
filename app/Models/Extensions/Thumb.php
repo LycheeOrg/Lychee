@@ -39,7 +39,7 @@ class Thumb extends AbstractDTO
 	public static function sizeVariantsFilter(HasMany $relation): HasMany
 	{
 		$svAlbumThumbs = [SizeVariantType::THUMB, SizeVariantType::THUMB2X];
-		if (config('app.livewire', true)) {
+		if (config('app.livewire', true) === true) {
 			$svAlbumThumbs = [SizeVariantType::SMALL, SizeVariantType::SMALL2X];
 		}
 
