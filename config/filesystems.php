@@ -20,7 +20,7 @@ if (!function_exists('renv')) {
  *
  * @param string $cst constant to fetch
  *
- * @return string '' or env value postfixed with '/'
+ * @return string '' or env value prefixed with '/'
  */
 if (!function_exists('renv_cond')) {
 	function renv_cond(string $cst): string
@@ -127,7 +127,7 @@ return [
 		'symbolic' => [
 			'driver' => 'local',
 			'root' => env('LYCHEE_SYM', public_path('sym')),
-			'url' => env('LYCHEE_SYM_URL', '') !== '' ? env('LYCHEE_SYM_URL') :
+			'url' => env('LYCHEE_SYM_URL', '') !== '' ? renv('LYCHEE_SYM_URL') :
 				(renv('APP_URL', 'http://localhost') . renv_cond('APP_DIR') . '/sym'),
 			'visibility' => 'public',
 		],

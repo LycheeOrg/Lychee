@@ -14,7 +14,7 @@ if (!function_exists('renv')) {
  *
  * @param string $cst constant to fetch
  *
- * @return string '' or env value postfixed with '/'
+ * @return string '' or env value prefixed with '/'
  */
 if (!function_exists('renv_cond')) {
 	function renv_cond(string $cst): string

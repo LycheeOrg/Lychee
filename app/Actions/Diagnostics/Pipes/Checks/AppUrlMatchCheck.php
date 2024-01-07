@@ -78,7 +78,7 @@ class AppUrlMatchCheck implements DiagnosticPipe
 				$censored_app_url,
 				$censored_current
 			);
-			$data[] = self::INVISIBLE_ERROR . 'This will prevent images to be properly displayed.';
+			$data[] = self::INVISIBLE_ERROR . 'This will prevent images from being properly displayed.';
 		}
 
 		return $next($data);
