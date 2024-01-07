@@ -12,6 +12,7 @@
 
 namespace Tests\Feature;
 
+use function Safe\scandir;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Tests\AbstractTestCase;
 
@@ -31,6 +32,7 @@ class LangTest extends AbstractTestCase
 
 		$failed = false;
 
+		/** @var array<int,string> $englishDictionaries */
 		$englishDictionaries = collect(array_diff(scandir(base_path('lang/en')), ['..', '.']))->filter(fn ($v) => str_ends_with($v, '.php'))->all();
 		foreach ($englishDictionaries as $dictionaryFile) {
 			$englishDictionary = include base_path('lang/en/' . $dictionaryFile);
