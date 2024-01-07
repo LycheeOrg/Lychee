@@ -315,6 +315,7 @@ return [
 	'U2F_AUTHENTIFICATION_SUCCESS' => 'Xác minh thành công!',
 	'U2F_CREDENTIALS' => 'Tên và Mật mã',
 	'U2F_CREDENTIALS_DELETED' => 'Tên và mật mã đã được xóa!',
+	'U2F_LOGIN' => 'Log in with WebAuthn',
 
 	'NEW_PHOTOS_NOTIFICATION' => 'Gửi email thông báo đăng hình ảnh mới.',
 	'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'Thông báo đăng hình mới được cập nhật',

@@ -13,6 +13,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
+use Laragear\WebAuthn\Models\WebAuthnCredential;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
@@ -21,6 +22,7 @@ use Livewire\Component;
  */
 class Login extends Component
 {
+	#[Locked] public bool $can_use_2fa = false;
 	#[Locked] public bool $is_new_release_available = false;
 	#[Locked] public bool $is_git_update_available = false;
 	#[Locked] public ?string $version = null;
@@ -44,6 +46,8 @@ class Login extends Component
 	 */
 	public function mount(): void
 	{
+		$this->can_use_2fa = WebAuthnCredential::query()->whereNull('disabled_at')->count() > 0;
+
 		if (!Configs::getValueAsBool('hide_version_number')) {
 			$this->version = resolve(InstalledVersion::class)->getVersion()->toString();
 		}

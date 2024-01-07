@@ -313,6 +313,7 @@ return [
 	'U2F_AUTHENTIFICATION_SUCCESS' => 'Sikeres hitelesítés!',
 	'U2F_CREDENTIALS' => 'Hitelesítő adatok',
 	'U2F_CREDENTIALS_DELETED' => 'Hitelesítő adatok törölve!',
+	'U2F_LOGIN' => 'Log in with WebAuthn',
 
 	'NEW_PHOTOS_NOTIFICATION' => 'Küldjön értesítést az új fényképekről e-mailben.',
 	'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'Az új fényképek értesítése frissítve',

@@ -1,5 +1,8 @@
 <div>
 	<div class="p-9">
+		@if($can_use_2fa)
+		<x-forms.buttons.action class="rounded w-full mb-9" x-on:click="$wire.dispatch('login-close'); $dispatch('webauthn-open')">{{ __('lychee.U2F_LOGIN') }}</x-forms.buttons.action>
+		@endif
 		<x-forms.error-message field='wrongLogin' />
 		<form class="" wire:submit="submit">
 			<div class="mb-4 mx-0">

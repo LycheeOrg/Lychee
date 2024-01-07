@@ -119,7 +119,7 @@ export const albumView = (Alpine: Alpine) =>
 				// [h] hide
 				// [f] fullscreen
 				// [l] login
-				// [k] keybinds
+				// [?] keybinds
 				// [esc] back
 				if (this.keybinds.handleGlobalKeydown(event, this)) {
 					return;

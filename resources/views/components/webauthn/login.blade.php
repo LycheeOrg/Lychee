@@ -2,8 +2,8 @@
     bg-black/80 z-5 fixed flex items-center justify-center w-full h-full top-0 left-0 box-border opacity-100"
     data-closable="true"
     x-data="loginWebAuthn('{{ __("lychee.U2F_AUTHENTIFICATION_SUCCESS") }}', '{{ __("lychee.ERROR_TEXT") }}')"
-    @keydown.window="if (event.key === 'k') { webAuthnOpen = true }"
-    @keydown.escape.window="webAuthnOpen = false"
+    @keyup.window="handleKeyUp(event)"
+    x-on:webauthn-open.document="webAuthnOpen = true"
     x-cloak
     x-show="webAuthnOpen">
     <div class="basicModal transition-opacity ease-in duration-1000
