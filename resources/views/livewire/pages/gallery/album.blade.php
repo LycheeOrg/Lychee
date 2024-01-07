@@ -32,7 +32,7 @@
             class="relative flex flex-wrap content-start w-full justify-start overflow-y-auto"
             x-bind:class="isFullscreen ? 'h-[calc(100vh-3px)]' : 'h-[calc(100vh-56px)]'">
             @if ($rights->can_edit && $flags->is_base_album)
-                <x-gallery.album.menu.menu :album="$this->album" :userCount="$this->num_users" />
+                <x-gallery.album.menu.menu :album="$this->album" :rights="$this->rights" :userCount="$this->num_users" />
             @endif
             @if ($this->albumFormatted !== null && ($num_albums > 0 || $num_photos > 0))
                 <x-gallery.album.hero x-show="! albumFlags.isDetailsOpen" />
