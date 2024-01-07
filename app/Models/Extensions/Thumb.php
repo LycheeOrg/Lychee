@@ -38,7 +38,12 @@ class Thumb extends AbstractDTO
 	 */
 	public static function sizeVariantsFilter(HasMany $relation): HasMany
 	{
-		return $relation->whereIn('type', [SizeVariantType::THUMB, SizeVariantType::THUMB2X]);
+		$svAlbumThumbs = [SizeVariantType::THUMB, SizeVariantType::THUMB2X];
+		if (config('app.livewire', true)) {
+			$svAlbumThumbs = [SizeVariantType::SMALL, SizeVariantType::SMALL2X];
+		}
+
+		return $relation->whereIn('type', $svAlbumThumbs);
 	}
 
 	/**
@@ -81,11 +86,16 @@ class Thumb extends AbstractDTO
 	 */
 	public static function createFromPhoto(?Photo $photo): ?Thumb
 	{
-		$thumb = $photo?->size_variants->getThumb();
+		$thumb = config('app.livewire', true) === true
+			? $photo?->size_variants->getSmall() ?? $photo?->size_variants->getThumb()
+			: $photo?->size_variants->getThumb();
 		if ($thumb === null) {
 			return null;
 		}
-		$thumb2x = $photo->size_variants->getThumb2x();
+
+		$thumb2x = config('app.livewire', true) === true
+			? $photo?->size_variants->getSmall2x() // We do note provide '?? sv->Thumb2x()' because if messes up on retina display
+			: $photo?->size_variants->getThumb2x();
 
 		return new self(
 			$photo->id,
