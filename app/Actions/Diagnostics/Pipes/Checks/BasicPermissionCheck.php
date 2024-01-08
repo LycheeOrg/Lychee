@@ -105,13 +105,19 @@ class BasicPermissionCheck implements DiagnosticPipe
 		}
 
 		if ($this->numOwnerIssues > self::MAX_ISSUE_REPORTS_PER_TYPE) {
+			// @codeCoverageIgnoreStart
 			$data[] = sprintf('Warning: %d more directories with wrong owner', $this->numOwnerIssues - self::MAX_ISSUE_REPORTS_PER_TYPE);
+			// @codeCoverageIgnoreEnd
 		}
 		if ($this->numPermissionIssues > self::MAX_ISSUE_REPORTS_PER_TYPE) {
+			// @codeCoverageIgnoreStart
 			$data[] = sprintf('Warning: %d more directories with wrong permissions', $this->numPermissionIssues - self::MAX_ISSUE_REPORTS_PER_TYPE);
+			// @codeCoverageIgnoreEnd
 		}
 		if ($this->numAccessIssues > self::MAX_ISSUE_REPORTS_PER_TYPE) {
+			// @codeCoverageIgnoreStart
 			$data[] = sprintf('Warning: %d more inaccessible directories', $this->numAccessIssues - self::MAX_ISSUE_REPORTS_PER_TYPE);
+			// @codeCoverageIgnoreEnd
 		}
 	}
 
@@ -126,11 +132,13 @@ class BasicPermissionCheck implements DiagnosticPipe
 	{
 		$p = Storage::disk('dist')->path('user.css');
 		if (!Helpers::hasPermissions($p)) {
+			// @codeCoverageIgnoreStart
 			$data[] = "Warning: '" . $p . "' does not exist or has insufficient read/write privileges.";
 			$p = Storage::disk('dist')->path('');
 			if (!Helpers::hasPermissions($p)) {
 				$data[] = "Warning: '" . $p . "' has insufficient read/write privileges.";
 			}
+			// @codeCoverageIgnoreEnd
 		}
 	}
 
@@ -179,13 +187,16 @@ class BasicPermissionCheck implements DiagnosticPipe
 			$expectedPerm = self::getConfiguredDirectoryPerm();
 
 			if (!in_array($owningGroupIdOrFalse, $this->groupIDs, true)) {
+				// @codeCoverageIgnoreStart
 				$this->numOwnerIssues++;
 				if ($this->numOwnerIssues <= self::MAX_ISSUE_REPORTS_PER_TYPE) {
 					$data[] = sprintf('Warning: %s is owned by group %s, but should be owned by one out of %s', $path, $owningGroupName, $this->groupNames);
 				}
+				// @codeCoverageIgnoreEnd
 			}
 
 			if ($expectedPerm !== $actualPerm) {
+				// @codeCoverageIgnoreStart
 				$this->numPermissionIssues++;
 				if ($this->numPermissionIssues <= self::MAX_ISSUE_REPORTS_PER_TYPE) {
 					$data[] = sprintf(
@@ -195,9 +206,11 @@ class BasicPermissionCheck implements DiagnosticPipe
 						$expectedPerm
 					);
 				}
+				// @codeCoverageIgnoreEnd
 			}
 
 			if (!is_writable($path) || !is_readable($path)) {
+				// @codeCoverageIgnoreStart
 				$this->numAccessIssues++;
 				if ($this->numAccessIssues <= self::MAX_ISSUE_REPORTS_PER_TYPE) {
 					$problem = match (true) {
@@ -208,6 +221,7 @@ class BasicPermissionCheck implements DiagnosticPipe
 					};
 					$data[] = sprintf('Error: %s is %s by %s', $path, $problem, $this->groupNames);
 				}
+				// @codeCoverageIgnoreEnd
 			}
 
 			$dir = new \DirectoryIterator($path);
@@ -252,12 +266,16 @@ class BasicPermissionCheck implements DiagnosticPipe
 		try {
 			$visibility = (string) config(sprintf('filesystems.disks.%s.visibility', AbstractSizeVariantNamingStrategy::IMAGE_DISK_NAME));
 			if ($visibility === '') {
+				// @codeCoverageIgnoreStart
 				throw new InvalidConfigOption('File/directory visibility not configured');
+				// @codeCoverageIgnoreEnd
 			}
 
 			$perm = (int) config(sprintf('filesystems.disks.%s.permissions.%s.%s', AbstractSizeVariantNamingStrategy::IMAGE_DISK_NAME, $type, $visibility));
 			if ($perm === 0) {
+				// @codeCoverageIgnoreStart
 				throw new InvalidConfigOption('Configured file/directory permission is invalid');
+				// @codeCoverageIgnoreEnd
 			}
 
 			return $perm;

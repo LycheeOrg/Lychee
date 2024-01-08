@@ -26,8 +26,10 @@ class AppUrlMatchCheck implements DiagnosticPipe
 		$config_url = config('app.url');
 		$dir_url = config('app.dir_url');
 		if (config('app.url') === 'http://localhost') {
+			// @codeCoverageIgnoreStart
 			$data[] = 'Warning: APP_URL is still set to default, this will break access to all your images';
 			$data[] = self::INVISIBLE_WARNING . 'and assets if you are using Lychee behind a sub-domain.';
+			// @codeCoverageIgnoreEnd
 		}
 
 		$bad = $this->splitUrl($config_url)[3];
@@ -37,6 +39,7 @@ class AppUrlMatchCheck implements DiagnosticPipe
 		$censored_current = $this->getCensorCurrentUrl();
 
 		if ($bad !== '') {
+			// @codeCoverageIgnoreStart
 			$data[] = sprintf(
 				'Error: APP_URL (%s) contains a sub-path (%s).',
 				$censored_app_url,
@@ -47,43 +50,54 @@ class AppUrlMatchCheck implements DiagnosticPipe
 				$censored_bad,
 				$censored_current,
 			);
+			// @codeCoverageIgnoreEnd
 		}
 
 		if ($bad !== '') {
+			// @codeCoverageIgnoreStart
 			$data[] = sprintf(
 				'Warning: APP_URL (%s) contains a sub-path (%s).',
 				$censored_app_url,
 				$censored_bad
 			);
 			$data[] = self::INVISIBLE_WARNING . 'This may impact your WebAuthn authentication.';
+			// @codeCoverageIgnoreEnd
 		}
 
 		if (!$this->checkUrlMatchCurrentHost()) {
+			// @codeCoverageIgnoreStart
 			$data[] = sprintf(
 				'Error: APP_URL (%s) does not match the current url (%s).',
 				$censored_app_url,
 				$censored_current,
 			);
 			$data[] = self::INVISIBLE_ERROR . 'This will break WebAuthn authentication.';
+			// @codeCoverageIgnoreEnd
 		}
 
 		$config_url_imgage = config('filesystems.disks.images.url');
 		if ($config_url_imgage === '') {
+			// @codeCoverageIgnoreStart
 			$data[] = 'Error: LYCHEE_UPLOADS_URL is set and empty. This will prevent images to be displayed. Remove the line from your .env';
+			// @codeCoverageIgnoreEnd
 		}
 
 		if (!str_starts_with($config_url_imgage, '/') && !str_starts_with($config_url_imgage, 'http')) {
+			// @codeCoverageIgnoreStart
 			$data[] = 'Error: LYCHEE_UPLOADS_URL is set but start with neither a / or http.';
 			$data[] = self::INVISIBLE_ERROR . 'This will prevent images to be displayed. Remove the line from your .env';
+			// @codeCoverageIgnoreEnd
 		}
 
 		if (($config_url . $dir_url . '/uploads') === $config_url_imgage && !$this->checkUrlMatchCurrentHost()) {
+			// @codeCoverageIgnoreStart
 			$data[] = sprintf(
 				'Error: APP_URL (%s) does not match the current url (%s).',
 				$censored_app_url,
 				$censored_current
 			);
 			$data[] = self::INVISIBLE_ERROR . 'This will prevent images from being properly displayed.';
+			// @codeCoverageIgnoreEnd
 		}
 
 		return $next($data);
