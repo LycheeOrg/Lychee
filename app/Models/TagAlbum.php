@@ -84,9 +84,9 @@ class TagAlbum extends BaseAlbum
 	];
 
 	/**
-	 * @var string[] The list of "virtual" attributes which do not exist as
-	 *               columns of the DB relation but which shall be appended to
-	 *               JSON from accessors
+	 * @var array<int,string> The list of "virtual" attributes which do not exist as
+	 *                        columns of the DB relation but which shall be appended to
+	 *                        JSON from accessors
 	 */
 	protected $appends = [
 		'thumb',

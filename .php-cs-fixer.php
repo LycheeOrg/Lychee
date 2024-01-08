@@ -21,6 +21,7 @@ $rules = [
 	'nullable_type_declaration_for_default_null_value' => true,
 	'align_multiline_comment' => true,
 	'array_indentation' => true,
+	'fully_qualified_strict_types' => ['leading_backslash_in_global_namespace' => false],
 	'backtick_to_shell_exec' => true,
 	'increment_style' => ['style' => 'post'],
 	'indentation_type' => true,
