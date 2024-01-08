@@ -27,7 +27,7 @@ class AlbumThumb extends Component
 			$this->src = URL::asset('img/no_images.svg');
 
 			if ($thumb !== '') {
-				$this->dataSrc = URL::asset($thumb);
+				$this->dataSrc = $thumb;
 			}
 		}
 
@@ -37,7 +37,7 @@ class AlbumThumb extends Component
 		}
 
 		if ($thumb2x !== '') {
-			$this->dataSrcSet = sprintf("data-srcset='%s 2x'", URL::asset($thumb2x));
+			$this->dataSrcSet = sprintf("data-srcset='%s 2x'", $thumb2x);
 		}
 	}
 

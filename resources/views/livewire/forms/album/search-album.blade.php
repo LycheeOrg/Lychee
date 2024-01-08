@@ -36,7 +36,7 @@
 						<a class="px-3 py-1 flex items-center"
 							@if ($loop->last) @keydown.tab="isOpen = false" @endif
 						>
-						<img src="{{ URL::asset($result['thumb']) }}" alt="poster" class=" w-4 rounded-sm">
+						<img src="{{ $result['thumb'] }}" alt="poster" class=" w-4 rounded-sm">
 						<span class="ml-4 text-left">{{ $result['short_title'] }}</span>
 					</a>
 					</li>
