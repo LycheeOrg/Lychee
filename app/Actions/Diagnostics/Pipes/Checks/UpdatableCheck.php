@@ -66,7 +66,9 @@ class UpdatableCheck implements DiagnosticPipe
 			// @codeCoverageIgnoreEnd
 		}
 		if (!Schema::hasTable('configs')) {
+			// @codeCoverageIgnoreStart
 			throw new ConfigurationException('Migration is not run');
+			// @codeCoverageIgnoreEnd
 		}
 
 		if (!Configs::getValueAsBool('allow_online_git_pull')) {
