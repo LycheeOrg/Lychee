@@ -78,7 +78,7 @@
         <x-gallery.photo.line if="photo.focal"
             :locale="__('lychee.PHOTO_FOCAL')"
             value="photo.focal" />
-        <x-gallery.photo.line if="preformatted.iso"
+        <x-gallery.photo.line if="photo.iso"
             :locale="sprintf(__('lychee.PHOTO_ISO'), '')" value="preformatted.iso" />
         <template x-if="precomputed.has_location">
             <h2 class="col-span-2 text-text-main-400 font-bold px-3 pt-4 pb-3">
