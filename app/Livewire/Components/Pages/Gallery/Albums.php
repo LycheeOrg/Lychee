@@ -111,4 +111,9 @@ class Albums extends Component implements Reloadable
 
 		$this->flags->is_mod_frame_enabled = $album->photos->count() > 0;
 	}
+
+	public function getIsLoginLeftProperty(): bool
+	{
+		return Configs::getValueAsString('login_button_position') === 'left';
+	}
 }

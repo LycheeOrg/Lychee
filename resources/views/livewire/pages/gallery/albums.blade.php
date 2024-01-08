@@ -13,8 +13,9 @@
     <!-- toolbar -->
     <x-header.bar>
         @guest
+            <x-backButtonHeader class="{{ $this->isLoginLeft ? 'order-4' : 'order-0' }}" />
             <!-- NOT LOGGED -->
-            <x-header.button x-on:click="loginModalOpen = true" icon="account-login" />
+            <x-header.button x-on:click="loginModalOpen = true" icon="account-login" class="{{ $this->isLoginLeft ? 'order-0' : 'order-4' }}" />
         @endguest
         @auth
             <x-header.button x-on:click="$dispatch('toggleLeftMenu')" icon="cog" />
