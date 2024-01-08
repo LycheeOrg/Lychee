@@ -17,11 +17,15 @@ class MigrationCheck implements DiagnosticPipe
 	public function handle(array &$data, \Closure $next): array
 	{
 		if (!self::isUpToDate()) {
+			// @codeCoverageIgnoreStart
 			$data[] = 'Error: Database is behind file version. Please apply the migrations.';
+			// @codeCoverageIgnoreEnd
 		}
 
 		if ($this->isInFuture()) {
+			// @codeCoverageIgnoreStart
 			$data[] = 'Warning: Database is in advance of file version. Please check your installation.';
+			// @codeCoverageIgnoreEnd
 		}
 
 		return $next($data);
