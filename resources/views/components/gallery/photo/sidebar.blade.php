@@ -69,17 +69,17 @@
             value="photo.model" />
         <x-gallery.photo.line if="photo.lens"
             :locale="__('lychee.PHOTO_LENS')" value="photo.lens" />
-        <x-gallery.photo.line if="photo.shutter"
+        <x-gallery.photo.line if="preformatted.shutter"
             :locale="__('lychee.PHOTO_SHUTTER')"
-            value="photo.shutter" />
-        <x-gallery.photo.line if="photo.aperture"
+            value="preformatted.shutter" />
+        <x-gallery.photo.line if="preformatted.aperture"
             :locale="__('lychee.PHOTO_APERTURE')"
-            value="'ƒ / ' + photo.aperture.toString()" />
+            value="'ƒ / ' + preformatted.aperture" />
         <x-gallery.photo.line if="photo.focal"
             :locale="__('lychee.PHOTO_FOCAL')"
             value="photo.focal" />
-        <x-gallery.photo.line if="photo.iso"
-            :locale="sprintf(__('lychee.PHOTO_ISO'), '')" value="photo.iso" />
+        <x-gallery.photo.line if="preformatted.iso"
+            :locale="sprintf(__('lychee.PHOTO_ISO'), '')" value="preformatted.iso" />
         <template x-if="precomputed.has_location">
             <h2 class="col-span-2 text-text-main-400 font-bold px-3 pt-4 pb-3">
                 {{ __('lychee.PHOTO_LOCATION') }}
