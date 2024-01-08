@@ -38,7 +38,12 @@ class Thumb extends AbstractDTO
 	 */
 	public static function sizeVariantsFilter(HasMany $relation): HasMany
 	{
-		return $relation->whereIn('type', [SizeVariantType::THUMB, SizeVariantType::THUMB2X]);
+		$svAlbumThumbs = [SizeVariantType::THUMB, SizeVariantType::THUMB2X];
+		if (config('app.livewire', true) === true) {
+			$svAlbumThumbs = [SizeVariantType::SMALL, SizeVariantType::SMALL2X];
+		}
+
+		return $relation->whereIn('type', $svAlbumThumbs);
 	}
 
 	/**
@@ -74,6 +79,8 @@ class Thumb extends AbstractDTO
 
 	/**
 	 * Creates a thumbnail from the given photo.
+	 * On Livewire it will use by default small and small2x if available, thumb and thumb2x if not.
+	 * On Legacy it will use thumb and thumb2x.
 	 *
 	 * @param Photo|null $photo the photo
 	 *
@@ -81,11 +88,28 @@ class Thumb extends AbstractDTO
 	 */
 	public static function createFromPhoto(?Photo $photo): ?Thumb
 	{
-		$thumb = $photo?->size_variants->getThumb();
+		$thumb = (config('app.livewire', true) === true && $photo?->size_variants->getSmall() !== null)
+			? $photo->size_variants->getSmall()
+			: $photo?->size_variants->getThumb();
 		if ($thumb === null) {
 			return null;
 		}
-		$thumb2x = $photo->size_variants->getThumb2x();
+
+		$thumb2x = (config('app.livewire', true) === true && $photo?->size_variants->getSmall() !== null)
+			? $photo->size_variants->getSmall2x()
+			: $photo?->size_variants->getThumb2x();
+
+		/**
+		 * TODO: Code for later when Livewire is the only front-end.
+		 */
+		// $thumb = $photo?->size_variants->getSmall() ?? $photo?->size_variants->getThumb();
+		// if ($thumb === null) {
+		// 	return null;
+		// }
+
+		// $thumb2x = $photo?->size_variants->getSmall() !== null
+		// 	? $photo?->size_variants->getSmall2x()
+		// 	: $photo?->size_variants->getThumb2x();
 
 		return new self(
 			$photo->id,

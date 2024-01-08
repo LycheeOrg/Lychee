@@ -132,4 +132,12 @@
 		-webkit-filter: blur(5px);
 		filter: blur(5px);
 	}
+
+	.aspect-2x3 {
+		aspect-ratio: 2/3;
+	}
+
+	.aspect-3x2 {
+		aspect-ratio: 3/2;
+	}
 }
