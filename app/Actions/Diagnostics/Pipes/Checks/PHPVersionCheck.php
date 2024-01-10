@@ -31,11 +31,14 @@ class PHPVersionCheck implements DiagnosticPipe
 	{
 		// As we cannot test this as those are just raising warnings which we cannot check via CICD.
 		// I hereby solemnly declare this code as covered !
-		// @codeCoverageIgnoreStart
 		if (floatval(phpversion()) <= self::PHP_ERROR) {
+			// @codeCoverageIgnoreStart
 			$data[] = 'Error: Upgrade to PHP ' . self::PHP_WARNING . ' or higher';
+		// @codeCoverageIgnoreEnd
 		} elseif (floatval(phpversion()) < self::PHP_WARNING) {
+			// @codeCoverageIgnoreStart
 			$data[] = 'Warning: Upgrade to PHP ' . self::PHP_LATEST . ' or higher';
+		// @codeCoverageIgnoreEnd
 		} elseif (floatval(phpversion()) < self::PHP_LATEST) {
 			$data[] = 'Info: Latest version of PHP is ' . self::PHP_LATEST;
 		}
@@ -45,7 +48,9 @@ class PHPVersionCheck implements DiagnosticPipe
 	{
 		// 32 or 64 bits ?
 		if (PHP_INT_MAX === 2147483647) {
+			// @codeCoverageIgnoreStart
 			$data[] = 'Warning: Using 32 bit PHP, recommended upgrade to 64 bit';
+			// @codeCoverageIgnoreEnd
 		}
 	}
 
@@ -75,7 +80,9 @@ class PHPVersionCheck implements DiagnosticPipe
 
 		foreach ($extensions as $extension) {
 			if (!extension_loaded($extension)) {
+				// @codeCoverageIgnoreStart
 				$data[] = 'Error: PHP ' . $extension . ' extension not activated';
+				// @codeCoverageIgnoreEnd
 			}
 		}
 	}
