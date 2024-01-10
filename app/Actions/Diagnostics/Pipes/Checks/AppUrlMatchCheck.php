@@ -84,8 +84,8 @@ class AppUrlMatchCheck implements DiagnosticPipe
 
 		if (!str_starts_with($config_url_imgage, '/') && !str_starts_with($config_url_imgage, 'http')) {
 			// @codeCoverageIgnoreStart
-			$data[] = 'Error: LYCHEE_UPLOADS_URL is set but start with neither a / or http.';
-			$data[] = self::INVISIBLE_ERROR . 'This will prevent images to be displayed. Remove the line from your .env';
+			$data[] = 'Error: LYCHEE_UPLOADS_URL is set but starts with neither a / nor http.';
+			$data[] = self::INVISIBLE_ERROR . 'This will prevent images from being displayed. Remove the line from your .env';
 			// @codeCoverageIgnoreEnd
 		}
 
