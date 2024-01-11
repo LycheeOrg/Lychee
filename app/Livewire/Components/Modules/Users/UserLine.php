@@ -4,6 +4,7 @@ namespace App\Livewire\Components\Modules\Users;
 
 use App\Actions\User\Save;
 use App\Http\RuleSets\Users\SetUserSettingsRuleSet;
+use App\Livewire\Traits\Notify;
 use App\Livewire\Traits\UseValidator;
 use App\Models\User;
 use App\Policies\UserPolicy;
@@ -18,6 +19,7 @@ use Livewire\Component;
 class UserLine extends Component
 {
 	use UseValidator;
+	use Notify;
 
 	private Save $save;
 	public User $user;
@@ -102,5 +104,7 @@ class UserLine extends Component
 			$this->may_upload,
 			$this->may_edit_own_settings
 		);
+		$this->password = ''; // Reset
+		$this->notify(__('lychee.CHANGE_SUCCESS'));
 	}
 }
