@@ -1,5 +1,6 @@
 <div>
 	<div class="p-9">
+		<a href="{{ route('oauth-authenticate', ['provider' => 'github']) }}" class="w-full text-center">Log in with GitHub</a>
 		@if($can_use_2fa)
 		<x-forms.buttons.action class="rounded w-full mb-9" x-on:click="$wire.dispatch('login-close'); $dispatch('webauthn-open')">{{ __('lychee.U2F_LOGIN') }}</x-forms.buttons.action>
 		@endif

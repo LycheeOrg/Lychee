@@ -9,6 +9,8 @@ use SocialiteProviders\Facebook\FacebookExtendSocialite;
 use SocialiteProviders\GitHub\GitHubExtendSocialite;
 use SocialiteProviders\Google\GoogleExtendSocialite;
 use SocialiteProviders\Manager\SocialiteWasCalled;
+use SocialiteProviders\Microsoft\MicrosoftExtendSocialite;
+use SocialiteProviders\Nextcloud\NextcloudExtendSocialite;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -23,9 +25,12 @@ class EventServiceProvider extends ServiceProvider
 		],
 		SocialiteWasCalled::class => [
 			AppleExtendSocialite::class . '@handle',
+			FacebookExtendSocialite::class . '@handle',
 			GitHubExtendSocialite::class . '@handle',
 			GoogleExtendSocialite::class . '@handle',
-			FacebookExtendSocialite::class . '@handle',
+			// Mastodon is provided directly.
+			MicrosoftExtendSocialite::class . '@handle',
+			NextcloudExtendSocialite::class . '@handle',
 		],
 	];
 

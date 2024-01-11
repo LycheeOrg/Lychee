@@ -42,30 +42,46 @@ return [
 	'apple' => [
 		'client_id' => env('APPLE_CLIENT_ID'),
 		'client_secret' => env('APPLE_CLIENT_SECRET'),
-		'redirect' => env('APPLE_REDIRECT_URI'),
-	],
-
-	'github' => [
-		'client_id' => env('GITHUB_CLIENT_ID'),
-		'client_secret' => env('GITHUB_CLIENT_SECRET'),
-		'redirect' => env('GITHUB_REDIRECT_URI'),
+		'redirect' => env('APPLE_REDIRECT_URI', '/auth/apple/redirect'),
 	],
 
 	'facebook' => [
 		'client_id' => env('FACEBOOK_CLIENT_ID'),
 		'client_secret' => env('FACEBOOK_CLIENT_SECRET'),
-		'redirect' => env('FACEBOOK_REDIRECT_URI'),
+		'redirect' => env('FACEBOOK_REDIRECT_URI', '/auth/facebook/redirect'),
+	],
+
+	'github' => [
+		'client_id' => env('GITHUB_CLIENT_ID'),
+		'client_secret' => env('GITHUB_CLIENT_SECRET'),
+		'redirect' => env('GITHUB_REDIRECT_URI', '/auth/github/redirect'),
 	],
 
 	'google' => [
 		'client_id' => env('GOOGLE_CLIENT_ID'),
 		'client_secret' => env('GOOGLE_CLIENT_SECRET'),
-		'redirect' => env('GOOGLE_REDIRECT_URI'),
+		'redirect' => env('GOOGLE_REDIRECT_URI', '/auth/google/redirect'),
+	],
+
+	'mastodon' => [
+		'domain' => env('MASTODON_DOMAIN'),
+		'client_id' => env('MASTODON_ID'),
+		'client_secret' => env('MASTODON_SECRET'),
+		'redirect' => env('MASTODON_REDIRECT_URI', '/auth/mastodon/redirect'),
+		// 'read', 'write', 'follow'
+		'scope' => ['read'],
 	],
 
 	'microsoft' => [
 		'client_id' => env('MICROSOFT_CLIENT_ID'),
 		'client_secret' => env('MICROSOFT_CLIENT_SECRET'),
-		'redirect' => env('MICROSOFT_REDIRECT_URI'),
+		'redirect' => env('MICROSOFT_REDIRECT_URI', '/auth/microsoft/redirect'),
+	],
+
+	'nextcloud' => [
+		'client_id' => env('NEXTCLOUD_CLIENT_ID'),
+		'client_secret' => env('NEXTCLOUD_CLIENT_SECRET'),
+		'redirect' => env('NEXTCLOUD_REDIRECT_URI', '/auth/nextcloud/redirect'),
+		'instance_uri' => env('NEXTCLOUD_BASE_URI'),
 	],
 ];

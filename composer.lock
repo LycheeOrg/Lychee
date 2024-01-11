@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a434a38c06d23e01b3f4d73665f9f61f",
+    "content-hash": "0b2fdea5ee75d23f0bad59398844472a",
     "packages": [
         {
             "name": "bepsvpt/secure-headers",
@@ -5384,6 +5384,65 @@
             "time": "2023-11-08T05:53:05+00:00"
         },
         {
+            "name": "revolution/socialite-mastodon",
+            "version": "1.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/kawax/socialite-mastodon.git",
+                "reference": "7e926091af7b81b0f3948ddc1b9379d074584515"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/kawax/socialite-mastodon/zipball/7e926091af7b81b0f3948ddc1b9379d074584515",
+                "reference": "7e926091af7b81b0f3948ddc1b9379d074584515",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "laravel/socialite": "*",
+                "php": "^8.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "^1.0",
+                "orchestra/testbench": "^7.0||^8.0",
+                "phpunit/phpunit": "^9.5"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Revolution\\Socialite\\Mastodon\\MastodonServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Revolution\\Socialite\\Mastodon\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "kawax",
+                    "email": "kawaxbiz@gmail.com"
+                }
+            ],
+            "description": "Socialite for Mastodon",
+            "keywords": [
+                "laravel",
+                "mastodon",
+                "socialite"
+            ],
+            "support": {
+                "issues": "https://github.com/kawax/socialite-mastodon/issues",
+                "source": "https://github.com/kawax/socialite-mastodon/tree/1.4.0"
+            },
+            "time": "2023-01-29T01:06:31+00:00"
+        },
+        {
             "name": "socialiteproviders/apple",
             "version": "5.6.1",
             "source": {
@@ -5651,6 +5710,97 @@
                 "source": "https://github.com/socialiteproviders/manager"
             },
             "time": "2023-08-27T23:46:34+00:00"
+        },
+        {
+            "name": "socialiteproviders/microsoft",
+            "version": "4.2.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/SocialiteProviders/Microsoft.git",
+                "reference": "19bc79810d7319c466f38552546b2c233b634059"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/SocialiteProviders/Microsoft/zipball/19bc79810d7319c466f38552546b2c233b634059",
+                "reference": "19bc79810d7319c466f38552546b2c233b634059",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "php": "^7.4 || ^8.0",
+                "socialiteproviders/manager": "~4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "SocialiteProviders\\Microsoft\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Brian Faust",
+                    "email": "hello@brianfaust.de"
+                }
+            ],
+            "description": "Microsoft OAuth2 Provider for Laravel Socialite",
+            "keywords": [
+                "laravel",
+                "microsoft",
+                "oauth",
+                "provider",
+                "socialite"
+            ],
+            "support": {
+                "docs": "https://socialiteproviders.com/microsoft",
+                "issues": "https://github.com/socialiteproviders/providers/issues",
+                "source": "https://github.com/socialiteproviders/providers"
+            },
+            "time": "2023-03-02T09:58:36+00:00"
+        },
+        {
+            "name": "socialiteproviders/nextcloud",
+            "version": "4.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/SocialiteProviders/Nextcloud.git",
+                "reference": "94b3cef64410994bdd480230a7aa78294564cc44"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/SocialiteProviders/Nextcloud/zipball/94b3cef64410994bdd480230a7aa78294564cc44",
+                "reference": "94b3cef64410994bdd480230a7aa78294564cc44",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "php": "^7.2 || ^8.0",
+                "socialiteproviders/manager": "~4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "SocialiteProviders\\Nextcloud\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Artur Shaik",
+                    "email": "artur@shaik.link"
+                }
+            ],
+            "description": "Nextcloud OAuth2 Provider for Laravel Socialite",
+            "support": {
+                "source": "https://github.com/SocialiteProviders/Nextcloud/tree/4.0.0"
+            },
+            "time": "2021-02-27T23:17:54+00:00"
         },
         {
             "name": "spatie/guzzle-rate-limiter-middleware",
