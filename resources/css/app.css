@@ -1,7 +1,6 @@
-
 @import "./photoDescription.css";
 @import "./fonts.css";
-@import "@fortawesome/fontawesome-free/css/all.css"; 
+@import "@fortawesome/fontawesome-free/css/all.css";
 
 @tailwind base;
 /* also contains normalize */
