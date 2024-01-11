@@ -63,6 +63,7 @@
         "php-http/guzzle7-adapter": "^1.0",
         "php-http/message": "^1.12",
         "revolution/socialite-mastodon": "^1.4",
+        "socialiteproviders/amazon": "^4.1",
         "socialiteproviders/apple": "^5.6",
         "socialiteproviders/facebook": "^4.1",
         "socialiteproviders/github": "^4.1",

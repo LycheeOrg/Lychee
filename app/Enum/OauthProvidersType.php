@@ -13,6 +13,7 @@ enum OauthProvidersType: string
 {
 	use DecorateBackedEnum;
 
+	case AMAZON = 'amazon';
 	case APPLE = 'apple';
 	case FACEBOOK = 'facebook';
 	case GITHUB = 'github';

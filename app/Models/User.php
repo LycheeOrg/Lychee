@@ -40,6 +40,7 @@ use function Safe\mb_convert_encoding;
  * @property bool                                                  $may_edit_own_settings
  * @property string|null                                           $token
  * @property string|null                                           $remember_token
+ * @property string|null                                           $amazon_id
  * @property string|null                                           $apple_id
  * @property string|null                                           $facebook_id
  * @property string|null                                           $github_id
@@ -110,6 +111,17 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 		'may_administrate' => 'boolean',
 		'may_upload' => 'boolean',
 		'may_edit_own_settings' => 'boolean',
+	];
+
+	protected $hidden = [
+		'amazon_id',
+		'apple_id',
+		'facebook_id',
+		'github_id',
+		'google_id',
+		'mastodon_id',
+		'microsoft_id',
+		'nextcloud_id',
 	];
 
 	protected function _toArray(): array

@@ -34,6 +34,12 @@ return [
 	| Oauth services
 	|--------------------------------------------------------------------------
 	*/
+	'amazon' => [
+		'client_id' => env('AMAZON_SIGNIN_CLIENT_ID'),
+		'client_secret' => env('AMAZON_SIGNIN_SECRET'),
+		'redirect' => env('AMAZON_SIGNIN_REDIRECT_URI', '/auth/amazon/redirect'),
+	],
+
 	// https://developer.okta.com/blog/2019/06/04/what-the-heck-is-sign-in-with-apple
 	// Note: the client secret used for "Sign In with Apple" is a JWT token that can have a maximum lifetime of 6 months.
 	// The article above explains how to generate the client secret on demand and you'll need to update this every 6 months.

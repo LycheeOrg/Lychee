@@ -6,7 +6,7 @@
 	<div class="overflow-x-clip overflow-y-auto h-[calc(100vh-56px)]">
 		<div class="settings_view max-w-xl text-text-main-400 text-sm mx-auto">
 			<livewire:forms.profile.set-login />
-			<livewire:forms.profile.github />
+			<livewire:forms.profile.oauth />
 			@if($are_notification_active)
 			<div>
 				<p>

@@ -1,9 +1,30 @@
 <div>
 	<div class="p-9">
-		<a href="{{ route('oauth-authenticate', ['provider' => 'github']) }}" class="w-full text-center">Log in with GitHub</a>
-		@if($can_use_2fa)
-		<x-forms.buttons.action class="rounded w-full mb-9" x-on:click="$wire.dispatch('login-close'); $dispatch('webauthn-open')">{{ __('lychee.U2F_LOGIN') }}</x-forms.buttons.action>
-		@endif
+		<div class="flex justify-center gap-4 text-2xl">
+			@if($this->can_use_2fa)
+			<a x-on:click="$wire.dispatch('login-close'); $dispatch('webauthn-open')"
+				class="hover:scale-125 transition-all cursor-pointer hover:text-primary-400 mb-6"
+				>
+				<i class="align-middle fa-solid fa-key"></i>
+			</a>
+			@endif
+			@foreach ($this->available_oauth as $provider)
+				<a href="{{ route('oauth-authenticate', ['provider' => $provider]) }}"
+					class="hover:scale-125 transition-all cursor-pointer  hover:text-primary-400 mb-6"
+					>
+					<i @class(["align-middle",
+					"fa-brands fa-apple" => $provider === 'apple',
+					"fa-brands fa-amazon" => $provider === 'amazon',
+					"fa-brands fa-facebook" => $provider === 'facebook',
+					"fa-brands fa-github" => $provider === 'github',
+					"fa-brands fa-google" => $provider === 'google',
+					"fa-brands fa-mastodon" => $provider === 'mastodon',
+					"fa-brands fa-microsoft" => $provider === 'microsoft',
+					"fa-solid fa-cloud" => $provider === 'nextcloud',
+					])></i>
+				</a>
+			@endforeach
+		</div>
 		<x-forms.error-message field='wrongLogin' />
 		<form class="" wire:submit="submit">
 			<div class="mb-4 mx-0">

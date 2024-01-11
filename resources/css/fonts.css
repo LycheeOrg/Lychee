@@ -63,6 +63,44 @@
 	content: "\eaa4";
 }
 
-#facebook:before {
+/* Oauth stuff
+#facebook:before, .facebook:before {
+	font-family: "socials";
 	content: "\ea91";
 }
+
+#apple:before, .apple:before {
+	font-family: "socials";
+	content: "\ea91";
+}
+
+#google:before, .google:before {
+	font-family: "socials";
+	content: "\ea91";
+}
+
+#amazon:before, .amazon:before {
+	font-family: "socials";
+	content: "\ea91";
+}
+
+#microsoft:before, .microsoft:before {
+	font-family: "socials";
+	content: "\ea91";
+}
+
+#github:before, .github:before {
+	font-family: "socials";
+	content: "\ea91";
+}
+
+#mastodon:before, .mastodon:before {
+	font-family: "socials";
+	content: "\ea91";
+}
+
+#nextcloud:before, .nextcloud:before {
+	font-family: "socials";
+	content: "\ea91";
+}
+ */

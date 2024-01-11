@@ -11,6 +11,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Controller;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 use Laravel\Socialite\Facades\Socialite;
 use Symfony\Component\HttpFoundation\RedirectResponse as HttpFoundationRedirectResponse;
@@ -18,7 +19,6 @@ use Symfony\Component\HttpFoundation\RedirectResponse as HttpFoundationRedirectR
 class Oauth extends Controller
 {
 	public const OAUTH_REGISTER = 'register';
-	public const OAUTH_INITIALIZE = 'initizalize';
 
 	/**
 	 * Provide a valid provider Enum from string.
@@ -89,7 +89,7 @@ class Oauth extends Controller
 		$providerEnum = $this->validateProviderOrDie($provider);
 
 		Auth::user() ?? throw new UnauthenticatedException();
-		if (Session::get($providerEnum->value) !== self::OAUTH_INITIALIZE) {
+		if (!Request::hasValidSignature(false)) {
 			throw new UnauthorizedException('Registration attempted but not initialized.');
 		}
 

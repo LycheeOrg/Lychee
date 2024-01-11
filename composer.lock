@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0b2fdea5ee75d23f0bad59398844472a",
+    "content-hash": "c66f10a5224314dca039c06c1f071b35",
     "packages": [
         {
             "name": "bepsvpt/secure-headers",
@@ -5441,6 +5441,48 @@
                 "source": "https://github.com/kawax/socialite-mastodon/tree/1.4.0"
             },
             "time": "2023-01-29T01:06:31+00:00"
+        },
+        {
+            "name": "socialiteproviders/amazon",
+            "version": "4.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/SocialiteProviders/Amazon.git",
+                "reference": "717c8c78d42fdffced7ccba218092384ce473e1d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/SocialiteProviders/Amazon/zipball/717c8c78d42fdffced7ccba218092384ce473e1d",
+                "reference": "717c8c78d42fdffced7ccba218092384ce473e1d",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "php": "^7.2 || ^8.0",
+                "socialiteproviders/manager": "~4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "SocialiteProviders\\Amazon\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "atymic",
+                    "email": "atymicq@gmail.com",
+                    "homepage": "https://atymic.dev"
+                }
+            ],
+            "description": "Amazon OAuth2 Provider for Laravel Socialite",
+            "support": {
+                "source": "https://github.com/SocialiteProviders/Amazon/tree/4.1.0"
+            },
+            "time": "2020-12-01T23:10:59+00:00"
         },
         {
             "name": "socialiteproviders/apple",

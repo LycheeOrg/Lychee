@@ -5,6 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class() extends Migration {
+	public const AMAZON = 'amazon_id';
 	public const APPLE = 'apple_id';
 	public const FACEBOOK = 'facebook_id';
 	public const GITHUB = 'github_id';
@@ -19,6 +20,7 @@ return new class() extends Migration {
 	public function up(): void
 	{
 		Schema::table('users', function (Blueprint $table) {
+			$table->string(self::AMAZON)->nullable(true)->default(null)->after('remember_token');
 			$table->string(self::APPLE)->nullable(true)->default(null)->after('remember_token');
 			$table->string(self::FACEBOOK)->nullable(true)->default(null)->after('remember_token');
 			$table->string(self::GITHUB)->nullable(true)->default(null)->after('remember_token');
@@ -35,6 +37,9 @@ return new class() extends Migration {
 	public function down(): void
 	{
 		Schema::disableForeignKeyConstraints();
+		Schema::table('users', function (Blueprint $table) {
+			$table->dropColumn(self::AMAZON);
+		});
 		Schema::table('users', function (Blueprint $table) {
 			$table->dropColumn(self::APPLE);
 		});
