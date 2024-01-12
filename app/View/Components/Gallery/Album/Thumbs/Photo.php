@@ -103,8 +103,8 @@ class Photo extends Component
 			$dim2x = 200;
 		}
 
-		$this->srcset = sprintf("data-src='%s'", URL::asset($thumbUrl));
-		$this->srcset2x = $thumb2xUrl !== null ? sprintf("data-srcset='%s %dw, %s %dw'", URL::asset($thumbUrl), $dim, URL::asset($thumb2xUrl), $dim2x) : '';
+		$this->srcset = sprintf("data-src='%s'", $thumbUrl);
+		$this->srcset2x = $thumb2xUrl !== null ? sprintf("data-srcset='%s %dw, %s %dw'", $thumbUrl, $dim, $thumb2xUrl, $dim2x) : '';
 	}
 
 	/**

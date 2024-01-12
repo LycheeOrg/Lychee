@@ -75,7 +75,7 @@ return [
 			'driver' => 'local',
 			'root' => env('LYCHEE_UPLOADS', public_path(env('LYCHEE_UPLOADS_DIR', 'uploads/'))),
 			'url' => env('LYCHEE_UPLOADS_URL', '') !== '' ? renv('LYCHEE_UPLOADS_URL')
-				: (renv('APP_URL', 'http://localhost') . renv_cond('APP_DIR') . '/' .
+				: (renv('APP_URL', '') . renv_cond('APP_DIR') . '/' .
 					renv('LYCHEE_UPLOADS_DIR', 'uploads')),
 			'visibility' => env('LYCHEE_IMAGE_VISIBILITY', 'public'),
 			'directory_visibility' => env('LYCHEE_IMAGE_VISIBILITY', 'public'),
