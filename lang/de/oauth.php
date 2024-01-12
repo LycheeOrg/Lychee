@@ -3,10 +3,10 @@
 /** @noinspection SpellCheckingInspection */
 
 return [
-	'NOT_AVAILABLE' => 'Oauth is not available.',
-	'SET_UP_CREDENTIALS' => 'Set up the credentials in your .env',
-	'SET_UP_OAUTH' => 'Set up Oauth authentication',
-	'SET_UP' => 'Set up %s',
-	'TOKEN_REGISTERED' => '%s token registered.',
-	'RESET' => 'reset',
+	'NOT_AVAILABLE' => 'Oauth ist nicht verfügbar.',
+	'SET_UP_CREDENTIALS' => 'Richten Sie die Zugangsdaten in Ihrer .env ein',
+	'SET_UP_OAUTH' => 'Oauth-Authentifizierung einrichten',
+	'SET_UP' => '%s einrichten',
+	'TOKEN_REGISTERED' => 'Token %s registriert.',
+	'RESET' => 'zurücksetzen',
 ];
