@@ -103,6 +103,10 @@ class SmallMediumExistsCheck implements DiagnosticPipe
 			self::MAX_NUM_MEDIUM2X
 		)->first();
 
+		if ($result === null) {
+			return $next($data);
+		}
+
 		$num = $result[self::MAX_NUM_SMALL] - $result[self::NUM_SMALL];
 		if ($num > 0) {
 			$data[] = sprintf(self::INFO_MSG, $num, SizeVariantType::SMALL->name());
