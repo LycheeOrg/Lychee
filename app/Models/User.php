@@ -40,14 +40,6 @@ use function Safe\mb_convert_encoding;
  * @property bool                                                  $may_edit_own_settings
  * @property string|null                                           $token
  * @property string|null                                           $remember_token
- * @property string|null                                           $amazon_id
- * @property string|null                                           $apple_id
- * @property string|null                                           $facebook_id
- * @property string|null                                           $github_id
- * @property string|null                                           $google_id
- * @property string|null                                           $mastodon_id
- * @property string|null                                           $microsoft_id
- * @property string|null                                           $nextcloud_id
  * @property Collection<BaseAlbumImpl>                             $albums
  * @property Collection<OauthCredential>                           $oauthCredentials
  * @property DatabaseNotificationCollection|DatabaseNotification[] $notifications
