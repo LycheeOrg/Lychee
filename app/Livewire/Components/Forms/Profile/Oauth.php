@@ -68,7 +68,7 @@ class Oauth extends Component
 				expiration: now()->addMinutes(5),
 				absolute: false);
 
-			$oauthData[] = new OauthData(
+			$oauthData[$provider->value] = new OauthData(
 				providerType: $provider->value,
 				isEnabled: $credentials->search(fn (OauthCredential $c) => $c->provider === $provider) !== false,
 				registrationRoute: $route,
