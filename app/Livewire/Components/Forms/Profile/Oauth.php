@@ -5,6 +5,7 @@ namespace App\Livewire\Components\Forms\Profile;
 use App\Enum\OauthProvidersType;
 use App\Exceptions\UnauthenticatedException;
 use App\Livewire\DTO\OauthData;
+use App\Models\OauthCredential;
 use App\Models\User;
 use App\Policies\UserPolicy;
 use Illuminate\Contracts\View\View;
@@ -37,11 +38,7 @@ class Oauth extends Component
 
 		/** @var User $user */
 		$user = Auth::user() ?? throw new UnauthenticatedException();
-		/** @phpstan-ignore-next-line we are sure this exists because we force it with the enum */
-		$user->{$providerEnum->value . '_id'} = null;
-		$user->save();
-
-		Auth::login($user);
+		$user->oauthCredentials()->where('provider', '=', $providerEnum)->delete();
 	}
 
 	/**
@@ -55,6 +52,8 @@ class Oauth extends Component
 
 		/** @var User $user */
 		$user = Auth::user() ?? throw new UnauthenticatedException();
+
+		$credentials = $user->oauthCredentials()->get();
 
 		foreach (OauthProvidersType::cases() as $provider) {
 			$client_id = config('services.' . $provider->value . '.client_id');
@@ -71,8 +70,7 @@ class Oauth extends Component
 
 			$oauthData[] = new OauthData(
 				providerType: $provider->value,
-				/** @phpstan-ignore-next-line we are sure this exists because we force it with the enum */
-				isEnabled: $user->{$provider->value . '_id'} !== null,
+				isEnabled: $credentials->search(fn (OauthCredential $c) => $c->provider === $provider) !== false,
 				registrationRoute: $route,
 			);
 		}

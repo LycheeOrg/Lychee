@@ -49,6 +49,7 @@ use function Safe\mb_convert_encoding;
  * @property string|null                                           $microsoft_id
  * @property string|null                                           $nextcloud_id
  * @property Collection<BaseAlbumImpl>                             $albums
+ * @property Collection<OauthCredential>                           $oauthCredentials
  * @property DatabaseNotificationCollection|DatabaseNotification[] $notifications
  * @property Collection<BaseAlbumImpl>                             $shared
  * @property Collection<Photo>                                     $photos
@@ -174,6 +175,16 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 			APC::USER_ID,
 			APC::BASE_ALBUM_ID
 		);
+	}
+
+	/**
+	 * Return the Oauth credentials owned by the user.
+	 *
+	 * @return HasMany
+	 */
+	public function oauthCredentials(): HasMany
+	{
+		return $this->hasMany(OauthCredential::class, 'user_id', 'id');
 	}
 
 	/**

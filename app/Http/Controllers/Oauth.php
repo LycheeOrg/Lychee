@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Enum\OauthProvidersType;
 use App\Exceptions\Internal\LycheeInvalidArgumentException;
+use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\UnauthenticatedException;
 use App\Exceptions\UnauthorizedException;
+use App\Models\OauthCredential;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Controller;
@@ -108,15 +110,18 @@ class Oauth extends Controller
 	private function authenticateOrDie(OauthProvidersType $provider)
 	{
 		$user = Socialite::driver($provider->value)->user();
-		$candidateUser = User::query()
-			->where($provider->value . '_id', '=', $user->getId())
+
+		$credential = OauthCredential::query()
+			->with(['user'])
+			->where('token_id', '=', $user->getId())
+			->where('provider', '=', $provider)
 			->first();
 
-		if ($candidateUser === null) {
+		if ($credential === null) {
 			throw new UnauthorizedException('User not found!');
 		}
 
-		Auth::login($candidateUser);
+		Auth::login($credential->user);
 
 		return redirect(route('livewire-gallery'));
 	}
@@ -135,13 +140,24 @@ class Oauth extends Controller
 		}
 
 		$user = Socialite::driver($provider->value)->user();
+
 		/** @var User $authedUser */
 		$authedUser = Auth::user();
 
-		/** @phpstan-ignore-next-line we are sure this exists because we force it with the enum */
-		$authedUser->{$provider->value . '_id'} = $user->getId();
-		$authedUser->save();
-		Auth::login($authedUser);
+		$count_existing = OauthCredential::query()
+			->where('provider', '=', $provider)
+			->where('user_id', '=', $authedUser->id)
+			->count();
+		if ($count_existing > 0) {
+			throw new LycheeLogicException('Oauth credential for that provider already exists.');
+		}
+
+		$credential = OauthCredential::create([
+			'provider' => $provider,
+			'user_id' => $authedUser->id,
+			'token_id' => $user->getId(),
+		]);
+		$credential->save();
 
 		return redirect(route('profile'));
 	}
