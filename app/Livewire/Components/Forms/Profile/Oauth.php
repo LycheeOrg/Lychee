@@ -44,7 +44,7 @@ class Oauth extends Component
 	/**
 	 * Return computed property for OauthData.
 	 *
-	 * @return array<int,OauthData>
+	 * @return array<string,OauthData>
 	 */
 	public function getOauthDataProperty(): array
 	{

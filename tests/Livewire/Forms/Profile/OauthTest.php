@@ -10,7 +10,7 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Tests\Livewire\Forms;
+namespace Tests\Livewire\Forms\Profile;
 
 use App\Enum\OauthProvidersType;
 use App\Livewire\Components\Forms\Profile\Oauth;
