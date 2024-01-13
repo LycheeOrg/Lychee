@@ -40,7 +40,7 @@ class Thumb extends AbstractDTO
 	{
 		$svAlbumThumbs = [SizeVariantType::THUMB, SizeVariantType::THUMB2X];
 		if (config('app.livewire', true) === true) {
-			$svAlbumThumbs = [SizeVariantType::SMALL, SizeVariantType::SMALL2X];
+			$svAlbumThumbs = [SizeVariantType::SMALL, SizeVariantType::SMALL2X, SizeVariantType::THUMB, SizeVariantType::THUMB2X];
 		}
 
 		return $relation->whereIn('type', $svAlbumThumbs);
