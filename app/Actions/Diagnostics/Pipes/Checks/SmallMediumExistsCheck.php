@@ -22,7 +22,7 @@ class SmallMediumExistsCheck implements DiagnosticPipe
 	public const MAX_NUM_SMALL2X = 'max_num_small2x';
 	public const MAX_NUM_MEDIUM2X = 'max_num_medium2x';
 	public const INFO_MSG = 'Info: Found %d %s that could be generated';
-	public const INFO_LINE = '      You can use `php artisan lychee:generate_thumbs %s` to generate them.';
+	public const INFO_LINE = '     You can use `php artisan lychee:generate_thumbs %s` to generate them.';
 
 	/**
 	 * {@inheritDoc}
