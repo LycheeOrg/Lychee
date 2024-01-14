@@ -181,8 +181,19 @@ class Album extends BaseAlbumComponent implements Reloadable
 			return null;
 		}
 
-		return SizeVariant::query()
+		$medium = SizeVariant::query()
 			->where('type', '=', SizeVariantType::MEDIUM)
+			->whereBelongsTo($this->album->photos)
+			->where('ratio', '>', 1)
+			->inRandomOrder()
+			->first();
+
+		if ($medium !== null) {
+			return $medium;
+		}
+
+		return SizeVariant::query()
+			->where('type', '=', SizeVariantType::SMALL2X)
 			->whereBelongsTo($this->album->photos)
 			->where('ratio', '>', 1)
 			->inRandomOrder()
