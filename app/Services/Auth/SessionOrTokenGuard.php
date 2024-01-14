@@ -9,6 +9,8 @@ use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 /**
  * A custom Guard which combines the default Laravel Session Guard with
@@ -308,8 +310,39 @@ class SessionOrTokenGuard extends SessionGuard
 	{
 		$token = $this->request->headers->get(self::HTTP_TOKEN_HEADER);
 
-		return is_string($token) && $token !== '' ? $this->provider->retrieveByCredentials([
+		// Skip if token is not found.
+		if ($token === null || !is_string($token) || $token === '') {
+			return null;
+		}
+
+		// Skip if token starts with Basic: it is not related to Lychee.
+		if (Str::startsWith('Basic', $token)) {
+			return null;
+		}
+
+		// Check if token starts with Bearer
+		$hasBearer = Str::startsWith('Bearer', $token);
+		/** @var bool $configLog */
+		$configLog = config('auth.token_guard.log_warn_no_scheme_bearer');
+		/** @var bool $configThrow */
+		$configThrow = config('auth.token_guard.fail_bearer_authenticable_not_found', true);
+
+		// If Token does not start with Bearer
+		if (!$hasBearer && $configLog) {
+			Log::warning('Auth token found, but Bearer prefix not provided.');
+		}
+
+		// Remove prefix and fetch authenticable.
+		$token = trim(Str::remove('Bearer', $token));
+		$authenticable = $this->provider->retrieveByCredentials([
 			self::TOKEN_COLUMN_NAME => hash(self::TOKEN_HASH_METHOD, $token),
-		]) ?? throw new BadRequestHeaderException('Invalid token') : null;
+		]);
+
+		return match (true) {
+			$authenticable !== null => $authenticable,
+			$hasBearer && $configThrow => throw new BadRequestHeaderException('Invalid token'),
+			$hasBearer => null,
+			default => throw new BadRequestHeaderException('Invalid token')
+		};
 	}
 }
