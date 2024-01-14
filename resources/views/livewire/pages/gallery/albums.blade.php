@@ -51,9 +51,17 @@
                     @endforeach
                 @endif
 
+                @php
+                    $oldUsername = '';
+                @endphp
                 @if ($this->sharedAlbums->count() > 0)
-                    <x-gallery.divider title="{{ __('lychee.SHARED_ALBUMS') }}" />
                     @foreach ($this->sharedAlbums as $album)
+                        @if ($oldUsername !== $album->owner->username)
+                        <x-gallery.divider :title="$album->owner->username" />
+                        @php
+                            $oldUsername = $album->owner->username;
+                        @endphp
+                        @endif
                         <x-gallery.album.thumbs.album :data="$album" :strAspectRatioClass="$flags->album_thumb_css_aspect_ratio" />
                     @endforeach
                 @endif
