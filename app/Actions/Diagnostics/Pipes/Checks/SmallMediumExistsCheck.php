@@ -6,6 +6,7 @@ use App\Contracts\DiagnosticPipe;
 use App\Enum\SizeVariantType;
 use App\Image\SizeVariantDimensionHelpers;
 use App\Models\SizeVariant;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 /**
@@ -37,7 +38,8 @@ class SmallMediumExistsCheck implements DiagnosticPipe
 
 		$svHelpers = new SizeVariantDimensionHelpers();
 
-		$result = SizeVariant::query()
+		/** @var object{num_small:int,num_medium:int,num_small2x:int,num_medium2x:int,max_num_small:int,max_num_medium:int,max_num_small2x:int,max_num_medium2x:int} $result */
+		$result = DB::query()
 		->selectSub(
 			SizeVariant::query()
 			->selectRaw('COUNT(*)')
@@ -101,31 +103,28 @@ class SmallMediumExistsCheck implements DiagnosticPipe
 			)
 			->where('type', '=', SizeVariantType::ORIGINAL),
 			self::MAX_NUM_MEDIUM2X
-		)->first();
+		)
+		->first();
 
-		if ($result === null) {
-			return $next($data);
-		}
-
-		$num = $result[self::MAX_NUM_SMALL] - $result[self::NUM_SMALL];
+		$num = $result->{self::MAX_NUM_SMALL} - $result->{self::NUM_SMALL}; // @phpstan-ignore-line
 		if ($num > 0) {
 			$data[] = sprintf(self::INFO_MSG, $num, SizeVariantType::SMALL->name());
 			$data[] = sprintf(self::INFO_LINE, SizeVariantType::SMALL->name(), $num);
 		}
 
-		$num = $result[self::MAX_NUM_SMALL2X] - $result[self::NUM_SMALL2X];
+		$num = $result->{self::MAX_NUM_SMALL2X} - $result->{self::NUM_SMALL2X}; // @phpstan-ignore-line
 		if ($num > 0 && $svHelpers->isEnabledByConfiguration(SizeVariantType::SMALL2X)) {
 			$data[] = sprintf(self::INFO_MSG, $num, SizeVariantType::SMALL2X->name());
 			$data[] = sprintf(self::INFO_LINE, SizeVariantType::SMALL2X->name(), $num);
 		}
 
-		$num = $result[self::MAX_NUM_MEDIUM] - $result[self::NUM_MEDIUM];
+		$num = $result->{self::MAX_NUM_MEDIUM} - $result->{self::NUM_MEDIUM}; // @phpstan-ignore-line
 		if ($num > 0) {
 			$data[] = sprintf(self::INFO_MSG, $num, SizeVariantType::MEDIUM->name());
 			$data[] = sprintf(self::INFO_LINE, SizeVariantType::MEDIUM->name(), $num);
 		}
 
-		$num = $result[self::MAX_NUM_MEDIUM2X] - $result[self::NUM_MEDIUM2X];
+		$num = $result->{self::MAX_NUM_MEDIUM2X} - $result->{self::NUM_MEDIUM2X}; // @phpstan-ignore-line
 		if ($num > 0 && $svHelpers->isEnabledByConfiguration(SizeVariantType::MEDIUM2X)) {
 			$data[] = sprintf(self::INFO_MSG, $num, SizeVariantType::MEDIUM2X->name());
 			$data[] = sprintf(self::INFO_LINE, SizeVariantType::MEDIUM2X->name(), $num);
