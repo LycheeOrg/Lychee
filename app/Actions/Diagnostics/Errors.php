@@ -14,6 +14,7 @@ use App\Actions\Diagnostics\Pipes\Checks\ImageOptCheck;
 use App\Actions\Diagnostics\Pipes\Checks\IniSettingsCheck;
 use App\Actions\Diagnostics\Pipes\Checks\MigrationCheck;
 use App\Actions\Diagnostics\Pipes\Checks\PHPVersionCheck;
+use App\Actions\Diagnostics\Pipes\Checks\SmallMediumExistsCheck;
 use App\Actions\Diagnostics\Pipes\Checks\TimezoneCheck;
 use App\Actions\Diagnostics\Pipes\Checks\UpdatableCheck;
 use Illuminate\Pipeline\Pipeline;
@@ -40,6 +41,7 @@ class Errors
 		UpdatableCheck::class,
 		ForeignKeyListInfo::class,
 		DBIntegrityCheck::class,
+		SmallMediumExistsCheck::class,
 	];
 
 	/**
