@@ -2,6 +2,8 @@
 
 namespace App\Livewire\Components\Pages;
 
+use App\Enum\OauthProvidersType;
+use App\Http\Controllers\Oauth;
 use App\Livewire\Components\Pages\Gallery\Album;
 use App\Livewire\Components\Pages\Gallery\Albums;
 use App\Livewire\Components\Pages\Gallery\Search;
@@ -22,6 +24,11 @@ Route::middleware(['installation:complete', 'migration:complete'])
 	->group(function () {
 		Route::prefix(config('app.livewire') === true ? '' : 'livewire')
 		->group(function () {
+			// Oauth routes.
+			Route::get('/auth/{provider}/redirect', [Oauth::class, 'redirected'])->whereIn('provider', OauthProvidersType::values());
+			Route::get('/auth/{provider}/authenticate', [Oauth::class, 'authenticate'])->name('oauth-authenticate')->whereIn('provider', OauthProvidersType::values());
+			Route::get('/auth/{provider}/register', [Oauth::class, 'register'])->name('oauth-register')->whereIn('provider', OauthProvidersType::values());
+
 			Route::get('/landing', Landing::class)->name('landing');
 			Route::get('/all-settings', AllSettings::class)->name('all-settings');
 			Route::get('/settings', Settings::class)->name('settings');

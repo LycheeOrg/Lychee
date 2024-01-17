@@ -29,7 +29,7 @@ module.exports = {
       },
       fontSize: {
         '3xs': ['0.55rem', '0.7rem'],
-        '2xs' : ['0.65rem', '0.8rem'],
+        '2xs': ['0.65rem', '0.8rem'],
       },
       colors: {
         primary: {
@@ -96,8 +96,8 @@ module.exports = {
           '100%': { 'background-position-x': '-100px' }
         },
         moveUp: {
-          '0%': {'transform': 'translateY(80px)'},
-          '100%': {'transform': 'translateY(0)'}
+          '0%': { 'transform': 'translateY(80px)' },
+          '100%': { 'transform': 'translateY(0)' }
         },
         zoomIn: {
           '0%': {
@@ -188,7 +188,7 @@ module.exports = {
         'landingIntroPopIn': 'popIn 2s forwards ease-in-out',
         'landingIntroFadeOut': 'fadeOut 2s 2s forwards ease-in-out', // delayed by 2s
         'landingSlidesPopIn': 'popIn 2s 3s forwards ease-in-out', // delayed by 2s
-        'ladningAnimateDown': 'animateDown 1s 3.1s forwards ease-in-out', 
+        'ladningAnimateDown': 'animateDown 1s 3.1s forwards ease-in-out',
         'ladningAnimateUp': 'animateUp 1s 3.1s forwards ease-in-out',
         'delayedFadeOut': 'fadeOut 2s 2s forwards ease-in-out'
       },
@@ -200,5 +200,6 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+  ],
 }
