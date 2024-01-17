@@ -55,7 +55,7 @@ class PhotoDropdown extends Component
 	public function star(): void
 	{
 		$this->closeContextMenu();
-		Gate::authorize(PhotoPolicy::CAN_EDIT_ID, [Photo::class, $this->params[Params::PHOTO_ID]]);
+		Gate::authorize(PhotoPolicy::CAN_EDIT_ID, [Photo::class, [$this->params[Params::PHOTO_ID]]]);
 		Photo::where('id', '=', $this->params[Params::PHOTO_ID])->update(['is_starred' => true]);
 		$this->dispatch('reloadPage')->to(GalleryAlbum::class);
 	}
@@ -63,7 +63,7 @@ class PhotoDropdown extends Component
 	public function unstar(): void
 	{
 		$this->closeContextMenu();
-		Gate::authorize(PhotoPolicy::CAN_EDIT_ID, [Photo::class, $this->params[Params::PHOTO_ID]]);
+		Gate::authorize(PhotoPolicy::CAN_EDIT_ID, [Photo::class, [$this->params[Params::PHOTO_ID]]]);
 		Photo::where('id', '=', $this->params[Params::PHOTO_ID])->update(['is_starred' => false]);
 		$this->dispatch('reloadPage')->to(GalleryAlbum::class);
 	}
