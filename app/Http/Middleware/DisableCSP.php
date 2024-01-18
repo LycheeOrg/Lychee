@@ -6,6 +6,7 @@ use App\Contracts\Exceptions\LycheeException;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 
 /**
@@ -51,6 +52,14 @@ class DisableCSP
 		// disable unsafe-eval if we are on a Livewire page
 		if (config('app.livewire', false) === true || Str::startsWith($request->getRequestUri(), $dir_url . '/livewire/')) {
 			$this->handleLivewire();
+		}
+
+		// Add the S3 URL to the list of allowed image sources
+		if (config('filesystems.s3_enabled')) {
+			$current = config('secure-headers.csp.img-src.allow');
+			$s3Url = config('filesystems.disks.s3.url');
+			$current[] = str_replace(parse_url($s3Url, PHP_URL_PATH), '', $s3Url);
+			config(['secure-headers.csp.img-src.allow' => $current]);
 		}
 
 		return $next($request);

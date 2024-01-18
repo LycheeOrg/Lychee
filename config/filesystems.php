@@ -45,6 +45,19 @@ return [
 
 	/*
 	|--------------------------------------------------------------------------
+	| Enable uploads to S3
+	|--------------------------------------------------------------------------
+	|
+	| If enabled, images will be uploaded to the S3 bucket specified below after
+	| they have been processed locally. Local files are removed after the upload.
+	| The media files will be served from S3 then.
+	|
+	*/
+
+	's3_enabled' => env('S3_UPLOAD_ENABLED', false),
+
+	/*
+	|--------------------------------------------------------------------------
 	| Default Cloud Filesystem Disk
 	|--------------------------------------------------------------------------
 	|
@@ -93,11 +106,7 @@ return [
 			],
 		],
 
-		// This is an example how the "images" disk can be hosted on an AWS S3
-		// ATTENTION: This is NOT supported yet!!!
-		// This is only a placeholder/reminder for the future
-		/*
-		'images' => [
+		's3' => [
 			'driver' => 's3',
 			'key' => env('AWS_ACCESS_KEY_ID'),
 			'secret' => env('AWS_SECRET_ACCESS_KEY'),
@@ -107,7 +116,7 @@ return [
 			'endpoint' => env('AWS_ENDPOINT'),
 			'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
 			'throw' => true,
-		],*/
+		],
 
 		// Lychee uses this disk to store the customized CSS file provided by the user
 		// ATTENTION: This disk MUST ALWAYS point to the local `./public/dist` directory.

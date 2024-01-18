@@ -18,6 +18,7 @@ abstract class AbstractSizeVariantNamingStrategy
 	 * The name of the Flysystem disk where images are stored.
 	 */
 	public const IMAGE_DISK_NAME = 'images';
+	public const S3_IMAGE_DISK_NAME = 's3';
 
 	protected string $extension = '';
 	protected ?Photo $photo = null;
@@ -29,7 +30,9 @@ abstract class AbstractSizeVariantNamingStrategy
 	 */
 	public static function getImageDisk(): FilesystemAdapter
 	{
-		return Storage::disk(self::IMAGE_DISK_NAME);
+		return config('filesystems.s3_enabled')
+			? Storage::disk(self::S3_IMAGE_DISK_NAME)
+			: Storage::disk(self::IMAGE_DISK_NAME);
 	}
 
 	/**

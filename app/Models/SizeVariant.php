@@ -21,22 +21,9 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Filesystem\AwsS3V3Adapter;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\URL;
 use League\Flysystem\Local\LocalFilesystemAdapter;
-
-// TODO: Uncomment the following line, if Lychee really starts to support AWS s3.
-// The previous code already contained some first steps for S3, but relied
-// on the fact that the associated disk was called "s3".
-// This only requires a string comparison, but is not robust, because the
-// disk name can be anything (depending on what the user configures in
-// config.php), but does not say anything about the actually used
-// driver/adapter.
-// Moreover, if any user had ever tried to actually use S3, the code would
-// have crashed, because the Laravel framework would try to load the adapter
-// below, but the adapter does not exist and is not part of our Composer
-// dependencies
-// use League\Flysystem\AwsS3v3\AwsS3Adapter;
 
 /**
  * Class SizeVariant.
@@ -199,10 +186,9 @@ class SizeVariant extends Model
 
 		$storageAdapter = $imageDisk->getAdapter();
 
-		// TODO: Uncomment these line when Laravel really starts to support s3
-		/*if ($storageAdapter instanceof AwsS3Adapter) {
+		if ($storageAdapter instanceof AwsS3V3Adapter) {
 			return $imageDisk->temporaryUrl($this->short_path, now()->addSeconds($maxLifetime));
-		}*/
+		}
 
 		if ($storageAdapter instanceof LocalFilesystemAdapter) {
 			/** @var ?SymLink $symLink */

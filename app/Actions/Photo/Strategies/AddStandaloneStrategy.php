@@ -23,7 +23,9 @@ use App\Image\Handlers\VideoHandler;
 use App\Image\StreamStat;
 use App\Models\Configs;
 use App\Models\Photo;
+use App\Models\SizeVariant;
 use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Support\Facades\Storage;
 
 class AddStandaloneStrategy extends AbstractAddStrategy
 {
@@ -193,7 +195,18 @@ class AddStandaloneStrategy extends AbstractAddStrategy
 				/** @var SizeVariantFactory $sizeVariantFactory */
 				$sizeVariantFactory = resolve(SizeVariantFactory::class);
 				$sizeVariantFactory->init($this->photo, $this->sourceImage, $this->namingStrategy);
-				$sizeVariantFactory->createSizeVariants();
+				$variants = $sizeVariantFactory->createSizeVariants();
+
+				if (config('filesystems.s3_enabled')) {
+					// If enabled, upload all size variants to the remote bucket and delete the local files after that
+					$variants->each(function (SizeVariant $variant) {
+						Storage::disk('s3')->writeStream(
+							$variant->short_path,
+							Storage::disk('images')->readStream($variant->short_path)
+						);
+						Storage::disk('images')->delete($variant->short_path);
+					});
+				}
 			} catch (\Throwable $t) {
 				// Don't re-throw the exception, because we do not want the
 				// import to fail completely only due to missing size variants.
