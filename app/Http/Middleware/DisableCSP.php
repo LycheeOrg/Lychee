@@ -55,8 +55,10 @@ class DisableCSP
 		}
 
 		// Add the S3 URL to the list of allowed image sources
-		if (config('filesystems.s3_enabled')) {
+		if (config('filesystems.disks.s3.key') !== '') {
+			/** @var string[] $current */
 			$current = config('secure-headers.csp.img-src.allow');
+			/** @var string $s3Url */
 			$s3Url = config('filesystems.disks.s3.url');
 			$current[] = str_replace(parse_url($s3Url, PHP_URL_PATH), '', $s3Url);
 			config(['secure-headers.csp.img-src.allow' => $current]);

@@ -30,7 +30,7 @@ abstract class AbstractSizeVariantNamingStrategy
 	 */
 	public static function getImageDisk(): FilesystemAdapter
 	{
-		return config('filesystems.s3_enabled')
+		return config('filesystems.disks.s3.key') !== ''
 			? Storage::disk(self::S3_IMAGE_DISK_NAME)
 			: Storage::disk(self::IMAGE_DISK_NAME);
 	}

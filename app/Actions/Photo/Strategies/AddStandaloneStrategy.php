@@ -197,7 +197,7 @@ class AddStandaloneStrategy extends AbstractAddStrategy
 				$sizeVariantFactory->init($this->photo, $this->sourceImage, $this->namingStrategy);
 				$variants = $sizeVariantFactory->createSizeVariants();
 
-				if (config('filesystems.s3_enabled')) {
+				if (config('filesystems.disks.s3.key') !== '') {
 					// If enabled, upload all size variants to the remote bucket and delete the local files after that
 					$variants->each(function (SizeVariant $variant) {
 						Storage::disk('s3')->writeStream(
