@@ -10,6 +10,7 @@ use App\Metadata\Json\UpdateRequest;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * FileVersion provides information about the code version.
@@ -44,7 +45,7 @@ class FileVersion implements VersionControl, HasVersion
 	 */
 	public function hydrate(bool $withRemote = true, bool $useCache = true): void
 	{
-		if ($withRemote) {
+		if ($withRemote && Schema::hasTable('configs')) {
 			$updateReques = resolve(UpdateRequest::class);
 			$json = $updateReques->get_json($useCache);
 
