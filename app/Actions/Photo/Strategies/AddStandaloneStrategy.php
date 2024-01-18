@@ -21,6 +21,7 @@ use App\Image\Handlers\GoogleMotionPictureHandler;
 use App\Image\Handlers\ImageHandler;
 use App\Image\Handlers\VideoHandler;
 use App\Image\StreamStat;
+use App\Jobs\UploadSizeVariantToS3Job;
 use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\SizeVariant;
@@ -200,11 +201,12 @@ class AddStandaloneStrategy extends AbstractAddStrategy
 				if (config('filesystems.disks.s3.key') !== '') {
 					// If enabled, upload all size variants to the remote bucket and delete the local files after that
 					$variants->each(function (SizeVariant $variant) {
-						Storage::disk('s3')->writeStream(
-							$variant->short_path,
-							Storage::disk('images')->readStream($variant->short_path)
-						);
-						Storage::disk('images')->delete($variant->short_path);
+						if (Configs::getValueAsBool('use_job_queues')) {
+							UploadSizeVariantToS3Job::dispatch($variant);
+						} else {
+							$job = new UploadSizeVariantToS3Job($variant);
+							$job->handle();
+						}
 					});
 				}
 			} catch (\Throwable $t) {
