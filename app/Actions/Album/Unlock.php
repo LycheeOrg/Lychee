@@ -63,7 +63,7 @@ class Unlock extends Action
 		// list of such albums is not exposed to the user and is
 		// considered as the last access check criteria.
 		$albums = BaseAlbumImpl::query()
-			->select(['base_albums.id', APC::PASSWORD])
+			->select(['base_albums.id', 'base_albums.owner_id', APC::PASSWORD])
 			->join(APC::ACCESS_PERMISSIONS, 'base_album_id', '=', 'base_albums.id', 'inner')
 			->whereNull(APC::ACCESS_PERMISSIONS . '.user_id')
 			->whereNotNull(APC::PASSWORD)
