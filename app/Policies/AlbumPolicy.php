@@ -288,11 +288,11 @@ class AlbumPolicy extends BasePolicy
 			return Configs::getValueAsBool('grants_full_photo_access');
 		}
 
+		/** @var BaseAlbum $abstractAlbum */
 		if ($this->isOwner($user, $abstractAlbum)) {
 			return true;
 		}
 
-		/** @var BaseAlbum $abstractAlbum */
 		return $abstractAlbum->public_permissions()?->grants_full_photo_access === true ||
 			$abstractAlbum->current_user_permissions()?->grants_full_photo_access === true;
 	}
