@@ -284,7 +284,7 @@ class AlbumPolicy extends BasePolicy
 	 */
 	public function canAccessFullPhoto(?User $user, ?AbstractAlbum $abstractAlbum): bool
 	{
-		if ($abstractAlbum instanceof BaseSmartAlbum) {
+		if ($abstractAlbum === null || $abstractAlbum instanceof BaseSmartAlbum) {
 			return Configs::getValueAsBool('grants_full_photo_access');
 		}
 
