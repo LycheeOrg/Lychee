@@ -5,6 +5,7 @@ namespace App\Livewire\Components\Forms\Add;
 use App\Actions\Import\FromUrl;
 use App\Contracts\Livewire\Params;
 use App\Contracts\Models\AbstractAlbum;
+use App\Enum\SmartAlbumType;
 use App\Exceptions\MassImportException;
 use App\Livewire\Components\Pages\Gallery\Album as PageGalleryAlbum;
 use App\Livewire\Forms\ImportFromUrlForm;
@@ -47,6 +48,11 @@ class ImportFromUrl extends Component
 	public function mount(array $params = ['parentID' => null]): void
 	{
 		$albumId = $params[Params::PARENT_ID] ?? null;
+
+		// remove smart albums => if we are in one: upload to unsorted (i.e. albumId = null)
+		if (SmartAlbumType::tryFrom($albumId) !== null) {
+			$albumId = null;
+		}
 
 		/** @var Album $album */
 		$album = $albumId === null ? null : Album::query()->findOrFail($albumId);
