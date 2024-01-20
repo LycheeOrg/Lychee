@@ -12,32 +12,38 @@
 
 namespace Tests\Livewire\Forms;
 
-use App\Livewire\Components\Forms\Add\ImportFromUrl;
+use App\Livewire\Components\Forms\Add\ImportFromDropbox;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Livewire\Livewire;
 use Tests\Feature\Constants\TestConstants;
 use Tests\Livewire\Base\BaseLivewireTest;
 
-class ImportFromUrlTest extends BaseLivewireTest
+class ImportFromDropBoxTest extends BaseLivewireTest
 {
 	use DatabaseTransactions;
 
 	public function testLoggedOut(): void
 	{
-		Livewire::test(ImportFromUrl::class)
+		Livewire::test(ImportFromDropbox::class)
 			->assertForbidden();
 	}
 
 	public function testLoggedInNoUpload(): void
 	{
-		Livewire::actingAs($this->userNoUpload)->test(ImportFromUrl::class)
+		Livewire::actingAs($this->userNoUpload)->test(ImportFromDropbox::class)
 			->assertForbidden();
 	}
 
-	public function testLoggedIn(): void
+	public function testLoggedInUpload(): void
 	{
-		Livewire::actingAs($this->userMayUpload1)->test(ImportFromUrl::class)
-			->assertViewIs('livewire.forms.add.import-from-url')
+		Livewire::actingAs($this->userMayUpload1)->test(ImportFromDropbox::class)
+			->assertForbidden();
+	}
+
+	public function testLoggedInAdmin(): void
+	{
+		Livewire::actingAs($this->admin)->test(ImportFromDropbox::class)
+			->assertViewIs('livewire.forms.add.import-from-dropbox')
 			->assertOk()
 			->set('form.urlArea', TestConstants::SAMPLE_DOWNLOAD_JPG)
 			->call('submit')
@@ -48,8 +54,8 @@ class ImportFromUrlTest extends BaseLivewireTest
 
 	public function testLoggedInClose(): void
 	{
-		Livewire::actingAs($this->userMayUpload1)->test(ImportFromUrl::class)
-			->assertViewIs('livewire.forms.add.import-from-url')
+		Livewire::actingAs($this->admin)->test(ImportFromDropbox::class)
+			->assertViewIs('livewire.forms.add.import-from-dropbox')
 			->assertOk()
 			->call('close')
 			->assertDispatched('closeModal');
