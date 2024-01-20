@@ -20,6 +20,11 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::prefix(config('app.livewire') === true ? '' : 'livewire')
+	->group(function () {
+		Route::get('/diagnostics', Diagnostics::class)->name('diagnostics');
+	});
+
 Route::middleware(['installation:complete', 'migration:complete'])
 	->group(function () {
 		Route::prefix(config('app.livewire') === true ? '' : 'livewire')
@@ -36,7 +41,6 @@ Route::middleware(['installation:complete', 'migration:complete'])
 			Route::get('/users', Users::class)->name('users');
 			Route::get('/sharing', Sharing::class)->name('sharing');
 			Route::get('/jobs', Jobs::class)->name('jobs');
-			Route::get('/diagnostics', Diagnostics::class)->name('diagnostics');
 			Route::get('/map/{albumId?}', Map::class)->name('livewire-map');
 			Route::get('/frame/{albumId?}', Frame::class)->name('livewire-frame');
 			Route::get('/gallery', Albums::class)->name('livewire-gallery');
