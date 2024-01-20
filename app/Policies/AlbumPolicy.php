@@ -23,6 +23,7 @@ class AlbumPolicy extends BasePolicy
 	public const IS_OWNER = 'isOwner';
 	public const CAN_SEE = 'canSee';
 	public const CAN_ACCESS = 'canAccess';
+	public const CAN_ACCESS_FULL_PHOTO = 'canAccessFullPhoto';
 	public const CAN_ACCESS_MAP = 'canAccessMap';
 	public const CAN_DOWNLOAD = 'canDownload';
 	public const CAN_DELETE = 'canDelete';
@@ -271,6 +272,29 @@ class AlbumPolicy extends BasePolicy
 		}
 
 		return false;
+	}
+
+	/**
+	 * Checks whether the album-user has the full photo access.
+	 *
+	 * @param User|null          $user
+	 * @param AbstractAlbum|null $abstractAlbum
+	 *
+	 * @return bool
+	 */
+	public function canAccessFullPhoto(?User $user, ?AbstractAlbum $abstractAlbum): bool
+	{
+		if ($abstractAlbum instanceof BaseSmartAlbum) {
+			return Configs::getValueAsBool('grants_full_photo_access');
+		}
+
+		if ($this->isOwner($user, $abstractAlbum)) {
+			return true;
+		}
+
+		/** @var BaseAlbum $abstractAlbum */
+		return $abstractAlbum->public_permissions()?->grants_full_photo_access === true ||
+			$abstractAlbum->current_user_permissions()?->grants_full_photo_access === true;
 	}
 
 	/**
