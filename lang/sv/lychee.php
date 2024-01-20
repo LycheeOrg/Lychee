@@ -359,7 +359,7 @@ return [
 	'SORT_CHANGE' => 'Spara ändringar av sorteringsföljden',
 
 	'DROPBOX_TITLE' => 'Spara nyckeln för Dropbox',
-	'DROPBOX_TEXT' => "För att kunna importera fotografier från ditt Dropboxkonto behöver du en godkänd applikationsnyckel från <a href='https://www.dropbox.com/developers/apps/create'>Dropbox</a>.\n Skapa en personlig nyckel och ange den sedan här nedan:",
+	'DROPBOX_TEXT' => "För att kunna importera fotografier från ditt Dropboxkonto behöver du en godkänd applikationsnyckel från <a href='https://www.dropbox.com/developers/saver'>Dropbox</a>.\n Skapa en personlig nyckel och ange den sedan här nedan:",
 
 	'LANG_TEXT' => 'Ändra språket i Lychee till:',
 	'LANG_TITLE' => 'Spara ändringen av språket',

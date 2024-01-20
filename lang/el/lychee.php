@@ -359,7 +359,7 @@ return [
 	'SORT_CHANGE' => 'Αλλαγή Ταξινόμησης',
 
 	'DROPBOX_TITLE' => 'Ορισμός Κλειδιού Dropbox',
-	'DROPBOX_TEXT' => "Για να μπορέσουμε να εισάγουμε φωτογραφίες από το δικό σας Dropbox, θα χρειαστείτε ένα έγκυρο κλειδί drop-ins app από <a href='https://www.dropbox.com/developers/apps/create'>την ιστοσελίδα του Dropbox</a>. Παράγετε ένα προσωπικό κλειδί και εισάγετέ το παρακάτω:",
+	'DROPBOX_TEXT' => "Για να μπορέσουμε να εισάγουμε φωτογραφίες από το δικό σας Dropbox, θα χρειαστείτε ένα έγκυρο κλειδί drop-ins app από <a href='https://www.dropbox.com/developers/saver'>την ιστοσελίδα του Dropbox</a>. Παράγετε ένα προσωπικό κλειδί και εισάγετέ το παρακάτω:",
 
 	'LANG_TEXT' => 'Αλλαγή γλώσσας του Lychee για:',
 	'LANG_TITLE' => 'Αλλαγή Γλώσσας',

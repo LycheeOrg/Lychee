@@ -357,7 +357,7 @@ return [
 	'SORT_CHANGE' => 'Rendezés megváltoztatása',
 
 	'DROPBOX_TITLE' => 'Dropbox Kulcs Beállítása',
-	'DROPBOX_TEXT' => "Annak érdekében, hogy képeket importáljon a Dropbox-ról, érvényes 'drop-ins app' kulcsra van szüksége a <a href='https://www.dropbox.com/developers/apps/create'>weboldalukon</a>. Generáljon magának egy személyes kulcsot és írja be az alábbiakban:",
+	'DROPBOX_TEXT' => "Annak érdekében, hogy képeket importáljon a Dropbox-ról, érvényes 'drop-ins app' kulcsra van szüksége a <a href='https://www.dropbox.com/developers/saver'>weboldalukon</a>. Generáljon magának egy személyes kulcsot és írja be az alábbiakban:",
 
 	'LANG_TEXT' => 'Változtassa meg a Lychee nyelvét:',
 	'LANG_TITLE' => 'Nyelv megváltoztatása',

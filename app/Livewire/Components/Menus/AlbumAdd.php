@@ -66,4 +66,10 @@ class AlbumAdd extends Component
 		$this->closeContextMenu();
 		$this->openModal('forms.add.upload', $this->params);
 	}
+
+	public function openImportFromDropboxModal(): void
+	{
+		$this->closeContextMenu();
+		$this->openModal('forms.add.import-from-dropbox', $this->params);
+	}
 }

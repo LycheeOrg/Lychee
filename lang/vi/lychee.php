@@ -359,7 +359,7 @@ return [
 	'SORT_CHANGE' => 'Thay đổi cách sắp xếp',
 
 	'DROPBOX_TITLE' => 'Đặt mã Dropbox',
-	'DROPBOX_TEXT' => "Để nhập hình ảnh của bạn vào từ Dropbox, bạn cần một mã nhập vào hợp lệ từ <a href='https://www.dropbox.com/developers/apps/create'>trang web của họ</a>. Hãy tạo một mã cá nhân cho mình và nhập mã vào bên dưới nhé:",
+	'DROPBOX_TEXT' => "Để nhập hình ảnh của bạn vào từ Dropbox, bạn cần một mã nhập vào hợp lệ từ <a href='https://www.dropbox.com/developers/saver'>trang web của họ</a>. Hãy tạo một mã cá nhân cho mình và nhập mã vào bên dưới nhé:",
 
 	'LANG_TEXT' => 'Thay đổi ngôn ngữ trên Lychee cho:',
 	'LANG_TITLE' => 'Thay đổi ngôn ngữ',

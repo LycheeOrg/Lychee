@@ -5,7 +5,7 @@
     </x-header.bar>
 	<div class="overflow-x-clip overflow-y-auto h-[calc(100vh-56px)]">
 		<div class="settings_view w-10/12 max-w-xl text-text-main-400 text-sm mx-auto">
-			<livewire:forms.settings.base.string-setting key="set-dropbox-key" description="DROPBOX_TEXT"
+			<livewire:forms.settings.base.password-setting key="set-dropbox-key" description="DROPBOX_TEXT"
 				placeholder="SETTINGS_DROPBOX_KEY" action="DROPBOX_TITLE" name="dropbox_key" />
 			<livewire:forms.settings.set-album-sorting-setting />
 			<livewire:forms.settings.set-photo-sorting-setting />

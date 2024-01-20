@@ -359,7 +359,7 @@ return [
 	'SORT_CHANGE' => 'Change Sorting',
 
 	'DROPBOX_TITLE' => 'Stel Dropbox sleutel in',
-	'DROPBOX_TEXT' => "Om foto’s vanuit Dropbox te kunnen importeren moet je een geldige drop-ins app sleutel hebben van <a href='https://www.dropbox.com/developers/apps/create'>hun website</a>. Genereer een sleutel en voer die in:",
+	'DROPBOX_TEXT' => "Om foto’s vanuit Dropbox te kunnen importeren moet je een geldige drop-ins app sleutel hebben van <a href='https://www.dropbox.com/developers/saver'>hun website</a>. Genereer een sleutel en voer die in:",
 
 	'LANG_TEXT' => 'Change Lychee language for:',
 	'LANG_TITLE' => 'Change Language',
