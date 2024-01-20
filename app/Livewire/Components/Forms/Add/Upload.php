@@ -5,6 +5,7 @@ namespace App\Livewire\Components\Forms\Add;
 use App\Contracts\Livewire\Params;
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\Livewire\FileStatus;
+use App\Enum\SmartAlbumType;
 use App\Exceptions\PhotoSkippedException;
 use App\Facades\Helpers;
 use App\Image\Files\NativeLocalFile;
@@ -53,6 +54,12 @@ class Upload extends Component
 	public function mount(array $params = ['parentID' => null]): void
 	{
 		$this->albumId = $params[Params::PARENT_ID] ?? null;
+
+		// remove smart albums => if we are in one: upload to unsorted (i.e. albumId = null)
+		if (SmartAlbumType::tryFrom($this->albumId) !== null) {
+			$this->albumId = null;
+		}
+
 		$album = $this->albumId === null ? null : Album::findOrFail($this->albumId);
 		Gate::authorize(AlbumPolicy::CAN_UPLOAD, [AbstractAlbum::class, $album]);
 
