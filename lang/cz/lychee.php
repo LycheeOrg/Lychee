@@ -359,7 +359,7 @@ return [
 	'SORT_CHANGE' => 'Změnit řazení',
 
 	'DROPBOX_TITLE' => 'Dropbox - nastavení',
-	'DROPBOX_TEXT' => "Pro uspěšný import fotografií z Dropboxu je řeba platný API klíč, který lze získat na stránkách <a href='https://www.dropbox.com/developers/apps/create'>Dropboxu</a>. Vygenerovaný osobní klíč zadejte níže:",
+	'DROPBOX_TEXT' => "Pro uspěšný import fotografií z Dropboxu je řeba platný API klíč, který lze získat na stránkách <a href='https://www.dropbox.com/developers/saver'>Dropboxu</a>. Vygenerovaný osobní klíč zadejte níže:",
 
 	'LANG_TEXT' => 'Změnit jazyk Lychee na:',
 	'LANG_TITLE' => 'Změnit jazyk',

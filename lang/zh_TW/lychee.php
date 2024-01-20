@@ -359,7 +359,7 @@ return [
 	'SORT_CHANGE' => '修改排序',
 
 	'DROPBOX_TITLE' => '設置Dropbox私鑰',
-	'DROPBOX_TEXT' => "要從Dropbox導入照片，需要一個有效的應用私鑰，請到<a href='https://www.dropbox.com/developers/apps/create'>官網獲取</a>。輸入你自己生成的私鑰：",
+	'DROPBOX_TEXT' => "要從Dropbox導入照片，需要一個有效的應用私鑰，請到<a href='https://www.dropbox.com/developers/saver'>官網獲取</a>。輸入你自己生成的私鑰：",
 
 	'LANG_TEXT' => '將Lychee語言更改為：',
 	'LANG_TITLE' => '改變語言',

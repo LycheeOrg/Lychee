@@ -160,3 +160,11 @@ export type UploadView = AlpineComponent<{
 	livewireUploadChunk: (fileIdx: number, wire: Livewire, alpine: UploadView) => void;
 	start: (wire: Livewire, alpine: UploadView) => void;
 }>;
+
+export type DropboxView = AlpineComponent<{
+	urlArea: string;
+	progress: string;
+
+	chooseFromDropbox: () => void;
+	send: () => void;
+}>;

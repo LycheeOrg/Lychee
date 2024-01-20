@@ -359,7 +359,7 @@ return [
 	'SORT_CHANGE' => 'Change Sorting',
 
 	'DROPBOX_TITLE' => 'Set Dropbox Key',
-	'DROPBOX_TEXT' => "In order to import photos from your Dropbox, you need a valid drop-ins app key from <a href='https://www.dropbox.com/developers/apps/create' class='text-text-main-200 border-b border-dashed border-neutral-400'>their website</a>. Generate yourself a personal key and enter it below:",
+	'DROPBOX_TEXT' => "In order to import photos from your Dropbox, you need a valid drop-ins app key from <a href='https://www.dropbox.com/developers/saver' class='text-text-main-200 border-b border-dashed border-neutral-400'>their website</a>. Generate yourself a personal key and enter it below:",
 
 	'LANG_TEXT' => 'Change Lychee language for:',
 	'LANG_TITLE' => 'Change Language',

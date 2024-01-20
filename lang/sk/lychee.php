@@ -359,7 +359,7 @@ return [
 	'SORT_CHANGE' => 'Zmeniť triedenie',
 
 	'DROPBOX_TITLE' => 'Nastaviť kľúč Dropbox',
-	'DROPBOX_TEXT' => "Aby ste mohli importovať obrázky z Dropbox, potrebujete platný API-Key zo <a href='https://www.dropbox.com/developers/apps/create'>stránky Dropbox</a>. Vytvorte personal key a zadajte ho:",
+	'DROPBOX_TEXT' => "Aby ste mohli importovať obrázky z Dropbox, potrebujete platný API-Key zo <a href='https://www.dropbox.com/developers/saver'>stránky Dropbox</a>. Vytvorte personal key a zadajte ho:",
 
 	'LANG_TEXT' => 'Zmeniť jazyk Lychee na:',
 	'LANG_TITLE' => 'Zmena jazyka',

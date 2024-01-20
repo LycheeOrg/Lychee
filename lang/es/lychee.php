@@ -359,7 +359,7 @@ return [
 	'SORT_CHANGE' => 'Cambiar clasificación',
 
 	'DROPBOX_TITLE' => 'Establecer clave de Dropbox',
-	'DROPBOX_TEXT' => 'Para importar fotos desde su Dropbox, necesita una clave de aplicación válida desde <a href=\'https://www.dropbox.com/developers/apps/create\'> su sitio web </a>. Generar usted mismo una clave personal e ingrésela a continuación:',
+	'DROPBOX_TEXT' => 'Para importar fotos desde su Dropbox, necesita una clave de aplicación válida desde <a href=\'https://www.dropbox.com/developers/saver\'> su sitio web </a>. Generar usted mismo una clave personal e ingrésela a continuación:',
 
 	'LANG_TEXT' => 'Cambiar el idioma Lychee para:',
 	'LANG_TITLE' => 'Cambiar idioma',

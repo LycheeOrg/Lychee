@@ -359,7 +359,7 @@ return [
 	'SORT_CHANGE' => 'Sortierung ändern',
 
 	'DROPBOX_TITLE' => 'Dropbox-Schlüssel festlegen',
-	'DROPBOX_TEXT' => "Um Ihre Fotos von Dropbox zu importieren, brauchen Sie einen gültigen API-Key von <a href='https://www.dropbox.com/developers/apps/create'>der Dropbox-Webseite</a>. Erstellen Sie einen persönlichen Schlüssel und geben Sie ihn hier ein:",
+	'DROPBOX_TEXT' => "Um Ihre Fotos von Dropbox zu importieren, brauchen Sie einen gültigen API-Key von <a href='https://www.dropbox.com/developers/saver'>der Dropbox-Webseite</a>. Erstellen Sie einen persönlichen Schlüssel und geben Sie ihn hier ein:",
 
 	'LANG_TEXT' => 'Sprache für Lychee ändern:',
 	'LANG_TITLE' => 'Sprache festlegen',

@@ -359,7 +359,7 @@ return [
 	'SORT_CHANGE' => 'Cambia Ordinamento',
 
 	'DROPBOX_TITLE' => 'Imposta Chiave Dropbox',
-	'DROPBOX_TEXT' => "Per importare foto dal tuo Dropbox, ha bisogno di una chiave valida ottenibile da <a href='https://www.dropbox.com/developers/apps/create'>their website</a>. Genera la tua chiave personale e inseriscila qui di seguito:",
+	'DROPBOX_TEXT' => "Per importare foto dal tuo Dropbox, ha bisogno di una chiave valida ottenibile da <a href='https://www.dropbox.com/developers/saver'>their website</a>. Genera la tua chiave personale e inseriscila qui di seguito:",
 
 	'LANG_TEXT' => 'Cambia Lingua Lychee per:',
 	'LANG_TITLE' => 'Cambia Lingua',

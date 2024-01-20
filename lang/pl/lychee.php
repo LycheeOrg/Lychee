@@ -359,7 +359,7 @@ return [
 	'SORT_CHANGE' => 'Zmień sortowanie',
 
 	'DROPBOX_TITLE' => 'Ustaw klucz Dropbox',
-	'DROPBOX_TEXT' => "In order to import photos from your Dropbox, you need a valid drop-ins app key from <a href='https://www.dropbox.com/developers/apps/create'>their website</a>. Generate yourself a personal key and enter it below:",
+	'DROPBOX_TEXT' => "In order to import photos from your Dropbox, you need a valid drop-ins app key from <a href='https://www.dropbox.com/developers/saver'>their website</a>. Generate yourself a personal key and enter it below:",
 
 	'LANG_TEXT' => 'Zmień język na:',
 	'LANG_TITLE' => 'Zmień język',
