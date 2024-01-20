@@ -46,8 +46,8 @@ class FileVersion implements VersionControl, HasVersion
 	public function hydrate(bool $withRemote = true, bool $useCache = true): void
 	{
 		if ($withRemote && Schema::hasTable('configs')) {
-			$updateReques = resolve(UpdateRequest::class);
-			$json = $updateReques->get_json($useCache);
+			$updateRequest = resolve(UpdateRequest::class);
+			$json = $updateRequest->get_json($useCache);
 
 			if ($json !== null) {
 				$this->remoteVersion = Version::createFromString($json->lychee->version);
