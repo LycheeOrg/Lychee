@@ -4,10 +4,10 @@ namespace App\Livewire\Components\Pages;
 
 use App\Enum\OauthProvidersType;
 use App\Http\Controllers\Oauth;
+use App\Http\Controllers\RedirectController;
 use App\Livewire\Components\Pages\Gallery\Album;
 use App\Livewire\Components\Pages\Gallery\Albums;
 use App\Livewire\Components\Pages\Gallery\Search;
-use App\Models\Configs;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -47,9 +47,7 @@ Route::middleware(['installation:complete', 'migration:complete'])
 			Route::get('/search/{albumId?}', Search::class)->name('livewire-search');
 			Route::get('/gallery/{albumId}/', Album::class)->name('livewire-gallery-album');
 			Route::get('/gallery/{albumId}/{photoId}', Album::class)->name('livewire-gallery-photo');
-			Route::get('/', function () {
-				return redirect(Configs::getValueAsBool('landing_page_enable') ? route('landing') : route('livewire-gallery'));
-			})->name('livewire-index');
+			Route::get('/', [RedirectController::class, 'view'])->name('livewire-index');
 		});
 	});
 
