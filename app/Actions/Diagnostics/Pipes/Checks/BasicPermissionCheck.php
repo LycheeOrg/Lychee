@@ -44,6 +44,16 @@ class BasicPermissionCheck implements DiagnosticPipe
 	protected int $numAccessIssues;
 
 	/**
+	 * @var array<int,string> List of real paths to be anonymized
+	 */
+	protected array $realPaths = [];
+
+	/**
+	 * @var array<int,string> Matching list of anonymized paths
+	 */
+	protected array $anonymizePaths = [];
+
+	/**
 	 * {@inheritDoc}
 	 */
 	public function handle(array &$data, \Closure $next): array
@@ -133,10 +143,10 @@ class BasicPermissionCheck implements DiagnosticPipe
 		$p = Storage::disk('dist')->path('user.css');
 		if (!Helpers::hasPermissions($p)) {
 			// @codeCoverageIgnoreStart
-			$data[] = "Warning: '" . $p . "' does not exist or has insufficient read/write privileges.";
+			$data[] = sprintf("Warning: '%s' does not exist or has insufficient read/write privileges.", $this->anonymize($p));
 			$p = Storage::disk('dist')->path('');
 			if (!Helpers::hasPermissions($p)) {
-				$data[] = "Warning: '" . $p . "' has insufficient read/write privileges.";
+				$data[] = sprintf("Warning: '%s' has insufficient read/write privileges.", $this->anonymize($p));
 			}
 			// @codeCoverageIgnoreEnd
 		}
@@ -163,7 +173,7 @@ class BasicPermissionCheck implements DiagnosticPipe
 			try {
 				$actualPerm = fileperms($path);
 			} catch (FilesystemException) {
-				$data[] = sprintf('Warning: Unable to determine permissions for %s' . PHP_EOL, $path);
+				$data[] = sprintf('Warning: Unable to determine permissions for %s' . PHP_EOL, $this->anonymize($path));
 
 				return;
 			}
@@ -190,7 +200,7 @@ class BasicPermissionCheck implements DiagnosticPipe
 				// @codeCoverageIgnoreStart
 				$this->numOwnerIssues++;
 				if ($this->numOwnerIssues <= self::MAX_ISSUE_REPORTS_PER_TYPE) {
-					$data[] = sprintf('Warning: %s is owned by group %s, but should be owned by one out of %s', $path, $owningGroupName, $this->groupNames);
+					$data[] = sprintf('Warning: %s is owned by group %s, but should be owned by one out of %s', $this->anonymize($path), $owningGroupName, $this->groupNames);
 				}
 				// @codeCoverageIgnoreEnd
 			}
@@ -201,7 +211,7 @@ class BasicPermissionCheck implements DiagnosticPipe
 				if ($this->numPermissionIssues <= self::MAX_ISSUE_REPORTS_PER_TYPE) {
 					$data[] = sprintf(
 						'Warning: %s has permissions %04o, but should have %04o',
-						$path,
+						$this->anonymize($path),
 						$actualPerm,
 						$expectedPerm
 					);
@@ -219,7 +229,7 @@ class BasicPermissionCheck implements DiagnosticPipe
 						!is_readable($path) => 'not readable',
 						default => ''
 					};
-					$data[] = sprintf('Error: %s is %s by %s', $path, $problem, $this->groupNames);
+					$data[] = sprintf('Error: %s is %s by %s', $this->anonymize($path), $problem, $this->groupNames);
 				}
 				// @codeCoverageIgnoreEnd
 			}
@@ -282,5 +292,19 @@ class BasicPermissionCheck implements DiagnosticPipe
 		} catch (ContainerExceptionInterface|BindingResolutionException|NotFoundExceptionInterface $e) {
 			throw new InvalidConfigOption('Could not read configuration for file/directory permission', $e);
 		}
+	}
+
+	private function anonymize(string $path): string
+	{
+		if (count($this->anonymizePaths) === 0) {
+			$this->realPaths[] = public_path();
+			$this->anonymizePaths[] = Helpers::censor(public_path(), 0.2);
+			$this->realPaths[] = storage_path();
+			$this->anonymizePaths[] = Helpers::censor(storage_path(), 0.2);
+			$this->realPaths[] = config('filesystems.disks.images.root');
+			$this->anonymizePaths[] = Helpers::censor(config('filesystems.disks.images.root'), 0.2);
+		}
+
+		return str_replace($this->realPaths, $this->anonymizePaths, $path);
 	}
 }
