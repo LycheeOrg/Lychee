@@ -3,7 +3,6 @@
 	const hashMatch = document.location.hash.replace("#", "").split("/");
 	const albumID = hashMatch[0] ?? '';
 	const photoID = hashMatch[1] ?? '';
-	console.log(hashMatch, albumID, photoID);
 	if (photoID !== '') {
 		window.location = '{{ $gallery }}/' + albumID + '/' + photoID;
 	} else if (albumID !== '') {
