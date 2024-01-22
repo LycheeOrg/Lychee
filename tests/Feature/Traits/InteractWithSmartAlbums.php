@@ -13,7 +13,6 @@
 namespace Tests\Feature\Traits;
 
 use App\SmartAlbums\OnThisDayAlbum;
-use App\SmartAlbums\PublicAlbum;
 use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\StarredAlbum;
 use App\SmartAlbums\UnsortedAlbum;
@@ -30,7 +29,6 @@ trait InteractWithSmartAlbums
 	protected function clearCachedSmartAlbums(): void
 	{
 		foreach ([
-			PublicAlbum::class,
 			RecentAlbum::class,
 			StarredAlbum::class,
 			UnsortedAlbum::class,

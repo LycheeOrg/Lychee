@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\Internal\NotImplementedException;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -70,7 +71,7 @@ Route::post('/Photo::getRandom', [PhotoController::class, 'getRandom']);
 Route::post('/Photo::setTitle', [PhotoController::class, 'setTitle']);
 Route::post('/Photo::setDescription', [PhotoController::class, 'setDescription']);
 Route::post('/Photo::setStar', [PhotoController::class, 'setStar']);
-Route::post('/Photo::setPublic', [PhotoController::class, 'setPublic']);
+Route::post('/Photo::setPublic', fn () => throw new NotImplementedException('This code is deprecated. Good bye.')); // just legacy stuff.
 Route::post('/Photo::setAlbum', [PhotoController::class, 'setAlbum']);
 Route::post('/Photo::setTags', [PhotoController::class, 'setTags']);
 Route::post('/Photo::delete', [PhotoController::class, 'delete']);

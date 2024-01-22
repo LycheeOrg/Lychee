@@ -60,11 +60,6 @@ class PhotoPolicy extends BasePolicy
 			return true;
 		}
 
-		// TODO: to be removed once migrated to v5.
-		if ($photo->is_public) {
-			return true;
-		}
-
 		return $photo->album !== null && $this->albumPolicy->canAccess($user, $photo->album);
 	}
 

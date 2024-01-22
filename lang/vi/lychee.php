@@ -350,7 +350,6 @@ return [
 	'SORT_PHOTO_SELECT_2' => 'Ngày chụp',
 	'SORT_PHOTO_SELECT_3' => 'Tên',
 	'SORT_PHOTO_SELECT_4' => 'Mô tả',
-	'SORT_PHOTO_SELECT_5' => 'Chia sẻ công cộng',
 	'SORT_PHOTO_SELECT_6' => 'Được đánh dấu sao',
 	'SORT_PHOTO_SELECT_7' => 'Định dạng hình ảnh',
 

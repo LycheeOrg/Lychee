@@ -13,7 +13,6 @@
 namespace Tests\Feature;
 
 use App\SmartAlbums\OnThisDayAlbum;
-use App\SmartAlbums\PublicAlbum;
 use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\StarredAlbum;
 use App\SmartAlbums\UnsortedAlbum;
@@ -310,7 +309,6 @@ class SharingWithAnonUserTest extends BaseSharingTestScenarios
 
 		$smartAlbums = [
 			UnsortedAlbum::ID => null,
-			PublicAlbum::ID => null,
 		];
 		if ($starredAlbumThumbID === null) {
 			$smartAlbums[StarredAlbum::ID] = null;
@@ -346,6 +344,11 @@ class SharingWithAnonUserTest extends BaseSharingTestScenarios
 	protected function getExpectedDefaultInaccessibleMessage(): string
 	{
 		return TestConstants::EXPECTED_UNAUTHENTICATED_MSG;
+	}
+
+	protected function getExpectedForbiddenHttpStatusCode(): int
+	{
+		return 403;
 	}
 
 	/**
@@ -387,9 +390,7 @@ class SharingWithAnonUserTest extends BaseSharingTestScenarios
 		$responseForOnThisDay->assertJsonMissing(['id' => $this->photoID1]);
 		$responseForOnThisDay->assertJsonMissing(['id' => $this->photoID2]);
 
-		// Even though the public photo is not searchable and hence does not
-		// show up in the smart albums, it can be fetched directly
-		$this->photos_tests->get($this->photoID1);
+		$this->photos_tests->get($this->photoID1, $this->getExpectedInaccessibleHttpStatusCode());
 		$this->photos_tests->get($this->photoID2, $this->getExpectedInaccessibleHttpStatusCode());
 	}
 
@@ -436,11 +437,8 @@ class SharingWithAnonUserTest extends BaseSharingTestScenarios
 		$responseForTree->assertJsonMissing(['id' => $this->photoID1]);
 		$responseForTree->assertJsonMissing(['id' => $this->photoID2]);
 
-		// The album and photo 2 are not accessible, but photo 1 is
-		// because it is public even though it is contained in an inaccessible
-		// album
 		$this->albums_tests->get($this->albumID1, $this->getExpectedInaccessibleHttpStatusCode(), $this->getExpectedDefaultInaccessibleMessage(), TestConstants::EXPECTED_PASSWORD_REQUIRED_MSG);
-		$this->photos_tests->get($this->photoID1);
+		$this->photos_tests->get($this->photoID1, $this->getExpectedInaccessibleHttpStatusCode());
 		$this->photos_tests->get($this->photoID2, $this->getExpectedInaccessibleHttpStatusCode());
 	}
 
@@ -477,7 +475,7 @@ class SharingWithAnonUserTest extends BaseSharingTestScenarios
 		$responseForTree->assertJsonMissing(['id' => $this->photoID2]);
 
 		$this->albums_tests->get($this->albumID1, $this->getExpectedInaccessibleHttpStatusCode(), $this->getExpectedDefaultInaccessibleMessage(), TestConstants::EXPECTED_PASSWORD_REQUIRED_MSG);
-		$this->photos_tests->get($this->photoID1);
+		$this->photos_tests->get($this->photoID1, $this->getExpectedInaccessibleHttpStatusCode());
 		$this->photos_tests->get($this->photoID2, $this->getExpectedInaccessibleHttpStatusCode());
 	}
 }

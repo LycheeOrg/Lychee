@@ -48,7 +48,6 @@ class AddDuplicateStrategy extends AbstractAddStrategy
 			$existing = $this->photo;
 			$this->photo = $existing->replicate();
 			// Adopt settings of duplicated photo acc. to target album
-			$this->photo->is_public = $this->parameters->is_public;
 			$this->photo->is_starred = $this->parameters->is_starred;
 			$this->setParentAndOwnership();
 			$this->photo->save();

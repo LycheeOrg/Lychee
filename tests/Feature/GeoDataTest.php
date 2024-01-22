@@ -102,7 +102,6 @@ class GeoDataTest extends AbstractTestCase
 					'altitude' => 1633,
 					'taken_at' => $taken_at->format('Y-m-d\TH:i:sP'),
 					'taken_at_orig_tz' => $taken_at->getTimezone()->getName(),
-					'is_public' => false,
 					'rights' => [
 						'can_download' => true,
 					],
@@ -255,7 +254,6 @@ class GeoDataTest extends AbstractTestCase
 			$responseForRoot->assertJsonMissing([
 				'unsorted' => null,
 				'starred' => null,
-				'public' => null,
 				'on_this_day' => null,
 			]);
 			foreach ([$albumID1, $photoID1, $photoID11, $photoID12, $photoID121, $photoID13] as $id) {

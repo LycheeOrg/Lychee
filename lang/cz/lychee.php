@@ -350,7 +350,6 @@ return [
 	'SORT_PHOTO_SELECT_2' => 'Data záznamu',
 	'SORT_PHOTO_SELECT_3' => 'Názvu',
 	'SORT_PHOTO_SELECT_4' => 'Popisu',
-	'SORT_PHOTO_SELECT_5' => 'Stavu zveřejnění',
 	'SORT_PHOTO_SELECT_6' => 'Oblíbenosti',
 	'SORT_PHOTO_SELECT_7' => 'Formátu',
 
