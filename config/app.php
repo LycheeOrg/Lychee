@@ -92,6 +92,8 @@ return [
 
 	'asset_url' => null,
 
+	'legacy_v4_redirect' => env('LEGACY_V4_REDIRECT', false),
+
 	/*
 	|--------------------------------------------------------------------------
 	| Application URL
