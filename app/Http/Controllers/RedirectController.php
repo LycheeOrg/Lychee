@@ -90,7 +90,7 @@ class RedirectController extends Controller
 	}
 
 	/**
-	 * Redirection to landing or gallery depending of the settings.
+	 * Redirection to landing or gallery depending on the settings.
 	 * Otherwise attach a JS hook if legacy is enabled.
 	 *
 	 * @return View|SymfonyResponse
