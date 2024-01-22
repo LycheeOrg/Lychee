@@ -55,6 +55,7 @@ export const photoFormPanel = (Alpine: Alpine) =>
 				// @ts-expect-error
 				const data = await this.$wire.updatePhoto(formData);
 				if (data !== null) {
+					this.photo.title = data.title;
 					this.photo.license = data.license;
 					this.photo.description = data.description;
 					this.photo.created_at = data.created_at;
