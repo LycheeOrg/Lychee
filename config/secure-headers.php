@@ -514,6 +514,20 @@ return [
 					'CL4mGy9ZhHM+PkLDZsWVuM25kEFBv3FXlmWe/O9Unmc=',
 
 					/*
+	const hashMatch = document.location.hash.replace("#", "").split("/");
+	const albumID = hashMatch[0] ?? '';
+	const photoID = hashMatch[1] ?? '';
+	if (photoID !== '') {
+		window.location = '{{ $gallery }}/' + albumID + '/' + photoID;
+	} else if (albumID !== '') {
+		window.location = '{{ $gallery }}/' + albumID;
+	} else {
+		window.location = '{{ $base }}';
+	}
+ */
+					'9zK0oWYjhW+ACIwFsQ6ksB1HCJ5EoUi+lRyrSt465A4=',
+
+					/*
 	document.addEventListener("DOMContentLoaded", function(event) {
 		document.querySelector("form").addEventListener("submit", function(e){
 			document.querySelector("form").hidden = true;
