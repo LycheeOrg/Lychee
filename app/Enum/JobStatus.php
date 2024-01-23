@@ -13,6 +13,7 @@ enum JobStatus: int
 	case READY = 0;
 	case SUCCESS = 1;
 	case FAILURE = 2;
+	case STARTED = 3;
 
 	/**
 	 * Given a JobStatus return the associated name.
@@ -25,6 +26,7 @@ enum JobStatus: int
 			self::READY => 'ready',
 			self::SUCCESS => 'success',
 			self::FAILURE => 'failure',
+			self::STARTED => 'started',
 		};
 	}
 }

@@ -84,6 +84,9 @@ class ProcessImageJob implements ShouldQueue
 	 */
 	public function handle(AlbumFactory $albumFactory): Photo
 	{
+		$this->history->status = JobStatus::FAILURE;
+		$this->history->save();
+
 		$copiedFile = new TemporaryJobFile($this->filePath, $this->originalBaseName);
 
 		// As the file has been uploaded, the (temporary) source file shall be

@@ -64,4 +64,7 @@
         <x-gallery.view.photo />
         <x-gallery.album.sharing-links :album="$this->album" x-show="albumFlags.isSharingLinksOpen" />
     @endif
+    @auth
+        <livewire:modules.jobs.feedback />
+    @endauth
 </div>
