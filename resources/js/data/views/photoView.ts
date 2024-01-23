@@ -42,7 +42,6 @@ export const photoView = (Alpine: Alpine) =>
 			mode: 0,
 
 			init() {
-				// @ts-expect-errror
 				console.log("init photoView!");
 
 				const photo = Alpine.store("photo") as Photo | undefined;
