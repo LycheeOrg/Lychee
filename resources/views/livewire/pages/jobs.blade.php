@@ -13,7 +13,6 @@
 					<span class="mx-2 text-red-700"><pre class="inline">{{ str_pad($job->status->name(), 7) }}</pre></span>
 				@endif
 				<span class="mx-2">{{ $job->owner->name }}</span>
-				<span class="mx-2">{{ $job->title ?? __('lychee.UNSORTED') }}</span>
 				<span class="mx-2">{{ $job->job }}</span>
 				<br>
 			@empty
