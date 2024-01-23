@@ -70,7 +70,7 @@ class ProcessImageJob implements ShouldQueue
 		// Set up our new history record.
 		$this->history = new JobHistory();
 		$this->history->owner_id = $this->userId;
-		$this->history->job = Str::limit($album_name . ': add ' . $this->originalBaseName, 200);
+		$this->history->job = Str::limit(sprintf('Process Image: %s added to %s.', $this->originalBaseName, $album_name), 200);
 		$this->history->status = JobStatus::READY;
 
 		$this->history->save();
