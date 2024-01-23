@@ -3,8 +3,8 @@
 	@if ($this->job_history->count() > 0)
 	<div x-on:click="isOpen = true"
 		x-bind:class="isOpen ? 'hidden' : ''"
-		class="w-6 h-6 bg-bg-700 cursor-pointer mb-4 mr-4">
-		<x-icons.iconic icon="pulse" fill='' class="animate-ping fill-create-600 my-0 w-4 h-4 mr-0 ml-0" />
+		class="w-6 h-6 bg-bg-700 cursor-pointer mb-8 mr-8">
+		<x-icons.iconic icon="pulse" fill='' class="animate-ping fill-create-600 my-0 w-8 h-8 mr-0 ml-0" />
 	</div>
 	<div
 		x-on:click="isOpen = false"
