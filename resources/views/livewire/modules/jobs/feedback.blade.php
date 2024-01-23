@@ -1,4 +1,5 @@
 <div class="fixed bottom-0 right-0" x-data="{isOpen: false}" x-cloak wire:poll>
+	@if($display)
 	@if ($this->job_history->count() > 0)
 	<div x-on:click="isOpen = true"
 		x-bind:class="isOpen ? 'hidden' : ''"
@@ -25,5 +26,6 @@
 		@endforeach
 		</div>
 	</div>
+	@endif
 	@endif
 </div>

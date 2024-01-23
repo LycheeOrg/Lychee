@@ -14,10 +14,12 @@ use Livewire\Component;
 class Feedback extends Component
 {
 	#[Locked] public bool $display;
-	/** @var Collection<JobHistory> */
-	public Collection $history;
-
-	public function mount()
+	/**
+	 * Mount the component.
+	 *
+	 * @return void
+	 */
+	public function mount(): void
 	{
 		if (!Auth::check()) {
 			$this->display = false;
