@@ -11,18 +11,17 @@
 		x-bind:class="isOpen ? '' : 'hidden'"
 		class="bg-bg-700 border-t-2  border-bg-800 border-l-2 border-solid rounded-tl"
 		>
-		<h2 class="text-center text-text-main-400 font-bold text-sm p-1">Jobs Queue</h2>
+		<h2 class="text-center text-text-main-400 font-bold text-sm p-1">Jobs Queue (<span class="text-primary-500">{{ $this->num_started }}</span>/<span class="text-ready-400">{{ $this->num_ready }}</span>)</h2>
 		<div class="overflow-y-auto h-32 border-t border-t-bg-600 border-solid text-xs p-2">
 		@foreach ($this->job_history as $history)
 			<span @class([
 				'text-ready-400' => $history->status->value === 0,
 				'text-danger-700' => $history->status->value === 1,
 				'text-create-700' => $history->status->value === 2,
-				'text-warning-700' => $history->status->value === 3,
+				'text-primary-500' => $history->status->value === 3,
 			]) >
-			{{ $history->job }} -- {{ $history->updated_at->diffForHumans() }}<br>
-			{{ $history->job }} -- {{ $history->updated_at->diffForHumans() }}<br>
-			</span>
+			{{ $history->job }} -- {{ $history->updated_at->diffForHumans() }}
+			</span><br>
 		@endforeach
 		</div>
 	</div>

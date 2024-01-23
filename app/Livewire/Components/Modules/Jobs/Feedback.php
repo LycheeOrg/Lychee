@@ -54,4 +54,30 @@ class Feedback extends Component
 			->orderBy('created_at', OrderSortingType::ASC->value)
 			->get();
 	}
+
+	/**
+	 * Return the Number of jobs ready.
+	 *
+	 * @return int
+	 */
+	public function getNumReadyProperty(): int
+	{
+		return JobHistory::query()
+			->where('owner_id', '=', Auth::id())
+			->where('status', '=', JobStatus::READY)
+			->count();
+	}
+
+	/**
+	 * Return the Number of jobs ready.
+	 *
+	 * @return int
+	 */
+	public function getNumStartedProperty(): int
+	{
+		return JobHistory::query()
+			->where('owner_id', '=', Auth::id())
+			->where('status', '=', JobStatus::STARTED)
+			->count();
+	}
 }
