@@ -1,4 +1,4 @@
-<div class="fixed bottom-0 right-0" x-data="{isOpen: false}" x-cloak wire:poll>
+<div class="fixed bottom-0 right-0" x-data="{isOpen: true}" x-cloak wire:poll>
 	@if($display)
 	@if ($this->job_history->count() > 0)
 	<div x-on:click="isOpen = true"
@@ -9,9 +9,11 @@
 	<div
 		x-on:click="isOpen = false"
 		x-bind:class="isOpen ? '' : 'hidden'"
-		class="bg-bg-700 border-t-2  border-bg-800 border-l-2 border-solid rounded-tl"
+		class="bg-bg-700 border-t-2 border-bg-800 border-l-2 border-solid rounded-tl"
 		>
-		<h2 class="text-center text-text-main-400 font-bold text-sm p-1">Jobs Queue (<span class="text-primary-500">{{ $this->num_started }}</span>/<span class="text-ready-400">{{ $this->num_ready }}</span>)</h2>
+		<h2 class="text-center text-text-main-400 font-bold text-sm p-1 px-12">
+			<x-icons.iconic icon="pulse" fill='' class="animate-ping fill-create-600 my-0 w-3 h-3 mr-2 ml-0" />
+			Jobs Queue (<span class="text-primary-500">{{ $this->num_started }}</span>/<span class="text-ready-400">{{ $this->num_ready }}</span>)</h2>
 		<div class="overflow-y-auto h-32 border-t border-t-bg-600 border-solid text-xs p-2">
 		@foreach ($this->job_history as $history)
 			<span @class([
