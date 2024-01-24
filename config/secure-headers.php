@@ -517,15 +517,19 @@ return [
 	const hashMatch = document.location.hash.replace("#", "").split("/");
 	const albumID = hashMatch[0] ?? '';
 	const photoID = hashMatch[1] ?? '';
+	const elem = document.getElementById('redirectData');
+	const gallery = elem.dataset.gallery;
+	const base = elem.dataset.redirect;
+
 	if (photoID !== '') {
-		window.location = '{{ $gallery }}/' + albumID + '/' + photoID;
+		window.location = gallery + '/' + albumID + '/' + photoID;
 	} else if (albumID !== '') {
-		window.location = '{{ $gallery }}/' + albumID;
+		window.location = gallery + '/' + albumID;
 	} else {
-		window.location = '{{ $base }}';
+		window.location = base;
 	}
  */
-					'9zK0oWYjhW+ACIwFsQ6ksB1HCJ5EoUi+lRyrSt465A4=',
+					'okzzdI+OgeNYCr3oJXDZ/rPI5WwGyiU5V/RwOQrv5zE=',
 
 					/*
 	document.addEventListener("DOMContentLoaded", function(event) {
