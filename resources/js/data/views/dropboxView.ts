@@ -15,7 +15,6 @@ type DropboxFile = {
 export const dropboxView = (Alpine: Alpine) =>
 	Alpine.data(
 		"dropboxView",
-		// @ts-expect-error
 		(urlArea_: string, progress_: string): DropboxView => ({
 			urlArea: urlArea_,
 			progress: progress_,

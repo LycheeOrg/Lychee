@@ -11,7 +11,6 @@ import PhotoLayout from "@/lycheeOrg/layouts/PhotoLayout";
 export const albumView = (Alpine: Alpine) =>
 	Alpine.data(
 		"albumView",
-		// @ts-expect-error
 		(
 			base_url: string,
 			nsfwAlbumsVisible: boolean,

@@ -27,7 +27,6 @@ export type PhotoView = AlpineComponent<{
 export const photoView = (Alpine: Alpine) =>
 	Alpine.data(
 		"photoView",
-		// @ts-expect-error
 		(
 			// photo_id: string,
 			photoFlags: PhotoFlagsView,
