@@ -4,6 +4,7 @@ namespace App\Livewire\Components\Modules\Jobs;
 
 use App\Enum\JobStatus;
 use App\Enum\OrderSortingType;
+use App\Models\Configs;
 use App\Models\JobHistory;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -13,7 +14,8 @@ use Livewire\Component;
 
 class Feedback extends Component
 {
-	#[Locked] public bool $display;
+	#[Locked] public bool $display = false;
+	#[Locked] public bool $open = false;
 	/**
 	 * Mount the component.
 	 *
@@ -27,6 +29,7 @@ class Feedback extends Component
 			return;
 		}
 
+		$this->open = Configs::getValueAsBool('current_job_processing_visible');
 		$this->display = true;
 	}
 
