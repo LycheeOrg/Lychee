@@ -1,7 +1,6 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import commonjs from 'vite-plugin-commonjs'
-import checker from 'vite-plugin-checker'
 
 /** @type {import('vite').UserConfig} */
 export default defineConfig({
@@ -13,10 +12,6 @@ export default defineConfig({
       refresh: true,
     }),
 
-    checker({
-      // e.g. use TypeScript check
-      typescript: true,
-    }),
   ],
   server: {
     watch: {
