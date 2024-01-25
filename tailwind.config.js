@@ -62,6 +62,9 @@ export default {
           900: 'var(--bg-900)',
           950: 'var(--bg-950)',
         },
+        ready: {
+          400: 'var(--ready)'
+        },
         danger: {
           600: 'var(--danger)',
           700: 'var(--danger-dark)',

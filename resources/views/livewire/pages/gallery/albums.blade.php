@@ -85,4 +85,7 @@
     @if($flags->can_use_2fa)
     <x-webauthn.login />
     @endif
+    @auth
+        <livewire:modules.jobs.feedback />
+    @endauth
 </div>

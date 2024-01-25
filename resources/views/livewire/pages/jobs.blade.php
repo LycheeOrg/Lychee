@@ -7,11 +7,13 @@
 		<div class="settings_view max-w-4xl text-text-main-400 text-sm mx-auto">
 			@forelse($this->jobs as $job)
 				<span class="mx-2">{{ $job->created_at }}</span>
-				@if($job->status->name() === 'success')
-					<span class="mx-2 text-green-600"><pre class="inline">{{ str_pad($job->status->name(), 7) }}</pre></span>
-				@else
-					<span class="mx-2 text-red-700"><pre class="inline">{{ str_pad($job->status->name(), 7) }}</pre></span>
-				@endif
+				<span @class([
+						'mx-2',
+						'text-ready-400' => $job->status->value === 0,
+						'text-danger-700' => $job->status->value === 2,
+						'text-create-700' => $job->status->value === 1,
+						'text-primary-500' => $job->status->value === 3,
+					])><pre class="inline">{{ str_pad($job->status->name(), 7) }}</pre></span>
 				<span class="mx-2">{{ $job->owner->name }}</span>
 				<span class="mx-2">{{ $job->job }}</span>
 				<br>

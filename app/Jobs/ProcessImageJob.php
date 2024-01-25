@@ -84,6 +84,9 @@ class ProcessImageJob implements ShouldQueue
 	 */
 	public function handle(AlbumFactory $albumFactory): Photo
 	{
+		$this->history->status = JobStatus::STARTED;
+		$this->history->save();
+
 		$copiedFile = new TemporaryJobFile($this->filePath, $this->originalBaseName);
 
 		// As the file has been uploaded, the (temporary) source file shall be
@@ -122,7 +125,6 @@ class ProcessImageJob implements ShouldQueue
 		if ($th->getCode() === 999) {
 			$this->release();
 		} else {
-			logger($th);
 			Log::error(__LINE__ . ':' . __FILE__ . ' ' . $th->getMessage(), $th->getTrace());
 		}
 	}
