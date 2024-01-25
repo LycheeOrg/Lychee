@@ -72,7 +72,6 @@ class AddStandaloneStrategy extends AbstractAddStrategy
 	{
 		// Create and save "bare" photo object without size variants
 		$this->hydrateMetadata();
-		$this->photo->is_public = $this->parameters->is_public;
 		$this->photo->is_starred = $this->parameters->is_starred;
 		$this->setParentAndOwnership();
 

@@ -350,7 +350,6 @@ return [
 	'SORT_PHOTO_SELECT_2' => 'Fotograferingsdatum',
 	'SORT_PHOTO_SELECT_3' => 'Titel',
 	'SORT_PHOTO_SELECT_4' => 'Beskrivning',
-	'SORT_PHOTO_SELECT_5' => 'Publikt',
 	'SORT_PHOTO_SELECT_6' => 'Stjärnmärkning',
 	'SORT_PHOTO_SELECT_7' => 'Bildformat',
 

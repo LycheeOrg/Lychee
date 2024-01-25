@@ -15,7 +15,6 @@ namespace Tests\Feature;
 use App\Enum\DefaultAlbumProtectionType;
 use App\Models\Configs;
 use App\SmartAlbums\OnThisDayAlbum;
-use App\SmartAlbums\PublicAlbum;
 use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\StarredAlbum;
 use App\SmartAlbums\UnsortedAlbum;
@@ -81,7 +80,6 @@ class AlbumTest extends AbstractTestCase
 
 		$this->albums_tests->get(RecentAlbum::ID, 401);
 		$this->albums_tests->get(StarredAlbum::ID, 401);
-		$this->albums_tests->get(PublicAlbum::ID, 401);
 		$this->albums_tests->get(UnsortedAlbum::ID, 401);
 		$this->albums_tests->get(OnThisDayAlbum::ID, 401);
 
@@ -97,7 +95,6 @@ class AlbumTest extends AbstractTestCase
 
 		$this->albums_tests->get(RecentAlbum::ID);
 		$this->albums_tests->get(StarredAlbum::ID);
-		$this->albums_tests->get(PublicAlbum::ID);
 		$this->albums_tests->get(UnsortedAlbum::ID);
 		$this->albums_tests->get(OnThisDayAlbum::ID);
 
@@ -816,7 +813,6 @@ class AlbumTest extends AbstractTestCase
 			'smart_albums' => [
 				'unsorted' => [],
 				'starred' => [],
-				'public' => [],
 				'recent' => [],
 				'on_this_day' => [],
 			],
@@ -837,7 +833,6 @@ class AlbumTest extends AbstractTestCase
 		]);
 		$response->assertDontSee('unsorted');
 		$response->assertDontSee('starred');
-		$response->assertDontSee('public');
 		$response->assertDontSee('recent');
 
 		Configs::set('SA_enabled', true);

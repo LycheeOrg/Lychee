@@ -262,7 +262,6 @@ class AlbumBuilder extends NSQueryBuilder
 						->orWhere('base_albums.owner_id', '=', $userID)
 						->orWhere('p.owner_id', '=', $userID)
 				);
-			$query2->orWhere('p.is_public', '=', true);
 		};
 
 		return $countQuery->where($visibilitySubQuery);

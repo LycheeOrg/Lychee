@@ -350,7 +350,6 @@ return [
 	'SORT_PHOTO_SELECT_2' => 'Ημερομηνία Λήψης',
 	'SORT_PHOTO_SELECT_3' => 'Τίτλος',
 	'SORT_PHOTO_SELECT_4' => 'Περιγραφή',
-	'SORT_PHOTO_SELECT_5' => 'Δημόσιο',
 	'SORT_PHOTO_SELECT_6' => 'Αστέρια',
 	'SORT_PHOTO_SELECT_7' => 'Μορφή Φωτογραφίας',
 

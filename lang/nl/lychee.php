@@ -350,7 +350,6 @@ return [
 	'SORT_PHOTO_SELECT_2' => 'Aangemaakt op',
 	'SORT_PHOTO_SELECT_3' => 'Titel',
 	'SORT_PHOTO_SELECT_4' => 'Omschrijving',
-	'SORT_PHOTO_SELECT_5' => 'Publiekelijk',
 	'SORT_PHOTO_SELECT_6' => 'Ster',
 	'SORT_PHOTO_SELECT_7' => 'Foto formaat',
 

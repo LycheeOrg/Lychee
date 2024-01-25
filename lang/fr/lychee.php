@@ -350,7 +350,6 @@ return [
 	'SORT_PHOTO_SELECT_2' => 'Date de prise de vue',
 	'SORT_PHOTO_SELECT_3' => 'Titre',
 	'SORT_PHOTO_SELECT_4' => 'Description',
-	'SORT_PHOTO_SELECT_5' => 'Public',
 	'SORT_PHOTO_SELECT_6' => 'Favoris',
 	'SORT_PHOTO_SELECT_7' => 'Format de la photo',
 

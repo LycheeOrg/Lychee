@@ -350,7 +350,6 @@ return [
 	'SORT_PHOTO_SELECT_2' => 'čas snímku',
 	'SORT_PHOTO_SELECT_3' => 'Titul',
 	'SORT_PHOTO_SELECT_4' => 'Popis',
-	'SORT_PHOTO_SELECT_5' => 'Verejný',
 	'SORT_PHOTO_SELECT_6' => 'Obľúbený',
 	'SORT_PHOTO_SELECT_7' => 'Formát',
 

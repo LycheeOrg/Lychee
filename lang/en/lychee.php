@@ -350,7 +350,6 @@ return [
 	'SORT_PHOTO_SELECT_2' => 'Take Date',
 	'SORT_PHOTO_SELECT_3' => 'Title',
 	'SORT_PHOTO_SELECT_4' => 'Description',
-	'SORT_PHOTO_SELECT_5' => 'Public',
 	'SORT_PHOTO_SELECT_6' => 'Star',
 	'SORT_PHOTO_SELECT_7' => 'Photo Format',
 

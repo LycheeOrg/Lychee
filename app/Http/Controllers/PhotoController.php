@@ -20,7 +20,6 @@ use App\Http\Requests\Photo\GetPhotoRequest;
 use App\Http\Requests\Photo\MovePhotosRequest;
 use App\Http\Requests\Photo\SetPhotoDescriptionRequest;
 use App\Http\Requests\Photo\SetPhotoLicenseRequest;
-use App\Http\Requests\Photo\SetPhotoPublicRequest;
 use App\Http\Requests\Photo\SetPhotosStarredRequest;
 use App\Http\Requests\Photo\SetPhotosTagsRequest;
 use App\Http\Requests\Photo\SetPhotosTitleRequest;
@@ -199,26 +198,6 @@ class PhotoController extends Controller
 	public function setDescription(SetPhotoDescriptionRequest $request): void
 	{
 		$request->photo()->description = $request->description();
-		$request->photo()->save();
-	}
-
-	/**
-	 * Sets the `is_public` attribute of the given photo.
-	 *
-	 * We do not advise the use of this and would rather see people use albums
-	 * visibility.
-	 * This would highly simplify the code if we remove this.
-	 * Do we really want to keep it ?
-	 *
-	 * @param SetPhotoPublicRequest $request
-	 *
-	 * @return void
-	 *
-	 * @throws LycheeException
-	 */
-	public function setPublic(SetPhotoPublicRequest $request): void
-	{
-		$request->photo()->is_public = $request->isPublic();
 		$request->photo()->save();
 	}
 

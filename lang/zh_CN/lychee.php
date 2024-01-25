@@ -350,7 +350,6 @@ return [
 	'SORT_PHOTO_SELECT_2' => '创建时间',
 	'SORT_PHOTO_SELECT_3' => '标题',
 	'SORT_PHOTO_SELECT_4' => '描述',
-	'SORT_PHOTO_SELECT_5' => '公开',
 	'SORT_PHOTO_SELECT_6' => '喜欢',
 	'SORT_PHOTO_SELECT_7' => '照片格式',
 
