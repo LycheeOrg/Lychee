@@ -45,20 +45,32 @@ class ProcessImageJob implements ShouldQueue
 	 */
 	public function __construct(
 		ProcessableJobFile $file,
-		string|AbstractAlbum|null $albumID,
+		string|AbstractAlbum|null $album,
 		?int $fileLastModifiedTime,
 	) {
 		$this->filePath = $file->getPath();
 		$this->originalBaseName = $file->getOriginalBasename();
-		$this->albumID = is_string($albumID) ? $albumID : $albumID?->id;
+
+		$this->albumID = null;
+		$album_name = __('lychee.UNSORTED');
+
+		if ($album instanceof AbstractAlbum) {
+			$this->albumID = $album->id;
+			$album_name = $album->title;
+		}
+
+		if (is_string($album)) {
+			$album_name = resolve(AlbumFactory::class)->findAbstractAlbumOrFail($this->albumID)->title;
+			$this->albumID = $album;
+		}
+
 		$this->userId = Auth::user()->id;
 		$this->fileLastModifiedTime = $fileLastModifiedTime;
 
 		// Set up our new history record.
 		$this->history = new JobHistory();
 		$this->history->owner_id = $this->userId;
-		$this->history->job = Str::limit('Process Image: ' . $this->originalBaseName, 200);
-		$this->history->parent_id = $this->albumID;
+		$this->history->job = Str::limit(sprintf('Process Image: %s added to %s.', $this->originalBaseName, $album_name), 200);
 		$this->history->status = JobStatus::READY;
 
 		$this->history->save();
