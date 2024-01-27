@@ -18,7 +18,7 @@ class DefaultConfig
 			| by looping through the array and run "extension_loaded" on it.
 			|
 			*/
-		'core' => ['minPhpVersion' => '8.0.0'],
+		'core' => ['minPhpVersion' => '8.2.0'],
 
 		'requirements' => [
 			'php' => [
@@ -61,6 +61,9 @@ class DefaultConfig
 			'storage/framework/cache/' => 'file_exists|is_readable|is_writable|is_executable',
 			'storage/framework/sessions/' => 'file_exists|is_readable|is_writable|is_executable',
 			'storage/logs/' => 'file_exists|is_readable|is_writable|is_executable',
+			'storage/image-jobs' => 'file_exists|is_readable|is_writable|is_executable',
+			'storage/extract-jobs' => 'file_exists|is_readable|is_writable|is_executable',
+			'storage/livewire-tmp' => 'file_exists|is_readable|is_writable|is_executable',
 			'bootstrap/cache/' => 'file_exists|is_readable|is_writable|is_executable',
 			'public/dist/' => 'file_exists|is_readable|is_writable|is_executable',
 			'public/sym/' => 'file_exists|is_readable|is_writable|is_executable',
