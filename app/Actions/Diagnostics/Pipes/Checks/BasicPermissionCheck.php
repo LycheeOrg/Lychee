@@ -7,6 +7,8 @@ use App\Contracts\Models\AbstractSizeVariantNamingStrategy;
 use App\Exceptions\Handler;
 use App\Exceptions\Internal\InvalidConfigOption;
 use App\Facades\Helpers;
+use App\Image\Files\ProcessableJobFile;
+use App\Livewire\Components\Forms\Add\Upload;
 use App\Models\SymLink;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\Storage;
@@ -106,6 +108,8 @@ class BasicPermissionCheck implements DiagnosticPipe
 		$disks = [
 			AbstractSizeVariantNamingStrategy::getImageDisk(),
 			Storage::disk(SymLink::DISK_NAME),
+			Storage::disk(ProcessableJobFile::DISK_NAME),
+			Storage::disk(Upload::DISK_NAME),
 		];
 
 		foreach ($disks as $disk) {
@@ -300,7 +304,7 @@ class BasicPermissionCheck implements DiagnosticPipe
 			$this->realPaths[] = public_path();
 			$this->anonymizePaths[] = Helpers::censor(public_path(), 0.2);
 			$this->realPaths[] = storage_path();
-			$this->anonymizePaths[] = Helpers::censor(storage_path(), 0.2);
+			$this->anonymizePaths[] = Helpers::censor(storage_path(), 0.4);
 			$this->realPaths[] = config('filesystems.disks.images.root');
 			$this->anonymizePaths[] = Helpers::censor(config('filesystems.disks.images.root'), 0.2);
 		}
