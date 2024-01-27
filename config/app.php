@@ -58,6 +58,8 @@ return [
 
 	'livewire' => (bool) env('LIVEWIRE_ENABLED', true),
 
+	'photo_pipes' => (bool) env('PHOTO_PIPES', false),
+
 	/*
 	|--------------------------------------------------------------------------
 	| Application Debug Mode

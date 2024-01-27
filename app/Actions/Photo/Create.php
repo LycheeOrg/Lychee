@@ -2,6 +2,14 @@
 
 namespace App\Actions\Photo;
 
+use App\Actions\Photo\Pipes\AssertSupportedMedia;
+use App\Actions\Photo\Pipes\FetchLastModifiedTime;
+use App\Actions\Photo\Pipes\FindDuplicate;
+use App\Actions\Photo\Pipes\FindLivePartner;
+use App\Actions\Photo\Pipes\InitParentAlbum;
+use App\Actions\Photo\Pipes\LoadFileMetadata;
+use App\Actions\Photo\Pipes\NotifyAlbums;
+use App\Actions\Photo\Pipes\Process;
 use App\Actions\Photo\Strategies\AddDuplicateStrategy;
 use App\Actions\Photo\Strategies\AddPhotoPartnerStrategy;
 use App\Actions\Photo\Strategies\AddStandaloneStrategy;
@@ -11,6 +19,7 @@ use App\Actions\Photo\Strategies\ImportMode;
 use App\Actions\User\Notify;
 use App\Contracts\Exceptions\LycheeException;
 use App\Contracts\Models\AbstractAlbum;
+use App\DTO\PhotoCreateDTO;
 use App\Exceptions\ExternalComponentFailedException;
 use App\Exceptions\ExternalComponentMissingException;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
@@ -27,6 +36,7 @@ use App\Models\Photo;
 use App\SmartAlbums\BaseSmartAlbum;
 use App\SmartAlbums\StarredAlbum;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Pipeline\Pipeline;
 use function Safe\filemtime;
 
 class Create
@@ -59,6 +69,32 @@ class Create
 	 */
 	public function add(NativeLocalFile $sourceFile, ?AbstractAlbum $album, ?int $fileLastModifiedTime = null): Photo
 	{
+		if (config('app.photo_pipes') === true) {
+			$photoDTO = new PhotoCreateDTO(
+				strategyParameters: $this->strategyParameters,
+				sourceFile: $sourceFile,
+				album: $album,
+				fileLastModifiedTime: $fileLastModifiedTime
+			);
+
+			return app(Pipeline::class)
+				->send($photoDTO)
+				->through([
+					AssertSupportedMedia::class,
+					FetchLastModifiedTime::class,
+					InitParentAlbum::class,
+					LoadFileMetadata::class,
+					FindDuplicate::class,
+					FindLivePartner::class,
+					Process::class,
+					NotifyAlbums::class,
+				])
+				->thenReturn()
+				->getPhoto();
+
+			return $photoDTO->getPhoto();
+		}
+
 		$fileLastModifiedTime ??= filemtime($sourceFile->getRealPath());
 
 		$sourceFile->assertIsSupportedMediaOrAcceptedRaw();
