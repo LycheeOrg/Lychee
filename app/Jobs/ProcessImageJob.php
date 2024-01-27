@@ -60,8 +60,8 @@ class ProcessImageJob implements ShouldQueue
 		}
 
 		if (is_string($album)) {
-			$album_name = resolve(AlbumFactory::class)->findAbstractAlbumOrFail($this->albumID)->title;
 			$this->albumID = $album;
+			$album_name = resolve(AlbumFactory::class)->findAbstractAlbumOrFail($this->albumID)->title;
 		}
 
 		$this->userId = Auth::user()->id;
