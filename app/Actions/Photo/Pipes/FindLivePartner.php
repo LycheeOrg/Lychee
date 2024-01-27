@@ -23,23 +23,22 @@ class FindLivePartner implements PhotoCreatePipe
 			// find a potential partner which has the same content id
 			if ($state->strategyParameters->exifInfo->livePhotoContentID !== null) {
 				/** @var Photo|null $livePartner */
-				$livePartner = Photo::query()
+				$state->livePartner = Photo::query()
 					->where('live_photo_content_id', '=', $state->strategyParameters->exifInfo->livePhotoContentID)
 					->where('album_id', '=', $state->strategyParameters->album?->id)
 					->whereNull('live_photo_short_path')->first();
 			}
+
 			// if a potential partner has been found, ensure that it is of a
 			// different kind then the uploaded media.
 			if (
-				$livePartner !== null && !(
+				$state->livePartner !== null && !(
 					BaseMediaFile::isSupportedImageMimeType($state->strategyParameters->exifInfo->type) && $livePartner->isVideo() ||
 					BaseMediaFile::isSupportedVideoMimeType($state->strategyParameters->exifInfo->type) && $livePartner->isPhoto()
 				)
 			) {
-				$livePartner = null;
+				$state->livePartner = null;
 			}
-
-			$state->livePartner = $livePartner;
 
 			return $next($state);
 		} catch (IllegalOrderOfOperationException $e) {
