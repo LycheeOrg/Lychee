@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Photo\Pipes;
+namespace App\Actions\Photo\Pipes\Init;
 
 use App\Contracts\PhotoCreatePipe;
 use App\DTO\PhotoCreateDTO;
@@ -22,13 +22,13 @@ class InitParentAlbum implements PhotoCreatePipe
 	public function handle(PhotoCreateDTO $state, \Closure $next): PhotoCreateDTO
 	{
 		if ($state->album === null) {
-			$state->strategyParameters->album = null;
+			$state->parameters->album = null;
 		} elseif ($state->album instanceof Album) {
-			$state->strategyParameters->album = $state->album;
+			$state->parameters->album = $state->album;
 		} elseif ($state->album instanceof BaseSmartAlbum) {
-			$state->strategyParameters->album = null;
+			$state->parameters->album = null;
 			if ($state->album instanceof StarredAlbum) {
-				$state->strategyParameters->is_starred = true;
+				$state->parameters->is_starred = true;
 			}
 		} else {
 			throw new InvalidPropertyException('The given parent album does not support uploading');

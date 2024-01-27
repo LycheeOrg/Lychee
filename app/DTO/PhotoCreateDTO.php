@@ -3,9 +3,15 @@
 namespace App\DTO;
 
 use App\Actions\Photo\Strategies\AddStrategyParameters;
+use App\Contracts\Image\ImageHandlerInterface;
+use App\Contracts\Image\StreamStats;
 use App\Contracts\Models\AbstractAlbum;
+use App\Contracts\Models\AbstractSizeVariantNamingStrategy;
 use App\Exceptions\Internal\LycheeLogicException;
+use App\Image\Files\BaseMediaFile;
+use App\Image\Files\FlysystemFile;
 use App\Image\Files\NativeLocalFile;
+use App\Image\Files\TemporaryLocalFile;
 use App\Models\Photo;
 
 class PhotoCreateDTO
@@ -14,11 +20,29 @@ class PhotoCreateDTO
 	public Photo|null $duplicate = null;
 	public Photo|null $livePartner = null;
 
+	// used on duplicate path
+	public bool $hasBeenReSynced = false;
+
+	// used on standalone
+	public ImageHandlerInterface|null $sourceImage = null;
+	public AbstractSizeVariantNamingStrategy $namingStrategy;
+	public TemporaryLocalFile|null $tmpVideoFile = null;
+	public FlysystemFile $targetFile;
+	public StreamStats|null $streamStat;
+
+	// used by VideoLivePartner
+	public string $videoPath;
+
+	// used by PhotoLivepartner;
+	public Photo $oldVideo;
+
+	public BaseMediaFile $videoFile;
+
 	public function __construct(
-		public AddStrategyParameters $strategyParameters,
+		public AddStrategyParameters $parameters,
 		public NativeLocalFile $sourceFile,
-		public null|AbstractAlbum $album,
-		public null|int $fileLastModifiedTime = null
+		public AbstractAlbum|null $album,
+		public int|null $fileLastModifiedTime = null
 	) {
 	}
 

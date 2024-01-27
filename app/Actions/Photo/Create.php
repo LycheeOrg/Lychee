@@ -2,14 +2,16 @@
 
 namespace App\Actions\Photo;
 
-use App\Actions\Photo\Pipes\AssertSupportedMedia;
-use App\Actions\Photo\Pipes\FetchLastModifiedTime;
-use App\Actions\Photo\Pipes\FindDuplicate;
-use App\Actions\Photo\Pipes\FindLivePartner;
-use App\Actions\Photo\Pipes\InitParentAlbum;
-use App\Actions\Photo\Pipes\LoadFileMetadata;
+use App\Actions\Photo\Pipes\Duplicate;
+use App\Actions\Photo\Pipes\HydrateMetadata;
+use App\Actions\Photo\Pipes\Init;
 use App\Actions\Photo\Pipes\NotifyAlbums;
-use App\Actions\Photo\Pipes\Process;
+use App\Actions\Photo\Pipes\PhotoPartner;
+use App\Actions\Photo\Pipes\Save;
+use App\Actions\Photo\Pipes\SetParentAndOwnership;
+use App\Actions\Photo\Pipes\SetStarred;
+use App\Actions\Photo\Pipes\Standalone;
+use App\Actions\Photo\Pipes\VideoPartner;
 use App\Actions\Photo\Strategies\AddDuplicateStrategy;
 use App\Actions\Photo\Strategies\AddPhotoPartnerStrategy;
 use App\Actions\Photo\Strategies\AddStandaloneStrategy;
@@ -71,28 +73,40 @@ class Create
 	{
 		if (config('app.photo_pipes') === true) {
 			$photoDTO = new PhotoCreateDTO(
-				strategyParameters: $this->strategyParameters,
+				parameters: $this->strategyParameters,
 				sourceFile: $sourceFile,
 				album: $album,
 				fileLastModifiedTime: $fileLastModifiedTime
 			);
 
-			return app(Pipeline::class)
+			$photoDTO = app(Pipeline::class)
 				->send($photoDTO)
 				->through([
-					AssertSupportedMedia::class,
-					FetchLastModifiedTime::class,
-					InitParentAlbum::class,
-					LoadFileMetadata::class,
-					FindDuplicate::class,
-					FindLivePartner::class,
-					Process::class,
-					NotifyAlbums::class,
+					Init\AssertSupportedMedia::class,
+					Init\FetchLastModifiedTime::class,
+					Init\InitParentAlbum::class,
+					Init\LoadFileMetadata::class,
+					Init\FindDuplicate::class,
+					Init\FindLivePartner::class,
 				])
+				->thenReturn();
+
+			$nextPipe = app(Pipeline::class)
+				->send($photoDTO);
+
+			if ($photoDTO->duplicate !== null) {
+				$nextPipe->pipe($this->getDuplicatePipe($photoDTO));
+			} elseif ($photoDTO->livePartner !== null && $sourceFile->isSupportedVideo()) {
+				$nextPipe->pipe($this->getVideoPartnerPipe());
+			} elseif ($photoDTO->livePartner !== null && $sourceFile->isSupportedImage()) {
+				$nextPipe->pipe($this->getPhotoPartnerPipe());
+			} else {
+				$nextPipe->pipe($this->getStandAlonePipe());
+			}
+
+			return $nextPipe->pipe([NotifyAlbums::class])
 				->thenReturn()
 				->getPhoto();
-
-			return $photoDTO->getPhoto();
 		}
 
 		$fileLastModifiedTime ??= filemtime($sourceFile->getRealPath());
@@ -275,5 +289,83 @@ class Create
 			->first();
 
 		return $photo;
+	}
+
+	private function getDuplicatePipe(PhotoCreateDTO $state): array
+	{
+		$next = [];
+
+		if ($state->parameters->importMode->shallResyncMetadata()) {
+			array_push($next, ...[
+				Duplicate\SetDuplicateAsPhoto::class,
+				HydrateMetadata::class,
+				Duplicate\SaveIfDirty::class,
+			]);
+		}
+		array_push($next, ...[
+			Duplicate\ThrowSkipDuplicate::class,
+			Duplicate\ReplicateAsPhoto::class,
+			SetStarred::class,
+			SetParentAndOwnership::class,
+			Save::class,
+		]);
+
+		return $next;
+	}
+
+	private function getStandAlonePipe(): array
+	{
+		return [
+			Standalone\CreatePhoto::class,
+			Standalone\FixTimeStamps::class,
+			Standalone\InitNamingStrategy::class,
+			HydrateMetadata::class,
+			SetStarred::class,
+			SetParentAndOwnership::class,
+			Standalone\SetOriginalChecksum::class,
+			Standalone\FetchSourceImage::class,
+			Standalone\ExtractGoogleMotionPictures::class,
+			Standalone\PlacePhoto::class,
+			Standalone\PlaceGoogleMotionVideo::class,
+			Standalone\SetChecksum::class,
+			Save::class,
+			Standalone\CreateOriginalSizeVariant::class,
+			Standalone\CreateSizeVariants::class,
+		];
+	}
+
+	private function getVideoPartnerPipe(array $steps = [VideoPartner\SetVideoFile::class]): array
+	{
+		array_push($steps, ...[
+			VideoPartner\SetLivePartnerAsPhoto::class,
+			VideoPartner\GetVideoPath::class,
+			VideoPartner\PlaceVideo::class,
+			VideoPartner\UpdateLivePartner::class,
+			Save::class,
+		]);
+
+		return $steps;
+	}
+
+	private function getPhotoPartnerPipe(): array
+	{
+		$steps = [
+			PhotoPartner\SetOldVideoPartner::class,
+		];
+
+		array_push($steps, ...$this->getStandAlonePipe());
+		array_push($steps, ...[
+			PhotoPartner\ResetParameters::class,
+			PhotoPartner\ResetFile::class,
+			PhotoPartner\ResetLivePartner::class,
+		]);
+		array_push($steps, ...$this->getVideoPartnerPipe([]));
+		array_push($steps, ...[
+			PhotoPartner\SetOldChecksum::class,
+			PhotoPartner\DeleteOldVideoPartner::class,
+			Save::class,
+		]);
+
+		return $steps;
 	}
 }

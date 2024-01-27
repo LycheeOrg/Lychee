@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Photo\Pipes;
+namespace App\Actions\Photo\Pipes\Init;
 
 use App\Contracts\PhotoCreatePipe;
 use App\DTO\PhotoCreateDTO;
@@ -22,24 +22,24 @@ class LoadFileMetadata implements PhotoCreatePipe
 	 */
 	public function handle(PhotoCreateDTO $state, \Closure $next): PhotoCreateDTO
 	{
-		$state->strategyParameters->exifInfo = Extractor::createFromFile($state->sourceFile, $state->fileLastModifiedTime);
+		$state->parameters->exifInfo = Extractor::createFromFile($state->sourceFile, $state->fileLastModifiedTime);
 
 		// Use basename of file if IPTC title missing
 		if (
-			$state->strategyParameters->exifInfo->title === null ||
-			$state->strategyParameters->exifInfo->title === ''
+			$state->parameters->exifInfo->title === null ||
+			$state->parameters->exifInfo->title === ''
 		) {
-			$state->strategyParameters->exifInfo->title = substr($state->sourceFile->getOriginalBasename(), 0, 98);
+			$state->parameters->exifInfo->title = substr($state->sourceFile->getOriginalBasename(), 0, 98);
 		}
 
 		if ($state->album === null) {
-			$state->strategyParameters->album = null;
+			$state->parameters->album = null;
 		} elseif ($state->album instanceof Album) {
-			$state->strategyParameters->album = $state->album;
+			$state->parameters->album = $state->album;
 		} elseif ($state->album instanceof BaseSmartAlbum) {
-			$state->strategyParameters->album = null;
+			$state->parameters->album = null;
 			if ($state->album instanceof StarredAlbum) {
-				$state->strategyParameters->is_starred = true;
+				$state->parameters->is_starred = true;
 			}
 		} else {
 			throw new InvalidPropertyException('The given parent album does not support uploading');

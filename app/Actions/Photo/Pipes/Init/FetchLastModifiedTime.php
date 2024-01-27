@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Photo\Pipes;
+namespace App\Actions\Photo\Pipes\Init;
 
 use App\Contracts\PhotoCreatePipe;
 use App\DTO\PhotoCreateDTO;
@@ -8,18 +8,18 @@ use App\DTO\PhotoCreateDTO;
 /**
  * Assert wether we support said file.
  */
-class AssertSupportedMedia implements PhotoCreatePipe
+class FetchLastModifiedTime implements PhotoCreatePipe
 {
 	/**
 	 * {@inheritDoc}
-	 *
-	 * @throws MediaFileUnsupportedException
-	 * @throws MediaFileOperationException
 	 */
 	public function handle(PhotoCreateDTO $state, \Closure $next): PhotoCreateDTO
 	{
-		$state->sourceFile->assertIsSupportedMediaOrAcceptedRaw();
+		if ($state->fileLastModifiedTime === null) {
+			$state->fileLastModifiedTime ??= $state->sourceFile->lastModified();
+		}
 
 		return $next($state);
 	}
 }
+

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Photo\Pipes;
+namespace App\Actions\Photo\Pipes\Init;
 
 use App\Contracts\PhotoCreatePipe;
 use App\DTO\PhotoCreateDTO;
@@ -19,7 +19,6 @@ class FindDuplicate implements PhotoCreatePipe
 	{
 		$checksum = StreamStat::createFromLocalFile($state->sourceFile)->checksum;
 
-		/** @var Photo|null $photo */
 		$state->duplicate = Photo::query()
 			->where('checksum', '=', $checksum)
 			->orWhere('original_checksum', '=', $checksum)
