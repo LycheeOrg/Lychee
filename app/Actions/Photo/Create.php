@@ -104,9 +104,19 @@ class Create
 				$nextPipe->pipe($this->getStandAlonePipe());
 			}
 
-			return $nextPipe->pipe([NotifyAlbums::class])
-				->thenReturn()
-				->getPhoto();
+			try {
+				return $nextPipe->pipe([NotifyAlbums::class])
+				->thenReturn()->getPhoto();
+			} catch (LycheeException $e) {
+				// If source file could not be put into final destination, remove
+				// freshly created photo from DB to avoid having "zombie" entries.
+				try {
+					$photoDTO->getPhoto()->delete();
+				} catch (\Throwable) {
+					// Sic! If anything goes wrong here, we still throw the original exception
+				}
+				throw $e;
+			}
 		}
 
 		$fileLastModifiedTime ??= filemtime($sourceFile->getRealPath());
