@@ -28,7 +28,7 @@ Route::get('/Permissions', [DiagnosticsController::class, 'getFullAccessPermissi
 // TODO: Reconsider, if we really want the diagnostic page to be world-wide accessible.
 Route::get('/Diagnostics', [DiagnosticsController::class, 'view']);
 
-Route::get('/Update', [UpdateController::class, 'view']);
+Route::get('/Update', [UpdateController::class, 'view'])->name('update');
 
 Route::get('/Optimize', [OptimizeController::class, 'view']);
 
