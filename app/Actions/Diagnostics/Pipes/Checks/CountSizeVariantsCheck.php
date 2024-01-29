@@ -8,9 +8,7 @@ use Illuminate\Support\Facades\Schema;
 
 /**
  * This checks the Database integrity.
- * More precisely if there are any pictures without an original.
- *
- * Such cases will crash the front-end.
+ * More precisely if there are any size variants with the filesize missing.
  */
 class CountSizeVariantsCheck implements DiagnosticPipe
 {
