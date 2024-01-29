@@ -32,6 +32,7 @@ class Upload extends Component
 {
 	use WithFileUploads;
 	use InteractWithModal;
+	public const DISK_NAME = 'livewire-upload';
 
 	/**
 	 * @var string|null albumId of where to upload the picture
@@ -99,7 +100,7 @@ class Upload extends Component
 			$fileDetails = $this->uploads[$index];
 			/** @var TemporaryUploadedFile $chunkFile */
 			$chunkFile = $fileDetails['fileChunk'];
-			$final = new NativeLocalFile(Storage::path('/livewire-tmp/' . $fileDetails['uuidName']));
+			$final = new NativeLocalFile(Storage::disk(self::DISK_NAME)->path($fileDetails['uuidName']));
 			$final->append($chunkFile->readStream());
 			$chunkFile->delete();
 
@@ -118,7 +119,7 @@ class Upload extends Component
 	{
 		foreach ($this->uploads as $idx => $fileData) {
 			if ($fileData['stage'] === FileStatus::READY->value) {
-				$uploadedFile = new NativeLocalFile(Storage::path('/livewire-tmp/' . $fileData['uuidName']));
+				$uploadedFile = new NativeLocalFile(Storage::disk(self::DISK_NAME)->path($fileData['uuidName']));
 				$processableFile = new ProcessableJobFile(
 					$fileData['extension'],
 					$fileData['fileName']
