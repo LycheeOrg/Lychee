@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\ImageProcessing;
 
 use App\Contracts\Exceptions\ExternalLycheeException;
 use App\Enum\SizeVariantType;

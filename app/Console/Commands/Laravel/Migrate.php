@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\Laravel;
 
 use App\Actions\Diagnostics\Pipes\Checks\PHPVersionCheck;
 use Illuminate\Contracts\Container\BindingResolutionException;

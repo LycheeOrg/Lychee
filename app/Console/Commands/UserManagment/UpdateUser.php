@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\UserManagment;
 
 use App\Contracts\Exceptions\ExternalLycheeException;
 use App\Models\User;
