@@ -30,7 +30,11 @@ class IndexTest extends AbstractTestCase
 		 * check if we can actually get a nice answer.
 		 */
 		$response = $this->get('/');
-		$this->assertOk($response);
+		if (config('app.livewire') === true) {
+			$this->assertRedirect($response);
+		} else {
+			$this->assertOk($response);
+		}
 
 		$response = $this->postJson('/api/Albums::get');
 		$this->assertOk($response);
