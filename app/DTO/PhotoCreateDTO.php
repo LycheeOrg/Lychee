@@ -18,9 +18,35 @@ use App\Models\Photo;
 
 class PhotoCreateDTO
 {
+	// Import mode.
+	public ImportMode $importMode;
+
+	// Indicates the intended owner of the image.
+	public int $intendedOwnerId;
+
+	// Indicates whether the new photo shall be starred.
+	public bool $is_starred = false;
+
+	// The extracted EXIF information (populated during init phase).
+	public ?Extractor $exifInfo = null;
+
+	// The intended parent album
+	public ?AbstractAlbum $album = null;
+
+	// The original photo source file that is imported.
+	public NativeLocalFile $sourceFile;
+
+	// Contains the final photo object that will be returned
 	public Photo|null $photo = null;
+
+	// During initial steps if a duplicate is found, it will be placed here.
 	public Photo|null $duplicate = null;
+
+	// During initial steps if liveParner is found, it will be placed here.
 	public Photo|null $livePartner = null;
+
+	// Optional last modified data if known.
+	public int|null $fileLastModifiedTime = null;
 
 	// used on duplicate path
 	public bool $hasBeenReSynced = false;
@@ -39,31 +65,19 @@ class PhotoCreateDTO
 	public Photo $oldVideo;
 	public BaseMediaFile $videoFile;
 
-	public ImportMode $importMode;
-
-	/** @var int Indicates the intended owner of the image. */
-	public int $intendedOwnerId;
-
-	/** @var AbstractAlbum|null the intended parent album */
-	public ?AbstractAlbum $album = null;
-
-	/** @var bool indicates whether the new photo shall be starred */
-	public bool $is_starred = false;
-
-	/** @var Extractor|null the extracted EXIF information */
-	public ?Extractor $exifInfo = null;
-
 	public function __construct(
 		AddStrategyParameters $parameters,
-		public NativeLocalFile $sourceFile,
+		NativeLocalFile $sourceFile,
 		AbstractAlbum|null $album,
-		public int|null $fileLastModifiedTime = null
+		int|null $fileLastModifiedTime = null
 	) {
+		$this->sourceFile = $sourceFile;
 		$this->importMode = $parameters->importMode;
 		$this->intendedOwnerId = $parameters->intendedOwnerId;
 		$this->is_starred = $parameters->is_starred;
 		$this->exifInfo = $parameters->exifInfo;
 		$this->album = $album;
+		$this->fileLastModifiedTime = $fileLastModifiedTime;
 	}
 
 	public function getPhoto(): Photo
@@ -72,6 +86,7 @@ class PhotoCreateDTO
 			throw new LycheeLogicException('Photo is null!');
 		}
 
+		// Save just in case.
 		$this->photo->save();
 
 		return $this->photo;
