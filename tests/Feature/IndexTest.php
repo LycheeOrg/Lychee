@@ -32,6 +32,7 @@ class IndexTest extends AbstractTestCase
 		$response = $this->get('/');
 		if (config('app.livewire') === true) {
 			$this->assertRedirect($response);
+			$response->assertRedirect(route('livewire-gallery'));
 		} else {
 			$this->assertOk($response);
 		}
@@ -60,8 +61,13 @@ class IndexTest extends AbstractTestCase
 		Configs::set('landing_page_enable', 1);
 
 		$response = $this->get('/');
-		$this->assertOk($response);
-		$response->assertViewIs('landing');
+		if (config('app.livewire') === true) {
+			$this->assertRedirect($response);
+			$response->assertRedirect(route('landing'));
+		} else {
+			$this->assertOk($response);
+			$response->assertViewIs('landing');
+		}
 
 		$response = $this->get('/gallery');
 		$this->assertOk($response);
