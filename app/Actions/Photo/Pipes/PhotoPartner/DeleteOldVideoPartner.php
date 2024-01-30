@@ -17,6 +17,8 @@ class DeleteOldVideoPartner implements PhotoCreatePipe
 {
 	public function handle(PhotoCreateDTO $state, \Closure $next): PhotoCreateDTO
 	{
+		$state->oldVideo->delete();
+
 		return $next($state);
 	}
 }
