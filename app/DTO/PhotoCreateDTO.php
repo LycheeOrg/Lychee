@@ -3,6 +3,7 @@
 namespace App\DTO;
 
 use App\Actions\Photo\Strategies\AddStrategyParameters;
+use App\Actions\Photo\Strategies\ImportMode;
 use App\Contracts\Image\ImageHandlerInterface;
 use App\Contracts\Image\StreamStats;
 use App\Contracts\Models\AbstractAlbum;
@@ -12,6 +13,7 @@ use App\Image\Files\BaseMediaFile;
 use App\Image\Files\FlysystemFile;
 use App\Image\Files\NativeLocalFile;
 use App\Image\Files\TemporaryLocalFile;
+use App\Metadata\Extractor;
 use App\Models\Photo;
 
 class PhotoCreateDTO
@@ -35,15 +37,33 @@ class PhotoCreateDTO
 
 	// used by PhotoLivepartner;
 	public Photo $oldVideo;
-
 	public BaseMediaFile $videoFile;
 
+	public ImportMode $importMode;
+
+	/** @var int Indicates the intended owner of the image. */
+	public int $intendedOwnerId;
+
+	/** @var AbstractAlbum|null the intended parent album */
+	public ?AbstractAlbum $album = null;
+
+	/** @var bool indicates whether the new photo shall be starred */
+	public bool $is_starred = false;
+
+	/** @var Extractor|null the extracted EXIF information */
+	public ?Extractor $exifInfo = null;
+
 	public function __construct(
-		public AddStrategyParameters $parameters,
+		AddStrategyParameters $parameters,
 		public NativeLocalFile $sourceFile,
-		public AbstractAlbum|null $album,
+		AbstractAlbum|null $album,
 		public int|null $fileLastModifiedTime = null
 	) {
+		$this->importMode = $parameters->importMode;
+		$this->intendedOwnerId = $parameters->intendedOwnerId;
+		$this->is_starred = $parameters->is_starred;
+		$this->exifInfo = $parameters->exifInfo;
+		$this->album = $album;
 	}
 
 	public function getPhoto(): Photo

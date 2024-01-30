@@ -2,7 +2,6 @@
 
 namespace App\Actions\Photo\Pipes\PhotoPartner;
 
-use App\Actions\Photo\Strategies\AddStrategyParameters;
 use App\Actions\Photo\Strategies\ImportMode;
 use App\Contracts\PhotoCreatePipe;
 use App\DTO\PhotoCreateDTO;
@@ -19,11 +18,7 @@ class ResetParameters implements PhotoCreatePipe
 {
 	public function handle(PhotoCreateDTO $state, \Closure $next): PhotoCreateDTO
 	{
-		$parameters = new AddStrategyParameters(
-			new ImportMode(deleteImported: true),
-			$state->parameters->intendedOwnerId
-		);
-		$state->parameters = $parameters;
+		$state->importMode = new ImportMode(deleteImported: true);
 
 		return $next($state);
 	}

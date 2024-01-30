@@ -12,7 +12,7 @@ class ExtractGoogleMotionPictures implements PhotoCreatePipe
 {
 	public function handle(PhotoCreateDTO $state, \Closure $next): PhotoCreateDTO
 	{
-		if ($state->parameters->exifInfo->microVideoOffset === 0) {
+		if ($state->exifInfo->microVideoOffset === 0) {
 			return $next($state);
 		}
 
@@ -23,7 +23,7 @@ class ExtractGoogleMotionPictures implements PhotoCreatePipe
 		try {
 			$state->tmpVideoFile = new TemporaryLocalFile(GoogleMotionPictureHandler::FINAL_VIDEO_FILE_EXTENSION, $state->sourceFile->getBasename());
 			$gmpHandler = new GoogleMotionPictureHandler();
-			$gmpHandler->load($state->sourceFile, $state->parameters->exifInfo->microVideoOffset);
+			$gmpHandler->load($state->sourceFile, $state->exifInfo->microVideoOffset);
 			$gmpHandler->saveVideoStream($state->tmpVideoFile);
 		} catch (\Throwable $e) {
 			Handler::reportSafely($e);

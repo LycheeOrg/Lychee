@@ -64,7 +64,7 @@ class PlacePhoto implements PhotoCreatePipe
 	private function putSourceIntoFinalDestination(PhotoCreateDTO $state): StreamStats
 	{
 		try {
-			if ($state->parameters->importMode->shallImportViaSymlink()) {
+			if ($state->importMode->shallImportViaSymlink()) {
 				if (!$state->targetFile->isLocalFile()) {
 					throw new ConfigurationException('Symlinking is only supported on local filesystems');
 				}
@@ -84,7 +84,7 @@ class PlacePhoto implements PhotoCreatePipe
 			} else {
 				$shallNormalize = Configs::getValueAsBool('auto_fix_orientation') &&
 					$state->sourceImage !== null &&
-					$state->parameters->exifInfo->orientation !== 1;
+					$state->exifInfo->orientation !== 1;
 
 				if ($shallNormalize) {
 					// Saving the loaded image to the final target normalizes
@@ -101,7 +101,7 @@ class PlacePhoto implements PhotoCreatePipe
 					$state->sourceFile->close();
 					$state->targetFile->close();
 				}
-				if ($state->parameters->importMode->shallDeleteImported()) {
+				if ($state->importMode->shallDeleteImported()) {
 					// This may throw an exception, if the original has been
 					// readable, but is not writable
 					// In this case, the media file will have been copied, but

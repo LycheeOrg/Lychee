@@ -11,7 +11,7 @@ class ThrowSkipDuplicate implements PhotoCreatePipe
 {
 	public function handle(PhotoCreateDTO $state, \Closure $next): PhotoCreateDTO
 	{
-		if (!$state->parameters->importMode->shallSkipDuplicates()) {
+		if (!$state->importMode->shallSkipDuplicates()) {
 			return $next($state);
 		}
 

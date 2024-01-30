@@ -305,7 +305,7 @@ class Create
 	{
 		$next = [];
 
-		if ($state->parameters->importMode->shallResyncMetadata()) {
+		if ($state->importMode->shallResyncMetadata()) {
 			array_push($next, ...[
 				Duplicate\SetDuplicateAsPhoto::class,
 				HydrateMetadata::class,

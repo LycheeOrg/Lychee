@@ -21,19 +21,20 @@ class InitParentAlbum implements PhotoCreatePipe
 	 */
 	public function handle(PhotoCreateDTO $state, \Closure $next): PhotoCreateDTO
 	{
-		if ($state->album === null) {
-			$state->parameters->album = null;
-		} elseif ($state->album instanceof Album) {
-			$state->parameters->album = $state->album;
-		} elseif ($state->album instanceof BaseSmartAlbum) {
-			$state->parameters->album = null;
-			if ($state->album instanceof StarredAlbum) {
-				$state->parameters->is_starred = true;
-			}
-		} else {
-			throw new InvalidPropertyException('The given parent album does not support uploading');
+		if ($state->album === null || $state->album instanceof Album) {
+			return $next($state);
 		}
 
-		return $next($state);
+		if ($state->album instanceof BaseSmartAlbum) {
+			if ($state->album instanceof StarredAlbum) {
+				$state->is_starred = true;
+			}
+
+			$state->album = null;
+
+			return $next($state);
+		}
+
+		throw new InvalidPropertyException('The given parent album does not support uploading');
 	}
 }

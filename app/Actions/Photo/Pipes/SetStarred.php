@@ -10,7 +10,7 @@ class SetStarred implements PhotoCreatePipe
 	public function handle(PhotoCreateDTO $state, \Closure $next): PhotoCreateDTO
 	{
 		// Adopt settings of duplicated photo acc. to target album
-		$state->photo->is_starred = $state->parameters->is_starred;
+		$state->photo->is_starred = $state->is_starred;
 
 		return $next($state);
 	}

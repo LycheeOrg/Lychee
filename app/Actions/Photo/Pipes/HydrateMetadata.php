@@ -25,58 +25,58 @@ class HydrateMetadata implements PhotoCreatePipe
 	public function handle(PhotoCreateDTO $state, \Closure $next): PhotoCreateDTO
 	{
 		if ($state->photo->title === null) {
-			$state->photo->title = $state->parameters->exifInfo->title;
+			$state->photo->title = $state->exifInfo->title;
 		}
 		if ($state->photo->description === null) {
-			$state->photo->description = $state->parameters->exifInfo->description;
+			$state->photo->description = $state->exifInfo->description;
 		}
 		if (count($state->photo->tags) === 0) {
-			$state->photo->tags = $state->parameters->exifInfo->tags;
+			$state->photo->tags = $state->exifInfo->tags;
 		}
 		if ($state->photo->type === null) {
-			$state->photo->type = $state->parameters->exifInfo->type;
+			$state->photo->type = $state->exifInfo->type;
 		}
 		if ($state->photo->iso === null) {
-			$state->photo->iso = $state->parameters->exifInfo->iso;
+			$state->photo->iso = $state->exifInfo->iso;
 		}
 		if ($state->photo->aperture === null) {
-			$state->photo->aperture = $state->parameters->exifInfo->aperture;
+			$state->photo->aperture = $state->exifInfo->aperture;
 		}
 		if ($state->photo->make === null) {
-			$state->photo->make = $state->parameters->exifInfo->make;
+			$state->photo->make = $state->exifInfo->make;
 		}
 		if ($state->photo->model === null) {
-			$state->photo->model = $state->parameters->exifInfo->model;
+			$state->photo->model = $state->exifInfo->model;
 		}
 		if ($state->photo->lens === null) {
-			$state->photo->lens = $state->parameters->exifInfo->lens;
+			$state->photo->lens = $state->exifInfo->lens;
 		}
 		if ($state->photo->shutter === null) {
-			$state->photo->shutter = $state->parameters->exifInfo->shutter;
+			$state->photo->shutter = $state->exifInfo->shutter;
 		}
 		if ($state->photo->focal === null) {
-			$state->photo->focal = $state->parameters->exifInfo->focal;
+			$state->photo->focal = $state->exifInfo->focal;
 		}
 		if ($state->photo->taken_at === null) {
-			$state->photo->taken_at = $state->parameters->exifInfo->taken_at;
+			$state->photo->taken_at = $state->exifInfo->taken_at;
 		}
 		if ($state->photo->latitude === null) {
-			$state->photo->latitude = $state->parameters->exifInfo->latitude;
+			$state->photo->latitude = $state->exifInfo->latitude;
 		}
 		if ($state->photo->longitude === null) {
-			$state->photo->longitude = $state->parameters->exifInfo->longitude;
+			$state->photo->longitude = $state->exifInfo->longitude;
 		}
 		if ($state->photo->altitude === null) {
-			$state->photo->altitude = $state->parameters->exifInfo->altitude;
+			$state->photo->altitude = $state->exifInfo->altitude;
 		}
 		if ($state->photo->img_direction === null) {
-			$state->photo->img_direction = $state->parameters->exifInfo->imgDirection;
+			$state->photo->img_direction = $state->exifInfo->imgDirection;
 		}
 		if ($state->photo->location === null) {
-			$state->photo->location = $state->parameters->exifInfo->location;
+			$state->photo->location = $state->exifInfo->location;
 		}
 		if ($state->photo->live_photo_content_id === null) {
-			$state->photo->live_photo_content_id = $state->parameters->exifInfo->livePhotoContentID;
+			$state->photo->live_photo_content_id = $state->exifInfo->livePhotoContentID;
 		}
 
 		return $next($state);
