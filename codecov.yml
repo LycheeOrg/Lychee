@@ -1,6 +1,9 @@
 ---
 codecov:
   require_ci_to_pass: true
+  notify:
+    after_n_builds: 9
+    wait_for_ci: true
 comment:
   behavior: default
   require_base: false
@@ -22,8 +25,6 @@ ignore:
 - "^app/Exceptions/.*"
 - "^app/Http/Middleware/VerifyCsrfToken.*"
 - "^app/Providers/BroadcastServiceProvider.*"
-- "^app/Http/Livewire/.*"
-- "^app/View/.*"
 parsers:
   gcov:
     branch_detection:
