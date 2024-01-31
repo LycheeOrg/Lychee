@@ -198,7 +198,9 @@ jobs:
         run: XDEBUG_MODE=coverage vendor/bin/phpunit --testsuite ${{ matrix.test-suite }}
 
       - name: Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
+        env:
+          token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Make sure we can go backward
         run: php artisan migrate:rollback
