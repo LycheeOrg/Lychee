@@ -29,6 +29,8 @@ use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\InvalidPropertyException;
 use App\Exceptions\MediaFileOperationException;
+use App\Exceptions\PhotoResyncedException;
+use App\Exceptions\PhotoSkippedException;
 use App\Image\Files\BaseMediaFile;
 use App\Image\Files\NativeLocalFile;
 use App\Image\StreamStat;
@@ -107,6 +109,9 @@ class Create
 			try {
 				return $nextPipe->pipe([NotifyAlbums::class])
 				->thenReturn()->getPhoto();
+			} catch (PhotoResyncedException|PhotoSkippedException $e) {
+				// duplicate case. Just rethrow.
+				throw $e;
 			} catch (LycheeException $e) {
 				// If source file could not be put into final destination, remove
 				// freshly created photo from DB to avoid having "zombie" entries.
