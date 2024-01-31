@@ -132,9 +132,11 @@ class DefaultConfig
 					$this->config['requirements']['php'][] = $db_possibility[1];
 				}
 			}
+			// @codeCoverageIgnoreStart
 		} catch (BindingResolutionException|ContainerExceptionInterface $e) {
 			throw new FrameworkException('Laravel\'s container component', $e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	public function get_core(): array
