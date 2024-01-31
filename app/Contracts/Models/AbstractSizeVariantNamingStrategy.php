@@ -3,10 +3,11 @@
 namespace App\Contracts\Models;
 
 use App\Contracts\Exceptions\LycheeException;
+use App\Enum\ExternalStorageProvider;
 use App\Enum\SizeVariantType;
 use App\Image\Files\FlysystemFile;
 use App\Models\Photo;
-use Illuminate\Filesystem\FilesystemAdapter;
+use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -26,13 +27,14 @@ abstract class AbstractSizeVariantNamingStrategy
 	/**
 	 * Returns the disk on which the size variants are put.
 	 *
-	 * @return FilesystemAdapter
+	 * @return Filesystem
 	 */
-	public static function getImageDisk(): FilesystemAdapter
+	public static function getImageDisk(?ExternalStorageProvider $externalStorageProvider = null): Filesystem
 	{
-		return config('filesystems.disks.s3.key') !== ''
-			? Storage::disk(self::S3_IMAGE_DISK_NAME)
-			: Storage::disk(self::IMAGE_DISK_NAME);
+		return match ($externalStorageProvider) {
+			ExternalStorageProvider::S3 => Storage::disk(self::S3_IMAGE_DISK_NAME),
+			default => Storage::disk(self::IMAGE_DISK_NAME)
+		};
 	}
 
 	/**

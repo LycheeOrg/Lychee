@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Actions\SizeVariant\Delete;
 use App\Casts\MustNotSetCast;
 use App\Contracts\Models\AbstractSizeVariantNamingStrategy;
+use App\Enum\ExternalStorageProvider;
 use App\Enum\SizeVariantType;
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\MediaFileOperationException;
@@ -21,7 +22,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Filesystem\AwsS3V3Adapter;
+use League\Flysystem\AwsS3V3\AwsS3V3Adapter;
 use Illuminate\Support\Facades\Auth;
 use League\Flysystem\Local\LocalFilesystemAdapter;
 
@@ -30,18 +31,19 @@ use League\Flysystem\Local\LocalFilesystemAdapter;
  *
  * Describes a size variant of a photo.
  *
- * @property int                 $id
- * @property string              $photo_id
- * @property Photo               $photo
- * @property SizeVariantType     $type
- * @property string              $short_path
- * @property string              $url
- * @property string              $full_path
- * @property int                 $width
- * @property int                 $height
- * @property float               $ratio
- * @property int                 $filesize
- * @property Collection<SymLink> $sym_links
+ * @property int                          $id
+ * @property string                       $photo_id
+ * @property Photo                        $photo
+ * @property SizeVariantType              $type
+ * @property string                       $short_path
+ * @property string                       $url
+ * @property string                       $full_path
+ * @property int                          $width
+ * @property int                          $height
+ * @property float                        $ratio
+ * @property ExternalStorageProvider|null $external_storage
+ * @property int                          $filesize
+ * @property Collection<SymLink>          $sym_links
  *
  * @method static SizeVariantBuilder|SizeVariant addSelect($column)
  * @method static SizeVariantBuilder|SizeVariant join(string $table, string $first, string $operator = null, string $second = null, string $type = 'inner', string $where = false)
@@ -93,6 +95,7 @@ class SizeVariant extends Model
 		'height' => 'integer',
 		'filesize' => 'integer',
 		'ratio' => 'float',
+		'external_storage' => ExternalStorageProvider::class,
 	];
 
 	/**
@@ -170,7 +173,7 @@ class SizeVariant extends Model
 	 */
 	public function getUrlAttribute(): string
 	{
-		$imageDisk = AbstractSizeVariantNamingStrategy::getImageDisk();
+		$imageDisk = AbstractSizeVariantNamingStrategy::getImageDisk($this->external_storage);
 
 		if (
 			(Auth::user()?->may_administrate === true && !Configs::getValueAsBool('SL_for_admin')) ||
@@ -185,8 +188,12 @@ class SizeVariant extends Model
 		$gracePeriod = $maxLifetime / 3;
 
 		$storageAdapter = $imageDisk->getAdapter();
-
 		if ($storageAdapter instanceof AwsS3V3Adapter) {
+			// Return the public URL in case the S3 bucket is set to public, otherwise generate a temporary URL
+			$visibility = $imageDisk->getConfig()['visibility'] ?? 'private';
+			if ($visibility === 'public') {
+				return $imageDisk->url($this->short_path);
+			}
 			return $imageDisk->temporaryUrl($this->short_path, now()->addSeconds($maxLifetime));
 		}
 
@@ -218,12 +225,15 @@ class SizeVariant extends Model
 	 */
 	public function getFullPathAttribute(): string
 	{
-		return AbstractSizeVariantNamingStrategy::getImageDisk()->path($this->short_path);
+		return AbstractSizeVariantNamingStrategy::getImageDisk($this->external_storage)->path($this->short_path);
 	}
 
 	public function getFile(): FlysystemFile
 	{
-		return new FlysystemFile(AbstractSizeVariantNamingStrategy::getImageDisk(), $this->short_path);
+		return new FlysystemFile(
+			AbstractSizeVariantNamingStrategy::getImageDisk($this->external_storage),
+			$this->short_path
+		);
 	}
 
 	/**

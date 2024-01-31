@@ -146,6 +146,7 @@ class AddStandaloneStrategy extends AbstractAddStrategy
 			// we must move the preliminary extracted video file next to the
 			// final target file
 			if ($tmpVideoFile !== null) {
+				//@TODO S3 How should live videos be handled?
 				$videoTargetPath =
 					pathinfo($targetFile->getRelativePath(), PATHINFO_DIRNAME) .
 					'/' .
@@ -172,7 +173,7 @@ class AddStandaloneStrategy extends AbstractAddStrategy
 			$imageDim = $this->sourceImage?->isLoaded() ?
 				$this->sourceImage->getDimensions() :
 				new ImageDimension($this->parameters->exifInfo->width, $this->parameters->exifInfo->height);
-			$this->photo->size_variants->create(
+			$originalVariant = $this->photo->size_variants->create(
 				SizeVariantType::ORIGINAL,
 				$targetFile->getRelativePath(),
 				$imageDim,
@@ -197,6 +198,7 @@ class AddStandaloneStrategy extends AbstractAddStrategy
 				$sizeVariantFactory = resolve(SizeVariantFactory::class);
 				$sizeVariantFactory->init($this->photo, $this->sourceImage, $this->namingStrategy);
 				$variants = $sizeVariantFactory->createSizeVariants();
+				$variants->push($originalVariant);
 
 				if (config('filesystems.disks.s3.key') !== '') {
 					// If enabled, upload all size variants to the remote bucket and delete the local files after that

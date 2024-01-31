@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Enum\ExternalStorageProvider;
 use App\Models\SizeVariant;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -21,6 +22,7 @@ class UploadSizeVariantToS3Job implements ShouldQueue
 
 	public function __construct(SizeVariant $variant)
 	{
+		$this->variant = $variant;
 	}
 
 	public function handle(): void
@@ -32,6 +34,7 @@ class UploadSizeVariantToS3Job implements ShouldQueue
 
 		Storage::disk('images')->delete($this->variant->short_path);
 
-		// TODO Update the variant to reflect the succeeded upload
+		$this->variant->external_storage = ExternalStorageProvider::S3;
+		$this->variant->save();
 	}
 }

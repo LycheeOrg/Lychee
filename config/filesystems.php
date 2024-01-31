@@ -114,6 +114,7 @@ return [
 			'bucket' => env('AWS_BUCKET'),
 			'url' => env('AWS_URL'),
 			'endpoint' => env('AWS_ENDPOINT'),
+			'visibility' => env('AWS_IMAGE_VISIBILITY', 'public'),
 			'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
 			'throw' => true,
 		],

@@ -7,6 +7,7 @@ use App\Casts\ArrayCast;
 use App\Casts\DateTimeWithTimezoneCast;
 use App\Casts\MustNotSetCast;
 use App\Constants\RandomID;
+use App\Enum\ExternalStorageProvider;
 use App\Enum\LicenseType;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Exceptions\Internal\LycheeAssertionError;
@@ -34,44 +35,45 @@ use function Safe\preg_match;
 /**
  * App\Photo.
  *
- * @property string       $id
- * @property int          $legacy_id
- * @property string       $title
- * @property string|null  $description
- * @property string[]     $tags
- * @property bool         $is_public
- * @property int          $owner_id
- * @property string|null  $type
- * @property string|null  $iso
- * @property string|null  $aperture
- * @property string|null  $make
- * @property string|null  $model
- * @property string|null  $lens
- * @property string|null  $shutter
- * @property string|null  $focal
- * @property float|null   $latitude
- * @property float|null   $longitude
- * @property float|null   $altitude
- * @property float|null   $img_direction
- * @property string|null  $location
- * @property Carbon|null  $taken_at
- * @property string|null  $taken_at_orig_tz
- * @property bool         $is_starred
- * @property string|null  $live_photo_short_path
- * @property string|null  $live_photo_full_path
- * @property string|null  $live_photo_url
- * @property string|null  $album_id
- * @property string       $checksum
- * @property string       $original_checksum
- * @property LicenseType  $license
- * @property Carbon       $created_at
- * @property Carbon       $updated_at
- * @property string|null  $live_photo_content_id
- * @property string|null  $live_photo_checksum
- * @property Album|null   $album
- * @property User         $owner
- * @property SizeVariants $size_variants
- * @property int          $filesize
+ * @property string                       $id
+ * @property int                          $legacy_id
+ * @property string                       $title
+ * @property string|null                  $description
+ * @property string[]                     $tags
+ * @property bool                         $is_public
+ * @property int                          $owner_id
+ * @property string|null                  $type
+ * @property string|null                  $iso
+ * @property string|null                  $aperture
+ * @property string|null                  $make
+ * @property string|null                  $model
+ * @property string|null                  $lens
+ * @property string|null                  $shutter
+ * @property string|null                  $focal
+ * @property float|null                   $latitude
+ * @property float|null                   $longitude
+ * @property float|null                   $altitude
+ * @property float|null                   $img_direction
+ * @property string|null                  $location
+ * @property Carbon|null                  $taken_at
+ * @property string|null                  $taken_at_orig_tz
+ * @property bool                         $is_starred
+ * @property ExternalStorageProvider|null $external_storage
+ * @property string|null                  $live_photo_short_path
+ * @property string|null                  $live_photo_full_path
+ * @property string|null                  $live_photo_url
+ * @property string|null                  $album_id
+ * @property string                       $checksum
+ * @property string                       $original_checksum
+ * @property LicenseType                  $license
+ * @property Carbon                       $created_at
+ * @property Carbon                       $updated_at
+ * @property string|null                  $live_photo_content_id
+ * @property string|null                  $live_photo_checksum
+ * @property Album|null                   $album
+ * @property User                         $owner
+ * @property SizeVariants                 $size_variants
+ * @property int                          $filesize
  *
  * @method static PhotoBuilder|Photo addSelect($column)
  * @method static PhotoBuilder|Photo join(string $table, string $first, string $operator = null, string $second = null, string $type = 'inner', string $where = false)
@@ -153,6 +155,7 @@ class Photo extends Model
 		'owner_id' => 'integer',
 		'is_starred' => 'boolean',
 		'is_public' => 'boolean',
+		'external_storage' => ExternalStorageProvider::class,
 		'tags' => ArrayCast::class,
 		'latitude' => 'float',
 		'longitude' => 'float',
