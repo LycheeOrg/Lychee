@@ -2,7 +2,6 @@
 
 namespace App\DTO;
 
-use App\Models\BaseAlbumImpl;
 use App\Models\Extensions\BaseAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
 
@@ -30,25 +29,6 @@ class AlbumProtectionPolicy extends ArrayableDTO
 		public bool $grants_download,
 		public bool $is_password_required = false, // Only used when sending info to the front-end
 	) {
-	}
-
-	/**
-	 * Given a {@link BaseAlbumImpl}, returns the Protection Policy associated to it.
-	 *
-	 * @param BaseAlbumImpl $baseAlbum
-	 *
-	 * @return AlbumProtectionPolicy
-	 */
-	public static function ofBaseAlbumImplementation(BaseAlbumImpl $baseAlbum): self
-	{
-		return new self(
-			is_public: $baseAlbum->public_permissions() !== null,
-			is_link_required: $baseAlbum->public_permissions()?->is_link_required === true,
-			is_nsfw: $baseAlbum->is_nsfw,
-			grants_full_photo_access: $baseAlbum->public_permissions()?->grants_full_photo_access === true,
-			grants_download: $baseAlbum->public_permissions()?->grants_download === true,
-			is_password_required: $baseAlbum->public_permissions()?->password !== null,
-		);
 	}
 
 	/**

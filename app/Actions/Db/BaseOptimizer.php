@@ -73,8 +73,10 @@ abstract class BaseOptimizer
 		try {
 			DB::statement($sql);
 			$ret[] = $success;
+			// @codeCoverageIgnoreStart
 		} catch (\Throwable $th) {
 			$ret[] = 'Error: ' . $th->getMessage();
 		}
+		// @codeCoverageIgnoreEnd
 	}
 }

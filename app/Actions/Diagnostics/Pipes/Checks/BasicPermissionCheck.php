@@ -24,6 +24,8 @@ use function Safe\posix_getgroups;
 /**
  * We check that the folders are with the correct permissions.
  * Mostly read write.
+ *
+ * Unhappy flows with posix missing are ignored from coverage.
  */
 class BasicPermissionCheck implements DiagnosticPipe
 {
@@ -76,7 +78,9 @@ class BasicPermissionCheck implements DiagnosticPipe
 	public function folders(array &$data): void
 	{
 		if (!extension_loaded('posix')) {
+			// @codeCoverageIgnoreStart
 			return;
+			// @codeCoverageIgnoreEnd
 		}
 
 		clearstatcache(true);
@@ -85,11 +89,13 @@ class BasicPermissionCheck implements DiagnosticPipe
 		$this->numAccessIssues = 0;
 		try {
 			$groupIDsOrFalse = posix_getgroups();
+			// @codeCoverageIgnoreStart
 		} catch (PosixException) {
 			$data[] = 'Error: Could not determine groups of process';
 
 			return;
 		}
+		// @codeCoverageIgnoreEnd
 		$this->groupIDs = $groupIDsOrFalse;
 		$this->groupIDs[] = posix_getegid();
 		$this->groupIDs[] = posix_getgid();
@@ -98,9 +104,11 @@ class BasicPermissionCheck implements DiagnosticPipe
 			function (int $gid): string {
 				try {
 					return posix_getgrgid($gid)['name'];
+					// @codeCoverageIgnoreStart
 				} catch (PosixException) {
 					return '<unknown>';
 				}
+				// @codeCoverageIgnoreEnd
 			},
 			$this->groupIDs
 		));
@@ -176,11 +184,13 @@ class BasicPermissionCheck implements DiagnosticPipe
 
 			try {
 				$actualPerm = fileperms($path);
+				// @codeCoverageIgnoreStart
 			} catch (FilesystemException) {
 				$data[] = sprintf('Warning: Unable to determine permissions for %s' . PHP_EOL, $this->anonymize($path));
 
 				return;
 			}
+			// @codeCoverageIgnoreEnd
 
 			// `fileperms` also returns the higher bits of the inode mode.
 			// Hence, we must AND it with 07777 to only get what we are
@@ -190,9 +200,11 @@ class BasicPermissionCheck implements DiagnosticPipe
 			if ($owningGroupIdOrFalse !== false) {
 				try {
 					$owningGroupNameOrFalse = posix_getgrgid($owningGroupIdOrFalse);
+					// @codeCoverageIgnoreStart
 				} catch (PosixException) {
 					$owningGroupNameOrFalse = false;
 				}
+			// @codeCoverageIgnoreEnd
 			} else {
 				$owningGroupNameOrFalse = false;
 			}
@@ -244,10 +256,12 @@ class BasicPermissionCheck implements DiagnosticPipe
 					$this->checkDirectoryPermissionsRecursively($dirEntry->getPathname(), $data);
 				}
 			}
+			// @codeCoverageIgnoreStart
 		} catch (\Exception $e) {
 			$data[] = 'Error: ' . $e->getMessage();
 			Handler::reportSafely($e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -293,9 +307,11 @@ class BasicPermissionCheck implements DiagnosticPipe
 			}
 
 			return $perm;
+			// @codeCoverageIgnoreStart
 		} catch (ContainerExceptionInterface|BindingResolutionException|NotFoundExceptionInterface $e) {
 			throw new InvalidConfigOption('Could not read configuration for file/directory permission', $e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	private function anonymize(string $path): string

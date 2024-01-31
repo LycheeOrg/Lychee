@@ -199,6 +199,10 @@ jobs:
 
       - name: Codecov
         uses: codecov/codecov-action@v3
+        # Later
+        # uses: codecov/codecov-action@v4 
+        # env:
+        #   token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Make sure we can go backward
         run: php artisan migrate:rollback

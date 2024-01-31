@@ -137,6 +137,7 @@ class Delete extends Action
 				->delete();
 
 			return $fileDeleter;
+			// @codeCoverageIgnoreStart
 		} catch (QueryBuilderException|InternalLycheeException $e) {
 			try {
 				// if anything goes wrong, don't leave the tree in an inconsistent state
@@ -154,6 +155,7 @@ class Delete extends Action
 			}
 			throw LycheeAssertionError::createFromUnexpectedException($e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**

@@ -21,7 +21,9 @@ class OptimizeTables extends BaseOptimizer
 		};
 
 		if ($sql === null) {
+			// @codeCoverageIgnoreStart
 			return $ret;
+			// @codeCoverageIgnoreEnd
 		}
 
 		foreach ($tables as $table) {

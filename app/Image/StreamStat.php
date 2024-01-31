@@ -47,13 +47,17 @@ class StreamStat implements StreamStats
 			error_clear_last();
 			$checksum = hash_file(StreamStatFilter::HASH_ALGO_NAME, $file->getPath());
 			if ($checksum === false) {
+				// @codeCoverageIgnoreStart
 				$error = error_get_last();
 				throw new \ErrorException($error['message'] ?? 'An error occurred', 0, $error['type'] ?? 1);
+				// @codeCoverageIgnoreEnd
 			}
 
 			return new StreamStat($file->getFilesize(), $checksum);
+			// @codeCoverageIgnoreStart
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 }

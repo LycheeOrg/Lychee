@@ -21,7 +21,9 @@ abstract class BasePipe
 	 * @throws HttpHoneyPotException
 	 * @throws NotFoundHttpException
 	 */
+	// @codeCoverageIgnoreStart
 	abstract public function handle(string $path, \Closure $next): never;
+	// @codeCoverageIgnoreEnd
 
 	/**
 	 * using abort(404) does not give the info which path was called.
