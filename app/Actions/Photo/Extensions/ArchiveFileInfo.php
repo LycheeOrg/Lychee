@@ -31,53 +31,27 @@ use App\Image\Files\BaseMediaFile;
  *    Note that the full path does not necessarily contains the base filename,
  *    because the source file might be named completely differently.
  */
-class ArchiveFileInfo
+final readonly class ArchiveFileInfo
 {
-	protected string $baseFilename;
-	protected string $baseFilenameAddon;
-	protected BaseMediaFile $file;
-
 	/**
 	 * ArchiveFileInfo constructor.
+	 *
+	 * The base file name should be used to create a "meaningful" filename
+	 * which is offered to the client for download or put into the archive.
+	 *
+	 * The addon enables to create different filenames for different variants
+	 * of the same photo.
 	 *
 	 * @param string        $baseFilename      the base filename (without directory
 	 *                                         and extension)
 	 * @param string        $baseFilenameAddon the "addon" to the base filename
 	 * @param BaseMediaFile $file              the source file
 	 */
-	public function __construct(string $baseFilename, string $baseFilenameAddon, BaseMediaFile $file)
+	public function __construct(
+		private string $baseFilename,
+		private string $baseFilenameAddon,
+		public BaseMediaFile $file)
 	{
-		$this->baseFilename = $baseFilename;
-		$this->baseFilenameAddon = $baseFilenameAddon;
-		$this->file = $file;
-	}
-
-	/**
-	 * Returns the base filename.
-	 *
-	 * The base file name should be used to create a "meaningful" filename
-	 * which is offered to the client for download or put into the archive.
-	 *
-	 * @return string the base filename
-	 */
-	public function getBaseFilename(): string
-	{
-		return $this->baseFilename;
-	}
-
-	/**
-	 * Returns the addon to the base filename.
-	 *
-	 * The base file name should be used to create a "meaningful" filename
-	 * which is offered to the client for download or put into the archive.
-	 * The addon enables to create different filenames for different variants
-	 * of the same photo.
-	 *
-	 * @return string the addon to the base filename
-	 */
-	public function getBaseFileNameAddon(): string
-	{
-		return $this->baseFilenameAddon;
 	}
 
 	/**
@@ -90,16 +64,6 @@ class ArchiveFileInfo
 	 */
 	public function getFilename(string $extraAddon = ''): string
 	{
-		return $this->getBaseFilename() . $this->getBaseFileNameAddon() . $extraAddon . $this->file->getExtension();
-	}
-
-	/**
-	 * Returns the source file.
-	 *
-	 * @return BaseMediaFile the source file
-	 */
-	public function getFile(): BaseMediaFile
-	{
-		return $this->file;
+		return $this->baseFilename . $this->baseFilenameAddon . $extraAddon . $this->file->getExtension();
 	}
 }
