@@ -53,7 +53,9 @@ class FromServer
 
 		sscanf(ini_get('memory_limit'), '%d%c', $value, $suffix);
 		if (!is_int($value) && !is_string($suffix)) {
+			// @codeCoverageIgnoreStart
 			return 0;
+			// @codeCoverageIgnoreEnd
 		}
 
 		/** @var int $value */
