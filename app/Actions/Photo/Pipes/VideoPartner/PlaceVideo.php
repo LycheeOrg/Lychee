@@ -56,7 +56,7 @@ class PlaceVideo implements PhotoCreatePipe
 				// AddStandaloneStrategy::putSourceIntoFinalDestination()
 				// except that we can skip the part about normalization of
 				// orientation, because we don't support that for videos.
-				if ($state->importMode->shallImportViaSymlink()) {
+				if ($state->importMode->shallImportViaSymlink) {
 					if (!$videoTargetFile->isLocalFile()) {
 						throw new ConfigurationException('Symlinking is only supported on local filesystems');
 					}
@@ -77,7 +77,7 @@ class PlaceVideo implements PhotoCreatePipe
 					$streamStat = $videoTargetFile->write($state->videoFile->read(), true);
 					$state->videoFile->close();
 					$videoTargetFile->close();
-					if ($state->importMode->shallDeleteImported()) {
+					if ($state->importMode->shallDeleteImported) {
 						// This may throw an exception, if the original has been
 						// readable, but is not writable
 						// In this case, the media file will have been copied, but
