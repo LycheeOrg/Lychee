@@ -13,8 +13,9 @@
     <!-- toolbar -->
     <x-header.bar>
         @guest
+            <x-backButtonHeader class="{{ $this->isLoginLeft ? 'order-4' : 'order-0' }}" />
             <!-- NOT LOGGED -->
-            <x-header.button x-on:click="loginModalOpen = true" icon="account-login" />
+            <x-header.button x-on:click="loginModalOpen = true" icon="account-login" class="{{ $this->isLoginLeft ? 'order-0' : 'order-4' }}" />
         @endguest
         @auth
             <x-header.button x-on:click="$dispatch('toggleLeftMenu')" icon="cog" />
@@ -37,7 +38,7 @@
                 @if ($this->smartAlbums->count() > 0)
                     <x-gallery.divider title="{{ __('lychee.SMART_ALBUMS') }}" />
                     @foreach ($this->smartAlbums as $album)
-                        <x-gallery.album.thumbs.album :data="$album" />
+                        <x-gallery.album.thumbs.album :data="$album" :strAspectRatioClass="$flags->album_thumb_css_aspect_ratio" />
                     @endforeach
                     @if ($this->albums->count() > 0)
                         <x-gallery.divider title="{{ __('lychee.ALBUMS') }}" />
@@ -46,14 +47,22 @@
 
                 @if ($this->albums->count() > 0)
                     @foreach ($this->albums as $album)
-                        <x-gallery.album.thumbs.album :data="$album" />
+                        <x-gallery.album.thumbs.album :data="$album" :strAspectRatioClass="$flags->album_thumb_css_aspect_ratio" />
                     @endforeach
                 @endif
 
+                @php
+                    $oldUsername = '';
+                @endphp
                 @if ($this->sharedAlbums->count() > 0)
-                    <x-gallery.divider title="{{ __('lychee.SHARED_ALBUMS') }}" />
                     @foreach ($this->sharedAlbums as $album)
-                        <x-gallery.album.thumbs.album :data="$album" />
+                        @if ($oldUsername !== $album->owner->username)
+                        <x-gallery.divider :title="$album->owner->username" />
+                        @php
+                            $oldUsername = $album->owner->username;
+                        @endphp
+                        @endif
+                        <x-gallery.album.thumbs.album :data="$album" :strAspectRatioClass="$flags->album_thumb_css_aspect_ratio" />
                     @endforeach
                 @endif
             </div>
@@ -76,4 +85,7 @@
     @if($flags->can_use_2fa)
     <x-webauthn.login />
     @endif
+    @auth
+        <livewire:modules.jobs.feedback />
+    @endauth
 </div>

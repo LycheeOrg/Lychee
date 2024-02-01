@@ -4,7 +4,6 @@ import { UploadView, Livewire, UploadEvent } from "./types";
 export const uploadView = (Alpine: Alpine) =>
 	Alpine.data(
 		"upload",
-		// @ts-expect-error
 		(chunkSize_val: number, parallelism_val: number = 3): UploadView => ({
 			isDropping: false,
 			chunkSize: chunkSize_val,

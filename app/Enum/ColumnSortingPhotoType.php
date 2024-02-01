@@ -17,7 +17,6 @@ enum ColumnSortingPhotoType: string
 	case CREATED_AT = 'created_at';
 	case TITLE = 'title';
 	case DESCRIPTION = 'description';
-	case IS_PUBLIC = 'is_public';
 
 	case TAKEN_AT = 'taken_at';
 	case IS_STARRED = 'is_starred';
@@ -46,7 +45,6 @@ enum ColumnSortingPhotoType: string
 			self::TAKEN_AT->value => __('lychee.SORT_PHOTO_SELECT_2'),
 			self::TITLE->value => __('lychee.SORT_PHOTO_SELECT_3'),
 			self::DESCRIPTION->value => __('lychee.SORT_PHOTO_SELECT_4'),
-			self::IS_PUBLIC->value => __('lychee.SORT_PHOTO_SELECT_5'),
 			self::IS_STARRED->value => __('lychee.SORT_PHOTO_SELECT_6'),
 			self::TYPE->value => __('lychee.SORT_PHOTO_SELECT_7'),
 		];

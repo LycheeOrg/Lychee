@@ -1,12 +1,17 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
   safelist: [
     'opacity-0',
     'group-hover:opacity-100',
     'transition-all',
     'ease-out',
     'hidden',
-    
+    'aspect-4/5',
+    'aspect-5/4',
+    'aspect-2/3',
+    'aspect-3/2',
+    'aspect-square', // 1x1
+    'aspect-video'   // 16x9
   ],
   content: [
     "./resources/**/*.blade.php",
@@ -24,7 +29,7 @@ module.exports = {
       },
       fontSize: {
         '3xs': ['0.55rem', '0.7rem'],
-        '2xs' : ['0.65rem', '0.8rem'],
+        '2xs': ['0.65rem', '0.8rem'],
       },
       colors: {
         primary: {
@@ -39,7 +44,9 @@ module.exports = {
           0: 'var(--text-main-0)',
           100: 'var(--text-main-100)',
           200: 'var(--text-main-200)',
+          300: 'var(--text-main-300)',
           400: 'var(--text-main-400)',
+          800: 'var(--text-main-800)',
         },
         'text-hover': 'var(--text-hover)',
         bg: {
@@ -54,6 +61,9 @@ module.exports = {
           800: 'var(--bg-800)',
           900: 'var(--bg-900)',
           950: 'var(--bg-950)',
+        },
+        ready: {
+          400: 'var(--ready)'
         },
         danger: {
           600: 'var(--danger)',
@@ -89,8 +99,8 @@ module.exports = {
           '100%': { 'background-position-x': '-100px' }
         },
         moveUp: {
-          '0%': {'transform': 'translateY(80px)'},
-          '100%': {'transform': 'translateY(0)'}
+          '0%': { 'transform': 'translateY(80px)' },
+          '100%': { 'transform': 'translateY(0)' }
         },
         zoomIn: {
           '0%': {
@@ -181,11 +191,18 @@ module.exports = {
         'landingIntroPopIn': 'popIn 2s forwards ease-in-out',
         'landingIntroFadeOut': 'fadeOut 2s 2s forwards ease-in-out', // delayed by 2s
         'landingSlidesPopIn': 'popIn 2s 3s forwards ease-in-out', // delayed by 2s
-        'ladningAnimateDown': 'animateDown 1s 3.1s forwards ease-in-out', 
+        'ladningAnimateDown': 'animateDown 1s 3.1s forwards ease-in-out',
         'ladningAnimateUp': 'animateUp 1s 3.1s forwards ease-in-out',
         'delayedFadeOut': 'fadeOut 2s 2s forwards ease-in-out'
-      }
+      },
+      aspectRatio: {
+        '4/5': '4 / 5',
+        '5/4': '5 / 4',
+        '2/3': '2 / 3',
+        '3/2': '3 / 2',
+      },
     },
   },
-  plugins: [],
+  plugins: [
+  ],
 }

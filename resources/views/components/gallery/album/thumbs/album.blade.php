@@ -1,16 +1,13 @@
 <a wire:navigate href="{{ route('livewire-gallery-album', ['albumId' => $id]) }}"
-	@class([
-	"album-thumb block relative aspect-square
+	class="album-thumb block relative {{ $aspect_ratio_class }}
 	w-[calc(33vw-9px-4px)] ml-1 mt-1
 	sm:w-[calc(25vw-9px-10px)] sm:ml-2 sm:mt-2
 	md:w-[calc(20vw-9px-18px)] md:ml-4 md:mt-4
 	lg:w-[calc(16vw-9px-15px)] lg:ml-5 lg:mt-5
 	xl:w-[calc(14vw-9px-22px)] xl:ml-6 xl:mt-6
 	2xl:w-52 2xl:ml-7 2xl:mt-7
-	animate-zoomIn
-	group",
-	"blurred" => $is_nsfw_blurred
-	])
+	animate-zoomIn group {{ $is_nsfw_blurred ? 'blurred' : '' }}
+	"
 	{{-- if it is NOT nsfw => display Otherwise check nsfwAlbumsVisible alpine value --}}
 	{{-- This would be better if livewire did not add comments around @if --}}
 	x-show="{{ !$is_nsfw ? 'true' : 'false' }} || albumFlags.areNsfwVisible"
@@ -28,7 +25,7 @@
 	<div class="overlay absolute mb-[1px] mx-[1px] p-0 border-0 w-[calc(100%-2px)] bottom-0 bg-gradient-to-t from-[#00000099] text-shadow-sm {{ $css_overlay }}">
 		<h1 class="w-full pt-3 pb-1 pr-1 pl-4 text-sm text-text-main-0 font-bold text-ellipsis whitespace-nowrap overflow-x-hidden"
 			title='{{ $title }}'>{{ $title }}</h1>
-		<span class="block mt-0 mr-0 mb-3 ml-4 text-2xs text-neutral-300">
+		<span class="block mt-0 mr-0 mb-3 ml-4 text-2xs text-text-main-300">
 			@switch($subType)
 				@case('description')
 					{{ Str::limit($description, 100) }}
@@ -59,9 +56,6 @@
 		@switch($id)
 			@case(App\SmartAlbums\StarredAlbum::ID)
 			<x-gallery.badge class='badge--star bg-yellow-500' icon='star' />
-			@break
-			@case(App\SmartAlbums\PublicAlbum::ID)
-			<x-gallery.badge class='badge--public bg-green-600' icon='eye' />
 			@break
 			@case(App\SmartAlbums\UnsortedAlbum::ID)
 			<x-gallery.badge class='badge--unsorted bg-red-700' icon='list' />

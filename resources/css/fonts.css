@@ -64,5 +64,6 @@
 }
 
 #facebook:before {
+	font-family: "socials";
 	content: "\ea91";
 }

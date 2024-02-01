@@ -13,7 +13,6 @@
 namespace Tests\Feature;
 
 use App\SmartAlbums\OnThisDayAlbum;
-use App\SmartAlbums\PublicAlbum;
 use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\StarredAlbum;
 use App\SmartAlbums\UnsortedAlbum;
@@ -343,7 +342,6 @@ class SharingWithNonAdminUserTest extends BaseSharingTestScenarios
 			'smart_albums' => [
 				UnsortedAlbum::ID => ['thumb' => $this->generateExpectedThumbJson($unsortedAlbumThumbID)],
 				StarredAlbum::ID => ['thumb' => $this->generateExpectedThumbJson($starredAlbumThumbID)],
-				PublicAlbum::ID => ['thumb' => $this->generateExpectedThumbJson($publicAlbumThumbID)],
 				RecentAlbum::ID => ['thumb' => $this->generateExpectedThumbJson($recentAlbumThumbID)],
 				OnThisDayAlbum::ID => ['thumb' => $this->generateExpectedThumbJson($onThisDayAlbumThumbID)],
 			],
@@ -434,7 +432,7 @@ class SharingWithNonAdminUserTest extends BaseSharingTestScenarios
 
 		// Even though the public photo is not searchable and hence does not
 		// show up in the smart albums, it can be fetched directly
-		$this->photos_tests->get($this->photoID1);
+		$this->photos_tests->get($this->photoID1, $this->getExpectedInaccessibleHttpStatusCode());
 		$this->photos_tests->get($this->photoID2, $this->getExpectedInaccessibleHttpStatusCode());
 	}
 
@@ -492,7 +490,7 @@ class SharingWithNonAdminUserTest extends BaseSharingTestScenarios
 		$this->albums_tests->get($this->albumID1, $this->getExpectedInaccessibleHttpStatusCode(), $this->getExpectedDefaultInaccessibleMessage(), TestConstants::EXPECTED_PASSWORD_REQUIRED_MSG);
 		// Even though public search is disabled, the photo is accessible
 		// by its direct link, because it is public.
-		$this->photos_tests->get($this->photoID1);
+		$this->photos_tests->get($this->photoID1, $this->getExpectedInaccessibleHttpStatusCode());
 		$this->photos_tests->get($this->photoID2, $this->getExpectedInaccessibleHttpStatusCode());
 	}
 
@@ -567,7 +565,7 @@ class SharingWithNonAdminUserTest extends BaseSharingTestScenarios
 			],
 		]);
 
-		$this->photos_tests->get($this->photoID1);
+		$this->photos_tests->get($this->photoID1, $this->getExpectedInaccessibleHttpStatusCode());
 		$this->photos_tests->get($this->photoID2);
 	}
 }

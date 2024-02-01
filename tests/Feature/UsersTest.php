@@ -15,7 +15,6 @@ namespace Tests\Feature;
 use App\Models\Configs;
 use App\Models\User;
 use App\SmartAlbums\OnThisDayAlbum;
-use App\SmartAlbums\PublicAlbum;
 use App\SmartAlbums\StarredAlbum;
 use App\SmartAlbums\UnsortedAlbum;
 use Illuminate\Support\Facades\Auth;
@@ -62,7 +61,6 @@ class UsersTest extends AbstractTestCase
 		 * 17. log out
 		 *
 		 * 18. log as 'test_abcde'
-		 * 19. try access shared pictures (public)
 		 * 20. try access starred pictures
 		 * 21. try access recent pictures
 		 * 22. try access on_this_day pictures
@@ -198,9 +196,6 @@ class UsersTest extends AbstractTestCase
 		$sessions_test->login('test_abcde', 'password_testing');
 		$sessions_test->init();
 		$this->clearCachedSmartAlbums();
-
-		// 19
-		$album_tests->get(PublicAlbum::ID, 403);
 
 		// 20
 		$album_tests->get(StarredAlbum::ID, 403);

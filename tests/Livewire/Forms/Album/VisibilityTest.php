@@ -96,17 +96,17 @@ class VisibilityTest extends BaseLivewireTest
 		$this->album1 = $this->album1->fresh();
 		$this->album1->base_class->load('access_permissions');
 
-		Livewire::actingAs($this->userMayUpload2)->test(UnlockAlbum::class, ['albumID' => $this->album1->id])
+		Livewire::actingAs($this->userMayUpload2)->test(UnlockAlbum::class, ['albumID' => $this->album1->id, 'back' => 'something'])
 			->set('password', 'wrongPassword')
 			->call('submit')
 			->assertForbidden();
 
-		Livewire::actingAs($this->userMayUpload2)->test(UnlockAlbum::class, ['albumID' => $this->album1->id])
+		Livewire::actingAs($this->userMayUpload2)->test(UnlockAlbum::class, ['albumID' => $this->album1->id, 'back' => 'something'])
 			->set('password', '')
 			->call('submit')
 			->assertDispatched('notify');
 
-		Livewire::actingAs($this->userMayUpload2)->test(UnlockAlbum::class, ['albumID' => $this->album1->id])
+		Livewire::actingAs($this->userMayUpload2)->test(UnlockAlbum::class, ['albumID' => $this->album1->id, 'back' => 'something'])
 			->set('password', 'password')
 			->call('submit')
 			->assertOk()
@@ -115,7 +115,7 @@ class VisibilityTest extends BaseLivewireTest
 
 	public function testUnlockingUnlockedAlbum(): void
 	{
-		Livewire::actingAs($this->userMayUpload2)->test(UnlockAlbum::class, ['albumID' => $this->album1->id])
+		Livewire::actingAs($this->userMayUpload2)->test(UnlockAlbum::class, ['albumID' => $this->album1->id, 'back' => 'something'])
 			->set('password', 'password')
 			->call('submit')
 			->assertForbidden();

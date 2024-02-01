@@ -315,6 +315,7 @@ return [
 	'U2F_AUTHENTIFICATION_SUCCESS' => 'Authentification réussie !',
 	'U2F_CREDENTIALS' => 'Clés',
 	'U2F_CREDENTIALS_DELETED' => 'Clé supprimée !',
+	'U2F_LOGIN' => 'Connexion avec WebAuthn',
 
 	'NEW_PHOTOS_NOTIFICATION' => 'Envoyer les notifications de nouvelles photos par emails.',
 	'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'Notification de nouvelles photos mise à jour',
@@ -349,7 +350,6 @@ return [
 	'SORT_PHOTO_SELECT_2' => 'Date de prise de vue',
 	'SORT_PHOTO_SELECT_3' => 'Titre',
 	'SORT_PHOTO_SELECT_4' => 'Description',
-	'SORT_PHOTO_SELECT_5' => 'Public',
 	'SORT_PHOTO_SELECT_6' => 'Favoris',
 	'SORT_PHOTO_SELECT_7' => 'Format de la photo',
 
@@ -358,7 +358,7 @@ return [
 	'SORT_CHANGE' => 'Modifier le tri',
 
 	'DROPBOX_TITLE' => 'Définir une clé Dropbox',
-	'DROPBOX_TEXT' => 'Pour pouvoir importer des photos à partir de votre Dropbox, vous aurez besoin d’une clé d’application «drop-ins» valide à créer sur <a href="https://www.dropbox.com/developers/apps/create\">leur site</a>. Générez votre clé personnelle et puis entrez-la ci-dessous :',
+	'DROPBOX_TEXT' => 'Pour pouvoir importer des photos à partir de votre Dropbox, vous aurez besoin d’une clé d’application «drop-ins» valide à créer sur <a href="https://www.dropbox.com/developers/saver\">leur site</a>. Générez votre clé personnelle et puis entrez-la ci-dessous :',
 
 	'LANG_TEXT' => 'Remplacer la langue de Lychee par :',
 	'LANG_TITLE' => 'Changer la langue',

@@ -12,7 +12,6 @@ use App\Models\Extensions\BaseAlbum;
 use App\Models\TagAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
 use App\SmartAlbums\OnThisDayAlbum;
-use App\SmartAlbums\PublicAlbum;
 use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\StarredAlbum;
 use App\SmartAlbums\UnsortedAlbum;
@@ -24,7 +23,6 @@ class AlbumFactory
 	public const BUILTIN_SMARTS_CLASS = [
 		SmartAlbumType::UNSORTED->value => UnsortedAlbum::class,
 		SmartAlbumType::STARRED->value => StarredAlbum::class,
-		SmartAlbumType::PUBLIC->value => PublicAlbum::class,
 		SmartAlbumType::RECENT->value => RecentAlbum::class,
 		SmartAlbumType::ON_THIS_DAY->value => OnThisDayAlbum::class,
 	];

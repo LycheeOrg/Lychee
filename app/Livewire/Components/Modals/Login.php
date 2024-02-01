@@ -2,17 +2,20 @@
 
 namespace App\Livewire\Components\Modals;
 
+use App\Enum\OauthProvidersType;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Http\RuleSets\LoginRuleSet;
 use App\Metadata\Versions\FileVersion;
 use App\Metadata\Versions\GitHubVersion;
 use App\Metadata\Versions\InstalledVersion;
 use App\Models\Configs;
+use App\Models\User;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
+use Laragear\WebAuthn\Models\WebAuthnCredential;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
@@ -91,5 +94,36 @@ class Login extends Component
 		// Wrong login: stay on the modal and update the rendering.
 		$this->addError('wrongLogin', 'Wrong login or password.');
 		Log::error(__METHOD__ . ':' . __LINE__ . ' User (' . $data['username'] . ') has tried to log in from ' . request()->ip());
+	}
+
+	/**
+	 * Check whether any user has a 2FA credential set.
+	 *
+	 * @return bool
+	 */
+	public function getCanUse2faProperty(): bool
+	{
+		return WebAuthnCredential::query()->whereNull('disabled_at')->count() > 0;
+	}
+
+	/**
+	 * List the Oauth providers which are enabled.
+	 *
+	 * @return array
+	 */
+	public function getAvailableOauthProperty(): array
+	{
+		$oauthAvailable = [];
+
+		foreach (OauthProvidersType::cases() as $oauthProvider) {
+			$client_id = config('services.' . $oauthProvider->value . '.client_id');
+			if ($client_id === null || $client_id === '') {
+				continue;
+			}
+
+			$oauthAvailable[] = $oauthProvider->value;
+		}
+
+		return $oauthAvailable;
 	}
 }

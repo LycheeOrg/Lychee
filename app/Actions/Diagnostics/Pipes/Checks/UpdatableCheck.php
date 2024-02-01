@@ -66,7 +66,9 @@ class UpdatableCheck implements DiagnosticPipe
 			// @codeCoverageIgnoreEnd
 		}
 		if (!Schema::hasTable('configs')) {
+			// @codeCoverageIgnoreStart
 			throw new ConfigurationException('Migration is not run');
+			// @codeCoverageIgnoreEnd
 		}
 
 		if (!Configs::getValueAsBool('allow_online_git_pull')) {
@@ -85,7 +87,7 @@ class UpdatableCheck implements DiagnosticPipe
 
 		if (!$gitHubFunctions->hasPermissions()) {
 			// @codeCoverageIgnoreStart
-			throw new InsufficientFilesystemPermissions(base_path('.git') . ' (and subdirectories) are not executable, check the permissions');
+			throw new InsufficientFilesystemPermissions(Helpers::censor(base_path('.git'), 1 / 4) . ' (and subdirectories) are not executable, check the permissions');
 			// @codeCoverageIgnoreEnd
 		}
 	}

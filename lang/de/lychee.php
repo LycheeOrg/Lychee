@@ -315,6 +315,7 @@ return [
 	'U2F_AUTHENTIFICATION_SUCCESS' => 'Authentifizierung erfolgreich!',
 	'U2F_CREDENTIALS' => 'Anmeldedaten',
 	'U2F_CREDENTIALS_DELETED' => 'Anmeldedaten gelöscht!',
+	'U2F_LOGIN' => 'Mit WebAuthn anmelden',
 
 	'NEW_PHOTOS_NOTIFICATION' => 'E-Mails für neue Fotos senden',
 	'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'Benachrichtigung für neue Fotos aktualisiert',
@@ -349,7 +350,6 @@ return [
 	'SORT_PHOTO_SELECT_2' => 'Aufnahmedatum',
 	'SORT_PHOTO_SELECT_3' => 'Titel',
 	'SORT_PHOTO_SELECT_4' => 'Beschreibung',
-	'SORT_PHOTO_SELECT_5' => 'Öffentlich',
 	'SORT_PHOTO_SELECT_6' => 'Favorit',
 	'SORT_PHOTO_SELECT_7' => 'Fotoformat',
 
@@ -358,7 +358,7 @@ return [
 	'SORT_CHANGE' => 'Sortierung ändern',
 
 	'DROPBOX_TITLE' => 'Dropbox-Schlüssel festlegen',
-	'DROPBOX_TEXT' => "Um Ihre Fotos von Dropbox zu importieren, brauchen Sie einen gültigen API-Key von <a href='https://www.dropbox.com/developers/apps/create'>der Dropbox-Webseite</a>. Erstellen Sie einen persönlichen Schlüssel und geben Sie ihn hier ein:",
+	'DROPBOX_TEXT' => "Um Ihre Fotos von Dropbox zu importieren, brauchen Sie einen gültigen API-Key von <a href='https://www.dropbox.com/developers/saver'>der Dropbox-Webseite</a>. Erstellen Sie einen persönlichen Schlüssel und geben Sie ihn hier ein:",
 
 	'LANG_TEXT' => 'Sprache für Lychee ändern:',
 	'LANG_TITLE' => 'Sprache festlegen',

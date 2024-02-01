@@ -18,6 +18,7 @@ class AlbumRights implements Wireable
 		public bool $can_download = false,
 		public bool $can_upload = false,
 		public bool $can_delete = false,
+		public bool $can_access_original = false,
 	) {
 	}
 
@@ -36,6 +37,7 @@ class AlbumRights implements Wireable
 			Gate::check(AlbumPolicy::CAN_DOWNLOAD, [AbstractAlbum::class, $abstractAlbum]),
 			Gate::check(AlbumPolicy::CAN_UPLOAD, [AbstractAlbum::class, $abstractAlbum]),
 			Gate::check(AlbumPolicy::CAN_DELETE, [AbstractAlbum::class, $abstractAlbum]),
+			Gate::check(AlbumPolicy::CAN_ACCESS_FULL_PHOTO, [AbstractAlbum::class, $abstractAlbum]),
 		);
 	}
 }

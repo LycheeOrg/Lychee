@@ -16,7 +16,7 @@ class ImportFromUrlForm extends Form
 	/** @var array<int,string> */
 	public array $urls = [];
 
-	public string $url = '';
+	public string $urlArea = '';
 
 	/**
 	 * This allows Livewire to know which values of the $configs we
@@ -40,7 +40,7 @@ class ImportFromUrlForm extends Form
 	 */
 	public function prepare()
 	{
-		$this->urls = [$this->url];
+		$this->urls = array_values(array_filter(explode("\n", $this->urlArea)));
 
 		// The replacement below looks suspicious.
 		// If it was really necessary, then there would be much more special

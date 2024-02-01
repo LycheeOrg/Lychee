@@ -35,7 +35,6 @@ class PhotoFactory extends Factory
 			'title' => 'CR_' . fake()->numerify('####'),
 			'description' => null,
 			'tags' => '',
-			'is_public' => false,
 			'owner_id' => 1,
 			'type' => 'image/jpeg',
 			'iso' => '100',

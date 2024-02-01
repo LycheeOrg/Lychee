@@ -19,6 +19,7 @@ class UnlockAlbum extends Component
 	use Notify;
 
 	#[Locked] public string $albumID;
+	#[Locked] public string $back;
 	public string $password = ''; // ! wired
 
 	private Unlock $unlock;
@@ -39,12 +40,14 @@ class UnlockAlbum extends Component
 	 * This is the equivalent of the constructor for Livewire Components.
 	 *
 	 * @param $albumID album to unlock
+	 * @param $back    where we go back to
 	 *
 	 * @return void
 	 */
-	public function mount(string $albumID): void
+	public function mount(string $albumID, string $back): void
 	{
 		$this->albumID = $albumID;
+		$this->back = $back;
 	}
 
 	/**

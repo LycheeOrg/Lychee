@@ -20,7 +20,7 @@
                 " >
     				<x-icons.iconic class="w-10 h-10" icon="link-intact" />
                 </a>
-				<x-icons.iconic class="w-10 h-10" icon="grid-two-up" x-on:click="qrCodeOpen = true; setQrCode('{{ $rawUrl }}');" />
+				<x-icons.iconic class="w-10 h-10" icon="grid-two-up" x-on:click="qrCodeOpen = true; setQrCode('{{ $url }}');" />
 		</div>
         <div class="flex flex-wrap p-9 gap-5 justify-center align-top text-text-main-0/80" x-show="qrCodeOpen">
             <canvas id="canvas"></canvas>

@@ -13,7 +13,6 @@ enum ColumnSortingType: string
 	case CREATED_AT = 'created_at';
 	case TITLE = 'title';
 	case DESCRIPTION = 'description';
-	case IS_PUBLIC = 'is_public';
 
 	// from albums
 	case MIN_TAKEN_AT = 'min_taken_at';

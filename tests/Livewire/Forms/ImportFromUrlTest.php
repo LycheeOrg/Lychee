@@ -39,7 +39,7 @@ class ImportFromUrlTest extends BaseLivewireTest
 		Livewire::actingAs($this->userMayUpload1)->test(ImportFromUrl::class)
 			->assertViewIs('livewire.forms.add.import-from-url')
 			->assertOk()
-			->set('form.url', TestConstants::SAMPLE_DOWNLOAD_JPG)
+			->set('form.urlArea', TestConstants::SAMPLE_DOWNLOAD_JPG)
 			->call('submit')
 			->assertOk()
 			->assertDispatched('reloadPage')

@@ -1,6 +1,6 @@
 <div>
 	<div class="p-9">
-		<p class="mb-5 text-neutral-200">{{ $title }}</p>
+		<p class="mb-5 text-text-main-200">{{ $title }}</p>
 		<form>
 		@foreach($form as $f => $v)
 			{{-- Only display the allowed forms --}}

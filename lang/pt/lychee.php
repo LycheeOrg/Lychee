@@ -315,6 +315,7 @@ return [
 	'U2F_AUTHENTIFICATION_SUCCESS' => 'Authenticação bem-sucedida!',
 	'U2F_CREDENTIALS' => 'Credenciais',
 	'U2F_CREDENTIALS_DELETED' => 'Credenciais eliminadas!',
+	'U2F_LOGIN' => 'Log in with WebAuthn',
 
 	'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
 	'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
@@ -349,7 +350,6 @@ return [
 	'SORT_PHOTO_SELECT_2' => 'Data de Modificação',
 	'SORT_PHOTO_SELECT_3' => 'Título',
 	'SORT_PHOTO_SELECT_4' => 'Descrição',
-	'SORT_PHOTO_SELECT_5' => 'Público',
 	'SORT_PHOTO_SELECT_6' => 'Favorito',
 	'SORT_PHOTO_SELECT_7' => 'Formato da Fotografia',
 
@@ -358,7 +358,7 @@ return [
 	'SORT_CHANGE' => 'Alterar Ordenação',
 
 	'DROPBOX_TITLE' => 'Escolher a Dropbox Key',
-	'DROPBOX_TEXT' => "Para importar fotografias do seu Dropbox, precisa de uma key válida de drop-in do <a href='https://www.dropbox.com/developers/apps/create'>website deles</a>. Crie uma key pessoal e insira-a abaixo:",
+	'DROPBOX_TEXT' => "Para importar fotografias do seu Dropbox, precisa de uma key válida de drop-in do <a href='https://www.dropbox.com/developers/saver'>website deles</a>. Crie uma key pessoal e insira-a abaixo:",
 
 	'LANG_TEXT' => 'Alterar língua do Lychee para:',
 	'LANG_TITLE' => 'Alterar Linguagem',

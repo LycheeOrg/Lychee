@@ -1,4 +1,4 @@
-<div class="text-neutral-200 text-sm p-9 sm:p-4 xl:px-9 max-sm:w-full sm:min-w-[32rem] flex-shrink-0">
+<div class="text-text-main-200 text-sm p-9 sm:p-4 xl:px-9 max-sm:w-full sm:min-w-[32rem] flex-shrink-0">
 	<form>
         <div class="mb-4 h-12">
             <p class="font-bold">{{ __('lychee.ALBUM_TITLE') }}:</p>
@@ -24,6 +24,10 @@
         <div class="h-10">
             <span class="font-bold">{{ __('lychee.ALBUM_SET_LICENSE') }}</span>
             <x-forms.dropdown class="mx-2" :options="$this->licenses" id="license_dialog_select" wire:model='license'/>
+        </div>
+        <div class="h-10">
+            <span class="font-bold">Set album thumbs aspect ratio</span>
+            <x-forms.dropdown class="mx-2" :options="$this->aspectRatios" id="aspect_ratio_dialog_select" wire:model='album_aspect_ratio'/>
         </div>
         @endif
         <x-forms.buttons.action class="rounded w-full" wire:click='submit' >

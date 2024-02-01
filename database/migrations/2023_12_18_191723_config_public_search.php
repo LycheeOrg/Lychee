@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\DB;
 
 return new class() extends Migration {
 	public const MOD_SEARCH = 'Mod Search';
-	public const BOOL = 'bool';
+	public const BOOL = '0|1';
 
 	/**
 	 * Run the migrations.

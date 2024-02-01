@@ -3,6 +3,7 @@
 namespace App\Livewire\DTO;
 
 use App\Contracts\Models\AbstractAlbum;
+use App\Enum\AspectRatioType;
 use App\Livewire\Traits\UseWireable;
 use App\Models\Configs;
 use App\Models\Photo;
@@ -22,6 +23,7 @@ class AlbumsFlags implements Wireable
 		public bool $is_map_accessible = false,
 		public bool $is_mod_frame_enabled = false,
 		public bool $is_search_accessible = false,
+		public string $album_thumb_css_aspect_ratio = '',
 	) {
 		$count_locations = Photo::whereNotNull('latitude')->whereNotNull('longitude')->count() > 0;
 		$this->is_map_accessible = $count_locations && Configs::getValueAsBool('map_display');
@@ -30,5 +32,6 @@ class AlbumsFlags implements Wireable
 		$this->can_use_2fa = !Auth::check() && (WebAuthnCredential::query()->whereNull('disabled_at')->count() > 0);
 		$this->can_edit = Gate::check(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, null]);
 		$this->is_search_accessible = Auth::check() || Configs::getValueAsBool('search_public');
+		$this->album_thumb_css_aspect_ratio = Configs::getValueAsEnum('default_album_thumb_aspect_ratio', AspectRatioType::class)->css();
 	}
 }

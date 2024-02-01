@@ -10,7 +10,7 @@
 	--}}
 	<div class="u2f_view_line border-b border-solid border-neutral-600 pb-3 mb-2">
 		<p>
-			<span class="text text-sm font-bold">
+			<span class="text text-sm font-bold text-text-main-100">
 				{{ __('lychee.U2F_CREDENTIALS') }}
 			</span>
 		</p>

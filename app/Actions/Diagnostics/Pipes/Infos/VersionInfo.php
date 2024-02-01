@@ -46,7 +46,9 @@ class VersionInfo implements DiagnosticPipe
 				$gitInfo = new LycheeGitInfo($gitHubFunctions);
 				$lycheeInfoString = $gitInfo->toString();
 			} else {
+				// @codeCoverageIgnoreStart
 				$lycheeInfoString = 'No git data found.';
+				// @codeCoverageIgnoreEnd
 			}
 		}
 

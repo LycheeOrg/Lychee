@@ -5,6 +5,7 @@ $finder = array_reduce(
 		__DIR__ . '/app/',
 		__DIR__ . '/database/',
 		__DIR__ . '/lang/',
+		__DIR__ . '/config/',
 		__DIR__ . '/resources/',
 		__DIR__ . '/routes/',
 		__DIR__ . '/tests/',
@@ -20,6 +21,7 @@ $rules = [
 	'nullable_type_declaration_for_default_null_value' => true,
 	'align_multiline_comment' => true,
 	'array_indentation' => true,
+	'fully_qualified_strict_types' => false,
 	'backtick_to_shell_exec' => true,
 	'increment_style' => ['style' => 'post'],
 	'indentation_type' => true,
@@ -41,7 +43,7 @@ $rules = [
 	],
 	'operator_linebreak' => [
 		'only_booleans' => true,
-		'position' => 'end'
+		'position' => 'end',
 	],
 ];
 $config = new PhpCsFixer\Config();

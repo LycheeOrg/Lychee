@@ -315,6 +315,7 @@ return [
 	'U2F_AUTHENTIFICATION_SUCCESS' => 'Authentication successful!',
 	'U2F_CREDENTIALS' => 'Credentials',
 	'U2F_CREDENTIALS_DELETED' => 'Credentials deleted!',
+	'U2F_LOGIN' => 'Log in with WebAuthn',
 
 	'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
 	'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
@@ -349,7 +350,6 @@ return [
 	'SORT_PHOTO_SELECT_2' => 'Take Date',
 	'SORT_PHOTO_SELECT_3' => 'Title',
 	'SORT_PHOTO_SELECT_4' => 'Description',
-	'SORT_PHOTO_SELECT_5' => 'Public',
 	'SORT_PHOTO_SELECT_6' => 'Star',
 	'SORT_PHOTO_SELECT_7' => 'Photo Format',
 
@@ -358,7 +358,7 @@ return [
 	'SORT_CHANGE' => 'Change Sorting',
 
 	'DROPBOX_TITLE' => 'Set Dropbox Key',
-	'DROPBOX_TEXT' => "In order to import photos from your Dropbox, you need a valid drop-ins app key from <a href='https://www.dropbox.com/developers/apps/create' class='text-neutral-200 border-b border-dashed border-neutral-400'>their website</a>. Generate yourself a personal key and enter it below:",
+	'DROPBOX_TEXT' => "In order to import photos from your Dropbox, you need a valid drop-ins app key from <a href='https://www.dropbox.com/developers/saver' class='text-text-main-200 border-b border-dashed border-neutral-400'>their website</a>. Generate yourself a personal key and enter it below:",
 
 	'LANG_TEXT' => 'Change Lychee language for:',
 	'LANG_TITLE' => 'Change Language',

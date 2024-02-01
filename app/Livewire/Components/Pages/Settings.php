@@ -32,8 +32,8 @@ class Settings extends Component
 	public function mount(): void
 	{
 		Gate::authorize(SettingsPolicy::CAN_EDIT, [Configs::class]);
-		$this->css = Storage::disk('dist')->get('user.css');
-		$this->js = Storage::disk('dist')->get('custom.js');
+		$this->css = Storage::disk('dist')->get('user.css') ?? '';
+		$this->js = Storage::disk('dist')->get('custom.js') ?? '';
 	}
 
 	/**

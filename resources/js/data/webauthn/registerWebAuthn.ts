@@ -11,7 +11,6 @@ type RegisterWebAuthn = AlpineComponent<{
 export const registerWebAuthn = (Alpine: Alpine) =>
 	Alpine.data(
 		"registerWebAuthn",
-		// @ts-expect-error
 		(success_msg_val: string = "U2F_REGISTRATION_SUCCESS", error_msg_val: string = "ERROR_TEXT"): RegisterWebAuthn => ({
 			success_msg: success_msg_val,
 			error_msg: error_msg_val,

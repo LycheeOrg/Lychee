@@ -19,7 +19,9 @@ class Configuration
 	public function get(): array
 	{
 		if (!Schema::hasTable('configs')) {
+			// @codeCoverageIgnoreStart
 			return ['Error: migration has not been run yet.'];
+			// @codeCoverageIgnoreEnd
 		}
 
 		// Load settings

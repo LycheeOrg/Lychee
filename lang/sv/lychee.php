@@ -315,6 +315,7 @@ return [
 	'U2F_AUTHENTIFICATION_SUCCESS' => 'Authentication successful!',
 	'U2F_CREDENTIALS' => 'Credentials',
 	'U2F_CREDENTIALS_DELETED' => 'Credentials deleted!',
+	'U2F_LOGIN' => 'Log in with WebAuthn',
 
 	'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
 	'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
@@ -349,7 +350,6 @@ return [
 	'SORT_PHOTO_SELECT_2' => 'Fotograferingsdatum',
 	'SORT_PHOTO_SELECT_3' => 'Titel',
 	'SORT_PHOTO_SELECT_4' => 'Beskrivning',
-	'SORT_PHOTO_SELECT_5' => 'Publikt',
 	'SORT_PHOTO_SELECT_6' => 'Stjärnmärkning',
 	'SORT_PHOTO_SELECT_7' => 'Bildformat',
 
@@ -358,7 +358,7 @@ return [
 	'SORT_CHANGE' => 'Spara ändringar av sorteringsföljden',
 
 	'DROPBOX_TITLE' => 'Spara nyckeln för Dropbox',
-	'DROPBOX_TEXT' => "För att kunna importera fotografier från ditt Dropboxkonto behöver du en godkänd applikationsnyckel från <a href='https://www.dropbox.com/developers/apps/create'>Dropbox</a>.\n Skapa en personlig nyckel och ange den sedan här nedan:",
+	'DROPBOX_TEXT' => "För att kunna importera fotografier från ditt Dropboxkonto behöver du en godkänd applikationsnyckel från <a href='https://www.dropbox.com/developers/saver'>Dropbox</a>.\n Skapa en personlig nyckel och ange den sedan här nedan:",
 
 	'LANG_TEXT' => 'Ändra språket i Lychee till:',
 	'LANG_TITLE' => 'Spara ändringen av språket',

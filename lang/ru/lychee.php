@@ -315,6 +315,7 @@ return [
 	'U2F_AUTHENTIFICATION_SUCCESS' => 'Authentication successful!',
 	'U2F_CREDENTIALS' => 'Credentials',
 	'U2F_CREDENTIALS_DELETED' => 'Credentials deleted!',
+	'U2F_LOGIN' => 'Log in with WebAuthn',
 
 	'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
 	'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
@@ -349,7 +350,6 @@ return [
 	'SORT_PHOTO_SELECT_2' => 'съёмки',
 	'SORT_PHOTO_SELECT_3' => 'заголовка',
 	'SORT_PHOTO_SELECT_4' => 'описания',
-	'SORT_PHOTO_SELECT_5' => 'доступности',
 	'SORT_PHOTO_SELECT_6' => 'отметки',
 	'SORT_PHOTO_SELECT_7' => 'формата',
 
@@ -358,7 +358,7 @@ return [
 	'SORT_CHANGE' => 'Сменить сортировку',
 
 	'DROPBOX_TITLE' => 'Задать ключ Dropbox',
-	'DROPBOX_TEXT' => "Для загрузки фото из Dropbox Вам нужен ключ, который можно получить на <a href='https://www.dropbox.com/developers/apps/create'>специальной странице</a>. Создайте личный ключ и вставьте здесь:",
+	'DROPBOX_TEXT' => "Для загрузки фото из Dropbox Вам нужен ключ, который можно получить на <a href='https://www.dropbox.com/developers/saver'>специальной странице</a>. Создайте личный ключ и вставьте здесь:",
 
 	'LANG_TEXT' => 'Change Lychee language to:',
 	'LANG_TITLE' => 'Change Language',
@@ -474,7 +474,7 @@ return [
 	'UPLOAD_IMPORT_CANCELLED' => 'Import cancelled',
 
 	'ABOUT_SUBTITLE' => 'Self-hosted photo-management done right',
-	'ABOUT_DESCRIPTION' => "<a target=\'_blank\' href=\'%0\'>Lychee</a> - это бесплатный фотоменеджер для Вашего сервера или хостинга. Установка занимает считанные секунды. Загружайте, редактируйте и делитесь фотографиями как в любимом приложении! Lychee обеспечит Вас всем необходимым, включая безопасность хранения Ваших фотографий! На русский язык перевёл Евгений Лебедев. Пожалуйста, <a href='mailto://k-t-c(at)ya.ru'>дайте мне знать</a>, если заметите неточности.",
+	'ABOUT_DESCRIPTION' => "<a target='_blank' href='%s'>Lychee</a> - это бесплатный фотоменеджер для Вашего сервера или хостинга. Установка занимает считанные секунды. Загружайте, редактируйте и делитесь фотографиями как в любимом приложении! Lychee обеспечит Вас всем необходимым, включая безопасность хранения Ваших фотографий! На русский язык перевёл Евгений Лебедев.",
 	'FOOTER_COPYRIGHT' => 'All images on this website are subject to copyright by %1$s © %2$s',
 	'HOSTED_WITH_LYCHEE' => 'Hosted with Lychee',
 

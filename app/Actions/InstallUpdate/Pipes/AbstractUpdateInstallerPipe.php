@@ -10,7 +10,9 @@ abstract class AbstractUpdateInstallerPipe
 	 *
 	 * @return array<int,string>
 	 */
+	// @codeCoverageIgnoreStart
 	abstract public function handle(array &$output, \Closure $next): array;
+	// @codeCoverageIgnoreEnd
 
 	/**
 	 * Arrayify a string and append it to $output.

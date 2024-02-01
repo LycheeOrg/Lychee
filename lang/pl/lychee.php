@@ -315,6 +315,7 @@ return [
 	'U2F_AUTHENTIFICATION_SUCCESS' => 'Autoryzacja pomyślna!',
 	'U2F_CREDENTIALS' => 'Dane uwierzytelniające',
 	'U2F_CREDENTIALS_DELETED' => 'Usunięto dane uwierzytelniające!',
+	'U2F_LOGIN' => 'Log in with WebAuthn',
 
 	'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
 	'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
@@ -349,7 +350,6 @@ return [
 	'SORT_PHOTO_SELECT_2' => 'Take Date',
 	'SORT_PHOTO_SELECT_3' => 'tytuł',
 	'SORT_PHOTO_SELECT_4' => 'opis',
-	'SORT_PHOTO_SELECT_5' => 'publiczny',
 	'SORT_PHOTO_SELECT_6' => 'oznaczony',
 	'SORT_PHOTO_SELECT_7' => 'format',
 
@@ -358,7 +358,7 @@ return [
 	'SORT_CHANGE' => 'Zmień sortowanie',
 
 	'DROPBOX_TITLE' => 'Ustaw klucz Dropbox',
-	'DROPBOX_TEXT' => "In order to import photos from your Dropbox, you need a valid drop-ins app key from <a href='https://www.dropbox.com/developers/apps/create'>their website</a>. Generate yourself a personal key and enter it below:",
+	'DROPBOX_TEXT' => "In order to import photos from your Dropbox, you need a valid drop-ins app key from <a href='https://www.dropbox.com/developers/saver'>their website</a>. Generate yourself a personal key and enter it below:",
 
 	'LANG_TEXT' => 'Zmień język na:',
 	'LANG_TITLE' => 'Zmień język',

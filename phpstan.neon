@@ -11,6 +11,7 @@ parameters:
 		- lang
 		- database/migrations
 		- tests
+		- config
 	excludePaths:
 		- database/migrations/2021_12_04_181200_refactor_models.php
 	stubFiles:
@@ -45,7 +46,7 @@ parameters:
 		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder)(<.*>)?::inRandomOrder\(\).#'
 		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder)(<.*>)?::groupBy\(\).#'
 		- '#Dynamic call to static method App\\Models\\Builders\\.*::orderByDesc\(\).#'
-		- '#Call to an undefined method Illuminate\\Database\\Eloquent\\.*::update\(\)#'
+		- '#Dynamic call to static method App\\Models\\Builders\\.*::selectRaw\(\).#'
 		- '#Call to an undefined method Illuminate\\Database\\Eloquent\\.*::with(Only)?\(\)#'
 		- '#Call to an undefined method App\\Relations\\HasManyPhotosRecursively::whereNotNull\(\)#'
 		- '#Call to an undefined method Illuminate\\Database\\Eloquent\\Builder|Illuminate\\Database\\Eloquent\\Relations\\Relation::whereNotNull\(\).#'
@@ -105,6 +106,12 @@ parameters:
 			message: '#Access to an undefined property object::\$value.#'
 			paths:
 				- database/migrations
+
+		# Configs
+		-
+			message: '#Cast to bool is forbidden.#'
+			paths:
+				- config
 
 		# TESTS
 		- 

@@ -12,7 +12,6 @@
 
 namespace Tests\Feature;
 
-use App\SmartAlbums\PublicAlbum;
 use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\StarredAlbum;
 use Tests\AbstractTestCase;
@@ -49,23 +48,6 @@ class PhotosAddSpecialAlbumTest extends BasePhotoTest
 				$this->albums_tests->delete([$album_id]);
 			}
 		}
-	}
-
-	/**
-	 * A simple upload of an ordinary photo to the public album.
-	 *
-	 * @return void
-	 */
-	public function testSimpleUploadToPublic(): void
-	{
-		$response = $this->photos_tests->upload(
-			AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE),
-			PublicAlbum::ID
-		);
-		$response->assertJson([
-			'album_id' => null,
-			'is_public' => true,
-		]);
 	}
 
 	/**

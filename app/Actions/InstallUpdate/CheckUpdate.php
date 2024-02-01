@@ -57,8 +57,10 @@ class CheckUpdate
 				return UpdateStatus::UP_TO_DATE;
 			}
 			// @codeCoverageIgnoreEnd
+			// @codeCoverageIgnoreStart
 		} catch (\Exception $e) {
 			return UpdateStatus::NOT_MASTER;
 		}
+		// @codeCoverageIgnoreEnd
 	}
 }

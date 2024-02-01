@@ -5,13 +5,6 @@
     <meta charset="UTF-8">
     <x-meta />
     {{-- @include('components.meta.index') --}}
-
-    {{-- <script async defer src="{{ URL::asset(Helpers::cacheBusting('js/app.js')) }}"></script> --}}
-    {{-- <script async defer src="{{ URL::asset(Helpers::cacheBusting('js/webauthn.js')) }}"></script> --}}
-    {{-- <link type="text/css" rel="stylesheet" href="{{ URL::asset(Helpers::cacheBusting('css/filepond.css')) }}" /> --}}
-    {{-- <link type="text/css" rel="stylesheet" href="{{ URL::asset(Helpers::cacheBusting('dist/frontend.css')) }}"> --}}
-    {{-- <link type="text/css" rel="stylesheet" href="{{ URL::asset(Helpers::cacheBusting('dist/user.css')) }}"> --}}
-
     {{-- @livewireStyles(['nonce' => csp_nonce('script')]) --}}
     {{-- @livewireScripts(['nonce' => csp_nonce('script')]) --}}
     @vite(['resources/css/app.css','resources/js/app.ts'])
@@ -29,5 +22,4 @@
         <livewire:base.modal />
         <x-shortcuts />
 </body>
-
 </html>

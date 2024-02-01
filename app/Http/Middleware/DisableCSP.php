@@ -30,14 +30,15 @@ class DisableCSP
 	 */
 	public function handle(Request $request, \Closure $next): mixed
 	{
+		$dir_url = config('app.dir_url');
 		if (
 			config('debugbar.enabled', false) === true ||
-			$request->getRequestUri() === '/docs/api'
+			$request->getRequestUri() === $dir_url . '/docs/api'
 		) {
 			config(['secure-headers.csp.enable' => false]);
 		}
 
-		if ($request->getRequestUri() === '/' . config('log-viewer.route_path', 'Logs')) {
+		if ($request->getRequestUri() === $dir_url . '/' . config('log-viewer.route_path', 'Logs')) {
 			// We must disable unsafe-eval because vue3 used by log-viewer requires it.
 			// We must disable unsafe-inline (and hashes) because log-viewer uses inline script with parameter to boot.
 			// Those parameters are not know by Lychee if someone modifies the config.
@@ -48,7 +49,7 @@ class DisableCSP
 		}
 
 		// disable unsafe-eval if we are on a Livewire page
-		if (config('app.livewire', false) === true || Str::startsWith($request->getRequestUri(), '/livewire/')) {
+		if (config('app.livewire', false) === true || Str::startsWith($request->getRequestUri(), $dir_url . '/livewire/')) {
 			$this->handleLivewire();
 		}
 

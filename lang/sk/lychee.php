@@ -315,6 +315,7 @@ return [
 	'U2F_AUTHENTIFICATION_SUCCESS' => 'Authentication successful!',
 	'U2F_CREDENTIALS' => 'Credentials',
 	'U2F_CREDENTIALS_DELETED' => 'Credentials deleted!',
+	'U2F_LOGIN' => 'Log in with WebAuthn',
 
 	'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
 	'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
@@ -349,7 +350,6 @@ return [
 	'SORT_PHOTO_SELECT_2' => 'čas snímku',
 	'SORT_PHOTO_SELECT_3' => 'Titul',
 	'SORT_PHOTO_SELECT_4' => 'Popis',
-	'SORT_PHOTO_SELECT_5' => 'Verejný',
 	'SORT_PHOTO_SELECT_6' => 'Obľúbený',
 	'SORT_PHOTO_SELECT_7' => 'Formát',
 
@@ -358,7 +358,7 @@ return [
 	'SORT_CHANGE' => 'Zmeniť triedenie',
 
 	'DROPBOX_TITLE' => 'Nastaviť kľúč Dropbox',
-	'DROPBOX_TEXT' => "Aby ste mohli importovať obrázky z Dropbox, potrebujete platný API-Key zo <a href='https://www.dropbox.com/developers/apps/create'>stránky Dropbox</a>. Vytvorte personal key a zadajte ho:",
+	'DROPBOX_TEXT' => "Aby ste mohli importovať obrázky z Dropbox, potrebujete platný API-Key zo <a href='https://www.dropbox.com/developers/saver'>stránky Dropbox</a>. Vytvorte personal key a zadajte ho:",
 
 	'LANG_TEXT' => 'Zmeniť jazyk Lychee na:',
 	'LANG_TITLE' => 'Zmena jazyka',

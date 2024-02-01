@@ -5,7 +5,6 @@ namespace App\Policies;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\QueryBuilderException;
-use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\User;
 use Illuminate\Contracts\Container\BindingResolutionException;
@@ -58,11 +57,6 @@ class PhotoPolicy extends BasePolicy
 	public function canSee(?User $user, Photo $photo): bool
 	{
 		if ($this->isOwner($user, $photo)) {
-			return true;
-		}
-
-		// TODO: to be removed once migrated to v5.
-		if ($photo->is_public) {
 			return true;
 		}
 
@@ -164,12 +158,7 @@ class PhotoPolicy extends BasePolicy
 			return false;
 		}
 
-		if ($photo->album === null) {
-			return Configs::getValueAsBool('grants_full_photo_access');
-		}
-
-		return $photo->album->public_permissions()?->grants_full_photo_access === true ||
-			$photo->album->current_user_permissions()?->grants_full_photo_access === true;
+		return $this->albumPolicy->canAccessFullPhoto($user, $photo->album);
 	}
 
 	/**

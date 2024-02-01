@@ -315,6 +315,7 @@ return [
 	'U2F_AUTHENTIFICATION_SUCCESS' => '¡Autenticación correcta!',
 	'U2F_CREDENTIALS' => 'Credenciales',
 	'U2F_CREDENTIALS_DELETED' => '¡Credenciales eliminadas!',
+	'U2F_LOGIN' => 'Log in with WebAuthn',
 
 	'NEW_PHOTOS_NOTIFICATION' => 'Enviar correos electrónicos de notificación de nuevas fotos.',
 	'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'Notificación de nuevas fotos actualizada',
@@ -349,7 +350,6 @@ return [
 	'SORT_PHOTO_SELECT_2' => 'Fecha Realización',
 	'SORT_PHOTO_SELECT_3' => 'Título',
 	'SORT_PHOTO_SELECT_4' => 'Descripción',
-	'SORT_PHOTO_SELECT_5' => 'Público',
 	'SORT_PHOTO_SELECT_6' => 'Estrella',
 	'SORT_PHOTO_SELECT_7' => 'Formato de foto',
 
@@ -358,7 +358,7 @@ return [
 	'SORT_CHANGE' => 'Cambiar clasificación',
 
 	'DROPBOX_TITLE' => 'Establecer clave de Dropbox',
-	'DROPBOX_TEXT' => 'Para importar fotos desde su Dropbox, necesita una clave de aplicación válida desde <a href=\'https://www.dropbox.com/developers/apps/create\'> su sitio web </a>. Generar usted mismo una clave personal e ingrésela a continuación:',
+	'DROPBOX_TEXT' => 'Para importar fotos desde su Dropbox, necesita una clave de aplicación válida desde <a href=\'https://www.dropbox.com/developers/saver\'> su sitio web </a>. Generar usted mismo una clave personal e ingrésela a continuación:',
 
 	'LANG_TEXT' => 'Cambiar el idioma Lychee para:',
 	'LANG_TITLE' => 'Cambiar idioma',

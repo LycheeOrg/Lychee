@@ -14,10 +14,13 @@
 				<x-header.back x-on:click="goTo(null)" x-bind:class="!photoFlags.isEditOpen ? '' : 'hidden'" />
 				<x-header.back x-on:click="photoFlags.isEditOpen = false" x-bind:class="!photoFlags.isEditOpen ? 'hidden' : ''" />
 				<x-header.title />
-				@can($this->rights->can_download)
+				@if($this->rights->can_download)
 					<x-header.button x-on:click="downloadPhoto()"
 						icon="cloud-download" fill="" class="fill-neutral-400"
 						/>
+				@endif
+				@if($this->rights->can_access_original)
+					<x-header.button icon="external-link" x-bind:href='photo.size_variants.original.url' target="_blank" fill="" class="fill-neutral-400"/>
 				@endif
 				@if($this->rights->can_edit)
 					<x-header.button x-on:click="photoFlags.isEditOpen = ! photoFlags.isEditOpen" icon="pencil"
@@ -27,7 +30,6 @@
 				<x-header.button x-on:click="photoFlags.isDetailsOpen = ! photoFlags.isDetailsOpen"
 					icon="info" fill="" class=""
 					x-bind:class="photoFlags.isDetailsOpen ? 'fill-primary-500' : 'fill-neutral-400'" />
-
 			</div>
 		</header>
 		<div class="w-0 flex-auto relative">

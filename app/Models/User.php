@@ -41,6 +41,7 @@ use function Safe\mb_convert_encoding;
  * @property string|null                                           $token
  * @property string|null                                           $remember_token
  * @property Collection<BaseAlbumImpl>                             $albums
+ * @property Collection<OauthCredential>                           $oauthCredentials
  * @property DatabaseNotificationCollection|DatabaseNotification[] $notifications
  * @property Collection<BaseAlbumImpl>                             $shared
  * @property Collection<Photo>                                     $photos
@@ -105,6 +106,17 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 		'may_edit_own_settings' => 'boolean',
 	];
 
+	protected $hidden = [
+		'amazon_id',
+		'apple_id',
+		'facebook_id',
+		'github_id',
+		'google_id',
+		'mastodon_id',
+		'microsoft_id',
+		'nextcloud_id',
+	];
+
 	protected function _toArray(): array
 	{
 		return parent::toArray();
@@ -155,6 +167,16 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 			APC::USER_ID,
 			APC::BASE_ALBUM_ID
 		);
+	}
+
+	/**
+	 * Return the Oauth credentials owned by the user.
+	 *
+	 * @return HasMany
+	 */
+	public function oauthCredentials(): HasMany
+	{
+		return $this->hasMany(OauthCredential::class, 'user_id', 'id');
 	}
 
 	/**

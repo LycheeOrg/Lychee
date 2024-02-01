@@ -25,7 +25,6 @@ use App\Metadata\Extractor;
 use App\Models\Album;
 use App\Models\Photo;
 use App\SmartAlbums\BaseSmartAlbum;
-use App\SmartAlbums\PublicAlbum;
 use App\SmartAlbums\StarredAlbum;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use function Safe\filemtime;
@@ -214,9 +213,7 @@ class Create
 			$this->strategyParameters->album = $album;
 		} elseif ($album instanceof BaseSmartAlbum) {
 			$this->strategyParameters->album = null;
-			if ($album instanceof PublicAlbum) {
-				$this->strategyParameters->is_public = true;
-			} elseif ($album instanceof StarredAlbum) {
+			if ($album instanceof StarredAlbum) {
 				$this->strategyParameters->is_starred = true;
 			}
 		} else {

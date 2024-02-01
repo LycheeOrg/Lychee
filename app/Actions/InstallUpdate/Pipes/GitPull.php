@@ -16,7 +16,9 @@ class GitPull extends AbstractUpdateInstallerPipe
 	{
 		$installedVersion = resolve(InstalledVersion::class);
 		if ($installedVersion->isRelease()) {
+			// @codeCoverageIgnoreStart
 			return $next($output);
+			// @codeCoverageIgnoreEnd
 		}
 
 		if (Helpers::isExecAvailable()) {
@@ -26,6 +28,8 @@ class GitPull extends AbstractUpdateInstallerPipe
 			return $next($output);
 		}
 
+		// @codeCoverageIgnoreStart
 		return $output;
+		// @codeCoverageIgnoreEnd
 	}
 }

@@ -1,6 +1,6 @@
 <div>
     <div class="p-9">
-        <p class="mb-5 text-neutral-200 text-sm/4">{{ __('lychee.TITLE_NEW_ALBUM') }}</p>
+        <p class="mb-5 text-text-main-200 text-sm/4">{{ __('lychee.TITLE_NEW_ALBUM') }}</p>
         <form>
             <div class="my-3 first:mt-0 last:mb-0">
                 <x-forms.inputs.text class="w-full" autocapitalize="off" wire:model="title"

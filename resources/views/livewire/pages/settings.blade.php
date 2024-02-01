@@ -5,14 +5,14 @@
     </x-header.bar>
 	<div class="overflow-x-clip overflow-y-auto h-[calc(100vh-56px)]">
 		<div class="settings_view w-10/12 max-w-xl text-text-main-400 text-sm mx-auto">
-			<livewire:forms.settings.base.string-setting key="set-dropbox-key" description="DROPBOX_TEXT"
+			<livewire:forms.settings.base.password-setting key="set-dropbox-key" description="DROPBOX_TEXT"
 				placeholder="SETTINGS_DROPBOX_KEY" action="DROPBOX_TITLE" name="dropbox_key" />
 			<livewire:forms.settings.set-album-sorting-setting />
 			<livewire:forms.settings.set-photo-sorting-setting />
 			<livewire:forms.settings.set-lang-setting />
 			<livewire:forms.settings.set-license-default-setting />
 			<div class="mb-4 -mt-4"><p>
-				<a href="https://creativecommons.org/choose/" class="text-neutral-200 hover:text-text-main-0 border-b border-dashed border-neutral-400" target="_blank">{{ __('lychee.ALBUM_LICENSE_HELP') }}</a>
+				<a href="https://creativecommons.org/choose/" class="text-text-main-200 hover:text-text-main-0 border-b border-dashed border-neutral-400" target="_blank">{{ __('lychee.ALBUM_LICENSE_HELP') }}</a>
 			</p></div>
 			<livewire:forms.settings.set-layout-setting />
 			<livewire:forms.settings.base.boolean-setting key="set-public_search"
