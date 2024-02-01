@@ -49,6 +49,7 @@ export const albumView = (Alpine: Alpine) =>
 			swiper: new SwipeActions(),
 
 			init() {
+				// @ts-expect-error
 				this.swiper.register(this);
 				console.log("init albumView!");
 				if (selectedPhoto !== "" && selectedPhoto !== null) {
