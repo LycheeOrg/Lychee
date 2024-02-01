@@ -99,7 +99,9 @@ class VisibilityTest extends BaseLivewireTest
 		Livewire::actingAs($this->userMayUpload2)->test(UnlockAlbum::class, ['albumID' => $this->album1->id, 'back' => 'something'])
 			->set('password', 'wrongPassword')
 			->call('submit')
-			->assertForbidden();
+			->assertOk()
+			->assertSee('Wrong password')
+			->assertNoRedirect();
 
 		Livewire::actingAs($this->userMayUpload2)->test(UnlockAlbum::class, ['albumID' => $this->album1->id, 'back' => 'something'])
 			->set('password', '')
@@ -118,6 +120,8 @@ class VisibilityTest extends BaseLivewireTest
 		Livewire::actingAs($this->userMayUpload2)->test(UnlockAlbum::class, ['albumID' => $this->album1->id, 'back' => 'something'])
 			->set('password', 'password')
 			->call('submit')
-			->assertForbidden();
+			->assertOk()
+			->assertSee('Wrong password')
+			->assertNoRedirect();
 	}
 }
