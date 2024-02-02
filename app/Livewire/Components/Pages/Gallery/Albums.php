@@ -34,7 +34,6 @@ class Albums extends Component implements Reloadable
 	private TopAlbumsResource $topAlbums;
 
 	#[Locked] public string $title;
-	/** @var array<int,string> */
 	#[Locked] public ?string $albumId = null;
 	public AlbumsFlags $flags;
 	public AlbumRights $rights;
