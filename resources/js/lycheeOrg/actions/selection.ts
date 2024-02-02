@@ -179,13 +179,12 @@ export default class Selection {
 			return;
 		}
 		let toAppend: string[];
-		const albumIDs = [...(Alpine.store("albumIDs") as string[])];
-		const index = albumIDs.indexOf(albumId);
-		const indexLastInserted = albumIDs.indexOf(lastInsertedAlbumId);
+		const index = (Alpine.store("albumIDs") as string[]).indexOf(albumId);
+		const indexLastInserted = (Alpine.store("albumIDs") as string[]).indexOf(lastInsertedAlbumId);
 		if (index < indexLastInserted) {
-			toAppend = albumIDs.slice(index + 1, indexLastInserted);
+			toAppend = (Alpine.store("albumIDs") as string[]).slice(index + 1, indexLastInserted);
 		} else {
-			toAppend = albumIDs.slice(indexLastInserted + 1, index);
+			toAppend = (Alpine.store("albumIDs") as string[]).slice(indexLastInserted + 1, index);
 		}
 		// Push albumId at the end.
 		toAppend.push(albumId);
