@@ -178,16 +178,14 @@ export default class Selection {
 			console.log("same elem");
 			return;
 		}
-
 		let toAppend: string[];
-		const index = (Alpine.store("albumIDs") as string[]).indexOf(albumId);
-		console.log(index);
-		const indexLastInserted = (Alpine.store("albumIDs") as string[]).indexOf(lastInsertedAlbumId);
-		console.log(indexLastInserted);
+		const albumIDs = [...(Alpine.store("albumIDs") as string[])];
+		const index = albumIDs.indexOf(albumId);
+		const indexLastInserted = albumIDs.indexOf(lastInsertedAlbumId);
 		if (index < indexLastInserted) {
-			toAppend = (Alpine.store("albumIDs") as string[]).slice(index + 1, indexLastInserted);
+			toAppend = albumIDs.slice(index + 1, indexLastInserted);
 		} else {
-			toAppend = (Alpine.store("albumIDs") as string[]).slice(indexLastInserted + 1, index);
+			toAppend = albumIDs.slice(indexLastInserted + 1, index);
 		}
 		// Push albumId at the end.
 		toAppend.push(albumId);
