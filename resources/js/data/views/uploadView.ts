@@ -11,6 +11,8 @@ export const uploadView = (Alpine: Alpine) =>
 			upload_processing_limit: parallelism_val,
 			chnkStarts: [],
 			fileList: [],
+			progress: [],
+			numChunks: [],
 			outstandingResponsesCount: 0,
 			latestFileIdx: 0,
 			isUploadRunning: false,
@@ -22,11 +24,16 @@ export const uploadView = (Alpine: Alpine) =>
 					wire.close();
 				} else {
 					console.log("Well something went wrong...");
-					wire.dispatch("reloadPage");
-					// Error
 				}
 			},
 
+			/**
+			 * Begin processing number "fileIdx".
+			 * 
+			 * @param fileIdx file index to process.
+			 * @param wire    Livewire object.
+			 * @param alpine  Alpine object.
+			 */
 			process(fileIdx: number, wire: Livewire, alpine: UploadView): void {
 				alpine.outstandingResponsesCount++;
 				this.livewireUploadChunk(fileIdx, wire, alpine);
@@ -62,12 +69,19 @@ export const uploadView = (Alpine: Alpine) =>
 				// End of chunk is start + chunkSize OR file size, whichever is greater
 				const chunkEnd = Math.min(alpine.chnkStarts[fileIdx] + alpine.chunkSize, alpine.fileList[fileIdx].size);
 				const chunk = alpine.fileList[fileIdx].slice(alpine.chnkStarts[fileIdx], chunkEnd);
+				alpine.numChunks[fileIdx] = Math.ceil(alpine.fileList[fileIdx].size / alpine.chunkSize);
 
 				wire.upload(
 					"uploads." + fileIdx + ".fileChunk",
 					chunk,
 					(success) => {
-						alpine.complete(wire, alpine);
+						alpine.chnkStarts[fileIdx] = Math.min(alpine.chnkStarts[fileIdx] + alpine.chunkSize, alpine.fileList[fileIdx].size);
+
+						if (alpine.chnkStarts[fileIdx] < alpine.fileList[fileIdx].size) {
+							setTimeout(alpine.livewireUploadChunk, 5, fileIdx, wire, alpine);
+						} else {
+							alpine.complete(wire, alpine);
+						}
 					},
 					() => {
 						alpine.hasErrorOccurred = true;
@@ -75,16 +89,8 @@ export const uploadView = (Alpine: Alpine) =>
 						wire.set("uploads." + fileIdx + ".stage", "error");
 					},
 					(event: UploadEvent) => {
-						console.log(event);
-						if (event.detail.progress == 100) {
-							alpine.chnkStarts[fileIdx] = Math.min(alpine.chnkStarts[fileIdx] + alpine.chunkSize, alpine.fileList[fileIdx].size);
-
-							if (alpine.chnkStarts[fileIdx] < alpine.fileList[fileIdx].size) {
-								let _time = Math.floor(Math.random() * 2000 + 1);
-								console.log("sleeping ", _time, "before next chunk upload");
-								setTimeout(alpine.livewireUploadChunk, _time, fileIdx, wire, alpine);
-							}
-						}
+						const numUploaded = alpine.chnkStarts[fileIdx] / alpine.chunkSize;
+						alpine.progress[fileIdx] = (numUploaded / alpine.numChunks[fileIdx] * 100) + (event.detail.progress / alpine.numChunks[fileIdx]);
 					},
 				);
 			},

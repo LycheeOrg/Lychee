@@ -112,8 +112,10 @@ export type UploadView = AlpineComponent<{
 	chunkSize: number;
 	hasErrorOccurred: boolean;
 	upload_processing_limit: number;
-	chnkStarts: any;
+	chnkStarts: number[];
 	fileList: any;
+	progress: number[];
+	numChunks: number[];
 
 	/**
 	 * The number of requests which are "on the fly", i.e. for which a
