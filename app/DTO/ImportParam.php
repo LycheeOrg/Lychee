@@ -1,11 +1,14 @@
 <?php
 
-namespace App\Actions\Photo\Strategies;
+namespace App\DTO;
 
 use App\Metadata\Extractor;
 use App\Models\Album;
 
-class AddStrategyParameters
+/**
+ * Define import mode.
+ */
+final class ImportParam
 {
 	public ImportMode $importMode;
 

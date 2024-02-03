@@ -2,8 +2,8 @@
 
 namespace App\Actions\Photo\Pipes\PhotoPartner;
 
-use App\Actions\Photo\Strategies\ImportMode;
 use App\Contracts\PhotoCreatePipe;
+use App\DTO\ImportMode;
 use App\DTO\PhotoCreateDTO;
 
 // Now we re-use the same strategy as if the freshly created photo

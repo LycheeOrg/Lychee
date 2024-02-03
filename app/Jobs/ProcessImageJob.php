@@ -3,8 +3,8 @@
 namespace App\Jobs;
 
 use App\Actions\Photo\Create;
-use App\Actions\Photo\Strategies\ImportMode;
 use App\Contracts\Models\AbstractAlbum;
+use App\DTO\ImportMode;
 use App\Enum\JobStatus;
 use App\Factories\AlbumFactory;
 use App\Image\Files\ProcessableJobFile;

@@ -2,8 +2,6 @@
 
 namespace App\DTO;
 
-use App\Actions\Photo\Strategies\AddStrategyParameters;
-use App\Actions\Photo\Strategies\ImportMode;
 use App\Contracts\Image\ImageHandlerInterface;
 use App\Contracts\Image\StreamStats;
 use App\Contracts\Models\AbstractAlbum;
@@ -66,7 +64,7 @@ class PhotoCreateDTO
 	public BaseMediaFile $videoFile;
 
 	public function __construct(
-		AddStrategyParameters $parameters,
+		ImportParam $parameters,
 		NativeLocalFile $sourceFile,
 		AbstractAlbum|null $album,
 		int|null $fileLastModifiedTime = null
