@@ -6,7 +6,7 @@
         @entangle('sessionFlags.are_photo_details_open'),
         @js($rights),
         @js(null),
-        @entangle('albumIDs')
+        @js($this->albumIDs),
         )"
     @keydown.window="handleKeydown(event)"
     x-on:login-close="loginModalOpen = false">
