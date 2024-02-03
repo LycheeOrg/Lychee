@@ -29,7 +29,7 @@ export const uploadView = (Alpine: Alpine) =>
 
 			/**
 			 * Begin processing number "fileIdx".
-			 * 
+			 *
 			 * @param fileIdx file index to process.
 			 * @param wire    Livewire object.
 			 * @param alpine  Alpine object.
@@ -90,7 +90,8 @@ export const uploadView = (Alpine: Alpine) =>
 					},
 					(event: UploadEvent) => {
 						const numUploaded = alpine.chnkStarts[fileIdx] / alpine.chunkSize;
-						alpine.progress[fileIdx] = (numUploaded / alpine.numChunks[fileIdx] * 100) + (event.detail.progress / alpine.numChunks[fileIdx]);
+						alpine.progress[fileIdx] =
+							(numUploaded / alpine.numChunks[fileIdx]) * 100 + event.detail.progress / alpine.numChunks[fileIdx];
 					},
 				);
 			},
