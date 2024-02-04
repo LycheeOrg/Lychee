@@ -12,7 +12,7 @@ use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 /**
- * This modules takes care of the optimization of the Datbase.
+ * This modules takes care of the optimization of the Database.
  */
 class Optimize extends Component
 {

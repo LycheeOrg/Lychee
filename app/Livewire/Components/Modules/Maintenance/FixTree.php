@@ -11,8 +11,8 @@ use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 /**
- * When an upload/extract job fail, they tend to leave files behind.
- * This provides the ability to cleans this up.
+ * Maybe the album tree is broken.
+ * We fix it here.
  */
 class FixTree extends Component
 {
