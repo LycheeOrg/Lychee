@@ -22,8 +22,8 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use League\Flysystem\AwsS3V3\AwsS3V3Adapter;
 use Illuminate\Support\Facades\Auth;
+use League\Flysystem\AwsS3V3\AwsS3V3Adapter;
 use League\Flysystem\Local\LocalFilesystemAdapter;
 
 /**
@@ -190,10 +190,12 @@ class SizeVariant extends Model
 		$storageAdapter = $imageDisk->getAdapter();
 		if ($storageAdapter instanceof AwsS3V3Adapter) {
 			// Return the public URL in case the S3 bucket is set to public, otherwise generate a temporary URL
-			$visibility = $imageDisk->getConfig()['visibility'] ?? 'private';
+			$visibility = config('filesystems.disks.s3.visibility', 'private');
+			// $visibility = $imageDisk->getConfig()['visibility'] ?? 'private';
 			if ($visibility === 'public') {
 				return $imageDisk->url($this->short_path);
 			}
+
 			return $imageDisk->temporaryUrl($this->short_path, now()->addSeconds($maxLifetime));
 		}
 
