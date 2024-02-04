@@ -27,7 +27,6 @@ use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 use Illuminate\Contracts\Container\BindingResolutionException;
-use Illuminate\Support\Facades\Storage;
 
 class AddStandaloneStrategy extends AbstractAddStrategy
 {
@@ -146,7 +145,7 @@ class AddStandaloneStrategy extends AbstractAddStrategy
 			// we must move the preliminary extracted video file next to the
 			// final target file
 			if ($tmpVideoFile !== null) {
-				//@TODO S3 How should live videos be handled?
+				// @TODO S3 How should live videos be handled?
 				$videoTargetPath =
 					pathinfo($targetFile->getRelativePath(), PATHINFO_DIRNAME) .
 					'/' .
