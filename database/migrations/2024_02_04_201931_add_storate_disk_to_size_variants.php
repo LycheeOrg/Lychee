@@ -16,13 +16,17 @@ return new class() extends Migration {
 	public function up(): void
 	{
 		// ! remove me in final PR
-		Schema::table(self::TABLE_SV, function (Blueprint $table) {
-			$table->dropColumn(self::COLUMN_REMOVED);
-		});
+		if (Schema::hasColumn(self::TABLE_SV, self::COLUMN_REMOVED)) {
+			Schema::table(self::TABLE_SV, function (Blueprint $table) {
+				$table->dropColumn(self::COLUMN_REMOVED);
+			});
+		}
 		// ! remove me in final PR
-		Schema::table(self::TABLE_PHOTO, function (Blueprint $table) {
-			$table->dropColumn(self::COLUMN_REMOVED);
-		});
+		if (Schema::hasColumn(self::TABLE_PHOTO, self::COLUMN_REMOVED)) {
+			Schema::table(self::TABLE_PHOTO, function (Blueprint $table) {
+				$table->dropColumn(self::COLUMN_REMOVED);
+			});
+		}
 
 		Schema::table(self::TABLE_SV, function (Blueprint $table) {
 			$table->string(self::COLUMN)->default(self::DEFAULT);

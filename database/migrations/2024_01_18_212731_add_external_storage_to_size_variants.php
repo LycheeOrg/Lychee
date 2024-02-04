@@ -18,11 +18,15 @@ return new class() extends Migration {
 
 	public function down(): void
 	{
-		Schema::table('size_variants', function (Blueprint $table) {
-			$table->dropColumn('external_storage');
-		});
-		Schema::table('photos', function (Blueprint $table) {
-			$table->dropColumn('external_storage');
-		});
+		if (Schema::hasColumn('size_variants', 'external_storage')) {
+			Schema::table('size_variants', function (Blueprint $table) {
+				$table->dropColumn('external_storage');
+			});
+		}
+		if (Schema::hasColumn('photos', 'external_storage')) {
+			Schema::table('photos', function (Blueprint $table) {
+				$table->dropColumn('external_storage');
+			});
+		}
 	}
 };
