@@ -6,6 +6,7 @@ use App\Actions\Diagnostics\Pipes\Checks\AdminUserExistsCheck;
 use App\Actions\Diagnostics\Pipes\Checks\AppUrlMatchCheck;
 use App\Actions\Diagnostics\Pipes\Checks\BasicPermissionCheck;
 use App\Actions\Diagnostics\Pipes\Checks\ConfigSanityCheck;
+use App\Actions\Diagnostics\Pipes\Checks\CountSizeVariantsCheck;
 use App\Actions\Diagnostics\Pipes\Checks\DBIntegrityCheck;
 use App\Actions\Diagnostics\Pipes\Checks\DBSupportCheck;
 use App\Actions\Diagnostics\Pipes\Checks\ForeignKeyListInfo;
@@ -42,6 +43,7 @@ class Errors
 		ForeignKeyListInfo::class,
 		DBIntegrityCheck::class,
 		SmallMediumExistsCheck::class,
+		CountSizeVariantsCheck::class,
 	];
 
 	/**

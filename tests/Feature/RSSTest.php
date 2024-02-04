@@ -88,15 +88,9 @@ class RSSTest extends AbstractTestCase
 				AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE)
 			)->offsetGet('id');
 
-			// set it to public
-			$this->photos_tests->set_public($photoID, true);
-
 			// try to get the RSS feed.
 			$response = $this->get('/feed');
 			$this->assertOk($response);
-
-			// set picture to private
-			$this->photos_tests->set_public($photoID, false);
 
 			// move picture to album
 			$this->photos_tests->set_album($albumID, [$photoID]);

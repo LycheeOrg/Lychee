@@ -350,7 +350,6 @@ return [
 	'SORT_PHOTO_SELECT_2' => 'Data záznamu',
 	'SORT_PHOTO_SELECT_3' => 'Názvu',
 	'SORT_PHOTO_SELECT_4' => 'Popisu',
-	'SORT_PHOTO_SELECT_5' => 'Stavu zveřejnění',
 	'SORT_PHOTO_SELECT_6' => 'Oblíbenosti',
 	'SORT_PHOTO_SELECT_7' => 'Formátu',
 
@@ -359,7 +358,7 @@ return [
 	'SORT_CHANGE' => 'Změnit řazení',
 
 	'DROPBOX_TITLE' => 'Dropbox - nastavení',
-	'DROPBOX_TEXT' => "Pro uspěšný import fotografií z Dropboxu je řeba platný API klíč, který lze získat na stránkách <a href='https://www.dropbox.com/developers/apps/create'>Dropboxu</a>. Vygenerovaný osobní klíč zadejte níže:",
+	'DROPBOX_TEXT' => "Pro uspěšný import fotografií z Dropboxu je řeba platný API klíč, který lze získat na stránkách <a href='https://www.dropbox.com/developers/saver'>Dropboxu</a>. Vygenerovaný osobní klíč zadejte níže:",
 
 	'LANG_TEXT' => 'Změnit jazyk Lychee na:',
 	'LANG_TITLE' => 'Změnit jazyk',

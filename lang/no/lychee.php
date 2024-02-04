@@ -350,7 +350,6 @@ return [
 	'SORT_PHOTO_SELECT_2' => 'Fangsdato',
 	'SORT_PHOTO_SELECT_3' => 'Tittel',
 	'SORT_PHOTO_SELECT_4' => 'Beskrivelse',
-	'SORT_PHOTO_SELECT_5' => 'Offentlig',
 	'SORT_PHOTO_SELECT_6' => 'Stjernemerk',
 	'SORT_PHOTO_SELECT_7' => 'Bildeformat',
 
@@ -359,7 +358,7 @@ return [
 	'SORT_CHANGE' => 'Lagre Rekkefølge',
 
 	'DROPBOX_TITLE' => 'Lagre nøkkel for Dropbox',
-	'DROPBOX_TEXT' => "For å importere bilder fra Dropbox trengs en gyldig applikasjonsnøkkel fra <a href='https://www.dropbox.com/developers/apps/create'>deres nettside</a>. Lag en personlig nøkkel og fyll inn denne under:",
+	'DROPBOX_TEXT' => "For å importere bilder fra Dropbox trengs en gyldig applikasjonsnøkkel fra <a href='https://www.dropbox.com/developers/saver'>deres nettside</a>. Lag en personlig nøkkel og fyll inn denne under:",
 
 	'LANG_TEXT' => 'Endre språk for Lychee til:',
 	'LANG_TITLE' => 'Lagre innstilling for språk',

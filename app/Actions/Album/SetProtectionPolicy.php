@@ -62,8 +62,5 @@ class SetProtectionPolicy extends Action
 		}
 		$active_permissions->base_album_id = $album->id;
 		$active_permissions->save();
-
-		// Reset permissions for photos
-		$album->photos()->update(['photos.is_public' => false]);
 	}
 }

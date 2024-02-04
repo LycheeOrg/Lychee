@@ -3,7 +3,10 @@
 		<p class="mb-5 text-text-main-200 text-sm/4">{{ __('lychee.UPLOAD_IMPORT_INSTR') }}</p>
 		<form>
 			<div class="my-3 first:mt-0 last:mb-0">
-				<x-forms.inputs.text class="w-full" x-intersect="$el.focus()" autocapitalize="off" wire:model="form.url" placeholder="https://" :has_error="$errors->has('form.urls.*')" />
+				<x-forms.textarea
+					class="w-full" autocapitalize="off" wire:model="form.urlArea"
+					placeholder="https://&#10;https://&#10;..."
+					:has_error="$errors->has('form.urls.*')" />
 			</div>
 		</form>
 	</div>

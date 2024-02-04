@@ -11,7 +11,6 @@ import PhotoLayout from "@/lycheeOrg/layouts/PhotoLayout";
 export const albumView = (Alpine: Alpine) =>
 	Alpine.data(
 		"albumView",
-		// @ts-expect-error
 		(
 			base_url: string,
 			nsfwAlbumsVisible: boolean,
@@ -87,14 +86,17 @@ export const albumView = (Alpine: Alpine) =>
 			},
 
 			handleContextPhoto(event: MouseEvent) {
+				// @ts-expect-error
 				this.actions.handleContextPhoto(event, this);
 			},
 
 			handleClickPhoto(event: MouseEvent) {
+				// @ts-expect-error
 				this.actions.handleClickPhoto(event, this);
 			},
 
 			handleContextAlbum(event: MouseEvent) {
+				// @ts-expect-error
 				this.actions.handleContextAlbum(event, this);
 			},
 
@@ -121,6 +123,7 @@ export const albumView = (Alpine: Alpine) =>
 				// [l] login
 				// [?] keybinds
 				// [esc] back
+				// @ts-expect-error
 				if (this.keybinds.handleGlobalKeydown(event, this)) {
 					return;
 				}
@@ -135,6 +138,7 @@ export const albumView = (Alpine: Alpine) =>
 				// [s] Star
 				// [ctrl + ->] rotate CW
 				// [ctrl + <-] rotate CCW
+				// @ts-expect-error
 				if (this.photo_id !== null && this.keybinds.handlePhotoKeyDown(event, this)) {
 					return;
 				}
@@ -152,6 +156,7 @@ export const albumView = (Alpine: Alpine) =>
 				// [i] info
 				// [m] move (without select)
 				// [r] rename (without select)
+				// @ts-expect-error
 				this.keybinds.handleAlbumKeydown(event, this);
 			},
 

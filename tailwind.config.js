@@ -1,5 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
   safelist: [
     'opacity-0',
     'group-hover:opacity-100',
@@ -61,6 +61,9 @@ module.exports = {
           800: 'var(--bg-800)',
           900: 'var(--bg-900)',
           950: 'var(--bg-950)',
+        },
+        ready: {
+          400: 'var(--ready)'
         },
         danger: {
           600: 'var(--danger)',

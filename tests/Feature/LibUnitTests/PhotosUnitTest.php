@@ -235,32 +235,6 @@ class PhotosUnitTest
 	}
 
 	/**
-	 * Set public.
-	 *
-	 * @param string      $id
-	 * @param bool        $isPublic
-	 * @param int         $expectedStatusCode
-	 * @param string|null $assertSee
-	 */
-	public function set_public(
-		string $id,
-		bool $isPublic,
-		int $expectedStatusCode = 204,
-		?string $assertSee = null
-	): void {
-		$response = $this->testCase->postJson(
-			'/api/Photo::setPublic', [
-				'photoID' => $id,
-				'is_public' => $isPublic,
-			]
-		);
-		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee !== null) {
-			$response->assertSee($assertSee, false);
-		}
-	}
-
-	/**
 	 * Set license.
 	 *
 	 * @param string      $id

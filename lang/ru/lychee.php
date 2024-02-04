@@ -350,7 +350,6 @@ return [
 	'SORT_PHOTO_SELECT_2' => 'съёмки',
 	'SORT_PHOTO_SELECT_3' => 'заголовка',
 	'SORT_PHOTO_SELECT_4' => 'описания',
-	'SORT_PHOTO_SELECT_5' => 'доступности',
 	'SORT_PHOTO_SELECT_6' => 'отметки',
 	'SORT_PHOTO_SELECT_7' => 'формата',
 
@@ -359,7 +358,7 @@ return [
 	'SORT_CHANGE' => 'Сменить сортировку',
 
 	'DROPBOX_TITLE' => 'Задать ключ Dropbox',
-	'DROPBOX_TEXT' => "Для загрузки фото из Dropbox Вам нужен ключ, который можно получить на <a href='https://www.dropbox.com/developers/apps/create'>специальной странице</a>. Создайте личный ключ и вставьте здесь:",
+	'DROPBOX_TEXT' => "Для загрузки фото из Dropbox Вам нужен ключ, который можно получить на <a href='https://www.dropbox.com/developers/saver'>специальной странице</a>. Создайте личный ключ и вставьте здесь:",
 
 	'LANG_TEXT' => 'Change Lychee language to:',
 	'LANG_TITLE' => 'Change Language',

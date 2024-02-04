@@ -40,7 +40,6 @@ use function Safe\preg_match;
  * @property string                       $title
  * @property string|null                  $description
  * @property string[]                     $tags
- * @property bool                         $is_public
  * @property int                          $owner_id
  * @property string|null                  $type
  * @property string|null                  $iso
@@ -96,7 +95,6 @@ use function Safe\preg_match;
  * @method static PhotoBuilder|Photo whereId($value)
  * @method static PhotoBuilder|Photo whereImgDirection($value)
  * @method static PhotoBuilder|Photo whereIn(string $column, string $values, string $boolean = 'and', string $not = false)
- * @method static PhotoBuilder|Photo whereIsPublic($value)
  * @method static PhotoBuilder|Photo whereIsStarred($value)
  * @method static PhotoBuilder|Photo whereIso($value)
  * @method static PhotoBuilder|Photo whereLatitude($value)
@@ -154,7 +152,6 @@ class Photo extends Model
 		'live_photo_url' => MustNotSetCast::class . ':live_photo_short_path',
 		'owner_id' => 'integer',
 		'is_starred' => 'boolean',
-		'is_public' => 'boolean',
 		'external_storage' => ExternalStorageProvider::class,
 		'tags' => ArrayCast::class,
 		'latitude' => 'float',

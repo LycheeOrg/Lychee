@@ -3,8 +3,8 @@ import Selection from "@/lycheeOrg/actions/selection";
 import { Photo } from "@/lycheeOrg/backend";
 
 export type PhotoListingPanel = AlpineComponent<{
-	select: Selection;
 	photos: Photo[];
+	select: Selection;
 }>;
 
 /**
@@ -14,7 +14,6 @@ export type PhotoListingPanel = AlpineComponent<{
 export const photoListingPanel = (Alpine: Alpine) =>
 	Alpine.data(
 		"photoListingPanel",
-		// @ts-expect-error
 		(photos: Photo[], select: Selection): PhotoListingPanel => ({
 			photos: photos,
 			select: select,

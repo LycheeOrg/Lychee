@@ -56,7 +56,6 @@ class PhotoQueryPolicy
 		// "OR"-clause.
 		$visibilitySubQuery = function (FixedQueryBuilder $query2) use ($userId) {
 			$this->albumQueryPolicy->appendAccessibilityConditions($query2->getQuery());
-			$query2->orWhere('photos.is_public', '=', true);
 			if ($userId !== null) {
 				$query2->orWhere('photos.owner_id', '=', $userId);
 			}

@@ -58,6 +58,8 @@ return [
 
 	'livewire' => (bool) env('LIVEWIRE_ENABLED', true),
 
+	'photo_pipes' => (bool) env('PHOTO_PIPES', false),
+
 	/*
 	|--------------------------------------------------------------------------
 	| Application Debug Mode
@@ -91,6 +93,8 @@ return [
 	'dir_url' => env('APP_DIR', '') === '' ? '' : ('/' . trim(env('APP_DIR'), '/')),
 
 	'asset_url' => null,
+
+	'legacy_v4_redirect' => env('LEGACY_V4_REDIRECT', false),
 
 	/*
 	|--------------------------------------------------------------------------

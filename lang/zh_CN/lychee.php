@@ -350,7 +350,6 @@ return [
 	'SORT_PHOTO_SELECT_2' => '创建时间',
 	'SORT_PHOTO_SELECT_3' => '标题',
 	'SORT_PHOTO_SELECT_4' => '描述',
-	'SORT_PHOTO_SELECT_5' => '公开',
 	'SORT_PHOTO_SELECT_6' => '喜欢',
 	'SORT_PHOTO_SELECT_7' => '照片格式',
 
@@ -359,7 +358,7 @@ return [
 	'SORT_CHANGE' => '修改排序',
 
 	'DROPBOX_TITLE' => '设置 Dropbox 密钥',
-	'DROPBOX_TEXT' => "要从 Dropbox 导入照片，您需要一个有效的插件应用密钥，请转到 <a href='https://www.dropbox.com/developers/apps/create'>他们的网站</a>。为你自己生成个人密钥并输入到下面：",
+	'DROPBOX_TEXT' => "要从 Dropbox 导入照片，您需要一个有效的插件应用密钥，请转到 <a href='https://www.dropbox.com/developers/saver'>他们的网站</a>。为你自己生成个人密钥并输入到下面：",
 
 	'LANG_TEXT' => '将 Lychee 的语言修改为：',
 	'LANG_TITLE' => '修改语言',

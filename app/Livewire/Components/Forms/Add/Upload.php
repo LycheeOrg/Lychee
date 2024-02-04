@@ -5,6 +5,7 @@ namespace App\Livewire\Components\Forms\Add;
 use App\Contracts\Livewire\Params;
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\Livewire\FileStatus;
+use App\Enum\SmartAlbumType;
 use App\Exceptions\PhotoSkippedException;
 use App\Facades\Helpers;
 use App\Image\Files\NativeLocalFile;
@@ -31,6 +32,7 @@ class Upload extends Component
 {
 	use WithFileUploads;
 	use InteractWithModal;
+	public const DISK_NAME = 'livewire-upload';
 
 	/**
 	 * @var string|null albumId of where to upload the picture
@@ -53,6 +55,12 @@ class Upload extends Component
 	public function mount(array $params = ['parentID' => null]): void
 	{
 		$this->albumId = $params[Params::PARENT_ID] ?? null;
+
+		// remove smart albums => if we are in one: upload to unsorted (i.e. albumId = null)
+		if (SmartAlbumType::tryFrom($this->albumId) !== null) {
+			$this->albumId = null;
+		}
+
 		$album = $this->albumId === null ? null : Album::findOrFail($this->albumId);
 		Gate::authorize(AlbumPolicy::CAN_UPLOAD, [AbstractAlbum::class, $album]);
 
@@ -92,7 +100,7 @@ class Upload extends Component
 			$fileDetails = $this->uploads[$index];
 			/** @var TemporaryUploadedFile $chunkFile */
 			$chunkFile = $fileDetails['fileChunk'];
-			$final = new NativeLocalFile(Storage::path('/livewire-tmp/' . $fileDetails['uuidName']));
+			$final = new NativeLocalFile(Storage::disk(self::DISK_NAME)->path($fileDetails['uuidName']));
 			$final->append($chunkFile->readStream());
 			$chunkFile->delete();
 
@@ -111,7 +119,7 @@ class Upload extends Component
 	{
 		foreach ($this->uploads as $idx => $fileData) {
 			if ($fileData['stage'] === FileStatus::READY->value) {
-				$uploadedFile = new NativeLocalFile(Storage::path('/livewire-tmp/' . $fileData['uuidName']));
+				$uploadedFile = new NativeLocalFile(Storage::disk(self::DISK_NAME)->path($fileData['uuidName']));
 				$processableFile = new ProcessableJobFile(
 					$fileData['extension'],
 					$fileData['fileName']

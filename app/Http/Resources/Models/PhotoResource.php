@@ -70,7 +70,6 @@ class PhotoResource extends JsonResource
 			'description' => $this->resource->description,
 			'focal' => $this->resource->focal,
 			'img_direction' => null,
-			'is_public' => $this->resource->is_public, // TO BE REMOVED LATER
 			'is_starred' => $this->resource->is_starred,
 			'iso' => $this->resource->iso,
 			'latitude' => $this->resource->latitude,

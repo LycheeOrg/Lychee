@@ -4,9 +4,9 @@ namespace App\Actions\Import;
 
 use App\Actions\Album\Create as AlbumCreate;
 use App\Actions\Photo\Create as PhotoCreate;
-use App\Actions\Photo\Strategies\ImportMode;
 use App\DTO\BaseImportReport;
 use App\DTO\ImportEventReport;
+use App\DTO\ImportMode;
 use App\DTO\ImportProgressReport;
 use App\Exceptions\FileOperationException;
 use App\Exceptions\Handler;
@@ -331,7 +331,7 @@ class Exec
 			foreach ($dirs as $dir) {
 				$this->assertImportNotCancelled();
 				/** @var Album|null */
-				$album = $this->importMode->shallSkipDuplicates() ?
+				$album = $this->importMode->shallSkipDuplicates ?
 					Album::query()
 						->select(['albums.*'])
 						->join('base_albums', 'base_albums.id', '=', 'albums.id')

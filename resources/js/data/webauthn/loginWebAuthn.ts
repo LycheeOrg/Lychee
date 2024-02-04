@@ -20,7 +20,6 @@ type LoginWebAuthn = AlpineComponent<{
 export const loginWebAuthn = (Alpine: Alpine) =>
 	Alpine.data(
 		"loginWebAuthn",
-		// @ts-expect-error
 		(success_msg_val: string = "U2F_AUTHENTIFICATION_SUCCESS", error_msg_val: string = "ERROR_TEXT"): LoginWebAuthn => ({
 			webAuthnOpen: false,
 			success_msg: success_msg_val,

@@ -27,7 +27,6 @@ export type PhotoView = AlpineComponent<{
 export const photoView = (Alpine: Alpine) =>
 	Alpine.data(
 		"photoView",
-		// @ts-expect-error
 		(
 			// photo_id: string,
 			photoFlags: PhotoFlagsView,
@@ -42,7 +41,6 @@ export const photoView = (Alpine: Alpine) =>
 			mode: 0,
 
 			init() {
-				// @ts-expect-errror
 				console.log("init photoView!");
 
 				const photo = Alpine.store("photo") as Photo | undefined;

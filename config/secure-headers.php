@@ -514,6 +514,24 @@ return [
 					'CL4mGy9ZhHM+PkLDZsWVuM25kEFBv3FXlmWe/O9Unmc=',
 
 					/*
+	const hashMatch = document.location.hash.replace("#", "").split("/");
+	const albumID = hashMatch[0] ?? '';
+	const photoID = hashMatch[1] ?? '';
+	const elem = document.getElementById('redirectData');
+	const gallery = elem.dataset.gallery;
+	const base = elem.dataset.redirect;
+
+	if (photoID !== '') {
+		window.location = gallery + '/' + albumID + '/' + photoID;
+	} else if (albumID !== '') {
+		window.location = gallery + '/' + albumID;
+	} else {
+		window.location = base;
+	}
+ */
+					'okzzdI+OgeNYCr3oJXDZ/rPI5WwGyiU5V/RwOQrv5zE=',
+
+					/*
 	document.addEventListener("DOMContentLoaded", function(event) {
 		document.querySelector("form").addEventListener("submit", function(e){
 			document.querySelector("form").hidden = true;

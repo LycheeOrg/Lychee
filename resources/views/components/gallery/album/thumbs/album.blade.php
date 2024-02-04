@@ -57,9 +57,6 @@
 			@case(App\SmartAlbums\StarredAlbum::ID)
 			<x-gallery.badge class='badge--star bg-yellow-500' icon='star' />
 			@break
-			@case(App\SmartAlbums\PublicAlbum::ID)
-			<x-gallery.badge class='badge--public bg-green-600' icon='eye' />
-			@break
 			@case(App\SmartAlbums\UnsortedAlbum::ID)
 			<x-gallery.badge class='badge--unsorted bg-red-700' icon='list' />
 			@break

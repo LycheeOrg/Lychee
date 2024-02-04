@@ -16,7 +16,6 @@ use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Exceptions\Internal\NotImplementedException;
 use App\Models\Configs;
 use App\Models\Photo;
-use App\SmartAlbums\PublicAlbum;
 use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\StarredAlbum;
 use App\SmartAlbums\UnsortedAlbum;
@@ -80,7 +79,6 @@ class PhotosOperationsTest extends BasePhotoTest
 		$this->clearCachedSmartAlbums();
 		$this->albums_tests->get(UnsortedAlbum::ID, 200, $id);
 		$this->albums_tests->get(RecentAlbum::ID, 200, $id);
-		$this->albums_tests->get(PublicAlbum::ID, 200, null, $id);
 		$this->albums_tests->get(StarredAlbum::ID, 200, null, $id);
 
 		$this->photos_tests->set_title($id, "Night in Ploumanac'h");
@@ -88,7 +86,6 @@ class PhotosOperationsTest extends BasePhotoTest
 		$this->photos_tests->set_star([$id], true);
 		$this->photos_tests->set_tag([$id], ['night']);
 		$this->photos_tests->set_tag([$id], ['trees'], false);
-		$this->photos_tests->set_public($id, true);
 		$this->photos_tests->set_license($id, 'WTFPL', 422, 'The selected license is invalid.');
 		$this->photos_tests->set_license($id, 'CC0');
 		$this->photos_tests->set_license($id, 'CC-BY-1.0');
@@ -143,7 +140,6 @@ class PhotosOperationsTest extends BasePhotoTest
 
 		$this->clearCachedSmartAlbums();
 		$this->albums_tests->get(StarredAlbum::ID, 200, $id);
-		$this->albums_tests->get(PublicAlbum::ID, 200, $id);
 		$response = $this->photos_tests->get($id);
 
 		$response->assertJson([
@@ -151,7 +147,6 @@ class PhotosOperationsTest extends BasePhotoTest
 			'id' => $id,
 			'created_at' => $updated_taken_at->setTimezone('UTC')->format('Y-m-d\TH:i:sP'),
 			'license' => 'reserved',
-			'is_public' => true,
 			'is_starred' => true,
 			'tags' => ['night', 'trees'],
 		]);
@@ -193,7 +188,6 @@ class PhotosOperationsTest extends BasePhotoTest
 				'license' => 'reserved',
 				'make' => 'Canon',
 				'model' => 'Canon EOS R',
-				'is_public' => true,
 				'shutter' => '30 s',
 				'is_starred' => true,
 				'tags' => [],
@@ -294,8 +288,6 @@ class PhotosOperationsTest extends BasePhotoTest
 		$this->photos_tests->get('abcdefghijklmnopxyrstuvx', 404);
 		$this->photos_tests->set_description('-1', 'test', 422);
 		$this->photos_tests->set_description('abcdefghijklmnopxyrstuvx', 'test', 404);
-		$this->photos_tests->set_public('-1', true, 422);
-		$this->photos_tests->set_public('abcdefghijklmnopxyrstuvx', true, 404);
 		$this->photos_tests->set_album('-1', ['-1'], 422);
 		$this->photos_tests->set_album('abcdefghijklmnopxyrstuvx', ['-1'], 422);
 		$this->photos_tests->set_album('-1', ['abcdefghijklmnopxyrstuvx'], 422);
@@ -385,7 +377,6 @@ class PhotosOperationsTest extends BasePhotoTest
 			$responseForRoot->assertJsonMissing([
 				'unsorted' => null,
 				'starred' => null,
-				'public' => null,
 			]);
 			foreach ([$albumID1, $photoID11, $photoID12, $photoID121, $photoID13] as $id) {
 				$responseForRoot->assertJsonMissing(['id' => $id]);

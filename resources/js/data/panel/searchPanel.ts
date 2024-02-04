@@ -13,7 +13,6 @@ export type SearchPanel = AlpineComponent<{
 export const searchPanel = (Alpine: Alpine) =>
 	Alpine.data(
 		"searchPanel",
-		// @ts-expect-error
 		(searchQuery: string, minLength: number, select: Selection): SearchPanel => ({
 			searchQuery: searchQuery,
 			hideMessage: false,

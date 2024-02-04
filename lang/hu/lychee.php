@@ -348,7 +348,6 @@ return [
 	'SORT_PHOTO_SELECT_2' => 'Felvétel dátuma',
 	'SORT_PHOTO_SELECT_3' => 'Cím',
 	'SORT_PHOTO_SELECT_4' => 'Leírás',
-	'SORT_PHOTO_SELECT_5' => 'Nyilvános',
 	'SORT_PHOTO_SELECT_6' => 'Csillag',
 	'SORT_PHOTO_SELECT_7' => 'Fénykép formátuma',
 
@@ -357,7 +356,7 @@ return [
 	'SORT_CHANGE' => 'Rendezés megváltoztatása',
 
 	'DROPBOX_TITLE' => 'Dropbox Kulcs Beállítása',
-	'DROPBOX_TEXT' => "Annak érdekében, hogy képeket importáljon a Dropbox-ról, érvényes 'drop-ins app' kulcsra van szüksége a <a href='https://www.dropbox.com/developers/apps/create'>weboldalukon</a>. Generáljon magának egy személyes kulcsot és írja be az alábbiakban:",
+	'DROPBOX_TEXT' => "Annak érdekében, hogy képeket importáljon a Dropbox-ról, érvényes 'drop-ins app' kulcsra van szüksége a <a href='https://www.dropbox.com/developers/saver'>weboldalukon</a>. Generáljon magának egy személyes kulcsot és írja be az alábbiakban:",
 
 	'LANG_TEXT' => 'Változtassa meg a Lychee nyelvét:',
 	'LANG_TITLE' => 'Nyelv megváltoztatása',

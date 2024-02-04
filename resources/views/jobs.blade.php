@@ -7,7 +7,7 @@
 <body>
 <pre>
 @forelse($jobs as $job)
-    {{ $job->created_at }} -- {{ str_pad($job->status->name(), 7) }} -- {{ $job->owner->name }} -- {{ $job->job }} -- {{ $job->title ?? __('lychee.UNSORTED') }}
+    {{ $job->created_at }} -- {{ str_pad($job->status->name(), 7) }} -- {{ $job->owner->name }} -- {{ $job->job }}
 @empty
 	No Jobs have been executed yet.
 @endforelse

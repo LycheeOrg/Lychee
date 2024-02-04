@@ -22,5 +22,4 @@
         <livewire:base.modal />
         <x-shortcuts />
 </body>
-
 </html>

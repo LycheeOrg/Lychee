@@ -3,7 +3,7 @@
 namespace App\Actions\Import;
 
 use App\Actions\Photo\Create;
-use App\Actions\Photo\Strategies\ImportMode;
+use App\DTO\ImportMode;
 use App\Exceptions\Handler;
 use App\Exceptions\MassImportException;
 use App\Image\Files\BaseMediaFile;
