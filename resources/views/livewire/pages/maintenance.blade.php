@@ -3,7 +3,7 @@
         <x-header.back @keydown.escape.window="$wire.back();" wire:click="back" />
         <x-header.title>{{ __('maintenance.title') }}</x-header.title>
     </x-header.bar>
-	<div class="overflow-x-clip overflow-y-auto h-[calc(100vh-56px)] pt-4">
+    <div class="overflow-x-clip overflow-y-auto h-[calc(100vh-56px)] pt-4">
         <div class="settings_view max-w-3xl text-text-main-400 text-sm mx-auto mb-9">
             <div class="w-full mt-5">
                 <p class="text-center">
@@ -18,6 +18,10 @@
                 <livewire:modules.maintenance.cleaning :path="config('filesystems.disks.livewire-upload.root')" />
                 <livewire:modules.maintenance.fix-jobs />
                 <livewire:modules.maintenance.fix-tree />
+                <livewire:modules.maintenance.gen-size-variants :type="\App\Enum\SizeVariantType::SMALL->value" />
+                <livewire:modules.maintenance.gen-size-variants :type="\App\Enum\SizeVariantType::SMALL2X->value" />
+                <livewire:modules.maintenance.gen-size-variants :type="\App\Enum\SizeVariantType::MEDIUM->value" />
+                <livewire:modules.maintenance.gen-size-variants :type="\App\Enum\SizeVariantType::MEDIUM2X->value" />
             </div>
         </div>
     </div>

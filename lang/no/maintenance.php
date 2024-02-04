@@ -19,6 +19,12 @@ return [
 		'description' => 'Mark jobs with status <span class="text-ready-400">%s</span> or <span class="text-primary-500">%s</span> as <span class="text-danger-700">%s</span>.',
 		'button' => 'Fix job history',
 	],
+	'gen-sizevariants' => [
+		'title' => 'Missing %s',
+		'description' => 'Found %d %s that could be generated.',
+		'button' => 'Generate!',
+		'success' => 'Successfully generated %d %s.',
+	],
 	'fix-tree' => [
 		'title' => 'Tree statistics',
 		'Oddness' => 'Oddness',
