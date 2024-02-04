@@ -45,19 +45,6 @@ return [
 
 	/*
 	|--------------------------------------------------------------------------
-	| Enable uploads to S3
-	|--------------------------------------------------------------------------
-	|
-	| If enabled, images will be uploaded to the S3 bucket specified below after
-	| they have been processed locally. Local files are removed after the upload.
-	| The media files will be served from S3 then.
-	|
-	*/
-
-	's3_enabled' => env('S3_UPLOAD_ENABLED', false),
-
-	/*
-	|--------------------------------------------------------------------------
 	| Default Cloud Filesystem Disk
 	|--------------------------------------------------------------------------
 	|
