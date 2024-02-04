@@ -4,9 +4,8 @@ namespace App\Models;
 
 use App\Actions\SizeVariant\Delete;
 use App\Casts\MustNotSetCast;
-use App\Contracts\Models\AbstractSizeVariantNamingStrategy;
-use App\Enum\ExternalStorageProvider;
 use App\Enum\SizeVariantType;
+use App\Enum\StorageDiskType;
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
@@ -23,6 +22,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use League\Flysystem\AwsS3V3\AwsS3V3Adapter;
 use League\Flysystem\Local\LocalFilesystemAdapter;
 
@@ -31,19 +31,19 @@ use League\Flysystem\Local\LocalFilesystemAdapter;
  *
  * Describes a size variant of a photo.
  *
- * @property int                          $id
- * @property string                       $photo_id
- * @property Photo                        $photo
- * @property SizeVariantType              $type
- * @property string                       $short_path
- * @property string                       $url
- * @property string                       $full_path
- * @property int                          $width
- * @property int                          $height
- * @property float                        $ratio
- * @property ExternalStorageProvider|null $external_storage
- * @property int                          $filesize
- * @property Collection<SymLink>          $sym_links
+ * @property int                  $id
+ * @property string               $photo_id
+ * @property Photo                $photo
+ * @property SizeVariantType      $type
+ * @property string               $short_path
+ * @property string               $url
+ * @property string               $full_path
+ * @property int                  $width
+ * @property int                  $height
+ * @property float                $ratio
+ * @property StorageDiskType|null $storage_disk
+ * @property int                  $filesize
+ * @property Collection<SymLink>  $sym_links
  *
  * @method static SizeVariantBuilder|SizeVariant addSelect($column)
  * @method static SizeVariantBuilder|SizeVariant join(string $table, string $first, string $operator = null, string $second = null, string $type = 'inner', string $where = false)
@@ -95,7 +95,7 @@ class SizeVariant extends Model
 		'height' => 'integer',
 		'filesize' => 'integer',
 		'ratio' => 'float',
-		'external_storage' => ExternalStorageProvider::class,
+		'storage_disk' => StorageDiskType::class,
 	];
 
 	/**
@@ -108,6 +108,7 @@ class SizeVariant extends Model
 		'photo_id', // see above
 		'short_path',  // serialize url instead
 		'sym_links', // don't serialize relation of symlinks
+		'',
 	];
 
 	/**
@@ -173,7 +174,7 @@ class SizeVariant extends Model
 	 */
 	public function getUrlAttribute(): string
 	{
-		$imageDisk = AbstractSizeVariantNamingStrategy::getImageDisk($this->external_storage);
+		$imageDisk = Storage::disk($this->storage_disk->value);
 
 		if (
 			(Auth::user()?->may_administrate === true && !Configs::getValueAsBool('SL_for_admin')) ||
@@ -227,13 +228,13 @@ class SizeVariant extends Model
 	 */
 	public function getFullPathAttribute(): string
 	{
-		return AbstractSizeVariantNamingStrategy::getImageDisk($this->external_storage)->path($this->short_path);
+		return Storage::disk($this->storage_disk->value)->path($this->short_path);
 	}
 
 	public function getFile(): FlysystemFile
 	{
 		return new FlysystemFile(
-			AbstractSizeVariantNamingStrategy::getImageDisk($this->external_storage),
+			Storage::disk($this->storage_disk->value),
 			$this->short_path
 		);
 	}

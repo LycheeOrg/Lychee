@@ -15,6 +15,7 @@ use App\Exceptions\ModelDBException;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection as BaseCollection;
 
 /**
  * Class SizeVariants.
@@ -102,6 +103,24 @@ class SizeVariants extends AbstractDTO
 			SizeVariantType::THUMB2X->name() => $this->thumb2x?->toArray(),
 			SizeVariantType::THUMB->name() => $this->thumb?->toArray(),
 		];
+	}
+
+	/**
+	 * Return all SizeVariants as a collection.
+	 *
+	 * @return BaseCollection<SizeVariant|null>
+	 */
+	public function toCollection(): BaseCollection
+	{
+		return collect([
+			$this->original,
+			$this->medium2x,
+			$this->medium,
+			$this->small2x,
+			$this->small,
+			$this->thumb2x,
+			$this->thumb,
+		]);
 	}
 
 	/**

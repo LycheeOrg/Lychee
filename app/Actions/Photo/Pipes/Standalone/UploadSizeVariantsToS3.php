@@ -20,7 +20,7 @@ class UploadSizeVariantsToS3 implements PhotoCreatePipe
 		if (config('filesystems.disks.s3.key') !== '') {
 			$sync = Configs::getValueAsBool('use_job_queues');
 
-			$jobs = collect($state->photo->size_variants->toArray())
+			$jobs = $state->photo->size_variants->toCollection()
 				->filter(fn ($v) => $v !== null)
 				->map(fn (SizeVariant $variant) => new UploadSizeVariantToS3Job($variant));
 

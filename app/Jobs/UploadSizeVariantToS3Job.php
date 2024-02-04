@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Enum\ExternalStorageProvider;
+use App\Enum\StorageDiskType;
 use App\Models\SizeVariant;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -27,14 +27,14 @@ class UploadSizeVariantToS3Job implements ShouldQueue
 
 	public function handle(): void
 	{
-		Storage::disk('s3')->writeStream(
+		Storage::disk(StorageDiskType::S3->value)->writeStream(
 			$this->variant->short_path,
-			Storage::disk('images')->readStream($this->variant->short_path)
+			Storage::disk(StorageDiskType::LOCAL->value)->readStream($this->variant->short_path)
 		);
 
-		Storage::disk('images')->delete($this->variant->short_path);
+		Storage::disk(StorageDiskType::LOCAL->value)->delete($this->variant->short_path);
 
-		$this->variant->external_storage = ExternalStorageProvider::S3;
+		$this->variant->storage_disk = StorageDiskType::S3;
 		$this->variant->save();
 	}
 }

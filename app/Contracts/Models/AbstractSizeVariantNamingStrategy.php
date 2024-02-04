@@ -3,12 +3,9 @@
 namespace App\Contracts\Models;
 
 use App\Contracts\Exceptions\LycheeException;
-use App\Enum\ExternalStorageProvider;
 use App\Enum\SizeVariantType;
 use App\Image\Files\FlysystemFile;
 use App\Models\Photo;
-use Illuminate\Contracts\Filesystem\Filesystem;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * Interface SizeVariantNamingStrategy.
@@ -18,24 +15,8 @@ abstract class AbstractSizeVariantNamingStrategy
 	/**
 	 * The name of the Flysystem disk where images are stored.
 	 */
-	public const IMAGE_DISK_NAME = 'images';
-	public const S3_IMAGE_DISK_NAME = 's3';
-
 	protected string $extension = '';
 	protected ?Photo $photo = null;
-
-	/**
-	 * Returns the disk on which the size variants are put.
-	 *
-	 * @return Filesystem
-	 */
-	public static function getImageDisk(?ExternalStorageProvider $externalStorageProvider = null): Filesystem
-	{
-		return match ($externalStorageProvider) {
-			ExternalStorageProvider::S3 => Storage::disk(self::S3_IMAGE_DISK_NAME),
-			default => Storage::disk(self::IMAGE_DISK_NAME)
-		};
-	}
 
 	/**
 	 * Sets the extension to be used for the size variants.

@@ -3,9 +3,9 @@
 namespace App\Actions\Photo\Pipes\VideoPartner;
 
 use App\Actions\Diagnostics\Pipes\Checks\BasicPermissionCheck;
-use App\Contracts\Models\AbstractSizeVariantNamingStrategy;
 use App\Contracts\PhotoCreatePipe;
 use App\DTO\PhotoCreateDTO;
+use App\Enum\StorageDiskType;
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\Handler;
 use App\Exceptions\Internal\LycheeAssertionError;
@@ -13,6 +13,7 @@ use App\Exceptions\MediaFileOperationException;
 use App\Image\Files\FlysystemFile;
 use App\Image\Files\NativeLocalFile;
 use App\Image\StreamStat;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Puts the video source file into the final position at video target file.
@@ -47,7 +48,7 @@ class PlaceVideo implements PhotoCreatePipe
 {
 	public function handle(PhotoCreateDTO $state, \Closure $next): PhotoCreateDTO
 	{
-		$videoTargetFile = new FlysystemFile(AbstractSizeVariantNamingStrategy::getImageDisk(), $state->videoPath);
+		$videoTargetFile = new FlysystemFile(Storage::disk(StorageDiskType::LOCAL->value), $state->videoPath);
 
 		try {
 			if ($state->videoFile instanceof NativeLocalFile) {

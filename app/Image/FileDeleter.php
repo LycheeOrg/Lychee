@@ -2,7 +2,7 @@
 
 namespace App\Image;
 
-use App\Contracts\Models\AbstractSizeVariantNamingStrategy;
+use App\Enum\StorageDiskType;
 use App\Exceptions\MediaFileOperationException;
 use App\Models\SymLink;
 use Illuminate\Support\Collection;
@@ -89,7 +89,7 @@ class FileDeleter
 
 		// TODO: When we use proper `File` objects, each file knows its associated disk
 		// In the mean time, we assume that any regular file is stored on the default image disk.
-		$defaultDisk = AbstractSizeVariantNamingStrategy::getImageDisk();
+		$defaultDisk = Storage::disk(StorageDiskType::LOCAL->value);
 		foreach ($this->regularFiles as $regularFile) {
 			try {
 				if ($defaultDisk->exists($regularFile)) {
