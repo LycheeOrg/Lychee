@@ -22,11 +22,13 @@ return new class() extends Migration {
 			});
 		}
 		// ! remove me in final PR
+		Schema::disableForeignKeyConstraints();
 		if (Schema::hasColumn(self::TABLE_PHOTO, self::COLUMN_REMOVED)) {
 			Schema::table(self::TABLE_PHOTO, function (Blueprint $table) {
 				$table->dropColumn(self::COLUMN_REMOVED);
 			});
 		}
+		Schema::enableForeignKeyConstraints();
 
 		Schema::table(self::TABLE_SV, function (Blueprint $table) {
 			$table->string(self::COLUMN)->default(self::DEFAULT);

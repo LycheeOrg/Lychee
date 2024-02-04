@@ -18,6 +18,7 @@ return new class() extends Migration {
 
 	public function down(): void
 	{
+		Schema::disableForeignKeyConstraints();
 		if (Schema::hasColumn('size_variants', 'external_storage')) {
 			Schema::table('size_variants', function (Blueprint $table) {
 				$table->dropColumn('external_storage');
@@ -28,5 +29,6 @@ return new class() extends Migration {
 				$table->dropColumn('external_storage');
 			});
 		}
+		Schema::enableForeignKeyConstraints();
 	}
 };
