@@ -377,19 +377,26 @@ return [
 			'self' => true,
 			// Allow OpenStreetMap tile images to be fetched from the different provides
 			// Allow image to be directly encoded at the img source parameter
-			'allow' => [
-				'https://maps.wikimedia.org/osm-intl/',
-				'https://tile.openstreetmap.org/',
-				'https://tile.openstreetmap.de/',
-				'https://a.tile.openstreetmap.fr/osmfr/',
-				'https://b.tile.openstreetmap.fr/osmfr/',
-				'https://c.tile.openstreetmap.fr/osmfr/',
-				'https://a.osm.rrze.fau.de/osmhd/',
-				'https://b.osm.rrze.fau.de/osmhd/',
-				'https://c.osm.rrze.fau.de/osmhd/',
-				'data:', // required by openstreetmap
-				'blob:', // required for "live" photos
-			],
+			'allow' => array_merge(
+				[
+					'https://maps.wikimedia.org/osm-intl/',
+					'https://tile.openstreetmap.org/',
+					'https://tile.openstreetmap.de/',
+					'https://a.tile.openstreetmap.fr/osmfr/',
+					'https://b.tile.openstreetmap.fr/osmfr/',
+					'https://c.tile.openstreetmap.fr/osmfr/',
+					'https://a.osm.rrze.fau.de/osmhd/',
+					'https://b.osm.rrze.fau.de/osmhd/',
+					'https://c.osm.rrze.fau.de/osmhd/',
+					'data:', // required by openstreetmap
+					'blob:', // required for "live" photos
+				],
+				// Add the S3 URL to the list of allowed image sources
+				env('AWS_ACCESS_KEY_ID', '') === '' ? [] :
+				[
+					str_replace(parse_url(env('AWS_URL'), PHP_URL_PATH), '', env('AWS_URL')),
+				]
+			),
 		],
 
 		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/manifest-src
