@@ -6,6 +6,7 @@ use App\Actions\SizeVariant\Delete;
 use App\DTO\AbstractDTO;
 use App\DTO\ImageDimension;
 use App\Enum\SizeVariantType;
+use App\Enum\StorageDiskType;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Exceptions\Internal\InvalidSizeVariantException;
 use App\Exceptions\Internal\LycheeAssertionError;
@@ -216,15 +217,16 @@ class SizeVariants extends AbstractDTO
 			throw new IllegalOrderOfOperationException('Cannot create a size variant for a photo whose id is not yet persisted to DB');
 		}
 		try {
-			$result = new SizeVariant();
-			$result->photo_id = $this->photo->id;
-			$result->type = $sizeVariantType;
-			$result->short_path = $shortPath;
-			$result->width = $dim->width;
-			$result->height = $dim->height;
-			$result->filesize = $filesize;
-			$result->ratio = $dim->getRatio();
-			$result->save();
+			$result = SizeVariant::create([
+				'photo_id' => $this->photo->id,
+				'storage_disk' => StorageDiskType::LOCAL,
+				'type' => $sizeVariantType,
+				'short_path' => $shortPath,
+				'width' => $dim->width,
+				'height' => $dim->height,
+				'filesize' => $filesize,
+				'ratio' => $dim->getRatio(),
+			]);
 			$this->add($result);
 
 			return $result;
