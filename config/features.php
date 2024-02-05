@@ -31,7 +31,7 @@ return [
 	| When using new front-end old links to /#albumID/PhotoID are broken.
 	| This provides here a way to avoid those.
 	*/
-	'legacy_v4_redirect' => env('LEGACY_V4_REDIRECT', false),
+	'legacy_v4_redirect' => (bool) env('LEGACY_V4_REDIRECT', false),
 
 	/*
 	|--------------------------------------------------------------------------
@@ -40,5 +40,5 @@ return [
 	| Log Viewer can be disabled, so it's no longer accessible via browser.
 	|
 	*/
-	'log-viewer' => env('LOG_VIEWER_ENABLED', true),
+	'log-viewer' => (bool) env('LOG_VIEWER_ENABLED', true),
 ];
