@@ -48,20 +48,6 @@ return [
 
 	/*
 	|--------------------------------------------------------------------------
-	| Application Environment
-	|--------------------------------------------------------------------------
-	|
-	| This value determines whether livewire front-end is enabled as it is
-	| currently under development.
-	|
-	*/
-
-	'livewire' => (bool) env('LIVEWIRE_ENABLED', true),
-
-	'photo_pipes' => (bool) env('PHOTO_PIPES', false),
-
-	/*
-	|--------------------------------------------------------------------------
 	| Application Debug Mode
 	|--------------------------------------------------------------------------
 	|
@@ -93,20 +79,6 @@ return [
 	'dir_url' => env('APP_DIR', '') === '' ? '' : ('/' . trim(env('APP_DIR'), '/')),
 
 	'asset_url' => null,
-
-	'legacy_v4_redirect' => env('LEGACY_V4_REDIRECT', false),
-
-	/*
-	|--------------------------------------------------------------------------
-	| Application URL
-	|--------------------------------------------------------------------------
-	|
-	| When running behind a proxy, it may be necessary for the urls to be
-	| set as https for the reverse translation. You should set this if you
-	| want to force the https scheme.
-	*/
-
-	'force_https' => (bool) env('APP_FORCE_HTTPS', false),
 
 	/*
 	|--------------------------------------------------------------------------
@@ -282,6 +254,7 @@ return [
 	'aliases' => Facade::defaultAliases()->merge([
 		'DebugBar' => Barryvdh\Debugbar\Facades\Debugbar::class,
 		'Helpers' => App\Facades\Helpers::class,
+		'Features' => App\Assets\Features::class,
 		// Aliases for easier access in the blade templates
 		'Configs' => App\Models\Configs::class,
 		'AlbumPolicy' => App\Policies\AlbumPolicy::class,
