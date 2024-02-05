@@ -46,9 +46,11 @@ That being said, if you like the gallery and would like to contribute, do not he
 
 ### Support the Team
 
-Through contributions, donations, and sponsorship, you allow Lychee to thrive. Your donations directly support demo server costs, continuous enhancements, and most importantly bug fixes!
+We aim to maintain a free open-source photography library with high quality of code.<br>
+Being in control of our own data, our own pictures is something that we value above all.
 
-https://opencollective.com/LycheeOrg
+Through [contributions, donations, and sponsorship](https://github.com/sponsors/LycheeOrg), you allow Lychee to thrive. Your donations directly support demo server costs, continuous enhancements, and most importantly bug fixes!
+
 
 ## Installation
 
@@ -137,5 +139,3 @@ We would like to thank Jetbrains for supporting us with their [Open Source Devel
 [gitter-shield]: https://img.shields.io/gitter/room/LycheeOrg/Lobby.svg?logo=gitter
 [jetbrains-opensource]: https://www.jetbrains.com/community/opensource/
 [download-shield]: https://img.shields.io/github/downloads/LycheeOrg/Lychee/total
-
-[join-the-team]: https://lycheeorg.github.io/docs/contributions.html#joining-the-team
