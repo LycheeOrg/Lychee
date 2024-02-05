@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Photo\Strategies;
+namespace App\Actions\Photo;
 
 use App\Contracts\Exceptions\LycheeException;
 use App\Contracts\Models\AbstractSizeVariantNamingStrategy;
@@ -21,7 +21,7 @@ use App\Models\SizeVariant;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Collection;
 
-class RotateStrategy
+class Rotate
 {
 	protected Photo $photo;
 	/** @var int either `1` for counterclockwise or `-1` for clockwise rotation */

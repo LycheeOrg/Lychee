@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Traits;
 
-use App\Actions\Photo\Strategies\RotateStrategy;
+use App\Actions\Photo\Rotate;
 use App\Enum\Livewire\NotificationType;
 use App\Http\Resources\Models\PhotoResource;
 use App\Livewire\Forms\PhotoUpdateForm;
@@ -88,8 +88,8 @@ trait UsePhotoViewActions
 
 		$photo = Photo::query()->findOrFail($photoID);
 		Gate::authorize(PhotoPolicy::CAN_EDIT, [Photo::class, $photo]);
-		$rotateStrategy = new RotateStrategy($photo, -1);
-		$photo = $rotateStrategy->do();
+		$rotate = new Rotate($photo, -1);
+		$photo = $rotate->do();
 		// Force hard refresh of the page (to load the rotated image)
 		$this->redirect(route('livewire-gallery-photo', ['albumId' => $this->albumId, 'photoId' => $photo->id]));
 	}
@@ -109,8 +109,8 @@ trait UsePhotoViewActions
 
 		$photo = Photo::query()->findOrFail($photoID);
 		Gate::authorize(PhotoPolicy::CAN_EDIT, [Photo::class, $photo]);
-		$rotateStrategy = new RotateStrategy($photo, 1);
-		$photo = $rotateStrategy->do();
+		$rotate = new Rotate($photo, 1);
+		$photo = $rotate->do();
 		// Force hard refresh of the page (to load the rotated image)
 		$this->redirect(route('livewire-gallery-photo', ['albumId' => $this->albumId, 'photoId' => $photo->id]));
 	}
