@@ -30,7 +30,7 @@
                     {{ __('lychee.SHARING') }}</x-leftbar.leftbar-item>
             @endcan
             @can(SettingsPolicy::CAN_SEE_LOGS, [App\Models\Configs::class])
-                @if($has_log_viewer)
+                @if(Features::active('log-viewer'))
                 <x-leftbar.leftbar-item href="{{ route('log-viewer.index') }}" icon="excerpt">
                     {{ __('lychee.LOGS') }}
                 </x-leftbar.leftbar-item>

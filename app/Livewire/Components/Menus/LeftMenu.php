@@ -35,7 +35,6 @@ class LeftMenu extends Component implements Openable
 	use InteractWithModal;
 	use UseOpenable;
 
-	#[Locked] public bool $has_log_viewer = false;
 	#[Locked] public bool $has_dev_tools = false;
 	#[Locked] public ?string $clockwork_url = null;
 	#[Locked] public ?string $doc_api_url = null;
@@ -62,7 +61,6 @@ class LeftMenu extends Component implements Openable
 	public function render(): View
 	{
 		$this->loadDevMenu();
-		$this->has_log_viewer = config('log-viewer.enabled', true);
 
 		return view('livewire.components.left-menu');
 	}
