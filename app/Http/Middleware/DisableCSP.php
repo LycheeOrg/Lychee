@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Assets\Features;
 use App\Contracts\Exceptions\LycheeException;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Http\Request;
@@ -49,7 +50,7 @@ class DisableCSP
 		}
 
 		// disable unsafe-eval if we are on a Livewire page
-		if (config('app.livewire', false) === true || Str::startsWith($request->getRequestUri(), $dir_url . '/livewire/')) {
+		if (Features::active('livewire') || Str::startsWith($request->getRequestUri(), $dir_url . '/livewire/')) {
 			$this->handleLivewire();
 		}
 

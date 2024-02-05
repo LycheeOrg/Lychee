@@ -2,6 +2,7 @@
 
 namespace App\Models\Extensions;
 
+use App\Assets\Features;
 use App\DTO\AbstractDTO;
 use App\DTO\SortingCriterion;
 use App\Enum\ColumnSortingPhotoType;
@@ -39,7 +40,7 @@ class Thumb extends AbstractDTO
 	public static function sizeVariantsFilter(HasMany $relation): HasMany
 	{
 		$svAlbumThumbs = [SizeVariantType::THUMB, SizeVariantType::THUMB2X];
-		if (config('app.livewire', true) === true) {
+		if (Features::active('livewire')) {
 			$svAlbumThumbs = [SizeVariantType::SMALL, SizeVariantType::SMALL2X, SizeVariantType::THUMB, SizeVariantType::THUMB2X];
 		}
 
@@ -88,14 +89,14 @@ class Thumb extends AbstractDTO
 	 */
 	public static function createFromPhoto(?Photo $photo): ?Thumb
 	{
-		$thumb = (config('app.livewire', true) === true && $photo?->size_variants->getSmall() !== null)
+		$thumb = (Features::active('livewire') && $photo?->size_variants->getSmall() !== null)
 			? $photo->size_variants->getSmall()
 			: $photo?->size_variants->getThumb();
 		if ($thumb === null) {
 			return null;
 		}
 
-		$thumb2x = (config('app.livewire', true) === true && $photo?->size_variants->getSmall() !== null)
+		$thumb2x = (Features::active('livewire') && $photo?->size_variants->getSmall() !== null)
 			? $photo->size_variants->getSmall2x()
 			: $photo?->size_variants->getThumb2x();
 

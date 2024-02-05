@@ -3,6 +3,7 @@
 namespace App\Livewire\Components\Forms\Album;
 
 use App\Actions\Album\Unlock;
+use App\Exceptions\UnauthorizedException;
 use App\Factories\AlbumFactory;
 use App\Http\RuleSets\Album\UnlockAlbumRuleSet;
 use App\Livewire\Traits\Notify;
@@ -73,7 +74,11 @@ class UnlockAlbum extends Component
 		}
 
 		$album = $this->albumFactory->findBaseAlbumOrFail($this->albumID);
-		$this->unlock->do($album, $this->password);
-		$this->redirect(route('livewire-gallery-album', ['albumId' => $this->albumID]));
+		try {
+			$this->unlock->do($album, $this->password);
+			$this->redirect(route('livewire-gallery-album', ['albumId' => $this->albumID]));
+		} catch (UnauthorizedException $e) {
+			$this->addError('password', 'Wrong password');
+		}
 	}
 }
