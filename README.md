@@ -28,6 +28,28 @@ Upgrade from v3 is straight forward. [Upgrade. &#187;](https://lycheeorg.github.
 
 Lychee is a free photo-management tool, which runs on your server or web-space. Installing is a matter of seconds. Upload, manage and share photos like from a native application. Lychee comes with everything you need and all your photos are stored securely. Read more on our [website](https://LycheeOrg.github.io).
 
+## Notice: `master` & `alpha` branches
+
+As LycheeOrg is a very small team, we do not have many maintainers. Most of us have an active work/family life, and as a result, it is no longer possible for us to apply proper 4-eyes principle in the coding reviews.
+
+In order to keep our high code quality, the following changes have been applied.
+
+- `master` stays as a stable branch and contains 4-eyes peer-reviewed pull-requests.
+- `alpha` contains the latest changes (i.e. the above mentionned PR) merged with minimal review.
+
+With this change, we hope to strike a balance between decently pace development (on `alpha`) and maintaining a robust core (on `master`).
+
+On Docker, `nightly`/`dev` continues to refer to the latest `master` commit.
+The `alpha` tag is updated daily with the content of the associated branch.
+
+That being said, if you like the gallery and would like to contribute, do not hesitate to open pull request. If you would like to see more functionalities added and help us push Lychee, [Join the team!][join-the-team]
+
+### Support the Team
+
+Through contributions, donations, and sponsorship, you allow Lychee to thrive. Your donations directly support demo server costs, continuous enhancements, and most importantly bug fixes!
+
+https://opencollective.com/LycheeOrg
+
 ## Installation
 
 To run Lychee, everything you need is a web-server with PHP 8.2 or later and a database (MySQL/MariaDB, PostgreSQL or SQLite). Follow the instructions to install Lychee on your server. This version of Lychee is built on the Laravel framework. To install:
@@ -115,3 +137,5 @@ We would like to thank Jetbrains for supporting us with their [Open Source Devel
 [gitter-shield]: https://img.shields.io/gitter/room/LycheeOrg/Lobby.svg?logo=gitter
 [jetbrains-opensource]: https://www.jetbrains.com/community/opensource/
 [download-shield]: https://img.shields.io/github/downloads/LycheeOrg/Lychee/total
+
+[join-the-team]: https://lycheeorg.github.io/docs/contributions.html#joining-the-team
