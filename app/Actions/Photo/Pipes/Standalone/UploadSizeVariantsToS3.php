@@ -2,6 +2,7 @@
 
 namespace App\Actions\Photo\Pipes\Standalone;
 
+use App\Assets\Features;
 use App\Contracts\PhotoCreatePipe;
 use App\DTO\PhotoCreateDTO;
 use App\Jobs\UploadSizeVariantToS3Job;
@@ -17,7 +18,7 @@ class UploadSizeVariantsToS3 implements PhotoCreatePipe
 {
 	public function handle(PhotoCreateDTO $state, \Closure $next): PhotoCreateDTO
 	{
-		if (config('filesystems.disks.s3.key') !== '') {
+		if (Features::active('use-s3')) {
 			$sync = Configs::getValueAsBool('use_job_queues');
 
 			$jobs = $state->photo->size_variants->toCollection()

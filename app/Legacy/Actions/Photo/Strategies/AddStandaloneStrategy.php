@@ -3,6 +3,7 @@
 namespace App\Legacy\Actions\Photo\Strategies;
 
 use App\Actions\Diagnostics\Pipes\Checks\BasicPermissionCheck;
+use App\Assets\Features;
 use App\Contracts\Exceptions\LycheeException;
 use App\Contracts\Image\ImageHandlerInterface;
 use App\Contracts\Image\StreamStats;
@@ -199,7 +200,7 @@ class AddStandaloneStrategy extends AbstractAddStrategy
 				$variants = $sizeVariantFactory->createSizeVariants();
 				$variants->push($originalVariant);
 
-				if (config('filesystems.disks.s3.key') !== '') {
+				if (Features::active('use-s3')) {
 					// If enabled, upload all size variants to the remote bucket and delete the local files after that
 					$variants->each(function (SizeVariant $variant) {
 						if (Configs::getValueAsBool('use_job_queues')) {
