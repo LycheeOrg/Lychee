@@ -37,12 +37,12 @@ In order to keep our high code quality, the following changes have been applied.
 - `master` stays as a stable branch and contains 4-eyes peer-reviewed pull-requests.
 - `alpha` contains the latest changes (i.e. the above mentionned PR) merged with minimal review.
 
-With this change, we hope to strike a balance between decently pace development (on `alpha`) and maintaining a robust core (on `master`).
+With this change, we hope to strike a balance between decently paced development (on `alpha`) and maintaining a robust core (on `master`).
 
 On Docker, `nightly`/`dev` continues to refer to the latest `master` commit.
 The `alpha` tag is updated daily with the content of the associated branch.
 
-That being said, if you like the gallery and would like to contribute, do not hesitate to open pull request. If you would like to see more functionalities added and help us push Lychee, [Join the team!][join-the-team]
+That being said, if you like the gallery and would like to contribute, do not hesitate to open pull request. If you would like to see more functionalities added and help us push Lychee, [Join the team!](https://lycheeorg.github.io/docs/contributions.html#joining-the-team)
 
 ### Support the Team
 
