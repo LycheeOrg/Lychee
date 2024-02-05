@@ -74,7 +74,9 @@ class Ghostbuster extends Command
 			$removeDeadSymLinks = filter_var($this->option('removeDeadSymLinks'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) === true;
 			$removeZombiePhotos = filter_var($this->option('removeZombiePhotos'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) === true;
 			$dryrun = filter_var($this->option('dryrun'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) !== false;
-			$uploadDisk = Features::whenConst('use-s3', Storage::disk(StorageDiskType::S3->value), Storage::disk(StorageDiskType::LOCAL->value));
+			$uploadDisk = Features::active('use-s3')
+				? Storage::disk(StorageDiskType::S3->value)
+				: Storage::disk(StorageDiskType::LOCAL->value);
 			$symlinkDisk = Storage::disk(SymLink::DISK_NAME);
 			$isLocalDisk = $uploadDisk->getAdapter() instanceof LocalFilesystemAdapter;
 
