@@ -12,6 +12,7 @@ use App\Actions\Photo\Pipes\SetParentAndOwnership;
 use App\Actions\Photo\Pipes\SetStarred;
 use App\Actions\Photo\Pipes\Standalone;
 use App\Actions\Photo\Pipes\VideoPartner;
+use App\Assets\Features;
 use App\Contracts\Exceptions\LycheeException;
 use App\Contracts\Models\AbstractAlbum;
 use App\DTO\ImportMode;
@@ -55,7 +56,7 @@ class Create
 	 */
 	public function add(NativeLocalFile $sourceFile, ?AbstractAlbum $album, ?int $fileLastModifiedTime = null): Photo
 	{
-		if (config('app.photo_pipes') !== true) {
+		if (Features::inactive('create-photo-via-pipes')) {
 			$oldCodePath = new LegacyPhotoCreate($this->strategyParameters->importMode, $this->strategyParameters->intendedOwnerId);
 
 			return $oldCodePath->add($sourceFile, $album, $fileLastModifiedTime);
