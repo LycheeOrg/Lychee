@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Components\Pages;
 
+use App\Assets\Features;
 use App\Enum\OauthProvidersType;
 use App\Http\Controllers\Oauth;
 use App\Http\Controllers\RedirectController;
@@ -20,14 +21,14 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::prefix(config('app.livewire') === true ? '' : 'livewire')
+Route::prefix(Features::whenConst('livewire', '', 'livewire'))// config('features.livewire') === true ? '' : 'livewire')
 	->group(function () {
 		Route::get('/diagnostics', Diagnostics::class)->name('diagnostics');
 	});
 
 Route::middleware(['installation:complete', 'migration:complete'])
 	->group(function () {
-		Route::prefix(config('app.livewire') === true ? '' : 'livewire')
+		Route::prefix(config('features.livewire') === true ? '' : 'livewire')
 		->group(function () {
 			// Oauth routes.
 			Route::get('/auth/{provider}/redirect', [Oauth::class, 'redirected'])->whereIn('provider', OauthProvidersType::values());
