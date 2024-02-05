@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Components\Forms\Add;
 
+use App\Assets\Features;
 use App\Contracts\Livewire\Params;
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\Livewire\FileStatus;
@@ -134,7 +135,7 @@ class Upload extends Component
 				try {
 					$this->uploads[$idx]['stage'] = FileStatus::PROCESSING->value;
 
-					if (Configs::getValueAsBool('extract_zip_files') &&
+					if (Features::active('extract-zip-files-on-upload') &&
 						Str::endsWith($processableFile->getPath(), '.zip')) {
 						ExtractZip::dispatch($processableFile, $this->albumId, $fileData['lastModified']);
 						$this->uploads[$idx]['stage'] = FileStatus::DONE->value;
