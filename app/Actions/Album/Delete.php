@@ -107,7 +107,7 @@ class Delete extends Action
 			// Delete the photos from DB and obtain the list of files which need
 			// to be deleted later
 			$fileDeleter = (new PhotoDelete())->do($unsortedPhotoIDs, $recursiveAlbumIDs);
-			$fileDeleter->addRegularFiles($recursiveAlbumTracks);
+			$fileDeleter->addSizeVariants($recursiveAlbumTracks);
 
 			// Remove the sub-forest spanned by the regular albums
 			$this->deleteSubForest($albums);

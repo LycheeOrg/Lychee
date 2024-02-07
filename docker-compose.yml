@@ -1,0 +1,20 @@
+version: "3"
+services:
+  app:
+    image: webdevops/php-apache:8.2
+    working_dir: "/app"
+    environment:
+      WEB_DOCUMENT_ROOT: /app/public
+    ports:
+      - "127.0.0.1:8080:80"
+    volumes:
+      - ".:/app"
+
+  minio:
+    image: quay.io/minio/minio
+    command: server /data --console-address ":9001"
+    ports:
+      - "127.0.0.1:9000:9000"
+      - "127.0.0.1:9001:9001"
+    volumes:
+      - "./minio-data:/data"

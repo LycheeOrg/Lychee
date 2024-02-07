@@ -60,9 +60,9 @@ class Delete
 			// Get all short paths of size variants which are going to be deleted.
 			// But exclude those short paths which are duplicated by a size
 			// variant which is not going to be deleted.
-			$svShortPaths = SizeVariant::query()
+			$sizeVariants = SizeVariant::query()
 				->from('size_variants as sv')
-				->select(['sv.short_path'])
+				->select(['sv.short_path', 'sv.external_storage'])
 				->leftJoin('size_variants as dup', function (JoinClause $join) use ($svIDs) {
 					$join
 						->on('dup.short_path', '=', 'sv.short_path')
@@ -70,8 +70,8 @@ class Delete
 				})
 				->whereIn('sv.id', $svIDs)
 				->whereNull('dup.id')
-				->pluck('sv.short_path');
-			$fileDeleter->addRegularFilesOrSymbolicLinks($svShortPaths);
+				->get();
+			$fileDeleter->addSizeVariants($sizeVariants);
 
 			// Get all short paths of symbolic links which point to size variants
 			// which are going to be deleted

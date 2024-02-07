@@ -3,6 +3,18 @@
 This guide contains some tricks and "do"s and "don't"s for new developer.
 In particular, it highlights some pitfalls one can easily trap into.
 
+# Local Dev
+
+```bash
+# Start minio server
+docker run -d --name lychee-minio -p 9000:9000 -p 9001:9001 -v "./minio-data:/data" quay.io/minio/minio 
+
+# Start php + apache on localhost:80
+docker run -d --name lychee-web -p 8080:80 -v ".:/app" -e WEB_DOCUMENT_ROOT=/app/public webdevops/php-apache:8.2
+```
+
+Add to .env `DB_DATABASE=/app/database/testing.sqlite`
+
 # TL;DR for the Impatient
 
  1. If you create a new Eloquent model, use the trait

@@ -4,10 +4,10 @@ namespace App\Image;
 
 use App\Contracts\Models\AbstractSizeVariantNamingStrategy;
 use App\Exceptions\MediaFileOperationException;
+use App\Models\SizeVariant;
 use App\Models\SymLink;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
-use League\Flysystem\Local\LocalFilesystemAdapter;
 use function Safe\unlink;
 
 /**
@@ -19,14 +19,15 @@ use function Safe\unlink;
  * {@link FileDeleter::addSymbolicLinks} and then delete all files at once
  * via {@link FileDeleter::do}.
  *
- * TODO: At the moment the file deleter uses string-encoded file path, eventually this class should use proper `File` objects
+ * TODO: At the moment the file deleter uses string-encoded file path, eventually this class should use proper `File`
+ * objects
  */
 class FileDeleter
 {
 	/**
-	 * @var Collection<string>
+	 * @var Collection<SizeVariant>
 	 */
-	protected Collection $regularFiles;
+	protected Collection $sizeVariants;
 
 	/**
 	 * @var Collection<string>
@@ -40,25 +41,24 @@ class FileDeleter
 
 	public function __construct()
 	{
-		$this->regularFiles = new Collection();
-		$this->symbolicLinks = new Collection();
-		$this->regularFilesOrSymbolicLinks = new Collection();
+		$this->sizeVariants = new Collection();
 	}
 
 	/**
-	 * @param Collection<string> $regularFiles
+	 * @param Collection<SizeVariant> $sizeVariants
 	 *
 	 * @return void
 	 */
-	public function addRegularFiles(Collection $regularFiles): void
+	public function addSizeVariants(Collection $sizeVariants): void
 	{
-		$this->regularFiles = $this->regularFiles->merge($regularFiles);
+		$this->sizeVariants = $this->sizeVariants->merge($sizeVariants);
 	}
 
 	/**
 	 * @param Collection<string> $symbolicLinks
-	 *
 	 * @return void
+	 * @deprecated
+	 *
 	 */
 	public function addSymbolicLinks(Collection $symbolicLinks): void
 	{
@@ -67,8 +67,9 @@ class FileDeleter
 
 	/**
 	 * @param Collection<string> $regularFilesOrSymbolicLinks
-	 *
 	 * @return void
+	 * @deprecated
+	 *
 	 */
 	public function addRegularFilesOrSymbolicLinks(Collection $regularFilesOrSymbolicLinks): void
 	{
@@ -87,53 +88,16 @@ class FileDeleter
 		/** @var \Throwable|null $firstException */
 		$firstException = null;
 
-		// TODO: When we use proper `File` objects, each file knows its associated disk
-		// In the mean time, we assume that any regular file is stored on the default image disk.
-		$defaultDisk = AbstractSizeVariantNamingStrategy::getImageDisk();
-		foreach ($this->regularFiles as $regularFile) {
+		foreach ($this->sizeVariants as $sizeVariant) {
+			$fileDisk = AbstractSizeVariantNamingStrategy::getImageDisk($sizeVariant->external_storage);
 			try {
-				if ($defaultDisk->exists($regularFile)) {
-					if (!$defaultDisk->delete($regularFile)) {
-						$firstException = $firstException ?? new \RuntimeException('Storage::delete failed: ' . $regularFile);
+				if ($fileDisk->exists($sizeVariant->short_path)) {
+					if (!$fileDisk->delete($sizeVariant->short_path)) {
+						$firstException = $firstException ?? new \RuntimeException('Storage::delete failed: ' . $sizeVariant);
 					}
 				}
 			} catch (\Throwable $e) {
 				$firstException = $firstException ?? $e;
-			}
-		}
-
-		// If the disk uses the local driver, we use low-level routines as
-		// these are also able to handle symbolic links in case of doubt
-		$isLocalDisk = $defaultDisk->getAdapter() instanceof LocalFilesystemAdapter;
-		if ($isLocalDisk) {
-			foreach ($this->regularFilesOrSymbolicLinks as $fileOrLink) {
-				try {
-					$absolutePath = $defaultDisk->path($fileOrLink);
-					// Note, `file_exist` returns `false` for existing,
-					// but dead links.
-					// So the first part takes care of deleting links no matter
-					// if they are dead or alive.
-					// The latter part deletes (regular) files, but avoids errors
-					// in case the file doesn't exist.
-					if (is_link($absolutePath) || file_exists($absolutePath)) {
-						unlink($absolutePath);
-					}
-				} catch (\Throwable $e) {
-					$firstException = $firstException ?? $e;
-				}
-			}
-		} else {
-			// If the disk is not local, we can assume that each file is a regular file
-			foreach ($this->regularFilesOrSymbolicLinks as $regularFile) {
-				try {
-					if ($defaultDisk->exists($regularFile)) {
-						if (!$defaultDisk->delete($regularFile)) {
-							$firstException = $firstException ?? new \RuntimeException('Storage::delete failed: ' . $regularFile);
-						}
-					}
-				} catch (\Throwable $e) {
-					$firstException = $firstException ?? $e;
-				}
 			}
 		}
 
