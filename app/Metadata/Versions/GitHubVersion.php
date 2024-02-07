@@ -72,7 +72,7 @@ class GitHubVersion implements VersionControl, HasIsRelease
 	 */
 	public function isMasterBranch(): bool
 	{
-		return $this->remote instanceof GitCommits && $this->localBranch === self::MASTER;
+		return $this->remote instanceof GitTags || ($this->remote instanceof GitCommits && $this->localBranch === self::MASTER);
 	}
 
 	/**
