@@ -40,6 +40,8 @@ class FileDeleter
 	public function __construct()
 	{
 		$this->sizeVariants = new Collection();
+		$this->symbolicLinks = new Collection();
+		$this->livePhotoPaths = new Collection();
 	}
 
 	/**
