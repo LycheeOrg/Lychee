@@ -108,9 +108,9 @@ readonly class Delete
 				return;
 			}
 
-			$svShortPaths = SizeVariant::query()
+			$sizeVariants = SizeVariant::query()
 				->from('size_variants as sv')
-				->select(['sv.short_path'])
+				->select(['sv.short_path', 'sv.storage_disk'])
 				->join('photos as p', 'p.id', '=', 'sv.photo_id')
 				->leftJoin('photos as dup', function (JoinClause $join) use ($photoIDs) {
 					$join
@@ -119,8 +119,8 @@ readonly class Delete
 				})
 				->whereIn('p.id', $photoIDs)
 				->whereNull('dup.id')
-				->pluck('sv.short_path');
-			$this->fileDeleter->addRegularFilesOrSymbolicLinks($svShortPaths);
+				->get();
+			$this->fileDeleter->addSizeVariants($sizeVariants);
 			// @codeCoverageIgnoreStart
 		} catch (\InvalidArgumentException $e) {
 			throw LycheeAssertionError::createFromUnexpectedException($e);
@@ -148,9 +148,9 @@ readonly class Delete
 				return;
 			}
 
-			$svShortPaths = SizeVariant::query()
+			$sizeVariants = SizeVariant::query()
 				->from('size_variants as sv')
-				->select(['sv.short_path'])
+				->select(['sv.short_path', 'sv.storage_disk'])
 				->join('photos as p', 'p.id', '=', 'sv.photo_id')
 				->leftJoin('photos as dup', function (JoinClause $join) use ($albumIDs) {
 					$join
@@ -159,8 +159,8 @@ readonly class Delete
 				})
 				->whereIn('p.album_id', $albumIDs)
 				->whereNull('dup.id')
-				->pluck('sv.short_path');
-			$this->fileDeleter->addRegularFilesOrSymbolicLinks($svShortPaths);
+				->get();
+			$this->fileDeleter->addSizeVariants($sizeVariants);
 			// @codeCoverageIgnoreStart
 		} catch (\InvalidArgumentException $e) {
 			throw LycheeAssertionError::createFromUnexpectedException($e);
@@ -200,7 +200,7 @@ readonly class Delete
 				->whereNull('dup.id')
 				->whereNotNull('p.live_photo_short_path')
 				->pluck('p.live_photo_short_path');
-			$this->fileDeleter->addRegularFilesOrSymbolicLinks($livePhotoShortPaths);
+			$this->fileDeleter->addLivePhotoPaths($livePhotoShortPaths);
 			// @codeCoverageIgnoreStart
 		} catch (\InvalidArgumentException $e) {
 			throw LycheeAssertionError::createFromUnexpectedException($e);
@@ -240,7 +240,7 @@ readonly class Delete
 				->whereNull('dup.id')
 				->whereNotNull('p.live_photo_short_path')
 				->pluck('p.live_photo_short_path');
-			$this->fileDeleter->addRegularFilesOrSymbolicLinks($livePhotoShortPaths);
+			$this->fileDeleter->addLivePhotoPaths($livePhotoShortPaths);
 			// @codeCoverageIgnoreStart
 		} catch (\InvalidArgumentException $e) {
 			throw LycheeAssertionError::createFromUnexpectedException($e);
