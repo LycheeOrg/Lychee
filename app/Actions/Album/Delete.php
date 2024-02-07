@@ -101,13 +101,10 @@ class Delete extends Action
 				$recursiveAlbumIDs = array_merge($recursiveAlbumIDs, $subAlbums->pluck('id')->all());
 				$recursiveAlbumTracks = $recursiveAlbumTracks->merge($subAlbums->pluck('track_short_path'));
 			}
-			// prune the null values
-			$recursiveAlbumTracks = $recursiveAlbumTracks->filter(fn ($val) => $val !== null);
 
 			// Delete the photos from DB and obtain the list of files which need
 			// to be deleted later
 			$fileDeleter = (new PhotoDelete())->do($unsortedPhotoIDs, $recursiveAlbumIDs);
-			$fileDeleter->addRegularFiles($recursiveAlbumTracks);
 
 			// Remove the sub-forest spanned by the regular albums
 			$this->deleteSubForest($albums);

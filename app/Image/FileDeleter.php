@@ -2,7 +2,6 @@
 
 namespace App\Image;
 
-use App\Contracts\Models\AbstractSizeVariantNamingStrategy;
 use App\Enum\StorageDiskType;
 use App\Exceptions\MediaFileOperationException;
 use App\Models\SizeVariant;
@@ -18,7 +17,7 @@ use function Safe\unlink;
  * The typical usage is to subsequently add regular files and symlinks
  * via a series of calls to {@link FileDeleter::addSizeVariants},
  * {@link FileDeleter::addLivePhotoPaths} or
- *  {@link FileDeleter::addSymbolicLinks} and then delete all files at once
+ * {@link FileDeleter::addSymbolicLinks} and then delete all files at once
  * via {@link FileDeleter::do}.
  */
 class FileDeleter
@@ -55,6 +54,7 @@ class FileDeleter
 
 	/**
 	 * @param Collection<string> $symbolicLinks
+	 *
 	 * @return void
 	 */
 	public function addSymbolicLinks(Collection $symbolicLinks): void
@@ -64,6 +64,7 @@ class FileDeleter
 
 	/**
 	 * @param Collection<string> $livePhotoPaths
+	 *
 	 * @return void
 	 */
 	public function addLivePhotoPaths(Collection $livePhotoPaths): void
