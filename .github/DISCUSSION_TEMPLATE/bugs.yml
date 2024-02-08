@@ -54,6 +54,10 @@ body:
         Paste result here
         ```
 
+  - type: textarea
+    attributes:
+      label: Browser & System [REQUIRED]
+
   - type: checkboxes
     attributes:
       label: Please confirm (incomplete submissions will not be addressed)
