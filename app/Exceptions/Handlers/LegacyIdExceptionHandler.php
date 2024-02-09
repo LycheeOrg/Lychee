@@ -9,9 +9,10 @@ use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface as HttpException;
 
 /**
- * Class AccessDBDenied.
+ * Class LegacyIdExceptionHandler.
  *
- * If access to the DB is denied, we need to run the installation.
+ * If SQLSTATE: Numeric value out of range: 1264 is throw it means we are interacting with 32 bit DB.
+ * Advise to set config parameter.
  */
 class LegacyIdExceptionHandler implements HttpExceptionHandler
 {
@@ -40,7 +41,7 @@ class LegacyIdExceptionHandler implements HttpExceptionHandler
 		return response()->view('error.error', [
 			'code' => $e->getStatusCode(),
 			'type' => class_basename($e),
-			'message' => 'SQLSTATE: Numeric value out of range: 1264 for column \'legacy_id\'. To fix, please set <pre>force_32bit_ids</pre> to <pre>1</pre> in your config.',
+			'message' => 'SQLSTATE: Numeric value out of range: 1264 for column \'legacy_id\'. To fix, please set `force_32bit_ids` to `1` in your config.',
 		], $e->getStatusCode(), $e->getHeaders());
 	}
 }
