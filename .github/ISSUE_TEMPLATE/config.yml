@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: I think I found a bug!
+    url: https://github.com/LycheeOrg/Lychee/discussions/new?category=bugs
+    about: Please submit your a bug here.
+  - name: I have an idea/suggestion.
+    url: https://github.com/LycheeOrg/Lychee/discussions/new?category=ideas
+    about: Please submit your ideas here.
+  - name: I have a question.
+    url: https://github.com/LycheeOrg/Lychee/discussions/new?category=q-a
+    about: Please ask and answer questions here.
