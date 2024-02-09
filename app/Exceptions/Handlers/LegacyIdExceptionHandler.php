@@ -41,7 +41,7 @@ class LegacyIdExceptionHandler implements HttpExceptionHandler
 		return response()->view('error.error', [
 			'code' => $e->getStatusCode(),
 			'type' => class_basename($e),
-			'message' => 'SQLSTATE: Numeric value out of range: 1264 for column \'legacy_id\'. To fix, please set `force_32bit_ids` to `1` in your config.',
+			'message' => 'SQLSTATE: Numeric value out of range: 1264 for column \'legacy_id\'. To fix, please set `force_32bit_ids` to `1` in your Settings => More.',
 		], $e->getStatusCode(), $e->getHeaders());
 	}
 }
