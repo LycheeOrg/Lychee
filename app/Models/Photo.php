@@ -8,6 +8,7 @@ use App\Casts\DateTimeWithTimezoneCast;
 use App\Casts\MustNotSetCast;
 use App\Constants\RandomID;
 use App\Enum\LicenseType;
+use App\Enum\StorageDiskType;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\ZeroModuloException;
@@ -343,7 +344,7 @@ class Photo extends Model
 	protected function getLivePhotoUrlAttribute(): ?string
 	{
 		$path = $this->live_photo_short_path;
-		$disk_name = $this->size_variants->getOriginal()->storage_disk->value;
+		$disk_name = $this->size_variants->getOriginal()?->storage_disk?->value ?? StorageDiskType::LOCAL->value;
 
 		return ($path === null || $path === '') ? null : Storage::disk($disk_name)->url($path);
 	}
