@@ -57,7 +57,6 @@ use function Safe\preg_match;
  * @property string|null  $taken_at_orig_tz
  * @property bool         $is_starred
  * @property string|null  $live_photo_short_path
- * @property string|null  $live_photo_full_path
  * @property string|null  $live_photo_url
  * @property string|null  $album_id
  * @property string       $checksum
@@ -146,7 +145,6 @@ class Photo extends Model
 		'created_at' => 'datetime',
 		'updated_at' => 'datetime',
 		'taken_at' => DateTimeWithTimezoneCast::class,
-		'live_photo_full_path' => MustNotSetCast::class . ':live_photo_short_path',
 		'live_photo_url' => MustNotSetCast::class . ':live_photo_short_path',
 		'owner_id' => 'integer',
 		'is_starred' => 'boolean',
@@ -332,24 +330,6 @@ class Photo extends Model
 	}
 
 	/**
-	 * Accessor for the "virtual" attribute {@see Photo::$live_photo_full_path}.
-	 *
-	 * Returns the full path of the live photo as it needs to be input into
-	 * some low-level PHP functions like `unlink`.
-	 * This is a convenient method and wraps
-	 * {@link Photo::$live_photo_short_path} into
-	 * {@link \Illuminate\Support\Facades\Storage::path()}.
-	 *
-	 * @return string|null The full path of the live photo
-	 */
-	protected function getLivePhotoFullPathAttribute(): ?string
-	{
-		$path = $this->live_photo_short_path;
-
-		return ($path === null || $path === '') ? null : Storage::path($path);
-	}
-
-	/**
 	 * Accessor for the "virtual" attribute {@see Photo::$live_photo_url}.
 	 *
 	 * Returns the URL of the live photo as it is seen from a client's
@@ -363,8 +343,9 @@ class Photo extends Model
 	protected function getLivePhotoUrlAttribute(): ?string
 	{
 		$path = $this->live_photo_short_path;
+		$disk_name = $this->size_variants->getOriginal()->storage_disk->value;
 
-		return ($path === null || $path === '') ? null : Storage::url($path);
+		return ($path === null || $path === '') ? null : Storage::disk($disk_name)->url($path);
 	}
 
 	/**

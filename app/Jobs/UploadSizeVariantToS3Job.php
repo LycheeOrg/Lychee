@@ -3,8 +3,10 @@
 namespace App\Jobs;
 
 use App\Enum\JobStatus;
+use App\Enum\SizeVariantType;
 use App\Enum\StorageDiskType;
 use App\Models\JobHistory;
+use App\Models\Photo;
 use App\Models\SizeVariant;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -54,6 +56,8 @@ class UploadSizeVariantToS3Job implements ShouldQueue
 		$this->variant->storage_disk = StorageDiskType::S3;
 		$this->variant->save();
 
+		$this->handleVideoPartner();
+
 		// Once the job has finished, set history status to 1.
 		$this->history->status = JobStatus::SUCCESS;
 		$this->history->save();
@@ -69,5 +73,24 @@ class UploadSizeVariantToS3Job implements ShouldQueue
 		} else {
 			Log::error(__LINE__ . ':' . __FILE__ . ' ' . $th->getMessage(), $th->getTrace());
 		}
+	}
+
+	/**
+	 * If we have a live partner, then we also upload it.
+	 */
+	private function handleVideoPartner(): void
+	{
+		if ($this->variant->type !== SizeVariantType::ORIGINAL) {
+			return;
+		}
+
+		$photo = Photo::query()->where('id', '=', $this->variant->photo_id)->first();
+
+		Storage::disk(StorageDiskType::S3->value)->writeStream(
+			$photo->live_photo_short_path,
+			Storage::disk(StorageDiskType::LOCAL->value)->readStream($photo->live_photo_short_path)
+		);
+
+		Storage::disk(StorageDiskType::LOCAL->value)->delete($photo->live_photo_short_path);
 	}
 }

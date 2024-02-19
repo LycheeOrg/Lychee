@@ -3,6 +3,7 @@
 namespace App\Actions\Photo\Pipes\VideoPartner;
 
 use App\Actions\Diagnostics\Pipes\Checks\BasicPermissionCheck;
+use App\Assets\Features;
 use App\Contracts\PhotoCreatePipe;
 use App\DTO\PhotoCreateDTO;
 use App\Enum\StorageDiskType;
@@ -48,7 +49,11 @@ class PlaceVideo implements PhotoCreatePipe
 {
 	public function handle(PhotoCreateDTO $state, \Closure $next): PhotoCreateDTO
 	{
-		$videoTargetFile = new FlysystemFile(Storage::disk(StorageDiskType::LOCAL->value), $state->videoPath);
+		$disk = Storage::disk(StorageDiskType::LOCAL->value);
+		if (Features::active('use-s3')) {
+			$disk = Storage::disk(StorageDiskType::S3->value);
+		}
+		$videoTargetFile = new FlysystemFile($disk, $state->videoPath);
 
 		try {
 			if ($state->videoFile instanceof NativeLocalFile) {
