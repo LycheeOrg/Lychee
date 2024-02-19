@@ -2,12 +2,13 @@
 
 namespace App\Image;
 
-use App\Enum\StorageDiskType;
+use App\Exceptions\Internal\FileDeletionException;
 use App\Exceptions\MediaFileOperationException;
 use App\Models\SizeVariant;
 use App\Models\SymLink;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
+use League\Flysystem\Local\LocalFilesystemAdapter;
 use function Safe\unlink;
 
 /**
@@ -23,25 +24,17 @@ use function Safe\unlink;
 class FileDeleter
 {
 	/**
-	 * @var Collection<SizeVariant>
+	 * @param array<string,Collection<string>> $files
+	 * @param Collection<SizeVariant>          $sizeVariants
+	 * @param Collection<string>               $symbolicLinks
+	 *
+	 * @return void
 	 */
-	protected Collection $sizeVariants;
-
-	/**
-	 * @var Collection<string>
-	 */
-	protected Collection $symbolicLinks;
-
-	/**
-	 * @var Collection<string>
-	 */
-	protected Collection $livePhotoPaths;
-
-	public function __construct()
-	{
-		$this->sizeVariants = new Collection();
-		$this->symbolicLinks = new Collection();
-		$this->livePhotoPaths = new Collection();
+	public function __construct(
+		protected array $files = [],
+		protected Collection $sizeVariants = new Collection(),
+		protected Collection $symbolicLinks = new Collection(),
+	) {
 	}
 
 	/**
@@ -65,13 +58,30 @@ class FileDeleter
 	}
 
 	/**
-	 * @param Collection<string> $livePhotoPaths
+	 * Give the possility to add files with their associated storage to the deleter.
+	 *
+	 * @param Collection<string> $paths
+	 * @param string             $diskName
 	 *
 	 * @return void
 	 */
-	public function addLivePhotoPaths(Collection $livePhotoPaths): void
+	public function addFiles(Collection $paths, string $diskName): void
 	{
-		$this->livePhotoPaths = $this->livePhotoPaths->merge($livePhotoPaths);
+		$this->files[$diskName] = ($this->files[$diskName] ?? new Collection())->merge($paths);
+	}
+
+	/**
+	 * Map the list of sizeVariants to their proper storage type for later processing.
+	 *
+	 * @return void
+	 */
+	private function convertSizeVariantsList()
+	{
+		/** @var Collection<string,Collection<SizeVariant>> $grouped */
+		$grouped = $this->sizeVariants->groupBy('storage_disk');
+		$grouped->each(
+			fn (Collection $svs, string $k) => $this->files[$k] = ($this->files[$k] ?? new Collection())->merge($svs->pluck('short_path'))
+		);
 	}
 
 	/**
@@ -86,30 +96,44 @@ class FileDeleter
 		/** @var \Throwable|null $firstException */
 		$firstException = null;
 
-		foreach ($this->sizeVariants as $sizeVariant) {
-			$fileDisk = Storage::disk($sizeVariant->storage_disk->value);
-			try {
-				if ($fileDisk->exists($sizeVariant->short_path)) {
-					if (!$fileDisk->delete($sizeVariant->short_path)) {
-						$firstException = $firstException ?? new \RuntimeException('Storage::delete failed: ' . $sizeVariant);
-					}
-				}
-			} catch (\Throwable $e) {
-				$firstException = $firstException ?? $e;
-			}
-		}
+		$this->convertSizeVariantsList();
 
-		foreach ($this->livePhotoPaths as $livePhotoPath) {
-			// TODO How do we find out where a live photo is stored?
-			$fileDisk = Storage::disk(StorageDiskType::LOCAL->value);
-			try {
-				if ($fileDisk->exists($livePhotoPath)) {
-					if (!$fileDisk->delete($livePhotoPath)) {
-						$firstException = $firstException ?? new \RuntimeException('Storage::delete failed: ' . $livePhotoPath);
+		foreach ($this->files as $storageType => $fileList) {
+			$disk = Storage::disk($storageType);
+
+			// If the disk uses the local driver, we use low-level routines as
+			// these are also able to handle symbolic links in case of doubt
+			$isLocalDisk = $disk->getAdapter() instanceof LocalFilesystemAdapter;
+			if ($isLocalDisk) {
+				foreach ($fileList as $file) {
+					try {
+						$absolutePath = $disk->path($file);
+						// Note, `file_exist` returns `false` for existing,
+						// but dead links.
+						// So the first part takes care of deleting links no matter
+						// if they are dead or alive.
+						// The latter part deletes (regular) files, but avoids errors
+						// in case the file doesn't exist.
+						if (is_link($absolutePath) || file_exists($absolutePath)) {
+							unlink($absolutePath);
+						}
+					} catch (\Throwable $e) {
+						$firstException = $firstException ?? $e;
 					}
 				}
-			} catch (\Throwable $e) {
-				$firstException = $firstException ?? $e;
+			} else {
+				// If the disk is not local, we can assume that each file is a regular file
+				foreach ($fileList as $file) {
+					try {
+						if ($disk->exists($file)) {
+							if (!$disk->delete($file)) {
+								$firstException = $firstException ?? new FileDeletionException($storageType, $file);
+							}
+						}
+					} catch (\Throwable $e) {
+						$firstException = $firstException ?? $e;
+					}
+				}
 			}
 		}
 
@@ -130,7 +154,7 @@ class FileDeleter
 		}
 
 		if ($firstException !== null) {
-			throw new MediaFileOperationException('Could not delete files', $firstException);
+			throw new MediaFileOperationException('Could not delete some files', $firstException);
 		}
 	}
 }

@@ -6,7 +6,6 @@ use App\Actions\Photo\Extensions\ArchiveFileInfo;
 use App\Contracts\Exceptions\LycheeException;
 use App\Enum\DownloadVariantType;
 use App\Enum\SizeVariantType;
-use App\Enum\StorageDiskType;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\InvalidSizeVariantException;
@@ -285,7 +284,8 @@ class Archive
 		$baseFilename = $validFilename !== '' ? $validFilename : 'Untitled';
 
 		if ($downloadVariant === DownloadVariantType::LIVEPHOTOVIDEO) {
-			$sourceFile = new FlysystemFile(Storage::disk(StorageDiskType::LOCAL->value), $photo->live_photo_short_path);
+			$disk = $photo->size_variants->getSizeVariant(SizeVariantType::ORIGINAL)->storage_disk->value;
+			$sourceFile = new FlysystemFile(Storage::disk($disk), $photo->live_photo_short_path);
 			$baseFilenameAddon = '';
 		} else {
 			$sv = $photo->size_variants->getSizeVariant($downloadVariant->getSizeVariantType());

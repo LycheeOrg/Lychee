@@ -184,41 +184,65 @@ class SizeVariant extends Model
 		$imageDisk = Storage::disk($this->storage_disk->value);
 
 		if (
-			(Auth::user()?->may_administrate === true && !Configs::getValueAsBool('SL_for_admin')) ||
-			!Configs::getValueAsBool('SL_enable')
+			!Configs::getValueAsBool('SL_enable') ||
+			(!Configs::getValueAsBool('SL_for_admin') && Auth::user()?->may_administrate === true)
 		) {
 			return $imageDisk->url($this->short_path);
 		}
 
+		$storageAdapter = $imageDisk->getAdapter();
+		if ($storageAdapter instanceof AwsS3V3Adapter) {
+			return $this->getAwsUrl();
+		}
+
+		if ($storageAdapter instanceof LocalFilesystemAdapter) {
+			return $this->getSymLinkUrl();
+		}
+
+		throw new ConfigurationException('the chosen storage adapter "' . get_class($storageAdapter) . '" does not support the symbolic linking feature');
+	}
+
+	/**
+	 * Retrieve the tempary url from AWS if possible.
+	 *
+	 * @return string
+	 */
+	private function getAwsUrl(): string
+	{
+		// In order to allow a grace period, we create a new symbolic link,
+		$maxLifetime = Configs::getValueAsInt('SL_life_time_days') * 24 * 60 * 60;
+		$imageDisk = Storage::disk($this->storage_disk->value);
+
+		// Return the public URL in case the S3 bucket is set to public, otherwise generate a temporary URL
+		$visibility = config('filesystems.disks.s3.visibility', 'private');
+		// $visibility = $imageDisk->getConfig()['visibility'] ?? 'private';
+		if ($visibility === 'public') {
+			return $imageDisk->url($this->short_path);
+		}
+
+		return $imageDisk->temporaryUrl($this->short_path, now()->addSeconds($maxLifetime));
+	}
+
+	/**
+	 * Get the symlink url if possible.
+	 *
+	 * @return string
+	 */
+	private function getSymLinkUrl(): string
+	{
 		// In order to allow a grace period, we create a new symbolic link,
 		// if the most recent existing link has reached 2/3 of its lifetime
 		$maxLifetime = Configs::getValueAsInt('SL_life_time_days') * 24 * 60 * 60;
 		$gracePeriod = $maxLifetime / 3;
 
-		$storageAdapter = $imageDisk->getAdapter();
-		if ($storageAdapter instanceof AwsS3V3Adapter) {
-			// Return the public URL in case the S3 bucket is set to public, otherwise generate a temporary URL
-			$visibility = config('filesystems.disks.s3.visibility', 'private');
-			// $visibility = $imageDisk->getConfig()['visibility'] ?? 'private';
-			if ($visibility === 'public') {
-				return $imageDisk->url($this->short_path);
-			}
-
-			return $imageDisk->temporaryUrl($this->short_path, now()->addSeconds($maxLifetime));
+		/** @var ?SymLink $symLink */
+		$symLink = $this->sym_links()->latest()->first();
+		if ($symLink === null || $symLink->created_at->isBefore(now()->subSeconds($gracePeriod))) {
+			/** @var SymLink $symLink */
+			$symLink = $this->sym_links()->create();
 		}
 
-		if ($storageAdapter instanceof LocalFilesystemAdapter) {
-			/** @var ?SymLink $symLink */
-			$symLink = $this->sym_links()->latest()->first();
-			if ($symLink === null || $symLink->created_at->isBefore(now()->subSeconds($gracePeriod))) {
-				/** @var SymLink $symLink */
-				$symLink = $this->sym_links()->create();
-			}
-
-			return $symLink->url;
-		}
-
-		throw new ConfigurationException('the chosen storage adapter "' . get_class($storageAdapter) . '" does not support the symbolic linking feature');
+		return $symLink->url;
 	}
 
 	/**
