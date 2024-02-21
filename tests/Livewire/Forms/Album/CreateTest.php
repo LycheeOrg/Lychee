@@ -97,6 +97,7 @@ class CreateTest extends BaseLivewireTest
 			->call('submit')
 			->assertRedirect();
 
+		/** @var Album $subAlbum */
 		$subAlbum = Album::query()
 			->select(['albums.*'])
 			->join('base_albums', 'base_albums.id', '=', 'albums.id')
