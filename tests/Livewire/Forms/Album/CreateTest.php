@@ -12,8 +12,13 @@
 
 namespace Tests\Livewire\Forms\Album;
 
+use App\Constants\AccessPermissionConstants as APC;
 use App\Contracts\Livewire\Params;
 use App\Livewire\Components\Forms\Album\Create;
+use App\Livewire\Components\Forms\Album\ShareWith;
+use App\Livewire\Components\Pages\Gallery\Album as GalleryAlbum;
+use App\Models\AccessPermission;
+use App\Models\Album;
 use Livewire\Livewire;
 use Tests\Livewire\Base\BaseLivewireTest;
 
@@ -56,5 +61,52 @@ class CreateTest extends BaseLivewireTest
 			->assertRedirect();
 
 		$this->assertCount(2, $this->album1->fresh()->load('children')->children);
+	}
+
+	public function testCreateViaAccessRights(): void
+	{
+		$album = Album::factory()->as_root()->owned_by($this->admin)->create();
+
+		Livewire::actingAs($this->admin)->test(ShareWith::class, ['album' => $album])
+			->assertOk()
+			->set('userID', $this->userMayUpload1->id)
+			->set('grants_full_photo_access', true)
+			->set('grants_download', true)
+			->set('grants_upload', true)
+			->set('grants_edit', true)
+			->set('grants_delete', true)
+			->call('add')
+			->assertOk();
+
+		$num = AccessPermission::query()
+			->where(APC::BASE_ALBUM_ID, '=', $album->id)
+			->where(APC::USER_ID, '=', $this->userMayUpload1->id)
+			->count();
+
+		// we do have one permission
+		$this->assertEquals(1, $num);
+
+		Livewire::actingAs($this->userMayUpload1)->test(GalleryAlbum::class, ['albumId' => $album->id])
+			->assertOk();
+
+		$title = fake()->country() . ' ' . fake()->year();
+		Livewire::actingAs($this->userMayUpload1)->test(Create::class, ['params' => [Params::PARENT_ID => $album->id]])
+			->assertOk()
+			->assertViewIs('livewire.forms.add.create')
+			->set('title', $title)
+			->call('submit')
+			->assertRedirect();
+
+		$subAlbum = Album::query()
+			->select(['albums.*'])
+			->join('base_albums', 'base_albums.id', '=', 'albums.id')
+			->where('base_albums.title', '=', $title)->first();
+
+		Livewire::actingAs($this->userMayUpload1)->test(GalleryAlbum::class, ['albumId' => $subAlbum->id])
+			->assertOk();
+
+		Livewire::actingAs($this->userMayUpload1)->test(GalleryAlbum::class, ['albumId' => $album->id])
+			->assertOk()
+			->assertSee($title);
 	}
 }
