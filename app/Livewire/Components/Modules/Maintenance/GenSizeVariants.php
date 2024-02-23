@@ -110,14 +110,18 @@ class GenSizeVariants extends Component
 	 */
 	public function getNumberOfSizeVariantsToGenerateProperty(): int
 	{
+		if (!$this->svHelpers->isEnabledByConfiguration($this->getSvProperty())) {
+			return 0;
+		}
+
 		$numGenerated = SizeVariant::query()->where('type', '=', $this->getSvProperty())->count();
 
 		$totalToHave = SizeVariant::query()->where(fn ($q) => $q
 				->when($this->svHelpers->getMaxWidth($this->getSvProperty()) !== 0, fn ($q1) => $q1->where('width', '>', $this->svHelpers->getMaxWidth($this->getSvProperty())))
 				->when($this->svHelpers->getMaxHeight($this->getSvProperty()) !== 0, fn ($q2) => $q2->orWhere('height', '>', $this->svHelpers->getMaxHeight($this->getSvProperty())))
 		)
-			->where('type', '=', SizeVariantType::ORIGINAL)
-			->count();
+		->where('type', '=', SizeVariantType::ORIGINAL)
+		->count();
 
 		return $totalToHave - $numGenerated;
 	}

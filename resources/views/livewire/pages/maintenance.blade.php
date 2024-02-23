@@ -22,6 +22,7 @@
                 <livewire:modules.maintenance.gen-size-variants :type="\App\Enum\SizeVariantType::SMALL2X->value" />
                 <livewire:modules.maintenance.gen-size-variants :type="\App\Enum\SizeVariantType::MEDIUM->value" />
                 <livewire:modules.maintenance.gen-size-variants :type="\App\Enum\SizeVariantType::MEDIUM2X->value" />
+                <livewire:modules.maintenance.missing-file-sizes />
             </div>
         </div>
     </div>
