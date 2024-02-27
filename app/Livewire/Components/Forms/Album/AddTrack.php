@@ -10,7 +10,7 @@ use App\Exceptions\Internal\LycheeLogicException;
 use App\Factories\AlbumFactory;
 use App\Livewire\Traits\InteractWithModal;
 use App\Livewire\Traits\Notify;
-use App\Models\TagAlbum;
+use App\Models\Album;
 use App\Policies\AlbumPolicy;
 use App\Rules\AlbumIDRule;
 use Illuminate\Contracts\View\View;
@@ -70,7 +70,7 @@ class AddTrack extends Component
 		}
 
 		$album = $this->albumFactory->findBaseAlbumOrFail($this->albumID, false);
-		if ($album instanceof TagAlbum) {
+		if (!$album instanceof Album) {
 			throw new LycheeDomainException('This functionality is not available for tag albums.');
 		}
 
@@ -85,6 +85,7 @@ class AddTrack extends Component
 	public function submit(): void
 	{
 		$this->validate();
+		/** @var Album $album */
 		$album = $this->albumFactory->findBaseAlbumOrFail($this->albumID, false);
 
 		Gate::authorize(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $album]);
