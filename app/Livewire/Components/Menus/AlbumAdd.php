@@ -72,4 +72,10 @@ class AlbumAdd extends Component
 		$this->closeContextMenu();
 		$this->openModal('forms.add.import-from-dropbox', $this->params);
 	}
+
+	public function openAddTrackModal(): void
+	{
+		$this->closeContextMenu();
+		$this->openModal('forms.album.add-track', $this->params);
+	}
 }
