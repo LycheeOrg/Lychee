@@ -102,39 +102,23 @@ final class Features
 	 *
 	 * @template T
 	 *
-	 * @param string|array<int,string> $featureNames  to check
-	 * @param \Closure(): T            $callbackTrue  what happens if we features are enabled
-	 * @param \Closure(): T            $callbackFalse what happens if we features are disabled
-	 *
-	 * @return T
-	 */
-	public static function when(string|array $featureNames, \Closure $callbackTrue, \Closure $callbackFalse): mixed
-	{
-		if (is_array($featureNames)) {
-			return self::allAreActive($featureNames) ? $callbackTrue() : $callbackFalse();
-		}
-
-		return self::active($featureNames) ? $callbackTrue() : $callbackFalse();
-	}
-
-	/**
-	 * Determine whether a feature is active.
-	 *
-	 * @template T
-	 *
 	 * @param string|array<int,string> $featureNames to check
-	 * @param T                        $valIfTrue    Value if we features are enabled
-	 * @param T                        $valIfFalse   Value if we features are disabled
+	 * @param T|\Closure(): T          $valIfTrue    what happens or Value if we features are enabled
+	 * @param T|\Closure(): T          $valIfFalse   what happens or Value if we features are disabled
 	 *
 	 * @return T
 	 */
-	public static function whenConst(string|array $featureNames, mixed $valIfTrue, mixed $valIfFalse): mixed
+	public static function when(string|array $featureNames, mixed $valIfTrue, mixed $valIfFalse): mixed
 	{
-		if (is_array($featureNames)) {
-			return self::allAreActive($featureNames) ? $valIfTrue : $valIfFalse;
-		}
+		// Sadly phpstan does not do the type inference as it would do in a if statement.
+		$retValue = match (is_array($featureNames)) {
+			true => self::allAreActive($featureNames) ? $valIfTrue : $valIfFalse, // @phpstan-ignore-line
+			// Parameter #1 $featureNames of static method App\Assets\Features::allAreActive() expects array<int, string>, array<int, string>|string given.
+			false => self::active($featureNames) ? $valIfTrue : $valIfFalse, // @phpstan-ignore-line
+			// Parameter #1 $featureName of static method App\Assets\Features::active() expects string, array<int, string>|string given.
+		};
 
-		return self::active($featureNames) ? $valIfTrue : $valIfFalse;
+		return is_callable($retValue) ? $retValue() : $retValue;
 	}
 
 	/**

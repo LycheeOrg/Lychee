@@ -21,14 +21,14 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::prefix(Features::whenConst('livewire', '', 'livewire'))
+Route::prefix(Features::when('livewire', '', 'livewire'))
 	->group(function () {
 		Route::get('/diagnostics', Diagnostics::class)->name('diagnostics');
 	});
 
 Route::middleware(['installation:complete', 'migration:complete'])
 	->group(function () {
-		Route::prefix(Features::whenConst('livewire', '', 'livewire'))
+		Route::prefix(Features::when('livewire', '', 'livewire'))
 		->group(function () {
 			// Oauth routes.
 			Route::get('/auth/{provider}/redirect', [Oauth::class, 'redirected'])->whereIn('provider', OauthProvidersType::values());
