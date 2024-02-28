@@ -28,9 +28,9 @@ return new class() extends Migration {
 	public function down(): void
 	{
 		Schema::table('albums', function (Blueprint $table) {
-			$table->dropColumn('header_id');
+			$table->dropForeign('albums_header_id_foreign');
 
-			$table->dropForeign('header_id');
+			$table->dropColumn('header_id');
 		});
 	}
 };
