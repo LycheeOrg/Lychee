@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Album;
 
 use App\Contracts\Http\Requests\HasAlbum;
 use App\Contracts\Http\Requests\HasPhoto;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Contracts\Models\AbstractAlbum;
+use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasAlbumTrait;
 use App\Http\Requests\Traits\HasPhotoTrait;
 use App\Http\RuleSets\Album\SetAlbumHeaderRuleSet;
