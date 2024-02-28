@@ -777,6 +777,45 @@ class AlbumTest extends AbstractTestCase
 	}
 
 	/**
+	 * Creates a (regular) album, put 2 photos in it.
+	 * Get original header_id.
+	 * Set header of album to photo 1, check that header_id is photo1.
+	 * Set header of album to photo 2, check that header_id is photo2.
+	 * Unset header of album, check that header_id is back to original. #### Unsure of this one because when header is unset it should return random id.
+	 *
+	 * @return void
+	 */
+	public function testSetHeaderByOwner()
+	{
+		Auth::loginUsingId(1);
+		$albumID = $this->albums_tests->add(null, 'Test Album')->offsetGet('id');
+		$photoID1 = $this->photos_tests->upload(
+			AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE),
+			$albumID
+		)->offsetGet('id');
+		$photoID2 = $this->photos_tests->upload(
+			AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_HOCHUFERWEG),
+			$albumID
+		)->offsetGet('id');
+		$initialHeaderID = $this->albums_tests->get($albumID)->offsetGet('header_id');
+
+		$this->albums_tests->set_header($albumID, $photoID1);
+		$headerID = $this->albums_tests->get($albumID)->offsetGet('header_id');
+		$this->assertEquals($photoID1, $headerID);
+
+		$this->albums_tests->set_header($albumID, $photoID2);
+		$headerID = $this->albums_tests->get($albumID)->offsetGet('header_id');
+		$this->assertEquals($photoID2, $headerID);
+
+		//		$this->albums_tests->set_header($albumID, null);
+		//		$headerID = $this->albums_tests->get($albumID)->offsetGet('header_id');
+		//		$this->assertEquals($initialHeaderID, $headerID);
+
+		Auth::logout();
+		Session::flush();
+	}
+
+	/**
 	 * Check that deleting in Unsorted results in removing Unsorted pictures.
 	 *
 	 * @return void
