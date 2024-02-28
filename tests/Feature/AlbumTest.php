@@ -781,7 +781,7 @@ class AlbumTest extends AbstractTestCase
 	 * Get original header_id.
 	 * Set header of album to photo 1, check that header_id is photo1.
 	 * Set header of album to photo 2, check that header_id is photo2.
-	 * Unset header of album, check that header_id is back to original. #### Unsure of this one because when header is unset it should return random id.
+	 * Unset header of album, check that header_id is back to original.
 	 *
 	 * @return void
 	 */
@@ -807,9 +807,9 @@ class AlbumTest extends AbstractTestCase
 		$headerID = $this->albums_tests->get($albumID)->offsetGet('header_id');
 		$this->assertEquals($photoID2, $headerID);
 
-		//		$this->albums_tests->set_header($albumID, null);
-		//		$headerID = $this->albums_tests->get($albumID)->offsetGet('header_id');
-		//		$this->assertEquals($initialHeaderID, $headerID);
+		$this->albums_tests->set_header($albumID, null);
+		$headerID = $this->albums_tests->get($albumID)->offsetGet('header_id');
+		$this->assertEquals($initialHeaderID, $headerID);
 
 		Auth::logout();
 		Session::flush();
