@@ -35,6 +35,7 @@ use App\Http\Requests\Album\SetAlbumsTitleRequest;
 use App\Http\Requests\Album\SetAlbumTagsRequest;
 use App\Http\Requests\Album\SetAlbumTrackRequest;
 use App\Http\Requests\Album\UnlockAlbumRequest;
+use App\Http\Requests\SetAlbumHeaderRequest;
 use App\Http\Resources\Collections\PositionDataResource;
 use App\Http\Resources\Models\AlbumResource;
 use App\Http\Resources\Models\SmartAlbumResource;
@@ -213,6 +214,19 @@ class AlbumController extends Controller
 	public function setCover(SetAlbumCoverRequest $request): void
 	{
 		$request->album()->cover_id = $request->photo()?->id;
+		$request->album()->save();
+	}
+
+	/**
+	 * Set header image of the album.
+	 *
+	 * @param SetAlbumHeaderRequest $request
+	 *
+	 * @return void
+	 */
+	public function setHeader(SetAlbumHeaderRequest $request): void
+	{
+		$request->album()->header_id = $request->photo()?->id;
 		$request->album()->save();
 	}
 
