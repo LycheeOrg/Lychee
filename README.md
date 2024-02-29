@@ -141,4 +141,4 @@ We would like to thank Jetbrains for supporting us with their [Open Source Devel
 [jetbrains-opensource]: https://www.jetbrains.com/community/opensource/
 [download-shield]: https://img.shields.io/github/downloads/LycheeOrg/Lychee/total
 [discord]: https://discord.gg/JMPvuRQcTf
-[discord-shield]: https://img.shields.io/discord/1046911561366765598
+[discord-shield]: https://img.shields.io/discord/1046911561366765598?logo=discord
