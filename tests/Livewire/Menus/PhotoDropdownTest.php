@@ -88,6 +88,23 @@ class PhotoDropdownTest extends BaseLivewireTest
 			->assertDispatched('reloadPage');
 	}
 
+	public function testSetAsHeaderGuest(): void
+	{
+		Livewire::test(PhotoDropdown::class,
+			['params' => [Params::ALBUM_ID => $this->album1->id, Params::PHOTO_ID => $this->photo1->id]])
+			->call('setAsHeader')
+			->assertStatus(403);
+	}
+
+	public function testSetAsHeader(): void
+	{
+		Livewire::actingAs($this->admin)->test(PhotoDropdown::class,
+			['params' => [Params::ALBUM_ID => $this->album1->id, Params::PHOTO_ID => $this->photo1->id]])
+			->call('setAsHeader')
+			->assertDispatched('closeContextMenu')
+			->assertDispatched('reloadPage');
+	}
+
 	public function testTag(): void
 	{
 		Livewire::test(PhotoDropdown::class,
