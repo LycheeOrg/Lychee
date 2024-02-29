@@ -4,8 +4,10 @@ namespace App\Livewire\Components\Pages\Gallery;
 
 use App\Actions\Search\AlbumSearch;
 use App\Actions\Search\PhotoSearch;
+use App\Contracts\Models\AbstractAlbum;
 use App\Enum\ColumnSortingPhotoType;
 use App\Enum\OrderSortingType;
+use App\Factories\AlbumFactory;
 use App\Livewire\DTO\AlbumFlags;
 use App\Livewire\DTO\AlbumRights;
 use App\Livewire\DTO\Layouts;
@@ -41,6 +43,8 @@ class Search extends BaseAlbumComponent
 	#[Url(history: true)]
 	public string $urlQuery = '';
 	public string $searchQuery = ''; // ! Wired
+	private AlbumFactory $albumFactory;
+	public ?AbstractAlbum $album = null;
 
 	/** @var string[] */
 	protected array $terms = [];
@@ -58,6 +62,7 @@ class Search extends BaseAlbumComponent
 		$this->num_albums = 0;
 		$this->num_photos = 0;
 		$this->search_minimum_length_required = Configs::getValueAsInt('search_minimum_length_required');
+		$this->albumFactory = resolve(AlbumFactory::class);
 	}
 
 	public function mount(string $albumId = ''): void
@@ -77,6 +82,7 @@ class Search extends BaseAlbumComponent
 		$this->sessionFlags = SessionFlags::get();
 		$this->flags->is_base_album = false;
 		$this->flags->is_accessible = true;
+		$this->album = $albumId ? $this->albumFactory->findAbstractAlbumOrFail($albumId) : null;
 	}
 
 	/**
@@ -107,7 +113,7 @@ class Search extends BaseAlbumComponent
 			/** @var LengthAwarePaginator<Photo> $photoResults */
 			/** @disregard P1013 Undefined method withQueryString() (stupid intelephense) */
 			$photoResults = $this->photoSearch
-				->sqlQuery($this->terms)
+				->sqlQuery($this->terms, $this->album)
 				->orderBy(ColumnSortingPhotoType::TAKEN_AT->value, OrderSortingType::ASC->value)
 				->paginate(Configs::getValueAsInt('search_pagination_limit'))
 				->withQueryString();
