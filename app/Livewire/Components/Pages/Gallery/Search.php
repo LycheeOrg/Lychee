@@ -4,7 +4,6 @@ namespace App\Livewire\Components\Pages\Gallery;
 
 use App\Actions\Search\AlbumSearch;
 use App\Actions\Search\PhotoSearch;
-use App\Contracts\Models\AbstractAlbum;
 use App\Enum\ColumnSortingPhotoType;
 use App\Enum\OrderSortingType;
 use App\Factories\AlbumFactory;
@@ -44,7 +43,7 @@ class Search extends BaseAlbumComponent
 	public string $urlQuery = '';
 	public string $searchQuery = ''; // ! Wired
 	private AlbumFactory $albumFactory;
-	public ?AbstractAlbum $album = null;
+	public ?ModelsAlbum $album = null;
 
 	/** @var string[] */
 	protected array $terms = [];
@@ -82,7 +81,15 @@ class Search extends BaseAlbumComponent
 		$this->sessionFlags = SessionFlags::get();
 		$this->flags->is_base_album = false;
 		$this->flags->is_accessible = true;
-		$this->album = $albumId ? $this->albumFactory->findAbstractAlbumOrFail($albumId) : null;
+		if ($albumId === '') {
+			$this->album = null;
+		} else {
+			if ($this->albumFactory->findAbstractAlbumOrFail($albumId) instanceof ModelsAlbum) {
+				$this->album = $this->albumFactory->findAbstractAlbumOrFail($albumId);
+			} else {
+				$this->album = null;
+			}
+		}
 	}
 
 	/**

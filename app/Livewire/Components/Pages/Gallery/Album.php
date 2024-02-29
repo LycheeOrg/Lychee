@@ -114,6 +114,7 @@ class Album extends BaseAlbumComponent implements Reloadable
 	{
 		$this->album = $this->albumFactory->findAbstractAlbumOrFail($this->albumId);
 		$this->flags->is_base_album = $this->album instanceof BaseAlbum;
+		$this->flags->is_normal_album = $this->album instanceof ModelsAlbum;
 		$this->flags->is_accessible = Gate::check(AlbumPolicy::CAN_ACCESS, [ModelsAlbum::class, $this->album]);
 
 		if (!$this->flags->is_accessible) {

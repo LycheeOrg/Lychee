@@ -39,7 +39,7 @@ class PhotoSearch
 	 * Create the query manually.
 	 *
 	 * @param array      $terms
-	 * @param Album|null $origin the optional top album which is used as a search base
+	 * @param Album|null $album the optional top album which is used as a search base
 	 *
 	 * @return Builder
 	 */

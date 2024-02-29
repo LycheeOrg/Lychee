@@ -13,6 +13,7 @@ class AlbumFlags
 		public bool $is_password_protected = false,
 		public bool $is_map_accessible = false,
 		public bool $is_base_album = false,
+		public bool $is_normal_album = false,
 		public bool $is_mod_frame_enabled = false,
 		public bool $is_search_accessible = false,
 		public string $album_thumb_css_aspect_ratio = '',
