@@ -777,6 +777,29 @@ class AlbumTest extends AbstractTestCase
 	}
 
 	/**
+	 * Creates an extra User.
+	 * Creates a (regular) album, put a photo in it.
+	 * Log are extra user, and try to set the header of the album, expect to fail.
+	 *
+	 * @return void
+	 */
+	public function testSetHeaderByNonOwner()
+	{
+		Auth::loginUsingId(1);
+		$userID = $this->users_tests->add('Test user', 'Test password 1')->offsetGet('id');
+		$albumID = $this->albums_tests->add(null, 'Test Album')->offsetGet('id');
+		$photoID1 = $this->photos_tests->upload(
+			AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE),
+			$albumID
+		)->offsetGet('id');
+		Auth::logout();
+		Session::flush();
+
+		Auth::loginUsingId($userID);
+		$this->albums_tests->set_header($albumID, $photoID1, 403);
+	}
+
+	/**
 	 * Creates a (regular) album, put 2 photos in it.
 	 * Get original header_id.
 	 * Set header of album to photo 1, check that header_id is photo1.
