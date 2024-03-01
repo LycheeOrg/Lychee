@@ -85,7 +85,7 @@ class Create extends Action
 			$album->access_permissions()->saveMany($this->copyPermission($parentAlbum));
 		}
 
-		$this->fixPermissionIfNotOwner($album);
+		$this->grantFullPermissionsToNewOwner($album);
 	}
 
 	/**
@@ -114,7 +114,7 @@ class Create extends Action
 	 *
 	 * @return void
 	 */
-	private function fixPermissionIfNotOwner(Album $album)
+	private function grantFullPermissionsToNewOwner(Album $album)
 	{
 		if ($album->owner_id === $this->intendedOwnerId) {
 			return;
@@ -125,14 +125,7 @@ class Create extends Action
 			->where(APC::BASE_ALBUM_ID, '=', $album->id)
 			->delete();
 
-		$accessPerm = new AccessPermission([
-			APC::USER_ID => $this->intendedOwnerId,
-			APC::GRANTS_FULL_PHOTO_ACCESS => true,
-			APC::GRANTS_DOWNLOAD => true,
-			APC::GRANTS_UPLOAD => true,
-			APC::GRANTS_EDIT => true,
-			APC::GRANTS_DELETE => true,
-		]);
+		$accessPerm = AccessPermission::withGrantFullPermissionsToUser($this->intendedOwnerId);
 
 		$album->access_permissions()->save($accessPerm);
 	}
