@@ -1,0 +1,14 @@
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Suggest an idea for this project. :)  
+
+        Valid ideas will be converted into proper issues to track their advancement.
+
+  - type: textarea
+    attributes:
+      label: Enhancement
+      description: Explain in a few words which functionality or improvements you would like to see in Lychee.
+    validations:
+      required: true

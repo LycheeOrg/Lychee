@@ -34,7 +34,7 @@ use Illuminate\Database\Query\JoinClause;
  * Hence, this method collects all files which need to be removed.
  * The caller can then decide to delete them asynchronously.
  */
-class Delete
+readonly class Delete
 {
 	protected FileDeleter $fileDeleter;
 

@@ -237,7 +237,7 @@ class AddStandaloneStrategy extends AbstractAddStrategy
 	private function putSourceIntoFinalDestination(FlysystemFile $targetFile): StreamStats
 	{
 		try {
-			if ($this->parameters->importMode->shallImportViaSymlink()) {
+			if ($this->parameters->importMode->shallImportViaSymlink) {
 				if (!$targetFile->isLocalFile()) {
 					throw new ConfigurationException('Symlinking is only supported on local filesystems');
 				}
@@ -274,7 +274,7 @@ class AddStandaloneStrategy extends AbstractAddStrategy
 					$this->sourceFile->close();
 					$targetFile->close();
 				}
-				if ($this->parameters->importMode->shallDeleteImported()) {
+				if ($this->parameters->importMode->shallDeleteImported) {
 					// This may throw an exception, if the original has been
 					// readable, but is not writable
 					// In this case, the media file will have been copied, but

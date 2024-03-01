@@ -17,6 +17,7 @@
 [![Front end repository][frontend-shield]](https://github.com/LycheeOrg/Lychee-front)
 [![Docker repository][docker-shield]](https://github.com/LycheeOrg/Lychee-Docker)
 [![Gitter][gitter-shield]](https://gitter.im/LycheeOrg/Lobby)
+[![Discord][discord-shield]][discord]
 
 
 #### A great looking and easy-to-use photo-management-system.
@@ -27,6 +28,30 @@
 Upgrade from v3 is straight forward. [Upgrade. &#187;](https://lycheeorg.github.io/docs/upgrade.html)
 
 Lychee is a free photo-management tool, which runs on your server or web-space. Installing is a matter of seconds. Upload, manage and share photos like from a native application. Lychee comes with everything you need and all your photos are stored securely. Read more on our [website](https://LycheeOrg.github.io).
+
+## Notice: `master` & `alpha` branches
+
+As LycheeOrg is a very small team, we do not have many maintainers. Most of us have an active work/family life, and as a result, it is no longer possible for us to apply proper 4-eyes principle in the coding reviews.
+
+In order to keep our high code quality, the following changes have been applied.
+
+- `master` stays as a stable branch and contains 4-eyes peer-reviewed pull-requests.
+- `alpha` contains the latest changes (i.e. the above mentionned PR) merged with minimal review.
+
+With this change, we hope to strike a balance between decently paced development (on `alpha`) and maintaining a robust core (on `master`).
+
+On Docker, `nightly`/`dev` continues to refer to the latest `master` commit.
+The `alpha` tag is updated daily with the content of the associated branch.
+
+That being said, if you like the gallery and would like to contribute, do not hesitate to open pull request. If you would like to see more functionalities added and help us push Lychee, [Join the team!](https://lycheeorg.github.io/docs/contributions.html#joining-the-team)
+
+### Support the Team
+
+We aim to maintain a free open-source photography library with high quality of code.<br>
+Being in control of our own data, our own pictures is something that we value above all.
+
+Through [contributions, donations, and sponsorship](https://github.com/sponsors/LycheeOrg), you allow Lychee to thrive. Your donations directly support demo server costs, continuous enhancements, and most importantly bug fixes!
+
 
 ## Installation
 
@@ -90,7 +115,7 @@ You can customize lychee with your own css code. Here you can find a list of ava
 
 ## Troubleshooting
 
-Take a look at the [Documentation](https://lycheeorg.github.io/docs/), particularly the [FAQ](https://lycheeorg.github.io/docs/faq_troubleshooting.html) if you have problems. Discovered a bug? Please create an issue [here](https://github.com/LycheeOrg/Lychee/issues) on GitHub! You can also contact us directly on [gitter (login with your github account). &#187;](https://gitter.im/LycheeOrg/Lobby)
+Take a look at the [Documentation](https://lycheeorg.github.io/docs/), particularly the [FAQ](https://lycheeorg.github.io/docs/faq_troubleshooting.html) if you have problems. Discovered a bug? Please create an issue [here](https://github.com/LycheeOrg/Lychee/issues) on GitHub! You can also contact us directly on [gitter (login with your github account)](https://gitter.im/LycheeOrg/Lobby) or on [discord &#187;][discord]
 
 ## Open Source Community Support
 
@@ -115,3 +140,5 @@ We would like to thank Jetbrains for supporting us with their [Open Source Devel
 [gitter-shield]: https://img.shields.io/gitter/room/LycheeOrg/Lobby.svg?logo=gitter
 [jetbrains-opensource]: https://www.jetbrains.com/community/opensource/
 [download-shield]: https://img.shields.io/github/downloads/LycheeOrg/Lychee/total
+[discord]: https://discord.gg/JMPvuRQcTf
+[discord-shield]: https://img.shields.io/discord/1046911561366765598?logo=discord

@@ -331,7 +331,7 @@ class Exec
 			foreach ($dirs as $dir) {
 				$this->assertImportNotCancelled();
 				/** @var Album|null */
-				$album = $this->importMode->shallSkipDuplicates() ?
+				$album = $this->importMode->shallSkipDuplicates ?
 					Album::query()
 						->select(['albums.*'])
 						->join('base_albums', 'base_albums.id', '=', 'albums.id')
