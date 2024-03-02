@@ -15,7 +15,7 @@
     <x-header.bar class="opacity-0" x-bind:class="isFullscreen ? 'opacity-0 h-0' : 'opacity-100 h-14'">
         <x-header.back wire:navigate href="{{ $this->back }}" />
         <x-header.title>{{ $this->title }}</x-header.title>
-        @if($flags->is_search_accessible && $flags->is_normal_album)
+        @if($flags->is_search_accessible)
         <x-header.button class="flex flex-grow justify-end" href="{{ route('livewire-search', ['albumId' => $album->id]) }}" wire:navigate icon="magnifying-glass" />
         @endif
         <x-header.actions-menus />

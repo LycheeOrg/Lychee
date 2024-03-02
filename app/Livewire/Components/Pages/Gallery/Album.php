@@ -114,7 +114,7 @@ class Album extends BaseAlbumComponent implements Reloadable
 	{
 		$this->album = $this->albumFactory->findAbstractAlbumOrFail($this->albumId);
 		$this->flags->is_base_album = $this->album instanceof BaseAlbum;
-		$this->flags->is_normal_album = $this->album instanceof ModelsAlbum;
+		$this->flags->is_search_accessible = $this->flags->is_search_accessible && $this->album instanceof ModelsAlbum;
 		$this->flags->is_accessible = Gate::check(AlbumPolicy::CAN_ACCESS, [ModelsAlbum::class, $this->album]);
 
 		if (!$this->flags->is_accessible) {
@@ -141,7 +141,7 @@ class Album extends BaseAlbumComponent implements Reloadable
 	/**
 	 * @return Collection<ModelsAlbum>|null
 	 */
-	public function getAlbumsProperty(): Collection|null
+	public function getAlbumsProperty(): ?Collection
 	{
 		if ($this->album instanceof ModelsAlbum) {
 			/** @var Collection<ModelsAlbum> $res */
@@ -172,7 +172,7 @@ class Album extends BaseAlbumComponent implements Reloadable
 	 * @throws QueryBuilderException
 	 * @throws RelationNotFoundException
 	 */
-	private function fetchHeaderUrl(): SizeVariant|null
+	private function fetchHeaderUrl(): ?SizeVariant
 	{
 		if (Configs::getValueAsBool('use_album_compact_header')) {
 			return null;
