@@ -47,8 +47,10 @@ class SearchTest extends BaseLivewireTest
 		Livewire::actingAs($this->admin)->test(Search::class)
 			->assertViewIs('livewire.pages.gallery.search')
 			->assertOk()
-			->set('searchQuery', $this->photo1b->title)
-			->assertOk();
+			->set('searchQuery', substr($this->photo1b->title, 3))
+			->assertOk()
+			->assertSet('num_albums', 0)
+			->assertSet('num_photos', 1);
 	}
 
 	public function testPageLoginSearchWithPhotoResultsAlbum(): void
@@ -57,26 +59,41 @@ class SearchTest extends BaseLivewireTest
 			->assertViewIs('livewire.pages.gallery.search')
 			->assertOk()
 			->set('searchQuery', $this->album1->title)
-			->assertOk();
+			->assertOk()
+			->assertSet('num_albums', 1)
+			->assertSet('num_photos', 0);
 	}
 
-	public function testPageLoginSearchWithPhotoResultsSubAlbum(): void
+	public function testPageLoginSearchWithPhotoResultsInAlbum(): void
+	{
+		Livewire::actingAs($this->admin)->test(Search::class, ['albumId' => $this->album1->id])
+			->assertViewIs('livewire.pages.gallery.search')
+			->assertOk()
+			->set('searchQuery', substr($this->photo1b->title, 3))
+			->assertOk()
+			->assertSet('num_albums', 0)
+			->assertSet('num_photos', 1);
+	}
+
+	public function testPageLoginSearchWithoutResultsInAlbum(): void
+	{
+		Livewire::actingAs($this->admin)->test(Search::class, ['albumId' => $this->album1->id])
+			->assertViewIs('livewire.pages.gallery.search')
+			->assertOk()
+			->set('searchQuery', substr($this->photo1b->title, 3) . 'wrong')
+			->assertOk()
+			->assertSet('num_albums', 0)
+			->assertSet('num_photos', 0);
+	}
+
+	public function testPageLoginSearchWithoutResultsInSubAlbum(): void
 	{
 		Livewire::actingAs($this->admin)->test(Search::class, ['albumId' => $this->subAlbum1->id])
 			->assertViewIs('livewire.pages.gallery.search')
 			->assertOk()
-			->set('searchQuery', $this->subPhoto1->title)
-			->assertSee($this->subPhoto1->id)
-			->assertOk();
-	}
-
-	public function testPageLoginSearchWithoutResultsSubAlbum(): void
-	{
-		Livewire::actingAs($this->admin)->test(Search::class, ['albumId' => $this->subAlbum1->id])
-			->assertViewIs('livewire.pages.gallery.search')
+			->set('searchQuery', substr($this->photo1b->title, 3) . 'wrong')
 			->assertOk()
-			->set('searchQuery', $this->subPhoto1->title . 'wrong')
-			->assertDontSee($this->subPhoto1->id)
-			->assertOk();
+			->assertSet('num_albums', 0)
+			->assertSet('num_photos', 0);
 	}
 }
