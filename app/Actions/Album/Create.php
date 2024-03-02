@@ -2,9 +2,12 @@
 
 namespace App\Actions\Album;
 
+use App\Constants\AccessPermissionConstants as APC;
 use App\Enum\DefaultAlbumProtectionType;
+use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;
+use App\Exceptions\UnexpectedException;
 use App\Models\AccessPermission;
 use App\Models\Album;
 use App\Models\Configs;
@@ -31,16 +34,7 @@ class Create extends Action
 		$album->title = $title;
 		$this->set_parent($album, $parentAlbum);
 		$album->save();
-
-		$defaultProtectionType = Configs::getValueAsEnum('default_album_protection', DefaultAlbumProtectionType::class);
-
-		if ($defaultProtectionType === DefaultAlbumProtectionType::PUBLIC) {
-			$album->access_permissions()->saveMany([AccessPermission::ofPublic()]);
-		}
-
-		if ($defaultProtectionType === DefaultAlbumProtectionType::INHERIT && $parentAlbum !== null) {
-			$album->access_permissions()->saveMany($this->copyPermission($parentAlbum));
-		}
+		$this->set_permissions($album, $parentAlbum);
 
 		return $album;
 	}
@@ -69,6 +63,32 @@ class Create extends Action
 	}
 
 	/**
+	 * Set up the permissions.
+	 *
+	 * @param Album      $album
+	 * @param Album|null $parentAlbum
+	 *
+	 * @return void
+	 *
+	 * @throws UnexpectedException
+	 * @throws ConfigurationKeyMissingException
+	 */
+	private function set_permissions(Album $album, ?Album $parentAlbum): void
+	{
+		$defaultProtectionType = Configs::getValueAsEnum('default_album_protection', DefaultAlbumProtectionType::class);
+
+		if ($defaultProtectionType === DefaultAlbumProtectionType::PUBLIC) {
+			$album->access_permissions()->saveMany([AccessPermission::ofPublic()]);
+		}
+
+		if ($defaultProtectionType === DefaultAlbumProtectionType::INHERIT && $parentAlbum !== null) {
+			$album->access_permissions()->saveMany($this->copyPermission($parentAlbum));
+		}
+
+		$this->grantFullPermissionsToNewOwner($album);
+	}
+
+	/**
 	 * Given a parent album, retrieve its access permission and return an array containing copies of them.
 	 *
 	 * @param Album|null $parentAlbum
@@ -84,5 +104,29 @@ class Create extends Action
 		}
 
 		return $copyPermissions;
+	}
+
+	/**
+	 * If album is created by someone who has the album shared with.
+	 * We need to give access all to that person.
+	 *
+	 * @param Album $album
+	 *
+	 * @return void
+	 */
+	private function grantFullPermissionsToNewOwner(Album $album)
+	{
+		if ($album->owner_id === $this->intendedOwnerId) {
+			return;
+		}
+
+		$album->access_permissions()
+			->where(APC::USER_ID, '=', $this->intendedOwnerId)
+			->where(APC::BASE_ALBUM_ID, '=', $album->id)
+			->delete();
+
+		$accessPerm = AccessPermission::withGrantFullPermissionsToUser($this->intendedOwnerId);
+
+		$album->access_permissions()->save($accessPerm);
 	}
 }
