@@ -59,4 +59,23 @@ class SearchTest extends BaseLivewireTest
 			->set('searchQuery', $this->album1->title)
 			->assertOk();
 	}
+
+	public function testPageLoginSearchWithPhotoResultsSubAlbum(): void
+	{
+		Livewire::actingAs($this->admin)->test(Search::class, ['albumId' => $this->subAlbum1->id])
+			->assertViewIs('livewire.pages.gallery.search')
+			->assertOk()
+			->set('searchQuery', $this->subPhoto1->title)
+			->assertSee($this->subPhoto1->id)
+			->assertOk();
+	}
+
+	public function testPageLoginSearchWithoutResultsSubAlbum(): void
+	{
+		Livewire::actingAs($this->admin)->test(Search::class, ['albumId' => $this->subAlbum1->id])
+			->assertViewIs('livewire.pages.gallery.search')
+			->assertOk()
+			->set('searchQuery', 'abc')
+			->assertOk();
+	}
 }
