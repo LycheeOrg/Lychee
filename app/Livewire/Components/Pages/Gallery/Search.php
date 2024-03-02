@@ -84,8 +84,9 @@ class Search extends BaseAlbumComponent
 		if ($albumId === '') {
 			$this->album = null;
 		} else {
-			if ($this->albumFactory->findAbstractAlbumOrFail($albumId) instanceof ModelsAlbum) {
-				$this->album = $this->albumFactory->findAbstractAlbumOrFail($albumId);
+			$album = $this->albumFactory->findAbstractAlbumOrFail($albumId);
+			if ($album instanceof ModelsAlbum) {
+				$this->album = $album;
 			} else {
 				$this->album = null;
 			}
