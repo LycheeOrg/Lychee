@@ -95,22 +95,22 @@
 			</template>
 			<template x-if="photo.rights.can_edit">
 			<div x-cloak
-				class="absolute top-0 h-1/4 w-3/4 xl:w-1/2 left-1/2 -translate-x-1/2 opacity-10 group hover:opacity-100 transition-opacity duration-500 ease-in-out 
-					z-20"
+				class="absolute top-0 h-1/4 w-full sm:w-1/2 left-1/2 -translate-x-1/2 opacity-50 lg:opacity-10 group lg:hover:opacity-100
+					transition-opacity duration-500 ease-in-out z-20 mt-14 sm:mt-0"
 					x-show="!photoFlags.isEditOpen">
-				<span class="absolute left-1/2 -translate-x-1/2 p-1 min-w-[25%] filter-shadow text-center">
+				<span class="absolute left-1/2 -translate-x-1/2 p-1 min-w-[25%] w-full filter-shadow text-center">
 					<x-gallery.photo.button icon="star" class=''
-						x-bind:class="photo.is_starred ? 'fill-yellow-500 hover:fill-yellow-100' : 'fill-white hover:fill-yellow-500'"
+						x-bind:class="photo.is_starred ? 'fill-yellow-500 lg:hover:fill-yellow-100' : 'fill-white lg:hover:fill-yellow-500'"
 						x-on:click="toggleStar()" />
 					@if ($this->photoFlags->can_rotate)
-						<x-gallery.photo.button icon="counterclockwise" class="fill-white hover:fill-primary-500"
+						<x-gallery.photo.button icon="counterclockwise" class="fill-white lg:hover:fill-primary-500"
 							x-on:click="rotatePhotoCCW()" />
-						<x-gallery.photo.button icon="clockwise" class="fill-white hover:fill-primary-500"
+						<x-gallery.photo.button icon="clockwise" class="fill-white lg:hover:fill-primary-500"
 							x-on:click="rotatePhotoCW()" />
 					@endif
-					<x-gallery.photo.button icon="transfer" class="fill-white hover:fill-primary-500"
+					<x-gallery.photo.button icon="transfer" class="fill-white lg:hover:fill-primary-500"
 						x-on:click="movePhoto()" />
-					<x-gallery.photo.button icon="trash" class="fill-white hover:fill-red-600"
+					<x-gallery.photo.button icon="trash" class="fill-red-600 lg:fill-white lg:hover:fill-red-600"
 						x-on:click="deletePhoto()" />
 				</span>
 			</div>
