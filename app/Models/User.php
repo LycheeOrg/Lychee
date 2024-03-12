@@ -86,7 +86,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	use ToArrayThrowsNotImplemented;
 
 	/**
-	 * @var string[] the attributes that are mass assignable
+	 * @var array<int,string> the attributes that are mass assignable
 	 */
 	protected $fillable = [
 		'username',

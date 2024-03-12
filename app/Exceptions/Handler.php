@@ -8,6 +8,7 @@ use App\Enum\SeverityType;
 use App\Exceptions\Handlers\AccessDBDenied;
 use App\Exceptions\Handlers\AdminSetterHandler;
 use App\Exceptions\Handlers\InstallationHandler;
+use App\Exceptions\Handlers\LegacyIdExceptionHandler;
 use App\Exceptions\Handlers\MigrationHandler;
 use App\Exceptions\Handlers\NoEncryptionKey;
 use App\Exceptions\Handlers\ViteManifestNotFoundHandler;
@@ -108,6 +109,7 @@ class Handler extends ExceptionHandler
 		AdminSetterHandler::class,
 		MigrationHandler::class,
 		ViteManifestNotFoundHandler::class,
+		LegacyIdExceptionHandler::class,
 	];
 
 	/** @var array<int,class-string<\Throwable>> */
