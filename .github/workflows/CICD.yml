@@ -133,6 +133,9 @@ jobs:
           - mariadb
           - postgresql
           - sqlite
+        test-suite:
+          - Feature
+          - Livewire
     # Service containers to run with `container-job`
     services:
       # Label used to access the service container
@@ -191,8 +194,8 @@ jobs:
           php artisan optimize
           php artisan migrate
 
-      - name: Apply tests
-        run: XDEBUG_MODE=coverage vendor/bin/phpunit
+      - name: Apply tests ${{ matrix.test-suite }}
+        run: XDEBUG_MODE=coverage vendor/bin/phpunit --testsuite ${{ matrix.test-suite }}
 
       - name: Codecov
         uses: codecov/codecov-action@v3
