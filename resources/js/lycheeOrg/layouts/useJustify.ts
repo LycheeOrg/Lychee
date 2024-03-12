@@ -1,5 +1,6 @@
 import { ChildNodeWithDataStyle } from "./types";
 import createJustifiedLayout from "justified-layout";
+import isMobile from "is-mobile";
 
 export function useJustify(el: HTMLElement, photoDefaultHeight: number = 320) {
 	const view = document.getElementById("lychee_view_content");
@@ -8,7 +9,7 @@ export function useJustify(el: HTMLElement, photoDefaultHeight: number = 320) {
 	}
 
 	const multiplier = view.scrollHeight > view.clientHeight ? 0 : 1;
-	const containerWidth = parseInt(getComputedStyle(el).width) - multiplier * 20;
+	const containerWidth = parseInt(getComputedStyle(el).width) - multiplier * 20 * (1 - +!!isMobile());
 
 	// @ts-expect-error
 	const justifiedItems: ChildNodeWithDataStyle[] = [...el.childNodes].filter((gridItem) => gridItem.nodeType === 1);

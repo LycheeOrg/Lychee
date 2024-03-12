@@ -178,12 +178,9 @@ export default class Selection {
 			console.log("same elem");
 			return;
 		}
-
 		let toAppend: string[];
 		const index = (Alpine.store("albumIDs") as string[]).indexOf(albumId);
-		console.log(index);
 		const indexLastInserted = (Alpine.store("albumIDs") as string[]).indexOf(lastInsertedAlbumId);
-		console.log(indexLastInserted);
 		if (index < indexLastInserted) {
 			toAppend = (Alpine.store("albumIDs") as string[]).slice(index + 1, indexLastInserted);
 		} else {
