@@ -141,7 +141,7 @@ class Album extends BaseAlbumComponent implements Reloadable
 	/**
 	 * @return Collection<ModelsAlbum>|null
 	 */
-	public function getAlbumsProperty(): ?Collection
+	public function getAlbumsProperty(): Collection|null
 	{
 		if ($this->album instanceof ModelsAlbum) {
 			/** @var Collection<ModelsAlbum> $res */
@@ -172,7 +172,7 @@ class Album extends BaseAlbumComponent implements Reloadable
 	 * @throws QueryBuilderException
 	 * @throws RelationNotFoundException
 	 */
-	private function fetchHeaderUrl(): ?SizeVariant
+	private function fetchHeaderUrl(): SizeVariant|null
 	{
 		if (Configs::getValueAsBool('use_album_compact_header')) {
 			return null;

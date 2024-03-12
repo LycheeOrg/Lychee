@@ -16,7 +16,7 @@
         <x-header.back wire:navigate href="{{ $this->back }}" />
         <x-header.title>{{ $this->title }}</x-header.title>
         @if($flags->is_search_accessible)
-        <x-header.button class="flex flex-grow justify-end" href="{{ route('livewire-search', ['albumId' => $album->id]) }}" wire:navigate icon="magnifying-glass" />
+        <x-header.button class="flex flex-grow justify-end" href="{{ route('livewire-search', ['albumId' => $this->album->id]) }}" wire:navigate icon="magnifying-glass" />
         @endif
         <x-header.actions-menus />
         @if ($rights->can_edit && $flags->is_base_album)
