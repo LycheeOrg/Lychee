@@ -33,7 +33,7 @@ class AddTrack extends Component
 	 * @var string|null albumId of where to upload the picture
 	 */
 	#[Locked] public ?string $albumID = null;
-	public UploadedFile $file;
+	public ?UploadedFile $file = null;
 
 	private AlbumFactory $albumFactory;
 

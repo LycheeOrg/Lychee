@@ -9,7 +9,9 @@
             file:cursor-pointer
             file:hover:bg-bg-100
             hover:text-text-main-100
-            mb-5 text-xs text-text-main-400 border border-bg-800 rounded-md cursor-pointer bg-bg-400 outline-none" wire:model="file" accept="application/x-gpx+xml">
+            mb-5 text-xs text-text-main-400 border border-bg-800 rounded-md cursor-pointer bg-bg-400 outline-none"
+            wire:model="file"
+            accept="application/x-gpx+xml">
             <x-forms.error-message field='file' />
         </p>
     </div>
