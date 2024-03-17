@@ -20,7 +20,7 @@ use Livewire\WithFileUploads;
 /**
  * This defines the Upload Form used in modals.
  */
-class AddTrack extends Component
+class DeleteTrack extends Component
 {
 	use WithFileUploads;
 	use Notify;
