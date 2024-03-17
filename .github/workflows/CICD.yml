@@ -25,7 +25,7 @@ jobs:
     if: (github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository)
     steps:
       - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.11.0
+        uses: styfle/cancel-workflow-action@0.12.1
         with:
           access_token: ${{ github.token }}
 
@@ -36,15 +36,15 @@ jobs:
       - kill_previous
     steps:
       - name: Set up PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@v2.30.0
         with:
           php-version: 8.2
 
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4.1.1
 
       - name: Install dependencies
-        uses: ramsey/composer-install@v2
+        uses: ramsey/composer-install@v3.0.0
 
       - name: Check source code for syntax errors
         run: vendor/bin/parallel-lint --exclude .git --exclude vendor .
@@ -56,15 +56,15 @@ jobs:
       - php_syntax_errors
     steps:
       - name: Set up PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@v2.30.0
         with:
           php-version: 8.2
 
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4.1.1
 
       - name: Install dependencies
-        uses: ramsey/composer-install@v2
+        uses: ramsey/composer-install@v3.0.0
 
       - name: Check source code for code style errors
         run: PHP_CS_FIXER_IGNORE_ENV=1 vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --verbose --diff --dry-run
@@ -79,10 +79,10 @@ jobs:
             node-version: [16, 18, 20]
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4.1.1
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4.0.2
         with:
             node-version: ${{ matrix.node-version }}
 
@@ -105,16 +105,16 @@ jobs:
       - php_syntax_errors
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4.1.1
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@v2.30.0
         with:
           php-version: 8.2
           coverage: none
 
       - name: Install Composer dependencies
-        uses: ramsey/composer-install@v2
+        uses: ramsey/composer-install@v3.0.0
 
       - name: Run PHPStan
         run: vendor/bin/phpstan analyze
@@ -159,7 +159,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4.1.1
 
       - name: Set Up Imagick, FFmpeg & Exiftools
         run: |
@@ -174,7 +174,7 @@ jobs:
           mysql -uroot -proot -e 'create database homestead_test;'
 
       - name: Setup PHP Action
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@v2.30.0
         with:
           php-version: ${{ matrix.php-version }}
           extensions: ${{ env.extensions }}
@@ -182,7 +182,7 @@ jobs:
           tools: pecl, composer
 
       - name: Install Composer dependencies
-        uses: ramsey/composer-install@v2
+        uses: ramsey/composer-install@v3.0.0
 
       - name: copy Env
         run: |
@@ -243,7 +243,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4.1.1
 
       - name: Set Up Imagick, FFmpeg & Exiftools
         run: |
@@ -258,14 +258,14 @@ jobs:
           mysql -uroot -proot -e 'create database homestead_test;'
 
       - name: Setup PHP Action
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@v2.30.0
         with:
           php-version: ${{ matrix.php-version }}
           extensions: ${{ env.extensions }}
           tools: pecl, composer
 
       - name: Install Composer dependencies
-        uses: ramsey/composer-install@v2
+        uses: ramsey/composer-install@v3.0.0
         with:
           composer-options: --no-dev
 
@@ -302,22 +302,22 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4.1.1
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@v2.30.0
         with:
           php-version: 8.2
           extensions: ${{ env.extensions }}
           coverage: none
 
       - name: Install Composer dependencies
-        uses: ramsey/composer-install@v2
+        uses: ramsey/composer-install@v3.0.0
         with:
           composer-options: --no-dev
 
       - name: Use Node.js 20
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4.0.2
         with:
             node-version: 20
 
@@ -332,7 +332,7 @@ jobs:
           make clean dist
 
       - name: Upload a Build Artifact
-        uses: actions/upload-artifact@v3.1.0
+        uses: actions/upload-artifact@v4.3.1
         with:
           name: Lychee-Dist.zip
           path: Lychee.zip
