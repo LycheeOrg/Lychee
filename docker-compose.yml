@@ -1,0 +1,26 @@
+#-------------------------------------------
+#  Docker Compose
+# @RobLandry
+# Repo : https://github.com/LycheeOrg/Lychee-Docker
+#-------------------------------------------
+
+version: '3'
+
+services:
+  lychee:
+    build: .
+    container_name: lychee
+    ports:
+      - 9999:80
+      - 5173:5173
+    volumes:
+      - ./:/var/www/html/Lychee
+    networks:
+      - lychee
+    environment:
+      - PHP_TZ=UTC
+      - TIMEZONE=UTC
+    restart: unless-stopped
+
+networks:
+  lychee:
