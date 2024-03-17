@@ -35,8 +35,8 @@ jobs:
     needs:
       - kill_previous
     steps:
-      - name: Set up PHP
-        uses: shivammathur/setup-php@v2.30.0
+      - name: Setup PHP Action
+        uses: shivammathur/setup-php@2.30.0
         with:
           php-version: 8.2
 
@@ -44,7 +44,7 @@ jobs:
         uses: actions/checkout@v4.1.1
 
       - name: Install dependencies
-        uses: ramsey/composer-install@v3
+        uses: ramsey/composer-install@3.0.0
 
       - name: Check source code for syntax errors
         run: vendor/bin/parallel-lint --exclude .git --exclude vendor .
@@ -56,7 +56,7 @@ jobs:
       - php_syntax_errors
     steps:
       - name: Set up PHP
-        uses: shivammathur/setup-php@v2.30.0
+        uses: shivammathur/setup-php@2.30.0
         with:
           php-version: 8.2
 
@@ -64,7 +64,7 @@ jobs:
         uses: actions/checkout@v4.1.1
 
       - name: Install dependencies
-        uses: ramsey/composer-install@v3
+        uses: ramsey/composer-install@3.0.0
 
       - name: Check source code for code style errors
         run: PHP_CS_FIXER_IGNORE_ENV=1 vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --verbose --diff --dry-run
@@ -108,13 +108,13 @@ jobs:
         uses: actions/checkout@v4.1.1
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@v2.30.0
+        uses: shivammathur/setup-php@2.30.0
         with:
           php-version: 8.2
           coverage: none
 
       - name: Install Composer dependencies
-        uses: ramsey/composer-install@v3
+        uses: ramsey/composer-install@3.0.0
 
       - name: Run PHPStan
         run: vendor/bin/phpstan analyze
@@ -174,7 +174,7 @@ jobs:
           mysql -uroot -proot -e 'create database homestead_test;'
 
       - name: Setup PHP Action
-        uses: shivammathur/setup-php@v2.30.0
+        uses: shivammathur/setup-php@2.30.0
         with:
           php-version: ${{ matrix.php-version }}
           extensions: ${{ env.extensions }}
@@ -182,7 +182,7 @@ jobs:
           tools: pecl, composer
 
       - name: Install Composer dependencies
-        uses: ramsey/composer-install@v3
+        uses: ramsey/composer-install@3.0.0
 
       - name: copy Env
         run: |
@@ -258,14 +258,14 @@ jobs:
           mysql -uroot -proot -e 'create database homestead_test;'
 
       - name: Setup PHP Action
-        uses: shivammathur/setup-php@v2.30.0
+        uses: shivammathur/setup-php@2.30.0
         with:
           php-version: ${{ matrix.php-version }}
           extensions: ${{ env.extensions }}
           tools: pecl, composer
 
       - name: Install Composer dependencies
-        uses: ramsey/composer-install@v3
+        uses: ramsey/composer-install@3.0.0
         with:
           composer-options: --no-dev
 
@@ -305,14 +305,14 @@ jobs:
         uses: actions/checkout@v4.1.1
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@v2.30.0
+        uses: shivammathur/setup-php@2.30.0
         with:
           php-version: 8.2
           extensions: ${{ env.extensions }}
           coverage: none
 
       - name: Install Composer dependencies
-        uses: ramsey/composer-install@v3
+        uses: ramsey/composer-install@3.0.0
         with:
           composer-options: --no-dev
 
