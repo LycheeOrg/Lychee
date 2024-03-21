@@ -6,6 +6,7 @@ import type Keybindings from "@/lycheeOrg/actions/keybindings";
 import AlbumFlagsView from "../../lycheeOrg/flags/albumFlags";
 import PhotoFlagsView from "../../lycheeOrg/flags/photoFlags";
 import PhotoLayout from "@/lycheeOrg/layouts/PhotoLayout";
+import SwipeActions from "@/lycheeOrg/actions/swipeActions";
 
 export interface PhotoArray {
 	[key: string]: Photo;
@@ -50,6 +51,9 @@ export type AlbumView = AlpineComponent<{
 
 	// Photo layout information in album (justified, masonry etc.)
 	photoLayout: PhotoLayout;
+
+	// Swipe actions
+	swiper: SwipeActions;
 
 	toggleFullScreen: () => void;
 	toggleNSFW: () => void;
@@ -108,8 +112,10 @@ export type UploadView = AlpineComponent<{
 	chunkSize: number;
 	hasErrorOccurred: boolean;
 	upload_processing_limit: number;
-	chnkStarts: any;
+	chnkStarts: number[];
 	fileList: any;
+	progress: number[];
+	numChunks: number[];
 
 	/**
 	 * The number of requests which are "on the fly", i.e. for which a

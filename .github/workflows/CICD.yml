@@ -17,6 +17,9 @@ on:
   # Allow manually triggering the workflow.
   workflow_dispatch:
 
+# Declare default permissions as read only.
+permissions: read-all
+
 jobs:
   kill_previous:
     name: 0️⃣ Kill previous runs
@@ -25,7 +28,7 @@ jobs:
     if: (github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository)
     steps:
       - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.11.0
+        uses: styfle/cancel-workflow-action@85880fa0301c86cca9da44039ee3bb12d3bedbfa # 0.12.1
         with:
           access_token: ${{ github.token }}
 
@@ -35,16 +38,16 @@ jobs:
     needs:
       - kill_previous
     steps:
-      - name: Set up PHP
-        uses: shivammathur/setup-php@v2
+      - name: Setup PHP Action
+        uses: shivammathur/setup-php@a4e22b60bbb9c1021113f2860347b0759f66fe5d # 2.30.0
         with:
           php-version: 8.2
 
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
       - name: Install dependencies
-        uses: ramsey/composer-install@v2
+        uses: ramsey/composer-install@57532f8be5bda426838819c5ee9afb8af389d51a # 3.0.0
 
       - name: Check source code for syntax errors
         run: vendor/bin/parallel-lint --exclude .git --exclude vendor .
@@ -56,15 +59,15 @@ jobs:
       - php_syntax_errors
     steps:
       - name: Set up PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@a4e22b60bbb9c1021113f2860347b0759f66fe5d # 2.30.0
         with:
           php-version: 8.2
 
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
       - name: Install dependencies
-        uses: ramsey/composer-install@v2
+        uses: ramsey/composer-install@57532f8be5bda426838819c5ee9afb8af389d51a # 3.0.0
 
       - name: Check source code for code style errors
         run: PHP_CS_FIXER_IGNORE_ENV=1 vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --verbose --diff --dry-run
@@ -76,13 +79,13 @@ jobs:
       - php_syntax_errors
     strategy:
         matrix:
-            node-version: [16, 18, 20]
+            node-version: [18, 20]
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
         with:
             node-version: ${{ matrix.node-version }}
 
@@ -105,16 +108,16 @@ jobs:
       - php_syntax_errors
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@a4e22b60bbb9c1021113f2860347b0759f66fe5d # 2.30.0
         with:
           php-version: 8.2
           coverage: none
 
       - name: Install Composer dependencies
-        uses: ramsey/composer-install@v2
+        uses: ramsey/composer-install@57532f8be5bda426838819c5ee9afb8af389d51a # 3.0.0
 
       - name: Run PHPStan
         run: vendor/bin/phpstan analyze
@@ -159,7 +162,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
       - name: Set Up Imagick, FFmpeg & Exiftools
         run: |
@@ -174,7 +177,7 @@ jobs:
           mysql -uroot -proot -e 'create database homestead_test;'
 
       - name: Setup PHP Action
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@a4e22b60bbb9c1021113f2860347b0759f66fe5d # 2.30.0
         with:
           php-version: ${{ matrix.php-version }}
           extensions: ${{ env.extensions }}
@@ -182,7 +185,7 @@ jobs:
           tools: pecl, composer
 
       - name: Install Composer dependencies
-        uses: ramsey/composer-install@v2
+        uses: ramsey/composer-install@57532f8be5bda426838819c5ee9afb8af389d51a # 3.0.0
 
       - name: copy Env
         run: |
@@ -197,11 +200,13 @@ jobs:
       - name: Apply tests ${{ matrix.test-suite }}
         run: XDEBUG_MODE=coverage vendor/bin/phpunit --testsuite ${{ matrix.test-suite }}
 
-      - name: Codecov
-        uses: codecov/codecov-action@v3
-
       - name: Make sure we can go backward
         run: php artisan migrate:rollback
+
+      - name: Codecov
+        uses: codecov/codecov-action@54bcd8715eee62d40e33596ef5e8f0f48dbbccab # v4.1.0
+        env:
+          token: ${{ secrets.CODECOV_TOKEN }}
 
   dist:
     name: 3️⃣ PHP ${{ matrix.php-version }} - ${{ matrix.sql-versions }} - Dist
@@ -239,7 +244,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
       - name: Set Up Imagick, FFmpeg & Exiftools
         run: |
@@ -254,14 +259,14 @@ jobs:
           mysql -uroot -proot -e 'create database homestead_test;'
 
       - name: Setup PHP Action
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@a4e22b60bbb9c1021113f2860347b0759f66fe5d # 2.30.0
         with:
           php-version: ${{ matrix.php-version }}
           extensions: ${{ env.extensions }}
           tools: pecl, composer
 
       - name: Install Composer dependencies
-        uses: ramsey/composer-install@v2
+        uses: ramsey/composer-install@57532f8be5bda426838819c5ee9afb8af389d51a # 3.0.0
         with:
           composer-options: --no-dev
 
@@ -298,22 +303,22 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@a4e22b60bbb9c1021113f2860347b0759f66fe5d # 2.30.0
         with:
           php-version: 8.2
           extensions: ${{ env.extensions }}
           coverage: none
 
       - name: Install Composer dependencies
-        uses: ramsey/composer-install@v2
+        uses: ramsey/composer-install@57532f8be5bda426838819c5ee9afb8af389d51a # 3.0.0
         with:
           composer-options: --no-dev
 
       - name: Use Node.js 20
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
         with:
             node-version: 20
 
@@ -328,7 +333,7 @@ jobs:
           make clean dist
 
       - name: Upload a Build Artifact
-        uses: actions/upload-artifact@v3.1.0
+        uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4.3.1
         with:
           name: Lychee-Dist.zip
           path: Lychee.zip

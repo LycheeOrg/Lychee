@@ -7,6 +7,7 @@ import Keybindings from "@/lycheeOrg/actions/keybindings";
 import AlbumFlags from "@/lycheeOrg/flags/albumFlags";
 import PhotoFlagsView from "@/lycheeOrg/flags/photoFlags";
 import PhotoLayout from "@/lycheeOrg/layouts/PhotoLayout";
+import SwipeActions from "@/lycheeOrg/actions/swipeActions";
 
 export const albumView = (Alpine: Alpine) =>
 	Alpine.data(
@@ -45,8 +46,11 @@ export const albumView = (Alpine: Alpine) =>
 			isFullscreen: isFullscreen,
 			photoLayout: new PhotoLayout(layouts),
 			photo_id: null,
+			swiper: new SwipeActions(),
 
 			init() {
+				// @ts-expect-error
+				this.swiper.register(this);
 				console.log("init albumView!");
 				if (selectedPhoto !== "" && selectedPhoto !== null) {
 					this.$store.photo = Selection.getPhoto(selectedPhoto);

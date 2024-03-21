@@ -90,8 +90,8 @@ class Archive
 
 		$responseGenerator = function () use ($archiveFileInfo) {
 			$outputStream = fopen('php://output', 'wb');
-			stream_copy_to_stream($archiveFileInfo->getFile()->read(), $outputStream);
-			$archiveFileInfo->getFile()->close();
+			stream_copy_to_stream($archiveFileInfo->file->read(), $outputStream);
+			$archiveFileInfo->file->close();
 			fclose($outputStream);
 		};
 
@@ -100,11 +100,11 @@ class Archive
 			$disposition = HeaderUtils::makeDisposition(
 				HeaderUtils::DISPOSITION_ATTACHMENT,
 				$archiveFileInfo->getFilename(),
-				mb_check_encoding($archiveFileInfo->getFilename(), 'ASCII') ? '' : 'Photo' . $archiveFileInfo->getFile()->getExtension()
+				mb_check_encoding($archiveFileInfo->getFilename(), 'ASCII') ? '' : 'Photo' . $archiveFileInfo->file->getExtension()
 			);
 			$response->headers->set('Content-Type', $photo->type);
 			$response->headers->set('Content-Disposition', $disposition);
-			$response->headers->set('Content-Length', strval($archiveFileInfo->getFile()->getFilesize()));
+			$response->headers->set('Content-Length', strval($archiveFileInfo->file->getFilesize()));
 			// Note: Using insecure hashing algorithm is fine here.
 			// The ETag header must only be different for different size variants
 			// Pre-image resistance and collision robustness is not required.
@@ -114,10 +114,10 @@ class Archive
 			// we must avoid illegal characters like `/` and md5 returns a
 			// hexadecimal string.
 			$response->headers->set('ETag', md5(
-				$archiveFileInfo->getFile()->getBasename() .
+				$archiveFileInfo->file->getBasename() .
 				$downloadVariant->value .
 				$photo->updated_at->toAtomString() .
-				$archiveFileInfo->getFile()->getFilesize())
+				$archiveFileInfo->file->getFilesize())
 			);
 			$response->headers->set('Last-Modified', $photo->updated_at->format(\DateTimeInterface::RFC7231));
 
@@ -232,10 +232,10 @@ class Archive
 						);
 					} while (array_key_exists($filename, $uniqueFilenames));
 				}
-				$zip->addFileFromStream(fileName: $filename, stream: $archiveFileInfo->getFile()->read(),
+				$zip->addFileFromStream(fileName: $filename, stream: $archiveFileInfo->file->read(),
 					compressionMethod: $this->deflateLevel === -1 ? ZipMethod::STORE : ZipMethod::DEFLATE,
 					deflateLevel: $this->deflateLevel);
-				$archiveFileInfo->getFile()->close();
+				$archiveFileInfo->file->close();
 				// Reset the execution timeout for every iteration.
 				try {
 					set_time_limit((int) ini_get('max_execution_time'));
