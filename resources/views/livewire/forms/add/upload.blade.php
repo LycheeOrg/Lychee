@@ -10,6 +10,8 @@
                 @this.set('uploads.' + index + '.stage', 'uploading');
                 @this.set('uploads.' + index + '.progress', 0);
                 chnkStarts[index] = 0;
+                progress[index] = 0;
+                numChunks[index] = 1;
             });
             
             start(@this);
@@ -37,6 +39,8 @@
                     @this.set('uploads.' + index + '.stage', 'uploading');
                     @this.set('uploads.' + index + '.progress', 0);
                     chnkStarts[index] = 0;
+                    progress[index] = 0;
+                    numChunks[index] = 1;
                 });
                 
                 start(@this);
@@ -51,7 +55,7 @@
                             <div class="float-left">{{ $upl['fileName'] }}</div>
                             @switch($upl['stage'])
                                 @case('uploading')
-                                    <div class="float-right text-primary-400">{{ $upl['progress'] }}%</div>
+                                    <div class="float-right text-primary-400" x-text="`${progress[{{$i}}]}%`"></div>
                                 @break
 
                                 @case('processing')
@@ -83,7 +87,7 @@
                         <div class="h-1 w-full bg-green-600"></div>
                         @else
                         <div class="h-1 w-full bg-neutral-800">
-                            <div class="h-1 bg-primary-400" style="width: {{ $upl['progress'] }}%"></div>
+                            <div class="h-1 bg-primary-400"  x-bind:style="`width: ${progress[{{$i}}]}%`"></div>
                         </div>
                         @endif
                     </div>

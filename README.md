@@ -17,6 +17,7 @@
 [![Front end repository][frontend-shield]](https://github.com/LycheeOrg/Lychee-front)
 [![Docker repository][docker-shield]](https://github.com/LycheeOrg/Lychee-Docker)
 [![Gitter][gitter-shield]](https://gitter.im/LycheeOrg/Lobby)
+[![Discord][discord-shield]][discord]
 
 
 #### A great looking and easy-to-use photo-management-system.
@@ -114,7 +115,7 @@ You can customize lychee with your own css code. Here you can find a list of ava
 
 ## Troubleshooting
 
-Take a look at the [Documentation](https://lycheeorg.github.io/docs/), particularly the [FAQ](https://lycheeorg.github.io/docs/faq_troubleshooting.html) if you have problems. Discovered a bug? Please create an issue [here](https://github.com/LycheeOrg/Lychee/issues) on GitHub! You can also contact us directly on [gitter (login with your github account). &#187;](https://gitter.im/LycheeOrg/Lobby)
+Take a look at the [Documentation](https://lycheeorg.github.io/docs/), particularly the [FAQ](https://lycheeorg.github.io/docs/faq_troubleshooting.html) if you have problems. Discovered a bug? Please create an issue [here](https://github.com/LycheeOrg/Lychee/issues) on GitHub! You can also contact us directly on [gitter (login with your github account)](https://gitter.im/LycheeOrg/Lobby) or on [discord &#187;][discord]
 
 ## Open Source Community Support
 
@@ -139,3 +140,5 @@ We would like to thank Jetbrains for supporting us with their [Open Source Devel
 [gitter-shield]: https://img.shields.io/gitter/room/LycheeOrg/Lobby.svg?logo=gitter
 [jetbrains-opensource]: https://www.jetbrains.com/community/opensource/
 [download-shield]: https://img.shields.io/github/downloads/LycheeOrg/Lychee/total
+[discord]: https://discord.gg/JMPvuRQcTf
+[discord-shield]: https://img.shields.io/discord/1046911561366765598?logo=discord

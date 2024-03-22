@@ -151,4 +151,23 @@ class AccessPermission extends Model
 			APC::PASSWORD => null,
 		]);
 	}
+
+	/**
+	 * Return a new permission set associated to a specific userId.
+	 *
+	 * @param int $userId
+	 *
+	 * @return AccessPermission
+	 */
+	public static function withGrantFullPermissionsToUser(int $userId): self
+	{
+		return new AccessPermission([
+			APC::USER_ID => $userId,
+			APC::GRANTS_FULL_PHOTO_ACCESS => true,
+			APC::GRANTS_DOWNLOAD => true,
+			APC::GRANTS_UPLOAD => true,
+			APC::GRANTS_EDIT => true,
+			APC::GRANTS_DELETE => true,
+		]);
+	}
 }
