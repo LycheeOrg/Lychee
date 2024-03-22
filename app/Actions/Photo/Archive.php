@@ -4,7 +4,6 @@ namespace App\Actions\Photo;
 
 use App\Actions\Photo\Extensions\ArchiveFileInfo;
 use App\Contracts\Exceptions\LycheeException;
-use App\Contracts\Models\AbstractSizeVariantNamingStrategy;
 use App\Enum\DownloadVariantType;
 use App\Enum\SizeVariantType;
 use App\Exceptions\ConfigurationKeyMissingException;
@@ -14,6 +13,7 @@ use App\Image\Files\FlysystemFile;
 use App\Models\Configs;
 use App\Models\Photo;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Storage;
 use Safe\Exceptions\InfoException;
 use function Safe\fclose;
 use function Safe\fopen;
@@ -284,7 +284,8 @@ class Archive
 		$baseFilename = $validFilename !== '' ? $validFilename : 'Untitled';
 
 		if ($downloadVariant === DownloadVariantType::LIVEPHOTOVIDEO) {
-			$sourceFile = new FlysystemFile(AbstractSizeVariantNamingStrategy::getImageDisk(), $photo->live_photo_short_path);
+			$disk = $photo->size_variants->getSizeVariant(SizeVariantType::ORIGINAL)->storage_disk->value;
+			$sourceFile = new FlysystemFile(Storage::disk($disk), $photo->live_photo_short_path);
 			$baseFilenameAddon = '';
 		} else {
 			$sv = $photo->size_variants->getSizeVariant($downloadVariant->getSizeVariantType());

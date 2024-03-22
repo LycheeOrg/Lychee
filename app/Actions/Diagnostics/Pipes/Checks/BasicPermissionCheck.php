@@ -3,7 +3,7 @@
 namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
-use App\Contracts\Models\AbstractSizeVariantNamingStrategy;
+use App\Enum\StorageDiskType;
 use App\Exceptions\Handler;
 use App\Exceptions\Internal\InvalidConfigOption;
 use App\Facades\Helpers;
@@ -114,7 +114,7 @@ class BasicPermissionCheck implements DiagnosticPipe
 		));
 
 		$disks = [
-			AbstractSizeVariantNamingStrategy::getImageDisk(),
+			Storage::disk(StorageDiskType::LOCAL->value),
 			Storage::disk(SymLink::DISK_NAME),
 			Storage::disk(ProcessableJobFile::DISK_NAME),
 			Storage::disk(Upload::DISK_NAME),
@@ -292,14 +292,14 @@ class BasicPermissionCheck implements DiagnosticPipe
 	private static function getConfiguredPerm(string $type): int
 	{
 		try {
-			$visibility = (string) config(sprintf('filesystems.disks.%s.visibility', AbstractSizeVariantNamingStrategy::IMAGE_DISK_NAME));
+			$visibility = (string) config(sprintf('filesystems.disks.%s.visibility', StorageDiskType::LOCAL->value));
 			if ($visibility === '') {
 				// @codeCoverageIgnoreStart
 				throw new InvalidConfigOption('File/directory visibility not configured');
 				// @codeCoverageIgnoreEnd
 			}
 
-			$perm = (int) config(sprintf('filesystems.disks.%s.permissions.%s.%s', AbstractSizeVariantNamingStrategy::IMAGE_DISK_NAME, $type, $visibility));
+			$perm = (int) config(sprintf('filesystems.disks.%s.permissions.%s.%s', StorageDiskType::LOCAL->value, $type, $visibility));
 			if ($perm === 0) {
 				// @codeCoverageIgnoreStart
 				throw new InvalidConfigOption('Configured file/directory permission is invalid');

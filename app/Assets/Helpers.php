@@ -227,7 +227,7 @@ class Helpers
 	 *
 	 * @returns string
 	 */
-	public function decimalToDegreeMinutesSeconds(float|null $decimal, bool $type): null|string
+	public function decimalToDegreeMinutesSeconds(float|null $decimal, bool $type): string|null
 	{
 		if ($decimal === null) {
 			return null;

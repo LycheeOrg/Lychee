@@ -271,7 +271,7 @@ class Exec
 
 			// TODO: Consider to use a modern OO-approach using [`DirectoryIterator`](https://www.php.net/manual/en/class.directoryiterator.php) and [`SplFileInfo`](https://www.php.net/manual/en/class.splfileinfo.php)
 			/** @var string[] $files */
-			$files = glob($path . '/*');
+			$files = glob(preg_quote($path) . '/*');
 
 			$filesTotal = count($files);
 			$filesCount = 0;

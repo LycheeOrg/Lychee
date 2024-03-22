@@ -27,6 +27,7 @@ $rules = [
 	'indentation_type' => true,
 	'multiline_comment_opening_closing' => true,
 	'no_php4_constructor' => true,
+	'nullable_type_declaration' => false,
 	'phpdoc_no_empty_return' => false,
 	'single_blank_line_at_eof' => false,
 	'yoda_style' => false,

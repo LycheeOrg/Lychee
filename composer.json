@@ -53,6 +53,7 @@
         "laminas/laminas-text": "^2.9",
         "laragear/webauthn": "^1.2.0",
         "laravel/framework": "^10.0",
+        "league/flysystem-aws-s3-v3": "^3.22",
         "laravel/socialite": "^5.11",
         "livewire/livewire": "^3.0",
         "lychee-org/nestedset": "^8.0",

@@ -154,6 +154,7 @@ class Create
 			Save::class,
 			Standalone\CreateOriginalSizeVariant::class,
 			Standalone\CreateSizeVariants::class,
+			Standalone\UploadSizeVariantsToS3::class,
 		];
 	}
 

@@ -34,8 +34,6 @@ class Albums extends Component implements Reloadable
 	private TopAlbumsResource $topAlbums;
 
 	#[Locked] public string $title;
-	/** @var array<int,string> */
-	#[Locked] public array $albumIDs;
 	#[Locked] public ?string $albumId = null;
 	public AlbumsFlags $flags;
 	public AlbumRights $rights;
@@ -52,7 +50,6 @@ class Albums extends Component implements Reloadable
 	{
 		$this->flags = new AlbumsFlags();
 		$this->rights = AlbumRights::make(null);
-		$this->albumIDs = $this->topAlbums->albums->map(fn ($v, $k) => $v->id)->all();
 		$this->checkFrameAccess();
 
 		return view('livewire.pages.gallery.albums');
@@ -113,5 +110,15 @@ class Albums extends Component implements Reloadable
 	public function getIsLoginLeftProperty(): bool
 	{
 		return Configs::getValueAsString('login_button_position') === 'left';
+	}
+
+	/**
+	 * Used in the JS front-end to manage the selected albums.
+	 *
+	 * @return array
+	 */
+	public function getAlbumIDsProperty(): array
+	{
+		return $this->topAlbums->albums->map(fn ($v, $k) => $v->id)->all();
 	}
 }

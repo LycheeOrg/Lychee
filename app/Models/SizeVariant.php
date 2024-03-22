@@ -4,8 +4,8 @@ namespace App\Models;
 
 use App\Actions\SizeVariant\Delete;
 use App\Casts\MustNotSetCast;
-use App\Contracts\Models\AbstractSizeVariantNamingStrategy;
 use App\Enum\SizeVariantType;
+use App\Enum\StorageDiskType;
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
@@ -22,39 +22,28 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Storage;
+use League\Flysystem\AwsS3V3\AwsS3V3Adapter;
 use League\Flysystem\Local\LocalFilesystemAdapter;
-
-// TODO: Uncomment the following line, if Lychee really starts to support AWS s3.
-// The previous code already contained some first steps for S3, but relied
-// on the fact that the associated disk was called "s3".
-// This only requires a string comparison, but is not robust, because the
-// disk name can be anything (depending on what the user configures in
-// config.php), but does not say anything about the actually used
-// driver/adapter.
-// Moreover, if any user had ever tried to actually use S3, the code would
-// have crashed, because the Laravel framework would try to load the adapter
-// below, but the adapter does not exist and is not part of our Composer
-// dependencies
-// use League\Flysystem\AwsS3v3\AwsS3Adapter;
 
 /**
  * Class SizeVariant.
  *
  * Describes a size variant of a photo.
  *
- * @property int                 $id
- * @property string              $photo_id
- * @property Photo               $photo
- * @property SizeVariantType     $type
- * @property string              $short_path
- * @property string              $url
- * @property string              $full_path
- * @property int                 $width
- * @property int                 $height
- * @property float               $ratio
- * @property int                 $filesize
- * @property Collection<SymLink> $sym_links
+ * @property int                  $id
+ * @property string               $photo_id
+ * @property Photo                $photo
+ * @property SizeVariantType      $type
+ * @property string               $short_path
+ * @property string               $url
+ * @property string               $full_path
+ * @property int                  $width
+ * @property int                  $height
+ * @property float                $ratio
+ * @property StorageDiskType|null $storage_disk
+ * @property int                  $filesize
+ * @property Collection<SymLink>  $sym_links
  *
  * @method static SizeVariantBuilder|SizeVariant addSelect($column)
  * @method static SizeVariantBuilder|SizeVariant join(string $table, string $first, string $operator = null, string $second = null, string $type = 'inner', string $where = false)
@@ -106,6 +95,7 @@ class SizeVariant extends Model
 		'height' => 'integer',
 		'filesize' => 'integer',
 		'ratio' => 'float',
+		'storage_disk' => StorageDiskType::class,
 	];
 
 	/**
@@ -118,6 +108,7 @@ class SizeVariant extends Model
 		'photo_id', // see above
 		'short_path',  // serialize url instead
 		'sym_links', // don't serialize relation of symlinks
+		'',
 	];
 
 	/**
@@ -128,6 +119,13 @@ class SizeVariant extends Model
 	protected $appends = [
 		'url',
 	];
+
+	/**
+	 * The attributes that are mass assignable.
+	 *
+	 * @var array<int,string>
+	 */
+	protected $fillable = ['photo_id', 'storage_disk', 'type', 'short_path', 'width', 'height', 'filesize', 'ratio'];
 
 	/**
 	 * @param $query
@@ -183,39 +181,68 @@ class SizeVariant extends Model
 	 */
 	public function getUrlAttribute(): string
 	{
-		$imageDisk = AbstractSizeVariantNamingStrategy::getImageDisk();
+		$imageDisk = Storage::disk($this->storage_disk->value);
 
 		if (
-			(Auth::user()?->may_administrate === true && !Configs::getValueAsBool('SL_for_admin')) ||
-			!Configs::getValueAsBool('SL_enable')
+			!Configs::getValueAsBool('SL_enable') ||
+			(!Configs::getValueAsBool('SL_for_admin') && Auth::user()?->may_administrate === true)
 		) {
 			return $imageDisk->url($this->short_path);
 		}
 
+		$storageAdapter = $imageDisk->getAdapter();
+		if ($storageAdapter instanceof AwsS3V3Adapter) {
+			return $this->getAwsUrl();
+		}
+
+		if ($storageAdapter instanceof LocalFilesystemAdapter) {
+			return $this->getSymLinkUrl();
+		}
+
+		throw new ConfigurationException('the chosen storage adapter "' . get_class($storageAdapter) . '" does not support the symbolic linking feature');
+	}
+
+	/**
+	 * Retrieve the tempary url from AWS if possible.
+	 *
+	 * @return string
+	 */
+	private function getAwsUrl(): string
+	{
+		// In order to allow a grace period, we create a new symbolic link,
+		$maxLifetime = Configs::getValueAsInt('SL_life_time_days') * 24 * 60 * 60;
+		$imageDisk = Storage::disk($this->storage_disk->value);
+
+		// Return the public URL in case the S3 bucket is set to public, otherwise generate a temporary URL
+		$visibility = config('filesystems.disks.s3.visibility', 'private');
+		// $visibility = $imageDisk->getConfig()['visibility'] ?? 'private';
+		if ($visibility === 'public') {
+			return $imageDisk->url($this->short_path);
+		}
+
+		return $imageDisk->temporaryUrl($this->short_path, now()->addSeconds($maxLifetime));
+	}
+
+	/**
+	 * Get the symlink url if possible.
+	 *
+	 * @return string
+	 */
+	private function getSymLinkUrl(): string
+	{
 		// In order to allow a grace period, we create a new symbolic link,
 		// if the most recent existing link has reached 2/3 of its lifetime
 		$maxLifetime = Configs::getValueAsInt('SL_life_time_days') * 24 * 60 * 60;
 		$gracePeriod = $maxLifetime / 3;
 
-		$storageAdapter = $imageDisk->getAdapter();
-
-		// TODO: Uncomment these line when Laravel really starts to support s3
-		/*if ($storageAdapter instanceof AwsS3Adapter) {
-			return $imageDisk->temporaryUrl($this->short_path, now()->addSeconds($maxLifetime));
-		}*/
-
-		if ($storageAdapter instanceof LocalFilesystemAdapter) {
-			/** @var ?SymLink $symLink */
-			$symLink = $this->sym_links()->latest()->first();
-			if ($symLink === null || $symLink->created_at->isBefore(now()->subSeconds($gracePeriod))) {
-				/** @var SymLink $symLink */
-				$symLink = $this->sym_links()->create();
-			}
-
-			return $symLink->url;
+		/** @var ?SymLink $symLink */
+		$symLink = $this->sym_links()->latest()->first();
+		if ($symLink === null || $symLink->created_at->isBefore(now()->subSeconds($gracePeriod))) {
+			/** @var SymLink $symLink */
+			$symLink = $this->sym_links()->create();
 		}
 
-		throw new ConfigurationException('the chosen storage adapter "' . get_class($storageAdapter) . '" does not support the symbolic linking feature');
+		return $symLink->url;
 	}
 
 	/**
@@ -232,12 +259,15 @@ class SizeVariant extends Model
 	 */
 	public function getFullPathAttribute(): string
 	{
-		return AbstractSizeVariantNamingStrategy::getImageDisk()->path($this->short_path);
+		return Storage::disk($this->storage_disk->value)->path($this->short_path);
 	}
 
 	public function getFile(): FlysystemFile
 	{
-		return new FlysystemFile(AbstractSizeVariantNamingStrategy::getImageDisk(), $this->short_path);
+		return new FlysystemFile(
+			Storage::disk($this->storage_disk->value),
+			$this->short_path
+		);
 	}
 
 	/**

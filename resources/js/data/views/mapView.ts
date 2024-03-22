@@ -5,6 +5,7 @@ import "leaflet.markercluster/dist/leaflet.markercluster.js";
 import "@lychee-org/leaflet.photo/Leaflet.Photo.js";
 import "leaflet/dist/leaflet.css";
 import "@lychee-org/leaflet.photo/Leaflet.Photo.css";
+import "leaflet-gpx/gpx.js";
 import { Alpine } from "alpinejs";
 import { Album, Photo, PositionData, TagAlbum } from "@/lycheeOrg/backend";
 import { MapPhotoEntry, Map } from "./map.types";

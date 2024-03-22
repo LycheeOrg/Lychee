@@ -2,6 +2,7 @@
 
 namespace App\Actions\Photo;
 
+use App\Enum\SizeVariantType;
 use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\ModelDBException;
@@ -108,9 +109,10 @@ readonly class Delete
 				return;
 			}
 
-			$svShortPaths = SizeVariant::query()
+			// Maybe consider doing multiple queries for the different storage types.
+			$sizeVariants = SizeVariant::query()
 				->from('size_variants as sv')
-				->select(['sv.short_path'])
+				->select(['sv.short_path', 'sv.storage_disk'])
 				->join('photos as p', 'p.id', '=', 'sv.photo_id')
 				->leftJoin('photos as dup', function (JoinClause $join) use ($photoIDs) {
 					$join
@@ -119,8 +121,8 @@ readonly class Delete
 				})
 				->whereIn('p.id', $photoIDs)
 				->whereNull('dup.id')
-				->pluck('sv.short_path');
-			$this->fileDeleter->addRegularFilesOrSymbolicLinks($svShortPaths);
+				->get();
+			$this->fileDeleter->addSizeVariants($sizeVariants);
 			// @codeCoverageIgnoreStart
 		} catch (\InvalidArgumentException $e) {
 			throw LycheeAssertionError::createFromUnexpectedException($e);
@@ -148,9 +150,10 @@ readonly class Delete
 				return;
 			}
 
-			$svShortPaths = SizeVariant::query()
+			// Maybe consider doing multiple queries for the different storage types.
+			$sizeVariants = SizeVariant::query()
 				->from('size_variants as sv')
-				->select(['sv.short_path'])
+				->select(['sv.short_path', 'sv.storage_disk'])
 				->join('photos as p', 'p.id', '=', 'sv.photo_id')
 				->leftJoin('photos as dup', function (JoinClause $join) use ($albumIDs) {
 					$join
@@ -159,8 +162,8 @@ readonly class Delete
 				})
 				->whereIn('p.album_id', $albumIDs)
 				->whereNull('dup.id')
-				->pluck('sv.short_path');
-			$this->fileDeleter->addRegularFilesOrSymbolicLinks($svShortPaths);
+				->get();
+			$this->fileDeleter->addSizeVariants($sizeVariants);
 			// @codeCoverageIgnoreStart
 		} catch (\InvalidArgumentException $e) {
 			throw LycheeAssertionError::createFromUnexpectedException($e);
@@ -190,7 +193,12 @@ readonly class Delete
 
 			$livePhotoShortPaths = Photo::query()
 				->from('photos as p')
-				->select(['p.live_photo_short_path'])
+				->select(['p.live_photo_short_path', 'sv.storage_disk'])
+				->join('size_variants as sv', function (JoinClause $join) {
+					$join
+						->on('sv.photo_id', '=', 'p.id')
+						->where('sv.type', '=', SizeVariantType::ORIGINAL);
+				})
 				->leftJoin('photos as dup', function (JoinClause $join) use ($photoIDs) {
 					$join
 						->on('dup.live_photo_checksum', '=', 'p.live_photo_checksum')
@@ -199,8 +207,12 @@ readonly class Delete
 				->whereIn('p.id', $photoIDs)
 				->whereNull('dup.id')
 				->whereNotNull('p.live_photo_short_path')
-				->pluck('p.live_photo_short_path');
-			$this->fileDeleter->addRegularFilesOrSymbolicLinks($livePhotoShortPaths);
+				->get(['p.live_photo_short_path', 'sv.storage_disk']);
+
+			$liveVariantsShortPathsGrouped = $livePhotoShortPaths->groupBy('storage_disk');
+			$liveVariantsShortPathsGrouped->each(
+				fn ($liveVariantsShortPaths, $disk) => $this->fileDeleter->addFiles($liveVariantsShortPaths->map(fn ($lv) => $lv->live_photo_short_path), $disk)
+			);
 			// @codeCoverageIgnoreStart
 		} catch (\InvalidArgumentException $e) {
 			throw LycheeAssertionError::createFromUnexpectedException($e);
@@ -230,7 +242,12 @@ readonly class Delete
 
 			$livePhotoShortPaths = Photo::query()
 				->from('photos as p')
-				->select(['p.live_photo_short_path'])
+				->select(['p.live_photo_short_path', 'sv.storage_disk'])
+				->join('size_variants as sv', function (JoinClause $join) {
+					$join
+						->on('sv.photo_id', '=', 'p.id')
+						->where('sv.type', '=', SizeVariantType::ORIGINAL);
+				})
 				->leftJoin('photos as dup', function (JoinClause $join) use ($albumIDs) {
 					$join
 						->on('dup.live_photo_checksum', '=', 'p.live_photo_checksum')
@@ -239,8 +256,12 @@ readonly class Delete
 				->whereIn('p.album_id', $albumIDs)
 				->whereNull('dup.id')
 				->whereNotNull('p.live_photo_short_path')
-				->pluck('p.live_photo_short_path');
-			$this->fileDeleter->addRegularFilesOrSymbolicLinks($livePhotoShortPaths);
+				->get(['p.live_photo_short_path', 'sv.storage_disk']);
+
+			$liveVariantsShortPathsGrouped = $livePhotoShortPaths->groupBy('storage_disk');
+			$liveVariantsShortPathsGrouped->each(
+				fn ($liveVariantsShortPaths, $disk) => $this->fileDeleter->addFiles($liveVariantsShortPaths->map(fn ($lv) => $lv->live_photo_short_path), $disk)
+			);
 			// @codeCoverageIgnoreStart
 		} catch (\InvalidArgumentException $e) {
 			throw LycheeAssertionError::createFromUnexpectedException($e);

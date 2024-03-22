@@ -188,6 +188,7 @@ class Archive extends Action
 
 		$usedFileNames = [];
 		// TODO: Ensure that the size variant `original` for each photo is eagerly loaded as it is needed below. This must be solved in close coordination with `ArchiveAlbumRequest`.
+		// TODO: don't forget livephoto (oups)
 		$photos = $album->photos;
 
 		/** @var Photo $photo */

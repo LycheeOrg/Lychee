@@ -396,9 +396,9 @@ class Album extends BaseAlbum implements Node
 				Storage::delete($this->track_short_path);
 			}
 
-			$new_track_id = strtr(base64_encode(random_bytes(18)), '+/', '-_');
-			Storage::putFileAs('tracks/', $file, "$new_track_id.xml");
-			$this->track_short_path = "tracks/$new_track_id.xml";
+			$new_track_name = strtr(base64_encode(random_bytes(18)), '+/', '-_') . '.xml';
+			Storage::putFileAs('tracks/', $file, $new_track_name);
+			$this->track_short_path = 'tracks/' . $new_track_name;
 			$this->save();
 		} catch (ModelDBException $e) {
 			throw $e;

@@ -526,7 +526,7 @@ class PhotosOperationsTest extends BasePhotoTest
 		$this->expectException(IllegalOrderOfOperationException::class);
 
 		$photo = new Photo();
-		$photo->live_photo_full_path = 'Something';
+		$photo->live_photo_url = 'Something';
 	}
 
 	/**

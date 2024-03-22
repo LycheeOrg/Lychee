@@ -2,8 +2,11 @@
 
 namespace App\Livewire\Components\Menus;
 
+use App\Contracts\Livewire\Params;
+use App\Factories\AlbumFactory;
 use App\Livewire\Traits\InteractWithContextMenu;
 use App\Livewire\Traits\InteractWithModal;
+use App\Models\Album;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
@@ -17,6 +20,8 @@ class AlbumAdd extends Component
 	use InteractWithContextMenu;
 
 	#[Locked] public array $params;
+	private ?Album $album = null;
+
 	/**
 	 * Renders the Add menu in the top right.
 	 *
@@ -71,5 +76,51 @@ class AlbumAdd extends Component
 	{
 		$this->closeContextMenu();
 		$this->openModal('forms.add.import-from-dropbox', $this->params);
+	}
+
+	public function openAddTrackModal(): void
+	{
+		$this->closeContextMenu();
+		$this->openModal('forms.album.add-track', $this->params);
+	}
+
+	public function openDeleteTrackModal(): void
+	{
+		$this->closeContextMenu();
+		$this->openModal('forms.album.delete-track', $this->params);
+	}
+
+	public function getHasParentProperty(): bool
+	{
+		return $this->getParentAlbum() !== null;
+	}
+
+	public function getCanAddTrackProperty(): bool
+	{
+		return $this->getParentAlbum() !== null;
+	}
+
+	public function getHasTrackProperty(): bool
+	{
+		return $this->getParentAlbum()?->track_short_path !== null;
+	}
+
+	public function getParentAlbum(): Album|null
+	{
+		$id = $this->params[Params::PARENT_ID];
+		if ($id === null) {
+			return null;
+		}
+
+		if ($this->album !== null) {
+			return $this->album;
+		}
+
+		$album_candidate = resolve(AlbumFactory::class)->findAbstractAlbumOrFail($id);
+		if ($album_candidate instanceof Album) {
+			$this->album = $album_candidate;
+		}
+
+		return $this->album;
 	}
 }

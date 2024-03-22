@@ -169,7 +169,9 @@ class AppServiceProvider extends ServiceProvider
 		$dir_url = config('app.dir_url') === '' ? '' : (config('app.dir_url') . '/');
 
 		Livewire::setScriptRoute(function ($handle) use ($dir_url) {
-			return Route::get($dir_url . 'livewire/livewire.js', $handle);
+			return config('app.debug') === true
+				? Route::get($dir_url . 'livewire/livewire.js', $handle)
+				: Route::get($dir_url . 'livewire/livewire.min.js', $handle);
 		});
 
 		Livewire::setUpdateRoute(function ($handle) use ($dir_url) {
