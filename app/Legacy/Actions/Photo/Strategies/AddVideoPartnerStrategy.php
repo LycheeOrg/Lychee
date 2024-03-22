@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Actions\Photo\Strategies;
+namespace App\Legacy\Actions\Photo\Strategies;
 
 use App\Actions\Diagnostics\Pipes\Checks\BasicPermissionCheck;
 use App\Contracts\Models\AbstractSizeVariantNamingStrategy;
+use App\DTO\ImportParam;
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\Handler;
 use App\Exceptions\Internal\LycheeAssertionError;
@@ -28,7 +29,7 @@ class AddVideoPartnerStrategy extends AbstractAddStrategy
 {
 	protected BaseMediaFile $videoSourceFile;
 
-	public function __construct(AddStrategyParameters $parameters, BaseMediaFile $videoSourceFile, Photo $existingPhoto)
+	public function __construct(ImportParam $parameters, BaseMediaFile $videoSourceFile, Photo $existingPhoto)
 	{
 		parent::__construct($parameters, $existingPhoto);
 		$this->videoSourceFile = $videoSourceFile;

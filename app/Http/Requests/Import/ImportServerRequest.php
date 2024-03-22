@@ -2,10 +2,10 @@
 
 namespace App\Http\Requests\Import;
 
-use App\Actions\Photo\Strategies\ImportMode;
 use App\Contracts\Http\Requests\HasAlbum;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Contracts\Models\AbstractAlbum;
+use App\DTO\ImportMode;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasAlbumTrait;
 use App\Http\RuleSets\Import\ImportServerRuleSet;
