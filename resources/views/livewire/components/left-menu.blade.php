@@ -48,6 +48,11 @@
                     {{ __('lychee.DIAGNOSTICS') }}
                 </x-leftbar.leftbar-item>
             @endcan
+            @can(SettingsPolicy::CAN_EDIT, [App\Models\Configs::class])
+                <x-leftbar.leftbar-item href="{{ route('maintenance') }}" wire:navigate icon="timer">
+                    {{ __('maintenance.title') }}
+                </x-leftbar.leftbar-item>
+            @endcan
             <x-leftbar.leftbar-item wire:click="openAboutModal" icon="info">
                 {{ __('lychee.ABOUT_LYCHEE') }}
             </x-leftbar.leftbar-item>
