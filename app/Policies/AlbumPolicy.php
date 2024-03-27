@@ -228,7 +228,7 @@ class AlbumPolicy extends BasePolicy
 		}
 
 		if ($album instanceof BaseAlbum) {
-			return $this->isOwner($user, $album) ||
+			return ($this->isOwner($user, $album) && $user->may_upload) ||
 				$album->current_user_permissions()?->grants_edit === true ||
 				$album->public_permissions()?->grants_edit === true;
 		}
