@@ -8,7 +8,6 @@
         <livewire:modules.diagnostics.errors lazy />
         <livewire:modules.diagnostics.infos />
         <livewire:modules.diagnostics.space />
-        <livewire:modules.diagnostics.optimize />
         <livewire:modules.diagnostics.configurations />
         </div>
 	</div>
