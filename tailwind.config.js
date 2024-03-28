@@ -201,8 +201,19 @@ export default {
         '2/3': '2 / 3',
         '3/2': '3 / 2',
       },
+      typography: {
+        DEFAULT: {
+          css: {
+            a: {
+              'text-underline-offset': '0.2rem',
+              'text-decoration': 'underline dashed',
+            },
+          },
+        },
+      },
     },
   },
   plugins: [
+    require('@tailwindcss/typography'),
   ],
 }

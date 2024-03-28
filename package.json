@@ -10,6 +10,7 @@
     },
     "devDependencies": {
         "@lychee-org/leaflet.photo": "^1.0.0",
+        "@tailwindcss/typography": "^0.5.12",
         "@types/alpinejs": "^3.13.6",
         "@types/leaflet": "^1.9.8",
         "@types/leaflet-rotatedmarker": "^0.2.5",
