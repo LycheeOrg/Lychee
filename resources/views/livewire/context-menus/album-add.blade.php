@@ -10,7 +10,13 @@
 	@endcan
 	<x-context-menu.separator />
 	<x-context-menu.item wire:click='openAlbumCreateModal' icon='folder'>{{ __('lychee.NEW_ALBUM') }}</x-context-menu.item>
-	@if($params[Params::PARENT_ID] === null)
+	@if(!$this->has_parent)
 	<x-context-menu.item wire:click='openTagAlbumCreateModal' icon='tags'>{{ __('lychee.NEW_TAG_ALBUM') }}</x-context-menu.item>
+	@endif
+	@if($this->can_add_track)
+	<x-context-menu.item wire:click='openAddTrackModal' icon='location'>{{ __('lychee.UPLOAD_TRACK') }}</x-context-menu.item>
+	@endif
+	@if($this->has_track)
+	<x-context-menu.item wire:click='openDeleteTrackModal' icon='location'>{{ __('lychee.DELETE_TRACK') }}</x-context-menu.item>
 	@endif
 </div>

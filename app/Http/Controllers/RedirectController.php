@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Album\Unlock;
+use App\Assets\Features;
 use App\Contracts\Exceptions\LycheeException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Factories\AlbumFactory;
@@ -75,7 +76,7 @@ class RedirectController extends Controller
 			}
 
 			// If we are using livewire by default, we redirect to Livewire url intead.
-			if (config('app.livewire') === true) {
+			if (Features::active('livewire')) {
 				return $photoID === null ?
 					redirect(route('livewire-gallery-album', ['albumId' => $albumID])) :
 					redirect(route('livewire-gallery-photo', ['albumId' => $albumID, 'photoId' => $photoID]));
@@ -98,7 +99,7 @@ class RedirectController extends Controller
 	public function view(): View|SymfonyResponse
 	{
 		$base_route = Configs::getValueAsBool('landing_page_enable') ? route('landing') : route('livewire-gallery');
-		if (config('app.legacy_v4_redirect') === false) {
+		if (Features::active('legacy_v4_redirect') === false) {
 			return redirect($base_route);
 		}
 

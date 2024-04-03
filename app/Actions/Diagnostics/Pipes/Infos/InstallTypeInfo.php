@@ -3,6 +3,7 @@
 namespace App\Actions\Diagnostics\Pipes\Infos;
 
 use App\Actions\Diagnostics\Diagnostics;
+use App\Assets\Features;
 use App\Contracts\DiagnosticPipe;
 use App\Metadata\Versions\InstalledVersion;
 
@@ -29,8 +30,8 @@ class InstallTypeInfo implements DiagnosticPipe
 		$data[] = Diagnostics::line('APP_DEBUG:', config('app.debug') === true ? 'true' : 'false'); // check if debug is on (will help in case of error 500)
 		$data[] = Diagnostics::line('APP_URL:', config('app.url') !== 'http://localhost' ? 'set' : 'default'); // Some people leave that value by default... It is now breaking their visual.
 		$data[] = Diagnostics::line('APP_DIR:', config('app.dir_url') !== '' ? 'set' : 'default'); // Some people leave that value by default... It is now breaking their visual.
-		$data[] = Diagnostics::line('LOG_VIEWER_ENABLED:', config('log-viewer.enabled', true) === true ? 'true' : 'false');
-		$data[] = Diagnostics::line('LIVEWIRE_ENABLED:', config('app.livewire', true) === true ? 'true' : 'false');
+		$data[] = Diagnostics::line('LOG_VIEWER_ENABLED:', Features::when('log-viewer', 'true', 'false'));
+		$data[] = Diagnostics::line('LIVEWIRE_ENABLED:', Features::when('livewire', 'true', 'false'));
 		$data[] = '';
 
 		return $next($data);

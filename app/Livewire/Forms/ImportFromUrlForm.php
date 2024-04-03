@@ -67,7 +67,7 @@ class ImportFromUrlForm extends Form
 		$this->albumID = $albumID;
 	}
 
-	public function getAlbum(): null|Album
+	public function getAlbum(): Album|null
 	{
 		/** @var Album $album */
 		$album = $this->albumID === null ? null : Album::query()->findOrFail($this->albumID);
