@@ -181,6 +181,27 @@ class Album extends BaseAlbumComponent implements Reloadable
 			return null;
 		}
 
+		if (!$this->album instanceof ModelsAlbum || !isset($this->album->header_id)) {
+			return $this->fetchRandomHeaderUrl();
+		}
+
+		$medium = SizeVariant::query()
+			->where('type', '=', SizeVariantType::MEDIUM)
+			->where('photo_id', '=', $this->album->header_id)
+			->first();
+
+		if ($medium !== null) {
+			return $medium;
+		}
+
+		return SizeVariant::query()
+			->where('type', '=', SizeVariantType::SMALL2X)
+			->where('photo_id', '=', $this->album->header_id)
+			->first();
+	}
+
+	protected function fetchRandomHeaderUrl(): SizeVariant|null
+	{
 		$medium = SizeVariant::query()
 			->where('type', '=', SizeVariantType::MEDIUM)
 			->whereBelongsTo($this->album->photos)
