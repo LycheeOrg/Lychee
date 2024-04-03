@@ -6,6 +6,7 @@
 	@endif
 	<x-context-menu.item wire:click='tag' icon='tag'>{{ __('lychee.TAG') }}</x-context-menu.item>
 	<x-context-menu.item wire:click='setAsCover' icon='folder-cover'>{{ __('lychee.SET_COVER') }}</x-context-menu.item>
+	<x-context-menu.item wire:click='setAsHeader' icon='image'>{{ __('lychee.SET_HEADER') }}</x-context-menu.item>
 	<x-context-menu.separator />
 	<x-context-menu.item wire:click='rename' icon='pencil'>{{ __('lychee.RENAME') }}</x-context-menu.item>
 	<x-context-menu.item wire:click='copyTo' icon='layers'>{{ __('lychee.COPY_TO') }}</x-context-menu.item>
