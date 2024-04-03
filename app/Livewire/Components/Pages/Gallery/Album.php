@@ -5,7 +5,6 @@ namespace App\Livewire\Components\Pages\Gallery;
 use App\Contracts\Livewire\Reloadable;
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\AspectRatioType;
-use App\Enum\SizeVariantType;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Factories\AlbumFactory;
 use App\Livewire\DTO\AlbumFlags;
@@ -23,6 +22,7 @@ use App\Models\User;
 use App\Policies\AlbumPolicy;
 use App\Policies\PhotoPolicy;
 use Illuminate\Database\Eloquent\RelationNotFoundException;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
@@ -167,8 +167,7 @@ class Album extends BaseAlbumComponent implements Reloadable
 	}
 
 	/**
-	 * Fetch the header url
-	 * TODO: Later this can be also a field from the album and if null we apply the rdm query.
+	 * Fetch the header url.
 	 *
 	 * @return SizeVariant|null
 	 *
@@ -186,42 +185,19 @@ class Album extends BaseAlbumComponent implements Reloadable
 		}
 
 		if (!$this->album instanceof ModelsAlbum || !isset($this->album->header_id)) {
-			return $this->fetchRandomHeaderUrl();
-		}
-
-		$medium = SizeVariant::query()
-			->where('type', '=', SizeVariantType::MEDIUM)
-			->where('photo_id', '=', $this->album->header_id)
+			return SizeVariant::query()->from(function (Builder $query) {
+				$query->from('size_variants')
+					->groupBy('photo_id')
+					->orderBy('type', 'asc');
+			}, 'photos')
+			->whereIn('photo_id', $this->album->photos->pluck('id'))
+			->inRandomOrder()
 			->first();
-
-		if ($medium !== null) {
-			return $medium;
 		}
 
 		return SizeVariant::query()
-			->where('type', '=', SizeVariantType::SMALL2X)
 			->where('photo_id', '=', $this->album->header_id)
-			->first();
-	}
-
-	protected function fetchRandomHeaderUrl(): SizeVariant|null
-	{
-		$medium = SizeVariant::query()
-			->where('type', '=', SizeVariantType::MEDIUM)
-			->whereBelongsTo($this->album->photos)
-			->where('ratio', '>', 1)
-			->inRandomOrder()
-			->first();
-
-		if ($medium !== null) {
-			return $medium;
-		}
-
-		return SizeVariant::query()
-			->where('type', '=', SizeVariantType::SMALL2X)
-			->whereBelongsTo($this->album->photos)
-			->where('ratio', '>', 1)
-			->inRandomOrder()
+			->orderBy('type', 'asc')
 			->first();
 	}
 
