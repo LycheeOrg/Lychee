@@ -86,6 +86,18 @@ class PhotoDropdown extends Component
 		$this->closeContextMenu();
 	}
 
+	public function setAsHeader(): void
+	{
+		/** @var Album $album */
+		$album = Album::query()->findOrFail($this->params[Params::ALBUM_ID]);
+
+		Gate::authorize(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $album]);
+		$album->header_id = $album->header_id === $this->params[Params::PHOTO_ID] ? null : $this->params[Params::PHOTO_ID];
+		$album->save();
+		$this->dispatch('reloadPage')->to(GalleryAlbum::class);
+		$this->closeContextMenu();
+	}
+
 	public function rename(): void
 	{
 		$this->closeContextMenu();
