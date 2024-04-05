@@ -419,6 +419,10 @@ class AlbumPolicy extends BasePolicy
 			return true;
 		}
 
+		if (!$abstractAlbum instanceof BaseAlbum) {
+			return false;
+		}
+
 		return $this->isOwner($user, $abstractAlbum);
 	}
 
