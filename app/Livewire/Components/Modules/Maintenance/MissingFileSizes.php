@@ -43,8 +43,8 @@ class MissingFileSizes extends Component
 	}
 
 	/**
-	 * Return the size used by Lychee.
-	 * We now separate this from the initial get() call as this is quite time consuming.
+	 * Fetch the file size of existing size variants when the data is not in the DB
+	 * Process by chunks of 500.
 	 *
 	 * @return void
 	 */
