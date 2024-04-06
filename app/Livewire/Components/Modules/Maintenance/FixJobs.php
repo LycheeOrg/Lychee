@@ -34,8 +34,7 @@ class FixJobs extends Component
 	}
 
 	/**
-	 * Return the size used by Lychee.
-	 * We now separate this from the initial get() call as this is quite time consuming.
+	 * Fix alls jobs that are in waiting states and mark them as failures.
 	 *
 	 * @return void
 	 */
