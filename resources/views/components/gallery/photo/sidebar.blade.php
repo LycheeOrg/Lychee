@@ -17,8 +17,7 @@
             <span class="col-span-2 py-0.5 pl-3 text-sm">{{ __('lychee.PHOTO_DESCRIPTION') }}</span>
         </template>
         <template x-if="preformatted.description">
-            <div class="pb-0.5 pt-4 pl-8 col-span-2 text-sm" id="photoDescription"
-                x-html="preformatted.description">
+            <div class="pb-0.5 pt-4 pl-8 col-span-2 prose prose-invert prose-sm" x-html="preformatted.description">
             </div>
         </template>
         <template x-if="precomputed.is_video">
@@ -35,10 +34,8 @@
             :locale="__('lychee.PHOTO_RESOLUTION')"
             value="preformatted.resolution" />
         <x-gallery.photo.line if="photo.duration && precomputed.is_video"
-           
             :locale="__('lychee.PHOTO_DURATION')" value="photo.duration" />
         <x-gallery.photo.line if="photo.fps && precomputed.is_video"
-           
             :locale="__('lychee.PHOTO_FPS')" value="photo.fps" />
         <template x-if="photo.tags.length > 0">
             <h2 class="col-span-2 text-text-main-400 font-bold px-3 pt-4 pb-3">
