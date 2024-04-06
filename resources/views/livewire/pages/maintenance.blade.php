@@ -11,7 +11,7 @@
                 </p>
             </div>
             <div class=" mt-9 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:items-stretch md:grid-cols-3 md:gap-8 w-full">
-                {{-- Here are the maintenance modules to be added. --}}
+                <livewire:modules.maintenance.optimize />
             </div>
         </div>
     </div>
