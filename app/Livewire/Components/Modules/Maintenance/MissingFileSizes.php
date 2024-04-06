@@ -12,7 +12,7 @@ use Illuminate\View\View;
 use Livewire\Component;
 
 /**
- * We may miss some size variants because of generation problem,
+ * We may be missing some file sizes because of generation problems,
  * transfer of files, or other.
  * This module aims to solve this issue.
  */
