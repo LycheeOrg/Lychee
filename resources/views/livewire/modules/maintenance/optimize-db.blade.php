@@ -8,7 +8,7 @@
     @else
         <x-maintenance.h1>{{ __('maintenance.optimize.title') }}</x-maintenance.h1>
         <x-maintenance.p>{{ __('maintenance.optimize.description') }}</x-maintenance.p>
-        <x-maintenance.button wire:click="do" wire:loading.remove>{{ __('maintenance.optimize.button') }}</x-maintenance.button>
+        <x-maintenance.button wire:click="do">{{ __('maintenance.optimize.button') }}</x-maintenance.button>
         <x-maintenance.loading />
     @endif
 </x-maintenance.card>
