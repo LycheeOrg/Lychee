@@ -20,4 +20,10 @@ return [
 		have all its needed index.',
 		'button' => 'Optimize Database',
 	],
+	'update' => [
+		'title' => 'Updates',
+		'check-button' => 'auf Updates prüfen',
+		'update-button' => 'Update',
+		'no-pending-updates' => 'No pending update.',
+	],
 ];
