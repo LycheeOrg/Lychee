@@ -14,6 +14,11 @@ return [
 		'description' => 'Supprimer le contenu de <span class="font-mono">%s</span>',
 		'button' => 'Nettoyer',
 	],
+	'fix-jobs' => [
+		'title' => 'Réparer l’historique des Jobs',
+		'description' => 'Marquer les jobs avec status <span class="text-ready-400">%s</span> ou <span class="text-primary-500">%s</span> comme <span class="text-danger-700">%s</span>.',
+		'button' => 'Réparer l’historique',
+	],
 	'fix-tree' => [
 		'title' => 'Statistique d’arbres',
 		'Oddness' => 'Imparité',

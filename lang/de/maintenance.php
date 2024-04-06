@@ -14,6 +14,11 @@ return [
 		'description' => 'Remove all contents from <span class="font-mono">%s</span>',
 		'button' => 'Clean',
 	],
+	'fix-jobs' => [
+		'title' => 'Fixing Jobs History',
+		'description' => 'Mark jobs with status <span class="text-ready-400">%s</span> or <span class="text-primary-500">%s</span> as <span class="text-danger-700">%s</span>.',
+		'button' => 'Fix job history',
+	],
 	'fix-tree' => [
 		'title' => 'Tree statistics',
 		'Oddness' => 'Oddness',

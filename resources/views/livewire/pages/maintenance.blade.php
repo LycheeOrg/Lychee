@@ -16,6 +16,7 @@
                 <livewire:modules.maintenance.cleaning :path="config('filesystems.disks.extract-jobs.root')" />
                 <livewire:modules.maintenance.cleaning :path="config('filesystems.disks.image-jobs.root')" />
                 <livewire:modules.maintenance.cleaning :path="config('filesystems.disks.livewire-upload.root')" />
+                <livewire:modules.maintenance.fix-jobs />
                 <livewire:modules.maintenance.fix-tree />
             </div>
         </div>
