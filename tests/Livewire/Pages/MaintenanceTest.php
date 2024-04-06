@@ -14,7 +14,7 @@ namespace Tests\Livewire\Pages;
 
 // use App\Livewire\Components\Modules\Maintenance\Cleaning;
 // use App\Livewire\Components\Modules\Maintenance\FixJobs;
-// use App\Livewire\Components\Modules\Maintenance\Optimize;
+use App\Livewire\Components\Modules\Maintenance\Optimize;
 // use App\Livewire\Components\Modules\Maintenance\Update;
 use App\Livewire\Components\Pages\Maintenance;
 use Livewire\Livewire;

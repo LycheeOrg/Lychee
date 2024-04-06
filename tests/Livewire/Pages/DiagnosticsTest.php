@@ -15,7 +15,6 @@ namespace Tests\Livewire\Pages;
 use App\Livewire\Components\Modules\Diagnostics\Configurations;
 use App\Livewire\Components\Modules\Diagnostics\Errors;
 use App\Livewire\Components\Modules\Diagnostics\Infos;
-use App\Livewire\Components\Modules\Diagnostics\Optimize;
 use App\Livewire\Components\Modules\Diagnostics\Space;
 use App\Livewire\Components\Pages\Diagnostics;
 use Livewire\Livewire;
@@ -30,7 +29,6 @@ class DiagnosticsTest extends BaseLivewireTest
 			->assertSeeLivewire(Errors::class)
 			->assertSeeLivewire(Configurations::class)
 			->assertSeeLivewire(Space::class)
-			->assertSeeLivewire(Optimize::class)
 			->assertSeeLivewire(Infos::class)
 			->assertSee('Diagnostics')
 			->assertDontSee('System Information')
@@ -46,7 +44,6 @@ class DiagnosticsTest extends BaseLivewireTest
 			->assertSeeLivewire(Errors::class)
 			->assertSeeLivewire(Configurations::class)
 			->assertSeeLivewire(Space::class)
-			->assertSeeLivewire(Optimize::class)
 			->assertSeeLivewire(Infos::class)
 			->assertSeeInOrder(['Diagnostics', 'System Information', 'Space Usage', 'Optimize DB', 'Config Information']);
 
