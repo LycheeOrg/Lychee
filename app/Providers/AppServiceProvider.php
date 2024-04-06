@@ -51,47 +51,47 @@ class AppServiceProvider extends ServiceProvider
 	 * @var array<int,string>
 	 */
 	private array $ignore_log_SQL =
-	[
-		'information_schema', // Not interesting
-		'migrations',
+		[
+			'information_schema', // Not interesting
+			'migrations',
 
-		// We do not want infinite loops
-		'EXPLAIN',
+			// We do not want infinite loops
+			'EXPLAIN',
 
-		// Way too noisy
-		'configs',
-	];
+			// Way too noisy
+			'configs',
+		];
 
 	public array $singletons =
-	[
-		SymLinkFunctions::class => SymLinkFunctions::class,
-		Helpers::class => Helpers::class,
-		CheckUpdate::class => CheckUpdate::class,
-		AlbumFactory::class => AlbumFactory::class,
-		AlbumQueryPolicy::class => AlbumQueryPolicy::class,
-		PhotoQueryPolicy::class => PhotoQueryPolicy::class,
+		[
+			SymLinkFunctions::class => SymLinkFunctions::class,
+			Helpers::class => Helpers::class,
+			CheckUpdate::class => CheckUpdate::class,
+			AlbumFactory::class => AlbumFactory::class,
+			AlbumQueryPolicy::class => AlbumQueryPolicy::class,
+			PhotoQueryPolicy::class => PhotoQueryPolicy::class,
 
-		// Versioning
-		InstalledVersion::class => InstalledVersion::class,
-		GitHubVersion::class => GitHubVersion::class,
-		FileVersion::class => FileVersion::class,
+			// Versioning
+			InstalledVersion::class => InstalledVersion::class,
+			GitHubVersion::class => GitHubVersion::class,
+			FileVersion::class => FileVersion::class,
 
-		// Json requests.
-		CommitsRequest::class => CommitsRequest::class,
-		UpdateRequest::class => UpdateRequest::class,
+			// Json requests.
+			CommitsRequest::class => CommitsRequest::class,
+			UpdateRequest::class => UpdateRequest::class,
 
-		// JsonParsers
-		GitCommits::class => GitCommits::class,
-		GitTags::class => GitTags::class,
-	];
+			// JsonParsers
+			GitCommits::class => GitCommits::class,
+			GitTags::class => GitTags::class,
+		];
 
 	private array $livewireSynth =
-	[
-		AlbumSynth::class,
-		PhotoSynth::class,
-		SessionFlagsSynth::class,
-		AlbumFlagsSynth::class,
-	];
+		[
+			AlbumSynth::class,
+			PhotoSynth::class,
+			SessionFlagsSynth::class,
+			AlbumFlagsSynth::class,
+		];
 
 	/**
 	 * Bootstrap any application services.

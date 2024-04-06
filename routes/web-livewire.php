@@ -42,6 +42,7 @@ Route::middleware(['installation:complete', 'migration:complete'])
 			Route::get('/users', Users::class)->name('users');
 			Route::get('/sharing', Sharing::class)->name('sharing');
 			Route::get('/jobs', Jobs::class)->name('jobs');
+			Route::get('/maintenance', Maintenance::class)->name('maintenance');
 			Route::get('/map/{albumId?}', Map::class)->name('livewire-map');
 			Route::get('/frame/{albumId?}', Frame::class)->name('livewire-frame');
 			Route::get('/gallery', Albums::class)->name('livewire-gallery');
