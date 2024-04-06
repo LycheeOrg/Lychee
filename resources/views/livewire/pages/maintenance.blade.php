@@ -12,6 +12,9 @@
             </div>
             <div class=" mt-9 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:items-stretch md:grid-cols-3 md:gap-8 w-full">
                 <livewire:modules.maintenance.optimize />
+                <livewire:modules.maintenance.cleaning :path="config('filesystems.disks.extract-jobs.root')" />
+                <livewire:modules.maintenance.cleaning :path="config('filesystems.disks.image-jobs.root')" />
+                <livewire:modules.maintenance.cleaning :path="config('filesystems.disks.livewire-upload.root')" />
             </div>
         </div>
     </div>
