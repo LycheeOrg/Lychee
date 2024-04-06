@@ -13,7 +13,7 @@
 namespace Tests\Livewire\Pages;
 
 use App\Livewire\Components\Modules\Maintenance\Cleaning;
-// use App\Livewire\Components\Modules\Maintenance\FixJobs;
+use App\Livewire\Components\Modules\Maintenance\FixJobs;
 use App\Livewire\Components\Modules\Maintenance\Optimize;
 use App\Livewire\Components\Modules\Maintenance\Update;
 use App\Livewire\Components\Pages\Maintenance;
@@ -38,7 +38,7 @@ class MaintenanceTest extends BaseLivewireTest
 			->assertSeeLivewire(Cleaning::class)
 			->assertSeeLivewire(Optimize::class)
 			->assertSeeLivewire(Update::class)
-			// ->assertSeeLivewire(FixJobs::class)
+			->assertSeeLivewire(FixJobs::class)
 			->assertSee('Maintenance');
 
 		Livewire::actingAs($this->admin)->test(Maintenance::class)
