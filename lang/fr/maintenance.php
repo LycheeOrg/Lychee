@@ -25,6 +25,12 @@ return [
 		'button' => 'Généré!',
 		'success' => 'Nous avons créé %d %s avec succès.',
 	],
+	'fill-filesize-sizevariants' => [
+		'title' => 'File sizes missing',
+		'description' => 'Found %d small variants without file size.',
+		'button' => 'Fetch data!',
+		'success' => 'Successfully computed sizes of %d small variants.',
+	],
 	'fix-tree' => [
 		'title' => 'Statistique d’arbres',
 		'Oddness' => 'Imparité',
