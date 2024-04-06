@@ -19,4 +19,10 @@ return [
 		'description' => 'Si vous remarquez que votre installation est devenue lente, il est possible que votre base de donnée n’ai pas les index requis.',
 		'button' => 'Optimiser la base de donnée',
 	],
+	'update' => [
+		'title' => 'Mises à jour',
+		'check-button' => 'Vérifier les mise-à-jour',
+		'update-button' => 'Mettre à jour',
+		'no-pending-updates' => 'Aucune mise-à-jour disponible',
+	],
 ];
