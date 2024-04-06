@@ -14,6 +14,14 @@ return [
 		'description' => 'Supprimer le contenu de <span class="font-mono">%s</span>',
 		'button' => 'Nettoyer',
 	],
+	'fix-tree' => [
+		'title' => 'Statistique d’arbres',
+		'Oddness' => 'Imparité',
+		'Duplicates' => 'Duplicata',
+		'Wrong parents' => 'Mauvais parents',
+		'Missing parents' => 'Parents manquants',
+		'button' => 'Fix tree',
+	],
 	'optimize' => [
 		'title' => 'Optimisation de la base de donnée',
 		'description' => 'Si vous remarquez que votre installation est devenue lente, il est possible que votre base de donnée n’ai pas les index requis.',

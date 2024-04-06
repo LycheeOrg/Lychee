@@ -14,6 +14,14 @@ return [
 		'description' => 'Remove all contents from <span class="font-mono">%s</span>',
 		'button' => 'Clean',
 	],
+	'fix-tree' => [
+		'title' => 'Tree statistics',
+		'Oddness' => 'Oddness',
+		'Duplicates' => 'Duplicates',
+		'Wrong parents' => 'Wrong parents',
+		'Missing parents' => 'Missing parents',
+		'button' => 'Fix tree',
+	],
 	'optimize' => [
 		'title' => 'Optimize Database',
 		'description' => 'If you notice slowdown in your installation, it may be because your database does not
