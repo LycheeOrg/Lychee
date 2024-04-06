@@ -98,7 +98,7 @@ class Cleaning extends Component
 			return true;
 		}
 
-		$count = 0;
+		$files_found = false;
 		foreach (new \DirectoryIterator($this->path) as $fileInfo) {
 			if ($fileInfo->isDot()) {
 				continue;
@@ -106,9 +106,9 @@ class Cleaning extends Component
 			if (in_array($fileInfo->getFilename(), $this->skip, true)) {
 				continue;
 			}
-			$count = 1;
+			$files_found = true;
 		}
 
-		return 0 === $count;
+		return $files_found === false;
 	}
 }
