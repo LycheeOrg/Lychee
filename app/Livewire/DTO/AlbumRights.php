@@ -14,6 +14,7 @@ class AlbumRights implements Wireable
 
 	public function __construct(
 		public bool $can_edit = false,
+		public bool $can_share = false,
 		public bool $can_share_with_users = false,
 		public bool $can_download = false,
 		public bool $can_upload = false,
@@ -32,12 +33,13 @@ class AlbumRights implements Wireable
 	public static function make(?AbstractAlbum $abstractAlbum): AlbumRights
 	{
 		return new self(
-			Gate::check(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $abstractAlbum]),
-			Gate::check(AlbumPolicy::CAN_SHARE_WITH_USERS, [AbstractAlbum::class, $abstractAlbum]),
-			Gate::check(AlbumPolicy::CAN_DOWNLOAD, [AbstractAlbum::class, $abstractAlbum]),
-			Gate::check(AlbumPolicy::CAN_UPLOAD, [AbstractAlbum::class, $abstractAlbum]),
-			Gate::check(AlbumPolicy::CAN_DELETE, [AbstractAlbum::class, $abstractAlbum]),
-			Gate::check(AlbumPolicy::CAN_ACCESS_FULL_PHOTO, [AbstractAlbum::class, $abstractAlbum]),
+			can_edit: Gate::check(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $abstractAlbum]),
+			can_share: Gate::check(AlbumPolicy::CAN_SHARE, [AbstractAlbum::class, $abstractAlbum]),
+			can_share_with_users: Gate::check(AlbumPolicy::CAN_SHARE_WITH_USERS, [AbstractAlbum::class, $abstractAlbum]),
+			can_download: Gate::check(AlbumPolicy::CAN_DOWNLOAD, [AbstractAlbum::class, $abstractAlbum]),
+			can_upload: Gate::check(AlbumPolicy::CAN_UPLOAD, [AbstractAlbum::class, $abstractAlbum]),
+			can_delete: Gate::check(AlbumPolicy::CAN_DELETE, [AbstractAlbum::class, $abstractAlbum]),
+			can_access_original: Gate::check(AlbumPolicy::CAN_ACCESS_FULL_PHOTO, [AbstractAlbum::class, $abstractAlbum]),
 		);
 	}
 }
