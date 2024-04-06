@@ -66,8 +66,7 @@ class GenSizeVariants extends Component
 	}
 
 	/**
-	 * Return the size used by Lychee.
-	 * We now separate this from the initial get() call as this is quite time consuming.
+	 * Generates missing size variants by chunk of 100.
 	 *
 	 * @return void
 	 */
