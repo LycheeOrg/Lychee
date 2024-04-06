@@ -33,7 +33,6 @@ class DiagnosticsTest extends BaseLivewireTest
 			->assertSee('Diagnostics')
 			->assertDontSee('System Information')
 			->assertDontSee('Space Usage')
-			->assertDontSee('Optimize DB')
 			->assertDontSee('Config Information');
 	}
 
@@ -45,7 +44,7 @@ class DiagnosticsTest extends BaseLivewireTest
 			->assertSeeLivewire(Configurations::class)
 			->assertSeeLivewire(Space::class)
 			->assertSeeLivewire(Infos::class)
-			->assertSeeInOrder(['Diagnostics', 'System Information', 'Space Usage', 'Optimize DB', 'Config Information']);
+			->assertSeeInOrder(['Diagnostics', 'System Information', 'Space Usage', 'Config Information']);
 
 		$diagnostics->dispatch('reloadPage')
 			->assertStatus(200);
