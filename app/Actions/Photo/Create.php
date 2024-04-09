@@ -2,14 +2,18 @@
 
 namespace App\Actions\Photo;
 
+use App\Actions\Photo\Pipes\Init;
+use App\Assets\Features;
 use App\Contracts\Exceptions\LycheeException;
 use App\Contracts\Models\AbstractAlbum;
 use App\DTO\ImportMode;
 use App\DTO\ImportParam;
+use App\DTO\PhotoCreate\InitDTO;
 use App\Image\Files\NativeLocalFile;
 use App\Legacy\Actions\Photo\Create as LegacyPhotoCreate;
 use App\Models\Photo;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Pipeline\Pipeline;
 
 class Create
 {
@@ -41,6 +45,36 @@ class Create
 	 */
 	public function add(NativeLocalFile $sourceFile, ?AbstractAlbum $album, ?int $fileLastModifiedTime = null): Photo
 	{
+		if (Features::inactive('create-photo-via-pipes')) {
+			$oldCodePath = new LegacyPhotoCreate($this->strategyParameters->importMode, $this->strategyParameters->intendedOwnerId);
+
+			return $oldCodePath->add($sourceFile, $album, $fileLastModifiedTime);
+		}
+
+		$initDTO = new InitDTO(
+			parameters: $this->strategyParameters,
+			sourceFile: $sourceFile,
+			album: $album,
+			fileLastModifiedTime: $fileLastModifiedTime
+		);
+
+		/** @var InitDTO $initDTO */
+		$initDTO = app(Pipeline::class)
+			->send($initDTO)
+			->through([
+				Init\AssertSupportedMedia::class,
+				Init\FetchLastModifiedTime::class,
+				Init\InitParentAlbum::class,
+				Init\LoadFileMetadata::class,
+				Init\FindDuplicate::class,
+				Init\FindLivePartner::class,
+			])
+			->thenReturn();
+
+		/** @var Pipeline $nextPipe */
+		// $nextPipe = app(Pipeline::class)
+		// 	->send($photoDTO);
+
 		$oldCodePath = new LegacyPhotoCreate($this->strategyParameters->importMode, $this->strategyParameters->intendedOwnerId);
 
 		return $oldCodePath->add($sourceFile, $album, $fileLastModifiedTime);
