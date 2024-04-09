@@ -1,14 +1,17 @@
 <?php
 
-namespace App\Models\Extensions;
+namespace App\Legacy;
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * Used in migrations prior 2024_04_09_121410.
+ */
 abstract class BaseConfigMigration extends Migration
 {
 	/**
-	 * @return array<int,array{key:string,value:string,is_secret:bool,cat:string,type_range:string,description:string}>
+	 * @return array<int,array{key:string,value:string,confidentiality:string,cat:string,type_range:string,description:string}>
 	 */
 	abstract public function getConfigs(): array;
 
