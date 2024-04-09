@@ -3,6 +3,8 @@
 namespace App\Actions\Photo\Strategies;
 
 use App\Contracts\Exceptions\LycheeException;
+use App\DTO\ImportMode;
+use App\DTO\ImportParam;
 use App\Image\Files\NativeLocalFile;
 use App\Models\Photo;
 
@@ -21,7 +23,7 @@ class AddPhotoPartnerStrategy extends AddStandaloneStrategy
 {
 	protected Photo $existingVideo;
 
-	public function __construct(AddStrategyParameters $parameters, NativeLocalFile $photoSourceFile, Photo $existingVideo)
+	public function __construct(ImportParam $parameters, NativeLocalFile $photoSourceFile, Photo $existingVideo)
 	{
 		parent::__construct($parameters, $photoSourceFile);
 		$this->existingVideo = $existingVideo;
@@ -46,7 +48,7 @@ class AddPhotoPartnerStrategy extends AddStandaloneStrategy
 		// "steals away" the stored video file from the existing video entity
 		// and moves it to the correct destination of a live partner for the
 		// photo.
-		$parameters = new AddStrategyParameters(
+		$parameters = new ImportParam(
 			new ImportMode(deleteImported: true),
 			$this->parameters->intendedOwnerId
 		);

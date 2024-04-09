@@ -5,12 +5,12 @@ namespace App\Actions\Photo;
 use App\Actions\Photo\Strategies\AddDuplicateStrategy;
 use App\Actions\Photo\Strategies\AddPhotoPartnerStrategy;
 use App\Actions\Photo\Strategies\AddStandaloneStrategy;
-use App\Actions\Photo\Strategies\AddStrategyParameters;
 use App\Actions\Photo\Strategies\AddVideoPartnerStrategy;
-use App\Actions\Photo\Strategies\ImportMode;
 use App\Actions\User\Notify;
 use App\Contracts\Exceptions\LycheeException;
 use App\Contracts\Models\AbstractAlbum;
+use App\DTO\ImportMode;
+use App\DTO\ImportParam;
 use App\Exceptions\ExternalComponentFailedException;
 use App\Exceptions\ExternalComponentMissingException;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
@@ -31,12 +31,12 @@ use function Safe\filemtime;
 
 class Create
 {
-	/** @var AddStrategyParameters the strategy parameters prepared and compiled by this class */
-	protected AddStrategyParameters $strategyParameters;
+	/** @var ImportParam the strategy parameters prepared and compiled by this class */
+	protected ImportParam $strategyParameters;
 
 	public function __construct(?ImportMode $importMode, int $intendedOwnerId)
 	{
-		$this->strategyParameters = new AddStrategyParameters($importMode, $intendedOwnerId);
+		$this->strategyParameters = new ImportParam($importMode, $intendedOwnerId);
 	}
 
 	/**
@@ -116,7 +116,7 @@ class Create
 
 	/**
 	 * Extracts the meta-data of the source file and initializes
-	 * {@link AddStrategyParameters::$exifInfo} of {@link Create::$strategyParameters}.
+	 * {@link ImportParam::$exifInfo} of {@link Create::$strategyParameters}.
 	 *
 	 * @param NativeLocalFile $sourceFile           the source file
 	 * @param int             $fileLastModifiedTime the timestamp to use if there's no creation date in Exif
