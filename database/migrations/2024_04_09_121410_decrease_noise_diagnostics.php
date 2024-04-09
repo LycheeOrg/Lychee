@@ -178,7 +178,7 @@ return new class() extends Migration {
 		});
 
 		Schema::table(self::TABLE_NAME, function (Blueprint $table) {
-			$table->removeColumn(self::OLD_COL_NAME);
+			$table->dropColumn(self::OLD_COL_NAME);
 		});
 
 		DB::table(self::TABLE_NAME)->whereIn('key', self::IS_SECRET)->update([self::NEW_COL_NAME => true]);
@@ -190,11 +190,11 @@ return new class() extends Migration {
 	public function down(): void
 	{
 		Schema::table(self::TABLE_NAME, function (Blueprint $table) {
-			$table->tinyInteger(self::OLD_COL_NAME)->after(self::OLD_COL_NAME)->default(0);
+			$table->tinyInteger(self::OLD_COL_NAME)->after(self::NEW_COL_NAME)->default(0);
 		});
 
 		Schema::table(self::TABLE_NAME, function (Blueprint $table) {
-			$table->removeColumn(self::NEW_COL_NAME);
+			$table->dropColumn(self::NEW_COL_NAME);
 		});
 
 		DB::table(self::TABLE_NAME)->whereIn('key', self::CONF_0)->update([self::OLD_COL_NAME => 0]);
