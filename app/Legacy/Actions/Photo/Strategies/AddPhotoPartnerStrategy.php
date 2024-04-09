@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Photo\Strategies;
+namespace App\Legacy\Actions\Photo\Strategies;
 
 use App\Contracts\Exceptions\LycheeException;
 use App\DTO\ImportMode;

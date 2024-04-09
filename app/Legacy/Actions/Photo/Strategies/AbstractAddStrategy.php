@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Photo\Strategies;
+namespace App\Legacy\Actions\Photo\Strategies;
 
 use App\DTO\ImportParam;
 use App\Exceptions\MediaFileOperationException;

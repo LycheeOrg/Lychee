@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Photo\Strategies;
+namespace App\Legacy\Actions\Photo\Strategies;
 
 use App\Actions\Diagnostics\Pipes\Checks\BasicPermissionCheck;
 use App\Contracts\Models\AbstractSizeVariantNamingStrategy;
