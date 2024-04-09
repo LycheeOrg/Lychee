@@ -5,7 +5,7 @@ namespace App\Contracts\PhotoCreate;
 use App\DTO\PhotoCreate\DuplicateDTO;
 
 /**
- * Basic definition of a Photo creation pipe.
+ * Basic definition of a Duplicate Photo pipe.
  *
  * This allows to clarify which steps are applied in which order.
  */
