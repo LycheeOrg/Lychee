@@ -8,7 +8,7 @@ use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
 
 /**
- * Assert wether we support said file.
+ * Assert whether we support said file.
  */
 class AssertSupportedMedia implements InitPipe
 {

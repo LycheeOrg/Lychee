@@ -8,7 +8,7 @@ use App\Exceptions\InvalidPropertyException;
 use App\Metadata\Extractor;
 
 /**
- * Assert wether we support said file.
+ * Load metadata from the file.
  */
 class LoadFileMetadata implements InitPipe
 {

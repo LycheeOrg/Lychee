@@ -8,7 +8,7 @@ use App\Image\StreamStat;
 use App\Models\Photo;
 
 /**
- * Assert wether we support said file.
+ * Look for duplicates of the file in the database.
  */
 class FindDuplicate implements InitPipe
 {

@@ -10,7 +10,7 @@ use App\Image\Files\BaseMediaFile;
 use App\Models\Photo;
 
 /**
- * Assert wether we support said file.
+ * Try to link live photo components together.
  */
 class FindLivePartner implements InitPipe
 {

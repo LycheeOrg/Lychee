@@ -6,7 +6,7 @@ use App\Contracts\PhotoCreate\InitPipe;
 use App\DTO\PhotoCreate\InitDTO;
 
 /**
- * Assert wether we support said file.
+ * Set fileLastModifiedTime if null.
  */
 class FetchLastModifiedTime implements InitPipe
 {
