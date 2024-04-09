@@ -71,10 +71,6 @@ class Create
 			])
 			->thenReturn();
 
-		/** @var Pipeline $nextPipe */
-		// $nextPipe = app(Pipeline::class)
-		// 	->send($photoDTO);
-
 		$oldCodePath = new LegacyPhotoCreate($this->strategyParameters->importMode, $this->strategyParameters->intendedOwnerId);
 
 		return $oldCodePath->add($sourceFile, $album, $fileLastModifiedTime);
