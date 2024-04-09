@@ -21,7 +21,7 @@ class InitDTO
 	public bool $is_starred = false;
 
 	// The extracted EXIF information (populated during init phase).
-	public Extractor $exifInfo;
+	public ?Extractor $exifInfo;
 
 	// The intended parent album
 	public ?AbstractAlbum $album = null;
