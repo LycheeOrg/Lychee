@@ -2,13 +2,18 @@
 
 namespace App\Actions\Photo;
 
+use App\Actions\Photo\Pipes\Duplicate;
 use App\Actions\Photo\Pipes\Init;
+use App\Actions\Photo\Pipes\Shared;
 use App\Assets\Features;
 use App\Contracts\Exceptions\LycheeException;
 use App\Contracts\Models\AbstractAlbum;
 use App\DTO\ImportMode;
 use App\DTO\ImportParam;
+use App\DTO\PhotoCreate\DuplicateDTO;
 use App\DTO\PhotoCreate\InitDTO;
+use App\Exceptions\PhotoResyncedException;
+use App\Exceptions\PhotoSkippedException;
 use App\Image\Files\NativeLocalFile;
 use App\Legacy\Actions\Photo\Create as LegacyPhotoCreate;
 use App\Models\Photo;
@@ -71,8 +76,50 @@ class Create
 			])
 			->thenReturn();
 
+		if ($initDTO->duplicate !== null) {
+			return $this->handleDuplicate($initDTO);
+		}
+
 		$oldCodePath = new LegacyPhotoCreate($this->strategyParameters->importMode, $this->strategyParameters->intendedOwnerId);
 
 		return $oldCodePath->add($sourceFile, $album, $fileLastModifiedTime);
+	}
+
+	/**
+	 * Handle duplicate case.
+	 *
+	 * @param InitDTO $initDTO initial fetched
+	 *
+	 * @return Photo Photo duplicated
+	 *
+	 * @throws PhotoResyncedException
+	 * @throws PhotoSkippedException
+	 */
+	private function handleDuplicate(InitDTO $initDTO): Photo
+	{
+		$dto = new DuplicateDTO($initDTO);
+
+		$pipes = [];
+		if ($dto->shallResyncMetadata) {
+			$pipes[] = Shared\HydrateMetadata::class;
+			$pipes[] = Duplicate\SaveIfDirty::class;
+		}
+		$pipes[] = Duplicate\ThrowSkipDuplicate::class;
+		$pipes[] = Duplicate\ReplicateAsPhoto::class;
+		$pipes[] = Shared\SetStarred::class;
+		$pipes[] = Shared\SetParentAndOwnership::class;
+		$pipes[] = Shared\Save::class;
+		$pipes[] = Shared\NotifyAlbums::class;
+
+		try {
+			return app(Pipeline::class)
+				->send($dto)
+				->through($pipes)
+				->thenReturn()
+				->photo;
+		} catch (PhotoResyncedException|PhotoSkippedException $e) {
+			// duplicate case. Just rethrow.
+			throw $e;
+		}
 	}
 }
