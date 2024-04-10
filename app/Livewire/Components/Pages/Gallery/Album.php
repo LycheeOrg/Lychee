@@ -22,7 +22,6 @@ use App\Models\User;
 use App\Policies\AlbumPolicy;
 use App\Policies\PhotoPolicy;
 use Illuminate\Database\Eloquent\RelationNotFoundException;
-use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
@@ -185,14 +184,17 @@ class Album extends BaseAlbumComponent implements Reloadable
 		}
 
 		if (!$this->album instanceof ModelsAlbum || !isset($this->album->header_id)) {
-			return SizeVariant::query()->from(function (Builder $query) {
-				$query->from('size_variants')
-					->groupBy('photo_id')
-					->orderBy('type', 'asc');
-			}, 'photos')
-			->whereIn('photo_id', $this->album->photos->pluck('id'))
-			->inRandomOrder()
-			->first();
+			$photo = SizeVariant::query()
+				->whereBelongsTo($this->album->photos)
+				->groupBy('photo_id')
+				->inRandomOrder()
+				->first();
+
+			return SizeVariant::query()
+				->where('photo_id', '=', $photo->photo_id)
+				->where('ratio', '>', 1)
+				->orderBy('type', 'asc')
+				->first();
 		}
 
 		return SizeVariant::query()
