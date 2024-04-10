@@ -9,27 +9,30 @@ use App\Models\Photo;
 
 class VideoPartnerDTO implements PhotoDTO
 {
-	public readonly bool $shallImportViaSymlink;
-	public readonly bool $shallDeleteImported;
-
-	// The resulting photo
-	public readonly Photo $photo;
-
 	public StreamStats|null $streamStat;
-
 	public string $videoPath;
-	public readonly BaseMediaFile $videoFile;
 
-	public function __construct(InitDTO $initDTO)
-	{
-		$this->videoFile = $initDTO->sourceFile;
-		$this->photo = $initDTO->livePartner;
-		$this->shallImportViaSymlink = $initDTO->importMode->shallImportViaSymlink;
-		$this->shallDeleteImported = $initDTO->importMode->shallDeleteImported;
+	public function __construct(
+		public readonly BaseMediaFile $videoFile,
+		// The resulting photo
+		public readonly Photo $photo,
+		public readonly bool $shallImportViaSymlink,
+		public readonly bool $shallDeleteImported,
+	) {
 	}
 
 	public function getPhoto(): Photo
 	{
 		return $this->photo;
+	}
+
+	public static function ofInit(InitDTO $initDTO): VideoPartnerDTO
+	{
+		return new VideoPartnerDTO(
+			videoFile: $initDTO->sourceFile,
+			photo: $initDTO->livePartner,
+			shallImportViaSymlink: $initDTO->importMode->shallImportViaSymlink,
+			shallDeleteImported: $initDTO->importMode->shallDeleteImported,
+		);
 	}
 }

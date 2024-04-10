@@ -13,36 +13,39 @@ use App\Models\Photo;
  */
 class DuplicateDTO implements PhotoDTO
 {
-	public readonly bool $shallResyncMetadata;
-	public readonly bool $shallSkipDuplicates;
-
 	public bool $hasBeenReSynced;
 
-	// Indicates the intended owner of the image.
-	public readonly int $intendedOwnerId;
+	public function __construct(
+		public readonly bool $shallResyncMetadata,
+		public readonly bool $shallSkipDuplicates,
+		// Indicates the intended owner of the image.
+		public readonly int $intendedOwnerId,
 
-	// Indicates whether the new photo shall be starred.
-	public readonly bool $is_starred;
+		// Indicates whether the new photo shall be starred.
+		public readonly bool $is_starred,
 
-	// The extracted EXIF information (populated during init phase).
-	public readonly Extractor $exifInfo;
+		// The extracted EXIF information (populated during init phase).
+		public readonly Extractor $exifInfo,
 
-	// The intended parent album
-	public readonly ?AbstractAlbum $album;
+		// The intended parent album
+		public readonly ?AbstractAlbum $album,
 
-	// During initial steps if liveParner is found, it will be placed here.
-	public Photo $photo;
+		// During initial steps if duplicate is found, it will be placed here.
+		public Photo $photo,
+	) {
+	}
 
-	public function __construct(InitDTO $initDTO)
+	public static function ofInit(InitDTO $initDTO): DuplicateDTO
 	{
-		$this->shallResyncMetadata = $initDTO->importMode->shallResyncMetadata;
-		$this->shallSkipDuplicates = $initDTO->importMode->shallSkipDuplicates;
-
-		$this->photo = $initDTO->duplicate;
-		$this->exifInfo = $initDTO->exifInfo;
-		$this->album = $initDTO->album;
-		$this->is_starred = $initDTO->is_starred;
-		$this->intendedOwnerId = $initDTO->intendedOwnerId;
+		return new DuplicateDTO(
+			shallResyncMetadata: $initDTO->importMode->shallResyncMetadata,
+			shallSkipDuplicates: $initDTO->importMode->shallSkipDuplicates,
+			intendedOwnerId: $initDTO->intendedOwnerId,
+			is_starred: $initDTO->is_starred,
+			exifInfo: $initDTO->exifInfo,
+			album: $initDTO->album,
+			photo: $initDTO->duplicate,
+		);
 	}
 
 	public function getPhoto(): Photo
