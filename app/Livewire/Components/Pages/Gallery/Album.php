@@ -186,13 +186,13 @@ class Album extends BaseAlbumComponent implements Reloadable
 		if (!$this->album instanceof ModelsAlbum || !isset($this->album->header_id)) {
 			$photo = SizeVariant::query()
 				->whereBelongsTo($this->album->photos)
+				->where('ratio', '>', 1)
 				->groupBy('photo_id')
 				->inRandomOrder()
 				->first();
 
 			return SizeVariant::query()
 				->where('photo_id', '=', $photo->photo_id)
-				->where('ratio', '>', 1)
 				->orderBy('type', 'asc')
 				->first();
 		}
