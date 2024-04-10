@@ -3,8 +3,8 @@
 namespace App\Actions\Photo\Pipes\Standalone;
 
 use App\Assets\Features;
-use App\Contracts\PhotoCreatePipe;
-use App\DTO\PhotoCreateDTO;
+use App\Contracts\PhotoCreate\StandalonePipe;
+use App\DTO\PhotoCreate\StandaloneDTO;
 use App\Jobs\UploadSizeVariantToS3Job;
 use App\Models\Configs;
 use App\Models\SizeVariant;
@@ -14,9 +14,9 @@ use App\Models\SizeVariant;
  * Note that we first create the job, then we dispatch it.
  * This allows to manage the queue properly and see it in the feedback.
  */
-class UploadSizeVariantsToS3 implements PhotoCreatePipe
+class UploadSizeVariantsToS3 implements StandalonePipe
 {
-	public function handle(PhotoCreateDTO $state, \Closure $next): PhotoCreateDTO
+	public function handle(StandaloneDTO $state, \Closure $next): StandaloneDTO
 	{
 		if (Features::active('use-s3')) {
 			$sync = Configs::getValueAsBool('use_job_queues');
