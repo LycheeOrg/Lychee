@@ -160,7 +160,7 @@ class Create
 			// If source file could not be put into final destination, remove
 			// freshly created photo from DB to avoid having "zombie" entries.
 			try {
-				$dto->photo->delete();
+				$dto->getPhoto()->delete();
 			} catch (\Throwable) {
 				// Sic! If anything goes wrong here, we still throw the original exception
 			}
