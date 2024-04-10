@@ -157,22 +157,7 @@ class Create
 			Standalone\CreateSizeVariants::class,
 		];
 
-		try {
-			return app(Pipeline::class)
-				->send($dto)
-				->through($pipes)
-				->thenReturn()
-				->getPhoto();
-		} catch (LycheeException $e) {
-			// If source file could not be put into final destination, remove
-			// freshly created photo from DB to avoid having "zombie" entries.
-			try {
-				$dto->getPhoto()->delete();
-			} catch (\Throwable) {
-				// Sic! If anything goes wrong here, we still throw the original exception
-			}
-			throw $e;
-		}
+		return $this->executePipeOnDTO($pipes, $dto)->getPhoto();
 	}
 
 	private function handleVideoLivePartner(InitDTO $initDTO): Photo
@@ -186,12 +171,28 @@ class Create
 			Shared\Save::class,
 		];
 
+		return $this->executePipeOnDTO($pipes, $dto)->getPhoto();
+	}
+
+	/**
+	 * Execute the pipes on the DTO.
+	 *
+	 * @template T of VideoPartnerDTO|StandaloneDTO
+	 *
+	 * @param array $pipes
+	 * @param T     $dto
+	 *
+	 * @return T
+	 *
+	 * @throws LycheeException
+	 */
+	private function executePipeOnDTO(array $pipes, VideoPartnerDTO|StandaloneDTO $dto): VideoPartnerDTO|StandaloneDTO
+	{
 		try {
 			return app(Pipeline::class)
 				->send($dto)
 				->through($pipes)
-				->thenReturn()
-				->getPhoto();
+				->thenReturn();
 		} catch (LycheeException $e) {
 			// If source file could not be put into final destination, remove
 			// freshly created photo from DB to avoid having "zombie" entries.
