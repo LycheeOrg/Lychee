@@ -214,7 +214,7 @@ class Create
 	/**
 	 * Adds a photo as partner to an existing video.
 	 *
-	 * Note the asymmetry to {@link AddVideoPartnerStrategy}.
+	 * Note the asymmetry to {@link handleVideoLivePartner}.
 	 *
 	 * A photo is always added as if it had no partner, even if the video had
 	 * been added first.
