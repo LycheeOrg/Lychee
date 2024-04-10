@@ -41,7 +41,12 @@ class InstallTest extends AbstractTestCase
 		config(['app.key' => $prevAppKey]);
 
 		$response = $this->get('/');
-		$this->assertOk($response);
+		if (config('app.livewire') === true) {
+			$this->assertRedirect($response);
+			$response->assertRedirect(route('livewire-gallery'));
+		} else {
+			$this->assertOk($response);
+		}
 
 		/*
 		 * Clearing things up. We could do an Artisan migrate:reset but this is more efficient.
@@ -133,7 +138,12 @@ class InstallTest extends AbstractTestCase
 		 */
 		Configs::invalidateCache();
 		$response = $this->get('/');
-		$this->assertOk($response);
+		if (config('app.livewire') === true) {
+			$this->assertRedirect($response);
+			$response->assertRedirect(route('livewire-gallery'));
+		} else {
+			$this->assertOk($response);
+		}
 
 		/*
 		 * make sure there's still an admin user with ID 1

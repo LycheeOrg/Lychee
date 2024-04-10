@@ -31,6 +31,7 @@ class AlbumPolicy extends BasePolicy
 	public const CAN_EDIT = 'canEdit';
 	public const CAN_EDIT_ID = 'canEditById';
 	public const CAN_DELETE_ID = 'canDeleteById';
+	public const CAN_SHARE = 'canShare';
 	public const CAN_SHARE_WITH_USERS = 'canShareWithUsers';
 	public const CAN_IMPORT_FROM_SERVER = 'canImportFromServer';
 	public const CAN_SHARE_ID = 'canShareById';
@@ -400,10 +401,36 @@ class AlbumPolicy extends BasePolicy
 	}
 
 	/**
+	 * Check if user can share selected album with to public.
+	 *
+	 * @param User           $user
+	 * @param ?AbstractAlbum $abstractAlbum
+	 *
+	 * @return bool
+	 */
+	public function canShare(?User $user, ?AbstractAlbum $abstractAlbum): bool
+	{
+		// should not be the case, but well.
+		if ($abstractAlbum === null) {
+			return true;
+		}
+
+		if (Configs::getValueAsBool('share_button_visible')) {
+			return true;
+		}
+
+		if (!$abstractAlbum instanceof BaseAlbum) {
+			return false;
+		}
+
+		return $this->isOwner($user, $abstractAlbum);
+	}
+
+	/**
 	 * Check if user can share selected album with another user.
 	 *
-	 * @param User          $user
-	 * @param AbstractAlbum $abstractAlbum
+	 * @param User                             $user
+	 * @param AbstractAlbum|BaseAlbumImpl|null $abstractAlbum
 	 *
 	 * @return bool
 	 */

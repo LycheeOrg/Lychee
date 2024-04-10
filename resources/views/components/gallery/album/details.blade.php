@@ -31,9 +31,11 @@
         <x-icons.iconic class="my-0 w-4 h-4 mr-0 ml-0" icon="cloud-download" />
     </a>
     @endif
+    @if($this->rights->can_share)
     <a class="flex-shrink-0 px-3 cursor-pointer" title={{ __('lychee.SHARE_ALBUM') }} x-on:click="albumFlags.isSharingLinksOpen = true">
         <x-icons.iconic class="my-0 w-4 h-4 mr-0 ml-0" icon="share-ion" />
     </a>
+    @endif
 </div>
 @if($this->AlbumFormatted->description !== null)
 <div class="w-full px-7 my-4 text-justify text-text-main-200 prose prose-invert prose-sm" {{ $attributes }} >
