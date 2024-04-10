@@ -143,6 +143,7 @@ return [
 	'UNSTAR_PHOTO' => 'Obrázok odstrániť z obľúbených',
 	'SET_COVER' => 'Set Album Cover',
 	'REMOVE_COVER' => 'Remove Album Cover',
+	'SET_HEADER' => 'Set Album Header',
 
 	'FULL_PHOTO' => 'Otvoriť originál',
 	'ABOUT_PHOTO' => 'O tomto obrázku',

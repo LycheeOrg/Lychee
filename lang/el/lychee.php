@@ -143,6 +143,7 @@ return [
 	'UNSTAR_PHOTO' => 'Αφαιρέστε Αστέρια από τη Φωτογραφία',
 	'SET_COVER' => 'Set Album Cover',
 	'REMOVE_COVER' => 'Remove Album Cover',
+	'SET_HEADER' => 'Set Album Header',
 
 	'FULL_PHOTO' => 'Πρωτότυπη Φωτογραφία',
 	'ABOUT_PHOTO' => 'Πληροφορίες Φωτογραφίας',

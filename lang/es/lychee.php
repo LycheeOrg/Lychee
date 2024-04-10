@@ -143,6 +143,7 @@ return [
 	'UNSTAR_PHOTO' => 'Desetiquetar Foto',
 	'SET_COVER' => 'Establecer portada del álbum',
 	'REMOVE_COVER' => 'Eliminar portada del álbum',
+	'SET_HEADER' => 'Set Album Header',
 
 	'FULL_PHOTO' => 'Foto Completa',
 	'ABOUT_PHOTO' => 'Acerca de la Foto',

@@ -141,6 +141,7 @@ return [
 	'UNSTAR_PHOTO' => 'Fotó kedvencjelölésének eltávolítása',
 	'SET_COVER' => 'Album borítójának beállítása',
 	'REMOVE_COVER' => 'Album borítójának eltávolítása',
+	'SET_HEADER' => 'Set Album Header',
 
 	'FULL_PHOTO' => 'Eredeti megnyitása',
 	'ABOUT_PHOTO' => 'A fotóról',

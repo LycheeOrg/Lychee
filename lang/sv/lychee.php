@@ -143,6 +143,7 @@ return [
 	'UNSTAR_PHOTO' => 'Ta bort stjärnmärke',
 	'SET_COVER' => 'Set Album Cover',
 	'REMOVE_COVER' => 'Remove Album Cover',
+	'SET_HEADER' => 'Set Album Header',
 
 	'FULL_PHOTO' => 'Originalfotografi',
 	'ABOUT_PHOTO' => 'Om fotografiet',

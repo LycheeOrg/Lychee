@@ -143,6 +143,7 @@ return [
 	'UNSTAR_PHOTO' => 'Foto von Favoriten entfernen',
 	'SET_COVER' => 'Als Album-Cover setzen',
 	'REMOVE_COVER' => 'Als Album-Cover entfernen',
+	'SET_HEADER' => 'Set Album Header',
 
 	'FULL_PHOTO' => 'Original öffnen',
 	'ABOUT_PHOTO' => 'Über dieses Foto',

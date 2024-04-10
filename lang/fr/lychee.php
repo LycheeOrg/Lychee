@@ -143,6 +143,7 @@ return [
 	'UNSTAR_PHOTO' => 'Retirer des Favoris',
 	'SET_COVER' => 'Changer la couverture de l’album',
 	'REMOVE_COVER' => 'Supprimer la couverture de l’album',
+	'SET_HEADER' => 'Set Album Header',
 
 	'FULL_PHOTO' => 'Ouvrir l’original',
 	'ABOUT_PHOTO' => 'À propos de la photo',

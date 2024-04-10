@@ -143,6 +143,7 @@ return [
 	'UNSTAR_PHOTO' => 'Desmarcar como Favorita',
 	'SET_COVER' => 'Escolher para Capa de Álbum',
 	'REMOVE_COVER' => 'Remover Capa de Álbum',
+	'SET_HEADER' => 'Set Album Header',
 
 	'FULL_PHOTO' => 'Abrir Original',
 	'ABOUT_PHOTO' => 'Acerca da Fotografia',

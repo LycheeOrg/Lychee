@@ -143,6 +143,7 @@ return [
 	'UNSTAR_PHOTO' => 'Rimuovi dalle Foto Speciali',
 	'SET_COVER' => 'Set Album Cover',
 	'REMOVE_COVER' => 'Remove Album Cover',
+	'SET_HEADER' => 'Set Album Header',
 
 	'FULL_PHOTO' => 'Open Original',
 	'ABOUT_PHOTO' => 'Informazioni sulla Foto',
