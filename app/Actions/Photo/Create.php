@@ -15,6 +15,7 @@ use App\DTO\ImportParam;
 use App\DTO\PhotoCreate\DuplicateDTO;
 use App\DTO\PhotoCreate\InitDTO;
 use App\DTO\PhotoCreate\StandaloneDTO;
+use App\DTO\PhotoCreate\VideoPartnerDTO;
 use App\Exceptions\PhotoResyncedException;
 use App\Exceptions\PhotoSkippedException;
 use App\Image\Files\NativeLocalFile;
@@ -176,7 +177,7 @@ class Create
 
 	private function handleVideoLivePartner(InitDTO $initDTO): Photo
 	{
-		$dto = new StandaloneDTO($initDTO);
+		$dto = new VideoPartnerDTO($initDTO);
 
 		$pipes = [
 			VideoPartner\GetVideoPath::class,
