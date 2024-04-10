@@ -3,6 +3,7 @@
 namespace App\DTO\PhotoCreate;
 
 use App\Contracts\Models\AbstractAlbum;
+use App\Contracts\PhotoCreate\PhotoDTO;
 use App\Metadata\Extractor;
 use App\Models\Photo;
 
@@ -10,7 +11,7 @@ use App\Models\Photo;
  * DTO used when dealing with duplicates.
  * We only keep the needed datas.
  */
-class DuplicateDTO
+class DuplicateDTO implements PhotoDTO
 {
 	public readonly bool $shallResyncMetadata;
 	public readonly bool $shallSkipDuplicates;
@@ -42,6 +43,11 @@ class DuplicateDTO
 		$this->album = $initDTO->album;
 		$this->is_starred = $initDTO->is_starred;
 		$this->intendedOwnerId = $initDTO->intendedOwnerId;
+	}
+
+	public function getPhoto(): Photo
+	{
+		return $this->photo;
 	}
 
 	public function setHasBeenResync(bool $val): void

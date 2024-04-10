@@ -6,8 +6,6 @@ use App\DTO\PhotoCreate\DuplicateDTO;
 
 /**
  * Basic definition of a Duplicate Photo pipe.
- *
- * This allows to clarify which steps are applied in which order.
  */
 interface DuplicatePipe
 {

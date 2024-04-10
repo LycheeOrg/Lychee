@@ -2,15 +2,13 @@
 
 namespace App\Actions\Photo\Pipes\Shared;
 
-use App\Contracts\PhotoCreate\SharedPipe;
-use App\DTO\PhotoCreate\DuplicateDTO;
-use App\DTO\PhotoCreate\StandaloneDTO;
+use App\Contracts\PhotoCreate\PhotoDTO;
 
-class Save implements SharedPipe
+class Save
 {
-	public function handle(DuplicateDTO|StandaloneDTO $state, \Closure $next): DuplicateDTO|StandaloneDTO
+	public function handle(PhotoDTO $state, \Closure $next): PhotoDTO
 	{
-		$state->photo->save();
+		$state->getPhoto()->save();
 
 		return $next($state);
 	}

@@ -5,9 +5,7 @@ namespace App\Contracts\PhotoCreate;
 use App\DTO\PhotoCreate\StandaloneDTO;
 
 /**
- * Basic definition of a Duplicate Photo pipe.
- *
- * This allows to clarify which steps are applied in which order.
+ * Basic definition of a Standalone Photo pipe.
  */
 interface StandalonePipe
 {
