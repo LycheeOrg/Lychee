@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 abstract class BaseConfigMigration extends Migration
 {
 	/**
-	 * @return array<int,array{key:string,value:string,confidentiality:string,cat:string,type_range:string,description:string}>
+	 * @return array<int,array{key:string,value:string,is_secret:bool,cat:string,type_range:string,description:string}>
 	 */
 	abstract public function getConfigs(): array;
 
