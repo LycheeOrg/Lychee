@@ -5,9 +5,9 @@ namespace App\Contracts\PhotoCreate;
 use App\DTO\PhotoCreate\DuplicateDTO;
 
 /**
- * Basic definition of a Photo creation pipe.
+ * Basic definition of a Photo shared pipe.
  *
- * This allows to clarify which steps are applied in which order.
+ * This pipes makes use of union types (|) to support the different DTO.
  */
 interface SharedPipe
 {

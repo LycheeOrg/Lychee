@@ -6,6 +6,10 @@ use App\Contracts\Models\AbstractAlbum;
 use App\Metadata\Extractor;
 use App\Models\Photo;
 
+/**
+ * DTO used when dealing with duplicates.
+ * We only keep the needed datas.
+ */
 class DuplicateDTO
 {
 	public readonly bool $shallResyncMetadata;
