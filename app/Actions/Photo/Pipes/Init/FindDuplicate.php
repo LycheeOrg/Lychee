@@ -2,20 +2,20 @@
 
 namespace App\Actions\Photo\Pipes\Init;
 
-use App\Contracts\PhotoCreatePipe;
-use App\DTO\PhotoCreateDTO;
+use App\Contracts\PhotoCreate\InitPipe;
+use App\DTO\PhotoCreate\InitDTO;
 use App\Image\StreamStat;
 use App\Models\Photo;
 
 /**
- * Assert wether we support said file.
+ * Look for duplicates of the file in the database.
  */
-class FindDuplicate implements PhotoCreatePipe
+class FindDuplicate implements InitPipe
 {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function handle(PhotoCreateDTO $state, \Closure $next): PhotoCreateDTO
+	public function handle(InitDTO $state, \Closure $next): InitDTO
 	{
 		$checksum = StreamStat::createFromLocalFile($state->sourceFile)->checksum;
 

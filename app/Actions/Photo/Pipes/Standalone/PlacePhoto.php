@@ -4,8 +4,8 @@ namespace App\Actions\Photo\Pipes\Standalone;
 
 use App\Actions\Diagnostics\Pipes\Checks\BasicPermissionCheck;
 use App\Contracts\Image\StreamStats;
-use App\Contracts\PhotoCreatePipe;
-use App\DTO\PhotoCreateDTO;
+use App\Contracts\PhotoCreate\StandalonePipe;
+use App\DTO\PhotoCreate\StandaloneDTO;
 use App\Enum\SizeVariantType;
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\Handler;
@@ -13,9 +13,9 @@ use App\Exceptions\MediaFileOperationException;
 use App\Image\StreamStat;
 use App\Models\Configs;
 
-class PlacePhoto implements PhotoCreatePipe
+class PlacePhoto implements StandalonePipe
 {
-	public function handle(PhotoCreateDTO $state, \Closure $next): PhotoCreateDTO
+	public function handle(StandaloneDTO $state, \Closure $next): StandaloneDTO
 	{
 		// Create target file and symlink/copy/move source file to target.
 		// If import strategy request to delete the source file.
@@ -53,7 +53,7 @@ class PlacePhoto implements PhotoCreatePipe
 	 * {@link AddStandaloneStrategy::$sourceFile} is written to `$targetFile`
 	 * without modifications.
 	 *
-	 * @param PhotoCreateDTO $state State of iteration
+	 * @param StandaloneDTO $state State of iteration
 	 *
 	 * @return StreamStats statistics about the final file, may differ from
 	 *                     the source file due to normalization of orientation
@@ -61,10 +61,10 @@ class PlacePhoto implements PhotoCreatePipe
 	 * @throws MediaFileOperationException
 	 * @throws ConfigurationException
 	 */
-	private function putSourceIntoFinalDestination(PhotoCreateDTO $state): StreamStats
+	private function putSourceIntoFinalDestination(StandaloneDTO $state): StreamStats
 	{
 		try {
-			if ($state->importMode->shallImportViaSymlink) {
+			if ($state->shallImportViaSymlink) {
 				if (!$state->targetFile->isLocalFile()) {
 					throw new ConfigurationException('Symlinking is only supported on local filesystems');
 				}
@@ -101,7 +101,7 @@ class PlacePhoto implements PhotoCreatePipe
 					$state->sourceFile->close();
 					$state->targetFile->close();
 				}
-				if ($state->importMode->shallDeleteImported) {
+				if ($state->shallDeleteImported) {
 					// This may throw an exception, if the original has been
 					// readable, but is not writable
 					// In this case, the media file will have been copied, but

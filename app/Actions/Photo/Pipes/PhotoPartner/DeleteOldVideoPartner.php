@@ -2,12 +2,12 @@
 
 namespace App\Actions\Photo\Pipes\PhotoPartner;
 
-use App\Contracts\PhotoCreatePipe;
-use App\DTO\PhotoCreateDTO;
+use App\Contracts\PhotoCreate\PhotoPartnerPipe;
+use App\DTO\PhotoCreate\PhotoPartnerDTO;
 
-class DeleteOldVideoPartner implements PhotoCreatePipe
+class DeleteOldVideoPartner implements PhotoPartnerPipe
 {
-	public function handle(PhotoCreateDTO $state, \Closure $next): PhotoCreateDTO
+	public function handle(PhotoPartnerDTO $state, \Closure $next): PhotoPartnerDTO
 	{
 		$state->oldVideo->delete();
 

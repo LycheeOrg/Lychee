@@ -2,12 +2,12 @@
 
 namespace App\Actions\Photo\Pipes\VideoPartner;
 
-use App\Contracts\PhotoCreatePipe;
-use App\DTO\PhotoCreateDTO;
+use App\Contracts\PhotoCreate\VideoPartnerPipe;
+use App\DTO\PhotoCreate\VideoPartnerDTO;
 
-class GetVideoPath implements PhotoCreatePipe
+class GetVideoPath implements VideoPartnerPipe
 {
-	public function handle(PhotoCreateDTO $state, \Closure $next): PhotoCreateDTO
+	public function handle(VideoPartnerDTO $state, \Closure $next): VideoPartnerDTO
 	{
 		$photoFile = $state->photo->size_variants->getOriginal()->getFile();
 		$photoPath = $photoFile->getRelativePath();

@@ -2,18 +2,18 @@
 
 namespace App\Actions\Photo\Pipes\Init;
 
-use App\Contracts\PhotoCreatePipe;
-use App\DTO\PhotoCreateDTO;
+use App\Contracts\PhotoCreate\InitPipe;
+use App\DTO\PhotoCreate\InitDTO;
 
 /**
- * Assert wether we support said file.
+ * Set fileLastModifiedTime if null.
  */
-class FetchLastModifiedTime implements PhotoCreatePipe
+class FetchLastModifiedTime implements InitPipe
 {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function handle(PhotoCreateDTO $state, \Closure $next): PhotoCreateDTO
+	public function handle(InitDTO $state, \Closure $next): InitDTO
 	{
 		if ($state->fileLastModifiedTime === null) {
 			$state->fileLastModifiedTime ??= $state->sourceFile->lastModified();

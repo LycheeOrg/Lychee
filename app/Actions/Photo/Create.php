@@ -3,13 +3,9 @@
 namespace App\Actions\Photo;
 
 use App\Actions\Photo\Pipes\Duplicate;
-use App\Actions\Photo\Pipes\HydrateMetadata;
 use App\Actions\Photo\Pipes\Init;
-use App\Actions\Photo\Pipes\NotifyAlbums;
 use App\Actions\Photo\Pipes\PhotoPartner;
-use App\Actions\Photo\Pipes\Save;
-use App\Actions\Photo\Pipes\SetParentAndOwnership;
-use App\Actions\Photo\Pipes\SetStarred;
+use App\Actions\Photo\Pipes\Shared;
 use App\Actions\Photo\Pipes\Standalone;
 use App\Actions\Photo\Pipes\VideoPartner;
 use App\Assets\Features;
@@ -17,7 +13,12 @@ use App\Contracts\Exceptions\LycheeException;
 use App\Contracts\Models\AbstractAlbum;
 use App\DTO\ImportMode;
 use App\DTO\ImportParam;
-use App\DTO\PhotoCreateDTO;
+use App\DTO\PhotoCreate\DuplicateDTO;
+use App\DTO\PhotoCreate\InitDTO;
+use App\DTO\PhotoCreate\PhotoPartnerDTO;
+use App\DTO\PhotoCreate\StandaloneDTO;
+use App\DTO\PhotoCreate\VideoPartnerDTO;
+use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\PhotoResyncedException;
 use App\Exceptions\PhotoSkippedException;
 use App\Image\Files\NativeLocalFile;
@@ -62,15 +63,16 @@ class Create
 			return $oldCodePath->add($sourceFile, $album, $fileLastModifiedTime);
 		}
 
-		$photoDTO = new PhotoCreateDTO(
+		$initDTO = new InitDTO(
 			parameters: $this->strategyParameters,
 			sourceFile: $sourceFile,
 			album: $album,
 			fileLastModifiedTime: $fileLastModifiedTime
 		);
 
-		$photoDTO = app(Pipeline::class)
-			->send($photoDTO)
+		/** @var InitDTO $initDTO */
+		$initDTO = app(Pipeline::class)
+			->send($initDTO)
 			->through([
 				Init\AssertSupportedMedia::class,
 				Init\FetchLastModifiedTime::class,
@@ -81,32 +83,126 @@ class Create
 			])
 			->thenReturn();
 
-		$nextPipe = app(Pipeline::class)
-			->send($photoDTO);
-
-		if ($photoDTO->duplicate !== null) {
-			$nextPipe->pipe($this->getDuplicatePipe($photoDTO));
-		} elseif ($photoDTO->livePartner !== null && $sourceFile->isSupportedVideo()) {
-			$nextPipe->pipe($this->getVideoPartnerPipe());
-		} elseif ($photoDTO->livePartner !== null && $sourceFile->isSupportedImage()) {
-			$nextPipe->pipe($this->getPhotoPartnerPipe());
-		} else {
-			$nextPipe->pipe($this->getStandAlonePipe());
+		if ($initDTO->duplicate !== null) {
+			return $this->handleDuplicate($initDTO);
 		}
 
+		if ($initDTO->livePartner === null) {
+			return $this->handleStandalone($initDTO);
+		}
+
+		// livePartner !== null
+		if ($sourceFile->isSupportedVideo()) {
+			return $this->handleVideoLivePartner($initDTO);
+		}
+
+		if ($sourceFile->isSupportedImage()) {
+			return $this->handlePhotoLivePartner($initDTO);
+		}
+
+		throw new LycheeLogicException('Pipe system for importing video failed');
+	}
+
+	/**
+	 * Handle duplicate case.
+	 *
+	 * @param InitDTO $initDTO initial fetched
+	 *
+	 * @return Photo Photo duplicated
+	 *
+	 * @throws PhotoResyncedException
+	 * @throws PhotoSkippedException
+	 */
+	private function handleDuplicate(InitDTO $initDTO): Photo
+	{
+		$dto = DuplicateDTO::ofInit($initDTO);
+
+		$pipes = [];
+		if ($dto->shallResyncMetadata) {
+			$pipes[] = Shared\HydrateMetadata::class;
+			$pipes[] = Duplicate\SaveIfDirty::class;
+		}
+		$pipes[] = Duplicate\ThrowSkipDuplicate::class;
+		$pipes[] = Duplicate\ReplicateAsPhoto::class;
+		$pipes[] = Shared\SetStarred::class;
+		$pipes[] = Shared\SetParentAndOwnership::class;
+		$pipes[] = Shared\Save::class;
+		$pipes[] = Shared\NotifyAlbums::class;
+
 		try {
-			return $nextPipe
-				->pipe([NotifyAlbums::class])
+			return app(Pipeline::class)
+				->send($dto)
+				->through($pipes)
 				->thenReturn()
 				->getPhoto();
 		} catch (PhotoResyncedException|PhotoSkippedException $e) {
 			// duplicate case. Just rethrow.
 			throw $e;
+		}
+	}
+
+	private function handleStandalone(InitDTO $initDTO): Photo
+	{
+		$dto = StandaloneDTO::ofInit($initDTO);
+
+		$pipes = [
+			Standalone\FixTimeStamps::class,
+			Standalone\InitNamingStrategy::class,
+			Shared\HydrateMetadata::class,
+			Shared\SetStarred::class,
+			Shared\SetParentAndOwnership::class,
+			Standalone\SetOriginalChecksum::class,
+			Standalone\FetchSourceImage::class,
+			Standalone\ExtractGoogleMotionPictures::class,
+			Standalone\PlacePhoto::class,
+			Standalone\PlaceGoogleMotionVideo::class,
+			Standalone\SetChecksum::class,
+			Shared\Save::class,
+			Standalone\CreateOriginalSizeVariant::class,
+			Standalone\CreateSizeVariants::class,
+		];
+
+		return $this->executePipeOnDTO($pipes, $dto)->getPhoto();
+	}
+
+	private function handleVideoLivePartner(InitDTO $initDTO): Photo
+	{
+		$dto = VideoPartnerDTO::ofInit($initDTO);
+
+		$pipes = [
+			VideoPartner\GetVideoPath::class,
+			VideoPartner\PlaceVideo::class,
+			VideoPartner\UpdateLivePartner::class,
+			Shared\Save::class,
+		];
+
+		return $this->executePipeOnDTO($pipes, $dto)->getPhoto();
+	}
+
+	/**
+	 * Execute the pipes on the DTO.
+	 *
+	 * @template T of VideoPartnerDTO|StandaloneDTO|PhotoPartnerDTO
+	 *
+	 * @param array $pipes
+	 * @param T     $dto
+	 *
+	 * @return T
+	 *
+	 * @throws LycheeException
+	 */
+	private function executePipeOnDTO(array $pipes, VideoPartnerDTO|StandaloneDTO|PhotoPartnerDTO $dto): VideoPartnerDTO|StandaloneDTO|PhotoPartnerDTO
+	{
+		try {
+			return app(Pipeline::class)
+				->send($dto)
+				->through($pipes)
+				->thenReturn();
 		} catch (LycheeException $e) {
 			// If source file could not be put into final destination, remove
 			// freshly created photo from DB to avoid having "zombie" entries.
 			try {
-				$photoDTO->getPhoto()->delete();
+				$dto->getPhoto()->delete();
 			} catch (\Throwable) {
 				// Sic! If anything goes wrong here, we still throw the original exception
 			}
@@ -114,82 +210,70 @@ class Create
 		}
 	}
 
-	private function getDuplicatePipe(PhotoCreateDTO $state): array
+	/**
+	 * Adds a photo as partner to an existing video.
+	 *
+	 * Note the asymmetry to {@link handleVideoLivePartner}.
+	 *
+	 * A photo is always added as if it had no partner, even if the video had
+	 * been added first.
+	 * Then the already existing video is added to the freshly added photo.
+	 * Hence, this strategy works mostly like the stand-alone strategy and also
+	 * requires the photo file to be a native, local file in order to be able to
+	 * extract EXIF data.
+	 */
+	private function handlePhotoLivePartner(InitDTO $initDTO): Photo
 	{
-		$next = [];
+		// Save old video.
+		$oldVideo = $initDTO->livePartner;
 
-		if ($state->importMode->shallResyncMetadata) {
-			array_push($next, ...[
-				Duplicate\SetDuplicateAsPhoto::class,
-				HydrateMetadata::class,
-				Duplicate\SaveIfDirty::class,
-			]);
-		}
-		array_push($next, ...[
-			Duplicate\ThrowSkipDuplicate::class,
-			Duplicate\ReplicateAsPhoto::class,
-			SetStarred::class,
-			SetParentAndOwnership::class,
-			Save::class,
-		]);
-
-		return $next;
-	}
-
-	private function getStandAlonePipe(): array
-	{
-		return [
-			Standalone\CreatePhoto::class,
+		// Import Photo as stand alone.
+		$standAloneDto = StandaloneDTO::ofInit($initDTO);
+		$standAlonePipes = [
 			Standalone\FixTimeStamps::class,
 			Standalone\InitNamingStrategy::class,
-			HydrateMetadata::class,
-			SetStarred::class,
-			SetParentAndOwnership::class,
+			Shared\HydrateMetadata::class,
+			Shared\SetStarred::class,
+			Shared\SetParentAndOwnership::class,
 			Standalone\SetOriginalChecksum::class,
 			Standalone\FetchSourceImage::class,
 			Standalone\ExtractGoogleMotionPictures::class,
 			Standalone\PlacePhoto::class,
 			Standalone\PlaceGoogleMotionVideo::class,
 			Standalone\SetChecksum::class,
-			Save::class,
+			Shared\Save::class,
 			Standalone\CreateOriginalSizeVariant::class,
 			Standalone\CreateSizeVariants::class,
-			Standalone\UploadSizeVariantsToS3::class,
 		];
-	}
+		$standAloneDto = $this->executePipeOnDTO($standAlonePipes, $standAloneDto);
 
-	private function getVideoPartnerPipe(array $steps = [VideoPartner\SetVideoFile::class]): array
-	{
-		array_push($steps, ...[
-			VideoPartner\SetLivePartnerAsPhoto::class,
+		// Use file from video as input for Video Partner and import
+		$videoPartnerDTO = new VideoPartnerDTO(
+			videoFile: $oldVideo->size_variants->getOriginal()->getFile(),
+			shallDeleteImported: true,
+			shallImportViaSymlink: false,
+			photo: $standAloneDto->getPhoto()
+		);
+		$videoPartnerPipes = [
 			VideoPartner\GetVideoPath::class,
 			VideoPartner\PlaceVideo::class,
 			VideoPartner\UpdateLivePartner::class,
-			Save::class,
-		]);
-
-		return $steps;
-	}
-
-	private function getPhotoPartnerPipe(): array
-	{
-		$steps = [
-			PhotoPartner\SetOldVideoPartner::class,
+			Shared\Save::class,
 		];
+		$videoPartnerDTO = $this->executePipeOnDTO($videoPartnerPipes, $videoPartnerDTO);
 
-		array_push($steps, ...$this->getStandAlonePipe());
-		array_push($steps, ...[
-			PhotoPartner\ResetParameters::class,
-			PhotoPartner\ResetFile::class,
-			PhotoPartner\ResetLivePartner::class,
-		]);
-		array_push($steps, ...$this->getVideoPartnerPipe([]));
-		array_push($steps, ...[
+		$finalizeDTO = new PhotoPartnerDTO(
+			photo: $videoPartnerDTO->photo,
+			oldVideo: $oldVideo
+		);
+
+		// Finalize
+		$finalize = [
 			PhotoPartner\SetOldChecksum::class,
 			PhotoPartner\DeleteOldVideoPartner::class,
-			Save::class,
-		]);
+			Shared\Save::class,
+		];
 
-		return $steps;
+		return $this->executePipeOnDTO($finalize, $finalizeDTO)->getPhoto();
 	}
 }

@@ -2,14 +2,14 @@
 
 namespace App\Actions\Photo\Pipes\Standalone;
 
-use App\Contracts\PhotoCreatePipe;
+use App\Contracts\PhotoCreate\StandalonePipe;
 use App\DTO\ImageDimension;
-use App\DTO\PhotoCreateDTO;
+use App\DTO\PhotoCreate\StandaloneDTO;
 use App\Enum\SizeVariantType;
 
-class CreateOriginalSizeVariant implements PhotoCreatePipe
+class CreateOriginalSizeVariant implements StandalonePipe
 {
-	public function handle(PhotoCreateDTO $state, \Closure $next): PhotoCreateDTO
+	public function handle(StandaloneDTO $state, \Closure $next): StandaloneDTO
 	{
 		// Create original size variant of photo
 		// If the image has been loaded (and potentially auto-rotated)

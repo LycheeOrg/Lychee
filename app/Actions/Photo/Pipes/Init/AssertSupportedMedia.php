@@ -2,15 +2,15 @@
 
 namespace App\Actions\Photo\Pipes\Init;
 
-use App\Contracts\PhotoCreatePipe;
-use App\DTO\PhotoCreateDTO;
+use App\Contracts\PhotoCreate\InitPipe;
+use App\DTO\PhotoCreate\InitDTO;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
 
 /**
- * Assert wether we support said file.
+ * Assert whether we support said file.
  */
-class AssertSupportedMedia implements PhotoCreatePipe
+class AssertSupportedMedia implements InitPipe
 {
 	/**
 	 * {@inheritDoc}
@@ -18,7 +18,7 @@ class AssertSupportedMedia implements PhotoCreatePipe
 	 * @throws MediaFileUnsupportedException
 	 * @throws MediaFileOperationException
 	 */
-	public function handle(PhotoCreateDTO $state, \Closure $next): PhotoCreateDTO
+	public function handle(InitDTO $state, \Closure $next): InitDTO
 	{
 		$state->sourceFile->assertIsSupportedMediaOrAcceptedRaw();
 

@@ -3,13 +3,13 @@
 namespace App\Actions\Photo\Pipes\Standalone;
 
 use App\Contracts\Models\SizeVariantFactory;
-use App\Contracts\PhotoCreatePipe;
-use App\DTO\PhotoCreateDTO;
+use App\Contracts\PhotoCreate\StandalonePipe;
+use App\DTO\PhotoCreate\StandaloneDTO;
 use App\Exceptions\Handler;
 
-class CreateSizeVariants implements PhotoCreatePipe
+class CreateSizeVariants implements StandalonePipe
 {
-	public function handle(PhotoCreateDTO $state, \Closure $next): PhotoCreateDTO
+	public function handle(StandaloneDTO $state, \Closure $next): StandaloneDTO
 	{
 		// Create remaining size variants if we were able to successfully
 		// extract a reference image above

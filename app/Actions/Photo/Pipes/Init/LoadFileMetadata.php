@@ -2,22 +2,22 @@
 
 namespace App\Actions\Photo\Pipes\Init;
 
-use App\Contracts\PhotoCreatePipe;
-use App\DTO\PhotoCreateDTO;
+use App\Contracts\PhotoCreate\InitPipe;
+use App\DTO\PhotoCreate\InitDTO;
 use App\Exceptions\InvalidPropertyException;
 use App\Metadata\Extractor;
 
 /**
- * Assert wether we support said file.
+ * Load metadata from the file.
  */
-class LoadFileMetadata implements PhotoCreatePipe
+class LoadFileMetadata implements InitPipe
 {
 	/**
 	 * {@inheritDoc}
 	 *
 	 * @throws InvalidPropertyException
 	 */
-	public function handle(PhotoCreateDTO $state, \Closure $next): PhotoCreateDTO
+	public function handle(InitDTO $state, \Closure $next): InitDTO
 	{
 		$state->exifInfo = Extractor::createFromFile($state->sourceFile, $state->fileLastModifiedTime);
 

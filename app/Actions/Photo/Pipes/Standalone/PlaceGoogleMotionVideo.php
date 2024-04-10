@@ -2,13 +2,13 @@
 
 namespace App\Actions\Photo\Pipes\Standalone;
 
-use App\Contracts\PhotoCreatePipe;
-use App\DTO\PhotoCreateDTO;
+use App\Contracts\PhotoCreate\StandalonePipe;
+use App\DTO\PhotoCreate\StandaloneDTO;
 use App\Image\Files\FlysystemFile;
 
-class PlaceGoogleMotionVideo implements PhotoCreatePipe
+class PlaceGoogleMotionVideo implements StandalonePipe
 {
-	public function handle(PhotoCreateDTO $state, \Closure $next): PhotoCreateDTO
+	public function handle(StandaloneDTO $state, \Closure $next): StandaloneDTO
 	{
 		// If we have a temporary video file from a Google Motion Picture,
 		// we must move the preliminary extracted video file next to the

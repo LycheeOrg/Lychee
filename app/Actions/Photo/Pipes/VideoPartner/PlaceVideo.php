@@ -4,8 +4,8 @@ namespace App\Actions\Photo\Pipes\VideoPartner;
 
 use App\Actions\Diagnostics\Pipes\Checks\BasicPermissionCheck;
 use App\Assets\Features;
-use App\Contracts\PhotoCreatePipe;
-use App\DTO\PhotoCreateDTO;
+use App\Contracts\PhotoCreate\VideoPartnerPipe;
+use App\DTO\PhotoCreate\VideoPartnerDTO;
 use App\Enum\StorageDiskType;
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\Handler;
@@ -45,9 +45,9 @@ use Illuminate\Support\Facades\Storage;
  * @throws MediaFileOperationException
  * @throws ConfigurationException
  */
-class PlaceVideo implements PhotoCreatePipe
+class PlaceVideo implements VideoPartnerPipe
 {
-	public function handle(PhotoCreateDTO $state, \Closure $next): PhotoCreateDTO
+	public function handle(VideoPartnerDTO $state, \Closure $next): VideoPartnerDTO
 	{
 		$disk = Storage::disk(StorageDiskType::LOCAL->value);
 		if (Features::active('use-s3')) {
@@ -62,7 +62,7 @@ class PlaceVideo implements PhotoCreatePipe
 				// AddStandaloneStrategy::putSourceIntoFinalDestination()
 				// except that we can skip the part about normalization of
 				// orientation, because we don't support that for videos.
-				if ($state->importMode->shallImportViaSymlink) {
+				if ($state->shallImportViaSymlink) {
 					if (!$videoTargetFile->isLocalFile()) {
 						throw new ConfigurationException('Symlinking is only supported on local filesystems');
 					}
@@ -83,7 +83,7 @@ class PlaceVideo implements PhotoCreatePipe
 					$streamStat = $videoTargetFile->write($state->videoFile->read(), true);
 					$state->videoFile->close();
 					$videoTargetFile->close();
-					if ($state->importMode->shallDeleteImported) {
+					if ($state->shallDeleteImported) {
 						// This may throw an exception, if the original has been
 						// readable, but is not writable
 						// In this case, the media file will have been copied, but

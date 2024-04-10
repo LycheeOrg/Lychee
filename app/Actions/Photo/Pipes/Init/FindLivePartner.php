@@ -2,22 +2,22 @@
 
 namespace App\Actions\Photo\Pipes\Init;
 
-use App\Contracts\PhotoCreatePipe;
-use App\DTO\PhotoCreateDTO;
+use App\Contracts\PhotoCreate\InitPipe;
+use App\DTO\PhotoCreate\InitDTO;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Exceptions\Internal\LycheeAssertionError;
 use App\Image\Files\BaseMediaFile;
 use App\Models\Photo;
 
 /**
- * Assert wether we support said file.
+ * Try to link live photo components together.
  */
-class FindLivePartner implements PhotoCreatePipe
+class FindLivePartner implements InitPipe
 {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function handle(PhotoCreateDTO $state, \Closure $next): PhotoCreateDTO
+	public function handle(InitDTO $state, \Closure $next): InitDTO
 	{
 		try {
 			// find a potential partner which has the same content id

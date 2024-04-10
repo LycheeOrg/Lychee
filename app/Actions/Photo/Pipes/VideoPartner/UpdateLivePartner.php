@@ -2,12 +2,12 @@
 
 namespace App\Actions\Photo\Pipes\VideoPartner;
 
-use App\Contracts\PhotoCreatePipe;
-use App\DTO\PhotoCreateDTO;
+use App\Contracts\PhotoCreate\VideoPartnerPipe;
+use App\DTO\PhotoCreate\VideoPartnerDTO;
 
-class UpdateLivePartner implements PhotoCreatePipe
+class UpdateLivePartner implements VideoPartnerPipe
 {
-	public function handle(PhotoCreateDTO $state, \Closure $next): PhotoCreateDTO
+	public function handle(VideoPartnerDTO $state, \Closure $next): VideoPartnerDTO
 	{
 		$state->photo->live_photo_short_path = $state->videoPath;
 		$state->photo->live_photo_checksum = $state->streamStat?->checksum;

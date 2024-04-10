@@ -2,15 +2,15 @@
 
 namespace App\Actions\Photo\Pipes\Standalone;
 
-use App\Contracts\PhotoCreatePipe;
-use App\DTO\PhotoCreateDTO;
+use App\Contracts\PhotoCreate\StandalonePipe;
+use App\DTO\PhotoCreate\StandaloneDTO;
 use App\Exceptions\Handler;
 use App\Image\Handlers\ImageHandler;
 use App\Image\Handlers\VideoHandler;
 
-class FetchSourceImage implements PhotoCreatePipe
+class FetchSourceImage implements StandalonePipe
 {
-	public function handle(PhotoCreateDTO $state, \Closure $next): PhotoCreateDTO
+	public function handle(StandaloneDTO $state, \Closure $next): StandaloneDTO
 	{
 		try {
 			if ($state->photo->isVideo()) {

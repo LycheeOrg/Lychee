@@ -2,15 +2,15 @@
 
 namespace App\Actions\Photo\Pipes\Standalone;
 
-use App\Contracts\PhotoCreatePipe;
-use App\DTO\PhotoCreateDTO;
+use App\Contracts\PhotoCreate\StandalonePipe;
+use App\DTO\PhotoCreate\StandaloneDTO;
 use App\Exceptions\Handler;
 use App\Image\Files\TemporaryLocalFile;
 use App\Image\Handlers\GoogleMotionPictureHandler;
 
-class ExtractGoogleMotionPictures implements PhotoCreatePipe
+class ExtractGoogleMotionPictures implements StandalonePipe
 {
-	public function handle(PhotoCreateDTO $state, \Closure $next): PhotoCreateDTO
+	public function handle(StandaloneDTO $state, \Closure $next): StandaloneDTO
 	{
 		if ($state->exifInfo->microVideoOffset === 0) {
 			return $next($state);

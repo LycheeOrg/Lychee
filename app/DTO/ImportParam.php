@@ -5,9 +5,6 @@ namespace App\DTO;
 use App\Metadata\Extractor;
 use App\Models\Album;
 
-/**
- * Define import mode.
- */
 final class ImportParam
 {
 	public ImportMode $importMode;

@@ -2,8 +2,8 @@
 
 namespace App\Actions\Photo\Pipes\Init;
 
-use App\Contracts\PhotoCreatePipe;
-use App\DTO\PhotoCreateDTO;
+use App\Contracts\PhotoCreate\InitPipe;
+use App\DTO\PhotoCreate\InitDTO;
 use App\Exceptions\InvalidPropertyException;
 use App\Models\Album;
 use App\SmartAlbums\BaseSmartAlbum;
@@ -12,14 +12,14 @@ use App\SmartAlbums\StarredAlbum;
 /**
  * Init album.
  */
-class InitParentAlbum implements PhotoCreatePipe
+class InitParentAlbum implements InitPipe
 {
 	/**
 	 * {@inheritDoc}
 	 *
 	 * @throws InvalidPropertyException
 	 */
-	public function handle(PhotoCreateDTO $state, \Closure $next): PhotoCreateDTO
+	public function handle(InitDTO $state, \Closure $next): InitDTO
 	{
 		if ($state->album === null || $state->album instanceof Album) {
 			return $next($state);
