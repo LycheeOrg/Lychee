@@ -89,7 +89,6 @@ class Kernel extends HttpKernel
 		'installation' => \App\Http\Middleware\InstallationStatus::class,
 		'admin_user' => \App\Http\Middleware\AdminUserStatus::class,
 		'migration' => \App\Http\Middleware\MigrationStatus::class,
-		'local_storage' => \App\Http\Middleware\LocalStorageOnly::class,
 		'content_type' => \App\Http\Middleware\ContentType::class,
 		'accept_content_type' => \App\Http\Middleware\AcceptContentType::class,
 		'redirect-legacy-id' => \App\Http\Middleware\RedirectLegacyPhotoID::class,
