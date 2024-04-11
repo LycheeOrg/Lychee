@@ -5,6 +5,7 @@ namespace App\Actions\Photo;
 use App\Actions\Photo\Pipes\Duplicate;
 use App\Actions\Photo\Pipes\Init;
 use App\Actions\Photo\Pipes\Shared;
+use App\Actions\Photo\Pipes\Standalone;
 use App\Assets\Features;
 use App\Contracts\Exceptions\LycheeException;
 use App\Contracts\Models\AbstractAlbum;
@@ -12,6 +13,7 @@ use App\DTO\ImportMode;
 use App\DTO\ImportParam;
 use App\DTO\PhotoCreate\DuplicateDTO;
 use App\DTO\PhotoCreate\InitDTO;
+use App\DTO\PhotoCreate\StandaloneDTO;
 use App\Exceptions\PhotoResyncedException;
 use App\Exceptions\PhotoSkippedException;
 use App\Image\Files\NativeLocalFile;
@@ -80,6 +82,10 @@ class Create
 			return $this->handleDuplicate($initDTO);
 		}
 
+		if ($initDTO->livePartner === null) {
+			return $this->handleStandalone($initDTO);
+		}
+
 		$oldCodePath = new LegacyPhotoCreate($this->strategyParameters->importMode, $this->strategyParameters->intendedOwnerId);
 
 		return $oldCodePath->add($sourceFile, $album, $fileLastModifiedTime);
@@ -119,6 +125,45 @@ class Create
 				->photo;
 		} catch (PhotoResyncedException|PhotoSkippedException $e) {
 			// duplicate case. Just rethrow.
+			throw $e;
+		}
+	}
+
+	private function handleStandalone(InitDTO $initDTO): Photo
+	{
+		$dto = new StandaloneDTO($initDTO);
+
+		$pipes = [
+			Standalone\FixTimeStamps::class,
+			Standalone\InitNamingStrategy::class,
+			Shared\HydrateMetadata::class,
+			Shared\SetStarred::class,
+			Shared\SetParentAndOwnership::class,
+			Standalone\SetOriginalChecksum::class,
+			Standalone\FetchSourceImage::class,
+			Standalone\ExtractGoogleMotionPictures::class,
+			Standalone\PlacePhoto::class,
+			Standalone\PlaceGoogleMotionVideo::class,
+			Standalone\SetChecksum::class,
+			Shared\Save::class,
+			Standalone\CreateOriginalSizeVariant::class,
+			Standalone\CreateSizeVariants::class,
+		];
+
+		try {
+			return app(Pipeline::class)
+				->send($dto)
+				->through($pipes)
+				->thenReturn()
+				->photo;
+		} catch (LycheeException $e) {
+			// If source file could not be put into final destination, remove
+			// freshly created photo from DB to avoid having "zombie" entries.
+			try {
+				$dto->photo->delete();
+			} catch (\Throwable) {
+				// Sic! If anything goes wrong here, we still throw the original exception
+			}
 			throw $e;
 		}
 	}

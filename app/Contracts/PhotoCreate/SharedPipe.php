@@ -3,6 +3,7 @@
 namespace App\Contracts\PhotoCreate;
 
 use App\DTO\PhotoCreate\DuplicateDTO;
+use App\DTO\PhotoCreate\StandaloneDTO;
 
 /**
  * Basic definition of a Photo shared pipe.
@@ -12,10 +13,10 @@ use App\DTO\PhotoCreate\DuplicateDTO;
 interface SharedPipe
 {
 	/**
-	 * @param DuplicateDTO                                $state
-	 * @param \Closure(DuplicateDTO $state): DuplicateDTO $next
+	 * @param StandaloneDTO|DuplicateDTO                                                $state
+	 * @param \Closure(StandaloneDTO|DuplicateDTO $state): (StandaloneDTO|DuplicateDTO) $next
 	 *
-	 * @return DuplicateDTO
+	 * @return StandaloneDTO|DuplicateDTO
 	 */
-	public function handle(DuplicateDTO $state, \Closure $next): DuplicateDTO;
+	public function handle(StandaloneDTO|DuplicateDTO $state, \Closure $next): StandaloneDTO|DuplicateDTO;
 }

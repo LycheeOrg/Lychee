@@ -5,13 +5,14 @@ namespace App\Actions\Photo\Pipes\Shared;
 use App\Actions\User\Notify;
 use App\Contracts\PhotoCreate\SharedPipe;
 use App\DTO\PhotoCreate\DuplicateDTO;
+use App\DTO\PhotoCreate\StandaloneDTO;
 
 /**
  * Notify by email if a picture has been added.
  */
 class NotifyAlbums implements SharedPipe
 {
-	public function handle(DuplicateDTO $state, \Closure $next): DuplicateDTO
+	public function handle(DuplicateDTO|StandaloneDTO $state, \Closure $next): DuplicateDTO|StandaloneDTO
 	{
 		if ($state->photo->album_id !== null) {
 			$notify = new Notify();
