@@ -39,11 +39,6 @@ class StandaloneDTO implements PhotoDTO
 	) {
 	}
 
-	public function getPhoto(): Photo
-	{
-		return $this->photo;
-	}
-
 	public static function ofInit(InitDTO $initDTO): StandaloneDTO
 	{
 		return new StandaloneDTO(
@@ -56,5 +51,10 @@ class StandaloneDTO implements PhotoDTO
 			shallImportViaSymlink: $initDTO->importMode->shallImportViaSymlink,
 			shallDeleteImported: $initDTO->importMode->shallDeleteImported,
 		);
+	}
+
+	public function getPhoto(): Photo
+	{
+		return $this->photo;
 	}
 }
