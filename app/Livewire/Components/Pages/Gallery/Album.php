@@ -175,6 +175,8 @@ class Album extends BaseAlbumComponent implements Reloadable
 	 */
 	private function fetchHeaderUrl(): SizeVariant|null
 	{
+		$photo = null;
+
 		if (Configs::getValueAsBool('use_album_compact_header')) {
 			return null;
 		}
@@ -183,7 +185,14 @@ class Album extends BaseAlbumComponent implements Reloadable
 			return null;
 		}
 
-		if (!$this->album instanceof ModelsAlbum || !isset($this->album->header_id)) {
+		if ($this->album instanceof ModelsAlbum) {
+			$photo = SizeVariant::query()
+				->where('photo_id', '=', $this->album->header_id)
+				->orderBy('type', 'asc')
+				->first();
+		}
+
+		if (!$this->album instanceof ModelsAlbum || !isset($this->album->header_id) || $photo === null) {
 			$photo = SizeVariant::query()
 				->whereBelongsTo($this->album->photos)
 				->where('ratio', '>', 1)
@@ -197,10 +206,7 @@ class Album extends BaseAlbumComponent implements Reloadable
 				->first();
 		}
 
-		return SizeVariant::query()
-			->where('photo_id', '=', $this->album->header_id)
-			->orderBy('type', 'asc')
-			->first();
+		return $photo;
 	}
 
 	public function getBackProperty(): string
