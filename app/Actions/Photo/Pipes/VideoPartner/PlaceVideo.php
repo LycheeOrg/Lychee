@@ -3,9 +3,10 @@
 namespace App\Actions\Photo\Pipes\VideoPartner;
 
 use App\Actions\Diagnostics\Pipes\Checks\BasicPermissionCheck;
-use App\Contracts\Models\AbstractSizeVariantNamingStrategy;
+use App\Assets\Features;
 use App\Contracts\PhotoCreate\VideoPartnerPipe;
 use App\DTO\PhotoCreate\VideoPartnerDTO;
+use App\Enum\StorageDiskType;
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\Handler;
 use App\Exceptions\Internal\LycheeAssertionError;
@@ -13,6 +14,7 @@ use App\Exceptions\MediaFileOperationException;
 use App\Image\Files\FlysystemFile;
 use App\Image\Files\NativeLocalFile;
 use App\Image\StreamStat;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Puts the video source file into the final position at video target file.
@@ -47,7 +49,11 @@ class PlaceVideo implements VideoPartnerPipe
 {
 	public function handle(VideoPartnerDTO $state, \Closure $next): VideoPartnerDTO
 	{
-		$videoTargetFile = new FlysystemFile(AbstractSizeVariantNamingStrategy::getImageDisk(), $state->videoPath);
+		$disk = Storage::disk(StorageDiskType::LOCAL->value);
+		if (Features::active('use-s3')) {
+			$disk = Storage::disk(StorageDiskType::S3->value);
+		}
+		$videoTargetFile = new FlysystemFile($disk, $state->videoPath);
 
 		try {
 			if ($state->videoFile instanceof NativeLocalFile) {
