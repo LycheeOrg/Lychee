@@ -6,6 +6,7 @@ use App\Actions\Photo\Pipes\Duplicate;
 use App\Actions\Photo\Pipes\Init;
 use App\Actions\Photo\Pipes\Shared;
 use App\Actions\Photo\Pipes\Standalone;
+use App\Actions\Photo\Pipes\VideoPartner;
 use App\Assets\Features;
 use App\Contracts\Exceptions\LycheeException;
 use App\Contracts\Models\AbstractAlbum;
@@ -14,6 +15,7 @@ use App\DTO\ImportParam;
 use App\DTO\PhotoCreate\DuplicateDTO;
 use App\DTO\PhotoCreate\InitDTO;
 use App\DTO\PhotoCreate\StandaloneDTO;
+use App\DTO\PhotoCreate\VideoPartnerDTO;
 use App\Exceptions\PhotoResyncedException;
 use App\Exceptions\PhotoSkippedException;
 use App\Image\Files\NativeLocalFile;
@@ -86,6 +88,11 @@ class Create
 			return $this->handleStandalone($initDTO);
 		}
 
+		// livePartner !== null
+		if ($sourceFile->isSupportedVideo()) {
+			return $this->handleVideoLivePartner($initDTO);
+		}
+
 		$oldCodePath = new LegacyPhotoCreate($this->strategyParameters->importMode, $this->strategyParameters->intendedOwnerId);
 
 		return $oldCodePath->add($sourceFile, $album, $fileLastModifiedTime);
@@ -148,6 +155,35 @@ class Create
 			Shared\Save::class,
 			Standalone\CreateOriginalSizeVariant::class,
 			Standalone\CreateSizeVariants::class,
+		];
+
+		try {
+			return app(Pipeline::class)
+				->send($dto)
+				->through($pipes)
+				->thenReturn()
+				->getPhoto();
+		} catch (LycheeException $e) {
+			// If source file could not be put into final destination, remove
+			// freshly created photo from DB to avoid having "zombie" entries.
+			try {
+				$dto->getPhoto()->delete();
+			} catch (\Throwable) {
+				// Sic! If anything goes wrong here, we still throw the original exception
+			}
+			throw $e;
+		}
+	}
+
+	private function handleVideoLivePartner(InitDTO $initDTO): Photo
+	{
+		$dto = new VideoPartnerDTO($initDTO);
+
+		$pipes = [
+			VideoPartner\GetVideoPath::class,
+			VideoPartner\PlaceVideo::class,
+			VideoPartner\UpdateLivePartner::class,
+			Shared\Save::class,
 		];
 
 		try {
