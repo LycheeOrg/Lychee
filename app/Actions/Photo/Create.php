@@ -4,6 +4,7 @@ namespace App\Actions\Photo;
 
 use App\Actions\Photo\Pipes\Duplicate;
 use App\Actions\Photo\Pipes\Init;
+use App\Actions\Photo\Pipes\PhotoPartner;
 use App\Actions\Photo\Pipes\Shared;
 use App\Actions\Photo\Pipes\Standalone;
 use App\Actions\Photo\Pipes\VideoPartner;
@@ -14,8 +15,10 @@ use App\DTO\ImportMode;
 use App\DTO\ImportParam;
 use App\DTO\PhotoCreate\DuplicateDTO;
 use App\DTO\PhotoCreate\InitDTO;
+use App\DTO\PhotoCreate\PhotoPartnerDTO;
 use App\DTO\PhotoCreate\StandaloneDTO;
 use App\DTO\PhotoCreate\VideoPartnerDTO;
+use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\PhotoResyncedException;
 use App\Exceptions\PhotoSkippedException;
 use App\Image\Files\NativeLocalFile;
@@ -93,9 +96,11 @@ class Create
 			return $this->handleVideoLivePartner($initDTO);
 		}
 
-		$oldCodePath = new LegacyPhotoCreate($this->strategyParameters->importMode, $this->strategyParameters->intendedOwnerId);
+		if ($sourceFile->isSupportedImage()) {
+			return $this->handlePhotoLivePartner($initDTO);
+		}
 
-		return $oldCodePath->add($sourceFile, $album, $fileLastModifiedTime);
+		throw new LycheeLogicException('Pipe system for importing video failed');
 	}
 
 	/**
@@ -177,7 +182,7 @@ class Create
 	/**
 	 * Execute the pipes on the DTO.
 	 *
-	 * @template T of VideoPartnerDTO|StandaloneDTO
+	 * @template T of VideoPartnerDTO|StandaloneDTO|PhotoPartnerDTO
 	 *
 	 * @param array $pipes
 	 * @param T     $dto
@@ -186,7 +191,7 @@ class Create
 	 *
 	 * @throws LycheeException
 	 */
-	private function executePipeOnDTO(array $pipes, VideoPartnerDTO|StandaloneDTO $dto): VideoPartnerDTO|StandaloneDTO
+	private function executePipeOnDTO(array $pipes, VideoPartnerDTO|StandaloneDTO|PhotoPartnerDTO $dto): VideoPartnerDTO|StandaloneDTO|PhotoPartnerDTO
 	{
 		try {
 			return app(Pipeline::class)
@@ -203,5 +208,72 @@ class Create
 			}
 			throw $e;
 		}
+	}
+
+	/**
+	 * Adds a photo as partner to an existing video.
+	 *
+	 * Note the asymmetry to {@link handleVideoLivePartner}.
+	 *
+	 * A photo is always added as if it had no partner, even if the video had
+	 * been added first.
+	 * Then the already existing video is added to the freshly added photo.
+	 * Hence, this strategy works mostly like the stand-alone strategy and also
+	 * requires the photo file to be a native, local file in order to be able to
+	 * extract EXIF data.
+	 */
+	private function handlePhotoLivePartner(InitDTO $initDTO): Photo
+	{
+		// Save old video.
+		$oldVideo = $initDTO->livePartner;
+
+		// Import Photo as stand alone.
+		$standAloneDto = StandaloneDTO::ofInit($initDTO);
+		$standAlonePipes = [
+			Standalone\FixTimeStamps::class,
+			Standalone\InitNamingStrategy::class,
+			Shared\HydrateMetadata::class,
+			Shared\SetStarred::class,
+			Shared\SetParentAndOwnership::class,
+			Standalone\SetOriginalChecksum::class,
+			Standalone\FetchSourceImage::class,
+			Standalone\ExtractGoogleMotionPictures::class,
+			Standalone\PlacePhoto::class,
+			Standalone\PlaceGoogleMotionVideo::class,
+			Standalone\SetChecksum::class,
+			Shared\Save::class,
+			Standalone\CreateOriginalSizeVariant::class,
+			Standalone\CreateSizeVariants::class,
+		];
+		$standAloneDto = $this->executePipeOnDTO($standAlonePipes, $standAloneDto);
+
+		// Use file from video as input for Video Partner and import
+		$videoPartnerDTO = new VideoPartnerDTO(
+			videoFile: $oldVideo->size_variants->getOriginal()->getFile(),
+			shallDeleteImported: true,
+			shallImportViaSymlink: false,
+			photo: $standAloneDto->getPhoto()
+		);
+		$videoPartnerPipes = [
+			VideoPartner\GetVideoPath::class,
+			VideoPartner\PlaceVideo::class,
+			VideoPartner\UpdateLivePartner::class,
+			Shared\Save::class,
+		];
+		$videoPartnerDTO = $this->executePipeOnDTO($videoPartnerPipes, $videoPartnerDTO);
+
+		$finalizeDTO = new PhotoPartnerDTO(
+			photo: $videoPartnerDTO->photo,
+			oldVideo: $oldVideo
+		);
+
+		// Finalize
+		$finalize = [
+			PhotoPartner\SetOldChecksum::class,
+			PhotoPartner\DeleteOldVideoPartner::class,
+			Shared\Save::class,
+		];
+
+		return $this->executePipeOnDTO($finalize, $finalizeDTO)->getPhoto();
 	}
 }
