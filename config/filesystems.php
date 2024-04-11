@@ -93,21 +93,18 @@ return [
 			],
 		],
 
-		// This is an example how the "images" disk can be hosted on an AWS S3
-		// ATTENTION: This is NOT supported yet!!!
-		// This is only a placeholder/reminder for the future
-		/*
-		'images' => [
+		's3' => [
 			'driver' => 's3',
-			'key' => env('AWS_ACCESS_KEY_ID'),
+			'key' => env('AWS_ACCESS_KEY_ID', ''),
 			'secret' => env('AWS_SECRET_ACCESS_KEY'),
 			'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
 			'bucket' => env('AWS_BUCKET'),
 			'url' => env('AWS_URL'),
 			'endpoint' => env('AWS_ENDPOINT'),
+			'visibility' => env('AWS_IMAGE_VISIBILITY', 'public'),
 			'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
 			'throw' => true,
-		],*/
+		],
 
 		// Lychee uses this disk to store the customized CSS file provided by the user
 		// ATTENTION: This disk MUST ALWAYS point to the local `./public/dist` directory.

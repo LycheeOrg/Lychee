@@ -3,6 +3,7 @@
 namespace App\Legacy\Actions\Photo\Strategies;
 
 use App\Actions\Diagnostics\Pipes\Checks\BasicPermissionCheck;
+use App\Assets\Features;
 use App\Contracts\Exceptions\LycheeException;
 use App\Contracts\Image\ImageHandlerInterface;
 use App\Contracts\Image\StreamStats;
@@ -22,8 +23,10 @@ use App\Image\Handlers\GoogleMotionPictureHandler;
 use App\Image\Handlers\ImageHandler;
 use App\Image\Handlers\VideoHandler;
 use App\Image\StreamStat;
+use App\Jobs\UploadSizeVariantToS3Job;
 use App\Models\Configs;
 use App\Models\Photo;
+use App\Models\SizeVariant;
 use Illuminate\Contracts\Container\BindingResolutionException;
 
 class AddStandaloneStrategy extends AbstractAddStrategy
@@ -143,6 +146,7 @@ class AddStandaloneStrategy extends AbstractAddStrategy
 			// we must move the preliminary extracted video file next to the
 			// final target file
 			if ($tmpVideoFile !== null) {
+				// @TODO S3 How should live videos be handled?
 				$videoTargetPath =
 					pathinfo($targetFile->getRelativePath(), PATHINFO_DIRNAME) .
 					'/' .
@@ -169,7 +173,7 @@ class AddStandaloneStrategy extends AbstractAddStrategy
 			$imageDim = $this->sourceImage?->isLoaded() ?
 				$this->sourceImage->getDimensions() :
 				new ImageDimension($this->parameters->exifInfo->width, $this->parameters->exifInfo->height);
-			$this->photo->size_variants->create(
+			$originalVariant = $this->photo->size_variants->create(
 				SizeVariantType::ORIGINAL,
 				$targetFile->getRelativePath(),
 				$imageDim,
@@ -193,7 +197,20 @@ class AddStandaloneStrategy extends AbstractAddStrategy
 				/** @var SizeVariantFactory $sizeVariantFactory */
 				$sizeVariantFactory = resolve(SizeVariantFactory::class);
 				$sizeVariantFactory->init($this->photo, $this->sourceImage, $this->namingStrategy);
-				$sizeVariantFactory->createSizeVariants();
+				$variants = $sizeVariantFactory->createSizeVariants();
+				$variants->push($originalVariant);
+
+				if (Features::active('use-s3')) {
+					// If enabled, upload all size variants to the remote bucket and delete the local files after that
+					$variants->each(function (SizeVariant $variant) {
+						if (Configs::getValueAsBool('use_job_queues')) {
+							UploadSizeVariantToS3Job::dispatch($variant);
+						} else {
+							$job = new UploadSizeVariantToS3Job($variant);
+							$job->handle();
+						}
+					});
+				}
 			} catch (\Throwable $t) {
 				// Don't re-throw the exception, because we do not want the
 				// import to fail completely only due to missing size variants.

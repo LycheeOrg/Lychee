@@ -3,10 +3,12 @@
 namespace App\Assets;
 
 use App\Enum\SizeVariantType;
+use App\Enum\StorageDiskType;
 use App\Exceptions\InsufficientEntropyException;
 use App\Exceptions\Internal\LycheeAssertionError;
 use App\Image\Files\FlysystemFile;
 use App\Models\Photo;
+use Illuminate\Support\Facades\Storage;
 use Safe\Exceptions\PcreException;
 
 /**
@@ -124,7 +126,7 @@ class SizeVariantGroupedWithRandomSuffixNamingStrategy extends BaseSizeVariantNa
 			$this->cachedRndMiddlePath .
 			$this->generateExtension($sizeVariant);
 
-		return new FlysystemFile(parent::getImageDisk(), $relativePath);
+		return new FlysystemFile(Storage::disk(StorageDiskType::LOCAL->value), $relativePath);
 	}
 
 	/**
