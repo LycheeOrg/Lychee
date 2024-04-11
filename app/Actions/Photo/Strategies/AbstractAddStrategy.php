@@ -2,6 +2,7 @@
 
 namespace App\Actions\Photo\Strategies;
 
+use App\DTO\ImportParam;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;
@@ -10,7 +11,7 @@ use App\Models\Photo;
 abstract class AbstractAddStrategy
 {
 	protected function __construct(
-		protected AddStrategyParameters $parameters,
+		protected ImportParam $parameters,
 		protected Photo $photo
 	) {
 	}
@@ -25,8 +26,8 @@ abstract class AbstractAddStrategy
 
 	/**
 	 * Hydrates meta-info of the media file from the
-	 * {@link AddStrategyParameters::$exifInfo} attribute of the associated
-	 * {@link AddStrategyParameters} object into the associated {@link Photo}
+	 * {@link ImportParam::$exifInfo} attribute of the associated
+	 * {@link ImportParam} object into the associated {@link Photo}
 	 * object.
 	 *
 	 * Meta information is conditionally copied if and only if the target
