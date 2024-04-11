@@ -14,11 +14,6 @@ return new class() extends Migration {
 	{
 		Schema::table('albums', function (Blueprint $table) {
 			$table->char('header_id', self::RANDOM_ID_LENGTH)->after('cover_id')->nullable()->default(null);
-
-			$table->foreign('header_id')
-				->references('id')->on('photos')
-				->onUpdate('CASCADE')
-				->onDelete('SET NULL');
 		});
 	}
 
@@ -28,8 +23,6 @@ return new class() extends Migration {
 	public function down(): void
 	{
 		Schema::table('albums', function (Blueprint $table) {
-			$table->dropForeign('albums_header_id_foreign');
-
 			$table->dropColumn('header_id');
 		});
 	}
