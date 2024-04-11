@@ -3,8 +3,8 @@
 namespace App\Legacy\Actions\Photo\Strategies;
 
 use App\Actions\Diagnostics\Pipes\Checks\BasicPermissionCheck;
-use App\Contracts\Models\AbstractSizeVariantNamingStrategy;
 use App\DTO\ImportParam;
+use App\Enum\StorageDiskType;
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\Handler;
 use App\Exceptions\Internal\LycheeAssertionError;
@@ -15,6 +15,7 @@ use App\Image\Files\FlysystemFile;
 use App\Image\Files\NativeLocalFile;
 use App\Image\StreamStat;
 use App\Models\Photo;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Adds a video as partner to an existing photo.
@@ -49,7 +50,7 @@ class AddVideoPartnerStrategy extends AbstractAddStrategy
 		$photoExt = $photoFile->getOriginalExtension();
 		$videoExt = $this->videoSourceFile->getOriginalExtension();
 		$videoPath = substr($photoPath, 0, -strlen($photoExt)) . $videoExt;
-		$videoTargetFile = new FlysystemFile(AbstractSizeVariantNamingStrategy::getImageDisk(), $videoPath);
+		$videoTargetFile = new FlysystemFile(Storage::disk(StorageDiskType::LOCAL->value), $videoPath);
 		$streamStat = $this->putSourceIntoFinalDestination($videoTargetFile);
 		$this->photo->live_photo_short_path = $videoPath;
 		$this->photo->live_photo_checksum = $streamStat?->checksum;
