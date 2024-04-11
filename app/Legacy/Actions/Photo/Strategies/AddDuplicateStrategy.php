@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Actions\Photo\Strategies;
+namespace App\Legacy\Actions\Photo\Strategies;
 
+use App\DTO\ImportParam;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\PhotoResyncedException;
 use App\Exceptions\PhotoSkippedException;
@@ -11,7 +12,7 @@ use Illuminate\Support\Facades\Log;
 
 class AddDuplicateStrategy extends AbstractAddStrategy
 {
-	public function __construct(AddStrategyParameters $parameters, Photo $existing)
+	public function __construct(ImportParam $parameters, Photo $existing)
 	{
 		parent::__construct($parameters, $existing);
 	}

@@ -2,41 +2,39 @@
 
 namespace App\Actions\Photo;
 
-use App\Actions\Photo\Strategies\AddDuplicateStrategy;
-use App\Actions\Photo\Strategies\AddPhotoPartnerStrategy;
-use App\Actions\Photo\Strategies\AddStandaloneStrategy;
-use App\Actions\Photo\Strategies\AddStrategyParameters;
-use App\Actions\Photo\Strategies\AddVideoPartnerStrategy;
-use App\Actions\Photo\Strategies\ImportMode;
-use App\Actions\User\Notify;
+use App\Actions\Photo\Pipes\Duplicate;
+use App\Actions\Photo\Pipes\Init;
+use App\Actions\Photo\Pipes\PhotoPartner;
+use App\Actions\Photo\Pipes\Shared;
+use App\Actions\Photo\Pipes\Standalone;
+use App\Actions\Photo\Pipes\VideoPartner;
+use App\Assets\Features;
 use App\Contracts\Exceptions\LycheeException;
 use App\Contracts\Models\AbstractAlbum;
-use App\Exceptions\ExternalComponentFailedException;
-use App\Exceptions\ExternalComponentMissingException;
-use App\Exceptions\Internal\IllegalOrderOfOperationException;
-use App\Exceptions\Internal\LycheeAssertionError;
-use App\Exceptions\Internal\QueryBuilderException;
-use App\Exceptions\InvalidPropertyException;
-use App\Exceptions\MediaFileOperationException;
-use App\Image\Files\BaseMediaFile;
+use App\DTO\ImportMode;
+use App\DTO\ImportParam;
+use App\DTO\PhotoCreate\DuplicateDTO;
+use App\DTO\PhotoCreate\InitDTO;
+use App\DTO\PhotoCreate\PhotoPartnerDTO;
+use App\DTO\PhotoCreate\StandaloneDTO;
+use App\DTO\PhotoCreate\VideoPartnerDTO;
+use App\Exceptions\Internal\LycheeLogicException;
+use App\Exceptions\PhotoResyncedException;
+use App\Exceptions\PhotoSkippedException;
 use App\Image\Files\NativeLocalFile;
-use App\Image\StreamStat;
-use App\Metadata\Extractor;
-use App\Models\Album;
+use App\Legacy\Actions\Photo\Create as LegacyPhotoCreate;
 use App\Models\Photo;
-use App\SmartAlbums\BaseSmartAlbum;
-use App\SmartAlbums\StarredAlbum;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use function Safe\filemtime;
+use Illuminate\Pipeline\Pipeline;
 
 class Create
 {
-	/** @var AddStrategyParameters the strategy parameters prepared and compiled by this class */
-	protected AddStrategyParameters $strategyParameters;
+	/** @var ImportParam the strategy parameters prepared and compiled by this class */
+	protected ImportParam $strategyParameters;
 
 	public function __construct(?ImportMode $importMode, int $intendedOwnerId)
 	{
-		$this->strategyParameters = new AddStrategyParameters($importMode, $intendedOwnerId);
+		$this->strategyParameters = new ImportParam($importMode, $intendedOwnerId);
 	}
 
 	/**
@@ -59,185 +57,223 @@ class Create
 	 */
 	public function add(NativeLocalFile $sourceFile, ?AbstractAlbum $album, ?int $fileLastModifiedTime = null): Photo
 	{
-		$fileLastModifiedTime ??= filemtime($sourceFile->getRealPath());
+		if (Features::inactive('create-photo-via-pipes')) {
+			$oldCodePath = new LegacyPhotoCreate($this->strategyParameters->importMode, $this->strategyParameters->intendedOwnerId);
 
-		$sourceFile->assertIsSupportedMediaOrAcceptedRaw();
+			return $oldCodePath->add($sourceFile, $album, $fileLastModifiedTime);
+		}
 
-		// Fill in information about targeted parent album
-		// throws InvalidPropertyException
-		$this->initParentAlbum($album);
-
-		// Fill in metadata extracted from source file
-		$this->loadFileMetadata($sourceFile, $fileLastModifiedTime);
-
-		// Look up potential duplicates/partners in order to select the
-		// proper strategy
-		$duplicate = $this->get_duplicate(StreamStat::createFromLocalFile($sourceFile)->checksum);
-		$livePartner = $this->findLivePartner(
-			$this->strategyParameters->exifInfo->livePhotoContentID,
-			$this->strategyParameters->exifInfo->type,
-			$this->strategyParameters->album
+		$initDTO = new InitDTO(
+			parameters: $this->strategyParameters,
+			sourceFile: $sourceFile,
+			album: $album,
+			fileLastModifiedTime: $fileLastModifiedTime
 		);
 
-		/*
-		 * From here we need to use a strategy depending on whether we have
-		 *
-		 *  - a duplicate
-		 *  - a "stand-alone" media file (i.e. a photo or video without a partner)
-		 *  - a photo which is the partner of an already existing video
-		 *  - a video which is the partner of an already existing photo
-		 */
-		if ($duplicate !== null) {
-			$strategy = new AddDuplicateStrategy($this->strategyParameters, $duplicate);
-		} else {
-			if ($livePartner === null) {
-				$strategy = new AddStandaloneStrategy($this->strategyParameters, $sourceFile);
-			} else {
-				if ($sourceFile->isSupportedVideo()) {
-					$strategy = new AddVideoPartnerStrategy($this->strategyParameters, $sourceFile, $livePartner);
-				} elseif ($sourceFile->isSupportedImage()) {
-					$strategy = new AddPhotoPartnerStrategy($this->strategyParameters, $sourceFile, $livePartner);
-				} else {
-					// Accepted, but unsupported raw files are added as stand-alone files
-					$strategy = new AddStandaloneStrategy($this->strategyParameters, $sourceFile);
-				}
-			}
+		/** @var InitDTO $initDTO */
+		$initDTO = app(Pipeline::class)
+			->send($initDTO)
+			->through([
+				Init\AssertSupportedMedia::class,
+				Init\FetchLastModifiedTime::class,
+				Init\InitParentAlbum::class,
+				Init\LoadFileMetadata::class,
+				Init\FindDuplicate::class,
+				Init\FindLivePartner::class,
+			])
+			->thenReturn();
+
+		if ($initDTO->duplicate !== null) {
+			return $this->handleDuplicate($initDTO);
 		}
 
-		$photo = $strategy->do();
-
-		if ($photo->album_id !== null) {
-			$notify = new Notify();
-			$notify->do($photo);
+		if ($initDTO->livePartner === null) {
+			return $this->handleStandalone($initDTO);
 		}
 
-		return $photo;
+		// livePartner !== null
+		if ($sourceFile->isSupportedVideo()) {
+			return $this->handleVideoLivePartner($initDTO);
+		}
+
+		if ($sourceFile->isSupportedImage()) {
+			return $this->handlePhotoLivePartner($initDTO);
+		}
+
+		throw new LycheeLogicException('Pipe system for importing video failed');
 	}
 
 	/**
-	 * Extracts the meta-data of the source file and initializes
-	 * {@link AddStrategyParameters::$exifInfo} of {@link Create::$strategyParameters}.
+	 * Handle duplicate case.
 	 *
-	 * @param NativeLocalFile $sourceFile           the source file
-	 * @param int             $fileLastModifiedTime the timestamp to use if there's no creation date in Exif
+	 * @param InitDTO $initDTO initial fetched
 	 *
-	 * @return void
+	 * @return Photo Photo duplicated
 	 *
-	 * @throws ExternalComponentMissingException
-	 * @throws MediaFileOperationException
-	 * @throws ExternalComponentFailedException
+	 * @throws PhotoResyncedException
+	 * @throws PhotoSkippedException
 	 */
-	protected function loadFileMetadata(NativeLocalFile $sourceFile, int $fileLastModifiedTime): void
+	private function handleDuplicate(InitDTO $initDTO): Photo
 	{
-		$this->strategyParameters->exifInfo = Extractor::createFromFile($sourceFile, $fileLastModifiedTime);
+		$dto = DuplicateDTO::ofInit($initDTO);
 
-		// Use basename of file if IPTC title missing
-		if (
-			$this->strategyParameters->exifInfo->title === null ||
-			$this->strategyParameters->exifInfo->title === ''
-		) {
-			$this->strategyParameters->exifInfo->title = substr($sourceFile->getOriginalBasename(), 0, 98);
+		$pipes = [];
+		if ($dto->shallResyncMetadata) {
+			$pipes[] = Shared\HydrateMetadata::class;
+			$pipes[] = Duplicate\SaveIfDirty::class;
 		}
-	}
+		$pipes[] = Duplicate\ThrowSkipDuplicate::class;
+		$pipes[] = Duplicate\ReplicateAsPhoto::class;
+		$pipes[] = Shared\SetStarred::class;
+		$pipes[] = Shared\SetParentAndOwnership::class;
+		$pipes[] = Shared\Save::class;
+		$pipes[] = Shared\NotifyAlbums::class;
 
-	/**
-	 * Finds a "lonely" live partner if it exists.
-	 *
-	 * A lonely live partner is a media entry which
-	 *  - has the same content ID
-	 *  - is in the same album
-	 *  - which has an "opposed" mime type (i.e. only mixed (video,photo) or
-	 *    (photo,video) pairs can be partners
-	 *  - which has no live partner yet
-	 *
-	 * @param string|null $contentID the content id to identify a matching partner
-	 * @param string      $mimeType  the mime type of the media which a partner is looked for, e.g. the returned {@link Photo} has an "opposed" mime type
-	 * @param Album|null  $album     the album of which the partner must be member of
-	 *
-	 * @return Photo|null The live partner if found
-	 *
-	 * @throws QueryBuilderException
-	 */
-	protected function findLivePartner(
-		?string $contentID,
-		string $mimeType,
-		?Album $album
-	): ?Photo {
 		try {
-			$livePartner = null;
-			// find a potential partner which has the same content id
-			if ($contentID !== null) {
-				/** @var Photo|null $livePartner */
-				$livePartner = Photo::query()
-					->where('live_photo_content_id', '=', $contentID)
-					->where('album_id', '=', $album?->id)
-					->whereNull('live_photo_short_path')->first();
-			}
-			// if a potential partner has been found, ensure that it is of a
-			// different kind then the uploaded media.
-			if (
-				$livePartner !== null && !(
-					BaseMediaFile::isSupportedImageMimeType($mimeType) && $livePartner->isVideo() ||
-					BaseMediaFile::isSupportedVideoMimeType($mimeType) && $livePartner->isPhoto()
-				)
-			) {
-				$livePartner = null;
-			}
+			return app(Pipeline::class)
+				->send($dto)
+				->through($pipes)
+				->thenReturn()
+				->getPhoto();
+		} catch (PhotoResyncedException|PhotoSkippedException $e) {
+			// duplicate case. Just rethrow.
+			throw $e;
+		}
+	}
 
-			return $livePartner;
-		} catch (IllegalOrderOfOperationException $e) {
-			throw LycheeAssertionError::createFromUnexpectedException($e);
+	private function handleStandalone(InitDTO $initDTO): Photo
+	{
+		$dto = StandaloneDTO::ofInit($initDTO);
+
+		$pipes = [
+			Standalone\FixTimeStamps::class,
+			Standalone\InitNamingStrategy::class,
+			Shared\HydrateMetadata::class,
+			Shared\SetStarred::class,
+			Shared\SetParentAndOwnership::class,
+			Standalone\SetOriginalChecksum::class,
+			Standalone\FetchSourceImage::class,
+			Standalone\ExtractGoogleMotionPictures::class,
+			Standalone\PlacePhoto::class,
+			Standalone\PlaceGoogleMotionVideo::class,
+			Standalone\SetChecksum::class,
+			Shared\Save::class,
+			Standalone\CreateOriginalSizeVariant::class,
+			Standalone\CreateSizeVariants::class,
+		];
+
+		return $this->executePipeOnDTO($pipes, $dto)->getPhoto();
+	}
+
+	private function handleVideoLivePartner(InitDTO $initDTO): Photo
+	{
+		$dto = VideoPartnerDTO::ofInit($initDTO);
+
+		$pipes = [
+			VideoPartner\GetVideoPath::class,
+			VideoPartner\PlaceVideo::class,
+			VideoPartner\UpdateLivePartner::class,
+			Shared\Save::class,
+		];
+
+		return $this->executePipeOnDTO($pipes, $dto)->getPhoto();
+	}
+
+	/**
+	 * Execute the pipes on the DTO.
+	 *
+	 * @template T of VideoPartnerDTO|StandaloneDTO|PhotoPartnerDTO
+	 *
+	 * @param array $pipes
+	 * @param T     $dto
+	 *
+	 * @return T
+	 *
+	 * @throws LycheeException
+	 */
+	private function executePipeOnDTO(array $pipes, VideoPartnerDTO|StandaloneDTO|PhotoPartnerDTO $dto): VideoPartnerDTO|StandaloneDTO|PhotoPartnerDTO
+	{
+		try {
+			return app(Pipeline::class)
+				->send($dto)
+				->through($pipes)
+				->thenReturn();
+		} catch (LycheeException $e) {
+			// If source file could not be put into final destination, remove
+			// freshly created photo from DB to avoid having "zombie" entries.
+			try {
+				$dto->getPhoto()->delete();
+			} catch (\Throwable) {
+				// Sic! If anything goes wrong here, we still throw the original exception
+			}
+			throw $e;
 		}
 	}
 
 	/**
-	 * Sets the (regular) parent album of {@link Create::$strategyParameters}
-	 * according to the provided parent album.
+	 * Adds a photo as partner to an existing video.
 	 *
-	 * If the provided parent album equals `null` or is already a (regular)
-	 * album, then the strategy is set to that album.
-	 * If the provided parent album is one of the built-in smart albums,
-	 * then the (regular) parent album of the strategy is set to `null` (aka
-	 * the root album) and the other properties of the strategy are tweaked
-	 * such that the photo will be shown by the smart album.
+	 * Note the asymmetry to {@link handleVideoLivePartner}.
 	 *
-	 * @param AbstractAlbum|null $album the targeted parent album
-	 *
-	 * @throws InvalidPropertyException
+	 * A photo is always added as if it had no partner, even if the video had
+	 * been added first.
+	 * Then the already existing video is added to the freshly added photo.
+	 * Hence, this strategy works mostly like the stand-alone strategy and also
+	 * requires the photo file to be a native, local file in order to be able to
+	 * extract EXIF data.
 	 */
-	protected function initParentAlbum(?AbstractAlbum $album = null): void
+	private function handlePhotoLivePartner(InitDTO $initDTO): Photo
 	{
-		if ($album === null) {
-			$this->strategyParameters->album = null;
-		} elseif ($album instanceof Album) {
-			$this->strategyParameters->album = $album;
-		} elseif ($album instanceof BaseSmartAlbum) {
-			$this->strategyParameters->album = null;
-			if ($album instanceof StarredAlbum) {
-				$this->strategyParameters->is_starred = true;
-			}
-		} else {
-			throw new InvalidPropertyException('The given parent album does not support uploading');
-		}
-	}
+		// Save old video.
+		$oldVideo = $initDTO->livePartner;
 
-	/**
-	 * Check if a picture has a duplicate
-	 * We compare the checksum to the other Photos or LivePhotos.
-	 *
-	 * @param string $checksum
-	 *
-	 * @return ?Photo
-	 */
-	public function get_duplicate(string $checksum): ?Photo
-	{
-		/** @var Photo|null $photo */
-		$photo = Photo::query()
-			->where('checksum', '=', $checksum)
-			->orWhere('original_checksum', '=', $checksum)
-			->orWhere('live_photo_checksum', '=', $checksum)
-			->first();
+		// Import Photo as stand alone.
+		$standAloneDto = StandaloneDTO::ofInit($initDTO);
+		$standAlonePipes = [
+			Standalone\FixTimeStamps::class,
+			Standalone\InitNamingStrategy::class,
+			Shared\HydrateMetadata::class,
+			Shared\SetStarred::class,
+			Shared\SetParentAndOwnership::class,
+			Standalone\SetOriginalChecksum::class,
+			Standalone\FetchSourceImage::class,
+			Standalone\ExtractGoogleMotionPictures::class,
+			Standalone\PlacePhoto::class,
+			Standalone\PlaceGoogleMotionVideo::class,
+			Standalone\SetChecksum::class,
+			Shared\Save::class,
+			Standalone\CreateOriginalSizeVariant::class,
+			Standalone\CreateSizeVariants::class,
+		];
+		$standAloneDto = $this->executePipeOnDTO($standAlonePipes, $standAloneDto);
 
-		return $photo;
+		// Use file from video as input for Video Partner and import
+		$videoPartnerDTO = new VideoPartnerDTO(
+			videoFile: $oldVideo->size_variants->getOriginal()->getFile(),
+			shallDeleteImported: true,
+			shallImportViaSymlink: false,
+			photo: $standAloneDto->getPhoto()
+		);
+		$videoPartnerPipes = [
+			VideoPartner\GetVideoPath::class,
+			VideoPartner\PlaceVideo::class,
+			VideoPartner\UpdateLivePartner::class,
+			Shared\Save::class,
+		];
+		$videoPartnerDTO = $this->executePipeOnDTO($videoPartnerPipes, $videoPartnerDTO);
+
+		$finalizeDTO = new PhotoPartnerDTO(
+			photo: $videoPartnerDTO->photo,
+			oldVideo: $oldVideo
+		);
+
+		// Finalize
+		$finalize = [
+			PhotoPartner\SetOldChecksum::class,
+			PhotoPartner\DeleteOldVideoPartner::class,
+			Shared\Save::class,
+		];
+
+		return $this->executePipeOnDTO($finalize, $finalizeDTO)->getPhoto();
 	}
 }

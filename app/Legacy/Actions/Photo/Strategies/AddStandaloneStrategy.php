@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Photo\Strategies;
+namespace App\Legacy\Actions\Photo\Strategies;
 
 use App\Actions\Diagnostics\Pipes\Checks\BasicPermissionCheck;
 use App\Contracts\Exceptions\LycheeException;
@@ -9,6 +9,7 @@ use App\Contracts\Image\StreamStats;
 use App\Contracts\Models\AbstractSizeVariantNamingStrategy;
 use App\Contracts\Models\SizeVariantFactory;
 use App\DTO\ImageDimension;
+use App\DTO\ImportParam;
 use App\Enum\SizeVariantType;
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\Handler;
@@ -34,7 +35,7 @@ class AddStandaloneStrategy extends AbstractAddStrategy
 	/**
 	 * @throws FrameworkException
 	 */
-	public function __construct(AddStrategyParameters $parameters, NativeLocalFile $sourceFile)
+	public function __construct(ImportParam $parameters, NativeLocalFile $sourceFile)
 	{
 		try {
 			parent::__construct($parameters, new Photo());
