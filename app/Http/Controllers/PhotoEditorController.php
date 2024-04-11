@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\Photo\Strategies\RotateStrategy;
+use App\Actions\Photo\Rotate;
 use App\Contracts\Exceptions\LycheeException;
 use App\Exceptions\ConfigurationException;
 use App\Http\Requests\Photo\RotatePhotoRequest;
@@ -27,7 +27,7 @@ class PhotoEditorController extends Controller
 			throw new ConfigurationException('support for rotation disabled by configuration');
 		}
 
-		$rotateStrategy = new RotateStrategy($request->photo(), $request->direction());
+		$rotateStrategy = new Rotate($request->photo(), $request->direction());
 		$photo = $rotateStrategy->do();
 
 		return PhotoResource::make($photo);

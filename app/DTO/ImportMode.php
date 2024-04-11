@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Photo\Strategies;
+namespace App\DTO;
 
 /**
  * Define import mode.

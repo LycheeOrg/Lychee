@@ -37,8 +37,17 @@ return [
 	|--------------------------------------------------------------------------
 	| Log Viewer
 	|--------------------------------------------------------------------------
-	| Log Viewer can be disabled, so it's no longer accessible via browser.
 	|
+	| Log Viewer can be disabled, so it's no longer accessible via browser.
 	*/
 	'log-viewer' => (bool) env('LOG_VIEWER_ENABLED', true),
+
+	/*
+	|--------------------------------------------------------------------------
+	| Use new code path when importing photos
+	|--------------------------------------------------------------------------
+	|
+	| Use pipeline design pattern instead of hardcoded Strategies.
+	*/
+	'create-photo-via-pipes' => (bool) env('PHOTO_PIPES', false),
 ];
