@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c66f10a5224314dca039c06c1f071b35",
+    "content-hash": "47f4b3e363eea81070259780e9e66872",
     "packages": [
         {
             "name": "bepsvpt/secure-headers",
@@ -5623,6 +5623,56 @@
                 "source": "https://github.com/SocialiteProviders/Google-Plus/tree/4.1.0"
             },
             "time": "2020-12-01T23:10:59+00:00"
+        },
+        {
+            "name": "socialiteproviders/keycloak",
+            "version": "5.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/SocialiteProviders/Keycloak.git",
+                "reference": "87d13f8a411a6f8f5010ecbaff9aedd4494863e4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/SocialiteProviders/Keycloak/zipball/87d13f8a411a6f8f5010ecbaff9aedd4494863e4",
+                "reference": "87d13f8a411a6f8f5010ecbaff9aedd4494863e4",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "php": "^7.4 || ^8.0",
+                "socialiteproviders/manager": "~4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "SocialiteProviders\\Keycloak\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Oleg Kuchumov",
+                    "email": "voenniy@gmail.com"
+                }
+            ],
+            "description": "Keycloak OAuth2 Provider for Laravel Socialite",
+            "keywords": [
+                "keycloak",
+                "laravel",
+                "oauth",
+                "provider",
+                "socialite"
+            ],
+            "support": {
+                "docs": "https://socialiteproviders.com/keycloak",
+                "issues": "https://github.com/socialiteproviders/providers/issues",
+                "source": "https://github.com/socialiteproviders/providers"
+            },
+            "time": "2023-04-10T05:50:49+00:00"
         },
         {
             "name": "socialiteproviders/manager",
