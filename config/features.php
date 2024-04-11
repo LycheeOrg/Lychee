@@ -45,6 +45,16 @@ return [
 
 	/*
 	|--------------------------------------------------------------------------
+	| Extract Zip
+	|--------------------------------------------------------------------------
+	|
+	| Allow Lychee to extract zip files. As this by passes some safeties with
+	| regard to files, we place it behind a feature flag rather than a config option.
+	*/
+	'extract-zip-files-on-upload' => (bool) env('FEATURE_EXTRACT_ZIP_FILES_ON_UPLOAD', false),
+
+	/*
+	|--------------------------------------------------------------------------
 	| Log Viewer
 	|--------------------------------------------------------------------------
 	|
