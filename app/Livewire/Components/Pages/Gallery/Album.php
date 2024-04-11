@@ -5,6 +5,7 @@ namespace App\Livewire\Components\Pages\Gallery;
 use App\Contracts\Livewire\Reloadable;
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\AspectRatioType;
+use App\Enum\SizeVariantType;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Factories\AlbumFactory;
 use App\Livewire\DTO\AlbumFlags;
@@ -188,6 +189,7 @@ class Album extends BaseAlbumComponent implements Reloadable
 		if ($this->album instanceof ModelsAlbum) {
 			$photo = SizeVariant::query()
 				->where('photo_id', '=', $this->album->header_id)
+				->whereIn('type', [SizeVariantType::MEDIUM, SizeVariantType::SMALL2X, SizeVariantType::SMALL])
 				->orderBy('type', 'asc')
 				->first();
 		}
@@ -196,12 +198,14 @@ class Album extends BaseAlbumComponent implements Reloadable
 			$photo = SizeVariant::query()
 				->whereBelongsTo($this->album->photos)
 				->where('ratio', '>', 1)
+				->whereIn('type', [SizeVariantType::MEDIUM, SizeVariantType::SMALL2X, SizeVariantType::SMALL])
 				->groupBy('photo_id')
 				->inRandomOrder()
 				->first();
 
 			return SizeVariant::query()
 				->where('photo_id', '=', $photo->photo_id)
+				->where('type', '>', 1)
 				->orderBy('type', 'asc')
 				->first();
 		}
