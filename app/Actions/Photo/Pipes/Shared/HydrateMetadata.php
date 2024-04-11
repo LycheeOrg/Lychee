@@ -4,6 +4,7 @@ namespace App\Actions\Photo\Pipes\Shared;
 
 use App\Contracts\PhotoCreate\SharedPipe;
 use App\DTO\PhotoCreate\DuplicateDTO;
+use App\DTO\PhotoCreate\StandaloneDTO;
 
 /**
  * Hydrates meta-info of the media file from the
@@ -22,7 +23,7 @@ use App\DTO\PhotoCreate\DuplicateDTO;
  */
 class HydrateMetadata implements SharedPipe
 {
-	public function handle(DuplicateDTO $state, \Closure $next): DuplicateDTO
+	public function handle(DuplicateDTO|StandaloneDTO $state, \Closure $next): DuplicateDTO|StandaloneDTO
 	{
 		if ($state->photo->title === null) {
 			$state->photo->title = $state->exifInfo->title;
