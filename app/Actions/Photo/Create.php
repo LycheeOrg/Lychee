@@ -122,7 +122,7 @@ class Create
 				->send($dto)
 				->through($pipes)
 				->thenReturn()
-				->photo;
+				->getPhoto();
 		} catch (PhotoResyncedException|PhotoSkippedException $e) {
 			// duplicate case. Just rethrow.
 			throw $e;
@@ -155,12 +155,12 @@ class Create
 				->send($dto)
 				->through($pipes)
 				->thenReturn()
-				->photo;
+				->getPhoto();
 		} catch (LycheeException $e) {
 			// If source file could not be put into final destination, remove
 			// freshly created photo from DB to avoid having "zombie" entries.
 			try {
-				$dto->photo->delete();
+				$dto->getPhoto()->delete();
 			} catch (\Throwable) {
 				// Sic! If anything goes wrong here, we still throw the original exception
 			}
