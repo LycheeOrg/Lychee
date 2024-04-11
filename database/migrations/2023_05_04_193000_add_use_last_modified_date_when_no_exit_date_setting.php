@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\Extensions\BaseConfigMigration;
+use App\Legacy\BaseConfigMigration;
 
 return new class() extends BaseConfigMigration {
 	public function getConfigs(): array

@@ -26,7 +26,7 @@ use Illuminate\Support\Facades\Log;
  * @property string|null $value
  * @property string      $cat
  * @property string      $type_range
- * @property int         $confidentiality
+ * @property bool        $is_secret
  * @property string      $description
  *
  * @method static ConfigsBuilder|Configs addSelect($column)
@@ -71,7 +71,7 @@ class Configs extends Model
 	 *
 	 * @var array<int,string>
 	 */
-	protected $fillable = ['key', 'value', 'cat', 'type_range', 'confidentiality', 'description'];
+	protected $fillable = ['key', 'value', 'cat', 'type_range', 'is_secret', 'description'];
 
 	/**
 	 *  this is a parameter for Laravel to indicate that there is no created_at, updated_at columns.
