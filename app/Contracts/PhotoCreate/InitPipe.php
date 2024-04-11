@@ -5,9 +5,7 @@ namespace App\Contracts\PhotoCreate;
 use App\DTO\PhotoCreate\InitDTO;
 
 /**
- * Basic definition of a Photo creation pipe.
- *
- * This allows to clarify which steps are applied in which order.
+ * Initial pipes, could be seen as pre-processing steps.
  */
 interface InitPipe
 {

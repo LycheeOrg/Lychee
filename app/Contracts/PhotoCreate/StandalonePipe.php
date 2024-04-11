@@ -6,8 +6,6 @@ use App\DTO\PhotoCreate\StandaloneDTO;
 
 /**
  * Basic definition of a Standalone Photo pipe.
- *
- * This allows to clarify which steps are applied in which order.
  */
 interface StandalonePipe
 {

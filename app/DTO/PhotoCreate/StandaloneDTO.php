@@ -6,13 +6,14 @@ use App\Contracts\Image\ImageHandlerInterface;
 use App\Contracts\Image\StreamStats;
 use App\Contracts\Models\AbstractAlbum;
 use App\Contracts\Models\AbstractSizeVariantNamingStrategy;
+use App\Contracts\PhotoCreate\PhotoDTO;
 use App\Image\Files\FlysystemFile;
 use App\Image\Files\NativeLocalFile;
 use App\Image\Files\TemporaryLocalFile;
 use App\Metadata\Extractor;
 use App\Models\Photo;
 
-class StandaloneDTO
+class StandaloneDTO implements PhotoDTO
 {
 	public readonly bool $shallImportViaSymlink;
 	public readonly bool $shallDeleteImported;
@@ -51,5 +52,10 @@ class StandaloneDTO
 		$this->intendedOwnerId = $initDTO->intendedOwnerId;
 		$this->shallImportViaSymlink = $initDTO->importMode->shallImportViaSymlink;
 		$this->shallDeleteImported = $initDTO->importMode->shallDeleteImported;
+	}
+
+	public function getPhoto(): Photo
+	{
+		return $this->photo;
 	}
 }
