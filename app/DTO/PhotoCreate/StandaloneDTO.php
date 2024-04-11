@@ -15,47 +15,46 @@ use App\Models\Photo;
 
 class StandaloneDTO implements PhotoDTO
 {
-	public readonly bool $shallImportViaSymlink;
-	public readonly bool $shallDeleteImported;
-
-	// The resulting photo
-	public Photo $photo;
-
-	// Indicates the intended owner of the image.
-	public readonly int $intendedOwnerId;
-
-	// Indicates whether the new photo shall be starred.
-	public readonly bool $is_starred;
-
-	// The intended parent album
-	public readonly ?AbstractAlbum $album;
-
-	// The original photo source file that is imported.
-	public readonly NativeLocalFile $sourceFile;
-
-	// The extracted EXIF information (populated during init phase).
-	public readonly Extractor $exifInfo;
-
 	public ImageHandlerInterface|null $sourceImage = null;
 	public AbstractSizeVariantNamingStrategy $namingStrategy;
 	public TemporaryLocalFile|null $tmpVideoFile = null;
 	public FlysystemFile $targetFile;
 	public StreamStats|null $streamStat;
 
-	public function __construct(InitDTO $initDTO)
-	{
-		$this->photo = new Photo();
-		$this->sourceFile = $initDTO->sourceFile;
-		$this->is_starred = $initDTO->is_starred;
-		$this->exifInfo = $initDTO->exifInfo;
-		$this->album = $initDTO->album;
-		$this->intendedOwnerId = $initDTO->intendedOwnerId;
-		$this->shallImportViaSymlink = $initDTO->importMode->shallImportViaSymlink;
-		$this->shallDeleteImported = $initDTO->importMode->shallDeleteImported;
+	public function __construct(
+		// The resulting photo
+		public Photo $photo,
+		// The original photo source file that is imported.
+		public readonly NativeLocalFile $sourceFile,
+		// Indicates whether the new photo shall be starred.
+		public readonly bool $is_starred,
+		// The extracted EXIF information (populated during init phase).
+		public readonly Extractor $exifInfo,
+		// The intended parent album
+		public readonly ?AbstractAlbum $album,
+		// Indicates the intended owner of the image.
+		public readonly int $intendedOwnerId,
+		public readonly bool $shallImportViaSymlink,
+		public readonly bool $shallDeleteImported,
+	) {
 	}
 
 	public function getPhoto(): Photo
 	{
 		return $this->photo;
+	}
+
+	public static function ofInit(InitDTO $initDTO): StandaloneDTO
+	{
+		return new StandaloneDTO(
+			photo: new Photo(),
+			sourceFile: $initDTO->sourceFile,
+			is_starred: $initDTO->is_starred,
+			exifInfo: $initDTO->exifInfo,
+			album: $initDTO->album,
+			intendedOwnerId: $initDTO->intendedOwnerId,
+			shallImportViaSymlink: $initDTO->importMode->shallImportViaSymlink,
+			shallDeleteImported: $initDTO->importMode->shallDeleteImported,
+		);
 	}
 }

@@ -110,7 +110,7 @@ class Create
 	 */
 	private function handleDuplicate(InitDTO $initDTO): Photo
 	{
-		$dto = new DuplicateDTO($initDTO);
+		$dto = DuplicateDTO::ofInit($initDTO);
 
 		$pipes = [];
 		if ($dto->shallResyncMetadata) {
@@ -138,7 +138,7 @@ class Create
 
 	private function handleStandalone(InitDTO $initDTO): Photo
 	{
-		$dto = new StandaloneDTO($initDTO);
+		$dto = StandaloneDTO::ofInit($initDTO);
 
 		$pipes = [
 			Standalone\FixTimeStamps::class,
@@ -177,7 +177,7 @@ class Create
 
 	private function handleVideoLivePartner(InitDTO $initDTO): Photo
 	{
-		$dto = new VideoPartnerDTO($initDTO);
+		$dto = VideoPartnerDTO::ofInit($initDTO);
 
 		$pipes = [
 			VideoPartner\GetVideoPath::class,
