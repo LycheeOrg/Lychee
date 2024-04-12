@@ -160,7 +160,7 @@ class Create
 			Shared\Save::class,
 			Standalone\CreateOriginalSizeVariant::class,
 			Standalone\CreateSizeVariants::class,
-			Standalone\UploadSizeVariantsToS3::class,
+			Shared\UploadSizeVariantsToS3::class,
 		];
 
 		return $this->executePipeOnDTO($pipes, $dto)->getPhoto();
@@ -245,6 +245,7 @@ class Create
 			Shared\Save::class,
 			Standalone\CreateOriginalSizeVariant::class,
 			Standalone\CreateSizeVariants::class,
+			Shared\UploadSizeVariantsToS3::class,
 		];
 		$standAloneDto = $this->executePipeOnDTO($standAlonePipes, $standAloneDto);
 
@@ -273,7 +274,6 @@ class Create
 			PhotoPartner\SetOldChecksum::class,
 			PhotoPartner\DeleteOldVideoPartner::class,
 			Shared\Save::class,
-			Standalone\UploadSizeVariantsToS3::class,
 		];
 
 		return $this->executePipeOnDTO($finalize, $finalizeDTO)->getPhoto();
