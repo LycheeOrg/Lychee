@@ -29,6 +29,7 @@ class PhotoDropdown extends Component
 	/** @var array{albumID:?string,photoID:string} */
 	#[Locked] public array $params;
 	#[Locked] public bool $is_starred;
+	#[Locked] public bool $is_header;
 	/**
 	 * mount info and load star condition.
 	 *
@@ -38,8 +39,14 @@ class PhotoDropdown extends Component
 	 */
 	public function mount(array $params): void
 	{
+		/** @var Album $album */
+		$album = Album::query()->find($params[Params::ALBUM_ID]);
+
 		$this->params = $params;
 		$this->is_starred = Photo::query()->findOrFail($params[Params::PHOTO_ID])->is_starred;
+		if ($album !== null) {
+			$this->is_header = $album->header_id === $params[Params::PHOTO_ID];
+		}
 	}
 
 	/**

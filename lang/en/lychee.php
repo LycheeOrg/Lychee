@@ -144,6 +144,7 @@ return [
 	'SET_COVER' => 'Set Album Cover',
 	'REMOVE_COVER' => 'Remove Album Cover',
 	'SET_HEADER' => 'Set Album Header',
+	'REMOVE_HEADER' => 'Remove Album Header',
 
 	'FULL_PHOTO' => 'Open Original',
 	'ABOUT_PHOTO' => 'About Photo',
