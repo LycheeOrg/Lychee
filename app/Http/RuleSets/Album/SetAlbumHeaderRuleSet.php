@@ -17,7 +17,7 @@ class SetAlbumHeaderRuleSet implements RuleSet
 	public static function rules(): array
 	{
 		return [
-			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
+			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['required', new RandomIDRule(true)],
 			RequestAttribute::PHOTO_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
 		];
 	}
