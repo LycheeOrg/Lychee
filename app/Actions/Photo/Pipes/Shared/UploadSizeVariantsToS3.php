@@ -21,7 +21,7 @@ class UploadSizeVariantsToS3 implements PhotoPipe
 		if (Features::active('use-s3')) {
 			$sync = Configs::getValueAsBool('use_job_queues');
 
-			$jobs = $state->photo->size_variants->toCollection()
+			$jobs = $state->getPhoto()->size_variants->toCollection()
 				->filter(fn ($v) => $v !== null)
 				->map(fn (SizeVariant $variant) => new UploadSizeVariantToS3Job($variant));
 
