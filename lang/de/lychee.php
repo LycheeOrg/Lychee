@@ -144,6 +144,7 @@ return [
 	'SET_COVER' => 'Als Album-Cover setzen',
 	'REMOVE_COVER' => 'Als Album-Cover entfernen',
 	'SET_HEADER' => 'Set Album Header',
+	'REMOVE_HEADER' => 'Remove Album Header',
 
 	'FULL_PHOTO' => 'Original öffnen',
 	'ABOUT_PHOTO' => 'Über dieses Foto',

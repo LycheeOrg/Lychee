@@ -144,6 +144,7 @@ return [
 	'SET_COVER' => 'Cài hình ảnh nền cho album',
 	'REMOVE_COVER' => 'Xóa hình ảnh nền album',
 	'SET_HEADER' => 'Set Album Header',
+	'REMOVE_HEADER' => 'Remove Album Header',
 
 	'FULL_PHOTO' => 'Xem hình ảnh gốc',
 	'ABOUT_PHOTO' => 'Giới thiệu về tấm ảnh',
