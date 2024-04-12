@@ -58,5 +58,5 @@ return [
 	|
 	| Put images on AWS instead of locally to save space.
 	*/
-	'use-s3' => env('AWS_ACCESS_KEY_ID', '') !== '',
+	'use-s3' => (env('AWS_ACCESS_KEY_ID', '') !== '') && (bool) env('S3_ENABLED', false),
 ];
