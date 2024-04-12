@@ -12,6 +12,7 @@ use SocialiteProviders\Google\GoogleExtendSocialite;
 use SocialiteProviders\Manager\SocialiteWasCalled;
 use SocialiteProviders\Microsoft\MicrosoftExtendSocialite;
 use SocialiteProviders\Nextcloud\NextcloudExtendSocialite;
+use SocialiteProviders\Keycloak\KeycloakExtendSocialite;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -33,6 +34,7 @@ class EventServiceProvider extends ServiceProvider
 			// Mastodon is provided directly.
 			MicrosoftExtendSocialite::class . '@handle',
 			NextcloudExtendSocialite::class . '@handle',
+			KeycloakExtendSocialite::class . '@handle',
 		],
 	];
 
