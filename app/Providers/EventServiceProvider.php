@@ -9,10 +9,10 @@ use SocialiteProviders\Apple\AppleExtendSocialite;
 use SocialiteProviders\Facebook\FacebookExtendSocialite;
 use SocialiteProviders\GitHub\GitHubExtendSocialite;
 use SocialiteProviders\Google\GoogleExtendSocialite;
+use SocialiteProviders\Keycloak\KeycloakExtendSocialite;
 use SocialiteProviders\Manager\SocialiteWasCalled;
 use SocialiteProviders\Microsoft\MicrosoftExtendSocialite;
 use SocialiteProviders\Nextcloud\NextcloudExtendSocialite;
-use SocialiteProviders\Keycloak\KeycloakExtendSocialite;
 
 class EventServiceProvider extends ServiceProvider
 {
