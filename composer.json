@@ -68,6 +68,7 @@
         "socialiteproviders/facebook": "^4.1",
         "socialiteproviders/github": "^4.1",
         "socialiteproviders/google": "^4.1",
+        "socialiteproviders/keycloak": "^5.3",
         "socialiteproviders/microsoft": "^4.2",
         "socialiteproviders/nextcloud": "^4.0",
         "spatie/guzzle-rate-limiter-middleware": "^2.0",

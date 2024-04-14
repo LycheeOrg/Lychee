@@ -22,6 +22,7 @@
 			"fa-brands fa-mastodon" => $oauthData->providerType === 'mastodon',
 			"fa-brands fa-microsoft" => $oauthData->providerType === 'microsoft',
 			"fa-solid fa-cloud" => $oauthData->providerType === 'nextcloud',
+			"fa-solid fa-key" => $oauthData->providerType === 'keycloak',
 			])></i>
 			@if($oauthData->isEnabled)
 			<span class="ml-2">

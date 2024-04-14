@@ -115,6 +115,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 		'mastodon_id',
 		'microsoft_id',
 		'nextcloud_id',
+		'keycloak_id',
 	];
 
 	protected function _toArray(): array
