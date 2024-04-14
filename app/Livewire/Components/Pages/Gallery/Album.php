@@ -178,6 +178,10 @@ class Album extends BaseAlbumComponent implements Reloadable
 	{
 		$headerSizeVariant = null;
 
+		if ($this->album instanceof ModelsAlbum && $this->album->header_id === 'compact') {
+			return null;
+		}
+
 		if (Configs::getValueAsBool('use_album_compact_header')) {
 			return null;
 		}

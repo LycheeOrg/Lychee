@@ -1,7 +1,7 @@
 <div class="mt-4 h-10" x-data="{ isSearchPhotoOpen: false }" x-on:click.away="isSearchPhotoOpen = false">
 	<span class="font-bold">{{ __('lychee.SET_HEADER') }}</span>
 	@if ($header_id !== null)
-		<span class="h-4 inline-block relative px-2 cursor-pointer text-2xs">{{ $title }}
+		<span class="h-4 inline-block relative px-2 cursor-pointer text-2xs">{{ $title ?? "Compact Header" }}
 			<a class="block absolute right-0 top-0" wire:click="clearHeaderId()">
 			<x-icons.iconic class=" fill-red-800 w-4 h-4 mb-2 translate-x-full" icon="x" /></a>
 		</span>
@@ -28,6 +28,14 @@
 			x-show.transition.opacity="isSearchPhotoOpen">
 			@if (count($this->photoList) > 0)
 				<ul class=" max-h-[50vh] overflow-y-auto">
+						<li class="border-b border-bg-800 cursor-pointer transition-all ease-in-out duration-300
+									hover:bg-gradient-to-b hover:from-primary-500 hover:to-primary-600 hover:text-text-main-0"
+							wire:click="select('compact','Compact Header')">
+							<a class="px-3 py-1 flex items-center">
+								<x-icons.iconic class=" fill-white w-4 h-4 " icon="collapse-up" />
+								<span class="ml-4 text-left">Compact Header</span>
+							</a>
+						</li>
 					@foreach ($this->photoList as $result)
 						<li class="border-b border-bg-800 cursor-pointer transition-all ease-in-out duration-300
 									hover:bg-gradient-to-b hover:from-primary-500 hover:to-primary-600 hover:text-text-main-0"
