@@ -13,8 +13,8 @@ class Move
 	/**
 	 * Duplicates a set of photos.
 	 *
-	 * @param Collection<Photo> $photos the source photos
-	 * @param Album|null        $album  the destination album; `null` means root album
+	 * @param Collection<int,Photo> $photos the source photos
+	 * @param Album|null            $album  the destination album; `null` means root album
 	 *
 	 * @return void
 	 *
