@@ -176,7 +176,7 @@ class Album extends BaseAlbumComponent implements Reloadable
 	 */
 	private function fetchHeaderUrl(): SizeVariant|null
 	{
-		$photo = null;
+		$headerSizeVariant = null;
 
 		if (Configs::getValueAsBool('use_album_compact_header')) {
 			return null;
@@ -186,31 +186,31 @@ class Album extends BaseAlbumComponent implements Reloadable
 			return null;
 		}
 
-		if ($this->album instanceof ModelsAlbum) {
-			$photo = SizeVariant::query()
+		if ($this->album instanceof ModelsAlbum && $this->album->header_id !== null) {
+			$headerSizeVariant = SizeVariant::query()
 				->where('photo_id', '=', $this->album->header_id)
 				->whereIn('type', [SizeVariantType::MEDIUM, SizeVariantType::SMALL2X, SizeVariantType::SMALL])
 				->orderBy('type', 'asc')
 				->first();
 		}
 
-		if (!$this->album instanceof ModelsAlbum || !isset($this->album->header_id) || $photo === null) {
-			$photo = SizeVariant::query()
-				->whereBelongsTo($this->album->photos)
-				->where('ratio', '>', 1)
-				->whereIn('type', [SizeVariantType::MEDIUM, SizeVariantType::SMALL2X, SizeVariantType::SMALL])
-				->groupBy('photo_id')
-				->inRandomOrder()
-				->first();
-
-			return SizeVariant::query()
-				->where('photo_id', '=', $photo->photo_id)
-				->where('type', '>', 1)
-				->orderBy('type', 'asc')
-				->first();
+		if ($headerSizeVariant !== null) {
+			return $headerSizeVariant;
 		}
 
-		return $photo;
+		$photo = SizeVariant::query()
+			->select('photo_id')
+			->whereBelongsTo($this->album->photos)
+			->where('ratio', '>', 1)
+			->whereIn('type', [SizeVariantType::MEDIUM, SizeVariantType::SMALL2X, SizeVariantType::SMALL])
+			->inRandomOrder()
+			->first();
+
+		return SizeVariant::query()
+			->where('photo_id', '=', $photo->photo_id)
+			->where('type', '>', 1)
+			->orderBy('type', 'asc')
+			->first();
 	}
 
 	public function getBackProperty(): string
