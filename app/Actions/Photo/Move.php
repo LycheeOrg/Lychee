@@ -36,5 +36,7 @@ class Move
 			$photo->save();
 			$notify->do($photo);
 		}
+
+		Album::query()->whereIn('header_id', $photos->map(fn (Photo $p) => $p->id))->update(['header_id' => null]);
 	}
 }
