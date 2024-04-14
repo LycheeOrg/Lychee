@@ -1,0 +1,14 @@
+name: PR dependency check
+
+on:
+  pull_request_target: 
+    types: [opened, edited, closed, reopened]
+  
+jobs:
+  check_dependencies:
+    runs-on: ubuntu-latest
+    name: Check Dependencies
+    steps:
+    - uses: gregsdennis/dependencies-action@4fc2a4879387b43f784920699cb9303dd0524ac4 # 1.3.3
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
