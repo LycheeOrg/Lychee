@@ -7,7 +7,6 @@ use App\Livewire\Traits\Notify;
 use App\Livewire\Traits\UseValidator;
 use App\Models\Album;
 use App\Models\Photo;
-use App\Models\User;
 use App\Policies\AlbumPolicy;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -22,6 +21,7 @@ class SetHeader extends Component
 	use AuthorizesRequests;
 	use UseValidator;
 	use Notify;
+	public const COMPACT_HEADER = 'compact';
 
 	#[Locked] public string $albumID;
 	public ?string $search = null; // ! wired

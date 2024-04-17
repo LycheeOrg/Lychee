@@ -145,6 +145,7 @@ return [
 	'REMOVE_COVER' => 'Xóa hình ảnh nền album',
 	'SET_HEADER' => 'Set Album Header',
 	'REMOVE_HEADER' => 'Remove Album Header',
+	'SET_COMPACT_HEADER' => 'Use Compact Header',
 
 	'FULL_PHOTO' => 'Xem hình ảnh gốc',
 	'ABOUT_PHOTO' => 'Giới thiệu về tấm ảnh',

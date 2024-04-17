@@ -145,6 +145,7 @@ return [
 	'REMOVE_COVER' => 'Remove Album Cover',
 	'SET_HEADER' => 'Set Album Header',
 	'REMOVE_HEADER' => 'Remove Album Header',
+	'SET_COMPACT_HEADER' => 'Use Compact Header',
 
 	'FULL_PHOTO' => '打開原圖',
 	'ABOUT_PHOTO' => '照片資訊',

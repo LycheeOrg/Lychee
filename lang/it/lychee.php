@@ -145,6 +145,7 @@ return [
 	'REMOVE_COVER' => 'Remove Album Cover',
 	'SET_HEADER' => 'Set Album Header',
 	'REMOVE_HEADER' => 'Remove Album Header',
+	'SET_COMPACT_HEADER' => 'Use Compact Header',
 
 	'FULL_PHOTO' => 'Open Original',
 	'ABOUT_PHOTO' => 'Informazioni sulla Foto',

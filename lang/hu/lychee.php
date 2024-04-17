@@ -143,6 +143,7 @@ return [
 	'REMOVE_COVER' => 'Album borítójának eltávolítása',
 	'SET_HEADER' => 'Set Album Header',
 	'REMOVE_HEADER' => 'Remove Album Header',
+	'SET_COMPACT_HEADER' => 'Use Compact Header',
 
 	'FULL_PHOTO' => 'Eredeti megnyitása',
 	'ABOUT_PHOTO' => 'A fotóról',

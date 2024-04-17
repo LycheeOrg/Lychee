@@ -8,6 +8,7 @@ use App\Enum\AspectRatioType;
 use App\Enum\SizeVariantType;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Factories\AlbumFactory;
+use App\Livewire\Components\Forms\Album\SetHeader;
 use App\Livewire\DTO\AlbumFlags;
 use App\Livewire\DTO\AlbumFormatted;
 use App\Livewire\DTO\AlbumRights;
@@ -178,11 +179,11 @@ class Album extends BaseAlbumComponent implements Reloadable
 	{
 		$headerSizeVariant = null;
 
-		if ($this->album instanceof ModelsAlbum && $this->album->header_id === 'compact') {
+		if (Configs::getValueAsBool('use_album_compact_header')) {
 			return null;
 		}
 
-		if (Configs::getValueAsBool('use_album_compact_header')) {
+		if ($this->album instanceof ModelsAlbum && $this->album->header_id === SetHeader::COMPACT_HEADER) {
 			return null;
 		}
 
