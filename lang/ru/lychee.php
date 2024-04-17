@@ -143,6 +143,9 @@ return [
 	'UNSTAR_PHOTO' => 'Снять отметку',
 	'SET_COVER' => 'Set Album Cover',
 	'REMOVE_COVER' => 'Remove Album Cover',
+	'SET_HEADER' => 'Set Album Header',
+	'REMOVE_HEADER' => 'Remove Album Header',
+	'SET_COMPACT_HEADER' => 'Use Compact Header',
 
 	'FULL_PHOTO' => 'Полный размер',
 	'ABOUT_PHOTO' => 'О фотографии',

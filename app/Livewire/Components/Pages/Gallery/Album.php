@@ -8,6 +8,7 @@ use App\Enum\AspectRatioType;
 use App\Enum\SizeVariantType;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Factories\AlbumFactory;
+use App\Livewire\Components\Forms\Album\SetHeader;
 use App\Livewire\DTO\AlbumFlags;
 use App\Livewire\DTO\AlbumFormatted;
 use App\Livewire\DTO\AlbumRights;
@@ -167,8 +168,7 @@ class Album extends BaseAlbumComponent implements Reloadable
 	}
 
 	/**
-	 * Fetch the header url
-	 * TODO: Later this can be also a field from the album and if null we apply the rdm query.
+	 * Fetch the header url.
 	 *
 	 * @return SizeVariant|null
 	 *
@@ -177,7 +177,13 @@ class Album extends BaseAlbumComponent implements Reloadable
 	 */
 	private function fetchHeaderUrl(): SizeVariant|null
 	{
+		$headerSizeVariant = null;
+
 		if (Configs::getValueAsBool('use_album_compact_header')) {
+			return null;
+		}
+
+		if ($this->album instanceof ModelsAlbum && $this->album->header_id === SetHeader::COMPACT_HEADER) {
 			return null;
 		}
 
@@ -185,22 +191,30 @@ class Album extends BaseAlbumComponent implements Reloadable
 			return null;
 		}
 
-		$medium = SizeVariant::query()
-			->where('type', '=', SizeVariantType::MEDIUM)
+		if ($this->album instanceof ModelsAlbum && $this->album->header_id !== null) {
+			$headerSizeVariant = SizeVariant::query()
+				->where('photo_id', '=', $this->album->header_id)
+				->whereIn('type', [SizeVariantType::MEDIUM, SizeVariantType::SMALL2X, SizeVariantType::SMALL])
+				->orderBy('type', 'asc')
+				->first();
+		}
+
+		if ($headerSizeVariant !== null) {
+			return $headerSizeVariant;
+		}
+
+		$photo = SizeVariant::query()
+			->select('photo_id')
 			->whereBelongsTo($this->album->photos)
 			->where('ratio', '>', 1)
+			->whereIn('type', [SizeVariantType::MEDIUM, SizeVariantType::SMALL2X, SizeVariantType::SMALL])
 			->inRandomOrder()
 			->first();
 
-		if ($medium !== null) {
-			return $medium;
-		}
-
 		return SizeVariant::query()
-			->where('type', '=', SizeVariantType::SMALL2X)
-			->whereBelongsTo($this->album->photos)
-			->where('ratio', '>', 1)
-			->inRandomOrder()
+			->where('photo_id', '=', $photo->photo_id)
+			->where('type', '>', 1)
+			->orderBy('type', 'asc')
 			->first();
 	}
 

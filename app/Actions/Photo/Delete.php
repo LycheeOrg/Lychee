@@ -6,6 +6,7 @@ use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\ModelDBException;
 use App\Image\FileDeleter;
+use App\Models\Album;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 use App\Models\SymLink;
@@ -84,6 +85,7 @@ readonly class Delete
 			throw ModelDBException::create('photos', 'deleting', $e);
 		}
 		// @codeCoverageIgnoreEnd
+		Album::query()->whereIn('header_id', $photoIDs)->update(['header_id' => null]);
 
 		return $this->fileDeleter;
 	}

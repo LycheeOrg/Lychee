@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Actions\Photo\Archive;
 use App\Actions\Photo\Delete;
 use App\Actions\Photo\Duplicate;
-use App\Actions\User\Notify;
+use App\Actions\Photo\Move;
 use App\Contracts\Exceptions\InternalLycheeException;
 use App\Contracts\Exceptions\LycheeException;
 use App\Exceptions\MediaFileOperationException;
@@ -229,28 +229,15 @@ class PhotoController extends Controller
 	 * Moves the photos to an album.
 	 *
 	 * @param MovePhotosRequest $request
+	 * @param Move              $move
 	 *
 	 * @return void
 	 *
 	 * @throws LycheeException
 	 */
-	public function setAlbum(MovePhotosRequest $request): void
+	public function setAlbum(MovePhotosRequest $request, Move $move): void
 	{
-		$notify = new Notify();
-		$album = $request->album();
-
-		/** @var Photo $photo */
-		foreach ($request->photos() as $photo) {
-			$photo->album_id = $album?->id;
-			// Avoid unnecessary DB request, when we access the album of a
-			// photo later (e.g. when a notification is sent).
-			$photo->setRelation('album', $album);
-			if ($album !== null) {
-				$photo->owner_id = $album->owner_id;
-			}
-			$photo->save();
-			$notify->do($photo);
-		}
+		$move->do($request->photos(), $request->album());
 	}
 
 	/**
