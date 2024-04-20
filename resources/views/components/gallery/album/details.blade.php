@@ -37,7 +37,7 @@
     </a>
     @endif
 </div>
-@if($this->AlbumFormatted->description !== null)
+@if($this->AlbumFormatted->description !== '')
 <div class="w-full px-7 my-4 text-justify text-text-main-200 prose prose-invert prose-sm" {{ $attributes }} >
     @markdown{{ $this->AlbumFormatted->description }}@endmarkdown
 </div>

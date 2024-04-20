@@ -32,7 +32,7 @@ class AlbumFormatted
 			$this->min_taken_at = $album->min_taken_at?->format($min_max_date_format);
 			$this->max_taken_at = $album->max_taken_at?->format($min_max_date_format);
 			$this->created_at = $album->created_at->format($create_date_format);
-			$this->description = $album->description;
+			$this->description = trim($album->description ?? '');
 		}
 		if ($album instanceof Album) {
 			$this->num_children = $album->num_children;
