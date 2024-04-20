@@ -206,25 +206,18 @@ class Album extends BaseAlbumComponent implements Reloadable
 		$photo = SizeVariant::query()
 					->select('photo_id')
 					->whereBelongsTo($this->album->photos)
-					->where('ratio', '>', 1)
+					->where('ratio', '>', 1) // ! we prefer landscape first.
+					->whereIn('type', [SizeVariantType::MEDIUM, SizeVariantType::SMALL2X, SizeVariantType::SMALL])
+					->inRandomOrder()
+					->first() ??
+				SizeVariant::query()
+					->select('photo_id')
+					->whereBelongsTo($this->album->photos)
 					->whereIn('type', [SizeVariantType::MEDIUM, SizeVariantType::SMALL2X, SizeVariantType::SMALL])
 					->inRandomOrder()
 					->first();
 
-		if ($photo === null) {
-			$photo = SizeVariant::query()
-				->select('photo_id')
-				->whereBelongsTo($this->album->photos)
-				->whereIn('type', [SizeVariantType::MEDIUM, SizeVariantType::SMALL2X, SizeVariantType::SMALL])
-				->inRandomOrder()
-				->first();
-		}
-
-		if ($photo === null) {
-			return null;
-		}
-
-		return SizeVariant::query()
+		return $photo === null ? null : SizeVariant::query()
 			->where('photo_id', '=', $photo->photo_id)
 			->where('type', '>', 1)
 			->orderBy('type', 'asc')
