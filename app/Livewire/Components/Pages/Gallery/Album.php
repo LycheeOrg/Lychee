@@ -211,7 +211,7 @@ class Album extends BaseAlbumComponent implements Reloadable
 			->inRandomOrder()
 			->first();
 
-		if (!$photo) {
+		if ($photo === null) {
 			return null;
 		}
 
