@@ -211,6 +211,10 @@ class Album extends BaseAlbumComponent implements Reloadable
 			->inRandomOrder()
 			->first();
 
+		if ($photo === null) {
+			return null;
+		}
+
 		return SizeVariant::query()
 			->where('photo_id', '=', $photo->photo_id)
 			->where('type', '>', 1)
