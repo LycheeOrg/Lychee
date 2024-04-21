@@ -38,7 +38,7 @@
     @endif
 </div>
 @if($this->AlbumFormatted->description !== '')
-<div class="w-full px-7 my-4 text-justify text-text-main-200 prose prose-invert prose-sm" {{ $attributes }} >
+<div class="w-full px-7 max-w-full my-4 text-justify text-text-main-200 prose prose-invert prose-sm" {{ $attributes }} >{{-- prose set max-width to 65 chars --}}
     @markdown{{ $this->AlbumFormatted->description }}@endmarkdown
 </div>
 @endif
