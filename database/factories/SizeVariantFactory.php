@@ -33,7 +33,7 @@ class SizeVariantFactory extends Factory
 		$hash = fake()->sha1();
 		$url = substr($hash, 0, 2) . '/' . substr($hash, 2, 2) . '/' . substr($hash, 4) . '.jpg';
 
-		return ['type' => SizeVariantType::ORIGINAL, 'short_path' => SizeVariantType::ORIGINAL->name() . '/' . $url, 'ratio' => 1.5, 'height' => self::H * 8, 'width' => self::W * 8, 'filesize' => 64 * self::FS];
+		return ['type' => SizeVariantType::ORIGINAL, 'short_path' => SizeVariantType::ORIGINAL->name() . '/' . $url, 'ratio' => 1.5, 'height' => self::H * 8, 'width' => self::W * 8, 'filesize' => 64 * self::FS, 'storage_disk' => 'images'];
 	}
 
 	/**
@@ -45,13 +45,13 @@ class SizeVariantFactory extends Factory
 		$url = substr($hash, 0, 2) . '/' . substr($hash, 2, 2) . '/' . substr($hash, 4) . '.jpg';
 
 		return $this->state(new Sequence(
-			['type' => SizeVariantType::ORIGINAL, 'short_path' => SizeVariantType::ORIGINAL->name() . '/' . $url, 'ratio' => 1.5, 'height' => self::H * 8, 'width' => self::W * 8, 'filesize' => 64 * self::FS],
-			['type' => SizeVariantType::MEDIUM2X, 'short_path' => SizeVariantType::MEDIUM2X->name() . '/' . $url, 'ratio' => 1.5, 'height' => self::H * 6, 'width' => self::W * 6, 'filesize' => 36 * self::FS],
-			['type' => SizeVariantType::MEDIUM, 'short_path' => SizeVariantType::MEDIUM->name() . '/' . $url, 'ratio' => 1.5, 'height' => self::H * 3, 'width' => self::W * 3, 'filesize' => 9 * self::FS],
-			['type' => SizeVariantType::SMALL2X, 'short_path' => SizeVariantType::SMALL2X->name() . '/' . $url, 'ratio' => 1.5, 'height' => self::H * 2, 'width' => self::W * 2, 'filesize' => 4 * self::FS],
-			['type' => SizeVariantType::SMALL, 'short_path' => SizeVariantType::SMALL->name() . '/' . $url, 'ratio' => 1.5, 'height' => self::H, 'width' => self::W, 'filesize' => self::FS],
-			['type' => SizeVariantType::THUMB2X, 'short_path' => SizeVariantType::THUMB2X->name() . '/' . $url, 'ratio' => 1.5, 'height' => 400, 'width' => 400, 'filesize' => 160_000],
-			['type' => SizeVariantType::THUMB, 'short_path' => SizeVariantType::THUMB->name() . '/' . $url, 'ratio' => 1.5, 'height' => 200, 'width' => 200, 'filesize' => 40_000],
+			['type' => SizeVariantType::ORIGINAL, 'short_path' => SizeVariantType::ORIGINAL->name() . '/' . $url, 'ratio' => 1.5, 'height' => self::H * 8, 'width' => self::W * 8, 'filesize' => 64 * self::FS, 'storage_disk' => 'images'],
+			['type' => SizeVariantType::MEDIUM2X, 'short_path' => SizeVariantType::MEDIUM2X->name() . '/' . $url, 'ratio' => 1.5, 'height' => self::H * 6, 'width' => self::W * 6, 'filesize' => 36 * self::FS, 'storage_disk' => 'images'],
+			['type' => SizeVariantType::MEDIUM, 'short_path' => SizeVariantType::MEDIUM->name() . '/' . $url, 'ratio' => 1.5, 'height' => self::H * 3, 'width' => self::W * 3, 'filesize' => 9 * self::FS, 'storage_disk' => 'images'],
+			['type' => SizeVariantType::SMALL2X, 'short_path' => SizeVariantType::SMALL2X->name() . '/' . $url, 'ratio' => 1.5, 'height' => self::H * 2, 'width' => self::W * 2, 'filesize' => 4 * self::FS, 'storage_disk' => 'images'],
+			['type' => SizeVariantType::SMALL, 'short_path' => SizeVariantType::SMALL->name() . '/' . $url, 'ratio' => 1.5, 'height' => self::H, 'width' => self::W, 'filesize' => self::FS, 'storage_disk' => 'images'],
+			['type' => SizeVariantType::THUMB2X, 'short_path' => SizeVariantType::THUMB2X->name() . '/' . $url, 'ratio' => 1.5, 'height' => 400, 'width' => 400, 'filesize' => 160_000, 'storage_disk' => 'images'],
+			['type' => SizeVariantType::THUMB, 'short_path' => SizeVariantType::THUMB->name() . '/' . $url, 'ratio' => 1.5, 'height' => 200, 'width' => 200, 'filesize' => 40_000, 'storage_disk' => 'images'],
 		));
 	}
 }

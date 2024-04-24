@@ -2,9 +2,10 @@
 
 namespace App\Console\Commands;
 
+use App\Assets\Features;
 use App\Console\Commands\Utilities\Colorize;
-use App\Contracts\Models\AbstractSizeVariantNamingStrategy;
 use App\Enum\SizeVariantType;
+use App\Enum\StorageDiskType;
 use App\Exceptions\UnexpectedException;
 use App\Models\Photo;
 use App\Models\SizeVariant;
@@ -73,11 +74,17 @@ class Ghostbuster extends Command
 			$removeDeadSymLinks = filter_var($this->option('removeDeadSymLinks'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) === true;
 			$removeZombiePhotos = filter_var($this->option('removeZombiePhotos'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) === true;
 			$dryrun = filter_var($this->option('dryrun'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) !== false;
-			$uploadDisk = AbstractSizeVariantNamingStrategy::getImageDisk();
+			$uploadDisk = Features::active('use-s3')
+				? Storage::disk(StorageDiskType::S3->value)
+				: Storage::disk(StorageDiskType::LOCAL->value);
 			$symlinkDisk = Storage::disk(SymLink::DISK_NAME);
 			$isLocalDisk = $uploadDisk->getAdapter() instanceof LocalFilesystemAdapter;
 
 			$this->line('');
+			if (!$isLocalDisk) {
+				$this->line($this->col->red('Using non-local disk to store images, USE AT YOUR OWN RISKS! This code is not battle tested.'));
+				$this->line('');
+			}
 
 			if ($removeDeadSymLinks && !$isLocalDisk) {
 				$this->line($this->col->yellow('Removal of dead symlinks requested, but filesystem does not support symlinks.'));
