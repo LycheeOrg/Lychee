@@ -6,31 +6,14 @@ use App\Contracts\Exceptions\LycheeException;
 use App\Enum\SizeVariantType;
 use App\Image\Files\FlysystemFile;
 use App\Models\Photo;
-use Illuminate\Filesystem\FilesystemAdapter;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * Interface SizeVariantNamingStrategy.
  */
 abstract class AbstractSizeVariantNamingStrategy
 {
-	/**
-	 * The name of the Flysystem disk where images are stored.
-	 */
-	public const IMAGE_DISK_NAME = 'images';
-
 	protected string $extension = '';
 	protected ?Photo $photo = null;
-
-	/**
-	 * Returns the disk on which the size variants are put.
-	 *
-	 * @return FilesystemAdapter
-	 */
-	public static function getImageDisk(): FilesystemAdapter
-	{
-		return Storage::disk(self::IMAGE_DISK_NAME);
-	}
 
 	/**
 	 * Sets the extension to be used for the size variants.
