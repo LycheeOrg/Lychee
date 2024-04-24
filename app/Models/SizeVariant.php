@@ -108,7 +108,6 @@ class SizeVariant extends Model
 		'photo_id', // see above
 		'short_path',  // serialize url instead
 		'sym_links', // don't serialize relation of symlinks
-		'',
 	];
 
 	/**
