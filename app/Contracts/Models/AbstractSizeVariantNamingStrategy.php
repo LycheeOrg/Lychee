@@ -12,9 +12,6 @@ use App\Models\Photo;
  */
 abstract class AbstractSizeVariantNamingStrategy
 {
-	/**
-	 * The name of the Flysystem disk where images are stored.
-	 */
 	protected string $extension = '';
 	protected ?Photo $photo = null;
 
