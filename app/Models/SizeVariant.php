@@ -214,7 +214,6 @@ class SizeVariant extends Model
 
 		// Return the public URL in case the S3 bucket is set to public, otherwise generate a temporary URL
 		$visibility = config('filesystems.disks.s3.visibility', 'private');
-		// $visibility = $imageDisk->getConfig()['visibility'] ?? 'private';
 		if ($visibility === 'public') {
 			return $imageDisk->url($this->short_path);
 		}
