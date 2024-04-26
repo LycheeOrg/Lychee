@@ -106,16 +106,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 		'may_edit_own_settings' => 'boolean',
 	];
 
-	protected $hidden = [
-		'amazon_id',
-		'apple_id',
-		'facebook_id',
-		'github_id',
-		'google_id',
-		'mastodon_id',
-		'microsoft_id',
-		'nextcloud_id',
-	];
+	protected $hidden = [];
 
 	protected function _toArray(): array
 	{

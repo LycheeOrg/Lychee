@@ -143,6 +143,9 @@ return [
 	'UNSTAR_PHOTO' => '取消星标',
 	'SET_COVER' => '设置为相册封面',
 	'REMOVE_COVER' => '取消设置为相册封面',
+	'SET_HEADER' => 'Set Album Header',
+	'REMOVE_HEADER' => 'Remove Album Header',
+	'SET_COMPACT_HEADER' => 'Use Compact Header',
 
 	'FULL_PHOTO' => '打开原图',
 	'ABOUT_PHOTO' => '关于照片',

@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Components\Forms\Photo;
 
-use App\Actions\User\Notify as UserNotify;
+use App\Actions\Photo\Move as PhotoMove;
 use App\Contracts\Livewire\Params;
 use App\Enum\SmartAlbumType;
 use App\Http\RuleSets\Photo\MovePhotosRuleSet;
@@ -21,6 +21,7 @@ class Move extends Component
 {
 	use InteractWithModal;
 	use AuthorizesRequests;
+	private PhotoMove $move;
 
 	#[Locked] public string $parent_id;
 	/** @var array<int,string> */
@@ -30,6 +31,16 @@ class Move extends Component
 	// Destination
 	#[Locked] public ?string $albumID = null;
 	#[Locked] public ?string $albumTitle = null;
+	/**
+	 * Initialize private properties of component.
+	 *
+	 * @return void
+	 */
+	public function boot(): void
+	{
+		$this->move = new PhotoMove();
+	}
+
 	/**
 	 * This is the equivalent of the constructor for Livewire Components.
 	 *
@@ -77,20 +88,7 @@ class Move extends Component
 
 		$photos = Photo::query()->findOrFail($this->photoIDs);
 
-		$notify = new UserNotify();
-
-		/** @var Photo $photo */
-		foreach ($photos as $photo) {
-			$photo->album_id = $album?->id;
-			// Avoid unnecessary DB request, when we access the album of a
-			// photo later (e.g. when a notification is sent).
-			$photo->setRelation('album', $album);
-			if ($album !== null) {
-				$photo->owner_id = $album->owner_id;
-			}
-			$photo->save();
-			$notify->do($photo);
-		}
+		$this->move->do($photos, $album);
 
 		// We stay in current album.
 		$this->redirect(route('livewire-gallery-album', ['albumId' => $this->parent_id]), true);

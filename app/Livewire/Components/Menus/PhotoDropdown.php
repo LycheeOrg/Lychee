@@ -29,6 +29,7 @@ class PhotoDropdown extends Component
 	/** @var array{albumID:?string,photoID:string} */
 	#[Locked] public array $params;
 	#[Locked] public bool $is_starred;
+	#[Locked] public bool $is_header;
 	/**
 	 * mount info and load star condition.
 	 *
@@ -38,8 +39,14 @@ class PhotoDropdown extends Component
 	 */
 	public function mount(array $params): void
 	{
+		/** @var Album $album */
+		$album = Album::query()->find($params[Params::ALBUM_ID]);
+
 		$this->params = $params;
 		$this->is_starred = Photo::query()->findOrFail($params[Params::PHOTO_ID])->is_starred;
+		if ($album !== null) {
+			$this->is_header = $album->header_id === $params[Params::PHOTO_ID];
+		}
 	}
 
 	/**
@@ -81,6 +88,18 @@ class PhotoDropdown extends Component
 
 		Gate::authorize(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $album]);
 		$album->cover_id = $album->cover_id === $this->params[Params::PHOTO_ID] ? null : $this->params[Params::PHOTO_ID];
+		$album->save();
+		$this->dispatch('reloadPage')->to(GalleryAlbum::class);
+		$this->closeContextMenu();
+	}
+
+	public function setAsHeader(): void
+	{
+		/** @var Album $album */
+		$album = Album::query()->findOrFail($this->params[Params::ALBUM_ID]);
+
+		Gate::authorize(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $album]);
+		$album->header_id = $album->header_id === $this->params[Params::PHOTO_ID] ? null : $this->params[Params::PHOTO_ID];
 		$album->save();
 		$this->dispatch('reloadPage')->to(GalleryAlbum::class);
 		$this->closeContextMenu();

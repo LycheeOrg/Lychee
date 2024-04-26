@@ -21,6 +21,7 @@
 					"fa-brands fa-mastodon" => $provider === 'mastodon',
 					"fa-brands fa-microsoft" => $provider === 'microsoft',
 					"fa-solid fa-cloud" => $provider === 'nextcloud',
+					"fa-solid fa-key" => $provider === 'keycloak',
 					])></i>
 				</a>
 			@endforeach

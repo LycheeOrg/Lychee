@@ -143,6 +143,9 @@ return [
 	'UNSTAR_PHOTO' => 'Cofnij oznaczenie',
 	'SET_COVER' => 'Ustaw jako okładkę albumu',
 	'REMOVE_COVER' => 'Usuń okładkę albumu',
+	'SET_HEADER' => 'Set Album Header',
+	'REMOVE_HEADER' => 'Remove Album Header',
+	'SET_COMPACT_HEADER' => 'Use Compact Header',
 
 	'FULL_PHOTO' => 'Otwórz oryginalne',
 	'ABOUT_PHOTO' => 'Informacje o zdjęciu',

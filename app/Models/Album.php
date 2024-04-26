@@ -43,6 +43,8 @@ use Kalnoy\Nestedset\NodeTrait;
  * @property LicenseType           $license
  * @property string|null           $cover_id
  * @property Photo|null            $cover
+ * @property string|null           $header_id
+ * @property Photo|null            $header
  * @property string|null           $track_short_path
  * @property string|null           $track_url
  * @property AspectRatioType|null  $album_thumb_aspect_ratio
@@ -144,6 +146,7 @@ class Album extends BaseAlbum implements Node
 		'parent_id' => null,
 		'license' => 'none',
 		'cover_id' => null,
+		'header_id' => null,
 		'album_thumb_aspect_ratio' => null,
 		'_lft' => null,
 		'_rgt' => null,
@@ -235,6 +238,16 @@ class Album extends BaseAlbum implements Node
 	public function cover(): HasOne
 	{
 		return $this->hasOne(Photo::class, 'id', 'cover_id');
+	}
+
+	/**
+	 * Return the relationship between an album and its header.
+	 *
+	 * @return HasOne
+	 */
+	public function header(): HasOne
+	{
+		return $this->hasOne(Photo::class, 'id', 'header_id');
 	}
 
 	/**

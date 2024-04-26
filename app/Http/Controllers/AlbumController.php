@@ -27,6 +27,7 @@ use App\Http\Requests\Album\MergeAlbumsRequest;
 use App\Http\Requests\Album\MoveAlbumsRequest;
 use App\Http\Requests\Album\SetAlbumCoverRequest;
 use App\Http\Requests\Album\SetAlbumDescriptionRequest;
+use App\Http\Requests\Album\SetAlbumHeaderRequest;
 use App\Http\Requests\Album\SetAlbumLicenseRequest;
 use App\Http\Requests\Album\SetAlbumNSFWRequest;
 use App\Http\Requests\Album\SetAlbumProtectionPolicyRequest;
@@ -213,6 +214,19 @@ class AlbumController extends Controller
 	public function setCover(SetAlbumCoverRequest $request): void
 	{
 		$request->album()->cover_id = $request->photo()?->id;
+		$request->album()->save();
+	}
+
+	/**
+	 * Set header image of the album.
+	 *
+	 * @param SetAlbumHeaderRequest $request
+	 *
+	 * @return void
+	 */
+	public function setHeader(SetAlbumHeaderRequest $request): void
+	{
+		$request->album()->header_id = $request->photo()?->id;
 		$request->album()->save();
 	}
 
