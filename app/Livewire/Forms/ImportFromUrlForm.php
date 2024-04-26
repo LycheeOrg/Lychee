@@ -40,7 +40,7 @@ class ImportFromUrlForm extends Form
 	 */
 	public function prepare()
 	{
-		$this->urls = array_values(array_filter(explode("\n", $this->urlArea)));
+		$this->urls = array_values(array_filter(explode("\n", $this->urlArea), fn ($elem) => $elem !== ''));
 
 		// The replacement below looks suspicious.
 		// If it was really necessary, then there would be much more special

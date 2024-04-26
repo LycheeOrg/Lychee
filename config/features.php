@@ -50,4 +50,13 @@ return [
 	| Use pipeline design pattern instead of hardcoded Strategies.
 	*/
 	'create-photo-via-pipes' => (bool) env('PHOTO_PIPES', false),
+
+	/*
+	|--------------------------------------------------------------------------
+	| Use S3 buckets instead of local hosting.
+	|--------------------------------------------------------------------------
+	|
+	| Put images on AWS instead of locally to save space.
+	*/
+	'use-s3' => (env('AWS_ACCESS_KEY_ID', '') !== '') && (bool) env('S3_ENABLED', false),
 ];

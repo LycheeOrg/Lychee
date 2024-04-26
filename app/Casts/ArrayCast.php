@@ -36,7 +36,7 @@ class ArrayCast implements CastsAttributes
 
 		$arr = !is_array($value) ? [] : array_values(array_filter(
 			$value,
-			fn ($elem) => ($elem !== null && $elem !== '' && !str_contains($elem, ','))
+			fn ($elem) => ($elem !== null && $elem !== '' && !str_contains($elem, ',')),
 		));
 
 		return [
