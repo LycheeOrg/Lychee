@@ -81,7 +81,9 @@ return [
 			'engine' => 'InnoDB ROW_FORMAT=DYNAMIC',
 			'options' => extension_loaded('pdo_mysql') ? array_filter([
 				PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
-			]) : [],
+			],
+				fn ($elem) => ($elem !== null && $elem !== ''),
+			) : [],
 			// Ensure a deterministic SQL mode for MySQL/MariaDB.
 			// Don't rely on accidentally correct, system-wide settings of the
 			// DB service.
