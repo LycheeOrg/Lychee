@@ -1,7 +1,7 @@
 <div id="lychee_sidebar"
     x-data="photoSidebarPanel()"
     x-on:photo-updated.window="refreshSidebar($store.photo)"
-    class="border-t border-solid border-primary-500 text-text-main-0 w-[360px] h-full bg-bg-800 pr-4 break-words overflow-x-clip overflow-y-scroll">
+    class="border-t border-solid border-primary-500 text-text-main-0 w-[360px] h-full bg-bg-800 pr-4 break-words">
     <div class="grid grid-cols-[auto minmax(0, 1fr)] mt-8">
         <h1 class="col-span-2 text-center text-lg font-bold my-4">
             {{ __('lychee.ALBUM_ABOUT') }}
