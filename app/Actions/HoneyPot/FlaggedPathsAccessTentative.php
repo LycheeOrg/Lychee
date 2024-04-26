@@ -23,7 +23,7 @@ class FlaggedPathsAccessTentative extends BasePipe
 		foreach ($honeypot_xpaths_array as $xpaths) {
 			foreach ($xpaths['prefix'] as $prefix) {
 				foreach ($xpaths['suffix'] as $suffix) {
-					$honeypot_paths_array[] = $prefix . '.' . $suffix;
+					$honeypot_paths_array[] = $prefix . $suffix;
 				}
 			}
 		}
