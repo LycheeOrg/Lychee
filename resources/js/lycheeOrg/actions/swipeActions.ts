@@ -14,7 +14,9 @@ export default class SwipeActions {
 				Math.max(
 					25,
 					Math.floor(
-						0.15 * (type === "x" ? window.innerWidth || document.body.clientWidth : window.innerHeight || document.body.clientHeight),
+						type === "x"
+							? 0.25 * (window.innerWidth || document.body.clientWidth)
+							: 0.5 * (window.innerHeight || document.body.clientHeight),
 					),
 				),
 			// Minimum velocity the gesture must be moving when the gesture ends to be

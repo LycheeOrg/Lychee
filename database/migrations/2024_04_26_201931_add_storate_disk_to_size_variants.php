@@ -11,9 +11,11 @@ return new class() extends Migration {
 
 	public function up(): void
 	{
-		Schema::table(self::TABLE_SV, function (Blueprint $table) {
-			$table->string(self::COLUMN)->default(self::DEFAULT);
-		});
+		if (!Schema::hasColumn(self::TABLE_SV, self::COLUMN)) {
+			Schema::table(self::TABLE_SV, function (Blueprint $table) {
+				$table->string(self::COLUMN)->default(self::DEFAULT);
+			});
+		}
 	}
 
 	public function down(): void
