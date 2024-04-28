@@ -13,7 +13,7 @@ return new class() extends Migration {
 	 */
 	public function up(): void
 	{
-		Schema::create(self::TABLE, function (Blueprint $table) {
+		Schema::table(self::TABLE, function (Blueprint $table) {
 			$table->string(self::COLUMN, 300)->nullable()->default(null);
 		});
 	}
