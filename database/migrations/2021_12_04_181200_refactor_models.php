@@ -515,7 +515,6 @@ return new class() extends Migration {
 			$table->string('password', 100)->nullable()->default(null);
 			$table->string('sorting_col', 30)->nullable()->default(null);
 			$table->string('sorting_order', 4)->nullable()->default(null);
-			$table->string('copyright', 300)->nullable()->default(null);
 			// Indices and constraint definitions
 			$table->primary('id');
 			$table->unique('legacy_id');
