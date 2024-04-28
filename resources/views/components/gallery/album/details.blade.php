@@ -8,6 +8,11 @@
             {{ __('lychee.ALBUM_CREATED') }} {{ $this->AlbumFormatted->created_at }}
         </span>
         @endif
+        @if($this->AlbumFormatted->copyright !== null && $this->AlbumFormatted->copyright !== '')
+        <span class="block text-text-main-200 text-sm">
+            {{ $this->AlbumFormatted->copyright }}
+        </span>
+        @endif
         @if($this->num_albums > 0)
             <span class="block text-text-main-200 text-sm">
                 {{ $this->num_albums }} {{ __('lychee.ALBUM_SUBALBUMS') }}
