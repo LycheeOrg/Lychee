@@ -131,6 +131,7 @@ export type Album = {
 	cover_id: string | null;
 	thumb: Thumb | null;
 	owner_name?: string;
+	copyright: string | null;
 	is_nsfw: boolean;
 	rights: AlbumRightsDTO;
 	policy: AlbumProtectionPolicy;

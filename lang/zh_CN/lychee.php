@@ -157,6 +157,8 @@ return [
 	'ALBUM_ABOUT' => '关于',
 	'ALBUM_BASICS' => '基本信息',
 	'ALBUM_TITLE' => '标题',
+	'ALBUM_COPYRIGHT' => 'Copyright',
+	'ALBUM_SET_COPYRIGHT' => 'Set copyright',
 	'ALBUM_NEW_TITLE' => '输入新的相册标题：',
 	'ALBUMS_NEW_TITLE' => '设置标题为 %d 已选择的相册：',
 	'ALBUM_SET_TITLE' => '设置标题',

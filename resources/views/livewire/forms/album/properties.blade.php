@@ -26,6 +26,11 @@
             <span class="font-bold">{{ __('lychee.ALBUM_SET_LICENSE') }}</span>
             <x-forms.dropdown class="mx-2" :options="$this->licenses" id="license_dialog_select" wire:model='license'/>
         </div>
+        <div class="mb-4 flex">
+            <span class="inline-block font-bold shrink-0 pr-2">{{ __('lychee.ALBUM_SET_COPYRIGHT') }}:</span>
+            <x-forms.inputs.text class="-mt-1 w-full" wire:model='copyright' id="copyright" />
+            <x-forms.error-message field='copyright' />
+        </div>
         <div class="h-10">
             <span class="font-bold">Set album thumbs aspect ratio</span>
             <x-forms.dropdown class="mx-2" :options="$this->aspectRatios" id="aspect_ratio_dialog_select" wire:model='album_aspect_ratio'/>

@@ -155,6 +155,8 @@ return [
 	'ALBUM_ABOUT' => 'Névjegy',
 	'ALBUM_BASICS' => 'Alapok',
 	'ALBUM_TITLE' => 'Cím',
+	'ALBUM_COPYRIGHT' => 'Copyright',
+	'ALBUM_SET_COPYRIGHT' => 'Set copyright',
 	'ALBUM_NEW_TITLE' => 'Adjon meg egy új címet ennek az albumnak:',
 	'ALBUMS_NEW_TITLE' => 'Adjon meg címet az összes %d kiválasztott albumnak:',
 	'ALBUM_SET_TITLE' => 'Cím beállítása',

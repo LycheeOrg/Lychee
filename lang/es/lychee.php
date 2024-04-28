@@ -157,6 +157,8 @@ return [
 	'ALBUM_ABOUT' => 'Acerca de',
 	'ALBUM_BASICS' => 'Básico',
 	'ALBUM_TITLE' => 'Título',
+	'ALBUM_COPYRIGHT' => 'Copyright',
+	'ALBUM_SET_COPYRIGHT' => 'Set copyright',
 	'ALBUM_NEW_TITLE' => 'Ingrese un nuevo título para este álbum:',
 	'ALBUMS_NEW_TITLE' => 'Ingrese un título para todos %d álbumes seleccionados:',
 	'ALBUM_SET_TITLE' => 'Establecer Título',

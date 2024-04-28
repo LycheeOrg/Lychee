@@ -157,6 +157,8 @@ return [
 	'ALBUM_ABOUT' => 'Om',
 	'ALBUM_BASICS' => 'Grunnleggende',
 	'ALBUM_TITLE' => 'Tittel',
+	'ALBUM_COPYRIGHT' => 'Copyright',
+	'ALBUM_SET_COPYRIGHT' => 'Set copyright',
 	'ALBUM_NEW_TITLE' => 'Legg inn en ny tittel for Albumet:',
 	'ALBUMS_NEW_TITLE' => 'Legg inn en ny tittel for %d valgte album:',
 	'ALBUM_SET_TITLE' => 'Lagre Tittel',

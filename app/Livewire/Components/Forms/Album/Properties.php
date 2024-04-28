@@ -20,6 +20,7 @@ use App\Livewire\Traits\UseValidator;
 use App\Models\Album as ModelsAlbum;
 use App\Models\Extensions\BaseAlbum;
 use App\Policies\AlbumPolicy;
+use App\Rules\CopyrightRule;
 use App\Rules\TitleRule;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -44,6 +45,7 @@ class Properties extends Component
 	public string $album_sorting_order = ''; // ! wired
 	public string $album_aspect_ratio = ''; // ! wired
 	public string $license = 'none'; // ! wired
+	public string $copyright = ''; // ! wired
 
 	/**
 	 * This is the equivalent of the constructor for Livewire Components.
@@ -63,6 +65,7 @@ class Properties extends Component
 		$this->description = $album->description ?? '';
 		$this->photo_sorting_column = $album->photo_sorting?->column->value ?? '';
 		$this->photo_sorting_order = $album->photo_sorting?->order->value ?? '';
+		$this->copyright = $album->copyright ?? '';
 		if ($this->is_model_album) {
 			/** @var ModelsAlbum $album */
 			$this->license = $album->license->value;
@@ -94,6 +97,7 @@ class Properties extends Component
 			...SetPhotoSortingRuleSet::rules(),
 			...SetAlbumSortingRuleSet::rules(),
 			RequestAttribute::ALBUM_ASPECT_RATIO_ATTRIBUTE => ['present', 'nullable', new Enum(AspectRatioType::class)],
+			RequestAttribute::COPYRIGHT_ATTRIBUTE => ['present', 'nullable', new CopyrightRule()],
 		];
 
 		if (!$this->areValid($rules)) {
@@ -106,11 +110,16 @@ class Properties extends Component
 		$baseAlbum->title = $this->title;
 		$baseAlbum->description = $this->description;
 
+		$this->copyright = trim($this->copyright);
+
 		// Not super pretty but whatever.
 		$column = ColumnSortingPhotoType::tryFrom($this->photo_sorting_column);
 		$order = OrderSortingType::tryFrom($this->photo_sorting_order);
 		$photoSortingCriterion = $column === null ? null : new PhotoSortingCriterion($column->toColumnSortingType(), $order);
 		$baseAlbum->photo_sorting = $photoSortingCriterion;
+
+		// If left empty, we set to null
+		$baseAlbum->copyright = $this->copyright === '' ? null : $this->copyright;
 
 		if ($this->is_model_album) {
 			/** @var ModelsAlbum $baseAlbum */

@@ -157,6 +157,8 @@ return [
 	'ALBUM_ABOUT' => 'Giới thiệu',
 	'ALBUM_BASICS' => 'Những phần cơ bản',
 	'ALBUM_TITLE' => 'Tên album',
+	'ALBUM_COPYRIGHT' => 'Copyright',
+	'ALBUM_SET_COPYRIGHT' => 'Set copyright',
 	'ALBUM_NEW_TITLE' => 'Đặt tên mới cho album này:',
 	'ALBUMS_NEW_TITLE' => 'Đặt tên cho tất cả %d những album được chọn:',
 	'ALBUM_SET_TITLE' => 'Đặt tên',

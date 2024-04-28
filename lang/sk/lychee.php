@@ -157,6 +157,8 @@ return [
 	'ALBUM_ABOUT' => 'O albume',
 	'ALBUM_BASICS' => 'Základné informácie',
 	'ALBUM_TITLE' => 'Názov',
+	'ALBUM_COPYRIGHT' => 'Copyright',
+	'ALBUM_SET_COPYRIGHT' => 'Set copyright',
 	'ALBUM_NEW_TITLE' => 'Zadajte nový názov pre tento album:',
 	'ALBUMS_NEW_TITLE' => 'Zadajte názov pre všetky %d vybrané albumy:',
 	'ALBUM_SET_TITLE' => 'Názov uložiť',

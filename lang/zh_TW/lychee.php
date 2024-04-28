@@ -157,6 +157,8 @@ return [
 	'ALBUM_ABOUT' => '關於',
 	'ALBUM_BASICS' => '基本資訊',
 	'ALBUM_TITLE' => '標題',
+	'ALBUM_COPYRIGHT' => 'Copyright',
+	'ALBUM_SET_COPYRIGHT' => 'Set copyright',
 	'ALBUM_NEW_TITLE' => '輸入新的相簿標題：',
 	'ALBUMS_NEW_TITLE' => '設定標題為 %d 已選擇的所有相簿：',
 	'ALBUM_SET_TITLE' => '設定標題',

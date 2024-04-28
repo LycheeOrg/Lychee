@@ -21,6 +21,7 @@ class AlbumFormatted
 	public bool $can_download;
 	public ?string $created_at = null;
 	public ?string $description = null;
+	public ?string $copyright = null;
 
 	public function __construct(AbstractAlbum $album, ?string $url)
 	{
@@ -33,6 +34,7 @@ class AlbumFormatted
 			$this->max_taken_at = $album->max_taken_at?->format($min_max_date_format);
 			$this->created_at = $album->created_at->format($create_date_format);
 			$this->description = trim($album->description ?? '');
+			$this->copyright = $album->copyright;
 		}
 		if ($album instanceof Album) {
 			$this->num_children = $album->num_children;
