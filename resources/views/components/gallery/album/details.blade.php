@@ -10,7 +10,7 @@
         @endif
         @if($this->AlbumFormatted->copyright !== null && $this->AlbumFormatted->copyright !== '')
         <span class="block text-text-main-200 text-sm">
-            {{ $this->AlbumFormatted->copyright }}
+            {{ __('lychee.ALBUM_COPYRIGHT') }} {{ $this->AlbumFormatted->copyright }}
         </span>
         @endif
         @if($this->num_albums > 0)

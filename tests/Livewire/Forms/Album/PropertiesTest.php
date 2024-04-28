@@ -13,6 +13,7 @@
 namespace Tests\Livewire\Forms\Album;
 
 use App\Livewire\Components\Forms\Album\Properties;
+use App\Models\Album;
 use Livewire\Livewire;
 use Tests\Livewire\Base\BaseLivewireTest;
 
@@ -39,5 +40,30 @@ class PropertiesTest extends BaseLivewireTest
 			->call('submit')
 			->assertOk()
 			->assertNotDispatched('notify', self::notifySuccess());
+	}
+
+	public function testSetCopyright(): void
+	{
+		Livewire::actingAs($this->admin)->test(Properties::class, ['album' => $this->album1])
+			->assertOk()
+			->assertViewIs('livewire.forms.album.properties')
+			->set('copyright', 'something')
+			->call('submit')
+			->assertOk()
+			->assertDispatched('notify', self::notifySuccess());
+
+		$copyright = Album::findOrFail($this->album1->id)->copyright;
+		$this->assertEquals('something', $copyright);
+
+		Livewire::actingAs($this->admin)->test(Properties::class, ['album' => $this->album1])
+			->assertOk()
+			->assertViewIs('livewire.forms.album.properties')
+			->set('copyright', '')
+			->call('submit')
+			->assertOk()
+			->assertDispatched('notify', self::notifySuccess());
+
+		$copyright = Album::findOrFail($this->album1->id)->copyright;
+		$this->assertEquals(null, $copyright);
 	}
 }

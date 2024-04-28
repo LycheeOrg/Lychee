@@ -6,6 +6,6 @@ class CopyrightRule extends StringRule
 {
 	public function __construct()
 	{
-		parent::__construct(false, 300);
+		parent::__construct(true, 300);
 	}
 }
