@@ -3,6 +3,12 @@
 namespace App\Models;
 
 use App\Actions\Album\Delete;
+use App\DTO\AlbumSortingCriterion;
+use App\Enum\AspectRatioType;
+use App\Enum\ColumnSortingType;
+use App\Enum\LicenseType;
+use App\Enum\OrderSortingType;
+use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
@@ -14,6 +20,7 @@ use App\Relations\HasManyChildAlbums;
 use App\Relations\HasManyChildPhotos;
 use App\Relations\HasManyPhotosRecursively;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Http\UploadedFile;
@@ -30,14 +37,17 @@ use Kalnoy\Nestedset\NodeTrait;
  * @property string|null           $parent_id
  * @property Album|null            $parent
  * @property Collection<int,Album> $children
- * @property int                   $num_children     The number of children.
+ * @property int                   $num_children             The number of children.
  * @property Collection<int,Photo> $all_photos
- * @property int                   $num_photos       The number of photos in this album (excluding photos in subalbums).
- * @property string                $license
+ * @property int                   $num_photos               The number of photos in this album (excluding photos in subalbums).
+ * @property LicenseType           $license
  * @property string|null           $cover_id
  * @property Photo|null            $cover
+ * @property string|null           $header_id
+ * @property Photo|null            $header
  * @property string|null           $track_short_path
  * @property string|null           $track_url
+ * @property AspectRatioType|null  $album_thumb_aspect_ratio
  * @property int                   $_lft
  * @property int                   $_rgt
  * @property BaseAlbumImpl         $base_class
@@ -118,6 +128,7 @@ class Album extends BaseAlbum implements Node
 {
 	use NodeTrait;
 	use ToArrayThrowsNotImplemented;
+	use HasFactory;
 
 	/**
 	 * The model's attributes.
@@ -135,8 +146,12 @@ class Album extends BaseAlbum implements Node
 		'parent_id' => null,
 		'license' => 'none',
 		'cover_id' => null,
+		'header_id' => null,
+		'album_thumb_aspect_ratio' => null,
 		'_lft' => null,
 		'_rgt' => null,
+		'album_sorting_col' => null,
+		'album_sorting_order' => null,
 	];
 
 	/**
@@ -147,6 +162,7 @@ class Album extends BaseAlbum implements Node
 		'max_taken_at' => 'datetime',
 		'num_children' => 'integer',
 		'num_photos' => 'integer',
+		'album_thumb_aspect_ratio' => AspectRatioType::class,
 		'_lft' => 'integer',
 		'_rgt' => 'integer',
 	];
@@ -155,6 +171,11 @@ class Album extends BaseAlbum implements Node
 	 * The relationships that should always be eagerly loaded by default.
 	 */
 	protected $with = ['cover', 'cover.size_variants', 'thumb'];
+
+	protected function _toArray(): array
+	{
+		return parent::toArray();
+	}
 
 	/**
 	 * Return the relationship between this album and photos which are
@@ -219,13 +240,32 @@ class Album extends BaseAlbum implements Node
 		return $this->hasOne(Photo::class, 'id', 'cover_id');
 	}
 
-	protected function getLicenseAttribute(string $value): string
+	/**
+	 * Return the relationship between an album and its header.
+	 *
+	 * @return HasOne
+	 */
+	public function header(): HasOne
+	{
+		return $this->hasOne(Photo::class, 'id', 'header_id');
+	}
+
+	/**
+	 * Return the License used by the album.
+	 *
+	 * @param string $value
+	 *
+	 * @return LicenseType
+	 *
+	 * @throws ConfigurationKeyMissingException
+	 */
+	protected function getLicenseAttribute(string $value): LicenseType
 	{
 		if ($value === 'none') {
-			return Configs::getValueAsString('default_license');
+			return Configs::getValueAsEnum('default_license', LicenseType::class);
 		}
 
-		return $value;
+		return LicenseType::from($value);
 	}
 
 	/**
@@ -316,6 +356,28 @@ class Album extends BaseAlbum implements Node
 	}
 
 	/**
+	 * Defines accessor for the Aspect Ratio.
+	 *
+	 * @return AspectRatioType|null
+	 */
+	protected function getAlbumThumbAspectRatioAttribute(): ?AspectRatioType
+	{
+		return AspectRatioType::tryFrom($this->attributes['album_thumb_aspect_ratio']);
+	}
+
+	/**
+	 * Defines setter for Aspect Ratio.
+	 *
+	 * @param AspectRatioType|null $aspectRatio
+	 *
+	 * @return void
+	 */
+	protected function setAlbumThumbAspectRatioAttribute(?AspectRatioType $aspectRatio): void
+	{
+		$this->attributes['album_thumb_aspect_ratio'] = $aspectRatio?->value;
+	}
+
+	/**
 	 * Accessor for the "virtual" attribute {@link Album::$track_url}.
 	 *
 	 * This is a convenient method which wraps
@@ -347,9 +409,9 @@ class Album extends BaseAlbum implements Node
 				Storage::delete($this->track_short_path);
 			}
 
-			$new_track_id = strtr(base64_encode(random_bytes(18)), '+/', '-_');
-			Storage::putFileAs('tracks/', $file, "$new_track_id.xml");
-			$this->track_short_path = "tracks/$new_track_id.xml";
+			$new_track_name = strtr(base64_encode(random_bytes(18)), '+/', '-_') . '.xml';
+			Storage::putFileAs('tracks/', $file, $new_track_name);
+			$this->track_short_path = 'tracks/' . $new_track_name;
 			$this->save();
 		} catch (ModelDBException $e) {
 			throw $e;
@@ -373,5 +435,23 @@ class Album extends BaseAlbum implements Node
 		Storage::delete($this->track_short_path);
 		$this->track_short_path = null;
 		$this->save();
+	}
+
+	protected function getAlbumSortingAttribute(): ?AlbumSortingCriterion
+	{
+		$sortingColumn = $this->attributes['album_sorting_col'];
+		$sortingOrder = $this->attributes['album_sorting_order'];
+
+		return ($sortingColumn === null || $sortingOrder === null) ?
+			null :
+			new AlbumSortingCriterion(
+				ColumnSortingType::from($sortingColumn),
+				OrderSortingType::from($sortingOrder));
+	}
+
+	protected function setAlbumSortingAttribute(?AlbumSortingCriterion $sorting): void
+	{
+		$this->attributes['album_sorting_col'] = $sorting?->column->value;
+		$this->attributes['album_sorting_order'] = $sorting?->order->value;
 	}
 }

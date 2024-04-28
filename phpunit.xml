@@ -9,7 +9,6 @@
   <testsuites>
     <testsuite name="Feature">
       <directory suffix="Test.php">./tests/Feature</directory>
-      <directory suffix="Test.php">./tests/Feature</directory>
       <exclude>./tests/Feature/Base/BasePhotoTest.php</exclude>
       <exclude>./tests/Feature/Base/BasePhotosRotateTest.php</exclude>
       <exclude>./tests/Feature/Base/BaseSharingTest.php</exclude>
@@ -20,6 +19,10 @@
       <exclude>./tests/Feature/LibUnitTests/SharingUnitTest.php</exclude>
       <exclude>./tests/Feature/LibUnitTests/UsersUnitTest.php</exclude>
     </testsuite>
+    <testsuite name="Livewire">
+      <directory suffix="Test.php">./tests/Livewire</directory>
+      <exclude>./tests/Livewire/Base/BaseLivewireTest.php</exclude>
+    </testsuite>
   </testsuites>
   <extensions>
     <bootstrap class="Tests\BootExtension"/>
@@ -28,6 +31,7 @@
   <php>
     <env name="APP_ENV" value="testing"/>
     <env name="DB_LOG_SQL" value="true"/>
+    <env name="DB_LOG_SQL_EXPLAIN" value="true"/>
     <env name="BCRYPT_ROUNDS" value="4"/>
     <env name="CACHE_DRIVER" value="array"/>
     <env name="SESSION_DRIVER" value="array"/>

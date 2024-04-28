@@ -7,8 +7,14 @@ use App\Contracts\DiagnosticPipe;
 use App\Facades\Helpers;
 use App\Models\Configs;
 
+/**
+ * Info on what image processing we have available.
+ */
 class ExtensionsInfo implements DiagnosticPipe
 {
+	/**
+	 * {@inheritDoc}
+	 */
 	public function handle(array &$data, \Closure $next): array
 	{
 		// Load settings
@@ -26,7 +32,7 @@ class ExtensionsInfo implements DiagnosticPipe
 		if (!isset($imagickVersion, $imagickVersion['versionNumber'])) {
 			// @codeCoverageIgnoreStart
 			$imagickVersion = '-';
-			// @codeCoverageIgnoreEnd
+		// @codeCoverageIgnoreEnd
 		} else {
 			$imagickVersion = $imagickVersion['versionNumber'];
 		}

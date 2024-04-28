@@ -6,22 +6,26 @@ use App\Contracts\DiagnosticPipe;
 use App\Metadata\Versions\FileVersion;
 use App\Metadata\Versions\InstalledVersion;
 
+/**
+ * Just checking that the Database or the files are in the correct version.
+ */
 class MigrationCheck implements DiagnosticPipe
 {
 	/**
-	 * @param array<int,string> $data list of error messages
-	 * @param \Closure(array<int,string> $data): array<int,string> $next
-	 *
-	 * @return array<int,string>
+	 * {@inheritDoc}
 	 */
 	public function handle(array &$data, \Closure $next): array
 	{
 		if (!self::isUpToDate()) {
+			// @codeCoverageIgnoreStart
 			$data[] = 'Error: Database is behind file version. Please apply the migrations.';
+			// @codeCoverageIgnoreEnd
 		}
 
 		if ($this->isInFuture()) {
+			// @codeCoverageIgnoreStart
 			$data[] = 'Warning: Database is in advance of file version. Please check your installation.';
+			// @codeCoverageIgnoreEnd
 		}
 
 		return $next($data);

@@ -31,7 +31,7 @@ class CommandVideoDataTest extends BasePhotoTest
 		));
 
 		// Remove the size variant "thumb" from disk and from DB
-		\Safe\unlink(public_path($photo1->size_variants->thumb->url));
+		\Safe\unlink(public_path($this->dropUrlPrefix($photo1->size_variants->thumb->url)));
 		DB::table('size_variants')
 			->where('photo_id', '=', $photo1->id)
 			->where('type', '=', SizeVariantType::THUMB)
@@ -47,6 +47,6 @@ class CommandVideoDataTest extends BasePhotoTest
 		$this->assertNotNull($photo2->size_variants->thumb);
 		$this->assertEquals($photo1->size_variants->thumb->width, $photo2->size_variants->thumb->width);
 		$this->assertEquals($photo1->size_variants->thumb->height, $photo2->size_variants->thumb->height);
-		$this->assertFileExists(public_path($photo2->size_variants->thumb->url));
+		$this->assertFileExists(public_path($this->dropUrlPrefix($photo2->size_variants->thumb->url)));
 	}
 }

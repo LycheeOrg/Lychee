@@ -5,7 +5,13 @@ composer:
 	composer install --prefer-dist --no-dev
 	php artisan vendor:publish --tag=log-viewer-asset
 
-dist-gen: clean composer
+npm-build:
+	rm -r public/build 2> /dev/null || true
+	rm -r node_modules 2> /dev/null || true
+	npm install
+	npm run build
+
+dist-gen: clean composer npm-build
 	@echo "packaging..."
 	@mkdir Lychee
 	@mkdir Lychee/public
@@ -19,6 +25,7 @@ dist-gen: clean composer
 	@cp -r config                           Lychee
 	@cp -r composer-cache                   Lychee
 	@cp -r database                         Lychee
+	@cp -r public/build                     Lychee/public
 	@cp -r public/dist                      Lychee/public
 	@cp -r public/vendor                    Lychee/public
 	@cp -r public/installer                 Lychee/public
@@ -46,6 +53,7 @@ dist-gen: clean composer
 	@cp -r version.md                       Lychee
 	@touch Lychee/storage/logs/laravel.log
 	@touch Lychee/public/dist/user.css
+	@touch Lychee/public/dist/custom.js
 	@touch Lychee/public/uploads/import/index.html
 	@touch Lychee/public/sym/index.html
 
@@ -63,6 +71,12 @@ dist: dist-clean
 clean:
 	@rm build/* 2> /dev/null || true
 	@rm -r Lychee 2> /dev/null || true
+	@rm -r public/build 2> /dev/null || true
+	@rm -r node_modules 2> /dev/null || true
+	@rm -r vendor  2> /dev/null || true
+
+install: composer npm-build
+	php artisan migrate
 
 test:
 	@if [ -x "vendor/bin/phpunit" ]; then \
@@ -90,6 +104,7 @@ formatting:
 phpstan:
 	vendor/bin/phpstan analyze
 
+# Generating new versions
 gen_minor:
 	php scripts/gen_release.php
 	git add database
@@ -106,10 +121,21 @@ gen_major:
 release_major: gen_major
 	git commit -m "bump to version $(shell cat version.md)"
 
+# Building tests 1 by 1
+
 TESTS_PHP := $(shell find tests/Feature -name "*Test.php" -printf "%f\n")
 TEST_DONE := $(addprefix build/,$(TESTS_PHP:.php=.done))
 
-build/%.done: tests/Feature/%.php
-	XDEBUG_MODE=coverage vendor/bin/phpunit --filter $* && touch build/$*.done
+build:
+	mkdir build
+
+build/Base%.done:
+	touch build/Base$*.done
+
+build/%UnitTest.done:
+	touch build/$*UnitTest.done
+
+build/%.done: tests/Feature/%.php build
+	vendor/bin/phpunit --no-coverage --filter $* && touch build/$*.done
 
 all_tests: $(TEST_DONE)

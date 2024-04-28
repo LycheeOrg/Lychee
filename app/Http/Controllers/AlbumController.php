@@ -28,6 +28,7 @@ use App\Http\Requests\Album\MoveAlbumsRequest;
 use App\Http\Requests\Album\SetAlbumCopyrightRequest;
 use App\Http\Requests\Album\SetAlbumCoverRequest;
 use App\Http\Requests\Album\SetAlbumDescriptionRequest;
+use App\Http\Requests\Album\SetAlbumHeaderRequest;
 use App\Http\Requests\Album\SetAlbumLicenseRequest;
 use App\Http\Requests\Album\SetAlbumNSFWRequest;
 use App\Http\Requests\Album\SetAlbumProtectionPolicyRequest;
@@ -233,6 +234,19 @@ class AlbumController extends Controller
 	}
 
 	/**
+	 * Set header image of the album.
+	 *
+	 * @param SetAlbumHeaderRequest $request
+	 *
+	 * @return void
+	 */
+	public function setHeader(SetAlbumHeaderRequest $request): void
+	{
+		$request->album()->header_id = $request->photo()?->id;
+		$request->album()->save();
+	}
+
+	/**
 	 * Set the license of the Album.
 	 *
 	 * @param SetAlbumLicenseRequest $request
@@ -351,7 +365,7 @@ class AlbumController extends Controller
 	 */
 	public function setSorting(SetAlbumSortingRequest $request): void
 	{
-		$request->album()->sorting = $request->sortingCriterion();
+		$request->album()->photo_sorting = $request->sortingCriterion();
 		$request->album()->save();
 	}
 

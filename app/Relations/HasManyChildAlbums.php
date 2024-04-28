@@ -25,7 +25,7 @@ class HasManyChildAlbums extends HasManyBidirectionally
 		// The parent constructor calls `addConstraints` and thus our own
 		// attributes must be initialized by then
 		$this->albumQueryPolicy = resolve(AlbumQueryPolicy::class);
-		$this->sorting = AlbumSortingCriterion::createDefault();
+		$this->sorting = $owningAlbum->album_sorting ?? AlbumSortingCriterion::createDefault();
 		parent::__construct(
 			$owningAlbum->newQuery(),
 			$owningAlbum,

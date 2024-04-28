@@ -2,9 +2,10 @@
 
 namespace App\Console\Commands;
 
+use App\Assets\Features;
 use App\Console\Commands\Utilities\Colorize;
-use App\Contracts\Models\AbstractSizeVariantNamingStrategy;
 use App\Enum\SizeVariantType;
+use App\Enum\StorageDiskType;
 use App\Exceptions\UnexpectedException;
 use App\Models\Photo;
 use App\Models\SizeVariant;
@@ -73,11 +74,17 @@ class Ghostbuster extends Command
 			$removeDeadSymLinks = filter_var($this->option('removeDeadSymLinks'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) === true;
 			$removeZombiePhotos = filter_var($this->option('removeZombiePhotos'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) === true;
 			$dryrun = filter_var($this->option('dryrun'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) !== false;
-			$uploadDisk = AbstractSizeVariantNamingStrategy::getImageDisk();
+			$uploadDisk = Features::active('use-s3')
+				? Storage::disk(StorageDiskType::S3->value)
+				: Storage::disk(StorageDiskType::LOCAL->value);
 			$symlinkDisk = Storage::disk(SymLink::DISK_NAME);
 			$isLocalDisk = $uploadDisk->getAdapter() instanceof LocalFilesystemAdapter;
 
 			$this->line('');
+			if (!$isLocalDisk) {
+				$this->line($this->col->red('Using non-local disk to store images, USE AT YOUR OWN RISKS! This code is not battle tested.'));
+				$this->line('');
+			}
 
 			if ($removeDeadSymLinks && !$isLocalDisk) {
 				$this->line($this->col->yellow('Removal of dead symlinks requested, but filesystem does not support symlinks.'));
@@ -188,7 +195,7 @@ class Ghostbuster extends Command
 				$this->line($totalFiles . ' files would be deleted.');
 				$this->line($totalDbEntries . ' photos would be deleted or sanitized');
 				$this->line('');
-				$this->line("Rerun the command '" . $this->col->yellow('php artisan lychee:ghostbuster --removeDeadSymLinks ' . ($removeDeadSymLinks ? '1' : '0') . ' --removeZombiePhotos ' . ($removeZombiePhotos ? '1' : '0') . '--dryrun 0') . "' to effectively remove the files.");
+				$this->line("Rerun the command '" . $this->col->yellow('php artisan lychee:ghostbuster --removeDeadSymLinks ' . ($removeDeadSymLinks ? '1' : '0') . ' --removeZombiePhotos ' . ($removeZombiePhotos ? '1' : '0') . ' --dryrun 0') . "' to effectively remove the files.");
 			}
 			if ($total > 0 && !$dryrun) {
 				$this->line($totalDeadSymLinks . ' dead symbolic links have been deleted.');

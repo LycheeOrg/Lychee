@@ -7,6 +7,7 @@ return [
 	'PASSWORD' => '密碼',
 	'ENTER' => '確定',
 	'CANCEL' => '取消',
+	'CONFIRM' => 'Confirm',
 	'SIGN_IN' => '登入',
 	'CLOSE' => '關閉',
 	'SETTINGS' => '設定',
@@ -16,6 +17,7 @@ return [
 	'GALLERY' => 'Gallery',
 
 	'USERS' => '使用者',
+	'PROFILE' => 'Profile',
 	'CREATE' => 'Create',
 	'REMOVE' => 'Remove',
 	'SHARE' => 'Share',
@@ -28,6 +30,7 @@ return [
 	'ABOUT_LYCHEE' => '關於Lychee',
 	'DIAGNOSTICS' => '診斷',
 	'DIAGNOSTICS_GET_SIZE' => '請求空間使用',
+	'JOBS' => 'Show job history',
 	'LOGS' => '查看日誌',
 	'SIGN_OUT' => '登出',
 	'UPDATE_AVAILABLE' => '可用更新！',
@@ -140,6 +143,9 @@ return [
 	'UNSTAR_PHOTO' => '從我的最愛中移除',
 	'SET_COVER' => 'Set Album Cover',
 	'REMOVE_COVER' => 'Remove Album Cover',
+	'SET_HEADER' => 'Set Album Header',
+	'REMOVE_HEADER' => 'Remove Album Header',
+	'SET_COMPACT_HEADER' => 'Use Compact Header',
 
 	'FULL_PHOTO' => '打開原圖',
 	'ABOUT_PHOTO' => '照片資訊',
@@ -205,6 +211,8 @@ return [
 	'ALBUM_RESERVED' => '版權所有',
 	'ALBUM_SET_ORDER' => '設定排序方式',
 	'ALBUM_ORDERING' => '排序方式',
+	'ALBUM_PHOTO_ORDERING' => 'Order photos by',
+	'ALBUM_CHILDREN_ORDERING' => 'Order albums by',
 	'ALBUM_OWNER' => 'Owner',
 
 	'PHOTO_ABOUT' => '關於',
@@ -282,6 +290,7 @@ return [
 	'ERROR_MAP_DEACTIVATED' => '地圖功能已被設為停用。',
 	'ERROR_SEARCH_DEACTIVATED' => '搜索功能已在設為停用。',
 	'SUCCESS' => '好',
+	'CHANGE_SUCCESS' => 'Change successful.',
 	'RETRY' => '重試',
 	'OVERRIDE' => 'Override',
 	'TAGS_OVERRIDE_INFO' => 'If this is unchecked, the tags will be added to the existing tags of the photo.',
@@ -311,6 +320,7 @@ return [
 	'U2F_AUTHENTIFICATION_SUCCESS' => 'Authentication successful!',
 	'U2F_CREDENTIALS' => 'Credentials',
 	'U2F_CREDENTIALS_DELETED' => 'Credentials deleted!',
+	'U2F_LOGIN' => 'Log in with WebAuthn',
 
 	'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
 	'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
@@ -345,7 +355,6 @@ return [
 	'SORT_PHOTO_SELECT_2' => '創建時間',
 	'SORT_PHOTO_SELECT_3' => '標題',
 	'SORT_PHOTO_SELECT_4' => '描述',
-	'SORT_PHOTO_SELECT_5' => '公開',
 	'SORT_PHOTO_SELECT_6' => '喜歡',
 	'SORT_PHOTO_SELECT_7' => '照片格式',
 
@@ -354,7 +363,7 @@ return [
 	'SORT_CHANGE' => '修改排序',
 
 	'DROPBOX_TITLE' => '設置Dropbox私鑰',
-	'DROPBOX_TEXT' => "要從Dropbox導入照片，需要一個有效的應用私鑰，請到<a href='https://www.dropbox.com/developers/apps/create'>官網獲取</a>。輸入你自己生成的私鑰：",
+	'DROPBOX_TEXT' => "要從Dropbox導入照片，需要一個有效的應用私鑰，請到<a href='https://www.dropbox.com/developers/saver'>官網獲取</a>。輸入你自己生成的私鑰：",
 
 	'LANG_TEXT' => '將Lychee語言更改為：',
 	'LANG_TITLE' => '改變語言',
@@ -400,6 +409,8 @@ return [
 	'LAYOUT_TYPE' => '照片佈局:',
 	'LAYOUT_SQUARES' => '方形縮略圖',
 	'LAYOUT_JUSTIFIED' => '有方面，有道理',
+	'LAYOUT_MASONRY' => '有方面, masonry',
+	'LAYOUT_GRID' => '有方面, grid',
 	'LAYOUT_UNJUSTIFIED' => '有方面，沒有道理',
 	'SET_LAYOUT' => '變更版面',
 
@@ -408,6 +419,9 @@ return [
 	'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Default sensitive album visibility updated with success.',
 
 	'NSFW_BANNER' => '<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>',
+	'NSFW_HEADER' => 'Sensitive content',
+	'NSFW_EXPLANATION' => 'This album contains sensitive content which some people may find offensive or disturbing.',
+	'TAP_CONSENT' => 'Tap to consent.',
 
 	'VIEW_NO_RESULT' => '無結果',
 	'VIEW_NO_PUBLIC_ALBUMS' => '沒有公開相簿',

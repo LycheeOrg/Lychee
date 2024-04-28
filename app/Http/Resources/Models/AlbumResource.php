@@ -3,6 +3,7 @@
 namespace App\Http\Resources\Models;
 
 use App\DTO\AlbumProtectionPolicy;
+use App\Http\Resources\Collections\AlbumCollectionResource;
 use App\Http\Resources\Collections\PhotoCollectionResource;
 use App\Http\Resources\Rights\AlbumRightsResource;
 use App\Http\Resources\Traits\WithStatus;
@@ -41,13 +42,14 @@ class AlbumResource extends JsonResource
 			// attributes
 			'description' => $this->resource->description,
 			'track_url' => $this->resource->track_url,
-			'license' => $this->resource->license,
-			'sorting' => $this->resource->sorting,
+			'license' => $this->resource->license->localization(),
+			'sorting' => $this->resource->photo_sorting,
+			'header_id' => $this->resource->header_id,
 
 			// children
 			'parent_id' => $this->resource->parent_id,
 			'has_albums' => !$this->resource->isLeaf(),
-			'albums' => AlbumResource::collection($this->whenLoaded('children')),
+			'albums' => AlbumCollectionResource::make($this->whenLoaded('children')),
 			'photos' => PhotoCollectionResource::make($this->whenLoaded('photos')),
 			'num_subalbums' => $this->resource->num_children,
 			'num_photos' => $this->resource->num_photos,
@@ -59,8 +61,8 @@ class AlbumResource extends JsonResource
 			// timestamps
 			'created_at' => $this->resource->created_at->toIso8601String(),
 			'updated_at' => $this->resource->updated_at->toIso8601String(),
-			'max_taken_at' => $this->resource->min_taken_at?->toIso8601String(),
-			'min_taken_at' => $this->resource->max_taken_at?->toIso8601String(),
+			'max_taken_at' => $this->resource->max_taken_at?->toIso8601String(),
+			'min_taken_at' => $this->resource->min_taken_at?->toIso8601String(),
 
 			// security
 			'policy' => AlbumProtectionPolicy::ofBaseAlbum($this->resource),

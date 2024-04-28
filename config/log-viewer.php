@@ -1,6 +1,27 @@
 <?php
 
-use Opcodes\LogViewer\Level;
+use Opcodes\LogViewer\LogLevels\LevelClass;
+
+if (!function_exists('renv')) {
+	function renv(string $cst, ?string $default = null): string
+	{
+		return rtrim(env($cst, $default) ?? '', '/');
+	}
+}
+
+/**
+ * Allow to conditionally append an env value.
+ *
+ * @param string $cst constant to fetch
+ *
+ * @return string '' or env value prefixed with '/'
+ */
+if (!function_exists('renv_cond')) {
+	function renv_cond(string $cst): string
+	{
+		return env($cst, '') === '' ? '' : ('/' . trim(env($cst), '/'));
+	}
+}
 
 return [
 	/*
@@ -45,7 +66,7 @@ return [
 	|
 	*/
 
-	'back_to_system_url' => '../', // config('app.url', null),
+	'back_to_system_url' => renv('APP_URL', 'http://localhost') . renv_cond('APP_DIR'),
 
 	'back_to_system_label' => null, // Displayed by default: "Back to {{ app.name }}"
 
@@ -195,7 +216,7 @@ return [
 			 * $matches[7] - the log text, the rest of the text.
 			 */
 			'log_parsing_regex' => '/^\[(\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}\.?(\d{6}([\+-]\d\d:\d\d)?)?)\](.*?(\w+)\.|.*?)('
-				. implode('|', array_filter(Level::caseValues()))
+				. implode('|', array_filter(LevelClass::caseValues(), fn ($elem) => ($elem !== null && $elem !== '')))
 				. ')?: (.*?)( in [\/].*?:[0-9]+)?$/is',
 		],
 	],

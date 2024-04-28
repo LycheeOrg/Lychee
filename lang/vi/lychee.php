@@ -7,6 +7,7 @@ return [
 	'PASSWORD' => 'Mật khẩu',
 	'ENTER' => 'Ok',
 	'CANCEL' => 'Bỏ',
+	'CONFIRM' => 'Confirm',
 	'SIGN_IN' => 'Đăng nhập',
 	'CLOSE' => 'Đóng',
 	'SETTINGS' => 'Cài đặt',
@@ -16,6 +17,7 @@ return [
 	'GALLERY' => 'Gallery',
 
 	'USERS' => 'Người dùng',
+	'PROFILE' => 'Profile',
 	'CREATE' => 'Tạo',
 	'REMOVE' => 'Remove',
 	'SHARE' => 'Share',
@@ -28,6 +30,7 @@ return [
 	'ABOUT_LYCHEE' => 'Giới thiệu Lychee',
 	'DIAGNOSTICS' => 'Thông tin hệ thống',
 	'DIAGNOSTICS_GET_SIZE' => 'Xem dung lượng đã dùng',
+	'JOBS' => 'Show job history',
 	'LOGS' => 'Xem nhật ký thay đổi',
 	'SIGN_OUT' => 'Thoát',
 	'UPDATE_AVAILABLE' => 'Có phiên bản mới!',
@@ -140,6 +143,9 @@ return [
 	'UNSTAR_PHOTO' => 'Gỡ dấu sao hình ảnh',
 	'SET_COVER' => 'Cài hình ảnh nền cho album',
 	'REMOVE_COVER' => 'Xóa hình ảnh nền album',
+	'SET_HEADER' => 'Set Album Header',
+	'REMOVE_HEADER' => 'Remove Album Header',
+	'SET_COMPACT_HEADER' => 'Use Compact Header',
 
 	'FULL_PHOTO' => 'Xem hình ảnh gốc',
 	'ABOUT_PHOTO' => 'Giới thiệu về tấm ảnh',
@@ -205,6 +211,8 @@ return [
 	'ALBUM_RESERVED' => 'Toàn Quyền Bảo Lưu',
 	'ALBUM_SET_ORDER' => 'Chỉnh thứ tự',
 	'ALBUM_ORDERING' => 'Sắp xếp thứ tự hình ảnh',
+	'ALBUM_PHOTO_ORDERING' => 'Order photos by',
+	'ALBUM_CHILDREN_ORDERING' => 'Order albums by',
 	'ALBUM_OWNER' => 'Chủ sở hữu',
 
 	'PHOTO_ABOUT' => 'Giới thiệu',
@@ -282,6 +290,7 @@ return [
 	'ERROR_MAP_DEACTIVATED' => 'Tính năng hiển thị bản đồ đã tắt trong phần cài đặt.',
 	'ERROR_SEARCH_DEACTIVATED' => 'Tính năng tìm kiếm đã tắt trong phần cài đặt',
 	'SUCCESS' => 'OK',
+	'CHANGE_SUCCESS' => 'Change successful.',
 	'RETRY' => 'Thử lại',
 	'OVERRIDE' => 'Override',
 	'TAGS_OVERRIDE_INFO' => 'If this is unchecked, the tags will be added to the existing tags of the photo.',
@@ -311,6 +320,7 @@ return [
 	'U2F_AUTHENTIFICATION_SUCCESS' => 'Xác minh thành công!',
 	'U2F_CREDENTIALS' => 'Tên và Mật mã',
 	'U2F_CREDENTIALS_DELETED' => 'Tên và mật mã đã được xóa!',
+	'U2F_LOGIN' => 'Log in with WebAuthn',
 
 	'NEW_PHOTOS_NOTIFICATION' => 'Gửi email thông báo đăng hình ảnh mới.',
 	'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'Thông báo đăng hình mới được cập nhật',
@@ -345,7 +355,6 @@ return [
 	'SORT_PHOTO_SELECT_2' => 'Ngày chụp',
 	'SORT_PHOTO_SELECT_3' => 'Tên',
 	'SORT_PHOTO_SELECT_4' => 'Mô tả',
-	'SORT_PHOTO_SELECT_5' => 'Chia sẻ công cộng',
 	'SORT_PHOTO_SELECT_6' => 'Được đánh dấu sao',
 	'SORT_PHOTO_SELECT_7' => 'Định dạng hình ảnh',
 
@@ -354,7 +363,7 @@ return [
 	'SORT_CHANGE' => 'Thay đổi cách sắp xếp',
 
 	'DROPBOX_TITLE' => 'Đặt mã Dropbox',
-	'DROPBOX_TEXT' => "Để nhập hình ảnh của bạn vào từ Dropbox, bạn cần một mã nhập vào hợp lệ từ <a href='https://www.dropbox.com/developers/apps/create'>trang web của họ</a>. Hãy tạo một mã cá nhân cho mình và nhập mã vào bên dưới nhé:",
+	'DROPBOX_TEXT' => "Để nhập hình ảnh của bạn vào từ Dropbox, bạn cần một mã nhập vào hợp lệ từ <a href='https://www.dropbox.com/developers/saver'>trang web của họ</a>. Hãy tạo một mã cá nhân cho mình và nhập mã vào bên dưới nhé:",
 
 	'LANG_TEXT' => 'Thay đổi ngôn ngữ trên Lychee cho:',
 	'LANG_TITLE' => 'Thay đổi ngôn ngữ',
@@ -400,6 +409,8 @@ return [
 	'LAYOUT_TYPE' => 'Cách trình bày hình ảnh:',
 	'LAYOUT_SQUARES' => 'Ô vuông hình nhỏ',
 	'LAYOUT_JUSTIFIED' => 'Theo tỷ lệ hình, canh đều hai bên',
+	'LAYOUT_MASONRY' => 'Theo tỷ lệ hình, masonry',
+	'LAYOUT_GRID' => 'Theo tỷ lệ hình, grid',
 	'LAYOUT_UNJUSTIFIED' => 'Theo tỷ lệ hình, không canh đều hai bên',
 	'SET_LAYOUT' => 'Thay đổi cách trình bày',
 
@@ -408,6 +419,9 @@ return [
 	'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Chế độ hiển thị album nhạy cảm được cập nhật thành công.',
 
 	'NSFW_BANNER' => '<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>',
+	'NSFW_HEADER' => 'Sensitive content',
+	'NSFW_EXPLANATION' => 'This album contains sensitive content which some people may find offensive or disturbing.',
+	'TAP_CONSENT' => 'Tap to consent.',
 
 	'VIEW_NO_RESULT' => 'Không có kết quả nào',
 	'VIEW_NO_PUBLIC_ALBUMS' => 'Chưa có album chia sẻ công cộng nào',

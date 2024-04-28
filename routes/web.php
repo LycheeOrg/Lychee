@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Assets\Features;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
 
@@ -15,15 +16,16 @@ use Illuminate\Support\Facades\URL;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
-if (config('app.force_https')) {
-	URL::forceScheme('https');
-}
-
 Route::feeds();
 
-Route::get('/', [IndexController::class, 'show'])->name('home')->middleware(['migration:complete']);
-Route::get('/gallery', [IndexController::class, 'gallery'])->name('gallery')->middleware(['migration:complete']);
+// If we are using Livewire by default, we no longer need those routes.
+if (!Features::active('livewire')) {
+	Route::get('/', [IndexController::class, 'show'])->name('home')->middleware(['migration:complete']);
+	Route::get('/gallery', [IndexController::class, 'gallery'])->name('gallery')->middleware(['migration:complete']);
+	Route::get('/view', [IndexController::class, 'view'])->name('view')->middleware(['redirect-legacy-id']);
+	Route::get('/frame', [IndexController::class, 'frame'])->name('frame')->middleware(['migration:complete']);
+}
+
 Route::match(['get', 'post'], '/migrate', [Administration\UpdateController::class, 'migrate'])
 	->name('migrate')
 	->middleware(['migration:incomplete']);
@@ -37,9 +39,6 @@ Route::match(['get', 'post'], '/migrate', [Administration\UpdateController::clas
  */
 Route::get('/r/{albumID}/{photoID}', [RedirectController::class, 'photo'])->middleware(['migration:complete']);
 Route::get('/r/{albumID}', [RedirectController::class, 'album'])->middleware(['migration:complete']);
-
-Route::get('/view', [IndexController::class, 'view'])->name('view')->middleware(['redirect-legacy-id']);
-Route::get('/frame', [IndexController::class, 'frame'])->name('frame')->middleware(['migration:complete']);
 
 // This route must be defined last because it is a catch all.
 Route::match(['get', 'post'], '{path}', HoneyPotController::class)->where('path', '.*');

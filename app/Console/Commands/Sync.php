@@ -3,8 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Actions\Import\Exec;
-use App\Actions\Photo\Strategies\ImportMode;
 use App\Contracts\Exceptions\ExternalLycheeException;
+use App\DTO\ImportMode;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\UnexpectedException;
 use App\Models\Album;
@@ -23,7 +23,7 @@ class Sync extends Command
 	 * @var string
 	 */
 	protected $signature =
-	'lychee:sync ' .
+		'lychee:sync ' .
 		'{dir* : directory to sync} ' . // string[]
 		'{--album_id= : Album ID to import to} ' . // string or null
 		'{--owner_id=1 : Owner ID of imported photos} ' . // string

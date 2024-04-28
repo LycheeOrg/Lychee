@@ -13,7 +13,6 @@
 namespace Tests\Feature\Base;
 
 use App\SmartAlbums\OnThisDayAlbum;
-use App\SmartAlbums\PublicAlbum;
 use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\StarredAlbum;
 use App\SmartAlbums\UnsortedAlbum;
@@ -21,7 +20,7 @@ use Illuminate\Support\Facades\Auth;
 use Tests\Feature\Constants\TestConstants;
 
 /**
- * Implements the tests of {@link SharingTestScenariosAbstract} for a
+ * Implements the tests of {@link BaseSharingTestScenarios} for a
  * non-admin user whose results are independent of the setting for public
  * search.
  */
@@ -337,7 +336,6 @@ abstract class BaseSharingWithNonAdminUser extends BaseSharingTestScenarios
 			'smart_albums' => [
 				UnsortedAlbum::ID => ['thumb' => $this->generateExpectedThumbJson($unsortedAlbumThumbID)],
 				StarredAlbum::ID => ['thumb' => $this->generateExpectedThumbJson($starredAlbumThumbID)],
-				PublicAlbum::ID => ['thumb' => $this->generateExpectedThumbJson($publicAlbumThumbID)],
 				RecentAlbum::ID => ['thumb' => $this->generateExpectedThumbJson($recentAlbumThumbID)],
 				OnThisDayAlbum::ID => ['thumb' => $this->generateExpectedThumbJson($onThisDayAlbumThumbID)],
 			],

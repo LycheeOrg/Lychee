@@ -6,6 +6,7 @@ use App\Actions\SizeVariant\Delete;
 use App\DTO\AbstractDTO;
 use App\DTO\ImageDimension;
 use App\Enum\SizeVariantType;
+use App\Enum\StorageDiskType;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Exceptions\Internal\InvalidSizeVariantException;
 use App\Exceptions\Internal\LycheeAssertionError;
@@ -15,6 +16,7 @@ use App\Exceptions\ModelDBException;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection as BaseCollection;
 
 /**
  * Class SizeVariants.
@@ -105,6 +107,24 @@ class SizeVariants extends AbstractDTO
 	}
 
 	/**
+	 * Return all SizeVariants as a collection.
+	 *
+	 * @return BaseCollection<SizeVariant|null>
+	 */
+	public function toCollection(): BaseCollection
+	{
+		return collect([
+			$this->original,
+			$this->medium2x,
+			$this->medium,
+			$this->small2x,
+			$this->small,
+			$this->thumb2x,
+			$this->thumb,
+		]);
+	}
+
+	/**
 	 * Returns the requested size variant of the photo.
 	 *
 	 * @param SizeVariantType $sizeVariantType the type of the size variant
@@ -131,9 +151,39 @@ class SizeVariants extends AbstractDTO
 		return $this->original;
 	}
 
+	/**
+	 * Get Medium2x or fallback to Medium.
+	 *
+	 * @return SizeVariant|null
+	 */
+	public function getMedium2x(): ?SizeVariant
+	{
+		return $this->medium2x;
+	}
+
+	/**
+	 * get Medium or fallback to Original.
+	 *
+	 * @return SizeVariant|null
+	 */
 	public function getMedium(): ?SizeVariant
 	{
 		return $this->medium;
+	}
+
+	/**
+	 * Get Small2x or fallback to Small.
+	 *
+	 * @return SizeVariant|null
+	 */
+	public function getSmall2x(): ?SizeVariant
+	{
+		return $this->small2x;
+	}
+
+	public function getSmall(): ?SizeVariant
+	{
+		return $this->small;
 	}
 
 	public function getThumb2x(): ?SizeVariant
@@ -167,14 +217,16 @@ class SizeVariants extends AbstractDTO
 			throw new IllegalOrderOfOperationException('Cannot create a size variant for a photo whose id is not yet persisted to DB');
 		}
 		try {
-			$result = new SizeVariant();
-			$result->photo_id = $this->photo->id;
-			$result->type = $sizeVariantType;
-			$result->short_path = $shortPath;
-			$result->width = $dim->width;
-			$result->height = $dim->height;
-			$result->filesize = $filesize;
-			$result->save();
+			$result = SizeVariant::create([
+				'photo_id' => $this->photo->id,
+				'storage_disk' => StorageDiskType::LOCAL,
+				'type' => $sizeVariantType,
+				'short_path' => $shortPath,
+				'width' => $dim->width,
+				'height' => $dim->height,
+				'filesize' => $filesize,
+				'ratio' => $dim->getRatio(),
+			]);
 			$this->add($result);
 
 			return $result;
@@ -257,6 +309,17 @@ class SizeVariants extends AbstractDTO
 	 */
 	public function hasMedium(): bool
 	{
-		return $this->medium2x !== null || $this->medium !== null;
+		return $this->medium !== null || $this->medium2x !== null;
+	}
+
+	/**
+	 * We don't need to check if small2x or medium2x exists.
+	 * small2x implies small, and same for medium2x, but the opposite is not true!
+	 *
+	 * @return bool
+	 */
+	public function hasMediumOrSmall(): bool
+	{
+		return $this->small !== null || $this->medium !== null;
 	}
 }

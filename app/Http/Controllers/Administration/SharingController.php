@@ -76,11 +76,11 @@ class SharingController extends Controller
 	 * Apply the modification.
 	 *
 	 * @param array<int,int>    $userIds
-	 * @param array<int,string> $albumIds
+	 * @param array<int,string> $albumIDs
 	 *
 	 * @return void
 	 */
-	private function updateLinks(array $userIds, array $albumIds): void
+	private function updateLinks(array $userIds, array $albumIDs): void
 	{
 		/** @var Collection<User> $users */
 		$users = User::query()
@@ -90,8 +90,9 @@ class SharingController extends Controller
 		/** @var User $user */
 		foreach ($users as $user) {
 			$user->shared()->syncWithPivotValues(
-				$albumIds,
+				$albumIDs,
 				[
+					APC::IS_LINK_REQUIRED => false, // In sharing no required link is needed
 					APC::GRANTS_DOWNLOAD => Configs::getValueAsBool('grants_download'),
 					APC::GRANTS_FULL_PHOTO_ACCESS => Configs::getValueAsBool('grants_full_photo_access'),
 				],

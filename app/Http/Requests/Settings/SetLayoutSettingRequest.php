@@ -2,7 +2,8 @@
 
 namespace App\Http\Requests\Settings;
 
-use Illuminate\Validation\Rule;
+use App\Enum\PhotoLayoutType;
+use Illuminate\Validation\Rules\Enum;
 
 class SetLayoutSettingRequest extends AbstractSettingRequest
 {
@@ -11,13 +12,13 @@ class SetLayoutSettingRequest extends AbstractSettingRequest
 	public function rules(): array
 	{
 		return [
-			self::ATTRIBUTE => ['required', Rule::in([0, 1, 2])],
+			self::ATTRIBUTE => ['required', new Enum(PhotoLayoutType::class)],
 		];
 	}
 
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		$this->name = self::ATTRIBUTE;
-		$this->value = (int) $values[self::ATTRIBUTE];
+		$this->value = PhotoLayoutType::from($values[self::ATTRIBUTE]);
 	}
 }

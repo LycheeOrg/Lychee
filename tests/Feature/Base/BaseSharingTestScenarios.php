@@ -17,7 +17,6 @@
 
 namespace Tests\Feature\Base;
 
-use App\Models\Configs;
 use App\SmartAlbums\OnThisDayAlbum;
 use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\StarredAlbum;
@@ -57,9 +56,6 @@ use Tests\Feature\Constants\TestConstants;
  */
 abstract class BaseSharingTestScenarios extends BaseSharingTest
 {
-	/** @var bool the previously configured visibility for public photos */
-	protected bool $arePublicPhotosHidden;
-
 	/** @var string|null the ID of the current album 1 (if applicable by the test) */
 	protected ?string $albumID1;
 
@@ -84,9 +80,6 @@ abstract class BaseSharingTestScenarios extends BaseSharingTest
 	public function setUp(): void
 	{
 		parent::setUp();
-
-		$this->arePublicPhotosHidden = Configs::getValueAsBool(TestConstants::CONFIG_PUBLIC_HIDDEN);
-
 		// Reset all variables to ensure that a test implementation of the
 		// child class does not accidentally use a value which it should not.
 		$this->albumID1 = null;
@@ -100,7 +93,6 @@ abstract class BaseSharingTestScenarios extends BaseSharingTest
 
 	public function tearDown(): void
 	{
-		Configs::set(TestConstants::CONFIG_PUBLIC_HIDDEN, $this->arePublicPhotosHidden);
 		parent::tearDown();
 	}
 
@@ -139,7 +131,7 @@ abstract class BaseSharingTestScenarios extends BaseSharingTest
 	/**
 	 * Ensures that the user does not see the private photo.
 	 *
-	 * See {@link SharingTestScenariosAbstract::prepareUnsortedPublicAndPrivatePhoto()}
+	 * See {@link BaseSharingTestScenarios::prepareUnsortedPublicAndPrivatePhoto()}
 	 * for description of scenario.
 	 *
 	 * @return void
@@ -181,7 +173,6 @@ abstract class BaseSharingTestScenarios extends BaseSharingTest
 	{
 		$this->photoID1 = $this->photos_tests->upload(static::createUploadedFile(TestConstants::SAMPLE_FILE_TRAIN_IMAGE))->offsetGet('id');
 		$this->photoID2 = $this->photos_tests->upload(static::createUploadedFile(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE))->offsetGet('id');
-		$this->photos_tests->set_public($this->photoID1, true);
 		$this->photos_tests->set_star([$this->photoID1], true);
 		Auth::logout();
 		Session::flush();
@@ -196,7 +187,7 @@ abstract class BaseSharingTestScenarios extends BaseSharingTest
 	 * it and logs out.
 	 *
 	 * This scenario is similar to
-	 * {@link SharingTestScenariosAbstract::prepareUnsortedPublicAndPrivatePhoto()}
+	 * {@link BaseSharingTestScenarios::prepareUnsortedPublicAndPrivatePhoto()}
 	 * but with an album.
 	 *
 	 * @return void
@@ -206,7 +197,6 @@ abstract class BaseSharingTestScenarios extends BaseSharingTest
 		$this->albumID1 = $this->albums_tests->add(null, TestConstants::ALBUM_TITLE_1)->offsetGet('id');
 		$this->photoID1 = $this->photos_tests->upload(static::createUploadedFile(TestConstants::SAMPLE_FILE_TRAIN_IMAGE), $this->albumID1)->offsetGet('id');
 		$this->photoID2 = $this->photos_tests->upload(static::createUploadedFile(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE), $this->albumID1)->offsetGet('id');
-		$this->photos_tests->set_public($this->photoID1, true);
 		$this->photos_tests->set_star([$this->photoID1], true);
 		Auth::logout();
 		Session::flush();
@@ -341,7 +331,6 @@ abstract class BaseSharingTestScenarios extends BaseSharingTest
 		$this->photoID1 = $this->photos_tests->upload(static::createUploadedFile(TestConstants::SAMPLE_FILE_TRAIN_IMAGE))->offsetGet('id');
 		$this->photoID2 = $this->photos_tests->upload(static::createUploadedFile(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE), $this->albumID1)->offsetGet('id');
 		$this->sharing_tests->add([$this->albumID1], [$this->userID]);
-		$this->photos_tests->set_public($this->photoID1, true);
 		$this->photos_tests->set_star([$this->photoID1, $this->photoID2], true);
 		Auth::logout();
 		Session::flush();
@@ -521,7 +510,7 @@ abstract class BaseSharingTestScenarios extends BaseSharingTest
 	}
 
 	/**
-	 * Like {@link SharingTestScenariosAbstract::preparePublicAlbumAndPasswordProtectedAlbum},
+	 * Like {@link BaseSharingTestScenarios::preparePublicAlbumAndPasswordProtectedAlbum},
 	 * but additionally the password-protected photo is starred.
 	 *
 	 * @return void
@@ -786,7 +775,7 @@ abstract class BaseSharingTestScenarios extends BaseSharingTest
 	}
 
 	/**
-	 * Like {@link SharingTestScenariosAbstract::preparePublicAlbumAndHiddenAlbum}, but
+	 * Like {@link BaseSharingTestScenarios::preparePublicAlbumAndHiddenAlbum}, but
 	 * additionally the hidden album is also password protected.
 	 *
 	 * @return void

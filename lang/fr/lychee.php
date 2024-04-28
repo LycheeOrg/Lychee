@@ -7,6 +7,7 @@ return [
 	'PASSWORD' => 'Mot de passe',
 	'ENTER' => 'OK',
 	'CANCEL' => 'Annuler',
+	'CONFIRM' => 'Confirmer',
 	'SIGN_IN' => 'Connexion',
 	'CLOSE' => 'Fermer',
 	'SETTINGS' => 'Paramètres',
@@ -16,6 +17,7 @@ return [
 	'GALLERY' => 'Gallery',
 
 	'USERS' => 'Utilisateurs',
+	'PROFILE' => 'Profil',
 	'CREATE' => 'Créer',
 	'REMOVE' => 'Retirer',
 	'SHARE' => 'Partager',
@@ -28,7 +30,8 @@ return [
 	'ABOUT_LYCHEE' => 'À propos de Lychee',
 	'DIAGNOSTICS' => 'Diagnostiques',
 	'DIAGNOSTICS_GET_SIZE' => 'Calculer l’espace utilisé',
-	'LOGS' => 'Afficher les logs',
+	'JOBS' => 'Historique des Jobs',
+	'LOGS' => 'Logs',
 	'SIGN_OUT' => 'Déconnexion',
 	'UPDATE_AVAILABLE' => 'Une mise-à-jour est disponible !',
 	'MIGRATION_AVAILABLE' => 'Une migration est disponible !',
@@ -140,6 +143,9 @@ return [
 	'UNSTAR_PHOTO' => 'Retirer des Favoris',
 	'SET_COVER' => 'Changer la couverture de l’album',
 	'REMOVE_COVER' => 'Supprimer la couverture de l’album',
+	'SET_HEADER' => 'Set Album Header',
+	'REMOVE_HEADER' => 'Remove Album Header',
+	'SET_COMPACT_HEADER' => 'Use Compact Header',
 
 	'FULL_PHOTO' => 'Ouvrir l’original',
 	'ABOUT_PHOTO' => 'À propos de la photo',
@@ -205,6 +211,8 @@ return [
 	'ALBUM_RESERVED' => 'Tous droits réservés',
 	'ALBUM_SET_ORDER' => 'Changer l’ordre',
 	'ALBUM_ORDERING' => 'Trier par',
+	'ALBUM_PHOTO_ORDERING' => 'Order photos by',
+	'ALBUM_CHILDREN_ORDERING' => 'Order albums by',
 	'ALBUM_OWNER' => 'Propriétaire',
 
 	'PHOTO_ABOUT' => 'À propos',
@@ -282,6 +290,7 @@ return [
 	'ERROR_MAP_DEACTIVATED' => 'La carte a été désactivée dans les paramètres.',
 	'ERROR_SEARCH_DEACTIVATED' => 'La recherche a été désactivée dans les paramètres.',
 	'SUCCESS' => 'OK',
+	'CHANGE_SUCCESS' => 'Changement réussi.',
 	'RETRY' => 'Réessayer',
 	'OVERRIDE' => 'Override',
 	'TAGS_OVERRIDE_INFO' => 'If this is unchecked, the tags will be added to the existing tags of the photo.',
@@ -311,6 +320,7 @@ return [
 	'U2F_AUTHENTIFICATION_SUCCESS' => 'Authentification réussie !',
 	'U2F_CREDENTIALS' => 'Clés',
 	'U2F_CREDENTIALS_DELETED' => 'Clé supprimée !',
+	'U2F_LOGIN' => 'Connexion avec WebAuthn',
 
 	'NEW_PHOTOS_NOTIFICATION' => 'Envoyer les notifications de nouvelles photos par emails.',
 	'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'Notification de nouvelles photos mise à jour',
@@ -345,7 +355,6 @@ return [
 	'SORT_PHOTO_SELECT_2' => 'Date de prise de vue',
 	'SORT_PHOTO_SELECT_3' => 'Titre',
 	'SORT_PHOTO_SELECT_4' => 'Description',
-	'SORT_PHOTO_SELECT_5' => 'Public',
 	'SORT_PHOTO_SELECT_6' => 'Favoris',
 	'SORT_PHOTO_SELECT_7' => 'Format de la photo',
 
@@ -354,7 +363,7 @@ return [
 	'SORT_CHANGE' => 'Modifier le tri',
 
 	'DROPBOX_TITLE' => 'Définir une clé Dropbox',
-	'DROPBOX_TEXT' => 'Pour pouvoir importer des photos à partir de votre Dropbox, vous aurez besoin d’une clé d’application «drop-ins» valide à créer sur <a href="https://www.dropbox.com/developers/apps/create\">leur site</a>. Générez votre clé personnelle et puis entrez-la ci-dessous :',
+	'DROPBOX_TEXT' => 'Pour pouvoir importer des photos à partir de votre Dropbox, vous aurez besoin d’une clé d’application «drop-ins» valide à créer sur <a href="https://www.dropbox.com/developers/saver\">leur site</a>. Générez votre clé personnelle et puis entrez-la ci-dessous :',
 
 	'LANG_TEXT' => 'Remplacer la langue de Lychee par :',
 	'LANG_TITLE' => 'Changer la langue',
@@ -400,6 +409,8 @@ return [
 	'LAYOUT_TYPE' => 'Affichage des photos :',
 	'LAYOUT_SQUARES' => 'Miniatures carrées',
 	'LAYOUT_JUSTIFIED' => 'En proportions, justifiées',
+	'LAYOUT_MASONRY' => 'En proportion, Maçonnerie',
+	'LAYOUT_GRID' => 'En proportion, Grille',
 	'LAYOUT_UNJUSTIFIED' => 'En proportions, non-justifiées',
 	'SET_LAYOUT' => 'Changer l’affichage',
 
@@ -408,6 +419,9 @@ return [
 	'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Visibilé par default des albums sensible mis à jour.',
 
 	'NSFW_BANNER' => '<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>',
+	'NSFW_HEADER' => 'Contenu Sensible',
+	'NSFW_EXPLANATION' => 'Cet album contient des contenus sensible que certaine personnes peuvent trouver chocant ou troublant.',
+	'TAP_CONSENT' => 'Tap pour consentir.',
 
 	'VIEW_NO_RESULT' => 'Aucun résultat',
 	'VIEW_NO_PUBLIC_ALBUMS' => 'Aucun album public',

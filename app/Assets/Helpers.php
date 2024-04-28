@@ -9,16 +9,6 @@ use function Safe\parse_url;
 
 class Helpers
 {
-	private int $numTab = 0;
-
-	/**
-	 * Initialize the Facade.
-	 */
-	public function __construct()
-	{
-		$this->numTab = 0;
-	}
-
 	/**
 	 * Add UnixTimeStamp to file path suffix.
 	 *
@@ -154,73 +144,25 @@ class Helpers
 	}
 
 	/**
-	 * Returns the available licenses.
+	 * From https://www.php.net/manual/en/function.disk-total-space.php.
+	 *
+	 * @param float $bytes
+	 *
+	 * @return string
 	 */
-	public function get_all_licenses(): array
+	public function getSymbolByQuantity(float $bytes): string
 	{
-		return [
-			'none',
-			'reserved',
-			'CC0',
-			'CC-BY-1.0',
-			'CC-BY-2.0',
-			'CC-BY-2.5',
-			'CC-BY-3.0',
-			'CC-BY-4.0',
-			'CC-BY-NC-1.0',
-			'CC-BY-NC-2.0',
-			'CC-BY-NC-2.5',
-			'CC-BY-NC-3.0',
-			'CC-BY-NC-4.0',
-			'CC-BY-NC-ND-1.0',
-			'CC-BY-NC-ND-2.0',
-			'CC-BY-NC-ND-2.5',
-			'CC-BY-NC-ND-3.0',
-			'CC-BY-NC-ND-4.0',
-			'CC-BY-NC-SA-1.0',
-			'CC-BY-NC-SA-2.0',
-			'CC-BY-NC-SA-2.5',
-			'CC-BY-NC-SA-3.0',
-			'CC-BY-NC-SA-4.0',
-			'CC-BY-ND-1.0',
-			'CC-BY-ND-2.0',
-			'CC-BY-ND-2.5',
-			'CC-BY-ND-3.0',
-			'CC-BY-ND-4.0',
-			'CC-BY-SA-1.0',
-			'CC-BY-SA-2.0',
-			'CC-BY-SA-2.5',
-			'CC-BY-SA-3.0',
-			'CC-BY-SA-4.0',
+		$symbols = [
+			'B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB',
 		];
-	}
+		$exp = intval(floor(log($bytes) / log(1024.0)));
 
-	/**
-	 * Return incrementing numbers.
-	 */
-	public function data_index(): int
-	{
-		$this->numTab++;
+		if ($exp >= sizeof($symbols)) {
+			// if the number is too large, we fall back to the largest available symbol
+			$exp = sizeof($symbols) - 1;
+		}
 
-		return $this->numTab;
-	}
-
-	/**
-	 * Reset and return incrementing numbers.
-	 */
-	public function data_index_r(): int
-	{
-		$this->numTab = 1;
-
-		return $this->numTab;
-	}
-
-	/**
-	 * Reset the incrementing number.
-	 */
-	public function data_index_set(int $idx = 0): void
-	{
-		$this->numTab = $idx;
+		return sprintf('%.2f %s', ($bytes / pow(1024, $exp)), $symbols[$exp]);
 	}
 
 	/**
@@ -233,5 +175,120 @@ class Helpers
 		$disabledFunctions = explode(',', ini_get('disable_functions'));
 
 		return function_exists('exec') && !in_array('exec', $disabledFunctions, true);
+	}
+
+	/**
+	 * Given a duration convert it into hms.
+	 *
+	 * @param int|float $d length in seconds
+	 *
+	 * @return string equivalent time string formatted
+	 */
+	public function secondsToHMS(int|float $d): string
+	{
+		$h = (int) floor($d / 3600);
+		$m = (int) floor(($d % 3600) / 60);
+		$s = (int) floor($d % 60);
+
+		return ($h > 0 ? $h . 'h' : '')
+			. ($m > 0 ? $m . 'm' : '')
+			. ($s > 0 || ($h === 0 && $m === 0) ? $s . 's' : '');
+	}
+
+	/**
+	 * Return true if the upload_max_filesize is bellow what we want.
+	 */
+	public function convertSize(string $size): int
+	{
+		$size = trim($size);
+		$last = strtolower($size[strlen($size) - 1]);
+		$size = intval($size);
+
+		switch ($last) {
+			case 'g':
+				$size *= 1024;
+				// no break
+			case 'm':
+				$size *= 1024;
+				// no break
+			case 'k':
+				$size *= 1024;
+		}
+
+		return $size;
+	}
+
+	/**
+	 * Converts a decimal degree into integer degree, minutes and seconds.
+	 *
+	 * @param float|null $decimal
+	 * @param bool       $type    - indicates if the passed decimal indicates a
+	 *                            latitude (`true`) or a longitude (`false`)
+	 *
+	 * @returns string
+	 */
+	public function decimalToDegreeMinutesSeconds(float|null $decimal, bool $type): string|null
+	{
+		if ($decimal === null) {
+			return null;
+		}
+
+		$d = abs($decimal);
+
+		// absolute value of decimal must be smaller than 180;
+		if ($d > 180) {
+			return '';
+		}
+
+		// set direction; north assumed
+		if ($type && $decimal < 0) {
+			$direction = 'S';
+		} elseif (!$type && $decimal < 0) {
+			$direction = 'W';
+		} elseif (!$type) {
+			$direction = 'E';
+		} else {
+			$direction = 'N';
+		}
+
+		// get degrees
+		$degrees = floor($d);
+
+		// get seconds
+		$seconds = ($d - $degrees) * 3600;
+
+		// get minutes
+		$minutes = floor($seconds / 60);
+
+		// reset seconds
+		$seconds = floor($seconds - $minutes * 60);
+
+		return $degrees . '° ' . $minutes . "' " . $seconds . '" ' . $direction;
+	}
+
+	/**
+	 * Censor a word by replacing half of its character by stars.
+	 *
+	 * @param string $string         to censor
+	 * @param float  $percentOfClear the amount of the original string that remains untouched. The lower the value, the higher the censoring.
+	 *
+	 * @return string
+	 */
+	public function censor(string $string, float $percentOfClear = 0.5): string
+	{
+		$strLength = strlen($string);
+		if ($strLength === 0) {
+			return '';
+		}
+
+		// Length of replacement
+		$censored_length = $strLength - (int) floor($strLength * $percentOfClear);
+
+		// we leave half the space in front and behind.
+		$start = (int) floor(($strLength - $censored_length) / 2);
+
+		$replacement = str_repeat('*', $censored_length);
+
+		return substr_replace($string, $replacement, $start, $censored_length);
 	}
 }

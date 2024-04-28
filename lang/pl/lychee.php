@@ -7,6 +7,7 @@ return [
 	'PASSWORD' => 'Hasło',
 	'ENTER' => 'Potwierdź',
 	'CANCEL' => 'Anuluj',
+	'CONFIRM' => 'Confirm',
 	'SIGN_IN' => 'Zaloguj',
 	'CLOSE' => 'Zamknij',
 	'SETTINGS' => 'Ustawienia',
@@ -16,6 +17,7 @@ return [
 	'GALLERY' => 'Gallery',
 
 	'USERS' => 'Użytkownicy',
+	'PROFILE' => 'Profile',
 	'CREATE' => 'Create',
 	'REMOVE' => 'Remove',
 	'SHARE' => 'Share',
@@ -28,6 +30,7 @@ return [
 	'ABOUT_LYCHEE' => 'O Lychee',
 	'DIAGNOSTICS' => 'Informacje techniczne',
 	'DIAGNOSTICS_GET_SIZE' => 'Analiza miejsca na dysku',
+	'JOBS' => 'Show job history',
 	'LOGS' => 'Logi',
 	'SIGN_OUT' => 'Wyloguj',
 	'UPDATE_AVAILABLE' => 'Dostępna aktualizacja!',
@@ -140,6 +143,9 @@ return [
 	'UNSTAR_PHOTO' => 'Cofnij oznaczenie',
 	'SET_COVER' => 'Ustaw jako okładkę albumu',
 	'REMOVE_COVER' => 'Usuń okładkę albumu',
+	'SET_HEADER' => 'Set Album Header',
+	'REMOVE_HEADER' => 'Remove Album Header',
+	'SET_COMPACT_HEADER' => 'Use Compact Header',
 
 	'FULL_PHOTO' => 'Otwórz oryginalne',
 	'ABOUT_PHOTO' => 'Informacje o zdjęciu',
@@ -205,6 +211,8 @@ return [
 	'ALBUM_RESERVED' => 'Wszelkie prawa zastrzeżone',
 	'ALBUM_SET_ORDER' => 'Zapisz',
 	'ALBUM_ORDERING' => 'Sortowanie',
+	'ALBUM_PHOTO_ORDERING' => 'Order photos by',
+	'ALBUM_CHILDREN_ORDERING' => 'Order albums by',
 	'ALBUM_OWNER' => 'Owner',
 
 	'PHOTO_ABOUT' => 'Informacje o zdjęciu',
@@ -282,6 +290,7 @@ return [
 	'ERROR_MAP_DEACTIVATED' => 'Funkcja mapy została wyłączona w ustawieniach.',
 	'ERROR_SEARCH_DEACTIVATED' => 'Funkcja wyszkukiwania została wyłączona w ustawieniach.',
 	'SUCCESS' => 'OK',
+	'CHANGE_SUCCESS' => 'Change successful.',
 	'RETRY' => 'Ponów',
 	'OVERRIDE' => 'Override',
 	'TAGS_OVERRIDE_INFO' => 'If this is unchecked, the tags will be added to the existing tags of the photo.',
@@ -311,6 +320,7 @@ return [
 	'U2F_AUTHENTIFICATION_SUCCESS' => 'Autoryzacja pomyślna!',
 	'U2F_CREDENTIALS' => 'Dane uwierzytelniające',
 	'U2F_CREDENTIALS_DELETED' => 'Usunięto dane uwierzytelniające!',
+	'U2F_LOGIN' => 'Log in with WebAuthn',
 
 	'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
 	'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
@@ -345,7 +355,6 @@ return [
 	'SORT_PHOTO_SELECT_2' => 'Take Date',
 	'SORT_PHOTO_SELECT_3' => 'tytuł',
 	'SORT_PHOTO_SELECT_4' => 'opis',
-	'SORT_PHOTO_SELECT_5' => 'publiczny',
 	'SORT_PHOTO_SELECT_6' => 'oznaczony',
 	'SORT_PHOTO_SELECT_7' => 'format',
 
@@ -354,7 +363,7 @@ return [
 	'SORT_CHANGE' => 'Zmień sortowanie',
 
 	'DROPBOX_TITLE' => 'Ustaw klucz Dropbox',
-	'DROPBOX_TEXT' => "In order to import photos from your Dropbox, you need a valid drop-ins app key from <a href='https://www.dropbox.com/developers/apps/create'>their website</a>. Generate yourself a personal key and enter it below:",
+	'DROPBOX_TEXT' => "In order to import photos from your Dropbox, you need a valid drop-ins app key from <a href='https://www.dropbox.com/developers/saver'>their website</a>. Generate yourself a personal key and enter it below:",
 
 	'LANG_TEXT' => 'Zmień język na:',
 	'LANG_TITLE' => 'Zmień język',
@@ -400,6 +409,8 @@ return [
 	'LAYOUT_TYPE' => 'Układ zdjęć:',
 	'LAYOUT_SQUARES' => 'Kwadratowe miniaturki',
 	'LAYOUT_JUSTIFIED' => 'Aspekt, wyrównane',
+	'LAYOUT_MASONRY' => 'Aspekt, masonry',
+	'LAYOUT_GRID' => 'Aspekt, grid',
 	'LAYOUT_UNJUSTIFIED' => 'Aspekt, bez wyrównania',
 	'SET_LAYOUT' => 'Zmień układ',
 
@@ -408,6 +419,9 @@ return [
 	'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Domyślne ustawienie dotyczące widoczności albumów poufnych ostało zaktualizowane.',
 
 	'NSFW_BANNER' => '<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>',
+	'NSFW_HEADER' => 'Sensitive content',
+	'NSFW_EXPLANATION' => 'This album contains sensitive content which some people may find offensive or disturbing.',
+	'TAP_CONSENT' => 'Tap to consent.',
 
 	'VIEW_NO_RESULT' => 'Brak wyników',
 	'VIEW_NO_PUBLIC_ALBUMS' => 'Brak albumów publicznych',

@@ -8,6 +8,8 @@ printf "\n${GREEN}pre commit hook start${NO_COLOR}\n"
 PHP_CS_FIXER="vendor/bin/php-cs-fixer"
 PHP_CS_FIXER_IGNORE_ENV=1
 
+NPM_FORMAT="node_modules/prettier"
+
 if [ -x "$PHP_CS_FIXER" ]; then
     git status --porcelain | grep -e '^[AM]\(.*\).php$' | cut -c 3- | while read line; do
         ${PHP_CS_FIXER} fix --config=.php-cs-fixer.php ${line};
@@ -18,6 +20,19 @@ else
     printf "${YELLOW}Please install php-cs-fixer, e.g.:${NO_COLOR}"
     echo ""
     echo "  composer install"
+    echo ""
+fi
+
+if [ -x "$NPM_FORMAT" ]; then
+    npm run format
+    git status --porcelain | grep -e '^[AM]\(.*\).js$' | cut -c 3- | while read line; do
+        git add "$line";
+    done
+else
+    echo ""
+    printf "${YELLOW}Please install prettier, e.g.:${NO_COLOR}"
+    echo ""
+    echo "  npm run install"
     echo ""
 fi
 

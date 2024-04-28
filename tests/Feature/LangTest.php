@@ -12,11 +12,16 @@
 
 namespace Tests\Feature;
 
+use function Safe\scandir;
 use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\Console\Output\ConsoleSectionOutput;
 use Tests\AbstractTestCase;
 
 class LangTest extends AbstractTestCase
 {
+	private ConsoleSectionOutput $msgSection;
+	private bool $failed = false;
+
 	/**
 	 * Test Languages are complete.
 	 *
@@ -27,27 +32,20 @@ class LangTest extends AbstractTestCase
 		static::assertEquals('en', app()->getLocale());
 		static::assertEquals('OK', __('lychee.SUCCESS'));
 
-		$msgSection = (new ConsoleOutput())->section();
+		$this->msgSection = (new ConsoleOutput())->section();
 
-		$englishDictionary = include base_path('lang/en/lychee.php');
-		$availableDictionaries = config('app.supported_locale');
-		$failed = false;
+		/** @var array<int,string> $englishDictionaries */
+		$englishDictionaries = collect(array_diff(scandir(base_path('lang/en')), ['..', '.']))->filter(fn ($v) => str_ends_with($v, '.php'))->all();
+		foreach ($englishDictionaries as $dictionaryFile) {
+			$englishDictionary = include base_path('lang/en/' . $dictionaryFile);
+			$availableDictionaries = array_diff(config('app.supported_locale'), ['en']);
 
-		foreach ($availableDictionaries as $locale) {
-			$dictionary = include base_path('lang/' . $locale . '/lychee.php');
-			$missingKeys = array_diff_key($englishDictionary, $dictionary);
-			foreach ($missingKeys as $key => $value) {
-				$msgSection->writeln(sprintf('<comment>Error:</comment> Locale %s misses the following key: %s', str_pad($locale, 8), $key));
-				$failed = true;
-			}
-
-			$extraKeys = array_diff_key($dictionary, $englishDictionary);
-			foreach ($extraKeys as $key => $value) {
-				$msgSection->writeln(sprintf('<comment>Error:</comment> Locale %s has the following extra key: %s', str_pad($locale, 8), $key));
-				$failed = true;
+			foreach ($availableDictionaries as $locale) {
+				$dictionary = include base_path('lang/' . $locale . '/' . $dictionaryFile);
+				$this->recursiveCheck($englishDictionary, $dictionary, $locale, $dictionaryFile);
 			}
 		}
-		static::assertFalse($failed);
+		static::assertFalse($this->failed);
 	}
 
 	public function testEnglishAsFallbackIfLangConfigIsMissing(): void
@@ -55,5 +53,28 @@ class LangTest extends AbstractTestCase
 		app()->setLocale('ZK');
 		static::assertEquals('ZK', app()->getLocale());
 		static::assertEquals('OK', __('lychee.SUCCESS'));
+	}
+
+	private function recursiveCheck(array $expected, array $candidate, string $locale, string $file, string $prefix = ''): void
+	{
+		$missingKeys = array_diff_key($expected, $candidate);
+
+		foreach ($missingKeys as $key => $value) {
+			$this->msgSection->writeln(sprintf('<comment>Error:</comment> Locale %s %s misses the following key: %s', str_pad($locale, 8), $file, $prefix . $key));
+			$this->failed = true;
+		}
+
+		$extraKeys = array_diff_key($candidate, $expected);
+		foreach ($extraKeys as $key => $value) {
+			$this->msgSection->writeln(sprintf('<comment>Error:</comment> Locale %s %s has the following extra key: %s', str_pad($locale, 8), $file, $prefix . $key));
+			$this->failed = true;
+		}
+
+		$expected_arrays = array_filter($expected, fn ($v) => is_array($v));
+		$candidate_arrays = array_filter($candidate, fn ($v) => is_array($v));
+		foreach ($expected_arrays as $key => $sub_expected) {
+			$sub_candidate = $candidate_arrays[$key] ?? [];
+			$this->recursiveCheck($sub_expected, $sub_candidate, $locale, $file, $key . '.');
+		}
 	}
 }

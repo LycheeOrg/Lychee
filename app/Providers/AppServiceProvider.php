@@ -11,6 +11,10 @@ use App\Contracts\Models\SizeVariantFactory;
 use App\Factories\AlbumFactory;
 use App\Image\SizeVariantDefaultFactory;
 use App\Image\StreamStatFilter;
+use App\Livewire\Synth\AlbumFlagsSynth;
+use App\Livewire\Synth\AlbumSynth;
+use App\Livewire\Synth\PhotoSynth;
+use App\Livewire\Synth\SessionFlagsSynth;
 use App\Metadata\Json\CommitsRequest;
 use App\Metadata\Json\UpdateRequest;
 use App\Metadata\Versions\FileVersion;
@@ -30,36 +34,64 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
+use Livewire\Livewire;
 use Opcodes\LogViewer\Facades\LogViewer;
 use Safe\Exceptions\StreamException;
 use function Safe\stream_filter_register;
 
 class AppServiceProvider extends ServiceProvider
 {
+	/**
+	 * Defines which queries to ignore when doing explain.
+	 *
+	 * @var array<int,string>
+	 */
+	private array $ignore_log_SQL =
+		[
+			'information_schema', // Not interesting
+			'migrations',
+
+			// We do not want infinite loops
+			'EXPLAIN',
+
+			// Way too noisy
+			'configs',
+		];
+
 	public array $singletons =
-	[
-		SymLinkFunctions::class => SymLinkFunctions::class,
-		Helpers::class => Helpers::class,
-		CheckUpdate::class => CheckUpdate::class,
-		AlbumFactory::class => AlbumFactory::class,
-		AlbumQueryPolicy::class => AlbumQueryPolicy::class,
-		PhotoQueryPolicy::class => PhotoQueryPolicy::class,
+		[
+			SymLinkFunctions::class => SymLinkFunctions::class,
+			Helpers::class => Helpers::class,
+			CheckUpdate::class => CheckUpdate::class,
+			AlbumFactory::class => AlbumFactory::class,
+			AlbumQueryPolicy::class => AlbumQueryPolicy::class,
+			PhotoQueryPolicy::class => PhotoQueryPolicy::class,
 
-		// Versioning
-		InstalledVersion::class => InstalledVersion::class,
-		GitHubVersion::class => GitHubVersion::class,
-		FileVersion::class => FileVersion::class,
+			// Versioning
+			InstalledVersion::class => InstalledVersion::class,
+			GitHubVersion::class => GitHubVersion::class,
+			FileVersion::class => FileVersion::class,
 
-		// Json requests.
-		CommitsRequest::class => CommitsRequest::class,
-		UpdateRequest::class => UpdateRequest::class,
+			// Json requests.
+			CommitsRequest::class => CommitsRequest::class,
+			UpdateRequest::class => UpdateRequest::class,
 
-		// JsonParsers
-		GitCommits::class => GitCommits::class,
-		GitTags::class => GitTags::class,
-	];
+			// JsonParsers
+			GitCommits::class => GitCommits::class,
+			GitTags::class => GitTags::class,
+		];
+
+	private array $livewireSynth =
+		[
+			AlbumSynth::class,
+			PhotoSynth::class,
+			SessionFlagsSynth::class,
+			AlbumFlagsSynth::class,
+		];
 
 	/**
 	 * Bootstrap any application services.
@@ -74,6 +106,13 @@ class AppServiceProvider extends ServiceProvider
 		 */
 		JsonResource::withoutWrapping();
 
+		/**
+		 * We force URL to HTTPS if requested in .env via APP_FORCE_HTTPS.
+		 */
+		if (config('features.force_https') === true) {
+			URL::forceScheme('https');
+		}
+
 		if (config('database.db_log_sql', false) === true) {
 			DB::listen(fn ($q) => $this->logSQL($q));
 		}
@@ -82,12 +121,11 @@ class AppServiceProvider extends ServiceProvider
 			$lang = Configs::getValueAsString('lang');
 			app()->setLocale($lang);
 		} catch (\Throwable $e) {
-			/** log and ignore.
+			/** Ignore.
 			 * This is necessary so that we can continue:
 			 * - if Configs table do not exists (no install),
 			 * - if the value does not exists in configs (no install),.
 			 */
-			logger($e);
 		}
 
 		/**
@@ -123,6 +161,22 @@ class AppServiceProvider extends ServiceProvider
 			// return true to allow viewing the Log Viewer.
 			return Auth::authenticate() !== null && Gate::check(SettingsPolicy::CAN_SEE_LOGS, Configs::class);
 		});
+
+		foreach ($this->livewireSynth as $synth) {
+			Livewire::propertySynthesizer($synth);
+		}
+
+		$dir_url = config('app.dir_url') === '' ? '' : (config('app.dir_url') . '/');
+
+		Livewire::setScriptRoute(function ($handle) use ($dir_url) {
+			return config('app.debug') === true
+				? Route::get($dir_url . 'livewire/livewire.js', $handle)
+				: Route::get($dir_url . 'livewire/livewire.min.js', $handle);
+		});
+
+		Livewire::setUpdateRoute(function ($handle) use ($dir_url) {
+			return Route::post($dir_url . 'livewire/update', $handle)->middleware('web');
+		});
 	}
 
 	/**
@@ -152,7 +206,7 @@ class AppServiceProvider extends ServiceProvider
 		// Quick exit
 		if (
 			Str::contains(request()->getRequestUri(), 'logs', true) ||
-			Str::contains($query->sql, ['information_schema', 'EXPLAIN', 'configs'])
+			Str::contains($query->sql, $this->ignore_log_SQL)
 		) {
 			return;
 		}
@@ -161,7 +215,10 @@ class AppServiceProvider extends ServiceProvider
 		$msg = '(' . $query->time . 'ms) ' . $query->sql . ' [' . implode(', ', $query->bindings) . ']';
 
 		// For pgsql and sqlite we log the query and exit early
-		if (config('database.default', 'mysql') !== 'mysql' || config('database.explain', false) === false) {
+		if (config('database.default', 'mysql') !== 'mysql' ||
+			config('database.explain', false) === false ||
+			!Str::contains($query->sql, 'select')
+		) {
 			Log::debug($msg);
 
 			return;
@@ -179,9 +236,14 @@ class AppServiceProvider extends ServiceProvider
 
 		$sql_with_bindings = Str::replaceArray('?', $bindings, $query->sql);
 
-		$explain = DB::select('EXPLAIN ' . $sql_with_bindings);
+		$explain = DB::select('EXPLAIN ' . $query->sql, $query->bindings);
 		$renderer = new ArrayToTextTable();
 		$renderer->setIgnoredKeys(['possible_keys', 'key_len', 'ref']);
-		Log::debug($msg . PHP_EOL . $renderer->getTable($explain));
+
+		$msg .= PHP_EOL;
+		$msg .= Str::repeat('-', 20) . PHP_EOL;
+		$msg .= $sql_with_bindings . PHP_EOL;
+		$msg .= $renderer->getTable($explain);
+		Log::debug($msg);
 	}
 }

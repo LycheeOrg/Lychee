@@ -90,7 +90,7 @@ class HasManyChildPhotos extends HasManyBidirectionally
 			return $this->related->newCollection();
 		}
 
-		$albumSorting = $this->getParent()->getEffectiveSorting();
+		$albumSorting = $this->getParent()->getEffectivePhotoSorting();
 
 		return (new SortingDecorator($this->query))
 			->orderPhotosBy(
@@ -124,7 +124,7 @@ class HasManyChildPhotos extends HasManyBidirectionally
 			if (isset($dictionary[$key = $this->getDictionaryKey($model->getAttribute($this->localKey))])) {
 				/** @var Collection $childrenOfModel */
 				$childrenOfModel = $this->getRelationValue($dictionary, $key, 'many');
-				$sorting = $model->getEffectiveSorting();
+				$sorting = $model->getEffectivePhotoSorting();
 				$childrenOfModel = $childrenOfModel
 					->sortBy(
 						$sorting->column->value,

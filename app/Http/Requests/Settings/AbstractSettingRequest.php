@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Gate;
  */
 abstract class AbstractSettingRequest extends BaseApiRequest
 {
-	protected string|int|bool $value;
+	protected string|int|bool|\BackedEnum $value;
 
 	protected string $name;
 
@@ -30,7 +30,7 @@ abstract class AbstractSettingRequest extends BaseApiRequest
 		return $this->name;
 	}
 
-	public function getSettingValue(): string|int|bool
+	public function getSettingValue(): string|int|bool|\BackedEnum
 	{
 		return $this->value;
 	}

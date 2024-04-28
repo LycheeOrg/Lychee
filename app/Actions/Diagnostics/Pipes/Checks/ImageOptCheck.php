@@ -5,6 +5,7 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 use App\Contracts\DiagnosticPipe;
 use App\Facades\Helpers;
 use App\Models\Configs;
+use Illuminate\Support\Facades\Schema;
 use function Safe\exec;
 use Spatie\ImageOptimizer\Optimizers\Cwebp;
 use Spatie\ImageOptimizer\Optimizers\Gifsicle;
@@ -13,10 +14,20 @@ use Spatie\ImageOptimizer\Optimizers\Optipng;
 use Spatie\ImageOptimizer\Optimizers\Pngquant;
 use Spatie\ImageOptimizer\Optimizers\Svgo;
 
+/**
+ * Verify that we have some image optimization available if enabled.
+ */
 class ImageOptCheck implements DiagnosticPipe
 {
+	/**
+	 * {@inheritDoc}
+	 */
 	public function handle(array &$data, \Closure $next): array
 	{
+		if (!Schema::hasTable('configs')) {
+			return $next($data);
+		}
+
 		$tools = [];
 		$tools[] = new Cwebp();
 		$tools[] = new Gifsicle();
@@ -34,7 +45,7 @@ class ImageOptCheck implements DiagnosticPipe
 		$binaryPath = config('image-optimizer.binary_path');
 
 		if ($binaryPath !== '' && substr($binaryPath, -1) !== DIRECTORY_SEPARATOR) {
-			$binaryPath = $binaryPath . DIRECTORY_SEPARATOR;
+			$binaryPath .= DIRECTORY_SEPARATOR;
 		}
 
 		if (Helpers::isExecAvailable()) {

@@ -51,14 +51,14 @@ class SearchTest extends BasePhotoTest
 
 	public function testSearchPhotoByTitle(): void
 	{
-		$photoId1 = $this->photos_tests->upload(
+		$photoID1 = $this->photos_tests->upload(
 			AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE)
 		)->offsetGet('id');
-		$photoId2 = $this->photos_tests->upload(
+		$photoID2 = $this->photos_tests->upload(
 			AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE)
 		)->offsetGet('id');
-		$this->photos_tests->set_title($photoId1, 'photo search');
-		$this->photos_tests->set_title($photoId2, 'do not find me');
+		$this->photos_tests->set_title($photoID1, 'photo search');
+		$this->photos_tests->set_title($photoID2, 'do not find me');
 
 		$response = $this->runSearch('search');
 
@@ -68,7 +68,7 @@ class SearchTest extends BasePhotoTest
 					'album_id' => null,
 					'aperture' => 'f/2.8',
 					'focal' => '16 mm',
-					'id' => $photoId1,
+					'id' => $photoID1,
 					'iso' => '1250',
 					'lens' => 'EF16-35mm f/2.8L USM',
 					'make' => 'Canon',
@@ -100,22 +100,22 @@ class SearchTest extends BasePhotoTest
 		]);
 
 		$response->assertJsonMissing([
-			'id' => $photoId2,
+			'id' => $photoID2,
 		]);
 	}
 
 	public function testSearchPhotoByTag(): void
 	{
-		$photoId1 = $this->photos_tests->upload(
+		$photoID1 = $this->photos_tests->upload(
 			AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE)
 		)->offsetGet('id');
-		$photoId2 = $this->photos_tests->upload(
+		$photoID2 = $this->photos_tests->upload(
 			AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE)
 		)->offsetGet('id');
-		$this->photos_tests->set_title($photoId1, 'photo search');
-		$this->photos_tests->set_title($photoId2, 'do not find me');
-		$this->photos_tests->set_tag([$photoId1], ['search tag']);
-		$this->photos_tests->set_tag([$photoId2], ['other tag']);
+		$this->photos_tests->set_title($photoID1, 'photo search');
+		$this->photos_tests->set_title($photoID2, 'do not find me');
+		$this->photos_tests->set_tag([$photoID1], ['search tag']);
+		$this->photos_tests->set_tag([$photoID2], ['other tag']);
 
 		$response = $this->runSearch('search');
 
@@ -125,7 +125,7 @@ class SearchTest extends BasePhotoTest
 					'album_id' => null,
 					'aperture' => 'f/2.8',
 					'focal' => '16 mm',
-					'id' => $photoId1,
+					'id' => $photoID1,
 					'iso' => '1250',
 					'lens' => 'EF16-35mm f/2.8L USM',
 					'make' => 'Canon',
@@ -161,22 +161,22 @@ class SearchTest extends BasePhotoTest
 		]);
 
 		$response->assertJsonMissing([
-			'id' => $photoId2,
+			'id' => $photoID2,
 		]);
 	}
 
 	public function testSearchAlbumByTitle(): void
 	{
-		/** @var string $albumId1 */
-		$albumId1 = $this->albums_tests->add(null, 'search')->offsetGet('id');
-		/** @var string $albumId2 */
-		$albumId2 = $this->albums_tests->add(null, 'other')->offsetGet('id');
+		/** @var string $albumID1 */
+		$albumID1 = $this->albums_tests->add(null, 'search')->offsetGet('id');
+		/** @var string $albumID2 */
+		$albumID2 = $this->albums_tests->add(null, 'other')->offsetGet('id');
 
 		$response = $this->runSearch('search');
 
 		$response->assertJson([
 			'albums' => [[
-				'id' => $albumId1,
+				'id' => $albumID1,
 				'title' => 'search',
 			]],
 		]);
@@ -186,7 +186,7 @@ class SearchTest extends BasePhotoTest
 		]);
 
 		$response->assertJsonMissing([
-			'id' => $albumId2,
+			'id' => $albumID2,
 		]);
 	}
 
@@ -206,10 +206,8 @@ class SearchTest extends BasePhotoTest
 
 	public function testSearchAlbumByTitleWithAnonUser(): void
 	{
-		$arePublicPhotosHidden = Configs::getValueAsBool(TestConstants::CONFIG_PUBLIC_HIDDEN);
 		$isPublicSearchEnabled = Configs::getValueAsBool(TestConstants::CONFIG_PUBLIC_SEARCH);
 		try {
-			Configs::set(TestConstants::CONFIG_PUBLIC_HIDDEN, false);
 			Configs::set(TestConstants::CONFIG_PUBLIC_SEARCH, true);
 
 			$albumID1 = $this->albums_tests->add(null, 'Matching private album')->offsetGet('id');
@@ -239,19 +237,16 @@ class SearchTest extends BasePhotoTest
 			$response->assertJsonMissing(['id' => $albumID2]);
 			$response->assertJsonMissing(['id' => $albumID4]);
 		} finally {
-			Configs::set(TestConstants::CONFIG_PUBLIC_HIDDEN, $arePublicPhotosHidden);
 			Configs::set(TestConstants::CONFIG_PUBLIC_SEARCH, $isPublicSearchEnabled);
 		}
 	}
 
 	public function testSearchAlbumByTitleWithNonAdminUser(): void
 	{
-		$arePublicPhotosHidden = Configs::getValueAsBool(TestConstants::CONFIG_PUBLIC_HIDDEN);
 		$isPublicSearchEnabled = Configs::getValueAsBool(TestConstants::CONFIG_PUBLIC_SEARCH);
 		$albumSortingColumn = Configs::getValueAsString(TestConstants::CONFIG_ALBUMS_SORTING_COL);
 		$albumSortingOrder = Configs::getValueAsString(TestConstants::CONFIG_ALBUMS_SORTING_ORDER);
 		try {
-			Configs::set(TestConstants::CONFIG_PUBLIC_HIDDEN, false);
 			Configs::set(TestConstants::CONFIG_PUBLIC_SEARCH, true);
 			Configs::set(TestConstants::CONFIG_ALBUMS_SORTING_COL, 'title');
 			Configs::set(TestConstants::CONFIG_ALBUMS_SORTING_ORDER, 'ASC');
@@ -287,7 +282,6 @@ class SearchTest extends BasePhotoTest
 		} finally {
 			Configs::set(TestConstants::CONFIG_ALBUMS_SORTING_COL, $albumSortingColumn);
 			Configs::set(TestConstants::CONFIG_ALBUMS_SORTING_ORDER, $albumSortingOrder);
-			Configs::set(TestConstants::CONFIG_PUBLIC_HIDDEN, $arePublicPhotosHidden);
 			Configs::set(TestConstants::CONFIG_PUBLIC_SEARCH, $isPublicSearchEnabled);
 		}
 	}

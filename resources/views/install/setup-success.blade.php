@@ -7,7 +7,7 @@ active
 @section('content')
 	<strong>Admin account has been created.</strong>
 	<div class="buttons">
-	<a href="{{ route('home') }}" class="button" >
+	<a href="{{ Features::when('livewire', fn () => route('livewire-index'), fn () => route('home')) }}" class="button" >
 			Open Lychee <i class="fa fa-angle-right fa-fw" aria-hidden="true"></i>
 		</a>
 	</div>

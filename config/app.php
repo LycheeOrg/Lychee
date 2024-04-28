@@ -1,7 +1,23 @@
 <?php
 
 use Illuminate\Support\Facades\Facade;
+use function Safe\date;
 use function Safe\scandir;
+
+/**
+ * Given a .env config constant, retrieve the env value and remove any trailing /.
+ *
+ * @param string      $cst     constant to fetch
+ * @param string|null $default default value if does not exists
+ *
+ * @return string trimmed result
+ */
+if (!function_exists('renv')) {
+	function renv(string $cst, ?string $default = null): string
+	{
+		return rtrim(env($cst, $default) ?? '', '/');
+	}
+}
 
 return [
 	/*
@@ -52,23 +68,17 @@ return [
 	| the Artisan command line tool. You should set this to the root of
 	| your application so that it is used when running Artisan tasks.
 	|
+	| url : the base url of your Lychee install up to the tld (end '/' will be trimmed)
+	| dir_url : the path of your Lychee install from the tld (will be prefixed by '/' and end '/' will be trimmed)
+	|
+	| asset_url : should be left to default (null).
 	*/
 
-	'url' => env('APP_URL', 'http://localhost'),
+	'url' => renv('APP_URL', 'http://localhost'),
+
+	'dir_url' => env('APP_DIR', '') === '' ? '' : ('/' . trim(env('APP_DIR'), '/')),
 
 	'asset_url' => null,
-
-	/*
-	|--------------------------------------------------------------------------
-	| Application URL
-	|--------------------------------------------------------------------------
-	|
-	| When running behind a proxy, it may be necessary for the urls to be
-	| set as https for the reverse translation. You should set this if you
-	| want to force the https scheme.
-	*/
-
-	'force_https' => (bool) env('APP_FORCE_HTTPS', false),
 
 	/*
 	|--------------------------------------------------------------------------
@@ -218,6 +228,7 @@ return [
 		 * Package Service Providers...
 		 */
 
+		\SocialiteProviders\Manager\ServiceProvider::class,
 		// Barryvdh\Debugbar\ServiceProvider::class,
 
 		/*
@@ -243,5 +254,17 @@ return [
 	'aliases' => Facade::defaultAliases()->merge([
 		'DebugBar' => Barryvdh\Debugbar\Facades\Debugbar::class,
 		'Helpers' => App\Facades\Helpers::class,
+		'Features' => App\Assets\Features::class,
+		// Aliases for easier access in the blade templates
+		'Configs' => App\Models\Configs::class,
+		'AlbumPolicy' => App\Policies\AlbumPolicy::class,
+		'PhotoPolicy' => App\Policies\PhotoPolicy::class,
+		'SettingsPolicy' => App\Policies\SettingsPolicy::class,
+		'UserPolicy' => App\Policies\UserPolicy::class,
+		'User' => App\Models\User::class,
+		'SizeVariantType' => App\Enum\SizeVariantType::class,
+		'FileStatus' => App\Enum\Livewire\FileStatus::class,
+		'Params' => App\Contracts\Livewire\Params::class,
+		'PhotoLayoutType' => \App\Enum\PhotoLayoutType::class,
 	])->toArray(),
 ];

@@ -11,8 +11,12 @@ use App\Facades\Helpers;
 use App\Metadata\Versions\GitHubVersion;
 use App\Metadata\Versions\InstalledVersion;
 use App\Models\Configs;
+use Illuminate\Support\Facades\Schema;
 use function Safe\exec;
 
+/**
+ * Check whether or not it is possible to update this installation.
+ */
 class UpdatableCheck implements DiagnosticPipe
 {
 	private InstalledVersion $installedVersion;
@@ -61,6 +65,11 @@ class UpdatableCheck implements DiagnosticPipe
 			return;
 			// @codeCoverageIgnoreEnd
 		}
+		if (!Schema::hasTable('configs')) {
+			// @codeCoverageIgnoreStart
+			throw new ConfigurationException('Migration is not run');
+			// @codeCoverageIgnoreEnd
+		}
 
 		if (!Configs::getValueAsBool('allow_online_git_pull')) {
 			throw new ConfigurationException('Online updates are disabled by configuration');
@@ -78,7 +87,7 @@ class UpdatableCheck implements DiagnosticPipe
 
 		if (!$gitHubFunctions->hasPermissions()) {
 			// @codeCoverageIgnoreStart
-			throw new InsufficientFilesystemPermissions(base_path('.git') . ' (and subdirectories) are not executable, check the permissions');
+			throw new InsufficientFilesystemPermissions(Helpers::censor(base_path('.git'), 1 / 4) . ' (and subdirectories) are not executable, check the permissions');
 			// @codeCoverageIgnoreEnd
 		}
 	}

@@ -1,21 +1,47 @@
 {
     "private": true,
+    "type": "module",
     "scripts": {
-        "dev": "npm run development",
-        "development": "mix",
-        "watch": "mix watch",
-        "watch-poll": "mix watch -- --watch-options-poll=1000",
-        "hot": "mix watch --hot",
-        "prod": "npm run production",
-        "production": "mix --production"
+        "check": "tsc --noEmit",
+        "dev": "vite",
+        "build": "vite build",
+        "check-formatting": "prettier --check resources/js/ resources/css/",
+        "format": "prettier --write resources/js/ resources/css/"
     },
     "devDependencies": {
-        "axios": "^0.27.2",
-        "laravel-mix": "^6.0.6",
-        "lodash": "^4.17.19",
-        "postcss": "^8.1.14",
-        "resolve-url-loader": "^5.0.0",
-        "sass": "^1.32.11",
-        "sass-loader": "^13.0.2"
-    }
+        "@lychee-org/leaflet.photo": "^1.0.0",
+        "@tailwindcss/typography": "^0.5.12",
+        "@types/alpinejs": "^3.13.6",
+        "@types/leaflet": "^1.9.8",
+        "@types/leaflet-rotatedmarker": "^0.2.5",
+        "@types/leaflet.markercluster": "^1.5.4",
+        "@types/mousetrap": "^1.6.15",
+        "@types/photoswipe": "^4.1.6",
+        "@types/qrcode": "^1.5.5"
+    },
+    "dependencies": {
+        "@fortawesome/fontawesome-free": "^6.5.1",
+        "@types/justified-layout": "^4.1.4",
+        "autoprefixer": "^10.4.17",
+        "is-mobile": "^4.0.0",
+        "justified-layout": "^4.1.0",
+        "laravel-vite-plugin": "^1.0.1",
+        "lazysizes": "^5.3.2",
+        "leaflet": "^1.9.4",
+        "leaflet-gpx": "^1.7.0",
+        "leaflet-rotatedmarker": "^0.2.0",
+        "leaflet.markercluster": "^1.5.3",
+        "postcss": "^8.4.33",
+        "prettier": "^3.2.4",
+        "qrcode": "^1.5.3",
+        "tailwindcss": "^3.4.1",
+        "tinygesture": "^3.0.0",
+        "ts-loader": "^9.5.1",
+        "typescript": "^5.3.3",
+        "vite": "^5.1.7",
+        "vite-plugin-commonjs": "^0.10.1"
+    },
+    "browserslist": [
+        "defaults and fully supports es6-module"
+    ]
 }

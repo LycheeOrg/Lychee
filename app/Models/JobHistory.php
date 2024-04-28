@@ -9,18 +9,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * App\Models\JobHistory.
- *
- * @property int         $id
- * @property int         $owner_id
- * @property User        $owner
- * @property string      $job
- * @property string|null $parent_id
- * @property Album|null  $parent
- * @property JobStatus   $status
- * @property ?string     $title
- * @property Carbon      $created_at
- * @property Carbon      $updated_at
+ * @property int       $id
+ * @property int       $owner_id
+ * @property User      $owner
+ * @property string    $job
+ * @property JobStatus $status
+ * @property Carbon    $created_at
+ * @property Carbon    $updated_at
  *
  * @method static JobHistoryBuilder|JobHistory addSelect($column)
  * @method static JobHistoryBuilder|JobHistory join(string $table, string $first, string $operator = null, string $second = null, string $type = 'inner', string $where = false)
@@ -37,10 +32,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static JobHistoryBuilder|JobHistory whereJob($value)
  * @method static JobHistoryBuilder|JobHistory whereNotIn(string $column, string $values, string $boolean = 'and')
  * @method static JobHistoryBuilder|JobHistory whereOwnerId($value)
- * @method static JobHistoryBuilder|JobHistory whereParentId($value)
  * @method static JobHistoryBuilder|JobHistory whereStatus($value)
  * @method static JobHistoryBuilder|JobHistory whereUpdatedAt($value)
- * @method static JobHistoryBuilder|JobHistory withAlbumTitleOrNull()
  *
  * @mixin \Eloquent
  */
@@ -85,15 +78,5 @@ class JobHistory extends Model
 	public function owner(): BelongsTo
 	{
 		return $this->belongsTo(User::class, 'owner_id', 'id');
-	}
-
-	/**
-	 * Returns the relationship between an Job and its associated album.
-	 *
-	 * @return BelongsTo
-	 */
-	public function parent(): BelongsTo
-	{
-		return $this->belongsTo(BaseAlbumImpl::class, 'parent_id', 'id');
 	}
 }

@@ -3,8 +3,8 @@
 namespace App\Jobs;
 
 use App\Actions\Photo\Create;
-use App\Actions\Photo\Strategies\ImportMode;
 use App\Contracts\Models\AbstractAlbum;
+use App\DTO\ImportMode;
 use App\Enum\JobStatus;
 use App\Factories\AlbumFactory;
 use App\Image\Files\ProcessableJobFile;
@@ -36,7 +36,7 @@ class ProcessImageJob implements ShouldQueue
 
 	public string $filePath;
 	public string $originalBaseName;
-	public ?string $albumId;
+	public ?string $albumID;
 	public int $userId;
 	public ?int $fileLastModifiedTime;
 
@@ -45,20 +45,32 @@ class ProcessImageJob implements ShouldQueue
 	 */
 	public function __construct(
 		ProcessableJobFile $file,
-		?AbstractAlbum $albumId,
+		string|AbstractAlbum|null $album,
 		?int $fileLastModifiedTime,
 	) {
 		$this->filePath = $file->getPath();
 		$this->originalBaseName = $file->getOriginalBasename();
-		$this->albumId = $albumId?->id;
+
+		$this->albumID = null;
+		$album_name = __('lychee.UNSORTED');
+
+		if ($album instanceof AbstractAlbum) {
+			$this->albumID = $album->id;
+			$album_name = $album->title;
+		}
+
+		if (is_string($album)) {
+			$this->albumID = $album;
+			$album_name = resolve(AlbumFactory::class)->findAbstractAlbumOrFail($this->albumID)->title;
+		}
+
 		$this->userId = Auth::user()->id;
 		$this->fileLastModifiedTime = $fileLastModifiedTime;
 
 		// Set up our new history record.
 		$this->history = new JobHistory();
 		$this->history->owner_id = $this->userId;
-		$this->history->job = Str::limit('Process Image: ' . $this->originalBaseName, 200);
-		$this->history->parent_id = $this->albumId;
+		$this->history->job = Str::limit(sprintf('Process Image: %s added to %s.', $this->originalBaseName, $album_name), 200);
 		$this->history->status = JobStatus::READY;
 
 		$this->history->save();
@@ -72,6 +84,9 @@ class ProcessImageJob implements ShouldQueue
 	 */
 	public function handle(AlbumFactory $albumFactory): Photo
 	{
+		$this->history->status = JobStatus::STARTED;
+		$this->history->save();
+
 		$copiedFile = new TemporaryJobFile($this->filePath, $this->originalBaseName);
 
 		// As the file has been uploaded, the (temporary) source file shall be
@@ -82,8 +97,8 @@ class ProcessImageJob implements ShouldQueue
 		);
 
 		$album = null;
-		if ($this->albumId !== null) {
-			$album = $albumFactory->findAbstractAlbumOrFail($this->albumId);
+		if ($this->albumID !== null) {
+			$album = $albumFactory->findAbstractAlbumOrFail($this->albumID);
 		}
 
 		$photo = $create->add($copiedFile, $album, $this->fileLastModifiedTime);
@@ -110,7 +125,6 @@ class ProcessImageJob implements ShouldQueue
 		if ($th->getCode() === 999) {
 			$this->release();
 		} else {
-			logger($th);
 			Log::error(__LINE__ . ':' . __FILE__ . ' ' . $th->getMessage(), $th->getTrace());
 		}
 	}

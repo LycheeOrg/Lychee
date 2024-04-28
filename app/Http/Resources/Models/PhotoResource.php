@@ -2,12 +2,17 @@
 
 namespace App\Http\Resources\Models;
 
+use App\Enum\LicenseType;
 use App\Enum\SizeVariantType;
+use App\Facades\Helpers;
 use App\Http\Resources\Rights\PhotoRightsResource;
 use App\Http\Resources\Traits\WithStatus;
+use App\Models\Configs;
 use App\Models\Extensions\SizeVariants;
 use App\Models\Photo;
+use App\Models\SizeVariant;
 use App\Policies\PhotoPolicy;
+use GrahamCampbell\Markdown\Facades\Markdown;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -65,7 +70,6 @@ class PhotoResource extends JsonResource
 			'description' => $this->resource->description,
 			'focal' => $this->resource->focal,
 			'img_direction' => null,
-			'is_public' => $this->resource->is_public,
 			'is_starred' => $this->resource->is_starred,
 			'iso' => $this->resource->iso,
 			'latitude' => $this->resource->latitude,
@@ -83,7 +87,7 @@ class PhotoResource extends JsonResource
 			'size_variants' => [
 				'medium' => $medium === null ? null : SizeVariantResource::make($medium)->toArray($request),
 				'medium2x' => $medium2x === null ? null : SizeVariantResource::make($medium2x)->toArray($request),
-				'original' => $original === null ? null : SizeVariantResource::make($original)->noUrl($downgrade)->toArray($request),
+				'original' => $original === null ? null : SizeVariantResource::make($original)->setNoUrl($downgrade)->toArray($request),
 				'small' => $small === null ? null : SizeVariantResource::make($small)->toArray($request),
 				'small2x' => $small2x === null ? null : SizeVariantResource::make($small2x)->toArray($request),
 				'thumb' => $thumb === null ? null : SizeVariantResource::make($thumb)->toArray($request),
@@ -98,6 +102,70 @@ class PhotoResource extends JsonResource
 			'rights' => PhotoRightsResource::make($this->resource)->toArray($request),
 			'next_photo_id' => null,
 			'previous_photo_id' => null,
+			'preformatted' => $this->preformatted($original),
+			'precomputed' => $this->precomputed(),
 		];
+	}
+
+	private function preformatted(?SizeVariant $original): array
+	{
+		$overlay_date_format = Configs::getValueAsString('date_format_photo_overlay');
+		$date_format_uploaded = Configs::getValueAsString('date_format_sidebar_uploaded');
+		$date_format_taken_at = Configs::getValueAsString('date_format_sidebar_taken_at');
+
+		return [
+			'created_at' => $this->resource->created_at->format($date_format_uploaded),
+			'taken_at' => $this->resource->taken_at?->format($date_format_taken_at),
+			'date_overlay' => ($this->resource->taken_at ?? $this->resource->created_at)->format($overlay_date_format) ?? '',
+
+			'shutter' => str_replace('s', 'sec', $this->resource->shutter ?? ''),
+			'aperture' => str_replace('f/', '', $this->resource->aperture ?? ''),
+			'iso' => sprintf(__('lychee.PHOTO_ISO'), $this->resource->iso),
+			'lens' => ($this->resource->lens === '' || $this->resource->lens === null) ? '' : sprintf('(%s)', $this->resource->lens),
+
+			'duration' => Helpers::secondsToHMS(intval($this->resource->aperture)),
+			'fps' => $this->resource->focal === null ? $this->resource->focal . ' fps' : '',
+
+			'filesize' => Helpers::getSymbolByQuantity($original?->filesize ?? 0),
+			'resolution' => $original?->width . ' x ' . $original?->height,
+			'latitude' => Helpers::decimalToDegreeMinutesSeconds($this->resource->latitude, true),
+			'longitude' => Helpers::decimalToDegreeMinutesSeconds($this->resource->longitude, false),
+			'altitude' => round($this->resource->altitude, 1) . 'm',
+			'license' => $this->resource->license !== LicenseType::NONE ? $this->resource->license->localization() : '',
+			'description' => ($this->resource->description ?? '') === '' ? '' : Markdown::convert($this->resource->description)->getContent(),
+		];
+	}
+
+	private function precomputed(): array
+	{
+		return [
+			'is_video' => $this->resource->isVideo(),
+			'is_raw' => $this->resource->isRaw(),
+			'is_livephoto' => $this->resource->live_photo_url !== null,
+			'is_camera_date' => $this->resource->taken_at !== null,
+			'has_exif' => $this->genExifHash() !== '',
+			'has_location' => $this->has_location(),
+		];
+	}
+
+	private function has_location(): bool
+	{
+		return $this->resource->longitude !== null &&
+			$this->resource->latitude !== null &&
+			$this->resource->altitude !== null;
+	}
+
+	private function genExifHash(): string
+	{
+		$exifHash = $this->resource->make;
+		$exifHash .= $this->resource->model;
+		$exifHash .= $this->resource->shutter;
+		if (!$this->resource->isVideo()) {
+			$exifHash .= $this->resource->aperture;
+			$exifHash .= $this->resource->focal;
+		}
+		$exifHash .= $this->resource->iso;
+
+		return $exifHash;
 	}
 }

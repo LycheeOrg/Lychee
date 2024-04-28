@@ -7,6 +7,7 @@ return [
 	'PASSWORD' => 'Passord',
 	'ENTER' => 'Stig inn',
 	'CANCEL' => 'Avbryt',
+	'CONFIRM' => 'Confirm',
 	'SIGN_IN' => 'Logg inn',
 	'CLOSE' => 'Lukk',
 	'SETTINGS' => 'Innstillinger',
@@ -16,6 +17,7 @@ return [
 	'GALLERY' => 'Gallery',
 
 	'USERS' => 'Brukere',
+	'PROFILE' => 'Profile',
 	'CREATE' => 'Create',
 	'REMOVE' => 'Remove',
 	'SHARE' => 'Share',
@@ -28,6 +30,7 @@ return [
 	'ABOUT_LYCHEE' => 'Om Lychee',
 	'DIAGNOSTICS' => 'Diagnostikk',
 	'DIAGNOSTICS_GET_SIZE' => 'Hent diskbruk',
+	'JOBS' => 'Show job history',
 	'LOGS' => 'Vis Logg',
 	'SIGN_OUT' => 'Logg Ut',
 	'UPDATE_AVAILABLE' => 'Oppdatering er tilgjengelig!',
@@ -140,6 +143,9 @@ return [
 	'UNSTAR_PHOTO' => 'Fjern Stjernemerke',
 	'SET_COVER' => 'Set Album Cover',
 	'REMOVE_COVER' => 'Remove Album Cover',
+	'SET_HEADER' => 'Set Album Header',
+	'REMOVE_HEADER' => 'Remove Album Header',
+	'SET_COMPACT_HEADER' => 'Use Compact Header',
 
 	'FULL_PHOTO' => 'Originalbildet',
 	'ABOUT_PHOTO' => 'Om Bildet',
@@ -205,6 +211,8 @@ return [
 	'ALBUM_RESERVED' => 'Alle Rettigheter Forbeholdt',
 	'ALBUM_SET_ORDER' => 'Set Order',
 	'ALBUM_ORDERING' => 'Order by',
+	'ALBUM_PHOTO_ORDERING' => 'Order photos by',
+	'ALBUM_CHILDREN_ORDERING' => 'Order albums by',
 	'ALBUM_OWNER' => 'Owner',
 
 	'PHOTO_ABOUT' => 'Om',
@@ -282,6 +290,7 @@ return [
 	'ERROR_MAP_DEACTIVATED' => 'Kartfunksjoner har blitt deaktivert under innstillinger',
 	'ERROR_SEARCH_DEACTIVATED' => 'Søkefunksjoner har blitt deaktivert under innstillinger',
 	'SUCCESS' => 'OK',
+	'CHANGE_SUCCESS' => 'Change successful.',
 	'RETRY' => 'Prøv igjen',
 	'OVERRIDE' => 'Override',
 	'TAGS_OVERRIDE_INFO' => 'If this is unchecked, the tags will be added to the existing tags of the photo.',
@@ -311,6 +320,7 @@ return [
 	'U2F_AUTHENTIFICATION_SUCCESS' => 'Authentication successful!',
 	'U2F_CREDENTIALS' => 'Credentials',
 	'U2F_CREDENTIALS_DELETED' => 'Credentials deleted!',
+	'U2F_LOGIN' => 'Log in with WebAuthn',
 
 	'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
 	'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
@@ -345,7 +355,6 @@ return [
 	'SORT_PHOTO_SELECT_2' => 'Fangsdato',
 	'SORT_PHOTO_SELECT_3' => 'Tittel',
 	'SORT_PHOTO_SELECT_4' => 'Beskrivelse',
-	'SORT_PHOTO_SELECT_5' => 'Offentlig',
 	'SORT_PHOTO_SELECT_6' => 'Stjernemerk',
 	'SORT_PHOTO_SELECT_7' => 'Bildeformat',
 
@@ -354,7 +363,7 @@ return [
 	'SORT_CHANGE' => 'Lagre Rekkefølge',
 
 	'DROPBOX_TITLE' => 'Lagre nøkkel for Dropbox',
-	'DROPBOX_TEXT' => "For å importere bilder fra Dropbox trengs en gyldig applikasjonsnøkkel fra <a href='https://www.dropbox.com/developers/apps/create'>deres nettside</a>. Lag en personlig nøkkel og fyll inn denne under:",
+	'DROPBOX_TEXT' => "For å importere bilder fra Dropbox trengs en gyldig applikasjonsnøkkel fra <a href='https://www.dropbox.com/developers/saver'>deres nettside</a>. Lag en personlig nøkkel og fyll inn denne under:",
 
 	'LANG_TEXT' => 'Endre språk for Lychee til:',
 	'LANG_TITLE' => 'Lagre innstilling for språk',
@@ -400,6 +409,8 @@ return [
 	'LAYOUT_TYPE' => 'Oppsett for bilder:',
 	'LAYOUT_SQUARES' => 'Kvadratiske miniatyrbilder',
 	'LAYOUT_JUSTIFIED' => 'Med aspektratio, justert',
+	'LAYOUT_MASONRY' => 'Med aspektratio, masonry',
+	'LAYOUT_GRID' => 'Med aspektratio, grid',
 	'LAYOUT_UNJUSTIFIED' => 'Med aspektratio, ikke justert',
 	'SET_LAYOUT' => 'Lagre oppsett',
 
@@ -408,6 +419,9 @@ return [
 	'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Default sensitive album visibility updated with success.',
 
 	'NSFW_BANNER' => '<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>',
+	'NSFW_HEADER' => 'Sensitive content',
+	'NSFW_EXPLANATION' => 'This album contains sensitive content which some people may find offensive or disturbing.',
+	'TAP_CONSENT' => 'Tap to consent.',
 
 	'VIEW_NO_RESULT' => 'Ingen resultater',
 	'VIEW_NO_PUBLIC_ALBUMS' => 'Ingen offentlige album',

@@ -4,7 +4,14 @@ namespace App\Http\Resources;
 
 use App\DTO\AlbumSortingCriterion;
 use App\DTO\PhotoSortingCriterion;
+use App\Enum\AlbumDecorationOrientation;
+use App\Enum\AlbumDecorationType;
 use App\Enum\DefaultAlbumProtectionType;
+use App\Enum\ImageOverlayType;
+use App\Enum\LicenseType;
+use App\Enum\MapProviders;
+use App\Enum\PhotoLayoutType;
+use App\Enum\ThumbAlbumSubtitleType;
 use App\Exceptions\Handler;
 use App\Metadata\Versions\InstalledVersion;
 use App\Models\Configs;
@@ -79,7 +86,7 @@ class ConfigurationResource extends JsonResource
 				'allow_online_git_pull' => Configs::getValueAsBool('allow_online_git_pull'),
 				'apply_composer_update' => Configs::getValueAsBool('apply_composer_update'),
 				'compression_quality' => Configs::getValueAsInt('compression_quality'),
-				'default_license' => Configs::getValueAsString('default_license'),
+				'default_license' => Configs::getValueAsEnum('default_license', LicenseType::class),
 				'delete_imported' => Configs::getValueAsBool('delete_imported'),
 				'dropbox_key' => Configs::getValueAsString('dropbox_key'),
 				'editor_enabled' => Configs::getValueAsBool('editor_enabled'),
@@ -117,7 +124,9 @@ class ConfigurationResource extends JsonResource
 				],
 			]),
 
-			'album_subtitle_type' => Configs::getValueAsString('album_subtitle_type'),
+			'album_decoration' => Configs::getValueAsEnum('album_decoration', AlbumDecorationType::class),
+			'album_decoration_orientation' => Configs::getValueAsEnum('album_decoration_orientation', AlbumDecorationOrientation::class),
+			'album_subtitle_type' => Configs::getValueAsEnum('album_subtitle_type', ThumbAlbumSubtitleType::class),
 			'check_for_updates' => Configs::getValueAsBool('check_for_updates'),
 			'default_album_protection' => Configs::getValueAsEnum('default_album_protection', DefaultAlbumProtectionType::class),
 			'feeds' => [],
@@ -126,10 +135,10 @@ class ConfigurationResource extends JsonResource
 			'footer_show_social_media' => Configs::getValueAsBool('footer_show_social_media'),
 			'grants_download' => Configs::getValueAsBool('grants_download'),
 			'grants_full_photo_access' => Configs::getValueAsBool('grants_full_photo_access'),
-			'image_overlay_type' => Configs::getValueAsString('image_overlay_type'),
+			'image_overlay_type' => Configs::getValueAsEnum('image_overlay_type', ImageOverlayType::class),
 			'landing_page_enable' => Configs::getValueAsBool('landing_page_enable'),
 			'lang' => Configs::getValueAsString('lang'),
-			'layout' => Configs::getValueAsString('layout'),
+			'layout' => Configs::getValueAsEnum('layout', PhotoLayoutType::class),
 			'legacy_id_redirection' => Configs::getValueAsBool('legacy_id_redirection'),
 			'location_decoding' => Configs::getValueAsBool('location_decoding'),
 			'location_decoding_timeout' => Configs::getValueAsInt('location_decoding_timeout'),
@@ -139,7 +148,7 @@ class ConfigurationResource extends JsonResource
 			'map_display_direction' => Configs::getValueAsString('map_display_direction'),
 			'map_display_public' => Configs::getValueAsBool('map_display_public'),
 			'map_include_subalbums' => Configs::getValueAsBool('map_include_subalbums'),
-			'map_provider' => Configs::getValueAsString('map_provider'),
+			'map_provider' => Configs::getValueAsEnum('map_provider', MapProviders::class),
 			'mod_frame_enabled' => Configs::getValueAsBool('mod_frame_enabled'),
 			'mod_frame_refresh' => Configs::getValueAsInt('mod_frame_refresh'),
 			'new_photos_notification' => Configs::getValueAsBool('new_photos_notification'),
@@ -149,8 +158,7 @@ class ConfigurationResource extends JsonResource
 			'nsfw_warning' => Configs::getValueAsBool('nsfw_warning'),
 			'nsfw_warning_admin' => Configs::getValueAsBool('nsfw_warning_admin'),
 			'photos_wraparound' => Configs::getValueAsBool('photos_wraparound'),
-			'public_photos_hidden' => Configs::getValueAsBool('public_photos_hidden'),
-			'public_search' => Configs::getValueAsBool('public_search'),
+			'public_search' => Configs::getValueAsBool('search_public'), // legacy
 			'rss_enable' => Configs::getValueAsBool('rss_enable'),
 			'rss_max_items' => Configs::getValueAsInt('rss_max_items'),
 			'rss_recent_days' => Configs::getValueAsInt('rss_recent_days'),

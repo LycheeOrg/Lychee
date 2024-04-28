@@ -81,7 +81,7 @@ class NotificationTest extends AbstractTestCase
 	{
 		// add email to admin
 		Auth::loginUsingId(1);
-		$this->users_tests->update_email('test@test.com');
+		$this->users_tests->update_email('test@gmail.com');
 
 		Auth::logout();
 		Session::flush();

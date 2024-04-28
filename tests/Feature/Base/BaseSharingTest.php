@@ -176,17 +176,17 @@ abstract class BaseSharingTest extends BasePhotoTest
 		];
 	}
 
-	protected function ensurePhotosWereTakenOnThisDay(string ...$photoIds): void
+	protected function ensurePhotosWereTakenOnThisDay(string ...$photoIDs): void
 	{
 		DB::table('photos')
-			->whereIn('id', $photoIds)
+			->whereIn('id', $photoIDs)
 			->update(['taken_at' => (Carbon::today())->subYear()->format('Y-m-d H:i:s.u')]);
 	}
 
-	protected function ensurePhotosWereNotTakenOnThisDay(string ...$photoIds): void
+	protected function ensurePhotosWereNotTakenOnThisDay(string ...$photoIDs): void
 	{
 		DB::table('photos')
-			->whereIn('id', $photoIds)
+			->whereIn('id', $photoIDs)
 			->update(['taken_at' => (Carbon::today())->subMonth()->format('Y-m-d H:i:s.u')]);
 	}
 }

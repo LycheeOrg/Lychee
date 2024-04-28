@@ -2,9 +2,9 @@
 
 /** @noinspection PhpUndefinedClassInspection */
 
-use App\Models\Configs;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 
@@ -95,18 +95,11 @@ return new class() extends Migration {
 	private function update_missing_fields(array &$default_values): void
 	{
 		foreach ($default_values as $value) {
-			$c = Configs::where('key', $value['key'])->count();
-			$config = Configs::updateOrCreate(
-				['key' => $value['key']],
-				[
-					'cat' => $value['cat'],
-					'type_range' => $value['type_range'],
-					'confidentiality' => $value['confidentiality'],
-				]
-			);
+			$c = DB::table('configs')->where('key', '=', $value['key'])->count();
 			if ($c === 0) {
-				$config->value = $value['value'];
-				$config->save();
+				DB::table('configs')->insert($value);
+			} else { // $c === 1
+				DB::table('configs')->where('key', '=', $value['key'])->update($value);
 			}
 		}
 	}

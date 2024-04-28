@@ -116,4 +116,17 @@ abstract class AbstractTestCase extends BaseTestCase
 
 		return Photo::query()->select('id')->where($recentFilter)->pluck('id');
 	}
+
+	/**
+	 * Because we are now using hard coded urls for the images size_variants instead of relative.
+	 * We need to drop that prefix in order to access them from public_path().
+	 *
+	 * @param string $url
+	 *
+	 * @return string prefix removed
+	 */
+	protected function dropUrlPrefix(string $url): string
+	{
+		return str_replace(config('app.url'), '', $url);
+	}
 }

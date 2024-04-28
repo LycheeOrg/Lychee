@@ -11,6 +11,7 @@ use App\Models\Extensions\ToArrayThrowsNotImplemented;
 use App\Models\Extensions\UTCBasedTimes;
 use Carbon\Exceptions\InvalidFormatException;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Query\Builder as BaseBuilder;
@@ -37,20 +38,16 @@ use function Safe\mb_convert_encoding;
  * @property bool                                                  $may_administrate
  * @property bool                                                  $may_upload
  * @property bool                                                  $may_edit_own_settings
- * @property string                                                $name
  * @property string|null                                           $token
  * @property string|null                                           $remember_token
  * @property Collection<BaseAlbumImpl>                             $albums
- * @property int|null                                              $albums_count
+ * @property Collection<OauthCredential>                           $oauthCredentials
  * @property DatabaseNotificationCollection|DatabaseNotification[] $notifications
- * @property int|null                                              $notifications_count
  * @property Collection<BaseAlbumImpl>                             $shared
- * @property int|null                                              $shared_count
  * @property Collection<Photo>                                     $photos
  * @property int|null                                              $photos_count
  * @property Collection<int, WebAuthnCredential>                   $webAuthnCredentials
  * @property int|null                                              $web_authn_credentials_count
- * @property Collection<int, WebAuthnCredential>                   $webAuthnCredentials
  *
  * @method static UserBuilder|User addSelect($column)
  * @method static UserBuilder|User join(string $table, string $first, string $operator = null, string $second = null, string $type = 'inner', string $where = false)
@@ -79,6 +76,7 @@ use function Safe\mb_convert_encoding;
  */
 class User extends Authenticatable implements WebAuthnAuthenticatable
 {
+	use HasFactory;
 	use Notifiable;
 	use WebAuthnAuthentication;
 	use UTCBasedTimes;
@@ -88,7 +86,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	use ToArrayThrowsNotImplemented;
 
 	/**
-	 * @var string[] the attributes that are mass assignable
+	 * @var array<int,string> the attributes that are mass assignable
 	 */
 	protected $fillable = [
 		'username',
@@ -107,6 +105,13 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 		'may_upload' => 'boolean',
 		'may_edit_own_settings' => 'boolean',
 	];
+
+	protected $hidden = [];
+
+	protected function _toArray(): array
+	{
+		return parent::toArray();
+	}
 
 	/**
 	 * Create a new Eloquent query builder for the model.
@@ -153,6 +158,16 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 			APC::USER_ID,
 			APC::BASE_ALBUM_ID
 		);
+	}
+
+	/**
+	 * Return the Oauth credentials owned by the user.
+	 *
+	 * @return HasMany
+	 */
+	public function oauthCredentials(): HasMany
+	{
+		return $this->hasMany(OauthCredential::class, 'user_id', 'id');
 	}
 
 	/**
@@ -215,7 +230,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 			}
 		}
 
-		$this->shared()->delete();
+		AccessPermission::query()->where(APC::USER_ID, '=', $this->id)->delete();
 		WebAuthnCredential::query()->where('authenticatable_id', '=', $this->id)->delete();
 
 		return $this->parentDelete();

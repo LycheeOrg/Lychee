@@ -30,6 +30,7 @@ class WebAuthTest extends AbstractTestCase
 	{
 		parent::setUp();
 		$this->setUpRequiresEmptyWebAuthnCredentials();
+		config(['app.url' => 'https://localhost']);
 	}
 
 	public function tearDown(): void
@@ -193,6 +194,34 @@ class WebAuthTest extends AbstractTestCase
 
 		// Generate a challenge for user_id = 1
 		$response = $this->postJson('/api/WebAuthn::login/options', ['user_id' => 1]);
+		$this->assertOk($response);
+
+		$challengeRetrieved = Session::get(config('webauthn.challenge.key'));
+		$clg = $challengeRetrieved->data->toBase64Url();
+
+		$response->assertJson([
+			'timeout' => 60000,
+			'challenge' => $clg,
+			'allowCredentials' => [
+				0 => [
+					'id' => '_Xlz-khgFhDdkvOWyy_YqC54ExkYyp1o6HAQiybqLST-9RGBndpgI06TQygIYI7ZL2dayCMYm6J1-bXyl72obA',
+					'type' => 'public-key',
+				],
+			],
+		]);
+	}
+
+	/**
+	 * Testing the Login options.
+	 *
+	 * @return void
+	 */
+	public function testWebAuthLoginOptionsUsername(): void
+	{
+		$this->createCredentials();
+
+		// Generate a challenge for username = admin
+		$response = $this->postJson('/api/WebAuthn::login/options', ['username' => 'admin']);
 		$this->assertOk($response);
 
 		$challengeRetrieved = Session::get(config('webauthn.challenge.key'));

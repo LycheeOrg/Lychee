@@ -2,6 +2,7 @@
 
 namespace App\Models\Extensions;
 
+use App\Assets\Features;
 use App\DTO\AbstractDTO;
 use App\DTO\SortingCriterion;
 use App\Enum\ColumnSortingPhotoType;
@@ -15,10 +16,10 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 
 class Thumb extends AbstractDTO
 {
-	protected string $id;
-	protected string $type;
-	protected string $thumbUrl;
-	protected ?string $thumb2xUrl;
+	public string $id;
+	public string $type;
+	public ?string $thumbUrl;
+	public ?string $thumb2xUrl;
 
 	protected function __construct(string $id, string $type, string $thumbUrl, ?string $thumb2xUrl = null)
 	{
@@ -38,7 +39,12 @@ class Thumb extends AbstractDTO
 	 */
 	public static function sizeVariantsFilter(HasMany $relation): HasMany
 	{
-		return $relation->whereIn('type', [SizeVariantType::THUMB, SizeVariantType::THUMB2X]);
+		$svAlbumThumbs = [SizeVariantType::THUMB, SizeVariantType::THUMB2X];
+		if (Features::active('livewire')) {
+			$svAlbumThumbs = [SizeVariantType::SMALL, SizeVariantType::SMALL2X, SizeVariantType::THUMB, SizeVariantType::THUMB2X];
+		}
+
+		return $relation->whereIn('type', $svAlbumThumbs);
 	}
 
 	/**
@@ -74,6 +80,8 @@ class Thumb extends AbstractDTO
 
 	/**
 	 * Creates a thumbnail from the given photo.
+	 * On Livewire it will use by default small and small2x if available, thumb and thumb2x if not.
+	 * On Legacy it will use thumb and thumb2x.
 	 *
 	 * @param Photo|null $photo the photo
 	 *
@@ -81,11 +89,28 @@ class Thumb extends AbstractDTO
 	 */
 	public static function createFromPhoto(?Photo $photo): ?Thumb
 	{
-		$thumb = $photo?->size_variants->getThumb();
+		$thumb = (Features::active('livewire') && $photo?->size_variants->getSmall() !== null)
+			? $photo->size_variants->getSmall()
+			: $photo?->size_variants->getThumb();
 		if ($thumb === null) {
 			return null;
 		}
-		$thumb2x = $photo->size_variants->getThumb2x();
+
+		$thumb2x = (Features::active('livewire') && $photo?->size_variants->getSmall() !== null)
+			? $photo->size_variants->getSmall2x()
+			: $photo?->size_variants->getThumb2x();
+
+		/**
+		 * TODO: Code for later when Livewire is the only front-end.
+		 */
+		// $thumb = $photo?->size_variants->getSmall() ?? $photo?->size_variants->getThumb();
+		// if ($thumb === null) {
+		// 	return null;
+		// }
+
+		// $thumb2x = $photo?->size_variants->getSmall() !== null
+		// 	? $photo?->size_variants->getSmall2x()
+		// 	: $photo?->size_variants->getThumb2x();
 
 		return new self(
 			$photo->id,

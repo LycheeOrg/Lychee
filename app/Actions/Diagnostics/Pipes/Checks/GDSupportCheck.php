@@ -4,8 +4,14 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
 
+/**
+ * Verify that GD support the correct images extensions.
+ */
 class GDSupportCheck implements DiagnosticPipe
 {
+	/**
+	 * {@inheritDoc}
+	 */
 	public function handle(array &$data, \Closure $next): array
 	{
 		if (function_exists('gd_info')) {

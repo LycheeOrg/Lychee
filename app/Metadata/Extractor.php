@@ -330,15 +330,15 @@ class Extractor
 							// that timezone.
 							$taken_at->setTimezone(new \DateTimeZone(date_default_timezone_get()));
 						}
-						// In the remaining cases the timezone information was
-						// extracted and the recording time is assumed exhibit
-						// to original timezone of the location where the video
-						// has been recorded.
-						// So we don't need to do anything.
-						//
-						// The only known example are the mov files from Apple
-						// devices; the time zone will be formatted as "+01:00"
-						// so neither of the two conditions above should trigger.
+					// In the remaining cases the timezone information was
+					// extracted and the recording time is assumed exhibit
+					// to original timezone of the location where the video
+					// has been recorded.
+					// So we don't need to do anything.
+					//
+					// The only known example are the mov files from Apple
+					// devices; the time zone will be formatted as "+01:00"
+					// so neither of the two conditions above should trigger.
 					} elseif ($taken_at->getTimezone()->getName() === 'Z') {
 						// This is a video format where we expect the takestamp
 						// to be provided in local time but the timezone is
@@ -432,7 +432,7 @@ class Extractor
 		if ($metadata->shutter !== null && $metadata->shutter !== '') {
 			// TODO: If we add the suffix " s" here, we should also normalize the fraction here.
 			// It does not make any sense to strip-off the suffix again in Photo and re-add it again.
-			$metadata->shutter = $metadata->shutter . self::SUFFIX_SEC_UNIT;
+			$metadata->shutter .= self::SUFFIX_SEC_UNIT;
 		}
 
 		// Decode location data, it can be longer than is acceptable for DB that's the reason for substr

@@ -40,7 +40,7 @@ class PhotosUnitTest
 	public function upload(
 		UploadedFile $file,
 		?string $albumID = null,
-		int $expectedStatusCode = 201,
+		int|array $expectedStatusCodes = 201,
 		?string $assertSee = null,
 		?int $fileLastModifiedTime = 1678824303000
 	): TestResponse {
@@ -59,8 +59,7 @@ class PhotosUnitTest
 				'Accept' => 'application/json',
 			]
 		);
-
-		$this->assertStatus($response, $expectedStatusCode);
+		$this->assertStatus($response, $expectedStatusCodes);
 		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);
 		}
@@ -229,32 +228,6 @@ class PhotosUnitTest
 			'tags' => $tags,
 			'shall_override' => $override,
 		]);
-		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee !== null) {
-			$response->assertSee($assertSee, false);
-		}
-	}
-
-	/**
-	 * Set public.
-	 *
-	 * @param string      $id
-	 * @param bool        $isPublic
-	 * @param int         $expectedStatusCode
-	 * @param string|null $assertSee
-	 */
-	public function set_public(
-		string $id,
-		bool $isPublic,
-		int $expectedStatusCode = 204,
-		?string $assertSee = null
-	): void {
-		$response = $this->testCase->postJson(
-			'/api/Photo::setPublic', [
-				'photoID' => $id,
-				'is_public' => $isPublic,
-			]
-		);
 		$this->assertStatus($response, $expectedStatusCode);
 		if ($assertSee !== null) {
 			$response->assertSee($assertSee, false);

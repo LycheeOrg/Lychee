@@ -6,6 +6,7 @@ use App\Actions\Photo\Delete as PhotoDelete;
 use App\Constants\AccessPermissionConstants as APC;
 use App\Contracts\Exceptions\InternalLycheeException;
 use App\Enum\SmartAlbumType;
+use App\Enum\StorageDiskType;
 use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\ModelDBException;
@@ -107,7 +108,7 @@ class Delete extends Action
 			// Delete the photos from DB and obtain the list of files which need
 			// to be deleted later
 			$fileDeleter = (new PhotoDelete())->do($unsortedPhotoIDs, $recursiveAlbumIDs);
-			$fileDeleter->addRegularFiles($recursiveAlbumTracks);
+			$fileDeleter->addFiles($recursiveAlbumTracks, StorageDiskType::LOCAL->value);
 
 			// Remove the sub-forest spanned by the regular albums
 			$this->deleteSubForest($albums);
@@ -137,6 +138,7 @@ class Delete extends Action
 				->delete();
 
 			return $fileDeleter;
+			// @codeCoverageIgnoreStart
 		} catch (QueryBuilderException|InternalLycheeException $e) {
 			try {
 				// if anything goes wrong, don't leave the tree in an inconsistent state
@@ -154,6 +156,7 @@ class Delete extends Action
 			}
 			throw LycheeAssertionError::createFromUnexpectedException($e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**

@@ -25,6 +25,8 @@ class RequestAttribute
 	public const DATE_ATTRIBUTE = 'date';
 	public const DESCRIPTION_ATTRIBUTE = 'description';
 	public const LICENSE_ATTRIBUTE = 'license';
+	public const ASPECT_RATIO_ATTRIBUTE = 'aspect_ratio';
+	public const ALBUM_ASPECT_RATIO_ATTRIBUTE = 'album_aspect_ratio';
 
 	public const USERNAME_ATTRIBUTE = 'username';
 
@@ -33,6 +35,10 @@ class RequestAttribute
 
 	public const SORTING_COLUMN_ATTRIBUTE = 'sorting_column';
 	public const SORTING_ORDER_ATTRIBUTE = 'sorting_order';
+	public const PHOTO_SORTING_COLUMN_ATTRIBUTE = 'photo_sorting_column';
+	public const PHOTO_SORTING_ORDER_ATTRIBUTE = 'photo_sorting_order';
+	public const ALBUM_SORTING_COLUMN_ATTRIBUTE = 'album_sorting_column';
+	public const ALBUM_SORTING_ORDER_ATTRIBUTE = 'album_sorting_order';
 
 	public const IS_NSFW_ATTRIBUTE = 'is_nsfw';
 	public const IS_PUBLIC_ATTRIBUTE = 'is_public';
@@ -80,4 +86,5 @@ class RequestAttribute
 	public const FILE_LAST_MODIFIED_TIME = 'fileLastModifiedTime';
 
 	public const COPYRIGHT_ATTRIBUTE = 'copyright';
+	public const URLS_ATTRIBUTE = 'urls';
 }

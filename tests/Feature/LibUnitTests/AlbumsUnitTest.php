@@ -283,6 +283,30 @@ class AlbumsUnitTest
 	}
 
 	/**
+	 * Change header.
+	 *
+	 * @param string      $id
+	 * @param string|null $photoID
+	 * @param int         $expectedStatusCode
+	 * @param string|null $assertSee
+	 */
+	public function set_header(
+		string $id,
+		?string $photoID,
+		int $expectedStatusCode = 204,
+		?string $assertSee = null
+	): void {
+		$response = $this->testCase->postJson(
+			'/api/Album::setHeader',
+			['albumID' => $id, 'photoID' => $photoID]
+		);
+		$this->assertStatus($response, $expectedStatusCode);
+		if ($assertSee !== null) {
+			$response->assertSee($assertSee, false);
+		}
+	}
+
+	/**
 	 * Set the licence.
 	 *
 	 * @param string      $id

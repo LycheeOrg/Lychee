@@ -7,6 +7,7 @@ return [
 	'PASSWORD' => 'Пароль',
 	'ENTER' => 'Enter',
 	'CANCEL' => 'Отмена',
+	'CONFIRM' => 'Confirm',
 	'SIGN_IN' => 'Вход',
 	'CLOSE' => 'Закрыть',
 	'SETTINGS' => 'Параметры',
@@ -16,6 +17,7 @@ return [
 	'GALLERY' => 'Gallery',
 
 	'USERS' => 'Пользователи',
+	'PROFILE' => 'Profile',
 	'CREATE' => 'Create',
 	'REMOVE' => 'Remove',
 	'SHARE' => 'Share',
@@ -28,6 +30,7 @@ return [
 	'ABOUT_LYCHEE' => 'О Lychee',
 	'DIAGNOSTICS' => 'Диагностика',
 	'DIAGNOSTICS_GET_SIZE' => 'Request space usage',
+	'JOBS' => 'Show job history',
 	'LOGS' => 'Логи',
 	'SIGN_OUT' => 'Выход',
 	'UPDATE_AVAILABLE' => 'Доступно обновление!',
@@ -140,6 +143,9 @@ return [
 	'UNSTAR_PHOTO' => 'Снять отметку',
 	'SET_COVER' => 'Set Album Cover',
 	'REMOVE_COVER' => 'Remove Album Cover',
+	'SET_HEADER' => 'Set Album Header',
+	'REMOVE_HEADER' => 'Remove Album Header',
+	'SET_COMPACT_HEADER' => 'Use Compact Header',
 
 	'FULL_PHOTO' => 'Полный размер',
 	'ABOUT_PHOTO' => 'О фотографии',
@@ -205,6 +211,8 @@ return [
 	'ALBUM_RESERVED' => 'Все права защищены',
 	'ALBUM_SET_ORDER' => 'Set Order',
 	'ALBUM_ORDERING' => 'Order by',
+	'ALBUM_PHOTO_ORDERING' => 'Order photos by',
+	'ALBUM_CHILDREN_ORDERING' => 'Order albums by',
 	'ALBUM_OWNER' => 'Owner',
 
 	'PHOTO_ABOUT' => 'Описание',
@@ -282,6 +290,7 @@ return [
 	'ERROR_MAP_DEACTIVATED' => 'Map functionality has been deactivated under settings.',
 	'ERROR_SEARCH_DEACTIVATED' => 'Search functionality has been deactivated under settings.',
 	'SUCCESS' => 'Ок',
+	'CHANGE_SUCCESS' => 'Change successful.',
 	'RETRY' => 'Повторить',
 	'OVERRIDE' => 'Override',
 	'TAGS_OVERRIDE_INFO' => 'If this is unchecked, the tags will be added to the existing tags of the photo.',
@@ -311,6 +320,7 @@ return [
 	'U2F_AUTHENTIFICATION_SUCCESS' => 'Authentication successful!',
 	'U2F_CREDENTIALS' => 'Credentials',
 	'U2F_CREDENTIALS_DELETED' => 'Credentials deleted!',
+	'U2F_LOGIN' => 'Log in with WebAuthn',
 
 	'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
 	'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
@@ -345,7 +355,6 @@ return [
 	'SORT_PHOTO_SELECT_2' => 'съёмки',
 	'SORT_PHOTO_SELECT_3' => 'заголовка',
 	'SORT_PHOTO_SELECT_4' => 'описания',
-	'SORT_PHOTO_SELECT_5' => 'доступности',
 	'SORT_PHOTO_SELECT_6' => 'отметки',
 	'SORT_PHOTO_SELECT_7' => 'формата',
 
@@ -354,7 +363,7 @@ return [
 	'SORT_CHANGE' => 'Сменить сортировку',
 
 	'DROPBOX_TITLE' => 'Задать ключ Dropbox',
-	'DROPBOX_TEXT' => "Для загрузки фото из Dropbox Вам нужен ключ, который можно получить на <a href='https://www.dropbox.com/developers/apps/create'>специальной странице</a>. Создайте личный ключ и вставьте здесь:",
+	'DROPBOX_TEXT' => "Для загрузки фото из Dropbox Вам нужен ключ, который можно получить на <a href='https://www.dropbox.com/developers/saver'>специальной странице</a>. Создайте личный ключ и вставьте здесь:",
 
 	'LANG_TEXT' => 'Change Lychee language to:',
 	'LANG_TITLE' => 'Change Language',
@@ -400,6 +409,8 @@ return [
 	'LAYOUT_TYPE' => 'Компоновка фото:',
 	'LAYOUT_SQUARES' => 'Квадратные превью',
 	'LAYOUT_JUSTIFIED' => 'По формату, выровнять',
+	'LAYOUT_MASONRY' => 'По формату, masonry',
+	'LAYOUT_GRID' => 'По формату, grid',
 	'LAYOUT_UNJUSTIFIED' => 'По формату, не выравнивать',
 	'SET_LAYOUT' => 'Изменить компоновку',
 
@@ -408,6 +419,9 @@ return [
 	'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Default sensitive album visibility updated with success.',
 
 	'NSFW_BANNER' => '<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>',
+	'NSFW_HEADER' => 'Sensitive content',
+	'NSFW_EXPLANATION' => 'This album contains sensitive content which some people may find offensive or disturbing.',
+	'TAP_CONSENT' => 'Tap to consent.',
 
 	'VIEW_NO_RESULT' => 'Не найдено',
 	'VIEW_NO_PUBLIC_ALBUMS' => 'Нет публичных альбомов',
@@ -465,7 +479,7 @@ return [
 	'UPLOAD_IMPORT_CANCELLED' => 'Import cancelled',
 
 	'ABOUT_SUBTITLE' => 'Self-hosted photo-management done right',
-	'ABOUT_DESCRIPTION' => "<a target=\'_blank\' href=\'%0\'>Lychee</a> - это бесплатный фотоменеджер для Вашего сервера или хостинга. Установка занимает считанные секунды. Загружайте, редактируйте и делитесь фотографиями как в любимом приложении! Lychee обеспечит Вас всем необходимым, включая безопасность хранения Ваших фотографий! На русский язык перевёл Евгений Лебедев. Пожалуйста, <a href='mailto://k-t-c(at)ya.ru'>дайте мне знать</a>, если заметите неточности.",
+	'ABOUT_DESCRIPTION' => "<a target='_blank' href='%s'>Lychee</a> - это бесплатный фотоменеджер для Вашего сервера или хостинга. Установка занимает считанные секунды. Загружайте, редактируйте и делитесь фотографиями как в любимом приложении! Lychee обеспечит Вас всем необходимым, включая безопасность хранения Ваших фотографий! На русский язык перевёл Евгений Лебедев.",
 	'FOOTER_COPYRIGHT' => 'All images on this website are subject to copyright by %1$s © %2$s',
 	'HOSTED_WITH_LYCHEE' => 'Hosted with Lychee',
 

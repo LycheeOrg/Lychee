@@ -34,4 +34,22 @@ enum SizeVariantType: int
 			self::ORIGINAL => 'original',
 		};
 	}
+
+	/**
+	 * Given a sizeVariantType return the localized name.
+	 *
+	 * @return string
+	 */
+	public function localization(): string
+	{
+		return match ($this) {
+			self::THUMB => __('lychee.PHOTO_THUMB'),
+			self::THUMB2X => __('lychee.PHOTO_THUMB_HIDPI'),
+			self::SMALL => __('lychee.PHOTO_SMALL'),
+			self::SMALL2X => __('lychee.PHOTO_SMALL_HIDPI'),
+			self::MEDIUM => __('lychee.PHOTO_MEDIUM'),
+			self::MEDIUM2X => __('lychee.PHOTO_MEDIUM_HIDPI'),
+			self::ORIGINAL => __('lychee.PHOTO_ORIGINAL'),
+		};
+	}
 }

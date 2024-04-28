@@ -5,9 +5,11 @@ namespace App\Actions\Search;
 use App\Contracts\Exceptions\InternalLycheeException;
 use App\DTO\PhotoSortingCriterion;
 use App\Eloquent\FixedQueryBuilder;
+use App\Models\Album;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\Photo;
 use App\Policies\PhotoQueryPolicy;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
 class PhotoSearch
@@ -20,12 +22,32 @@ class PhotoSearch
 	}
 
 	/**
+	 * Apply search directly.
+	 *
 	 * @throws InternalLycheeException
 	 */
 	public function query(array $terms): Collection
 	{
+		$query = $this->sqlQuery($terms);
+		$sorting = PhotoSortingCriterion::createDefault();
+
+		return (new SortingDecorator($query))
+			->orderBy($sorting->column, $sorting->order)->get();
+	}
+
+	/**
+	 * Create the query manually.
+	 *
+	 * @param array      $terms
+	 * @param Album|null $album the optional top album which is used as a search base
+	 *
+	 * @return Builder
+	 */
+	public function sqlQuery(array $terms, ?Album $album = null): Builder
+	{
 		$query = $this->photoQueryPolicy->applySearchabilityFilter(
-			Photo::query()->with(['album', 'size_variants', 'size_variants.sym_links'])
+			Photo::query()->with(['album', 'size_variants', 'size_variants.sym_links']),
+			$album
 		);
 
 		foreach ($terms as $term) {
@@ -40,10 +62,6 @@ class PhotoSearch
 			);
 		}
 
-		$sorting = PhotoSortingCriterion::createDefault();
-
-		return (new SortingDecorator($query))
-			->orderBy($sorting->column, $sorting->order)
-			->get();
+		return $query;
 	}
 }

@@ -2,7 +2,7 @@
 
 namespace App\Actions\Import;
 
-use App\Actions\Photo\Strategies\ImportMode;
+use App\DTO\ImportMode;
 use App\Models\Album;
 use function Safe\ini_get;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -53,7 +53,9 @@ class FromServer
 
 		sscanf(ini_get('memory_limit'), '%d%c', $value, $suffix);
 		if (!is_int($value) && !is_string($suffix)) {
+			// @codeCoverageIgnoreStart
 			return 0;
+			// @codeCoverageIgnoreEnd
 		}
 
 		/** @var int $value */

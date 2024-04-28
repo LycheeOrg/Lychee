@@ -1,0 +1,70 @@
+<div class="w-full">
+    <x-header.bar>
+        <x-header.back @keydown.escape.window="$wire.back();" wire:click="back" />
+        <x-header.title>{{ __('lychee.SETTINGS') }}</x-header.title>
+    </x-header.bar>
+	<div class="overflow-x-clip overflow-y-auto h-[calc(100vh-56px)]">
+		<div class="settings_view w-10/12 max-w-xl text-text-main-400 text-sm mx-auto">
+			<livewire:forms.settings.base.password-setting key="set-dropbox-key" description="DROPBOX_TEXT"
+				placeholder="SETTINGS_DROPBOX_KEY" action="DROPBOX_TITLE" name="dropbox_key" />
+			<livewire:forms.settings.set-album-sorting-setting />
+			<livewire:forms.settings.set-photo-sorting-setting />
+			<livewire:forms.settings.set-lang-setting />
+			<livewire:forms.settings.set-license-default-setting />
+			<div class="mb-4 -mt-4"><p>
+				<a href="https://creativecommons.org/choose/" class="text-text-main-200 hover:text-text-main-0 border-b border-dashed border-neutral-400" target="_blank">{{ __('lychee.ALBUM_LICENSE_HELP') }}</a>
+			</p></div>
+			<livewire:forms.settings.set-layout-setting />
+			<livewire:forms.settings.base.boolean-setting key="set-public_search"
+				description="PUBLIC_SEARCH_TEXT" name="search_public" />
+			<livewire:forms.settings.set-album-decoration-setting />
+			<livewire:forms.settings.set-album-decoration-orientation-setting />
+			<livewire:forms.settings.set-photo-overlay-setting />
+			<livewire:forms.settings.base.boolean-setting key="set-map_display"
+				description="MAP_DISPLAY_TEXT" name="map_display" />
+			<livewire:forms.settings.base.boolean-setting key="set-map_display_public"
+				description="MAP_DISPLAY_PUBLIC_TEXT" name="map_display_public" />
+			<livewire:forms.settings.set-map-provider-setting />
+			<livewire:forms.settings.base.boolean-setting key="set-map_include_subalbums"
+				description="MAP_INCLUDE_SUBALBUMS_TEXT" name="map_include_subalbums" />
+			<livewire:forms.settings.base.boolean-setting key="set-location_decoding"
+				description="LOCATION_DECODING" name="location_decoding" />
+			<livewire:forms.settings.base.boolean-setting key="set-location_show"
+				description="LOCATION_SHOW" name="location_show" />
+			<livewire:forms.settings.base.boolean-setting key="set-location_show_public"
+				description="LOCATION_SHOW_PUBLIC" name="location_show_public" />
+			<livewire:forms.settings.base.boolean-setting key="set-nsfw_visible"
+				description="NSFW_VISIBLE_TEXT_1" name="nsfw_visible" footer="NSFW_VISIBLE_TEXT_2" />
+			<livewire:forms.settings.base.boolean-setting key="set-new_photos_notification"
+				description="NEW_PHOTOS_NOTIFICATION" name="new_photos_notification" />
+
+			<div class="my-4">
+				<p>{{ __('lychee.CSS_TEXT') }}</p>
+				<textarea id="css" class="p-2 h-28 bg-transparent text-text-main-0 border border-solid border-neutral-400 resize-y w-full
+					hover:border-primary-400
+					focus:border-primary-400 focus-visible:outline-none"
+					wire:model='css'>
+				</textarea>
+				<div class="basicModal__buttons">
+					<x-forms.buttons.action wire:click='setCSS' class="rounded-md w-full" >{{ __('lychee.CSS_TITLE') }}</x-forms.buttons.action>
+				</div>
+			</div>
+
+			<div class="my-4">
+				<p>{{ __('lychee.JS_TEXT') }}</p>
+				<textarea id="js" class="p-2 h-28 bg-transparent text-text-main-0 border border-solid border-neutral-400 resize-y w-full
+					hover:border-primary-400
+					focus:border-primary-400 focus-visible:outline-none"
+					wire:model='js'>
+				</textarea>
+				<div class="basicModal__buttons">
+					<x-forms.buttons.action wire:click='setJS' class="rounded-md w-full" >{{ __('lychee.JS_TITLE') }}</x-forms.buttons.action>
+				</div>
+			</div>
+
+			<div class="my-4">
+				<x-forms.buttons.danger class="rounded-md w-full" wire:navigate href="{{ route('all-settings') }}">{{ __('lychee.MORE') }}</x-forms.buttons.danger>
+			</div>
+		</div>
+	</div>
+</div>

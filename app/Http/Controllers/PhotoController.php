@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Actions\Photo\Archive;
 use App\Actions\Photo\Delete;
 use App\Actions\Photo\Duplicate;
-use App\Actions\User\Notify;
+use App\Actions\Photo\Move;
 use App\Contracts\Exceptions\InternalLycheeException;
 use App\Contracts\Exceptions\LycheeException;
 use App\Exceptions\MediaFileOperationException;
@@ -20,7 +20,6 @@ use App\Http\Requests\Photo\GetPhotoRequest;
 use App\Http\Requests\Photo\MovePhotosRequest;
 use App\Http\Requests\Photo\SetPhotoDescriptionRequest;
 use App\Http\Requests\Photo\SetPhotoLicenseRequest;
-use App\Http\Requests\Photo\SetPhotoPublicRequest;
 use App\Http\Requests\Photo\SetPhotosStarredRequest;
 use App\Http\Requests\Photo\SetPhotosTagsRequest;
 use App\Http\Requests\Photo\SetPhotosTitleRequest;
@@ -89,6 +88,7 @@ class PhotoController extends Controller
 									 ->photos()
 									 ->with(['album', 'size_variants', 'size_variants.sym_links']);
 		}
+
 		// PHPStan does not understand that `firstOrFail` returns `Photo`, but assumes that it returns `Model`
 		// @phpstan-ignore-next-line
 		return PhotoResource::make($query->inRandomOrder()
@@ -202,26 +202,6 @@ class PhotoController extends Controller
 	}
 
 	/**
-	 * Sets the `is_public` attribute of the given photo.
-	 *
-	 * We do not advise the use of this and would rather see people use albums
-	 * visibility.
-	 * This would highly simplify the code if we remove this.
-	 * Do we really want to keep it ?
-	 *
-	 * @param SetPhotoPublicRequest $request
-	 *
-	 * @return void
-	 *
-	 * @throws LycheeException
-	 */
-	public function setPublic(SetPhotoPublicRequest $request): void
-	{
-		$request->photo()->is_public = $request->isPublic();
-		$request->photo()->save();
-	}
-
-	/**
 	 * Set the tags of a photo.
 	 *
 	 * @param SetPhotosTagsRequest $request
@@ -249,28 +229,15 @@ class PhotoController extends Controller
 	 * Moves the photos to an album.
 	 *
 	 * @param MovePhotosRequest $request
+	 * @param Move              $move
 	 *
 	 * @return void
 	 *
 	 * @throws LycheeException
 	 */
-	public function setAlbum(MovePhotosRequest $request): void
+	public function setAlbum(MovePhotosRequest $request, Move $move): void
 	{
-		$notify = new Notify();
-		$album = $request->album();
-
-		/** @var Photo $photo */
-		foreach ($request->photos() as $photo) {
-			$photo->album_id = $album?->id;
-			// Avoid unnecessary DB request, when we access the album of a
-			// photo later (e.g. when a notification is sent).
-			$photo->setRelation('album', $album);
-			if ($album !== null) {
-				$photo->owner_id = $album->owner_id;
-			}
-			$photo->save();
-			$notify->do($photo);
-		}
+		$move->do($request->photos(), $request->album());
 	}
 
 	/**

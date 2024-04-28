@@ -7,6 +7,7 @@ return [
 	'PASSWORD' => 'Password',
 	'ENTER' => 'Invia',
 	'CANCEL' => 'Annulla',
+	'CONFIRM' => 'Confirm',
 	'SIGN_IN' => 'Entra',
 	'CLOSE' => 'Chiudi',
 	'SETTINGS' => 'Impostazioni',
@@ -16,6 +17,7 @@ return [
 	'GALLERY' => 'Gallery',
 
 	'USERS' => 'Utenti',
+	'PROFILE' => 'Profile',
 	'CREATE' => 'Create',
 	'REMOVE' => 'Remove',
 	'SHARE' => 'Share',
@@ -28,6 +30,7 @@ return [
 	'ABOUT_LYCHEE' => 'Informazioni su Lychee',
 	'DIAGNOSTICS' => 'Diagnostica',
 	'DIAGNOSTICS_GET_SIZE' => 'Request space usage',
+	'JOBS' => 'Show job history',
 	'LOGS' => 'Visualizza Log',
 	'SIGN_OUT' => 'Esci',
 	'UPDATE_AVAILABLE' => 'Aggiornamento disponibile!',
@@ -140,6 +143,9 @@ return [
 	'UNSTAR_PHOTO' => 'Rimuovi dalle Foto Speciali',
 	'SET_COVER' => 'Set Album Cover',
 	'REMOVE_COVER' => 'Remove Album Cover',
+	'SET_HEADER' => 'Set Album Header',
+	'REMOVE_HEADER' => 'Remove Album Header',
+	'SET_COMPACT_HEADER' => 'Use Compact Header',
 
 	'FULL_PHOTO' => 'Open Original',
 	'ABOUT_PHOTO' => 'Informazioni sulla Foto',
@@ -205,6 +211,8 @@ return [
 	'ALBUM_RESERVED' => 'Tutti i Diritti Riservati',
 	'ALBUM_SET_ORDER' => 'Set Order',
 	'ALBUM_ORDERING' => 'Order by',
+	'ALBUM_PHOTO_ORDERING' => 'Order photos by',
+	'ALBUM_CHILDREN_ORDERING' => 'Order albums by',
 	'ALBUM_OWNER' => 'Owner',
 
 	'PHOTO_ABOUT' => 'Informazioni',
@@ -282,6 +290,7 @@ return [
 	'ERROR_MAP_DEACTIVATED' => 'Map functionality has been deactivated under settings.',
 	'ERROR_SEARCH_DEACTIVATED' => 'Search functionality has been deactivated under settings.',
 	'SUCCESS' => 'OK',
+	'CHANGE_SUCCESS' => 'Change successful.',
 	'RETRY' => 'Riprova',
 	'OVERRIDE' => 'Override',
 	'TAGS_OVERRIDE_INFO' => 'If this is unchecked, the tags will be added to the existing tags of the photo.',
@@ -311,6 +320,7 @@ return [
 	'U2F_AUTHENTIFICATION_SUCCESS' => 'Authentication successful!',
 	'U2F_CREDENTIALS' => 'Credentials',
 	'U2F_CREDENTIALS_DELETED' => 'Credentials deleted!',
+	'U2F_LOGIN' => 'Log in with WebAuthn',
 
 	'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
 	'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
@@ -345,7 +355,6 @@ return [
 	'SORT_PHOTO_SELECT_2' => 'Data di Creazione',
 	'SORT_PHOTO_SELECT_3' => 'Titolo',
 	'SORT_PHOTO_SELECT_4' => 'Descrizione',
-	'SORT_PHOTO_SELECT_5' => 'Pubblico',
 	'SORT_PHOTO_SELECT_6' => 'Speciale',
 	'SORT_PHOTO_SELECT_7' => 'Formato Photo',
 
@@ -354,7 +363,7 @@ return [
 	'SORT_CHANGE' => 'Cambia Ordinamento',
 
 	'DROPBOX_TITLE' => 'Imposta Chiave Dropbox',
-	'DROPBOX_TEXT' => "Per importare foto dal tuo Dropbox, ha bisogno di una chiave valida ottenibile da <a href='https://www.dropbox.com/developers/apps/create'>their website</a>. Genera la tua chiave personale e inseriscila qui di seguito:",
+	'DROPBOX_TEXT' => "Per importare foto dal tuo Dropbox, ha bisogno di una chiave valida ottenibile da <a href='https://www.dropbox.com/developers/saver'>their website</a>. Genera la tua chiave personale e inseriscila qui di seguito:",
 
 	'LANG_TEXT' => 'Cambia Lingua Lychee per:',
 	'LANG_TITLE' => 'Cambia Lingua',
@@ -400,6 +409,8 @@ return [
 	'LAYOUT_TYPE' => 'Layout delle foto:',
 	'LAYOUT_SQUARES' => 'Miniature Quadrate',
 	'LAYOUT_JUSTIFIED' => 'Relativo all’aspetto, giustificate',
+	'LAYOUT_MASONRY' => 'Relativo all’aspetto, masonry',
+	'LAYOUT_GRID' => 'Relativo all’aspetto, grid',
 	'LAYOUT_UNJUSTIFIED' => 'Relativo all’aspetto, non giustificate',
 	'SET_LAYOUT' => 'Cambia layout',
 
@@ -408,6 +419,9 @@ return [
 	'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Default sensitive album visibility updated with success.',
 
 	'NSFW_BANNER' => '<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>',
+	'NSFW_HEADER' => 'Sensitive content',
+	'NSFW_EXPLANATION' => 'This album contains sensitive content which some people may find offensive or disturbing.',
+	'TAP_CONSENT' => 'Tap to consent.',
 
 	'VIEW_NO_RESULT' => 'Nessun risultato',
 	'VIEW_NO_PUBLIC_ALBUMS' => 'Nessun album pubblico',

@@ -88,7 +88,7 @@ class HasManyPhotosByTag extends BaseHasManyPhotos
 		}
 		/** @var TagAlbum $album */
 		$album = $albums[0];
-		$sorting = $album->getEffectiveSorting();
+		$sorting = $album->getEffectivePhotoSorting();
 
 		$photos = $photos->sortBy(
 			$sorting->column->value,

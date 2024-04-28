@@ -7,6 +7,7 @@ return [
 	'PASSWORD' => 'Password',
 	'ENTER' => 'Inserir',
 	'CANCEL' => 'Cancelar',
+	'CONFIRM' => 'Confirm',
 	'SIGN_IN' => 'Iniciar Sessão',
 	'CLOSE' => 'Fechar',
 	'SETTINGS' => 'Configurações',
@@ -16,6 +17,7 @@ return [
 	'GALLERY' => 'Gallery',
 
 	'USERS' => 'Utilizadores',
+	'PROFILE' => 'Profile',
 	'CREATE' => 'Create',
 	'REMOVE' => 'Remove',
 	'SHARE' => 'Share',
@@ -28,6 +30,7 @@ return [
 	'ABOUT_LYCHEE' => 'Acerca do Lychee',
 	'DIAGNOSTICS' => 'Diagnosticos',
 	'DIAGNOSTICS_GET_SIZE' => 'Pedir utilização de espaço',
+	'JOBS' => 'Show job history',
 	'LOGS' => 'Mostrar Logs',
 	'SIGN_OUT' => 'Terminar Sessão',
 	'UPDATE_AVAILABLE' => 'Atualização disponível!',
@@ -140,6 +143,9 @@ return [
 	'UNSTAR_PHOTO' => 'Desmarcar como Favorita',
 	'SET_COVER' => 'Escolher para Capa de Álbum',
 	'REMOVE_COVER' => 'Remover Capa de Álbum',
+	'SET_HEADER' => 'Set Album Header',
+	'REMOVE_HEADER' => 'Remove Album Header',
+	'SET_COMPACT_HEADER' => 'Use Compact Header',
 
 	'FULL_PHOTO' => 'Abrir Original',
 	'ABOUT_PHOTO' => 'Acerca da Fotografia',
@@ -205,6 +211,8 @@ return [
 	'ALBUM_RESERVED' => 'Todos os Direitos Reservados',
 	'ALBUM_SET_ORDER' => 'Escolher Ordem',
 	'ALBUM_ORDERING' => 'Ordenar por',
+	'ALBUM_PHOTO_ORDERING' => 'Order photos by',
+	'ALBUM_CHILDREN_ORDERING' => 'Order albums by',
 	'ALBUM_OWNER' => 'Owner',
 
 	'PHOTO_ABOUT' => 'Acerca de',
@@ -282,6 +290,7 @@ return [
 	'ERROR_MAP_DEACTIVATED' => 'A funcionalidade do mapa foi desativada nas configurações.',
 	'ERROR_SEARCH_DEACTIVATED' => 'A funcionalidade de procura foi desativada nas configurações.',
 	'SUCCESS' => 'OK',
+	'CHANGE_SUCCESS' => 'Change successful.',
 	'RETRY' => 'Tentar de novo',
 	'OVERRIDE' => 'Override',
 	'TAGS_OVERRIDE_INFO' => 'If this is unchecked, the tags will be added to the existing tags of the photo.',
@@ -311,6 +320,7 @@ return [
 	'U2F_AUTHENTIFICATION_SUCCESS' => 'Authenticação bem-sucedida!',
 	'U2F_CREDENTIALS' => 'Credenciais',
 	'U2F_CREDENTIALS_DELETED' => 'Credenciais eliminadas!',
+	'U2F_LOGIN' => 'Log in with WebAuthn',
 
 	'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
 	'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
@@ -345,7 +355,6 @@ return [
 	'SORT_PHOTO_SELECT_2' => 'Data de Modificação',
 	'SORT_PHOTO_SELECT_3' => 'Título',
 	'SORT_PHOTO_SELECT_4' => 'Descrição',
-	'SORT_PHOTO_SELECT_5' => 'Público',
 	'SORT_PHOTO_SELECT_6' => 'Favorito',
 	'SORT_PHOTO_SELECT_7' => 'Formato da Fotografia',
 
@@ -354,7 +363,7 @@ return [
 	'SORT_CHANGE' => 'Alterar Ordenação',
 
 	'DROPBOX_TITLE' => 'Escolher a Dropbox Key',
-	'DROPBOX_TEXT' => "Para importar fotografias do seu Dropbox, precisa de uma key válida de drop-in do <a href='https://www.dropbox.com/developers/apps/create'>website deles</a>. Crie uma key pessoal e insira-a abaixo:",
+	'DROPBOX_TEXT' => "Para importar fotografias do seu Dropbox, precisa de uma key válida de drop-in do <a href='https://www.dropbox.com/developers/saver'>website deles</a>. Crie uma key pessoal e insira-a abaixo:",
 
 	'LANG_TEXT' => 'Alterar língua do Lychee para:',
 	'LANG_TITLE' => 'Alterar Linguagem',
@@ -400,6 +409,8 @@ return [
 	'LAYOUT_TYPE' => 'Disposição das fotografias:',
 	'LAYOUT_SQUARES' => 'Miniaturas quadradas',
 	'LAYOUT_JUSTIFIED' => 'Com formatação, justificada',
+	'LAYOUT_MASONRY' => 'Com formatação, masonry',
+	'LAYOUT_GRID' => 'Com formatação, grid',
 	'LAYOUT_UNJUSTIFIED' => 'Com formatação, não justificada',
 	'SET_LAYOUT' => 'Alterar disposição',
 
@@ -408,6 +419,9 @@ return [
 	'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Sensibilidade predefinida do álbum visível atualizada com sucesso.',
 
 	'NSFW_BANNER' => '<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>',
+	'NSFW_HEADER' => 'Sensitive content',
+	'NSFW_EXPLANATION' => 'This album contains sensitive content which some people may find offensive or disturbing.',
+	'TAP_CONSENT' => 'Tap to consent.',
 
 	'VIEW_NO_RESULT' => 'Sem resultados',
 	'VIEW_NO_PUBLIC_ALBUMS' => 'Sem álbums públicos',
@@ -466,7 +480,7 @@ return [
 
 	'ABOUT_SUBTITLE' => 'Gestão de fotografias auto-hospedada e bem feita',
 	'ABOUT_DESCRIPTION' => '<a target=\'_blank\' href=\'%s\'>Lychee</a> é uma ferramenta gratuita de gestão de fotografias, que corre no teu servidor ou espaço web. A instalação demora segundos. Enviar, gerir e partilhar fotografias como uma aplicação nativa. O Lychee vem com tudo o que precisas e todas as tuas fotografias são guardadas de forma segura.',
-	'FOOTER_COPYRIGHT' => 'Todas as imagens neste website estão sujeitas a direitos autorais por %0 © %1',
+	'FOOTER_COPYRIGHT' => 'Todas as imagens neste website estão sujeitas a direitos autorais por %1$s © %2$s',
 	'HOSTED_WITH_LYCHEE' => 'Hospedado com Lychee',
 
 	'URL_COPY_TO_CLIPBOARD' => 'Copiar para o clipboard',

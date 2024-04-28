@@ -7,6 +7,7 @@ return [
 	'PASSWORD' => 'Κωδικός πρόσβασης',
 	'ENTER' => 'Είσοδος',
 	'CANCEL' => 'Άκυρο',
+	'CONFIRM' => 'Confirm',
 	'SIGN_IN' => 'Συνδεθείτε',
 	'CLOSE' => 'Κλείσιμο',
 	'SETTINGS' => 'Ρυθμίσεις',
@@ -16,6 +17,7 @@ return [
 	'GALLERY' => 'Gallery',
 
 	'USERS' => 'Χρήστες',
+	'PROFILE' => 'Profile',
 	'CREATE' => 'Create',
 	'REMOVE' => 'Remove',
 	'SHARE' => 'Share',
@@ -28,6 +30,7 @@ return [
 	'ABOUT_LYCHEE' => 'Περί Lychee',
 	'DIAGNOSTICS' => 'Διαγνωστικά',
 	'DIAGNOSTICS_GET_SIZE' => 'Request space usage',
+	'JOBS' => 'Show job history',
 	'LOGS' => 'Εμφάνιση Καταγραφών',
 	'SIGN_OUT' => 'Αποσύνδεση',
 	'UPDATE_AVAILABLE' => 'Διαθέσιμη Ενημέρωση!',
@@ -140,6 +143,9 @@ return [
 	'UNSTAR_PHOTO' => 'Αφαιρέστε Αστέρια από τη Φωτογραφία',
 	'SET_COVER' => 'Set Album Cover',
 	'REMOVE_COVER' => 'Remove Album Cover',
+	'SET_HEADER' => 'Set Album Header',
+	'REMOVE_HEADER' => 'Remove Album Header',
+	'SET_COMPACT_HEADER' => 'Use Compact Header',
 
 	'FULL_PHOTO' => 'Πρωτότυπη Φωτογραφία',
 	'ABOUT_PHOTO' => 'Πληροφορίες Φωτογραφίας',
@@ -205,6 +211,8 @@ return [
 	'ALBUM_RESERVED' => 'Με επιφύλαξη παντός δικαιώματος',
 	'ALBUM_SET_ORDER' => 'Set Order',
 	'ALBUM_ORDERING' => 'Order by',
+	'ALBUM_PHOTO_ORDERING' => 'Order photos by',
+	'ALBUM_CHILDREN_ORDERING' => 'Order albums by',
 	'ALBUM_OWNER' => 'Owner',
 
 	'PHOTO_ABOUT' => 'Περί',
@@ -282,6 +290,7 @@ return [
 	'ERROR_MAP_DEACTIVATED' => 'Map functionality has been deactivated under settings.',
 	'ERROR_SEARCH_DEACTIVATED' => 'Search functionality has been deactivated under settings.',
 	'SUCCESS' => 'OK',
+	'CHANGE_SUCCESS' => 'Change successful.',
 	'RETRY' => 'Προσπάθεια ξανά',
 	'OVERRIDE' => 'Override',
 	'TAGS_OVERRIDE_INFO' => 'If this is unchecked, the tags will be added to the existing tags of the photo.',
@@ -311,6 +320,7 @@ return [
 	'U2F_AUTHENTIFICATION_SUCCESS' => 'Authentication successful!',
 	'U2F_CREDENTIALS' => 'Credentials',
 	'U2F_CREDENTIALS_DELETED' => 'Credentials deleted!',
+	'U2F_LOGIN' => 'Log in with WebAuthn',
 
 	'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
 	'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
@@ -345,7 +355,6 @@ return [
 	'SORT_PHOTO_SELECT_2' => 'Ημερομηνία Λήψης',
 	'SORT_PHOTO_SELECT_3' => 'Τίτλος',
 	'SORT_PHOTO_SELECT_4' => 'Περιγραφή',
-	'SORT_PHOTO_SELECT_5' => 'Δημόσιο',
 	'SORT_PHOTO_SELECT_6' => 'Αστέρια',
 	'SORT_PHOTO_SELECT_7' => 'Μορφή Φωτογραφίας',
 
@@ -354,7 +363,7 @@ return [
 	'SORT_CHANGE' => 'Αλλαγή Ταξινόμησης',
 
 	'DROPBOX_TITLE' => 'Ορισμός Κλειδιού Dropbox',
-	'DROPBOX_TEXT' => "Για να μπορέσουμε να εισάγουμε φωτογραφίες από το δικό σας Dropbox, θα χρειαστείτε ένα έγκυρο κλειδί drop-ins app από <a href='https://www.dropbox.com/developers/apps/create'>την ιστοσελίδα του Dropbox</a>. Παράγετε ένα προσωπικό κλειδί και εισάγετέ το παρακάτω:",
+	'DROPBOX_TEXT' => "Για να μπορέσουμε να εισάγουμε φωτογραφίες από το δικό σας Dropbox, θα χρειαστείτε ένα έγκυρο κλειδί drop-ins app από <a href='https://www.dropbox.com/developers/saver'>την ιστοσελίδα του Dropbox</a>. Παράγετε ένα προσωπικό κλειδί και εισάγετέ το παρακάτω:",
 
 	'LANG_TEXT' => 'Αλλαγή γλώσσας του Lychee για:',
 	'LANG_TITLE' => 'Αλλαγή Γλώσσας',
@@ -400,6 +409,8 @@ return [
 	'LAYOUT_TYPE' => 'Διάταξη φωτογραφιών:',
 	'LAYOUT_SQUARES' => 'Τετράγωνες μικρογραφίες',
 	'LAYOUT_JUSTIFIED' => 'Με ίσες αναλογίες',
+	'LAYOUT_MASONRY' => 'Με ίσες masonry',
+	'LAYOUT_GRID' => 'Με ίσες grid',
 	'LAYOUT_UNJUSTIFIED' => 'Με άνισες αναλογίες',
 	'SET_LAYOUT' => 'Αλλαγή διάταξης',
 
@@ -408,6 +419,9 @@ return [
 	'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Default sensitive album visibility updated with success.',
 
 	'NSFW_BANNER' => '<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>',
+	'NSFW_HEADER' => 'Sensitive content',
+	'NSFW_EXPLANATION' => 'This album contains sensitive content which some people may find offensive or disturbing.',
+	'TAP_CONSENT' => 'Tap to consent.',
 
 	'VIEW_NO_RESULT' => 'Κανένα αποτέλεσμα',
 	'VIEW_NO_PUBLIC_ALBUMS' => 'Κανένα δημόσιο λεύκωμα',

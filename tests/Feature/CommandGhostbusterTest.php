@@ -30,13 +30,13 @@ class CommandGhostbusterTest extends Base\BasePhotoTest
 		// and thumb, because these size variants must be generated at least
 		// otherwise we have nothing to test.
 		$fileURLs = array_diff([
-			$photo->size_variants->original->url,
-			$photo->size_variants->medium2x?->url,
-			$photo->size_variants->medium?->url,
-			$photo->size_variants->small2x?->url,
-			$photo->size_variants->small?->url,
-			$photo->size_variants->thumb2x?->url,
-			$photo->size_variants->thumb->url,
+			$this->dropUrlPrefix($photo->size_variants->original->url),
+			$this->dropUrlPrefix($photo->size_variants->medium2x?->url),
+			$this->dropUrlPrefix($photo->size_variants->medium?->url),
+			$this->dropUrlPrefix($photo->size_variants->small2x?->url),
+			$this->dropUrlPrefix($photo->size_variants->small?->url),
+			$this->dropUrlPrefix($photo->size_variants->thumb2x?->url),
+			$this->dropUrlPrefix($photo->size_variants->thumb->url),
 		], [null]);
 		$this->assertNotEmpty($fileURLs);
 
@@ -79,18 +79,18 @@ class CommandGhostbusterTest extends Base\BasePhotoTest
 		// otherwise we have nothing to test.
 		$originalFileURL = $photo->size_variants->original->url;
 		$fileURLs = array_diff([
-			$originalFileURL,
-			$photo->size_variants->medium2x?->url,
-			$photo->size_variants->medium?->url,
-			$photo->size_variants->small2x?->url,
-			$photo->size_variants->small?->url,
-			$photo->size_variants->thumb2x?->url,
-			$photo->size_variants->thumb->url,
+			$this->dropUrlPrefix($originalFileURL),
+			$this->dropUrlPrefix($photo->size_variants->medium2x?->url),
+			$this->dropUrlPrefix($photo->size_variants->medium?->url),
+			$this->dropUrlPrefix($photo->size_variants->small2x?->url),
+			$this->dropUrlPrefix($photo->size_variants->small?->url),
+			$this->dropUrlPrefix($photo->size_variants->thumb2x?->url),
+			$this->dropUrlPrefix($photo->size_variants->thumb->url),
 		], [null]);
 		$this->assertNotEmpty($fileURLs);
 
 		// Remove original file
-		\Safe\unlink(public_path($originalFileURL));
+		\Safe\unlink(public_path($this->dropUrlPrefix($originalFileURL)));
 
 		// Ghostbuster, ...
 		$this->artisan(self::COMMAND, [

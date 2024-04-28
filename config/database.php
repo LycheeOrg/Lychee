@@ -81,7 +81,9 @@ return [
 			'engine' => 'InnoDB ROW_FORMAT=DYNAMIC',
 			'options' => extension_loaded('pdo_mysql') ? array_filter([
 				PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
-			]) : [],
+			],
+				fn ($elem) => ($elem !== null && $elem !== ''),
+			) : [],
 			// Ensure a deterministic SQL mode for MySQL/MariaDB.
 			// Don't rely on accidentally correct, system-wide settings of the
 			// DB service.
@@ -205,5 +207,6 @@ return [
 		],
 	],
 
-	'list_foreign_keys' => env('DB_LIST_FOREIGN_KEYS', false),
+	// Only list fk keys in debug mode.
+	'list_foreign_keys' => (bool) env('DB_LIST_FOREIGN_KEYS', false) && (bool) env('APP_DEBUG', false),
 ];

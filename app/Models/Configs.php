@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Enum\LicenseType;
+use App\Enum\MapProviders;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\InvalidConfigOption;
 use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnexpectedException;
-use App\Facades\Helpers;
 use App\Models\Builders\ConfigsBuilder;
 use App\Models\Extensions\ConfigsHas;
 use App\Models\Extensions\ThrowsConsistentExceptions;
@@ -25,7 +26,7 @@ use Illuminate\Support\Facades\Log;
  * @property string|null $value
  * @property string      $cat
  * @property string      $type_range
- * @property int         $confidentiality
+ * @property bool        $is_secret
  * @property string      $description
  *
  * @method static ConfigsBuilder|Configs addSelect($column)
@@ -55,19 +56,22 @@ class Configs extends Model
 	use ThrowsConsistentExceptions;
 
 	protected const INT = 'int';
+	protected const POSTIIVE = 'positive';
 	protected const STRING = 'string';
 	protected const STRING_REQ = 'string_required';
 	protected const BOOL = '0|1';
+	protected const BOOL_STRING = 'bool';
 	protected const TERNARY = '0|1|2';
 	protected const DISABLED = '';
 	protected const LICENSE = 'license';
+	protected const MAP_PROVIDER = 'map_provider';
 
 	/**
 	 * The attributes that are mass assignable.
 	 *
-	 * @var array<string>
+	 * @var array<int,string>
 	 */
-	protected $fillable = ['key', 'value', 'cat', 'type_range', 'confidentiality', 'description'];
+	protected $fillable = ['key', 'value', 'cat', 'type_range', 'is_secret', 'description'];
 
 	/**
 	 *  this is a parameter for Laravel to indicate that there is no created_at, updated_at columns.
@@ -95,18 +99,20 @@ class Configs extends Model
 	 * Sanity check.
 	 *
 	 * @param string|null $candidateValue
+	 * @param string|null $message_template
 	 *
 	 * @return string
 	 */
-	public function sanity(?string $candidateValue): string
+	public function sanity(?string $candidateValue, ?string $message_template = null): string
 	{
 		$message = '';
 		$val_range = [
+			self::BOOL_STRING => ['0', '1'],
 			self::BOOL => explode('|', self::BOOL),
 			self::TERNARY => explode('|', self::TERNARY),
 		];
 
-		$message_template_got = 'Error: Wrong property for ' . $this->key . ', expected %s, got ' . ($candidateValue ?? 'NULL') . '.';
+		$message_template ??= 'Error: Wrong property for ' . $this->key . ', expected %s, got ' . ($candidateValue ?? 'NULL') . '.';
 		switch ($this->type_range) {
 			case self::STRING:
 			case self::DISABLED:
@@ -119,24 +125,35 @@ class Configs extends Model
 			case self::INT:
 				// we make sure that we only have digits in the chosen value.
 				if (!ctype_digit(strval($candidateValue))) {
-					$message = sprintf($message_template_got, 'positive integer');
+					$message = sprintf($message_template, 'positive integer or 0');
 				}
 				break;
+			case self::POSTIIVE:
+				if (!ctype_digit(strval($candidateValue)) || intval($candidateValue, 10) === 0) {
+					$message = sprintf($message_template, 'strictly positive integer');
+				}
+				break;
+			case self::BOOL_STRING:
 			case self::BOOL:
 			case self::TERNARY:
 				if (!in_array($candidateValue, $val_range[$this->type_range], true)) { // BOOL or TERNARY
-					$message = sprintf($message_template_got, implode(' or ', $val_range[$this->type_range]));
+					$message = sprintf($message_template, implode(' or ', $val_range[$this->type_range]));
 				}
 				break;
 			case self::LICENSE:
-				if (!in_array($candidateValue, Helpers::get_all_licenses(), true)) {
-					$message = sprintf($message_template_got, 'a valid license');
+				if (LicenseType::tryFrom($candidateValue) === null) {
+					$message = sprintf($message_template, 'a valid license');
+				}
+				break;
+			case self::MAP_PROVIDER:
+				if (MapProviders::tryFrom($candidateValue) === null) {
+					$message = sprintf($message_template, 'a valid map provider');
 				}
 				break;
 			default:
 				$values = explode('|', $this->type_range);
 				if (!in_array($candidateValue, $values, true)) {
-					$message = sprintf($message_template_got, implode(' or ', $values));
+					$message = sprintf($message_template, implode(' or ', $values));
 				}
 				break;
 		}

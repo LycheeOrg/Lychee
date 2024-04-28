@@ -39,7 +39,7 @@ return [
 
 	'guards' => [
 		'lychee' => [
-			'driver' => env('ENABLE_TOKEN_AUTH', true) ? 'session-or-token' : 'session',
+			'driver' => env('ENABLE_BEARER_TOKEN_AUTH', env('ENABLE_TOKEN_AUTH', true)) ? 'session-or-token' : 'session', // @phpstan-ignore-line
 			'provider' => 'users',
 		],
 	],
@@ -110,4 +110,23 @@ return [
 	*/
 
 	'password_timeout' => 10800,
+
+	/*
+	|--------------------------------------------------------------------------
+	| Hard fail on bearer token
+	|--------------------------------------------------------------------------
+	|
+	| When a bearer token is found, we fail hard by throwing an exception when the
+	| associated authenticable (user) is not found.
+	|
+	| This is only used if ENABLE_BEARER_TOKEN_AUTH = true
+	*/
+
+	'token_guard' => [
+		// Hard fail if bearer token is provided but no authenticable user is found
+		'fail_bearer_authenticable_not_found' => (bool) env('FAIL_NO_AUTHENTICABLE_BEARER_TOKEN', true),
+
+		// Log if token is provided but no bearer prefix.
+		'log_warn_no_scheme_bearer' => (bool) env('LOG_WARN_NO_BEARER_TOKEN', true),
+	],
 ];

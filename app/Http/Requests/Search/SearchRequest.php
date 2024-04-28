@@ -20,7 +20,7 @@ class SearchRequest extends BaseApiRequest
 	 */
 	public function authorize(): bool
 	{
-		return Auth::check() || Configs::getValueAsBool('public_search');
+		return Auth::check() || Configs::getValueAsBool('search_public');
 	}
 
 	/**

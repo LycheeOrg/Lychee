@@ -30,6 +30,8 @@ class SetProtectionPolicy extends Action
 	public function do(BaseAlbum $album, AlbumProtectionPolicy $protectionPolicy, bool $shallSetPassword, ?string $password): void
 	{
 		$album->is_nsfw = $protectionPolicy->is_nsfw;
+		$album->save();
+
 		$active_permissions = $album->public_permissions();
 
 		if (!$protectionPolicy->is_public) {
@@ -60,8 +62,5 @@ class SetProtectionPolicy extends Action
 		}
 		$active_permissions->base_album_id = $album->id;
 		$active_permissions->save();
-
-		// Reset permissions for photos
-		$album->photos()->update(['photos.is_public' => false]);
 	}
 }

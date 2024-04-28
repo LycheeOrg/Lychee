@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Album\Unlock;
+use App\Assets\Features;
 use App\Contracts\Exceptions\LycheeException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Factories\AlbumFactory;
@@ -13,6 +14,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class RedirectController extends Controller
@@ -73,11 +75,37 @@ class RedirectController extends Controller
 				$this->unlock->do($album, $request['password']);
 			}
 
+			// If we are using livewire by default, we redirect to Livewire url intead.
+			if (Features::active('livewire')) {
+				return $photoID === null ?
+					redirect(route('livewire-gallery-album', ['albumId' => $albumID])) :
+					redirect(route('livewire-gallery-photo', ['albumId' => $albumID, 'photoId' => $photoID]));
+			}
+
 			return $photoID === null ?
 				redirect('gallery#' . $albumID) :
 				redirect('gallery#' . $albumID . '/' . $photoID);
 		} catch (BindingResolutionException $e) {
 			throw new FrameworkException('Lychee redirection component', $e);
 		}
+	}
+
+	/**
+	 * Redirection to landing or gallery depending on the settings.
+	 * Otherwise attach a JS hook if legacy is enabled.
+	 *
+	 * @return View|SymfonyResponse
+	 */
+	public function view(): View|SymfonyResponse
+	{
+		$base_route = Configs::getValueAsBool('landing_page_enable') ? route('landing') : route('livewire-gallery');
+		if (Features::active('legacy_v4_redirect') === false) {
+			return redirect($base_route);
+		}
+
+		return view('hook-redirection', [
+			'gallery' => route('livewire-gallery'),
+			'base' => $base_route,
+		]);
 	}
 }

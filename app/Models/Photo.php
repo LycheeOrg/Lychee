@@ -7,6 +7,8 @@ use App\Casts\ArrayCast;
 use App\Casts\DateTimeWithTimezoneCast;
 use App\Casts\MustNotSetCast;
 use App\Constants\RandomID;
+use App\Enum\LicenseType;
+use App\Enum\StorageDiskType;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\ZeroModuloException;
@@ -23,6 +25,7 @@ use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\ToArrayThrowsNotImplemented;
 use App\Models\Extensions\UTCBasedTimes;
 use App\Relations\HasManySizeVariants;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
@@ -37,7 +40,6 @@ use function Safe\preg_match;
  * @property string       $title
  * @property string|null  $description
  * @property string[]     $tags
- * @property bool         $is_public
  * @property int          $owner_id
  * @property string|null  $type
  * @property string|null  $iso
@@ -56,12 +58,11 @@ use function Safe\preg_match;
  * @property string|null  $taken_at_orig_tz
  * @property bool         $is_starred
  * @property string|null  $live_photo_short_path
- * @property string|null  $live_photo_full_path
  * @property string|null  $live_photo_url
  * @property string|null  $album_id
  * @property string       $checksum
  * @property string       $original_checksum
- * @property string       $license
+ * @property LicenseType  $license
  * @property Carbon       $created_at
  * @property Carbon       $updated_at
  * @property string|null  $live_photo_content_id
@@ -92,7 +93,6 @@ use function Safe\preg_match;
  * @method static PhotoBuilder|Photo whereId($value)
  * @method static PhotoBuilder|Photo whereImgDirection($value)
  * @method static PhotoBuilder|Photo whereIn(string $column, string $values, string $boolean = 'and', string $not = false)
- * @method static PhotoBuilder|Photo whereIsPublic($value)
  * @method static PhotoBuilder|Photo whereIsStarred($value)
  * @method static PhotoBuilder|Photo whereIso($value)
  * @method static PhotoBuilder|Photo whereLatitude($value)
@@ -121,6 +121,7 @@ use function Safe\preg_match;
  */
 class Photo extends Model
 {
+	use HasFactory;
 	use UTCBasedTimes;
 	use HasAttributesPatch;
 	use HasRandomIDAndLegacyTimeBasedID;
@@ -145,16 +146,26 @@ class Photo extends Model
 		'created_at' => 'datetime',
 		'updated_at' => 'datetime',
 		'taken_at' => DateTimeWithTimezoneCast::class,
-		'live_photo_full_path' => MustNotSetCast::class . ':live_photo_short_path',
 		'live_photo_url' => MustNotSetCast::class . ':live_photo_short_path',
 		'owner_id' => 'integer',
 		'is_starred' => 'boolean',
-		'is_public' => 'boolean',
 		'tags' => ArrayCast::class,
 		'latitude' => 'float',
 		'longitude' => 'float',
 		'altitude' => 'float',
 		'img_direction' => 'float',
+	];
+
+	/**
+	 * @var array<int,string> The list of attributes which exist as columns of the DB
+	 *                        relation but shall not be serialized to JSON
+	 */
+	protected $hidden = [
+		RandomID::LEGACY_ID_NAME,
+		'album',  // do not serialize relation in order to avoid infinite loops
+		'owner',  // do not serialize relation
+		'owner_id',
+		'live_photo_short_path', // serialize live_photo_url instead
 	];
 
 	/**
@@ -165,6 +176,11 @@ class Photo extends Model
 	public function newEloquentBuilder($query): PhotoBuilder
 	{
 		return new PhotoBuilder($query);
+	}
+
+	protected function _toArray(): array
+	{
+		return parent::toArray();
 	}
 
 	/**
@@ -224,8 +240,8 @@ class Photo extends Model
 					$b = intval($matches[2]);
 					if ($b !== 0) {
 						$gcd = Helpers::gcd($a, $b);
-						$a = $a / $gcd;
-						$b = $b / $gcd;
+						$a /= $gcd;
+						$b /= $gcd;
 						if ($a === 1) {
 							$shutter = '1/' . $b . ' s';
 						} else {
@@ -257,22 +273,33 @@ class Photo extends Model
 	 * @param ?string $license the value from the database passed in by
 	 *                         the Eloquent framework
 	 *
-	 * @return string
+	 * @return LicenseType
 	 */
-	protected function getLicenseAttribute(?string $license): string
+	protected function getLicenseAttribute(?string $license): LicenseType
 	{
 		if ($license === null) {
-			return Configs::getValueAsString('default_license');
+			return Configs::getValueAsEnum('default_license', LicenseType::class);
 		}
 
-		if ($license !== 'none') {
-			return $license;
+		if (LicenseType::tryFrom($license) !== null && LicenseType::tryFrom($license) !== LicenseType::NONE) {
+			return LicenseType::from($license);
 		}
-		if ($this->album_id !== null) {
+
+		if ($this->album_id !== null && $this->relationLoaded('album')) {
 			return $this->album->license;
 		}
 
-		return Configs::getValueAsString('default_license');
+		return Configs::getValueAsEnum('default_license', LicenseType::class);
+	}
+
+	/**
+	 * This is to avoid loading the license from configs & albums.
+	 *
+	 * @return ?string
+	 */
+	public function getOriginalLicense(): ?string
+	{
+		return $this->attributes['license'];
 	}
 
 	/**
@@ -298,26 +325,9 @@ class Photo extends Model
 		if ($focal === null || $focal === '') {
 			return null;
 		}
+
 		// We need to format the framerate (stored as focal) -> max 2 decimal digits
 		return $this->isVideo() ? (string) round(floatval($focal), 2) : $focal;
-	}
-
-	/**
-	 * Accessor for the "virtual" attribute {@see Photo::$live_photo_full_path}.
-	 *
-	 * Returns the full path of the live photo as it needs to be input into
-	 * some low-level PHP functions like `unlink`.
-	 * This is a convenient method and wraps
-	 * {@link Photo::$live_photo_short_path} into
-	 * {@link \Illuminate\Support\Facades\Storage::path()}.
-	 *
-	 * @return string|null The full path of the live photo
-	 */
-	protected function getLivePhotoFullPathAttribute(): ?string
-	{
-		$path = $this->live_photo_short_path;
-
-		return ($path === null || $path === '') ? null : Storage::path($path);
 	}
 
 	/**
@@ -334,8 +344,32 @@ class Photo extends Model
 	protected function getLivePhotoUrlAttribute(): ?string
 	{
 		$path = $this->live_photo_short_path;
+		$disk_name = $this->size_variants->getOriginal()?->storage_disk?->value ?? StorageDiskType::LOCAL->value;
 
-		return ($path === null || $path === '') ? null : Storage::url($path);
+		return ($path === null || $path === '') ? null : Storage::disk($disk_name)->url($path);
+	}
+
+	/**
+	 * Accessor for the virtual attribute $aspect_ratio.
+	 *
+	 * Returns the correct aspect ratio for
+	 * - photos
+	 * - and videos where small or medium exists
+	 * Otherwise returns 1 (square)
+	 *
+	 * @return float aspect ratio to use in display mode
+	 */
+	protected function getAspectRatioAttribute(): float
+	{
+		if ($this->isVideo() &&
+			$this->size_variants->getSmall() === null &&
+			$this->size_variants->getMedium() === null) {
+			return 1;
+		}
+
+		return $this->size_variants->getOriginal()?->ratio ??
+			$this->size_variants->getMedium()?->ratio ??
+			$this->size_variants->getSmall()?->ratio ?? 1;
 	}
 
 	/**

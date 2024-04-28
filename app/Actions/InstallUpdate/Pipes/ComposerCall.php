@@ -36,7 +36,7 @@ class ComposerCall extends AbstractUpdateInstallerPipe
 				chdir(base_path());
 				exec(sprintf('composer install %s--no-progress 2>&1', $noDev), $output);
 				chdir(base_path('public'));
-				// @codeCoverageIgnoreEnd
+			// @codeCoverageIgnoreEnd
 			} else {
 				$output[] = 'Composer update are always dangerous when automated.';
 				$output[] = 'So we did not execute it.';

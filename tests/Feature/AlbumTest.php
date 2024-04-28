@@ -15,7 +15,6 @@ namespace Tests\Feature;
 use App\Enum\DefaultAlbumProtectionType;
 use App\Models\Configs;
 use App\SmartAlbums\OnThisDayAlbum;
-use App\SmartAlbums\PublicAlbum;
 use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\StarredAlbum;
 use App\SmartAlbums\UnsortedAlbum;
@@ -81,7 +80,6 @@ class AlbumTest extends AbstractTestCase
 
 		$this->albums_tests->get(RecentAlbum::ID, 401);
 		$this->albums_tests->get(StarredAlbum::ID, 401);
-		$this->albums_tests->get(PublicAlbum::ID, 401);
 		$this->albums_tests->get(UnsortedAlbum::ID, 401);
 		$this->albums_tests->get(OnThisDayAlbum::ID, 401);
 
@@ -97,7 +95,6 @@ class AlbumTest extends AbstractTestCase
 
 		$this->albums_tests->get(RecentAlbum::ID);
 		$this->albums_tests->get(StarredAlbum::ID);
-		$this->albums_tests->get(PublicAlbum::ID);
 		$this->albums_tests->get(UnsortedAlbum::ID);
 		$this->albums_tests->get(OnThisDayAlbum::ID);
 
@@ -792,6 +789,68 @@ class AlbumTest extends AbstractTestCase
 	}
 
 	/**
+	 * Creates an extra User.
+	 * Creates a (regular) album, put a photo in it.
+	 * Log are extra user, and try to set the header of the album, expect to fail.
+	 *
+	 * @return void
+	 */
+	public function testSetHeaderByNonOwner()
+	{
+		Auth::loginUsingId(1);
+		$userID = $this->users_tests->add('Test user', 'Test password 1')->offsetGet('id');
+		$albumID = $this->albums_tests->add(null, 'Test Album')->offsetGet('id');
+		$photoID1 = $this->photos_tests->upload(
+			AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE),
+			$albumID
+		)->offsetGet('id');
+		Auth::logout();
+		Session::flush();
+
+		Auth::loginUsingId($userID);
+		$this->albums_tests->set_header($albumID, $photoID1, 403);
+	}
+
+	/**
+	 * Creates a (regular) album, put 2 photos in it.
+	 * Get original header_id.
+	 * Set header of album to photo 1, check that header_id is photo1.
+	 * Set header of album to photo 2, check that header_id is photo2.
+	 * Unset header of album, check that header_id is back to original.
+	 *
+	 * @return void
+	 */
+	public function testSetHeaderByOwner()
+	{
+		Auth::loginUsingId(1);
+		$albumID = $this->albums_tests->add(null, 'Test Album')->offsetGet('id');
+		$photoID1 = $this->photos_tests->upload(
+			AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE),
+			$albumID
+		)->offsetGet('id');
+		$photoID2 = $this->photos_tests->upload(
+			AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_HOCHUFERWEG),
+			$albumID
+		)->offsetGet('id');
+		$initialHeaderID = $this->albums_tests->get($albumID)->offsetGet('header_id');
+
+		$this->albums_tests->set_header($albumID, $photoID1);
+		$headerID = $this->albums_tests->get($albumID)->offsetGet('header_id');
+		$this->assertEquals($photoID1, $headerID);
+
+		$this->albums_tests->set_header($albumID, $photoID2);
+		$headerID = $this->albums_tests->get($albumID)->offsetGet('header_id');
+		$this->assertEquals($photoID2, $headerID);
+
+		$this->albums_tests->set_header($albumID, null);
+		$headerID = $this->albums_tests->get($albumID)->offsetGet('header_id');
+		$this->assertEquals($initialHeaderID, $headerID);
+
+		Auth::logout();
+		Session::flush();
+	}
+
+	/**
 	 * Check that deleting in Unsorted results in removing Unsorted pictures.
 	 *
 	 * @return void
@@ -828,7 +887,6 @@ class AlbumTest extends AbstractTestCase
 			'smart_albums' => [
 				'unsorted' => [],
 				'starred' => [],
-				'public' => [],
 				'recent' => [],
 				'on_this_day' => [],
 			],
@@ -849,7 +907,6 @@ class AlbumTest extends AbstractTestCase
 		]);
 		$response->assertDontSee('unsorted');
 		$response->assertDontSee('starred');
-		$response->assertDontSee('public');
 		$response->assertDontSee('recent');
 
 		Configs::set('SA_enabled', true);
@@ -958,5 +1015,31 @@ class AlbumTest extends AbstractTestCase
 		$album1->assertDontSee($albumID3);
 
 		Configs::set(TestConstants::CONFIG_DEFAULT_ALBUM_PROTECTION, $defaultProtectionType);
+	}
+
+	/**
+	 * Test that setting NSFW via the Protection Policy works.
+	 * 1. Create album
+	 * 2. check nsfw is false
+	 * 3. set nsfw to true
+	 * 4. check nsfw is true
+	 * 5. set nsfw to false
+	 * 6. check nsfw is false.
+	 *
+	 * @return void
+	 */
+	public function testNSFWViaProtectionPolicy(): void
+	{
+		Auth::loginUsingId(1);
+		$albumID1 = $this->albums_tests->add(null, 'Test Album')->offsetGet('id');
+		$res = $this->albums_tests->get($albumID1);
+		$res->assertJson(['policy' => ['is_nsfw' => false]]);
+		$this->albums_tests->set_protection_policy(id: $albumID1, is_nsfw: true);
+		$res = $this->albums_tests->get($albumID1);
+		$res->assertJson(['policy' => ['is_nsfw' => true]]);
+		$this->albums_tests->set_protection_policy(id: $albumID1, is_nsfw: false);
+		$res = $this->albums_tests->get($albumID1);
+		$res->assertJson(['policy' => ['is_nsfw' => false]]);
+		Auth::logout();
 	}
 }

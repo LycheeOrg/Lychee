@@ -1,5 +1,7 @@
 <?php
 
+use function Safe\parse_url;
+
 return [
 	/*
 	 * Server
@@ -377,22 +379,27 @@ return [
 			'self' => true,
 			// Allow OpenStreetMap tile images to be fetched from the different provides
 			// Allow image to be directly encoded at the img source parameter
-			'allow' => [
-				'https://maps.wikimedia.org/osm-intl/',
-				'https://a.tile.osm.org/',
-				'https://b.tile.osm.org/',
-				'https://c.tile.osm.org/',
-				'https://a.tile.openstreetmap.de/',
-				'https://b.tile.openstreetmap.de/',
-				'https://c.tile.openstreetmap.de/',
-				'https://a.tile.openstreetmap.fr/osmfr/',
-				'https://b.tile.openstreetmap.fr/osmfr/',
-				'https://c.tile.openstreetmap.fr/osmfr/',
-				'https://a.osm.rrze.fau.de/osmhd/',
-				'https://b.osm.rrze.fau.de/osmhd/',
-				'https://c.osm.rrze.fau.de/osmhd/',
-				'data:', // required by openstreetmap
-			],
+			'allow' => array_merge(
+				[
+					'https://maps.wikimedia.org/osm-intl/',
+					'https://tile.openstreetmap.org/',
+					'https://tile.openstreetmap.de/',
+					'https://a.tile.openstreetmap.fr/osmfr/',
+					'https://b.tile.openstreetmap.fr/osmfr/',
+					'https://c.tile.openstreetmap.fr/osmfr/',
+					'https://a.osm.rrze.fau.de/osmhd/',
+					'https://b.osm.rrze.fau.de/osmhd/',
+					'https://c.osm.rrze.fau.de/osmhd/',
+					'data:', // required by openstreetmap
+					'blob:', // required for "live" photos
+				],
+				// Add the S3 URL to the list of allowed image sources
+				env('AWS_ACCESS_KEY_ID', '') === '' ? [] :
+				[
+					// @phpstan-ignore-next-line
+					str_replace(parse_url(env('AWS_URL'), PHP_URL_PATH), '', env('AWS_URL')),
+				]
+			),
 		],
 
 		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/manifest-src
@@ -402,6 +409,9 @@ return [
 		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/media-src
 		'media-src' => [
 			'self' => true,
+			'allow' => [
+				'blob:', // required for "live" photos
+			],
 		],
 
 		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/navigate-to
@@ -512,6 +522,24 @@ return [
 
 					// upload.check()
 					'CL4mGy9ZhHM+PkLDZsWVuM25kEFBv3FXlmWe/O9Unmc=',
+
+					/*
+	const hashMatch = document.location.hash.replace("#", "").split("/");
+	const albumID = hashMatch[0] ?? '';
+	const photoID = hashMatch[1] ?? '';
+	const elem = document.getElementById('redirectData');
+	const gallery = elem.dataset.gallery;
+	const base = elem.dataset.redirect;
+
+	if (photoID !== '') {
+		window.location = gallery + '/' + albumID + '/' + photoID;
+	} else if (albumID !== '') {
+		window.location = gallery + '/' + albumID;
+	} else {
+		window.location = base;
+	}
+ */
+					'okzzdI+OgeNYCr3oJXDZ/rPI5WwGyiU5V/RwOQrv5zE=',
 
 					/*
 	document.addEventListener("DOMContentLoaded", function(event) {

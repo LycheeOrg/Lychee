@@ -7,6 +7,7 @@ return [
 	'PASSWORD' => 'Contraseña',
 	'ENTER' => 'Entrar',
 	'CANCEL' => 'Cancelar',
+	'CONFIRM' => 'Confirm',
 	'SIGN_IN' => 'Iniciar sesión',
 	'CLOSE' => 'Cerrar',
 	'SETTINGS' => 'Configuraciones',
@@ -16,6 +17,7 @@ return [
 	'GALLERY' => 'Galería',
 
 	'USERS' => 'Usuarios',
+	'PROFILE' => 'Profile',
 	'CREATE' => 'Crear',
 	'REMOVE' => 'Remove',
 	'SHARE' => 'Share',
@@ -28,6 +30,7 @@ return [
 	'ABOUT_LYCHEE' => 'Acerca de Lychee',
 	'DIAGNOSTICS' => 'Diagnóstico',
 	'DIAGNOSTICS_GET_SIZE' => 'Pedir uso de espacio',
+	'JOBS' => 'Show job history',
 	'LOGS' => 'Mostrar Registros',
 	'SIGN_OUT' => 'Cerrar Sesión',
 	'UPDATE_AVAILABLE' => '¡Actualización disponible!',
@@ -140,6 +143,9 @@ return [
 	'UNSTAR_PHOTO' => 'Desetiquetar Foto',
 	'SET_COVER' => 'Establecer portada del álbum',
 	'REMOVE_COVER' => 'Eliminar portada del álbum',
+	'SET_HEADER' => 'Set Album Header',
+	'REMOVE_HEADER' => 'Remove Album Header',
+	'SET_COMPACT_HEADER' => 'Use Compact Header',
 
 	'FULL_PHOTO' => 'Foto Completa',
 	'ABOUT_PHOTO' => 'Acerca de la Foto',
@@ -205,6 +211,8 @@ return [
 	'ALBUM_RESERVED' => 'Todos los derechos reservados',
 	'ALBUM_SET_ORDER' => 'Establecer orden',
 	'ALBUM_ORDERING' => 'Ordenar por',
+	'ALBUM_PHOTO_ORDERING' => 'Order photos by',
+	'ALBUM_CHILDREN_ORDERING' => 'Order albums by',
 	'ALBUM_OWNER' => 'Dueño',
 
 	'PHOTO_ABOUT' => 'Acerca de',
@@ -282,6 +290,7 @@ return [
 	'ERROR_MAP_DEACTIVATED' => 'La funcionalidad del mapa se ha desactivado en la configuración.',
 	'ERROR_SEARCH_DEACTIVATED' => 'La función de búsqueda se ha desactivado en la configuración.',
 	'SUCCESS' => 'Vale',
+	'CHANGE_SUCCESS' => 'Change successful.',
 	'RETRY' => 'Procesar de nuevo',
 	'OVERRIDE' => 'Override',
 	'TAGS_OVERRIDE_INFO' => 'If this is unchecked, the tags will be added to the existing tags of the photo.',
@@ -311,6 +320,7 @@ return [
 	'U2F_AUTHENTIFICATION_SUCCESS' => '¡Autenticación correcta!',
 	'U2F_CREDENTIALS' => 'Credenciales',
 	'U2F_CREDENTIALS_DELETED' => '¡Credenciales eliminadas!',
+	'U2F_LOGIN' => 'Log in with WebAuthn',
 
 	'NEW_PHOTOS_NOTIFICATION' => 'Enviar correos electrónicos de notificación de nuevas fotos.',
 	'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'Notificación de nuevas fotos actualizada',
@@ -345,7 +355,6 @@ return [
 	'SORT_PHOTO_SELECT_2' => 'Fecha Realización',
 	'SORT_PHOTO_SELECT_3' => 'Título',
 	'SORT_PHOTO_SELECT_4' => 'Descripción',
-	'SORT_PHOTO_SELECT_5' => 'Público',
 	'SORT_PHOTO_SELECT_6' => 'Estrella',
 	'SORT_PHOTO_SELECT_7' => 'Formato de foto',
 
@@ -354,7 +363,7 @@ return [
 	'SORT_CHANGE' => 'Cambiar clasificación',
 
 	'DROPBOX_TITLE' => 'Establecer clave de Dropbox',
-	'DROPBOX_TEXT' => 'Para importar fotos desde su Dropbox, necesita una clave de aplicación válida desde <a href=\'https://www.dropbox.com/developers/apps/create\'> su sitio web </a>. Generar usted mismo una clave personal e ingrésela a continuación:',
+	'DROPBOX_TEXT' => 'Para importar fotos desde su Dropbox, necesita una clave de aplicación válida desde <a href=\'https://www.dropbox.com/developers/saver\'> su sitio web </a>. Generar usted mismo una clave personal e ingrésela a continuación:',
 
 	'LANG_TEXT' => 'Cambiar el idioma Lychee para:',
 	'LANG_TITLE' => 'Cambiar idioma',
@@ -400,6 +409,8 @@ return [
 	'LAYOUT_TYPE' => 'Diseño de fotos:',
 	'LAYOUT_SQUARES' => 'Miniaturas cuadradas',
 	'LAYOUT_JUSTIFIED' => 'Con aspecto justificado',
+	'LAYOUT_MASONRY' => 'Con aspecto, masonry',
+	'LAYOUT_GRID' => 'Con aspecto, grid',
 	'LAYOUT_UNJUSTIFIED' => 'Con aspecto, injustificado',
 	'SET_LAYOUT' => 'Cambia el diseño',
 
@@ -408,6 +419,9 @@ return [
 	'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Visibilidad predeterminada del álbum sensible actualizada con éxito.',
 
 	'NSFW_BANNER' => '<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>',
+	'NSFW_HEADER' => 'Sensitive content',
+	'NSFW_EXPLANATION' => 'This album contains sensitive content which some people may find offensive or disturbing.',
+	'TAP_CONSENT' => 'Tap to consent.',
 
 	'VIEW_NO_RESULT' => 'No hay resultados',
 	'VIEW_NO_PUBLIC_ALBUMS' => 'Sin álbumes públicos',

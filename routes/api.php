@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\Internal\NotImplementedException;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\URL;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,10 +15,6 @@ use Illuminate\Support\Facades\URL;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
-if (config('app.force_https')) {
-	URL::forceScheme('https');
-}
 
 /**
  * ALBUMS.
@@ -40,6 +36,7 @@ Route::post('/Album::setNSFW', [AlbumController::class, 'setNSFW']);
 Route::post('/Album::setDescription', [AlbumController::class, 'setDescription']);
 Route::post('/Album::setCopyright', [AlbumController::class, 'setCopyright']);
 Route::post('/Album::setCover', [AlbumController::class, 'setCover']);
+Route::post('/Album::setHeader', [AlbumController::class, 'setHeader']);
 Route::post('/Album::setShowTags', [AlbumController::class, 'setShowTags']);
 Route::post('/Album::setProtectionPolicy', [AlbumController::class, 'setProtectionPolicy']);
 Route::post('/Album::delete', [AlbumController::class, 'delete']);
@@ -48,8 +45,9 @@ Route::post('/Album::move', [AlbumController::class, 'move']);
 Route::post('/Album::setLicense', [AlbumController::class, 'setLicense']);
 Route::post('/Album::setSorting', [AlbumController::class, 'setSorting']);
 Route::get('/Album::getArchive', [AlbumController::class, 'getArchive'])
+	->name('download')
 	->withoutMiddleware(['content_type:json', 'accept_content_type:json'])
-	->middleware(['local_storage', 'accept_content_type:any']);
+	->middleware(['accept_content_type:any']);
 Route::post('/Album::setTrack', [AlbumController::class, 'setTrack'])
 	->withoutMiddleware(['content_type:json'])
 	->middleware(['content_type:multipart']);
@@ -75,7 +73,7 @@ Route::post('/Photo::getRandom', [PhotoController::class, 'getRandom']);
 Route::post('/Photo::setTitle', [PhotoController::class, 'setTitle']);
 Route::post('/Photo::setDescription', [PhotoController::class, 'setDescription']);
 Route::post('/Photo::setStar', [PhotoController::class, 'setStar']);
-Route::post('/Photo::setPublic', [PhotoController::class, 'setPublic']);
+Route::post('/Photo::setPublic', fn () => throw new NotImplementedException('This code is deprecated. Good bye.')); // just legacy stuff.
 Route::post('/Photo::setAlbum', [PhotoController::class, 'setAlbum']);
 Route::post('/Photo::setTags', [PhotoController::class, 'setTags']);
 Route::post('/Photo::delete', [PhotoController::class, 'delete']);
@@ -88,8 +86,9 @@ Route::post('/Photo::add', [PhotoController::class, 'add'])
 	->withoutMiddleware(['content_type:json'])
 	->middleware(['content_type:multipart']);
 Route::get('/Photo::getArchive', [PhotoController::class, 'getArchive'])
+	->name('photo_download')
 	->withoutMiddleware(['content_type:json', 'accept_content_type:json'])
-	->middleware(['local_storage', 'accept_content_type:any']);
+	->middleware(['accept_content_type:any']);
 
 /**
  * SEARCH.

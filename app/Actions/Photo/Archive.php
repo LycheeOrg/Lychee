@@ -4,7 +4,6 @@ namespace App\Actions\Photo;
 
 use App\Actions\Photo\Extensions\ArchiveFileInfo;
 use App\Contracts\Exceptions\LycheeException;
-use App\Contracts\Models\AbstractSizeVariantNamingStrategy;
 use App\Enum\DownloadVariantType;
 use App\Enum\SizeVariantType;
 use App\Exceptions\ConfigurationKeyMissingException;
@@ -14,6 +13,7 @@ use App\Image\Files\FlysystemFile;
 use App\Models\Configs;
 use App\Models\Photo;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Storage;
 use Safe\Exceptions\InfoException;
 use function Safe\fclose;
 use function Safe\fopen;
@@ -22,8 +22,7 @@ use function Safe\set_time_limit;
 use function Safe\stream_copy_to_stream;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\StreamedResponse;
-use ZipStream\Option\File as ZipFileOption;
-use ZipStream\Option\Method as ZipMethod;
+use ZipStream\CompressionMethod as ZipMethod;
 use ZipStream\ZipStream;
 
 class Archive
@@ -91,8 +90,8 @@ class Archive
 
 		$responseGenerator = function () use ($archiveFileInfo) {
 			$outputStream = fopen('php://output', 'wb');
-			stream_copy_to_stream($archiveFileInfo->getFile()->read(), $outputStream);
-			$archiveFileInfo->getFile()->close();
+			stream_copy_to_stream($archiveFileInfo->file->read(), $outputStream);
+			$archiveFileInfo->file->close();
 			fclose($outputStream);
 		};
 
@@ -101,11 +100,11 @@ class Archive
 			$disposition = HeaderUtils::makeDisposition(
 				HeaderUtils::DISPOSITION_ATTACHMENT,
 				$archiveFileInfo->getFilename(),
-				mb_check_encoding($archiveFileInfo->getFilename(), 'ASCII') ? '' : 'Photo' . $archiveFileInfo->getFile()->getExtension()
+				mb_check_encoding($archiveFileInfo->getFilename(), 'ASCII') ? '' : 'Photo' . $archiveFileInfo->file->getExtension()
 			);
 			$response->headers->set('Content-Type', $photo->type);
 			$response->headers->set('Content-Disposition', $disposition);
-			$response->headers->set('Content-Length', strval($archiveFileInfo->getFile()->getFilesize()));
+			$response->headers->set('Content-Length', strval($archiveFileInfo->file->getFilesize()));
 			// Note: Using insecure hashing algorithm is fine here.
 			// The ETag header must only be different for different size variants
 			// Pre-image resistance and collision robustness is not required.
@@ -115,10 +114,10 @@ class Archive
 			// we must avoid illegal characters like `/` and md5 returns a
 			// hexadecimal string.
 			$response->headers->set('ETag', md5(
-				$archiveFileInfo->getFile()->getBasename() .
+				$archiveFileInfo->file->getBasename() .
 				$downloadVariant->value .
 				$photo->updated_at->toAtomString() .
-				$archiveFileInfo->getFile()->getFilesize())
+				$archiveFileInfo->file->getFilesize())
 			);
 			$response->headers->set('Last-Modified', $photo->updated_at->format(\DateTimeInterface::RFC7231));
 
@@ -142,10 +141,7 @@ class Archive
 		$this->deflateLevel = Configs::getValueAsInt('zip_deflate_level');
 
 		$responseGenerator = function () use ($downloadVariant, $photos) {
-			$options = new \ZipStream\Option\Archive();
-			$options->setEnableZip64(Configs::getValueAsBool('zip64'));
-			$options->setZeroHeader(true);
-			$zip = new ZipStream(null, $options);
+			$zip = new ZipStream(enableZip64: Configs::getValueAsBool('zip64'), defaultEnableZeroHeader: true, sendHttpHeaders: false);
 
 			// We first need to scan the whole array of files to avoid
 			// problems with duplicate file names.
@@ -236,11 +232,10 @@ class Archive
 						);
 					} while (array_key_exists($filename, $uniqueFilenames));
 				}
-				$zipFileOption = new ZipFileOption();
-				$zipFileOption->setMethod($this->deflateLevel === -1 ? ZipMethod::STORE() : ZipMethod::DEFLATE());
-				$zipFileOption->setDeflateLevel($this->deflateLevel);
-				$zip->addFileFromStream($filename, $archiveFileInfo->getFile()->read(), $zipFileOption);
-				$archiveFileInfo->getFile()->close();
+				$zip->addFileFromStream(fileName: $filename, stream: $archiveFileInfo->file->read(),
+					compressionMethod: $this->deflateLevel === -1 ? ZipMethod::STORE : ZipMethod::DEFLATE,
+					deflateLevel: $this->deflateLevel);
+				$archiveFileInfo->file->close();
 				// Reset the execution timeout for every iteration.
 				try {
 					set_time_limit((int) ini_get('max_execution_time'));
@@ -289,7 +284,8 @@ class Archive
 		$baseFilename = $validFilename !== '' ? $validFilename : 'Untitled';
 
 		if ($downloadVariant === DownloadVariantType::LIVEPHOTOVIDEO) {
-			$sourceFile = new FlysystemFile(AbstractSizeVariantNamingStrategy::getImageDisk(), $photo->live_photo_short_path);
+			$disk = $photo->size_variants->getSizeVariant(SizeVariantType::ORIGINAL)->storage_disk->value;
+			$sourceFile = new FlysystemFile(Storage::disk($disk), $photo->live_photo_short_path);
 			$baseFilenameAddon = '';
 		} else {
 			$sv = $photo->size_variants->getSizeVariant($downloadVariant->getSizeVariantType());

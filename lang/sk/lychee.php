@@ -7,6 +7,7 @@ return [
 	'PASSWORD' => 'Heslo',
 	'ENTER' => 'Zadať',
 	'CANCEL' => 'Prerušiť',
+	'CONFIRM' => 'Confirm',
 	'SIGN_IN' => 'Prihlásiť',
 	'CLOSE' => 'Zatvoriť',
 	'SETTINGS' => 'Nastavenia',
@@ -16,6 +17,7 @@ return [
 	'GALLERY' => 'Gallery',
 
 	'USERS' => 'Užívatelia',
+	'PROFILE' => 'Profile',
 	'CREATE' => 'Create',
 	'REMOVE' => 'Remove',
 	'SHARE' => 'Share',
@@ -28,6 +30,7 @@ return [
 	'ABOUT_LYCHEE' => 'O Lychee',
 	'DIAGNOSTICS' => 'Diagnostika',
 	'DIAGNOSTICS_GET_SIZE' => 'Request space usage',
+	'JOBS' => 'Show job history',
 	'LOGS' => 'Protokoly',
 	'SIGN_OUT' => 'Odhlásiť',
 	'UPDATE_AVAILABLE' => 'Update je k dispozícii!',
@@ -140,6 +143,9 @@ return [
 	'UNSTAR_PHOTO' => 'Obrázok odstrániť z obľúbených',
 	'SET_COVER' => 'Set Album Cover',
 	'REMOVE_COVER' => 'Remove Album Cover',
+	'SET_HEADER' => 'Set Album Header',
+	'REMOVE_HEADER' => 'Remove Album Header',
+	'SET_COMPACT_HEADER' => 'Use Compact Header',
 
 	'FULL_PHOTO' => 'Otvoriť originál',
 	'ABOUT_PHOTO' => 'O tomto obrázku',
@@ -205,6 +211,8 @@ return [
 	'ALBUM_RESERVED' => 'Všetky práva vyhradené',
 	'ALBUM_SET_ORDER' => 'Set Order',
 	'ALBUM_ORDERING' => 'Order by',
+	'ALBUM_PHOTO_ORDERING' => 'Order photos by',
+	'ALBUM_CHILDREN_ORDERING' => 'Order albums by',
 	'ALBUM_OWNER' => 'Owner',
 
 	'PHOTO_ABOUT' => 'O obrázku',
@@ -282,6 +290,7 @@ return [
 	'ERROR_MAP_DEACTIVATED' => 'Map functionality has been deactivated under settings.',
 	'ERROR_SEARCH_DEACTIVATED' => 'Search functionality has been deactivated under settings.',
 	'SUCCESS' => 'OK',
+	'CHANGE_SUCCESS' => 'Change successful.',
 	'RETRY' => 'Opakovať',
 	'OVERRIDE' => 'Override',
 	'TAGS_OVERRIDE_INFO' => 'If this is unchecked, the tags will be added to the existing tags of the photo.',
@@ -311,6 +320,7 @@ return [
 	'U2F_AUTHENTIFICATION_SUCCESS' => 'Authentication successful!',
 	'U2F_CREDENTIALS' => 'Credentials',
 	'U2F_CREDENTIALS_DELETED' => 'Credentials deleted!',
+	'U2F_LOGIN' => 'Log in with WebAuthn',
 
 	'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
 	'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
@@ -345,7 +355,6 @@ return [
 	'SORT_PHOTO_SELECT_2' => 'čas snímku',
 	'SORT_PHOTO_SELECT_3' => 'Titul',
 	'SORT_PHOTO_SELECT_4' => 'Popis',
-	'SORT_PHOTO_SELECT_5' => 'Verejný',
 	'SORT_PHOTO_SELECT_6' => 'Obľúbený',
 	'SORT_PHOTO_SELECT_7' => 'Formát',
 
@@ -354,7 +363,7 @@ return [
 	'SORT_CHANGE' => 'Zmeniť triedenie',
 
 	'DROPBOX_TITLE' => 'Nastaviť kľúč Dropbox',
-	'DROPBOX_TEXT' => "Aby ste mohli importovať obrázky z Dropbox, potrebujete platný API-Key zo <a href='https://www.dropbox.com/developers/apps/create'>stránky Dropbox</a>. Vytvorte personal key a zadajte ho:",
+	'DROPBOX_TEXT' => "Aby ste mohli importovať obrázky z Dropbox, potrebujete platný API-Key zo <a href='https://www.dropbox.com/developers/saver'>stránky Dropbox</a>. Vytvorte personal key a zadajte ho:",
 
 	'LANG_TEXT' => 'Zmeniť jazyk Lychee na:',
 	'LANG_TITLE' => 'Zmena jazyka',
@@ -400,6 +409,8 @@ return [
 	'LAYOUT_TYPE' => 'Rozmiestnenie obrázkov:',
 	'LAYOUT_SQUARES' => 'Štvorcové náhľady',
 	'LAYOUT_JUSTIFIED' => 'Zachovaný pomer strán, zarovnané',
+	'LAYOUT_MASONRY' => 'Zachovaný pomer strán, masonry',
+	'LAYOUT_GRID' => 'Zachovaný pomer strán, grid',
 	'LAYOUT_UNJUSTIFIED' => 'Zachovaný pomer strán, nezarovnané',
 	'SET_LAYOUT' => 'Zmeniť rozmiestnenie',
 
@@ -408,6 +419,9 @@ return [
 	'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Default sensitive album visibility updated with success.',
 
 	'NSFW_BANNER' => '<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>',
+	'NSFW_HEADER' => 'Sensitive content',
+	'NSFW_EXPLANATION' => 'This album contains sensitive content which some people may find offensive or disturbing.',
+	'TAP_CONSENT' => 'Tap to consent.',
 
 	'VIEW_NO_RESULT' => 'Žiadny výsledok',
 	'VIEW_NO_PUBLIC_ALBUMS' => 'Žiadne verejné albumy',

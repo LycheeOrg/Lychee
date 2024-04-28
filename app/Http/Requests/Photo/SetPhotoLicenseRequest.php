@@ -5,6 +5,7 @@ namespace App\Http\Requests\Photo;
 use App\Contracts\Http\Requests\HasLicense;
 use App\Contracts\Http\Requests\HasPhoto;
 use App\Contracts\Http\Requests\RequestAttribute;
+use App\Enum\LicenseType;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\Authorize\AuthorizeCanEditPhotoTrait;
 use App\Http\Requests\Traits\HasLicenseTrait;
@@ -34,6 +35,6 @@ class SetPhotoLicenseRequest extends BaseApiRequest implements HasPhoto, HasLice
 		/** @var ?string $photoID */
 		$photoID = $values[RequestAttribute::PHOTO_ID_ATTRIBUTE];
 		$this->photo = Photo::query()->findOrFail($photoID);
-		$this->license = $values[RequestAttribute::LICENSE_ATTRIBUTE];
+		$this->license = LicenseType::tryFrom($values[RequestAttribute::LICENSE_ATTRIBUTE]);
 	}
 }

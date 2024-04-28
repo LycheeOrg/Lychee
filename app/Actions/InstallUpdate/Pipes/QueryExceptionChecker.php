@@ -19,7 +19,9 @@ class QueryExceptionChecker extends AbstractUpdateInstallerPipe
 		 */
 		foreach ($output as $line) {
 			if (str_contains($line, 'QueryException')) {
+				// @codeCoverageIgnoreStart
 				throw new InstallationFailedException('DB migration failed: ' . $line);
+				// @codeCoverageIgnoreEnd
 			}
 		}
 
