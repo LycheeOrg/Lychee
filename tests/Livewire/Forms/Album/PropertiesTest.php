@@ -52,8 +52,9 @@ class PropertiesTest extends BaseLivewireTest
 			->assertOk()
 			->assertDispatched('notify', self::notifySuccess());
 
-		$copyright = Album::findOrFail($this->album1->id)->copyright;
-		$this->assertEquals('something', $copyright);
+		/** @var Album $album */
+		$album = Album::findOrFail($this->album1->id);
+		$this->assertEquals('something', $album->copyright);
 
 		Livewire::actingAs($this->admin)->test(Properties::class, ['album' => $this->album1])
 			->assertOk()
@@ -63,7 +64,8 @@ class PropertiesTest extends BaseLivewireTest
 			->assertOk()
 			->assertDispatched('notify', self::notifySuccess());
 
-		$copyright = Album::findOrFail($this->album1->id)->copyright;
-		$this->assertEquals(null, $copyright);
+		/** @var Album $album */
+		$album = Album::findOrFail($this->album1->id);
+		$this->assertEquals(null, $album->copyright);
 	}
 }
