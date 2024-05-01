@@ -22,7 +22,7 @@ return [
 	'gen-sizevariants' => [
 		'title' => '%s manquants',
 		'description' => 'Nous avons trouvé %d %s qui peuvent être générés.',
-		'button' => 'Généré!',
+		'button' => 'Générer !',
 		'success' => 'Nous avons créé %d %s avec succès.',
 	],
 	'fill-filesize-sizevariants' => [
