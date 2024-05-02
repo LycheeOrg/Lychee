@@ -88,6 +88,7 @@
             data-asset='{{ URL::asset('/') }}'
             id="leaflet_map_single_photo" class="col-span-2 h-48 bg-red-500 my-0.5 mx-3"
             x-init="$nextTick(() => displayMap())"
+            x-on:photo-updated.window="$nextTick(() => displayMap())"
             x-show="precomputed.has_location"></div>
         <x-gallery.photo.line if="precomputed.has_location && preformatted.latitude"
             :locale="__('lychee.PHOTO_LATITUDE')"
