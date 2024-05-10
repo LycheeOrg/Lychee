@@ -154,7 +154,7 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 			 * only returns photos which are accessible by the current
 			 * user.
 			 */
-			$this->thumb = Thumb::createFromQueryable(
+			$this->thumb = Thumb::createFromRandomQueryable(
 				$this->photos(),
 				PhotoSortingCriterion::createDefault()
 			);
