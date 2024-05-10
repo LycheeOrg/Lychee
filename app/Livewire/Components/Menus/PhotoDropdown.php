@@ -30,6 +30,7 @@ class PhotoDropdown extends Component
 	#[Locked] public array $params;
 	#[Locked] public bool $is_starred;
 	#[Locked] public bool $is_header;
+	#[Locked] public bool $is_model_album;
 	/**
 	 * mount info and load star condition.
 	 *
@@ -44,6 +45,7 @@ class PhotoDropdown extends Component
 
 		$this->params = $params;
 		$this->is_starred = Photo::query()->findOrFail($params[Params::PHOTO_ID])->is_starred;
+		$this->is_model_album = $album instanceof Album;
 		if ($album !== null) {
 			$this->is_header = $album->header_id === $params[Params::PHOTO_ID];
 		}
