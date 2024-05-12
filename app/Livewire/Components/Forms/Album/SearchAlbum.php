@@ -8,6 +8,7 @@ use App\Models\Extensions\SortingDecorator;
 use App\Policies\AlbumQueryPolicy;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use Kalnoy\Nestedset\Collection as NsCollection;
 use Livewire\Attributes\Locked;
@@ -92,7 +93,7 @@ class SearchAlbum extends Component
 					'title' => __('lychee.ROOT'),
 					'original' => __('lychee.ROOT'),
 					'short_title' => __('lychee.ROOT'),
-					'thumb' => 'img/no_images.svg',
+					'thumb' => URL::asset('img/no_images.svg'),
 				]
 			);
 		}
@@ -119,7 +120,7 @@ class SearchAlbum extends Component
 				'title' => $title,
 				'original' => $node->title,
 				'short_title' => $short_title,
-				'thumb' => $node->thumb?->thumbUrl ?? 'img/no_images.svg',
+				'thumb' => $node->thumb?->thumbUrl ?? URL::asset('img/no_images.svg'),
 			];
 			if ($node->children !== null) {
 				$flatArray = array_merge($flatArray, $this->flatten($node->children, $title));
