@@ -13,6 +13,7 @@
 namespace Tests\Livewire\Forms\Album;
 
 use App\Livewire\Components\Forms\Album\SearchAlbum;
+use Illuminate\Support\Facades\URL;
 use Livewire\Livewire;
 use Tests\Livewire\Base\BaseLivewireTest;
 
@@ -41,7 +42,7 @@ class SearchAlbumTest extends BaseLivewireTest
 					'title' => __('lychee.ROOT'),
 					'original' => __('lychee.ROOT'),
 					'short_title' => __('lychee.ROOT'),
-					'thumb' => 'img/no_images.svg',
+					'thumb' => URL::asset('img/no_images.svg'),
 				],
 			]);
 	}
@@ -62,7 +63,7 @@ class SearchAlbumTest extends BaseLivewireTest
 					'title' => __('lychee.ROOT'),
 					'original' => __('lychee.ROOT'),
 					'short_title' => __('lychee.ROOT'),
-					'thumb' => 'img/no_images.svg',
+					'thumb' => URL::asset('img/no_images.svg'),
 				],
 			]);
 	}
