@@ -6405,16 +6405,16 @@
         },
         {
             "name": "spatie/image-optimizer",
-            "version": "1.7.2",
+            "version": "1.7.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/image-optimizer.git",
-                "reference": "62f7463483d1bd975f6f06025d89d42a29608fe1"
+                "reference": "ed39c7bfce7a2ecf676174a2d4286ab3a1c4f4f7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/image-optimizer/zipball/62f7463483d1bd975f6f06025d89d42a29608fe1",
-                "reference": "62f7463483d1bd975f6f06025d89d42a29608fe1",
+                "url": "https://api.github.com/repos/spatie/image-optimizer/zipball/ed39c7bfce7a2ecf676174a2d4286ab3a1c4f4f7",
+                "reference": "ed39c7bfce7a2ecf676174a2d4286ab3a1c4f4f7",
                 "shasum": ""
             },
             "require": {
@@ -6454,9 +6454,9 @@
             ],
             "support": {
                 "issues": "https://github.com/spatie/image-optimizer/issues",
-                "source": "https://github.com/spatie/image-optimizer/tree/1.7.2"
+                "source": "https://github.com/spatie/image-optimizer/tree/1.7.4"
             },
-            "time": "2023-11-03T10:08:02+00:00"
+            "time": "2024-05-06T09:12:30+00:00"
         },
         {
             "name": "spatie/laravel-feed",
@@ -8500,16 +8500,16 @@
         },
         {
             "name": "symfony/process",
-            "version": "v6.4.4",
+            "version": "v6.4.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/process.git",
-                "reference": "710e27879e9be3395de2b98da3f52a946039f297"
+                "reference": "cdb1c81c145fd5aa9b0038bab694035020943381"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/process/zipball/710e27879e9be3395de2b98da3f52a946039f297",
-                "reference": "710e27879e9be3395de2b98da3f52a946039f297",
+                "url": "https://api.github.com/repos/symfony/process/zipball/cdb1c81c145fd5aa9b0038bab694035020943381",
+                "reference": "cdb1c81c145fd5aa9b0038bab694035020943381",
                 "shasum": ""
             },
             "require": {
@@ -8541,7 +8541,7 @@
             "description": "Executes commands in sub-processes",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/process/tree/v6.4.4"
+                "source": "https://github.com/symfony/process/tree/v6.4.7"
             },
             "funding": [
                 {
@@ -8557,7 +8557,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-02-20T12:31:00+00:00"
+            "time": "2024-04-18T09:22:46+00:00"
         },
         {
             "name": "symfony/routing",
@@ -13659,5 +13659,5 @@
     "platform-overrides": {
         "php": "8.2"
     },
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.6.0"
 }
