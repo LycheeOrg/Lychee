@@ -13,6 +13,7 @@ use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Exceptions\Internal\InvalidQueryModelException;
 use App\Exceptions\InvalidPropertyException;
 use App\Models\AccessPermission;
+use App\Models\Configs;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\Extensions\Thumb;
 use App\Models\Extensions\ToArrayThrowsNotImplemented;
@@ -148,17 +149,17 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	 */
 	protected function getThumbAttribute(): ?Thumb
 	{
-		if ($this->thumb === null) {
-			/*
-			 * Note, `photos()` already applies a "security filter" and
-			 * only returns photos which are accessible by the current
-			 * user.
-			 */
-			$this->thumb = Thumb::createFromRandomQueryable(
+		/*
+			* Note, `photos()` already applies a "security filter" and
+			* only returns photos which are accessible by the current
+			* user.
+			*/
+		$this->thumb ??= Configs::getValueAsBool('SA_random_thumbs')
+			? Thumb::createFromRandomQueryable($this->photos())
+			: $this->thumb = Thumb::createFromQueryable(
 				$this->photos(),
 				PhotoSortingCriterion::createDefault()
 			);
-		}
 
 		return $this->thumb;
 	}

@@ -86,14 +86,13 @@ class Thumb extends AbstractDTO
 	 * such that it only returns photos which the current user may see.
 	 *
 	 * @param Relation|Builder $photoQueryable the relation to or query for {@link Photo} which is used to pick a thumb
-	 * @param SortingCriterion $sorting        the sorting criterion
 	 *
 	 * @return Thumb|null the created thumbnail; null if the relation is empty
 	 *
 	 * @throws InvalidPropertyException thrown, if $sortingOrder neither
 	 *                                  equals `desc` nor `asc`
 	 */
-	public static function createFromRandomQueryable(Relation|Builder $photoQueryable, SortingCriterion $sorting): ?Thumb
+	public static function createFromRandomQueryable(Relation|Builder $photoQueryable): ?Thumb
 	{
 		try {
 			/** @var Photo|null $cover */
