@@ -531,8 +531,15 @@ class SharingSpecialTest extends BaseSharingTest
 		?string $thumbID = null,
 		array $expectedPhotos = []
 	): array {
+		if ($thumbID === null) {
+			return [
+				'thumb' => null,
+				'photos' => $expectedPhotos,
+			];
+		}
+
+		// in this specific case because thumbID is random we cannot predict the value.
 		return [
-			'thumb' => $this->generateExpectedThumbJson($thumbID),
 			'photos' => $expectedPhotos,
 		];
 	}

@@ -18,7 +18,6 @@ use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\StarredAlbum;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use Tests\AbstractTestCase;
 use Tests\Feature\Constants\TestConstants;
 use Tests\Feature\LibUnitTests\RootAlbumUnitTest;
 use Tests\Feature\LibUnitTests\SharingUnitTest;
@@ -130,9 +129,9 @@ abstract class BaseSharingTest extends BasePhotoTest
 	 * cumbersome, expected JSON description again and again.
 	 *
 	 * @param string      $samplePhotoID the identifier of the sample photo:
-	 *                                   {@link AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE},
-	 *                                   {@link AbstractTestCase::SAMPLE_FILE_MONGOLIA_IMAGE}, or
-	 *                                   {@link AbstractTestCase::SAMPLE_FILE_TRAIN_IMAGE}
+	 *                                   {@link Tests\AbstractTestCase::SAMPLE_FILE_NIGHT_IMAGE},
+	 *                                   {@link Tests\AbstractTestCase::SAMPLE_FILE_MONGOLIA_IMAGE}, or
+	 *                                   {@link Tests\AbstractTestCase::SAMPLE_FILE_TRAIN_IMAGE}
 	 * @param string      $photoID       the photo ID
 	 * @param string|null $albumID       the album ID
 	 * @param array       $attrToMerge   additional attributes which should be
