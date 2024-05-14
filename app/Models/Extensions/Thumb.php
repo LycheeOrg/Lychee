@@ -79,6 +79,36 @@ class Thumb extends AbstractDTO
 	}
 
 	/**
+	 * Creates a thumb by using the best rated photo from the given queryable.
+	 * In other words, same as above but this time we pick a random image instead.
+	 *
+	 * Note, this method assumes that the relation is already restricted
+	 * such that it only returns photos which the current user may see.
+	 *
+	 * @param Relation|Builder $photoQueryable the relation to or query for {@link Photo} which is used to pick a thumb
+	 *
+	 * @return Thumb|null the created thumbnail; null if the relation is empty
+	 *
+	 * @throws InvalidPropertyException thrown, if $sortingOrder neither
+	 *                                  equals `desc` nor `asc`
+	 */
+	public static function createFromRandomQueryable(Relation|Builder $photoQueryable): ?Thumb
+	{
+		try {
+			/** @var Photo|null $cover */
+			$cover = $photoQueryable
+				->withOnly(['size_variants' => (fn (HasMany $r) => self::sizeVariantsFilter($r))])
+				->inRandomOrder()
+				->select(['photos.id', 'photos.type'])
+				->first();
+
+			return self::createFromPhoto($cover);
+		} catch (\InvalidArgumentException $e) {
+			throw new InvalidPropertyException('Sorting order invalid', $e);
+		}
+	}
+
+	/**
 	 * Creates a thumbnail from the given photo.
 	 * On Livewire it will use by default small and small2x if available, thumb and thumb2x if not.
 	 * On Legacy it will use thumb and thumb2x.
