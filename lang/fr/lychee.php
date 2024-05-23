@@ -14,7 +14,7 @@ return [
 	'SEARCH' => 'Rechercher…',
 	'MORE' => 'Plus',
 	'DEFAULT' => 'Valeur par défaut',
-	'GALLERY' => 'Gallerie',
+	'GALLERY' => 'Galerie',
 
 	'USERS' => 'Utilisateurs',
 	'PROFILE' => 'Profil',
