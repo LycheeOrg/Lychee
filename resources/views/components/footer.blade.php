@@ -28,8 +28,8 @@
 	@isset($copyright)
 		<p class="home_copyright w-full uppercase text-text-main-400 leading-6 font-normal">{{ $copyright }}</p>
 	@endisset
-	@isset($personal_text)
-		<p class="personal_text w-full text-text-main-400 leading-6 font-normal">{{ $personal_text }}</p>
+	@isset($additional_footer_text)
+		<p class="personal_text w-full text-text-main-400 leading-6 font-normal">{{ $additional_footer_text }}</p>
 	@endisset
 	@isset($hosted_by)
 	<p class="hosted_by w-full uppercase text-text-main-400 leading-6 font-normal">
