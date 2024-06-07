@@ -91,6 +91,7 @@ class Album extends BaseAlbumComponent implements Reloadable
 				$is_latitude_longitude_found = $this->album->all_photos()->whereNotNull('latitude')->whereNotNull('longitude')->count() > 0;
 				$aspectRatio = $this->album->album_thumb_aspect_ratio ?? Configs::getValueAsEnum('default_album_thumb_aspect_ratio', AspectRatioType::class);
 				$this->flags->album_thumb_css_aspect_ratio = $aspectRatio->css();
+				$this->flags->cover_id = $this->album->cover_id;
 			} else {
 				$is_latitude_longitude_found = $this->album->photos()->whereNotNull('latitude')->whereNotNull('longitude')->count() > 0;
 			}
@@ -133,7 +134,7 @@ class Album extends BaseAlbumComponent implements Reloadable
 	}
 
 	/**
-	 * Return the photoIDs (no need to wait to compute the geometry).
+	 * Return the photoIDs.
 	 *
 	 * @return Collection<int,Photo>
 	 */
@@ -203,19 +204,22 @@ class Album extends BaseAlbumComponent implements Reloadable
 			return $headerSizeVariant;
 		}
 
-		$photo = SizeVariant::query()
+		$query_ratio = SizeVariant::query()
 					->select('photo_id')
 					->whereBelongsTo($this->album->photos)
 					->where('ratio', '>', 1) // ! we prefer landscape first.
-					->whereIn('type', [SizeVariantType::MEDIUM, SizeVariantType::SMALL2X, SizeVariantType::SMALL])
-					->inRandomOrder()
-					->first() ??
-				SizeVariant::query()
-					->select('photo_id')
-					->whereBelongsTo($this->album->photos)
-					->whereIn('type', [SizeVariantType::MEDIUM, SizeVariantType::SMALL2X, SizeVariantType::SMALL])
-					->inRandomOrder()
-					->first();
+					->whereIn('type', [SizeVariantType::MEDIUM, SizeVariantType::SMALL2X, SizeVariantType::SMALL]);
+		$num = $query_ratio->count() - 1;
+		$photo = $query_ratio->skip(rand(0, $num))->first();
+
+		if ($photo === null) {
+			$query = SizeVariant::query()
+				->select('photo_id')
+				->whereBelongsTo($this->album->photos)
+				->whereIn('type', [SizeVariantType::MEDIUM, SizeVariantType::SMALL2X, SizeVariantType::SMALL]);
+			$num = $query->count() - 1;
+			$photo = $query->skip(rand(0, $num))->first();
+		}
 
 		return $photo === null ? null : SizeVariant::query()
 			->where('photo_id', '=', $photo->photo_id)
