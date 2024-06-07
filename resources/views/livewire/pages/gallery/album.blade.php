@@ -53,7 +53,7 @@
             @endif
             @if ($num_albums > 0)
                 @foreach ($this->albums as $data)
-                    <x-gallery.album.thumbs.album :data="$data" :strAspectRatioClass="$flags->album_thumb_css_aspect_ratio" />
+                    <x-gallery.album.thumbs.album :data="$data" :strAspectRatioClass="$flags->album_thumb_css_aspect_ratio" :coverId="$album->cover_id" />
                 @endforeach
             @endif
             @if ($num_albums > 0 && $num_photos > 0)
