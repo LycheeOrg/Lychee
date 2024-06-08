@@ -3,11 +3,19 @@
 namespace App\Livewire\DTO;
 
 use App\Enum\AspectRatioType;
+use App\Livewire\Traits\UseWireable;
 use App\Models\Configs;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Wireable;
 
-class AlbumFlags
+/**
+ * @implements Wireable<AlbumFlags>
+ */
+class AlbumFlags implements Wireable
 {
+	/** @phpstan-use UseWireable<AlbumFlags> */
+	use UseWireable;
+
 	public function __construct(
 		public bool $is_accessible = false,
 		public bool $is_password_protected = false,
@@ -15,6 +23,7 @@ class AlbumFlags
 		public bool $is_base_album = false,
 		public bool $is_mod_frame_enabled = false,
 		public string $album_thumb_css_aspect_ratio = '',
+		public string|null $cover_id = null,
 	) {
 		$this->is_map_accessible = Configs::getValueAsBool('map_display');
 		$this->is_map_accessible = $this->is_map_accessible && (Auth::check() || Configs::getValueAsBool('map_display_public'));

@@ -47,7 +47,7 @@
             </div>
         </div>
         @if ($this->rights->can_edit && $this->flags->is_base_album)
-            <x-gallery.album.menu.menu :album="$this->album" :userCount="$this->num_users" />
+            <x-gallery.album.menu.menu :album="$this->album" :user-count="$this->num_users" />
         @endif
         @if ($this->albumFormatted !== null && ($this->num_albums > 0 || $this->num_photos > 0))
             <x-gallery.album.hero x-show="! albumFlags.isDetailsOpen" />
@@ -63,7 +63,7 @@
         @endif
         @if ($this->num_albums > 0)
             @foreach ($this->albums as $data)
-                <x-gallery.album.thumbs.album :data="$data" :strAspectRatioClass="$flags->album_thumb_css_aspect_ratio" />
+                <x-gallery.album.thumbs.album :data="$data" :str-aspect-ratio-class="$this->flags->album_thumb_css_aspect_ratio"  :cover-id="$this->flags->cover_id" />
             @endforeach
         @endif
         @if ($this->num_albums > 0 && $this->num_photos > 0)
