@@ -35,7 +35,7 @@
             class="relative flex flex-wrap content-start w-full justify-start overflow-y-auto"
             x-bind:class="isFullscreen ? 'h-[calc(100vh-3px)]' : 'h-[calc(100vh-56px)]'">
             @if ($rights->can_edit && $flags->is_base_album)
-                <x-gallery.album.menu.menu :album="$this->album" :rights="$this->rights" :userCount="$this->num_users" />
+                <x-gallery.album.menu.menu :album="$this->album" :rights="$this->rights" :user-count="$this->num_users" />
             @endif
             @if ($this->albumFormatted !== null && ($num_albums > 0 || $num_photos > 0))
                 <x-gallery.album.hero x-show="! albumFlags.isDetailsOpen" />
@@ -53,7 +53,7 @@
             @endif
             @if ($num_albums > 0)
                 @foreach ($this->albums as $data)
-                    <x-gallery.album.thumbs.album :data="$data" :strAspectRatioClass="$flags->album_thumb_css_aspect_ratio" :coverId="$album->cover_id" />
+                    <x-gallery.album.thumbs.album :data="$data" :str-aspect-ratio-class="$this->flags->album_thumb_css_aspect_ratio" :cover-id="$this->flags->cover_id" />
                 @endforeach
             @endif
             @if ($num_albums > 0 && $num_photos > 0)
