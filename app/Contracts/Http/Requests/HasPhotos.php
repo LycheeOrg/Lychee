@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Collection;
 interface HasPhotos
 {
 	/**
-	 * @return Collection<Photo>
+	 * @return Collection<int,Photo>
 	 */
 	public function photos(): Collection;
 }

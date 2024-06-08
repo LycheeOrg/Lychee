@@ -22,7 +22,7 @@ class ListedAlbumsResource extends JsonResource
 	 *
 	 * @param \Illuminate\Http\Request $request
 	 *
-	 * @return array
+	 * @return array<string,string>
 	 */
 	public function toArray($request): array
 	{

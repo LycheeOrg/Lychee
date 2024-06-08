@@ -5,8 +5,12 @@ namespace App\Livewire\DTO;
 use App\Livewire\Traits\UseWireable;
 use Livewire\Wireable;
 
+/**
+ * @implements Wireable<PhotoFlags>
+ */
 class PhotoFlags implements Wireable
 {
+	/** @phpstan-use UseWireable<PhotoFlags> */
 	use UseWireable;
 
 	public function __construct(

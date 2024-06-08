@@ -58,7 +58,7 @@ abstract class BaseAlbum extends Model implements AbstractAlbum, HasRandomID
 	public $incrementing = false;
 
 	/**
-	 * {@inheritDoc}
+	 * @return BelongsTo<BaseAlbumImpl,self>
 	 */
 	public function base_class(): BelongsTo
 	{
@@ -68,7 +68,7 @@ abstract class BaseAlbum extends Model implements AbstractAlbum, HasRandomID
 	/**
 	 * Returns the relationship between an album and its owner.
 	 *
-	 * @return BelongsTo
+	 * @return BelongsTo<User,BaseAlbumImpl>
 	 */
 	public function owner(): BelongsTo
 	{
@@ -79,7 +79,7 @@ abstract class BaseAlbum extends Model implements AbstractAlbum, HasRandomID
 	 * Returns the relationship between an album and all users with whom
 	 * this album is shared.
 	 *
-	 * @return BelongsToMany
+	 * @return BelongsToMany<User>
 	 */
 	public function shared_with(): BelongsToMany
 	{
@@ -89,7 +89,7 @@ abstract class BaseAlbum extends Model implements AbstractAlbum, HasRandomID
 	/**
 	 * Returns the relationship between an album and its associated permissions.
 	 *
-	 * @return HasMany
+	 * @return HasMany<AccessPermission>
 	 */
 	public function access_permissions(): HasMany
 	{
@@ -116,6 +116,9 @@ abstract class BaseAlbum extends Model implements AbstractAlbum, HasRandomID
 		return $this->base_class->public_permissions();
 	}
 
+	/**
+	 * @return Relation<\App\Models\Photo>
+	 */
 	abstract public function photos(): Relation;
 
 	/**

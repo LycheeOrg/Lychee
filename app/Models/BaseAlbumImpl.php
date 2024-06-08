@@ -133,6 +133,7 @@ use Illuminate\Support\Facades\Auth;
 class BaseAlbumImpl extends Model implements HasRandomID
 {
 	use HasAttributesPatch;
+	/** @phpstan-use HasRandomIDAndLegacyTimeBasedID<BaseAlbumImpl> */
 	use HasRandomIDAndLegacyTimeBasedID;
 	use ThrowsConsistentExceptions;
 	use UTCBasedTimes;
@@ -196,6 +197,9 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	 */
 	protected $with = ['owner', 'access_permissions'];
 
+	/**
+	 * @return array<string,mixed>
+	 */
 	protected function _toArray(): array
 	{
 		return parent::toArray();
@@ -214,7 +218,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	/**
 	 * Returns the relationship between an album and its owner.
 	 *
-	 * @return BelongsTo
+	 * @return BelongsTo<User,BaseAlbumImpl>
 	 */
 	public function owner(): BelongsTo
 	{
@@ -225,7 +229,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	 * Returns the relationship between an album and all users with whom
 	 * this album is shared.
 	 *
-	 * @return BelongsToMany
+	 * @return BelongsToMany<User>
 	 */
 	public function shared_with(): BelongsToMany
 	{
@@ -240,7 +244,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	/**
 	 * Returns the relationship between an album and its associated permissions.
 	 *
-	 * @return hasMany
+	 * @return hasMany<AccessPermission>
 	 */
 	public function access_permissions(): hasMany
 	{

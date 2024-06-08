@@ -25,7 +25,7 @@ class PhotoCollectionResource extends ResourceCollection
 	 *
 	 * @param \Illuminate\Http\Request $request
 	 *
-	 * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
+	 * @return array<int,mixed>|\Illuminate\Contracts\Support\Arrayable<int,mixed>|\JsonSerializable
 	 */
 	public function toArray($request)
 	{

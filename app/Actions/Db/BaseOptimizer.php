@@ -24,7 +24,7 @@ abstract class BaseOptimizer
 	/**
 	 * Get the kind of driver used.
 	 *
-	 * @param array $ret reference array for return messages
+	 * @param array<int,string> $ret reference array for return messages
 	 *
 	 * @return DbDriverType|null
 	 */
@@ -62,9 +62,9 @@ abstract class BaseOptimizer
 	/**
 	 * Execute SQL statement.
 	 *
-	 * @param string $sql     statment to be executed
-	 * @param string $success success message
-	 * @param array  $ret     reference array for return messages
+	 * @param string            $sql     statment to be executed
+	 * @param string            $success success message
+	 * @param array<int,string> $ret     reference array for return messages
 	 *
 	 * @return void
 	 */

@@ -43,7 +43,7 @@ return new class() extends Migration {
 /**
  * We get the current version number.
  *
- * @return array
+ * @return array<int,int>
  */
 function get_version(): array
 {
@@ -63,10 +63,10 @@ function get_version(): array
 /**
  * Given the current version and the update array return the new version number.
  *
- * @param array  $curr_version current version number
- * @param string $kind         'minor' or 'major'
+ * @param array<int,int> $curr_version current version number
+ * @param string         $kind         'minor' or 'major'
  *
- * @return array
+ * @return array<int,int>
  */
 function new_version(array $curr_version, string $kind): array
 {
@@ -87,6 +87,8 @@ function new_version(array $curr_version, string $kind): array
 
 /**
  * encode $version into a string of 6 digits.
+ *
+ * @param array<int,int> $version
  *
  * @return string
  */

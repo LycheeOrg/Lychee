@@ -51,11 +51,17 @@ class MOVFormat extends DefaultVideo
 		return ['-f', self::FFMPEG_CONTAINER_ID];
 	}
 
+	/**
+	 * @return string[]
+	 */
 	public function getAvailableAudioCodecs(): array
 	{
 		return [self::FFMPEG_AUDIO_CODEC_ID];
 	}
 
+	/**
+	 * @return string[]
+	 */
 	public function getAvailableVideoCodecs(): array
 	{
 		return [self::FFMPEG_VIDEO_CODEC_ID];

@@ -10,7 +10,7 @@ use Illuminate\Support\Collection;
 interface HasAlbums
 {
 	/**
-	 * @return Collection<T>
+	 * @return Collection<int,T>
 	 */
 	public function albums(): Collection;
 }

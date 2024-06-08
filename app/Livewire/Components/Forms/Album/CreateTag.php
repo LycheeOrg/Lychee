@@ -26,6 +26,7 @@ class CreateTag extends Component
 
 	public string $title = '';
 	public string $tag = '';
+	/** @var string[] $tags */
 	#[Locked] public array $tags = [];
 	public function boot(): void
 	{
@@ -36,7 +37,7 @@ class CreateTag extends Component
 	 * This defines the set of validation rules to be applied on the input.
 	 * It would be a good idea to unify (namely reuse) the rules from the JSON api.
 	 *
-	 * @return array
+	 * @return array<string,string|array<int,string|\Illuminate\Contracts\Validation\ValidationRule|\Illuminate\Validation\Rules\Enum>>
 	 */
 	protected function rules(): array
 	{
@@ -46,7 +47,7 @@ class CreateTag extends Component
 	/**
 	 * Mount the component.
 	 *
-	 * @param array $params
+	 * @param array<string,string[]|string> $params
 	 *
 	 * @return void
 	 */

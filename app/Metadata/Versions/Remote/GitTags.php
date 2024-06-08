@@ -63,8 +63,8 @@ class GitTags extends AbstractGitRemote implements GitRemote
 	/**
 	 * Given array and sha returns the name of the tag associated to the sha.
 	 *
-	 * @param array  $data
-	 * @param string $sha
+	 * @param object[] $data
+	 * @param string   $sha
 	 *
 	 * @return string
 	 */

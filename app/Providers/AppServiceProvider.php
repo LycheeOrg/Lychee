@@ -48,7 +48,7 @@ class AppServiceProvider extends ServiceProvider
 	/**
 	 * Defines which queries to ignore when doing explain.
 	 *
-	 * @var array<int,string>
+	 * @var string[]
 	 */
 	private array $ignore_log_SQL =
 		[
@@ -62,6 +62,7 @@ class AppServiceProvider extends ServiceProvider
 			'configs',
 		];
 
+	/** @var array<class-string,class-string> */
 	public array $singletons =
 		[
 			SymLinkFunctions::class => SymLinkFunctions::class,
@@ -85,6 +86,7 @@ class AppServiceProvider extends ServiceProvider
 			GitTags::class => GitTags::class,
 		];
 
+	/** @var array<int,class-string> */
 	private array $livewireSynth =
 		[
 			AlbumSynth::class,

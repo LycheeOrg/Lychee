@@ -28,7 +28,7 @@ class Jobs extends Component
 	 * We use a computed property instead of attributes
 	 * in order to avoid poluting the data sent to the user.
 	 *
-	 * @return Collection
+	 * @return Collection<int,JobHistory>
 	 *
 	 * @throws ConfigurationKeyMissingException
 	 */

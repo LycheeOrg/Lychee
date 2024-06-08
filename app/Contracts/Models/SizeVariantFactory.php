@@ -82,7 +82,7 @@ interface SizeVariantFactory
 	 * This method is inapt to create the original size variant.
 	 * Use {@link SizeVariantFactory::createOriginal()} for that.
 	 *
-	 * @return Collection the collection of created size variants
+	 * @return Collection<int,SizeVariant> the collection of created size variants
 	 *
 	 * @throws LycheeException
 	 */

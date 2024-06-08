@@ -92,6 +92,9 @@ class TagAlbum extends BaseAlbum
 		'thumb',
 	];
 
+	/**
+	 * @return array<string,mixed>
+	 */
 	protected function _toArray(): array
 	{
 		$result = parent::toArray();

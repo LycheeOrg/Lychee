@@ -61,8 +61,8 @@ class ArchivePhotosRequest extends BaseApiRequest implements HasPhotos, HasSizeV
 				'size_variants' => fn (HasMany $r) => $r->where('type', '=', $variant),
 			]);
 		}
-		// `findOrFail` returns the union `Photo|Collection<Photo>`
-		// which is not assignable to `Collection<Photo>`; but as we query
+		// `findOrFail` returns the union `Photo|Collection<int,Photo>`
+		// which is not assignable to `Collection<int,Photo>`; but as we query
 		// with an array of IDs we never get a single entity (even if the
 		// array only contains a single ID).
 		$this->photos = $photoQuery->findOrFail(

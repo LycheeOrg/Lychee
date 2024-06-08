@@ -27,6 +27,11 @@ class PHPVersionCheck implements DiagnosticPipe
 		return $next($data);
 	}
 
+	/**
+	 * @param array<int,string> $data
+	 *
+	 * @return void
+	 */
 	private function checkPhpVersion(array &$data): void
 	{
 		// As we cannot test this as those are just raising warnings which we cannot check via CICD.
@@ -44,6 +49,11 @@ class PHPVersionCheck implements DiagnosticPipe
 		}
 	}
 
+	/**
+	 * @param array<int,string> $data
+	 *
+	 * @return void
+	 */
 	private function check32Bits(array &$data): void
 	{
 		// 32 or 64 bits ?
@@ -54,6 +64,11 @@ class PHPVersionCheck implements DiagnosticPipe
 		}
 	}
 
+	/**
+	 * @param array<int,string> $data
+	 *
+	 * @return void
+	 */
 	private function checkExtensions(array &$data): void
 	{
 		// Extensions

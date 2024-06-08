@@ -13,7 +13,7 @@ trait UseValidator
 	/**
 	 * Send message to front-end, it will be displayed in the top right of the window.
 	 *
-	 * @param array $rules to apply
+	 * @param array<string,string|array<int,string|\Illuminate\Contracts\Validation\ValidationRule|\Illuminate\Validation\Rules\Enum>> $rules
 	 *
 	 * @return bool
 	 */

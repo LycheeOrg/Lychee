@@ -12,6 +12,7 @@ use Livewire\Component;
 
 class Space extends Component
 {
+	/** @var string[] */
 	#[Locked] public array $result = [];
 	#[Locked] public string $action;
 	#[Locked] public bool $can;

@@ -102,7 +102,7 @@ abstract class AbstractTestCase extends BaseTestCase
 	}
 
 	/**
-	 * @return BaseCollection<string> the IDs of recently added photos
+	 * @return BaseCollection<int,string> the IDs of recently added photos
 	 */
 	protected static function getRecentPhotoIDs(): BaseCollection
 	{

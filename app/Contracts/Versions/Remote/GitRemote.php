@@ -9,7 +9,7 @@ interface GitRemote
 	 *
 	 * @param bool $useCache
 	 *
-	 * @return array
+	 * @return object[]
 	 */
 	public function fetchRemote(bool $useCache): array;
 
@@ -17,8 +17,8 @@ interface GitRemote
 	 * Count the number of elements between current version and remote HEAD.
 	 * Do nothing if no data are available.
 	 *
-	 * @param array  $data   fetched from github
-	 * @param string $needle
+	 * @param object[] $data   fetched from github
+	 * @param string   $needle
 	 *
 	 * @return int|false Number of elements behind or false if not available
 	 */

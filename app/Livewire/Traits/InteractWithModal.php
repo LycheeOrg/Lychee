@@ -9,8 +9,8 @@ trait InteractWithModal
 	/**
 	 * Open Modal with form and paramters.
 	 *
-	 * @param string $form   Livewire component to include in the modal
-	 * @param array  $params Parameters for said component
+	 * @param string                             $form   Livewire component to include in the modal
+	 * @param array<string,string[]|string|null> $params Parameters for said component
 	 *
 	 * @return void
 	 */
@@ -22,9 +22,9 @@ trait InteractWithModal
 	/**
 	 * Open Modal with form and paramters.
 	 *
-	 * @param string $form       Livewire component to include in the modal
-	 * @param string $close_text text to put if we use a close button
-	 * @param array  $params     Parameters for said component
+	 * @param string                             $form       Livewire component to include in the modal
+	 * @param string                             $close_text text to put if we use a close button
+	 * @param array<string,string|string[]|null> $params     Parameters for said component
 	 *
 	 * @return void
 	 */

@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Schema;
  */
 class ConfigSanityCheck implements DiagnosticPipe
 {
+	/** @var array<string,string> */
 	private array $settings;
 
 	/**
@@ -38,7 +39,7 @@ class ConfigSanityCheck implements DiagnosticPipe
 	/**
 	 * Check that a certain set of configuration exists in the database.
 	 *
-	 * @param array $data
+	 * @param array<int,string> $data
 	 *
 	 * @return void
 	 */
@@ -59,7 +60,7 @@ class ConfigSanityCheck implements DiagnosticPipe
 	/**
 	 * Warning if the Dropbox key does not exists.
 	 *
-	 * @param array $data
+	 * @param array<int,string> $data
 	 *
 	 * @return void
 	 */
@@ -77,7 +78,7 @@ class ConfigSanityCheck implements DiagnosticPipe
 	/**
 	 * Sanity check of the config.
 	 *
-	 * @param array $return
+	 * @param array<int,string> $return
 	 */
 	private function sanity(array &$return): void
 	{

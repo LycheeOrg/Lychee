@@ -136,6 +136,9 @@ class SizeVariant extends Model
 		return new SizeVariantBuilder($query);
 	}
 
+	/**
+	 * @return array<string,mixed>
+	 */
 	protected function _toArray(): array
 	{
 		return parent::toArray();
@@ -145,7 +148,7 @@ class SizeVariant extends Model
 	 * Returns the association to the photo which this size variant belongs
 	 * to.
 	 *
-	 * @return BelongsTo
+	 * @return BelongsTo<Photo,SizeVariant>
 	 */
 	public function photo(): BelongsTo
 	{
@@ -156,7 +159,7 @@ class SizeVariant extends Model
 	 * Returns the association to the symbolics links which point to this
 	 * size variant.
 	 *
-	 * @return HasManyBidirectionally
+	 * @return HasManyBidirectionally<SymLink,SizeVariant>
 	 */
 	public function sym_links(): HasManyBidirectionally
 	{

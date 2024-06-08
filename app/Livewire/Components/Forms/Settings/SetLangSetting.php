@@ -13,7 +13,7 @@ class SetLangSetting extends BaseConfigDropDown
 	/**
 	 * Give the list of available languages.
 	 *
-	 * @return array
+	 * @return array<string,string>
 	 */
 	public function getOptionsProperty(): array
 	{

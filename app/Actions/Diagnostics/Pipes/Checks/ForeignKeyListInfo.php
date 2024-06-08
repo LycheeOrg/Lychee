@@ -30,6 +30,11 @@ class ForeignKeyListInfo implements DiagnosticPipe
 		return $next($data);
 	}
 
+	/**
+	 * @param array<int,string> $data
+	 *
+	 * @return void
+	 */
 	private function sqlite(array &$data): void
 	{
 		$fks = DB::select("SELECT m.name , p.* FROM sqlite_master m JOIN pragma_foreign_key_list(m.name) p ON m.name != p.\"table\" WHERE m.type = 'table' ORDER BY m.name;");
@@ -39,6 +44,11 @@ class ForeignKeyListInfo implements DiagnosticPipe
 		}
 	}
 
+	/**
+	 * @param array<int,string> $data
+	 *
+	 * @return void
+	 */
 	private function mysql(array &$data): void
 	{
 		$fks = DB::select('select *
@@ -57,6 +67,11 @@ order by fks.constraint_schema, fks.table_name;
 		}
 	}
 
+	/**
+	 * @param array<int,string> $data
+	 *
+	 * @return void
+	 */
 	private function pgsql(array &$data): void
 	{
 		$fks = DB::select('SELECT tc.table_schema, tc.constraint_name, tc.table_name, kcu.column_name,

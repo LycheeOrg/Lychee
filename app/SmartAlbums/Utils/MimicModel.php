@@ -14,7 +14,7 @@ trait MimicModel
 	/**
 	 * Serializes this object into an array.
 	 *
-	 * @return array The serialized properties of this object
+	 * @return array<string,mixed> The serialized properties of this object
 	 *
 	 * @throws \JsonException
 	 */

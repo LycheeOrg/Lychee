@@ -46,7 +46,7 @@ class Feedback extends Component
 	/**
 	 * Return the list of current Jobs that will be created & possibly processed.
 	 *
-	 * @return Collection Jobs
+	 * @return Collection<int,JobHistory> Jobs
 	 */
 	public function getJobHistoryProperty(): Collection
 	{

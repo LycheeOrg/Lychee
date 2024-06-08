@@ -35,6 +35,13 @@ trait AlbumsPhotosContextMenus
 		)->to(ContextMenu::class);
 	}
 
+	/**
+	 * @param int      $x
+	 * @param int      $y
+	 * @param string[] $photoIds
+	 *
+	 * @return void
+	 */
 	#[Renderless]
 	public function openPhotosDropdown(int $x, int $y, array $photoIds): void
 	{
@@ -57,6 +64,13 @@ trait AlbumsPhotosContextMenus
 		)->to(ContextMenu::class);
 	}
 
+	/**
+	 * @param int      $x
+	 * @param int      $y
+	 * @param string[] $albumIds
+	 *
+	 * @return void
+	 */
 	#[Renderless]
 	public function openAlbumsDropdown(int $x, int $y, array $albumIds): void
 	{

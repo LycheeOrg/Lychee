@@ -31,6 +31,9 @@ class ManageSecondFactor extends Component
 	/** @var string alias to rename the credentials. By default we provide the first parts of the ID */
 	public string $alias; // ! wired
 
+	/**
+	 * @return array<string,string|array<int,string|\Illuminate\Contracts\Validation\ValidationRule|\Illuminate\Validation\Rules\Enum>>
+	 */
 	public function rules(): array
 	{
 		return ['alias' => 'required|string|min:5|max:255'];

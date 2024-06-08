@@ -16,6 +16,8 @@ use Illuminate\Database\Eloquent\Relations\Relation;
  * Common base class of all photo relations for albums which are not the
  * direct parent of the queried photos, but include the photo due to some
  * indirect condition.
+ *
+ * @extends Relation<Photo>
  */
 abstract class BaseHasManyPhotos extends Relation
 {
@@ -58,6 +60,9 @@ abstract class BaseHasManyPhotos extends Relation
 		);
 	}
 
+	/**
+	 * @return FixedQueryBuilder<Photo>
+	 */
 	protected function getRelationQuery(): FixedQueryBuilder
 	{
 		/**
@@ -91,10 +96,10 @@ abstract class BaseHasManyPhotos extends Relation
 	 * In this case, the default value is an empty collection of
 	 * {@link \App\Models\Photo}.
 	 *
-	 * @param array  $models   a list of owning models, i.e. a list of albums
-	 * @param string $relation the name of the relation on the owning models
+	 * @param array<int,BaseAlbum> $models   a list of owning models, i.e. a list of albums
+	 * @param string               $relation the name of the relation on the owning models
 	 *
-	 * @return array always returns $models
+	 * @return array<int,BaseAlbum> always returns $models
 	 */
 	public function initRelation(array $models, $relation): array
 	{
@@ -117,7 +122,7 @@ abstract class BaseHasManyPhotos extends Relation
 	 * sorting, the collection is sorted after is has been fetched from
 	 * the DB.
 	 *
-	 * @return Collection
+	 * @return Collection<int,Photo>
 	 *
 	 * @throws InvalidOrderDirectionException
 	 */

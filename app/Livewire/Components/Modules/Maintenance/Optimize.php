@@ -16,6 +16,7 @@ use Livewire\Component;
  */
 class Optimize extends Component
 {
+	/** @var string[] */
 	#[Locked] public array $result = [];
 	/**
 	 * Rendering of the front-end.

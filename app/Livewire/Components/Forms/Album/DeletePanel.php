@@ -25,7 +25,7 @@ class DeletePanel extends Component
 	use Notify;
 
 	// We need to use an array instead of directly said album id to reuse the rules (because I'm lazy).
-	/** @var array<int,string> */
+	/** @var string[] */
 	#[Locked] public array $albumIDs;
 	#[Locked] public string $title;
 	private AlbumFactory $albumFactory;

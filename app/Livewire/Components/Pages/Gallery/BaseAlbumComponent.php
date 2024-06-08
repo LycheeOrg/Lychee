@@ -72,21 +72,21 @@ abstract class BaseAlbumComponent extends Component
 	/**
 	 * Return the photoIDs (no need to wait to compute the geometry).
 	 *
-	 * @return Collection<Photo>
+	 * @return Collection<int,Photo>|LengthAwarePaginator<Photo>
 	 */
 	abstract public function getPhotosProperty(): Collection|LengthAwarePaginator;
 
 	/**
 	 * Return the albums.
 	 *
-	 * @return Collection<ModelsAlbum>|null
+	 * @return Collection<int,ModelsAlbum>|null
 	 */
 	abstract public function getAlbumsProperty(): Collection|null;
 
 	/**
 	 * Used in the JS front-end to manage the selected albums.
 	 *
-	 * @return array
+	 * @return string[]
 	 */
 	abstract public function getAlbumIDsProperty(): array;
 
@@ -124,7 +124,7 @@ abstract class BaseAlbumComponent extends Component
 	/**
 	 * Getter for the license types in the front-end.
 	 *
-	 * @return array associated array of license type and their localization
+	 * @return array<string,string> associated array of license type and their localization
 	 */
 	final public function getLicensesProperty(): array
 	{

@@ -23,6 +23,8 @@ abstract class BaseApiRequest extends FormRequest
 
 	/**
 	 * @throws FrameworkException
+	 *
+	 * @phpstan-ignore-next-line
 	 */
 	public function __construct(
 		array $query = [],
@@ -141,15 +143,15 @@ abstract class BaseApiRequest extends FormRequest
 	/**
 	 * Returns the validation rules that apply to the request.
 	 *
-	 * @return array
+	 * @return array<string,string|array<int,string|\Illuminate\Contracts\Validation\ValidationRule|\Illuminate\Validation\Rules\Enum>>
 	 */
 	abstract public function rules(): array;
 
 	/**
 	 * Post-processes the validated values.
 	 *
-	 * @param array          $values
-	 * @param UploadedFile[] $files
+	 * @param array<string,mixed> $values
+	 * @param UploadedFile[]      $files
 	 *
 	 * @return void
 	 *

@@ -12,8 +12,8 @@ class ImportFromUrlForm extends Form
 {
 	#[Locked]
 	public ?string $albumID = null;
+	/** @var string[] $urls */
 	#[Locked]
-	/** @var array<int,string> */
 	public array $urls = [];
 
 	public string $urlArea = '';

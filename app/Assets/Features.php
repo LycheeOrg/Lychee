@@ -112,10 +112,8 @@ final class Features
 	{
 		// Sadly phpstan does not do the type inference as it would do in a if statement.
 		$retValue = match (is_array($featureNames)) {
-			true => self::allAreActive($featureNames) ? $valIfTrue : $valIfFalse, // @phpstan-ignore-line
-			// Parameter #1 $featureNames of static method App\Assets\Features::allAreActive() expects array<int, string>, array<int, string>|string given.
-			false => self::active($featureNames) ? $valIfTrue : $valIfFalse, // @phpstan-ignore-line
-			// Parameter #1 $featureName of static method App\Assets\Features::active() expects string, array<int, string>|string given.
+			true => self::allAreActive($featureNames) ? $valIfTrue : $valIfFalse,
+			false => self::active($featureNames) ? $valIfTrue : $valIfFalse,
 		};
 
 		return is_callable($retValue) ? $retValue() : $retValue;

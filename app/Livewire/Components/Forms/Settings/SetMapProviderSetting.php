@@ -13,7 +13,7 @@ class SetMapProviderSetting extends BaseConfigDropDown
 	/**
 	 * Options for the provider.
 	 *
-	 * @return array
+	 * @return array<string,string>
 	 */
 	public function getOptionsProperty(): array
 	{

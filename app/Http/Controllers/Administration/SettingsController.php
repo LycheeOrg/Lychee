@@ -394,7 +394,7 @@ class SettingsController extends Controller
 	 * Fortunately, this is behind an admin middleware.
 	 * This is used in the advanced settings part.
 	 *
-	 * @return Collection
+	 * @return Collection<int,Configs>
 	 *
 	 * @throws QueryBuilderException
 	 */

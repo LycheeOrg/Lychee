@@ -22,6 +22,7 @@ use App\Models\Extensions\BaseAlbum;
 use App\Policies\AlbumPolicy;
 use App\Rules\CopyrightRule;
 use App\Rules\TitleRule;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Gate;
@@ -139,7 +140,7 @@ class Properties extends Component
 	/**
 	 * Return computed property so that it does not stay in memory.
 	 *
-	 * @return array column sorting
+	 * @return array<string,string> column sorting
 	 */
 	final public function getPhotoSortingColumnsProperty(): array
 	{
@@ -150,7 +151,7 @@ class Properties extends Component
 	/**
 	 * Return computed property so that it does not stay in memory.
 	 *
-	 * @return array column sorting
+	 * @return array<string,string> column sorting
 	 */
 	final public function getAlbumSortingColumnsProperty(): array
 	{
@@ -161,7 +162,7 @@ class Properties extends Component
 	/**
 	 * Return computed property so that it does not stay in memory.
 	 *
-	 * @return array order
+	 * @return array<string,string> order
 	 */
 	final public function getSortingOrdersProperty(): array
 	{
@@ -172,7 +173,7 @@ class Properties extends Component
 	/**
 	 * Return computed property so that it does not stay in memory.
 	 *
-	 * @return array order
+	 * @return array<string,string> order
 	 */
 	final public function getAspectRatiosProperty(): array
 	{
@@ -180,6 +181,13 @@ class Properties extends Component
 		return ['' => '-', ...AspectRatioType::localized()];
 	}
 
+	/**
+	 * Return the list of license localized.
+	 *
+	 * @return array<string,string>
+	 *
+	 * @throws BindingResolutionException
+	 */
 	final public function getLicensesProperty(): array
 	{
 		return LicenseType::localized();

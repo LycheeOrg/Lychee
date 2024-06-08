@@ -19,6 +19,7 @@ use Livewire\Component;
  */
 class Users extends Component
 {
+	/** @var Collection<int,User> */
 	public Collection $users;
 	private Create $create;
 

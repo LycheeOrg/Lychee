@@ -8,7 +8,7 @@ return new class() extends Migration {
 	/**
 	 * Update the fields.
 	 *
-	 * @param array $default_values
+	 * @param array{key:string,value:string,cat:string,type_range:string,confidentiality:string}[] $default_values
 	 */
 	private function update_fields(array &$default_values): void
 	{
@@ -44,7 +44,7 @@ return new class() extends Migration {
 		$this->update_fields($default_values);
 
 		// Get all CC licences
-		/** @var Collection $photos */
+		/** @var Collection<int,object{id:string,license:string}> $photos */
 		$photos = DB::table('photos')->where('license', 'like', 'CC-%')->get();
 		if ($photos->isEmpty()) {
 			return;
@@ -60,7 +60,7 @@ return new class() extends Migration {
 	public function down(): void
 	{
 		// Get all CC licences
-		/** @var Collection $photos */
+		/** @var Collection<int,object{id:string,license:string}> $photos */
 		$photos = DB::table('photos')->where('license', 'like', 'CC-%')->get();
 		if ($photos->isEmpty()) {
 			return;

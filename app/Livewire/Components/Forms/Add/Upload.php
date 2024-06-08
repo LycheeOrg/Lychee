@@ -157,7 +157,7 @@ class Upload extends Component
 			);
 		}
 
-		/** @var array<int,string> $rules */
+		/** @var string[] $rules */
 		$rules = FileUploadConfiguration::rules();
 		$sizeRule = collect($rules)->first(fn ($rule) => Str::startsWith($rule, 'max:'), 'max:12288');
 		$LivewireSizeLimit = intval(Str::substr($sizeRule, 4)) * 1024;

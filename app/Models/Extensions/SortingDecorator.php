@@ -8,6 +8,9 @@ use App\Exceptions\Internal\InvalidOrderDirectionException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
+/**
+ * @template TModelClass of \Illuminate\Database\Eloquent\Model
+ */
 class SortingDecorator
 {
 	public const POSTPONE_COLUMNS = [
@@ -15,8 +18,16 @@ class SortingDecorator
 		ColumnSortingType::DESCRIPTION,
 	];
 
+	/**
+	 * @var Builder<TModelClass>
+	 */
 	protected Builder $baseBuilder;
 
+	/**
+	 * @param Builder<TModelClass> $baseBuilder
+	 *
+	 * @return void
+	 */
 	public function __construct(Builder $baseBuilder)
 	{
 		$this->baseBuilder = $baseBuilder;
@@ -76,6 +87,8 @@ class SortingDecorator
 	 * @param ColumnSortingType $column    the column acc. to which the result shall be sorted
 	 * @param OrderSortingType  $direction the order direction
 	 *
+	 * @return SortingDecorator<TModelClass>
+	 *
 	 * @throws InvalidOrderDirectionException
 	 */
 	public function orderBy(ColumnSortingType $column, OrderSortingType $direction): SortingDecorator
@@ -99,6 +112,8 @@ class SortingDecorator
 	 * @param ColumnSortingType $column    the column acc. to which the result shall be sorted
 	 * @param OrderSortingType  $direction the order direction
 	 *
+	 * @return SortingDecorator<TModelClass>
+	 *
 	 * @throws InvalidOrderDirectionException
 	 */
 	public function orderPhotosBy(ColumnSortingType $column, OrderSortingType $direction): SortingDecorator
@@ -120,7 +135,7 @@ class SortingDecorator
 	 *
 	 * @param string[] $columns
 	 *
-	 * @return Collection
+	 * @return Collection<int,TModelClass>
 	 *
 	 * @throws InvalidOrderDirectionException
 	 */
@@ -144,7 +159,7 @@ class SortingDecorator
 			throw new InvalidOrderDirectionException();
 		}
 
-		/** @var Collection $result */
+		/** @var Collection<int,TModelClass> $result */
 		$result = $this->baseBuilder->get($columns);
 
 		// Sort with PHP for the remaining criteria in reverse order.

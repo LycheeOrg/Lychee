@@ -12,11 +12,14 @@ class PhotosAdded extends Mailable
 	use Queueable;
 	use SerializesModels;
 
+	/** @var array<string, array<string, array<string, array<string, string|null>>|string>> */
 	protected array $photos;
 	protected string $title;
 
 	/**
 	 * Create a new message instance.
+	 *
+	 * @param array<string, array<string, array<string, array<string, string|null>>|string>> $photos
 	 *
 	 * @return void
 	 */

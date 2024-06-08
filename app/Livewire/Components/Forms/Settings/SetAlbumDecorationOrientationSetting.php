@@ -14,7 +14,7 @@ class SetAlbumDecorationOrientationSetting extends BaseConfigDropDown
 	/**
 	 * Options available.
 	 *
-	 * @return array
+	 * @return array<string,string>
 	 */
 	public function getOptionsProperty(): array
 	{

@@ -22,7 +22,7 @@ class SharedAlbumResource extends JsonResource
 	 *
 	 * @param \Illuminate\Http\Request $request
 	 *
-	 * @return array
+	 * @return array<string,string|int>
 	 */
 	public function toArray($request): array
 	{

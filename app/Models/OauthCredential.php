@@ -47,7 +47,7 @@ class OauthCredential extends Model
 	/**
 	 * Return the relationship between a Photo and its Album.
 	 *
-	 * @return BelongsTo
+	 * @return BelongsTo<User,OauthCredential>
 	 */
 	public function user(): BelongsTo
 	{

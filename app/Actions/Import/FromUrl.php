@@ -28,7 +28,7 @@ class FromUrl
 	 * @param Album|null $album
 	 * @param int        $intendedOwnerId
 	 *
-	 * @return Collection<Photo> the collection of imported photos
+	 * @return Collection<int,Photo> the collection of imported photos
 	 *
 	 * @throws MassImportException
 	 */

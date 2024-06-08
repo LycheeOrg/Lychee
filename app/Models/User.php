@@ -44,7 +44,7 @@ use function Safe\mb_convert_encoding;
  * @property Collection<OauthCredential>                           $oauthCredentials
  * @property DatabaseNotificationCollection|DatabaseNotification[] $notifications
  * @property Collection<BaseAlbumImpl>                             $shared
- * @property Collection<Photo>                                     $photos
+ * @property Collection<int,Photo>                                 $photos
  * @property int|null                                              $photos_count
  * @property Collection<int, WebAuthnCredential>                   $webAuthnCredentials
  * @property int|null                                              $web_authn_credentials_count
@@ -108,6 +108,9 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 
 	protected $hidden = [];
 
+	/**
+	 * @return array<string,mixed>
+	 */
 	protected function _toArray(): array
 	{
 		return parent::toArray();
@@ -128,17 +131,18 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	/**
 	 * Return the albums owned by the user.
 	 *
-	 * @return HasMany
+	 * @return HasMany<Album>
 	 */
 	public function albums(): HasMany
 	{
+		/** @phpstan-ignore-next-line */
 		return $this->hasMany(BaseAlbumImpl::class, 'owner_id', 'id');
 	}
 
 	/**
 	 * Return the photos owned by the user.
 	 *
-	 * @return HasMany
+	 * @return HasMany<Photo>
 	 */
 	public function photos(): HasMany
 	{
@@ -148,7 +152,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	/**
 	 * Return the albums shared to the user.
 	 *
-	 * @return BelongsToMany
+	 * @return BelongsToMany<BaseAlbumImpl>
 	 */
 	public function shared(): BelongsToMany
 	{
@@ -163,7 +167,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	/**
 	 * Return the Oauth credentials owned by the user.
 	 *
-	 * @return HasMany
+	 * @return HasMany<OauthCredential>
 	 */
 	public function oauthCredentials(): HasMany
 	{
@@ -207,7 +211,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	 */
 	public function delete(): bool
 	{
-		/** @var HasMany[] $ownershipRelations */
+		/** @var HasMany<Photo|Album>[] $ownershipRelations */
 		$ownershipRelations = [$this->photos(), $this->albums()];
 		$hasAny = false;
 

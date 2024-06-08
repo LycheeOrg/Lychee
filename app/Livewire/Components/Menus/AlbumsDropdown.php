@@ -17,7 +17,7 @@ class AlbumsDropdown extends Component
 	use InteractWithModal;
 	use InteractWithContextMenu;
 
-	/** @var array{parentID:?string,albumIDs:array<int,string>} */
+	/** @var array{parentID:?string,albumIDs:string[]} */
 	#[Locked] public array $params;
 	/**
 	 * Renders the Add menu in the top right.

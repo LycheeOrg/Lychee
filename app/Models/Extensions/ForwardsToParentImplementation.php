@@ -75,7 +75,9 @@ trait ForwardsToParentImplementation
 	/**
 	 * Perform a model insert operation.
 	 *
-	 * @param Builder $query
+	 * @template TModel of \Illuminate\Database\Eloquent\Model
+	 *
+	 * @param Builder<TModel> $query
 	 *
 	 * @return bool
 	 *
@@ -104,7 +106,9 @@ trait ForwardsToParentImplementation
 	/**
 	 * Perform a model update operation.
 	 *
-	 * @param Builder $query
+	 * @template TModel of \Illuminate\Database\Eloquent\Model
+	 *
+	 * @param Builder<TModel> $query
 	 *
 	 * @return bool
 	 */
@@ -205,7 +209,7 @@ trait ForwardsToParentImplementation
 	 *
 	 * Inspired by {@link \Illuminate\Database\Eloquent\Concerns\HasAttributes::isDirty()}.
 	 *
-	 * @param array|string|null $attributes
+	 * @param string[]|string|null $attributes
 	 *
 	 * @return bool
 	 */
@@ -222,7 +226,7 @@ trait ForwardsToParentImplementation
 	/**
 	 * Convert the model instance to an array.
 	 *
-	 * @return array
+	 * @return array<string,mixed>
 	 */
 	public function toArray(): array
 	{

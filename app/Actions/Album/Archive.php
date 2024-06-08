@@ -39,7 +39,7 @@ class Archive extends Action
 	protected int $deflateLevel = -1;
 
 	/**
-	 * @param Collection<AbstractAlbum> $albums
+	 * @param Collection<int,AbstractAlbum> $albums
 	 *
 	 * @return StreamedResponse
 	 *
@@ -101,6 +101,10 @@ class Archive extends Action
 
 	/**
 	 * Create the title of the ZIP archive.
+	 *
+	 * @param Collection<int,AbstractAlbum> $albums
+	 *
+	 * @return string
 	 */
 	private static function createZipTitle(Collection $albums): string
 	{

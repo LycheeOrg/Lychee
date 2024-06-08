@@ -16,10 +16,10 @@ class PositionDataResource extends JsonResource
 	public ?string $track_url;
 
 	/**
-	 * @param string|null $id        the ID of the album; `null` for root album
-	 * @param string|null $title     the title of the album; `null` if untitled
-	 * @param Collection  $photos    the collection of photos with position data to be shown on map
-	 * @param string|null $track_url the URL of the album's track
+	 * @param string|null                       $id        the ID of the album; `null` for root album
+	 * @param string|null                       $title     the title of the album; `null` if untitled
+	 * @param Collection<int,\App\Models\Photo> $photos    the collection of photos with position data to be shown on map
+	 * @param string|null                       $track_url the URL of the album's track
 	 */
 	public function __construct(
 		?string $id,
@@ -38,7 +38,7 @@ class PositionDataResource extends JsonResource
 	 *
 	 * @param \Illuminate\Http\Request $request
 	 *
-	 * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
+	 * @return array<string,mixed>|\Illuminate\Contracts\Support\Arrayable<string,mixed>|\JsonSerializable
 	 */
 	public function toArray($request)
 	{

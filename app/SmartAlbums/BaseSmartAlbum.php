@@ -68,6 +68,9 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 		}
 	}
 
+	/**
+	 * @return array{id:string,title:string,thumb:?Thumb,policy:AlbumProtectionPolicy,photos:?array<int,Photo>}
+	 */
 	protected function _toArray(): array
 	{
 		// The properties `thumb` and `photos` are intentionally treated
@@ -99,6 +102,8 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	}
 
 	/**
+	 * @return \App\Eloquent\FixedQueryBuilder<Photo>
+	 *
 	 * @throws InternalLycheeException
 	 */
 	public function photos(): Builder
@@ -110,7 +115,7 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	}
 
 	/**
-	 * @return Collection<Photo>
+	 * @return Collection<int,Photo>
 	 *
 	 * @throws InvalidOrderDirectionException
 	 * @throws InvalidQueryModelException
@@ -122,7 +127,7 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 		if ($this->photos === null) {
 			$sorting = PhotoSortingCriterion::createDefault();
 
-			/** @var \Illuminate\Database\Eloquent\Collection&iterable<\App\Models\Photo> $photos */
+			/** @var \Illuminate\Database\Eloquent\Collection<int,\App\Models\Photo>&iterable $photos */
 			$photos = (new SortingDecorator($this->photos()))
 				->orderPhotosBy($sorting->column, $sorting->order)
 				->get();
@@ -136,7 +141,7 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	 * Similar to the function above.
 	 * The big difference is that we do not check if it is null or not.
 	 *
-	 * @return Collection|null
+	 * @return Collection<int,Photo>|null
 	 */
 	public function getPhotos(): ?Collection
 	{

@@ -35,7 +35,7 @@ class Search extends BaseAlbumComponent
 
 	/** @var LengthAwarePaginator<Photo> */
 	private LengthAwarePaginator $photos;
-	/** @var Collection<ModelsAlbum> */
+	/** @var Collection<int,ModelsAlbum> */
 	private Collection $albums;
 
 	#[Locked]
@@ -126,7 +126,7 @@ class Search extends BaseAlbumComponent
 				->paginate(Configs::getValueAsInt('search_pagination_limit'))
 				->withQueryString();
 			$this->photos = $photoResults;
-			/** @var Collection<ModelsAlbum> $albumResults */
+			/** @var Collection<int,ModelsAlbum> $albumResults */
 			$albumResults = $this->albumSearch->queryAlbums($this->terms);
 			$this->albums = $albumResults;
 			$this->num_albums = $this->albums->count();
@@ -141,7 +141,7 @@ class Search extends BaseAlbumComponent
 	/**
 	 * Return the photos.
 	 *
-	 * @return Collection<Photo>
+	 * @return Collection<int,Photo>
 	 */
 	public function getPhotosProperty(): Collection
 	{

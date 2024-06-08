@@ -4,6 +4,9 @@ namespace App\DTO;
 
 use Illuminate\Support\Str;
 
+/**
+ * @extends AbstractDTO<string>
+ */
 class BacktraceRecord extends AbstractDTO
 {
 	public const UNKNOWN_PLACEHOLDER = '<unknown>';

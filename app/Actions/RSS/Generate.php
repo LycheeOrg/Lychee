@@ -51,7 +51,7 @@ class Generate
 	}
 
 	/**
-	 * @return Collection<FeedItem>
+	 * @return Collection<int,FeedItem>
 	 *
 	 * @throws InternalLycheeException
 	 */

@@ -13,8 +13,12 @@ use Illuminate\Support\Facades\Gate;
 use Laragear\WebAuthn\Models\WebAuthnCredential;
 use Livewire\Wireable;
 
+/**
+ * @implements Wireable<AlbumsFlags>
+ */
 class AlbumsFlags implements Wireable
 {
+	/** @phpstan-use UseWireable<AlbumsFlags> */
 	use UseWireable;
 
 	public function __construct(

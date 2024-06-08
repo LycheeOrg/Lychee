@@ -105,6 +105,7 @@ class ListShare
 		return implode('/', $title);
 	}
 
+	/** @phpstan-ignore-next-line */
 	private function linkAlbums(Collection $albums): void
 	{
 		if ($albums->isEmpty()) {

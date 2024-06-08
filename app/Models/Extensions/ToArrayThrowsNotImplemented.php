@@ -16,8 +16,16 @@ use Illuminate\Support\Facades\Route;
  */
 trait ToArrayThrowsNotImplemented
 {
+	/**
+	 * @return array<string,mixed>
+	 */
 	abstract protected function _toArray(): array;
 
+	/**
+	 * @return array<string,mixed>
+	 *
+	 * @throws NotImplementedException
+	 */
 	final public function toArray(): array
 	{
 		if (Route::is('livewire_index') || Route::is('livewire.message')) {

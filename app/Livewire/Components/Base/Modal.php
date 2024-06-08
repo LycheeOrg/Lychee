@@ -35,8 +35,8 @@ class Modal extends Component implements Openable
 	public string $close_text = '';
 
 	/**
-	 * @var array defines the arguments to be passed to the
-	 *            Livewire component loaded inside the Modal
+	 * @var array<string,string[]|string> defines the arguments to be passed to the
+	 *                                    Livewire component loaded inside the Modal
 	 */
 	public array $params = [];
 
@@ -50,9 +50,9 @@ class Modal extends Component implements Openable
 	/**
 	 * Open a Modal.
 	 *
-	 * @param string $type       defines the Component loaded inside the modal
-	 * @param string $close_text text to put if we use a close button
-	 * @param array  $params     Arguments to pass to the modal
+	 * @param string                             $type       defines the Component loaded inside the modal
+	 * @param string                             $close_text text to put if we use a close button
+	 * @param array<string,string[]|string|null> $params     Arguments to pass to the modal
 	 *
 	 * @return void
 	 */

@@ -16,12 +16,15 @@ use Livewire\Component;
 
 /**
  * TODO: improve speed. 800ms component.
+ *
+ * @phpstan-type TAlbumSaved array{id:string|null,title:string,original:string,short_title:string,thumb:string}
  */
 class SearchAlbum extends Component
 {
 	private const SHORTEN_BY = 80;
 
 	public ?string $search = null; // ! wired
+	/** @var TAlbumSaved[] */
 	#[Locked] public array $albumListSaved;
 	/**
 	 * This is the equivalent of the constructor for Livewire Components.
@@ -40,7 +43,7 @@ class SearchAlbum extends Component
 	/**
 	 * Give the tree of albums owned by the user.
 	 *
-	 * @return Collection<int,Album>
+	 * @return Collection<int,TAlbumSaved>
 	 */
 	public function getAlbumListProperty(): Collection
 	{
@@ -64,6 +67,13 @@ class SearchAlbum extends Component
 		return view('livewire.forms.album.search-album');
 	}
 
+	/**
+	 * @param int|null    $lft
+	 * @param int|null    $rgt
+	 * @param string|null $parent_id
+	 *
+	 * @return TAlbumSaved[]
+	 */
 	private function getAlbumsListWithPath(?int $lft, ?int $rgt, ?string $parent_id): array
 	{
 		$albumQueryPolicy = resolve(AlbumQueryPolicy::class);
@@ -78,8 +88,9 @@ class SearchAlbum extends Component
 		$query = (new SortingDecorator($unfiltered))
 			->orderBy($sorting->column, $sorting->order);
 
-		/** @var NsCollection<Album> $albums */
+		/** @var NsCollection<int,Album> $albums */
 		$albums = $query->get();
+		/** @var NsCollection<int,Album> $tree */
 		$tree = $albums->toTree(null);
 
 		$flat_tree = $this->flatten($tree);
@@ -104,13 +115,14 @@ class SearchAlbum extends Component
 	/**
 	 * Flatten the tree and create bread crumb paths.
 	 *
-	 * @param mixed  $collection
-	 * @param string $prefix
+	 * @param NsCollection<int,Album>|Collection<int,Album> $collection
+	 * @param string                                        $prefix
 	 *
-	 * @return array
+	 * @return TAlbumSaved[]
 	 */
 	private function flatten($collection, $prefix = ''): array
 	{
+		/** @var TAlbumSaved[] $flatArray */
 		$flatArray = [];
 		foreach ($collection as $node) {
 			$title = $prefix . ($prefix !== '' ? '/' : '') . $node->title;

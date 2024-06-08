@@ -23,7 +23,7 @@ class Rename extends Component
 	use AuthorizesRequests;
 
 	#[Locked] public ?string $parent_id = null;
-	/** @var array<int,string> */
+	/** @var string[] */
 	#[Locked] public array $albumIDs;
 	#[Locked] public int $num;
 	public string $title = '';
@@ -38,7 +38,7 @@ class Rename extends Component
 	/**
 	 * This is the equivalent of the constructor for Livewire Components.
 	 *
-	 * @param array{albumID?:string,albumIDs?:array<int,string>,parentID:?string} $params to move
+	 * @param array{albumID?:string,albumIDs?:string[],parentID:?string} $params to move
 	 *
 	 * @return void
 	 */

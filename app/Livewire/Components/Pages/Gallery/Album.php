@@ -135,7 +135,7 @@ class Album extends BaseAlbumComponent implements Reloadable
 	/**
 	 * Return the photoIDs (no need to wait to compute the geometry).
 	 *
-	 * @return Collection<Photo>
+	 * @return Collection<int,Photo>
 	 */
 	public function getPhotosProperty(): Collection
 	{
@@ -143,12 +143,12 @@ class Album extends BaseAlbumComponent implements Reloadable
 	}
 
 	/**
-	 * @return Collection<ModelsAlbum>|null
+	 * @return Collection<int,ModelsAlbum>|null
 	 */
 	public function getAlbumsProperty(): Collection|null
 	{
 		if ($this->album instanceof ModelsAlbum) {
-			/** @var Collection<ModelsAlbum> $res */
+			/** @var Collection<int,ModelsAlbum> $res */
 			$res = $this->album->children()->getResults();
 
 			return $res;
@@ -160,7 +160,7 @@ class Album extends BaseAlbumComponent implements Reloadable
 	/**
 	 * Used in the JS front-end to manage the selected albums.
 	 *
-	 * @return array
+	 * @return string[]
 	 */
 	public function getAlbumIDsProperty(): array
 	{

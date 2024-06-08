@@ -23,7 +23,7 @@ class MovePanel extends Component
 	use Notify;
 
 	// We need to use an array instead of directly said album id to reuse the rules.
-	/** @var array<int,string> */
+	/** @var string[] */
 	#[Locked] public array $albumIDs;
 	#[Locked] public ?string $titleMoved;
 	// Destination

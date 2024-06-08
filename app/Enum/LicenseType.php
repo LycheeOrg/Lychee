@@ -48,7 +48,7 @@ enum LicenseType: string
 	/**
 	 * Given return the array of localized name.
 	 *
-	 * @return array
+	 * @return array<string,string>
 	 */
 	public static function localized(): array
 	{

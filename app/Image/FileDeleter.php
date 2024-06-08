@@ -24,9 +24,9 @@ use function Safe\unlink;
 class FileDeleter
 {
 	/**
-	 * @param array<string,Collection<string>> $files
-	 * @param Collection<SizeVariant>          $sizeVariants
-	 * @param Collection<string>               $symbolicLinks
+	 * @param array<string,Collection<int,string>> $files
+	 * @param Collection<int,SizeVariant>          $sizeVariants
+	 * @param Collection<int,string>               $symbolicLinks
 	 *
 	 * @return void
 	 */
@@ -38,7 +38,7 @@ class FileDeleter
 	}
 
 	/**
-	 * @param Collection<SizeVariant> $sizeVariants
+	 * @param Collection<int,SizeVariant> $sizeVariants
 	 *
 	 * @return void
 	 */
@@ -48,7 +48,7 @@ class FileDeleter
 	}
 
 	/**
-	 * @param Collection<string> $symbolicLinks
+	 * @param Collection<int,string> $symbolicLinks
 	 *
 	 * @return void
 	 */
@@ -60,8 +60,8 @@ class FileDeleter
 	/**
 	 * Give the possility to add files with their associated storage to the deleter.
 	 *
-	 * @param Collection<string> $paths
-	 * @param string             $diskName
+	 * @param Collection<int|string,string|null> $paths
+	 * @param string                             $diskName
 	 *
 	 * @return void
 	 */
@@ -77,7 +77,7 @@ class FileDeleter
 	 */
 	private function convertSizeVariantsList()
 	{
-		/** @var Collection<string,Collection<SizeVariant>> $grouped */
+		/** @var Collection<string,Collection<int,SizeVariant>> $grouped */
 		$grouped = $this->sizeVariants->groupBy('storage_disk');
 		$grouped->each(
 			fn (Collection $svs, string $k) => $this->files[$k] = ($this->files[$k] ?? new Collection())->merge($svs->pluck('short_path'))

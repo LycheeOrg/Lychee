@@ -15,7 +15,7 @@ class JobController extends Controller
 	/**
 	 * @param string $order
 	 *
-	 * @return Collection<JobHistory>
+	 * @return Collection<int,JobHistory>
 	 *
 	 * @throws QueryBuilderException
 	 */

@@ -8,6 +8,7 @@ use Psr\Container\ContainerExceptionInterface;
 
 class DefaultConfig
 {
+	/** @var array{core:array<string,string>,requirements:array<string,array<int,string>>,permissions:array<string,string>} */
 	private array $config = [
 		/*
 			|--------------------------------------------------------------------------
@@ -139,18 +140,24 @@ class DefaultConfig
 		// @codeCoverageIgnoreEnd
 	}
 
+	/**
+	 * @return array<string,string>
+	 */
 	public function get_core(): array
 	{
 		return $this->config['core'];
 	}
 
+	/**
+	 * @return array<string,array<int,string>>
+	 */
 	public function get_requirements(): array
 	{
 		return $this->config['requirements'];
 	}
 
 	/**
-	 * @return string[]
+	 * @return array<string,string>
 	 */
 	public function get_permissions(): array
 	{

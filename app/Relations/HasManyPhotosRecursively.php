@@ -78,6 +78,9 @@ class HasManyPhotosRecursively extends BaseHasManyPhotos
 			->applySearchabilityFilter($this->getRelationQuery(), $albums[0]);
 	}
 
+	/**
+	 * @return Collection<int,\App\Models\Photo>
+	 */
 	public function getResults(): Collection
 	{
 		/** @var Album|null $album */
@@ -95,11 +98,11 @@ class HasManyPhotosRecursively extends BaseHasManyPhotos
 	 * This method is called by the framework after the unified result of
 	 * photos has been fetched by {@link HasManyPhotosRecursively::addEagerConstraints()}.
 	 *
-	 * @param array      $albums   the list of owning albums
-	 * @param Collection $photos   collection of {@link Photo} models which needs to be mapped to the albums
-	 * @param string     $relation the name of the relation
+	 * @param Album[]                           $albums   the list of owning albums
+	 * @param Collection<int,\App\Models\Photo> $photos   collection of {@link Photo} models which needs to be mapped to the albums
+	 * @param string                            $relation the name of the relation
 	 *
-	 * @return array
+	 * @return Album[]
 	 *
 	 * @throws NotImplementedException
 	 */

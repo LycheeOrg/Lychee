@@ -19,6 +19,7 @@ use Livewire\Component;
  */
 class FixJobs extends Component
 {
+	/** @var JobStatus[] */
 	private array $waitingJobsTypes = [JobStatus::READY, JobStatus::STARTED];
 
 	/**

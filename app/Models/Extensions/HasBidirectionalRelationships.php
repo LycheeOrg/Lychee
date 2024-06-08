@@ -62,15 +62,18 @@ trait HasBidirectionalRelationships
 	 *
 	 * Inspired by {@link \Illuminate\Database\Eloquent\Concerns\HasRelationships::hasMany}.
 	 *
-	 * @param string      $related
-	 * @param string|null $foreignKey
-	 * @param string|null $localKey
-	 * @param string|null $foreignMethodName
+	 * @template TRelatedModel of \Illuminate\Database\Eloquent\Model
 	 *
-	 * @return HasManyBidirectionally
+	 * @param class-string<TRelatedModel> $related
+	 * @param string|null                 $foreignKey
+	 * @param string|null                 $localKey
+	 * @param string|null                 $foreignMethodName
+	 *
+	 * @return HasManyBidirectionally<TRelatedModel,self>
 	 */
 	public function hasManyBidirectionally(string $related, ?string $foreignKey = null, ?string $localKey = null, ?string $foreignMethodName = null): HasManyBidirectionally
 	{
+		/** @var TRelatedModel $instance */
 		$instance = $this->newRelatedInstance($related);
 
 		$foreignKey = $foreignKey ?? $this->getForeignKey();
@@ -79,6 +82,7 @@ trait HasBidirectionalRelationships
 
 		$foreignMethodName = $foreignMethodName ?? $this->getForeignProperty();
 
+		/** @phpstan-ignore-next-line */
 		return $this->newHasManyBidirectionally(
 			$instance->newQuery(),
 			$this,
@@ -93,13 +97,16 @@ trait HasBidirectionalRelationships
 	 *
 	 * Inspired by {@link \Illuminate\Database\Eloquent\Concerns\HasRelationships::newHasMany}.
 	 *
-	 * @param Builder $query
-	 * @param Model   $parent
-	 * @param string  $foreignKey
-	 * @param string  $localKey
-	 * @param string  $foreignMethodName
+	 * @template TRelatedModel of \Illuminate\Database\Eloquent\Model
+	 * @template TParentModel of \Illuminate\Database\Eloquent\Model
 	 *
-	 * @return HasManyBidirectionally
+	 * @param Builder<TRelatedModel> $query
+	 * @param TParentModel           $parent
+	 * @param string                 $foreignKey
+	 * @param string                 $localKey
+	 * @param string                 $foreignMethodName
+	 *
+	 * @return HasManyBidirectionally<TRelatedModel,TParentModel>
 	 */
 	protected function newHasManyBidirectionally(Builder $query, Model $parent, string $foreignKey, string $localKey, string $foreignMethodName): HasManyBidirectionally
 	{

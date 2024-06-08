@@ -51,7 +51,8 @@ class MustNotSetCast implements CastsInboundAttributes
 	 *
 	 * @throws IllegalOrderOfOperationException
 	 */
-	public function set($model, string $key, $value, array $attributes): void
+	/** @phpstan-ignore-next-line Assigning type to array breaks contra-variance */
+	public function set(Model $model, string $key, mixed $value, array $attributes): void
 	{
 		$msg = 'must not set read-only attribute \'' . get_class($model) . '::$' . $key . '\' directly';
 		if ($this->alternative !== null) {

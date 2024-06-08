@@ -15,14 +15,16 @@ class RequirementsChecker
 	/**
 	 * Check for the server requirements.
 	 *
-	 * @param array $requirements
+	 * @param array<string,array<int,string>> $requirements
 	 *
-	 * @return array
+	 * @return array{requirements:array<string,array<string,bool>>,errors:bool}
 	 */
 	public function check(array $requirements): array
 	{
-		$results = [];
-		$results['errors'] = false;
+		$results = [
+			'errors' => false,
+			'requirements' => [],
+		];
 		foreach ($requirements as $type => $requirement_) {
 			if ($type === 'php') {
 				// check php requirements
@@ -59,7 +61,7 @@ class RequirementsChecker
 	 *
 	 * @param string|null $minPhpVersion
 	 *
-	 * @return array
+	 * @return array{full:string,current:string,minimum:string,supported:bool}
 	 */
 	public function checkPHPVersion(?string $minPhpVersion = null): array
 	{
@@ -78,7 +80,7 @@ class RequirementsChecker
 	/**
 	 * Get current Php version information.
 	 *
-	 * @return array
+	 * @return array{full:string,version:string}
 	 */
 	private static function getPhpVersionInfo(): array
 	{

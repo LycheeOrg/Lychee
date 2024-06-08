@@ -32,8 +32,8 @@ class ContextMenu extends Component implements Openable
 	public string $style;
 
 	/**
-	 * @var array defines the arguments to be passed to the
-	 *            Livewire component loaded inside the ContextMenu
+	 * @var array<string,string|string[]> defines the arguments to be passed to the
+	 *                                    Livewire component loaded inside the ContextMenu
 	 */
 	#[Locked]
 	public array $params = [];
@@ -41,8 +41,8 @@ class ContextMenu extends Component implements Openable
 	/**
 	 * Open the Context Menu.
 	 *
-	 * @param string $type   defines the Component loaded inside the modal
-	 * @param array  $params Arguments to pass to the modal
+	 * @param string                             $type   defines the Component loaded inside the modal
+	 * @param array<string,string[]|string|null> $params Arguments to pass to the modal
 	 *
 	 * @return void
 	 */

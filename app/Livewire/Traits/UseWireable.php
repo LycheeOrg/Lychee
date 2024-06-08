@@ -6,9 +6,16 @@ use App\Exceptions\Internal\LycheeLogicException;
 
 /**
  * Quick helpers for the serialization and deserialization of livewire components.
+ *
+ * @template TModelClass
  */
 trait UseWireable
 {
+	/**
+	 * @return array<string,mixed>
+	 *
+	 * @throws LycheeLogicException
+	 */
 	public function toLivewire(): array
 	{
 		$result = [];
@@ -29,7 +36,7 @@ trait UseWireable
 	/**
 	 * @param mixed $data
 	 *
-	 * @return self
+	 * @return TModelClass
 	 *
 	 * @throws LycheeLogicException
 	 * @throws \ReflectionException

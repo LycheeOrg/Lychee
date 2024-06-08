@@ -6,6 +6,9 @@ use App\Enum\DbDriverType;
 
 class OptimizeDb extends BaseOptimizer
 {
+	/**
+	 * @return array<int, string>
+	 */
 	public function do(): array
 	{
 		$ret = ['Optimizing Database.'];
