@@ -46,6 +46,19 @@ class Kernel extends HttpKernel
 			\App\Http\Middleware\QueryStringFixer::class,
 		],
 
+		'web-livewire' => [
+			'accept_content_type:html',
+			\Illuminate\Cookie\Middleware\EncryptCookies::class,
+			\Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+			\Illuminate\Session\Middleware\StartSession::class,
+			\Illuminate\Session\Middleware\AuthenticateSession::class,
+			\Illuminate\View\Middleware\ShareErrorsFromSession::class,
+			\App\Http\Middleware\VerifyCsrfToken::class,
+			\Illuminate\Routing\Middleware\SubstituteBindings::class,
+			\App\Http\Middleware\DisableCSP::class,
+			\App\Http\Middleware\QueryStringFixer::class,
+		],
+
 		'web-admin' => [
 			'accept_content_type:html',
 			\Illuminate\Cookie\Middleware\EncryptCookies::class,
