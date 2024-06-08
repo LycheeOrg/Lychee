@@ -55,8 +55,8 @@ class Album extends BaseAlbumComponent implements Reloadable
 	{
 		$this->albumFactory = resolve(AlbumFactory::class);
 		$this->layouts = new Layouts();
-		$this->albumsCollection = new ProtectedCollection();
-		$this->photosCollection = new ProtectedCollection();
+		$this->albumsCollection = new ProtectedCollection(type: 'album');
+		$this->photosCollection = new ProtectedCollection(type: 'photo');
 	}
 
 	public function mount(string $albumId, string $photoId = ''): void
@@ -95,6 +95,8 @@ class Album extends BaseAlbumComponent implements Reloadable
 			if ($this->album instanceof ModelsAlbum) {
 				$this->albumsCollection->set($this->album->children()->getResults());
 				$this->num_albums = $this->albumsCollection->get()->count();
+			} else {
+				$this->albumsCollection->set(null);
 			}
 
 			$is_latitude_longitude_found = false;

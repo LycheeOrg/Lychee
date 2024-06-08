@@ -55,8 +55,8 @@ class Search extends BaseAlbumComponent
 		$this->layouts = new Layouts();
 		$this->albumSearch = resolve(AlbumSearch::class);
 		$this->photoSearch = resolve(PhotoSearch::class);
-		$this->albumsCollection = new ProtectedCollection(is_loaded: true, collection: collect([]));
-		$this->photosCollection = new ProtectedCollection();
+		$this->albumsCollection = new ProtectedCollection(type: 'album', is_loaded: true, collection: collect([]));
+		$this->photosCollection = new ProtectedCollection(type: 'photo');
 		$this->photos = new LengthAwarePaginator([], 0, 200);
 		$this->num_albums = 0;
 		$this->num_photos = 0;

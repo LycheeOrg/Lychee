@@ -17,6 +17,7 @@ class ProtectedCollection
 	 * @return void
 	 */
 	public function __construct(
+		private string $type,
 		private bool $is_loaded = false,
 		private ?Collection $collection = null,
 	) {
@@ -33,7 +34,7 @@ class ProtectedCollection
 			return $this->collection;
 		}
 
-		throw new LycheeLogicException('Collection data is not available.');
+		throw new LycheeLogicException(sprintf('Collection %s data is not available.', $this->type));
 	}
 
 	/**
