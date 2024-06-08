@@ -20,8 +20,6 @@ return new class() extends Migration {
 	 */
 	public function down(): void
 	{
-		Schema::table('jobs_history', function (Blueprint $table) {
-			$table->dropIndex(['owner_id', 'status']);
-		});
+		// We cannot remove index key because owner_id is used for FK constraint.
 	}
 };
