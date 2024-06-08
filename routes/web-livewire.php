@@ -33,7 +33,6 @@ Route::prefix(Features::when('livewire', '', 'livewire'))
 	Route::get('/auth/{provider}/authenticate', [Oauth::class, 'authenticate'])->name('oauth-authenticate')->whereIn('provider', OauthProvidersType::values());
 	Route::get('/auth/{provider}/register', [Oauth::class, 'register'])->name('oauth-register')->whereIn('provider', OauthProvidersType::values());
 
-	Route::get('/landing', Landing::class)->name('landing');
 	Route::get('/all-settings', AllSettings::class)->name('all-settings');
 	Route::get('/settings', Settings::class)->name('settings');
 	Route::get('/profile', Profile::class)->name('profile');
@@ -43,7 +42,6 @@ Route::prefix(Features::when('livewire', '', 'livewire'))
 	Route::get('/maintenance', Maintenance::class)->name('maintenance');
 	Route::get('/map/{albumId?}', Map::class)->name('livewire-map');
 	Route::get('/frame/{albumId?}', Frame::class)->name('livewire-frame');
-	Route::get('/gallery', Albums::class)->name('livewire-gallery');
 	Route::get('/search/{albumId?}', Search::class)->name('livewire-search');
 	Route::get('/gallery/{albumId}/', Album::class)->name('livewire-gallery-album');
 	Route::get('/gallery/{albumId}/{photoId}', Album::class)->name('livewire-gallery-photo');
@@ -53,6 +51,8 @@ Route::middleware(['installation:complete', 'migration:complete'])
 	->group(function () {
 		Route::prefix(Features::when('livewire', '', 'livewire'))
 		->group(function () {
+			Route::get('/landing', Landing::class)->name('landing');
+			Route::get('/gallery', Albums::class)->name('livewire-gallery');
 			Route::get('/', [RedirectController::class, 'view'])->name('livewire-index');
 		});
 	});
