@@ -64,8 +64,8 @@ class Kernel extends HttpKernel
 		],
 
 		'api' => [
-			'installation:complete',
-			'admin_user:set',
+			// 'installation:complete',
+			// 'admin_user:set',
 			'accept_content_type:json',
 			'content_type:json',
 			\Illuminate\Cookie\Middleware\EncryptCookies::class,
