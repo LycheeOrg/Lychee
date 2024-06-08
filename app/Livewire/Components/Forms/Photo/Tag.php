@@ -18,8 +18,9 @@ class Tag extends Component
 	use InteractWithModal;
 	use AuthorizesRequests;
 
-	/** @var array<int,string> */
+	/** @var string[] */
 	#[Locked] public array $photoIDs;
+	/** @var string[] */
 	#[Locked] public array $tags = [];
 	#[Locked] public int $num;
 	public bool $shall_override = false;
@@ -28,7 +29,7 @@ class Tag extends Component
 	/**
 	 * This is the equivalent of the constructor for Livewire Components.
 	 *
-	 * @param array{photoID?:string,photoIDs?:array<int,string>,albumID:?string} $params to move
+	 * @param array{photoID?:string,photoIDs?:string[],albumID:?string} $params to move
 	 *
 	 * @return void
 	 */

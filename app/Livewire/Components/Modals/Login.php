@@ -109,7 +109,7 @@ class Login extends Component
 	/**
 	 * List the Oauth providers which are enabled.
 	 *
-	 * @return array
+	 * @return string[]
 	 */
 	public function getAvailableOauthProperty(): array
 	{

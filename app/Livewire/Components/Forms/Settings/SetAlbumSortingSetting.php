@@ -37,7 +37,7 @@ class SetAlbumSortingSetting extends BaseConfigDoubleDropDown
 	/**
 	 * Give the options on the column.
 	 *
-	 * @return array
+	 * @return array<string,string>
 	 */
 	public function getOptions1Property(): array
 	{
@@ -47,7 +47,7 @@ class SetAlbumSortingSetting extends BaseConfigDoubleDropDown
 	/**
 	 * Give the options on the ordering.
 	 *
-	 * @return array
+	 * @return array<string,string>
 	 */
 	public function getOptions2Property(): array
 	{

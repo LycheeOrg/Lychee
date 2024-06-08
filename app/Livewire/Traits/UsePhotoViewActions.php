@@ -20,7 +20,7 @@ trait UsePhotoViewActions
 	/**
 	 * Update data from a form data.
 	 *
-	 * @param array $formData data
+	 * @param string[] $formData data
 	 *
 	 * @return PhotoResource|null null or error, updated Model otherwise
 	 */
@@ -118,7 +118,7 @@ trait UsePhotoViewActions
 	/**
 	 * Set all photos for given id as starred.
 	 *
-	 * @param array<int,string> $photoIDs
+	 * @param string[] $photoIDs
 	 *
 	 * @return void
 	 */
@@ -132,7 +132,7 @@ trait UsePhotoViewActions
 	/**
 	 * Set all photos for given id as NOT starred.
 	 *
-	 * @param array $photoIDs
+	 * @param string[] $photoIDs
 	 *
 	 * @return void
 	 */

@@ -35,7 +35,7 @@ class SetPhotosStarredRequest extends BaseApiRequest implements HasPhotos
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		/** @var array $photosIDs */
+		/** @var array<int,string> $photosIDs */
 		$photosIDs = $values[RequestAttribute::PHOTO_IDS_ATTRIBUTE];
 		$this->photos = Photo::query()->findOrFail($photosIDs);
 		$this->isStarred = static::toBoolean($values[RequestAttribute::IS_STARRED_ATTRIBUTE]);

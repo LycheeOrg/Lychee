@@ -20,6 +20,6 @@
 @endif
 <div id="photoListing" class="relative w-full my-7 mx-1 sm:m-7" x-data="photoListingPanel(@js($this->photosResource), select)" >
     @foreach ($this->photos as $idx => $photo)
-        <x-gallery.album.thumbs.photo :data="$photo" albumId="{{ $this->albumId }}" :idx="$idx" />
+        <x-gallery.album.thumbs.photo :data="$photo" albumId="{{ $this->albumId }}" :idx="$idx" :coverId="$this->flags->cover_id" />
     @endforeach
 </div>

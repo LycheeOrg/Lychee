@@ -13,6 +13,13 @@ use Illuminate\Support\Collection;
 
 class SearchResource extends JsonResource
 {
+	/**
+	 * @param Collection<int,\App\Models\Album>    $albums
+	 * @param Collection<int,\App\Models\TagAlbum> $tag_albums
+	 * @param Collection<int,\App\Models\Photo>    $photos
+	 *
+	 * @return void
+	 */
 	public function __construct(
 		public Collection $albums,
 		public Collection $tag_albums,
@@ -27,7 +34,7 @@ class SearchResource extends JsonResource
 	 *
 	 * @param \Illuminate\Http\Request $request
 	 *
-	 * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
+	 * @return array<string,mixed>|\Illuminate\Contracts\Support\Arrayable<string,mixed>|\JsonSerializable
 	 */
 	public function toArray($request)
 	{

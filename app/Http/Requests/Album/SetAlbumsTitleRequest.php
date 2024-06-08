@@ -19,11 +19,12 @@ use Illuminate\Support\Facades\Gate;
  *
  * SetAlbumsTitleRuleSet ensure that we are actually dealing with BaseAlbum
  *
- * @implements HasAlbums<AbstractAlbum>
+ * @implements HasAlbums<\App\Models\Album|\App\Models\TagAlbum>
  */
 class SetAlbumsTitleRequest extends BaseApiRequest implements HasTitle, HasAlbums
 {
 	use HasTitleTrait;
+	/** @use HasAlbumsTrait<\App\Models\Album|\App\Models\TagAlbum> */
 	use HasAlbumsTrait;
 
 	/**

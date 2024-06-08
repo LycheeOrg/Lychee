@@ -19,6 +19,7 @@ class AlbumAdd extends Component
 	use InteractWithModal;
 	use InteractWithContextMenu;
 
+	/** @var array{parentID:string|null} */
 	#[Locked] public array $params;
 	private ?Album $album = null;
 

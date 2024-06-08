@@ -20,6 +20,8 @@ use Illuminate\Support\Collection as BaseCollection;
 
 /**
  * Class SizeVariants.
+ *
+ * @extends AbstractDTO<array<string,string>|null>
  */
 class SizeVariants extends AbstractDTO
 {
@@ -37,10 +39,10 @@ class SizeVariants extends AbstractDTO
 	/**
 	 * SizeVariants constructor.
 	 *
-	 * @param Photo                        $photo        the parent object
-	 *                                                   this object is tied to
-	 * @param Collection<SizeVariant>|null $sizeVariants a collection of size
-	 *                                                   variants
+	 * @param Photo                            $photo        the parent object
+	 *                                                       this object is tied to
+	 * @param Collection<int,SizeVariant>|null $sizeVariants a collection of size
+	 *                                                       variants
 	 *
 	 * @throws LycheeInvalidArgumentException thrown if the photo and the
 	 *                                        collection of size variants don't
@@ -91,7 +93,7 @@ class SizeVariants extends AbstractDTO
 	/**
 	 * Serializes this object into an array.
 	 *
-	 * @return array<string, array|null> The serialized properties of this object
+	 * @return array<string,array<string,string>|null> The serialized properties of this object
 	 */
 	public function toArray(): array
 	{
@@ -109,7 +111,7 @@ class SizeVariants extends AbstractDTO
 	/**
 	 * Return all SizeVariants as a collection.
 	 *
-	 * @return BaseCollection<SizeVariant|null>
+	 * @return BaseCollection<int,SizeVariant|null>
 	 */
 	public function toCollection(): BaseCollection
 	{

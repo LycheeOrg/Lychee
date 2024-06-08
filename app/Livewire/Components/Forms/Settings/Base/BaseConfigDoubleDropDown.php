@@ -82,14 +82,14 @@ abstract class BaseConfigDoubleDropDown extends Component
 	/**
 	 * Defines accessor for the drop down options1.
 	 *
-	 * @return array
+	 * @return array<string,string>
 	 */
 	abstract public function getOptions1Property(): array;
 
 	/**
 	 * Defines accessor for the drop down options2.
 	 *
-	 * @return array
+	 * @return array<string,string>
 	 */
 	abstract public function getOptions2Property(): array;
 }

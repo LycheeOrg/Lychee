@@ -14,7 +14,7 @@ class SetPhotoOverlaySetting extends BaseConfigDropDown
 	/**
 	 * Default overlay options.
 	 *
-	 * @return array
+	 * @return array<string,string>
 	 */
 	public function getOptionsProperty(): array
 	{

@@ -13,10 +13,10 @@ class Duplicate
 	/**
 	 * Duplicates a set of photos.
 	 *
-	 * @param EloquentCollection<Photo> $photos the source photos
-	 * @param Album|null                $album  the destination album; `null` means root album
+	 * @param EloquentCollection<int,Photo> $photos the source photos
+	 * @param Album|null                    $album  the destination album; `null` means root album
 	 *
-	 * @return BaseCollection<Photo> the duplicates
+	 * @return BaseCollection<int,Photo> the duplicates
 	 *
 	 * @throws ModelDBException
 	 */

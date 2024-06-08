@@ -14,7 +14,7 @@ class SetAlbumDecorationSetting extends BaseConfigDropDown
 	/**
 	 * Specify the options available.
 	 *
-	 * @return array
+	 * @return array<string,string>
 	 */
 	public function getOptionsProperty(): array
 	{

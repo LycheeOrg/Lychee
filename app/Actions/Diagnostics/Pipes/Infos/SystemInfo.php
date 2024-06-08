@@ -63,6 +63,11 @@ class SystemInfo implements DiagnosticPipe
 		return $next($data);
 	}
 
+	/**
+	 * @param array<int,string> $data
+	 *
+	 * @return void
+	 */
 	private function getUploadLimit(array &$data): void
 	{
 		$size = Upload::getUploadLimit();

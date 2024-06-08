@@ -30,7 +30,7 @@ class CopyTo extends Component
 	private Duplicate $duplicate;
 
 	#[Locked] public string $parent_id;
-	/** @var array<int,string> */
+	/** @var string[] */
 	#[Locked] public array $photoIDs;
 	#[Locked] public string $title = '';
 	// Destination
@@ -48,7 +48,7 @@ class CopyTo extends Component
 	/**
 	 * This is the equivalent of the constructor for Livewire Components.
 	 *
-	 * @param array{photoID?:string,photoIDs?:array<int,string>,albumID:?string} $params to move
+	 * @param array{photoID?:string,photoIDs?:string[],albumID:?string} $params to move
 	 *
 	 * @return void
 	 */

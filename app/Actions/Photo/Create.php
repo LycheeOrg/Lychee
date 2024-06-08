@@ -185,8 +185,8 @@ class Create
 	 *
 	 * @template T of VideoPartnerDTO|StandaloneDTO|PhotoPartnerDTO
 	 *
-	 * @param array $pipes
-	 * @param T     $dto
+	 * @param array<int,mixed> $pipes
+	 * @param T                $dto
 	 *
 	 * @return T
 	 *

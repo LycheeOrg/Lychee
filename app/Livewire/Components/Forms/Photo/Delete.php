@@ -25,7 +25,7 @@ class Delete extends Component
 	use UseValidator;
 	use Notify;
 
-	/** @var array<int,string> */
+	/** @var string[] */
 	#[Locked] public array $photoIDs;
 	#[Locked] public ?string $albumId = null;
 	#[Locked] public string $title = '';
@@ -33,7 +33,7 @@ class Delete extends Component
 	/**
 	 * This is the equivalent of the constructor for Livewire Components.
 	 *
-	 * @param array{albumID:?string,photoID?:string,photoIDs?:array<int,string>} $params to delete
+	 * @param array{albumID:?string,photoID?:string,photoIDs?:string[]} $params to delete
 	 *
 	 * @return void
 	 */

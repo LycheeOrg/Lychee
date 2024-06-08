@@ -24,6 +24,10 @@ class PhotoSearch
 	/**
 	 * Apply search directly.
 	 *
+	 * @param array<int,string> $terms
+	 *
+	 * @return Collection<int,Photo> photos
+	 *
 	 * @throws InternalLycheeException
 	 */
 	public function query(array $terms): Collection
@@ -38,10 +42,10 @@ class PhotoSearch
 	/**
 	 * Create the query manually.
 	 *
-	 * @param array      $terms
-	 * @param Album|null $album the optional top album which is used as a search base
+	 * @param array<int,string> $terms
+	 * @param Album|null        $album the optional top album which is used as a search base
 	 *
-	 * @return Builder
+	 * @return FixedQueryBuilder<Photo>
 	 */
 	public function sqlQuery(array $terms, ?Album $album = null): Builder
 	{

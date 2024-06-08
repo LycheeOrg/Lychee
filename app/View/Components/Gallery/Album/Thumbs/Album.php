@@ -39,7 +39,7 @@ class Album extends Component
 
 	public string $aspect_ratio_class;
 
-	public function __construct(AbstractAlbum $data, string $strAspectRatioClass)
+	public function __construct(AbstractAlbum $data, string $strAspectRatioClass, ?string $coverId)
 	{
 		$this->aspect_ratio_class = $strAspectRatioClass;
 
@@ -76,7 +76,7 @@ class Album extends Component
 
 		$this->is_tag_album = $data instanceof TagAlbum;
 		// This aims to indicate whether the current thumb is used to determine the parent.
-		$this->is_cover_id = $data instanceof AlbumModel && $data->thumb !== null && $data->parent?->cover_id === $data->thumb->id;
+		$this->is_cover_id = $data instanceof AlbumModel && $data->thumb !== null && $coverId === $data->thumb->id;
 		$this->has_subalbum = $data instanceof AlbumModel && !$data->isLeaf();
 	}
 

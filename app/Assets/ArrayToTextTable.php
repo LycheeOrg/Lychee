@@ -27,7 +27,7 @@ class ArrayToTextTable
 	public const ALIGNCENTER = STR_PAD_BOTH;
 	public const ALIGNRIGHT = STR_PAD_LEFT;
 
-	/** @var array<int,array> */
+	/** @var array<int,array<string>> */
 	protected array $data;
 	/** @var array<int,string> */
 	protected array $keys;
@@ -46,7 +46,7 @@ class ArrayToTextTable
 	/**
 	 * Create a table.
 	 *
-	 * @param array<int,object|array> $rawData
+	 * @param array<int,object|array<string|null>> $rawData
 	 *
 	 * @return void
 	 */
@@ -71,7 +71,7 @@ class ArrayToTextTable
 	/**
 	 * return the table.
 	 *
-	 * @param array<int,array|object>|null $rawData
+	 * @param array<int,array<string|int>|object>|null $rawData
 	 *
 	 * @return string
 	 *
@@ -121,7 +121,7 @@ class ArrayToTextTable
 	}
 
 	/**
-	 * @param array<int,array|object>|null $data
+	 * @param array<int,array<string|int|null>|object>|null $data
 	 *
 	 * @return self
 	 */
@@ -222,6 +222,15 @@ class ArrayToTextTable
 		return $line . $right;
 	}
 
+	/**
+	 * @param array<string|null> $row
+	 * @param int                $alignment
+	 *
+	 * @return array<string>
+	 *
+	 * @throws MbstringException
+	 * @throws PcreException
+	 */
 	protected function row(array $row, int $alignment): array
 	{
 		$data = [];
@@ -243,6 +252,15 @@ class ArrayToTextTable
 		return $rowLines;
 	}
 
+	/**
+	 * @param array<string,string> $row
+	 * @param int                  $alignment
+	 *
+	 * @return string
+	 *
+	 * @throws MbstringException
+	 * @throws PcreException
+	 */
 	protected function rowLine(array $row, int $alignment): string
 	{
 		$line = $this->decorator->getVertical();
@@ -261,7 +279,7 @@ class ArrayToTextTable
 	}
 
 	/**
-	 * @return array<int,array>
+	 * @return array<int,array<string|null>>
 	 *
 	 * @throws PcreException
 	 */
@@ -316,6 +334,11 @@ class ArrayToTextTable
 		}
 	}
 
+	/**
+	 * @param string|null $value
+	 *
+	 * @return array<int,string>
+	 */
 	protected static function valueToLines(?string $value): array
 	{
 		return explode("\n", $value);

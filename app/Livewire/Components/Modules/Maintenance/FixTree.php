@@ -18,6 +18,7 @@ class FixTree extends Component
 {
 	#[Locked] public int|null $result = null;
 	#[Locked] public string $path = '';
+	/** @var array<string,int> */
 	#[Locked] public array $stats;
 	/**
 	 * Rendering of the front-end.

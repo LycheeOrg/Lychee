@@ -10,6 +10,9 @@ use Spatie\GuzzleRateLimiterMiddleware\Store;
  */
 class RateLimiterStore implements Store
 {
+	/**
+	 * @return array<int,int>
+	 */
 	public function get(): array
 	{
 		return Cache::get('rate-limiter', []);

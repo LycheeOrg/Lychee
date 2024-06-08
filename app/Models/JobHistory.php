@@ -73,7 +73,7 @@ class JobHistory extends Model
 	/**
 	 * Returns the relationship between an Job and its owner.
 	 *
-	 * @return BelongsTo
+	 * @return BelongsTo<User,JobHistory>
 	 */
 	public function owner(): BelongsTo
 	{

@@ -63,7 +63,7 @@ class Top
 		if (Configs::getValueAsBool('SA_enabled')) {
 			// Do not eagerly load the relation `photos` for each smart album.
 			// On the albums overview, we only need a thumbnail for each album.
-			/** @var BaseCollection<BaseSmartAlbum> $smartAlbums */
+			/** @var BaseCollection<int,BaseSmartAlbum> $smartAlbums */
 			$smartAlbums = $this->albumFactory
 				->getAllBuiltInSmartAlbums(false)
 				->map(
@@ -75,7 +75,9 @@ class Top
 
 		$tagAlbumQuery = $this->albumQueryPolicy
 			->applyVisibilityFilter(TagAlbum::query()->with(['access_permissions', 'owner']));
-		/** @var BaseCollection<TagAlbum> $tagAlbums */
+
+		/** @var BaseCollection<int,TagAlbum> $tagAlbums */
+		/** @phpstan-ignore-next-line */
 		$tagAlbums = (new SortingDecorator($tagAlbumQuery))
 			->orderBy($this->sorting->column, $this->sorting->order)
 			->get();
@@ -87,15 +89,15 @@ class Top
 		$userID = Auth::id();
 		if ($userID !== null) {
 			// For authenticated users we group albums by ownership.
-			/** @var BaseCollection<Album> $albums */
+			/** @var BaseCollection<int,Album> $albums */
 			$albums = (new SortingDecorator($query))
 				->orderBy(ColumnSortingType::OWNER_ID, OrderSortingType::ASC)
 				->orderBy($this->sorting->column, $this->sorting->order)
 				->get();
 
 			/**
-			 * @var BaseCollection<Album> $a
-			 * @var BaseCollection<Album> $b
+			 * @var BaseCollection<int,Album> $a
+			 * @var BaseCollection<int,Album> $b
 			 */
 			list($a, $b) = $albums->partition(fn ($album) => $album->owner_id === $userID);
 
@@ -103,6 +105,7 @@ class Top
 		} else {
 			// For anonymous users we don't want to implicitly expose
 			// ownership via sorting.
+			/** @var BaseCollection<int,Album> */
 			$albums = (new SortingDecorator($query))
 				->orderBy($this->sorting->column, $this->sorting->order)
 				->get();

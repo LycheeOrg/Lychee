@@ -15,6 +15,7 @@ class Download extends Component
 {
 	public string $url_placeholder = 'api/Photo::getArchive?photoIDs=%s&kind%s';
 	public string $photoId;
+	/** @var array<int,mixed> */
 	public array $size_variants;
 
 	/**

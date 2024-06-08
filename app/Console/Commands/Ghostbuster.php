@@ -121,11 +121,11 @@ class Ghostbuster extends Command
 					$isDeadSymlink = is_link($fullPath) && !file_exists(readlink($fullPath));
 				}
 
-				/** @var Collection<Photo> $photos */
+				/** @var Collection<int,Photo> $photos */
 				$photos = Photo::query()
 					->where('live_photo_short_path', '=', $filename)
 					->get();
-				/** @var Collection<SizeVariant> $sizeVariants */
+				/** @var Collection<int,SizeVariant> $sizeVariants */
 				$sizeVariants = SizeVariant::query()
 					->with('photo')
 					->where('short_path', '=', $filename)

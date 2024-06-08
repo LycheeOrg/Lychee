@@ -10,6 +10,13 @@ use Illuminate\Support\Collection;
  */
 class SharesResource extends JsonResource
 {
+	/**
+	 * @param Collection<int,\App\Models\AccessPermission> $shared
+	 * @param Collection<int,\App\Models\Album>            $albums
+	 * @param Collection<int,\App\Models\User>             $users
+	 *
+	 * @return void
+	 */
 	public function __construct(
 		public Collection $shared,
 		public Collection $albums,
@@ -24,7 +31,7 @@ class SharesResource extends JsonResource
 	 *
 	 * @param \Illuminate\Http\Request $request
 	 *
-	 * @return array
+	 * @return array<string,mixed>
 	 */
 	public function toArray($request): array
 	{

@@ -14,6 +14,9 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
 
+/**
+ * @extends AbstractDTO<string|null>
+ */
 class Thumb extends AbstractDTO
 {
 	public string $id;
@@ -33,9 +36,9 @@ class Thumb extends AbstractDTO
 	 * Restricts the given relation for size variants such that only the
 	 * necessary variants for a thumbnail are selected.
 	 *
-	 * @param HasMany $relation
+	 * @param HasMany<Photo> $relation
 	 *
-	 * @return HasMany
+	 * @return HasMany<Photo>
 	 */
 	public static function sizeVariantsFilter(HasMany $relation): HasMany
 	{
@@ -53,8 +56,8 @@ class Thumb extends AbstractDTO
 	 * Note, this method assumes that the relation is already restricted
 	 * such that it only returns photos which the current user may see.
 	 *
-	 * @param Relation|Builder $photoQueryable the relation to or query for {@link Photo} which is used to pick a thumb
-	 * @param SortingCriterion $sorting        the sorting criterion
+	 * @param Relation<Photo>|Builder<Photo> $photoQueryable the relation to or query for {@link Photo} which is used to pick a thumb
+	 * @param SortingCriterion               $sorting        the sorting criterion
 	 *
 	 * @return Thumb|null the created thumbnail; null if the relation is empty
 	 *
@@ -85,7 +88,7 @@ class Thumb extends AbstractDTO
 	 * Note, this method assumes that the relation is already restricted
 	 * such that it only returns photos which the current user may see.
 	 *
-	 * @param Relation|Builder $photoQueryable the relation to or query for {@link Photo} which is used to pick a thumb
+	 * @param Relation<Photo>|Builder<Photo> $photoQueryable the relation to or query for {@link Photo} which is used to pick a thumb
 	 *
 	 * @return Thumb|null the created thumbnail; null if the relation is empty
 	 *
@@ -153,7 +156,7 @@ class Thumb extends AbstractDTO
 	/**
 	 * Serializes this object into an array.
 	 *
-	 * @return array<string, string|null> The serialized properties of this object
+	 * @return array<string,string|null> The serialized properties of this object
 	 */
 	public function toArray(): array
 	{

@@ -48,7 +48,7 @@ class AppServiceProvider extends ServiceProvider
 	/**
 	 * Defines which queries to ignore when doing explain.
 	 *
-	 * @var array<int,string>
+	 * @var string[]
 	 */
 	private array $ignore_log_SQL =
 		[
@@ -62,6 +62,7 @@ class AppServiceProvider extends ServiceProvider
 			'configs',
 		];
 
+	/** @var array<class-string,class-string> */
 	public array $singletons =
 		[
 			SymLinkFunctions::class => SymLinkFunctions::class,
@@ -85,6 +86,7 @@ class AppServiceProvider extends ServiceProvider
 			GitTags::class => GitTags::class,
 		];
 
+	/** @var array<int,class-string> */
 	private array $livewireSynth =
 		[
 			AlbumSynth::class,
@@ -119,6 +121,7 @@ class AppServiceProvider extends ServiceProvider
 
 		try {
 			$lang = Configs::getValueAsString('lang');
+			/** @disregard P1013 Undefined method setLocale() (stupid intelephense) */
 			app()->setLocale($lang);
 		} catch (\Throwable $e) {
 			/** Ignore.
@@ -175,7 +178,7 @@ class AppServiceProvider extends ServiceProvider
 		});
 
 		Livewire::setUpdateRoute(function ($handle) use ($dir_url) {
-			return Route::post($dir_url . 'livewire/update', $handle)->middleware('web');
+			return Route::post($dir_url . 'livewire/update', $handle)->middleware('web-livewire');
 		});
 	}
 

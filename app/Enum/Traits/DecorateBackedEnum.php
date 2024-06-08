@@ -31,7 +31,7 @@ trait DecorateBackedEnum
 	/**
 	 * Returns a list of name covered by the enum.
 	 *
-	 * @return array
+	 * @return string[]
 	 */
 	public static function names(): array
 	{
@@ -41,7 +41,7 @@ trait DecorateBackedEnum
 	/**
 	 * Returns a list of values covered by the enum.
 	 *
-	 * @return array
+	 * @return (string|int)[]
 	 */
 	public static function values(): array
 	{
@@ -51,7 +51,7 @@ trait DecorateBackedEnum
 	/**
 	 * Returns an associative array [name => value].
 	 *
-	 * @return array
+	 * @return array<string,string|int>
 	 */
 	public static function array(): array
 	{

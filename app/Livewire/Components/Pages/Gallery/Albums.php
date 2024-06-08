@@ -72,19 +72,26 @@ class Albums extends Component implements Reloadable
 		$this->title = Configs::getValueAsString('site_title');
 	}
 
+	/**
+	 * @return Collection<int,\App\Models\Album>
+	 */
 	public function getAlbumsProperty(): Collection
 	{
 		return $this->topAlbums->albums;
 	}
 
+	/**
+	 * @return Collection<int,\App\SmartAlbums\BaseSmartAlbum|\App\Models\TagAlbum>
+	 */
 	public function getSmartAlbumsProperty(): Collection
 	{
 		return $this->topAlbums->smart_albums
-			// We filter out the public one (we don't remove it completely to not break the other front-end).
-			->concat($this->topAlbums->tag_albums)
-			->reject(fn ($album) => $album === null);
+			->concat($this->topAlbums->tag_albums);
 	}
 
+	/**
+	 * @return Collection<int,\App\Models\Album>
+	 */
 	public function getSharedAlbumsProperty(): Collection
 	{
 		return $this->topAlbums->shared_albums;
@@ -115,7 +122,7 @@ class Albums extends Component implements Reloadable
 	/**
 	 * Used in the JS front-end to manage the selected albums.
 	 *
-	 * @return array
+	 * @return string[]
 	 */
 	public function getAlbumIDsProperty(): array
 	{

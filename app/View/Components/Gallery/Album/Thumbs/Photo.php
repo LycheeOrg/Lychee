@@ -45,7 +45,7 @@ class Photo extends Component
 	 *
 	 * @throws ConfigurationKeyMissingException
 	 */
-	public function __construct(ModelsPhoto $data, string $albumId, int $idx)
+	public function __construct(ModelsPhoto $data, string $albumId, int $idx, ?string $coverId)
 	{
 		$this->idx = $idx;
 		$date_format = Configs::getValueAsString('date_format_photo_thumb');
@@ -59,7 +59,7 @@ class Photo extends Component
 
 		$this->is_video = $data->isVideo();
 		$this->is_livephoto = $data->live_photo_url !== null;
-		$this->is_cover_id = $data->album?->cover_id === $data->id;
+		$this->is_cover_id = $coverId === $data->id;
 
 		$this->css_overlay = match ($displayOverlay) {
 			ThumbOverlayVisibilityType::NEVER => 'hidden',

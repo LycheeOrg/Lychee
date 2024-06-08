@@ -23,7 +23,7 @@ class Delete extends Component
 	use InteractWithModal;
 
 	// We need to use an array instead of directly said album id to reuse the rules (because I'm lazy).
-	/** @var array<int,string> */
+	/** @var string[] */
 	#[Locked] public array $albumIDs;
 	#[Locked] public string $parent_id;
 	#[Locked] public string $title = '';
@@ -40,7 +40,7 @@ class Delete extends Component
 	/**
 	 * This is the equivalent of the constructor for Livewire Components.
 	 *
-	 * @param array{albumID?:string,albumIDs?:array<int,string>,parentID:?string} $params to delete
+	 * @param array{albumID?:string,albumIDs?:string[],parentID:?string} $params to delete
 	 *
 	 * @return void
 	 */

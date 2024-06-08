@@ -37,7 +37,7 @@ class PhotoRightsResource extends JsonResource
 	 *
 	 * @param \Illuminate\Http\Request $request
 	 *
-	 * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
+	 * @return array<string,bool>|\Illuminate\Contracts\Support\Arrayable<string,bool>|\JsonSerializable
 	 */
 	public function toArray($request)
 	{

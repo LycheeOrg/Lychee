@@ -3,7 +3,6 @@ includes:
 	- vendor/lychee-org/phpstan-lychee/phpstan.neon
 
 parameters:
-	checkGenericClassInNonGenericObjectType: false
 	treatPhpDocTypesAsCertain: false
 	paths:
 		- app
@@ -29,28 +28,30 @@ parameters:
 		- '#Access to an undefined property App\\Contracts\\Image\\StreamStats::\$bytes#'
 
 		# bunch of false positives from Eloquent
-		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder)(<.*>)?::from\(\).#'
-		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder)(<.*>)?::limit\(\).#'
-		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder)(<.*>)?::offset\(\).#'
-		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder)(<.*>)?::take\(\).#'
-		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder)(<.*>)?::truncate\(\).#'
-		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder)(<.*>)?::insert\(\).#'
-		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder)(<.*>)?::select\(\).#'
-		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder)(<.*>)?::orderBy\(\)#'
-		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder)(<.*>)?::where(Not)?(Null|In|Between|Exists|Column|Year|Month|Day)?\(\).#'
-		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder)(<.*>)?::delete\(\)#'
-		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder)(<.*>)?::without\(\)#'
-		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder)(<.*>)?::with\(\)#'
-		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder)(<.*>)?::count\(\).#'
-		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder)(<.*>)?::update\(\).#'
-		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder)(<.*>)?::inRandomOrder\(\).#'
-		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder)(<.*>)?::groupBy\(\).#'
+		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::from\(\).#'
+		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::limit\(\).#'
+		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::offset\(\).#'
+		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::take\(\).#'
+		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::truncate\(\).#'
+		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::insert\(\).#'
+		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::select\(\).#'
+		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::orderBy\(\)#'
+		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::where(Not)?(Null|In|Between|Exists|Column|Year|Month|Day)?\(\).#'
+		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::delete\(\)#'
+		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::without\(\)#'
+		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::with\(\)#'
+		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::count\(\).#'
+		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::update\(\).#'
+		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::inRandomOrder\(\).#'
+		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::groupBy\(\).#'
+		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::latest\(\).#'
+		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::first\(\).#'
+		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::skip\(\).#'
 		- '#Dynamic call to static method App\\Models\\Builders\\.*::orderByDesc\(\).#'
 		- '#Dynamic call to static method App\\Models\\Builders\\.*::selectRaw\(\).#'
 		- '#Call to an undefined method Illuminate\\Database\\Eloquent\\.*::with(Only)?\(\)#'
 		- '#Call to an undefined method App\\Relations\\HasManyPhotosRecursively::whereNotNull\(\)#'
 		- '#Call to an undefined method Illuminate\\Database\\Eloquent\\Builder|Illuminate\\Database\\Eloquent\\Relations\\Relation::whereNotNull\(\).#'
-		- '#Call to private method latest\(\) of parent class Illuminate\\Database\\Eloquent\\Relations\\HasMany<Illuminate\\Database\\Eloquent\\Model>#'
 		- '#Call to protected method asDateTime\(\) of class Illuminate\\Database\\Eloquent\\Model.#'
 
 		# Covariance - LSP princinple: https://en.wikipedia.org/wiki/Liskov_substitution_principle
@@ -58,16 +59,17 @@ parameters:
 			message: '#Parameter \#1 \$column \(array<string>\|Closure\|Illuminate\\Database\\Query\\Expression\|string\) of method .* should be contravariant with parameter \$column \(array<int\|string, mixed>\|\(Closure.*\)\|\(Closure.*\)\|Illuminate\\Contracts\\Database\\Query\\Expression\|string\) of method .*#'
 			paths:
 				- app/Eloquent/FixedQueryBuilderTrait.php
-		- '#Parameter \#1 \$models \(array<.*>\) of method .*::initRelation\(\) should be contravariant with parameter \$models \(array\) of method .*::initRelation\(\)#'
-		- '#Parameter \#1 \$models \(array<.*>\) of method .*::match\(\) should be contravariant with parameter \$models \(array\) of method .*::match\(\)#'
-		- '#Parameter \#1 \$models \(array<.*>\) of method .*::addEagerConstraints\(\) should be contravariant with parameter \$models \(array\) of method .*::addEagerConstraints\(\)#'
-		- '#Parameter \#1 \$albums \(array<.*>\) of method .*::addEagerConstraints\(\) should be contravariant with parameter \$models \(array\) of method .*::addEagerConstraints\(\)#'
-
-		- '#Parameter \#1 \$key of method .*::partition\(\) expects \(callable\(.*\): bool\)\|Illuminate\\Database\\Eloquent\\Model\|string, Closure\(.*\): bool given.#'
-
+		- '#Parameter \#1 \$models .* of method .*::initRelation\(\) should be contravariant with parameter \$models .* of method .*::initRelation\(\)#'
+		- '#Parameter \#(1|2) \$(models|albums|photos|results) .* of method .*::(match|addEagerConstraints)\(\) should be contravariant with parameter \$(models|albums|photos|results) .* of method .*::(match|addEagerConstraints)\(\)#'
+		- '#Parameter .* of method .*::partition\(\) expects \(callable\(.*\): bool\)\|Illuminate\\Database\\Eloquent\\Model\|string, Closure\(.*\): bool given.#'
+		- '#Parameter .* of method .*::performInsert\(\) should be contravariant with parameter .* of method .*::performInsert\(\)#' 
+		- '#Parameter .* of method .*::replicate\(\) should be contravariant with parameter .* of method .*::replicate\(\)#' 
+		- '#Parameter .* of method .*::save\(\) should be contravariant with parameter .* of method .*::save\(\)#' 
+		- '#Parameter .* of method .*::newEloquentBuilder\(\) should be contravariant with parameter .* of method Kalnoy\\Nestedset\\Node::newEloquentBuilder\(\)#'
+		- '#Parameter .* of method .*::performUpdate\(\) should be contravariant with parameter .* of method .*::performUpdate\(\)#'
+		- '#Parameter .* of method .*::isDirty\(\) should be contravariant with parameter .* of method .*::isDirty\(\)#'
 
 		- '#Call to an undefined( static)? method Kalnoy\\Nestedset\\.*::(whereIn|select|join|leftJoin|orderBy|addSelect|without)\(\)#'
-		- '#Parameter .* of method .*::newEloquentBuilder\(\) should be contravariant with parameter \$query \(mixed\) of method Kalnoy\\Nestedset\\Node::newEloquentBuilder\(\)#'
 		- '#Call to an undefined method Geocoder\\Location::getDisplayName\(\)#'
 		- '#Call to an undefined method COM::getfolder\(\).#'
 		- '#Dynamic call to static method Laragear\\WebAuthn\\Http\\Requests\\AssertionRequest::validate\(\).#'
@@ -107,6 +109,11 @@ parameters:
 			paths:
 				- database/migrations
 
+		-
+			message: '#with generic class Doctrine\\DBAL\\Schema\\AbstractSchemaManager does not specify its types: T#'
+			paths:
+				- database/migrations
+
 		# Configs
 		-
 			message: '#Cast to bool is forbidden.#'
@@ -114,6 +121,10 @@ parameters:
 				- config
 
 		# TESTS
+		-
+			message: '#no value type specified in iterable type array.#'
+			paths:
+				- tests
 		- 
 			message: '#Dynamic call to static method Illuminate\\Testing\\TestResponse::assert(Forbidden|ViewIs|Unauthorized|Ok|Status)#'
 			paths:

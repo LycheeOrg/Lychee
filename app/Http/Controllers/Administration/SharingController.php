@@ -82,7 +82,7 @@ class SharingController extends Controller
 	 */
 	private function updateLinks(array $userIds, array $albumIDs): void
 	{
-		/** @var Collection<User> $users */
+		/** @var Collection<int,User> $users */
 		$users = User::query()
 			->whereIn('id', $userIds)
 			->get();

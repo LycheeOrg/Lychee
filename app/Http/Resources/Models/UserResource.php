@@ -24,7 +24,7 @@ class UserResource extends JsonResource
 	 *
 	 * @param \Illuminate\Http\Request $request
 	 *
-	 * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
+	 * @return array<string,mixed>|\Illuminate\Contracts\Support\Arrayable<string,mixed>|\JsonSerializable
 	 */
 	public function toArray($request)
 	{

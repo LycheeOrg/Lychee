@@ -24,7 +24,7 @@ class Move extends Component
 	private PhotoMove $move;
 
 	#[Locked] public string $parent_id;
-	/** @var array<int,string> */
+	/** @var string[] */
 	#[Locked] public array $photoIDs;
 	#[Locked] public string $title = '';
 	#[Locked] public int $num;
@@ -44,7 +44,7 @@ class Move extends Component
 	/**
 	 * This is the equivalent of the constructor for Livewire Components.
 	 *
-	 * @param array{photoID?:string,photoIDs?:array<int,string>,albumID:?string} $params to move
+	 * @param array{photoID?:string,photoIDs?:string[],albumID:?string} $params to move
 	 *
 	 * @return void
 	 */

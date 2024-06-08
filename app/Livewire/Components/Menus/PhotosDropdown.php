@@ -21,13 +21,13 @@ class PhotosDropdown extends Component
 	use InteractWithModal;
 	use InteractWithContextMenu;
 
-	/** @var array{albumID:?string,photoIDs:array<int,string>} */
+	/** @var array{albumID:?string,photoIDs:string[]} */
 	#[Locked] public array $params;
 	#[Locked] public bool $are_starred;
 	/**
 	 * mount info and load star condition.
 	 *
-	 * @param array{albumID:?string,photoIDs:array<int,string>} $params
+	 * @param array{albumID:?string,photoIDs:string[]} $params
 	 *
 	 * @return void
 	 */

@@ -13,6 +13,9 @@ use App\Policies\AlbumQueryPolicy;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @extends HasManyBidirectionally<Album,Album>
+ */
 class HasManyChildAlbums extends HasManyBidirectionally
 {
 	protected AlbumQueryPolicy $albumQueryPolicy;
@@ -27,6 +30,7 @@ class HasManyChildAlbums extends HasManyBidirectionally
 		$this->albumQueryPolicy = resolve(AlbumQueryPolicy::class);
 		$this->sorting = $owningAlbum->album_sorting ?? AlbumSortingCriterion::createDefault();
 		parent::__construct(
+			/** @phpstan-ignore-next-line */
 			$owningAlbum->newQuery(),
 			$owningAlbum,
 			'parent_id',
@@ -60,6 +64,8 @@ class HasManyChildAlbums extends HasManyBidirectionally
 	}
 
 	/**
+	 * @param Album[] $models
+	 *
 	 * @throws InternalLycheeException
 	 */
 	public function addEagerConstraints(array $models)
@@ -69,6 +75,8 @@ class HasManyChildAlbums extends HasManyBidirectionally
 	}
 
 	/**
+	 * @return Collection<int,Album>
+	 *
 	 * @throws InvalidOrderDirectionException
 	 */
 	public function getResults(): Collection
@@ -77,7 +85,10 @@ class HasManyChildAlbums extends HasManyBidirectionally
 			return $this->related->newCollection();
 		}
 
-		return (new SortingDecorator($this->query))
+		/** @var SortingDecorator<Album> */
+		$sortingDecorator = new SortingDecorator($this->query);
+
+		return $sortingDecorator
 			->orderBy($this->sorting->column, $this->sorting->order)
 			->get();
 	}
@@ -85,11 +96,11 @@ class HasManyChildAlbums extends HasManyBidirectionally
 	/**
 	 * Match the eagerly loaded results to their parents.
 	 *
-	 * @param array      $models   an array of parent models
-	 * @param Collection $results  the unified collection of all child models of all parent models
-	 * @param string     $relation the name of the relation from the parent to the child models
+	 * @param Album[]               $models   an array of parent models
+	 * @param Collection<int,Album> $results  the unified collection of all child models of all parent models
+	 * @param string                $relation the name of the relation from the parent to the child models
 	 *
-	 * @return array
+	 * @return Album[]
 	 */
 	public function match(array $models, Collection $results, $relation): array
 	{
@@ -100,7 +111,7 @@ class HasManyChildAlbums extends HasManyBidirectionally
 		// matching very convenient and easy work. Then we'll just return them.
 		foreach ($models as $model) {
 			if (isset($dictionary[$key = $this->getDictionaryKey($model->getAttribute($this->localKey))])) {
-				/** @var Collection $childrenOfModel */
+				/** @var Collection<int,Album> $childrenOfModel */
 				$childrenOfModel = $this->getRelationValue($dictionary, $key, 'many');
 				$childrenOfModel = $childrenOfModel
 					->sortBy($this->sorting->column->value, SORT_NATURAL | SORT_FLAG_CASE, $this->sorting->order === OrderSortingType::DESC)

@@ -513,9 +513,9 @@ return new class() extends Migration {
 	 * If the current value of the configuration option is not included in
 	 * $map, then the value is not altered.
 	 *
-	 * @param string $key   the key (aka name) of the configuration option
-	 * @param array  $map   a mapping from old-to-new configuration values
-	 * @param string $range the new range for the configuration option
+	 * @param string               $key   the key (aka name) of the configuration option
+	 * @param array<string,string> $map   a mapping from old-to-new configuration values
+	 * @param string               $range the new range for the configuration option
 	 */
 	protected function convertConfiguration(string $key, array $map, string $range): void
 	{

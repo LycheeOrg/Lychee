@@ -33,7 +33,7 @@ class Create extends Component
 	 * This defines the set of validation rules to be applied on the input.
 	 * It would be a good idea to unify (namely reuse) the rules from the JSON api.
 	 *
-	 * @return array
+	 * @return array<string,string|array<int,string|\Illuminate\Contracts\Validation\ValidationRule|\Illuminate\Validation\Rules\Enum>>
 	 */
 	protected function rules(): array
 	{
@@ -43,11 +43,11 @@ class Create extends Component
 	/**
 	 * Mount the component.
 	 *
-	 * @param array $params
+	 * @param array{parentID:string|null} $params
 	 *
 	 * @return void
 	 */
-	public function mount(array $params = []): void
+	public function mount(array $params = [Params::PARENT_ID => null]): void
 	{
 		$this->parent_id = $params[Params::PARENT_ID];
 		Gate::authorize(AlbumPolicy::CAN_EDIT_ID, [AbstractAlbum::class, [$this->parent_id]]);

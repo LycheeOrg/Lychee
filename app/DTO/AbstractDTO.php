@@ -13,6 +13,10 @@ use function Safe\json_encode;
  * We use DTOs as result types for some controller methods which do not
  * return proper models.
  * Thereby we avoid using associative arrays and have a bit more type safety.
+ *
+ * @template TValue
+ *
+ * @implements DTO<TValue>
  */
 abstract class AbstractDTO implements DTO
 {
@@ -55,7 +59,7 @@ abstract class AbstractDTO implements DTO
 	 *
 	 * @see Arrayable::toArray()
 	 *
-	 * @return array The serialized properties of this object
+	 * @return array<string,TValue> The serialized properties of this object
 	 *
 	 * @throws \JsonException
 	 */

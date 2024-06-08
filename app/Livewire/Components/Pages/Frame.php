@@ -2,7 +2,10 @@
 
 namespace App\Livewire\Components\Pages;
 
+use App\Contracts\Exceptions\InternalLycheeException;
 use App\Contracts\Models\AbstractAlbum;
+use App\Exceptions\Internal\IllegalOrderOfOperationException;
+use App\Exceptions\Internal\InvalidSmartIdException;
 use App\Exceptions\PhotoCollectionEmptyException;
 use App\Exceptions\UnauthorizedException;
 use App\Factories\AlbumFactory;
@@ -11,6 +14,7 @@ use App\Models\Photo;
 use App\Policies\AlbumPolicy;
 use App\Policies\PhotoQueryPolicy;
 use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 use Livewire\Attributes\Renderless;
@@ -59,6 +63,17 @@ class Frame extends Component
 		$this->back = $albumId !== null ? route('livewire-gallery-album', ['albumId' => $albumId]) : route('livewire-gallery');
 	}
 
+	/**
+	 * @param int $retries
+	 *
+	 * @return array<string,string>
+	 *
+	 * @throws InternalLycheeException
+	 * @throws ModelNotFoundException
+	 * @throws InvalidSmartIdException
+	 * @throws PhotoCollectionEmptyException
+	 * @throws IllegalOrderOfOperationException
+	 */
 	#[Renderless]
 	public function loadPhoto(int $retries = 5): array
 	{

@@ -172,6 +172,9 @@ class Album extends BaseAlbum implements Node
 	 */
 	protected $with = ['cover', 'cover.size_variants', 'thumb'];
 
+	/**
+	 * @return array<string,mixed>
+	 */
 	protected function _toArray(): array
 	{
 		return parent::toArray();
@@ -233,7 +236,7 @@ class Album extends BaseAlbum implements Node
 	/**
 	 * Return the relationship between an album and its cover.
 	 *
-	 * @return HasOne
+	 * @return HasOne<Photo>
 	 */
 	public function cover(): HasOne
 	{
@@ -243,7 +246,7 @@ class Album extends BaseAlbum implements Node
 	/**
 	 * Return the relationship between an album and its header.
 	 *
-	 * @return HasOne
+	 * @return HasOne<Photo>
 	 */
 	public function header(): HasOne
 	{

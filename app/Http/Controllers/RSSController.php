@@ -8,13 +8,14 @@ use App\Exceptions\ConfigurationException;
 use App\Models\Configs;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Collection;
+use Spatie\Feed\FeedItem;
 
 class RSSController extends Controller
 {
 	/**
 	 * @param Generate $generate
 	 *
-	 * @return Collection
+	 * @return Collection<int,FeedItem>
 	 *
 	 * @throws LycheeException
 	 */

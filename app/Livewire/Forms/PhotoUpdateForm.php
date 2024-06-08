@@ -16,7 +16,7 @@ use Livewire\Drawer\Utils;
 class PhotoUpdateForm
 {
 	private ?Photo $photo = null;
-	/** @var array<int,string> */
+	/** @var string[] */
 	#[Locked] public array $tags = [];
 	#[Locked] public string $date = '';
 	public function __construct(
@@ -96,6 +96,9 @@ class PhotoUpdateForm
 		$photo->save();
 	}
 
+	/**
+	 * @return array<string,mixed>
+	 */
 	public function all(): array
 	{
 		return Utils::getPublicProperties($this);

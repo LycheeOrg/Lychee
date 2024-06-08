@@ -12,6 +12,7 @@ use App\Http\Resources\Collections\AlbumForestResource;
 use App\Models\Album;
 use App\Models\Extensions\SortingDecorator;
 use App\Policies\AlbumQueryPolicy;
+use Illuminate\Support\Collection as BaseCollection;
 use Illuminate\Support\Facades\Auth;
 use Kalnoy\Nestedset\Collection as NsCollection;
 
@@ -61,9 +62,9 @@ class Tree
 		}
 		$query->orderBy($this->sorting->column, $this->sorting->order);
 
-		/** @var NsCollection<Album> $albums */
+		/** @var NsCollection<int,Album> $albums */
 		$albums = $query->get();
-		/** @var ?NsCollection<Album> $sharedAlbums */
+		/** @var ?NsCollection<int,Album> $sharedAlbums */
 		$sharedAlbums = null;
 		$userID = Auth::id();
 		if ($userID !== null) {
@@ -74,8 +75,8 @@ class Tree
 			// (sub)-tree and then `toTree` will return garbage as it does
 			// not find connected paths within `$albums` or `$sharedAlbums`,
 			// resp.
-			/** @var NsCollection<Album> $albums */
-			/** @var ?NsCollection<Album> $sharedAlbums */
+			/** @var NsCollection<int,Album> $albums */
+			/** @var ?NsCollection<int,Album> $sharedAlbums */
 			list($albums, $sharedAlbums) = $albums->partition(fn (Album $album) => $album->owner_id === $userID);
 		}
 
@@ -83,6 +84,11 @@ class Tree
 		// as there are several top-level albums below root.
 		// Otherwise, `toTree` uses the ID of the album with the lowest
 		// `_lft` value as the (wrong) root album.
-		return new AlbumForestResource($albums->toTree(null), $sharedAlbums?->toTree(null));
+		/** @var BaseCollection<int,\App\Contracts\Models\AbstractAlbum> $albumsTree */
+		$albumsTree = $albums->toTree(null);
+		/** @var BaseCollection<int,\App\Contracts\Models\AbstractAlbum> $sharedTree */
+		$sharedTree = $sharedAlbums?->toTree(null);
+
+		return new AlbumForestResource($albumsTree, $sharedTree);
 	}
 }

@@ -22,6 +22,7 @@ class WireableTest extends AbstractTestCase
 	public function testWirableDehydrate(): void
 	{
 		$trait = new class() implements Wireable {
+			/** @phpstan-use UseWireable<self> */
 			use UseWireable;
 			public object $num;
 
@@ -37,6 +38,7 @@ class WireableTest extends AbstractTestCase
 	public function testWirableHydrate(): void
 	{
 		$trait = new class() implements Wireable {
+			/** @phpstan-use UseWireable<self> */
 			use UseWireable;
 		};
 

@@ -60,7 +60,7 @@ class AlbumBuilder extends NSQueryBuilder
 	 * num_children and num_photos to the query, if a "full" model is
 	 * requested, i.e. if the selected columns are `*` or not given at all.
 	 *
-	 * @param array|string $columns
+	 * @param string[]|string $columns
 	 *
 	 * @return Album[]
 	 *
@@ -101,7 +101,7 @@ class AlbumBuilder extends NSQueryBuilder
 	/**
 	 * Get statistics of errors of the tree.
 	 *
-	 * @return array
+	 * @return array<string,int>
 	 *
 	 * @throws QueryBuilderException
 	 */

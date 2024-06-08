@@ -38,13 +38,13 @@ class AlbumQueryPolicy
 	 *
 	 * Note this makes use of the fact that when an album is NOT shared nor public, the value of is_link_required is NULL.
 	 *
-	 * @param AlbumBuilder|TagAlbumBuilder $query
+	 * @param AlbumBuilder|FixedQueryBuilder<TagAlbum>|FixedQueryBuilder<Album> $query
 	 *
-	 * @return AlbumBuilder|TagAlbumBuilder
+	 * @return AlbumBuilder|FixedQueryBuilder<TagAlbum>|FixedQueryBuilder<Album>|TagAlbumBuilder
 	 *
 	 * @throws InternalLycheeException
 	 */
-	public function applyVisibilityFilter(AlbumBuilder|FixedQueryBuilder $query): AlbumBuilder|TagAlbumBuilder
+	public function applyVisibilityFilter(AlbumBuilder|FixedQueryBuilder $query): AlbumBuilder|TagAlbumBuilder|FixedQueryBuilder
 	{
 		$this->prepareModelQueryOrFail($query);
 
@@ -379,7 +379,7 @@ class AlbumQueryPolicy
 	/**
 	 * Throws an exception if the given query does not query for an album.
 	 *
-	 * @param AlbumBuilder|FixedQueryBuilder $query
+	 * @param AlbumBuilder|FixedQueryBuilder<TagAlbum>|FixedQueryBuilder<Album> $query
 	 *
 	 * @throws QueryBuilderException
 	 * @throws InvalidQueryModelException
@@ -473,11 +473,11 @@ class AlbumQueryPolicy
 	/**
 	 * Helper to join the the computed property for the possibly logged-in user.
 	 *
-	 * @param AlbumBuilder|FixedQueryBuilder|BaseBuilder $query  query to join to
-	 * @param string                                     $second id to link with
-	 * @param string                                     $prefix prefix in the future queries
-	 * @param string                                     $type   left|inner
-	 * @param bool                                       $full   Select most columns instead of just restricted
+	 * @param AlbumBuilder|FixedQueryBuilder<TagAlbum>|FixedQueryBuilder<Album>|FixedQueryBuilder<\App\Models\Photo>|BaseBuilder $query  query to join to
+	 * @param string                                                                                                             $second id to link with
+	 * @param string                                                                                                             $prefix prefix in the future queries
+	 * @param string                                                                                                             $type   left|inner
+	 * @param bool                                                                                                               $full   Select most columns instead of just restricted
 	 *
 	 * @return void
 	 *
@@ -504,10 +504,10 @@ class AlbumQueryPolicy
 	 * Join BaseAlbum.
 	 * This aim to give lighter sub selection to make the queries run faster.
 	 *
-	 * @param AlbumBuilder|FixedQueryBuilder|BaseBuilder $query
-	 * @param string                                     $second
-	 * @param string                                     $prefix
-	 * @param bool                                       $full
+	 * @param AlbumBuilder|FixedQueryBuilder<TagAlbum>|FixedQueryBuilder<Album>|BaseBuilder $query
+	 * @param string                                                                        $second
+	 * @param string                                                                        $prefix
+	 * @param bool                                                                          $full
 	 *
 	 * @return void
 	 *

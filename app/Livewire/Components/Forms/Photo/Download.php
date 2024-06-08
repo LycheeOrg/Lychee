@@ -22,14 +22,14 @@ class Download extends Component
 	use UseValidator;
 	use Notify;
 
-	/** @var array<int,string> */
+	/** @var string[] */
 	#[Locked] public array $photoIDs;
 	public Photo $photo;
 
 	/**
 	 * This is the equivalent of the constructor for Livewire Components.
 	 *
-	 * @param array{albumID:?string,photoID?:string,photoIDs?:array<int,string>} $params to download
+	 * @param array{albumID:?string,photoID?:string,photoIDs?:string[]} $params to download
 	 *
 	 * @return void
 	 */

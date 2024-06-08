@@ -35,9 +35,9 @@ class PhotoQueryPolicy
 	 *    (cp. {@link AlbumQueryPolicy::isAccessible()}).
 	 *  - the photo is public
 	 *
-	 * @param FixedQueryBuilder $query
+	 * @param FixedQueryBuilder<Photo> $query
 	 *
-	 * @return FixedQueryBuilder
+	 * @return FixedQueryBuilder<Photo>
 	 *
 	 * @throws InternalLycheeException
 	 */
@@ -86,10 +86,10 @@ class PhotoQueryPolicy
 	 * The method simply assumes that the user has already legitimately
 	 * accessed the origin album, if the caller provides an album model.
 	 *
-	 * @param FixedQueryBuilder $query  the photo query which shall be restricted
-	 * @param Album|null        $origin the optional top album which is used as a search base
+	 * @param FixedQueryBuilder<Photo> $query  the photo query which shall be restricted
+	 * @param Album|null               $origin the optional top album which is used as a search base
 	 *
-	 * @return FixedQueryBuilder the restricted photo query
+	 * @return FixedQueryBuilder<Photo> the restricted photo query
 	 *
 	 * @throws InternalLycheeException
 	 */
@@ -188,9 +188,9 @@ class PhotoQueryPolicy
 	/**
 	 * Throws an exception if the given query does not query for a photo.
 	 *
-	 * @param FixedQueryBuilder $query         the query to prepare
-	 * @param bool              $addAlbums     if true, joins photo query with (parent) albums
-	 * @param bool              $addBaseAlbums if true, joins photos query with (parent) base albums
+	 * @param FixedQueryBuilder<Photo> $query         the query to prepare
+	 * @param bool                     $addAlbums     if true, joins photo query with (parent) albums
+	 * @param bool                     $addBaseAlbums if true, joins photos query with (parent) base albums
 	 *
 	 * @throws InternalLycheeException
 	 */

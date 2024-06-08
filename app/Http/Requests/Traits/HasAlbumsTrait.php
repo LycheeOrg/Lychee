@@ -10,12 +10,12 @@ use Illuminate\Support\Collection;
 trait HasAlbumsTrait
 {
 	/**
-	 * @var Collection<T>
+	 * @var Collection<int,T>
 	 */
 	protected Collection $albums;
 
 	/**
-	 * @return Collection<T>
+	 * @return Collection<int,T>
 	 */
 	public function albums(): Collection
 	{

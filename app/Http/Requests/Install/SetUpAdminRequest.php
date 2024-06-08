@@ -18,6 +18,9 @@ class SetUpAdminRequest extends FormRequest implements HasUsername, HasPassword
 
 	protected $errorBag = 'errors';
 
+	/**
+	 * @return array<string,array<int,string|\Illuminate\Contracts\Validation\ValidationRule>>
+	 */
 	public function rules(): array
 	{
 		return [

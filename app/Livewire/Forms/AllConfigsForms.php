@@ -15,7 +15,7 @@ class AllConfigsForms extends Form
 	#[Locked]
 	public array $configs;
 
-	/** @var array<int,string> */
+	/** @var string[] */
 	public array $values;
 
 	/**
@@ -31,7 +31,7 @@ class AllConfigsForms extends Form
 	/**
 	 * Initialize form data.
 	 *
-	 * @param Collection<Configs> $configs
+	 * @param Collection<int,Configs> $configs
 	 *
 	 * @return void
 	 */

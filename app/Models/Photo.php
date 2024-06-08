@@ -124,8 +124,10 @@ class Photo extends Model
 	use HasFactory;
 	use UTCBasedTimes;
 	use HasAttributesPatch;
+	/** @phpstan-use HasRandomIDAndLegacyTimeBasedID<Photo> */
 	use HasRandomIDAndLegacyTimeBasedID;
 	use ThrowsConsistentExceptions;
+	/** @phpstan-use HasBidirectionalRelationships */
 	use HasBidirectionalRelationships;
 	use ToArrayThrowsNotImplemented;
 
@@ -178,6 +180,9 @@ class Photo extends Model
 		return new PhotoBuilder($query);
 	}
 
+	/**
+	 * @return array<string,mixed>
+	 */
 	protected function _toArray(): array
 	{
 		return parent::toArray();
@@ -186,7 +191,7 @@ class Photo extends Model
 	/**
 	 * Return the relationship between a Photo and its Album.
 	 *
-	 * @return BelongsTo
+	 * @return BelongsTo<Album,Photo>
 	 */
 	public function album(): BelongsTo
 	{
@@ -196,7 +201,7 @@ class Photo extends Model
 	/**
 	 * Return the relationship between a Photo and its Owner.
 	 *
-	 * @return BelongsTo
+	 * @return BelongsTo<User,Photo>
 	 */
 	public function owner(): BelongsTo
 	{
@@ -420,8 +425,7 @@ class Photo extends Model
 	}
 
 	/**
-	 * @throws ModelDBException
-	 * @throws IllegalOrderOfOperationException
+	 * @param string[] $except
 	 */
 	public function replicate(?array $except = null): Photo
 	{

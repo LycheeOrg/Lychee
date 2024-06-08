@@ -79,6 +79,9 @@ class SymLink extends Model
 		'size_variant_id', // see above
 	];
 
+	/**
+	 * @return array<string,mixed>
+	 */
 	final protected function _toArray(): array
 	{
 		return parent::toArray();
@@ -94,6 +97,9 @@ class SymLink extends Model
 		return new SymLinkBuilder($query);
 	}
 
+	/**
+	 * @return BelongsTo<SizeVariant,SymLink>
+	 */
 	public function size_variant(): BelongsTo
 	{
 		return $this->belongsTo(SizeVariant::class);
@@ -102,9 +108,9 @@ class SymLink extends Model
 	/**
 	 * Scopes the passed query to all outdated symlinks.
 	 *
-	 * @param Builder $query the unscoped query
+	 * @param Builder<SizeVariant> $query the unscoped query
 	 *
-	 * @return Builder the scoped query
+	 * @return Builder<SizeVariant> the scoped query
 	 *
 	 * @throws InvalidTimeZoneException
 	 */
@@ -143,7 +149,7 @@ class SymLink extends Model
 	 * If this method cannot create the symbolic link, then this method
 	 * cancels the insert operation.
 	 *
-	 * @param Builder $query
+	 * @param Builder<SizeVariant> $query
 	 *
 	 * @return bool
 	 *

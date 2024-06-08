@@ -61,7 +61,7 @@ class Transfer extends Component
 	/**
 	 * Return a table with the user_id and associated username.
 	 *
-	 * @return array list of usernames
+	 * @return string[] list of usernames
 	 */
 	public function getUsersProperty(): array
 	{

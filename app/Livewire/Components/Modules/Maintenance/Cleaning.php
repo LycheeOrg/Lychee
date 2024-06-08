@@ -18,8 +18,10 @@ use function Safe\unlink;
  */
 class Cleaning extends Component
 {
+	/** @var string[] */
 	#[Locked] public array $result = [];
 	#[Locked] public string $path = '';
+	/** @var string[] */
 	private array $skip = ['.gitignore'];
 
 	/**

@@ -347,7 +347,7 @@ class Handler extends ExceptionHandler
 	 *
 	 * @param \Throwable $e
 	 *
-	 * @return array
+	 * @return array<string,mixed>
 	 */
 	protected function convertExceptionToArray(\Throwable $e): array
 	{
@@ -378,7 +378,7 @@ class Handler extends ExceptionHandler
 	 *
 	 * @param \Throwable|null $e
 	 *
-	 * @return ($e is null ? null : array)
+	 * @return ($e is null ? null : array<string,mixed>)
 	 */
 	private function convertDebugExceptionToArray(\Throwable|null $e): array|null
 	{

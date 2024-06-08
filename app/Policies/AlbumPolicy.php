@@ -537,9 +537,9 @@ class AlbumPolicy extends BasePolicy
 	 * Remove root and smart albums, as they get a pass.
 	 * Make IDs unique as otherwise count will fail.
 	 *
-	 * @param array $albumIDs
+	 * @param array<int,string> $albumIDs
 	 *
-	 * @return array
+	 * @return array<int,string>
 	 */
 	private function uniquify(array $albumIDs): array
 	{

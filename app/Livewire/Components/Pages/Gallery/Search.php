@@ -11,6 +11,7 @@ use App\Livewire\DTO\AlbumFlags;
 use App\Livewire\DTO\AlbumRights;
 use App\Livewire\DTO\Layouts;
 use App\Livewire\DTO\PhotoFlags;
+use App\Livewire\DTO\ProtectedCollection;
 use App\Livewire\DTO\SessionFlags;
 use App\Models\Album as ModelsAlbum;
 use App\Models\Configs;
@@ -35,8 +36,6 @@ class Search extends BaseAlbumComponent
 
 	/** @var LengthAwarePaginator<Photo> */
 	private LengthAwarePaginator $photos;
-	/** @var Collection<ModelsAlbum> */
-	private Collection $albums;
 
 	#[Locked]
 	#[Url(history: true)]
@@ -56,8 +55,9 @@ class Search extends BaseAlbumComponent
 		$this->layouts = new Layouts();
 		$this->albumSearch = resolve(AlbumSearch::class);
 		$this->photoSearch = resolve(PhotoSearch::class);
+		$this->albumsCollection = new ProtectedCollection(type: 'album', is_loaded: true, collection: collect([]));
+		$this->photosCollection = new ProtectedCollection(type: 'photo');
 		$this->photos = new LengthAwarePaginator([], 0, 200);
-		$this->albums = collect([]);
 		$this->num_albums = 0;
 		$this->num_photos = 0;
 		$this->search_minimum_length_required = Configs::getValueAsInt('search_minimum_length_required');
@@ -87,6 +87,7 @@ class Search extends BaseAlbumComponent
 			$album = $this->albumFactory->findAbstractAlbumOrFail($albumId);
 			if ($album instanceof ModelsAlbum) {
 				$this->album = $album;
+				$this->flags->cover_id = $this->album->cover_id;
 			} else {
 				$this->album = null;
 			}
@@ -126,14 +127,14 @@ class Search extends BaseAlbumComponent
 				->paginate(Configs::getValueAsInt('search_pagination_limit'))
 				->withQueryString();
 			$this->photos = $photoResults;
-			/** @var Collection<ModelsAlbum> $albumResults */
 			$albumResults = $this->albumSearch->queryAlbums($this->terms);
-			$this->albums = $albumResults;
-			$this->num_albums = $this->albums->count();
+			$this->albumsCollection->set($albumResults);
+			$this->num_albums = $this->albumsCollection->get()->count();
 			$this->num_photos = $this->photos->count();
 			$this->albumId = '';
 			$this->photoId = '';
 		}
+		/** @var Collection<int,ModelsAlbum> $albumResults */
 
 		return view('livewire.pages.gallery.search');
 	}
@@ -141,21 +142,11 @@ class Search extends BaseAlbumComponent
 	/**
 	 * Return the photos.
 	 *
-	 * @return Collection<Photo>
+	 * @return Collection<int,Photo>
 	 */
 	public function getPhotosProperty(): Collection
 	{
 		return collect($this->photos->items());
-	}
-
-	public function getAlbumsProperty(): ?Collection
-	{
-		return $this->albums;
-	}
-
-	public function getAlbumIDsProperty(): array
-	{
-		return $this->albums->map(fn ($v, $k) => $v->id)->all();
 	}
 
 	// For now, simple

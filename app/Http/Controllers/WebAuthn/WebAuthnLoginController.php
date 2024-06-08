@@ -81,7 +81,7 @@ class WebAuthnLoginController
 	/**
 	 * Check if the credentials are for a public key signed challenge.
 	 *
-	 * @param array $credentials
+	 * @param array<string,string> $credentials
 	 *
 	 * @return bool
 	 */
@@ -93,7 +93,7 @@ class WebAuthnLoginController
 	/**
 	 * Retrieve a user by the given credentials.
 	 *
-	 * @param array $credentials
+	 * @param array<string,string> $credentials
 	 *
 	 * @return User|null
 	 */

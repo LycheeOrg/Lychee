@@ -86,7 +86,7 @@ class Delete extends Action
 			// find all photos in those and their descendants
 			// Only load necessary attributes for tree; in particular avoid
 			// loading expensive `min_taken_at` and `max_taken_at`.
-			/** @var Collection<Album> $albums */
+			/** @var Collection<int,Album> $albums */
 			$albums = Album::query()
 				->without(['cover', 'thumb'])
 				->select(['id', 'parent_id', '_lft', '_rgt', 'track_short_path'])
@@ -182,7 +182,7 @@ class Delete extends Action
 	 * The latter is more efficient, because we do not reload models
 	 * from the DB.
 	 *
-	 * @param Collection<Album> $albums
+	 * @param Collection<int,Album> $albums
 	 *
 	 * @return void
 	 *

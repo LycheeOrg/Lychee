@@ -12,6 +12,8 @@ class WebAuthnManageController
 {
 	/**
 	 * @throws UnauthenticatedException
+	 *
+	 * @phpstan-ignore-next-line unused...
 	 */
 	public function list(ListCredentialsRequest $request): Collection
 	{

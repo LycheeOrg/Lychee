@@ -14,7 +14,7 @@ class SetLicenseDefaultSetting extends BaseConfigDropDown
 	/**
 	 * We have to use this mapping to provide easilly readable license type.
 	 *
-	 * @return array
+	 * @return array<string,string>
 	 */
 	public function getOptionsProperty(): array
 	{

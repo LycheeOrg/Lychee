@@ -37,7 +37,7 @@ class SetPhotoSortingSetting extends BaseConfigDoubleDropDown
 	/**
 	 * Give the columns options.
 	 *
-	 * @return array
+	 * @return array<string,string>
 	 */
 	public function getOptions1Property(): array
 	{
@@ -47,7 +47,7 @@ class SetPhotoSortingSetting extends BaseConfigDoubleDropDown
 	/**
 	 * Ordering ascending or descending.
 	 *
-	 * @return array
+	 * @return array<string,string>
 	 */
 	public function getOptions2Property(): array
 	{

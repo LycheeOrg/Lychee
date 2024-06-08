@@ -51,7 +51,7 @@ return new class() extends Migration {
 	/**
 	 * Cleaning up entries which do not exists anymore.
 	 *
-	 * @param array $values
+	 * @param array{key:string,value:string,cat:string,type_range:string,confidentiality:string}[] $values
 	 */
 	private function cleanup(array &$values): void
 	{
@@ -90,7 +90,7 @@ return new class() extends Migration {
 	/**
 	 * Update the fields which are missing, set up the correct values for columns.
 	 *
-	 * @param array $default_values
+	 * @param array{key:string,value:string,cat:string,type_range:string,confidentiality:string}[] $default_values
 	 */
 	private function update_missing_fields(array &$default_values): void
 	{
@@ -116,6 +116,7 @@ return new class() extends Migration {
 		defined('TERNARY') or define('TERNARY', '0|1|2');
 		defined('DISABLED') or define('DISABLED', '');
 
+		/** @var array{key:string,value:string,cat:string,type_range:string,confidentiality:string}[] */
 		$default_values = [
 			[
 				'key' => 'version',

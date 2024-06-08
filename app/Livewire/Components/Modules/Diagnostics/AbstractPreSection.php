@@ -33,7 +33,7 @@ abstract class AbstractPreSection extends Component
 	/**
 	 * Defined the data to be displayed.
 	 *
-	 * @return array<int,string>
+	 * @return string[]
 	 */
 	abstract public function getDataProperty(): array;
 

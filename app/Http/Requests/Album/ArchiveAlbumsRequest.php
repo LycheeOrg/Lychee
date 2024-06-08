@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Gate;
  */
 class ArchiveAlbumsRequest extends BaseApiRequest implements HasAlbums
 {
+	/** @use HasAlbumsTrait<AbstractAlbum> */
 	use HasAlbumsTrait;
 
 	/**

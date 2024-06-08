@@ -20,6 +20,14 @@ use Illuminate\Support\Collection;
  */
 class TopAlbumsResource extends JsonResource
 {
+	/**
+	 * @param Collection<int,\App\SmartAlbums\BaseSmartAlbum> $smart_albums
+	 * @param Collection<int,\App\Models\TagAlbum>            $tag_albums
+	 * @param Collection<int,\App\Models\Album>               $albums
+	 * @param Collection<int,\App\Models\Album>|null          $shared_albums
+	 *
+	 * @return void
+	 */
 	public function __construct(
 		public Collection $smart_albums,
 		public Collection $tag_albums,
@@ -37,7 +45,7 @@ class TopAlbumsResource extends JsonResource
 	 *
 	 * @param \Illuminate\Http\Request $request
 	 *
-	 * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
+	 * @return array<string,mixed>|\Illuminate\Contracts\Support\Arrayable<string,mixed>|\JsonSerializable
 	 */
 	public function toArray($request)
 	{

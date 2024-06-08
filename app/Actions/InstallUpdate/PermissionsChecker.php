@@ -6,16 +6,11 @@ use function Safe\preg_match;
 
 class PermissionsChecker
 {
-	protected array $results = [];
-
-	/**
-	 * Set the result array permissions and errors.
-	 */
-	public function __construct()
-	{
-		$this->results['permissions'] = [];
-		$this->results['errors'] = null;
-	}
+	/** @var array{"errors":bool|null,"permissions":array{"folder":string,"permission":(string|int)[][],"isSet":int}[]} */
+	protected array $results = [
+		'permissions' => [],
+		'errors' => null,
+	];
 
 	/**
 	 * Return true if we are stupid enough to use Windows.
@@ -28,9 +23,9 @@ class PermissionsChecker
 	/**
 	 * Check for the folders permissions.
 	 *
-	 * @param string[] $folders
+	 * @param array<string,string> $folders
 	 *
-	 * @return array
+	 * @return array{"errors":bool|null,"permissions":array{"folder":string,"permission":(string|int)[][],"isSet":int}[]}
 	 */
 	public function check(array $folders): array
 	{
@@ -87,6 +82,11 @@ class PermissionsChecker
 
 	/**
 	 *  map.
+	 *
+	 * @param string $permissions
+	 * @param int    $areSet
+	 *
+	 * @return (string|int)[][]
 	 */
 	private function map_perm_set(string $permissions, int $areSet): array
 	{

@@ -19,6 +19,9 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 use Livewire\Component;
 
+/**
+ * @phpstan-type TUser array{id:int,username:string}
+ */
 class ShareWith extends Component
 {
 	use AuthorizesRequests;
@@ -27,6 +30,7 @@ class ShareWith extends Component
 
 	public BaseAlbum $album;
 
+	/** @var AccessPermission[] */
 	public array $perms;
 
 	public ?string $search = null; // ! wired
@@ -72,7 +76,7 @@ class ShareWith extends Component
 	 * - Not the admins (they already have all access)
 	 * - Not users which have already been shared.
 	 *
-	 * @return array
+	 * @return TUser[]
 	 *
 	 * @throws UnauthorizedException
 	 * @throws QueryBuilderException

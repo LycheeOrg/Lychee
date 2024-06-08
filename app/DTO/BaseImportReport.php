@@ -15,6 +15,8 @@ namespace App\DTO;
  * Hence, errors cannot be reported using the normal exception handling
  * mechanism, but must be reported "inline" within the streamed response
  * as an event report.
+ *
+ * @extends AbstractDTO<string>
  */
 abstract class BaseImportReport extends AbstractDTO
 {

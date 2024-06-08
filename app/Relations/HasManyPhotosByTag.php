@@ -30,6 +30,7 @@ class HasManyPhotosByTag extends BaseHasManyPhotos
 	public function addConstraints(): void
 	{
 		if (static::$constraints) {
+			/** @phpstan-ignore-next-line */
 			$this->addEagerConstraints([$this->parent]);
 		}
 	}
@@ -42,7 +43,7 @@ class HasManyPhotosByTag extends BaseHasManyPhotos
 	 * The unified result of the query is mapped to the specific albums
 	 * by {@link HasManyPhotosByTag::match()}.
 	 *
-	 * @param array $albums an array of {@link \App\Models\TagAlbum} whose photos are loaded
+	 * @param TagAlbum[] $albums an array of {@link \App\Models\TagAlbum} whose photos are loaded
 	 *
 	 * @return void
 	 *
@@ -73,11 +74,11 @@ class HasManyPhotosByTag extends BaseHasManyPhotos
 	 * This method is called by the framework after the unified result of
 	 * photos has been fetched by {@link HasManyPhotosByTag::addEagerConstraints()}.
 	 *
-	 * @param array      $albums   the list of owning albums
-	 * @param Collection $photos   collection of {@link Photo} models which needs to be mapped to the albums
-	 * @param string     $relation the name of the relation
+	 * @param TagAlbum[]                        $albums   the list of owning albums
+	 * @param Collection<int,\App\Models\Photo> $photos   collection of {@link Photo} models which needs to be mapped to the albums
+	 * @param string                            $relation the name of the relation
 	 *
-	 * @return array
+	 * @return TagAlbum[]
 	 *
 	 * @throws NotImplementedException
 	 */

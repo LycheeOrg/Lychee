@@ -29,11 +29,13 @@ use Illuminate\Database\Eloquent\Relations\Relation;
  * @property Collection<int,Photo>            $photos
  * @property Thumb|null                       $thumb
  * @property Collection<int,AccessPermission> $access_permissions
+ *
+ * @extends Arrayable<string,string|int|float|string[]|null>
  */
 interface AbstractAlbum extends \JsonSerializable, Arrayable, Jsonable
 {
 	/**
-	 * @return Relation|Builder
+	 * @return Relation<Photo>|Builder<Photo>
 	 */
 	public function photos(): Relation|Builder;
 

@@ -21,7 +21,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
 /**
- * @mixin Builder
+ * @mixin Builder<Photo>
+ *
+ * @extends Relation<Photo>
  */
 class HasAlbumThumb extends Relation
 {
@@ -44,6 +46,9 @@ class HasAlbumThumb extends Relation
 		);
 	}
 
+	/**
+	 * @return FixedQueryBuilder<Photo>
+	 */
 	protected function getRelationQuery(): FixedQueryBuilder
 	{
 		/**
@@ -228,10 +233,10 @@ class HasAlbumThumb extends Relation
 	}
 
 	/**
-	 * @param array<Album> $models   an array of albums models whose thumbnails shall be initialized
-	 * @param string       $relation the name of the relation from the parent to the child models
+	 * @param array<int,Album> $models   an array of albums models whose thumbnails shall be initialized
+	 * @param string           $relation the name of the relation from the parent to the child models
 	 *
-	 * @return array the array of album models
+	 * @return array<int,Album> the array of album models
 	 */
 	public function initRelation(array $models, $relation): array
 	{
@@ -245,16 +250,17 @@ class HasAlbumThumb extends Relation
 	/**
 	 * Match the eagerly loaded results to their parents.
 	 *
-	 * @param array<Album> $models   an array of parent models
-	 * @param Collection   $results  the unified collection of all child models of all parent models
-	 * @param string       $relation the name of the relation from the parent to the child models
+	 * @param array<int,Album>      $models   an array of parent models
+	 * @param Collection<int,Photo> $results  the unified collection of all child models of all parent models
+	 * @param string                $relation the name of the relation from the parent to the child models
 	 *
-	 * @return array
+	 * @return array<int,Album>
 	 */
 	public function match(array $models, Collection $results, $relation): array
 	{
 		$dictionary = $results->mapToDictionary(function ($result) {
-			return [$result->covered_album_id => $result]; // @phpstan-ignore-line
+			/** @phpstan-ignore-next-line undefied property */
+			return [$result->covered_album_id => $result];
 		})->all();
 
 		// Once we have the dictionary we can simply spin through the parent models to

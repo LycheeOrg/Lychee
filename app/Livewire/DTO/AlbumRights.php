@@ -8,8 +8,12 @@ use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Wireable;
 
+/**
+ * @implements Wireable<AlbumRights>
+ */
 class AlbumRights implements Wireable
 {
+	/** @phpstan-use UseWireable<AlbumRights> */
 	use UseWireable;
 
 	public function __construct(

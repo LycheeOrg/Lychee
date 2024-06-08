@@ -30,7 +30,7 @@ class Errors extends Component
 	 * Computable property to access the errors.
 	 * If we are not ready to load, we return an empty array.
 	 *
-	 * @return array
+	 * @return array<int,array{color:string,type:string,line:string}>
 	 */
 	public function getDataProperty(): array
 	{

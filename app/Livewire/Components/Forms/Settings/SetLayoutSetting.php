@@ -14,7 +14,7 @@ class SetLayoutSetting extends BaseConfigDropDown
 	/**
 	 * Provides the different options.
 	 *
-	 * @return array
+	 * @return array<string,string>
 	 */
 	public function getOptionsProperty(): array
 	{

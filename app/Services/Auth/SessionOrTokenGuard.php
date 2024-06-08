@@ -109,6 +109,8 @@ class SessionOrTokenGuard extends SessionGuard
 	 * {@link \Illuminate\Auth\AuthManager::createSessionDriver()} which
 	 * creates the Laravel Session guard.
 	 *
+	 * @param array<string,mixed> $config
+	 *
 	 * @throws BindingResolutionException
 	 */
 	public static function createGuard(Application $app, string $name, array $config): self

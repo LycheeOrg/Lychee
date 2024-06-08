@@ -183,7 +183,7 @@ class Exec
 	 *
 	 * @param string $path
 	 *
-	 * @return array
+	 * @return array<int,string>
 	 *
 	 * @throws FileOperationException
 	 */
@@ -368,7 +368,7 @@ class Exec
 	}
 
 	/**
-	 * @param array $my_array
+	 * @param array<int,string> $my_array
 	 *
 	 * @return string
 	 */

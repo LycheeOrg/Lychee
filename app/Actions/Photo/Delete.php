@@ -98,7 +98,7 @@ readonly class Delete
 	 * Size variants which belong to a photo which has a duplicate that is
 	 * not going to be deleted are skipped.
 	 *
-	 * @param array $photoIDs the photo IDs
+	 * @param array<int,string> $photoIDs the photo IDs
 	 *
 	 * @return void
 	 *
@@ -139,7 +139,7 @@ readonly class Delete
 	 * Size variants which belong to a photo which has a duplicate that is
 	 * not going to be deleted are skipped.
 	 *
-	 * @param array $albumIDs the album IDs
+	 * @param array<int,string> $albumIDs the album IDs
 	 *
 	 * @return void
 	 *
@@ -180,7 +180,7 @@ readonly class Delete
 	 * Live photos which have a duplicate that is not going to be deleted are
 	 * skipped.
 	 *
-	 * @param array $photoIDs the photo IDs
+	 * @param array<int,string> $photoIDs the photo IDs
 	 *
 	 * @return void
 	 *
@@ -229,7 +229,7 @@ readonly class Delete
 	 * Live photos which have a duplicate that is not going to be deleted are
 	 * skipped.
 	 *
-	 * @param array $albumIDs the album IDs
+	 * @param array<int,string> $albumIDs the album IDs
 	 *
 	 * @return void
 	 *
@@ -274,7 +274,7 @@ readonly class Delete
 	/**
 	 * Collects all symbolic links which shall be deleted from disk.
 	 *
-	 * @param array $photoIDs the photo IDs
+	 * @param array<int,string> $photoIDs the photo IDs
 	 *
 	 * @return void
 	 *
@@ -304,7 +304,7 @@ readonly class Delete
 	/**
 	 * Collects all symbolic links which shall be deleted from disk.
 	 *
-	 * @param array $albumIDs the album IDs
+	 * @param array<int,string> $albumIDs the album IDs
 	 *
 	 * @return void
 	 *
@@ -338,8 +338,8 @@ readonly class Delete
 	 * The records are deleted in such an order that foreign keys are not
 	 * broken.
 	 *
-	 * @param array $photoIDs the photo IDs
-	 * @param array $albumIDs the album IDs
+	 * @param array<int,string> $photoIDs the photo IDs
+	 * @param array<int,string> $albumIDs the album IDs
 	 *
 	 * @return void
 	 *

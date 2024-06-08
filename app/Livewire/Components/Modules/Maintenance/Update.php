@@ -18,6 +18,7 @@ use Livewire\Component;
  */
 class Update extends Component
 {
+	/** @var string[] */
 	#[Locked] public array $result = [];
 	#[Locked] public string $channelName;
 	#[Locked] public string $info;

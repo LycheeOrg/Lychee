@@ -13,6 +13,10 @@ use Illuminate\Database\Eloquent\JsonEncodingException;
  * We use DTOs as result types for some controller methods which do not
  * return proper models.
  * Thereby we avoid using associative arrays and have a bit more type safety.
+ *
+ * @template TValue
+ *
+ * @extends Arrayable<string,TValue>
  */
 interface DTO extends Arrayable, Jsonable, \JsonSerializable
 {
@@ -34,7 +38,7 @@ interface DTO extends Arrayable, Jsonable, \JsonSerializable
 	 *
 	 * @see Arrayable::toArray()
 	 *
-	 * @return array The serialized properties of this object
+	 * @return array<mixed,mixed> The serialized properties of this object
 	 *
 	 * @throws \JsonException
 	 */

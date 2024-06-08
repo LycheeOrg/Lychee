@@ -36,7 +36,7 @@ class ConfigurationResource extends JsonResource
 	 *
 	 * @param \Illuminate\Http\Request $request
 	 *
-	 * @return array
+	 * @return array<string,mixed>
 	 */
 	public function toArray($request): array
 	{
@@ -65,6 +65,7 @@ class ConfigurationResource extends JsonResource
 			}
 		}
 
+		/** @phpstan-ignore-next-line */
 		return [
 			// Computed
 			'lang_available' => $this->when(Auth::check(), config('app.supported_locale')),

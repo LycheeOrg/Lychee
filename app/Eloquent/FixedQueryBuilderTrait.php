@@ -168,13 +168,13 @@ trait FixedQueryBuilderTrait
 	/**
 	 * Add a subquery join clause to the query.
 	 *
-	 * @param \Closure|\Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder|string $query
-	 * @param string                                                                                   $as
-	 * @param \Closure|string                                                                          $first
-	 * @param string|null                                                                              $operator
-	 * @param string|null                                                                              $second
-	 * @param string                                                                                   $type
-	 * @param bool                                                                                     $where
+	 * @param \Closure|\Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder<TModelClass>|string $query
+	 * @param string                                                                                                $as
+	 * @param \Closure|string                                                                                       $first
+	 * @param string|null                                                                                           $operator
+	 * @param string|null                                                                                           $second
+	 * @param string                                                                                                $type
+	 * @param bool                                                                                                  $where
 	 *
 	 * @return $this
 	 *
@@ -219,8 +219,8 @@ trait FixedQueryBuilderTrait
 	/**
 	 * Add an "order by" clause to the query.
 	 *
-	 * @param \Closure|Builder|BaseBuilder|Expression|string $column
-	 * @param string                                         $direction
+	 * @param \Closure|Builder<TModelClass>|BaseBuilder|Expression|string $column
+	 * @param string                                                      $direction
 	 *
 	 * @return $this
 	 *

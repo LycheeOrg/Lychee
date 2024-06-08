@@ -128,8 +128,8 @@ class Archive
 	}
 
 	/**
-	 * @param Collection          $photos
-	 * @param DownloadVariantType $downloadVariant
+	 * @param Collection<int,Photo> $photos
+	 * @param DownloadVariantType   $downloadVariant
 	 *
 	 * @return StreamedResponse
 	 *

@@ -8,12 +8,28 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @template TRelatedModel of \Illuminate\Database\Eloquent\Model
+ * @template TParentModel of \Illuminate\Database\Eloquent\Model
+ *
+ * @extends HasMany<TRelatedModel>
+ */
 class HasManyBidirectionally extends HasMany implements BidirectionalRelation
 {
 	use BidirectionalRelationTrait;
 
+	/**
+	 * @param Builder<TRelatedModel> $query
+	 * @param TParentModel           $parent
+	 * @param string                 $foreignKey
+	 * @param string                 $localKey
+	 * @param string                 $foreignMethodName
+	 *
+	 * @return void
+	 */
 	public function __construct(Builder $query, Model $parent, string $foreignKey, string $localKey, string $foreignMethodName)
 	{
+		/** @phpstan-ignore-next-line */
 		parent::__construct($query, $parent, $foreignKey, $localKey);
 		$this->foreignMethodName = $foreignMethodName;
 	}
@@ -26,11 +42,11 @@ class HasManyBidirectionally extends HasMany implements BidirectionalRelation
 	 * but additionally sets the reverse association of the child object
 	 * back to its parent object.
 	 *
-	 * @param array      $models   an array of parent models
-	 * @param Collection $results  the unified collection of all child models of all parent models
-	 * @param string     $relation the name of the relation from the parent to the child models
+	 * @param TParentModel[]                $models   an array of parent models
+	 * @param Collection<int,TRelatedModel> $results  the unified collection of all child models of all parent models
+	 * @param string                        $relation the name of the relation from the parent to the child models
 	 *
-	 * @return array
+	 * @return TParentModel[]
 	 */
 	public function match(array $models, Collection $results, $relation): array
 	{
@@ -41,7 +57,7 @@ class HasManyBidirectionally extends HasMany implements BidirectionalRelation
 		// matching very convenient and easy work. Then we'll just return them.
 		foreach ($models as $model) {
 			if (isset($dictionary[$key = $this->getDictionaryKey($model->getAttribute($this->localKey))])) {
-				/** @var Collection $childrenOfModel */
+				/** @var Collection<int,TRelatedModel> $childrenOfModel */
 				$childrenOfModel = $this->getRelationValue($dictionary, $key, 'many');
 				$model->setRelation($relation, $childrenOfModel);
 				// This is the newly added code which sets this method apart

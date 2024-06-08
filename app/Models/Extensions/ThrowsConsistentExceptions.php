@@ -45,7 +45,7 @@ trait ThrowsConsistentExceptions
 	abstract public function toArray();
 
 	/**
-	 * @param array $options
+	 * @param array<string,bool> $options
 	 *
 	 * @return bool always return true
 	 *
@@ -104,7 +104,7 @@ trait ThrowsConsistentExceptions
 	/**
 	 * Serializes this object into an array.
 	 *
-	 * @return array The serialized properties of this object
+	 * @return array<string,mixed> The serialized properties of this object
 	 *
 	 * @throws \JsonException
 	 *

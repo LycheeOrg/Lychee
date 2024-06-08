@@ -15,6 +15,8 @@ use Illuminate\Database\QueryException;
 /**
  * Trait HasTimeBasedID.
  *
+ * @template TModel of \Illuminate\Database\Eloquent\Model
+ *
  * Inspired by https://emymbenoun.medium.com/how-to-use-uuids-instead-of-auto-increment-ids-in-your-laravel-app-2e6cc045f6c1.
  */
 trait HasRandomIDAndLegacyTimeBasedID
@@ -72,7 +74,7 @@ trait HasRandomIDAndLegacyTimeBasedID
 	 * The method is mostly copied & pasted from {@link \Illuminate\Database\Eloquent\Model::performInsert()}
 	 * with adoptions regarding key generation.
 	 *
-	 * @param Builder $query
+	 * @param Builder<TModel> $query
 	 *
 	 * @return bool true on success
 	 *

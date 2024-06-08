@@ -39,7 +39,7 @@ class PhotoResource extends JsonResource
 	 * @param \Illuminate\Http\Request $request
 	 * @param Request                  $request
 	 *
-	 * @return array|Arrayable|\JsonSerializable
+	 * @return array<string,mixed>|Arrayable<string,mixed>|\JsonSerializable
 	 */
 	public function toArray($request)
 	{
@@ -107,6 +107,11 @@ class PhotoResource extends JsonResource
 		];
 	}
 
+	/**
+	 * @param SizeVariant|null $original
+	 *
+	 * @return array<string,mixed>
+	 */
 	private function preformatted(?SizeVariant $original): array
 	{
 		$overlay_date_format = Configs::getValueAsString('date_format_photo_overlay');
@@ -136,6 +141,9 @@ class PhotoResource extends JsonResource
 		];
 	}
 
+	/**
+	 * @return array<string,mixed>
+	 */
 	private function precomputed(): array
 	{
 		return [

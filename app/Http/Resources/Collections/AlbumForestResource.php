@@ -11,6 +11,12 @@ use Illuminate\Support\Collection;
  */
 class AlbumForestResource extends JsonResource
 {
+	/**
+	 * @param Collection<int,\App\Contracts\Models\AbstractAlbum>      $albums
+	 * @param Collection<int,\App\Contracts\Models\AbstractAlbum>|null $sharedAlbums
+	 *
+	 * @return void
+	 */
 	public function __construct(
 		public Collection $albums,
 		public ?Collection $sharedAlbums = null
@@ -27,7 +33,7 @@ class AlbumForestResource extends JsonResource
 	 *
 	 * @param \Illuminate\Http\Request $request
 	 *
-	 * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
+	 * @return array<string,mixed>|\Illuminate\Contracts\Support\Arrayable<string,mixed>|\JsonSerializable
 	 */
 	public function toArray($request)
 	{

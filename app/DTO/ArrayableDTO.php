@@ -9,13 +9,15 @@ use Illuminate\Contracts\Support\Arrayable;
  * In some cases, when a DTO does not need to apply casts on attributes
  * we can directly make use of a reflection which returns an array containing
  * all the PUBLIC attributes of the DTO.
+ *
+ * @extends AbstractDTO<mixed>
  */
 class ArrayableDTO extends AbstractDTO
 {
 	/**
 	 * By default, we return an array containing the PUBLIC attributes of the DTO.
 	 *
-	 * @return array the serialized properties of this object
+	 * @return array<string,mixed> the serialized properties of this object
 	 */
 	public function toArray(): array
 	{

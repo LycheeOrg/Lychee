@@ -11,6 +11,7 @@ use App\Livewire\DTO\AlbumFormatted;
 use App\Livewire\DTO\AlbumRights;
 use App\Livewire\DTO\Layouts;
 use App\Livewire\DTO\PhotoFlags;
+use App\Livewire\DTO\ProtectedCollection;
 use App\Livewire\DTO\SessionFlags;
 use App\Livewire\Traits\AlbumsPhotosContextMenus;
 use App\Livewire\Traits\Notify;
@@ -41,9 +42,14 @@ abstract class BaseAlbumComponent extends Component
 
 	protected Layouts $layouts;
 
+	/** @var ProtectedCollection<ModelsAlbum> */
+	protected ?ProtectedCollection $albumsCollection;
+
+	/** @var ProtectedCollection<\App\Models\Photo> */
+	protected ?ProtectedCollection $photosCollection;
+
 	#[Locked] public ?string $albumId = null;
 	#[Locked] public ?string $photoId = null;
-	#[Locked] public ?string $header_url = null;
 	#[Locked] public int $num_albums = 0;
 	#[Locked] public int $num_photos = 0;
 	#[Locked] public int $num_users = 0;
@@ -72,23 +78,32 @@ abstract class BaseAlbumComponent extends Component
 	/**
 	 * Return the photoIDs (no need to wait to compute the geometry).
 	 *
-	 * @return Collection<Photo>
+	 * @return Collection<int,Photo>|LengthAwarePaginator<Photo>
 	 */
-	abstract public function getPhotosProperty(): Collection|LengthAwarePaginator;
+	public function getPhotosProperty(): Collection|LengthAwarePaginator
+	{
+		return $this->photosCollection->get();
+	}
 
 	/**
 	 * Return the albums.
 	 *
-	 * @return Collection<ModelsAlbum>|null
+	 * @return Collection<int,ModelsAlbum>|null
 	 */
-	abstract public function getAlbumsProperty(): Collection|null;
+	final public function getAlbumsProperty(): Collection|null
+	{
+		return $this->albumsCollection->get();
+	}
 
 	/**
 	 * Used in the JS front-end to manage the selected albums.
 	 *
-	 * @return array
+	 * @return string[]
 	 */
-	abstract public function getAlbumIDsProperty(): array;
+	final public function getAlbumIDsProperty(): array
+	{
+		return $this->albumsCollection->get()?->map(fn ($v, $_k) => $v->id)?->all() ?? [];
+	}
 
 	/**
 	 * Back property used to retrieve the URL to step back and back arrow.
@@ -124,7 +139,7 @@ abstract class BaseAlbumComponent extends Component
 	/**
 	 * Getter for the license types in the front-end.
 	 *
-	 * @return array associated array of license type and their localization
+	 * @return array<string,string> associated array of license type and their localization
 	 */
 	final public function getLicensesProperty(): array
 	{
