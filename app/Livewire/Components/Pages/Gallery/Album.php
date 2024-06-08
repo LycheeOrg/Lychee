@@ -116,6 +116,9 @@ class Album extends BaseAlbumComponent implements Reloadable
 				can_rotate: Configs::getValueAsBool('editor_enabled'),
 				can_edit: $this->rights->can_edit,
 			);
+		} else {
+			$this->albumsCollection->set(null);
+			$this->photosCollection->set(collect([]));
 		}
 
 		return view('livewire.pages.gallery.album');
