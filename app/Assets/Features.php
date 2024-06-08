@@ -110,7 +110,6 @@ final class Features
 	 */
 	public static function when(string|array $featureNames, mixed $valIfTrue, mixed $valIfFalse): mixed
 	{
-		// Sadly phpstan does not do the type inference as it would do in a if statement.
 		$retValue = match (is_array($featureNames)) {
 			true => self::allAreActive($featureNames) ? $valIfTrue : $valIfFalse,
 			false => self::active($featureNames) ? $valIfTrue : $valIfFalse,
