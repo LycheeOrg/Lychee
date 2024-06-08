@@ -121,6 +121,7 @@ class AppServiceProvider extends ServiceProvider
 
 		try {
 			$lang = Configs::getValueAsString('lang');
+			/** @disregard P1013 Undefined method setLocale() (stupid intelephense) */
 			app()->setLocale($lang);
 		} catch (\Throwable $e) {
 			/** Ignore.
@@ -177,7 +178,7 @@ class AppServiceProvider extends ServiceProvider
 		});
 
 		Livewire::setUpdateRoute(function ($handle) use ($dir_url) {
-			return Route::post($dir_url . 'livewire/update', $handle)->middleware('web');
+			return Route::post($dir_url . 'livewire/update', $handle)->middleware('web-livewire');
 		});
 	}
 

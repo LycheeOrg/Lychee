@@ -14,6 +14,7 @@ use App\Livewire\DTO\AlbumFormatted;
 use App\Livewire\DTO\AlbumRights;
 use App\Livewire\DTO\Layouts;
 use App\Livewire\DTO\PhotoFlags;
+use App\Livewire\DTO\ProtectedCollection;
 use App\Livewire\DTO\SessionFlags;
 use App\Models\Album as ModelsAlbum;
 use App\Models\Configs;
@@ -24,7 +25,6 @@ use App\Models\User;
 use App\Policies\AlbumPolicy;
 use App\Policies\PhotoPolicy;
 use Illuminate\Database\Eloquent\RelationNotFoundException;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
@@ -41,6 +41,7 @@ use Livewire\Attributes\Renderless;
 class Album extends BaseAlbumComponent implements Reloadable
 {
 	private AlbumFactory $albumFactory;
+	private AlbumFormatted $formatted;
 
 	#[Locked] public bool $is_search_accessible = false;
 	public ?AbstractAlbum $album = null;
@@ -54,6 +55,8 @@ class Album extends BaseAlbumComponent implements Reloadable
 	{
 		$this->albumFactory = resolve(AlbumFactory::class);
 		$this->layouts = new Layouts();
+		$this->albumsCollection = new ProtectedCollection(type: 'album');
+		$this->photosCollection = new ProtectedCollection(type: 'photo');
 	}
 
 	public function mount(string $albumId, string $photoId = ''): void
@@ -74,16 +77,26 @@ class Album extends BaseAlbumComponent implements Reloadable
 	{
 		$this->sessionFlags = SessionFlags::get();
 		$this->rights = AlbumRights::make($this->album);
+		$this->num_albums = 0;
+		$this->num_albums = 0;
 
 		if ($this->flags->is_accessible) {
+			$this->formatted = new AlbumFormatted($this->album, $this->fetchHeaderUrl()?->url);
 			$this->num_users = User::count();
-			$this->header_url ??= $this->fetchHeaderUrl()?->url;
-			$this->num_albums = $this->album instanceof ModelsAlbum ? $this->album->children->count() : 0;
-			$this->num_photos = $this->album->photos->count();
+
+			$this->photosCollection->set($this->album->photos);
+			$this->num_photos = $this->photosCollection->get()->count();
 
 			// No photos, no frame
 			if ($this->num_photos === 0) {
 				$this->flags->is_mod_frame_enabled = false;
+			}
+
+			if ($this->album instanceof ModelsAlbum) {
+				$this->albumsCollection->set($this->album->children()->getResults());
+				$this->num_albums = $this->albumsCollection->get()->count();
+			} else {
+				$this->albumsCollection->set(null);
 			}
 
 			$is_latitude_longitude_found = false;
@@ -103,6 +116,9 @@ class Album extends BaseAlbumComponent implements Reloadable
 				can_rotate: Configs::getValueAsBool('editor_enabled'),
 				can_edit: $this->rights->can_edit,
 			);
+		} else {
+			$this->albumsCollection->set(null);
+			$this->photosCollection->set(collect([]));
 		}
 
 		return view('livewire.pages.gallery.album');
@@ -131,41 +147,6 @@ class Album extends BaseAlbumComponent implements Reloadable
 		if (Auth::check() && !$this->flags->is_accessible && !$this->flags->is_password_protected) {
 			$this->redirect(route('livewire-gallery'));
 		}
-	}
-
-	/**
-	 * Return the photoIDs.
-	 *
-	 * @return Collection<int,Photo>
-	 */
-	public function getPhotosProperty(): Collection
-	{
-		return $this->album->photos;
-	}
-
-	/**
-	 * @return Collection<int,ModelsAlbum>|null
-	 */
-	public function getAlbumsProperty(): Collection|null
-	{
-		if ($this->album instanceof ModelsAlbum) {
-			/** @var Collection<int,ModelsAlbum> $res */
-			$res = $this->album->children()->getResults();
-
-			return $res;
-		}
-
-		return null;
-	}
-
-	/**
-	 * Used in the JS front-end to manage the selected albums.
-	 *
-	 * @return string[]
-	 */
-	public function getAlbumIDsProperty(): array
-	{
-		return $this->getAlbumsProperty()?->map(fn ($v, $k) => $v->id)?->all() ?? [];
 	}
 
 	/**
@@ -282,7 +263,7 @@ class Album extends BaseAlbumComponent implements Reloadable
 
 	public function getAlbumFormattedProperty(): AlbumFormatted
 	{
-		return new AlbumFormatted($this->album, $this->fetchHeaderUrl()?->url);
+		return $this->formatted;
 	}
 
 	public function getNoImagesAlbumsMessageProperty(): string

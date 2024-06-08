@@ -87,7 +87,6 @@ class Albums extends Component implements Reloadable
 	{
 		return $this->topAlbums->smart_albums
 			->concat($this->topAlbums->tag_albums);
-		// ->reject(fn ($album) => $album === null);
 	}
 
 	/**

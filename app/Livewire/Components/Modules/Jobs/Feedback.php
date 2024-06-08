@@ -30,7 +30,7 @@ class Feedback extends Component
 		}
 
 		$this->open = Configs::getValueAsBool('current_job_processing_visible');
-		$this->display = true;
+		$this->display = Configs::getValueAsBool('job_processing_queue_visible');
 	}
 
 	/**
