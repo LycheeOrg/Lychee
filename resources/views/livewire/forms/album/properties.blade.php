@@ -21,7 +21,7 @@
             <x-forms.dropdown class="mx-2" :options="$this->albumSortingColumns" id="sorting_dialog_album_column_select" wire:model='album_sorting_column'/>
             <x-forms.dropdown class="mx-2" :options="$this->sortingOrders" id="sorting_dialog_album_order_select" wire:model='album_sorting_order'/>
         </div>
-        <livewire:forms.album.set-header :album_id="$this->albumID" />
+        <livewire:forms.album.set-header :album_id="$this->albumID" lazy="on-load" />
         <div class="h-10">
             <span class="font-bold">{{ __('lychee.ALBUM_SET_LICENSE') }}</span>
             <x-forms.dropdown class="mx-2" :options="$this->licenses" id="license_dialog_select" wire:model='license'/>

@@ -11,6 +11,7 @@ use App\Livewire\DTO\AlbumFormatted;
 use App\Livewire\DTO\AlbumRights;
 use App\Livewire\DTO\Layouts;
 use App\Livewire\DTO\PhotoFlags;
+use App\Livewire\DTO\ProtectedCollection;
 use App\Livewire\DTO\SessionFlags;
 use App\Livewire\Traits\AlbumsPhotosContextMenus;
 use App\Livewire\Traits\Notify;
@@ -41,9 +42,16 @@ abstract class BaseAlbumComponent extends Component
 
 	protected Layouts $layouts;
 
+	protected bool $is_albums_loaded = false;
+	/** @var ProtectedCollection<ModelsAlbum> */
+	protected ?ProtectedCollection $albumsCollection;
+
+	protected bool $is_photos_loaded = false;
+	/** @var ProtectedCollection<\App\Models\Photo> */
+	protected ?ProtectedCollection $photosCollection;
+
 	#[Locked] public ?string $albumId = null;
 	#[Locked] public ?string $photoId = null;
-	#[Locked] public ?string $header_url = null;
 	#[Locked] public int $num_albums = 0;
 	#[Locked] public int $num_photos = 0;
 	#[Locked] public int $num_users = 0;
@@ -74,21 +82,30 @@ abstract class BaseAlbumComponent extends Component
 	 *
 	 * @return Collection<int,Photo>|LengthAwarePaginator<Photo>
 	 */
-	abstract public function getPhotosProperty(): Collection|LengthAwarePaginator;
+	public function getPhotosProperty(): Collection|LengthAwarePaginator
+	{
+		return $this->photosCollection->get();
+	}
 
 	/**
 	 * Return the albums.
 	 *
 	 * @return Collection<int,ModelsAlbum>|null
 	 */
-	abstract public function getAlbumsProperty(): Collection|null;
+	final public function getAlbumsProperty(): Collection|null
+	{
+		return $this->albumsCollection->get();
+	}
 
 	/**
 	 * Used in the JS front-end to manage the selected albums.
 	 *
 	 * @return string[]
 	 */
-	abstract public function getAlbumIDsProperty(): array;
+	final public function getAlbumIDsProperty(): array
+	{
+		return $this->albumsCollection->get()?->map(fn ($v, $_k) => $v->id)?->all() ?? [];
+	}
 
 	/**
 	 * Back property used to retrieve the URL to step back and back arrow.
