@@ -121,6 +121,7 @@ class AppServiceProvider extends ServiceProvider
 
 		try {
 			$lang = Configs::getValueAsString('lang');
+			/** @disregard P1013 Undefined method setLocale() (stupid intelephense) */
 			app()->setLocale($lang);
 		} catch (\Throwable $e) {
 			/** Ignore.

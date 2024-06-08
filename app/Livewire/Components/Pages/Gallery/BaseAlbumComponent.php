@@ -42,11 +42,9 @@ abstract class BaseAlbumComponent extends Component
 
 	protected Layouts $layouts;
 
-	protected bool $is_albums_loaded = false;
 	/** @var ProtectedCollection<ModelsAlbum> */
 	protected ?ProtectedCollection $albumsCollection;
 
-	protected bool $is_photos_loaded = false;
 	/** @var ProtectedCollection<\App\Models\Photo> */
 	protected ?ProtectedCollection $photosCollection;
 
