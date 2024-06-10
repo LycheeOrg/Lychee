@@ -10,6 +10,7 @@ use App\Models\Configs;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 /**
  * Class LoginRequired.
@@ -31,7 +32,8 @@ class LoginRequired
 	 */
 	public function handle(Request $request, \Closure $next): mixed
 	{
-		if (Features::inactive('livewire')) {
+		$dir_url = config('app.dir_url');
+		if (Features::inactive('livewire') && !Str::startsWith($request->getRequestUri(), $dir_url . '/livewire/')) {
 			return $next($request);
 		}
 
