@@ -47,6 +47,8 @@ use Kalnoy\Nestedset\QueryBuilder as NSQueryBuilder;
  * @method        $this              whereNotIn(string $column, mixed $values, string $boolean = 'and')
  * @method        $this              whereNull(string|array $columns, string $boolean = 'and', bool $not = false)
  * @method        $this              orderByDesc($column)
+ *
+ * @extends NSQueryBuilder<string,Album>
  */
 class AlbumBuilder extends NSQueryBuilder
 {
@@ -94,14 +96,13 @@ class AlbumBuilder extends NSQueryBuilder
 		// The parent method returns a `Model[]`, but we must return
 		// `Album[]` and we know that this is indeed the case as we have
 		// queried for albums
-		// @phpstan-ignore-next-line
 		return parent::getModels($columns);
 	}
 
 	/**
 	 * Get statistics of errors of the tree.
 	 *
-	 * @return array<string,int>
+	 * @return array{oddness:int,duplicates:int,wrong_parent:int,missing_parent:int}
 	 *
 	 * @throws QueryBuilderException
 	 */
@@ -265,5 +266,17 @@ class AlbumBuilder extends NSQueryBuilder
 		};
 
 		return $countQuery->where($visibilitySubQuery);
+	}
+
+	/**
+	 * Scope limits query to select just root node.
+	 *
+	 * @return AlbumBuilder
+	 */
+	public function whereIsRoot(): AlbumBuilder
+	{
+		$this->query->whereNull($this->model->getParentIdName());
+
+		return $this;
 	}
 }

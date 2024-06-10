@@ -64,7 +64,6 @@ class AlbumSearch
 
 		$sorting = AlbumSortingCriterion::createDefault();
 
-		/** @phpstan-ignore-next-line */
 		return (new SortingDecorator($albumQuery))
 			->orderBy($sorting->column, $sorting->order)
 			->get();

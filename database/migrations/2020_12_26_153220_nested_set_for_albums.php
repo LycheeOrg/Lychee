@@ -26,7 +26,7 @@ return new class() extends Migration {
 			$table->index([self::LEFT, self::RIGHT]);
 		});
 
-		NestedSetForAlbums_AlbumModel::query()->fixTree(); /** @phpstan-ignore-line */
+		NestedSetForAlbums_AlbumModel::query()->fixTree();
 	}
 
 	/**

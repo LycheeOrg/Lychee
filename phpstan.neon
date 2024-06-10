@@ -61,11 +61,11 @@ parameters:
 				- app/Eloquent/FixedQueryBuilderTrait.php
 		- '#Parameter \#1 \$models .* of method .*::initRelation\(\) should be contravariant with parameter \$models .* of method .*::initRelation\(\)#'
 		- '#Parameter \#(1|2) \$(models|albums|photos|results) .* of method .*::(match|addEagerConstraints)\(\) should be contravariant with parameter \$(models|albums|photos|results) .* of method .*::(match|addEagerConstraints)\(\)#'
-		- '#Parameter .* of method .*::partition\(\) expects \(callable\(.*\): bool\)\|Illuminate\\Database\\Eloquent\\Model\|string, Closure\(.*\): bool given.#'
+		# - '#Parameter .* of method .*::partition\(\) expects \(callable\(.*\): bool\)\|Illuminate\\Database\\Eloquent\\Model\|string, Closure\(.*\): bool given.#'
 		- '#Parameter .* of method .*::performInsert\(\) should be contravariant with parameter .* of method .*::performInsert\(\)#' 
 		- '#Parameter .* of method .*::replicate\(\) should be contravariant with parameter .* of method .*::replicate\(\)#' 
 		- '#Parameter .* of method .*::save\(\) should be contravariant with parameter .* of method .*::save\(\)#' 
-		- '#Parameter .* of method .*::newEloquentBuilder\(\) should be contravariant with parameter .* of method Kalnoy\\Nestedset\\Node::newEloquentBuilder\(\)#'
+		- '#Parameter .* of method .*::newEloquentBuilder\(\) should be contravariant with parameter .* of method Kalnoy\\Nestedset\\Node<.*>::newEloquentBuilder\(\)#'
 		- '#Parameter .* of method .*::performUpdate\(\) should be contravariant with parameter .* of method .*::performUpdate\(\)#'
 		- '#Parameter .* of method .*::isDirty\(\) should be contravariant with parameter .* of method .*::isDirty\(\)#'
 
@@ -78,7 +78,6 @@ parameters:
 		- '#Dynamic call to static method Illuminate\\Foundation\\Application::getCachedRoutesPath\(\).#'
 
 
-		- '#Property .* \(App\\Models\\.*(\|null)?\) does not accept (Illuminate\\Database\\Eloquent\\Collection<int, Illuminate\\Database\\Eloquent\\Model>\|)?Illuminate\\Database\\Eloquent\\Model(\|null)?.#'
 		- '#Access to an undefined property Laragear\\WebAuthn\\Models\\WebAuthnCredential::\$authenticatable_id#'
 
 		# False positive as stub code for PHP has not yet been updated to 2nd parameter, see https://github.com/php/doc-en/issues/1529 and https://www.php.net/imagick.writeimagefile

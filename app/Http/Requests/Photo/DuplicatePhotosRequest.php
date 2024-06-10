@@ -37,6 +37,7 @@ class DuplicatePhotosRequest extends BaseApiRequest implements HasPhotos, HasAlb
 		$this->photos = Photo::query()
 			->with(['size_variants'])
 			->findOrFail($photosIDs);
+		/** @var string|null */
 		$targetAlbumID = $values[RequestAttribute::ALBUM_ID_ATTRIBUTE];
 		$this->album = $targetAlbumID === null ?
 			null :

@@ -20,7 +20,6 @@ use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Support\Collection as BaseCollection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
-use Kalnoy\Nestedset\QueryBuilder as NsQueryBuilder;
 
 class Top
 {
@@ -82,14 +81,14 @@ class Top
 			->orderBy($this->sorting->column, $this->sorting->order)
 			->get();
 
-		/** @var NsQueryBuilder $query */
+		/** @return AlbumBuilder $query */
 		$query = $this->albumQueryPolicy
 			->applyVisibilityFilter(Album::query()->with(['access_permissions', 'owner'])->whereIsRoot());
 
 		$userID = Auth::id();
 		if ($userID !== null) {
 			// For authenticated users we group albums by ownership.
-			/** @var BaseCollection<int,Album> $albums */
+			/** @phpstan-ignore-next-line */
 			$albums = (new SortingDecorator($query))
 				->orderBy(ColumnSortingType::OWNER_ID, OrderSortingType::ASC)
 				->orderBy($this->sorting->column, $this->sorting->order)
@@ -106,6 +105,7 @@ class Top
 			// For anonymous users we don't want to implicitly expose
 			// ownership via sorting.
 			/** @var BaseCollection<int,Album> */
+			/** @phpstan-ignore-next-line */
 			$albums = (new SortingDecorator($query))
 				->orderBy($this->sorting->column, $this->sorting->order)
 				->get();
