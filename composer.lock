@@ -62,16 +62,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.311.0",
+            "version": "3.311.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "3e1cc8fe522eae7deca8b7753c573c2c69444705"
+                "reference": "731cd73062909594c5f7443413c4c4c40ed1c25c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/3e1cc8fe522eae7deca8b7753c573c2c69444705",
-                "reference": "3e1cc8fe522eae7deca8b7753c573c2c69444705",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/731cd73062909594c5f7443413c4c4c40ed1c25c",
+                "reference": "731cd73062909594c5f7443413c4c4c40ed1c25c",
                 "shasum": ""
             },
             "require": {
@@ -151,9 +151,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.311.0"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.311.2"
             },
-            "time": "2024-06-05T18:07:37+00:00"
+            "time": "2024-06-07T18:05:33+00:00"
         },
         {
             "name": "bepsvpt/secure-headers",
@@ -3522,31 +3522,31 @@
         },
         {
             "name": "lychee-org/nestedset",
-            "version": "v8.0.0",
+            "version": "v8.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/LycheeOrg/laravel-nestedset.git",
-                "reference": "eb7480b40c0d16dbf16f10fb66cf303e2546b34d"
+                "reference": "92a00e9f89013275cb5831b3a6a2aa70267ad86d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/LycheeOrg/laravel-nestedset/zipball/eb7480b40c0d16dbf16f10fb66cf303e2546b34d",
-                "reference": "eb7480b40c0d16dbf16f10fb66cf303e2546b34d",
+                "url": "https://api.github.com/repos/LycheeOrg/laravel-nestedset/zipball/92a00e9f89013275cb5831b3a6a2aa70267ad86d",
+                "reference": "92a00e9f89013275cb5831b3a6a2aa70267ad86d",
                 "shasum": ""
             },
             "require": {
                 "illuminate/database": "^10.0",
                 "illuminate/events": "^10.0",
                 "illuminate/support": "^10.0",
-                "php": "^8.1"
+                "php": "^8.2"
             },
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "^3.3",
-                "lychee-org/phpstan-lychee": "^1.0",
+                "lychee-org/phpstan-lychee": "^1.0.4",
                 "nunomaduro/larastan": "^2.0",
                 "orchestra/testbench": "^8.0",
                 "php-parallel-lint/php-parallel-lint": "^1.2",
-                "phpunit/phpunit": "^9.5.20"
+                "phpunit/phpunit": "^10.5"
             },
             "type": "library",
             "extra": {
@@ -3583,9 +3583,9 @@
                 "nsm"
             ],
             "support": {
-                "source": "https://github.com/LycheeOrg/laravel-nestedset/tree/v8.0.0"
+                "source": "https://github.com/LycheeOrg/laravel-nestedset/tree/v8.1.0"
             },
-            "time": "2023-02-15T15:05:23+00:00"
+            "time": "2024-06-10T08:23:54+00:00"
         },
         {
             "name": "lychee-org/php-exif",
