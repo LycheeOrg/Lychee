@@ -88,9 +88,9 @@ class SearchAlbum extends Component
 		$query = (new SortingDecorator($unfiltered))
 			->orderBy($sorting->column, $sorting->order);
 
-		/** @var NsCollection<int,Album> $albums */
+		/** @var NsCollection<int,string,Album> $albums */
 		$albums = $query->get();
-		/** @var NsCollection<int,Album> $tree */
+		/** @var NsCollection<int,string,Album> $tree */
 		$tree = $albums->toTree(null);
 
 		$flat_tree = $this->flatten($tree);
@@ -115,8 +115,8 @@ class SearchAlbum extends Component
 	/**
 	 * Flatten the tree and create bread crumb paths.
 	 *
-	 * @param NsCollection<int,Album>|Collection<int,Album> $collection
-	 * @param string                                        $prefix
+	 * @param NsCollection<int,string,Album>|Collection<int,Album> $collection
+	 * @param string                                               $prefix
 	 *
 	 * @return TAlbumSaved[]
 	 */

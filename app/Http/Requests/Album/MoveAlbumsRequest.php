@@ -42,6 +42,7 @@ class MoveAlbumsRequest extends BaseApiRequest implements HasAlbum, HasAlbums
 		$this->album = $id === null ?
 			null :
 			Album::findOrFail($id);
+		/** @phpstan-ignore-next-line */
 		$this->albums = Album::findOrFail($ids);
 	}
 }

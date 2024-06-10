@@ -19,6 +19,7 @@ use Kalnoy\Nestedset\NodeTrait;
  */
 class NestedSetForAlbums_AlbumModel extends Model
 {
+	/** @phpstan-use NodeTrait<string,NestedSetForAlbums_AlbumModel> */
 	use NodeTrait;
 
 	protected $table = 'albums';

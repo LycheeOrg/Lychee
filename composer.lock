@@ -3522,16 +3522,16 @@
         },
         {
             "name": "lychee-org/nestedset",
-            "version": "v8.1.0",
+            "version": "v8.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/LycheeOrg/laravel-nestedset.git",
-                "reference": "92a00e9f89013275cb5831b3a6a2aa70267ad86d"
+                "reference": "f9601affe48e111579db16d0f9d85c39809c120e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/LycheeOrg/laravel-nestedset/zipball/92a00e9f89013275cb5831b3a6a2aa70267ad86d",
-                "reference": "92a00e9f89013275cb5831b3a6a2aa70267ad86d",
+                "url": "https://api.github.com/repos/LycheeOrg/laravel-nestedset/zipball/f9601affe48e111579db16d0f9d85c39809c120e",
+                "reference": "f9601affe48e111579db16d0f9d85c39809c120e",
                 "shasum": ""
             },
             "require": {
@@ -3583,9 +3583,9 @@
                 "nsm"
             ],
             "support": {
-                "source": "https://github.com/LycheeOrg/laravel-nestedset/tree/v8.1.0"
+                "source": "https://github.com/LycheeOrg/laravel-nestedset/tree/v8.1.1"
             },
-            "time": "2024-06-10T08:23:54+00:00"
+            "time": "2024-06-10T09:16:44+00:00"
         },
         {
             "name": "lychee-org/php-exif",

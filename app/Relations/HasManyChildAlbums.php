@@ -30,7 +30,6 @@ class HasManyChildAlbums extends HasManyBidirectionally
 		$this->albumQueryPolicy = resolve(AlbumQueryPolicy::class);
 		$this->sorting = $owningAlbum->album_sorting ?? AlbumSortingCriterion::createDefault();
 		parent::__construct(
-			/** @phpstan-ignore-next-line */
 			$owningAlbum->newQuery(),
 			$owningAlbum,
 			'parent_id',

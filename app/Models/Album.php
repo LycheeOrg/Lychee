@@ -123,9 +123,12 @@ use Kalnoy\Nestedset\NodeTrait;
  * @method static AlbumBuilder|Album         withoutRoot()
  *
  * // * @mixin \Eloquent
+ *
+ * @implements Node<string,Album>
  */
 class Album extends BaseAlbum implements Node
 {
+	/** @phpstan-use NodeTrait<string,Album> */
 	use NodeTrait;
 	use ToArrayThrowsNotImplemented;
 	use HasFactory;
@@ -220,13 +223,14 @@ class Album extends BaseAlbum implements Node
 	/**
 	 * Get query for descendants of the node.
 	 *
-	 * @return DescendantsRelation
+	 * @return DescendantsRelation<string,Album>
 	 *
 	 * @throws QueryBuilderException
 	 */
 	public function descendants(): DescendantsRelation
 	{
 		try {
+			/** @var DescendantsRelation<string,Album> */
 			return new DescendantsRelation($this->newQuery(), $this);
 		} catch (\Throwable $e) {
 			throw new QueryBuilderException($e);

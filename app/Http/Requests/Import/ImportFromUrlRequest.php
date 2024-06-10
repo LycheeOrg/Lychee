@@ -33,6 +33,7 @@ class ImportFromUrlRequest extends BaseApiRequest implements HasAlbum
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
+		/** @var string|null */
 		$albumID = $values[RequestAttribute::ALBUM_ID_ATTRIBUTE];
 		$this->album = $albumID === null ?
 			null :
