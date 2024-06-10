@@ -104,5 +104,6 @@ class Kernel extends HttpKernel
 		'accept_content_type' => \App\Http\Middleware\AcceptContentType::class,
 		'redirect-legacy-id' => \App\Http\Middleware\RedirectLegacyPhotoID::class,
 		'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+		'login_required' => \App\Http\Middleware\LoginRequired::class,
 	];
 }

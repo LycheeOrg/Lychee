@@ -19,14 +19,14 @@ use Illuminate\Support\Facades\Route;
 /**
  * ALBUMS.
  */
-Route::post('/Albums::get', [AlbumsController::class, 'get']);
-Route::post('/Albums::getPositionData', [AlbumsController::class, 'getPositionData']);
-Route::post('/Albums::tree', [AlbumsController::class, 'tree']);
+Route::post('/Albums::get', [AlbumsController::class, 'get'])->middleware(['login_required']);
+Route::post('/Albums::getPositionData', [AlbumsController::class, 'getPositionData'])->middleware(['login_required']);
+Route::post('/Albums::tree', [AlbumsController::class, 'tree'])->middleware(['login_required']);
 
 /**
  * ALBUM.
  */
-Route::post('/Album::get', [AlbumController::class, 'get']);
+Route::post('/Album::get', [AlbumController::class, 'get'])->middleware(['login_required']);
 Route::post('/Album::getPositionData', [AlbumController::class, 'getPositionData']);
 Route::post('/Album::unlock', [AlbumController::class, 'unlock']);
 Route::post('/Album::add', [AlbumController::class, 'add']);
@@ -68,8 +68,8 @@ Route::post('/Legacy::translateLegacyModelIDs', [LegacyController::class, 'trans
 /**
  * PHOTO.
  */
-Route::post('/Photo::get', [PhotoController::class, 'get']);
-Route::post('/Photo::getRandom', [PhotoController::class, 'getRandom']);
+Route::post('/Photo::get', [PhotoController::class, 'get'])->middleware(['login_required']);
+Route::post('/Photo::getRandom', [PhotoController::class, 'getRandom'])->middleware(['login_required']);
 Route::post('/Photo::setTitle', [PhotoController::class, 'setTitle']);
 Route::post('/Photo::setDescription', [PhotoController::class, 'setDescription']);
 Route::post('/Photo::setStar', [PhotoController::class, 'setStar']);
