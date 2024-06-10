@@ -21,7 +21,7 @@ use Tests\Livewire\Base\BaseLivewireTest;
 class LoginTest extends BaseLivewireTest
 {
 	/**
-	 * Test that when we are not longged in,
+	 * Test that when we are not logged in,
 	 * and login is required, we are properly redirected.
 	 *
 	 * @return void
@@ -38,7 +38,7 @@ class LoginTest extends BaseLivewireTest
 	}
 
 	/**
-	 * Test that when we are not longged in,
+	 * Test that when we are not logged in,
 	 * and login is NOT required, we are not redirected.
 	 *
 	 * @return void
@@ -54,7 +54,7 @@ class LoginTest extends BaseLivewireTest
 	}
 
 	/**
-	 * Test that when we are longged in,
+	 * Test that when we are logged in,
 	 * and login is required, we are not redirected.
 	 *
 	 * @return void
@@ -72,7 +72,7 @@ class LoginTest extends BaseLivewireTest
 	}
 
 	/**
-	 * Test that when we are longged in,
+	 * Test that when we are logged in,
 	 * and we are properly redirected when accessing login page.
 	 *
 	 * @return void
