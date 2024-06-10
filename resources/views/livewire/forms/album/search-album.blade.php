@@ -32,7 +32,7 @@
 				@foreach ($this->albumList as $result)
 					<li class="border-b border-neutral-700 cursor-pointer transition-all ease-in-out duration-300
 						hover:bg-gradient-to-b hover:from-primary-500 hover:to-primary-600 hover:text-text-main-0"
-						wire:click="$parent.setAlbum('{{ $result['id'] }}', '{{ $result['original'] }}')">
+						wire:click='$parent.setAlbum("{{ $result['id'] }}", @json($result['original']))'>
 						<a class="px-3 py-1 flex items-center"
 							@if ($loop->last) @keydown.tab="isOpen = false" @endif
 						>
