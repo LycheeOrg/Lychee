@@ -11,7 +11,6 @@ use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Factories\AlbumFactory;
 use App\Http\Resources\Collections\TopAlbumsResource;
 use App\Models\Album;
-use App\Models\Configs;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\TagAlbum;
 use App\Policies\AlbumPolicy;
@@ -59,18 +58,14 @@ class Top
 	 */
 	public function get(): TopAlbumsResource
 	{
-		if (Configs::getValueAsBool('SA_enabled')) {
-			// Do not eagerly load the relation `photos` for each smart album.
-			// On the albums overview, we only need a thumbnail for each album.
-			/** @var BaseCollection<int,BaseSmartAlbum> $smartAlbums */
-			$smartAlbums = $this->albumFactory
-				->getAllBuiltInSmartAlbums(false)
-				->map(
-					fn ($smartAlbum) => Gate::check(AlbumPolicy::CAN_SEE, $smartAlbum) ? $smartAlbum : null
-				)->reject(fn ($smartAlbum) => $smartAlbum === null);
-		} else {
-			$smartAlbums = new BaseCollection();
-		}
+		// Do not eagerly load the relation `photos` for each smart album.
+		// On the albums overview, we only need a thumbnail for each album.
+		/** @var BaseCollection<int,BaseSmartAlbum> $smartAlbums */
+		$smartAlbums = $this->albumFactory
+			->getAllBuiltInSmartAlbums(false)
+			->map(
+				fn ($smartAlbum) => Gate::check(AlbumPolicy::CAN_SEE, $smartAlbum) ? $smartAlbum : null
+			)->reject(fn ($smartAlbum) => $smartAlbum === null);
 
 		$tagAlbumQuery = $this->albumQueryPolicy
 			->applyVisibilityFilter(TagAlbum::query()->with(['access_permissions', 'owner']));

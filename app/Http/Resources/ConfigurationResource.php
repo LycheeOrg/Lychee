@@ -80,7 +80,7 @@ class ConfigurationResource extends JsonResource
 				'location' => base_path('public/'),
 
 				// from config
-				'SA_enabled' => Configs::getValueAsBool('SA_enabled'),
+				'SA_enabled' => '1',
 				'SL_enable' => Configs::getValueAsBool('SL_enable'),
 				'SL_for_admin' => Configs::getValueAsBool('SL_for_admin'),
 				'SL_life_time_days' => Configs::getValueAsInt('SL_life_time_days'),
