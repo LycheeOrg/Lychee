@@ -8,7 +8,6 @@ use App\Exceptions\Internal\InvalidSmartIdException;
 use App\Exceptions\Internal\LycheeAssertionError;
 use App\Models\Album;
 use App\Models\BaseAlbumImpl;
-use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\TagAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
@@ -184,12 +183,9 @@ class AlbumFactory
 	public function getAllBuiltInSmartAlbums(bool $withRelations = true): Collection
 	{
 		$smartAlbums = new Collection();
-		/** @var SmartAlbumType $smartAlbumId */
-		foreach (SmartAlbumType::cases() as $smartAlbumId) {
-			if (Configs::getValueAsBool($smartAlbumId->get_config_key())) {
-				$smartAlbums->put($smartAlbumId->value, $this->createSmartAlbum($smartAlbumId, $withRelations));
-			}
-		}
+		collect(SmartAlbumType::cases())
+			->filter(fn (SmartAlbumType $s) => $s->is_enabled())
+			->each(fn (SmartAlbumType $s) => $smartAlbums->put($s->value, $this->createSmartAlbum($s, $withRelations)));
 
 		return $smartAlbums;
 	}

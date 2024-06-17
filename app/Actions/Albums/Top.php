@@ -63,9 +63,7 @@ class Top
 		/** @var BaseCollection<int,BaseSmartAlbum> $smartAlbums */
 		$smartAlbums = $this->albumFactory
 			->getAllBuiltInSmartAlbums(false)
-			->map(
-				fn ($smartAlbum) => Gate::check(AlbumPolicy::CAN_SEE, $smartAlbum) ? $smartAlbum : null
-			)->reject(fn ($smartAlbum) => $smartAlbum === null);
+			->filter(fn ($smartAlbum) => Gate::check(AlbumPolicy::CAN_SEE, $smartAlbum));
 
 		$tagAlbumQuery = $this->albumQueryPolicy
 			->applyVisibilityFilter(TagAlbum::query()->with(['access_permissions', 'owner']));

@@ -81,10 +81,10 @@ class ConfigurationResource extends JsonResource
 				'location' => base_path('public/'),
 
 				// from config
-				'SA_enabled' => Configs::getValueAsBool(SmartAlbumType::UNSORTED->get_config_key()) &&
-					Configs::getValueAsBool(SmartAlbumType::STARRED->get_config_key()) &&
-					Configs::getValueAsBool(SmartAlbumType::RECENT->get_config_key()) &&
-					Configs::getValueAsBool(SmartAlbumType::ON_THIS_DAY->get_config_key()),
+				'SA_enabled' => SmartAlbumType::UNSORTED->is_enabled() &&
+					SmartAlbumType::STARRED->is_enabled() &&
+					SmartAlbumType::RECENT->is_enabled() &&
+					SmartAlbumType::ON_THIS_DAY->is_enabled(),
 				'SL_enable' => Configs::getValueAsBool('SL_enable'),
 				'SL_for_admin' => Configs::getValueAsBool('SL_for_admin'),
 				'SL_life_time_days' => Configs::getValueAsInt('SL_life_time_days'),
