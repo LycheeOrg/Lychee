@@ -11,6 +11,7 @@ use App\Enum\ImageOverlayType;
 use App\Enum\LicenseType;
 use App\Enum\MapProviders;
 use App\Enum\PhotoLayoutType;
+use App\Enum\SmartAlbumType;
 use App\Enum\ThumbAlbumSubtitleType;
 use App\Exceptions\Handler;
 use App\Metadata\Versions\InstalledVersion;
@@ -80,7 +81,10 @@ class ConfigurationResource extends JsonResource
 				'location' => base_path('public/'),
 
 				// from config
-				'SA_enabled' => '1',
+				'SA_enabled' => Configs::getValueAsBool(SmartAlbumType::UNSORTED->get_config_key()) &&
+					Configs::getValueAsBool(SmartAlbumType::STARRED->get_config_key()) &&
+					Configs::getValueAsBool(SmartAlbumType::RECENT->get_config_key()) &&
+					Configs::getValueAsBool(SmartAlbumType::ON_THIS_DAY->get_config_key()),
 				'SL_enable' => Configs::getValueAsBool('SL_enable'),
 				'SL_for_admin' => Configs::getValueAsBool('SL_for_admin'),
 				'SL_life_time_days' => Configs::getValueAsInt('SL_life_time_days'),
