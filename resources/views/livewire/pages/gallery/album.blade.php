@@ -3,7 +3,7 @@
     @entangle('sessionFlags.nsfwAlbumsVisible'),
     @entangle('sessionFlags.is_fullscreen'),
     @entangle('sessionFlags.are_photo_details_open'),
-    @js($rights),
+    @js($this->rights),
     @js($album->id),
     @js($this->albumIDs),
     @js($this->photosResource),
@@ -19,7 +19,7 @@
         <x-header.button class="flex flex-grow justify-end" href="{{ route('livewire-search', ['albumId' => $this->album->id]) }}" wire:navigate icon="magnifying-glass" />
         @endif
         <x-header.actions-menus />
-        @if ($rights->can_edit && $flags->is_base_album)
+        @if ($this->rights->can_edit)
             <x-header.button x-on:click="toggleDetails" icon="chevron-top" fill="fill-primary-500" x-cloak
                 x-show="albumFlags.isDetailsOpen" />
             <x-header.button x-on:click="toggleDetails" icon="chevron-bottom" x-cloak
@@ -34,8 +34,8 @@
         <div id="lychee_view_content"
             class="relative flex flex-wrap content-start w-full justify-start overflow-y-auto"
             x-bind:class="isFullscreen ? 'h-[calc(100vh-3px)]' : 'h-[calc(100vh-56px)]'">
-            @if ($rights->can_edit && $flags->is_base_album)
-                <x-gallery.album.menu.menu :album="$this->album" :rights="$this->rights" :user-count="$this->num_users" />
+            @if ($this->rights->can_edit)
+                <x-gallery.album.menu.menu />
             @endif
             @if ($this->albumFormatted !== null && ($num_albums > 0 || $num_photos > 0))
                 <x-gallery.album.hero x-show="! albumFlags.isDetailsOpen" />

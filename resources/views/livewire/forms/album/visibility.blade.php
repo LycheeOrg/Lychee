@@ -5,6 +5,7 @@
 			<x-forms.toggle id="pp_dialog_public_check" wire:model.live="is_public" />
 			<p class="my-1.5">{{ __('lychee.ALBUM_PUBLIC_EXPL') }}</p>
 		</div>
+		@if($is_base_album)
 		<div @class(['relative h-12 my-4 pl-9 transition-color duration-300', 
 			'text-text-main-400'=> !$is_public,
 			'text-text-main-200' => $is_public ])>
@@ -36,7 +37,9 @@
 				<x-forms.inputs.text wire:model.live.debounce.500ms='password' placeholder="{{ __('lychee.ALBUM_PASSWORD') }}" />
 			</div>
 		</div>
+		@endif
 	</form>
+	@if($is_base_album)
 	<hr class="block my-6 w-full border-t border-solid border-black/30">
 	<form>
 		<div class="relative h-12 my-4 transition-color duration-300">
@@ -45,4 +48,5 @@
 			<p class="my-1.5">{{ __('lychee.ALBUM_NSFW_EXPL') }}</p>
 		</div>
 	</form>
+	@endif
 </div>
