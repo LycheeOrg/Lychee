@@ -116,7 +116,7 @@ class Sync extends Command
 				try {
 					$exec->do($directory, $album);
 				} catch (\Exception $e) {
-					$this->error($e);
+					$this->error($e->getMessage());
 				}
 			}
 

@@ -35,7 +35,7 @@ class Create extends Component
 	 * This defines the set of validation rules to be applied on the input.
 	 * It would be a good idea to unify (namely reuse) the rules from the JSON api.
 	 *
-	 * @return array<string,string|array<int,string|\Illuminate\Contracts\Validation\ValidationRule|\Illuminate\Validation\Rules\Enum>>
+	 * @return array<string,string|array<int,string|\Illuminate\Contracts\Validation\ValidationRule|\Illuminate\Validation\Rules\Enum|\Illuminate\Validation\Rules\In>>
 	 */
 	protected function rules(): array
 	{

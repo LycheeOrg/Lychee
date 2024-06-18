@@ -145,7 +145,7 @@ abstract class BaseApiRequest extends FormRequest
 	/**
 	 * Returns the validation rules that apply to the request.
 	 *
-	 * @return array<string,string|array<int,string|\Illuminate\Contracts\Validation\ValidationRule|\Illuminate\Validation\Rules\Enum>>
+	 * @return array<string,string|array<int,string|\Illuminate\Contracts\Validation\ValidationRule|\Illuminate\Validation\Rules\Enum|\Illuminate\Validation\Rules\In>>
 	 */
 	abstract public function rules(): array;
 
