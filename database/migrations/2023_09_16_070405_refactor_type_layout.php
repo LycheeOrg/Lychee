@@ -15,14 +15,13 @@ return new class() extends Migration {
 	 */
 	public function up(): void
 	{
-		/** @var int $layout */
-		$layout = DB::table('configs')->select('value')->where('key', '=', 'layout')->first()->value;
+		$layout = (int) DB::table('configs')->select('value')->where('key', '=', 'layout')->first()->value;
 		DB::table('configs')->where('key', '=', 'layout')->delete();
 		DB::table('configs')->insert([
 			[
 				'key' => 'layout',
 				'value' => $this->toEnum($layout),
-				'confidentiality' => 0,
+				'confidentiality' => '0',
 				'cat' => 'Gallery',
 				'type_range' => self::SQUARE . '|' . self::JUSTIFIED . '|' . self::UNJUSTIFIED,
 				'description' => 'Layout for pictures',
@@ -35,14 +34,13 @@ return new class() extends Migration {
 	 */
 	public function down(): void
 	{
-		/** @var string $layout */
 		$layout = DB::table('configs')->select('value')->where('key', '=', 'layout')->first()->value;
 		DB::table('configs')->where('key', '=', 'layout')->delete();
 		DB::table('configs')->insert([
 			[
 				'key' => 'layout',
 				'value' => $this->fromEnum($layout),
-				'confidentiality' => 0,
+				'confidentiality' => '0',
 				'cat' => 'Gallery',
 				'type_range' => '0|1|2',
 				'description' => 'Layout for pictures',
