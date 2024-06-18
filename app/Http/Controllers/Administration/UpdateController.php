@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Administration;
 
 use App\Actions\Diagnostics\Pipes\Checks\UpdatableCheck;

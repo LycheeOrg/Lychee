@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Actions\Photo\Pipes\Shared;
 
 use App\Actions\User\Notify;

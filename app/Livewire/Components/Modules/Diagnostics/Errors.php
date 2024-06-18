@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Components\Modules\Diagnostics;
 
 use App\Actions\Diagnostics\Errors as DiagnosticsErrors;

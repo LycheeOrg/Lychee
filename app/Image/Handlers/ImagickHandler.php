@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /** @noinspection PhpComposerExtensionStubsInspection */
 
 namespace App\Image\Handlers;

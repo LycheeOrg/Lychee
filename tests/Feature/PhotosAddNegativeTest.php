@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * We don't care for unhandled exceptions in tests.
  * It is the nature of a test to throw an exception.

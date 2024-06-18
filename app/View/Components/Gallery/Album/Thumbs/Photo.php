@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\View\Components\Gallery\Album\Thumbs;
 
 use App\Enum\SizeVariantType;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
 	/*
 	 * Your API path. By default, all routes starting with this path will be added to the docs.

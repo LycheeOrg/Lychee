@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\View\Components\Gallery\Album;
 
 use App\Contracts\Models\AbstractAlbum;

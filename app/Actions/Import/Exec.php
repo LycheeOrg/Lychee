@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Actions\Import;
 
 use App\Actions\Album\Create as AlbumCreate;

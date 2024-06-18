@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Traits;
 
 use Illuminate\Support\Facades\Validator as ValidatorFacade;

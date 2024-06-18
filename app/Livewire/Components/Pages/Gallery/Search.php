@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Components\Pages\Gallery;
 
 use App\Actions\Search\AlbumSearch;

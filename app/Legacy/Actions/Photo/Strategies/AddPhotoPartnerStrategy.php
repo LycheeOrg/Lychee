@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Legacy\Actions\Photo\Strategies;
 
 use App\Contracts\Exceptions\LycheeException;

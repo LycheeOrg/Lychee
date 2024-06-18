@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Actions\Album;
 
 use App\Constants\AccessPermissionConstants as APC;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
 	'update' => [
 		// we need this in case the URL of the project changes

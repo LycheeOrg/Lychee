@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Actions\Photo\Pipes\Init;
 
 use App\Contracts\PhotoCreate\InitPipe;

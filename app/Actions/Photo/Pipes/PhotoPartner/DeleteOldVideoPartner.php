@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Actions\Photo\Pipes\PhotoPartner;
 
 use App\Contracts\PhotoCreate\PhotoPartnerPipe;

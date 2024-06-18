@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\RuleSets\Users;
 
 use App\Contracts\Http\Requests\RequestAttribute;

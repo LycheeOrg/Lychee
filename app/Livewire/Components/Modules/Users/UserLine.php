@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Components\Modules\Users;
 
 use App\Actions\User\Save;

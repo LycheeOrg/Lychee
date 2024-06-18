@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
 	/**
 	 * Enable HoneyPot to return 418 when hitting honey.

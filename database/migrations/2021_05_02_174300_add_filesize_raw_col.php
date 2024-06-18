@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
@@ -34,11 +36,11 @@ return new class() extends Migration {
 		// The approximation error can easily be fixed by calling `artisan lychee:exif_lens` from the CLI.
 		// This will replace the estimation by the actual filesize but takes time.
 		foreach ($photos as $photo) {
-			if (strpos($photo->size, 'MB') !== false) {
+			if (str_contains($photo->size, 'MB')) {
 				$filesize = (int) (floatval(trim(str_replace('MB', '', $photo->size))) * 1024 * 1024);
-			} elseif (strpos($photo->size, 'KB') !== false || strpos($photo->size, 'kB') !== false) {
+			} elseif (str_contains($photo->size, 'KB') || str_contains($photo->size, 'kB')) {
 				$filesize = (int) (floatval(trim(str_replace(['KB', 'kB'], '', $photo->size))) * 1024);
-			} elseif (strpos($photo->size, 'B') !== false) {
+			} elseif (str_contains($photo->size, 'B')) {
 				$filesize = (int) (floatval(trim(str_replace('B', '', $photo->size))));
 			} else {
 				$filesize = 0;

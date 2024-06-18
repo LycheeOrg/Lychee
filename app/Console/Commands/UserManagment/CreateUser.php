@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Console\Commands\UserManagment;
 
 use App\Actions\User\Create;

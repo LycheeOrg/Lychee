@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Components\Pages;
 
 use App\Actions\Album\PositionData as AlbumPositionData;

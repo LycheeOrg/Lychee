@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Database\Eloquent\Model;
 use Kalnoy\Nestedset\Node;
 use Kalnoy\Nestedset\NodeTrait;

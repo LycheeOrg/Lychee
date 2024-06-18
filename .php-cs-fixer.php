@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $finder = array_reduce(
 	[
 		__DIR__ . '/app/',
@@ -21,6 +23,7 @@ $rules = [
 	'nullable_type_declaration_for_default_null_value' => true,
 	'align_multiline_comment' => true,
 	'array_indentation' => true,
+	'declare_strict_types' => true,
 	'fully_qualified_strict_types' => false,
 	'backtick_to_shell_exec' => true,
 	'increment_style' => ['style' => 'post'],

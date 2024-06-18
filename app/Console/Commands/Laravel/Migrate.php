@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Console\Commands\Laravel;
 
 use App\Actions\Diagnostics\Pipes\Checks\PHPVersionCheck;

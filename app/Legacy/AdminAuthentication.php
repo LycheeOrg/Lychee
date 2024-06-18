@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Legacy;
 
 use App\Metadata\Versions\InstalledVersion;

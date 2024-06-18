@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Requests\Search;
 
 use App\Http\Requests\BaseApiRequest;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Metadata\Versions\Remote;
 
 use App\Contracts\Versions\Remote\GitRemote;

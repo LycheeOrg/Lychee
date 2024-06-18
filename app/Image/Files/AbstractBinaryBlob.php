@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Image\Files;
 
 use App\Contracts\Image\BinaryBlob;

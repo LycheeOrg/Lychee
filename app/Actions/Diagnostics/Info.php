@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Actions\Diagnostics;
 
 use App\Actions\Diagnostics\Pipes\Infos\CountForeignKeyInfo;

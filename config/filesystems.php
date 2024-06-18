@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Given a .env config constant, retrieve the env value and remove any trailing /.
  *

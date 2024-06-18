@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Doctrine\DBAL\Exception as DBALException;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;

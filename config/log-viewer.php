@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Opcodes\LogViewer\LogLevels\LevelClass;
 
 if (!function_exists('renv')) {

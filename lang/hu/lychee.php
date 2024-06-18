@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
 	'USERNAME' => 'Felhasználónév',
 	'PASSWORD' => 'Jelszó',

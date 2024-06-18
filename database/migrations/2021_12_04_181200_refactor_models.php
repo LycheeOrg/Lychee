@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Carbon\Carbon;
 use Carbon\Exceptions\InvalidFormatException;
 use Doctrine\DBAL\Exception as DBALException;

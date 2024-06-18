@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Exceptions\Handlers;
 
 use App\Contracts\Exceptions\Handlers\HttpExceptionHandler;

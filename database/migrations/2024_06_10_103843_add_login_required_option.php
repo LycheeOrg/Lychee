@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Models\Extensions\BaseConfigMigration;
 
 return new class() extends BaseConfigMigration {

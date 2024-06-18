@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Components\Forms\Photo;
 
 use App\Actions\Photo\Duplicate;
