@@ -183,10 +183,9 @@ class AlbumFactory
 	public function getAllBuiltInSmartAlbums(bool $withRelations = true): Collection
 	{
 		$smartAlbums = new Collection();
-		/** @var SmartAlbumType $smartAlbumId */
-		foreach (SmartAlbumType::cases() as $smartAlbumId) {
-			$smartAlbums->put($smartAlbumId->value, $this->createSmartAlbum($smartAlbumId, $withRelations));
-		}
+		collect(SmartAlbumType::cases())
+			->filter(fn (SmartAlbumType $s) => $s->is_enabled())
+			->each(fn (SmartAlbumType $s) => $smartAlbums->put($s->value, $this->createSmartAlbum($s, $withRelations)));
 
 		return $smartAlbums;
 	}
