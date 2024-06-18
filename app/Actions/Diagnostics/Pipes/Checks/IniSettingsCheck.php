@@ -75,6 +75,13 @@ class IniSettingsCheck implements DiagnosticPipe
 			// @codeCoverageIgnoreEnd
 		}
 
+		if (extension_loaded('xdebug')) {
+			// @codeCoverageIgnoreStart
+			$data[] = 'Info: xdebug mode:' . ini_get('xdebug.mode');
+			$data[] = 'Info: xdebug start_with_request:' . ini_get('xdebug.start_with_request');
+			// @codeCoverageIgnoreEnd
+		}
+
 		if (ini_get('assert.exception') !== '1') {
 			// @codeCoverageIgnoreStart
 			$data[] = 'Warning: assert.exception is set to false. Lychee assumes that failing assertions throw proper exceptions.';
