@@ -3,6 +3,7 @@
 namespace App\Livewire\Components\Forms\Album;
 
 use App\Actions\Album\SetProtectionPolicy;
+use App\Contracts\Http\Requests\RequestAttribute;
 use App\Contracts\Models\AbstractAlbum;
 use App\DTO\AlbumProtectionPolicy;
 use App\Factories\AlbumFactory;
@@ -31,6 +32,7 @@ class Visibility extends Component
 	public ?string $password = null; // ! wired
 
 	#[Locked] public string $albumID;
+	#[Locked] public bool $is_base_album;
 	/**
 	 * This is the equivalent of the constructor for Livewire Components.
 	 *
@@ -38,12 +40,13 @@ class Visibility extends Component
 	 *
 	 * @return void
 	 */
-	public function mount(BaseAlbum $album): void
+	public function mount(AbstractAlbum $album): void
 	{
 		Gate::authorize(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $album]);
 
 		$this->albumID = $album->id;
-		$this->is_nsfw = $album->is_nsfw;
+		$this->is_base_album = $album instanceof BaseAlbum;
+		$this->is_nsfw = $this->is_base_album ? $album->is_nsfw : false;
 
 		/** @var AccessPermission $perm */
 		$perm = $album->public_permissions();
@@ -102,6 +105,20 @@ class Visibility extends Component
 	 */
 	public function updated()
 	{
+		if ($this->is_base_album) {
+			$this->updatedAsBaseAlbum();
+		} else {
+			$this->updatedAsSmartAlbum();
+		}
+	}
+
+	/**
+	 * Update the policy for a base album.
+	 *
+	 * @return void
+	 */
+	private function updatedAsBaseAlbum()
+	{
 		$albumFactory = resolve(AlbumFactory::class);
 		$baseAlbum = $albumFactory->findBaseAlbumOrFail($this->albumID, false);
 
@@ -143,5 +160,29 @@ class Visibility extends Component
 			$this->password
 		);
 		$this->notify(__('lychee.CHANGE_SUCCESS'));
+	}
+
+	/**
+	 * Update policy for a smart album.
+	 *
+	 * @return void
+	 */
+	private function updatedAsSmartAlbum(): void
+	{
+		$albumFactory = resolve(AlbumFactory::class);
+		/** @var \App\SmartAlbums\BaseSmartAlbum */
+		$smartAlbum = $albumFactory->findAbstractAlbumOrFail($this->albumID, false);
+
+		$this->validate([
+			RequestAttribute::IS_PUBLIC_ATTRIBUTE => 'required|boolean',
+		]);
+
+		Gate::authorize(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $smartAlbum]);
+
+		if ($this->is_public) {
+			$smartAlbum->setPublic();
+		} else {
+			$smartAlbum->setPrivate();
+		}
 	}
 }
