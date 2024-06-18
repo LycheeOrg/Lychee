@@ -919,11 +919,58 @@ class AlbumTest extends AbstractTestCase
 		$response->assertDontSee('unsorted');
 		$response->assertDontSee('starred');
 		$response->assertDontSee('recent');
+		$response->assertDontSee('on_this_day');
 
+		$this->clearCachedSmartAlbums();
 		Configs::set(self::ENABLE_UNSORTED, true);
+		$response = $this->postJson('/api/Albums::get');
+		$this->assertOk($response);
+		$response->assertJson([
+			'smart_albums' => [
+				'unsorted' => [],
+			],
+			'tag_albums' => [],
+			'albums' => [],
+			'shared_albums' => [],
+		]);
+		$response->assertDontSee('starred');
+		$response->assertDontSee('recent');
+		$response->assertDontSee('on_this_day');
+
+		$this->clearCachedSmartAlbums();
 		Configs::set(self::ENABLE_STARRED, true);
+		$response = $this->postJson('/api/Albums::get');
+		$this->assertOk($response);
+		$response->assertJson([
+			'smart_albums' => [
+				'unsorted' => [],
+				'starred' => [],
+			],
+			'tag_albums' => [],
+			'albums' => [],
+			'shared_albums' => [],
+		]);
+		$response->assertDontSee('recent');
+		$response->assertDontSee('on_this_day');
+
+		$this->clearCachedSmartAlbums();
 		Configs::set(self::ENABLE_RECENT, true);
+		$response = $this->postJson('/api/Albums::get');
+		$this->assertOk($response);
+		$response->assertJson([
+			'smart_albums' => [
+				'unsorted' => [],
+				'starred' => [],
+				'recent' => [],
+			],
+			'tag_albums' => [],
+			'albums' => [],
+			'shared_albums' => [],
+		]);
+		$response->assertDontSee('on_this_day');
+		$this->clearCachedSmartAlbums();
 		Configs::set(self::ENABLE_ON_THIS_DAY, true);
+
 		Auth::logout();
 		Session::flush();
 	}
