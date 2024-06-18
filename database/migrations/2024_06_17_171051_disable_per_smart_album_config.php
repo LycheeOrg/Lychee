@@ -15,7 +15,7 @@ return new class() extends BaseConfigMigration {
 				'is_secret' => false,
 				'cat' => self::SMART_ALBUMS,
 				'type_range' => self::BOOL,
-				'description' => 'Enable Unsorted smart album. Warning! Disabling this will make pictures without album invisible.',
+				'description' => 'Enable Unsorted smart album. Warning! Disabling this will make pictures without an album invisible.',
 			],
 			[
 				'key' => 'enable_starred',
