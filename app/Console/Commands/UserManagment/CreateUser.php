@@ -58,7 +58,11 @@ class CreateUser extends Command
 		$mayEditOwnSettings = $mayAdministrate || $this->option('may-edit-own-settings') === true;
 		$mayUpload = $mayAdministrate || $this->option('may-upload') === true;
 
-		$user = $this->create->do($username, $password, $mayUpload, $mayEditOwnSettings);
+		$user = $this->create->do(
+			username: $username,
+			password: $password,
+			mayUpload: $mayUpload,
+			mayEditOwnSettings: $mayEditOwnSettings);
 		$user->may_administrate = $mayAdministrate;
 		$user->save();
 

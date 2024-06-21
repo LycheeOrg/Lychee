@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\User\Create;
 use App\Enum\OauthProvidersType;
 use App\Exceptions\Internal\LycheeInvalidArgumentException;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\UnauthenticatedException;
 use App\Exceptions\UnauthorizedException;
+use App\Models\Configs;
 use App\Models\OauthCredential;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
@@ -15,6 +17,7 @@ use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
+use Laravel\Socialite\Contracts\User as ContractsUser;
 use Laravel\Socialite\Facades\Socialite;
 use Symfony\Component\HttpFoundation\RedirectResponse as HttpFoundationRedirectResponse;
 
@@ -109,21 +112,70 @@ class Oauth extends Controller
 	 */
 	private function authenticateOrDie(OauthProvidersType $provider)
 	{
-		$user = Socialite::driver($provider->value)->user();
+		/** @var ContractsUser */
+		$user = $this->getUserFromOauth($provider);
 
-		$credential = OauthCredential::query()
-			->with(['user'])
-			->where('token_id', '=', $user->getId())
-			->where('provider', '=', $provider)
-			->first();
+		$credential = $this->fetchAssociatedUserFromDB($provider, $user->getId());
 
-		if ($credential === null) {
+		if ($credential !== null) {
+			Auth::login($credential->user);
+
+			return redirect(route('livewire-gallery'));
+		}
+
+		if (!Configs::getValueAsBool('oauth_create_user_on_first_attempt')) {
 			throw new UnauthorizedException('User not found!');
 		}
 
-		Auth::login($credential->user);
+		if (User::query()->where('username', '=', $user->getName())->orWhere('email', '=', $user->getEmail())->exists()) {
+			throw new UnauthorizedException('User already exists!');
+		}
+
+		$create = resolve(Create::class);
+		$new_user = $create->do(
+			username: $user->getName() ?? $user->getEmail() ?? $user->getId(),
+			email: $user->getEmail(),
+			password: strtr(base64_encode(random_bytes(8)), '+/', '-_'),
+			mayUpload: Configs::getValueAsBool('oauth_grant_new_user_upload_rights'),
+			mayEditOwnSettings: Configs::getValueAsBool('oauth_grant_new_user_modification_rights'));
+
+		Auth::login($new_user);
+
+		$this->saveOauth(
+			provider: $provider,
+			authedUser_id: $new_user->id,
+			oauth_id: $user->getId());
 
 		return redirect(route('livewire-gallery'));
+	}
+
+	/**
+	 * Get the user from the driver.
+	 *
+	 * @param OauthProvidersType $provider
+	 *
+	 * @return ContractsUser
+	 */
+	private function getUserFromOauth(OauthProvidersType $provider): ContractsUser
+	{
+		return Socialite::driver($provider->value)->user();
+	}
+
+	/**
+	 * Fetch the Oauth credential and user associated.
+	 *
+	 * @param OauthProvidersType $provider Oauth provider
+	 * @param string             $user_id  to fetch with
+	 *
+	 * @return OauthCredential|null credential if found
+	 */
+	private function fetchAssociatedUserFromDB(OauthProvidersType $provider, string $user_id): OauthCredential|null
+	{
+		return OauthCredential::query()
+			->with(['user'])
+			->where('token_id', '=', $user_id)
+			->where('provider', '=', $provider)
+			->first();
 	}
 
 	/**
@@ -152,13 +204,30 @@ class Oauth extends Controller
 			throw new LycheeLogicException('Oauth credential for that provider already exists.');
 		}
 
-		$credential = OauthCredential::create([
-			'provider' => $provider,
-			'user_id' => $authedUser->id,
-			'token_id' => $user->getId(),
-		]);
-		$credential->save();
+		$this->saveOauth(
+			provider: $provider,
+			authedUser_id: $authedUser->id,
+			oauth_id: $user->getId());
 
 		return redirect(route('profile'));
+	}
+
+	/**
+	 * Save a credential for a user.
+	 *
+	 * @param OauthProvidersType $provider      of credential
+	 * @param int                $authedUser_id user ID already existing in the database
+	 * @param string             $oauth_id      oauth id on the Oauth server side
+	 *
+	 * @return void
+	 */
+	private function saveOauth(OauthProvidersType $provider, int $authedUser_id, string $oauth_id): void
+	{
+		$credential = OauthCredential::create([
+			'provider' => $provider,
+			'user_id' => $authedUser_id,
+			'token_id' => $oauth_id,
+		]);
+		$credential->save();
 	}
 }
