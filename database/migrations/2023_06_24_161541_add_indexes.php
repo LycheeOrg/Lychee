@@ -1,7 +1,5 @@
 <?php
 
-use Doctrine\DBAL\Exception as DBALException;
-use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -19,15 +17,11 @@ return new class() extends Migration {
 	public const IS_LINK_REQUIRED = 'is_link_required';
 	public const PASSWORD = 'password';
 
-	private AbstractSchemaManager $schemaManager;
+	private OptimizeTables $optimize;
 
-	/**
-	 * @throws DBALException
-	 */
 	public function __construct()
 	{
-		$connection = Schema::connection(null)->getConnection();
-		$this->schemaManager = $connection->getDoctrineSchemaManager();
+		$this->optimize = new OptimizeTables();
 	}
 
 	/**
@@ -40,8 +34,7 @@ return new class() extends Migration {
 			$table->index([self::IS_LINK_REQUIRED, self::PASSWORD]); // for albums which are public and how no password
 		});
 
-		$optimize = new OptimizeTables();
-		$optimize->exec();
+		$this->optimize->exec();
 	}
 
 	/**
@@ -50,24 +43,8 @@ return new class() extends Migration {
 	public function down(): void
 	{
 		Schema::table(self::ACCESS_PERMISSIONS, function (Blueprint $table) {
-			$this->dropIndexIfExists($table, self::ACCESS_PERMISSIONS . '_' . self::IS_LINK_REQUIRED . '_index');
-			$this->dropIndexIfExists($table, self::ACCESS_PERMISSIONS . '_' . self::IS_LINK_REQUIRED . '_' . self::PASSWORD . '_index');
+			$this->optimize->dropIndexIfExists($table, self::ACCESS_PERMISSIONS . '_' . self::IS_LINK_REQUIRED . '_index');
+			$this->optimize->dropIndexIfExists($table, self::ACCESS_PERMISSIONS . '_' . self::IS_LINK_REQUIRED . '_' . self::PASSWORD . '_index');
 		});
-	}
-
-	/**
-	 * A helper function that allows to drop an index if exists.
-	 *
-	 * @param Blueprint $table
-	 * @param string    $indexName
-	 *
-	 * @throws DBALException
-	 */
-	private function dropIndexIfExists(Blueprint $table, string $indexName): void
-	{
-		$doctrineTable = $this->schemaManager->introspectTable($table->getTable());
-		if ($doctrineTable->hasIndex($indexName)) {
-			$table->dropIndex($indexName);
-		}
 	}
 };

@@ -18,6 +18,13 @@ return new class() extends Migration {
 	private const IS_SHARE_BUTTON_VISIBLE = 'is_share_button_visible';
 	private const IS_PUBLIC = 'is_public';
 
+	private OptimizeTables $optimize;
+
+	public function __construct()
+	{
+		$this->optimize = new OptimizeTables();
+	}
+
 	/**
 	 * Run the migrations.
 	 */
@@ -34,14 +41,15 @@ return new class() extends Migration {
 		$this->fixBaseAlbumTable();
 		DB::transaction(fn () => $this->populateBaseAlbumTable());
 
-		$optimize = new OptimizeTables();
-		$optimize->exec();
+		$this->optimize->exec();
 	}
 
 	private function dropColumnsBaseAlbumTable(): void
 	{
 		Schema::disableForeignKeyConstraints();
 		Schema::table(self::TABLE_BASE_ALBUMS, function ($table) {
+			$this->optimize->dropIndexIfExists($table, ['requires_link', self::IS_PUBLIC]);
+			$this->optimize->dropIndexIfExists($table, [self::IS_PUBLIC, self::PASSWORD]);
 			$table->dropColumn(self::IS_PUBLIC);
 		});
 		Schema::table(self::TABLE_BASE_ALBUMS, function ($table) {

@@ -15,6 +15,13 @@ return new class() extends Migration {
 
 	private const RANDOM_ID_LENGTH = 24;
 
+	private OptimizeTables $optimize;
+
+	public function __construct()
+	{
+		$this->optimize = new OptimizeTables();
+	}
+
 	/**
 	 * Run the migrations.
 	 */
@@ -31,8 +38,7 @@ return new class() extends Migration {
 		$this->createUserBaseAlbumTable();
 		DB::transaction(fn () => $this->populateUserBaseAlbumTable());
 
-		$optimize = new OptimizeTables();
-		$optimize->exec();
+		$this->optimize->exec();
 	}
 
 	private function createUserBaseAlbumTable(): void

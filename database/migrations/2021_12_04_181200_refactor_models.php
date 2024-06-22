@@ -3,7 +3,6 @@
 use Carbon\Carbon;
 use Carbon\Exceptions\InvalidFormatException;
 use Doctrine\DBAL\Exception as DBALException;
-use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Schema\Blueprint;
@@ -15,6 +14,7 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\ConsoleSectionOutput;
 
 require_once 'TemporaryModels/RefactorAlbumModel_AlbumModel.php';
+require_once 'TemporaryModels/OptimizeTables.php';
 
 /**
  * Migration for new architecture of albums.
@@ -65,12 +65,11 @@ require_once 'TemporaryModels/RefactorAlbumModel_AlbumModel.php';
  * Yikes! :-(
  */
 return new class() extends Migration {
-	private string $driverName;
-	private AbstractSchemaManager $schemaManager;
 	private ConsoleOutput $output;
 	/** @var ProgressBar[] */
 	private array $progressBars;
 	private ConsoleSectionOutput $msgSection;
+	private OptimizeTables $optimize;
 
 	private const SQL_TIMEZONE_NAME = 'UTC';
 	private const SQL_DATETIME_FORMAT = 'Y-m-d H:i:s';
@@ -181,12 +180,10 @@ return new class() extends Migration {
 	 */
 	public function __construct()
 	{
-		$connection = Schema::connection(null)->getConnection();
-		$this->driverName = $connection->getDriverName();
-		$this->schemaManager = $connection->getDoctrineSchemaManager();
 		$this->output = new ConsoleOutput();
 		$this->progressBars = [];
 		$this->msgSection = $this->output->section();
+		$this->optimize = new OptimizeTables();
 	}
 
 	/**
@@ -346,46 +343,46 @@ return new class() extends Migration {
 	private function renameTables(): void
 	{
 		Schema::table('albums', function (Blueprint $table) {
-			$this->dropForeignIfExists($table, 'albums_owner_id_foreign');
+			$this->optimize->dropForeignIfExists($table, 'albums_owner_id_foreign');
 			// We must remove any foreign link from `albums` to `photos` to
 			// break up circular dependencies.
-			$this->dropForeignIfExists($table, 'albums_cover_id_foreign');
-			$this->dropForeignIfExists($table, 'albums_parent_id_foreign');
-			$this->dropIndexIfExists($table, 'albums__lft__rgt_index');
+			$this->optimize->dropForeignIfExists($table, 'albums_cover_id_foreign');
+			$this->optimize->dropForeignIfExists($table, 'albums_parent_id_foreign');
+			$this->optimize->dropIndexIfExists($table, 'albums__lft__rgt_index');
 		});
 		Schema::rename('albums', 'albums_tmp');
 		Schema::table('photos', function (Blueprint $table) {
-			$this->dropForeignIfExists($table, 'photos_album_id_foreign');
-			$this->dropForeignIfExists($table, 'photos_owner_id_foreign');
-			$this->dropIndexIfExists($table, 'photos_created_at_index');
-			$this->dropIndexIfExists($table, 'photos_updated_at_index');
-			$this->dropIndexIfExists($table, 'photos_taken_at_index');
-			$this->dropIndexIfExists($table, 'photos_original_checksum_index');
-			$this->dropIndexIfExists($table, 'photos_checksum_index');
-			$this->dropIndexIfExists($table, 'photos_live_photo_content_id_index');
-			$this->dropIndexIfExists($table, 'photos_livephotocontentid_index');
-			$this->dropIndexIfExists($table, 'photos_live_photo_checksum_index');
-			$this->dropIndexIfExists($table, 'photos_livephotochecksum_index');
-			$this->dropIndexIfExists($table, 'photos_is_public_index');
-			$this->dropIndexIfExists($table, 'photos_is_starred_index');
-			$this->dropIndexIfExists($table, 'photos_album_id_taken_at_index');
-			$this->dropIndexIfExists($table, 'photos_album_id_created_at_index');
-			$this->dropIndexIfExists($table, 'photos_album_id_is_starred_index');
-			$this->dropIndexIfExists($table, 'photos_album_id_is_public_index');
-			$this->dropIndexIfExists($table, 'photos_album_id_type_index');
-			$this->dropIndexIfExists($table, 'photos_album_id_is_starred_created_at_index');
-			$this->dropIndexIfExists($table, 'photos_album_id_is_starred_taken_at_index');
-			$this->dropIndexIfExists($table, 'photos_album_id_is_starred_is_public_index');
-			$this->dropIndexIfExists($table, 'photos_album_id_is_starred_type_index');
+			$this->optimize->dropForeignIfExists($table, 'photos_album_id_foreign');
+			$this->optimize->dropForeignIfExists($table, 'photos_owner_id_foreign');
+			$this->optimize->dropIndexIfExists($table, 'photos_created_at_index');
+			$this->optimize->dropIndexIfExists($table, 'photos_updated_at_index');
+			$this->optimize->dropIndexIfExists($table, 'photos_taken_at_index');
+			$this->optimize->dropIndexIfExists($table, 'photos_original_checksum_index');
+			$this->optimize->dropIndexIfExists($table, 'photos_checksum_index');
+			$this->optimize->dropIndexIfExists($table, 'photos_live_photo_content_id_index');
+			$this->optimize->dropIndexIfExists($table, 'photos_livephotocontentid_index');
+			$this->optimize->dropIndexIfExists($table, 'photos_live_photo_checksum_index');
+			$this->optimize->dropIndexIfExists($table, 'photos_livephotochecksum_index');
+			$this->optimize->dropIndexIfExists($table, 'photos_is_public_index');
+			$this->optimize->dropIndexIfExists($table, 'photos_is_starred_index');
+			$this->optimize->dropIndexIfExists($table, 'photos_album_id_taken_at_index');
+			$this->optimize->dropIndexIfExists($table, 'photos_album_id_created_at_index');
+			$this->optimize->dropIndexIfExists($table, 'photos_album_id_is_starred_index');
+			$this->optimize->dropIndexIfExists($table, 'photos_album_id_is_public_index');
+			$this->optimize->dropIndexIfExists($table, 'photos_album_id_type_index');
+			$this->optimize->dropIndexIfExists($table, 'photos_album_id_is_starred_created_at_index');
+			$this->optimize->dropIndexIfExists($table, 'photos_album_id_is_starred_taken_at_index');
+			$this->optimize->dropIndexIfExists($table, 'photos_album_id_is_starred_is_public_index');
+			$this->optimize->dropIndexIfExists($table, 'photos_album_id_is_starred_type_index');
 		});
 		Schema::rename('photos', 'photos_tmp');
 		Schema::table('web_authn_credentials', function (Blueprint $table) {
-			$this->dropForeignIfExists($table, 'web_authn_credentials_user_id_foreign');
+			$this->optimize->dropForeignIfExists($table, 'web_authn_credentials_user_id_foreign');
 		});
 		Schema::rename('web_authn_credentials', 'web_authn_credentials_tmp');
 		Schema::table('users', function (Blueprint $table) {
-			$this->dropUniqueIfExists($table, 'users_username_unique');
-			$this->dropUniqueIfExists($table, 'users_email_unique');
+			$this->optimize->dropUniqueIfExists($table, 'users_username_unique');
+			$this->optimize->dropUniqueIfExists($table, 'users_email_unique');
 		});
 		Schema::rename('users', 'users_tmp');
 		$this->renamePageContentTable();
@@ -1746,57 +1743,6 @@ return new class() extends Migration {
 			return (bool) ($photo->thumb2x);
 		} else {
 			return $this->getWidth($photo, $variantType) !== 0;
-		}
-	}
-
-	/**
-	 * A helper function that allows to drop an index if exists.
-	 *
-	 * @param Blueprint $table
-	 * @param string    $indexName
-	 *
-	 * @throws DBALException
-	 */
-	private function dropIndexIfExists(Blueprint $table, string $indexName)
-	{
-		$doctrineTable = $this->schemaManager->introspectTable($table->getTable());
-		if ($doctrineTable->hasIndex($indexName)) {
-			$table->dropIndex($indexName);
-		}
-	}
-
-	/**
-	 * A helper function that allows to drop an unique constraint if exists.
-	 *
-	 * @param Blueprint $table
-	 * @param string    $indexName
-	 *
-	 * @throws DBALException
-	 */
-	private function dropUniqueIfExists(Blueprint $table, string $indexName)
-	{
-		$doctrineTable = $this->schemaManager->introspectTable($table->getTable());
-		if ($doctrineTable->hasIndex($indexName)) {
-			$table->dropUnique($indexName);
-		}
-	}
-
-	/**
-	 * A helper function that allows to drop an foreign key if exists.
-	 *
-	 * @param Blueprint $table
-	 * @param string    $indexName
-	 *
-	 * @throws DBALException
-	 */
-	private function dropForeignIfExists(Blueprint $table, string $indexName)
-	{
-		if ($this->driverName === 'sqlite') {
-			return;
-		}
-		$doctrineTable = $this->schemaManager->introspectTable($table->getTable());
-		if ($doctrineTable->hasForeignKey($indexName)) {
-			$table->dropForeign($indexName);
 		}
 	}
 

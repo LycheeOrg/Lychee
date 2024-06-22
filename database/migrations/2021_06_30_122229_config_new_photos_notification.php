@@ -1,32 +1,19 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Support\Facades\DB;
+use App\Legacy\BaseConfigMigration;
 
-return new class() extends Migration {
-	/**
-	 * Run the migrations.
-	 */
-	public function up(): void
+return new class() extends BaseConfigMigration {
+	public function getConfigs(): array
 	{
-		defined('BOOL') or define('BOOL', '0|1');
-
-		DB::table('configs')->insert([
+		return [
 			[
 				'key' => 'new_photos_notification',
 				'value' => '0',
-				'confidentiality' => 0,
+				'confidentiality' => '0',
 				'cat' => 'config',
-				'type_range' => BOOL,
+				'type_range' => self::BOOL,
+				'description' => '',
 			],
-		]);
-	}
-
-	/**
-	 * Reverse the migrations.
-	 */
-	public function down(): void
-	{
-		DB::table('configs')->where('key', '=', 'new_photos_notification')->delete();
+		];
 	}
 };

@@ -1,34 +1,19 @@
 <?php
 
-/** @noinspection PhpUndefinedClassInspection */
+use App\Legacy\BaseConfigMigration;
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Support\Facades\DB;
-
-return new class() extends Migration {
-	/**
-	 * Run the migrations.
-	 */
-	public function up(): void
+return new class() extends BaseConfigMigration {
+	public function getConfigs(): array
 	{
-		defined('INT') or define('INT', 'int');
-
-		DB::table('configs')->insert([
+		return [
 			[
 				'key' => 'update_check_every_days',
 				'value' => '3',
-				'confidentiality' => 2,
+				'confidentiality' => '2',
 				'cat' => 'Config',
-				'type_range' => INT,
+				'type_range' => self::INT,
+				'description' => '',
 			],
-		]);
-	}
-
-	/**
-	 * Reverse the migrations.
-	 */
-	public function down(): void
-	{
-		DB::table('configs')->where('key', '=', 'update_check_every_days')->delete();
+		];
 	}
 };

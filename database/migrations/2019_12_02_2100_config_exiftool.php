@@ -1,36 +1,19 @@
 <?php
 
-/** @noinspection PhpUndefinedClassInspection */
+use App\Legacy\BaseConfigMigration;
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Support\Facades\DB;
-
-return new class() extends Migration {
-	/**
-	 * Run the migrations.
-	 */
-	public function up(): void
+return new class() extends BaseConfigMigration {
+	public function getConfigs(): array
 	{
-		defined('BOOL') or define('BOOL', '0|1');
-
-		DB::table('configs')->insert([
+		return [
 			[
 				'key' => 'has_exiftool',
-				'value' => null,
-				'confidentiality' => 2,
+				'value' => '',
+				'confidentiality' => '2',
 				'cat' => 'Image Processing',
-				'type_range' => BOOL,
+				'type_range' => self::BOOL,
+				'description' => '',
 			],
-		]);
-	}
-
-	/**
-	 * Reverse the migrations.
-	 */
-	public function down(): void
-	{
-		if (env('DB_DROP_CLEAR_TABLES_ON_ROLLBACK', false) !== false) {
-			DB::table('configs')->where('key', '=', 'has_exiftool')->delete();
-		}
+		];
 	}
 };

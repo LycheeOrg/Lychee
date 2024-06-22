@@ -43,16 +43,6 @@ abstract class BaseOptimizer
 	}
 
 	/**
-	 * get the list of tables in the Database.
-	 *
-	 * @return array<int,string>
-	 */
-	protected function getTables(): array
-	{
-		return $this->connection->getDoctrineSchemaManager()->listTableNames();
-	}
-
-	/**
 	 * Do the stuff.
 	 *
 	 * @return array<int,string>

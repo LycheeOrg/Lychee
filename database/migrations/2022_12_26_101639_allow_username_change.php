@@ -1,35 +1,19 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Support\Facades\DB;
+use App\Legacy\BaseConfigMigration;
 
-return new class() extends Migration {
-	/**
-	 * Run the migrations.
-	 */
-	public function up(): void
+return new class() extends BaseConfigMigration {
+	public function getConfigs(): array
 	{
-		DB::table('configs')->insert([
+		return [
 			[
 				'key' => 'allow_username_change',
 				'value' => '1',
-				'confidentiality' => 0,
 				'cat' => 'config',
 				'type_range' => '0|1',
+				'confidentiality' => '0',
 				'description' => 'Allow users to change their username.',
 			],
-		]);
-	}
-
-	/**
-	 * Reverse the migrations.
-	 *
-	 * @throws InvalidArgumentException
-	 */
-	public function down(): void
-	{
-		DB::table('configs')
-			->where('key', '=', 'allow_username_change')
-			->delete();
+		];
 	}
 };

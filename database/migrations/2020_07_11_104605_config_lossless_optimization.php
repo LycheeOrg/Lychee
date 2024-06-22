@@ -1,31 +1,19 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Support\Facades\DB;
+use App\Legacy\BaseConfigMigration;
 
-return new class() extends Migration {
-	/**
-	 * Run the migrations.
-	 */
-	public function up(): void
+return new class() extends BaseConfigMigration {
+	public function getConfigs(): array
 	{
-		defined('BOOL') or define('BOOL', '0|1');
-		DB::table('configs')->insert([
+		return [
 			[
 				'key' => 'lossless_optimization',
 				'value' => '0',
 				'confidentiality' => '2',
 				'cat' => 'Image Processing',
-				'type_range' => BOOL,
+				'type_range' => self::BOOL,
+				'description' => '',
 			],
-		]);
-	}
-
-	/**
-	 * Reverse the migrations.
-	 */
-	public function down(): void
-	{
-		DB::table('configs')->where('key', '=', 'lossless_optimization')->delete();
+		];
 	}
 };

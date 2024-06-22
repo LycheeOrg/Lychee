@@ -1,22 +1,18 @@
 <?php
 
-use Doctrine\DBAL\Exception as DBALException;
-use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-return new class() extends Migration {
-	private AbstractSchemaManager $schemaManager;
+require_once 'TemporaryModels/OptimizeTables.php';
 
-	/**
-	 * @throws DBALException
-	 */
+return new class() extends Migration {
+	private OptimizeTables $optimize;
+
 	public function __construct()
 	{
-		$connection = Schema::connection(null)->getConnection();
-		$this->schemaManager = $connection->getDoctrineSchemaManager();
+		$this->optimize = new OptimizeTables();
 	}
 
 	/**
@@ -41,28 +37,12 @@ return new class() extends Migration {
 	 */
 	public function down(): void
 	{
-		Schema::table('photos', function (Blueprint $table) {
-			$this->dropIndexIfExists($table, 'photo_id_type_ratio_index');
+		Schema::table('size_variants', function (Blueprint $table) {
+			$this->optimize->dropIndexIfExists($table, 'size_variants_photo_id_type_ratio_index');
 		});
 
 		Schema::table('size_variants', function (Blueprint $table) {
 			$table->dropColumn('ratio');
 		});
-	}
-
-	/**
-	 * A helper function that allows to drop an index if exists.
-	 *
-	 * @param Blueprint $table
-	 * @param string    $indexName
-	 *
-	 * @throws DBALException
-	 */
-	private function dropIndexIfExists(Blueprint $table, string $indexName): void
-	{
-		$doctrineTable = $this->schemaManager->introspectTable($table->getTable());
-		if ($doctrineTable->hasIndex($indexName)) {
-			$table->dropIndex($indexName);
-		}
 	}
 };

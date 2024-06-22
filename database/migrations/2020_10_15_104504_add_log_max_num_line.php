@@ -1,32 +1,19 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Support\Facades\DB;
+use App\Legacy\BaseConfigMigration;
 
-return new class() extends Migration {
-	/**
-	 * Run the migrations.
-	 */
-	public function up(): void
+return new class() extends BaseConfigMigration {
+	public function getConfigs(): array
 	{
-		defined('INT') or define('INT', 'int');
-
-		DB::table('configs')->insert([
+		return [
 			[
 				'key' => 'log_max_num_line',
 				'value' => '1000',
 				'confidentiality' => '2',
 				'cat' => 'Admin',
-				'type_range' => INT,
+				'type_range' => self::INT,
+				'description' => '',
 			],
-		]);
-	}
-
-	/**
-	 * Reverse the migrations.
-	 */
-	public function down(): void
-	{
-		DB::table('configs')->where('key', '=', 'log_max_num_line')->delete();
+		];
 	}
 };
