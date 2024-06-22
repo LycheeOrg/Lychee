@@ -127,7 +127,11 @@ class Oauth extends Controller
 			throw new UnauthorizedException('User not found!');
 		}
 
-		if (User::query()->where('username', '=', $user->getName())->orWhere('email', '=', $user->getEmail())->exists()) {
+		if (User::query()->where('username', '=', $user->getName() ?? $user->getEmail() ?? $user->getId())
+			->when(
+				$user->getEmail() !== null && $user->getEmail() !== '',
+				fn ($q) => $q->orWhere('email', '=', $user->getEmail())
+			)->exists()) {
 			throw new UnauthorizedException('User already exists!');
 		}
 
