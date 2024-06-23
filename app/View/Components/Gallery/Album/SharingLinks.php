@@ -2,7 +2,6 @@
 
 namespace App\View\Components\Gallery\Album;
 
-use App\Contracts\Models\AbstractAlbum;
 use Illuminate\View\Component;
 use Illuminate\View\View;
 
@@ -14,11 +13,11 @@ class SharingLinks extends Component
 	public string $url;
 	public string $rawUrl;
 
-	public function __construct(AbstractAlbum $album)
+	public function __construct(string $albumId, string $albumTitle)
 	{
-		$this->url = route('livewire-gallery-album', ['albumId' => $album->id]);
+		$this->url = route('livewire-gallery-album', ['albumId' => $albumId]);
 		$this->rawUrl = rawurlencode($this->url);
-		$raw_title = rawurlencode($album->title);
+		$raw_title = rawurlencode($albumTitle);
 		$this->twitter_link = 'https://twitter.com/share?url=' . $this->rawUrl;
 		$this->facebook_link = 'https://www.facebook.com/sharer.php?u=' . $this->rawUrl . '?t=' . $raw_title;
 		$this->mailTo_link = 'mailto:?subject=' . $raw_title . '&body=' . $this->rawUrl;
