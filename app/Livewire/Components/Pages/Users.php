@@ -81,10 +81,10 @@ class Users extends Component
 
 		// Create user
 		$this->create->do(
-			$this->username,
-			$this->password,
-			$this->may_upload,
-			$this->may_edit_own_settings);
+			username: $this->username,
+			password: $this->password,
+			mayUpload: $this->may_upload,
+			mayEditOwnSettings: $this->may_edit_own_settings);
 
 		// reset attributes and reload user list (triggers refresh)
 		$this->username = '';
