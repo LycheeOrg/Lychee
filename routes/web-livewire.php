@@ -43,7 +43,7 @@ Route::prefix(Features::when('livewire', '', 'livewire'))
 		Route::get('/jobs', Jobs::class)->name('jobs');
 		Route::get('/maintenance', Maintenance::class)->name('maintenance');
 
-		Route::middleware(['login_required'])
+		Route::middleware(['login_required:album'])
 			->group(function () {
 				Route::get('/map/{albumId?}', Map::class)->name('livewire-map');
 				Route::get('/frame/{albumId?}', Frame::class)->name('livewire-frame');
@@ -58,7 +58,7 @@ Route::middleware(['installation:complete', 'migration:complete'])
 		Route::prefix(Features::when('livewire', '', 'livewire'))
 			->group(function () {
 				Route::get('/landing', Landing::class)->name('landing');
-				Route::get('/gallery', Albums::class)->middleware(['login_required'])->name('livewire-gallery');
+				Route::get('/gallery', Albums::class)->middleware(['login_required:root'])->name('livewire-gallery');
 				Route::get('/', [RedirectController::class, 'view'])->name('livewire-index');
 			});
 	});

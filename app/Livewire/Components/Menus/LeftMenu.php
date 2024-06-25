@@ -132,6 +132,6 @@ class LeftMenu extends Component implements Openable
 		$this->doc_api_url = Route::has('scramble.docs.api') ? route('scramble.docs.api') : null;
 
 		// Double check to avoid showing an empty section.
-		$this->has_dev_tools = $this->doc_api_url !== null && $this->clockwork_url !== null;
+		$this->has_dev_tools = $this->doc_api_url !== null || $this->clockwork_url !== null;
 	}
 }
