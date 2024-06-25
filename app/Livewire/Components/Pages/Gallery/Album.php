@@ -28,7 +28,6 @@ use Illuminate\Database\Eloquent\RelationNotFoundException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
-use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Renderless;
 
@@ -42,8 +41,6 @@ class Album extends BaseAlbumComponent implements Reloadable
 {
 	private AlbumFactory $albumFactory;
 	private AlbumFormatted $formatted;
-
-	#[Locked] public bool $is_search_accessible = false;
 	public ?AbstractAlbum $album = null;
 
 	/**
@@ -134,8 +131,7 @@ class Album extends BaseAlbumComponent implements Reloadable
 	{
 		$this->album = $this->albumFactory->findAbstractAlbumOrFail($this->albumId);
 		$this->flags->is_base_album = $this->album instanceof BaseAlbum;
-		$this->is_search_accessible = Auth::check() || Configs::getValueAsBool('search_public');
-		$this->is_search_accessible = $this->is_search_accessible && $this->album instanceof ModelsAlbum;
+		$this->flags->is_search_accessible = $this->flags->is_search_accessible && $this->album instanceof ModelsAlbum;
 		$this->flags->is_accessible = Gate::check(AlbumPolicy::CAN_ACCESS, [ModelsAlbum::class, $this->album]);
 
 		if (!$this->flags->is_accessible) {

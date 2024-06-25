@@ -27,7 +27,7 @@
 		<div class=" translate-x-[8.75rem] z-50 absolute bg-bg-900 text-xs rounded"
 			x-show.transition.opacity="isSearchPhotoOpen">
 			<ul class="max-h-[50vh] overflow-y-auto">
-				@if(strlen( $search ) === 0)
+				@if(strlen( $search ?? '' ) === 0)
 					<li class="border-b border-bg-800 cursor-pointer transition-all ease-in-out duration-300
 								hover:bg-gradient-to-b hover:from-primary-500 hover:to-primary-600 hover:text-text-main-0"
 						wire:click="select('{{ \App\Livewire\Components\Forms\Album\SetHeader::COMPACT_HEADER }}','{{ __('lychee.SET_COMPACT_HEADER') }}')">
@@ -48,7 +48,7 @@
 						</a>
 					</li>
 				@empty
-					@if(strlen( $search ) > 0)
+					@if(strlen( $search ?? '' ) > 0)
 					<li class="border-b border-bg-800 cursor-pointer transition-all ease-in-out duration-300
 								hover:bg-gradient-to-b hover:from-primary-500 hover:to-primary-600 hover:text-text-main-0">
 						<a class="px-3 py-1 flex items-center">No results for "{{ $search }}"</a>
