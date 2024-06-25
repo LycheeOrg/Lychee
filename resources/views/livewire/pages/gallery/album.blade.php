@@ -4,10 +4,10 @@
     @entangle('sessionFlags.is_fullscreen'),
     @entangle('sessionFlags.are_photo_details_open'),
     @js($this->rights),
-    @js($album->id),
+    @js($this->album->id),
     @js($this->albumIDs),
     @js($this->photosResource),
-    @js($photoId),
+    @js($this->photoId),
     @js($this->overlayType),
     @js($this->layouts)
 )" @keydown.window="handleKeydown(event)" @popstate.window="handlePopState(event)">
@@ -15,7 +15,7 @@
     <x-header.bar class="opacity-0" x-bind:class="isFullscreen ? 'opacity-0 h-0' : 'opacity-100 h-14'">
         <x-header.back wire:navigate href="{{ $this->back }}" />
         <x-header.title>{{ $this->title }}</x-header.title>
-        @if($is_search_accessible)
+        @if($this->flags->is_search_accessible)
         <x-header.button class="flex flex-grow justify-end" href="{{ route('livewire-search', ['albumId' => $this->album->id]) }}" wire:navigate icon="magnifying-glass" />
         @endif
         <x-header.actions-menus />
@@ -26,9 +26,9 @@
                 x-show="!albumFlags.isDetailsOpen" />
         @endif
     </x-header.bar>
-    @if ($flags->is_password_protected)
+    @if ($this->flags->is_password_protected)
         <livewire:forms.album.unlock-album :albumID="$albumId" :back="$this->back" />
-    @elseif(!$flags->is_accessible)
+    @elseif(!$this->flags->is_accessible)
         <x-gallery.album.login-dialog />
     @else
         <div id="lychee_view_content"
@@ -37,26 +37,26 @@
             @if ($this->rights->can_edit)
                 <x-gallery.album.menu.menu />
             @endif
-            @if ($this->albumFormatted !== null && ($num_albums > 0 || $num_photos > 0))
+            @if ($this->albumFormatted !== null && ($this->num_albums > 0 || $this->num_photos > 0))
                 <x-gallery.album.hero x-show="! albumFlags.isDetailsOpen" />
                 <x-gallery.album.details x-show="! albumFlags.isDetailsOpen" />
             @endif
-            @if ($num_albums === 0 && $num_photos === 0)
+            @if ($this->num_albums === 0 && $this->num_photos === 0)
                 <div class="flex w-full h-full items-center justify-center text-xl text-text-main-400">
                     <span class="block">
                     {{ $this->noImagesAlbumsMessage }}
                     </span>
                 </div>
             @endif
-            @if ($num_albums > 0 && $num_photos > 0)
+            @if ($this->num_albums > 0 && $this->num_photos > 0)
                 <x-gallery.divider title="{{ __('lychee.ALBUMS') }}" />
             @endif
-            @if ($num_albums > 0)
+            @if ($this->num_albums > 0)
                 @foreach ($this->albums as $data)
                     <x-gallery.album.thumbs.album :data="$data" :str-aspect-ratio-class="$this->flags->album_thumb_css_aspect_ratio" :cover-id="$this->flags->cover_id" />
                 @endforeach
             @endif
-            @if ($num_albums > 0 && $num_photos > 0)
+            @if ($this->num_albums > 0 && $this->num_photos > 0)
                 <x-gallery.divider title="{{ __('lychee.PHOTOS') }}" />
             @endif
             <x-gallery.view.photo-listing />
@@ -65,7 +65,7 @@
             @endif
         </div>
         <x-gallery.view.photo />
-        <x-gallery.album.sharing-links :album="$this->album" x-show="albumFlags.isSharingLinksOpen" />
+        <x-gallery.album.sharing-links :album-id="$this->album->id" :album-title="$this->album->title" x-show="albumFlags.isSharingLinksOpen" />
     @endif
     @auth
         <livewire:modules.jobs.feedback />

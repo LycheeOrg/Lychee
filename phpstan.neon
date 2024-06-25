@@ -109,11 +109,6 @@ parameters:
 			paths:
 				- database/migrations
 
-		-
-			message: '#with generic class Doctrine\\DBAL\\Schema\\AbstractSchemaManager does not specify its types: T#'
-			paths:
-				- database/migrations
-
 		# Configs
 		-
 			message: '#Cast to bool is forbidden.#'

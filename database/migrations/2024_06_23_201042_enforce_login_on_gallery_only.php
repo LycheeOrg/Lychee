@@ -3,18 +3,18 @@
 use App\Models\Extensions\BaseConfigMigration;
 
 return new class() extends BaseConfigMigration {
-	public const PROCESSING = 'Image Processing';
+	public const GALLERY = 'Gallery';
 
 	public function getConfigs(): array
 	{
 		return [
 			[
-				'key' => 'job_processing_queue_visible',
+				'key' => 'login_required_root_only',
 				'value' => '1',
 				'is_secret' => false,
-				'cat' => self::PROCESSING,
+				'cat' => self::GALLERY,
 				'type_range' => self::BOOL,
-				'description' => 'Enable the processing queue in the bottom left corner.',
+				'description' => 'Require user to login only on root. A user with a direct link to an album can still access it.',
 			],
 		];
 	}

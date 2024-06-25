@@ -8,14 +8,14 @@ use Illuminate\Support\Facades\DB;
 use function Safe\exec;
 
 return new class() extends Migration {
+	public const BOOL = '0|1';
+	public const TERNARY = '0|1|2';
+
 	/**
 	 * Run the migrations.
 	 */
 	public function up(): void
 	{
-		defined('BOOL') or define('BOOL', '0|1');
-		defined('TERNARY') or define('TERNARY', '0|1|2');
-
 		if (Helpers::isExecAvailable()) {
 			// Let's run the check for exiftool right here
 			$has_exiftool = 2; // not set
@@ -37,7 +37,7 @@ return new class() extends Migration {
 			->update(
 				[
 					'value' => $has_exiftool,
-					'type_range' => TERNARY,
+					'type_range' => self::TERNARY,
 				]
 			);
 	}
@@ -47,13 +47,11 @@ return new class() extends Migration {
 	 */
 	public function down(): void
 	{
-		defined('BOOL') or define('BOOL', '0|1');
-
 		DB::table('configs')->where('key', '=', 'has_exiftool')
 			->update(
 				[
 					'value' => null,
-					'type_range' => BOOL,
+					'type_range' => self::BOOL,
 				]
 			);
 	}

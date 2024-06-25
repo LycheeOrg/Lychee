@@ -25,6 +25,13 @@ return new class() extends Migration {
 	private const DATETIME_PRECISION = 0;
 	private const RANDOM_ID_LENGTH = 24;
 
+	private OptimizeTables $optimize;
+
+	public function __construct()
+	{
+		$this->optimize = new OptimizeTables();
+	}
+
 	/**
 	 * Run the migrations.
 	 */
@@ -33,8 +40,7 @@ return new class() extends Migration {
 		$this->createAccessPermissionTable();
 		DB::transaction(fn () => $this->populateAccessPermissionTable());
 
-		$optimize = new OptimizeTables();
-		$optimize->exec();
+		$this->optimize->exec();
 	}
 
 	/**

@@ -3,6 +3,7 @@
 namespace App\Actions\Db;
 
 use App\Enum\DbDriverType;
+use Illuminate\Support\Facades\Schema;
 
 class OptimizeTables extends BaseOptimizer
 {
@@ -13,7 +14,8 @@ class OptimizeTables extends BaseOptimizer
 	{
 		$ret = ['Optimizing tables.'];
 		$driverName = $this->getDriverType($ret);
-		$tables = $this->getTables();
+		/** @var array{name:string,schema:?string,size:int,comment:?string,collation:?string,engine:?string}[] */
+		$tables = Schema::getTables();
 
 		/** @var string|null $sql */
 		$sql = match ($driverName) {
@@ -30,7 +32,7 @@ class OptimizeTables extends BaseOptimizer
 		}
 
 		foreach ($tables as $table) {
-			$this->execStatement($sql . $table, $table . ' analyzed.', $ret);
+			$this->execStatement($sql . $table['name'], $table['name'] . ' analyzed.', $ret);
 		}
 
 		return $ret;

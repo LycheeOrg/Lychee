@@ -135,14 +135,14 @@ class PhotoResource extends JsonResource
 			'resolution' => $original?->width . ' x ' . $original?->height,
 			'latitude' => Helpers::decimalToDegreeMinutesSeconds($this->resource->latitude, true),
 			'longitude' => Helpers::decimalToDegreeMinutesSeconds($this->resource->longitude, false),
-			'altitude' => round($this->resource->altitude, 1) . 'm',
+			'altitude' => $this->resource->altitude !== null ? round($this->resource->altitude, 1) . 'm' : '',
 			'license' => $this->resource->license !== LicenseType::NONE ? $this->resource->license->localization() : '',
 			'description' => ($this->resource->description ?? '') === '' ? '' : Markdown::convert($this->resource->description)->getContent(),
 		];
 	}
 
 	/**
-	 * @return array<string,mixed>
+	 * @return array<string,bool>
 	 */
 	private function precomputed(): array
 	{

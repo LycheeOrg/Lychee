@@ -4,7 +4,6 @@ use App\Legacy\BaseConfigMigration;
 
 return new class() extends BaseConfigMigration {
 	public const GALLERY = 'Gallery';
-	public const BOOL = '0|1';
 
 	public function getConfigs(): array
 	{

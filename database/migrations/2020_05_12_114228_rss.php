@@ -1,49 +1,35 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Support\Facades\DB;
+use App\Legacy\BaseConfigMigration;
 
-return new class() extends Migration {
-	/**
-	 * Run the migrations.
-	 */
-	public function up(): void
+return new class() extends BaseConfigMigration {
+	public function getConfigs(): array
 	{
-		defined('BOOL') or define('BOOL', '0|1');
-		defined('INT') or define('INT', 'int');
-
-		DB::table('configs')->insert([
+		return [
 			[
 				'key' => 'rss_enable',
 				'value' => '0',
 				'confidentiality' => '0',
 				'cat' => 'Mod RSS',
-				'type_range' => BOOL,
+				'type_range' => self::BOOL,
+				'description' => '',
 			],
 			[
 				'key' => 'rss_recent_days',
 				'value' => '7',
 				'confidentiality' => '0',
 				'cat' => 'Mod RSS',
-				'type_range' => INT,
+				'type_range' => self::INT,
+				'description' => '',
 			],
 			[
 				'key' => 'rss_max_items',
 				'value' => '100',
 				'confidentiality' => '0',
 				'cat' => 'Mod RSS',
-				'type_range' => INT,
+				'type_range' => self::INT,
+				'description' => '',
 			],
-		]);
-	}
-
-	/**
-	 * Reverse the migrations.
-	 */
-	public function down(): void
-	{
-		DB::table('configs')->where('key', '=', 'rss_enable')->delete();
-		DB::table('configs')->where('key', '=', 'rss_recent_days')->delete();
-		DB::table('configs')->where('key', '=', 'rss_max_items')->delete();
+		];
 	}
 };

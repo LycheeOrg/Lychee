@@ -10,6 +10,10 @@ use Illuminate\Support\Facades\DB;
  */
 abstract class BaseConfigMigration extends Migration
 {
+	public const BOOL = '0|1';
+	public const POSITIVE = 'positive';
+	public const INT = 'int';
+
 	/**
 	 * @return array<int,array{key:string,value:string,confidentiality:string,cat:string,type_range:string,description:string}>
 	 */

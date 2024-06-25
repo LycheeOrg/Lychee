@@ -1,34 +1,19 @@
 <?php
 
-/** @noinspection PhpUndefinedClassInspection */
+use App\Legacy\BaseConfigMigration;
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Support\Facades\DB;
-
-return new class() extends Migration {
-	/**
-	 * Run the migrations.
-	 */
-	public function up(): void
+return new class() extends BaseConfigMigration {
+	public function getConfigs(): array
 	{
-		defined('MAP_PROVIDERS') or define('MAP_PROVIDERS', 'Wikimedia|OpenStreetMap.org|OpenStreetMap.de|OpenStreetMap.fr|RRZE');
-
-		DB::table('configs')->insert([
+		return [
 			[
 				'key' => 'map_provider',
 				'value' => 'Wikimedia',
-				'confidentiality' => 0,
+				'confidentiality' => '0',
 				'cat' => 'Mod Map',
-				'type_range' => MAP_PROVIDERS,
+				'type_range' => 'Wikimedia|OpenStreetMap.org|OpenStreetMap.de|OpenStreetMap.fr|RRZE',
+				'description' => '',
 			],
-		]);
-	}
-
-	/**
-	 * Reverse the migrations.
-	 */
-	public function down(): void
-	{
-		DB::table('configs')->where('key', '=', 'map_provider')->delete();
+		];
 	}
 };

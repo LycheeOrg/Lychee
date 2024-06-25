@@ -4,8 +4,6 @@ use App\Legacy\BaseConfigMigration;
 
 return new class() extends BaseConfigMigration {
 	public const MOD_SEARCH = 'Mod Search';
-	public const POSITIVE = 'positive';
-	public const BOOL = '0|1';
 
 	public function getConfigs(): array
 	{

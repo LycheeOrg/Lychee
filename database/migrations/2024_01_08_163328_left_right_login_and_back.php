@@ -6,7 +6,6 @@ return new class() extends BaseConfigMigration {
 	public const CONFIG = 'config';
 	public const BACK_BUTTON = 'Mod Back Button';
 	public const ENUM = 'left|right';
-	public const BOOL = '0|1';
 	public const STRING = 'string';
 
 	public function getConfigs(): array
