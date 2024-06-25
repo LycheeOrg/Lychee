@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "aws/aws-crt-php",
-            "version": "v1.2.5",
+            "version": "v1.2.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/awslabs/aws-crt-php.git",
-                "reference": "0ea1f04ec5aa9f049f97e012d1ed63b76834a31b"
+                "reference": "a63485b65b6b3367039306496d49737cf1995408"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/awslabs/aws-crt-php/zipball/0ea1f04ec5aa9f049f97e012d1ed63b76834a31b",
-                "reference": "0ea1f04ec5aa9f049f97e012d1ed63b76834a31b",
+                "url": "https://api.github.com/repos/awslabs/aws-crt-php/zipball/a63485b65b6b3367039306496d49737cf1995408",
+                "reference": "a63485b65b6b3367039306496d49737cf1995408",
                 "shasum": ""
             },
             "require": {
@@ -56,22 +56,22 @@
             ],
             "support": {
                 "issues": "https://github.com/awslabs/aws-crt-php/issues",
-                "source": "https://github.com/awslabs/aws-crt-php/tree/v1.2.5"
+                "source": "https://github.com/awslabs/aws-crt-php/tree/v1.2.6"
             },
-            "time": "2024-04-19T21:30:56+00:00"
+            "time": "2024-06-13T17:21:28+00:00"
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.314.6",
+            "version": "3.314.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "d04da330b0201edab71edd33a03b8d5ad6e4a313"
+                "reference": "3a7ea3e49ae50eaaa969dc15d69b2dd46b4d7284"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/d04da330b0201edab71edd33a03b8d5ad6e4a313",
-                "reference": "d04da330b0201edab71edd33a03b8d5ad6e4a313",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/3a7ea3e49ae50eaaa969dc15d69b2dd46b4d7284",
+                "reference": "3a7ea3e49ae50eaaa969dc15d69b2dd46b4d7284",
                 "shasum": ""
             },
             "require": {
@@ -151,9 +151,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.314.6"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.314.7"
             },
-            "time": "2024-06-20T18:09:51+00:00"
+            "time": "2024-06-24T21:03:27+00:00"
         },
         {
             "name": "bepsvpt/secure-headers",
@@ -3655,33 +3655,33 @@
         },
         {
             "name": "lychee-org/php-exif",
-            "version": "v1.0.2",
+            "version": "v1.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/LycheeOrg/php-exif.git",
-                "reference": "12c4976d2dea44fc4eb3b9dd33428b95ba7461c0"
+                "reference": "8a44f53dbf91e835b187b57358cb16137012e1fa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/LycheeOrg/php-exif/zipball/12c4976d2dea44fc4eb3b9dd33428b95ba7461c0",
-                "reference": "12c4976d2dea44fc4eb3b9dd33428b95ba7461c0",
+                "url": "https://api.github.com/repos/LycheeOrg/php-exif/zipball/8a44f53dbf91e835b187b57358cb16137012e1fa",
+                "reference": "8a44f53dbf91e835b187b57358cb16137012e1fa",
                 "shasum": ""
             },
             "require": {
                 "ext-fileinfo": "*",
-                "fylax/forceutf8": "^3.0.1",
-                "php": "^8.1",
-                "php-ffmpeg/php-ffmpeg": "^1.0",
-                "thecodingmachine/safe": "^2.2"
+                "fylax/forceutf8": "^3.0.3",
+                "php": "^8.2",
+                "php-ffmpeg/php-ffmpeg": "^1.2",
+                "thecodingmachine/safe": "^2.5"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "^3.3",
-                "infection/infection": "^0.26.13",
-                "lychee-org/phpstan-lychee": "^1.0.1",
-                "php-parallel-lint/php-parallel-lint": "^1.2",
-                "phpmd/phpmd": "^2.9",
+                "friendsofphp/php-cs-fixer": "^3.51",
+                "infection/infection": "^0.27.10",
+                "lychee-org/phpstan-lychee": "^1.0.4",
+                "php-parallel-lint/php-parallel-lint": "^1.3.2",
+                "phpmd/phpmd": "^2.15",
                 "phpunit/phpunit": "^9.5.10",
-                "squizlabs/php_codesniffer": "^3.5",
+                "squizlabs/php_codesniffer": "^3.9",
                 "thecodingmachine/phpstan-safe-rule": "^1.2"
             },
             "suggest": {
@@ -3738,10 +3738,10 @@
                 "tiff"
             ],
             "support": {
-                "source": "https://github.com/LycheeOrg/php-exif/tree/v1.0.2",
+                "source": "https://github.com/LycheeOrg/php-exif/tree/v1.0.3",
                 "issues": "https://github.com/LycheeOrg/php-exif/issues"
             },
-            "time": "2023-04-11T11:03:27+00:00"
+            "time": "2024-06-25T15:36:19+00:00"
         },
         {
             "name": "maennchen/zipstream-php",
@@ -5094,16 +5094,16 @@
         },
         {
             "name": "phpseclib/phpseclib",
-            "version": "3.0.38",
+            "version": "3.0.39",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpseclib/phpseclib.git",
-                "reference": "b18b8788e51156c4dd97b7f220a31149a0052067"
+                "reference": "211ebc399c6e73c225a018435fe5ae209d1d1485"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/b18b8788e51156c4dd97b7f220a31149a0052067",
-                "reference": "b18b8788e51156c4dd97b7f220a31149a0052067",
+                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/211ebc399c6e73c225a018435fe5ae209d1d1485",
+                "reference": "211ebc399c6e73c225a018435fe5ae209d1d1485",
                 "shasum": ""
             },
             "require": {
@@ -5184,7 +5184,7 @@
             ],
             "support": {
                 "issues": "https://github.com/phpseclib/phpseclib/issues",
-                "source": "https://github.com/phpseclib/phpseclib/tree/3.0.38"
+                "source": "https://github.com/phpseclib/phpseclib/tree/3.0.39"
             },
             "funding": [
                 {
@@ -5200,7 +5200,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-06-17T10:11:32+00:00"
+            "time": "2024-06-24T06:27:33+00:00"
         },
         {
             "name": "psr/cache",
