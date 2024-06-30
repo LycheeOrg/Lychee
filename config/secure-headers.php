@@ -413,7 +413,7 @@ return [
 				[
 					'blob:', // required for "live" photos
 				],
-				// Add the S3 URL to the list of allowed image sources
+				// Add the S3 URL to the list of allowed media sources
 				env('AWS_ACCESS_KEY_ID', '') === '' ? [] :
 				[
 					// @phpstan-ignore-next-line
