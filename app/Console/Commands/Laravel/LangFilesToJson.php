@@ -66,7 +66,7 @@ class LangFilesToJson extends Command
 	public function handle(): void
 	{
 		$sourceDir = base_path('lang/');
-		$targetDir = resource_path('lang/');
+		$targetDir = base_path('lang/');
 
 		$languages = array_diff(scandir($sourceDir), ['.', '..']);
 

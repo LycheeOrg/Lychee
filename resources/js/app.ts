@@ -4,16 +4,21 @@
  * building robust, powerful web applications using Vue and Laravel.
  */
 
-import "./bootstrap";
+import axios from "axios";
 import { createApp } from "vue";
 import PrimeVue from "primevue/config";
 import { createRouter, createWebHistory } from "vue-router";
 import { routes } from "@/router/routes";
 import Aura from "@primevue/themes/aura";
-// import Aura from "@/presets/aura";
 import { i18nVue } from "laravel-vue-i18n";
 import ToastService from "primevue/toastservice";
 import AxiosConfig from "@/config/axios-config";
+import { createI18n } from 'vue-i18n'
+
+// @ts-expect-error
+window.axios = axios;
+// @ts-expect-error
+window.axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
 
 const router = createRouter({
 	history: createWebHistory(),
@@ -39,6 +44,10 @@ app.use(PrimeVue, {
 
 import AppComponent from "@/views/App.vue";
 
+const i18n = createI18n({
+	// ...
+  })
+
 app.component("app", AppComponent);
 app.use(router);
 app.use(ToastService);
@@ -54,12 +63,11 @@ app.use(ToastService);
 // Object.entries(import.meta.glob('./**/*.vue', { eager: true })).forEach(([path, definition]) => {
 //     app.component(path.split('/').pop().replace(/\.\w+$/, ''), definition.default);
 // });
-
 app.use(i18nVue, {
 	resolve: async (lang: string) => {
 		// @ts-expect-error
-		const langs = import.meta.glob("../lang/*.json");
-		return await langs[`../lang/${lang}.json`]();
+		const langs = import.meta.glob("../../lang/*.json");
+		return await langs[`../../lang/${lang}.json`]();
 	},
 });
 

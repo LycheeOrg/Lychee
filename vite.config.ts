@@ -21,7 +21,7 @@ export default defineConfig({
         },
       },
     }),
-    i18n('resources/lang'),
+    i18n(),
   ],
   server: {
     watch: {
