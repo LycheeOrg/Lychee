@@ -78,8 +78,8 @@ class Extractor
 			//  3. Imagick (not for videos, i.e. for supported photos and accepted raw files only)
 			//  4. Native PHP exif reader (last resort)
 			$reader = match (true) {
-				(Configs::hasFFmpeg() && $isSupportedVideo) => Reader::factory(ReaderType::FFPROBE),
-				Configs::hasExiftool() => Reader::factory(ReaderType::EXIFTOOL),
+				(Configs::hasFFmpeg() && $isSupportedVideo) => Reader::factory(ReaderType::FFPROBE, Configs::getValueAsString('ffprobe_path')),
+				Configs::hasExiftool() => Reader::factory(ReaderType::EXIFTOOL, Configs::getValueAsString('exiftool_path')),
 				(Configs::hasImagick() && !$isSupportedVideo) => Reader::factory(ReaderType::IMAGICK),
 				default => Reader::factory(ReaderType::NATIVE),
 			};
