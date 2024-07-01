@@ -13,7 +13,7 @@ import Aura from "@primevue/themes/aura";
 import { i18nVue } from "laravel-vue-i18n";
 import ToastService from "primevue/toastservice";
 import AxiosConfig from "@/config/axios-config";
-import { createI18n } from 'vue-i18n'
+import { createI18n } from "vue-i18n";
 
 // @ts-expect-error
 window.axios = axios;
@@ -46,7 +46,7 @@ import AppComponent from "@/views/App.vue";
 
 const i18n = createI18n({
 	// ...
-  })
+});
 
 app.component("app", AppComponent);
 app.use(router);
