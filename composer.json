@@ -57,7 +57,7 @@
         "laravel/socialite": "^5.11",
         "livewire/livewire": "^3.0",
         "lychee-org/nestedset": "^9.0",
-        "lychee-org/php-exif": "^1.0.0",
+        "lychee-org/php-exif": "^1.0.4",
         "maennchen/zipstream-php": "^3.1",
         "opcodesio/log-viewer": "dev-lycheeOrg",
         "php-ffmpeg/php-ffmpeg": "^1.0",
