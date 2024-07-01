@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Components\Forms\Add;
 
+use App\Assets\Features;
 use App\Contracts\Livewire\Params;
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\Livewire\FileStatus;
@@ -10,6 +11,7 @@ use App\Exceptions\PhotoSkippedException;
 use App\Facades\Helpers;
 use App\Image\Files\NativeLocalFile;
 use App\Image\Files\ProcessableJobFile;
+use App\Jobs\ExtractZip;
 use App\Jobs\ProcessImageJob;
 use App\Livewire\Traits\InteractWithModal;
 use App\Models\Album;
@@ -133,12 +135,18 @@ class Upload extends Component
 				try {
 					$this->uploads[$idx]['stage'] = FileStatus::PROCESSING->value;
 
-					if (Configs::getValueAsBool('use_job_queues')) {
-						ProcessImageJob::dispatch($processableFile, $this->albumId, $fileData['lastModified']);
+					if (Features::active('extract-zip-files-on-upload') &&
+						Str::endsWith($processableFile->getPath(), '.zip')) {
+						ExtractZip::dispatch($processableFile, $this->albumId, $fileData['lastModified']);
+						$this->uploads[$idx]['stage'] = FileStatus::DONE->value;
 					} else {
-						ProcessImageJob::dispatchSync($processableFile, $this->albumId, $fileData['lastModified']);
+						if (Configs::getValueAsBool('use_job_queues')) {
+							ProcessImageJob::dispatch($processableFile, $this->albumId, $fileData['lastModified']);
+						} else {
+							ProcessImageJob::dispatchSync($processableFile, $this->albumId, $fileData['lastModified']);
+						}
+						$this->uploads[$idx]['stage'] = FileStatus::DONE->value;
 					}
-					$this->uploads[$idx]['stage'] = FileStatus::DONE->value;
 				} catch (PhotoSkippedException $e) {
 					$this->uploads[$idx]['stage'] = FileStatus::SKIPPED->value;
 				}
