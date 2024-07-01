@@ -1,16 +1,14 @@
-
-<template>
-
-</template>
+<template></template>
 <script setup lang="ts">
-import { watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { watch } from "vue";
+import { useRoute } from "vue-router";
 
-const route = useRoute()
+const route = useRoute();
 
 watch(
-  () => route.params.id,
-  (newId, oldId) => {
-    // react to route changes...
-  }
-)</script>
+	() => route.params.id,
+	(newId, oldId) => {
+		// react to route changes...
+	},
+);
+</script>

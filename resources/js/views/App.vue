@@ -18,5 +18,5 @@ const leftMenuOpen = ref(false);
 
 function toggleLeftMenu() {
 	leftMenuOpen.value = !leftMenuOpen.value;
-};
+}
 </script>
