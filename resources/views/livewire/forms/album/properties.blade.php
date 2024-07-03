@@ -36,6 +36,12 @@
             <x-forms.dropdown class="mx-2" :options="$this->aspectRatios" id="aspect_ratio_dialog_select" wire:model='album_aspect_ratio'/>
         </div>
         @endif
+        @if($is_tag_album)
+        <div class="mb-4 h-10">
+            <span class="font-bold">{{ __('lychee.ALBUM_SET_SHOWTAGS') }}</span>
+            <x-forms.inputs.text wire:model='tag' id="albumTags" />
+        </div>
+        @endif
         <x-forms.buttons.action class="rounded w-full" wire:click='submit' >
             {{ __('lychee.SAVE') }}
         </x-forms.buttons.action>

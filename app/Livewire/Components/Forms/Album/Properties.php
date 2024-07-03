@@ -19,6 +19,7 @@ use App\Livewire\Traits\Notify;
 use App\Livewire\Traits\UseValidator;
 use App\Models\Album as ModelsAlbum;
 use App\Models\Extensions\BaseAlbum;
+use App\Models\TagAlbum;
 use App\Policies\AlbumPolicy;
 use App\Rules\CopyrightRule;
 use App\Rules\TitleRule;
@@ -38,6 +39,7 @@ class Properties extends Component
 
 	#[Locked] public string $albumID;
 	#[Locked] public bool $is_model_album;
+	#[Locked] public bool $is_tag_album;
 	public string $title; // ! wired
 	public string $description; // ! wired
 	public string $photo_sorting_column = ''; // ! wired
@@ -47,6 +49,7 @@ class Properties extends Component
 	public string $album_aspect_ratio = ''; // ! wired
 	public string $license = 'none'; // ! wired
 	public string $copyright = ''; // ! wired
+	public ?string $tag = ''; // ! wired
 
 	/**
 	 * This is the equivalent of the constructor for Livewire Components.
@@ -60,6 +63,7 @@ class Properties extends Component
 		Gate::authorize(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $album]);
 
 		$this->is_model_album = $album instanceof ModelsAlbum;
+		$this->is_tag_album = $album instanceof TagAlbum;
 
 		$this->albumID = $album->id;
 		$this->title = $album->title;
@@ -73,6 +77,10 @@ class Properties extends Component
 			$this->album_sorting_column = $album->album_sorting?->column->value ?? '';
 			$this->album_sorting_order = $album->album_sorting?->order->value ?? '';
 			$this->album_aspect_ratio = $album->album_thumb_aspect_ratio?->value ?? '';
+		}
+		if ($this->is_tag_album) {
+			/** @var TagAlbum $album */
+			$this->tag = implode(', ', $album->show_tags);
 		}
 	}
 
@@ -131,6 +139,10 @@ class Properties extends Component
 			$albumSortingCriterion = $column === null ? null : new AlbumSortingCriterion($column->toColumnSortingType(), $order);
 			$baseAlbum->album_sorting = $albumSortingCriterion;
 			$baseAlbum->album_thumb_aspect_ratio = AspectRatioType::tryFrom($this->album_aspect_ratio);
+		}
+		if ($this->is_tag_album) {
+			/** @var TagAlbum $baseAlbum */
+			$baseAlbum->show_tags = collect(explode(',', $this->tag))->map(fn ($v) => trim($v))->filter(fn ($v) => $v !== '')->all();
 		}
 
 		$this->notify(__('lychee.CHANGE_SUCCESS'));
