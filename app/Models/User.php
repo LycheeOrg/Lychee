@@ -109,14 +109,6 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	protected $hidden = [];
 
 	/**
-	 * @return array<string,mixed>
-	 */
-	protected function _toArray(): array
-	{
-		return parent::toArray();
-	}
-
-	/**
 	 * Create a new Eloquent query builder for the model.
 	 *
 	 * @param BaseBuilder $query

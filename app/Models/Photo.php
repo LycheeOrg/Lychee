@@ -181,14 +181,6 @@ class Photo extends Model
 	}
 
 	/**
-	 * @return array<string,mixed>
-	 */
-	protected function _toArray(): array
-	{
-		return parent::toArray();
-	}
-
-	/**
 	 * Return the relationship between a Photo and its Album.
 	 *
 	 * @return BelongsTo<Album,Photo>

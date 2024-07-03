@@ -18,11 +18,6 @@ trait ToArrayThrowsNotImplemented
 {
 	/**
 	 * @return array<string,mixed>
-	 */
-	abstract protected function _toArray(): array;
-
-	/**
-	 * @return array<string,mixed>
 	 *
 	 * @throws NotImplementedException
 	 */

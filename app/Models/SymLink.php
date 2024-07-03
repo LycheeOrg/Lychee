@@ -80,14 +80,6 @@ class SymLink extends Model
 	];
 
 	/**
-	 * @return array<string,mixed>
-	 */
-	final protected function _toArray(): array
-	{
-		return parent::toArray();
-	}
-
-	/**
 	 * @param $query
 	 *
 	 * @return SymLinkBuilder
@@ -136,6 +128,7 @@ class SymLink extends Model
 	protected function getUrlAttribute(): string
 	{
 		try {
+			/** @disregard P1013 */
 			return Storage::disk(self::DISK_NAME)->url($this->short_path);
 		} catch (\RuntimeException $e) {
 			throw new FrameworkException('Laravel\'s storage component', $e);
@@ -161,6 +154,7 @@ class SymLink extends Model
 		$origRealPath = $file->getRealPath();
 		$extension = $file->getExtension();
 		$symShortPath = hash('sha256', random_bytes(32) . '|' . $origRealPath) . $extension;
+		/** @disregard P1013 */
 		$symAbsolutePath = Storage::disk(SymLink::DISK_NAME)->path($symShortPath);
 		try {
 			if (is_link($symAbsolutePath)) {
