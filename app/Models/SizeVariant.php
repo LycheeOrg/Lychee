@@ -137,14 +137,6 @@ class SizeVariant extends Model
 	}
 
 	/**
-	 * @return array<string,mixed>
-	 */
-	protected function _toArray(): array
-	{
-		return parent::toArray();
-	}
-
-	/**
 	 * Returns the association to the photo which this size variant belongs
 	 * to.
 	 *
