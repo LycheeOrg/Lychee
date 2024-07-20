@@ -4,6 +4,7 @@ namespace App\DTO;
 
 use App\Models\Extensions\BaseAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
+use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
 /**
  * This represents the Album Protection Policy.
@@ -19,6 +20,7 @@ use App\SmartAlbums\BaseSmartAlbum;
  *   - allows for an easy interface between the validated request {@link \App\Http\Requests\Album\SetAlbumProtectionPolicyRequest}
  *     and the applied action {@link \App\Actions\Album\SetProtectionPolicy}.
  */
+#[TypeScript()]
 class AlbumProtectionPolicy extends ArrayableDTO
 {
 	public function __construct(

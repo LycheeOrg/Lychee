@@ -1,0 +1,135 @@
+<template>
+	<Card class="text-sm p-4 xl:px-9 sm:min-w-[32rem]">
+		<template #content>
+			<form>
+				<div class="h-12 mb-4">
+					<ToggleSwitch v-model="is_public" class="mr-2 translate-y-1" />
+					<label for="pp_dialog_public_check" class="font-bold">{{ $t("lychee.ALBUM_PUBLIC") }}</label>
+					<p class="my-1.5">{{ $t("lychee.ALBUM_PUBLIC_EXPL") }}</p>
+				</div>
+				<template v-if="props.config.is_base_album">
+					<div
+						class="relative h-12 my-4 pl-9 transition-color duration-300"
+						:class="is_public ? 'text-muted-color-emphasis' : 'text-muted-color'"
+					>
+						<ToggleSwitch
+							id="pp_dialog_full_check"
+							v-model="grants_full_photo_access"
+							:disabled="!is_public"
+							class="-ml-10 mr-2 translate-y-1"
+							@change="save"
+						/>
+						<label class="font-bold" for="pp_dialog_full_check">{{ $t("lychee.ALBUM_FULL") }}</label>
+						<p class="my-1.5">{{ $t("lychee.ALBUM_FULL_EXPL") }}</p>
+					</div>
+					<div
+						class="relative h-12 my-4 pl-9 transition-color duration-300"
+						:class="is_public ? 'text-muted-color-emphasis' : 'text-muted-color'"
+					>
+						<ToggleSwitch
+							id="pp_dialog_link_check"
+							v-model="is_link_required"
+							:disabled="!is_public"
+							class="-ml-10 mr-2 translate-y-1"
+							@change="save"
+						/>
+						<label class="font-bold" for="pp_dialog_link_check">{{ $t("lychee.ALBUM_HIDDEN") }}</label>
+						<p class="my-1.5">{{ $t("lychee.ALBUM_HIDDEN_EXPL") }}</p>
+					</div>
+					<div
+						class="relative h-12 my-4 pl-9 transition-color duration-300"
+						:class="is_public ? 'text-muted-color-emphasis' : 'text-muted-color'"
+					>
+						<ToggleSwitch
+							id="pp_dialog_downloadable_check"
+							v-model="grants_download"
+							:disabled="!is_public"
+							class="-ml-10 mr-2 translate-y-1"
+							@change="save"
+						/>
+						<label class="font-bold" for="pp_dialog_downloadable_check">{{ $t("lychee.ALBUM_DOWNLOADABLE") }}</label>
+						<p class="my-1.5">{{ $t("lychee.ALBUM_DOWNLOADABLE_EXPL") }}</p>
+					</div>
+					<div
+						class="relative h-12 my-4 pl-9 transition-color duration-300"
+						:class="is_public ? 'text-muted-color-emphasis' : 'text-muted-color'"
+					>
+						<ToggleSwitch
+							id="pp_dialog_password_check"
+							v-model="is_password_required"
+							:disabled="!is_public"
+							class="-ml-10 mr-2 translate-y-1"
+							@change="save"
+						/>
+						<label class="font-bold" for="pp_dialog_password_check">{{ $t("lychee.ALBUM_PASSWORD_PROT") }}</label>
+						<p class="mt-1.5 mb-4">{{ $t("lychee.ALBUM_PASSWORD_PROT_EXPL") }}</p>
+						<FloatLabel v-if="is_password_required">
+							<InputPassword id="password" v-model="password" @change="save" />
+							<label for="password">{{ $t("lychee.ALBUM_PASSWORD") }}</label>
+						</FloatLabel>
+					</div>
+				</template>
+			</form>
+			<template v-if="props.config.is_base_album">
+				<hr class="block mt-24 mb-8 w-full border-t border-solid border-surface-600" />
+				<form>
+					<div class="relative h-12 my-4 transition-color duration-300">
+						<ToggleSwitch
+							id="pp_dialog_nsfw_check"
+							v-model="is_nsfw"
+							class="mr-2 translate-y-1"
+							style="
+								--p-toggleswitch-checked-background: var(--p-red-800);
+								--p-toggleswitch-checked-hover-background: var(--p-red-900);
+								--p-toggleswitch-hover-background: var(--p-red-900);
+							"
+							@change="save"
+						/>
+						<label for="pp_dialog_nsfw_check" class="font-bold" :class="is_nsfw ? ' text-red-700' : ''">{{
+							$t("lychee.ALBUM_NSFW")
+						}}</label>
+						<p class="my-1.5">{{ $t("lychee.ALBUM_NSFW_EXPL") }}</p>
+					</div>
+				</form>
+			</template>
+		</template>
+	</Card>
+</template>
+<script setup lang="ts">
+import Card from "primevue/card";
+import ToggleSwitch from "primevue/toggleswitch";
+import { ref } from "vue";
+import InputPassword from "../basic/InputPassword.vue";
+import FloatLabel from "primevue/floatlabel";
+import AlbumService, { UpdateProtectionPolicyData } from "@/services/album-service";
+
+const props = defineProps<{
+	album: App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.SmartAlbumResource | App.Http.Resources.Models.TagAlbumResource;
+	config: App.Http.Resources.GalleryConfigs.AlbumConfig;
+}>();
+
+const albumId = ref<string>(props.album.id);
+const is_public = ref<boolean>(props.album.policy.is_public);
+const is_link_required = ref<boolean>(props.album.policy.is_link_required);
+const is_nsfw = ref<boolean>(props.album.policy.is_nsfw);
+const grants_full_photo_access = ref<boolean>(props.album.policy.grants_full_photo_access);
+const grants_download = ref<boolean>(props.album.policy.grants_download);
+const is_password_required = ref<boolean>(props.album.policy.is_password_required);
+const password = ref<string>("");
+
+function save() {
+	const data: UpdateProtectionPolicyData = {
+		albumID: albumId.value,
+		is_public: is_public.value,
+		is_link_required: is_link_required.value,
+		is_nsfw: is_nsfw.value,
+		grants_full_photo_access: grants_full_photo_access.value,
+		grants_download: grants_download.value,
+		password: password.value,
+	};
+
+	AlbumService.updateProtectionPolicy(data).catch((error) => {
+		console.error(error);
+	});
+}
+</script>

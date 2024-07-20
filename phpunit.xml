@@ -19,9 +19,10 @@
       <exclude>./tests/Feature_v1/LibUnitTests/SharingUnitTest.php</exclude>
       <exclude>./tests/Feature_v1/LibUnitTests/UsersUnitTest.php</exclude>
     </testsuite>
-    <testsuite name="Livewire">
-      <directory suffix="Test.php">./tests/Livewire</directory>
-      <exclude>./tests/Livewire/Base/BaseLivewireTest.php</exclude>
+    <testsuite name="Feature_v2">
+      <directory suffix="Test.php">./tests/Feature_v2</directory>
+      <exclude>./tests/Feature_v2/Base/BaseApiV2Test.php</exclude>
+      <exclude>./tests/Feature_v2/Base/BaseV2Test.php</exclude>
     </testsuite>
   </testsuites>
   <extensions>

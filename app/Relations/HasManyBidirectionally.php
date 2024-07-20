@@ -46,7 +46,7 @@ class HasManyBidirectionally extends HasMany implements BidirectionalRelation
 	 * @param Collection<int,TRelatedModel> $results  the unified collection of all child models of all parent models
 	 * @param string                        $relation the name of the relation from the parent to the child models
 	 *
-	 * @return TParentModel[]
+	 * @return array<int,TParentModel>
 	 */
 	public function match(array $models, Collection $results, $relation): array
 	{

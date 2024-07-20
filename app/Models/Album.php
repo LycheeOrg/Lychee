@@ -131,6 +131,7 @@ class Album extends BaseAlbum implements Node
 	/** @phpstan-use NodeTrait<string,Album> */
 	use NodeTrait;
 	use ToArrayThrowsNotImplemented;
+	/** @phpstan-use HasFactory<\Database\Factories\AlbumFactory> */
 	use HasFactory;
 
 	/**

@@ -119,6 +119,7 @@ class SessionOrTokenGuard extends SessionGuard
 		$guard = new self($name, $userProvider, $app->make('session.store'));
 		$guard->setCookieJar($app->make('cookie'));
 		$guard->setDispatcher($app->make('events'));
+		/** @disregard P1013 */
 		$guard->setRequest($app->refresh('request', $guard, 'setRequest'));
 		if (isset($config['remember'])) {
 			$guard->setRememberDuration($config['remember']);

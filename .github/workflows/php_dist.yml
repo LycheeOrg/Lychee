@@ -2,11 +2,6 @@ name: PHP Dist
 
 on:
   workflow_call:
-    inputs:
-      env-file:
-        required: true
-        type: string
-        description: 'The env files to use'
 
 jobs:
   php_dist:
@@ -75,7 +70,7 @@ jobs:
 
       - name: copy Env
         run: |
-          cp .github/workflows/${{ inputs.env-file }}.${{ matrix.sql-versions }} Lychee/.env
+          cp .github/workflows/.env.${{ matrix.sql-versions }} Lychee/.env
 
       - name: setup MySQL Database with v3
         run: |

@@ -6,7 +6,9 @@ use App\Enum\ColumnSortingAlbumType;
 use App\Enum\ColumnSortingType;
 use App\Enum\OrderSortingType;
 use App\Models\Configs;
+use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
+#[TypeScript()]
 class AlbumSortingCriterion extends SortingCriterion
 {
 	/**

@@ -11,9 +11,6 @@ use App\Enum\ColumnSortingPhotoType;
 use App\Enum\LicenseType;
 use App\Enum\OrderSortingType;
 use App\Factories\AlbumFactory;
-use App\Http\RuleSets\Album\SetAlbumDescriptionRuleSet;
-use App\Http\RuleSets\Album\SetAlbumSortingRuleSet;
-use App\Http\RuleSets\Album\SetPhotoSortingRuleSet;
 use App\Legacy\V1\Contracts\Http\Requests\RequestAttribute;
 use App\Livewire\Traits\Notify;
 use App\Livewire\Traits\UseValidator;
@@ -22,6 +19,8 @@ use App\Models\Extensions\BaseAlbum;
 use App\Models\TagAlbum;
 use App\Policies\AlbumPolicy;
 use App\Rules\CopyrightRule;
+use App\Rules\DescriptionRule;
+use App\Rules\RandomIDRule;
 use App\Rules\TitleRule;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\View\View;
@@ -100,11 +99,20 @@ class Properties extends Component
 	public function submit(AlbumFactory $albumFactory): void
 	{
 		$rules = [
+			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
 			RequestAttribute::TITLE_ATTRIBUTE => ['required', new TitleRule()],
 			RequestAttribute::LICENSE_ATTRIBUTE => ['required', new Enum(LicenseType::class)],
-			...SetAlbumDescriptionRuleSet::rules(),
-			...SetPhotoSortingRuleSet::rules(),
-			...SetAlbumSortingRuleSet::rules(),
+			RequestAttribute::DESCRIPTION_ATTRIBUTE => ['present', new DescriptionRule()],
+			RequestAttribute::PHOTO_SORTING_COLUMN_ATTRIBUTE => ['present', 'nullable', new Enum(ColumnSortingPhotoType::class)],
+			RequestAttribute::PHOTO_SORTING_ORDER_ATTRIBUTE => [
+				'required_with:' . RequestAttribute::PHOTO_SORTING_COLUMN_ATTRIBUTE,
+				'nullable', new Enum(OrderSortingType::class),
+			],
+			RequestAttribute::ALBUM_SORTING_COLUMN_ATTRIBUTE => ['present', 'nullable', new Enum(ColumnSortingAlbumType::class)],
+			RequestAttribute::ALBUM_SORTING_ORDER_ATTRIBUTE => [
+				'required_with:' . RequestAttribute::ALBUM_SORTING_COLUMN_ATTRIBUTE,
+				'nullable', new Enum(OrderSortingType::class),
+			],
 			RequestAttribute::ALBUM_ASPECT_RATIO_ATTRIBUTE => ['present', 'nullable', new Enum(AspectRatioType::class)],
 			RequestAttribute::COPYRIGHT_ATTRIBUTE => ['present', 'nullable', new CopyrightRule()],
 		];

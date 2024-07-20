@@ -100,7 +100,7 @@ class Album extends BaseAlbumComponent implements Reloadable
 			if ($this->album instanceof ModelsAlbum) {
 				$is_latitude_longitude_found = $this->album->all_photos()->whereNotNull('latitude')->whereNotNull('longitude')->count() > 0;
 				$aspectRatio = $this->album->album_thumb_aspect_ratio ?? Configs::getValueAsEnum('default_album_thumb_aspect_ratio', AspectRatioType::class);
-				$this->flags->album_thumb_css_aspect_ratio = $aspectRatio->css();
+				$this->flags->album_thumb_css_aspect_ratio = $aspectRatio->css()->value;
 				$this->flags->cover_id = $this->album->cover_id;
 			} else {
 				$is_latitude_longitude_found = $this->album->photos()->whereNotNull('latitude')->whereNotNull('longitude')->count() > 0;

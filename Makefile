@@ -139,3 +139,6 @@ build/%.done: tests/Feature_v1/%.php build
 	vendor/bin/phpunit --no-coverage --filter $* && touch build/$*.done
 
 all_tests: $(TEST_DONE)
+
+test_v2:
+	vendor/bin/phpunit --testsuite Feature_v2 --stop-on-failure --stop-on-error

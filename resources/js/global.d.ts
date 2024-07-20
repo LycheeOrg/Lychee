@@ -7,4 +7,5 @@ export type Livewire = {
 declare global {
 	var Alpine: AlpineType;
 	var Livewire: Livewire;
+	var assets_url: string;
 }

@@ -62,4 +62,16 @@ class AlbumFactory extends Factory
 			$album->makeRoot();
 		});
 	}
+
+	// /**
+	//  * Configure the model factory.
+	//  */
+	// public function configure(): static
+	// {
+	// 	return $this
+	// 	// ->afterMaking(function (Album $_album) {})
+	// 	->afterCreating(function (Album $album) {
+	// 		// dd($album->base_class);
+	// 	});
+	// }
 }

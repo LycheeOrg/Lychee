@@ -108,13 +108,20 @@ jobs:
       test-suite: 'Feature_v1'
       env-file: '.env.legacy'
 
+  tests:
+    name:  2️⃣ PHP tests
+    needs:
+      - php_syntax_errors
+    uses: ./.github/workflows/php_tests.yml
+    with:
+      test-suite: 'Feature_v2'
+      env-file: '.env'
+    
   dist:
     name:  3️⃣ PHP dist
     needs:
       - code_style_errors
     uses: ./.github/workflows/php_dist.yml
-    with:
-      env-file: '.env.legacy'
 
   createArtifact:
     name: 4️⃣ Build Artifact
@@ -122,6 +129,7 @@ jobs:
     needs:
       - phpstan
       - dist
+      - tests
       - tests_legacy
       - check_js
     runs-on: ubuntu-latest

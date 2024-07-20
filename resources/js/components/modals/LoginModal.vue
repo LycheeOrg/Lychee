@@ -1,0 +1,87 @@
+<template>
+	<!-- <div class="card flex justify-center"> -->
+	<Dialog
+		v-model:visible="visible"
+		modal
+		:pt="{
+			root: 'border-none',
+			mask: {
+				style: 'backdrop-filter: blur(2px)',
+			},
+		}"
+	>
+		<template #container="{ closeCallback }">
+			<div v-focustrap class="flex flex-col gap-4 relative w-[500px] text-sm rounded-md pt-9">
+				<div class="inline-flex flex-col gap-2 px-9">
+					<FloatLabel>
+						<InputText id="username" v-model="username" autofocus />
+						<label class="" for="username">{{ $t("lychee.USERNAME") }}</label>
+					</FloatLabel>
+				</div>
+				<div class="inline-flex flex-col gap-2 px-9">
+					<FloatLabel>
+						<InputPassword id="password" v-model="password" @keydown.enter="login" />
+						<label class="" for="password">{{ $t("lychee.PASSWORD") }}</label>
+					</FloatLabel>
+				</div>
+				<div class="flex items-center mt-9">
+					<Button
+						@click="closeCallback"
+						text
+						class="p-3 w-full font-bold border-none text-muted-color hover:text-danger-700 rounded-bl-xl flex-shrink-2"
+						>{{ trans("lychee.CANCEL") }}</Button
+					>
+					<Button
+						@click="login"
+						text
+						class="p-3 w-full font-bold border-none text-primary-500 hover:bg-primary-500 hover:text-surface-0 rounded-none rounded-br-xl flex-shrink"
+						>{{ trans("lychee.SIGN_IN") }}</Button
+					>
+				</div>
+			</div>
+		</template>
+	</Dialog>
+	<!-- </div> -->
+</template>
+
+<script setup lang="ts">
+import FloatLabel from "primevue/floatlabel";
+import AuthService from "@/services/auth-service";
+import { trans } from "laravel-vue-i18n";
+import Button from "primevue/button";
+import Dialog from "primevue/dialog";
+import InputText from "@/components/forms/basic/InputText.vue";
+import { ref, watch } from "vue";
+import { useAuthStore } from "@/stores/Auth";
+import InputPassword from "../forms/basic/InputPassword.vue";
+
+const props = defineProps<{
+	visible: boolean;
+}>();
+
+const emit = defineEmits(["logged-in"]);
+
+const visible = ref(props.visible);
+const username = ref("");
+const password = ref("");
+const authStore = useAuthStore();
+
+function login() {
+	AuthService.login(username.value, password.value)
+		.then(() => {
+			visible.value = false;
+			authStore.setUser(null);
+			emit("logged-in");
+		})
+		.catch((e: any) => {
+			console.log("error", e);
+		});
+}
+
+watch(
+	() => props.visible,
+	(value) => {
+		visible.value = value;
+	},
+);
+</script>

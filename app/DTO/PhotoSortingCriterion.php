@@ -6,7 +6,9 @@ use App\Enum\ColumnSortingPhotoType;
 use App\Enum\ColumnSortingType;
 use App\Enum\OrderSortingType;
 use App\Models\Configs;
+use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
+#[TypeScript()]
 class PhotoSortingCriterion extends SortingCriterion
 {
 	/**

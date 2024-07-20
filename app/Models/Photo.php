@@ -121,6 +121,7 @@ use function Safe\preg_match;
  */
 class Photo extends Model
 {
+	/** @phpstan-use HasFactory<\Database\Factories\PhotoFactory> */
 	use HasFactory;
 	use UTCBasedTimes;
 	use HasAttributesPatch;

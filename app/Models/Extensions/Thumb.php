@@ -43,7 +43,7 @@ class Thumb extends AbstractDTO
 	public static function sizeVariantsFilter(HasMany $relation): HasMany
 	{
 		$svAlbumThumbs = [SizeVariantType::THUMB, SizeVariantType::THUMB2X];
-		if (Features::active('livewire')) {
+		if (Features::active('livewire') || Features::active('vuejs')) {
 			$svAlbumThumbs = [SizeVariantType::SMALL, SizeVariantType::SMALL2X, SizeVariantType::THUMB, SizeVariantType::THUMB2X];
 		}
 
@@ -122,28 +122,18 @@ class Thumb extends AbstractDTO
 	 */
 	public static function createFromPhoto(?Photo $photo): ?Thumb
 	{
-		$thumb = (Features::active('livewire') && $photo?->size_variants->getSmall() !== null)
-			? $photo->size_variants->getSmall()
-			: $photo?->size_variants->getThumb();
+		if ($photo === null) {
+			return null;
+		}
+
+		$thumb = $photo->size_variants->getSmall() ?? $photo->size_variants->getThumb();
 		if ($thumb === null) {
 			return null;
 		}
 
-		$thumb2x = (Features::active('livewire') && $photo?->size_variants->getSmall() !== null)
+		$thumb2x = $photo->size_variants->getSmall() !== null
 			? $photo->size_variants->getSmall2x()
-			: $photo?->size_variants->getThumb2x();
-
-		/**
-		 * TODO: Code for later when Livewire is the only front-end.
-		 */
-		// $thumb = $photo?->size_variants->getSmall() ?? $photo?->size_variants->getThumb();
-		// if ($thumb === null) {
-		// 	return null;
-		// }
-
-		// $thumb2x = $photo?->size_variants->getSmall() !== null
-		// 	? $photo?->size_variants->getSmall2x()
-		// 	: $photo?->size_variants->getThumb2x();
+			: $photo->size_variants->getThumb2x();
 
 		return new self(
 			$photo->id,

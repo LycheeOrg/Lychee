@@ -34,7 +34,8 @@ class DisableCSP
 		$dir_url = config('app.dir_url');
 		if (
 			config('debugbar.enabled', false) === true ||
-			$request->getRequestUri() === $dir_url . '/docs/api'
+			$request->getRequestUri() === $dir_url . '/docs/api' ||
+			$request->getRequestUri() === $dir_url . '/request-docs'
 		) {
 			config(['secure-headers.csp.enable' => false]);
 		}
@@ -50,7 +51,7 @@ class DisableCSP
 		}
 
 		// disable unsafe-eval if we are on a Livewire page
-		if (Features::active('livewire') || Str::startsWith($request->getRequestUri(), $dir_url . '/livewire/')) {
+		if (Features::active('vuejs') || Features::active('livewire') || Str::startsWith($request->getRequestUri(), $dir_url . '/livewire/')) {
 			$this->handleLivewire();
 		}
 
