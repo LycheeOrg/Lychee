@@ -4,7 +4,7 @@ namespace App\Actions\Album;
 
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\SizeVariantType;
-use App\Http\Resources\Collections\PositionDataResource;
+use App\Legacy\V1\Resources\Collections\PositionDataResource;
 use App\Models\Album;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;

@@ -2,8 +2,8 @@
 
 namespace App\Http\RuleSets\Album;
 
-use App\Contracts\Http\Requests\RequestAttribute;
 use App\Contracts\Http\RuleSet;
+use App\Legacy\V1\Contracts\Http\Requests\RequestAttribute;
 use App\Rules\PasswordRule;
 use App\Rules\RandomIDRule;
 

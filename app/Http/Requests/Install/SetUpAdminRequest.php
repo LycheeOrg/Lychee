@@ -2,11 +2,11 @@
 
 namespace App\Http\Requests\Install;
 
-use App\Contracts\Http\Requests\HasPassword;
-use App\Contracts\Http\Requests\HasUsername;
-use App\Contracts\Http\Requests\RequestAttribute;
-use App\Http\Requests\Traits\HasPasswordTrait;
-use App\Http\Requests\Traits\HasUsernameTrait;
+use App\Legacy\V1\Contracts\Http\Requests\HasPassword;
+use App\Legacy\V1\Contracts\Http\Requests\HasUsername;
+use App\Legacy\V1\Contracts\Http\Requests\RequestAttribute;
+use App\Legacy\V1\Requests\Traits\HasPasswordTrait;
+use App\Legacy\V1\Requests\Traits\HasUsernameTrait;
 use App\Rules\PasswordRule;
 use App\Rules\UsernameRule;
 use Illuminate\Foundation\Http\FormRequest;

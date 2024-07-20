@@ -3,7 +3,7 @@
 namespace App\View\Components;
 
 use App\Exceptions\ConfigurationKeyMissingException;
-use App\Http\Controllers\IndexController;
+use App\Legacy\V1\Controllers\IndexController;
 use App\Models\Configs;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\View\Component;

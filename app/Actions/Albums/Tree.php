@@ -8,7 +8,7 @@ use App\Enum\ColumnSortingType;
 use App\Enum\OrderSortingType;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
-use App\Http\Resources\Collections\AlbumForestResource;
+use App\Legacy\V1\Resources\Collections\AlbumForestResource;
 use App\Models\Album;
 use App\Models\Extensions\SortingDecorator;
 use App\Policies\AlbumQueryPolicy;

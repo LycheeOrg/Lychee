@@ -3,6 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\Internal\NotImplementedException;
+use App\Legacy\V1\Controllers\Administration\DiagnosticsController as AdministrationDiagnosticsController;
+use App\Legacy\V1\Controllers\Administration\SettingsController as AdministrationSettingsController;
+use App\Legacy\V1\Controllers\Administration\SharingController as AdministrationSharingController;
+use App\Legacy\V1\Controllers\Administration\UpdateController as AdministrationUpdateController;
+use App\Legacy\V1\Controllers\Administration\UserController as AdministrationUserController;
+use App\Legacy\V1\Controllers\Administration\UsersController as AdministrationUsersController;
+use App\Legacy\V1\Controllers\AlbumController;
+use App\Legacy\V1\Controllers\AlbumsController;
+use App\Legacy\V1\Controllers\ImportController;
+use App\Legacy\V1\Controllers\LegacyController;
+use App\Legacy\V1\Controllers\PhotoController;
+use App\Legacy\V1\Controllers\PhotoEditorController;
+use App\Legacy\V1\Controllers\SearchController;
+use App\Legacy\V1\Controllers\SessionController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -105,19 +119,19 @@ Route::post('/Session::logout', [SessionController::class, 'logout']);
 /**
  * USER.
  */
-Route::post('/User::updateLogin', [Administration\UserController::class, 'updateLogin']);
-Route::post('/User::setEmail', [Administration\UserController::class, 'setEmail']);
-Route::post('/User::getAuthenticatedUser', [Administration\UserController::class, 'getAuthenticatedUser']);
-Route::post('/User::resetToken', [Administration\UserController::class, 'resetToken']);
-Route::post('/User::unsetToken', [Administration\UserController::class, 'unsetToken']);
+Route::post('/User::updateLogin', [AdministrationUserController::class, 'updateLogin']);
+Route::post('/User::setEmail', [AdministrationUserController::class, 'setEmail']);
+Route::post('/User::getAuthenticatedUser', [AdministrationUserController::class, 'getAuthenticatedUser']);
+Route::post('/User::resetToken', [AdministrationUserController::class, 'resetToken']);
+Route::post('/User::unsetToken', [AdministrationUserController::class, 'unsetToken']);
 
 /**
  * USERS.
  */
-Route::post('/Users::list', [Administration\UsersController::class, 'list']);
-Route::post('/Users::save', [Administration\UsersController::class, 'save']);
-Route::post('/Users::delete', [Administration\UsersController::class, 'delete']);
-Route::post('/Users::create', [Administration\UsersController::class, 'create']);
+Route::post('/Users::list', [AdministrationUsersController::class, 'list']);
+Route::post('/Users::save', [AdministrationUsersController::class, 'save']);
+Route::post('/Users::delete', [AdministrationUsersController::class, 'delete']);
+Route::post('/Users::create', [AdministrationUsersController::class, 'create']);
 
 /**
  * WEBAUTHN.
@@ -136,46 +150,46 @@ Route::post('/WebAuthn::login', [WebAuthn\WebAuthnLoginController::class, 'login
 /**
  * SHARING.
  */
-Route::post('/Sharing::list', [Administration\SharingController::class, 'list']);
-Route::post('/Sharing::add', [Administration\SharingController::class, 'add']);
-Route::post('/Sharing::setByAlbum', [Administration\SharingController::class, 'setByAlbum']);
-Route::post('/Sharing::delete', [Administration\SharingController::class, 'delete']);
+Route::post('/Sharing::list', [AdministrationSharingController::class, 'list']);
+Route::post('/Sharing::add', [AdministrationSharingController::class, 'add']);
+Route::post('/Sharing::setByAlbum', [AdministrationSharingController::class, 'setByAlbum']);
+Route::post('/Sharing::delete', [AdministrationSharingController::class, 'delete']);
 
 /**
  * DIAGNOSTICS.
  */
-Route::post('/Diagnostics::get', [Administration\DiagnosticsController::class, 'get']);
-Route::post('/Diagnostics::getSize', [Administration\DiagnosticsController::class, 'getSize']);
+Route::post('/Diagnostics::get', [AdministrationDiagnosticsController::class, 'get']);
+Route::post('/Diagnostics::getSize', [AdministrationDiagnosticsController::class, 'getSize']);
 
 /**
  * SETTINGS.
  */
-Route::post('/Settings::setSorting', [Administration\SettingsController::class, 'setSorting']);
-Route::post('/Settings::setLang', [Administration\SettingsController::class, 'setLang']);
-Route::post('/Settings::setLayout', [Administration\SettingsController::class, 'setLayout']);
-Route::post('/Settings::setPublicSearch', [Administration\SettingsController::class, 'setPublicSearch']);
-Route::post('/Settings::setDefaultLicense', [Administration\SettingsController::class, 'setDefaultLicense']);
-Route::post('/Settings::setMapDisplay', [Administration\SettingsController::class, 'setMapDisplay']);
-Route::post('/Settings::setMapDisplayPublic', [Administration\SettingsController::class, 'setMapDisplayPublic']);
-Route::post('/Settings::setMapProvider', [Administration\SettingsController::class, 'setMapProvider']);
-Route::post('/Settings::setMapIncludeSubAlbums', [Administration\SettingsController::class, 'setMapIncludeSubAlbums']);
-Route::post('/Settings::setLocationDecoding', [Administration\SettingsController::class, 'setLocationDecoding']);
-Route::post('/Settings::setLocationShow', [Administration\SettingsController::class, 'setLocationShow']);
-Route::post('/Settings::setLocationShowPublic', [Administration\SettingsController::class, 'setLocationShowPublic']);
-Route::post('/Settings::setCSS', [Administration\SettingsController::class, 'setCSS']);
-Route::post('/Settings::setJS', [Administration\SettingsController::class, 'setJS']);
-Route::post('/Settings::getAll', [Administration\SettingsController::class, 'getAll']);
-Route::post('/Settings::saveAll', [Administration\SettingsController::class, 'saveAll']);
-Route::post('/Settings::setAlbumDecoration', [Administration\SettingsController::class, 'setAlbumDecoration']);
-Route::post('/Settings::setOverlayType', [Administration\SettingsController::class, 'setImageOverlayType']);
-Route::post('/Settings::setNSFWVisible', [Administration\SettingsController::class, 'setNSFWVisible']);
-Route::post('/Settings::setDropboxKey', [Administration\SettingsController::class, 'setDropboxKey']);
-Route::post('/Settings::setNewPhotosNotification', [Administration\SettingsController::class, 'setNewPhotosNotification']);
-Route::post('/Settings::setSmartAlbumVisibility', [Administration\SettingsController::class, 'setSmartAlbumVisibility']);
+Route::post('/Settings::setSorting', [AdministrationSettingsController::class, 'setSorting']);
+Route::post('/Settings::setLang', [AdministrationSettingsController::class, 'setLang']);
+Route::post('/Settings::setLayout', [AdministrationSettingsController::class, 'setLayout']);
+Route::post('/Settings::setPublicSearch', [AdministrationSettingsController::class, 'setPublicSearch']);
+Route::post('/Settings::setDefaultLicense', [AdministrationSettingsController::class, 'setDefaultLicense']);
+Route::post('/Settings::setMapDisplay', [AdministrationSettingsController::class, 'setMapDisplay']);
+Route::post('/Settings::setMapDisplayPublic', [AdministrationSettingsController::class, 'setMapDisplayPublic']);
+Route::post('/Settings::setMapProvider', [AdministrationSettingsController::class, 'setMapProvider']);
+Route::post('/Settings::setMapIncludeSubAlbums', [AdministrationSettingsController::class, 'setMapIncludeSubAlbums']);
+Route::post('/Settings::setLocationDecoding', [AdministrationSettingsController::class, 'setLocationDecoding']);
+Route::post('/Settings::setLocationShow', [AdministrationSettingsController::class, 'setLocationShow']);
+Route::post('/Settings::setLocationShowPublic', [AdministrationSettingsController::class, 'setLocationShowPublic']);
+Route::post('/Settings::setCSS', [AdministrationSettingsController::class, 'setCSS']);
+Route::post('/Settings::setJS', [AdministrationSettingsController::class, 'setJS']);
+Route::post('/Settings::getAll', [AdministrationSettingsController::class, 'getAll']);
+Route::post('/Settings::saveAll', [AdministrationSettingsController::class, 'saveAll']);
+Route::post('/Settings::setAlbumDecoration', [AdministrationSettingsController::class, 'setAlbumDecoration']);
+Route::post('/Settings::setOverlayType', [AdministrationSettingsController::class, 'setImageOverlayType']);
+Route::post('/Settings::setNSFWVisible', [AdministrationSettingsController::class, 'setNSFWVisible']);
+Route::post('/Settings::setDropboxKey', [AdministrationSettingsController::class, 'setDropboxKey']);
+Route::post('/Settings::setNewPhotosNotification', [AdministrationSettingsController::class, 'setNewPhotosNotification']);
+Route::post('/Settings::setSmartAlbumVisibility', [AdministrationSettingsController::class, 'setSmartAlbumVisibility']);
 
 /**
  * UPDATE.
  */
-Route::post('/Update::apply', [Administration\UpdateController::class, 'apply']);
-Route::post('/Update::check', [Administration\UpdateController::class, 'check']);
+Route::post('/Update::apply', [AdministrationUpdateController::class, 'apply']);
+Route::post('/Update::check', [AdministrationUpdateController::class, 'check']);
 

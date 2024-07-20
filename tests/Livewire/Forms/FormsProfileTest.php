@@ -19,8 +19,8 @@ use App\Livewire\Components\Forms\Profile\SetEmail;
 use App\Livewire\Components\Forms\Profile\SetLogin;
 use Laragear\WebAuthn\Models\WebAuthnCredential;
 use Livewire\Livewire;
-use Tests\Feature\Traits\RequiresEmptyWebAuthnCredentials;
 use Tests\Livewire\Base\BaseLivewireTest;
+use Tests\Traits\RequiresEmptyWebAuthnCredentials;
 
 class FormsProfileTest extends BaseLivewireTest
 {

@@ -2,10 +2,10 @@
 
 namespace App\Http\RuleSets\Album;
 
-use App\Contracts\Http\Requests\RequestAttribute;
 use App\Contracts\Http\RuleSet;
 use App\Enum\ColumnSortingAlbumType;
 use App\Enum\OrderSortingType;
+use App\Legacy\V1\Contracts\Http\Requests\RequestAttribute;
 use App\Rules\RandomIDRule;
 use Illuminate\Validation\Rules\Enum;
 

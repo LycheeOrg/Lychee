@@ -2,9 +2,9 @@
 
 namespace App\Http\RuleSets\Photo;
 
-use App\Contracts\Http\Requests\RequestAttribute;
 use App\Contracts\Http\RuleSet;
 use App\Enum\DownloadVariantType;
+use App\Legacy\V1\Contracts\Http\Requests\RequestAttribute;
 use App\Rules\RandomIDListRule;
 use Illuminate\Validation\Rules\Enum;
 

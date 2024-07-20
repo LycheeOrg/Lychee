@@ -20,7 +20,7 @@ use function Safe\copy;
 use function Safe\file_get_contents;
 use function Safe\filesize;
 use function Safe\tempnam;
-use Tests\Feature\Constants\TestConstants;
+use Tests\Constants\TestConstants;
 use Tests\Livewire\Base\BaseLivewireTest;
 
 class UploadTest extends BaseLivewireTest

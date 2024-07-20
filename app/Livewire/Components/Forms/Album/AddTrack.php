@@ -2,12 +2,12 @@
 
 namespace App\Livewire\Components\Forms\Album;
 
-use App\Contracts\Http\Requests\RequestAttribute;
 use App\Contracts\Livewire\Params;
 use App\Contracts\Models\AbstractAlbum;
 use App\Exceptions\Internal\LycheeDomainException;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Factories\AlbumFactory;
+use App\Legacy\V1\Contracts\Http\Requests\RequestAttribute;
 use App\Livewire\Traits\InteractWithModal;
 use App\Livewire\Traits\Notify;
 use App\Models\Album;

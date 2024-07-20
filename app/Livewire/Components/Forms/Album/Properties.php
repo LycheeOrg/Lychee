@@ -2,7 +2,6 @@
 
 namespace App\Livewire\Components\Forms\Album;
 
-use App\Contracts\Http\Requests\RequestAttribute;
 use App\Contracts\Models\AbstractAlbum;
 use App\DTO\AlbumSortingCriterion;
 use App\DTO\PhotoSortingCriterion;
@@ -15,6 +14,7 @@ use App\Factories\AlbumFactory;
 use App\Http\RuleSets\Album\SetAlbumDescriptionRuleSet;
 use App\Http\RuleSets\Album\SetAlbumSortingRuleSet;
 use App\Http\RuleSets\Album\SetPhotoSortingRuleSet;
+use App\Legacy\V1\Contracts\Http\Requests\RequestAttribute;
 use App\Livewire\Traits\Notify;
 use App\Livewire\Traits\UseValidator;
 use App\Models\Album as ModelsAlbum;
