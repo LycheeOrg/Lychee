@@ -1,5 +1,5 @@
 <template>
-	<LoginModal :visible="isLoginOpen" @logged-in="refresh" />
+	<LoginModal v-if="user?.id === null" :visible="isLoginOpen" @logged-in="refresh" />
 	<Toolbar class="w-full">
 		<template #start>
 			<Button
@@ -89,6 +89,10 @@ function refresh() {
 			smartAlbums.value = smartAlbums.value.concat(data.data.tag_albums as App.Http.Resources.Models.ThumbAlbumResource[]);
 			sharedAlbums.value = (data.data.shared_albums as App.Http.Resources.Models.ThumbAlbumResource[]) ?? [];
 			rootConfig.value = data.data.config;
+
+			if (albums.value.length === 0 && smartAlbums.value.length === 0 && sharedAlbums.value.length === 0) {
+				isLoginOpen.value = true;
+			}
 		})
 		.catch((error) => {
 			// We are required to login :)
@@ -98,6 +102,7 @@ function refresh() {
 				console.error(error);
 			}
 		});
+
 }
 
 const emit = defineEmits(["toggleLeftMenu"]);

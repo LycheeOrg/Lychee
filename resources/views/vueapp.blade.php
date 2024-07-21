@@ -15,7 +15,7 @@
 <body class="antialiased lychee-dark">
         <x-warning-misconfiguration />
     @include('includes.svg')
-	<div id="app" class="w-full">
+	<div id="app" class="w-full3">
         <app/>
 	</div>
 </body>
