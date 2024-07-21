@@ -102,7 +102,6 @@ function refresh() {
 				console.error(error);
 			}
 		});
-
 }
 
 const emit = defineEmits(["toggleLeftMenu"]);

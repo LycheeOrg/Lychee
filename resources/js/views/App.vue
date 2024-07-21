@@ -24,4 +24,5 @@ body {
 
 //   font-family: var(--font-family);
 //   font-weight: 400;
-//   color: var(--text-color);</style>
+//   color: var(--text-color);
+</style>
