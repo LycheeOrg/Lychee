@@ -5,7 +5,7 @@ namespace App\Livewire\Components\Forms\Photo;
 use App\Actions\Photo\Move as PhotoMove;
 use App\Contracts\Livewire\Params;
 use App\Enum\SmartAlbumType;
-use App\Http\RuleSets\Photo\MovePhotosRuleSet;
+use App\Legacy\V1\RuleSets\Photo\MovePhotosRuleSet;
 use App\Livewire\Traits\InteractWithModal;
 use App\Models\Album;
 use App\Models\Photo;

@@ -5,7 +5,7 @@ namespace App\Livewire\Components\Forms\Album;
 use App\Actions\Album\Unlock;
 use App\Exceptions\UnauthorizedException;
 use App\Factories\AlbumFactory;
-use App\Http\RuleSets\Album\UnlockAlbumRuleSet;
+use App\Legacy\V1\RuleSets\Album\UnlockAlbumRuleSet;
 use App\Livewire\Traits\Notify;
 use App\Livewire\Traits\UseValidator;
 use Illuminate\Contracts\View\View;

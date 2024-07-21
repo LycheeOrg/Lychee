@@ -7,7 +7,7 @@ use App\Contracts\Livewire\Params;
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\SmartAlbumType;
 use App\Factories\AlbumFactory;
-use App\Http\RuleSets\Album\DeleteAlbumsRuleSet;
+use App\Legacy\V1\RuleSets\Album\DeleteAlbumsRuleSet;
 use App\Livewire\Traits\InteractWithModal;
 use App\Policies\AlbumPolicy;
 use Illuminate\Contracts\View\View;

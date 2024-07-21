@@ -3,11 +3,11 @@
 namespace App\Legacy\V1\Requests\Album;
 
 use App\Http\Requests\BaseApiRequest;
-use App\Http\RuleSets\Album\BasicAlbumIdRuleSet;
 use App\Legacy\V1\Contracts\Http\Requests\HasAlbum;
 use App\Legacy\V1\Contracts\Http\Requests\RequestAttribute;
 use App\Legacy\V1\Requests\Traits\Authorize\AuthorizeCanEditAlbumTrait;
 use App\Legacy\V1\Requests\Traits\HasAlbumTrait;
+use App\Legacy\V1\RuleSets\Album\BasicAlbumIdRuleSet;
 use App\Models\Album;
 
 class DeleteTrackRequest extends BaseApiRequest implements HasAlbum

@@ -2,14 +2,14 @@
 
 namespace App\Http\Requests\Album;
 
+use App\Contracts\Http\Requests\HasBaseAlbum;
+use App\Contracts\Http\Requests\HasPassword;
+use App\Contracts\Http\Requests\RequestAttribute;
 use App\DTO\AlbumProtectionPolicy;
 use App\Http\Requests\BaseApiRequest;
-use App\Legacy\V1\Contracts\Http\Requests\HasBaseAlbum;
-use App\Legacy\V1\Contracts\Http\Requests\HasPassword;
-use App\Legacy\V1\Contracts\Http\Requests\RequestAttribute;
-use App\Legacy\V1\Requests\Traits\Authorize\AuthorizeCanEditAlbumTrait;
-use App\Legacy\V1\Requests\Traits\HasBaseAlbumTrait;
-use App\Legacy\V1\Requests\Traits\HasPasswordTrait;
+use App\Http\Requests\Traits\Authorize\AuthorizeCanEditAlbumTrait;
+use App\Http\Requests\Traits\HasBaseAlbumTrait;
+use App\Http\Requests\Traits\HasPasswordTrait;
 use App\Rules\PasswordRule;
 use App\Rules\RandomIDRule;
 

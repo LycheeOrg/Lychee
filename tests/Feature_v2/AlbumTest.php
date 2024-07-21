@@ -26,7 +26,7 @@ class AlbumTest extends BaseApiV2Test
 		$response = $this->getJson('Album::get');
 		$response->assertUnprocessable();
 		$response->assertJson([
-			'message' => 'The album i d field is required.',
+			'message' => 'The album id field is required.',
 		]);
 	}
 }

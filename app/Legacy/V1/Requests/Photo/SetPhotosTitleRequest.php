@@ -3,13 +3,13 @@
 namespace App\Legacy\V1\Requests\Photo;
 
 use App\Http\Requests\BaseApiRequest;
-use App\Http\RuleSets\Photo\SetPhotosTitleRuleSet;
 use App\Legacy\V1\Contracts\Http\Requests\HasPhotos;
 use App\Legacy\V1\Contracts\Http\Requests\HasTitle;
 use App\Legacy\V1\Contracts\Http\Requests\RequestAttribute;
 use App\Legacy\V1\Requests\Traits\Authorize\AuthorizeCanEditPhotosTrait;
 use App\Legacy\V1\Requests\Traits\HasPhotosTrait;
 use App\Legacy\V1\Requests\Traits\HasTitleTrait;
+use App\Legacy\V1\RuleSets\Photo\SetPhotosTitleRuleSet;
 use App\Models\Photo;
 
 class SetPhotosTitleRequest extends BaseApiRequest implements HasPhotos, HasTitle

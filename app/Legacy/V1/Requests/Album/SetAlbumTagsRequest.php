@@ -3,13 +3,13 @@
 namespace App\Legacy\V1\Requests\Album;
 
 use App\Http\Requests\BaseApiRequest;
-use App\Http\RuleSets\Album\SetAlbumTagRuleSet;
 use App\Legacy\V1\Contracts\Http\Requests\HasTagAlbum;
 use App\Legacy\V1\Contracts\Http\Requests\HasTags;
 use App\Legacy\V1\Contracts\Http\Requests\RequestAttribute;
 use App\Legacy\V1\Requests\Traits\Authorize\AuthorizeCanEditAlbumTrait;
 use App\Legacy\V1\Requests\Traits\HasTagAlbumTrait;
 use App\Legacy\V1\Requests\Traits\HasTagsTrait;
+use App\Legacy\V1\RuleSets\Album\SetAlbumTagRuleSet;
 use App\Models\TagAlbum;
 
 class SetAlbumTagsRequest extends BaseApiRequest implements HasTagAlbum, HasTags

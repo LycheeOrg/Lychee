@@ -2,13 +2,13 @@
 
 namespace App\Http\Requests\Photo;
 
+use App\Contracts\Http\Requests\HasPhoto;
+use App\Contracts\Http\Requests\RequestAttribute;
 use App\Http\Requests\BaseApiRequest;
-use App\Http\RuleSets\Photo\GetPhotoRuleSet;
-use App\Legacy\V1\Contracts\Http\Requests\HasPhoto;
-use App\Legacy\V1\Contracts\Http\Requests\RequestAttribute;
-use App\Legacy\V1\Requests\Traits\HasPhotoTrait;
+use App\Http\Requests\Traits\HasPhotoTrait;
 use App\Models\Photo;
 use App\Policies\PhotoPolicy;
+use App\Rules\RandomIDRule;
 use Illuminate\Support\Facades\Gate;
 
 class GetPhotoRequest extends BaseApiRequest implements HasPhoto
@@ -28,7 +28,9 @@ class GetPhotoRequest extends BaseApiRequest implements HasPhoto
 	 */
 	public function rules(): array
 	{
-		return GetPhotoRuleSet::rules();
+		return [
+			RequestAttribute::PHOTO_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
+		];
 	}
 
 	/**

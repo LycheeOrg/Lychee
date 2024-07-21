@@ -3,7 +3,7 @@
 namespace App\Livewire\Components\Forms\Photo;
 
 use App\Contracts\Livewire\Params;
-use App\Http\RuleSets\Photo\SetPhotosTitleRuleSet;
+use App\Legacy\V1\RuleSets\Photo\SetPhotosTitleRuleSet;
 use App\Livewire\Components\Pages\Gallery\Album as GalleryAlbum;
 use App\Livewire\Traits\InteractWithModal;
 use App\Models\Photo;

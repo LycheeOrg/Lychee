@@ -6,7 +6,7 @@ use App\Actions\Photo\Duplicate;
 use App\Actions\User\Notify as UserNotify;
 use App\Contracts\Livewire\Params;
 use App\Enum\SmartAlbumType;
-use App\Http\RuleSets\Photo\DuplicatePhotosRuleSet;
+use App\Legacy\V1\RuleSets\Photo\DuplicatePhotosRuleSet;
 use App\Livewire\Traits\InteractWithModal;
 use App\Livewire\Traits\Notify;
 use App\Livewire\Traits\UseValidator;

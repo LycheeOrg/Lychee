@@ -4,7 +4,7 @@ namespace App\Livewire\Components\Forms\Album;
 
 use App\Actions\Album\Move as AlbumMove;
 use App\Contracts\Models\AbstractAlbum;
-use App\Http\RuleSets\Album\MoveAlbumsRuleSet;
+use App\Legacy\V1\RuleSets\Album\MoveAlbumsRuleSet;
 use App\Livewire\Traits\Notify;
 use App\Livewire\Traits\UseValidator;
 use App\Models\Album;

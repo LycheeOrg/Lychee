@@ -3,13 +3,13 @@
 namespace App\Legacy\V1\Requests\Photo;
 
 use App\Http\Requests\BaseApiRequest;
-use App\Http\RuleSets\Photo\SetPhotosTagsRuleSet;
 use App\Legacy\V1\Contracts\Http\Requests\HasPhotos;
 use App\Legacy\V1\Contracts\Http\Requests\HasTags;
 use App\Legacy\V1\Contracts\Http\Requests\RequestAttribute;
 use App\Legacy\V1\Requests\Traits\Authorize\AuthorizeCanEditPhotosTrait;
 use App\Legacy\V1\Requests\Traits\HasPhotosTrait;
 use App\Legacy\V1\Requests\Traits\HasTagsTrait;
+use App\Legacy\V1\RuleSets\Photo\SetPhotosTagsRuleSet;
 use App\Models\Photo;
 
 class SetPhotosTagsRequest extends BaseApiRequest implements HasPhotos, HasTags

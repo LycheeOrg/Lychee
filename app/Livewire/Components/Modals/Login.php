@@ -4,7 +4,7 @@ namespace App\Livewire\Components\Modals;
 
 use App\Enum\OauthProvidersType;
 use App\Exceptions\Internal\QueryBuilderException;
-use App\Http\RuleSets\LoginRuleSet;
+use App\Legacy\V1\RuleSets\LoginRuleSet;
 use App\Metadata\Versions\FileVersion;
 use App\Metadata\Versions\GitHubVersion;
 use App\Metadata\Versions\InstalledVersion;

@@ -6,7 +6,7 @@ use App\Actions\Album\Merge as AlbumMerge;
 use App\Contracts\Livewire\Params;
 use App\Contracts\Models\AbstractAlbum;
 use App\Factories\AlbumFactory;
-use App\Http\RuleSets\Album\MergeAlbumsRuleSet;
+use App\Legacy\V1\RuleSets\Album\MergeAlbumsRuleSet;
 use App\Livewire\Traits\InteractWithModal;
 use App\Models\Album;
 use App\Policies\AlbumPolicy;

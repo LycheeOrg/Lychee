@@ -6,7 +6,7 @@ use App\Contracts\Livewire\Params;
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\SmartAlbumType;
 use App\Factories\AlbumFactory;
-use App\Http\RuleSets\Album\SetAlbumsTitleRuleSet;
+use App\Legacy\V1\RuleSets\Album\SetAlbumsTitleRuleSet;
 use App\Livewire\Components\Pages\Gallery\Album as GalleryAlbum;
 use App\Livewire\Traits\InteractWithModal;
 use App\Models\BaseAlbumImpl;

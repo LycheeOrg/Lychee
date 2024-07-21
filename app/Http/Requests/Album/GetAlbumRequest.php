@@ -2,15 +2,15 @@
 
 namespace App\Http\Requests\Album;
 
+use App\Contracts\Http\Requests\HasAbstractAlbum;
+use App\Contracts\Http\Requests\RequestAttribute;
 use App\Contracts\Models\AbstractAlbum;
 use App\Exceptions\PasswordRequiredException;
 use App\Http\Requests\BaseApiRequest;
-use App\Http\RuleSets\Album\BasicAlbumIdRuleSet;
-use App\Legacy\V1\Contracts\Http\Requests\HasAbstractAlbum;
-use App\Legacy\V1\Contracts\Http\Requests\RequestAttribute;
-use App\Legacy\V1\Requests\Traits\HasAbstractAlbumTrait;
+use App\Http\Requests\Traits\HasAbstractAlbumTrait;
 use App\Models\Extensions\BaseAlbum;
 use App\Policies\AlbumPolicy;
+use App\Rules\AlbumIDRule;
 use Illuminate\Support\Facades\Gate;
 
 class GetAlbumRequest extends BaseApiRequest implements HasAbstractAlbum
@@ -44,7 +44,9 @@ class GetAlbumRequest extends BaseApiRequest implements HasAbstractAlbum
 	 */
 	public function rules(): array
 	{
-		return BasicAlbumIdRuleSet::rules();
+		return [
+			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['required', new AlbumIDRule(false)],
+		];
 	}
 
 	/**

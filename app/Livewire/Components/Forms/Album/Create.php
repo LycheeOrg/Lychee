@@ -6,7 +6,7 @@ use App\Actions\Album\Create as AlbumCreate;
 use App\Contracts\Livewire\Params;
 use App\Contracts\Models\AbstractAlbum;
 use App\Exceptions\UnauthenticatedException;
-use App\Http\RuleSets\AddAlbumRuleSet;
+use App\Legacy\V1\RuleSets\AddAlbumRuleSet;
 use App\Livewire\Traits\InteractWithModal;
 use App\Models\Album;
 use App\Policies\AlbumPolicy;
