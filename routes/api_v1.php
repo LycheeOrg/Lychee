@@ -1,22 +1,17 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Legacy\V1\Controllers;
 
 use App\Exceptions\Internal\NotImplementedException;
+use App\Http\Controllers\WebAuthn\WebAuthnLoginController;
+use App\Http\Controllers\WebAuthn\WebAuthnManageController;
+use App\Http\Controllers\WebAuthn\WebAuthnRegisterController;
 use App\Legacy\V1\Controllers\Administration\DiagnosticsController as AdministrationDiagnosticsController;
 use App\Legacy\V1\Controllers\Administration\SettingsController as AdministrationSettingsController;
 use App\Legacy\V1\Controllers\Administration\SharingController as AdministrationSharingController;
 use App\Legacy\V1\Controllers\Administration\UpdateController as AdministrationUpdateController;
 use App\Legacy\V1\Controllers\Administration\UserController as AdministrationUserController;
 use App\Legacy\V1\Controllers\Administration\UsersController as AdministrationUsersController;
-use App\Legacy\V1\Controllers\AlbumController;
-use App\Legacy\V1\Controllers\AlbumsController;
-use App\Legacy\V1\Controllers\ImportController;
-use App\Legacy\V1\Controllers\LegacyController;
-use App\Legacy\V1\Controllers\PhotoController;
-use App\Legacy\V1\Controllers\PhotoEditorController;
-use App\Legacy\V1\Controllers\SearchController;
-use App\Legacy\V1\Controllers\SessionController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -136,15 +131,15 @@ Route::post('/Users::create', [AdministrationUsersController::class, 'create']);
 /**
  * WEBAUTHN.
  */
-Route::post('/WebAuthn::list', [WebAuthn\WebAuthnManageController::class, 'list']);
-Route::post('/WebAuthn::delete', [WebAuthn\WebAuthnManageController::class, 'delete']);
-Route::post('/WebAuthn::register/options', [WebAuthn\WebAuthnRegisterController::class, 'options'])
+Route::post('/WebAuthn::list', [WebAuthnManageController::class, 'list']);
+Route::post('/WebAuthn::delete', [WebAuthnManageController::class, 'delete']);
+Route::post('/WebAuthn::register/options', [WebAuthnRegisterController::class, 'options'])
 	->name('webauthn.register.options');
-Route::post('/WebAuthn::register', [WebAuthn\WebAuthnRegisterController::class, 'register'])
+Route::post('/WebAuthn::register', [WebAuthnRegisterController::class, 'register'])
 	->name('webauthn.register');
-Route::post('/WebAuthn::login/options', [WebAuthn\WebAuthnLoginController::class, 'options'])
+Route::post('/WebAuthn::login/options', [WebAuthnLoginController::class, 'options'])
 	->name('webauthn.login.options');
-Route::post('/WebAuthn::login', [WebAuthn\WebAuthnLoginController::class, 'login'])
+Route::post('/WebAuthn::login', [WebAuthnLoginController::class, 'login'])
 	->name('webauthn.login');
 
 /**
