@@ -69,4 +69,54 @@ class AlbumTest extends BaseApiV2Test
 		$response = $this->actingAs($this->userLocked)->getJsonWithData('Album::get', ['album_id' => $this->album1->id]);
 		$response->assertForbidden();
 	}
+
+	public function testUpdateAlbumUnauthorizedForbidden(): void
+	{
+		$response = $this->postJson('Album::update', [
+			'album_id' => $this->album1->id,
+			'title' => 'title',
+			'license' => 'none',
+			'description' => '',
+			'photo_sorting_column' => 'title',
+			'photo_sorting_order' => 'ASC',
+			'album_sorting_column' => 'title',
+			'album_sorting_order' => 'DESC',
+			'album_aspect_ratio' => '1/1',
+			'copyright' => '',
+		]);
+		$response->assertUnauthorized();
+
+		$response = $this->actingAs($this->userLocked)->postJson('Album::update', [
+			'album_id' => $this->album1->id,
+			'title' => 'title',
+			'license' => 'none',
+			'description' => '',
+			'photo_sorting_column' => 'title',
+			'photo_sorting_order' => 'ASC',
+			'album_sorting_column' => 'title',
+			'album_sorting_order' => 'DESC',
+			'album_aspect_ratio' => '1/1',
+			'copyright' => '',
+		]);
+		$response->assertForbidden();
+	}
+
+	public function testUpdateAlbumAuthorized(): void
+	{
+		$response = $this->actingAs($this->userMayUpload1)->postJson('Album::update', [
+			'album_id' => $this->album1->id,
+			'title' => 'title',
+			'license' => 'none',
+			'description' => '',
+			'photo_sorting_column' => 'title',
+			'photo_sorting_order' => 'ASC',
+			'album_sorting_column' => 'title',
+			'album_sorting_order' => 'DESC',
+			'album_aspect_ratio' => '1/1',
+			'copyright' => '',
+		]);
+		$response->assertOk();
+	}
+
+	// updateProtectionPolicy
 }

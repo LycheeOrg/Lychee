@@ -17,7 +17,7 @@ final class LoadedSubscriber implements LoadedSubscriberInterface
 	{
 		$this->createApplication();
 
-		if (config('features.vuejs')) {
+		if (config('features.vuejs') === true) {
 			return;
 		}
 
