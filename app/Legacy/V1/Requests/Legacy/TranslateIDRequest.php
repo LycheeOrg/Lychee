@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http\Requests\Legacy;
+namespace App\Legacy\V1\Requests\Legacy;
 
-use App\Contracts\Http\Requests\RequestAttribute;
+use App\Legacy\V1\Contracts\Http\Requests\RequestAttribute;
 use App\Http\Requests\BaseApiRequest;
 use App\Rules\IntegerIDRule;
 
