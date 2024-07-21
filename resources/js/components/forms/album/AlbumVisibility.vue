@@ -119,7 +119,7 @@ const password = ref<string>("");
 
 function save() {
 	const data: UpdateProtectionPolicyData = {
-		albumID: albumId.value,
+		album_id: albumId.value,
 		is_public: is_public.value,
 		is_link_required: is_link_required.value,
 		is_nsfw: is_nsfw.value,

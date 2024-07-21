@@ -2,7 +2,7 @@ import axios, { type AxiosResponse } from "axios";
 import Constants from "./constants";
 
 export type UpdateAbumData = {
-	albumID: string;
+	album_id: string;
 	title: string;
 	license: string | null;
 	description: string | null;
@@ -15,7 +15,7 @@ export type UpdateAbumData = {
 };
 
 export type UpdateTagAlbumData = {
-	albumID: string;
+	album_id: string;
 	title: string;
 	tags: string[];
 	description: string | null;
@@ -25,7 +25,7 @@ export type UpdateTagAlbumData = {
 };
 
 export type UpdateProtectionPolicyData = {
-	albumID: string;
+	album_id: string;
 	password?: string | undefined;
 	is_public: boolean;
 	is_link_required: boolean;
@@ -39,8 +39,8 @@ const AlbumService = {
 		return axios.get(`${Constants.API_URL}Albums::get`, { data: {} });
 	},
 
-	get(albumId: string): Promise<AxiosResponse<App.Http.Resources.Models.AbstractAlbumResource>> {
-		return axios.get(`${Constants.API_URL}Album::get`, { data: { albumID: albumId } });
+	get(album_id: string): Promise<AxiosResponse<App.Http.Resources.Models.AbstractAlbumResource>> {
+		return axios.get(`${Constants.API_URL}Album::get`, { params: { album_id: album_id }, data: {} });
 	},
 
 	getLayout(): Promise<AxiosResponse<App.Http.Resources.GalleryConfigs.PhotoLayoutConfig>> {

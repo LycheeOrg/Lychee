@@ -16,6 +16,11 @@ final class LoadedSubscriber implements LoadedSubscriberInterface
 	public function notify(Loaded $event): void
 	{
 		$this->createApplication();
+
+		if (config('features.vuejs')) {
+			return;
+		}
+
 		/** @var User|null $admin */
 		$admin = User::find(1);
 		if ($admin === null) {

@@ -101,6 +101,17 @@ abstract class BaseV2Test extends AbstractTestCase
 		AccessPermission::factory()->public()->visible()->for_album($this->album4)->create();
 		AccessPermission::factory()->public()->visible()->for_album($this->subAlbum4)->create();
 
+		AccessPermission::factory()
+			->for_user($this->userMayUpload2)
+			->for_album($this->album1)
+			->visible()
+			->grants_edit()
+			->grants_delete()
+			->grants_upload()
+			->grants_download()
+			->grants_full_photo()
+			->create();
+
 		$this->withoutVite();
 	}
 

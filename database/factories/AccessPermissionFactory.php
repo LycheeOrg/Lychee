@@ -62,6 +62,8 @@ class AccessPermissionFactory extends Factory
 			return [
 				'user_id' => $user->id,
 			];
+		})->afterCreating(function (AccessPermission $perm) {
+			$perm->load('album', 'user');
 		});
 	}
 

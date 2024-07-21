@@ -231,7 +231,7 @@ function save() {
 
 function saveAlbum() {
 	const data: UpdateAbumData = {
-		albumID: albumId.value,
+		album_id: albumId.value,
 		title: title.value,
 		license: license.value?.value ?? null,
 		description: description.value,
@@ -249,7 +249,7 @@ function saveAlbum() {
 
 function saveTagAlbum() {
 	const data: UpdateTagAlbumData = {
-		albumID: albumId.value,
+		album_id: albumId.value,
 		title: title.value,
 		tags: tags.value?.split(",") ?? [],
 		description: description.value,
