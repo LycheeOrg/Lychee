@@ -198,4 +198,28 @@ class AlbumTest extends BaseApiV2Test
 		]);
 		$this->assertCount(0, $response->json('resource.photos'));
 	}
+
+	public function testUpdateProtectionPolicyAuUnauthorizedForbidden(): void
+	{
+		$response = $this->postJson('Album::updateProtectionPolicy', [
+			'album_id' => $this->album1->id,
+			'is_public' => false,
+			'is_link_required' => false,
+			'is_nsfw' => false,
+			'grants_download' => false,
+			'grants_full_photo_access' => false,
+		]);
+		$this->assertUnauthorized($response);
+
+		$response = $this->actingAs($this->userLocked)->postJson('Album::updateProtectionPolicy', [
+			'album_id' => $this->album1->id,
+			'album_id' => $this->album1->id,
+			'is_public' => false,
+			'is_link_required' => false,
+			'is_nsfw' => false,
+			'grants_download' => false,
+			'grants_full_photo_access' => false,
+		]);
+		$this->assertForbidden($response);
+	}
 }
