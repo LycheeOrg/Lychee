@@ -114,7 +114,7 @@ jobs:
       - php_syntax_errors
     uses: ./.github/workflows/php_tests.yml
     with:
-      test-suite: 'Feature_v2'
+      test-suite: 'Unit,Feature_v2'
       env-file: '.env'
     
   dist:

@@ -10,13 +10,24 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Tests\Feature_v1;
+namespace Tests\Unit;
 
+use App\Models\User;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Http\Response;
 use Tests\AbstractTestCase;
 
 class HoneyPotTest extends AbstractTestCase
 {
+	use DatabaseTransactions;
+
+	public function setUp(): void
+	{
+		parent::setUp();
+		// Create an admin user so that the check does not complain admin is not found.
+		User::factory()->may_administrate()->create();
+	}
+
 	public function testRoutesWithHoney(): void
 	{
 		foreach (config('honeypot.paths') as $path) {

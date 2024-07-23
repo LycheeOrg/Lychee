@@ -87,16 +87,18 @@
         "ext-zip": "*",
         "barryvdh/laravel-debugbar": "^3.13",
         "barryvdh/laravel-ide-helper": "^3.0",
+        "brianium/paratest": "^7.4",
         "dedoc/scramble": "^0.10",
+        "fakerphp/faker": "^1.23.0",
         "filp/whoops": "^2.5",
         "friendsofphp/php-cs-fixer": "^3.3",
         "itsgoingd/clockwork": "^5.1",
+        "larastan/larastan": "^2.0",
         "lychee-org/phpstan-lychee": "^v1.0.1",
         "mockery/mockery": "^1.5",
-        "larastan/larastan": "^2.0",
+        "nunomaduro/collision": "^8.3",
         "php-parallel-lint/php-parallel-lint": "^1.3",
-        "phpunit/phpunit": "^10.0",
-        "fakerphp/faker": "^1.23.0"
+        "phpunit/phpunit": "^10.0"
     },
     "autoload": {
         "classmap": [

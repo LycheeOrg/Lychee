@@ -10,20 +10,17 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Tests\Feature_v1;
+namespace Tests\Feature_v2;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Laragear\WebAuthn\ByteBuffer;
 use Laragear\WebAuthn\Challenge;
-use Tests\AbstractTestCase;
-use Tests\Traits\RequiresEmptyWebAuthnCredentials;
+use Tests\Feature_v2\Base\BaseApiV2Test;
 
-class WebAuthTest extends AbstractTestCase
+class WebAuthTest extends BaseApiV2Test
 {
-	use RequiresEmptyWebAuthnCredentials;
-
 	public function setUp(): void
 	{
 		parent::setUp();
@@ -46,7 +43,7 @@ class WebAuthTest extends AbstractTestCase
 	{
 		Auth::loginUsingId(1);
 
-		$response = $this->postJson('/api/WebAuthn::register/options');
+		$response = $this->postJson('WebAuthn::register/options');
 		$this->assertOk($response);
 
 		// retrieve the challenge from the Session
@@ -75,7 +72,7 @@ class WebAuthTest extends AbstractTestCase
 	 */
 	public function testWebAuthnRegisterOptionsUnauthorized(): void
 	{
-		$response = $this->postJson('/api/WebAuthn::register/options');
+		$response = $this->actingAs($this->admin)->postJson('WebAuthn::register/options');
 		$this->assertForbidden($response);
 	}
 
@@ -97,7 +94,7 @@ class WebAuthTest extends AbstractTestCase
 		);
 		Session::put(config('webauthn.challenge.key'), $challenge);
 
-		$response = $this->postJson('/api/WebAuthn::register', [
+		$response = $this->actingAs($this->admin)->postJson('WebAuthn::register', [
 			'id' => 'kudbBp8jSUfho6ksyUPhPOMsC2ZLXmUJgkxvZd1zi8AXO6dnXfcRQg9xbTNA5PLcoIbn0ZQbsj4De6bvRy_Cgg',
 			'rawId' => 'kudbBp8jSUfho6ksyUPhPOMsC2ZLXmUJgkxvZd1zi8AXO6dnXfcRQg9xbTNA5PLcoIbn0ZQbsj4De6bvRy/Cgg==',
 			'response' => [
@@ -110,7 +107,7 @@ class WebAuthTest extends AbstractTestCase
 		$this->assertNoContent($response); // code 204
 
 		// Check that it is indeed in the list
-		$responseList = $this->postJson('/api/WebAuthn::list');
+		$responseList = $this->actingAs($this->admin)->postJson('WebAuthn::list');
 		$this->assertOk($responseList); // code 200
 
 		// Check that the key is indeed in the list
@@ -135,7 +132,7 @@ class WebAuthTest extends AbstractTestCase
 		$challenge = new Challenge(ByteBuffer::fromBase64Url('Y7CVUuj2aBfZ3nKP_tS3YQ'), -100, false, []);
 		Session::put(config('webauthn.challenge.key'), $challenge);
 
-		$response = $this->postJson('/api/WebAuthn::register', [
+		$response = $this->actingAs($this->admin)->postJson('WebAuthn::register', [
 			'id' => 'kudbBp8jSUfho6ksyUPhPOMsC2ZLXmUJgkxvZd1zi8AXO6dnXfcRQg9xbTNA5PLcoIbn0ZQbsj4De6bvRy_Cgg',
 			'rawId' => 'kudbBp8jSUfho6ksyUPhPOMsC2ZLXmUJgkxvZd1zi8AXO6dnXfcRQg9xbTNA5PLcoIbn0ZQbsj4De6bvRy/Cgg==',
 			'response' => [
@@ -146,7 +143,7 @@ class WebAuthTest extends AbstractTestCase
 		]);
 		$this->assertStatus($response, 422); // Challenge is expired
 
-		$responseList = $this->postJson('/api/WebAuthn::list');
+		$responseList = $this->actingAs($this->admin)->postJson('WebAuthn::list');
 		$this->assertOk($responseList); // code 200
 
 		// check that the key has not been added to the list
@@ -169,7 +166,7 @@ class WebAuthTest extends AbstractTestCase
 		$challenge = new Challenge(ByteBuffer::fromBase64Url('Y7CVUuj2aBfZ3nKP_tS3YQ'), 60, false, []);
 		Session::put(config('webauthn.challenge.key'), $challenge);
 
-		$response = $this->postJson('/api/WebAuthn::register', [
+		$response = $this->actingAs($this->admin)->postJson('WebAuthn::register', [
 			'id' => 'kudbBp8jSUfho6ksyUPhPOMsC2ZLXmUJgkxvZd1zi8AXO6dnXfcRQg9xbTNA5PLcoIbn0ZQbsj4De6bvRy_Cgg',
 			'rawId' => 'kudbBp8jSUfho6ksyUPhPOMsC2ZLXmUJgkxvZd1zi8AXO6dnXfcRQg9xbTNA5PLcoIbn0ZQbsj4De6bvRy/Cgg==',
 			'response' => [
@@ -191,7 +188,7 @@ class WebAuthTest extends AbstractTestCase
 		$this->createCredentials();
 
 		// Generate a challenge for user_id = 1
-		$response = $this->postJson('/api/WebAuthn::login/options', ['user_id' => 1]);
+		$response = $this->actingAs($this->admin)->postJson('WebAuthn::login/options', ['user_id' => 1]);
 		$this->assertOk($response);
 
 		$challengeRetrieved = Session::get(config('webauthn.challenge.key'));
@@ -219,7 +216,7 @@ class WebAuthTest extends AbstractTestCase
 		$this->createCredentials();
 
 		// Generate a challenge for username = admin
-		$response = $this->postJson('/api/WebAuthn::login/options', ['username' => 'admin']);
+		$response = $this->actingAs($this->admin)->postJson('WebAuthn::login/options', ['username' => 'admin']);
 		$this->assertOk($response);
 
 		$challengeRetrieved = Session::get(config('webauthn.challenge.key'));
@@ -247,7 +244,7 @@ class WebAuthTest extends AbstractTestCase
 		$this->createCredentials();
 
 		// Generate a challenge for user_id = 1
-		$response = $this->postJson('/api/WebAuthn::login/options', []);
+		$response = $this->actingAs($this->admin)->postJson('WebAuthn::login/options', []);
 		$this->assertOk($response);
 
 		$challengeRetrieved = Session::get(config('webauthn.challenge.key'));
@@ -280,7 +277,7 @@ class WebAuthTest extends AbstractTestCase
 		);
 		Session::put(config('webauthn.challenge.key'), $challenge);
 
-		$response = $this->postJson('/api/WebAuthn::login', [
+		$response = $this->actingAs($this->admin)->postJson('WebAuthn::login', [
 			'id' => '_Xlz-khgFhDdkvOWyy_YqC54ExkYyp1o6HAQiybqLST-9RGBndpgI06TQygIYI7ZL2dayCMYm6J1-bXyl72obA',
 			'rawId' => '/Xlz+khgFhDdkvOWyy/YqC54ExkYyp1o6HAQiybqLST+9RGBndpgI06TQygIYI7ZL2dayCMYm6J1+bXyl72obA==',
 			'response' => [
@@ -317,7 +314,7 @@ class WebAuthTest extends AbstractTestCase
 		);
 		Session::put(config('webauthn.challenge.key'), $challenge);
 
-		$response = $this->postJson('/api/WebAuthn::login', [
+		$response = $this->actingAs($this->admin)->postJson('WebAuthn::login', [
 			'id' => '_Xlz-khgFhDdkvOWyy_YqC54ExkYyp1o6HAQiybqLST-9RGBndpgI06TQygIYI7ZL2dayCMYm6J1-bXyl72obA',
 			'rawId' => '/Xlz+khgFhDdkvOWyy/YqC54ExkYyp1o6HAQiybqLST+9RGBndpgI06TQygIYI7ZL2dayCMYm6J1+bXyl72obA==',
 			'response' => [
@@ -352,7 +349,7 @@ class WebAuthTest extends AbstractTestCase
 		);
 		Session::put(config('webauthn.challenge.key'), $challenge);
 
-		$response = $this->postJson('/api/WebAuthn::login', [
+		$response = $this->actingAs($this->admin)->postJson('WebAuthn::login', [
 			'id' => '_Xlz-khgFhDdkvOWyy_YqC54ExkYyp1o6HAQiybqLST-9RGBndpgI06TQygIYI7ZL2dayCMYm6J1-bXyl72obA',
 			'rawId' => '/Xlz+khgFhDdkvOWyy/YqC54ExkYyp1o6HAQiybqLST+9RGBndpgI06TQygIYI7ZL2dayCMYm6J1+bXyl72obA==',
 			'response' => [
@@ -378,7 +375,7 @@ class WebAuthTest extends AbstractTestCase
 	{
 		$this->createCredentials();
 
-		$responseList = $this->postJson('/api/WebAuthn::list');
+		$responseList = $this->actingAs($this->admin)->postJson('WebAuthn::list');
 		$this->assertUnauthorized($responseList);
 	}
 
@@ -391,7 +388,7 @@ class WebAuthTest extends AbstractTestCase
 	{
 		$this->createCredentials();
 
-		$responseDelete = $this->postJson('/api/WebAuthn::delete', ['id' => '_Xlz-khgFhDdkvOWyy_YqC54ExkYyp1o6HAQiybqLST-9RGBndpgI06TQygIYI7ZL2dayCMYm6J1-bXyl72obA']);
+		$responseDelete = $this->actingAs($this->admin)->postJson('WebAuthn::delete', ['id' => '_Xlz-khgFhDdkvOWyy_YqC54ExkYyp1o6HAQiybqLST-9RGBndpgI06TQygIYI7ZL2dayCMYm6J1-bXyl72obA']);
 		$this->assertUnauthorized($responseDelete);
 	}
 
@@ -405,7 +402,7 @@ class WebAuthTest extends AbstractTestCase
 		$this->createCredentials();
 
 		Auth::loginUsingId(1);
-		$responseDelete = $this->postJson('/api/WebAuthn::delete', ['id' => '_Xlz-khgFhDdkvOWyy_YqC54ExkYyp1o6HAQiybqLST-9RGBndpgI06TQygIYI7ZL2dayCMYm6J1-bXyl72obA']);
+		$responseDelete = $this->actingAs($this->admin)->postJson('WebAuthn::delete', ['id' => '_Xlz-khgFhDdkvOWyy_YqC54ExkYyp1o6HAQiybqLST-9RGBndpgI06TQygIYI7ZL2dayCMYm6J1-bXyl72obA']);
 		$this->assertNoContent($responseDelete);
 		Auth::logout();
 		Session::flush();

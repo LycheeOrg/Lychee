@@ -10,7 +10,7 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Tests\Feature_v1;
+namespace Tests\Unit;
 
 use App\DTO\Version;
 use App\Exceptions\Internal\LycheeInvalidArgumentException;

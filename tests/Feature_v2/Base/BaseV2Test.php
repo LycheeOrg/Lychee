@@ -24,12 +24,14 @@ use Tests\Traits\InteractWithSmartAlbums;
 use Tests\Traits\RequiresEmptyAlbums;
 use Tests\Traits\RequiresEmptyPhotos;
 use Tests\Traits\RequiresEmptyUsers;
+use Tests\Traits\RequiresEmptyWebAuthnCredentials;
 
 abstract class BaseV2Test extends AbstractTestCase
 {
 	use RequiresEmptyUsers;
 	use RequiresEmptyAlbums;
 	use RequiresEmptyPhotos;
+	use RequiresEmptyWebAuthnCredentials;
 	use DatabaseTransactions;
 	use InteractWithSmartAlbums;
 
