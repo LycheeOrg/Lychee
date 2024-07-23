@@ -35,7 +35,7 @@ class PagesTest extends BaseV2Test
 			'/gallery/albumID/photoID',
 		])->each(function ($addr) {
 			$response = $this->get($addr);
-			$response->assertOk();
+			$this->assertOk($response);
 			$response->assertViewIs('vueapp');
 		});
 	}

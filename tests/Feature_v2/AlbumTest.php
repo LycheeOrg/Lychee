@@ -19,7 +19,7 @@ class AlbumTest extends BaseApiV2Test
 	public function testGet(): void
 	{
 		$response = $this->getJson('Album::get');
-		$response->assertUnprocessable();
+		$this->assertUnprocessable($response);
 		$response->assertJson([
 			'message' => 'The album id field is required.',
 		]);
@@ -28,7 +28,7 @@ class AlbumTest extends BaseApiV2Test
 	public function testGetAnon(): void
 	{
 		$response = $this->getJsonWithData('Album::get', ['album_id' => $this->album4->id]);
-		$response->assertOk();
+		$this->assertOk($response);
 		$response->assertJson([
 			'config' => [
 				'is_base_album' => true,
@@ -62,7 +62,7 @@ class AlbumTest extends BaseApiV2Test
 	public function testGetAsOwner(): void
 	{
 		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album::get', ['album_id' => $this->tagAlbum1->id]);
-		$response->assertOk();
+		$this->assertOk($response);
 		$response->assertJson([
 			'config' => [
 				'is_base_album' => true,
@@ -87,11 +87,11 @@ class AlbumTest extends BaseApiV2Test
 	{
 		// Unauthorized if not logged in.
 		$response = $this->getJsonWithData('Album::get', ['album_id' => $this->album1->id]);
-		$response->assertUnauthorized();
+		$this->assertUnauthorized($response);
 
 		// Forbidden if logged in.
 		$response = $this->actingAs($this->userLocked)->getJsonWithData('Album::get', ['album_id' => $this->album1->id]);
-		$response->assertForbidden();
+		$this->assertForbidden($response);
 	}
 
 	public function testUpdateAlbumUnauthorizedForbidden(): void
@@ -108,7 +108,7 @@ class AlbumTest extends BaseApiV2Test
 			'album_aspect_ratio' => '1/1',
 			'copyright' => '',
 		]);
-		$response->assertUnauthorized();
+		$this->assertUnauthorized($response);
 
 		$response = $this->actingAs($this->userLocked)->postJson('Album::update', [
 			'album_id' => $this->album1->id,
@@ -122,7 +122,7 @@ class AlbumTest extends BaseApiV2Test
 			'album_aspect_ratio' => '1/1',
 			'copyright' => '',
 		]);
-		$response->assertForbidden();
+		$this->assertForbidden($response);
 	}
 
 	public function testUpdateAlbumAuthorized(): void
@@ -142,5 +142,60 @@ class AlbumTest extends BaseApiV2Test
 		$response->assertCreated();
 	}
 
-	// updateProtectionPolicy
+	public function testUpdateTagAlbumAuUnauthorizedForbidden(): void
+	{
+		$response = $this->postJson('Album::updateTag', [
+			'album_id' => $this->tagAlbum1->id,
+			'title' => 'title',
+			'tags' => ['tag1', 'tag2'],
+			'description' => '',
+			'photo_sorting_column' => 'title',
+			'photo_sorting_order' => 'ASC',
+			'copyright' => '',
+		]);
+		$this->assertUnauthorized($response);
+
+		$response = $this->actingAs($this->userLocked)->postJson('Album::updateTag', [
+			'album_id' => $this->tagAlbum1->id,
+			'title' => 'title',
+			'tags' => ['tag1', 'tag2'],
+			'description' => '',
+			'photo_sorting_column' => 'title',
+			'photo_sorting_order' => 'ASC',
+			'copyright' => '',
+		]);
+		$this->assertForbidden($response);
+	}
+
+	public function testUpdateTagAlbumAuthorized(): void
+	{
+		$response = $this->actingAs($this->userMayUpload1)->postJson('Album::updateTag', [
+			'album_id' => $this->tagAlbum1->id,
+			'title' => 'title',
+			'tags' => ['tag1', 'tag2'],
+			'description' => '',
+			'photo_sorting_column' => 'title',
+			'photo_sorting_order' => 'ASC',
+			'copyright' => '',
+		]);
+		$response->assertCreated();
+
+		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album::get', ['album_id' => $this->tagAlbum1->id]);
+		$this->assertOk($response);
+		$response->assertJson([
+			'config' => [
+				'is_base_album' => true,
+				'is_model_album' => false,
+				'is_accessible' => true,
+				'is_password_protected' => false,
+				'is_search_accessible' => true,
+			],
+			'resource' => [
+				'id' => $this->tagAlbum1->id,
+				'title' => 'title', // from modified above.
+				'photos' => [],
+			],
+		]);
+		$this->assertCount(0, $response->json('resource.photos'));
+	}
 }

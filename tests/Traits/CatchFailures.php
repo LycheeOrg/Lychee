@@ -71,6 +71,11 @@ trait CatchFailures
 		$this->assertStatus($response, 200);
 	}
 
+	protected function assertUnprocessable(TestResponse $response): void
+	{
+		$this->assertStatus($response, 422);
+	}
+
 	protected function assertForbidden(TestResponse $response): void
 	{
 		$this->assertStatus($response, 403);

@@ -58,7 +58,7 @@ class TagAlbumResource extends Data
 		$this->prepPhotosCollection();
 
 		// thumb
-		$this->thumb = new ThumbResource($tagAlbum->thumb->id, $tagAlbum->thumb->type, $tagAlbum->thumb->thumbUrl, $tagAlbum->thumb->thumb2xUrl);
+		$this->thumb = ThumbResource::make($tagAlbum->thumb?->id, $tagAlbum->thumb?->type, $tagAlbum->thumb?->thumbUrl, $tagAlbum->thumb?->thumb2xUrl);
 
 		// security
 		$this->policy = AlbumProtectionPolicy::ofBaseAlbum($tagAlbum);
