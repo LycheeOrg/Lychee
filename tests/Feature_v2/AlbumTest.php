@@ -59,6 +59,30 @@ class AlbumTest extends BaseApiV2Test
 		]);
 	}
 
+	public function testGetAsOwner(): void
+	{
+		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album::get', ['album_id' => $this->tagAlbum1->id]);
+		$response->assertOk();
+		$response->assertJson([
+			'config' => [
+				'is_base_album' => true,
+				'is_model_album' => false,
+				'is_accessible' => true,
+				'is_password_protected' => false,
+				'is_search_accessible' => true,
+			],
+			'resource' => [
+				'id' => $this->tagAlbum1->id,
+				'title' => $this->tagAlbum1->title,
+				'photos' => [
+					[
+						'id' => $this->photo1->id,
+					],
+				],
+			],
+		]);
+	}
+
 	public function testGetUnauthorizedOrForbidden(): void
 	{
 		// Unauthorized if not logged in.
@@ -115,7 +139,7 @@ class AlbumTest extends BaseApiV2Test
 			'album_aspect_ratio' => '1/1',
 			'copyright' => '',
 		]);
-		$response->assertOk();
+		$response->assertCreated();
 	}
 
 	// updateProtectionPolicy

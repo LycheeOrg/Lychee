@@ -29,6 +29,7 @@ use Kalnoy\Nestedset\Collection as NSCollection;
 use Kalnoy\Nestedset\DescendantsRelation;
 use Kalnoy\Nestedset\Node;
 use Kalnoy\Nestedset\NodeTrait;
+use PharIo\Manifest\License;
 
 /**
  * Class Album.
@@ -253,19 +254,23 @@ class Album extends BaseAlbum implements Node
 	/**
 	 * Return the License used by the album.
 	 *
-	 * @param string $value
+	 * @param string|LicenseType|null $value
 	 *
 	 * @return LicenseType
 	 *
 	 * @throws ConfigurationKeyMissingException
 	 */
-	protected function getLicenseAttribute(string $value): LicenseType
+	protected function getLicenseAttribute(string|LicenseType|null $value): LicenseType
 	{
-		if ($value === 'none') {
+		if ($value === null || $value === 'none' || $value === LicenseType::NONE) {
 			return Configs::getValueAsEnum('default_license', LicenseType::class);
 		}
 
-		return LicenseType::from($value);
+		if (is_string($value)) {
+			return LicenseType::from($value);
+		}
+
+		return $value;
 	}
 
 	/**

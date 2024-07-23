@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Gallery;
 
 use App\Actions\Album\SetProtectionPolicy;
+use App\DTO\AlbumProtectionPolicy;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Http\Requests\Album\GetAlbumRequest;
 use App\Http\Requests\Album\SetAlbumProtectionPolicyRequest;
 use App\Http\Requests\Album\UpdateAlbumRequest;
 use App\Http\Requests\Album\UpdateTagAlbumRequest;
+use App\Http\Resources\Editable\EditableBaseAlbumResource;
 use App\Http\Resources\GalleryConfigs\AlbumConfig;
 use App\Http\Resources\Models\AbstractAlbumResource;
 use App\Http\Resources\Models\AlbumResource;
@@ -47,7 +49,7 @@ class AlbumController extends Controller
 		return new AbstractAlbumResource($config, $albumResource);
 	}
 
-	public function updateAlbum(UpdateAlbumRequest $request): void
+	public function updateAlbum(UpdateAlbumRequest $request): EditableBaseAlbumResource
 	{
 		$album = $request->album();
 		if ($album === null) {
@@ -61,9 +63,11 @@ class AlbumController extends Controller
 		$album->photo_sorting = $request->photoSortingCriterion();
 		$album->album_sorting = $request->albumSortingCriterion();
 		$album->save();
+
+		return EditableBaseAlbumResource::fromModel($album);
 	}
 
-	public function updateTagAlbum(UpdateTagAlbumRequest $request): void
+	public function updateTagAlbum(UpdateTagAlbumRequest $request): EditableBaseAlbumResource
 	{
 		$album = $request->album();
 		if ($album === null) {
@@ -75,9 +79,11 @@ class AlbumController extends Controller
 		$album->copyright = $request->copyright();
 		$album->photo_sorting = $request->photoSortingCriterion();
 		$album->save();
+
+		return EditableBaseAlbumResource::fromModel($album);
 	}
 
-	public function updateProtectionPolicy(SetAlbumProtectionPolicyRequest $request, SetProtectionPolicy $setProtectionPolicy): void
+	public function updateProtectionPolicy(SetAlbumProtectionPolicyRequest $request, SetProtectionPolicy $setProtectionPolicy): AlbumProtectionPolicy
 	{
 		$setProtectionPolicy->do(
 			$request->album(),
@@ -85,5 +91,7 @@ class AlbumController extends Controller
 			$request->isPasswordProvided(),
 			$request->password()
 		);
+
+		return AlbumProtectionPolicy::ofBaseAlbum($request->album());
 	}
 }

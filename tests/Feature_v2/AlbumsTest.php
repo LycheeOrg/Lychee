@@ -60,7 +60,15 @@ class AlbumsTest extends BaseApiV2Test
 		$response->assertSee($this->album4->id);
 		$response->assertJson([
 			'smart_albums' => [],
-			'tag_albums' => [],
+			'tag_albums' => [
+				[
+					'id' => $this->tagAlbum1->id,
+					'title' => $this->tagAlbum1->title,
+					'thumb' => [
+						'id' => $this->photo1->id,
+					],
+				],
+			],
 			'albums' => [
 				[
 					'id' => $this->album1->id,

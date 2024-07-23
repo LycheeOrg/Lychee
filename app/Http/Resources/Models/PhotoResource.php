@@ -14,7 +14,7 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 class PhotoResource extends Data
 {
 	public string $id;
-	public string $album_id;
+	public ?string $album_id;
 	public ?float $altitude;
 	public ?string $aperture;
 	public string $checksum;

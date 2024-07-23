@@ -16,6 +16,7 @@ use App\Enum\Livewire\NotificationType;
 use App\Models\AccessPermission;
 use App\Models\Album;
 use App\Models\Photo;
+use App\Models\TagAlbum;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\AbstractTestCase;
@@ -41,6 +42,7 @@ abstract class BaseV2Test extends AbstractTestCase
 	// album 1 belongs to userMayUpload1
 	protected Album $album1;
 	protected Album $subAlbum1;
+	protected TagAlbum $tagAlbum1;
 	protected Photo $photo1;
 	protected Photo $photo1b;
 	protected Photo $subPhoto1;
@@ -77,10 +79,11 @@ abstract class BaseV2Test extends AbstractTestCase
 		$this->userLocked = User::factory()->locked()->create();
 
 		$this->album1 = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
-		$this->photo1 = Photo::factory()->owned_by($this->userMayUpload1)->with_GPS_coordinates()->in($this->album1)->create();
+		$this->photo1 = Photo::factory()->owned_by($this->userMayUpload1)->with_GPS_coordinates()->with_tags('test')->in($this->album1)->create();
 		$this->photo1b = Photo::factory()->owned_by($this->userMayUpload1)->with_subGPS_coordinates()->in($this->album1)->create();
 		$this->subAlbum1 = Album::factory()->children_of($this->album1)->owned_by($this->userMayUpload1)->create();
 		$this->subPhoto1 = Photo::factory()->owned_by($this->userMayUpload1)->with_GPS_coordinates()->in($this->subAlbum1)->create();
+		$this->tagAlbum1 = TagAlbum::factory()->owned_by($this->userMayUpload1)->of_tags('test')->create();
 
 		$this->album2 = Album::factory()->as_root()->owned_by($this->userMayUpload2)->create();
 		$this->photo2 = Photo::factory()->owned_by($this->userMayUpload2)->with_GPS_coordinates()->in($this->album2)->create();

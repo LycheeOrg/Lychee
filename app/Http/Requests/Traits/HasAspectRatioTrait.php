@@ -13,6 +13,6 @@ trait HasAspectRatioTrait
 	 */
 	public function aspectRatio(): ?AspectRatioType
 	{
-		return $this->aspectRatio();
+		return $this->aspectRatio;
 	}
 }
