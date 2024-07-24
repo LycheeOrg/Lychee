@@ -1,6 +1,6 @@
 <template>
-<Card>
-<!-- 
+	<Card>
+		<!-- 
 	<div class="setOauth my-10">
 	@if(count($this->oauthData) === 0)
 	@if (Auth::user()->may_administrate === true)
@@ -41,9 +41,8 @@
 	@endforeach
 	@endif
 </div> -->
-</Card>	
+	</Card>
 </template>
 <script setup lang="ts">
-import Card from 'primevue/card';
-
+import Card from "primevue/card";
 </script>

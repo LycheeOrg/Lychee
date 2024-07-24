@@ -2,20 +2,19 @@
 	<Toolbar class="w-full">
 		<template #start>
 			<router-link :to="{ name: 'gallery' }">
-			<Button icon="pi pi-angle-left" class="mr-2" severity="secondary" text @click="" />
+				<Button icon="pi pi-angle-left" class="mr-2" severity="secondary" text @click="" />
 			</router-link>
 		</template>
 
 		<template #center>
-			{{ $t('lychee.PROFILE') }}
+			{{ $t("lychee.PROFILE") }}
 		</template>
 
-		<template #end>
-		</template>
+		<template #end> </template>
 	</Toolbar>
 	<SetLogin />
-		<!-- <Card class=""> -->
-			<!-- <div class="flex flex-wrap flex-row flex-shrink w-full justify-start align-top">
+	<!-- <Card class=""> -->
+	<!-- <div class="flex flex-wrap flex-row flex-shrink w-full justify-start align-top">
 				<template v-for="album in props.albums">
 					<AlbumThumb
 						:album="album"
@@ -25,7 +24,7 @@
 					/>
 				</template>
 			</div> -->
-		<!-- <div class="settings_view max-w-xl text-text-main-400 text-sm mx-auto">
+	<!-- <div class="settings_view max-w-xl text-text-main-400 text-sm mx-auto">
 			<livewire:forms.profile.set-login />
 			<livewire:forms.profile.oauth />
 			@if($are_notification_active)
@@ -41,9 +40,8 @@
 	</div> -->
 </template>
 <script setup lang="ts">
-import SetLogin from '@/components/forms/profile/SetLogin.vue';
-import Button from 'primevue/button';
-import Toolbar from 'primevue/toolbar';
+import SetLogin from "@/components/forms/profile/SetLogin.vue";
+import Button from "primevue/button";
+import Toolbar from "primevue/toolbar";
 // import Card from 'primevue/card';
-
 </script>
