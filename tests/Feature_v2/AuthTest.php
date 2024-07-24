@@ -19,7 +19,7 @@ class AuthTest extends BaseApiV2Test
 	public function testGuest(): void
 	{
 		$response = $this->getJson('Auth::user');
-		$this->assertok($response);
+		$this->assertOk($response);
 		$response->assertJson([
 			'id' => null,
 			'has_token' => null,
@@ -28,7 +28,7 @@ class AuthTest extends BaseApiV2Test
 		]);
 
 		$response = $this->getJson('Auth::rights');
-		$this->assertok($response);
+		$this->assertOk($response);
 		$response->assertJson([
 			'root_album' => [
 				'can_edit' => false,
@@ -54,7 +54,7 @@ class AuthTest extends BaseApiV2Test
 		]);
 
 		$response = $this->getJson('Auth::config');
-		$this->assertok($response);
+		$this->assertOk($response);
 		$response->assertJson([
 			'oauthProviders' => [],
 			'u2f_enabled' => false,
