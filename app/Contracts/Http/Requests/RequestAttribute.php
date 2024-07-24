@@ -31,7 +31,7 @@ class RequestAttribute
 	public const USERNAME_ATTRIBUTE = 'username';
 
 	public const PASSWORD_ATTRIBUTE = 'password';
-	public const OLD_PASSWORD_ATTRIBUTE = 'oldPassword';
+	public const OLD_PASSWORD_ATTRIBUTE = 'old_password';
 
 	public const SORTING_COLUMN_ATTRIBUTE = 'sorting_column';
 	public const SORTING_ORDER_ATTRIBUTE = 'sorting_order';

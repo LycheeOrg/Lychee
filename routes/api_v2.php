@@ -8,7 +8,6 @@ use App\Legacy\V1\Controllers\Administration\DiagnosticsController as Administra
 use App\Legacy\V1\Controllers\Administration\SettingsController as AdministrationSettingsController;
 use App\Legacy\V1\Controllers\Administration\SharingController as AdministrationSharingController;
 use App\Legacy\V1\Controllers\Administration\UpdateController as AdministrationUpdateController;
-use App\Legacy\V1\Controllers\Administration\UserController as AdministrationUserController;
 use App\Legacy\V1\Controllers\Administration\UsersController as AdministrationUsersController;
 use App\Legacy\V1\Controllers\AlbumController;
 // use App\Legacy\V1\Controllers\AlbumsController;
@@ -131,11 +130,10 @@ Route::get('/Auth::config', [AuthController::class, 'getConfig']);
 /**
  * USER.
  */
-// Route::post('/User::updateLogin', [AdministrationUserController::class, 'updateLogin']);
-// Route::post('/User::setEmail', [AdministrationUserController::class, 'setEmail']);
-// Route::post('/User::getAuthenticatedUser', [AdministrationUserController::class, 'getAuthenticatedUser']);
-// Route::post('/User::resetToken', [AdministrationUserController::class, 'resetToken']);
-// Route::post('/User::unsetToken', [AdministrationUserController::class, 'unsetToken']);
+Route::post('/Profile::updateLogin', [ProfileController::class, 'updateLogin']);
+Route::post('/Profile::setEmail', [ProfileController::class, 'setEmail']);
+Route::post('/Profile::resetToken', [ProfileController::class, 'resetToken']);
+Route::post('/Profile::unsetToken', [ProfileController::class, 'unsetToken']);
 
 /**
  * USERS.
