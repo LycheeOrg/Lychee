@@ -3,9 +3,9 @@
 namespace App\View\Components\Gallery\Album\Thumbs;
 
 use App\Contracts\Models\AbstractAlbum;
-use App\DTO\AlbumProtectionPolicy;
 use App\Enum\ThumbAlbumSubtitleType;
 use App\Enum\ThumbOverlayVisibilityType;
+use App\Http\Resources\Models\Utils\AlbumProtectionPolicy;
 use App\Models\Album as AlbumModel;
 use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;

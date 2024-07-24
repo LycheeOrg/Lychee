@@ -139,10 +139,10 @@ class AlbumTest extends BaseApiV2Test
 			'album_aspect_ratio' => '1/1',
 			'copyright' => '',
 		]);
-		$response->assertCreated();
+		$this->assertCreated($response);
 	}
 
-	public function testUpdateTagAlbumAuUnauthorizedForbidden(): void
+	public function testUpdateTagAlbumUnauthorizedForbidden(): void
 	{
 		$response = $this->postJson('Album::updateTag', [
 			'album_id' => $this->tagAlbum1->id,
@@ -178,7 +178,7 @@ class AlbumTest extends BaseApiV2Test
 			'photo_sorting_order' => 'ASC',
 			'copyright' => '',
 		]);
-		$response->assertCreated();
+		$this->assertCreated($response);
 
 		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album::get', ['album_id' => $this->tagAlbum1->id]);
 		$this->assertOk($response);
@@ -199,7 +199,7 @@ class AlbumTest extends BaseApiV2Test
 		$this->assertCount(0, $response->json('resource.photos'));
 	}
 
-	public function testUpdateProtectionPolicyAuUnauthorizedForbidden(): void
+	public function testUpdateProtectionPolicyUnauthorizedForbidden(): void
 	{
 		$response = $this->postJson('Album::updateProtectionPolicy', [
 			'album_id' => $this->album1->id,
@@ -213,7 +213,6 @@ class AlbumTest extends BaseApiV2Test
 
 		$response = $this->actingAs($this->userLocked)->postJson('Album::updateProtectionPolicy', [
 			'album_id' => $this->album1->id,
-			'album_id' => $this->album1->id,
 			'is_public' => false,
 			'is_link_required' => false,
 			'is_nsfw' => false,
@@ -221,5 +220,88 @@ class AlbumTest extends BaseApiV2Test
 			'grants_full_photo_access' => false,
 		]);
 		$this->assertForbidden($response);
+	}
+
+	public function testUpdateProtectionPolicyAuthorized(): void
+	{
+		// Set as public
+		$response = $this->actingAs($this->userMayUpload1)->postJson('Album::updateProtectionPolicy', [
+			'album_id' => $this->album1->id,
+			'is_public' => true,
+			'is_link_required' => false,
+			'is_nsfw' => false,
+			'grants_download' => false,
+			'grants_full_photo_access' => false,
+		]);
+		$this->assertCreated($response);
+		$response->assertJson([
+			'is_public' => true,
+			'is_link_required' => false,
+			'is_password_required' => false,
+			'is_nsfw' => false,
+			'grants_download' => false,
+			'grants_full_photo_access' => false,
+		]);
+		$this->
+
+		// Check that album is indeed public
+		$response = $this->getJson('Albums::get');
+		$this->assertOk($response);
+		dd($response->json());
+		$this->assertCount(0, $response->json('smart_albums'));
+		$response->assertSee($this->album1->id);
+
+		// Set as hidden
+		$response = $this->actingAs($this->userMayUpload1)->postJson('Album::updateProtectionPolicy', [
+			'album_id' => $this->album1->id,
+			'is_public' => true,
+			'is_link_required' => true,
+			'is_nsfw' => false,
+			'grants_download' => false,
+			'grants_full_photo_access' => false,
+		]);
+		$this->assertCreated($response);
+		$response->assertJson([
+			'is_public' => true,
+			'is_link_required' => true,
+			'is_password_required' => false,
+			'is_nsfw' => false,
+			'grants_download' => false,
+			'grants_full_photo_access' => false,
+		]);
+
+		// Check that album is indeed hidden
+		$response = $this->getJson('Albums::get');
+		$this->assertOk($response);
+		dd($response->json());
+		$this->assertCount(0, $response->json('smart_albums'));
+		$response->assertDontSee($this->album1->id);
+
+		// Set with password
+		$response = $this->actingAs($this->userMayUpload1)->postJson('Album::updateProtectionPolicy', [
+			'album_id' => $this->album1->id,
+			'is_public' => true,
+			'is_link_required' => false,
+			'is_nsfw' => false,
+			'password' => 'something',
+			'grants_download' => false,
+			'grants_full_photo_access' => false,
+		]);
+		$this->assertCreated($response);
+		$response->assertJson([
+			'is_public' => true,
+			'is_link_required' => true,
+			'is_password_required' => true,
+			'is_nsfw' => false,
+			'grants_download' => false,
+			'grants_full_photo_access' => false,
+		]);
+
+		// Check that album is indeed visible but locked
+		$response = $this->getJson('Albums::get');
+		$this->assertOk($response);
+		$this->assertCount(0, $response->json('smart_albums'));
+		$response->assertDontSee($this->album1->id);
+		dd($response->json());
 	}
 }

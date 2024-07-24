@@ -2,7 +2,7 @@
 
 namespace App\Http\Resources\Models;
 
-use App\DTO\AlbumProtectionPolicy;
+use App\Http\Resources\Models\Utils\AlbumProtectionPolicy;
 use App\Http\Resources\Models\Utils\PreFormattedAlbumData;
 use App\Http\Resources\Rights\AlbumRightsResource;
 use App\Http\Resources\Traits\HasHeaderUrl;

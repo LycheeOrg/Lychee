@@ -2,8 +2,8 @@
 
 namespace App\Legacy\V1\Requests\Album;
 
-use App\DTO\AlbumProtectionPolicy;
 use App\Http\Requests\BaseApiRequest;
+use App\Http\Resources\Models\Utils\AlbumProtectionPolicy;
 use App\Legacy\V1\Contracts\Http\Requests\HasBaseAlbum;
 use App\Legacy\V1\Contracts\Http\Requests\HasPassword;
 use App\Legacy\V1\Contracts\Http\Requests\RequestAttribute;

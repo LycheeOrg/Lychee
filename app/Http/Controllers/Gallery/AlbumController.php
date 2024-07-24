@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Gallery;
 
 use App\Actions\Album\SetProtectionPolicy;
-use App\DTO\AlbumProtectionPolicy;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Http\Requests\Album\GetAlbumRequest;
 use App\Http\Requests\Album\SetAlbumProtectionPolicyRequest;
@@ -15,6 +14,7 @@ use App\Http\Resources\Models\AbstractAlbumResource;
 use App\Http\Resources\Models\AlbumResource;
 use App\Http\Resources\Models\SmartAlbumResource;
 use App\Http\Resources\Models\TagAlbumResource;
+use App\Http\Resources\Models\Utils\AlbumProtectionPolicy;
 use App\Models\Album;
 use App\Models\TagAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
@@ -92,6 +92,6 @@ class AlbumController extends Controller
 			$request->password()
 		);
 
-		return AlbumProtectionPolicy::ofBaseAlbum($request->album());
+		return AlbumProtectionPolicy::ofBaseAlbum($request->album()->refresh());
 	}
 }

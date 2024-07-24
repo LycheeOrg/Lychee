@@ -3,9 +3,9 @@
 namespace App\Http\Resources\Models;
 
 use App\Contracts\Models\AbstractAlbum;
-use App\DTO\AlbumProtectionPolicy;
 use App\Enum\DateOrderingType;
 use App\Enum\ThumbOverlayVisibilityType;
+use App\Http\Resources\Models\Utils\AlbumProtectionPolicy;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;

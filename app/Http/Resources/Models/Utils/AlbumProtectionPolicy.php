@@ -1,9 +1,10 @@
 <?php
 
-namespace App\DTO;
+namespace App\Http\Resources\Models\Utils;
 
 use App\Models\Extensions\BaseAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
+use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
 /**
@@ -21,7 +22,7 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
  *     and the applied action {@link \App\Actions\Album\SetProtectionPolicy}.
  */
 #[TypeScript()]
-class AlbumProtectionPolicy extends ArrayableDTO
+class AlbumProtectionPolicy extends Data
 {
 	public function __construct(
 		public bool $is_public,

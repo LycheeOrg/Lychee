@@ -145,7 +145,7 @@ class WebAuthTest extends BaseApiV2Test
 			],
 			'type' => 'public-key',
 		]);
-		$this->assertStatus($response, 422); // Challenge is expired
+		$this->assertUnprocessable($response); // Challenge is expired
 
 		$responseList = $this->actingAs($this->admin)->postJson('WebAuthn::list');
 		$this->assertOk($responseList); // code 200
@@ -329,7 +329,7 @@ class WebAuthTest extends BaseApiV2Test
 			],
 			'type' => 'public-key',
 		]);
-		$this->assertStatus($response, 422);
+		$this->assertUnprocessable($response);
 		$response->assertSee('Assertion Error: Signature is invalid');
 
 		$this->assertGuest();
@@ -364,7 +364,7 @@ class WebAuthTest extends BaseApiV2Test
 			],
 			'type' => 'public-key',
 		]);
-		$this->assertStatus($response, 422);
+		$this->assertUnprocessable($response);
 		$response->assertSee('Assertion Error: Response challenge is not equal.');
 
 		$this->assertGuest();

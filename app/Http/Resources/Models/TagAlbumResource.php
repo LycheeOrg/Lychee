@@ -2,8 +2,8 @@
 
 namespace App\Http\Resources\Models;
 
-use App\DTO\AlbumProtectionPolicy;
 use App\Http\Resources\Editable\EditableBaseAlbumResource;
+use App\Http\Resources\Models\Utils\AlbumProtectionPolicy;
 use App\Http\Resources\Models\Utils\PreFormattedAlbumData;
 use App\Http\Resources\Traits\HasHeaderUrl;
 use App\Http\Resources\Traits\HasPrepPhotoCollection;

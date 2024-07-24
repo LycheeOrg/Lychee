@@ -11,7 +11,7 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 class AuthConfig extends Data
 {
 	/** @var array<int,OauthProvidersType> */
-	public readonly array $oathProviders;
+	public readonly array $oauthProviders;
 	public readonly bool $u2f_enabled;
 
 	public function __construct()
@@ -24,7 +24,7 @@ class AuthConfig extends Data
 			}
 			$providers[] = $oauth;
 		}
-		$this->oathProviders = $providers;
+		$this->oauthProviders = $providers;
 		$this->u2f_enabled = WebAuthnCredential::query()->whereNull('disabled_at')->count() > 0;
 	}
 }
