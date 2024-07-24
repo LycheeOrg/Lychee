@@ -242,15 +242,63 @@ class AlbumTest extends BaseApiV2Test
 			'grants_download' => false,
 			'grants_full_photo_access' => false,
 		]);
-		$this->
+
+		// Logout.
+		$response = $this->postJson('Auth::logout', []);
+		$this->assertNoContent($response);
 
 		// Check that album is indeed public
 		$response = $this->getJson('Albums::get');
 		$this->assertOk($response);
-		dd($response->json());
 		$this->assertCount(0, $response->json('smart_albums'));
 		$response->assertSee($this->album1->id);
 
+		// Set as nsfw
+		$response = $this->actingAs($this->userMayUpload1)->postJson('Album::updateProtectionPolicy', [
+			'album_id' => $this->album1->id,
+			'is_public' => true,
+			'is_link_required' => false,
+			'is_nsfw' => true,
+			'grants_download' => false,
+			'grants_full_photo_access' => false,
+		]);
+		$this->assertCreated($response);
+		$response->assertJson([
+			'is_public' => true,
+			'is_link_required' => false,
+			'is_password_required' => false,
+			'is_nsfw' => true,
+			'grants_download' => false,
+			'grants_full_photo_access' => false,
+		]);
+
+		// Logout.
+		$response = $this->postJson('Auth::logout', []);
+		$this->assertNoContent($response);
+
+		$response = $this->getJson('Albums::get');
+		$this->assertOk($response);
+		$this->assertCount(0, $response->json('smart_albums'));
+		$response->assertJson([
+			'albums' => [
+				[
+					'id' => $this->album1->id,
+					'title' => $this->album1->title,
+					'description' => null,
+					'thumb' => [
+						'id' => $this->photo1->id,
+					],
+					'is_nsfw' => true,
+					'is_nsfw_blurred' => false,
+					'is_public' => true,
+					'is_link_required' => false,
+					'is_password_required' => false,
+					'is_tag_album' => false,
+					'has_subalbum' => true,
+					'css_overlay' => '',
+				],
+			],
+		]);
 		// Set as hidden
 		$response = $this->actingAs($this->userMayUpload1)->postJson('Album::updateProtectionPolicy', [
 			'album_id' => $this->album1->id,
@@ -270,10 +318,13 @@ class AlbumTest extends BaseApiV2Test
 			'grants_full_photo_access' => false,
 		]);
 
+		// Logout.
+		$response = $this->postJson('Auth::logout', []);
+		$this->assertNoContent($response);
+
 		// Check that album is indeed hidden
 		$response = $this->getJson('Albums::get');
 		$this->assertOk($response);
-		dd($response->json());
 		$this->assertCount(0, $response->json('smart_albums'));
 		$response->assertDontSee($this->album1->id);
 
@@ -290,18 +341,38 @@ class AlbumTest extends BaseApiV2Test
 		$this->assertCreated($response);
 		$response->assertJson([
 			'is_public' => true,
-			'is_link_required' => true,
+			'is_link_required' => false,
 			'is_password_required' => true,
 			'is_nsfw' => false,
 			'grants_download' => false,
 			'grants_full_photo_access' => false,
 		]);
 
+		// Logout.
+		$response = $this->postJson('Auth::logout', []);
+		$this->assertNoContent($response);
+
 		// Check that album is indeed visible but locked
 		$response = $this->getJson('Albums::get');
 		$this->assertOk($response);
 		$this->assertCount(0, $response->json('smart_albums'));
-		$response->assertDontSee($this->album1->id);
-		dd($response->json());
+		$response->assertJson([
+			'albums' => [
+				[
+					'id' => $this->album1->id,
+					'title' => $this->album1->title,
+					'description' => null,
+					'thumb' => null,
+					'is_nsfw' => false,
+					'is_nsfw_blurred' => false,
+					'is_public' => true,
+					'is_link_required' => false,
+					'is_password_required' => true,
+					'is_tag_album' => false,
+					'has_subalbum' => true,
+					'css_overlay' => '',
+				],
+			],
+		]);
 	}
 }
