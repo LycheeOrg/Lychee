@@ -16,11 +16,6 @@ use Tests\Feature_v2\Base\BaseApiV2Test;
 
 class ProfileTest extends BaseApiV2Test
 {
-	// Route::post('/Profile::updateLogin', [ProfileController::class, 'updateLogin']);
-	// Route::post('/Profile::setEmail', [ProfileController::class, 'setEmail']);
-	// Route::post('/Profile::resetToken', [ProfileController::class, 'resetToken']);
-	// Route::post('/Profile::unsetToken', [ProfileController::class, 'unsetToken']);
-
 	public function testUpdateLoginGuest(): void
 	{
 		$response = $this->postJson('Profile::updateLogin', []);
