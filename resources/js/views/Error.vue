@@ -1,7 +1,10 @@
 <template>
-	<div v-if="lycheeError !== null" class="w-full h-full absolute top-0 left-0 bg-white">
-		<Message severity="error">
-			<span class="font-bold text-2xl">{{}} in {{ lycheeError.file }}:{{ lycheeError.line }}</span>
+	<div v-if="lycheeError !== null" class="w-full h-full absolute top-0 left-0 bg-panel z-50">
+		<Message severity="error" @click="lycheeError = null">
+			<span class="font-bold text-xl w-full" v-if="lycheeError.exception"
+				>{{ lycheeError.exception }} in {{ lycheeError.file }}:{{ lycheeError.line }}</span
+			>
+			<span class="font-bold text-xl w-full" v-else>{{ lycheeError.message }}</span>
 		</Message>
 		<Panel>
 			<template #header>
@@ -11,8 +14,8 @@
 			<p v-for="trace in lycheeError.trace">{{ trace.file + ":" + trace.line }} &mdash; {{ trace.function }}</p>
 		</Panel>
 	</div>
-	<div v-if="jsError !== null" class="w-full h-full absolute top-0 left-0 bg-white">
-		<Message severity="error z-50">
+	<div v-if="jsError !== null" class="w-full h-full absolute top-0 left-0 bg-panel z-50">
+		<Message severity="error z-50" @click="jsError = null">
 			<span class="font-bold text-xl">{{ jsError.message }} in {{ jsError.filename }}:{{ jsError.lineno }}</span>
 		</Message>
 	</div>
@@ -67,3 +70,13 @@ window.addEventListener("error", function (e: Event) {
 	}
 });
 </script>
+
+<style lang="css">
+.bg-panel {
+	background-color: var(--p-surface-0);
+}
+
+.lychee-dark .bg-panel {
+	background-color: var(--p-surface-900);
+}
+</style>

@@ -23,6 +23,7 @@
 						<InputPassword id="password" v-model="password" @keydown.enter="login" />
 						<label class="" for="password">{{ $t("lychee.PASSWORD") }}</label>
 					</FloatLabel>
+					<Message v-if="invalidPassword" severity="error">Unknown user or invalid password</Message>
 				</div>
 				<div class="flex items-center mt-9">
 					<Button
@@ -54,6 +55,7 @@ import InputText from "@/components/forms/basic/InputText.vue";
 import { ref, watch } from "vue";
 import { useAuthStore } from "@/stores/Auth";
 import InputPassword from "../forms/basic/InputPassword.vue";
+import Message from "primevue/message";
 
 const props = defineProps<{
 	visible: boolean;
@@ -65,16 +67,20 @@ const visible = ref(props.visible);
 const username = ref("");
 const password = ref("");
 const authStore = useAuthStore();
+const invalidPassword = ref(false);
 
 function login() {
 	AuthService.login(username.value, password.value)
 		.then(() => {
 			visible.value = false;
 			authStore.setUser(null);
+			invalidPassword.value = false;
 			emit("logged-in");
 		})
 		.catch((e: any) => {
-			console.log("error", e);
+			if (e.response && e.response.status === 401) {
+				invalidPassword.value = true;
+			}
 		});
 }
 

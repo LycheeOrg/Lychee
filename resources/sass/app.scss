@@ -6,10 +6,18 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
-// @tailwind base;
-// /* also contains normalize */
-// @tailwind components;
-// @tailwind utilities;
+// @layer tailwind-base, primevue, tailwind-utilities;
+
+// @layer tailwind-base {
+//   @tailwind base;
+// }
+
+// @layer tailwind-utilities {
+//   @tailwind components;
+//   @tailwind utilities;
+// }
+
+// @layer base {
 
 body {
 	background-color: var(--p-panel-background);
@@ -154,3 +162,4 @@ input:checked ~ .checkbox svg {
 .p-floatlabel:has(.p-inputwrapper-filled) label {
 	top: 0;
 }
+// }

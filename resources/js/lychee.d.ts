@@ -1,12 +1,4 @@
 declare namespace App.DTO {
-	export type AlbumProtectionPolicy = {
-		is_public: boolean;
-		is_link_required: boolean;
-		is_nsfw: boolean;
-		grants_full_photo_access: boolean;
-		grants_download: boolean;
-		is_password_required: boolean;
-	};
 	export type AlbumSortingCriterion = {
 		column: App.Enum.ColumnSortingType;
 		order: App.Enum.OrderSortingType;
@@ -207,14 +199,14 @@ declare namespace App.Http.Resources.Models {
 		photos: App.Http.Resources.Models.PhotoResource[] | Array<any>;
 		cover_id: string | null;
 		thumb: App.Http.Resources.Models.ThumbResource | null;
-		policy: App.DTO.AlbumProtectionPolicy;
+		policy: App.Http.Resources.Models.Utils.AlbumProtectionPolicy;
 		rights: App.Http.Resources.Rights.AlbumRightsResource;
 		preFormattedData: App.Http.Resources.Models.Utils.PreFormattedAlbumData;
 		editable: App.Http.Resources.Editable.EditableBaseAlbumResource | null;
 	};
 	export type PhotoResource = {
 		id: string;
-		album_id: string;
+		album_id: string | null;
 		altitude: number | null;
 		aperture: string | null;
 		checksum: string;
@@ -269,7 +261,7 @@ declare namespace App.Http.Resources.Models {
 		title: string;
 		photos: App.Http.Resources.Models.PhotoResource[] | Array<any>;
 		thumb: App.Http.Resources.Models.ThumbResource | null;
-		policy: App.DTO.AlbumProtectionPolicy;
+		policy: App.Http.Resources.Models.Utils.AlbumProtectionPolicy;
 		rights: App.Http.Resources.Rights.AlbumRightsResource;
 		preFormattedData: App.Http.Resources.Models.Utils.PreFormattedAlbumData;
 	};
@@ -282,7 +274,7 @@ declare namespace App.Http.Resources.Models {
 		show_tags: Array<string>;
 		photos: App.Http.Resources.Models.PhotoResource[] | Array<any>;
 		thumb: App.Http.Resources.Models.ThumbResource | null;
-		policy: App.DTO.AlbumProtectionPolicy;
+		policy: App.Http.Resources.Models.Utils.AlbumProtectionPolicy;
 		rights: any;
 		preFormattedData: App.Http.Resources.Models.Utils.PreFormattedAlbumData;
 		editable: App.Http.Resources.Editable.EditableBaseAlbumResource | null;
@@ -322,6 +314,14 @@ declare namespace App.Http.Resources.Models {
 	};
 }
 declare namespace App.Http.Resources.Models.Utils {
+	export type AlbumProtectionPolicy = {
+		is_public: boolean;
+		is_link_required: boolean;
+		is_nsfw: boolean;
+		grants_full_photo_access: boolean;
+		grants_download: boolean;
+		is_password_required: boolean;
+	};
 	export type PreComputedPhotoData = {
 		is_video: boolean;
 		is_raw: boolean;
@@ -359,6 +359,9 @@ declare namespace App.Http.Resources.Models.Utils {
 		altitude: string | null;
 		license: string;
 		description: string;
+	};
+	export type UserToken = {
+		token: string;
 	};
 }
 declare namespace App.Http.Resources.Rights {
@@ -407,7 +410,7 @@ declare namespace App.Http.Resources.Rights {
 }
 declare namespace App.Http.Resources.Root {
 	export type AuthConfig = {
-		oathProviders: { [key: number]: App.Enum.OauthProvidersType };
+		oauthProviders: { [key: number]: App.Enum.OauthProvidersType };
 		u2f_enabled: boolean;
 	};
 	export type VersionResource = {

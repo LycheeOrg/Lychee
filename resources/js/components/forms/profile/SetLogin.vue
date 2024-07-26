@@ -8,7 +8,7 @@
 					</div>
 					<FloatLabel>
 						<InputPassword id="oldPassword" v-model="oldPassword" autofocus />
-						<label class="" for="oldPassword">{{ $t("lychee.USERNAME") }}</label>
+						<label class="" for="oldPassword">{{ $t("lychee.PASSWORD_CURRENT") }}</label>
 					</FloatLabel>
 				</div>
 				<div class="w-full mt-2">
@@ -29,14 +29,18 @@
 					</FloatLabel>
 				</div>
 				<div class="flex w-full mt-4">
-					<Button class="p-3 w-full font-bold border-none text-primary-500 hover:bg-primary-500 hover:text-surface-0 flex-shrink">{{
-						$t("lychee.PASSWORD_CHANGE")
-					}}</Button>
+					<Button
+						class="p-3 w-full font-bold border-none text-primary-500 hover:bg-primary-500 hover:text-surface-0 flex-shrink"
+						@click="save"
+					>
+						{{ $t("lychee.PASSWORD_CHANGE") }}
+					</Button>
 					<Button
 						class="p-3 w-full font-bold border-none text-primary-500 hover:bg-primary-500 hover:text-surface-0 flex-shrink"
 						@click="isApiTokenOpen = !isApiTokenOpen"
-						>{{ $t("lychee.TOKEN_BUTTON") }}</Button
 					>
+						{{ $t("lychee.TOKEN_BUTTON") }}
+					</Button>
 				</div>
 			</form>
 		</template>
@@ -51,10 +55,34 @@ import InputText from "@/components/forms/basic/InputText.vue";
 import FloatLabel from "primevue/floatlabel";
 import Button from "primevue/button";
 import ApiToken from "./ApiToken.vue";
+import ProfileService from "@/services/profile-service";
 
 const isApiTokenOpen = ref(false);
 const oldPassword = ref(undefined as undefined | string);
 const username = ref(undefined as undefined | string);
 const password = ref(undefined as undefined | string);
 const password_confirmation = ref(undefined as undefined | string);
+
+function save() {
+	if (
+		oldPassword.value === undefined ||
+		username.value === undefined ||
+		password.value === undefined ||
+		password_confirmation.value === undefined
+	) {
+		return;
+	}
+
+	ProfileService.updateLogin({
+		old_password: oldPassword.value,
+		username: username.value,
+		password: password.value,
+		password_confirmation: password_confirmation.value,
+	}).then(() => {
+		oldPassword.value = undefined;
+		username.value = undefined;
+		password.value = undefined;
+		password_confirmation.value = undefined;
+	});
+}
 </script>
