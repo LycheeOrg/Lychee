@@ -25,7 +25,15 @@ class ProfileTest extends BaseApiV2Test
 			'old_password' => 'password',
 			'username' => 'username',
 			'password' => 'password2',
-			'password_confirm' => 'password2',
+			'password_confirmation' => 'password3',
+		]);
+		$this->assertUnprocessable($response);
+
+		$response = $this->postJson('Profile::updateLogin', [
+			'old_password' => 'password',
+			'username' => 'username',
+			'password' => 'password2',
+			'password_confirmation' => 'password2',
 		]);
 		$this->assertUnauthorized($response);
 	}
@@ -56,7 +64,7 @@ class ProfileTest extends BaseApiV2Test
 			'old_password' => 'password',
 			'username' => 'username',
 			'password' => 'password2',
-			'password_confirm' => 'password2',
+			'password_confirmation' => 'password2',
 		]);
 		$this->assertForbidden($response);
 
@@ -78,7 +86,7 @@ class ProfileTest extends BaseApiV2Test
 			'old_password' => 'password',
 			'username' => 'username',
 			'password' => 'password2',
-			'password_confirm' => 'password2',
+			'password_confirmation' => 'password2',
 		]);
 		$this->assertCreated($response);
 
