@@ -32,7 +32,6 @@ class GetAllSettingsTest extends BaseApiV2Test
 	{
 		$response = $this->actingAs($this->admin)->getJson('Settings');
 		$this->assertOk($response);
-		// dd($response->json());
 		$response->assertJson([
 			'configs' => [
 				'Admin' => [
