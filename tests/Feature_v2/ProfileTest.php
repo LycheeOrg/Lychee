@@ -27,7 +27,8 @@ class ProfileTest extends BaseApiV2Test
 			'password' => 'password2',
 			'password_confirmation' => 'password3',
 		]);
-		$this->assertUnprocessable($response);
+		$this->assertUnauthorized($response);
+		// $this->assertUnprocessable($response);
 
 		$response = $this->postJson('Profile::updateLogin', [
 			'old_password' => 'password',
@@ -82,6 +83,14 @@ class ProfileTest extends BaseApiV2Test
 
 	public function testUserUnlocked(): void
 	{
+		$response = $this->actingAs($this->userMayUpload1)->postJson('Profile::updateLogin', [
+			'old_password' => 'password',
+			'username' => 'username',
+			'password' => 'password2',
+			'password_confirmation' => 'password3',
+		]);
+		$this->assertUnprocessable($response);
+
 		$response = $this->actingAs($this->userMayUpload1)->postJson('Profile::updateLogin', [
 			'old_password' => 'password',
 			'username' => 'username',

@@ -18,7 +18,7 @@ class AlbumTest extends BaseApiV2Test
 {
 	public function testGet(): void
 	{
-		$response = $this->getJson('Album::get');
+		$response = $this->getJson('Album');
 		$this->assertUnprocessable($response);
 		$response->assertJson([
 			'message' => 'The album id field is required.',
@@ -27,7 +27,7 @@ class AlbumTest extends BaseApiV2Test
 
 	public function testGetAnon(): void
 	{
-		$response = $this->getJsonWithData('Album::get', ['album_id' => $this->album4->id]);
+		$response = $this->getJsonWithData('Album', ['album_id' => $this->album4->id]);
 		$this->assertOk($response);
 		$response->assertJson([
 			'config' => [
@@ -61,7 +61,7 @@ class AlbumTest extends BaseApiV2Test
 
 	public function testGetAsOwner(): void
 	{
-		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album::get', ['album_id' => $this->tagAlbum1->id]);
+		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album', ['album_id' => $this->tagAlbum1->id]);
 		$this->assertOk($response);
 		$response->assertJson([
 			'config' => [
@@ -86,11 +86,11 @@ class AlbumTest extends BaseApiV2Test
 	public function testGetUnauthorizedOrForbidden(): void
 	{
 		// Unauthorized if not logged in.
-		$response = $this->getJsonWithData('Album::get', ['album_id' => $this->album1->id]);
+		$response = $this->getJsonWithData('Album', ['album_id' => $this->album1->id]);
 		$this->assertUnauthorized($response);
 
 		// Forbidden if logged in.
-		$response = $this->actingAs($this->userLocked)->getJsonWithData('Album::get', ['album_id' => $this->album1->id]);
+		$response = $this->actingAs($this->userLocked)->getJsonWithData('Album', ['album_id' => $this->album1->id]);
 		$this->assertForbidden($response);
 	}
 
@@ -180,7 +180,7 @@ class AlbumTest extends BaseApiV2Test
 		]);
 		$this->assertCreated($response);
 
-		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album::get', ['album_id' => $this->tagAlbum1->id]);
+		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album', ['album_id' => $this->tagAlbum1->id]);
 		$this->assertOk($response);
 		$response->assertJson([
 			'config' => [
@@ -248,7 +248,7 @@ class AlbumTest extends BaseApiV2Test
 		$this->assertNoContent($response);
 
 		// Check that album is indeed public
-		$response = $this->getJson('Albums::get');
+		$response = $this->getJson('Albums');
 		$this->assertOk($response);
 		$this->assertCount(0, $response->json('smart_albums'));
 		$response->assertSee($this->album1->id);
@@ -276,7 +276,7 @@ class AlbumTest extends BaseApiV2Test
 		$response = $this->postJson('Auth::logout', []);
 		$this->assertNoContent($response);
 
-		$response = $this->getJson('Albums::get');
+		$response = $this->getJson('Albums');
 		$this->assertOk($response);
 		$this->assertCount(0, $response->json('smart_albums'));
 		$response->assertJson([
@@ -323,7 +323,7 @@ class AlbumTest extends BaseApiV2Test
 		$this->assertNoContent($response);
 
 		// Check that album is indeed hidden
-		$response = $this->getJson('Albums::get');
+		$response = $this->getJson('Albums');
 		$this->assertOk($response);
 		$this->assertCount(0, $response->json('smart_albums'));
 		$response->assertDontSee($this->album1->id);
@@ -353,7 +353,7 @@ class AlbumTest extends BaseApiV2Test
 		$this->assertNoContent($response);
 
 		// Check that album is indeed visible but locked
-		$response = $this->getJson('Albums::get');
+		$response = $this->getJson('Albums');
 		$this->assertOk($response);
 		$this->assertCount(0, $response->json('smart_albums'));
 		$response->assertJson([

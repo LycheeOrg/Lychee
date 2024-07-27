@@ -2,13 +2,13 @@
 
 namespace App\Legacy\V1\Controllers\Administration;
 
-use App\Actions\Settings\UpdateLogin;
 use App\Actions\User\TokenDisable;
 use App\Actions\User\TokenReset;
 use App\Contracts\Exceptions\InternalLycheeException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;
+use App\Legacy\Actions\Settings\UpdateLogin;
 use App\Legacy\V1\Requests\User\ChangeLoginRequest;
 use App\Legacy\V1\Requests\User\ChangeTokenRequest;
 use App\Legacy\V1\Requests\User\SetEmailRequest;

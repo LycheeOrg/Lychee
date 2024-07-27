@@ -18,7 +18,7 @@ class AlbumsTest extends BaseApiV2Test
 {
 	public function testGetAnon(): void
 	{
-		$response = $this->getJson('Albums::get');
+		$response = $this->getJson('Albums');
 		$this->assertOk($response);
 		$this->assertCount(0, $response->json('smart_albums'));
 		$response->assertSee($this->album4->id);
@@ -53,7 +53,7 @@ class AlbumsTest extends BaseApiV2Test
 
 	public function testGetAsUserMayUpload1(): void
 	{
-		$response = $this->actingAs($this->userMayUpload1)->getJson('Albums::get');
+		$response = $this->actingAs($this->userMayUpload1)->getJson('Albums');
 		$this->assertOk($response);
 		$this->assertCount(4, $response->json('smart_albums'));
 		$response->assertSee($this->album1->id);
@@ -111,7 +111,7 @@ class AlbumsTest extends BaseApiV2Test
 
 	public function testGetAsUserMayUpload2(): void
 	{
-		$response = $this->actingAs($this->userMayUpload2)->getJson('Albums::get');
+		$response = $this->actingAs($this->userMayUpload2)->getJson('Albums');
 		$this->assertOk($response);
 		$response->assertSee($this->album1->id);
 		$response->assertSee($this->album2->id);

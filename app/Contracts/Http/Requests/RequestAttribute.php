@@ -87,4 +87,10 @@ class RequestAttribute
 
 	public const COPYRIGHT_ATTRIBUTE = 'copyright';
 	public const URLS_ATTRIBUTE = 'urls';
+
+	public const CONFIGS_ATTRIBUTE = 'configs';
+	public const CONFIGS_ARRAY_KEY_ATTRIBUTE = 'configs.*.key';
+	public const CONFIGS_ARRAY_VALUE_ATTRIBUTE = 'configs.*.value';
+	public const CONFIGS_KEY_ATTRIBUTE = 'key';
+	public const CONFIGS_VALUE_ATTRIBUTE = 'value';
 }

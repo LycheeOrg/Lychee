@@ -11,12 +11,14 @@ class ConfigResource extends Data
 {
 	public string $key;
 	public ConfigType|string $type;
-	public mixed $value;
+	public string $value;
+	public string $documentation;
 
-	public function __construct(string $key, ConfigType|string $type, mixed $value)
+	public function __construct(string $key, ConfigType|string $type, string $value, string $doc)
 	{
 		$this->key = $key;
 		$this->type = $type;
 		$this->value = $value;
+		$this->documentation = $doc;
 	}
 }

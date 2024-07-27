@@ -37,8 +37,8 @@ Route::get('/Gallery::getMapProvider', [Gallery\ConfigController::class, 'getMap
 /**
  * ALBUMS.
  */
-Route::get('/Albums::get', [Gallery\AlbumsController::class, 'get'])->middleware(['login_required:root']);
-Route::get('/Album::get', [Gallery\AlbumController::class, 'get'])->middleware(['login_required:album']);
+Route::get('/Albums', [Gallery\AlbumsController::class, 'get'])->middleware(['login_required:root']);
+Route::get('/Album', [Gallery\AlbumController::class, 'get'])->middleware(['login_required:album']);
 Route::post('/Album::update', [Gallery\AlbumController::class, 'updateAlbum']);
 Route::post('/Album::updateTag', [Gallery\AlbumController::class, 'updateTagAlbum']);
 Route::post('/Album::updateProtectionPolicy', [Gallery\AlbumController::class, 'updateProtectionPolicy']);
@@ -91,7 +91,7 @@ Route::post('/Album::updateProtectionPolicy', [Gallery\AlbumController::class, '
 /**
  * PHOTO.
  */
-Route::get('/Photo::get', [Gallery\PhotoController::class, 'get'])->middleware(['login_required:album']);
+Route::get('/Photo', [Gallery\PhotoController::class, 'get'])->middleware(['login_required:album']);
 // Route::post('/Photo::getRandom', [PhotoController::class, 'getRandom']);
 // Route::post('/Photo::setTitle', [PhotoController::class, 'setTitle']);
 // Route::post('/Photo::setDescription', [PhotoController::class, 'setDescription']);
@@ -175,6 +175,9 @@ Route::post('/WebAuthn::login', [WebAuthn\WebAuthnLoginController::class, 'login
 /**
  * SETTINGS.
  */
+Route::get('/Settings', [Admin\SettingsController::class, 'getAll']);
+Route::post('/Settings::setConfigs', [Admin\SettingsController::class, 'setConfigs']);
+
 // Route::post('/Settings::setSorting', [AdministrationSettingsController::class, 'setSorting']);
 // Route::post('/Settings::setLang', [AdministrationSettingsController::class, 'setLang']);
 // Route::post('/Settings::setLayout', [AdministrationSettingsController::class, 'setLayout']);
@@ -203,4 +206,4 @@ Route::post('/WebAuthn::login', [WebAuthn\WebAuthnLoginController::class, 'login
  */
 // Route::post('/Update::apply', [AdministrationUpdateController::class, 'apply']);
 // Route::post('/Update::check', [AdministrationUpdateController::class, 'check']);
-Route::get('/Version::get', [VersionController::class, 'get']);
+Route::get('/Version', [VersionController::class, 'get']);

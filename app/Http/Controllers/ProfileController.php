@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\Settings\UpdateLogin;
+use App\Actions\Profile\UpdateLogin;
 use App\Actions\User\TokenDisable;
 use App\Actions\User\TokenReset;
 use App\Contracts\Exceptions\InternalLycheeException;

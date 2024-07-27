@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Settings;
+namespace App\Legacy\Actions\Settings;
 
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\ConflictingPropertyException;

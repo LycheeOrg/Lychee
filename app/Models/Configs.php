@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enum\ConfigType;
 use App\Enum\LicenseType;
 use App\Enum\MapProviders;
 use App\Exceptions\ConfigurationKeyMissingException;
@@ -55,15 +56,15 @@ class Configs extends Model
 	use ConfigsHas;
 	use ThrowsConsistentExceptions;
 
-	protected const INT = 'int';
-	protected const POSTIIVE = 'positive';
-	protected const STRING = 'string';
-	protected const STRING_REQ = 'string_required';
-	protected const BOOL = '0|1';
-	protected const TERNARY = '0|1|2';
-	protected const DISABLED = '';
-	protected const LICENSE = 'license';
-	protected const MAP_PROVIDER = 'map_provider';
+	// protected const INT = 'int';
+	// protected const POSTIIVE = 'positive';
+	// protected const STRING = 'string';
+	// protected const STRING_REQ = 'string_required';
+	// protected const BOOL = '0|1';
+	// protected const TERNARY = '0|1|2';
+	// protected const DISABLED = '';
+	// protected const LICENSE = 'license';
+	// protected const MAP_PROVIDER = 'map_provider';
 
 	/**
 	 * The attributes that are mass assignable.
@@ -106,43 +107,43 @@ class Configs extends Model
 	{
 		$message = '';
 		$val_range = [
-			self::BOOL => explode('|', self::BOOL),
-			self::TERNARY => explode('|', self::TERNARY),
+			ConfigType::BOOL->value => explode('|', ConfigType::BOOL->value),
+			ConfigType::TERNARY->value => explode('|', ConfigType::TERNARY->value),
 		];
 
 		$message_template ??= 'Error: Wrong property for ' . $this->key . ', expected %s, got ' . ($candidateValue ?? 'NULL') . '.';
 		switch ($this->type_range) {
-			case self::STRING:
-			case self::DISABLED:
+			case ConfigType::STRING->value:
+			case ConfigType::DISABLED->value:
 				break;
-			case self::STRING_REQ:
+			case ConfigType::STRING_REQ->value:
 				if ($candidateValue === '' || $candidateValue === null) {
 					$message = 'Error: ' . $this->key . ' empty or not set';
 				}
 				break;
-			case self::INT:
+			case ConfigType::INT->value:
 				// we make sure that we only have digits in the chosen value.
 				if (!ctype_digit(strval($candidateValue))) {
 					$message = sprintf($message_template, 'positive integer or 0');
 				}
 				break;
-			case self::POSTIIVE:
+			case ConfigType::POSTIIVE->value:
 				if (!ctype_digit(strval($candidateValue)) || intval($candidateValue, 10) === 0) {
 					$message = sprintf($message_template, 'strictly positive integer');
 				}
 				break;
-			case self::BOOL:
-			case self::TERNARY:
+			case ConfigType::BOOL->value:
+			case ConfigType::TERNARY->value:
 				if (!in_array($candidateValue, $val_range[$this->type_range], true)) { // BOOL or TERNARY
 					$message = sprintf($message_template, implode(' or ', $val_range[$this->type_range]));
 				}
 				break;
-			case self::LICENSE:
+			case ConfigType::LICENSE->value:
 				if (LicenseType::tryFrom($candidateValue) === null) {
 					$message = sprintf($message_template, 'a valid license');
 				}
 				break;
-			case self::MAP_PROVIDER:
+			case ConfigType::MAP_PROVIDER->value:
 				if (MapProviders::tryFrom($candidateValue) === null) {
 					$message = sprintf($message_template, 'a valid map provider');
 				}

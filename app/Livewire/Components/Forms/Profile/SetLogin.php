@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Components\Forms\Profile;
 
-use App\Actions\Settings\UpdateLogin;
+use App\Legacy\Actions\Settings\UpdateLogin;
 use App\Legacy\V1\RuleSets\ChangeLoginRuleSet;
 use App\Livewire\Traits\InteractWithModal;
 use App\Livewire\Traits\Notify;
