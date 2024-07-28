@@ -34,12 +34,7 @@ class GetAllSettingsTest extends BaseApiV2Test
 		$this->assertOk($response);
 		$response->assertJson([
 			'configs' => [
-				'Admin' => [
-					[
-						'key' => 'version',
-						'documentation' => 'Current version of Lychee',
-					],
-				],
+				'Admin' => [],
 				'config' => [],
 				'Footer' => [],
 				'Gallery' => [],
