@@ -1,5 +1,5 @@
 <template>
-	<Panel :header="$t(props.header)" :toggleable="!isAlone" class="">
+	<Panel :header="$t(props.header)" :toggleable="!isAlone" class="border-0">
 		<div class="flex flex-wrap flex-row flex-shrink w-full justify-start align-top">
 			<template v-for="album in props.albums">
 				<AlbumThumb

@@ -44,7 +44,6 @@ export default defineConfig({
     alias: {
       // @ts-ignore-next-line
       '@': fileURLToPath(new URL('./resources/js/', import.meta.url)),
-      // "@": path.resolve(__dirname, "./resources/js/"),
       vue: 'vue/dist/vue.esm-bundler.js',
     },
   },

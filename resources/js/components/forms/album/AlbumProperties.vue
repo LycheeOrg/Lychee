@@ -20,7 +20,7 @@
 					<FloatLabel>
 						<Select
 							id="photoSortingColumn"
-							class="w-48"
+							class="w-48 border-none"
 							v-model="photoSortingColumn"
 							:options="photoSortingColumnsOptions"
 							optionLabel="label"
@@ -42,7 +42,7 @@
 					<FloatLabel>
 						<Select
 							id="photoSortingOrder"
-							class="w-48"
+							class="w-48 border-none"
 							v-model="photoSortingOrder"
 							:options="sortingOrdersOptions"
 							optionLabel="label"
@@ -67,7 +67,7 @@
 						<FloatLabel>
 							<Select
 								id="albumSortingColumn"
-								class="w-48"
+								class="w-48 border-none"
 								v-model="albumSortingColumn"
 								:options="albumSortingColumnsOptions"
 								optionLabel="label"
@@ -89,7 +89,7 @@
 						<FloatLabel>
 							<Select
 								id="albumSortingOrder"
-								class="w-48"
+								class="w-48 border-none"
 								v-model="albumSortingOrder"
 								:options="sortingOrdersOptions"
 								optionLabel="label"
@@ -112,7 +112,7 @@
 					<!-- <livewire:forms.album.set-header :album_id="$this->albumID" lazy="on-load" /> -->
 					<div class="h-10 my-4">
 						<FloatLabel>
-							<Select id="license" class="w-72" v-model="license" :options="licenseOptions" optionLabel="label" showClear>
+							<Select id="license" class="w-72 border-none" v-model="license" :options="licenseOptions" optionLabel="label" showClear>
 								<template #value="slotProps">
 									<div v-if="slotProps.value" class="flex items-center">
 										<div>{{ $t(slotProps.value.label) }}</div>
@@ -136,7 +136,14 @@
 					</div>
 					<div class="h-10 my-4">
 						<FloatLabel>
-							<Select id="aspectRatio" class="w-72" v-model="aspectRatio" :options="aspectRationOptions" optionLabel="label" showClear>
+							<Select
+								id="aspectRatio"
+								class="w-72 border-none"
+								v-model="aspectRatio"
+								:options="aspectRationOptions"
+								optionLabel="label"
+								showClear
+							>
 								<template #value="slotProps">
 									<div v-if="slotProps.value" class="flex items-center">
 										<div>{{ $t(slotProps.value.label) }}</div>

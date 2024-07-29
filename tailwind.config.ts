@@ -1,6 +1,5 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  darkMode: 'class', // This enables dark mode based on the presence of the "dark" class in the HTML tag
   safelist: [
     'opacity-0',
     'group-hover:opacity-100',

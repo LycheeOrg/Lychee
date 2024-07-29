@@ -1,6 +1,6 @@
 <template>
 	<LoginModal :visible="isLoginOpen" @logged-in="refresh" />
-	<Toolbar class="w-full" v-if="album">
+	<Toolbar class="w-full border-0" v-if="album">
 		<template #start>
 			<Button icon="pi pi-angle-left" class="mr-2" severity="secondary" text @click="goBack" />
 			<!-- <Button v-if="user?.id" @click="openLeftMenu" icon="pi pi-bars" class="mr-2" severity="secondary" text /> -->
@@ -19,8 +19,8 @@
 				<InputText placeholder="Search" />
 			</IconField> -->
 			<template v-if="album.rights.can_edit">
-				<Button v-if="!areDetailsOpen" icon="pi pi-angle-down" class="mr-2" @click="toggleDetails"> </Button>
-				<Button v-if="areDetailsOpen" icon="pi pi-angle-up" class="mr-2" @click="toggleDetails"> </Button>
+				<Button v-if="!areDetailsOpen" icon="pi pi-angle-down" severity="secondary" class="mr-2" text @click="toggleDetails" />
+				<Button v-if="areDetailsOpen" icon="pi pi-angle-up" severity="secondary" class="mr-2 text-primary-400" text @click="toggleDetails" />
 			</template>
 			<!-- <SplitButton label="Save" :model="items"></SplitButton> -->
 		</template>
@@ -31,7 +31,7 @@
 				{{ "Nothing to see here" }}
 			</span>
 		</div>
-		<div class="relative flex flex-wrap content-start w-full justify-start overflow-y-auto h-[calc(100vh-48px)]">
+		<div class="relative flex flex-wrap content-start w-full justify-start overflow-y-auto h-[calc(100vh-66px)]">
 			<AlbumEdit v-model="areDetailsOpen" v-if="album.rights.can_edit" :album="album" :config="config" />
 			<AlbumHero :album="album" @open-sharing-modal="openSharingModal" />
 			<AlbumThumbPanel
@@ -68,7 +68,7 @@ import ShareAlbum from "@/components/modals/ShareAlbum.vue";
 import AlbumHero from "@/components/gallery/AlbumHero.vue";
 import AlbumEdit from "@/components/drawers/AlbumEdit.vue";
 
-const areDetailsOpen = ref(true);
+const areDetailsOpen = ref(false);
 const router = useRouter();
 const props = defineProps<{
 	albumid: string;

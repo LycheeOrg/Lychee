@@ -41,11 +41,13 @@ const pinia = createPinia();
 const app = createApp({});
 app.config.globalProperties.window = window;
 app.use(pinia);
+console.log("LycheePreset", JSON.stringify(LycheePreset));
 app.use(PrimeVue, {
 	ripple: true,
 	theme: {
 		preset: LycheePreset,
 		options: {
+			// cssLayer: false,
 			cssLayer: {
 				name: "primevue",
 				order: "tailwind-base, primevue, tailwind-utilities",

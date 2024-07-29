@@ -15,7 +15,7 @@ const InitService = {
 	},
 
 	fetchVersion(): Promise<AxiosResponse<App.Http.Resources.Root.VersionResource>> {
-		return axios.get(`${Constants.API_URL}Version::get`, { data: {} });
+		return axios.get(`${Constants.API_URL}Version`, { data: {} });
 	},
 };
 

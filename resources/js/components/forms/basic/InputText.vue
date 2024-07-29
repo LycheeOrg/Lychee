@@ -31,5 +31,5 @@ const props = defineProps<{
 }>();
 
 const modelValue = defineModel();
-const classValue = ref((props.class ?? "") + " p-3 w-full border-b hover:border-b-primary-400 focus:border-b-primary-400");
+const classValue = ref((props.class ?? "") + " border-0 p-3 w-full border-b hover:border-b-primary-400 focus:border-b-primary-400");
 </script>

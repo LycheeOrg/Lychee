@@ -1,5 +1,5 @@
 <template>
-	<Panel id="lychee_view_content" :header="$t(props.header)" class="w-full">
+	<Panel id="lychee_view_content" :header="$t(props.header)" class="w-full border-0">
 		<template #icons>
 			<a class="px-1 cursor-pointer group" @click="(layout.photos_layout = 'square') && activateLayout()" :title="$t('lychee.LAYOUT_SQUARES')">
 				<MiniIcon icon="squares" fill="fill-transparent" :class="squareClass" />

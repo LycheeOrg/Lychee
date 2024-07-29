@@ -18,7 +18,7 @@ class SettingsController extends Controller
 		return new ConfigCollectionResource(Configs::orderBy('cat', 'asc')->get());
 	}
 
-	public function setConfigs(SetConfigsRequest $request): int
+	public function setConfigs(SetConfigsRequest $request): ConfigCollectionResource
 	{
 		$configs = $request->configs();
 		$configs->each(function ($config) {
@@ -27,6 +27,6 @@ class SettingsController extends Controller
 
 		Configs::invalidateCache();
 
-		return 0;
+		return new ConfigCollectionResource(Configs::orderBy('cat', 'asc')->get());
 	}
 }

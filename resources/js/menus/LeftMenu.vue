@@ -99,7 +99,7 @@ function loadMenu() {
 		{
 			label: "lychee.SETTINGS",
 			icon: "cog",
-			route: "/gallery",
+			route: "/settings",
 			access: initData.value.settings.can_edit ?? false,
 		},
 		{

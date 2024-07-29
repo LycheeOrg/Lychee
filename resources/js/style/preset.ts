@@ -134,9 +134,9 @@ const LycheePrimeVueConfig = {
 				invalidBorderColor: "{red.300}",
 				color: "{surface.0}",
 				disabledColor: "{surface.400}",
-				placeholderColor: "{surface.400}",
-				floatLabelColor: "{surface.400}",
-				floatLabelFocusColor: "{surface.400}",
+				placeholderColor: "{surface.300}",
+				floatLabelColor: "{surface.300}",
+				floatLabelFocusColor: "{surface.300}",
 				floatLabelInvalidColor: "{red.300}",
 				iconColor: "{surface.400}",
 				shadow: "0 0 #0000, 0 0 #0000, 0 1px 2px 0 rgba(18, 18, 23, 0.05)",
@@ -145,7 +145,7 @@ const LycheePrimeVueConfig = {
 				color: "{surface.0}",
 				hoverColor: "{surface.0}",
 				mutedColor: "{surface.400}",
-				hoverMutedColor: "{surface.300}",
+				hoverMutedColor: "{surface.200}",
 			},
 			select: {
 				color: "{red.400}",
@@ -184,7 +184,7 @@ const LycheePrimeVueConfig = {
 			colorScheme: {
 				light: {
 					root: {
-						"border-radius": "0",
+						background: "{surface.50}",
 					},
 				},
 				dark: {
@@ -216,6 +216,9 @@ const LycheePrimeVueConfig = {
 							radius: 0,
 						},
 					},
+					header: {
+						color: "{surface.700}",
+					},
 				},
 				dark: {
 					root: {
@@ -225,18 +228,31 @@ const LycheePrimeVueConfig = {
 						background: "{surface.900}",
 						color: "{surface.0}",
 					},
+					header: {
+						color: "{surface.300}",
+					},
 				},
 			},
-			header: {
-				colorScheme: {
-					light: {
-						root: {
-							color: "{surface.700}",
+		},
+		fieldset: {
+			colorScheme: {
+				light: {},
+				dark: {
+					root: {
+						borderColor: "{surface.700}",
+						background: "{surface.900}",
+						color: "{surface.0}",
+					},
+					legend: {
+						background: "{surface.900}",
+						hover: {
+							background: "{surface.800}",
+							color: "{surface.0}",
 						},
 					},
-					dark: {
-						root: {
-							color: "{surface.300}",
+					"toggle-icon": {
+						hover: {
+							color: "{primary.500}",
 						},
 					},
 				},
@@ -268,6 +284,28 @@ const LycheePrimeVueConfig = {
 				},
 			},
 		},
+		tabs: {
+			tablist: {
+				colorScheme: {
+					light: {
+						background: "transparent",
+					},
+					dark: {
+						background: "transparent",
+					},
+				},
+			},
+			tabpanel: {
+				colorScheme: {
+					light: {
+						background: "transparent",
+					},
+					dark: {
+						background: "transparent",
+					},
+				},
+			},
+		},
 		inputtext: {
 			background: "transparent",
 			border: {
@@ -277,6 +315,14 @@ const LycheePrimeVueConfig = {
 				duration: 0,
 			},
 			shadow: "none",
+			colorScheme: {
+				light: {
+					color: "{surface.700}",
+				},
+				dark: {
+					color: "{surface.300}",
+				},
+			},
 		},
 		select: {
 			background: "transparent",

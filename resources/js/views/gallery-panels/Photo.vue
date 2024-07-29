@@ -5,7 +5,7 @@
 			class="absolute top-0 left-0 w-full flex-none z-10 bg-gradient-to-b from-black"
 			x-bind:class="isFullscreen ? 'opacity-0 hover:opacity-100' : 'opacity-100 h-14'"
 		>
-			<Toolbar class="w-full bg-transparent">
+			<Toolbar class="w-full bg-transparent border-0">
 				<template #start>
 					<Button icon="pi pi-angle-left" class="mr-2" severity="secondary" text @click="goBack" />
 				</template>

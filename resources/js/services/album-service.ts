@@ -36,11 +36,11 @@ export type UpdateProtectionPolicyData = {
 
 const AlbumService = {
 	getAll(): Promise<AxiosResponse<App.Http.Resources.Collections.RootAlbumResource>> {
-		return axios.get(`${Constants.API_URL}Albums::get`, { data: {} });
+		return axios.get(`${Constants.API_URL}Albums`, { data: {} });
 	},
 
 	get(album_id: string): Promise<AxiosResponse<App.Http.Resources.Models.AbstractAlbumResource>> {
-		return axios.get(`${Constants.API_URL}Album::get`, { params: { album_id: album_id }, data: {} });
+		return axios.get(`${Constants.API_URL}Album`, { params: { album_id: album_id }, data: {} });
 	},
 
 	getLayout(): Promise<AxiosResponse<App.Http.Resources.GalleryConfigs.PhotoLayoutConfig>> {

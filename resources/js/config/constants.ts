@@ -69,3 +69,36 @@ export const licenseOptions: SelectOption<App.Enum.LicenseType>[] = [
 	{ value: "CC-BY-NC-SA-3.0", label: "CC Attribution-NonCommercial-ShareAlike 3.0" },
 	{ value: "CC-BY-NC-SA-4.0", label: "CC Attribution-NonCommercial-ShareAlike 4.0" },
 ];
+
+export const photoLayoutOptions: SelectOption<App.Enum.PhotoLayoutType>[] = [
+	{ value: "square", label: "lychee.LAYOUT_SQUARES" },
+	{ value: "justified", label: "lychee.LAYOUT_JUSTIFIED" },
+	{ value: "masonry", label: "lychee.LAYOUT_MASONRY" },
+	{ value: "grid", label: "lychee.LAYOUT_GRID" },
+];
+
+export const SelectBuilders = {
+	buildPhotoSorting(value: App.Enum.ColumnSortingPhotoType): SelectOption<App.Enum.ColumnSortingPhotoType> | undefined {
+		return photoSortingColumnsOptions.find((option) => option.value === value) || undefined;
+	},
+
+	buildSortingOrder(value: App.Enum.OrderSortingType): SelectOption<App.Enum.OrderSortingType> | undefined {
+		return sortingOrdersOptions.find((option) => option.value === value) || undefined;
+	},
+
+	buildAlbumSorting(value: App.Enum.ColumnSortingAlbumType): SelectOption<App.Enum.ColumnSortingAlbumType> | undefined {
+		return albumSortingColumnsOptions.find((option) => option.value === value) || undefined;
+	},
+
+	buildAspectRatio(value: App.Enum.AspectRatioType): SelectOption<App.Enum.AspectRatioType> | undefined {
+		return aspectRationOptions.find((option) => option.value === value) || undefined;
+	},
+
+	buildLicense(value: App.Enum.LicenseType): SelectOption<App.Enum.LicenseType> | undefined {
+		return licenseOptions.find((option) => option.value === value) || undefined;
+	},
+
+	buildPhotoLayout(value: App.Enum.PhotoLayoutType): SelectOption<App.Enum.PhotoLayoutType> | undefined {
+		return photoLayoutOptions.find((option) => option.value === value) || undefined;
+	},
+};

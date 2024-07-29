@@ -1,5 +1,5 @@
 <template>
-	<Toolbar class="w-full">
+	<Toolbar class="w-full border-0">
 		<template #start>
 			<router-link :to="{ name: 'gallery' }">
 				<Button icon="pi pi-angle-left" class="mr-2" severity="secondary" text @click="" />

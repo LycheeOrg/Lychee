@@ -1,6 +1,6 @@
 <template>
 	<LoginModal v-if="user?.id === null" :visible="isLoginOpen" @logged-in="refresh" />
-	<Toolbar class="w-full">
+	<Toolbar class="w-full border-0">
 		<template #start>
 			<Button
 				v-if="user?.id === null"
