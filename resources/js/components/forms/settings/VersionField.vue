@@ -1,17 +1,23 @@
 <template>
 	<div class="flex">
 		<span class="mr-4">{{ props.config.documentation }}:</span>
-		<InputOtp v-model="val" :length="6" style="gap: 0" integerOnly>
-			<template #default="{ attrs, events, index }">
-				<input type="text" v-bind="attrs" v-on="events" class="h-4 w-3 text-center border-b border-primary-500" />
-				<div v-if="index === 2 || index === 4" class="">.</div>
+		<Inplace style="--p-inplace-padding: 0">
+			<template #display>{{ computedVersion }}</template>
+			<template #content>
+				<InputOtp v-model="val" :length="6" style="gap: 0" integerOnly>
+					<template #default="{ attrs, events, index }">
+						<input type="text" v-bind="attrs" v-on="events" class="h-4 w-3 text-center border-b border-primary-500" />
+						<div v-if="index === 2 || index === 4" class="">.</div>
+					</template>
+				</InputOtp>
 			</template>
-		</InputOtp>
+		</Inplace>
 	</div>
 </template>
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import InputOtp from "primevue/inputotp";
+import Inplace from "primevue/inplace";
 
 const props = defineProps<{
 	config: App.Http.Resources.Models.ConfigResource;
@@ -20,6 +26,21 @@ const props = defineProps<{
 const val = ref(props.config.value);
 
 const changed = computed(() => val.value !== props.config.value);
+
+const computedVersion = computed(() => {
+	const value = val.value;
+	let version = "";
+	for (let i = 0; i < 6; i += 2) {
+		if (version !== "") {
+			version += ".";
+		}
+		if (value[i] !== "0") {
+			version += value[i];
+		}
+		version += value[i + 1];
+	}
+	return version;
+});
 
 const emits = defineEmits(["filled", "reset"]);
 

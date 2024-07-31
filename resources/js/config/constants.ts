@@ -77,28 +77,71 @@ export const photoLayoutOptions: SelectOption<App.Enum.PhotoLayoutType>[] = [
 	{ value: "grid", label: "lychee.LAYOUT_GRID" },
 ];
 
+export const defaultAlbumProtectionOptions: SelectOption<string>[] = [
+	{ value: "1", label: "private" },
+	{ value: "2", label: "public" },
+	{ value: "3", label: "inherit from parent" },
+];
+
+export const mapProvidersOptions: SelectOption<App.Enum.MapProviders>[] = [
+	{ value: "Wikimedia", label: "Wikimedia" },
+	{ value: "OpenStreetMap.org", label: "OpenStreetMap.org" },
+	{ value: "OpenStreetMap.de", label: "OpenStreetMap.de" },
+	{ value: "OpenStreetMap.fr", label: "OpenStreetMap.fr" },
+	{ value: "RRZE", label: "RRZE" },
+];
+
+export const overlayOptions: SelectOption<App.Enum.ImageOverlayType>[] = [
+	{ value: "exif", label: "lychee.OVERLAY_EXIF" },
+	{ value: "desc", label: "lychee.OVERLAY_DESCRIPTION" },
+	{ value: "date", label: "lychee.OVERLAY_DATE" },
+	{ value: "none", label: "lychee.OVERLAY_NONE" },
+];
+
+export const toolsOptions: SelectOption<string>[] = [
+	{ value: "0", label: "disabled" },
+	{ value: "1", label: "enabled" },
+	{ value: "2", label: "discover" },
+];
+
 export const SelectBuilders = {
-	buildPhotoSorting(value: App.Enum.ColumnSortingPhotoType): SelectOption<App.Enum.ColumnSortingPhotoType> | undefined {
+	buildPhotoSorting(value: string | App.Enum.ColumnSortingType | undefined): SelectOption<App.Enum.ColumnSortingPhotoType> | undefined {
 		return photoSortingColumnsOptions.find((option) => option.value === value) || undefined;
 	},
 
-	buildSortingOrder(value: App.Enum.OrderSortingType): SelectOption<App.Enum.OrderSortingType> | undefined {
+	buildSortingOrder(value: string | App.Enum.OrderSortingType | undefined): SelectOption<App.Enum.OrderSortingType> | undefined {
 		return sortingOrdersOptions.find((option) => option.value === value) || undefined;
 	},
 
-	buildAlbumSorting(value: App.Enum.ColumnSortingAlbumType): SelectOption<App.Enum.ColumnSortingAlbumType> | undefined {
+	buildAlbumSorting(value: string | App.Enum.ColumnSortingType | undefined): SelectOption<App.Enum.ColumnSortingAlbumType> | undefined {
 		return albumSortingColumnsOptions.find((option) => option.value === value) || undefined;
 	},
 
-	buildAspectRatio(value: App.Enum.AspectRatioType): SelectOption<App.Enum.AspectRatioType> | undefined {
+	buildAspectRatio(value: string | App.Enum.AspectRatioType | null): SelectOption<App.Enum.AspectRatioType> | undefined {
 		return aspectRationOptions.find((option) => option.value === value) || undefined;
 	},
 
-	buildLicense(value: App.Enum.LicenseType): SelectOption<App.Enum.LicenseType> | undefined {
+	buildLicense(value: string | App.Enum.LicenseType | null): SelectOption<App.Enum.LicenseType> | undefined {
 		return licenseOptions.find((option) => option.value === value) || undefined;
 	},
 
-	buildPhotoLayout(value: App.Enum.PhotoLayoutType): SelectOption<App.Enum.PhotoLayoutType> | undefined {
+	buildPhotoLayout(value: string | App.Enum.PhotoLayoutType | undefined): SelectOption<App.Enum.PhotoLayoutType> | undefined {
 		return photoLayoutOptions.find((option) => option.value === value) || undefined;
+	},
+
+	buildMapProvider(value: string | App.Enum.MapProviders | undefined): SelectOption<App.Enum.MapProviders> | undefined {
+		return mapProvidersOptions.find((option) => option.value === value) || undefined;
+	},
+
+	buildDefaultAlbumProtection(value: string | undefined): SelectOption<string> | undefined {
+		return defaultAlbumProtectionOptions.find((option) => option.value === value) || undefined;
+	},
+
+	buildOverlay(value: string | App.Enum.ImageOverlayType | undefined): SelectOption<App.Enum.ImageOverlayType> | undefined {
+		return overlayOptions.find((option) => option.value === value) || undefined;
+	},
+
+	buildToolSelection(value: string | undefined): SelectOption<string> | undefined {
+		return toolsOptions.find((option) => option.value === value) || undefined;
 	},
 };

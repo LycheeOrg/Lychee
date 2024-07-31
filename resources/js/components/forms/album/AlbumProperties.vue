@@ -188,6 +188,7 @@ import {
 	licenseOptions,
 	aspectRationOptions,
 	SelectOption,
+	SelectBuilders,
 } from "@/config/constants";
 import Select from "primevue/select";
 
@@ -213,17 +214,12 @@ function load(editable: App.Http.Resources.Editable.EditableBaseAlbumResource) {
 	albumId.value = editable.id;
 	title.value = editable.title;
 	description.value = editable.description;
-	photoSortingColumn.value = photoSortingColumnsOptions.find((option) => option.value === editable.photo_sorting?.column) as
-		| SelectOption<App.Enum.ColumnSortingPhotoType>
-		| undefined;
-	photoSortingOrder.value = sortingOrdersOptions.find((option) => option.value === editable.photo_sorting?.order);
-	albumSortingColumn.value = albumSortingColumnsOptions.find((option) => option.value === editable.album_sorting?.column) as
-		| SelectOption<App.Enum.ColumnSortingAlbumType>
-		| undefined;
-	albumSortingOrder.value = sortingOrdersOptions.find((option) => option.value === editable.album_sorting?.order);
-	license.value = licenseOptions.find((option) => option.value === editable.license) ?? undefined;
-	aspectRatio.value = aspectRationOptions.find((option) => option.value === editable.aspect_ratio) ?? undefined;
-	console.log(license.value);
+	photoSortingColumn.value = SelectBuilders.buildPhotoSorting(editable.photo_sorting?.column);
+	photoSortingOrder.value = SelectBuilders.buildSortingOrder(editable.photo_sorting?.order);
+	albumSortingColumn.value = SelectBuilders.buildAlbumSorting(editable.album_sorting?.column);
+	albumSortingOrder.value = SelectBuilders.buildSortingOrder(editable.album_sorting?.order);
+	license.value = SelectBuilders.buildLicense(editable.license);
+	aspectRatio.value = SelectBuilders.buildAspectRatio(editable.aspect_ratio);
 }
 
 load(props.editable);

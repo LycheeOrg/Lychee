@@ -5,6 +5,7 @@
 				v-model="val"
 				:inputId="props.config.key"
 				:min="props.min"
+				:max="props?.max ?? undefined"
 				showButtons
 				mode="decimal"
 				:useGrouping="false"
@@ -25,6 +26,7 @@ import InputNumber from "primevue/inputnumber";
 
 const props = defineProps<{
 	min: number;
+	max?: number;
 	config: App.Http.Resources.Models.ConfigResource;
 }>();
 
@@ -51,7 +53,7 @@ watch(
 </script>
 
 <style>
-.p-inputtext {
+.p-inputnumber-input {
 	border: none;
 }
 </style>
