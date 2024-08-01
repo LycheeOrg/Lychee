@@ -79,6 +79,6 @@ class UpdateSettingsTest extends BaseApiV2Test
 				],
 			],
 		]);
-		$this->assertOk($response);
+		$this->assertCreated($response);
 	}
 }
