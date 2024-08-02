@@ -18,6 +18,7 @@ import AppComponent from "@/views/App.vue";
 import { definePreset } from "@primevue/themes";
 import LycheePrimeVueConfig from "./style/preset";
 import FocusTrap from "primevue/focustrap";
+import Tooltip from "primevue/tooltip";
 
 // @ts-expect-error
 window.axios = axios;
@@ -41,7 +42,7 @@ const pinia = createPinia();
 const app = createApp({});
 app.config.globalProperties.window = window;
 app.use(pinia);
-console.log("LycheePreset", JSON.stringify(LycheePreset));
+// console.log("LycheePreset", JSON.stringify(LycheePreset));
 app.use(PrimeVue, {
 	ripple: true,
 	theme: {
@@ -58,6 +59,7 @@ app.use(PrimeVue, {
 });
 app.directive("ripple", Ripple);
 app.directive("focustrap", FocusTrap);
+app.directive("tooltip", Tooltip);
 
 app.component("app", AppComponent);
 app.use(router);

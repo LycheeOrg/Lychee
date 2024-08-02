@@ -2,7 +2,7 @@
 	<div class="py-1 flex flex-wrap">
 		<div class="w-1/2">{{ props.config.key }}</div>
 		<IconField class="w-1/2">
-			<InputText :id="props.config.key" type="text" class="!py-1" v-model="val" @updated="update" />
+			<InputText :id="props.config.key" type="text" class="!py-1" v-model="val" @update:modelValue="update" />
 			<InputIcon class="pi pi-times" @click="reset" v-if="changed" />
 		</IconField>
 		<div class="w-full text-muted-color">{{ props.config.documentation }}</div>

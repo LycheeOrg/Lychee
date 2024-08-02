@@ -1,17 +1,16 @@
 <template>
 	<div class="flex gap-4">
-		<IconField>
-			<ToggleSwitch v-model="val" @updated="update" class="text-sm translate-y-1"></ToggleSwitch>
-			<InputIcon class="pi pi-times" @click="reset" v-if="changed" />
-		</IconField>
+		<!-- <IconField> -->
+		<ToggleSwitch v-model="val" @update:modelValue="update" class="text-sm translate-y-1"></ToggleSwitch>
+		<!-- </IconField> -->
 		<p>{{ props.config.documentation }}</p>
+		<ResetField v-if="changed" @click="reset" />
 	</div>
 </template>
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
-import IconField from "primevue/iconfield";
-import InputIcon from "primevue/inputicon";
 import ToggleSwitch from "primevue/toggleswitch";
+import ResetField from "./ResetField.vue";
 
 const props = defineProps<{
 	config: App.Http.Resources.Models.ConfigResource;
@@ -24,7 +23,11 @@ const changed = computed(() => val.value !== (props.config.value === "1"));
 const emits = defineEmits(["filled", "reset"]);
 
 function update() {
-	emits("filled", props.config.key, val.value);
+	if (changed.value) {
+		emits("filled", props.config.key, val.value ? "1" : "0");
+	} else {
+		emits("reset", props.config.key);
+	}
 }
 
 function reset() {

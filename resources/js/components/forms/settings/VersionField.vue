@@ -4,7 +4,7 @@
 		<Inplace style="--p-inplace-padding: 0">
 			<template #display>{{ computedVersion }}</template>
 			<template #content>
-				<InputOtp v-model="val" :length="6" style="gap: 0" integerOnly>
+				<InputOtp v-model="val" :length="6" style="gap: 0" integerOnly @update:modelValue="update">
 					<template #default="{ attrs, events, index }">
 						<input type="text" v-bind="attrs" v-on="events" class="h-4 w-3 text-center border-b border-primary-500" />
 						<div v-if="index === 2 || index === 4" class="">.</div>
@@ -12,12 +12,20 @@
 				</InputOtp>
 			</template>
 		</Inplace>
+		<i
+			class="ml-4 pi pi-exclamation-triangle text-danger-700 mt-1 cursor-pointer"
+			v-tooltip="'Click me to reset!'"
+			v-if="changed"
+			@click="reset"
+		></i>
 	</div>
+	<Message v-if="changed" severity="error">We strongly recommend you do not modify this value.</Message>
 </template>
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import InputOtp from "primevue/inputotp";
 import Inplace from "primevue/inplace";
+import Message from "primevue/message";
 
 const props = defineProps<{
 	config: App.Http.Resources.Models.ConfigResource;

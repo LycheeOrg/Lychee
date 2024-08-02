@@ -1,7 +1,15 @@
 <template>
-	<div class="py-1">
+	<div class="py-1 flex">
 		<FloatLabel class="w-full flex-grow">
-			<Select :id="props.config.key" class="w-96 border-none" v-model="val" optionLabel="label" :options="props.options" showClear>
+			<Select
+				:id="props.config.key"
+				class="w-96 border-none"
+				v-model="val"
+				optionLabel="label"
+				:options="props.options"
+				showClear
+				@update:modelValue="update"
+			>
 				<template #value="slotProps">
 					<div v-if="slotProps.value" class="flex items-center">
 						<div>{{ $t(slotProps.value.label) }}</div>
@@ -15,6 +23,7 @@
 			</Select>
 			<label :for="props.config.key">{{ props.config.documentation }}</label>
 		</FloatLabel>
+		<ResetField v-if="changed" @click="reset" />
 	</div>
 </template>
 
@@ -23,6 +32,7 @@ import { computed, ref, watch } from "vue";
 import Select from "primevue/select";
 import { SelectOption } from "@/config/constants";
 import FloatLabel from "primevue/floatlabel";
+import ResetField from "./ResetField.vue";
 
 type Props = {
 	config: App.Http.Resources.Models.ConfigResource;
@@ -34,7 +44,7 @@ const props = defineProps<Props>();
 
 const val = ref(props.mapper(props.config.value));
 
-const changed = computed(() => val.value !== props.mapper(props.config.value));
+const changed = computed(() => val.value?.value !== props.mapper(props.config.value)?.value);
 
 const emits = defineEmits(["filled", "reset"]);
 

@@ -1,6 +1,13 @@
 <template>
 	<div class="flex items-center flex-wrap my-4">
-		<SelectButton id="albumSortingColumn" class="border-none" v-model="val" :options="options" aria-labelledby="basic" />
+		<SelectButton
+			id="albumSortingColumn"
+			class="border-none"
+			v-model="val"
+			:options="options"
+			aria-labelledby="basic"
+			@update:modelValue="update"
+		/>
 		<div>{{ props.config.documentation }}</div>
 	</div>
 </template>

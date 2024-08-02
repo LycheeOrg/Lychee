@@ -2,8 +2,13 @@
 	<div class="py-1">
 		<FloatLabel class="w-full flex-grow">
 			<IconField>
-				<InputText :id="props.config.key" type="text" class="!py-1" v-model="val" @updated="update" />
-				<InputIcon class="pi pi-times" @click="reset" v-if="changed" />
+				<InputText :id="props.config.key" type="text" class="!py-1" v-model="val" @update:modelValue="update" />
+				<InputIcon
+					class="pi pi-exclamation-circle text-warning-600 cursor-pointer"
+					@click="reset"
+					v-if="changed"
+					v-tooltip="'Click me to reset!'"
+				/>
 			</IconField>
 			<label :for="props.config.key">{{ props.config.documentation }}</label>
 		</FloatLabel>

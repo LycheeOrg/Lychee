@@ -1,9 +1,10 @@
 <template>
 	<div class="py-1">
 		<FloatLabel class="w-full flex-grow">
-			<Select :id="props.config.key" class="w-96 border-none" v-model="val" :options="options" showClear> </Select>
+			<Select :id="props.config.key" class="w-96 border-none" v-model="val" :options="options" showClear @update:modelValue="update" />
 			<label :for="props.config.key">{{ props.config.documentation }}</label>
 		</FloatLabel>
+		<ResetField v-if="changed" @click="reset" />
 	</div>
 </template>
 
@@ -11,6 +12,7 @@
 import { computed, ref, watch } from "vue";
 import Select from "primevue/select";
 import FloatLabel from "primevue/floatlabel";
+import ResetField from "./ResetField.vue";
 
 type Props = {
 	config: App.Http.Resources.Models.ConfigResource;

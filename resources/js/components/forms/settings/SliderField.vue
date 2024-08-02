@@ -1,6 +1,6 @@
 <template>
 	<div class="flex items-center gap-4">
-		<SelectButton id="albumSortingColumn" class="border-none" v-model="val" :options="options" aria-labelledby="basic" />
+		<SelectButton class="border-none" v-model="val" :options="options" aria-labelledby="basic" @update:modelValue="update" />
 		<div>{{ props.config.documentation }}</div>
 	</div>
 </template>
