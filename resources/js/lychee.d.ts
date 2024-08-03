@@ -128,6 +128,9 @@ declare namespace App.Http.Resources.Collections {
 		shared_albums: { [key: number]: App.Http.Resources.Models.ThumbAlbumResource } | Array<any>;
 		config: App.Http.Resources.GalleryConfigs.RootConfig;
 	};
+	export type UserManagementCollectionResource = {
+		users: Array<App.Http.Resources.Models.UserManagementResource>;
+	};
 }
 declare namespace App.Http.Resources.Editable {
 	export type EditableBaseAlbumResource = {
@@ -316,9 +319,11 @@ declare namespace App.Http.Resources.Models {
 		thumb2x: string | null;
 	};
 	export type UserManagementResource = {
-		resource: any;
-		with: Array<any>;
-		additional: Array<any>;
+		id: number;
+		username: string;
+		may_administrate: boolean;
+		may_upload: boolean;
+		may_edit_own_settings: boolean;
 	};
 	export type UserResource = {
 		id: number | null;
