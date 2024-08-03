@@ -76,21 +76,6 @@ trait CatchFailures
 		$this->assertStatus($response, 201);
 	}
 
-	protected function assertUnprocessable(TestResponse $response): void
-	{
-		$this->assertStatus($response, 422);
-	}
-
-	protected function assertForbidden(TestResponse $response): void
-	{
-		$this->assertStatus($response, 403);
-	}
-
-	protected function assertUnauthorized(TestResponse $response): void
-	{
-		$this->assertStatus($response, 401);
-	}
-
 	protected function assertNoContent(TestResponse $response): void
 	{
 		$this->assertStatus($response, 204);
@@ -101,8 +86,28 @@ trait CatchFailures
 		$this->assertStatus($response, 302);
 	}
 
+	protected function assertUnauthorized(TestResponse $response): void
+	{
+		$this->assertStatus($response, 401);
+	}
+
+	protected function assertForbidden(TestResponse $response): void
+	{
+		$this->assertStatus($response, 403);
+	}
+
 	protected function assertNotFound(TestResponse $response): void
 	{
 		$this->assertStatus($response, 404);
+	}
+
+	protected function assertConflict(TestResponse $response): void
+	{
+		$this->assertStatus($response, 409);
+	}
+
+	protected function assertUnprocessable(TestResponse $response): void
+	{
+		$this->assertStatus($response, 422);
 	}
 }

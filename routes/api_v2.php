@@ -8,7 +8,6 @@ use App\Legacy\V1\Controllers\Administration\DiagnosticsController as Administra
 use App\Legacy\V1\Controllers\Administration\SettingsController as AdministrationSettingsController;
 use App\Legacy\V1\Controllers\Administration\SharingController as AdministrationSharingController;
 use App\Legacy\V1\Controllers\Administration\UpdateController as AdministrationUpdateController;
-use App\Legacy\V1\Controllers\Administration\UsersController as AdministrationUsersController;
 use App\Legacy\V1\Controllers\AlbumController;
 // use App\Legacy\V1\Controllers\AlbumsController;
 use App\Legacy\V1\Controllers\ImportController;
@@ -30,7 +29,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/LandingPage', [LandingPageController::class, '__invoke']);
-Route::get('/Config::init', [ConfigController::class, 'init']);
+// Route::get('/Config::init', [ConfigController::class, 'init']);
 Route::get('/Gallery::getLayout', [Gallery\ConfigController::class, 'getGalleryLayout']);
 Route::get('/Gallery::getMapProvider', [Gallery\ConfigController::class, 'getMapProvider']);
 
@@ -139,10 +138,11 @@ Route::post('/Profile::unsetToken', [ProfileController::class, 'unsetToken']);
  * USERS.
  */
 Route::get('/Users::count', [Admin\UsersController::class, 'count']);
-// Route::post('/Users::list', [AdministrationUsersController::class, 'list']);
-// Route::post('/Users::save', [AdministrationUsersController::class, 'save']);
-// Route::post('/Users::delete', [AdministrationUsersController::class, 'delete']);
-// Route::post('/Users::create', [AdministrationUsersController::class, 'create']);
+
+Route::post('/Users::list', [Admin\UsersController::class, 'list']);
+Route::post('/Users::save', [Admin\UsersController::class, 'save']);
+Route::post('/Users::delete', [Admin\UsersController::class, 'delete']);
+Route::post('/Users::create', [Admin\UsersController::class, 'create']);
 
 /**
  * WEBAUTHN.
