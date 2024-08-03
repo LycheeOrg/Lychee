@@ -1,16 +1,20 @@
 <template>
-	<div class="py-1 flex flex-wrap">
+	<div class="py-0.5 flex flex-wrap">
 		<div class="w-1/2">{{ props.config.key }}</div>
 		<IconField class="w-1/2">
 			<InputText :id="props.config.key" type="text" class="!py-1" v-model="val" @update:modelValue="update" />
-			<InputIcon class="pi pi-times" @click="reset" v-if="changed" />
+			<InputIcon :class="`pi ${classes} cursor-pointer`" v-tooltip="'Click me to reset!'" @click="reset" v-if="changed" />
 		</IconField>
-		<div class="w-full text-muted-color">{{ props.config.documentation }}</div>
+		<Message class="w-full h-8 mt-0.5" v-if="changed && isVersion" severity="error">We strongly recommend you do not modify this value.</Message>
+		<div class="w-full text-muted-color" v-if="!changed || !isVersion">{{ props.config.documentation }}</div>
 	</div>
 </template>
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import InputText from "../basic/InputText.vue";
+import IconField from "primevue/iconfield";
+import InputIcon from "primevue/inputicon";
+import Message from "primevue/message";
 
 const props = defineProps<{
 	config: App.Http.Resources.Models.ConfigResource;
@@ -19,6 +23,8 @@ const props = defineProps<{
 const val = ref(props.config.value as string);
 
 const changed = computed(() => val.value !== props.config.value);
+const isVersion = computed(() => props.config.key === "version");
+const classes = computed(() => (isVersion.value ? "pi-exclamation-triangle text-danger-700" : "pi-exclamation-circle text-warning-600"));
 
 const emits = defineEmits(["filled", "reset"]);
 

@@ -18,7 +18,7 @@
 			<div class="flex flex-col gap-4">
 				<template v-for="config in configGroup">
 					<template v-if="oldStyle">
-						<OldField :config="config" />
+						<OldField :config="config" @filled="update" @reset="reset" />
 					</template>
 					<template v-else>
 						<!-- Special keys -->

@@ -8,8 +8,8 @@ type UserManagementCreateRequest = {
 	may_edit_own_settings: boolean;
 };
 
-type HasUserId = {
-	user_id: number;
+type HasId = {
+	id: number;
 };
 
 const UsersService = {
@@ -25,11 +25,11 @@ const UsersService = {
 		return axios.post(`${Constants.API_URL}Users::create`, data);
 	},
 
-	edit(data: UserManagementCreateRequest & HasUserId): Promise<AxiosResponse<App.Http.Resources.Models.UserManagementResource>> {
+	edit(data: UserManagementCreateRequest & HasId): Promise<AxiosResponse<App.Http.Resources.Models.UserManagementResource>> {
 		return axios.post(`${Constants.API_URL}Users::save`, data);
 	},
 
-	delete(data: HasUserId): Promise<AxiosResponse<App.Http.Resources.Models.UserManagementResource>> {
+	delete(data: HasId): Promise<AxiosResponse<App.Http.Resources.Models.UserManagementResource>> {
 		return axios.post(`${Constants.API_URL}Users::delete`, data);
 	},
 };

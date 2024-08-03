@@ -11,8 +11,8 @@
     @vite(['resources/js/app.ts','resources/sass/app.scss'])
     {!! "<script>window.assets_url = '" . URL::asset('') . "'; console.log('" . URL::asset('') . "')</script>" !!}
 </head>
-{{-- <body class="antialiased"> --}}
-<body class="antialiased lychee-dark">
+<body class="antialiased">
+{{-- <body class="antialiased lychee-dark"> --}}
         <x-warning-misconfiguration />
     @include('includes.svg')
 	<div id="app" class="w-full3">

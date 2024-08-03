@@ -12,20 +12,35 @@
 
 		<template #end> </template>
 	</Toolbar>
-	<Panel class="border-0">
-		<DataTable :value="users" tableStyle="min-width: 50rem">
-			<Column field="username" header="username"></Column>
-			<Column field="may_upload" header="upload"></Column>
-			<Column field="may_edit_own_settings" header="edit"></Column>
-		</DataTable>
+	<Panel class="border-0 max-w-3xl mx-auto">
+		<div class="w-full mb-10 text-muted-color">
+			<p>This pages allows you to manage users.</p>
+			<ul class="mt-1">
+				<li class="ml-4 pt-2"><i class="pi pi-upload" /> : When selected, the user can upload content.</li>
+				<li class="ml-4 pt-2"><i class="pi pi-lock-open" /> : When selected, the user can modify their profile (username, password).</li>
+			</ul>
+		</div>
+		<div class="flex flex-col">
+			<div class="flex flex-wrap md:flex-nowrap gap-2 justify-center">
+				<span class="w-1/4 font-bold">{{ $t("lychee.USERNAME") }}</span>
+				<span class="w-1/4 font-bold">{{ $t("lychee.PASSWORD") }}</span>
+				<span class="w-1/12 text-center" v-tooltip.top="'When selected, the user can upload content.'"><i class="pi pi-upload" /></span>
+				<span class="w-1/12 text-center" v-tooltip.top="'When selected, the user can modify their profile (username, password).'"
+					><i class="pi pi-lock-open"
+				/></span>
+				<span class="w-1/6"></span>
+			</div>
+			<EditUser v-for="user in users" :key="user.id" :user="user" @deleteUser="deleteUser" />
+			<CreateUser class="mt-10" @createUser="load" />
+		</div>
 	</Panel>
 	<Panel class="border-0"> </Panel>
 </template>
 <script setup lang="ts">
+import CreateUser from "@/components/forms/users/CreateUser.vue";
+import EditUser from "@/components/forms/users/EditUser.vue";
 import UsersService from "@/services/users-service";
 import Button from "primevue/button";
-import Column from "primevue/column";
-import DataTable from "primevue/datatable";
 import Panel from "primevue/panel";
 import Toolbar from "primevue/toolbar";
 import { ref } from "vue";
@@ -37,6 +52,13 @@ function load() {
 		console.log(response.data.users);
 		users.value = response.data.users;
 	});
+}
+
+function deleteUser(id: number) {
+	UsersService.delete({ id: id }).then(() => {
+		load();
+	});
+	load();
 }
 
 load();
