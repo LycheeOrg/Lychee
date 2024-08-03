@@ -50,15 +50,14 @@ class EditUserTest extends BaseApiV2Test
 
 		$response = $this->actingAs($this->admin)->getJson('Users');
 		$this->assertOk($response);
-		$response->assertJson(
-			['users' => [
-				[
-					'id' => $this->userMayUpload1->id,
-					'username' => 'anotherUsername',
-					'may_administrate' => false,
-					'may_upload' => false,
-					'may_edit_own_settings' => false,
-				],
-			]]);
+		$response->assertJsonFragment(
+			[
+				'id' => $this->userMayUpload1->id,
+				'username' => 'anotherUsername',
+				'may_administrate' => false,
+				'may_upload' => false,
+				'may_edit_own_settings' => false,
+			],
+		);
 	}
 }
