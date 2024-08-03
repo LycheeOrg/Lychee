@@ -139,7 +139,7 @@ Route::post('/Profile::unsetToken', [ProfileController::class, 'unsetToken']);
  */
 Route::get('/Users::count', [Admin\UsersController::class, 'count']);
 
-Route::post('/Users::list', [Admin\UsersController::class, 'list']);
+Route::get('/Users', [Admin\UsersController::class, 'list']);
 Route::post('/Users::save', [Admin\UsersController::class, 'save']);
 Route::post('/Users::delete', [Admin\UsersController::class, 'delete']);
 Route::post('/Users::create', [Admin\UsersController::class, 'create']);

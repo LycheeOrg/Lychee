@@ -56,8 +56,8 @@ class CreateUserTest extends BaseApiV2Test
 		]);
 		$this->assertCreated($response);
 
-		$response = $this->actingAs($this->admin)->postJson('Users::list');
-		$this->assertCreated($response);
+		$response = $this->actingAs($this->admin)->getJson('Users');
+		$this->assertOK($response);
 		$response->assertJsonFragment(
 			[
 				'username' => 'newUsername',

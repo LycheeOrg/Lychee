@@ -48,8 +48,8 @@ class EditUserTest extends BaseApiV2Test
 		]);
 		$this->assertNoContent($response);
 
-		$response = $this->actingAs($this->admin)->postJson('Users::list');
-		$this->assertCreated($response);
+		$response = $this->actingAs($this->admin)->getJson('Users');
+		$this->assertOk($response);
 		$response->assertJson(
 			['users' => [
 				[

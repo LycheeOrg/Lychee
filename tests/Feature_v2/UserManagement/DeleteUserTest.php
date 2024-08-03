@@ -42,8 +42,8 @@ class DeleteUserTest extends BaseApiV2Test
 		$this->assertNoContent($response);
 		$this->assertEquals($num_users - 1, User::count());
 
-		$response = $this->actingAs($this->admin)->postJson('Users::list');
-		$this->assertCreated($response);
+		$response = $this->actingAs($this->admin)->getJson('Users');
+		$this->assertOk($response);
 		$response->assertDontSee($this->userNoUpload->username);
 	}
 }
