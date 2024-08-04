@@ -168,7 +168,11 @@ Route::post('/WebAuthn::login', [WebAuthn\WebAuthnLoginController::class, 'login
 /**
  * DIAGNOSTICS.
  */
-// Route::post('/Diagnostics::get', [AdministrationDiagnosticsController::class, 'get']);
+Route::get('/Diagnostics', [Admin\DiagnosticsController::class, 'errors']);
+Route::get('/Diagnostics::info', [Admin\DiagnosticsController::class, 'info']);
+Route::get('/Diagnostics::space', [Admin\DiagnosticsController::class, 'space']);
+Route::get('/Diagnostics::config', [Admin\DiagnosticsController::class, 'config']);
+
 // Route::post('/Diagnostics::getSize', [AdministrationDiagnosticsController::class, 'getSize']);
 
 /**
