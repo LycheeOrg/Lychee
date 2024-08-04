@@ -16,21 +16,21 @@ use Tests\Feature_v2\Base\BaseApiV2Test;
 
 class ProfileTest extends BaseApiV2Test
 {
+	// Test update as guest.
 	public function testUpdateLoginGuest(): void
 	{
-		$response = $this->postJson('Profile::updateLogin', []);
+		$response = $this->postJson('Profile::update', []);
 		$this->assertUnprocessable($response);
 
-		$response = $this->postJson('Profile::updateLogin', [
+		$response = $this->postJson('Profile::update', [
 			'old_password' => 'password',
 			'username' => 'username',
 			'password' => 'password2',
 			'password_confirmation' => 'password3',
 		]);
 		$this->assertUnauthorized($response);
-		// $this->assertUnprocessable($response);
 
-		$response = $this->postJson('Profile::updateLogin', [
+		$response = $this->postJson('Profile::update', [
 			'old_password' => 'password',
 			'username' => 'username',
 			'password' => 'password2',
@@ -41,11 +41,13 @@ class ProfileTest extends BaseApiV2Test
 
 	public function testSetEmailGuest(): void
 	{
-		$response = $this->postJson('Profile::setEmail', []);
+		$response = $this->postJson('Profile::update', []);
 		$this->assertUnprocessable($response);
 
-		$response = $this->postJson('Profile::setEmail', [
+		$response = $this->postJson('Profile::update', [
+			'username' => 'username',
 			'email' => 'something@something.com',
+			'old_password' => 'passwordpasswordpassword',
 		]);
 		$this->assertUnauthorized($response);
 	}
@@ -61,16 +63,19 @@ class ProfileTest extends BaseApiV2Test
 
 	public function testUserLocked(): void
 	{
-		$response = $this->actingAs($this->userLocked)->postJson('Profile::updateLogin', [
+		$response = $this->actingAs($this->userLocked)->postJson('Profile::update', [
 			'old_password' => 'password',
 			'username' => 'username',
 			'password' => 'password2',
 			'password_confirmation' => 'password2',
+			'email' => '',
 		]);
 		$this->assertForbidden($response);
 
-		$response = $this->actingAs($this->userLocked)->postJson('Profile::setEmail', [
+		$response = $this->actingAs($this->userLocked)->postJson('Profile::update', [
+			'username' => 'username',
 			'email' => 'something@something.com',
+			'old_password' => 'password',
 		]);
 		$this->assertForbidden($response);
 
@@ -83,7 +88,7 @@ class ProfileTest extends BaseApiV2Test
 
 	public function testUserUnlocked(): void
 	{
-		$response = $this->actingAs($this->userMayUpload1)->postJson('Profile::updateLogin', [
+		$response = $this->actingAs($this->userMayUpload1)->postJson('Profile::update', [
 			'old_password' => 'password',
 			'username' => 'username',
 			'password' => 'password2',
@@ -91,11 +96,12 @@ class ProfileTest extends BaseApiV2Test
 		]);
 		$this->assertUnprocessable($response);
 
-		$response = $this->actingAs($this->userMayUpload1)->postJson('Profile::updateLogin', [
+		$response = $this->actingAs($this->userMayUpload1)->postJson('Profile::update', [
 			'old_password' => 'password',
 			'username' => 'username',
 			'password' => 'password2',
 			'password_confirmation' => 'password2',
+			'email' => '',
 		]);
 		$this->assertCreated($response);
 
@@ -108,10 +114,12 @@ class ProfileTest extends BaseApiV2Test
 		]);
 		$this->assertNoContent($response);
 
-		$response = $this->actingAs($this->userMayUpload1)->postJson('Profile::setEmail', [
+		$response = $this->actingAs($this->userMayUpload1)->postJson('Profile::update', [
+			'old_password' => 'password2',
+			'username' => 'username',
 			'email' => 'something@something.com',
 		]);
-		$this->assertNoContent($response);
+		$this->assertCreated($response);
 
 		$response = $this->actingAs($this->userMayUpload1)->postJson('Profile::resetToken', []);
 		$this->assertCreated($response);

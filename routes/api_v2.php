@@ -129,8 +129,7 @@ Route::get('/Auth::config', [AuthController::class, 'getConfig']);
 /**
  * USER.
  */
-Route::post('/Profile::updateLogin', [ProfileController::class, 'updateLogin']);
-Route::post('/Profile::setEmail', [ProfileController::class, 'setEmail']);
+Route::post('/Profile::update', [ProfileController::class, 'update']);
 Route::post('/Profile::resetToken', [ProfileController::class, 'resetToken']);
 Route::post('/Profile::unsetToken', [ProfileController::class, 'unsetToken']);
 

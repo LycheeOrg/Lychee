@@ -1,23 +1,17 @@
 import axios, { type AxiosResponse } from "axios";
 import Constants from "./constants";
 
-export type SetLoginRequest = {
+export type UpdateProfileRequest = {
 	old_password: string;
 	username: string | null;
-	password: string;
-	password_confirmation: string;
-};
-
-export type SetEmailRequest = {
-	email: string;
+	password: string | null;
+	password_confirmation: string | null;
+	email: string | null;
 };
 
 const ProfileService = {
-	updateLogin(data: SetLoginRequest): Promise<AxiosResponse<App.Http.Resources.Models.UserResource>> {
-		return axios.post(`${Constants.API_URL}Profile::updateLogin`, data);
-	},
-	setEmail(data: SetEmailRequest): Promise<AxiosResponse<number>> {
-		return axios.post(`${Constants.API_URL}Profile::setEmail`, data);
+	update(data: UpdateProfileRequest): Promise<AxiosResponse<App.Http.Resources.Models.UserResource>> {
+		return axios.post(`${Constants.API_URL}Profile::update`, data);
 	},
 	resetToken(): Promise<AxiosResponse<App.Http.Resources.Models.Utils.UserToken>> {
 		return axios.post(`${Constants.API_URL}Profile::resetToken`, {});

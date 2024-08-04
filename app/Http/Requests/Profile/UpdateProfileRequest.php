@@ -13,12 +13,13 @@ use App\Rules\PasswordRule;
 use App\Rules\UsernameRule;
 use Illuminate\Support\Facades\Gate;
 
-class ChangeLoginRequest extends BaseApiRequest implements HasPassword
+class UpdateProfileRequest extends BaseApiRequest implements HasPassword
 {
 	use HasPasswordTrait;
 
 	protected string $oldPassword;
 	protected ?string $username = null;
+	protected ?string $email = null;
 
 	/**
 	 * {@inheritDoc}
@@ -34,9 +35,10 @@ class ChangeLoginRequest extends BaseApiRequest implements HasPassword
 	public function rules(): array
 	{
 		return [
-			RequestAttribute::USERNAME_ATTRIBUTE => ['sometimes', new UsernameRule(true)],
-			RequestAttribute::PASSWORD_ATTRIBUTE => ['required', 'confirmed', new PasswordRule(false)],
+			RequestAttribute::USERNAME_ATTRIBUTE => ['required', new UsernameRule(true)],
+			RequestAttribute::PASSWORD_ATTRIBUTE => ['sometimes', 'confirmed', new PasswordRule(false)],
 			RequestAttribute::OLD_PASSWORD_ATTRIBUTE => ['required', new PasswordRule(false), new CurrentPasswordRule()],
+			RequestAttribute::EMAIL_ATTRIBUTE => ['present', 'nullable', 'email:rfc,dns', 'max:100'],
 		];
 	}
 
@@ -45,16 +47,14 @@ class ChangeLoginRequest extends BaseApiRequest implements HasPassword
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->password = $values[RequestAttribute::PASSWORD_ATTRIBUTE];
+		$this->password = $values[RequestAttribute::PASSWORD_ATTRIBUTE] ?? null;
 		$this->oldPassword = $values[RequestAttribute::OLD_PASSWORD_ATTRIBUTE];
 
-		// We do not allow '' as a username. So any such input will be cast to null
-		if (array_key_exists(RequestAttribute::USERNAME_ATTRIBUTE, $values)) {
-			$this->username = trim($values[RequestAttribute::USERNAME_ATTRIBUTE]);
-			$this->username = $this->username === '' ? null : $this->username;
-		} else {
-			$this->username = null;
-		}
+		$this->username = trim($values[RequestAttribute::USERNAME_ATTRIBUTE]);
+		$this->username = $this->username === '' ? null : $this->username;
+
+		$this->email = trim($values[RequestAttribute::EMAIL_ATTRIBUTE] ?? '');
+		$this->email = $this->email === '' ? null : $this->email;
 	}
 
 	/**
@@ -79,5 +79,10 @@ class ChangeLoginRequest extends BaseApiRequest implements HasPassword
 	public function username(): ?string
 	{
 		return $this->username;
+	}
+
+	public function email(): ?string
+	{
+		return $this->email;
 	}
 }
