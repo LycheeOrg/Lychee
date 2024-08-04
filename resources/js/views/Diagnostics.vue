@@ -20,12 +20,12 @@
 	</Panel>
 </template>
 <script setup lang="ts">
-import ConfigurationsDiagnostics from '@/components/diagnostics/ConfigurationsDiagnostics.vue';
-import InfoDiagnostics from '@/components/diagnostics/InfoDiagnostics.vue';
-import ErrorsDiagnotics from '@/components/diagnostics/ErrorsDiagnostics.vue';
-import SpaceDiagnostics from '@/components/diagnostics/SpaceDiagnostics.vue';
-import { ref } from 'vue';
-import AuthService from '@/services/auth-service';
+import ConfigurationsDiagnostics from "@/components/diagnostics/ConfigurationsDiagnostics.vue";
+import InfoDiagnostics from "@/components/diagnostics/InfoDiagnostics.vue";
+import ErrorsDiagnotics from "@/components/diagnostics/ErrorsDiagnostics.vue";
+import SpaceDiagnostics from "@/components/diagnostics/SpaceDiagnostics.vue";
+import { ref } from "vue";
+import AuthService from "@/services/auth-service";
 
 const user = ref(undefined as App.Http.Resources.Models.UserResource | undefined);
 
