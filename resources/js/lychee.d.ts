@@ -132,6 +132,15 @@ declare namespace App.Http.Resources.Collections {
 		users: Array<App.Http.Resources.Models.UserManagementResource>;
 	};
 }
+declare namespace App.Http.Resources.Diagnostics {
+	export type ErrorLine = {
+		type: string;
+		line: string;
+	};
+	export type ErrorsResource = {
+		errors: Array<App.Http.Resources.Diagnostics.ErrorLine>;
+	};
+}
 declare namespace App.Http.Resources.Editable {
 	export type EditableBaseAlbumResource = {
 		id: string;
