@@ -4,7 +4,7 @@ const Constants = {
 
 export type PaginatedResponse<T> = {
 	data: T[];
-	links: {url: string | null;label: string;active: boolean;}[];
+	links: { url: string | null; label: string; active: boolean }[];
 	meta: {
 		current_page: number;
 		first_page_url: string;
@@ -17,7 +17,7 @@ export type PaginatedResponse<T> = {
 		prev_page_url: string | null;
 		to: number | null;
 		total: number;
-	}
+	};
 };
 
 export default Constants;
