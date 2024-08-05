@@ -17,7 +17,7 @@ const UsersService = {
 		return axios.get(`${Constants.API_URL}Users::count`, { data: {} });
 	},
 
-	get(): Promise<AxiosResponse<App.Http.Resources.Collections.UserManagementCollectionResource>> {
+	get(): Promise<AxiosResponse<App.Http.Resources.Models.UserManagementResource[]>> {
 		return axios.get(`${Constants.API_URL}Users`, { data: {} });
 	},
 

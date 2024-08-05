@@ -173,6 +173,11 @@ Route::get('/Diagnostics::info', [Admin\DiagnosticsController::class, 'info']);
 Route::get('/Diagnostics::space', [Admin\DiagnosticsController::class, 'space']);
 Route::get('/Diagnostics::config', [Admin\DiagnosticsController::class, 'config']);
 
+/**
+ * JOBS.
+ */
+Route::get('/Jobs', [Admin\JobsController::class, 'list']);
+
 // Route::post('/Diagnostics::getSize', [AdministrationDiagnosticsController::class, 'getSize']);
 
 /**

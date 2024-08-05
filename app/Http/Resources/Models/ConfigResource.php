@@ -3,6 +3,7 @@
 namespace App\Http\Resources\Models;
 
 use App\Enum\ConfigType;
+use App\Models\Configs;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
@@ -14,11 +15,16 @@ class ConfigResource extends Data
 	public string $value;
 	public string $documentation;
 
-	public function __construct(string $key, ConfigType|string $type, string $value, string $doc)
+	public function __construct(Configs $c)
 	{
-		$this->key = $key;
-		$this->type = $type;
-		$this->value = $value;
-		$this->documentation = $doc;
+		$this->key = $c->key;
+		$this->type = ConfigType::tryFrom($c->type_range) ?? $c->type_range;
+		$this->value = $c->value;
+		$this->documentation = $c->description;
+	}
+
+	public static function fromModel(Configs $c): ConfigResource
+	{
+		return new self($c);
 	}
 }

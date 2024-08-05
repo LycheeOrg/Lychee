@@ -15,7 +15,7 @@ export type UpdateProfileRequest = {
 };
 
 const DiagnosticsService = {
-	errors(): Promise<AxiosResponse<App.Http.Resources.Diagnostics.ErrorsResource>> {
+	errors(): Promise<AxiosResponse<App.Http.Resources.Diagnostics.ErrorLine[]>> {
 		return axios.get(`${Constants.API_URL}Diagnostics`, { data: {} });
 	},
 

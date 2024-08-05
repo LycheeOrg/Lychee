@@ -32,4 +32,9 @@ class ErrorLine extends Data
 			$this->line = \Str::substr($line, 7);
 		}
 	}
+
+	public static function fromString(string $line): ErrorLine
+	{
+		return new self($line);
+	}
 }

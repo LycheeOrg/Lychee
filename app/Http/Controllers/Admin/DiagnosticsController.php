@@ -7,8 +7,7 @@ use App\Actions\Diagnostics\Errors;
 use App\Actions\Diagnostics\Info;
 use App\Actions\Diagnostics\Space;
 use App\Http\Requests\Diagnostics\DiagnosticsRequest;
-use App\Http\Resources\Diagnostics\ErrorsResource;
-use Illuminate\Contracts\Container\BindingResolutionException;
+use App\Http\Resources\Diagnostics\ErrorLine;
 use Illuminate\Routing\Controller;
 
 class DiagnosticsController extends Controller
@@ -18,13 +17,11 @@ class DiagnosticsController extends Controller
 	 *
 	 * @param Errors $errors
 	 *
-	 * @return ErrorsResource
-	 *
-	 * @throws BindingResolutionException
+	 * @return array<array-key, \App\Http\Resources\Diagnostics\ErrorLine>
 	 */
-	public function errors(Errors $errors): ErrorsResource
+	public function errors(Errors $errors): array
 	{
-		return new ErrorsResource($errors->get());
+		return ErrorLine::collect($errors->get());
 	}
 
 	/**

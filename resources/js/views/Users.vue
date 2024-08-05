@@ -49,8 +49,8 @@ const users = ref([] as App.Http.Resources.Models.UserManagementResource[]);
 
 function load() {
 	UsersService.get().then((response) => {
-		console.log(response.data.users);
-		users.value = response.data.users;
+		console.log(response.data);
+		users.value = response.data;
 	});
 }
 

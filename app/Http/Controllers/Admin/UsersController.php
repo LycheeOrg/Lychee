@@ -10,10 +10,10 @@ use App\Http\Requests\Users\CountUserRequest;
 use App\Http\Requests\Users\DeleteUserRequest;
 use App\Http\Requests\Users\ManagmentListUsersRequest;
 use App\Http\Requests\Users\SetUserSettingsRequest;
-use App\Http\Resources\Collections\UserManagementCollectionResource;
 use App\Http\Resources\Models\UserManagementResource;
 use App\Models\User;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -26,9 +26,16 @@ class UsersController extends Controller
 		return User::count();
 	}
 
-	public function list(ManagmentListUsersRequest $_request): UserManagementCollectionResource
+	/**
+	 * Get the list of users for management purposes..
+	 *
+	 * @param ManagmentListUsersRequest $_request
+	 *
+	 * @return Collection<array-key, UserManagementResource>
+	 */
+	public function list(ManagmentListUsersRequest $_request): Collection
 	{
-		return new UserManagementCollectionResource(User::where('id', '!=', Auth::id())->get());
+		return UserManagementResource::collect(User::where('id', '!=', Auth::id())->get());
 	}
 
 	/**

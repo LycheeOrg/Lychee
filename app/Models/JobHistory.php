@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enum\JobStatus;
 use App\Models\Builders\JobHistoryBuilder;
 use App\Models\Extensions\ThrowsConsistentExceptions;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 

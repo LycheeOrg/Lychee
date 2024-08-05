@@ -30,7 +30,7 @@ class ListUserTest extends BaseApiV2Test
 		$response = $this->actingAs($this->admin)->getJson('Users');
 		$this->assertOk($response);
 		$response->assertJson(
-			['users' => [
+			[
 				[
 					'id' => $this->userMayUpload1->id,
 					'username' => $this->userMayUpload1->username,
@@ -59,7 +59,7 @@ class ListUserTest extends BaseApiV2Test
 					'may_upload' => $this->userLocked->may_upload,
 					'may_edit_own_settings' => $this->userLocked->may_edit_own_settings,
 				],
-			]]);
+			]);
 		$response->assertDontSee((string) $this->admin->id);
 		$response->assertDontSee($this->admin->username);
 	}
