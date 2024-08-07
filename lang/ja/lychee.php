@@ -24,7 +24,7 @@ return [
 	'U2F' => 'U2F',
 	'NOTIFICATIONS' => '通知',
 	'SHARING' => '共有',
-	'CHANGE_LOGIN' => 'パスワードを変更',
+	'CHANGE_LOGIN' => 'ログイン情報を変更',
 	'CHANGE_SORTING' => '順序を変更',
 	'SET_DROPBOX' => 'Dropboxを設定',
 	'ABOUT_LYCHEE' => 'Lycheeについて',
