@@ -408,10 +408,10 @@ return [
 
 	'LAYOUT_TYPE' => '写真のレイアウト',
 	'LAYOUT_SQUARES' => '正方形のサムネイル',
-	'LAYOUT_JUSTIFIED' => '比率を保持し、縦幅を合わせる',
-	'LAYOUT_MASONRY' => '比率を保持し、横幅を合わせる',
-	'LAYOUT_GRID' => '比率を保持し、均等に並べる',
-	'LAYOUT_UNJUSTIFIED' => '比率を保持し、幅を合わせない',
+	'LAYOUT_JUSTIFIED' => '比率に合わせ、縦幅を合わせる',
+	'LAYOUT_MASONRY' => '比率に合わせ、横幅を合わせる',
+	'LAYOUT_GRID' => '比率に合わせ、均等に並べる',
+	'LAYOUT_UNJUSTIFIED' => '比率に合わせ、幅を合わせない',
 	'SET_LAYOUT' => 'レイアウトを変更',
 
 	'NSFW_VISIBLE_TEXT_1' => 'センシティブなアルバムをデフォルトで表示する',
