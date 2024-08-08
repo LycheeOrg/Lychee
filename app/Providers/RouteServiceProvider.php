@@ -46,7 +46,7 @@ class RouteServiceProvider extends ServiceProvider
 		});
 	}
 
-	private function getLycheeV6Routes()
+	private function getLycheeV6Routes(): void
 	{
 		Route::middleware('web-admin')->group(base_path('routes/web-admin-v2.php'));
 		Route::middleware('api')->prefix('api/v2')->group(base_path('routes/api_v2.php'));
@@ -59,7 +59,7 @@ class RouteServiceProvider extends ServiceProvider
 		Route::middleware('web')->group(base_path('routes/web_v2.php'));
 	}
 
-	private function getLegacyRoutes()
+	private function getLegacyRoutes(): void
 	{
 		Route::middleware('web-install')->group(base_path('routes/web-install.php'));
 		Route::middleware('api')->prefix('api')->group(base_path('routes/api_v1.php'));

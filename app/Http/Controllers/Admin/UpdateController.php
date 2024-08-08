@@ -5,9 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Actions\Diagnostics\Pipes\Checks\UpdatableCheck;
 use App\Actions\Diagnostics\Pipes\Infos\VersionInfo;
 use App\Actions\InstallUpdate\ApplyUpdate;
+use App\Contracts\Exceptions\LycheeException;
 use App\Enum\VersionChannelType;
+use App\Http\Requests\Maintenance\MigrateRequest;
 use App\Http\Requests\Maintenance\UpdateRequest;
-use App\Http\Requests\Settings\MigrateRequest;
 use App\Http\Resources\Diagnostics\UpdateCheckInfo;
 use App\Http\Resources\Diagnostics\UpdateInfo;
 use App\Metadata\Versions\GitHubVersion;
@@ -54,7 +55,7 @@ class UpdateController extends Controller
 	/**
 	 * Checking if any updates are available.
 	 *
-	 * @return void
+	 * @return UpdateCheckInfo
 	 */
 	public function check(UpdateRequest $request, GitHubVersion $gitHubFunctions, VersionInfo $versionInfo): UpdateCheckInfo
 	{

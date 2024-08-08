@@ -36,4 +36,3 @@ Route::get('/Update', [UpdateController::class, 'view'])->name('update');
 
 Route::get('/Optimize', [OptimizeController::class, 'view']);
 
-

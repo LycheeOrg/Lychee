@@ -51,6 +51,8 @@ class RequestAttribute
 	public const IS_STARRED_ATTRIBUTE = 'is_starred';
 	public const DIRECTION_ATTRIBUTE = 'direction';
 
+	public const SINGLE_PATH_ATTRIBUTE = 'path';
+
 	/**
 	 * Due to historic reasons the attribute which stores the type of
 	 * size variant is called `kind`.

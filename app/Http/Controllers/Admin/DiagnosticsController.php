@@ -15,6 +15,8 @@ use App\Policies\AlbumQueryPolicy;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use function Safe\json_encode;
+use function Safe\phpinfo;
 
 class DiagnosticsController extends Controller
 {

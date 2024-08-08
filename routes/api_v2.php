@@ -192,6 +192,9 @@ Route::post('/Settings::setConfigs', [Admin\SettingsController::class, 'setConfi
  */
 Route::get('/Maintenance::update', [Admin\UpdateController::class, 'get']);
 Route::post('/Maintenance::update', [Admin\UpdateController::class, 'check']);
+Route::get('/Maintenance::jobs', [Admin\Maintenance\FixJobs::class, 'get']);
+Route::post('/Maintenance::jobs', [Admin\Maintenance\FixJobs::class, 'do']);
+Route::post('/Maintenance::optimize', [Admin\Maintenance\Optimize::class, 'do']);
 
 // Route::post('/Settings::setSorting', [AdministrationSettingsController::class, 'setSorting']);
 // Route::post('/Settings::setLang', [AdministrationSettingsController::class, 'setLang']);

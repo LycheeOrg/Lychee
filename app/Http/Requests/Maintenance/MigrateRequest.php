@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Settings;
+namespace App\Http\Requests\Maintenance;
 
 use App\Contracts\Http\Requests\HasPassword;
 use App\Contracts\Http\Requests\HasUsername;
