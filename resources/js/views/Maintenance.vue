@@ -13,7 +13,7 @@
 		<template #end> </template>
 	</Toolbar>
 	<Panel class="border-none text-center text-muted-color">
-		{{ $t('maintenance.description') }}
+		{{ $t("maintenance.description") }}
 	</Panel>
 	<div class="max-w-5xl mt-9 mx-auto grid grid-cols-1 gap-4 sm:grid-cols-2 sm:items-stretch md:grid-cols-3 md:gap-8 w-full">
 		<MaintenanceUpdate />
@@ -31,12 +31,10 @@
 	<livewire:modules.maintenance.gen-size-variants :type="\App\Enum\SizeVariantType::MEDIUM2X->value" />
 	<livewire:modules.maintenance.missing-file-sizes />
 	-->
-
 </template>
 <script setup lang="ts">
 import MaintenanceUpdate from "@/components/maintenance/MaintenanceUpdate.vue";
 import Button from "primevue/button";
 import Panel from "primevue/panel";
 import Toolbar from "primevue/toolbar";
-
 </script>

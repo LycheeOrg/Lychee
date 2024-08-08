@@ -10,27 +10,26 @@
 			{{ $t("lychee.DIAGNOSTICS") }}
 		</template>
 
-		<template #end>
-		</template>
+		<template #end> </template>
 	</Toolbar>
 	<Panel v-if="left.length && right.length" class="border-none p-9">
-		<div class="grid" style="grid-template-columns: 1fr 1fr 1fr;">
-				<div></div>
-				<div>
+		<div class="grid" style="grid-template-columns: 1fr 1fr 1fr">
+			<div></div>
+			<div>
 				<template v-for="i in Math.min(left.length, right.length)">
 					<pre v-if="left[i] !== right[i]" class="text-create-600">{{ i }} - {{ left[i] }}</pre>
 					<pre v-if="left[i] !== right[i]" class="text-danger-600">{{ i }} + {{ right[i] }}</pre>
 				</template>
-				<pre v-if="same" class=" font-bold text-create-700 text-center">Identical content</pre>
-				</div>
-				<div></div>
+				<pre v-if="same" class="font-bold text-create-700 text-center">Identical content</pre>
 			</div>
-			<div class="grid text-muted-color" style="grid-template-columns: 1fr 1fr 1fr 1fr;">
-				<div></div>
-				<pre>{{ left.join("\n") }}</pre>
-				<pre>{{ right.join("\n") }}</pre>
-				<div></div>
-			</div>
+			<div></div>
+		</div>
+		<div class="grid text-muted-color" style="grid-template-columns: 1fr 1fr 1fr 1fr">
+			<div></div>
+			<pre>{{ left.join("\n") }}</pre>
+			<pre>{{ right.join("\n") }}</pre>
+			<div></div>
+		</div>
 	</Panel>
 </template>
 <script setup lang="ts">

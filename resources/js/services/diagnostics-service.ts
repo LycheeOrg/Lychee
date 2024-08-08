@@ -33,7 +33,7 @@ const DiagnosticsService = {
 
 	permissions(): Promise<AxiosResponse<App.Http.Resources.Diagnostics.Permissions>> {
 		return axios.get(`${Constants.API_URL}Diagnostics::permissions`, { data: {} });
-	}
+	},
 };
 
 export default DiagnosticsService;

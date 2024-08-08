@@ -6,7 +6,7 @@ const MaintenanceService = {
 		return axios.get(`${Constants.API_URL}Maintenance::update`, { data: {} });
 	},
 	updateCheck(): Promise<AxiosResponse<App.Http.Resources.Diagnostics.UpdateCheckInfo>> {
-		return axios.post(`${Constants.API_URL}Maintenance::update`, { });
+		return axios.post(`${Constants.API_URL}Maintenance::update`, {});
 	},
 };
 

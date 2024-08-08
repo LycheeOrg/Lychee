@@ -46,8 +46,8 @@ export const routes = [
 		component: Diagnostics,
 	},
 	{
-		name: 'permissions',
-		path: '/permissions',
+		name: "permissions",
+		path: "/permissions",
 		component: Permissions,
 	},
 	{
