@@ -55,7 +55,7 @@ class FixTree extends Controller
 	 *
 	 * @return bool
 	 */
-	public function getNoErrorsFoundProperty(): bool
+	public function get(): bool
 	{
 		return 0 === ($this->stats['oddness'] ?? 0) + ($this->stats['duplicates'] ?? 0) + ($this->stats['wrong_parent'] ?? 0) + ($this->stats['missing_parent'] ?? 0);
 	}

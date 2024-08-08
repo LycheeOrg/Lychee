@@ -192,8 +192,16 @@ Route::post('/Settings::setConfigs', [Admin\SettingsController::class, 'setConfi
  */
 Route::get('/Maintenance::update', [Admin\UpdateController::class, 'get']);
 Route::post('/Maintenance::update', [Admin\UpdateController::class, 'check']);
+Route::get('/Maintenance::cleaning', [Admin\Maintenance\Cleaning::class, 'check']);
+Route::post('/Maintenance::cleaning', [Admin\Maintenance\Cleaning::class, 'do']);
 Route::get('/Maintenance::jobs', [Admin\Maintenance\FixJobs::class, 'get']);
 Route::post('/Maintenance::jobs', [Admin\Maintenance\FixJobs::class, 'do']);
+Route::get('/Maintenance::tree', [Admin\Maintenance\FixTree::class, 'get']);
+Route::post('/Maintenance::tree', [Admin\Maintenance\FixTree::class, 'do']);
+Route::get('/Maintenance::getSizeVariants', [Admin\Maintenance\GenSizeVariants::class, 'check']);
+Route::post('/Maintenance::getSizeVariants', [Admin\Maintenance\GenSizeVariants::class, 'do']);
+Route::get('/Maintenance::missingFileSize', [Admin\Maintenance\MissingFileSizes::class, 'check']);
+Route::post('/Maintenance::missingFileSize', [Admin\Maintenance\MissingFileSizes::class, 'do']);
 Route::post('/Maintenance::optimize', [Admin\Maintenance\Optimize::class, 'do']);
 
 // Route::post('/Settings::setSorting', [AdministrationSettingsController::class, 'setSorting']);
