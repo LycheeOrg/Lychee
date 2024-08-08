@@ -1,5 +1,5 @@
 <template>
-	<Card v-if="data !== undefined && data > 0" class="min-h-40 shadow shadow-surface-950 rounded-lg relative bg-surface-800">
+	<Card v-if="data !== undefined && data > 0" class="min-h-40 shadow shadow-surface-950/30 rounded-lg relative">
 		<template #title>
 			<div class="text-center">
 				{{ $t("maintenance.fix-jobs.title") }}
@@ -52,3 +52,9 @@ function exec() {
 
 load();
 </script>
+
+<style lang="css" scoped>
+.lychee-dark .p-card {
+	--p-card-background: var(--p-surface-800);
+}
+</style>
