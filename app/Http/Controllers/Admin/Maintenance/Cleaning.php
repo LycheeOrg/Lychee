@@ -25,7 +25,7 @@ class Cleaning extends Component
 	 */
 	public function do(CleaningRequest $request): array
 	{
-		if ($this->check($request)->is_not_empty) {
+		if (!$this->check($request)->is_not_empty) {
 			return [];
 		}
 

@@ -12,7 +12,7 @@
 			</ScrollPanel>
 			<div class="flex gap-4 mt-1">
 				<Button v-if="data.is_not_empty && !loading" class="w-full bg-danger-800 hover:bg-danger-700 border-none text-white" @click="exec">{{
-					$t("maintenance.fix-jobs.button")
+					$t("maintenance.cleaning.button")
 				}}</Button>
 			</div>
 		</template>
