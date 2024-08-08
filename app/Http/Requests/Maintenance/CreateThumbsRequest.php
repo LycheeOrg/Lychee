@@ -19,7 +19,6 @@ class CreateThumbsRequest extends BaseApiRequest
 		return [
 			RequestAttribute::SIZE_VARIANT_ATTRIBUTE => [
 				'required',
-				'string',
 				Rule::in([
 					SizeVariantType::SMALL->value,
 					SizeVariantType::SMALL2X->value,

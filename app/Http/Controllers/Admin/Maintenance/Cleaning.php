@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers\Admin\Maintenance;
 
-use App\Http\Requests\Maintenance\MaintenanceRequest;
+use App\Http\Requests\Maintenance\CleaningRequest;
+use App\Http\Resources\Diagnostics\CleaningState;
 use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use function Safe\rmdir;
@@ -22,9 +23,9 @@ class Cleaning extends Component
 	 *
 	 * @return string[]
 	 */
-	public function do(MaintenanceRequest $request): array
+	public function do(CleaningRequest $request): array
 	{
-		if ($this->check($request)) {
+		if ($this->check($request)->is_not_empty) {
 			return [];
 		}
 
@@ -56,18 +57,23 @@ class Cleaning extends Component
 	 * Check whether there are files to be removed.
 	 * If not, we will not display the module to reduce complexity.
 	 *
-	 * @return bool
+	 * @return CleaningState
 	 */
-	public function check(MaintenanceRequest $request): bool
+	public function check(CleaningRequest $request): CleaningState
 	{
+		$cleaning_state = new CleaningState($request->path(), false);
+
 		if (!is_dir($request->path())) {
 			Log::warning('directory ' . $request->path() . ' not found!');
+			$cleaning_state->is_not_empty = false;
 
-			return true;
+			return $cleaning_state;
 		}
 
 		if (!(new \FilesystemIterator($request->path()))->valid()) {
-			return true;
+			$cleaning_state->is_not_empty = false;
+
+			return $cleaning_state;
 		}
 
 		$files_found = false;
@@ -80,7 +86,8 @@ class Cleaning extends Component
 			}
 			$files_found = true;
 		}
+		$cleaning_state->is_not_empty = $files_found;
 
-		return $files_found === false;
+		return $cleaning_state;
 	}
 }

@@ -160,6 +160,19 @@ const LycheePrimeVueConfig = {
 		},
 	},
 	components: {
+		progressspinner: {
+			colorScheme: {
+				light: {},
+				dark: {
+					color: {
+						1: "{primary.400}",
+						2: "{primary.500}",
+						3: "{primary.600}",
+						4: "{primary.700}",
+					},
+				},
+			},
+		},
 		toggleswitch: {
 			width: "2rem",
 			height: "1rem",

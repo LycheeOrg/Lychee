@@ -12,27 +12,33 @@
 
 		<template #end> </template>
 	</Toolbar>
-	<Panel class="border-none text-center text-muted-color">
+	<div class="text-muted-color text-center mt-2 p-2">
 		{{ $t("maintenance.description") }}
-	</Panel>
-	<div class="max-w-5xl mt-9 mx-auto grid grid-cols-1 gap-4 sm:grid-cols-2 sm:items-stretch md:grid-cols-3 md:gap-8 w-full">
-		<MaintenanceUpdate />
 	</div>
-	<!--
-	<livewire:modules.maintenance.optimize />
-	<livewire:modules.maintenance.cleaning :path="config('filesystems.disks.extract-jobs.root')" />
-	<livewire:modules.maintenance.cleaning :path="config('filesystems.disks.image-jobs.root')" />
-	<livewire:modules.maintenance.cleaning :path="config('filesystems.disks.livewire-upload.root')" />
-	<livewire:modules.maintenance.fix-jobs />
-	<livewire:modules.maintenance.fix-tree />
-	<livewire:modules.maintenance.gen-size-variants :type="\App\Enum\SizeVariantType::SMALL->value" />
-	<livewire:modules.maintenance.gen-size-variants :type="\App\Enum\SizeVariantType::SMALL2X->value" />
-	<livewire:modules.maintenance.gen-size-variants :type="\App\Enum\SizeVariantType::MEDIUM->value" />
-	<livewire:modules.maintenance.gen-size-variants :type="\App\Enum\SizeVariantType::MEDIUM2X->value" />
-	<livewire:modules.maintenance.missing-file-sizes />
-	-->
+	<div
+		class="md:max-w-3xl lg:max-w-5xl xl:max-w-7xl mt-9 mx-auto grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 md:gap-8 lg:grid-cols-4 w-full"
+	>
+		<MaintenanceUpdate />
+		<MaintenanceOptimize />
+		<MaintenanceGenSizevariants :sv="1" />
+		<MaintenanceGenSizevariants :sv="2" />
+		<MaintenanceGenSizevariants :sv="3" />
+		<MaintenanceGenSizevariants :sv="4" />
+		<MaintenanceFixJobs />
+		<MaintenanceFixTree />
+		<MaintenanceFilesize />
+		<MaintenanceCleaning path="filesystems.disks.extract-jobs.root" />
+		<MaintenanceCleaning path="filesystems.disks.image-jobs.root" />
+		<MaintenanceCleaning path="filesystems.disks.livewire-upload.root" />
+	</div>
 </template>
 <script setup lang="ts">
+import MaintenanceCleaning from "@/components/maintenance/MaintenanceCleaning.vue";
+import MaintenanceFilesize from "@/components/maintenance/MaintenanceFilesize.vue";
+import MaintenanceFixJobs from "@/components/maintenance/MaintenanceFixJobs.vue";
+import MaintenanceFixTree from "@/components/maintenance/MaintenanceFixTree.vue";
+import MaintenanceGenSizevariants from "@/components/maintenance/MaintenanceGenSizevariants.vue";
+import MaintenanceOptimize from "@/components/maintenance/MaintenanceOptimize.vue";
 import MaintenanceUpdate from "@/components/maintenance/MaintenanceUpdate.vue";
 import Button from "primevue/button";
 import Panel from "primevue/panel";

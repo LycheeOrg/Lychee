@@ -1,0 +1,40 @@
+<template>
+	<Card v-if="data" class="min-h-40 shadow shadow-surface-950 rounded-lg relative bg-surface-800">
+		<template #title>
+			<div class="text-center">
+				{{ $t("maintenance.optimize.title") }}
+			</div>
+		</template>
+		<template #content>
+			<ScrollPanel class="w-full h-40 text-muted-color text-sm">
+				<div v-if="data.length === 0 && !loading">{{ $t("maintenance.optimize.description") }}</div>
+				<ProgressSpinner v-if="loading && data.length === 0" class="w-full"></ProgressSpinner>
+				<pre class="text-2xs m-4" v-if="data.length > 0">{{ data.join("\n") }}</pre>
+			</ScrollPanel>
+			<div class="flex gap-4 mt-1">
+				<Button v-if="data.length === 0 && !loading" severity="primary" class="w-full" @click="exec">{{
+					$t("maintenance.optimize.button")
+				}}</Button>
+			</div>
+		</template>
+	</Card>
+</template>
+
+<script setup lang="ts">
+import ProgressSpinner from "primevue/progressspinner";
+import MaintenanceService from "@/services/maintenance-service";
+import Button from "primevue/button";
+import Card from "primevue/card";
+import { ref } from "vue";
+import ScrollPanel from "primevue/scrollpanel";
+
+const data = ref([] as string[]);
+const loading = ref(false);
+
+function exec() {
+	loading.value = true;
+	MaintenanceService.optimizeDo().then((response) => {
+		data.value = response.data;
+	});
+}
+</script>

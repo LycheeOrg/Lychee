@@ -6,21 +6,19 @@
 			</div>
 		</template>
 		<template #content>
-			<div class="text-center text-muted-color">
+			<ScrollPanel class="w-full h-40 text-center text-muted-color text-sm">
 				{{ data.channelName }}<br />
 				{{ data.info }}<br />
 				{{ data.extra }}
-			</div>
+			</ScrollPanel>
 		</template>
 		<template #footer>
-			<div class="flex gap-4 mt-1">
-				<Button v-if="canCheck" severity="primary" class="w-full" @click="check">{{ $t("lychee.CHECK_FOR_UPDATE") }}</Button>
-				<Button v-if="canUpdate" severity="primary" href="/Update" target="_blank" rel="noopener" class="w-full">{{
-					$t("lychee.UPDATE")
-				}}</Button>
-				<div v-if="!canCheck && !canUpdate && !loading" class="w-full text-center">
-					{{ $t("maintenance.update.no-pending-updates") }}
-				</div>
+			<Button v-if="canCheck" severity="primary" class="w-full" @click="check">{{ $t("lychee.CHECK_FOR_UPDATE") }}</Button>
+			<Button v-if="canUpdate" severity="primary" href="/Update" target="_blank" rel="noopener" class="w-full">{{
+				$t("lychee.UPDATE")
+			}}</Button>
+			<div v-if="!canCheck && !canUpdate && !loading" class="w-full text-center">
+				{{ $t("maintenance.update.no-pending-updates") }}
 			</div>
 		</template>
 	</Card>
@@ -30,6 +28,7 @@
 import MaintenanceService from "@/services/maintenance-service";
 import Button from "primevue/button";
 import Card from "primevue/card";
+import ScrollPanel from "primevue/scrollpanel";
 import { ref } from "vue";
 
 const data = ref(undefined as App.Http.Resources.Diagnostics.UpdateInfo | undefined);

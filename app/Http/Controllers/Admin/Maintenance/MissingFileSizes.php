@@ -51,7 +51,7 @@ class MissingFileSizes extends Controller
 	 *
 	 * @return int
 	 */
-	public function get(): int
+	public function check(): int
 	{
 		return SizeVariant::query()
 			->where('filesize', '=', 0)

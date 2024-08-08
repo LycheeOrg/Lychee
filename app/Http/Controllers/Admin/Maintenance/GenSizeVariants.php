@@ -57,7 +57,7 @@ class GenSizeVariants extends Controller
 	 *
 	 * @return int
 	 */
-	public function get(CreateThumbsRequest $request, SizeVariantDimensionHelpers $svHelpers): int
+	public function check(CreateThumbsRequest $request, SizeVariantDimensionHelpers $svHelpers): int
 	{
 		if (!$svHelpers->isEnabledByConfiguration($request->kind())) {
 			return 0;

@@ -26,7 +26,7 @@ class FixJobs extends Controller
 	 */
 	public function do(MaintenanceRequest $_request): void
 	{
-		if ($this->check($_request)) {
+		if ($this->check($_request) === 0) {
 			return;
 		}
 
@@ -39,10 +39,10 @@ class FixJobs extends Controller
 	 * Check if there are any waiting jobs.
 	 * If not, we will not display the module to reduce complexity.
 	 *
-	 * @return bool
+	 * @return int
 	 */
-	public function check(MaintenanceRequest $_request): bool
+	public function check(MaintenanceRequest $_request): int
 	{
-		return JobHistory::whereIn('status', $this->waitingJobsTypes)->count() === 0;
+		return JobHistory::whereIn('status', $this->waitingJobsTypes)->count();
 	}
 }

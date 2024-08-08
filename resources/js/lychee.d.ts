@@ -130,6 +130,11 @@ declare namespace App.Http.Resources.Collections {
 	};
 }
 declare namespace App.Http.Resources.Diagnostics {
+	export type CleaningState = {
+		path: string;
+		base: string;
+		is_not_empty: boolean;
+	};
 	export type ErrorLine = {
 		type: string;
 		line: string;
@@ -137,6 +142,12 @@ declare namespace App.Http.Resources.Diagnostics {
 	export type Permissions = {
 		left: string;
 		right: string;
+	};
+	export type TreeState = {
+		oddness: number;
+		duplicates: number;
+		wrong_parent: number;
+		missing_parent: number;
 	};
 	export type UpdateCheckInfo = {
 		extra: string;

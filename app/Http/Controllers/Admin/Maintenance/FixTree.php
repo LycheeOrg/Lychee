@@ -2,13 +2,10 @@
 
 namespace App\Http\Controllers\Admin\Maintenance;
 
+use App\Http\Requests\Maintenance\MaintenanceRequest;
+use App\Http\Resources\Diagnostics\TreeState;
 use App\Models\Album;
-use App\Models\Configs;
-use App\Policies\SettingsPolicy;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Gate;
-use Illuminate\View\View;
-use Livewire\Attributes\Locked;
 
 /**
  * Maybe the album tree is broken.
@@ -16,47 +13,31 @@ use Livewire\Attributes\Locked;
  */
 class FixTree extends Controller
 {
-	#[Locked] public int|null $result = null;
-	#[Locked] public string $path = '';
-	/** @var array<string,int> */
-	#[Locked] public array $stats;
-	/**
-	 * Rendering of the front-end.
-	 *
-	 * @return View
-	 */
-	public function render(): View
-	{
-		Gate::authorize(SettingsPolicy::CAN_UPDATE, Configs::class);
-
-		$query = Album::query();
-
-		$this->stats = $query->countErrors();
-
-		return view('livewire.modules.maintenance.fix-tree');
-	}
-
 	/**
 	 * Clean the path from all files excluding $this->skip.
 	 *
-	 * @return void
+	 * @return int
 	 */
-	public function do(): void
+	public function do(MaintenanceRequest $request): int
 	{
-		Gate::authorize(SettingsPolicy::CAN_UPDATE, Configs::class);
-
-		$query = Album::query();
-		$this->result = $query->fixTree();
+		return Album::query()->fixTree();
 	}
 
 	/**
 	 * Check whether there are files to be removed.
 	 * If not, we will not display the module to reduce complexity.
 	 *
-	 * @return bool
+	 * @return TreeState
 	 */
-	public function get(): bool
+	public function check(MaintenanceRequest $request): TreeState
 	{
-		return 0 === ($this->stats['oddness'] ?? 0) + ($this->stats['duplicates'] ?? 0) + ($this->stats['wrong_parent'] ?? 0) + ($this->stats['missing_parent'] ?? 0);
+		$stats = Album::query()->countErrors();
+
+		return new TreeState(
+			$stats['oddness'] ?? 0,
+			$stats['duplicates'] ?? 0,
+			$stats['wrong_parent'] ?? 0,
+			$stats['missing_parent'] ?? 0
+		);
 	}
 }
