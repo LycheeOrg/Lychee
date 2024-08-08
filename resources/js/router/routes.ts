@@ -10,6 +10,7 @@ import Album from "@/views/gallery-panels/Album.vue";
 import Albums from "@/views/gallery-panels/Albums.vue";
 import Photo from "@/views/gallery-panels/Photo.vue";
 import Search from "@/views/gallery-panels/Search.vue";
+import Permissions from "@/views/Permissions.vue";
 
 export const routes = [
 	{
@@ -43,6 +44,11 @@ export const routes = [
 		name: "diagnostics",
 		path: "/diagnostics",
 		component: Diagnostics,
+	},
+	{
+		name: 'permissions',
+		path: '/permissions',
+		component: Permissions,
 	},
 	{
 		name: "jobs",

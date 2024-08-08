@@ -22,8 +22,8 @@
 		</div>
 		<div class="flex flex-col">
 			<div class="flex flex-wrap md:flex-nowrap gap-2 justify-center">
-				<span class="w-1/4 font-bold">{{ $t("lychee.USERNAME") }}</span>
-				<span class="w-1/4 font-bold">{{ $t("lychee.PASSWORD") }}</span>
+				<span class="w-1/3 font-bold">{{ $t("lychee.USERNAME") }}</span>
+				<span class="w-1/3 font-bold">{{ $t("lychee.PASSWORD") }}</span>
 				<span class="w-1/12 text-center" v-tooltip.top="'When selected, the user can upload content.'"><i class="pi pi-upload" /></span>
 				<span class="w-1/12 text-center" v-tooltip.top="'When selected, the user can modify their profile (username, password).'"
 					><i class="pi pi-lock-open"

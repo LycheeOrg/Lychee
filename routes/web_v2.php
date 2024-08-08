@@ -33,6 +33,7 @@ Route::get('/search', fn () => view('vueapp'))->middleware(['migration:complete'
 Route::get('/map', fn () => view('vueapp'))->middleware(['migration:complete']);
 Route::get('/users', fn () => view('vueapp'))->middleware(['migration:complete']);
 Route::get('/settings', fn () => view('vueapp'))->middleware(['migration:complete']);
+Route::get('/permissions', fn () => view('vueapp'))->middleware(['migration:complete']);
 
 Route::match(['get', 'post'], '/migrate', [UpdateController::class, 'migrate'])
 	->name('migrate')

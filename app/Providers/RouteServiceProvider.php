@@ -42,30 +42,29 @@ class RouteServiceProvider extends ServiceProvider
 		// "catch all" route and the routes are considered in a "first match"
 		// fashion.
 		$this->routes(function () {
-			if (Features::active('legacy_api')) {
-				Route::middleware('api')
-				->prefix('api')
-				->group(base_path('routes/api_v1.php'));
-			}
-
-			Route::middleware('api')
-				->prefix('api/v2')
-				->group(base_path('routes/api_v2.php'));
-
-			Route::middleware('web-install')
-				->group(base_path('routes/web-install.php'));
-
-			Route::middleware('web-admin')
-				->group(base_path('routes/web-admin.php'));
-
-			if (Features::active('vuejs')) {
-				Route::middleware('web')
-					->group(base_path('routes/web_v2.php'));
-			} else {
-				Route::middleware('web')
-					->group(base_path('routes/web_v1.php'));
-			}
+			Features::when('vuejs', fn () => $this->getLycheeV6Routes(), fn () => $this->getLegacyRoutes());
 		});
+	}
+
+	private function getLycheeV6Routes()
+	{
+		Route::middleware('web-admin')->group(base_path('routes/web-admin-v2.php'));
+		Route::middleware('api')->prefix('api/v2')->group(base_path('routes/api_v2.php'));
+		Route::middleware('web-install')->group(base_path('routes/web-install.php'));
+
+		if (Features::active('legacy_api')) {
+			Route::middleware('api')->prefix('api')->group(base_path('routes/api_v1.php'));
+		}
+
+		Route::middleware('web')->group(base_path('routes/web_v2.php'));
+	}
+
+	private function getLegacyRoutes()
+	{
+		Route::middleware('web-install')->group(base_path('routes/web-install.php'));
+		Route::middleware('api')->prefix('api')->group(base_path('routes/api_v1.php'));
+		Route::middleware('web-admin')->group(base_path('routes/web-admin-v1.php'));
+		Route::middleware('web')->group(base_path('routes/web_v1.php'));
 	}
 
 	/**

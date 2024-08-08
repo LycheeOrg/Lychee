@@ -1,10 +1,10 @@
 <template>
 	<div class="w-full flex flex-wrap md:flex-nowrap gap-2 justify-center">
-		<FloatLabel class="w-1/4">
+		<FloatLabel class="w-1/3">
 			<InputText id="username" v-model="username" aria-label="Username" />
 			<label class="" for="username">{{ $t("lychee.USERNAME") }}</label>
 		</FloatLabel>
-		<FloatLabel class="w-1/4">
+		<FloatLabel class="w-1/3">
 			<InputPassword id="password" v-model="password" aria-label="Password" />
 			<label class="" for="password">{{ $t("lychee.PASSWORD") }}</label>
 		</FloatLabel>

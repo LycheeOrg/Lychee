@@ -172,6 +172,7 @@ Route::get('/Diagnostics', [Admin\DiagnosticsController::class, 'errors']);
 Route::get('/Diagnostics::info', [Admin\DiagnosticsController::class, 'info']);
 Route::get('/Diagnostics::space', [Admin\DiagnosticsController::class, 'space']);
 Route::get('/Diagnostics::config', [Admin\DiagnosticsController::class, 'config']);
+Route::get('/Diagnostics::permissions', [Admin\DiagnosticsController::class, 'getFullAccessPermissions']);
 
 /**
  * JOBS.
@@ -185,6 +186,12 @@ Route::get('/Jobs', [Admin\JobsController::class, 'list']);
  */
 Route::get('/Settings', [Admin\SettingsController::class, 'getAll']);
 Route::post('/Settings::setConfigs', [Admin\SettingsController::class, 'setConfigs']);
+
+/**
+ * MAINTENANCE.
+ */
+Route::get('/Maintenance::update', [Admin\UpdateController::class, 'get']);
+Route::post('/Maintenance::update', [Admin\UpdateController::class, 'check']);
 
 // Route::post('/Settings::setSorting', [AdministrationSettingsController::class, 'setSorting']);
 // Route::post('/Settings::setLang', [AdministrationSettingsController::class, 'setLang']);

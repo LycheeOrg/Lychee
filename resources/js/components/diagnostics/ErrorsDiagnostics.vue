@@ -1,6 +1,7 @@
 <template>
-	<Panel header="Errors" v-if="errors" class="border-none max-w-7xl mx-auto">
-		<div v-for="error in errors" class="flex">
+	<Panel header="Errors" class="border-none max-w-7xl mx-auto">
+		<div v-if="!errors" class="text-sky-400 font-bold">Loading...</div>
+		<div v-else v-for="error in errors" class="flex">
 			<div class="w-24" :class="getCss(error.type)">{{ error.type }}</div>
 			<div class="text-muted-color">{{ error.line }}</div>
 		</div>

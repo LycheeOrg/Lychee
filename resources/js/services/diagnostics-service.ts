@@ -30,6 +30,10 @@ const DiagnosticsService = {
 	config(): Promise<AxiosResponse<string[]>> {
 		return axios.get(`${Constants.API_URL}Diagnostics::config`, { data: {} });
 	},
+
+	permissions(): Promise<AxiosResponse<App.Http.Resources.Diagnostics.Permissions>> {
+		return axios.get(`${Constants.API_URL}Diagnostics::permissions`, { data: {} });
+	}
 };
 
 export default DiagnosticsService;

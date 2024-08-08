@@ -1,7 +1,7 @@
 <template>
 	<div class="w-full flex flex-wrap md:flex-nowrap gap-2 justify-center">
-		<InputText v-model="username" class="!w-1/4" aria-label="Username" />
-		<InputPassword v-model="password" class="!w-1/4" aria-label="Password" />
+		<InputText v-model="username" class="!w-1/3" aria-label="Username" />
+		<InputPassword v-model="password" class="!w-1/3" aria-label="Password" />
 		<div class="w-1/12 flex justify-center items-center">
 			<Checkbox v-model="may_upload" :binary="true" />
 		</div>
