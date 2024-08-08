@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Legacy\V1\Controllers\Administration\UpdateController;
 use App\Legacy\V1\Controllers\RedirectController;
 use Illuminate\Support\Facades\Route;
 
@@ -35,7 +34,7 @@ Route::get('/users', fn () => view('vueapp'))->middleware(['migration:complete']
 Route::get('/settings', fn () => view('vueapp'))->middleware(['migration:complete']);
 Route::get('/permissions', fn () => view('vueapp'))->middleware(['migration:complete']);
 
-Route::match(['get', 'post'], '/migrate', [UpdateController::class, 'migrate'])
+Route::match(['get', 'post'], '/migrate', [Admin\UpdateController::class, 'migrate'])
 	->name('migrate')
 	->middleware(['migration:incomplete']);
 
