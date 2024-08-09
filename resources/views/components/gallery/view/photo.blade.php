@@ -117,7 +117,7 @@
 			</template>
 		</div>
 		<template x-if="photo.rights.can_edit">
-			<div class="h-full relative overflow-clip w-0 bg-bg-800 transition-all"
+			<div class="h-full relative overflow-x-clip overflow-y-auto w-0 bg-bg-800 transition-all"
 				x-bind:class="photoFlags.isEditOpen ? 'w-full' : 'w-0 translate-x-full'">
 				<x-gallery.photo.properties />
 			</div>
