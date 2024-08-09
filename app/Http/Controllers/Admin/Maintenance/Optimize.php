@@ -17,7 +17,7 @@ class Optimize extends Controller
 	 *
 	 * @return string[]
 	 */
-	public function do(MaintenanceRequest $_request): array
+	public function do(MaintenanceRequest $request): array
 	{
 		return collect(resolve(OptimizeDb::class)->do())
 			->merge(collect(resolve(OptimizeTables::class)->do()))
