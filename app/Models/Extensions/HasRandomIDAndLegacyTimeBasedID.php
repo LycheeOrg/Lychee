@@ -74,7 +74,7 @@ trait HasRandomIDAndLegacyTimeBasedID
 	 * The method is mostly copied & pasted from {@link \Illuminate\Database\Eloquent\Model::performInsert()}
 	 * with adoptions regarding key generation.
 	 *
-	 * @param Builder<TModel> $query
+	 * @param Builder<static> $query
 	 *
 	 * @return bool true on success
 	 *

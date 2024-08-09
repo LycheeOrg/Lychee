@@ -8,7 +8,7 @@ return [
 	'ENTER' => 'Enter',
 	'CANCEL' => 'Cancel',
 	'CONFIRM' => 'Confirm',
-	'SIGN_IN' => 'Sign In',
+	'SIGN_IN' => 'Sign-In',
 	'CLOSE' => 'Close',
 	'SETTINGS' => 'Settings',
 	'SEARCH' => 'Search …',

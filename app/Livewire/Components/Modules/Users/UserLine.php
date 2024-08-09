@@ -3,7 +3,7 @@
 namespace App\Livewire\Components\Modules\Users;
 
 use App\Actions\User\Save;
-use App\Http\RuleSets\Users\SetUserSettingsRuleSet;
+use App\Legacy\V1\RuleSets\Users\SetUserSettingsRuleSet;
 use App\Livewire\Traits\Notify;
 use App\Livewire\Traits\UseValidator;
 use App\Models\User;

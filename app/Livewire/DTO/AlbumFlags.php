@@ -29,7 +29,7 @@ class AlbumFlags implements Wireable
 		$this->is_map_accessible = Configs::getValueAsBool('map_display');
 		$this->is_map_accessible = $this->is_map_accessible && (Auth::check() || Configs::getValueAsBool('map_display_public'));
 		$this->is_mod_frame_enabled = Configs::getValueAsBool('mod_frame_enabled');
-		$this->album_thumb_css_aspect_ratio = Configs::getValueAsEnum('default_album_thumb_aspect_ratio', AspectRatioType::class)->css();
+		$this->album_thumb_css_aspect_ratio = Configs::getValueAsEnum('default_album_thumb_aspect_ratio', AspectRatioType::class)->css()->value;
 		$this->is_search_accessible = Auth::check() || Configs::getValueAsBool('search_public');
 	}
 }

@@ -5,7 +5,7 @@ namespace App\Livewire\Components\Forms\Photo;
 use App\Actions\Photo\Delete as DeleteAction;
 use App\Contracts\Livewire\Params;
 use App\Enum\SmartAlbumType;
-use App\Http\RuleSets\Photo\DeletePhotosRuleSet;
+use App\Legacy\V1\RuleSets\Photo\DeletePhotosRuleSet;
 use App\Livewire\Traits\InteractWithModal;
 use App\Livewire\Traits\Notify;
 use App\Livewire\Traits\UseValidator;

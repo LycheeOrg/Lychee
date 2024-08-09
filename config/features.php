@@ -3,14 +3,25 @@
 return [
 	/*
 	|--------------------------------------------------------------------------
-	| Use Livewire Front-end
+	| Use VueJS Front-end
 	|--------------------------------------------------------------------------
 	|
 	| This value determines whether livewire front-end is enabled as it is
 	| currently under development.
 	|
 	*/
-	'livewire' => (bool) env('LIVEWIRE_ENABLED', true),
+	'vuejs' => (bool) env('VUEJS_ENABLED', true),
+
+	/*
+	|--------------------------------------------------------------------------
+	| Use VueJS Front-end
+	|--------------------------------------------------------------------------
+	|
+	| This value determines whether livewire front-end is enabled as it is
+	| currently under development.
+	|
+	*/
+	'legacy_api' => (bool) env('LEGACY_API_ENABLED', !(bool) env('VUEJS_ENABLED', true)),
 
 	/*
 	|--------------------------------------------------------------------------

@@ -4,8 +4,8 @@ namespace App\Livewire\Components\Forms\Album;
 
 use App\Actions\Album\SetProtectionPolicy;
 use App\Contracts\Models\AbstractAlbum;
-use App\DTO\AlbumProtectionPolicy;
 use App\Factories\AlbumFactory;
+use App\Http\Resources\Models\Utils\AlbumProtectionPolicy;
 use App\Legacy\V1\Contracts\Http\Requests\RequestAttribute;
 use App\Legacy\V1\RuleSets\Album\SetAlbumProtectionPolicyRuleSet;
 use App\Livewire\Traits\Notify;

@@ -62,12 +62,9 @@ parameters:
 				- app/Eloquent/FixedQueryBuilderTrait.php
 		- '#Parameter \#1 \$models .* of method .*::initRelation\(\) should be contravariant with parameter \$models .* of method .*::initRelation\(\)#'
 		- '#Parameter \#(1|2) \$(models|albums|photos|results) .* of method .*::(match|addEagerConstraints)\(\) should be contravariant with parameter \$(models|albums|photos|results) .* of method .*::(match|addEagerConstraints)\(\)#'
-		# - '#Parameter .* of method .*::partition\(\) expects \(callable\(.*\): bool\)\|Illuminate\\Database\\Eloquent\\Model\|string, Closure\(.*\): bool given.#'
-		- '#Parameter .* of method .*::performInsert\(\) should be contravariant with parameter .* of method .*::performInsert\(\)#' 
 		- '#Parameter .* of method .*::replicate\(\) should be contravariant with parameter .* of method .*::replicate\(\)#' 
 		- '#Parameter .* of method .*::save\(\) should be contravariant with parameter .* of method .*::save\(\)#' 
 		- '#Parameter .* of method .*::newEloquentBuilder\(\) should be contravariant with parameter .* of method Kalnoy\\Nestedset\\Node<.*>::newEloquentBuilder\(\)#'
-		- '#Parameter .* of method .*::performUpdate\(\) should be contravariant with parameter .* of method .*::performUpdate\(\)#'
 		- '#Parameter .* of method .*::isDirty\(\) should be contravariant with parameter .* of method .*::isDirty\(\)#'
 
 		- '#Call to an undefined( static)? method Kalnoy\\Nestedset\\.*::(whereIn|select|join|leftJoin|orderBy|addSelect|without)\(\)#'
@@ -120,14 +117,14 @@ parameters:
 			message: '#no value type specified in iterable type array.#'
 			paths:
 				- tests
-		- 
-			message: '#Dynamic call to static method Illuminate\\Testing\\TestResponse::assert(Forbidden|ViewIs|Unauthorized|Ok|Status)#'
-			paths:
-				- tests
-		- 
-			message: '#Call to an undefined method Illuminate\\Testing\\TestResponse::(assert)?(SeeLivewire|dispatch|call|Set|Count)#'
-			paths:
-				- tests
+		# - 
+		# 	message: '#Dynamic call to static method Illuminate\\Testing\\TestResponse::assert(Forbidden|ViewIs|Unauthorized|Ok|Status)#'
+		# 	paths:
+		# 		- tests
+		# - 
+		# 	message: '#Call to an undefined method Illuminate\\Testing\\TestResponse::(assert)?(SeeLivewire|dispatch|call|Set|Count)#'
+		# 	paths:
+		# 		- tests
 		-
 			message: '#Dynamic call to static method PHPUnit\\Framework\\Assert::assert(Is)?(Not)?(True|False|Equals|Int|Null|Empty|Count)\(\)#'
 			paths:

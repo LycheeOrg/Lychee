@@ -76,6 +76,7 @@ use function Safe\mb_convert_encoding;
  */
 class User extends Authenticatable implements WebAuthnAuthenticatable
 {
+	/** @phpstan-use HasFactory<\Database\Factories\UserFactory> */
 	use HasFactory;
 	use Notifiable;
 	use WebAuthnAuthentication;

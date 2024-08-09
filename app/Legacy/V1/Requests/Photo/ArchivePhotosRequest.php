@@ -4,12 +4,12 @@ namespace App\Legacy\V1\Requests\Photo;
 
 use App\Enum\DownloadVariantType;
 use App\Http\Requests\BaseApiRequest;
-use App\Http\RuleSets\Photo\ArchivePhotosRuleSet;
 use App\Legacy\V1\Contracts\Http\Requests\HasPhotos;
 use App\Legacy\V1\Contracts\Http\Requests\HasSizeVariant;
 use App\Legacy\V1\Contracts\Http\Requests\RequestAttribute;
 use App\Legacy\V1\Requests\Traits\HasPhotosTrait;
 use App\Legacy\V1\Requests\Traits\HasSizeVariantTrait;
+use App\Legacy\V1\RuleSets\Photo\ArchivePhotosRuleSet;
 use App\Models\Photo;
 use App\Policies\PhotoPolicy;
 use Illuminate\Database\Eloquent\Relations\HasMany;

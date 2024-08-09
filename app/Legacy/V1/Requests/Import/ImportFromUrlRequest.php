@@ -3,11 +3,11 @@
 namespace App\Legacy\V1\Requests\Import;
 
 use App\Http\Requests\BaseApiRequest;
-use App\Http\RuleSets\Import\ImportFromUrlRuleSet;
 use App\Legacy\V1\Contracts\Http\Requests\HasAlbum;
 use App\Legacy\V1\Contracts\Http\Requests\RequestAttribute;
 use App\Legacy\V1\Requests\Traits\Authorize\AuthorizeCanEditAlbumTrait;
 use App\Legacy\V1\Requests\Traits\HasAlbumTrait;
+use App\Legacy\V1\RuleSets\Import\ImportFromUrlRuleSet;
 use App\Models\Album;
 
 class ImportFromUrlRequest extends BaseApiRequest implements HasAlbum

@@ -18,12 +18,10 @@ use Illuminate\Support\Facades\Session;
 use Laragear\WebAuthn\ByteBuffer;
 use Laragear\WebAuthn\Challenge;
 use Tests\AbstractTestCase;
-use Tests\Traits\CatchFailures;
 use Tests\Traits\RequiresEmptyWebAuthnCredentials;
 
 class WebAuthTest extends AbstractTestCase
 {
-	use CatchFailures;
 	use RequiresEmptyWebAuthnCredentials;
 
 	public function setUp(): void

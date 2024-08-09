@@ -5,7 +5,7 @@ namespace App\Livewire\Components\Forms\Album;
 use App\Actions\Album\Delete as DeleteAction;
 use App\Contracts\Models\AbstractAlbum;
 use App\Factories\AlbumFactory;
-use App\Http\RuleSets\Album\DeleteAlbumsRuleSet;
+use App\Legacy\V1\RuleSets\Album\DeleteAlbumsRuleSet;
 use App\Livewire\Traits\Notify;
 use App\Livewire\Traits\UseValidator;
 use App\Models\Album;

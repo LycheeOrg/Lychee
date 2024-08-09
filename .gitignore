@@ -42,6 +42,7 @@ storage/image-jobs/*
 
 # used by Vite
 public/hot
+lang/php_*.json
 
 sync/*
 

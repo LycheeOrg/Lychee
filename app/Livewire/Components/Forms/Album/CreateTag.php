@@ -4,7 +4,7 @@ namespace App\Livewire\Components\Forms\Album;
 
 use App\Actions\Album\CreateTagAlbum;
 use App\Contracts\Models\AbstractAlbum;
-use App\Http\RuleSets\Album\AddTagAlbumRuleSet;
+use App\Legacy\V1\RuleSets\Album\AddTagAlbumRuleSet;
 use App\Livewire\Traits\InteractWithModal;
 use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\Gate;

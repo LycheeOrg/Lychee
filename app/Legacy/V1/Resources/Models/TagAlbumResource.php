@@ -2,7 +2,7 @@
 
 namespace App\Legacy\V1\Resources\Models;
 
-use App\DTO\AlbumProtectionPolicy;
+use App\Http\Resources\Models\Utils\AlbumProtectionPolicy;
 use App\Legacy\V1\Resources\Collections\PhotoCollectionResource;
 use App\Legacy\V1\Resources\Rights\AlbumRightsResource;
 use App\Legacy\V1\Resources\Traits\WithStatus;

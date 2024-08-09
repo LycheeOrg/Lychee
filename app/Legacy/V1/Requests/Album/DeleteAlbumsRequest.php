@@ -3,10 +3,10 @@
 namespace App\Legacy\V1\Requests\Album;
 
 use App\Http\Requests\BaseApiRequest;
-use App\Http\RuleSets\Album\DeleteAlbumsRuleSet;
 use App\Legacy\V1\Contracts\Http\Requests\HasAlbumIDs;
 use App\Legacy\V1\Contracts\Http\Requests\RequestAttribute;
 use App\Legacy\V1\Requests\Traits\HasAlbumIDsTrait;
+use App\Legacy\V1\RuleSets\Album\DeleteAlbumsRuleSet;
 use App\Models\Album;
 use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\Gate;
