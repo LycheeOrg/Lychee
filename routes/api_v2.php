@@ -186,6 +186,7 @@ Route::get('/Jobs', [Admin\JobsController::class, 'list']);
  */
 Route::get('/Settings', [Admin\SettingsController::class, 'getAll']);
 Route::post('/Settings::setConfigs', [Admin\SettingsController::class, 'setConfigs']);
+Route::get('/Settings::getLanguages', [Admin\SettingsController::class, 'getLanguages']);
 
 /**
  * MAINTENANCE.

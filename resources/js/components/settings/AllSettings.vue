@@ -121,7 +121,7 @@
 							@filled="update"
 							@reset="reset"
 						/>
-
+						<SelectLang v-else-if="config.key === 'lang'" :config="config" @filled="update" @reset="reset" />
 						<SelectField v-else-if="config.key === 'album_decoration'" :config @filled="update" @reset="reset" />
 						<SelectField v-else-if="config.key === 'album_decoration_orientation'" :config @filled="update" @reset="reset" />
 						<StringField v-else-if="config.key === 'raw_formats'" :config="config" @filled="update" @reset="reset" />
@@ -169,6 +169,7 @@ import OldField from "../forms/settings/OldField.vue";
 import Message from "primevue/message";
 import Button from "primevue/button";
 import { useToast } from "primevue/usetoast";
+import SelectLang from "../forms/settings/SelectLang.vue";
 
 const toast = useToast();
 const oldStyle = ref(false);

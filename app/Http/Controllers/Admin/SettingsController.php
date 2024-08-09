@@ -29,4 +29,16 @@ class SettingsController extends Controller
 
 		return new ConfigCollectionResource(Configs::orderBy('cat', 'asc')->get());
 	}
+
+	/**
+	 * Give the list of available languages.
+	 *
+	 * @return string[]
+	 */
+	public function getLanguages(): array
+	{
+		return collect(config('app.supported_locale'))->filter(function ($value, $key) {
+			return !str_contains($value, 'json');
+		})->values()->toArray();
+	}
 }

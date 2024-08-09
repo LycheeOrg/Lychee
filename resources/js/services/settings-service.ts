@@ -12,6 +12,9 @@ const SettingsService = {
 	setConfigs(data: SetConfigRequest): Promise<AxiosResponse<App.Http.Resources.Collections.ConfigCollectionResource>> {
 		return axios.post(`${Constants.API_URL}Settings::setConfigs`, data);
 	},
+	getLanguages(): Promise<AxiosResponse<string[]>> {
+		return axios.get(`${Constants.API_URL}Settings::getLanguages`, { data: {} });
+	}
 };
 
 export default SettingsService;
