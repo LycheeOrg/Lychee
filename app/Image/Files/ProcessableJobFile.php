@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Storage;
 use function Safe\mkdir;
 
 /**
- * Class TemporaryJobFile.
+ * Class ProcessableJobFile.
  *
  * Represents a local file with an automatically chosen, unique name intended
  * to be used temporarily before being processed in a Job.

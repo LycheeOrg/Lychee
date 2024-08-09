@@ -7,6 +7,7 @@ use App\Contracts\Models\AbstractAlbum;
 use App\DTO\ImportMode;
 use App\Enum\JobStatus;
 use App\Factories\AlbumFactory;
+use App\Image\Files\ExtractedJobFile;
 use App\Image\Files\ProcessableJobFile;
 use App\Image\Files\TemporaryJobFile;
 use App\Models\Configs;
@@ -44,7 +45,7 @@ class ProcessImageJob implements ShouldQueue
 	 * Create a new job instance.
 	 */
 	public function __construct(
-		ProcessableJobFile $file,
+		ProcessableJobFile|ExtractedJobFile $file,
 		string|AbstractAlbum|null $album,
 		?int $fileLastModifiedTime,
 	) {
