@@ -41,6 +41,7 @@ Route::get('/Album', [Gallery\AlbumController::class, 'get'])->middleware(['logi
 Route::post('/Album::update', [Gallery\AlbumController::class, 'updateAlbum']);
 Route::post('/Album::updateTag', [Gallery\AlbumController::class, 'updateTagAlbum']);
 Route::post('/Album::updateProtectionPolicy', [Gallery\AlbumController::class, 'updateProtectionPolicy']);
+Route::post('/Album::delete', [Gallery\AlbumController::class, 'delete']);
 
 // Route::post('/Albums::getPositionData', [AlbumsController::class, 'getPositionData'])->middleware(['login_required:root']);
 // Route::post('/Albums::tree', [AlbumsController::class, 'tree'])->middleware(['login_required:root']);
@@ -61,7 +62,6 @@ Route::post('/Album::updateProtectionPolicy', [Gallery\AlbumController::class, '
 // Route::post('/Album::setHeader', [AlbumController::class, 'setHeader']);
 // Route::post('/Album::setShowTags', [AlbumController::class, 'setShowTags']);
 // Route::post('/Album::setProtectionPolicy', [AlbumController::class, 'setProtectionPolicy']);
-// Route::post('/Album::delete', [AlbumController::class, 'delete']);
 // Route::post('/Album::merge', [AlbumController::class, 'merge']);
 // Route::post('/Album::move', [AlbumController::class, 'move']);
 // Route::post('/Album::setLicense', [AlbumController::class, 'setLicense']);

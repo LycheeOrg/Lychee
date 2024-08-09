@@ -1,7 +1,7 @@
 <template>
 	<div v-if="configs">
 		<Fieldset legend="Dropbox" class="border-b-0 border-r-0 rounded-r-none rounded-b-none">
-			<p class="mb-4">
+			<p class="mb-4 text-muted-color">
 				In order to import photos from your Dropbox, you need a valid drop-ins app key from their website.
 				<a href="https://www.dropbox.com/developers/saver" class="pl-2 border-b border-dashed border-b-primary-500 text-primary-500">
 					<i class="pi pi-link"></i>
@@ -10,7 +10,7 @@
 			<div class="flex gap-4">
 				<FloatLabel class="w-full flex-grow">
 					<InputPassword id="api_key" type="text" v-model="api_key" />
-					<label for="api_key">{{ $t("lychee.SETTINGS_DROPBOX_KEY") }}</label>
+					<label for="api_key" class="text-muted-color">{{ $t("lychee.SETTINGS_DROPBOX_KEY") }}</label>
 				</FloatLabel>
 				<Button class="w-full flex-shrink-2">{{ $t("lychee.DROPBOX_TITLE") }}</Button>
 			</div>
@@ -18,9 +18,9 @@
 		<Fieldset legend="System" class="border-b-0 border-r-0 rounded-r-none rounded-b-none">
 			<div class="flex flex-col gap-4">
 				<div class="pl-9">
-					<ToggleSwitch id="pp_dialog_nsfw_visible" v-model="nsfwVisible" class="-ml-10 mr-2 translate-y-1" />
-					<label class="font-bold" for="pp_dialog_nsfw_visible">{{ $t("lychee.NSFW_VISIBLE_TEXT_1") }}</label>
-					<p class="my-1.5">{{ $t("lychee.NSFW_VISIBLE_TEXT_2") }}</p>
+					<ToggleSwitch id="pp_dialog_nsfw_visible" v-model="nsfwVisible" class="-ml-10 mr-2 translate-y-1 text-sm" />
+					<label class="text-muted-color" for="pp_dialog_nsfw_visible">{{ $t("lychee.NSFW_VISIBLE_TEXT_1") }}</label>
+					<p class="my-1.5 text-muted-color" v-html="nsfwText2"></p>
 				</div>
 				<!--
 						<livewire:forms.settings.set-lang-setting />
@@ -208,7 +208,7 @@
 						</Select>
 						<label for="license">{{ $t("lychee.ALBUM_SET_LICENSE") }}</label>
 					</FloatLabel>
-					<div class="mb-4 pl-4">
+					<div class="mb-4 pl-4 text-muted-color">
 						<p>
 							{{ $t("lychee.ALBUM_LICENSE_HELP") }}
 							<a
@@ -256,7 +256,7 @@
 import Card from "primevue/card";
 import Fieldset from "primevue/fieldset";
 import FloatLabel from "primevue/floatlabel";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import SettingsService from "@/services/settings-service";
 import Button from "primevue/button";
 import {
@@ -272,6 +272,7 @@ import {
 import InputPassword from "../forms/basic/InputPassword.vue";
 import Select from "primevue/select";
 import ToggleSwitch from "primevue/toggleswitch";
+import { trans } from "laravel-vue-i18n";
 
 type EasySettings = {
 	dropbox_key: string | undefined;
@@ -306,6 +307,9 @@ const lang = ref("en" as string);
 const layout = ref(undefined as SelectOption<App.Enum.PhotoLayoutType> | undefined);
 const loadedSettings = ref(undefined as undefined | EasySettings);
 const nsfwVisible = ref(false);
+const nsfwText2 = computed(() => {
+	return trans("lychee.NSFW_VISIBLE_TEXT_2");
+});
 
 function load() {
 	SettingsService.getAll().then((response) => {
@@ -361,3 +365,9 @@ function loadingOptions() {
 
 load();
 </script>
+
+<style lang="css" scoped>
+kbd {
+	color: red;
+}
+</style>

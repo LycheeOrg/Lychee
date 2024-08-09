@@ -14,7 +14,7 @@ const SettingsService = {
 	},
 	getLanguages(): Promise<AxiosResponse<string[]>> {
 		return axios.get(`${Constants.API_URL}Settings::getLanguages`, { data: {} });
-	}
+	},
 };
 
 export default SettingsService;

@@ -24,7 +24,7 @@ class GenSizeVariants extends Controller
 	 *
 	 * @return void
 	 */
-	public function do(CreateThumbsRequest $request): void
+	public function do(CreateThumbsRequest $request, SizeVariantFactory $sizeVariantFactory): void
 	{
 		$photos = Photo::query()
 			->where('type', 'like', 'image/%')
@@ -34,9 +34,6 @@ class GenSizeVariants extends Controller
 			})
 			->take(100)
 			->get();
-
-		// Initialize factory for size variants
-		$sizeVariantFactory = resolve(SizeVariantFactory::class);
 
 		$generated = 0;
 		/** @var Photo $photo */

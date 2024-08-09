@@ -51,16 +51,20 @@ const AlbumService = {
 		return axios.get(`${Constants.API_URL}Gallery::getMapProvider`, { data: {} });
 	},
 
-	updateAlbum(data: UpdateAbumData): Promise<AxiosResponse<any>> {
+	updateAlbum(data: UpdateAbumData): Promise<AxiosResponse> {
 		return axios.post(`${Constants.API_URL}Album::update`, data);
 	},
 
-	updateTag(data: UpdateTagAlbumData): Promise<AxiosResponse<any>> {
+	updateTag(data: UpdateTagAlbumData): Promise<AxiosResponse> {
 		return axios.post(`${Constants.API_URL}Album::updateTag`, data);
 	},
 
-	updateProtectionPolicy(data: UpdateProtectionPolicyData): Promise<AxiosResponse<any>> {
+	updateProtectionPolicy(data: UpdateProtectionPolicyData): Promise<AxiosResponse> {
 		return axios.post(`${Constants.API_URL}Album::updateProtectionPolicy`, data);
+	},
+
+	delete(album_ids: string[]): Promise<AxiosResponse> {
+		return axios.post(`${Constants.API_URL}Album::delete`, { album_ids: album_ids });
 	},
 };
 

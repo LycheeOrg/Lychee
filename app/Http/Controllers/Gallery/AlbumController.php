@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Gallery;
 
+use App\Actions\Album\Delete;
 use App\Actions\Album\SetProtectionPolicy;
 use App\Exceptions\Internal\LycheeLogicException;
+use App\Http\Requests\Album\DeleteAlbumsRequest;
 use App\Http\Requests\Album\GetAlbumRequest;
 use App\Http\Requests\Album\SetAlbumProtectionPolicyRequest;
 use App\Http\Requests\Album\UpdateAlbumRequest;
@@ -19,6 +21,7 @@ use App\Models\Album;
 use App\Models\TagAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\App;
 
 /**
  * Controller responsible for the config.
@@ -93,5 +96,19 @@ class AlbumController extends Controller
 		);
 
 		return AlbumProtectionPolicy::ofBaseAlbum($request->album()->refresh());
+	}
+
+	/**
+	 * Delete the album and all of its pictures.
+	 *
+	 * @param DeleteAlbumsRequest $request the request
+	 * @param Delete              $delete  the delete action
+	 *
+	 * @return void
+	 */
+	public function delete(DeleteAlbumsRequest $request, Delete $delete): void
+	{
+		$fileDeleter = $delete->do($request->albumIDs());
+		App::terminating(fn () => $fileDeleter->do());
 	}
 }

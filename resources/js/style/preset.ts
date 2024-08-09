@@ -302,9 +302,43 @@ const LycheePrimeVueConfig = {
 				colorScheme: {
 					light: {
 						background: "transparent",
+						border: {
+							color: "{surface.300}",
+						},
 					},
 					dark: {
 						background: "transparent",
+						border: {
+							color: "{surface.700}",
+						},
+					},
+				},
+			},
+			tab: {
+				colorScheme: {
+					light: {
+						background: "transparent",
+						border: {
+							color: "{surface.300}",
+						},
+						hover: {
+							color: "{primary.600}",
+							border: {
+								color: "{primary.600}",
+							},
+						},
+					},
+					dark: {
+						background: "transparent",
+						border: {
+							color: "{surface.700}",
+						},
+						hover: {
+							color: "{primary.600}",
+							border: {
+								color: "{primary.600}",
+							},
+						},
 					},
 				},
 			},

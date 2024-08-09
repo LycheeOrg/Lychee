@@ -58,6 +58,7 @@
             @if ($this->num_users > 1) -->
 			<!-- <livewire:forms.album.transfer :album="$this->album"  lazy /> -->
 			<!-- @endif -->
+			<AlbumDelete :album="props.album" :is_base_album="props.config.is_base_album" :is_model_album="props.config.is_model_album" />
 			<!-- <livewire:forms.album.delete-panel :album="$this->album" /> -->
 		</div>
 		<!-- @endif
@@ -70,6 +71,7 @@ import { ref } from "vue";
 import UsersService from "@/services/users-service";
 import AlbumProperties from "@/components/forms/album/AlbumProperties.vue";
 import AlbumVisibility from "../forms/album/AlbumVisibility.vue";
+import AlbumDelete from "../forms/album/AlbumDelete.vue";
 
 const props = defineProps<{
 	album: App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.SmartAlbumResource | App.Http.Resources.Models.TagAlbumResource;

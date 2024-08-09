@@ -37,6 +37,7 @@ class SettingsController extends Controller
 	 */
 	public function getLanguages(): array
 	{
+		// @phpstan-ignore-next-line
 		return collect(config('app.supported_locale'))->filter(function ($value, $key) {
 			return !str_contains($value, 'json');
 		})->values()->toArray();
