@@ -5,7 +5,7 @@ namespace App\Livewire\Components\Pages;
 use App\Assets\Features;
 use App\Enum\OauthProvidersType;
 use App\Http\Controllers\Oauth;
-use App\Http\Controllers\RedirectController;
+use App\Legacy\V1\Controllers\RedirectController;
 use App\Livewire\Components\Pages\Gallery\Album;
 use App\Livewire\Components\Pages\Gallery\Albums;
 use App\Livewire\Components\Pages\Gallery\Search;

@@ -7,17 +7,17 @@
     </report>
   </coverage>
   <testsuites>
-    <testsuite name="Feature">
-      <directory suffix="Test.php">./tests/Feature</directory>
-      <exclude>./tests/Feature/Base/BasePhotoTest.php</exclude>
-      <exclude>./tests/Feature/Base/BasePhotosRotateTest.php</exclude>
-      <exclude>./tests/Feature/Base/BaseSharingTest.php</exclude>
-      <exclude>./tests/Feature/LibUnitTests/AlbumsUnitTest.php</exclude>
-      <exclude>./tests/Feature/LibUnitTests/PhotosUnitTest.php</exclude>
-      <exclude>./tests/Feature/LibUnitTests/RootAlbumUnitTest.php</exclude>
-      <exclude>./tests/Feature/LibUnitTests/SessionUnitTest.php</exclude>
-      <exclude>./tests/Feature/LibUnitTests/SharingUnitTest.php</exclude>
-      <exclude>./tests/Feature/LibUnitTests/UsersUnitTest.php</exclude>
+    <testsuite name="Feature_v1">
+      <directory suffix="Test.php">./tests/Feature_v1</directory>
+      <exclude>./tests/Feature_v1/Base/BasePhotoTest.php</exclude>
+      <exclude>./tests/Feature_v1/Base/BasePhotosRotateTest.php</exclude>
+      <exclude>./tests/Feature_v1/Base/BaseSharingTest.php</exclude>
+      <exclude>./tests/Feature_v1/LibUnitTests/AlbumsUnitTest.php</exclude>
+      <exclude>./tests/Feature_v1/LibUnitTests/PhotosUnitTest.php</exclude>
+      <exclude>./tests/Feature_v1/LibUnitTests/RootAlbumUnitTest.php</exclude>
+      <exclude>./tests/Feature_v1/LibUnitTests/SessionUnitTest.php</exclude>
+      <exclude>./tests/Feature_v1/LibUnitTests/SharingUnitTest.php</exclude>
+      <exclude>./tests/Feature_v1/LibUnitTests/UsersUnitTest.php</exclude>
     </testsuite>
     <testsuite name="Livewire">
       <directory suffix="Test.php">./tests/Livewire</directory>

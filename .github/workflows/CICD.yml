@@ -73,33 +73,10 @@ jobs:
         run: PHP_CS_FIXER_IGNORE_ENV=1 vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --verbose --diff --dry-run
 
   check_js:
-    name: 2️⃣ JS Node ${{ matrix.node-version }} - Code Style errors & Compilation
-    runs-on: ubuntu-latest
+    uses: ./.github/workflows/js_check.yml
     needs:
       - php_syntax_errors
-    strategy:
-        matrix:
-            node-version: [18, 20]
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
-
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
-        with:
-            node-version: ${{ matrix.node-version }}
-
-      - name: Install
-        run: npm install -D
-
-      - name: Check Style
-        run: npm run check-formatting
-
-      - name: Check TypeScript
-        run: npm run check
-
-      - name: Compile Front-end
-        run: npm run build
+    name: 2️⃣ JS front-end
 
   phpstan:
     name: 2️⃣ PHP 8.2 - PHPStan
@@ -122,173 +99,22 @@ jobs:
       - name: Run PHPStan
         run: vendor/bin/phpstan analyze
 
-  tests:
-    name: 2️⃣ PHP ${{ matrix.php-version }} - ${{ matrix.sql-versions }} -- ${{ matrix.test-suite }}
+  tests_legacy:
+    name:  2️⃣ PHP tests legacy 
     needs:
       - php_syntax_errors
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        php-version:
-          - 8.2
-          - 8.3
-        sql-versions:
-          - mariadb
-          - postgresql
-          - sqlite
-        test-suite:
-          - Feature
-          - Livewire
-    # Service containers to run with `container-job`
-    services:
-      # Label used to access the service container
-      postgres:
-        # Docker Hub image
-        image: postgres
-        # Provide the password for postgres
-        env:
-          POSTGRES_PASSWORD: postgres
-        # Set health checks to wait until postgres has started
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          # Maps tcp port 5432 on service container to the host
-          - 5432:5432
-    env:
-      extensions: bcmath, curl, dom, gd, imagick, json, libxml, mbstring, pcntl, pdo, pdo_sqlite, pdo_mysql, pdo_pgsql, pgsql, sqlite3, zip
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
-
-      - name: Set Up Imagick, FFmpeg & Exiftools
-        run: |
-          sudo apt-get update
-          sudo apt-get --fix-broken install
-          sudo apt-get -y install ffmpeg libimage-exiftool-perl
-
-      - name: setup Databases
-        run: |
-          sudo service mysql start
-          touch database/database.sqlite
-          mysql -uroot -proot -e 'create database homestead_test;'
-
-      - name: Setup PHP Action
-        uses: shivammathur/setup-php@a4e22b60bbb9c1021113f2860347b0759f66fe5d # 2.30.0
-        with:
-          php-version: ${{ matrix.php-version }}
-          extensions: ${{ env.extensions }}
-          coverage: xdebug
-          tools: pecl, composer
-
-      - name: Install Composer dependencies
-        uses: ramsey/composer-install@57532f8be5bda426838819c5ee9afb8af389d51a # 3.0.0
-
-      - name: copy Env
-        run: |
-          cp .github/workflows/.env.${{ matrix.sql-versions }} .env
-
-      - name: Generate secure key & Optimize application & Migrate
-        run: |
-          php artisan key:generate
-          php artisan optimize
-          php artisan migrate
-
-      - name: Apply tests ${{ matrix.test-suite }}
-        run: XDEBUG_MODE=coverage vendor/bin/phpunit --testsuite ${{ matrix.test-suite }}
-
-      - name: Make sure we can go backward
-        run: php artisan migrate:rollback
-
-      - name: Codecov
-        uses: codecov/codecov-action@54bcd8715eee62d40e33596ef5e8f0f48dbbccab # v4.1.0
-        env:
-          token: ${{ secrets.CODECOV_TOKEN }}
+    uses: ./.github/workflows/php_tests.yml
+    with:
+      test-suite: 'Feature_v1'
+      env-file: '.env.legacy'
 
   dist:
-    name: 3️⃣ PHP ${{ matrix.php-version }} - ${{ matrix.sql-versions }} - Dist
+    name:  3️⃣ PHP dist
     needs:
       - code_style_errors
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        php-version:
-          - 8.2
-        sql-versions:
-          - mariadb
-          - postgresql
-          - sqlite
-    # Service containers to run with `container-job`
-    services:
-      # Label used to access the service container
-      postgres:
-        # Docker Hub image
-        image: postgres
-        # Provide the password for postgres
-        env:
-          POSTGRES_PASSWORD: postgres
-        # Set health checks to wait until postgres has started
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          # Maps tcp port 5432 on service container to the host
-          - 5432:5432
-    env:
-      extensions: bcmath, curl, dom, gd, imagick, json, libxml, mbstring, pcntl, pdo, pdo_sqlite, pdo_mysql, pdo_pgsql, pgsql, sqlite3, zip
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
-
-      - name: Set Up Imagick, FFmpeg & Exiftools
-        run: |
-          sudo apt-get update
-          sudo apt-get --fix-broken install
-          sudo apt-get -y install ffmpeg libimage-exiftool-perl
-
-      - name: setup Databases
-        run: |
-          sudo service mysql start
-          touch database/database.sqlite
-          mysql -uroot -proot -e 'create database homestead_test;'
-
-      - name: Setup PHP Action
-        uses: shivammathur/setup-php@a4e22b60bbb9c1021113f2860347b0759f66fe5d # 2.30.0
-        with:
-          php-version: ${{ matrix.php-version }}
-          extensions: ${{ env.extensions }}
-          tools: pecl, composer
-
-      - name: Install Composer dependencies
-        uses: ramsey/composer-install@57532f8be5bda426838819c5ee9afb8af389d51a # 3.0.0
-        with:
-          composer-options: --no-dev
-
-      - name: Build Dist
-        run: |
-          make dist-clean
-
-      - name: copy Env
-        run: |
-          cp .github/workflows/.env.${{ matrix.sql-versions }} Lychee/.env
-
-      - name: setup MySQL Database with v3
-        run: |
-          mysql -uroot -proot homestead_test < .github/workflows/v3.sql
-
-      - name: Generate secure key & Migrate & go backward
-        run: |
-          cd Lychee
-          pwd
-          php artisan key:generate
-          php artisan migrate
-          php artisan migrate:rollback
+    uses: ./.github/workflows/php_dist.yml
+    with:
+      env-file: '.env.legacy'
 
   createArtifact:
     name: 4️⃣ Build Artifact
@@ -296,7 +122,8 @@ jobs:
     needs:
       - phpstan
       - dist
-      - tests
+      - tests_legacy
+      - check_js
     runs-on: ubuntu-latest
     env:
       extensions: bcmath, curl, dom, gd, imagick, json, libxml, mbstring, pcntl, pdo, pdo_sqlite, pdo_mysql, pdo_pgsql, pgsql, sqlite3, zip

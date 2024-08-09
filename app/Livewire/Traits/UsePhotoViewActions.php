@@ -4,7 +4,7 @@ namespace App\Livewire\Traits;
 
 use App\Actions\Photo\Rotate;
 use App\Enum\Livewire\NotificationType;
-use App\Http\Resources\Models\PhotoResource;
+use App\Legacy\V1\Resources\Models\PhotoResource;
 use App\Livewire\Forms\PhotoUpdateForm;
 use App\Models\Configs;
 use App\Models\Photo;

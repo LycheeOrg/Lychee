@@ -4,12 +4,12 @@ namespace App\Actions\Albums;
 
 use App\Contracts\Exceptions\InternalLycheeException;
 use App\DTO\AlbumSortingCriterion;
+use App\DTO\TopAlbumDTO;
 use App\Enum\ColumnSortingType;
 use App\Enum\OrderSortingType;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Factories\AlbumFactory;
-use App\Http\Resources\Collections\TopAlbumsResource;
 use App\Models\Album;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\TagAlbum;
@@ -52,11 +52,11 @@ class Top
 	 * Note, the result may include password-protected albums that are not
 	 * accessible (but are visible).
 	 *
-	 * @return TopAlbumsResource
+	 * @return TopAlbumDTO
 	 *
 	 * @throws InternalLycheeException
 	 */
-	public function get(): TopAlbumsResource
+	public function get(): TopAlbumDTO
 	{
 		// Do not eagerly load the relation `photos` for each smart album.
 		// On the albums overview, we only need a thumbnail for each album.
@@ -93,7 +93,7 @@ class Top
 			 */
 			list($a, $b) = $albums->partition(fn ($album) => $album->owner_id === $userID);
 
-			return new TopAlbumsResource($smartAlbums, $tagAlbums, $a->values(), $b->values());
+			return new TopAlbumDTO($smartAlbums, $tagAlbums, $a->values(), $b->values());
 		} else {
 			// For anonymous users we don't want to implicitly expose
 			// ownership via sorting.
@@ -103,7 +103,7 @@ class Top
 				->orderBy($this->sorting->column, $this->sorting->order)
 				->get();
 
-			return new TopAlbumsResource($smartAlbums, $tagAlbums, $albums);
+			return new TopAlbumDTO($smartAlbums, $tagAlbums, $albums);
 		}
 	}
 }

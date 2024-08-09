@@ -14,8 +14,8 @@ namespace Tests\Livewire\Pages;
 
 use App\Livewire\Components\Pages\Settings;
 use Livewire\Livewire;
-use Tests\Feature\Traits\RequiresEmptyUsers;
 use Tests\Livewire\Base\BaseLivewireTest;
+use Tests\Traits\RequiresEmptyUsers;
 
 class SettingsTest extends BaseLivewireTest
 {

@@ -123,7 +123,7 @@ release_major: gen_major
 
 # Building tests 1 by 1
 
-TESTS_PHP := $(shell find tests/Feature -name "*Test.php" -printf "%f\n")
+TESTS_PHP := $(shell find tests/Feature_v1 -name "*Test.php" -printf "%f\n")
 TEST_DONE := $(addprefix build/,$(TESTS_PHP:.php=.done))
 
 build:
@@ -135,7 +135,7 @@ build/Base%.done:
 build/%UnitTest.done:
 	touch build/$*UnitTest.done
 
-build/%.done: tests/Feature/%.php build
+build/%.done: tests/Feature_v1/%.php build
 	vendor/bin/phpunit --no-coverage --filter $* && touch build/$*.done
 
 all_tests: $(TEST_DONE)

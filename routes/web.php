@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Assets\Features;
+use App\Legacy\V1\Controllers\Administration\UpdateController;
+use App\Legacy\V1\Controllers\IndexController;
+use App\Legacy\V1\Controllers\RedirectController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\URL;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,11 +24,11 @@ Route::feeds();
 if (!Features::active('livewire')) {
 	Route::get('/', [IndexController::class, 'show'])->name('home')->middleware(['migration:complete']);
 	Route::get('/gallery', [IndexController::class, 'gallery'])->name('gallery')->middleware(['migration:complete']);
-	Route::get('/view', [IndexController::class, 'view'])->name('view')->middleware(['redirect-legacy-id']);
+	Route::get('/view', [IndexController::class, 'view'])->name('view');
 	Route::get('/frame', [IndexController::class, 'frame'])->name('frame')->middleware(['migration:complete']);
 }
 
-Route::match(['get', 'post'], '/migrate', [Administration\UpdateController::class, 'migrate'])
+Route::match(['get', 'post'], '/migrate', [UpdateController::class, 'migrate'])
 	->name('migrate')
 	->middleware(['migration:incomplete']);
 

@@ -5,8 +5,8 @@ namespace App\Livewire\Components\Pages\Gallery;
 use App\Actions\Albums\Top;
 use App\Contracts\Livewire\Reloadable;
 use App\Contracts\Models\AbstractAlbum;
+use App\DTO\TopAlbumDTO;
 use App\Factories\AlbumFactory;
-use App\Http\Resources\Collections\TopAlbumsResource;
 use App\Livewire\DTO\AlbumRights;
 use App\Livewire\DTO\AlbumsFlags;
 use App\Livewire\DTO\SessionFlags;
@@ -31,7 +31,7 @@ class Albums extends Component implements Reloadable
 	use AlbumsPhotosContextMenus;
 	use SilentUpdate;
 
-	private TopAlbumsResource $topAlbums;
+	private TopAlbumDTO $topAlbums;
 
 	#[Locked] public string $title;
 	#[Locked] public ?string $albumId = null;
@@ -94,7 +94,7 @@ class Albums extends Component implements Reloadable
 	 */
 	public function getSharedAlbumsProperty(): Collection
 	{
-		return $this->topAlbums->shared_albums;
+		return $this->topAlbums?->shared_albums ?? collect([]);
 	}
 
 	private function checkFrameAccess(): void

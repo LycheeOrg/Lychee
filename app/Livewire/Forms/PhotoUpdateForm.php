@@ -2,9 +2,9 @@
 
 namespace App\Livewire\Forms;
 
-use App\Contracts\Http\Requests\RequestAttribute;
 use App\Enum\LicenseType;
 use App\Http\RuleSets\Photo\SetPhotoDescriptionRuleSet;
+use App\Legacy\V1\Contracts\Http\Requests\RequestAttribute;
 use App\Models\Photo;
 use App\Rules\TitleRule;
 use Illuminate\Support\Facades\Validator as ValidatorFacade;

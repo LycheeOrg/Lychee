@@ -1,0 +1,32 @@
+name: Check JS
+
+on:
+  workflow_call:
+
+jobs:
+  check_js:
+    name: Node ${{ matrix.node-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18, 20]
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: Install
+      run: npm install -D
+
+    - name: Check Style
+      run: npm run check-formatting
+
+    - name: Check TypeScript
+      run: npm run check
+
+    - name: Compile Front-end
+      run: npm run build

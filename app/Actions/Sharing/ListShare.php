@@ -4,7 +4,7 @@ namespace App\Actions\Sharing;
 
 use App\Constants\AccessPermissionConstants as APC;
 use App\Exceptions\Internal\QueryBuilderException;
-use App\Http\Resources\Sharing\SharesResource;
+use App\Legacy\V1\Resources\Sharing\SharesResource;
 use App\Models\AccessPermission;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\User;

@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Forms;
 
-use App\Contracts\Http\Requests\RequestAttribute;
+use App\Legacy\V1\Contracts\Http\Requests\RequestAttribute;
 use App\Models\Album;
 use App\Rules\RandomIDRule;
 use Livewire\Attributes\Locked;

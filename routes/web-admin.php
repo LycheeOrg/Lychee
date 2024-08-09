@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers\Administration;
 
-use App\Http\Controllers\IndexController;
+use App\Legacy\V1\Controllers\Administration\DiagnosticsController;
+use App\Legacy\V1\Controllers\Administration\JobController;
+use App\Legacy\V1\Controllers\Administration\OptimizeController;
+use App\Legacy\V1\Controllers\Administration\UpdateController;
+use App\Legacy\V1\Controllers\IndexController;
 use Illuminate\Support\Facades\Route;
 
 /*

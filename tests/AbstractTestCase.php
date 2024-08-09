@@ -23,8 +23,8 @@ use Illuminate\Testing\TestResponse;
 use function Safe\copy;
 use function Safe\json_decode;
 use function Safe\tempnam;
-use Tests\Feature\Constants\TestConstants;
-use Tests\Feature\Traits\CatchFailures;
+use Tests\Constants\TestConstants;
+use Tests\Traits\CatchFailures;
 
 abstract class AbstractTestCase extends BaseTestCase
 {
