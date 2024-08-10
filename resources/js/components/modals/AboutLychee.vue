@@ -52,12 +52,12 @@
 	</Dialog>
 </template>
 <script setup lang="ts">
-import InitService from "@/services/init-service";
-import { trans } from "laravel-vue-i18n";
+import { Ref, ref, watch } from "vue";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
+import InitService from "@/services/init-service";
+import { trans } from "laravel-vue-i18n";
 import { sprintf } from "sprintf-js";
-import { Ref, ref, watch } from "vue";
 
 const props = defineProps<{
 	visible: boolean;

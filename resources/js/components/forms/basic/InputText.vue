@@ -13,10 +13,10 @@
 	/>
 </template>
 <script setup lang="ts">
+import { ref } from "vue";
 import InputText, { InputTextPassThroughOptions } from "primevue/inputtext";
 import type { PassThroughOptions } from "primevue/passthrough";
 import type { DesignToken, PassThrough } from "@primevue/core";
-import { ref } from "vue";
 
 const props = defineProps<{
 	size?: "small" | "large" | undefined;

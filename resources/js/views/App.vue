@@ -8,9 +8,9 @@
 </template>
 
 <script setup lang="ts">
+import Toast from "primevue/toast";
 import LeftMenu from "@/menus/LeftMenu.vue";
 import Error from "@/views/Error.vue";
-import Toast from "primevue/toast";
 </script>
 
 <style lang="scss">

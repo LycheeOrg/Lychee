@@ -26,10 +26,10 @@
 	</Panel>
 </template>
 <script setup lang="ts">
+import { onMounted, onUpdated, ref } from "vue";
 import Panel from "primevue/panel";
 import PhotoThumb from "@/components/gallery/thumbs/PhotoThumb.vue";
 import MiniIcon from "@/components/icons/MiniIcon.vue";
-import { onMounted, onUpdated, ref, watch } from "vue";
 import { useSquare } from "@/layouts/useSquare";
 import { useGrid } from "@/layouts/useGrid";
 import { useJustify } from "@/layouts/useJustify";

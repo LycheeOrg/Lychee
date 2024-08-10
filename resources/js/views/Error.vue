@@ -21,10 +21,10 @@
 	</div>
 </template>
 <script setup lang="ts">
+import { type Ref, ref } from "vue";
 import Divider from "primevue/divider";
 import Message from "primevue/message";
 import Panel from "primevue/panel";
-import { type Ref, ref } from "vue";
 
 type Trace = {
 	class: string;

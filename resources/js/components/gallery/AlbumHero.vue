@@ -55,8 +55,8 @@
 	</template>
 </template>
 <script setup lang="ts">
-import MiniIcon from "@/components/icons/MiniIcon.vue";
 import Card from "primevue/card";
+import MiniIcon from "@/components/icons/MiniIcon.vue";
 
 const props = defineProps<{
 	album: App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.TagAlbumResource | App.Http.Resources.Models.SmartAlbumResource | null;

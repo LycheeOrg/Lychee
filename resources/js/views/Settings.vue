@@ -28,8 +28,6 @@
 	</Tabs>
 </template>
 <script setup lang="ts">
-import AllSettings from "@/components/settings/AllSettings.vue";
-import EasySettings from "@/components/settings/EasySettings.vue";
 import Button from "primevue/button";
 import Tabs from "primevue/tabs";
 import TabList from "primevue/tablist";
@@ -37,4 +35,6 @@ import Tab from "primevue/tab";
 import TabPanels from "primevue/tabpanels";
 import TabPanel from "primevue/tabpanel";
 import Toolbar from "primevue/toolbar";
+import AllSettings from "@/components/settings/AllSettings.vue";
+import EasySettings from "@/components/settings/EasySettings.vue";
 </script>

@@ -33,6 +33,8 @@
 	</div>
 </template>
 <script setup lang="ts">
+import Button from "primevue/button";
+import Toolbar from "primevue/toolbar";
 import MaintenanceCleaning from "@/components/maintenance/MaintenanceCleaning.vue";
 import MaintenanceFilesize from "@/components/maintenance/MaintenanceFilesize.vue";
 import MaintenanceFixJobs from "@/components/maintenance/MaintenanceFixJobs.vue";
@@ -40,7 +42,4 @@ import MaintenanceFixTree from "@/components/maintenance/MaintenanceFixTree.vue"
 import MaintenanceGenSizevariants from "@/components/maintenance/MaintenanceGenSizevariants.vue";
 import MaintenanceOptimize from "@/components/maintenance/MaintenanceOptimize.vue";
 import MaintenanceUpdate from "@/components/maintenance/MaintenanceUpdate.vue";
-import Button from "primevue/button";
-import Panel from "primevue/panel";
-import Toolbar from "primevue/toolbar";
 </script>

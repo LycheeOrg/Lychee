@@ -66,10 +66,10 @@
 	</main>
 </template>
 <script setup lang="ts">
-import InitService from "@/services/init-service";
-import LandingFooter from "@/components/footers/LandingFooter.vue";
 import { Ref, ref } from "vue";
 import { RouterLink } from "vue-router";
+import InitService from "@/services/init-service";
+import LandingFooter from "@/components/footers/LandingFooter.vue";
 
 const introVisible = ref(true);
 const copyright = ref("");

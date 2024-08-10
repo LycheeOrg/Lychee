@@ -5,7 +5,7 @@ namespace App\Http\Requests\Users;
 use App\Http\Requests\BaseApiRequest;
 use Illuminate\Support\Facades\Auth;
 
-class CountUserRequest extends BaseApiRequest
+class UsersRequest extends BaseApiRequest
 {
 	/**
 	 * {@inheritDoc}

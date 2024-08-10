@@ -11,8 +11,8 @@
 	</div>
 </template>
 <script setup lang="ts">
-import MiniIcon from "@/components/icons/MiniIcon.vue";
 import { computed } from "vue";
+import MiniIcon from "@/components/icons/MiniIcon.vue";
 
 const props = defineProps<{
 	is_next: boolean;

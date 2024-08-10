@@ -22,11 +22,11 @@
 	</Panel>
 </template>
 <script setup lang="ts">
-import JobService from "@/services/jobs-service";
+import { ref } from "vue";
 import Button from "primevue/button";
 import Panel from "primevue/panel";
 import Toolbar from "primevue/toolbar";
-import { ref } from "vue";
+import JobService from "@/services/jobs-service";
 
 const jobs = ref([] as App.Http.Resources.Models.JobHistoryResource[]);
 function load() {

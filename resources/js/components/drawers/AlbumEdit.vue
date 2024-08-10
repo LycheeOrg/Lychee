@@ -70,8 +70,8 @@ import { Collapse } from "vue-collapsed";
 import { ref } from "vue";
 import UsersService from "@/services/users-service";
 import AlbumProperties from "@/components/forms/album/AlbumProperties.vue";
-import AlbumVisibility from "../forms/album/AlbumVisibility.vue";
-import AlbumDelete from "../forms/album/AlbumDelete.vue";
+import AlbumVisibility from "@/components/forms/album/AlbumVisibility.vue";
+import AlbumDelete from "@/components/forms/album/AlbumDelete.vue";
 
 const props = defineProps<{
 	album: App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.SmartAlbumResource | App.Http.Resources.Models.TagAlbumResource;

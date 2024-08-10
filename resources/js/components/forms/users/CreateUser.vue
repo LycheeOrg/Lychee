@@ -20,14 +20,14 @@
 	</div>
 </template>
 <script setup lang="ts">
-import UsersService from "@/services/users-service";
-import Button from "primevue/button";
 import { ref } from "vue";
-import InputText from "../basic/InputText.vue";
-import InputPassword from "../basic/InputPassword.vue";
+import Button from "primevue/button";
 import Checkbox from "primevue/checkbox";
 import FloatLabel from "primevue/floatlabel";
 import { useToast } from "primevue/usetoast";
+import InputText from "@/components/forms/basic/InputText.vue";
+import InputPassword from "@/components/forms/basic/InputPassword.vue";
+import UserManagementService from "@/services/user-management-service";
 
 const username = ref(undefined as string | undefined);
 const password = ref(undefined as string | undefined);
@@ -42,7 +42,7 @@ function createUser() {
 		return;
 	}
 
-	UsersService.create({
+	UserManagementService.create({
 		username: username.value,
 		password: password.value,
 		may_edit_own_settings: may_edit_own_settings.value,

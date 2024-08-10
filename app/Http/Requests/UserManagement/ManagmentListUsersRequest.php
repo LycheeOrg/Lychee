@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Users;
+namespace App\Http\Requests\UserManagement;
 
 use App\Http\Requests\AbstractEmptyRequest;
 use App\Models\User;

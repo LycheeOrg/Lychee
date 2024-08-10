@@ -44,13 +44,13 @@
 	</Dialog>
 </template>
 <script setup lang="ts">
-import Dialog from "primevue/dialog";
-import InputText from "../basic/InputText.vue";
 import { ref, watch } from "vue";
-import MiniIcon from "@/components/icons/MiniIcon.vue";
-import AuthService from "@/services/auth-service";
-import { trans } from "laravel-vue-i18n";
+import Dialog from "primevue/dialog";
 import Button from "primevue/button";
+import { trans } from "laravel-vue-i18n";
+import AuthService from "@/services/auth-service";
+import InputText from "@/components/forms/basic/InputText.vue";
+import MiniIcon from "@/components/icons/MiniIcon.vue";
 import ProfileService from "@/services/profile-service";
 
 const visible = defineModel();

@@ -34,9 +34,9 @@
 </template>
 <script setup lang="ts">
 import { ref } from "vue";
-import DiagnosticsService from "@/services/diagnostics-service";
 import Toolbar from "primevue/toolbar";
 import Button from "primevue/button";
+import DiagnosticsService from "@/services/diagnostics-service";
 
 const same = ref(true);
 const left = ref([] as string[]);

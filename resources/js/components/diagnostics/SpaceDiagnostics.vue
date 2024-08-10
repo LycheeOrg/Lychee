@@ -7,10 +7,10 @@
 	</Panel>
 </template>
 <script setup lang="ts">
-import DiagnosticsService from "@/services/diagnostics-service";
+import { ref } from "vue";
 import Button from "primevue/button";
 import Panel from "primevue/panel";
-import { ref } from "vue";
+import DiagnosticsService from "@/services/diagnostics-service";
 
 const requested = ref(false);
 const space = ref(undefined as string[] | undefined);

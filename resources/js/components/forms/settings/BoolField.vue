@@ -10,7 +10,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import ToggleSwitch from "primevue/toggleswitch";
-import ResetField from "./ResetField.vue";
+import ResetField from "@/components/forms/settings/ResetField.vue";
 
 const props = defineProps<{
 	config: App.Http.Resources.Models.ConfigResource;

@@ -173,13 +173,14 @@
 	</Card>
 </template>
 <script setup lang="ts">
+import { ref, watch } from "vue";
 import Button from "primevue/button";
 import Card from "primevue/card";
+import Select from "primevue/select";
 import FloatLabel from "primevue/floatlabel";
 import InputChips from "primevue/inputchips";
 import InputText from "@/components/forms/basic/InputText.vue";
 import Textarea from "@/components/forms/basic/Textarea.vue";
-import { ref, watch } from "vue";
 import AlbumService, { UpdateAbumData, UpdateTagAlbumData } from "@/services/album-service";
 import {
 	photoSortingColumnsOptions,
@@ -190,7 +191,6 @@ import {
 	SelectOption,
 	SelectBuilders,
 } from "@/config/constants";
-import Select from "primevue/select";
 
 const props = defineProps<{
 	editable: App.Http.Resources.Editable.EditableBaseAlbumResource;

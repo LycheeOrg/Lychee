@@ -5,11 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Actions\User\Create;
 use App\Actions\User\Save;
 use App\Exceptions\UnauthorizedException;
-use App\Http\Requests\Users\AddUserRequest;
-use App\Http\Requests\Users\CountUserRequest;
-use App\Http\Requests\Users\DeleteUserRequest;
-use App\Http\Requests\Users\ManagmentListUsersRequest;
-use App\Http\Requests\Users\SetUserSettingsRequest;
+use App\Http\Requests\UserManagement\AddUserRequest;
+use App\Http\Requests\UserManagement\DeleteUserRequest;
+use App\Http\Requests\UserManagement\ManagmentListUsersRequest;
+use App\Http\Requests\UserManagement\SetUserSettingsRequest;
 use App\Http\Resources\Models\UserManagementResource;
 use App\Models\User;
 use Illuminate\Routing\Controller;
@@ -19,13 +18,8 @@ use Illuminate\Support\Facades\Auth;
 /**
  * Controller responsible for the config.
  */
-class UsersController extends Controller
+class UserManagementController extends Controller
 {
-	public function count(CountUserRequest $_request): int
-	{
-		return User::count();
-	}
-
 	/**
 	 * Get the list of users for management purposes..
 	 *

@@ -253,12 +253,14 @@
 	</div>
 </template>
 <script setup lang="ts">
-import Card from "primevue/card";
+import { computed, ref } from "vue";
 import Fieldset from "primevue/fieldset";
 import FloatLabel from "primevue/floatlabel";
-import { computed, ref } from "vue";
-import SettingsService from "@/services/settings-service";
 import Button from "primevue/button";
+import Select from "primevue/select";
+import ToggleSwitch from "primevue/toggleswitch";
+import InputPassword from "@/components/forms/basic/InputPassword.vue";
+import SettingsService from "@/services/settings-service";
 import {
 	photoSortingColumnsOptions,
 	albumSortingColumnsOptions,
@@ -269,9 +271,6 @@ import {
 	SelectBuilders,
 	type SelectOption,
 } from "@/config/constants";
-import InputPassword from "../forms/basic/InputPassword.vue";
-import Select from "primevue/select";
-import ToggleSwitch from "primevue/toggleswitch";
 import { trans } from "laravel-vue-i18n";
 
 type EasySettings = {

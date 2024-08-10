@@ -57,16 +57,16 @@
 	<ApiToken v-model="isApiTokenOpen" />
 </template>
 <script setup lang="ts">
-import Card from "primevue/card";
 import { computed, ref } from "vue";
-import InputPassword from "@/components/forms/basic/InputPassword.vue";
-import InputText from "@/components/forms/basic/InputText.vue";
+import Card from "primevue/card";
 import FloatLabel from "primevue/floatlabel";
 import Button from "primevue/button";
-import ApiToken from "./ApiToken.vue";
+import { useToast } from "primevue/usetoast";
+import InputPassword from "@/components/forms/basic/InputPassword.vue";
+import InputText from "@/components/forms/basic/InputText.vue";
+import ApiToken from "@/components/forms/profile/ApiToken.vue";
 import ProfileService from "@/services/profile-service";
 import AuthService from "@/services/auth-service";
-import { useToast } from "primevue/usetoast";
 
 const isApiTokenOpen = ref(false);
 

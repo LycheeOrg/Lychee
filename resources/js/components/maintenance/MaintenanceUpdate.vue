@@ -25,11 +25,11 @@
 </template>
 
 <script setup lang="ts">
-import MaintenanceService from "@/services/maintenance-service";
+import { ref } from "vue";
 import Button from "primevue/button";
 import Card from "primevue/card";
 import ScrollPanel from "primevue/scrollpanel";
-import { ref } from "vue";
+import MaintenanceService from "@/services/maintenance-service";
 
 const data = ref(undefined as App.Http.Resources.Diagnostics.UpdateInfo | undefined);
 const canCheck = ref(true);

@@ -26,13 +26,13 @@
 	</Dialog>
 </template>
 <script setup lang="ts">
-import QRCode from "qrcode";
-import Dialog from "primevue/dialog";
-import MiniIcon from "@/components/icons/MiniIcon.vue";
-import { useToast } from "primevue/usetoast";
 import { ref, watch } from "vue";
-import { trans } from "laravel-vue-i18n";
 import Button from "primevue/button";
+import Dialog from "primevue/dialog";
+import { useToast } from "primevue/usetoast";
+import QRCode from "qrcode";
+import { trans } from "laravel-vue-i18n";
+import MiniIcon from "@/components/icons/MiniIcon.vue";
 
 const props = defineProps<{
 	url: string;

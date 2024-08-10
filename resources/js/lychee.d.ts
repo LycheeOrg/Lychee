@@ -255,6 +255,10 @@ declare namespace App.Http.Resources.Models {
 		updated_at: string;
 		job: string;
 	};
+	export type LightUserResource = {
+		id: number | null;
+		username: string | null;
+	};
 	export type PhotoResource = {
 		id: string;
 		album_id: string | null;

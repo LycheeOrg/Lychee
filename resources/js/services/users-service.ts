@@ -17,20 +17,8 @@ const UsersService = {
 		return axios.get(`${Constants.API_URL}Users::count`, { data: {} });
 	},
 
-	get(): Promise<AxiosResponse<App.Http.Resources.Models.UserManagementResource[]>> {
+	get(): Promise<AxiosResponse<App.Http.Resources.Models.LightUserResource[]>> {
 		return axios.get(`${Constants.API_URL}Users`, { data: {} });
-	},
-
-	create(data: UserManagementCreateRequest): Promise<AxiosResponse<App.Http.Resources.Models.UserManagementResource>> {
-		return axios.post(`${Constants.API_URL}Users::create`, data);
-	},
-
-	edit(data: UserManagementCreateRequest & HasId): Promise<AxiosResponse<App.Http.Resources.Models.UserManagementResource>> {
-		return axios.post(`${Constants.API_URL}Users::save`, data);
-	},
-
-	delete(data: HasId): Promise<AxiosResponse<App.Http.Resources.Models.UserManagementResource>> {
-		return axios.post(`${Constants.API_URL}Users::delete`, data);
 	},
 };
 

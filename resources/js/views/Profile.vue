@@ -40,8 +40,8 @@
 	</div> -->
 </template>
 <script setup lang="ts">
-import SetLogin from "@/components/forms/profile/SetLogin.vue";
 import Button from "primevue/button";
 import Toolbar from "primevue/toolbar";
+import SetLogin from "@/components/forms/profile/SetLogin.vue";
 // import Card from 'primevue/card';
 </script>

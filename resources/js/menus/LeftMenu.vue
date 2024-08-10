@@ -22,15 +22,15 @@
 	</Drawer>
 </template>
 <script setup lang="ts">
+import { Ref, ref } from "vue";
+import Drawer from "primevue/drawer";
+import Menu from "primevue/menu";
 import MiniIcon from "@/components/icons/MiniIcon.vue";
 import AboutLychee from "@/components/modals/AboutLychee.vue";
 import AuthService from "@/services/auth-service";
 import InitService from "@/services/init-service";
 import { useAuthStore } from "@/stores/Auth";
 import { useLycheeStateStore } from "@/stores/LycheeState";
-import Drawer from "primevue/drawer";
-import Menu from "primevue/menu";
-import { Ref, ref } from "vue";
 
 type MenyType = {
 	label: string;

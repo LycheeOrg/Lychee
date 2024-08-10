@@ -10,13 +10,13 @@
 </template>
 
 <script setup lang="ts">
-import AlbumService from "@/services/album-service";
-import { trans } from "laravel-vue-i18n";
-import Button from "primevue/button";
-import Card from "primevue/card";
-import { sprintf } from "sprintf-js";
 import { computed } from "vue";
 import { useRouter } from "vue-router";
+import Button from "primevue/button";
+import Card from "primevue/card";
+import AlbumService from "@/services/album-service";
+import { trans } from "laravel-vue-i18n";
+import { sprintf } from "sprintf-js";
 
 const props = defineProps<{
 	album: App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.SmartAlbumResource | App.Http.Resources.Models.TagAlbumResource;

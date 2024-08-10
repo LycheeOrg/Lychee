@@ -46,16 +46,16 @@
 </template>
 
 <script setup lang="ts">
+import { ref, watch } from "vue";
 import FloatLabel from "primevue/floatlabel";
-import AuthService from "@/services/auth-service";
-import { trans } from "laravel-vue-i18n";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
-import InputText from "@/components/forms/basic/InputText.vue";
-import { ref, watch } from "vue";
-import { useAuthStore } from "@/stores/Auth";
-import InputPassword from "../forms/basic/InputPassword.vue";
 import Message from "primevue/message";
+import { trans } from "laravel-vue-i18n";
+import AuthService from "@/services/auth-service";
+import InputText from "@/components/forms/basic/InputText.vue";
+import InputPassword from "@/components/forms/basic/InputPassword.vue";
+import { useAuthStore } from "@/stores/Auth";
 
 const props = defineProps<{
 	visible: boolean;

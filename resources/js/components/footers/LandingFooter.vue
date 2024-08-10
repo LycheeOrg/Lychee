@@ -54,9 +54,9 @@
 	</div>
 </template>
 <script setup lang="ts">
-import { trans } from "laravel-vue-i18n";
-import { sprintf } from "sprintf-js";
 import { computed } from "vue";
+import { sprintf } from "sprintf-js";
+import { trans } from "laravel-vue-i18n";
 
 type FooterProps = {
 	show_socials: boolean;

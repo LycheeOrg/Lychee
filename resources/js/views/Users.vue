@@ -37,25 +37,25 @@
 	<Panel class="border-0"> </Panel>
 </template>
 <script setup lang="ts">
-import CreateUser from "@/components/forms/users/CreateUser.vue";
-import EditUser from "@/components/forms/users/EditUser.vue";
-import UsersService from "@/services/users-service";
+import { ref } from "vue";
 import Button from "primevue/button";
 import Panel from "primevue/panel";
 import Toolbar from "primevue/toolbar";
-import { ref } from "vue";
+import CreateUser from "@/components/forms/users/CreateUser.vue";
+import EditUser from "@/components/forms/users/EditUser.vue";
+import UserManagementService from "@/services/user-management-service";
 
 const users = ref([] as App.Http.Resources.Models.UserManagementResource[]);
 
 function load() {
-	UsersService.get().then((response) => {
+	UserManagementService.get().then((response) => {
 		console.log(response.data);
 		users.value = response.data;
 	});
 }
 
 function deleteUser(id: number) {
-	UsersService.delete({ id: id }).then(() => {
+	UserManagementService.delete({ id: id }).then(() => {
 		load();
 	});
 	load();

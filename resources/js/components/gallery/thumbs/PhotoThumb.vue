@@ -47,9 +47,9 @@
 </template>
 <script setup lang="ts">
 import { ref, type Ref } from "vue";
-import ThumbBadge from "@/components/gallery/thumbs/ThumbBadge.vue";
 import { useAuthStore } from "@/stores/Auth";
 import MiniIcon from "@/components/icons/MiniIcon.vue";
+import ThumbBadge from "@/components/gallery/thumbs/ThumbBadge.vue";
 
 const props = defineProps<{
 	album: App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.TagAlbumResource | App.Http.Resources.Models.SmartAlbumResource | null;

@@ -21,12 +21,12 @@
 </template>
 
 <script setup lang="ts">
-import ProgressSpinner from "primevue/progressspinner";
-import MaintenanceService from "@/services/maintenance-service";
+import { ref } from "vue";
 import Button from "primevue/button";
 import Card from "primevue/card";
-import { ref } from "vue";
+import ProgressSpinner from "primevue/progressspinner";
 import ScrollPanel from "primevue/scrollpanel";
+import MaintenanceService from "@/services/maintenance-service";
 
 const data = ref([] as string[]);
 const loading = ref(false);

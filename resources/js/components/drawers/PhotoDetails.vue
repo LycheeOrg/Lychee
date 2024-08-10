@@ -99,10 +99,10 @@
 	</div>
 </template>
 <script setup lang="ts">
+import { Ref, ref, watch } from "vue";
+import { sprintf } from "sprintf-js";
 import AlbumService from "@/services/album-service";
 import SidebarMap from "@/services/sidebar-map";
-import { sprintf } from "sprintf-js";
-import { Ref, ref, watch } from "vue";
 
 const props = defineProps<{
 	photo: App.Http.Resources.Models.PhotoResource | undefined;

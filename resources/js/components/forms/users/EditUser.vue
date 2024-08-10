@@ -17,13 +17,13 @@
 	</div>
 </template>
 <script setup lang="ts">
-import UsersService from "@/services/users-service";
-import Button from "primevue/button";
 import { computed, ref, watch } from "vue";
-import InputText from "../basic/InputText.vue";
-import InputPassword from "../basic/InputPassword.vue";
+import Button from "primevue/button";
 import Checkbox from "primevue/checkbox";
 import { useToast } from "primevue/usetoast";
+import InputText from "@/components/forms/basic/InputText.vue";
+import InputPassword from "@/components/forms/basic/InputPassword.vue";
+import UserManagementService from "@/services/user-management-service";
 
 const props = defineProps<{
 	user: App.Http.Resources.Models.UserManagementResource;
@@ -49,7 +49,7 @@ const isModified = computed(() => {
 const emits = defineEmits(["deleteUser"]);
 
 function saveUser() {
-	UsersService.edit({
+	UserManagementService.edit({
 		id: id.value,
 		username: username.value,
 		password: password.value,

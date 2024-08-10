@@ -23,13 +23,13 @@
 </template>
 
 <script setup lang="ts">
-import ProgressSpinner from "primevue/progressspinner";
-import MaintenanceService from "@/services/maintenance-service";
+import { computed, ref } from "vue";
 import Button from "primevue/button";
 import Card from "primevue/card";
-import { computed, ref } from "vue";
-import ScrollPanel from "primevue/scrollpanel";
 import { useToast } from "primevue/usetoast";
+import ProgressSpinner from "primevue/progressspinner";
+import ScrollPanel from "primevue/scrollpanel";
+import MaintenanceService from "@/services/maintenance-service";
 
 const data = ref(undefined as App.Http.Resources.Diagnostics.TreeState | undefined);
 const loading = ref(false);

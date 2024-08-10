@@ -96,11 +96,11 @@
 	</Card>
 </template>
 <script setup lang="ts">
+import { ref } from "vue";
 import Card from "primevue/card";
 import ToggleSwitch from "primevue/toggleswitch";
-import { ref } from "vue";
-import InputPassword from "../basic/InputPassword.vue";
 import FloatLabel from "primevue/floatlabel";
+import InputPassword from "@/components/forms/basic/InputPassword.vue";
 import AlbumService, { UpdateProtectionPolicyData } from "@/services/album-service";
 
 const props = defineProps<{

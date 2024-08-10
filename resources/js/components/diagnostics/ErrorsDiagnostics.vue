@@ -8,9 +8,9 @@
 	</Panel>
 </template>
 <script setup lang="ts">
-import DiagnosticsService from "@/services/diagnostics-service";
-import Panel from "primevue/panel";
 import { ref } from "vue";
+import Panel from "primevue/panel";
+import DiagnosticsService from "@/services/diagnostics-service";
 
 const errors = ref(undefined as App.Http.Resources.Diagnostics.ErrorLine[] | undefined);
 

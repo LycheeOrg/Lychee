@@ -8,6 +8,7 @@ use App\Http\Requests\Session\LoginRequest;
 use App\Http\Resources\Models\UserResource;
 use App\Http\Resources\Rights\GlobalRightsResource;
 use App\Http\Resources\Root\AuthConfig;
+use App\Models\User;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -70,7 +71,10 @@ class AuthController extends Controller
 	 */
 	public function getCurrentUser(): Data
 	{
-		return new UserResource(Auth::user());
+		/** @var User|null $user */
+		$user = Auth::user();
+
+		return new UserResource($user);
 	}
 
 	/**

@@ -136,12 +136,16 @@ Route::post('/Profile::unsetToken', [ProfileController::class, 'unsetToken']);
 /**
  * USERS.
  */
-Route::get('/Users::count', [Admin\UsersController::class, 'count']);
+Route::get('/Users', [UsersController::class, 'list']);
+Route::get('/Users::count', [UsersController::class, 'count']);
 
-Route::get('/Users', [Admin\UsersController::class, 'list']);
-Route::post('/Users::save', [Admin\UsersController::class, 'save']);
-Route::post('/Users::delete', [Admin\UsersController::class, 'delete']);
-Route::post('/Users::create', [Admin\UsersController::class, 'create']);
+/**
+ * USERS MANAGEMENT.
+ */
+Route::get('/UserManagement', [Admin\UserManagementController::class, 'list']);
+Route::post('/UserManagement::save', [Admin\UserManagementController::class, 'save']);
+Route::post('/UserManagement::delete', [Admin\UserManagementController::class, 'delete']);
+Route::post('/UserManagement::create', [Admin\UserManagementController::class, 'create']);
 
 /**
  * WEBAUTHN.

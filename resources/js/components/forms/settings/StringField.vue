@@ -16,10 +16,10 @@
 </template>
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
-import InputText from "../basic/InputText.vue";
 import FloatLabel from "primevue/floatlabel";
 import IconField from "primevue/iconfield";
 import InputIcon from "primevue/inputicon";
+import InputText from "@/components/forms/basic/InputText.vue";
 
 const props = defineProps<{
 	config: App.Http.Resources.Models.ConfigResource;

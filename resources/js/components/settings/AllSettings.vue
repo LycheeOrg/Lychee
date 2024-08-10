@@ -161,16 +161,23 @@
 	</div>
 </template>
 <script setup lang="ts">
-import SettingsService from "@/services/settings-service";
 import { computed, onUpdated, ref } from "vue";
+import Menu from "primevue/menu";
+import Message from "primevue/message";
+import Button from "primevue/button";
+import Fieldset from "primevue/fieldset";
+import ToggleSwitch from "primevue/toggleswitch";
+import { useToast } from "primevue/usetoast";
 import StringField from "@/components/forms/settings/StringField.vue";
 import BoolField from "@/components/forms/settings/BoolField.vue";
 import NumberField from "@/components/forms/settings/NumberField.vue";
 import VersionField from "@/components/forms/settings/VersionField.vue";
-import Fieldset from "primevue/fieldset";
 import SliderField from "@/components/forms/settings/SliderField.vue";
 import SelectField from "@/components/forms/settings/SelectField.vue";
 import SelectOptionsField from "@/components/forms/settings/SelectOptionsField.vue";
+import OldField from "@/components/forms/settings/OldField.vue";
+import ZipSliderField from "@/components/forms/settings/ZipSliderField.vue";
+import SelectLang from "@/components/forms/settings/SelectLang.vue";
 import {
 	photoSortingColumnsOptions,
 	albumSortingColumnsOptions,
@@ -184,16 +191,9 @@ import {
 	mapProvidersOptions,
 	toolsOptions,
 } from "@/config/constants";
-import ZipSliderField from "../forms/settings/ZipSliderField.vue";
-import ToggleSwitch from "primevue/toggleswitch";
-import OldField from "../forms/settings/OldField.vue";
-import Message from "primevue/message";
-import Button from "primevue/button";
-import { useToast } from "primevue/usetoast";
-import SelectLang from "../forms/settings/SelectLang.vue";
-import Menu from "primevue/menu";
 // @ts-expect-error
 import scrollSpy from "@sidsbrmnn/scrollspy";
+import SettingsService from "@/services/settings-service";
 
 const toast = useToast();
 const oldStyle = ref(false);
