@@ -334,6 +334,13 @@ declare namespace App.Http.Resources.Models {
 		preFormattedData: App.Http.Resources.Models.Utils.PreFormattedAlbumData;
 		editable: App.Http.Resources.Editable.EditableBaseAlbumResource | null;
 	};
+	export type TargetAlbumResource = {
+		id: string | null;
+		title: string;
+		original: string;
+		short_title: string;
+		thumb: string;
+	};
 	export type ThumbAlbumResource = {
 		id: string;
 		title: string;

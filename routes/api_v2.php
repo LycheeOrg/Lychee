@@ -8,8 +8,6 @@ use App\Legacy\V1\Controllers\Administration\DiagnosticsController as Administra
 use App\Legacy\V1\Controllers\Administration\SettingsController as AdministrationSettingsController;
 use App\Legacy\V1\Controllers\Administration\SharingController as AdministrationSharingController;
 use App\Legacy\V1\Controllers\Administration\UpdateController as AdministrationUpdateController;
-use App\Legacy\V1\Controllers\AlbumController;
-// use App\Legacy\V1\Controllers\AlbumsController;
 use App\Legacy\V1\Controllers\ImportController;
 use App\Legacy\V1\Controllers\LegacyController;
 use App\Legacy\V1\Controllers\PhotoController;
@@ -38,10 +36,13 @@ Route::get('/Gallery::getMapProvider', [Gallery\ConfigController::class, 'getMap
  */
 Route::get('/Albums', [Gallery\AlbumsController::class, 'get'])->middleware(['login_required:root']);
 Route::get('/Album', [Gallery\AlbumController::class, 'get'])->middleware(['login_required:album']);
+Route::get('/Album::getTargetListAlbums', [Gallery\AlbumController::class, 'getTargetListAlbums'])->middleware(['login_required:album']);
 Route::post('/Album::update', [Gallery\AlbumController::class, 'updateAlbum']);
 Route::post('/Album::updateTag', [Gallery\AlbumController::class, 'updateTagAlbum']);
 Route::post('/Album::updateProtectionPolicy', [Gallery\AlbumController::class, 'updateProtectionPolicy']);
 Route::post('/Album::delete', [Gallery\AlbumController::class, 'delete']);
+Route::post('/Album::move', [Gallery\AlbumController::class, 'move']);
+// Route::post('/Album::merge', [AlbumController::class, 'merge']);
 
 // Route::post('/Albums::getPositionData', [AlbumsController::class, 'getPositionData'])->middleware(['login_required:root']);
 // Route::post('/Albums::tree', [AlbumsController::class, 'tree'])->middleware(['login_required:root']);

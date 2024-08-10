@@ -19,15 +19,15 @@ class DeleteUserTest extends BaseApiV2Test
 {
 	public function testDeleteUserGuest(): void
 	{
-		$response = $this->postJson('Users::delete');
+		$response = $this->postJson('UserManagement::delete');
 		$this->assertUnprocessable($response);
 
-		$response = $this->postJson('Users::delete', [
+		$response = $this->postJson('UserManagement::delete', [
 			'id' => $this->userMayUpload1->id,
 		]);
 		$this->assertUnauthorized($response);
 
-		$response = $this->actingAs($this->userMayUpload2)->postJson('Users::delete', [
+		$response = $this->actingAs($this->userMayUpload2)->postJson('UserManagement::delete', [
 			'id' => $this->userMayUpload1->id,
 		]);
 		$this->assertForbidden($response);
@@ -36,13 +36,13 @@ class DeleteUserTest extends BaseApiV2Test
 	public function testDeleteUserAdmin(): void
 	{
 		$num_users = User::count();
-		$response = $this->actingAs($this->admin)->postJson('Users::delete', [
+		$response = $this->actingAs($this->admin)->postJson('UserManagement::delete', [
 			'id' => $this->userNoUpload->id,
 		]);
 		$this->assertNoContent($response);
 		$this->assertEquals($num_users - 1, User::count());
 
-		$response = $this->actingAs($this->admin)->getJson('Users');
+		$response = $this->actingAs($this->admin)->getJson('UserManagement');
 		$this->assertOk($response);
 		$response->assertDontSee($this->userNoUpload->username);
 	}

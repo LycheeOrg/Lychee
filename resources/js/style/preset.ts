@@ -1,3 +1,5 @@
+import { text } from "stream/consumers";
+
 const LycheePrimeVueConfig = {
 	semantic: {
 		focusRing: {
@@ -404,18 +406,46 @@ const LycheePrimeVueConfig = {
 				},
 			},
 		},
+
 		select: {
 			background: "transparent",
 			border: {
 				radius: 0,
+			},
+			option: {
+				padding: "0 1rem",
+				border: {
+					radius: 0,
+				},
 			},
 			transition: {
 				duration: 0,
 			},
 			shadow: "none",
 			colorScheme: {
-				light: {},
+				light: {
+					option: {
+						color: "{surface.500}",
+						focus: {
+							background: "linear-gradient({primary.500}, {primary.600})",
+							color: "{surface.0}",
+						},
+					},
+				},
 				dark: {
+					option: {
+						color: "{surface.400}",
+						focus: {
+							background: "linear-gradient({primary.500}, {primary.600})",
+							color: "{surface.0}",
+						},
+					},
+					overlay: {
+						background: "{surface.900}",
+						border: {
+							color: "{surface.800}",
+						},
+					},
 					color: "{surface.300}",
 				},
 			},

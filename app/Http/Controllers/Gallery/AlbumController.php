@@ -3,11 +3,17 @@
 namespace App\Http\Controllers\Gallery;
 
 use App\Actions\Album\Delete;
+use App\Actions\Album\ListAlbums;
+use App\Actions\Album\Merge;
+use App\Actions\Album\Move;
 use App\Actions\Album\SetProtectionPolicy;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Http\Requests\Album\DeleteAlbumsRequest;
 use App\Http\Requests\Album\GetAlbumRequest;
+use App\Http\Requests\Album\MergeAlbumsRequest;
+use App\Http\Requests\Album\MoveAlbumsRequest;
 use App\Http\Requests\Album\SetAlbumProtectionPolicyRequest;
+use App\Http\Requests\Album\TargetListAlbumRequest;
 use App\Http\Requests\Album\UpdateAlbumRequest;
 use App\Http\Requests\Album\UpdateTagAlbumRequest;
 use App\Http\Resources\Editable\EditableBaseAlbumResource;
@@ -16,6 +22,7 @@ use App\Http\Resources\Models\AbstractAlbumResource;
 use App\Http\Resources\Models\AlbumResource;
 use App\Http\Resources\Models\SmartAlbumResource;
 use App\Http\Resources\Models\TagAlbumResource;
+use App\Http\Resources\Models\TargetAlbumResource;
 use App\Http\Resources\Models\Utils\AlbumProtectionPolicy;
 use App\Models\Album;
 use App\Models\TagAlbum;
@@ -110,5 +117,51 @@ class AlbumController extends Controller
 	{
 		$fileDeleter = $delete->do($request->albumIDs());
 		App::terminating(fn () => $fileDeleter->do());
+	}
+
+	/**
+	 * Get the list of albums.
+	 *
+	 * @param TargetListAlbumRequest $request
+	 * @param ListAlbums             $listAlbums
+	 *
+	 * @return array<string|int,TargetAlbumResource>
+	 */
+	public function getTargetListAlbums(TargetListAlbumRequest $request, ListAlbums $listAlbums)
+	{
+		if ($request->album() instanceof Album) {
+			/** @var Album $album */
+			$album = $request->album();
+
+			return TargetAlbumResource::collect($listAlbums->do($album->_lft, $album->_rgt, $album->parent_id));
+		}
+
+		return TargetAlbumResource::collect($listAlbums->do(null, null, null));
+	}
+
+	/**
+	 * Merge albums. The first of the list is the destination of the merge.
+	 *
+	 * @param MergeAlbumsRequest $request
+	 * @param Merge              $merge
+	 *
+	 * @return void
+	 */
+	public function merge(MergeAlbumsRequest $request, Merge $merge): void
+	{
+		$merge->do($request->album(), $request->albums());
+	}
+
+	/**
+	 * Move multiple albums into another album.
+	 *
+	 * @param MoveAlbumsRequest $request
+	 * @param Move              $move
+	 *
+	 * @return void
+	 */
+	public function move(MoveAlbumsRequest $request, Move $move): void
+	{
+		$move->do($request->album(), $request->albums());
 	}
 }

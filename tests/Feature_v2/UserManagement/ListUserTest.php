@@ -18,16 +18,16 @@ class ListUserTest extends BaseApiV2Test
 {
 	public function testListUsersGuest(): void
 	{
-		$response = $this->getJson('Users');
+		$response = $this->getJson('UserManagement');
 		$this->assertUnauthorized($response);
 
-		$response = $this->actingAs($this->userMayUpload1)->getJson('Users');
+		$response = $this->actingAs($this->userMayUpload1)->getJson('UserManagement');
 		$this->assertForbidden($response);
 	}
 
 	public function testListUsersAdmin(): void
 	{
-		$response = $this->actingAs($this->admin)->getJson('Users');
+		$response = $this->actingAs($this->admin)->getJson('UserManagement');
 		$this->assertOk($response);
 		$response->assertJson(
 			[

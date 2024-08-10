@@ -17,4 +17,9 @@ class LightUserResource extends Data
 		$this->id = $user?->id;
 		$this->username = $user?->username;
 	}
+
+	public static function fromModel(User $c): LightUserResource
+	{
+		return new self($c);
+	}
 }

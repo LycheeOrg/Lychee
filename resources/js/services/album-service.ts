@@ -66,6 +66,18 @@ const AlbumService = {
 	delete(album_ids: string[]): Promise<AxiosResponse> {
 		return axios.post(`${Constants.API_URL}Album::delete`, { album_ids: album_ids });
 	},
+
+	getTargetListAlbums(album_id: string | null): Promise<AxiosResponse<App.Http.Resources.Models.TargetAlbumResource[]>> {
+		return axios.get(`${Constants.API_URL}Album::getTargetListAlbums`, { params: { album_id: album_id }, data: {} });
+	},
+
+	move(dest: string | null, album_ids: string[]): Promise<AxiosResponse> {
+		return axios.post(`${Constants.API_URL}Album::move`, { album_id: dest, album_ids: album_ids });
+	},
+
+	merge(dest: string, album_ids: string[]): Promise<AxiosResponse> {
+		return axios.post(`${Constants.API_URL}Album::merge`, { album_id: dest, album_ids: album_ids });
+	},
 };
 
 export default AlbumService;

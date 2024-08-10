@@ -18,10 +18,10 @@ class EditUserTest extends BaseApiV2Test
 {
 	public function testEditUserGuest(): void
 	{
-		$response = $this->postJson('Users::save');
+		$response = $this->postJson('UserManagement::save');
 		$this->assertUnprocessable($response);
 
-		$response = $this->postJson('Users::save', [
+		$response = $this->postJson('UserManagement::save', [
 			'id' => $this->userMayUpload1->id,
 			'username' => $this->userMayUpload1->username,
 			'may_upload' => $this->userMayUpload1->may_upload,
@@ -29,7 +29,7 @@ class EditUserTest extends BaseApiV2Test
 		]);
 		$this->assertUnauthorized($response);
 
-		$response = $this->actingAs($this->userMayUpload2)->postJson('Users::save', [
+		$response = $this->actingAs($this->userMayUpload2)->postJson('UserManagement::save', [
 			'id' => $this->userMayUpload1->id,
 			'username' => $this->userMayUpload1->username,
 			'may_upload' => $this->userMayUpload1->may_upload,
@@ -40,7 +40,7 @@ class EditUserTest extends BaseApiV2Test
 
 	public function testEditUserAdmin(): void
 	{
-		$response = $this->actingAs($this->admin)->postJson('Users::save', [
+		$response = $this->actingAs($this->admin)->postJson('UserManagement::save', [
 			'id' => $this->userMayUpload1->id,
 			'username' => 'anotherUsername',
 			'may_upload' => false,
@@ -48,7 +48,7 @@ class EditUserTest extends BaseApiV2Test
 		]);
 		$this->assertNoContent($response);
 
-		$response = $this->actingAs($this->admin)->getJson('Users');
+		$response = $this->actingAs($this->admin)->getJson('UserManagement');
 		$this->assertOk($response);
 		$response->assertJsonFragment(
 			[

@@ -20,7 +20,7 @@
 				{{ $t("lychee.SHARE_ALBUM") }}
 			</li>
 			<li
-				v-if="album.rights.can_move"
+				v-if="album.rights.can_move && props.config.is_model_album"
 				class="px-2 pt-3 pb-4 cursor-pointer font-bold text-center transition-colors ease-in-out select-none xl:border-l-2 max-xl:border-b-2 border-solid border-primary-500 text-primary-500 hover:border-primary-300 hover:text-primary-300"
 				:class="activeTab === 2 ? 'bg-primary-500/5' : ''"
 				v-on:click="activeTab = 2"
@@ -48,8 +48,8 @@
 		</div>
 		<!-- @endif
     @if($this->rights->can_move === true) -->
-		<div class="w-full xl:w-5/6 flex justify-center flex-wrap mb-4 sm:mt-7 pl-7" v-if="activeTab === 2">
-			<!-- <livewire:forms.album.move-panel :album="$this->album" /> -->
+		<div class="w-full xl:w-5/6 flex justify-center flex-wrap mb-4 sm:mt-7 pl-7" v-if="activeTab === 2 && props.config.is_model_album">
+			<AlbumMove :album="props.album as App.Http.Resources.Models.AlbumResource" />
 		</div>
 		<!-- @endif
     @if($this->rights->can_delete === true) -->
@@ -72,6 +72,7 @@ import UsersService from "@/services/users-service";
 import AlbumProperties from "@/components/forms/album/AlbumProperties.vue";
 import AlbumVisibility from "@/components/forms/album/AlbumVisibility.vue";
 import AlbumDelete from "@/components/forms/album/AlbumDelete.vue";
+import AlbumMove from "../forms/album/AlbumMove.vue";
 
 const props = defineProps<{
 	album: App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.SmartAlbumResource | App.Http.Resources.Models.TagAlbumResource;
