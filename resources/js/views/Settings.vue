@@ -12,7 +12,7 @@
 
 		<template #end> </template>
 	</Toolbar>
-	<Tabs value="0" class="max-w-3xl mx-auto">
+	<Tabs value="0" class="max-w-5xl mx-auto">
 		<TabList>
 			<Tab value="0">Basic</Tab>
 			<Tab value="1">{{ $t("lychee.MORE") }}</Tab>

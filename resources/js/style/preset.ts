@@ -35,6 +35,9 @@ const LycheePrimeVueConfig = {
 				shadow: "none",
 			},
 		},
+		navigation: {
+			list: { gap: 0 },
+		},
 	},
 	colorScheme: {
 		light: {
@@ -243,6 +246,36 @@ const LycheePrimeVueConfig = {
 					},
 					header: {
 						color: "{surface.300}",
+					},
+				},
+			},
+		},
+		menu: {
+			colorScheme: {
+				light: {
+					root: {
+						border: {
+							radius: 0,
+						},
+					},
+					item: {
+						// color: "{surface.700}",
+					},
+				},
+				dark: {
+					root: {
+						border: {
+							radius: 0,
+						},
+						background: "transparent",
+						// color: "{surface.0}",
+					},
+					item: {
+						// color: "{surface.400}",
+						focus: {
+							background: "transparent",
+							color: "{primary.500}",
+						},
 					},
 				},
 			},

@@ -8,140 +8,161 @@
 			<Message severity="warn" class="w-full" v-if="modified.length">Some settings changed.</Message>
 			<Button @click="save" class="bg-danger-800 border-none text-white font-bold px-8 hover:bg-danger-700">Save</Button>
 		</div>
-
-		<Fieldset
-			v-for="(configGroup, key, index) in configs.configs"
-			:legend="key"
-			:toggleable="true"
-			class="border-b-0 border-r-0 rounded-r-none rounded-b-none mb-4 hover:border-primary-500 pt-2"
-		>
-			<div class="flex flex-col gap-4">
-				<template v-for="config in configGroup">
-					<template v-if="oldStyle">
-						<OldField :config="config" @filled="update" @reset="reset" />
-					</template>
-					<template v-else>
-						<!-- Special keys -->
-						<VersionField v-if="config.key === 'version'" :config="config" />
-						<ZipSliderField v-else-if="config.key === 'zip_deflate_level'" :config="config" @filled="update" @reset="reset" />
-						<SelectOptionsField
-							v-else-if="config.key === 'default_license'"
-							:config="config"
-							:options="licenseOptions"
-							:mapper="SelectBuilders.buildLicense"
-							@filled="update"
-							@reset="reset"
-						/>
-						<SelectOptionsField
-							v-else-if="config.key === 'sorting_photos_col'"
-							:config="config"
-							:options="photoSortingColumnsOptions"
-							:mapper="SelectBuilders.buildPhotoSorting"
-							@filled="update"
-							@reset="reset"
-						/>
-						<SelectOptionsField
-							v-else-if="config.key === 'sorting_photos_order'"
-							:config="config"
-							:options="sortingOrdersOptions"
-							:mapper="SelectBuilders.buildSortingOrder"
-							@filled="update"
-							@reset="reset"
-						/>
-						<SelectOptionsField
-							v-else-if="config.key === 'sorting_albums_col'"
-							:config="config"
-							:options="albumSortingColumnsOptions"
-							:mapper="SelectBuilders.buildAlbumSorting"
-							@filled="update"
-							@reset="reset"
-						/>
-						<SelectOptionsField
-							v-else-if="config.key === 'sorting_albums_order'"
-							:config="config"
-							:options="sortingOrdersOptions"
-							:mapper="SelectBuilders.buildSortingOrder"
-							@filled="update"
-							@reset="reset"
-						/>
-						<SelectOptionsField
-							v-else-if="config.key === 'default_album_thumb_aspect_ratio'"
-							:config="config"
-							:options="aspectRationOptions"
-							:mapper="SelectBuilders.buildAspectRatio"
-							@filled="update"
-							@reset="reset"
-						/>
-
-						<SelectOptionsField
-							v-else-if="config.key === 'layout'"
-							:config="config"
-							:options="photoLayoutOptions"
-							:mapper="SelectBuilders.buildPhotoLayout"
-							@filled="update"
-							@reset="reset"
-						/>
-						<SelectOptionsField
-							v-else-if="config.key === 'default_album_protection'"
-							:config="config"
-							:options="defaultAlbumProtectionOptions"
-							:mapper="SelectBuilders.buildDefaultAlbumProtection"
-							@filled="update"
-							@reset="reset"
-						/>
-						<SelectOptionsField
-							v-else-if="config.key === 'image_overlay_type'"
-							:config="config"
-							:options="overlayOptions"
-							:mapper="SelectBuilders.buildOverlay"
-							@filled="update"
-							@reset="reset"
-						/>
-						<SelectOptionsField
-							v-else-if="config.key === 'map_provider'"
-							:config="config"
-							:options="mapProvidersOptions"
-							:mapper="SelectBuilders.buildMapProvider"
-							@filled="update"
-							@reset="reset"
-						/>
-						<SelectOptionsField
-							v-else-if="config.key === 'has_exiftool'"
-							:config="config"
-							:options="toolsOptions"
-							:mapper="SelectBuilders.buildToolSelection"
-							@filled="update"
-							@reset="reset"
-						/>
-						<SelectOptionsField
-							v-else-if="config.key === 'has_ffmpeg'"
-							:config="config"
-							:options="toolsOptions"
-							:mapper="SelectBuilders.buildToolSelection"
-							@filled="update"
-							@reset="reset"
-						/>
-						<SelectLang v-else-if="config.key === 'lang'" :config="config" @filled="update" @reset="reset" />
-						<SelectField v-else-if="config.key === 'album_decoration'" :config @filled="update" @reset="reset" />
-						<SelectField v-else-if="config.key === 'album_decoration_orientation'" :config @filled="update" @reset="reset" />
-						<StringField v-else-if="config.key === 'raw_formats'" :config="config" @filled="update" @reset="reset" />
-						<StringField v-else-if="config.key === 'local_takestamp_video_formats'" :config="config" @filled="update" @reset="reset" />
-						<!-- Generic -->
-						<StringField v-else-if="config.type.startsWith('string')" :config="config" @filled="update" @reset="reset" />
-						<BoolField v-else-if="config.type === '0|1'" :config="config" @filled="update" @reset="reset" />
-						<NumberField v-else-if="config.type === 'int'" :config="config" :min="0" @filled="update" @reset="reset" />
-						<NumberField v-else-if="config.type === 'positive'" :config="config" :min="1" @filled="update" @reset="reset" />
-						<SliderField v-else-if="config.type.includes('|')" :config="config" @filled="update" @reset="reset" />
-						<p v-else class="bg-red-500">{{ config.key }} -- {{ config.value }} -- {{ config.documentation }} -- {{ config.type }}</p>
-					</template>
+		<div class="flex relative items-start flex-row-reverse justify-between">
+			<Menu :model="sections" class="sticky top-0 border-none" id="navMain">
+				<template #item="{ item, props }">
+					<a
+						:href="item.link"
+						class="nav-link block text-muted-color hover:text-primary-500 border-l border-solid border-surface-700 hover:border-primary-500 px-4 transition-all duration-300"
+					>
+						<span>{{ item.label }}</span>
+					</a>
 				</template>
+			</Menu>
+			<div class="max-w-3xl" id="allSettings">
+				<Fieldset
+					v-for="(configGroup, key, index) in configs.configs"
+					:legend="key"
+					:toggleable="true"
+					class="border-b-0 border-r-0 rounded-r-none rounded-b-none mb-4 hover:border-primary-500 pt-2"
+					:id="key"
+				>
+					<div class="flex flex-col gap-4">
+						<template v-for="config in configGroup">
+							<template v-if="oldStyle">
+								<OldField :config="config" @filled="update" @reset="reset" />
+							</template>
+							<template v-else>
+								<!-- Special keys -->
+								<VersionField v-if="config.key === 'version'" :config="config" />
+								<ZipSliderField v-else-if="config.key === 'zip_deflate_level'" :config="config" @filled="update" @reset="reset" />
+								<SelectOptionsField
+									v-else-if="config.key === 'default_license'"
+									:config="config"
+									:options="licenseOptions"
+									:mapper="SelectBuilders.buildLicense"
+									@filled="update"
+									@reset="reset"
+								/>
+								<SelectOptionsField
+									v-else-if="config.key === 'sorting_photos_col'"
+									:config="config"
+									:options="photoSortingColumnsOptions"
+									:mapper="SelectBuilders.buildPhotoSorting"
+									@filled="update"
+									@reset="reset"
+								/>
+								<SelectOptionsField
+									v-else-if="config.key === 'sorting_photos_order'"
+									:config="config"
+									:options="sortingOrdersOptions"
+									:mapper="SelectBuilders.buildSortingOrder"
+									@filled="update"
+									@reset="reset"
+								/>
+								<SelectOptionsField
+									v-else-if="config.key === 'sorting_albums_col'"
+									:config="config"
+									:options="albumSortingColumnsOptions"
+									:mapper="SelectBuilders.buildAlbumSorting"
+									@filled="update"
+									@reset="reset"
+								/>
+								<SelectOptionsField
+									v-else-if="config.key === 'sorting_albums_order'"
+									:config="config"
+									:options="sortingOrdersOptions"
+									:mapper="SelectBuilders.buildSortingOrder"
+									@filled="update"
+									@reset="reset"
+								/>
+								<SelectOptionsField
+									v-else-if="config.key === 'default_album_thumb_aspect_ratio'"
+									:config="config"
+									:options="aspectRationOptions"
+									:mapper="SelectBuilders.buildAspectRatio"
+									@filled="update"
+									@reset="reset"
+								/>
+
+								<SelectOptionsField
+									v-else-if="config.key === 'layout'"
+									:config="config"
+									:options="photoLayoutOptions"
+									:mapper="SelectBuilders.buildPhotoLayout"
+									@filled="update"
+									@reset="reset"
+								/>
+								<SelectOptionsField
+									v-else-if="config.key === 'default_album_protection'"
+									:config="config"
+									:options="defaultAlbumProtectionOptions"
+									:mapper="SelectBuilders.buildDefaultAlbumProtection"
+									@filled="update"
+									@reset="reset"
+								/>
+								<SelectOptionsField
+									v-else-if="config.key === 'image_overlay_type'"
+									:config="config"
+									:options="overlayOptions"
+									:mapper="SelectBuilders.buildOverlay"
+									@filled="update"
+									@reset="reset"
+								/>
+								<SelectOptionsField
+									v-else-if="config.key === 'map_provider'"
+									:config="config"
+									:options="mapProvidersOptions"
+									:mapper="SelectBuilders.buildMapProvider"
+									@filled="update"
+									@reset="reset"
+								/>
+								<SelectOptionsField
+									v-else-if="config.key === 'has_exiftool'"
+									:config="config"
+									:options="toolsOptions"
+									:mapper="SelectBuilders.buildToolSelection"
+									@filled="update"
+									@reset="reset"
+								/>
+								<SelectOptionsField
+									v-else-if="config.key === 'has_ffmpeg'"
+									:config="config"
+									:options="toolsOptions"
+									:mapper="SelectBuilders.buildToolSelection"
+									@filled="update"
+									@reset="reset"
+								/>
+								<SelectLang v-else-if="config.key === 'lang'" :config="config" @filled="update" @reset="reset" />
+								<SelectField v-else-if="config.key === 'album_decoration'" :config @filled="update" @reset="reset" />
+								<SelectField v-else-if="config.key === 'album_decoration_orientation'" :config @filled="update" @reset="reset" />
+								<StringField v-else-if="config.key === 'raw_formats'" :config="config" @filled="update" @reset="reset" />
+								<StringField
+									v-else-if="config.key === 'local_takestamp_video_formats'"
+									:config="config"
+									@filled="update"
+									@reset="reset"
+								/>
+								<!-- Generic -->
+								<StringField v-else-if="config.type.startsWith('string')" :config="config" @filled="update" @reset="reset" />
+								<BoolField v-else-if="config.type === '0|1'" :config="config" @filled="update" @reset="reset" />
+								<NumberField v-else-if="config.type === 'int'" :config="config" :min="0" @filled="update" @reset="reset" />
+								<NumberField v-else-if="config.type === 'positive'" :config="config" :min="1" @filled="update" @reset="reset" />
+								<SliderField v-else-if="config.type.includes('|')" :config="config" @filled="update" @reset="reset" />
+								<p v-else class="bg-red-500">
+									{{ config.key }} -- {{ config.value }} -- {{ config.documentation }} -- {{ config.type }}
+								</p>
+							</template>
+						</template>
+					</div>
+				</Fieldset>
 			</div>
-		</Fieldset>
+		</div>
 	</div>
 </template>
 <script setup lang="ts">
 import SettingsService from "@/services/settings-service";
-import { ref } from "vue";
+import { computed, onUpdated, ref } from "vue";
 import StringField from "@/components/forms/settings/StringField.vue";
 import BoolField from "@/components/forms/settings/BoolField.vue";
 import NumberField from "@/components/forms/settings/NumberField.vue";
@@ -170,12 +191,26 @@ import Message from "primevue/message";
 import Button from "primevue/button";
 import { useToast } from "primevue/usetoast";
 import SelectLang from "../forms/settings/SelectLang.vue";
+import Menu from "primevue/menu";
+// @ts-expect-error
+import scrollSpy from "@sidsbrmnn/scrollspy";
 
 const toast = useToast();
 const oldStyle = ref(false);
 const active = ref([] as string[]);
 const configs = ref(undefined as undefined | App.Http.Resources.Collections.ConfigCollectionResource);
 const modified = ref([] as App.Http.Resources.Editable.EditableConfigResource[]);
+const sections = computed(function () {
+	if (!configs.value) {
+		return [];
+	}
+	return Object.keys(configs.value.configs).map((key) => {
+		return {
+			label: key,
+			link: "#" + key,
+		};
+	});
+});
 
 function load() {
 	SettingsService.getAll().then((response) => {
@@ -214,4 +249,21 @@ function save() {
 }
 
 load();
+
+onUpdated(function () {
+	const elem = document.getElementById("navMain");
+	if (!elem) {
+		return;
+	}
+
+	const spy = scrollSpy(document.getElementById("navMain"), {
+		sectionSelector: "#allSettings .p-fieldset", // Query selector to your sections
+		targetSelector: ".nav-link", // Query select
+		activeClass: "!text-primary-500 !border-primary-500",
+	});
+	// Set the first section as active.
+	const admin = spy.sections[0];
+	const adminMenuItem = spy.getCurrentMenuItem(admin);
+	spy.setActive(adminMenuItem, admin);
+});
 </script>
