@@ -49,7 +49,8 @@
 		<!-- @endif
     @if($this->rights->can_move === true) -->
 		<div class="w-full xl:w-5/6 flex justify-center flex-wrap mb-4 sm:mt-7 pl-7" v-if="activeTab === 2 && props.config.is_model_album">
-			<AlbumMove :album="props.album as App.Http.Resources.Models.AlbumResource" />
+			<!-- @vue-expect-error -->
+			<AlbumMove :album="props.album" />
 		</div>
 		<!-- @endif
     @if($this->rights->can_delete === true) -->
@@ -58,6 +59,8 @@
             @if ($this->num_users > 1) -->
 			<!-- <livewire:forms.album.transfer :album="$this->album"  lazy /> -->
 			<!-- @endif -->
+			<!-- @vue-expect-error -->
+			<AlbumTransfer v-if="props.config.is_base_album && numUsers > 0" :album="props.album" />
 			<AlbumDelete :album="props.album" :is_base_album="props.config.is_base_album" :is_model_album="props.config.is_model_album" />
 			<!-- <livewire:forms.album.delete-panel :album="$this->album" /> -->
 		</div>
@@ -73,6 +76,7 @@ import AlbumProperties from "@/components/forms/album/AlbumProperties.vue";
 import AlbumVisibility from "@/components/forms/album/AlbumVisibility.vue";
 import AlbumDelete from "@/components/forms/album/AlbumDelete.vue";
 import AlbumMove from "../forms/album/AlbumMove.vue";
+import AlbumTransfer from "../forms/album/AlbumTransfer.vue";
 
 const props = defineProps<{
 	album: App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.SmartAlbumResource | App.Http.Resources.Models.TagAlbumResource;
@@ -80,7 +84,7 @@ const props = defineProps<{
 }>();
 const detailsOpen = defineModel<boolean>({ required: true });
 const activeTab = ref(0);
-const numUsers = ref(1);
+const numUsers = ref(0);
 
 UsersService.count().then((data) => {
 	numUsers.value = data.data;

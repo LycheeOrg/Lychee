@@ -256,8 +256,8 @@ declare namespace App.Http.Resources.Models {
 		job: string;
 	};
 	export type LightUserResource = {
-		id: number | null;
-		username: string | null;
+		id: number;
+		username: string;
 	};
 	export type PhotoResource = {
 		id: string;

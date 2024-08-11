@@ -1,0 +1,48 @@
+<template>
+	<Select
+		id="targetUser"
+		class="w-full border-none"
+		v-model="selectedTarget"
+		@update:modelValue="selected"
+		filter
+		placeholder="Select user"
+		:loading="options.length === 0"
+		:options="options"
+		optionLabel="username"
+		showClear
+	>
+		<template #value="slotProps">
+			<div v-if="slotProps.value" class="flex items-center">
+				<div>{{ $t(slotProps.value.username) }}</div>
+			</div>
+		</template>
+		<template #option="slotProps">
+			<div class="flex items-center">
+				<img :src="slotProps.option.thumb" alt="poster" class="w-4 rounded-sm" />
+				<span class="ml-4 text-left">{{ slotProps.option.username }}</span>
+			</div>
+		</template>
+	</Select>
+</template>
+<script setup lang="ts">
+import { ref } from "vue";
+import Select from "primevue/select";
+import UsersService from "@/services/users-service";
+
+const emits = defineEmits(["selected"]);
+
+const options = ref([] as App.Http.Resources.Models.LightUserResource[]);
+const selectedTarget = ref(undefined as App.Http.Resources.Models.LightUserResource | undefined);
+
+function load() {
+	UsersService.get().then((response) => {
+		options.value = response.data;
+	});
+}
+
+load();
+
+function selected() {
+	emits("selected", selectedTarget.value);
+}
+</script>

@@ -7,6 +7,7 @@ use App\Actions\Album\ListAlbums;
 use App\Actions\Album\Merge;
 use App\Actions\Album\Move;
 use App\Actions\Album\SetProtectionPolicy;
+use App\Actions\Album\Transfer;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Http\Requests\Album\DeleteAlbumsRequest;
 use App\Http\Requests\Album\GetAlbumRequest;
@@ -14,6 +15,7 @@ use App\Http\Requests\Album\MergeAlbumsRequest;
 use App\Http\Requests\Album\MoveAlbumsRequest;
 use App\Http\Requests\Album\SetAlbumProtectionPolicyRequest;
 use App\Http\Requests\Album\TargetListAlbumRequest;
+use App\Http\Requests\Album\TransferAlbumRequest;
 use App\Http\Requests\Album\UpdateAlbumRequest;
 use App\Http\Requests\Album\UpdateTagAlbumRequest;
 use App\Http\Resources\Editable\EditableBaseAlbumResource;
@@ -115,7 +117,7 @@ class AlbumController extends Controller
 	 */
 	public function delete(DeleteAlbumsRequest $request, Delete $delete): void
 	{
-		$fileDeleter = $delete->do($request->albumIDs());
+		$fileDeleter = $delete->do($request->albumIds());
 		App::terminating(fn () => $fileDeleter->do());
 	}
 
@@ -163,5 +165,16 @@ class AlbumController extends Controller
 	public function move(MoveAlbumsRequest $request, Move $move): void
 	{
 		$move->do($request->album(), $request->albums());
+	}
+
+	/**
+	 * @param TransferAlbumRequest $request
+	 * @param Transfer             $transfer
+	 *
+	 * @return void
+	 */
+	public function transfer(TransferAlbumRequest $request, Transfer $transfer): void
+	{
+		$transfer->do($request->album(), $request->userId());
 	}
 }

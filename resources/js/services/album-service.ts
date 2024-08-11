@@ -78,6 +78,10 @@ const AlbumService = {
 	merge(dest: string, album_ids: string[]): Promise<AxiosResponse> {
 		return axios.post(`${Constants.API_URL}Album::merge`, { album_id: dest, album_ids: album_ids });
 	},
+
+	transfer(album_id: string, user_id: number): Promise<AxiosResponse> {
+		return axios.post(`${Constants.API_URL}Album::transfer`, { album_id: album_id, user_id: user_id });
+	},
 };
 
 export default AlbumService;

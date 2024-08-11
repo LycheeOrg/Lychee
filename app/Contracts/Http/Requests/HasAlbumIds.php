@@ -2,10 +2,10 @@
 
 namespace App\Contracts\Http\Requests;
 
-interface HasAlbumIDs
+interface HasAlbumIds
 {
 	/**
 	 * @return string[]
 	 */
-	public function albumIDs(): array;
+	public function albumIds(): array;
 }
