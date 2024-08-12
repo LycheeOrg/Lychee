@@ -127,6 +127,7 @@ jobs:
     with:
       test-suite: 'Feature_v1'
       env-file: '.env.legacy'
+    secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
@@ -138,6 +139,7 @@ jobs:
     with:
       test-suite: 'Unit,Feature_v2'
       env-file: '.env'
+    secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
