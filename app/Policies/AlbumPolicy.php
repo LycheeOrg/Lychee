@@ -279,8 +279,8 @@ class AlbumPolicy extends BasePolicy
 	/**
 	 * Check if user is allowed to USE delete in current albumn.
 	 *
-	 * @param User           $user
-	 * @param BaseAlbum|null $abstractAlbum
+	 * @param User               $user
+	 * @param AbstractAlbum|null $baseAlbum
 	 *
 	 * @return bool
 	 *

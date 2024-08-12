@@ -9,6 +9,7 @@ use App\Contracts\Models\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasBaseAlbumTrait;
 use App\Http\Requests\Traits\HasUserTrait;
+use App\Models\User;
 use App\Policies\AlbumPolicy;
 use App\Rules\AlbumIDRule;
 use App\Rules\IntegerIDRule;
@@ -43,7 +44,9 @@ class TransferAlbumRequest extends BaseApiRequest implements HasBaseAlbum, HasUs
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->user2 = \User::findOrFail($values[RequestAttribute::USER_ID_ATTRIBUTE]);
+		/** @var int $user_id */
+		$user_id = $values[RequestAttribute::USER_ID_ATTRIBUTE];
+		$this->user2 = User::findOrFail($user_id);
 		// As we are going to delete the albums anyway, we don't load the
 		// models for efficiency reasons.
 		// Instead, we use mass deletion via low-level SQL queries later.
