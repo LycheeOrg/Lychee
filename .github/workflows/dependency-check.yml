@@ -4,9 +4,9 @@ on:
   pull_request_target: 
     types: [opened, edited, closed, reopened]
 
+permissions:
+  contents: read
 
-    permissions:
-      contents: read
 jobs:
   check_dependencies:
     runs-on: ubuntu-latest
