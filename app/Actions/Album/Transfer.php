@@ -2,6 +2,7 @@
 
 namespace App\Actions\Album;
 
+use App\Models\AccessPermission;
 use App\Models\Album;
 use App\Models\Extensions\BaseAlbum;
 
@@ -17,6 +18,9 @@ class Transfer extends Action
 	{
 		$baseAlbum->owner_id = $userId;
 		$baseAlbum->save();
+
+		// No longer necessary because we transfer the ownership
+		AccessPermission::query()->where('base_album_id', '=', $baseAlbum->id)->where('user_id', '=', $userId)->delete();
 
 		// If this is an Album, we also need to fix the children and photos ownership
 		if ($baseAlbum instanceof Album) {

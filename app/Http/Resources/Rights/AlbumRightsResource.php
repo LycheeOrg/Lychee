@@ -19,6 +19,7 @@ class AlbumRightsResource extends Data
 	public bool $can_upload = false;
 	public bool $can_move = false;
 	public bool $can_delete = false;
+	public bool $can_transfer = false;
 	public bool $can_access_original = false;
 
 	/**
@@ -33,6 +34,7 @@ class AlbumRightsResource extends Data
 		$this->can_upload = Gate::check(AlbumPolicy::CAN_UPLOAD, [AbstractAlbum::class, $abstractAlbum]);
 		$this->can_move = Gate::check(AlbumPolicy::CAN_DELETE, [AbstractAlbum::class, $abstractAlbum]) && $abstractAlbum instanceof Album;
 		$this->can_delete = Gate::check(AlbumPolicy::CAN_DELETE, [AbstractAlbum::class, $abstractAlbum]);
+		$this->can_transfer = Gate::check(AlbumPolicy::CAN_TRANSFER, [AbstractAlbum::class, $abstractAlbum]);
 		$this->can_access_original = Gate::check(AlbumPolicy::CAN_ACCESS_FULL_PHOTO, [AbstractAlbum::class, $abstractAlbum]);
 	}
 }

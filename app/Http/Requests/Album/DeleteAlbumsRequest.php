@@ -23,7 +23,7 @@ class DeleteAlbumsRequest extends BaseApiRequest implements HasBaseAlbum, HasAlb
 	 */
 	public function authorize(): bool
 	{
-		return Gate::check(AlbumPolicy::CAN_DELETE_ID, [AbstractAlbum::class, [$this->albumIds()]]);
+		return Gate::check(AlbumPolicy::CAN_DELETE_ID, [AbstractAlbum::class, $this->albumIds()]);
 	}
 
 	/**
@@ -32,7 +32,7 @@ class DeleteAlbumsRequest extends BaseApiRequest implements HasBaseAlbum, HasAlb
 	public function rules(): array
 	{
 		return [
-			RequestAttribute::ALBUM_ID_ATTRIBUTE => 'required|array|min:1',
+			RequestAttribute::ALBUM_IDS_ATTRIBUTE => 'required|array|min:1',
 			RequestAttribute::ALBUM_IDS_ATTRIBUTE . '.*' => ['required', new AlbumIDRule(false)],
 		];
 	}
@@ -45,6 +45,6 @@ class DeleteAlbumsRequest extends BaseApiRequest implements HasBaseAlbum, HasAlb
 		// As we are going to delete the albums anyway, we don't load the
 		// models for efficiency reasons.
 		// Instead, we use mass deletion via low-level SQL queries later.
-		$this->albumIds = [$values[RequestAttribute::ALBUM_IDS_ATTRIBUTE]];
+		$this->albumIds = $values[RequestAttribute::ALBUM_IDS_ATTRIBUTE];
 	}
 }

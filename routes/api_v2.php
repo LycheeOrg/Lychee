@@ -41,6 +41,7 @@ Route::post('/Album::update', [Gallery\AlbumController::class, 'updateAlbum']);
 Route::post('/Album::updateTag', [Gallery\AlbumController::class, 'updateTagAlbum']);
 Route::post('/Album::updateProtectionPolicy', [Gallery\AlbumController::class, 'updateProtectionPolicy']);
 Route::post('/Album::delete', [Gallery\AlbumController::class, 'delete']);
+Route::post('/Album::transfer', [Gallery\AlbumController::class, 'transfer']);
 Route::post('/Album::move', [Gallery\AlbumController::class, 'move']);
 // Route::post('/Album::merge', [AlbumController::class, 'merge']);
 

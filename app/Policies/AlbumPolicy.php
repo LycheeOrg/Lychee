@@ -27,6 +27,7 @@ class AlbumPolicy extends BasePolicy
 	public const CAN_ACCESS_MAP = 'canAccessMap';
 	public const CAN_DOWNLOAD = 'canDownload';
 	public const CAN_DELETE = 'canDelete';
+	public const CAN_TRANSFER = 'canTransfer';
 	public const CAN_UPLOAD = 'canUpload';
 	public const CAN_EDIT = 'canEdit';
 	public const CAN_EDIT_ID = 'canEditById';
@@ -273,6 +274,25 @@ class AlbumPolicy extends BasePolicy
 		}
 
 		return false;
+	}
+
+	/**
+	 * Check if user is allowed to USE delete in current albumn.
+	 *
+	 * @param User           $user
+	 * @param BaseAlbum|null $abstractAlbum
+	 *
+	 * @return bool
+	 *
+	 * @throws ConfigurationKeyMissingException
+	 */
+	public function canTransfer(User $user, ?AbstractAlbum $baseAlbum = null): bool
+	{
+		if (!$baseAlbum instanceof BaseAlbum) {
+			return false;
+		}
+
+		return $this->isOwner($user, $baseAlbum);
 	}
 
 	/**

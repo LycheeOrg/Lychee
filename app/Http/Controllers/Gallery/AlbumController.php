@@ -175,6 +175,6 @@ class AlbumController extends Controller
 	 */
 	public function transfer(TransferAlbumRequest $request, Transfer $transfer): void
 	{
-		$transfer->do($request->album(), $request->userId());
+		$transfer->do($request->album(), $request->user2()->id);
 	}
 }
