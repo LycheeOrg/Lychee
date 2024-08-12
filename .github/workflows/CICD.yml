@@ -127,6 +127,8 @@ jobs:
     with:
       test-suite: 'Feature_v1'
       env-file: '.env.legacy'
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   tests:
     name:  2️⃣ PHP tests
@@ -136,7 +138,9 @@ jobs:
     with:
       test-suite: 'Unit,Feature_v2'
       env-file: '.env'
-    
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
   dist:
     name:  3️⃣ PHP dist
     needs:
