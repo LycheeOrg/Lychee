@@ -40,11 +40,15 @@ class RequestAttribute
 	public const ALBUM_SORTING_COLUMN_ATTRIBUTE = 'album_sorting_column';
 	public const ALBUM_SORTING_ORDER_ATTRIBUTE = 'album_sorting_order';
 
+	public const PERMISSION_ID = 'perm_id';
 	public const IS_NSFW_ATTRIBUTE = 'is_nsfw';
 	public const IS_PUBLIC_ATTRIBUTE = 'is_public';
 	public const IS_LINK_REQUIRED_ATTRIBUTE = 'is_link_required';
 	public const GRANTS_DOWNLOAD_ATTRIBUTE = 'grants_download';
 	public const GRANTS_FULL_PHOTO_ACCESS_ATTRIBUTE = 'grants_full_photo_access';
+	public const GRANTS_UPLOAD_ATTRIBUTE = 'grants_upload';
+	public const GRANTS_EDIT_ATTRIBUTE = 'grants_edit';
+	public const GRANTS_DELETE_ATTRIBUTE = 'grants_delete';
 
 	public const FILE_ATTRIBUTE = 'file';
 	public const SHALL_OVERRIDE_ATTRIBUTE = 'shall_override';
