@@ -26,6 +26,7 @@ class Share
 		$perm->grants_edit = $accessPermissionResource->grants_edit;
 		$perm->grants_delete = $accessPermissionResource->grants_delete;
 		$perm->load('user');
+		$perm->load('album');
 		$perm->save();
 
 		return $perm;

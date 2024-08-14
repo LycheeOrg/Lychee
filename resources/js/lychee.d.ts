@@ -222,6 +222,17 @@ declare namespace App.Http.Resources.Models {
 			| App.Http.Resources.Models.TagAlbumResource
 			| null;
 	};
+	export type AccessPermissionResource = {
+		id: number | null;
+		user_id: number | null;
+		username: string | null;
+		album_title: string | null;
+		grants_full_photo_access: boolean;
+		grants_download: boolean;
+		grants_upload: boolean;
+		grants_edit: boolean;
+		grants_delete: boolean;
+	};
 	export type AlbumResource = {
 		id: string;
 		title: string;
@@ -330,7 +341,7 @@ declare namespace App.Http.Resources.Models {
 		photos: App.Http.Resources.Models.PhotoResource[] | Array<any>;
 		thumb: App.Http.Resources.Models.ThumbResource | null;
 		policy: App.Http.Resources.Models.Utils.AlbumProtectionPolicy;
-		rights: any;
+		rights: App.Http.Resources.Rights.AlbumRightsResource;
 		preFormattedData: App.Http.Resources.Models.Utils.PreFormattedAlbumData;
 		editable: App.Http.Resources.Editable.EditableBaseAlbumResource | null;
 	};

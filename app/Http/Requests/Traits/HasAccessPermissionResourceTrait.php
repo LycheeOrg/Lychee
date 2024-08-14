@@ -6,13 +6,13 @@ use App\Http\Resources\Models\AccessPermissionResource;
 
 trait HasAccessPermissionResourceTrait
 {
-	protected AccessPermissionResource $perm;
+	protected AccessPermissionResource $permResource;
 
 	/**
 	 * @return AccessPermissionResource
 	 */
-	public function perm(): AccessPermissionResource
+	public function permResource(): AccessPermissionResource
 	{
-		return $this->perm;
+		return $this->permResource;
 	}
 }

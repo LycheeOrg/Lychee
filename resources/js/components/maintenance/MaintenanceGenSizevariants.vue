@@ -74,7 +74,7 @@ function load() {
 function exec() {
 	loading.value = true;
 	MaintenanceService.genSizeVariantsDo(props.sv).then((response) => {
-		toast.add({ severity: "success", summary: "Success" });
+		toast.add({ severity: "success", summary: "Success", life: 3000 });
 		load();
 	});
 }

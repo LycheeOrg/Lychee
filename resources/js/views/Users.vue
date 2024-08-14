@@ -49,7 +49,6 @@ const users = ref([] as App.Http.Resources.Models.UserManagementResource[]);
 
 function load() {
 	UserManagementService.get().then((response) => {
-		console.log(response.data);
 		users.value = response.data;
 	});
 }
@@ -58,7 +57,6 @@ function deleteUser(id: number) {
 	UserManagementService.delete({ id: id }).then(() => {
 		load();
 	});
-	load();
 }
 
 load();

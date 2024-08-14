@@ -18,8 +18,8 @@
 		</template>
 		<template #option="slotProps">
 			<div class="flex items-center">
-				<img :src="slotProps.option.thumb" alt="poster" class="w-4 rounded-sm" />
-				<span class="ml-4 text-left">{{ slotProps.option.username }}</span>
+				<!-- <img :src="slotProps.option.thumb" alt="poster" class="w-4 rounded-sm" /> -->
+				<span class="text-left">{{ slotProps.option.username }}</span>
 			</div>
 		</template>
 	</Select>
@@ -29,14 +29,23 @@ import { ref } from "vue";
 import Select from "primevue/select";
 import UsersService from "@/services/users-service";
 
+const props = withDefaults(
+	defineProps<{
+		filteredUsersIds?: number[];
+	}>(),
+	{
+		filteredUsersIds: () => [],
+	},
+);
 const emits = defineEmits(["selected"]);
 
 const options = ref([] as App.Http.Resources.Models.LightUserResource[]);
 const selectedTarget = ref(undefined as App.Http.Resources.Models.LightUserResource | undefined);
 
+console.log(props.filteredUsersIds);
 function load() {
 	UsersService.get().then((response) => {
-		options.value = response.data;
+		options.value = response.data.filter((user) => !props.filteredUsersIds.includes(user.id));
 	});
 }
 

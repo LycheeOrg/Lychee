@@ -61,7 +61,7 @@ class AddSharingRequest extends BaseApiRequest implements HasAlbumIds, HasUserId
 	{
 		$this->albumIds = $values[RequestAttribute::ALBUM_IDS_ATTRIBUTE];
 		$this->userIds = $values[RequestAttribute::USER_IDS_ATTRIBUTE];
-		$this->perm = new AccessPermissionResource(
+		$this->permResource = new AccessPermissionResource(
 			grants_edit: static::toBoolean($values[RequestAttribute::GRANTS_EDIT_ATTRIBUTE]),
 			grants_delete: static::toBoolean($values[RequestAttribute::GRANTS_DELETE_ATTRIBUTE]),
 			grants_download: static::toBoolean($values[RequestAttribute::GRANTS_DOWNLOAD_ATTRIBUTE]),

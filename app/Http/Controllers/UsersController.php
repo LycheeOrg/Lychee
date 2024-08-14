@@ -29,6 +29,6 @@ class UsersController extends Controller
 	 */
 	public function list(ListUsersRequest $_request): Collection
 	{
-		return LightUserResource::collect(User::where('id', '!=', Auth::id())->get());
+		return LightUserResource::collect(User::where('id', '!=', Auth::id())->orderBy('username')->get());
 	}
 }

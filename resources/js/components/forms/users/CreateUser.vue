@@ -52,7 +52,7 @@ function createUser() {
 		may_upload.value = false;
 		may_edit_own_settings.value = false;
 		username.value = undefined;
-		toast.add({ severity: "success", summary: "Success", detail: "User created" });
+		toast.add({ severity: "success", summary: "Success", detail: "User created", life: 3000 });
 		emits("createUser");
 	});
 }

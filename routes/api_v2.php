@@ -45,6 +45,14 @@ Route::post('/Album::transfer', [Gallery\AlbumController::class, 'transfer']);
 Route::post('/Album::move', [Gallery\AlbumController::class, 'move']);
 // Route::post('/Album::merge', [AlbumController::class, 'merge']);
 
+/**
+ * Sharing.
+ */
+Route::get('/Sharing', [Gallery\SharingController::class, 'list']);
+Route::post('/Sharing', [Gallery\SharingController::class, 'create']);
+Route::post('/Sharing::edit', [Gallery\SharingController::class, 'edit']);
+Route::post('/Sharing::delete', [Gallery\SharingController::class, 'delete']);
+
 // Route::post('/Albums::getPositionData', [AlbumsController::class, 'getPositionData'])->middleware(['login_required:root']);
 // Route::post('/Albums::tree', [AlbumsController::class, 'tree'])->middleware(['login_required:root']);
 

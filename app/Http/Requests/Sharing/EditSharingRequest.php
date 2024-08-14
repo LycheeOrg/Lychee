@@ -2,19 +2,19 @@
 
 namespace App\Http\Requests\Sharing;
 
+use App\Contracts\Http\Requests\HasAccessPermission;
 use App\Contracts\Http\Requests\HasAccessPermissionResource;
 use App\Contracts\Http\Requests\HasAlbumIds;
-use App\Contracts\Http\Requests\HasUserIds;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Contracts\Models\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasAccessPermissionResourceTrait;
+use App\Http\Requests\Traits\HasAccessPermissionTrait;
 use App\Http\Requests\Traits\HasAlbumIdsTrait;
-use App\Http\Requests\Traits\HasUserIdsTrait;
 use App\Http\Resources\Models\AccessPermissionResource;
+use App\Models\AccessPermission;
 use App\Policies\AlbumPolicy;
 use App\Rules\IntegerIDRule;
-use App\Rules\RandomIDRule;
 use Illuminate\Support\Facades\Gate;
 
 /**
@@ -22,10 +22,10 @@ use Illuminate\Support\Facades\Gate;
  *
  * Only the owner (or the admin) of the album can set the shares.
  */
-class EditSharingRequest extends BaseApiRequest implements HasAlbumIds, HasUserIds, HasAccessPermissionResource
+class EditSharingRequest extends BaseApiRequest implements HasAlbumIds, HasAccessPermission, HasAccessPermissionResource
 {
 	use HasAlbumIdsTrait;
-	use HasUserIdsTrait;
+	use HasAccessPermissionTrait;
 	use HasAccessPermissionResourceTrait;
 
 	/**
@@ -33,7 +33,7 @@ class EditSharingRequest extends BaseApiRequest implements HasAlbumIds, HasUserI
 	 */
 	public function authorize(): bool
 	{
-		return Gate::check(AlbumPolicy::CAN_SHARE_ID, [AbstractAlbum::class, $this->albumIDs]);
+		return Gate::check(AlbumPolicy::CAN_SHARE_WITH_USERS, [AbstractAlbum::class, $this->perm->album]);
 	}
 
 	/**
@@ -42,10 +42,7 @@ class EditSharingRequest extends BaseApiRequest implements HasAlbumIds, HasUserI
 	public function rules(): array
 	{
 		return [
-			RequestAttribute::ALBUM_IDS_ATTRIBUTE => 'required|array|min:1',
-			RequestAttribute::ALBUM_IDS_ATTRIBUTE . '.*' => ['required', new RandomIDRule(false)],
-			RequestAttribute::USER_IDS_ATTRIBUTE => 'required|array|min:1',
-			RequestAttribute::USER_IDS_ATTRIBUTE . '.*' => ['required', new IntegerIDRule(false)],
+			RequestAttribute::PERMISSION_ID => ['required', new IntegerIDRule(false)],
 			RequestAttribute::GRANTS_DOWNLOAD_ATTRIBUTE => ['required', 'boolean'],
 			RequestAttribute::GRANTS_FULL_PHOTO_ACCESS_ATTRIBUTE => ['required', 'boolean'],
 			RequestAttribute::GRANTS_UPLOAD_ATTRIBUTE => ['required', 'boolean'],
@@ -59,9 +56,11 @@ class EditSharingRequest extends BaseApiRequest implements HasAlbumIds, HasUserI
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->albumIds = $values[RequestAttribute::ALBUM_IDS_ATTRIBUTE];
-		$this->userIds = $values[RequestAttribute::USER_IDS_ATTRIBUTE];
-		$this->perm = new AccessPermissionResource(
+		/** @var int $id */
+		$id = $values[RequestAttribute::PERMISSION_ID];
+		$this->perm = AccessPermission::with(['album', 'user'])->findOrFail($id);
+
+		$this->permResource = new AccessPermissionResource(
 			grants_edit: static::toBoolean($values[RequestAttribute::GRANTS_EDIT_ATTRIBUTE]),
 			grants_delete: static::toBoolean($values[RequestAttribute::GRANTS_DELETE_ATTRIBUTE]),
 			grants_download: static::toBoolean($values[RequestAttribute::GRANTS_DOWNLOAD_ATTRIBUTE]),

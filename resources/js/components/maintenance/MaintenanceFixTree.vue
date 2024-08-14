@@ -47,7 +47,7 @@ function load() {
 function exec() {
 	loading.value = true;
 	MaintenanceService.treeDo().then((response) => {
-		toast.add({ severity: "success", summary: "Success" });
+		toast.add({ severity: "success", summary: "Success", life: 3000 });
 		loading.value = false;
 	});
 }

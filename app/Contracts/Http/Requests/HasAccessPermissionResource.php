@@ -9,5 +9,5 @@ interface HasAccessPermissionResource
 	/**
 	 * @return AccessPermissionResource
 	 */
-	public function perm(): AccessPermissionResource;
+	public function permResource(): AccessPermissionResource;
 }

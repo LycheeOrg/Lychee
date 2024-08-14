@@ -20,7 +20,6 @@ import { sprintf } from "sprintf-js";
 
 const props = defineProps<{
 	album: App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.SmartAlbumResource | App.Http.Resources.Models.TagAlbumResource;
-	is_base_album: boolean;
 	is_model_album: boolean;
 }>();
 
