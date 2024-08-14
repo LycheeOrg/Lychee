@@ -25,6 +25,7 @@ ignore:
 - "^app/Exceptions/.*"
 - "^app/Http/Middleware/VerifyCsrfToken.*"
 - "^app/Providers/BroadcastServiceProvider.*"
+- "^app/Livewire/.*"
 parsers:
   gcov:
     branch_detection:
