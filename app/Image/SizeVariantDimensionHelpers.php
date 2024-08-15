@@ -60,7 +60,8 @@ class SizeVariantDimensionHelpers
 			SizeVariantType::MEDIUM2X => Configs::getValueAsBool('medium_2x'),
 			SizeVariantType::SMALL2X => Configs::getValueAsBool('small_2x'),
 			SizeVariantType::THUMB2X => Configs::getValueAsBool('thumb_2x'),
-			SizeVariantType::SMALL, SizeVariantType::MEDIUM, SizeVariantType::THUMB, SizeVariantType::PLACEHOLDER => true, // TODO: Add config for placeholder
+			SizeVariantType::PLACEHOLDER => Configs::getValueAsBool('low_quality_image_placeholder'),
+			SizeVariantType::SMALL, SizeVariantType::MEDIUM, SizeVariantType::THUMB => true,
 			default => throw new InvalidSizeVariantException('unknown size variant: ' . $sizeVariant->value),
 		};
 	}

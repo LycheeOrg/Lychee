@@ -109,6 +109,7 @@ class ConfigurationResource extends JsonResource
 				'local_takestamp_video_formats' => Configs::getValueAsString('local_takestamp_video_formats'),
 				'log_max_num_line' => Configs::getValueAsInt('log_max_num_line'),
 				'lossless_optimization' => Configs::getValueAsBool('lossless_optimization'),
+				'low_quality_image_placeholder' => Configs::getValueAsBool('low_quality_image_placeholder'),
 				'medium_2x' => Configs::getValueAsBool('medium_2x'),
 				'medium_max_height' => Configs::getValueAsInt('medium_max_height'),
 				'medium_max_width' => Configs::getValueAsInt('medium_max_width'),
