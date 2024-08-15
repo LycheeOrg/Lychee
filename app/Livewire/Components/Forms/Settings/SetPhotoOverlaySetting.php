@@ -3,6 +3,7 @@
 namespace App\Livewire\Components\Forms\Settings;
 
 use App\Enum\ImageOverlayType;
+use App\Legacy\EnumLocalization;
 use App\Livewire\Components\Forms\Settings\Base\BaseConfigDropDown;
 use App\Models\Configs;
 
@@ -18,7 +19,7 @@ class SetPhotoOverlaySetting extends BaseConfigDropDown
 	 */
 	public function getOptionsProperty(): array
 	{
-		return ImageOverlayType::localized();
+		return EnumLocalization::of(ImageOverlayType::class);
 	}
 
 	/**

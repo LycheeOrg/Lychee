@@ -27,21 +27,4 @@ enum AspectRatioType: string
 			self::aspect1byx9 => AspectRatioCSSType::aspect1byx9,
 		};
 	}
-
-	/**
-	 * Convert the enum into it's translated format.
-	 *
-	 * @return array<string,string>
-	 */
-	public static function localized(): array
-	{
-		return [
-			self::aspect5by4->value => __('aspect_ratio.5by4'),
-			self::aspect4by5->value => __('aspect_ratio.4by5'),
-			self::aspect2by3->value => __('aspect_ratio.2by3'),
-			self::aspect3by2->value => __('aspect_ratio.3by2'),
-			self::aspect1by1->value => __('aspect_ratio.1by1'),
-			self::aspect1byx9->value => __('aspect_ratio.1byx9'),
-		];
-	}
 }

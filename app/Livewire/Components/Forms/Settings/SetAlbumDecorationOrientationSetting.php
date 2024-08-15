@@ -3,6 +3,7 @@
 namespace App\Livewire\Components\Forms\Settings;
 
 use App\Enum\AlbumDecorationOrientation;
+use App\Legacy\EnumLocalization;
 use App\Livewire\Components\Forms\Settings\Base\BaseConfigDropDown;
 use App\Models\Configs;
 
@@ -18,7 +19,7 @@ class SetAlbumDecorationOrientationSetting extends BaseConfigDropDown
 	 */
 	public function getOptionsProperty(): array
 	{
-		return AlbumDecorationOrientation::localized();
+		return EnumLocalization::of(AlbumDecorationOrientation::class);
 	}
 
 	/**

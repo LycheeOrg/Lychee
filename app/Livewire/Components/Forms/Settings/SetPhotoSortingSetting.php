@@ -4,6 +4,7 @@ namespace App\Livewire\Components\Forms\Settings;
 
 use App\Enum\ColumnSortingPhotoType;
 use App\Enum\OrderSortingType;
+use App\Legacy\EnumLocalization;
 use App\Livewire\Components\Forms\Settings\Base\BaseConfigDoubleDropDown;
 use App\Models\Configs;
 use function Safe\preg_match;
@@ -41,7 +42,7 @@ class SetPhotoSortingSetting extends BaseConfigDoubleDropDown
 	 */
 	public function getOptions1Property(): array
 	{
-		return ColumnSortingPhotoType::localized();
+		return EnumLocalization::of(ColumnSortingPhotoType::class);
 	}
 
 	/**
@@ -51,6 +52,6 @@ class SetPhotoSortingSetting extends BaseConfigDoubleDropDown
 	 */
 	public function getOptions2Property(): array
 	{
-		return OrderSortingType::localized();
+		return EnumLocalization::of(OrderSortingType::class);
 	}
 }

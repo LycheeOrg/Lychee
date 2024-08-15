@@ -3,6 +3,7 @@
 namespace App\Livewire\Components\Forms\Settings;
 
 use App\Enum\PhotoLayoutType;
+use App\Legacy\EnumLocalization;
 use App\Livewire\Components\Forms\Settings\Base\BaseConfigDropDown;
 use App\Models\Configs;
 
@@ -18,7 +19,7 @@ class SetLayoutSetting extends BaseConfigDropDown
 	 */
 	public function getOptionsProperty(): array
 	{
-		return PhotoLayoutType::localized();
+		return EnumLocalization::of(PhotoLayoutType::class);
 	}
 
 	/**

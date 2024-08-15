@@ -11,6 +11,7 @@ use App\Enum\ColumnSortingPhotoType;
 use App\Enum\LicenseType;
 use App\Enum\OrderSortingType;
 use App\Factories\AlbumFactory;
+use App\Legacy\EnumLocalization;
 use App\Legacy\V1\Contracts\Http\Requests\RequestAttribute;
 use App\Livewire\Traits\Notify;
 use App\Livewire\Traits\UseValidator;
@@ -165,7 +166,7 @@ class Properties extends Component
 	final public function getPhotoSortingColumnsProperty(): array
 	{
 		// ? Dark magic: The ... will expand the array.
-		return ['' => '-', ...ColumnSortingPhotoType::localized()];
+		return ['' => '-', ...EnumLocalization::of(ColumnSortingPhotoType::class)];
 	}
 
 	/**
@@ -176,7 +177,7 @@ class Properties extends Component
 	final public function getAlbumSortingColumnsProperty(): array
 	{
 		// ? Dark magic: The ... will expand the array.
-		return ['' => '-', ...ColumnSortingAlbumType::localized()];
+		return ['' => '-', ...EnumLocalization::of(ColumnSortingAlbumType::class)];
 	}
 
 	/**
@@ -187,7 +188,7 @@ class Properties extends Component
 	final public function getSortingOrdersProperty(): array
 	{
 		// ? Dark magic: The ... will expand the array.
-		return ['' => '-', ...OrderSortingType::localized()];
+		return ['' => '-', ...EnumLocalization::of(OrderSortingType::class)];
 	}
 
 	/**
@@ -198,7 +199,7 @@ class Properties extends Component
 	final public function getAspectRatiosProperty(): array
 	{
 		// ? Dark magic: The ... will expand the array.
-		return ['' => '-', ...AspectRatioType::localized()];
+		return ['' => '-', ...EnumLocalization::of(AspectRatioType::class)];
 	}
 
 	/**
