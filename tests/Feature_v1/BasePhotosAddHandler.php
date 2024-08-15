@@ -338,6 +338,7 @@ abstract class BasePhotosAddHandler extends BasePhotoTest
 				'small' => ['width' => 480, 'height' => 360],
 				'thumb2x' => ['width' => 400, 'height' => 400],
 				'thumb' => ['width' => 200,	'height' => 200],
+				'placeholder' => ['width' => 16, 'height' => 16],
 			],
 			'live_photo_url' => null,
 		]);
@@ -363,6 +364,10 @@ abstract class BasePhotosAddHandler extends BasePhotoTest
 			'title' => 'gaming',
 			'type' => TestConstants::MIME_TYPE_VID_MP4,
 			'size_variants' => [
+				'placeholder' => [
+					'width' => 16,
+					'height' => 16,
+				],
 				'thumb' => [
 					'width' => 200,
 					'height' => 200,
@@ -422,6 +427,7 @@ abstract class BasePhotosAddHandler extends BasePhotoTest
 				'small' => null,
 				'thumb2x' => null,
 				'thumb' => null,
+				'placeholder' => null,
 			],
 		]);
 
@@ -464,6 +470,7 @@ abstract class BasePhotosAddHandler extends BasePhotoTest
 			'shutter' => '1/250 s',
 			'type' => TestConstants::MIME_TYPE_IMG_JPEG,
 			'size_variants' => [
+				'placeholder' => ['width' => 16, 'height' => 16],
 				'thumb' => ['width' => 200, 'height' => 200],
 				'thumb2x' => ['width' => 400, 'height' => 400],
 				'small' => ['width' => 529,	'height' => 360],
