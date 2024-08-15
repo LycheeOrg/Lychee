@@ -263,7 +263,7 @@ return [
 		'UserPolicy' => App\Policies\UserPolicy::class,
 		'User' => App\Models\User::class,
 		'SizeVariantType' => App\Enum\SizeVariantType::class,
-		'FileStatus' => App\Enum\Livewire\FileStatus::class,
+		'FileStatus' => App\Enum\FileStatus::class,
 		'Params' => App\Contracts\Livewire\Params::class,
 		'PhotoLayoutType' => \App\Enum\PhotoLayoutType::class,
 	])->toArray(),

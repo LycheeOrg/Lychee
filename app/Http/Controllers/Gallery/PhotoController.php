@@ -22,4 +22,8 @@ class PhotoController extends Controller
 	{
 		return new PhotoResource($request->photo());
 	}
+
+	public function upload(): void
+	{
+	}
 }

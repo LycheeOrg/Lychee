@@ -4,7 +4,7 @@ namespace App\Livewire\Components\Forms\Add;
 
 use App\Contracts\Livewire\Params;
 use App\Contracts\Models\AbstractAlbum;
-use App\Enum\Livewire\FileStatus;
+use App\Enum\FileStatus;
 use App\Enum\SmartAlbumType;
 use App\Exceptions\PhotoSkippedException;
 use App\Facades\Helpers;

@@ -4,7 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\Internal\FrameworkException;
-use App\Exceptions\Internal\LycheeLogicException;
+use App\Exceptions\Internal\LycheeInvalidArgumentException;
 use App\Exceptions\UnauthenticatedException;
 use App\Models\Configs;
 use Illuminate\Http\Request;
@@ -36,7 +36,7 @@ class LoginRequired
 	public function handle(Request $request, \Closure $next, string $requiredStatus): mixed
 	{
 		if (in_array($requiredStatus, [self::ALBUM, self::ROOT], true) === false) {
-			throw new LycheeLogicException($requiredStatus . ' is not a valid login requirement.');
+			throw new LycheeInvalidArgumentException($requiredStatus . ' is not a valid login requirement.');
 		}
 
 		// We are logged in. Proceed.

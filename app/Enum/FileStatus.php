@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Enum\Livewire;
+namespace App\Enum;
 
 enum FileStatus: string
 {

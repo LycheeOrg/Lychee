@@ -24,9 +24,10 @@ ignore:
 - "^app/Console/.*"
 - "^app/Exceptions/.*"
 - "^app/Http/Middleware/VerifyCsrfToken.*"
+- "^app/Http/Middleware/VerifyCsrfToken.*"
 - "^app/Providers/BroadcastServiceProvider.*"
 # We do not test those
-- "^app/Mails/.*"
+- "^app/Mail/.*"
 - "^app/Notifications/.*"
 # Legacy shit
 - "^app/Livewire/.*"

@@ -53,6 +53,29 @@ class AlbumFactory
 	}
 
 	/**
+	 * Same as above but in the case of albumID being null, it returns null.
+	 *
+	 * @param string|null $albumID       the ID of the requested album
+	 * @param bool        $withRelations indicates if the relations of an
+	 *                                   album (i.e. photos and sub-albums,
+	 *                                   if applicable) shall be loaded, too.
+	 *
+	 * @return AbstractAlbum|null the album for the ID or null if ID is null
+	 *
+	 * @throws ModelNotFoundException  thrown, if no album with the given ID exists
+	 * @throws InvalidSmartIdException should not be thrown; otherwise this
+	 *                                 indicates an internal bug
+	 */
+	public function findNullalbleAbstractAlbumOrFail(?string $albumID, bool $withRelations = true): ?AbstractAlbum
+	{
+		if ($albumID === null) {
+			return null;
+		}
+
+		return $this->findAbstractAlbumOrFail($albumID, $withRelations);
+	}
+
+	/**
 	 * Returns an existing model instance of an album with the given ID or
 	 * fails with an exception.
 	 *
