@@ -10,9 +10,17 @@ use App\Enum\ColumnSortingPhotoType;
 use App\Enum\ImageOverlayType;
 use App\Enum\OrderSortingType;
 use App\Enum\PhotoLayoutType;
+use Illuminate\Contracts\Container\BindingResolutionException;
 
 class EnumLocalization
 {
+	/**
+	 * @param string $class
+	 *
+	 * @return array<string,string>
+	 *
+	 * @throws BindingResolutionException
+	 */
 	public static function of(string $class): array
 	{
 		return match ($class) {
@@ -68,6 +76,7 @@ class EnumLocalization
 				PhotoLayoutType::MASONRY->value => __('lychee.LAYOUT_MASONRY'),
 				PhotoLayoutType::GRID->value => __('lychee.LAYOUT_GRID'),
 			],
+			default => [],
 		};
 	}
 }

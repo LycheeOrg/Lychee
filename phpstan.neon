@@ -154,3 +154,8 @@ parameters:
 			message: '#Access to private property App\\Models\\Extensions\\SizeVariants::\$(original|small(2x)?|thumb(2x)?|medium(2x)?)#'
 			paths:
 				- tests
+		-
+			message: '#Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage::once\(\).#'
+			paths:
+				- tests
+				
