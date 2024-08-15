@@ -5,6 +5,7 @@ namespace App\Http\Requests\Photo;
 use App\Contracts\Http\Requests\HasAbstractAlbum;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Contracts\Models\AbstractAlbum;
+use App\Enum\FileStatus;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\Authorize\AuthorizeCanEditAlbumTrait;
 use App\Http\Requests\Traits\HasAbstractAlbumTrait;
@@ -19,14 +20,11 @@ class UploadPhotoRequest extends BaseApiRequest implements HasAbstractAlbum
 	use HasAbstractAlbumTrait;
 	use AuthorizeCanEditAlbumTrait;
 
-	protected ?int $fileLastModifiedTime;
+	protected ?int $file_last_modified_time;
 	// protected UploadedFile $file;
-	protected string $fileName;
-	protected UploadedFile $fileChunk;
+	protected UploadedFile $file_chunk;
 	protected UploadMetaResource $meta;
-	protected int $lastModified;
-	protected int $fileSize;
-	protected int $progress;
+	protected int $file_size;
 
 	/**
 	 * {@inheritDoc}
@@ -45,6 +43,10 @@ class UploadPhotoRequest extends BaseApiRequest implements HasAbstractAlbum
 			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['present', new AlbumIDRule(true)],
 			RequestAttribute::FILE_LAST_MODIFIED_TIME => 'sometimes|nullable|numeric',
 			RequestAttribute::FILE_ATTRIBUTE => 'required|file',
+			'uuidName' => 'required|string|nullable',
+			'extension' => 'required|string|nullable',
+			'chunkNumber' => 'required|integer|min:1',
+			'totalChunks' => 'required|integer',
 		];
 	}
 
@@ -56,17 +58,30 @@ class UploadPhotoRequest extends BaseApiRequest implements HasAbstractAlbum
 		$this->album = $this->albumFactory->findNullalbleAbstractAlbumOrFail($values[RequestAttribute::ALBUM_ID_ATTRIBUTE]);
 		// Convert the File Last Modified to seconds instead of milliseconds
 		$val = $values[RequestAttribute::FILE_LAST_MODIFIED_TIME] ?? null;
-		$this->fileLastModifiedTime = $val !== null ? intval($val) : null;
-		$this->fileChunk = $files[RequestAttribute::FILE_ATTRIBUTE];
+		$this->file_last_modified_time = $val !== null ? intval($val) : null;
+		$this->file_chunk = $files[RequestAttribute::FILE_ATTRIBUTE];
+		$this->meta = new UploadMetaResource(
+			file_name: $this->file_chunk->getClientOriginalName(),
+			extension: $values['extension'] ?? null,
+			uuid_name: $values['uuidName'] ?? null,
+			stage: FileStatus::UPLOADING,
+			chunk_number: $values['chunkNumber'],
+			total_chunks: $values['totalChunks'],
+		);
 	}
 
-	public function uploadedFileChunk(): UploadedFile
+	public function uploaded_file_chunk(): UploadedFile
 	{
-		return $this->fileChunk;
+		return $this->file_chunk;
 	}
 
-	public function fileLastModifiedTime(): ?int
+	public function file_last_modified_time(): ?int
 	{
-		return $this->fileLastModifiedTime !== null ? intval($this->fileLastModifiedTime / 1000) : null;
+		return $this->file_last_modified_time !== null ? intval($this->file_last_modified_time / 1000) : null;
+	}
+
+	public function meta(): UploadMetaResource
+	{
+		return $this->meta;
 	}
 }
