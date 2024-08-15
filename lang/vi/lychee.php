@@ -493,6 +493,7 @@ return [
 	'PHOTO_SMALL_HIDPI' => 'Độ phân giải cho hình nhỏ HiDPI',
 	'PHOTO_THUMB' => 'Ô vuông nhỏ',
 	'PHOTO_THUMB_HIDPI' => 'Độ phân giải cho hình ô vuông nhỏ HiDPI',
+	'PHOTO_PLACEHOLDER' => 'Low Quality Image Placeholder',
 	'PHOTO_THUMBNAIL' => 'Hình thu nhỏ của hình ảnh gốc',
 	'PHOTO_LIVE_VIDEO' => 'Phần video của hình động live-photo',
 	'PHOTO_VIEW' => 'Khung hiển thị hình ảnh Lychee:',

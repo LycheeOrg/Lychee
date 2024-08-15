@@ -493,6 +493,7 @@ return [
 	'PHOTO_SMALL_HIDPI' => '缩略图 HiDPI',
 	'PHOTO_THUMB' => '方形缩略图',
 	'PHOTO_THUMB_HIDPI' => '方形缩略图 HiDPI',
+	'PHOTO_PLACEHOLDER' => 'Low Quality Image Placeholder',
 	'PHOTO_THUMBNAIL' => 'Photo thumbnail',
 	'PHOTO_LIVE_VIDEO' => '实况照片（Live-Photo）的视频部分',
 	'PHOTO_VIEW' => 'Lychee 照片查看:',

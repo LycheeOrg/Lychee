@@ -493,6 +493,7 @@ return [
 	'PHOTO_SMALL_HIDPI' => '低解析度',
 	'PHOTO_THUMB' => '方形圖',
 	'PHOTO_THUMB_HIDPI' => '方形解析度',
+	'PHOTO_PLACEHOLDER' => 'Low Quality Image Placeholder',
 	'PHOTO_THUMBNAIL' => 'Photo thumbnail',
 	'PHOTO_LIVE_VIDEO' => '實時照片的視頻部分',
 	'PHOTO_VIEW' => 'Lychee照片瀏覽：',

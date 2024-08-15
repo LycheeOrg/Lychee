@@ -491,6 +491,7 @@ return [
 	'PHOTO_SMALL_HIDPI' => 'Bélyegkép HiDPI',
 	'PHOTO_THUMB' => 'Négyzetes bélyegkép',
 	'PHOTO_THUMB_HIDPI' => 'Négyzetes bélyegkép HiDPI',
+	'PHOTO_PLACEHOLDER' => 'Low Quality Image Placeholder',
 	'PHOTO_THUMBNAIL' => 'Kép bélyegképe',
 	'PHOTO_LIVE_VIDEO' => 'Videó része a live-fotónak',
 	'PHOTO_VIEW' => 'Lychee Kép Megtekintés:',
