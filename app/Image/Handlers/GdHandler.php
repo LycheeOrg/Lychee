@@ -221,7 +221,7 @@ class GdHandler extends BaseImageHandler
 	/**
 	 * {@inheritDoc}
 	 */
-	public function save(MediaFile $file, bool $collectStatistics = false): ?StreamStats
+	public function save(MediaFile $file, ?int $compressionQuality = null, bool $collectStatistics = false): ?StreamStats
 	{
 		if ($this->gdImage === null) {
 			throw new MediaFileOperationException('No image loaded');

@@ -71,13 +71,18 @@ class ImagickHandler extends BaseImageHandler
 	/**
 	 * {@inheritDoc}
 	 */
-	public function save(MediaFile $file, bool $collectStatistics = false): ?StreamStats
+	public function save(MediaFile $file, ?int $compressionQuality = null, bool $collectStatistics = false): ?StreamStats
 	{
 		if ($this->imImage === null) {
 			throw new MediaFileOperationException('No image loaded');
 		}
 		try {
-			$this->imImage->setImageCompressionQuality($this->compressionQuality);
+			if ($compressionQuality !== null) {
+				$this->imImage->setImageCompressionQuality($compressionQuality);
+			} else {
+				$this->imImage->setImageCompressionQuality($this->compressionQuality);
+			}
+
 			$profiles = $this->imImage->getImageProfiles('icc', true);
 			// Remove metadata to save some bytes
 			$this->imImage->stripImage();
