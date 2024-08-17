@@ -1,5 +1,6 @@
 <template>
 	<LoginModal v-if="user?.id === null" :visible="isLoginOpen" @logged-in="refresh" />
+	<UploadPanel v-if="user?.id !== null" :visible="isUploadOpen" @close="isUploadOpen = false" />
 	<Toolbar class="w-full border-0">
 		<template #start>
 			<Button
@@ -64,9 +65,12 @@ import Button from "primevue/button";
 import Toolbar from "primevue/toolbar";
 import { Ref, ref } from "vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
+import UploadPanel from "@/components/modals/UploadPanel.vue";
+import { onKeyStroke } from "@vueuse/core";
 
 const title = ref("Albums");
 const isLoginOpen = ref(false);
+const isUploadOpen = ref(false);
 const user = ref(undefined) as Ref<undefined | App.Http.Resources.Models.UserResource>;
 
 const smartAlbums = ref([]) as Ref<App.Http.Resources.Models.ThumbAlbumResource[]>;
@@ -109,6 +113,10 @@ const emit = defineEmits(["toggleLeftMenu"]);
 function openLeftMenu() {
 	lycheeStore.toggleLeftMenu();
 }
+
+onKeyStroke("u", () => {
+	isUploadOpen.value = !isUploadOpen.value;
+});
 
 refresh();
 </script>

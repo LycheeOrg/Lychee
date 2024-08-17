@@ -165,6 +165,17 @@ const LycheePrimeVueConfig = {
 		},
 	},
 	components: {
+		progressbar: {
+			height: "0.25rem",
+			colorScheme: {
+				light: {
+					background: "{surface.300}",
+				},
+				dark: {
+					background: "{surface.700}",
+				},
+			},
+		},
 		progressspinner: {
 			colorScheme: {
 				light: {},

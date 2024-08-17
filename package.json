@@ -30,6 +30,7 @@
         "@primevue/themes": "^4.0.0-rc.2",
         "@sidsbrmnn/scrollspy": "^1.1.0",
         "@types/justified-layout": "^4.1.4",
+        "@vueuse/core": "^11.0.0",
         "autoprefixer": "^10.4.19",
         "axios": "^1.7.2",
         "is-mobile": "^4.0.0",

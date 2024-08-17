@@ -101,6 +101,10 @@ Route::post('/Sharing::delete', [Gallery\SharingController::class, 'delete']);
  * PHOTO.
  */
 Route::get('/Photo', [Gallery\PhotoController::class, 'get'])->middleware(['login_required:album']);
+Route::post('/Photo', [Gallery\PhotoController::class, 'upload'])
+	->withoutMiddleware(['content_type:json'])
+	->middleware(['content_type:multipart']);
+
 // Route::post('/Photo::getRandom', [PhotoController::class, 'getRandom']);
 // Route::post('/Photo::setTitle', [PhotoController::class, 'setTitle']);
 // Route::post('/Photo::setDescription', [PhotoController::class, 'setDescription']);

@@ -43,10 +43,11 @@ class UploadPhotoRequest extends BaseApiRequest implements HasAbstractAlbum
 			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['present', new AlbumIDRule(true)],
 			RequestAttribute::FILE_LAST_MODIFIED_TIME => 'sometimes|nullable|numeric',
 			RequestAttribute::FILE_ATTRIBUTE => 'required|file',
-			'uuidName' => 'required|string|nullable',
-			'extension' => 'required|string|nullable',
-			'chunkNumber' => 'required|integer|min:1',
-			'totalChunks' => 'required|integer',
+			'file_name' => 'required|string',
+			'uuid_name' => 'present|string|nullable',
+			'extension' => 'present|string|nullable',
+			'chunk_number' => 'required|integer|min:1',
+			'total_chunks' => 'required|integer',
 		];
 	}
 
@@ -61,12 +62,12 @@ class UploadPhotoRequest extends BaseApiRequest implements HasAbstractAlbum
 		$this->file_last_modified_time = $val !== null ? intval($val) : null;
 		$this->file_chunk = $files[RequestAttribute::FILE_ATTRIBUTE];
 		$this->meta = new UploadMetaResource(
-			file_name: $this->file_chunk->getClientOriginalName(),
+			file_name: $values['file_name'],
 			extension: $values['extension'] ?? null,
-			uuid_name: $values['uuidName'] ?? null,
+			uuid_name: $values['uuid_name'] ?? null,
 			stage: FileStatus::UPLOADING,
-			chunk_number: $values['chunkNumber'],
-			total_chunks: $values['totalChunks'],
+			chunk_number: $values['chunk_number'],
+			total_chunks: $values['total_chunks'],
 		);
 	}
 

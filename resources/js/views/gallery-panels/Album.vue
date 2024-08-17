@@ -26,12 +26,12 @@
 		</template>
 	</Toolbar>
 	<template v-if="config && album">
-		<div v-if="noData" class="flex w-full h-full items-center justify-center text-xl text-muted-color">
+		<div v-if="noData" class="flex w-full h-[calc(100vh-100px)] items-center justify-center text-xl text-muted-color">
 			<span class="block">
 				{{ "Nothing to see here" }}
 			</span>
 		</div>
-		<div class="relative flex flex-wrap content-start w-full justify-start overflow-y-auto h-[calc(100vh-66px)]">
+		<div v-if="!noData" class="relative flex flex-wrap content-start w-full justify-start overflow-y-auto h-[calc(100vh-66px)]">
 			<AlbumEdit v-model="areDetailsOpen" v-if="album.rights.can_edit" :album="album" :config="config" />
 			<AlbumHero :album="album" @open-sharing-modal="openSharingModal" />
 			<AlbumThumbPanel

@@ -89,7 +89,7 @@ class RequestAttribute
 	public const IMPORT_VIA_SYMLINK_ATTRIBUTE = 'import_via_symlink';
 	public const RESYNC_METADATA_ATTRIBUTE = 'resync_metadata';
 
-	public const FILE_LAST_MODIFIED_TIME = 'fileLastModifiedTime';
+	public const FILE_LAST_MODIFIED_TIME = 'file_last_modified_time';
 
 	public const COPYRIGHT_ATTRIBUTE = 'copyright';
 	public const URLS_ATTRIBUTE = 'urls';

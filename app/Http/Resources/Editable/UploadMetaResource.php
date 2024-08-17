@@ -10,7 +10,7 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 class UploadMetaResource extends Data
 {
 	public function __construct(
-		public ?string $file_name,
+		public string $file_name,
 		public ?string $extension,
 		public ?string $uuid_name,
 		public FileStatus $stage,

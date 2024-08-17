@@ -34,6 +34,7 @@ declare namespace App.Enum {
 	export type DbDriverType = "mysql" | "pgsql" | "sqlite";
 	export type DefaultAlbumProtectionType = 1 | 2 | 3;
 	export type DownloadVariantType = "LIVEPHOTOVIDEO" | "ORIGINAL" | "MEDIUM2X" | "MEDIUM" | "SMALL2X" | "SMALL" | "THUMB2X" | "THUMB";
+	export type FileStatus = "uploading" | "processing" | "ready" | "skipped" | "done" | "error";
 	export type ImageOverlayType = "none" | "desc" | "date" | "exif";
 	export type JobStatus = 0 | 1 | 2 | 3;
 	export type LicenseType =
@@ -84,7 +85,6 @@ declare namespace App.Enum {
 	export type VersionChannelType = "release" | "git" | "tag";
 }
 declare namespace App.Enum.Livewire {
-	export type FileStatus = "uploading" | "processing" | "ready" | "skipped" | "done" | "error";
 	export type NotificationType = "success" | "error" | "info" | "warning";
 }
 declare namespace App.Http.Resources {
@@ -177,6 +177,14 @@ declare namespace App.Http.Resources.Editable {
 	export type EditableConfigResource = {
 		key: string;
 		value: string | null;
+	};
+	export type UploadMetaResource = {
+		file_name: string;
+		extension: string | null;
+		uuid_name: string | null;
+		stage: App.Enum.FileStatus;
+		chunk_number: number;
+		total_chunks: number;
 	};
 }
 declare namespace App.Http.Resources.GalleryConfigs {
