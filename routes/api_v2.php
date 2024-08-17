@@ -30,6 +30,7 @@ Route::get('/LandingPage', [LandingPageController::class, '__invoke']);
 // Route::get('/Config::init', [ConfigController::class, 'init']);
 Route::get('/Gallery::getLayout', [Gallery\ConfigController::class, 'getGalleryLayout']);
 Route::get('/Gallery::getMapProvider', [Gallery\ConfigController::class, 'getMapProvider']);
+Route::get('/Gallery::getUploadLimits', [Gallery\ConfigController::class, 'getUploadCOnfig']);
 
 /**
  * ALBUMS.

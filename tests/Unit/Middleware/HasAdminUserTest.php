@@ -16,12 +16,15 @@ use App\Exceptions\AdminUserRequiredException;
 use App\Exceptions\Internal\LycheeInvalidArgumentException;
 use App\Http\Middleware\AdminUserStatus;
 use App\Http\Middleware\Checks\HasAdminUser;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Http\Request;
 use Mockery\MockInterface;
 use Tests\AbstractTestCase;
 
 class HasAdminUserTest extends AbstractTestCase
 {
+	use DatabaseTransactions;
+
 	public function testExceptionAdminUnset(): void
 	{
 		$mock = $this->mock(HasAdminUser::class, function (MockInterface $mock) {

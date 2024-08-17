@@ -16,11 +16,14 @@ use App\Exceptions\Internal\LycheeInvalidArgumentException;
 use App\Exceptions\UnauthenticatedException;
 use App\Http\Middleware\LoginRequired;
 use App\Models\Configs;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Http\Request;
 use Tests\AbstractTestCase;
 
 class LoginRequiredTest extends AbstractTestCase
 {
+	use DatabaseTransactions;
+
 	public function testExceptionLoginRequired(): void
 	{
 		Configs::where('key', 'login_required')->update(['value' => '1']);

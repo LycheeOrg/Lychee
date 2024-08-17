@@ -13,12 +13,10 @@ class RootAlbumRightsResource extends Data
 {
 	public bool $can_edit;
 	public bool $can_upload;
-	public bool $can_import_from_server;
 
 	public function __construct()
 	{
 		$this->can_edit = Gate::check(AlbumPolicy::CAN_UPLOAD, [AbstractAlbum::class, null]);
 		$this->can_upload = Gate::check(AlbumPolicy::CAN_UPLOAD, [AbstractAlbum::class, null]);
-		$this->can_import_from_server = Gate::check(AlbumPolicy::CAN_IMPORT_FROM_SERVER, [AbstractAlbum::class]);
 	}
 }

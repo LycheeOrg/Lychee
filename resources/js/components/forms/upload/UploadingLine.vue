@@ -3,7 +3,7 @@
 		<div class="flex gap-4 justify-between relative">
 			<span class="text-ellipsis min-w-0 w-full overflow-hidden text-nowrap">{{ file.name }}</span>
 			<span :class="statusClass" v-if="progress < 100 && progress > 0">{{ progress }}%</span>
-			<span :class="statusClass">{{ status }}</span>
+			<span :class="statusClass">{{ statusMessage }}</span>
 		</div>
 		<span class="text-center w-full hidden group-hover:block text-danger-700 cursor-pointer" @click="controller.abort()">{{
 			$t("lychee.CANCEL")
@@ -14,8 +14,20 @@
 <script setup lang="ts">
 import UploadService, { UploadData } from "@/services/upload-service";
 import { AxiosProgressEvent } from "axios";
+import { trans } from "laravel-vue-i18n";
 import ProgressBar from "primevue/progressbar";
 import { computed, ref, watch } from "vue";
+
+//  'UPLOAD_UPLOADING' => 'Uploading',
+// 	'UPLOAD_FINISHED' => 'Finished',
+// 	'UPLOAD_PROCESSING' => 'Processing',
+// 	'UPLOAD_FAILED' => 'Failed',
+// 	'UPLOAD_FAILED_ERROR' => 'Upload failed. The server returned an error!',
+// 	'UPLOAD_FAILED_WARNING' => 'Upload failed. The server returned a warning!',
+// 	'UPLOAD_CANCELLED' => 'Cancelled',
+// 	'UPLOAD_SKIPPED' => 'Skipped',
+// 	'UPLOAD_UPDATED' => 'Updated',
+// 	'UPLOAD_GENERAL' => 'General',
 
 const props = withDefaults(
 	defineProps<{
@@ -46,6 +58,19 @@ const meta = ref({
 	total_chunks: Math.ceil(size.value / props.chunkSize),
 } as App.Http.Resources.Editable.UploadMetaResource);
 const controller = ref(new AbortController());
+
+const statusMessage = computed(() => {
+	switch (status.value) {
+		case "uploading":
+			return trans("lychee.UPLOAD_UPLOADING");
+		case "done":
+			return trans("lychee.UPLOAD_FINISHED");
+		case "error":
+			return trans("lychee.UPLOAD_FAILED_ERROR");
+		default:
+			return "";
+	}
+});
 
 const statusClass = computed(() => {
 	switch (status.value) {

@@ -1,5 +1,6 @@
 <template>
 	<LoginModal :visible="isLoginOpen" @logged-in="refresh" />
+	<UploadPanel v-if="canUpload" :visible="isUploadOpen" @close="isUploadOpen = false" :album-id="albumid" />
 	<Toolbar class="w-full border-0" v-if="album">
 		<template #start>
 			<Button icon="pi pi-angle-left" class="mr-2" severity="secondary" text @click="goBack" />
@@ -67,7 +68,10 @@ import PhotoThumbPanel from "@/components/gallery/PhotoThumbPanel.vue";
 import ShareAlbum from "@/components/modals/ShareAlbum.vue";
 import AlbumHero from "@/components/gallery/AlbumHero.vue";
 import AlbumEdit from "@/components/drawers/AlbumEdit.vue";
+import UploadPanel from "@/components/modals/UploadPanel.vue";
+import { onKeyStroke } from "@vueuse/core";
 
+const isUploadOpen = ref(false);
 const areDetailsOpen = ref(false);
 const router = useRouter();
 const props = defineProps<{
@@ -87,6 +91,7 @@ const children = ref([]) as Ref<App.Http.Resources.Models.ThumbAlbumResource[]>;
 const photos = ref([]) as Ref<App.Http.Resources.Models.PhotoResource[]>;
 const route = useRoute();
 const noData = computed(() => (children.value === null || children.value.length === 0) && (photos.value === null || photos.value.length === 0));
+const canUpload = computed(() => user.value?.id !== null && album.value?.rights.can_upload === true);
 
 function goBack() {
 	if (config.value?.is_model_album === true && (album.value as App.Http.Resources.Models.AlbumResource | null)?.parent_id !== null) {
@@ -153,4 +158,8 @@ watch(
 		refresh();
 	},
 );
+
+onKeyStroke("u", () => {
+	isUploadOpen.value = !isUploadOpen.value;
+});
 </script>

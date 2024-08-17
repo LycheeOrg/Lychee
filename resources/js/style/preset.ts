@@ -303,6 +303,50 @@ const LycheePrimeVueConfig = {
 				},
 			},
 		},
+		contextmenu: {
+			colorScheme: {
+				light: {
+					// option: {
+					// 	color: "{surface.500}",
+					// 	focus: {
+					// 		background: "linear-gradient({primary.500}, {primary.600})",
+					// 		color: "{surface.0}",
+					// 	},
+					// },
+				},
+				dark: {
+					root: {
+						background: "{surface.800}",
+						color: "{surface.200}",
+						border: {
+							color: "{surface.900}",
+						},
+					},
+					item: {
+						color: "{surface.400}",
+						padding: "0.1rem 0.75rem",
+						focus: {
+							background: "linear-gradient({primary.500}, {primary.600})",
+							color: "{surface.0}",
+						},
+					},
+					// option: {
+					// 	color: "{surface.400}",
+					// 	focus: {
+					// 		background: "linear-gradient({primary.500}, {primary.600})",
+					// 		color: "{surface.0}",
+					// 	},
+					// },
+					// overlay: {
+					// 	background: "{surface.900}",
+					// 	border: {
+					// 		color: "{surface.800}",
+					// 	},
+					// },
+					// color: "{surface.300}",
+				},
+			},
+		},
 		fieldset: {
 			colorScheme: {
 				light: {},
@@ -427,7 +471,6 @@ const LycheePrimeVueConfig = {
 				},
 			},
 		},
-
 		select: {
 			background: "transparent",
 			border: {

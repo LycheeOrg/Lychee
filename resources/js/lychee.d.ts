@@ -220,6 +220,10 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		album_thumb_css_aspect_ratio: App.Enum.AspectRatioType;
 		album_subtitle_type: App.Enum.ThumbAlbumSubtitleType;
 	};
+	export type UploadConfig = {
+		upload_processing_limit: number;
+		upload_chunk_size: number;
+	};
 }
 declare namespace App.Http.Resources.Models {
 	export type AbstractAlbumResource = {
@@ -473,7 +477,6 @@ declare namespace App.Http.Resources.Rights {
 	export type RootAlbumRightsResource = {
 		can_edit: boolean;
 		can_upload: boolean;
-		can_import_from_server: boolean;
 	};
 	export type SettingsRightsResource = {
 		can_edit: boolean;

@@ -33,7 +33,6 @@ class AuthTest extends BaseApiV2Test
 			'root_album' => [
 				'can_edit' => false,
 				'can_upload' => false,
-				'can_import_from_server' => false,
 			],
 			'settings' => [
 				'can_edit' => false,

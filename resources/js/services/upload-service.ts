@@ -11,6 +11,10 @@ export type UploadData = {
 };
 
 const UploadService = {
+	getSetUp(): Promise<AxiosResponse<App.Http.Resources.GalleryConfigs.UploadConfig>> {
+		return axios.get(`${Constants.API_URL}Gallery::getUploadLimits`, { data: {} });
+	},
+
 	upload(info: UploadData, abortController: AbortController): Promise<AxiosResponse<App.Http.Resources.Editable.UploadMetaResource>> {
 		const formData = new FormData();
 

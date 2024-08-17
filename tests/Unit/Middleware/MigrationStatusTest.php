@@ -17,12 +17,15 @@ use App\Exceptions\MigrationAlreadyCompletedException;
 use App\Exceptions\MigrationRequiredException;
 use App\Http\Middleware\Checks\IsMigrated;
 use App\Http\Middleware\MigrationStatus;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Http\Request;
 use Mockery\MockInterface;
 use Tests\AbstractTestCase;
 
 class MigrationStatusTest extends AbstractTestCase
 {
+	use DatabaseTransactions;
+
 	public function testExceptionMigrationComplete(): void
 	{
 		$mock = $this->mock(IsMigrated::class, function (MockInterface $mock) {
