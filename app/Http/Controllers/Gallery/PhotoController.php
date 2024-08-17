@@ -15,6 +15,7 @@ use App\Image\Files\UploadedFile;
 use App\Jobs\ProcessImageJob;
 use App\Models\Configs;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Controller responsible for fetching Photo Data.
@@ -40,16 +41,13 @@ class PhotoController extends Controller
 		$meta = $request->meta();
 		$file = new UploadedFile($request->uploaded_file_chunk());
 
-		if ($meta->chunk_number === 0) {
-			// Initialize data not existing.
-			$meta->file_name = $file->getOriginalBasename();
-			$meta->extension = '.' . pathinfo($file->getOriginalBasename(), PATHINFO_EXTENSION);
-			$meta->uuid_name = strtr(base64_encode(random_bytes(12)), '+/', '-_') . $meta->extension;
-		}
+		// Set up meta data if not already present
+		$meta->extension ??= '.' . pathinfo($meta->file_name, PATHINFO_EXTENSION);
+		$meta->uuid_name ??= strtr(base64_encode(random_bytes(12)), '+/', '-_') . $meta->extension;
 
-		$final = new NativeLocalFile(\Storage::disk(self::DISK_NAME)->path($meta->uuid_name));
+		$final = new NativeLocalFile(Storage::disk(self::DISK_NAME)->path($meta->uuid_name));
 		$final->append($file->read());
-		$file->delete();
+		// $file->delete();
 
 		if ($meta->chunk_number < $meta->total_chunks) {
 			// Not the last chunk

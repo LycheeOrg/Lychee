@@ -11,7 +11,7 @@
 		@hide="closeCallback"
 	>
 		<template #container="{ closeCallback }">
-			<ScrollPanel v-if="files.length > 0" class="w-96 h-48 p-6">
+			<ScrollPanel v-if="files.length > 0" class="w-96 h-48 m-4 p-1 mr-5">
 				<UploadingLine
 					v-for="(uploadable, index) in files"
 					:key="uploadable.file.name"
@@ -53,6 +53,7 @@ import Button from "primevue/button";
 import Dialog from "primevue/dialog";
 import { ref, watch } from "vue";
 import UploadingLine from "../forms/upload/UploadingLine.vue";
+import ScrollPanel from "primevue/scrollpanel";
 
 type Uploadable = {
 	file: File;
@@ -88,7 +89,7 @@ function upload(event: Event) {
 
 function uploadCompleted(index: number) {
 	// Find the next one and start uploading.
-	for (let i = index; i < files.value.length - 1; i++) {
+	for (let i = index; i < files.value.length; i++) {
 		if (files.value[i].status === "waiting") {
 			files.value[i].status = "uploading";
 			break;
@@ -183,6 +184,7 @@ function uploadCompleted(index: number) {
 // }
 function closeCallback() {
 	visible.value = false;
+	files.value = [];
 	emit("close");
 }
 
@@ -190,6 +192,7 @@ watch(
 	() => props.visible,
 	(value) => {
 		visible.value = value;
+		files.value = [];
 	},
 );
 </script>

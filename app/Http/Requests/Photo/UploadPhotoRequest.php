@@ -12,6 +12,8 @@ use App\Http\Requests\Traits\HasAbstractAlbumTrait;
 use App\Http\Resources\Editable\UploadMetaResource;
 use App\Policies\AlbumPolicy;
 use App\Rules\AlbumIDRule;
+use App\Rules\ExtensionRule;
+use App\Rules\FileUuidRule;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Gate;
 
@@ -44,10 +46,10 @@ class UploadPhotoRequest extends BaseApiRequest implements HasAbstractAlbum
 			RequestAttribute::FILE_LAST_MODIFIED_TIME => 'sometimes|nullable|numeric',
 			RequestAttribute::FILE_ATTRIBUTE => 'required|file',
 			'file_name' => 'required|string',
-			'uuid_name' => 'present|string|nullable',
-			'extension' => 'present|string|nullable',
+			'uuid_name' => ['present', new FileUuidRule()],
+			'extension' => ['present', new ExtensionRule()],
 			'chunk_number' => 'required|integer|min:1',
-			'total_chunks' => 'required|integer',
+			'total_chunks' => 'required|integer|gte:chunk_number',
 		];
 	}
 

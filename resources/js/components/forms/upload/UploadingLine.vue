@@ -1,10 +1,14 @@
 <template>
 	<div class="w-full flex flex-col">
-		<div class="flex gap-4 justify-between">
+		<div class="flex gap-4 justify-between relative">
 			<span class="text-ellipsis min-w-0 w-full overflow-hidden text-nowrap">{{ file.name }}</span>
-			<span :class="statusClass + ' text-right'">{{ status }}</span>
+			<span :class="statusClass" v-if="progress < 100 && progress > 0">{{ progress }}%</span>
+			<span :class="statusClass">{{ status }}</span>
 		</div>
-		<ProgressBar :value="progress"></ProgressBar>
+		<span class="text-center w-full hidden group-hover:block text-danger-700 cursor-pointer" @click="controller.abort()">{{
+			$t("lychee.CANCEL")
+		}}</span>
+		<ProgressBar :class="progressClass" :value="progress" :show-value="false"></ProgressBar>
 	</div>
 </template>
 <script setup lang="ts">
@@ -22,7 +26,7 @@ const props = withDefaults(
 		index: number;
 	}>(),
 	{
-		chunkSize: 1024 * 1024,
+		chunkSize: 1024,
 	},
 );
 
@@ -41,17 +45,29 @@ const meta = ref({
 	chunk_number: 0,
 	total_chunks: Math.ceil(size.value / props.chunkSize),
 } as App.Http.Resources.Editable.UploadMetaResource);
+const controller = ref(new AbortController());
 
 const statusClass = computed(() => {
 	switch (status.value) {
 		case "uploading":
-			return "text-sky-500";
+			return "text-sky-500 text-right pr-1";
 		case "done":
-			return "text-green-500";
+			return "text-create-600 text-right pr-1";
 		case "error":
-			return "text-red-500";
+			return "text-danger-700 text-right pr-1";
 		default:
-			return "text-orange-500";
+			return "text-warning-600 text-right pr-1";
+	}
+});
+
+const progressClass = computed(() => {
+	switch (status.value) {
+		case "done":
+			return "success";
+		case "error":
+			return "error";
+		default:
+			return "";
 	}
 });
 
@@ -59,30 +75,34 @@ function process() {
 	meta.value.chunk_number = meta.value.chunk_number + 1;
 	const chunkEnd = Math.min(chunkStart.value + props.chunkSize, size.value);
 	const chunk = file.value.slice(chunkStart.value, chunkEnd);
-	console.log(chunkStart.value, chunkEnd, size.value);
-	console.log(chunk);
 	const data: UploadData = {
 		album_id: props.albumId,
 		file: chunk,
 		file_last_modified_time: file.value.lastModified,
 		meta: meta.value,
 		onUploadProgress: (progressEvent: AxiosProgressEvent) => {
-			const percent = Math.round((progressEvent.loaded / (progressEvent.total ?? 1)) * 100);
-
-			progress.value = chunkStart.value / size.value + percent / (chunkEnd - chunkStart.value);
+			const percent = progressEvent.loaded / (progressEvent.total ?? 1);
+			progress.value = Math.round(((chunkStart.value + percent * (chunkEnd - chunkStart.value)) / size.value) * 100);
 		},
 	};
-	console.log(data);
 
-	UploadService.upload(data).then((response) => {
-		if (response.data.chunk_number === response.data.total_chunks) {
-			status.value = "done";
+	UploadService.upload(data, controller.value)
+		.then((response) => {
+			meta.value = response.data;
+			if (response.data.chunk_number === response.data.total_chunks) {
+				progress.value = 100;
+				status.value = "done";
+				emit("upload:completed", props.index);
+			} else {
+				chunkStart.value += props.chunkSize;
+				process();
+			}
+		})
+		.catch((error) => {
+			progress.value = 100;
+			status.value = "error";
 			emit("upload:completed", props.index);
-		} else {
-			chunkStart.value += props.chunkSize;
-			process();
-		}
-	});
+		});
 }
 
 if (status.value === "uploading") {
@@ -98,3 +118,12 @@ watch(
 	},
 );
 </script>
+
+<style lang="css" scoped>
+.error {
+	--p-progressbar-value-background: var(--danger-dark);
+}
+.success {
+	--p-progressbar-value-background: var(--create);
+}
+</style>

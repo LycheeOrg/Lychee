@@ -11,7 +11,7 @@ export type UploadData = {
 };
 
 const UploadService = {
-	upload(info: UploadData): Promise<AxiosResponse<App.Http.Resources.Editable.UploadMetaResource>> {
+	upload(info: UploadData, abortController: AbortController): Promise<AxiosResponse<App.Http.Resources.Editable.UploadMetaResource>> {
 		const formData = new FormData();
 
 		formData.append("file", info.file, info.meta.file_name);
@@ -28,6 +28,7 @@ const UploadService = {
 			headers: {
 				"Content-Type": "application/json",
 			},
+			signal: abortController.signal,
 			transformRequest: [(data) => data],
 		};
 

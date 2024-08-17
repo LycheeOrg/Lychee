@@ -237,6 +237,16 @@ const LycheePrimeVueConfig = {
 				},
 			},
 		},
+		scrollpanel: {
+			colorScheme: {
+				light: {},
+				dark: {
+					bar: {
+						background: "{surface.700}",
+					},
+				},
+			},
+		},
 		panel: {
 			colorScheme: {
 				light: {

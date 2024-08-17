@@ -54,12 +54,14 @@ function update() {
 
 function reset() {
 	emits("reset", props.config.key);
+	// @ts-expect-error
 	val.value = props.mapper(props.config.value);
 }
 
 // We watch props in case of updates.
 watch(
 	() => props.config,
+	// @ts-expect-error
 	(newValue, _oldValue) => (val.value = props.mapper(newValue.value)),
 );
 </script>
