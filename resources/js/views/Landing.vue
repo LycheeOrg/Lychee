@@ -49,15 +49,15 @@
 				</ul>
 			</div>
 			<div class="flex w-full h-1/2 absolute top-1/2 left-0 items-center justify-center animate-landingEnterPopIn opacity-0">
-			<RouterLink to="/gallery" class="
-				cursor-pointer block text-2xl uppercase text-surface-0
-				hover:scale-125
-				transition-all duration-300 filter-shadow p-10">
-				ACCESS THE {{ $t("lychee.GALLERY") }}
-				<i class="pi pi-angle-right animate-pulseTo0 text-2xl animate-infinite"></i>
-				<i class="pi pi-angle-right animate-pulseTo0 text-2xl animate-delay-500 animate-infinite -ml-1"></i>
-				<i class="pi pi-angle-right animate-pulseTo0 text-2xl animate-delay-1000 animate-infinite -ml-1"></i>
-			</RouterLink>
+				<RouterLink
+					to="/gallery"
+					class="cursor-pointer block text-2xl uppercase text-surface-0 hover:scale-125 transition-all duration-300 filter-shadow p-10"
+				>
+					ACCESS THE {{ $t("lychee.GALLERY") }}
+					<i class="pi pi-angle-right animate-pulseTo0 text-2xl animate-infinite"></i>
+					<i class="pi pi-angle-right animate-pulseTo0 text-2xl animate-delay-500 animate-infinite -ml-1"></i>
+					<i class="pi pi-angle-right animate-pulseTo0 text-2xl animate-delay-1000 animate-infinite -ml-1"></i>
+				</RouterLink>
 			</div>
 		</div>
 		<LandingFooter

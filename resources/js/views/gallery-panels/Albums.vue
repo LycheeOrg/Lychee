@@ -1,6 +1,7 @@
 <template>
 	<LoginModal v-if="user?.id === null" :visible="isLoginOpen" @logged-in="refresh" />
 	<UploadPanel v-if="canUpload" :visible="isUploadOpen" @close="isUploadOpen = false" :album-id="null" />
+	<ImportFromServer v-if="canUpload" :visible="isImportFromServerOpen" @close="isImportFromServerOpen = false" />
 	<Toolbar class="w-full border-0">
 		<template #start>
 			<Button
@@ -77,6 +78,7 @@ import { useLycheeStateStore } from "@/stores/LycheeState";
 import UploadPanel from "@/components/modals/UploadPanel.vue";
 import { onKeyStroke } from "@vueuse/core";
 import ContextMenu from "primevue/contextmenu";
+import ImportFromServer from "@/components/modals/ImportFromServer.vue";
 
 const addmenu = ref();
 
@@ -108,7 +110,7 @@ const addMenu = ref([
 	{
 		label: "lychee.IMPORT_SERVER",
 		icon: "pi pi-server",
-		callback: () => {},
+		callback: () => (isImportFromServerOpen.value = true),
 	},
 	{
 		label: "lychee.NEW_ALBUM",
@@ -124,6 +126,7 @@ const addMenu = ref([
 const title = ref("Albums");
 const isLoginOpen = ref(false);
 const isUploadOpen = ref(false);
+const isImportFromServerOpen = ref(false);
 const user = ref(undefined) as Ref<undefined | App.Http.Resources.Models.UserResource>;
 const canUpload = computed(() => user.value?.id !== null);
 
