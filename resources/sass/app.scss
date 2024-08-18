@@ -94,6 +94,10 @@ html {
 	filter: drop-shadow(0 0 0.5rem black);
 }
 
+.filter-shadow-darker {
+	filter: drop-shadow(0 0 1rem black) drop-shadow(0 0 2rem black) drop-shadow(0 0 4rem black);
+}
+
 .menu-shadow {
 	box-shadow: 3px 3px 8px -2px rgba(0, 0, 0, 0.7);
 }
@@ -144,6 +148,8 @@ input:checked ~ .checkbox svg {
 .drop-shadow-black {
 	--tw-drop-shadow: drop-shadow(0 0 1px rgba(0, 0, 0, 0.3)) drop-shadow(0 0 10px rgba(0, 0, 0, 0.3));
 }
+
+
 
 .blurred span {
 	overflow: hidden;
