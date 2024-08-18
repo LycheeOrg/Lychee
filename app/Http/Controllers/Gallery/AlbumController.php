@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Gallery;
 
+use App\Actions\Album\Create;
+use App\Actions\Album\CreateTagAlbum;
 use App\Actions\Album\Delete;
 use App\Actions\Album\ListAlbums;
 use App\Actions\Album\Merge;
@@ -9,6 +11,8 @@ use App\Actions\Album\Move;
 use App\Actions\Album\SetProtectionPolicy;
 use App\Actions\Album\Transfer;
 use App\Exceptions\Internal\LycheeLogicException;
+use App\Exceptions\UnauthenticatedException;
+use App\Http\Requests\Album\AddAlbumRequest;
 use App\Http\Requests\Album\DeleteAlbumsRequest;
 use App\Http\Requests\Album\GetAlbumRequest;
 use App\Http\Requests\Album\MergeAlbumsRequest;
@@ -26,11 +30,13 @@ use App\Http\Resources\Models\SmartAlbumResource;
 use App\Http\Resources\Models\TagAlbumResource;
 use App\Http\Resources\Models\TargetAlbumResource;
 use App\Http\Resources\Models\Utils\AlbumProtectionPolicy;
+use App\Legacy\V1\Requests\Album\AddTagAlbumRequest;
 use App\Models\Album;
 use App\Models\TagAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Controller responsible for the config.
@@ -59,6 +65,20 @@ class AlbumController extends Controller
 		}
 
 		return new AbstractAlbumResource($config, $albumResource);
+	}
+
+	public function createAlbum(AddAlbumRequest $request): string
+	{
+		/** @var int $ownerId */
+		$ownerId = Auth::id() ?? throw new UnauthenticatedException();
+		$create = new Create($ownerId);
+
+		return $create->create($request->title(), $request->parent_album())->id;
+	}
+
+	public function createTagAlbum(AddTagAlbumRequest $request, CreateTagAlbum $create): string
+	{
+		return $create->create($request->title(), $request->tags())->id;
 	}
 
 	public function updateAlbum(UpdateAlbumRequest $request): EditableBaseAlbumResource

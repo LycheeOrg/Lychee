@@ -471,6 +471,25 @@ const LycheePrimeVueConfig = {
 				},
 			},
 		},
+		inputchips: {
+			background: "transparent",
+			border: {
+				radius: 0,
+				color: "transparent",
+			},
+			transition: {
+				duration: 0,
+			},
+			shadow: "none",
+			colorScheme: {
+				light: {
+					color: "{surface.700}",
+				},
+				dark: {
+					color: "{surface.300}",
+				},
+			},
+		},
 		select: {
 			background: "transparent",
 			border: {

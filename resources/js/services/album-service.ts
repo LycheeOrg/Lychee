@@ -1,6 +1,16 @@
 import axios, { type AxiosResponse } from "axios";
 import Constants from "./constants";
 
+export type CreateAlbumData = {
+	title: string;
+	parent_id: string | null;
+};
+
+export type CreateTagAlbumData = {
+	title: string;
+	tags: string[];
+};
+
 export type UpdateAbumData = {
 	album_id: string;
 	title: string;
@@ -51,12 +61,20 @@ const AlbumService = {
 		return axios.get(`${Constants.API_URL}Gallery::getMapProvider`, { data: {} });
 	},
 
+	createAlbum(data: CreateAlbumData): Promise<AxiosResponse<string>> {
+		return axios.post(`${Constants.API_URL}Album`, data);
+	},
+
+	createTag(data: CreateTagAlbumData): Promise<AxiosResponse<string>> {
+		return axios.post(`${Constants.API_URL}TagAlbum`, data);
+	},
+
 	updateAlbum(data: UpdateAbumData): Promise<AxiosResponse> {
-		return axios.post(`${Constants.API_URL}Album::update`, data);
+		return axios.patch(`${Constants.API_URL}Album`, data);
 	},
 
 	updateTag(data: UpdateTagAlbumData): Promise<AxiosResponse> {
-		return axios.post(`${Constants.API_URL}Album::updateTag`, data);
+		return axios.patch(`${Constants.API_URL}TagAlbum`, data);
 	},
 
 	updateProtectionPolicy(data: UpdateProtectionPolicyData): Promise<AxiosResponse> {

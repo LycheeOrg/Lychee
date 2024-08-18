@@ -89,4 +89,19 @@ abstract class BaseApiV2Test extends BaseV2Test
 	{
 		return $this->json('POST', self::API_PREFIX . ltrim($uri, '/'), $data, $headers, $options);
 	}
+
+	/**
+	 * Visit the given URI with a PATCH request, expecting a JSON response.
+	 *
+	 * @param string $uri
+	 * @param array  $data
+	 * @param array  $headers
+	 * @param int    $options
+	 *
+	 * @return \Illuminate\Testing\TestResponse
+	 */
+	public function patchJson($uri, array $data = [], array $headers = [], $options = 0)
+	{
+		return $this->json('PATCH', self::API_PREFIX . ltrim($uri, '/'), $data, $headers, $options);
+	}
 }

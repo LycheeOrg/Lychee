@@ -1,5 +1,4 @@
 <template>
-	<!-- <div class="card flex justify-center"> -->
 	<Dialog
 		v-model:visible="visible"
 		modal
@@ -42,7 +41,6 @@
 			</div>
 		</template>
 	</Dialog>
-	<!-- </div> -->
 </template>
 
 <script setup lang="ts">

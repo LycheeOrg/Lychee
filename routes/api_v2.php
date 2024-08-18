@@ -2,17 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Exceptions\Internal\NotImplementedException;
-use App\Http\Controllers\Gallery\AlbumsController;
-use App\Legacy\V1\Controllers\Administration\DiagnosticsController as AdministrationDiagnosticsController;
-use App\Legacy\V1\Controllers\Administration\SettingsController as AdministrationSettingsController;
-use App\Legacy\V1\Controllers\Administration\SharingController as AdministrationSharingController;
-use App\Legacy\V1\Controllers\Administration\UpdateController as AdministrationUpdateController;
-use App\Legacy\V1\Controllers\ImportController;
-use App\Legacy\V1\Controllers\LegacyController;
-use App\Legacy\V1\Controllers\PhotoController;
-use App\Legacy\V1\Controllers\PhotoEditorController;
-use App\Legacy\V1\Controllers\SearchController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -36,30 +25,25 @@ Route::get('/Gallery::getUploadLimits', [Gallery\ConfigController::class, 'getUp
  * ALBUMS.
  */
 Route::get('/Albums', [Gallery\AlbumsController::class, 'get'])->middleware(['login_required:root']);
+
+/**
+ * ALBUM.
+ */
 Route::get('/Album', [Gallery\AlbumController::class, 'get'])->middleware(['login_required:album']);
 Route::get('/Album::getTargetListAlbums', [Gallery\AlbumController::class, 'getTargetListAlbums'])->middleware(['login_required:album']);
-Route::post('/Album::update', [Gallery\AlbumController::class, 'updateAlbum']);
-Route::post('/Album::updateTag', [Gallery\AlbumController::class, 'updateTagAlbum']);
+Route::post('/Album', [Gallery\AlbumController::class, 'createAlbum']);
+Route::patch('/Album', [Gallery\AlbumController::class, 'updateAlbum']);
+Route::post('/TagAlbum', [Gallery\AlbumController::class, 'createTagAlbum']);
+Route::patch('/TagAlbum', [Gallery\AlbumController::class, 'updateTagAlbum']);
 Route::post('/Album::updateProtectionPolicy', [Gallery\AlbumController::class, 'updateProtectionPolicy']);
 Route::post('/Album::delete', [Gallery\AlbumController::class, 'delete']);
 Route::post('/Album::transfer', [Gallery\AlbumController::class, 'transfer']);
 Route::post('/Album::move', [Gallery\AlbumController::class, 'move']);
 // Route::post('/Album::merge', [AlbumController::class, 'merge']);
 
-/**
- * Sharing.
- */
-Route::get('/Sharing', [Gallery\SharingController::class, 'list']);
-Route::post('/Sharing', [Gallery\SharingController::class, 'create']);
-Route::post('/Sharing::edit', [Gallery\SharingController::class, 'edit']);
-Route::post('/Sharing::delete', [Gallery\SharingController::class, 'delete']);
-
 // Route::post('/Albums::getPositionData', [AlbumsController::class, 'getPositionData'])->middleware(['login_required:root']);
 // Route::post('/Albums::tree', [AlbumsController::class, 'tree'])->middleware(['login_required:root']);
 
-/**
- * ALBUM.
- */
 // Route::post('/Album::get', [AlbumController::class, 'get'])->middleware(['login_required:album']);
 // Route::post('/Album::getPositionData', [AlbumController::class, 'getPositionData']);
 // Route::post('/Album::unlock', [AlbumController::class, 'unlock']);
@@ -85,6 +69,14 @@ Route::post('/Sharing::delete', [Gallery\SharingController::class, 'delete']);
 // 	->withoutMiddleware(['content_type:json'])
 // 	->middleware(['content_type:multipart']);
 // Route::post('/Album::deleteTrack', [AlbumController::class, 'deleteTrack']);
+
+/**
+ * Sharing.
+ */
+Route::get('/Sharing', [Gallery\SharingController::class, 'list']);
+Route::post('/Sharing', [Gallery\SharingController::class, 'create']);
+Route::post('/Sharing::edit', [Gallery\SharingController::class, 'edit']);
+Route::post('/Sharing::delete', [Gallery\SharingController::class, 'delete']);
 
 /**
  * IMPORT.

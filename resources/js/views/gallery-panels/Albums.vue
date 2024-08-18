@@ -1,7 +1,9 @@
 <template>
 	<LoginModal v-if="user?.id === null" :visible="isLoginOpen" @logged-in="refresh" />
-	<UploadPanel v-if="canUpload" :visible="isUploadOpen" @close="isUploadOpen = false" :album-id="null" />
+	<UploadPanel v-if="canUpload" :visible="isUploadOpen" :album-id="null" @close="isUploadOpen = false" />
 	<ImportFromServer v-if="canUpload" :visible="isImportFromServerOpen" @close="isImportFromServerOpen = false" />
+	<AlbumCreateDialog v-if="canUpload" :visible="isCreateAlbumOpen" :parent-id="null" @close="isCreateAlbumOpen = false" />
+	<AlbumCreateTagDialog v-if="canUpload" :visible="isCreateTagAlbumOpen" @close="isCreateTagAlbumOpen = false" />
 	<Toolbar class="w-full border-0">
 		<template #start>
 			<Button
@@ -79,6 +81,8 @@ import UploadPanel from "@/components/modals/UploadPanel.vue";
 import { onKeyStroke } from "@vueuse/core";
 import ContextMenu from "primevue/contextmenu";
 import ImportFromServer from "@/components/modals/ImportFromServer.vue";
+import AlbumCreateDialog from "@/components/forms/album/AlbumCreateDialog.vue";
+import AlbumCreateTagDialog from "@/components/forms/album/AlbumCreateTagDialog.vue";
 
 const addmenu = ref();
 
@@ -115,17 +119,19 @@ const addMenu = ref([
 	{
 		label: "lychee.NEW_ALBUM",
 		icon: "pi pi-folder",
-		callback: () => {},
+		callback: () => (isCreateAlbumOpen.value = true),
 	},
 	{
 		label: "lychee.NEW_TAG_ALBUM",
 		icon: "pi pi-tags",
-		callback: () => {},
+		callback: () => (isCreateTagAlbumOpen.value = true),
 	},
 ]);
 const title = ref("Albums");
 const isLoginOpen = ref(false);
 const isUploadOpen = ref(false);
+const isCreateAlbumOpen = ref(false);
+const isCreateTagAlbumOpen = ref(false);
 const isImportFromServerOpen = ref(false);
 const user = ref(undefined) as Ref<undefined | App.Http.Resources.Models.UserResource>;
 const canUpload = computed(() => user.value?.id !== null);

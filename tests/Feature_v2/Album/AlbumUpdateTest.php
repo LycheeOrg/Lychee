@@ -18,7 +18,7 @@ class AlbumUpdateTest extends BaseApiV2Test
 {
 	public function testUpdateAlbumUnauthorizedForbidden(): void
 	{
-		$response = $this->postJson('Album::update', [
+		$response = $this->patchJson('Album', [
 			'album_id' => $this->album1->id,
 			'title' => 'title',
 			'license' => 'none',
@@ -32,7 +32,7 @@ class AlbumUpdateTest extends BaseApiV2Test
 		]);
 		$this->assertUnauthorized($response);
 
-		$response = $this->actingAs($this->userLocked)->postJson('Album::update', [
+		$response = $this->actingAs($this->userLocked)->patchJson('Album', [
 			'album_id' => $this->album1->id,
 			'title' => 'title',
 			'license' => 'none',
@@ -49,7 +49,7 @@ class AlbumUpdateTest extends BaseApiV2Test
 
 	public function testUpdateAlbumAuthorized(): void
 	{
-		$response = $this->actingAs($this->userMayUpload1)->postJson('Album::update', [
+		$response = $this->actingAs($this->userMayUpload1)->patchJson('Album', [
 			'album_id' => $this->album1->id,
 			'title' => 'title',
 			'license' => 'none',
@@ -61,12 +61,12 @@ class AlbumUpdateTest extends BaseApiV2Test
 			'album_aspect_ratio' => '1/1',
 			'copyright' => '',
 		]);
-		$this->assertCreated($response);
+		$this->assertOk($response);
 	}
 
 	public function testUpdateTagAlbumUnauthorizedForbidden(): void
 	{
-		$response = $this->postJson('Album::updateTag', [
+		$response = $this->patchJson('TagAlbum', [
 			'album_id' => $this->tagAlbum1->id,
 			'title' => 'title',
 			'tags' => ['tag1', 'tag2'],
@@ -77,7 +77,7 @@ class AlbumUpdateTest extends BaseApiV2Test
 		]);
 		$this->assertUnauthorized($response);
 
-		$response = $this->actingAs($this->userLocked)->postJson('Album::updateTag', [
+		$response = $this->actingAs($this->userLocked)->patchJson('TagAlbum', [
 			'album_id' => $this->tagAlbum1->id,
 			'title' => 'title',
 			'tags' => ['tag1', 'tag2'],
@@ -91,7 +91,7 @@ class AlbumUpdateTest extends BaseApiV2Test
 
 	public function testUpdateTagAlbumAuthorized(): void
 	{
-		$response = $this->actingAs($this->userMayUpload1)->postJson('Album::updateTag', [
+		$response = $this->actingAs($this->userMayUpload1)->patchJson('TagAlbum', [
 			'album_id' => $this->tagAlbum1->id,
 			'title' => 'title',
 			'tags' => ['tag1', 'tag2'],
@@ -100,7 +100,7 @@ class AlbumUpdateTest extends BaseApiV2Test
 			'photo_sorting_order' => 'ASC',
 			'copyright' => '',
 		]);
-		$this->assertCreated($response);
+		$this->assertOk($response);
 
 		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album', ['album_id' => $this->tagAlbum1->id]);
 		$this->assertOk($response);
