@@ -29,15 +29,16 @@ interface ImageHandlerInterface
 	/**
 	 * Save the image into the provided file.
 	 *
-	 * @param MediaFile $file               the file to write into
-	 * @param int|null  $compressionQuality Override configured compression quality
-	 * @param bool      $collectStatistics  if true, the method returns statistics about the stream
+	 * @param MediaFile $file              the file to write into
+	 * @param bool      $collectStatistics if true, the method returns statistics about the stream
 	 *
 	 * @return StreamStats|null optional statistics about the stream, if requested
 	 *
 	 * @throws MediaFileOperationException
 	 */
-	public function save(MediaFile $file, ?int $compressionQuality = null, bool $collectStatistics = false): ?StreamStats;
+	public function save(MediaFile $file, bool $collectStatistics = false): ?StreamStats;
+
+	public function convertAndSave(MediaFile $file, string $targetMimeType, ?int $compressionQuality = null, bool $collectStatistics = false): ?StreamStats;
 
 	/**
 	 * Frees all internal resources.
