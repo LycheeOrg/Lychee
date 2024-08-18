@@ -7,7 +7,7 @@ return [
 	|--------------------------------------------------------------------------
 	*/
 	'title' => 'Maintenance',
-	'description' => 'You will find on this page, all the required actions to keep your Lychee installation running smooth and nicely.',
+	'description' => 'On this page you will find, all the required actions to keep your Lychee installation running smooth and nicely.',
 	'cleaning' => [
 		'title' => 'Cleaning %s',
 		'result' => '%s deleted.',
