@@ -116,6 +116,9 @@ export default {
         width: ['width'],
       },
       keyframes: {
+        pulseTo0: {
+          '50%': { 'opacity': '0.1' },
+        },
         fadeIn: {
           '0%': { 'opacity': '0' },
           '100%': { 'opacity': '1' }
@@ -220,10 +223,12 @@ export default {
 
         'landingIntroPopIn': 'popIn 2s forwards ease-in-out',
         'landingIntroFadeOut': 'fadeOut 2s 2s forwards ease-in-out', // delayed by 2s
-        'landingSlidesPopIn': 'popIn 2s 3s forwards ease-in-out', // delayed by 2s
-        'ladningAnimateDown': 'animateDown 1s 3.1s forwards ease-in-out',
-        'ladningAnimateUp': 'animateUp 1s 3.1s forwards ease-in-out',
-        'delayedFadeOut': 'fadeOut 2s 2s forwards ease-in-out'
+        'landingSlidesPopIn': 'popIn 2s 3s forwards ease-in-out', // delayed by 3s
+        'landingEnterPopIn': 'zoomIn 2s 4s forwards ease-in-out', // delayed by 4s
+        'landingAnimateDown': 'animateDown 1s 3.1s forwards ease-in-out',
+        'landingAnimateUp': 'animateUp 1s 3.1s forwards ease-in-out',
+        'delayedFadeOut': 'fadeOut 2s 2s forwards ease-in-out',
+        'pulseTo0': 'pulseTo0 2s infinite',
       },
       aspectRatio: {
         '4/5': '4 / 5',

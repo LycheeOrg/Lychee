@@ -1,6 +1,6 @@
 <template>
 	<div id="footer" class="absolute bg-black z-10 left-0 right-0 bottom-0 text-center py-1 px-0 overflow-clip">
-		<div id="home_socials" class="fixed bottom-8 left-0 right-0 text-center z-10 opacity-0 translate-y-[300px] animate-ladningAnimateUp">
+		<div id="home_socials" class="fixed bottom-8 left-0 right-0 text-center z-10 opacity-0 translate-y-[300px] animate-landingAnimateUp">
 			<a
 				v-if="props.facebook !== ''"
 				:href="props.facebook"
@@ -44,11 +44,11 @@
 		</div>
 		<p
 			v-if="props.show_copy_right"
-			class="home_copyright uppercase text-surface-0 text-3xs font-normal translate-y-[300px] animate-ladningAnimateUp"
+			class="home_copyright uppercase text-surface-0 text-3xs font-normal translate-y-[300px] animate-landingAnimateUp"
 		>
 			{{ copyright }}
 		</p>
-		<p v-if="props.personalText !== ''" class="personal_text text-surface-0 text-3xs font-normal translate-y-[300px] animate-ladningAnimateUp">
+		<p v-if="props.personalText !== ''" class="personal_text text-surface-0 text-3xs font-normal translate-y-[300px] animate-landingAnimateUp">
 			{{ props.personalText }}
 		</p>
 	</div>

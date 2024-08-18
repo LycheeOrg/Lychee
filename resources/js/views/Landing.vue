@@ -1,7 +1,7 @@
 <template>
 	<main v-if="initdata" id="landing" class="w-screen h-screen bg-black roboto overflow-hidden">
 		<div id="header" class="fixed top-0 left-0 right-0 z-50 overflow-y-hidden">
-			<div id="logo" class="float-left p-4 text-surface-0 translate-y-[-300px] opacity-0 animate-ladningAnimateDown">
+			<div id="logo" class="float-left p-4 text-surface-0 translate-y-[-300px] opacity-0 animate-landingAnimateDown">
 				<a href="#">
 					<h1 class="text-lg font-bold uppercase text-center roboto">
 						{{ initdata.landing_title }}
@@ -12,7 +12,7 @@
 		</div>
 
 		<div id="menu_wrap" class="fixed top-0 right-0 z-50 w-4/5 overflow-y-hidden">
-			<div id="menu" class="w-full translate-y-[-300px] opacity-0 animate-ladningAnimateDown">
+			<div id="menu" class="w-full translate-y-[-300px] opacity-0 animate-landingAnimateDown">
 				<ul class="menu list-none">
 					<li class="menu-item relative block float-right pt-6 pb-5 px-3">
 						<RouterLink to="/gallery" class="cursor-pointer block text-xs uppercase font-normal text-surface-0 hover:text-muted-color">{{
@@ -47,6 +47,17 @@
 						<img class="w-full h-full object-cover absolute top-0 left-0" :src="initdata.landing_background" alt="landing image" />
 					</li>
 				</ul>
+			</div>
+			<div class="flex w-full h-1/2 absolute top-1/2 left-0 items-center justify-center animate-landingEnterPopIn opacity-0">
+			<RouterLink to="/gallery" class="
+				cursor-pointer block text-2xl uppercase text-surface-0
+				hover:scale-125
+				transition-all duration-300 filter-shadow p-10">
+				ACCESS THE {{ $t("lychee.GALLERY") }}
+				<i class="pi pi-angle-right animate-pulseTo0 text-2xl animate-infinite"></i>
+				<i class="pi pi-angle-right animate-pulseTo0 text-2xl animate-delay-500 animate-infinite -ml-1"></i>
+				<i class="pi pi-angle-right animate-pulseTo0 text-2xl animate-delay-1000 animate-infinite -ml-1"></i>
+			</RouterLink>
 			</div>
 		</div>
 		<LandingFooter
