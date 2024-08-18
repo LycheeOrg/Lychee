@@ -17,6 +17,9 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Http\Response;
 use Tests\AbstractTestCase;
 
+/**
+ * Consider refactoring this test to only check the pipes used rather than the full path each time.
+ */
 class HoneyPotTest extends AbstractTestCase
 {
 	use DatabaseTransactions;
@@ -28,6 +31,7 @@ class HoneyPotTest extends AbstractTestCase
 		User::factory()->may_administrate()->create();
 	}
 
+	// ! Very slow test.
 	public function testRoutesWithHoney(): void
 	{
 		foreach (config('honeypot.paths') as $path) {
@@ -48,6 +52,7 @@ class HoneyPotTest extends AbstractTestCase
 		$this->assertStatus($response, Response::HTTP_NOT_FOUND);
 	}
 
+	// ! Very slow test.
 	public function testDisabled(): void
 	{
 		config(['honeypot.enabled' => false]);

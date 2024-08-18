@@ -141,7 +141,10 @@ build/%.done: tests/Feature_v1/%.php build
 all_tests: $(TEST_DONE)
 
 test_unit:
-	vendor/bin/phpunit --testsuite Unit --stop-on-failure --stop-on-error --no-coverage
+	vendor/bin/phpunit --testsuite Unit --stop-on-failure --stop-on-error --no-coverage --log-junit report_unit.xml
+
+test_v1:
+	vendor/bin/phpunit --testsuite Feature_v1 --stop-on-failure --stop-on-error --no-coverage --log-junit report_v1.xml
 
 test_v2:
-	vendor/bin/phpunit --testsuite Feature_v2 --stop-on-failure --stop-on-error --no-coverage
+	vendor/bin/phpunit --testsuite Feature_v2 --stop-on-failure --stop-on-error --no-coverage --log-junit report_v2.xml

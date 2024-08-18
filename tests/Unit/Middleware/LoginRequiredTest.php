@@ -27,6 +27,7 @@ class LoginRequiredTest extends AbstractTestCase
 	public function testExceptionLoginRequired(): void
 	{
 		Configs::where('key', 'login_required')->update(['value' => '1']);
+		Configs::invalidateCache();
 		$request = $this->mock(Request::class);
 		$middleware = new LoginRequired();
 		$this->assertThrows(fn () => $middleware->handle($request, fn () => 1, 'root'), UnauthenticatedException::class);
@@ -36,6 +37,7 @@ class LoginRequiredTest extends AbstractTestCase
 	{
 		Configs::where('key', 'login_required')->update(['value' => '1']);
 		Configs::where('key', 'login_required_root_only')->update(['value' => '1']);
+		Configs::invalidateCache();
 		$request = $this->mock(Request::class);
 		$middleware = new LoginRequired();
 		$this->assertEquals(1, $middleware->handle($request, fn () => 1, 'album'));
@@ -44,6 +46,7 @@ class LoginRequiredTest extends AbstractTestCase
 	public function testExceptionWrongParam(): void
 	{
 		Configs::where('key', 'login_required')->update(['value' => '1']);
+		Configs::invalidateCache();
 		$request = $this->mock(Request::class);
 
 		$middleware = new LoginRequired();

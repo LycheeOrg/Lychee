@@ -21,11 +21,7 @@ public/uploads-*/**
 # IDE & Cache stuff
 /.idea
 /.vscode
-/.vagrant
-Homestead.json
-Homestead.yaml
 npm-debug.log
-yarn-error.log
 .phpunit*
 _ide*
 .php_cs.cache
@@ -33,9 +29,7 @@ _ide*
 *.log
 clover.xml
 *.swp
-installed.log
 .DS_Store
-.NO_SECURE_KEY
 .NO_AUTO_COMPOSER_MIGRATE
 storage/bootstrap/cache/*
 storage/image-jobs/*
@@ -58,3 +52,4 @@ aliases
 
 # Building stuff for releaseses
 Lychee/*
+report_*
