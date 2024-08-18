@@ -19,7 +19,6 @@ use App\Exceptions\MediaFileUnsupportedException;
 use App\Image\Files\TemporaryLocalFile;
 use App\Image\Handlers\ImageHandler;
 use App\Image\Handlers\VideoHandler;
-use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 use Illuminate\Contracts\Container\BindingResolutionException;
@@ -143,10 +142,6 @@ class SizeVariantDefaultFactory implements SizeVariantFactory
 		if ($this->photo->isVideo() && ($sizeVariant === SizeVariantType::MEDIUM || $sizeVariant === SizeVariantType::MEDIUM2X)) {
 			return null;
 		}
-		// TODO: Remove when GD can convert supported files to webp with proper compression
-		if ($sizeVariant === SizeVariantType::PLACEHOLDER && Configs::hasImagick() === false) {
-			return null;
-		}
 		// Don't re-create existing size variant
 		if ($this->photo->size_variants->getSizeVariant($sizeVariant) !== null) {
 			return null;
@@ -191,7 +186,7 @@ class SizeVariantDefaultFactory implements SizeVariantFactory
 		$svFile = $this->namingStrategy->createFile($sizeVariant);
 		// Placeholder must be small enough to fit in database when encoded with base64, so it needs more compression.
 		if ($sizeVariant === SizeVariantType::PLACEHOLDER) {
-			$svImage->save($svFile, self::PLACEHOLDER_COMPRESSION_QUALITY);
+			$svImage->convertAndSave($svFile, 'image/webp', self::PLACEHOLDER_COMPRESSION_QUALITY);
 		} else {
 			$svImage->save($svFile);
 		}
