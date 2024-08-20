@@ -9,6 +9,7 @@ use App\Enum\ColumnSortingPhotoType;
 use App\Enum\OrderSortingType;
 use App\Enum\SizeVariantType;
 use App\Exceptions\InvalidPropertyException;
+use App\Models\Configs;
 use App\Models\Photo;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -23,13 +24,15 @@ class Thumb extends AbstractDTO
 	public string $type;
 	public ?string $thumbUrl;
 	public ?string $thumb2xUrl;
+	public ?string $placeholderUrl;
 
-	protected function __construct(string $id, string $type, string $thumbUrl, ?string $thumb2xUrl = null)
+	protected function __construct(string $id, string $type, string $thumbUrl, ?string $thumb2xUrl = null, ?string $placeholderUrl = null)
 	{
 		$this->id = $id;
 		$this->type = $type;
 		$this->thumbUrl = $thumbUrl;
 		$this->thumb2xUrl = $thumb2xUrl;
+		$this->placeholderUrl = $placeholderUrl;
 	}
 
 	/**
@@ -42,9 +45,9 @@ class Thumb extends AbstractDTO
 	 */
 	public static function sizeVariantsFilter(HasMany $relation): HasMany
 	{
-		$svAlbumThumbs = [SizeVariantType::THUMB, SizeVariantType::THUMB2X];
+		$svAlbumThumbs = [SizeVariantType::THUMB, SizeVariantType::THUMB2X, SizeVariantType::PLACEHOLDER];
 		if (Features::active('livewire')) {
-			$svAlbumThumbs = [SizeVariantType::SMALL, SizeVariantType::SMALL2X, SizeVariantType::THUMB, SizeVariantType::THUMB2X];
+			$svAlbumThumbs = [SizeVariantType::SMALL, SizeVariantType::SMALL2X, SizeVariantType::THUMB, SizeVariantType::THUMB2X, SizeVariantType::PLACEHOLDER];
 		}
 
 		return $relation->whereIn('type', $svAlbumThumbs);
@@ -133,6 +136,10 @@ class Thumb extends AbstractDTO
 			? $photo->size_variants->getSmall2x()
 			: $photo?->size_variants->getThumb2x();
 
+		$placeholder = (Configs::getValueAsBool('low_quality_image_placeholder'))
+			? $photo?->size_variants->getPlaceholder()
+			: null;
+
 		/**
 		 * TODO: Code for later when Livewire is the only front-end.
 		 */
@@ -149,7 +156,8 @@ class Thumb extends AbstractDTO
 			$photo->id,
 			$photo->type,
 			$thumb->url,
-			$thumb2x?->url
+			$thumb2x?->url,
+			$placeholder?->url,
 		);
 	}
 
@@ -165,6 +173,7 @@ class Thumb extends AbstractDTO
 			'type' => $this->type,
 			'thumb' => $this->thumbUrl,
 			'thumb2x' => $this->thumb2xUrl,
+			'placeholder' => $this->placeholderUrl,
 		];
 	}
 }
