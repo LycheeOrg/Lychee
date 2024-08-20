@@ -160,6 +160,7 @@ class Create
 			Shared\Save::class,
 			Standalone\CreateOriginalSizeVariant::class,
 			Standalone\CreateSizeVariants::class,
+			Standalone\EncodePlaceholder::class,
 			Shared\UploadSizeVariantsToS3::class,
 		];
 
