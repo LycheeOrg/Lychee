@@ -26,59 +26,6 @@ class ImagickHandler extends BaseImageHandler
 	}
 
 	/**
-	 * Not currently working as expected, and should not be used.
-	 *  We are limited by imagick's lack of webp compression.
-	 * This method only exists here because its GD counterpart is
-	 * working fine and {@link ImageHandlerInterface} requires it.
-	 *
-	 * @param MediaFile $file
-	 * @param string    $targetMimeType
-	 * @param int|null  $compressionQuality
-	 * @param bool      $collectStatistics
-	 *
-	 * @return StreamStats|null
-	 */
-	public function convertAndSave(MediaFile $file, string $targetMimeType, ?int $compressionQuality = null, bool $collectStatistics = false): ?StreamStats
-	{
-		// Nasty workaround to only use GD for this function
-		$image = new GdHandler();
-		$image->load($file);
-
-		return $image->convertAndSave($file, $targetMimeType, $compressionQuality, $collectStatistics);
-		//		if ($this->imImage === null) {
-		//			throw new MediaFileOperationException('No image loaded');
-		//		}
-		//		try {
-		//			$this->imImage->setImageFormat('WEBP');
-		//			$this->imImage->setImageCompressionQuality($compressionQuality);
-		//			$this->imImage->setOption('webp:method', '6');
-		//			$this->imImage->setOption('webp:lossless', 'false');
-		//			$this->imImage->setOption('webp:emulate-jpeg-size', 'false');
-		//
-		//			$profiles = $this->imImage->getImageProfiles('icc', true);
-		//			// Remove metadata to save some bytes
-		//			$this->imImage->stripImage();
-		//			// Re-add  color profiles
-		//			if (key_exists('icc', $profiles)) {
-		//				$this->imImage->profileImage('icc', $profiles['icc']);
-		//			}
-		//
-		//			// We write the image into a memory buffer first, because
-		//			// we don't know if the file is a local file (or hosted elsewhere)
-		//			// and if the file supports seekable streams
-		//			$inMemoryBuffer = new InMemoryBuffer();
-		//			$this->imImage->writeImageFile($inMemoryBuffer->stream(), ltrim($file->getExtension(), '.'));
-		//			$streamStat = $file->write($inMemoryBuffer->read(), $collectStatistics);
-		//			$file->close();
-		//			$inMemoryBuffer->close();
-		//
-		//			return $streamStat;
-		//		} catch (\ImagickException $e) {
-		//			throw new MediaFileOperationException('Failed to convert image', $e);
-		//		}
-	}
-
-	/**
 	 * {@inheritdoc}
 	 */
 	public function reset(): void

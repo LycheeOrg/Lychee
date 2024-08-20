@@ -184,12 +184,7 @@ class SizeVariantDefaultFactory implements SizeVariantFactory
 		};
 
 		$svFile = $this->namingStrategy->createFile($sizeVariant);
-		// Placeholder must be small enough to fit in database when encoded with base64, so it needs more compression.
-		if ($sizeVariant === SizeVariantType::PLACEHOLDER) {
-			$svImage->convertAndSave($svFile, 'image/webp', self::PLACEHOLDER_COMPRESSION_QUALITY);
-		} else {
-			$svImage->save($svFile);
-		}
+		$svImage->save($svFile);
 
 		return $this->photo->size_variants->create(
 			$sizeVariant,
