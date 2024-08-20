@@ -38,8 +38,6 @@ interface ImageHandlerInterface
 	 */
 	public function save(MediaFile $file, bool $collectStatistics = false): ?StreamStats;
 
-	public function convertAndSave(MediaFile $file, string $targetMimeType, ?int $compressionQuality = null, bool $collectStatistics = false): ?StreamStats;
-
 	/**
 	 * Frees all internal resources.
 	 *
