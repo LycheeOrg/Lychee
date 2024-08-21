@@ -177,14 +177,14 @@ class SizeVariant extends Model
 	{
 		$imageDisk = Storage::disk($this->storage_disk->value);
 
+		if ($this->type === SizeVariantType::PLACEHOLDER) {
+			return 'data:image/webp;base64,' . $this->short_path;
+		}
+
 		if (
 			!Configs::getValueAsBool('SL_enable') ||
 			(!Configs::getValueAsBool('SL_for_admin') && Auth::user()?->may_administrate === true)
 		) {
-			if ($this->type === SizeVariantType::PLACEHOLDER) {
-				return 'data:image/webp;base64,' . $this->short_path;
-			}
-
 			/** @disregard P1013 */
 			return $imageDisk->url($this->short_path);
 		}
