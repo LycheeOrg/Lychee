@@ -86,11 +86,6 @@ class ImageHandler extends BaseImageHandler implements ImageHandlerInterface
 		return $this->engine->save($file, $collectStatistics);
 	}
 
-	public function convertAndSave(MediaFile $file, string $targetMimeType, ?int $compressionQuality = null, bool $collectStatistics = false): ?StreamStats
-	{
-		return $this->engine->convertAndSave($file, $targetMimeType, $compressionQuality, $collectStatistics);
-	}
-
 	/**
 	 * {@inheritDoc}
 	 */
