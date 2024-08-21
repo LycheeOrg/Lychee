@@ -20,7 +20,7 @@ class EncodePlaceholder implements StandalonePipe
 		try {
 			$inMemoryBuffer = new InMemoryBuffer();
 			$placeholder = $state->getPhoto()->size_variants->getPlaceholder();
-			$file = $placeholder->getFile();
+			$file = $placeholder?->getFile();
 			// Do not attempt to encode placeholders if they were not generated
 			if ($placeholder === null) {
 				return $next($state);
