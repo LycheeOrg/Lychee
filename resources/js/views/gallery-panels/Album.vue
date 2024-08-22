@@ -1,5 +1,12 @@
 <template>
-	<AlbumHeader v-if="album && config && user" :album="album" :config="config" :user="user" v-model:are-details-open="areDetailsOpen" @refresh="refresh" />
+	<AlbumHeader
+		v-if="album && config && user"
+		:album="album"
+		:config="config"
+		:user="user"
+		v-model:are-details-open="areDetailsOpen"
+		@refresh="refresh"
+	/>
 	<template v-if="config && album">
 		<div class="relative flex flex-wrap content-start w-full justify-start overflow-y-auto h-[calc(100vh-66px)]">
 			<AlbumEdit v-model="areDetailsOpen" v-if="album.rights.can_edit" :album="album" :config="config" />
