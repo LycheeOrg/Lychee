@@ -23,7 +23,7 @@
 					</ul>
 				</div>
 				<div class="flex justify-center">
-					<Button @click="closeCallback" text autofocus class="p-3 w-full font-bold border-1 border-white-alpha-30 hover:bg-white-alpha-10">
+					<Button @click="closeCallback" text class="p-3 w-full font-bold border-1 border-white-alpha-30 hover:bg-white-alpha-10">
 						{{ $t("lychee.CLOSE") }}
 					</Button>
 				</div>
@@ -32,26 +32,13 @@
 	</Dialog>
 </template>
 <script setup lang="ts">
-import { ref, watch } from "vue";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
+import { Ref } from "vue";
 
-const props = defineProps<{
-	visible: boolean;
-}>();
-const visible = ref(props.visible);
-
-const emit = defineEmits(["close"]);
-
-watch(
-	() => props.visible,
-	(value) => {
-		visible.value = value;
-	},
-);
+const visible = defineModel("visible", { default: false }) as Ref<boolean>;
 
 function closeCallback() {
 	visible.value = false;
-	emit("close");
 }
 </script>

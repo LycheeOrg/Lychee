@@ -1,40 +1,14 @@
 <template>
-	<LoginModal :visible="isLoginOpen" @logged-in="refresh" />
-	<UploadPanel v-if="canUpload" :visible="isUploadOpen" @close="isUploadOpen = false" :album-id="albumid" />
-	<Toolbar class="w-full border-0" v-if="album">
-		<template #start>
-			<Button icon="pi pi-angle-left" class="mr-2" severity="secondary" text @click="goBack" />
-			<!-- <Button v-if="user?.id" @click="openLeftMenu" icon="pi pi-bars" class="mr-2" severity="secondary" text /> -->
-			<!-- <Button v-if="initdata?.user" @click="logout" icon="pi pi-sign-out" class="mr-2" severity="secondary" text /> -->
-		</template>
-
-		<template #center>
-			{{ album.title }}
-		</template>
-
-		<template #end>
-			<!-- <IconField>
-				<InputIcon>
-					<i class="pi pi-search" />
-				</InputIcon>
-				<InputText placeholder="Search" />
-			</IconField> -->
-			<template v-if="album.rights.can_edit">
-				<Button v-if="!areDetailsOpen" icon="pi pi-angle-down" severity="secondary" class="mr-2" text @click="toggleDetails" />
-				<Button v-if="areDetailsOpen" icon="pi pi-angle-up" severity="secondary" class="mr-2 text-primary-400" text @click="toggleDetails" />
-			</template>
-			<!-- <SplitButton label="Save" :model="items"></SplitButton> -->
-		</template>
-	</Toolbar>
+	<AlbumHeader v-if="album && config && user" :album="album" :config="config" :user="user" v-model:are-details-open="areDetailsOpen" @refresh="refresh" />
 	<template v-if="config && album">
-		<div v-if="noData" class="flex w-full h-[calc(100vh-100px)] items-center justify-center text-xl text-muted-color">
-			<span class="block">
-				{{ "Nothing to see here" }}
-			</span>
-		</div>
-		<div v-if="!noData" class="relative flex flex-wrap content-start w-full justify-start overflow-y-auto h-[calc(100vh-66px)]">
+		<div class="relative flex flex-wrap content-start w-full justify-start overflow-y-auto h-[calc(100vh-66px)]">
 			<AlbumEdit v-model="areDetailsOpen" v-if="album.rights.can_edit" :album="album" :config="config" />
-			<AlbumHero :album="album" @open-sharing-modal="openSharingModal" />
+			<div v-if="noData" class="flex w-full h-full items-center justify-center text-xl text-muted-color">
+				<span class="block">
+					{{ "Nothing to see here" }}
+				</span>
+			</div>
+			<AlbumHero v-if="!noData" :album="album" @open-sharing-modal="openSharingModal" />
 			<AlbumThumbPanel
 				v-if="children !== null && children.length > 0"
 				header="lychee.ALBUMS"
@@ -52,28 +26,22 @@
 			/>
 		</div>
 	</template>
-	<ShareAlbum ref="shareAlbum" v-if="album !== null" :title="album.title" :url="route.path"></ShareAlbum>
+	<ShareAlbum ref="shareAlbum" v-if="album" :title="album.title" :url="route.path"></ShareAlbum>
 </template>
 <script setup lang="ts">
 import { useAuthStore } from "@/stores/Auth";
-import LoginModal from "@/components/modals/LoginModal.vue";
 import AlbumService from "@/services/album-service";
-import Button from "primevue/button";
-import Toolbar from "primevue/toolbar";
 import { Ref, computed, ref } from "vue";
 import { watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import AlbumThumbPanel from "@/components/gallery/AlbumThumbPanel.vue";
 import PhotoThumbPanel from "@/components/gallery/PhotoThumbPanel.vue";
 import ShareAlbum from "@/components/modals/ShareAlbum.vue";
 import AlbumHero from "@/components/gallery/AlbumHero.vue";
 import AlbumEdit from "@/components/drawers/AlbumEdit.vue";
-import UploadPanel from "@/components/modals/UploadPanel.vue";
-import { onKeyStroke } from "@vueuse/core";
+import AlbumHeader from "@/components/headers/AlbumHeader.vue";
 
-const isUploadOpen = ref(false);
 const areDetailsOpen = ref(false);
-const router = useRouter();
 const props = defineProps<{
 	albumid: string;
 }>();
@@ -82,24 +50,20 @@ const isLoginOpen = ref(false);
 const albumid = ref(props.albumid);
 const auth = useAuthStore();
 const user = ref(undefined) as Ref<undefined | App.Http.Resources.Models.UserResource>;
-const album = ref(null) as Ref<
-	null | App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.TagAlbumResource | App.Http.Resources.Models.SmartAlbumResource
->;
+
+const modelAlbum = ref(undefined) as Ref<undefined | App.Http.Resources.Models.AlbumResource>;
+const tagAlbum = ref(undefined) as Ref<undefined | App.Http.Resources.Models.TagAlbumResource>;
+const smartAlbum = ref(undefined) as Ref<undefined | App.Http.Resources.Models.SmartAlbumResource>;
+
+const album = computed<
+	undefined | App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.TagAlbumResource | App.Http.Resources.Models.SmartAlbumResource
+>(() => modelAlbum.value || tagAlbum.value || smartAlbum.value);
 const config = ref(null) as Ref<null | App.Http.Resources.GalleryConfigs.AlbumConfig>;
 const layout = ref(null) as Ref<null | App.Http.Resources.GalleryConfigs.PhotoLayoutConfig>;
-const children = ref([]) as Ref<App.Http.Resources.Models.ThumbAlbumResource[]>;
 const photos = ref([]) as Ref<App.Http.Resources.Models.PhotoResource[]>;
 const route = useRoute();
-const noData = computed(() => (children.value === null || children.value.length === 0) && (photos.value === null || photos.value.length === 0));
-const canUpload = computed(() => user.value?.id !== null && album.value?.rights.can_upload === true);
-
-function goBack() {
-	if (config.value?.is_model_album === true && (album.value as App.Http.Resources.Models.AlbumResource | null)?.parent_id !== null) {
-		router.push({ name: "album", params: { albumid: (album.value as App.Http.Resources.Models.AlbumResource | null)?.parent_id } });
-	} else {
-		router.push({ name: "gallery" });
-	}
-}
+const noData = computed(() => children.value.length === 0 && (photos.value === null || photos.value.length === 0));
+const children = computed<App.Http.Resources.Models.ThumbAlbumResource[]>(() => modelAlbum.value?.albums ?? []);
 
 AlbumService.getLayout().then((data) => {
 	layout.value = data.data;
@@ -114,8 +78,17 @@ function refresh() {
 		.then((data) => {
 			console.log(data.data);
 			config.value = data.data.config;
-			album.value = data.data.resource;
-			prepare();
+			modelAlbum.value = undefined;
+			tagAlbum.value = undefined;
+			smartAlbum.value = undefined;
+			if (data.data.config.is_model_album) {
+				modelAlbum.value = data.data.resource as App.Http.Resources.Models.AlbumResource;
+			} else if (data.data.config.is_base_album) {
+				tagAlbum.value = data.data.resource as App.Http.Resources.Models.TagAlbumResource;
+			} else {
+				smartAlbum.value = data.data.resource as App.Http.Resources.Models.SmartAlbumResource;
+			}
+			photos.value = album.value?.photos ?? [];
 		})
 		.catch((error) => {
 			// We are required to login :)
@@ -127,25 +100,8 @@ function refresh() {
 		});
 }
 
-function prepare() {
-	if (config.value === null || album.value === null || config.value.is_accessible !== true) {
-		return;
-	}
-
-	photos.value = album.value.photos as App.Http.Resources.Models.PhotoResource[];
-
-	if (config.value.is_base_album === true) {
-		const albumResource = album.value as App.Http.Resources.Models.AlbumResource;
-		children.value = albumResource.albums as App.Http.Resources.Models.ThumbAlbumResource[];
-	}
-}
-
 function openSharingModal() {
 	shareAlbum.value.toggleModal();
-}
-
-function toggleDetails() {
-	areDetailsOpen.value = !areDetailsOpen.value;
 }
 
 refresh();
@@ -158,8 +114,4 @@ watch(
 		refresh();
 	},
 );
-
-onKeyStroke("u", () => {
-	isUploadOpen.value = !isUploadOpen.value;
-});
 </script>

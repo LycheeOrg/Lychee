@@ -43,7 +43,7 @@
 					<p class="about-desc" v-html="description"></p>
 				</div>
 				<div class="flex justify-center">
-					<Button @click="closeCallback" text autofocus class="p-3 w-full font-bold border-1 border-white-alpha-30 hover:bg-white-alpha-10">
+					<Button @click="closeCallback" text class="p-3 w-full font-bold border-1 border-white-alpha-30 hover:bg-white-alpha-10">
 						{{ $t("lychee.CLOSE") }}
 					</Button>
 				</div>
@@ -52,17 +52,14 @@
 	</Dialog>
 </template>
 <script setup lang="ts">
-import { Ref, ref, watch } from "vue";
+import { Ref, ref } from "vue";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
 import InitService from "@/services/init-service";
 import { trans } from "laravel-vue-i18n";
 import { sprintf } from "sprintf-js";
 
-const props = defineProps<{
-	visible: boolean;
-}>();
-const visible = ref(props.visible);
+const visible = defineModel("visible", { default: false }) as Ref<boolean>;
 
 const emit = defineEmits(["close"]);
 const description = ref(sprintf(trans("lychee.ABOUT_DESCRIPTION"), "https://LycheeOrg.github.io"));
@@ -76,15 +73,7 @@ InitService.fetchVersion()
 		console.error(error);
 	});
 
-watch(
-	() => props.visible,
-	(value) => {
-		visible.value = value;
-	},
-);
-
 function closeCallback() {
 	visible.value = false;
-	emit("close");
 }
 </script>

@@ -7,7 +7,7 @@
 						{{ $t("lychee.PASSWORD_TITLE") }}
 					</div>
 					<FloatLabel>
-						<InputPassword id="oldPassword" v-model="oldPassword" autofocus :invalid="!oldPassword && hasChanged" />
+						<InputPassword id="oldPassword" v-model="oldPassword" :invalid="!oldPassword && hasChanged" />
 						<label class="" for="oldPassword">{{ $t("lychee.PASSWORD_CURRENT") }}</label>
 					</FloatLabel>
 				</div>

@@ -35,7 +35,7 @@
 					</div>
 				</div>
 				<div class="flex justify-center mt-9">
-					<Button @click="closeCallback" text autofocus class="p-3 w-full font-bold border-1 border-white-alpha-30 hover:bg-white-alpha-10">
+					<Button @click="closeCallback" text class="p-3 w-full font-bold border-1 border-white-alpha-30 hover:bg-white-alpha-10">
 						{{ $t("lychee.CLOSE") }}
 					</Button>
 				</div>

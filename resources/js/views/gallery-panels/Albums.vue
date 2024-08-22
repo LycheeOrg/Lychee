@@ -1,47 +1,6 @@
 <template>
-	<LoginModal v-if="user?.id === null" :visible="isLoginOpen" @logged-in="refresh" />
-	<UploadPanel v-if="canUpload" :visible="isUploadOpen" :album-id="null" @close="isUploadOpen = false" />
-	<ImportFromServer v-if="canUpload" :visible="isImportFromServerOpen" @close="isImportFromServerOpen = false" />
-	<AlbumCreateDialog v-if="canUpload" :visible="isCreateAlbumOpen" :parent-id="null" @close="isCreateAlbumOpen = false" />
-	<AlbumCreateTagDialog v-if="canUpload" :visible="isCreateTagAlbumOpen" @close="isCreateTagAlbumOpen = false" />
-	<Toolbar class="w-full border-0">
-		<template #start>
-			<Button
-				v-if="user?.id === null"
-				icon="pi pi-sign-in"
-				class="mr-2"
-				severity="secondary"
-				text
-				@click="() => (isLoginOpen = !isLoginOpen)"
-			/>
-			<Button v-if="user?.id" @click="openLeftMenu" icon="pi pi-bars" class="mr-2" severity="secondary" text />
-			<!-- <Button v-if="initdata?.user" @click="logout" icon="pi pi-sign-out" class="mr-2" severity="secondary" text /> -->
-		</template>
-
-		<template #center>
-			{{ title }}
-		</template>
-
-		<template #end>
-			<!-- <IconField>
-				<InputIcon>
-					<i class="pi pi-search" />
-				</InputIcon>
-				<InputText placeholder="Search" />
-			</IconField> -->
-			<!-- <SplitButton label="Save" :model="items"></SplitButton> -->
-			<Button icon="pi pi-plus" severity="secondary" @click="openAddMenu" />
-		</template>
-	</Toolbar>
-	<ContextMenu ref="addmenu" :model="addMenu">
-		<template #item="{ item, props }">
-			<a v-ripple v-bind="props.action" @click="item.callback">
-				<span :class="item.icon" />
-				<span class="ml-2">{{ $t(item.label) }}</span>
-			</a>
-		</template>
-	</ContextMenu>
 	<div v-if="rootConfig !== undefined">
+		<AlbumsHeader v-model:is-login-open="isLoginOpen" v-if="user" :user="user" title="lychee.ALBUMS" @refresh="refresh" />
 		<AlbumThumbPanel
 			v-if="smartAlbums.length > 0"
 			header="lychee.SMART_ALBUMS"
@@ -71,77 +30,18 @@
 <script setup lang="ts">
 import AlbumThumbPanel from "@/components/gallery/AlbumThumbPanel.vue";
 import { useAuthStore } from "@/stores/Auth";
-import LoginModal from "@/components/modals/LoginModal.vue";
 import AlbumService from "@/services/album-service";
-import Button from "primevue/button";
-import Toolbar from "primevue/toolbar";
-import { computed, Ref, ref } from "vue";
-import { useLycheeStateStore } from "@/stores/LycheeState";
-import UploadPanel from "@/components/modals/UploadPanel.vue";
-import { onKeyStroke } from "@vueuse/core";
-import ContextMenu from "primevue/contextmenu";
-import ImportFromServer from "@/components/modals/ImportFromServer.vue";
-import AlbumCreateDialog from "@/components/forms/album/AlbumCreateDialog.vue";
-import AlbumCreateTagDialog from "@/components/forms/album/AlbumCreateTagDialog.vue";
+import { Ref, ref } from "vue";
+import AlbumsHeader from "@/components/headers/AlbumsHeader.vue";
 
-const addmenu = ref();
-
-// 'UPLOAD_PHOTO' => 'Upload Photo',
-// 	'IMPORT_LINK' => 'Import from Link',
-// 	'IMPORT_DROPBOX' => 'Import from Dropbox',
-// 	'IMPORT_SERVER' => 'Import from Server',
-// 	'NEW_ALBUM' => 'New Album',
-// 	'NEW_TAG_ALBUM' => 'New Tag Album',
-// 	'UPLOAD_TRACK' => 'Upload track',
-// 	'DELETE_TRACK' => 'Delete track',
-
-const addMenu = ref([
-	{
-		label: "lychee.UPLOAD_PHOTO",
-		icon: "pi pi-upload",
-		callback: () => (isUploadOpen.value = true),
-	},
-	{
-		label: "lychee.IMPORT_LINK",
-		icon: "pi pi-link",
-		callback: () => {},
-	},
-	{
-		label: "lychee.IMPORT_DROPBOX",
-		icon: "pi pi-box",
-		callback: () => {},
-	},
-	{
-		label: "lychee.IMPORT_SERVER",
-		icon: "pi pi-server",
-		callback: () => (isImportFromServerOpen.value = true),
-	},
-	{
-		label: "lychee.NEW_ALBUM",
-		icon: "pi pi-folder",
-		callback: () => (isCreateAlbumOpen.value = true),
-	},
-	{
-		label: "lychee.NEW_TAG_ALBUM",
-		icon: "pi pi-tags",
-		callback: () => (isCreateTagAlbumOpen.value = true),
-	},
-]);
-const title = ref("Albums");
 const isLoginOpen = ref(false);
-const isUploadOpen = ref(false);
-const isCreateAlbumOpen = ref(false);
-const isCreateTagAlbumOpen = ref(false);
-const isImportFromServerOpen = ref(false);
+
 const user = ref(undefined) as Ref<undefined | App.Http.Resources.Models.UserResource>;
-const canUpload = computed(() => user.value?.id !== null);
 
 const smartAlbums = ref([]) as Ref<App.Http.Resources.Models.ThumbAlbumResource[]>;
 const albums = ref([]) as Ref<App.Http.Resources.Models.ThumbAlbumResource[]>;
 const sharedAlbums = ref([]) as Ref<App.Http.Resources.Models.ThumbAlbumResource[]>;
 const rootConfig = ref(undefined) as Ref<undefined | App.Http.Resources.GalleryConfigs.RootConfig>;
-
-const lycheeStore = useLycheeStateStore();
 const auth = useAuthStore();
 
 function refresh() {
@@ -171,19 +71,9 @@ function refresh() {
 		});
 }
 
-const emit = defineEmits(["toggleLeftMenu"]);
-
-function openLeftMenu() {
-	lycheeStore.toggleLeftMenu();
-}
-
-function openAddMenu(event: Event) {
-	addmenu.value.show(event);
-}
-
-onKeyStroke("u", () => {
-	isUploadOpen.value = !isUploadOpen.value;
-});
+const emit = defineEmits<{
+	(e: "toggleLeftMenu"): void;
+}>();
 
 refresh();
 </script>

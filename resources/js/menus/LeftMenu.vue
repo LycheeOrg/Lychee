@@ -18,7 +18,7 @@
 				</a>
 			</template>
 		</Menu>
-		<AboutLychee :visible="openLycheeAbout" @close="openLycheeAbout = false" />
+		<AboutLychee :visible="openLycheeAbout" />
 	</Drawer>
 </template>
 <script setup lang="ts">

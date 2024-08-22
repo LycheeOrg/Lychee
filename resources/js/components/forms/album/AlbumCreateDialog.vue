@@ -11,7 +11,7 @@
 				<p class="mb-5 px-9">{{ $t("lychee.TITLE_NEW_ALBUM") }}</p>
 				<div class="inline-flex flex-col gap-2 px-9">
 					<FloatLabel>
-						<InputText id="title" v-model="title" autofocus />
+						<InputText id="title" v-model="title" />
 						<label class="" for="title">{{ $t("lychee.ALBUM_SET_TITLE") }}</label>
 					</FloatLabel>
 				</div>
@@ -43,13 +43,13 @@ import FloatLabel from "primevue/floatlabel";
 import Button from "primevue/button";
 
 const props = defineProps<{
-	visible: boolean;
 	parentId: string | null;
 }>();
 
-const router = useRouter();
+const visible = defineModel("visible", { default: false });
 const parentId = ref(props.parentId);
-const visible = ref(props.visible);
+
+const router = useRouter();
 
 const title = ref(undefined as undefined | string);
 
@@ -62,15 +62,14 @@ function create() {
 		title: title.value,
 		parent_id: parentId.value,
 	}).then((response) => {
+		visible.value = false;
 		router.push(`/gallery/${response.data}`);
 	});
 }
 
 watch(
-	() => [props.visible, props.parentId],
-	([newVisible, newAlbumID], [_oldVisible, _oldAlbumID]) => {
-		console.log("hello");
-		visible.value = newVisible as boolean;
+	() => props.parentId,
+	(newAlbumID, _oldAlbumID) => {
 		parentId.value = newAlbumID as string | null;
 	},
 );

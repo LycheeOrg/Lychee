@@ -44,7 +44,7 @@
 				{{ $t("lychee.LOADING") }}
 			</div>
 			<div class="flex justify-center">
-				<Button @click="closeCallback" text autofocus class="p-3 w-full font-bold border-1 border-white-alpha-30 hover:bg-white-alpha-10">
+				<Button @click="closeCallback" text class="p-3 w-full font-bold border-1 border-white-alpha-30 hover:bg-white-alpha-10">
 					{{ $t("lychee.CLOSE") }}
 				</Button>
 			</div>
@@ -54,7 +54,7 @@
 <script setup lang="ts">
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
-import { ref, watch } from "vue";
+import { Ref, ref, watch } from "vue";
 import UploadingLine from "../forms/upload/UploadingLine.vue";
 import ScrollPanel from "primevue/scrollpanel";
 import UploadService from "@/services/upload-service";
@@ -64,18 +64,11 @@ type Uploadable = {
 	status: string;
 };
 
-const props = withDefaults(
-	defineProps<{
-		visible: boolean;
-		albumId: string | null;
-	}>(),
-	{
-		visible: false,
-	},
-);
+const visible = defineModel("visible", { default: false }) as Ref<boolean>;
+
+const props = defineProps<{ albumId: string | null }>();
 
 const setup = ref(undefined as undefined | App.Http.Resources.GalleryConfigs.UploadConfig);
-const visible = ref(props.visible);
 const albumId = ref(props.albumId);
 
 const emit = defineEmits(["close"]);
@@ -125,9 +118,8 @@ function closeCallback() {
 load();
 
 watch(
-	() => [props.visible, props.albumId],
-	([newVisible, newAlbumId], [_oldVisible, _oldAlbumId]) => {
-		visible.value = newVisible as boolean;
+	() => props.albumId,
+	(newAlbumId, _oldAlbumId) => {
 		albumId.value = newAlbumId as string | null;
 		files.value = [];
 	},

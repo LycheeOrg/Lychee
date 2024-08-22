@@ -13,7 +13,7 @@
 			<div v-focustrap class="flex flex-col gap-4 relative max-w-full text-sm rounded-md pt-9">
 				<div class="inline-flex flex-col gap-2 px-9">
 					<FloatLabel>
-						<InputText id="username" v-model="username" autofocus />
+						<InputText id="username" v-model="username" />
 						<label class="" for="username">{{ $t("lychee.USERNAME") }}</label>
 					</FloatLabel>
 				</div>
@@ -44,7 +44,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { Ref, ref, watch } from "vue";
 import FloatLabel from "primevue/floatlabel";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
@@ -55,13 +55,10 @@ import InputText from "@/components/forms/basic/InputText.vue";
 import InputPassword from "@/components/forms/basic/InputPassword.vue";
 import { useAuthStore } from "@/stores/Auth";
 
-const props = defineProps<{
-	visible: boolean;
-}>();
+const visible = defineModel("visible", { default: false }) as Ref<boolean>;
 
 const emit = defineEmits(["logged-in"]);
 
-const visible = ref(props.visible);
 const username = ref("");
 const password = ref("");
 const authStore = useAuthStore();
@@ -81,11 +78,4 @@ function login() {
 			}
 		});
 }
-
-watch(
-	() => props.visible,
-	(value) => {
-		visible.value = value;
-	},
-);
 </script>
