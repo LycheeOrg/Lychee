@@ -25,7 +25,7 @@
 	</Select>
 </template>
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import AlbumService from "@/services/album-service";
 import Select from "primevue/select";
 
@@ -33,13 +33,14 @@ const props = defineProps<{
 	album: App.Http.Resources.Models.AlbumResource | null;
 }>();
 
+const albumId = ref(props.album?.id as string | null);
 const emits = defineEmits(["selected"]);
 
 const options = ref([] as App.Http.Resources.Models.TargetAlbumResource[]);
 const selectedTarget = ref(undefined as App.Http.Resources.Models.TargetAlbumResource | undefined);
 
 function load() {
-	AlbumService.getTargetListAlbums(props.album?.id ?? null).then((response) => {
+	AlbumService.getTargetListAlbums(albumId.value).then((response) => {
 		options.value = response.data;
 	});
 }
@@ -49,4 +50,12 @@ load();
 function selected() {
 	emits("selected", selectedTarget.value);
 }
+
+watch(
+	() => props.album,
+	(newAlbum, _oldAlbum) => {
+		albumId.value = newAlbum?.id ?? null;
+		load();
+	},
+);
 </script>

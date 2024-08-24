@@ -4,7 +4,7 @@
 	<AlbumCreateDialog
 		v-if="canUpload && config.is_model_album"
 		v-model:visible="isCreateAlbumOpen"
-		v-model:parent-id="albumid"
+		v-model:parent-id="props.album.id"
 		@close="isCreateAlbumOpen = false"
 	/>
 	<Toolbar class="w-full border-0" v-if="album">
@@ -47,7 +47,6 @@ import LoginModal from "@/components/modals/LoginModal.vue";
 import Button from "primevue/button";
 import Toolbar from "primevue/toolbar";
 import { Ref, computed, ref } from "vue";
-import { watch } from "vue";
 import { useRouter } from "vue-router";
 import UploadPanel from "@/components/modals/UploadPanel.vue";
 import { onKeyStroke } from "@vueuse/core";
@@ -95,14 +94,16 @@ const addMenu = ref([
 const isUploadOpen = ref(false);
 const isCreateAlbumOpen = ref(false);
 const router = useRouter();
-const albumid = ref(props.album.id);
 const user = ref(undefined) as Ref<undefined | App.Http.Resources.Models.UserResource>;
 const canUpload = computed(() => user.value?.id !== null && props.album.rights.can_upload === true);
 
 onKeyStroke("n", () => !shouldIgnoreKeystroke() && (isCreateAlbumOpen.value = true));
 onKeyStroke("u", () => !shouldIgnoreKeystroke() && (isUploadOpen.value = true));
+onKeyStroke("i", () => !shouldIgnoreKeystroke() && toggleDetails());
 
 function goBack() {
+	areDetailsOpen.value = false;
+
 	if (props.config.is_model_album === true && (props.album as App.Http.Resources.Models.AlbumResource | null)?.parent_id !== null) {
 		router.push({ name: "album", params: { albumid: (props.album as App.Http.Resources.Models.AlbumResource | null)?.parent_id } });
 	} else {
@@ -131,6 +132,11 @@ onKeyStroke("Escape", () => {
 	// 1. lose focus
 	if (shouldIgnoreKeystroke() && document.activeElement instanceof HTMLElement) {
 		document.activeElement.blur();
+		return;
+	}
+
+	if (areDetailsOpen.value) {
+		toggleDetails();
 		return;
 	}
 

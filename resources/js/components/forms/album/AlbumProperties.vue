@@ -165,7 +165,7 @@
 						<label for="tags">{{ $t("lychee.ALBUM_SET_SHOWTAGS") }}</label>
 					</FloatLabel>
 				</div>
-				<Button class="p-3 w-full font-bold border-none text-primary-500 hover:bg-primary-500 hover:text-surface-0 flex-shrink" @click="save">
+				<Button class="p-3 w-full font-bold border-none text-white hover:bg-primary-500 hover:text-surface-0 flex-shrink" @click="save">
 					{{ $t("lychee.SAVE") }}
 				</Button>
 			</form>

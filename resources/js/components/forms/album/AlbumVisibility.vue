@@ -3,7 +3,7 @@
 		<template #content>
 			<form>
 				<div class="h-12 mb-4">
-					<ToggleSwitch v-model="is_public" class="mr-2 translate-y-1" />
+					<ToggleSwitch v-model="is_public" class="mr-2 translate-y-1" @change="save" />
 					<label for="pp_dialog_public_check" class="font-bold">{{ $t("lychee.ALBUM_PUBLIC") }}</label>
 					<p class="my-1.5">{{ $t("lychee.ALBUM_PUBLIC_EXPL") }}</p>
 				</div>
