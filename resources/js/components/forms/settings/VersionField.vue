@@ -50,7 +50,10 @@ const computedVersion = computed(() => {
 	return version;
 });
 
-const emits = defineEmits(["filled", "reset"]);
+const emits = defineEmits<{
+	(e: "filled", key: string, value: string): void;
+	(e: "reset", key: string): void;
+}>();
 
 function update() {
 	emits("filled", props.config.key, val.value);

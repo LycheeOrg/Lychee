@@ -32,7 +32,6 @@ const LycheePrimeVueConfig = {
 			focusRing: {
 				width: "0",
 				style: "none",
-				color: "transparent",
 				offset: "0",
 				shadow: "none",
 			},
@@ -542,6 +541,14 @@ const LycheePrimeVueConfig = {
 				duration: 0,
 			},
 			shadow: "none",
+			colorScheme: {
+				light: {
+					color: "{surface.700}",
+				},
+				dark: {
+					color: "{surface.300}",
+				},
+			},
 		},
 	},
 };

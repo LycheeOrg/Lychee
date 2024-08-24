@@ -71,7 +71,9 @@ const props = defineProps<{ albumId: string | null }>();
 const setup = ref(undefined as undefined | App.Http.Resources.GalleryConfigs.UploadConfig);
 const albumId = ref(props.albumId);
 
-const emit = defineEmits(["close"]);
+const emits = defineEmits<{
+	(e: "close"): void;
+}>();
 
 const isDropping = ref(false);
 const files = ref([] as Uploadable[]);
@@ -112,7 +114,7 @@ function uploadCompleted(index: number) {
 function closeCallback() {
 	visible.value = false;
 	files.value = [];
-	emit("close");
+	emits("close");
 }
 
 load();

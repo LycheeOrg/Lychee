@@ -46,10 +46,13 @@ const val = ref(props.mapper(props.config.value));
 
 const changed = computed(() => val.value?.value !== props.mapper(props.config.value)?.value);
 
-const emits = defineEmits(["filled", "reset"]);
+const emits = defineEmits<{
+	(e: "filled", key: string, value: string): void;
+	(e: "reset", key: string): void;
+}>();
 
 function update() {
-	emits("filled", props.config.key, val.value?.value);
+	emits("filled", props.config.key, val.value?.value as string);
 }
 
 function reset() {

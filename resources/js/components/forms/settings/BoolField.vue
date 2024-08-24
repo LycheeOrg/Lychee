@@ -20,7 +20,10 @@ const val = ref((props.config.value === "1") as boolean);
 
 const changed = computed(() => val.value !== (props.config.value === "1"));
 
-const emits = defineEmits(["filled", "reset"]);
+const emits = defineEmits<{
+	(e: "filled", key: string, value: string): void;
+	(e: "reset", key: string): void;
+}>();
 
 function update() {
 	if (changed.value) {

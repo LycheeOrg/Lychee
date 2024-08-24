@@ -18,7 +18,10 @@ const options = ref(props.config.type.split("|"));
 
 const changed = computed(() => val.value !== props.config.value);
 
-const emits = defineEmits(["filled", "reset"]);
+const emits = defineEmits<{
+	(e: "filled", key: string, value: string): void;
+	(e: "reset", key: string): void;
+}>();
 
 function update() {
 	emits("filled", props.config.key, val.value);

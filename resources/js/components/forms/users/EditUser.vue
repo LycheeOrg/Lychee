@@ -46,7 +46,9 @@ const isModified = computed(() => {
 		may_upload.value !== user.may_upload
 	);
 });
-const emits = defineEmits(["deleteUser"]);
+const emits = defineEmits<{
+	(e: "deleteUser", id: number): void;
+}>();
 
 function saveUser() {
 	UserManagementService.edit({

@@ -34,7 +34,9 @@ const props = defineProps<{
 }>();
 
 const albumId = ref(props.album?.id as string | null);
-const emits = defineEmits(["selected"]);
+const emits = defineEmits<{
+	(e: "selected", target: App.Http.Resources.Models.TargetAlbumResource): void;
+}>();
 
 const options = ref([] as App.Http.Resources.Models.TargetAlbumResource[]);
 const selectedTarget = ref(undefined as App.Http.Resources.Models.TargetAlbumResource | undefined);
@@ -48,6 +50,10 @@ function load() {
 load();
 
 function selected() {
+	if (selectedTarget.value === undefined) {
+		return;
+	}
+
 	emits("selected", selectedTarget.value);
 }
 

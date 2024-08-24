@@ -63,9 +63,11 @@ const props = defineProps<{
 	// config: App.Http.Resources.GalleryConfigs.AlbumConfig;
 }>();
 
-const emit = defineEmits(["open-sharing-modal"]);
+const emits = defineEmits<{
+	(e: "open-sharing-modal"): void;
+}>();
 
 function openSharingModal() {
-	emit("open-sharing-modal");
+	emits("open-sharing-modal");
 }
 </script>

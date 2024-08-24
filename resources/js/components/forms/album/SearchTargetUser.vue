@@ -37,7 +37,9 @@ const props = withDefaults(
 		filteredUsersIds: () => [],
 	},
 );
-const emits = defineEmits(["selected"]);
+const emits = defineEmits<{
+	(e: "selected", user: App.Http.Resources.Models.LightUserResource): void;
+}>();
 
 const options = ref([] as App.Http.Resources.Models.LightUserResource[]);
 const selectedTarget = ref(undefined as App.Http.Resources.Models.LightUserResource | undefined);
@@ -52,6 +54,10 @@ function load() {
 load();
 
 function selected() {
+	if (selectedTarget.value === undefined) {
+		return;
+	}
+
 	emits("selected", selectedTarget.value);
 }
 </script>

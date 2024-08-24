@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Gallery;
 
+use App\Actions\Import\FromUrl;
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\FileStatus;
 use App\Factories\AlbumFactory;
+use App\Http\Requests\Photo\FromUrlRequest;
 use App\Http\Requests\Photo\GetPhotoRequest;
 use App\Http\Requests\Photo\UploadPhotoRequest;
 use App\Http\Resources\Editable\UploadMetaResource;
@@ -15,6 +17,7 @@ use App\Image\Files\UploadedFile;
 use App\Jobs\ProcessImageJob;
 use App\Models\Configs;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -89,5 +92,14 @@ class PhotoController extends Controller
 		$meta->stage = FileStatus::DONE;
 
 		return $meta;
+	}
+
+	public function fromUrl(FromUrlRequest $request, FromUrl $fromUrl): string
+	{
+		/** @var int $userId */
+		$userId = Auth::id();
+		$fromUrl->do($request->urls(), $request->album(), $userId);
+
+		return 'success';
 	}
 }

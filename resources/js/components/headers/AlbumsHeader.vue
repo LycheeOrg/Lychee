@@ -2,6 +2,7 @@
 	<LoginModal v-if="user.id === null" v-model:visible="isLoginOpen" @logged-in="refresh" />
 	<UploadPanel v-if="canUpload" v-model:visible="isUploadOpen" :album-id="null" @close="refresh" />
 	<ImportFromServer v-if="canUpload" v-model:visible="isImportFromServerOpen" />
+	<ImportFromLink v-if="canUpload" v-model:visible="isImportLinkOpen" :parent-id="null" />
 	<AlbumCreateDialog v-if="canUpload" v-model:visible="isCreateAlbumOpen" :parent-id="null" />
 	<AlbumCreateTagDialog v-if="canUpload" v-model:visible="isCreateTagAlbumOpen" />
 	<Toolbar class="w-full border-0">
@@ -49,6 +50,7 @@ import { onKeyStroke } from "@vueuse/core";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import LoginModal from "@/components/modals/LoginModal.vue";
 import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
+import ImportFromLink from "@/components/modals/ImportFromLink.vue";
 
 const props = defineProps<{
 	user: App.Http.Resources.Models.UserResource;
@@ -80,13 +82,13 @@ const addMenu = ref([
 	{
 		label: "lychee.IMPORT_LINK",
 		icon: "pi pi-link",
-		callback: () => {},
+		callback: () => (isImportLinkOpen.value = true),
 	},
-	{
-		label: "lychee.IMPORT_DROPBOX",
-		icon: "pi pi-box",
-		callback: () => {},
-	},
+	// {
+	// 	label: "lychee.IMPORT_DROPBOX",
+	// 	icon: "pi pi-box",
+	// 	callback: () => {},
+	// },
 	{
 		label: "lychee.IMPORT_SERVER",
 		icon: "pi pi-server",
@@ -109,6 +111,7 @@ const isUploadOpen = ref(false);
 const isCreateAlbumOpen = ref(false);
 const isCreateTagAlbumOpen = ref(false);
 const isImportFromServerOpen = ref(false);
+const isImportLinkOpen = ref(false);
 const canUpload = computed(() => props.user.id !== null);
 const title = ref("Albums");
 

@@ -148,7 +148,6 @@ const props = defineProps<{
 	photoid: string;
 }>();
 
-const emit = defineEmits(["toggleLeftMenu"]);
 const router = useRouter();
 const route = useRoute();
 const lycheeStore = useLycheeStateStore();

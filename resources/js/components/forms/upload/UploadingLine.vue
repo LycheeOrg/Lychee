@@ -42,7 +42,9 @@ const props = withDefaults(
 	},
 );
 
-const emit = defineEmits(["upload:completed"]);
+const emits = defineEmits<{
+	(e: "upload:completed", index: number): void;
+}>();
 
 const status = ref(props.status);
 const file = ref(props.file);
@@ -117,7 +119,7 @@ function process() {
 			if (response.data.chunk_number === response.data.total_chunks) {
 				progress.value = 100;
 				status.value = "done";
-				emit("upload:completed", props.index);
+				emits("upload:completed", props.index);
 			} else {
 				chunkStart.value += props.chunkSize;
 				process();
@@ -126,7 +128,7 @@ function process() {
 		.catch((error) => {
 			progress.value = 100;
 			status.value = "error";
-			emit("upload:completed", props.index);
+			emits("upload:completed", props.index);
 		});
 }
 

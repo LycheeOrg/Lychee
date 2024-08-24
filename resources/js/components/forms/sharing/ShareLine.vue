@@ -38,7 +38,9 @@ const props = defineProps<{
 }>();
 
 const toast = useToast();
-const emit = defineEmits(["delete"]);
+const emits = defineEmits<{
+	(e: "delete", id: number): void;
+}>();
 
 const grantsFullPhotoAccess = ref(false);
 const grantsDownload = ref(false);
@@ -68,6 +70,9 @@ function edit() {
 }
 
 const deletePermission = () => {
-	emit("delete", props.perm.id);
+	if (props.perm.id === null) {
+		return;
+	}
+	emits("delete", props.perm.id);
 };
 </script>

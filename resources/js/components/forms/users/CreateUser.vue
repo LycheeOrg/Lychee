@@ -35,7 +35,9 @@ const may_edit_own_settings = ref(false);
 const may_upload = ref(false);
 
 const toast = useToast();
-const emits = defineEmits(["createUser"]);
+const emits = defineEmits<{
+	(e: "createUser"): void;
+}>();
 
 function createUser() {
 	if (username.value === undefined || password.value === undefined) {

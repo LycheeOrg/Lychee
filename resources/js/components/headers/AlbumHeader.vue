@@ -1,6 +1,7 @@
 <template>
-	<LoginModal :visible="isLoginOpen" @logged-in="refresh" />
-	<UploadPanel v-if="canUpload" :visible="isUploadOpen" @close="isUploadOpen = false" :album-id="props.album.id" />
+	<LoginModal v-if="props.user.id === null" v-model:visible="isLoginOpen" @logged-in="refresh" />
+	<UploadPanel v-if="canUpload" v-model:visible="isUploadOpen" @close="isUploadOpen = false" :album-id="props.album.id" />
+	<ImportFromLink v-if="canUpload" v-model:visible="isImportLinkOpen" :parent-id="props.album.id" @refresh="refresh" />
 	<AlbumCreateDialog
 		v-if="canUpload && config.is_model_album"
 		v-model:visible="isCreateAlbumOpen"
@@ -53,6 +54,7 @@ import { onKeyStroke } from "@vueuse/core";
 import AlbumCreateDialog from "@/components/forms/album/AlbumCreateDialog.vue";
 import ContextMenu from "primevue/contextmenu";
 import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
+import ImportFromLink from "@/components/modals/ImportFromLink.vue";
 
 const props = defineProps<{
 	config: App.Http.Resources.GalleryConfigs.AlbumConfig;
@@ -77,13 +79,13 @@ const addMenu = ref([
 	{
 		label: "lychee.IMPORT_LINK",
 		icon: "pi pi-link",
-		callback: () => {},
+		callback: () => (isImportLinkOpen.value = true),
 	},
-	{
-		label: "lychee.IMPORT_DROPBOX",
-		icon: "pi pi-box",
-		callback: () => {},
-	},
+	// {
+	// 	label: "lychee.IMPORT_DROPBOX",
+	// 	icon: "pi pi-box",
+	// 	callback: () => {},
+	// },
 	{
 		label: "lychee.NEW_ALBUM",
 		icon: "pi pi-folder",
@@ -93,6 +95,7 @@ const addMenu = ref([
 
 const isUploadOpen = ref(false);
 const isCreateAlbumOpen = ref(false);
+const isImportLinkOpen = ref(false);
 const router = useRouter();
 const user = ref(undefined) as Ref<undefined | App.Http.Resources.Models.UserResource>;
 const canUpload = computed(() => user.value?.id !== null && props.album.rights.can_upload === true);

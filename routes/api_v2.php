@@ -94,6 +94,7 @@ Route::post('/Sharing::delete', [Gallery\SharingController::class, 'delete']);
  * PHOTO.
  */
 Route::get('/Photo', [Gallery\PhotoController::class, 'get'])->middleware(['login_required:album']);
+Route::post('/Photo::fromUrl', [Gallery\PhotoController::class, 'fromUrl']);
 Route::post('/Photo', [Gallery\PhotoController::class, 'upload'])
 	->withoutMiddleware(['content_type:json'])
 	->middleware(['content_type:multipart']);

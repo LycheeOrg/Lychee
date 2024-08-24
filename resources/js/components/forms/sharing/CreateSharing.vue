@@ -48,7 +48,9 @@ const props = withDefaults(
 );
 
 const toast = useToast();
-const emit = defineEmits(["createdPermission"]);
+const emits = defineEmits<{
+	(e: "createdPermission"): void;
+}>();
 
 const newShareUser = ref(undefined as undefined | App.Http.Resources.Models.LightUserResource);
 const grantsFullPhotoAccess = ref(false);
@@ -87,7 +89,7 @@ function create() {
 	SharingService.add(data).then(() => {
 		toast.add({ severity: "success", summary: "Success", detail: "Permission created", life: 3000 });
 		reset();
-		emit("createdPermission");
+		emits("createdPermission");
 	});
 }
 </script>

@@ -57,7 +57,9 @@ import { useAuthStore } from "@/stores/Auth";
 
 const visible = defineModel("visible", { default: false }) as Ref<boolean>;
 
-const emit = defineEmits(["logged-in"]);
+const emits = defineEmits<{
+	(e: "logged-in"): void;
+}>();
 
 const username = ref("");
 const password = ref("");
@@ -70,7 +72,7 @@ function login() {
 			visible.value = false;
 			authStore.setUser(null);
 			invalidPassword.value = false;
-			emit("logged-in");
+			emits("logged-in");
 		})
 		.catch((e: any) => {
 			if (e.response && e.response.status === 401) {
