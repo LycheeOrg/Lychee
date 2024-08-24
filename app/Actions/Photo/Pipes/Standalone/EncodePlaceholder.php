@@ -14,10 +14,12 @@ class EncodePlaceholder implements StandalonePipe
 		try {
 			$placeholderEncoder = new PlaceholderEncoder();
 			$placeholder = $state->getPhoto()->size_variants->getPlaceholder();
-			$originalFile = $placeholder->getFile();
-			$placeholderEncoder->do($placeholder);
-			// delete original file since we now have no reference to it
-			$originalFile->delete();
+			if ($placeholder !== null) {
+				$originalFile = $placeholder->getFile();
+				$placeholderEncoder->do($placeholder);
+				// delete original file since we now have no reference to it
+				$originalFile->delete();
+			}
 
 			return $next($state);
 		} catch (\ErrorException $e) {
