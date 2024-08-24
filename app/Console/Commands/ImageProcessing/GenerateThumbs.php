@@ -105,7 +105,8 @@ class GenerateThumbs extends Command
 			foreach ($photos as $photo) {
 				$sizeVariantFactory->init($photo);
 				$sizeVariant = $sizeVariantFactory->createSizeVariantCond($sizeVariantType);
-				if ($sizeVariant->type === SizeVariantType::PLACEHOLDER) {
+
+				if ($sizeVariant->type === SizeVariantType::PLACEHOLDER && $sizeVariant !== null) {
 					$originalFile = $sizeVariant->getFile();
 					$placeholderEncoder->do($sizeVariant);
 					// delete original file since we now have no reference to it
