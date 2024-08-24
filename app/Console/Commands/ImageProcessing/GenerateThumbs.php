@@ -7,6 +7,7 @@ use App\Contracts\Exceptions\LycheeException;
 use App\Contracts\Models\SizeVariantFactory;
 use App\Enum\SizeVariantType;
 use App\Exceptions\UnexpectedException;
+use App\Image\PlaceholderEncoder;
 use App\Models\Photo;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Builder;
@@ -99,10 +100,18 @@ class GenerateThumbs extends Command
 
 			// Initialize factory for size variants
 			$sizeVariantFactory = resolve(SizeVariantFactory::class);
+			$placeholderEncoder = new PlaceholderEncoder();
 			/** @var Photo $photo */
 			foreach ($photos as $photo) {
 				$sizeVariantFactory->init($photo);
 				$sizeVariant = $sizeVariantFactory->createSizeVariantCond($sizeVariantType);
+				if ($sizeVariant->type === SizeVariantType::PLACEHOLDER) {
+					$originalFile = $sizeVariant->getFile();
+					$placeholderEncoder->do($sizeVariant);
+					// delete original file since we now have no reference to it
+					$originalFile->delete();
+					$sizeVariant->save();
+				}
 				if ($sizeVariant !== null) {
 					$this->line('   ' . $sizeVariantName . ' (' . $sizeVariant->width . 'x' . $sizeVariant->height . ') for ' . $photo->title . ' created.');
 				} else {
