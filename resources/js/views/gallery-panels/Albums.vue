@@ -1,6 +1,6 @@
 <template>
-	<div v-if="rootConfig !== undefined">
-		<AlbumsHeader v-model:is-login-open="isLoginOpen" v-if="user" :user="user" title="lychee.ALBUMS" @refresh="refresh" />
+	<div v-if="rootConfig && rootRights">
+		<AlbumsHeader v-model:is-login-open="isLoginOpen" v-if="user" :user="user" title="lychee.ALBUMS" :rights="rootRights" @refresh="refresh" />
 		<AlbumThumbPanel
 			v-if="smartAlbums.length > 0"
 			header="lychee.SMART_ALBUMS"
@@ -42,6 +42,7 @@ const smartAlbums = ref([]) as Ref<App.Http.Resources.Models.ThumbAlbumResource[
 const albums = ref([]) as Ref<App.Http.Resources.Models.ThumbAlbumResource[]>;
 const sharedAlbums = ref([]) as Ref<App.Http.Resources.Models.ThumbAlbumResource[]>;
 const rootConfig = ref(undefined) as Ref<undefined | App.Http.Resources.GalleryConfigs.RootConfig>;
+const rootRights = ref(undefined) as Ref<undefined | App.Http.Resources.Rights.RootAlbumRightsResource>;
 const auth = useAuthStore();
 
 function refresh() {
@@ -56,6 +57,7 @@ function refresh() {
 			smartAlbums.value = smartAlbums.value.concat(data.data.tag_albums as App.Http.Resources.Models.ThumbAlbumResource[]);
 			sharedAlbums.value = (data.data.shared_albums as App.Http.Resources.Models.ThumbAlbumResource[]) ?? [];
 			rootConfig.value = data.data.config;
+			rootRights.value = data.data.rights;
 
 			if (albums.value.length === 0 && smartAlbums.value.length === 0 && sharedAlbums.value.length === 0) {
 				isLoginOpen.value = true;

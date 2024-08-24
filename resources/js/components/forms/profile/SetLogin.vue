@@ -118,6 +118,11 @@ function save() {
 		password.value = undefined;
 		password_confirmation.value = undefined;
 		email.value = data.data.email ?? undefined;
+		toast.add({
+			severity: "success",
+			summary: "Success",
+			life: 3000,
+		});
 	});
 }
 

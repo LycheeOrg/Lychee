@@ -1,14 +1,6 @@
 <template>
-	<aside
-		id="lychee_sidebar_container"
-		class="h-full relative transition-all overflow-x-clip overflow-y-scroll bg-bg-800"
-		:class="areDetailsOpen ? 'w-[360px]' : 'w-0 translate-x-full'"
-	>
-		<Card
-			id="lychee_sidebar"
-			v-if="props.photo"
-			class="border-t border-solid border-primary-500 text-surface-0 w-[360px] h-full pr-4 break-words"
-		>
+	<Drawer :closeOnEsc="false" v-model:visible="isEditOpen" position="right" pt:root:class="w-full p-card border-transparent">
+		<Card id="lychee_sidebar" v-if="props.photo" class="h-full pr-4 break-words max-w-4xl mx-auto">
 			<template #content>
 				<div class="grid grid-cols-[auto minmax(0, 1fr)] mt-16">
 					<h1 class="col-span-2 text-center text-lg font-bold my-4">
@@ -89,14 +81,6 @@
 						<h2 class="col-span-2 text-muted-color font-bold px-3 pt-4 pb-3">
 							{{ $t("lychee.PHOTO_LOCATION") }}
 						</h2>
-						<div
-							v-if="map_provider"
-							:data-layer="map_provider.layer"
-							:data-provider="map_provider.attribution"
-							:data-asset="assets_url"
-							id="leaflet_map_single_photo"
-							class="col-span-2 h-48 bg-red-500 my-0.5 mx-3"
-						></div>
 						<span class="py-0.5 px-3 text-sm" v-if="props.photo.preformatted.latitude">{{ $t("lychee.PHOTO_LATITUDE") }}</span>
 						<span class="py-0.5 pl-0 text-sm" v-if="props.photo.preformatted.latitude">{{ props.photo.preformatted.latitude }}</span>
 						<span class="py-0.5 px-3 text-sm" v-if="props.photo.preformatted.longitude">{{ $t("lychee.PHOTO_LONGITUDE") }}</span>
@@ -114,42 +98,17 @@
 				</div>
 			</template>
 		</Card>
-	</aside>
+	</Drawer>
 </template>
 <script setup lang="ts">
-import { Ref, ref, watch } from "vue";
-import { sprintf } from "sprintf-js";
-import AlbumService from "@/services/album-service";
-import SidebarMap from "@/services/sidebar-map";
 import Card from "primevue/card";
+import Drawer from "primevue/drawer";
+import { sprintf } from "sprintf-js";
+import { ref, Ref } from "vue";
 
 const props = defineProps<{
-	photo: App.Http.Resources.Models.PhotoResource | undefined;
+	photo: App.Http.Resources.Models.PhotoResource;
 }>();
 
-const areDetailsOpen = defineModel("areDetailsOpen", { default: true }) as Ref<boolean>;
-
-const map = ref(new SidebarMap());
-const assets_url = ref(window.assets_url);
-
-const map_provider = ref(undefined) as Ref<undefined | App.Http.Resources.GalleryConfigs.MapProviderData>;
-
-AlbumService.getMapProvider().then((data) => {
-	map_provider.value = data.data;
-});
-
-function load() {
-	if (props.photo?.latitude && props.photo?.longitude) {
-		map.value.displayOnMap(props.photo.latitude as number, props.photo.longitude as number);
-	}
-}
-
-load();
-
-watch(
-	() => props.photo,
-	(_newPhoto, _oldPhoto) => {
-		load();
-	},
-);
+const isEditOpen = defineModel("isEditOpen", { default: false }) as Ref<boolean>;
 </script>

@@ -7,8 +7,8 @@
 	<AlbumCreateTagDialog v-if="canUpload" v-model:visible="isCreateTagAlbumOpen" />
 	<Toolbar class="w-full border-0">
 		<template #start>
-			<Button v-if="user?.id === null" icon="pi pi-sign-in" class="mr-2" severity="secondary" text @click="() => (isLoginOpen = true)" />
-			<Button v-if="user?.id" @click="openLeftMenu" icon="pi pi-bars" class="mr-2" severity="secondary" text />
+			<Button v-if="user.id === null" icon="pi pi-sign-in" class="mr-2" severity="secondary" text @click="() => (isLoginOpen = true)" />
+			<Button v-if="user.id" @click="openLeftMenu" icon="pi pi-bars" class="mr-2" severity="secondary" text />
 			<!-- <Button v-if="initdata?.user" @click="logout" icon="pi pi-sign-out" class="mr-2" severity="secondary" text /> -->
 		</template>
 
@@ -24,11 +24,10 @@
 				<InputText placeholder="Search" />
 			</IconField> -->
 			<!-- <SplitButton label="Save" :model="items"></SplitButton> -->
-			<!-- TODO: FIX ME LATER WITH CAN_UPLOAD right check -->
-			<Button icon="pi pi-plus" severity="secondary" @click="openAddMenu" />
+			<Button v-if="props.rights.can_upload" icon="pi pi-plus" severity="secondary" @click="openAddMenu" />
 		</template>
 	</Toolbar>
-	<ContextMenu ref="addmenu" :model="addMenu">
+	<ContextMenu v-if="props.rights.can_upload" ref="addmenu" :model="addMenu">
 		<template #item="{ item, props }">
 			<a v-ripple v-bind="props.action" @click="item.callback">
 				<span :class="item.icon" />
@@ -55,6 +54,7 @@ import ImportFromLink from "@/components/modals/ImportFromLink.vue";
 const props = defineProps<{
 	user: App.Http.Resources.Models.UserResource;
 	title: string;
+	rights: App.Http.Resources.Rights.RootAlbumRightsResource;
 }>();
 
 const emit = defineEmits<{
@@ -123,9 +123,9 @@ function openAddMenu(event: Event) {
 	addmenu.value.show(event);
 }
 
-onKeyStroke("n", () => !shouldIgnoreKeystroke() && (isCreateAlbumOpen.value = true));
-onKeyStroke("u", () => !shouldIgnoreKeystroke() && (isUploadOpen.value = true));
-onKeyStroke("l", () => !shouldIgnoreKeystroke() && (isLoginOpen.value = true));
+onKeyStroke("n", () => !shouldIgnoreKeystroke() && props.rights.can_upload && (isCreateAlbumOpen.value = true));
+onKeyStroke("u", () => !shouldIgnoreKeystroke() && props.rights.can_upload && (isUploadOpen.value = true));
+onKeyStroke("l", () => !shouldIgnoreKeystroke() && props.user.id === null && (isLoginOpen.value = true));
 
 // on key stroke escape:
 // 1. lose focus

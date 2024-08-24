@@ -26,7 +26,7 @@
 				</InputIcon>
 				<InputText placeholder="Search" />
 			</IconField> -->
-			<Button icon="pi pi-plus" severity="secondary" @click="openAddMenu" />
+			<Button icon="pi pi-plus" severity="secondary" @click="openAddMenu" v-if="album.rights.can_upload" />
 			<template v-if="album.rights.can_edit">
 				<Button v-if="!areDetailsOpen" icon="pi pi-angle-down" severity="secondary" class="mr-2" text @click="toggleDetails" />
 				<Button v-if="areDetailsOpen" icon="pi pi-angle-up" severity="secondary" class="mr-2 text-primary-400" text @click="toggleDetails" />
@@ -34,7 +34,7 @@
 			<!-- <SplitButton label="Save" :model="items"></SplitButton> -->
 		</template>
 	</Toolbar>
-	<ContextMenu ref="addmenu" :model="addMenu">
+	<ContextMenu ref="addmenu" :model="addMenu" v-if="album.rights.can_upload">
 		<template #item="{ item, props }">
 			<a v-ripple v-bind="props.action" @click="item.callback">
 				<span :class="item.icon" />

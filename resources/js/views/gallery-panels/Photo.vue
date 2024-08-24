@@ -1,17 +1,6 @@
 <template>
 	<div class="absolute top-0 left-0 w-full flex h-full overflow-hidden bg-black" v-if="photo">
-		<header
-			id="lychee_toolbar_container"
-			class="absolute top-0 left-0 w-full flex-none z-10 bg-gradient-to-b from-black"
-			x-bind:class="isFullscreen ? 'opacity-0 hover:opacity-100' : 'opacity-100 h-14'"
-		>
-			<Toolbar class="w-full bg-transparent border-0">
-				<template #start>
-					<Button icon="pi pi-angle-left" class="mr-2" severity="secondary" text @click="goBack" />
-				</template>
-				<template #end> </template>
-			</Toolbar>
-		</header>
+		<PhotoHeader :albumid="albumid" :photo="photo" v-model:is-edit-open="isEditOpen" v-model:are-details-open="areDetailsOpen" />
 		<div class="w-0 flex-auto relative">
 			<div
 				id="imageview"
@@ -102,9 +91,8 @@
 				:style="nextStyle"
 			/>
 			<div
-				v-if="photo?.rights.can_edit"
+				v-if="photo?.rights.can_edit && !isEditOpen"
 				class="absolute top-0 h-1/4 w-full sm:w-1/2 left-1/2 -translate-x-1/2 opacity-50 lg:opacity-10 group lg:hover:opacity-100 transition-opacity duration-500 ease-in-out z-20 mt-14 sm:mt-0"
-				x-show="!photoFlags.isEditOpen"
 			>
 				<span class="absolute left-1/2 -translate-x-1/2 p-1 min-w-[25%] w-full filter-shadow text-center">
 					<DockButton
@@ -121,15 +109,9 @@
 				</span>
 			</div>
 		</div>
-		<aside
-			id="lychee_sidebar_container"
-			class="h-full relative transition-all overflow-x-clip overflow-y-scroll bg-bg-800"
-			:class="areDetailsOpen ? 'w-[360px]' : 'w-0 translate-x-full'"
-		>
-			<PhotoDetails :photo="photo" />
-		</aside>
+		<PhotoDetails v-model:are-details-open="areDetailsOpen" :photo="photo" />
 	</div>
-	<Drawer v-model:visible="isEditOpen" class="!w-full" position="right"> </Drawer>
+	<PhotoEdit v-if="photo?.rights.can_edit" :photo="photo" v-model:visible="isEditOpen" />
 </template>
 <script setup lang="ts">
 import DockButton from "@/components/gallery/photo/DockButton.vue";
@@ -137,11 +119,10 @@ import NextPrevious from "@/components/gallery/photo/NextPrevious.vue";
 import AlbumService from "@/services/album-service";
 import PhotoDetails from "@/components/drawers/PhotoDetails.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
-import Button from "primevue/button";
-import Drawer from "primevue/drawer";
-import Toolbar from "primevue/toolbar";
 import { Ref, computed, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import PhotoHeader from "@/components/headers/PhotoHeader.vue";
+import PhotoEdit from "@/components/drawers/PhotoEdit.vue";
 
 const props = defineProps<{
 	albumid: string;

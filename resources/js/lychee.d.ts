@@ -127,6 +127,7 @@ declare namespace App.Http.Resources.Collections {
 		albums: { [key: number]: App.Http.Resources.Models.ThumbAlbumResource } | Array<any>;
 		shared_albums: { [key: number]: App.Http.Resources.Models.ThumbAlbumResource } | Array<any>;
 		config: App.Http.Resources.GalleryConfigs.RootConfig;
+		rights: App.Http.Resources.Rights.RootAlbumRightsResource;
 	};
 }
 declare namespace App.Http.Resources.Diagnostics {
@@ -320,7 +321,8 @@ declare namespace App.Http.Resources.Models {
 	};
 	export type SizeVariantResource = {
 		type: App.Enum.SizeVariantType;
-		filesize: number;
+		locale: string;
+		filesize: string;
 		height: number;
 		width: number;
 		url: string | null;

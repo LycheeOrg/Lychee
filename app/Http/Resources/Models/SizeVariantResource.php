@@ -3,6 +3,7 @@
 namespace App\Http\Resources\Models;
 
 use App\Enum\SizeVariantType;
+use App\Facades\Helpers;
 use App\Models\SizeVariant;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
@@ -11,7 +12,8 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 class SizeVariantResource extends Data
 {
 	public SizeVariantType $type;
-	public int $filesize;
+	public string $locale;
+	public string $filesize;
 	public int $height;
 	public int $width;
 	public ?string $url;
@@ -19,7 +21,8 @@ class SizeVariantResource extends Data
 	public function __construct(SizeVariant $sizeVariant, bool $noUrl = false)
 	{
 		$this->type = $sizeVariant->type;
-		$this->filesize = $sizeVariant->filesize;
+		$this->locale = $sizeVariant->type->localization();
+		$this->filesize = Helpers::getSymbolByQuantity(floatval($sizeVariant->filesize));
 		$this->height = $sizeVariant->height;
 		$this->width = $sizeVariant->width;
 		$this->url = !$noUrl ? $sizeVariant->url : null;

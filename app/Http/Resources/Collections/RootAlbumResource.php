@@ -5,6 +5,7 @@ namespace App\Http\Resources\Collections;
 use App\DTO\TopAlbumDTO;
 use App\Http\Resources\GalleryConfigs\RootConfig;
 use App\Http\Resources\Models\ThumbAlbumResource;
+use App\Http\Resources\Rights\RootAlbumRightsResource;
 use Illuminate\Support\Collection;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
@@ -31,6 +32,7 @@ class RootAlbumResource extends Data
 	/** @var Collection<int,ThumbAlbumResource> */
 	public Collection $shared_albums;
 	public RootConfig $config;
+	public RootAlbumRightsResource $rights;
 
 	/**
 	 * @param Collection<int,ThumbAlbumResource> $smart_albums
@@ -47,12 +49,14 @@ class RootAlbumResource extends Data
 		Collection $albums,
 		Collection $shared_albums,
 		RootConfig $config,
+		RootAlbumRightsResource $rights
 	) {
 		$this->smart_albums = $smart_albums;
 		$this->tag_albums = $tag_albums;
 		$this->albums = $albums;
 		$this->shared_albums = $shared_albums;
 		$this->config = $config;
+		$this->rights = $rights;
 	}
 
 	public static function fromDTO(TopAlbumDTO $dto, RootConfig $config): self
@@ -63,6 +67,7 @@ class RootAlbumResource extends Data
 			albums: ThumbAlbumResource::collect($dto->albums),
 			shared_albums: $dto->shared_albums !== null ? ThumbAlbumResource::collect($dto->shared_albums) : collect([]),
 			config: $config,
+			rights: new RootAlbumRightsResource()
 		);
 	}
 }

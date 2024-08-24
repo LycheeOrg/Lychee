@@ -2,29 +2,16 @@
 @import "@fortawesome/fontawesome-free/css/all.css";
 
 @import "primeicons/primeicons.css";
-// @import "tailwindcss/base";
-// @import "tailwindcss/components";
-// @import "tailwindcss/utilities";
 
-// @layer tailwind-base, primevue, tailwind-utilities;
-
-// @layer tailwind-base {
-// @tailwind base;
-// }
-
-// @layer tailwind-utilities {
-// @tailwind components;
-// @tailwind utilities;
-// }
 @layer tailwind-base, primevue, tailwind-utilities;
 
 @layer tailwind-base {
-	@tailwind base;
+	@import "tailwindcss/base";
 }
 
 @layer tailwind-utilities {
-	@tailwind components;
-	@tailwind utilities;
+	@import "tailwindcss/components";
+	@import "tailwindcss/utilities";
 }
 
 // @layer base {

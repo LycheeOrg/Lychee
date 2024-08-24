@@ -49,7 +49,7 @@ class PreformattedPhotoData extends Data
 		$this->duration = Helpers::secondsToHMS(intval($photo->aperture));
 		$this->fps = $photo->focal === null ? $photo->focal . ' fps' : '';
 
-		$this->filesize = Helpers::getSymbolByQuantity($original?->filesize ?? 0);
+		$this->filesize = $original?->filesize ?? '0';
 		$this->resolution = $original?->width . ' x ' . $original?->height;
 		$this->latitude = Helpers::decimalToDegreeMinutesSeconds($photo->latitude, true);
 		$this->longitude = Helpers::decimalToDegreeMinutesSeconds($photo->longitude, false);
