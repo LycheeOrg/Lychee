@@ -2,21 +2,23 @@
 
 namespace App\Http\Requests\Photo;
 
-use App\Contracts\Http\Requests\HasAbstractAlbum;
+use App\Contracts\Http\Requests\HasAlbum;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Contracts\Models\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\Authorize\AuthorizeCanEditAlbumTrait;
-use App\Http\Requests\Traits\HasAbstractAlbumTrait;
+use App\Http\Requests\Traits\HasAlbumTrait;
+use App\Models\Album;
 use App\Policies\AlbumPolicy;
 use App\Rules\RandomIDRule;
 use Illuminate\Support\Facades\Gate;
 
-class FromUrlRequest extends BaseApiRequest implements HasAbstractAlbum
+class FromUrlRequest extends BaseApiRequest implements HasAlbum
 {
-	use HasAbstractAlbumTrait;
+	use HasAlbumTrait;
 	use AuthorizeCanEditAlbumTrait;
 
+	/** @var string[] */
 	protected array $urls;
 
 	/**
@@ -44,7 +46,12 @@ class FromUrlRequest extends BaseApiRequest implements HasAbstractAlbum
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->album = $this->albumFactory->findNullalbleAbstractAlbumOrFail($values[RequestAttribute::ALBUM_ID_ATTRIBUTE]);
+		$this->album = null;
+		/** @var string|null $id */
+		$id = $values[RequestAttribute::ALBUM_ID_ATTRIBUTE];
+		if ($id !== null) {
+			$this->album = Album::query()->findOrFail($id);
+		}
 		$this->urls = $values[RequestAttribute::URLS_ATTRIBUTE];
 
 		// The replacement below looks suspicious.
@@ -60,6 +67,9 @@ class FromUrlRequest extends BaseApiRequest implements HasAbstractAlbum
 		$this->urls = str_replace(' ', '%20', $this->urls);
 	}
 
+	/**
+	 * @return string[]
+	 */
 	public function urls(): array
 	{
 		return $this->urls;
