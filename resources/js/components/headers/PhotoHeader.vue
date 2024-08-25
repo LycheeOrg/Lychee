@@ -10,27 +10,27 @@
 			</template>
 			<template #end>
 				<Button
-					v-if="props.photo.rights.can_access_full_photo"
+					v-if="props.photo.rights.can_access_full_photo && props.photo.size_variants.original?.url"
+					text
 					icon="pi pi-window-maximize"
 					class="mr-2 font-bold"
 					severity="secondary"
-					text
-					@click="goBack"
+					@click="openInNewTab(props.photo.size_variants.original.url)"
 				/>
 				<Button
 					v-if="props.photo.rights.can_download"
+					text
 					icon="pi pi-cloud-download"
 					class="mr-2"
 					severity="secondary"
-					text
 					@click="isDownloadOpen = !isDownloadOpen"
 				/>
 				<Button
 					v-if="props.photo.rights.can_edit"
+					text
 					icon="pi pi-pencil"
 					class="mr-2"
 					severity="secondary"
-					text
 					@click="isEditOpen = !isEditOpen"
 				/>
 				<Button icon="pi pi-info" class="mr-2" severity="secondary" text @click="areDetailsOpen = !areDetailsOpen" />
@@ -68,7 +68,7 @@ const user = ref(undefined) as Ref<undefined | App.Http.Resources.Models.UserRes
 
 // onKeyStroke("n", () => !shouldIgnoreKeystroke() && (isCreateAlbumOpen.value = true));
 // onKeyStroke("u", () => !shouldIgnoreKeystroke() && (isUploadOpen.value = true));
-// onKeyStroke("i", () => !shouldIgnoreKeystroke() && toggleDetails());
+onKeyStroke("i", () => !shouldIgnoreKeystroke() && toggleDetails());
 
 function goBack() {
 	router.push({ name: "album", params: { albumid: props.albumid } });
@@ -76,6 +76,10 @@ function goBack() {
 
 function toggleDetails() {
 	areDetailsOpen.value = !areDetailsOpen.value;
+}
+
+function openInNewTab(url: string) {
+	window?.open(url, "_blank")?.focus();
 }
 
 // bubble up.

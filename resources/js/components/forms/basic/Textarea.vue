@@ -33,6 +33,6 @@ const props = defineProps<{
 const modelValue = defineModel();
 const classValue = ref(
 	(props.class ?? "") +
-		" p-3 w-full border-b border-l hover:border-b-primary-400 hover:border-l-primary-400 focus:border-b-primary-400 focus:border-l-primary-400",
+		" p-3 w-full border-t-transparent border-r-transparent border-b border-l hover:border-b-primary-400 hover:border-l-primary-400 focus:border-b-primary-400 focus:border-l-primary-400",
 );
 </script>

@@ -138,7 +138,7 @@ const photo = ref(undefined) as Ref<App.Http.Resources.Models.PhotoResource | un
 const album = ref(null) as Ref<App.Http.Resources.Models.AbstractAlbumResource | null>;
 const isFullscreen = ref(lycheeStore.is_full_screen);
 const isEditOpen = ref(false);
-const areDetailsOpen = ref(true);
+const areDetailsOpen = ref(false);
 
 const placeholder = window.assets_url + "img/placeholder.png";
 

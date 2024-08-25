@@ -2,7 +2,7 @@
 	<LoginModal v-if="user.id === null" v-model:visible="isLoginOpen" @logged-in="refresh" />
 	<UploadPanel v-if="canUpload" v-model:visible="isUploadOpen" :album-id="null" @close="refresh" />
 	<ImportFromServer v-if="canUpload" v-model:visible="isImportFromServerOpen" />
-	<ImportFromLink v-if="canUpload" v-model:visible="isImportLinkOpen" :parent-id="null" />
+	<ImportFromLink v-if="canUpload" v-model:visible="isImportFromLinkOpen" :parent-id="null" />
 	<AlbumCreateDialog v-if="canUpload" v-model:visible="isCreateAlbumOpen" :parent-id="null" />
 	<AlbumCreateTagDialog v-if="canUpload" v-model:visible="isCreateTagAlbumOpen" />
 	<Toolbar class="w-full border-0">
@@ -50,6 +50,9 @@ import { useLycheeStateStore } from "@/stores/LycheeState";
 import LoginModal from "@/components/modals/LoginModal.vue";
 import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
 import ImportFromLink from "@/components/modals/ImportFromLink.vue";
+import { useUploadOpen } from "@/composables/uploadOpen";
+import { useCreateAlbumOpen } from "@/composables/createAlbumOpen";
+import { useImportFromLinkOpen } from "@/composables/importFromLinkOpen";
 
 const props = defineProps<{
 	user: App.Http.Resources.Models.UserResource;
@@ -72,17 +75,21 @@ const emit = defineEmits<{
 // 	'DELETE_TRACK' => 'Delete track',
 const lycheeStore = useLycheeStateStore();
 
+const { isUploadOpen, toggleUpload } = useUploadOpen(false);
+const { isCreateAlbumOpen, toggleCreateAlbum } = useCreateAlbumOpen(false);
+const { isImportFromLinkOpen, toggleImportFromLink } = useImportFromLinkOpen(false);
+
 const addmenu = ref();
 const addMenu = ref([
 	{
 		label: "lychee.UPLOAD_PHOTO",
 		icon: "pi pi-upload",
-		callback: () => (isUploadOpen.value = true),
+		callback: toggleUpload,
 	},
 	{
 		label: "lychee.IMPORT_LINK",
 		icon: "pi pi-link",
-		callback: () => (isImportLinkOpen.value = true),
+		callback: toggleImportFromLink,
 	},
 	// {
 	// 	label: "lychee.IMPORT_DROPBOX",
@@ -97,7 +104,7 @@ const addMenu = ref([
 	{
 		label: "lychee.NEW_ALBUM",
 		icon: "pi pi-folder",
-		callback: () => (isCreateAlbumOpen.value = true),
+		callback: toggleCreateAlbum,
 	},
 	{
 		label: "lychee.NEW_TAG_ALBUM",
@@ -106,12 +113,9 @@ const addMenu = ref([
 	},
 ]);
 const isLoginOpen = defineModel("isLoginOpen", { type: Boolean, default: false });
-const isUploadOpen = ref(false);
 
-const isCreateAlbumOpen = ref(false);
 const isCreateTagAlbumOpen = ref(false);
 const isImportFromServerOpen = ref(false);
-const isImportLinkOpen = ref(false);
 const canUpload = computed(() => props.user.id !== null);
 const title = ref("Albums");
 

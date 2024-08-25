@@ -55,12 +55,15 @@ import AlbumCreateDialog from "@/components/forms/album/AlbumCreateDialog.vue";
 import ContextMenu from "primevue/contextmenu";
 import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
 import ImportFromLink from "@/components/modals/ImportFromLink.vue";
+import { useUploadOpen } from "@/composables/uploadOpen";
 
 const props = defineProps<{
 	config: App.Http.Resources.GalleryConfigs.AlbumConfig;
 	album: App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.TagAlbumResource | App.Http.Resources.Models.SmartAlbumResource;
 	user: App.Http.Resources.Models.UserResource;
 }>();
+
+const { isUploadOpen, toggleUpload } = useUploadOpen(false);
 
 const areDetailsOpen = defineModel("areDetailsOpen", { default: false });
 const isLoginOpen = ref(false);
@@ -74,7 +77,7 @@ const addMenu = ref([
 	{
 		label: "lychee.UPLOAD_PHOTO",
 		icon: "pi pi-upload",
-		callback: () => (isUploadOpen.value = true),
+		callback: toggleUpload,
 	},
 	{
 		label: "lychee.IMPORT_LINK",
@@ -93,7 +96,6 @@ const addMenu = ref([
 	},
 ]);
 
-const isUploadOpen = ref(false);
 const isCreateAlbumOpen = ref(false);
 const isImportLinkOpen = ref(false);
 const router = useRouter();
@@ -103,6 +105,7 @@ const canUpload = computed(() => user.value?.id !== null && props.album.rights.c
 onKeyStroke("n", () => !shouldIgnoreKeystroke() && (isCreateAlbumOpen.value = true));
 onKeyStroke("u", () => !shouldIgnoreKeystroke() && (isUploadOpen.value = true));
 onKeyStroke("i", () => !shouldIgnoreKeystroke() && toggleDetails());
+onKeyStroke("l", () => !shouldIgnoreKeystroke() && props.user.id === null && (isLoginOpen.value = true));
 
 function goBack() {
 	areDetailsOpen.value = false;

@@ -4,6 +4,8 @@ import "leaflet.markercluster/dist/leaflet.markercluster.js";
 import "@lychee-org/leaflet.photo/Leaflet.Photo.js";
 import "leaflet/dist/leaflet.css";
 import "@lychee-org/leaflet.photo/Leaflet.Photo.css";
+import { Ref, ref } from "vue";
+import AlbumService from "./album-service";
 
 export default class SidebarMap {
 	layer: string;
@@ -46,4 +48,42 @@ export default class SidebarMap {
 		// Add Marker to map, direction is not set
 		L.marker([latitude, longitude]).addTo(myMap);
 	}
+}
+
+export function useSidebarMap(latitudeValue: number | null, longitudeValue: number | null) {
+	const latitude = ref(latitudeValue);
+	const longitude = ref(longitudeValue);
+
+	const map = ref(undefined) as Ref<undefined | SidebarMap>;
+	const assets_url = ref(window.assets_url);
+	const map_provider = ref(undefined) as Ref<undefined | App.Http.Resources.GalleryConfigs.MapProviderData>;
+
+	function onMount() {
+		if (!map.value) {
+			map.value = new SidebarMap();
+		}
+
+		if (!map_provider.value) {
+			AlbumService.getMapProvider().then((data) => {
+				map_provider.value = data.data;
+				load();
+			});
+		}
+	}
+
+	function load() {
+		if (latitude.value && longitude.value && map.value) {
+			map.value.displayOnMap(latitude.value, longitude.value);
+		}
+	}
+
+	return {
+		latitude,
+		longitude,
+		assets_url,
+		map,
+		map_provider,
+		load,
+		onMount,
+	};
 }
