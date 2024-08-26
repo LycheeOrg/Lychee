@@ -15,6 +15,7 @@ namespace Tests\Feature_v1;
 use App\Models\Configs;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Testing\Assert;
 use function Safe\date;
 use function Safe\file_get_contents;
 use function Safe\file_put_contents;
@@ -71,6 +72,40 @@ abstract class BasePhotosAddHandler extends BasePhotoTest
 				'original' => ['width' => 6720,	'height' => 4480, 'filesize' => 21106422],
 			],
 		]);
+	}
+
+	/**
+	 * Tests that a placeholder for the source image was encoded.
+	 *
+	 * @return void
+	 */
+	public function testUploadWithPlaceholder(): void
+	{
+		$init_config_value1 = Configs::getValue('low_quality_image_placeholder');
+
+		try {
+			Configs::set('low_quality_image_placeholder', '1');
+			static::assertEquals('1', Configs::getValue('low_quality_image_placeholder'));
+
+			$response = $this->photos_tests->upload(
+				AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE)
+			);
+			$response->assertJson([
+				'size_variants' => [
+					'placeholder' => ['width' => 16, 'height' => 16],
+				],
+			]);
+			$responseContent = $response->getContent();
+			if ($responseContent !== false) {
+				$photo = \Safe\json_decode($responseContent)->size_variants->placeholder;
+				// Because image compression is non-deterministic, we can only reliably
+				// check for the file signature in the decoded base64 data.
+				Assert::assertStringContainsString('WEBPVP8', \Safe\base64_decode($photo->url));
+				Assert::assertLessThan(190, $photo->filesize);
+			}
+		} finally {
+			Configs::set('low_quality_image_placeholder', $init_config_value1);
+		}
 	}
 
 	/**
