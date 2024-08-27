@@ -102,12 +102,13 @@ import ToggleSwitch from "primevue/toggleswitch";
 import FloatLabel from "primevue/floatlabel";
 import InputPassword from "@/components/forms/basic/InputPassword.vue";
 import AlbumService, { UpdateProtectionPolicyData } from "@/services/album-service";
+import { useToast } from "primevue/usetoast";
 
 const props = defineProps<{
 	album: App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.SmartAlbumResource | App.Http.Resources.Models.TagAlbumResource;
 	config: App.Http.Resources.GalleryConfigs.AlbumConfig;
 }>();
-
+const toast = useToast();
 const albumId = ref<string>(props.album.id);
 const is_public = ref<boolean>(props.album.policy.is_public);
 const is_link_required = ref<boolean>(props.album.policy.is_link_required);
@@ -128,8 +129,12 @@ function save() {
 		password: password.value,
 	};
 
-	AlbumService.updateProtectionPolicy(data).catch((error) => {
-		console.error(error);
-	});
+	AlbumService.updateProtectionPolicy(data)
+		.then(() => {
+			toast.add({ severity: "success", summary: "Success", detail: "Permission deleted", life: 3000 });
+		})
+		.catch((error) => {
+			console.error(error);
+		});
 }
 </script>

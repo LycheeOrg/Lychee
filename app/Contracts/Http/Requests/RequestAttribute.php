@@ -22,7 +22,7 @@ class RequestAttribute
 	public const PHOTO_IDS_ATTRIBUTE = 'photo_ids';
 
 	public const TITLE_ATTRIBUTE = 'title';
-	public const DATE_ATTRIBUTE = 'date';
+	public const UPLOAD_DATE_ATTRIBUTE = 'upload_date';
 	public const DESCRIPTION_ATTRIBUTE = 'description';
 	public const LICENSE_ATTRIBUTE = 'license';
 	public const ASPECT_RATIO_ATTRIBUTE = 'aspect_ratio';

@@ -69,6 +69,7 @@ const user = ref(undefined) as Ref<undefined | App.Http.Resources.Models.UserRes
 // onKeyStroke("n", () => !shouldIgnoreKeystroke() && (isCreateAlbumOpen.value = true));
 // onKeyStroke("u", () => !shouldIgnoreKeystroke() && (isUploadOpen.value = true));
 onKeyStroke("i", () => !shouldIgnoreKeystroke() && toggleDetails());
+onKeyStroke("e", () => !shouldIgnoreKeystroke() && props.photo.rights.can_edit && toggleEdit());
 
 function goBack() {
 	router.push({ name: "album", params: { albumid: props.albumid } });
@@ -76,6 +77,10 @@ function goBack() {
 
 function toggleDetails() {
 	areDetailsOpen.value = !areDetailsOpen.value;
+}
+
+function toggleEdit() {
+	isEditOpen.value = !isEditOpen.value;
 }
 
 function openInNewTab(url: string) {

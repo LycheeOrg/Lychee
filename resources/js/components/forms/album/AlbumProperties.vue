@@ -191,11 +191,13 @@ import {
 	SelectOption,
 	SelectBuilders,
 } from "@/config/constants";
+import { useToast } from "primevue/usetoast";
 
 const props = defineProps<{
 	editable: App.Http.Resources.Editable.EditableBaseAlbumResource;
 }>();
 
+const toast = useToast();
 const is_model_album = ref(true);
 const albumId = ref("");
 const title = ref("");
@@ -260,9 +262,13 @@ function saveTagAlbum() {
 		photo_sorting_order: photoSortingOrder.value?.value ?? null,
 		copyright: copyright.value ?? null,
 	};
-	AlbumService.updateTag(data).catch((error) => {
-		console.error(error);
-	});
+	AlbumService.updateTag(data)
+		.then(() => {
+			toast.add({ severity: "success", summary: "Success", detail: "Permission deleted", life: 3000 });
+		})
+		.catch((error) => {
+			console.error(error);
+		});
 }
 
 watch(

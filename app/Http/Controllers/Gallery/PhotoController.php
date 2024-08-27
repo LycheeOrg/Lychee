@@ -6,6 +6,7 @@ use App\Actions\Import\FromUrl;
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\FileStatus;
 use App\Factories\AlbumFactory;
+use App\Http\Requests\Photo\EditPhotoRequest;
 use App\Http\Requests\Photo\FromUrlRequest;
 use App\Http\Requests\Photo\GetPhotoRequest;
 use App\Http\Requests\Photo\UploadPhotoRequest;
@@ -101,5 +102,18 @@ class PhotoController extends Controller
 		$fromUrl->do($request->urls(), $request->album(), $userId);
 
 		return 'success';
+	}
+
+	public function update(EditPhotoRequest $request): PhotoResource
+	{
+		$photo = $request->photo();
+		$photo->title = $request->title();
+		$photo->description = $request->description();
+		$photo->created_at = $request->uploadDate();
+		$photo->tags = $request->tags();
+		$photo->license = $request->license();
+		$photo->save();
+
+		return PhotoResource::fromModel($photo);
 	}
 }
