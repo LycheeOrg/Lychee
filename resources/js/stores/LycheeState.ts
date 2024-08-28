@@ -1,22 +1,60 @@
+import InitService from "@/services/init-service";
 import { defineStore } from "pinia";
 
 export type LycheeStateStore = ReturnType<typeof useLycheeStateStore>;
 
 export const useLycheeStateStore = defineStore("lychee-store", {
 	state: () => ({
-		is_full_screen: false,
-		are_nsfw_visible: false,
+		// togglables
 		left_menu_open: false,
+		is_full_screen: false,
+
+		// configs
+		are_nsfw_blurred: false,
+		is_nsfw_warning_visible: false,
+		is_nsfw_warning_visible_for_admin: false,
+		is_nsfw_background_blurred: false,
+		nsfw_banner_override: "",
+		is_nsfw_banner_backdrop_blurred: false,
+
+		// togglable with defaults
+		are_nsfw_visible: false,
+		image_overlay_type: "exif" as App.Enum.ImageOverlayType,
+		display_thumb_album_overlay: "always" as App.Enum.ThumbOverlayVisibilityType,
+		display_thumb_photo_overlay: "always" as App.Enum.ThumbOverlayVisibilityType,
+
+		// flag to fetch data
+		is_init: false,
+		is_loading: false,
 	}),
 	actions: {
-		toggleFullScreen() {
-			this.is_full_screen = !this.is_full_screen;
-		},
-		toggleNsfwVisibility() {
-			this.are_nsfw_visible = !this.are_nsfw_visible;
-		},
-		toggleLeftMenu() {
-			this.left_menu_open = !this.left_menu_open;
+		init() {
+			// Check if already initialized
+			if (this.is_init) {
+				return;
+			}
+
+			// semaphore to avoid multiple calls
+			if (this.is_loading) {
+				return;
+			}
+			this.is_loading = true;
+
+			InitService.fetchInitData().then((response) => {
+				const data = response.data;
+				this.are_nsfw_visible = data.are_nsfw_visible;
+				this.are_nsfw_blurred = data.are_nsfw_blurred;
+				this.is_nsfw_warning_visible = data.is_nsfw_warning_visible;
+				this.is_nsfw_warning_visible_for_admin = data.is_nsfw_warning_visible_for_admin;
+				this.is_nsfw_background_blurred = data.is_nsfw_background_blurred;
+				this.nsfw_banner_override = data.nsfw_banner_override;
+				this.is_nsfw_banner_backdrop_blurred = data.is_nsfw_banner_backdrop_blurred;
+				this.image_overlay_type = data.image_overlay_type;
+				this.display_thumb_album_overlay = data.display_thumb_album_overlay;
+				this.display_thumb_photo_overlay = data.display_thumb_photo_overlay;
+				this.is_init = true;
+				this.is_loading = false;
+			});
 		},
 	},
 });

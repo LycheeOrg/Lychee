@@ -22,6 +22,7 @@
 				:albums="children"
 				:config="config"
 				:is-alone="!photos?.length"
+				:are-nsfw-visible="are_nsfw_visible"
 			/>
 			<PhotoThumbPanel
 				v-if="layout !== null && photos !== null && photos.length > 0"
@@ -47,6 +48,10 @@ import ShareAlbum from "@/components/modals/ShareAlbum.vue";
 import AlbumHero from "@/components/gallery/AlbumHero.vue";
 import AlbumEdit from "@/components/drawers/AlbumEdit.vue";
 import AlbumHeader from "@/components/headers/AlbumHeader.vue";
+import { useLycheeStateStore } from "@/stores/LycheeState";
+import { onKeyStroke } from "@vueuse/core";
+import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
+import { storeToRefs } from "pinia";
 
 const areDetailsOpen = ref(false);
 const props = defineProps<{
@@ -56,6 +61,11 @@ const shareAlbum = ref();
 const isLoginOpen = ref(false);
 const albumid = ref(props.albumid);
 const auth = useAuthStore();
+const lycheeStore = useLycheeStateStore();
+
+lycheeStore.init();
+const { are_nsfw_visible } = storeToRefs(lycheeStore);
+
 const user = ref(undefined) as Ref<undefined | App.Http.Resources.Models.UserResource>;
 
 const modelAlbum = ref(undefined) as Ref<undefined | App.Http.Resources.Models.AlbumResource>;
@@ -71,6 +81,15 @@ const photos = ref([]) as Ref<App.Http.Resources.Models.PhotoResource[]>;
 const route = useRoute();
 const noData = computed(() => children.value.length === 0 && (photos.value === null || photos.value.length === 0));
 const children = computed<App.Http.Resources.Models.ThumbAlbumResource[]>(() => modelAlbum.value?.albums ?? []);
+const css_overlay = computed(() => {
+	if (lycheeStore.display_thumb_album_overlay === "never") {
+		return "hidden";
+	}
+	if (lycheeStore.display_thumb_album_overlay === "hover") {
+		return "opacity-0 group-hover:opacity-100 transition-all ease-out";
+	}
+	return "";
+});
 
 AlbumService.getLayout().then((data) => {
 	layout.value = data.data;
@@ -121,4 +140,6 @@ watch(
 		refresh();
 	},
 );
+
+onKeyStroke("h", () => !shouldIgnoreKeystroke() && (are_nsfw_visible.value = !are_nsfw_visible.value));
 </script>

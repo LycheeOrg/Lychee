@@ -202,6 +202,18 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		can_rotate: boolean;
 		can_autoplay: boolean;
 	};
+	export type InitConfig = {
+		are_nsfw_visible: boolean;
+		are_nsfw_blurred: boolean;
+		is_nsfw_warning_visible: boolean;
+		is_nsfw_warning_visible_for_admin: boolean;
+		is_nsfw_background_blurred: boolean;
+		nsfw_banner_override: string;
+		is_nsfw_banner_backdrop_blurred: boolean;
+		image_overlay_type: App.Enum.ImageOverlayType;
+		display_thumb_album_overlay: App.Enum.ThumbOverlayVisibilityType;
+		display_thumb_photo_overlay: App.Enum.ThumbOverlayVisibilityType;
+	};
 	export type MapProviderData = {
 		layer: string;
 		attribution: string;
@@ -372,7 +384,6 @@ declare namespace App.Http.Resources.Models {
 		description: string | null;
 		thumb: App.Http.Resources.Models.ThumbResource | null;
 		is_nsfw: boolean;
-		is_nsfw_blurred: boolean;
 		is_public: boolean;
 		is_link_required: boolean;
 		is_password_required: boolean;

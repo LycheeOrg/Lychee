@@ -132,6 +132,7 @@ const props = defineProps<{
 const router = useRouter();
 const route = useRoute();
 const lycheeStore = useLycheeStateStore();
+lycheeStore.init();
 
 const photoId = ref(props.photoid);
 const photo = ref(undefined) as Ref<App.Http.Resources.Models.PhotoResource | undefined>;

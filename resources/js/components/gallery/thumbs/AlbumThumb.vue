@@ -2,10 +2,9 @@
 	<router-link
 		:to="{ name: 'album', params: { albumid: album.id } }"
 		class="album-thumb block relative w-[calc(33vw-9px-4px)] mr-1 mt-1 sm:w-[calc(25vw-9px-10px)] sm:mr-2 sm:mt-2 md:w-[calc(20vw-9px-18px)] md:mr-4 md:mt-4 lg:w-[calc(16vw-9px-15px)] lg:mr-5 lg:mt-5 xl:w-[calc(14vw-9px-22px)] xl:mr-6 xl:mt-6 2xl:w-52 2xl:mr-7 2xl:mt-7 animate-zoomIn group"
-		:class="(props.album.is_nsfw_blurred ? 'blurred' : '') + ' ' + props.asepct_ratio"
+		:class="(lycheeStore.are_nsfw_blurred ? 'blurred' : '') + ' ' + props.asepct_ratio"
 		:data-id="props.album.id"
 	>
-		<!-- x-show="{{ !is_nsfw ? 'true' : 'false' }} || albumFlags.areNsfwVisible" -->
 		<!-- x-on:contextmenu.prevent="handleContextAlbum($event, $wire)" -->
 		<!-- x-on:click='select.handleClickAlbum($event, $wire)' -->
 		<!-- x-bind:class="select.selectedAlbums.includes('{{ $id }}') ? 'outline outline-1 outline-primary-500' : ''" -->
@@ -20,7 +19,7 @@
 		<AlbumThumbImage class="group-hover:border-primary-500" :thumb="props.album.thumb" />
 		<div
 			class="overlay absolute mb-[1px] mx-[1px] p-0 border-0 w-[calc(100%-2px)] bottom-0 bg-gradient-to-t from-[#00000099] text-shadow-sm"
-			:class="props.album.css_overlay"
+			:class="cssOverlay"
 		>
 			<h1
 				class="w-full pt-3 pb-1 pr-1 pl-4 text-sm text-surface-0 font-bold text-ellipsis whitespace-nowrap overflow-x-hidden"
@@ -71,11 +70,12 @@
 	</router-link>
 </template>
 <script setup lang="ts">
-import { ref, type Ref } from "vue";
+import { computed, ref, type Ref } from "vue";
 import MiniIcon from "@/components/icons/MiniIcon.vue";
 import ThumbBadge from "@/components/gallery/thumbs/ThumbBadge.vue";
 import AlbumThumbImage from "@/components/gallery/thumbs/AlbumThumbImage.vue";
 import { useAuthStore } from "@/stores/Auth";
+import { useLycheeStateStore } from "@/stores/LycheeState";
 
 const props = defineProps<{
 	cover_id: string | null;
@@ -85,10 +85,21 @@ const props = defineProps<{
 }>();
 
 const auth = useAuthStore();
+const lycheeStore = useLycheeStateStore();
 
 const user = ref(null) as Ref<App.Http.Resources.Models.UserResource | null>;
 auth.getUser().then((data) => {
 	user.value = data;
+});
+
+const cssOverlay = computed(() => {
+	if (lycheeStore.display_thumb_album_overlay === "never") {
+		return "hidden";
+	}
+	if (lycheeStore.display_thumb_album_overlay === "hover") {
+		return "opacity-0 group-hover:opacity-100 transition-all ease-out";
+	}
+	return "";
 });
 
 const play_icon = ref(window.assets_url + "/img/play-icon.png");

@@ -19,7 +19,7 @@ const PhotoService = {
 	},
 
 	update(photo_id: string, data: PhotoUpdateRequest): Promise<AxiosResponse<App.Http.Resources.Models.PhotoResource>> {
-		return axios.patch(`${Constants.API_URL}Photo`, { params: { photo_id: photo_id }, data: data });
+		return axios.patch(`${Constants.API_URL}Photo?photo_id=${photo_id}`, data);
 	},
 };
 

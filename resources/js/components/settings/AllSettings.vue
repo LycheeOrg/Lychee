@@ -13,7 +13,7 @@
 				<template #item="{ item, props }">
 					<a
 						:href="item.link"
-						class="nav-link block text-muted-color hover:text-primary-500 border-l border-solid border-surface-700 hover:border-primary-500 px-4 transition-all duration-300"
+						class="nav-link block text-muted-color hover:text-primary-500 border-l border-solid border-surface-700 hover:border-primary-500 px-4 transition-all duration-300 capitalize"
 					>
 						<span>{{ item.label }}</span>
 					</a>
@@ -25,6 +25,7 @@
 					:legend="key"
 					:toggleable="true"
 					class="border-b-0 border-r-0 rounded-r-none rounded-b-none mb-4 hover:border-primary-500 pt-2"
+					:pt:legendlabel:class="'capitalize'"
 					:id="key"
 				>
 					<div class="flex flex-col gap-4">

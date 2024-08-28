@@ -53,6 +53,7 @@ import ImportFromLink from "@/components/modals/ImportFromLink.vue";
 import { useUploadOpen } from "@/composables/uploadOpen";
 import { useCreateAlbumOpen } from "@/composables/createAlbumOpen";
 import { useImportFromLinkOpen } from "@/composables/importFromLinkOpen";
+import { storeToRefs } from "pinia";
 
 const props = defineProps<{
 	user: App.Http.Resources.Models.UserResource;
@@ -74,6 +75,7 @@ const emit = defineEmits<{
 // 	'UPLOAD_TRACK' => 'Upload track',
 // 	'DELETE_TRACK' => 'Delete track',
 const lycheeStore = useLycheeStateStore();
+const { left_menu_open } = storeToRefs(lycheeStore);
 
 const { isUploadOpen, toggleUpload } = useUploadOpen(false);
 const { isCreateAlbumOpen, toggleCreateAlbum } = useCreateAlbumOpen(false);
@@ -120,7 +122,7 @@ const canUpload = computed(() => props.user.id !== null);
 const title = ref("Albums");
 
 function openLeftMenu() {
-	lycheeStore.toggleLeftMenu();
+	left_menu_open.value = !left_menu_open.value;
 }
 
 function openAddMenu(event: Event) {
@@ -165,7 +167,7 @@ onKeyStroke("escape", () => {
 		return;
 	}
 
-	lycheeStore.toggleLeftMenu();
+	lycheeStore.left_menu_open = false;
 });
 
 // bubble up.

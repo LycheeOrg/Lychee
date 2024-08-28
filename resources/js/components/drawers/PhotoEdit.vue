@@ -112,8 +112,9 @@ function save() {
 		license: license.value?.value ?? "none",
 		upload_date: uploadDate.value?.toISOString().slice(0, 16) + uploadTz.value,
 	})
-		.then(() => {
-			toast.add({ severity: "success", summary: "Success", detail: "Permission deleted", life: 3000 });
+		.then((response) => {
+			toast.add({ severity: "success", summary: "Success", life: 3000 });
+			load(response.data);
 		})
 		.catch((error) => {
 			console.error(error);

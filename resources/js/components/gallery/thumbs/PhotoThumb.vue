@@ -26,7 +26,7 @@
 				draggable="false"
 			/>
 		</span>
-		<div class="overlay w-full absolute bottom-0 m-0 bg-gradient-to-t from-[#00000066] text-shadow-sm" :class="props.album">
+		<div class="overlay w-full absolute bottom-0 m-0 bg-gradient-to-t from-[#00000066] text-shadow-sm" :class="cssOverlay">
 			<h1 class="min-h-[19px] mt-3 mb-1 ml-3 text-surface-0 text-base font-bold overflow-hidden whitespace-nowrap text-ellipsis">
 				{{ props.photo.title }}
 			</h1>
@@ -46,10 +46,11 @@
 	</router-link>
 </template>
 <script setup lang="ts">
-import { ref, type Ref } from "vue";
+import { computed, ref, type Ref } from "vue";
 import { useAuthStore } from "@/stores/Auth";
 import MiniIcon from "@/components/icons/MiniIcon.vue";
 import ThumbBadge from "@/components/gallery/thumbs/ThumbBadge.vue";
+import { useLycheeStateStore } from "@/stores/LycheeState";
 
 const props = defineProps<{
 	album: App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.TagAlbumResource | App.Http.Resources.Models.SmartAlbumResource | null;
@@ -58,8 +59,7 @@ const props = defineProps<{
 }>();
 
 const auth = useAuthStore();
-const src = ref("");
-const srcSet = ref("");
+const lycheeStore = useLycheeStateStore();
 const srcPlay = ref(window.assets_url + "img/play-icon.png");
 const srcNoImage = ref(window.assets_url + "img/no_image.png");
 
@@ -69,5 +69,15 @@ const is_cover_id = ref(props.album?.cover_id === props.photo.id);
 const user = ref(null) as Ref<App.Http.Resources.Models.UserResource | null>;
 auth.getUser().then((data) => {
 	user.value = data;
+});
+
+const cssOverlay = computed(() => {
+	if (lycheeStore.display_thumb_photo_overlay === "never") {
+		return "hidden";
+	}
+	if (lycheeStore.display_thumb_photo_overlay === "hover") {
+		return "opacity-0 group-hover:opacity-100 transition-all ease-out";
+	}
+	return "";
 });
 </script>

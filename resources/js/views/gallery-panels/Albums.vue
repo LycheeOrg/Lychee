@@ -8,6 +8,7 @@
 			:user="user"
 			:config="rootConfig"
 			:is-alone="!albums.length"
+			:are-nsfw-visible="false"
 		/>
 		<AlbumThumbPanel
 			v-if="albums.length > 0"
@@ -16,6 +17,7 @@
 			:user="user"
 			:config="rootConfig"
 			:is-alone="!sharedAlbums.length"
+			:are-nsfw-visible="are_nsfw_visible"
 		/>
 		<AlbumThumbPanel
 			v-if="sharedAlbums.length > 0"
@@ -24,6 +26,7 @@
 			:user="user"
 			:config="rootConfig"
 			:is-alone="!albums.length"
+			:are-nsfw-visible="are_nsfw_visible"
 		/>
 	</div>
 </template>
@@ -33,6 +36,10 @@ import { useAuthStore } from "@/stores/Auth";
 import AlbumService from "@/services/album-service";
 import { Ref, ref } from "vue";
 import AlbumsHeader from "@/components/headers/AlbumsHeader.vue";
+import { useLycheeStateStore } from "@/stores/LycheeState";
+import { storeToRefs } from "pinia";
+import { onKeyStroke } from "@vueuse/core";
+import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
 
 const isLoginOpen = ref(false);
 
@@ -44,6 +51,9 @@ const sharedAlbums = ref([]) as Ref<App.Http.Resources.Models.ThumbAlbumResource
 const rootConfig = ref(undefined) as Ref<undefined | App.Http.Resources.GalleryConfigs.RootConfig>;
 const rootRights = ref(undefined) as Ref<undefined | App.Http.Resources.Rights.RootAlbumRightsResource>;
 const auth = useAuthStore();
+const lycheeStore = useLycheeStateStore();
+lycheeStore.init();
+const { are_nsfw_visible } = storeToRefs(lycheeStore);
 
 function refresh() {
 	auth.getUser().then((data) => {
@@ -78,4 +88,6 @@ const emit = defineEmits<{
 }>();
 
 refresh();
+
+onKeyStroke("h", () => !shouldIgnoreKeystroke() && (are_nsfw_visible.value = !are_nsfw_visible.value));
 </script>

@@ -1,5 +1,5 @@
 <template>
-	<Drawer v-model:visible="leftMenuOpen">
+	<Drawer v-model:visible="left_menu_open">
 		<Menu :model="items" v-if="initData" class="!border-none">
 			<template #item="{ item, props }">
 				<router-link v-if="item.access && item.route" v-slot="{ href, navigate }" :to="item.route" custom>
@@ -22,7 +22,8 @@
 	</Drawer>
 </template>
 <script setup lang="ts">
-import { Ref, ref } from "vue";
+import { Ref, ref, watch } from "vue";
+import { storeToRefs } from "pinia";
 import Drawer from "primevue/drawer";
 import Menu from "primevue/menu";
 import MiniIcon from "@/components/icons/MiniIcon.vue";
@@ -46,16 +47,16 @@ const initData = ref(undefined) as Ref<undefined | App.Http.Resources.Rights.Glo
 const openLycheeAbout = ref(false);
 const items = ref([] as MenyType[]);
 const clockwork_url = ref("/clockwork/app");
-const doc_api_url = ref("/api/documentation");
 const hasDevTools = ref(true);
 const logsEnabled = ref(true);
-const leftMenuOpen = ref(false);
 
 const authStore = useAuthStore();
 const lycheeStore = useLycheeStateStore();
+lycheeStore.init();
+
+const { left_menu_open } = storeToRefs(lycheeStore);
 
 lycheeStore.$subscribe((_mutation, state) => {
-	leftMenuOpen.value = state.left_menu_open;
 	authStore.getUser().then(
 		(user) => {
 			if (user.id) {
@@ -83,7 +84,7 @@ function load() {
 
 function logout() {
 	AuthService.logout().then(() => {
-		lycheeStore.toggleLeftMenu();
+		lycheeStore.left_menu_open = false;
 		initData.value = undefined;
 		authStore.setUser(null);
 		window.location.href = "/gallery";
@@ -170,30 +171,12 @@ function loadMenu() {
 	];
 
 	if (hasDevTools.value) {
-		items.value.push(
-			// {
-			// 	label: 'Dev Tools',
-			// 	icon: 'pi pi-bug',
-			// 	access: true
-			// },
-			{
-				label: "Clockwork App",
-				icon: "telescope",
-				url: clockwork_url.value,
-				access: initData.value.settings.can_edit ?? false,
-			},
-			{
-				label: "Api Documentation",
-				icon: "document",
-				url: doc_api_url.value,
-				access: initData.value.settings.can_edit ?? false,
-			},
-		);
-		// <template v-if="hasDevTools">
-		// 	<LeftBarHeader>Dev Tools</LeftBarHeader>
-		// 	<LeftBarRealLinkItem icon="telescope" text="Clockwork App" v-if="initData?.rights.settings.can_edit" :to="clockwork_url" />
-		// 	<LeftBarRealLinkItem icon="document" text="Api Documentation" v-if="initData?.rights.settings.can_edit" :to="doc_api_url" />
-		// </template>
+		items.value.push({
+			label: "Clockwork App",
+			icon: "telescope",
+			url: clockwork_url.value,
+			access: initData.value.settings.can_edit ?? false,
+		});
 	}
 }
 </script>

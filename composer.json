@@ -93,7 +93,6 @@
         "barryvdh/laravel-debugbar": "^3.13",
         "barryvdh/laravel-ide-helper": "^3.0",
         "brianium/paratest": "^7.4",
-        "dedoc/scramble": "^0.10",
         "fakerphp/faker": "^1.23.0",
         "filp/whoops": "^2.5",
         "friendsofphp/php-cs-fixer": "^3.3",

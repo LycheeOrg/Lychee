@@ -6,9 +6,9 @@ const InitService = {
 		return axios.get(`${Constants.API_URL}LandingPage`, { data: {} });
 	},
 
-	// fetchInitData(): Promise<AxiosResponse<App.Http.Resources.LandingPageResource>> {
-	// 	return axios.post(`${Constants.API_URL}Session::init`, { data: {} });
-	// },
+	fetchInitData(): Promise<AxiosResponse<App.Http.Resources.GalleryConfigs.InitConfig>> {
+		return axios.get(`${Constants.API_URL}Gallery::Init`, { data: {} });
+	},
 
 	fetchGlobalRights(): Promise<AxiosResponse<App.Http.Resources.Rights.GlobalRightsResource>> {
 		return axios.get(`${Constants.API_URL}Auth::rights`, { data: {} });

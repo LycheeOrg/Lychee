@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Gallery;
 
+use App\Http\Resources\GalleryConfigs\InitConfig;
 use App\Http\Resources\GalleryConfigs\MapProviderData;
 use App\Http\Resources\GalleryConfigs\PhotoLayoutConfig;
 use App\Http\Resources\GalleryConfigs\UploadConfig;
@@ -13,6 +14,16 @@ use Spatie\LaravelData\Data;
  */
 class ConfigController extends Controller
 {
+	/**
+	 * Return global gallery config.
+	 *
+	 * @return Data
+	 */
+	public function getInit(): Data
+	{
+		return new InitConfig();
+	}
+
 	/**
 	 * Return gallery layout info.
 	 */

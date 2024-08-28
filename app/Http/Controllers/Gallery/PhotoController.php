@@ -111,7 +111,7 @@ class PhotoController extends Controller
 		$photo->description = $request->description();
 		$photo->created_at = $request->uploadDate();
 		$photo->tags = $request->tags();
-		$photo->license = $request->license();
+		$photo->license = $request->license()->value;
 		$photo->save();
 
 		return PhotoResource::fromModel($photo);
