@@ -9,7 +9,7 @@
 			</div>
 			<div v-else>
 				<span class="font-bold">{{ "Move to" }}</span>
-				<SearchTargetAlbum :album="props.album" @selected="selected" />
+				<SearchTargetAlbum :album-id="props.album.id" @selected="selected" />
 			</div>
 		</template>
 	</Card>

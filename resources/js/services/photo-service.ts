@@ -21,6 +21,10 @@ const PhotoService = {
 	update(photo_id: string, data: PhotoUpdateRequest): Promise<AxiosResponse<App.Http.Resources.Models.PhotoResource>> {
 		return axios.patch(`${Constants.API_URL}Photo?photo_id=${photo_id}`, data);
 	},
+
+	move(destination_id: string | null, photo_ids: string[]): Promise<AxiosResponse> {
+		return axios.post(`${Constants.API_URL}Photo::move`, { album_id: destination_id, photo_ids: photo_ids });
+	},
 };
 
 export default PhotoService;

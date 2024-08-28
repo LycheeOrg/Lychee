@@ -104,7 +104,7 @@
 						<DockButton icon="counterclockwise" class="fill-white lg:hover:fill-primary-500" v-on:click="rotatePhotoCCW()" />
 						<DockButton icon="clockwise" class="fill-white lg:hover:fill-primary-500" v-on:click="rotatePhotoCW()" />
 					</template>
-					<DockButton icon="transfer" class="fill-white lg:hover:fill-primary-500" v-on:click="movePhoto()" />
+					<DockButton icon="transfer" class="fill-white lg:hover:fill-primary-500" v-on:click="isMoveVisible = true" />
 					<DockButton icon="trash" class="fill-red-600 lg:fill-white lg:hover:fill-red-600" v-on:click="deletePhoto()" />
 				</span>
 			</div>
@@ -112,6 +112,11 @@
 		<PhotoDetails v-model:are-details-open="areDetailsOpen" :photo="photo" />
 	</div>
 	<PhotoEdit v-if="photo?.rights.can_edit" :photo="photo" v-model:visible="isEditOpen" />
+	<Dialog v-model:visible="isMoveVisible" pt:root:class="border-none">
+		<template #container="{ closeCallback }">
+			<PhotoMove :photo="photo" />
+		</template>
+	</Dialog>
 </template>
 <script setup lang="ts">
 import DockButton from "@/components/gallery/photo/DockButton.vue";
@@ -123,6 +128,8 @@ import { Ref, computed, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import PhotoHeader from "@/components/headers/PhotoHeader.vue";
 import PhotoEdit from "@/components/drawers/PhotoEdit.vue";
+import PhotoMove from "@/components/forms/photo/PhotoMove.vue";
+import Dialog from "primevue/dialog";
 
 const props = defineProps<{
 	albumid: string;
@@ -134,6 +141,7 @@ const route = useRoute();
 const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
 
+const isMoveVisible = ref(false);
 const photoId = ref(props.photoid);
 const photo = ref(undefined) as Ref<App.Http.Resources.Models.PhotoResource | undefined>;
 const album = ref(null) as Ref<App.Http.Resources.Models.AbstractAlbumResource | null>;

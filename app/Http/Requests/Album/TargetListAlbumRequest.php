@@ -45,7 +45,7 @@ class TargetListAlbumRequest extends BaseApiRequest implements HasAbstractAlbum
 	public function rules(): array
 	{
 		return [
-			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['required', new AlbumIDRule(true)],
+			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['sometimes', new AlbumIDRule(false)],
 		];
 	}
 
@@ -54,7 +54,8 @@ class TargetListAlbumRequest extends BaseApiRequest implements HasAbstractAlbum
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		if ($values[RequestAttribute::ALBUM_ID_ATTRIBUTE] !== null) {
+		$album_id = $values[RequestAttribute::ALBUM_ID_ATTRIBUTE] ?? null;
+		if ($album_id !== null) {
 			$this->album = $this->albumFactory->findAbstractAlbumOrFail($values[RequestAttribute::ALBUM_ID_ATTRIBUTE]);
 		}
 	}

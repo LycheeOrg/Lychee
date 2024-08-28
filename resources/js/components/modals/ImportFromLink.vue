@@ -1,12 +1,5 @@
 <template>
-	<Dialog
-		v-model:visible="visible"
-		modal
-		:pt="{
-			root: '!border-none',
-		}"
-		@hide="closeCallback"
-	>
+	<Dialog v-model:visible="visible" modal pt:root:class="border-none" @hide="closeCallback">
 		<template #container="{ closeCallback }">
 			<div class="flex flex-col gap-4 bg-gradient-to-b from-bg-300 to-bg-400 relative max-w-full rounded-md text-muted-color">
 				<div class="p-9">

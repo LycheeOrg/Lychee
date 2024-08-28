@@ -1,5 +1,5 @@
 <template>
-	<Dialog v-model:visible="visible" modal>
+	<Dialog v-model:visible="visible" modal pt:root:class="border-none">
 		<template #container="{ closeCallback }">
 			<div class="flex flex-wrap p-9 gap-5 justify-center align-top text-muted-color" v-if="!qrCodeOpen">
 				<MiniIcon class="w-10 h-10 ionicons cursor-pointer" icon="twitter" v-on:click="openTwitter" />

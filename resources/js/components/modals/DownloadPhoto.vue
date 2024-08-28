@@ -1,15 +1,5 @@
 <template>
-	<Dialog
-		v-model:visible="visible"
-		modal
-		:pt="{
-			root: '!border-none',
-			mask: {
-				style: 'backdrop-filter: blur(2px)',
-			},
-		}"
-		@hide="closeCallback"
-	>
+	<Dialog v-model:visible="visible" modal pt:root:class="border-none" pt:mask:style="backdrop-filter: blur(2px)" @hide="closeCallback">
 		<template #container="{ closeCallback }">
 			<div class="flex flex-col relative w-[500px] text-sm rounded-md text-muted-color">
 				<div class="flex flex-wrap gap-0.5 justify-center align-top text-text-main-0/80 p-9">
