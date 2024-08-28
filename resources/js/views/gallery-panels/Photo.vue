@@ -105,7 +105,7 @@
 						<DockButton icon="clockwise" class="fill-white lg:hover:fill-primary-500" v-on:click="rotatePhotoCW()" />
 					</template>
 					<DockButton icon="transfer" class="fill-white lg:hover:fill-primary-500" v-on:click="isMoveVisible = true" />
-					<DockButton icon="trash" class="fill-red-600 lg:fill-white lg:hover:fill-red-600" v-on:click="deletePhoto()" />
+					<DockButton icon="trash" class="fill-red-600 lg:fill-white lg:hover:fill-red-600" v-on:click="isDeleteVisible = true" />
 				</span>
 			</div>
 		</div>
@@ -115,6 +115,11 @@
 	<Dialog v-model:visible="isMoveVisible" pt:root:class="border-none">
 		<template #container="{ closeCallback }">
 			<PhotoMove :photo="photo" />
+		</template>
+	</Dialog>
+	<Dialog v-model:visible="isDeleteVisible" pt:root:class="border-none">
+		<template #container="{ closeCallback }">
+			<PhotoDelete :photo="photo" />
 		</template>
 	</Dialog>
 </template>
@@ -130,6 +135,7 @@ import PhotoHeader from "@/components/headers/PhotoHeader.vue";
 import PhotoEdit from "@/components/drawers/PhotoEdit.vue";
 import PhotoMove from "@/components/forms/photo/PhotoMove.vue";
 import Dialog from "primevue/dialog";
+import PhotoDelete from "@/components/forms/photo/PhotoDelete.vue";
 
 const props = defineProps<{
 	albumid: string;
@@ -142,6 +148,7 @@ const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
 
 const isMoveVisible = ref(false);
+const isDeleteVisible = ref(false);
 const photoId = ref(props.photoid);
 const photo = ref(undefined) as Ref<App.Http.Resources.Models.PhotoResource | undefined>;
 const album = ref(null) as Ref<App.Http.Resources.Models.AbstractAlbumResource | null>;
@@ -254,10 +261,6 @@ function rotatePhotoCW() {
 	// 	refresh();
 	// });
 }
-
-function deletePhoto() {}
-
-function movePhoto() {}
 
 function rotateOverlay() {}
 // photoFlags: PhotoFlagsView;
