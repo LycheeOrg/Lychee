@@ -27,7 +27,7 @@ const PhotoService = {
 	},
 
 	delete(photo_ids: string[]): Promise<AxiosResponse> {
-		return axios.post(`${Constants.API_URL}Photo::delete`, { photo_ids: photo_ids });
+		return axios.delete(`${Constants.API_URL}Photo`, { data: { photo_ids: photo_ids } });
 	},
 };
 

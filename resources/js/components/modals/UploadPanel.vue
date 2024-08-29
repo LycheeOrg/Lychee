@@ -1,5 +1,5 @@
 <template>
-	<Dialog v-model:visible="visible" modal pt:root:class="border-none" @hide="closeCallback">
+	<Dialog v-model:visible="visible" modal pt:root:class="border-none" @hide="closeCallback" :dismissable-mask="true">
 		<template #container="{ closeCallback }">
 			<div v-if="setup">
 				<ScrollPanel v-if="files.length > 0" class="w-96 h-48 m-4 p-1 mr-5">

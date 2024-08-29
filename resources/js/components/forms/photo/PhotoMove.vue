@@ -39,6 +39,10 @@ const confirmation = computed(() => {
 	return sprintf("Move %d photos to %s.", props.photoIds?.length, titleMovedTo.value);
 });
 
+const emit = defineEmits<{
+	(e: "moved"): void;
+}>();
+
 function selected(target: App.Http.Resources.Models.TargetAlbumResource) {
 	titleMovedTo.value = target.original;
 	destination_id.value = target.id;
@@ -57,8 +61,10 @@ function execute() {
 	PhotoService.move(destination_id.value, photoMovedIds).then(() => {
 		toast.add({
 			severity: "success",
+			summary: "Photo moved",
 			life: 3000,
 		});
+		emit("moved");
 		// Todo emit that we moved things.
 	});
 }

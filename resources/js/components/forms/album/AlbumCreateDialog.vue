@@ -2,6 +2,7 @@
 	<Dialog
 		v-model:visible="visible"
 		modal
+		:dismissable-mask="true"
 		:pt="{
 			root: 'border-none',
 		}"

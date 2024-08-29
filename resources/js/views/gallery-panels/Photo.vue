@@ -112,14 +112,14 @@
 		<PhotoDetails v-model:are-details-open="areDetailsOpen" :photo="photo" />
 	</div>
 	<PhotoEdit v-if="photo?.rights.can_edit" :photo="photo" v-model:visible="isEditOpen" />
-	<Dialog v-model:visible="isMoveVisible" pt:root:class="border-none">
+	<Dialog v-model:visible="isMoveVisible" modal :dismissable-mask="true" pt:root:class="border-none">
 		<template #container="{ closeCallback }">
-			<PhotoMove :photo="photo" />
+			<PhotoMove :photo="photo" @moved="goBack" />
 		</template>
 	</Dialog>
-	<Dialog v-model:visible="isDeleteVisible" pt:root:class="border-none">
+	<Dialog v-model:visible="isDeleteVisible" pt:root:class="border-none" modal :dismissable-mask="true">
 		<template #container="{ closeCallback }">
-			<PhotoDelete :photo="photo" />
+			<PhotoDelete :photo="photo" @deleted="goBack" />
 		</template>
 	</Dialog>
 </template>
