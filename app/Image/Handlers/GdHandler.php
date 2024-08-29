@@ -251,33 +251,6 @@ class GdHandler extends BaseImageHandler
 		}
 	}
 
-	public function convertAndSave(MediaFile $file, string $targetMimeType, ?int $compressionQuality = null, bool $collectStatistics = false): ?StreamStats
-	{
-		if ($this->gdImage === null) {
-			throw new MediaFileOperationException('No image loaded');
-		}
-		try {
-			$inMemoryBuffer = new InMemoryBuffer();
-			$compressionQuality = $compressionQuality ?? $this->compressionQuality;
-
-			match ($targetMimeType) {
-				'image/jpeg' => imagejpeg($this->gdImage, $inMemoryBuffer->stream(), $compressionQuality),
-				'image/png' => imagepng($this->gdImage, $inMemoryBuffer->stream(), $compressionQuality),
-				'image/gif' => imagegif($this->gdImage, $inMemoryBuffer->stream()),
-				'image/webp' => imagewebp($this->gdImage, $inMemoryBuffer->stream(), $compressionQuality),
-				default => throw new \AssertionError('uncovered image type'),
-			};
-
-			$streamStat = $file->write($inMemoryBuffer->read(), $collectStatistics);
-			$file->close();
-			$inMemoryBuffer->close();
-
-			return parent::applyLosslessOptimizationConditionally($file) ?? $streamStat;
-		} catch (\ErrorException $e) {
-			throw new MediaFileOperationException('Failed to convert image', $e);
-		}
-	}
-
 	/**
 	 * Rotates and flips a photo based on the designated EXIF orientation.
 	 *
