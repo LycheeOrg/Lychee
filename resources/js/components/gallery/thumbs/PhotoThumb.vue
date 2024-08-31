@@ -40,7 +40,7 @@
 			<img class="absolute top-1/2 -translate-y-1/2 aspect-square w-fit h-fit" alt="play" :src="srcPlay" />
 		</div>
 		<div v-if="user" class="badges absolute mt-[-1px] ml-1 top-0 left-0">
-			<ThumbBadge v-if="props.photo.is_starred" class="badge--cover bg-yellow-500" icon="folder-cover" />
+			<ThumbBadge v-if="props.photo.is_starred" class="badge--cover bg-yellow-500" icon="star" />
 			<ThumbBadge v-if="is_cover_id" class="badge--cover bg-yellow-500" icon="folder-cover" />
 		</div>
 	</router-link>

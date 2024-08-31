@@ -77,19 +77,14 @@
 				<!-- <x-gallery.photo.overlay /> -->
 			</div>
 			<NextPrevious
-				v-if="photo !== undefined && photo.previous_photo_id !== null"
+				v-if="photo.previous_photo_id !== null"
 				:albumId="albumid"
 				:photoId="photo.previous_photo_id"
 				:is_next="false"
 				:style="previousStyle"
 			/>
-			<NextPrevious
-				v-if="photo !== undefined && photo.next_photo_id !== null"
-				:albumId="albumid"
-				:photoId="photo.next_photo_id"
-				:is_next="true"
-				:style="nextStyle"
-			/>
+			<NextPrevious v-if="photo.next_photo_id !== null" :albumId="albumid" :photoId="photo.next_photo_id" :is_next="true" :style="nextStyle" />
+			<Overlay :photo="photo" :image-overlay-type="lycheeStore.image_overlay_type" />
 			<div
 				v-if="photo?.rights.can_edit && !isEditOpen"
 				class="absolute top-0 h-1/4 w-full sm:w-1/2 left-1/2 -translate-x-1/2 opacity-50 lg:opacity-10 group lg:hover:opacity-100 transition-opacity duration-500 ease-in-out z-20 mt-14 sm:mt-0"
@@ -136,6 +131,10 @@ import PhotoEdit from "@/components/drawers/PhotoEdit.vue";
 import PhotoMove from "@/components/forms/photo/PhotoMove.vue";
 import Dialog from "primevue/dialog";
 import PhotoDelete from "@/components/forms/photo/PhotoDelete.vue";
+import PhotoService from "@/services/photo-service";
+import { onKeyStroke } from "@vueuse/core";
+import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
+import Overlay from "@/components/gallery/photo/Overlay.vue";
 
 const props = defineProps<{
 	albumid: string;
@@ -242,64 +241,58 @@ function goBack() {
 	router.push({ name: "album", params: { albumid: props.albumid } });
 }
 
-load();
-
 function toggleStar() {
-	// PhotoService.toggleStar(photoId.value).then(() => {
-	// 	photo.value!.is_starred = !photo.value!.is_starred;
-	// });
+	PhotoService.star([photoId.value], !photo.value!.is_starred).then(() => {
+		photo.value!.is_starred = !photo.value!.is_starred;
+	});
 }
 
+// Untested
 function rotatePhotoCCW() {
-	// PhotoService.rotate(photoId.value, -90).then(() => {
-	// 	refresh();
-	// });
+	PhotoService.rotate(photoId.value, "-1").then(() => {
+		refresh();
+	});
 }
 
+// Untested
 function rotatePhotoCW() {
-	// PhotoService.rotate(photoId.value, 90).then(() => {
-	// 	refresh();
-	// });
+	PhotoService.rotate(photoId.value, "1").then(() => {
+		refresh();
+	});
 }
 
-function rotateOverlay() {}
-// photoFlags: PhotoFlagsView;
-// photo: Photo;
-// // photo_id: string;
-// parent_id: string;
+function rotateOverlay() {
+	const overlays = ["none", "desc", "date", "exif"] as App.Enum.ImageOverlayType[];
+	for (let i = 0; i < overlays.length; i++) {
+		if (lycheeStore.image_overlay_type === overlays[i]) {
+			lycheeStore.image_overlay_type = overlays[(i + 1) % overlays.length];
+			return;
+		}
+	}
+}
 
-// style: string;
-// srcSetMedium: string;
-// mode: number;
+onKeyStroke(
+	"ArrowLeft",
+	() =>
+		!shouldIgnoreKeystroke() &&
+		photo.value?.previous_photo_id !== null &&
+		router.push({ name: "photo", params: { albumid: props.albumid, photoid: photo.value?.previous_photo_id ?? "" } }),
+);
+onKeyStroke(
+	"ArrowRight",
+	() =>
+		!shouldIgnoreKeystroke() &&
+		photo.value?.next_photo_id !== null &&
+		router.push({ name: "photo", params: { albumid: props.albumid, photoid: photo.value?.next_photo_id ?? "" } }),
+);
+onKeyStroke("o", () => !shouldIgnoreKeystroke() && rotateOverlay());
 
-// refreshPhotoView: (photo: Photo) => void;
-
-// previousStyle: () => string;
-// nextStyle: () => string;
-// displayMap(): void;
-
-// imageViewMode: () => number;
-// getSrcSetMedium: () => string;
-// getStyle: () => string;
-
-// this.srcSetMedium = this.getSrcSetMedium();
-// this.style = this.getStyle();
-// this.mode = this.imageViewMode();
-
-// 			getStyle(): string {
-// 				if (!this.photo.precomputed.is_livephoto) {
-// 					return "background-image: url(" + this.photo.size_variants.small?.url + ")";
-// 				}
-// 				if (this.photo.size_variants.medium !== null) {
-// 					return "width: " + this.photo.size_variants.medium.width + "px; height: " + this.photo.size_variants.medium.height + "px";
-// 				}
-// 				return "width: " + this.photo.size_variants.original.width + "px; height: " + this.photo.size_variants.original.height + "px";
-// 			},
+load();
 
 watch(
 	() => route.params.photoid,
 	(newId, oldId) => {
-		console.log("newId", newId, "oldId", oldId);
+		// console.log("newId", newId, "oldId", oldId);
 		photoId.value = newId as string;
 		refresh();
 	},
