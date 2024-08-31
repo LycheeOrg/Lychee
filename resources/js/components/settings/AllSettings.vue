@@ -1,8 +1,8 @@
 <template>
 	<div v-if="configs">
 		<div class="flex gap-4 w-full h-11" v-if="!modified.length">
-			<ToggleSwitch v-model="oldStyle" class="text-sm translate-y-1"></ToggleSwitch>
-			<p class="text-muted-color">Old settings style</p>
+			<ToggleSwitch v-model="oldStyle" class="text-sm translate-y-1" input-id="oldStyleToggle"></ToggleSwitch>
+			<label for="oldStyleToggle" class="text-muted-color">Old settings style</label>
 		</div>
 		<div v-if="modified.length" class="flex h-11">
 			<Message severity="warn" class="w-full" v-if="modified.length">Some settings changed.</Message>

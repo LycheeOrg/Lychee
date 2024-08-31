@@ -1,6 +1,16 @@
 <template>
+	<KeybindingsHelp v-model:visible="isKeybindingsHelpOpen" v-if="user?.id" />
 	<div v-if="rootConfig && rootRights">
-		<AlbumsHeader v-model:is-login-open="isLoginOpen" v-if="user" :user="user" title="lychee.ALBUMS" :rights="rootRights" @refresh="refresh" />
+		<AlbumsHeader
+			v-model:is-login-open="isLoginOpen"
+			v-if="user"
+			:user="user"
+			title="lychee.ALBUMS"
+			:rights="rootRights"
+			@refresh="refresh"
+			@help="isKeybindingsHelpOpen = true"
+			:config="rootConfig"
+		/>
 		<AlbumThumbPanel
 			v-if="smartAlbums.length > 0"
 			header="lychee.SMART_ALBUMS"
@@ -40,11 +50,12 @@ import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import { onKeyStroke } from "@vueuse/core";
 import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
+import KeybindingsHelp from "@/components/modals/KeybindingsHelp.vue";
 
 const isLoginOpen = ref(false);
 
 const user = ref(undefined) as Ref<undefined | App.Http.Resources.Models.UserResource>;
-
+const isKeybindingsHelpOpen = ref(false);
 const smartAlbums = ref([]) as Ref<App.Http.Resources.Models.ThumbAlbumResource[]>;
 const albums = ref([]) as Ref<App.Http.Resources.Models.ThumbAlbumResource[]>;
 const sharedAlbums = ref([]) as Ref<App.Http.Resources.Models.ThumbAlbumResource[]>;
@@ -58,6 +69,11 @@ const { are_nsfw_visible } = storeToRefs(lycheeStore);
 function refresh() {
 	auth.getUser().then((data) => {
 		user.value = data;
+
+		// display popup if logged in and set..
+		if (user.value.id && lycheeStore.show_keybinding_help_popup) {
+			isKeybindingsHelpOpen.value = true;
+		}
 	});
 
 	AlbumService.getAll()

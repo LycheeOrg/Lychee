@@ -18,6 +18,7 @@ class InitConfig extends Data
 	public bool $is_nsfw_background_blurred;
 	public string $nsfw_banner_override;
 	public bool $is_nsfw_banner_backdrop_blurred;
+	public bool $show_keybinding_help_popup;
 	public ImageOverlayType $image_overlay_type;
 	public ThumbOverlayVisibilityType $display_thumb_album_overlay;
 	public ThumbOverlayVisibilityType $display_thumb_photo_overlay;
@@ -33,5 +34,6 @@ class InitConfig extends Data
 		$this->image_overlay_type = Configs::getValueAsEnum('image_overlay_type', ImageOverlayType::class);
 		$this->display_thumb_album_overlay = Configs::getValueAsEnum('display_thumb_album_overlay', ThumbOverlayVisibilityType::class);
 		$this->display_thumb_photo_overlay = Configs::getValueAsEnum('display_thumb_photo_overlay', ThumbOverlayVisibilityType::class);
+		$this->show_keybinding_help_popup = Configs::getValueAsBool('show_keybinding_help_popup');
 	}
 }

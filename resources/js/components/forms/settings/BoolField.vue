@@ -1,9 +1,9 @@
 <template>
 	<div class="flex gap-4">
 		<!-- <IconField> -->
-		<ToggleSwitch v-model="val" @update:modelValue="update" class="text-sm translate-y-1"></ToggleSwitch>
+		<ToggleSwitch v-model="val" @update:modelValue="update" :input-id="props.config.key" class="text-sm translate-y-1"></ToggleSwitch>
 		<!-- </IconField> -->
-		<p>{{ props.config.documentation }}</p>
+		<label :for="props.config.key">{{ props.config.documentation }}</label>
 		<ResetField v-if="changed" @click="reset" />
 	</div>
 </template>

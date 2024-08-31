@@ -18,9 +18,16 @@ class RootConfig extends Data
 	public bool $is_map_accessible = false;
 	public bool $is_mod_frame_enabled = false;
 	public bool $is_search_accessible = false;
+	public bool $show_keybinding_help_button = false;
 	#[LiteralTypeScriptType('App.Enum.AspectRatioType')]
 	public AspectRatioCSSType $album_thumb_css_aspect_ratio;
 	public ThumbAlbumSubtitleType $album_subtitle_type;
+
+	// for now we keep it here. Maybe we should move it to a separate class
+	public string $login_button_position; // left/right
+	public bool $back_button_enabled;
+	public string $back_button_text;
+	public string $back_button_url;
 
 	public function __construct()
 	{
@@ -32,5 +39,11 @@ class RootConfig extends Data
 		$this->is_search_accessible = Auth::check() || Configs::getValueAsBool('search_public');
 		$this->album_thumb_css_aspect_ratio = Configs::getValueAsEnum('default_album_thumb_aspect_ratio', AspectRatioType::class)->css();
 		$this->album_subtitle_type = Configs::getValueAsEnum('album_subtitle_type', ThumbAlbumSubtitleType::class);
+		$this->show_keybinding_help_button = Configs::getValueAsBool('show_keybinding_help_button');
+		$this->login_button_position = Configs::getValueAsString('login_button_position');
+		$this->back_button_enabled = Configs::getValueAsBool('back_button_enabled');
+		$this->back_button_text = Configs::getValueAsString('back_button_text');
+		$this->back_button_url = Configs::getValueAsString('back_button_url');
 	}
 }
+

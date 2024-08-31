@@ -210,6 +210,7 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		is_nsfw_background_blurred: boolean;
 		nsfw_banner_override: string;
 		is_nsfw_banner_backdrop_blurred: boolean;
+		show_keybinding_help_popup: boolean;
 		image_overlay_type: App.Enum.ImageOverlayType;
 		display_thumb_album_overlay: App.Enum.ThumbOverlayVisibilityType;
 		display_thumb_photo_overlay: App.Enum.ThumbOverlayVisibilityType;
@@ -230,8 +231,13 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		is_map_accessible: boolean;
 		is_mod_frame_enabled: boolean;
 		is_search_accessible: boolean;
+		show_keybinding_help_button: boolean;
 		album_thumb_css_aspect_ratio: App.Enum.AspectRatioType;
 		album_subtitle_type: App.Enum.ThumbAlbumSubtitleType;
+		login_button_position: string;
+		back_button_enabled: boolean;
+		back_button_text: string;
+		back_button_url: string;
 	};
 	export type UploadConfig = {
 		upload_processing_limit: number;
@@ -389,7 +395,6 @@ declare namespace App.Http.Resources.Models {
 		is_password_required: boolean;
 		is_tag_album: boolean;
 		has_subalbum: boolean;
-		css_overlay: string;
 		created_at: string;
 		formatted_min_max: string | null;
 	};

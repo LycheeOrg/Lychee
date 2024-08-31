@@ -7,7 +7,8 @@
 	<AlbumCreateTagDialog v-if="canUpload" v-model:visible="isCreateTagAlbumOpen" />
 	<Toolbar class="w-full border-0">
 		<template #start>
-			<Button v-if="user.id === null" icon="pi pi-sign-in" class="mr-2" severity="secondary" text @click="() => (isLoginOpen = true)" />
+			<BackLinkButton v-if="user.id === null && !isLoginLeft" :config="props.config" />
+			<Button v-if="user.id === null && isLoginLeft" icon="pi pi-sign-in" class="mr-2" severity="secondary" text @click="isLoginOpen = true" />
 			<Button v-if="user.id" @click="openLeftMenu" icon="pi pi-bars" class="mr-2" severity="secondary" text />
 			<!-- <Button v-if="initdata?.user" @click="logout" icon="pi pi-sign-out" class="mr-2" severity="secondary" text /> -->
 		</template>
@@ -23,8 +24,16 @@
 				</InputIcon>
 				<InputText placeholder="Search" />
 			</IconField> -->
+			<BackLinkButton v-if="user.id === null && isLoginLeft" :config="props.config" />
 			<!-- <SplitButton label="Save" :model="items"></SplitButton> -->
+			<Button
+				v-if="user.id !== null && props.config.show_keybinding_help_button"
+				icon="pi pi-question-circle"
+				severity="secondary"
+				@click="openHelp"
+			/>
 			<Button v-if="props.rights.can_upload" icon="pi pi-plus" severity="secondary" @click="openAddMenu" />
+			<Button v-if="user.id === null && !isLoginLeft" icon="pi pi-sign-in" class="mr-2" severity="secondary" text @click="isLoginOpen = true" />
 		</template>
 	</Toolbar>
 	<ContextMenu v-if="props.rights.can_upload" ref="addmenu" :model="addMenu">
@@ -54,15 +63,27 @@ import { useUploadOpen } from "@/composables/uploadOpen";
 import { useCreateAlbumOpen } from "@/composables/createAlbumOpen";
 import { useImportFromLinkOpen } from "@/composables/importFromLinkOpen";
 import { storeToRefs } from "pinia";
+import BackLinkButton from "./BackLinkButton.vue";
 
 const props = defineProps<{
 	user: App.Http.Resources.Models.UserResource;
 	title: string;
 	rights: App.Http.Resources.Rights.RootAlbumRightsResource;
+	config: {
+		is_map_accessible: boolean;
+		is_mod_frame_enabled: boolean;
+		is_search_accessible: boolean;
+		show_keybinding_help_button: boolean;
+		back_button_enabled: boolean;
+		back_button_text: string;
+		back_button_url: string;
+		login_button_position: string;
+	};
 }>();
 
 const emit = defineEmits<{
 	(e: "refresh"): void;
+	(e: "help"): void;
 	//   (e: 'update', value: string): void
 }>();
 
@@ -81,7 +102,7 @@ const { isUploadOpen, toggleUpload } = useUploadOpen(false);
 const { isCreateAlbumOpen, toggleCreateAlbum } = useCreateAlbumOpen(false);
 const { isImportFromLinkOpen, toggleImportFromLink } = useImportFromLinkOpen(false);
 
-const addmenu = ref();
+const addmenu = ref(); // ! Reference to the context menu
 const addMenu = ref([
 	{
 		label: "lychee.UPLOAD_PHOTO",
@@ -120,6 +141,7 @@ const isCreateTagAlbumOpen = ref(false);
 const isImportFromServerOpen = ref(false);
 const canUpload = computed(() => props.user.id !== null);
 const title = ref("Albums");
+const isLoginLeft = computed(() => props.config.login_button_position === "left");
 
 function openLeftMenu() {
 	left_menu_open.value = !left_menu_open.value;
@@ -127,6 +149,10 @@ function openLeftMenu() {
 
 function openAddMenu(event: Event) {
 	addmenu.value.show(event);
+}
+
+function openHelp() {
+	emit("help");
 }
 
 onKeyStroke("n", () => !shouldIgnoreKeystroke() && props.rights.can_upload && (isCreateAlbumOpen.value = true));

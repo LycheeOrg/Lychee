@@ -272,6 +272,45 @@ const LycheePrimeVueConfig = {
 				},
 			},
 		},
+		datatable: {
+			header: {
+				background: "transparent",
+			},
+			row: {
+				background: "transparent",
+			},
+			colorScheme: {
+				light: {
+					header: {
+						color: "{surface.700}",
+					},
+					row: {
+						color: "{surface.700}",
+					},
+					bodyCell: {
+						border: {
+							color: "{surface.300}",
+						},
+					},
+				},
+				dark: {
+					header: {
+						color: "{surface.200}",
+						border: {
+							color: "{surface.700}",
+						},
+					},
+					row: {
+						color: "{surface.300}",
+					},
+					bodyCell: {
+						border: {
+							color: "{surface.700}",
+						},
+					},
+				},
+			},
+		},
 		menu: {
 			colorScheme: {
 				light: {
