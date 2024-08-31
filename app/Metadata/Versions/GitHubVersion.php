@@ -98,7 +98,7 @@ class GitHubVersion implements VersionControl, HasIsRelease
 				$this->countBehind,
 				$this->remote->getType(),
 				$this->remote->getHead() ?? '??',
-				$this->remote->getAgeText() ?? '??')
+				$this->remote->getAgeText() ?? '??'),
 		};
 	}
 

@@ -28,7 +28,7 @@ class SystemInfo implements DiagnosticPipe
 				'mysql' => ['MySQL', 'select version() as version'],
 				'sqlite' => ['SQLite', 'select sqlite_version() as version'],
 				'pgsql' => ['PostgreSQL', 'select version() as version'],
-				default => [DB::getDriverName(), 'select version() as version']
+				default => [DB::getDriverName(), 'select version() as version'],
 			};
 
 			$dbtype = $sql[0];

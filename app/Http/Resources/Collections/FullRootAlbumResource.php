@@ -50,7 +50,7 @@ class FullRootAlbumResource extends Data
 		Collection $smart_albums,
 		Collection $tag_albums,
 		Collection $albums,
-		?Collection $shared_albums = null
+		?Collection $shared_albums = null,
 	) {
 		$this->smart_albums = $smart_albums;
 		$this->tag_albums = $tag_albums;

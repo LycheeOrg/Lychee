@@ -166,7 +166,7 @@ abstract class BaseSharingTest extends BasePhotoTest
 	protected function generateExpectedSmartAlbumJson(
 		bool $isPublic,
 		?string $thumbID = null,
-		array $expectedPhotos = []
+		array $expectedPhotos = [],
 	): array {
 		return [
 			'thumb' => $this->generateExpectedThumbJson($thumbID),

@@ -161,7 +161,7 @@ class Create
 	protected function findLivePartner(
 		?string $contentID,
 		string $mimeType,
-		?Album $album
+		?Album $album,
 	): ?Photo {
 		try {
 			$livePartner = null;

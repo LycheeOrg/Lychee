@@ -296,7 +296,7 @@ class Configs extends Model
 			$strValue = match (gettype($value)) {
 				'boolean' => $value === true ? '1' : '0',
 				'integer', 'string' => strval($value),
-				default => throw new LycheeAssertionError('Unexpected type')
+				default => throw new LycheeAssertionError('Unexpected type'),
 			};
 
 			/**

@@ -24,7 +24,7 @@ class ForeignKeyListInfo implements DiagnosticPipe
 			'sqlite' => $this->sqlite($data),
 			'mysql' => $this->mysql($data),
 			'pgsql' => $this->pgsql($data),
-			default => ''
+			default => '',
 		};
 
 		return $next($data);

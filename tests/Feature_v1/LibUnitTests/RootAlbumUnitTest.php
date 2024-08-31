@@ -39,7 +39,7 @@ class RootAlbumUnitTest
 	public function get(
 		int $expectedStatusCode = 200,
 		?string $assertSee = null,
-		?string $assertDontSee = null
+		?string $assertDontSee = null,
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/Albums::get');
 		$this->assertStatus($response, $expectedStatusCode);
@@ -65,7 +65,7 @@ class RootAlbumUnitTest
 	public function getTree(
 		int $expectedStatusCode = 200,
 		?string $assertSee = null,
-		?string $assertDontSee = null
+		?string $assertDontSee = null,
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/Albums::tree');
 		$this->assertStatus($response, $expectedStatusCode);
@@ -89,7 +89,7 @@ class RootAlbumUnitTest
 	 */
 	public function getPositionData(
 		int $expectedStatusCode = 200,
-		?string $assertSee = null
+		?string $assertSee = null,
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/Albums::getPositionData');
 		$this->assertStatus($response, $expectedStatusCode);

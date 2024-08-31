@@ -345,7 +345,7 @@ class SessionOrTokenGuard extends SessionGuard
 			$authenticable !== null => $authenticable,
 			$hasBearer && $configThrow => throw new BadRequestHeaderException('Invalid token'),
 			$hasBearer => null,
-			default => throw new BadRequestHeaderException('Invalid token')
+			default => throw new BadRequestHeaderException('Invalid token'),
 		};
 	}
 }

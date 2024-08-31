@@ -115,14 +115,14 @@ class ImagickHandler extends BaseImageHandler
 
 			$needsFlop = match ($orientation) {
 				\Imagick::ORIENTATION_TOPRIGHT, \Imagick::ORIENTATION_BOTTOMLEFT, \Imagick::ORIENTATION_LEFTTOP, \Imagick::ORIENTATION_RIGHTBOTTOM => true,
-				\Imagick::ORIENTATION_TOPLEFT, \Imagick::ORIENTATION_BOTTOMRIGHT, \Imagick::ORIENTATION_RIGHTTOP, \Imagick::ORIENTATION_LEFTBOTTOM, \Imagick::ORIENTATION_UNDEFINED => false
+				\Imagick::ORIENTATION_TOPLEFT, \Imagick::ORIENTATION_BOTTOMRIGHT, \Imagick::ORIENTATION_RIGHTTOP, \Imagick::ORIENTATION_LEFTBOTTOM, \Imagick::ORIENTATION_UNDEFINED => false,
 			};
 
 			$angle = match ($orientation) {
 				\Imagick::ORIENTATION_TOPLEFT, \Imagick::ORIENTATION_TOPRIGHT, \Imagick::ORIENTATION_UNDEFINED => 0,
 				\Imagick::ORIENTATION_BOTTOMRIGHT, \Imagick::ORIENTATION_BOTTOMLEFT => 180,
 				\Imagick::ORIENTATION_LEFTTOP, \Imagick::ORIENTATION_LEFTBOTTOM => -90,
-				\Imagick::ORIENTATION_RIGHTTOP, \Imagick::ORIENTATION_RIGHTBOTTOM => 90
+				\Imagick::ORIENTATION_RIGHTTOP, \Imagick::ORIENTATION_RIGHTBOTTOM => 90,
 			};
 
 			if ($needsFlop && !$this->imImage->flopImage()) {

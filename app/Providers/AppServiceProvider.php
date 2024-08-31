@@ -236,7 +236,7 @@ class AppServiceProvider extends ServiceProvider
 				'NULL' => "''",
 				'string' => "'{$q}'",
 				'boolean' => $q ? '1' : '0',
-				default => $q
+				default => $q,
 			};
 		})->all();
 

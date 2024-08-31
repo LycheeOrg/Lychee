@@ -101,24 +101,14 @@ Route::post('/Photo', [Gallery\PhotoController::class, 'upload'])
 	->middleware(['content_type:multipart']);
 Route::patch('/Photo', [Gallery\PhotoController::class, 'update']);
 Route::post('/Photo::move', [Gallery\PhotoController::class, 'move']);
+Route::post('/Photo::star', [Gallery\PhotoController::class, 'star']);
+Route::post('/Photo::rotate', [Gallery\PhotoController::class, 'rotate']);
+Route::post('/Photo::duplicate', [Gallery\PhotoController::class, 'duplicate']);
 Route::delete('/Photo', [Gallery\PhotoController::class, 'delete']);
 
 // Route::post('/Photo::getRandom', [PhotoController::class, 'getRandom']);
-// Route::post('/Photo::setTitle', [PhotoController::class, 'setTitle']);
-// Route::post('/Photo::setDescription', [PhotoController::class, 'setDescription']);
-// Route::post('/Photo::setStar', [PhotoController::class, 'setStar']);
-// Route::post('/Photo::setPublic', fn () => throw new NotImplementedException('This code is deprecated. Good bye.')); // just legacy stuff.
-// Route::post('/Photo::setAlbum', [PhotoController::class, 'setAlbum']);
-// Route::post('/Photo::setTags', [PhotoController::class, 'setTags']);
-// Route::post('/Photo::delete', [PhotoController::class, 'delete']);
-// Route::post('/Photo::duplicate', [PhotoController::class, 'duplicate']);
-// Route::post('/Photo::setLicense', [PhotoController::class, 'setLicense']);
-// Route::post('/Photo::setUploadDate', [PhotoController::class, 'setUploadDate']);
 // Route::post('/Photo::clearSymLink', [PhotoController::class, 'clearSymLink']);
 // Route::post('/PhotoEditor::rotate', [PhotoEditorController::class, 'rotate']);
-// Route::post('/Photo::add', [PhotoController::class, 'add'])
-// 	->withoutMiddleware(['content_type:json'])
-// 	->middleware(['content_type:multipart']);
 // Route::get('/Photo::getArchive', [PhotoController::class, 'getArchive'])
 // 	->name('photo_download')
 // 	->withoutMiddleware(['content_type:json', 'accept_content_type:json'])

@@ -9,7 +9,7 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 class UserToken extends Data
 {
 	public function __construct(
-		public string $token
+		public string $token,
 	) {
 	}
 }

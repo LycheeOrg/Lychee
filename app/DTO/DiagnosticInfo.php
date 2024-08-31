@@ -16,7 +16,7 @@ class DiagnosticInfo extends ArrayableDTO
 		public array $errors,
 		public array $infos,
 		public array $configs,
-		public UpdateStatus $update
+		public UpdateStatus $update,
 	) {
 	}
 }

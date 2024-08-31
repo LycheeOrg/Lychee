@@ -102,7 +102,7 @@ abstract class BaseSharingTestScenarios extends BaseSharingTest
 		?string $publicAlbumThumbID = null,
 		?string $recentAlbumThumbID = null,
 		?string $onThisDayAlbumThumbID = null,
-		array $expectedAlbumJson = []
+		array $expectedAlbumJson = [],
 	): array;
 
 	abstract protected function generateUnexpectedRootJson(

@@ -52,7 +52,7 @@ class JsonRequestFunctions implements JsonRequest
 				now()->diffInWeeks($age) => now()->diffInDays($age) . ' days',
 				now()->diffInMonths($age) => now()->diffInWeeks($age) . ' weeks',
 				now()->diffInYears($age) => now()->diffInMonths($age) . ' months',
-				default => now()->diffInYears($age) . ' years'
+				default => now()->diffInYears($age) . ' years',
 			};
 
 			return $text . ' ago';

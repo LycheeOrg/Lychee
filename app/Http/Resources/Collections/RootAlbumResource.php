@@ -49,7 +49,7 @@ class RootAlbumResource extends Data
 		Collection $albums,
 		Collection $shared_albums,
 		RootConfig $config,
-		RootAlbumRightsResource $rights
+		RootAlbumRightsResource $rights,
 	) {
 		$this->smart_albums = $smart_albums;
 		$this->tag_albums = $tag_albums;

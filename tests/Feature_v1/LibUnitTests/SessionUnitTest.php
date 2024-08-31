@@ -41,7 +41,7 @@ class SessionUnitTest
 		string $username,
 		string $password,
 		int $expectedStatusCode = 204,
-		?string $assertSee = null
+		?string $assertSee = null,
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/Session::login', [
 			'username' => $username,
@@ -63,7 +63,7 @@ class SessionUnitTest
 	 */
 	public function init(
 		int $expectedStatusCode = 200,
-		?string $assertSee = null
+		?string $assertSee = null,
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/Session::init');
 		$this->assertStatus($response, $expectedStatusCode);
@@ -103,7 +103,7 @@ class SessionUnitTest
 		string $password,
 		string $oldPassword,
 		int $expectedStatusCode = 200,
-		?string $assertSee = null
+		?string $assertSee = null,
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/User::updateLogin', [
 			'username' => $login,

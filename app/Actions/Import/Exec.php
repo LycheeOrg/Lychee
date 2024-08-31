@@ -261,7 +261,7 @@ class Exec
 	public function do(
 		string $path,
 		?Album $parentAlbum,
-		array $ignore_list = []
+		array $ignore_list = [],
 	): void {
 		try {
 			$path = self::normalizePath($path);

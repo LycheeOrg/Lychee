@@ -103,7 +103,7 @@ class AlbumController extends Controller
 			$request->album() instanceof BaseSmartAlbum => SmartAlbumResource::make($request->album()),
 			$request->album() instanceof TagAlbum => TagAlbumResource::make($request->album()),
 			$request->album() instanceof Album => AlbumResource::make($request->album()),
-			default => throw new LycheeLogicException('This should not happen')
+			default => throw new LycheeLogicException('This should not happen'),
 		};
 	}
 

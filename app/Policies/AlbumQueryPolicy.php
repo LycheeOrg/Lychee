@@ -517,7 +517,7 @@ class AlbumQueryPolicy
 		AlbumBuilder|FixedQueryBuilder|BaseBuilder $query,
 		string $second = 'inner.id',
 		string $prefix = '',
-		bool $full = true
+		bool $full = true,
 	): void {
 		$columns = [
 			$prefix . 'base_albums.id',

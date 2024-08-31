@@ -6,7 +6,7 @@ class ImageDimension extends ArrayableDTO
 {
 	public function __construct(
 		public int $width,
-		public int $height
+		public int $height,
 	) {
 	}
 

@@ -243,7 +243,7 @@ class BasicPermissionCheck implements DiagnosticPipe
 						(!is_writable($path) && !is_readable($path)) => 'neither readable nor writable',
 						!is_writable($path) => 'not writable',
 						!is_readable($path) => 'not readable',
-						default => ''
+						default => '',
 					};
 					$data[] = sprintf('Error: %s is %s by %s', $this->anonymize($path), $problem, $this->groupNames);
 				}

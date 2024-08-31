@@ -4,15 +4,21 @@ namespace App\Http\Controllers\Gallery;
 
 use App\Actions\Import\FromUrl;
 use App\Actions\Photo\Delete;
+use App\Actions\Photo\Duplicate;
 use App\Actions\Photo\Move;
+use App\Actions\Photo\Rotate;
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\FileStatus;
+use App\Exceptions\ConfigurationException;
 use App\Factories\AlbumFactory;
 use App\Http\Requests\Photo\DeletePhotosRequest;
+use App\Http\Requests\Photo\DuplicatePhotosRequest;
 use App\Http\Requests\Photo\EditPhotoRequest;
 use App\Http\Requests\Photo\FromUrlRequest;
 use App\Http\Requests\Photo\GetPhotoRequest;
 use App\Http\Requests\Photo\MovePhotosRequest;
+use App\Http\Requests\Photo\RotatePhotoRequest;
+use App\Http\Requests\Photo\SetPhotosStarredRequest;
 use App\Http\Requests\Photo\UploadPhotoRequest;
 use App\Http\Resources\Editable\UploadMetaResource;
 use App\Http\Resources\Models\PhotoResource;
@@ -22,6 +28,7 @@ use App\Image\Files\UploadedFile;
 use App\Jobs\ProcessImageJob;
 use App\Models\Configs;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -128,17 +135,14 @@ class PhotoController extends Controller
 	 * @param SetPhotosStarredRequest $request
 	 *
 	 * @return void
-	 *
-	 * @throws LycheeException
 	 */
-	// public function setStar(SetPhotosStarredRequest $request): void
-	// {
-	// 	/** @var Photo $photo */
-	// 	foreach ($request->photos() as $photo) {
-	// 		$photo->is_starred = $request->isStarred();
-	// 		$photo->save();
-	// 	}
-	// }
+	public function star(SetPhotosStarredRequest $request): void
+	{
+		foreach ($request->photos() as $photo) {
+			$photo->is_starred = $request->isStarred();
+			$photo->save();
+		}
+	}
 
 	/**
 	 * Moves the photos to an album.
@@ -174,12 +178,31 @@ class PhotoController extends Controller
 	 * @param DuplicatePhotosRequest $request
 	 * @param Duplicate              $duplicate
 	 *
-	 * @return JsonResponse the collection of duplicated photos
+	 * @return Collection<string|int, PhotoResource> the collection of duplicated photos
 	 */
-	// public function duplicate(DuplicatePhotosRequest $request, Duplicate $duplicate): JsonResponse
-	// {
-	// 	$duplicates = $duplicate->do($request->photos(), $request->album());
+	public function duplicate(DuplicatePhotosRequest $request, Duplicate $duplicate): Collection
+	{
+		$duplicates = $duplicate->do($request->photos(), $request->album());
 
-	// 	return PhotoResource::collection($duplicates)->toResponse($request)->setStatusCode(201);
-	// }
+		return PhotoResource::collect($duplicates);
+	}
+
+	/**
+	 * Given a photoID and a direction (+1: 90° clockwise, -1: 90° counterclockwise) rotate an image.
+	 *
+	 * @param RotatePhotoRequest $request
+	 *
+	 * @return PhotoResource
+	 */
+	public function rotate(RotatePhotoRequest $request): PhotoResource
+	{
+		if (!Configs::getValueAsBool('editor_enabled')) {
+			throw new ConfigurationException('support for rotation disabled by configuration');
+		}
+
+		$rotateStrategy = new Rotate($request->photo(), $request->direction());
+		$photo = $rotateStrategy->do();
+
+		return PhotoResource::fromModel($photo);
+	}
 }
