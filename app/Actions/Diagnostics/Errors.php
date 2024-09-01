@@ -15,6 +15,7 @@ use App\Actions\Diagnostics\Pipes\Checks\ImageOptCheck;
 use App\Actions\Diagnostics\Pipes\Checks\IniSettingsCheck;
 use App\Actions\Diagnostics\Pipes\Checks\MigrationCheck;
 use App\Actions\Diagnostics\Pipes\Checks\PHPVersionCheck;
+use App\Actions\Diagnostics\Pipes\Checks\PlaceholderExistsCheck;
 use App\Actions\Diagnostics\Pipes\Checks\SmallMediumExistsCheck;
 use App\Actions\Diagnostics\Pipes\Checks\TimezoneCheck;
 use App\Actions\Diagnostics\Pipes\Checks\UpdatableCheck;
@@ -43,6 +44,7 @@ class Errors
 		ForeignKeyListInfo::class,
 		DBIntegrityCheck::class,
 		SmallMediumExistsCheck::class,
+		PlaceholderExistsCheck::class,
 		CountSizeVariantsCheck::class,
 	];
 
