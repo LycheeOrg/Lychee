@@ -59,13 +59,13 @@ class PlaceholderExistsCheck implements DiagnosticPipe
 		)
 		->first();
 
-		$num = $result->{self::NUM_UNENCODED_PLACEHOLDER};
+		$num = $result->{self::NUM_UNENCODED_PLACEHOLDER}; // @phpstan-ignore-line
 		if ($num > 0) {
 			$data[] = sprintf(self::INFO_MSG_UNENCODED, $num);
 			$data[] = sprintf(self::INFO_LINE_UNENCODED, $num);
 		}
 
-		$num = $result->{self::MAX_NUM_PLACEHOLDER} - $result->{self::NUM_PLACEHOLDER};
+		$num = $result->{self::MAX_NUM_PLACEHOLDER} - $result->{self::NUM_PLACEHOLDER}; // @phpstan-ignore-line
 		if ($num > 0) {
 			$data[] = sprintf(self::INFO_MSG_MISSING, $num);
 			$data[] = sprintf(self::INFO_LINE_MISSING, $num);
