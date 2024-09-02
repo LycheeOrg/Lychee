@@ -29,7 +29,6 @@ class SizeVariantDefaultFactory implements SizeVariantFactory
 	public const THUMBNAIL_DIM = 200;
 	public const THUMBNAIL2X_DIM = 400;
 	public const PLACEHOLDER_DIM = 16;
-	public const PLACEHOLDER_COMPRESSION_QUALITY = 30;
 
 	/** @var ImageHandlerInterface the image handler (gd, imagick, ...) which is used to generate image files */
 	protected ImageHandlerInterface $referenceImage;
