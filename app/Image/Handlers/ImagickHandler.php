@@ -78,7 +78,6 @@ class ImagickHandler extends BaseImageHandler
 		}
 		try {
 			$this->imImage->setImageCompressionQuality($this->compressionQuality);
-
 			$profiles = $this->imImage->getImageProfiles('icc', true);
 			// Remove metadata to save some bytes
 			$this->imImage->stripImage();
