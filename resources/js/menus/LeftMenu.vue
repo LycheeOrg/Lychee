@@ -32,6 +32,7 @@ import AuthService from "@/services/auth-service";
 import InitService from "@/services/init-service";
 import { useAuthStore } from "@/stores/Auth";
 import { useLycheeStateStore } from "@/stores/LycheeState";
+import AlbumService from "@/services/album-service";
 
 type MenyType = {
 	label: string;
@@ -87,6 +88,7 @@ function logout() {
 		lycheeStore.left_menu_open = false;
 		initData.value = undefined;
 		authStore.setUser(null);
+		AlbumService.clearCache();
 		window.location.href = "/gallery";
 	});
 }

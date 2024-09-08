@@ -25,13 +25,13 @@ Route::get('/Gallery::getUploadLimits', [Gallery\ConfigController::class, 'getUp
 /**
  * ALBUMS.
  */
-Route::get('/Albums', [Gallery\AlbumsController::class, 'get'])->middleware(['login_required:root']);
+Route::get('/Albums', [Gallery\AlbumsController::class, 'get'])->middleware(['login_required:root', 'cache_control']);
 
 /**
  * ALBUM.
  */
-Route::get('/Album', [Gallery\AlbumController::class, 'get'])->middleware(['login_required:album']);
-Route::get('/Album::getTargetListAlbums', [Gallery\AlbumController::class, 'getTargetListAlbums'])->middleware(['login_required:album']);
+Route::get('/Album', [Gallery\AlbumController::class, 'get'])->middleware(['login_required:album', 'cache_control']);
+Route::get('/Album::getTargetListAlbums', [Gallery\AlbumController::class, 'getTargetListAlbums'])->middleware(['login_required:album', 'cache_control']);
 Route::post('/Album', [Gallery\AlbumController::class, 'createAlbum']);
 Route::patch('/Album', [Gallery\AlbumController::class, 'updateAlbum']);
 Route::post('/TagAlbum', [Gallery\AlbumController::class, 'createTagAlbum']);

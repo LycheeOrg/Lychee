@@ -81,15 +81,6 @@ const photos = ref([]) as Ref<App.Http.Resources.Models.PhotoResource[]>;
 const route = useRoute();
 const noData = computed(() => children.value.length === 0 && (photos.value === null || photos.value.length === 0));
 const children = computed<App.Http.Resources.Models.ThumbAlbumResource[]>(() => modelAlbum.value?.albums ?? []);
-const css_overlay = computed(() => {
-	if (lycheeStore.display_thumb_album_overlay === "never") {
-		return "hidden";
-	}
-	if (lycheeStore.display_thumb_album_overlay === "hover") {
-		return "opacity-0 group-hover:opacity-100 transition-all ease-out";
-	}
-	return "";
-});
 
 AlbumService.getLayout().then((data) => {
 	layout.value = data.data;
@@ -102,7 +93,7 @@ function refresh() {
 
 	AlbumService.get(albumid.value)
 		.then((data) => {
-			console.log(data.data);
+			// console.log(data.data);
 			config.value = data.data.config;
 			modelAlbum.value = undefined;
 			tagAlbum.value = undefined;
@@ -135,7 +126,7 @@ refresh();
 watch(
 	() => route.params.albumid,
 	(newId, oldId) => {
-		console.log("newId", newId, "oldId", oldId);
+		// console.log("newId", newId, "oldId", oldId);
 		albumid.value = newId as string;
 		refresh();
 	},

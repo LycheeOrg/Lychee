@@ -238,7 +238,7 @@ class Exec
 	{
 		try {
 			// re-read session in case cancelling import was requested
-			session()->start();
+			session_start();
 			if (Session::has('cancel')) {
 				Session::forget('cancel');
 				throw new ImportCancelledException();

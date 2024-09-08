@@ -1,5 +1,5 @@
 <template>
-	<Panel :header="$t(props.header)" :toggleable="!isAlone" class="border-0 w-full">
+	<Panel :header="$t(props.header)" :toggleable="!isAlone" :pt:header:class="headerClass" class="border-0 w-full">
 		<div class="flex flex-wrap flex-row flex-shrink w-full justify-start align-top">
 			<template v-for="album in props.albums">
 				<AlbumThumb
@@ -16,6 +16,7 @@
 <script setup lang="ts">
 import Panel from "primevue/panel";
 import AlbumThumb from "@/components/gallery/thumbs/AlbumThumb.vue";
+import { computed } from "vue";
 
 const props = defineProps<{
 	areNsfwVisible: boolean;
@@ -24,4 +25,8 @@ const props = defineProps<{
 	config: { album_thumb_css_aspect_ratio: string; album_subtitle_type: App.Enum.ThumbAlbumSubtitleType };
 	isAlone: boolean;
 }>();
+
+const headerClass = computed(() => {
+	return props.isAlone ? "hidden" : "";
+});
 </script>

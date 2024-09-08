@@ -1,7 +1,7 @@
 <template>
 	<Dialog v-model:visible="visible" modal pt:root:class="border-none" pt:mask:style="backdrop-filter: blur(2px)">
 		<template #container="{ closeCallback }">
-			<div v-focustrap class="flex flex-col gap-4 relative max-w-full text-sm rounded-md pt-9">
+			<form v-focustrap class="flex flex-col gap-4 relative max-w-full text-sm rounded-md pt-9">
 				<div class="inline-flex flex-col gap-2 px-9">
 					<FloatLabel>
 						<InputText id="username" v-model="username" />
@@ -29,7 +29,7 @@
 						>{{ trans("lychee.SIGN_IN") }}</Button
 					>
 				</div>
-			</div>
+			</form>
 		</template>
 	</Dialog>
 </template>
@@ -45,6 +45,7 @@ import AuthService from "@/services/auth-service";
 import InputText from "@/components/forms/basic/InputText.vue";
 import InputPassword from "@/components/forms/basic/InputPassword.vue";
 import { useAuthStore } from "@/stores/Auth";
+import AlbumService from "@/services/album-service";
 
 const visible = defineModel("visible", { default: false }) as Ref<boolean>;
 
@@ -63,6 +64,7 @@ function login() {
 			visible.value = false;
 			authStore.setUser(null);
 			invalidPassword.value = false;
+			AlbumService.clearCache();
 			emits("logged-in");
 		})
 		.catch((e: any) => {

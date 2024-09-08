@@ -1,4 +1,5 @@
 import axios, { type AxiosResponse } from "axios";
+import { setupCache } from "axios-cache-interceptor/dev";
 import Constants from "./constants";
 
 export type CreateAlbumData = {
@@ -45,16 +46,23 @@ export type UpdateProtectionPolicyData = {
 };
 
 const AlbumService = {
+	axios: setupCache(axios, { debug: console.log }),
+
+	clearCache(): void {
+		// @ts-expect-error
+		this.axios.storage.data = {};
+	},
+
 	getAll(): Promise<AxiosResponse<App.Http.Resources.Collections.RootAlbumResource>> {
-		return axios.get(`${Constants.API_URL}Albums`, { data: {} });
+		return this.axios.get(`${Constants.API_URL}Albums`, { data: {}, id: "albums" });
 	},
 
 	get(album_id: string): Promise<AxiosResponse<App.Http.Resources.Models.AbstractAlbumResource>> {
-		return axios.get(`${Constants.API_URL}Album`, { params: { album_id: album_id }, data: {} });
+		return this.axios.get(`${Constants.API_URL}Album`, { params: { album_id: album_id }, data: {}, id: "album_" + album_id });
 	},
 
 	getLayout(): Promise<AxiosResponse<App.Http.Resources.GalleryConfigs.PhotoLayoutConfig>> {
-		return axios.get(`${Constants.API_URL}Gallery::getLayout`, { data: {} });
+		return this.axios.get(`${Constants.API_URL}Gallery::getLayout`, { data: {} });
 	},
 
 	getMapProvider(): Promise<AxiosResponse<App.Http.Resources.GalleryConfigs.MapProviderData>> {
