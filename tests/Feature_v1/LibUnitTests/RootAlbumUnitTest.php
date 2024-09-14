@@ -88,7 +88,7 @@ class RootAlbumUnitTest
 	 * @return TestResponse
 	 */
 	public function getPositionData(
-		int $expectedStatusCode = 200,
+		int $expectedStatusCode = 201,
 		?string $assertSee = null,
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/Albums::getPositionData');
