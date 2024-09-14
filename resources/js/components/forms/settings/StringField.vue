@@ -1,17 +1,20 @@
 <template>
-	<div class="py-1 flex items-center justify-between gap-4">
-		<label class="w-full" :for="props.config.key">{{ props.config.documentation }}</label>
-		<FloatLabel class="w-full flex-grow">
-			<IconField>
-				<InputText :id="props.config.key" type="text" class="!py-1" v-model="val" @update:modelValue="update" />
-				<InputIcon
-					class="pi pi-exclamation-circle text-warning-600 cursor-pointer"
-					@click="reset"
-					v-if="changed"
-					v-tooltip="'Click me to reset!'"
-				/>
-			</IconField>
-		</FloatLabel>
+	<div>
+		<div class="py-1 flex items-center justify-between gap-4">
+			<label class="w-full" :for="props.config.key">{{ props.config.documentation }}</label>
+			<FloatLabel class="w-full flex-grow">
+				<IconField>
+					<InputText :id="props.config.key" type="text" class="!py-1" v-model="val" @update:modelValue="update" />
+					<InputIcon
+						class="pi pi-exclamation-circle text-warning-600 cursor-pointer"
+						@click="reset"
+						v-if="changed"
+						v-tooltip="'Click me to reset!'"
+					/>
+				</IconField>
+			</FloatLabel>
+		</div>
+		<div v-if="props.config.details" class="text-muted-color text-sm">{{ props.config.details }}</div>
 	</div>
 </template>
 <script setup lang="ts">

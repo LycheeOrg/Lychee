@@ -6,7 +6,7 @@
 			<InputIcon :class="`pi ${classes} cursor-pointer`" v-tooltip="'Click me to reset!'" @click="reset" v-if="changed" />
 		</IconField>
 		<Message class="w-full h-8 mt-0.5" v-if="changed && isVersion" severity="error">We strongly recommend you do not modify this value.</Message>
-		<div class="w-full text-muted-color" v-if="!changed || !isVersion">{{ props.config.documentation }}</div>
+		<div class="w-full text-muted-color" v-if="!changed || !isVersion">{{ props.config.documentation }} {{ props.config.details }}</div>
 	</div>
 </template>
 <script setup lang="ts">

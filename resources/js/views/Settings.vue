@@ -15,10 +15,11 @@
 	<Tabs value="0" class="max-w-5xl mx-auto">
 		<TabList>
 			<Tab value="0">Basic</Tab>
-			<Tab value="1">{{ $t("lychee.MORE") }}</Tab>
+			<Tab value="1"><i class="pi pi-exclamation-triangle mr-2" />{{ $t("lychee.MORE") }}</Tab>
 		</TabList>
 		<TabPanels :pt:root:class="'px-0'">
 			<TabPanel value="0">
+				<span class="font-bold text-red-500 text-center w-full inline-block text-3xl">STILL WORK IN PROGRESS HERE (nothing works).</span>
 				<EasySettings />
 			</TabPanel>
 			<TabPanel value="1">
