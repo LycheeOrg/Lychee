@@ -7,8 +7,8 @@ use App\Enum\StorageDiskType;
 use App\Exceptions\Handler;
 use App\Exceptions\Internal\InvalidConfigOption;
 use App\Facades\Helpers;
+use App\Http\Controllers\Gallery\PhotoController;
 use App\Image\Files\ProcessableJobFile;
-use App\Livewire\Components\Forms\Add\Upload;
 use App\Models\SymLink;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\Storage;
@@ -117,7 +117,7 @@ class BasicPermissionCheck implements DiagnosticPipe
 			Storage::disk(StorageDiskType::LOCAL->value),
 			Storage::disk(SymLink::DISK_NAME),
 			Storage::disk(ProcessableJobFile::DISK_NAME),
-			Storage::disk(Upload::DISK_NAME),
+			Storage::disk(PhotoController::DISK_NAME),
 		];
 
 		foreach ($disks as $disk) {
