@@ -35,13 +35,13 @@ class PhotosAddMethodsTest extends BasePhotoTest
 	{
 		// import the photo
 		copy(base_path(TestConstants::SAMPLE_FILE_NIGHT_IMAGE), static::importPath('night.jpg'));
+		$this->assertEquals(true, file_exists(static::importPath('night.jpg')));
 		$this->photos_tests->importFromServer(
 			path: static::importPath(),
 			album_id: null,
 			delete_imported: true,
 			skip_duplicates: false,
 			import_via_symlink: false);
-
 		// check if the file has been moved
 		$this->assertEquals(false, file_exists(static::importPath('night.jpg')));
 	}
