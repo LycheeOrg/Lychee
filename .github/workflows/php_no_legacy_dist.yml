@@ -47,10 +47,7 @@ jobs:
 
       - name: Removing legacy files
         run: |
-          rm -rf app/Legacy/V1
-          rm -rf app/Legacy/Actions/Settings
-          rm -fr app/Livewire
-          rm -fr tests/Feature_v1
+          sh scripts/delete_legacy.sh
 
       - name: Set Up Imagick, FFmpeg & Exiftools
         run: |
