@@ -58,7 +58,8 @@ jobs:
 
       - name: Removing legacy files
         run: |
-          rm -rf app/Legacy
+          rm -rf app/Legacy/V1
+          rm -rf app/Legacy/Actions/Settings
 
       - name: Install dependencies
         uses: ramsey/composer-install@57532f8be5bda426838819c5ee9afb8af389d51a # 3.0.0
@@ -87,7 +88,8 @@ jobs:
 
       - name: Removing legacy files
         run: |
-          rm -rf app/Legacy
+          rm -rf app/Legacy/V1
+          rm -rf app/Legacy/Actions/Settings
 
       - name: Install dependencies
         uses: ramsey/composer-install@57532f8be5bda426838819c5ee9afb8af389d51a # 3.0.0
@@ -117,7 +119,8 @@ jobs:
 
       - name: Removing legacy files
         run: |
-          rm -rf app/Legacy
+          rm -rf app/Legacy/V1
+          rm -rf app/Legacy/Actions/Settings
 
       - name: Setup PHP
         uses: shivammathur/setup-php@a4e22b60bbb9c1021113f2860347b0759f66fe5d # 2.30.0
@@ -172,7 +175,8 @@ jobs:
 
       - name: Removing legacy files
         run: |
-          rm -rf app/Legacy
+          rm -rf app/Legacy/V1
+          rm -rf app/Legacy/Actions/Settings
 
       - name: Setup PHP
         uses: shivammathur/setup-php@a4e22b60bbb9c1021113f2860347b0759f66fe5d # 2.30.0

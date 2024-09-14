@@ -64,7 +64,8 @@ jobs:
       
       - name: Removing legacy files
         run: |
-          rm -rf app/Legacy
+          rm -rf app/Legacy/V1
+          rm -rf app/Legacy/Actions/Settings
 
       - name: Set Up Imagick, FFmpeg & Exiftools
         run: |

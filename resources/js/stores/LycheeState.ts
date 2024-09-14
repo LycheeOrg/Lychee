@@ -17,6 +17,9 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		nsfw_banner_override: "",
 		is_nsfw_banner_backdrop_blurred: false,
 		show_keybinding_help_popup: false,
+		
+		// menu stuff
+		clockwork_url: "" as null | string,
 
 		// togglable with defaults
 		are_nsfw_visible: false,
@@ -56,6 +59,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 				this.is_init = true;
 				this.is_loading = false;
 				this.show_keybinding_help_popup = data.show_keybinding_help_popup;
+				this.clockwork_url = data.clockwork_url;
 			});
 		},
 	},

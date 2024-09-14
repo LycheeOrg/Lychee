@@ -47,15 +47,15 @@ type MenyType = {
 const initData = ref(undefined) as Ref<undefined | App.Http.Resources.Rights.GlobalRightsResource>;
 const openLycheeAbout = ref(false);
 const items = ref([] as MenyType[]);
-const clockwork_url = ref("/clockwork/app");
-const hasDevTools = ref(true);
+// const clockwork_url = ref("/clockwork/app");
+// const hasDevTools = ref(false);
 const logsEnabled = ref(true);
 
 const authStore = useAuthStore();
 const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
 
-const { left_menu_open } = storeToRefs(lycheeStore);
+const { left_menu_open, clockwork_url } = storeToRefs(lycheeStore);
 
 lycheeStore.$subscribe((_mutation, state) => {
 	authStore.getUser().then(
@@ -172,7 +172,7 @@ function loadMenu() {
 		},
 	];
 
-	if (hasDevTools.value) {
+	if (clockwork_url.value) {
 		items.value.push({
 			label: "Clockwork App",
 			icon: "telescope",
