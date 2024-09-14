@@ -19,14 +19,4 @@ class ListedAlbumsResource extends Data
 		$this->id = $albumListed->id;
 		$this->title = $albumListed->title;
 	}
-
-	/**
-	 * @param object{id:string,title:string} $albumListed
-	 *
-	 * @return ListedAlbumsResource
-	 */
-	public static function fromModel(object $albumListed): ListedAlbumsResource
-	{
-		return new ListedAlbumsResource($albumListed);
-	}
 }
