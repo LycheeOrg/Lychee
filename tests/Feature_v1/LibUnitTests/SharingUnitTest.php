@@ -36,7 +36,7 @@ class SharingUnitTest
 	 * @return TestResponse
 	 */
 	public function list(
-		int $expectedStatusCode = 200,
+		int $expectedStatusCode = 201,
 		?string $assertSee = null,
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/Sharing::list');
