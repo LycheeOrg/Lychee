@@ -77,6 +77,7 @@ class PhotosAddMethodsTest extends BasePhotoTest
 		$photo_id = $ids_after->diff($ids_before)->first();
 		/** @var \App\Models\Photo $photo */
 		$photo = static::convertJsonToObject($this->photos_tests->get($photo_id));
+		/** @disregard */
 		$symlink_path = public_path($this->dropUrlPrefix($photo->size_variants->original->url));
 		$this->assertEquals(true, is_link($symlink_path));
 	}
@@ -196,10 +197,13 @@ class PhotosAddMethodsTest extends BasePhotoTest
 		$photo = static::convertJsonToObject($this->photos_tests->get($photo_id));
 		$this->assertEquals('E905E6C6-C747-4805-942F-9904A0281F02', $photo->live_photo_content_id);
 		$this->assertStringEndsWith('.mov', $photo->live_photo_url);
+		/** @disregard */
 		$this->assertEquals(pathinfo($photo->live_photo_url, PATHINFO_DIRNAME), pathinfo($photo->size_variants->original->url, PATHINFO_DIRNAME));
+		/** @disregard */
 		$this->assertEquals(pathinfo($photo->live_photo_url, PATHINFO_FILENAME), pathinfo($photo->size_variants->original->url, PATHINFO_FILENAME));
 
 		// get the paths of the original size variant and the live photo and check whether they are truly symbolic links
+		/** @disregard */
 		$symlink_path1 = public_path($this->dropUrlPrefix($photo->size_variants->original->url));
 		$symlink_path2 = public_path($this->dropUrlPrefix($photo->live_photo_url));
 		$this->assertEquals(true, is_link($symlink_path1));
