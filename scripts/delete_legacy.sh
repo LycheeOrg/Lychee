@@ -38,6 +38,6 @@ rm -fr routes/web-admin-v1.php
 
 sed -i "\#^.*login_required_v1#d" ./app/Http/Kernel.php
 
-sed -i '44,50d;55,57d;62,69d' ./app/Providers/RouteServiceProvider.php
+sed -i '5d;44,50d;54,58d;62,69d' ./app/Providers/RouteServiceProvider.php
 
 		
