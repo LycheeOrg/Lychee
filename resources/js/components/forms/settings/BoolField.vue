@@ -1,12 +1,15 @@
 <template>
-	<div class="flex gap-4 justify-between">
-		<!-- </IconField> -->
-		<label :for="props.config.key">{{ props.config.documentation }}</label>
-		<!-- <IconField> -->
-		<span class="flex gap-4">
-			<ResetField v-if="changed" @click="reset" />
-			<ToggleSwitch v-model="val" @update:modelValue="update" :input-id="props.config.key" class="text-sm translate-y-1"></ToggleSwitch>
-		</span>
+	<div>
+		<div class="flex gap-4 justify-between">
+			<!-- </IconField> -->
+			<label :for="props.config.key">{{ props.config.documentation }}</label>
+			<!-- <IconField> -->
+			<span class="flex gap-4">
+				<ResetField v-if="changed" @click="reset" />
+				<ToggleSwitch v-model="val" @update:modelValue="update" :input-id="props.config.key" class="text-sm translate-y-1"></ToggleSwitch>
+			</span>
+		</div>
+		<div v-if="props.config.details" class="text-muted-color text-sm">{{ props.config.details }}</div>
 	</div>
 </template>
 <script setup lang="ts">

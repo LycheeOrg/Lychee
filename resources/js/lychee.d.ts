@@ -290,6 +290,7 @@ declare namespace App.Http.Resources.Models {
 		type: App.Enum.ConfigType | string;
 		value: string;
 		documentation: string;
+		details: string;
 	};
 	export type JobHistoryResource = {
 		username: string;
