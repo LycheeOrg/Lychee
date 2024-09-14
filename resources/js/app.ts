@@ -53,7 +53,7 @@ app.use(PrimeVue, {
 				name: "primevue",
 				order: "tailwind-base, primevue, tailwind-utilities",
 			},
-			darkModeSelector: ".lychee-dark",
+			darkModeSelector: ".dark",
 		},
 	},
 });

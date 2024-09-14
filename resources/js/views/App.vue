@@ -17,7 +17,7 @@ import Error from "@/views/Error.vue";
 body {
 	background-color: var(--p-surface-0);
 
-	&.lychee-dark {
+	&.dark {
 		background-color: var(--p-surface-900);
 	}
 }

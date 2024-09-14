@@ -4,12 +4,12 @@
 			<ToggleSwitch v-model="oldStyle" class="text-sm translate-y-1" input-id="oldStyleToggle"></ToggleSwitch>
 			<label for="oldStyleToggle" class="text-muted-color">Old settings style</label>
 		</div>
-		<div v-if="modified.length" class="flex h-11">
+		<div v-if="modified.length" class="sticky z-30 w-full top-0 flex bg-white dark:bg-surface-800 h-11">
 			<Message severity="warn" class="w-full" v-if="modified.length">Some settings changed.</Message>
 			<Button @click="save" class="bg-danger-800 border-none text-white font-bold px-8 hover:bg-danger-700">Save</Button>
 		</div>
 		<div class="flex relative items-start flex-row-reverse justify-between">
-			<Menu :model="sections" class="sticky top-0 border-none" id="navMain">
+			<Menu :model="sections" class="sticky top-11 border-none" id="navMain">
 				<template #item="{ item, props }">
 					<a
 						:href="item.link"

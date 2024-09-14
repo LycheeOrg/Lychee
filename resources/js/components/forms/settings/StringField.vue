@@ -1,5 +1,6 @@
 <template>
-	<div class="py-1">
+	<div class="py-1 flex items-center justify-between gap-4">
+		<label class="w-full" :for="props.config.key">{{ props.config.documentation }}</label>
 		<FloatLabel class="w-full flex-grow">
 			<IconField>
 				<InputText :id="props.config.key" type="text" class="!py-1" v-model="val" @update:modelValue="update" />
@@ -10,7 +11,6 @@
 					v-tooltip="'Click me to reset!'"
 				/>
 			</IconField>
-			<label :for="props.config.key">{{ props.config.documentation }}</label>
 		</FloatLabel>
 	</div>
 </template>
