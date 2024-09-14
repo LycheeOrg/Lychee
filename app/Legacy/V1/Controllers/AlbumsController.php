@@ -4,9 +4,9 @@ namespace App\Legacy\V1\Controllers;
 
 use App\Actions\Albums\PositionData;
 use App\Actions\Albums\Top;
-use App\Actions\Albums\Tree;
 use App\Contracts\Exceptions\LycheeException;
 use App\DTO\TopAlbumDTO;
+use App\Legacy\V1\Actions\Albums\Tree;
 use App\Legacy\V1\Resources\Collections\AlbumForestResource;
 use App\Legacy\V1\Resources\Collections\PositionDataResource;
 use App\Legacy\V1\Resources\Collections\TopAlbumsResource;

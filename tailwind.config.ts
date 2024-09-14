@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: 'selector',
   safelist: [
     'opacity-0',
     'group-hover:opacity-100',

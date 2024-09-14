@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Albums;
+namespace App\Legacy\V1\Actions\Albums;
 
 use App\Contracts\Exceptions\InternalLycheeException;
 use App\DTO\AlbumSortingCriterion;

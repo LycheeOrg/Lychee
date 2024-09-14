@@ -14,11 +14,6 @@
 	@import "tailwindcss/utilities";
 }
 
-// @layer base {
-
-// body {
-// 	// background-color: var(--p-panel-background);
-// }
 
 // @layer base {
 :root {
@@ -61,21 +56,11 @@ html {
 	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
-// input:focus,
-// textarea:focus,
-// select:focus {
-// 	outline: none;
-// }
-
 /* Remove all ugly outlines */
 * {
 	outline: 2px solid transparent;
 	outline-offset: 2px;
 }
-
-// [x-cloak] {
-// 	display: none !important;
-// }
 
 .filter-shadow {
 	filter: drop-shadow(0 0 0.5rem black);
