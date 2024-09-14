@@ -27,14 +27,4 @@ class SharedAlbumResource extends Data
 		$this->username = $albumShared->username;
 		$this->title = $albumShared->title;
 	}
-
-	/**
-	 * @param object{id:int,user_id:int,album_id:string,username:string,title:string} $albumShared
-	 *
-	 * @return SharedAlbumResource
-	 */
-	public static function fromModel(object $albumShared): SharedAlbumResource
-	{
-		return new SharedAlbumResource($albumShared);
-	}
 }

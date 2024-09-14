@@ -33,8 +33,8 @@ class SharesResource extends Data
 		Collection $albums,
 		Collection $users)
 	{
-		$this->shared = SharedAlbumResource::collect($shared);
-		$this->albums = ListedAlbumsResource::collect($albums);
-		$this->users = UserSharedResource::collect($users);
+		$this->shared = $shared->map(fn ($s) => new SharedAlbumResource($s));
+		$this->albums = $albums->map(fn ($a) => new ListedAlbumsResource($a));
+		$this->users = $users->map(fn ($u) => new UserSharedResource($u));
 	}
 }
