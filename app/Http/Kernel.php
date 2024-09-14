@@ -103,7 +103,7 @@ class Kernel extends HttpKernel
 		'content_type' => \App\Http\Middleware\ContentType::class,
 		'accept_content_type' => \App\Http\Middleware\AcceptContentType::class,
 		'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
-		'login_required_v1' => \App\Legacy\V1\Middleware\LoginRequiredV1::class,
+		'login_required_v1' => \App\Legacy\V1\Middleware\LoginRequiredV1::class, // remove me in non-legacy build
 		'login_required' => \App\Http\Middleware\LoginRequired::class,
 		'cache_control' => \App\Http\Middleware\CacheControl::class,
 		'support' => \LycheeVerify\Http\Middleware\VerifySupporterStatus::class,

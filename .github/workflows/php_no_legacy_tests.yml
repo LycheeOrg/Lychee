@@ -67,6 +67,7 @@ jobs:
           rm -rf app/Legacy/V1
           rm -rf app/Legacy/Actions/Settings
           rm -fr app/Livewire
+          rm -fr tests/Feature_v1
 
       - name: Set Up Imagick, FFmpeg & Exiftools
         run: |

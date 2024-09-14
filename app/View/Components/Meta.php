@@ -3,9 +3,9 @@
 namespace App\View\Components;
 
 use App\Exceptions\ConfigurationKeyMissingException;
-use App\Legacy\V1\Controllers\IndexController;
 use App\Models\Configs;
 use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\Component;
 use Illuminate\View\View;
 
@@ -56,8 +56,8 @@ class Meta extends Component
 		$this->imageUrl = $imageUrl;
 		$this->pageUrl = url()->current();
 		$this->rssEnable = Configs::getValueAsBool('rss_enable');
-		$this->userCssUrl = IndexController::getUserCustomFiles('user.css');
-		$this->userJsUrl = IndexController::getUserCustomFiles('custom.js');
+		$this->userCssUrl = self::getUserCustomFiles('user.css');
+		$this->userJsUrl = self::getUserCustomFiles('custom.js');
 		$this->frame = '';
 	}
 
@@ -71,5 +71,24 @@ class Meta extends Component
 	public function render(): View
 	{
 		return view('components.meta');
+	}
+
+	/**
+	 * Returns user.css url with cache busting if file has been updated.
+	 *
+	 * @param string $fileName
+	 *
+	 * @return string
+	 */
+	public static function getUserCustomFiles(string $fileName): string
+	{
+		$cssCacheBusting = '';
+		/** @disregard P1013 */
+		if (Storage::disk('dist')->fileExists($fileName)) {
+			$cssCacheBusting = '?' . Storage::disk('dist')->lastModified($fileName);
+		}
+
+		/** @disregard P1013 */
+		return Storage::disk('dist')->url($fileName) . $cssCacheBusting;
 	}
 }

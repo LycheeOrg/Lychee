@@ -18,14 +18,24 @@ class UploadConfig extends Data
 	public function __construct()
 	{
 		$this->upload_processing_limit = max(1, Configs::getValueAsInt('upload_processing_limit'));
-		$chunk_size = Configs::getValueAsInt('upload_chunk_size');
-		try {
-			$upload_max_filesize = Helpers::convertSize(ini_get('upload_max_filesize'));
-			$post_max_size = Helpers::convertSize(ini_get('post_max_size'));
-		} catch (InfoException $e) {
-			$upload_max_filesize = 1024 * 1024;
-			$post_max_size = 1024 * 1024;
+		$this->upload_chunk_size = self::getUploadLimit();
+	}
+
+	public static function getUploadLimit(): int
+	{
+		$size = Configs::getValueAsInt('upload_chunk_size');
+		if ($size === 0) {
+			try {
+				$size = (int) min(
+					Helpers::convertSize(ini_get('upload_max_filesize')),
+					Helpers::convertSize(ini_get('post_max_size')),
+					Helpers::convertSize(ini_get('memory_limit')) / 10
+				);
+			} catch (InfoException $e) {
+				return 1024 * 1024;
+			}
 		}
-		$this->upload_chunk_size = $chunk_size > 0 ? $chunk_size : min($upload_max_filesize, $post_max_size);
+
+		return $size;
 	}
 }
