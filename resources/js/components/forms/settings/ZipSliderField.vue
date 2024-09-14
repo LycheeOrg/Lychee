@@ -1,5 +1,6 @@
 <template>
-	<div class="flex items-center flex-wrap my-4 gap-4">
+	<div class="flex items-center flex-wrap my-4 gap-4 justify-between">
+		<div>{{ props.config.documentation }}</div>
 		<SelectButton
 			id="albumSortingColumn"
 			class="border-none"
@@ -8,7 +9,6 @@
 			aria-labelledby="basic"
 			@update:modelValue="update"
 		/>
-		<div>{{ props.config.documentation }}</div>
 	</div>
 </template>
 

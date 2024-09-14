@@ -14,6 +14,7 @@ class ConfigResource extends Data
 	public ConfigType|string $type;
 	public string $value;
 	public string $documentation;
+	public string $details;
 
 	public function __construct(Configs $c)
 	{
@@ -21,6 +22,7 @@ class ConfigResource extends Data
 		$this->type = ConfigType::tryFrom($c->type_range) ?? $c->type_range;
 		$this->value = $c->value;
 		$this->documentation = $c->description;
+		$this->details = $c->details;
 	}
 
 	public static function fromModel(Configs $c): ConfigResource
