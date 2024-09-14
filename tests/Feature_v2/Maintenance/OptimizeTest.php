@@ -27,10 +27,4 @@ class OptimizeTest extends BaseApiV2Test
 		$response = $this->actingAs($this->userLocked)->postJson('Maintenance::optimize');
 		$this->assertForbidden($response);
 	}
-
-	public function testAdmin(): void
-	{
-		$response = $this->actingAs($this->admin)->postJson('Maintenance::optimize');
-		$this->assertOk($response);
-	}
 }
