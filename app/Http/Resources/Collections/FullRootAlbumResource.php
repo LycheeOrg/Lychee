@@ -8,7 +8,7 @@ use App\Http\Resources\Models\SmartAlbumResource;
 use App\Http\Resources\Models\TagAlbumResource;
 use Illuminate\Support\Collection;
 use Spatie\LaravelData\Data;
-use Spatie\TypeScriptTransformer\Attributes\LiteralTypeScriptType;
+// use Spatie\TypeScriptTransformer\Attributes\LiteralTypeScriptType;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
 /**

@@ -1,6 +1,6 @@
 <template>
 	<div class="absolute top-0 left-0 w-full flex h-full overflow-hidden bg-black" v-if="photo">
-		<PhotoHeader :albumid="albumid" :photo="photo" v-model:is-edit-open="isEditOpen" v-model:are-details-open="areDetailsOpen" />
+		<PhotoHeader :albumid="props.albumid" :photo="photo" v-model:is-edit-open="isEditOpen" v-model:are-details-open="areDetailsOpen" />
 		<div class="w-0 flex-auto relative">
 			<div
 				id="imageview"
@@ -78,12 +78,18 @@
 			</div>
 			<NextPrevious
 				v-if="photo.previous_photo_id !== null"
-				:albumId="albumid"
+				:albumId="props.albumid"
 				:photoId="photo.previous_photo_id"
 				:is_next="false"
 				:style="previousStyle"
 			/>
-			<NextPrevious v-if="photo.next_photo_id !== null" :albumId="albumid" :photoId="photo.next_photo_id" :is_next="true" :style="nextStyle" />
+			<NextPrevious
+				v-if="photo.next_photo_id !== null"
+				:albumId="props.albumid"
+				:photoId="photo.next_photo_id"
+				:is_next="true"
+				:style="nextStyle"
+			/>
 			<Overlay :photo="photo" :image-overlay-type="lycheeStore.image_overlay_type" />
 			<div
 				v-if="photo?.rights.can_edit && !isEditOpen"
@@ -109,12 +115,12 @@
 	<PhotoEdit v-if="photo?.rights.can_edit" :photo="photo" v-model:visible="isEditOpen" />
 	<Dialog v-model:visible="isMoveVisible" modal :dismissable-mask="true" pt:root:class="border-none">
 		<template #container="{ closeCallback }">
-			<PhotoMove :photo="photo" @moved="goBack" />
+			<PhotoMove :photo="photo" @moved="updated" />
 		</template>
 	</Dialog>
 	<Dialog v-model:visible="isDeleteVisible" pt:root:class="border-none" modal :dismissable-mask="true">
 		<template #container="{ closeCallback }">
-			<PhotoDelete :photo="photo" @deleted="goBack" />
+			<PhotoDelete :photo="photo" @deleted="updated" />
 		</template>
 	</Dialog>
 </template>
@@ -235,6 +241,11 @@ function refresh() {
 	photo.value = ((album.value?.resource?.photos ?? []) as App.Http.Resources.Models.PhotoResource[]).find(
 		(p: App.Http.Resources.Models.PhotoResource) => p.id === photoId.value,
 	);
+}
+
+function updated() {
+	AlbumService.clearCache(props.albumid);
+	goBack();
 }
 
 function goBack() {

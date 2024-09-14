@@ -1,6 +1,6 @@
 import axios, { type AxiosResponse } from "axios";
-import { setupCache } from "axios-cache-interceptor/dev";
 import Constants from "./constants";
+import { AxiosCacheInstance } from "axios-cache-interceptor";
 
 export type CreateAlbumData = {
 	title: string;
@@ -46,23 +46,28 @@ export type UpdateProtectionPolicyData = {
 };
 
 const AlbumService = {
-	axios: setupCache(axios, { debug: console.log }),
-
-	clearCache(): void {
-		// @ts-expect-error
-		this.axios.storage.data = {};
+	clearCache(album_id: string | null = null): void {
+		const axiosWithCache = axios as unknown as AxiosCacheInstance;
+		if (!album_id) {
+			// @ts-expect-error
+			axiosWithCache.storage.data = {};
+		} else {
+			axiosWithCache.storage.remove("album_" + album_id);
+		}
 	},
 
 	getAll(): Promise<AxiosResponse<App.Http.Resources.Collections.RootAlbumResource>> {
-		return this.axios.get(`${Constants.API_URL}Albums`, { data: {}, id: "albums" });
+		const requester = axios as unknown as AxiosCacheInstance;
+		return requester.get(`${Constants.API_URL}Albums`, { data: {}, id: "albums" });
 	},
 
 	get(album_id: string): Promise<AxiosResponse<App.Http.Resources.Models.AbstractAlbumResource>> {
-		return this.axios.get(`${Constants.API_URL}Album`, { params: { album_id: album_id }, data: {}, id: "album_" + album_id });
+		const requester = axios as unknown as AxiosCacheInstance;
+		return requester.get(`${Constants.API_URL}Album`, { params: { album_id: album_id }, data: {}, id: "album_" + album_id });
 	},
 
 	getLayout(): Promise<AxiosResponse<App.Http.Resources.GalleryConfigs.PhotoLayoutConfig>> {
-		return this.axios.get(`${Constants.API_URL}Gallery::getLayout`, { data: {} });
+		return axios.get(`${Constants.API_URL}Gallery::getLayout`, { data: {} });
 	},
 
 	getMapProvider(): Promise<AxiosResponse<App.Http.Resources.GalleryConfigs.MapProviderData>> {
