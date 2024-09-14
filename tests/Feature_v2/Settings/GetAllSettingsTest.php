@@ -20,11 +20,17 @@ class GetAllSettingsTest extends BaseApiV2Test
 	{
 		$response = $this->getJson('Settings');
 		$this->assertUnauthorized($response);
+
+		$response = $this->getJson('Settings::getLanguages');
+		$this->assertUnauthorized($response);
 	}
 
 	public function testGetAllSettingUser(): void
 	{
 		$response = $this->actingAs($this->userMayUpload1)->getJson('Settings');
+		$this->assertForbidden($response);
+
+		$response = $this->actingAs($this->userMayUpload1)->getJson('Settings::getLanguages');
 		$this->assertForbidden($response);
 	}
 
@@ -41,5 +47,8 @@ class GetAllSettingsTest extends BaseApiV2Test
 				'Image Processing' => [],
 			],
 		]);
+
+		$response = $this->actingAs($this->admin)->getJson('Settings::getLanguages');
+		$this->assertOk($response);
 	}
 }
