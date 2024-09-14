@@ -10,27 +10,27 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Tests\Feature_v2\Jobs;
+namespace Tests\Feature_v2\Diagnostics;
 
 use Tests\Feature_v2\Base\BaseApiV2Test;
 
-class GetJobTest extends BaseApiV2Test
+class PermissionTest extends BaseApiV2Test
 {
-	public function testGetJobsGuest(): void
+	public function testGetGuest(): void
 	{
-		$response = $this->getJson('Jobs');
+		$response = $this->getJson('Diagnostics::permissions');
 		$this->assertUnauthorized($response);
 	}
 
-	public function testGetJobsUser(): void
+	public function testAuthenticated(): void
 	{
-		$response = $this->actingAs($this->userMayUpload1)->getJson('Jobs');
+		$response = $this->actingAs($this->userLocked)->getJson('Diagnostics::permissions');
 		$this->assertForbidden($response);
 	}
 
-	public function testGetJobsAdmin(): void
+	public function testAuthorized(): void
 	{
-		$response = $this->actingAs($this->admin)->getJson('Jobs');
+		$response = $this->actingAs($this->admin)->getJson('Diagnostics::permissions');
 		$this->assertOk($response);
 	}
 }
