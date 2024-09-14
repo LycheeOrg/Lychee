@@ -49,19 +49,18 @@ class PlaceholderEncoder
 	public function do(SizeVariant $sizeVariant): void
 	{
 		try {
-			$inMemoryBuffer = new InMemoryBuffer();
+			$compressedImage = new InMemoryBuffer();
 			$gdImage = $this->createGdImage($sizeVariant->getFile());
-			$this->compressImage($gdImage, $inMemoryBuffer);
+			$this->compressImage($gdImage, $compressedImage);
 
 			$base64 = new TemporaryLocalFile('');
-
 			stream_filter_append($base64->read(), 'convert.base64-encode');
-			$base64->write($inMemoryBuffer->read());
+			$base64->write($compressedImage->read());
 			$base64->close();
 
 			$base64Length = $base64->getFilesize();
 			if ($base64Length <= self::BASE64_SIZE_LIMIT) {
-				$sizeVariant->filesize = $base64->getFilesize();
+				$sizeVariant->filesize = $base64Length;
 				$sizeVariant->short_path = stream_get_contents($base64->read());
 				$sizeVariant->save();
 			} else {
@@ -103,6 +102,19 @@ class PlaceholderEncoder
 		rewind($inputStream);
 		/** @var \GdImage $referenceImage */
 		$referenceImage = imagecreatefromstring($imgBinary);
+
+		// Since gd has issues with saving gif as webp, save as jpeg first and reload
+		$imageStats = getimagesizefromstring($imgBinary);
+		if ($imageStats !== false && $imageStats[2] === IMAGETYPE_GIF) {
+			// TODO: remove when GdHandler save method respects naming strategy extensions
+			$tmpJpeg = new InMemoryBuffer();
+			\Safe\imagejpeg($referenceImage, $tmpJpeg->stream());
+
+			$imgBinary = stream_get_contents($tmpJpeg->read());
+			rewind($inputStream);
+			/** @var \GdImage $referenceImage */
+			$referenceImage = imagecreatefromstring($imgBinary);
+		}
 
 		return $referenceImage;
 	}
