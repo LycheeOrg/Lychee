@@ -1,19 +1,22 @@
 <template>
-	<div class="flex items-center gap-4">
-		<InputNumber
-			v-model="val"
-			:inputId="props.config.key"
-			:min="props.min"
-			:max="props?.max ?? undefined"
-			showButtons
-			mode="decimal"
-			:useGrouping="false"
-			fluid
-			class="w-28"
-			@update:modelValue="update"
-		/>
+	<div class="flex items-center gap-4 justify-between">
 		<div>{{ props.config.documentation }}</div>
-		<ResetField v-if="changed" @click="reset" />
+		<div class="flex gap-4 items-center">
+			<ResetField v-if="changed" @click="reset" />
+			<InputNumber
+				v-model="val"
+				:inputId="props.config.key"
+				:min="props.min"
+				:max="props?.max ?? undefined"
+				showButtons
+				mode="decimal"
+				:useGrouping="false"
+				inputClass="text-right pr-10"
+				fluid
+				class="w-28"
+				@update:modelValue="update"
+			/>
+		</div>
 	</div>
 </template>
 <script setup lang="ts">

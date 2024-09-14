@@ -17,7 +17,7 @@
 			<Tab value="0">Basic</Tab>
 			<Tab value="1">{{ $t("lychee.MORE") }}</Tab>
 		</TabList>
-		<TabPanels>
+		<TabPanels :pt:root:class="'px-0'">
 			<TabPanel value="0">
 				<EasySettings />
 			</TabPanel>

@@ -11,10 +11,6 @@ use App\Contracts\Models\SizeVariantFactory;
 use App\Factories\AlbumFactory;
 use App\Image\SizeVariantDefaultFactory;
 use App\Image\StreamStatFilter;
-use App\Livewire\Synth\AlbumFlagsSynth;
-use App\Livewire\Synth\AlbumSynth;
-use App\Livewire\Synth\PhotoSynth;
-use App\Livewire\Synth\SessionFlagsSynth;
 use App\Metadata\Json\CommitsRequest;
 use App\Metadata\Json\UpdateRequest;
 use App\Metadata\Versions\FileVersion;
@@ -34,11 +30,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
-use Livewire\Livewire;
 use Opcodes\LogViewer\Facades\LogViewer;
 use Safe\Exceptions\StreamException;
 use function Safe\stream_filter_register;
@@ -84,15 +78,6 @@ class AppServiceProvider extends ServiceProvider
 			// JsonParsers
 			GitCommits::class => GitCommits::class,
 			GitTags::class => GitTags::class,
-		];
-
-	/** @var array<int,class-string> */
-	private array $livewireSynth =
-		[
-			AlbumSynth::class,
-			PhotoSynth::class,
-			SessionFlagsSynth::class,
-			AlbumFlagsSynth::class,
 		];
 
 	/**
@@ -166,22 +151,6 @@ class AppServiceProvider extends ServiceProvider
 
 			// return true to allow viewing the Log Viewer.
 			return Auth::authenticate() !== null && Gate::check(SettingsPolicy::CAN_SEE_LOGS, Configs::class);
-		});
-
-		foreach ($this->livewireSynth as $synth) {
-			Livewire::propertySynthesizer($synth);
-		}
-
-		$dir_url = config('app.dir_url') === '' ? '' : (config('app.dir_url') . '/');
-
-		Livewire::setScriptRoute(function ($handle) use ($dir_url) {
-			return config('app.debug') === true
-				? Route::get($dir_url . 'livewire/livewire.js', $handle)
-				: Route::get($dir_url . 'livewire/livewire.min.js', $handle);
-		});
-
-		Livewire::setUpdateRoute(function ($handle) use ($dir_url) {
-			return Route::post($dir_url . 'livewire/update', $handle)->middleware('web-livewire');
 		});
 	}
 

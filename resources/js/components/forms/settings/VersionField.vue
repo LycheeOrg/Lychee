@@ -1,5 +1,5 @@
 <template>
-	<div class="flex">
+	<div class="flex justify-between gap-4">
 		<span class="mr-4">{{ props.config.documentation }}:</span>
 		<Inplace style="--p-inplace-padding: 0">
 			<template #display>{{ computedVersion }}</template>

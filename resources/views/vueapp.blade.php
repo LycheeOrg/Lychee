@@ -12,7 +12,7 @@
     {!! "<script>window.assets_url = '" . URL::asset('') . "'; console.log('" . URL::asset('') . "')</script>" !!}
 </head>
 @if((Configs::get()['dark_mode_enabled'] ?? '1') == '1')
-    <body class="antialiased lychee-dark">
+    <body class="antialiased dark">
 @else
     <body class="antialiased">
 @endif

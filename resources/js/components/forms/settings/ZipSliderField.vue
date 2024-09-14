@@ -1,5 +1,5 @@
 <template>
-	<div class="flex items-center flex-wrap my-4">
+	<div class="flex items-center flex-wrap my-4 gap-4">
 		<SelectButton
 			id="albumSortingColumn"
 			class="border-none"

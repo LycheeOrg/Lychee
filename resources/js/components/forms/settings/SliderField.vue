@@ -1,7 +1,7 @@
 <template>
-	<div class="flex items-center gap-4">
-		<SelectButton class="border-none" v-model="val" :options="options" aria-labelledby="basic" @update:modelValue="update" />
+	<div class="flex items-center justify-between gap-4">
 		<div>{{ props.config.documentation }}</div>
+		<SelectButton class="border-none" v-model="val" :options="options" aria-labelledby="basic" @update:modelValue="update" />
 	</div>
 </template>
 

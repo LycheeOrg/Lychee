@@ -1,10 +1,12 @@
 <template>
-	<div class="flex gap-4">
-		<!-- <IconField> -->
-		<ToggleSwitch v-model="val" @update:modelValue="update" :input-id="props.config.key" class="text-sm translate-y-1"></ToggleSwitch>
+	<div class="flex gap-4 justify-between">
 		<!-- </IconField> -->
 		<label :for="props.config.key">{{ props.config.documentation }}</label>
-		<ResetField v-if="changed" @click="reset" />
+		<!-- <IconField> -->
+		<span class="flex gap-4">
+			<ResetField v-if="changed" @click="reset" />
+			<ToggleSwitch v-model="val" @update:modelValue="update" :input-id="props.config.key" class="text-sm translate-y-1"></ToggleSwitch>
+		</span>
 	</div>
 </template>
 <script setup lang="ts">

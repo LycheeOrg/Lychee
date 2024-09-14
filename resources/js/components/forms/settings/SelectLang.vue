@@ -1,17 +1,16 @@
 <template>
-	<div class="py-1">
-		<FloatLabel class="w-full flex-grow">
-			<Select :id="props.config.key" class="w-96 border-none" v-model="val" :options="options" showClear @update:modelValue="update" />
-			<label :for="props.config.key">{{ props.config.documentation }}</label>
-		</FloatLabel>
-		<ResetField v-if="changed" @click="reset" />
+	<div class="py-1 flex gap-4 justify-between items-center">
+		<label class="w-full" :for="props.config.key">{{ props.config.documentation }}</label>
+		<div class="flex gap-4 items-center">
+			<ResetField v-if="changed" @click="reset" />
+			<Select :id="props.config.key" class="border-none" v-model="val" :options="options" @update:modelValue="update" />
+		</div>
 	</div>
 </template>
 
 <script setup lang="ts" generic="T extends string">
 import { computed, ref, watch } from "vue";
 import Select from "primevue/select";
-import FloatLabel from "primevue/floatlabel";
 import ResetField from "@/components/forms/settings/ResetField.vue";
 import SettingsService from "@/services/settings-service";
 
