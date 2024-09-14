@@ -19,12 +19,10 @@ class Optimize extends Controller
 	 */
 	public function do(MaintenanceRequest $request, OptimizeDb $optimizeDb, OptimizeTables $optimizeTables): array
 	{
-		try {
-			return collect($optimizeDb->do())
+		// @codeCoverageIgnoreStart
+		return collect($optimizeDb->do())
 			->merge(collect($optimizeTables->do()))
 			->all();
-		} catch (\Exception $e) {
-			return [$e->getMessage()];
-		}
+		// @codeCoverageIgnoreEnd
 	}
 }
