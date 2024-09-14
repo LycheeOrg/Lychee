@@ -3,7 +3,7 @@ import Constants from "./constants";
 
 type UserManagementCreateRequest = {
 	username: string;
-	password?: string | null | undefined;
+	password: string | null | undefined;
 	may_upload: boolean;
 	may_edit_own_settings: boolean;
 };

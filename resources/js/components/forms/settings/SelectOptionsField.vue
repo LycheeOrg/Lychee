@@ -23,7 +23,6 @@
 import { computed, ref, watch } from "vue";
 import Select from "primevue/select";
 import { SelectOption } from "@/config/constants";
-import FloatLabel from "primevue/floatlabel";
 import ResetField from "@/components/forms/settings/ResetField.vue";
 
 type Props = {

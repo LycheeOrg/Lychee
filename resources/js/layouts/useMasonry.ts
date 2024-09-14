@@ -10,7 +10,6 @@ export function useMasonry(el: HTMLElement, target_width: number, grid_gap: numb
 	const remaining_space = usable_width - perChunk * target_width - (perChunk - 1) * grid_gap;
 	const spread = Math.ceil(remaining_space / perChunk);
 	const grid_width = target_width + spread;
-	// console.log(usable_width, perChunk, remaining_space, spread, grid_width);
 
 	// Compute ratio of each item.
 	const ratio = gridItems.map(function (_photo) {

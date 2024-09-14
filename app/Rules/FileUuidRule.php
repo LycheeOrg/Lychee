@@ -83,8 +83,6 @@ class FileUuidRule implements DataAwareRule, ValidationRule
 
 		if (!Storage::disk(PhotoController::DISK_NAME)->exists($value)) {
 			$fail(':attribute is not a valid target file.');
-
-			return;
 		}
 	}
 }

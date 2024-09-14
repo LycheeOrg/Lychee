@@ -37,7 +37,7 @@ export type UpdateTagAlbumData = {
 
 export type UpdateProtectionPolicyData = {
 	album_id: string;
-	password?: string | undefined;
+	password: string | undefined;
 	is_public: boolean;
 	is_link_required: boolean;
 	is_nsfw: boolean;

@@ -43,5 +43,4 @@
 import Button from "primevue/button";
 import Toolbar from "primevue/toolbar";
 import SetLogin from "@/components/forms/profile/SetLogin.vue";
-// import Card from 'primevue/card';
 </script>

@@ -42,7 +42,6 @@ const pinia = createPinia();
 const app = createApp({});
 app.config.globalProperties.window = window;
 app.use(pinia);
-// console.log("LycheePreset", JSON.stringify(LycheePreset));
 app.use(PrimeVue, {
 	ripple: true,
 	theme: {
@@ -73,9 +72,6 @@ app.use(ToastService);
  * Eg. ./components/ExampleComponent.vue -> <example-component></example-component>
  */
 
-// Object.entries(import.meta.glob('./**/*.vue', { eager: true })).forEach(([path, definition]) => {
-//     app.component(path.split('/').pop().replace(/\.\w+$/, ''), definition.default);
-// });
 app.use(i18nVue, {
 	resolve: async (lang: string) => {
 		// @ts-expect-error

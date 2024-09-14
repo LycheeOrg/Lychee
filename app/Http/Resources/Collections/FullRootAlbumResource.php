@@ -8,7 +8,6 @@ use App\Http\Resources\Models\SmartAlbumResource;
 use App\Http\Resources\Models\TagAlbumResource;
 use Illuminate\Support\Collection;
 use Spatie\LaravelData\Data;
-// use Spatie\TypeScriptTransformer\Attributes\LiteralTypeScriptType;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
 /**
@@ -21,11 +20,6 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
  * other users.)
  * Actually, in this context "shared albums" means "foreign albums".
  */
-// #[LiteralTypeScriptType("App.Http.Resources.Models.SmartAlbumResource[]")]
-// #[LiteralTypeScriptType("App.Http.Resources.Models.TagAlbumResource[]")]
-// #[LiteralTypeScriptType("App.Http.Resources.Models.AlbumResource[]")]
-// #[LiteralTypeScriptType("App.Http.Resources.Models.AlbumResource[]|null")]
-
 #[TypeScript()]
 class FullRootAlbumResource extends Data
 {

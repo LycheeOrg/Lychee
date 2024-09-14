@@ -26,16 +26,6 @@ class LangFilesToJson extends Command
 	protected $description = 'Convert Laravel language files from PHP to JSON';
 
 	/**
-	 * Create a new command instance.
-	 *
-	 * @return void
-	 */
-	public function __construct()
-	{
-		parent::__construct();
-	}
-
-	/**
 	 * @param array<string,mixed> $data
 	 *
 	 * @return array<string,mixed>

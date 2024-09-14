@@ -39,8 +39,7 @@
 <script setup lang="ts">
 import { useAuthStore } from "@/stores/Auth";
 import AlbumService from "@/services/album-service";
-import { Ref, computed, ref } from "vue";
-import { watch } from "vue";
+import { Ref, computed, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import AlbumThumbPanel from "@/components/gallery/AlbumThumbPanel.vue";
 import PhotoThumbPanel from "@/components/gallery/PhotoThumbPanel.vue";
@@ -93,7 +92,6 @@ function refresh() {
 
 	AlbumService.get(albumid.value)
 		.then((data) => {
-			// console.log(data.data);
 			config.value = data.data.config;
 			modelAlbum.value = undefined;
 			tagAlbum.value = undefined;
@@ -125,7 +123,7 @@ refresh();
 
 watch(
 	() => route.params.albumid,
-	(newId, oldId) => {
+	(newId, _oldId) => {
 		// console.log("newId", newId, "oldId", oldId);
 		albumid.value = newId as string;
 		refresh();

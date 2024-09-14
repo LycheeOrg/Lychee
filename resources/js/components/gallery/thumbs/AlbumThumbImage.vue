@@ -15,8 +15,7 @@
 	</span>
 </template>
 <script setup lang="ts">
-import { watch } from "vue";
-import { ref } from "vue";
+import { watch, ref } from "vue";
 
 const props = defineProps<{
 	thumb: App.Http.Resources.Models.ThumbResource | undefined | null;

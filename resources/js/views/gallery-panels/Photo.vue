@@ -302,8 +302,7 @@ load();
 
 watch(
 	() => route.params.photoid,
-	(newId, oldId) => {
-		// console.log("newId", newId, "oldId", oldId);
+	(newId, _oldId) => {
 		photoId.value = newId as string;
 		refresh();
 	},
