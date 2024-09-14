@@ -91,8 +91,6 @@ class ExtensionRule implements DataAwareRule, ValidationRule
 		$extension = '.' . pathinfo($this->data['uuid_name'] ?? '', PATHINFO_EXTENSION);
 		if ($value !== $extension) {
 			$fail('Error: Expected ' . $extension . ' in :attribute, got ' . $value . '.');
-
-			return;
 		}
 	}
 }

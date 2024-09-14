@@ -106,7 +106,7 @@
 	</aside>
 </template>
 <script setup lang="ts">
-import { Ref, ref, watch } from "vue";
+import { Ref } from "vue";
 import { sprintf } from "sprintf-js";
 import Card from "primevue/card";
 import MapInclude from "../gallery/photo/MapInclude.vue";

@@ -58,16 +58,6 @@ class Configs extends Model
 	use ConfigsHas;
 	use ThrowsConsistentExceptions;
 
-	// protected const INT = 'int';
-	// protected const POSTIIVE = 'positive';
-	// protected const STRING = 'string';
-	// protected const STRING_REQ = 'string_required';
-	// protected const BOOL = '0|1';
-	// protected const TERNARY = '0|1|2';
-	// protected const DISABLED = '';
-	// protected const LICENSE = 'license';
-	// protected const MAP_PROVIDER = 'map_provider';
-
 	/**
 	 * The attributes that are mass assignable.
 	 *

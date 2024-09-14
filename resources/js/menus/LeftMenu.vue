@@ -22,7 +22,7 @@
 	</Drawer>
 </template>
 <script setup lang="ts">
-import { Ref, ref, watch } from "vue";
+import { Ref, ref } from "vue";
 import { storeToRefs } from "pinia";
 import Drawer from "primevue/drawer";
 import Menu from "primevue/menu";

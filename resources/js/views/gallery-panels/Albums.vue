@@ -99,10 +99,6 @@ function refresh() {
 		});
 }
 
-const emit = defineEmits<{
-	(e: "toggleLeftMenu"): void;
-}>();
-
 refresh();
 
 onKeyStroke("h", () => !shouldIgnoreKeystroke() && (are_nsfw_visible.value = !are_nsfw_visible.value));
