@@ -485,7 +485,7 @@ class AlbumsUnitTest
 	public function getPositionData(
 		string $id,
 		bool $includeSubAlbums,
-		int $expectedStatusCode = 200,
+		int $expectedStatusCode = 201,
 		?string $assertSee = null,
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/Album::getPositionData', [
