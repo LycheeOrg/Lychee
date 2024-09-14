@@ -121,6 +121,12 @@ declare namespace App.Http.Resources.Collections {
 		albums: { [key: number]: App.Http.Resources.Models.AlbumResource } | Array<any>;
 		shared_albums: { [key: number]: App.Http.Resources.Models.AlbumResource } | Array<any> | null;
 	};
+	export type PositionDataResource = {
+		id: string | null;
+		title: string | null;
+		track_url: string | null;
+		photos: App.Http.Resources.Models.PhotoResource[] | Array<any>;
+	};
 	export type RootAlbumResource = {
 		smart_albums: { [key: number]: App.Http.Resources.Models.ThumbAlbumResource } | Array<any>;
 		tag_albums: { [key: number]: App.Http.Resources.Models.ThumbAlbumResource } | Array<any>;

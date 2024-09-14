@@ -59,7 +59,7 @@ class Map extends Component
 	{
 		if ($this->albumId === null) {
 			/** @var array<string,mixed> $ret */
-			$ret = $this->rootPositionData->do()->toArray(request());
+			$ret = $this->rootPositionData->do()->toArray();
 
 			return $ret;
 		}
@@ -67,7 +67,7 @@ class Map extends Component
 		$includeSubAlbums = Configs::getValueAsBool('map_include_subalbums');
 
 		/** @var array<string,mixed> $ret */
-		$ret = $this->albumPositionData->get($this->album, $includeSubAlbums)->toArray(request());
+		$ret = $this->albumPositionData->get($this->album, $includeSubAlbums)->toArray();
 
 		return $ret;
 	}

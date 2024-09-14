@@ -4,7 +4,7 @@ namespace App\Actions\Sharing;
 
 use App\Constants\AccessPermissionConstants as APC;
 use App\Exceptions\Internal\QueryBuilderException;
-use App\Legacy\V1\Resources\Sharing\SharesResource;
+use App\Http\Resources\Sharing\SharesResource;
 use App\Models\AccessPermission;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\User;
@@ -32,6 +32,7 @@ class ListShare
 		try {
 			// Active shares, optionally filtered by album ID, participant ID
 			// and or owner ID
+			/** @var Collection<int,object{id:int,user_id:int,album_id:string,username:string,title:string}> $shared */
 			$shared = AccessPermission::query()->select([
 				APC::ACCESS_PERMISSIONS . '.id',
 				APC::ACCESS_PERMISSIONS . '.user_id',

@@ -30,6 +30,7 @@ function execute() {
 	AlbumService.delete([props.album.id]).then(() => {
 		if (props.is_model_album) {
 			const album = props.album as App.Http.Resources.Models.AlbumResource;
+			AlbumService.clearCache(album.parent_id);
 			album.parent_id ? router.push(`/gallery/${album.parent_id}`) : router.push("/gallery");
 		} else {
 			router.push("/gallery");

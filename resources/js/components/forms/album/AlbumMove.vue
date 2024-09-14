@@ -45,6 +45,7 @@ function execute() {
 		return;
 	}
 	AlbumService.move(destination_id.value, [props.album.id]).then(() => {
+		AlbumService.clearCache(destination_id.value);
 		toast.add({
 			severity: "success",
 			summary: "Album moved!",
