@@ -532,3 +532,16 @@ declare namespace App.Http.Resources.Root {
 		is_git_update_available: boolean;
 	};
 }
+declare namespace App.Http.Resources.Sharing {
+	export type ListedAlbumsResource = {
+		id: string;
+		title: string;
+	};
+	export type SharedAlbumResource = {
+		id: number;
+		user_id: number;
+		album_id: string;
+		username: string;
+		title: string;
+	};
+}
