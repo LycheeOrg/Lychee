@@ -188,10 +188,8 @@ return new class() extends Migration {
 			$sqlDatetime,
 			$oldTz
 		);
-		/** @phpstan-ignore-next-line */ // Cannot call method setTimezone() on Carbon\Carbon|false.
 		$result->setTimezone($newTz);
 
-		/** @phpstan-ignore-next-line */ // Cannot call method format() on Carbon\Carbon|false.
 		return $result->format(self::SQL_DATETIME_FORMAT);
 	}
 

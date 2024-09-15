@@ -92,17 +92,6 @@ class TagAlbum extends BaseAlbum
 		'thumb',
 	];
 
-	/**
-	 * @return array<string,mixed>
-	 */
-	protected function _toArray(): array
-	{
-		$result = parent::toArray();
-		$result['is_tag_album'] = true;
-
-		return $result;
-	}
-
 	public function photos(): HasManyPhotosByTag
 	{
 		return new HasManyPhotosByTag($this);

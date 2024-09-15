@@ -198,14 +198,6 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	protected $with = ['owner', 'access_permissions'];
 
 	/**
-	 * @return array<string,mixed>
-	 */
-	protected function _toArray(): array
-	{
-		return parent::toArray();
-	}
-
-	/**
 	 * @param $query
 	 *
 	 * @return BaseAlbumImplBuilder

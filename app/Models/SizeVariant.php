@@ -137,14 +137,6 @@ class SizeVariant extends Model
 	}
 
 	/**
-	 * @return array<string,mixed>
-	 */
-	protected function _toArray(): array
-	{
-		return parent::toArray();
-	}
-
-	/**
 	 * Returns the association to the photo which this size variant belongs
 	 * to.
 	 *
@@ -189,9 +181,11 @@ class SizeVariant extends Model
 			!Configs::getValueAsBool('SL_enable') ||
 			(!Configs::getValueAsBool('SL_for_admin') && Auth::user()?->may_administrate === true)
 		) {
+			/** @disregard P1013 */
 			return $imageDisk->url($this->short_path);
 		}
 
+		/** @disregard P1013 */
 		$storageAdapter = $imageDisk->getAdapter();
 		if ($storageAdapter instanceof AwsS3V3Adapter) {
 			return $this->getAwsUrl();
@@ -218,9 +212,11 @@ class SizeVariant extends Model
 		// Return the public URL in case the S3 bucket is set to public, otherwise generate a temporary URL
 		$visibility = config('filesystems.disks.s3.visibility', 'private');
 		if ($visibility === 'public') {
+			/** @disregard P1013 */
 			return $imageDisk->url($this->short_path);
 		}
 
+		/** @disregard P1013 */
 		return $imageDisk->temporaryUrl($this->short_path, now()->addSeconds($maxLifetime));
 	}
 
@@ -260,6 +256,7 @@ class SizeVariant extends Model
 	 */
 	public function getFullPathAttribute(): string
 	{
+		/** @disregard P1013 */
 		return Storage::disk($this->storage_disk->value)->path($this->short_path);
 	}
 

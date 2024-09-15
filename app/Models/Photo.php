@@ -181,14 +181,6 @@ class Photo extends Model
 	}
 
 	/**
-	 * @return array<string,mixed>
-	 */
-	protected function _toArray(): array
-	{
-		return parent::toArray();
-	}
-
-	/**
 	 * Return the relationship between a Photo and its Album.
 	 *
 	 * @return BelongsTo<Album,Photo>
@@ -351,6 +343,7 @@ class Photo extends Model
 		$path = $this->live_photo_short_path;
 		$disk_name = $this->size_variants->getOriginal()?->storage_disk?->value ?? StorageDiskType::LOCAL->value;
 
+		/** @disregard P1013 */
 		return ($path === null || $path === '') ? null : Storage::disk($disk_name)->url($path);
 	}
 

@@ -102,6 +102,9 @@ class AppServiceProvider extends ServiceProvider
 	 */
 	public function boot()
 	{
+		// Prohibits: db:wipe, migrate:fresh, migrate:refresh, and migrate:reset
+		DB::prohibitDestructiveCommands(config('app.env', 'production') !== 'dev');
+
 		/**
 		 * By default resources are wrapping results in a 'data' attribute.
 		 * We disable that.

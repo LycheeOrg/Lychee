@@ -1,34 +1,19 @@
 <?php
 
-/** @noinspection PhpUndefinedClassInspection */
+use App\Legacy\BaseConfigMigration;
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Support\Facades\DB;
-
-return new class() extends Migration {
-	/**
-	 * Run the migrations.
-	 */
-	public function up(): void
+return new class() extends BaseConfigMigration {
+	public function getConfigs(): array
 	{
-		defined('BOOL') or define('BOOL', '0|1');
-
-		DB::table('configs')->insert([
+		return [
 			[
 				'key' => 'map_include_subalbums',
 				'value' => '0',
-				'confidentiality' => 0,
+				'confidentiality' => '0',
 				'cat' => 'Mod Map',
-				'type_range' => BOOL,
+				'type_range' => self::BOOL,
+				'description' => '',
 			],
-		]);
-	}
-
-	/**
-	 * Reverse the migrations.
-	 */
-	public function down(): void
-	{
-		DB::table('configs')->where('key', '=', 'map_include_subalbums')->delete();
+		];
 	}
 };

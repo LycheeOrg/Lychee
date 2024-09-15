@@ -176,14 +176,6 @@ class Album extends BaseAlbum implements Node
 	protected $with = ['cover', 'cover.size_variants', 'thumb'];
 
 	/**
-	 * @return array<string,mixed>
-	 */
-	protected function _toArray(): array
-	{
-		return parent::toArray();
-	}
-
-	/**
 	 * Return the relationship between this album and photos which are
 	 * direct children of this album.
 	 *
@@ -369,7 +361,7 @@ class Album extends BaseAlbum implements Node
 	 */
 	protected function getAlbumThumbAspectRatioAttribute(): ?AspectRatioType
 	{
-		return AspectRatioType::tryFrom($this->attributes['album_thumb_aspect_ratio']);
+		return AspectRatioType::tryFrom($this->attributes['album_thumb_aspect_ratio'] ?? '1/1');
 	}
 
 	/**

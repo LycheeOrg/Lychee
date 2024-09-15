@@ -6,9 +6,9 @@
 <x-header.button href="{{ route('livewire-frame', ['albumId' => $this->albumId]) }}" wire:navigate icon="monitor" />
 @endif
 {{-- No selection --}}
-@can(App\Policies\AlbumPolicy::CAN_UPLOAD, [App\Contracts\Models\AbstractAlbum::class, $this->album ?? null])
+@if($this->rights->can_upload)
 <x-header.button x-show='select.selectedPhotos.length === 0 && select.selectedAlbums.length === 0 ' wire:click='openContextMenu' icon='plus' />
-@endcan
+@endif
 @if($this->rights->can_edit)
 {{-- Albums selection --}}
 <x-header.button x-cloak x-show='select.selectedAlbums.length > 0' fill='fill-primary-400 hover:fill-primary-200' x-on:click='renameAlbums' icon='pencil' />

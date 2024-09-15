@@ -4,7 +4,6 @@ use App\Models\Extensions\BaseConfigMigration;
 
 return new class() extends BaseConfigMigration {
 	public const PROCESSING = 'Image Processing';
-	public const BOOL = '0|1';
 
 	public function getConfigs(): array
 	{

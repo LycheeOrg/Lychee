@@ -409,9 +409,17 @@ return [
 		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/media-src
 		'media-src' => [
 			'self' => true,
-			'allow' => [
-				'blob:', // required for "live" photos
-			],
+			'allow' => array_merge(
+				[
+					'blob:', // required for "live" photos
+				],
+				// Add the S3 URL to the list of allowed media sources
+				env('AWS_ACCESS_KEY_ID', '') === '' ? [] :
+				[
+					// @phpstan-ignore-next-line
+					str_replace(parse_url(env('AWS_URL'), PHP_URL_PATH), '', env('AWS_URL')),
+				]
+			),
 		],
 
 		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/navigate-to

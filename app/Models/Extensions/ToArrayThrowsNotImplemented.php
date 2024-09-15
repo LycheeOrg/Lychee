@@ -18,19 +18,11 @@ trait ToArrayThrowsNotImplemented
 {
 	/**
 	 * @return array<string,mixed>
-	 */
-	abstract protected function _toArray(): array;
-
-	/**
-	 * @return array<string,mixed>
 	 *
 	 * @throws NotImplementedException
 	 */
 	final public function toArray(): array
 	{
-		if (Route::is('livewire_index') || Route::is('livewire.message')) {
-			return $this->_toArray();
-		}
 		$details = Route::getCurrentRoute()?->getName() ?? '';
 		$details .= ($details !== '' ? ':' : '') . get_called_class();
 		throw new NotImplementedException($details . '->toArray() is deprecated, use Resources instead.');

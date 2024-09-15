@@ -29,7 +29,7 @@
         <livewire:forms.album.share-with :album="$this->album" />
     </div>
     @endif
-    @if($this->rights->can_delete === true)
+    @if($this->rights->can_move === true)
     <div class="w-full xl:w-5/6 flex justify-center flex-wrap mb-4 sm:mt-7 pl-7" x-cloak x-show="albumFlags.activeTab === 2">
         <livewire:forms.album.move-panel :album="$this->album" />
     </div>

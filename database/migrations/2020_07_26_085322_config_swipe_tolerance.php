@@ -1,39 +1,27 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Support\Facades\DB;
+use App\Legacy\BaseConfigMigration;
 
-return new class() extends Migration {
-	/**
-	 * Run the migrations.
-	 */
-	public function up(): void
+return new class() extends BaseConfigMigration {
+	public function getConfigs(): array
 	{
-		defined('INT') or define('INT', 'int');
-		DB::table('configs')->insert([
+		return [
 			[
 				'key' => 'swipe_tolerance_x',
 				'value' => '150',
-				'confidentiality' => 0,
+				'confidentiality' => '0',
 				'cat' => 'Gallery',
-				'type_range' => INT,
+				'type_range' => self::INT,
+				'description' => '',
 			],
 			[
 				'key' => 'swipe_tolerance_y',
 				'value' => '250',
-				'confidentiality' => 0,
+				'confidentiality' => '0',
 				'cat' => 'Gallery',
-				'type_range' => INT,
+				'type_range' => self::INT,
+				'description' => '',
 			],
-		]);
-	}
-
-	/**
-	 * Reverse the migrations.
-	 */
-	public function down(): void
-	{
-		DB::table('configs')->where('key', '=', 'swipe_tolerance_x')->delete();
-		DB::table('configs')->where('key', '=', 'swipe_tolerance_y')->delete();
+		];
 	}
 };

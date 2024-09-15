@@ -127,6 +127,7 @@ class Archive extends Action
 	private static function createValidTitle(string $title): string
 	{
 		$validTitle = str_replace(self::BAD_CHARS, '', $title);
+		$validTitle = pathinfo($validTitle, PATHINFO_FILENAME);
 
 		return $validTitle !== '' ? $validTitle : 'Untitled';
 	}

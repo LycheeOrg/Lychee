@@ -282,6 +282,7 @@ class Archive
 	{
 		$validFilename = str_replace(self::BAD_CHARS, '', $photo->title);
 		$baseFilename = $validFilename !== '' ? $validFilename : 'Untitled';
+		$baseFilename = pathinfo($baseFilename, PATHINFO_FILENAME);
 
 		if ($downloadVariant === DownloadVariantType::LIVEPHOTOVIDEO) {
 			$disk = $photo->size_variants->getSizeVariant(SizeVariantType::ORIGINAL)->storage_disk->value;

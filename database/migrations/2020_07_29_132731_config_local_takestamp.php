@@ -1,32 +1,19 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Support\Facades\DB;
+use App\Legacy\BaseConfigMigration;
 
-return new class() extends Migration {
-	/**
-	 * Run the migrations.
-	 */
-	public function up(): void
+return new class() extends BaseConfigMigration {
+	public function getConfigs(): array
 	{
-		defined('DISABLED') or define('DISABLED', '');
-
-		DB::table('configs')->insert([
+		return [
 			[
 				'key' => 'local_takestamp_video_formats',
 				'value' => '.avi|.mov',
 				'confidentiality' => '2',
 				'cat' => 'Image Processing',
-				'type_range' => DISABLED,
+				'type_range' => '',
+				'description' => '',
 			],
-		]);
-	}
-
-	/**
-	 * Reverse the migrations.
-	 */
-	public function down(): void
-	{
-		DB::table('configs')->where('key', '=', 'local_takestamp_video_formats')->delete();
+		];
 	}
 };
