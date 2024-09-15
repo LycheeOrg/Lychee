@@ -67,6 +67,10 @@ abstract class BaseV2Test extends AbstractTestCase
 	protected Photo $photo4;
 	protected Photo $subPhoto4;
 
+	protected AccessPermission $perm1;
+	protected AccessPermission $perm4;
+	protected AccessPermission $perm44;
+
 	public function setUp(): void
 	{
 		parent::setUp();
@@ -103,10 +107,10 @@ abstract class BaseV2Test extends AbstractTestCase
 		$this->subAlbum4 = Album::factory()->children_of($this->album4)->owned_by($this->userLocked)->create();
 		$this->subPhoto4 = Photo::factory()->owned_by($this->userLocked)->with_GPS_coordinates()->in($this->subAlbum4)->create();
 
-		AccessPermission::factory()->public()->visible()->for_album($this->album4)->create();
-		AccessPermission::factory()->public()->visible()->for_album($this->subAlbum4)->create();
+		$this->perm4 = AccessPermission::factory()->public()->visible()->for_album($this->album4)->create();
+		$this->perm44 = AccessPermission::factory()->public()->visible()->for_album($this->subAlbum4)->create();
 
-		AccessPermission::factory()
+		$this->perm1 = AccessPermission::factory()
 			->for_user($this->userMayUpload2)
 			->for_album($this->album1)
 			->visible()
