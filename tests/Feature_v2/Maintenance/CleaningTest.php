@@ -12,6 +12,7 @@
 
 namespace Tests\Feature_v2\Maintenance;
 
+use function Safe\touch;
 use Tests\Feature_v2\Base\BaseApiV2Test;
 
 class CleaningTest extends BaseApiV2Test
