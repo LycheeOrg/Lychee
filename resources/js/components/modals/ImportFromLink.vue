@@ -25,13 +25,9 @@
 						>{{ $t("lychee.CANCEL") }}</Button
 					>
 					<!-- class="p-3 w-full font-bold border-none text-primary-500 hover:bg-primary-500 hover:text-surface-0 rounded-none rounded-br-xl" -->
-					<Button
-						text
-						security="primary"
-						class="w-full font-bold border-none rounded-none rounded-br-xl"
-						@click="submit"
-						>{{ $t("lychee.UPLOAD_IMPORT") }}</Button
-					>
+					<Button text security="primary" class="w-full font-bold border-none rounded-none rounded-br-xl" @click="submit">{{
+						$t("lychee.UPLOAD_IMPORT")
+					}}</Button>
 				</div>
 			</div>
 		</template>

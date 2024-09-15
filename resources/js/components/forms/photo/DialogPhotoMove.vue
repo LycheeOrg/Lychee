@@ -4,15 +4,17 @@
 			<div v-if="titleMovedTo !== undefined">
 				<p class="p-9 text-center text-muted-color">{{ confirmation }}</p>
 				<div class="flex">
-				<Button class="w-full" severity="secondary" @click="close">
-					{{ $t("lychee.CANCEL") }}
-				</Button>
-				<Button class="text-primary-500 font-bold hover:text-white hover:bg-primary-400 w-full bg-transparent border-none" @click="execute">{{
-					$t("lychee.MOVE")
-				}}</Button>
+					<Button class="w-full" severity="secondary" @click="close">
+						{{ $t("lychee.CANCEL") }}
+					</Button>
+					<Button
+						class="text-primary-500 font-bold hover:text-white hover:bg-primary-400 w-full bg-transparent border-none"
+						@click="execute"
+						>{{ $t("lychee.MOVE") }}</Button
+					>
 				</div>
 			</div>
-			<div  v-else>
+			<div v-else>
 				<div class="p-9">
 					<span v-if="props.photo" class="font-bold">
 						{{ sprintf("Move %s to:", props.photo.title) }}
@@ -23,7 +25,7 @@
 					<SearchTargetAlbum :album-id="props.albumId" @selected="selected" />
 				</div>
 				<Button class="w-full" severity="secondary" @click="closeCallback">
-						{{ $t("lychee.CANCEL") }}
+					{{ $t("lychee.CANCEL") }}
 				</Button>
 			</div>
 		</template>
