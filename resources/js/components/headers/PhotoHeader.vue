@@ -64,7 +64,7 @@ const emit = defineEmits<{
 	//   (e: 'update', value: string): void
 }>();
 
-const user = ref(undefined) as Ref<undefined | App.Http.Resources.Models.UserResource>;
+// const user = ref(undefined) as Ref<undefined | App.Http.Resources.Models.UserResource>;
 
 // onKeyStroke("n", () => !shouldIgnoreKeystroke() && (isCreateAlbumOpen.value = true));
 // onKeyStroke("u", () => !shouldIgnoreKeystroke() && (isUploadOpen.value = true));

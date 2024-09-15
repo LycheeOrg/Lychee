@@ -24,16 +24,23 @@
 			</template>
 		</div>
 	</Panel>
+	<ContextMenu v-if="props.album?.rights.can_edit" ref="singlephotomenu" :model="singlePhotoMenu">
+		<template #item="{ item, props }">
+			<a v-ripple v-bind="props.action" @click="item.callback">
+				<span :class="item.icon" />
+				<span class="ml-2">{{ $t(item.label) }}</span>
+			</a>
+		</template>
+	</ContextMenu>
 </template>
 <script setup lang="ts">
-import { onMounted, onUpdated, ref } from "vue";
+import { onMounted, onUpdated } from "vue";
 import Panel from "primevue/panel";
 import PhotoThumb from "@/components/gallery/thumbs/PhotoThumb.vue";
 import MiniIcon from "@/components/icons/MiniIcon.vue";
-import { useSquare } from "@/layouts/useSquare";
-import { useGrid } from "@/layouts/useGrid";
-import { useJustify } from "@/layouts/useJustify";
-import { useMasonry } from "@/layouts/useMasonry";
+import ContextMenu from "primevue/contextmenu";
+import { useContextMenuPhoto } from "@/composables/contextMenus/contextMenuPhoto";
+import { useLayouts } from "@/layouts/PhotoLayout";
 
 const props = defineProps<{
 	header: string;
@@ -43,47 +50,9 @@ const props = defineProps<{
 	galleryConfig: App.Http.Resources.GalleryConfigs.PhotoLayoutConfig;
 }>();
 
-const layout = ref(props.galleryConfig);
-const BASE = "my-0 w-5 h-5 mr-0 ml-0 transition-all duration-300 group-hover:scale-150 group-hover:stroke-white ";
-const squareClass = ref(BASE);
-const justifiedClass = ref(BASE);
-const masonryClass = ref(BASE);
-const gridClass = ref(BASE);
+const { singlephotomenu, singlePhotoMenu } = useContextMenuPhoto();
 
-function setClasses() {
-	squareClass.value = BASE;
-	justifiedClass.value = BASE;
-	masonryClass.value = BASE;
-	gridClass.value = BASE;
-
-	squareClass.value += layout.value.photos_layout === "square" ? "stroke-primary-400" : "stroke-neutral-400";
-	justifiedClass.value +=
-		layout.value.photos_layout === "justified" || layout.value.photos_layout === "unjustified" ? "fill-primary-400" : "fill-neutral-400";
-	masonryClass.value += layout.value.photos_layout === "masonry" ? "stroke-primary-400" : "stroke-neutral-400";
-	gridClass.value += layout.value.photos_layout === "grid" ? "stroke-primary-400" : "stroke-neutral-400";
-}
-
-function activateLayout() {
-	console.log("activateLayout");
-	const photoListing = document.getElementById("photoListing");
-	if (photoListing === null) {
-		return; // Nothing to do
-	}
-
-	switch (layout.value.photos_layout) {
-		case "square":
-			return useSquare(photoListing, layout.value.photo_layout_square_column_width, layout.value.photo_layout_gap);
-		case "justified":
-		case "unjustified":
-			return useJustify(photoListing, layout.value.photo_layout_justified_row_height);
-		case "masonry":
-			return useMasonry(photoListing, layout.value.photo_layout_masonry_column_width, layout.value.photo_layout_gap);
-		case "grid":
-			return useGrid(photoListing, layout.value.photo_layout_grid_column_width, layout.value.photo_layout_gap);
-	}
-}
-
-setClasses();
+const { activateLayout, layout, squareClass, justifiedClass, masonryClass, gridClass } = useLayouts(props.galleryConfig);
 
 onMounted(() => {
 	activateLayout();

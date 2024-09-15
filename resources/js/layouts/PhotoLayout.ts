@@ -1,47 +1,42 @@
-import { useGrid } from "./useGrid";
+import { computed, ref } from "vue";
+import { useSquare } from "./useSquare";
 import { useJustify } from "./useJustify";
 import { useMasonry } from "./useMasonry";
-import { useSquare } from "./useSquare";
+import { useGrid } from "./useGrid";
 
-export default class PhotoLayout {
-	type: App.Enum.PhotoLayoutType;
-	justifiedHeight: number;
-	masonryWidth: number;
-	gridWidth: number;
-	gap: number;
-	squareWidth: number;
+export function useLayouts(config: App.Http.Resources.GalleryConfigs.PhotoLayoutConfig) {
+	const layout = ref(config);
+	const BASE = "my-0 w-5 h-5 mr-0 ml-0 transition-all duration-300 group-hover:scale-150 group-hover:stroke-white ";
+	const squareClass = computed(() => BASE + (layout.value.photos_layout === "square" ? "stroke-primary-400" : "stroke-neutral-400"));
+	const justifiedClass = computed(() => BASE + (layout.value.photos_layout === "justified" ? "fill-primary-400" : "fill-neutral-400"));
+	const masonryClass = computed(() => BASE + (layout.value.photos_layout === "masonry" ? "stroke-primary-400" : "stroke-neutral-400"));
+	const gridClass = computed(() => BASE + (layout.value.photos_layout === "grid" ? "stroke-primary-400" : "stroke-neutral-400"));
 
-	constructor(layout: App.Http.Resources.GalleryConfigs.PhotoLayoutConfig) {
-		this.type = layout.photos_layout;
-		this.justifiedHeight = layout.photo_layout_justified_row_height;
-		this.masonryWidth = layout.photo_layout_masonry_column_width;
-		this.gridWidth = layout.photo_layout_grid_column_width;
-		this.squareWidth = layout.photo_layout_square_column_width;
-		this.gap = layout.photo_layout_gap;
-
-		window.addEventListener("resize", () => this.activateLayout());
-	}
-
-	activateLayout() {
+	function activateLayout() {
 		const photoListing = document.getElementById("photoListing");
 		if (photoListing === null) {
 			return; // Nothing to do
 		}
 
-		if (this.type === "square") {
-			useSquare(photoListing, this.squareWidth, this.gap);
-		}
-
-		if (this.type === "grid") {
-			useGrid(photoListing, this.gridWidth, this.gap);
-		}
-
-		if (this.type === "justified" || this.type === "unjustified") {
-			useJustify(photoListing, this.justifiedHeight);
-		}
-
-		if (this.type === "masonry") {
-			useMasonry(photoListing, this.masonryWidth, this.gap);
+		switch (layout.value.photos_layout) {
+			case "square":
+				return useSquare(photoListing, layout.value.photo_layout_square_column_width, layout.value.photo_layout_gap);
+			case "justified":
+			case "unjustified":
+				return useJustify(photoListing, layout.value.photo_layout_justified_row_height);
+			case "masonry":
+				return useMasonry(photoListing, layout.value.photo_layout_masonry_column_width, layout.value.photo_layout_gap);
+			case "grid":
+				return useGrid(photoListing, layout.value.photo_layout_grid_column_width, layout.value.photo_layout_gap);
 		}
 	}
+
+	return {
+		layout,
+		squareClass,
+		justifiedClass,
+		masonryClass,
+		gridClass,
+		activateLayout,
+	};
 }
