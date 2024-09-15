@@ -16,6 +16,9 @@ export function useContextMenuAlbumAdd(callbacks: Callbacks) {
 			callback: callbacks.toggleUpload,
 		},
 		{
+			is_divider: true,
+		},
+		{
 			label: "lychee.IMPORT_LINK",
 			icon: "pi pi-link",
 			callback: () => (isImportLinkOpen.value = true),
@@ -26,10 +29,18 @@ export function useContextMenuAlbumAdd(callbacks: Callbacks) {
 		// 	callback: () => {},
 		// },
 		{
+			is_divider: true,
+		},
+		{
 			label: "lychee.NEW_ALBUM",
 			icon: "pi pi-folder",
 			callback: () => (isCreateAlbumOpen.value = true),
 		},
+		// { //! Upload tracks
+		// 	label: "lychee.NEW_TAG_ALBUM",
+		// 	icon: "pi pi-tags",
+		// 	callback: () => {},
+		// }
 	]);
 
 	function openAddMenu(event: Event) {

@@ -36,7 +36,8 @@
 	</Toolbar>
 	<ContextMenu ref="addmenu" :model="addMenu" v-if="album.rights.can_upload">
 		<template #item="{ item, props }">
-			<a v-ripple v-bind="props.action" @click="item.callback">
+			<Divider v-if="item.is_divider" />
+			<a v-else v-ripple v-bind="props.action" @click="item.callback">
 				<span :class="item.icon" />
 				<span class="ml-2">{{ $t(item.label) }}</span>
 			</a>
@@ -47,7 +48,7 @@
 import LoginModal from "@/components/modals/LoginModal.vue";
 import Button from "primevue/button";
 import Toolbar from "primevue/toolbar";
-import { Ref, computed, ref } from "vue";
+import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
 import UploadPanel from "@/components/modals/UploadPanel.vue";
 import { onKeyStroke } from "@vueuse/core";
@@ -57,6 +58,7 @@ import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
 import ImportFromLink from "@/components/modals/ImportFromLink.vue";
 import { useUploadOpen } from "@/composables/modalsTriggers/uploadOpen";
 import { useContextMenuAlbumAdd } from "@/composables/contextMenus/contextMenuAlbumAdd";
+import Divider from "primevue/divider";
 
 const props = defineProps<{
 	config: App.Http.Resources.GalleryConfigs.AlbumConfig;

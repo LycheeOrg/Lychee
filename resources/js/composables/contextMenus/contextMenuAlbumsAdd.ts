@@ -18,6 +18,9 @@ export function useContextMenuAlbumsAdd(callbacks: Callbacks) {
 			callback: callbacks.toggleUpload,
 		},
 		{
+			is_divider: true,
+		},
+		{
 			label: "lychee.IMPORT_LINK",
 			icon: "pi pi-link",
 			callback: callbacks.toggleImportFromLink,
@@ -31,6 +34,9 @@ export function useContextMenuAlbumsAdd(callbacks: Callbacks) {
 			label: "lychee.IMPORT_SERVER",
 			icon: "pi pi-server",
 			callback: () => (isImportFromServerOpen.value = true),
+		},
+		{
+			is_divider: true,
 		},
 		{
 			label: "lychee.NEW_ALBUM",
