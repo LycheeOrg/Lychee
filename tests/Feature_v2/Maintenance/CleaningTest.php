@@ -60,4 +60,15 @@ class CleaningTest extends BaseApiV2Test
 		$response = $this->actingAs($this->admin)->postJson('Maintenance::cleaning', ['path' => 'filesystems.disks.extract-jobs.root']);
 		$this->assertOk($response);
 	}
+
+	public function testAdminWithFiles(): void
+	{
+		touch(storage_path('extract-jobs') . '/delete-me.txt');
+		$response = $this->actingAs($this->admin)->getJsonWithData('Maintenance::cleaning', ['path' => 'filesystems.disks.extract-jobs.root']);
+		$this->assertOk($response);
+
+		$response = $this->actingAs($this->admin)->postJson('Maintenance::cleaning', ['path' => 'filesystems.disks.extract-jobs.root']);
+		$this->assertOk($response);
+		static::assertEquals(false, file_exists(storage_path('extract-jobs') . '/delete-me.txt'));
+	}
 }
