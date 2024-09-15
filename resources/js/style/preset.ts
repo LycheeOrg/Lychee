@@ -162,6 +162,57 @@ const LycheePrimeVueConfig = {
 		},
 	},
 	components: {
+		button : {
+			padding: {
+				x: "0.75rem",
+				y: "0.75rem",
+			},
+			colorScheme: {
+				light: {
+					danger: {
+						color: "{surface.0}",
+						background: "{red.600}",
+						hover: {
+							background: "{red.700}",
+							color: "{surface.0}",
+						},
+					},
+				},
+				dark: {
+					text: {
+						primary: {
+							// color: "{primary.0}",
+							// background: "{red.600}",
+							hover: {
+								background: "{primary.500}",
+								color: "{surface.0}",
+							},
+						}
+					},
+					danger: {
+						color: "{surface.0}",
+						background: "{red.600}",
+						hover: {
+							background: "{red.700}",
+							color: "{surface.0}",
+						},
+					},
+				}
+			}
+		},
+		divider: {
+			horizontal: {
+				margin: "0.25rem 0",
+			},
+			colorScheme: {
+				light: {
+					boderColor: "{surface.300}",
+				},
+				dark: {
+					borderColor: "{surface.900}",
+				},
+			},
+		},
 		progressbar: {
 			height: "0.25rem",
 			colorScheme: {

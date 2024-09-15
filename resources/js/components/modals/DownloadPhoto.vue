@@ -10,7 +10,7 @@
 					</template>
 				</div>
 				<div class="flex justify-center">
-					<Button @click="closeCallback" text class="p-3 w-full font-bold border-1 border-white-alpha-30 hover:bg-white-alpha-10">
+					<Button @click="closeCallback" severity="secondary" class="w-full font-bold">
 						{{ $t("lychee.CLOSE") }}
 					</Button>
 				</div>

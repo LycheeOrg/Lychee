@@ -105,24 +105,16 @@
 						<DockButton icon="counterclockwise" class="fill-white lg:hover:fill-primary-500" v-on:click="rotatePhotoCCW()" />
 						<DockButton icon="clockwise" class="fill-white lg:hover:fill-primary-500" v-on:click="rotatePhotoCW()" />
 					</template>
-					<DockButton icon="transfer" class="fill-white lg:hover:fill-primary-500" v-on:click="isMoveVisible = true" />
-					<DockButton icon="trash" class="fill-red-600 lg:fill-white lg:hover:fill-red-600" v-on:click="isDeleteVisible = true" />
+					<DockButton icon="transfer" class="fill-white lg:hover:fill-primary-500" v-on:click="toggleMovePhoto" />
+					<DockButton icon="trash" class="fill-red-600 lg:fill-white lg:hover:fill-red-600" v-on:click="toggleDeletePhoto" />
 				</span>
 			</div>
 		</div>
 		<PhotoDetails v-model:are-details-open="areDetailsOpen" :photo="photo" />
 	</div>
 	<PhotoEdit v-if="photo?.rights.can_edit" :photo="photo" v-model:visible="isEditOpen" />
-	<Dialog v-model:visible="isMoveVisible" modal :dismissable-mask="true" pt:root:class="border-none">
-		<template #container="{ closeCallback }">
-			<PhotoMove :photo="photo" @moved="updated" />
-		</template>
-	</Dialog>
-	<Dialog v-model:visible="isDeleteVisible" pt:root:class="border-none" modal :dismissable-mask="true">
-		<template #container="{ closeCallback }">
-			<PhotoDelete :photo="photo" @deleted="updated" />
-		</template>
-	</Dialog>
+	<DialogPhotoMove :photo="photo" v-model:visible="isMovePhotoVisible" @moved="updated" />
+	<DialogPhotoDelete :photo="photo" v-model:visible="isDeletePhotoVisible" @deleted="updated" />
 </template>
 <script setup lang="ts">
 import DockButton from "@/components/gallery/photo/DockButton.vue";
@@ -134,13 +126,14 @@ import { Ref, computed, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import PhotoHeader from "@/components/headers/PhotoHeader.vue";
 import PhotoEdit from "@/components/drawers/PhotoEdit.vue";
-import PhotoMove from "@/components/forms/photo/PhotoMove.vue";
-import Dialog from "primevue/dialog";
-import PhotoDelete from "@/components/forms/photo/PhotoDelete.vue";
 import PhotoService from "@/services/photo-service";
 import { onKeyStroke } from "@vueuse/core";
 import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
 import Overlay from "@/components/gallery/photo/Overlay.vue";
+import DialogPhotoDelete from "@/components/forms/photo/DialogPhotoDelete.vue";
+import DialogPhotoMove from "@/components/forms/photo/DialogPhotoMove.vue";
+import { useMovePhotoOpen } from "@/composables/modalsTriggers/movePhotoOpen";
+import { useDeletePhotoOpen } from "@/composables/modalsTriggers/deletePhotoOpen";
 
 const props = defineProps<{
 	albumid: string;
@@ -152,8 +145,9 @@ const route = useRoute();
 const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
 
-const isMoveVisible = ref(false);
-const isDeleteVisible = ref(false);
+const { isMovePhotoVisible, toggleMovePhoto } = useMovePhotoOpen();
+const { isDeletePhotoVisible, toggleDeletePhoto } = useDeletePhotoOpen();
+
 const photoId = ref(props.photoid);
 const photo = ref(undefined) as Ref<App.Http.Resources.Models.PhotoResource | undefined>;
 const album = ref(null) as Ref<App.Http.Resources.Models.AbstractAlbumResource | null>;

@@ -30,10 +30,10 @@
 						</span>
 					</h1>
 					<h2 class="my-6 font-bold">{{ $t("lychee.ABOUT_SUBTITLE") }}</h2>
-					<p class="about-desc" v-html="description"></p>
+					<p class="text-muted-color" v-html="description"></p>
 				</div>
 				<div class="flex justify-center">
-					<Button @click="closeCallback" text class="p-3 w-full font-bold border-1 border-white-alpha-30 hover:bg-white-alpha-10">
+					<Button @click="closeCallback" severity="secondary" class="w-full font-bold">
 						{{ $t("lychee.CLOSE") }}
 					</Button>
 				</div>

@@ -1,10 +1,12 @@
 import axios, { type AxiosRequestConfig, type AxiosRequestHeaders, type AxiosResponse } from "axios";
 import CSRF from "./csrf-getter";
-import { setupCache } from "axios-cache-interceptor/dev";
+// import { setupCache } from "axios-cache-interceptor/dev";
+import { setupCache } from "axios-cache-interceptor";
 
 const AxiosConfig = {
 	axiosSetUp() {
-		setupCache(axios, { debug: console.log });
+		// setupCache(axios, { debug: console.log });
+		setupCache(axios);
 
 		axios.interceptors.request.use(
 			// @ts-expect-error

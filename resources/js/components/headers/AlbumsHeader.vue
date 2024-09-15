@@ -38,7 +38,8 @@
 	</Toolbar>
 	<ContextMenu v-if="props.rights.can_upload" ref="addmenu" :model="addMenu">
 		<template #item="{ item, props }">
-			<a v-ripple v-bind="props.action" @click="item.callback">
+			<Divider v-if="item.is_divider" />
+			<a v-else v-ripple v-bind="props.action" @click="item.callback">
 				<span :class="item.icon" />
 				<span class="ml-2">{{ $t(item.label) }}</span>
 			</a>
@@ -65,6 +66,7 @@ import { useCreateAlbumOpen } from "@/composables/modalsTriggers/createAlbumOpen
 import { useImportFromLinkOpen } from "@/composables/modalsTriggers/importFromLinkOpen";
 import { useUploadOpen } from "@/composables/modalsTriggers/uploadOpen";
 import { useContextMenuAlbumsAdd } from "@/composables/contextMenus/contextMenuAlbumsAdd";
+import Divider from "primevue/divider";
 
 const props = defineProps<{
 	user: App.Http.Resources.Models.UserResource;

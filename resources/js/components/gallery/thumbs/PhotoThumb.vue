@@ -1,16 +1,16 @@
 <template>
 	<router-link
 		:to="{ name: 'photo', params: { albumid: props.album?.id, photoid: props.photo.id } }"
-		class="photo group shadow-md shadow-black/25 animate-zoomIn transition-all ease-in duration-200 block absolute"
+		:class="cssClass"
 		:data-width="props.photo.size_variants.original?.width"
 		:data-height="props.photo.size_variants.original?.height"
 		:data-id="props.photo.id"
 		:data-album-id="props.album?.id"
 	>
-		<!-- {{-- wire:navigate href="{{ route('livewire-gallery-photo',['albumId'=>$album_id, 'photoId' => $photo_id]) }}" --}}
+		<!--
 	x-on:contextmenu.prevent='handleContextPhoto($event, $wire)'
 	x-on:click='handleClickPhoto($event, $wire)'
-	x-bind:class="select.selectedPhotos.includes('{{ $photo_id }}') ? 'outline outline-1 outline-primary-500' : ''" -->
+	-->
 		<span
 			class="thumbimg w-full h-full border-none"
 			:class="(props.photo.precomputed.is_video ? 'video' : '') + ' ' + (props.photo.precomputed.is_livephoto ? 'livephoto' : '')"
@@ -46,13 +46,14 @@
 	</router-link>
 </template>
 <script setup lang="ts">
-import { computed, ref, type Ref } from "vue";
+import { computed, ref, watch, type Ref } from "vue";
 import { useAuthStore } from "@/stores/Auth";
 import MiniIcon from "@/components/icons/MiniIcon.vue";
 import ThumbBadge from "@/components/gallery/thumbs/ThumbBadge.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 
 const props = defineProps<{
+	isSelected: boolean;
 	album: App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.TagAlbumResource | App.Http.Resources.Models.SmartAlbumResource | null;
 	photo: App.Http.Resources.Models.PhotoResource;
 	config: App.Http.Resources.GalleryConfigs.AlbumConfig | null;
@@ -69,6 +70,14 @@ const is_cover_id = ref(props.album?.cover_id === props.photo.id);
 const user = ref(null) as Ref<App.Http.Resources.Models.UserResource | null>;
 auth.getUser().then((data) => {
 	user.value = data;
+});
+
+const cssClass = computed(() => {
+	let css = "photo group shadow-md shadow-black/25 animate-zoomIn transition-all ease-in duration-200 block absolute";
+	if (props.isSelected) {
+		css += " outline outline-1 outline-primary-500";
+	}
+	return css;
 });
 
 const cssOverlay = computed(() => {
