@@ -12,6 +12,8 @@
 
 namespace Tests\Feature_v2\Maintenance;
 
+use App\Enum\JobStatus;
+use App\Models\JobHistory;
 use Tests\Feature_v2\Base\BaseApiV2Test;
 
 class JobsTest extends BaseApiV2Test
@@ -36,6 +38,14 @@ class JobsTest extends BaseApiV2Test
 
 	public function testAdmin(): void
 	{
+		$jobHistory = new JobHistory();
+		$jobHistory->owner_id = $this->admin->id;
+		$jobHistory->job = 'Maintenance::jobs';
+		$jobHistory->status = JobStatus::STARTED;
+		$jobHistory->created_at = now();
+		$jobHistory->updated_at = now();
+		$jobHistory->save();
+
 		$response = $this->actingAs($this->admin)->getJsonWithData('Maintenance::jobs');
 		$this->assertOk($response);
 
