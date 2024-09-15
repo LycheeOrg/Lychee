@@ -33,7 +33,7 @@ class AddSharingRequest extends BaseApiRequest implements HasAlbumIds, HasUserId
 	 */
 	public function authorize(): bool
 	{
-		return Gate::check(AlbumPolicy::CAN_SHARE_ID, [AbstractAlbum::class, $this->albumIDs]);
+		return Gate::check(AlbumPolicy::CAN_SHARE_ID, [AbstractAlbum::class, $this->albumIds]);
 	}
 
 	/**
