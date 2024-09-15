@@ -59,11 +59,12 @@ import { useLycheeStateStore } from "@/stores/LycheeState";
 import LoginModal from "@/components/modals/LoginModal.vue";
 import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
 import ImportFromLink from "@/components/modals/ImportFromLink.vue";
-import { useUploadOpen } from "@/composables/uploadOpen";
-import { useCreateAlbumOpen } from "@/composables/createAlbumOpen";
-import { useImportFromLinkOpen } from "@/composables/importFromLinkOpen";
 import { storeToRefs } from "pinia";
 import BackLinkButton from "./BackLinkButton.vue";
+import { useCreateAlbumOpen } from "@/composables/modalsTriggers/createAlbumOpen";
+import { useImportFromLinkOpen } from "@/composables/modalsTriggers/importFromLinkOpen";
+import { useUploadOpen } from "@/composables/modalsTriggers/uploadOpen";
+import { useContextMenuAlbumsAdd } from "@/composables/contextMenus/contextMenuAlbumsAdd";
 
 const props = defineProps<{
 	user: App.Http.Resources.Models.UserResource;
@@ -97,55 +98,23 @@ const emit = defineEmits<{
 // 	'DELETE_TRACK' => 'Delete track',
 const lycheeStore = useLycheeStateStore();
 const { left_menu_open } = storeToRefs(lycheeStore);
+const openLeftMenu = () => (left_menu_open.value = !left_menu_open.value);
 
 const { isUploadOpen, toggleUpload } = useUploadOpen(false);
 const { isCreateAlbumOpen, toggleCreateAlbum } = useCreateAlbumOpen(false);
 const { isImportFromLinkOpen, toggleImportFromLink } = useImportFromLinkOpen(false);
 
-const addmenu = ref(); // ! Reference to the context menu
-const addMenu = ref([
-	{
-		label: "lychee.UPLOAD_PHOTO",
-		icon: "pi pi-upload",
-		callback: toggleUpload,
-	},
-	{
-		label: "lychee.IMPORT_LINK",
-		icon: "pi pi-link",
-		callback: toggleImportFromLink,
-	},
-	// {
-	// 	label: "lychee.IMPORT_DROPBOX",
-	// 	icon: "pi pi-box",
-	// 	callback: () => {},
-	// },
-	{
-		label: "lychee.IMPORT_SERVER",
-		icon: "pi pi-server",
-		callback: () => (isImportFromServerOpen.value = true),
-	},
-	{
-		label: "lychee.NEW_ALBUM",
-		icon: "pi pi-folder",
-		callback: toggleCreateAlbum,
-	},
-	{
-		label: "lychee.NEW_TAG_ALBUM",
-		icon: "pi pi-tags",
-		callback: () => (isCreateTagAlbumOpen.value = true),
-	},
-]);
+const { addmenu, addMenu, isImportFromServerOpen, isCreateTagAlbumOpen } = useContextMenuAlbumsAdd({
+	toggleUpload: toggleUpload,
+	toggleCreateAlbum: toggleCreateAlbum,
+	toggleImportFromLink: toggleImportFromLink,
+});
+
 const isLoginOpen = defineModel("isLoginOpen", { type: Boolean, default: false });
 
-const isCreateTagAlbumOpen = ref(false);
-const isImportFromServerOpen = ref(false);
 const canUpload = computed(() => props.user.id !== null);
 const title = ref("Albums");
 const isLoginLeft = computed(() => props.config.login_button_position === "left");
-
-function openLeftMenu() {
-	left_menu_open.value = !left_menu_open.value;
-}
 
 function openAddMenu(event: Event) {
 	addmenu.value.show(event);

@@ -55,52 +55,28 @@ import AlbumCreateDialog from "@/components/forms/album/AlbumCreateDialog.vue";
 import ContextMenu from "primevue/contextmenu";
 import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
 import ImportFromLink from "@/components/modals/ImportFromLink.vue";
-import { useUploadOpen } from "@/composables/uploadOpen";
+import { useUploadOpen } from "@/composables/modalsTriggers/uploadOpen";
+import { useContextMenuAlbumAdd } from "@/composables/contextMenus/contextMenuAlbumAdd";
 
 const props = defineProps<{
 	config: App.Http.Resources.GalleryConfigs.AlbumConfig;
 	album: App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.TagAlbumResource | App.Http.Resources.Models.SmartAlbumResource;
 	user: App.Http.Resources.Models.UserResource;
 }>();
+const isLoginOpen = ref(false);
+const areDetailsOpen = defineModel("areDetailsOpen", { default: false });
+const toggleDetails = () => (areDetailsOpen.value = !areDetailsOpen.value);
 
 const { isUploadOpen, toggleUpload } = useUploadOpen(false);
-
-const areDetailsOpen = defineModel("areDetailsOpen", { default: false });
-const isLoginOpen = ref(false);
 const emit = defineEmits<{
 	(e: "refresh"): void;
 	//   (e: 'update', value: string): void
 }>();
 
-const addmenu = ref();
-const addMenu = ref([
-	{
-		label: "lychee.UPLOAD_PHOTO",
-		icon: "pi pi-upload",
-		callback: toggleUpload,
-	},
-	{
-		label: "lychee.IMPORT_LINK",
-		icon: "pi pi-link",
-		callback: () => (isImportLinkOpen.value = true),
-	},
-	// {
-	// 	label: "lychee.IMPORT_DROPBOX",
-	// 	icon: "pi pi-box",
-	// 	callback: () => {},
-	// },
-	{
-		label: "lychee.NEW_ALBUM",
-		icon: "pi pi-folder",
-		callback: () => (isCreateAlbumOpen.value = true),
-	},
-]);
+const { addmenu, addMenu, isCreateAlbumOpen, isImportLinkOpen, openAddMenu } = useContextMenuAlbumAdd({ toggleUpload });
 
-const isCreateAlbumOpen = ref(false);
-const isImportLinkOpen = ref(false);
 const router = useRouter();
-const user = ref(undefined) as Ref<undefined | App.Http.Resources.Models.UserResource>;
-const canUpload = computed(() => user.value?.id !== null && props.album.rights.can_upload === true);
+const canUpload = computed(() => props.user.id !== null && props.album.rights.can_upload === true);
 
 onKeyStroke("n", () => !shouldIgnoreKeystroke() && (isCreateAlbumOpen.value = true));
 onKeyStroke("u", () => !shouldIgnoreKeystroke() && (isUploadOpen.value = true));
@@ -115,14 +91,6 @@ function goBack() {
 	} else {
 		router.push({ name: "gallery" });
 	}
-}
-
-function openAddMenu(event: Event) {
-	addmenu.value.show(event);
-}
-
-function toggleDetails() {
-	areDetailsOpen.value = !areDetailsOpen.value;
 }
 
 // bubble up.

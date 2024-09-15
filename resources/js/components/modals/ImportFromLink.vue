@@ -8,7 +8,7 @@
 						<div class="my-3 first:mt-0 last:mb-0">
 							<Textarea
 								id="links"
-								class="w-full h-48 p-3 w-full border-t-transparent border-r-transparent border-b border-l hover:border-b-primary-400 hover:border-l-primary-400 focus:border-b-primary-400 focus:border-l-primary-400"
+								class="w-full h-48 p-3 border-t-transparent border-r-transparent border-b border-l hover:border-b-primary-400 hover:border-l-primary-400 focus:border-b-primary-400 focus:border-l-primary-400"
 								v-model="urls"
 								rows="5"
 								cols="30"
