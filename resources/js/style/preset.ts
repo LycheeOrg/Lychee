@@ -162,7 +162,7 @@ const LycheePrimeVueConfig = {
 		},
 	},
 	components: {
-		button : {
+		button: {
 			padding: {
 				x: "0.75rem",
 				y: "0.75rem",
@@ -187,7 +187,7 @@ const LycheePrimeVueConfig = {
 								background: "{primary.500}",
 								color: "{surface.0}",
 							},
-						}
+						},
 					},
 					danger: {
 						color: "{surface.0}",
@@ -197,8 +197,8 @@ const LycheePrimeVueConfig = {
 							color: "{surface.0}",
 						},
 					},
-				}
-			}
+				},
+			},
 		},
 		divider: {
 			horizontal: {

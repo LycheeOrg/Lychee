@@ -4,14 +4,11 @@
 			<div>
 				<p class="p-9 text-center text-muted-color max-w-xl text-wrap">{{ confirmation }}</p>
 				<div class="flex">
-				<Button class="w-full" severity="secondary" @click="closeCallback">
-					{{ $t("lychee.CANCEL") }}
-				</Button>
-				<!-- class="text-danger-600 font-bold hover:text-white hover:bg-danger-700 w-full bg-transparent border-none" -->
-				<Button  severity="danger" class="w-full"
-				 @click="execute">{{
-					$t("lychee.DELETE")
-				}}</Button>
+					<Button class="w-full" severity="secondary" @click="closeCallback">
+						{{ $t("lychee.CANCEL") }}
+					</Button>
+					<!-- class="text-danger-600 font-bold hover:text-white hover:bg-danger-700 w-full bg-transparent border-none" -->
+					<Button severity="danger" class="w-full" @click="execute">{{ $t("lychee.DELETE") }}</Button>
 				</div>
 			</div>
 		</template>
