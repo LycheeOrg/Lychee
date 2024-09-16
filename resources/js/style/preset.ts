@@ -187,6 +187,18 @@ const LycheePrimeVueConfig = {
 					},
 				},
 				dark: {
+					primary: {
+						color: "{surface.0}",
+						background: "{primary.500}",
+						hover: {
+							background: "{primary.600}",
+							color: "{surface.0}",
+						},
+						active: {
+							background: "{primary.700}",
+							color: "{surface.0}",
+						},
+					},
 					contrast: {
 						// Primary with transparent background
 						color: "{primary.500}",
@@ -227,7 +239,7 @@ const LycheePrimeVueConfig = {
 					},
 					danger: {
 						color: "{surface.0}",
-						background: "{red.600}",
+						background: "{red.800}",
 						hover: {
 							background: "{red.700}",
 							color: "{surface.0}",
@@ -235,6 +247,19 @@ const LycheePrimeVueConfig = {
 					},
 				},
 			},
+		},
+		checkbox: {
+			colorScheme: {
+				light: {
+
+				},
+				dark: {
+					background: "{surface.800}",
+					border: {
+						color: "{surface.700}",
+					}
+				}
+			}
 		},
 		divider: {
 			horizontal: {

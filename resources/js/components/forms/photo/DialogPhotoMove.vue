@@ -4,14 +4,12 @@
 			<div v-if="titleMovedTo !== undefined">
 				<p class="p-9 text-center text-muted-color">{{ confirmation }}</p>
 				<div class="flex">
-					<Button class="w-full" severity="secondary" @click="close">
+					<Button severity="secondary" class="font-bold w-full border-none rounded-none rounded-bl-xl"  @click="close">
 						{{ $t("lychee.CANCEL") }}
 					</Button>
-					<Button
-						class="text-primary-500 font-bold hover:text-white hover:bg-primary-400 w-full bg-transparent border-none"
-						@click="execute"
-						>{{ $t("lychee.MOVE") }}</Button
-					>
+					<Button severity="contrast" class="font-bold w-full border-none rounded-none rounded-br-xl" @click="execute">
+						{{ $t("lychee.MOVE") }}
+					</Button>
 				</div>
 			</div>
 			<div v-else>
@@ -24,7 +22,7 @@
 					</span>
 					<SearchTargetAlbum :album-id="props.albumId" @selected="selected" />
 				</div>
-				<Button class="w-full" severity="secondary" @click="closeCallback">
+				<Button class="w-full font-bold rounded-none rounded-bl-xl rounded-br-xl border-none" severity="secondary" @click="closeCallback">
 					{{ $t("lychee.CANCEL") }}
 				</Button>
 			</div>

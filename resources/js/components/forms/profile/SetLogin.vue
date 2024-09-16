@@ -39,13 +39,15 @@
 				</div>
 				<div class="flex w-full mt-4">
 					<Button
-						class="p-3 w-full font-bold border-none text-primary-500 bg-surface hover:bg-primary-500 hover:text-surface-0 flex-shrink"
+						severity="contrast"
+						class="w-full font-bold border-none flex-shrink rounded-none rounded-bl-xl rounded-tl-xl"
 						@click="save"
 					>
 						{{ $t("lychee.PASSWORD_CHANGE") }}
 					</Button>
 					<Button
-						class="p-3 w-full font-bold border-none text-primary-500 bg-surface hover:bg-primary-500 hover:text-surface-0 flex-shrink"
+						severity="secondary"
+						class="w-full font-bold border-none flex-shrink rounded-none rounded-br-xl rounded-tr-xl"
 						@click="isApiTokenOpen = !isApiTokenOpen"
 					>
 						{{ $t("lychee.TOKEN_BUTTON") }}

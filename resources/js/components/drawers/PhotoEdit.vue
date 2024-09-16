@@ -45,8 +45,8 @@
 						</template>
 					</Select>
 					<Button
-						text
-						class="w-full col-span-2 font-bold border-none text-primary-500 hover:bg-primary-500 hover:text-surface-0"
+						severity="contrast"
+						class="w-full col-span-2 font-bold border-none"
 						@click="save"
 					>
 						{{ $t("lychee.SAVE") }}
