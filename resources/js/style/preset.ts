@@ -250,16 +250,14 @@ const LycheePrimeVueConfig = {
 		},
 		checkbox: {
 			colorScheme: {
-				light: {
-
-				},
+				light: {},
 				dark: {
 					background: "{surface.800}",
 					border: {
 						color: "{surface.700}",
-					}
-				}
-			}
+					},
+				},
+			},
 		},
 		divider: {
 			horizontal: {

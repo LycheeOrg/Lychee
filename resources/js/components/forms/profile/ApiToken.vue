@@ -23,13 +23,24 @@
 						<Button text severity="secondary" class="group" :title="$t('lychee.RESET')" @click="resetToken">
 							<MiniIcon class="w-4 h-4 ionicons group-hover:fill-primary-500" icon="reload" />
 						</Button>
-						<Button text severity="secondary" class="group" :tile="$t('lychee.DISABLE_TOKEN_TOOLTIP')" @click="unsetToken" v-if="!isDisabled">
+						<Button
+							text
+							severity="secondary"
+							class="group"
+							:tile="$t('lychee.DISABLE_TOKEN_TOOLTIP')"
+							@click="unsetToken"
+							v-if="!isDisabled"
+						>
 							<MiniIcon class="w-4 h-4 ionicons group-hover:fill-red-700" icon="ban" />
 						</Button>
 					</div>
 				</div>
 				<div class="flex justify-center mt-9">
-					<Button @click="closeCallback" severity="secondary" class="w-full border-none font-bold border-1 border-white-alpha-30 hover:bg-white-alpha-10">
+					<Button
+						@click="closeCallback"
+						severity="secondary"
+						class="w-full border-none font-bold border-1 border-white-alpha-30 hover:bg-white-alpha-10"
+					>
 						{{ $t("lychee.CLOSE") }}
 					</Button>
 				</div>

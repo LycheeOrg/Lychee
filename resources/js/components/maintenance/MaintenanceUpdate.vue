@@ -14,7 +14,7 @@
 		</template>
 		<template #footer>
 			<Button v-if="canCheck" severity="primary" class="w-full border-none" @click="check">{{ $t("lychee.CHECK_FOR_UPDATE") }}</Button>
-			<Button v-if="canUpdate" severity="primary" class="w-full border-none" href="/Update" target="_blank" rel="noopener" >{{
+			<Button v-if="canUpdate" severity="primary" class="w-full border-none" href="/Update" target="_blank" rel="noopener">{{
 				$t("lychee.UPDATE")
 			}}</Button>
 			<div v-if="!canCheck && !canUpdate && !loading" class="w-full text-center">

@@ -44,11 +44,7 @@
 							</div>
 						</template>
 					</Select>
-					<Button
-						severity="contrast"
-						class="w-full col-span-2 font-bold border-none"
-						@click="save"
-					>
+					<Button severity="contrast" class="w-full col-span-2 font-bold border-none" @click="save">
 						{{ $t("lychee.SAVE") }}
 					</Button>
 				</form>
