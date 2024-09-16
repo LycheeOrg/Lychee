@@ -12,7 +12,7 @@
 		<template #container="{ closeCallback }">
 			<form>
 				<div v-focustrap class="flex flex-col gap-4 relative w-[500px] text-sm rounded-md pt-9">
-					<div class="flex flex-row justify-between gap-2 px-9 w-full">
+					<div class="flex flex-row justify-between gap-2 px-9 w-full items-center">
 						<label for="token-dialog-token" class="flex-shrink">Token</label>
 						<InputText
 							class="flex-grow[4] bg-transparent w-full pt-1 pb-0 px-0.5 h-7 border-b border-b-solid focus:border-b-primary-500 disabled:italic disabled:text-center inline-block"
@@ -20,22 +20,16 @@
 							v-model="token"
 							:readonly="true"
 						/>
-						<!-- class="mx-2 w-2/3 bg-transparent pt-1 pb-0 px-0.5 h-7
-						border-b border-b-solid focus:border-b-primary-400 border-b-neutral-800
-						disabled:italic disabled:text-center text-text-main-200 disabled:text-text-main-400
-						" -->
-						<!-- <div class="flex-shrink"> -->
-						<Button :title="$t('lychee.RESET')" @click="resetToken">
-							<MiniIcon class="w-4 h-4 ionicons hover:fill-primary-500" icon="reload" />
+						<Button text severity="secondary" class="group" :title="$t('lychee.RESET')" @click="resetToken">
+							<MiniIcon class="w-4 h-4 ionicons group-hover:fill-primary-500" icon="reload" />
 						</Button>
-						<Button :tile="$t('lychee.DISABLE_TOKEN_TOOLTIP')" @click="unsetToken" v-if="!isDisabled">
-							<MiniIcon class="w-4 h-4 ionicons hover:fill-red-700" icon="ban" />
+						<Button text severity="secondary" class="group" :tile="$t('lychee.DISABLE_TOKEN_TOOLTIP')" @click="unsetToken" v-if="!isDisabled">
+							<MiniIcon class="w-4 h-4 ionicons group-hover:fill-red-700" icon="ban" />
 						</Button>
-						<!-- </div> -->
 					</div>
 				</div>
 				<div class="flex justify-center mt-9">
-					<Button @click="closeCallback" text class="p-3 w-full font-bold border-1 border-white-alpha-30 hover:bg-white-alpha-10">
+					<Button @click="closeCallback" severity="secondary" class="w-full border-none font-bold border-1 border-white-alpha-30 hover:bg-white-alpha-10">
 						{{ $t("lychee.CLOSE") }}
 					</Button>
 				</div>

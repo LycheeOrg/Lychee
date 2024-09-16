@@ -1,5 +1,5 @@
 <template>
-	<Card v-if="data !== undefined && data.is_not_empty" class="min-h-40 shadow shadow-surface-950/30 rounded-lg relative">
+	<Card v-if="data !== undefined && data.is_not_empty" class="min-h-40 dark:bg-surface-800 shadow shadow-surface-950/30 rounded-lg relative">
 		<template #title>
 			<div class="text-center">
 				{{ title }}
@@ -11,7 +11,7 @@
 				<ProgressSpinner v-if="loading" class="w-full"></ProgressSpinner>
 			</ScrollPanel>
 			<div class="flex gap-4 mt-1">
-				<Button v-if="data.is_not_empty && !loading" class="w-full bg-danger-800 hover:bg-danger-700 border-none text-white" @click="exec">{{
+				<Button severity="danger" v-if="data.is_not_empty && !loading" class="w-full font-bold border-none" @click="exec">{{
 					$t("maintenance.cleaning.button")
 				}}</Button>
 			</div>
