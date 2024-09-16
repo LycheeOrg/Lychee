@@ -169,6 +169,14 @@ const LycheePrimeVueConfig = {
 			},
 			colorScheme: {
 				light: {
+					contrast: {
+						color: "{primary.500}",
+						background: "transparent",
+						hover: {
+							background: "{primary.500}",
+							color: "{surface.0}",
+						},
+					},
 					danger: {
 						color: "{surface.0}",
 						background: "{red.600}",
@@ -179,14 +187,42 @@ const LycheePrimeVueConfig = {
 					},
 				},
 				dark: {
-					text: {
-						primary: {
-							// color: "{primary.0}",
-							// background: "{red.600}",
-							hover: {
-								background: "{primary.500}",
-								color: "{surface.0}",
-							},
+					contrast: {
+						// Primary with transparent background
+						color: "{primary.500}",
+						background: "transparent",
+						hover: {
+							background: "{primary.500}",
+							color: "{surface.0}",
+						},
+						active: {
+							background: "{primary.500}",
+							color: "{surface.0}",
+						},
+					},
+					secondary: {
+						// gray with transparent background
+						color: "{text.mutedColor}",
+						background: "transparent",
+						hover: {
+							background: "color-mix(in srgb, {surface.700}, transparent 76%)",
+							color: "{red.700}",
+						},
+						active: {
+							background: "color-mix(in srgb, {surface.700}, transparent 76%)",
+							color: "{red.700}",
+						},
+					},
+					info: {
+						color: "{text.mutedColor}",
+						background: "transparent",
+						hover: {
+							background: "color-mix(in srgb, {surface.700}, transparent 76%)",
+							color: "{text.hoverMutedColor}",
+						},
+						active: {
+							background: "color-mix(in srgb, {surface.700}, transparent 76%)",
+							color: "{text.hoverMutedColor}",
 						},
 					},
 					danger: {

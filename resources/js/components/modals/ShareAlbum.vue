@@ -18,8 +18,9 @@
 					qrCodeOpen = false;
 					closeCallback();
 				"
+				severity="secondary"
 				:label="trans('lychee.CLOSE')"
-				class="rounded-none font-bold py-2 w-full ease-in-out select-none hover:text-danger-700 border-t border-t-black/20 hover:bg-white/[.02]"
+				class="font-bold border-none w-full select-none border-t border-t-black/20 rounded-none rounded-bl-xl rounded-br-xl"
 				>{{ trans("lychee.CLOSE") }}</Button
 			>
 		</template>

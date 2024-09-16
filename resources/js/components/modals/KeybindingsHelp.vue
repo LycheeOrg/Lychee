@@ -27,11 +27,7 @@
 					</div>
 				</div>
 				<div class="flex justify-center">
-					<Button
-						@click="closeCallback"
-						text
-						class="p-3 w-full font-bold border-none text-muted-color hover:text-danger-700 rounded-bl-xl flex-shrink-2"
-					>
+					<Button @click="closeCallback" severity="secondary" class="w-full font-bold border-none rounded-none rounded-bl-xl rounded-br-xl">
 						{{ $t("lychee.CLOSE") }}
 					</Button>
 				</div>

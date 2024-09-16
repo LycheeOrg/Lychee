@@ -18,16 +18,13 @@
 				<div class="flex items-center mt-9">
 					<Button
 						@click="closeCallback"
-						text
-						class="p-3 w-full font-bold border-none text-muted-color hover:text-danger-700 rounded-bl-xl flex-shrink-2"
+						severity="secondary"
+						class="w-full font-bold border-none rounded-none rounded-bl-xl flex-shrink-2"
 						>{{ trans("lychee.CANCEL") }}</Button
 					>
-					<Button
-						@click="login"
-						text
-						class="p-3 w-full font-bold border-none text-primary-500 hover:bg-primary-500 hover:text-surface-0 rounded-none rounded-br-xl flex-shrink"
-						>{{ trans("lychee.SIGN_IN") }}</Button
-					>
+					<Button @click="login" severity="contrast" class="w-full font-bold border-none rounded-none rounded-br-xl flex-shrink">{{
+						trans("lychee.SIGN_IN")
+					}}</Button>
 				</div>
 			</form>
 		</template>

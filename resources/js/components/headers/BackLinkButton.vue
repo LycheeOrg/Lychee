@@ -1,5 +1,5 @@
 <template>
-	<Button as="a" :href="props.config.back_button_url" text class="p-button-secondary">
+	<Button as="a" :href="props.config.back_button_url" severity="secondary" text class="border-none">
 		<!-- v-if="props.config.back_button_enabled" -->
 		{{ props.config.back_button_text }}
 	</Button>

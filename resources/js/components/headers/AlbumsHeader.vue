@@ -10,7 +10,7 @@
 			<BackLinkButton v-if="user.id === null && !isLoginLeft" :config="props.config" />
 			<Button v-if="user.id === null && isLoginLeft" icon="pi pi-sign-in" class="mr-2" severity="secondary" text @click="isLoginOpen = true" />
 			<Button v-if="user.id" @click="openLeftMenu" icon="pi pi-bars" class="mr-2" severity="secondary" text />
-			<!-- <Button v-if="initdata?.user" @click="logout" icon="pi pi-sign-out" class="mr-2" severity="secondary" text /> -->
+			<!-- <Button v-if="initdata?.user" @click="logout" icon="pi pi-sign-out" class="mr-2 border-none" severity="info" text /> -->
 		</template>
 
 		<template #center>
@@ -30,9 +30,10 @@
 				v-if="user.id !== null && props.config.show_keybinding_help_button"
 				icon="pi pi-question-circle"
 				severity="secondary"
+				text
 				@click="openHelp"
 			/>
-			<Button v-if="props.rights.can_upload" icon="pi pi-plus" severity="secondary" @click="openAddMenu" />
+			<Button v-if="props.rights.can_upload" icon="pi pi-plus" severity="secondary" text @click="openAddMenu" />
 			<Button v-if="user.id === null && !isLoginLeft" icon="pi pi-sign-in" class="mr-2" severity="secondary" text @click="isLoginOpen = true" />
 		</template>
 	</Toolbar>

@@ -33,7 +33,7 @@
 					<p class="text-muted-color" v-html="description"></p>
 				</div>
 				<div class="flex justify-center">
-					<Button @click="closeCallback" severity="secondary" class="w-full font-bold">
+					<Button @click="closeCallback" severity="info" class="w-full font-bold border-none rounded-none rounded-bl-xl rounded-br-xl">
 						{{ $t("lychee.CLOSE") }}
 					</Button>
 				</div>
