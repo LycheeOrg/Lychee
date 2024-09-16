@@ -18,14 +18,10 @@
 					</form>
 				</div>
 				<div class="flex justify-center">
-					<Button
-						text
-						class="p-3 w-full font-bold border-none text-muted-color hover:text-danger-700 rounded-bl-xl"
-						@click="closeCallback"
-						>{{ $t("lychee.CANCEL") }}</Button
-					>
-					<!-- class="p-3 w-full font-bold border-none text-primary-500 hover:bg-primary-500 hover:text-surface-0 rounded-none rounded-br-xl" -->
-					<Button text security="primary" class="w-full font-bold border-none rounded-none rounded-br-xl" @click="submit">{{
+					<Button severity="secondary" class="w-full font-bold border-none rounded-none rounded-bl-xl" @click="closeCallback">{{
+						$t("lychee.CANCEL")
+					}}</Button>
+					<Button severity="contrast" class="w-full font-bold border-none rounded-none rounded-br-xl" @click="submit">{{
 						$t("lychee.UPLOAD_IMPORT")
 					}}</Button>
 				</div>

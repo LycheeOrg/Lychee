@@ -11,8 +11,8 @@
 	<Toolbar class="w-full border-0" v-if="album">
 		<template #start>
 			<Button icon="pi pi-angle-left" class="mr-2" severity="secondary" text @click="goBack" />
-			<!-- <Button v-if="user?.id" @click="openLeftMenu" icon="pi pi-bars" class="mr-2" severity="secondary" text /> -->
-			<!-- <Button v-if="initdata?.user" @click="logout" icon="pi pi-sign-out" class="mr-2" severity="secondary" text /> -->
+			<!-- <Button v-if="user?.id" @click="openLeftMenu" icon="pi pi-bars" class="mr-2" severity="info" text /> -->
+			<!-- <Button v-if="initdata?.user" @click="logout" icon="pi pi-sign-out" class="mr-2" severity="info" text /> -->
 		</template>
 
 		<template #center>
@@ -26,10 +26,17 @@
 				</InputIcon>
 				<InputText placeholder="Search" />
 			</IconField> -->
-			<Button icon="pi pi-plus" severity="secondary" @click="openAddMenu" v-if="album.rights.can_upload" />
+			<Button icon="pi pi-plus" severity="secondary" text @click="openAddMenu" v-if="album.rights.can_upload" />
 			<template v-if="album.rights.can_edit">
-				<Button v-if="!areDetailsOpen" icon="pi pi-angle-down" severity="secondary" class="mr-2" text @click="toggleDetails" />
-				<Button v-if="areDetailsOpen" icon="pi pi-angle-up" severity="secondary" class="mr-2 text-primary-400" text @click="toggleDetails" />
+				<Button v-if="!areDetailsOpen" icon="pi pi-angle-down" severity="secondary" text class="mr-2 border-none" @click="toggleDetails" />
+				<Button
+					v-if="areDetailsOpen"
+					icon="pi pi-angle-up"
+					severity="secondary"
+					class="mr-2 text-primary-400 border-none"
+					text
+					@click="toggleDetails"
+				/>
 			</template>
 			<!-- <SplitButton label="Save" :model="items"></SplitButton> -->
 		</template>

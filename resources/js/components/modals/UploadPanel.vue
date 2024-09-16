@@ -24,11 +24,11 @@
 						<span class="text-3xl">Release file to upload!</span>
 					</div>
 					<label
-						class="flex flex-col items-center justify-center hover:bg-surface-500 border border-bg-500 shadow cursor-pointer h-1/2 rounded-2xl p-6"
+						class="flex flex-col items-center justify-center hover:text-muted-color-emphasis dark:border-surface-900 dark:hover:bg-surface-900/10 dark:hover:border-surface-950 border shadow cursor-pointer h-1/2 rounded-2xl p-6"
 						for="myFiles"
 					>
 						<h3 class="text-xl text-center">Click here to select files to upload</h3>
-						<em class="italic text-muted-color-emphasis">(Or drag files to the page)</em>
+						<em class="italic text-muted-color-emphasis hover:text-muted-color">(Or drag files to the page)</em>
 					</label>
 					<input v-on:change="upload" type="file" id="myFiles" multiple class="hidden" />
 				</div>
@@ -37,7 +37,11 @@
 				{{ $t("lychee.LOADING") }}
 			</div>
 			<div class="flex justify-center">
-				<Button @click="closeCallback" text class="p-3 w-full font-bold border-1 border-white-alpha-30 hover:bg-white-alpha-10">
+				<Button
+					@click="closeCallback"
+					severity="secondary"
+					class="w-full font-bold border-none border-1 rounded-none rounded-bl-xl rounded-br-xl"
+				>
 					{{ $t("lychee.CLOSE") }}
 				</Button>
 			</div>
