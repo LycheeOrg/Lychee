@@ -4,7 +4,7 @@
 			<div v-if="titleMovedTo !== undefined">
 				<p class="p-9 text-center text-muted-color">{{ confirmation }}</p>
 				<div class="flex">
-					<Button severity="secondary" class="font-bold w-full border-none rounded-none rounded-bl-xl"  @click="close">
+					<Button severity="secondary" class="font-bold w-full border-none rounded-none rounded-bl-xl" @click="close">
 						{{ $t("lychee.CANCEL") }}
 					</Button>
 					<Button severity="contrast" class="font-bold w-full border-none rounded-none rounded-br-xl" @click="execute">

@@ -8,7 +8,9 @@
 						{{ $t("lychee.CANCEL") }}
 					</Button>
 					<!-- class="text-danger-600 font-bold hover:text-white hover:bg-danger-700 w-full bg-transparent border-none" -->
-					<Button severity="danger" class="w-full border-none rounded-none rounded-br-xl font-bold" @click="execute">{{ $t("lychee.DELETE") }}</Button>
+					<Button severity="danger" class="w-full border-none rounded-none rounded-br-xl font-bold" @click="execute">{{
+						$t("lychee.DELETE")
+					}}</Button>
 				</div>
 			</div>
 		</template>
