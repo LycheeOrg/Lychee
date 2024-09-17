@@ -4,21 +4,20 @@ namespace App\Http\Resources\Traits;
 
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\SizeVariantType;
+use App\Http\Controllers\Gallery\AlbumController;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\SizeVariant;
 
 trait HasHeaderUrl
 {
-	public const COMPACT_HEADER = 'compact';
-
 	protected function getHeaderUrl(AbstractAlbum $album): ?string
 	{
 		if (Configs::getValueAsBool('use_album_compact_header')) {
 			return null;
 		}
 
-		if ($album instanceof Album && $album->header_id === self::COMPACT_HEADER) {
+		if ($album instanceof Album && $album->header_id === AlbumController::COMPACT_HEADER) {
 			return null;
 		}
 

@@ -41,6 +41,7 @@ class RequestAttribute
 	public const ALBUM_SORTING_ORDER_ATTRIBUTE = 'album_sorting_order';
 
 	public const PERMISSION_ID = 'perm_id';
+	public const IS_COMPACT_ATTRIBUTE = 'is_compact';
 	public const IS_NSFW_ATTRIBUTE = 'is_nsfw';
 	public const IS_PUBLIC_ATTRIBUTE = 'is_public';
 	public const IS_LINK_REQUIRED_ATTRIBUTE = 'is_link_required';
@@ -71,12 +72,6 @@ class RequestAttribute
 	public const SIZE_VARIANT_ATTRIBUTE = 'kind';
 
 	public const TAGS_ATTRIBUTE = 'tags';
-	/**
-	 * For historical reasons the parameter of the API is called `show_tags`
-	 * and not only `tags`; otherwise `RequestAttribute::TAGS_ATTRIBUTE` could be used.
-	 */
-	public const SHOW_TAGS_ATTRIBUTE = 'show_tags';
-
 	public const MAY_UPLOAD_ATTRIBUTE = 'may_upload';
 	public const MAY_EDIT_OWN_SETTINGS_ATTRIBUTE = 'may_edit_own_settings';
 
