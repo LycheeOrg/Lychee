@@ -50,7 +50,7 @@ const props = defineProps<{
 
 const emits = defineEmits<{
 	(e: "clicked", idx: number, event: MouseEvent): void;
-	(e: "contexted", idx: number, event: MouseEvent): void
+	(e: "contexted", idx: number, event: MouseEvent): void;
 }>();
 
 // bubble up.

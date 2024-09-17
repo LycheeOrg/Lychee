@@ -80,7 +80,6 @@ function openMailto() {
 	window.open(`mailto:?subject=${encodeURIComponent(title.value)}&body=${encodeURIComponent(url.value)}`);
 }
 
-
 watch(
 	() => [props.url, props.title],
 	([newUrl, newTitle], [_oldUrl, _oldTitle]) => {
