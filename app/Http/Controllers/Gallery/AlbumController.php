@@ -19,6 +19,8 @@ use App\Http\Requests\Album\GetAlbumRequest;
 use App\Http\Requests\Album\MergeAlbumsRequest;
 use App\Http\Requests\Album\MoveAlbumsRequest;
 use App\Http\Requests\Album\SetAlbumProtectionPolicyRequest;
+use App\Http\Requests\Album\SetAsCoverRequest;
+use App\Http\Requests\Album\SetAsHeaderRequest;
 use App\Http\Requests\Album\TargetListAlbumRequest;
 use App\Http\Requests\Album\TransferAlbumRequest;
 use App\Http\Requests\Album\UpdateAlbumRequest;
@@ -43,6 +45,8 @@ use Illuminate\Support\Facades\Auth;
  */
 class AlbumController extends Controller
 {
+	public const COMPACT_HEADER = 'compact';
+
 	/**
 	 * Provided an albumID, returns the album.
 	 *
@@ -196,5 +200,33 @@ class AlbumController extends Controller
 	public function transfer(TransferAlbumRequest $request, Transfer $transfer): void
 	{
 		$transfer->do($request->album(), $request->user2()->id);
+	}
+
+	/**
+	 * @param SetAsCoverRequest $request
+	 *
+	 * @return void
+	 */
+	public function cover(SetAsCoverRequest $request): void
+	{
+		$album = $request->album();
+		$album->cover_id = ($album->cover_id === $request->photo()->id) ? null : $request->photo()->id;
+		$album->save();
+	}
+
+	/**
+	 * @param SetAsHeaderRequest $request
+	 *
+	 * @return void
+	 */
+	public function header(SetAsHeaderRequest $request): void
+	{
+		$album = $request->album();
+		if ($request->is_compact) {
+			$album->header_id = self::COMPACT_HEADER;
+		} else {
+			$album->header_id = ($album->header_id === $request->photo()->id) ? null : $request->photo()->id;
+		}
+		$album->save();
 	}
 }

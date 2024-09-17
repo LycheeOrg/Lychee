@@ -40,6 +40,8 @@ Route::post('/Album::updateProtectionPolicy', [Gallery\AlbumController::class, '
 Route::post('/Album::delete', [Gallery\AlbumController::class, 'delete']);
 Route::post('/Album::transfer', [Gallery\AlbumController::class, 'transfer']);
 Route::post('/Album::move', [Gallery\AlbumController::class, 'move']);
+Route::post('/Album::cover', [Gallery\AlbumController::class, 'cover']);
+Route::post('/Album::header', [Gallery\AlbumController::class, 'header']);
 // Route::post('/Album::merge', [AlbumController::class, 'merge']);
 
 // Route::post('/Albums::getPositionData', [AlbumsController::class, 'getPositionData'])->middleware(['login_required:root']);
