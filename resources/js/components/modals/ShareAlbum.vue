@@ -43,7 +43,7 @@ const toast = useToast();
 
 const qrCodeOpen = ref(false);
 
-const visible = ref(false);
+const visible = defineModel<boolean>("visible", { default: false });
 const url = ref(props.url);
 const title = ref(props.title);
 
@@ -80,11 +80,6 @@ function openMailto() {
 	window.open(`mailto:?subject=${encodeURIComponent(title.value)}&body=${encodeURIComponent(url.value)}`);
 }
 
-defineExpose({
-	toggleModal: () => {
-		visible.value = !visible.value;
-	},
-});
 
 watch(
 	() => [props.url, props.title],

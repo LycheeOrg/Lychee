@@ -44,7 +44,7 @@ const props = defineProps<{
 	albumId?: string;
 }>();
 
-const visible = defineModel("visible", { default: false });
+const visible = defineModel<boolean>("visible", { default: false });
 
 const toast = useToast();
 const titleMovedTo = ref(undefined as string | undefined);

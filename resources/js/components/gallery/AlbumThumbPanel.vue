@@ -17,7 +17,6 @@
 import Panel from "primevue/panel";
 import AlbumThumb from "@/components/gallery/thumbs/AlbumThumb.vue";
 import { computed } from "vue";
-import { useAlbumsSelection } from "@/composables/selections/albumSelections";
 
 const props = defineProps<{
 	areNsfwVisible: boolean;
@@ -27,9 +26,6 @@ const props = defineProps<{
 	config: { album_thumb_css_aspect_ratio: string; album_subtitle_type: App.Enum.ThumbAlbumSubtitleType };
 	isAlone: boolean;
 }>();
-
-const { getAlbum, selectedAlbums, isAlbumSelected, getSelectedAlbums, getSelectedAlbumsIds, addToAlbumSelection, maySelect } =
-	useAlbumsSelection(props);
 
 const headerClass = computed(() => {
 	return props.isAlone ? "hidden" : "";
