@@ -23,7 +23,7 @@
 				<PhotoThumb
 					@click="maySelect(idx, $event)"
 					@contextmenu.prevent="menuOpen(idx, $event)"
-					:is-selected="isPhotoSelected(idx)"
+					:is-selected="props.selectedPhotos.includes(photo.id)"
 					:photo="photo"
 					:album="props.album"
 					:config="props.config"
@@ -31,42 +31,13 @@
 			</template>
 		</div>
 	</Panel>
-	<ContextMenu v-if="props.album?.rights.can_edit" ref="photomenu" :model="PhotoMenu">
-		<template #item="{ item, props }">
-			<Divider v-if="item.is_divider" />
-			<a v-else v-ripple v-bind="props.action" @click="item.callback">
-				<span :class="item.icon" />
-				<span class="ml-2">{{ $t(item.label) }}</span>
-			</a>
-		</template>
-	</ContextMenu>
-	<ContextMenu v-if="props.album?.rights.can_edit" ref="photomenu" :model="PhotoMenu">
-		<template #item="{ item, props }">
-			<Divider v-if="item.is_divider" />
-			<a v-else v-ripple v-bind="props.action" @click="item.callback">
-				<span :class="item.icon" />
-				<span class="ml-2">{{ $t(item.label) }}</span>
-			</a>
-		</template>
-	</ContextMenu>
-	<DialogPhotoMove v-model:visible="isMovePhotoVisible" :photo="photo" :photo-ids="getSelectedPhotosIds()" />
-	<DialogPhotoDelete v-model:visible="isDeletePhotoVisible" :photo="photo" :photo-ids="getSelectedPhotosIds()" />
 </template>
 <script setup lang="ts">
-import { computed, onMounted, onUpdated } from "vue";
+import { onMounted, onUpdated } from "vue";
 import Panel from "primevue/panel";
 import PhotoThumb from "@/components/gallery/thumbs/PhotoThumb.vue";
 import MiniIcon from "@/components/icons/MiniIcon.vue";
-import ContextMenu from "primevue/contextmenu";
-import { useContextMenuPhoto } from "@/composables/contextMenus/contextMenuPhoto";
 import { useLayouts } from "@/layouts/PhotoLayout";
-import Divider from "primevue/divider";
-import { usePhotosSelection } from "@/composables/selections/photoSelections";
-import PhotoService from "@/services/photo-service";
-import DialogPhotoMove from "../forms/photo/DialogPhotoMove.vue";
-import { useMovePhotoOpen } from "@/composables/modalsTriggers/movePhotoOpen";
-import { useDeletePhotoOpen } from "@/composables/modalsTriggers/deletePhotoOpen";
-import DialogPhotoDelete from "../forms/photo/DialogPhotoDelete.vue";
 
 const props = defineProps<{
 	header: string;
@@ -74,43 +45,17 @@ const props = defineProps<{
 	album: App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.TagAlbumResource | App.Http.Resources.Models.SmartAlbumResource;
 	config: App.Http.Resources.GalleryConfigs.AlbumConfig;
 	galleryConfig: App.Http.Resources.GalleryConfigs.PhotoLayoutConfig;
+	selectedPhotos: string[];
 }>();
 
-const { isMovePhotoVisible, toggleMovePhoto } = useMovePhotoOpen();
-const { isDeletePhotoVisible, toggleDeletePhoto } = useDeletePhotoOpen();
+const emits = defineEmits<{
+	(e: "clicked", idx: number, event: MouseEvent): void;
+	(e: "contexted", idx: number, event: MouseEvent): void
+}>();
 
-const { getAlbum, getAlbumConfig, selectedPhotos, isPhotoSelected, getSelectedPhotos, getSelectedPhotosIds, addToPhotoSelection, maySelect } =
-	usePhotosSelection(props);
-
-const photo = computed(() => (getSelectedPhotos().length === 1 ? getSelectedPhotos()[0] : undefined));
-
-function menuOpen(idx: number, e: MouseEvent): void {
-	if (!isPhotoSelected(idx)) {
-		selectedPhotos.value = [];
-		addToPhotoSelection(idx);
-	}
-	photomenu.value.show(e);
-}
-
-const { photomenu, PhotoMenu } = useContextMenuPhoto(
-	{
-		getAlbumConfig,
-		getAlbum,
-		getSelectedPhotos,
-	},
-	{
-		star: () => PhotoService.star(getSelectedPhotosIds(), true),
-		unstar: () => PhotoService.star(getSelectedPhotosIds(), false),
-		setAsCover: () => PhotoService.setAsCover(getSelectedPhotos()[0].id, props.album?.id as string),
-		setAsHeader: () => PhotoService.setAsHeader(getSelectedPhotos()[0].id, props.album?.id as string, true),
-		toggleTag: () => {},
-		toggleRename: () => {},
-		toggleCopyTo: () => {},
-		toggleMove: toggleMovePhoto,
-		toggleDelete: toggleDeletePhoto,
-		toggleDownload: () => {},
-	},
-);
+// bubble up.
+const maySelect = (idx: number, e: MouseEvent) => emits("clicked", idx, e);
+const menuOpen = (idx: number, e: MouseEvent) => emits("contexted", idx, e);
 
 // Layouts stuff
 const { activateLayout, layout, squareClass, justifiedClass, masonryClass, gridClass } = useLayouts(props.galleryConfig);

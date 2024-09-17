@@ -31,7 +31,7 @@ const props = defineProps<{
 	photoIds?: string[];
 }>();
 
-const visible = defineModel("visible", { default: false });
+const visible = defineModel<boolean>("visible", { default: false });
 const emit = defineEmits<{
 	(e: "deleted"): void;
 }>();
