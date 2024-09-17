@@ -2,9 +2,11 @@ import { useKeyModifier } from "@vueuse/core";
 import { computed, ref } from "vue";
 
 export function usePhotosSelection(props: {
-	album: App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.TagAlbumResource | App.Http.Resources.Models.SmartAlbumResource | null;
+	config: App.Http.Resources.GalleryConfigs.AlbumConfig;
+	album: App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.TagAlbumResource | App.Http.Resources.Models.SmartAlbumResource;
 	photos: { [key: number]: App.Http.Resources.Models.PhotoResource };
 }) {
+	const albumConfig = computed(() => props.config);
 	const photos = computed(() => props.photos);
 	const album = computed(() => props.album);
 
@@ -18,6 +20,7 @@ export function usePhotosSelection(props: {
 
 	// Getter for the menu
 	const getAlbum = () => album.value;
+	const getAlbumConfig = () => albumConfig.value;
 	function isPhotoSelected(idx: number) {
 		return selectedPhotos.value.includes(idx);
 	}
@@ -101,6 +104,7 @@ export function usePhotosSelection(props: {
 		photos,
 		album,
 		getAlbum,
+		getAlbumConfig,
 		selectedPhotos,
 		isPhotoSelected,
 		getSelectedPhotos,

@@ -22,11 +22,11 @@ import { computed, ref } from "vue";
 // <x-context-menu.item wire:click='download' icon='cloud-download'>{{ __('lychee.DOWNLOAD') }}</x-context-menu.item>
 
 type Selectors = {
+	getAlbumConfig: () => App.Http.Resources.GalleryConfigs.AlbumConfig;
 	getAlbum: () =>
 		| App.Http.Resources.Models.AlbumResource
 		| App.Http.Resources.Models.TagAlbumResource
-		| App.Http.Resources.Models.SmartAlbumResource
-		| null;
+		| App.Http.Resources.Models.SmartAlbumResource;
 	getSelectedPhotos: () => App.Http.Resources.Models.PhotoResource[];
 };
 
@@ -80,7 +80,7 @@ export function useContextMenuPhoto(selectors: Selectors, callbacks: Callbacks) 
 		});
 
 		const isSingle = photos.length === 1;
-		if (isSingle) {
+		if (isSingle && selectors.getAlbumConfig().is_model_album) {
 			menu.push({
 				label: "lychee.SET_COVER",
 				icon: "pi pi-id-card",

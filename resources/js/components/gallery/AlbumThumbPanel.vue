@@ -17,14 +17,19 @@
 import Panel from "primevue/panel";
 import AlbumThumb from "@/components/gallery/thumbs/AlbumThumb.vue";
 import { computed } from "vue";
+import { useAlbumsSelection } from "@/composables/selections/albumSelections";
 
 const props = defineProps<{
 	areNsfwVisible: boolean;
 	header: string;
+	album: App.Http.Resources.Models.AlbumResource | undefined | null;
 	albums: { [key: number]: App.Http.Resources.Models.ThumbAlbumResource };
 	config: { album_thumb_css_aspect_ratio: string; album_subtitle_type: App.Enum.ThumbAlbumSubtitleType };
 	isAlone: boolean;
 }>();
+
+const { getAlbum, selectedAlbums, isAlbumSelected, getSelectedAlbums, getSelectedAlbumsIds, addToAlbumSelection, maySelect } =
+	useAlbumsSelection(props);
 
 const headerClass = computed(() => {
 	return props.isAlone ? "hidden" : "";

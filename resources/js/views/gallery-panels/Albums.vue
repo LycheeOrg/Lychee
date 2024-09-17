@@ -14,6 +14,7 @@
 		<AlbumThumbPanel
 			v-if="smartAlbums.length > 0"
 			header="lychee.SMART_ALBUMS"
+			:album="undefined"
 			:albums="smartAlbums"
 			:user="user"
 			:config="rootConfig"
@@ -23,6 +24,7 @@
 		<AlbumThumbPanel
 			v-if="albums.length > 0"
 			header="lychee.ALBUMS"
+			:album="null"
 			:albums="albums"
 			:user="user"
 			:config="rootConfig"
@@ -32,6 +34,7 @@
 		<AlbumThumbPanel
 			v-if="sharedAlbums.length > 0"
 			header="lychee.SHARED_ALBUMS"
+			:album="undefined"
 			:albums="sharedAlbums"
 			:user="user"
 			:config="rootConfig"

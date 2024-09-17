@@ -71,7 +71,7 @@ import DialogPhotoDelete from "../forms/photo/DialogPhotoDelete.vue";
 const props = defineProps<{
 	header: string;
 	photos: { [key: number]: App.Http.Resources.Models.PhotoResource };
-	album: App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.TagAlbumResource | App.Http.Resources.Models.SmartAlbumResource | null;
+	album: App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.TagAlbumResource | App.Http.Resources.Models.SmartAlbumResource;
 	config: App.Http.Resources.GalleryConfigs.AlbumConfig;
 	galleryConfig: App.Http.Resources.GalleryConfigs.PhotoLayoutConfig;
 }>();
@@ -79,7 +79,7 @@ const props = defineProps<{
 const { isMovePhotoVisible, toggleMovePhoto } = useMovePhotoOpen();
 const { isDeletePhotoVisible, toggleDeletePhoto } = useDeletePhotoOpen();
 
-const { getAlbum, selectedPhotos, isPhotoSelected, getSelectedPhotos, getSelectedPhotosIds, addToPhotoSelection, maySelect } =
+const { getAlbum, getAlbumConfig, selectedPhotos, isPhotoSelected, getSelectedPhotos, getSelectedPhotosIds, addToPhotoSelection, maySelect } =
 	usePhotosSelection(props);
 
 const photo = computed(() => (getSelectedPhotos().length === 1 ? getSelectedPhotos()[0] : undefined));
@@ -94,14 +94,15 @@ function menuOpen(idx: number, e: MouseEvent): void {
 
 const { photomenu, PhotoMenu } = useContextMenuPhoto(
 	{
+		getAlbumConfig,
 		getAlbum,
 		getSelectedPhotos,
 	},
 	{
 		star: () => PhotoService.star(getSelectedPhotosIds(), true),
 		unstar: () => PhotoService.star(getSelectedPhotosIds(), false),
-		setAsCover: () => {},
-		setAsHeader: () => {},
+		setAsCover: () => PhotoService.setAsCover(getSelectedPhotos()[0].id, props.album?.id as string),
+		setAsHeader: () => PhotoService.setAsHeader(getSelectedPhotos()[0].id, props.album?.id as string, true),
 		toggleTag: () => {},
 		toggleRename: () => {},
 		toggleCopyTo: () => {},

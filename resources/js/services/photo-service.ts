@@ -41,6 +41,14 @@ const PhotoService = {
 	rotate(photo_id: string, direction: "1" | "-1"): Promise<AxiosResponse> {
 		return axios.post(`${Constants.API_URL}Photo::rotate`, { photo_id: photo_id, direction: direction });
 	},
+
+	setAsCover(photo_id: string, album_id: string): Promise<AxiosResponse> {
+		return axios.post(`${Constants.API_URL}Album::cover`, { photo_id: photo_id, album_id: album_id });
+	},
+
+	setAsHeader(photo_id: string, album_id: string, is_compact: boolean): Promise<AxiosResponse> {
+		return axios.post(`${Constants.API_URL}Album::header`, { photo_id: photo_id, album_id: album_id, is_compact: is_compact });
+	},
 };
 
 export default PhotoService;
