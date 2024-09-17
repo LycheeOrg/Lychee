@@ -19,6 +19,7 @@
 			<AlbumThumbPanel
 				v-if="children !== null && children.length > 0"
 				header="lychee.ALBUMS"
+				:album="modelAlbum"
 				:albums="children"
 				:config="config"
 				:is-alone="!photos?.length"
@@ -67,13 +68,11 @@ const { are_nsfw_visible } = storeToRefs(lycheeStore);
 
 const user = ref(undefined) as Ref<undefined | App.Http.Resources.Models.UserResource>;
 
-const modelAlbum = ref(undefined) as Ref<undefined | App.Http.Resources.Models.AlbumResource>;
-const tagAlbum = ref(undefined) as Ref<undefined | App.Http.Resources.Models.TagAlbumResource>;
-const smartAlbum = ref(undefined) as Ref<undefined | App.Http.Resources.Models.SmartAlbumResource>;
+const modelAlbum = ref(undefined as undefined | App.Http.Resources.Models.AlbumResource);
+const tagAlbum = ref(undefined as undefined | App.Http.Resources.Models.TagAlbumResource);
+const smartAlbum = ref(undefined as undefined | App.Http.Resources.Models.SmartAlbumResource);
+const album = computed(() => modelAlbum.value || tagAlbum.value || smartAlbum.value);
 
-const album = computed<
-	undefined | App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.TagAlbumResource | App.Http.Resources.Models.SmartAlbumResource
->(() => modelAlbum.value || tagAlbum.value || smartAlbum.value);
 const config = ref(null) as Ref<null | App.Http.Resources.GalleryConfigs.AlbumConfig>;
 const layout = ref(null) as Ref<null | App.Http.Resources.GalleryConfigs.PhotoLayoutConfig>;
 const photos = ref([]) as Ref<App.Http.Resources.Models.PhotoResource[]>;

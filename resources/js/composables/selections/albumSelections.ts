@@ -1,9 +1,9 @@
 import { useKeyModifier } from "@vueuse/core";
 import { computed, ref } from "vue";
 
-export function useAlbumssSelection(props: {
-	album: App.Http.Resources.Models.AlbumResource | null;
-	albums: App.Http.Resources.Models.ThumbAlbumResource[];
+export function useAlbumsSelection(props: {
+	album: App.Http.Resources.Models.AlbumResource | undefined | null;
+	albums: { [key: number]: App.Http.Resources.Models.ThumbAlbumResource };
 }) {
 	const albums = computed(() => props.albums);
 	const album = computed(() => props.album);
@@ -22,7 +22,7 @@ export function useAlbumssSelection(props: {
 		return selectedAlbums.value.includes(idx);
 	}
 	function getSelectedAlbums(): App.Http.Resources.Models.ThumbAlbumResource[] {
-		return albums.value.filter((_, idx) => selectedAlbums.value.includes(idx));
+		return (albums.value as App.Http.Resources.Models.ThumbAlbumResource[]).filter((_, idx) => selectedAlbums.value.includes(idx));
 	}
 
 	function getSelectedAlbumsIds(): string[] {

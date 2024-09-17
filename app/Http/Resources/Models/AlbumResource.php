@@ -64,7 +64,8 @@ class AlbumResource extends Data
 		// $this->description = $album->description;
 		$this->track_url = $album->track_url;
 		$this->license = $album->license->localization();
-		$this->header_id = $album->header_id;
+		// TODO: Investigate later
+		$this->header_id = trim($album->header_id);
 
 		// children
 		$this->parent_id = $album->parent_id;
