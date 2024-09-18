@@ -81,9 +81,6 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 		if (selectors.selectedAlbums.value.length > 0) {
 			return albumsMenu();
 		}
-
-		//! Should not happen.
-		console.log("No menu available??");
 		return [];
 	});
 

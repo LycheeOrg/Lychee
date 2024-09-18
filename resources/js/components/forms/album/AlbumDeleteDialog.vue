@@ -15,21 +15,19 @@
 		</template>
 	</Dialog>
 </template>
+
 <script setup lang="ts">
-import Dialog from "primevue/dialog";
-import PhotoService from "@/services/photo-service";
-import { useToast } from "primevue/usetoast";
-import { sprintf } from "sprintf-js";
 import { computed } from "vue";
 import Button from "primevue/button";
-import { trans } from "laravel-vue-i18n";
 import AlbumService from "@/services/album-service";
-const toast = useToast();
+import { trans } from "laravel-vue-i18n";
+import { sprintf } from "sprintf-js";
+import Dialog from "primevue/dialog";
 
 const props = defineProps<{
-	photo?: App.Http.Resources.Models.PhotoResource;
-	photoIds?: string[];
-	albumId: string;
+	parentId: string | undefined;
+	album?: App.Http.Resources.Models.ThumbAlbumResource;
+	albumIds: string[];
 }>();
 
 const visible = defineModel<boolean>("visible", { default: false });
@@ -38,28 +36,27 @@ const emit = defineEmits<{
 }>();
 
 const confirmation = computed(() => {
-	if (props.photo) {
-		return sprintf(trans("lychee.PHOTO_DELETE_CONFIRMATION"), props.photo.title);
+	if (props.album) {
+		return sprintf(trans("lychee.DELETE_ALBUM_CONFIRMATION"), props.album.title);
 	}
-	return sprintf(trans("lychee.PHOTO_DELETE_ALL"), props.photoIds?.length);
+	return sprintf(trans("lychee.DELETE_ALBUMS_CONFIRMATION"), props.albumIds.length);
 });
 
 function execute() {
-	let photoDeletedIds = [];
-	if (props.photo) {
-		photoDeletedIds.push(props.photo.id);
+	let albumDeletedIds = [];
+	if (props.album) {
+		albumDeletedIds.push(props.album.id);
 	} else {
-		photoDeletedIds = props.photoIds as string[];
+		albumDeletedIds = props.albumIds as string[];
 	}
-	PhotoService.delete(photoDeletedIds).then(() => {
-		toast.add({
-			severity: "success",
-			summary: "Photo deleted",
-			life: 3000,
-		});
-		AlbumService.clearCache(props.albumId);
+
+	AlbumService.delete(albumDeletedIds).then(() => {
+		if (props.parentId === undefined) {
+			AlbumService.clearAlbums();
+		} else {
+			AlbumService.clearCache(props.parentId);
+		}
 		emit("deleted");
-		// Todo emit that we moved things.
 	});
 }
 </script>

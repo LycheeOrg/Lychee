@@ -61,12 +61,26 @@
 			</a>
 		</template>
 	</ContextMenu>
+	<!-- Dialogs for albums -->
+	<AlbumMoveDialog
+		v-model:visible="isMoveAlbumVisible"
+		:parent-id="undefined"
+		:album="selectedAlbum"
+		:album-ids="selectedAlbumsIds"
+		@moved="refresh"
+	/>
+	<AlbumDeleteDialog
+		v-model:visible="isDeleteAlbumVisible"
+		:parent-id="undefined"
+		:album="selectedAlbum"
+		:album-ids="selectedAlbumsIds"
+		@deleted="refresh"
+	/>
 </template>
 <script setup lang="ts">
 import AlbumThumbPanel from "@/components/gallery/AlbumThumbPanel.vue";
 import { useAuthStore } from "@/stores/Auth";
-import AlbumService from "@/services/album-service";
-import { computed, Ref, ref } from "vue";
+import { ref } from "vue";
 import AlbumsHeader from "@/components/headers/AlbumsHeader.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
@@ -76,27 +90,35 @@ import KeybindingsHelp from "@/components/modals/KeybindingsHelp.vue";
 import { useSelection } from "@/composables/selections/selections";
 import { useContextMenu } from "@/composables/contextMenus/contextMenu";
 import ContextMenu from "primevue/contextmenu";
+import { useAlbumsRefresher } from "@/composables/album/albumsRefresher";
+import AlbumDeleteDialog from "@/components/forms/album/AlbumDeleteDialog.vue";
+import { useDeleteAlbumOpen } from "@/composables/modalsTriggers/deleteAlbumOpen";
+import AlbumMoveDialog from "@/components/forms/album/AlbumMoveDialog.vue";
+import { useMoveAlbumOpen } from "@/composables/modalsTriggers/moveAlbumOpen";
 
 const isLoginOpen = ref(false);
 
-const user = ref(undefined) as Ref<undefined | App.Http.Resources.Models.UserResource>;
-const isKeybindingsHelpOpen = ref(false);
-const smartAlbums = ref([]) as Ref<App.Http.Resources.Models.ThumbAlbumResource[]>;
-const albums = ref([]) as Ref<App.Http.Resources.Models.ThumbAlbumResource[]>;
-const sharedAlbums = ref([]) as Ref<App.Http.Resources.Models.ThumbAlbumResource[]>;
-const rootConfig = ref(undefined) as Ref<undefined | App.Http.Resources.GalleryConfigs.RootConfig>;
-const rootRights = ref(undefined) as Ref<undefined | App.Http.Resources.Rights.RootAlbumRightsResource>;
 const auth = useAuthStore();
 const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
 const { are_nsfw_visible } = storeToRefs(lycheeStore);
 
 const config = ref(null); // unused for now.
-const root = computed(() => undefined);
 const photos = ref([]); // unused.
-const selectableAlbums = computed(() => albums.value.concat(sharedAlbums.value));
 
-const { selectedAlbum, selectedAlbumsIdx, selectedAlbums, selectedAlbumsIds, albumClick } = useSelection(config, root, photos, selectableAlbums);
+const { user, isKeybindingsHelpOpen, smartAlbums, albums, sharedAlbums, rootConfig, rootRights, selectableAlbums, refresh } = useAlbumsRefresher(
+	auth,
+	lycheeStore,
+	isLoginOpen,
+);
+
+const { selectedAlbum, selectedAlbumsIdx, selectedAlbums, selectedAlbumsIds, albumClick } = useSelection(config, undefined, photos, selectableAlbums);
+
+// Modals for Albums
+const { isMoveAlbumVisible, toggleMoveAlbum } = useMoveAlbumOpen();
+const { isDeleteAlbumVisible, toggleDeleteAlbum } = useDeleteAlbumOpen();
+
+// Unused.
 const photoCallbacks = {
 	star: () => {},
 	unstar: () => {},
@@ -114,8 +136,8 @@ const albumCallbacks = {
 	setAsCover: () => {},
 	toggleRename: () => {},
 	toggleMerge: () => {},
-	toggleMove: () => {},
-	toggleDelete: () => {},
+	toggleMove: toggleMoveAlbum,
+	toggleDelete: toggleDeleteAlbum,
 	toggleDownload: () => {},
 };
 
@@ -133,39 +155,6 @@ const { menu, Menu, albumMenuOpen } = useContextMenu(
 	photoCallbacks,
 	albumCallbacks,
 );
-
-function refresh() {
-	auth.getUser().then((data) => {
-		user.value = data;
-
-		// display popup if logged in and set..
-		if (user.value.id && lycheeStore.show_keybinding_help_popup) {
-			isKeybindingsHelpOpen.value = true;
-		}
-	});
-
-	AlbumService.getAll()
-		.then((data) => {
-			smartAlbums.value = (data.data.smart_albums as App.Http.Resources.Models.ThumbAlbumResource[]) ?? [];
-			albums.value = data.data.albums as App.Http.Resources.Models.ThumbAlbumResource[];
-			smartAlbums.value = smartAlbums.value.concat(data.data.tag_albums as App.Http.Resources.Models.ThumbAlbumResource[]);
-			sharedAlbums.value = (data.data.shared_albums as App.Http.Resources.Models.ThumbAlbumResource[]) ?? [];
-			rootConfig.value = data.data.config;
-			rootRights.value = data.data.rights;
-
-			if (albums.value.length === 0 && smartAlbums.value.length === 0 && sharedAlbums.value.length === 0) {
-				isLoginOpen.value = true;
-			}
-		})
-		.catch((error) => {
-			// We are required to login :)
-			if (error.response.status === 401) {
-				isLoginOpen.value = true;
-			} else {
-				console.error(error);
-			}
-		});
-}
 
 refresh();
 

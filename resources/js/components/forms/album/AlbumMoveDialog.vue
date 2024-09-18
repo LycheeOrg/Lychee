@@ -14,13 +14,13 @@
 			</div>
 			<div v-else>
 				<div class="p-9">
-					<span v-if="props.photo" class="font-bold">
-						{{ sprintf("Move %s to:", props.photo.title) }}
+					<span v-if="props.album" class="font-bold">
+						{{ sprintf("Move %s to:", props.album.title) }}
 					</span>
 					<span v-else class="font-bold">
-						{{ sprintf("Move %d photos to:", props.photoIds?.length) }}
+						{{ sprintf("Move %d albums to:", props.albumIds?.length) }}
 					</span>
-					<SearchTargetAlbum :album-id="props.albumId" @selected="selected" />
+					<SearchTargetAlbum :album-id="parentId" @selected="selected" />
 				</div>
 				<Button class="w-full font-bold rounded-none rounded-bl-xl rounded-br-xl border-none" severity="secondary" @click="closeCallback">
 					{{ $t("lychee.CANCEL") }}
@@ -30,36 +30,36 @@
 	</Dialog>
 </template>
 <script setup lang="ts">
-import PhotoService from "@/services/photo-service";
-import { useToast } from "primevue/usetoast";
-import { sprintf } from "sprintf-js";
 import { computed, ref } from "vue";
-import SearchTargetAlbum from "../album/SearchTargetAlbum.vue";
 import Button from "primevue/button";
-import Dialog from "primevue/dialog";
+import { trans } from "laravel-vue-i18n";
+import { sprintf } from "sprintf-js";
+import SearchTargetAlbum from "@/components/forms/album/SearchTargetAlbum.vue";
 import AlbumService from "@/services/album-service";
+import { useToast } from "primevue/usetoast";
+import Dialog from "primevue/dialog";
 
 const props = defineProps<{
-	photo?: App.Http.Resources.Models.PhotoResource;
-	photoIds?: string[];
-	albumId?: string;
+	parentId: string | undefined;
+	album?: App.Http.Resources.Models.ThumbAlbumResource;
+	albumIds: string[];
 }>();
 
 const visible = defineModel<boolean>("visible", { default: false });
+
+const emit = defineEmits<{
+	(e: "moved"): void;
+}>();
 
 const toast = useToast();
 const titleMovedTo = ref(undefined as string | undefined);
 const destination_id = ref(undefined as string | undefined | null);
 const confirmation = computed(() => {
-	if (props.photo) {
-		return sprintf("Move %s to %s.", props.photo.title, titleMovedTo.value);
+	if (props.album) {
+		return sprintf(trans("lychee.ALBUM_MOVE"), props.album.title, titleMovedTo.value);
 	}
-	return sprintf("Move %d photos to %s.", props.photoIds?.length, titleMovedTo.value);
+	return sprintf(trans("lychee.ALBUMS_MOVE"), titleMovedTo.value);
 });
-
-const emit = defineEmits<{
-	(e: "moved"): void;
-}>();
 
 function selected(target: App.Http.Resources.Models.TargetAlbumResource) {
 	titleMovedTo.value = target.original;
@@ -76,24 +76,27 @@ function execute() {
 	if (destination_id.value === undefined) {
 		return;
 	}
-	let photoMovedIds = [];
-	if (props.photo) {
-		photoMovedIds.push(props.photo.id);
+	let albumMovedIds = [];
+	if (props.album) {
+		albumMovedIds.push(props.album.id);
 	} else {
-		photoMovedIds = props.photoIds as string[];
+		albumMovedIds = props.albumIds as string[];
 	}
-	PhotoService.move(destination_id.value, photoMovedIds).then(() => {
+
+	AlbumService.move(destination_id.value, albumMovedIds).then(() => {
+		AlbumService.clearCache(destination_id.value);
 		toast.add({
 			severity: "success",
-			summary: "Photo moved",
+			summary: "Album(s) moved to " + titleMovedTo.value,
 			life: 3000,
 		});
-		// Clear the cache for the current album and the destination album
-		AlbumService.clearCache(props.albumId);
 		AlbumService.clearCache(destination_id.value);
-
+		if (props.parentId === undefined) {
+			AlbumService.clearAlbums();
+		} else {
+			AlbumService.clearCache(props.parentId);
+		}
 		emit("moved");
-		// Todo emit that we moved things.
 	});
 }
 </script>

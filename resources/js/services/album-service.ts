@@ -55,6 +55,11 @@ const AlbumService = {
 		}
 	},
 
+	clearAlbums(): void {
+		const axiosWithCache = axios as unknown as AxiosCacheInstance;
+		axiosWithCache.storage.remove("albums");
+	},
+
 	getAll(): Promise<AxiosResponse<App.Http.Resources.Collections.RootAlbumResource>> {
 		const requester = axios as unknown as AxiosCacheInstance;
 		return requester.get(`${Constants.API_URL}Albums`, { data: {}, id: "albums" });
