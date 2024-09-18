@@ -25,6 +25,7 @@
 				:is-alone="!photos?.length"
 				:are-nsfw-visible="are_nsfw_visible"
 				@clicked="albumClick"
+				@contexted="albumMenuOpen"
 				:idx-shift="0"
 				:selected-albums="selectedAlbumsIds"
 			/>
@@ -37,14 +38,13 @@
 				:gallery-config="layout"
 				:selected-photos="selectedPhotosIds"
 				@clicked="photoClick"
+				@contexted="photoMenuOpen"
 			/>
-			<!-- @clicked="maySelect"
-			@contexted="menuOpen" -->
 		</div>
 		<ShareAlbum v-model:visible="isShareAlbumVisible" :title="album.title" :url="route.path" />
 		<DialogPhotoMove v-model:visible="isMovePhotoVisible" :photo="selectedPhoto" :photo-ids="selectedPhotosIds" />
 		<DialogPhotoDelete v-model:visible="isDeletePhotoVisible" :photo="selectedPhoto" :photo-ids="selectedPhotosIds" />
-		<!-- <ContextMenu ref="menu" :model="Menu">
+		<ContextMenu ref="menu" :model="Menu">
 			<template #item="{ item, props }">
 				<Divider v-if="item.is_divider" />
 				<a v-else v-ripple v-bind="props.action" @click="item.callback">
@@ -52,7 +52,7 @@
 					<span class="ml-2">{{ $t(item.label) }}</span>
 				</a>
 			</template>
-		</ContextMenu> -->
+		</ContextMenu>
 	</template>
 </template>
 <script setup lang="ts">
@@ -74,12 +74,12 @@ import DialogPhotoDelete from "@/components/forms/photo/DialogPhotoDelete.vue";
 import { useMovePhotoOpen } from "@/composables/modalsTriggers/movePhotoOpen";
 import { useDeletePhotoOpen } from "@/composables/modalsTriggers/deletePhotoOpen";
 import { useSelection } from "@/composables/selections/selections";
-import { useContextMenuPhoto } from "@/composables/contextMenus/contextMenuPhoto";
-import PhotoService from "@/services/photo-service";
+// import PhotoService from "@/services/photo-service";
 import { useShareAlbumOpen } from "@/composables/modalsTriggers/shareAlbumOpen";
 import Divider from "primevue/divider";
 import ContextMenu from "primevue/contextmenu";
 import { useAlbumRefresher } from "@/composables/album/albumRefresher";
+import { useContextMenu } from "@/composables/contextMenus/contextMenu";
 
 const route = useRoute();
 
@@ -134,20 +134,42 @@ const {
 	albumClick,
 } = useSelection(config, album, photos, children);
 
-// const { getAlbum, getAlbumConfig, selectedPhotos, isPhotoSelected, getSelectedPhotos, getSelectedPhotosIds, addToPhotoSelection, maySelect } =
-// 	usePhotosSelection({
-// 		config
-// 	});
+const photoCallbacks = {
+	star: () => {},
+	unstar: () => {},
+	setAsCover: () => {},
+	setAsHeader: () => {},
+	toggleTag: () => {},
+	toggleRename: () => {},
+	toggleCopyTo: () => {},
+	toggleMove: () => {},
+	toggleDelete: () => {},
+	toggleDownload: () => {},
+};
 
-// const photo = computed(() => (getSelectedPhotos().length === 1 ? getSelectedPhotos()[0] : undefined));
+const albumCallbacks = {
+	setAsCover: () => {},
+	toggleRename: () => {},
+	toggleMerge: () => {},
+	toggleMove: () => {},
+	toggleDelete: () => {},
+	toggleDownload: () => {},
+};
 
-// function menuOpen(idx: number, e: MouseEvent): void {
-// 	if (!isPhotoSelected(idx)) {
-// 		selectedPhotos.value = [];
-// 		addToPhotoSelection(idx);
-// 	}
-// 	photomenu.value.show(e);
-// }
+const { menu, Menu, photoMenuOpen, albumMenuOpen } = useContextMenu(
+	{
+		config: config,
+		album: album,
+		selectedPhoto: selectedPhoto,
+		selectedPhotos: selectedPhotos,
+		selectedPhotosIdx: selectedPhotosIdx,
+		selectedAlbum: selectedAlbum,
+		selectedAlbums: selectedAlbums,
+		selectedAlbumIdx: selectedAlbumsIdx,
+	},
+	photoCallbacks,
+	albumCallbacks,
+);
 
 // const { photomenu, PhotoMenu } = useContextMenuPhoto(
 // 	{
@@ -170,7 +192,6 @@ const {
 // );
 
 loadLayout();
-// loadUser();
 
 refresh();
 

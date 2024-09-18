@@ -35,6 +35,7 @@
 			:idx-shift="0"
 			:selected-albums="selectedAlbumsIds"
 			@clicked="albumClick"
+			@contexted="albumMenuOpen"
 		/>
 		<AlbumThumbPanel
 			v-if="sharedAlbums.length > 0"
@@ -48,6 +49,7 @@
 			:idx-shift="albums.length"
 			:selected-albums="selectedAlbumsIds"
 			@clicked="albumClick"
+			@contexted="albumMenuOpen"
 		/>
 	</div>
 	<ContextMenu ref="menu" :model="Menu">
@@ -55,7 +57,7 @@
 			<Divider v-if="item.is_divider" />
 			<a v-else v-ripple v-bind="props.action" @click="item.callback">
 				<span :class="item.icon" />
-				<span class="ml-2">{{ $t(item.label as string) }}</span>
+				<span class="ml-2">{{ $t(item.label) }}</span>
 			</a>
 		</template>
 	</ContextMenu>
@@ -73,6 +75,7 @@ import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
 import KeybindingsHelp from "@/components/modals/KeybindingsHelp.vue";
 import { useSelection } from "@/composables/selections/selections";
 import { useContextMenu } from "@/composables/contextMenus/contextMenu";
+import ContextMenu from "primevue/contextmenu";
 
 const isLoginOpen = ref(false);
 
@@ -94,7 +97,6 @@ const photos = ref([]); // unused.
 const selectableAlbums = computed(() => albums.value.concat(sharedAlbums.value));
 
 const { selectedAlbum, selectedAlbumsIdx, selectedAlbums, selectedAlbumsIds, albumClick } = useSelection(config, root, photos, selectableAlbums);
-
 const photoCallbacks = {
 	star: () => {},
 	unstar: () => {},
@@ -117,14 +119,16 @@ const albumCallbacks = {
 	toggleDownload: () => {},
 };
 
-const { menu, Menu } = useContextMenu(
+const { menu, Menu, albumMenuOpen } = useContextMenu(
 	{
 		config: null,
 		album: null,
 		selectedPhoto: undefined,
 		selectedPhotos: undefined,
+		selectedPhotosIdx: undefined,
 		selectedAlbum: selectedAlbum,
 		selectedAlbums: selectedAlbums,
+		selectedAlbumIdx: selectedAlbumsIdx,
 	},
 	photoCallbacks,
 	albumCallbacks,

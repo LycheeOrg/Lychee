@@ -1,4 +1,4 @@
-import { computed, ComputedRef, ref } from "vue";
+import { computed, ComputedRef, Ref, ref } from "vue";
 
 // @if (!$is_starred)
 // <x-context-menu.item wire:click='star' icon_class='hover:fill-yello-400' icon='star'>{{ __('lychee.STAR') }}</x-context-menu.item>
@@ -22,16 +22,18 @@ import { computed, ComputedRef, ref } from "vue";
 // <x-context-menu.item wire:click='download' icon='cloud-download'>{{ __('lychee.DOWNLOAD') }}</x-context-menu.item>
 
 type Selectors = {
-	config: ComputedRef<App.Http.Resources.GalleryConfigs.AlbumConfig | null> | null;
+	config: Ref<App.Http.Resources.GalleryConfigs.AlbumConfig | null> | null;
 	album: ComputedRef<
 		| App.Http.Resources.Models.AlbumResource
 		| App.Http.Resources.Models.TagAlbumResource
 		| App.Http.Resources.Models.SmartAlbumResource
 		| undefined
 	> | null;
+	selectedPhotosIdx: Ref<number[]> | undefined;
 	selectedPhoto: ComputedRef<App.Http.Resources.Models.PhotoResource | undefined> | undefined;
-	selectedAlbum: ComputedRef<App.Http.Resources.Models.ThumbAlbumResource | undefined>;
 	selectedPhotos: ComputedRef<App.Http.Resources.Models.PhotoResource[]> | undefined;
+	selectedAlbumIdx: Ref<number[]>;
+	selectedAlbum: ComputedRef<App.Http.Resources.Models.ThumbAlbumResource | undefined>;
 	selectedAlbums: ComputedRef<App.Http.Resources.Models.ThumbAlbumResource[]>;
 };
 
@@ -294,5 +296,35 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 		];
 	}
 
-	return { menu, Menu };
+	function photoMenuOpen(idx: number, e: MouseEvent): void {
+		// Clear up Album selection (if any)
+		selectors.selectedAlbumIdx!.value = [];
+
+		// Check if photo was selected already.
+		// If not, we replace entire selection.
+		if (!selectors.selectedPhotosIdx!.value.includes(idx)) {
+			selectors.selectedPhotosIdx!.value = [idx];
+		}
+
+		// Show menu
+		menu.value.show(e);
+	}
+
+	function albumMenuOpen(idx: number, e: MouseEvent): void {
+		// Clear up Photo selection (if any)
+		if (selectors.selectedPhotosIdx !== undefined) {
+			selectors.selectedPhotosIdx!.value = [];
+		}
+
+		// Check if album was selected already.
+		// If not, we replace entire selection.
+		if (!selectors.selectedAlbumIdx!.value.includes(idx)) {
+			selectors.selectedAlbumIdx!.value = [idx];
+		}
+
+		// Show menu
+		menu.value.show(e);
+	}
+
+	return { menu, Menu, photoMenuOpen, albumMenuOpen };
 }
