@@ -114,7 +114,7 @@
 	</div>
 	<PhotoEdit v-if="photo?.rights.can_edit" :photo="photo" v-model:visible="isEditOpen" />
 	<DialogPhotoMove :photo="photo" v-model:visible="isMovePhotoVisible" @moved="updated" />
-	<DialogPhotoDelete :photo="photo" v-model:visible="isDeletePhotoVisible" @deleted="updated" />
+	<DialogPhotoDelete :photo="photo" v-model:visible="isDeletePhotoVisible" :album-id="props.albumid" @deleted="updated" />
 </template>
 <script setup lang="ts">
 import DockButton from "@/components/gallery/photo/DockButton.vue";
