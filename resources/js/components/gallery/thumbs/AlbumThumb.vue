@@ -10,13 +10,15 @@
 		<!-- x-bind:class="select.selectedAlbums.includes('{{ $id }}') ? 'outline outline-1 outline-primary-500' : ''" -->
 		<AlbumThumbImage
 			class="group-hover:border-primary-500 group-hover:-rotate-2 group-hover:-translate-x-3 group-hover:translate-y-2"
+			:class="cssClass"
 			:thumb="props.album.thumb"
 		/>
 		<AlbumThumbImage
 			class="group-hover:border-primary-500 group-hover:rotate-6 group-hover:translate-x-3 group-hover:-translate-y-2"
+			:class="cssClass"
 			:thumb="props.album.thumb"
 		/>
-		<AlbumThumbImage class="group-hover:border-primary-500" :thumb="props.album.thumb" />
+		<AlbumThumbImage class="group-hover:border-primary-500" :class="cssClass" :thumb="props.album.thumb" />
 		<div
 			class="overlay absolute mb-[1px] mx-[1px] p-0 border-0 w-[calc(100%-2px)] bottom-0 bg-gradient-to-t from-[#00000099] text-shadow-sm"
 			:class="cssOverlay"
@@ -78,6 +80,7 @@ import { useAuthStore } from "@/stores/Auth";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 
 const props = defineProps<{
+	isSelected: boolean;
 	cover_id: string | null;
 	album: App.Http.Resources.Models.ThumbAlbumResource;
 	asepct_ratio: string;
@@ -86,6 +89,14 @@ const props = defineProps<{
 
 const auth = useAuthStore();
 const lycheeStore = useLycheeStateStore();
+
+const cssClass = computed(() => {
+	let css = "";
+	if (props.isSelected) {
+		css += "outline outline-1.5 outline-primary-500";
+	}
+	return css;
+});
 
 const user = ref(null) as Ref<App.Http.Resources.Models.UserResource | null>;
 auth.getUser().then((data) => {
