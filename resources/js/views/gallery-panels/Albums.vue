@@ -20,6 +20,8 @@
 			:config="rootConfig"
 			:is-alone="!albums.length"
 			:are-nsfw-visible="false"
+			:idx-shift="-1"
+			:selected-albums="[]"
 		/>
 		<AlbumThumbPanel
 			v-if="albums.length > 0"
@@ -30,6 +32,9 @@
 			:config="rootConfig"
 			:is-alone="!sharedAlbums.length"
 			:are-nsfw-visible="are_nsfw_visible"
+			:idx-shift="0"
+			:selected-albums="selectedAlbumsIds"
+			@clicked="albumClick"
 		/>
 		<AlbumThumbPanel
 			v-if="sharedAlbums.length > 0"
@@ -40,20 +45,34 @@
 			:config="rootConfig"
 			:is-alone="!albums.length"
 			:are-nsfw-visible="are_nsfw_visible"
+			:idx-shift="albums.length"
+			:selected-albums="selectedAlbumsIds"
+			@clicked="albumClick"
 		/>
 	</div>
+	<ContextMenu ref="menu" :model="Menu">
+		<template #item="{ item, props }">
+			<Divider v-if="item.is_divider" />
+			<a v-else v-ripple v-bind="props.action" @click="item.callback">
+				<span :class="item.icon" />
+				<span class="ml-2">{{ $t(item.label as string) }}</span>
+			</a>
+		</template>
+	</ContextMenu>
 </template>
 <script setup lang="ts">
 import AlbumThumbPanel from "@/components/gallery/AlbumThumbPanel.vue";
 import { useAuthStore } from "@/stores/Auth";
 import AlbumService from "@/services/album-service";
-import { Ref, ref } from "vue";
+import { computed, Ref, ref } from "vue";
 import AlbumsHeader from "@/components/headers/AlbumsHeader.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import { onKeyStroke } from "@vueuse/core";
 import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
 import KeybindingsHelp from "@/components/modals/KeybindingsHelp.vue";
+import { useSelection } from "@/composables/selections/selections";
+import { useContextMenu } from "@/composables/contextMenus/contextMenu";
 
 const isLoginOpen = ref(false);
 
@@ -68,6 +87,48 @@ const auth = useAuthStore();
 const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
 const { are_nsfw_visible } = storeToRefs(lycheeStore);
+
+const config = ref(null); // unused for now.
+const root = computed(() => undefined);
+const photos = ref([]); // unused.
+const selectableAlbums = computed(() => albums.value.concat(sharedAlbums.value));
+
+const { selectedAlbum, selectedAlbumsIdx, selectedAlbums, selectedAlbumsIds, albumClick } = useSelection(config, root, photos, selectableAlbums);
+
+const photoCallbacks = {
+	star: () => {},
+	unstar: () => {},
+	setAsCover: () => {},
+	setAsHeader: () => {},
+	toggleTag: () => {},
+	toggleRename: () => {},
+	toggleCopyTo: () => {},
+	toggleMove: () => {},
+	toggleDelete: () => {},
+	toggleDownload: () => {},
+};
+
+const albumCallbacks = {
+	setAsCover: () => {},
+	toggleRename: () => {},
+	toggleMerge: () => {},
+	toggleMove: () => {},
+	toggleDelete: () => {},
+	toggleDownload: () => {},
+};
+
+const { menu, Menu } = useContextMenu(
+	{
+		config: null,
+		album: null,
+		selectedPhoto: undefined,
+		selectedPhotos: undefined,
+		selectedAlbum: selectedAlbum,
+		selectedAlbums: selectedAlbums,
+	},
+	photoCallbacks,
+	albumCallbacks,
+);
 
 function refresh() {
 	auth.getUser().then((data) => {

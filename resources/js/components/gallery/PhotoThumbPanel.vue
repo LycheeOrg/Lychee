@@ -48,12 +48,11 @@ const props = defineProps<{
 	selectedPhotos: string[];
 }>();
 
+// bubble up.
 const emits = defineEmits<{
 	(e: "clicked", idx: number, event: MouseEvent): void;
 	(e: "contexted", idx: number, event: MouseEvent): void;
 }>();
-
-// bubble up.
 const maySelect = (idx: number, e: MouseEvent) => emits("clicked", idx, e);
 const menuOpen = (idx: number, e: MouseEvent) => emits("contexted", idx, e);
 

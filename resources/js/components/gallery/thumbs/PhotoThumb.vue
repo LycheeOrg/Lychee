@@ -7,10 +7,6 @@
 		:data-id="props.photo.id"
 		:data-album-id="props.album?.id"
 	>
-		<!--
-	x-on:contextmenu.prevent='handleContextPhoto($event, $wire)'
-	x-on:click='handleClickPhoto($event, $wire)'
-	-->
 		<span
 			class="thumbimg w-full h-full border-none"
 			:class="(props.photo.precomputed.is_video ? 'video' : '') + ' ' + (props.photo.precomputed.is_livephoto ? 'livephoto' : '')"
@@ -46,7 +42,7 @@
 	</router-link>
 </template>
 <script setup lang="ts">
-import { computed, ref, watch, type Ref } from "vue";
+import { computed, ref, type Ref } from "vue";
 import { useAuthStore } from "@/stores/Auth";
 import MiniIcon from "@/components/icons/MiniIcon.vue";
 import ThumbBadge from "@/components/gallery/thumbs/ThumbBadge.vue";
@@ -75,7 +71,7 @@ auth.getUser().then((data) => {
 const cssClass = computed(() => {
 	let css = "photo group shadow-md shadow-black/25 animate-zoomIn transition-all ease-in duration-200 block absolute";
 	if (props.isSelected) {
-		css += " outline outline-1 outline-primary-500";
+		css += " outline outline-1.5 outline-primary-500";
 	}
 	return css;
 });
