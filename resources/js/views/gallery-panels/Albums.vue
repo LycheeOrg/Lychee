@@ -69,6 +69,13 @@
 		:album-ids="selectedAlbumsIds"
 		@moved="refresh"
 	/>
+	<AlbumMergeDialog
+		v-model:visible="isMergeAlbumVisible"
+		:parent-id="undefined"
+		:album="selectedAlbum"
+		:album-ids="selectedAlbumsIds"
+		@merged="refresh"
+	/>
 	<AlbumDeleteDialog
 		v-model:visible="isDeleteAlbumVisible"
 		:parent-id="undefined"
@@ -95,6 +102,8 @@ import AlbumDeleteDialog from "@/components/forms/album/AlbumDeleteDialog.vue";
 import { useDeleteAlbumOpen } from "@/composables/modalsTriggers/deleteAlbumOpen";
 import AlbumMoveDialog from "@/components/forms/album/AlbumMoveDialog.vue";
 import { useMoveAlbumOpen } from "@/composables/modalsTriggers/moveAlbumOpen";
+import { useMergeAlbumOpen } from "@/composables/modalsTriggers/mergeAlbumOpen";
+import AlbumMergeDialog from "@/components/forms/album/AlbumMergeDialog.vue";
 
 const isLoginOpen = ref(false);
 
@@ -116,6 +125,7 @@ const { selectedAlbum, selectedAlbumsIdx, selectedAlbums, selectedAlbumsIds, alb
 
 // Modals for Albums
 const { isMoveAlbumVisible, toggleMoveAlbum } = useMoveAlbumOpen();
+const { isMergeAlbumVisible, toggleMergeAlbum } = useMergeAlbumOpen();
 const { isDeleteAlbumVisible, toggleDeleteAlbum } = useDeleteAlbumOpen();
 
 const unselect = () => {
@@ -139,7 +149,7 @@ const photoCallbacks = {
 const albumCallbacks = {
 	setAsCover: () => {},
 	toggleRename: () => {},
-	toggleMerge: () => {},
+	toggleMerge: toggleMergeAlbum,
 	toggleMove: toggleMoveAlbum,
 	toggleDelete: toggleDeleteAlbum,
 	toggleDownload: () => {},
