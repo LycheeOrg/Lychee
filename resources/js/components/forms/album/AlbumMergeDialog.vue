@@ -8,17 +8,17 @@
 						{{ $t("lychee.CANCEL") }}
 					</Button>
 					<Button severity="contrast" class="font-bold w-full border-none rounded-none rounded-br-xl" @click="execute">
-						{{ $t("lychee.MOVE") }}
+						{{ $t("lychee.MERGE") }}
 					</Button>
 				</div>
 			</div>
 			<div v-else>
 				<div class="p-9">
 					<span v-if="props.album" class="font-bold">
-						{{ sprintf("Move %s to:", props.album.title) }}
+						{{ sprintf("Merge %s to:", props.album.title) }}
 					</span>
 					<span v-else class="font-bold">
-						{{ sprintf("Move %d albums to:", props.albumIds?.length) }}
+						{{ sprintf("Merge %d albums to:", props.albumIds?.length) }}
 					</span>
 					<SearchTargetAlbum :album-id="parentId" @selected="selected" />
 				</div>
@@ -48,7 +48,7 @@ const props = defineProps<{
 const visible = defineModel<boolean>("visible", { default: false });
 
 const emit = defineEmits<{
-	(e: "moved"): void;
+	(e: "merged"): void;
 }>();
 
 const toast = useToast();
@@ -56,9 +56,9 @@ const titleMovedTo = ref(undefined as string | undefined);
 const destination_id = ref(undefined as string | undefined | null);
 const confirmation = computed(() => {
 	if (props.album) {
-		return sprintf(trans("lychee.ALBUM_MOVE"), props.album.title, titleMovedTo.value);
+		return sprintf(trans("lychee.ALBUM_MERGE"), props.album.title, titleMovedTo.value);
 	}
-	return sprintf(trans("lychee.ALBUMS_MOVE"), titleMovedTo.value);
+	return sprintf(trans("lychee.ALBUMS_MERGE"), titleMovedTo.value);
 });
 
 function selected(target: App.Http.Resources.Models.TargetAlbumResource) {
@@ -76,22 +76,22 @@ function execute() {
 	if (destination_id.value === undefined) {
 		return;
 	}
-	let albumMovedIds = [];
+	let albumMergedIds = [];
 	if (props.album) {
-		albumMovedIds.push(props.album.id);
+		albumMergedIds.push(props.album.id);
 	} else {
-		albumMovedIds = props.albumIds as string[];
+		albumMergedIds = props.albumIds as string[];
 	}
 
-	AlbumService.move(destination_id.value, albumMovedIds).then(() => {
+	AlbumService.move(destination_id.value, albumMergedIds).then(() => {
 		AlbumService.clearCache(destination_id.value);
 		toast.add({
 			severity: "success",
-			summary: "Album(s) moved to " + titleMovedTo.value,
+			summary: "Album(s) merged to " + titleMovedTo.value,
 			life: 3000,
 		});
 		AlbumService.clearCache(destination_id.value);
-		for (let id in albumMovedIds) {
+		for (let id in albumMergedIds) {
 			AlbumService.clearCache(id);
 		}
 		if (props.parentId === undefined) {
@@ -99,7 +99,7 @@ function execute() {
 		} else {
 			AlbumService.clearCache(props.parentId);
 		}
-		emit("moved");
+		emit("merged");
 	});
 }
 </script>

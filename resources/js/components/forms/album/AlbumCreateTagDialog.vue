@@ -1,11 +1,5 @@
 <template>
-	<Dialog
-		v-model:visible="visible"
-		modal
-		:pt="{
-			root: 'border-none',
-		}"
-	>
+	<Dialog v-model:visible="visible" pt:root:class="border-none" modal :dismissable-mask="true">
 		<template #container="{ closeCallback }">
 			<div v-focustrap class="flex flex-col relative max-w-full text-sm rounded-md pt-9">
 				<p class="mb-5 px-9">{{ $t("lychee.NEW_TAG_ALBUM") }}</p>
