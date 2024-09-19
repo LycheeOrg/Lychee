@@ -32,8 +32,11 @@
 			</span>
 			<span v-else class="block mt-0 mr-0 mb-2 ml-3 text-2xs text-surface-300">{{ props.photo.preformatted.created_at }}</span>
 		</div>
-		<div v-if="props.photo.precomputed.is_video" class="w-full top-0 h-full absolute hover:opacity-70 transition-opacity duration-300">
-			<img class="absolute top-1/2 -translate-y-1/2 aspect-square w-fit h-fit" alt="play" :src="srcPlay" />
+		<div
+			v-if="props.photo.precomputed.is_video"
+			class="w-full top-0 h-full absolute hover:opacity-70 transition-opacity duration-300 flex justify-center items-center"
+		>
+			<img class="absolute aspect-square w-fit h-fit" alt="play" :src="srcPlay" />
 		</div>
 		<div v-if="user" class="badges absolute mt-[-1px] ml-1 top-0 left-0">
 			<ThumbBadge v-if="props.photo.is_starred" class="badge--cover bg-yellow-500" icon="star" />
