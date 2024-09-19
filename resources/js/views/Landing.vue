@@ -56,7 +56,7 @@
 					to="/gallery"
 					class="cursor-pointer block text-2xl uppercase text-surface-0 hover:scale-125 transition-all duration-300 p-10 filter-shadow text-center"
 				>
-					ACCESS THE {{ $t("lychee.GALLERY") }}<br class="md:hidden">
+					ACCESS THE {{ $t("lychee.GALLERY") }}<br class="md:hidden" />
 					<i class="pi pi-angle-right animate-pulseTo0 text-2xl animate-infinite"></i>
 					<i class="pi pi-angle-right animate-pulseTo0 text-2xl animate-delay-500 animate-infinite -ml-1"></i>
 					<i class="pi pi-angle-right animate-pulseTo0 text-2xl animate-delay-1000 animate-infinite -ml-1"></i>
