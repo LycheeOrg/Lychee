@@ -1,6 +1,6 @@
 <template>
 	<Panel :header="$t(props.header)" :toggleable="!isAlone" :pt:header:class="headerClass" class="border-0 w-full">
-		<div class="flex flex-wrap flex-row flex-shrink w-full justify-start align-top">
+		<div class="flex flex-wrap flex-row flex-shrink w-full justify-evenly sm:justify-center gap-1 sm:gap-2 md:gap-4 pt-4">
 			<template v-for="(album, idx) in props.albums">
 				<AlbumThumb
 					@click="maySelect(idx + props.idxShift, $event)"

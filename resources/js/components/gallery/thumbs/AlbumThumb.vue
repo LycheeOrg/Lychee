@@ -1,11 +1,18 @@
 <template>
 	<router-link
 		:to="{ name: 'album', params: { albumid: album.id } }"
-		class="album-thumb block relative w-[calc(33vw-9px-4px)] mr-1 mt-1 sm:w-[calc(25vw-9px-10px)] sm:mr-2 sm:mt-2 md:w-[calc(20vw-9px-18px)] md:mr-4 md:mt-4 lg:w-[calc(16vw-9px-15px)] lg:mr-5 lg:mt-5 xl:w-[calc(14vw-9px-22px)] xl:mr-6 xl:mt-6 2xl:w-52 2xl:mr-7 2xl:mt-7 animate-zoomIn group"
+		class="album-thumb block relative
+		w-1/4 min-w-32
+		sm:w-[calc(25vw)]
+		md:w-[calc(20vw)]
+		lg:w-[calc(16vw)]
+		xl:w-[calc(14vw)]
+		2xl:w-52
+		animate-zoomIn group"
 		:class="(lycheeStore.are_nsfw_blurred ? 'blurred' : '') + ' ' + props.asepct_ratio"
 		:data-id="props.album.id"
 	>
-		<!-- x-on:contextmenu.prevent="handleContextAlbum($event, $wire)" -->
+	<!-- x-on:contextmenu.prevent="handleContextAlbum($event, $wire)" -->
 		<!-- x-on:click='select.handleClickAlbum($event, $wire)' -->
 		<!-- x-bind:class="select.selectedAlbums.includes('{{ $id }}') ? 'outline outline-1 outline-primary-500' : ''" -->
 		<AlbumThumbImage
@@ -24,21 +31,21 @@
 			:class="cssOverlay"
 		>
 			<h1
-				class="w-full pt-3 pb-1 pr-1 pl-4 text-sm text-surface-0 font-bold text-ellipsis whitespace-nowrap overflow-x-hidden"
+				class="w-full pt-3 pb-1 pr-1 pl-2 sm:pl-3 md:pl-4 text-sm text-surface-0 font-bold text-ellipsis whitespace-nowrap overflow-x-hidden"
 				:title="props.album.title"
 			>
 				{{ props.album.title }}
 			</h1>
-			<span class="block mt-0 mr-0 mb-3 ml-4 text-2xs text-surface-300" v-if="props.album_subtitle_type === 'description'">
+			<span class="block mt-0 mr-0 mb-1.5 sm:mb-3 ml-2 sm:ml-3 md:ml-4 text-2xs text-surface-300" v-if="props.album_subtitle_type === 'description'">
 				{{ props.album.description }}
 			</span>
-			<span class="block mt-0 mr-0 mb-3 ml-4 text-2xs text-surface-300" v-if="props.album_subtitle_type === 'takedate'">
+			<span class="block mt-0 mr-0 mb-1.5 sm:mb-3 ml-2 sm:ml-3 md:ml-4 text-2xs text-surface-300" v-if="props.album_subtitle_type === 'takedate'">
 				<MiniIcon icon="camera" class="fill-neutral-200 w-3 h-3"></MiniIcon>{{ album.formatted_min_max ?? album.created_at }}
 			</span>
-			<span class="block mt-0 mr-0 mb-3 ml-4 text-2xs text-surface-300" v-if="props.album_subtitle_type === 'creation'">
+			<span class="block mt-0 mr-0 mb-1.5 sm:mb-3 ml-2 sm:ml-3 md:ml-4 text-2xs text-surface-300" v-if="props.album_subtitle_type === 'creation'">
 				<MiniIcon icon="camera" class="fill-neutral-200 w-3 h-3"></MiniIcon>{{ album.created_at }}
 			</span>
-			<span class="block mt-0 mr-0 mb-3 ml-4 text-2xs text-surface-300" v-if="props.album_subtitle_type === 'oldstyle'">
+			<span class="block mt-0 mr-0 mb-1.5 sm:mb-3 ml-2 sm:ml-3 md:ml-4 text-2xs text-surface-300" v-if="props.album_subtitle_type === 'oldstyle'">
 				{{ album.formatted_min_max ?? album.created_at }}
 			</span>
 		</div>
