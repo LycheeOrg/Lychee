@@ -62,6 +62,7 @@ export function useSelection(
 
 		// We are able to edit.
 		e.preventDefault();
+		e.stopPropagation();
 
 		if (ctrlKeyState.value) {
 			handlePhotoCtrl(idx, e);
@@ -119,9 +120,11 @@ export function useSelection(
 		if (!ctrlKeyState.value && !shiftKeyState.value) {
 			return;
 		}
+		console.log("albumCLick", idx);
 
 		// We are able to edit.
 		e.preventDefault();
+		e.stopPropagation();
 
 		if (ctrlKeyState.value) {
 			handleAlbumCtrl(idx, e);

@@ -1,6 +1,6 @@
 <template>
 	<KeybindingsHelp v-model:visible="isKeybindingsHelpOpen" v-if="user?.id" />
-	<div v-if="rootConfig && rootRights">
+	<div v-if="rootConfig && rootRights" @click="unselect">
 		<AlbumsHeader
 			v-model:is-login-open="isLoginOpen"
 			v-if="user"
@@ -117,6 +117,10 @@ const { selectedAlbum, selectedAlbumsIdx, selectedAlbums, selectedAlbumsIds, alb
 // Modals for Albums
 const { isMoveAlbumVisible, toggleMoveAlbum } = useMoveAlbumOpen();
 const { isDeleteAlbumVisible, toggleDeleteAlbum } = useDeleteAlbumOpen();
+
+const unselect = () => {
+	selectedAlbumsIdx.value = [];
+};
 
 // Unused.
 const photoCallbacks = {
