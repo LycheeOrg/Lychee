@@ -104,6 +104,7 @@ Route::post('/Photo', [Gallery\PhotoController::class, 'upload'])
 	->middleware(['content_type:multipart']);
 Route::patch('/Photo', [Gallery\PhotoController::class, 'update']);
 Route::patch('/Photo::rename', [Gallery\PhotoController::class, 'rename']);
+Route::patch('/Photo::tags', [Gallery\PhotoController::class, 'tags']);
 Route::post('/Photo::move', [Gallery\PhotoController::class, 'move']);
 Route::post('/Photo::copy', [Gallery\PhotoController::class, 'copy']);
 Route::post('/Photo::star', [Gallery\PhotoController::class, 'star']);
