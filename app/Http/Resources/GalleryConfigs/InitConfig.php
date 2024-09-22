@@ -2,7 +2,10 @@
 
 namespace App\Http\Resources\GalleryConfigs;
 
+use App\Enum\AlbumDecorationOrientation;
+use App\Enum\AlbumDecorationType;
 use App\Enum\ImageOverlayType;
+use App\Enum\ThumbAlbumSubtitleType;
 use App\Enum\ThumbOverlayVisibilityType;
 use App\Models\Configs;
 use App\Policies\SettingsPolicy;
@@ -26,6 +29,11 @@ class InitConfig extends Data
 	public ThumbOverlayVisibilityType $display_thumb_album_overlay;
 	public ThumbOverlayVisibilityType $display_thumb_photo_overlay;
 	public ?string $clockwork_url;
+	public ThumbAlbumSubtitleType $album_subtitle_type;
+	public bool $can_rotate;
+	public bool $can_autoplay;
+	public AlbumDecorationType $album_decoration;
+	public AlbumDecorationOrientation $album_decoration_orientation;
 
 	public function __construct()
 	{
@@ -40,6 +48,13 @@ class InitConfig extends Data
 		$this->display_thumb_photo_overlay = Configs::getValueAsEnum('display_thumb_photo_overlay', ThumbOverlayVisibilityType::class);
 		$this->show_keybinding_help_popup = Configs::getValueAsBool('show_keybinding_help_popup');
 		$this->clockwork_url = $this->has_clockwork_in_menu();
+
+		$this->album_subtitle_type = Configs::getValueAsEnum('album_subtitle_type', ThumbAlbumSubtitleType::class);
+		$this->can_rotate = Configs::getValueAsBool('editor_enabled');
+		$this->can_autoplay = Configs::getValueAsBool('autoplay_enabled');
+
+		$this->album_decoration = Configs::getValueAsEnum('album_decoration', AlbumDecorationType::class);
+		$this->album_decoration_orientation = Configs::getValueAsEnum('album_decoration_orientation', AlbumDecorationOrientation::class);
 	}
 
 	private function has_clockwork_in_menu(): string|null

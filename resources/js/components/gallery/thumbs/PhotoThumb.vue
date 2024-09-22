@@ -38,9 +38,11 @@
 		>
 			<img class="absolute aspect-square w-fit h-fit" alt="play" :src="srcPlay" />
 		</div>
-		<div v-if="user" class="badges absolute mt-[-1px] ml-1 top-0 left-0">
-			<ThumbBadge v-if="props.photo.is_starred" class="badge--cover bg-yellow-500" icon="star" />
-			<ThumbBadge v-if="is_cover_id" class="badge--cover bg-yellow-500" icon="folder-cover" />
+		<!-- TODO: make me an option. -->
+		<div v-if="user?.id" class="badges absolute mt-[-1px] ml-1 top-0 left-0">
+			<ThumbBadge v-if="props.photo.is_starred" class="bg-yellow-500" icon="star" />
+			<ThumbBadge v-if="is_cover_id" class="bg-yellow-500" icon="folder-cover" />
+			<ThumbBadge v-if="is_header_id" class="bg-slate-400" pi="image" />
 		</div>
 	</router-link>
 </template>
@@ -55,7 +57,6 @@ const props = defineProps<{
 	isSelected: boolean;
 	album: App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.TagAlbumResource | App.Http.Resources.Models.SmartAlbumResource | null;
 	photo: App.Http.Resources.Models.PhotoResource;
-	config: App.Http.Resources.GalleryConfigs.AlbumConfig | null;
 }>();
 
 const auth = useAuthStore();
@@ -65,6 +66,8 @@ const srcNoImage = ref(window.assets_url + "img/no_image.png");
 
 // @ts-expect-error
 const is_cover_id = ref(props.album?.cover_id === props.photo.id);
+// @ts-expect-error
+const is_header_id = ref(props.album?.header_id === props.photo.id);
 
 const user = ref(null) as Ref<App.Http.Resources.Models.UserResource | null>;
 auth.getUser().then((data) => {

@@ -63,11 +63,9 @@ import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
 import ImportFromLink from "@/components/modals/ImportFromLink.vue";
 import { storeToRefs } from "pinia";
 import BackLinkButton from "./BackLinkButton.vue";
-import { useCreateAlbumOpen } from "@/composables/modalsTriggers/createAlbumOpen";
-import { useImportFromLinkOpen } from "@/composables/modalsTriggers/importFromLinkOpen";
-import { useUploadOpen } from "@/composables/modalsTriggers/uploadOpen";
 import { useContextMenuAlbumsAdd } from "@/composables/contextMenus/contextMenuAlbumsAdd";
 import Divider from "primevue/divider";
+import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
 
 const props = defineProps<{
 	user: App.Http.Resources.Models.UserResource;
@@ -103,9 +101,24 @@ const lycheeStore = useLycheeStateStore();
 const { left_menu_open } = storeToRefs(lycheeStore);
 const openLeftMenu = () => (left_menu_open.value = !left_menu_open.value);
 
-const { isUploadOpen, toggleUpload } = useUploadOpen(false);
-const { isCreateAlbumOpen, toggleCreateAlbum } = useCreateAlbumOpen(false);
-const { isImportFromLinkOpen, toggleImportFromLink } = useImportFromLinkOpen(false);
+const {
+	isCreateAlbumOpen,
+	toggleCreateAlbum,
+	isDeleteVisible,
+	toggleDelete,
+	isMergeAlbumVisible,
+	toggleMergeAlbum,
+	isMoveVisible,
+	toggleMove,
+	isRenameVisible,
+	toggleRename,
+	isShareAlbumVisible,
+	toggleShareAlbum,
+	isImportFromLinkOpen,
+	toggleImportFromLink,
+	isUploadOpen,
+	toggleUpload,
+} = useGalleryModals();
 
 const { addmenu, addMenu, isImportFromServerOpen, isCreateTagAlbumOpen } = useContextMenuAlbumsAdd({
 	toggleUpload: toggleUpload,

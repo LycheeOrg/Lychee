@@ -17,7 +17,7 @@
 					class="absolute m-auto w-auto h-auto"
 					x-bind:class="isFullscreen ? 'max-w-full max-h-full' : 'max-wh-full-56'"
 					autobuffer
-					:autoplay="album?.config.can_autoplay"
+					:autoplay="lycheeStore.can_autoplay"
 				>
 					<source :src="photo?.size_variants.original?.url ?? ''" />
 					Your browser does not support the video tag.
@@ -101,20 +101,20 @@
 						:class="photo.is_starred ? 'fill-yellow-500 lg:hover:fill-yellow-100' : 'fill-white lg:hover:fill-yellow-500'"
 						v-on:click="toggleStar()"
 					/>
-					<template v-if="album?.config.can_rotate">
+					<template v-if="lycheeStore.can_rotate">
 						<DockButton icon="counterclockwise" class="fill-white lg:hover:fill-primary-500" v-on:click="rotatePhotoCCW()" />
 						<DockButton icon="clockwise" class="fill-white lg:hover:fill-primary-500" v-on:click="rotatePhotoCW()" />
 					</template>
-					<DockButton icon="transfer" class="fill-white lg:hover:fill-primary-500" v-on:click="toggleMovePhoto" />
-					<DockButton icon="trash" class="fill-red-600 lg:fill-white lg:hover:fill-red-600" v-on:click="toggleDeletePhoto" />
+					<DockButton icon="transfer" class="fill-white lg:hover:fill-primary-500" v-on:click="toggleMove" />
+					<DockButton icon="trash" class="fill-red-600 lg:fill-white lg:hover:fill-red-600" v-on:click="toggleDelete" />
 				</span>
 			</div>
 		</div>
 		<PhotoDetails v-model:are-details-open="areDetailsOpen" :photo="photo" />
 	</div>
 	<PhotoEdit v-if="photo?.rights.can_edit" :photo="photo" v-model:visible="isEditOpen" />
-	<DialogPhotoMove :photo="photo" v-model:visible="isMovePhotoVisible" @moved="updated" />
-	<DialogPhotoDelete :photo="photo" v-model:visible="isDeletePhotoVisible" :album-id="props.albumid" @deleted="updated" />
+	<MoveDialog :photo="photo" v-model:visible="isMoveVisible" :parent-id="props.albumid" @moved="updated" />
+	<DeleteDialog :photo="photo" v-model:visible="isDeleteVisible" :parent-id="props.albumid" @deleted="updated" />
 </template>
 <script setup lang="ts">
 import DockButton from "@/components/gallery/photo/DockButton.vue";
@@ -130,10 +130,9 @@ import PhotoService from "@/services/photo-service";
 import { onKeyStroke } from "@vueuse/core";
 import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
 import Overlay from "@/components/gallery/photo/Overlay.vue";
-import DialogPhotoDelete from "@/components/forms/photo/DialogPhotoDelete.vue";
-import DialogPhotoMove from "@/components/forms/photo/DialogPhotoMove.vue";
-import { useMovePhotoOpen } from "@/composables/modalsTriggers/movePhotoOpen";
-import { useDeletePhotoOpen } from "@/composables/modalsTriggers/deletePhotoOpen";
+import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
+import MoveDialog from "@/components/forms/gallery-dialogs/MoveDialog.vue";
+import DeleteDialog from "@/components/forms/gallery-dialogs/DeleteDialog.vue";
 
 const props = defineProps<{
 	albumid: string;
@@ -145,8 +144,7 @@ const route = useRoute();
 const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
 
-const { isMovePhotoVisible, toggleMovePhoto } = useMovePhotoOpen();
-const { isDeletePhotoVisible, toggleDeletePhoto } = useDeletePhotoOpen();
+const { isDeleteVisible, toggleDelete, isMoveVisible, toggleMove } = useGalleryModals();
 
 const photoId = ref(props.photoid);
 const photo = ref(undefined) as Ref<App.Http.Resources.Models.PhotoResource | undefined>;

@@ -98,6 +98,10 @@ const AlbumService = {
 		return axios.post(`${Constants.API_URL}Album::updateProtectionPolicy`, data);
 	},
 
+	rename(album_id: string, title: string): Promise<AxiosResponse> {
+		return axios.patch(`${Constants.API_URL}Album::rename`, { album_id: album_id, title: title });
+	},
+
 	delete(album_ids: string[]): Promise<AxiosResponse> {
 		return axios.post(`${Constants.API_URL}Album::delete`, { album_ids: album_ids });
 	},

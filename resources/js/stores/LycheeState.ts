@@ -9,7 +9,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		left_menu_open: false,
 		is_full_screen: false,
 
-		// configs
+		// configs for nsfw
 		are_nsfw_blurred: false,
 		is_nsfw_warning_visible: false,
 		is_nsfw_warning_visible_for_admin: false,
@@ -18,14 +18,22 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		is_nsfw_banner_backdrop_blurred: false,
 		show_keybinding_help_popup: false,
 
+		// album stuff
+		album_decoration: "LAYERS" as App.Enum.AlbumDecorationType,
+		album_decoration_orientation: "ROW" as App.Enum.AlbumDecorationOrientation,
+		album_subtitle_type: "OLDSTYLE" as App.Enum.ThumbAlbumSubtitleType,
+		display_thumb_album_overlay: "always" as App.Enum.ThumbOverlayVisibilityType,
+		display_thumb_photo_overlay: "always" as App.Enum.ThumbOverlayVisibilityType,
+
+		can_rotate: false,
+		can_autoplay: false,
+
 		// menu stuff
 		clockwork_url: "" as null | string,
 
 		// togglable with defaults
 		are_nsfw_visible: false,
 		image_overlay_type: "exif" as App.Enum.ImageOverlayType,
-		display_thumb_album_overlay: "always" as App.Enum.ThumbOverlayVisibilityType,
-		display_thumb_photo_overlay: "always" as App.Enum.ThumbOverlayVisibilityType,
 
 		// flag to fetch data
 		is_init: false,
@@ -60,6 +68,11 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 				this.is_loading = false;
 				this.show_keybinding_help_popup = data.show_keybinding_help_popup;
 				this.clockwork_url = data.clockwork_url;
+				this.can_rotate = data.can_rotate;
+				this.can_autoplay = data.can_autoplay;
+				this.album_decoration = data.album_decoration;
+				this.album_decoration_orientation = data.album_decoration_orientation;
+				this.album_subtitle_type = data.album_subtitle_type;
 			});
 		},
 	},

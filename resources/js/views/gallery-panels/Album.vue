@@ -21,7 +21,7 @@
 				header="lychee.ALBUMS"
 				:album="modelAlbum"
 				:albums="children"
-				:config="config"
+				:config="albumPanelConfig"
 				:is-alone="!photos?.length"
 				:are-nsfw-visible="are_nsfw_visible"
 				@clicked="albumClick"
@@ -34,7 +34,6 @@
 				header="lychee.PHOTOS"
 				:photos="photos"
 				:album="album"
-				:config="config"
 				:gallery-config="layout"
 				:selected-photos="selectedPhotosIds"
 				@clicked="photoClick"
@@ -42,43 +41,34 @@
 			/>
 		</div>
 		<ShareAlbum v-model:visible="isShareAlbumVisible" :title="album.title" :url="route.path" />
-		<!-- Dialogs for photos -->
-		<DialogPhotoMove
-			v-model:visible="isMovePhotoVisible"
-			:photo="selectedPhoto"
-			:photo-ids="selectedPhotosIds"
-			:album-id="albumid"
-			@moved="refresh"
-		/>
-		<DialogPhotoDelete
-			v-model:visible="isDeletePhotoVisible"
-			:photo="selectedPhoto"
-			:photo-ids="selectedPhotosIds"
-			:album-id="albumid"
-			@deleted="refresh"
-		/>
-
-		<!-- Dialogs for albums -->
-		<AlbumMoveDialog
-			v-model:visible="isMoveAlbumVisible"
+		<!-- Dialogs -->
+		<MoveDialog
+			v-model:visible="isMoveVisible"
 			:parent-id="albumid"
+			:photo="selectedPhoto"
+			:photo-ids="selectedPhotosIds"
 			:album="selectedAlbum"
 			:album-ids="selectedAlbumsIds"
 			@moved="refresh"
 		/>
+		<DeleteDialog
+			v-model:visible="isDeleteVisible"
+			:parent-id="albumid"
+			:photo="selectedPhoto"
+			:photo-ids="selectedPhotosIds"
+			:album="selectedAlbum"
+			:album-ids="selectedAlbumsIds"
+			@deleted="refresh"
+		/>
+
+		<!-- Dialogs for albums -->
+		<RenameDialog v-model:visible="isRenameVisible" :parent-id="undefined" :album="selectedAlbum" :photo="selectedPhoto" @renamed="refresh" />
 		<AlbumMergeDialog
 			v-model:visible="isMergeAlbumVisible"
 			:parent-id="albumid"
 			:album="selectedAlbum"
 			:album-ids="selectedAlbumsIds"
 			@merged="refresh"
-		/>
-		<AlbumDeleteDialog
-			v-model:visible="isDeleteAlbumVisible"
-			:parent-id="albumid"
-			:album="selectedAlbum"
-			:album-ids="selectedAlbumsIds"
-			@deleted="refresh"
 		/>
 
 		<ContextMenu ref="menu" :model="Menu">
@@ -106,25 +96,20 @@ import { useLycheeStateStore } from "@/stores/LycheeState";
 import { onKeyStroke } from "@vueuse/core";
 import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
 import { storeToRefs } from "pinia";
-import DialogPhotoMove from "@/components/forms/photo/DialogPhotoMove.vue";
-import DialogPhotoDelete from "@/components/forms/photo/DialogPhotoDelete.vue";
-import { useMovePhotoOpen } from "@/composables/modalsTriggers/movePhotoOpen";
-import { useDeletePhotoOpen } from "@/composables/modalsTriggers/deletePhotoOpen";
 import { useSelection } from "@/composables/selections/selections";
 // import PhotoService from "@/services/photo-service";
-import { useShareAlbumOpen } from "@/composables/modalsTriggers/shareAlbumOpen";
 import Divider from "primevue/divider";
 import ContextMenu from "primevue/contextmenu";
 import { useAlbumRefresher } from "@/composables/album/albumRefresher";
 import { useContextMenu } from "@/composables/contextMenus/contextMenu";
 import PhotoService from "@/services/photo-service";
 import AlbumService from "@/services/album-service";
-import { useDeleteAlbumOpen } from "@/composables/modalsTriggers/deleteAlbumOpen";
-import AlbumDeleteDialog from "@/components/forms/album/AlbumDeleteDialog.vue";
-import { useMoveAlbumOpen } from "@/composables/modalsTriggers/moveAlbumOpen";
-import AlbumMoveDialog from "@/components/forms/album/AlbumMoveDialog.vue";
-import AlbumMergeDialog from "@/components/forms/album/AlbumMergeDialog.vue";
-import { useMergeAlbumOpen } from "@/composables/modalsTriggers/mergeAlbumOpen";
+import { AlbumThumbConfig } from "@/components/gallery/thumbs/AlbumThumb.vue";
+import RenameDialog from "@/components/forms/gallery-dialogs/RenameDialog.vue";
+import AlbumMergeDialog from "@/components/forms/gallery-dialogs/AlbumMergeDialog.vue";
+import MoveDialog from "@/components/forms/gallery-dialogs/MoveDialog.vue";
+import DeleteDialog from "@/components/forms/gallery-dialogs/DeleteDialog.vue";
+import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
 
 const route = useRoute();
 
@@ -133,9 +118,6 @@ const props = defineProps<{
 }>();
 
 const albumid = ref(props.albumid);
-
-// Sharing stuff
-const { isShareAlbumVisible, toggleShareAlbum } = useShareAlbumOpen();
 
 // binding between hero and header. We use a boolean instead of events to avoid de-sync
 const areDetailsOpen = ref(false);
@@ -165,14 +147,18 @@ watch(
 const children = computed<App.Http.Resources.Models.ThumbAlbumResource[]>(() => modelAlbum.value?.albums ?? []);
 const noData = computed(() => children.value.length === 0 && (photos.value === null || photos.value.length === 0));
 
-// Modals for Photos
-const { isMovePhotoVisible, toggleMovePhoto } = useMovePhotoOpen();
-const { isDeletePhotoVisible, toggleDeletePhoto } = useDeletePhotoOpen();
-
-// Modals for Albums
-const { isMoveAlbumVisible, toggleMoveAlbum } = useMoveAlbumOpen();
-const { isMergeAlbumVisible, toggleMergeAlbum } = useMergeAlbumOpen();
-const { isDeleteAlbumVisible, toggleDeleteAlbum } = useDeleteAlbumOpen();
+const {
+	isDeleteVisible,
+	toggleDelete,
+	isMergeAlbumVisible,
+	toggleMergeAlbum,
+	isMoveVisible,
+	toggleMove,
+	isRenameVisible,
+	toggleRename,
+	isShareAlbumVisible,
+	toggleShareAlbum,
+} = useGalleryModals();
 
 const {
 	selectedPhotosIdx,
@@ -209,19 +195,19 @@ const photoCallbacks = {
 		refresh();
 	},
 	toggleTag: () => {},
-	toggleRename: () => {},
+	toggleRename: toggleRename,
 	toggleCopyTo: () => {},
-	toggleMove: toggleMovePhoto,
-	toggleDelete: toggleDeletePhoto,
+	toggleMove: toggleMove,
+	toggleDelete: toggleDelete,
 	toggleDownload: () => {},
 };
 
 const albumCallbacks = {
 	setAsCover: () => {},
-	toggleRename: () => {},
+	toggleRename: toggleRename,
 	toggleMerge: toggleMergeAlbum,
-	toggleMove: toggleMoveAlbum,
-	toggleDelete: toggleDeleteAlbum,
+	toggleMove: toggleMove,
+	toggleDelete: toggleDelete,
 	toggleDownload: () => {},
 };
 
@@ -240,25 +226,13 @@ const { menu, Menu, photoMenuOpen, albumMenuOpen } = useContextMenu(
 	albumCallbacks,
 );
 
-// const { photomenu, PhotoMenu } = useContextMenuPhoto(
-// 	{
-// 		getAlbumConfig,
-// 		getAlbum,
-// 		getSelectedPhotos,
-// 	},
-// 	{
-// 		star: () => PhotoService.star(getSelectedPhotosIds(), true),
-// 		unstar: () => PhotoService.star(getSelectedPhotosIds(), false),
-// 		setAsCover: () => PhotoService.setAsCover(getSelectedPhotos()[0].id, album.value?.id as string),
-// 		setAsHeader: () => PhotoService.setAsHeader(getSelectedPhotos()[0].id, album.value?.id as string, true),
-// 		toggleTag: () => {},
-// 		toggleRename: () => {},
-// 		toggleCopyTo: () => {},
-// 		toggleMove: toggleMovePhoto,
-// 		toggleDelete: toggleDeletePhoto,
-// 		toggleDownload: () => {},
-// 	},
-// );
+const albumPanelConfig = computed<AlbumThumbConfig>(() => ({
+	album_thumb_css_aspect_ratio: config.value?.album_thumb_css_aspect_ratio ?? "aspect-square",
+	album_subtitle_type: lycheeStore.album_subtitle_type,
+	display_thumb_album_overlay: lycheeStore.display_thumb_album_overlay,
+	album_decoration: lycheeStore.album_decoration,
+	album_decoration_orientation: lycheeStore.album_decoration_orientation,
+}));
 
 loadLayout();
 

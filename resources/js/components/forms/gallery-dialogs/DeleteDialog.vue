@@ -15,19 +15,23 @@
 		</template>
 	</Dialog>
 </template>
-
 <script setup lang="ts">
 import { computed } from "vue";
-import Button from "primevue/button";
+import PhotoService from "@/services/photo-service";
 import AlbumService from "@/services/album-service";
 import { trans } from "laravel-vue-i18n";
 import { sprintf } from "sprintf-js";
 import Dialog from "primevue/dialog";
+import Button from "primevue/button";
+import { useToast } from "primevue/usetoast";
+const toast = useToast();
 
 const props = defineProps<{
 	parentId: string | undefined;
+	photo?: App.Http.Resources.Models.PhotoResource;
+	photoIds?: string[];
 	album?: App.Http.Resources.Models.ThumbAlbumResource;
-	albumIds: string[];
+	albumIds?: string[];
 }>();
 
 const visible = defineModel<boolean>("visible", { default: false });
@@ -36,13 +40,36 @@ const emit = defineEmits<{
 }>();
 
 const confirmation = computed(() => {
+	if (props.photo || (props.photoIds && props.photoIds?.length > 0)) {
+		return deleteConfirmationPhoto();
+	}
+
+	return deleteConfirmationAlbum();
+});
+
+function deleteConfirmationPhoto() {
+	if (props.photo) {
+		return sprintf(trans("lychee.PHOTO_DELETE_CONFIRMATION"), props.photo.title);
+	}
+	return sprintf(trans("lychee.PHOTO_DELETE_ALL"), props.photoIds?.length);
+}
+
+function deleteConfirmationAlbum() {
 	if (props.album) {
 		return sprintf(trans("lychee.DELETE_ALBUM_CONFIRMATION"), props.album.title);
 	}
-	return sprintf(trans("lychee.DELETE_ALBUMS_CONFIRMATION"), props.albumIds.length);
-});
+	return sprintf(trans("lychee.DELETE_ALBUMS_CONFIRMATION"), props.albumIds?.length);
+}
 
 function execute() {
+	if (props.photo || (props.photoIds && props.photoIds?.length > 0)) {
+		return executeDeletePhoto();
+	}
+
+	return executeDeleteAlbum();
+}
+
+function executeDeleteAlbum() {
 	let albumDeletedIds = [];
 	if (props.album) {
 		albumDeletedIds.push(props.album.id);
@@ -57,6 +84,25 @@ function execute() {
 			AlbumService.clearCache(props.parentId);
 		}
 		emit("deleted");
+	});
+}
+
+function executeDeletePhoto() {
+	let photoDeletedIds = [];
+	if (props.photo) {
+		photoDeletedIds.push(props.photo.id);
+	} else {
+		photoDeletedIds = props.photoIds as string[];
+	}
+	PhotoService.delete(photoDeletedIds).then(() => {
+		toast.add({
+			severity: "success",
+			summary: "Photo deleted",
+			life: 3000,
+		});
+		AlbumService.clearCache(props.parentId);
+		emit("deleted");
+		// Todo emit that we moved things.
 	});
 }
 </script>
