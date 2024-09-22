@@ -162,6 +162,30 @@ const LycheePrimeVueConfig = {
 		},
 	},
 	components: {
+		autocomplete: {
+			colorScheme: {
+				dark: {
+					background: "transparent",
+					color: "{surface.300}",
+					border: {
+						radius: 0,
+						color: "transparent",
+					},
+					hover: {
+						border: {
+							color: "transparent",
+						},
+					},
+				},
+			},
+		},
+		chip: {
+			colorScheme: {
+				dark: {
+					background: "{surface.900}",
+				},
+			},
+		},
 		button: {
 			padding: {
 				x: "0.75rem",

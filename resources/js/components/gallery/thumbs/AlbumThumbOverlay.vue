@@ -19,13 +19,13 @@
 			class="block mt-0 mr-0 mb-1.5 sm:mb-3 ml-2 sm:ml-3 md:ml-4 text-2xs text-surface-300"
 			v-if="props.config.album_subtitle_type === 'takedate'"
 		>
-			<MiniIcon icon="camera" class="fill-neutral-200 w-3 h-3"></MiniIcon>{{ props.album.formatted_min_max ?? props.album.created_at }}
+			<i class="pi pi-pi-camera"></i>{{ props.album.formatted_min_max ?? props.album.created_at }}
 		</span>
 		<span
 			class="block mt-0 mr-0 mb-1.5 sm:mb-3 ml-2 sm:ml-3 md:ml-4 text-2xs text-surface-300"
 			v-if="props.config.album_subtitle_type === 'creation'"
 		>
-			<MiniIcon icon="camera" class="fill-neutral-200 w-3 h-3"></MiniIcon>{{ props.album.created_at }}
+			<i class="pi pi-pi-camera"></i>{{ props.album.created_at }}
 		</span>
 		<span
 			class="block mt-0 mr-0 mb-1.5 sm:mb-3 ml-2 sm:ml-3 md:ml-4 text-2xs text-surface-300"
@@ -38,6 +38,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { AlbumThumbConfig } from "./AlbumThumb.vue";
+import MiniIcon from "@/components/icons/MiniIcon.vue";
 
 const props = defineProps<{
 	album: App.Http.Resources.Models.ThumbAlbumResource;

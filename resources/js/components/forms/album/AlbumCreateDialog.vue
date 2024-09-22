@@ -10,18 +10,12 @@
 					</FloatLabel>
 				</div>
 				<div class="flex items-center mt-9">
-					<Button
-						@click="closeCallback"
-						text
-						class="p-3 w-full font-bold border-none text-muted-color hover:text-danger-700 rounded-bl-xl flex-shrink-2"
-						>{{ $t("lychee.CANCEL") }}</Button
-					>
-					<Button
-						@click="create"
-						text
-						class="p-3 w-full font-bold border-none text-primary-500 hover:bg-primary-500 hover:text-surface-0 rounded-none rounded-br-xl flex-shrink"
-						>{{ $t("lychee.CREATE_ALBUM") }}</Button
-					>
+					<Button @click="closeCallback" severity="secondary" class="w-full font-bold border-none rounded-bl-xl">
+						{{ $t("lychee.CANCEL") }}
+					</Button>
+					<Button @click="create" severity="contrast" class="font-bold w-full border-none rounded-none rounded-br-xl">
+						{{ $t("lychee.CREATE_ALBUM") }}
+					</Button>
 				</div>
 			</div>
 		</template>

@@ -9,23 +9,24 @@
 						<label class="" for="title">{{ $t("lychee.ALBUM_SET_TITLE") }}</label>
 					</FloatLabel>
 					<FloatLabel>
-						<AutoComplete id="tags" v-model="tags" :typeahead="false" multiple field="title" separator="," />
+						<AutoComplete
+							id="tags"
+							v-model="tags"
+							:typeahead="false"
+							multiple
+							class="pt-3 border-b hover:border-b-0"
+							pt:inputmultiple:class="w-full border-t-0 border-l-0 border-r-0 border-b hover:border-b-primary-400 focus:border-b-primary-400"
+						/>
 						<label for="tags">{{ $t("lychee.ALBUM_SET_SHOWTAGS") }}</label>
 					</FloatLabel>
 				</div>
 				<div class="flex items-center mt-9">
-					<Button
-						@click="closeCallback"
-						text
-						class="p-3 w-full font-bold border-none text-muted-color hover:text-danger-700 rounded-bl-xl flex-shrink-2"
-						>{{ $t("lychee.CANCEL") }}</Button
-					>
-					<Button
-						@click="create"
-						text
-						class="p-3 w-full font-bold border-none text-primary-500 hover:bg-primary-500 hover:text-surface-0 rounded-none rounded-br-xl flex-shrink"
-						>{{ $t("lychee.CREATE_TAG_ALBUM") }}</Button
-					>
+					<Button @click="closeCallback" severity="secondary" class="w-full font-bold border-none rounded-bl-xl">
+						{{ $t("lychee.CANCEL") }}
+					</Button>
+					<Button @click="create" severity="contrast" class="font-bold w-full border-none rounded-none rounded-br-xl">
+						{{ $t("lychee.CREATE_TAG_ALBUM") }}
+					</Button>
 				</div>
 			</div>
 		</template>
@@ -49,17 +50,17 @@ const router = useRouter();
 const visible = ref(props.visible);
 
 const title = ref(undefined as undefined | string);
-const tags = ref(undefined as undefined | string);
+const tags = ref([] as string[]);
 
 function create() {
 	console.log(tags.value);
-	if (!title.value || !tags.value) {
+	if (!title.value || tags.value.length === 0) {
 		return;
 	}
 
 	AlbumService.createTag({
 		title: title.value,
-		tags: tags.value?.split(",") ?? [],
+		tags: tags.value,
 	}).then((response) => {
 		AlbumService.clearAlbums();
 		router.push(`/gallery/${response.data}`);

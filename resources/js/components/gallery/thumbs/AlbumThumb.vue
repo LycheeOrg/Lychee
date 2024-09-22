@@ -28,7 +28,7 @@
 			<ThumbBadge v-if="props.album.id === 'on_this_day'" class="bg-green-600" icon="calendar" />
 			<ThumbBadge v-if="props.album.is_public" :class="props.album.is_link_required ? 'bg-orange-400' : 'bg-green-600'" icon="eye" />
 			<ThumbBadge v-if="props.album.is_password_required" class="bg-orange-400" icon="lock-locked" />
-			<ThumbBadge v-if="props.album.is_tag_album" class="bg-green-600" icon="download" />
+			<ThumbBadge v-if="props.album.is_tag_album" class="bg-green-600" icon="tags" />
 			<ThumbBadge v-if="props.cover_id === props.album.thumb?.id" class="bg-yellow-500" icon="folder-cover" />
 		</div>
 		<!-- v-if="props.config.album_decoration !== 'none'" -->

@@ -30,6 +30,10 @@ const PhotoService = {
 		return axios.post(`${Constants.API_URL}Photo::move`, { album_id: destination_id, photo_ids: photo_ids });
 	},
 
+	tags(photo_ids: string[], tags: string[], shall_override: boolean): Promise<AxiosResponse> {
+		return axios.patch(`${Constants.API_URL}Photo::tags`, { photo_ids: photo_ids, tags: tags, shall_override: shall_override });
+	},
+
 	copy(destination_id: string | null, photo_ids: string[]): Promise<AxiosResponse> {
 		return axios.post(`${Constants.API_URL}Photo::copy`, { album_id: destination_id, photo_ids: photo_ids });
 	},

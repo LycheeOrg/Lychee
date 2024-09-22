@@ -42,6 +42,14 @@
 		</div>
 		<ShareAlbum v-model:visible="isShareAlbumVisible" :title="album.title" :url="route.path" />
 		<!-- Dialogs -->
+		<PhotoTagDialog v-model:visible="isTagVisible" :parent-id="albumid" :photo="selectedPhoto" :photo-ids="selectedPhotosIds" @tagged="refresh" />
+		<PhotoCopyDialog
+			v-model:visible="isCopyVisible"
+			:parent-id="albumid"
+			:photo="selectedPhoto"
+			:photo-ids="selectedPhotosIds"
+			@copied="refresh"
+		/>
 		<MoveDialog
 			v-model:visible="isMoveVisible"
 			:parent-id="albumid"
@@ -109,6 +117,8 @@ import AlbumMergeDialog from "@/components/forms/gallery-dialogs/AlbumMergeDialo
 import MoveDialog from "@/components/forms/gallery-dialogs/MoveDialog.vue";
 import DeleteDialog from "@/components/forms/gallery-dialogs/DeleteDialog.vue";
 import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
+import PhotoTagDialog from "@/components/forms/photo/PhotoTagDialog.vue";
+import PhotoCopyDialog from "@/components/forms/photo/PhotoCopyDialog.vue";
 
 const route = useRoute();
 
@@ -153,6 +163,10 @@ const {
 	toggleRename,
 	isShareAlbumVisible,
 	toggleShareAlbum,
+	isTagVisible,
+	toggleTag,
+	isCopyVisible,
+	toggleCopy,
 } = useGalleryModals();
 
 const {
@@ -189,9 +203,9 @@ const photoCallbacks = {
 		AlbumService.clearCache(albumid.value);
 		refresh();
 	},
-	toggleTag: () => {},
+	toggleTag: toggleTag,
 	toggleRename: toggleRename,
-	toggleCopyTo: () => {},
+	toggleCopyTo: toggleCopy,
 	toggleMove: toggleMove,
 	toggleDelete: toggleDelete,
 	toggleDownload: () => {},

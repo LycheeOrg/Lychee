@@ -3,9 +3,9 @@
 		<template #content>
 			<div v-if="titleMovedTo !== undefined">
 				<p class="mb-4 text-center text-muted-color">{{ confirmation }}</p>
-				<Button class="text-primary-500 font-bold hover:text-white hover:bg-primary-400 w-full bg-transparent border-none" @click="execute">{{
-					$t("lychee.MOVE_ALBUM")
-				}}</Button>
+				<Button class="text-primary-500 font-bold hover:text-white hover:bg-primary-400 w-full bg-transparent border-none" @click="execute">
+					{{ $t("lychee.MOVE_ALBUM") }}
+				</Button>
 			</div>
 			<div v-else>
 				<span class="font-bold">{{ "Move to" }}</span>

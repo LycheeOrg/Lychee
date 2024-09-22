@@ -2,9 +2,9 @@
 	<Card class="sm:p-4 xl:px-9 max-w-3xl">
 		<template #content>
 			<p class="mb-4 text-center">{{ title }}</p>
-			<Button class="text-danger-800 font-bold hover:text-white hover:bg-danger-800 w-full bg-transparent border-none" @click="execute">{{
-				$t("lychee.DELETE_ALBUM_QUESTION")
-			}}</Button>
+			<Button class="text-danger-800 font-bold hover:text-white hover:bg-danger-800 w-full bg-transparent border-none" @click="execute">
+				{{ $t("lychee.DELETE_ALBUM_QUESTION") }}
+			</Button>
 		</template>
 	</Card>
 </template>

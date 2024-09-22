@@ -12,8 +12,9 @@
 				class="text-danger-800 font-bold hover:text-white hover:bg-danger-800 w-full bg-transparent border-none"
 				:disabled="newOwner === undefined"
 				@click="execute"
-				>{{ "Transfer ownership of album and photos" }}</Button
 			>
+				{{ "Transfer ownership of album and photos" }}
+			</Button>
 		</template>
 	</Card>
 </template>
