@@ -17,7 +17,7 @@
 			:album="undefined"
 			:albums="smartAlbums"
 			:user="user"
-			:config="rootConfig"
+			:config="albumPanelConfig"
 			:is-alone="!albums.length"
 			:are-nsfw-visible="false"
 			:idx-shift="-1"
@@ -29,7 +29,7 @@
 			:album="null"
 			:albums="albums"
 			:user="user"
-			:config="rootConfig"
+			:config="albumPanelConfig"
 			:is-alone="!sharedAlbums.length"
 			:are-nsfw-visible="are_nsfw_visible"
 			:idx-shift="0"
@@ -43,7 +43,7 @@
 			:album="undefined"
 			:albums="sharedAlbums"
 			:user="user"
-			:config="rootConfig"
+			:config="albumPanelConfig"
 			:is-alone="!albums.length"
 			:are-nsfw-visible="are_nsfw_visible"
 			:idx-shift="albums.length"
@@ -62,13 +62,7 @@
 		</template>
 	</ContextMenu>
 	<!-- Dialogs for albums -->
-	<AlbumMoveDialog
-		v-model:visible="isMoveAlbumVisible"
-		:parent-id="undefined"
-		:album="selectedAlbum"
-		:album-ids="selectedAlbumsIds"
-		@moved="refresh"
-	/>
+	<MoveDialog v-model:visible="isMoveVisible" :parent-id="undefined" :album="selectedAlbum" :album-ids="selectedAlbumsIds" @moved="refresh" />
 	<AlbumMergeDialog
 		v-model:visible="isMergeAlbumVisible"
 		:parent-id="undefined"
@@ -76,18 +70,13 @@
 		:album-ids="selectedAlbumsIds"
 		@merged="refresh"
 	/>
-	<AlbumDeleteDialog
-		v-model:visible="isDeleteAlbumVisible"
-		:parent-id="undefined"
-		:album="selectedAlbum"
-		:album-ids="selectedAlbumsIds"
-		@deleted="refresh"
-	/>
+	<DeleteDialog v-model:visible="isDeleteVisible" :parent-id="undefined" :album="selectedAlbum" :album-ids="selectedAlbumsIds" @deleted="refresh" />
+	<RenameDialog v-if="selectedAlbum" v-model:visible="isRenameVisible" :parent-id="undefined" :album="selectedAlbum" @renamed="refresh" />
 </template>
 <script setup lang="ts">
 import AlbumThumbPanel from "@/components/gallery/AlbumThumbPanel.vue";
 import { useAuthStore } from "@/stores/Auth";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import AlbumsHeader from "@/components/headers/AlbumsHeader.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
@@ -98,12 +87,12 @@ import { useSelection } from "@/composables/selections/selections";
 import { useContextMenu } from "@/composables/contextMenus/contextMenu";
 import ContextMenu from "primevue/contextmenu";
 import { useAlbumsRefresher } from "@/composables/album/albumsRefresher";
-import AlbumDeleteDialog from "@/components/forms/album/AlbumDeleteDialog.vue";
-import { useDeleteAlbumOpen } from "@/composables/modalsTriggers/deleteAlbumOpen";
-import AlbumMoveDialog from "@/components/forms/album/AlbumMoveDialog.vue";
-import { useMoveAlbumOpen } from "@/composables/modalsTriggers/moveAlbumOpen";
-import { useMergeAlbumOpen } from "@/composables/modalsTriggers/mergeAlbumOpen";
-import AlbumMergeDialog from "@/components/forms/album/AlbumMergeDialog.vue";
+import { AlbumThumbConfig } from "@/components/gallery/thumbs/AlbumThumb.vue";
+import MoveDialog from "@/components/forms/gallery-dialogs/MoveDialog.vue";
+import AlbumMergeDialog from "@/components/forms/gallery-dialogs/AlbumMergeDialog.vue";
+import DeleteDialog from "@/components/forms/gallery-dialogs/DeleteDialog.vue";
+import RenameDialog from "@/components/forms/gallery-dialogs/RenameDialog.vue";
+import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
 
 const isLoginOpen = ref(false);
 
@@ -124,9 +113,18 @@ const { user, isKeybindingsHelpOpen, smartAlbums, albums, sharedAlbums, rootConf
 const { selectedAlbum, selectedAlbumsIdx, selectedAlbums, selectedAlbumsIds, albumClick } = useSelection(config, undefined, photos, selectableAlbums);
 
 // Modals for Albums
-const { isMoveAlbumVisible, toggleMoveAlbum } = useMoveAlbumOpen();
-const { isMergeAlbumVisible, toggleMergeAlbum } = useMergeAlbumOpen();
-const { isDeleteAlbumVisible, toggleDeleteAlbum } = useDeleteAlbumOpen();
+const {
+	isDeleteVisible,
+	toggleDelete,
+	isMergeAlbumVisible,
+	toggleMergeAlbum,
+	isMoveVisible,
+	toggleMove,
+	isRenameVisible,
+	toggleRename,
+	isShareAlbumVisible,
+	toggleShareAlbum,
+} = useGalleryModals();
 
 const unselect = () => {
 	selectedAlbumsIdx.value = [];
@@ -148,10 +146,10 @@ const photoCallbacks = {
 
 const albumCallbacks = {
 	setAsCover: () => {},
-	toggleRename: () => {},
+	toggleRename: toggleRename,
 	toggleMerge: toggleMergeAlbum,
-	toggleMove: toggleMoveAlbum,
-	toggleDelete: toggleDeleteAlbum,
+	toggleMove: toggleMove,
+	toggleDelete: toggleDelete,
 	toggleDownload: () => {},
 };
 
@@ -169,6 +167,14 @@ const { menu, Menu, albumMenuOpen } = useContextMenu(
 	photoCallbacks,
 	albumCallbacks,
 );
+
+const albumPanelConfig = computed<AlbumThumbConfig>(() => ({
+	album_thumb_css_aspect_ratio: rootConfig.value?.album_thumb_css_aspect_ratio ?? "aspect-square",
+	album_subtitle_type: lycheeStore.album_subtitle_type,
+	display_thumb_album_overlay: lycheeStore.display_thumb_album_overlay,
+	album_decoration: lycheeStore.album_decoration,
+	album_decoration_orientation: lycheeStore.album_decoration_orientation,
+}));
 
 refresh();
 

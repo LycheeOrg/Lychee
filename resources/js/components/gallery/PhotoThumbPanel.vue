@@ -26,7 +26,6 @@
 					:is-selected="props.selectedPhotos.includes(photo.id)"
 					:photo="photo"
 					:album="props.album"
-					:config="props.config"
 				/>
 			</template>
 		</div>
@@ -43,7 +42,6 @@ const props = defineProps<{
 	header: string;
 	photos: { [key: number]: App.Http.Resources.Models.PhotoResource };
 	album: App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.TagAlbumResource | App.Http.Resources.Models.SmartAlbumResource;
-	config: App.Http.Resources.GalleryConfigs.AlbumConfig;
 	galleryConfig: App.Http.Resources.GalleryConfigs.PhotoLayoutConfig;
 	selectedPhotos: string[];
 }>();

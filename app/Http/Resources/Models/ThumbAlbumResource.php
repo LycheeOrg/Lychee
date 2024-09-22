@@ -29,6 +29,8 @@ class ThumbAlbumResource extends Data
 
 	public bool $is_tag_album;
 	public bool $has_subalbum;
+	public int $num_subalbums = 0;
+	public int $num_photos = 0;
 
 	public string $created_at = '';
 	private ?string $min_taken_at = null;
@@ -55,6 +57,11 @@ class ThumbAlbumResource extends Data
 			$this->created_at = $data->created_at->format($date_format);
 			$policy = AlbumProtectionPolicy::ofBaseAlbum($data);
 			$this->description = Str::limit($data->description, 100);
+		}
+
+		if ($data instanceof Album) {
+			$this->num_photos = $data->num_photos;
+			$this->num_subalbums = $data->num_children;
 		}
 
 		$this->is_nsfw = $policy->is_nsfw;

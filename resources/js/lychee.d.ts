@@ -204,9 +204,6 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		is_mod_frame_enabled: boolean;
 		is_search_accessible: boolean;
 		album_thumb_css_aspect_ratio: App.Enum.AspectRatioCSSType;
-		album_subtitle_type: App.Enum.ThumbAlbumSubtitleType;
-		can_rotate: boolean;
-		can_autoplay: boolean;
 	};
 	export type InitConfig = {
 		are_nsfw_visible: boolean;
@@ -221,6 +218,11 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		display_thumb_album_overlay: App.Enum.ThumbOverlayVisibilityType;
 		display_thumb_photo_overlay: App.Enum.ThumbOverlayVisibilityType;
 		clockwork_url: string | null;
+		album_subtitle_type: App.Enum.ThumbAlbumSubtitleType;
+		can_rotate: boolean;
+		can_autoplay: boolean;
+		album_decoration: App.Enum.AlbumDecorationType;
+		album_decoration_orientation: App.Enum.AlbumDecorationOrientation;
 	};
 	export type MapProviderData = {
 		layer: string;
@@ -240,7 +242,6 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		is_search_accessible: boolean;
 		show_keybinding_help_button: boolean;
 		album_thumb_css_aspect_ratio: App.Enum.AspectRatioType;
-		album_subtitle_type: App.Enum.ThumbAlbumSubtitleType;
 		login_button_position: string;
 		back_button_enabled: boolean;
 		back_button_text: string;
@@ -403,6 +404,8 @@ declare namespace App.Http.Resources.Models {
 		is_password_required: boolean;
 		is_tag_album: boolean;
 		has_subalbum: boolean;
+		num_subalbums: number;
+		num_photos: number;
 		created_at: string;
 		formatted_min_max: string | null;
 	};

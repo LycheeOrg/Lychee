@@ -5,7 +5,6 @@ namespace App\Http\Resources\GalleryConfigs;
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\AspectRatioCSSType;
 use App\Enum\AspectRatioType;
-use App\Enum\ThumbAlbumSubtitleType;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
@@ -26,9 +25,6 @@ class AlbumConfig extends Data
 	public bool $is_mod_frame_enabled;
 	public bool $is_search_accessible;
 	public AspectRatioCSSType $album_thumb_css_aspect_ratio;
-	public ThumbAlbumSubtitleType $album_subtitle_type;
-	public bool $can_rotate;
-	public bool $can_autoplay;
 
 	public function __construct(AbstractAlbum $album)
 	{
@@ -47,10 +43,6 @@ class AlbumConfig extends Data
 		} else {
 			$this->album_thumb_css_aspect_ratio = Configs::getValueAsEnum('default_album_thumb_aspect_ratio', AspectRatioType::class)->css();
 		}
-		Configs::getValueAsEnum('default_album_thumb_aspect_ratio', AspectRatioType::class)->css();
-		$this->album_subtitle_type = Configs::getValueAsEnum('album_subtitle_type', ThumbAlbumSubtitleType::class);
-		$this->can_rotate = Configs::getValueAsBool('editor_enabled');
-		$this->can_autoplay = Configs::getValueAsBool('autoplay_enabled');
 	}
 
 	public function setIsMapAccessible(bool $is_map_accessible): void

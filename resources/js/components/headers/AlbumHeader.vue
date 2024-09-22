@@ -1,7 +1,7 @@
 <template>
 	<LoginModal v-if="props.user.id === null" v-model:visible="isLoginOpen" @logged-in="refresh" />
 	<UploadPanel v-if="canUpload" v-model:visible="isUploadOpen" @close="isUploadOpen = false" :album-id="props.album.id" />
-	<ImportFromLink v-if="canUpload" v-model:visible="isImportLinkOpen" :parent-id="props.album.id" @refresh="refresh" />
+	<ImportFromLink v-if="canUpload" v-model:visible="isImportFromLinkOpen" :parent-id="props.album.id" @refresh="refresh" />
 	<AlbumCreateDialog
 		v-if="canUpload && config.is_model_album"
 		v-model:visible="isCreateAlbumOpen"
@@ -63,9 +63,9 @@ import AlbumCreateDialog from "@/components/forms/album/AlbumCreateDialog.vue";
 import ContextMenu from "primevue/contextmenu";
 import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
 import ImportFromLink from "@/components/modals/ImportFromLink.vue";
-import { useUploadOpen } from "@/composables/modalsTriggers/uploadOpen";
 import { useContextMenuAlbumAdd } from "@/composables/contextMenus/contextMenuAlbumAdd";
 import Divider from "primevue/divider";
+import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
 
 const props = defineProps<{
 	config: App.Http.Resources.GalleryConfigs.AlbumConfig;
@@ -76,13 +76,31 @@ const isLoginOpen = ref(false);
 const areDetailsOpen = defineModel("areDetailsOpen", { default: false });
 const toggleDetails = () => (areDetailsOpen.value = !areDetailsOpen.value);
 
-const { isUploadOpen, toggleUpload } = useUploadOpen(false);
+const {
+	isCreateAlbumOpen,
+	toggleCreateAlbum,
+	isDeleteVisible,
+	toggleDelete,
+	isMergeAlbumVisible,
+	toggleMergeAlbum,
+	isMoveVisible,
+	toggleMove,
+	isRenameVisible,
+	toggleRename,
+	isShareAlbumVisible,
+	toggleShareAlbum,
+	isImportFromLinkOpen,
+	toggleImportFromLink,
+	isUploadOpen,
+	toggleUpload,
+} = useGalleryModals();
+
 const emit = defineEmits<{
 	(e: "refresh"): void;
 	//   (e: 'update', value: string): void
 }>();
 
-const { addmenu, addMenu, isCreateAlbumOpen, isImportLinkOpen, openAddMenu } = useContextMenuAlbumAdd({ toggleUpload });
+const { addmenu, addMenu, openAddMenu } = useContextMenuAlbumAdd({ toggleUpload, toggleCreateAlbum, toggleImportFromLink });
 
 const router = useRouter();
 const canUpload = computed(() => props.user.id !== null && props.album.rights.can_upload === true);

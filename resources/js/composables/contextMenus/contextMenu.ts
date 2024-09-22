@@ -266,11 +266,6 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 	function albumsMenu() {
 		return [
 			{
-				label: "lychee.RENAME_ALL",
-				icon: "pi pi-pencil",
-				callback: albumCallbacks.toggleRename,
-			},
-			{
 				label: "lychee.MERGE_ALL",
 				icon: "pi pi-paperclip",
 				callback: albumCallbacks.toggleMerge,

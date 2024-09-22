@@ -1,13 +1,12 @@
 import { ref } from "vue";
 
 type Callbacks = {
+	toggleCreateAlbum: () => void;
 	toggleUpload: () => void;
+	toggleImportFromLink: () => void;
 };
 
 export function useContextMenuAlbumAdd(callbacks: Callbacks) {
-	const isCreateAlbumOpen = ref(false);
-	const isImportLinkOpen = ref(false);
-
 	const addmenu = ref(); // ! Reference to the context menu
 	const addMenu = ref([
 		{
@@ -21,7 +20,7 @@ export function useContextMenuAlbumAdd(callbacks: Callbacks) {
 		{
 			label: "lychee.IMPORT_LINK",
 			icon: "pi pi-link",
-			callback: () => (isImportLinkOpen.value = true),
+			callback: () => callbacks.toggleImportFromLink,
 		},
 		// {
 		// 	label: "lychee.IMPORT_DROPBOX",
@@ -34,7 +33,7 @@ export function useContextMenuAlbumAdd(callbacks: Callbacks) {
 		{
 			label: "lychee.NEW_ALBUM",
 			icon: "pi pi-folder",
-			callback: () => (isCreateAlbumOpen.value = true),
+			callback: () => callbacks.toggleCreateAlbum,
 		},
 		// { //! Upload tracks
 		// 	label: "lychee.NEW_TAG_ALBUM",
@@ -50,8 +49,6 @@ export function useContextMenuAlbumAdd(callbacks: Callbacks) {
 	return {
 		addmenu,
 		addMenu,
-		isCreateAlbumOpen,
-		isImportLinkOpen,
 		openAddMenu,
 	};
 }
