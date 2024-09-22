@@ -40,11 +40,11 @@ class PhotoRenameTest extends BaseApiV2Test
 			'photo_id' => $this->photo1->id,
 			'title' => 'new title',
 		]);
-		exit;
 		$this->assertNoContent($response);
 		$response = $this->getJsonWithData('Album', ['album_id' => $this->album1->id]);
 		$this->assertOk($response);
-		$response->assertJsonFragment([
+		$response->assertJson([
+			'config' => [],
 			'resource' => [
 				'photos' => [
 					[
