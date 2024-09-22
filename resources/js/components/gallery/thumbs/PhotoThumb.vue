@@ -62,7 +62,7 @@ const props = defineProps<{
 const auth = useAuthStore();
 const lycheeStore = useLycheeStateStore();
 const srcPlay = ref(window.assets_url + "img/play-icon.png");
-const srcNoImage = ref(window.assets_url + "img/no_image.png");
+const srcNoImage = ref(window.assets_url + "img/no_images.svg");
 
 // @ts-expect-error
 const is_cover_id = computed(() => props.album?.cover_id === props.photo.id);
