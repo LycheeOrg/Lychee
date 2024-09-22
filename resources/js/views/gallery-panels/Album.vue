@@ -8,7 +8,7 @@
 		@refresh="refresh"
 	/>
 	<template v-if="config && album">
-		<div class="relative flex flex-wrap content-start w-full justify-start overflow-y-auto h-[calc(100vh-66px)]">
+		<div class="relative flex flex-wrap content-start w-full justify-start overflow-y-auto h-[calc(100vh-3.5rem)]">
 			<AlbumEdit v-model="areDetailsOpen" v-if="album.rights.can_edit" :album="album" :config="config" />
 			<div v-if="noData" class="flex w-full h-full items-center justify-center text-xl text-muted-color">
 				<span class="block">
@@ -97,7 +97,6 @@ import { onKeyStroke } from "@vueuse/core";
 import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
 import { storeToRefs } from "pinia";
 import { useSelection } from "@/composables/selections/selections";
-// import PhotoService from "@/services/photo-service";
 import Divider from "primevue/divider";
 import ContextMenu from "primevue/contextmenu";
 import { useAlbumRefresher } from "@/composables/album/albumRefresher";
@@ -130,11 +129,7 @@ lycheeStore.init();
 const { are_nsfw_visible } = storeToRefs(lycheeStore);
 
 // Set up Album ID reference. This one is updated at each page change.
-const { user, modelAlbum, tagAlbum, smartAlbum, album, layout, photos, config, loadUser, loadAlbum, loadLayout, refresh } = useAlbumRefresher(
-	albumid,
-	auth,
-	isLoginOpen,
-);
+const { user, modelAlbum, album, layout, photos, config, loadLayout, refresh } = useAlbumRefresher(albumid, auth, isLoginOpen);
 
 watch(
 	() => route.params.albumid,

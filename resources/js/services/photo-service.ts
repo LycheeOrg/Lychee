@@ -30,6 +30,10 @@ const PhotoService = {
 		return axios.post(`${Constants.API_URL}Photo::move`, { album_id: destination_id, photo_ids: photo_ids });
 	},
 
+	copy(destination_id: string | null, photo_ids: string[]): Promise<AxiosResponse> {
+		return axios.post(`${Constants.API_URL}Photo::copy`, { album_id: destination_id, photo_ids: photo_ids });
+	},
+
 	delete(photo_ids: string[]): Promise<AxiosResponse> {
 		return axios.delete(`${Constants.API_URL}Photo`, { data: { photo_ids: photo_ids } });
 	},

@@ -317,6 +317,9 @@ const LycheePrimeVueConfig = {
 			},
 		},
 		toolbar: {
+			root: {
+				padding: "0 0.5rem",
+			},
 			colorScheme: {
 				light: {
 					root: {
@@ -325,6 +328,7 @@ const LycheePrimeVueConfig = {
 				},
 				dark: {
 					root: {
+						// background: "linear-gradient(to bottom, {surface.800}, {surface.900});",
 						background: "{surface.800}",
 						color: "{surface.0}",
 					},

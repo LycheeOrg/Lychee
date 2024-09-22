@@ -8,7 +8,7 @@
 		v-model:parent-id="props.album.id"
 		@close="isCreateAlbumOpen = false"
 	/>
-	<Toolbar class="w-full border-0" v-if="album">
+	<Toolbar class="w-full border-0 h-14" v-if="album">
 		<template #start>
 			<Button icon="pi pi-angle-left" class="mr-2" severity="secondary" text @click="goBack" />
 			<!-- <Button v-if="user?.id" @click="openLeftMenu" icon="pi pi-bars" class="mr-2" severity="info" text /> -->
