@@ -248,6 +248,7 @@ function saveAlbum() {
 		copyright: copyright.value ?? null,
 	};
 	AlbumService.updateAlbum(data).catch((error) => {
+		AlbumService.clearCache(albumId.value);
 		console.error(error);
 	});
 }
@@ -265,6 +266,7 @@ function saveTagAlbum() {
 	AlbumService.updateTag(data)
 		.then(() => {
 			toast.add({ severity: "success", summary: "Success", detail: "Permission deleted", life: 3000 });
+			AlbumService.clearCache(albumId.value);
 		})
 		.catch((error) => {
 			console.error(error);

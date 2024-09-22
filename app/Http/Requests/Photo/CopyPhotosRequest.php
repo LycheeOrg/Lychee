@@ -13,7 +13,7 @@ use App\Models\Album;
 use App\Models\Photo;
 use App\Rules\RandomIDRule;
 
-class DuplicatePhotosRequest extends BaseApiRequest implements HasPhotos, HasAlbum
+class CopyPhotosRequest extends BaseApiRequest implements HasPhotos, HasAlbum
 {
 	use HasPhotosTrait;
 	use HasAlbumTrait;

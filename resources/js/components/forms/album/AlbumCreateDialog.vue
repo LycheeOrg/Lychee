@@ -57,6 +57,7 @@ function create() {
 		parent_id: parentId.value,
 	}).then((response) => {
 		visible.value = false;
+		AlbumService.clearCache(parentId.value);
 		router.push(`/gallery/${response.data}`);
 	});
 }

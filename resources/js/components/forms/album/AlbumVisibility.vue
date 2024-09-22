@@ -134,6 +134,14 @@ function save() {
 			toast.add({ severity: "success", summary: "Success", detail: "Permission deleted", life: 3000 });
 		})
 		.catch((error) => {
+			AlbumService.clearCache(albumId.value);
+			if (props.config.is_model_album) {
+				// @ts-expect-error
+				AlbumService.clearCache(props.album.parent_id);
+			} else {
+				AlbumService.clearAlbums();
+			}
+
 			console.error(error);
 		});
 }

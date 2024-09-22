@@ -101,6 +101,7 @@ function moveConfirmationAlbum() {
 }
 
 function execute() {
+	visible.value = false;
 	if (props.photo || (props.photoIds && props.photoIds?.length > 0)) {
 		return executeMovePhoto();
 	}

@@ -61,6 +61,7 @@ function create() {
 		title: title.value,
 		tags: tags.value?.split(",") ?? [],
 	}).then((response) => {
+		AlbumService.clearAlbums();
 		router.push(`/gallery/${response.data}`);
 	});
 }

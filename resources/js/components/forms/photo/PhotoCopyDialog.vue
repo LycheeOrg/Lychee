@@ -82,6 +82,7 @@ function execute() {
 		return;
 	}
 
+	visible.value = false;
 	let photoCopiedIds = [];
 	if (props.photo) {
 		photoCopiedIds.push(props.photo.id);
