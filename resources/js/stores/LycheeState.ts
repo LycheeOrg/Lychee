@@ -75,5 +75,9 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 				this.album_subtitle_type = data.album_subtitle_type;
 			});
 		},
+
+		toggleFullScreen() {
+			this.is_full_screen = !this.is_full_screen;
+		},
 	},
 });

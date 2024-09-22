@@ -38,7 +38,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { AlbumThumbConfig } from "./AlbumThumb.vue";
-import MiniIcon from "@/components/icons/MiniIcon.vue";
 
 const props = defineProps<{
 	album: App.Http.Resources.Models.ThumbAlbumResource;

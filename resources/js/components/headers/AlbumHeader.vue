@@ -66,6 +66,8 @@ import ImportFromLink from "@/components/modals/ImportFromLink.vue";
 import { useContextMenuAlbumAdd } from "@/composables/contextMenus/contextMenuAlbumAdd";
 import Divider from "primevue/divider";
 import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
+import { useLycheeStateStore } from "@/stores/LycheeState";
+import { storeToRefs } from "pinia";
 
 const props = defineProps<{
 	config: App.Http.Resources.GalleryConfigs.AlbumConfig;
@@ -75,6 +77,9 @@ const props = defineProps<{
 const isLoginOpen = ref(false);
 const areDetailsOpen = defineModel("areDetailsOpen", { default: false });
 const toggleDetails = () => (areDetailsOpen.value = !areDetailsOpen.value);
+const lycheeStore = useLycheeStateStore();
+lycheeStore.init();
+const { is_full_screen } = storeToRefs(lycheeStore);
 
 const {
 	isCreateAlbumOpen,

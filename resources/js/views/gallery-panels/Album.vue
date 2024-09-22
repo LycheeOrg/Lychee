@@ -1,94 +1,108 @@
 <template>
-	<AlbumHeader
-		v-if="album && config && user"
-		:album="album"
-		:config="config"
-		:user="user"
-		v-model:are-details-open="areDetailsOpen"
-		@refresh="refresh"
-	/>
-	<template v-if="config && album">
-		<div class="relative flex flex-wrap content-start w-full justify-start overflow-y-auto h-[calc(100vh-3.5rem)]">
-			<AlbumEdit v-model="areDetailsOpen" v-if="album.rights.can_edit" :album="album" :config="config" />
-			<div v-if="noData" class="flex w-full h-full items-center justify-center text-xl text-muted-color">
-				<span class="block">
-					{{ "Nothing to see here" }}
-				</span>
-			</div>
-			<AlbumHero v-if="!noData" :album="album" @open-sharing-modal="toggleShareAlbum" />
-			<AlbumThumbPanel
-				v-if="children !== null && children.length > 0"
-				header="lychee.ALBUMS"
-				:album="modelAlbum"
-				:albums="children"
-				:config="albumPanelConfig"
-				:is-alone="!photos?.length"
-				:are-nsfw-visible="are_nsfw_visible"
-				@clicked="albumClick"
-				@contexted="albumMenuOpen"
-				:idx-shift="0"
-				:selected-albums="selectedAlbumsIds"
-			/>
-			<PhotoThumbPanel
-				v-if="layout !== null && photos !== null && photos.length > 0"
-				header="lychee.PHOTOS"
-				:photos="photos"
+	<div class="h-svh overflow-y-hidden">
+		<!-- Trick to avoid the scroll bar to appear on the right when switching to full screen -->
+		<Collapse :when="!is_full_screen">
+			<AlbumHeader
+				v-if="album && config && user"
 				:album="album"
-				:gallery-config="layout"
-				:selected-photos="selectedPhotosIds"
-				@clicked="photoClick"
-				@contexted="photoMenuOpen"
+				:config="config"
+				:user="user"
+				v-model:are-details-open="areDetailsOpen"
+				@refresh="refresh"
 			/>
-		</div>
-		<ShareAlbum v-model:visible="isShareAlbumVisible" :title="album.title" :url="route.path" />
-		<!-- Dialogs -->
-		<PhotoTagDialog v-model:visible="isTagVisible" :parent-id="albumid" :photo="selectedPhoto" :photo-ids="selectedPhotosIds" @tagged="refresh" />
-		<PhotoCopyDialog
-			v-model:visible="isCopyVisible"
-			:parent-id="albumid"
-			:photo="selectedPhoto"
-			:photo-ids="selectedPhotosIds"
-			@copied="refresh"
-		/>
-		<MoveDialog
-			v-model:visible="isMoveVisible"
-			:parent-id="albumid"
-			:photo="selectedPhoto"
-			:photo-ids="selectedPhotosIds"
-			:album="selectedAlbum"
-			:album-ids="selectedAlbumsIds"
-			@moved="refresh"
-		/>
-		<DeleteDialog
-			v-model:visible="isDeleteVisible"
-			:parent-id="albumid"
-			:photo="selectedPhoto"
-			:photo-ids="selectedPhotosIds"
-			:album="selectedAlbum"
-			:album-ids="selectedAlbumsIds"
-			@deleted="refresh"
-		/>
+		</Collapse>
+		<template v-if="config && album">
+			<div
+				class="relative flex flex-wrap content-start w-full justify-start overflow-y-auto"
+				:class="is_full_screen ? 'h-svh' : 'h-[calc(100vh-3.5rem)]'"
+			>
+				<AlbumEdit v-model="areDetailsOpen" v-if="album.rights.can_edit" :album="album" :config="config" />
+				<div v-if="noData" class="flex w-full h-full items-center justify-center text-xl text-muted-color">
+					<span class="block">
+						{{ "Nothing to see here" }}
+					</span>
+				</div>
+				<AlbumHero v-if="!noData" :album="album" @open-sharing-modal="toggleShareAlbum" />
+				<AlbumThumbPanel
+					v-if="children !== null && children.length > 0"
+					header="lychee.ALBUMS"
+					:album="modelAlbum"
+					:albums="children"
+					:config="albumPanelConfig"
+					:is-alone="!photos?.length"
+					:are-nsfw-visible="are_nsfw_visible"
+					@clicked="albumClick"
+					@contexted="albumMenuOpen"
+					:idx-shift="0"
+					:selected-albums="selectedAlbumsIds"
+				/>
+				<PhotoThumbPanel
+					v-if="layout !== null && photos !== null && photos.length > 0"
+					header="lychee.PHOTOS"
+					:photos="photos"
+					:album="album"
+					:gallery-config="layout"
+					:selected-photos="selectedPhotosIds"
+					@clicked="photoClick"
+					@contexted="photoMenuOpen"
+				/>
+			</div>
+			<ShareAlbum v-model:visible="isShareAlbumVisible" :title="album.title" :url="route.path" />
+			<!-- Dialogs -->
+			<PhotoTagDialog
+				v-model:visible="isTagVisible"
+				:parent-id="albumid"
+				:photo="selectedPhoto"
+				:photo-ids="selectedPhotosIds"
+				@tagged="refresh"
+			/>
+			<PhotoCopyDialog
+				v-model:visible="isCopyVisible"
+				:parent-id="albumid"
+				:photo="selectedPhoto"
+				:photo-ids="selectedPhotosIds"
+				@copied="refresh"
+			/>
+			<MoveDialog
+				v-model:visible="isMoveVisible"
+				:parent-id="albumid"
+				:photo="selectedPhoto"
+				:photo-ids="selectedPhotosIds"
+				:album="selectedAlbum"
+				:album-ids="selectedAlbumsIds"
+				@moved="refresh"
+			/>
+			<DeleteDialog
+				v-model:visible="isDeleteVisible"
+				:parent-id="albumid"
+				:photo="selectedPhoto"
+				:photo-ids="selectedPhotosIds"
+				:album="selectedAlbum"
+				:album-ids="selectedAlbumsIds"
+				@deleted="refresh"
+			/>
 
-		<!-- Dialogs for albums -->
-		<RenameDialog v-model:visible="isRenameVisible" :parent-id="undefined" :album="selectedAlbum" :photo="selectedPhoto" @renamed="refresh" />
-		<AlbumMergeDialog
-			v-model:visible="isMergeAlbumVisible"
-			:parent-id="albumid"
-			:album="selectedAlbum"
-			:album-ids="selectedAlbumsIds"
-			@merged="refresh"
-		/>
+			<!-- Dialogs for albums -->
+			<RenameDialog v-model:visible="isRenameVisible" :parent-id="undefined" :album="selectedAlbum" :photo="selectedPhoto" @renamed="refresh" />
+			<AlbumMergeDialog
+				v-model:visible="isMergeAlbumVisible"
+				:parent-id="albumid"
+				:album="selectedAlbum"
+				:album-ids="selectedAlbumsIds"
+				@merged="refresh"
+			/>
 
-		<ContextMenu ref="menu" :model="Menu">
-			<template #item="{ item, props }">
-				<Divider v-if="item.is_divider" />
-				<a v-else v-ripple v-bind="props.action" @click="item.callback">
-					<span :class="item.icon" />
-					<span class="ml-2">{{ $t(item.label) }}</span>
-				</a>
-			</template>
-		</ContextMenu>
-	</template>
+			<ContextMenu ref="menu" :model="Menu">
+				<template #item="{ item, props }">
+					<Divider v-if="item.is_divider" />
+					<a v-else v-ripple v-bind="props.action" @click="item.callback">
+						<span :class="item.icon" />
+						<span class="ml-2">{{ $t(item.label) }}</span>
+					</a>
+				</template>
+			</ContextMenu>
+		</template>
+	</div>
 </template>
 <script setup lang="ts">
 import { useAuthStore } from "@/stores/Auth";
@@ -119,6 +133,7 @@ import DeleteDialog from "@/components/forms/gallery-dialogs/DeleteDialog.vue";
 import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
 import PhotoTagDialog from "@/components/forms/photo/PhotoTagDialog.vue";
 import PhotoCopyDialog from "@/components/forms/photo/PhotoCopyDialog.vue";
+import { Collapse } from "vue-collapsed";
 
 const route = useRoute();
 
@@ -136,7 +151,7 @@ const isLoginOpen = ref(false);
 const auth = useAuthStore();
 const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
-const { are_nsfw_visible } = storeToRefs(lycheeStore);
+const { are_nsfw_visible, is_full_screen } = storeToRefs(lycheeStore);
 
 // Set up Album ID reference. This one is updated at each page change.
 const { user, modelAlbum, album, layout, photos, config, loadLayout, refresh } = useAlbumRefresher(albumid, auth, isLoginOpen);
@@ -248,4 +263,5 @@ loadLayout();
 refresh();
 
 onKeyStroke("h", () => !shouldIgnoreKeystroke() && (are_nsfw_visible.value = !are_nsfw_visible.value));
+onKeyStroke("f", () => !shouldIgnoreKeystroke() && lycheeStore.toggleFullScreen());
 </script>
