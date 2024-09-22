@@ -18,6 +18,7 @@ use App\Http\Requests\Album\DeleteAlbumsRequest;
 use App\Http\Requests\Album\GetAlbumRequest;
 use App\Http\Requests\Album\MergeAlbumsRequest;
 use App\Http\Requests\Album\MoveAlbumsRequest;
+use App\Http\Requests\Album\RenameAlbumRequest;
 use App\Http\Requests\Album\SetAlbumProtectionPolicyRequest;
 use App\Http\Requests\Album\SetAsCoverRequest;
 use App\Http\Requests\Album\SetAsHeaderRequest;
@@ -227,6 +228,20 @@ class AlbumController extends Controller
 		} else {
 			$album->header_id = ($album->header_id === $request->photo()->id) ? null : $request->photo()->id;
 		}
+		$album->save();
+	}
+
+	/**
+	 * Rename an album.
+	 *
+	 * @param RenameAlbumRequest $request
+	 *
+	 * @return void
+	 */
+	public function rename(RenameAlbumRequest $request): void
+	{
+		$album = $request->album();
+		$album->title = $request->title();
 		$album->save();
 	}
 }

@@ -34,6 +34,7 @@ Route::get('/Album', [Gallery\AlbumController::class, 'get'])->middleware(['logi
 Route::get('/Album::getTargetListAlbums', [Gallery\AlbumController::class, 'getTargetListAlbums'])->middleware(['login_required:album', 'cache_control']);
 Route::post('/Album', [Gallery\AlbumController::class, 'createAlbum']);
 Route::patch('/Album', [Gallery\AlbumController::class, 'updateAlbum']);
+Route::patch('/Album::rename', [Gallery\AlbumController::class, 'rename']);
 Route::post('/TagAlbum', [Gallery\AlbumController::class, 'createTagAlbum']);
 Route::patch('/TagAlbum', [Gallery\AlbumController::class, 'updateTagAlbum']);
 Route::post('/Album::updateProtectionPolicy', [Gallery\AlbumController::class, 'updateProtectionPolicy']);
@@ -102,10 +103,11 @@ Route::post('/Photo', [Gallery\PhotoController::class, 'upload'])
 	->withoutMiddleware(['content_type:json'])
 	->middleware(['content_type:multipart']);
 Route::patch('/Photo', [Gallery\PhotoController::class, 'update']);
+Route::patch('/Photo::rename', [Gallery\PhotoController::class, 'rename']);
 Route::post('/Photo::move', [Gallery\PhotoController::class, 'move']);
+Route::post('/Photo::copy', [Gallery\PhotoController::class, 'copy']);
 Route::post('/Photo::star', [Gallery\PhotoController::class, 'star']);
 Route::post('/Photo::rotate', [Gallery\PhotoController::class, 'rotate']);
-Route::post('/Photo::duplicate', [Gallery\PhotoController::class, 'duplicate']);
 Route::delete('/Photo', [Gallery\PhotoController::class, 'delete']);
 
 // Route::post('/Photo::getRandom', [PhotoController::class, 'getRandom']);

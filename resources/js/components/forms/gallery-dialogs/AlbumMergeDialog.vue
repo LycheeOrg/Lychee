@@ -76,6 +76,7 @@ function execute() {
 	if (destination_id.value === undefined) {
 		return;
 	}
+	visible.value = false;
 	let albumMergedIds = [];
 	if (props.album) {
 		albumMergedIds.push(props.album.id);

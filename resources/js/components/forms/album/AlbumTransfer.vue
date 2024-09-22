@@ -27,6 +27,7 @@ import AlbumService from "@/services/album-service";
 import { sprintf } from "sprintf-js";
 import SearchTargetUser from "@/components/forms/album/SearchTargetUser.vue";
 import { useToast } from "primevue/usetoast";
+import Album from "@/views/gallery-panels/Album.vue";
 
 const props = defineProps<{
 	album: App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.TagAlbumResource;
@@ -54,6 +55,8 @@ function execute() {
 		// 	album.parent_id ? router.push(`/gallery/${album.parent_id}`) : router.push("/gallery");
 		// } else {
 		router.push("/gallery");
+		// @ts-expect-error
+		AlbumService.clearCache(props.album?.parent_id);
 		// }
 	});
 }

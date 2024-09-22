@@ -56,6 +56,7 @@ function execute() {
 		return;
 	}
 
+	visible.value = false;
 	if (props.photo) {
 		executePhoto();
 	} else {

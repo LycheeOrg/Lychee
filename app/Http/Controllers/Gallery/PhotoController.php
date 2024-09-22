@@ -11,12 +11,13 @@ use App\Contracts\Models\AbstractAlbum;
 use App\Enum\FileStatus;
 use App\Exceptions\ConfigurationException;
 use App\Factories\AlbumFactory;
+use App\Http\Requests\Photo\CopyPhotosRequest;
 use App\Http\Requests\Photo\DeletePhotosRequest;
-use App\Http\Requests\Photo\DuplicatePhotosRequest;
 use App\Http\Requests\Photo\EditPhotoRequest;
 use App\Http\Requests\Photo\FromUrlRequest;
 use App\Http\Requests\Photo\GetPhotoRequest;
 use App\Http\Requests\Photo\MovePhotosRequest;
+use App\Http\Requests\Photo\RenamePhotoRequest;
 use App\Http\Requests\Photo\RotatePhotoRequest;
 use App\Http\Requests\Photo\SetPhotosStarredRequest;
 use App\Http\Requests\Photo\UploadPhotoRequest;
@@ -28,7 +29,6 @@ use App\Image\Files\UploadedFile;
 use App\Jobs\ProcessImageJob;
 use App\Models\Configs;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -172,22 +172,6 @@ class PhotoController extends Controller
 	}
 
 	/**
-	 * Duplicates a set of photos.
-	 * Only the SQL entry is duplicated for space reason.
-	 *
-	 * @param DuplicatePhotosRequest $request
-	 * @param Duplicate              $duplicate
-	 *
-	 * @return Collection<string|int, PhotoResource> the collection of duplicated photos
-	 */
-	public function duplicate(DuplicatePhotosRequest $request, Duplicate $duplicate): Collection
-	{
-		$duplicates = $duplicate->do($request->photos(), $request->album());
-
-		return PhotoResource::collect($duplicates);
-	}
-
-	/**
 	 * Given a photoID and a direction (+1: 90° clockwise, -1: 90° counterclockwise) rotate an image.
 	 *
 	 * @param RotatePhotoRequest $request
@@ -204,5 +188,33 @@ class PhotoController extends Controller
 		$photo = $rotateStrategy->do();
 
 		return PhotoResource::fromModel($photo);
+	}
+
+	/**
+	 * Copy a photos to an album.
+	 * Only the SQL entry is duplicated for space reason.
+	 *
+	 * @param CopyPhotosRequest $request
+	 * @param Duplicate         $duplicate
+	 *
+	 * @return void
+	 */
+	public function copy(CopyPhotosRequest $request, Duplicate $duplicate): void
+	{
+		$duplicate->do($request->photos(), $request->album());
+	}
+
+	/**
+	 * Rename a photo.
+	 *
+	 * @param RenamePhotoRequest $request
+	 *
+	 * @return void
+	 */
+	public function rename(RenamePhotoRequest $request): void
+	{
+		$photo = $request->photo();
+		$photo->title = $request->title;
+		$photo->save();
 	}
 }

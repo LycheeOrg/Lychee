@@ -30,7 +30,7 @@
 			:albums="albums"
 			:user="user"
 			:config="albumPanelConfig"
-			:is-alone="!sharedAlbums.length"
+			:is-alone="!sharedAlbums.length && !smartAlbums.length"
 			:are-nsfw-visible="are_nsfw_visible"
 			:idx-shift="0"
 			:selected-albums="selectedAlbumsIds"
@@ -62,7 +62,7 @@
 		</template>
 	</ContextMenu>
 	<!-- Dialogs for albums -->
-	<MoveDialog v-model:visible="isMoveVisible" :parent-id="undefined" :album="selectedAlbum" :album-ids="selectedAlbumsIds" @moved="refresh" />
+	<MoveDialog v-model:visible="isMoveVisible" :parent-id="undefined" :album="selectedAlbum" :album-ids="selectedAlbumsIds" @moved="refresh()" />
 	<AlbumMergeDialog
 		v-model:visible="isMergeAlbumVisible"
 		:parent-id="undefined"
