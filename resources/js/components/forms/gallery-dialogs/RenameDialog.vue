@@ -12,9 +12,9 @@
 					<Button severity="secondary" class="w-full border-none rounded-none rounded-bl-xl font-bold" @click="closeCallback">
 						{{ $t("lychee.CANCEL") }}
 					</Button>
-					<Button severity="danger" class="w-full border-none rounded-none rounded-br-xl font-bold" @click="execute">{{
-						$t("lychee.RENAME")
-					}}</Button>
+					<Button severity="danger" class="w-full border-none rounded-none rounded-br-xl font-bold" @click="execute">
+						{{ $t("lychee.RENAME") }}
+					</Button>
 				</div>
 			</div>
 		</template>

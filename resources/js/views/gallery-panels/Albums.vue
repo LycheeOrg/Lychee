@@ -93,6 +93,7 @@ import AlbumMergeDialog from "@/components/forms/gallery-dialogs/AlbumMergeDialo
 import DeleteDialog from "@/components/forms/gallery-dialogs/DeleteDialog.vue";
 import RenameDialog from "@/components/forms/gallery-dialogs/RenameDialog.vue";
 import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
+import Divider from "primevue/divider";
 
 const isLoginOpen = ref(false);
 

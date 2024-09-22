@@ -49,6 +49,18 @@ export function useGalleryModals() {
 		isUploadOpen.value = !isUploadOpen.value;
 	}
 
+	const isTagVisible = ref(false);
+
+	function toggleTag() {
+		isTagVisible.value = !isTagVisible.value;
+	}
+
+	const isCopyVisible = ref(false);
+
+	function toggleCopy() {
+		isCopyVisible.value = !isCopyVisible.value;
+	}
+
 	return {
 		isCreateAlbumOpen,
 		toggleCreateAlbum,
@@ -66,5 +78,9 @@ export function useGalleryModals() {
 		toggleImportFromLink,
 		isUploadOpen,
 		toggleUpload,
+		isTagVisible,
+		toggleTag,
+		isCopyVisible,
+		toggleCopy,
 	};
 }

@@ -65,9 +65,9 @@ const srcPlay = ref(window.assets_url + "img/play-icon.png");
 const srcNoImage = ref(window.assets_url + "img/no_image.png");
 
 // @ts-expect-error
-const is_cover_id = ref(props.album?.cover_id === props.photo.id);
+const is_cover_id = computed(() => props.album?.cover_id === props.photo.id);
 // @ts-expect-error
-const is_header_id = ref(props.album?.header_id === props.photo.id);
+const is_header_id = computed(() => props.album?.header_id === props.photo.id);
 
 const user = ref(null) as Ref<App.Http.Resources.Models.UserResource | null>;
 auth.getUser().then((data) => {
