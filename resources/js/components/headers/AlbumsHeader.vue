@@ -5,7 +5,7 @@
 	<ImportFromLink v-if="canUpload" v-model:visible="isImportFromLinkOpen" :parent-id="null" />
 	<AlbumCreateDialog v-if="canUpload" v-model:visible="isCreateAlbumOpen" :parent-id="null" />
 	<AlbumCreateTagDialog v-if="canUpload" v-model:visible="isCreateTagAlbumOpen" />
-	<Toolbar class="w-full border-0">
+	<Toolbar class="w-full border-0 h-14">
 		<template #start>
 			<BackLinkButton v-if="user.id === null && !isLoginLeft" :config="props.config" />
 			<Button v-if="user.id === null && isLoginLeft" icon="pi pi-sign-in" class="mr-2" severity="secondary" text @click="isLoginOpen = true" />

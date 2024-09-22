@@ -1,7 +1,7 @@
 <template>
 	<header
 		id="lychee_toolbar_container"
-		class="absolute top-0 left-0 w-full flex-none z-10 bg-gradient-to-b from-black"
+		class="absolute top-0 left-0 w-full flex-none z-10 bg-gradient-to-b from-black h-14"
 		x-bind:class="isFullscreen ? 'opacity-0 hover:opacity-100' : 'opacity-100 h-14'"
 	>
 		<Toolbar class="w-full bg-transparent border-0">

@@ -113,18 +113,8 @@ const { user, isKeybindingsHelpOpen, smartAlbums, albums, sharedAlbums, rootConf
 const { selectedAlbum, selectedAlbumsIdx, selectedAlbums, selectedAlbumsIds, albumClick } = useSelection(config, undefined, photos, selectableAlbums);
 
 // Modals for Albums
-const {
-	isDeleteVisible,
-	toggleDelete,
-	isMergeAlbumVisible,
-	toggleMergeAlbum,
-	isMoveVisible,
-	toggleMove,
-	isRenameVisible,
-	toggleRename,
-	isShareAlbumVisible,
-	toggleShareAlbum,
-} = useGalleryModals();
+const { isDeleteVisible, toggleDelete, isMergeAlbumVisible, toggleMergeAlbum, isMoveVisible, toggleMove, isRenameVisible, toggleRename } =
+	useGalleryModals();
 
 const unselect = () => {
 	selectedAlbumsIdx.value = [];
