@@ -2,7 +2,7 @@
 	<header
 		id="lychee_toolbar_container"
 		class="absolute top-0 left-0 w-full flex-none z-10 bg-gradient-to-b from-black h-14"
-		x-bind:class="isFullscreen ? 'opacity-0 hover:opacity-100' : 'opacity-100 h-14'"
+		:class="is_full_screen ? 'opacity-0 hover:opacity-100' : 'opacity-100 h-14'"
 	>
 		<Toolbar class="w-full bg-transparent border-0">
 			<template #start>
@@ -42,12 +42,14 @@
 <script setup lang="ts">
 import Button from "primevue/button";
 import Toolbar from "primevue/toolbar";
-import { Ref, ref } from "vue";
+import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { onKeyStroke } from "@vueuse/core";
 // import ContextMenu from "primevue/contextmenu";
 import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
 import DownloadPhoto from "../modals/DownloadPhoto.vue";
+import { useLycheeStateStore } from "@/stores/LycheeState";
+import { storeToRefs } from "pinia";
 
 const router = useRouter();
 const props = defineProps<{
@@ -55,6 +57,9 @@ const props = defineProps<{
 	photo: App.Http.Resources.Models.PhotoResource;
 }>();
 
+const lycheeStore = useLycheeStateStore();
+lycheeStore.init();
+const { is_full_screen } = storeToRefs(lycheeStore);
 const isEditOpen = defineModel("isEditOpen", { default: false });
 const areDetailsOpen = defineModel("areDetailsOpen", { default: false });
 const isDownloadOpen = ref(false);

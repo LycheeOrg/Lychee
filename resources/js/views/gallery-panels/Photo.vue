@@ -15,7 +15,7 @@
 					id="image"
 					controls
 					class="absolute m-auto w-auto h-auto"
-					x-bind:class="isFullscreen ? 'max-w-full max-h-full' : 'max-wh-full-56'"
+					:class="is_full_screen ? 'max-w-full max-h-full' : 'max-wh-full-56'"
 					autobuffer
 					:autoplay="lycheeStore.can_autoplay"
 				>
@@ -37,7 +37,7 @@
 					alt="medium"
 					class="absolute m-auto w-auto h-auto animate-zoomIn bg-contain bg-center bg-no-repeat"
 					:src="photo.size_variants.medium?.url ?? ''"
-					:class="isFullscreen ? 'max-w-full max-h-full' : 'max-wh-full-56'"
+					:class="is_full_screen ? 'max-w-full max-h-full' : 'max-wh-full-56'"
 					:srcset="srcSetMedium"
 				/>
 				<img
@@ -45,7 +45,7 @@
 					id="image"
 					alt="big"
 					class="absolute m-auto w-auto h-auto animate-zoomIn bg-contain bg-center bg-no-repeat"
-					:class="isFullscreen ? 'max-w-full max-h-full' : 'max-wh-full-56'"
+					:class="is_full_screen ? 'max-w-full max-h-full' : 'max-wh-full-56'"
 					:style="style"
 					:src="photo?.size_variants.original?.url ?? ''"
 				/>
@@ -58,7 +58,7 @@
 					:data-photo-src="photo?.size_variants.medium?.url"
 					:data-video-src="photo?.live_photo_url"
 					class="absolute m-auto w-auto h-auto"
-					:class="isFullscreen ? 'max-w-full max-h-full' : 'max-wh-full-56'"
+					:class="is_full_screen ? 'max-w-full max-h-full' : 'max-wh-full-56'"
 					:style="style"
 				></div>
 				<!-- This is a livephoto : full -->
@@ -70,7 +70,7 @@
 					:data-photo-src="photo?.size_variants.original?.url"
 					:data-video-src="photo?.live_photo_url"
 					class="absolute m-auto w-auto h-auto"
-					:class="isFullscreen ? 'max-w-full max-h-full' : 'max-wh-full-56'"
+					:class="is_full_screen ? 'max-w-full max-h-full' : 'max-wh-full-56'"
 					:style="style"
 				></div>
 
@@ -133,6 +133,7 @@ import Overlay from "@/components/gallery/photo/Overlay.vue";
 import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
 import MoveDialog from "@/components/forms/gallery-dialogs/MoveDialog.vue";
 import DeleteDialog from "@/components/forms/gallery-dialogs/DeleteDialog.vue";
+import { storeToRefs } from "pinia";
 
 const props = defineProps<{
 	albumid: string;
@@ -149,7 +150,7 @@ const { isDeleteVisible, toggleDelete, isMoveVisible, toggleMove } = useGalleryM
 const photoId = ref(props.photoid);
 const photo = ref(undefined) as Ref<App.Http.Resources.Models.PhotoResource | undefined>;
 const album = ref(null) as Ref<App.Http.Resources.Models.AbstractAlbumResource | null>;
-const isFullscreen = ref(lycheeStore.is_full_screen);
+const { is_full_screen } = storeToRefs(lycheeStore);
 const isEditOpen = ref(false);
 const areDetailsOpen = ref(false);
 
@@ -289,6 +290,7 @@ onKeyStroke(
 		router.push({ name: "photo", params: { albumid: props.albumid, photoid: photo.value?.next_photo_id ?? "" } }),
 );
 onKeyStroke("o", () => !shouldIgnoreKeystroke() && rotateOverlay());
+onKeyStroke("f", () => !shouldIgnoreKeystroke() && lycheeStore.toggleFullScreen());
 
 load();
 

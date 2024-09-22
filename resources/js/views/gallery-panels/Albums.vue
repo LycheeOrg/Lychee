@@ -1,16 +1,18 @@
 <template>
 	<KeybindingsHelp v-model:visible="isKeybindingsHelpOpen" v-if="user?.id" />
-	<div v-if="rootConfig && rootRights" @click="unselect">
-		<AlbumsHeader
-			v-model:is-login-open="isLoginOpen"
-			v-if="user"
-			:user="user"
-			title="lychee.ALBUMS"
-			:rights="rootRights"
-			@refresh="refresh"
-			@help="isKeybindingsHelpOpen = true"
-			:config="rootConfig"
-		/>
+	<div v-if="rootConfig && rootRights" @click="unselect" class="h-svh overflow-y-auto">
+		<Collapse :when="!is_full_screen">
+			<AlbumsHeader
+				v-model:is-login-open="isLoginOpen"
+				v-if="user"
+				:user="user"
+				title="lychee.ALBUMS"
+				:rights="rootRights"
+				@refresh="refresh"
+				@help="isKeybindingsHelpOpen = true"
+				:config="rootConfig"
+			/>
+		</Collapse>
 		<AlbumThumbPanel
 			v-if="smartAlbums.length > 0"
 			header="lychee.SMART_ALBUMS"
@@ -94,13 +96,14 @@ import DeleteDialog from "@/components/forms/gallery-dialogs/DeleteDialog.vue";
 import RenameDialog from "@/components/forms/gallery-dialogs/RenameDialog.vue";
 import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
 import Divider from "primevue/divider";
+import { Collapse } from "vue-collapsed";
 
 const isLoginOpen = ref(false);
 
 const auth = useAuthStore();
 const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
-const { are_nsfw_visible } = storeToRefs(lycheeStore);
+const { are_nsfw_visible, is_full_screen } = storeToRefs(lycheeStore);
 
 const config = ref(null); // unused for now.
 const photos = ref([]); // unused.
@@ -170,4 +173,5 @@ const albumPanelConfig = computed<AlbumThumbConfig>(() => ({
 refresh();
 
 onKeyStroke("h", () => !shouldIgnoreKeystroke() && (are_nsfw_visible.value = !are_nsfw_visible.value));
+onKeyStroke("f", () => !shouldIgnoreKeystroke() && lycheeStore.toggleFullScreen());
 </script>
