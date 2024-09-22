@@ -20,6 +20,7 @@ use App\Http\Requests\Photo\MovePhotosRequest;
 use App\Http\Requests\Photo\RenamePhotoRequest;
 use App\Http\Requests\Photo\RotatePhotoRequest;
 use App\Http\Requests\Photo\SetPhotosStarredRequest;
+use App\Http\Requests\Photo\SetPhotosTagsRequest;
 use App\Http\Requests\Photo\UploadPhotoRequest;
 use App\Http\Resources\Editable\UploadMetaResource;
 use App\Http\Resources\Models\PhotoResource;
@@ -216,5 +217,27 @@ class PhotoController extends Controller
 		$photo = $request->photo();
 		$photo->title = $request->title;
 		$photo->save();
+	}
+
+	/**
+	 * Set the tags of a photo.
+	 *
+	 * @param SetPhotosTagsRequest $request
+	 *
+	 * @return void
+	 */
+	public function tags(SetPhotosTagsRequest $request): void
+	{
+		$tags = $request->tags();
+
+		/** @var Photo $photo */
+		foreach ($request->photos() as $photo) {
+			if ($request->shallOverride) {
+				$photo->tags = $tags;
+			} else {
+				$photo->tags = array_unique(array_merge($photo->tags, $tags));
+			}
+			$photo->save();
+		}
 	}
 }
