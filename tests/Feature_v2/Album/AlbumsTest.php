@@ -45,7 +45,6 @@ class AlbumsTest extends BaseApiV2Test
 				'is_mod_frame_enabled' => true,
 				'is_search_accessible' => false,
 				'album_thumb_css_aspect_ratio' => 'aspect-square',
-				'album_subtitle_type' => 'oldstyle',
 			],
 		]);
 	}
@@ -101,7 +100,6 @@ class AlbumsTest extends BaseApiV2Test
 				'is_mod_frame_enabled' => true,
 				'is_search_accessible' => true,
 				'album_thumb_css_aspect_ratio' => 'aspect-square',
-				'album_subtitle_type' => 'oldstyle',
 			],
 		]);
 	}
@@ -161,7 +159,6 @@ class AlbumsTest extends BaseApiV2Test
 				'is_mod_frame_enabled' => true,
 				'is_search_accessible' => true,
 				'album_thumb_css_aspect_ratio' => 'aspect-square',
-				'album_subtitle_type' => 'oldstyle',
 			],
 		]);
 	}
