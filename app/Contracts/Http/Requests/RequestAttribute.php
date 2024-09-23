@@ -10,6 +10,7 @@ class RequestAttribute
 	public const USER_IDS_ATTRIBUTE = 'user_ids';
 
 	public const EMAIL_ATTRIBUTE = 'email';
+	public const ALIAS_ATTRIBUTE = 'alias';
 
 	public const PARENT_ID_ATTRIBUTE = 'parent_id';
 

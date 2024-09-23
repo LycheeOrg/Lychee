@@ -1,5 +1,6 @@
 <template>
-	<LoginModal v-if="user.id === null" v-model:visible="isLoginOpen" @logged-in="refresh" />
+	<LoginModal v-if="user.id === null" v-model:visible="is_login_open" @logged-in="refresh" @open-webauthn="isWebAuthnOpen = true" />
+	<WebauthnModal v-if="user.id === null && !isWebAuthnUnavailable" v-model:visible="isWebAuthnOpen" @logged-in="refresh" />
 	<UploadPanel v-if="canUpload" v-model:visible="isUploadOpen" :album-id="null" @close="refresh" />
 	<ImportFromServer v-if="canUpload" v-model:visible="isImportFromServerOpen" />
 	<ImportFromLink v-if="canUpload" v-model:visible="isImportFromLinkOpen" :parent-id="null" />
@@ -8,7 +9,14 @@
 	<Toolbar class="w-full border-0 h-14">
 		<template #start>
 			<BackLinkButton v-if="user.id === null && !isLoginLeft" :config="props.config" />
-			<Button v-if="user.id === null && isLoginLeft" icon="pi pi-sign-in" class="mr-2" severity="secondary" text @click="isLoginOpen = true" />
+			<Button
+				v-if="user.id === null && isLoginLeft"
+				icon="pi pi-sign-in"
+				class="mr-2"
+				severity="secondary"
+				text
+				@click="lycheeStore.toggleLogin()"
+			/>
 			<Button v-if="user.id" @click="openLeftMenu" icon="pi pi-bars" class="mr-2" severity="secondary" text />
 			<!-- <Button v-if="initdata?.user" @click="logout" icon="pi pi-sign-out" class="mr-2 border-none" severity="info" text /> -->
 		</template>
@@ -34,7 +42,14 @@
 				@click="openHelp"
 			/>
 			<Button v-if="props.rights.can_upload" icon="pi pi-plus" severity="secondary" text @click="openAddMenu" />
-			<Button v-if="user.id === null && !isLoginLeft" icon="pi pi-sign-in" class="mr-2" severity="secondary" text @click="isLoginOpen = true" />
+			<Button
+				v-if="user.id === null && !isLoginLeft"
+				icon="pi pi-sign-in"
+				class="mr-2"
+				severity="secondary"
+				text
+				@click="lycheeStore.toggleLogin()"
+			/>
 		</template>
 	</Toolbar>
 	<ContextMenu v-if="props.rights.can_upload" ref="addmenu" :model="addMenu">
@@ -50,22 +65,24 @@
 <script setup lang="ts">
 import Button from "primevue/button";
 import Toolbar from "primevue/toolbar";
-import UploadPanel from "@/components/modals/UploadPanel.vue";
 import ContextMenu from "primevue/contextmenu";
+import UploadPanel from "@/components/modals/UploadPanel.vue";
+import WebauthnModal from "@/components/modals/WebauthnModal.vue";
+import LoginModal from "@/components/modals/LoginModal.vue";
+import ImportFromLink from "@/components/modals/ImportFromLink.vue";
 import ImportFromServer from "@/components/modals/ImportFromServer.vue";
 import AlbumCreateDialog from "@/components/forms/album/AlbumCreateDialog.vue";
 import AlbumCreateTagDialog from "@/components/forms/album/AlbumCreateTagDialog.vue";
 import { computed, ref } from "vue";
 import { onKeyStroke } from "@vueuse/core";
 import { useLycheeStateStore } from "@/stores/LycheeState";
-import LoginModal from "@/components/modals/LoginModal.vue";
 import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
-import ImportFromLink from "@/components/modals/ImportFromLink.vue";
 import { storeToRefs } from "pinia";
 import BackLinkButton from "./BackLinkButton.vue";
 import { useContextMenuAlbumsAdd } from "@/composables/contextMenus/contextMenuAlbumsAdd";
 import Divider from "primevue/divider";
 import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
+import WebAuthnService from "@/services/webauthn-service";
 
 const props = defineProps<{
 	user: App.Http.Resources.Models.UserResource;
@@ -98,7 +115,8 @@ const emit = defineEmits<{
 // 	'UPLOAD_TRACK' => 'Upload track',
 // 	'DELETE_TRACK' => 'Delete track',
 const lycheeStore = useLycheeStateStore();
-const { left_menu_open } = storeToRefs(lycheeStore);
+const { left_menu_open, is_login_open } = storeToRefs(lycheeStore);
+const isWebAuthnOpen = ref(false);
 const openLeftMenu = () => (left_menu_open.value = !left_menu_open.value);
 
 const {
@@ -126,11 +144,11 @@ const { addmenu, addMenu, isImportFromServerOpen, isCreateTagAlbumOpen } = useCo
 	toggleImportFromLink: toggleImportFromLink,
 });
 
-const isLoginOpen = defineModel("isLoginOpen", { type: Boolean, default: false });
-
 const canUpload = computed(() => props.user.id !== null);
 const title = ref("Albums");
 const isLoginLeft = computed(() => props.config.login_button_position === "left");
+
+const isWebAuthnUnavailable = computed(() => WebAuthnService.isWebAuthnUnavailable());
 
 function openAddMenu(event: Event) {
 	addmenu.value.show(event);
@@ -142,7 +160,8 @@ function openHelp() {
 
 onKeyStroke("n", () => !shouldIgnoreKeystroke() && props.rights.can_upload && (isCreateAlbumOpen.value = true));
 onKeyStroke("u", () => !shouldIgnoreKeystroke() && props.rights.can_upload && (isUploadOpen.value = true));
-onKeyStroke("l", () => !shouldIgnoreKeystroke() && props.user.id === null && (isLoginOpen.value = true));
+onKeyStroke("l", () => !shouldIgnoreKeystroke() && props.user.id === null && (is_login_open.value = true));
+onKeyStroke("k", () => !shouldIgnoreKeystroke() && props.user.id === null && !isWebAuthnUnavailable.value && (isWebAuthnOpen.value = true));
 
 // on key stroke escape:
 // 1. lose focus
@@ -156,8 +175,8 @@ onKeyStroke("escape", () => {
 	}
 
 	// 2. close modals
-	if (isLoginOpen.value) {
-		isLoginOpen.value = false;
+	if (is_login_open.value) {
+		is_login_open.value = false;
 		return;
 	}
 

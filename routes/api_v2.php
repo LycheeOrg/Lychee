@@ -157,8 +157,11 @@ Route::post('/UserManagement::create', [Admin\UserManagementController::class, '
 /**
  * WEBAUTHN.
  */
-Route::post('/WebAuthn::list', [WebAuthn\WebAuthnManageController::class, 'list']);
+Route::get('/WebAuthn', [WebAuthn\WebAuthnManageController::class, 'list']);
+Route::patch('/WebAuthn', [WebAuthn\WebAuthnManageController::class, 'edit']);
 Route::post('/WebAuthn::delete', [WebAuthn\WebAuthnManageController::class, 'delete']);
+
+// Special Webauthn operations
 Route::post('/WebAuthn::register/options', [WebAuthn\WebAuthnRegisterController::class, 'options'])
 	->name('webauthn.register.options');
 Route::post('/WebAuthn::register', [WebAuthn\WebAuthnRegisterController::class, 'register'])

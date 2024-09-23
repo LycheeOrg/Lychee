@@ -8,6 +8,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		// togglables
 		left_menu_open: false,
 		is_full_screen: false,
+		is_login_open: false,
 
 		// configs for nsfw
 		are_nsfw_blurred: false,
@@ -78,6 +79,10 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 
 		toggleFullScreen() {
 			this.is_full_screen = !this.is_full_screen;
+		},
+
+		toggleLogin() {
+			this.is_login_open = !this.is_login_open;
 		},
 	},
 });

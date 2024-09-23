@@ -428,6 +428,11 @@ declare namespace App.Http.Resources.Models {
 		username: string | null;
 		email: string | null;
 	};
+	export type WebAuthnResource = {
+		id: string;
+		alias: string | null;
+		created_at: string;
+	};
 }
 declare namespace App.Http.Resources.Models.Utils {
 	export type AlbumProtectionPolicy = {
