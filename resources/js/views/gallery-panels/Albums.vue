@@ -3,7 +3,6 @@
 	<div v-if="rootConfig && rootRights" @click="unselect" class="h-svh overflow-y-auto">
 		<Collapse :when="!is_full_screen">
 			<AlbumsHeader
-				v-model:is-login-open="isLoginOpen"
 				v-if="user"
 				:user="user"
 				title="lychee.ALBUMS"
@@ -98,12 +97,10 @@ import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
 import Divider from "primevue/divider";
 import { Collapse } from "vue-collapsed";
 
-const isLoginOpen = ref(false);
-
 const auth = useAuthStore();
 const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
-const { are_nsfw_visible, is_full_screen } = storeToRefs(lycheeStore);
+const { are_nsfw_visible, is_full_screen, is_login_open } = storeToRefs(lycheeStore);
 
 const config = ref(null); // unused for now.
 const photos = ref([]); // unused.
@@ -111,7 +108,7 @@ const photos = ref([]); // unused.
 const { user, isKeybindingsHelpOpen, smartAlbums, albums, sharedAlbums, rootConfig, rootRights, selectableAlbums, refresh } = useAlbumsRefresher(
 	auth,
 	lycheeStore,
-	isLoginOpen,
+	is_login_open,
 );
 
 const { selectedAlbum, selectedAlbumsIdx, selectedAlbums, selectedAlbumsIds, albumClick } = useSelection(config, undefined, photos, selectableAlbums);

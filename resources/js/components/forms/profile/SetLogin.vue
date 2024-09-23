@@ -1,61 +1,61 @@
 <template>
-	<Card class="max-w-xl mx-auto" v-if="user">
-		<template #content>
-			<form>
-				<div class="w-full mt-2">
-					<div class="py-5">
-						{{ $t("lychee.PASSWORD_TITLE") }}
-					</div>
-					<FloatLabel>
-						<InputPassword id="oldPassword" v-model="oldPassword" :invalid="!oldPassword && hasChanged" />
-						<label class="" for="oldPassword">{{ $t("lychee.PASSWORD_CURRENT") }}</label>
-					</FloatLabel>
+	<Fieldset
+		:legend="loginTitle"
+		:toggleable="true"
+		class="border-b-0 border-r-0 rounded-r-none rounded-b-none mb-4 hover:border-primary-500 pt-2 max-w-xl mx-auto"
+		:pt:legendlabel:class="'capitalize'"
+		v-if="user && user.id !== null"
+	>
+		<form>
+			<div class="w-full">
+				<div class="pb-5">
+					{{ $t("lychee.PASSWORD_TITLE") }}
 				</div>
-				<div class="w-full mt-2">
-					<div class="py-5">
-						{{ $t("lychee.PASSWORD_TEXT") }}
-					</div>
-					<FloatLabel>
-						<InputText id="username" v-model="username" />
-						<label class="" for="username">{{ $t("lychee.USERNAME") }}</label>
-					</FloatLabel>
-					<FloatLabel class="mt-4">
-						<InputPassword id="password" v-model="password" />
-						<label class="" for="password">{{ $t("lychee.LOGIN_PASSWORD") }}</label>
-					</FloatLabel>
-					<FloatLabel class="mt-4">
-						<InputPassword id="password_confirmation" v-model="password_confirmation" :invalid="password !== password_confirmation" />
-						<label class="" for="password_confirmation">{{ $t("lychee.LOGIN_PASSWORD_CONFIRM") }}</label>
-					</FloatLabel>
+				<FloatLabel>
+					<InputPassword id="oldPassword" v-model="oldPassword" :invalid="!oldPassword && hasChanged" />
+					<label class="" for="oldPassword">{{ $t("lychee.PASSWORD_CURRENT") }}</label>
+				</FloatLabel>
+			</div>
+			<div class="w-full mt-2">
+				<div class="py-5">
+					{{ $t("lychee.PASSWORD_TEXT") }}
 				</div>
-				<div class="w-full mt-2">
-					<div class="py-5">
-						{{ $t("lychee.USER_EMAIL_INSTRUCTION") }}
-					</div>
-					<FloatLabel>
-						<InputText id="email" v-model="email" />
-						<label class="" for="email">{{ $t("lychee.ENTER_EMAIL") }}</label>
-					</FloatLabel>
+				<FloatLabel>
+					<InputText id="username" v-model="username" />
+					<label class="" for="username">{{ $t("lychee.USERNAME") }}</label>
+				</FloatLabel>
+				<FloatLabel class="mt-4">
+					<InputPassword id="password" v-model="password" />
+					<label class="" for="password">{{ $t("lychee.LOGIN_PASSWORD") }}</label>
+				</FloatLabel>
+				<FloatLabel class="mt-4">
+					<InputPassword id="password_confirmation" v-model="password_confirmation" :invalid="password !== password_confirmation" />
+					<label class="" for="password_confirmation">{{ $t("lychee.LOGIN_PASSWORD_CONFIRM") }}</label>
+				</FloatLabel>
+			</div>
+			<div class="w-full mt-2">
+				<div class="py-5">
+					{{ $t("lychee.USER_EMAIL_INSTRUCTION") }}
 				</div>
-				<div class="flex w-full mt-4">
-					<Button
-						severity="contrast"
-						class="w-full font-bold border-none flex-shrink rounded-none rounded-bl-xl rounded-tl-xl"
-						@click="save"
-					>
-						{{ $t("lychee.PASSWORD_CHANGE") }}
-					</Button>
-					<Button
-						severity="secondary"
-						class="w-full font-bold border-none flex-shrink rounded-none rounded-br-xl rounded-tr-xl"
-						@click="isApiTokenOpen = !isApiTokenOpen"
-					>
-						{{ $t("lychee.TOKEN_BUTTON") }}
-					</Button>
-				</div>
-			</form>
-		</template>
-	</Card>
+				<FloatLabel>
+					<InputText id="email" v-model="email" />
+					<label class="" for="email">{{ $t("lychee.ENTER_EMAIL") }}</label>
+				</FloatLabel>
+			</div>
+			<div class="flex w-full mt-4">
+				<Button severity="contrast" class="w-full font-bold border-none flex-shrink rounded-none rounded-bl-xl rounded-tl-xl" @click="save">
+					{{ $t("lychee.PASSWORD_CHANGE") }}
+				</Button>
+				<Button
+					severity="secondary"
+					class="w-full font-bold border-none flex-shrink rounded-none rounded-br-xl rounded-tr-xl"
+					@click="isApiTokenOpen = !isApiTokenOpen"
+				>
+					{{ $t("lychee.TOKEN_BUTTON") }}
+				</Button>
+			</div>
+		</form>
+	</Fieldset>
 	<ApiToken v-model="isApiTokenOpen" />
 </template>
 <script setup lang="ts">
@@ -69,6 +69,8 @@ import InputText from "@/components/forms/basic/InputText.vue";
 import ApiToken from "@/components/forms/profile/ApiToken.vue";
 import ProfileService from "@/services/profile-service";
 import AuthService from "@/services/auth-service";
+import Fieldset from "primevue/fieldset";
+import { trans } from "laravel-vue-i18n";
 
 const isApiTokenOpen = ref(false);
 
@@ -78,6 +80,8 @@ const username = ref(undefined as undefined | string);
 const password = ref(undefined as undefined | string);
 const password_confirmation = ref(undefined as undefined | string);
 const email = ref(undefined as undefined | string);
+
+const loginTitle = computed(() => trans("lychee.PROFILE"));
 
 const toast = useToast();
 
