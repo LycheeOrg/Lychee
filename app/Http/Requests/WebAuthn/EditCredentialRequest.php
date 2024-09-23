@@ -21,7 +21,7 @@ class EditCredentialRequest extends BaseApiRequest
 	public function authorize(): bool
 	{
 		return Gate::check(UserPolicy::CAN_EDIT, [User::class]) &&
-			($this->credential->authenticatable_id === Auth::id());
+			($this->credential->user_id === Auth::id());
 	}
 
 	public function rules(): array
