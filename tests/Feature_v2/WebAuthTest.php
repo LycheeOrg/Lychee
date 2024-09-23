@@ -111,7 +111,7 @@ class WebAuthTest extends BaseApiV2Test
 		$this->assertNoContent($response); // code 204
 
 		// Check that it is indeed in the list
-		$responseList = $this->actingAs($this->admin)->postJson('WebAuthn::list');
+		$responseList = $this->actingAs($this->admin)->getJson('WebAuthn');
 		$this->assertOk($responseList); // code 200
 
 		// Check that the key is indeed in the list
@@ -147,7 +147,7 @@ class WebAuthTest extends BaseApiV2Test
 		]);
 		$this->assertUnprocessable($response); // Challenge is expired
 
-		$responseList = $this->actingAs($this->admin)->postJson('WebAuthn::list');
+		$responseList = $this->actingAs($this->admin)->getJson('WebAuthn');
 		$this->assertOk($responseList); // code 200
 
 		// check that the key has not been added to the list
@@ -379,7 +379,7 @@ class WebAuthTest extends BaseApiV2Test
 	{
 		$this->createCredentials();
 
-		$responseList = $this->postJson('WebAuthn::list');
+		$responseList = $this->getJson('WebAuthn');
 		$this->assertUnauthorized($responseList);
 	}
 
