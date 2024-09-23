@@ -3,7 +3,11 @@
 		<span class="w-1/4 text-sm text-muted-color">{{ formattedCreatedAt }}</span>
 		<InputText v-model="alias" class="!w-1/2 pb-1" aria-label="Alias" :invalid="isInvalid" />
 		<span v-if="isInvalid" class="w-1/4 text-xs text-muted-color text-center">At least 5 chars.</span>
-		<Button v-if="isModified && !isInvalid" @click="saveU2F" class="border-0 text-primary-500 bg-surface hover:bg-primary-400 hover:text-white w-1/4">
+		<Button
+			v-if="isModified && !isInvalid"
+			@click="saveU2F"
+			class="border-0 text-primary-500 bg-surface hover:bg-primary-400 hover:text-white w-1/4"
+		>
 			<i class="pi pi-save" /><span class="hidden md:inline">{{ $t("lychee.SAVE") }}</span></Button
 		>
 		<Button v-if="!isModified" @click="deleteU2F" class="border-0 bg-surface text-danger-600 hover:bg-danger-700 hover:text-white w-1/4">
