@@ -18,7 +18,7 @@
 				</a>
 			</template>
 		</Menu>
-		<AboutLychee :visible="openLycheeAbout" />
+		<AboutLychee v-model:visible="openLycheeAbout" />
 	</Drawer>
 </template>
 <script setup lang="ts">
@@ -47,8 +47,6 @@ type MenyType = {
 const initData = ref(undefined) as Ref<undefined | App.Http.Resources.Rights.GlobalRightsResource>;
 const openLycheeAbout = ref(false);
 const items = ref([] as MenyType[]);
-// const clockwork_url = ref("/clockwork/app");
-// const hasDevTools = ref(false);
 const logsEnabled = ref(true);
 
 const authStore = useAuthStore();

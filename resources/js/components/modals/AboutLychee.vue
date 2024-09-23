@@ -49,7 +49,7 @@ import InitService from "@/services/init-service";
 import { trans } from "laravel-vue-i18n";
 import { sprintf } from "sprintf-js";
 
-const visible = defineModel("visible", { default: false }) as Ref<boolean>;
+const visible = defineModel("visible") as Ref<boolean>;
 const description = ref(sprintf(trans("lychee.ABOUT_DESCRIPTION"), "https://LycheeOrg.github.io"));
 const version = ref(undefined) as Ref<undefined | App.Http.Resources.Root.VersionResource>;
 
