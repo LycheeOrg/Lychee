@@ -11,6 +11,7 @@ class RequestAttribute
 
 	public const EMAIL_ATTRIBUTE = 'email';
 	public const ALIAS_ATTRIBUTE = 'alias';
+	public const PROVIDER_ATTRIBUTE = 'provider';
 
 	public const PARENT_ID_ATTRIBUTE = 'parent_id';
 

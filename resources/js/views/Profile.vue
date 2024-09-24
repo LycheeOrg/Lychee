@@ -14,6 +14,7 @@
 			<template #end> </template>
 		</Toolbar>
 		<SetLogin />
+		<SetOauth />
 		<SetSecondFactor />
 	</div>
 </template>
@@ -22,4 +23,5 @@ import Button from "primevue/button";
 import Toolbar from "primevue/toolbar";
 import SetLogin from "@/components/forms/profile/SetLogin.vue";
 import SetSecondFactor from "@/components/forms/profile/SetSecondFactor.vue";
+import SetOauth from "@/components/forms/profile/SetOauth.vue";
 </script>

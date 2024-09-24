@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enum\OauthProvidersType;
 use App\Legacy\V1\Controllers\RedirectController;
 use Illuminate\Support\Facades\Route;
 
@@ -22,7 +23,7 @@ Route::get('/', fn () => view('vueapp'))->name('home')->middleware(['migration:c
 Route::get('/gallery', fn () => view('vueapp'))->name('gallery')->middleware(['migration:complete']);
 Route::get('/gallery/{albumID}', fn () => view('vueapp'))->name('gallery')->middleware(['migration:complete']);
 Route::get('/gallery/{albumID}/{photoID}', fn () => view('vueapp'))->name('gallery')->middleware(['migration:complete']);
-Route::get('/profile', fn () => view('vueapp'))->middleware(['migration:complete']);
+Route::get('/profile', fn () => view('vueapp'))->name('profile')->middleware(['migration:complete']);
 Route::get('/users', fn () => view('vueapp'))->middleware(['migration:complete']);
 Route::get('/sharing', fn () => view('vueapp'))->middleware(['migration:complete']);
 Route::get('/jobs', fn () => view('vueapp'))->middleware(['migration:complete']);
@@ -38,6 +39,10 @@ Route::get('/permissions', fn () => view('vueapp'))->middleware(['migration:comp
 Route::match(['get', 'post'], '/migrate', [Admin\UpdateController::class, 'migrate'])
 	->name('migrate')
 	->middleware(['migration:incomplete']);
+
+Route::get('/auth/{provider}/redirect', [OauthController::class, 'redirected'])->whereIn('provider', OauthProvidersType::values());
+Route::get('/auth/{provider}/authenticate', [OauthController::class, 'authenticate'])->name('oauth-authenticate')->whereIn('provider', OauthProvidersType::values());
+Route::get('/auth/{provider}/register', [OauthController::class, 'register'])->name('oauth-register')->whereIn('provider', OauthProvidersType::values());
 
 /*
  * TODO see to add better redirection functionality later.

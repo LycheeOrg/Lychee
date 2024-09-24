@@ -2,13 +2,20 @@
 	<Dialog v-model:visible="visible" modal pt:root:class="border-none" pt:mask:style="backdrop-filter: blur(2px)">
 		<template #container="{ closeCallback }">
 			<form v-focustrap class="flex flex-col gap-4 relative max-w-full text-sm rounded-md pt-9">
-				<div class="text-center">
+				<div class="flex justify-center gap-2">
 					<a
 						class="inline-block text-xl text-muted-color transition-all duration-300 hover:text-primary-400 hover:scale-150 cursor-pointer"
 						@click="openWebAuthn"
 					>
 						<i class="fa-solid fa-key" />
 					</a>
+					<template v-if="oauths !== undefined">
+						<a v-for="oauth in oauths"
+							:href="oauth.url"
+							class="inline-block text-xl text-muted-color hover:scale-125 transition-all cursor-pointer hover:text-primary-400 mb-6" :title="oauth.provider">
+							<i class="items-center" :class="oauth.icon"></i>
+						</a>
+					</template>
 				</div>
 				<div class="inline-flex flex-col gap-2 px-9">
 					<FloatLabel>
@@ -24,7 +31,7 @@
 					<Message v-if="invalidPassword" severity="error">Unknown user or invalid password</Message>
 				</div>
 				<div class="flex items-center mt-9">
-					<Button @click="closeCallback" severity="secondary" class="w-full font-bold border-none rounded-none rounded-bl-xl flex-shrink-2">
+					<Button @click="closeCallback" severity="secondary" class="w-full font-bold border-none rounded-none rounded-bl-xl flex-shrink">
 						{{ $t("lychee.CANCEL") }}
 					</Button>
 					<Button @click="login" severity="contrast" class="w-full font-bold border-none rounded-none rounded-br-xl flex-shrink">
@@ -47,6 +54,7 @@ import InputText from "@/components/forms/basic/InputText.vue";
 import InputPassword from "@/components/forms/basic/InputPassword.vue";
 import { useAuthStore } from "@/stores/Auth";
 import AlbumService from "@/services/album-service";
+import OauthService from "@/services/oauth-service";
 
 const visible = defineModel("visible", { default: false }) as Ref<boolean>;
 
@@ -55,10 +63,18 @@ const emits = defineEmits<{
 	(e: "open-webauthn"): void;
 }>();
 
+type OauthProvider = {
+	url: string;
+	icon: string;
+	provider: App.Enum.OauthProvidersType;
+}
+
 const username = ref("");
 const password = ref("");
 const authStore = useAuthStore();
 const invalidPassword = ref(false);
+
+const oauths = ref(undefined as undefined | OauthProvider[]);
 
 function login() {
 	AuthService.login(username.value, password.value)
@@ -75,6 +91,24 @@ function login() {
 			}
 		});
 }
+
+function fetchOauths() {
+	OauthService.list()
+		.then((res) => {
+			oauths.value = (res.data as App.Enum.OauthProvidersType[]).map(mapToOauths);
+		})
+		.catch((e) => {
+			console.error(e);
+		});
+}
+
+function mapToOauths(provider: App.Enum.OauthProvidersType): OauthProvider {
+	let icon = OauthService.providerIcon(provider);
+	let url = `/auth/${provider}/authenticate`
+	return { url, icon, provider };
+}
+
+fetchOauths();
 
 function openWebAuthn() {
 	visible.value = false;
