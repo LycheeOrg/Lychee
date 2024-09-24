@@ -6,8 +6,9 @@
 					<a
 						class="inline-block text-xl text-muted-color transition-all duration-300 hover:text-primary-400 hover:scale-150 cursor-pointer"
 						@click="openWebAuthn"
+						title="WebAuthn"
 					>
-						<i class="fa-solid fa-key" />
+						<i class="fa-solid fa-fingerprint" />
 					</a>
 					<template v-if="oauths !== undefined">
 						<a
