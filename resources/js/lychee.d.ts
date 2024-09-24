@@ -194,6 +194,13 @@ declare namespace App.Http.Resources.Editable {
 		total_chunks: number;
 	};
 }
+declare namespace App.Http.Resources.Frame {
+	export type FrameData = {
+		timeout: number;
+		src: string;
+		srcset: string;
+	};
+}
 declare namespace App.Http.Resources.GalleryConfigs {
 	export type AlbumConfig = {
 		is_base_album: boolean;

@@ -16,7 +16,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/LandingPage', [LandingPageController::class, '__invoke']);
-// Route::get('/Config::init', [ConfigController::class, 'init']);
+Route::get('/Frame', [Gallery\FrameController::class, 'get']);
+
 Route::get('/Gallery::Init', [Gallery\ConfigController::class, 'getInit']);
 Route::get('/Gallery::getLayout', [Gallery\ConfigController::class, 'getGalleryLayout']);
 Route::get('/Gallery::getMapProvider', [Gallery\ConfigController::class, 'getMapProvider']);
