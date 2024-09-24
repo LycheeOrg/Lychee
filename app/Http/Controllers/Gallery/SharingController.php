@@ -7,11 +7,14 @@ use App\Constants\AccessPermissionConstants as APC;
 use App\Http\Requests\Sharing\AddSharingRequest;
 use App\Http\Requests\Sharing\DeleteSharingRequest;
 use App\Http\Requests\Sharing\EditSharingRequest;
+use App\Http\Requests\Sharing\ListAllSharingRequest;
 use App\Http\Requests\Sharing\ListSharingRequest;
 use App\Http\Resources\Models\AccessPermissionResource;
 use App\Models\AccessPermission;
+use App\Models\BaseAlbumImpl;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Controller responsible for the config.
@@ -76,6 +79,26 @@ class SharingController extends Controller
 		$query = AccessPermission::with(['album', 'user']);
 		$query = $query->whereNotNull(APC::USER_ID);
 		$query = $query->where(APC::BASE_ALBUM_ID, '=', $request->album()->id);
+
+		return AccessPermissionResource::collect($query->get());
+	}
+
+	/**
+	 * List all sharing permissions.
+	 *
+	 * @param ListAllSharingRequest $request
+	 *
+	 * @return Collection<string|int, \App\Http\Resources\Models\AccessPermissionResource>
+	 */
+	public function listAll(ListAllSharingRequest $request): Collection
+	{
+		$query = AccessPermission::with(['album', 'user']);
+		$query = $query->when(
+			!Auth::user()->may_administrate,
+			fn ($q) => $q->whereIn('base_album_id', BaseAlbumImpl::select('id')
+						->where('owner_id', '=', Auth::id())));
+		$query = $query->whereNotNull('user_id');
+		$query = $query->orderBy('base_album_id', 'asc');
 
 		return AccessPermissionResource::collect($query->get());
 	}

@@ -103,7 +103,7 @@ const AlbumService = {
 	},
 
 	delete(album_ids: string[]): Promise<AxiosResponse> {
-		return axios.post(`${Constants.API_URL}Album::delete`, { album_ids: album_ids });
+		return axios.delete(`${Constants.API_URL}Album`, { data: { album_ids: album_ids } });
 	},
 
 	getTargetListAlbums(album_id: string | null): Promise<AxiosResponse<App.Http.Resources.Models.TargetAlbumResource[]>> {

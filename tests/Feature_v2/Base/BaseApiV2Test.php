@@ -104,4 +104,19 @@ abstract class BaseApiV2Test extends BaseV2Test
 	{
 		return $this->json('PATCH', self::API_PREFIX . ltrim($uri, '/'), $data, $headers, $options);
 	}
+
+	/**
+	 * Visit the given URI with a DELETE request, expecting a JSON response.
+	 *
+	 * @param string $uri
+	 * @param array  $data
+	 * @param array  $headers
+	 * @param int    $options
+	 *
+	 * @return \Illuminate\Testing\TestResponse
+	 */
+	public function deleteJson($uri, array $data = [], array $headers = [], $options = 0)
+	{
+		return $this->json('DELETE', self::API_PREFIX . ltrim($uri, '/'), $data, $headers, $options);
+	}
 }

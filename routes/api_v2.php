@@ -38,7 +38,7 @@ Route::patch('/Album::rename', [Gallery\AlbumController::class, 'rename']);
 Route::post('/TagAlbum', [Gallery\AlbumController::class, 'createTagAlbum']);
 Route::patch('/TagAlbum', [Gallery\AlbumController::class, 'updateTagAlbum']);
 Route::post('/Album::updateProtectionPolicy', [Gallery\AlbumController::class, 'updateProtectionPolicy']);
-Route::post('/Album::delete', [Gallery\AlbumController::class, 'delete']);
+Route::delete('/Album', [Gallery\AlbumController::class, 'delete']);
 Route::post('/Album::transfer', [Gallery\AlbumController::class, 'transfer']);
 Route::post('/Album::move', [Gallery\AlbumController::class, 'move']);
 Route::post('/Album::cover', [Gallery\AlbumController::class, 'cover']);
@@ -79,8 +79,9 @@ Route::post('/Album::header', [Gallery\AlbumController::class, 'header']);
  */
 Route::get('/Sharing', [Gallery\SharingController::class, 'list']);
 Route::post('/Sharing', [Gallery\SharingController::class, 'create']);
-Route::post('/Sharing::edit', [Gallery\SharingController::class, 'edit']);
-Route::post('/Sharing::delete', [Gallery\SharingController::class, 'delete']);
+Route::patch('/Sharing', [Gallery\SharingController::class, 'edit']);
+Route::delete('/Sharing', [Gallery\SharingController::class, 'delete']);
+Route::get('/Sharing::all', [Gallery\SharingController::class, 'listAll']);
 
 /**
  * IMPORT.

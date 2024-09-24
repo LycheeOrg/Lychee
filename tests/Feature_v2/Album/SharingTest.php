@@ -33,7 +33,7 @@ class SharingTest extends BaseApiV2Test
 		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Sharing', ['album_id' => $this->album1->id]);
 		$this->assertOk($response);
 
-		$response = $this->actingAs($this->userMayUpload1)->postJson('Sharing::edit', [
+		$response = $this->actingAs($this->userMayUpload1)->patchJson('Sharing', [
 			'perm_id' => $this->perm1->id,
 			'grants_edit' => true,
 			'grants_delete' => true,
@@ -41,7 +41,7 @@ class SharingTest extends BaseApiV2Test
 			'grants_full_photo_access' => true,
 			'grants_upload' => true,
 		]);
-		$this->assertCreated($response);
+		$this->assertOk($response);
 
 		$response = $this->actingAs($this->userMayUpload2)->postJson('Sharing', [
 			'user_ids' => [$this->userMayUpload1->id],
