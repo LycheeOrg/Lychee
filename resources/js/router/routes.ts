@@ -35,11 +35,11 @@ export const routes = [
 		path: "/gallery",
 		component: Albums,
 	},
-	{
-		name: "search",
-		path: "/search",
-		component: Search,
-	},
+	// {
+	// 	name: "search",
+	// 	path: "/search",
+	// 	component: Search,
+	// },
 	{
 		name: "diagnostics",
 		path: "/diagnostics",

@@ -1,6 +1,6 @@
 <template>
 	<div class="flex">
-		<div class="w-5/12 flex">
+		<div class="w-5/12 flex items-center">
 			<span v-if="props.withAlbum" class="w-full">{{ props.perm.album_title }}</span>
 			<span class="w-full">{{ props.perm.username }}</span>
 		</div>
@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { useToast } from "primevue/usetoast";
 import Checkbox from "primevue/checkbox";
 import Button from "primevue/button";
@@ -48,6 +48,14 @@ const grantsUpload = ref(false);
 const grantsEdit = ref(false);
 const grantsDelete = ref(false);
 
+function load(permisison: App.Http.Resources.Models.AccessPermissionResource) {
+	grantsFullPhotoAccess.value = permisison.grants_full_photo_access;
+	grantsDownload.value = permisison.grants_download;
+	grantsUpload.value = permisison.grants_upload;
+	grantsEdit.value = permisison.grants_edit;
+	grantsDelete.value = permisison.grants_delete;
+}
+
 function edit() {
 	const data = {
 		perm_id: props.perm.id as number,
@@ -59,15 +67,12 @@ function edit() {
 	};
 	console.log(data);
 	SharingService.edit(data).then((response) => {
-		grantsFullPhotoAccess.value = response.data.grants_full_photo_access;
-		grantsDownload.value = response.data.grants_download;
-		grantsUpload.value = response.data.grants_upload;
-		grantsEdit.value = response.data.grants_edit;
-		grantsDelete.value = response.data.grants_delete;
-
+		load(response.data);
 		toast.add({ severity: "success", summary: "Success", detail: "Permission updated", life: 1000 });
 	});
 }
+
+load(props.perm);
 
 const deletePermission = () => {
 	if (props.perm.id === null) {
@@ -75,4 +80,11 @@ const deletePermission = () => {
 	}
 	emits("delete", props.perm.id);
 };
+
+watch(
+	() => props.perm,
+	(newVal) => {
+		load(newVal);
+	},
+);
 </script>

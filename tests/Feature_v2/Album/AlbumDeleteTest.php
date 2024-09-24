@@ -18,15 +18,15 @@ class AlbumDeleteTest extends BaseApiV2Test
 {
 	public function testDeleteAlbumUnauthorizedForbidden(): void
 	{
-		$response = $this->postJson('Album::delete', []);
+		$response = $this->deleteJson('Album', []);
 		$this->assertUnprocessable($response);
 
-		$response = $this->postJson('Album::delete', [
+		$response = $this->deleteJson('Album', [
 			'album_ids' => [$this->subAlbum1->id],
 		]);
 		$this->assertUnauthorized($response);
 
-		$response = $this->actingAs($this->userMayUpload2)->postJson('Album::delete', [
+		$response = $this->actingAs($this->userMayUpload2)->deleteJson('Album', [
 			'album_ids' => [$this->subAlbum1->id],
 		]);
 		$this->assertForbidden($response);
@@ -34,7 +34,7 @@ class AlbumDeleteTest extends BaseApiV2Test
 
 	public function testDeleteAlbumAuthorizedOwner(): void
 	{
-		$response = $this->actingAs($this->userMayUpload1)->postJson('Album::delete', [
+		$response = $this->actingAs($this->userMayUpload1)->deleteJson('Album', [
 			'album_ids' => [$this->subAlbum1->id],
 		]);
 		$this->assertNoContent($response);
@@ -45,7 +45,7 @@ class AlbumDeleteTest extends BaseApiV2Test
 
 	public function testDeleteAlbumAuthorizedUser(): void
 	{
-		$response = $this->actingAs($this->userMayUpload2)->postJson('Album::delete', [
+		$response = $this->actingAs($this->userMayUpload2)->deleteJson('Album', [
 			'album_ids' => [$this->album1->id],
 		]);
 		$this->assertNoContent($response);

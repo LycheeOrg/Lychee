@@ -3,7 +3,7 @@
 		<Toolbar class="w-full border-0 h-14">
 			<template #start>
 				<router-link :to="{ name: 'gallery' }">
-					<Button icon="pi pi-angle-left" class="mr-2" severity="secondary" text @click="" />
+					<Button icon="pi pi-angle-left" class="mr-2" severity="secondary" text />
 				</router-link>
 			</template>
 
