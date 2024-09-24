@@ -172,6 +172,12 @@ Route::post('/WebAuthn::login', [WebAuthn\WebAuthnLoginController::class, 'login
 	->name('webauthn.login');
 
 /**
+ * OAUTH.
+ */
+Route::get('/Oauth', [OauthController::class, 'list']);
+// Route::get('/Oauth', [OauthController::class, 'available']);
+
+/**
  * SHARING.
  */
 // Route::post('/Sharing::list', [AdministrationSharingController::class, 'list']);
