@@ -121,6 +121,10 @@ const AlbumService = {
 	transfer(album_id: string, user_id: number): Promise<AxiosResponse> {
 		return axios.post(`${Constants.API_URL}Album::transfer`, { album_id: album_id, user_id: user_id });
 	},
+
+	frame(album_id: string | null): Promise<AxiosResponse<App.Http.Resources.Frame.FrameData>> {
+		return axios.get(`${Constants.API_URL}Frame?album_id=${album_id === null ? "" : album_id}`, { data: {} });
+	},
 };
 
 export default AlbumService;

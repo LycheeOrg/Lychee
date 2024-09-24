@@ -11,6 +11,7 @@ import Albums from "@/views/gallery-panels/Albums.vue";
 import Photo from "@/views/gallery-panels/Photo.vue";
 import Search from "@/views/gallery-panels/Search.vue";
 import Permissions from "@/views/Permissions.vue";
+import Frame from "@/views/gallery-panels/Frame.vue";
 
 export const routes = [
 	{
@@ -35,6 +36,18 @@ export const routes = [
 		path: "/gallery",
 		component: Albums,
 	},
+	{
+		name: "frame-with-album",
+		path: "/frame/:albumid",
+		component: Frame,
+		props: true,
+	},
+	{
+		name: "frame",
+		path: "/frame",
+		component: Frame,
+	},
+
 	// {
 	// 	name: "search",
 	// 	path: "/search",
