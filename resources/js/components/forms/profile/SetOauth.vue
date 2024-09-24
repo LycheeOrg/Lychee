@@ -14,7 +14,9 @@
 				<i class="align-middle w-4" :class="oauth.icon + (oauth.isEnabled ? 'text-create-600' : '')"></i>
 				<span class="ml-2" v-if="oauth.isEnabled">
 					{{ sprintf($t("oauth.TOKEN_REGISTERED"), capitalize(oauth.providerType)) }}
-					<a @click="clear(oauth.providerType)" class="ml-2 cursor-pointer italic text-text-main-400 hover:text-danger-800">({{ $t("oauth.RESET") }})</a>
+					<a @click="clear(oauth.providerType)" class="ml-2 cursor-pointer italic text-text-main-400 hover:text-danger-800"
+						>({{ $t("oauth.RESET") }})</a
+					>
 				</span>
 				<a v-else :href="oauth.registrationRoute" class="ml-2 cursor-pointer">
 					{{ sprintf($t("oauth.SET_UP"), capitalize(oauth.providerType)) }}
@@ -44,18 +46,17 @@ const title = computed(() => {
 	}
 
 	if (oauths.value?.length === 0) {
-		return trans("oauth.NOT_AVAILABLE")
+		return trans("oauth.NOT_AVAILABLE");
 	}
 
 	return trans("oauth.SET_UP_OAUTH");
-})
+});
 
 function refresh() {
 	OauthService.list().then((response) => {
 		oauths.value = (response.data as App.Http.Resources.Oauth.OauthRegistrationData[]).map(mapToOauthData);
 	});
 }
-
 
 function mapToOauthData(data: App.Http.Resources.Oauth.OauthRegistrationData): OauthData {
 	return {

@@ -10,9 +10,12 @@
 						<i class="fa-solid fa-key" />
 					</a>
 					<template v-if="oauths !== undefined">
-						<a v-for="oauth in oauths"
+						<a
+							v-for="oauth in oauths"
 							:href="oauth.url"
-							class="inline-block text-xl text-muted-color hover:scale-125 transition-all cursor-pointer hover:text-primary-400 mb-6" :title="oauth.provider">
+							class="inline-block text-xl text-muted-color hover:scale-125 transition-all cursor-pointer hover:text-primary-400 mb-6"
+							:title="oauth.provider"
+						>
 							<i class="items-center" :class="oauth.icon"></i>
 						</a>
 					</template>
@@ -67,7 +70,7 @@ type OauthProvider = {
 	url: string;
 	icon: string;
 	provider: App.Enum.OauthProvidersType;
-}
+};
 
 const username = ref("");
 const password = ref("");
@@ -104,7 +107,7 @@ function fetchOauths() {
 
 function mapToOauths(provider: App.Enum.OauthProvidersType): OauthProvider {
 	let icon = OauthService.providerIcon(provider);
-	let url = `/auth/${provider}/authenticate`
+	let url = `/auth/${provider}/authenticate`;
 	return { url, icon, provider };
 }
 
