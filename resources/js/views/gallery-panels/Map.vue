@@ -130,11 +130,11 @@ function open() {
 		if (photo.url2x !== "") {
 			template = template.concat(
 				'<img class=" w-full h-auto" src="{url}" srcset="{url} 1x, {url2x} 2x" data-album-id="{albumID}" data-id="{photoID}"/>',
-				'<div class=" pointer-events-none absolute w-full bottom-0 m-0 bg-gradient-to-t from-[#00000066]" style="width:401px; bottom: 13px;">',
-				'<h1 class=" min-h-[19px] mt-3 mb-1 ml-3 text-text-main-0 text-base font-bold overflow-hidden whitespace-nowrap text-ellipsis">{name}</h1>',
-				'<p class="block mt-0 mr-0 mb-2 ml-3 text-2xs text-text-main-200">',
-				'<span class="inline-block mx-3" title="' + camera_date + '">',
-				'<svg class="inline-block h-4 w-4 fill-neutral-400"><use xlink:href="#camera-slr" /></svg>',
+				'<div class=" pointer-events-none absolute w-full bottom-0 m-0 bg-gradient-to-t from-[#00000066] text-shadow" style="width:401px; bottom: 13px;">',
+				'<h1 class=" min-h-[19px] mt-3 mb-1 ml-3 text-color text-base font-bold overflow-hidden whitespace-nowrap text-ellipsis">{name}</h1>',
+				'<p class="block mt-0 mr-0 mb-2 ml-3 text-xs text-muted-color-emphasis">',
+				'<span class="inline-block mx-2" title="' + camera_date + '">',
+				'<svg class="inline-block h-3 w-3 fill-neutral-400"><use xlink:href="#camera-slr" /></svg>',
 				"</span>",
 				"{taken_at}</p>",
 				"</div>",
@@ -142,11 +142,11 @@ function open() {
 		} else {
 			template = template.concat(
 				'<img class=" w-full h-auto" src="{url}" data-album-id="{albumID}" data-id="{photoID}"/>',
-				'<div class=" pointer-events-none absolute w-full bottom-0 m-0 bg-gradient-to-t from-[#00000066]" style="width:401px; bottom: 13px;">',
-				'<h1 class=" min-h-[19px] mt-3 mb-1 ml-3 text-text-main-0 text-base font-bold overflow-hidden whitespace-nowrap text-ellipsis">{name}</h1>',
-				'<p class="block mt-0 mr-0 mb-2 ml-3 text-2xs text-text-main-200">',
-				'<span class="inline-block mx-3" title="' + camera_date + '">',
-				'<svg class="inline-block h-4 w-4 fill-neutral-400"><use xlink:href="#camera-slr" /></svg>',
+				'<div class=" pointer-events-none absolute w-full bottom-0 m-0 bg-gradient-to-t from-[#00000066] text-shadow" style="width:401px; bottom: 13px;">',
+				'<h1 class=" min-h-[19px] mt-3 mb-1 ml-3 text-color text-base font-bold overflow-hidden whitespace-nowrap text-ellipsis">{name}</h1>',
+				'<p class="block mt-0 mr-0 mb-2 ml-3 text-xs text-muted-color-emphasis">',
+				'<span class="inline-block mx-2" title="' + camera_date + '">',
+				'<svg class="inline-block h-3 w-3 fill-neutral-400"><use xlink:href="#camera-slr" /></svg>',
 				"</span>",
 				"{taken_at}</p>",
 				"</div>",
