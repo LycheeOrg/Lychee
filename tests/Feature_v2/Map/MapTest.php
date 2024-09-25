@@ -10,21 +10,15 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Tests\Feature_v2\Album;
+namespace Tests\Feature_v2\Map;
 
 use Tests\Feature_v2\Base\BaseApiV2Test;
 
-class ConfigTest extends BaseApiV2Test
+class MapTest extends BaseApiV2Test
 {
 	public function testGet(): void
 	{
-		$response = $this->getJson('Gallery::Init');
-		$this->assertOk($response);
-
-		$response = $this->getJson('Gallery::getLayout');
-		$this->assertOk($response);
-
-		$response = $this->getJson('Gallery::getUploadLimits');
+		$response = $this->getJson('Map::provider');
 		$this->assertOk($response);
 	}
 }
