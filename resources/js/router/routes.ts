@@ -12,6 +12,7 @@ import Photo from "@/views/gallery-panels/Photo.vue";
 import Search from "@/views/gallery-panels/Search.vue";
 import Permissions from "@/views/Permissions.vue";
 import Frame from "@/views/gallery-panels/Frame.vue";
+import Map from "@/views/gallery-panels/Map.vue";
 
 export const routes = [
 	{
@@ -46,6 +47,17 @@ export const routes = [
 		name: "frame",
 		path: "/frame",
 		component: Frame,
+	},
+	{
+		name: "map",
+		path: "/map",
+		component: Map,
+	},
+	{
+		name: "map-with-album",
+		path: "/map/:albumid",
+		component: Map,
+		props: true,
 	},
 
 	// {

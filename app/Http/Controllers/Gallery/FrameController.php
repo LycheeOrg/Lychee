@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Gallery;
 
+use App\Contracts\Models\AbstractAlbum;
 use App\Exceptions\PhotoCollectionEmptyException;
-use App\Factories\AlbumFactory;
 use App\Http\Requests\Frame\FrameRequest;
 use App\Http\Resources\Frame\FrameData;
 use App\Models\Configs;
@@ -13,13 +13,10 @@ use App\Policies\PhotoQueryPolicy;
 class FrameController
 {
 	private PhotoQueryPolicy $photoQueryPolicy;
-	private AlbumFactory $albumFactory;
-	private int $timeout;
 
 	public function __construct()
 	{
 		$this->photoQueryPolicy = resolve(PhotoQueryPolicy::class);
-		$this->albumFactory = resolve(AlbumFactory::class);
 	}
 
 	/**
@@ -31,36 +28,34 @@ class FrameController
 	 */
 	public function get(FrameRequest $request): FrameData
 	{
-		$this->timeout = Configs::getValueAsInt('mod_frame_refresh');
-
-		return $this->loadPhoto($request->albumId(), 5);
+		return $this->loadPhoto($request->album(), 5);
 	}
 
 	/**
 	 * Recursively search for a photo to display.
 	 *
-	 * @param string|null $albumId
-	 * @param int         $retries
+	 * @param AbstractAlbum|null $album
+	 * @param int                $retries
 	 *
 	 * @return FrameData
 	 */
-	private function loadPhoto(string|null $albumId, int $retries = 5): FrameData
+	private function loadPhoto(AbstractAlbum|null $album, int $retries = 5): FrameData
 	{
 		$src = '';
 		$srcset = '';
 
 		// avoid infinite recursion
 		if ($retries === 0) {
-			return new FrameData($this->timeout, '', '');
+			$timeout = Configs::getValueAsInt('mod_frame_refresh');
+
+			return new FrameData($timeout, '', '');
 		}
 
 		// default query
 		$query = $this->photoQueryPolicy->applySearchabilityFilter(Photo::query()->with(['album', 'size_variants', 'size_variants.sym_links']));
 
-		if ($albumId !== null) {
-			$query = $this->albumFactory->findAbstractAlbumOrFail($albumId)
-									 ->photos()
-									 ->with(['album', 'size_variants', 'size_variants.sym_links']);
+		if ($album !== null) {
+			$query = $album->photos()->with(['album', 'size_variants', 'size_variants.sym_links']);
 		}
 
 		/** @var ?Photo $photo */
@@ -68,12 +63,12 @@ class FrameController
 		// @phpstan-ignore-next-line
 		$photo = $query->inRandomOrder()->first();
 		if ($photo === null) {
-			$albumId === null ? throw new PhotoCollectionEmptyException() : throw new PhotoCollectionEmptyException('Photo collection of ' . $albumId . ' is empty');
+			$album === null ? throw new PhotoCollectionEmptyException() : throw new PhotoCollectionEmptyException('Photo collection of ' . $album->title . ' is empty');
 		}
 
 		// retry
 		if ($photo->isVideo()) {
-			return $this->loadPhoto($albumId, $retries - 1);
+			return $this->loadPhoto($album, $retries - 1);
 		}
 
 		$src = $photo->size_variants->getMedium()?->url ?? $photo->size_variants->getOriginal()?->url;
@@ -85,6 +80,8 @@ class FrameController
 			$srcset = '';
 		}
 
-		return new FrameData($this->timeout, $src, $srcset);
+		$timeout = Configs::getValueAsInt('mod_frame_refresh');
+
+		return new FrameData($timeout, $src, $srcset);
 	}
 }

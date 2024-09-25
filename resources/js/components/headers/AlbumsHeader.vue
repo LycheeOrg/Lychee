@@ -22,7 +22,7 @@
 		</template>
 
 		<template #center>
-			{{ title }}
+			{{ props.title }}
 		</template>
 
 		<template #end>
@@ -145,7 +145,6 @@ const { addmenu, addMenu, isImportFromServerOpen, isCreateTagAlbumOpen } = useCo
 });
 
 const canUpload = computed(() => props.user.id !== null);
-const title = ref("Albums");
 const isLoginLeft = computed(() => props.config.login_button_position === "left");
 
 const isWebAuthnUnavailable = computed(() => WebAuthnService.isWebAuthnUnavailable());

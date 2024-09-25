@@ -36,6 +36,9 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		are_nsfw_visible: false,
 		image_overlay_type: "exif" as App.Enum.ImageOverlayType,
 
+		// Site title
+		title: "lychee.GALLERY",
+
 		// flag to fetch data
 		is_init: false,
 		is_loading: false,
@@ -74,6 +77,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 				this.album_decoration = data.album_decoration;
 				this.album_decoration_orientation = data.album_decoration_orientation;
 				this.album_subtitle_type = data.album_subtitle_type;
+				this.title = data.title;
 			});
 		},
 
