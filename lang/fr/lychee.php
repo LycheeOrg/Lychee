@@ -393,8 +393,8 @@ return [
 	'ALBUM_DECORATION_ORIENTATION_ROW_REVERSE' => 'Horizontale (albums, photos)',
 	'ALBUM_DECORATION_ORIENTATION_COLUMN' => 'Verticale (photos au-dessus, albums)',
 	'ALBUM_DECORATION_ORIENTATION_COLUMN_REVERSE' => 'Verticale (albums au-dessus, photos)',
-	'MAP_DISPLAY_TEXT' => 'Activer les cartes (fourni par OpenStreetMap):',
-	'MAP_DISPLAY_PUBLIC_TEXT' => 'Activer les cartes pour les albums publics (fourni par OpenStreetMap):',
+	'MAP_DISPLAY_TEXT' => 'Activer les cartes (fournies par OpenStreetMap):',
+	'MAP_DISPLAY_PUBLIC_TEXT' => 'Activer les cartes pour les albums publics (fournies par OpenStreetMap):',
 	'MAP_PROVIDER' => 'Fournisseur de cartes OpenStreetMap :',
 	'MAP_PROVIDER_WIKIMEDIA' => 'Wikimedia',
 	'MAP_PROVIDER_OSM_ORG' => 'OpenStreetMap.org (no HiDPI)',
@@ -414,7 +414,7 @@ return [
 	'LAYOUT_UNJUSTIFIED' => 'En proportions, non-justifiées',
 	'SET_LAYOUT' => 'Changer l’affichage',
 
-	'NSFW_VISIBLE_TEXT_1' => 'Rendre les albums sensible visible par défaut.',
+	'NSFW_VISIBLE_TEXT_1' => 'Rendre les albums sensibles visibles par défaut.',
 	'NSFW_VISIBLE_TEXT_2' => 'Si l’album est public, il est toujours accessible, juste masqué et <b>peut-être révélé avec la touche <kbd>H</kbd></b>.',
 	'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Visibilé par default des albums sensible mis à jour.',
 
