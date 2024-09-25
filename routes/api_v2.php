@@ -20,7 +20,6 @@ Route::get('/Frame', [Gallery\FrameController::class, 'get']);
 
 Route::get('/Gallery::Init', [Gallery\ConfigController::class, 'getInit']);
 Route::get('/Gallery::getLayout', [Gallery\ConfigController::class, 'getGalleryLayout']);
-Route::get('/Gallery::getMapProvider', [Gallery\ConfigController::class, 'getMapProvider']);
 Route::get('/Gallery::getUploadLimits', [Gallery\ConfigController::class, 'getUploadCOnfig']);
 
 /**
@@ -36,36 +35,24 @@ Route::get('/Album::getTargetListAlbums', [Gallery\AlbumController::class, 'getT
 Route::post('/Album', [Gallery\AlbumController::class, 'createAlbum']);
 Route::patch('/Album', [Gallery\AlbumController::class, 'updateAlbum']);
 Route::patch('/Album::rename', [Gallery\AlbumController::class, 'rename']);
-Route::post('/TagAlbum', [Gallery\AlbumController::class, 'createTagAlbum']);
-Route::patch('/TagAlbum', [Gallery\AlbumController::class, 'updateTagAlbum']);
 Route::post('/Album::updateProtectionPolicy', [Gallery\AlbumController::class, 'updateProtectionPolicy']);
 Route::delete('/Album', [Gallery\AlbumController::class, 'delete']);
-Route::post('/Album::transfer', [Gallery\AlbumController::class, 'transfer']);
 Route::post('/Album::move', [Gallery\AlbumController::class, 'move']);
 Route::post('/Album::cover', [Gallery\AlbumController::class, 'cover']);
 Route::post('/Album::header', [Gallery\AlbumController::class, 'header']);
-// Route::post('/Album::merge', [AlbumController::class, 'merge']);
+Route::post('/Album::merge', [Gallery\AlbumController::class, 'merge']);
+Route::post('/Album::transfer', [Gallery\AlbumController::class, 'transfer']);
 
-// Route::post('/Albums::getPositionData', [AlbumsController::class, 'getPositionData'])->middleware(['login_required:root']);
-// Route::post('/Albums::tree', [AlbumsController::class, 'tree'])->middleware(['login_required:root']);
+Route::post('/TagAlbum', [Gallery\AlbumController::class, 'createTagAlbum']);
+Route::patch('/TagAlbum', [Gallery\AlbumController::class, 'updateTagAlbum']);
 
-// Route::post('/Album::get', [AlbumController::class, 'get'])->middleware(['login_required:album']);
-// Route::post('/Album::getPositionData', [AlbumController::class, 'getPositionData']);
+/**
+ * MAP.
+ */
+Route::get('/Map', [Gallery\MapController::class, 'getData']);
+Route::get('/Map::provider', [Gallery\MapController::class, 'getProvider']);
+
 // Route::post('/Album::unlock', [AlbumController::class, 'unlock']);
-// Route::post('/Album::add', [AlbumController::class, 'add']);
-// Route::post('/Album::addByTags', [AlbumController::class, 'addTagAlbum']);
-// Route::post('/Album::setTitle', [AlbumController::class, 'setTitle']);
-// Route::post('/Album::setNSFW', [AlbumController::class, 'setNSFW']);
-// Route::post('/Album::setDescription', [AlbumController::class, 'setDescription']);
-// Route::post('/Album::setCopyright', [AlbumController::class, 'setCopyright']);
-// Route::post('/Album::setCover', [AlbumController::class, 'setCover']);
-// Route::post('/Album::setHeader', [AlbumController::class, 'setHeader']);
-// Route::post('/Album::setShowTags', [AlbumController::class, 'setShowTags']);
-// Route::post('/Album::setProtectionPolicy', [AlbumController::class, 'setProtectionPolicy']);
-// Route::post('/Album::merge', [AlbumController::class, 'merge']);
-// Route::post('/Album::move', [AlbumController::class, 'move']);
-// Route::post('/Album::setLicense', [AlbumController::class, 'setLicense']);
-// Route::post('/Album::setSorting', [AlbumController::class, 'setSorting']);
 // Route::get('/Album::getArchive', [AlbumController::class, 'getArchive'])
 // 	->name('download')
 // 	->withoutMiddleware(['content_type:json', 'accept_content_type:json'])
@@ -115,7 +102,6 @@ Route::delete('/Photo', [Gallery\PhotoController::class, 'delete']);
 
 // Route::post('/Photo::getRandom', [PhotoController::class, 'getRandom']);
 // Route::post('/Photo::clearSymLink', [PhotoController::class, 'clearSymLink']);
-// Route::post('/PhotoEditor::rotate', [PhotoEditorController::class, 'rotate']);
 // Route::get('/Photo::getArchive', [PhotoController::class, 'getArchive'])
 // 	->name('photo_download')
 // 	->withoutMiddleware(['content_type:json', 'accept_content_type:json'])
@@ -176,16 +162,10 @@ Route::post('/WebAuthn::login', [WebAuthn\WebAuthnLoginController::class, 'login
 /**
  * OAUTH.
  */
+// This route returns different results depending whether we are authenticated or not:
+// If Authenticated: list of the registrated Oauth providers
+// If not Authenticated: list of the available Oauth providers
 Route::get('/Oauth', [OauthController::class, 'list']);
-// Route::get('/Oauth', [OauthController::class, 'available']);
-
-/**
- * SHARING.
- */
-// Route::post('/Sharing::list', [AdministrationSharingController::class, 'list']);
-// Route::post('/Sharing::add', [AdministrationSharingController::class, 'add']);
-// Route::post('/Sharing::setByAlbum', [AdministrationSharingController::class, 'setByAlbum']);
-// Route::post('/Sharing::delete', [AdministrationSharingController::class, 'delete']);
 
 /**
  * DIAGNOSTICS.
@@ -201,32 +181,12 @@ Route::get('/Diagnostics::permissions', [Admin\DiagnosticsController::class, 'ge
  */
 Route::get('/Jobs', [Admin\JobsController::class, 'list']);
 
-// Route::post('/Diagnostics::getSize', [AdministrationDiagnosticsController::class, 'getSize']);
-
 /**
  * SETTINGS.
  */
 Route::get('/Settings', [Admin\SettingsController::class, 'getAll']);
 Route::post('/Settings::setConfigs', [Admin\SettingsController::class, 'setConfigs']);
 Route::get('/Settings::getLanguages', [Admin\SettingsController::class, 'getLanguages']);
-
-/**
- * MAINTENANCE.
- */
-Route::get('/Maintenance::update', [Admin\UpdateController::class, 'get']);
-Route::post('/Maintenance::update', [Admin\UpdateController::class, 'check']);
-Route::get('/Maintenance::cleaning', [Admin\Maintenance\Cleaning::class, 'check']);
-Route::post('/Maintenance::cleaning', [Admin\Maintenance\Cleaning::class, 'do']);
-Route::get('/Maintenance::jobs', [Admin\Maintenance\FixJobs::class, 'check']);
-Route::post('/Maintenance::jobs', [Admin\Maintenance\FixJobs::class, 'do']);
-Route::get('/Maintenance::tree', [Admin\Maintenance\FixTree::class, 'check']);
-Route::post('/Maintenance::tree', [Admin\Maintenance\FixTree::class, 'do']);
-Route::get('/Maintenance::genSizeVariants', [Admin\Maintenance\GenSizeVariants::class, 'check']);
-Route::post('/Maintenance::genSizeVariants', [Admin\Maintenance\GenSizeVariants::class, 'do']);
-Route::get('/Maintenance::missingFileSize', [Admin\Maintenance\MissingFileSizes::class, 'check']);
-Route::post('/Maintenance::missingFileSize', [Admin\Maintenance\MissingFileSizes::class, 'do']);
-Route::post('/Maintenance::optimize', [Admin\Maintenance\Optimize::class, 'do']);
-
 // Route::post('/Settings::setSorting', [AdministrationSettingsController::class, 'setSorting']);
 // Route::post('/Settings::setLang', [AdministrationSettingsController::class, 'setLang']);
 // Route::post('/Settings::setLayout', [AdministrationSettingsController::class, 'setLayout']);
@@ -249,6 +209,23 @@ Route::post('/Maintenance::optimize', [Admin\Maintenance\Optimize::class, 'do'])
 // Route::post('/Settings::setDropboxKey', [AdministrationSettingsController::class, 'setDropboxKey']);
 // Route::post('/Settings::setNewPhotosNotification', [AdministrationSettingsController::class, 'setNewPhotosNotification']);
 // Route::post('/Settings::setSmartAlbumVisibility', [AdministrationSettingsController::class, 'setSmartAlbumVisibility']);
+
+/**
+ * MAINTENANCE.
+ */
+Route::get('/Maintenance::update', [Admin\UpdateController::class, 'get']);
+Route::post('/Maintenance::update', [Admin\UpdateController::class, 'check']);
+Route::get('/Maintenance::cleaning', [Admin\Maintenance\Cleaning::class, 'check']);
+Route::post('/Maintenance::cleaning', [Admin\Maintenance\Cleaning::class, 'do']);
+Route::get('/Maintenance::jobs', [Admin\Maintenance\FixJobs::class, 'check']);
+Route::post('/Maintenance::jobs', [Admin\Maintenance\FixJobs::class, 'do']);
+Route::get('/Maintenance::tree', [Admin\Maintenance\FixTree::class, 'check']);
+Route::post('/Maintenance::tree', [Admin\Maintenance\FixTree::class, 'do']);
+Route::get('/Maintenance::genSizeVariants', [Admin\Maintenance\GenSizeVariants::class, 'check']);
+Route::post('/Maintenance::genSizeVariants', [Admin\Maintenance\GenSizeVariants::class, 'do']);
+Route::get('/Maintenance::missingFileSize', [Admin\Maintenance\MissingFileSizes::class, 'check']);
+Route::post('/Maintenance::missingFileSize', [Admin\Maintenance\MissingFileSizes::class, 'do']);
+Route::post('/Maintenance::optimize', [Admin\Maintenance\Optimize::class, 'do']);
 
 /**
  * UPDATE.

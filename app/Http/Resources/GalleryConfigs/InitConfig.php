@@ -8,8 +8,6 @@ use App\Enum\ImageOverlayType;
 use App\Enum\ThumbAlbumSubtitleType;
 use App\Enum\ThumbOverlayVisibilityType;
 use App\Models\Configs;
-use App\Policies\SettingsPolicy;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\URL;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
@@ -34,6 +32,7 @@ class InitConfig extends Data
 	public bool $can_autoplay;
 	public AlbumDecorationType $album_decoration;
 	public AlbumDecorationOrientation $album_decoration_orientation;
+	public string $title;
 
 	public function __construct()
 	{
@@ -55,14 +54,12 @@ class InitConfig extends Data
 
 		$this->album_decoration = Configs::getValueAsEnum('album_decoration', AlbumDecorationType::class);
 		$this->album_decoration_orientation = Configs::getValueAsEnum('album_decoration_orientation', AlbumDecorationOrientation::class);
+
+		$this->title = Configs::getValueAsString('site_title');
 	}
 
 	private function has_clockwork_in_menu(): string|null
 	{
-		if (!Gate::check(SettingsPolicy::CAN_ACCESS_DEV_TOOLS, [Configs::class])) {
-			return null;
-		}
-
 		// Defining clockwork URL
 		$clockWorkEnabled = config('clockwork.enable') === true || (config('app.debug') === true && config('clockwork.enable') === null);
 		$clockWorkWeb = config('clockwork.web');

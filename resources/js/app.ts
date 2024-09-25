@@ -20,6 +20,10 @@ import LycheePrimeVueConfig from "./style/preset";
 import FocusTrap from "primevue/focustrap";
 import Tooltip from "primevue/tooltip";
 
+declare global {
+	var assets_url: string;
+}
+
 // @ts-expect-error
 window.axios = axios;
 // @ts-expect-error

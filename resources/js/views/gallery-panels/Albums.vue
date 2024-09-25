@@ -5,7 +5,7 @@
 			<AlbumsHeader
 				v-if="user"
 				:user="user"
-				title="lychee.ALBUMS"
+				:title="lycheeStore.title"
 				:rights="rootRights"
 				@refresh="refresh"
 				@help="isKeybindingsHelpOpen = true"

@@ -23,17 +23,22 @@ Route::get('/', fn () => view('vueapp'))->name('home')->middleware(['migration:c
 Route::get('/gallery', fn () => view('vueapp'))->name('gallery')->middleware(['migration:complete']);
 Route::get('/gallery/{albumID}', fn () => view('vueapp'))->name('gallery')->middleware(['migration:complete']);
 Route::get('/gallery/{albumID}/{photoID}', fn () => view('vueapp'))->name('gallery')->middleware(['migration:complete']);
+
 Route::get('/frame', fn () => view('vueapp'))->name('frame')->middleware(['migration:complete']);
 Route::get('/frame/{albumID}', fn () => view('vueapp'))->name('frame')->middleware(['migration:complete']);
+
+Route::get('/map', fn () => view('vueapp'))->name('map')->middleware(['migration:complete']);
+Route::get('/map/{albumID}', fn () => view('vueapp'))->name('map')->middleware(['migration:complete']);
+
+// later
+Route::get('/search', fn () => view('vueapp'))->middleware(['migration:complete']);
+
 Route::get('/profile', fn () => view('vueapp'))->name('profile')->middleware(['migration:complete']);
 Route::get('/users', fn () => view('vueapp'))->middleware(['migration:complete']);
 Route::get('/sharing', fn () => view('vueapp'))->middleware(['migration:complete']);
 Route::get('/jobs', fn () => view('vueapp'))->middleware(['migration:complete']);
 Route::get('/diagnostics', fn () => view('vueapp'))->middleware(['migration:complete']);
 Route::get('/maintenance', fn () => view('vueapp'))->middleware(['migration:complete']);
-Route::get('/frame', fn () => view('vueapp'))->middleware(['migration:complete']);
-Route::get('/search', fn () => view('vueapp'))->middleware(['migration:complete']);
-Route::get('/map', fn () => view('vueapp'))->middleware(['migration:complete']);
 Route::get('/users', fn () => view('vueapp'))->middleware(['migration:complete']);
 Route::get('/settings', fn () => view('vueapp'))->middleware(['migration:complete']);
 Route::get('/permissions', fn () => view('vueapp'))->middleware(['migration:complete']);

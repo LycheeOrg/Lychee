@@ -230,6 +230,7 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		can_autoplay: boolean;
 		album_decoration: App.Enum.AlbumDecorationType;
 		album_decoration_orientation: App.Enum.AlbumDecorationOrientation;
+		title: string;
 	};
 	export type MapProviderData = {
 		layer: string;
@@ -532,6 +533,7 @@ declare namespace App.Http.Resources.Rights {
 		can_clear_logs: boolean;
 		can_see_diagnostics: boolean;
 		can_update: boolean;
+		can_access_dev_tools: boolean;
 	};
 	export type UserManagementRightsResource = {
 		can_create: boolean;

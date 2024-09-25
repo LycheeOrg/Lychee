@@ -170,7 +170,7 @@ function loadMenu() {
 		},
 	];
 
-	if (clockwork_url.value) {
+	if (clockwork_url.value && initData.value.settings.can_access_dev_tools) {
 		items.value.push({
 			label: "Clockwork App",
 			icon: "telescope",

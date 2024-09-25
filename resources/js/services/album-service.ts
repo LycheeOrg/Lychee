@@ -74,10 +74,6 @@ const AlbumService = {
 		return axios.get(`${Constants.API_URL}Gallery::getLayout`, { data: {} });
 	},
 
-	getMapProvider(): Promise<AxiosResponse<App.Http.Resources.GalleryConfigs.MapProviderData>> {
-		return axios.get(`${Constants.API_URL}Gallery::getMapProvider`, { data: {} });
-	},
-
 	createAlbum(data: CreateAlbumData): Promise<AxiosResponse<string>> {
 		return axios.post(`${Constants.API_URL}Album`, data);
 	},
@@ -124,6 +120,14 @@ const AlbumService = {
 
 	frame(album_id: string | null): Promise<AxiosResponse<App.Http.Resources.Frame.FrameData>> {
 		return axios.get(`${Constants.API_URL}Frame?album_id=${album_id === null ? "" : album_id}`, { data: {} });
+	},
+
+	getMapProvider(): Promise<AxiosResponse<App.Http.Resources.GalleryConfigs.MapProviderData>> {
+		return axios.get(`${Constants.API_URL}Map::provider`, { data: {} });
+	},
+
+	getMapData(album_id: string | undefined): Promise<AxiosResponse<App.Http.Resources.Collections.PositionDataResource>> {
+		return axios.get(`${Constants.API_URL}Map?album_id=${album_id === undefined ? "" : album_id}`, { data: {} });
 	},
 };
 

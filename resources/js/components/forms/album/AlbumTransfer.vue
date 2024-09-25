@@ -27,14 +27,11 @@ import Card from "primevue/card";
 import AlbumService from "@/services/album-service";
 import { sprintf } from "sprintf-js";
 import SearchTargetUser from "@/components/forms/album/SearchTargetUser.vue";
-import { useToast } from "primevue/usetoast";
-import Album from "@/views/gallery-panels/Album.vue";
 
 const props = defineProps<{
 	album: App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.TagAlbumResource;
 }>();
 
-const toast = useToast();
 const router = useRouter();
 const newOwner = ref(undefined as undefined | App.Http.Resources.Models.LightUserResource);
 const confirmation = computed(() =>

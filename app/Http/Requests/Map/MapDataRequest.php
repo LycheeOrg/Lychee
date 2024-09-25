@@ -1,19 +1,17 @@
 <?php
 
-namespace App\Http\Requests\Frame;
+namespace App\Http\Requests\Map;
 
 use App\Contracts\Http\Requests\HasAbstractAlbum;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Contracts\Models\AbstractAlbum;
-use App\Exceptions\UnauthorizedException;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasAbstractAlbumTrait;
-use App\Models\Configs;
 use App\Policies\AlbumPolicy;
 use App\Rules\RandomIDRule;
 use Illuminate\Support\Facades\Gate;
 
-class FrameRequest extends BaseApiRequest implements HasAbstractAlbum
+class MapDataRequest extends BaseApiRequest implements HasAbstractAlbum
 {
 	use HasAbstractAlbumTrait;
 
@@ -22,7 +20,7 @@ class FrameRequest extends BaseApiRequest implements HasAbstractAlbum
 	 */
 	public function authorize(): bool
 	{
-		return Gate::check(AlbumPolicy::CAN_ACCESS, [AbstractAlbum::class, $this->album]);
+		return Gate::check(AlbumPolicy::CAN_ACCESS_MAP, [AbstractAlbum::class, $this->album]);
 	}
 
 	/**
@@ -40,12 +38,8 @@ class FrameRequest extends BaseApiRequest implements HasAbstractAlbum
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		if (!Configs::getValueAsBool('mod_frame_enabled')) {
-			throw new UnauthorizedException();
-		}
-
-		$randomAlbumId = Configs::getValueAsString('random_album_id');
-		$albumId = $values[RequestAttribute::ALBUM_ID_ATTRIBUTE] ?? (($randomAlbumId !== '') ? $randomAlbumId : null);
-		$this->album = $albumId === null ? null : $this->albumFactory->findAbstractAlbumOrFail($albumId);
+		/** @var string|null $albumId */
+		$albumId = $values[RequestAttribute::ALBUM_ID_ATTRIBUTE] ?? null;
+		$this->album = $albumId === null ? null : $this->albumFactory->findAbstractAlbumOrFail($this->albumId);
 	}
 }
