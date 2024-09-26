@@ -1,6 +1,6 @@
 <template>
 	<router-link
-		:to="{ name: 'photo', params: { albumid: props.album?.id, photoid: props.photo.id } }"
+		:to="{ name: 'photo', params: { albumid: props.album?.id ?? 'search', photoid: props.photo.id } }"
 		:class="cssClass"
 		:data-width="props.photo.size_variants.original?.width"
 		:data-height="props.photo.size_variants.original?.height"
@@ -55,7 +55,11 @@ import { useLycheeStateStore } from "@/stores/LycheeState";
 
 const props = defineProps<{
 	isSelected: boolean;
-	album: App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.TagAlbumResource | App.Http.Resources.Models.SmartAlbumResource | null;
+	album:
+		| App.Http.Resources.Models.AlbumResource
+		| App.Http.Resources.Models.TagAlbumResource
+		| App.Http.Resources.Models.SmartAlbumResource
+		| undefined;
 	photo: App.Http.Resources.Models.PhotoResource;
 }>();
 

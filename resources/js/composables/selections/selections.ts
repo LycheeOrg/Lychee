@@ -12,7 +12,9 @@ export function useSelection(
 		  >
 		| undefined,
 	photos: Ref<{ [key: number]: App.Http.Resources.Models.PhotoResource }>,
-	albums: ComputedRef<{ [key: number]: App.Http.Resources.Models.ThumbAlbumResource }>,
+	albums:
+		| ComputedRef<{ [key: number]: App.Http.Resources.Models.ThumbAlbumResource }>
+		| Ref<{ [key: number]: App.Http.Resources.Models.ThumbAlbumResource }>,
 ) {
 	const selectedPhotosIdx = ref([] as number[]);
 	const selectedAlbumsIdx = ref([] as number[]);

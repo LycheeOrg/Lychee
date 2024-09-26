@@ -148,3 +148,6 @@ test_v1:
 
 test_v2:
 	vendor/bin/phpunit --testsuite Feature_v2 --stop-on-failure --stop-on-error --no-coverage --log-junit report_v2.xml
+
+gen_typescript_types:
+	php artisan typescript:transform

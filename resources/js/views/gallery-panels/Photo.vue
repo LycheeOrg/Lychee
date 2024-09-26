@@ -1,6 +1,6 @@
 <template>
 	<div class="absolute top-0 left-0 w-full flex h-full overflow-hidden bg-black" v-if="photo">
-		<PhotoHeader :albumid="props.albumid" :photo="photo" v-model:is-edit-open="isEditOpen" v-model:are-details-open="areDetailsOpen" />
+		<PhotoHeader :albumid="props.albumid" :photo="photo" />
 		<div class="w-0 flex-auto relative">
 			<div
 				id="imageview"
@@ -92,7 +92,7 @@
 			/>
 			<Overlay :photo="photo" :image-overlay-type="lycheeStore.image_overlay_type" />
 			<div
-				v-if="photo?.rights.can_edit && !isEditOpen"
+				v-if="photo?.rights.can_edit && !is_edit_open"
 				class="absolute top-0 h-1/4 w-full sm:w-1/2 left-1/2 -translate-x-1/2 opacity-50 lg:opacity-10 group lg:hover:opacity-100 transition-opacity duration-500 ease-in-out z-20 mt-14 sm:mt-0"
 			>
 				<span class="absolute left-1/2 -translate-x-1/2 p-1 min-w-[25%] w-full filter-shadow text-center">
@@ -110,9 +110,9 @@
 				</span>
 			</div>
 		</div>
-		<PhotoDetails v-model:are-details-open="areDetailsOpen" :photo="photo" />
+		<PhotoDetails v-model:are-details-open="are_details_open" :photo="photo" />
 	</div>
-	<PhotoEdit v-if="photo?.rights.can_edit" :photo="photo" v-model:visible="isEditOpen" />
+	<PhotoEdit v-if="photo?.rights.can_edit" :photo="photo" v-model:visible="is_edit_open" />
 	<MoveDialog :photo="photo" v-model:visible="isMoveVisible" :parent-id="props.albumid" @moved="updated" />
 	<DeleteDialog :photo="photo" v-model:visible="isDeleteVisible" :parent-id="props.albumid" @deleted="updated" />
 </template>
@@ -122,7 +122,7 @@ import NextPrevious from "@/components/gallery/photo/NextPrevious.vue";
 import AlbumService from "@/services/album-service";
 import PhotoDetails from "@/components/drawers/PhotoDetails.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
-import { Ref, computed, ref, watch } from "vue";
+import { ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import PhotoHeader from "@/components/headers/PhotoHeader.vue";
 import PhotoEdit from "@/components/drawers/PhotoEdit.vue";
@@ -134,6 +134,8 @@ import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
 import MoveDialog from "@/components/forms/gallery-dialogs/MoveDialog.vue";
 import DeleteDialog from "@/components/forms/gallery-dialogs/DeleteDialog.vue";
 import { storeToRefs } from "pinia";
+import SearchService from "@/services/search-service";
+import { usePhotoBaseFunction } from "@/composables/photo/basePhoto";
 
 const props = defineProps<{
 	albumid: string;
@@ -148,92 +150,35 @@ lycheeStore.init();
 const { isDeleteVisible, toggleDelete, isMoveVisible, toggleMove } = useGalleryModals();
 
 const photoId = ref(props.photoid);
-const photo = ref(undefined) as Ref<App.Http.Resources.Models.PhotoResource | undefined>;
-const album = ref(null) as Ref<App.Http.Resources.Models.AbstractAlbumResource | null>;
-const { is_full_screen } = storeToRefs(lycheeStore);
-const isEditOpen = ref(false);
-const areDetailsOpen = ref(false);
+const { photo, album, photos, placeholder, previousStyle, nextStyle, srcSetMedium, style, imageViewMode, refresh, hasPrevious, hasNext } =
+	usePhotoBaseFunction(photoId);
 
-const placeholder = window.assets_url + "img/placeholder.png";
-
-const previousStyle = computed(() => {
-	const previousId = photo.value?.previous_photo_id ?? null;
-	if (previousId === null) {
-		return "";
-	}
-	const previousPhoto = album.value?.resource?.photos?.find((p) => p.id);
-	if (previousPhoto === undefined) {
-		return "";
-	}
-	return "background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('" + previousPhoto.size_variants.thumb?.url + "')";
-});
-
-const nextStyle = computed(() => {
-	const nextId = photo.value?.next_photo_id ?? null;
-	if (nextId === null) {
-		return "";
-	}
-	const nextPhoto = album.value?.resource?.photos.find((p) => p.id === nextId);
-	if (nextPhoto === undefined) {
-		return "";
-	}
-	return "background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('" + nextPhoto.size_variants.thumb?.url + "')";
-});
-
-const srcSetMedium = computed(() => {
-	const medium = photo.value?.size_variants.medium ?? null;
-	const medium2x = photo.value?.size_variants.medium2x ?? null;
-	if (medium === null || medium2x === null) {
-		return "";
-	}
-
-	return `${medium.url} ${medium.width}w, ${medium2x.url} ${medium2x.width}w`;
-});
-
-const style = computed(() => {
-	if (!photo.value?.precomputed.is_livephoto) {
-		return "background-image: url(" + photo.value?.size_variants.small?.url + ")";
-	}
-	if (photo.value?.size_variants.medium !== null) {
-		return "width: " + photo.value?.size_variants.medium.width + "px; height: " + photo.value?.size_variants.medium.height + "px";
-	}
-	if (photo.value?.size_variants.original === null) {
-		return "";
-	}
-	return "width: " + photo.value?.size_variants.original.width + "px; height: " + photo.value?.size_variants.original.height + "px";
-});
-
-const imageViewMode = computed(() => {
-	if (photo.value?.precomputed.is_video) {
-		return 0;
-	}
-	if (photo.value?.precomputed.is_raw) {
-		return 1;
-	}
-
-	if (!photo.value?.precomputed.is_livephoto) {
-		if (photo.value?.size_variants.medium !== null) {
-			return 2;
-		}
-		return 3;
-	}
-	if (photo.value?.size_variants.medium !== null) {
-		return 4;
-	}
-	return 5;
-});
+const { is_full_screen, is_edit_open, are_details_open } = storeToRefs(lycheeStore);
 
 function load() {
+	if (lycheeStore.isSearchActive) {
+		const albumId = lycheeStore.search_album_id;
+		const page = lycheeStore.search_page;
+		const term = lycheeStore.search_term;
+		SearchService.search(albumId, term, page).then((response) => {
+			console.log(response.data);
+			photos.value = response.data.photos;
+			refresh();
+		});
+		return;
+	}
+
+	// This will crash so we redirect to the gallery
+	if (props.albumid === "search") {
+		router.push({ name: "gallery" });
+		return;
+	}
+
 	AlbumService.get(props.albumid).then((response) => {
 		album.value = response.data;
+		photos.value = album.value?.resource?.photos ?? [];
 		refresh();
 	});
-}
-
-function refresh() {
-	photo.value = ((album.value?.resource?.photos ?? []) as App.Http.Resources.Models.PhotoResource[]).find(
-		(p: App.Http.Resources.Models.PhotoResource) => p.id === photoId.value,
-	);
 }
 
 function updated() {
@@ -242,6 +187,15 @@ function updated() {
 }
 
 function goBack() {
+	if (lycheeStore.isSearchActive && lycheeStore.search_album_id === null) {
+		router.push({ name: "search" });
+		return;
+	}
+	if (lycheeStore.isSearchActive) {
+		router.push({ name: "search-album", params: { albumid: lycheeStore.search_album_id } });
+		return;
+	}
+
 	router.push({ name: "album", params: { albumid: props.albumid } });
 }
 
@@ -279,17 +233,18 @@ onKeyStroke(
 	"ArrowLeft",
 	() =>
 		!shouldIgnoreKeystroke() &&
-		photo.value?.previous_photo_id !== null &&
+		hasPrevious() &&
 		router.push({ name: "photo", params: { albumid: props.albumid, photoid: photo.value?.previous_photo_id ?? "" } }),
 );
 onKeyStroke(
 	"ArrowRight",
 	() =>
 		!shouldIgnoreKeystroke() &&
-		photo.value?.next_photo_id !== null &&
+		hasNext() &&
 		router.push({ name: "photo", params: { albumid: props.albumid, photoid: photo.value?.next_photo_id ?? "" } }),
 );
 onKeyStroke("o", () => !shouldIgnoreKeystroke() && rotateOverlay());
+onKeyStroke("s", () => !shouldIgnoreKeystroke() && toggleStar());
 onKeyStroke("f", () => !shouldIgnoreKeystroke() && lycheeStore.toggleFullScreen());
 
 load();

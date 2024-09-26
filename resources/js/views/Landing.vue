@@ -88,7 +88,7 @@ import LandingFooter from "@/components/footers/LandingFooter.vue";
 const introVisible = ref(true);
 const copyright = ref("");
 
-const initdata = ref(undefined) as Ref<undefined | App.Http.Resources.LandingPageResource>;
+const initdata = ref(undefined) as Ref<undefined | App.Http.Resources.GalleryConfigs.LandingPageResource>;
 
 InitService.fetchLandingData()
 	.then((data) => {

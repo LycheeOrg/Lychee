@@ -1,30 +1,34 @@
 <template>
-	<div v-if="lycheeError !== null" class="w-full h-full absolute top-0 left-0 bg-panel z-50">
-		<Message severity="error" @click="lycheeError = null">
-			<span class="font-bold text-xl w-full" v-if="lycheeError.exception"
-				>{{ lycheeError.exception }} in {{ lycheeError.file }}:{{ lycheeError.line }}</span
-			>
-			<span class="font-bold text-xl w-full" v-else>{{ lycheeError.message }}</span>
-		</Message>
-		<Panel>
-			<template #header>
-				<span class="font-bold text-xl">{{ lycheeError.message }}</span>
-			</template>
-			<Divider />
-			<p v-for="trace in lycheeError.trace">{{ trace.file + ":" + trace.line }} &mdash; {{ trace.function }}</p>
-		</Panel>
-	</div>
-	<div v-if="jsError !== null" class="w-full h-full absolute top-0 left-0 bg-panel z-50">
-		<Message severity="error z-50" @click="jsError = null">
-			<span class="font-bold text-xl">{{ jsError.message }} in {{ jsError.filename }}:{{ jsError.lineno }}</span>
-		</Message>
-	</div>
+	<template v-if="is_debug_enabled">
+		<div v-if="lycheeError !== null" class="w-full h-full absolute top-0 left-0 bg-panel z-50">
+			<Message severity="error" @click="lycheeError = null">
+				<span class="font-bold text-xl w-full" v-if="lycheeError.exception"
+					>{{ lycheeError.exception }} in {{ lycheeError.file }}:{{ lycheeError.line }}</span
+				>
+				<span class="font-bold text-xl w-full" v-else>{{ lycheeError.message }}</span>
+			</Message>
+			<Panel>
+				<template #header>
+					<span class="font-bold text-xl">{{ lycheeError.message }}</span>
+				</template>
+				<Divider />
+				<p v-for="trace in lycheeError.trace">{{ trace.file + ":" + trace.line }} &mdash; {{ trace.function }}</p>
+			</Panel>
+		</div>
+		<div v-if="jsError !== null" class="w-full h-full absolute top-0 left-0 bg-panel z-50">
+			<Message severity="error z-50" @click="jsError = null">
+				<span class="font-bold text-xl">{{ jsError.message }} in {{ jsError.filename }}:{{ jsError.lineno }}</span>
+			</Message>
+		</div>
+	</template>
 </template>
 <script setup lang="ts">
 import { type Ref, ref } from "vue";
 import Divider from "primevue/divider";
 import Message from "primevue/message";
 import Panel from "primevue/panel";
+import { useLycheeStateStore } from "@/stores/LycheeState";
+import { storeToRefs } from "pinia";
 
 type Trace = {
 	class: string;
@@ -49,6 +53,9 @@ type LycheeException = {
 	trace?: Trace[];
 	previous_exception?: LycheeException | null;
 };
+
+const lycheeStore = useLycheeStateStore();
+const { is_debug_enabled } = storeToRefs(lycheeStore);
 
 const lycheeError = ref(null) as Ref<null | LycheeException>;
 const jsError = ref(null) as Ref<null | ErrorEvent>;

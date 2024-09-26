@@ -151,6 +151,8 @@ const isLoginOpen = ref(false);
 const auth = useAuthStore();
 const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
+lycheeStore.resetSearch();
+
 const { are_nsfw_visible, is_full_screen } = storeToRefs(lycheeStore);
 
 // Set up Album ID reference. This one is updated at each page change.

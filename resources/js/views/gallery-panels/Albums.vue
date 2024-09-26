@@ -100,6 +100,8 @@ import { Collapse } from "vue-collapsed";
 const auth = useAuthStore();
 const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
+lycheeStore.resetSearch();
+
 const { are_nsfw_visible, is_full_screen, is_login_open } = storeToRefs(lycheeStore);
 
 const config = ref(null); // unused for now.

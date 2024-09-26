@@ -20,8 +20,8 @@ Route::get('/LandingPage', [LandingPageController::class, '__invoke']);
 Route::get('/Frame', [Gallery\FrameController::class, 'get']);
 
 Route::get('/Gallery::Init', [Gallery\ConfigController::class, 'getInit']);
-Route::get('/Gallery::getLayout', [Gallery\ConfigController::class, 'getGalleryLayout']);
-Route::get('/Gallery::getUploadLimits', [Gallery\ConfigController::class, 'getUploadCOnfig']);
+Route::get('/Gallery::getLayout', [Gallery\ConfigController::class, 'getGalleryLayout'])->middleware(['cache_control']);
+Route::get('/Gallery::getUploadLimits', [Gallery\ConfigController::class, 'getUploadCOnfig'])->middleware(['cache_control']);
 
 /**
  * ALBUMS.
@@ -50,7 +50,7 @@ Route::patch('/TagAlbum', [Gallery\AlbumController::class, 'updateTagAlbum']);
 /**
  * MAP.
  */
-Route::get('/Map', [Gallery\MapController::class, 'getData']);
+Route::get('/Map', [Gallery\MapController::class, 'getData'])->middleware(['cache_control']);
 Route::get('/Map::provider', [Gallery\MapController::class, 'getProvider']);
 
 // Route::post('/Album::unlock', [AlbumController::class, 'unlock']);
@@ -87,7 +87,7 @@ Route::get('/Sharing::all', [Gallery\SharingController::class, 'listAll']);
 /**
  * PHOTO.
  */
-Route::get('/Photo', [Gallery\PhotoController::class, 'get'])->middleware(['login_required:album']);
+// Route::get('/Photo', [Gallery\PhotoController::class, 'get'])->middleware(['login_required:album']);
 Route::post('/Photo::fromUrl', [Gallery\PhotoController::class, 'fromUrl']);
 Route::post('/Photo', [Gallery\PhotoController::class, 'upload'])
 	->withoutMiddleware(['content_type:json'])
@@ -111,8 +111,8 @@ Route::delete('/Photo', [Gallery\PhotoController::class, 'delete']);
 /**
  * SEARCH.
  */
-Route::get('/Search', [SearchController::class, 'init']);
-Route::post('/Search', [SearchController::class, 'search']);
+Route::get('/Search::init', [SearchController::class, 'init'])->middleware(['cache_control']);
+Route::get('/Search', [SearchController::class, 'search'])->middleware(['cache_control']);
 
 /**
  * SESSION.

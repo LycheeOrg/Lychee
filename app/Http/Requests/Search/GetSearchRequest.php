@@ -14,6 +14,7 @@ use App\Policies\AlbumPolicy;
 use App\Rules\RandomIDRule;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use function Safe\base64_decode;
 
 class GetSearchRequest extends BaseApiRequest implements HasAbstractAlbum, HasTerms
 {
@@ -55,7 +56,7 @@ class GetSearchRequest extends BaseApiRequest implements HasAbstractAlbum, HasTe
 		$this->terms = explode(' ', str_replace(
 			['\\', '%', '_'],
 			['\\\\', '\\%', '\\_'],
-			$values[RequestAttribute::TERM_ATTRIBUTE]
+			base64_decode($values[RequestAttribute::TERM_ATTRIBUTE], true)
 		));
 	}
 }

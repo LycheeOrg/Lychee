@@ -15,6 +15,7 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 #[TypeScript()]
 class InitConfig extends Data
 {
+	public bool $is_debug_enabled;
 	public bool $are_nsfw_visible;
 	public bool $are_nsfw_blurred;
 	public bool $is_nsfw_warning_visible;
@@ -36,6 +37,7 @@ class InitConfig extends Data
 
 	public function __construct()
 	{
+		$this->is_debug_enabled = config('app.debug');
 		$this->are_nsfw_visible = Configs::getValueAsBool('nsfw_visible');
 		$this->are_nsfw_blurred = Configs::getValueAsBool('nsfw_blur');
 		$this->is_nsfw_warning_visible = Configs::getValueAsBool('nsfw_warning');

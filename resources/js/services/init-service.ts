@@ -2,7 +2,7 @@ import axios, { type AxiosResponse } from "axios";
 import Constants from "./constants";
 
 const InitService = {
-	fetchLandingData(): Promise<AxiosResponse<App.Http.Resources.LandingPageResource>> {
+	fetchLandingData(): Promise<AxiosResponse<App.Http.Resources.GalleryConfigs.LandingPageResource>> {
 		return axios.get(`${Constants.API_URL}LandingPage`, { data: {} });
 	},
 
