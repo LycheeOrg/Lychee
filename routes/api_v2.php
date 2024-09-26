@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Gallery\SearchController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -110,7 +111,8 @@ Route::delete('/Photo', [Gallery\PhotoController::class, 'delete']);
 /**
  * SEARCH.
  */
-// Route::post('/Search::run', [SearchController::class, 'run']);
+Route::get('/Search', [SearchController::class, 'init']);
+Route::post('/Search', [SearchController::class, 'search']);
 
 /**
  * SESSION.
