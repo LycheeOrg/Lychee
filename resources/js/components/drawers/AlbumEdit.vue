@@ -1,5 +1,5 @@
 <template>
-	<Collapse class="w-full flex justify-center flex-wrap flex-row-reverse" :when="detailsOpen">
+	<Collapse class="w-full flex justify-center flex-wrap flex-row-reverse" :when="are_details_open">
 		<ul
 			v-if="props.config.is_base_album"
 			class="sm:mt-7 sm:px-7 mb-4 text-sm w-full xl:w-1/6 xl:px-9 max-xl:w-full max-xl:flex max-xl:justify-center"
@@ -67,12 +67,19 @@ import AlbumDelete from "@/components/forms/album/AlbumDelete.vue";
 import AlbumMove from "../forms/album/AlbumMove.vue";
 import AlbumTransfer from "../forms/album/AlbumTransfer.vue";
 import AlbumShare from "../forms/album/AlbumShare.vue";
+import { useLycheeStateStore } from "@/stores/LycheeState";
+import { storeToRefs } from "pinia";
 
 const props = defineProps<{
 	album: App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.SmartAlbumResource | App.Http.Resources.Models.TagAlbumResource;
 	config: App.Http.Resources.GalleryConfigs.AlbumConfig;
 }>();
-const detailsOpen = defineModel<boolean>({ required: true });
+
+const lycheeStore = useLycheeStateStore();
+lycheeStore.init();
+
+const { are_details_open } = storeToRefs(lycheeStore);
+
 const activeTab = ref(0);
 const numUsers = ref(0);
 
