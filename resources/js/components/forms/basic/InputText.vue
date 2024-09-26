@@ -10,6 +10,7 @@
 		:pt="props.pt"
 		:ptOptions="props.ptOptions"
 		:unstyled="props.unstyled"
+		@update:modelValue="($event) => emits('updated', $event)"
 	/>
 </template>
 <script setup lang="ts">
@@ -30,6 +31,7 @@ const props = defineProps<{
 	class?: string;
 }>();
 
+const emits = defineEmits(["updated"]);
 const modelValue = defineModel();
 const classValue = ref((props.class ?? "") + " border-0 p-3 w-full border-b hover:border-b-primary-400 focus:border-b-primary-400");
 </script>

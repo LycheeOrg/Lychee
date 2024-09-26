@@ -25,15 +25,8 @@
 					severity="secondary"
 					@click="isDownloadOpen = !isDownloadOpen"
 				/>
-				<Button
-					v-if="props.photo.rights.can_edit"
-					text
-					icon="pi pi-pencil"
-					class="mr-2"
-					severity="secondary"
-					@click="isEditOpen = !isEditOpen"
-				/>
-				<Button icon="pi pi-info" class="mr-2" severity="secondary" text @click="areDetailsOpen = !areDetailsOpen" />
+				<Button v-if="props.photo.rights.can_edit" text icon="pi pi-pencil" class="mr-2" severity="secondary" @click="toggleEdit" />
+				<Button icon="pi pi-info" class="mr-2" severity="secondary" text @click="toggleDetails" />
 			</template>
 		</Toolbar>
 	</header>
@@ -59,33 +52,37 @@ const props = defineProps<{
 
 const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
-const { is_full_screen } = storeToRefs(lycheeStore);
-const isEditOpen = defineModel("isEditOpen", { default: false });
-const areDetailsOpen = defineModel("areDetailsOpen", { default: false });
+const { is_full_screen, is_edit_open, are_details_open } = storeToRefs(lycheeStore);
+// const isEditOpen = defineModel("isEditOpen", { default: false });
+// const areDetailsOpen = defineModel("areDetailsOpen", { default: false });
 const isDownloadOpen = ref(false);
 
-const emit = defineEmits<{
-	(e: "refresh"): void;
-	//   (e: 'update', value: string): void
-}>();
+// const emit = defineEmits<{
+// 	(e: "refresh"): void;
+// }>();
 
 // const user = ref(undefined) as Ref<undefined | App.Http.Resources.Models.UserResource>;
-
-// onKeyStroke("n", () => !shouldIgnoreKeystroke() && (isCreateAlbumOpen.value = true));
-// onKeyStroke("u", () => !shouldIgnoreKeystroke() && (isUploadOpen.value = true));
 onKeyStroke("i", () => !shouldIgnoreKeystroke() && toggleDetails());
 onKeyStroke("e", () => !shouldIgnoreKeystroke() && props.photo.rights.can_edit && toggleEdit());
 
 function goBack() {
+	if (lycheeStore.isSearchActive && !lycheeStore.search_album_id) {
+		router.push({ name: "search" });
+		return;
+	}
+	if (lycheeStore.isSearchActive) {
+		router.push({ name: "search-album", params: { albumid: lycheeStore.search_album_id } });
+		return;
+	}
 	router.push({ name: "album", params: { albumid: props.albumid } });
 }
 
 function toggleDetails() {
-	areDetailsOpen.value = !areDetailsOpen.value;
+	are_details_open.value = !are_details_open.value;
 }
 
 function toggleEdit() {
-	isEditOpen.value = !isEditOpen.value;
+	is_edit_open.value = !is_edit_open.value;
 }
 
 function openInNewTab(url: string) {
@@ -93,9 +90,9 @@ function openInNewTab(url: string) {
 }
 
 // bubble up.
-function refresh() {
-	emit("refresh");
-}
+// function refresh() {
+// 	emit("refresh");
+// }
 
 // on key stroke escape:
 // 1. lose focus
@@ -108,7 +105,7 @@ onKeyStroke("Escape", () => {
 		return;
 	}
 
-	if (areDetailsOpen.value) {
+	if (are_details_open.value) {
 		toggleDetails();
 		return;
 	}

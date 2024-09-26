@@ -2,14 +2,16 @@
 
 namespace App\Http\Resources\Search;
 
-use App\Http\Resources\Models\AlbumResource;
 use App\Http\Resources\Models\PhotoResource;
+use App\Http\Resources\Models\ThumbAlbumResource;
+use App\Http\Resources\Traits\HasPrepPhotoCollection;
 use App\Models\Album;
 use App\Models\Photo;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Support\Collection;
 use Spatie\LaravelData\Data;
+use Spatie\TypeScriptTransformer\Attributes\LiteralTypeScriptType;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
 /**
@@ -25,24 +27,43 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 #[TypeScript()]
 class ResultsResource extends Data
 {
-	/** @var Collection<int,AlbumResource> */
+	use HasPrepPhotoCollection;
+
+	/** @var Collection<int,ThumbAlbumResource> */
+	#[LiteralTypeScriptType('App.Http.Resources.Models.ThumbAlbumResource[]')]
 	public Collection $albums;
 
-	/** @var Paginator<PhotoResource> */
-	public Paginator $photos;
+	/** @var Collection<int,PhotoResource> */
+	#[LiteralTypeScriptType('App.Http.Resources.Models.PhotoResource[]')]
+	public Collection $photos;
+
+	public int $current_page;
+	public int $from;
+	public int $last_page;
+	public int $per_page;
+	public int $to;
+	public int $total;
 
 	/**
-	 * @param Collection<int,AlbumResource> $albums
-	 * @param Paginator<PhotoResource>      $photos
+	 * @param Collection<int,ThumbAlbumResource>                           $albums
+	 * @param LengthAwarePaginator<PhotoResource>&Paginator<PhotoResource> $photos
 	 *
 	 * @return void
 	 */
 	public function __construct(
 		Collection $albums,
-		Paginator $photos,
+		LengthAwarePaginator $photos,
 	) {
 		$this->albums = $albums;
-		$this->photos = $photos;
+		$this->photos = collect($photos->items());
+		$this->current_page = $photos->currentPage();
+		$this->from = $photos->firstItem();
+		$this->last_page = $photos->lastPage();
+		$this->per_page = $photos->perPage();
+		$this->to = $photos->lastItem();
+		$this->total = $photos->total();
+
+		$this->prepPhotosCollection();
 	}
 
 	/**
@@ -54,7 +75,7 @@ class ResultsResource extends Data
 	public static function fromData(Collection $albums, LengthAwarePaginator $photos): self
 	{
 		return new self(
-			albums: AlbumResource::collect($albums),
+			albums: ThumbAlbumResource::collect($albums),
 			photos: PhotoResource::collect($photos), // @phpstan-ignore-line
 		);
 	}

@@ -87,39 +87,9 @@ declare namespace App.Enum {
 declare namespace App.Enum.Livewire {
 	export type NotificationType = "success" | "error" | "info" | "warning";
 }
-declare namespace App.Http.Resources {
-	export type LandingPageResource = {
-		footer_additional_text: string;
-		footer_show_copyright: boolean;
-		footer_show_social_media: boolean;
-		landing_page_enable: boolean;
-		landing_background: string;
-		landing_subtitle: string;
-		landing_title: string;
-		site_copyright_begin: number;
-		site_copyright_end: number;
-		site_owner: string;
-		site_title: string;
-		sm_facebook_url: string;
-		sm_flickr_url: string;
-		sm_instagram_url: string;
-		sm_twitter_url: string;
-		sm_youtube_url: string;
-	};
-	export type OauthData = {
-		providerType: App.Enum.OauthProvidersType;
-		registrationRoute: string;
-	};
-}
 declare namespace App.Http.Resources.Collections {
 	export type ConfigCollectionResource = {
 		configs: { [key: string]: Array<App.Http.Resources.Models.ConfigResource> };
-	};
-	export type FullRootAlbumResource = {
-		smart_albums: { [key: number]: App.Http.Resources.Models.SmartAlbumResource } | Array<any>;
-		tag_albums: { [key: number]: App.Http.Resources.Models.TagAlbumResource } | Array<any>;
-		albums: { [key: number]: App.Http.Resources.Models.AlbumResource } | Array<any>;
-		shared_albums: { [key: number]: App.Http.Resources.Models.AlbumResource } | Array<any> | null;
 	};
 	export type PositionDataResource = {
 		id: string | null;
@@ -213,6 +183,7 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		album_thumb_css_aspect_ratio: App.Enum.AspectRatioCSSType;
 	};
 	export type InitConfig = {
+		is_debug_enabled: boolean;
 		are_nsfw_visible: boolean;
 		are_nsfw_blurred: boolean;
 		is_nsfw_warning_visible: boolean;
@@ -231,6 +202,24 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		album_decoration: App.Enum.AlbumDecorationType;
 		album_decoration_orientation: App.Enum.AlbumDecorationOrientation;
 		title: string;
+	};
+	export type LandingPageResource = {
+		footer_additional_text: string;
+		footer_show_copyright: boolean;
+		footer_show_social_media: boolean;
+		landing_page_enable: boolean;
+		landing_background: string;
+		landing_subtitle: string;
+		landing_title: string;
+		site_copyright_begin: number;
+		site_copyright_end: number;
+		site_owner: string;
+		site_title: string;
+		sm_facebook_url: string;
+		sm_flickr_url: string;
+		sm_instagram_url: string;
+		sm_twitter_url: string;
+		sm_youtube_url: string;
 	};
 	export type MapProviderData = {
 		layer: string;
@@ -554,6 +543,21 @@ declare namespace App.Http.Resources.Root {
 		version: string | null;
 		is_new_release_available: boolean;
 		is_git_update_available: boolean;
+	};
+}
+declare namespace App.Http.Resources.Search {
+	export type InitResource = {
+		search_minimum_length: number;
+	};
+	export type ResultsResource = {
+		albums: App.Http.Resources.Models.ThumbAlbumResource[] | Array<any>;
+		photos: App.Http.Resources.Models.PhotoResource[] | Array<any>;
+		current_page: number;
+		from: number;
+		last_page: number;
+		per_page: number;
+		to: number;
+		total: number;
 	};
 }
 declare namespace App.Http.Resources.Sharing {

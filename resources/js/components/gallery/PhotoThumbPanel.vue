@@ -41,7 +41,11 @@ import { useLayouts } from "@/layouts/PhotoLayout";
 const props = defineProps<{
 	header: string;
 	photos: { [key: number]: App.Http.Resources.Models.PhotoResource };
-	album: App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.TagAlbumResource | App.Http.Resources.Models.SmartAlbumResource;
+	album:
+		| App.Http.Resources.Models.AlbumResource
+		| App.Http.Resources.Models.TagAlbumResource
+		| App.Http.Resources.Models.SmartAlbumResource
+		| undefined;
 	galleryConfig: App.Http.Resources.GalleryConfigs.PhotoLayoutConfig;
 	selectedPhotos: string[];
 }>();

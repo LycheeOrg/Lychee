@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\LandingPageResource;
+use App\Http\Resources\GalleryConfigs\LandingPageResource;
 use Illuminate\Routing\Controller;
 use Spatie\LaravelData\Data;
 

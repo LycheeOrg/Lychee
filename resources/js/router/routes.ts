@@ -59,12 +59,23 @@ export const routes = [
 		component: Map,
 		props: true,
 	},
-
-	// {
-	// 	name: "search",
-	// 	path: "/search",
-	// 	component: Search,
-	// },
+	{
+		name: "search",
+		path: "/search",
+		component: Search,
+	},
+	{
+		name: "search-album",
+		path: "/search/:albumid",
+		component: Search,
+		props: true,
+	},
+	{
+		name: "search-photo",
+		path: "/gallery/:albumid/:photoid",
+		component: Photo,
+		props: true,
+	},
 	{
 		name: "diagnostics",
 		path: "/diagnostics",

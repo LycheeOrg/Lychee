@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\GalleryConfigs;
 
 use App\Models\Configs;
 use Spatie\LaravelData\Data;

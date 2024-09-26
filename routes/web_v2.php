@@ -32,6 +32,8 @@ Route::get('/map/{albumID}', fn () => view('vueapp'))->name('map')->middleware([
 
 // later
 Route::get('/search', fn () => view('vueapp'))->middleware(['migration:complete']);
+Route::get('/search/{albumID}', fn () => view('vueapp'))->middleware(['migration:complete']);
+Route::get('/search/{albumID}/{photoID}', fn () => view('vueapp'))->middleware(['migration:complete']);
 
 Route::get('/profile', fn () => view('vueapp'))->name('profile')->middleware(['migration:complete']);
 Route::get('/users', fn () => view('vueapp'))->middleware(['migration:complete']);

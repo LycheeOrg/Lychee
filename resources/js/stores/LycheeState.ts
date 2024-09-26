@@ -5,10 +5,21 @@ export type LycheeStateStore = ReturnType<typeof useLycheeStateStore>;
 
 export const useLycheeStateStore = defineStore("lychee-store", {
 	state: () => ({
+		is_debug_enabled: true,
+
 		// togglables
 		left_menu_open: false,
 		is_full_screen: false,
 		is_login_open: false,
+
+		// Photo toggleables
+		is_edit_open: false,
+		are_details_open: false,
+
+		// Search stuff
+		search_term: "",
+		search_album_id: undefined as string | undefined,
+		search_page: 1,
 
 		// configs for nsfw
 		are_nsfw_blurred: false,
@@ -43,6 +54,11 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		is_init: false,
 		is_loading: false,
 	}),
+	getters: {
+		isSearchActive(): boolean {
+			return this.search_term !== "";
+		},
+	},
 	actions: {
 		init() {
 			// Check if already initialized
@@ -78,6 +94,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 				this.album_decoration_orientation = data.album_decoration_orientation;
 				this.album_subtitle_type = data.album_subtitle_type;
 				this.title = data.title;
+				this.is_debug_enabled = data.is_debug_enabled;
 			});
 		},
 
@@ -87,6 +104,12 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 
 		toggleLogin() {
 			this.is_login_open = !this.is_login_open;
+		},
+
+		resetSearch() {
+			this.search_term = "";
+			this.search_album_id = undefined;
+			this.search_page = 1;
 		},
 	},
 });
