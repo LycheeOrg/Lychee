@@ -1,5 +1,5 @@
 <template>
-	<LoginModal v-if="props.user.id === null" v-model:visible="isLoginOpen" @logged-in="refresh" />
+	<LoginModal v-if="props.user.id === null" v-model:visible="is_login_open" @logged-in="refresh" />
 	<UploadPanel v-if="canUpload" v-model:visible="isUploadOpen" @close="isUploadOpen = false" :album-id="props.album.id" />
 	<ImportFromLink v-if="canUpload" v-model:visible="isImportFromLinkOpen" :parent-id="props.album.id" @refresh="refresh" />
 	<AlbumCreateDialog
@@ -28,9 +28,9 @@
 			</IconField> -->
 			<Button icon="pi pi-plus" severity="secondary" text @click="openAddMenu" v-if="album.rights.can_upload" />
 			<template v-if="album.rights.can_edit">
-				<Button v-if="!areDetailsOpen" icon="pi pi-angle-down" severity="secondary" text class="mr-2 border-none" @click="toggleDetails" />
+				<Button v-if="!are_details_open" icon="pi pi-angle-down" severity="secondary" text class="mr-2 border-none" @click="toggleDetails" />
 				<Button
-					v-if="areDetailsOpen"
+					v-if="are_details_open"
 					icon="pi pi-angle-up"
 					severity="secondary"
 					class="mr-2 text-primary-400 border-none"
@@ -74,12 +74,10 @@ const props = defineProps<{
 	album: App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.TagAlbumResource | App.Http.Resources.Models.SmartAlbumResource;
 	user: App.Http.Resources.Models.UserResource;
 }>();
-const isLoginOpen = ref(false);
-const areDetailsOpen = defineModel("areDetailsOpen", { default: false });
-const toggleDetails = () => (areDetailsOpen.value = !areDetailsOpen.value);
+const toggleDetails = () => (are_details_open.value = !are_details_open.value);
 const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
-const { is_full_screen } = storeToRefs(lycheeStore);
+const { are_details_open, is_login_open } = storeToRefs(lycheeStore);
 
 const {
 	isCreateAlbumOpen,
@@ -113,10 +111,10 @@ const canUpload = computed(() => props.user.id !== null && props.album.rights.ca
 onKeyStroke("n", () => !shouldIgnoreKeystroke() && (isCreateAlbumOpen.value = true));
 onKeyStroke("u", () => !shouldIgnoreKeystroke() && (isUploadOpen.value = true));
 onKeyStroke("i", () => !shouldIgnoreKeystroke() && toggleDetails());
-onKeyStroke("l", () => !shouldIgnoreKeystroke() && props.user.id === null && (isLoginOpen.value = true));
+onKeyStroke("l", () => !shouldIgnoreKeystroke() && props.user.id === null && (is_login_open.value = true));
 
 function goBack() {
-	areDetailsOpen.value = false;
+	are_details_open.value = false;
 
 	if (props.config.is_model_album === true && (props.album as App.Http.Resources.Models.AlbumResource | null)?.parent_id !== null) {
 		router.push({ name: "album", params: { albumid: (props.album as App.Http.Resources.Models.AlbumResource | null)?.parent_id } });
@@ -141,7 +139,7 @@ onKeyStroke("Escape", () => {
 		return;
 	}
 
-	if (areDetailsOpen.value) {
+	if (are_details_open.value) {
 		toggleDetails();
 		return;
 	}

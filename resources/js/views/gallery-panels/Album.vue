@@ -2,21 +2,14 @@
 	<div class="h-svh overflow-y-hidden">
 		<!-- Trick to avoid the scroll bar to appear on the right when switching to full screen -->
 		<Collapse :when="!is_full_screen">
-			<AlbumHeader
-				v-if="album && config && user"
-				:album="album"
-				:config="config"
-				:user="user"
-				v-model:are-details-open="areDetailsOpen"
-				@refresh="refresh"
-			/>
+			<AlbumHeader v-if="album && config && user" :album="album" :config="config" :user="user" @refresh="refresh" />
 		</Collapse>
 		<template v-if="config && album">
 			<div
 				class="relative flex flex-wrap content-start w-full justify-start overflow-y-auto"
 				:class="is_full_screen ? 'h-svh' : 'h-[calc(100vh-3.5rem)]'"
 			>
-				<AlbumEdit v-model="areDetailsOpen" v-if="album.rights.can_edit" :album="album" :config="config" />
+				<AlbumEdit v-if="album.rights.can_edit" :album="album" :config="config" />
 				<div v-if="noData" class="flex w-full h-full items-center justify-center text-xl text-muted-color">
 					<span class="block">
 						{{ "Nothing to see here" }}
@@ -143,20 +136,16 @@ const props = defineProps<{
 
 const albumid = ref(props.albumid);
 
-// binding between hero and header. We use a boolean instead of events to avoid de-sync
-const areDetailsOpen = ref(false);
 // flag to open login modal if necessary
-const isLoginOpen = ref(false);
-
 const auth = useAuthStore();
 const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
 lycheeStore.resetSearch();
 
-const { are_nsfw_visible, is_full_screen } = storeToRefs(lycheeStore);
+const { are_nsfw_visible, is_full_screen, is_login_open } = storeToRefs(lycheeStore);
 
 // Set up Album ID reference. This one is updated at each page change.
-const { user, modelAlbum, album, layout, photos, config, loadLayout, refresh } = useAlbumRefresher(albumid, auth, isLoginOpen);
+const { user, modelAlbum, album, layout, photos, config, loadLayout, refresh } = useAlbumRefresher(albumid, auth, is_login_open);
 
 watch(
 	() => route.params.albumid,
