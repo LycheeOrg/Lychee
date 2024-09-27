@@ -45,11 +45,12 @@
 				</div>
 				<div
 					v-if="props.album.preFormattedData.description"
-					class="w-full px-7 max-w-full my-4 text-justify text-muted-color prose prose-invert prose-sm"
-				>
-					<!-- Fix me: output markdown here -->
-					{{ props.album.preFormattedData.description }}
-				</div>
+					class="w-full max-w-full my-4 text-justify text-muted-color text-base/5 prose prose-invert prose-sm"
+					v-html="props.album.preFormattedData.description"
+				/>
+				<!-- Fix me: output markdown here -->
+				<!-- {{ props.album.preFormattedData.description }} -->
+				<!-- </div> -->
 			</template>
 		</Card>
 	</template>

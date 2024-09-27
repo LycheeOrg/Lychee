@@ -8,6 +8,7 @@ use App\Enum\LicenseType;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
+use GrahamCampbell\Markdown\Facades\Markdown;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
@@ -38,7 +39,7 @@ class PreFormattedAlbumData extends Data
 			$this->max_taken_at = $album->max_taken_at?->format($min_max_date_format);
 			$this->formatMinMaxDate();
 			$this->created_at = $album->created_at->format($create_date_format);
-			$this->description = trim($album->description ?? '');
+			$this->description = Markdown::convert(trim($album->description ?? ''))->getContent();
 			$this->copyright = $album->copyright;
 		}
 		if ($album instanceof Album) {
