@@ -18,10 +18,6 @@ final class Features
 	 */
 	public static function active(string $featureName): bool
 	{
-		if ($featureName === 'livewire') {
-			return false;
-		}
-
 		self::exists($featureName);
 
 		return config('features.' . $featureName) === true;
@@ -36,10 +32,6 @@ final class Features
 	 */
 	public static function inactive(string $featureName): bool
 	{
-		if ($featureName === 'livewire') {
-			return true;
-		}
-
 		self::exists($featureName);
 
 		return config('features.' . $featureName) === false;

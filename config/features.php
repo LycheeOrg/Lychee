@@ -6,7 +6,7 @@ return [
 	| Use VueJS Front-end
 	|--------------------------------------------------------------------------
 	|
-	| This value determines whether livewire front-end is enabled as it is
+	| This value determines whether vuejs front-end is enabled as it is
 	| currently under development.
 	|
 	*/
@@ -14,11 +14,10 @@ return [
 
 	/*
 	|--------------------------------------------------------------------------
-	| Use VueJS Front-end
+	| Use Legacy API
 	|--------------------------------------------------------------------------
 	|
-	| This value determines whether livewire front-end is enabled as it is
-	| currently under development.
+	| This value determines whether the Legacy API is still available.
 	|
 	*/
 	'legacy_api' => (bool) env('LEGACY_API_ENABLED', !(bool) env('VUEJS_ENABLED', true)),

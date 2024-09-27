@@ -21,19 +21,19 @@ Route::feeds();
 
 Route::get('/', fn () => view('vueapp'))->name('home')->middleware(['migration:complete']);
 Route::get('/gallery', fn () => view('vueapp'))->name('gallery')->middleware(['migration:complete']);
-Route::get('/gallery/{albumID}', fn () => view('vueapp'))->name('gallery')->middleware(['migration:complete']);
-Route::get('/gallery/{albumID}/{photoID}', fn () => view('vueapp'))->name('gallery')->middleware(['migration:complete']);
+Route::get('/gallery/{albumId}', fn () => view('vueapp'))->name('gallery-album')->middleware(['migration:complete']);
+Route::get('/gallery/{albumId}/{photoId}', fn () => view('vueapp'))->name('gallery-photo')->middleware(['migration:complete']);
 
 Route::get('/frame', fn () => view('vueapp'))->name('frame')->middleware(['migration:complete']);
-Route::get('/frame/{albumID}', fn () => view('vueapp'))->name('frame')->middleware(['migration:complete']);
+Route::get('/frame/{albumId}', fn () => view('vueapp'))->name('frame')->middleware(['migration:complete']);
 
 Route::get('/map', fn () => view('vueapp'))->name('map')->middleware(['migration:complete']);
-Route::get('/map/{albumID}', fn () => view('vueapp'))->name('map')->middleware(['migration:complete']);
+Route::get('/map/{albumId}', fn () => view('vueapp'))->name('map')->middleware(['migration:complete']);
 
 // later
 Route::get('/search', fn () => view('vueapp'))->middleware(['migration:complete']);
-Route::get('/search/{albumID}', fn () => view('vueapp'))->middleware(['migration:complete']);
-Route::get('/search/{albumID}/{photoID}', fn () => view('vueapp'))->middleware(['migration:complete']);
+Route::get('/search/{albumId}', fn () => view('vueapp'))->middleware(['migration:complete']);
+Route::get('/search/{albumId}/{photoId}', fn () => view('vueapp'))->middleware(['migration:complete']);
 
 Route::get('/profile', fn () => view('vueapp'))->name('profile')->middleware(['migration:complete']);
 Route::get('/users', fn () => view('vueapp'))->middleware(['migration:complete']);

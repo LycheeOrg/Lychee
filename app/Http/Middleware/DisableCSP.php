@@ -7,7 +7,6 @@ use App\Contracts\Exceptions\LycheeException;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Str;
 
 /**
  * Class DisableCSP.
@@ -50,22 +49,22 @@ class DisableCSP
 			config(['secure-headers.csp.script-src.hashes.sha256' => []]);
 		}
 
-		// disable unsafe-eval if we are on a Livewire page
-		if (Features::active('vuejs') || Features::active('livewire') || Str::startsWith($request->getRequestUri(), $dir_url . '/livewire/')) {
-			$this->handleLivewire();
+		// disable unsafe-eval if we are on a VueJS page
+		if (Features::active('vuejs')) {
+			$this->handleVueJS();
 		}
 
 		return $next($request);
 	}
 
 	/**
-	 * Disabling rules because of poor decision from the designer of Livewire.
+	 * Disabling rules because ... VueJS.
 	 *
 	 * @return void
 	 *
 	 * @throws BindingResolutionException
 	 */
-	private function handleLivewire()
+	private function handleVueJS()
 	{
 		// We have to disable unsafe-eval because Livewire requires it...
 		// So stupid....

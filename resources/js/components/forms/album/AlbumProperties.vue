@@ -132,7 +132,6 @@
 							<InputText id="copyright" v-model="copyright" />
 							<label for="copyright">{{ $t("lychee.ALBUM_SET_COPYRIGHT") }}</label>
 						</FloatLabel>
-						<!-- <x-forms.error-message field='copyright' /> -->
 					</div>
 					<div class="h-10 my-4">
 						<FloatLabel>
