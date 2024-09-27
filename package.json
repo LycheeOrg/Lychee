@@ -34,7 +34,6 @@
         "autoprefixer": "^10.4.19",
         "axios": "^1.7.6",
         "axios-cache-interceptor": "^1.5.3",
-        "is-mobile": "^4.0.0",
         "justified-layout": "^4.1.0",
         "laravel-vite-plugin": "^1.0.1",
         "laravel-vue-i18n": "^2.7.7",
