@@ -24,33 +24,6 @@
 					<p class="my-1.5 text-muted-color w-full" v-html="nsfwText2"></p>
 				</div>
 				<SelectLang v-if="lang !== undefined" :config="lang" />
-				<!--
-						<livewire:forms.settings.set-lang-setting />
-
-						<FloatLabel>
-				<Select
-					id="lang"
-					class="w-48 border-none"
-					v-model="lang"
-					:options="langsOptions"
-					optionLabel="label"
-					showClear
-				>
-					<template #value="slotProps">
-						<div v-if="slotProps.value" class="flex items-center">
-							<div>{{ $t(slotProps.value.label) }}</div>
-						</div>
-					</template>
-					<template #option="slotProps">
-						<div class="flex items-center">
-							<div>{{ $t(slotProps.option.label) }}</div>
-						</div>
-					</template>
-				</Select>
-				<label for="lang">{{ $t("lychee.ALBUM_CHILDREN_ORDERING") }}</label>
-			</FloatLabel> -->
-				<!-- LANGUAGE -->
-				<!-- Sensitive -->
 			</div>
 		</Fieldset>
 		<Fieldset legend="Gallery" class="border-b-0 border-r-0 rounded-r-none rounded-b-none">
@@ -146,24 +119,8 @@
 				<BoolField v-if="location_decoding !== undefined" :config="location_decoding" @filled="save" />
 				<BoolField v-if="location_show !== undefined" :config="location_show" @filled="save" />
 				<BoolField v-if="location_show_public !== undefined" :config="location_show_public" @filled="save" />
-
-				<!-- 
-				<SelectField v-if="mapProviders !== undefined" :config="mapProviders" />
-				<div class="pl-9">
-					<ToggleSwitch id="pp_dialog_map_display" v-model="map_display" class="-ml-10 mr-2 translate-y-1 text-sm" />
-					<label class="text-muted-color" for="pp_dialog_map_display">{{ $t("lychee.MAP_DISPLAY_TEXT") }}</label>
-				</div>
-				<div class="pl-9">
-					<ToggleSwitch id="pp_dialog_map_display_public" v-model="map_display_public" class="-ml-10 mr-2 translate-y-1 text-sm" />
-					<label class="text-muted-color" for="pp_dialog_map_display_public">{{ $t("lychee.MAP_DISPLAY_PUBLIC_TEXT") }}</label>
-				</div>
-				<div class="pl-9">
-					<ToggleSwitch id="pp_dialog_map_include_subalbums" v-model="map_include_subalbums" class="-ml-10 mr-2 translate-y-1 text-sm" />
-					<label class="text-muted -->
 			</div>
-			<!-- MAP & locations -->
 		</Fieldset>
-
 		<!-- 
 			<livewire:forms.settings.base.boolean-setting key="set-public_search"
 				description="PUBLIC_SEARCH_TEXT" name="search_public" />
