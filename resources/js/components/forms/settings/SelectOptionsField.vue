@@ -1,6 +1,6 @@
 <template>
-	<div class="py-1 flex justify-between items-center gap-4">
-		<label class="w-full" :for="props.config.key">{{ props.config.documentation }}</label>
+	<div class="flex justify-between items-center gap-4">
+		<label class="w-full" :for="props.config.key">{{ props.docs ?? props.config.documentation }}</label>
 		<div class="flex gap-4 items-center">
 			<ResetField v-if="changed" @click="reset" />
 			<Select :id="props.config.key" class="border-none" v-model="val" optionLabel="label" :options="props.options" @update:modelValue="update">
@@ -26,6 +26,7 @@ import { SelectOption } from "@/config/constants";
 import ResetField from "@/components/forms/settings/ResetField.vue";
 
 type Props = {
+	docs?: string;
 	config: App.Http.Resources.Models.ConfigResource;
 	options: SelectOption<T>[];
 	mapper: (value: string) => SelectOption<T> | undefined;

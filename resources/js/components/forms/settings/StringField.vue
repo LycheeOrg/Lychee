@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<div class="py-1 flex items-center justify-between gap-4">
+		<div class="flex items-center justify-between gap-4">
 			<label class="w-full" :for="props.config.key">{{ props.config.documentation }}</label>
 			<FloatLabel class="w-full flex-grow">
 				<IconField>
