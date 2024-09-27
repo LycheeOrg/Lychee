@@ -9,7 +9,7 @@ use App\Enum\ThumbAlbumSubtitleType;
 use App\Enum\ThumbOverlayVisibilityType;
 use App\Models\Configs;
 use Illuminate\Support\Facades\URL;
-use LycheeVerify\Facades\VerifyFacade as Verify;
+use LycheeVerify\Verify;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
@@ -70,8 +70,9 @@ class InitConfig extends Data
 
 		$this->title = Configs::getValueAsString('site_title');
 
-		$is_supporter = Verify::is_supporter();
-		$this->is_se_enabled = Verify::validate() && $is_supporter;
+		$verify = resolve(Verify::class);
+		$is_supporter = $verify->is_supporter();
+		$this->is_se_enabled = $verify->validate() && $is_supporter;
 		$this->is_se_preview_enabled = !$is_supporter && !Configs::getValueAsBool('disable_se_call_for_actions') && Configs::getValueAsBool('enable_se_preview');
 		$this->is_se_info_hidden = $is_supporter || Configs::getValueAsBool('disable_se_call_for_actions');
 	}

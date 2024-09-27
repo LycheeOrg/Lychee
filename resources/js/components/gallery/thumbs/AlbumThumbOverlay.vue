@@ -10,25 +10,25 @@
 			{{ props.album.title }}
 		</h1>
 		<span
-			class="block mt-0 mr-0 mb-1.5 sm:mb-3 ml-2 sm:ml-3 md:ml-4 text-2xs text-surface-300"
+			class="hidden sm:block mt-0 mr-0 mb-1.5 sm:mb-3 ml-2 sm:ml-3 md:ml-4 text-2xs text-surface-300"
 			v-if="props.config.album_subtitle_type === 'description'"
 		>
 			{{ props.album.description }}
 		</span>
 		<span
-			class="block mt-0 mr-0 mb-1.5 sm:mb-3 ml-2 sm:ml-3 md:ml-4 text-2xs text-surface-300"
+			class="hidden sm:block mt-0 mr-0 mb-1.5 sm:mb-3 ml-2 sm:ml-3 md:ml-4 text-2xs text-surface-300"
 			v-if="props.config.album_subtitle_type === 'takedate'"
 		>
 			<i class="pi pi-pi-camera"></i>{{ props.album.formatted_min_max ?? props.album.created_at }}
 		</span>
 		<span
-			class="block mt-0 mr-0 mb-1.5 sm:mb-3 ml-2 sm:ml-3 md:ml-4 text-2xs text-surface-300"
+			class="hidden sm:block mt-0 mr-0 mb-1.5 sm:mb-3 ml-2 sm:ml-3 md:ml-4 text-2xs text-surface-300"
 			v-if="props.config.album_subtitle_type === 'creation'"
 		>
 			<i class="pi pi-pi-camera"></i>{{ props.album.created_at }}
 		</span>
 		<span
-			class="block mt-0 mr-0 mb-1.5 sm:mb-3 ml-2 sm:ml-3 md:ml-4 text-2xs text-surface-300"
+			class="hidden sm:block mt-0 mr-0 mb-1.5 sm:mb-3 ml-2 sm:ml-3 md:ml-4 text-2xs text-surface-300"
 			v-if="props.config.album_subtitle_type === 'oldstyle'"
 		>
 			{{ props.album.formatted_min_max ?? props.album.created_at }}
