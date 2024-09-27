@@ -9,6 +9,7 @@ use App\Enum\ThumbAlbumSubtitleType;
 use App\Enum\ThumbOverlayVisibilityType;
 use App\Models\Configs;
 use Illuminate\Support\Facades\URL;
+use LycheeVerify\Facades\VerifyFacade as Verify;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
@@ -35,6 +36,16 @@ class InitConfig extends Data
 	public AlbumDecorationOrientation $album_decoration_orientation;
 	public string $title;
 
+	// Lychee SE is available.
+	public bool $is_se_enabled;
+
+	// Lychee SE is not available, but preview is enabled (only if se info are not hidden).
+	public bool $is_se_preview_enabled;
+
+	// We hide the info about Lychee SE if the user is already a supporter
+	// or if they asked to hide it (because we are nice :) ).
+	public bool $is_se_info_hidden;
+
 	public function __construct()
 	{
 		$this->is_debug_enabled = config('app.debug');
@@ -58,6 +69,11 @@ class InitConfig extends Data
 		$this->album_decoration_orientation = Configs::getValueAsEnum('album_decoration_orientation', AlbumDecorationOrientation::class);
 
 		$this->title = Configs::getValueAsString('site_title');
+
+		$is_supporter = Verify::isSupporter();
+		$this->is_se_enabled = Verify::validate() && $is_supporter;
+		$this->is_se_preview_enabled = !$is_supporter && !Configs::getValueAsBool('disable_se_call_for_actions') && Configs::getValueAsBool('enable_se_preview');
+		$this->is_se_info_hidden = $is_supporter || Configs::getValueAsBool('disable_se_call_for_actions');
 	}
 
 	private function has_clockwork_in_menu(): string|null

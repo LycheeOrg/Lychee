@@ -12,6 +12,8 @@
 
 namespace Tests\Feature_v2\Base;
 
+use Illuminate\Testing\TestResponse;
+
 abstract class BaseApiV2Test extends BaseV2Test
 {
 	public const API_PREFIX = '/api/v2/';
@@ -22,7 +24,7 @@ abstract class BaseApiV2Test extends BaseV2Test
 	 * @param string $uri
 	 * @param array  $headers
 	 *
-	 * @return \Illuminate\Testing\TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function get($uri, array $headers = [])
 	{
@@ -36,7 +38,7 @@ abstract class BaseApiV2Test extends BaseV2Test
 	 * @param array  $data
 	 * @param array  $headers
 	 *
-	 * @return \Illuminate\Testing\TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function post($uri, array $data = [], array $headers = [])
 	{
@@ -54,7 +56,7 @@ abstract class BaseApiV2Test extends BaseV2Test
 	 * @param array  $headers
 	 * @param int    $options
 	 *
-	 * @return \Illuminate\Testing\TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function getJsonWithData($uri, array $data = [], array $headers = [], $options = 0)
 	{
@@ -68,7 +70,7 @@ abstract class BaseApiV2Test extends BaseV2Test
 	 * @param array  $headers
 	 * @param int    $options
 	 *
-	 * @return \Illuminate\Testing\TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function getJson($uri, array $headers = [], $options = 0)
 	{
@@ -83,7 +85,7 @@ abstract class BaseApiV2Test extends BaseV2Test
 	 * @param array  $headers
 	 * @param int    $options
 	 *
-	 * @return \Illuminate\Testing\TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function postJson($uri, array $data = [], array $headers = [], $options = 0)
 	{
@@ -98,7 +100,7 @@ abstract class BaseApiV2Test extends BaseV2Test
 	 * @param array  $headers
 	 * @param int    $options
 	 *
-	 * @return \Illuminate\Testing\TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function patchJson($uri, array $data = [], array $headers = [], $options = 0)
 	{
@@ -113,7 +115,7 @@ abstract class BaseApiV2Test extends BaseV2Test
 	 * @param array  $headers
 	 * @param int    $options
 	 *
-	 * @return \Illuminate\Testing\TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function deleteJson($uri, array $data = [], array $headers = [], $options = 0)
 	{

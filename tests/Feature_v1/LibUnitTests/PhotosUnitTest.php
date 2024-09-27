@@ -35,7 +35,7 @@ class PhotosUnitTest
 	 * @param UploadedFile $file
 	 * @param string|null  $albumID
 	 *
-	 * @return TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function upload(
 		UploadedFile $file,
@@ -112,7 +112,7 @@ class PhotosUnitTest
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *
-	 * @return TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function get(
 		string $photo_id,
@@ -320,7 +320,7 @@ class PhotosUnitTest
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *
-	 * @return TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function duplicate(
 		array $ids,
@@ -346,7 +346,7 @@ class PhotosUnitTest
 	 * @param string[] $ids
 	 * @param string   $kind
 	 *
-	 * @return TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function download(
 		array $ids,
@@ -459,7 +459,7 @@ class PhotosUnitTest
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *
-	 * @return TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function importFromUrl(
 		array $urls,
@@ -489,7 +489,7 @@ class PhotosUnitTest
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *
-	 * @return TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function rotate(
 		string $id,

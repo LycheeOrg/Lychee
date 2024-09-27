@@ -42,7 +42,7 @@ abstract class AbstractTestCase extends BaseTestCase
 	 * @param array  $queryParameters
 	 * @param array  $headers
 	 *
-	 * @return TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function getWithParameters(string $uri, array $queryParameters = [], array $headers = []): TestResponse
 	{
@@ -55,7 +55,7 @@ abstract class AbstractTestCase extends BaseTestCase
 	/**
 	 * Converts the JSON content of the response into a PHP standard object.
 	 *
-	 * @param TestResponse $response
+	 * @param TestResponse<\Illuminate\Http\JsonResponse> $response
 	 *
 	 * @return object
 	 */

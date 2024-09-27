@@ -12,7 +12,6 @@ use App\Legacy\V1\Requests\Traits\HasSizeVariantTrait;
 use App\Legacy\V1\RuleSets\Photo\ArchivePhotosRuleSet;
 use App\Models\Photo;
 use App\Policies\PhotoPolicy;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Gate;
 
 class ArchivePhotosRequest extends BaseApiRequest implements HasPhotos, HasSizeVariant
@@ -58,7 +57,7 @@ class ArchivePhotosRequest extends BaseApiRequest implements HasPhotos, HasSizeV
 			// If a proper size variant is requested, eagerly load the size
 			// variants but only the requested type due to efficiency reasons
 			$photoQuery = $photoQuery->with([
-				'size_variants' => fn (HasMany $r) => $r->where('type', '=', $variant),
+				'size_variants' => fn ($r) => $r->where('type', '=', $variant),
 			]);
 		}
 		// `findOrFail` returns the union `Photo|Collection<int,Photo>`

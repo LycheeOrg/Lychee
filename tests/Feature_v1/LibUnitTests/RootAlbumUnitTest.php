@@ -34,7 +34,7 @@ class RootAlbumUnitTest
 	 * @param string|null $assertSee
 	 * @param string|null $assertDontSee
 	 *
-	 * @return TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function get(
 		int $expectedStatusCode = 200,
@@ -60,7 +60,7 @@ class RootAlbumUnitTest
 	 * @param string|null $assertSee
 	 * @param string|null $assertDontSee
 	 *
-	 * @return TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function getTree(
 		int $expectedStatusCode = 200,
@@ -85,7 +85,7 @@ class RootAlbumUnitTest
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *
-	 * @return TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function getPositionData(
 		int $expectedStatusCode = 201,
