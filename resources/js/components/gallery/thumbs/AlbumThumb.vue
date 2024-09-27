@@ -1,7 +1,7 @@
 <template>
 	<router-link
 		:to="{ name: 'album', params: { albumid: album.id } }"
-		class="album-thumb block relative w-1/4 min-w-32 sm:w-[calc(25vw)] md:w-[calc(20vw)] lg:w-[calc(16vw)] xl:w-[calc(14vw)] 2xl:w-52 animate-zoomIn group"
+		class="album-thumb block relative w-[calc(33vw-1rem)] sm:w-[calc(25vw-1rem)] md:w-[calc(19vw-0.8rem)] lg:w-[calc(16vw-0.8rem)] xl:w-[calc(14vw-1rem)] 2xl:w-[calc(12vw-0.75rem)] 3xl:w-[calc(12vw-0.75rem)] 4xl:w-52 animate-zoomIn group"
 		:class="linkClass"
 		:data-id="props.album.id"
 	>
