@@ -18,6 +18,7 @@
 </template>
 <script setup lang="ts">
 import AlbumService from "@/services/album-service";
+import { onKeyStroke } from "@vueuse/core";
 import Button from "primevue/button";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
@@ -62,4 +63,8 @@ function goBack() {
 		router.push({ name: "gallery" });
 	}
 }
+
+onKeyStroke("Escape", () => {
+	goBack();
+});
 </script>

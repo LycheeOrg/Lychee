@@ -192,7 +192,7 @@ function goBack() {
 		return;
 	}
 	if (lycheeStore.isSearchActive) {
-		router.push({ name: "search-album", params: { albumid: lycheeStore.search_album_id } });
+		router.push({ name: "search-with-album", params: { albumid: lycheeStore.search_album_id } });
 		return;
 	}
 
@@ -246,7 +246,7 @@ onKeyStroke(
 onKeyStroke("o", () => !shouldIgnoreKeystroke() && rotateOverlay());
 onKeyStroke("s", () => !shouldIgnoreKeystroke() && toggleStar());
 onKeyStroke("f", () => !shouldIgnoreKeystroke() && lycheeStore.toggleFullScreen());
-
+onKeyStroke(["Delete", "Backspace"], () => !shouldIgnoreKeystroke() && toggleDelete());
 load();
 
 watch(

@@ -51,7 +51,7 @@ Route::patch('/TagAlbum', [Gallery\AlbumController::class, 'updateTagAlbum']);
  * MAP.
  */
 Route::get('/Map', [Gallery\MapController::class, 'getData'])->middleware(['cache_control']);
-Route::get('/Map::provider', [Gallery\MapController::class, 'getProvider']);
+Route::get('/Map::provider', [Gallery\MapController::class, 'getProvider'])->middleware(['cache_control']);
 
 // Route::post('/Album::unlock', [AlbumController::class, 'unlock']);
 // Route::get('/Album::getArchive', [AlbumController::class, 'getArchive'])
@@ -134,7 +134,7 @@ Route::post('/Profile::unsetToken', [ProfileController::class, 'unsetToken']);
  * USERS.
  */
 Route::get('/Users', [UsersController::class, 'list']);
-Route::get('/Users::count', [UsersController::class, 'count']);
+Route::get('/Users::count', [UsersController::class, 'count'])->middleware(['cache_control']);
 
 /**
  * USERS MANAGEMENT.
