@@ -70,7 +70,7 @@ class InitConfig extends Data
 
 		$this->title = Configs::getValueAsString('site_title');
 
-		$is_supporter = Verify::isSupporter();
+		$is_supporter = Verify::is_supporter();
 		$this->is_se_enabled = Verify::validate() && $is_supporter;
 		$this->is_se_preview_enabled = !$is_supporter && !Configs::getValueAsBool('disable_se_call_for_actions') && Configs::getValueAsBool('enable_se_preview');
 		$this->is_se_info_hidden = $is_supporter || Configs::getValueAsBool('disable_se_call_for_actions');
