@@ -65,7 +65,7 @@ export const routes = [
 		component: Search,
 	},
 	{
-		name: "search-album",
+		name: "search-with-album",
 		path: "/search/:albumid",
 		component: Search,
 		props: true,

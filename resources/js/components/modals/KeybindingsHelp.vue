@@ -16,8 +16,9 @@
 								<kbd
 									v-for="k in slotProps.data.key.split(' ')"
 									class="py-0.5 px-2 ml-2 rounded border border-black/30 text-xs shadow-black/5 bg-bg-300 shadow-sm font-mono"
-									>{{ k }}</kbd
 								>
+									{{ k }}
+								</kbd>
 							</template>
 						</Column>
 					</DataTable>
@@ -129,7 +130,7 @@ const shortcutsList = ref([
 			{ action: "Toggle full screen", key: "f" },
 			// { action: "Rotate counter clock wise", key: "ctrl ←" },
 			// { action: "Rotate clockwise", key: "ctrl →" },
-			// { action: "Delete the photo", key: "delete or BckSpace" },
+			{ action: "Delete the photo", key: "BckSpace" },
 		],
 	},
 ]);

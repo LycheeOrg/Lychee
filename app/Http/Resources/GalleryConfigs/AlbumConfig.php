@@ -35,9 +35,10 @@ class AlbumConfig extends Data
 		$this->is_base_album = $album instanceof BaseAlbum;
 		$this->is_model_album = $album instanceof Album;
 		$this->is_password_protected = !$is_accessible && $public_perm?->password !== null;
-		$this->setIsMapAccessible(false);
+
+		$this->setIsMapAccessible();
 		$this->setIsSearchAccessible($this->is_base_album);
-		$this->is_mod_frame_enabled = Configs::getValueAsBool('mod_frame_enabled');
+		$this->is_mod_frame_enabled = Configs::getValueAsBool('mod_frame_enabled') && $album->photos->count() > 0;
 		if ($album instanceof Album && $album->album_thumb_aspect_ratio !== null) {
 			$this->album_thumb_css_aspect_ratio = $album->album_thumb_aspect_ratio->css();
 		} else {
@@ -45,11 +46,11 @@ class AlbumConfig extends Data
 		}
 	}
 
-	public function setIsMapAccessible(bool $is_map_accessible): void
+	public function setIsMapAccessible(): void
 	{
 		$map_display = Configs::getValueAsBool('map_display');
 		$public_display = Auth::check() || Configs::getValueAsBool('map_display_public');
-		$this->is_map_accessible = $is_map_accessible && $map_display && $public_display;
+		$this->is_map_accessible = $map_display && $public_display;
 	}
 
 	public function setIsSearchAccessible(bool $is_base_album): void

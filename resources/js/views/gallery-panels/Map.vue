@@ -36,6 +36,7 @@ import "@lychee-org/leaflet.photo/Leaflet.Photo.css";
 import "leaflet-gpx/gpx.js";
 import { useToast } from "primevue/usetoast";
 import Toolbar from "primevue/toolbar";
+import { onKeyStroke } from "@vueuse/core";
 
 type MapPhotoEntry = {
 	lat?: number | null;
@@ -271,4 +272,8 @@ function updateZoom() {
 }
 
 loadMapProvider();
+
+onKeyStroke("Escape", () => {
+	goBack();
+});
 </script>

@@ -12,12 +12,12 @@
 			<Button
 				v-if="user.id === null && isLoginLeft"
 				icon="pi pi-sign-in"
-				class="mr-2"
+				class="mr-2 border-none"
 				severity="secondary"
 				text
 				@click="lycheeStore.toggleLogin()"
 			/>
-			<Button v-if="user.id" @click="openLeftMenu" icon="pi pi-bars" class="mr-2" severity="secondary" text />
+			<Button v-if="user.id" @click="openLeftMenu" icon="pi pi-bars" class="mr-2 border-none" severity="secondary" text />
 			<!-- <Button v-if="initdata?.user" @click="logout" icon="pi pi-sign-out" class="mr-2 border-none" severity="info" text /> -->
 		</template>
 
@@ -26,29 +26,29 @@
 		</template>
 
 		<template #end>
-			<!-- <IconField>
-				<InputIcon>
-					<i class="pi pi-search" />
-				</InputIcon>
-				<InputText placeholder="Search" />
-			</IconField> -->
 			<BackLinkButton v-if="user.id === null && isLoginLeft" :config="props.config" />
-			<!-- <SplitButton label="Save" :model="items"></SplitButton> -->
+			<router-link :to="{ name: 'frame' }" v-if="props.config.is_mod_frame_enabled">
+				<Button icon="pi pi-desktop" class="border-none" severity="secondary" text />
+			</router-link>
+			<router-link :to="{ name: 'map' }" v-if="props.config.is_map_accessible">
+				<Button icon="pi pi-map" class="border-none" severity="secondary" text />
+			</router-link>
+			<Button icon="pi pi-search" class="border-none" severity="secondary" text @click="openSearch" v-if="props.config.is_search_accessible" />
 			<Button
-				v-if="user.id !== null && props.config.show_keybinding_help_button"
 				icon="pi pi-question-circle"
 				severity="secondary"
 				text
 				@click="openHelp"
+				v-if="user.id !== null && props.config.show_keybinding_help_button"
 			/>
-			<Button v-if="props.rights.can_upload" icon="pi pi-plus" severity="secondary" text @click="openAddMenu" />
+			<Button icon="pi pi-plus" severity="secondary" text @click="openAddMenu" v-if="props.rights.can_upload" />
 			<Button
-				v-if="user.id === null && !isLoginLeft"
 				icon="pi pi-sign-in"
 				class="mr-2"
 				severity="secondary"
 				text
 				@click="lycheeStore.toggleLogin()"
+				v-if="user.id === null && !isLoginLeft"
 			/>
 		</template>
 	</Toolbar>
@@ -83,6 +83,7 @@ import { useContextMenuAlbumsAdd } from "@/composables/contextMenus/contextMenuA
 import Divider from "primevue/divider";
 import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
 import WebAuthnService from "@/services/webauthn-service";
+import { useRouter } from "vue-router";
 
 const props = defineProps<{
 	user: App.Http.Resources.Models.UserResource;
@@ -117,6 +118,7 @@ const emit = defineEmits<{
 const lycheeStore = useLycheeStateStore();
 const { left_menu_open, is_login_open } = storeToRefs(lycheeStore);
 const isWebAuthnOpen = ref(false);
+const router = useRouter();
 const openLeftMenu = () => (left_menu_open.value = !left_menu_open.value);
 
 const {
@@ -157,10 +159,15 @@ function openHelp() {
 	emit("help");
 }
 
+function openSearch() {
+	router.push({ name: "search" });
+}
+
 onKeyStroke("n", () => !shouldIgnoreKeystroke() && props.rights.can_upload && (isCreateAlbumOpen.value = true));
 onKeyStroke("u", () => !shouldIgnoreKeystroke() && props.rights.can_upload && (isUploadOpen.value = true));
 onKeyStroke("l", () => !shouldIgnoreKeystroke() && props.user.id === null && (is_login_open.value = true));
 onKeyStroke("k", () => !shouldIgnoreKeystroke() && props.user.id === null && !isWebAuthnUnavailable.value && (isWebAuthnOpen.value = true));
+onKeyStroke("/", () => !shouldIgnoreKeystroke() && props.config.is_search_accessible && openSearch());
 
 // on key stroke escape:
 // 1. lose focus

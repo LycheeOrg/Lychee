@@ -71,7 +71,7 @@ function goBack() {
 		return;
 	}
 	if (lycheeStore.isSearchActive) {
-		router.push({ name: "search-album", params: { albumid: lycheeStore.search_album_id } });
+		router.push({ name: "search-with-album", params: { albumid: lycheeStore.search_album_id } });
 		return;
 	}
 	router.push({ name: "album", params: { albumid: props.albumid } });

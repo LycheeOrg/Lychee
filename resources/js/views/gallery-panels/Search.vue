@@ -116,6 +116,7 @@ import SearchBox from "@/components/forms/search/SearchBox.vue";
 import AlbumThumbPanel from "@/components/gallery/AlbumThumbPanel.vue";
 import PhotoThumbPanel from "@/components/gallery/PhotoThumbPanel.vue";
 import { AlbumThumbConfig } from "@/components/gallery/thumbs/AlbumThumb.vue";
+import { useAlbumRefresher } from "@/composables/album/albumRefresher";
 import { useContextMenu } from "@/composables/contextMenus/contextMenu";
 import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
 import { useSelection } from "@/composables/selections/selections";
@@ -123,6 +124,7 @@ import AlbumService from "@/services/album-service";
 import SearchService from "@/services/search-service";
 import { useAuthStore } from "@/stores/Auth";
 import { useLycheeStateStore } from "@/stores/LycheeState";
+import { onKeyStroke } from "@vueuse/core";
 import { storeToRefs } from "pinia";
 import Button from "primevue/button";
 import Toolbar from "primevue/toolbar";
@@ -137,7 +139,7 @@ const props = defineProps<{
 	albumid?: string;
 }>();
 
-const albumid = ref(props.albumid);
+const albumid = ref(props.albumid ?? "");
 
 function goBack() {
 	if (props.albumid !== undefined) {
@@ -152,7 +154,9 @@ const auth = useAuthStore();
 const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
 
-const { are_nsfw_visible, is_full_screen, search_page, search_term } = storeToRefs(lycheeStore);
+const { are_nsfw_visible, is_full_screen, search_page, search_term, is_login_open } = storeToRefs(lycheeStore);
+
+const { album, loadAlbum } = useAlbumRefresher(albumid, auth, is_login_open);
 
 const albums = ref<App.Http.Resources.Models.ThumbAlbumResource[]>([]);
 const photos = ref<App.Http.Resources.Models.PhotoResource[]>([]);
@@ -284,4 +288,8 @@ loadLayout();
 if (lycheeStore.isSearchActive) {
 	search(lycheeStore.search_term);
 }
+
+onKeyStroke("Escape", () => {
+	goBack();
+});
 </script>

@@ -10,7 +10,7 @@
 	/>
 	<Toolbar class="w-full border-0 h-14" v-if="album">
 		<template #start>
-			<Button icon="pi pi-angle-left" class="mr-2" severity="secondary" text @click="goBack" />
+			<Button icon="pi pi-angle-left" class="mr-2 border-none" severity="secondary" text @click="goBack" />
 			<!-- <Button v-if="user?.id" @click="openLeftMenu" icon="pi pi-bars" class="mr-2" severity="info" text /> -->
 			<!-- <Button v-if="initdata?.user" @click="logout" icon="pi pi-sign-out" class="mr-2" severity="info" text /> -->
 		</template>
@@ -20,13 +20,17 @@
 		</template>
 
 		<template #end>
-			<!-- <IconField>
-				<InputIcon>
-					<i class="pi pi-search" />
-				</InputIcon>
-				<InputText placeholder="Search" />
-			</IconField> -->
-			<Button icon="pi pi-plus" severity="secondary" text @click="openAddMenu" v-if="album.rights.can_upload" />
+			<router-link :to="{ name: 'frame-with-album', params: { albumid: props.album.id } }" v-if="props.config.is_mod_frame_enabled">
+				<Button icon="pi pi-desktop" class="border-none" severity="secondary" text />
+			</router-link>
+			<router-link
+				:to="{ name: 'map-with-album', params: { albumid: props.album.id } }"
+				v-if="props.config.is_map_accessible && hasCoordinates"
+			>
+				<Button icon="pi pi-map" class="border-none" severity="secondary" text />
+			</router-link>
+			<Button icon="pi pi-search" class="border-none" severity="secondary" text @click="openSearch" v-if="props.config.is_search_accessible" />
+			<Button icon="pi pi-plus" class="border-none" severity="secondary" text @click="openAddMenu" v-if="album.rights.can_upload" />
 			<template v-if="album.rights.can_edit">
 				<Button v-if="!are_details_open" icon="pi pi-angle-down" severity="secondary" text class="mr-2 border-none" @click="toggleDetails" />
 				<Button
@@ -74,10 +78,13 @@ const props = defineProps<{
 	album: App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.TagAlbumResource | App.Http.Resources.Models.SmartAlbumResource;
 	user: App.Http.Resources.Models.UserResource;
 }>();
+
 const toggleDetails = () => (are_details_open.value = !are_details_open.value);
 const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
 const { are_details_open, is_login_open } = storeToRefs(lycheeStore);
+
+const hasCoordinates = computed(() => props.album.photos.find((photo) => photo.latitude !== null && photo.longitude !== null) !== undefined);
 
 const {
 	isCreateAlbumOpen,
@@ -108,11 +115,6 @@ const { addmenu, addMenu, openAddMenu } = useContextMenuAlbumAdd({ toggleUpload,
 const router = useRouter();
 const canUpload = computed(() => props.user.id !== null && props.album.rights.can_upload === true);
 
-onKeyStroke("n", () => !shouldIgnoreKeystroke() && (isCreateAlbumOpen.value = true));
-onKeyStroke("u", () => !shouldIgnoreKeystroke() && (isUploadOpen.value = true));
-onKeyStroke("i", () => !shouldIgnoreKeystroke() && toggleDetails());
-onKeyStroke("l", () => !shouldIgnoreKeystroke() && props.user.id === null && (is_login_open.value = true));
-
 function goBack() {
 	are_details_open.value = false;
 
@@ -123,11 +125,20 @@ function goBack() {
 	}
 }
 
+function openSearch() {
+	router.push({ name: "search-with-album", params: { albumid: props.album.id } });
+}
+
 // bubble up.
 function refresh() {
 	emit("refresh");
 }
 
+onKeyStroke("n", () => !shouldIgnoreKeystroke() && (isCreateAlbumOpen.value = true));
+onKeyStroke("u", () => !shouldIgnoreKeystroke() && (isUploadOpen.value = true));
+onKeyStroke("i", () => !shouldIgnoreKeystroke() && toggleDetails());
+onKeyStroke("l", () => !shouldIgnoreKeystroke() && props.user.id === null && (is_login_open.value = true));
+onKeyStroke("/", () => !shouldIgnoreKeystroke() && props.config.is_search_accessible && openSearch());
 // on key stroke escape:
 // 1. lose focus
 // 2. close modals
