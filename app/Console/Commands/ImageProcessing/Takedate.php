@@ -9,7 +9,6 @@ use App\Exceptions\UnexpectedException;
 use App\Metadata\Extractor;
 use App\Models\Photo;
 use Illuminate\Console\Command;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use Safe\Exceptions\InfoException;
 use function Safe\filemtime;
@@ -106,7 +105,7 @@ class Takedate extends Command
 
 			// For faster iteration we eagerly load the original size variant,
 			// but only the original size variant
-			$photoQuery = Photo::query()->with(['size_variants' => function (HasMany $r) {
+			$photoQuery = Photo::query()->with(['size_variants' => function ($r) {
 				$r->where('type', '=', SizeVariantType::ORIGINAL);
 			}]);
 

@@ -35,7 +35,7 @@ class SessionUnitTest
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *
-	 * @return TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function login(
 		string $username,
@@ -59,7 +59,7 @@ class SessionUnitTest
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *
-	 * @return TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function init(
 		int $expectedStatusCode = 200,
@@ -77,7 +77,7 @@ class SessionUnitTest
 	/**
 	 * Logging out.
 	 *
-	 * @return TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function logout(): TestResponse
 	{
@@ -96,7 +96,7 @@ class SessionUnitTest
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *
-	 * @return TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function update_login(
 		string $login,

@@ -36,7 +36,7 @@ class AlbumsUnitTest
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *
-	 * @return TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function add(
 		?string $parent_id,
@@ -64,7 +64,7 @@ class AlbumsUnitTest
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *
-	 * @return TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function addByTags(
 		string $title,
@@ -140,7 +140,7 @@ class AlbumsUnitTest
 	 * @param string|null $assertSee
 	 * @param string|null $assertDontSee
 	 *
-	 * @return TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function get(
 		string $id,
@@ -431,7 +431,7 @@ class AlbumsUnitTest
 	 *
 	 * @param string $id
 	 *
-	 * @return TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function download(string $id): TestResponse
 	{
@@ -480,7 +480,7 @@ class AlbumsUnitTest
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *
-	 * @return TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function getPositionData(
 		string $id,

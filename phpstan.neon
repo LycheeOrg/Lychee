@@ -159,3 +159,6 @@ parameters:
 			paths:
 				- tests
 				
+		# Lychee verify
+		- '#Call to an undefined static method LycheeVerify\\Facades\\VerifyFacade::isSupporter\(\)#'
+		- '#Parameter \#1 \$paths of method .*::addFiles\(\) expects .*Collection<int\|string, string\|null>, .*Collection<int, string\|null> given.#'

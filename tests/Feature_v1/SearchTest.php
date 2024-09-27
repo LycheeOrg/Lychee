@@ -318,7 +318,7 @@ class SearchTest extends BasePhotoTest
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *
-	 * @return TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	protected function runSearch(
 		string $term,

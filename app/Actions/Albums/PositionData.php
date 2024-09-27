@@ -8,8 +8,6 @@ use App\Http\Resources\Collections\PositionDataResource;
 use App\Models\Configs;
 use App\Models\Photo;
 use App\Policies\PhotoQueryPolicy;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class PositionData
 {
@@ -34,14 +32,14 @@ class PositionData
 		$photoQuery = $this->photoQueryPolicy->applySearchabilityFilter(
 			Photo::query()
 				->with([
-					'album' => function (BelongsTo $b) {
+					'album' => function ($b) {
 						// The album is required for photos to properly
 						// determine access and visibility rights; but we
 						// don't need to determine the cover and thumbnail for
 						// each album
 						$b->without(['cover', 'thumb']);
 					},
-					'size_variants' => function (HasMany $r) {
+					'size_variants' => function ($r) {
 						// The web GUI only uses the small and thumb size
 						// variants to show photos on a map; so we can save
 						// hydrating the larger size variants
