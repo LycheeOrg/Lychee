@@ -1,5 +1,5 @@
 <template>
-	<div class="py-1 flex gap-4 items-center justify-between">
+	<div class="flex gap-4 items-center justify-between">
 		<label :for="props.config.key" class="w-full">{{ props.config.documentation }}</label>
 		<div class="flex gap-4 items-center">
 			<ResetField v-if="changed" @click="reset" />
