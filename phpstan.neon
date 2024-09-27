@@ -39,7 +39,7 @@ parameters:
 		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::where(Not)?(Null|In|Between|Exists|Column|Year|Month|Day)?\(\).#'
 		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::delete\(\)#'
 		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::without\(\)#'
-		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::with\(\)#'
+		# - '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::with\(\)#'
 		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::count\(\).#'
 		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::update\(\).#'
 		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::inRandomOrder\(\).#'
@@ -51,8 +51,8 @@ parameters:
 		- '#Dynamic call to static method App\\Models\\Builders\\.*::orderByDesc\(\).#'
 		- '#Dynamic call to static method App\\Models\\Builders\\.*::selectRaw\(\).#'
 		- '#Call to an undefined method Illuminate\\Database\\Eloquent\\.*::with(Only)?\(\)#'
-		- '#Call to an undefined method App\\Relations\\HasManyPhotosRecursively::whereNotNull\(\)#'
-		- '#Call to an undefined method Illuminate\\Database\\Eloquent\\Builder|Illuminate\\Database\\Eloquent\\Relations\\Relation::whereNotNull\(\).#'
+		# - '#Call to an undefined method App\\Relations\\HasManyPhotosRecursively::whereNotNull\(\)#'
+		# - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Builder|Illuminate\\Database\\Eloquent\\Relations\\Relation::whereNotNull\(\).#'
 		- '#Call to protected method asDateTime\(\) of class Illuminate\\Database\\Eloquent\\Model.#'
 
 		# Covariance - LSP princinple: https://en.wikipedia.org/wiki/Liskov_substitution_principle
@@ -76,21 +76,21 @@ parameters:
 		- '#Dynamic call to static method Illuminate\\Foundation\\Application::getCachedRoutesPath\(\).#'
 
 
-		- '#Access to an undefined property Laragear\\WebAuthn\\Models\\WebAuthnCredential::\$authenticatable_id#'
+		# - '#Access to an undefined property Laragear\\WebAuthn\\Models\\WebAuthnCredential::\$authenticatable_id#'
 
 		# False positive as stub code for PHP has not yet been updated to 2nd parameter, see https://github.com/php/doc-en/issues/1529 and https://www.php.net/imagick.writeimagefile
 		- '#Method Imagick::writeImageFile\(\) invoked with 2 parameters, 1 required#'
 
 		# Synth
-		-
-			message: '#Variable property access on .*#'
-			paths:
-				- app/Livewire/Synth 
+		# -
+		# 	message: '#Variable property access on .*#'
+		# 	paths:
+		# 		- app/Livewire/Synth 
 
-		-
-			message: '#Parameter .* of method App\\Livewire\\Synth\\.* should be contravariant with parameter .* of method Livewire\\Mechanisms\\HandleComponents\\Synthesizers\\Synth::.*#'
-			paths:
-				- app/Livewire/Synth 
+		# -
+		# 	message: '#Parameter .* of method App\\Livewire\\Synth\\.* should be contravariant with parameter .* of method Livewire\\Mechanisms\\HandleComponents\\Synthesizers\\Synth::.*#'
+		# 	paths:
+		# 		- app/Livewire/Synth 
 
 		# Migrations
 		-
