@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Admin\Maintenance;
 
 use App\Http\Requests\Maintenance\CleaningRequest;
 use App\Http\Resources\Diagnostics\CleaningState;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Log;
-use Livewire\Component;
 use function Safe\rmdir;
 use function Safe\unlink;
 
@@ -13,7 +13,7 @@ use function Safe\unlink;
  * When an upload/extract job fail, they tend to leave files behind.
  * This provides the ability to cleans this up.
  */
-class Cleaning extends Component
+class Cleaning extends Controller
 {
 	/** @var string[] */
 	private array $skip = ['.gitignore'];
