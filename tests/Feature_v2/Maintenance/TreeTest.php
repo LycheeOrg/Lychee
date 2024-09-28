@@ -39,8 +39,7 @@ class TreeTest extends BaseApiV2Test
 		$response = $this->actingAs($this->admin)->getJsonWithData('Maintenance::tree');
 		$this->assertOk($response);
 
-		// FIX ME: The attribute [cover_id] either does not exist or was not retrieved for model [App\Models\BaseAlbumImpl]
-		// $response = $this->actingAs($this->admin)->postJson('Maintenance::tree');
-		// $this->assertCreated($response);
+		$response = $this->actingAs($this->admin)->postJson('Maintenance::tree');
+		$this->assertOk($response);
 	}
 }

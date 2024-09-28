@@ -72,30 +72,38 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 			}
 			this.is_loading = true;
 
-			InitService.fetchInitData().then((response) => {
-				const data = response.data;
-				this.are_nsfw_visible = data.are_nsfw_visible;
-				this.are_nsfw_blurred = data.are_nsfw_blurred;
-				this.is_nsfw_warning_visible = data.is_nsfw_warning_visible;
-				this.is_nsfw_warning_visible_for_admin = data.is_nsfw_warning_visible_for_admin;
-				this.is_nsfw_background_blurred = data.is_nsfw_background_blurred;
-				this.nsfw_banner_override = data.nsfw_banner_override;
-				this.is_nsfw_banner_backdrop_blurred = data.is_nsfw_banner_backdrop_blurred;
-				this.image_overlay_type = data.image_overlay_type;
-				this.display_thumb_album_overlay = data.display_thumb_album_overlay;
-				this.display_thumb_photo_overlay = data.display_thumb_photo_overlay;
-				this.is_init = true;
-				this.is_loading = false;
-				this.show_keybinding_help_popup = data.show_keybinding_help_popup;
-				this.clockwork_url = data.clockwork_url;
-				this.can_rotate = data.can_rotate;
-				this.can_autoplay = data.can_autoplay;
-				this.album_decoration = data.album_decoration;
-				this.album_decoration_orientation = data.album_decoration_orientation;
-				this.album_subtitle_type = data.album_subtitle_type;
-				this.title = data.title;
-				this.is_debug_enabled = data.is_debug_enabled;
-			});
+			InitService.fetchInitData()
+				.then((response) => {
+					const data = response.data;
+					this.are_nsfw_visible = data.are_nsfw_visible;
+					this.are_nsfw_blurred = data.are_nsfw_blurred;
+					this.is_nsfw_warning_visible = data.is_nsfw_warning_visible;
+					this.is_nsfw_warning_visible_for_admin = data.is_nsfw_warning_visible_for_admin;
+					this.is_nsfw_background_blurred = data.is_nsfw_background_blurred;
+					this.nsfw_banner_override = data.nsfw_banner_override;
+					this.is_nsfw_banner_backdrop_blurred = data.is_nsfw_banner_backdrop_blurred;
+					this.image_overlay_type = data.image_overlay_type;
+					this.display_thumb_album_overlay = data.display_thumb_album_overlay;
+					this.display_thumb_photo_overlay = data.display_thumb_photo_overlay;
+					this.is_init = true;
+					this.is_loading = false;
+					this.show_keybinding_help_popup = data.show_keybinding_help_popup;
+					this.clockwork_url = data.clockwork_url;
+					this.can_rotate = data.can_rotate;
+					this.can_autoplay = data.can_autoplay;
+					this.album_decoration = data.album_decoration;
+					this.album_decoration_orientation = data.album_decoration_orientation;
+					this.album_subtitle_type = data.album_subtitle_type;
+					this.title = data.title;
+					this.is_debug_enabled = data.is_debug_enabled;
+				})
+				.catch((error) => {
+					// In this specific case, even though it has been possibly disabled, we really need to see the error.
+					this.is_debug_enabled = true;
+
+					const event = new CustomEvent("error", { detail: error.response.data });
+					window.dispatchEvent(event);
+				});
 		},
 
 		toggleFullScreen() {

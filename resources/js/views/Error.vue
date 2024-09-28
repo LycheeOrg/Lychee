@@ -1,7 +1,7 @@
 <template>
 	<template v-if="is_debug_enabled">
 		<div v-if="lycheeError !== null" class="w-full h-full absolute top-0 left-0 bg-panel z-50">
-			<Message severity="error" @click="lycheeError = null">
+			<Message severity="error" @click="closeError">
 				<span class="font-bold text-xl w-full" v-if="lycheeError.exception"
 					>{{ lycheeError.exception }} in {{ lycheeError.file }}:{{ lycheeError.line }}</span
 				>
@@ -11,12 +11,15 @@
 				<template #header>
 					<span class="font-bold text-xl">{{ lycheeError.message }}</span>
 				</template>
+				<template #icons>
+					<Button icon="pi pi-times" severity="secondary" class="text-muted-color" rounded text @click="closeError" />
+				</template>
 				<Divider />
 				<p v-for="trace in lycheeError.trace">{{ trace.file + ":" + trace.line }} &mdash; {{ trace.function }}</p>
 			</Panel>
 		</div>
 		<div v-if="jsError !== null" class="w-full h-full absolute top-0 left-0 bg-panel z-50">
-			<Message severity="error z-50" @click="jsError = null">
+			<Message severity="error z-50" @click="closeError">
 				<span class="font-bold text-xl">{{ jsError.message }} in {{ jsError.filename }}:{{ jsError.lineno }}</span>
 			</Message>
 		</div>
@@ -29,6 +32,7 @@ import Message from "primevue/message";
 import Panel from "primevue/panel";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
+import Button from "primevue/button";
 
 type Trace = {
 	class: string;
@@ -76,6 +80,11 @@ window.addEventListener("error", function (e: Event) {
 		console.log(jsError.value);
 	}
 });
+
+function closeError() {
+	lycheeError.value = null;
+	jsError.value = null;
+}
 </script>
 
 <style lang="css">

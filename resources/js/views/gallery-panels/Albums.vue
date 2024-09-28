@@ -5,7 +5,7 @@
 			<AlbumsHeader
 				v-if="user"
 				:user="user"
-				:title="lycheeStore.title"
+				:title="title"
 				:rights="rootRights"
 				@refresh="refresh"
 				@help="isKeybindingsHelpOpen = true"
@@ -102,7 +102,7 @@ const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
 lycheeStore.resetSearch();
 
-const { are_nsfw_visible, is_full_screen, is_login_open } = storeToRefs(lycheeStore);
+const { are_nsfw_visible, is_full_screen, is_login_open, title } = storeToRefs(lycheeStore);
 
 const config = ref(null); // unused for now.
 const photos = ref([]); // unused.

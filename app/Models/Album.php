@@ -29,7 +29,6 @@ use Kalnoy\Nestedset\Collection as NSCollection;
 use Kalnoy\Nestedset\DescendantsRelation;
 use Kalnoy\Nestedset\Node;
 use Kalnoy\Nestedset\NodeTrait;
-use PharIo\Manifest\License;
 
 /**
  * Class Album.
