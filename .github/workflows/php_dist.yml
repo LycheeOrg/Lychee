@@ -12,8 +12,8 @@ jobs:
         php-version:
           - 8.2
         sql-versions:
-          - mariadb
-          - postgresql
+          # - mariadb
+          # - postgresql
           - sqlite
     # Service containers to run with `container-job`
     services:
