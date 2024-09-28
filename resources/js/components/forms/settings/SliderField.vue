@@ -1,5 +1,5 @@
 <template>
-	<div class="flex items-center justify-between gap-4">
+	<div class="items-center justify-between gap-4 hidden sm:flex">
 		<div>{{ props.config.documentation }}</div>
 		<SelectButton class="border-none" v-model="val" :options="options" aria-labelledby="basic" @update:modelValue="update" />
 	</div>

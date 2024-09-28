@@ -1,5 +1,5 @@
 <template>
-	<div class="flex items-center flex-wrap my-4 gap-4 justify-between">
+	<div class="items-center flex-wrap my-4 gap-4 justify-between hidden sm:flex">
 		<div>{{ props.config.documentation }}</div>
 		<SelectButton
 			id="albumSortingColumn"

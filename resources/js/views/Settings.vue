@@ -12,6 +12,10 @@
 
 		<template #end> </template>
 	</Toolbar>
+	<div class="text-center sm:hidden font-bold text-danger-700 py-3">
+		For better a experience on the Settings page,<br />
+		we recommend you use a larger screen.
+	</div>
 	<Tabs value="0" class="max-w-5xl mx-auto">
 		<TabList>
 			<Tab value="0">Basic</Tab>
