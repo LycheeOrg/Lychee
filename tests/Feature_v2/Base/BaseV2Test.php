@@ -12,7 +12,6 @@
 
 namespace Tests\Feature_v2\Base;
 
-use App\Enum\Livewire\NotificationType;
 use App\Models\AccessPermission;
 use App\Models\Album;
 use App\Models\Photo;
@@ -131,10 +130,5 @@ abstract class BaseV2Test extends AbstractTestCase
 		$this->tearDownRequiresEmptyUsers();
 
 		parent::tearDown();
-	}
-
-	final public static function notifySuccess(): array
-	{
-		return ['msg' => __('lychee.CHANGE_SUCCESS'), 'type' => NotificationType::SUCCESS->value];
 	}
 }
