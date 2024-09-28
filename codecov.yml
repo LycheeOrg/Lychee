@@ -26,6 +26,7 @@ ignore:
 - "^app/Http/Middleware/VerifyCsrfToken.*"
 - "^app/Http/Middleware/VerifyCsrfToken.*"
 - "^app/Providers/BroadcastServiceProvider.*"
+- "^app/Jobs/UploadSizeVariantToS3Job.php"
 # We do not test those
 - "^app/Mail/.*"
 - "^app/Notifications/.*"
