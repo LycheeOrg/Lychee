@@ -15,18 +15,18 @@
 				</div>
 				<ProgressSpinner v-if="loading" class="w-full"></ProgressSpinner>
 			</ScrollPanel>
-			<div class="flex gap-4 mt-1">
+			<!-- <div class="flex gap-4 mt-1">
 				<Button v-if="fixable && !loading" severity="primary" class="w-full border-none" @click="exec">{{
 					$t("maintenance.fix-tree.button")
 				}}</Button>
-			</div>
+			</div> -->
 		</template>
 	</Card>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import Button from "primevue/button";
+// import Button from "primevue/button";
 import Card from "primevue/card";
 import { useToast } from "primevue/usetoast";
 import ProgressSpinner from "primevue/progressspinner";
@@ -46,13 +46,13 @@ function load() {
 	});
 }
 
-function exec() {
-	loading.value = true;
-	MaintenanceService.treeDo().then((response) => {
-		toast.add({ severity: "success", summary: "Success", life: 3000 });
-		loading.value = false;
-	});
-}
+// function exec() {
+// 	loading.value = true;
+// 	MaintenanceService.treeDo().then((response) => {
+// 		toast.add({ severity: "success", summary: "Success", life: 3000 });
+// 		loading.value = false;
+// 	});
+// }
 
 load();
 </script>

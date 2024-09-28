@@ -61,6 +61,10 @@ class LangFilesToJson extends Command
 		$languages = array_diff(scandir($sourceDir), ['.', '..']);
 
 		foreach ($languages as $language) {
+			if (!is_dir($sourceDir . $language)) {
+				continue;
+			}
+
 			$languageDir = $sourceDir . $language . '/';
 			/** @var string[] */
 			$files = array_diff(scandir($languageDir), ['.', '..']);

@@ -5,6 +5,7 @@ namespace App\Http\Resources\Models;
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\DateOrderingType;
 use App\Http\Resources\Models\Utils\AlbumProtectionPolicy;
+use App\Http\Resources\Rights\AlbumRightsResource;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
@@ -36,6 +37,8 @@ class ThumbAlbumResource extends Data
 	private ?string $min_taken_at = null;
 	private ?string $max_taken_at = null;
 	public ?string $formatted_min_max = null;
+
+	public AlbumRightsResource $rights;
 
 	public function __construct(AbstractAlbum $data)
 	{
@@ -72,6 +75,8 @@ class ThumbAlbumResource extends Data
 		$this->is_tag_album = $data instanceof TagAlbum;
 		// This aims to indicate whether the current thumb is used to determine the parent.
 		$this->has_subalbum = $data instanceof Album && !$data->isLeaf();
+
+		$this->rights = new AlbumRightsResource($data);
 	}
 
 	public static function fromModel(AbstractAlbum $album): ThumbAlbumResource

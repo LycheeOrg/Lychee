@@ -38,16 +38,19 @@
 					:album="null"
 					:albums="albums"
 					:config="albumPanelConfig"
-					:is-alone="!photos?.length"
+					:is-alone="photos.length === 0"
 					:are-nsfw-visible="are_nsfw_visible"
 					@clicked="albumClick"
 					@contexted="albumMenuOpen"
 					:idx-shift="0"
 					:selected-albums="selectedAlbumsIds"
 				/>
+				<div class="flex justify-center w-full" v-if="photos.length > 0">
+					<Paginator :total-records="total" :rows="per_page" v-model:first="from" @update:first="switchPage" :always-show="false" />
+				</div>
 				<PhotoThumbPanel
-					v-if="layout !== null"
-					header="lychee.PHOTOS"
+					v-if="layout !== null && photos.length > 0"
+					:header="photoHeader"
 					:photos="photos"
 					:album="undefined"
 					:gallery-config="layout"
@@ -125,9 +128,11 @@ import SearchService from "@/services/search-service";
 import { useAuthStore } from "@/stores/Auth";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { onKeyStroke } from "@vueuse/core";
+import { trans } from "laravel-vue-i18n";
 import { storeToRefs } from "pinia";
 import Button from "primevue/button";
 import Toolbar from "primevue/toolbar";
+import Paginator from "primevue/paginator";
 import { computed, Ref, ref } from "vue";
 import { Collapse } from "vue-collapsed";
 import { useRoute, useRouter } from "vue-router";
@@ -165,6 +170,14 @@ const searchMinimumLengh = ref(undefined as number | undefined);
 const layout = ref(null) as Ref<null | App.Http.Resources.GalleryConfigs.PhotoLayoutConfig>;
 const searching = ref(false);
 
+const from = ref(0);
+const per_page = ref(0);
+const total = ref(0);
+
+const photoHeader = computed(() => {
+	return trans("lychee.PHOTOS") + " (" + total.value + ")";
+});
+
 function loadLayout() {
 	AlbumService.getLayout().then((data) => {
 		layout.value = data.data;
@@ -200,6 +213,21 @@ function search(terms: string) {
 	SearchService.search(props.albumid, search_term.value, search_page.value).then((response) => {
 		albums.value = response.data.albums;
 		photos.value = response.data.photos;
+		from.value = response.data.from;
+		per_page.value = response.data.per_page;
+		total.value = response.data.total;
+		searching.value = false;
+	});
+}
+
+function switchPage() {
+	search_page.value = Math.ceil(from.value / per_page.value) + 1;
+	SearchService.search(props.albumid, search_term.value, search_page.value).then((response) => {
+		albums.value = response.data.albums;
+		photos.value = response.data.photos;
+		from.value = response.data.from;
+		per_page.value = response.data.per_page;
+		total.value = response.data.total;
 		searching.value = false;
 	});
 }

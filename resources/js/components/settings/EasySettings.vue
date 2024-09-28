@@ -58,17 +58,17 @@
 					@filled="save"
 				/>
 				<SelectOptionsField
-					v-if="aspectRatio !== undefined"
-					:config="aspectRatio"
-					:options="aspectRationOptions"
-					:mapper="SelectBuilders.buildAspectRatio"
-					@filled="save"
-				/>
-				<SelectOptionsField
 					v-if="layout !== undefined"
 					:config="layout"
 					:options="photoLayoutOptions"
 					:mapper="SelectBuilders.buildPhotoLayout"
+					@filled="save"
+				/>
+				<SelectOptionsField
+					v-if="aspectRatio !== undefined"
+					:config="aspectRatio"
+					:options="aspectRationOptions"
+					:mapper="SelectBuilders.buildAspectRatio"
 					@filled="save"
 				/>
 				<SelectField v-if="album_decoration !== undefined" :config="album_decoration" @filled="save" />

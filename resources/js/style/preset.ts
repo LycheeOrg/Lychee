@@ -408,6 +408,70 @@ const LycheePrimeVueConfig = {
 				},
 			},
 		},
+		paginator: {
+			colorScheme: {
+				light: {
+					// root: {
+					// 	border: {
+					// 		radius: 0,
+					// 	},
+					// },
+					// header: {
+					// 	color: "{surface.700}",
+					// },
+				},
+				dark: {
+					background: "transparent",
+					// color: "{surface.200}",
+					// root: {
+					// 	border: {
+					// 		radius: 0,
+					// 	},
+					// 	background: "{surface.900}",
+					// 	color: "{surface.0}",
+					// },
+					// header: {
+					// 	color: "{surface.300}",
+					// },
+				},
+			},
+			nav: {
+				button: {
+					colorScheme: {
+						light: {},
+						dark: {
+							color: "{surface.300}",
+						},
+					},
+					selected: {
+						colorScheme: {
+							light: {
+								color: "{primary.500}",
+							},
+							dark: {
+								color: "{primary.500}",
+								background: "color-mix(in srgb, {primary.50}, transparent 84%)",
+								// background: "{surface.800}"
+							},
+						},
+					},
+					hover: {
+						colorScheme: {
+							light: {
+								// color: "{primary.500}"
+							},
+							dark: {
+								color: "{primary.500}",
+								background: "color-mix(in srgb, {primary.50}, transparent 92%)",
+								// background: "{surface.800}"
+							},
+						},
+					},
+				},
+			},
+			// vackground: var(--p-paginator-nav-button-selected-background);
+			// color: var(--p-paginator-nav-button-selected-color);
+		},
 		datatable: {
 			header: {
 				background: "transparent",
@@ -629,6 +693,10 @@ const LycheePrimeVueConfig = {
 		},
 		inputtext: {
 			background: "transparent",
+			padding: {
+				x: "1rem",
+				y: "0.25rem",
+			},
 			border: {
 				radius: 0,
 			},
@@ -668,6 +736,10 @@ const LycheePrimeVueConfig = {
 			background: "transparent",
 			border: {
 				radius: 0,
+			},
+			padding: {
+				x: "1rem",
+				y: "0.25rem",
 			},
 			option: {
 				padding: "0 1rem",
