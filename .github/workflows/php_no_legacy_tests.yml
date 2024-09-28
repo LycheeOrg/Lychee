@@ -29,8 +29,8 @@ jobs:
           # - 8.2
           - 8.3
         sql-versions:
-          # - mariadb
-          # - postgresql
+          - mariadb
+          - postgresql
           - sqlite
     # Service containers to run with `container-job`
     services:
