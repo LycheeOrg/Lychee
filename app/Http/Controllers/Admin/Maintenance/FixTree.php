@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Admin\Maintenance;
 
+use App\Http\Controllers\Admin\Maintenance\Model\Album;
 use App\Http\Requests\Maintenance\MaintenanceRequest;
 use App\Http\Resources\Diagnostics\TreeState;
-use App\Models\Album;
 use Illuminate\Routing\Controller;
 
 /**
