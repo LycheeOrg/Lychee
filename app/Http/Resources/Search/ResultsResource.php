@@ -57,10 +57,10 @@ class ResultsResource extends Data
 		$this->albums = $albums;
 		$this->photos = collect($photos->items());
 		$this->current_page = $photos->currentPage();
-		$this->from = $photos->firstItem();
+		$this->from = $photos->firstItem() ?? 0;
 		$this->last_page = $photos->lastPage();
 		$this->per_page = $photos->perPage();
-		$this->to = $photos->lastItem();
+		$this->to = $photos->lastItem() ?? 0;
 		$this->total = $photos->total();
 
 		$this->prepPhotosCollection();

@@ -20,19 +20,23 @@ class PagesTest extends BaseV2Test
 	{
 		collect([
 			'/',
-			'/search',
-			'/map',
 			'/settings',
 			'/diagnostics',
 			'/jobs',
 			'/sharing',
 			'/users',
 			'/maintenance',
-			'/frame',
 			'/profile',
 			'/gallery',
 			'/gallery/albumID',
 			'/gallery/albumID/photoID',
+			'/frame',
+			'/frame/albumID',
+			'/map',
+			'/map/albumID',
+			'/search',
+			'/search/albumID',
+			'/search/albumID/photoID',
 		])->each(function ($addr) {
 			$response = $this->get($addr);
 			$this->assertOk($response);
