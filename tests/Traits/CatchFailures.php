@@ -27,7 +27,7 @@ trait CatchFailures
 	 */
 	protected function assertStatus(TestResponse $response, int|array $expectedStatusCode): void
 	{
-		if ($response->getStatusCode() === 500) {
+		if ($response->getStatusCode() === 500 && $expectedStatusCode !== 500) {
 			$exception = $response->json();
 			if (in_array($exception['exception'], $this->catchFailureSilence, true)) {
 				return;
@@ -161,5 +161,15 @@ trait CatchFailures
 	protected function assertUnprocessable(TestResponse $response): void
 	{
 		$this->assertStatus($response, 422);
+	}
+
+	/**
+	 * @param TestResponse<\Illuminate\Http\JsonResponse> $response
+	 *
+	 * @return void
+	 */
+	public function assertInternalServerError(TestResponse $response): void
+	{
+		$this->assertStatus($response, 500);
 	}
 }

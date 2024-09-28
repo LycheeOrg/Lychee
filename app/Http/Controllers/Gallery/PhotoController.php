@@ -15,7 +15,6 @@ use App\Http\Requests\Photo\CopyPhotosRequest;
 use App\Http\Requests\Photo\DeletePhotosRequest;
 use App\Http\Requests\Photo\EditPhotoRequest;
 use App\Http\Requests\Photo\FromUrlRequest;
-use App\Http\Requests\Photo\GetPhotoRequest;
 use App\Http\Requests\Photo\MovePhotosRequest;
 use App\Http\Requests\Photo\RenamePhotoRequest;
 use App\Http\Requests\Photo\RotatePhotoRequest;
@@ -41,18 +40,6 @@ use Illuminate\Support\Facades\Storage;
 class PhotoController extends Controller
 {
 	public const DISK_NAME = 'livewire-upload';
-
-	/**
-	 * Provided an albumID, returns the album.
-	 *
-	 * @param GetPhotoRequest $request
-	 *
-	 * @return PhotoResource
-	 */
-	public function get(GetPhotoRequest $request): PhotoResource
-	{
-		return new PhotoResource($request->photo());
-	}
 
 	public function upload(UploadPhotoRequest $request): UploadMetaResource
 	{

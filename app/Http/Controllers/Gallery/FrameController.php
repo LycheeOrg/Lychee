@@ -74,7 +74,7 @@ class FrameController
 		$src = $photo->size_variants->getMedium()?->url ?? $photo->size_variants->getOriginal()?->url;
 
 		if ($photo->size_variants->getMedium() !== null && $photo->size_variants->getMedium2x() !== null) {
-			$srcset = $photo->size_variants->getMedium()->url . ' ' . $photo->size_variants->getMedium()->width . 'w';
+			$srcset = $photo->size_variants->getMedium()->url . ' ' . $photo->size_variants->getMedium()->width . 'w,';
 			$srcset .= $photo->size_variants->getMedium2x()->url . ' ' . $photo->size_variants->getMedium2x()->width . 'w';
 		} else {
 			$srcset = '';
