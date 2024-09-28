@@ -42,25 +42,29 @@ type MenuItem = {
 	is_divider?: boolean;
 	label?: string;
 	icon?: string;
+	access?: boolean;
 	callback?: () => void;
 };
 
 export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallbacks, albumCallbacks: AlbumCallbacks) {
 	const menu = ref();
 	const Menu = computed<MenuItem[]>(() => {
+		let menu: MenuItem[] = [];
+
 		if (selectors.selectedPhoto !== undefined && selectors.selectedPhoto.value !== undefined) {
-			return photoMenu();
+			menu = photoMenu();
 		}
 		if (selectors.selectedPhotos !== undefined && selectors.selectedPhotos.value.length > 0) {
-			return photosMenu();
+			menu = photosMenu();
 		}
 		if (selectors.selectedAlbum.value !== undefined) {
-			return albumMenu();
+			menu = albumMenu();
 		}
 		if (selectors.selectedAlbums.value.length > 0) {
-			return albumsMenu();
+			menu = albumsMenu();
 		}
-		return [];
+
+		return menu.filter((item) => item.access !== false);
 	});
 
 	// Define the photo Menu when only one photo is selected

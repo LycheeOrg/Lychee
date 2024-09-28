@@ -1,5 +1,5 @@
 <template>
-	<div class="py-0.5 flex flex-wrap">
+	<div class="flex flex-wrap items-center">
 		<div class="w-1/2">{{ props.config.key }}</div>
 		<IconField class="w-1/2">
 			<InputText :id="props.config.key" type="text" class="!py-1" v-model="val" @update:modelValue="update" />

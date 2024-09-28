@@ -1,6 +1,6 @@
 <template>
 	<div
-		class="flex items-center justify-center w-full p-4 flex-wrap mb-5 bg-none transition-all"
+		class="flex items-center justify-center w-full flex-wrap mt-5 mb-5 bg-none transition-all"
 		:class="search.length < props.searchMinimumLengh ? 'h-4/5' : ''"
 	>
 		<div class="w-full flex items-center flex-wrap justify-center">
@@ -21,8 +21,6 @@
 	</div>
 </template>
 <script lang="ts" setup>
-import SearchService from "@/services/search-service";
-import { ref } from "vue";
 import InputText from "@/components/forms/basic/InputText.vue";
 import { computed } from "@vue/reactivity";
 import { useDebounceFn } from "@vueuse/core";
@@ -38,7 +36,7 @@ const emit = defineEmits<{
 }>();
 
 const isValid = computed<boolean>(() => {
-	return search.value === "" || search.value.length > props.searchMinimumLengh;
+	return search.value === "" || search.value.length >= props.searchMinimumLengh;
 });
 
 const debouncedFn = useDebounceFn(() => {
