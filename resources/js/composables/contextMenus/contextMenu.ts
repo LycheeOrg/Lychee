@@ -1,7 +1,7 @@
 import { computed, ComputedRef, Ref, ref } from "vue";
 
 type Selectors = {
-	config: Ref<App.Http.Resources.GalleryConfigs.AlbumConfig | null> | null;
+	config: ComputedRef<App.Http.Resources.GalleryConfigs.AlbumConfig> | Ref<App.Http.Resources.GalleryConfigs.AlbumConfig | undefined> | null;
 	album: ComputedRef<
 		| App.Http.Resources.Models.AlbumResource
 		| App.Http.Resources.Models.TagAlbumResource
@@ -67,7 +67,6 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 	const menu = ref();
 	const Menu = computed<MenuItem[]>(() => {
 		let menu: MenuItem[] = [];
-
 		if (selectors.selectedPhoto !== undefined && selectors.selectedPhoto.value !== undefined) {
 			menu = photoMenu();
 		}
@@ -80,9 +79,6 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 		if (selectors.selectedAlbums.value.length > 1) {
 			menu = albumsMenu();
 		}
-		const ret = menu.filter((item) => item.access !== false);
-		console.log(ret);
-
 		return menu.filter((item) => item.access !== false);
 	});
 

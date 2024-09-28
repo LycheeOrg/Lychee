@@ -113,7 +113,7 @@ const { user, isKeybindingsHelpOpen, smartAlbums, albums, sharedAlbums, rootConf
 	is_login_open,
 );
 
-const { selectedAlbum, selectedAlbumsIdx, selectedAlbums, selectedAlbumsIds, albumClick } = useSelection(config, undefined, photos, selectableAlbums);
+const { selectedAlbum, selectedAlbumsIdx, selectedAlbums, selectedAlbumsIds, albumClick } = useSelection(photos, selectableAlbums);
 
 // Modals for Albums
 const { isDeleteVisible, toggleDelete, isMergeAlbumVisible, toggleMergeAlbum, isMoveVisible, toggleMove, isRenameVisible, toggleRename } =
