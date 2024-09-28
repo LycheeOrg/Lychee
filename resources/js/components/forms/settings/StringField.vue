@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<div class="flex items-center justify-between gap-4">
+		<div class="flex items-center justify-between gap-x-4 flex-wrap">
 			<label class="w-full" :for="props.config.key">{{ props.config.documentation }}</label>
 			<FloatLabel class="w-full flex-grow">
 				<IconField>
@@ -14,7 +14,7 @@
 				</IconField>
 			</FloatLabel>
 		</div>
-		<div v-if="props.config.details" class="text-muted-color text-sm">{{ props.config.details }}</div>
+		<div v-if="props.config.details" class="text-muted-color text-sm hidden sm:block">{{ props.config.details }}</div>
 	</div>
 </template>
 <script setup lang="ts">

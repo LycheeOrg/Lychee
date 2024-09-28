@@ -9,7 +9,7 @@
 			<Button @click="save" class="bg-danger-800 border-none text-white font-bold px-8 hover:bg-danger-700">Save</Button>
 		</div>
 		<div class="flex relative items-start flex-row-reverse justify-between">
-			<Menu :model="sections" class="sticky top-11 border-none" id="navMain">
+			<Menu :model="sections" class="top-11 border-none hidden sticky sm:block" id="navMain">
 				<template #item="{ item, props }">
 					<a
 						:href="item.link"
