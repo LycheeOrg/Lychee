@@ -33,8 +33,9 @@ class AlbumIDRule implements ValidationRule
 	 */
 	public function message(): string
 	{
-		return ':attribute ' .
-			' must either be null, a string with ' . RandomID::ID_LENGTH . ' characters or one of the built-in IDs ' .
+		return ':attribute must be' .
+			($this->isNullable ? ' either null, or' : '') .
+			' a string with ' . RandomID::ID_LENGTH . ' characters or one of the built-in IDs ' .
 			implode(', ', SmartAlbumType::values());
 	}
 }

@@ -9,6 +9,8 @@ use Kalnoy\Nestedset\NodeTrait;
 /**
  * This is necessary to fix the tree of the album model.
  * We do not want to have to deal with the relationships here.
+ *
+ * @implements Node<string,Album>
  */
 class Album extends Model implements Node
 {

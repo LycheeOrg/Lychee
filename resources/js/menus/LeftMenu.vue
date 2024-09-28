@@ -2,20 +2,22 @@
 	<Drawer v-model:visible="left_menu_open">
 		<Menu :model="items" v-if="initData" class="!border-none">
 			<template #item="{ item, props }">
-				<router-link v-if="item.access && item.route" v-slot="{ href, navigate }" :to="item.route" custom>
-					<a v-ripple :href="href" v-bind="props.action" @click="navigate">
+				<template v-if="item.access">
+					<router-link v-if="item.route" v-slot="{ href, navigate }" :to="item.route" custom>
+						<a v-ripple :href="href" v-bind="props.action" @click="navigate">
+							<MiniIcon :icon="item.icon" :class="'w-3 h-3'" />
+							<span class="ml-2">{{ $t(item.label) }}</span>
+						</a>
+					</router-link>
+					<a v-if="item.url" v-ripple :href="item.url" :target="item.target" v-bind="props.action">
 						<MiniIcon :icon="item.icon" :class="'w-3 h-3'" />
 						<span class="ml-2">{{ $t(item.label) }}</span>
 					</a>
-				</router-link>
-				<a v-if="item.access && item.url" v-ripple :href="item.url" :target="item.target" v-bind="props.action">
-					<MiniIcon :icon="item.icon" :class="'w-3 h-3'" />
-					<span class="ml-2">{{ $t(item.label) }}</span>
-				</a>
-				<a v-if="item.access && !item.route && !item.url" v-ripple v-bind="props.action">
-					<MiniIcon :icon="item.icon" :class="'w-3 h-3'" />
-					<span class="ml-2">{{ $t(item.label) }}</span>
-				</a>
+					<a v-if="!item.route && !item.url" v-ripple v-bind="props.action">
+						<MiniIcon :icon="item.icon" :class="'w-3 h-3'" />
+						<span class="ml-2">{{ $t(item.label) }}</span>
+					</a>
+				</template>
 			</template>
 		</Menu>
 		<AboutLychee v-model:visible="openLycheeAbout" />
@@ -168,6 +170,12 @@ function loadMenu() {
 			access: true,
 			command: logout,
 		},
+		// {
+		// 	label: "Statistics ✨",
+		// 	icon: "account",
+		// 	route: "/stats",
+		// 	access: !authStore.user,
+		// },
 	];
 
 	if (clockwork_url.value && initData.value.settings.can_access_dev_tools) {
