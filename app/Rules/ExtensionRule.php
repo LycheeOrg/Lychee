@@ -41,7 +41,7 @@ class ExtensionRule implements DataAwareRule, ValidationRule
 		$value = $value === '' ? null : $value;
 
 		if ($attribute !== 'extension') {
-			throw new LycheeLogicException('ExtensionRule: attribute must be "uuid_name"');
+			throw new LycheeLogicException('ExtensionRule: attribute must be "extension"');
 		}
 
 		$chunk_number = intval($this->data['chunk_number'] ?? null);
@@ -65,7 +65,7 @@ class ExtensionRule implements DataAwareRule, ValidationRule
 			return;
 		}
 
-		if (Str::of($value)->match('/^[a-zA-Z0-9]*$/') === false) {
+		if (Str::of($value)->isMatch('/^\.[a-zA-Z0-9]*$/') === false) {
 			$fail(':attribute is not a valid extension.');
 
 			return;

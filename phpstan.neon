@@ -159,5 +159,10 @@ parameters:
 			paths:
 				- tests
 				
+		-
+			message: '#Parameter \#3 \$fail of method App\\Rules\\.*::validate\(\) expects Closure\(string, string\|null=\): Illuminate\\Translation\\PotentiallyTranslatedString, Closure\(mixed\): void given.#'
+			paths:
+				- tests
+
 		# Lychee verify
 		- '#Parameter \#1 \$paths of method .*::addFiles\(\) expects .*Collection<int\|string, string\|null>, .*Collection<int, string\|null> given.#'

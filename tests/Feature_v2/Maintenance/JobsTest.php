@@ -51,5 +51,9 @@ class JobsTest extends BaseApiV2Test
 
 		$response = $this->actingAs($this->admin)->postJson('Maintenance::jobs');
 		$this->assertNoContent($response);
+
+		// Do it again to cover all paths.
+		$response = $this->actingAs($this->admin)->postJson('Maintenance::jobs');
+		$this->assertNoContent($response);
 	}
 }

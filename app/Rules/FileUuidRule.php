@@ -75,7 +75,7 @@ class FileUuidRule implements DataAwareRule, ValidationRule
 		$extension = pathinfo($file_name, PATHINFO_EXTENSION);
 
 		$pattern = '/[a-zA-Z0-9-_]{16}\.' . $extension . '/';
-		if (Str::of($value)->match($pattern) === false) {
+		if (Str::of($value)->isMatch($pattern) === false) {
 			$fail(':attribute is not a valid random string.');
 
 			return;
