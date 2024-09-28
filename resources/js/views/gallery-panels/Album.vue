@@ -186,7 +186,7 @@ const {
 	selectedAlbumsIds,
 	photoClick,
 	albumClick,
-} = useSelection(config, album, photos, children);
+} = useSelection(photos, children);
 
 const photoCallbacks = {
 	star: () => {

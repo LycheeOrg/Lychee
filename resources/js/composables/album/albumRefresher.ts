@@ -11,7 +11,7 @@ export function useAlbumRefresher(albumId: Ref<string>, auth: AuthStore, isLogin
 	const layout = ref(null) as Ref<null | App.Http.Resources.GalleryConfigs.PhotoLayoutConfig>;
 
 	const photos = ref([]) as Ref<App.Http.Resources.Models.PhotoResource[]>;
-	const config = ref(null) as Ref<null | App.Http.Resources.GalleryConfigs.AlbumConfig>;
+	const config = ref(undefined) as Ref<undefined | App.Http.Resources.GalleryConfigs.AlbumConfig>;
 
 	function loadUser() {
 		auth.getUser().then((data: App.Http.Resources.Models.UserResource) => {

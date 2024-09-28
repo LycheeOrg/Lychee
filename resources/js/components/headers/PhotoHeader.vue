@@ -38,7 +38,6 @@ import Toolbar from "primevue/toolbar";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { onKeyStroke } from "@vueuse/core";
-// import ContextMenu from "primevue/contextmenu";
 import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
 import DownloadPhoto from "../modals/DownloadPhoto.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
@@ -53,15 +52,8 @@ const props = defineProps<{
 const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
 const { is_full_screen, is_edit_open, are_details_open } = storeToRefs(lycheeStore);
-// const isEditOpen = defineModel("isEditOpen", { default: false });
-// const areDetailsOpen = defineModel("areDetailsOpen", { default: false });
 const isDownloadOpen = ref(false);
 
-// const emit = defineEmits<{
-// 	(e: "refresh"): void;
-// }>();
-
-// const user = ref(undefined) as Ref<undefined | App.Http.Resources.Models.UserResource>;
 onKeyStroke("i", () => !shouldIgnoreKeystroke() && toggleDetails());
 onKeyStroke("e", () => !shouldIgnoreKeystroke() && props.photo.rights.can_edit && toggleEdit());
 
@@ -88,11 +80,6 @@ function toggleEdit() {
 function openInNewTab(url: string) {
 	window?.open(url, "_blank")?.focus();
 }
-
-// bubble up.
-// function refresh() {
-// 	emit("refresh");
-// }
 
 // on key stroke escape:
 // 1. lose focus

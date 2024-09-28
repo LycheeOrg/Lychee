@@ -2,15 +2,6 @@ import { useKeyModifier } from "@vueuse/core";
 import { computed, ComputedRef, Ref, ref } from "vue";
 
 export function useSelection(
-	config: Ref<App.Http.Resources.GalleryConfigs.AlbumConfig | null>,
-	album:
-		| ComputedRef<
-				| App.Http.Resources.Models.AlbumResource
-				| App.Http.Resources.Models.TagAlbumResource
-				| App.Http.Resources.Models.SmartAlbumResource
-				| undefined
-		  >
-		| undefined,
 	photos: Ref<{ [key: number]: App.Http.Resources.Models.PhotoResource }>,
 	albums:
 		| ComputedRef<{ [key: number]: App.Http.Resources.Models.ThumbAlbumResource }>
