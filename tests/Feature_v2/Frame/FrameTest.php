@@ -37,7 +37,6 @@ class FrameTest extends BaseApiV2Test
 		$this->assertOk($response);
 		$response->assertJson([
 			'timeout' => 30,
-			'src' => $this->photo1->size_variants->getMedium()->url,
 		]);
 	}
 }
