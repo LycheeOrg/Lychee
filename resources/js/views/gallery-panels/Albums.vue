@@ -53,7 +53,7 @@
 			@contexted="albumMenuOpen"
 		/>
 	</div>
-	<ContextMenu ref="menu" :model="Menu">
+	<ContextMenu ref="menu" :model="Menu" :class="Menu.length === 0 ? 'hidden' : ''">
 		<template #item="{ item, props }">
 			<Divider v-if="item.is_divider" />
 			<a v-else v-ripple v-bind="props.action" @click="item.callback">

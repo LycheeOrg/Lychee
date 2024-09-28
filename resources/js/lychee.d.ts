@@ -202,6 +202,9 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		album_decoration: App.Enum.AlbumDecorationType;
 		album_decoration_orientation: App.Enum.AlbumDecorationOrientation;
 		title: string;
+		is_se_enabled: boolean;
+		is_se_preview_enabled: boolean;
+		is_se_info_hidden: boolean;
 	};
 	export type LandingPageResource = {
 		footer_additional_text: string;
@@ -405,6 +408,7 @@ declare namespace App.Http.Resources.Models {
 		num_photos: number;
 		created_at: string;
 		formatted_min_max: string | null;
+		rights: App.Http.Resources.Rights.AlbumRightsResource;
 	};
 	export type ThumbResource = {
 		id: string;
