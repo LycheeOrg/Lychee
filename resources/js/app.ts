@@ -79,7 +79,7 @@ app.use(ToastService);
 app.use(i18nVue, {
 	resolve: async (lang: string) => {
 		if (!lang.startsWith("php")) {
-			lang = 'php_' + lang;
+			lang = "php_" + lang;
 		}
 		// @ts-expect-error
 		const langs = import.meta.glob("../../lang/*.json");

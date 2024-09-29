@@ -3,7 +3,7 @@ import createJustifiedLayout from "justified-layout";
 
 export function useJustify(el: HTMLElement, photoDefaultHeight: number = 320) {
 	const containerWidth = parseInt(getComputedStyle(el).width);
-	
+
 	// const width = el.clientWidth;
 	// const body_width = document.body.scrollWidth;
 	// console.log("containerWidth: " + containerWidth);
