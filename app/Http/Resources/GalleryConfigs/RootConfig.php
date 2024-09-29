@@ -2,11 +2,15 @@
 
 namespace App\Http\Resources\GalleryConfigs;
 
+use App\Contracts\Models\AbstractAlbum;
 use App\Enum\AspectRatioCSSType;
 use App\Enum\AspectRatioType;
+use App\Factories\AlbumFactory;
 use App\Models\Configs;
 use App\Models\Photo;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\LiteralTypeScriptType;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
@@ -33,7 +37,7 @@ class RootConfig extends Data
 		$map_display = Configs::getValueAsBool('map_display');
 		$public_display = Auth::check() || Configs::getValueAsBool('map_display_public');
 		$this->is_map_accessible = $count_locations && $map_display && $public_display;
-		$this->is_mod_frame_enabled = Configs::getValueAsBool('mod_frame_enabled');
+		$this->is_mod_frame_enabled = $this->checkModFrameEnabled();
 		$this->is_search_accessible = Auth::check() || Configs::getValueAsBool('search_public');
 		$this->album_thumb_css_aspect_ratio = Configs::getValueAsEnum('default_album_thumb_aspect_ratio', AspectRatioType::class)->css();
 		$this->show_keybinding_help_button = Configs::getValueAsBool('show_keybinding_help_button');
@@ -41,6 +45,24 @@ class RootConfig extends Data
 		$this->back_button_enabled = Configs::getValueAsBool('back_button_enabled');
 		$this->back_button_text = Configs::getValueAsString('back_button_text');
 		$this->back_button_url = Configs::getValueAsString('back_button_url');
+	}
+
+	private function checkModFrameEnabled(): bool
+	{
+		if (!Configs::getValueAsBool('mod_frame_enabled')) {
+			return false;
+		}
+
+		$factory = resolve(AlbumFactory::class);
+		try {
+			$album = $factory->findAbstractAlbumOrFail(Configs::getValueAsString('random_album_id'));
+
+			return Gate::check(\AlbumPolicy::CAN_ACCESS, [AbstractAlbum::class, $album]);
+		} catch (\Throwable) {
+			Log::critical('Could not find random album for frame with ID:' . Configs::getValueAsString('random_album_id'));
+
+			return false;
+		}
 	}
 }
 
