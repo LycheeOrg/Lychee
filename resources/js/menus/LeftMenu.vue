@@ -56,18 +56,13 @@ const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
 
 const { left_menu_open, clockwork_url } = storeToRefs(lycheeStore);
+const { user } = storeToRefs(authStore);
+authStore.getUser();
 
 lycheeStore.$subscribe((_mutation, state) => {
-	authStore.getUser().then(
-		(user) => {
-			if (user.id) {
-				load();
-			}
-		},
-		(error) => {
-			console.error(error);
-		},
-	);
+	if (user.value?.id) {
+		load();
+	}
 });
 
 load();

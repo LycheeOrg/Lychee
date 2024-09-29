@@ -12,10 +12,10 @@
 
 		<template #end> </template>
 	</Toolbar>
-	<!-- <div class="text-center sm:hidden font-bold text-danger-700 py-3">
+	<div class="text-center sm:hidden font-bold text-danger-700 py-3">
 		For better a experience on the Settings page,<br />
 		we recommend you use a larger screen.
-	</div> -->
+	</div>
 	<Tabs value="0" class="max-w-5xl mx-auto">
 		<TabList>
 			<Tab value="0">Basic</Tab>
@@ -23,7 +23,7 @@
 		</TabList>
 		<TabPanels :pt:root:class="'px-0'">
 			<TabPanel value="0">
-				<span class="font-bold text-red-500 text-center w-full inline-block text-3xl">STILL WORK IN PROGRESS HERE (nothing works).</span>
+				<!-- <span class="font-bold text-red-500 text-center w-full inline-block text-3xl">STILL WORK IN PROGRESS HERE (nothing works).</span> -->
 				<EasySettings />
 			</TabPanel>
 			<TabPanel value="1">

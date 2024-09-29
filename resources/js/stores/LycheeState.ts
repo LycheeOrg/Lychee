@@ -22,11 +22,17 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		search_page: 1,
 
 		// configs for nsfw
-		are_nsfw_blurred: false,
 		is_nsfw_background_blurred: false,
-		nsfw_banner_override: "",
 		is_nsfw_banner_backdrop_blurred: false,
+		nsfw_banner_override: "",
+
+		// keybinding help
 		show_keybinding_help_popup: false,
+
+		// Lychee Supporter Edition
+		is_se_enabled: false,
+		is_se_preview_enabled: false,
+		is_se_info_hidden: false,
 
 		// album stuff
 		album_decoration: "LAYERS" as App.Enum.AlbumDecorationType,
@@ -65,7 +71,10 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 			if (this.is_init) {
 				return;
 			}
+			this.load();
+		},
 
+		load() {
 			// semaphore to avoid multiple calls
 			if (this.is_loading) {
 				return;
@@ -76,7 +85,6 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 				.then((response) => {
 					const data = response.data;
 					this.are_nsfw_visible = data.are_nsfw_visible;
-					this.are_nsfw_blurred = data.are_nsfw_blurred;
 					this.is_nsfw_background_blurred = data.is_nsfw_background_blurred;
 					this.nsfw_banner_override = data.nsfw_banner_override;
 					this.is_nsfw_banner_backdrop_blurred = data.is_nsfw_banner_backdrop_blurred;
@@ -94,6 +102,9 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.album_subtitle_type = data.album_subtitle_type;
 					this.title = data.title;
 					this.is_debug_enabled = data.is_debug_enabled;
+					this.is_se_enabled = data.is_se_enabled;
+					this.is_se_preview_enabled = data.is_se_preview_enabled;
+					this.is_se_info_hidden = data.is_se_info_hidden;
 				})
 				.catch((error) => {
 					// In this specific case, even though it has been possibly disabled, we really need to see the error.

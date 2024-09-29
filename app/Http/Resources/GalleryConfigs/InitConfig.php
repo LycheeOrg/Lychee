@@ -18,7 +18,6 @@ class InitConfig extends Data
 {
 	public bool $is_debug_enabled;
 	public bool $are_nsfw_visible;
-	public bool $are_nsfw_blurred;
 	public bool $is_nsfw_warning_visible;
 	public bool $is_nsfw_background_blurred;
 	public string $nsfw_banner_override;
@@ -37,10 +36,8 @@ class InitConfig extends Data
 
 	// Lychee SE is available.
 	public bool $is_se_enabled;
-
 	// Lychee SE is not available, but preview is enabled (only if se info are not hidden).
 	public bool $is_se_preview_enabled;
-
 	// We hide the info about Lychee SE if the user is already a supporter
 	// or if they asked to hide it (because we are nice :) ).
 	public bool $is_se_info_hidden;
@@ -49,7 +46,7 @@ class InitConfig extends Data
 	{
 		$this->is_debug_enabled = config('app.debug');
 		$this->are_nsfw_visible = Configs::getValueAsBool('nsfw_visible');
-		$this->are_nsfw_blurred = Configs::getValueAsBool('nsfw_blur');
+		$this->is_nsfw_background_blurred = Configs::getValueAsBool('nsfw_blur');
 		$this->nsfw_banner_override = Configs::getValueAsString('nsfw_banner_override');
 		$this->is_nsfw_banner_backdrop_blurred = Configs::getValueAsBool('nsfw_banner_blur_backdrop');
 		$this->image_overlay_type = Configs::getValueAsEnum('image_overlay_type', ImageOverlayType::class);

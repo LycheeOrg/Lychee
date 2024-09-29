@@ -52,6 +52,7 @@ import { useAuthStore } from "@/stores/Auth";
 import MiniIcon from "@/components/icons/MiniIcon.vue";
 import ThumbBadge from "@/components/gallery/thumbs/ThumbBadge.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
+import { storeToRefs } from "pinia";
 
 const props = defineProps<{
 	isSelected: boolean;
@@ -73,10 +74,8 @@ const is_cover_id = computed(() => props.album?.cover_id === props.photo.id);
 // @ts-expect-error
 const is_header_id = computed(() => props.album?.header_id === props.photo.id);
 
-const user = ref(null) as Ref<App.Http.Resources.Models.UserResource | null>;
-auth.getUser().then((data) => {
-	user.value = data;
-});
+const { user } = storeToRefs(auth);
+auth.getUser();
 
 const cssClass = computed(() => {
 	let css = "photo group shadow-md shadow-black/25 animate-zoomIn transition-all ease-in duration-200 block absolute";

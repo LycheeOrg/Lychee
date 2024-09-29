@@ -50,6 +50,7 @@ import { useAuthStore } from "@/stores/Auth";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import AlbumThumbOverlay from "./AlbumThumbOverlay.vue";
 import AlbumThumbDecorations from "./AlbumThumbDecorations.vue";
+import { storeToRefs } from "pinia";
 
 export type AlbumThumbConfig = {
 	album_thumb_css_aspect_ratio: string;
@@ -68,6 +69,7 @@ const props = defineProps<{
 
 const auth = useAuthStore();
 const lycheeStore = useLycheeStateStore();
+const { user } = storeToRefs(auth);
 
 const cssClass = computed(() => {
 	let css = "";
@@ -77,12 +79,10 @@ const cssClass = computed(() => {
 	return css;
 });
 
-const linkClass = computed(() => props.config.album_thumb_css_aspect_ratio + (lycheeStore.are_nsfw_blurred && props.album.is_nsfw ? " blurred" : ""));
-
-const user = ref(null) as Ref<App.Http.Resources.Models.UserResource | null>;
-auth.getUser().then((data) => {
-	user.value = data;
-});
+const linkClass = computed(
+	() => props.config.album_thumb_css_aspect_ratio + (lycheeStore.is_nsfw_background_blurred && props.album.is_nsfw ? " blurred" : ""),
+);
+auth.getUser();
 
 const play_icon = ref(window.assets_url + "/img/play-icon.png");
 </script>
