@@ -31,10 +31,10 @@ const MaintenanceService = {
 	},
 
 	genSizeVariantsCheck(sv: App.Enum.SizeVariantType): Promise<AxiosResponse<number>> {
-		return axios.get(`${Constants.API_URL}Maintenance::genSizeVariants`, { data: {}, params: { kind: sv } });
+		return axios.get(`${Constants.API_URL}Maintenance::genSizeVariants`, { data: {}, params: { variant: sv } });
 	},
 	genSizeVariantsDo(sv: App.Enum.SizeVariantType): Promise<AxiosResponse> {
-		return axios.post(`${Constants.API_URL}Maintenance::genSizeVariants`, { kind: sv });
+		return axios.post(`${Constants.API_URL}Maintenance::genSizeVariants`, { variant: sv });
 	},
 
 	missingFileSizesCheck(): Promise<AxiosResponse<number>> {
