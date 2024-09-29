@@ -52,7 +52,6 @@ class PhotoController extends Controller
 
 		$final = new NativeLocalFile(Storage::disk(self::DISK_NAME)->path($meta->uuid_name));
 		$final->append($file->read());
-		// $file->delete();
 
 		if ($meta->chunk_number < $meta->total_chunks) {
 			// Not the last chunk
@@ -73,7 +72,7 @@ class PhotoController extends Controller
 	{
 		$processableFile = new ProcessableJobFile(
 			$final->getOriginalExtension(),
-			$final->getOriginalBasename()
+			$meta->file_name
 		);
 		$processableFile->write($final->read());
 
