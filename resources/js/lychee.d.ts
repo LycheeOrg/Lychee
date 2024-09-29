@@ -84,9 +84,6 @@ declare namespace App.Enum {
 	export type UpdateStatus = 0 | 1 | 2 | 3;
 	export type VersionChannelType = "release" | "git" | "tag";
 }
-declare namespace App.Enum.Livewire {
-	export type NotificationType = "success" | "error" | "info" | "warning";
-}
 declare namespace App.Http.Resources.Collections {
 	export type ConfigCollectionResource = {
 		configs: { [key: string]: Array<App.Http.Resources.Models.ConfigResource> };

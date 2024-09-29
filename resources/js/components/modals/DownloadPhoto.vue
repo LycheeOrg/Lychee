@@ -1,10 +1,10 @@
 <template>
 	<Dialog v-model:visible="visible" modal pt:root:class="border-none" pt:mask:style="backdrop-filter: blur(2px)" @hide="closeCallback">
 		<template #container="{ closeCallback }">
-			<div class="flex flex-col relative w-[500px] text-sm rounded-md text-muted-color">
-				<div class="flex flex-wrap gap-0.5 justify-center align-top text-text-main-0/80 p-9">
+			<div class="flex flex-col relative w-[500px] text-sm rounded-md">
+				<div class="flex flex-col gap-1 justify-center p-9">
 					<template v-for="sv in props.photo.size_variants">
-						<Button text v-if="sv?.locale" class="w-full"
+						<Button severity="contrast" v-if="sv?.locale" class="w-full dark:border-surface-900"
 							><i class="pi pi-cloud-download"></i> {{ sv?.locale }} - {{ sv?.width }}x{{ sv?.height }} ({{ sv?.filesize }})
 						</Button>
 					</template>

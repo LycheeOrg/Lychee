@@ -119,7 +119,7 @@ const AlbumService = {
 	},
 
 	frame(album_id: string | null): Promise<AxiosResponse<App.Http.Resources.Frame.FrameData>> {
-		return axios.get(`${Constants.API_URL}Frame?album_id=${album_id === null ? "" : album_id}`, { data: {} });
+		return axios.get(`${Constants.API_URL}Frame`, { params: { album_id: album_id }, data: {} });
 	},
 
 	getMapProvider(): Promise<AxiosResponse<App.Http.Resources.GalleryConfigs.MapProviderData>> {
@@ -127,8 +127,12 @@ const AlbumService = {
 	},
 
 	getMapData(album_id: string | undefined): Promise<AxiosResponse<App.Http.Resources.Collections.PositionDataResource>> {
-		return axios.get(`${Constants.API_URL}Map?album_id=${album_id === undefined ? "" : album_id}`, { data: {} });
+		return axios.get(`${Constants.API_URL}Map`, { params: { album_id: album_id }, data: {} });
 	},
+
+	download(album_ids: string[]): void {
+		location.href = `${Constants.API_URL}Zip?album_ids=${album_ids.join(",")}`;
+	}
 };
 
 export default AlbumService;

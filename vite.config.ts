@@ -30,6 +30,7 @@ export default defineConfig({
     watch: {
       ignored: [
         "**/.*/**",
+        "**/app/**",
         "**/database/**",
         "**/node_modules/**",
         "**/public/**",

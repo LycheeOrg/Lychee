@@ -25,7 +25,7 @@
 
     # Ensure that streamed responses are not cached,
     # because Apache tries to ZIP them
-    RewriteRule (Album::getArchive|Photo::getArchive|Import::server) - [E=no-gzip:1]
+    RewriteRule (Album::getArchive|Photo::getArchive|Import::server|Zip) - [E=no-gzip:1]
 
     # Send Requests To Front Controller...
     RewriteCond %{REQUEST_FILENAME} !-d

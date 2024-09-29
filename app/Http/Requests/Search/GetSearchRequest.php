@@ -40,7 +40,7 @@ class GetSearchRequest extends BaseApiRequest implements HasAbstractAlbum, HasTe
 	{
 		return [
 			RequestAttribute::TERM_ATTRIBUTE => ['required', 'string'],
-			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
+			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['sometimes', new RandomIDRule(true)],
 		];
 	}
 

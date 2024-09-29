@@ -96,6 +96,7 @@ import RenameDialog from "@/components/forms/gallery-dialogs/RenameDialog.vue";
 import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
 import Divider from "primevue/divider";
 import { Collapse } from "vue-collapsed";
+import AlbumService from "@/services/album-service";
 
 const auth = useAuthStore();
 const lycheeStore = useLycheeStateStore();
@@ -143,7 +144,9 @@ const albumCallbacks = {
 	toggleMerge: toggleMergeAlbum,
 	toggleMove: toggleMove,
 	toggleDelete: toggleDelete,
-	toggleDownload: () => {},
+	toggleDownload: () => {
+		AlbumService.download(selectedAlbumsIds.value);
+	},
 };
 
 const { menu, Menu, albumMenuOpen } = useContextMenu(

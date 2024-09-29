@@ -96,7 +96,7 @@ jobs:
           php artisan migrate
 
       - name: Apply tests ${{ inputs.test-suite }}
-        run: XDEBUG_MODE=coverage vendor/bin/phpunit --testsuite ${{ inputs.test-suite }}
+        run: XDEBUG_MODE=coverage vendor/bin/phpunit --configuration phpunit.ci.xml --testsuite ${{ inputs.test-suite }}
 
       - name: Make sure we can go backward
         run: php artisan migrate:rollback

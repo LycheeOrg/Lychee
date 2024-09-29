@@ -6,7 +6,7 @@ use App\Actions\User\Notify;
 use App\Exceptions\ModelDBException;
 use App\Models\Album;
 use App\Models\Photo;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection;
 
 class Move
 {

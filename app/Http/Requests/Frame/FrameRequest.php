@@ -31,7 +31,7 @@ class FrameRequest extends BaseApiRequest implements HasAbstractAlbum
 	public function rules(): array
 	{
 		return [
-			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
+			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['sometimes', new RandomIDRule(true)],
 		];
 	}
 
