@@ -22,7 +22,7 @@ class CleaningRequest extends BaseApiRequest
 				Rule::in([
 					'filesystems.disks.extract-jobs.root',
 					'filesystems.disks.image-jobs.root',
-					'filesystems.disks.livewire-upload.root']),
+					'filesystems.disks.image-upload.root']),
 			],
 		];
 	}

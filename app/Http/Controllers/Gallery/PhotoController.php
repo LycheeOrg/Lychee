@@ -39,7 +39,7 @@ use Illuminate\Support\Facades\Storage;
  */
 class PhotoController extends Controller
 {
-	public const DISK_NAME = 'livewire-upload';
+	public const DISK_NAME = 'image-upload';
 
 	public function upload(UploadPhotoRequest $request): UploadMetaResource
 	{

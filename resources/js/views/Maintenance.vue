@@ -29,7 +29,7 @@
 		<MaintenanceFilesize />
 		<MaintenanceCleaning path="filesystems.disks.extract-jobs.root" />
 		<MaintenanceCleaning path="filesystems.disks.image-jobs.root" />
-		<MaintenanceCleaning path="filesystems.disks.livewire-upload.root" />
+		<MaintenanceCleaning path="filesystems.disks.image-upload.root" />
 	</div>
 </template>
 <script setup lang="ts">

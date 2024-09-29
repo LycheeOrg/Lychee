@@ -180,6 +180,7 @@ const configForMenu = computed<App.Http.Resources.GalleryConfigs.AlbumConfig>(()
 		is_map_accessible: false,
 		is_mod_frame_enabled: false,
 		is_search_accessible: false,
+		is_nsfw_warning_visible: false,
 		album_thumb_css_aspect_ratio: "aspect-square",
 	};
 });

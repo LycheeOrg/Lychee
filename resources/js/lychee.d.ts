@@ -177,6 +177,7 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		is_map_accessible: boolean;
 		is_mod_frame_enabled: boolean;
 		is_search_accessible: boolean;
+		is_nsfw_warning_visible: boolean;
 		album_thumb_css_aspect_ratio: App.Enum.AspectRatioCSSType;
 	};
 	export type InitConfig = {
@@ -184,7 +185,6 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		are_nsfw_visible: boolean;
 		are_nsfw_blurred: boolean;
 		is_nsfw_warning_visible: boolean;
-		is_nsfw_warning_visible_for_admin: boolean;
 		is_nsfw_background_blurred: boolean;
 		nsfw_banner_override: string;
 		is_nsfw_banner_backdrop_blurred: boolean;

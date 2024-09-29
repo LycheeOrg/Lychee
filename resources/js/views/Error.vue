@@ -1,6 +1,6 @@
 <template>
 	<template v-if="is_debug_enabled">
-		<div v-if="lycheeError !== null" class="w-full h-full absolute top-0 left-0 bg-panel z-50">
+		<div v-if="lycheeError !== null" class="w-full h-full fixed top-0 left-0 bg-panel z-50">
 			<Message severity="error" @click="closeError">
 				<span class="font-bold text-xl w-full" v-if="lycheeError.exception"
 					>{{ lycheeError.exception }} in {{ lycheeError.file }}:{{ lycheeError.line }}</span
