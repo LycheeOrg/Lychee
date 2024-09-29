@@ -120,7 +120,7 @@ jobs:
         run: vendor/bin/phpstan analyze
 
   tests_legacy:
-    name:  2️⃣ PHP tests legacy 
+    name:  2️⃣ PHP tests (legacy API)
     needs:
       - php_syntax_errors
     uses: ./.github/workflows/php_tests.yml
