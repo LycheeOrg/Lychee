@@ -20,12 +20,13 @@ import { watch, ref } from "vue";
 const props = defineProps<{
 	thumb: App.Http.Resources.Models.ThumbResource | undefined | null;
 	class: string;
+	isPasswordProtected: boolean;
 }>();
 
 const src = ref("");
 const srcSet = ref("");
 
-function load(thumb: App.Http.Resources.Models.ThumbResource | undefined | null) {
+function load(thumb: App.Http.Resources.Models.ThumbResource | undefined | null, isPasswordProtected: boolean) {
 	if (thumb?.thumb === "uploads/thumb/") {
 		src.value = window.assets_url + "img/placeholder.png";
 		if (thumb.type.includes("video")) {
@@ -34,6 +35,8 @@ function load(thumb: App.Http.Resources.Models.ThumbResource | undefined | null)
 		if (thumb.type.includes("raw")) {
 			src.value = window.assets_url + "img/no_images.svg";
 		}
+	} else if(isPasswordProtected) { 
+		src.value = window.assets_url + "img/password.svg";
 	} else {
 		src.value = isNotEmpty(thumb?.thumb) ? (thumb?.thumb as string) : window.assets_url + "img/no_images.svg";
 	}
@@ -44,12 +47,12 @@ function isNotEmpty(link: string | null | undefined): boolean {
 	return link !== "" && link !== null && link !== undefined;
 }
 
-load(props.thumb);
+load(props.thumb, props.isPasswordProtected);
 
 watch(
 	() => props.thumb,
 	(newThumb: App.Http.Resources.Models.ThumbResource | undefined | null, _oldThumb: any) => {
-		load(newThumb);
+		load(newThumb, props.isPasswordProtected);
 	},
 );
 </script>
