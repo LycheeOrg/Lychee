@@ -15,8 +15,8 @@ use App\Http\Requests\Traits\HasSizeVariantTrait;
 use App\Models\Photo;
 use App\Policies\AlbumPolicy;
 use App\Policies\PhotoPolicy;
-use App\Rules\AlbumIDRule;
-use App\Rules\RandomIDRule;
+use App\Rules\AlbumIDListRule;
+use App\Rules\RandomIDListRule;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Enum;
 
@@ -58,10 +58,8 @@ class ZipRequest extends BaseApiRequest implements HasAlbums, HasPhotos, HasSize
 	public function rules(): array
 	{
 		return [
-			RequestAttribute::ALBUM_IDS_ATTRIBUTE => ['sometimes', 'required', 'array', 'min:1'],
-			RequestAttribute::ALBUM_IDS_ATTRIBUTE . '.*' => ['required_if_accepted:album_ids', new AlbumIDRule(false)],
-			RequestAttribute::PHOTO_IDS_ATTRIBUTE => ['sometimes', 'required', 'array', 'min:1'],
-			RequestAttribute::PHOTO_IDS_ATTRIBUTE . '.*' => ['required_if_accepted:photos_ids', new RandomIDRule(false)],
+			RequestAttribute::ALBUM_IDS_ATTRIBUTE => ['sometimes', new AlbumIDListRule()],
+			RequestAttribute::PHOTO_IDS_ATTRIBUTE => ['sometimes', new RandomIDListRule()],
 			RequestAttribute::SIZE_VARIANT_ATTRIBUTE => ['required_if_accepted:photos_ids', new Enum(DownloadVariantType::class)],
 		];
 	}
@@ -71,14 +69,15 @@ class ZipRequest extends BaseApiRequest implements HasAlbums, HasPhotos, HasSize
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		dd('die');
-		/** @var string[] $album_ids */
-		$album_ids = $values[RequestAttribute::ALBUM_IDS_ATTRIBUTE] ?? [];
+		$album_ids = $values[RequestAttribute::ALBUM_IDS_ATTRIBUTE] ?? null;
+		$album_ids = $album_ids === null ? [] : explode(',', $album_ids);
 		$this->processAlbums($album_ids);
 
 		// only interesting if we have no albums
 		$this->sizeVariant = DownloadVariantType::tryFrom($values[RequestAttribute::SIZE_VARIANT_ATTRIBUTE] ?? '');
-		$photo_ids = $values[RequestAttribute::PHOTO_IDS_ATTRIBUTE] ?? [];
+
+		$photo_ids = $values[RequestAttribute::PHOTO_IDS_ATTRIBUTE] ?? null;
+		$photo_ids = $photo_ids === null ? [] : explode(',', $photo_ids);
 		$this->processPhotos($photo_ids);
 	}
 

@@ -62,8 +62,8 @@ const PhotoService = {
 		return axios.post(`${Constants.API_URL}Album::header`, { photo_id: photo_id, album_id: album_id, is_compact: is_compact });
 	},
 
-	download(photo_ids: string[], download_type: App.Enum.DownloadVariantType): void {
-		// window.open(`${Constants.API_URL}Zip?photo_ids=${photo_ids.join(",")}&variant=${download_type}`, '_blank');
+	download(photo_ids: string[], download_type: App.Enum.DownloadVariantType = "ORIGINAL"): void {
+		window.open(`${Constants.API_URL}Zip?photo_ids=${photo_ids.join(",")}&variant=${download_type}`, "_blank");
 	},
 };
 
