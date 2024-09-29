@@ -46,22 +46,22 @@ Route::post('/Album::transfer', [Gallery\AlbumController::class, 'transfer']);
 
 Route::post('/TagAlbum', [Gallery\AlbumController::class, 'createTagAlbum']);
 Route::patch('/TagAlbum', [Gallery\AlbumController::class, 'updateTagAlbum']);
+// Route::post('/Album::unlock', [AlbumController::class, 'unlock']);
+// Route::post('/Album::setTrack', [AlbumController::class, 'setTrack'])
+// 	->withoutMiddleware(['content_type:json'])
+// 	->middleware(['content_type:multipart']);
+// Route::post('/Album::deleteTrack', [AlbumController::class, 'deleteTrack']);
+
+Route::get('/Zip', [Gallery\AlbumController::class, 'getArchive'])
+	->name('download')
+	->withoutMiddleware(['content_type:json', 'accept_content_type:json'])
+	->middleware(['accept_content_type:any']);
 
 /**
  * MAP.
  */
 Route::get('/Map', [Gallery\MapController::class, 'getData'])->middleware(['cache_control']);
 Route::get('/Map::provider', [Gallery\MapController::class, 'getProvider'])->middleware(['cache_control']);
-
-// Route::post('/Album::unlock', [AlbumController::class, 'unlock']);
-// Route::get('/Album::getArchive', [AlbumController::class, 'getArchive'])
-// 	->name('download')
-// 	->withoutMiddleware(['content_type:json', 'accept_content_type:json'])
-// 	->middleware(['accept_content_type:any']);
-// Route::post('/Album::setTrack', [AlbumController::class, 'setTrack'])
-// 	->withoutMiddleware(['content_type:json'])
-// 	->middleware(['content_type:multipart']);
-// Route::post('/Album::deleteTrack', [AlbumController::class, 'deleteTrack']);
 
 /**
  * Sharing.
@@ -101,7 +101,6 @@ Route::post('/Photo::star', [Gallery\PhotoController::class, 'star']);
 Route::post('/Photo::rotate', [Gallery\PhotoController::class, 'rotate']);
 Route::delete('/Photo', [Gallery\PhotoController::class, 'delete']);
 
-// Route::post('/Photo::getRandom', [PhotoController::class, 'getRandom']);
 // Route::post('/Photo::clearSymLink', [PhotoController::class, 'clearSymLink']);
 // Route::get('/Photo::getArchive', [PhotoController::class, 'getArchive'])
 // 	->name('photo_download')
@@ -189,28 +188,8 @@ Route::get('/Jobs', [Admin\JobsController::class, 'list']);
 Route::get('/Settings', [Admin\SettingsController::class, 'getAll']);
 Route::post('/Settings::setConfigs', [Admin\SettingsController::class, 'setConfigs']);
 Route::get('/Settings::getLanguages', [Admin\SettingsController::class, 'getLanguages']);
-// Route::post('/Settings::setSorting', [AdministrationSettingsController::class, 'setSorting']);
-// Route::post('/Settings::setLang', [AdministrationSettingsController::class, 'setLang']);
-// Route::post('/Settings::setLayout', [AdministrationSettingsController::class, 'setLayout']);
-// Route::post('/Settings::setPublicSearch', [AdministrationSettingsController::class, 'setPublicSearch']);
-// Route::post('/Settings::setDefaultLicense', [AdministrationSettingsController::class, 'setDefaultLicense']);
-// Route::post('/Settings::setMapDisplay', [AdministrationSettingsController::class, 'setMapDisplay']);
-// Route::post('/Settings::setMapDisplayPublic', [AdministrationSettingsController::class, 'setMapDisplayPublic']);
-// Route::post('/Settings::setMapProvider', [AdministrationSettingsController::class, 'setMapProvider']);
-// Route::post('/Settings::setMapIncludeSubAlbums', [AdministrationSettingsController::class, 'setMapIncludeSubAlbums']);
-// Route::post('/Settings::setLocationDecoding', [AdministrationSettingsController::class, 'setLocationDecoding']);
-// Route::post('/Settings::setLocationShow', [AdministrationSettingsController::class, 'setLocationShow']);
-// Route::post('/Settings::setLocationShowPublic', [AdministrationSettingsController::class, 'setLocationShowPublic']);
 // Route::post('/Settings::setCSS', [AdministrationSettingsController::class, 'setCSS']);
 // Route::post('/Settings::setJS', [AdministrationSettingsController::class, 'setJS']);
-// Route::post('/Settings::getAll', [AdministrationSettingsController::class, 'getAll']);
-// Route::post('/Settings::saveAll', [AdministrationSettingsController::class, 'saveAll']);
-// Route::post('/Settings::setAlbumDecoration', [AdministrationSettingsController::class, 'setAlbumDecoration']);
-// Route::post('/Settings::setOverlayType', [AdministrationSettingsController::class, 'setImageOverlayType']);
-// Route::post('/Settings::setNSFWVisible', [AdministrationSettingsController::class, 'setNSFWVisible']);
-// Route::post('/Settings::setDropboxKey', [AdministrationSettingsController::class, 'setDropboxKey']);
-// Route::post('/Settings::setNewPhotosNotification', [AdministrationSettingsController::class, 'setNewPhotosNotification']);
-// Route::post('/Settings::setSmartAlbumVisibility', [AdministrationSettingsController::class, 'setSmartAlbumVisibility']);
 
 /**
  * MAINTENANCE.

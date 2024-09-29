@@ -3,6 +3,12 @@ import createJustifiedLayout from "justified-layout";
 
 export function useJustify(el: HTMLElement, photoDefaultHeight: number = 320) {
 	const containerWidth = parseInt(getComputedStyle(el).width);
+	
+	// const width = el.clientWidth;
+	// const body_width = document.body.scrollWidth;
+	// console.log("containerWidth: " + containerWidth);
+	// console.log("width: " + width)
+	// console.log("body_width: " + body_width);
 
 	// @ts-expect-error
 	const justifiedItems: ChildNodeWithDataStyle[] = [...el.childNodes].filter((gridItem) => gridItem.nodeType === 1);

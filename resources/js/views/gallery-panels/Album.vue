@@ -218,12 +218,19 @@ const photoCallbacks = {
 };
 
 const albumCallbacks = {
-	setAsCover: () => {},
+	setAsCover: () => {
+		if (selectedAlbum.value?.thumb?.id === undefined) return;
+		PhotoService.setAsCover(selectedAlbum.value!.thumb?.id, albumid.value);
+		AlbumService.clearCache(albumid.value);
+		refresh();
+	},
 	toggleRename: toggleRename,
 	toggleMerge: toggleMergeAlbum,
 	toggleMove: toggleMove,
 	toggleDelete: toggleDelete,
-	toggleDownload: () => {},
+	toggleDownload: () => {
+		AlbumService.download(selectedAlbumsIds.value);
+	},
 };
 
 const { menu, Menu, photoMenuOpen, albumMenuOpen } = useContextMenu(

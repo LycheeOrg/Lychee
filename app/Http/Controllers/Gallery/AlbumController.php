@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Gallery;
 
+use App\Actions\Album\Archive as AlbumArchive;
 use App\Actions\Album\Create;
 use App\Actions\Album\CreateTagAlbum;
 use App\Actions\Album\Delete;
@@ -10,6 +11,7 @@ use App\Actions\Album\Merge;
 use App\Actions\Album\Move;
 use App\Actions\Album\SetProtectionPolicy;
 use App\Actions\Album\Transfer;
+use App\Actions\Photo\Archive as PhotoArchive;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\UnauthenticatedException;
 use App\Http\Requests\Album\AddAlbumRequest;
@@ -26,6 +28,7 @@ use App\Http\Requests\Album\TargetListAlbumRequest;
 use App\Http\Requests\Album\TransferAlbumRequest;
 use App\Http\Requests\Album\UpdateAlbumRequest;
 use App\Http\Requests\Album\UpdateTagAlbumRequest;
+use App\Http\Requests\Album\ZipRequest;
 use App\Http\Resources\Editable\EditableBaseAlbumResource;
 use App\Http\Resources\GalleryConfigs\AlbumConfig;
 use App\Http\Resources\Models\AbstractAlbumResource;
@@ -40,6 +43,7 @@ use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * Controller responsible for the config.
@@ -243,5 +247,24 @@ class AlbumController extends Controller
 		$album = $request->album();
 		$album->title = $request->title();
 		$album->save();
+	}
+
+	/**
+	 * Return the archive of the pictures of the album and its sub-albums.
+	 *
+	 * @param ZipRequest   $request
+	 * @param AlbumArchive $album_archive
+	 * @param PhotoArchive $photo_archive
+	 *
+	 * @return StreamedResponse
+	 */
+	public function getArchive(ZipRequest $request, AlbumArchive $album_archive, PhotoArchive $photo_archive): StreamedResponse
+	{
+		dd('die');
+		if ($request->albums()->count() > 0) {
+			return $album_archive->do($request->albums());
+		}
+
+		return $photo_archive->do($request->photos(), $request->sizeVariant());
 	}
 }

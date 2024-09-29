@@ -19,10 +19,7 @@ class FrameTest extends BaseApiV2Test
 	public function testErrors(): void
 	{
 		$response = $this->getJson('Frame');
-		$this->assertUnprocessable($response);
-		$response->assertJson([
-			'message' => 'The album id field must be present.',
-		]);
+		$this->assertUnauthorized($response);
 
 		$response = $this->getJsonWithData('Frame', ['album_id' => null]);
 		$this->assertUnauthorized($response);

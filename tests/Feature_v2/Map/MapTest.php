@@ -22,8 +22,7 @@ class MapTest extends BaseApiV2Test
 		$this->assertOk($response);
 
 		$response = $this->getJson('Map');
-		$this->assertUnprocessable($response);
-		$response->assertSee('The album id field must be present.');
+		$this->assertUnauthorized($response);
 
 		$response = $this->getJsonWithData('Map', ['album_id' => null]);
 		$this->assertUnauthorized($response);

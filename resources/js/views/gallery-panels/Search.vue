@@ -146,7 +146,6 @@ import DeleteDialog from "@/components/forms/gallery-dialogs/DeleteDialog.vue";
 import PhotoService from "@/services/photo-service";
 import AlbumService from "@/services/album-service";
 
-const route = useRoute();
 const router = useRouter();
 const props = defineProps<{
 	albumid?: string;
@@ -202,8 +201,6 @@ const {
 	toggleMove,
 	isRenameVisible,
 	toggleRename,
-	isShareAlbumVisible,
-	toggleShareAlbum,
 	isTagVisible,
 	toggleTag,
 	isCopyVisible,
