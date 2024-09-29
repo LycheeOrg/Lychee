@@ -70,6 +70,10 @@ const AlbumService = {
 		return requester.get(`${Constants.API_URL}Album`, { params: { album_id: album_id }, data: {}, id: "album_" + album_id });
 	},
 
+	unlock(album_id: string, password: string): Promise<AxiosResponse> {
+		return axios.post(`${Constants.API_URL}Album::unlock`, { album_id: album_id, password: password });
+	},
+
 	getLayout(): Promise<AxiosResponse<App.Http.Resources.GalleryConfigs.PhotoLayoutConfig>> {
 		return axios.get(`${Constants.API_URL}Gallery::getLayout`, { data: {} });
 	},

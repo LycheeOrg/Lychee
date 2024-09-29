@@ -26,7 +26,16 @@ const AxiosConfig = {
 				return response;
 			},
 			function (error: any): Promise<never> {
+				if (
+					["Password required", "Password is invalid", "Album is not enabled for password-based access"].find(
+						(e) => e === error.response.data.message,
+					) !== undefined
+				) {
+					return Promise.reject(error);
+				}
+
 				if (error.response && error.response.status && !isNaN(error.response.status)) {
+					console.log(error.response.data.message === "Password required");
 					let errorMsg = "";
 					if (error.response.data.detail && error.response.status) {
 						errorMsg = `Status: ${error.response.status}, ${error.response.data.detail}`;
