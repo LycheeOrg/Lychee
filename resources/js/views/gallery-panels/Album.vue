@@ -214,7 +214,9 @@ const photoCallbacks = {
 	toggleCopyTo: toggleCopy,
 	toggleMove: toggleMove,
 	toggleDelete: toggleDelete,
-	toggleDownload: () => {},
+	toggleDownload: () => {
+		AlbumService.download(selectedPhotosIds.value);
+	},
 };
 
 const albumCallbacks = {

@@ -260,7 +260,6 @@ class AlbumController extends Controller
 	 */
 	public function getArchive(ZipRequest $request, AlbumArchive $album_archive, PhotoArchive $photo_archive): StreamedResponse
 	{
-		dd('die');
 		if ($request->albums()->count() > 0) {
 			return $album_archive->do($request->albums());
 		}
