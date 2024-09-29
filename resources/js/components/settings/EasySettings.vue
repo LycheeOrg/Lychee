@@ -18,16 +18,16 @@
 		<Fieldset legend="System" class="border-b-0 border-r-0 rounded-r-none rounded-b-none">
 			<div class="flex flex-col gap-4">
 				<BoolField v-if="dark_mode_enabled !== undefined" :config="dark_mode_enabled" @filled="save" />
+				<SelectLang v-if="lang !== undefined" :config="lang" />
 				<div class="flex flex-wrap justify-between">
 					<label for="pp_dialog_nsfw_visible">{{ $t("lychee.NSFW_VISIBLE_TEXT_1") }}</label>
-					<ToggleSwitch id="pp_dialog_nsfw_visible" v-model="nsfwVisible" class="text-sm" />
+					<ToggleSwitch id="pp_dialog_nsfw_visible" v-model="nsfwVisible_value" class="text-sm" @update:model-value="() => save('nsfw_visible', nsfwVisible_value ? '1' : '0')" />
 					<p class="my-1.5 text-muted-color w-full" v-html="nsfwText2"></p>
 				</div>
-				<SelectLang v-if="lang !== undefined" :config="lang" />
 			</div>
 		</Fieldset>
 		<Fieldset legend="Gallery" class="border-b-0 border-r-0 rounded-r-none rounded-b-none">
-			<div class="flex flex-col">
+			<div class="flex flex-col mb-6">
 				<!-- ALBUM ORDER -->
 				<SelectOptionsField
 					v-if="photoSortingColumn !== undefined"
@@ -50,7 +50,7 @@
 					:mapper="SelectBuilders.buildAlbumSorting"
 					@filled="save"
 				/>
-				<SelectOptionsField
+				<SelectOptionsField class="mb-6"
 					v-if="albumSortingOrder !== undefined"
 					:config="albumSortingOrder"
 					:options="sortingOrdersOptions"
@@ -58,17 +58,17 @@
 					@filled="save"
 				/>
 				<SelectOptionsField
-					v-if="layout !== undefined"
-					:config="layout"
-					:options="photoLayoutOptions"
-					:mapper="SelectBuilders.buildPhotoLayout"
-					@filled="save"
-				/>
-				<SelectOptionsField
 					v-if="aspectRatio !== undefined"
 					:config="aspectRatio"
 					:options="aspectRationOptions"
 					:mapper="SelectBuilders.buildAspectRatio"
+					@filled="save"
+				/>
+				<SelectOptionsField class="mb-6"
+					v-if="layout !== undefined"
+					:config="layout"
+					:options="photoLayoutOptions"
+					:mapper="SelectBuilders.buildPhotoLayout"
 					@filled="save"
 				/>
 				<SelectField v-if="album_decoration !== undefined" :config="album_decoration" @filled="save" />
@@ -258,6 +258,10 @@ function load() {
 		location_show.value = configurations.find((config) => config.key === "location_show");
 		location_show_public.value = configurations.find((config) => config.key === "location_show_public");
 	});
+}
+
+function updateNSFW() {
+	save("nsfw_visible", nsfwVisible_value.value ? "1" : "0");
 }
 
 load();

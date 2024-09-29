@@ -276,8 +276,6 @@ class AlbumController extends Controller
 	 * @param Unlock             $unlock
 	 *
 	 * @return void
-	 *
-	 * @throws LycheeException
 	 */
 	public function unlock(UnlockAlbumRequest $request, Unlock $unlock): void
 	{
