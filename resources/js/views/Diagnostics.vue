@@ -14,24 +14,22 @@
 	</Toolbar>
 	<Panel>
 		<ErrorsDiagnotics />
-		<InfoDiagnostics v-if="user" />
-		<SpaceDiagnostics v-if="user" />
-		<ConfigurationsDiagnostics v-if="user" />
+		<InfoDiagnostics v-if="user?.id" />
+		<SpaceDiagnostics v-if="user?.id" />
+		<ConfigurationsDiagnostics v-if="user?.id" />
 	</Panel>
 </template>
 <script setup lang="ts">
-import { ref } from "vue";
 import Toolbar from "primevue/toolbar";
 import Button from "primevue/button";
 import ConfigurationsDiagnostics from "@/components/diagnostics/ConfigurationsDiagnostics.vue";
 import InfoDiagnostics from "@/components/diagnostics/InfoDiagnostics.vue";
 import ErrorsDiagnotics from "@/components/diagnostics/ErrorsDiagnostics.vue";
 import SpaceDiagnostics from "@/components/diagnostics/SpaceDiagnostics.vue";
-import AuthService from "@/services/auth-service";
+import { useAuthStore } from "@/stores/Auth";
+import { storeToRefs } from "pinia";
 
-const user = ref(undefined as App.Http.Resources.Models.UserResource | undefined);
-
-AuthService.user().then((response) => {
-	user.value = response.data;
-});
+const authStore = useAuthStore();
+const { user } = storeToRefs(authStore);
+authStore.getUser();
 </script>

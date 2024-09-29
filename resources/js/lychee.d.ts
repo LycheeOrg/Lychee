@@ -183,7 +183,6 @@ declare namespace App.Http.Resources.GalleryConfigs {
 	export type InitConfig = {
 		is_debug_enabled: boolean;
 		are_nsfw_visible: boolean;
-		are_nsfw_blurred: boolean;
 		is_nsfw_warning_visible: boolean;
 		is_nsfw_background_blurred: boolean;
 		nsfw_banner_override: string;
