@@ -11,6 +11,7 @@ use App\Actions\Album\Merge;
 use App\Actions\Album\Move;
 use App\Actions\Album\SetProtectionPolicy;
 use App\Actions\Album\Transfer;
+use App\Actions\Album\Unlock;
 use App\Actions\Photo\Archive as PhotoArchive;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\UnauthenticatedException;
@@ -26,6 +27,7 @@ use App\Http\Requests\Album\SetAsCoverRequest;
 use App\Http\Requests\Album\SetAsHeaderRequest;
 use App\Http\Requests\Album\TargetListAlbumRequest;
 use App\Http\Requests\Album\TransferAlbumRequest;
+use App\Http\Requests\Album\UnlockAlbumRequest;
 use App\Http\Requests\Album\UpdateAlbumRequest;
 use App\Http\Requests\Album\UpdateTagAlbumRequest;
 use App\Http\Requests\Album\ZipRequest;
@@ -265,5 +267,20 @@ class AlbumController extends Controller
 		}
 
 		return $photo_archive->do($request->photos(), $request->sizeVariant());
+	}
+
+	/**
+	 * Provided the albumID and password, return whether the album can be accessed or not.
+	 *
+	 * @param UnlockAlbumRequest $request
+	 * @param Unlock             $unlock
+	 *
+	 * @return void
+	 *
+	 * @throws LycheeException
+	 */
+	public function unlock(UnlockAlbumRequest $request, Unlock $unlock): void
+	{
+		$unlock->do($request->album(), $request->password());
 	}
 }

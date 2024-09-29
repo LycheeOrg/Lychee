@@ -4,6 +4,8 @@
 		<Collapse :when="!is_full_screen">
 			<AlbumHeader v-if="album && config && user" :album="album" :config="config" :user="user" @refresh="refresh" />
 		</Collapse>
+		<LoginModal v-if="user?.id === null" v-model:visible="is_login_open" @logged-in="refresh" />
+		<Unlock :albumid="albumid" :visible="isPasswordProtected" @reload="refresh" @fail="is_login_open = true" />
 		<template v-if="config && album">
 			<div
 				class="relative flex flex-wrap content-start w-full justify-start overflow-y-auto"
@@ -129,6 +131,8 @@ import PhotoTagDialog from "@/components/forms/photo/PhotoTagDialog.vue";
 import PhotoCopyDialog from "@/components/forms/photo/PhotoCopyDialog.vue";
 import { Collapse } from "vue-collapsed";
 import SensitiveWarning from "@/components/gallery/SensitiveWarning.vue";
+import Unlock from "@/components/forms/album/Unlock.vue";
+import LoginModal from "@/components/modals/LoginModal.vue";
 
 const route = useRoute();
 
@@ -137,7 +141,6 @@ const props = defineProps<{
 }>();
 
 const albumid = ref(props.albumid);
-
 // flag to open login modal if necessary
 const auth = useAuthStore();
 const lycheeStore = useLycheeStateStore();
@@ -147,7 +150,7 @@ lycheeStore.resetSearch();
 const { are_nsfw_visible, is_full_screen, is_login_open, nsfw_consented } = storeToRefs(lycheeStore);
 
 // Set up Album ID reference. This one is updated at each page change.
-const { user, modelAlbum, album, layout, photos, config, loadLayout, refresh } = useAlbumRefresher(albumid, auth, is_login_open);
+const { isPasswordProtected, user, modelAlbum, album, layout, photos, config, loadLayout, refresh } = useAlbumRefresher(albumid, auth, is_login_open);
 
 watch(
 	() => route.params.albumid,

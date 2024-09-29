@@ -23,13 +23,13 @@
 				</div>
 				<div class="inline-flex flex-col gap-2 px-9">
 					<FloatLabel>
-						<InputText id="username" v-model="username" />
+						<InputText id="username" v-model="username" autocomplete="username" />
 						<label class="" for="username">{{ $t("lychee.USERNAME") }}</label>
 					</FloatLabel>
 				</div>
 				<div class="inline-flex flex-col gap-2 px-9">
 					<FloatLabel>
-						<InputPassword id="password" v-model="password" @keydown.enter="login" />
+						<InputPassword id="password" v-model="password" @keydown.enter="login" autocomplete="current-password" />
 						<label class="" for="password">{{ $t("lychee.PASSWORD") }}</label>
 					</FloatLabel>
 					<Message v-if="invalidPassword" severity="error">Unknown user or invalid password</Message>

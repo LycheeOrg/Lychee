@@ -3,6 +3,7 @@ import { AuthStore } from "@/stores/Auth";
 import { computed, Ref, ref } from "vue";
 
 export function useAlbumRefresher(albumId: Ref<string>, auth: AuthStore, isLoginOpen: Ref<boolean>) {
+	const isPasswordProtected = ref(false);
 	const user = ref(undefined) as Ref<undefined | App.Http.Resources.Models.UserResource>;
 	const modelAlbum = ref(undefined as undefined | App.Http.Resources.Models.AlbumResource);
 	const tagAlbum = ref(undefined as undefined | App.Http.Resources.Models.TagAlbumResource);
@@ -23,6 +24,7 @@ export function useAlbumRefresher(albumId: Ref<string>, auth: AuthStore, isLogin
 	function loadAlbum() {
 		AlbumService.get(albumId.value)
 			.then((data) => {
+				isPasswordProtected.value = false;
 				config.value = data.data.config;
 				modelAlbum.value = undefined;
 				tagAlbum.value = undefined;
@@ -37,8 +39,9 @@ export function useAlbumRefresher(albumId: Ref<string>, auth: AuthStore, isLogin
 				photos.value = album.value?.photos ?? [];
 			})
 			.catch((error) => {
-				// We are required to login :)
-				if (error.response.status === 401 && user.value?.id === null) {
+				if (error.response.status === 401 && error.response.data.message === "Password required") {
+					isPasswordProtected.value = true;
+				} else if (error.response.status === 401) {
 					isLoginOpen.value = true;
 				} else {
 					console.error(error);
@@ -57,6 +60,7 @@ export function useAlbumRefresher(albumId: Ref<string>, auth: AuthStore, isLogin
 	}
 
 	return {
+		isPasswordProtected,
 		albumId,
 		user,
 		modelAlbum,
