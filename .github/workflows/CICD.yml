@@ -121,9 +121,9 @@ jobs:
 
   tests_legacy:
     name:  2️⃣ PHP tests legacy
-    uses: ./.github/workflows/php_tests.yml
     needs:
       - php_syntax_errors
+    uses: ./.github/workflows/php_tests.yml
     with:
       test-suite: 'Feature_v1'
       env-file: '.env.legacy'
