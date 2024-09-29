@@ -17,11 +17,12 @@
 			:thumb="props.album.thumb"
 			:is-password-protected="props.album.is_password_required"
 		/>
-		<AlbumThumbImage class="group-hover:border-primary-500"
+		<AlbumThumbImage
+			class="group-hover:border-primary-500"
 			:class="cssClass"
 			:thumb="props.album.thumb"
 			:is-password-protected="props.album.is_password_required"
-			/>
+		/>
 		<AlbumThumbOverlay v-if="props.config.display_thumb_album_overlay !== 'never'" :album="props.album" :config="props.config" />
 		<span v-if="album.thumb?.type.includes('video')" class="w-full h-full absolute hover:opacity-70 transition-opacity duration-300">
 			<img class="h-full w-full" alt="play" :src="play_icon" />

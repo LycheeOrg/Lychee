@@ -100,6 +100,7 @@ formatting:
 		echo "  composer install"; \
 		echo ""; \
 	fi
+	npm run format
 
 phpstan:
 	vendor/bin/phpstan analyze

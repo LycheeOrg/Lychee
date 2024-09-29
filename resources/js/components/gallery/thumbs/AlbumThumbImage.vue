@@ -35,7 +35,7 @@ function load(thumb: App.Http.Resources.Models.ThumbResource | undefined | null,
 		if (thumb.type.includes("raw")) {
 			src.value = window.assets_url + "img/no_images.svg";
 		}
-	} else if(isPasswordProtected) { 
+	} else if (isPasswordProtected) {
 		src.value = window.assets_url + "img/password.svg";
 	} else {
 		src.value = isNotEmpty(thumb?.thumb) ? (thumb?.thumb as string) : window.assets_url + "img/no_images.svg";
