@@ -132,7 +132,7 @@ const AlbumService = {
 
 	download(album_ids: string[]): void {
 		location.href = `${Constants.API_URL}Zip?album_ids=${album_ids.join(",")}`;
-	}
+	},
 };
 
 export default AlbumService;

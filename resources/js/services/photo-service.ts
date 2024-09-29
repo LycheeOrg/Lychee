@@ -64,7 +64,7 @@ const PhotoService = {
 
 	download(photo_ids: string[], download_type: App.Enum.DownloadVariantType): void {
 		// window.open(`${Constants.API_URL}Zip?photo_ids=${photo_ids.join(",")}&variant=${download_type}`, '_blank');
-	}
+	},
 };
 
 export default PhotoService;
