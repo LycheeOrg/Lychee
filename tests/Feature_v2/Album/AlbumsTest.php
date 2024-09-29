@@ -42,7 +42,7 @@ class AlbumsTest extends BaseApiV2Test
 			'shared_albums' => [],
 			'config' => [
 				'is_map_accessible' => false,
-				'is_mod_frame_enabled' => true,
+				'is_mod_frame_enabled' => false,
 				'is_search_accessible' => false,
 				'album_thumb_css_aspect_ratio' => 'aspect-square',
 			],
