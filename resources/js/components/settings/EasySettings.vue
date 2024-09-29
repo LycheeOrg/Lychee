@@ -21,7 +21,12 @@
 				<SelectLang v-if="lang !== undefined" :config="lang" />
 				<div class="flex flex-wrap justify-between">
 					<label for="pp_dialog_nsfw_visible">{{ $t("lychee.NSFW_VISIBLE_TEXT_1") }}</label>
-					<ToggleSwitch id="pp_dialog_nsfw_visible" v-model="nsfwVisible_value" class="text-sm" @update:model-value="() => save('nsfw_visible', nsfwVisible_value ? '1' : '0')" />
+					<ToggleSwitch
+						id="pp_dialog_nsfw_visible"
+						v-model="nsfwVisible_value"
+						class="text-sm"
+						@update:model-value="() => save('nsfw_visible', nsfwVisible_value ? '1' : '0')"
+					/>
 					<p class="my-1.5 text-muted-color w-full" v-html="nsfwText2"></p>
 				</div>
 			</div>
@@ -50,7 +55,8 @@
 					:mapper="SelectBuilders.buildAlbumSorting"
 					@filled="save"
 				/>
-				<SelectOptionsField class="mb-6"
+				<SelectOptionsField
+					class="mb-6"
 					v-if="albumSortingOrder !== undefined"
 					:config="albumSortingOrder"
 					:options="sortingOrdersOptions"
@@ -64,7 +70,8 @@
 					:mapper="SelectBuilders.buildAspectRatio"
 					@filled="save"
 				/>
-				<SelectOptionsField class="mb-6"
+				<SelectOptionsField
+					class="mb-6"
 					v-if="layout !== undefined"
 					:config="layout"
 					:options="photoLayoutOptions"
