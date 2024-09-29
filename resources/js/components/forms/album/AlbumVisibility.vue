@@ -132,8 +132,6 @@ function save() {
 	AlbumService.updateProtectionPolicy(data)
 		.then(() => {
 			toast.add({ severity: "success", summary: "Success", detail: "Permission deleted", life: 3000 });
-		})
-		.catch((error) => {
 			AlbumService.clearCache(albumId.value);
 			if (props.config.is_model_album) {
 				// @ts-expect-error
@@ -141,7 +139,8 @@ function save() {
 			} else {
 				AlbumService.clearAlbums();
 			}
-
+		})
+		.catch((error) => {
 			console.error(error);
 		});
 }

@@ -22,7 +22,7 @@ class SettingsController extends Controller
 	{
 		$configs = $request->configs();
 		$configs->each(function ($config) {
-			Configs::query()->where('key', $config->key)->update(['value' => $config->value]);
+			Configs::query()->where('key', $config->key)->update(['value' => $config->value ?? '']);
 		});
 
 		Configs::invalidateCache();

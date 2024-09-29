@@ -24,6 +24,7 @@ class AlbumConfig extends Data
 	public bool $is_map_accessible;
 	public bool $is_mod_frame_enabled;
 	public bool $is_search_accessible;
+	public bool $is_nsfw_warning_visible;
 	public AspectRatioCSSType $album_thumb_css_aspect_ratio;
 
 	public function __construct(AbstractAlbum $album)
@@ -35,6 +36,10 @@ class AlbumConfig extends Data
 		$this->is_base_album = $album instanceof BaseAlbum;
 		$this->is_model_album = $album instanceof Album;
 		$this->is_password_protected = !$is_accessible && $public_perm?->password !== null;
+		$this->is_nsfw_warning_visible =
+			$album instanceof BaseAlbum &&
+			$album->is_nsfw &&
+			(Auth::check() ? Configs::getValueAsBool('nsfw_warning_admin') : Configs::getValueAsBool('nsfw_warning'));
 
 		$this->setIsMapAccessible();
 		$this->setIsSearchAccessible($this->is_base_album);

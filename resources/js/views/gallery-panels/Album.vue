@@ -40,6 +40,7 @@
 					@contexted="photoMenuOpen"
 				/>
 			</div>
+			<SensitiveWarning v-if="showNsfwWarning" @click="consent" />
 			<ShareAlbum v-model:visible="isShareAlbumVisible" :title="album.title" :url="route.path" />
 			<!-- Dialogs -->
 			<PhotoTagDialog
@@ -127,6 +128,7 @@ import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
 import PhotoTagDialog from "@/components/forms/photo/PhotoTagDialog.vue";
 import PhotoCopyDialog from "@/components/forms/photo/PhotoCopyDialog.vue";
 import { Collapse } from "vue-collapsed";
+import SensitiveWarning from "@/components/gallery/SensitiveWarning.vue";
 
 const route = useRoute();
 
@@ -142,7 +144,7 @@ const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
 lycheeStore.resetSearch();
 
-const { are_nsfw_visible, is_full_screen, is_login_open } = storeToRefs(lycheeStore);
+const { are_nsfw_visible, is_full_screen, is_login_open, nsfw_consented } = storeToRefs(lycheeStore);
 
 // Set up Album ID reference. This one is updated at each page change.
 const { user, modelAlbum, album, layout, photos, config, loadLayout, refresh } = useAlbumRefresher(albumid, auth, is_login_open);
@@ -157,6 +159,7 @@ watch(
 
 const children = computed<App.Http.Resources.Models.ThumbAlbumResource[]>(() => modelAlbum.value?.albums ?? []);
 const noData = computed(() => children.value.length === 0 && (photos.value === null || photos.value.length === 0));
+const showNsfwWarning = computed(() => config.value?.is_nsfw_warning_visible && nsfw_consented.value.find((e) => e === albumid.value) === undefined);
 
 const {
 	isDeleteVisible,
@@ -257,6 +260,10 @@ const albumPanelConfig = computed<AlbumThumbConfig>(() => ({
 	album_decoration: lycheeStore.album_decoration,
 	album_decoration_orientation: lycheeStore.album_decoration_orientation,
 }));
+
+function consent() {
+	nsfw_consented.value.push(albumid.value);
+}
 
 loadLayout();
 

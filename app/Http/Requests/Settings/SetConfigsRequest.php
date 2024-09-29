@@ -40,7 +40,7 @@ class SetConfigsRequest extends BaseApiRequest implements HasConfigs
 		return [
 			RequestAttribute::CONFIGS_ATTRIBUTE => ['required'],
 			RequestAttribute::CONFIGS_ARRAY_KEY_ATTRIBUTE => ['required', new ConfigKeyRule()],
-			RequestAttribute::CONFIGS_ARRAY_VALUE_ATTRIBUTE => ['required', new ConfigValueRule()],
+			RequestAttribute::CONFIGS_ARRAY_VALUE_ATTRIBUTE => ['present', new ConfigValueRule()],
 		];
 	}
 

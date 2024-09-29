@@ -131,9 +131,9 @@ return [
 
 		// We use this space to temporarily store images when uploading.
 		// Mostly chunks and incomplete images are placed here
-		'livewire-upload' => [
+		'image-upload' => [
 			'driver' => 'local',
-			'root' => env('LYCHEE_TMP_UPLOAD', storage_path('livewire-tmp')),
+			'root' => env('LYCHEE_TMP_UPLOAD', storage_path('image-tmp')),
 			'visibility' => 'private',
 		],
 

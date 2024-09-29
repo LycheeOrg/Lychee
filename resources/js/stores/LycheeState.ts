@@ -23,8 +23,6 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 
 		// configs for nsfw
 		are_nsfw_blurred: false,
-		is_nsfw_warning_visible: false,
-		is_nsfw_warning_visible_for_admin: false,
 		is_nsfw_background_blurred: false,
 		nsfw_banner_override: "",
 		is_nsfw_banner_backdrop_blurred: false,
@@ -53,6 +51,8 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		// flag to fetch data
 		is_init: false,
 		is_loading: false,
+
+		nsfw_consented: [] as string[],
 	}),
 	getters: {
 		isSearchActive(): boolean {
@@ -77,8 +77,6 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					const data = response.data;
 					this.are_nsfw_visible = data.are_nsfw_visible;
 					this.are_nsfw_blurred = data.are_nsfw_blurred;
-					this.is_nsfw_warning_visible = data.is_nsfw_warning_visible;
-					this.is_nsfw_warning_visible_for_admin = data.is_nsfw_warning_visible_for_admin;
 					this.is_nsfw_background_blurred = data.is_nsfw_background_blurred;
 					this.nsfw_banner_override = data.nsfw_banner_override;
 					this.is_nsfw_banner_backdrop_blurred = data.is_nsfw_banner_backdrop_blurred;
