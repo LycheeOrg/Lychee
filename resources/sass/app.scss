@@ -1,7 +1,9 @@
 @import "./fonts.css";
 @import "@fortawesome/fontawesome-free/css/all.css";
-
 @import "primeicons/primeicons.css";
+@import "leaflet/dist/leaflet.css";
+@import "leaflet.markercluster/dist/MarkerCluster.css";
+@import "@lychee-org/leaflet.photo/Leaflet.Photo.css";
 
 @layer tailwind-base, primevue, tailwind-utilities;
 
