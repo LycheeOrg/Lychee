@@ -14,10 +14,11 @@
 	</Toolbar>
 	<Panel class="max-w-5xl mx-auto border-none">
 		<div v-if="jobs.length === 0" class="text-center">No Jobs have been executed yet.</div>
-		<div class="flex" v-for="job in jobs">
-			<span class="w-1/4" :class="textCss(job.status)">{{ job.status }}</span>
-			<span class="w-1/4">{{ job.username }}</span>
-			<span class="w-full text-muted-color">{{ job.job }}</span>
+		<div class="flex text-xs sm:text-base flex-wrap sm:flex-nowrap" v-for="job in jobs">
+			<span class="w-1/6 sm:w-1/4" :class="textCss(job.status)">{{ job.status }}</span>
+			<span class="w-5/6 sm:w-1/4">{{ job.username }}</span>
+			<span class="w-1/6 sm:hidden"></span>
+			<span class="w-5/6 sm:w-full text-2xs sm:text-base text-muted-color">{{ job.job }}</span>
 		</div>
 	</Panel>
 </template>
