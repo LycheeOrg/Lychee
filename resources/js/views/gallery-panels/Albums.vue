@@ -105,7 +105,6 @@ lycheeStore.resetSearch();
 
 const { are_nsfw_visible, is_full_screen, is_login_open, title } = storeToRefs(lycheeStore);
 
-const config = ref(null); // unused for now.
 const photos = ref([]); // unused.
 
 const { user, isKeybindingsHelpOpen, smartAlbums, albums, sharedAlbums, rootConfig, rootRights, selectableAlbums, refresh } = useAlbumsRefresher(

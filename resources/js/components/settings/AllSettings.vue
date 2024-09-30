@@ -222,7 +222,6 @@ function load() {
 
 function update(configKey: string, value: string) {
 	const config = modified.value.find((c) => c.key === configKey);
-	console.log(configKey, value);
 	if (config) {
 		config.value = value;
 	} else {

@@ -182,7 +182,7 @@ function addContentsToMap() {
 
 	data.value.photos.forEach(function (element: App.Http.Resources.Models.PhotoResource) {
 		if (element.latitude || element.longitude) {
-			console.log(element);
+			// console.log(element);
 			photos.push({
 				lat: element.latitude,
 				lng: element.longitude,

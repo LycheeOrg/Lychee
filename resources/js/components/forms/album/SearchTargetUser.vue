@@ -44,7 +44,6 @@ const emits = defineEmits<{
 const options = ref([] as App.Http.Resources.Models.LightUserResource[]);
 const selectedTarget = ref(undefined as App.Http.Resources.Models.LightUserResource | undefined);
 
-console.log(props.filteredUsersIds);
 function load() {
 	UsersService.get().then((response) => {
 		options.value = response.data.filter((user) => !props.filteredUsersIds.includes(user.id));

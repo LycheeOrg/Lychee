@@ -29,7 +29,7 @@ export function useJustify(el: HTMLElement, photoDefaultHeight: number = 320) {
 			// Race condition in search.find -- window content
 			// and `photos` can get out of sync as search
 			// query is being modified.
-			console.log("race!");
+			console.error("race!");
 			return false;
 		}
 

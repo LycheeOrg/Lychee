@@ -17,8 +17,9 @@ export function useAlbumsRefresher(auth: AuthStore, lycheeStore: LycheeStateStor
 		auth.getUser().then((data) => {
 			user.value = data;
 
+			const body_width = document.body.scrollWidth;
 			// display popup if logged in and set..
-			if (user.value.id && lycheeStore.show_keybinding_help_popup) {
+			if (user.value.id && lycheeStore.show_keybinding_help_popup && body_width > 800) {
 				isKeybindingsHelpOpen.value = true;
 			}
 		});
