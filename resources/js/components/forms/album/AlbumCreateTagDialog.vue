@@ -53,7 +53,6 @@ const title = ref(undefined as undefined | string);
 const tags = ref([] as string[]);
 
 function create() {
-	console.log(tags.value);
 	if (!title.value || tags.value.length === 0) {
 		return;
 	}

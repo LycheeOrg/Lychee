@@ -34,7 +34,6 @@ const SharingService = {
 	},
 
 	delete(sharing_id: number): Promise<AxiosResponse> {
-		console.log(sharing_id);
 		return axios.delete(`${Constants.API_URL}Sharing`, { data: { perm_id: sharing_id } });
 	},
 

@@ -161,7 +161,6 @@ function load() {
 		const page = lycheeStore.search_page;
 		const term = lycheeStore.search_term;
 		SearchService.search(albumId, term, page).then((response) => {
-			console.log(response.data);
 			photos.value = response.data.photos;
 			refresh();
 		});

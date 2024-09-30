@@ -65,7 +65,6 @@ function edit() {
 		grants_edit: grantsEdit.value,
 		grants_delete: grantsDelete.value,
 	};
-	console.log(data);
 	SharingService.edit(data).then((response) => {
 		load(response.data);
 		toast.add({ severity: "success", summary: "Success", detail: "Permission updated", life: 1000 });

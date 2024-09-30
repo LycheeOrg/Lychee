@@ -113,7 +113,6 @@ export function useSelection(
 		if (!ctrlKeyState.value && !shiftKeyState.value) {
 			return;
 		}
-		console.log("albumCLick", idx);
 
 		// We are able to edit.
 		e.preventDefault();

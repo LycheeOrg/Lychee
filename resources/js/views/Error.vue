@@ -77,7 +77,6 @@ window.addEventListener("error", function (e: Event) {
 	} else {
 		// @ts-expect-error
 		jsError.value = e as ErrorEvent;
-		console.log(jsError.value);
 	}
 });
 

@@ -36,7 +36,7 @@ const AxiosConfig = {
 
 				if (error.response && error.response.status && !isNaN(error.response.status)) {
 					console.log(error.response.data.message === "Password required");
-					let errorMsg = "";
+					let errorMsg: string;
 					if (error.response.data.detail && error.response.status) {
 						errorMsg = `Status: ${error.response.status}, ${error.response.data.detail}`;
 					} else {
