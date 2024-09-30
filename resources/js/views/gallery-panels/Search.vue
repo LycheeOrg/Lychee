@@ -7,7 +7,10 @@
 					<Button icon="pi pi-angle-left" class="mr-2" severity="secondary" text @click="goBack" />
 				</template>
 				<template #center>
-					{{ title }}
+					<span class="sm:hidden font-bold">
+						{{ $t("lychee.SEARCH") }}
+					</span>
+					<span class="hidden sm:block font-bold text-sm lg:text-base text-center w-full">{{ title }}</span>
 				</template>
 				<template #end> </template>
 			</Toolbar>

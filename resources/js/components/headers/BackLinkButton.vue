@@ -1,6 +1,7 @@
 <template>
 	<Button as="a" :href="props.config.back_button_url" severity="secondary" text class="border-none">
-		{{ props.config.back_button_text }}
+		<i class="pi pi-home sm:hidden" />
+		<span class="hidden sm:inline">{{ props.config.back_button_text }}</span>
 	</Button>
 </template>
 <script setup lang="ts">

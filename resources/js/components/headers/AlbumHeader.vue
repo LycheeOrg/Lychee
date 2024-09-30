@@ -10,8 +10,6 @@
 	<Toolbar class="w-full border-0 h-14" v-if="album">
 		<template #start>
 			<Button icon="pi pi-angle-left" class="mr-2 border-none" severity="secondary" text @click="goBack" />
-			<!-- <Button v-if="user?.id" @click="openLeftMenu" icon="pi pi-bars" class="mr-2" severity="info" text /> -->
-			<!-- <Button v-if="initdata?.user" @click="logout" icon="pi pi-sign-out" class="mr-2" severity="info" text /> -->
 		</template>
 
 		<template #center>
@@ -41,7 +39,6 @@
 					@click="toggleDetails"
 				/>
 			</template>
-			<!-- <SplitButton label="Save" :model="items"></SplitButton> -->
 		</template>
 	</Toolbar>
 	<ContextMenu ref="addmenu" :model="addMenu" v-if="album.rights.can_upload">

@@ -249,6 +249,15 @@ const LycheePrimeVueConfig = {
 							color: "{red.700}",
 						},
 					},
+					warn: {
+						color: "{surface.100}",
+						background: "{surface.700}",
+						borderColor: "{surface.800}",
+						hover: {
+							background: "{surface.600}",
+							color: "{surface.0}",
+						},
+					},
 					info: {
 						color: "{text.mutedColor}",
 						background: "transparent",

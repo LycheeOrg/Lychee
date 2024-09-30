@@ -6,50 +6,62 @@
 	<ImportFromLink v-if="canUpload" v-model:visible="isImportFromLinkOpen" :parent-id="null" />
 	<AlbumCreateDialog v-if="canUpload" v-model:visible="isCreateAlbumOpen" :parent-id="null" />
 	<AlbumCreateTagDialog v-if="canUpload" v-model:visible="isCreateTagAlbumOpen" />
-	<Toolbar class="w-full border-0 h-14">
+	<Toolbar class="w-full border-0 h-14" :pt:root:class="'flex-nowrap'" :pt:center:class="'absolute top-0 py-3 left-1/2 -translate-x-1/2 h-14'">
 		<template #start>
+			<!-- Not logged in. -->
 			<BackLinkButton v-if="user.id === null && !isLoginLeft" :config="props.config" />
 			<Button
 				v-if="user.id === null && isLoginLeft"
 				icon="pi pi-sign-in"
-				class="mr-2 border-none"
+				class="border-none"
 				severity="secondary"
 				text
 				@click="lycheeStore.toggleLogin()"
 			/>
+			<!-- Logged in. -->
 			<Button v-if="user.id" @click="openLeftMenu" icon="pi pi-bars" class="mr-2 border-none" severity="secondary" text />
-			<!-- <Button v-if="initdata?.user" @click="logout" icon="pi pi-sign-out" class="mr-2 border-none" severity="info" text /> -->
 		</template>
 
 		<template #center>
-			{{ props.title }}
+			<span class="sm:hidden font-bold">
+				{{ $t("lychee.ALBUMS") }}
+			</span>
+			<span class="hidden sm:block font-bold text-sm lg:text-base text-center w-full">{{ props.title }}</span>
 		</template>
 
 		<template #end>
-			<BackLinkButton v-if="user.id === null && isLoginLeft" :config="props.config" />
-			<router-link :to="{ name: 'frame' }" v-if="props.config.is_mod_frame_enabled">
-				<Button icon="pi pi-desktop" class="border-none" severity="secondary" text />
-			</router-link>
-			<router-link :to="{ name: 'map' }" v-if="props.config.is_map_accessible">
-				<Button icon="pi pi-map" class="border-none" severity="secondary" text />
-			</router-link>
-			<Button icon="pi pi-search" class="border-none" severity="secondary" text @click="openSearch" v-if="props.config.is_search_accessible" />
-			<Button
-				icon="pi pi-question-circle"
-				severity="secondary"
-				text
-				@click="openHelp"
-				v-if="user.id !== null && props.config.show_keybinding_help_button"
-			/>
-			<Button icon="pi pi-plus" severity="secondary" text @click="openAddMenu" v-if="props.rights.can_upload" />
-			<Button
-				icon="pi pi-sign-in"
-				class="mr-2"
-				severity="secondary"
-				text
-				@click="lycheeStore.toggleLogin()"
-				v-if="user.id === null && !isLoginLeft"
-			/>
+			<!-- Maybe logged in. -->
+			<div :class="menu.length > 1 ? 'hidden sm:block' : ''">
+				<template v-for="item in menu">
+					<template v-if="item.type === 'link'">
+						<Button as="router-link" :to="item.to" :icon="item.icon" class="border-none" severity="secondary" text v-if="item.if" />
+					</template>
+					<template v-else>
+						<Button @click="item.callback" :icon="item.icon" class="border-none" severity="secondary" text v-if="item.if" />
+					</template>
+				</template>
+				<!-- Not logged in. -->
+				<BackLinkButton v-if="user.id === null && isLoginLeft" :config="props.config" />
+			</div>
+			<SpeedDial
+				:model="menu"
+				v-if="menu.length > 1"
+				direction="down"
+				class="top-0 mr-4 absolute right-0 sm:hidden"
+				:buttonProps="{ severity: 'help', rounded: true }"
+			>
+				<template #button="{ toggleCallback }">
+					<Button text severity="secondary" class="border-none h-14" @click="toggleCallback" icon="pi pi-angle-double-down" />
+				</template>
+				<template #item="{ item, toggleCallback }">
+					<template v-if="item.type === 'link'">
+						<Button as="router-link" :to="item.to" :icon="item.icon" class="shadow-md shadow-black/25" severity="warn" rounded />
+					</template>
+					<template v-else>
+						<Button @click="item.callback" :icon="item.icon" class="shadow-md shadow-black/25" severity="warn" rounded />
+					</template>
+				</template>
+			</SpeedDial>
 		</template>
 	</Toolbar>
 	<ContextMenu v-if="props.rights.can_upload" ref="addmenu" :model="addMenu">
@@ -64,6 +76,7 @@
 </template>
 <script setup lang="ts">
 import Button from "primevue/button";
+import SpeedDial from "primevue/speeddial";
 import Toolbar from "primevue/toolbar";
 import ContextMenu from "primevue/contextmenu";
 import UploadPanel from "@/components/modals/UploadPanel.vue";
@@ -73,7 +86,7 @@ import ImportFromLink from "@/components/modals/ImportFromLink.vue";
 import ImportFromServer from "@/components/modals/ImportFromServer.vue";
 import AlbumCreateDialog from "@/components/forms/album/AlbumCreateDialog.vue";
 import AlbumCreateTagDialog from "@/components/forms/album/AlbumCreateTagDialog.vue";
-import { computed, ref } from "vue";
+import { computed, ComputedRef, ref } from "vue";
 import { onKeyStroke } from "@vueuse/core";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
@@ -205,6 +218,61 @@ onKeyStroke("escape", () => {
 
 	lycheeStore.left_menu_open = false;
 });
+
+type Link = {
+	type: "link";
+	to: { name: string };
+};
+type Callback = {
+	type: "fn";
+	callback: () => void;
+};
+type Item = {
+	icon: string;
+	if: boolean;
+};
+type MenuRight = (Item & Link) | (Item & Callback);
+
+const menu = computed(() =>
+	[
+		{
+			to: { name: "frame" },
+			type: "link",
+			icon: "pi pi-desktop",
+			if: props.config.is_mod_frame_enabled,
+		},
+		{
+			to: { name: "map" },
+			type: "link",
+			icon: "pi pi-map",
+			if: props.config.is_map_accessible,
+		},
+		{
+			icon: "pi pi-search",
+			type: "fn",
+			callback: openSearch,
+			if: props.config.is_search_accessible,
+		},
+		{
+			icon: "pi pi-sign-in",
+			type: "fn",
+			callback: lycheeStore.toggleLogin,
+			if: props.user.id === null && !isLoginLeft,
+		},
+		{
+			icon: "pi pi-question-circle",
+			type: "fn",
+			callback: openHelp,
+			if: props.user.id !== null && props.config.show_keybinding_help_button,
+		},
+		{
+			icon: "pi pi-plus",
+			type: "fn",
+			callback: openAddMenu,
+			if: props.rights.can_upload,
+		},
+	].filter((item) => item.if),
+) as ComputedRef<MenuRight[]>;
 
 // bubble up.
 function refresh() {
