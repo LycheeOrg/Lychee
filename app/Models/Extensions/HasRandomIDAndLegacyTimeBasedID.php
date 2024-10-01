@@ -151,7 +151,7 @@ trait HasRandomIDAndLegacyTimeBasedID
 		// The other characters (a-z, A-Z, 0-9) are legal within an URL.
 		// As the number of bytes is divisible by 3, no trailing `=` occurs.
 		try {
-			$id = strtr(base64_encode(random_bytes(3 * RandomID::ID_LENGTH / 4)), '+/', '-_');
+			$id = rtrim(strtr(base64_encode(random_bytes(3 * RandomID::ID_LENGTH / 4)), '+/', '-_'),'-');
 		} catch (\Exception $e) {
 			throw new InsufficientEntropyException($e);
 		}
