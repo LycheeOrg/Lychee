@@ -44,6 +44,10 @@ Route::post('/Album::cover', [Gallery\AlbumController::class, 'cover']);
 Route::post('/Album::header', [Gallery\AlbumController::class, 'header']);
 Route::post('/Album::merge', [Gallery\AlbumController::class, 'merge']);
 Route::post('/Album::transfer', [Gallery\AlbumController::class, 'transfer']);
+Route::post('/Album::setTrack', [Gallery\AlbumController::class, 'setTrack'])
+	->withoutMiddleware(['content_type:json'])
+	->middleware(['content_type:multipart']);
+Route::post('/Album::deleteTrack', [Gallery\AlbumController::class, 'deleteTrack']);
 
 Route::post('/TagAlbum', [Gallery\AlbumController::class, 'createTagAlbum']);
 Route::patch('/TagAlbum', [Gallery\AlbumController::class, 'updateTagAlbum']);

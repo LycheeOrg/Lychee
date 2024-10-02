@@ -18,11 +18,13 @@ use App\Exceptions\UnauthenticatedException;
 use App\Http\Requests\Album\AddAlbumRequest;
 use App\Http\Requests\Album\AddTagAlbumRequest;
 use App\Http\Requests\Album\DeleteAlbumsRequest;
+use App\Http\Requests\Album\DeleteTrackRequest;
 use App\Http\Requests\Album\GetAlbumRequest;
 use App\Http\Requests\Album\MergeAlbumsRequest;
 use App\Http\Requests\Album\MoveAlbumsRequest;
 use App\Http\Requests\Album\RenameAlbumRequest;
 use App\Http\Requests\Album\SetAlbumProtectionPolicyRequest;
+use App\Http\Requests\Album\SetAlbumTrackRequest;
 use App\Http\Requests\Album\SetAsCoverRequest;
 use App\Http\Requests\Album\SetAsHeaderRequest;
 use App\Http\Requests\Album\TargetListAlbumRequest;
@@ -280,5 +282,29 @@ class AlbumController extends Controller
 	public function unlock(UnlockAlbumRequest $request, Unlock $unlock): void
 	{
 		$unlock->do($request->album(), $request->password());
+	}
+
+	/**
+	 * Upload a track for the Album.
+	 *
+	 * @param SetAlbumTrackRequest $request
+	 *
+	 * @return void
+	 */
+	public function setTrack(SetAlbumTrackRequest $request): void
+	{
+		$request->album()->setTrack($request->file);
+	}
+
+	/**
+	 * Delete a track from the Album.
+	 *
+	 * @param DeleteTrackRequest $request
+	 *
+	 * @return void
+	 */
+	public function deleteTrack(DeleteTrackRequest $request): void
+	{
+		$request->album()->deleteTrack();
 	}
 }
