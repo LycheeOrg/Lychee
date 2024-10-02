@@ -41,6 +41,8 @@ export function useAlbumRefresher(albumId: Ref<string>, auth: AuthStore, isLogin
 			.catch((error) => {
 				if (error.response.status === 401 && error.response.data.message === "Password required") {
 					isPasswordProtected.value = true;
+				} else if (error.response.status === 403 && error.response.data.message === "Password required") {
+					isPasswordProtected.value = true;
 				} else if (error.response.status === 401) {
 					isLoginOpen.value = true;
 				} else {
