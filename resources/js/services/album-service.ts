@@ -137,6 +137,20 @@ const AlbumService = {
 	download(album_ids: string[]): void {
 		location.href = `${Constants.API_URL}Zip?album_ids=${album_ids.join(",")}`;
 	},
+
+	setTrack(album_id: string, file: Blob): Promise<AxiosResponse> {
+		const formData = new FormData();
+		formData.append("album_id", album_id);
+		formData.append("file", file);
+
+		return axios.post(`${Constants.API_URL}Album::track`, formData, {
+			headers: { "Content-Type": "multipart/form-data" },
+		});
+	},
+
+	deleteTrack(album_id: string): Promise<AxiosResponse> {
+		return axios.delete(`${Constants.API_URL}Album::track`, { params: { album_id: album_id } });
+	},
 };
 
 export default AlbumService;
