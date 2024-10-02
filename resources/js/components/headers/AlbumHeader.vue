@@ -2,7 +2,7 @@
 	<UploadPanel v-if="canUpload" v-model:visible="isUploadOpen" @close="isUploadOpen = false" :album-id="props.album.id" />
 	<ImportFromLink v-if="canUpload" v-model:visible="isImportFromLinkOpen" :parent-id="props.album.id" @refresh="refresh" />
 	<AlbumCreateDialog
-		v-if="canUpload && config.is_model_album"
+		v-if="canUpload && props.config.is_model_album"
 		v-model:visible="isCreateAlbumOpen"
 		v-model:parent-id="props.album.id"
 		@close="isCreateAlbumOpen = false"
@@ -27,8 +27,8 @@
 				<Button icon="pi pi-map" class="border-none" severity="secondary" text />
 			</router-link>
 			<Button icon="pi pi-search" class="border-none" severity="secondary" text @click="openSearch" v-if="props.config.is_search_accessible" />
-			<Button icon="pi pi-plus" class="border-none" severity="secondary" text @click="openAddMenu" v-if="album.rights.can_upload" />
-			<template v-if="album.rights.can_edit">
+			<Button icon="pi pi-plus" class="border-none" severity="secondary" text @click="openAddMenu" v-if="props.album.rights.can_upload" />
+			<template v-if="props.album.rights.can_edit">
 				<Button v-if="!are_details_open" icon="pi pi-angle-down" severity="secondary" text class="mr-2 border-none" @click="toggleDetails" />
 				<Button
 					v-if="are_details_open"
@@ -41,7 +41,7 @@
 			</template>
 		</template>
 	</Toolbar>
-	<ContextMenu ref="addmenu" :model="addMenu" v-if="album.rights.can_upload">
+	<ContextMenu ref="addmenu" :model="addMenu" v-if="props.album.rights.can_upload && props.config.is_model_album">
 		<template #item="{ item, props }">
 			<Divider v-if="item.is_divider" />
 			<a v-else v-ripple v-bind="props.action" @click="item.callback">
@@ -50,9 +50,9 @@
 			</a>
 		</template>
 	</ContextMenu>
+	<input id="upload_track_file" type="file" name="fileElem" accept="application/x-gpx+xml" class="hidden" @change="uploadTrack" />
 </template>
 <script setup lang="ts">
-import LoginModal from "@/components/modals/LoginModal.vue";
 import Button from "primevue/button";
 import Toolbar from "primevue/toolbar";
 import { computed, ref } from "vue";
@@ -68,6 +68,7 @@ import Divider from "primevue/divider";
 import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
+import AlbumService from "@/services/album-service";
 
 const props = defineProps<{
 	config: App.Http.Resources.GalleryConfigs.AlbumConfig;
@@ -106,7 +107,29 @@ const emit = defineEmits<{
 	//   (e: 'update', value: string): void
 }>();
 
-const { addmenu, addMenu, openAddMenu } = useContextMenuAlbumAdd({ toggleUpload, toggleCreateAlbum, toggleImportFromLink });
+function toggleUploadTrack() {
+	document.getElementById("upload_track_file")?.click();
+}
+
+function uploadTrack(e: Event) {
+	const target: HTMLInputElement = e.target as HTMLInputElement;
+	if (target.files === null) {
+		return;
+	}
+	AlbumService.uploadTrack(props.album.id, target.files[0] as Blob);
+}
+
+function deleteTrack() {
+	AlbumService.deleteTrack(props.album.id);
+}
+
+const { addmenu, addMenu, openAddMenu } = useContextMenuAlbumAdd(props.album, {
+	toggleUpload,
+	toggleCreateAlbum,
+	toggleImportFromLink,
+	toggleUploadTrack,
+	deleteTrack,
+});
 
 const router = useRouter();
 const canUpload = computed(() => props.user.id !== null && props.album.rights.can_upload === true);
