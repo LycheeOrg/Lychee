@@ -1,4 +1,4 @@
-import axios, { type AxiosResponse } from "axios";
+import axios, { AxiosRequestConfig, type AxiosResponse } from "axios";
 import Constants from "./constants";
 import { AxiosCacheInstance } from "axios-cache-interceptor";
 
@@ -138,18 +138,23 @@ const AlbumService = {
 		location.href = `${Constants.API_URL}Zip?album_ids=${album_ids.join(",")}`;
 	},
 
-	setTrack(album_id: string, file: Blob): Promise<AxiosResponse> {
+	uploadTrack(album_id: string, file: Blob): Promise<AxiosResponse> {
 		const formData = new FormData();
 		formData.append("album_id", album_id);
 		formData.append("file", file);
 
-		return axios.post(`${Constants.API_URL}Album::track`, formData, {
-			headers: { "Content-Type": "multipart/form-data" },
-		});
+		const config: AxiosRequestConfig<FormData> = {
+			headers: {
+				"Content-Type": "application/json",
+			},
+			transformRequest: [(data) => data],
+		};
+
+		return axios.post(`${Constants.API_URL}Album::track`, formData, config);
 	},
 
 	deleteTrack(album_id: string): Promise<AxiosResponse> {
-		return axios.delete(`${Constants.API_URL}Album::track`, { params: { album_id: album_id } });
+		return axios.delete(`${Constants.API_URL}Album::track`, { params: { album_id: album_id }, data: {} });
 	},
 };
 
