@@ -59,6 +59,9 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		is_loading: false,
 
 		nsfw_consented: [] as string[],
+
+		// Dropbox API key
+		dropbox_api_key: "",
 	}),
 	getters: {
 		isSearchActive(): boolean {
@@ -105,6 +108,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.is_se_enabled = data.is_se_enabled;
 					this.is_se_preview_enabled = data.is_se_preview_enabled;
 					this.is_se_info_hidden = data.is_se_info_hidden;
+					this.dropbox_api_key = data.dropbox_api_key;
 				})
 				.catch((error) => {
 					// In this specific case, even though it has been possibly disabled, we really need to see the error.

@@ -4,6 +4,7 @@ type Callbacks = {
 	toggleUpload: () => void;
 	toggleImportFromLink: () => void;
 	toggleCreateAlbum: () => void;
+	toggleImportFromDropbox: () => void;
 };
 
 export function useContextMenuAlbumsAdd(callbacks: Callbacks) {
@@ -25,11 +26,11 @@ export function useContextMenuAlbumsAdd(callbacks: Callbacks) {
 			icon: "pi pi-link",
 			callback: callbacks.toggleImportFromLink,
 		},
-		// {
-		// 	label: "lychee.IMPORT_DROPBOX",
-		// 	icon: "pi pi-box",
-		// 	callback: () => {},
-		// },
+		{
+			label: "lychee.IMPORT_DROPBOX",
+			icon: "pi pi-box",
+			callback: callbacks.toggleImportFromDropbox,
+		},
 		{
 			label: "lychee.IMPORT_SERVER",
 			icon: "pi pi-server",

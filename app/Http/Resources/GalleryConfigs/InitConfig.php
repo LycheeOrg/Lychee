@@ -8,6 +8,7 @@ use App\Enum\ImageOverlayType;
 use App\Enum\ThumbAlbumSubtitleType;
 use App\Enum\ThumbOverlayVisibilityType;
 use App\Models\Configs;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\URL;
 use LycheeVerify\Verify;
 use Spatie\LaravelData\Data;
@@ -33,6 +34,7 @@ class InitConfig extends Data
 	public AlbumDecorationType $album_decoration;
 	public AlbumDecorationOrientation $album_decoration_orientation;
 	public string $title;
+	public string $dropbox_api_key;
 
 	// Lychee SE is available.
 	public bool $is_se_enabled;
@@ -69,6 +71,8 @@ class InitConfig extends Data
 		$this->is_se_enabled = $verify->validate() && $is_supporter;
 		$this->is_se_preview_enabled = !$is_supporter && !Configs::getValueAsBool('disable_se_call_for_actions') && Configs::getValueAsBool('enable_se_preview');
 		$this->is_se_info_hidden = $is_supporter || Configs::getValueAsBool('disable_se_call_for_actions');
+
+		$this->dropbox_api_key = Auth::user()?->may_administrate === true ? Configs::getValueAsString('dropbox_key') : '';
 	}
 
 	private function has_clockwork_in_menu(): string|null
