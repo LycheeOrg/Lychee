@@ -5,7 +5,7 @@ namespace App\Livewire\Components\Pages\Gallery;
 use App\Enum\ImageOverlayType;
 use App\Enum\LicenseType;
 use App\Enum\MapProviders;
-use App\Http\Resources\Collections\PhotoCollectionResource;
+use App\Legacy\V1\Resources\Collections\PhotoCollectionResource;
 use App\Livewire\DTO\AlbumFlags;
 use App\Livewire\DTO\AlbumFormatted;
 use App\Livewire\DTO\AlbumRights;

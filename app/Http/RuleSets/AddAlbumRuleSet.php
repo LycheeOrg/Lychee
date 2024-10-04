@@ -2,8 +2,8 @@
 
 namespace App\Http\RuleSets;
 
-use App\Contracts\Http\Requests\RequestAttribute;
 use App\Contracts\Http\RuleSet;
+use App\Legacy\V1\Contracts\Http\Requests\RequestAttribute;
 use App\Rules\RandomIDRule;
 use App\Rules\TitleRule;
 

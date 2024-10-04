@@ -1,0 +1,72 @@
+<?php
+
+namespace App\Legacy\V1\Middleware;
+
+use App\Assets\Features;
+use App\Exceptions\ConfigurationException;
+use App\Exceptions\ConfigurationKeyMissingException;
+use App\Exceptions\Internal\FrameworkException;
+use App\Exceptions\Internal\LycheeLogicException;
+use App\Models\Configs;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
+
+/**
+ * Class LoginRequired.
+ *
+ * This middleware is ensures that only logged in users can access Lychee.
+ */
+class LoginRequiredV1
+{
+	public const ROOT = 'root';
+	public const ALBUM = 'album';
+
+	/**
+	 * Handle an incoming request.
+	 *
+	 * @param Request  $request        the incoming request to serve
+	 * @param \Closure $next           the next operation to be applied to the
+	 *                                 request
+	 * @param string   $requiredStatus the required login status; either
+	 *                                 {@link self::ROOT} or
+	 *                                 {@link self::ALBUM}
+	 *
+	 * @throws ConfigurationException
+	 * @throws FrameworkException
+	 */
+	public function handle(Request $request, \Closure $next, string $requiredStatus): mixed
+	{
+		// We are logged in. Proceed.
+		if (Auth::user() !== null) {
+			return $next($request);
+		}
+
+		$dir_url = config('app.dir_url');
+		if (Features::inactive('livewire') && !Str::startsWith($request->getRequestUri(), $dir_url . '/livewire/')) {
+			return $next($request);
+		}
+
+		if ($requiredStatus !== self::ALBUM && $requiredStatus !== self::ROOT) {
+			throw new LycheeLogicException($requiredStatus . ' is not a valid login requirement.');
+		}
+
+		try {
+			if (!Configs::getValueAsBool('login_required')) {
+				// Login is not required. Proceed.
+				return $next($request);
+			}
+
+			if ($requiredStatus === self::ALBUM && Configs::getValueAsBool('login_required_root_only')) {
+				return $next($request);
+			}
+
+			return redirect()->route('login');
+		} catch (ConfigurationKeyMissingException $e) {
+			Log::warning(__METHOD__ . ':' . __LINE__ . ' ' . $e->getMessage());
+
+			return $next($request);
+		}
+	}
+}

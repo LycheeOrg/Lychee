@@ -2,9 +2,9 @@
 
 namespace App\Http\RuleSets\Photo;
 
-use App\Contracts\Http\Requests\RequestAttribute;
 use App\Contracts\Http\RuleSet;
 use App\Enum\LicenseType;
+use App\Legacy\V1\Contracts\Http\Requests\RequestAttribute;
 use App\Rules\RandomIDRule;
 use Illuminate\Validation\Rules\Enum;
 

@@ -16,7 +16,7 @@ use App\Livewire\Components\Pages\Users;
 use App\Models\User;
 use Livewire\Livewire;
 use Tests\AbstractTestCase;
-use Tests\Feature\Traits\RequiresEmptyUsers;
+use Tests\Traits\RequiresEmptyUsers;
 
 class UsersTest extends AbstractTestCase
 {

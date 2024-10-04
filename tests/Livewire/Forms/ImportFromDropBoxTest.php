@@ -15,7 +15,7 @@ namespace Tests\Livewire\Forms;
 use App\Livewire\Components\Forms\Add\ImportFromDropbox;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Livewire\Livewire;
-use Tests\Feature\Constants\TestConstants;
+use Tests\Constants\TestConstants;
 use Tests\Livewire\Base\BaseLivewireTest;
 
 class ImportFromDropBoxTest extends BaseLivewireTest
