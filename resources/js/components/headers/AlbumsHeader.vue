@@ -4,6 +4,7 @@
 	<UploadPanel v-if="canUpload" v-model:visible="isUploadOpen" :album-id="null" @close="refresh" />
 	<ImportFromServer v-if="canUpload" v-model:visible="isImportFromServerOpen" />
 	<ImportFromLink v-if="canUpload" v-model:visible="isImportFromLinkOpen" :parent-id="null" />
+	<DropBox v-if="canUpload" v-model:visible="isImportFromDropboxOpen" :album-id="null" />
 	<AlbumCreateDialog v-if="canUpload" v-model:visible="isCreateAlbumOpen" :parent-id="null" />
 	<AlbumCreateTagDialog v-if="canUpload" v-model:visible="isCreateTagAlbumOpen" />
 	<Toolbar class="w-full border-0 h-14" :pt:root:class="'flex-nowrap'" :pt:center:class="'absolute top-0 py-3 left-1/2 -translate-x-1/2 h-14'">
@@ -97,6 +98,7 @@ import Divider from "primevue/divider";
 import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
 import WebAuthnService from "@/services/webauthn-service";
 import { useRouter } from "vue-router";
+import DropBox from "../modals/DropBox.vue";
 
 const props = defineProps<{
 	user: App.Http.Resources.Models.UserResource;
@@ -129,7 +131,7 @@ const emit = defineEmits<{
 // 	'UPLOAD_TRACK' => 'Upload track',
 // 	'DELETE_TRACK' => 'Delete track',
 const lycheeStore = useLycheeStateStore();
-const { left_menu_open, is_login_open } = storeToRefs(lycheeStore);
+const { left_menu_open, is_login_open, dropbox_api_key } = storeToRefs(lycheeStore);
 const isWebAuthnOpen = ref(false);
 const router = useRouter();
 const openLeftMenu = () => (left_menu_open.value = !left_menu_open.value);
@@ -149,6 +151,8 @@ const {
 	toggleShareAlbum,
 	isImportFromLinkOpen,
 	toggleImportFromLink,
+	isImportFromDropboxOpen,
+	toggleImportFromDropbox,
 	isUploadOpen,
 	toggleUpload,
 } = useGalleryModals();
@@ -157,6 +161,7 @@ const { addmenu, addMenu, isImportFromServerOpen, isCreateTagAlbumOpen } = useCo
 	toggleUpload: toggleUpload,
 	toggleCreateAlbum: toggleCreateAlbum,
 	toggleImportFromLink: toggleImportFromLink,
+	toggleImportFromDropbox: toggleImportFromDropbox,
 });
 
 const canUpload = computed(() => props.user.id !== null);

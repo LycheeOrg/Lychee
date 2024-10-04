@@ -1,5 +1,6 @@
 <template>
 	<UploadPanel v-if="canUpload" v-model:visible="isUploadOpen" @close="isUploadOpen = false" :album-id="props.album.id" />
+	<DropBox v-if="canUpload" v-model:visible="isImportFromDropboxOpen" :album-id="props.album.id" />
 	<ImportFromLink v-if="canUpload" v-model:visible="isImportFromLinkOpen" :parent-id="props.album.id" @refresh="refresh" />
 	<AlbumCreateDialog
 		v-if="canUpload && props.config.is_model_album"
@@ -69,6 +70,7 @@ import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import AlbumService from "@/services/album-service";
+import DropBox from "../modals/DropBox.vue";
 
 const props = defineProps<{
 	config: App.Http.Resources.GalleryConfigs.AlbumConfig;
@@ -98,6 +100,8 @@ const {
 	toggleShareAlbum,
 	isImportFromLinkOpen,
 	toggleImportFromLink,
+	isImportFromDropboxOpen,
+	toggleImportFromDropbox,
 	isUploadOpen,
 	toggleUpload,
 } = useGalleryModals();
@@ -129,6 +133,7 @@ const { addmenu, addMenu, openAddMenu } = useContextMenuAlbumAdd(props.album, {
 	toggleImportFromLink,
 	toggleUploadTrack,
 	deleteTrack,
+	toggleImportFromDropbox,
 });
 
 const router = useRouter();

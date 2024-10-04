@@ -6,6 +6,7 @@ type Callbacks = {
 	toggleImportFromLink: () => void;
 	toggleUploadTrack: () => void;
 	deleteTrack: () => void;
+	toggleImportFromDropbox: () => void;
 };
 
 export function useContextMenuAlbumAdd(
@@ -31,11 +32,11 @@ export function useContextMenuAlbumAdd(
 				icon: "pi pi-link",
 				callback: callbacks.toggleImportFromLink,
 			},
-			// {
-			// 	label: "lychee.IMPORT_DROPBOX",
-			// 	icon: "pi pi-box",
-			// 	callback: () => {},
-			// },
+			{
+				label: "lychee.IMPORT_DROPBOX",
+				icon: "pi pi-box",
+				callback: callbacks.toggleImportFromDropbox,
+			},
 			{
 				is_divider: true,
 			},

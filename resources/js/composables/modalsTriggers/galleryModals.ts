@@ -43,6 +43,12 @@ export function useGalleryModals() {
 		isImportFromLinkOpen.value = !isImportFromLinkOpen.value;
 	}
 
+	const isImportFromDropboxOpen = ref(false);
+
+	function toggleImportFromDropbox() {
+		isImportFromDropboxOpen.value = !isImportFromDropboxOpen.value;
+	}
+
 	const isUploadOpen = ref(false);
 
 	function toggleUpload() {
@@ -76,6 +82,8 @@ export function useGalleryModals() {
 		toggleShareAlbum,
 		isImportFromLinkOpen,
 		toggleImportFromLink,
+		isImportFromDropboxOpen,
+		toggleImportFromDropbox,
 		isUploadOpen,
 		toggleUpload,
 		isTagVisible,
