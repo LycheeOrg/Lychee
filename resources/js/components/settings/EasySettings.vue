@@ -21,12 +21,7 @@
 				<SelectLang v-if="lang !== undefined" :config="lang" />
 				<div class="flex flex-wrap justify-between">
 					<label for="pp_dialog_nsfw_visible">{{ $t("lychee.NSFW_VISIBLE_TEXT_1") }}</label>
-					<ToggleSwitch
-						id="pp_dialog_nsfw_visible"
-						v-model="nsfwVisible_value"
-						class="text-sm"
-						@update:model-value="updateNSFW"
-					/>
+					<ToggleSwitch id="pp_dialog_nsfw_visible" v-model="nsfwVisible_value" class="text-sm" @update:model-value="updateNSFW" />
 					<p class="my-1.5 text-muted-color w-full" v-html="nsfwText2"></p>
 				</div>
 			</div>
@@ -128,23 +123,15 @@
 				<BoolField v-if="location_show_public !== undefined" :config="location_show_public" @filled="save" />
 			</div>
 		</Fieldset>
-		<Fieldset legend="Advanced Customization" class="border-b-0 border-r-0 rounded-r-none rounded-b-none"
-			:toggleable="true"
-			:collapsed="true">
+		<Fieldset legend="Advanced Customization" class="border-b-0 border-r-0 rounded-r-none rounded-b-none" :toggleable="true" :collapsed="true">
 			<div class="flex flex-col gap-4">
 				<div>
-					<Textarea
-						v-model="css"
-						class="w-full h-48" rows="10" cols="30" 
-					/>
-					<Button severity="contrast" class="w-full border-none font-bold" @click="saveCss" >{{ $t("lychee.CSS_TITLE") }}</Button>
+					<Textarea v-model="css" class="w-full h-48" rows="10" cols="30" />
+					<Button severity="contrast" class="w-full border-none font-bold" @click="saveCss">{{ $t("lychee.CSS_TITLE") }}</Button>
 				</div>
 				<div>
-					<Textarea
-						v-model="js"
-						class="w-full h-48" rows="10" cols="30" 
-					/>
-					<Button severity="contrast" class="w-full border-none font-bold" @click="saveJs" >{{ $t("lychee.JS_TITLE") }}</Button>
+					<Textarea v-model="js" class="w-full h-48" rows="10" cols="30" />
+					<Button severity="contrast" class="w-full border-none font-bold" @click="saveJs">{{ $t("lychee.JS_TITLE") }}</Button>
 				</div>
 			</div>
 		</Fieldset>
@@ -302,21 +289,23 @@ function updateNSFW() {
 }
 
 function saveCss() {
-	SettingsService.setCss(css.value ?? '').then(() => {
-		toast.add({ severity: "success", summary: "Change saved!", life: 3000 });
-	}).
-	catch(() => {
-		toast.add({ severity: "error", summary: "Error!", detail: "Could not save CSS", life: 3000 });
-	});
+	SettingsService.setCss(css.value ?? "")
+		.then(() => {
+			toast.add({ severity: "success", summary: "Change saved!", life: 3000 });
+		})
+		.catch(() => {
+			toast.add({ severity: "error", summary: "Error!", detail: "Could not save CSS", life: 3000 });
+		});
 }
 
 function saveJs() {
-	SettingsService.setJs(js.value ?? '').then(() => {
-		toast.add({ severity: "success", summary: "Change saved!", life: 3000 });
-	}).
-	catch(() => {
-		toast.add({ severity: "error", summary: "Error!", detail: "Could not save JS", life: 3000 });
-	});
+	SettingsService.setJs(js.value ?? "")
+		.then(() => {
+			toast.add({ severity: "success", summary: "Change saved!", life: 3000 });
+		})
+		.catch(() => {
+			toast.add({ severity: "error", summary: "Error!", detail: "Could not save JS", life: 3000 });
+		});
 }
 
 load();

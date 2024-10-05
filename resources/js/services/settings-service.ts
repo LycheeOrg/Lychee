@@ -26,7 +26,7 @@ const SettingsService = {
 	},
 	getCss(): Promise<AxiosResponse> {
 		return axios.get(`${window.assets_url}/dist/user.css`);
-	}
+	},
 };
 
 export default SettingsService;
