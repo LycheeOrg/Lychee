@@ -37,6 +37,10 @@ export default {
       dropShadow: {
         '3xl': '0 20px 20px rgba(0, 0, 0, 1)',
       },
+      brightness: {
+        25: '.25',
+        175: '1.75',
+      },
       fontSize: {
         '3xs': ['0.55rem', '0.7rem'],
         '2xs': ['0.65rem', '0.8rem'],

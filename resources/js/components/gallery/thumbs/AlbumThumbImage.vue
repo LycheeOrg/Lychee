@@ -6,6 +6,7 @@
 		<img
 			:alt="$t('lychee.PHOTO_THUMBNAIL')"
 			class="w-full h-full m-0 p-0 border-0 object-cover"
+			:class="classList"
 			:src="src"
 			:srcset="srcSet"
 			data-overlay="false"
@@ -15,7 +16,7 @@
 	</span>
 </template>
 <script setup lang="ts">
-import { watch, ref } from "vue";
+import { watch, ref, computed } from "vue";
 
 const props = defineProps<{
 	thumb: App.Http.Resources.Models.ThumbResource | undefined | null;
@@ -25,20 +26,26 @@ const props = defineProps<{
 
 const src = ref("");
 const srcSet = ref("");
+const classList = computed(() => {
+	if (src.value === window.assets_url + "/img/no_images.svg" || src.value === window.assets_url + "/img/password.svg") {
+		return "invert brightness-25 dark:invert-0 dark:brightness-100";
+	}
+	return "";
+});
 
 function load(thumb: App.Http.Resources.Models.ThumbResource | undefined | null, isPasswordProtected: boolean) {
 	if (thumb?.thumb === "uploads/thumb/") {
-		src.value = window.assets_url + "img/placeholder.png";
+		src.value = window.assets_url + "/img/placeholder.png";
 		if (thumb.type.includes("video")) {
-			src.value = window.assets_url + "img/play-icon.png";
+			src.value = window.assets_url + "/img/play-icon.png";
 		}
 		if (thumb.type.includes("raw")) {
-			src.value = window.assets_url + "img/no_images.svg";
+			src.value = window.assets_url + "/img/no_images.svg";
 		}
 	} else {
 		src.value = isNotEmpty(thumb?.thumb)
 			? (thumb?.thumb as string)
-			: window.assets_url + (isPasswordProtected ? "img/password.svg" : "img/no_images.svg");
+			: window.assets_url + (isPasswordProtected ? "/img/password.svg" : "/img/no_images.svg");
 	}
 	srcSet.value = isNotEmpty(thumb?.thumb2x) ? (thumb?.thumb2x as string) : "";
 }

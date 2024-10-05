@@ -34,6 +34,9 @@
 					</FloatLabel>
 					<Message v-if="invalidPassword" severity="error">Unknown user or invalid password</Message>
 				</div>
+				<div class="px-9 text-muted-color text-right font-semibold">
+					Lychee <span class="text-primary-500" v-if="is_se_enabled">SE</span>
+				</div>
 				<div class="flex items-center mt-9">
 					<Button @click="closeCallback" severity="secondary" class="w-full font-bold border-none rounded-none rounded-bl-xl flex-shrink">
 						{{ $t("lychee.CANCEL") }}
@@ -59,6 +62,8 @@ import InputPassword from "@/components/forms/basic/InputPassword.vue";
 import { useAuthStore } from "@/stores/Auth";
 import AlbumService from "@/services/album-service";
 import OauthService from "@/services/oauth-service";
+import { useLycheeStateStore } from "@/stores/LycheeState";
+import { storeToRefs } from "pinia";
 
 const visible = defineModel("visible", { default: false }) as Ref<boolean>;
 
@@ -76,6 +81,8 @@ type OauthProvider = {
 const username = ref("");
 const password = ref("");
 const authStore = useAuthStore();
+const lycheeStore = useLycheeStateStore();
+const { is_se_enabled } = storeToRefs(lycheeStore);
 const invalidPassword = ref(false);
 
 const oauths = ref(undefined as undefined | OauthProvider[]);

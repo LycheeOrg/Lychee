@@ -6,7 +6,7 @@ import { useGrid } from "./useGrid";
 
 export function useLayouts(config: App.Http.Resources.GalleryConfigs.PhotoLayoutConfig) {
 	const layout = ref(config);
-	const BASE = "my-0 w-5 h-5 mr-0 ml-0 transition-all duration-300 group-hover:scale-150 group-hover:stroke-white ";
+	const BASE = "my-0 w-5 h-5 mr-0 ml-0 transition-all duration-300 group-hover:scale-150 group-hover:stroke-black dark:group-hover:stroke-white ";
 	const squareClass = computed(() => BASE + (layout.value.photos_layout === "square" ? "stroke-primary-400" : "stroke-neutral-400"));
 	const justifiedClass = computed(() => BASE + (layout.value.photos_layout === "justified" ? "fill-primary-400" : "fill-neutral-400"));
 	const masonryClass = computed(() => BASE + (layout.value.photos_layout === "masonry" ? "stroke-primary-400" : "stroke-neutral-400"));
