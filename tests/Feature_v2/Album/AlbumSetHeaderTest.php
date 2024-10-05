@@ -24,14 +24,14 @@ class AlbumSetHeaderTest extends BaseApiV2Test
 
 		$response = $this->postJson('Album::header', [
 			'album_id' => $this->album1->id,
-			'photo_id' => $this->photo1->id,
+			'header_id' => $this->photo1->id,
 			'is_compact' => false,
 		]);
 		$this->assertUnauthorized($response);
 
 		$response = $this->actingAs($this->userNoUpload)->postJson('Album::header', [
 			'album_id' => $this->album1->id,
-			'photo_id' => $this->photo1->id,
+			'header_id' => $this->photo1->id,
 			'is_compact' => false,
 		]);
 		$this->assertForbidden($response);
@@ -45,7 +45,7 @@ class AlbumSetHeaderTest extends BaseApiV2Test
 		// Set the header ID
 		$response = $this->postJson('Album::header', [
 			'album_id' => $this->album1->id,
-			'photo_id' => $this->photo1->id,
+			'header_id' => $this->photo1->id,
 			'is_compact' => false,
 		]);
 		$this->assertNoContent($response);
@@ -70,7 +70,7 @@ class AlbumSetHeaderTest extends BaseApiV2Test
 		// Unset the header_id with second user (with grants_edit).
 		$response = $this->actingAs($this->userMayUpload2)->postJson('Album::header', [
 			'album_id' => $this->album1->id,
-			'photo_id' => $this->photo1->id,
+			'header_id' => $this->photo1->id,
 			'is_compact' => false,
 		]);
 		$this->assertNoContent($response);
@@ -98,7 +98,7 @@ class AlbumSetHeaderTest extends BaseApiV2Test
 		// Set the header ID
 		$response = $this->actingAs($this->userMayUpload1)->postJson('Album::header', [
 			'album_id' => $this->album1->id,
-			'photo_id' => 'aaaaaaaaaaaaaaaaaaaaaaaa',
+			'header_id' => 'aaaaaaaaaaaaaaaaaaaaaaaa',
 			'is_compact' => true,
 		]);
 		$this->assertNoContent($response);
@@ -123,7 +123,7 @@ class AlbumSetHeaderTest extends BaseApiV2Test
 		// Unset the header_id with second user (with grants_edit).
 		$response = $this->actingAs($this->userMayUpload2)->postJson('Album::header', [
 			'album_id' => $this->album1->id,
-			'photo_id' => $this->photo1->id,
+			'header_id' => $this->photo1->id,
 			'is_compact' => false,
 		]);
 		$this->assertNoContent($response);
@@ -148,7 +148,7 @@ class AlbumSetHeaderTest extends BaseApiV2Test
 		// Unset the header_id with second user (with grants_edit).
 		$response = $this->actingAs($this->userMayUpload1)->postJson('Album::header', [
 			'album_id' => $this->album1->id,
-			'photo_id' => $this->photo2->id,
+			'header_id' => $this->photo2->id,
 			'is_compact' => false,
 		]);
 		$this->assertForbidden($response);

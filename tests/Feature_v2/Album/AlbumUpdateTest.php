@@ -29,6 +29,8 @@ class AlbumUpdateTest extends BaseApiV2Test
 			'album_sorting_order' => 'DESC',
 			'album_aspect_ratio' => '1/1',
 			'copyright' => '',
+			'is_compact' => false,
+			'header_id' => null,
 		]);
 		$this->assertUnauthorized($response);
 
@@ -43,6 +45,8 @@ class AlbumUpdateTest extends BaseApiV2Test
 			'album_sorting_order' => 'DESC',
 			'album_aspect_ratio' => '1/1',
 			'copyright' => '',
+			'is_compact' => false,
+			'header_id' => null,
 		]);
 		$this->assertForbidden($response);
 	}
@@ -60,6 +64,8 @@ class AlbumUpdateTest extends BaseApiV2Test
 			'album_sorting_order' => 'DESC',
 			'album_aspect_ratio' => '1/1',
 			'copyright' => '',
+			'is_compact' => false,
+			'header_id' => null,
 		]);
 		$this->assertOk($response);
 	}
