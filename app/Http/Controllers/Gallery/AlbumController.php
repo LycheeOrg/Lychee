@@ -256,7 +256,7 @@ class AlbumController extends Controller
 		if ($request->is_compact()) {
 			$album->header_id = self::COMPACT_HEADER;
 		} else {
-			$album->header_id = ($album->header_id === $request->photo()->id) ? null : $request->photo()->id;
+			$album->header_id = ($album->header_id === $request->photo()?->id) ? null : $request->photo()?->id;
 		}
 		$album->save();
 	}
