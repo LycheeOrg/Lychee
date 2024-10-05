@@ -15,6 +15,10 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		// Photo toggleables
 		is_edit_open: false,
 		are_details_open: false,
+		is_slideshow_active: false,
+
+		// Photo config
+		slideshow_timeout: 5,
 
 		// Search stuff
 		search_term: "",
@@ -109,6 +113,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.is_se_preview_enabled = data.is_se_preview_enabled;
 					this.is_se_info_hidden = data.is_se_info_hidden;
 					this.dropbox_api_key = data.dropbox_api_key;
+					this.slideshow_timeout = data.slideshow_timeout;
 				})
 				.catch((error) => {
 					// In this specific case, even though it has been possibly disabled, we really need to see the error.

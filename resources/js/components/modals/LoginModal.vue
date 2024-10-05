@@ -66,8 +66,8 @@ import { storeToRefs } from "pinia";
 const visible = defineModel("visible", { default: false }) as Ref<boolean>;
 
 const emits = defineEmits<{
-	(e: "logged-in"): void;
-	(e: "open-webauthn"): void;
+	"logged-in": [];
+	"open-webauthn": [];
 }>();
 
 type OauthProvider = {

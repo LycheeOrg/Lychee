@@ -52,8 +52,8 @@ const props = defineProps<{
 
 const visible = defineModel<boolean>("visible", { default: false });
 
-const emit = defineEmits<{
-	(e: "tagged"): void;
+const emits = defineEmits<{
+	tagged: [];
 }>();
 
 const toast = useToast();
@@ -94,7 +94,7 @@ function execute() {
 		});
 		AlbumService.clearCache(props.parentId);
 		close();
-		emit("tagged");
+		emits("tagged");
 	});
 }
 </script>

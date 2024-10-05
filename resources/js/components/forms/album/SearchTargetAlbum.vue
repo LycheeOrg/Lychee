@@ -35,7 +35,7 @@ const props = defineProps<{
 
 const albumId = ref(props.albumId ?? (null as string | null));
 const emits = defineEmits<{
-	(e: "selected", target: App.Http.Resources.Models.TargetAlbumResource): void;
+	selected: [target: App.Http.Resources.Models.TargetAlbumResource];
 }>();
 
 const options = ref([] as App.Http.Resources.Models.TargetAlbumResource[]);

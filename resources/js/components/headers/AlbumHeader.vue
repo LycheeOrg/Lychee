@@ -18,16 +18,29 @@
 		</template>
 
 		<template #end>
-			<router-link :to="{ name: 'frame-with-album', params: { albumid: props.album.id } }" v-if="props.config.is_mod_frame_enabled">
+			<Button icon="pi pi-play" class="border-none" severity="secondary" text @click="toggleSlideShow" v-if="props.album.photos.length > 0" />
+			<router-link
+				:to="{ name: 'frame-with-album', params: { albumid: props.album.id } }"
+				v-if="props.config.is_mod_frame_enabled"
+				class="hidden sm:block"
+			>
 				<Button icon="pi pi-desktop" class="border-none" severity="secondary" text />
 			</router-link>
 			<router-link
 				:to="{ name: 'map-with-album', params: { albumid: props.album.id } }"
 				v-if="props.config.is_map_accessible && hasCoordinates"
+				class="hidden sm:block"
 			>
 				<Button icon="pi pi-map" class="border-none" severity="secondary" text />
 			</router-link>
-			<Button icon="pi pi-search" class="border-none" severity="secondary" text @click="openSearch" v-if="props.config.is_search_accessible" />
+			<Button
+				icon="pi pi-search"
+				class="border-none hidden sm:block"
+				severity="secondary"
+				text
+				@click="openSearch"
+				v-if="props.config.is_search_accessible"
+			/>
 			<Button icon="pi pi-plus" class="border-none" severity="secondary" text @click="openAddMenu" v-if="props.album.rights.can_upload" />
 			<template v-if="props.album.rights.can_edit">
 				<Button v-if="!are_details_open" icon="pi pi-angle-down" severity="secondary" text class="mr-2 border-none" @click="toggleDetails" />
@@ -81,7 +94,7 @@ const props = defineProps<{
 const toggleDetails = () => (are_details_open.value = !are_details_open.value);
 const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
-const { are_details_open, is_login_open } = storeToRefs(lycheeStore);
+const { are_details_open, is_login_open, is_slideshow_active } = storeToRefs(lycheeStore);
 
 const hasCoordinates = computed(() => props.album.photos.find((photo) => photo.latitude !== null && photo.longitude !== null) !== undefined);
 
@@ -106,13 +119,17 @@ const {
 	toggleUpload,
 } = useGalleryModals();
 
-const emit = defineEmits<{
-	(e: "refresh"): void;
-	//   (e: 'update', value: string): void
+const emits = defineEmits<{
+	refresh: [];
+	toggleSlideShow: [];
 }>();
 
 function toggleUploadTrack() {
 	document.getElementById("upload_track_file")?.click();
+}
+
+function toggleSlideShow() {
+	emits("toggleSlideShow");
 }
 
 function uploadTrack(e: Event) {
@@ -155,7 +172,7 @@ function openSearch() {
 
 // bubble up.
 function refresh() {
-	emit("refresh");
+	emits("refresh");
 }
 
 onKeyStroke("n", () => !shouldIgnoreKeystroke() && (isCreateAlbumOpen.value = true));

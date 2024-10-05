@@ -2,7 +2,14 @@
 	<div class="h-svh overflow-y-hidden">
 		<!-- Trick to avoid the scroll bar to appear on the right when switching to full screen -->
 		<Collapse :when="!is_full_screen">
-			<AlbumHeader v-if="album && config && user" :album="album" :config="config" :user="user" @refresh="refresh" />
+			<AlbumHeader
+				v-if="album && config && user"
+				:album="album"
+				:config="config"
+				:user="user"
+				@refresh="refresh"
+				@toggle-slide-show="toggleSlideShow"
+			/>
 		</Collapse>
 		<LoginModal v-if="user?.id === null" v-model:visible="is_login_open" @logged-in="refresh" />
 		<Unlock :albumid="albumid" :visible="isPasswordProtected" @reload="refresh" @fail="is_login_open = true" />
@@ -103,7 +110,7 @@
 <script setup lang="ts">
 import { useAuthStore } from "@/stores/Auth";
 import { computed, ref, watch } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import AlbumThumbPanel from "@/components/gallery/AlbumThumbPanel.vue";
 import PhotoThumbPanel from "@/components/gallery/PhotoThumbPanel.vue";
 import ShareAlbum from "@/components/modals/ShareAlbum.vue";
@@ -135,6 +142,7 @@ import Unlock from "@/components/forms/album/Unlock.vue";
 import LoginModal from "@/components/modals/LoginModal.vue";
 
 const route = useRoute();
+const router = useRouter();
 
 const props = defineProps<{
 	albumid: string;
@@ -147,7 +155,18 @@ const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
 lycheeStore.resetSearch();
 
-const { are_nsfw_visible, is_full_screen, is_login_open, nsfw_consented } = storeToRefs(lycheeStore);
+const { are_nsfw_visible, is_full_screen, is_login_open, nsfw_consented, is_slideshow_active } = storeToRefs(lycheeStore);
+
+// Reset the slideshow.
+is_slideshow_active.value = false;
+function toggleSlideShow() {
+	if (album.value === undefined || album.value.photos.length === 0) {
+		return;
+	}
+
+	is_slideshow_active.value = true;
+	router.push({ name: "photo", params: { albumid: album.value.id, photoid: album.value.photos[0].id } });
+}
 
 // Set up Album ID reference. This one is updated at each page change.
 const { isPasswordProtected, user, modelAlbum, album, layout, photos, config, loadLayout, refresh } = useAlbumRefresher(albumid, auth, is_login_open);
@@ -274,4 +293,5 @@ refresh();
 
 onKeyStroke("h", () => !shouldIgnoreKeystroke() && (are_nsfw_visible.value = !are_nsfw_visible.value));
 onKeyStroke("f", () => !shouldIgnoreKeystroke() && lycheeStore.toggleFullScreen());
+onKeyStroke(" ", () => !shouldIgnoreKeystroke() && toggleSlideShow());
 </script>

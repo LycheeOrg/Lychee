@@ -26,8 +26,8 @@ const options = ref([] as string[]);
 const changed = computed(() => val.value !== props.config.value);
 
 const emits = defineEmits<{
-	(e: "filled", key: string, value: string): void;
-	(e: "reset", key: string): void;
+	filled: [key: string, value: string];
+	reset: [key: string];
 }>();
 
 SettingsService.getLanguages().then((response) => {

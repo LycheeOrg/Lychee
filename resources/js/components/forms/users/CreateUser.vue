@@ -36,7 +36,7 @@ const may_upload = ref(false);
 
 const toast = useToast();
 const emits = defineEmits<{
-	(e: "createUser"): void;
+	createUser: [];
 }>();
 
 function createUser() {

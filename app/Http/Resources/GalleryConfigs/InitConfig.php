@@ -35,6 +35,7 @@ class InitConfig extends Data
 	public AlbumDecorationOrientation $album_decoration_orientation;
 	public string $title;
 	public string $dropbox_api_key;
+	public int $slideshow_timeout;
 
 	// Lychee SE is available.
 	public bool $is_se_enabled;
@@ -60,6 +61,7 @@ class InitConfig extends Data
 		$this->album_subtitle_type = Configs::getValueAsEnum('album_subtitle_type', ThumbAlbumSubtitleType::class);
 		$this->can_rotate = Configs::getValueAsBool('editor_enabled');
 		$this->can_autoplay = Configs::getValueAsBool('autoplay_enabled');
+		$this->slideshow_timeout = Configs::getValueAsInt('slideshow_timeout');
 
 		$this->album_decoration = Configs::getValueAsEnum('album_decoration', AlbumDecorationType::class);
 		$this->album_decoration_orientation = Configs::getValueAsEnum('album_decoration_orientation', AlbumDecorationOrientation::class);

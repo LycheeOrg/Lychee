@@ -39,7 +39,7 @@ const props = defineProps<{
 
 const toast = useToast();
 const emits = defineEmits<{
-	(e: "delete", id: number): void;
+	delete: [id: number];
 }>();
 
 const grantsFullPhotoAccess = ref(false);

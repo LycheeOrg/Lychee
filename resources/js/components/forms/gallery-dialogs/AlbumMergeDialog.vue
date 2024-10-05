@@ -47,8 +47,8 @@ const props = defineProps<{
 
 const visible = defineModel<boolean>("visible", { default: false });
 
-const emit = defineEmits<{
-	(e: "merged"): void;
+const emits = defineEmits<{
+	merged: [];
 }>();
 
 const toast = useToast();
@@ -100,7 +100,7 @@ function execute() {
 		} else {
 			AlbumService.clearCache(props.parentId);
 		}
-		emit("merged");
+		emits("merged");
 	});
 }
 </script>

@@ -49,7 +49,7 @@ const props = withDefaults(
 
 const toast = useToast();
 const emits = defineEmits<{
-	(e: "createdPermission"): void;
+	createdPermission: [];
 }>();
 
 const newShareUser = ref(undefined as undefined | App.Http.Resources.Models.LightUserResource);

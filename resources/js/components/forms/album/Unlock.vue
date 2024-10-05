@@ -39,9 +39,9 @@ const props = defineProps<{
 }>();
 const visible = defineModel("visible", { default: false });
 
-const emit = defineEmits<{
-	(e: "reload"): void;
-	(e: "fail"): void;
+const emits = defineEmits<{
+	reload: [];
+	fail: [];
 }>();
 
 const password = ref<string | undefined>(undefined);
@@ -53,14 +53,14 @@ function unlock() {
 	}
 
 	AlbumService.unlock(props.albumid, password.value)
-		.then((response) => {
+		.then((_response) => {
 			AlbumService.clearAlbums();
 			AlbumService.clearCache(props.albumid);
-			emit("reload");
+			emits("reload");
 		})
 		.catch((_error) => {
 			visible.value = false;
-			emit("fail");
+			emits("fail");
 		});
 }
 

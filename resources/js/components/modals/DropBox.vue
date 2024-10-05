@@ -29,7 +29,9 @@ import { storeToRefs } from "pinia";
 
 const visible = defineModel("visible", { default: false }) as Ref<boolean>;
 const props = defineProps<{ albumId: string | null }>();
-const emit = defineEmits<{ (e: "refresh"): void }>();
+const emits = defineEmits<{
+	refresh: [];
+}>();
 
 const lycheeStore = useLycheeStateStore();
 const { dropbox_api_key } = storeToRefs(lycheeStore);
@@ -40,7 +42,7 @@ function action(files: Dropbox.ChooserFile[]) {
 		props.albumId,
 	).then(() => {
 		visible.value = false;
-		emit("refresh");
+		emits("refresh");
 	});
 }
 

@@ -43,7 +43,7 @@ const props = withDefaults(
 );
 
 const emits = defineEmits<{
-	(e: "upload:completed", index: number): void;
+	"upload:completed": [index: number];
 }>();
 
 const status = ref(props.status);

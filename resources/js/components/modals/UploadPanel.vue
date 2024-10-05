@@ -69,7 +69,7 @@ const setup = ref(undefined as undefined | App.Http.Resources.GalleryConfigs.Upl
 const albumId = ref(props.albumId);
 
 const emits = defineEmits<{
-	(e: "close"): void;
+	close: [];
 }>();
 
 const isDropping = ref(false);

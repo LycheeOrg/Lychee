@@ -47,8 +47,8 @@ const props = defineProps<{
 
 const visible = defineModel<boolean>("visible", { default: false });
 
-const emit = defineEmits<{
-	(e: "moved"): void;
+const emits = defineEmits<{
+	moved: [];
 }>();
 
 const toast = useToast();
@@ -135,7 +135,7 @@ function executeMoveAlbum() {
 		} else {
 			AlbumService.clearCache(props.parentId);
 		}
-		emit("moved");
+		emits("moved");
 	});
 }
 
@@ -159,7 +159,7 @@ function executeMovePhoto() {
 		AlbumService.clearCache(props.parentId);
 		AlbumService.clearCache(destination_id.value);
 
-		emit("moved");
+		emits("moved");
 		// Todo emit that we moved things.
 	});
 }

@@ -38,7 +38,7 @@ const props = withDefaults(
 	},
 );
 const emits = defineEmits<{
-	(e: "selected", user: App.Http.Resources.Models.LightUserResource): void;
+	selected: [user: App.Http.Resources.Models.LightUserResource];
 }>();
 
 const options = ref([] as App.Http.Resources.Models.LightUserResource[]);
