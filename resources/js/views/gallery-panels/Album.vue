@@ -169,7 +169,12 @@ function toggleSlideShow() {
 }
 
 // Set up Album ID reference. This one is updated at each page change.
-const { isPasswordProtected, user, modelAlbum, album, layout, photos, config, loadLayout, refresh } = useAlbumRefresher(albumid, auth, is_login_open);
+const { isAlbumConsented, isPasswordProtected, user, modelAlbum, album, layout, photos, config, loadLayout, refresh } = useAlbumRefresher(
+	albumid,
+	auth,
+	is_login_open,
+	nsfw_consented,
+);
 
 watch(
 	() => route.params.albumid,
@@ -181,7 +186,7 @@ watch(
 
 const children = computed<App.Http.Resources.Models.ThumbAlbumResource[]>(() => modelAlbum.value?.albums ?? []);
 const noData = computed(() => children.value.length === 0 && (photos.value === null || photos.value.length === 0));
-const showNsfwWarning = computed(() => config.value?.is_nsfw_warning_visible && nsfw_consented.value.find((e) => e === albumid.value) === undefined);
+const showNsfwWarning = computed(() => config.value?.is_nsfw_warning_visible && isAlbumConsented.value === false);
 
 const {
 	isDeleteVisible,
@@ -285,6 +290,7 @@ const albumPanelConfig = computed<AlbumThumbConfig>(() => ({
 
 function consent() {
 	nsfw_consented.value.push(albumid.value);
+	isAlbumConsented.value = true;
 }
 
 loadLayout();
