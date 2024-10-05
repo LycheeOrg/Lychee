@@ -28,15 +28,15 @@ class PagesTest extends BaseV2Test
 			'/maintenance',
 			'/profile',
 			'/gallery',
-			'/gallery/albumID',
-			'/gallery/albumID/photoID',
+			'/gallery/' . $this->album4->id,
+			'/gallery/' . $this->album4->id . '/' . $this->photo4->id,
 			'/frame',
-			'/frame/albumID',
+			'/frame/' . $this->album4->id,
 			'/map',
-			'/map/albumID',
+			'/map/' . $this->album4->id,
 			'/search',
-			'/search/albumID',
-			'/search/albumID/photoID',
+			'/search/' . $this->album4->id,
+			'/search/' . $this->album4->id . '/' . $this->photo4->id,
 		])->each(function ($addr) {
 			$response = $this->get($addr);
 			$this->assertOk($response);
