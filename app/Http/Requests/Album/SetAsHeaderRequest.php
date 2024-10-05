@@ -3,11 +3,13 @@
 namespace App\Http\Requests\Album;
 
 use App\Contracts\Http\Requests\HasAlbum;
+use App\Contracts\Http\Requests\HasCompactBoolean;
 use App\Contracts\Http\Requests\HasPhoto;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Contracts\Models\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasAlbumTrait;
+use App\Http\Requests\Traits\HasCompactBooleanTrait;
 use App\Http\Requests\Traits\HasPhotoTrait;
 use App\Models\Album;
 use App\Models\Photo;
@@ -16,12 +18,11 @@ use App\Rules\RandomIDRule;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\ValidationException;
 
-class SetAsHeaderRequest extends BaseApiRequest implements HasAlbum, HasPhoto
+class SetAsHeaderRequest extends BaseApiRequest implements HasAlbum, HasPhoto, HasCompactBoolean
 {
 	use HasAlbumTrait;
 	use HasPhotoTrait;
-
-	public bool $is_compact;
+	use HasCompactBooleanTrait;
 
 	public function authorize(): bool
 	{
@@ -36,7 +37,7 @@ class SetAsHeaderRequest extends BaseApiRequest implements HasAlbum, HasPhoto
 	{
 		return [
 			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
-			RequestAttribute::PHOTO_ID_ATTRIBUTE => ['required', new RandomIDRule(true)],
+			RequestAttribute::HEADER_ID_ATTRIBUTE => ['required', new RandomIDRule(true)],
 			RequestAttribute::IS_COMPACT_ATTRIBUTE => ['required', 'boolean'],
 		];
 	}
@@ -62,7 +63,7 @@ class SetAsHeaderRequest extends BaseApiRequest implements HasAlbum, HasPhoto
 		}
 
 		/** @var string $photoId */
-		$photoId = $values[RequestAttribute::PHOTO_ID_ATTRIBUTE];
+		$photoId = $values[RequestAttribute::HEADER_ID_ATTRIBUTE];
 		$this->photo = Photo::query()->findOrFail($photoId);
 	}
 }

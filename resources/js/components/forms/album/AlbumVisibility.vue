@@ -64,7 +64,7 @@
 						<label class="font-bold" for="pp_dialog_password_check">{{ $t("lychee.ALBUM_PASSWORD_PROT") }}</label>
 						<p class="mt-1.5 mb-4">{{ $t("lychee.ALBUM_PASSWORD_PROT_EXPL") }}</p>
 						<FloatLabel v-if="is_password_required">
-							<InputPassword id="password" v-model="password" @change="save" />
+							<InputPassword id="password" v-model="password" autocomplete="new-password" @change="save" />
 							<label for="password">{{ $t("lychee.ALBUM_PASSWORD") }}</label>
 						</FloatLabel>
 					</div>
