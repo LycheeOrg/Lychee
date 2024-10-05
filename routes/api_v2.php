@@ -193,8 +193,8 @@ Route::get('/Jobs', [Admin\JobsController::class, 'list']);
 Route::get('/Settings', [Admin\SettingsController::class, 'getAll']);
 Route::post('/Settings::setConfigs', [Admin\SettingsController::class, 'setConfigs']);
 Route::get('/Settings::getLanguages', [Admin\SettingsController::class, 'getLanguages']);
-// Route::post('/Settings::setCSS', [AdministrationSettingsController::class, 'setCSS']);
-// Route::post('/Settings::setJS', [AdministrationSettingsController::class, 'setJS']);
+Route::post('/Settings::setCSS', [Admin\SettingsController::class, 'setCSS']);
+Route::post('/Settings::setJS', [Admin\SettingsController::class, 'setJS']);
 
 /**
  * MAINTENANCE.

@@ -15,6 +15,18 @@ const SettingsService = {
 	getLanguages(): Promise<AxiosResponse<string[]>> {
 		return axios.get(`${Constants.API_URL}Settings::getLanguages`, { data: {} });
 	},
+	setJs(jsData: string): Promise<AxiosResponse> {
+		return axios.post(`${Constants.API_URL}Settings::setJS`, { js: jsData });
+	},
+	setCss(cssData: string): Promise<AxiosResponse> {
+		return axios.post(`${Constants.API_URL}Settings::setCSS`, { css: cssData });
+	},
+	getJs(): Promise<AxiosResponse> {
+		return axios.get(`${window.assets_url}/dist/custom.js`);
+	},
+	getCss(): Promise<AxiosResponse> {
+		return axios.get(`${window.assets_url}/dist/user.css`);
+	}
 };
 
 export default SettingsService;
