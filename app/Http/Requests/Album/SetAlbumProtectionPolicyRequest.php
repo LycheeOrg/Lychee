@@ -2,20 +2,20 @@
 
 namespace App\Http\Requests\Album;
 
-use App\Contracts\Http\Requests\HasBaseAlbum;
+use App\Contracts\Http\Requests\HasAbstractAlbum;
 use App\Contracts\Http\Requests\HasPassword;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\Authorize\AuthorizeCanEditAlbumTrait;
-use App\Http\Requests\Traits\HasBaseAlbumTrait;
+use App\Http\Requests\Traits\HasAbstractAlbumTrait;
 use App\Http\Requests\Traits\HasPasswordTrait;
 use App\Http\Resources\Models\Utils\AlbumProtectionPolicy;
+use App\Rules\AlbumIDRule;
 use App\Rules\PasswordRule;
-use App\Rules\RandomIDRule;
 
-class SetAlbumProtectionPolicyRequest extends BaseApiRequest implements HasBaseAlbum, HasPassword
+class SetAlbumProtectionPolicyRequest extends BaseApiRequest implements HasAbstractAlbum, HasPassword
 {
-	use HasBaseAlbumTrait;
+	use HasAbstractAlbumTrait;
 	use HasPasswordTrait;
 	use AuthorizeCanEditAlbumTrait;
 
@@ -28,7 +28,7 @@ class SetAlbumProtectionPolicyRequest extends BaseApiRequest implements HasBaseA
 	public function rules(): array
 	{
 		return [
-			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
+			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['required', new AlbumIDRule(false)],
 			RequestAttribute::PASSWORD_ATTRIBUTE => ['sometimes', new PasswordRule(true)],
 			RequestAttribute::IS_PUBLIC_ATTRIBUTE => 'required|boolean',
 			RequestAttribute::IS_LINK_REQUIRED_ATTRIBUTE => 'required|boolean',
@@ -43,7 +43,7 @@ class SetAlbumProtectionPolicyRequest extends BaseApiRequest implements HasBaseA
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->album = $this->albumFactory->findBaseAlbumOrFail(
+		$this->album = $this->albumFactory->findAbstractAlbumOrFail(
 			$values[RequestAttribute::ALBUM_ID_ATTRIBUTE]
 		);
 		$this->albumProtectionPolicy = new AlbumProtectionPolicy(

@@ -10,6 +10,7 @@ use App\Actions\Album\ListAlbums;
 use App\Actions\Album\Merge;
 use App\Actions\Album\Move;
 use App\Actions\Album\SetProtectionPolicy;
+use App\Actions\Album\SetSmartProtectionPolicy;
 use App\Actions\Album\Transfer;
 use App\Actions\Album\Unlock;
 use App\Actions\Photo\Archive as PhotoArchive;
@@ -128,8 +129,21 @@ class AlbumController extends Controller
 		return EditableBaseAlbumResource::fromModel($album);
 	}
 
-	public function updateProtectionPolicy(SetAlbumProtectionPolicyRequest $request, SetProtectionPolicy $setProtectionPolicy): AlbumProtectionPolicy
+	public function updateProtectionPolicy(SetAlbumProtectionPolicyRequest $request,
+		SetProtectionPolicy $setProtectionPolicy,
+		SetSmartProtectionPolicy $setSmartProtectionPolicy): AlbumProtectionPolicy
 	{
+		if ($request->album() instanceof BaseSmartAlbum) {
+			$setSmartProtectionPolicy->do(
+				$request->album(),
+				$request->albumProtectionPolicy()->is_public
+			);
+
+			return AlbumProtectionPolicy::ofSmartAlbum($request->album());
+		}
+
+		/** @var BaseAlbum $album */
+		$album = $request->album();
 		$setProtectionPolicy->do(
 			$request->album(),
 			$request->albumProtectionPolicy(),
@@ -137,7 +151,7 @@ class AlbumController extends Controller
 			$request->password()
 		);
 
-		return AlbumProtectionPolicy::ofBaseAlbum($request->album()->refresh());
+		return AlbumProtectionPolicy::ofBaseAlbum($album->refresh());
 	}
 
 	/**
