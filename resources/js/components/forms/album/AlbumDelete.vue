@@ -33,6 +33,7 @@ function execute() {
 			AlbumService.clearCache(album.parent_id);
 			album.parent_id ? router.push(`/gallery/${album.parent_id}`) : router.push("/gallery");
 		} else {
+			AlbumService.clearAlbums();
 			router.push("/gallery");
 		}
 	});
