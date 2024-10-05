@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<div class="flex items-center justify-between gap-x-4 flex-wrap sm:flex-nowrap">
-			<label class="w-full" :for="props.config.key">{{ props.config.documentation }}</label>
+			<label class="w-full text-muted-color-emphasis" :for="props.config.key">{{ props.config.documentation }}</label>
 			<FloatLabel class="w-full flex-grow">
 				<IconField>
 					<InputText :id="props.config.key" type="text" class="!py-1" v-model="val" @update:modelValue="update" />
