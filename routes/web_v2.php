@@ -19,32 +19,31 @@ use Illuminate\Support\Facades\Route;
 
 Route::feeds();
 
-$vue_app = fn () => view('vueapp');
-Route::get('/', $vue_app)->name('home')->middleware(['migration:complete']);
-Route::get('/gallery', $vue_app)->name('gallery')->middleware(['migration:complete']);
-Route::get('/gallery/{albumId}', $vue_app)->name('gallery-album')->middleware(['migration:complete']);
-Route::get('/gallery/{albumId}/{photoId}', $vue_app)->name('gallery-photo')->middleware(['migration:complete']);
+Route::get('/', [VueController::class, 'view'])->name('home')->middleware(['migration:complete']);
+Route::get('/gallery', [VueController::class, 'view'])->name('gallery')->middleware(['migration:complete']);
+Route::get('/gallery/{albumId}', [VueController::class, 'view'])->name('gallery-album')->middleware(['migration:complete']);
+Route::get('/gallery/{albumId}/{photoId}', [VueController::class, 'view'])->name('gallery-photo')->middleware(['migration:complete']);
 
-Route::get('/frame', $vue_app)->name('frame')->middleware(['migration:complete']);
-Route::get('/frame/{albumId}', $vue_app)->name('frame')->middleware(['migration:complete']);
+Route::get('/frame', [VueController::class, 'view'])->name('frame')->middleware(['migration:complete']);
+Route::get('/frame/{albumId}', [VueController::class, 'view'])->name('frame')->middleware(['migration:complete']);
 
-Route::get('/map', $vue_app)->name('map')->middleware(['migration:complete']);
-Route::get('/map/{albumId}', $vue_app)->name('map')->middleware(['migration:complete']);
+Route::get('/map', [VueController::class, 'view'])->name('map')->middleware(['migration:complete']);
+Route::get('/map/{albumId}', [VueController::class, 'view'])->name('map')->middleware(['migration:complete']);
 
 // later
-Route::get('/search', $vue_app)->middleware(['migration:complete']);
-Route::get('/search/{albumId}', $vue_app)->middleware(['migration:complete']);
-Route::get('/search/{albumId}/{photoId}', $vue_app)->middleware(['migration:complete']);
+Route::get('/search', [VueController::class, 'view'])->middleware(['migration:complete']);
+Route::get('/search/{albumId}', [VueController::class, 'view'])->middleware(['migration:complete']);
+Route::get('/search/{albumId}/{photoId}', [VueController::class, 'view'])->middleware(['migration:complete']);
 
-Route::get('/profile', $vue_app)->name('profile')->middleware(['migration:complete']);
-Route::get('/users', $vue_app)->middleware(['migration:complete']);
-Route::get('/sharing', $vue_app)->middleware(['migration:complete']);
-Route::get('/jobs', $vue_app)->middleware(['migration:complete']);
-Route::get('/diagnostics', $vue_app)->middleware(['migration:complete']);
-Route::get('/maintenance', $vue_app)->middleware(['migration:complete']);
-Route::get('/users', $vue_app)->middleware(['migration:complete']);
-Route::get('/settings', $vue_app)->middleware(['migration:complete']);
-Route::get('/permissions', $vue_app)->middleware(['migration:complete']);
+Route::get('/profile', [VueController::class, 'view'])->name('profile')->middleware(['migration:complete']);
+Route::get('/users', [VueController::class, 'view'])->middleware(['migration:complete']);
+Route::get('/sharing', [VueController::class, 'view'])->middleware(['migration:complete']);
+Route::get('/jobs', [VueController::class, 'view'])->middleware(['migration:complete']);
+Route::get('/diagnostics', [VueController::class, 'view'])->middleware(['migration:complete']);
+Route::get('/maintenance', [VueController::class, 'view'])->middleware(['migration:complete']);
+Route::get('/users', [VueController::class, 'view'])->middleware(['migration:complete']);
+Route::get('/settings', [VueController::class, 'view'])->middleware(['migration:complete']);
+Route::get('/permissions', [VueController::class, 'view'])->middleware(['migration:complete']);
 
 Route::match(['get', 'post'], '/migrate', [Admin\UpdateController::class, 'migrate'])
 	->name('migrate')
