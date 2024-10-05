@@ -30,17 +30,23 @@
 							</span>
 						</span>
 					</div>
-					<a v-if="props.album.rights.can_download" class="flex-shrink-0 px-3 cursor-pointer" :title="$t('lychee.DOWNLOAD_ALBUM')">
+					<a
+						v-if="props.album.rights.can_download"
+						class="flex-shrink-0 px-3 cursor-pointer text-muted-color inline-block transform duration-300 hover:scale-125 hover:text-color"
+						:title="$t('lychee.DOWNLOAD_ALBUM')"
+					>
 						<!-- href="{{ route('download', ['albumIDs' => $this->albumId]) }}" -->
-						<MiniIcon class="my-0 w-4 h-4 mr-0 ml-0" icon="cloud-download" />
+						<i class="pi pi-download" />
+						<!-- <MiniIcon class="my-0 w-4 h-4 mr-0 ml-0" icon="cloud-download" /> -->
 					</a>
 					<a
 						v-if="props.album.rights.can_share"
-						class="flex-shrink-0 px-3 cursor-pointer"
+						class="flex-shrink-0 px-3 cursor-pointer text-muted-color inline-block transform duration-300 hover:scale-125 hover:text-color"
 						:title="$t('lychee.SHARE_ALBUM')"
 						v-on:click="openSharingModal"
 					>
-						<MiniIcon class="my-0 w-4 h-4 mr-0 ml-0" icon="share-ion" />
+						<i class="pi pi-share-alt" />
+						<!-- <MiniIcon class="my-0 w-4 h-4 mr-0 ml-0" icon="share-ion" /> -->
 					</a>
 				</div>
 				<div
@@ -48,9 +54,6 @@
 					class="w-full max-w-full my-4 text-justify text-muted-color text-base/5 prose prose-invert prose-sm"
 					v-html="props.album.preFormattedData.description"
 				/>
-				<!-- Fix me: output markdown here -->
-				<!-- {{ props.album.preFormattedData.description }} -->
-				<!-- </div> -->
 			</template>
 		</Card>
 	</template>
