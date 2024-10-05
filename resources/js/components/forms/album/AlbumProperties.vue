@@ -185,9 +185,16 @@
 						</FloatLabel>
 					</div>
 				</template>
-				<div v-if="!is_model_album" class="mb-4 h-10">
+				<div v-if="!is_model_album" class="mb-8 h-10">
 					<FloatLabel>
-						<InputChips id="tags" v-model="tags" />
+						<AutoComplete
+							id="tags"
+							v-model="tags"
+							:typeahead="false"
+							multiple
+							class="pt-3 border-b hover:border-b-0 w-full"
+							pt:inputmultiple:class="w-full border-t-0 border-l-0 border-r-0 border-b hover:border-b-primary-400 focus:border-b-primary-400"
+						/>
 						<label for="tags">{{ $t("lychee.ALBUM_SET_SHOWTAGS") }}</label>
 					</FloatLabel>
 				</div>
@@ -204,7 +211,6 @@ import Button from "primevue/button";
 import Card from "primevue/card";
 import Select from "primevue/select";
 import FloatLabel from "primevue/floatlabel";
-import InputChips from "primevue/inputchips";
 import InputText from "@/components/forms/basic/InputText.vue";
 import Textarea from "@/components/forms/basic/Textarea.vue";
 import AlbumService, { UpdateAbumData, UpdateTagAlbumData } from "@/services/album-service";
@@ -219,6 +225,7 @@ import {
 } from "@/config/constants";
 import { useToast } from "primevue/usetoast";
 import { trans } from "laravel-vue-i18n";
+import AutoComplete from "primevue/autocomplete";
 
 type HeaderOption = {
 	id: string;
@@ -242,7 +249,7 @@ const albumSortingColumn = ref(undefined as SelectOption<App.Enum.ColumnSortingA
 const albumSortingOrder = ref(undefined as SelectOption<App.Enum.OrderSortingType> | undefined);
 const license = ref(undefined as SelectOption<App.Enum.LicenseType> | undefined);
 const copyright = ref(undefined as undefined | string);
-const tags = ref(null as null | string);
+const tags = ref([] as string[]);
 const aspectRatio = ref(undefined as SelectOption<App.Enum.AspectRatioType> | undefined);
 const header_id = ref(undefined as HeaderOption | undefined);
 
@@ -293,6 +300,7 @@ function load(editable: App.Http.Resources.Editable.EditableBaseAlbumResource, p
 	license.value = SelectBuilders.buildLicense(editable.license);
 	aspectRatio.value = SelectBuilders.buildAspectRatio(editable.aspect_ratio);
 	header_id.value = buildHeaderId(editable.header_id, photos);
+	tags.value = editable.tags;
 }
 
 load(props.editable, props.photos);
@@ -331,10 +339,15 @@ function saveAlbum() {
 }
 
 function saveTagAlbum() {
+	if (tags.value.length === 0) {
+		toast.add({ severity: "error", summary: "Error", detail: "Tags are required", life: 3000 });
+		return;
+	}
+
 	const data: UpdateTagAlbumData = {
 		album_id: albumId.value,
 		title: title.value,
-		tags: tags.value?.split(",") ?? [],
+		tags: tags.value,
 		description: description.value,
 		photo_sorting_column: photoSortingColumn.value?.value ?? null,
 		photo_sorting_order: photoSortingOrder.value?.value ?? null,
