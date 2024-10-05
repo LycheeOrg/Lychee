@@ -59,7 +59,7 @@ const PhotoService = {
 	},
 
 	setAsHeader(photo_id: string, album_id: string, is_compact: boolean): Promise<AxiosResponse> {
-		return axios.post(`${Constants.API_URL}Album::header`, { photo_id: photo_id, album_id: album_id, is_compact: is_compact });
+		return axios.post(`${Constants.API_URL}Album::header`, { header_id: photo_id, album_id: album_id, is_compact: is_compact });
 	},
 
 	download(photo_ids: string[], download_type: App.Enum.DownloadVariantType = "ORIGINAL"): void {

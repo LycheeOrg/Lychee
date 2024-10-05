@@ -23,6 +23,7 @@ class RequestAttribute
 
 	public const PHOTO_ID_ATTRIBUTE = 'photo_id';
 	public const PHOTO_IDS_ATTRIBUTE = 'photo_ids';
+	public const HEADER_ID_ATTRIBUTE = 'header_id';
 
 	public const TITLE_ATTRIBUTE = 'title';
 	public const UPLOAD_DATE_ATTRIBUTE = 'upload_date';

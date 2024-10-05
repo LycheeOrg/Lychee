@@ -35,8 +35,6 @@ class UnsortedAlbum extends BaseSmartAlbum
 	 * If the Unsorted album is made public, then all the pictures in it are visible (including pictures which are not owned by the current user).
 	 *
 	 * @return \App\Eloquent\FixedQueryBuilder<Photo>
-	 *
-	 * @throws InternalLycheeException
 	 */
 	public function photos(): Builder
 	{

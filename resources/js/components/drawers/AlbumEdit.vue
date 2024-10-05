@@ -38,7 +38,7 @@
 		</ul>
 		<div class="w-full xl:w-5/6 flex justify-center flex-wrap mb-4 sm:mt-7 pl-7" v-if="activeTab === 0">
 			<!-- @vue-expect-error editable exist in that case. -->
-			<AlbumProperties v-if="props.config.is_base_album" :editable="props.album.editable" />
+			<AlbumProperties v-if="props.config.is_base_album" :editable="props.album.editable" :photos="props.album.photos" />
 			<AlbumVisibility :album="props.album" :config="props.config" />
 		</div>
 		<!-- @if($this->flags->is_base_album)  -->

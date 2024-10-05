@@ -109,6 +109,33 @@
 							<label for="albumSortingOrder">asc/desc</label>
 						</FloatLabel>
 					</div>
+					<div class="h-10 my-4">
+						<FloatLabel>
+							<Select id="header" class="w-72 border-none" v-model="header_id" :options="headersOptions" optionLabel="title" showClear>
+								<template #value="slotProps">
+									<div v-if="slotProps.value && slotProps.value.id === 'compact'">
+										<i class="pi pi-arrow-down-left-and-arrow-up-right-to-center" />
+										<span class="ml-4 text-left">{{ $t("lychee.SET_COMPACT_HEADER") }}</span>
+									</div>
+									<div v-else-if="slotProps.value" class="flex items-center">
+										<img :src="slotProps.value.thumb" alt="poster" class="w-4 rounded-sm" />
+										<span class="ml-4 text-left">{{ slotProps.value.title }}</span>
+									</div>
+								</template>
+								<template #option="slotProps">
+									<div v-if="slotProps.option.id === 'compact'" class="flex items-center">
+										<i class="pi pi-arrow-down-left-and-arrow-up-right-to-center" />
+										<span class="ml-4 text-left">{{ $t("lychee.SET_COMPACT_HEADER") }}</span>
+									</div>
+									<div v-else class="flex items-center">
+										<img :src="slotProps.option.thumb" alt="poster" class="w-4 rounded-sm" />
+										<span class="ml-4 text-left">{{ slotProps.option.title }}</span>
+									</div>
+								</template>
+							</Select>
+							<label for="header">{{ $t("lychee.SET_HEADER") }}</label>
+						</FloatLabel>
+					</div>
 					<!-- <livewire:forms.album.set-header :album_id="$this->albumID" lazy="on-load" /> -->
 					<div class="h-10 my-4">
 						<FloatLabel>
@@ -172,7 +199,7 @@
 	</Card>
 </template>
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import Button from "primevue/button";
 import Card from "primevue/card";
 import Select from "primevue/select";
@@ -191,9 +218,17 @@ import {
 	SelectBuilders,
 } from "@/config/constants";
 import { useToast } from "primevue/usetoast";
+import { trans } from "laravel-vue-i18n";
+
+type HeaderOption = {
+	id: string;
+	title?: string;
+	thumb?: string | null;
+};
 
 const props = defineProps<{
 	editable: App.Http.Resources.Editable.EditableBaseAlbumResource;
+	photos: App.Http.Resources.Models.PhotoResource[];
 }>();
 
 const toast = useToast();
@@ -209,8 +244,44 @@ const license = ref(undefined as SelectOption<App.Enum.LicenseType> | undefined)
 const copyright = ref(undefined as undefined | string);
 const tags = ref(null as null | string);
 const aspectRatio = ref(undefined as SelectOption<App.Enum.AspectRatioType> | undefined);
+const header_id = ref(undefined as HeaderOption | undefined);
 
-function load(editable: App.Http.Resources.Editable.EditableBaseAlbumResource) {
+const headersOptions = computed(() => {
+	const list: HeaderOption[] = [
+		{
+			id: "compact",
+			title: trans("lychee.SET_COMPACT_HEADER"),
+		},
+	];
+	list.push(
+		...props.photos.map((photo) => ({
+			id: photo.id,
+			title: photo.title,
+			thumb: photo.size_variants.thumb?.url,
+		})),
+	);
+	return list;
+});
+
+function buildHeaderId(value: string | null, photos: App.Http.Resources.Models.PhotoResource[]): HeaderOption | undefined {
+	if (value === null) {
+		return undefined;
+	}
+	if (value === "compact") {
+		return { id: "compact" };
+	}
+	const photo = photos.find((photo) => photo.id === value);
+	if (photo === undefined) {
+		return undefined;
+	}
+	return {
+		id: photo.id,
+		title: photo.title,
+		thumb: photo.size_variants.thumb?.url,
+	};
+}
+
+function load(editable: App.Http.Resources.Editable.EditableBaseAlbumResource, photos: App.Http.Resources.Models.PhotoResource[]) {
 	is_model_album.value = editable.is_model_album;
 	albumId.value = editable.id;
 	title.value = editable.title;
@@ -221,9 +292,10 @@ function load(editable: App.Http.Resources.Editable.EditableBaseAlbumResource) {
 	albumSortingOrder.value = SelectBuilders.buildSortingOrder(editable.album_sorting?.order);
 	license.value = SelectBuilders.buildLicense(editable.license);
 	aspectRatio.value = SelectBuilders.buildAspectRatio(editable.aspect_ratio);
+	header_id.value = buildHeaderId(editable.header_id, photos);
 }
 
-load(props.editable);
+load(props.editable, props.photos);
 
 function save() {
 	if (is_model_album.value) {
@@ -245,11 +317,17 @@ function saveAlbum() {
 		album_sorting_order: albumSortingOrder.value?.value ?? null,
 		album_aspect_ratio: aspectRatio.value?.value ?? null,
 		copyright: copyright.value ?? null,
+		header_id: header_id.value?.id === "compact" ? null : (header_id.value?.id ?? null),
+		is_compact: header_id.value?.id === "compact",
 	};
-	AlbumService.updateAlbum(data).catch((error) => {
-		AlbumService.clearCache(albumId.value);
-		console.error(error);
-	});
+	AlbumService.updateAlbum(data)
+		.then(() => {
+			toast.add({ severity: "success", summary: "Success", life: 3000 });
+			AlbumService.clearCache(albumId.value);
+		})
+		.catch((error) => {
+			console.error(error);
+		});
 }
 
 function saveTagAlbum() {
@@ -264,7 +342,7 @@ function saveTagAlbum() {
 	};
 	AlbumService.updateTag(data)
 		.then(() => {
-			toast.add({ severity: "success", summary: "Success", detail: "Permission deleted", life: 3000 });
+			toast.add({ severity: "success", summary: "Success", life: 3000 });
 			AlbumService.clearCache(albumId.value);
 		})
 		.catch((error) => {
@@ -273,9 +351,10 @@ function saveTagAlbum() {
 }
 
 watch(
-	() => props.editable,
-	(editable) => {
-		load(editable);
+	() => [props.editable, props.photos],
+	([editable, photos]) => {
+		// @ts-expect-error
+		load(editable, photos);
 	},
 );
 </script>

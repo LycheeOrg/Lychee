@@ -14,6 +14,9 @@ use App\Actions\Album\SetSmartProtectionPolicy;
 use App\Actions\Album\Transfer;
 use App\Actions\Album\Unlock;
 use App\Actions\Photo\Archive as PhotoArchive;
+use App\Contracts\Http\Requests\HasAlbum;
+use App\Contracts\Http\Requests\HasCompactBoolean;
+use App\Contracts\Http\Requests\HasPhoto;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\UnauthenticatedException;
 use App\Http\Requests\Album\AddAlbumRequest;
@@ -27,7 +30,6 @@ use App\Http\Requests\Album\RenameAlbumRequest;
 use App\Http\Requests\Album\SetAlbumProtectionPolicyRequest;
 use App\Http\Requests\Album\SetAlbumTrackRequest;
 use App\Http\Requests\Album\SetAsCoverRequest;
-use App\Http\Requests\Album\SetAsHeaderRequest;
 use App\Http\Requests\Album\TargetListAlbumRequest;
 use App\Http\Requests\Album\TransferAlbumRequest;
 use App\Http\Requests\Album\UnlockAlbumRequest;
@@ -43,6 +45,7 @@ use App\Http\Resources\Models\TagAlbumResource;
 use App\Http\Resources\Models\TargetAlbumResource;
 use App\Http\Resources\Models\Utils\AlbumProtectionPolicy;
 use App\Models\Album;
+use App\Models\Extensions\BaseAlbum;
 use App\Models\TagAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Routing\Controller;
@@ -110,6 +113,11 @@ class AlbumController extends Controller
 		$album->album_sorting = $request->albumSortingCriterion();
 		$album->save();
 
+		// Take care of the header :)
+		$this->header($request);
+
+		$album->refresh();
+
 		return EditableBaseAlbumResource::fromModel($album);
 	}
 
@@ -145,7 +153,7 @@ class AlbumController extends Controller
 		/** @var BaseAlbum $album */
 		$album = $request->album();
 		$setProtectionPolicy->do(
-			$request->album(),
+			$album,
 			$request->albumProtectionPolicy(),
 			$request->isPasswordProvided(),
 			$request->password()
@@ -238,14 +246,14 @@ class AlbumController extends Controller
 	}
 
 	/**
-	 * @param SetAsHeaderRequest $request
+	 * @param $request
 	 *
 	 * @return void
 	 */
-	public function header(SetAsHeaderRequest $request): void
+	public function header(HasAlbum&HasPhoto&HasCompactBoolean $request): void
 	{
 		$album = $request->album();
-		if ($request->is_compact) {
+		if ($request->is_compact()) {
 			$album->header_id = self::COMPACT_HEADER;
 		} else {
 			$album->header_id = ($album->header_id === $request->photo()->id) ? null : $request->photo()->id;

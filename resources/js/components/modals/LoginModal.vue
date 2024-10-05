@@ -34,9 +34,7 @@
 					</FloatLabel>
 					<Message v-if="invalidPassword" severity="error">Unknown user or invalid password</Message>
 				</div>
-				<div class="px-9 text-muted-color text-right font-semibold">
-					Lychee <span class="text-primary-500" v-if="is_se_enabled">SE</span>
-				</div>
+				<div class="px-9 text-muted-color text-right font-semibold">Lychee <span class="text-primary-500" v-if="is_se_enabled">SE</span></div>
 				<div class="flex items-center mt-9">
 					<Button @click="closeCallback" severity="secondary" class="w-full font-bold border-none rounded-none rounded-bl-xl flex-shrink">
 						{{ $t("lychee.CANCEL") }}

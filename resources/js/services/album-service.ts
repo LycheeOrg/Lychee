@@ -23,6 +23,8 @@ export type UpdateAbumData = {
 	album_sorting_order: App.Enum.OrderSortingType | null;
 	album_aspect_ratio: App.Enum.AspectRatioType | null;
 	copyright: string | null;
+	header_id: string | null;
+	is_compact: boolean;
 };
 
 export type UpdateTagAlbumData = {
