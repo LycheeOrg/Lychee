@@ -25,7 +25,7 @@
 						id="pp_dialog_nsfw_visible"
 						v-model="nsfwVisible_value"
 						class="text-sm"
-						@update:model-value="() => save('nsfw_visible', nsfwVisible_value ? '1' : '0')"
+						@update:model-value="updateNSFW"
 					/>
 					<p class="my-1.5 text-muted-color w-full" v-html="nsfwText2"></p>
 				</div>
@@ -128,6 +128,26 @@
 				<BoolField v-if="location_show_public !== undefined" :config="location_show_public" @filled="save" />
 			</div>
 		</Fieldset>
+		<Fieldset legend="Advanced Customization" class="border-b-0 border-r-0 rounded-r-none rounded-b-none"
+			:toggleable="true"
+			:collapsed="true">
+			<div class="flex flex-col gap-4">
+				<div>
+					<Textarea
+						v-model="css"
+						class="w-full h-48" rows="10" cols="30" 
+					/>
+					<Button severity="contrast" class="w-full border-none font-bold" @click="saveCss" >{{ $t("lychee.CSS_TITLE") }}</Button>
+				</div>
+				<div>
+					<Textarea
+						v-model="js"
+						class="w-full h-48" rows="10" cols="30" 
+					/>
+					<Button severity="contrast" class="w-full border-none font-bold" @click="saveJs" >{{ $t("lychee.JS_TITLE") }}</Button>
+				</div>
+			</div>
+		</Fieldset>
 		<!-- 
 			<livewire:forms.settings.base.boolean-setting key="set-public_search"
 				description="PUBLIC_SEARCH_TEXT" name="search_public" />
@@ -178,6 +198,7 @@ import SelectOptionsField from "../forms/settings/SelectOptionsField.vue";
 import SelectField from "../forms/settings/SelectField.vue";
 import BoolField from "../forms/settings/BoolField.vue";
 import { useToast } from "primevue/usetoast";
+import Textarea from "../forms/basic/Textarea.vue";
 
 const toast = useToast();
 
@@ -208,6 +229,8 @@ const location_decoding = ref<App.Http.Resources.Models.ConfigResource | undefin
 const location_show = ref<App.Http.Resources.Models.ConfigResource | undefined>(undefined);
 const location_show_public = ref<App.Http.Resources.Models.ConfigResource | undefined>(undefined);
 
+const css = ref<string | undefined>(undefined);
+const js = ref<string | undefined>(undefined);
 // Map stuff
 
 function save(configKey: string, value: string) {
@@ -264,10 +287,36 @@ function load() {
 		location_show.value = configurations.find((config) => config.key === "location_show");
 		location_show_public.value = configurations.find((config) => config.key === "location_show_public");
 	});
+
+	SettingsService.getCss().then((response) => {
+		css.value = response.data;
+	});
+
+	SettingsService.getJs().then((response) => {
+		js.value = response.data;
+	});
 }
 
 function updateNSFW() {
 	save("nsfw_visible", nsfwVisible_value.value ? "1" : "0");
+}
+
+function saveCss() {
+	SettingsService.setCss(css.value ?? '').then(() => {
+		toast.add({ severity: "success", summary: "Change saved!", life: 3000 });
+	}).
+	catch(() => {
+		toast.add({ severity: "error", summary: "Error!", detail: "Could not save CSS", life: 3000 });
+	});
+}
+
+function saveJs() {
+	SettingsService.setJs(js.value ?? '').then(() => {
+		toast.add({ severity: "success", summary: "Change saved!", life: 3000 });
+	}).
+	catch(() => {
+		toast.add({ severity: "error", summary: "Error!", detail: "Could not save JS", life: 3000 });
+	});
 }
 
 load();
