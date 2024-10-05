@@ -166,10 +166,10 @@ function goBack() {
 const auth = useAuthStore();
 const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
-const { are_nsfw_visible, is_full_screen, search_page, search_term, is_login_open } = storeToRefs(lycheeStore);
+const { are_nsfw_visible, is_full_screen, search_page, search_term, is_login_open, nsfw_consented } = storeToRefs(lycheeStore);
 const { albums, photos, noData, searchMinimumLengh, isSearching, from, per_page, total, photoHeader, albumHeader, searchInit, search, refresh } =
 	useSearch(albumid, lycheeStore, search_term, search_page);
-const { album, config, layout, loadAlbum, loadLayout } = useAlbumRefresher(albumid, auth, is_login_open);
+const { album, config, layout, loadAlbum, loadLayout } = useAlbumRefresher(albumid, auth, is_login_open, nsfw_consented);
 
 const configForMenu = computed<App.Http.Resources.GalleryConfigs.AlbumConfig>(() => {
 	if (config.value !== undefined) {
