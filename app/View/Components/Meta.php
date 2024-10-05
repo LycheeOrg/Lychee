@@ -6,6 +6,7 @@ use App\Contracts\Models\AbstractAlbum;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Http\Resources\Traits\HasHeaderUrl;
 use App\Models\Configs;
+use App\Models\Extensions\BaseAlbum;
 use App\Models\Photo;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\Storage;
@@ -44,7 +45,9 @@ class Meta extends Component
 			/** @var AbstractAlbum $album */
 			$album = session()->get('album');
 			$this->pageTitle = $album->title;
-			$this->pageDescription = $album->description ?? Configs::getValueAsString('site_title');
+			if ($album instanceof BaseAlbum) {
+				$this->pageDescription = $album->description ?? Configs::getValueAsString('site_title');
+			}
 			$this->imageUrl = $this->getHeaderUrl($album) ?? '';
 		}
 

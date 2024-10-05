@@ -20,9 +20,8 @@ use Illuminate\Support\Facades\Gate;
 class VueController extends Controller
 {
 	/**
-	 * @param string|null  $albumId
-	 * @param string|null  $photoId
-	 * @param AlbumFactory $albumFactory
+	 * @param string|null $albumId
+	 * @param string|null $photoId
 	 *
 	 * @return View
 	 *
