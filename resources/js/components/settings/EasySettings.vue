@@ -1,6 +1,15 @@
 <template>
 	<div v-if="configs" class="max-w-2xl mx-auto">
-		<!-- <Fieldset legend="Dropbox" class="border-b-0 border-r-0 rounded-r-none rounded-b-none">
+		<Fieldset legend="System" class="border-b-0 border-r-0 rounded-r-none rounded-b-none">
+			<div class="flex flex-col gap-4 mb-8">
+				<BoolField v-if="dark_mode_enabled !== undefined" :config="dark_mode_enabled" @filled="save" />
+				<SelectLang v-if="lang !== undefined" :config="lang" />
+				<div class="flex flex-wrap justify-between">
+					<label for="pp_dialog_nsfw_visible">{{ $t("lychee.NSFW_VISIBLE_TEXT_1") }}</label>
+					<ToggleSwitch id="pp_dialog_nsfw_visible" v-model="nsfwVisible" class="text-sm" @update:model-value="updateNSFW" />
+					<p class="my-1.5 text-muted-color w-full" v-html="nsfwText2"></p>
+				</div>
+			</div>
 			<p class="mb-4 text-muted-color">
 				In order to import photos from your Dropbox, you need a valid drop-ins app key from their website.
 				<a href="https://www.dropbox.com/developers/saver" class="pl-2 border-b border-dashed border-b-primary-500 text-primary-500">
@@ -9,21 +18,10 @@
 			</p>
 			<div class="flex gap-4">
 				<FloatLabel class="w-full flex-grow">
-					<InputPassword id="api_key" type="text" v-model="dropbox_key_value" />
+					<InputPassword id="api_key" type="text" v-model="dropbox_key" />
 					<label for="api_key" class="text-muted-color">{{ $t("lychee.SETTINGS_DROPBOX_KEY") }}</label>
 				</FloatLabel>
-				<Button severity="primary" class="w-full border-none">{{ $t("lychee.DROPBOX_TITLE") }}</Button>
-			</div>
-		</Fieldset> -->
-		<Fieldset legend="System" class="border-b-0 border-r-0 rounded-r-none rounded-b-none">
-			<div class="flex flex-col gap-4">
-				<BoolField v-if="dark_mode_enabled !== undefined" :config="dark_mode_enabled" @filled="save" />
-				<SelectLang v-if="lang !== undefined" :config="lang" />
-				<div class="flex flex-wrap justify-between">
-					<label for="pp_dialog_nsfw_visible">{{ $t("lychee.NSFW_VISIBLE_TEXT_1") }}</label>
-					<ToggleSwitch id="pp_dialog_nsfw_visible" v-model="nsfwVisible_value" class="text-sm" @update:model-value="updateNSFW" />
-					<p class="my-1.5 text-muted-color w-full" v-html="nsfwText2"></p>
-				</div>
+				<Button severity="primary" class="w-full border-none" @click="saveDropboxKey">{{ $t("lychee.DROPBOX_TITLE") }}</Button>
 			</div>
 		</Fieldset>
 		<Fieldset legend="Gallery" class="border-b-0 border-r-0 rounded-r-none rounded-b-none">
@@ -190,8 +188,7 @@ import Textarea from "../forms/basic/Textarea.vue";
 const toast = useToast();
 
 const configs = ref(undefined as undefined | App.Http.Resources.Collections.ConfigCollectionResource);
-const dropbox_key = ref<App.Http.Resources.Models.ConfigResource | undefined>(undefined);
-const dropbox_key_value = ref<string | undefined>(undefined);
+const dropbox_key = ref<string | undefined>(undefined);
 const photoSortingColumn = ref<App.Http.Resources.Models.ConfigResource | undefined>(undefined);
 const photoSortingOrder = ref<App.Http.Resources.Models.ConfigResource | undefined>(undefined);
 const albumSortingColumn = ref<App.Http.Resources.Models.ConfigResource | undefined>(undefined);
@@ -203,8 +200,7 @@ const default_license = ref<App.Http.Resources.Models.ConfigResource | undefined
 const aspectRatio = ref<App.Http.Resources.Models.ConfigResource | undefined>(undefined);
 const lang = ref<App.Http.Resources.Models.ConfigResource | undefined>(undefined);
 const layout = ref<App.Http.Resources.Models.ConfigResource | undefined>(undefined);
-const nsfwVisible = ref<App.Http.Resources.Models.ConfigResource | undefined>(undefined);
-const nsfwVisible_value = ref<boolean | undefined>(undefined);
+const nsfwVisible = ref<boolean | undefined>(undefined);
 
 const dark_mode_enabled = ref<App.Http.Resources.Models.ConfigResource | undefined>(undefined);
 
@@ -249,11 +245,8 @@ function load() {
 		lang.value = configurations.find((config) => config.key === "lang");
 
 		dark_mode_enabled.value = configurations.find((config) => config.key === "dark_mode_enabled");
-		nsfwVisible.value = configurations.find((config) => config.key === "nsfw_visible");
-		nsfwVisible_value.value = nsfwVisible.value?.value === "1";
-
-		dropbox_key.value = configurations.find((config) => config.key === "dropbox_key");
-		dropbox_key_value.value = dropbox_key.value?.value ?? "";
+		nsfwVisible.value = configurations.find((config) => config.key === "nsfw_visible")?.value === "1";
+		dropbox_key.value = configurations.find((config) => config.key === "dropbox_key")?.value ?? "";
 
 		photoSortingColumn.value = configurations.find((config) => config.key === "sorting_photos_col");
 		photoSortingOrder.value = configurations.find((config) => config.key === "sorting_photos_order");
@@ -285,7 +278,7 @@ function load() {
 }
 
 function updateNSFW() {
-	save("nsfw_visible", nsfwVisible_value.value ? "1" : "0");
+	save("nsfw_visible", nsfwVisible.value ? "1" : "0");
 }
 
 function saveCss() {
@@ -306,6 +299,10 @@ function saveJs() {
 		.catch(() => {
 			toast.add({ severity: "error", summary: "Error!", detail: "Could not save JS", life: 3000 });
 		});
+}
+
+function saveDropboxKey() {
+	save("dropbox_key", dropbox_key.value ?? "");
 }
 
 load();
