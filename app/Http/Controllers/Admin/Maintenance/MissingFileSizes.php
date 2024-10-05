@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Admin\Maintenance;
 
+use App\Enum\StorageDiskType;
 use App\Http\Requests\Maintenance\MaintenanceRequest;
 use App\Models\SizeVariant;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Log;
+use League\Flysystem\UnableToRetrieveMetadata;
 
 /**
  * We may be missing some file sizes because of generation problems,
@@ -23,8 +25,8 @@ class MissingFileSizes extends Controller
 	public function do(MaintenanceRequest $request): void
 	{
 		$variants_query = SizeVariant::query()
+			->where('storage_disk', '=', StorageDiskType::LOCAL)
 			->where('filesize', '=', 0)
-			// TODO: remove s3 support here.
 			->orderBy('id');
 		// Internally, only holds $limit entries at once
 		$variants = $variants_query->lazyById(500);
@@ -34,14 +36,18 @@ class MissingFileSizes extends Controller
 		foreach ($variants as $variant) {
 			$variantFile = $variant->getFile();
 			if ($variantFile->exists()) {
-				$variant->filesize = $variantFile->getFilesize();
-				if (!$variant->save()) {
-					Log::error('Failed to update filesize for ' . $variantFile->getRelativePath() . '.');
-				} else {
-					$generated++;
+				try {
+					$variant->filesize = $variantFile->getFilesize();
+					if (!$variant->save()) {
+						Log::error('Failed to update filesize for ' . $variantFile->getRelativePath() . '.');
+					} else {
+						$generated++;
+					}
+				} catch (UnableToRetrieveMetadata $e) {
+					Log::error($variant->id . ' : Failed to get filesize for ' . $variantFile->getRelativePath() . '.');
 				}
 			} else {
-				Log::error('No file found at ' . $variantFile->getRelativePath() . '.');
+				Log::error($variant->id . ' : No file found at ' . $variantFile->getRelativePath() . '.');
 			}
 		}
 	}
