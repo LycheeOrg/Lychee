@@ -28,9 +28,7 @@
 					:pt:legendlabel:class="'capitalize'"
 					:id="key"
 				>
-					<div v-if="key === 'lychee SE'" class=" font-bold text-primary-500 mb-8">
-						Coming Soon...
-					</div>
+					<div v-if="key === 'lychee SE'" class="font-bold text-primary-500 mb-8">Coming Soon...</div>
 					<div class="flex flex-col gap-4">
 						<template v-for="config in configGroup">
 							<template v-if="oldStyle">
