@@ -1,6 +1,6 @@
 <template>
 	<div class="flex items-center gap-4 justify-between">
-		<div class="w-1/2 sm:w-full">{{ props.config.documentation }}</div>
+		<div class="w-1/2 sm:w-full text-muted-color-emphasis">{{ props.config.documentation }}</div>
 		<div class="flex gap-4 items-center">
 			<ResetField v-if="changed" @click="reset" />
 			<InputNumber

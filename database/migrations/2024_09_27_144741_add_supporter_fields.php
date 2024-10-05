@@ -19,7 +19,7 @@ return new class() extends BaseConfigMigration {
 			],
 			[
 				'key' => 'license_key',
-				'value' => 'free',
+				'value' => '',
 				'is_secret' => true,
 				'cat' => self::SE,
 				'type_range' => self::STRING,
@@ -37,7 +37,7 @@ return new class() extends BaseConfigMigration {
 			],
 			[
 				'key' => 'enable_se_preview',
-				'value' => '0',
+				'value' => '1',
 				'is_secret' => false,
 				'cat' => self::SE,
 				'type_range' => self::BOOL,

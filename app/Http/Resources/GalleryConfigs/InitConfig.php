@@ -39,7 +39,7 @@ class InitConfig extends Data
 
 	// Lychee SE is available.
 	public bool $is_se_enabled;
-	// Lychee SE is not available, but preview is enabled (only if se info are not hidden).
+	// Lychee SE is not available, but preview is enabled.
 	public bool $is_se_preview_enabled;
 	// We hide the info about Lychee SE if the user is already a supporter
 	// or if they asked to hide it (because we are nice :) ).
@@ -71,7 +71,7 @@ class InitConfig extends Data
 		$verify = resolve(Verify::class);
 		$is_supporter = $verify->is_supporter();
 		$this->is_se_enabled = $verify->validate() && $is_supporter;
-		$this->is_se_preview_enabled = !$is_supporter && !Configs::getValueAsBool('disable_se_call_for_actions') && Configs::getValueAsBool('enable_se_preview');
+		$this->is_se_preview_enabled = !$is_supporter && Configs::getValueAsBool('enable_se_preview');
 		$this->is_se_info_hidden = $is_supporter || Configs::getValueAsBool('disable_se_call_for_actions');
 
 		$this->dropbox_api_key = Auth::user()?->may_administrate === true ? Configs::getValueAsString('dropbox_key') : '';
