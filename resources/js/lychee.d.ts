@@ -199,6 +199,7 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		album_decoration_orientation: App.Enum.AlbumDecorationOrientation;
 		title: string;
 		dropbox_api_key: string;
+		slideshow_timeout: number;
 		is_se_enabled: boolean;
 		is_se_preview_enabled: boolean;
 		is_se_info_hidden: boolean;

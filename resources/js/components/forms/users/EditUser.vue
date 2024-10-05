@@ -47,7 +47,7 @@ const isModified = computed(() => {
 	);
 });
 const emits = defineEmits<{
-	(e: "deleteUser", id: number): void;
+	deleteUser: [id: number];
 }>();
 
 function saveUser() {

@@ -43,7 +43,7 @@ const formattedCreatedAt = computed(() => {
 });
 
 const emits = defineEmits<{
-	(e: "delete", id: string): void;
+	delete: [id: string];
 }>();
 
 function saveU2F() {

@@ -33,8 +33,8 @@ const props = defineProps<{
 
 // bubble up.
 const emits = defineEmits<{
-	(e: "clicked", idx: number, event: MouseEvent): void;
-	(e: "contexted", idx: number, event: MouseEvent): void;
+	clicked: [idx: number, event: MouseEvent];
+	contexted: [idx: number, event: MouseEvent];
 }>();
 const maySelect = (idx: number, e: MouseEvent) => {
 	if (props.idxShift < 0) {

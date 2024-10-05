@@ -31,8 +31,8 @@ const props = defineProps<{
 
 const search = defineModel<string>("search", { required: true });
 
-const emit = defineEmits<{
-	(e: "search", terms: string): void;
+const emits = defineEmits<{
+	search: [terms: string];
 }>();
 
 const isValid = computed<boolean>(() => {
@@ -40,6 +40,6 @@ const isValid = computed<boolean>(() => {
 });
 
 const debouncedFn = useDebounceFn(() => {
-	emit("search", search.value);
+	emits("search", search.value);
 }, 1000);
 </script>

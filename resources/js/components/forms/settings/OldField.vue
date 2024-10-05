@@ -27,8 +27,8 @@ const isVersion = computed(() => props.config.key === "version");
 const classes = computed(() => (isVersion.value ? "pi-exclamation-triangle text-danger-700" : "pi-exclamation-circle text-warning-600"));
 
 const emits = defineEmits<{
-	(e: "filled", key: string, value: string): void;
-	(e: "reset", key: string): void;
+	filled: [key: string, value: string];
+	reset: [key: string];
 }>();
 
 function update() {

@@ -35,8 +35,8 @@ const props = defineProps<{
 }>();
 
 const visible = defineModel<boolean>("visible", { default: false });
-const emit = defineEmits<{
-	(e: "deleted"): void;
+const emits = defineEmits<{
+	deleted: [];
 }>();
 
 const confirmation = computed(() => {
@@ -85,7 +85,7 @@ function executeDeleteAlbum() {
 		} else {
 			AlbumService.clearCache(props.parentId);
 		}
-		emit("deleted");
+		emits("deleted");
 	});
 }
 
@@ -103,7 +103,7 @@ function executeDeletePhoto() {
 			life: 3000,
 		});
 		AlbumService.clearCache(props.parentId);
-		emit("deleted");
+		emits("deleted");
 		// Todo emit that we moved things.
 	});
 }

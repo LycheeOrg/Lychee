@@ -1,6 +1,11 @@
 <template>
+	<div
+		id="shutter"
+		class="absolute w-screen h-dvh bg-surface-950 transition-opacity duration-1000 ease-in-out top-0 left-0"
+		:class="is_slideshow_active ? 'z-50 opacity-0' : ''"
+	></div>
 	<div class="absolute top-0 left-0 w-full flex h-full overflow-hidden bg-black" v-if="photo">
-		<PhotoHeader :albumid="props.albumid" :photo="photo" />
+		<PhotoHeader :albumid="props.albumid" :photo="photo" @slideshow="slideshow" />
 		<div class="w-0 flex-auto relative">
 			<div
 				id="imageview"
@@ -15,7 +20,7 @@
 					id="image"
 					controls
 					class="absolute m-auto w-auto h-auto"
-					:class="is_full_screen ? 'max-w-full max-h-full' : 'max-wh-full-56'"
+					:class="is_full_screen || is_slideshow_active ? 'max-w-full max-h-full' : 'max-wh-full-56'"
 					autobuffer
 					:autoplay="lycheeStore.can_autoplay"
 				>
@@ -37,7 +42,7 @@
 					alt="medium"
 					class="absolute m-auto w-auto h-auto animate-zoomIn bg-contain bg-center bg-no-repeat"
 					:src="photo.size_variants.medium?.url ?? ''"
-					:class="is_full_screen ? 'max-w-full max-h-full' : 'max-wh-full-56'"
+					:class="is_full_screen || is_slideshow_active ? 'max-w-full max-h-full' : 'max-wh-full-56'"
 					:srcset="srcSetMedium"
 				/>
 				<img
@@ -45,7 +50,7 @@
 					id="image"
 					alt="big"
 					class="absolute m-auto w-auto h-auto animate-zoomIn bg-contain bg-center bg-no-repeat"
-					:class="is_full_screen ? 'max-w-full max-h-full' : 'max-wh-full-56'"
+					:class="is_full_screen || is_slideshow_active ? 'max-w-full max-h-full' : 'max-wh-full-56'"
 					:style="style"
 					:src="photo?.size_variants.original?.url ?? ''"
 				/>
@@ -58,7 +63,7 @@
 					:data-photo-src="photo?.size_variants.medium?.url"
 					:data-video-src="photo?.live_photo_url"
 					class="absolute m-auto w-auto h-auto"
-					:class="is_full_screen ? 'max-w-full max-h-full' : 'max-wh-full-56'"
+					:class="is_full_screen || is_slideshow_active ? 'max-w-full max-h-full' : 'max-wh-full-56'"
 					:style="style"
 				></div>
 				<!-- This is a livephoto : full -->
@@ -70,7 +75,7 @@
 					:data-photo-src="photo?.size_variants.original?.url"
 					:data-video-src="photo?.live_photo_url"
 					class="absolute m-auto w-auto h-auto"
-					:class="is_full_screen ? 'max-w-full max-h-full' : 'max-wh-full-56'"
+					:class="is_full_screen || is_slideshow_active ? 'max-w-full max-h-full' : 'max-wh-full-56'"
 					:style="style"
 				></div>
 
@@ -136,6 +141,7 @@ import DeleteDialog from "@/components/forms/gallery-dialogs/DeleteDialog.vue";
 import { storeToRefs } from "pinia";
 import SearchService from "@/services/search-service";
 import { usePhotoBaseFunction } from "@/composables/photo/basePhoto";
+import { useSlideshowFunction } from "@/composables/photo/slideshow";
 
 const props = defineProps<{
 	albumid: string;
@@ -153,7 +159,17 @@ const photoId = ref(props.photoid);
 const { photo, album, photos, placeholder, previousStyle, nextStyle, srcSetMedium, style, imageViewMode, refresh, hasPrevious, hasNext } =
 	usePhotoBaseFunction(photoId);
 
-const { is_full_screen, is_edit_open, are_details_open } = storeToRefs(lycheeStore);
+const { is_full_screen, is_edit_open, are_details_open, is_slideshow_active, slideshow_timeout } = storeToRefs(lycheeStore);
+
+function getNext() {
+	router.push({ name: "photo", params: { albumid: props.albumid, photoid: photo.value?.next_photo_id ?? "" } });
+}
+
+function getPrevious() {
+	router.push({ name: "photo", params: { albumid: props.albumid, photoid: photo.value?.previous_photo_id ?? "" } });
+}
+
+const { slideshow, start, next, previous } = useSlideshowFunction(1000, is_slideshow_active, slideshow_timeout, getNext, getPrevious);
 
 function load() {
 	if (lycheeStore.isSearchActive) {
@@ -228,22 +244,15 @@ function rotateOverlay() {
 	}
 }
 
-onKeyStroke(
-	"ArrowLeft",
-	() =>
-		!shouldIgnoreKeystroke() &&
-		hasPrevious() &&
-		router.push({ name: "photo", params: { albumid: props.albumid, photoid: photo.value?.previous_photo_id ?? "" } }),
-);
-onKeyStroke(
-	"ArrowRight",
-	() =>
-		!shouldIgnoreKeystroke() &&
-		hasNext() &&
-		router.push({ name: "photo", params: { albumid: props.albumid, photoid: photo.value?.next_photo_id ?? "" } }),
-);
+if (is_slideshow_active.value) {
+	start();
+}
+
+onKeyStroke("ArrowLeft", () => !shouldIgnoreKeystroke() && hasPrevious() && previous(true));
+onKeyStroke("ArrowRight", () => !shouldIgnoreKeystroke() && hasNext() && next(true));
 onKeyStroke("o", () => !shouldIgnoreKeystroke() && rotateOverlay());
 onKeyStroke("s", () => !shouldIgnoreKeystroke() && toggleStar());
+onKeyStroke(" ", () => !shouldIgnoreKeystroke() && slideshow());
 onKeyStroke("f", () => !shouldIgnoreKeystroke() && lycheeStore.toggleFullScreen());
 onKeyStroke(["Delete", "Backspace"], () => !shouldIgnoreKeystroke() && toggleDelete());
 load();

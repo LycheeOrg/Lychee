@@ -44,8 +44,8 @@ const props = defineProps<{
 
 const visible = defineModel<boolean>("visible", { default: false });
 
-const emit = defineEmits<{
-	(e: "copy"): void;
+const emits = defineEmits<{
+	copy: [];
 }>();
 
 const toast = useToast();
@@ -98,7 +98,7 @@ function execute() {
 		// Clear the cache for the current album and the destination album
 		AlbumService.clearCache(destination_id.value);
 
-		emit("copy");
+		emits("copy");
 		// Todo emit that we moved things.
 	});
 }

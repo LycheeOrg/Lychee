@@ -2,13 +2,14 @@
 	<header
 		id="lychee_toolbar_container"
 		class="absolute top-0 left-0 w-full flex-none z-10 bg-gradient-to-b from-black h-14"
-		:class="is_full_screen ? 'opacity-0 hover:opacity-100' : 'opacity-100 h-14'"
+		:class="is_full_screen || is_slideshow_active ? 'opacity-0 hover:opacity-100' : 'opacity-100 h-14'"
 	>
 		<Toolbar class="w-full bg-transparent border-0">
 			<template #start>
 				<Button icon="pi pi-angle-left" class="mr-2" severity="secondary" text @click="goBack" />
 			</template>
 			<template #end>
+				<Button text icon="pi pi-play" class="mr-2" severity="secondary" @click="toggleSlideShow" />
 				<Button
 					v-if="props.photo.rights.can_access_full_photo && props.photo.size_variants.original?.url"
 					text
@@ -44,6 +45,10 @@ import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 
 const router = useRouter();
+const emits = defineEmits<{
+	slideshow: [];
+}>();
+
 const props = defineProps<{
 	albumid: string;
 	photo: App.Http.Resources.Models.PhotoResource;
@@ -51,7 +56,7 @@ const props = defineProps<{
 
 const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
-const { is_full_screen, is_edit_open, are_details_open } = storeToRefs(lycheeStore);
+const { is_full_screen, is_edit_open, are_details_open, is_slideshow_active } = storeToRefs(lycheeStore);
 const isDownloadOpen = ref(false);
 
 onKeyStroke("i", () => !shouldIgnoreKeystroke() && toggleDetails());
@@ -77,6 +82,10 @@ function toggleEdit() {
 	is_edit_open.value = !is_edit_open.value;
 }
 
+function toggleSlideShow() {
+	emits("slideshow");
+}
+
 function openInNewTab(url: string) {
 	window?.open(url, "_blank")?.focus();
 }
@@ -86,6 +95,11 @@ function openInNewTab(url: string) {
 // 2. close modals
 // 3. go back
 onKeyStroke("Escape", () => {
+	if (is_slideshow_active.value) {
+		is_slideshow_active.value = false;
+		return;
+	}
+
 	// 1. lose focus
 	if (shouldIgnoreKeystroke() && document.activeElement instanceof HTMLElement) {
 		document.activeElement.blur();

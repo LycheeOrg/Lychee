@@ -33,8 +33,8 @@ const val = ref(props.config.value as string);
 const changed = computed(() => val.value !== props.config.value);
 
 const emits = defineEmits<{
-	(e: "filled", key: string, value: string): void;
-	(e: "reset", key: string): void;
+	filled: [key: string, value: string];
+	reset: [key: string];
 }>();
 
 function update() {

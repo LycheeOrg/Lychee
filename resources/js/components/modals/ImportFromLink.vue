@@ -38,7 +38,7 @@ import Textarea from "primevue/textarea";
 
 const visible = defineModel("visible", { default: false }) as Ref<boolean>;
 const props = defineProps<{ parentId: string | null }>();
-const emit = defineEmits<{ (e: "refresh"): void }>();
+const emits = defineEmits<{ refresh: [] }>();
 
 const urls = ref<string>("");
 
@@ -46,7 +46,7 @@ function submit() {
 	PhotoService.importFromUrl(urls.value.split("\n"), props.parentId).then(() => {
 		urls.value = "";
 		visible.value = false;
-		emit("refresh");
+		emits("refresh");
 	});
 }
 

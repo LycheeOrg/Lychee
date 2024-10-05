@@ -17,6 +17,7 @@
 	</div>
 </template>
 <script setup lang="ts">
+import { useSlideshowFunction } from "@/composables/photo/slideshow";
 import AlbumService from "@/services/album-service";
 import { onKeyStroke } from "@vueuse/core";
 import Button from "primevue/button";
@@ -32,31 +33,30 @@ const imgSrc = ref("");
 const imgSrcset = ref("");
 const refreshTimeout = ref(5);
 
+const is_slideshow_active = ref(false);
+
+function getNext() {
+	AlbumService.frame(props.albumid ?? null).then((response) => {
+		imgSrc.value = response.data.src;
+		imgSrcset.value = response.data.srcset;
+	});
+}
+
+const { slideshow, clearTimeouts } = useSlideshowFunction(1000, is_slideshow_active, refreshTimeout, getNext, undefined);
+
 function start() {
 	AlbumService.frame(props.albumid ?? null).then((response) => {
 		refreshTimeout.value = response.data.timeout;
-		setTimeout(() => changePhoto(response.data), 1000);
-		setTimeout(() => rotate(), 1000 * refreshTimeout.value);
+		getNext();
+		slideshow();
 	});
-}
-
-function rotate() {
-	AlbumService.frame(props.albumid ?? null).then((response) => {
-		document.getElementById("shutter")!.classList.remove("opacity-0");
-		setTimeout(() => changePhoto(response.data), 1000);
-		setTimeout(() => rotate(), 1000 * refreshTimeout.value);
-	});
-}
-
-function changePhoto(newPhotos: { src: string; srcset: string }) {
-	imgSrc.value = newPhotos.src;
-	imgSrcset.value = newPhotos.srcset;
-	document.getElementById("shutter")!.classList.add("opacity-0");
 }
 
 start();
 
 function goBack() {
+	clearTimeouts();
+
 	if (props.albumid !== undefined) {
 		router.push({ name: "album", params: { albumid: props.albumid } });
 	} else {

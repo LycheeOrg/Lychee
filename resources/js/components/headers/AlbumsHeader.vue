@@ -7,7 +7,11 @@
 	<DropBox v-if="canUpload" v-model:visible="isImportFromDropboxOpen" :album-id="null" />
 	<AlbumCreateDialog v-if="canUpload" v-model:visible="isCreateAlbumOpen" :parent-id="null" />
 	<AlbumCreateTagDialog v-if="canUpload" v-model:visible="isCreateTagAlbumOpen" />
-	<Toolbar class="w-full border-0 h-14" :pt:root:class="'flex-nowrap'" :pt:center:class="'absolute top-0 py-3 left-1/2 -translate-x-1/2 h-14'">
+	<Toolbar
+		class="w-full border-0 h-14"
+		:pt:root:class="'flex-nowrap relative'"
+		:pt:center:class="'absolute top-0 py-3 left-1/2 -translate-x-1/2 h-14'"
+	>
 		<template #start>
 			<!-- Not logged in. -->
 			<BackLinkButton v-if="user.id === null && !isLoginLeft" :config="props.config" />
@@ -35,10 +39,10 @@
 			<div :class="menu.length > 1 ? 'hidden sm:block' : ''">
 				<template v-for="item in menu">
 					<template v-if="item.type === 'link'">
-						<Button as="router-link" :to="item.to" :icon="item.icon" class="border-none" severity="secondary" text v-if="item.if" />
+						<Button as="router-link" :to="item.to" :icon="item.icon" class="border-none" severity="secondary" text />
 					</template>
 					<template v-else>
-						<Button @click="item.callback" :icon="item.icon" class="border-none" severity="secondary" text v-if="item.if" />
+						<Button @click="item.callback" :icon="item.icon" class="border-none" severity="secondary" text />
 					</template>
 				</template>
 				<!-- Not logged in. -->
@@ -116,10 +120,9 @@ const props = defineProps<{
 	};
 }>();
 
-const emit = defineEmits<{
-	(e: "refresh"): void;
-	(e: "help"): void;
-	//   (e: 'update', value: string): void
+const emits = defineEmits<{
+	refresh: [];
+	help: [];
 }>();
 
 // 'UPLOAD_PHOTO' => 'Upload Photo',
@@ -174,7 +177,7 @@ function openAddMenu(event: Event) {
 }
 
 function openHelp() {
-	emit("help");
+	emits("help");
 }
 
 function openSearch() {
@@ -281,6 +284,6 @@ const menu = computed(() =>
 
 // bubble up.
 function refresh() {
-	emit("refresh");
+	emits("refresh");
 }
 </script>

@@ -38,8 +38,8 @@ const props = defineProps<{
 }>();
 
 const visible = defineModel<boolean>("visible", { default: false });
-const emit = defineEmits<{
-	(e: "updated"): void;
+const emits = defineEmits<{
+	updated: [];
 }>();
 
 const title = ref(undefined as undefined | string);
@@ -67,7 +67,7 @@ function execute() {
 function executePhoto() {
 	// @ts-ignore
 	PhotoService.rename(props.photo.id, title.value).then(() => {
-		emit("updated");
+		emits("updated");
 		AlbumService.clearCache(props.photo?.album_id);
 	});
 }
@@ -75,7 +75,7 @@ function executePhoto() {
 function executeAlbum() {
 	// @ts-ignore
 	AlbumService.rename(props.album.id, title.value).then(() => {
-		emit("updated");
+		emits("updated");
 		AlbumService.clearCache(props.album?.id);
 	});
 }

@@ -32,8 +32,8 @@ return new class() extends BaseConfigMigration {
 				'is_secret' => false,
 				'cat' => self::SE,
 				'type_range' => self::BOOL,
-				'description' => 'Disable Lychee SE info',
-				'details' => '',
+				'description' => 'Disable Lychee SE hint',
+				'details' => 'Hides Lychee SE call for actions.',
 			],
 			[
 				'key' => 'enable_se_preview',
@@ -41,7 +41,7 @@ return new class() extends BaseConfigMigration {
 				'is_secret' => false,
 				'cat' => self::SE,
 				'type_range' => self::BOOL,
-				'description' => 'Preview Lychee SE features',
+				'description' => 'Enable preview of Lychee SE features',
 				'details' => '',
 			],
 		];

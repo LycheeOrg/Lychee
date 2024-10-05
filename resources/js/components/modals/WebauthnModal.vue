@@ -35,7 +35,7 @@ import AlbumService from "@/services/album-service";
 const toast = useToast();
 const visible = defineModel("visible", { default: false }) as Ref<boolean>;
 const emits = defineEmits<{
-	(e: "logged-in"): void;
+	"logged-in": [];
 }>();
 
 const authStore = useAuthStore();

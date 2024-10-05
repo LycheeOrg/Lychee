@@ -24,9 +24,9 @@ const props = withDefaults(
 	},
 );
 
-const emit = defineEmits<{
-	(e: "picked", attachments: Dropbox.ChooserFile[]): void;
-	(e: "cancel"): void;
+const emits = defineEmits<{
+	picked: [attachments: Dropbox.ChooserFile[]];
+	cancel: [];
 }>();
 
 const scriptLoaded = ref(false);
@@ -64,11 +64,11 @@ function dropboxIconClicked() {
 
 	let options: Dropbox.ChooserOptions = {
 		success: async (files: Dropbox.ChooserFile[]) => {
-			emit("picked", files);
+			emits("picked", files);
 		},
 
 		cancel: function () {
-			emit("cancel");
+			emits("cancel");
 		},
 
 		linkType: "direct",
