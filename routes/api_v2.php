@@ -212,6 +212,7 @@ Route::post('/Maintenance::genSizeVariants', [Admin\Maintenance\GenSizeVariants:
 Route::get('/Maintenance::missingFileSize', [Admin\Maintenance\MissingFileSizes::class, 'check']);
 Route::post('/Maintenance::missingFileSize', [Admin\Maintenance\MissingFileSizes::class, 'do']);
 Route::post('/Maintenance::optimize', [Admin\Maintenance\Optimize::class, 'do']);
+Route::post('/Maintenance::register', Admin\Maintenance\RegisterController::class);
 
 /**
  * UPDATE.

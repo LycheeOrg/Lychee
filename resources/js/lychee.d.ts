@@ -234,6 +234,9 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		photo_layout_square_column_width: number;
 		photo_layout_gap: number;
 	};
+	export type RegisterData = {
+		success: boolean;
+	};
 	export type RootConfig = {
 		is_map_accessible: boolean;
 		is_mod_frame_enabled: boolean;

@@ -38,11 +38,12 @@
 					</h2>
 
 					<p class="text-muted-color text-center" v-html="description"></p>
-					<!-- <p class="text-muted-color text-center font-bold mt-8" v-if="!is_se_enabled">Thank you for your support!</p> -->
+					<p class="text-muted-color text-center font-bold mt-8" v-if="is_se_enabled">Thank you for your support!</p>
 					<p class="text-muted-color text-center font-bold mt-8" v-if="!is_se_enabled && !is_se_info_hidden">
 						Get exclusive features and support the development of Lychee.<br />
 						Unlock the
-						<a href="https://lycheeorg.github.io/get-supporter-edition/" class="text-primary-500 underline">Supporter Edition</a>.<br />
+						<a href="https://lycheeorg.github.io/get-supporter-edition/" class="text-primary-500 underline">Supporter Edition</a>
+						or register your License key <a class="text-primary-500 underline cursor-pointer" @click="toggleRegistration">here</a>.<br />
 					</p>
 				</div>
 				<div class="flex justify-center">
@@ -53,6 +54,7 @@
 			</div>
 		</template>
 	</Dialog>
+	<RegisterLychee v-model:visible="registerLycheeVisible" />
 </template>
 <script setup lang="ts">
 import { Ref, ref } from "vue";
@@ -63,13 +65,15 @@ import { trans } from "laravel-vue-i18n";
 import { sprintf } from "sprintf-js";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
+import RegisterLychee from "./RegisterLychee.vue";
 
 const visible = defineModel("visible") as Ref<boolean>;
+const registerLycheeVisible = ref(false);
 const description = ref(sprintf(trans("lychee.ABOUT_DESCRIPTION"), "https://LycheeOrg.github.io"));
 const version = ref(undefined) as Ref<undefined | App.Http.Resources.Root.VersionResource>;
 const lycheeStore = useLycheeStateStore();
 
-const { is_se_enabled, is_se_preview_enabled, is_se_info_hidden } = storeToRefs(lycheeStore);
+const { is_se_enabled, is_se_info_hidden } = storeToRefs(lycheeStore);
 
 InitService.fetchVersion()
 	.then((data) => {
@@ -80,6 +84,11 @@ InitService.fetchVersion()
 	});
 
 function closeCallback() {
+	visible.value = false;
+}
+
+function toggleRegistration() {
+	registerLycheeVisible.value = true;
 	visible.value = false;
 }
 </script>
