@@ -5,7 +5,6 @@ namespace App\Image;
 use App\Contracts\Image\MediaFile;
 use App\Exceptions\MediaFileOperationException;
 use App\Image\Files\InMemoryBuffer;
-use App\Image\Files\TemporaryLocalFile;
 use App\Models\SizeVariant;
 use Safe\Exceptions\FilesystemException;
 use Safe\Exceptions\ImageException;
@@ -18,7 +17,7 @@ use function Safe\stream_get_contents;
 
 class PlaceholderEncoder
 {
-	private const IMAGE_QUALITY = 50;
+	private const IMAGE_QUALITY = 30;
 
 	/** Character length that the encoded base64 image cannot exceed.
 	 *	The initial value 255 is determined by the max characters in size_variants.short_path DB column.
@@ -35,13 +34,12 @@ class PlaceholderEncoder
 	 *    - Since each group of 4 chars corresponds to 3 bytes of data,
 	 *      63 * 3 = 189 bytes of unencoded data.
 	 */
-	private const FILESIZE_LIMIT = 189;
+	private const COMPRESSION_SIZE_LIMIT = 189;
 	private const MAX_COMPRESSION_RETRIES = 3;
 
+	private ?\GdImage $gdImage = null;
+
 	/**
-	 * Performs the steps to encode a usable placeholder image and saves it in
-	 * the size variant's short_path column.
-	 *
 	 * @param SizeVariant $sizeVariant unencoded placeholder size variant
 	 *
 	 * @return void
@@ -49,23 +47,16 @@ class PlaceholderEncoder
 	public function do(SizeVariant $sizeVariant): void
 	{
 		try {
-			$compressedImage = new InMemoryBuffer();
-			$gdImage = $this->createGdImage($sizeVariant->getFile());
-			$this->compressImage($gdImage, $compressedImage);
+			$originalFile = $sizeVariant->getFile();
+			$workingImage = new InMemoryBuffer();
 
-			$base64 = new TemporaryLocalFile('');
-			stream_filter_append($base64->read(), 'convert.base64-encode');
-			$base64->write($compressedImage->read());
-			$base64->close();
+			$this->createGdImage($sizeVariant->getFile());
+			$this->compressImage($this->gdImage, $workingImage);
+			$this->encodeBase64Placeholder($workingImage);
+			$this->savePlaceholder($workingImage, $sizeVariant);
 
-			$base64Length = $base64->getFilesize();
-			if ($base64Length <= self::BASE64_SIZE_LIMIT) {
-				$sizeVariant->filesize = $base64Length;
-				$sizeVariant->short_path = stream_get_contents($base64->read());
-				$sizeVariant->save();
-			} else {
-				throw new MediaFileOperationException('Encoded image is too large.');
-			}
+			// delete original file since we now have no reference to it
+			$originalFile->delete();
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException('Failed to encode placeholder to base64', $e);
 		}
@@ -76,13 +67,13 @@ class PlaceholderEncoder
 	 *
 	 * @param MediaFile $file
 	 *
-	 * @return \GdImage
+	 * @return void
 	 *
 	 * @throws FilesystemException
 	 * @throws ImageException
 	 * @throws StreamException
 	 */
-	private function createGdImage(MediaFile $file): \GdImage
+	private function createGdImage(MediaFile $file): void
 	{
 		$inMemoryBuffer = new InMemoryBuffer();
 
@@ -106,7 +97,7 @@ class PlaceholderEncoder
 		// Since gd has issues with saving gif as webp, save as jpeg first and reload
 		$imageStats = getimagesizefromstring($imgBinary);
 		if ($imageStats !== false && $imageStats[2] === IMAGETYPE_GIF) {
-			// TODO: remove when GdHandler save method respects naming strategy extensions
+			// TODO: remove if/when GdHandler save method respects naming strategy extensions and placeholders are first generated as jpegs
 			$tmpJpeg = new InMemoryBuffer();
 			\Safe\imagejpeg($referenceImage, $tmpJpeg->stream());
 
@@ -116,7 +107,7 @@ class PlaceholderEncoder
 			$referenceImage = imagecreatefromstring($imgBinary);
 		}
 
-		return $referenceImage;
+		$this->gdImage = $referenceImage;
 	}
 
 	/**
@@ -148,6 +139,49 @@ class PlaceholderEncoder
 
 			$quality -= 5;
 			$retries++;
-		} while ($filesize > self::FILESIZE_LIMIT && $retries <= self::MAX_COMPRESSION_RETRIES);
+		} while ($filesize > self::COMPRESSION_SIZE_LIMIT && $retries <= self::MAX_COMPRESSION_RETRIES);
+	}
+
+	/**
+	 * Encodes provided image file to base64.
+	 *
+	 * @param InMemoryBuffer $file
+	 *
+	 * @return void
+	 *
+	 * @throws StreamException
+	 */
+	private function encodeBase64Placeholder(InMemoryBuffer $file): void
+	{
+		$inMemoryBuffer = new InMemoryBuffer();
+
+		stream_filter_append($inMemoryBuffer->read(), 'convert.base64-encode', STREAM_FILTER_WRITE);
+		$inMemoryBuffer->write($file->read());
+
+		$file->write($inMemoryBuffer->read());
+		$inMemoryBuffer->close();
+	}
+
+	/**
+	 * Saves base64 string and size to DB.
+	 *
+	 * @param InMemoryBuffer $file
+	 * @param SizeVariant    $sizeVariant
+	 *
+	 * @return void
+	 *
+	 * @throws FilesystemException
+	 * @throws StreamException
+	 */
+	private function savePlaceholder(InMemoryBuffer $file, SizeVariant $sizeVariant): void
+	{
+		$base64Length = \Safe\fstat($file->read())['size'];
+		if ($base64Length <= self::BASE64_SIZE_LIMIT) {
+			$sizeVariant->filesize = $base64Length;
+			$sizeVariant->short_path = stream_get_contents($file->read());
+			$sizeVariant->save();
+		} else {
+			throw new MediaFileOperationException('Encoded image is too large.');
+		}
 	}
 }
