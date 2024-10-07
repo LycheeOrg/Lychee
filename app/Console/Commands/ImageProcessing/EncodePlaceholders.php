@@ -52,9 +52,7 @@ class EncodePlaceholders extends Command
 
 			$placeholderEncoder = new PlaceholderEncoder();
 			foreach ($placeholders as $placeholder) {
-				$file = $placeholder->getFile();
 				$placeholderEncoder->do($placeholder);
-				$file->delete();
 			}
 
 			return 0;
