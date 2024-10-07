@@ -47,6 +47,10 @@ const MaintenanceService = {
 	optimizeDo(): Promise<AxiosResponse<string[]>> {
 		return axios.post(`${Constants.API_URL}Maintenance::optimize`, {});
 	},
+
+	register(key: string): Promise<AxiosResponse<App.Http.Resources.GalleryConfigs.RegisterData>> {
+		return axios.post(`${Constants.API_URL}Maintenance::register`, { key: key });
+	},
 };
 
 export default MaintenanceService;
