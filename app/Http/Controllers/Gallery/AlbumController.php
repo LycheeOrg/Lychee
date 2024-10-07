@@ -111,7 +111,11 @@ class AlbumController extends Controller
 		$album->photo_sorting = $request->photoSortingCriterion();
 		$album->album_sorting = $request->albumSortingCriterion();
 
-		$album = $setHeader->do($album, $request->is_compact(), $request->photo());
+		$album = $setHeader->do(
+			album: $album,
+			is_compact: $request->is_compact(),
+			photo: $request->photo(),
+			shall_override: true);
 
 		return EditableBaseAlbumResource::fromModel($album);
 	}
