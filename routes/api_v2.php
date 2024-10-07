@@ -215,6 +215,11 @@ Route::post('/Maintenance::optimize', [Admin\Maintenance\Optimize::class, 'do'])
 Route::post('/Maintenance::register', Admin\Maintenance\RegisterController::class);
 
 /**
+ * STATISTICS.
+ */
+Route::get('/Statistics', [StatisticsController::class, 'all'])->middleware(['support:se']);
+
+/**
  * UPDATE.
  */
 // Route::post('/Update::apply', [AdministrationUpdateController::class, 'apply']);
