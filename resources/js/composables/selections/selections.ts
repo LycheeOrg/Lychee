@@ -7,6 +7,30 @@ export function useSelection(
 		| ComputedRef<{ [key: number]: App.Http.Resources.Models.ThumbAlbumResource }>
 		| Ref<{ [key: number]: App.Http.Resources.Models.ThumbAlbumResource }>,
 ) {
+    function get_platform() {
+        // 2022 way of detecting. Note : this userAgentData feature is available only in secure contexts (HTTPS)
+        // @ts-expect-error Legacy stuff
+        if (typeof navigator.userAgentData !== 'undefined' && navigator.userAgentData != null) {
+            // @ts-expect-error Legacy stuff
+            return navigator.userAgentData.platform;
+        }
+        // Deprecated but still works for most of the browser
+        if (typeof navigator.platform !== 'undefined') {
+            if (typeof navigator.userAgent !== 'undefined' && /android/.test(navigator.userAgent.toLowerCase())) {
+                // android device’s navigator.platform is often set as 'linux', so let’s use userAgent for them
+                return 'android';
+            }
+            return navigator.platform;
+        }
+        return 'unknown';
+    }
+
+    const platform = get_platform().toLowerCase();
+
+    const isOSX = /mac/.test(platform); // Mac desktop
+    const isIOS = ['iphone', 'ipad', 'ipod'].indexOf(platform) >= 0; // Mac iOs
+    const isApple = isOSX || isIOS; // Apple device (desktop or iOS)
+
 	const selectedPhotosIdx = ref([] as number[]);
 	const selectedAlbumsIdx = ref([] as number[]);
 	const selectedPhoto = computed(() => (selectedPhotosIdx.value.length === 1 ? photos.value[selectedPhotosIdx.value[0]] : undefined));
@@ -21,7 +45,16 @@ export function useSelection(
 	const selectedAlbumsIds = computed(() => selectedAlbums.value.map((a) => a.id));
 
 	const ctrlKeyState = useKeyModifier("Control");
+	const metaKeyState = useKeyModifier("Meta");
 	const shiftKeyState = useKeyModifier("Shift");
+
+	function modKey() {
+        if (isApple) {
+            return metaKeyState;
+        }
+        return ctrlKeyState;
+    }
+
 
 	// We save the last clicked index so we can do selections with shift.
 	const lastPhotoClicked = ref(undefined as number | undefined);
@@ -49,7 +82,7 @@ export function useSelection(
 		selectedAlbumsIdx.value = [];
 
 		// we do not support CTRL + SHIFT
-		if (!ctrlKeyState.value && !shiftKeyState.value) {
+		if (!modKey().value && !shiftKeyState.value) {
 			return;
 		}
 
@@ -57,7 +90,7 @@ export function useSelection(
 		e.preventDefault();
 		e.stopPropagation();
 
-		if (ctrlKeyState.value) {
+		if (modKey().value) {
 			handlePhotoCtrl(idx, e);
 			return;
 		}
