@@ -93,19 +93,8 @@ class PlaceholderEncoder
 		rewind($inputStream);
 		/** @var \GdImage $referenceImage */
 		$referenceImage = imagecreatefromstring($imgBinary);
-
-		// Since gd has issues with saving gif as webp, save as jpeg first and reload
-		$imageStats = getimagesizefromstring($imgBinary);
-		if ($imageStats !== false && $imageStats[2] === IMAGETYPE_GIF) {
-			// TODO: remove if/when GdHandler save method respects naming strategy extensions and placeholders are first generated as jpegs
-			$tmpJpeg = new InMemoryBuffer();
-			\Safe\imagejpeg($referenceImage, $tmpJpeg->stream());
-
-			$imgBinary = stream_get_contents($tmpJpeg->read());
-			rewind($inputStream);
-			/** @var \GdImage $referenceImage */
-			$referenceImage = imagecreatefromstring($imgBinary);
-		}
+		// webp does not support palette images
+		imagepalettetotruecolor($referenceImage);
 
 		$this->gdImage = $referenceImage;
 	}
