@@ -24,4 +24,14 @@ class Sizes extends Data
 		$this->size = $sizes['size'];
 		$this->formatted = $sizes['formatted'];
 	}
+
+	/**
+	 * @param array{type:SizeVariantType,size:int,formatted:string} $sizes
+	 *
+	 * @return Sizes
+	 */
+	public static function fromArray(array $sizes): self
+	{
+		return new self($sizes);
+	}
 }
