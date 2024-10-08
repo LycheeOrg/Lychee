@@ -22,6 +22,7 @@ use App\Image\Files\TemporaryLocalFile;
 use App\Image\Handlers\GoogleMotionPictureHandler;
 use App\Image\Handlers\ImageHandler;
 use App\Image\Handlers\VideoHandler;
+use App\Image\PlaceholderEncoder;
 use App\Image\StreamStat;
 use App\Jobs\UploadSizeVariantToS3Job;
 use App\Models\Configs;
@@ -199,6 +200,12 @@ class AddStandaloneStrategy extends AbstractAddStrategy
 				$sizeVariantFactory->init($this->photo, $this->sourceImage, $this->namingStrategy);
 				$variants = $sizeVariantFactory->createSizeVariants();
 				$variants->push($originalVariant);
+
+				$placeholder = $variants->firstWhere('type', SizeVariantType::PLACEHOLDER);
+				if ($placeholder !== null) {
+					$placeholderEncoder = new PlaceholderEncoder();
+					$placeholderEncoder->do($placeholder);
+				}
 
 				if (Features::active('use-s3')) {
 					// If enabled, upload all size variants to the remote bucket and delete the local files after that
