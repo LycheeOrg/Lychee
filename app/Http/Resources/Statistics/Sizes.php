@@ -11,10 +11,9 @@ class Sizes extends Data
 {
 	public string $type;
 	public int $size;
-	public string $formatted;
 
 	/**
-	 * @param array{type:SizeVariantType,size:int,formatted:string} $sizes
+	 * @param array{type:SizeVariantType,size:int} $sizes
 	 *
 	 * @return void
 	 */
@@ -22,11 +21,10 @@ class Sizes extends Data
 	{
 		$this->type = $sizes['type']->localization();
 		$this->size = $sizes['size'];
-		$this->formatted = $sizes['formatted'];
 	}
 
 	/**
-	 * @param array{type:SizeVariantType,size:int,formatted:string} $sizes
+	 * @param array{type:SizeVariantType,size:int} $sizes
 	 *
 	 * @return Sizes
 	 */

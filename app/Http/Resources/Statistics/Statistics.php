@@ -20,6 +20,7 @@ class Statistics extends Data
 	/**
 	 * @param Collection<int,Sizes> $sizes
 	 * @param Collection<int,Album> $albums
+	 * @param Collection<int,Album> $collapsed_albums
 	 *
 	 * @return void
 	 */
@@ -31,9 +32,9 @@ class Statistics extends Data
 	}
 
 	/**
-	 * @param Collection<int,array{type:SizeVariantType,size:int,formatted:string}>                                                                                                          $sizes
-	 * @param Collection<int,array{title:string,left:int,right:int,num_photos:int,num_descendants:int,size:int,formatted:string,num_total_photos:int,total_size:int,formatted_total:string}> $albums
-	 * @param Collection<int,array{title:string,left:int,right:int,num_photos:int,num_descendants:int,size:int,formatted:string,num_total_photos:int,total_size:int,formatted_total:string}> $collapsed_albums
+	 * @param Collection<int,array{type:SizeVariantType,size:int}>                                                                            $sizes
+	 * @param Collection<int,array{username:string,title:string,is_nsfw:bool,left:int,right:int,num_photos:int,num_descendants:int,size:int}> $albums
+	 * @param Collection<int,array{username:string,title:string,is_nsfw:bool,left:int,right:int,num_photos:int,num_descendants:int,size:int}> $collapsed_albums
 	 *
 	 * @return Statistics
 	 */

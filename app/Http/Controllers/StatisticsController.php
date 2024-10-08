@@ -13,6 +13,6 @@ class StatisticsController extends Controller
 	 */
 	public function all(GetSizes $getSizes): Statistics
 	{
-		return Statistics::fromDTO($getSizes->getFullSize(), $getSizes->getAlbumsSizes(), $getSizes->getTotalAlbumsSizes());
+		return Statistics::fromDTO($getSizes->getFullSizeBreakdown(), $getSizes->getAlbumsSizes(), $getSizes->getTotalAlbumsSizes());
 	}
 }
