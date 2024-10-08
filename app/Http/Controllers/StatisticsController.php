@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Statistics\GetSizes;
-use App\Http\Resources\Statistics\All;
+use App\Http\Resources\Statistics\Statistics;
 use Illuminate\Routing\Controller;
 
 class StatisticsController extends Controller
@@ -11,8 +11,8 @@ class StatisticsController extends Controller
 	/**
 	 * Update the Login information of the current user.
 	 */
-	public function all(GetSizes $getSizes): All
+	public function all(GetSizes $getSizes): Statistics
 	{
-		return All::fromDTO($getSizes->getFullSize());
+		return Statistics::fromDTO($getSizes->getFullSize(), $getSizes->getAlbumsSizes(), $getSizes->getTotalAlbumsSizes());
 	}
 }

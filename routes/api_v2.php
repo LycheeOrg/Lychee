@@ -51,12 +51,6 @@ Route::delete('/Album::track', [Gallery\AlbumController::class, 'deleteTrack']);
 
 Route::post('/TagAlbum', [Gallery\AlbumController::class, 'createTagAlbum']);
 Route::patch('/TagAlbum', [Gallery\AlbumController::class, 'updateTagAlbum']);
-// Route::post('/Album::unlock', [AlbumController::class, 'unlock']);
-// Route::post('/Album::setTrack', [AlbumController::class, 'setTrack'])
-// 	->withoutMiddleware(['content_type:json'])
-// 	->middleware(['content_type:multipart']);
-// Route::post('/Album::deleteTrack', [AlbumController::class, 'deleteTrack']);
-
 Route::get('/Zip', [Gallery\AlbumController::class, 'getArchive'])
 	->name('download')
 	->withoutMiddleware(['content_type:json', 'accept_content_type:json'])
@@ -80,7 +74,6 @@ Route::get('/Sharing::all', [Gallery\SharingController::class, 'listAll']);
 /**
  * IMPORT.
  */
-// Route::post('/Import::url', [ImportController::class, 'url']);
 // Route::post('/Import::server', [ImportController::class, 'server']);
 // Route::post('/Import::serverCancel', [ImportController::class, 'serverCancel']);
 
@@ -92,7 +85,6 @@ Route::get('/Sharing::all', [Gallery\SharingController::class, 'listAll']);
 /**
  * PHOTO.
  */
-// Route::get('/Photo', [Gallery\PhotoController::class, 'get'])->middleware(['login_required:album']);
 Route::post('/Photo::fromUrl', [Gallery\PhotoController::class, 'fromUrl']);
 Route::post('/Photo', [Gallery\PhotoController::class, 'upload'])
 	->withoutMiddleware(['content_type:json'])
@@ -217,7 +209,7 @@ Route::post('/Maintenance::register', Admin\Maintenance\RegisterController::clas
 /**
  * STATISTICS.
  */
-Route::get('/Statistics', [StatisticsController::class, 'all'])->middleware(['support:se']);
+Route::get('/Statistics', [StatisticsController::class, 'all'])->middleware(['support:se'])->withoutMiddleware(['content_type:json', 'accept_content_type:json']);
 
 /**
  * UPDATE.
