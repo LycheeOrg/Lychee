@@ -47,7 +47,7 @@ class EncodePlaceholders extends Command
 			if (count($placeholders) === 0) {
 				$this->line('No placeholders require encoding.');
 
-				return -1;
+				return 0;
 			}
 
 			$placeholderEncoder = new PlaceholderEncoder();
