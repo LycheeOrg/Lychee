@@ -152,6 +152,12 @@ trait HasRandomIDAndLegacyTimeBasedID
 		// As the number of bytes is divisible by 3, no trailing `=` occurs.
 		try {
 			$id = strtr(base64_encode(random_bytes(3 * RandomID::ID_LENGTH / 4)), '+/', '-_');
+			// Last character whould not be a - for some version of android.
+			// this will reduce the entropy and induce a slight bias but we are still
+			// above the birthday bounds.
+			if ($id[23] === '-') {
+				$id[23] = '0';
+			}
 		} catch (\Exception $e) {
 			throw new InsufficientEntropyException($e);
 		}
