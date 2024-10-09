@@ -7,15 +7,18 @@
 						<a v-ripple :href="href" v-bind="props.action" @click="navigate">
 							<MiniIcon :icon="item.icon" :class="'w-3 h-3'" />
 							<span class="ml-2">{{ $t(item.label) }}</span>
+							<SETag v-if="item.seTag" />
 						</a>
 					</router-link>
 					<a v-if="item.url" v-ripple :href="item.url" :target="item.target" v-bind="props.action">
 						<MiniIcon :icon="item.icon" :class="'w-3 h-3'" />
 						<span class="ml-2">{{ $t(item.label) }}</span>
+						<SETag v-if="item.seTag" />
 					</a>
 					<a v-if="!item.route && !item.url" v-ripple v-bind="props.action">
 						<MiniIcon :icon="item.icon" :class="'w-3 h-3'" />
 						<span class="ml-2">{{ $t(item.label) }}</span>
+						<SETag v-if="item.seTag" />
 					</a>
 				</template>
 			</template>
@@ -35,6 +38,7 @@ import InitService from "@/services/init-service";
 import { useAuthStore } from "@/stores/Auth";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import AlbumService from "@/services/album-service";
+import SETag from "@/components/icons/SETag.vue";
 
 type MenyType = {
 	label: string;
@@ -43,6 +47,7 @@ type MenyType = {
 	url?: string;
 	target?: string;
 	access: boolean;
+	seTag?: boolean;
 	command?: () => void;
 };
 
@@ -55,7 +60,7 @@ const authStore = useAuthStore();
 const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
 
-const { left_menu_open, clockwork_url } = storeToRefs(lycheeStore);
+const { left_menu_open, clockwork_url, is_se_enabled, is_se_preview_enabled } = storeToRefs(lycheeStore);
 const { user } = storeToRefs(authStore);
 authStore.getUser();
 
@@ -154,6 +159,19 @@ function loadMenu() {
 			access: initData.value.settings.can_edit ?? false,
 		},
 		{
+			label: "Statistics",
+			icon: "bar-chart",
+			route: "/statistics",
+			access: is_se_preview_enabled.value,
+			seTag: true,
+		},
+		{
+			label: "Statistics",
+			icon: "bar-chart",
+			route: "/statistics",
+			access: is_se_enabled.value,
+		},
+		{
 			label: "lychee.ABOUT_LYCHEE",
 			icon: "info",
 			access: true,
@@ -165,12 +183,6 @@ function loadMenu() {
 			access: true,
 			command: logout,
 		},
-		// {
-		// 	label: "Statistics ✨",
-		// 	icon: "account",
-		// 	route: "/stats",
-		// 	access: !authStore.user,
-		// },
 	];
 
 	if (clockwork_url.value && initData.value.settings.can_access_dev_tools) {

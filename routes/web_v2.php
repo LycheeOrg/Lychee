@@ -40,6 +40,7 @@ Route::get('/users', [VueController::class, 'view'])->middleware(['migration:com
 Route::get('/sharing', [VueController::class, 'view'])->middleware(['migration:complete']);
 Route::get('/jobs', [VueController::class, 'view'])->middleware(['migration:complete']);
 Route::get('/diagnostics', [VueController::class, 'view'])->middleware(['migration:complete']);
+Route::get('/statistics', [VueController::class, 'view'])->middleware(['migration:complete']);
 Route::get('/maintenance', [VueController::class, 'view'])->middleware(['migration:complete']);
 Route::get('/users', [VueController::class, 'view'])->middleware(['migration:complete']);
 Route::get('/settings', [VueController::class, 'view'])->middleware(['migration:complete']);

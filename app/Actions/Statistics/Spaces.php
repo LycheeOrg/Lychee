@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
  * Do note that this number may be slightly off due to the way we store pictures in the database:
  * row are duplicates for pictures, but the file is stored only once.
  */
-class GetSizes
+class Spaces
 {
 	/**
 	 * Return the amount of data stored on the server (optionally for a user).
@@ -20,7 +20,7 @@ class GetSizes
 	 *
 	 * @return Collection<int,array{username:string,size:int}>
 	 */
-	public function getFullSizeUser(?int $owner_id = null): Collection
+	public function getFullSpacePerUser(?int $owner_id = null): Collection
 	{
 		return DB::table('size_variants')
 			->join('photos', 'photos.id', '=', 'size_variants.photo_id')
@@ -45,7 +45,7 @@ class GetSizes
 	 *
 	 * @return Collection<int,array{type:SizeVariantType,size:int}>
 	 */
-	public function getFullSizeBreakdown(?int $owner_id = null): Collection
+	public function getSpacePerSizeVariantType(?int $owner_id = null): Collection
 	{
 		return DB::table('size_variants')
 			->join('photos', 'photos.id', '=', 'size_variants.photo_id')
@@ -70,7 +70,7 @@ class GetSizes
 	 *
 	 * @return Collection<int,array{username:string,title:string,is_nsfw:bool,left:int,right:int,num_photos:int,num_descendants:int,size:int}>
 	 */
-	public function getAlbumsSizes(?string $album_id = null, ?int $owner_id = null)
+	public function getSpacePerAlbum(?string $album_id = null, ?int $owner_id = null)
 	{
 		$query = DB::table('albums')
 			->when($album_id !== null, fn ($query) => $query->where('albums.id', '=', $album_id))
@@ -113,7 +113,7 @@ class GetSizes
 	 *
 	 * @return Collection<int,array{username:string,title:string,is_nsfw:bool,left:int,right:int,num_photos:int,num_descendants:int,size:int}>
 	 */
-	public function getTotalAlbumsSizes(?string $album_id = null, ?int $owner_id = null)
+	public function getTotalSpacePerAlbum(?string $album_id = null, ?int $owner_id = null)
 	{
 		$query = DB::table('albums')
 			->when($album_id !== null, fn ($query) => $query->where('albums.id', '=', $album_id))
