@@ -52,10 +52,11 @@ abstract class AbstractSizeVariantNamingStrategy
 	 * Creates a file for the designated size variant.
 	 *
 	 * @param SizeVariantType $sizeVariant the size variant
+	 * @param bool            $isBackup    whether to create a backup file
 	 *
 	 * @return FlysystemFile the file
 	 *
 	 * @throws LycheeException
 	 */
-	abstract public function createFile(SizeVariantType $sizeVariant): FlysystemFile;
+	abstract public function createFile(SizeVariantType $sizeVariant, bool $isBackup = false): FlysystemFile;
 }
