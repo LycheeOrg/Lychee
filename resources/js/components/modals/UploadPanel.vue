@@ -2,7 +2,10 @@
 	<Dialog v-model:visible="visible" modal pt:root:class="border-none" @hide="closeCallback" :dismissable-mask="true">
 		<template #container="{ closeCallback }">
 			<div v-if="setup">
-				<ScrollPanel v-if="files.length > 0" class="w-96 h-48 m-4 p-1 mr-5">
+				<div v-if="files.length > 0" class="m-4 flex flex-col justify-center">
+					<span>Completed: {{ countCompleted }} / {{ files.length }}</span>
+				</div>
+				<ScrollPanel v-if="files.length > 0" class="w-96 h-48 m-4 p-1 mr-5" :pt:scrollbar:class="'opacity-100'">
 					<UploadingLine
 						v-for="(uploadable, index) in files"
 						:key="uploadable.file.name"
@@ -51,7 +54,7 @@
 <script setup lang="ts">
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
-import { Ref, ref, watch } from "vue";
+import { computed, Ref, ref, watch } from "vue";
 import UploadingLine from "../forms/upload/UploadingLine.vue";
 import ScrollPanel from "primevue/scrollpanel";
 import UploadService from "@/services/upload-service";
@@ -80,8 +83,10 @@ function load() {
 		setup.value = response.data;
 	});
 }
+const countCompleted = ref(0);
 
 function upload(event: Event) {
+	countCompleted.value = 0;
 	const target = event.target as HTMLInputElement;
 	if (target.files === null) {
 		return;
@@ -99,6 +104,8 @@ function upload(event: Event) {
 }
 
 function uploadCompleted(index: number) {
+	countCompleted.value++;
+	document.getElementById("upload" + index)?.scrollIntoView();
 	// Find the next one and start uploading.
 	for (let i = index; i < files.value.length; i++) {
 		if (files.value[i].status === "waiting") {
