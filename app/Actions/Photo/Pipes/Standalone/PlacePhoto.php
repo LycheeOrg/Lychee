@@ -87,6 +87,7 @@ class PlacePhoto implements StandalonePipe
 					// the image is re-encoded and hence its quality might
 					// be reduced.
 					$streamStat = $state->sourceImage->save($state->targetFile, true);
+					$this->backupOriginal($state);
 				} else {
 					// If the image does not require normalization the
 					// unaltered source file is copied to the final target.
@@ -116,5 +117,18 @@ class PlacePhoto implements StandalonePipe
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException('Could move/copy/symlink source file to final destination', $e);
 		}
+	}
+
+	/**
+	 * When rotating, we backup the original file to prevent data loss.
+	 *
+	 * @param StandaloneDTO $state
+	 *
+	 * @return void
+	 */
+	private function backupOriginal(StandaloneDTO $state)
+	{
+		$state->backupFile = $state->namingStrategy->createFile(SizeVariantType::ORIGINAL, true);
+		$state->backupFile->write($state->sourceFile->read(), true);
 	}
 }

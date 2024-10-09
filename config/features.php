@@ -59,7 +59,7 @@ return [
 	|
 	| Use pipeline design pattern instead of hardcoded Strategies.
 	*/
-	'create-photo-via-pipes' => (bool) env('PHOTO_PIPES', false),
+	'create-photo-via-pipes' => (bool) env('PHOTO_PIPES', true),
 
 	/*
 	|--------------------------------------------------------------------------
