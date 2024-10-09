@@ -37,16 +37,13 @@
 	</Panel>
 
 	<Panel class="max-w-5xl mx-auto border-0">
-		<div class="py-4">
-			<ToggleSwitch v-model="is_collapsed" class="text-sm"></ToggleSwitch> {{ "Collapse albums sizes" }}
-		</div>
-		<DataTable :value="albumData" size="small" scrollable scrollHeight="600px" :loading="albumData === undefined" >
-			<Column field="username" header="Owner" class="w-32">
-			</Column>
+		<div class="py-4"><ToggleSwitch v-model="is_collapsed" class="text-sm"></ToggleSwitch> {{ "Collapse albums sizes" }}</div>
+		<DataTable :value="albumData" size="small" scrollable scrollHeight="600px" :loading="albumData === undefined">
+			<Column field="username" header="Owner" class="w-32"> </Column>
 			<Column field="title" sortable header="Title"></Column>
 			<Column field="num_photos" sortable header="Photos" class="w-16"></Column>
-			<Column field="num_descendants" sortable  header="Children" class="w-16"></Column>
-			<Column field="size" header="Size" sortable  class="w-32">
+			<Column field="num_descendants" sortable header="Children" class="w-16"></Column>
+			<Column field="size" header="Size" sortable class="w-32">
 				<template #body="slotProps">{{ sizeToUnit(slotProps.data.size) }}</template>
 			</Column>
 		</DataTable>
