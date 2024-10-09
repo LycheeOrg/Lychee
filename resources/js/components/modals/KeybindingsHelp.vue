@@ -95,7 +95,7 @@ const shortcutsList = ref([
 			{ action: "Search", key: "/" },
 			{ action: "Show this modal", key: "?" },
 			// { action: "Toggle Sensitive albums", key: "h" },
-			// { action: "Select all albums", key: "ctrl a" },
+			{ action: "Select all", key: "ctrl/cmd a" },
 		],
 	},
 	{
@@ -106,6 +106,7 @@ const shortcutsList = ref([
 			{ action: "Search", key: "/" },
 			{ action: "Start/Stop slideshow", key: "Space" },
 			{ action: "Toggle panel", key: "i" },
+			{ action: "Select all", key: "ctrl/cmd a" },
 			// { action: "Select all albums or photos", key: "ctrl a" },
 		],
 	},

@@ -35,15 +35,16 @@ const AxiosConfig = {
 				}
 
 				if (error.response && error.response.status && !isNaN(error.response.status)) {
-					console.log(error.response.data.message === "Password required");
 					let errorMsg: string;
 					if (error.response.data.detail && error.response.status) {
 						errorMsg = `Status: ${error.response.status}, ${error.response.data.detail}`;
 					} else {
 						errorMsg = error.message;
 					}
-					const event = new CustomEvent("error", { detail: error.response.data });
-					window.dispatchEvent(event);
+					if (error.response.status !== 404) {
+						const event = new CustomEvent("error", { detail: error.response.data });
+						window.dispatchEvent(event);
+					}
 				}
 
 				return Promise.reject(error);
