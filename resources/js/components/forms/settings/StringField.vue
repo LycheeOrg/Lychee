@@ -14,7 +14,7 @@
 				</IconField>
 			</FloatLabel>
 		</div>
-		<div v-if="props.config.details" class="text-muted-color text-sm hidden sm:block">{{ props.config.details }}</div>
+		<div v-if="props.config.details" class="text-muted-color text-sm hidden sm:block" v-html="props.config.details" />
 	</div>
 </template>
 <script setup lang="ts">

@@ -9,7 +9,7 @@
 				<ToggleSwitch v-model="val" @update:modelValue="update" :input-id="props.config.key" class="text-sm translate-y-1"></ToggleSwitch>
 			</span>
 		</div>
-		<div v-if="props.config.details" class="text-muted-color text-sm">{{ props.config.details }}</div>
+		<div v-if="props.config.details" class="text-muted-color text-sm" v-html="props.config.details" />
 	</div>
 </template>
 <script setup lang="ts">

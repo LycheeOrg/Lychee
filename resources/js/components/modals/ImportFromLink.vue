@@ -13,6 +13,7 @@
 								rows="5"
 								cols="30"
 								placeholder="https://&#10;https://&#10;..."
+								:invalid="!isValidInput && urls.length > 0"
 							/>
 						</div>
 					</form>
@@ -21,16 +22,20 @@
 					<Button severity="secondary" class="w-full font-bold border-none rounded-none rounded-bl-xl" @click="closeCallback">{{
 						$t("lychee.CANCEL")
 					}}</Button>
-					<Button severity="contrast" class="w-full font-bold border-none rounded-none rounded-br-xl" @click="submit">{{
-						$t("lychee.UPLOAD_IMPORT")
-					}}</Button>
+					<Button
+						severity="contrast"
+						class="w-full font-bold border-none rounded-none rounded-br-xl"
+						@click="submit"
+						:disabled="!isValidInput || urls.length === 0"
+						>{{ $t("lychee.UPLOAD_IMPORT") }}</Button
+					>
 				</div>
 			</div>
 		</template>
 	</Dialog>
 </template>
 <script setup lang="ts">
-import { ref, Ref } from "vue";
+import { computed, ref, Ref } from "vue";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
 import PhotoService from "@/services/photo-service";
@@ -49,6 +54,8 @@ function submit() {
 		emits("refresh");
 	});
 }
+
+const isValidInput = computed(() => urls.value.split("\n").every((url) => url.match(/^https?:\/\/.+/)));
 
 function closeCallback() {
 	visible.value = false;

@@ -160,6 +160,7 @@ class Create
 			Shared\Save::class,
 			Standalone\CreateOriginalSizeVariant::class,
 			Standalone\CreateSizeVariants::class,
+			Standalone\ReplaceOriginalWithBackup::class,
 			Shared\UploadSizeVariantsToS3::class,
 		];
 
@@ -245,6 +246,7 @@ class Create
 			Shared\Save::class,
 			Standalone\CreateOriginalSizeVariant::class,
 			Standalone\CreateSizeVariants::class,
+			Standalone\ReplaceOriginalWithBackup::class,
 			Shared\UploadSizeVariantsToS3::class,
 		];
 		$standAloneDto = $this->executePipeOnDTO($standAlonePipes, $standAloneDto);

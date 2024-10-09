@@ -119,11 +119,12 @@ class SizeVariantGroupedWithRandomSuffixNamingStrategy extends BaseSizeVariantNa
 	/**
 	 * {@inheritDoc}
 	 */
-	public function createFile(SizeVariantType $sizeVariant): FlysystemFile
+	public function createFile(SizeVariantType $sizeVariant, bool $isBackup = false): FlysystemFile
 	{
 		$relativePath =
 			$sizeVariant->name() . DIRECTORY_SEPARATOR .
 			$this->cachedRndMiddlePath .
+			($isBackup ? '_orig' : '') .
 			$this->generateExtension($sizeVariant);
 
 		return new FlysystemFile(Storage::disk(StorageDiskType::LOCAL->value), $relativePath);
