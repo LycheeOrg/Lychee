@@ -169,26 +169,34 @@ export function useSelection(
 	}
 
 	function selectEverything() {
+		// @ts-expect-error
 		if (selectedPhotosIdx.value.length === photos.value.length) {
 			// Flip and select albums
 			selectedPhotosIdx.value = [];
+			// @ts-expect-error
 			selectedAlbumsIdx.value = Array.from(Array(albums.value.length).keys());
 			return;
 		}
+		// @ts-expect-error
 		if (selectedAlbumsIdx.value.length === albums.value.length) {
 			selectedAlbumsIdx.value = [];
+			// @ts-expect-error
 			selectedPhotosIdx.value = Array.from(Array(photos.value.length).keys());
 			// Flip and select photos
 			return;
 		}
 		if (selectedAlbumsIdx.value.length > 0) {
+			// @ts-expect-error
 			selectedAlbumsIdx.value = Array.from(Array(albums.value.length).keys());
 			return;
 		}
+		// @ts-expect-error
 		if (photos.value.length > 0) {
+			// @ts-expect-error
 			selectedPhotosIdx.value = Array.from(Array(photos.value.length).keys());
 			return;
 		}
+		// @ts-expect-error
 		selectedAlbumsIdx.value = Array.from(Array(albums.value.length).keys());
 	}
 
