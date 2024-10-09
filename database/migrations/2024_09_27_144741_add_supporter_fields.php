@@ -37,7 +37,7 @@ return new class() extends BaseConfigMigration {
 			],
 			[
 				'key' => 'enable_se_preview',
-				'value' => '1',
+				'value' => '0',
 				'is_secret' => false,
 				'cat' => self::SE,
 				'type_range' => self::BOOL,

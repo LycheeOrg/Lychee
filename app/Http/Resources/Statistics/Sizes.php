@@ -9,7 +9,8 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 #[TypeScript()]
 class Sizes extends Data
 {
-	public string $type;
+	public SizeVariantType $type;
+	public string $label;
 	public int $size;
 
 	/**
@@ -19,7 +20,8 @@ class Sizes extends Data
 	 */
 	public function __construct(array $sizes)
 	{
-		$this->type = $sizes['type']->localization();
+		$this->type = $sizes['type'];
+		$this->label = $sizes['type']->localization();
 		$this->size = $sizes['size'];
 	}
 

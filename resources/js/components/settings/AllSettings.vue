@@ -31,129 +31,131 @@
 					<div v-if="key === 'lychee SE'" class="font-bold text-primary-500 mb-8">Coming Soon...</div>
 					<div class="flex flex-col gap-4">
 						<template v-for="config in configGroup">
-							<template v-if="oldStyle">
-								<OldField :config="config" @filled="update" @reset="reset" />
-							</template>
-							<template v-else>
-								<!-- Special keys -->
-								<VersionField v-if="config.key === 'version'" :config="config" />
-								<ZipSliderField v-else-if="config.key === 'zip_deflate_level'" :config="config" @filled="update" @reset="reset" />
-								<SelectOptionsField
-									v-else-if="config.key === 'default_license'"
-									:config="config"
-									:options="licenseOptions"
-									:mapper="SelectBuilders.buildLicense"
-									@filled="update"
-									@reset="reset"
-								/>
-								<SelectOptionsField
-									v-else-if="config.key === 'sorting_photos_col'"
-									:config="config"
-									:options="photoSortingColumnsOptions"
-									:mapper="SelectBuilders.buildPhotoSorting"
-									@filled="update"
-									@reset="reset"
-								/>
-								<SelectOptionsField
-									v-else-if="config.key === 'sorting_photos_order'"
-									:config="config"
-									:options="sortingOrdersOptions"
-									:mapper="SelectBuilders.buildSortingOrder"
-									@filled="update"
-									@reset="reset"
-								/>
-								<SelectOptionsField
-									v-else-if="config.key === 'sorting_albums_col'"
-									:config="config"
-									:options="albumSortingColumnsOptions"
-									:mapper="SelectBuilders.buildAlbumSorting"
-									@filled="update"
-									@reset="reset"
-								/>
-								<SelectOptionsField
-									v-else-if="config.key === 'sorting_albums_order'"
-									:config="config"
-									:options="sortingOrdersOptions"
-									:mapper="SelectBuilders.buildSortingOrder"
-									@filled="update"
-									@reset="reset"
-								/>
-								<SelectOptionsField
-									v-else-if="config.key === 'default_album_thumb_aspect_ratio'"
-									:config="config"
-									:options="aspectRationOptions"
-									:mapper="SelectBuilders.buildAspectRatio"
-									@filled="update"
-									@reset="reset"
-								/>
+							<template v-if="show(config)">
+								<template v-if="oldStyle">
+									<OldField :config="config" @filled="update" @reset="reset" />
+								</template>
+								<template v-else>
+									<!-- Special keys -->
+									<VersionField v-if="config.key === 'version'" :config="config" />
+									<ZipSliderField v-else-if="config.key === 'zip_deflate_level'" :config="config" @filled="update" @reset="reset" />
+									<SelectOptionsField
+										v-else-if="config.key === 'default_license'"
+										:config="config"
+										:options="licenseOptions"
+										:mapper="SelectBuilders.buildLicense"
+										@filled="update"
+										@reset="reset"
+									/>
+									<SelectOptionsField
+										v-else-if="config.key === 'sorting_photos_col'"
+										:config="config"
+										:options="photoSortingColumnsOptions"
+										:mapper="SelectBuilders.buildPhotoSorting"
+										@filled="update"
+										@reset="reset"
+									/>
+									<SelectOptionsField
+										v-else-if="config.key === 'sorting_photos_order'"
+										:config="config"
+										:options="sortingOrdersOptions"
+										:mapper="SelectBuilders.buildSortingOrder"
+										@filled="update"
+										@reset="reset"
+									/>
+									<SelectOptionsField
+										v-else-if="config.key === 'sorting_albums_col'"
+										:config="config"
+										:options="albumSortingColumnsOptions"
+										:mapper="SelectBuilders.buildAlbumSorting"
+										@filled="update"
+										@reset="reset"
+									/>
+									<SelectOptionsField
+										v-else-if="config.key === 'sorting_albums_order'"
+										:config="config"
+										:options="sortingOrdersOptions"
+										:mapper="SelectBuilders.buildSortingOrder"
+										@filled="update"
+										@reset="reset"
+									/>
+									<SelectOptionsField
+										v-else-if="config.key === 'default_album_thumb_aspect_ratio'"
+										:config="config"
+										:options="aspectRationOptions"
+										:mapper="SelectBuilders.buildAspectRatio"
+										@filled="update"
+										@reset="reset"
+									/>
 
-								<SelectOptionsField
-									v-else-if="config.key === 'layout'"
-									:config="config"
-									:options="photoLayoutOptions"
-									:mapper="SelectBuilders.buildPhotoLayout"
-									@filled="update"
-									@reset="reset"
-								/>
-								<SelectOptionsField
-									v-else-if="config.key === 'default_album_protection'"
-									:config="config"
-									:options="defaultAlbumProtectionOptions"
-									:mapper="SelectBuilders.buildDefaultAlbumProtection"
-									@filled="update"
-									@reset="reset"
-								/>
-								<SelectOptionsField
-									v-else-if="config.key === 'image_overlay_type'"
-									:config="config"
-									:options="overlayOptions"
-									:mapper="SelectBuilders.buildOverlay"
-									@filled="update"
-									@reset="reset"
-								/>
-								<SelectOptionsField
-									v-else-if="config.key === 'map_provider'"
-									:config="config"
-									:options="mapProvidersOptions"
-									:mapper="SelectBuilders.buildMapProvider"
-									@filled="update"
-									@reset="reset"
-								/>
-								<SelectOptionsField
-									v-else-if="config.key === 'has_exiftool'"
-									:config="config"
-									:options="toolsOptions"
-									:mapper="SelectBuilders.buildToolSelection"
-									@filled="update"
-									@reset="reset"
-								/>
-								<SelectOptionsField
-									v-else-if="config.key === 'has_ffmpeg'"
-									:config="config"
-									:options="toolsOptions"
-									:mapper="SelectBuilders.buildToolSelection"
-									@filled="update"
-									@reset="reset"
-								/>
-								<SelectLang v-else-if="config.key === 'lang'" :config="config" @filled="update" @reset="reset" />
-								<SelectField v-else-if="config.key === 'album_decoration'" :config @filled="update" @reset="reset" />
-								<SelectField v-else-if="config.key === 'album_decoration_orientation'" :config @filled="update" @reset="reset" />
-								<StringField v-else-if="config.key === 'raw_formats'" :config="config" @filled="update" @reset="reset" />
-								<StringField
-									v-else-if="config.key === 'local_takestamp_video_formats'"
-									:config="config"
-									@filled="update"
-									@reset="reset"
-								/>
-								<!-- Generic -->
-								<StringField v-else-if="config.type.startsWith('string')" :config="config" @filled="update" @reset="reset" />
-								<BoolField v-else-if="config.type === '0|1'" :config="config" @filled="update" @reset="reset" />
-								<NumberField v-else-if="config.type === 'int'" :config="config" :min="0" @filled="update" @reset="reset" />
-								<NumberField v-else-if="config.type === 'positive'" :config="config" :min="1" @filled="update" @reset="reset" />
-								<SliderField v-else-if="config.type.includes('|')" :config="config" @filled="update" @reset="reset" />
-								<p v-else class="bg-red-500">
-									{{ config.key }} -- {{ config.value }} -- {{ config.documentation }} -- {{ config.type }}
-								</p>
+									<SelectOptionsField
+										v-else-if="config.key === 'layout'"
+										:config="config"
+										:options="photoLayoutOptions"
+										:mapper="SelectBuilders.buildPhotoLayout"
+										@filled="update"
+										@reset="reset"
+									/>
+									<SelectOptionsField
+										v-else-if="config.key === 'default_album_protection'"
+										:config="config"
+										:options="defaultAlbumProtectionOptions"
+										:mapper="SelectBuilders.buildDefaultAlbumProtection"
+										@filled="update"
+										@reset="reset"
+									/>
+									<SelectOptionsField
+										v-else-if="config.key === 'image_overlay_type'"
+										:config="config"
+										:options="overlayOptions"
+										:mapper="SelectBuilders.buildOverlay"
+										@filled="update"
+										@reset="reset"
+									/>
+									<SelectOptionsField
+										v-else-if="config.key === 'map_provider'"
+										:config="config"
+										:options="mapProvidersOptions"
+										:mapper="SelectBuilders.buildMapProvider"
+										@filled="update"
+										@reset="reset"
+									/>
+									<SelectOptionsField
+										v-else-if="config.key === 'has_exiftool'"
+										:config="config"
+										:options="toolsOptions"
+										:mapper="SelectBuilders.buildToolSelection"
+										@filled="update"
+										@reset="reset"
+									/>
+									<SelectOptionsField
+										v-else-if="config.key === 'has_ffmpeg'"
+										:config="config"
+										:options="toolsOptions"
+										:mapper="SelectBuilders.buildToolSelection"
+										@filled="update"
+										@reset="reset"
+									/>
+									<SelectLang v-else-if="config.key === 'lang'" :config="config" @filled="update" @reset="reset" />
+									<SelectField v-else-if="config.key === 'album_decoration'" :config @filled="update" @reset="reset" />
+									<SelectField v-else-if="config.key === 'album_decoration_orientation'" :config @filled="update" @reset="reset" />
+									<StringField v-else-if="config.key === 'raw_formats'" :config="config" @filled="update" @reset="reset" />
+									<StringField
+										v-else-if="config.key === 'local_takestamp_video_formats'"
+										:config="config"
+										@filled="update"
+										@reset="reset"
+									/>
+									<!-- Generic -->
+									<StringField v-else-if="config.type.startsWith('string')" :config="config" @filled="update" @reset="reset" />
+									<BoolField v-else-if="config.type === '0|1'" :config="config" @filled="update" @reset="reset" />
+									<NumberField v-else-if="config.type === 'int'" :config="config" :min="0" @filled="update" @reset="reset" />
+									<NumberField v-else-if="config.type === 'positive'" :config="config" :min="1" @filled="update" @reset="reset" />
+									<SliderField v-else-if="config.type.includes('|')" :config="config" @filled="update" @reset="reset" />
+									<p v-else class="bg-red-500">
+										{{ config.key }} -- {{ config.value }} -- {{ config.documentation }} -- {{ config.type }}
+									</p>
+								</template>
 							</template>
 						</template>
 					</div>
@@ -250,6 +252,11 @@ function save() {
 }
 
 load();
+
+function show(config: App.Http.Resources.Editable.EditableConfigResource) {
+	// We do not show that yet, may be later...
+	return config.key !== "email";
+}
 
 onUpdated(function () {
 	const elem = document.getElementById("navMain");

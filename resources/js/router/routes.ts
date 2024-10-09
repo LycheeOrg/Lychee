@@ -13,6 +13,7 @@ import Search from "@/views/gallery-panels/Search.vue";
 import Permissions from "@/views/Permissions.vue";
 import Frame from "@/views/gallery-panels/Frame.vue";
 import Map from "@/views/gallery-panels/Map.vue";
+import Statistics from "@/views/Statistics.vue";
 
 export const routes = [
 	{
@@ -110,6 +111,11 @@ export const routes = [
 		name: "sharing",
 		path: "/sharing",
 		component: Sharing,
+	},
+	{
+		name: "statistics",
+		path: "/statistics",
+		component: Statistics,
 	},
 	{
 		name: "users",

@@ -59,7 +59,7 @@
         "laravel/framework": "^11.0",
         "laravel/socialite": "^5.11",
         "league/flysystem-aws-s3-v3": "^3.22",
-        "lychee-org/lycheeverify": "^0.0.2",
+        "lychee-org/lycheeverify": "^1.0.0",
         "lychee-org/nestedset": "^9.0",
         "lychee-org/php-exif": "^1.0.4",
         "maennchen/zipstream-php": "^3.1",
