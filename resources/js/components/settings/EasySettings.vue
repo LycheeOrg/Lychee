@@ -125,11 +125,11 @@
 			<div class="flex flex-col gap-4">
 				<div>
 					<Textarea v-model="css" class="w-full h-48" rows="10" cols="30" />
-					<Button severity="contrast" class="w-full border-none font-bold" @click="saveCss">{{ $t("lychee.CSS_TITLE") }}</Button>
+					<Button severity="primary" class="w-full border-none font-bold" @click="saveCss">{{ $t("lychee.CSS_TITLE") }}</Button>
 				</div>
 				<div>
 					<Textarea v-model="js" class="w-full h-48" rows="10" cols="30" />
-					<Button severity="contrast" class="w-full border-none font-bold" @click="saveJs">{{ $t("lychee.JS_TITLE") }}</Button>
+					<Button severity="primary" class="w-full border-none font-bold" @click="saveJs">{{ $t("lychee.JS_TITLE") }}</Button>
 				</div>
 			</div>
 		</Fieldset>
@@ -272,9 +272,13 @@ function load() {
 		css.value = response.data;
 	});
 
-	SettingsService.getJs().then((response) => {
-		js.value = response.data;
-	});
+	SettingsService.getJs()
+		.then((response) => {
+			js.value = response.data;
+		})
+		.catch(() => {
+			toast.add({ severity: "error", summary: "Error!", detail: "Could not load custom.js", life: 3000 });
+		});
 }
 
 function updateNSFW() {
