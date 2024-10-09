@@ -119,7 +119,7 @@ import AlbumEdit from "@/components/drawers/AlbumEdit.vue";
 import AlbumHeader from "@/components/headers/AlbumHeader.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { onKeyStroke } from "@vueuse/core";
-import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
+import { getModKey, shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
 import { storeToRefs } from "pinia";
 import { useSelection } from "@/composables/selections/selections";
 import Divider from "primevue/divider";
@@ -179,6 +179,7 @@ const { isAlbumConsented, isPasswordProtected, user, modelAlbum, album, layout, 
 watch(
 	() => route.params.albumid,
 	(newId, _oldId) => {
+		unselect();
 		albumid.value = newId as string;
 		refresh();
 	},
@@ -216,6 +217,8 @@ const {
 	selectedAlbumsIds,
 	photoClick,
 	albumClick,
+	selectEverything,
+	unselect,
 } = useSelection(photos, children);
 
 const photoCallbacks = {
@@ -299,5 +302,6 @@ refresh();
 
 onKeyStroke("h", () => !shouldIgnoreKeystroke() && (are_nsfw_visible.value = !are_nsfw_visible.value));
 onKeyStroke("f", () => !shouldIgnoreKeystroke() && lycheeStore.toggleFullScreen());
-onKeyStroke(" ", () => !shouldIgnoreKeystroke() && toggleSlideShow());
+onKeyStroke(" ", () => !shouldIgnoreKeystroke() && unselect());
+onKeyStroke([getModKey(), "a"], () => !shouldIgnoreKeystroke() && selectEverything());
 </script>

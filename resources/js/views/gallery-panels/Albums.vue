@@ -82,7 +82,7 @@ import AlbumsHeader from "@/components/headers/AlbumsHeader.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import { onKeyStroke } from "@vueuse/core";
-import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
+import { getModKey, shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
 import KeybindingsHelp from "@/components/modals/KeybindingsHelp.vue";
 import { useSelection } from "@/composables/selections/selections";
 import { useContextMenu } from "@/composables/contextMenus/contextMenu";
@@ -113,15 +113,14 @@ const { user, isKeybindingsHelpOpen, smartAlbums, albums, sharedAlbums, rootConf
 	is_login_open,
 );
 
-const { selectedAlbum, selectedAlbumsIdx, selectedAlbums, selectedAlbumsIds, albumClick } = useSelection(photos, selectableAlbums);
+const { selectedAlbum, selectedAlbumsIdx, selectedAlbums, selectedAlbumsIds, albumClick, selectEverything, unselect } = useSelection(
+	photos,
+	selectableAlbums,
+);
 
 // Modals for Albums
 const { isDeleteVisible, toggleDelete, isMergeAlbumVisible, toggleMergeAlbum, isMoveVisible, toggleMove, isRenameVisible, toggleRename } =
 	useGalleryModals();
-
-const unselect = () => {
-	selectedAlbumsIdx.value = [];
-};
 
 // Unused.
 const photoCallbacks = {
@@ -175,4 +174,6 @@ refresh();
 
 onKeyStroke("h", () => !shouldIgnoreKeystroke() && (are_nsfw_visible.value = !are_nsfw_visible.value));
 onKeyStroke("f", () => !shouldIgnoreKeystroke() && lycheeStore.toggleFullScreen());
+onKeyStroke(" ", () => !shouldIgnoreKeystroke() && unselect());
+onKeyStroke([getModKey(), "a"], () => !shouldIgnoreKeystroke() && selectEverything());
 </script>

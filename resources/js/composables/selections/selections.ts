@@ -1,4 +1,4 @@
-import { useKeyModifier } from "@vueuse/core";
+import { modKey, shiftKeyState } from "@/utils/keybindings-utils";
 import { computed, ComputedRef, Ref, ref } from "vue";
 
 export function useSelection(
@@ -7,30 +7,6 @@ export function useSelection(
 		| ComputedRef<{ [key: number]: App.Http.Resources.Models.ThumbAlbumResource }>
 		| Ref<{ [key: number]: App.Http.Resources.Models.ThumbAlbumResource }>,
 ) {
-	function get_platform() {
-		// 2022 way of detecting. Note : this userAgentData feature is available only in secure contexts (HTTPS)
-		// @ts-expect-error Legacy stuff
-		if (typeof navigator.userAgentData !== "undefined" && navigator.userAgentData != null) {
-			// @ts-expect-error Legacy stuff
-			return navigator.userAgentData.platform;
-		}
-		// Deprecated but still works for most of the browser
-		if (typeof navigator.platform !== "undefined") {
-			if (typeof navigator.userAgent !== "undefined" && /android/.test(navigator.userAgent.toLowerCase())) {
-				// android device’s navigator.platform is often set as 'linux', so let’s use userAgent for them
-				return "android";
-			}
-			return navigator.platform;
-		}
-		return "unknown";
-	}
-
-	const platform = get_platform().toLowerCase();
-
-	const isOSX = /mac/.test(platform); // Mac desktop
-	const isIOS = ["iphone", "ipad", "ipod"].indexOf(platform) >= 0; // Mac iOs
-	const isApple = isOSX || isIOS; // Apple device (desktop or iOS)
-
 	const selectedPhotosIdx = ref([] as number[]);
 	const selectedAlbumsIdx = ref([] as number[]);
 	const selectedPhoto = computed(() => (selectedPhotosIdx.value.length === 1 ? photos.value[selectedPhotosIdx.value[0]] : undefined));
@@ -44,23 +20,17 @@ export function useSelection(
 	const selectedPhotosIds = computed(() => selectedPhotos.value.map((p) => p.id));
 	const selectedAlbumsIds = computed(() => selectedAlbums.value.map((a) => a.id));
 
-	const ctrlKeyState = useKeyModifier("Control");
-	const metaKeyState = useKeyModifier("Meta");
-	const shiftKeyState = useKeyModifier("Shift");
-
-	function modKey() {
-		if (isApple) {
-			return metaKeyState;
-		}
-		return ctrlKeyState;
-	}
-
 	// We save the last clicked index so we can do selections with shift.
 	const lastPhotoClicked = ref(undefined as number | undefined);
 	const lastAlbumClicked = ref(undefined as number | undefined);
 
 	const isPhotoSelected = (idx: number) => selectedPhotosIdx.value.includes(idx);
 	const isAlbumSelected = (idx: number) => selectedAlbumsIdx.value.includes(idx);
+
+	function unselect() {
+		selectedAlbumsIdx.value = [];
+		selectedPhotosIdx.value = [];
+	}
 
 	function addToPhotoSelection(idx: number) {
 		selectedPhotosIdx.value.push(idx);
@@ -142,7 +112,7 @@ export function useSelection(
 		selectedPhotosIdx.value = [];
 
 		// we do not support CTRL + SHIFT
-		if (!ctrlKeyState.value && !shiftKeyState.value) {
+		if (!modKey().value && !shiftKeyState.value) {
 			return;
 		}
 
@@ -150,7 +120,7 @@ export function useSelection(
 		e.preventDefault();
 		e.stopPropagation();
 
-		if (ctrlKeyState.value) {
+		if (modKey().value) {
 			handleAlbumCtrl(idx, e);
 			return;
 		}
@@ -198,6 +168,30 @@ export function useSelection(
 		lastAlbumClicked.value = idx;
 	}
 
+	function selectEverything() {
+		if (selectedPhotosIdx.value.length === photos.value.length) {
+			// Flip and select albums
+			selectedPhotosIdx.value = [];
+			selectedAlbumsIdx.value = Array.from(Array(albums.value.length).keys());
+			return;
+		}
+		if (selectedAlbumsIdx.value.length === albums.value.length) {
+			selectedAlbumsIdx.value = [];
+			selectedPhotosIdx.value = Array.from(Array(photos.value.length).keys());
+			// Flip and select photos
+			return;
+		}
+		if (selectedAlbumsIdx.value.length > 0) {
+			selectedAlbumsIdx.value = Array.from(Array(albums.value.length).keys());
+			return;
+		}
+		if (photos.value.length > 0) {
+			selectedPhotosIdx.value = Array.from(Array(photos.value.length).keys());
+			return;
+		}
+		selectedAlbumsIdx.value = Array.from(Array(albums.value.length).keys());
+	}
+
 	return {
 		selectedPhoto,
 		selectedAlbum,
@@ -209,5 +203,7 @@ export function useSelection(
 		selectedAlbumsIds,
 		photoClick,
 		albumClick,
+		selectEverything,
+		unselect,
 	};
 }
