@@ -67,10 +67,10 @@ function close() {
 }
 
 const question = computed(() => {
-	if (props.photoIds && props.photoIds?.length > 0) {
+	if (props.photoIds && props.photoIds?.length > 1) {
 		return sprintf("Move %d photos to:", props.photoIds?.length);
 	}
-	if (props.albumIds && props.albumIds?.length > 0) {
+	if (props.albumIds && props.albumIds?.length > 1) {
 		return sprintf("Move %d albums to:", props.albumIds?.length);
 	}
 	if (props.photo) {

@@ -27,26 +27,30 @@ export function useSelection(
 	const isPhotoSelected = (idx: number) => selectedPhotosIdx.value.includes(idx);
 	const isAlbumSelected = (idx: number) => selectedAlbumsIdx.value.includes(idx);
 
-	function unselect() {
+	function hasSelection(): boolean {
+		return selectedPhotosIdx.value.length > 0 || selectedAlbumsIdx.value.length > 0;
+	}
+
+	function unselect(): void {
 		selectedAlbumsIdx.value = [];
 		selectedPhotosIdx.value = [];
 	}
 
-	function addToPhotoSelection(idx: number) {
+	function addToPhotoSelection(idx: number): void {
 		selectedPhotosIdx.value.push(idx);
 	}
-	function removeFromPhotoSelection(idx: number) {
+	function removeFromPhotoSelection(idx: number): void {
 		selectedPhotosIdx.value = selectedPhotosIdx.value.filter((i) => i !== idx);
 	}
 
-	function addToAlbumSelection(idx: number) {
+	function addToAlbumSelection(idx: number): void {
 		selectedAlbumsIdx.value.push(idx);
 	}
-	function removeFromAlbumSelection(idx: number) {
+	function removeFromAlbumSelection(idx: number): void {
 		selectedAlbumsIdx.value = selectedAlbumsIdx.value.filter((i) => i !== idx);
 	}
 
-	function photoClick(idx: number, e: Event) {
+	function photoClick(idx: number, e: Event): void {
 		// clear the Album selection.
 		selectedAlbumsIdx.value = [];
 
@@ -70,7 +74,7 @@ export function useSelection(
 		}
 	}
 
-	function handlePhotoCtrl(idx: number, e: Event) {
+	function handlePhotoCtrl(idx: number, e: Event): void {
 		if (isPhotoSelected(idx)) {
 			removeFromPhotoSelection(idx);
 		} else {
@@ -79,7 +83,7 @@ export function useSelection(
 		lastPhotoClicked.value = idx;
 	}
 
-	function handlePhotoShift(idx: number, e: Event) {
+	function handlePhotoShift(idx: number, e: Event): void {
 		if (selectedPhotos.value.length === 0) {
 			addToPhotoSelection(idx);
 			return;
@@ -107,7 +111,7 @@ export function useSelection(
 		lastPhotoClicked.value = idx;
 	}
 
-	function albumClick(idx: number, e: Event) {
+	function albumClick(idx: number, e: Event): void {
 		// clear the Photo selection.
 		selectedPhotosIdx.value = [];
 
@@ -131,7 +135,7 @@ export function useSelection(
 		}
 	}
 
-	function handleAlbumCtrl(idx: number, e: Event) {
+	function handleAlbumCtrl(idx: number, e: Event): void {
 		if (isAlbumSelected(idx)) {
 			removeFromAlbumSelection(idx);
 		} else {
@@ -140,7 +144,7 @@ export function useSelection(
 		lastAlbumClicked.value = idx;
 	}
 
-	function handleAlbumShift(idx: number, e: Event) {
+	function handleAlbumShift(idx: number, e: Event): void {
 		if (selectedAlbums.value.length === 0) {
 			addToAlbumSelection(idx);
 			return;
@@ -168,7 +172,7 @@ export function useSelection(
 		lastAlbumClicked.value = idx;
 	}
 
-	function selectEverything() {
+	function selectEverything(): void {
 		// @ts-expect-error
 		if (selectedPhotosIdx.value.length === photos.value.length) {
 			// Flip and select albums
@@ -213,5 +217,6 @@ export function useSelection(
 		albumClick,
 		selectEverything,
 		unselect,
+		hasSelection,
 	};
 }

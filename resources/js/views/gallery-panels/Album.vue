@@ -219,6 +219,7 @@ const {
 	albumClick,
 	selectEverything,
 	unselect,
+	hasSelection,
 } = useSelection(photos, children);
 
 const photoCallbacks = {
@@ -303,5 +304,10 @@ refresh();
 onKeyStroke("h", () => !shouldIgnoreKeystroke() && (are_nsfw_visible.value = !are_nsfw_visible.value));
 onKeyStroke("f", () => !shouldIgnoreKeystroke() && lycheeStore.toggleFullScreen());
 onKeyStroke(" ", () => !shouldIgnoreKeystroke() && unselect());
+
+// Privileged actions
+onKeyStroke("m", () => !shouldIgnoreKeystroke() && album.value?.rights.can_move && hasSelection() && toggleMove());
+onKeyStroke(["Delete", "Backspace"], () => !shouldIgnoreKeystroke() && album.value?.rights.can_delete && hasSelection() && toggleDelete());
+
 onKeyStroke([getModKey(), "a"], () => !shouldIgnoreKeystroke() && selectEverything());
 </script>
