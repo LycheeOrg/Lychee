@@ -18,29 +18,20 @@ class Album extends Data
 	public int $size;
 
 	/**
-	 * @param array{username:string,title:string,is_nsfw:bool,left:int,right:int,num_photos:int,num_descendants:int,size:int} $album
+	 * @param array{id:string,left:int,right:int,size:int}                                                                     $space_data
+	 * @param array{id:string,username:string,title:string,is_nsfw:bool,left:int,right:int,num_photos:int,num_descendants:int} $count_data
 	 *
 	 * @return void
 	 */
-	public function __construct(array $album)
+	public function __construct(array $space_data, array $count_data)
 	{
-		$this->username = $album['username'];
-		$this->title = $album['title'];
-		$this->is_nsfw = $album['is_nsfw'];
-		$this->left = $album['left'];
-		$this->right = $album['right'];
-		$this->num_photos = $album['num_photos'];
-		$this->num_descendants = $album['num_descendants'];
-		$this->size = $album['size'];
-	}
-
-	/**
-	 * @param array{username:string,title:string,is_nsfw:bool,left:int,right:int,num_photos:int,num_descendants:int,size:int} $album
-	 *
-	 * @return Album
-	 */
-	public static function fromArray(array $album): self
-	{
-		return new self($album);
+		$this->username = $count_data['username'];
+		$this->title = $count_data['title'];
+		$this->is_nsfw = $count_data['is_nsfw'];
+		$this->left = $count_data['left'];
+		$this->right = $count_data['right'];
+		$this->num_photos = $count_data['num_photos'];
+		$this->num_descendants = $count_data['num_descendants'];
+		$this->size = $space_data['size'];
 	}
 }

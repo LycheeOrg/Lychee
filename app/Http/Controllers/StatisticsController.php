@@ -57,8 +57,13 @@ class StatisticsController extends Controller
 			album_id: $albumId,
 			owner_id: $ownerId
 		);
+		$countData = $spaces->getPhotoCountPerAlbum(
+			album_id: $albumId,
+			owner_id: $ownerId);
 
-		return Album::collect($spaceData);
+		$zipped = $spaceData->zip($countData);
+
+		return $zipped->map(fn ($z) => new Album($z[0], $z[1]));
 	}
 
 	/**
@@ -77,7 +82,12 @@ class StatisticsController extends Controller
 			album_id: $albumId,
 			owner_id: $ownerId
 		);
+		$countData = $spaces->getTotalPhotoCountPerAlbum(
+			album_id: $albumId,
+			owner_id: $ownerId);
 
-		return Album::collect($spaceData);
+		$zipped = $spaceData->zip($countData);
+
+		return $zipped->map(fn ($z) => new Album($z[0], $z[1]));
 	}
 }

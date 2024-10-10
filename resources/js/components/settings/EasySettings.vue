@@ -268,16 +268,20 @@ function load() {
 		location_show_public.value = configurations.find((config) => config.key === "location_show_public");
 	});
 
-	SettingsService.getCss().then((response) => {
-		css.value = response.data;
-	});
+	SettingsService.getCss()
+		.then((response) => {
+			css.value = response.data;
+		})
+		.catch(() => {
+			toast.add({ severity: "error", summary: "Error!", detail: "Could not load dist/user.css", life: 3000 });
+		});
 
 	SettingsService.getJs()
 		.then((response) => {
 			js.value = response.data;
 		})
 		.catch(() => {
-			toast.add({ severity: "error", summary: "Error!", detail: "Could not load custom.js", life: 3000 });
+			toast.add({ severity: "error", summary: "Error!", detail: "Could not load dist/custom.js", life: 3000 });
 		});
 }
 
