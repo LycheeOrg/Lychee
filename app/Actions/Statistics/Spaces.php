@@ -55,6 +55,7 @@ class Spaces
 				DB::raw('SUM(size_variants.filesize) as size')
 			)
 			->groupBy('size_variants.type')
+			->orderBy('size_variants.type', 'asc')
 			->get()
 			->map(fn ($item) => [
 				'type' => SizeVariantType::from($item->type),
@@ -157,7 +158,14 @@ class Spaces
 				'albums._lft',
 				'albums._rgt',
 				DB::raw('COUNT(photos.id) as num_photos'),
-			)->groupBy('albums.id', 'username')
+			)->groupBy(
+				'albums.id',
+				'username',
+				'base_albums.title',
+				'is_nsfw',
+				'albums._lft',
+				'albums._rgt',
+			)
 			->orderBy('albums._lft', 'asc');
 
 		return $query
@@ -201,7 +209,14 @@ class Spaces
 				'albums._lft',
 				'albums._rgt',
 				DB::raw('COUNT(photos.id) as num_photos'),
-			)->groupBy('albums.id', 'username')
+			)->groupBy(
+				'albums.id',
+				'username',
+				'base_albums.title',
+				'is_nsfw',
+				'albums._lft',
+				'albums._rgt',
+			)
 			->orderBy('albums._lft', 'asc');
 
 		return $query
