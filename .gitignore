@@ -49,6 +49,8 @@ backup.sql
 .env.*
 
 aliases
+pgdata
+docker-compose.yml
 
 # Building stuff for releaseses
 Lychee/*
