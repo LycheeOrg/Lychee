@@ -128,6 +128,16 @@ trait CatchFailures
 	 *
 	 * @return void
 	 */
+	protected function assertSupporterRequired(TestResponse $response): void
+	{
+		$this->assertStatus($response, 402);
+	}
+
+	/**
+	 * @param TestResponse<\Illuminate\Http\JsonResponse> $response
+	 *
+	 * @return void
+	 */
 	protected function assertForbidden(TestResponse $response): void
 	{
 		$this->assertStatus($response, 403);

@@ -12,12 +12,10 @@
 
 		<template #end> </template>
 	</Toolbar>
-	<Panel>
-		<ErrorsDiagnotics />
-		<InfoDiagnostics v-if="user?.id" />
-		<SpaceDiagnostics v-if="user?.id" />
-		<ConfigurationsDiagnostics v-if="user?.id" />
-	</Panel>
+	<ErrorsDiagnotics />
+	<InfoDiagnostics v-if="user?.id" />
+	<SpaceDiagnostics v-if="user?.id" />
+	<ConfigurationsDiagnostics v-if="user?.id" />
 </template>
 <script setup lang="ts">
 import Toolbar from "primevue/toolbar";

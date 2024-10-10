@@ -5,22 +5,37 @@ namespace App\Http\Requests\Album;
 use App\Contracts\Http\Requests\HasAbstractAlbum;
 use App\Contracts\Http\Requests\HasPassword;
 use App\Contracts\Http\Requests\RequestAttribute;
+use App\Contracts\Models\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
-use App\Http\Requests\Traits\Authorize\AuthorizeCanEditAlbumTrait;
 use App\Http\Requests\Traits\HasAbstractAlbumTrait;
 use App\Http\Requests\Traits\HasPasswordTrait;
 use App\Http\Resources\Models\Utils\AlbumProtectionPolicy;
+use App\Policies\AlbumPolicy;
 use App\Rules\AlbumIDRule;
 use App\Rules\PasswordRule;
+use App\SmartAlbums\BaseSmartAlbum;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class SetAlbumProtectionPolicyRequest extends BaseApiRequest implements HasAbstractAlbum, HasPassword
 {
 	use HasAbstractAlbumTrait;
 	use HasPasswordTrait;
-	use AuthorizeCanEditAlbumTrait;
 
 	protected bool $isPasswordProvided;
 	protected AlbumProtectionPolicy $albumProtectionPolicy;
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function authorize(): bool
+	{
+		if ($this->album instanceof BaseSmartAlbum) {
+			return Auth::user()?->may_administrate === true;
+		}
+
+		return Gate::check(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $this->album]);
+	}
 
 	/**
 	 * {@inheritDoc}

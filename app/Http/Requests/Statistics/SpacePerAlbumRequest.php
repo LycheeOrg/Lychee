@@ -49,7 +49,7 @@ class SpacePerAlbumRequest extends BaseApiRequest implements HasAlbum, HasOwnerI
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		/** @var string|null */
-		$albumID = $values[RequestAttribute::PARENT_ID_ATTRIBUTE] ?? null;
+		$albumID = $values[RequestAttribute::ALBUM_ID_ATTRIBUTE] ?? null;
 		$this->album = $albumID === null ? null : Album::query()->findOrFail($albumID);
 
 		// Filter only to user if user is not admin

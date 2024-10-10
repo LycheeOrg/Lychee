@@ -1,0 +1,45 @@
+<?php
+
+/**
+ * We don't care for unhandled exceptions in tests.
+ * It is the nature of a test to throw an exception.
+ * Without this suppression we had 100+ Linter warning in this file which
+ * don't help anything.
+ *
+ * @noinspection PhpDocMissingThrowsInspection
+ * @noinspection PhpUnhandledExceptionInspection
+ */
+// Route::get('/Statistics::albumSpace', [StatisticsController::class, 'getSpacePerAlbum'])->middleware(['support:se']);
+// Route::get('/Statistics::totalAlbumSpace', [StatisticsController::class, 'getTotalSpacePerAlbum'])->middleware(['support:se']);
+
+namespace Tests\Feature_v2\Statistics;
+
+use LycheeVerify\Http\Middleware\VerifySupporterStatus;
+use Tests\Feature_v2\Base\BaseApiV2Test;
+
+class AlbumSpaceTest extends BaseApiV2Test
+{
+	public function testAlbumSpaceTestUnauthorized(): void
+	{
+		$response = $this->getJson('Statistics::albumSpace');
+		$this->assertSupporterRequired($response);
+
+		$response = $this->withoutMiddleware(VerifySupporterStatus::class)->getJson('Statistics::albumSpace');
+		$this->assertUnauthorized($response);
+
+		$response = $this->withoutMiddleware(VerifySupporterStatus::class)->actingAs($this->userMayUpload1)->getJson('Statistics::albumSpace');
+		$this->assertForbidden($response);
+	}
+
+	public function testAlbumSpaceTestAuthorized(): void
+	{
+		$response = $this->withoutMiddleware(VerifySupporterStatus::class)->actingAs($this->userMayUpload1)->getJson('Statistics::albumSpace?album_id=' . $this->album1->id);
+		$this->assertOk($response);
+		$this->assertCount(1, $response->json());
+		$this->assertEquals($this->album1->title, $response->json()[0]['title']);
+
+		$response = $this->withoutMiddleware(VerifySupporterStatus::class)->actingAs($this->admin)->getJson('Statistics::albumSpace');
+		$this->assertOk($response);
+		$this->assertCount(7, $response->json());
+	}
+}
