@@ -30,7 +30,7 @@ return new class() extends Migration {
 		$sqlConcatLivePhotoPath = match ($this->driverName) {
 			'mysql' => DB::raw('CONCAT(\'big/\', live_photo_short_path)'),
 			'pgsql', 'sqlite' => DB::raw('\'big/\' || live_photo_short_path'),
-			default => throw new \RuntimeException('Unknown DBMS')
+			default => throw new \RuntimeException('Unknown DBMS'),
 		};
 
 		DB::table('photos')
@@ -52,7 +52,7 @@ return new class() extends Migration {
 		$sqlSubstringLivePhotoPath = match ($this->driverName) {
 			'mysql', 'pgsql' => DB::raw('SUBSTRING(live_photo_short_path FROM 5)'),
 			'sqlite' => DB::raw('SUBSTR(live_photo_short_path, 5)'),
-			default => throw new \RuntimeException('Unknown DBMS')
+			default => throw new \RuntimeException('Unknown DBMS'),
 		};
 
 		DB::table('photos')

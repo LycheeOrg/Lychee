@@ -12,7 +12,7 @@ abstract class AbstractAddStrategy
 {
 	protected function __construct(
 		protected ImportParam $parameters,
-		protected Photo $photo
+		protected Photo $photo,
 	) {
 	}
 

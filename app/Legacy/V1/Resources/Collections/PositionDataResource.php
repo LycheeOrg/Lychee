@@ -25,7 +25,7 @@ class PositionDataResource extends JsonResource
 		?string $id,
 		?string $title,
 		Collection $photos,
-		?string $track_url
+		?string $track_url,
 	) {
 		parent::__construct($photos);
 		$this->id = $id;

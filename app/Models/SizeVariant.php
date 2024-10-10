@@ -9,6 +9,7 @@ use App\Enum\StorageDiskType;
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
+use App\Http\Resources\Models\SizeVariantResource;
 use App\Image\Files\FlysystemFile;
 use App\Models\Builders\SizeVariantBuilder;
 use App\Models\Extensions\HasAttributesPatch;
@@ -73,6 +74,7 @@ class SizeVariant extends Model
 	use HasBidirectionalRelationships;
 	use ThrowsConsistentExceptions;
 	use ToArrayThrowsNotImplemented;
+	/** @phpstan-use HasFactory<\Database\Factories\SizeVariantFactory> */
 	use HasFactory;
 
 	/**
@@ -279,5 +281,10 @@ class SizeVariant extends Model
 		$fileDeleter = (new Delete())->do([$this->id]);
 		$this->exists = false;
 		$fileDeleter->do();
+	}
+
+	public function toResource(bool $noUrl = false): SizeVariantResource
+	{
+		return new SizeVariantResource($this, noUrl: $noUrl);
 	}
 }

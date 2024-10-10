@@ -10,6 +10,7 @@ use App\Models\Extensions\Thumb;
 use App\Models\Extensions\ToArrayThrowsNotImplemented;
 use App\Relations\HasManyPhotosByTag;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 
 /**
@@ -49,6 +50,8 @@ use Illuminate\Database\Query\Builder as BaseBuilder;
 class TagAlbum extends BaseAlbum
 {
 	use ToArrayThrowsNotImplemented;
+	/** @phpstan-use HasFactory<\Database\Factories\TagAlbumFactory> */
+	use HasFactory;
 
 	/**
 	 * The model's attributes.

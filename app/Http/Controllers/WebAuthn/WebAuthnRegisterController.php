@@ -19,6 +19,7 @@ class WebAuthnRegisterController
 	 */
 	public function options(AttestationRequest $request): Responsable
 	{
+		/** @disregard P1014 */
 		$request->user = Auth::user() ?? throw new UnauthenticatedException();
 
 		return $request
@@ -35,6 +36,7 @@ class WebAuthnRegisterController
 	 */
 	public function register(AttestedRequest $request): void
 	{
+		/** @disregard P1014 */
 		$request->user = Auth::user() ?? throw new UnauthenticatedException();
 		$request->save();
 	}

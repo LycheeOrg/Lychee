@@ -119,6 +119,7 @@ class SessionOrTokenGuard extends SessionGuard
 		$guard = new self($name, $userProvider, $app->make('session.store'));
 		$guard->setCookieJar($app->make('cookie'));
 		$guard->setDispatcher($app->make('events'));
+		/** @disregard P1013 */
 		$guard->setRequest($app->refresh('request', $guard, 'setRequest'));
 		if (isset($config['remember'])) {
 			$guard->setRememberDuration($config['remember']);
@@ -344,7 +345,7 @@ class SessionOrTokenGuard extends SessionGuard
 			$authenticable !== null => $authenticable,
 			$hasBearer && $configThrow => throw new BadRequestHeaderException('Invalid token'),
 			$hasBearer => null,
-			default => throw new BadRequestHeaderException('Invalid token')
+			default => throw new BadRequestHeaderException('Invalid token'),
 		};
 	}
 }

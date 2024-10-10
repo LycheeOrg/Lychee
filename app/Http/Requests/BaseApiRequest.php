@@ -33,7 +33,7 @@ abstract class BaseApiRequest extends FormRequest
 		array $cookies = [],
 		array $files = [],
 		array $server = [],
-		$content = null
+		$content = null,
 	) {
 		try {
 			$this->albumFactory = resolve(AlbumFactory::class);

@@ -7,7 +7,7 @@ return [
 	|--------------------------------------------------------------------------
 	*/
 	'title' => 'Maintenance',
-	'description' => 'Vous trouverez sur cette page toutes les actions necessaire au bon fonctionment de Lychee.',
+	'description' => 'Vous trouverez sur cette page toutes les actions nécessaires au bon fonctionment de Lychee.',
 	'cleaning' => [
 		'title' => 'Nettoyer %s',
 		'result' => '%s supprimé.',
@@ -26,10 +26,10 @@ return [
 		'success' => 'Nous avons créé %d %s avec succès.',
 	],
 	'fill-filesize-sizevariants' => [
-		'title' => 'File sizes missing',
-		'description' => 'Found %d small variants without file size.',
-		'button' => 'Fetch data!',
-		'success' => 'Successfully computed sizes of %d small variants.',
+		'title' => 'Tailles de fichiers manquantes',
+		'description' => '%d petites variantes sans taille de fichier trouvées.',
+		'button' => 'Récuperer les données !',
+		'success' => 'Succès du calcul des tailles de %d petites variantes.',
 	],
 	'fix-tree' => [
 		'title' => 'Statistique d’arbres',
@@ -41,7 +41,7 @@ return [
 	],
 	'optimize' => [
 		'title' => 'Optimisation de la base de donnée',
-		'description' => 'Si vous remarquez que votre installation est devenue lente, il est possible que votre base de donnée n’ai pas les index requis.',
+		'description' => 'Si vous remarquez que votre installation est devenue lente, il est possible que votre base de donnée n’ait pas les index requis.',
 		'button' => 'Optimiser la base de donnée',
 	],
 	'update' => [

@@ -10,6 +10,7 @@ use App\Models\TagAlbum;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
+/** @disregard */
 class HasManyPhotosByTag extends BaseHasManyPhotos
 {
 	public function __construct(TagAlbum $owningAlbum)
@@ -78,7 +79,7 @@ class HasManyPhotosByTag extends BaseHasManyPhotos
 	 * @param Collection<int,\App\Models\Photo> $photos   collection of {@link Photo} models which needs to be mapped to the albums
 	 * @param string                            $relation the name of the relation
 	 *
-	 * @return TagAlbum[]
+	 * @return array<int,TagAlbum>
 	 *
 	 * @throws NotImplementedException
 	 */

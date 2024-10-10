@@ -5,6 +5,7 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 use App\Contracts\DiagnosticPipe;
 use App\Facades\Helpers;
 use App\Models\Configs;
+use LycheeVerify\Verify;
 use function Safe\ini_get;
 use function Safe\preg_match;
 
@@ -14,6 +15,10 @@ use function Safe\preg_match;
  */
 class IniSettingsCheck implements DiagnosticPipe
 {
+	public function __construct(private Verify $verify)
+	{
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -22,6 +27,10 @@ class IniSettingsCheck implements DiagnosticPipe
 		// Check php.ini Settings
 		// Load settings
 		$settings = Configs::get();
+
+		if (!$this->verify->validate()) {
+			$data[] = 'Warning: Your installation has been tampered. Please verify the integrity of your files.';
+		}
 
 		if (Helpers::convertSize(ini_get('upload_max_filesize')) < Helpers::convertSize(('30M'))) {
 			$data[] = 'Warning: You may experience problems when uploading a photo of large size. Take a look in the FAQ for details.';

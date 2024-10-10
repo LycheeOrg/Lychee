@@ -18,6 +18,7 @@ class CreateOriginalSizeVariant implements StandalonePipe
 		$imageDim = $state->sourceImage?->isLoaded() ?
 			$state->sourceImage->getDimensions() :
 			new ImageDimension($state->exifInfo->width, $state->exifInfo->height);
+
 		$state->photo->size_variants->create(
 			SizeVariantType::ORIGINAL,
 			$state->targetFile->getRelativePath(),

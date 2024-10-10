@@ -43,20 +43,6 @@ class Kernel extends HttpKernel
 			\App\Http\Middleware\VerifyCsrfToken::class,
 			\Illuminate\Routing\Middleware\SubstituteBindings::class,
 			\App\Http\Middleware\DisableCSP::class,
-			\App\Http\Middleware\QueryStringFixer::class,
-		],
-
-		'web-livewire' => [
-			'accept_content_type:html',
-			\Illuminate\Cookie\Middleware\EncryptCookies::class,
-			\Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
-			\Illuminate\Session\Middleware\StartSession::class,
-			\Illuminate\Session\Middleware\AuthenticateSession::class,
-			\Illuminate\View\Middleware\ShareErrorsFromSession::class,
-			\App\Http\Middleware\VerifyCsrfToken::class,
-			\Illuminate\Routing\Middleware\SubstituteBindings::class,
-			\App\Http\Middleware\DisableCSP::class,
-			\App\Http\Middleware\QueryStringFixer::class,
 		],
 
 		'web-admin' => [
@@ -103,6 +89,9 @@ class Kernel extends HttpKernel
 		'content_type' => \App\Http\Middleware\ContentType::class,
 		'accept_content_type' => \App\Http\Middleware\AcceptContentType::class,
 		'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+		'login_required_v1' => \App\Legacy\V1\Middleware\LoginRequiredV1::class, // remove me in non-legacy build
 		'login_required' => \App\Http\Middleware\LoginRequired::class,
+		'cache_control' => \App\Http\Middleware\CacheControl::class,
+		'support' => \LycheeVerify\Http\Middleware\VerifySupporterStatus::class,
 	];
 }

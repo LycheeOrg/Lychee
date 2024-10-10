@@ -4,23 +4,29 @@ namespace App\Http\Controllers\WebAuthn;
 
 use App\Exceptions\UnauthenticatedException;
 use App\Http\Requests\WebAuthn\DeleteCredentialRequest;
+use App\Http\Requests\WebAuthn\EditCredentialRequest;
 use App\Http\Requests\WebAuthn\ListCredentialsRequest;
+use App\Http\Resources\Models\WebAuthnResource;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
 class WebAuthnManageController
 {
 	/**
-	 * @throws UnauthenticatedException
+	 * List all the WebAuthn users credentials.
 	 *
-	 * @phpstan-ignore-next-line unused...
+	 * @param ListCredentialsRequest $request
+	 *
+	 * @return Collection<string|int, WebAuthnResource>
+	 *
+	 * @throws UnauthenticatedException
 	 */
 	public function list(ListCredentialsRequest $request): Collection
 	{
 		/** @var \App\Models\User $user */
 		$user = Auth::user() ?? throw new UnauthenticatedException();
 
-		return $user->webAuthnCredentials;
+		return WebAuthnResource::collect($user->webAuthnCredentials);
 	}
 
 	/**
@@ -31,6 +37,20 @@ class WebAuthnManageController
 		/** @var \App\Models\User $user */
 		$user = Auth::user() ?? throw new UnauthenticatedException();
 
-		$user->webAuthnCredentials()->where('id', $request->id)->delete();
+		$user->webAuthnCredentials()->where('id', $request->getId())->delete();
+	}
+
+	/**
+	 * Edit credential.
+	 *
+	 * @param EditCredentialRequest $request
+	 *
+	 * @return void
+	 */
+	public function edit(EditCredentialRequest $request): void
+	{
+		$credential = $request->getCredential();
+		$credential->alias = $request->getAlias();
+		$credential->save();
 	}
 }

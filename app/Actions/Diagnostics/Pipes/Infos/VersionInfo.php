@@ -9,6 +9,8 @@ use App\Enum\VersionChannelType;
 use App\Metadata\Versions\FileVersion;
 use App\Metadata\Versions\GitHubVersion;
 use App\Metadata\Versions\InstalledVersion;
+use LycheeVerify\Contract\Status;
+use LycheeVerify\Verify;
 
 /**
  * Which version of Lychee are we using?
@@ -19,6 +21,7 @@ class VersionInfo implements DiagnosticPipe
 		private InstalledVersion $installedVersion,
 		public FileVersion $fileVersion,
 		public GitHubVersion $gitHubFunctions,
+		private Verify $verify,
 	) {
 		$this->fileVersion->hydrate(withRemote: false);
 	}
@@ -43,7 +46,7 @@ class VersionInfo implements DiagnosticPipe
 			}
 		}
 
-		$data[] = Diagnostics::line('Lychee Version (' . $channelName->value . '):', $lycheeInfoString);
+		$data[] = Diagnostics::line($this->getVersionString() . ' (' . $channelName->value . '):', $lycheeInfoString);
 		$data[] = Diagnostics::line('DB Version:', $this->installedVersion->getVersion()->toString());
 		$data[] = '';
 
@@ -65,5 +68,31 @@ class VersionInfo implements DiagnosticPipe
 		}
 
 		return $lycheeChannelName;
+	}
+
+	/**
+	 * Retrieve the version string.
+	 *
+	 * SE for supporter edition
+	 * Plus for premium edition
+	 * The star marks a tampered installation
+	 *
+	 * @return string
+	 */
+	private function getVersionString(): string
+	{
+		$lychee_version = 'Lychee';
+		$lychee_version .= match ($this->verify->get_status()) {
+			Status::SUPPORTER_EDITION => ' SE',
+			Status::PLUS_EDITION => ' Plus',
+			default => '',
+		};
+
+		if (!$this->verify->validate()) {
+			$lychee_version .= '*';
+		}
+		$lychee_version .= ' Version';
+
+		return $lychee_version;
 	}
 }

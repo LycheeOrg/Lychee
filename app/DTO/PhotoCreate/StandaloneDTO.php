@@ -20,6 +20,7 @@ class StandaloneDTO implements PhotoDTO
 	public TemporaryLocalFile|null $tmpVideoFile = null;
 	public FlysystemFile $targetFile;
 	public StreamStats|null $streamStat;
+	public FlysystemFile|null $backupFile = null;
 
 	public function __construct(
 		// The resulting photo

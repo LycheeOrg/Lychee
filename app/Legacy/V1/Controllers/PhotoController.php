@@ -46,7 +46,7 @@ class PhotoController extends Controller
 	 */
 	public function __construct(
 		private SymLinkFunctions $symLinkFunctions,
-		private AlbumFactory $albumFactory
+		private AlbumFactory $albumFactory,
 	) {
 	}
 
@@ -173,8 +173,6 @@ class PhotoController extends Controller
 	 * @param SetPhotosStarredRequest $request
 	 *
 	 * @return void
-	 *
-	 * @throws LycheeException
 	 */
 	public function setStar(SetPhotosStarredRequest $request): void
 	{
@@ -191,8 +189,6 @@ class PhotoController extends Controller
 	 * @param SetPhotoDescriptionRequest $request
 	 *
 	 * @return void
-	 *
-	 * @throws LycheeException
 	 */
 	public function setDescription(SetPhotoDescriptionRequest $request): void
 	{
@@ -206,8 +202,6 @@ class PhotoController extends Controller
 	 * @param SetPhotosTagsRequest $request
 	 *
 	 * @return void
-	 *
-	 * @throws LycheeException
 	 */
 	public function setTags(SetPhotosTagsRequest $request): void
 	{

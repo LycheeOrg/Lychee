@@ -98,6 +98,16 @@ class PhotoFactory extends Factory
 		});
 	}
 
+	/** define tags for that picture */
+	public function with_tags(string $tags): self
+	{
+		return $this->state(function (array $attributes) use ($tags) {
+			return [
+				'tags' => $tags,
+			];
+		});
+	}
+
 	/**
 	 * Set a bunch of GPS coordinates (in Netherlands).
 	 *

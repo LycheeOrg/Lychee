@@ -24,6 +24,7 @@ class IsInstalled implements MiddlewareCheck
 				config('app.key') !== null &&
 				config('app.key') !== '' &&
 				Schema::hasTable('configs');
+			// @codeCoverageIgnoreStart
 		} catch (QueryException $e) {
 			// Authentication to DB failed.
 			// This means that we cannot even check that `configs` is present,
@@ -49,4 +50,5 @@ class IsInstalled implements MiddlewareCheck
 			throw new FrameworkException('Laravel\'s container component', $e);
 		}
 	}
+	// @codeCoverageIgnoreEnd
 }

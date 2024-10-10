@@ -81,6 +81,7 @@ class HasManyChildAlbums extends HasManyBidirectionally
 	public function getResults(): Collection
 	{
 		if (is_null($this->getParentKey())) {
+			/** @var Collection<int,Album> */
 			return $this->related->newCollection();
 		}
 
@@ -99,7 +100,7 @@ class HasManyChildAlbums extends HasManyBidirectionally
 	 * @param Collection<int,Album> $results  the unified collection of all child models of all parent models
 	 * @param string                $relation the name of the relation from the parent to the child models
 	 *
-	 * @return Album[]
+	 * @return array<int,Album>
 	 */
 	public function match(array $models, Collection $results, $relation): array
 	{

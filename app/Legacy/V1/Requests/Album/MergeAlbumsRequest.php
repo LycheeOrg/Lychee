@@ -3,13 +3,13 @@
 namespace App\Legacy\V1\Requests\Album;
 
 use App\Http\Requests\BaseApiRequest;
-use App\Http\RuleSets\Album\MergeAlbumsRuleSet;
 use App\Legacy\V1\Contracts\Http\Requests\HasAlbum;
 use App\Legacy\V1\Contracts\Http\Requests\HasAlbums;
 use App\Legacy\V1\Contracts\Http\Requests\RequestAttribute;
 use App\Legacy\V1\Requests\Traits\Authorize\AuthorizeCanEditAlbumAlbumsTrait;
 use App\Legacy\V1\Requests\Traits\HasAlbumsTrait;
 use App\Legacy\V1\Requests\Traits\HasAlbumTrait;
+use App\Legacy\V1\RuleSets\Album\MergeAlbumsRuleSet;
 use App\Models\Album;
 
 /**

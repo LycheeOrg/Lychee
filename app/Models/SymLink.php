@@ -142,7 +142,7 @@ class SymLink extends Model
 	 * If this method cannot create the symbolic link, then this method
 	 * cancels the insert operation.
 	 *
-	 * @param Builder<SizeVariant> $query
+	 * @param Builder<static> $query
 	 *
 	 * @return bool
 	 *

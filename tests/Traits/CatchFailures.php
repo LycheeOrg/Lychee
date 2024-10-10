@@ -4,6 +4,7 @@ namespace Tests\Traits;
 
 use Illuminate\Testing\Assert as PHPUnit;
 use Illuminate\Testing\TestResponse;
+use PHPUnit\Framework\Exception;
 
 /**
  * This trait allows to retrieve the message returned by the back-end in case of unexpected results.
@@ -18,9 +19,15 @@ trait CatchFailures
 	 */
 	private array $catchFailureSilence = ["App\Exceptions\MediaFileOperationException"];
 
+	/**
+	 * @param TestResponse<\Illuminate\Http\JsonResponse> $response
+	 * @param int|array                                   $expectedStatusCode
+	 *
+	 * @return void
+	 */
 	protected function assertStatus(TestResponse $response, int|array $expectedStatusCode): void
 	{
-		if ($response->getStatusCode() === 500) {
+		if ($response->getStatusCode() === 500 && $expectedStatusCode !== 500) {
 			$exception = $response->json();
 			if (in_array($exception['exception'], $this->catchFailureSilence, true)) {
 				return;
@@ -66,33 +73,113 @@ trait CatchFailures
 		}
 	}
 
+	/**
+	 * @param TestResponse<\Illuminate\Http\JsonResponse> $response
+	 *
+	 * @return void
+	 */
 	protected function assertOk(TestResponse $response): void
 	{
 		$this->assertStatus($response, 200);
 	}
 
-	protected function assertForbidden(TestResponse $response): void
+	/**
+	 * @param TestResponse<\Illuminate\Http\JsonResponse> $response
+	 *
+	 * @return void
+	 */
+	protected function assertCreated(TestResponse $response): void
 	{
-		$this->assertStatus($response, 403);
+		$this->assertStatus($response, 201);
 	}
 
-	protected function assertUnauthorized(TestResponse $response): void
-	{
-		$this->assertStatus($response, 401);
-	}
-
+	/**
+	 * @param TestResponse<\Illuminate\Http\JsonResponse> $response
+	 *
+	 * @return void
+	 */
 	protected function assertNoContent(TestResponse $response): void
 	{
 		$this->assertStatus($response, 204);
 	}
 
+	/**
+	 * @param TestResponse<\Illuminate\Http\JsonResponse> $response
+	 *
+	 * @return void
+	 */
 	protected function assertRedirect(TestResponse $response): void
 	{
 		$this->assertStatus($response, 302);
 	}
 
+	/**
+	 * @param TestResponse<\Illuminate\Http\JsonResponse> $response
+	 *
+	 * @return void
+	 */
+	protected function assertUnauthorized(TestResponse $response): void
+	{
+		$this->assertStatus($response, 401);
+	}
+
+	/**
+	 * @param TestResponse<\Illuminate\Http\JsonResponse> $response
+	 *
+	 * @return void
+	 */
+	protected function assertSupporterRequired(TestResponse $response): void
+	{
+		$this->assertStatus($response, 402);
+	}
+
+	/**
+	 * @param TestResponse<\Illuminate\Http\JsonResponse> $response
+	 *
+	 * @return void
+	 */
+	protected function assertForbidden(TestResponse $response): void
+	{
+		$this->assertStatus($response, 403);
+	}
+
+	/**
+	 * @param TestResponse<\Illuminate\Http\JsonResponse> $response
+	 *
+	 * @return void
+	 */
 	protected function assertNotFound(TestResponse $response): void
 	{
 		$this->assertStatus($response, 404);
+	}
+
+	/**
+	 * @param TestResponse<\Illuminate\Http\JsonResponse> $response
+	 *
+	 * @return void
+	 */
+	protected function assertConflict(TestResponse $response): void
+	{
+		$this->assertStatus($response, 409);
+	}
+
+	/**
+	 * @param TestResponse<\Illuminate\Http\JsonResponse> $response
+	 *
+	 * @return void
+	 */
+	protected function assertUnprocessable(TestResponse $response): void
+	{
+		$this->assertStatus($response, 422);
+	}
+
+	/**
+	 * @param TestResponse<\Illuminate\Http\JsonResponse> $response
+	 *
+	 * @return void
+	 */
+	public function assertInternalServerError(TestResponse $response): void
+	{
+		$this->assertStatus($response, 500);
 	}
 }

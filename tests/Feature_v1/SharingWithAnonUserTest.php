@@ -272,7 +272,7 @@ class SharingWithAnonUserTest extends BaseSharingTestScenarios
 		?string $publicAlbumThumbID = null,
 		?string $recentAlbumThumbID = null,
 		?string $onThisDayAlbumThumbID = null,
-		array $expectedAlbumJson = []
+		array $expectedAlbumJson = [],
 	): array {
 		if ($unsortedAlbumThumbID !== null) {
 			throw new \InvalidArgumentException('$unsortedAlbumThumbID must be `null` for test with unauthenticated users');
@@ -298,7 +298,7 @@ class SharingWithAnonUserTest extends BaseSharingTestScenarios
 		?string $starredAlbumThumbID = null,
 		?string $publicAlbumThumbID = null,
 		?string $recentAlbumThumbID = null,
-		array $expectedAlbumJson = []
+		array $expectedAlbumJson = [],
 	): array {
 		if ($unsortedAlbumThumbID !== null) {
 			throw new \InvalidArgumentException('$unsortedAlbumThumbID must be `null` for test with unauthenticated users');

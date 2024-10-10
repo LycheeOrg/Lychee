@@ -25,7 +25,6 @@ class AcceptContentType
 	 * @var array<int,string>
 	 */
 	protected $except = [
-		'livewire/upload-file',
 	];
 
 	/**

@@ -3,14 +3,24 @@
 return [
 	/*
 	|--------------------------------------------------------------------------
-	| Use Livewire Front-end
+	| Use VueJS Front-end
 	|--------------------------------------------------------------------------
 	|
-	| This value determines whether livewire front-end is enabled as it is
+	| This value determines whether vuejs front-end is enabled as it is
 	| currently under development.
 	|
 	*/
-	'livewire' => (bool) env('LIVEWIRE_ENABLED', true),
+	'vuejs' => (bool) env('VUEJS_ENABLED', true),
+
+	/*
+	|--------------------------------------------------------------------------
+	| Use Legacy API
+	|--------------------------------------------------------------------------
+	|
+	| This value determines whether the Legacy API is still available.
+	|
+	*/
+	'legacy_api' => (bool) env('LEGACY_API_ENABLED', !(bool) env('VUEJS_ENABLED', true)),
 
 	/*
 	|--------------------------------------------------------------------------
@@ -49,7 +59,7 @@ return [
 	|
 	| Use pipeline design pattern instead of hardcoded Strategies.
 	*/
-	'create-photo-via-pipes' => (bool) env('PHOTO_PIPES', false),
+	'create-photo-via-pipes' => (bool) env('PHOTO_PIPES', true),
 
 	/*
 	|--------------------------------------------------------------------------
