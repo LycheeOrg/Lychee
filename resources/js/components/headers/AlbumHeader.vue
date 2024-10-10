@@ -94,7 +94,7 @@ const props = defineProps<{
 const toggleDetails = () => (are_details_open.value = !are_details_open.value);
 const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
-const { are_details_open, is_login_open, is_slideshow_active } = storeToRefs(lycheeStore);
+const { are_details_open, is_login_open, is_slideshow_active, dropbox_api_key } = storeToRefs(lycheeStore);
 
 const hasCoordinates = computed(() => props.album.photos.find((photo) => photo.latitude !== null && photo.longitude !== null) !== undefined);
 
@@ -144,14 +144,18 @@ function deleteTrack() {
 	AlbumService.deleteTrack(props.album.id);
 }
 
-const { addmenu, addMenu, openAddMenu } = useContextMenuAlbumAdd(props.album, {
-	toggleUpload,
-	toggleCreateAlbum,
-	toggleImportFromLink,
-	toggleUploadTrack,
-	deleteTrack,
-	toggleImportFromDropbox,
-});
+const { addmenu, addMenu, openAddMenu } = useContextMenuAlbumAdd(
+	props.album,
+	{
+		toggleUpload,
+		toggleCreateAlbum,
+		toggleImportFromLink,
+		toggleUploadTrack,
+		deleteTrack,
+		toggleImportFromDropbox,
+	},
+	dropbox_api_key,
+);
 
 const router = useRouter();
 const canUpload = computed(() => props.user.id !== null && props.album.rights.can_upload === true);

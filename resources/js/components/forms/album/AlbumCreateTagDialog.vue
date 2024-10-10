@@ -6,7 +6,7 @@
 				<div class="inline-flex flex-col gap-3 px-9">
 					<FloatLabel>
 						<InputText id="title" v-model="title" />
-						<label class="" for="title">{{ $t("lychee.ALBUM_SET_TITLE") }}</label>
+						<label class="" for="title">{{ $t("lychee.ALBUM_TITLE") }}</label>
 					</FloatLabel>
 					<FloatLabel>
 						<AutoComplete

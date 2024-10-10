@@ -160,12 +160,15 @@ const {
 	toggleUpload,
 } = useGalleryModals();
 
-const { addmenu, addMenu, isImportFromServerOpen, isCreateTagAlbumOpen } = useContextMenuAlbumsAdd({
-	toggleUpload: toggleUpload,
-	toggleCreateAlbum: toggleCreateAlbum,
-	toggleImportFromLink: toggleImportFromLink,
-	toggleImportFromDropbox: toggleImportFromDropbox,
-});
+const { addmenu, addMenu, isImportFromServerOpen, isCreateTagAlbumOpen } = useContextMenuAlbumsAdd(
+	{
+		toggleUpload: toggleUpload,
+		toggleCreateAlbum: toggleCreateAlbum,
+		toggleImportFromLink: toggleImportFromLink,
+		toggleImportFromDropbox: toggleImportFromDropbox,
+	},
+	dropbox_api_key,
+);
 
 const canUpload = computed(() => props.user.id !== null);
 const isLoginLeft = computed(() => props.config.login_button_position === "left");
