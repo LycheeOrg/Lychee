@@ -4,7 +4,7 @@
 			<div v-focustrap class="flex flex-col relative max-w-full text-sm rounded-md pt-9">
 				<p class="mb-5 px-9">{{ $t("lychee.TITLE_NEW_ALBUM") }}</p>
 				<div class="inline-flex flex-col gap-2 px-9">
-					<FloatLabel>
+					<FloatLabel variant="on">
 						<InputText id="title" v-model="title" />
 						<label class="" for="title">{{ $t("lychee.ALBUM_TITLE") }}</label>
 					</FloatLabel>

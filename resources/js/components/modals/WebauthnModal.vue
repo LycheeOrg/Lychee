@@ -3,7 +3,7 @@
 		<template #container="{ closeCallback }">
 			<form v-focustrap class="flex flex-col gap-4 relative max-w-full text-sm rounded-md pt-9">
 				<div class="inline-flex flex-col gap-2 px-9">
-					<FloatLabel>
+					<FloatLabel variant="on">
 						<InputText id="username" v-model="username" />
 						<label class="" for="username">{{ $t("lychee.USERNAME") }}</label>
 					</FloatLabel>

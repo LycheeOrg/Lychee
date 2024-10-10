@@ -139,14 +139,3 @@ input:checked ~ .checkbox svg {
 .aspect-3x2 {
 	aspect-ratio: 3/2;
 }
-
-.p-floatlabel:has(input:focus) label,
-.p-floatlabel:has(input.p-filled) label,
-.p-floatlabel:has(input:-webkit-autofill) label,
-.p-floatlabel:has(textarea:focus) label,
-.p-floatlabel:has(textarea.p-filled) label,
-.p-floatlabel:has(.p-inputwrapper-focus) label,
-.p-floatlabel:has(.p-inputwrapper-filled) label {
-	top: 0;
-}
-// }

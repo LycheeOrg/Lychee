@@ -4,7 +4,7 @@
 			<div v-focustrap class="flex flex-col relative max-w-xl text-sm rounded-md pt-9">
 				<p class="mb-5 px-9">{{ $t("lychee.ALBUM_PASSWORD_REQUIRED") }}</p>
 				<div class="inline-flex flex-col gap-2 px-9">
-					<FloatLabel>
+					<FloatLabel variant="on">
 						<InputText id="albumPassword" v-model="password" @keydown.enter="unlock" />
 						<label class="" for="albumPassword">{{ $t("lychee.PASSWORD") }}</label>
 					</FloatLabel>

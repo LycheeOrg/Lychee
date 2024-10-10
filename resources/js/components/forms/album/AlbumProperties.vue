@@ -2,22 +2,22 @@
 	<Card class="sm:p-4 xl:px-9 max-sm:w-full sm:min-w-[32rem] flex-shrink-0">
 		<template #content>
 			<form>
-				<div class="mb-4 h-12">
-					<FloatLabel>
+				<div class="h-12">
+					<FloatLabel variant="on">
 						<InputText id="title" type="text" v-model="title" />
 						<label for="title">{{ $t("lychee.ALBUM_TITLE") }}</label>
 					</FloatLabel>
 					<!-- <x-forms.error-message field='title' /> -->
 				</div>
-				<div class="my-4 h-56 pt-4">
-					<FloatLabel>
-						<Textarea id="description" class="w-full h-48" v-model="description" rows="5" cols="30" />
+				<div class="my-4 h-48">
+					<FloatLabel variant="on">
+						<Textarea id="description" class="w-full h-48" v-model="description" rows="6" cols="30" />
 						<!-- <x-forms.error-message field='description' /> -->
 						<label for="description">{{ $t("lychee.ALBUM_DESCRIPTION") }}</label>
 					</FloatLabel>
 				</div>
-				<div class="my-4 h-10 flex">
-					<FloatLabel>
+				<div class="my-2 h-10 flex">
+					<FloatLabel variant="on">
 						<Select
 							id="photoSortingColumn"
 							class="w-48 border-none"
@@ -39,7 +39,7 @@
 						</Select>
 						<label for="photoSortingColumn">{{ $t("lychee.ALBUM_PHOTO_ORDERING") }}</label>
 					</FloatLabel>
-					<FloatLabel>
+					<FloatLabel variant="on">
 						<Select
 							id="photoSortingOrder"
 							class="w-48 border-none"
@@ -63,8 +63,8 @@
 					</FloatLabel>
 				</div>
 				<template v-if="is_model_album">
-					<div class="my-4 h-10 flex">
-						<FloatLabel>
+					<div class="my-2 h-10 flex">
+						<FloatLabel variant="on">
 							<Select
 								id="albumSortingColumn"
 								class="w-48 border-none"
@@ -86,7 +86,7 @@
 							</Select>
 							<label for="albumSortingColumn">{{ $t("lychee.ALBUM_CHILDREN_ORDERING") }}</label>
 						</FloatLabel>
-						<FloatLabel>
+						<FloatLabel variant="on">
 							<Select
 								id="albumSortingOrder"
 								class="w-48 border-none"
@@ -109,8 +109,8 @@
 							<label for="albumSortingOrder">asc/desc</label>
 						</FloatLabel>
 					</div>
-					<div class="h-10 my-4">
-						<FloatLabel>
+					<div class="h-10 my-2">
+						<FloatLabel variant="on">
 							<Select id="header" class="w-72 border-none" v-model="header_id" :options="headersOptions" optionLabel="title" showClear>
 								<template #value="slotProps">
 									<div v-if="slotProps.value && slotProps.value.id === 'compact'">
@@ -137,8 +137,8 @@
 						</FloatLabel>
 					</div>
 					<!-- <livewire:forms.album.set-header :album_id="$this->albumID" lazy="on-load" /> -->
-					<div class="h-10 my-4">
-						<FloatLabel>
+					<div class="h-10 my-2">
+						<FloatLabel variant="on">
 							<Select id="license" class="w-72 border-none" v-model="license" :options="licenseOptions" optionLabel="label" showClear>
 								<template #value="slotProps">
 									<div v-if="slotProps.value" class="flex items-center">
@@ -154,14 +154,14 @@
 							<label for="license">{{ $t("lychee.ALBUM_SET_LICENSE") }}</label>
 						</FloatLabel>
 					</div>
-					<div class="my-4">
-						<FloatLabel>
+					<div class="my-2">
+						<FloatLabel variant="on">
 							<InputText id="copyright" v-model="copyright" />
 							<label for="copyright">{{ $t("lychee.ALBUM_SET_COPYRIGHT") }}</label>
 						</FloatLabel>
 					</div>
-					<div class="h-10 my-4">
-						<FloatLabel>
+					<div class="h-10 my-2 pt-4">
+						<FloatLabel variant="on">
 							<Select
 								id="aspectRatio"
 								class="w-72 border-none"
@@ -186,7 +186,7 @@
 					</div>
 				</template>
 				<div v-if="!is_model_album" class="mb-8 h-10">
-					<FloatLabel>
+					<FloatLabel variant="on">
 						<AutoComplete
 							id="tags"
 							v-model="tags"
@@ -198,7 +198,7 @@
 						<label for="tags">{{ $t("lychee.ALBUM_SET_SHOWTAGS") }}</label>
 					</FloatLabel>
 				</div>
-				<Button class="p-3 w-full font-bold border-none text-white hover:bg-primary-500 hover:text-surface-0 flex-shrink" @click="save">
+				<Button class="p-3 mt-4 w-full font-bold border-none text-white hover:bg-primary-500 hover:text-surface-0 flex-shrink" @click="save">
 					{{ $t("lychee.SAVE") }}
 				</Button>
 			</form>

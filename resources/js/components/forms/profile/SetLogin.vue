@@ -11,7 +11,7 @@
 				<div class="pb-5">
 					{{ $t("lychee.PASSWORD_TITLE") }}
 				</div>
-				<FloatLabel>
+				<FloatLabel variant="on">
 					<InputPassword id="oldPassword" v-model="oldPassword" :invalid="!oldPassword && hasChanged" />
 					<label class="" for="oldPassword">{{ $t("lychee.PASSWORD_CURRENT") }}</label>
 				</FloatLabel>
@@ -20,15 +20,15 @@
 				<div class="py-5">
 					{{ $t("lychee.PASSWORD_TEXT") }}
 				</div>
-				<FloatLabel>
+				<FloatLabel variant="on">
 					<InputText id="username" v-model="username" />
 					<label class="" for="username">{{ $t("lychee.USERNAME") }}</label>
 				</FloatLabel>
-				<FloatLabel class="mt-4">
+				<FloatLabel class="mt-4" variant="on">
 					<InputPassword id="password" v-model="password" />
 					<label class="" for="password">{{ $t("lychee.LOGIN_PASSWORD") }}</label>
 				</FloatLabel>
-				<FloatLabel class="mt-4">
+				<FloatLabel class="mt-4" variant="on">
 					<InputPassword id="password_confirmation" v-model="password_confirmation" :invalid="password !== password_confirmation" />
 					<label class="" for="password_confirmation">{{ $t("lychee.LOGIN_PASSWORD_CONFIRM") }}</label>
 				</FloatLabel>
@@ -37,7 +37,7 @@
 				<div class="py-5">
 					{{ $t("lychee.USER_EMAIL_INSTRUCTION") }}
 				</div>
-				<FloatLabel>
+				<FloatLabel variant="on">
 					<InputText id="email" v-model="email" />
 					<label class="" for="email">{{ $t("lychee.ENTER_EMAIL") }}</label>
 				</FloatLabel>
