@@ -145,7 +145,7 @@ Route::post('/UserManagement::create', [Admin\UserManagementController::class, '
  */
 Route::get('/WebAuthn', [WebAuthn\WebAuthnManageController::class, 'list']);
 Route::patch('/WebAuthn', [WebAuthn\WebAuthnManageController::class, 'edit']);
-Route::post('/WebAuthn::delete', [WebAuthn\WebAuthnManageController::class, 'delete']);
+Route::delete('/WebAuthn', [WebAuthn\WebAuthnManageController::class, 'delete']);
 
 // Special Webauthn operations
 Route::post('/WebAuthn::register/options', [WebAuthn\WebAuthnRegisterController::class, 'options'])
@@ -164,6 +164,7 @@ Route::post('/WebAuthn::login', [WebAuthn\WebAuthnLoginController::class, 'login
 // If Authenticated: list of the registrated Oauth providers
 // If not Authenticated: list of the available Oauth providers
 Route::get('/Oauth', [OauthController::class, 'list']);
+Route::delete('/Oauth', [OauthController::class, 'clear']);
 
 /**
  * DIAGNOSTICS.

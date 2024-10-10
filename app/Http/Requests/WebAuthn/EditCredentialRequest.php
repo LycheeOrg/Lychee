@@ -6,7 +6,6 @@ use App\Contracts\Http\Requests\RequestAttribute;
 use App\Http\Requests\BaseApiRequest;
 use App\Models\User;
 use App\Policies\UserPolicy;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Laragear\WebAuthn\Models\WebAuthnCredential;
 
@@ -20,8 +19,7 @@ class EditCredentialRequest extends BaseApiRequest
 	 */
 	public function authorize(): bool
 	{
-		return Gate::check(UserPolicy::CAN_EDIT, [User::class]) &&
-			($this->credential->user_id === Auth::id());
+		return Gate::check(UserPolicy::CAN_EDIT, [User::class]);
 	}
 
 	public function rules(): array

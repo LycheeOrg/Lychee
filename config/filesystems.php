@@ -112,7 +112,7 @@ return [
 		'dist' => [
 			'driver' => 'local',
 			'root' => env('LYCHEE_DIST', public_path('dist/')),
-			'url' => env('LYCHEE_DIST_URL', 'dist/'),
+			'url' => env('LYCHEE_DIST_URL', '/dist/'),
 			'visibility' => 'public',
 		],
 
