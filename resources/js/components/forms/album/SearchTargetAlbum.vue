@@ -6,7 +6,7 @@
 		@update:modelValue="selected"
 		filter
 		placeholder="Select album"
-		:loading="options.length === 0"
+		:loading="options === undefined"
 		:options="options"
 		optionLabel="original"
 		showClear
@@ -38,7 +38,7 @@ const emits = defineEmits<{
 	selected: [target: App.Http.Resources.Models.TargetAlbumResource];
 }>();
 
-const options = ref([] as App.Http.Resources.Models.TargetAlbumResource[]);
+const options = ref(undefined as undefined | App.Http.Resources.Models.TargetAlbumResource[]);
 const selectedTarget = ref(undefined as App.Http.Resources.Models.TargetAlbumResource | undefined);
 
 function load() {

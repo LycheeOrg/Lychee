@@ -6,7 +6,7 @@
 		@update:modelValue="selected"
 		filter
 		placeholder="Select user"
-		:loading="options.length === 0"
+		:loading="options === undefined"
 		:options="options"
 		optionLabel="username"
 		showClear
@@ -41,7 +41,7 @@ const emits = defineEmits<{
 	selected: [user: App.Http.Resources.Models.LightUserResource];
 }>();
 
-const options = ref([] as App.Http.Resources.Models.LightUserResource[]);
+const options = ref(undefined as undefined | App.Http.Resources.Models.LightUserResource[]);
 const selectedTarget = ref(undefined as App.Http.Resources.Models.LightUserResource | undefined);
 
 function load() {
