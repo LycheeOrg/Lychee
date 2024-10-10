@@ -388,11 +388,14 @@ class WebAuthTest extends BaseApiV2Test
 	 *
 	 * @return void
 	 */
-	public function testWebAuthDeleteUnautorized(): void
+	public function testWebAuthEditDeleteUnautorized(): void
 	{
 		$this->createCredentials();
 
-		$responseDelete = $this->postJson('WebAuthn::delete', ['id' => '_Xlz-khgFhDdkvOWyy_YqC54ExkYyp1o6HAQiybqLST-9RGBndpgI06TQygIYI7ZL2dayCMYm6J1-bXyl72obA']);
+		$responseEdit = $this->patchJson('WebAuthn', ['id' => '_Xlz-khgFhDdkvOWyy_YqC54ExkYyp1o6HAQiybqLST-9RGBndpgI06TQygIYI7ZL2dayCMYm6J1-bXyl72obA', 'alias' => 'something']);
+		$this->assertUnauthorized($responseEdit);
+
+		$responseDelete = $this->deleteJson('WebAuthn', ['id' => '_Xlz-khgFhDdkvOWyy_YqC54ExkYyp1o6HAQiybqLST-9RGBndpgI06TQygIYI7ZL2dayCMYm6J1-bXyl72obA']);
 		$this->assertUnauthorized($responseDelete);
 	}
 
@@ -401,12 +404,20 @@ class WebAuthTest extends BaseApiV2Test
 	 *
 	 * @return void
 	 */
-	public function testWebAuthDeleteAutorized(): void
+	public function testWebAuthEditDeleteAutorized(): void
 	{
 		$this->createCredentials();
 
 		Auth::loginUsingId($this->admin->id);
-		$responseDelete = $this->postJson('WebAuthn::delete', ['id' => '_Xlz-khgFhDdkvOWyy_YqC54ExkYyp1o6HAQiybqLST-9RGBndpgI06TQygIYI7ZL2dayCMYm6J1-bXyl72obA']);
+
+		$responseEdit = $this->patchJson('WebAuthn', ['id' => '_Xlz-khgFhDdkvOWyy_YqC54ExkYyp1o6HAQiybqLST-9RGBndpgI06TQygIYI7ZL2dayCMYm6J1-bXyl72obA', 'alias' => 'something']);
+		$this->assertNoContent($responseEdit);
+
+		$responseList = $this->getJson('WebAuthn');
+		$this->assertOk($responseList);
+		$this->assertEquals('something', $responseList->json()[0]['alias']);
+
+		$responseDelete = $this->deleteJson('WebAuthn', ['id' => '_Xlz-khgFhDdkvOWyy_YqC54ExkYyp1o6HAQiybqLST-9RGBndpgI06TQygIYI7ZL2dayCMYm6J1-bXyl72obA']);
 		$this->assertNoContent($responseDelete);
 		Auth::logout();
 		Session::flush();
