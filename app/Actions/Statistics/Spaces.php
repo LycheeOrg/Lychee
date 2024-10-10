@@ -22,13 +22,13 @@ class Spaces
 	 */
 	public function getFullSpacePerUser(?int $owner_id = null): Collection
 	{
-		return DB::table('size_variants')
-			->join('photos', 'photos.id', '=', 'size_variants.photo_id')
-			->when($owner_id !== null, fn ($query) => $query->where('photos.owner_id', '=', $owner_id))
-			->join('user', 'photos.owner_id', '=', 'user.id')
+		return DB::table('users')
+			->when($owner_id !== null, fn ($query) => $query->where('users.id', '=', $owner_id))
+			->leftJoin('photos', 'photos.owner_id', '=', 'users.id')
+			->leftJoin('size_variants', 'size_variants.photo_id', '=', 'photos.id')
 			->select(
 				'username',
-				DB::raw('SUM(filesize) as size')
+				DB::raw('SUM(size_variants.filesize) as size')
 			)
 			->groupBy('username')
 			->get()

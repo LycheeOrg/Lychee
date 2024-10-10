@@ -148,6 +148,16 @@ class AlbumUpdateTest extends BaseApiV2Test
 			'grants_full_photo_access' => false,
 		]);
 		$this->assertForbidden($response);
+
+		$response = $this->actingAs($this->userMayUpload1)->postJson('Album::updateProtectionPolicy', [
+			'album_id' => 'unsorted',
+			'is_public' => true,
+			'is_link_required' => false,
+			'is_nsfw' => false,
+			'grants_download' => false,
+			'grants_full_photo_access' => false,
+		]);
+		$this->assertForbidden($response);
 	}
 
 	public function testUpdateProtectionPolicyAuthorized(): void
@@ -170,6 +180,26 @@ class AlbumUpdateTest extends BaseApiV2Test
 			'grants_download' => false,
 			'grants_full_photo_access' => false,
 		]);
+
+		$response = $this->actingAs($this->admin)->postJson('Album::updateProtectionPolicy', [
+			'album_id' => 'unsorted',
+			'is_public' => true,
+			'is_link_required' => false,
+			'is_nsfw' => false,
+			'grants_download' => false,
+			'grants_full_photo_access' => false,
+		]);
+		$this->assertCreated($response);
+
+		$response = $this->actingAs($this->admin)->postJson('Album::updateProtectionPolicy', [
+			'album_id' => 'unsorted',
+			'is_public' => false,
+			'is_link_required' => false,
+			'is_nsfw' => false,
+			'grants_download' => false,
+			'grants_full_photo_access' => false,
+		]);
+		$this->assertCreated($response);
 
 		// Logout.
 		$response = $this->postJson('Auth::logout', []);
