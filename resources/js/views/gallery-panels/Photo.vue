@@ -288,10 +288,13 @@ if (is_slideshow_active.value) {
 onKeyStroke("ArrowLeft", () => !shouldIgnoreKeystroke() && hasPrevious() && previous(true));
 onKeyStroke("ArrowRight", () => !shouldIgnoreKeystroke() && hasNext() && next(true));
 onKeyStroke("o", () => !shouldIgnoreKeystroke() && rotateOverlay());
-onKeyStroke("s", () => !shouldIgnoreKeystroke() && toggleStar());
 onKeyStroke(" ", () => !shouldIgnoreKeystroke() && slideshow());
 onKeyStroke("f", () => !shouldIgnoreKeystroke() && lycheeStore.toggleFullScreen());
-onKeyStroke(["Delete", "Backspace"], () => !shouldIgnoreKeystroke() && toggleDelete());
+
+// Priviledged operations
+onKeyStroke("m", () => !shouldIgnoreKeystroke() && photo.value?.rights.can_edit && toggleMove());
+onKeyStroke("s", () => !shouldIgnoreKeystroke() && photo.value?.rights.can_edit && toggleStar());
+onKeyStroke(["Delete", "Backspace"], () => !shouldIgnoreKeystroke() && album.value?.resource?.rights.can_delete && toggleDelete());
 
 function scrollTo(event: WheelEvent) {
 	if (shouldIgnoreKeystroke()) {

@@ -113,7 +113,7 @@ const { user, isKeybindingsHelpOpen, smartAlbums, albums, sharedAlbums, rootConf
 	is_login_open,
 );
 
-const { selectedAlbum, selectedAlbumsIdx, selectedAlbums, selectedAlbumsIds, albumClick, selectEverything, unselect } = useSelection(
+const { selectedAlbum, selectedAlbumsIdx, selectedAlbums, selectedAlbumsIds, albumClick, selectEverything, unselect, hasSelection } = useSelection(
 	photos,
 	selectableAlbums,
 );
@@ -175,5 +175,8 @@ refresh();
 onKeyStroke("h", () => !shouldIgnoreKeystroke() && (are_nsfw_visible.value = !are_nsfw_visible.value));
 onKeyStroke("f", () => !shouldIgnoreKeystroke() && lycheeStore.toggleFullScreen());
 onKeyStroke(" ", () => !shouldIgnoreKeystroke() && unselect());
+onKeyStroke("m", () => !shouldIgnoreKeystroke() && rootRights.value?.can_edit && hasSelection() && toggleMove());
+onKeyStroke(["Delete", "Backspace"], () => !shouldIgnoreKeystroke() && rootRights.value?.can_edit && hasSelection() && toggleDelete());
+
 onKeyStroke([getModKey(), "a"], () => !shouldIgnoreKeystroke() && selectEverything());
 </script>
