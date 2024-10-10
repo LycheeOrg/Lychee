@@ -157,7 +157,7 @@ class Spaces
 				'albums._lft',
 				'albums._rgt',
 				DB::raw('COUNT(photos.id) as num_photos'),
-			)->groupBy('albums.id')
+			)->groupBy('albums.id', 'username')
 			->orderBy('albums._lft', 'asc');
 
 		return $query
@@ -201,7 +201,7 @@ class Spaces
 				'albums._lft',
 				'albums._rgt',
 				DB::raw('COUNT(photos.id) as num_photos'),
-			)->groupBy('albums.id')
+			)->groupBy('albums.id', 'username')
 			->orderBy('albums._lft', 'asc');
 
 		return $query
