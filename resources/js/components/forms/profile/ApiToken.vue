@@ -14,25 +14,39 @@
 				<div v-focustrap class="flex flex-col gap-4 relative w-[500px] text-sm rounded-md pt-9">
 					<div class="flex flex-col justify-center gap-2 px-9 w-full items-center">
 						<template v-if="token === undefined">
-						<span>{{ tokenText }}</span>
-						<a v-if="isDisabled" severity="contrast" class="cursor-pointer font-bold text-primary-500 underline" @click="resetToken">Create a new token</a>
-						<a v-else severity="contrast" class="cursor-pointer font-bold text-primary-500 underline" @click="resetToken">Reset the token</a>
+							<span>{{ tokenText }}</span>
+							<a v-if="isDisabled" severity="contrast" class="cursor-pointer font-bold text-primary-500 underline" @click="resetToken"
+								>Create a new token</a
+							>
+							<a v-else severity="contrast" class="cursor-pointer font-bold text-primary-500 underline" @click="resetToken"
+								>Reset the token</a
+							>
 						</template>
 						<template v-else>
-							<span><i class="text-danger-600 pi pi-exclamation-triangle mr-2" />This token will not be displayed again. Copy it and keep it in a safe place.</span>
-							<InputText 
+							<span
+								><i class="text-danger-600 pi pi-exclamation-triangle mr-2" />This token will not be displayed again. Copy it and keep
+								it in a safe place.</span
+							>
+							<InputText
 								class="flex-grow[4] bg-transparent w-full pt-1 pb-0 px-0.5 h-7 border-b border-b-solid focus:border-b-primary-500 disabled:italic disabled:text-center inline-block"
 								v-model="token"
 								:readonly="true"
 							/>
 						</template>
-				</div>
+					</div>
 				</div>
 				<div class="flex justify-center mt-9">
 					<Button @click="close" severity="secondary" class="w-full border-none font-bold rounded-none rounded-bl-lg">
 						{{ $t("lychee.CLOSE") }}
 					</Button>
-					<Button @click="disable" v-if="!isDisabled && token === undefined" severity="danger" class="w-full border-none font-bold rounded-none rounded-br-lg"> Disable </Button>
+					<Button
+						@click="disable"
+						v-if="!isDisabled && token === undefined"
+						severity="danger"
+						class="w-full border-none font-bold rounded-none rounded-br-lg"
+					>
+						Disable
+					</Button>
 				</div>
 			</form>
 		</template>
