@@ -3,7 +3,8 @@
 		<template #container="{ closeCallback }">
 			<div v-if="setup">
 				<div v-if="files.length > 0" class="m-4 flex flex-col justify-center">
-					<span>Completed: {{ countCompleted }} / {{ files.length }}</span>
+					<Knob v-model="countCompleted" :strokeWidth="5" :max="files.length" disabled />
+					<!-- <span>Completed: {{  }} / {{ files.length }}</span> -->
 				</div>
 				<ScrollPanel v-if="files.length > 0" class="w-96 h-48 m-4 p-1 mr-5" :pt:scrollbar:class="'opacity-100'">
 					<UploadingLine
@@ -58,6 +59,7 @@ import { computed, Ref, ref, watch } from "vue";
 import UploadingLine from "../forms/upload/UploadingLine.vue";
 import ScrollPanel from "primevue/scrollpanel";
 import UploadService from "@/services/upload-service";
+import Knob from "primevue/knob";
 
 type Uploadable = {
 	file: File;
