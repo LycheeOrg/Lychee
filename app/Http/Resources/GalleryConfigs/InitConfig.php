@@ -74,7 +74,7 @@ class InitConfig extends Data
 		$this->is_se_preview_enabled = !$is_supporter && Configs::getValueAsBool('enable_se_preview');
 		$this->is_se_info_hidden = $is_supporter || Configs::getValueAsBool('disable_se_call_for_actions');
 
-		$this->dropbox_api_key = Auth::user()?->may_administrate === true ? Configs::getValueAsString('dropbox_key') : '';
+		$this->dropbox_api_key = Auth::user()?->may_administrate === true ? Configs::getValueAsString('dropbox_key') : 'disabled';
 	}
 
 	private function has_clockwork_in_menu(): string|null

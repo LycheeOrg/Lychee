@@ -3,11 +3,8 @@
 		<template #container="{ closeCallback }">
 			<div class="flex flex-col gap-4 bg-gradient-to-b from-bg-300 to-bg-400 relative max-w-full rounded-md text-muted-color">
 				<div class="p-9">
-					<DropBoxChooser v-if="dropbox_api_key !== ''" :api-key="dropbox_api_key" @picked="action" @cancel="closeCallback" />
-					<p v-else>
-						Dropbox is not configured.
-						<!-- {{ $t("lychee.DROPBOX_NOT_CONFIGURED") }} -->
-					</p>
+					<DropBoxChooser v-if="dropbox_api_key !== 'disabled'" :api-key="dropbox_api_key" @picked="action" @cancel="closeCallback" />
+					<p v-else>Dropbox is not configured.</p>
 				</div>
 				<div class="flex justify-center">
 					<Button severity="secondary" class="w-full font-bold border-none rounded-none rounded-bl-xl" @click="closeCallback">{{

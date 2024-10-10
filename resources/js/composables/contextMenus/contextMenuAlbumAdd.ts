@@ -1,4 +1,4 @@
-import { computed, ref } from "vue";
+import { computed, Ref, ref } from "vue";
 
 type Callbacks = {
 	toggleCreateAlbum: () => void;
@@ -15,6 +15,7 @@ export function useContextMenuAlbumAdd(
 		| App.Http.Resources.Models.TagAlbumResource
 		| App.Http.Resources.Models.SmartAlbumResource,
 	callbacks: Callbacks,
+	dropbox_api_key: Ref<string>,
 ) {
 	const addmenu = ref(); // ! Reference to the context menu
 	const addMenu = computed(function () {
@@ -36,6 +37,7 @@ export function useContextMenuAlbumAdd(
 				label: "lychee.IMPORT_DROPBOX",
 				icon: "pi pi-box",
 				callback: callbacks.toggleImportFromDropbox,
+				if: dropbox_api_key.value !== "disabled",
 			},
 			{
 				is_divider: true,
@@ -61,7 +63,7 @@ export function useContextMenuAlbumAdd(
 				callback: callbacks.toggleUploadTrack,
 			});
 		}
-		return menu;
+		return menu.filter((item) => item.if === undefined || item.if !== false);
 	});
 
 	function openAddMenu(event: Event) {
