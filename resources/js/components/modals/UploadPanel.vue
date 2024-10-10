@@ -2,9 +2,14 @@
 	<Dialog v-model:visible="visible" modal pt:root:class="border-none" @hide="closeCallback" :dismissable-mask="true">
 		<template #container="{ closeCallback }">
 			<div v-if="setup">
-				<div v-if="files.length > 0" class="m-4 flex flex-col justify-center">
-					<Knob v-model="countCompleted" :strokeWidth="5" :max="files.length" disabled />
-					<!-- <span>Completed: {{  }} / {{ files.length }}</span> -->
+				<div v-if="files.length > 0" class="m-4 flex flex-wrap justify-center">
+					<span class="w-full text-center">Completed: {{ countCompleted }} / {{ files.length }}</span>
+					<ProgressBar
+						:class="'w-full'"
+						:value="Math.round((countCompleted * 100) / files.length)"
+						:show-value="false"
+						:pt:value:class="'duration-300'"
+					></ProgressBar>
 				</div>
 				<ScrollPanel v-if="files.length > 0" class="w-96 h-48 m-4 p-1 mr-5" :pt:scrollbar:class="'opacity-100'">
 					<UploadingLine
@@ -55,11 +60,11 @@
 <script setup lang="ts">
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
-import { computed, Ref, ref, watch } from "vue";
+import { Ref, ref, watch } from "vue";
 import UploadingLine from "../forms/upload/UploadingLine.vue";
 import ScrollPanel from "primevue/scrollpanel";
 import UploadService from "@/services/upload-service";
-import Knob from "primevue/knob";
+import ProgressBar from "primevue/progressbar";
 
 type Uploadable = {
 	file: File;

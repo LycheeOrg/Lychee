@@ -8,7 +8,7 @@
 		<span class="text-center w-full hidden group-hover:block text-danger-700 cursor-pointer" @click="controller.abort()">{{
 			$t("lychee.CANCEL")
 		}}</span>
-		<ProgressBar :class="progressClass" :value="progress" :show-value="false"></ProgressBar>
+		<ProgressBar :class="progressClass" :value="progress" :show-value="false" :pt:value:class="'duration-300'"></ProgressBar>
 	</div>
 </template>
 <script setup lang="ts">
