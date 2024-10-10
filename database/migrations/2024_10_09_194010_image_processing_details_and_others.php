@@ -18,8 +18,8 @@ return new class() extends Migration {
 			'date_format_hero_min_max',
 			'date_format_hero_created_at',
 			'date_format_album_thumb',
-		])->update(['details' => 'See <a class="underlined" href="https://www.php.net/manual/en/datetime.format.php">datetime.format.php</a>']);
-		DB::table('configs')->where('key', 'license_key')->update(['details' => 'Get Supporter Edition here: <a class="underlined" href="https://lycheeorg.github.io/get-supporter-edition">https://lycheeorg.github.io/get-supporter-edition</a>']);
+		])->update(['details' => 'See <a class="underline" href="https://www.php.net/manual/en/datetime.format.php">datetime.format.php</a>']);
+		DB::table('configs')->where('key', 'license_key')->update(['details' => 'Get Supporter Edition here: <a class="underline" href="https://lycheeorg.github.io/get-supporter-edition">https://lycheeorg.github.io/get-supporter-edition</a>']);
 	}
 
 	/**

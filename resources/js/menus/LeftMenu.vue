@@ -118,12 +118,6 @@ function loadMenu() {
 			access: initData.value.user_management.can_edit ?? false,
 		},
 		{
-			label: "lychee.U2F",
-			icon: "key",
-			route: "/profile",
-			access: initData.value.user.can_edit ?? false,
-		},
-		{
 			label: "lychee.SHARING",
 			icon: "cloud",
 			route: "/sharing",

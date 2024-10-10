@@ -6,6 +6,9 @@
 		:pt:legendlabel:class="'capitalize'"
 		v-if="u2f"
 	>
+		<div class="text-muted-color text-center">
+			This only provides with the ability to use WebAuthn to authenticate instead of login & password.
+		</div>
 		<SetSecondFactorLine v-for="credential in u2f" :key="credential.id" :u2f="credential" @delete="deleteU2F" />
 		<div v-if="u2f.length === 0">
 			<p class="text-muted-color text-center">Credentials list is empty!</p>
@@ -35,7 +38,7 @@ const toast = useToast();
 
 const isWebAuthnUnavailable = computed(() => WebAuthnService.isWebAuthnUnavailable());
 
-const creadentialsTitle = computed(() => trans("lychee.U2F_CREDENTIALS"));
+const creadentialsTitle = computed(() => trans("Passkey/MFA/2FA"));
 
 function refresh() {
 	WebAuthnService.get().then((response) => {

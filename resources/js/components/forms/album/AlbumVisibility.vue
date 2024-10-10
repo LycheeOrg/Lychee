@@ -2,12 +2,12 @@
 	<Card class="text-sm p-4 xl:px-9 sm:min-w-[32rem]">
 		<template #content>
 			<form>
-				<div class="h-12 mb-4">
+				<div class="h-12">
 					<ToggleSwitch v-model="is_public" class="mr-2 translate-y-1" @change="save" />
 					<label for="pp_dialog_public_check" class="font-bold">{{ $t("lychee.ALBUM_PUBLIC") }}</label>
 					<p class="my-1.5">{{ $t("lychee.ALBUM_PUBLIC_EXPL") }}</p>
 				</div>
-				<template v-if="props.config.is_base_album">
+				<Collapse v-if="props.config.is_base_album" :when="is_public">
 					<div
 						class="relative h-12 my-4 pl-9 transition-color duration-300"
 						:class="is_public ? 'text-muted-color-emphasis' : 'text-muted-color'"
@@ -51,7 +51,7 @@
 						<p class="my-1.5">{{ $t("lychee.ALBUM_DOWNLOADABLE_EXPL") }}</p>
 					</div>
 					<div
-						class="relative h-12 my-4 pl-9 transition-color duration-300"
+						class="relative my-4 pl-9 transition-color duration-300"
 						:class="is_public ? 'text-muted-color-emphasis' : 'text-muted-color'"
 					>
 						<ToggleSwitch
@@ -68,10 +68,10 @@
 							<label for="password">{{ $t("lychee.ALBUM_PASSWORD") }}</label>
 						</FloatLabel>
 					</div>
-				</template>
+				</Collapse>
 			</form>
 			<template v-if="props.config.is_base_album">
-				<hr class="block mt-24 mb-8 w-full border-t border-solid border-surface-600" />
+				<hr class="block mt-8 mb-8 w-full border-t border-solid border-surface-600" />
 				<form>
 					<div class="relative h-12 my-4 transition-color duration-300">
 						<ToggleSwitch
@@ -103,6 +103,7 @@ import FloatLabel from "primevue/floatlabel";
 import InputPassword from "@/components/forms/basic/InputPassword.vue";
 import AlbumService, { UpdateProtectionPolicyData } from "@/services/album-service";
 import { useToast } from "primevue/usetoast";
+import { Collapse } from "vue-collapsed";
 
 const props = defineProps<{
 	album: App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.SmartAlbumResource | App.Http.Resources.Models.TagAlbumResource;
