@@ -7,7 +7,7 @@
 					<template v-if="!is_se_enabled">
 						<h2 class="my-6 font-bold text-center">Enter your license key below:</h2>
 						<p class="text-muted-color text-center">
-							<FloatLabel>
+							<FloatLabel variant="on">
 								<InputText v-model="licenseKey" id="licenseKey" class="w-full" @update:model-value="licenseKeyIsInvValid = false" />
 								<label for="licenseKey">{{ "License key" }}</label>
 							</FloatLabel>

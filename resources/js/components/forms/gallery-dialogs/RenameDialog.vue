@@ -3,7 +3,7 @@
 		<template #container="{ closeCallback }">
 			<div>
 				<p class="p-9 text-center text-muted-color max-w-xl text-wrap">
-					<FloatLabel>
+					<FloatLabel variant="on">
 						<InputText id="title" v-model="title" />
 						<label for="title">{{ question }}</label>
 					</FloatLabel>

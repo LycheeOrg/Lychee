@@ -9,8 +9,16 @@
 					<label for="description" class="font-bold mt-4 md:mt-0">{{ $t("lychee.PHOTO_SET_DESCRIPTION") }}</label>
 					<Textarea id="description" class="w-full h-48" v-model="description" rows="5" cols="30" />
 
-					<label for="tags" class="font-bold mt-4 md:mt-0 self-center">{{ $t("lychee.PHOTO_SET_TAGS") }}</label>
-					<AutoComplete id="tags" v-model="tags" multiple :typeahead="false"></AutoComplete>
+					<label for="tags" class="font-bold h-11 mt-4 md:mt-0 self-center">{{ $t("lychee.PHOTO_SET_TAGS") }}</label>
+					<AutoComplete
+						id="tags"
+						v-model="tags"
+						:typeahead="false"
+						multiple
+						class="border-b hover:border-b-0"
+						:placeholder="$t('lychee.NO_TAGS')"
+						pt:inputmultiple:class="w-full border-t-0 border-l-0 border-r-0 border-b hover:border-b-primary-400 focus:border-b-primary-400"
+					/>
 
 					<label for="uploadDate" class="font-bold mt-4 md:mt-0 self-center">{{ $t("lychee.PHOTO_SET_CREATED_AT") }}</label>
 					<DatePicker
@@ -21,6 +29,7 @@
 						dateFormat=""
 						:showSeconds="true"
 						:invalid="!uploadDate"
+						class="border-0 p-0 w-full border-b hover:border-b-primary-400 focus:border-b-primary-400"
 					/>
 
 					<label for="license" class="font-bold mt-4 md:mt-0 self-center">{{ $t("lychee.SET_LICENSE") }}</label>
@@ -44,7 +53,7 @@
 							</div>
 						</template>
 					</Select>
-					<Button severity="contrast" class="w-full col-span-2 font-bold border-none" @click="save">
+					<Button severity="primary" class="w-full col-span-2 font-bold border-none" @click="save">
 						{{ $t("lychee.SAVE") }}
 					</Button>
 				</form>
@@ -124,3 +133,9 @@ watch(
 	(newPhoto: App.Http.Resources.Models.PhotoResource, _oldPhoto) => load(newPhoto),
 );
 </script>
+<style lang="css">
+/* Only way to get rid of the border sadly. */
+.p-datepicker-input {
+	border: none;
+}
+</style>
