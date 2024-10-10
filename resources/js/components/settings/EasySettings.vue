@@ -10,6 +10,8 @@
 					<p class="my-1.5 text-muted-color w-full" v-html="nsfwText2"></p>
 				</div>
 			</div>
+		</Fieldset>
+		<Fieldset legend="Dropbox" class="border-b-0 border-r-0 rounded-r-none rounded-b-none" :toggleable="true" :collapsed="true">
 			<p class="mb-4 text-muted-color">
 				In order to import photos from your Dropbox, you need a valid drop-ins app key from their website.
 				<a href="https://www.dropbox.com/developers/saver" class="pl-2 border-b border-dashed border-b-primary-500 text-primary-500">
