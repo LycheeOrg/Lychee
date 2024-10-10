@@ -99,19 +99,38 @@
 			<div
 				v-if="photo?.rights.can_edit && !is_edit_open"
 				class="absolute top-0 h-1/4 w-full sm:w-1/2 left-1/2 -translate-x-1/2 opacity-50 lg:opacity-10 group lg:hover:opacity-100 transition-opacity duration-500 ease-in-out z-20 mt-14 sm:mt-0"
+				:class="is_slideshow_active ? 'hidden' : ''"
 			>
 				<span class="absolute left-1/2 -translate-x-1/2 p-1 min-w-[25%] w-full filter-shadow text-center">
 					<DockButton
 						icon="star"
 						:class="photo.is_starred ? 'fill-yellow-500 lg:hover:fill-yellow-100' : 'fill-white lg:hover:fill-yellow-500'"
+						v-tooltip.bottom="photo.is_starred ? $t('lychee.UNSTAR') : $t('lychee.STAR')"
 						v-on:click="toggleStar()"
 					/>
+					<DockButton
+						pi="image"
+						:class="photo.is_starred ? 'fill-yellow-500 lg:hover:fill-yellow-100' : 'fill-white lg:hover:fill-yellow-500'"
+						v-tooltip.bottom="$t('lychee.SET_HEADER')"
+						v-on:click="setAlbumHeader()"
+					/>
+
 					<template v-if="lycheeStore.can_rotate">
 						<DockButton icon="counterclockwise" class="fill-white lg:hover:fill-primary-500" v-on:click="rotatePhotoCCW()" />
 						<DockButton icon="clockwise" class="fill-white lg:hover:fill-primary-500" v-on:click="rotatePhotoCW()" />
 					</template>
-					<DockButton icon="transfer" class="fill-white lg:hover:fill-primary-500" v-on:click="toggleMove" />
-					<DockButton icon="trash" class="fill-red-600 lg:fill-white lg:hover:fill-red-600" v-on:click="toggleDelete" />
+					<DockButton
+						icon="transfer"
+						class="fill-white lg:hover:fill-primary-500"
+						v-tooltip.bottom="$t('lychee.MOVE')"
+						v-on:click="toggleMove"
+					/>
+					<DockButton
+						icon="trash"
+						class="fill-red-600 lg:fill-white lg:hover:fill-red-600"
+						v-tooltip.bottom="$t('lychee.DELETE')"
+						v-on:click="toggleDelete"
+					/>
 				</span>
 			</div>
 		</div>
@@ -142,6 +161,7 @@ import { storeToRefs } from "pinia";
 import SearchService from "@/services/search-service";
 import { usePhotoBaseFunction } from "@/composables/photo/basePhoto";
 import { useSlideshowFunction } from "@/composables/photo/slideshow";
+import { useToast } from "primevue/usetoast";
 
 const props = defineProps<{
 	albumid: string;
@@ -150,6 +170,7 @@ const props = defineProps<{
 
 const router = useRouter();
 const route = useRoute();
+const toast = useToast();
 const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
 
@@ -217,12 +238,14 @@ function goBack() {
 function toggleStar() {
 	PhotoService.star([photoId.value], !photo.value!.is_starred).then(() => {
 		photo.value!.is_starred = !photo.value!.is_starred;
+		AlbumService.clearCache(props.albumid);
 	});
 }
 
 // Untested
 function rotatePhotoCCW() {
 	PhotoService.rotate(photoId.value, "-1").then(() => {
+		AlbumService.clearCache(props.albumid);
 		refresh();
 	});
 }
@@ -230,6 +253,15 @@ function rotatePhotoCCW() {
 // Untested
 function rotatePhotoCW() {
 	PhotoService.rotate(photoId.value, "1").then(() => {
+		AlbumService.clearCache(props.albumid);
+		refresh();
+	});
+}
+
+function setAlbumHeader() {
+	PhotoService.setAsHeader(photoId.value, props.albumid, false).then(() => {
+		toast.add({ severity: "success", summary: "Success", detail: "Header set", life: 2000 });
+		AlbumService.clearCache(props.albumid);
 		refresh();
 	});
 }
