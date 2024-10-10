@@ -289,11 +289,35 @@ onKeyStroke("f", () => !shouldIgnoreKeystroke() && lycheeStore.toggleFullScreen(
 onKeyStroke(["Delete", "Backspace"], () => !shouldIgnoreKeystroke() && toggleDelete());
 load();
 
+function scrollTo(event: WheelEvent) {
+	if (shouldIgnoreKeystroke()) {
+		return;
+	}
+
+	if (route.name !== "photo") {
+		return;
+	}
+
+	const delta = Math.sign(event.deltaY);
+	if (delta > 0) {
+		next();
+	} else if (delta < 0) {
+		previous();
+	}
+}
+
+window.addEventListener("wheel", scrollTo);
+
 watch(
 	() => route.params.photoid,
 	(newId, _oldId) => {
 		photoId.value = newId as string;
+		window.addEventListener("wheel", scrollTo);
 		refresh();
 	},
 );
+
+router.afterEach(() => {
+	window.removeEventListener("wheel", scrollTo);
+});
 </script>
