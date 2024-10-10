@@ -20,7 +20,7 @@ const WebAuthnService = {
 	},
 
 	delete(id: string): Promise<AxiosResponse<App.Http.Resources.Models.UserManagementResource>> {
-		return axios.post(`${Constants.API_URL}WebAuthn::delete`, { id: id });
+		return axios.delete(`${Constants.API_URL}WebAuthn`, { data: { id: id } });
 	},
 
 	login(username: string | null, user_id: number | null): Promise<JSON | ReadableStream> {

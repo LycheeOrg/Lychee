@@ -19,7 +19,6 @@ import { definePreset } from "@primevue/themes";
 import LycheePrimeVueConfig from "./style/preset";
 import FocusTrap from "primevue/focustrap";
 import Tooltip from "primevue/tooltip";
-import { disableCtrlA } from "./utils/keybindings-utils";
 
 declare global {
 	var assets_url: string;

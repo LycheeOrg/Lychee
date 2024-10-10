@@ -10,7 +10,8 @@
 			<div
 				id="imageview"
 				class="absolute top-0 left-0 w-full h-full bg-black flex items-center justify-center overflow-hidden"
-				v-on:click="rotateOverlay()"
+				@click="rotateOverlay()"
+				ref="swipe"
 			>
 				<!--  This is a video file: put html5 player -->
 				<video
@@ -98,7 +99,7 @@
 			<Overlay :photo="photo" :image-overlay-type="lycheeStore.image_overlay_type" />
 			<div
 				v-if="photo?.rights.can_edit && !is_edit_open"
-				class="absolute top-0 h-1/4 w-full sm:w-1/2 left-1/2 -translate-x-1/2 opacity-50 lg:opacity-10 group lg:hover:opacity-100 transition-opacity duration-500 ease-in-out z-20 mt-14 sm:mt-0"
+				class="absolute top-0 sm:h-1/4 w-full sm:w-1/2 left-1/2 -translate-x-1/2 opacity-50 lg:opacity-10 group lg:hover:opacity-100 transition-opacity duration-500 ease-in-out z-20 mt-14 sm:mt-0"
 				:class="is_slideshow_active ? 'hidden' : ''"
 			>
 				<span class="absolute left-1/2 -translate-x-1/2 p-1 min-w-[25%] w-full filter-shadow text-center">
@@ -162,6 +163,10 @@ import SearchService from "@/services/search-service";
 import { usePhotoBaseFunction } from "@/composables/photo/basePhoto";
 import { useSlideshowFunction } from "@/composables/photo/slideshow";
 import { useToast } from "primevue/usetoast";
+import type { UseSwipeDirection } from "@vueuse/core";
+import { useSwipe } from "@vueuse/core";
+
+const swipe = ref<HTMLElement | null>(null);
 
 const props = defineProps<{
 	albumid: string;
@@ -287,7 +292,6 @@ onKeyStroke("s", () => !shouldIgnoreKeystroke() && toggleStar());
 onKeyStroke(" ", () => !shouldIgnoreKeystroke() && slideshow());
 onKeyStroke("f", () => !shouldIgnoreKeystroke() && lycheeStore.toggleFullScreen());
 onKeyStroke(["Delete", "Backspace"], () => !shouldIgnoreKeystroke() && toggleDelete());
-load();
 
 function scrollTo(event: WheelEvent) {
 	if (shouldIgnoreKeystroke()) {
@@ -300,13 +304,27 @@ function scrollTo(event: WheelEvent) {
 
 	const delta = Math.sign(event.deltaY);
 	if (delta > 0) {
-		next();
+		next(true);
 	} else if (delta < 0) {
-		previous();
+		previous(true);
 	}
 }
-
 window.addEventListener("wheel", scrollTo);
+
+useSwipe(swipe, {
+	onSwipe(_e: TouchEvent) {},
+	onSwipeEnd(_e: TouchEvent, direction: UseSwipeDirection) {
+		if (direction === "left") {
+			next(true);
+		} else if (direction === "right") {
+			previous(true);
+		} else {
+			goBack();
+		}
+	},
+});
+
+load();
 
 watch(
 	() => route.params.photoid,
