@@ -79,13 +79,13 @@ class DiagnosticsController extends Controller
 	 * @param DiagnosticsRequest $_request
 	 *
 	 * @return void
+	 *
+	 * @codeCoverageIgnore
 	 */
-	// @codeCoverageIgnoreStart
 	public function phpinfo(DiagnosticsRequest $_request): void
 	{
 		phpinfo();
 	}
-	// @codeCoverageIgnoreEnd
 
 	/**
 	 * Return the table of access permissions currently available on the server.

@@ -9,10 +9,10 @@ abstract class AbstractUpdateInstallerPipe
 	 * @param \Closure(array<int,string> $output): array<int,string> $next
 	 *
 	 * @return array<int,string>
+	 *
+	 * @codeCoverageIgnore
 	 */
-	// @codeCoverageIgnoreStart
 	abstract public function handle(array &$output, \Closure $next): array;
-	// @codeCoverageIgnoreEnd
 
 	/**
 	 * Arrayify a string and append it to $output.

@@ -16,13 +16,13 @@ class Optimize extends Controller
 	 * Apply the indexing and optimization of the database.
 	 *
 	 * @return string[]
+	 *
+	 * @codeCoverageIgnore
 	 */
 	public function do(MaintenanceRequest $request, OptimizeDb $optimizeDb, OptimizeTables $optimizeTables): array
 	{
-		// @codeCoverageIgnoreStart
 		return collect($optimizeDb->do())
 			->merge(collect($optimizeTables->do()))
 			->all();
-		// @codeCoverageIgnoreEnd
 	}
 }

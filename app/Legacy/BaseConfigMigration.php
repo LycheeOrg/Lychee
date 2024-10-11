@@ -16,6 +16,8 @@ abstract class BaseConfigMigration extends Migration
 
 	/**
 	 * @return array<int,array{key:string,value:string,confidentiality:string,cat:string,type_range:string,description:string}>
+	 *
+	 * @codeCoverageIgnore
 	 */
 	abstract public function getConfigs(): array;
 
@@ -29,6 +31,8 @@ abstract class BaseConfigMigration extends Migration
 
 	/**
 	 * Reverse the migrations.
+	 *
+	 * @codeCoverageIgnore
 	 */
 	final public function down(): void
 	{

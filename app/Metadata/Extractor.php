@@ -96,6 +96,7 @@ class Extractor
 			// as `application/octet-stream`, but this work-around only
 			// succeeds if the file has a recognized extension.
 			$exif = $reader->read($file->getRealPath());
+			// @codeCoverageIgnoreStart
 		} catch (PhpExifReaderException $e) {
 			// thrown by $reader->read if EXIF could not be extracted,
 			// don't give up yet, only log the event
@@ -111,6 +112,7 @@ class Extractor
 				throw new MediaFileOperationException('Could not even extract basic EXIF data with the native adapter', $e);
 			}
 		}
+		// @codeCoverageIgnoreEnd
 
 		// Attempt to get sidecar metadata if it exists, make sure to check 'real' path in case of symlinks
 		$sidecarData = [];
@@ -118,6 +120,7 @@ class Extractor
 		$sidecarFile = new NativeLocalFile($file->getPath() . '.xmp');
 
 		if (Configs::hasExiftool() && $sidecarFile->exists()) {
+			// @codeCoverageIgnoreStart
 			try {
 				// Don't use the same reader as the file in case it's a video
 				$sidecarReader = Reader::factory(ReaderType::EXIFTOOL);
@@ -135,6 +138,7 @@ class Extractor
 			} catch (\Exception $e) {
 				Handler::reportSafely($e);
 			}
+			// @codeCoverageIgnoreEnd
 		}
 
 		$metadata->type = ($exif->getMimeType() !== false) ? $exif->getMimeType() : $file->getMimeType();
@@ -442,10 +446,12 @@ class Extractor
 			if ($metadata->location !== null) {
 				$metadata->location = substr($metadata->location, 0, self::MAX_LOCATION_STRING_LENGTH);
 			}
+			// @codeCoverageIgnoreStart
 		} catch (ExternalComponentFailedException|StringsException $e) {
 			Handler::reportSafely($e);
 			$metadata->location = null;
 		}
+		// @codeCoverageIgnoreEnd
 
 		return $metadata;
 	}
