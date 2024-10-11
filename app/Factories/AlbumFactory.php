@@ -134,13 +134,9 @@ class AlbumFactory
 
 		$smartAlbums = [];
 		foreach ($smartAlbumIDs as $smartID) {
-			try {
-				$smartAlbumType = SmartAlbumType::from($smartID);
-				$smartAlbums[] = $this->createSmartAlbum($smartAlbumType, $withRelations);
-			} catch (\ValueError $e) {
-				$e2 = new InvalidSmartIdException($smartID);
-				throw LycheeAssertionError::createFromUnexpectedException($e2);
-			}
+			$smartAlbumType = SmartAlbumType::tryFrom($smartID)
+				?? throw LycheeAssertionError::createFromUnexpectedException(new InvalidSmartIdException($smartID));
+			$smartAlbums[] = $this->createSmartAlbum($smartAlbumType, $withRelations);
 		}
 
 		/** @phpstan-ignore-next-line phpstan stan complain of incompatibility of types while both are subtypes... */

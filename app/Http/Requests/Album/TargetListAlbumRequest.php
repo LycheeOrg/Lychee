@@ -55,8 +55,6 @@ class TargetListAlbumRequest extends BaseApiRequest implements HasAbstractAlbum
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		$album_id = $values[RequestAttribute::ALBUM_ID_ATTRIBUTE] ?? null;
-		if ($album_id !== null) {
-			$this->album = $this->albumFactory->findAbstractAlbumOrFail($values[RequestAttribute::ALBUM_ID_ATTRIBUTE]);
-		}
+		$this->album = $this->albumFactory->findNullalbleAbstractAlbumOrFail($album_id);
 	}
 }

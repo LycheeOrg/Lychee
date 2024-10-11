@@ -43,4 +43,10 @@ class PagesTest extends BaseV2Test
 			$response->assertViewIs('vueapp');
 		});
 	}
+
+	public function testVueCrash(): void
+	{
+		$response = $this->get('/gallery/1234567890');
+		$this->assertNotFound($response);
+	}
 }

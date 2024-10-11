@@ -58,5 +58,7 @@ abstract class AbstractSizeVariantNamingStrategy
 	 *
 	 * @throws LycheeException
 	 */
+	// @codeCoverageIgnoreStart
 	abstract public function createFile(SizeVariantType $sizeVariant, bool $isBackup = false): FlysystemFile;
+	// @codeCoverageIgnoreEnd
 }
