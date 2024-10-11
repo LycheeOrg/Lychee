@@ -78,6 +78,8 @@ abstract class AbstractDTO implements DTO
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @codeCoverageIgnore
 	 */
 	abstract public function toArray(): array;
 }

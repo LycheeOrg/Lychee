@@ -204,8 +204,9 @@ class SizeVariant extends Model
 	 * Retrieve the tempary url from AWS if possible.
 	 *
 	 * @return string
+	 *
+	 * @codeCoverageIgnore
 	 */
-	// @codeCoverageIgnoreStart
 	private function getAwsUrl(): string
 	{
 		// In order to allow a grace period, we create a new symbolic link,
@@ -222,7 +223,6 @@ class SizeVariant extends Model
 		/** @disregard P1013 */
 		return $imageDisk->temporaryUrl($this->short_path, now()->addSeconds($maxLifetime));
 	}
-	// @codeCoverageIgnoreEnd
 
 	/**
 	 * Get the symlink url if possible.
