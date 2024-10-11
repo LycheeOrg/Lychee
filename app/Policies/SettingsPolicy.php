@@ -79,7 +79,7 @@ class SettingsPolicy extends BasePolicy
 	 */
 	public function canSeeStatistics(User $user): bool
 	{
-		return false;
+		return true;
 	}
 
 	/**

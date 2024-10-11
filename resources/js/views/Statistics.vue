@@ -12,8 +12,8 @@
 
 		<template #end> </template>
 	</Toolbar>
-	<Panel v-if="sizeVariantSpaceMeter" class="max-w-5xl mx-auto border-0">
-		<MeterGroup :value="sizeVariantSpaceMeter">
+	<Panel v-if="sizeVariantSpaceMeter !== undefined" class="max-w-5xl mx-auto border-0">
+		<MeterGroup :value="sizeVariantSpaceMeter" v-if="sizeVariantSpaceMeter.length > 0">
 			<template #label="{ value }">
 				<div class="flex flex-wrap gap-4 w-full sm:justify-between justify-center">
 					<template v-for="val of value" :key="val.label">
@@ -37,9 +37,10 @@
 				</div>
 			</template>
 		</MeterGroup>
+		<div v-else class="text-center">User does not have data on server.</div>
 	</Panel>
 
-	<Panel class="max-w-5xl mx-auto border-0">
+	<Panel class="max-w-5xl mx-auto border-0" :pt:header:class="'hidden'">
 		<Card v-if="total !== undefined">
 			<template #content>
 				<div class="flex flex-wrap">
@@ -53,8 +54,17 @@
 				</div>
 			</template>
 		</Card>
-		<div class="py-4"><ToggleSwitch v-model="is_collapsed" class="text-sm"></ToggleSwitch> {{ "Collapse albums sizes" }}</div>
-		<DataTable :value="albumData" size="small" scrollable scrollHeight="600px" :loading="albumData === undefined">
+		<div class="py-4" v-if="albumData !== undefined && albumData.length > 0">
+			<ToggleSwitch v-model="is_collapsed" class="text-sm"></ToggleSwitch> {{ "Collapse albums sizes" }}
+		</div>
+		<DataTable
+			:value="albumData"
+			size="small"
+			scrollable
+			scrollHeight="600px"
+			:loading="albumData === undefined"
+			v-if="albumData === undefined || albumData.length > 0"
+		>
 			<Column field="username" header="Owner" class="w-32"> </Column>
 			<Column field="title" sortable header="Title"></Column>
 			<Column field="num_photos" sortable header="Photos" class="w-16"></Column>
@@ -88,6 +98,13 @@ type TotalAlbum = {
 	size: number;
 };
 
+type SizeVairantData = {
+	label: string;
+	value: number;
+	size: string;
+	color: string;
+};
+
 const router = useRouter();
 const user = ref(undefined as undefined | App.Http.Resources.Models.UserResource);
 const authStore = useAuthStore();
@@ -97,7 +114,7 @@ lycheeStore.init();
 const sizeVariantSpace = ref(undefined as undefined | App.Http.Resources.Statistics.Sizes[]);
 const albumSpace = ref(undefined as undefined | App.Http.Resources.Statistics.Album[]);
 const totalAlbumSpace = ref(undefined as undefined | App.Http.Resources.Statistics.Album[]);
-const sizeVariantSpaceMeter = ref();
+const sizeVariantSpaceMeter = ref(undefined as undefined | SizeVairantData[]);
 const is_collapsed = ref(false);
 
 const albumData = computed(() => {
@@ -134,7 +151,6 @@ const { is_se_preview_enabled, are_nsfw_visible } = storeToRefs(lycheeStore);
 authStore.getUser().then((data) => {
 	user.value = data;
 
-	console.log(user.value);
 	// Not logged in. Bye.
 	if (user.value.id === null) {
 		router.push({ name: "gallery" });
