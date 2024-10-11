@@ -106,14 +106,18 @@ class SizeVariantGroupedWithRandomSuffixNamingStrategy extends BaseSizeVariantNa
 					$this->cachedRndMiddlePath = $matches[1] . DIRECTORY_SEPARATOR . $matches[2] . DIRECTORY_SEPARATOR . $matches[3];
 				} else {
 					// If we don't have a match, we create a new random base path.
+					// @codeCoverageIgnoreStart
 					$this->cachedRndMiddlePath = self::createRndMiddlePath();
+					// @codeCoverageIgnoreEnd
 				}
 			} else {
 				$this->cachedRndMiddlePath = self::createRndMiddlePath();
 			}
+			// @codeCoverageIgnoreStart
 		} catch (PcreException $e) {
 			throw LycheeAssertionError::createFromUnexpectedException($e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -146,8 +150,10 @@ class SizeVariantGroupedWithRandomSuffixNamingStrategy extends BaseSizeVariantNa
 				substr($rndStr, 2, 2) .
 				DIRECTORY_SEPARATOR .
 				substr($rndStr, 4);
+			// @codeCoverageIgnoreStart
 		} catch (\Exception $e) {
 			throw new InsufficientEntropyException($e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 }

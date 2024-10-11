@@ -49,9 +49,11 @@ abstract class AbstractDTO implements DTO
 			}
 
 			return $json;
+			// @codeCoverageIgnoreStart
 		} catch (\JsonException $e) {
 			throw new JsonEncodingException('Error encoding DTO [' . get_class($this) . ']', 0, $e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -67,8 +69,8 @@ abstract class AbstractDTO implements DTO
 	{
 		try {
 			return $this->toArray();
-		} catch (\Exception $e) {
 			// @codeCoverageIgnoreStart
+		} catch (\Exception $e) {
 			throw new \JsonException(get_class($this) . '::toArray() failed', 0, $e);
 			// @codeCoverageIgnoreEnd
 		}

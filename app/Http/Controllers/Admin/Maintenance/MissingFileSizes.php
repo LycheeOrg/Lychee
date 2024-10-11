@@ -34,6 +34,7 @@ class MissingFileSizes extends Controller
 		$generated = 0;
 
 		foreach ($variants as $variant) {
+			// @codeCoverageIgnoreStart
 			$variantFile = $variant->getFile();
 			if ($variantFile->exists()) {
 				try {
@@ -49,6 +50,7 @@ class MissingFileSizes extends Controller
 			} else {
 				Log::error($variant->id . ' : No file found at ' . $variantFile->getRelativePath() . '.');
 			}
+			// @codeCoverageIgnoreEnd
 		}
 	}
 

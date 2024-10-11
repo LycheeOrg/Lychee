@@ -40,6 +40,6 @@ class MapDataRequest extends BaseApiRequest implements HasAbstractAlbum
 	{
 		/** @var string|null $albumId */
 		$albumId = $values[RequestAttribute::ALBUM_ID_ATTRIBUTE] ?? null;
-		$this->album = $albumId === null ? null : $this->albumFactory->findAbstractAlbumOrFail($albumId);
+		$this->album = $this->albumFactory->findNullalbleAbstractAlbumOrFail($albumId);
 	}
 }

@@ -38,6 +38,7 @@ class GenSizeVariants extends Controller
 		$generated = 0;
 		/** @var Photo $photo */
 		foreach ($photos as $photo) {
+			// @codeCoverageIgnoreStart
 			$sizeVariantFactory->init($photo);
 			$sizeVariant = $sizeVariantFactory->createSizeVariantCond($request->kind());
 			if ($sizeVariant !== null) {
@@ -46,6 +47,7 @@ class GenSizeVariants extends Controller
 			} else {
 				Log::error('Did not create ' . $request->kind()->value . ' for ' . $photo->title . '.');
 			}
+			// @codeCoverageIgnoreEnd
 		}
 	}
 

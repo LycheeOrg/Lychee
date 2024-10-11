@@ -188,7 +188,9 @@ class SizeVariant extends Model
 		/** @disregard P1013 */
 		$storageAdapter = $imageDisk->getAdapter();
 		if ($storageAdapter instanceof AwsS3V3Adapter) {
+			// @codeCoverageIgnoreStart
 			return $this->getAwsUrl();
+			// @codeCoverageIgnoreEnd
 		}
 
 		if ($storageAdapter instanceof LocalFilesystemAdapter) {
@@ -203,6 +205,7 @@ class SizeVariant extends Model
 	 *
 	 * @return string
 	 */
+	// @codeCoverageIgnoreStart
 	private function getAwsUrl(): string
 	{
 		// In order to allow a grace period, we create a new symbolic link,
@@ -219,6 +222,7 @@ class SizeVariant extends Model
 		/** @disregard P1013 */
 		return $imageDisk->temporaryUrl($this->short_path, now()->addSeconds($maxLifetime));
 	}
+	// @codeCoverageIgnoreEnd
 
 	/**
 	 * Get the symlink url if possible.

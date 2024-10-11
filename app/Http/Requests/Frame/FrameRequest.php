@@ -46,6 +46,6 @@ class FrameRequest extends BaseApiRequest implements HasAbstractAlbum
 
 		$randomAlbumId = Configs::getValueAsString('random_album_id');
 		$albumId = $values[RequestAttribute::ALBUM_ID_ATTRIBUTE] ?? (($randomAlbumId !== '') ? $randomAlbumId : null);
-		$this->album = $albumId === null ? null : $this->albumFactory->findAbstractAlbumOrFail($albumId);
+		$this->album = $this->albumFactory->findNullalbleAbstractAlbumOrFail($albumId);
 	}
 }
