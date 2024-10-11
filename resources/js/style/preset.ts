@@ -508,7 +508,14 @@ const LycheePrimeVueConfig = {
 						border: {
 							color: "{surface.700}",
 						},
+						cell: {
+							background: "{surface.800}",
+							hoverBackground: "{surface.700}",
+							color: "{surface.200}",
+							hoverColor: "{surface.200}",
+						},
 					},
+
 					row: {
 						color: "{surface.300}",
 					},

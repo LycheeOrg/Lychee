@@ -12,6 +12,7 @@ use App\Http\Requests\Traits\HasOwnerIdTrait;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Policies\AlbumPolicy;
+use App\Policies\SettingsPolicy;
 use App\Rules\RandomIDRule;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
@@ -27,7 +28,7 @@ class SpacePerAlbumRequest extends BaseApiRequest implements HasAlbum, HasOwnerI
 	public function authorize(): bool
 	{
 		if ($this->album === null) {
-			return Gate::check(\SettingsPolicy::CAN_SEE_STATISTICS, [Configs::class]);
+			return Gate::check(SettingsPolicy::CAN_SEE_STATISTICS, [Configs::class]);
 		}
 
 		return Gate::check(AlbumPolicy::CAN_ACCESS, [AbstractAlbum::class, $this->album]);

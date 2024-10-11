@@ -26,13 +26,16 @@ class AlbumSpaceTest extends BaseApiV2Test
 
 		$response = $this->withoutMiddleware(VerifySupporterStatus::class)->getJson('Statistics::albumSpace');
 		$this->assertUnauthorized($response);
-
-		$response = $this->withoutMiddleware(VerifySupporterStatus::class)->actingAs($this->userMayUpload1)->getJson('Statistics::albumSpace');
-		$this->assertForbidden($response);
 	}
 
 	public function testAlbumSpaceTestAuthorized(): void
 	{
+		$response = $this->withoutMiddleware(VerifySupporterStatus::class)->actingAs($this->userMayUpload1)->getJson('Statistics::albumSpace');
+		$this->assertOk($response);
+		$this->assertCount(2, $response->json());
+		$this->assertEquals($this->album1->title, $response->json()[0]['title']);
+		$this->assertEquals($this->subAlbum1->title, $response->json()[1]['title']);
+
 		$response = $this->withoutMiddleware(VerifySupporterStatus::class)->actingAs($this->userMayUpload1)->getJson('Statistics::albumSpace?album_id=' . $this->album1->id);
 		$this->assertOk($response);
 		$this->assertCount(1, $response->json());
