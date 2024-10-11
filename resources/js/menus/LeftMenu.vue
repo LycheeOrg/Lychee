@@ -40,16 +40,21 @@ import { useLycheeStateStore } from "@/stores/LycheeState";
 import AlbumService from "@/services/album-service";
 import SETag from "@/components/icons/SETag.vue";
 
-type MenyType = {
-	label: string;
-	icon: string;
-	route?: string;
-	url?: string;
-	target?: string;
-	access: boolean;
-	seTag?: boolean;
-	command?: () => void;
-};
+type MenyType =
+	| {
+			label: string;
+			icon: string;
+			route?: string;
+			url?: string;
+			target?: string;
+			access: boolean;
+			seTag?: boolean;
+			command?: () => void;
+	  }
+	| {
+			label: string;
+			items: MenyType[];
+	  };
 
 const initData = ref(undefined) as Ref<undefined | App.Http.Resources.Rights.GlobalRightsResource>;
 const openLycheeAbout = ref(false);
@@ -100,16 +105,23 @@ function loadMenu() {
 
 	items.value = [
 		{
-			label: "lychee.SETTINGS",
-			icon: "cog",
-			route: "/settings",
-			access: initData.value.settings.can_edit ?? false,
-		},
-		{
 			label: "lychee.PROFILE",
 			icon: "person",
 			route: "/profile",
 			access: initData.value.user.can_edit ?? false,
+		},
+		{
+			label: "lychee.SHARING",
+			icon: "cloud",
+			route: "/sharing",
+			access: initData.value.root_album.can_upload ?? false,
+		},
+		{
+			label: "Statistics",
+			icon: "bar-chart",
+			route: "/statistics",
+			access: is_se_preview_enabled.value,
+			seTag: true,
 		},
 		{
 			label: "lychee.USERS",
@@ -118,10 +130,22 @@ function loadMenu() {
 			access: initData.value.user_management.can_edit ?? false,
 		},
 		{
-			label: "lychee.SHARING",
-			icon: "cloud",
-			route: "/sharing",
-			access: initData.value.root_album.can_upload ?? false,
+			label: "lychee.SETTINGS",
+			icon: "cog",
+			route: "/settings",
+			access: initData.value.settings.can_edit ?? false,
+		},
+		{
+			label: "lychee.DIAGNOSTICS",
+			icon: "wrench",
+			route: "/diagnostics",
+			access: initData.value.settings.can_see_diagnostics ?? false,
+		},
+		{
+			label: "maintenance.title",
+			icon: "timer",
+			route: "/maintenance",
+			access: initData.value.settings.can_edit ?? false,
 		},
 		{
 			label: "lychee.LOGS",
@@ -139,31 +163,6 @@ function loadMenu() {
 			icon: "project",
 			route: "/jobs",
 			access: initData.value.settings.can_see_logs ?? false,
-		},
-		{
-			label: "lychee.DIAGNOSTICS",
-			icon: "wrench",
-			route: "/diagnostics",
-			access: initData.value.settings.can_see_diagnostics ?? false,
-		},
-		{
-			label: "maintenance.title",
-			icon: "timer",
-			route: "/maintenance",
-			access: initData.value.settings.can_edit ?? false,
-		},
-		{
-			label: "Statistics",
-			icon: "bar-chart",
-			route: "/statistics",
-			access: is_se_preview_enabled.value,
-			seTag: true,
-		},
-		{
-			label: "Statistics",
-			icon: "bar-chart",
-			route: "/statistics",
-			access: is_se_enabled.value,
 		},
 		{
 			label: "lychee.ABOUT_LYCHEE",

@@ -28,6 +28,7 @@
 						class="absolute flex items-center justify-center bg-primary-500 opacity-90"
 						v-on:dragover.prevent="isDropping = true"
 						v-on:dragleave.prevent="isDropping = false"
+						v-on:drop="upload"
 						v-show="isDropping"
 					>
 						<span class="text-3xl">Release file to upload!</span>

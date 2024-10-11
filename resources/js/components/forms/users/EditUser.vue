@@ -8,7 +8,7 @@
 		<div class="w-1/12 flex justify-center items-center">
 			<Checkbox v-model="may_edit_own_settings" :binary="true" />
 		</div>
-		<Button v-if="isModified" @click="saveUser" class="border-0 text-primary-500 bg-surface hover:bg-primary-400 hover:text-white w-1/6">
+		<Button v-if="isModified" @click="saveUser" severity="primary" class="border-0 w-1/6">
 			<i class="pi pi-user-edit" /><span class="hidden md:inline">{{ $t("lychee.SAVE") }}</span></Button
 		>
 		<Button v-if="!isModified" @click="deleteUser" class="border-0 bg-surface text-danger-600 hover:bg-danger-700 hover:text-white w-1/6">
