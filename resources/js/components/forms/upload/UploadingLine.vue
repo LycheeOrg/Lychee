@@ -18,17 +18,6 @@ import { trans } from "laravel-vue-i18n";
 import ProgressBar from "primevue/progressbar";
 import { computed, ref, watch } from "vue";
 
-//  'UPLOAD_UPLOADING' => 'Uploading',
-// 	'UPLOAD_FINISHED' => 'Finished',
-// 	'UPLOAD_PROCESSING' => 'Processing',
-// 	'UPLOAD_FAILED' => 'Failed',
-// 	'UPLOAD_FAILED_ERROR' => 'Upload failed. The server returned an error!',
-// 	'UPLOAD_FAILED_WARNING' => 'Upload failed. The server returned a warning!',
-// 	'UPLOAD_CANCELLED' => 'Cancelled',
-// 	'UPLOAD_SKIPPED' => 'Skipped',
-// 	'UPLOAD_UPDATED' => 'Updated',
-// 	'UPLOAD_GENERAL' => 'General',
-
 const props = withDefaults(
 	defineProps<{
 		albumId: string | null;
@@ -99,9 +88,9 @@ const statusClass = computed(() => {
 const progressClass = computed(() => {
 	switch (status.value) {
 		case "done":
-			return "success";
+			return "successProgressBarSeverity";
 		case "error":
-			return "error";
+			return "errorProgressBarSeverity";
 		default:
 			return "";
 	}
@@ -155,11 +144,11 @@ watch(
 );
 </script>
 
-<style lang="css" scoped>
-.error {
+<style lang="css">
+.errorProgressBarSeverity {
 	--p-progressbar-value-background: var(--danger-dark);
 }
-.success {
+.successProgressBarSeverity {
 	--p-progressbar-value-background: var(--create);
 }
 </style>
