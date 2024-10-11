@@ -38,7 +38,6 @@ use League\Flysystem\Local\LocalFilesystemAdapter;
  * @property SizeVariantType      $type
  * @property string               $short_path
  * @property string               $url
- * @property string               $full_path
  * @property int                  $width
  * @property int                  $height
  * @property float                $ratio
@@ -91,7 +90,6 @@ class SizeVariant extends Model
 	protected $casts = [
 		'id' => 'integer',
 		'type' => SizeVariantType::class,
-		'full_path' => MustNotSetCast::class . ':short_path',
 		'url' => MustNotSetCast::class . ':short_path',
 		'width' => 'integer',
 		'height' => 'integer',
@@ -242,24 +240,6 @@ class SizeVariant extends Model
 		}
 
 		return $symLink->url;
-	}
-
-	/**
-	 * Accessor for the "virtual" attribute {@link SizeVariant::$full_path}.
-	 *
-	 * Returns the full path of the size variant as it needs to be input into
-	 * some low-level PHP functions like `unlink`.
-	 * This is a convenient method and wraps {@link SizeVariant::$short_path}
-	 * into {@link \Illuminate\Support\Facades\Storage::path()}.
-	 *
-	 * TODO: Remove this method eventually, we must not use paths.
-	 *
-	 * @return string the full path of the file
-	 */
-	public function getFullPathAttribute(): string
-	{
-		/** @disregard P1013 */
-		return Storage::disk($this->storage_disk->value)->path($this->short_path);
 	}
 
 	public function getFile(): FlysystemFile
