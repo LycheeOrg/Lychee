@@ -135,7 +135,7 @@
 				</span>
 			</div>
 		</div>
-		<PhotoDetails v-model:are-details-open="are_details_open" :photo="photo" />
+		<PhotoDetails v-model:are-details-open="are_details_open" :photo="photo" :is-map-visible="album?.config.is_map_accessible ?? false" />
 	</div>
 	<PhotoEdit v-if="photo?.rights.can_edit" :photo="photo" v-model:visible="is_edit_open" />
 	<MoveDialog :photo="photo" v-model:visible="isMoveVisible" :parent-id="props.albumid" @moved="updated" />

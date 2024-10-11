@@ -84,7 +84,7 @@
 					<h2 v-if="props.photo.precomputed.has_location" class="col-span-2 text-muted-color font-bold px-3 pt-4 pb-3">
 						{{ $t("lychee.PHOTO_LOCATION") }}
 					</h2>
-					<MapInclude :latitude="props.photo.latitude" :longitude="props.photo.longitude" />
+					<MapInclude :latitude="props.photo.latitude" :longitude="props.photo.longitude" v-if="props.isMapVisible" />
 					<template v-if="props.photo.precomputed.has_location">
 						<span class="py-0.5 px-3 text-sm" v-if="props.photo.preformatted.latitude">{{ $t("lychee.PHOTO_LATITUDE") }}</span>
 						<span class="py-0.5 pl-0 text-sm" v-if="props.photo.preformatted.latitude">{{ props.photo.preformatted.latitude }}</span>
@@ -113,6 +113,7 @@ import MapInclude from "../gallery/photo/MapInclude.vue";
 
 const props = defineProps<{
 	photo: App.Http.Resources.Models.PhotoResource | undefined;
+	isMapVisible: boolean;
 }>();
 
 const areDetailsOpen = defineModel("areDetailsOpen", { default: true }) as Ref<boolean>;
