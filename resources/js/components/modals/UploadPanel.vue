@@ -1,5 +1,5 @@
 <template>
-	<Dialog v-model:visible="visible" modal pt:root:class="border-none" @hide="closeCallback" :dismissable-mask="true">
+	<Dialog v-model:visible="visible" modal pt:root:class="border-none" :dismissable-mask="true">
 		<template #container="{ closeCallback }">
 			<div v-if="setup">
 				<div v-if="files.length > 0" class="m-4 flex flex-wrap justify-center">
@@ -47,9 +47,19 @@
 			</div>
 			<div class="flex justify-center">
 				<Button
-					@click="closeCallback"
+					v-if="showCancel"
+					@click="closeCancel"
 					severity="secondary"
-					class="w-full font-bold border-none border-1 rounded-none rounded-bl-xl rounded-br-xl"
+					class="w-full font-bold border-none border-1 rounded-none rounded-bl-xl"
+				>
+					{{ $t("lychee.CANCEL") }}
+				</Button>
+				<Button
+					@click="closeCancel"
+					severity="secondary"
+					class="w-full font-bold border-none border-1 rounded-none rounded-br-xl"
+					:class="showCancel ? '' : 'rounded-bl-xl'"
+					:disabled="showCancel"
 				>
 					{{ $t("lychee.CLOSE") }}
 				</Button>
@@ -60,11 +70,12 @@
 <script setup lang="ts">
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
-import { Ref, ref, watch } from "vue";
+import { computed, Ref, ref, watch } from "vue";
 import UploadingLine from "../forms/upload/UploadingLine.vue";
 import ScrollPanel from "primevue/scrollpanel";
 import UploadService from "@/services/upload-service";
 import ProgressBar from "primevue/progressbar";
+import AlbumService from "@/services/album-service";
 
 type Uploadable = {
 	file: File;
@@ -84,6 +95,7 @@ const emits = defineEmits<{
 
 const isDropping = ref(false);
 const files = ref([] as Uploadable[]);
+const showCancel = computed(() => files.value.length > 0 && countCompleted.value < files.value.length);
 
 function load() {
 	UploadService.getSetUp().then((response) => {
@@ -122,9 +134,10 @@ function uploadCompleted(index: number) {
 	}
 }
 
-function closeCallback() {
+function closeCancel() {
 	visible.value = false;
 	files.value = [];
+	AlbumService.clearCache(props.albumId ?? "unsorted");
 	emits("close");
 }
 
