@@ -6,7 +6,9 @@ use App\Enum\LicenseType;
 use App\Http\Resources\Models\Utils\PreComputedPhotoData;
 use App\Http\Resources\Models\Utils\PreformattedPhotoData;
 use App\Http\Resources\Rights\PhotoRightsResource;
+use App\Models\Configs;
 use App\Models\Photo;
+use Illuminate\Support\Facades\Auth;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
@@ -67,7 +69,7 @@ class PhotoResource extends Data
 		$this->live_photo_checksum = $photo->live_photo_checksum;
 		$this->live_photo_content_id = $photo->live_photo_content_id;
 		$this->live_photo_url = $photo->live_photo_url;
-		$this->location = $photo->location;
+		$this->setLocation($photo);
 		$this->longitude = $photo->longitude;
 		$this->make = $photo->make;
 		$this->model = $photo->model;
@@ -90,5 +92,11 @@ class PhotoResource extends Data
 	public static function fromModel(Photo $photo): PhotoResource
 	{
 		return new self($photo);
+	}
+
+	private function setLocation(Photo $photo): void
+	{
+		$showLocation = Configs::getValueAsBool('location_show') && (Auth::check() || Configs::getValueAsBool('location_show_public'));
+		$this->location = $showLocation ? $photo->location : null;
 	}
 }
