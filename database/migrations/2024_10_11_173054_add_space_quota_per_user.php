@@ -11,9 +11,9 @@ return new class() extends Migration {
 	public function up(): void
 	{
 		Schema::table('users', function (Blueprint $table) {
-			$table->bigInteger('quota_kb')->after('remember_token')->nullable(true)->default(null);
-			$table->text('description')->after('quota_kb')->nullable(true)->default(null);
-			$table->text('note')->after('description')->nullable(true)->default(null);
+			$table->bigInteger('quota_kb')->nullable(true)->default(null);
+			$table->text('description')->nullable(true)->default(null);
+			$table->text('note')->nullable(true)->default(null);
 		});
 	}
 
