@@ -32,6 +32,13 @@ class ListUserTest extends BaseApiV2Test
 		$response->assertJson(
 			[
 				[
+					'id' => $this->admin->id,
+					'username' => $this->admin->username,
+					'may_administrate' => true,
+					'may_upload' => true,
+					'may_edit_own_settings' => true,
+				],
+				[
 					'id' => $this->userMayUpload1->id,
 					'username' => $this->userMayUpload1->username,
 					'may_administrate' => $this->userMayUpload1->may_administrate,
@@ -60,7 +67,5 @@ class ListUserTest extends BaseApiV2Test
 					'may_edit_own_settings' => $this->userLocked->may_edit_own_settings,
 				],
 			]);
-		$response->assertDontSee((string) $this->admin->id);
-		$response->assertDontSee($this->admin->username);
 	}
 }
