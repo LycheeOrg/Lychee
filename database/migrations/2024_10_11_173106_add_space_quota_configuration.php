@@ -3,7 +3,7 @@
 use App\Models\Extensions\BaseConfigMigration;
 
 return new class() extends BaseConfigMigration {
-	public const PROCESSING = 'Image Processing';
+	public const OAUTH = 'OAuth & SSO';
 
 	public function getConfigs(): array
 	{
@@ -11,7 +11,7 @@ return new class() extends BaseConfigMigration {
 			[
 				'key' => 'default_user_quota',
 				'value' => '0',
-				'cat' => self::PROCESSING,
+				'cat' => self::OAUTH,
 				'type_range' => self::INT,
 				'description' => 'Default space quota for new users.',
 				'details' => 'Value in KB, keep at 0 to disable quota.',
@@ -21,4 +21,3 @@ return new class() extends BaseConfigMigration {
 		];
 	}
 };
-// TOOD: remove legacy setting allow_username_change

@@ -1,6 +1,6 @@
 <template>
 	<div class="flex flex-wrap items-center">
-		<div class="w-1/2">{{ props.config.key }}</div>
+		<div class="w-1/2" :class="props.config.require_se ? 'text-primary-emphasis' : 'text-muted-color-emphasis'">{{ props.config.key }}</div>
 		<IconField class="w-1/2">
 			<InputText :id="props.config.key" type="text" class="!py-1" v-model="val" @update:modelValue="update" />
 			<InputIcon :class="`pi ${classes} cursor-pointer`" v-tooltip="'Click me to reset!'" @click="reset" v-if="changed" />

@@ -32,8 +32,8 @@ class UserManagementResource extends Data
 		$this->id = $user->id;
 		$this->username = $user->username;
 		$this->may_administrate = $user->may_administrate;
-		$this->may_upload = $user->may_upload;
-		$this->may_edit_own_settings = $user->may_edit_own_settings;
+		$this->may_upload = $user->may_upload || $user->may_administrate;
+		$this->may_edit_own_settings = $user->may_edit_own_settings || $user->may_administrate;
 		if ($is_se) {
 			$this->quota_kb = $user->quota_kb;
 			$this->description = $user->description;

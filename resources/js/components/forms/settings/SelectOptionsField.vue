@@ -1,6 +1,11 @@
 <template>
 	<div class="flex justify-between items-center gap-4">
-		<label class="w-1/2 sm:w-full text-muted-color-emphasis" :for="props.config.key">{{ props.docs ?? props.config.documentation }}</label>
+		<label
+			class="w-1/2 sm:w-full"
+			:class="props.config.require_se ? 'text-primary-emphasis' : 'text-muted-color-emphasis'"
+			:for="props.config.key"
+			>{{ props.docs ?? props.config.documentation }}</label
+		>
 		<div class="flex gap-4 items-center">
 			<ResetField v-if="changed" @click="reset" />
 			<Select :id="props.config.key" class="border-none" v-model="val" optionLabel="label" :options="props.options" @update:modelValue="update">

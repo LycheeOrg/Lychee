@@ -3,6 +3,7 @@
 		<div class="w-3/6 flex flex-wrap">
 			<div class="w-2/3">
 				{{ props.user.username }}
+				<i class="pi pi-crown text-orange-400" v-if="props.user.may_administrate" v-tooltip.top="'admin user'"></i>
 			</div>
 			<div class="w-1/6 flex justify-center items-center">
 				<i v-if="props.user.may_upload" class="pi pi-check text-create-600"></i>
@@ -17,13 +18,20 @@
 					v-if="value > 0"
 					:value="value"
 					:show-value="false"
-					class="w-full mt-4"
+					class="w-full mt-1.5 mb-3.5"
 					:pt:value:class="colorMetterBar"
 					v-tooltip.bottom="formattedSpace"
 				/>
 			</template>
 		</div>
-		<Button @click="deleteUser" class="border-0 bg-surface text-danger-600 hover:bg-danger-700 hover:text-white w-1/6">
+		<Button @click="editUser" severity="contrast" class="border-none w-1/6" :disabled="props.user.may_administrate">
+			<i class="pi pi-user-edit" /><span class="hidden md:inline">{{ $t("Edit") }}</span>
+		</Button>
+		<Button
+			@click="deleteUser"
+			class="border-none bg-surface text-danger-600 hover:bg-danger-700 hover:text-white w-1/6"
+			:disabled="props.user.may_administrate"
+		>
 			<i class="pi pi-user-minus" /><span class="hidden md:inline">{{ $t("lychee.DELETE") }}</span></Button
 		>
 	</div>
@@ -77,10 +85,15 @@ const id = ref(props.user.id);
 
 const emits = defineEmits<{
 	deleteUser: [id: number];
+	editUser: [id: number];
 }>();
 
 function deleteUser() {
 	emits("deleteUser", id.value);
+}
+
+function editUser() {
+	emits("editUser", id.value);
 }
 
 watch(
