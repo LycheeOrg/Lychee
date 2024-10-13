@@ -20,7 +20,7 @@
 				</div>
 			</div>
 			<div class="flex">
-				<Button @click="closeCallback" severity="secondary" class="w-full border-0 rounded-bl-lg font-bold">
+				<Button @click="closeCallback" severity="secondary" class="w-full border-0 rounded-none rounded-bl-lg font-bold">
 					{{ $t("lychee.CANCEL") }}
 				</Button>
 				<Button
