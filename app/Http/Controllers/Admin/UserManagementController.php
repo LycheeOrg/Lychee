@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Actions\Statistics\Spaces;
 use App\Actions\User\Create;
 use App\Actions\User\Save;
 use App\Exceptions\UnauthorizedException;
@@ -23,13 +24,18 @@ class UserManagementController extends Controller
 	/**
 	 * Get the list of users for management purposes..
 	 *
-	 * @param ManagmentListUsersRequest $_request
+	 * @param ManagmentListUsersRequest $request
+	 * @param Spaces                    $spaces
 	 *
 	 * @return Collection<array-key, UserManagementResource>
 	 */
-	public function list(ManagmentListUsersRequest $_request): Collection
+	public function list(ManagmentListUsersRequest $request, Spaces $spaces): Collection
 	{
-		return UserManagementResource::collect(User::where('id', '!=', Auth::id())->get());
+		$users = User::select(['id', 'username', 'may_administrate', 'may_upload', 'may_edit_own_settings', 'quota_kb', 'description', 'note'])->orderBy('id', 'asc')->get();
+		$spacesPerUser = $spaces->getFullSpacePerUser();
+		$zipped = $users->zip($spacesPerUser);
+
+		return $zipped->map(fn ($item) => new UserManagementResource($item[0], $item[1], $request->is_se()));
 	}
 
 	/**
@@ -86,6 +92,6 @@ class UserManagementController extends Controller
 			mayUpload: $request->mayUpload(),
 			mayEditOwnSettings: $request->mayEditOwnSettings());
 
-		return new UserManagementResource($user);
+		return new UserManagementResource($user, ['id' => $user->id, 'size' => 0], $request->is_se());
 	}
 }

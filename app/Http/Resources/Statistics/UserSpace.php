@@ -8,22 +8,24 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 #[TypeScript()]
 class UserSpace extends Data
 {
+	public int $id;
 	public string $username;
 	public int $size;
 
 	/**
-	 * @param array{username:string,size:int} $user_data
+	 * @param array{id:int,username:string,size:int} $user_data
 	 *
 	 * @return void
 	 */
 	public function __construct(array $user_data)
 	{
+		$this->id = $user_data['id'];
 		$this->username = $user_data['username'];
 		$this->size = $user_data['size'];
 	}
 
 	/**
-	 * @param array{username:string,size:int} $user_data
+	 * @param array{id:int,username:string,size:int} $user_data
 	 *
 	 * @return UserSpace
 	 */

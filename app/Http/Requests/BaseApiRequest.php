@@ -15,11 +15,13 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
+use LycheeVerify\Verify;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
 abstract class BaseApiRequest extends FormRequest
 {
 	protected AlbumFactory $albumFactory;
+	protected Verify $verify;
 
 	/**
 	 * @throws FrameworkException
@@ -37,6 +39,7 @@ abstract class BaseApiRequest extends FormRequest
 	) {
 		try {
 			$this->albumFactory = resolve(AlbumFactory::class);
+			$this->verify = resolve(Verify::class);
 			parent::__construct($query, $request, $attributes, $cookies, $files, $server, $content);
 		} catch (BindingResolutionException $e) {
 			throw new FrameworkException('Laravel\'s provider component', $e);

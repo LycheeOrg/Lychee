@@ -18,7 +18,7 @@ class Spaces
 	 *
 	 * @param int|null $owner_id
 	 *
-	 * @return Collection<int,array{username:string,size:int}>
+	 * @return Collection<int,array{id:int,username:string,size:int}>
 	 */
 	public function getFullSpacePerUser(?int $owner_id = null): Collection
 	{
@@ -27,12 +27,15 @@ class Spaces
 			->leftJoin('photos', 'photos.owner_id', '=', 'users.id')
 			->leftJoin('size_variants', 'size_variants.photo_id', '=', 'photos.id')
 			->select(
+				'users.id',
 				'username',
 				DB::raw('SUM(size_variants.filesize) as size')
 			)
-			->groupBy('username')
+			->groupBy('users.id', 'username')
+			->orderBy('users.id', 'asc')
 			->get()
 			->map(fn ($item) => [
+				'id' => intval($item->id),
 				'username' => strval($item->username),
 				'size' => intval($item->size),
 			]);

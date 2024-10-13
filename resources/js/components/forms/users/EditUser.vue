@@ -24,6 +24,21 @@ import { useToast } from "primevue/usetoast";
 import InputText from "@/components/forms/basic/InputText.vue";
 import InputPassword from "@/components/forms/basic/InputPassword.vue";
 import UserManagementService from "@/services/user-management-service";
+import { useLycheeStateStore } from "@/stores/LycheeState";
+import { storeToRefs } from "pinia";
+
+type UserData = {
+	id: number;
+	username: string;
+	may_edit_own_settings: boolean;
+	may_upload: boolean;
+	space_used: number;
+	quota: number;
+};
+
+const lycheeStore = useLycheeStateStore();
+lycheeStore.init();
+const { is_se_preview_enabled, is_se_enabled } = storeToRefs(lycheeStore);
 
 const props = defineProps<{
 	user: App.Http.Resources.Models.UserManagementResource;
