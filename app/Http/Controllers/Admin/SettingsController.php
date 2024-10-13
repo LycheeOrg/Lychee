@@ -19,7 +19,11 @@ class SettingsController extends Controller
 {
 	public function getAll(GetAllConfigsRequest $request): ConfigCollectionResource
 	{
-		return new ConfigCollectionResource(Configs::orderBy('cat', 'asc')->get());
+		$editable_configs = Configs::query()
+			->when(!$request->is_se(), fn ($q) => $q->where('level', '=', 0))
+			->orderBy('cat', 'asc')->get();
+
+		return new ConfigCollectionResource($editable_configs);
 	}
 
 	public function setConfigs(SetConfigsRequest $request): ConfigCollectionResource

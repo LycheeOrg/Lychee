@@ -3,10 +3,12 @@
 namespace App\Http\Requests\UserManagement;
 
 use App\Contracts\Http\Requests\HasPassword;
+use App\Contracts\Http\Requests\HasSeStatusBoolean;
 use App\Contracts\Http\Requests\HasUsername;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasPasswordTrait;
+use App\Http\Requests\Traits\HasSeStatusBooleanTrait;
 use App\Http\Requests\Traits\HasUsernameTrait;
 use App\Models\User;
 use App\Policies\UserPolicy;
@@ -14,10 +16,11 @@ use App\Rules\PasswordRule;
 use App\Rules\UsernameRule;
 use Illuminate\Support\Facades\Gate;
 
-class AddUserRequest extends BaseApiRequest implements HasUsername, HasPassword
+class AddUserRequest extends BaseApiRequest implements HasUsername, HasPassword, HasSeStatusBoolean
 {
 	use HasUsernameTrait;
 	use HasPasswordTrait;
+	use HasSeStatusBooleanTrait;
 
 	protected bool $mayUpload = false;
 	protected bool $mayEditOwnSettings = false;

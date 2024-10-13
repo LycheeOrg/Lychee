@@ -120,6 +120,12 @@ function loadMenu() {
 			label: "Statistics",
 			icon: "bar-chart",
 			route: "/statistics",
+			access: is_se_enabled.value,
+		},
+		{
+			label: "Statistics",
+			icon: "bar-chart",
+			route: "/statistics",
 			access: is_se_preview_enabled.value,
 			seTag: true,
 		},
