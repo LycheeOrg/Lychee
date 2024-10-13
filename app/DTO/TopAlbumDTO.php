@@ -4,7 +4,7 @@ namespace App\DTO;
 
 use Illuminate\Support\Collection;
 
-class TopAlbumDTO extends ArrayableDTO
+class TopAlbumDTO
 {
 	/**
 	 * Sorting criterion.

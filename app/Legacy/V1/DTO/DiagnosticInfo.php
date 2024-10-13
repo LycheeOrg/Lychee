@@ -1,7 +1,8 @@
 <?php
 
-namespace App\DTO;
+namespace App\Legacy\V1\DTO;
 
+use App\DTO\ArrayableDTO;
 use App\Enum\UpdateStatus;
 
 class DiagnosticInfo extends ArrayableDTO

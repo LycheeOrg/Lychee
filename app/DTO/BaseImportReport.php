@@ -44,5 +44,10 @@ abstract class BaseImportReport extends AbstractDTO
 		];
 	}
 
+	/**
+	 * @return string
+	 *
+	 * @codeCoverageIgnore
+	 */
 	abstract public function toCLIString(): string;
 }
