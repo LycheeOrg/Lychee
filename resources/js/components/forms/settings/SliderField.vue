@@ -1,6 +1,6 @@
 <template>
 	<div class="items-center justify-between gap-4 hidden sm:flex">
-		<div class="text-muted-color-emphasis">{{ props.config.documentation }}</div>
+		<div :class="props.config.require_se ? 'text-primary-emphasis' : 'text-muted-color-emphasis'">{{ props.config.documentation }}</div>
 		<SelectButton class="border-none" v-model="val" :options="options" aria-labelledby="basic" @update:modelValue="update" />
 	</div>
 </template>

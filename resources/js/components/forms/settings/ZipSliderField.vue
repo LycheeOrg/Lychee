@@ -34,11 +34,6 @@ function update() {
 	emits("filled", props.config.key, val.value);
 }
 
-function reset() {
-	emits("reset", props.config.key);
-	val.value = props.config.value;
-}
-
 // We watch props in case of updates.
 watch(
 	() => props.config,

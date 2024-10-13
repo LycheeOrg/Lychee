@@ -1,7 +1,10 @@
 <template>
 	<div>
 		<div class="flex items-center gap-4 justify-between">
-			<div class="w-1/2 sm:w-full text-muted-color-emphasis">{{ props.config.documentation }}</div>
+			<div class="w-1/2 sm:w-full" :class="props.config.require_se ? 'text-primary-emphasis' : 'text-muted-color-emphasis'">
+				{{ props.config.documentation }}
+				<SETag v-if="config.require_se" />
+			</div>
 			<div class="flex gap-4 items-center">
 				<ResetField v-if="changed" @click="reset" />
 				<InputNumber
@@ -26,6 +29,7 @@
 import { computed, ref, watch } from "vue";
 import InputNumber from "primevue/inputnumber";
 import ResetField from "@/components/forms/settings/ResetField.vue";
+import SETag from "@/components/icons/SETag.vue";
 
 const props = defineProps<{
 	min: number;

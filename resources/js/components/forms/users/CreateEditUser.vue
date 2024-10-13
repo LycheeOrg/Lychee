@@ -24,18 +24,28 @@
 					{{ $t("lychee.CANCEL") }}
 				</Button>
 				<Button
+					v-if="!props.isEdit"
 					@click="createUser"
 					class="w-full border-0 bg-surface text-create-600 hover:bg-create-600 hover:text-white rounded-none rounded-br-lg font-bold"
 					:disabled="username === undefined || password === undefined || username === '' || password === ''"
 				>
 					<i class="pi pi-user-plus" /><span class="hidden md:inline">{{ $t("lychee.CREATE") }}</span>
 				</Button>
+				<Button
+					v-else
+					@click="editUser"
+					severity="contrast"
+					class="w-full border-0 rounded-none rounded-br-lg font-bold"
+					:disabled="username === undefined || username === ''"
+				>
+					<i class="pi pi-user-edit" /><span class="hidden md:inline">{{ $t("Edit") }}</span>
+				</Button>
 			</div>
 		</template>
 	</Dialog>
 </template>
 <script setup lang="ts">
-import { Ref, ref } from "vue";
+import { Ref, ref, watch } from "vue";
 import Button from "primevue/button";
 import Checkbox from "primevue/checkbox";
 import FloatLabel from "primevue/floatlabel";
@@ -44,16 +54,28 @@ import InputText from "@/components/forms/basic/InputText.vue";
 import InputPassword from "@/components/forms/basic/InputPassword.vue";
 import UserManagementService from "@/services/user-management-service";
 import Dialog from "primevue/dialog";
+import { useLycheeStateStore } from "@/stores/LycheeState";
+import { storeToRefs } from "pinia";
 
-const username = ref(undefined as string | undefined);
-const password = ref(undefined as string | undefined);
-const may_edit_own_settings = ref(false);
-const may_upload = ref(false);
+const lycheeStore = useLycheeStateStore();
+lycheeStore.init();
+const { is_se_preview_enabled, is_se_enabled } = storeToRefs(lycheeStore);
 
 const visible = defineModel("visible") as Ref<boolean>;
+const props = defineProps<{
+	user: App.Http.Resources.Models.UserManagementResource | undefined;
+	isEdit: boolean;
+}>();
+
+const id = ref(props.user?.id);
+const username = ref(props.user?.username);
+const password = ref(undefined as string | undefined);
+const may_edit_own_settings = ref(props.user?.may_edit_own_settings ?? false);
+const may_upload = ref(props.user?.may_upload ?? false);
+
 const toast = useToast();
 const emits = defineEmits<{
-	createUser: [];
+	refresh: [];
 }>();
 
 function createUser() {
@@ -73,7 +95,39 @@ function createUser() {
 		may_edit_own_settings.value = false;
 		username.value = undefined;
 		toast.add({ severity: "success", summary: "Success", detail: "User created", life: 3000 });
-		emits("createUser");
+		emits("refresh");
 	});
 }
+
+function editUser() {
+	if (username.value === undefined || id.value === undefined) {
+		return;
+	}
+
+	UserManagementService.edit({
+		id: id.value,
+		username: username.value,
+		password: password.value,
+		may_edit_own_settings: may_edit_own_settings.value,
+		may_upload: may_upload.value,
+	}).then(() => {
+		visible.value = false;
+		password.value = undefined;
+		may_upload.value = false;
+		may_edit_own_settings.value = false;
+		username.value = undefined;
+		toast.add({ severity: "success", summary: "Change saved!", detail: "User updated", life: 3000 });
+		emits("refresh");
+	});
+}
+
+watch(
+	() => props.user,
+	(newUser: App.Http.Resources.Models.UserManagementResource | undefined, _oldUser) => {
+		id.value = newUser?.id;
+		username.value = newUser?.username;
+		may_edit_own_settings.value = newUser?.may_edit_own_settings ?? false;
+		may_upload.value = newUser?.may_upload ?? false;
+	},
+);
 </script>

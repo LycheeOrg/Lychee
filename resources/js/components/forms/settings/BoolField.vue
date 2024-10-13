@@ -2,7 +2,12 @@
 	<div>
 		<div class="flex gap-4 justify-between flex-wrap sm:flex-nowrap">
 			<!-- </IconField> -->
-			<label :for="props.config.key" class="w-1/2 sm:w-full text-muted-color-emphasis">{{ props.config.documentation }}</label>
+			<label
+				:for="props.config.key"
+				class="w-1/2 sm:w-full"
+				:class="props.config.require_se ? 'text-primary-emphasis' : 'text-muted-color-emphasis'"
+				>{{ props.config.documentation }}</label
+			>
 			<!-- <IconField> -->
 			<span class="flex gap-4">
 				<ResetField v-if="changed" @click="reset" />

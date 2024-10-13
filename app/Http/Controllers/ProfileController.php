@@ -11,6 +11,7 @@ use App\Http\Requests\Profile\ChangeTokenRequest;
 use App\Http\Requests\Profile\UpdateProfileRequest;
 use App\Http\Resources\Models\UserResource;
 use App\Http\Resources\Models\Utils\UserToken;
+use App\Models\Configs;
 use App\Models\User;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -30,11 +31,11 @@ class ProfileController extends Controller
 		/** @var User $currentUser */
 		$currentUser = Auth::user();
 
-		$currentUser = $updateLogin->updateUsername(
-			$currentUser,
-			$request->username(),
-			$request->ip()
-		);
+		if ($request->username() !== null &&
+			$request->username() !== '' &&
+			Configs::getValueAsBool('allow_username_change')) {
+			$updateLogin->updateUsername($currentUser, $request->username(), $request->ip());
+		}
 
 		$currentUser = $updateLogin->updatePassword(
 			$currentUser,
