@@ -47,7 +47,9 @@ abstract class AbstractGitRemote implements GitRemote
 		$data = $request->get_json($useCache);
 		if (!is_array($data) || count($data) === 0) {
 			// if $gitData is null we already logged the problem
+			// @codeCoverageIgnoreStart
 			return [];
+			// @codeCoverageIgnoreEnd
 		}
 
 		$this->head = $this->dataToName($data[0]);

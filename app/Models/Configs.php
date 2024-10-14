@@ -167,9 +167,11 @@ class Configs extends Model
 				->select(['key', 'value'])
 				->pluck('value', 'key')
 				->all();
+			// @codeCoverageIgnoreStart
 		} catch (\Throwable) {
 			self::$cache = [];
 		}
+		// @codeCoverageIgnoreEnd
 
 		return self::$cache;
 	}
@@ -193,9 +195,11 @@ class Configs extends Model
 			/*
 			 * For some reason the $default is not returned above...
 			 */
+			// @codeCoverageIgnoreStart
 			Log::critical(__METHOD__ . ':' . __LINE__ . ' ' . $key . ' does not exist in config (local) !');
 
 			throw new ConfigurationKeyMissingException($key . ' does not exist in config!');
+			// @codeCoverageIgnoreEnd
 		}
 
 		return self::$cache[$key];
@@ -254,7 +258,9 @@ class Configs extends Model
 	public static function getValueAsEnum(string $key, string $type): \BackedEnum|null
 	{
 		if (!function_exists('enum_exists') || !enum_exists($type) || !method_exists($type, 'tryFrom')) {
+			// @codeCoverageIgnoreStart
 			throw new UnexpectedException();
+			// @codeCoverageIgnoreEnd
 		}
 
 		return $type::tryFrom(self::getValue($key));
@@ -288,7 +294,9 @@ class Configs extends Model
 			$strValue = match (gettype($value)) {
 				'boolean' => $value === true ? '1' : '0',
 				'integer', 'string' => strval($value),
+				// @codeCoverageIgnoreStart
 				default => throw new LycheeAssertionError('Unexpected type'),
+				// @codeCoverageIgnoreEnd
 			};
 
 			/**
@@ -300,10 +308,12 @@ class Configs extends Model
 			}
 			$config->value = $strValue;
 			$config->save();
+			// @codeCoverageIgnoreStart
 		} catch (ModelNotFoundException $e) {
 			throw new InvalidConfigOption('key ' . $key . ' not found!', $e);
 		} catch (ModelDBException $e) {
 			throw new InvalidConfigOption('Could not save configuration', $e);
+			// @codeCoverageIgnoreEnd
 		} finally {
 			// invalidate cache.
 			self::$cache = [];

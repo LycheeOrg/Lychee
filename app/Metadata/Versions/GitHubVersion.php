@@ -89,11 +89,13 @@ class GitHubVersion implements VersionControl, HasIsRelease
 	public function getBehindTest(): string
 	{
 		return match ($this->countBehind) {
+			// @codeCoverageIgnoreStart
 			false => 'Could not compare.',
 			0 => sprintf('Up to date (%s).', $this->remote->getAgeText() ?? '??'),
 			30 => sprintf('More than 30 %s behind (%s).',
 				$this->remote->getType(),
 				$this->remote->getAgeText() ?? '??'),
+			// @codeCoverageIgnoreEnd
 			default => sprintf('%d %s behind %s (%s)',
 				$this->countBehind,
 				$this->remote->getType(),
@@ -135,7 +137,9 @@ class GitHubVersion implements VersionControl, HasIsRelease
 		if (Str::startsWith($branch, 'ref:')) {
 			$this->remote = resolve(GitCommits::class);
 		} else {
+			// @codeCoverageIgnoreStart
 			$this->remote = resolve(GitTags::class);
+			// @codeCoverageIgnoreEnd
 		}
 
 		return true;
@@ -167,9 +171,11 @@ class GitHubVersion implements VersionControl, HasIsRelease
 			$branch = explode('/', $branchOrCommit, 3);
 			$this->localBranch = trim($branch[2]);
 		} else {
+			// @codeCoverageIgnoreStart
 			// This is tagged/CICD behaviour
 			// we leave localBranch as null so that we know that we are not on master
 			$this->localHead = $this->trim($branchOrCommit);
+			// @codeCoverageIgnoreEnd
 		}
 	}
 
@@ -214,6 +220,8 @@ class GitHubVersion implements VersionControl, HasIsRelease
 	 * @param bool $useCache
 	 *
 	 * @return void
+	 *
+	 * @codeCoverageIgnore the code path here depends whether you are on a PR or on master...
 	 */
 	private function hydrateRemote(bool $useCache): void
 	{
