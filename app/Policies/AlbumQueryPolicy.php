@@ -418,12 +418,8 @@ class AlbumQueryPolicy
 		try {
 			// There are outers albums ...
 			// WE MUST JOIN LEFT HERE
-			$builder
-				->from('albums', 'outers')
-				->when(
-					Auth::check(),
-					fn ($q) => $this->joinBaseAlbumSensitive($q, 'outers.id', 'outers_')
-				);
+			$builder->from('albums', 'outers');
+			$this->joinBaseAlbumSensitive($builder, 'outers.id', 'outers_');
 
 			// ... on the path from the origin ...
 			if (is_int($originLeft)) {
