@@ -2,7 +2,7 @@
 	<div v-if="configs" class="max-w-2xl mx-auto">
 		<Fieldset legend="System" class="border-b-0 border-r-0 rounded-r-none rounded-b-none">
 			<div class="flex flex-col gap-4 mb-8">
-				<BoolField v-if="dark_mode_enabled !== undefined" :config="dark_mode_enabled" @filled="save" />
+				<BoolField v-if="dark_mode_enabled !== undefined" :config="dark_mode_enabled" @filled="saveDarkMode" />
 				<SelectLang v-if="lang !== undefined" :config="lang" />
 				<div class="flex flex-wrap justify-between">
 					<label for="pp_dialog_nsfw_visible">{{ $t("lychee.NSFW_VISIBLE_TEXT_1") }}</label>
@@ -289,6 +289,16 @@ function load() {
 
 function updateNSFW() {
 	save("nsfw_visible", nsfwVisible.value ? "1" : "0");
+}
+
+function saveDarkMode(_configKey: string, value: string) {
+	if (value === "1") {
+		document.body.classList.add("dark");
+		save("dark_mode_enabled", "1");
+	} else {
+		document.body.classList.remove("dark");
+		save("dark_mode_enabled", "0");
+	}
 }
 
 function saveCss() {
