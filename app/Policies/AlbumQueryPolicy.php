@@ -377,6 +377,86 @@ class AlbumQueryPolicy
 	}
 
 	/**
+	 * Adds the conditions of an sensitive album by recursion to the query.
+	 *
+	 * An album is called _recursive sensitive_, if it is marked as sensitive or contains a sensitive parent.
+	 *
+	 * **Attention:** This method is only meant for internal use by
+	 * this class or {@link PhotoQueryPolicy}.
+	 *
+	 * This method adds the WHERE conditions without any further pre-cautions.
+	 * The method silently assumes that the passed query builder is used
+	 * within an outer query whose SELECT clause contains the table
+	 *
+	 *  - **`albums`**.
+	 *
+	 * Moreover, the raw clauses are added.
+	 * They are not wrapped into a nesting braces `()`.
+	 *
+	 * @param BaseBuilder     $builder     the album query which shall be
+	 *                                     restricted
+	 * @param int|string|null $originLeft  optionally constraints the search
+	 *                                     base; an integer value is
+	 *                                     interpreted a raw left bound of the
+	 *                                     search base; a string value is
+	 *                                     interpreted as a reference to a
+	 *                                     column which shall be used as a
+	 *                                     left bound
+	 * @param int|string|null $originRight like `$originLeft` but for the
+	 *                                     right bound
+	 *
+	 * @return BaseBuilder
+	 *
+	 * @throws InternalLycheeException
+	 */
+	public function appendRecursiveSensitiveAlbumsCondition(BaseBuilder $builder, int|string|null $originLeft, int|string|null $originRight): BaseBuilder
+	{
+		if (gettype($originLeft) !== gettype($originRight)) {
+			throw new LycheeInvalidArgumentException('$originLeft and $originRight must simultaneously either be integers, strings or null');
+		}
+
+		try {
+			// There are outers albums ...
+			// WE MUST JOIN LEFT HERE
+			$builder
+				->from('albums', 'outers')
+				->when(
+					Auth::check(),
+					fn ($q) => $this->joinBaseAlbumSensitive($q, 'outers.id', 'outers_')
+				);
+
+			// ... on the path from the origin ...
+			if (is_int($originLeft)) {
+				// (We must exclude the origin as an outer node
+				// because the origin might have set as is_nsfw, but
+				// we do not care, because the user has already got
+				// somehow into the origin)
+				$builder
+					->where('outers._lft', '>', $originLeft)
+					->where('outers._rgt', '<', $originRight);
+			} elseif (is_string($originLeft) && is_string($originRight)) {
+				$builder
+					->whereColumn('outers._lft', '>', $originLeft)
+					->whereColumn('outers._rgt', '<', $originRight);
+			}
+
+			// ... to the target ...
+			$builder
+				// (We must include the target into the list of outers nodes,
+				// because we must also check whether the target is unreachable.)
+				->whereColumn('outers._lft', '<=', 'albums._lft')
+				->whereColumn('outers._rgt', '>=', 'albums._rgt');
+			// ... which are unreachable.
+
+			$builder->where('outers_base_albums.is_nsfw', '=', true);
+
+			return $builder;
+		} catch (\InvalidArgumentException $e) {
+			throw new QueryBuilderException($e);
+		}
+	}
+
+	/**
 	 * Throws an exception if the given query does not query for an album.
 	 *
 	 * @param AlbumBuilder|FixedQueryBuilder<TagAlbum>|FixedQueryBuilder<Album> $query
@@ -501,7 +581,7 @@ class AlbumQueryPolicy
 	}
 
 	/**
-	 * Join BaseAlbum.
+	 * Join BaseAlbum for ownership and more.
 	 * This aim to give lighter sub selection to make the queries run faster.
 	 *
 	 * @param AlbumBuilder|FixedQueryBuilder<TagAlbum>|FixedQueryBuilder<Album>|BaseBuilder $query
@@ -529,6 +609,39 @@ class AlbumQueryPolicy
 			$columns[] = $prefix . 'base_albums.created_at';
 			$columns[] = $prefix . 'base_albums.description';
 		}
+
+		$query->joinSub(
+			query: DB::table('base_albums', $prefix . 'base_albums')
+				->select($columns),
+			as: $prefix . 'base_albums',
+			first: $prefix . 'base_albums.id',
+			operator: '=',
+			second: $second,
+			type: 'left'
+		);
+	}
+
+	/**
+	 * Join BaseAlbum for sensitivity only.
+	 * This aim to give lighter sub selection to make the queries run faster.
+	 *
+	 * @param AlbumBuilder|FixedQueryBuilder<TagAlbum>|FixedQueryBuilder<Album>|BaseBuilder $query
+	 * @param string                                                                        $second
+	 * @param string                                                                        $prefix
+	 *
+	 * @return void
+	 *
+	 * @throws \InvalidArgumentException
+	 */
+	public function joinBaseAlbumSensitive(
+		AlbumBuilder|FixedQueryBuilder|BaseBuilder $query,
+		string $second = 'inner.id',
+		string $prefix = '',
+	): void {
+		$columns = [
+			$prefix . 'base_albums.id',
+			$prefix . 'base_albums.is_nsfw',
+		];
 
 		$query->joinSub(
 			query: DB::table('base_albums', $prefix . 'base_albums')

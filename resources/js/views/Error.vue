@@ -1,22 +1,25 @@
 <template>
 	<template v-if="is_debug_enabled">
 		<div v-if="lycheeError !== null" class="w-full h-full fixed top-0 left-0 bg-panel z-50">
-			<Message severity="error" @click="closeError">
-				<span class="font-bold text-xl w-full" v-if="lycheeError.exception"
-					>{{ lycheeError.exception }} in {{ lycheeError.file }}:{{ lycheeError.line }}</span
-				>
-				<span class="font-bold text-xl w-full" v-else>{{ lycheeError.message }}</span>
-			</Message>
-			<Panel>
-				<template #header>
-					<span class="font-bold text-xl">{{ lycheeError.message }}</span>
-				</template>
-				<template #icons>
-					<Button icon="pi pi-times" severity="secondary" class="text-muted-color" rounded text @click="closeError" />
-				</template>
-				<Divider />
-				<p v-for="trace in lycheeError.trace">{{ trace.file + ":" + trace.line }} &mdash; {{ trace.function }}</p>
-			</Panel>
+			<template v-if="lycheeError.exception">
+				<Message severity="error" @click="closeError">
+					<span class="font-bold text-xl w-full" v-if="lycheeError.exception"
+						>{{ lycheeError.exception }} in {{ lycheeError.file }}:{{ lycheeError.line }}</span
+					>
+					<span class="font-bold text-xl w-full" v-else>{{ lycheeError.message }}</span>
+				</Message>
+				<Panel>
+					<template #header>
+						<span class="font-bold text-xl">{{ lycheeError.message }}</span>
+					</template>
+					<template #icons>
+						<Button icon="pi pi-times" severity="secondary" class="text-muted-color" rounded text @click="closeError" />
+					</template>
+					<Divider />
+					<p v-for="trace in lycheeError.trace">{{ trace.file + ":" + trace.line }} &mdash; {{ trace.function }}</p>
+				</Panel>
+			</template>
+			<div v-else v-html="lycheeError"></div>
 		</div>
 		<div v-if="jsError !== null" class="w-full h-full absolute top-0 left-0 bg-panel z-50">
 			<Message severity="error z-50" @click="closeError">
@@ -56,6 +59,7 @@ type LycheeException = {
 	line?: number;
 	trace?: Trace[];
 	previous_exception?: LycheeException | null;
+	details?: string;
 };
 
 const lycheeStore = useLycheeStateStore();
