@@ -23,9 +23,14 @@
 					<span class="block">
 						{{ "Nothing to see here" }}
 					</span>
-					<Button severity="warn" @click="toggleUpload" class="rounded max-w-xs w-full border-none font-bold" icon="pi pi-upload">{{
-						$t("lychee.UPLOAD_PHOTO")
-					}}</Button>
+					<Button
+						v-if="album.rights.can_upload"
+						severity="warn"
+						@click="toggleUpload"
+						class="rounded max-w-xs w-full border-none font-bold"
+						icon="pi pi-upload"
+						>{{ $t("lychee.UPLOAD_PHOTO") }}</Button
+					>
 				</div>
 				<AlbumHero v-if="!noData" :album="album" @open-sharing-modal="toggleShareAlbum" />
 				<AlbumThumbPanel
