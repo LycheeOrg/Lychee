@@ -19,10 +19,13 @@
 				:class="is_full_screen ? 'h-svh' : 'h-[calc(100vh-3.5rem)]'"
 			>
 				<AlbumEdit v-if="album.rights.can_edit" :album="album" :config="config" />
-				<div v-if="noData" class="flex w-full h-full items-center justify-center text-xl text-muted-color">
+				<div v-if="noData" class="flex w-full flex-col h-full items-center justify-center text-xl text-muted-color gap-8">
 					<span class="block">
 						{{ "Nothing to see here" }}
 					</span>
+					<Button severity="warn" @click="toggleUpload" class="rounded max-w-xs w-full border-none font-bold" icon="pi pi-upload">{{
+						$t("lychee.UPLOAD_PHOTO")
+					}}</Button>
 				</div>
 				<AlbumHero v-if="!noData" :album="album" @open-sharing-modal="toggleShareAlbum" />
 				<AlbumThumbPanel
@@ -140,6 +143,7 @@ import { Collapse } from "vue-collapsed";
 import SensitiveWarning from "@/components/gallery/SensitiveWarning.vue";
 import Unlock from "@/components/forms/album/Unlock.vue";
 import LoginModal from "@/components/modals/LoginModal.vue";
+import Button from "primevue/button";
 
 const route = useRoute();
 const router = useRouter();
@@ -204,6 +208,7 @@ const {
 	toggleTag,
 	isCopyVisible,
 	toggleCopy,
+	toggleUpload,
 } = useGalleryModals(is_upload_visible);
 
 const {
