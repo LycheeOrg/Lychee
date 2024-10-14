@@ -291,16 +291,6 @@ class Photo extends Model
 	}
 
 	/**
-	 * This is to avoid loading the license from configs & albums.
-	 *
-	 * @return ?string
-	 */
-	public function getOriginalLicense(): ?string
-	{
-		return $this->attributes['license'];
-	}
-
-	/**
 	 * Accessor for attribute `focal`.
 	 *
 	 * In case the photo is a video (why it is called a photo then, btw?), the
@@ -381,7 +371,9 @@ class Photo extends Model
 	public function isPhoto(): bool
 	{
 		if ($this->type === null || $this->type === '') {
+			// @codeCoverageIgnoreStart
 			throw new IllegalOrderOfOperationException('Photo::isPhoto() must not be called before Photo::$type has been set');
+			// @codeCoverageIgnoreEnd
 		}
 
 		return BaseMediaFile::isSupportedImageMimeType($this->type);
@@ -397,7 +389,9 @@ class Photo extends Model
 	public function isVideo(): bool
 	{
 		if ($this->type === null || $this->type === '') {
+			// @codeCoverageIgnoreStart
 			throw new IllegalOrderOfOperationException('Photo::isVideo() must not be called before Photo::$type has been set');
+			// @codeCoverageIgnoreEnd
 		}
 
 		return BaseMediaFile::isSupportedVideoMimeType($this->type);

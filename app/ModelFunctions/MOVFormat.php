@@ -26,6 +26,9 @@ class MOVFormat extends DefaultVideo
 		}
 	}
 
+	/**
+	 * @codeCoverageIgnore
+	 */
 	public function supportBFrames(): bool
 	{
 		return false;

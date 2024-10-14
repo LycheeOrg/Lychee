@@ -225,9 +225,11 @@ class Album extends BaseAlbum implements Node
 		try {
 			/** @var DescendantsRelation<string,Album> */
 			return new DescendantsRelation($this->newQuery(), $this);
+			// @codeCoverageIgnoreStart
 		} catch (\Throwable $e) {
 			throw new QueryBuilderException($e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -297,6 +299,8 @@ class Album extends BaseAlbum implements Node
 	 * Hence, we must avoid any attempt to delete the descendants twice.
 	 *
 	 * @return void
+	 *
+	 * @codeCoverageIgnore
 	 */
 	protected function deleteDescendants(): void
 	{

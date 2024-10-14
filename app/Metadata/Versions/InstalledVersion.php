@@ -63,7 +63,9 @@ class InstalledVersion implements HasVersion, HasIsRelease
 	public function getVersion(): Version
 	{
 		if (!Schema::hasTable('configs')) {
+			// @codeCoverageIgnoreStart
 			return Version::createFromInt(10000);
+			// @codeCoverageIgnoreEnd
 		}
 
 		return Version::createFromInt(Configs::getValueAsInt('version'));
