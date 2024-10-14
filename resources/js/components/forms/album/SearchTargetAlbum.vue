@@ -36,6 +36,7 @@ const props = defineProps<{
 const albumId = ref(props.albumId ?? (null as string | null));
 const emits = defineEmits<{
 	selected: [target: App.Http.Resources.Models.TargetAlbumResource];
+	"no-target": [];
 }>();
 
 const options = ref(undefined as undefined | App.Http.Resources.Models.TargetAlbumResource[]);
@@ -44,6 +45,9 @@ const selectedTarget = ref(undefined as App.Http.Resources.Models.TargetAlbumRes
 function load() {
 	AlbumService.getTargetListAlbums(albumId.value).then((response) => {
 		options.value = response.data;
+		if (options.value.length === 0) {
+			emits("no-target");
+		}
 	});
 }
 
