@@ -11,6 +11,7 @@ use App\Contracts\Models\AbstractAlbum;
 use App\Enum\FileStatus;
 use App\Exceptions\ConfigurationException;
 use App\Factories\AlbumFactory;
+use App\Http\Requests\Frame\FrameRequest;
 use App\Http\Requests\Photo\CopyPhotosRequest;
 use App\Http\Requests\Photo\DeletePhotosRequest;
 use App\Http\Requests\Photo\EditPhotoRequest;
@@ -29,6 +30,7 @@ use App\Image\Files\UploadedFile;
 use App\Jobs\ProcessImageJob;
 use App\Models\Configs;
 use App\Models\Photo;
+use App\Policies\PhotoQueryPolicy;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
@@ -226,5 +228,26 @@ class PhotoController extends Controller
 			}
 			$photo->save();
 		}
+	}
+
+	public function random(FrameRequest $request): PhotoResource
+	{
+		$photoQueryPolicy = resolve(PhotoQueryPolicy::class);
+		// default query
+		$query = $photoQueryPolicy->applySearchabilityFilter(Photo::query()->with(['album', 'size_variants', 'size_variants.sym_links']));
+
+		if ($album !== null) {
+			$query = $album->photos()->with(['album', 'size_variants', 'size_variants.sym_links']);
+		}
+
+		/** @var ?Photo $photo */
+		// PHPStan does not understand that `firstOrFail` returns `Photo`, but assumes that it returns `Model`
+		// @phpstan-ignore-next-line
+		$photo = $query->inRandomOrder()->first();
+		if ($photo === null) {
+			$album === null ? throw new PhotoCollectionEmptyException() : throw new PhotoCollectionEmptyException('Photo collection of ' . $album->title . ' is empty');
+		}
+
+		return PhotoResource::fromModel($photo);
 	}
 }

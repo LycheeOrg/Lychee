@@ -6,6 +6,7 @@ use App\Contracts\Models\AbstractAlbum;
 use App\Exceptions\PhotoCollectionEmptyException;
 use App\Http\Requests\Frame\FrameRequest;
 use App\Http\Resources\Frame\FrameData;
+use App\Http\Resources\Models\PhotoResource;
 use App\Models\Configs;
 use App\Models\Photo;
 use App\Policies\PhotoQueryPolicy;
@@ -28,7 +29,37 @@ class FrameController
 	 */
 	public function get(FrameRequest $request): FrameData
 	{
-		return $this->loadPhoto($request->album(), 5);
+		$timeout = Configs::getValueAsInt('mod_frame_refresh');
+		$photo = $this->loadPhoto($request->album(), 5);
+
+		if ($photo === null) {
+			return new FrameData($timeout, '', '');
+		}
+
+		$src = $photo->size_variants->getMedium()?->url ?? $photo->size_variants->getOriginal()?->url;
+
+		if ($photo->size_variants->getMedium() !== null && $photo->size_variants->getMedium2x() !== null) {
+			$srcset = $photo->size_variants->getMedium()->url . ' ' . $photo->size_variants->getMedium()->width . 'w,';
+			$srcset .= $photo->size_variants->getMedium2x()->url . ' ' . $photo->size_variants->getMedium2x()->width . 'w';
+		} else {
+			$srcset = '';
+		}
+
+		return new FrameData($timeout, $src, $srcset);
+	}
+
+	/**
+	 * Return the full random image data instead of just the URLs.
+	 *
+	 * @param FrameRequest $request
+	 *
+	 * @return PhotoResource
+	 */
+	public function random(FrameRequest $request): PhotoResource
+	{
+		$photo = $this->loadPhoto($request->album(), 5);
+
+		return PhotoResource::fromModel($photo);
 	}
 
 	/**
@@ -37,18 +68,13 @@ class FrameController
 	 * @param AbstractAlbum|null $album
 	 * @param int                $retries
 	 *
-	 * @return FrameData
+	 * @return Photo|null
 	 */
-	private function loadPhoto(AbstractAlbum|null $album, int $retries = 5): FrameData
+	private function loadPhoto(AbstractAlbum|null $album, int $retries = 5): ?Photo
 	{
-		$src = '';
-		$srcset = '';
-
 		// avoid infinite recursion
 		if ($retries === 0) {
-			$timeout = Configs::getValueAsInt('mod_frame_refresh');
-
-			return new FrameData($timeout, '', '');
+			return null;
 		}
 
 		// default query
@@ -71,17 +97,6 @@ class FrameController
 			return $this->loadPhoto($album, $retries - 1);
 		}
 
-		$src = $photo->size_variants->getMedium()?->url ?? $photo->size_variants->getOriginal()?->url;
-
-		if ($photo->size_variants->getMedium() !== null && $photo->size_variants->getMedium2x() !== null) {
-			$srcset = $photo->size_variants->getMedium()->url . ' ' . $photo->size_variants->getMedium()->width . 'w,';
-			$srcset .= $photo->size_variants->getMedium2x()->url . ' ' . $photo->size_variants->getMedium2x()->width . 'w';
-		} else {
-			$srcset = '';
-		}
-
-		$timeout = Configs::getValueAsInt('mod_frame_refresh');
-
-		return new FrameData($timeout, $src, $srcset);
+		return $photo;
 	}
 }
