@@ -125,7 +125,7 @@ function upload(event: Event) {
 
 function uploadCompleted(index: number) {
 	countCompleted.value++;
-	document.getElementById("upload" + index)?.scrollIntoView();
+	// document.getElementById("upload" + index)?.scrollIntoView();
 	// Find the next one and start uploading.
 	for (let i = index; i < files.value.length; i++) {
 		if (files.value[i].status === "waiting") {
