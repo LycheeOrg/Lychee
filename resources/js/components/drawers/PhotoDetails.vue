@@ -4,7 +4,7 @@
 		class="h-full relative transition-all overflow-x-clip overflow-y-scroll bg-bg-800"
 		:class="areDetailsOpen ? 'w-[360px]' : 'w-0 translate-x-full'"
 	>
-		<Card id="lychee_sidebar" v-if="props.photo" class="text-surface-0 w-[360px] h-full pr-4 break-words">
+		<Card id="lychee_sidebar" v-if="props.photo" class="w-[360px] h-full pr-4 break-words">
 			<template #content>
 				<div class="grid grid-cols-[auto minmax(0, 1fr)] mt-8">
 					<h1 class="col-span-2 text-center text-lg font-bold my-4">
