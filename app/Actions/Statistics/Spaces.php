@@ -3,6 +3,7 @@
 namespace App\Actions\Statistics;
 
 use App\Enum\SizeVariantType;
+use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -30,14 +31,16 @@ class Spaces
 				first: 'photos.owner_id',
 				operator: '=',
 				second: 'users.id',
-				type: 'left')
+				type: 'left'
+			)
 			->joinSub(
 				query: DB::table('size_variants')->select(['size_variants.photo_id', 'size_variants.filesize']),
 				as: 'size_variants',
 				first: 'size_variants.photo_id',
 				operator: '=',
 				second: 'photos.id',
-				type: 'left')
+				type: 'left'
+			)
 			->select(
 				'users.id',
 				'username',
@@ -63,8 +66,15 @@ class Spaces
 	public function getSpacePerSizeVariantType(?int $owner_id = null): Collection
 	{
 		return DB::table('size_variants')
-			->join('photos', 'photos.id', '=', 'size_variants.photo_id')
-			->when($owner_id !== null, fn ($query) => $query->where('photos.owner_id', '=', $owner_id))
+			->when($owner_id !== null, fn ($query) => $query
+				->joinSub(
+					query: DB::table('photos')->select(['photos.id', 'photos.owner_id']),
+					as: 'photos',
+					first: 'photos.id',
+					operator: '=',
+					second: 'size_variants.photo_id'
+				)
+				->where('photos.owner_id', '=', $owner_id))
 			->select(
 				'size_variants.type',
 				DB::raw('SUM(size_variants.filesize) as size')
@@ -90,10 +100,28 @@ class Spaces
 	{
 		$query = DB::table('albums')
 			->when($album_id !== null, fn ($query) => $query->where('albums.id', '=', $album_id))
-			->join('base_albums', 'base_albums.id', '=', 'albums.id')
-			->when($owner_id !== null, fn ($query) => $query->where('base_albums.owner_id', '=', $owner_id))
-			->join('photos', 'photos.album_id', '=', 'albums.id')
-			->join('size_variants', 'size_variants.photo_id', '=', 'photos.id')
+			->when($owner_id !== null, fn ($query) => $query->joinSub(
+				query: DB::table('base_albums')->select(['base_albums.id', 'base_albums.owner_id']),
+				as: 'base_albums',
+				first: 'base_albums.id',
+				operator: '=',
+				second: 'albums.id'
+			)
+				->where('base_albums.owner_id', '=', $owner_id))
+			->joinSub(
+				query: DB::table('photos'),
+				as: 'photos',
+				first: 'photos.album_id',
+				operator: '=',
+				second: 'albums.id'
+			)
+			->joinSub(
+				query: DB::table('size_variants')->select(['size_variants.id', 'size_variants.photo_id', 'size_variants.filesize']),
+				as: 'size_variants',
+				first: 'size_variants.photo_id',
+				operator: '=',
+				second: 'photos.id'
+			)
 			->select(
 				'albums.id',
 				'albums._lft',
@@ -124,13 +152,36 @@ class Spaces
 	{
 		$query = DB::table('albums')
 			->when($album_id !== null, fn ($query) => $query->where('albums.id', '=', $album_id))
-			->join('base_albums', 'base_albums.id', '=', 'albums.id')
-			->when($owner_id !== null, fn ($query) => $query->where('base_albums.owner_id', '=', $owner_id))
-			->join('albums as descendants',
-				fn ($q) => $q->on('albums._lft', '<=', 'descendants._lft')
-				->on('albums._rgt', '>=', 'descendants._rgt'))
-			->join('photos', 'photos.album_id', '=', 'descendants.id')
-			->join('size_variants', 'size_variants.photo_id', '=', 'photos.id')
+			->when($owner_id !== null, fn ($query) => $query->joinSub(
+				query: DB::table('base_albums')->select(['base_albums.id', 'base_albums.owner_id']),
+				as: 'base_albums',
+				first: 'base_albums.id',
+				operator: '=',
+				second: 'albums.id'
+			)
+				->where('base_albums.owner_id', '=', $owner_id))
+			->joinSub(
+				query: DB::table('albums', 'descendants')->select('descendants.id', 'descendants._lft', 'descendants._rgt'),
+				as: 'descendants',
+				first: function (JoinClause $join) {
+					$join->on('albums._lft', '<=', 'descendants._lft')
+						->on('albums._rgt', '>=', 'descendants._rgt');
+				}
+			)
+			->joinSub(
+				query: DB::table('photos'),
+				as: 'photos',
+				first: 'photos.album_id',
+				operator: '=',
+				second: 'descendants.id'
+			)
+			->joinSub(
+				query: DB::table('size_variants')->select(['size_variants.id', 'size_variants.photo_id', 'size_variants.filesize']),
+				as: 'size_variants',
+				first: 'size_variants.photo_id',
+				operator: '=',
+				second: 'photos.id'
+			)
 			->select(
 				'albums.id',
 				'albums._lft',
@@ -161,15 +212,33 @@ class Spaces
 	{
 		$query = DB::table('albums')
 			->when($album_id !== null, fn ($query) => $query->where('albums.id', '=', $album_id))
-			->join('base_albums', 'base_albums.id', '=', 'albums.id')
+			->joinSub(
+				query: DB::table('base_albums')->select(['base_albums.id', 'base_albums.owner_id', 'base_albums.title', 'base_albums.is_nsfw']),
+				as: 'base_albums',
+				first: 'base_albums.id',
+				operator: '=',
+				second: 'albums.id'
+			)
 			->when($owner_id !== null, fn ($query) => $query->where('base_albums.owner_id', '=', $owner_id))
-			->join('photos', 'photos.album_id', '=', 'albums.id')
-			->join('users', 'users.id', '=', 'base_albums.owner_id')
+			->joinSub(
+				query: DB::table('photos')->select(['photos.id', 'photos.album_id']),
+				as: 'photos',
+				first: 'photos.album_id',
+				operator: '=',
+				second: 'albums.id'
+			)
+			->joinSub(
+				query: DB::table('users')->select(['users.id', 'users.username']),
+				as: 'users',
+				first: 'users.id',
+				operator: '=',
+				second: 'base_albums.owner_id'
+			)
 			->select(
 				'albums.id',
 				'username',
 				'base_albums.title',
-				'is_nsfw',
+				'base_albums.is_nsfw',
 				'albums._lft',
 				'albums._rgt',
 				DB::raw('COUNT(photos.id) as num_photos'),
@@ -177,7 +246,7 @@ class Spaces
 				'albums.id',
 				'username',
 				'base_albums.title',
-				'is_nsfw',
+				'base_albums.is_nsfw',
 				'albums._lft',
 				'albums._rgt',
 			)
@@ -209,18 +278,41 @@ class Spaces
 	{
 		$query = DB::table('albums')
 			->when($album_id !== null, fn ($query) => $query->where('albums.id', '=', $album_id))
-			->join('base_albums', 'base_albums.id', '=', 'albums.id')
+			->joinSub(
+				query: DB::table('base_albums')->select(['base_albums.id', 'base_albums.owner_id', 'base_albums.title', 'base_albums.is_nsfw']),
+				as: 'base_albums',
+				first: 'base_albums.id',
+				operator: '=',
+				second: 'albums.id'
+			)
 			->when($owner_id !== null, fn ($query) => $query->where('base_albums.owner_id', '=', $owner_id))
-			->join('albums as descendants',
-				fn ($q) => $q->on('albums._lft', '<=', 'descendants._lft')
-				->on('albums._rgt', '>=', 'descendants._rgt'))
-			->join('photos', 'photos.album_id', '=', 'descendants.id')
-			->join('users', 'users.id', '=', 'base_albums.owner_id')
+			->joinSub(
+				query: DB::table('albums', 'descendants')->select('descendants.id', 'descendants._lft', 'descendants._rgt'),
+				as: 'descendants',
+				first: function (JoinClause $join) {
+					$join->on('albums._lft', '<=', 'descendants._lft')
+						->on('albums._rgt', '>=', 'descendants._rgt');
+				}
+			)
+			->joinSub(
+				query: DB::table('photos')->select(['photos.id', 'photos.album_id']),
+				as: 'photos',
+				first: 'photos.album_id',
+				operator: '=',
+				second: 'descendants.id'
+			)
+			->joinSub(
+				query: DB::table('users')->select(['users.id', 'users.username']),
+				as: 'users',
+				first: 'users.id',
+				operator: '=',
+				second: 'base_albums.owner_id'
+			)
 			->select(
 				'albums.id',
 				'username',
 				'base_albums.title',
-				'is_nsfw',
+				'base_albums.is_nsfw',
 				'albums._lft',
 				'albums._rgt',
 				DB::raw('COUNT(photos.id) as num_photos'),
@@ -228,7 +320,7 @@ class Spaces
 				'albums.id',
 				'username',
 				'base_albums.title',
-				'is_nsfw',
+				'base_albums.is_nsfw',
 				'albums._lft',
 				'albums._rgt',
 			)

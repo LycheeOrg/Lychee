@@ -91,6 +91,8 @@ import Card from "primevue/card";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import ToggleSwitch from "primevue/toggleswitch";
+import { onKeyStroke } from "@vueuse/core";
+import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
 
 type TotalAlbum = {
 	num_photos: number;
@@ -125,7 +127,7 @@ const albumData = computed(() => {
 });
 
 const total = computed(() => {
-	if (albumData.value === undefined) {
+	if (albumSpace.value === undefined) {
 		return undefined;
 	}
 
@@ -135,13 +137,13 @@ const total = computed(() => {
 		num_albums: 0,
 	};
 
-	albumData.value.reduce((acc, a) => {
+	albumSpace.value?.filter((a) => !a.is_nsfw || are_nsfw_visible.value)?.reduce((acc, a) => {
 		sumData.size += a.size;
 		sumData.num_photos += a.num_photos;
 		return acc;
 	}, sumData);
 
-	sumData.num_albums = albumData.value?.length ?? 0;
+	sumData.num_albums = albumSpace.value?.filter((a) => !a.is_nsfw || are_nsfw_visible.value)?.length ?? 0;
 
 	return sumData;
 });
@@ -200,4 +202,7 @@ function loadTotalAlbumSpace() {
 		console.log(response.data);
 	});
 }
+
+onKeyStroke("h", () => !shouldIgnoreKeystroke() && (are_nsfw_visible.value = !are_nsfw_visible.value));
+
 </script>
