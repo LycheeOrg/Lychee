@@ -178,8 +178,9 @@ const route = useRoute();
 const toast = useToast();
 const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
+const { is_upload_visible } = storeToRefs(lycheeStore);
 
-const { isDeleteVisible, toggleDelete, isMoveVisible, toggleMove } = useGalleryModals();
+const { isDeleteVisible, toggleDelete, isMoveVisible, toggleMove } = useGalleryModals(is_upload_visible);
 
 const photoId = ref(props.photoid);
 const { photo, album, photos, placeholder, previousStyle, nextStyle, srcSetMedium, style, imageViewMode, refresh, hasPrevious, hasNext } =

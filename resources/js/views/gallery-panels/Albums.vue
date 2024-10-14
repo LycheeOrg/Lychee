@@ -103,7 +103,7 @@ const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
 lycheeStore.resetSearch();
 
-const { are_nsfw_visible, is_full_screen, is_login_open, title } = storeToRefs(lycheeStore);
+const { are_nsfw_visible, is_full_screen, is_login_open, title, is_upload_visible } = storeToRefs(lycheeStore);
 
 const photos = ref([]); // unused.
 
@@ -120,7 +120,7 @@ const { selectedAlbum, selectedAlbumsIdx, selectedAlbums, selectedAlbumsIds, alb
 
 // Modals for Albums
 const { isDeleteVisible, toggleDelete, isMergeAlbumVisible, toggleMergeAlbum, isMoveVisible, toggleMove, isRenameVisible, toggleRename } =
-	useGalleryModals();
+	useGalleryModals(is_upload_visible);
 
 // Unused.
 const photoCallbacks = {
