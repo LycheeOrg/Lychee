@@ -85,6 +85,7 @@ Route::get('/Sharing::all', [Gallery\SharingController::class, 'listAll']);
 /**
  * PHOTO.
  */
+Route::get('/Photo::random', [Gallery\FrameController::class, 'random']);
 Route::post('/Photo::fromUrl', [Gallery\PhotoController::class, 'fromUrl']);
 Route::post('/Photo', [Gallery\PhotoController::class, 'upload'])
 	->withoutMiddleware(['content_type:json'])
