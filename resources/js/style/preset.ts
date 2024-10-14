@@ -257,6 +257,10 @@ const LycheePrimeVueConfig = {
 							background: "{surface.600}",
 							color: "{surface.0}",
 						},
+						active: {
+							background: "{surface.600}",
+							color: "{surface.0}",
+						},
 					},
 					info: {
 						color: "{text.mutedColor}",
