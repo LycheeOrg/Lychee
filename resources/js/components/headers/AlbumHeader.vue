@@ -1,5 +1,5 @@
 <template>
-	<UploadPanel v-if="canUpload" v-model:visible="isUploadOpen" @refresh="refresh" :album-id="props.album.id" />
+	<UploadPanel v-if="canUpload" @refresh="refresh" />
 	<DropBox v-if="canUpload" v-model:visible="isImportFromDropboxOpen" :album-id="props.album.id" />
 	<ImportFromLink v-if="canUpload" v-model:visible="isImportFromLinkOpen" :parent-id="props.album.id" @refresh="refresh" />
 	<AlbumCreateDialog
@@ -94,7 +94,7 @@ const props = defineProps<{
 const toggleDetails = () => (are_details_open.value = !are_details_open.value);
 const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
-const { are_details_open, is_login_open, is_slideshow_active, dropbox_api_key } = storeToRefs(lycheeStore);
+const { are_details_open, is_login_open, dropbox_api_key, is_upload_visible } = storeToRefs(lycheeStore);
 
 const hasCoordinates = computed(() => props.album.photos.find((photo) => photo.latitude !== null && photo.longitude !== null) !== undefined);
 
@@ -115,9 +115,8 @@ const {
 	toggleImportFromLink,
 	isImportFromDropboxOpen,
 	toggleImportFromDropbox,
-	isUploadOpen,
 	toggleUpload,
-} = useGalleryModals();
+} = useGalleryModals(is_upload_visible);
 
 const emits = defineEmits<{
 	refresh: [];
@@ -180,7 +179,7 @@ function refresh() {
 }
 
 onKeyStroke("n", () => !shouldIgnoreKeystroke() && (isCreateAlbumOpen.value = true));
-onKeyStroke("u", () => !shouldIgnoreKeystroke() && (isUploadOpen.value = true));
+onKeyStroke("u", () => !shouldIgnoreKeystroke() && (is_upload_visible.value = true));
 onKeyStroke("i", () => !shouldIgnoreKeystroke() && toggleDetails());
 onKeyStroke("l", () => !shouldIgnoreKeystroke() && props.user.id === null && (is_login_open.value = true));
 onKeyStroke("/", () => !shouldIgnoreKeystroke() && props.config.is_search_accessible && openSearch());

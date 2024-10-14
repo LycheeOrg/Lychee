@@ -214,6 +214,8 @@ class PhotoQueryPolicy
 	 */
 	public function appendSensitivityConditions(BaseBuilder $query, int|string|null $originLeft, int|string|null $originRight): BaseBuilder
 	{
+		$userId = Auth::id();
+
 		try {
 			// there must be no unreachable album between the origin and the photo
 			$query->whereNotExists(function (BaseBuilder $q) use ($originLeft, $originRight) {
@@ -231,6 +233,10 @@ class PhotoQueryPolicy
 			//      photos (this is different to any other album: if users are
 			//      allowed to access an album, they may also see its content)
 			$query->whereNotNull('photos.album_id');
+
+			if ($userId !== null) {
+				$query->orWhere('photos.owner_id', '=', $userId);
+			}
 		} catch (\Throwable $e) {
 			throw new QueryBuilderException($e);
 		}

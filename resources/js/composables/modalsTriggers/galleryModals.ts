@@ -1,6 +1,6 @@
-import { ref } from "vue";
+import { Ref, ref } from "vue";
 
-export function useGalleryModals() {
+export function useGalleryModals(is_upload_visible: Ref<boolean>) {
 	const isCreateAlbumOpen = ref(false);
 
 	function toggleCreateAlbum() {
@@ -49,10 +49,8 @@ export function useGalleryModals() {
 		isImportFromDropboxOpen.value = !isImportFromDropboxOpen.value;
 	}
 
-	const isUploadOpen = ref(false);
-
 	function toggleUpload() {
-		isUploadOpen.value = !isUploadOpen.value;
+		is_upload_visible.value = !is_upload_visible.value;
 	}
 
 	const isTagVisible = ref(false);
@@ -84,7 +82,6 @@ export function useGalleryModals() {
 		toggleImportFromLink,
 		isImportFromDropboxOpen,
 		toggleImportFromDropbox,
-		isUploadOpen,
 		toggleUpload,
 		isTagVisible,
 		toggleTag,

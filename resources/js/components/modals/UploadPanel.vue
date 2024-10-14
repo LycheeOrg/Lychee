@@ -1,19 +1,19 @@
 <template>
-	<Dialog v-model:visible="visible" modal pt:root:class="border-none" :dismissable-mask="true">
+	<Dialog v-model:visible="is_upload_visible" modal pt:root:class="border-none" :dismissable-mask="true">
 		<template #container="{ closeCallback }">
 			<div v-if="setup">
-				<div v-if="files.length > 0" class="m-4 flex flex-wrap justify-center">
-					<span class="w-full text-center">Completed: {{ countCompleted }} / {{ files.length }}</span>
+				<div v-if="list_upload_files.length > 0" class="m-4 flex flex-wrap justify-center">
+					<span class="w-full text-center">Completed: {{ countCompleted }} / {{ list_upload_files.length }}</span>
 					<ProgressBar
 						:class="'w-full'"
-						:value="Math.round((countCompleted * 100) / files.length)"
+						:value="Math.round((countCompleted * 100) / list_upload_files.length)"
 						:show-value="false"
 						:pt:value:class="'duration-300'"
 					></ProgressBar>
 				</div>
-				<ScrollPanel v-if="files.length > 0" class="w-96 h-48 m-4 p-1 mr-5" :pt:scrollbar:class="'opacity-100'">
+				<ScrollPanel v-if="list_upload_files.length > 0" class="w-96 h-48 m-4 p-1 mr-5" :pt:scrollbar:class="'opacity-100'">
 					<UploadingLine
-						v-for="(uploadable, index) in files"
+						v-for="(uploadable, index) in list_upload_files"
 						:key="uploadable.file.name"
 						:file="uploadable.file"
 						:album-id="albumId"
@@ -23,7 +23,7 @@
 						@upload:completed="uploadCompleted"
 					></UploadingLine>
 				</ScrollPanel>
-				<div v-if="files.length === 0" class="p-9 max-w-3xl w-full">
+				<div v-if="list_upload_files.length === 0" class="p-9 max-w-3xl w-full">
 					<div
 						class="absolute flex items-center justify-center bg-primary-500 opacity-90"
 						v-on:dragover.prevent="isDropping = true"
@@ -77,26 +77,29 @@ import ScrollPanel from "primevue/scrollpanel";
 import UploadService from "@/services/upload-service";
 import ProgressBar from "primevue/progressbar";
 import AlbumService from "@/services/album-service";
+import { useRoute } from "vue-router";
+import { useLycheeStateStore } from "@/stores/LycheeState";
+import { storeToRefs } from "pinia";
 
-type Uploadable = {
+export type Uploadable = {
 	file: File;
 	status: string;
 };
 
-const visible = defineModel("visible", { default: false }) as Ref<boolean>;
-
-const props = defineProps<{ albumId: string | null }>();
+// const visible = defineModel("visible", { default: false }) as Ref<boolean>;
+const lycheeStore = useLycheeStateStore();
+const { is_upload_visible, list_upload_files } = storeToRefs(lycheeStore);
+const route = useRoute();
 
 const setup = ref(undefined as undefined | App.Http.Resources.GalleryConfigs.UploadConfig);
-const albumId = ref(props.albumId);
+const albumId = ref(route.params.albumid ?? (null as string | null)) as Ref<string | null>;
 
 const emits = defineEmits<{
 	refresh: [];
 }>();
 
 const isDropping = ref(false);
-const files = ref([] as Uploadable[]);
-const showCancel = computed(() => files.value.length > 0 && countCompleted.value < files.value.length);
+const showCancel = computed(() => list_upload_files.value.length > 0 && countCompleted.value < list_upload_files.value.length);
 
 function load() {
 	UploadService.getSetUp().then((response) => {
@@ -113,13 +116,13 @@ function upload(event: Event) {
 	}
 
 	for (let i = 0; i < target.files.length; i++) {
-		files.value.push({ file: target.files[i], status: "waiting" });
+		list_upload_files.value.push({ file: target.files[i], status: "waiting" });
 	}
 
 	// Start uploading chunks.
-	const processing_limit = Math.min(setup.value?.upload_processing_limit ?? 1, files.value.length);
+	const processing_limit = Math.min(setup.value?.upload_processing_limit ?? 1, list_upload_files.value.length);
 	for (let i = 0; i < processing_limit; i++) {
-		files.value[i].status = "uploading";
+		list_upload_files.value[i].status = "uploading";
 	}
 }
 
@@ -127,38 +130,38 @@ function uploadCompleted(index: number) {
 	countCompleted.value++;
 	// document.getElementById("upload" + index)?.scrollIntoView();
 	// Find the next one and start uploading.
-	for (let i = index; i < files.value.length; i++) {
-		if (files.value[i].status === "waiting") {
-			files.value[i].status = "uploading";
+	for (let i = index; i < list_upload_files.value.length; i++) {
+		if (list_upload_files.value[i].status === "waiting") {
+			list_upload_files.value[i].status = "uploading";
 			break;
 		}
 	}
 
-	if (countCompleted.value === files.value.length) {
-		AlbumService.clearCache(props.albumId ?? "unsorted");
+	if (countCompleted.value === list_upload_files.value.length) {
+		AlbumService.clearCache(albumId.value ?? "unsorted");
 		emits("refresh");
 	}
 }
 
 function cancel() {
-	visible.value = false;
-	files.value = [];
-	AlbumService.clearCache(props.albumId ?? "unsorted");
+	is_upload_visible.value = false;
+	list_upload_files.value = [];
+	AlbumService.clearCache(albumId.value ?? "unsorted");
 	emits("refresh");
 }
 
 function close() {
-	files.value = [];
-	visible.value = false;
+	list_upload_files.value = [];
+	is_upload_visible.value = false;
 }
 
 load();
 
 watch(
-	() => props.albumId,
+	() => route.params.albumid,
 	(newAlbumId, _oldAlbumId) => {
 		albumId.value = newAlbumId as string | null;
-		files.value = [];
+		list_upload_files.value = [];
 	},
 );
 </script>
