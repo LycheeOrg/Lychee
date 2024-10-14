@@ -1,3 +1,4 @@
+import { Uploadable } from "@/components/modals/UploadPanel.vue";
 import InitService from "@/services/init-service";
 import { defineStore } from "pinia";
 
@@ -11,6 +12,10 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		left_menu_open: false,
 		is_full_screen: false,
 		is_login_open: false,
+
+		// upload
+		is_upload_visible: false,
+		list_upload_files: [] as Uploadable[],
 
 		// Photo toggleables
 		is_edit_open: false,

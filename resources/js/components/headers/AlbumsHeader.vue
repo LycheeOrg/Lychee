@@ -1,7 +1,7 @@
 <template>
 	<LoginModal v-if="user.id === null" v-model:visible="is_login_open" @logged-in="refresh" @open-webauthn="isWebAuthnOpen = true" />
 	<WebauthnModal v-if="user.id === null && !isWebAuthnUnavailable" v-model:visible="isWebAuthnOpen" @logged-in="refresh" />
-	<UploadPanel v-if="canUpload" v-model:visible="isUploadOpen" :album-id="null" @refresh="refresh" />
+	<UploadPanel v-if="canUpload" @refresh="refresh" />
 	<ImportFromServer v-if="canUpload" v-model:visible="isImportFromServerOpen" />
 	<ImportFromLink v-if="canUpload" v-model:visible="isImportFromLinkOpen" :parent-id="null" />
 	<DropBox v-if="canUpload" v-model:visible="isImportFromDropboxOpen" :album-id="null" />
@@ -134,7 +134,7 @@ const emits = defineEmits<{
 // 	'UPLOAD_TRACK' => 'Upload track',
 // 	'DELETE_TRACK' => 'Delete track',
 const lycheeStore = useLycheeStateStore();
-const { left_menu_open, is_login_open, dropbox_api_key } = storeToRefs(lycheeStore);
+const { left_menu_open, is_login_open, dropbox_api_key, is_upload_visible } = storeToRefs(lycheeStore);
 const isWebAuthnOpen = ref(false);
 const router = useRouter();
 const openLeftMenu = () => (left_menu_open.value = !left_menu_open.value);
@@ -156,9 +156,8 @@ const {
 	toggleImportFromLink,
 	isImportFromDropboxOpen,
 	toggleImportFromDropbox,
-	isUploadOpen,
 	toggleUpload,
-} = useGalleryModals();
+} = useGalleryModals(is_upload_visible);
 
 const { addmenu, addMenu, isImportFromServerOpen, isCreateTagAlbumOpen } = useContextMenuAlbumsAdd(
 	{
@@ -188,7 +187,7 @@ function openSearch() {
 }
 
 onKeyStroke("n", () => !shouldIgnoreKeystroke() && props.rights.can_upload && (isCreateAlbumOpen.value = true));
-onKeyStroke("u", () => !shouldIgnoreKeystroke() && props.rights.can_upload && (isUploadOpen.value = true));
+onKeyStroke("u", () => !shouldIgnoreKeystroke() && props.rights.can_upload && (is_upload_visible.value = true));
 onKeyStroke("l", () => !shouldIgnoreKeystroke() && props.user.id === null && (is_login_open.value = true));
 onKeyStroke("k", () => !shouldIgnoreKeystroke() && props.user.id === null && !isWebAuthnUnavailable.value && (isWebAuthnOpen.value = true));
 onKeyStroke("/", () => !shouldIgnoreKeystroke() && props.config.is_search_accessible && openSearch());
@@ -210,8 +209,8 @@ onKeyStroke("escape", () => {
 		return;
 	}
 
-	if (isUploadOpen.value) {
-		isUploadOpen.value = false;
+	if (is_upload_visible.value) {
+		is_upload_visible.value = false;
 		return;
 	}
 	if (isCreateAlbumOpen.value) {
