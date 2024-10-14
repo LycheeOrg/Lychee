@@ -24,8 +24,20 @@ class Spaces
 	{
 		return DB::table('users')
 			->when($owner_id !== null, fn ($query) => $query->where('users.id', '=', $owner_id))
-			->leftJoin('photos', 'photos.owner_id', '=', 'users.id')
-			->leftJoin('size_variants', 'size_variants.photo_id', '=', 'photos.id')
+			->joinSub(
+				query: DB::table('photos')->select(['photos.id', 'photos.owner_id']),
+				as: 'photos',
+				first: 'photos.owner_id',
+				operator: '=',
+				second: 'users.id',
+				type: 'left')
+			->joinSub(
+				query: DB::table('size_variants')->select(['size_variants.photo_id', 'size_variants.filesize']),
+				as: 'size_variants',
+				first: 'size_variants.photo_id',
+				operator: '=',
+				second: 'photos.id',
+				type: 'left')
 			->select(
 				'users.id',
 				'username',

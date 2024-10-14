@@ -7,6 +7,7 @@ use App\Eloquent\FixedQueryBuilder;
 use App\Exceptions\Internal\InvalidQueryModelException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Album;
+use App\Models\Configs;
 use App\Models\Photo;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as BaseBuilder;
@@ -106,6 +107,10 @@ class PhotoQueryPolicy
 				->where('albums._rgt', '<=', $origin->_rgt);
 		}
 
+		if (Configs::getValueAsBool('hide_nsfw_photos_in_smart_albums')) {
+			$query->where(fn (Builder $query) => $this->appendSensitivityConditions($query->getQuery(), $origin?->_lft, $origin?->_rgt));
+		}
+
 		if (Auth::user()?->may_administrate === true) {
 			return $query;
 		}
@@ -178,6 +183,54 @@ class PhotoQueryPolicy
 			if ($userId !== null) {
 				$query->orWhere('photos.owner_id', '=', $userId);
 			}
+		} catch (\Throwable $e) {
+			throw new QueryBuilderException($e);
+		}
+
+		return $query;
+	}
+
+	/**
+	 * Adds the conditions of _sensitive_ photos to the query.
+	 *
+	 * **Attention:** This method is only meant for internal use.
+	 * Use {@link PhotoQueryPolicy::applySearchabilityFilter()}
+	 * if called from other places instead.
+	 *
+	 * This method adds the WHERE conditions without any further pre-cautions.
+	 * The method silently assumes that the SELECT clause contains the tables
+	 *
+	 *  - **`albums`**.
+	 *
+	 * Moreover, the raw clauses are added.
+	 * They are not wrapped into a nesting braces `()`.
+	 *
+	 * @param BaseBuilder $query the photo query which shall be
+	 *                           restricted
+	 *
+	 * @return BaseBuilder the restricted photo query
+	 *
+	 * @throws QueryBuilderException
+	 */
+	public function appendSensitivityConditions(BaseBuilder $query, int|string|null $originLeft, int|string|null $originRight): BaseBuilder
+	{
+		try {
+			// there must be no unreachable album between the origin and the photo
+			$query->whereNotExists(function (BaseBuilder $q) use ($originLeft, $originRight) {
+				$this->albumQueryPolicy->appendRecursiveSensitiveAlbumsCondition($q, $originLeft, $originRight);
+			});
+
+			// Special care needs to be taken for unsorted photo, i.e. photos on
+			// the root level:
+			// The condition for "no unreachable albums along the path" fails for
+			// root album due to two reasons:
+			//   a) the path of albums between to the root album is empty; hence,
+			//      there are never any unreachable albums in between
+			//   b) while all users (even unauthenticated users) may access the
+			//      root album, they must only see their own photos or public
+			//      photos (this is different to any other album: if users are
+			//      allowed to access an album, they may also see its content)
+			$query->whereNotNull('photos.album_id');
 		} catch (\Throwable $e) {
 			throw new QueryBuilderException($e);
 		}
