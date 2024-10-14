@@ -9,12 +9,12 @@ return new class() extends BaseConfigMigration {
 	{
 		return [
 			[
-				'key' => 'hide_nsfw_photos_in_smart_albums',
+				'key' => 'hide_nsfw_in_smart_albums_and_search',
 				'value' => '1', // safe default
 				'cat' => 'Mod NSFW',
 				'type_range' => self::BOOL,
-				'description' => 'Do not show sensitive photos in Smart Albums.',
-				'details' => 'Pictures placed in sensive albums will not be shown in Smart Albums.',
+				'description' => 'Do not show sensitive photos in Smart Albums and Search.',
+				'details' => 'Pictures placed in sensive albums will not be shown in Smart Albums and Search.',
 				'is_secret' => false,
 				'level' => 0,
 			],

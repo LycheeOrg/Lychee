@@ -107,7 +107,7 @@ class PhotoQueryPolicy
 				->where('albums._rgt', '<=', $origin->_rgt);
 		}
 
-		if (Configs::getValueAsBool('hide_nsfw_photos_in_smart_albums')) {
+		if (Configs::getValueAsBool('hide_nsfw_in_smart_albums_and_search')) {
 			$query->where(fn (Builder $query) => $this->appendSensitivityConditions($query->getQuery(), $origin?->_lft, $origin?->_rgt));
 		}
 
