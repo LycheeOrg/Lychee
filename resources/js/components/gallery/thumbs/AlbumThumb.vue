@@ -85,5 +85,5 @@ const linkClass = computed(
 );
 auth.getUser();
 
-const play_icon = ref(window.assets_url + "/img/play-icon.png");
+const play_icon = ref((window.assets_url ?? "") + "/img/play-icon.png");
 </script>

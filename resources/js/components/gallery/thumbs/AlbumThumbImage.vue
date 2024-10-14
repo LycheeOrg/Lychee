@@ -26,8 +26,9 @@ const props = defineProps<{
 
 const src = ref("");
 const srcSet = ref("");
+const assets_url = ref(window.assets_url ?? "");
 const classList = computed(() => {
-	if (src.value === window.assets_url + "/img/no_images.svg" || src.value === window.assets_url + "/img/password.svg") {
+	if (src.value === assets_url.value + "/img/no_images.svg" || src.value === assets_url.value + "/img/password.svg") {
 		return "invert brightness-25 dark:invert-0 dark:brightness-100";
 	}
 	return "";
@@ -35,17 +36,17 @@ const classList = computed(() => {
 
 function load(thumb: App.Http.Resources.Models.ThumbResource | undefined | null, isPasswordProtected: boolean) {
 	if (thumb?.thumb === "uploads/thumb/") {
-		src.value = window.assets_url + "/img/placeholder.png";
+		src.value = assets_url.value + "/img/placeholder.png";
 		if (thumb.type.includes("video")) {
-			src.value = window.assets_url + "/img/play-icon.png";
+			src.value = assets_url.value + "/img/play-icon.png";
 		}
 		if (thumb.type.includes("raw")) {
-			src.value = window.assets_url + "/img/no_images.svg";
+			src.value = assets_url.value + "/img/no_images.svg";
 		}
 	} else {
 		src.value = isNotEmpty(thumb?.thumb)
 			? (thumb?.thumb as string)
-			: window.assets_url + (isPasswordProtected ? "/img/password.svg" : "/img/no_images.svg");
+			: assets_url.value + (isPasswordProtected ? "/img/password.svg" : "/img/no_images.svg");
 	}
 	srcSet.value = isNotEmpty(thumb?.thumb2x) ? (thumb?.thumb2x as string) : "";
 }
