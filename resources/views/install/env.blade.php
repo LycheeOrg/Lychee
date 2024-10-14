@@ -15,17 +15,14 @@ active
 <strong>For more details of how those values are used, look in the "config" folder.</strong><br/>
 	<form method="post" action="{{ route('install-env') }}">
 		<textarea class="textarea" name="envConfig">{{ $env }}</textarea>
-		<div class="buttons buttons--right">
-			<button class="button button--light" type="submit"><i class="fa fa-floppy-o fa-fw" aria-hidden="true"></i>Save</button>
-		</div>
+		<div class="buttons-container">
+			@if($exists == true)
+			<a class="button float-right ml-4" href="{{ route('install-migrate') }}">
+				<i class="fa fa-check fa-fw" aria-hidden="true"></i> Install
+				<i class="fa fa-angle-double-right fa-fw" aria-hidden="true"></i>
+			</a>
+			@endif
+			<button class="float-right button button--light" type="submit"><i class="fa fa-floppy-o fa-fw" aria-hidden="true"></i>Save</button>
+		</div>	
 	</form>
-
-	@if($exists == true)
-	<div class="buttons-container">
-		<a class="button float-right" href="{{ route('install-migrate') }}">
-			<i class="fa fa-check fa-fw" aria-hidden="true"></i> Install
-			<i class="fa fa-angle-double-right fa-fw" aria-hidden="true"></i>
-		</a>
-	</div>
-	@endif
 @endsection

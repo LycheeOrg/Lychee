@@ -7,9 +7,12 @@
 					{{ $t("lychee.MOVE_ALBUM") }}
 				</Button>
 			</div>
-			<div v-else>
+			<div v-else-if="error_no_target === false">
 				<span class="font-bold">{{ "Move to" }}</span>
-				<SearchTargetAlbum :album-id="props.album.id" @selected="selected" />
+				<SearchTargetAlbum :album-id="props.album.id" @selected="selected" @no-target="error_no_target = true" />
+			</div>
+			<div v-else>
+				<p class="text-center text-muted-color">{{ "No album to move to" }}</p>
 			</div>
 		</template>
 	</Card>
@@ -34,6 +37,7 @@ const router = useRouter();
 const titleMovedTo = ref(undefined as string | undefined);
 const destination_id = ref(undefined as string | undefined | null);
 const confirmation = computed(() => sprintf(trans("lychee.ALBUM_MOVE"), props.album.title, titleMovedTo.value));
+const error_no_target = ref(false);
 
 function selected(target: App.Http.Resources.Models.TargetAlbumResource) {
 	titleMovedTo.value = target.original;

@@ -13,11 +13,14 @@
 				</div>
 			</div>
 			<div v-else>
-				<div class="p-9">
+				<div class="p-9" v-if="error_no_target">
 					<span class="font-bold">
 						{{ question }}
 					</span>
-					<SearchTargetAlbum :album-id="parentId" @selected="selected" />
+					<SearchTargetAlbum :album-id="parentId" @selected="selected" @no-target="error_no_target = true" />
+				</div>
+				<div v-else class="p-9">
+					<p class="text-center text-muted-color">{{ "No album to copy to." }}</p>
 				</div>
 				<Button class="w-full font-bold rounded-none rounded-bl-xl rounded-br-xl border-none" severity="secondary" @click="closeCallback">
 					{{ $t("lychee.CANCEL") }}
@@ -51,6 +54,7 @@ const emits = defineEmits<{
 const toast = useToast();
 const titleCopyTo = ref(undefined as string | undefined);
 const destination_id = ref(undefined as string | undefined | null);
+const error_no_target = ref(false);
 
 function selected(target: App.Http.Resources.Models.TargetAlbumResource) {
 	titleCopyTo.value = target.original;

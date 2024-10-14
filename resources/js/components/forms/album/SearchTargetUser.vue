@@ -39,6 +39,7 @@ const props = withDefaults(
 );
 const emits = defineEmits<{
 	selected: [user: App.Http.Resources.Models.LightUserResource];
+	"no-target": [];
 }>();
 
 const options = ref(undefined as undefined | App.Http.Resources.Models.LightUserResource[]);
@@ -47,6 +48,9 @@ const selectedTarget = ref(undefined as App.Http.Resources.Models.LightUserResou
 function load() {
 	UsersService.get().then((response) => {
 		options.value = response.data.filter((user) => !props.filteredUsersIds.includes(user.id));
+		if (options.value.length === 0) {
+			emits("no-target");
+		}
 	});
 }
 

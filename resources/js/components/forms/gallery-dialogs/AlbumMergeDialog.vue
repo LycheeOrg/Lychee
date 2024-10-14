@@ -13,14 +13,17 @@
 				</div>
 			</div>
 			<div v-else>
-				<div class="p-9">
+				<div class="p-9" v-if="error_no_target === false">
 					<span v-if="props.album" class="font-bold">
 						{{ sprintf("Merge %s to:", props.album.title) }}
 					</span>
 					<span v-else class="font-bold">
 						{{ sprintf("Merge %d albums to:", props.albumIds?.length) }}
 					</span>
-					<SearchTargetAlbum :album-id="parentId" @selected="selected" />
+					<SearchTargetAlbum :album-id="parentId" @selected="selected" @no-target="error_no_target = true" />
+				</div>
+				<div v-else class="p-9">
+					<p class="text-center text-muted-color">{{ "No album to merge to." }}</p>
 				</div>
 				<Button class="w-full font-bold rounded-none rounded-bl-xl rounded-br-xl border-none" severity="secondary" @click="closeCallback">
 					{{ $t("lychee.CANCEL") }}
@@ -54,6 +57,7 @@ const emits = defineEmits<{
 const toast = useToast();
 const titleMovedTo = ref(undefined as string | undefined);
 const destination_id = ref(undefined as string | undefined | null);
+const error_no_target = ref(false);
 const confirmation = computed(() => {
 	if (props.album) {
 		return sprintf(trans("lychee.ALBUM_MERGE"), props.album.title, titleMovedTo.value);
