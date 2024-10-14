@@ -232,7 +232,7 @@ class PhotoQueryPolicy
 			//      root album, they must only see their own photos or public
 			//      photos (this is different to any other album: if users are
 			//      allowed to access an album, they may also see its content)
-			$query->whereNotNull('photos.album_id');
+			$query->orWhereNull('photos.album_id');
 
 			if ($userId !== null) {
 				$query->orWhere('photos.owner_id', '=', $userId);
