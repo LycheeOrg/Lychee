@@ -1071,8 +1071,8 @@ abstract class BaseSharingTestScenarios extends BaseSharingTest
 		// Sic! We use the same password for both albums here, because we want
 		// to ensure that incidentally "unlocking" an album which is also
 		// shared has no negative side effect.
-		$this->albums_tests->set_protection_policy(id: $this->albumID2, is_nsfw: true, password: TestConstants::ALBUM_PWD_1);
-		$this->albums_tests->set_protection_policy(id: $this->albumID3, is_nsfw: true, password: TestConstants::ALBUM_PWD_1);
+		$this->albums_tests->set_protection_policy(id: $this->albumID2, is_nsfw: false, password: TestConstants::ALBUM_PWD_1);
+		$this->albums_tests->set_protection_policy(id: $this->albumID3, is_nsfw: false, password: TestConstants::ALBUM_PWD_1);
 
 		Auth::logout();
 		Session::flush();
