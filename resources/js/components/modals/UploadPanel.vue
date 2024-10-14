@@ -49,14 +49,14 @@
 			<div class="flex justify-center">
 				<Button
 					v-if="showCancel"
-					@click="closeCancel"
+					@click="cancel"
 					severity="secondary"
 					class="w-full font-bold border-none border-1 rounded-none rounded-bl-xl"
 				>
 					{{ $t("lychee.CANCEL") }}
 				</Button>
 				<Button
-					@click="closeCancel"
+					@click="close"
 					severity="secondary"
 					class="w-full font-bold border-none border-1 rounded-none rounded-br-xl"
 					:class="showCancel ? '' : 'rounded-bl-xl'"
@@ -91,7 +91,7 @@ const setup = ref(undefined as undefined | App.Http.Resources.GalleryConfigs.Upl
 const albumId = ref(props.albumId);
 
 const emits = defineEmits<{
-	close: [];
+	refresh: [];
 }>();
 
 const isDropping = ref(false);
@@ -133,13 +133,23 @@ function uploadCompleted(index: number) {
 			break;
 		}
 	}
+
+	if (countCompleted.value === files.value.length) {
+		AlbumService.clearCache(props.albumId ?? "unsorted");
+		emits("refresh");
+	}
 }
 
-function closeCancel() {
+function cancel() {
 	visible.value = false;
 	files.value = [];
 	AlbumService.clearCache(props.albumId ?? "unsorted");
-	emits("close");
+	emits("refresh");
+}
+
+function close() {
+	files.value = [];
+	visible.value = false;
 }
 
 load();

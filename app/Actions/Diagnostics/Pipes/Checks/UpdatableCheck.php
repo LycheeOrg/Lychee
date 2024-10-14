@@ -39,7 +39,9 @@ class UpdatableCheck implements DiagnosticPipe
 			try {
 				self::assertUpdatability();
 				// @codeCoverageIgnoreStart
-			} catch (ConfigurationException|ExternalComponentMissingException $e) {
+			} catch (ExternalComponentMissingException $e) {
+				$data[] = 'Info: ' . $e->getMessage();
+			} catch (ConfigurationException $e) {
 				$data[] = 'Warning: ' . $e->getMessage();
 			} catch (InsufficientFilesystemPermissions|VersionControlException $e) {
 				$data[] = 'Error: ' . $e->getMessage();
