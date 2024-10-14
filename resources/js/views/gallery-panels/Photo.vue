@@ -252,7 +252,7 @@ function toggleStar() {
 function rotatePhotoCCW() {
 	PhotoService.rotate(photoId.value, "-1").then(() => {
 		AlbumService.clearCache(props.albumid);
-		refresh();
+		load();
 	});
 }
 
@@ -260,7 +260,7 @@ function rotatePhotoCCW() {
 function rotatePhotoCW() {
 	PhotoService.rotate(photoId.value, "1").then(() => {
 		AlbumService.clearCache(props.albumid);
-		refresh();
+		load();
 	});
 }
 
