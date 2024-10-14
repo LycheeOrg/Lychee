@@ -137,11 +137,13 @@ const total = computed(() => {
 		num_albums: 0,
 	};
 
-	albumSpace.value?.filter((a) => !a.is_nsfw || are_nsfw_visible.value)?.reduce((acc, a) => {
-		sumData.size += a.size;
-		sumData.num_photos += a.num_photos;
-		return acc;
-	}, sumData);
+	albumSpace.value
+		?.filter((a) => !a.is_nsfw || are_nsfw_visible.value)
+		?.reduce((acc, a) => {
+			sumData.size += a.size;
+			sumData.num_photos += a.num_photos;
+			return acc;
+		}, sumData);
 
 	sumData.num_albums = albumSpace.value?.filter((a) => !a.is_nsfw || are_nsfw_visible.value)?.length ?? 0;
 
@@ -204,5 +206,4 @@ function loadTotalAlbumSpace() {
 }
 
 onKeyStroke("h", () => !shouldIgnoreKeystroke() && (are_nsfw_visible.value = !are_nsfw_visible.value));
-
 </script>
