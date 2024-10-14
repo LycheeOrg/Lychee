@@ -155,7 +155,7 @@ const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
 lycheeStore.resetSearch();
 
-const { are_nsfw_visible, is_full_screen, is_login_open, nsfw_consented, is_slideshow_active } = storeToRefs(lycheeStore);
+const { are_nsfw_visible, is_full_screen, is_login_open, nsfw_consented, is_slideshow_active, is_upload_visible } = storeToRefs(lycheeStore);
 
 // Reset the slideshow.
 is_slideshow_active.value = false;
@@ -204,7 +204,7 @@ const {
 	toggleTag,
 	isCopyVisible,
 	toggleCopy,
-} = useGalleryModals();
+} = useGalleryModals(is_upload_visible);
 
 const {
 	selectedPhotosIdx,
