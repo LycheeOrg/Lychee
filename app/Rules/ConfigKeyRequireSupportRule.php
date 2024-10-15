@@ -3,11 +3,10 @@
 namespace App\Rules;
 
 use App\Models\Configs;
-use Illuminate\Contracts\Validation\DataAwareRule;
 use Illuminate\Contracts\Validation\ValidationRule;
 use LycheeVerify\Contract\VerifyInterface;
 
-class ConfigKeyRequireSupportRule implements DataAwareRule, ValidationRule
+class ConfigKeyRequireSupportRule implements ValidationRule
 {
 	use ValidateTrait;
 
@@ -19,34 +18,12 @@ class ConfigKeyRequireSupportRule implements DataAwareRule, ValidationRule
 	}
 
 	/**
-	 * All of the data under validation.
-	 *
-	 * @var array<string,mixed>
-	 */
-	protected $data = [];
-
-	/**
-	 * Set the data under validation.
-	 *
-	 * @param array<string,mixed> $data
-	 *
-	 * @phpstan-ignore-next-line
-	 */
-	public function setData(array $data): static
-	{
-		$this->data = $data;
-
-		return $this;
-	}
-
-	/**
 	 * {@inheritDoc}
 	 */
 	public function validate(string $attribute, mixed $value, \Closure $fail): void
 	{
 		if (is_string($value) === false) {
-			$fail($attribute . ' is not a string');
-
+			// This is taken care of in ConfigKeyRule
 			return;
 		}
 
