@@ -15,100 +15,12 @@ namespace Tests\Unit\Rules;
 use App\Rules\BooleanRequireSupportRule;
 use App\Rules\IntegerRequireSupportRule;
 use App\Rules\StringRequireSupportRule;
-use LycheeVerify\Contract\Status;
-use LycheeVerify\Contract\VerifyInterface;
-use LycheeVerify\Exceptions\SupporterOnlyOperationException;
 use Tests\AbstractTestCase;
+use Tests\Traits\RequireSupport;
 
 class RequireSupportRuleTest extends AbstractTestCase
 {
-	private function getFree(): VerifyInterface
-	{
-		return new class() implements VerifyInterface {
-			public function get_status(): Status
-			{
-				return Status::FREE_EDITION;
-			}
-
-			public function check(Status $required_status = Status::SUPPORTER_EDITION): bool
-			{
-				return $required_status === Status::FREE_EDITION;
-			}
-
-			public function is_supporter(): bool
-			{
-				return false;
-			}
-
-			public function is_plus(): bool
-			{
-				return false;
-			}
-
-			public function authorize(Status $required_status = Status::SUPPORTER_EDITION): void
-			{
-				if (!$this->check($required_status)) {
-					throw new SupporterOnlyOperationException($required_status);
-				}
-			}
-
-			public function when(mixed $valIfTrue, mixed $valIfFalse, Status $required_status = Status::SUPPORTER_EDITION): mixed
-			{
-				$retValue = $this->check($required_status) ? $valIfTrue : $valIfFalse;
-
-				return is_callable($retValue) ? $retValue() : $retValue;
-			}
-
-			public function validate(): bool
-			{
-				return true;
-			}
-		};
-	}
-
-	private function getSupporter(): VerifyInterface
-	{
-		return new class() implements VerifyInterface {
-			public function get_status(): Status
-			{
-				return Status::SUPPORTER_EDITION;
-			}
-
-			public function check(Status $required_status = Status::SUPPORTER_EDITION): bool
-			{
-				return $required_status === Status::FREE_EDITION || $required_status === Status::SUPPORTER_EDITION;
-			}
-
-			public function is_supporter(): bool
-			{
-				return true;
-			}
-
-			public function is_plus(): bool
-			{
-				return false;
-			}
-
-			public function authorize(Status $required_status = Status::SUPPORTER_EDITION): void
-			{
-				if (!$this->check($required_status)) {
-					throw new SupporterOnlyOperationException($required_status);
-				}
-			}
-
-			public function when(mixed $valIfTrue, mixed $valIfFalse, Status $required_status = Status::SUPPORTER_EDITION): mixed
-			{
-				$retValue = $this->check($required_status) ? $valIfTrue : $valIfFalse;
-
-				return is_callable($retValue) ? $retValue() : $retValue;
-			}
-
-			public function validate(): bool
-			{
-				return true;
-			}
-		};
-	}
+	use RequireSupport;
 
 	public function testNegative(): void
 	{
