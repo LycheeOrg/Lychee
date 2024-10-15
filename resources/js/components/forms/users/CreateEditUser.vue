@@ -96,6 +96,8 @@ function createUser() {
 		username.value = undefined;
 		toast.add({ severity: "success", summary: "Success", detail: "User created", life: 3000 });
 		emits("refresh");
+	}).catch((e) => {
+		toast.add({ severity: "error", summary: "Error", detail: e.response.data.message, life: 3000 });
 	});
 }
 
@@ -118,6 +120,8 @@ function editUser() {
 		username.value = undefined;
 		toast.add({ severity: "success", summary: "Change saved!", detail: "User updated", life: 3000 });
 		emits("refresh");
+	}).catch((e) => {
+		toast.add({ severity: "error", summary: "Error", detail: e.response.data.message, life: 3000 });
 	});
 }
 
