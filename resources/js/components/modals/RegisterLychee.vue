@@ -18,7 +18,7 @@
 					</template>
 				</div>
 				<div class="flex justify-center">
-					<Button @click="closeCallback" severity="info" class="w-full font-bold border-none rounded-none rounded-bl-xl rounded-br-xl">
+					<Button @click="closeCallback" severity="info" class="w-full font-bold border-none rounded-none rounded-bl-xl">
 						{{ $t("lychee.CLOSE") }}
 					</Button>
 					<Button
@@ -26,7 +26,7 @@
 						@click="register"
 						severity="contrast"
 						:disabled="!isValidForm"
-						class="w-full font-bold border-none rounded-none rounded-bl-xl rounded-br-xl"
+						class="w-full font-bold border-none rounded-none rounded-br-xl"
 					>
 						{{ "Register" }}
 					</Button>

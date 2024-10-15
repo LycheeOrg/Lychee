@@ -32,7 +32,7 @@ const props = withDefaults(
 );
 
 const emits = defineEmits<{
-	"upload:completed": [index: number];
+	"upload:completed": [index: number, status: "done" | "error"];
 }>();
 
 const status = ref(props.status);
@@ -49,17 +49,15 @@ const meta = ref({
 	total_chunks: Math.ceil(size.value / props.chunkSize),
 } as App.Http.Resources.Editable.UploadMetaResource);
 const controller = ref(new AbortController());
+const errorMessage = ref(undefined as string | undefined);
 
+// prettier-ignore
 const statusMessage = computed(() => {
 	switch (status.value) {
-		case "uploading":
-			return trans("lychee.UPLOAD_UPLOADING");
-		case "done":
-			return trans("lychee.UPLOAD_FINISHED");
-		case "error":
-			return trans("lychee.UPLOAD_FAILED_ERROR");
-		default:
-			return "";
+		case "uploading": return trans("lychee.UPLOAD_UPLOADING");
+		case "done":      return trans("lychee.UPLOAD_FINISHED");
+		case "error":     return errorMessage ?? trans("lychee.UPLOAD_FAILED_ERROR");
+		default:          return "";
 	}
 });
 
@@ -112,16 +110,19 @@ function process() {
 			if (response.data.chunk_number === response.data.total_chunks) {
 				progress.value = 100;
 				status.value = "done";
-				emits("upload:completed", props.index);
+				emits("upload:completed", props.index, "done");
 			} else {
 				chunkStart.value += props.chunkSize;
 				process();
 			}
 		})
 		.catch((error) => {
+			if (error.response.status === 413) {
+				errorMessage.value = error.response.data.message;
+			}
 			progress.value = 100;
 			status.value = "error";
-			emits("upload:completed", props.index);
+			emits("upload:completed", props.index, "error");
 		});
 }
 

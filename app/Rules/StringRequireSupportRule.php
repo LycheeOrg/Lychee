@@ -8,7 +8,7 @@ use LycheeVerify\Contract\VerifyInterface;
 /**
  * This rule is designed specifically to avoid path injection.
  */
-class RequireSupportRule implements ValidationRule
+class StringRequireSupportRule implements ValidationRule
 {
 	protected VerifyInterface $verify;
 	protected mixed $expected;

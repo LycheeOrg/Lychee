@@ -36,6 +36,9 @@ class RequestAttribute
 
 	public const PASSWORD_ATTRIBUTE = 'password';
 	public const OLD_PASSWORD_ATTRIBUTE = 'old_password';
+	public const HAS_QUOTA_ATTRIBUTE = 'has_quota';
+	public const QUOTA_ATTRIBUTE = 'quota_kb';
+	public const NOTE_ATTRIBUTE = 'note';
 
 	public const SORTING_COLUMN_ATTRIBUTE = 'sorting_column';
 	public const SORTING_ORDER_ATTRIBUTE = 'sorting_order';

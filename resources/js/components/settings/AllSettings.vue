@@ -244,11 +244,15 @@ function reset(configKey: string) {
 }
 
 function save() {
-	SettingsService.setConfigs({ configs: modified.value }).then(() => {
-		modified.value = [];
-		toast.add({ severity: "success", summary: "Change saved!", detail: "Settings have been modified as per request", life: 3000 });
-		load();
-	});
+	SettingsService.setConfigs({ configs: modified.value })
+		.then(() => {
+			modified.value = [];
+			toast.add({ severity: "success", summary: "Change saved!", detail: "Settings have been modified as per request", life: 3000 });
+			load();
+		})
+		.catch((e) => {
+			toast.add({ severity: "error", summary: "Error!", detail: e.response.data.message, life: 3000 });
+		});
 }
 
 load();

@@ -9,6 +9,7 @@ use App\Http\Requests\Traits\HasConfigsTrait;
 use App\Http\Resources\Editable\EditableConfigResource;
 use App\Models\Configs;
 use App\Policies\SettingsPolicy;
+use App\Rules\ConfigKeyRequireSupportRule;
 use App\Rules\ConfigKeyRule;
 use App\Rules\ConfigValueRule;
 use Illuminate\Support\Facades\Gate;
@@ -39,7 +40,7 @@ class SetConfigsRequest extends BaseApiRequest implements HasConfigs
 	{
 		return [
 			RequestAttribute::CONFIGS_ATTRIBUTE => ['required'],
-			RequestAttribute::CONFIGS_ARRAY_KEY_ATTRIBUTE => ['required', new ConfigKeyRule()],
+			RequestAttribute::CONFIGS_ARRAY_KEY_ATTRIBUTE => ['required', new ConfigKeyRule(), new ConfigKeyRequireSupportRule($this->verify)],
 			RequestAttribute::CONFIGS_ARRAY_VALUE_ATTRIBUTE => ['present', new ConfigValueRule()],
 		];
 	}

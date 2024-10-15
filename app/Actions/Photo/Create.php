@@ -8,6 +8,7 @@ use App\Actions\Photo\Pipes\PhotoPartner;
 use App\Actions\Photo\Pipes\Shared;
 use App\Actions\Photo\Pipes\Standalone;
 use App\Actions\Photo\Pipes\VideoPartner;
+use App\Actions\Statistics\Spaces;
 use App\Assets\Features;
 use App\Contracts\Exceptions\LycheeException;
 use App\Contracts\Models\AbstractAlbum;
@@ -21,11 +22,14 @@ use App\DTO\PhotoCreate\VideoPartnerDTO;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\PhotoResyncedException;
 use App\Exceptions\PhotoSkippedException;
+use App\Exceptions\QuotaExceededException;
 use App\Image\Files\NativeLocalFile;
 use App\Legacy\Actions\Photo\Create as LegacyPhotoCreate;
 use App\Models\Photo;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Pipeline\Pipeline;
+use LycheeVerify\Verify;
+use User;
 
 class Create
 {
@@ -53,10 +57,13 @@ class Create
 	 * @return Photo the newly created or updated photo
 	 *
 	 * @throws ModelNotFoundException
+	 * @throws
 	 * @throws LycheeException
 	 */
 	public function add(NativeLocalFile $sourceFile, ?AbstractAlbum $album, ?int $fileLastModifiedTime = null): Photo
 	{
+		$this->checkQuota($sourceFile);
+
 		if (Features::inactive('create-photo-via-pipes')) {
 			$oldCodePath = new LegacyPhotoCreate($this->strategyParameters->importMode, $this->strategyParameters->intendedOwnerId);
 
@@ -279,5 +286,46 @@ class Create
 		];
 
 		return $this->executePipeOnDTO($finalize, $finalizeDTO)->getPhoto();
+	}
+
+	/**
+	 * Check whether the user has enough quota to upload the file.
+	 *
+	 * @param NativeLocalFile $sourceFile
+	 *
+	 * @return void
+	 *
+	 * @throws QuotaExceededException
+	 *
+	 * @codeCoverageIgnore
+	 */
+	private function checkQuota(NativeLocalFile $sourceFile): void
+	{
+		$verify = resolve(Verify::class);
+
+		// if the installation is not validated
+		// if the user is not a supporter, we skip.
+		if (!$verify->validate() || !$verify->is_supporter()) {
+			return;
+		}
+
+		$user = \User::find($this->strategyParameters->intendedOwnerId) ?? throw new ModelNotFoundException();
+
+		// User does not have quota
+		if ($user->quota_kb === null) {
+			return;
+		}
+
+		// Admins can upload without quota
+		if ($user->may_administrate === true) {
+			return;
+		}
+
+		$spaces = (new Spaces())->getFullSpacePerUser($user->id);
+		$used = $spaces[0]['size'];
+
+		if (($user->quota_kb * 1024) <= $used + $sourceFile->getFilesize()) {
+			throw new QuotaExceededException();
+		}
 	}
 }

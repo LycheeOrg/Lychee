@@ -50,11 +50,13 @@ class UserManagementController extends Controller
 	public function save(SetUserSettingsRequest $request, Save $save): void
 	{
 		$save->do(
-			$request->user2(),
-			$request->username(),
-			$request->password(),
-			$request->mayUpload(),
-			$request->mayEditOwnSettings()
+			user: $request->user2(),
+			username: $request->username(),
+			password: $request->password(),
+			mayUpload: $request->mayUpload(),
+			mayEditOwnSettings: $request->mayEditOwnSettings(),
+			quota_kb: $request->quota_kb(),
+			note: $request->note()
 		);
 	}
 
@@ -90,7 +92,10 @@ class UserManagementController extends Controller
 			username: $request->username(),
 			password: $request->password(),
 			mayUpload: $request->mayUpload(),
-			mayEditOwnSettings: $request->mayEditOwnSettings());
+			mayEditOwnSettings: $request->mayEditOwnSettings(),
+			quota_kb: $request->quota_kb(),
+			note: $request->note()
+		);
 
 		return new UserManagementResource($user, ['id' => $user->id, 'size' => 0], $request->is_se());
 	}

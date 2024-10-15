@@ -3,12 +3,14 @@
 namespace App\Http\Requests\Photo;
 
 use App\Contracts\Http\Requests\HasAbstractAlbum;
+use App\Contracts\Http\Requests\HasSeStatusBoolean;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\FileStatus;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\Authorize\AuthorizeCanEditAlbumTrait;
 use App\Http\Requests\Traits\HasAbstractAlbumTrait;
+use App\Http\Requests\Traits\HasSeStatusBooleanTrait;
 use App\Http\Resources\Editable\UploadMetaResource;
 use App\Policies\AlbumPolicy;
 use App\Rules\AlbumIDRule;
@@ -17,10 +19,11 @@ use App\Rules\FileUuidRule;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Gate;
 
-class UploadPhotoRequest extends BaseApiRequest implements HasAbstractAlbum
+class UploadPhotoRequest extends BaseApiRequest implements HasAbstractAlbum, HasSeStatusBoolean
 {
 	use HasAbstractAlbumTrait;
 	use AuthorizeCanEditAlbumTrait;
+	use HasSeStatusBooleanTrait;
 
 	protected ?int $file_last_modified_time;
 	// protected UploadedFile $file;
@@ -44,7 +47,7 @@ class UploadPhotoRequest extends BaseApiRequest implements HasAbstractAlbum
 		return [
 			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['present', new AlbumIDRule(true)],
 			RequestAttribute::FILE_LAST_MODIFIED_TIME => 'sometimes|nullable|numeric',
-			RequestAttribute::FILE_ATTRIBUTE => 'required|file',
+			RequestAttribute::FILE_ATTRIBUTE => ['required', 'file'],
 			'file_name' => 'required|string',
 			'uuid_name' => ['present', new FileUuidRule()],
 			'extension' => ['present', new ExtensionRule()],
