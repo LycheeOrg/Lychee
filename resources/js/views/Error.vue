@@ -1,6 +1,6 @@
 <template>
 	<template v-if="is_debug_enabled">
-		<template v-if="lycheeError !== null" >
+		<template v-if="lycheeError !== null">
 			<div v-if="lycheeError.exception" class="w-full h-full fixed top-0 left-0 bg-panel z-50">
 				<Message severity="error" @click="closeError">
 					<span class="font-bold text-xl w-full" v-if="lycheeError.exception"
@@ -24,7 +24,7 @@
 					<span class="font-bold text-xl w-full">{{ lycheeError.message }}</span>
 				</Message>
 			</div>
-			<div v-else  v-html="lycheeError"></div>
+			<div v-else v-html="lycheeError"></div>
 		</template>
 		<div v-if="jsError !== null" class="w-full h-full absolute top-0 left-0 bg-panel z-50">
 			<Message severity="error z-50" @click="closeError">

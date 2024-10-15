@@ -88,17 +88,19 @@ function createUser() {
 		password: password.value,
 		may_edit_own_settings: may_edit_own_settings.value,
 		may_upload: may_upload.value,
-	}).then(() => {
-		visible.value = false;
-		password.value = undefined;
-		may_upload.value = false;
-		may_edit_own_settings.value = false;
-		username.value = undefined;
-		toast.add({ severity: "success", summary: "Success", detail: "User created", life: 3000 });
-		emits("refresh");
-	}).catch((e) => {
-		toast.add({ severity: "error", summary: "Error", detail: e.response.data.message, life: 3000 });
-	});
+	})
+		.then(() => {
+			visible.value = false;
+			password.value = undefined;
+			may_upload.value = false;
+			may_edit_own_settings.value = false;
+			username.value = undefined;
+			toast.add({ severity: "success", summary: "Success", detail: "User created", life: 3000 });
+			emits("refresh");
+		})
+		.catch((e) => {
+			toast.add({ severity: "error", summary: "Error", detail: e.response.data.message, life: 3000 });
+		});
 }
 
 function editUser() {
@@ -112,17 +114,19 @@ function editUser() {
 		password: password.value,
 		may_edit_own_settings: may_edit_own_settings.value,
 		may_upload: may_upload.value,
-	}).then(() => {
-		visible.value = false;
-		password.value = undefined;
-		may_upload.value = false;
-		may_edit_own_settings.value = false;
-		username.value = undefined;
-		toast.add({ severity: "success", summary: "Change saved!", detail: "User updated", life: 3000 });
-		emits("refresh");
-	}).catch((e) => {
-		toast.add({ severity: "error", summary: "Error", detail: e.response.data.message, life: 3000 });
-	});
+	})
+		.then(() => {
+			visible.value = false;
+			password.value = undefined;
+			may_upload.value = false;
+			may_edit_own_settings.value = false;
+			username.value = undefined;
+			toast.add({ severity: "success", summary: "Change saved!", detail: "User updated", life: 3000 });
+			emits("refresh");
+		})
+		.catch((e) => {
+			toast.add({ severity: "error", summary: "Error", detail: e.response.data.message, life: 3000 });
+		});
 }
 
 watch(
