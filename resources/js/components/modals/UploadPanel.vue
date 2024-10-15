@@ -168,9 +168,9 @@ function uploadNext(searchIndex = 0, max_processing_limit: number | undefined = 
 	return isUploading;
 }
 
-function uploadCompleted(index: number) {
+function uploadCompleted(index: number, status: "done" | "error") {
 	// countCompleted.value++;
-	list_upload_files.value[index].status = "done";
+	list_upload_files.value[index].status = status;
 
 	const isUploading = uploadNext(index, 1);
 
