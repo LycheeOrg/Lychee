@@ -24,7 +24,7 @@
 					}}</span>
 					<div
 						v-if="props.photo.preformatted.description"
-						class="pb-0.5 pt-4 pl-8 col-span-2 prose prose-invert prose-sm"
+						class="pb-0.5 pt-4 pl-8 col-span-2 prose dark:prose-invert prose-sm"
 						v-html="props.photo.preformatted.description"
 					></div>
 
