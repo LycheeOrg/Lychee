@@ -22,7 +22,7 @@
 					<Checkbox inputId="hasQuota" v-model="has_quota" :binary="true" />
 					<label for="hasQuota" class="ml-2 cursor-pointer">User has quota limit.</label>
 				</div>
-				<div class="w-full flex items-center text-muted-color" v-if="has_quota">
+				<div class="w-full flex items-center text-muted-color" v-if="has_quota === true">
 					<InputText id="quota_kb" v-model="quota_kb" aria-label="quota_kb" class="!w-1/2" />
 					<label class="pl-4 w-1/2" for="username">{{ "quota in kB (0 for default)" }}</label>
 				</div>
@@ -87,7 +87,7 @@ const note = ref(props.user?.note ?? undefined);
 const password = ref(undefined as string | undefined);
 const may_edit_own_settings = ref(props.user?.may_edit_own_settings ?? false);
 const may_upload = ref(props.user?.may_upload ?? false);
-const has_quota = ref(props.user?.quota_kb !== null);
+const has_quota = ref(props.user?.quota_kb !== undefined && props.user?.quota_kb !== null);
 const quota_kb = ref(props.user?.quota_kb ?? 0);
 
 const toast = useToast();
@@ -163,7 +163,7 @@ watch(
 		username.value = newUser?.username;
 		may_edit_own_settings.value = newUser?.may_edit_own_settings ?? false;
 		may_upload.value = newUser?.may_upload ?? false;
-		has_quota.value = newUser?.quota_kb !== null;
+		has_quota.value = newUser?.quota_kb !== undefined && newUser?.quota_kb !== null;
 		quota_kb.value = newUser?.quota_kb ?? 0;
 	},
 );
