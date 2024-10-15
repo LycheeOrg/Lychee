@@ -51,6 +51,12 @@ class ConfigKeyRequireSupportRule implements DataAwareRule, ValidationRule
 		}
 
 		/** @var string $value */
+		if (!array_key_exists($value, Configs::get())) {
+			// This is taken care of in ConfigKeyRule
+			return;
+		}
+
+		/** @var string $value */
 		$config = Configs::where('key', '=', $value)->firstOrFail();
 		if ($config->level === 1 && !$this->verify->is_supporter()) {
 			$fail('Error: This functionality is only available in the Supporter Edition of Lychee. See here: https://lycheeorg.github.io/get-supporter-edition/');
