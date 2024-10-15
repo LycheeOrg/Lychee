@@ -1,11 +1,9 @@
 import { modKey, shiftKeyState } from "@/utils/keybindings-utils";
-import { computed, ComputedRef, Ref, ref } from "vue";
+import { computed, Ref, ref } from "vue";
 
 export function useSelection(
 	photos: Ref<{ [key: number]: App.Http.Resources.Models.PhotoResource }>,
-	albums:
-		| ComputedRef<{ [key: number]: App.Http.Resources.Models.ThumbAlbumResource }>
-		| Ref<{ [key: number]: App.Http.Resources.Models.ThumbAlbumResource }>,
+	albums: Ref<{ [key: number]: App.Http.Resources.Models.ThumbAlbumResource }>,
 ) {
 	const selectedPhotosIdx = ref([] as number[]);
 	const selectedAlbumsIdx = ref([] as number[]);

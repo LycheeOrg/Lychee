@@ -65,14 +65,24 @@
 				:parent-id="albumid"
 				:photo="selectedPhoto"
 				:photo-ids="selectedPhotosIds"
-				@tagged="refresh"
+				@tagged="
+					() => {
+						unselect();
+						refresh();
+					}
+				"
 			/>
 			<PhotoCopyDialog
 				v-model:visible="isCopyVisible"
 				:parent-id="albumid"
 				:photo="selectedPhoto"
 				:photo-ids="selectedPhotosIds"
-				@copied="refresh"
+				@copied="
+					() => {
+						unselect();
+						refresh();
+					}
+				"
 			/>
 			<MoveDialog
 				v-model:visible="isMoveVisible"
@@ -81,7 +91,12 @@
 				:photo-ids="selectedPhotosIds"
 				:album="selectedAlbum"
 				:album-ids="selectedAlbumsIds"
-				@moved="refresh"
+				@moved="
+					() => {
+						unselect();
+						refresh();
+					}
+				"
 			/>
 			<DeleteDialog
 				v-model:visible="isDeleteVisible"
@@ -90,17 +105,38 @@
 				:photo-ids="selectedPhotosIds"
 				:album="selectedAlbum"
 				:album-ids="selectedAlbumsIds"
-				@deleted="refresh"
+				@deleted="
+					() => {
+						unselect();
+						refresh();
+					}
+				"
 			/>
 
 			<!-- Dialogs for albums -->
-			<RenameDialog v-model:visible="isRenameVisible" :parent-id="undefined" :album="selectedAlbum" :photo="selectedPhoto" @renamed="refresh" />
+			<RenameDialog
+				v-model:visible="isRenameVisible"
+				:parent-id="undefined"
+				:album="selectedAlbum"
+				:photo="selectedPhoto"
+				@renamed="
+					() => {
+						unselect();
+						refresh();
+					}
+				"
+			/>
 			<AlbumMergeDialog
 				v-model:visible="isMergeAlbumVisible"
 				:parent-id="albumid"
 				:album="selectedAlbum"
 				:album-ids="selectedAlbumsIds"
-				@merged="refresh"
+				@merged="
+					() => {
+						unselect();
+						refresh();
+					}
+				"
 			/>
 
 			<ContextMenu ref="menu" :model="Menu" :class="Menu.length === 0 ? 'hidden' : ''">
@@ -149,6 +185,7 @@ import SensitiveWarning from "@/components/gallery/SensitiveWarning.vue";
 import Unlock from "@/components/forms/album/Unlock.vue";
 import LoginModal from "@/components/modals/LoginModal.vue";
 import Button from "primevue/button";
+import { useMouseEvents } from "@/composables/album/uploadEvents";
 
 const route = useRoute();
 const router = useRouter();
@@ -164,7 +201,8 @@ const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
 lycheeStore.resetSearch();
 
-const { are_nsfw_visible, is_full_screen, is_login_open, nsfw_consented, is_slideshow_active, is_upload_visible } = storeToRefs(lycheeStore);
+const { are_nsfw_visible, is_full_screen, is_login_open, nsfw_consented, is_slideshow_active, is_upload_visible, list_upload_files } =
+	storeToRefs(lycheeStore);
 
 // Reset the slideshow.
 is_slideshow_active.value = false;
@@ -178,20 +216,11 @@ function toggleSlideShow() {
 }
 
 // Set up Album ID reference. This one is updated at each page change.
-const { isAlbumConsented, isPasswordProtected, user, modelAlbum, album, layout, photos, config, loadLayout, refresh } = useAlbumRefresher(
+const { isAlbumConsented, isPasswordProtected, user, modelAlbum, album, rights, layout, photos, config, loadLayout, refresh } = useAlbumRefresher(
 	albumid,
 	auth,
 	is_login_open,
 	nsfw_consented,
-);
-
-watch(
-	() => route.params.albumid,
-	(newId, _oldId) => {
-		unselect();
-		albumid.value = newId as string;
-		refresh();
-	},
 );
 
 const children = computed<App.Http.Resources.Models.ThumbAlbumResource[]>(() => modelAlbum.value?.albums ?? []);
@@ -320,4 +349,28 @@ onKeyStroke("m", () => !shouldIgnoreKeystroke() && album.value?.rights.can_move 
 onKeyStroke(["Delete", "Backspace"], () => !shouldIgnoreKeystroke() && album.value?.rights.can_delete && hasSelection() && toggleDelete());
 
 onKeyStroke([getModKey(), "a"], () => !shouldIgnoreKeystroke() && selectEverything());
+
+const { onPaste, dragEnd, dropUpload } = useMouseEvents(rights, is_upload_visible, list_upload_files);
+
+window.addEventListener("paste", onPaste);
+window.addEventListener("dragover", dragEnd);
+window.addEventListener("drop", dropUpload);
+
+router.afterEach(() => {
+	window.removeEventListener("paste", onPaste);
+	window.removeEventListener("dragover", dragEnd);
+	window.removeEventListener("drop", dropUpload);
+});
+
+watch(
+	() => route.params.albumid,
+	(newId, _oldId) => {
+		unselect();
+		albumid.value = newId as string;
+		window.addEventListener("paste", onPaste);
+		window.addEventListener("dragover", dragEnd);
+		window.addEventListener("drop", dropUpload);
+		refresh();
+	},
+);
 </script>

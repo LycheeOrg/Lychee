@@ -1,19 +1,19 @@
-import { computed, ComputedRef, Ref, ref } from "vue";
+import { computed, Ref, ref } from "vue";
 
 type Selectors = {
-	config: ComputedRef<App.Http.Resources.GalleryConfigs.AlbumConfig> | Ref<App.Http.Resources.GalleryConfigs.AlbumConfig | undefined> | null;
-	album: ComputedRef<
+	config: Ref<App.Http.Resources.GalleryConfigs.AlbumConfig | undefined> | null;
+	album: Ref<
 		| App.Http.Resources.Models.AlbumResource
 		| App.Http.Resources.Models.TagAlbumResource
 		| App.Http.Resources.Models.SmartAlbumResource
 		| undefined
 	> | null;
 	selectedPhotosIdx: Ref<number[]> | undefined;
-	selectedPhoto: ComputedRef<App.Http.Resources.Models.PhotoResource | undefined> | undefined;
-	selectedPhotos: ComputedRef<App.Http.Resources.Models.PhotoResource[]> | undefined;
+	selectedPhoto: Ref<App.Http.Resources.Models.PhotoResource | undefined> | undefined;
+	selectedPhotos: Ref<App.Http.Resources.Models.PhotoResource[]> | undefined;
 	selectedAlbumIdx: Ref<number[]>;
-	selectedAlbum: ComputedRef<App.Http.Resources.Models.ThumbAlbumResource | undefined>;
-	selectedAlbums: ComputedRef<App.Http.Resources.Models.ThumbAlbumResource[]>;
+	selectedAlbum: Ref<App.Http.Resources.Models.ThumbAlbumResource | undefined>;
+	selectedAlbums: Ref<App.Http.Resources.Models.ThumbAlbumResource[]>;
 };
 
 type PhotoCallbacks = {
