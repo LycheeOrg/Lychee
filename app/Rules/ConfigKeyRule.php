@@ -13,7 +13,6 @@ class ConfigKeyRule implements ValidationRule
 	public function validate(string $attribute, mixed $value, \Closure $fail): void
 	{
 		if (is_string($value) === false) {
-			dd($value);
 			$fail($attribute . ' is not a string');
 
 			return;

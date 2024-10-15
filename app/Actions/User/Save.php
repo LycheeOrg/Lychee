@@ -38,6 +38,11 @@ class Save
 			throw new ConflictingPropertyException('Username already exists');
 		}
 
+		if ($quota_kb === 0) {
+			$default = \Configs::getValueAsInt('default_user_quota');
+			$quota_kb = $default === 0 ? null : $default;
+		}
+
 		$user->username = $username;
 		$user->may_upload = $mayUpload;
 		$user->may_edit_own_settings = $mayEditOwnSettings;

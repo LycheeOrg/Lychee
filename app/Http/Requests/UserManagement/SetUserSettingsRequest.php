@@ -56,7 +56,7 @@ class SetUserSettingsRequest extends BaseApiRequest implements HasUsername, HasP
 			RequestAttribute::MAY_EDIT_OWN_SETTINGS_ATTRIBUTE => 'present|boolean',
 			RequestAttribute::HAS_QUOTA_ATTRIBUTE => ['sometimes', 'boolean', new BooleanRequireSupportRule(false, $this->verify)],
 			RequestAttribute::QUOTA_ATTRIBUTE => ['sometimes', 'int', new IntegerRequireSupportRule(0, $this->verify)],
-			RequestAttribute::NOTE_ATTRIBUTE => ['sometimes', 'string', new StringRequireSupportRule('', $this->verify)],
+			RequestAttribute::NOTE_ATTRIBUTE => ['sometimes', 'nullable', 'string', new StringRequireSupportRule('', $this->verify)],
 		];
 	}
 
