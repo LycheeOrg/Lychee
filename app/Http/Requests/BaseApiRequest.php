@@ -15,13 +15,14 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
+use LycheeVerify\Contract\VerifyInterface;
 use LycheeVerify\Verify;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
 abstract class BaseApiRequest extends FormRequest
 {
 	protected AlbumFactory $albumFactory;
-	protected Verify $verify;
+	protected VerifyInterface $verify;
 
 	/**
 	 * @throws FrameworkException
