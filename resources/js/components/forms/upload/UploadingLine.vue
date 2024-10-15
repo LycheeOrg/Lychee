@@ -8,7 +8,7 @@
 		<span class="text-center w-full hidden group-hover:block text-danger-700 cursor-pointer" @click="controller.abort()">{{
 			$t("lychee.CANCEL")
 		}}</span>
-		<ProgressBar :class="progressClass" :value="progress" :show-value="false" :pt:value:class="'duration-300'"></ProgressBar>
+		<ProgressBar :class="progressClass" :value="progressBar" :show-value="false" :pt:value:class="'duration-300'"></ProgressBar>
 	</div>
 </template>
 <script setup lang="ts">
@@ -23,7 +23,7 @@ const props = withDefaults(
 		albumId: string | null;
 		file: File;
 		chunkSize: number;
-		status: string;
+		status: "uploading" | "waiting" | "done" | "error";
 		index: number;
 	}>(),
 	{
@@ -63,36 +63,31 @@ const statusMessage = computed(() => {
 	}
 });
 
+// prettier-ignore
 const errorFlexClass = computed(() => {
 	switch (status.value) {
-		case "error":
-			return "flex-wrap";
-		default:
-			return "";
+		case "error": return "flex-wrap";
+		default:      return "";
 	}
 });
 
+// prettier-ignore
 const statusClass = computed(() => {
 	switch (status.value) {
-		case "uploading":
-			return "text-sky-500 text-right pr-1";
-		case "done":
-			return "text-create-600 text-right pr-1";
-		case "error":
-			return "text-danger-700 text-right pr-1";
-		default:
-			return "text-warning-600 text-right pr-1";
+		case "uploading": return "text-sky-500 text-right pr-1";
+		case "done":      return "text-create-600 text-right pr-1";
+		case "error":     return "text-danger-700 text-right pr-1";
+		default:          return "text-warning-600 text-right pr-1";
 	}
 });
 
+const progressBar = computed(() => (status.value === "done" ? 100 : progress.value));
+// prettier-ignore
 const progressClass = computed(() => {
 	switch (status.value) {
-		case "done":
-			return "successProgressBarSeverity";
-		case "error":
-			return "errorProgressBarSeverity";
-		default:
-			return "";
+		case "done":  return "successProgressBarSeverity";
+		case "error": return "errorProgressBarSeverity";
+		default:      return "";
 	}
 });
 

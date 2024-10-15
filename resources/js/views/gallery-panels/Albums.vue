@@ -63,16 +63,54 @@
 		</template>
 	</ContextMenu>
 	<!-- Dialogs for albums -->
-	<MoveDialog v-model:visible="isMoveVisible" :parent-id="undefined" :album="selectedAlbum" :album-ids="selectedAlbumsIds" @moved="refresh()" />
+	<MoveDialog
+		v-model:visible="isMoveVisible"
+		:parent-id="undefined"
+		:album="selectedAlbum"
+		:album-ids="selectedAlbumsIds"
+		@moved="
+			() => {
+				unselect();
+				refresh();
+			}
+		"
+	/>
 	<AlbumMergeDialog
 		v-model:visible="isMergeAlbumVisible"
 		:parent-id="undefined"
 		:album="selectedAlbum"
 		:album-ids="selectedAlbumsIds"
-		@merged="refresh"
+		@merged="
+			() => {
+				unselect();
+				refresh();
+			}
+		"
 	/>
-	<DeleteDialog v-model:visible="isDeleteVisible" :parent-id="undefined" :album="selectedAlbum" :album-ids="selectedAlbumsIds" @deleted="refresh" />
-	<RenameDialog v-if="selectedAlbum" v-model:visible="isRenameVisible" :parent-id="undefined" :album="selectedAlbum" @renamed="refresh" />
+	<DeleteDialog
+		v-model:visible="isDeleteVisible"
+		:parent-id="undefined"
+		:album="selectedAlbum"
+		:album-ids="selectedAlbumsIds"
+		@deleted="
+			() => {
+				unselect();
+				refresh();
+			}
+		"
+	/>
+	<RenameDialog
+		v-if="selectedAlbum"
+		v-model:visible="isRenameVisible"
+		:parent-id="undefined"
+		:album="selectedAlbum"
+		@renamed="
+			() => {
+				unselect();
+				refresh();
+			}
+		"
+	/>
 </template>
 <script setup lang="ts">
 import AlbumThumbPanel from "@/components/gallery/AlbumThumbPanel.vue";
@@ -97,13 +135,17 @@ import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
 import Divider from "primevue/divider";
 import { Collapse } from "vue-collapsed";
 import AlbumService from "@/services/album-service";
+import { useRouter } from "vue-router";
+import { Uploadable } from "@/components/modals/UploadPanel.vue";
+import { useMouseEvents } from "@/composables/album/uploadEvents";
 
 const auth = useAuthStore();
+const router = useRouter();
 const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
 lycheeStore.resetSearch();
 
-const { are_nsfw_visible, is_full_screen, is_login_open, title, is_upload_visible } = storeToRefs(lycheeStore);
+const { are_nsfw_visible, is_full_screen, is_login_open, title, is_upload_visible, list_upload_files } = storeToRefs(lycheeStore);
 
 const photos = ref([]); // unused.
 
@@ -179,4 +221,15 @@ onKeyStroke("m", () => !shouldIgnoreKeystroke() && rootRights.value?.can_edit &&
 onKeyStroke(["Delete", "Backspace"], () => !shouldIgnoreKeystroke() && rootRights.value?.can_edit && hasSelection() && toggleDelete());
 
 onKeyStroke([getModKey(), "a"], () => !shouldIgnoreKeystroke() && selectEverything());
+
+const { onPaste, dragEnd, dropUpload } = useMouseEvents(rootRights, is_upload_visible, list_upload_files);
+
+window.addEventListener("paste", onPaste);
+window.addEventListener("dragover", dragEnd);
+window.addEventListener("drop", dropUpload);
+router.afterEach(() => {
+	window.removeEventListener("paste", onPaste);
+	window.removeEventListener("dragover", dragEnd);
+	window.removeEventListener("drop", dropUpload);
+});
 </script>

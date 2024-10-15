@@ -14,6 +14,7 @@ export function useAlbumRefresher(albumId: Ref<string>, auth: AuthStore, isLogin
 
 	const photos = ref([]) as Ref<App.Http.Resources.Models.PhotoResource[]>;
 	const config = ref(undefined) as Ref<undefined | App.Http.Resources.GalleryConfigs.AlbumConfig>;
+	const rights = computed(() => album.value?.rights ?? undefined);
 
 	function loadUser() {
 		auth.getUser().then((data: App.Http.Resources.Models.UserResource) => {
@@ -73,6 +74,7 @@ export function useAlbumRefresher(albumId: Ref<string>, auth: AuthStore, isLogin
 		tagAlbum,
 		smartAlbum,
 		album,
+		rights,
 		layout,
 		photos,
 		config,

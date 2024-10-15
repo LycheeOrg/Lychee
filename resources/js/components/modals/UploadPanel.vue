@@ -2,16 +2,16 @@
 	<Dialog v-model:visible="is_upload_visible" modal pt:root:class="border-none" :dismissable-mask="true">
 		<template #container="{ closeCallback }">
 			<div v-if="setup">
-				<div v-if="list_upload_files.length > 0" class="m-4 flex flex-wrap justify-center">
-					<span class="w-full text-center">Completed: {{ countCompleted }} / {{ list_upload_files.length }}</span>
+				<div v-if="counts.files > 0" class="m-4 flex flex-wrap justify-center">
+					<span class="w-full text-center">Completed: {{ counts.completed }} / {{ counts.files }}</span>
 					<ProgressBar
 						:class="'w-full'"
-						:value="Math.round((countCompleted * 100) / list_upload_files.length)"
+						:value="Math.round((counts.completed * 100) / counts.files)"
 						:show-value="false"
 						:pt:value:class="'duration-300'"
 					></ProgressBar>
 				</div>
-				<ScrollPanel v-if="list_upload_files.length > 0" class="w-96 h-48 m-4 p-1 mr-5" :pt:scrollbar:class="'opacity-100'">
+				<ScrollPanel v-if="counts.files > 0" class="w-96 h-48 m-4 p-1 mr-5" :pt:scrollbar:class="'opacity-100'">
 					<UploadingLine
 						v-for="(uploadable, index) in list_upload_files"
 						:key="uploadable.file.name"
@@ -23,7 +23,7 @@
 						@upload:completed="uploadCompleted"
 					></UploadingLine>
 				</ScrollPanel>
-				<div v-if="list_upload_files.length === 0" class="p-9 max-w-3xl w-full">
+				<div v-if="counts.files === 0" class="p-9 max-w-3xl w-full">
 					<div
 						class="absolute flex items-center justify-center bg-primary-500 opacity-90"
 						v-on:dragover.prevent="isDropping = true"
@@ -56,6 +56,7 @@
 					{{ $t("lychee.CANCEL") }}
 				</Button>
 				<Button
+					v-if="!showResume"
 					@click="close"
 					severity="secondary"
 					class="w-full font-bold border-none border-1 rounded-none rounded-br-xl"
@@ -63,6 +64,14 @@
 					:disabled="showCancel"
 				>
 					{{ $t("lychee.CLOSE") }}
+				</Button>
+				<Button
+					v-else
+					@click="() => uploadNext()"
+					severity="contrast"
+					class="w-full font-bold border-none border-1 rounded-none rounded-br-xl"
+				>
+					{{ "Resume" }}
 				</Button>
 			</div>
 		</template>
@@ -83,10 +92,9 @@ import { storeToRefs } from "pinia";
 
 export type Uploadable = {
 	file: File;
-	status: string;
+	status: "uploading" | "waiting" | "done" | "error";
 };
 
-// const visible = defineModel("visible", { default: false }) as Ref<boolean>;
 const lycheeStore = useLycheeStateStore();
 const { is_upload_visible, list_upload_files } = storeToRefs(lycheeStore);
 const route = useRoute();
@@ -99,17 +107,25 @@ const emits = defineEmits<{
 }>();
 
 const isDropping = ref(false);
-const showCancel = computed(() => list_upload_files.value.length > 0 && countCompleted.value < list_upload_files.value.length);
+const showCancel = computed(() => counts.value.files > 0 && counts.value.completed < counts.value.files);
+const showResume = computed(() => counts.value.waiting > 0 && counts.value.uploading === 0);
 
 function load() {
 	UploadService.getSetUp().then((response) => {
 		setup.value = response.data;
 	});
 }
-const countCompleted = ref(0);
+const counts = computed(() => {
+	return {
+		files: list_upload_files.value.length,
+		waiting: list_upload_files.value.filter((f) => f.status === "waiting").length,
+		completed: list_upload_files.value.filter((f) => f.status === "done").length,
+		uploading: list_upload_files.value.filter((f) => f.status === "uploading").length,
+	};
+});
 
 function upload(event: Event) {
-	countCompleted.value = 0;
+	// countCompleted.value = 0;
 	const target = event.target as HTMLInputElement;
 	if (target.files === null) {
 		return;
@@ -120,24 +136,45 @@ function upload(event: Event) {
 	}
 
 	// Start uploading chunks.
-	const processing_limit = Math.min(setup.value?.upload_processing_limit ?? 1, list_upload_files.value.length);
-	for (let i = 0; i < processing_limit; i++) {
-		list_upload_files.value[i].status = "uploading";
-	}
+	uploadNext(0);
 }
 
-function uploadCompleted(index: number) {
-	countCompleted.value++;
-	// document.getElementById("upload" + index)?.scrollIntoView();
-	// Find the next one and start uploading.
-	for (let i = index; i < list_upload_files.value.length; i++) {
+function uploadNext(searchIndex = 0, max_processing_limit: number | undefined = undefined): boolean {
+	let isUploading = false;
+
+	let offset = 0;
+	for (let i = searchIndex; i < list_upload_files.value.length; i++) {
 		if (list_upload_files.value[i].status === "waiting") {
-			list_upload_files.value[i].status = "uploading";
+			offset = i;
 			break;
 		}
 	}
+	console.log("searchIndex", searchIndex);
+	console.log("offset", offset);
 
-	if (countCompleted.value === list_upload_files.value.length) {
+	// Compute processing limit : min between the provided max and the number of waiting.
+	const processing_limit = Math.min(max_processing_limit ?? setup.value?.upload_processing_limit ?? 1, counts.value.waiting);
+	console.log("processing limit", processing_limit);
+
+	// Start uploading chunks.
+	for (let i = 0; i < processing_limit; i++) {
+		// only execute if we are waiting.
+		if (list_upload_files.value[i + offset].status === "waiting") {
+			list_upload_files.value[i + offset].status = "uploading";
+			isUploading = true;
+		}
+	}
+
+	return isUploading;
+}
+
+function uploadCompleted(index: number) {
+	// countCompleted.value++;
+	list_upload_files.value[index].status = "done";
+
+	const isUploading = uploadNext(index, 1);
+
+	if (isUploading === false) {
 		AlbumService.clearCache(albumId.value ?? "unsorted");
 		emits("refresh");
 	}
@@ -158,10 +195,21 @@ function close() {
 load();
 
 watch(
+	() => is_upload_visible.value,
+	() => {
+		if (list_upload_files.value.length > 0) {
+			uploadNext(0, setup.value?.upload_processing_limit);
+		}
+	},
+);
+
+watch(
 	() => route.params.albumid,
 	(newAlbumId, _oldAlbumId) => {
 		albumId.value = newAlbumId as string | null;
-		list_upload_files.value = [];
+		if (!is_upload_visible.value) {
+			list_upload_files.value = [];
+		}
 	},
 );
 </script>
