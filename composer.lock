@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "30044487380cf715fa5e24a6e5a85b0d",
+    "content-hash": "98c3bd77cb220e44b8187f60936e80fd",
     "packages": [
         {
             "name": "amphp/amp",
@@ -921,16 +921,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.324.1",
+            "version": "3.324.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "5b824a9b8015a38f18c53b023975c0f63c7bd3dc"
+                "reference": "fea3d0ac8f96009cb87cf8166caba6558f26a0ab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/5b824a9b8015a38f18c53b023975c0f63c7bd3dc",
-                "reference": "5b824a9b8015a38f18c53b023975c0f63c7bd3dc",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/fea3d0ac8f96009cb87cf8166caba6558f26a0ab",
+                "reference": "fea3d0ac8f96009cb87cf8166caba6558f26a0ab",
                 "shasum": ""
             },
             "require": {
@@ -1013,9 +1013,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.324.1"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.324.2"
             },
-            "time": "2024-10-11T18:22:01+00:00"
+            "time": "2024-10-14T18:06:11+00:00"
         },
         {
             "name": "bepsvpt/secure-headers",
@@ -4660,20 +4660,20 @@
         },
         {
             "name": "lychee-org/lycheeverify",
-            "version": "1.0.1",
+            "version": "1.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/LycheeOrg/verify.git",
-                "reference": "891a1a2288e9e2dd7cfed8a5cfb9bfa31e06dd2b"
+                "reference": "d09d003452f70b05ddbe2affbef856b5f31ea705"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/LycheeOrg/verify/zipball/891a1a2288e9e2dd7cfed8a5cfb9bfa31e06dd2b",
-                "reference": "891a1a2288e9e2dd7cfed8a5cfb9bfa31e06dd2b",
+                "url": "https://api.github.com/repos/LycheeOrg/verify/zipball/d09d003452f70b05ddbe2affbef856b5f31ea705",
+                "reference": "d09d003452f70b05ddbe2affbef856b5f31ea705",
                 "shasum": ""
             },
             "require": {
-                "illuminate/contracts": "^10.0||^11.0",
+                "illuminate/contracts": "^11.0",
                 "php": "^8.2",
                 "thecodingmachine/safe": "^2.5"
             },
@@ -4738,7 +4738,7 @@
             "description": "Verification package for Lychee",
             "homepage": "https://github.com/LycheeOrg/verify",
             "support": {
-                "source": "https://github.com/LycheeOrg/verify/tree/1.0.1",
+                "source": "https://github.com/LycheeOrg/verify/tree/1.0.2",
                 "issues": "https://github.com/LycheeOrg/verify/issues"
             },
             "funding": [
@@ -4747,7 +4747,7 @@
                     "url": "https://github.com/LycheeOrg"
                 }
             ],
-            "time": "2024-10-09T13:18:58+00:00"
+            "time": "2024-10-15T11:41:02+00:00"
         },
         {
             "name": "lychee-org/nestedset",
@@ -11929,16 +11929,16 @@
         },
         {
             "name": "brianium/paratest",
-            "version": "v7.4.6",
+            "version": "v7.4.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/paratestphp/paratest.git",
-                "reference": "76815564c8d191f71d2cb4df12aed5e0bcd99945"
+                "reference": "70573947888f65dc45fc7a75f883589c7d6a1353"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/paratestphp/paratest/zipball/76815564c8d191f71d2cb4df12aed5e0bcd99945",
-                "reference": "76815564c8d191f71d2cb4df12aed5e0bcd99945",
+                "url": "https://api.github.com/repos/paratestphp/paratest/zipball/70573947888f65dc45fc7a75f883589c7d6a1353",
+                "reference": "70573947888f65dc45fc7a75f883589c7d6a1353",
                 "shasum": ""
             },
             "require": {
@@ -12006,7 +12006,7 @@
             ],
             "support": {
                 "issues": "https://github.com/paratestphp/paratest/issues",
-                "source": "https://github.com/paratestphp/paratest/tree/v7.4.6"
+                "source": "https://github.com/paratestphp/paratest/tree/v7.4.7"
             },
             "funding": [
                 {
@@ -12018,7 +12018,7 @@
                     "type": "paypal"
                 }
             ],
-            "time": "2024-09-09T10:42:18+00:00"
+            "time": "2024-10-14T07:14:10+00:00"
         },
         {
             "name": "clue/ndjson-react",
