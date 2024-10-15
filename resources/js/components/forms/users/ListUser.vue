@@ -5,13 +5,18 @@
 				{{ props.user.username }}
 				<i class="pi pi-crown text-orange-400" v-if="props.user.may_administrate" v-tooltip.top="'admin user'"></i>
 			</div>
-			<div class="w-1/6 flex justify-center items-center">
-				<i v-if="props.user.may_upload" class="pi pi-check text-create-600"></i>
-				<i v-else class="pi pi-times text-muted-color"></i>
-			</div>
-			<div class="w-1/6 flex justify-center items-center">
-				<i v-if="props.user.may_edit_own_settings" class="pi pi-check text-create-600"></i>
-				<i v-else class="pi pi-times text-muted-color"></i>
+			<div class="w-1/3 flex items-center justify-evenly">
+				<div class="w-full text-center">
+					<i v-if="props.user.may_upload" class="pi pi-check text-create-600"></i>
+					<i v-else class="pi pi-times text-muted-color opacity-30"></i>
+				</div>
+				<div class="w-full text-center">
+					<i v-if="props.user.may_edit_own_settings" class="pi pi-check text-create-600"></i>
+					<i v-else class="pi pi-times text-muted-color opacity-30"></i>
+				</div>
+				<div class="w-full text-center" v-if="isQuotaEnabled">
+					<i v-if="props.user.quota_kb !== null" class="pi pi-chart-pie text-muted-color" v-tooltip.right="formattedQuota"></i>
+				</div>
 			</div>
 			<template v-if="showMetterBar">
 				<ProgressBar
@@ -45,13 +50,21 @@ import { sizeToUnit } from "@/utils/StatsSizeVariantToColours";
 const props = defineProps<{
 	user: App.Http.Resources.Models.UserManagementResource;
 	totalUsedSpace: number;
+	isQuotaEnabled: boolean;
 }>();
 
 const value = computed(() => {
 	if (props.user.quota_kb !== null) {
-		return ((props.user.space ?? 0) * 100) / props.user.quota_kb;
+		return ((props.user.space ?? 0) * 100) / (props.user.quota_kb * 1024);
 	}
 	return ((props.user.space ?? 0) * 100) / (props.totalUsedSpace ?? 1);
+});
+
+const formattedQuota = computed(() => {
+	if (props.user.quota_kb !== null) {
+		return `${sizeToUnit(props.user.quota_kb * 1024)}`;
+	}
+	return "";
 });
 
 const formattedSpace = computed(() => {

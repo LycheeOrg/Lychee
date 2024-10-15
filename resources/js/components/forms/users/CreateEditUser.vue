@@ -1,5 +1,5 @@
 <template>
-	<Dialog v-model:visible="visible" class="border-none">
+	<Dialog v-model:visible="visible" class="border-none max-w-lg w-full">
 		<template #container="{ closeCallback }">
 			<div class="p-9 w-full flex flex-col gap-2 justify-center">
 				<FloatLabel class="w-full" variant="on">
@@ -17,6 +17,20 @@
 				<div class="w-full items-center text-muted-color">
 					<Checkbox inputId="mayEdit" v-model="may_edit_own_settings" :binary="true" />
 					<label for="mayEdit" class="ml-2 cursor-pointer">User can modify their profile (username, password).</label>
+				</div>
+				<div class="w-full items-center text-muted-color" v-if="is_se_enabled || is_se_preview_enabled">
+					<Checkbox inputId="hasQuota" v-model="has_quota" :binary="true" />
+					<label for="hasQuota" class="ml-2 cursor-pointer">User has quota limit.</label>
+				</div>
+				<div class="w-full flex items-center text-muted-color" v-if="has_quota">
+					<InputText id="quota_kb" v-model="quota_kb" aria-label="quota_kb" class="!w-1/2" />
+					<label class="pl-4 w-1/2" for="username">{{ "quota in kB (0 for default)" }}</label>
+				</div>
+				<div class="w-full flex items-center text-muted-color pt-2" v-if="is_se_enabled">
+					<FloatLabel variant="on">
+						<Textarea id="note" class="w-full h-18" v-model="note" rows="2" cols="40" />
+						<label for="note">{{ "Admin note (not publically visible)" }}</label>
+					</FloatLabel>
 				</div>
 			</div>
 			<div class="flex">
@@ -56,9 +70,9 @@ import UserManagementService from "@/services/user-management-service";
 import Dialog from "primevue/dialog";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
+import Textarea from "../basic/Textarea.vue";
 
 const lycheeStore = useLycheeStateStore();
-lycheeStore.init();
 const { is_se_preview_enabled, is_se_enabled } = storeToRefs(lycheeStore);
 
 const visible = defineModel("visible") as Ref<boolean>;
@@ -69,9 +83,12 @@ const props = defineProps<{
 
 const id = ref(props.user?.id);
 const username = ref(props.user?.username);
+const note = ref(props.user?.note ?? undefined);
 const password = ref(undefined as string | undefined);
 const may_edit_own_settings = ref(props.user?.may_edit_own_settings ?? false);
 const may_upload = ref(props.user?.may_upload ?? false);
+const has_quota = ref(props.user?.quota_kb !== null);
+const quota_kb = ref(props.user?.quota_kb ?? 0);
 
 const toast = useToast();
 const emits = defineEmits<{
@@ -88,6 +105,9 @@ function createUser() {
 		password: password.value,
 		may_edit_own_settings: may_edit_own_settings.value,
 		may_upload: may_upload.value,
+		has_quota: is_se_enabled ? has_quota.value : undefined,
+		quota_kb: is_se_enabled ? quota_kb.value : undefined,
+		note: is_se_enabled ? note.value : undefined,
 	})
 		.then(() => {
 			visible.value = false;
@@ -95,6 +115,8 @@ function createUser() {
 			may_upload.value = false;
 			may_edit_own_settings.value = false;
 			username.value = undefined;
+			has_quota.value = false;
+			quota_kb.value = 0;
 			toast.add({ severity: "success", summary: "Success", detail: "User created", life: 3000 });
 			emits("refresh");
 		})
@@ -114,6 +136,9 @@ function editUser() {
 		password: password.value,
 		may_edit_own_settings: may_edit_own_settings.value,
 		may_upload: may_upload.value,
+		has_quota: is_se_enabled ? has_quota.value : undefined,
+		quota_kb: is_se_enabled ? quota_kb.value : undefined,
+		note: is_se_enabled ? note.value : undefined,
 	})
 		.then(() => {
 			visible.value = false;
@@ -121,6 +146,8 @@ function editUser() {
 			may_upload.value = false;
 			may_edit_own_settings.value = false;
 			username.value = undefined;
+			has_quota.value = false;
+			quota_kb.value = 0;
 			toast.add({ severity: "success", summary: "Change saved!", detail: "User updated", life: 3000 });
 			emits("refresh");
 		})
@@ -136,6 +163,8 @@ watch(
 		username.value = newUser?.username;
 		may_edit_own_settings.value = newUser?.may_edit_own_settings ?? false;
 		may_upload.value = newUser?.may_upload ?? false;
+		has_quota.value = newUser?.quota_kb !== null;
+		quota_kb.value = newUser?.quota_kb ?? 0;
 	},
 );
 </script>

@@ -57,7 +57,7 @@ class Create
 	 * @return Photo the newly created or updated photo
 	 *
 	 * @throws ModelNotFoundException
-	 * @throws
+	 * @throws QuotaExceededException
 	 * @throws LycheeException
 	 */
 	public function add(NativeLocalFile $sourceFile, ?AbstractAlbum $album, ?int $fileLastModifiedTime = null): Photo

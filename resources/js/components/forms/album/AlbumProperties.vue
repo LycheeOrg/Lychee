@@ -7,12 +7,10 @@
 						<InputText id="title" type="text" v-model="title" />
 						<label for="title">{{ $t("lychee.ALBUM_TITLE") }}</label>
 					</FloatLabel>
-					<!-- <x-forms.error-message field='title' /> -->
 				</div>
 				<div class="my-4 h-48">
 					<FloatLabel variant="on">
 						<Textarea id="description" class="w-full h-48" v-model="description" rows="6" cols="30" />
-						<!-- <x-forms.error-message field='description' /> -->
 						<label for="description">{{ $t("lychee.ALBUM_DESCRIPTION") }}</label>
 					</FloatLabel>
 				</div>
@@ -136,7 +134,6 @@
 							<label for="header">{{ $t("lychee.SET_HEADER") }}</label>
 						</FloatLabel>
 					</div>
-					<!-- <livewire:forms.album.set-header :album_id="$this->albumID" lazy="on-load" /> -->
 					<div class="h-10 my-2">
 						<FloatLabel variant="on">
 							<Select id="license" class="w-72 border-none" v-model="license" :options="licenseOptions" optionLabel="label" showClear>

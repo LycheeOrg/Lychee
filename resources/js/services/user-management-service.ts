@@ -6,6 +6,9 @@ type UserManagementCreateRequest = {
 	password: string | null | undefined;
 	may_upload: boolean;
 	may_edit_own_settings: boolean;
+	has_quota?: boolean;
+	quota_kb?: number;
+	note?: string;
 };
 
 type HasId = {
