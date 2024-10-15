@@ -1,7 +1,7 @@
 <template>
 	<template v-if="is_debug_enabled">
-		<div v-if="lycheeError !== null" class="w-full h-full fixed top-0 left-0 bg-panel z-50">
-			<template v-if="lycheeError.exception">
+		<template v-if="lycheeError !== null" >
+			<div v-if="lycheeError.exception" class="w-full h-full fixed top-0 left-0 bg-panel z-50">
 				<Message severity="error" @click="closeError">
 					<span class="font-bold text-xl w-full" v-if="lycheeError.exception"
 						>{{ lycheeError.exception }} in {{ lycheeError.file }}:{{ lycheeError.line }}</span
@@ -18,9 +18,14 @@
 					<Divider />
 					<p v-for="trace in lycheeError.trace">{{ trace.file + ":" + trace.line }} &mdash; {{ trace.function }}</p>
 				</Panel>
-			</template>
-			<div v-else v-html="lycheeError"></div>
-		</div>
+			</div>
+			<div v-else-if="lycheeError.message">
+				<Message severity="error" @click="closeError">
+					<span class="font-bold text-xl w-full">{{ lycheeError.message }}</span>
+				</Message>
+			</div>
+			<div v-else  v-html="lycheeError"></div>
+		</template>
 		<div v-if="jsError !== null" class="w-full h-full absolute top-0 left-0 bg-panel z-50">
 			<Message severity="error z-50" @click="closeError">
 				<span class="font-bold text-xl">{{ jsError.message }} in {{ jsError.filename }}:{{ jsError.lineno }}</span>
