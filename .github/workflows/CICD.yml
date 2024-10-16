@@ -73,10 +73,10 @@ jobs:
         run: PHP_CS_FIXER_IGNORE_ENV=1 vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --verbose --diff --dry-run
 
   check_js:
+    name: 2️⃣ JS front-end
     uses: ./.github/workflows/js_check.yml
     needs:
       - php_syntax_errors
-    name: 2️⃣ JS front-end
 
   phpstan:
     name: 2️⃣ PHP 8.2 - PHPStan
@@ -100,10 +100,10 @@ jobs:
         run: vendor/bin/phpstan analyze
 
   tests_legacy:
-    name:  2️⃣ PHP tests legacy 
+    name:  2️⃣ PHP tests legacy
+    uses: ./.github/workflows/php_tests.yml
     needs:
       - php_syntax_errors
-    uses: ./.github/workflows/php_tests.yml
     with:
       test-suite: 'Feature_v1'
       env-file: '.env.legacy'

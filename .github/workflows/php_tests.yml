@@ -1,4 +1,4 @@
-name: Check JS
+name: PHP Tests
 
 on:
   workflow_call:
