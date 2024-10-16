@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 /**
- * Class LoginRequired.
+ * Class LoginRequiredV1.
  *
  * This middleware is ensures that only logged in users can access Lychee.
  */
