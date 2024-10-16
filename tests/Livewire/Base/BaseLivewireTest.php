@@ -18,9 +18,9 @@ use App\Models\Photo;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\AbstractTestCase;
-use Tests\Feature\Traits\RequiresEmptyAlbums;
-use Tests\Feature\Traits\RequiresEmptyPhotos;
-use Tests\Feature\Traits\RequiresEmptyUsers;
+use Tests\Traits\RequiresEmptyAlbums;
+use Tests\Traits\RequiresEmptyPhotos;
+use Tests\Traits\RequiresEmptyUsers;
 
 abstract class BaseLivewireTest extends AbstractTestCase
 {

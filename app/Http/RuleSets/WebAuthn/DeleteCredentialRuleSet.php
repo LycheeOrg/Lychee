@@ -2,8 +2,8 @@
 
 namespace App\Http\RuleSets\WebAuthn;
 
-use App\Contracts\Http\Requests\RequestAttribute;
 use App\Contracts\Http\RuleSet;
+use App\Legacy\V1\Contracts\Http\Requests\RequestAttribute;
 
 /**
  * Rules applied when deleting a credential.

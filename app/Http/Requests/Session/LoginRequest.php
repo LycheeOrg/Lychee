@@ -2,13 +2,13 @@
 
 namespace App\Http\Requests\Session;
 
-use App\Contracts\Http\Requests\HasPassword;
-use App\Contracts\Http\Requests\HasUsername;
-use App\Contracts\Http\Requests\RequestAttribute;
 use App\Http\Requests\BaseApiRequest;
-use App\Http\Requests\Traits\HasPasswordTrait;
-use App\Http\Requests\Traits\HasUsernameTrait;
 use App\Http\RuleSets\Session\LoginRuleSet;
+use App\Legacy\V1\Contracts\Http\Requests\HasPassword;
+use App\Legacy\V1\Contracts\Http\Requests\HasUsername;
+use App\Legacy\V1\Contracts\Http\Requests\RequestAttribute;
+use App\Legacy\V1\Requests\Traits\HasPasswordTrait;
+use App\Legacy\V1\Requests\Traits\HasUsernameTrait;
 
 class LoginRequest extends BaseApiRequest implements HasUsername, HasPassword
 {

@@ -4,7 +4,7 @@ namespace App\View\Components\Gallery\Photo;
 
 use App\Enum\SizeVariantType;
 use App\Facades\Helpers;
-use App\Http\Resources\Models\SizeVariantResource;
+use App\Legacy\V1\Resources\Models\SizeVariantResource;
 use App\Models\Photo;
 use App\Policies\PhotoPolicy;
 use Illuminate\Support\Facades\Gate;
