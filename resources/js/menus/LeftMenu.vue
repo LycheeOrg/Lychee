@@ -1,6 +1,9 @@
 <template>
 	<Drawer v-model:visible="left_menu_open">
 		<Menu :model="items" v-if="initData" class="!border-none">
+			<template #submenulabel="{ item }">
+				<span class="text-primary-emphasis font-bold" v-if="item.access !== false">{{ $t(item.label) }}</span>
+			</template>
 			<template #item="{ item, props }">
 				<template v-if="item.access">
 					<router-link v-if="item.route" v-slot="{ href, navigate }" :to="item.route" custom>
@@ -27,7 +30,7 @@
 	</Drawer>
 </template>
 <script setup lang="ts">
-import { Ref, ref } from "vue";
+import { computed, Ref, ref } from "vue";
 import { storeToRefs } from "pinia";
 import Drawer from "primevue/drawer";
 import Menu from "primevue/menu";
@@ -98,6 +101,15 @@ function logout() {
 	});
 }
 
+const canSeeAdmin = computed(() => {
+	return (
+		initData.value?.settings.can_edit ||
+		initData.value?.user_management.can_edit ||
+		initData.value?.settings.can_see_diagnostics ||
+		initData.value?.settings.can_see_logs
+	);
+});
+
 function loadMenu() {
 	if (!initData.value) {
 		return;
@@ -105,82 +117,94 @@ function loadMenu() {
 
 	items.value = [
 		{
+			label: "Admin",
+			access: canSeeAdmin.value,
+			items: [
+				{
+					label: "lychee.SETTINGS",
+					icon: "cog",
+					route: "/settings",
+					access: initData.value.settings.can_edit ?? false,
+				},
+				{
+					label: "lychee.USERS",
+					icon: "people",
+					route: "/users",
+					access: initData.value.user_management.can_edit ?? false,
+				},
+				{
+					label: "lychee.DIAGNOSTICS",
+					icon: "wrench",
+					route: "/diagnostics",
+					access: initData.value.settings.can_see_diagnostics ?? false,
+				},
+				{
+					label: "maintenance.title",
+					icon: "timer",
+					route: "/maintenance",
+					access: initData.value.settings.can_edit ?? false,
+				},
+				{
+					label: "lychee.LOGS",
+					icon: "excerpt",
+					url: "/Logs",
+					access: (initData.value.settings.can_see_logs ?? false) && logsEnabled.value,
+				},
+				{
+					label: "lychee.LOGS",
+					icon: "excerpt",
+					access: (initData.value.settings.can_see_logs ?? false) && !logsEnabled.value,
+				},
+				{
+					label: "lychee.JOBS",
+					icon: "project",
+					route: "/jobs",
+					access: initData.value.settings.can_see_logs ?? false,
+				},
+			],
+		},
+		{
 			label: "lychee.PROFILE",
-			icon: "person",
-			route: "/profile",
-			access: initData.value.user.can_edit ?? false,
+			items: [
+				{
+					label: "User",
+					icon: "person",
+					route: "/profile",
+					access: initData.value.user.can_edit ?? false,
+				},
+				{
+					label: "lychee.SHARING",
+					icon: "cloud",
+					route: "/sharing",
+					access: initData.value.root_album.can_upload ?? false,
+				},
+				{
+					label: "Statistics",
+					icon: "bar-chart",
+					route: "/statistics",
+					access: is_se_enabled.value,
+				},
+				{
+					label: "Statistics",
+					icon: "bar-chart",
+					route: "/statistics",
+					access: is_se_preview_enabled.value,
+					seTag: true,
+				},
+				{
+					label: "lychee.SIGN_OUT",
+					icon: "account-logout",
+					access: true,
+					command: logout,
+				},
+			],
 		},
-		{
-			label: "lychee.SHARING",
-			icon: "cloud",
-			route: "/sharing",
-			access: initData.value.root_album.can_upload ?? false,
-		},
-		{
-			label: "Statistics",
-			icon: "bar-chart",
-			route: "/statistics",
-			access: is_se_enabled.value,
-		},
-		{
-			label: "Statistics",
-			icon: "bar-chart",
-			route: "/statistics",
-			access: is_se_preview_enabled.value,
-			seTag: true,
-		},
-		{
-			label: "lychee.USERS",
-			icon: "people",
-			route: "/users",
-			access: initData.value.user_management.can_edit ?? false,
-		},
-		{
-			label: "lychee.SETTINGS",
-			icon: "cog",
-			route: "/settings",
-			access: initData.value.settings.can_edit ?? false,
-		},
-		{
-			label: "lychee.DIAGNOSTICS",
-			icon: "wrench",
-			route: "/diagnostics",
-			access: initData.value.settings.can_see_diagnostics ?? false,
-		},
-		{
-			label: "maintenance.title",
-			icon: "timer",
-			route: "/maintenance",
-			access: initData.value.settings.can_edit ?? false,
-		},
-		{
-			label: "lychee.LOGS",
-			icon: "excerpt",
-			url: "/Logs",
-			access: (initData.value.settings.can_see_logs ?? false) && logsEnabled.value,
-		},
-		{
-			label: "lychee.LOGS",
-			icon: "excerpt",
-			access: (initData.value.settings.can_see_logs ?? false) && !logsEnabled.value,
-		},
-		{
-			label: "lychee.JOBS",
-			icon: "project",
-			route: "/jobs",
-			access: initData.value.settings.can_see_logs ?? false,
-		},
+
 		{
 			label: "lychee.ABOUT_LYCHEE",
 			icon: "info",
 			access: true,
 			command: () => (openLycheeAbout.value = true),
-		},
-		{
-			label: "lychee.SIGN_OUT",
-			icon: "account-logout",
-			access: true,
-			command: logout,
 		},
 	];
 

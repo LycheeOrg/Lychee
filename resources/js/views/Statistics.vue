@@ -12,6 +12,10 @@
 
 		<template #end> </template>
 	</Toolbar>
+	<Panel v-if="is_se_preview_enabled" class="text-center">
+		This is a preview of the upcoming statistics page.<br />
+		The data shown here are randomly generated and do not reflect your server.
+	</Panel>
 	<Panel v-if="sizeVariantSpaceMeter !== undefined" class="max-w-5xl mx-auto border-0">
 		<MeterGroup :value="sizeVariantSpaceMeter" v-if="sizeVariantSpaceMeter.length > 0">
 			<template #label="{ value }">
@@ -93,6 +97,8 @@ import DataTable from "primevue/datatable";
 import ToggleSwitch from "primevue/toggleswitch";
 import { onKeyStroke } from "@vueuse/core";
 import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
+import { usePreviewData } from "@/composables/preview/getPreviewInfo";
+import SETag from "@/components/icons/SETag.vue";
 
 type TotalAlbum = {
 	num_photos: number;
@@ -161,7 +167,15 @@ authStore.getUser().then((data) => {
 	}
 
 	if (is_se_preview_enabled.value === true) {
-		// Input dummy data.
+		const { getSizeVariantSizeData, getAlbumSizeData } = usePreviewData();
+		sizeVariantSpace.value = getSizeVariantSizeData();
+		prepSizeVariantDonut();
+		getAlbumSizeData().then((data) => {
+			albumSpace.value = data;
+		});
+		getAlbumSizeData().then((data) => {
+			albumSpace.value = data;
+		});
 	} else {
 		loadSizeVariantSpace();
 		loadAlbumSpace();
@@ -194,14 +208,12 @@ function prepSizeVariantDonut() {
 function loadAlbumSpace() {
 	StatisticsService.getAlbumSpace().then((response) => {
 		albumSpace.value = response.data;
-		console.log(albumSpace.value);
 	});
 }
 
 function loadTotalAlbumSpace() {
 	StatisticsService.getTotalAlbumSpace().then((response) => {
 		totalAlbumSpace.value = response.data;
-		console.log(response.data);
 	});
 }
 

@@ -20,7 +20,7 @@
 				</div>
 				<div class="w-full items-center text-muted-color" v-if="is_se_enabled || is_se_preview_enabled">
 					<Checkbox inputId="hasQuota" v-model="has_quota" :binary="true" />
-					<label for="hasQuota" class="ml-2 cursor-pointer">User has quota limit.</label>
+					<label for="hasQuota" class="ml-2 cursor-pointer">User has quota limit. <SETag /></label>
 				</div>
 				<div class="w-full flex items-center text-muted-color" v-if="has_quota === true">
 					<InputText id="quota_kb" v-model="quota_kb" aria-label="quota_kb" class="!w-1/2" />
@@ -71,6 +71,7 @@ import Dialog from "primevue/dialog";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import Textarea from "../basic/Textarea.vue";
+import SETag from "@/components/icons/SETag.vue";
 
 const lycheeStore = useLycheeStateStore();
 const { is_se_preview_enabled, is_se_enabled } = storeToRefs(lycheeStore);

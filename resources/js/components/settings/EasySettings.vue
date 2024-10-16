@@ -11,6 +11,49 @@
 				</div>
 			</div>
 		</Fieldset>
+		<Fieldset class="border-b-0 border-r-0 rounded-r-none rounded-b-none" v-if="!is_se_enabled && !is_se_info_hidden">
+			<template #legend>
+				<div class="font-bold">Lychee <span class="text-primary-emphasis">SE</span></div>
+			</template>
+			<p class="mb-2">
+				Get exclusive features and support the development of Lychee. Unlock the
+				<a href="https://lycheeorg.github.io/get-supporter-edition/" class="text-primary-500 underline">SE edition</a>.
+			</p>
+			<div class="mb-8 flex items-start" v-if="!is_se_enabled">
+				<div class="w-3/4">
+					<FloatLabel variant="on">
+						<InputText v-model="licenseKey" id="licenseKey" class="w-full" @update:model-value="licenseKeyIsInvValid = false" />
+						<label for="licenseKey">{{ "License key" }}</label>
+					</FloatLabel>
+					<span class="inline-block mt-4 font-bold text-danger-600" v-if="licenseKey && licenseKeyIsInvValid">Invalid license key</span>
+				</div>
+				<Button
+					class="w-1/4 border-none font-bold bg-primary-500/20 hover:bg-primary-500"
+					v-if="!is_se_enabled"
+					@click="register"
+					severity="contrast"
+					:disabled="!isValidRegistrationForm"
+					>{{ "Register" }}
+				</Button>
+			</div>
+			<p class="flex flex-wrap justify-between my-6">
+				<label for="enable_se_preview">{{ "Enable preview of Lychee SE features" }}</label>
+				<ToggleSwitch id="enable_se_preview" v-model="enable_se_preview" class="text-sm" @update:model-value="savePreview" />
+			</p>
+			<p class="flex flex-wrap justify-between">
+				<label for="disable_se_call_for_actions">{{ "Hide this Lychee SE registrations forms, I am happy with Lyche as-is. :)" }}</label>
+				<ToggleSwitch
+					id="disable_se_call_for_actions"
+					v-model="disable_se_call_for_actions"
+					class="text-sm"
+					@update:model-value="saveHideC4A"
+				/>
+				<span class="mt-1 w-full text-muted-color"
+					><i class="pi pi-exclamation-triangle text-orange-500 mr-2" />If enabled, the only way to register your license key will be via
+					the More Tab above. Changes are applied on page reload.</span
+				>
+			</p>
+		</Fieldset>
 		<Fieldset legend="Dropbox" class="border-b-0 border-r-0 rounded-r-none rounded-b-none" :toggleable="true" :collapsed="true">
 			<p class="mb-4 text-muted-color">
 				In order to import photos from your Dropbox, you need a valid drop-ins app key from their website.
@@ -23,7 +66,9 @@
 					<InputPassword id="api_key" type="text" v-model="dropbox_key" />
 					<label for="api_key" class="text-muted-color">{{ $t("lychee.SETTINGS_DROPBOX_KEY") }}</label>
 				</FloatLabel>
-				<Button severity="primary" class="w-full border-none" @click="saveDropboxKey">{{ $t("lychee.DROPBOX_TITLE") }}</Button>
+				<Button severity="contrast" class="w-full border-none bg-primary-500/20 hover:bg-primary-500" @click="saveDropboxKey">{{
+					$t("lychee.DROPBOX_TITLE")
+				}}</Button>
 			</div>
 		</Fieldset>
 		<Fieldset legend="Gallery" class="border-b-0 border-r-0 rounded-r-none rounded-b-none">
@@ -186,6 +231,10 @@ import SelectField from "../forms/settings/SelectField.vue";
 import BoolField from "../forms/settings/BoolField.vue";
 import { useToast } from "primevue/usetoast";
 import Textarea from "../forms/basic/Textarea.vue";
+import { useLycheeStateStore } from "@/stores/LycheeState";
+import { storeToRefs } from "pinia";
+import InputText from "../forms/basic/InputText.vue";
+import MaintenanceService from "@/services/maintenance-service";
 
 const toast = useToast();
 
@@ -214,9 +263,19 @@ const location_decoding = ref<App.Http.Resources.Models.ConfigResource | undefin
 const location_show = ref<App.Http.Resources.Models.ConfigResource | undefined>(undefined);
 const location_show_public = ref<App.Http.Resources.Models.ConfigResource | undefined>(undefined);
 
+const disable_se_call_for_actions = ref<boolean | undefined>(undefined);
+const enable_se_preview = ref<boolean | undefined>(undefined);
+const licenseKey = ref<string | undefined>(undefined);
+const licenseKeyIsInvValid = ref(false);
+const isValidRegistrationForm = computed(() => {
+	return licenseKey.value !== undefined && licenseKey.value !== "";
+});
+
 const css = ref<string | undefined>(undefined);
 const js = ref<string | undefined>(undefined);
 // Map stuff
+const lycheeStore = useLycheeStateStore();
+const { is_se_preview_enabled, is_se_enabled, is_se_info_hidden } = storeToRefs(lycheeStore);
 
 function save(configKey: string, value: string) {
 	SettingsService.setConfigs({
@@ -268,6 +327,10 @@ function load() {
 		location_decoding.value = configurations.find((config) => config.key === "location_decoding");
 		location_show.value = configurations.find((config) => config.key === "location_show");
 		location_show_public.value = configurations.find((config) => config.key === "location_show_public");
+
+		disable_se_call_for_actions.value = configurations.find((config) => config.key === "disable_se_call_for_actions")?.value === "1";
+		enable_se_preview.value = configurations.find((config) => config.key === "enable_se_preview")?.value === "1";
+		licenseKey.value = configurations.find((config) => config.key === "license_key")?.value ?? "";
 	});
 
 	SettingsService.getCss()
@@ -299,6 +362,40 @@ function saveDarkMode(_configKey: string, value: string) {
 		document.body.classList.remove("dark");
 		save("dark_mode_enabled", "0");
 	}
+}
+
+function savePreview() {
+	save("enable_se_preview", enable_se_preview.value ? "1" : "0");
+}
+
+function saveHideC4A() {
+	save("disable_se_call_for_actions", disable_se_call_for_actions.value ? "1" : "0");
+}
+
+function register() {
+	if (licenseKey.value === undefined || licenseKey.value === "") {
+		return;
+	}
+
+	MaintenanceService.register(licenseKey.value)
+		.then((response) => {
+			if (response.data.success) {
+				is_se_enabled.value = true;
+				is_se_preview_enabled.value = false;
+				is_se_info_hidden.value = false;
+				toast.add({
+					severity: "success",
+					summary: "Thank you for your support.",
+					detail: "Reload your page for full functionalities.",
+					life: 5000,
+				});
+			} else {
+				licenseKeyIsInvValid.value = true;
+			}
+		})
+		.catch(() => {
+			licenseKeyIsInvValid.value = true;
+		});
 }
 
 function saveCss() {

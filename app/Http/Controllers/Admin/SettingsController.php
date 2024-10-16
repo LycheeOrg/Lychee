@@ -20,7 +20,7 @@ class SettingsController extends Controller
 	public function getAll(GetAllConfigsRequest $request): ConfigCollectionResource
 	{
 		$editable_configs = Configs::query()
-			->when(!$request->is_se(), fn ($q) => $q->where('level', '=', 0))
+			->when(!$request->is_se() && !Configs::getValueAsBool('enable_se_preview'), fn ($q) => $q->where('level', '=', 0))
 			->orderBy('cat', 'asc')->get();
 
 		return new ConfigCollectionResource($editable_configs);
