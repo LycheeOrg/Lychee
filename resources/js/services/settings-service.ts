@@ -22,10 +22,10 @@ const SettingsService = {
 		return axios.post(`${Constants.API_URL}Settings::setCSS`, { css: cssData });
 	},
 	getJs(): Promise<AxiosResponse> {
-		return axios.get(`${window.assets_url}/dist/custom.js`);
+		return axios.get(`${window.assets_url ?? ''}/dist/custom.js`);
 	},
 	getCss(): Promise<AxiosResponse> {
-		return axios.get(`${window.assets_url}/dist/user.css`);
+		return axios.get(`${window.assets_url ?? ''}/dist/user.css`);
 	},
 };
 
