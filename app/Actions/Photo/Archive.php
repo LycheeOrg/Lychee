@@ -12,7 +12,7 @@ use App\Exceptions\Internal\InvalidSizeVariantException;
 use App\Image\Files\FlysystemFile;
 use App\Models\Configs;
 use App\Models\Photo;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Safe\Exceptions\InfoException;
 use function Safe\fclose;

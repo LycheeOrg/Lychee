@@ -56,7 +56,7 @@ class Optimize extends OptimizeCommand
 			'assume-yes' => true,
 			'assume-no' => false,
 			null => null,
-			default => throw new InvalidOptionException(sprintf('Unexpected option value %s for --dont-confirm', strval($this->option('dont-confirm'))))
+			default => throw new InvalidOptionException(sprintf('Unexpected option value %s for --dont-confirm', strval($this->option('dont-confirm')))),
 		};
 		$hasPreviousCache = file_exists($this->laravel->getCachedConfigPath()) || file_exists($this->laravel->getCachedRoutesPath());
 

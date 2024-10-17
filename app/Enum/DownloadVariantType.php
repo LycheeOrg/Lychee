@@ -34,7 +34,7 @@ enum DownloadVariantType: string
 			self::MEDIUM => SizeVariantType::MEDIUM,
 			self::MEDIUM2X => SizeVariantType::MEDIUM2X,
 			self::ORIGINAL => SizeVariantType::ORIGINAL,
-			self::LIVEPHOTOVIDEO => null
+			self::LIVEPHOTOVIDEO => null,
 		};
 	}
 }

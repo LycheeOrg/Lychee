@@ -144,7 +144,7 @@ class SizeVariants extends AbstractDTO
 			SizeVariantType::SMALL2X => $this->small2x,
 			SizeVariantType::SMALL => $this->small,
 			SizeVariantType::THUMB2X => $this->thumb2x,
-			SizeVariantType::THUMB => $this->thumb
+			SizeVariantType::THUMB => $this->thumb,
 		};
 	}
 

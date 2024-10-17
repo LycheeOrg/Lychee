@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enum\ConfigType;
 use App\Enum\LicenseType;
 use App\Enum\MapProviders;
 use App\Exceptions\ConfigurationKeyMissingException;
@@ -28,6 +29,8 @@ use Illuminate\Support\Facades\Log;
  * @property string      $type_range
  * @property bool        $is_secret
  * @property string      $description
+ * @property string      $details
+ * @property int         $level
  *
  * @method static ConfigsBuilder|Configs addSelect($column)
  * @method static ConfigsBuilder|Configs join(string $table, string $first, string $operator = null, string $second = null, string $type = 'inner', string $where = false)
@@ -55,23 +58,12 @@ class Configs extends Model
 	use ConfigsHas;
 	use ThrowsConsistentExceptions;
 
-	protected const INT = 'int';
-	protected const POSTIIVE = 'positive';
-	protected const STRING = 'string';
-	protected const STRING_REQ = 'string_required';
-	protected const BOOL = '0|1';
-	protected const BOOL_STRING = 'bool';
-	protected const TERNARY = '0|1|2';
-	protected const DISABLED = '';
-	protected const LICENSE = 'license';
-	protected const MAP_PROVIDER = 'map_provider';
-
 	/**
 	 * The attributes that are mass assignable.
 	 *
 	 * @var array<int,string>
 	 */
-	protected $fillable = ['key', 'value', 'cat', 'type_range', 'is_secret', 'description'];
+	protected $fillable = ['key', 'value', 'cat', 'type_range', 'is_secret', 'description', 'level'];
 
 	/**
 	 *  this is a parameter for Laravel to indicate that there is no created_at, updated_at columns.
@@ -107,45 +99,43 @@ class Configs extends Model
 	{
 		$message = '';
 		$val_range = [
-			self::BOOL_STRING => ['0', '1'],
-			self::BOOL => explode('|', self::BOOL),
-			self::TERNARY => explode('|', self::TERNARY),
+			ConfigType::BOOL->value => explode('|', ConfigType::BOOL->value),
+			ConfigType::TERNARY->value => explode('|', ConfigType::TERNARY->value),
 		];
 
 		$message_template ??= 'Error: Wrong property for ' . $this->key . ', expected %s, got ' . ($candidateValue ?? 'NULL') . '.';
 		switch ($this->type_range) {
-			case self::STRING:
-			case self::DISABLED:
+			case ConfigType::STRING->value:
+			case ConfigType::DISABLED->value:
 				break;
-			case self::STRING_REQ:
+			case ConfigType::STRING_REQ->value:
 				if ($candidateValue === '' || $candidateValue === null) {
 					$message = 'Error: ' . $this->key . ' empty or not set';
 				}
 				break;
-			case self::INT:
+			case ConfigType::INT->value:
 				// we make sure that we only have digits in the chosen value.
 				if (!ctype_digit(strval($candidateValue))) {
 					$message = sprintf($message_template, 'positive integer or 0');
 				}
 				break;
-			case self::POSTIIVE:
+			case ConfigType::POSTIIVE->value:
 				if (!ctype_digit(strval($candidateValue)) || intval($candidateValue, 10) === 0) {
 					$message = sprintf($message_template, 'strictly positive integer');
 				}
 				break;
-			case self::BOOL_STRING:
-			case self::BOOL:
-			case self::TERNARY:
+			case ConfigType::BOOL->value:
+			case ConfigType::TERNARY->value:
 				if (!in_array($candidateValue, $val_range[$this->type_range], true)) { // BOOL or TERNARY
 					$message = sprintf($message_template, implode(' or ', $val_range[$this->type_range]));
 				}
 				break;
-			case self::LICENSE:
+			case ConfigType::LICENSE->value:
 				if (LicenseType::tryFrom($candidateValue) === null) {
 					$message = sprintf($message_template, 'a valid license');
 				}
 				break;
-			case self::MAP_PROVIDER:
+			case ConfigType::MAP_PROVIDER->value:
 				if (MapProviders::tryFrom($candidateValue) === null) {
 					$message = sprintf($message_template, 'a valid map provider');
 				}
@@ -177,9 +167,11 @@ class Configs extends Model
 				->select(['key', 'value'])
 				->pluck('value', 'key')
 				->all();
+			// @codeCoverageIgnoreStart
 		} catch (\Throwable) {
 			self::$cache = [];
 		}
+		// @codeCoverageIgnoreEnd
 
 		return self::$cache;
 	}
@@ -203,9 +195,11 @@ class Configs extends Model
 			/*
 			 * For some reason the $default is not returned above...
 			 */
+			// @codeCoverageIgnoreStart
 			Log::critical(__METHOD__ . ':' . __LINE__ . ' ' . $key . ' does not exist in config (local) !');
 
 			throw new ConfigurationKeyMissingException($key . ' does not exist in config!');
+			// @codeCoverageIgnoreEnd
 		}
 
 		return self::$cache[$key];
@@ -264,7 +258,9 @@ class Configs extends Model
 	public static function getValueAsEnum(string $key, string $type): \BackedEnum|null
 	{
 		if (!function_exists('enum_exists') || !enum_exists($type) || !method_exists($type, 'tryFrom')) {
+			// @codeCoverageIgnoreStart
 			throw new UnexpectedException();
+			// @codeCoverageIgnoreEnd
 		}
 
 		return $type::tryFrom(self::getValue($key));
@@ -298,7 +294,9 @@ class Configs extends Model
 			$strValue = match (gettype($value)) {
 				'boolean' => $value === true ? '1' : '0',
 				'integer', 'string' => strval($value),
-				default => throw new LycheeAssertionError('Unexpected type')
+				// @codeCoverageIgnoreStart
+				default => throw new LycheeAssertionError('Unexpected type'),
+				// @codeCoverageIgnoreEnd
 			};
 
 			/**
@@ -310,10 +308,12 @@ class Configs extends Model
 			}
 			$config->value = $strValue;
 			$config->save();
+			// @codeCoverageIgnoreStart
 		} catch (ModelNotFoundException $e) {
 			throw new InvalidConfigOption('key ' . $key . ' not found!', $e);
 		} catch (ModelDBException $e) {
 			throw new InvalidConfigOption('Could not save configuration', $e);
+			// @codeCoverageIgnoreEnd
 		} finally {
 			// invalidate cache.
 			self::$cache = [];

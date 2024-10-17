@@ -38,6 +38,9 @@ use function Safe\mb_convert_encoding;
  * @property bool                                                  $may_administrate
  * @property bool                                                  $may_upload
  * @property bool                                                  $may_edit_own_settings
+ * @property int                                                   $quota_kb
+ * @property string|null                                           $description
+ * @property string|null                                           $note
  * @property string|null                                           $token
  * @property string|null                                           $remember_token
  * @property Collection<BaseAlbumImpl>                             $albums
@@ -76,6 +79,7 @@ use function Safe\mb_convert_encoding;
  */
 class User extends Authenticatable implements WebAuthnAuthenticatable
 {
+	/** @phpstan-use HasFactory<\Database\Factories\UserFactory> */
 	use HasFactory;
 	use Notifiable;
 	use WebAuthnAuthentication;
@@ -104,6 +108,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 		'may_administrate' => 'boolean',
 		'may_upload' => 'boolean',
 		'may_edit_own_settings' => 'boolean',
+		'quota_kb' => 'integer',
 	];
 
 	protected $hidden = [];

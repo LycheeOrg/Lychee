@@ -4,12 +4,12 @@ namespace App\Legacy\V1\Requests\Album;
 
 use App\Contracts\Models\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
-use App\Http\RuleSets\Album\AddAlbumRuleSet;
 use App\Legacy\V1\Contracts\Http\Requests\HasParentAlbum;
 use App\Legacy\V1\Contracts\Http\Requests\HasTitle;
 use App\Legacy\V1\Contracts\Http\Requests\RequestAttribute;
 use App\Legacy\V1\Requests\Traits\HasParentAlbumTrait;
 use App\Legacy\V1\Requests\Traits\HasTitleTrait;
+use App\Legacy\V1\RuleSets\Album\AddAlbumRuleSet;
 use App\Models\Album;
 use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\Gate;

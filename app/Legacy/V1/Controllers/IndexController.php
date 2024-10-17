@@ -89,15 +89,15 @@ class IndexController extends Controller
 	 * Cannot be tested.
 	 *
 	 * @return void
+	 *
+	 * @codeCoverageIgnore
 	 */
-	// @codeCoverageIgnoreStart
 	public function phpinfo(): void
 	{
 		Gate::authorize(SettingsPolicy::CAN_SEE_DIAGNOSTICS, Configs::class);
 
 		phpinfo();
 	}
-	// @codeCoverageIgnoreEnd
 
 	/**
 	 * Returns the frontend in "gallery mode".

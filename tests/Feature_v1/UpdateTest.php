@@ -20,12 +20,9 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use PHPUnit\Framework\ExpectationFailedException;
 use Tests\AbstractTestCase;
-use Tests\Traits\CatchFailures;
 
 class UpdateTest extends AbstractTestCase
 {
-	use CatchFailures;
-
 	public function testDoNotLogged(): void
 	{
 		$response = $this->get('/Update', []);

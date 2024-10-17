@@ -238,7 +238,7 @@ class Exec
 	{
 		try {
 			// re-read session in case cancelling import was requested
-			session()->start();
+			Session::start();
 			if (Session::has('cancel')) {
 				Session::forget('cancel');
 				throw new ImportCancelledException();
@@ -261,7 +261,7 @@ class Exec
 	public function do(
 		string $path,
 		?Album $parentAlbum,
-		array $ignore_list = []
+		array $ignore_list = [],
 	): void {
 		try {
 			$path = self::normalizePath($path);

@@ -75,9 +75,7 @@ trait ForwardsToParentImplementation
 	/**
 	 * Perform a model insert operation.
 	 *
-	 * @template TModel of \Illuminate\Database\Eloquent\Model
-	 *
-	 * @param Builder<TModel> $query
+	 * @param Builder<static> $query
 	 *
 	 * @return bool
 	 *
@@ -106,9 +104,7 @@ trait ForwardsToParentImplementation
 	/**
 	 * Perform a model update operation.
 	 *
-	 * @template TModel of \Illuminate\Database\Eloquent\Model
-	 *
-	 * @param Builder<TModel> $query
+	 * @param Builder<static> $query
 	 *
 	 * @return bool
 	 */
@@ -331,6 +327,7 @@ trait ForwardsToParentImplementation
 		// If the "attribute" exists as a method on the model, we will just assume
 		// it is a relationship and will load and return results from the query
 		// and hydrate the relationship's value on the "relationships" array.
+		/** @disregard */
 		if (
 			method_exists($this, $key) ||
 			(static::$relationResolvers[get_class($this)][$key] ?? null)
@@ -406,6 +403,7 @@ trait ForwardsToParentImplementation
 		// If the "attribute" exists as a method on the model, we will just assume
 		// it is a relationship and will load and return results from the query
 		// and hydrate the relationship's value on the "relationships" array.
+		/** @disregard */
 		if (
 			method_exists($this, $key) ||
 			(static::$relationResolvers[get_class($this)][$key] ?? null)

@@ -3,11 +3,11 @@
 namespace App\Legacy\V1\Requests\Photo;
 
 use App\Http\Requests\BaseApiRequest;
-use App\Http\RuleSets\Photo\SetPhotosStarredRuleSet;
 use App\Legacy\V1\Contracts\Http\Requests\HasPhotos;
 use App\Legacy\V1\Contracts\Http\Requests\RequestAttribute;
 use App\Legacy\V1\Requests\Traits\Authorize\AuthorizeCanEditPhotosTrait;
 use App\Legacy\V1\Requests\Traits\HasPhotosTrait;
+use App\Legacy\V1\RuleSets\Photo\SetPhotosStarredRuleSet;
 use App\Models\Photo;
 
 /**

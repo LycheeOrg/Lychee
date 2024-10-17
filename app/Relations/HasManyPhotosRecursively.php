@@ -12,6 +12,7 @@ use App\Policies\AlbumQueryPolicy;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Gate;
 
+/** @disregard */
 class HasManyPhotosRecursively extends BaseHasManyPhotos
 {
 	protected AlbumQueryPolicy $albumQueryPolicy;
@@ -102,7 +103,7 @@ class HasManyPhotosRecursively extends BaseHasManyPhotos
 	 * @param Collection<int,\App\Models\Photo> $photos   collection of {@link Photo} models which needs to be mapped to the albums
 	 * @param string                            $relation the name of the relation
 	 *
-	 * @return Album[]
+	 * @return array<int,Album>
 	 *
 	 * @throws NotImplementedException
 	 */

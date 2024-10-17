@@ -1,1 +1,0 @@
-<span wire:loading class="absolute mt-4 bottom-0 text-primary-500 font-bold text-center block w-full pb-4">{{ __('lychee.LOADING') }} ...</span>

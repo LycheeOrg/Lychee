@@ -3,7 +3,6 @@
 namespace App\Legacy\V1\Requests\Users;
 
 use App\Http\Requests\BaseApiRequest;
-use App\Http\RuleSets\Users\SetUserSettingsRuleSet;
 use App\Legacy\V1\Contracts\Http\Requests\HasPassword;
 use App\Legacy\V1\Contracts\Http\Requests\HasUser;
 use App\Legacy\V1\Contracts\Http\Requests\HasUsername;
@@ -11,6 +10,7 @@ use App\Legacy\V1\Contracts\Http\Requests\RequestAttribute;
 use App\Legacy\V1\Requests\Traits\HasPasswordTrait;
 use App\Legacy\V1\Requests\Traits\HasUsernameTrait;
 use App\Legacy\V1\Requests\Traits\HasUserTrait;
+use App\Legacy\V1\RuleSets\Users\SetUserSettingsRuleSet;
 use App\Models\User;
 use App\Policies\UserPolicy;
 use Illuminate\Support\Facades\Gate;

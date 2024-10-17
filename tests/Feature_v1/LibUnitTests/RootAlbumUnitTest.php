@@ -34,12 +34,12 @@ class RootAlbumUnitTest
 	 * @param string|null $assertSee
 	 * @param string|null $assertDontSee
 	 *
-	 * @return TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function get(
 		int $expectedStatusCode = 200,
 		?string $assertSee = null,
-		?string $assertDontSee = null
+		?string $assertDontSee = null,
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/Albums::get');
 		$this->assertStatus($response, $expectedStatusCode);
@@ -60,12 +60,12 @@ class RootAlbumUnitTest
 	 * @param string|null $assertSee
 	 * @param string|null $assertDontSee
 	 *
-	 * @return TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function getTree(
 		int $expectedStatusCode = 200,
 		?string $assertSee = null,
-		?string $assertDontSee = null
+		?string $assertDontSee = null,
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/Albums::tree');
 		$this->assertStatus($response, $expectedStatusCode);
@@ -85,11 +85,11 @@ class RootAlbumUnitTest
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *
-	 * @return TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function getPositionData(
-		int $expectedStatusCode = 200,
-		?string $assertSee = null
+		int $expectedStatusCode = 201,
+		?string $assertSee = null,
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/Albums::getPositionData');
 		$this->assertStatus($response, $expectedStatusCode);

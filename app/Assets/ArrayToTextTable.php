@@ -349,7 +349,7 @@ class ArrayToTextTable
 		int $pad_length,
 		string $pad_string = ' ',
 		int $pad_type = STR_PAD_RIGHT,
-		string|null $encoding = null
+		string|null $encoding = null,
 	): string {
 		/** @var string $encoding */
 		$encoding = $encoding === null ? mb_internal_encoding() : $encoding;

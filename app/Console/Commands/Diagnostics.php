@@ -40,7 +40,7 @@ class Diagnostics extends Command
 	 * @throws SymfonyConsoleException
 	 */
 	public function __construct(
-		Colorize $colorize
+		Colorize $colorize,
 	) {
 		parent::__construct();
 

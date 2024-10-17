@@ -2,13 +2,14 @@
 
 namespace App\Http\Requests\Session;
 
+use App\Contracts\Http\Requests\HasPassword;
+use App\Contracts\Http\Requests\HasUsername;
+use App\Contracts\Http\Requests\RequestAttribute;
 use App\Http\Requests\BaseApiRequest;
-use App\Http\RuleSets\Session\LoginRuleSet;
-use App\Legacy\V1\Contracts\Http\Requests\HasPassword;
-use App\Legacy\V1\Contracts\Http\Requests\HasUsername;
-use App\Legacy\V1\Contracts\Http\Requests\RequestAttribute;
-use App\Legacy\V1\Requests\Traits\HasPasswordTrait;
-use App\Legacy\V1\Requests\Traits\HasUsernameTrait;
+use App\Http\Requests\Traits\HasPasswordTrait;
+use App\Http\Requests\Traits\HasUsernameTrait;
+use App\Rules\PasswordRule;
+use App\Rules\UsernameRule;
 
 class LoginRequest extends BaseApiRequest implements HasUsername, HasPassword
 {
@@ -28,7 +29,10 @@ class LoginRequest extends BaseApiRequest implements HasUsername, HasPassword
 	 */
 	public function rules(): array
 	{
-		return LoginRuleSet::rules();
+		return [
+			RequestAttribute::USERNAME_ATTRIBUTE => ['required', new UsernameRule()],
+			RequestAttribute::PASSWORD_ATTRIBUTE => ['required', new PasswordRule(false)],
+		];
 	}
 
 	/**

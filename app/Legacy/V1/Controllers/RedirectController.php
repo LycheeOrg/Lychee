@@ -75,11 +75,11 @@ class RedirectController extends Controller
 				$this->unlock->do($album, $request['password']);
 			}
 
-			// If we are using livewire by default, we redirect to Livewire url intead.
-			if (Features::active('livewire')) {
+			// If we are using vuejs by default, we redirect to vuejs url intead.
+			if (Features::active('vuejs')) {
 				return $photoID === null ?
-					redirect(route('livewire-gallery-album', ['albumId' => $albumID])) :
-					redirect(route('livewire-gallery-photo', ['albumId' => $albumID, 'photoId' => $photoID]));
+					redirect(route('gallery-album', ['albumId' => $albumID])) :
+					redirect(route('gallery-photo', ['albumId' => $albumID, 'photoId' => $photoID]));
 			}
 
 			return $photoID === null ?
@@ -98,13 +98,13 @@ class RedirectController extends Controller
 	 */
 	public function view(): View|SymfonyResponse
 	{
-		$base_route = Configs::getValueAsBool('landing_page_enable') ? route('landing') : route('livewire-gallery');
+		$base_route = Configs::getValueAsBool('landing_page_enable') ? route('landing') : route('gallery');
 		if (Features::active('legacy_v4_redirect') === false) {
 			return redirect($base_route);
 		}
 
 		return view('hook-redirection', [
-			'gallery' => route('livewire-gallery'),
+			'gallery' => route('gallery'),
 			'base' => $base_route,
 		]);
 	}

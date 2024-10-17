@@ -31,22 +31,4 @@ enum ColumnSortingPhotoType: string
 	{
 		return ColumnSortingType::from($this->value);
 	}
-
-	/**
-	 * Convert the enum into it's translated format.
-	 * Note that it is missing owner.
-	 *
-	 * @return array<string,string>
-	 */
-	public static function localized(): array
-	{
-		return [
-			self::CREATED_AT->value => __('lychee.SORT_PHOTO_SELECT_1'),
-			self::TAKEN_AT->value => __('lychee.SORT_PHOTO_SELECT_2'),
-			self::TITLE->value => __('lychee.SORT_PHOTO_SELECT_3'),
-			self::DESCRIPTION->value => __('lychee.SORT_PHOTO_SELECT_4'),
-			self::IS_STARRED->value => __('lychee.SORT_PHOTO_SELECT_6'),
-			self::TYPE->value => __('lychee.SORT_PHOTO_SELECT_7'),
-		];
-	}
 }

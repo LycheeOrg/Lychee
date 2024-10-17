@@ -16,6 +16,7 @@ use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;
+use App\Http\Resources\Collections\PositionDataResource;
 use App\Legacy\V1\Requests\Album\AddAlbumRequest;
 use App\Legacy\V1\Requests\Album\AddTagAlbumRequest;
 use App\Legacy\V1\Requests\Album\ArchiveAlbumsRequest;
@@ -37,7 +38,6 @@ use App\Legacy\V1\Requests\Album\SetAlbumsTitleRequest;
 use App\Legacy\V1\Requests\Album\SetAlbumTagsRequest;
 use App\Legacy\V1\Requests\Album\SetAlbumTrackRequest;
 use App\Legacy\V1\Requests\Album\UnlockAlbumRequest;
-use App\Legacy\V1\Resources\Collections\PositionDataResource;
 use App\Legacy\V1\Resources\Models\AlbumResource;
 use App\Legacy\V1\Resources\Models\SmartAlbumResource;
 use App\Legacy\V1\Resources\Models\TagAlbumResource;
@@ -103,7 +103,7 @@ class AlbumController extends Controller
 			$request->album() instanceof BaseSmartAlbum => SmartAlbumResource::make($request->album()),
 			$request->album() instanceof TagAlbum => TagAlbumResource::make($request->album()),
 			$request->album() instanceof Album => AlbumResource::make($request->album()),
-			default => throw new LycheeLogicException('This should not happen')
+			default => throw new LycheeLogicException('This should not happen'),
 		};
 	}
 

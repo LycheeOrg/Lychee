@@ -3,8 +3,8 @@
 namespace App\Legacy\V1\Requests\User;
 
 use App\Http\Requests\BaseApiRequest;
-use App\Http\RuleSets\User\SetEmailRuleSet;
 use App\Legacy\V1\Contracts\Http\Requests\RequestAttribute;
+use App\Legacy\V1\RuleSets\User\SetEmailRuleSet;
 use App\Models\User;
 use App\Policies\UserPolicy;
 use Illuminate\Support\Facades\Gate;

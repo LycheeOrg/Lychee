@@ -3955,6 +3955,10 @@ input[type=text] {
 	  font-size: 16px;
 }
 
+.ml-4 {
+	margin-left: 1.5rem;
+}
+
 .buttons {
 	text-align: center;
 }
@@ -3978,6 +3982,7 @@ input[type=text] {
 	text-decoration: none;
 	outline: none;
 	border: none;
+	border-top: 1px solid #eee;
 	-webkit-transition: background-color .2s ease, -webkit-box-shadow .2s ease;
 	transition: box-shadow .2s ease, background-color .2s ease, -webkit-box-shadow .2s ease;
 	cursor: pointer;
@@ -3992,7 +3997,6 @@ input[type=text] {
 }
 
 .button--light {
-	padding: 3px 16px;
 	font-size: 16px;
 	border-top: 1px solid #eee;
 	color: #222;
