@@ -2,7 +2,7 @@
 	<Drawer v-model:visible="left_menu_open">
 		<Menu :model="items" v-if="initData" class="!border-none">
 			<template #submenulabel="{ item }">
-				<span class="text-primary-emphasis font-bold" v-if="item.access !== false">{{ $t(item.label) }}</span>
+				<span class="text-primary-emphasis font-bold" :class="item.access !== false ? '' : 'hidden'">{{ $t(item.label) }}</span>
 			</template>
 			<template #item="{ item, props }">
 				<template v-if="item.access">
@@ -106,7 +106,8 @@ const canSeeAdmin = computed(() => {
 		initData.value?.settings.can_edit ||
 		initData.value?.user_management.can_edit ||
 		initData.value?.settings.can_see_diagnostics ||
-		initData.value?.settings.can_see_logs
+		initData.value?.settings.can_see_logs ||
+		false
 	);
 });
 
