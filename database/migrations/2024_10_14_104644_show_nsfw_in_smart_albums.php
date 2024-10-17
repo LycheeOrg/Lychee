@@ -3,8 +3,6 @@
 use App\Models\Extensions\BaseConfigMigration;
 
 return new class() extends BaseConfigMigration {
-	public const OAUTH = 'OAuth & SSO';
-
 	public function getConfigs(): array
 	{
 		return [
