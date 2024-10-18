@@ -84,8 +84,8 @@ class PhotoController extends Controller
 
 		if (Configs::getValueAsBool('extract_zip_on_upload') &&
 			\Str::endsWith($processableFile->getPath(), '.zip')) {
-			ExtractZip::dispatch($processableFile, $album->id, $file_last_modified_time);
-			$meta->stage = FileStatus::DONE->value;
+			ExtractZip::dispatch($processableFile, $album?->id, $file_last_modified_time);
+			$meta->stage = FileStatus::DONE;
 
 			return $meta;
 		}

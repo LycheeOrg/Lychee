@@ -12,7 +12,7 @@ readonly class ExtractedJobFile
 {
 	public function __construct(
 		public string $path,
-		public string $baseName
+		public string $baseName,
 	) {
 	}
 
