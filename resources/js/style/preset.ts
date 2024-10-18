@@ -287,11 +287,44 @@ const LycheePrimeVueConfig = {
 		},
 		checkbox: {
 			colorScheme: {
-				light: {},
+				light: {
+					disabled: {
+						background: "{surface.100}",
+						border: "{surface.100}",
+					},
+					checked: {
+						disabled: {
+							border: {
+								color: "{surface.100}",
+							},
+						},
+					},
+					icon: {
+						disabled: {
+							color: "{primary-500}",
+						},
+					},
+				},
 				dark: {
 					background: "{surface.800}",
 					border: {
 						color: "{surface.700}",
+					},
+					disabled: {
+						background: "{surface.700}",
+						border: "{surface.700}",
+					},
+					checked: {
+						disabled: {
+							border: {
+								color: "{surface.700}",
+							},
+						},
+					},
+					icon: {
+						disabled: {
+							color: "{primary-500}",
+						},
 					},
 				},
 			},

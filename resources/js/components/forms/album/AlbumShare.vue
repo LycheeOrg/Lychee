@@ -5,22 +5,15 @@
 				<div class="w-5/12 flex">
 					<span class="w-full">{{ $t("lychee.USERNAME") }}</span>
 				</div>
-				<div class="w-1/12 flex justify-center items-center">
+				<div class="w-1/2 flex justify-around items-center">
+					<i class="pi pi-eye" v-tooltip.top="'Grants read access'" />
 					<i class="pi pi-window-maximize" v-tooltip.top="'Grants full photo access'" />
-				</div>
-				<div class="w-1/12 flex justify-center items-center">
 					<i class="pi pi-download" v-tooltip.top="'Grants download'" />
-				</div>
-				<div class="w-1/12 flex justify-center items-center">
 					<i class="pi pi-upload" v-tooltip.top="'Grants upload'" />
-				</div>
-				<div class="w-1/12 flex justify-center items-center">
 					<i class="pi pi-file-edit" v-tooltip.top="'Grants edit'" />
-				</div>
-				<div class="w-1/12 flex justify-center items-center">
 					<i class="pi pi-trash" v-tooltip.top="'Grants delete'" />
 				</div>
-				<div class="w-16"></div>
+				<div class="w-1/6"></div>
 			</div>
 			<ShareLine v-for="perm in perms" :perm="perm" @delete="deletePermission" :with-album="props.withAlbum" />
 			<CreateSharing :withAlbum="props.withAlbum" :album="props.album" @createdPermission="load" :filtered-users-ids="sharedUserIds" />
