@@ -117,8 +117,16 @@ function process() {
 			}
 		})
 		.catch((error) => {
-			if (error.response.status === 413) {
-				errorMessage.value = error.response.data.message;
+			switch (error.response.status) {
+				case 413: errorMessage.value = error.response.data.message; break;
+				case 422: errorMessage.value = error.response.data.message; break;
+				case 500:
+					if (error.response.data.message.includes("Failed to open stream: Permission denied")) {
+						errorMessage.value = "Failed to open stream: Permission denied";
+					}
+					errorMessage.value = "Something went wrong, check the logs."
+					break;
+				default: break;
 			}
 			progress.value = 100;
 			status.value = "error";
