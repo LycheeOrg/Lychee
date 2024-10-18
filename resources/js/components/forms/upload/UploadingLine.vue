@@ -117,14 +117,14 @@ function process() {
 			}
 		})
 		.catch((error) => {
+			// prettier-ignore
 			switch (error.response.status) {
 				case 413: errorMessage.value = error.response.data.message; break;
 				case 422: errorMessage.value = error.response.data.message; break;
-				case 500:
+				case 500: errorMessage.value = "Something went wrong, check the logs.";
 					if (error.response.data.message.includes("Failed to open stream: Permission denied")) {
 						errorMessage.value = "Failed to open stream: Permission denied";
 					}
-					errorMessage.value = "Something went wrong, check the logs."
 					break;
 				default: break;
 			}
