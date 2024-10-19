@@ -179,7 +179,7 @@ class SizeVariantDefaultFactory implements SizeVariantFactory
 	{
 		$svImage = match ($sizeVariant) {
 			SizeVariantType::THUMB, SizeVariantType::THUMB2X, SizeVariantType::PLACEHOLDER => $this->referenceImage->cloneAndCrop($maxDim),
-			default => $this->referenceImage->cloneAndScale($maxDim)
+			default => $this->referenceImage->cloneAndScale($maxDim),
 		};
 
 		$svFile = $this->namingStrategy->createFile($sizeVariant);
