@@ -1,41 +1,73 @@
 <template>
-	<div id="footer" class="w-full h-full flex flex-col justify-end flex-wrap align-bottom self-end text-center py-5 px-0 text-3xs">
+	<div id="footer" class="w-full flex flex-col justify-end flex-wrap align-bottom self-end text-center py-5 px-0 text-3xs" v-if="footerData">
 		<!--
-	Footer Vertically shares space with the content.
-	The height of the footer is always the natural height
-	of its child elements
-	-->
-		<div id="home_socials" class="w-full" style="display: none" v-if="props.show_socials">
-			<a v-if="props.facebook !== ''" :href="props.facebook" class="socialicons" id="facebook" target="_blank" rel="noopener"></a>
-			<a v-if="props.flickr !== ''" :href="props.flickr" class="socialicons" id="flickr" target="_blank" rel="noopener"></a>
-			<a v-if="props.twitter !== ''" :href="props.twitter" class="socialicons" id="twitter" target="_blank" rel="noopener"></a>
-			<a v-if="props.instagram !== ''" :href="props.instagram" class="socialicons" id="instagram" target="_blank" rel="noopener"></a>
-			<a v-if="props.youtube !== ''" :href="props.youtube" class="socialicons" id="youtube" target="_blank" rel="noopener"></a>
+			Footer Vertically shares space with the content.
+			The height of the footer is always the natural height
+			of its child elements
+			-->
+		<div id="home_socials" class="w-full" style="display: none" v-if="footerData.footer_show_social_media">
+			<a
+				v-if="footerData.sm_facebook_url !== ''"
+				:href="footerData.sm_facebook_url"
+				class="socialicons"
+				id="facebook"
+				target="_blank"
+				rel="noopener"
+			></a>
+			<a
+				v-if="footerData.sm_flickr_url !== ''"
+				:href="footerData.sm_flickr_url"
+				class="socialicons"
+				id="flickr"
+				target="_blank"
+				rel="noopener"
+			></a>
+			<a
+				v-if="footerData.sm_twitter_url !== ''"
+				:href="footerData.sm_twitter_url"
+				class="socialicons"
+				id="twitter"
+				target="_blank"
+				rel="noopener"
+			></a>
+			<a
+				v-if="footerData.sm_instagram_url !== ''"
+				:href="footerData.sm_instagram_url"
+				class="socialicons"
+				id="instagram"
+				target="_blank"
+				rel="noopener"
+			></a>
+			<a
+				v-if="footerData.sm_youtube_url !== ''"
+				:href="footerData.sm_youtube_url"
+				class="socialicons"
+				id="youtube"
+				target="_blank"
+				rel="noopener"
+			></a>
 		</div>
-		<p v-if="props.copyright !== ''" class="home_copyright w-full uppercase text-muted-color leading-6 font-normal">{{ props.copyright }}</p>
-		<p v-if="props.additionalFooterText !== ''" class="personal_text w-full text-muted-color leading-6 font-normal">
-			{{ props.additionalFooterText }}
+		<p v-if="footerData.copyright !== ''" class="home_copyright w-full uppercase text-muted-color leading-6 font-normal">
+			{{ footerData.copyright }}
 		</p>
+		<p
+			v-if="footerData.footer_additional_text !== ''"
+			class="personal_text w-full text-muted-color leading-6 font-normal"
+			v-html="footerData.footer_additional_text"
+		></p>
 		<p class="hosted_by w-full uppercase text-muted-color leading-6 font-normal">
 			<a rel="noopener noreferrer" target="_blank" href="https://LycheeOrg.github.io" tabindex="-1" class="underline">{{
-				trans("lychee.HOSTED_WITH_LYCHEE")
+				$t("lychee.HOSTED_WITH_LYCHEE")
 			}}</a>
 		</p>
 	</div>
 </template>
 <script setup lang="ts">
-import { trans } from "laravel-vue-i18n";
+import InitService from "@/services/init-service";
+import { ref } from "vue";
 
-type FooterProps = {
-	show_socials: boolean;
-	facebook: string;
-	flickr: string;
-	twitter: string;
-	instagram: string;
-	youtube: string;
-	copyright: string;
-	additionalFooterText: string;
-};
-
-const props = defineProps<FooterProps>();
+const footerData = ref<App.Http.Resources.GalleryConfigs.FooterConfig | undefined>(undefined);
+InitService.fetchFooter().then((data) => {
+	footerData.value = data.data;
+});
 </script>
