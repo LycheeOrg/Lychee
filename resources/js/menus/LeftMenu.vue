@@ -30,7 +30,7 @@
 	</Drawer>
 </template>
 <script setup lang="ts">
-import { computed, Ref, ref } from "vue";
+import { computed, Ref, ref, watch } from "vue";
 import { storeToRefs } from "pinia";
 import Drawer from "primevue/drawer";
 import Menu from "primevue/menu";
@@ -72,8 +72,12 @@ const { left_menu_open, clockwork_url, is_se_enabled, is_se_preview_enabled } = 
 const { user } = storeToRefs(authStore);
 authStore.getUser();
 
-lycheeStore.$subscribe((_mutation, state) => {
-	if (user.value?.id) {
+watch(() => user.value, (newValue, oldValue) => {
+	if (newValue === null) {
+		initData.value = undefined;
+	}
+
+	if (newValue !== null && newValue.id !== oldValue?.id) {
 		load();
 	}
 });
