@@ -13,7 +13,7 @@
 				<template #item="{ item, props }">
 					<a
 						:href="item.link"
-						class="nav-link block text-muted-color hover:text-primary-500 border-l border-solid border-surface-700 hover:border-primary-500 px-4 transition-all duration-300 capitalize"
+						class="nav-link block hover:text-primary-400 border-l border-solid border-surface-700 hover:border-primary-400 px-4 capitalize"
 					>
 						<span>{{ item.label }}</span>
 					</a>
