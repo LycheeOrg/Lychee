@@ -18,6 +18,11 @@ abstract class BaseSizeVariantNamingStrategy extends AbstractSizeVariantNamingSt
 	public const THUMB_EXTENSION = '.jpeg';
 
 	/**
+	 * The file extension which is always used by placeholder variants.
+	 */
+	public const PLACEHOLDER_EXTENSION = '.webp';
+
+	/**
 	 * Returns the file extension incl. the preceding dot.
 	 *
 	 * @throws MissingValueException
@@ -30,6 +35,10 @@ abstract class BaseSizeVariantNamingStrategy extends AbstractSizeVariantNamingSt
 			($sizeVariant !== SizeVariantType::ORIGINAL && !$this->photo->isPhoto())
 		) {
 			return self::THUMB_EXTENSION;
+		}
+
+		if ($sizeVariant === SizeVariantType::PLACEHOLDER) {
+			return self::PLACEHOLDER_EXTENSION;
 		}
 
 		if ($this->extension === '') {

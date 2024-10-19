@@ -493,6 +493,7 @@ return [
 	'PHOTO_SMALL_HIDPI' => 'Petite taille HiDPI',
 	'PHOTO_THUMB' => 'Mignature carrée',
 	'PHOTO_THUMB_HIDPI' => 'Mignature carrée HiDPI',
+	'PHOTO_PLACEHOLDER' => 'Low Quality Image Placeholder',
 	'PHOTO_THUMBNAIL' => 'Photo thumbnail',
 	'PHOTO_LIVE_VIDEO' => 'Partie vidéo d’une live-photo',
 	'PHOTO_VIEW' => 'Vue photo de Lychee :',

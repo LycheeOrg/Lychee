@@ -35,6 +35,7 @@ class SizeVariants extends AbstractDTO
 	private ?SizeVariant $small = null;
 	private ?SizeVariant $thumb2x = null;
 	private ?SizeVariant $thumb = null;
+	private ?SizeVariant $placeholder = null;
 
 	/**
 	 * SizeVariants constructor.
@@ -87,6 +88,7 @@ class SizeVariants extends AbstractDTO
 			SizeVariantType::SMALL => $this->small = $sizeVariant,
 			SizeVariantType::THUMB2X => $this->thumb2x = $sizeVariant,
 			SizeVariantType::THUMB => $this->thumb = $sizeVariant,
+			SizeVariantType::PLACEHOLDER => $this->placeholder = $sizeVariant,
 		};
 	}
 
@@ -105,6 +107,7 @@ class SizeVariants extends AbstractDTO
 			SizeVariantType::SMALL->name() => $this->small?->toArray(),
 			SizeVariantType::THUMB2X->name() => $this->thumb2x?->toArray(),
 			SizeVariantType::THUMB->name() => $this->thumb?->toArray(),
+			SizeVariantType::PLACEHOLDER->name() => $this->placeholder?->toArray(),
 		];
 	}
 
@@ -123,6 +126,7 @@ class SizeVariants extends AbstractDTO
 			$this->small,
 			$this->thumb2x,
 			$this->thumb,
+			$this->placeholder,
 		]);
 	}
 
@@ -145,6 +149,7 @@ class SizeVariants extends AbstractDTO
 			SizeVariantType::SMALL => $this->small,
 			SizeVariantType::THUMB2X => $this->thumb2x,
 			SizeVariantType::THUMB => $this->thumb,
+			SizeVariantType::PLACEHOLDER => $this->placeholder,
 		};
 	}
 
@@ -196,6 +201,11 @@ class SizeVariants extends AbstractDTO
 	public function getThumb(): ?SizeVariant
 	{
 		return $this->thumb;
+	}
+
+	public function getPlaceholder(): ?SizeVariant
+	{
+		return $this->placeholder;
 	}
 
 	/**
@@ -257,6 +267,7 @@ class SizeVariants extends AbstractDTO
 			$this->small?->id,
 			$this->thumb2x?->id,
 			$this->thumb?->id,
+			$this->placeholder?->id,
 		];
 
 		$this->original = null;
@@ -266,6 +277,7 @@ class SizeVariants extends AbstractDTO
 		$this->small = null;
 		$this->thumb2x = null;
 		$this->thumb = null;
+		$this->placeholder = null;
 
 		(new Delete())->do(array_diff($ids, [null]))->do();
 	}
@@ -284,6 +296,7 @@ class SizeVariants extends AbstractDTO
 		self::replicateSizeVariant($duplicate, $this->small);
 		self::replicateSizeVariant($duplicate, $this->thumb2x);
 		self::replicateSizeVariant($duplicate, $this->thumb);
+		self::replicateSizeVariant($duplicate, $this->placeholder);
 
 		return $duplicate;
 	}
