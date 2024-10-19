@@ -180,6 +180,17 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		is_nsfw_warning_visible: boolean;
 		album_thumb_css_aspect_ratio: App.Enum.AspectRatioCSSType;
 	};
+	export type FooterConfig = {
+		footer_additional_text: string;
+		footer_show_copyright: boolean;
+		footer_show_social_media: boolean;
+		copyright: string;
+		sm_facebook_url: string;
+		sm_flickr_url: string;
+		sm_instagram_url: string;
+		sm_twitter_url: string;
+		sm_youtube_url: string;
+	};
 	export type InitConfig = {
 		is_debug_enabled: boolean;
 		are_nsfw_visible: boolean;
@@ -205,22 +216,13 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		is_se_info_hidden: boolean;
 	};
 	export type LandingPageResource = {
-		footer_additional_text: string;
-		footer_show_copyright: boolean;
-		footer_show_social_media: boolean;
 		landing_page_enable: boolean;
 		landing_background: string;
 		landing_subtitle: string;
 		landing_title: string;
-		site_copyright_begin: number;
-		site_copyright_end: number;
 		site_owner: string;
 		site_title: string;
-		sm_facebook_url: string;
-		sm_flickr_url: string;
-		sm_instagram_url: string;
-		sm_twitter_url: string;
-		sm_youtube_url: string;
+		footer: App.Http.Resources.GalleryConfigs.FooterConfig;
 	};
 	export type MapProviderData = {
 		layer: string;

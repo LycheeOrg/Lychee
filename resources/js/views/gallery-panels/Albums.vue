@@ -52,6 +52,7 @@
 			@clicked="albumClick"
 			@contexted="albumMenuOpen"
 		/>
+		<GalleryFooter v-once />
 	</div>
 	<ContextMenu ref="menu" :model="Menu" :class="Menu.length === 0 ? 'hidden' : ''">
 		<template #item="{ item, props }">
@@ -136,8 +137,8 @@ import Divider from "primevue/divider";
 import { Collapse } from "vue-collapsed";
 import AlbumService from "@/services/album-service";
 import { useRouter } from "vue-router";
-import { Uploadable } from "@/components/modals/UploadPanel.vue";
 import { useMouseEvents } from "@/composables/album/uploadEvents";
+import GalleryFooter from "@/components/footers/GalleryFooter.vue";
 
 const auth = useAuthStore();
 const router = useRouter();

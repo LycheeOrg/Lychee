@@ -17,6 +17,9 @@ const InitService = {
 	fetchVersion(): Promise<AxiosResponse<App.Http.Resources.Root.VersionResource>> {
 		return axios.get(`${Constants.API_URL}Version`, { data: {} });
 	},
+	fetchFooter(): Promise<AxiosResponse<App.Http.Resources.GalleryConfigs.FooterConfig>> {
+		return axios.get(`${Constants.API_URL}Gallery::Footer`, { data: {} });
+	},
 };
 
 export default InitService;
