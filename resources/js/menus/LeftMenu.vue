@@ -72,15 +72,18 @@ const { left_menu_open, clockwork_url, is_se_enabled, is_se_preview_enabled } = 
 const { user } = storeToRefs(authStore);
 authStore.getUser();
 
-watch(() => user.value, (newValue, oldValue) => {
-	if (newValue === null) {
-		initData.value = undefined;
-	}
+watch(
+	() => user.value,
+	(newValue, oldValue) => {
+		if (newValue === null) {
+			initData.value = undefined;
+		}
 
-	if (newValue !== null && newValue.id !== oldValue?.id) {
-		load();
-	}
-});
+		if (newValue !== null && newValue.id !== oldValue?.id) {
+			load();
+		}
+	},
+);
 
 load();
 
