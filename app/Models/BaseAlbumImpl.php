@@ -8,6 +8,7 @@ use App\Contracts\Models\HasRandomID;
 use App\DTO\PhotoSortingCriterion;
 use App\Enum\ColumnSortingType;
 use App\Enum\OrderSortingType;
+use App\Enum\PhotoLayoutType;
 use App\Models\Builders\BaseAlbumImplBuilder;
 use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\HasBidirectionalRelationships;
@@ -94,6 +95,7 @@ use Illuminate\Support\Facades\Auth;
  * @property Carbon                           $updated_at
  * @property string                           $title
  * @property string|null                      $description
+ * @property PhotoLayoutType|null             $photo_layout
  * @property int                              $owner_id
  * @property User                             $owner
  * @property bool                             $is_nsfw
@@ -178,6 +180,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		'copyright' => null,
 		// Special visibility attributes
 		'is_nsfw' => false,
+		'photo_layout' => null,
 	];
 
 	/**
@@ -190,6 +193,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		'updated_at' => 'datetime',
 		'is_nsfw' => 'boolean',
 		'owner_id' => 'integer',
+		'photo_layout' => PhotoLayoutType::class,
 	];
 
 	/**
