@@ -284,26 +284,4 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		$this->attributes['sorting_col'] = $sorting?->column->value;
 		$this->attributes['sorting_order'] = $sorting?->order->value;
 	}
-
-	// /**
-	//  * Defines accessor for the Aspect Ratio.
-	//  *
-	//  * @return PhotoLayoutType|null
-	//  */
-	// protected function getPhotoLayoutAttribute(): ?PhotoLayoutType
-	// {
-	// 	return PhotoLayoutType::tryFrom($this->attributes['photo_layout']);
-	// }
-
-	// /**
-	//  * Defines setter for Aspect Ratio.
-	//  *
-	//  * @param AspectRatioType|null $aspectRatio
-	//  *
-	//  * @return void
-	//  */
-	// protected function setPhotoLayoutAttribute(?PhotoLayoutType $aspectRatio): void
-	// {
-	// 	$this->attributes['photo_layout'] = $aspectRatio?->value;
-	// }
 }
