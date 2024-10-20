@@ -58,7 +58,7 @@
 				/>
 			</div>
 			<SensitiveWarning v-if="showNsfwWarning" @click="consent" />
-			<ShareAlbum v-model:visible="isShareAlbumVisible" :title="album.title" :url="route.path" />
+			<ShareAlbum v-model:visible="isShareAlbumVisible" :title="album.title" :key="'share_modal_' + album.id" />
 			<!-- Dialogs -->
 			<PhotoTagDialog
 				v-model:visible="isTagVisible"
