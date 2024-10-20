@@ -37,6 +37,7 @@ class ThumbAlbumResource extends Data
 	private ?string $min_taken_at = null;
 	private ?string $max_taken_at = null;
 	public ?string $formatted_min_max = null;
+	public ?string $owner = null;
 
 	public AlbumRightsResource $rights;
 
@@ -60,6 +61,7 @@ class ThumbAlbumResource extends Data
 			$this->created_at = $data->created_at->format($date_format);
 			$policy = AlbumProtectionPolicy::ofBaseAlbum($data);
 			$this->description = Str::limit($data->description, 100);
+			$this->owner = $data->owner->username;
 		}
 
 		if ($data instanceof Album) {
