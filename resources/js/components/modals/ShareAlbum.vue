@@ -1,7 +1,7 @@
 <template>
 	<Dialog v-model:visible="visible" modal pt:root:class="border-none">
 		<template #container="{ closeCallback }">
-			<div class="flex flex-wrap p-9 gap-5 justify-center align-top text-muted-color" v-if="!qrCodeOpen">
+			<div class="flex flex-wrap p-9 gap-5 justify-center align-top text-muted-color" v-show="!qrCodeOpen">
 				<MiniIcon class="w-10 h-10 ionicons cursor-pointer" icon="twitter" v-on:click="openTwitter" />
 				<MiniIcon class="w-10 h-10 ionicons cursor-pointer" icon="facebook" v-on:click="openFacebook" />
 				<MiniIcon class="w-10 h-10 cursor-pointer" icon="envelope-closed" v-on:click="openMailto" />
@@ -10,7 +10,7 @@
 				</a>
 				<MiniIcon class="w-10 h-10" icon="grid-two-up" v-on:click="openQrCode" />
 			</div>
-			<div class="flex flex-wrap p-9 gap-5 justify-center align-top text-muted-color" v-if="qrCodeOpen">
+			<div class="flex flex-wrap p-9 gap-5 justify-center align-top text-muted-color" v-show="qrCodeOpen">
 				<canvas id="canvas"></canvas>
 			</div>
 			<Button
@@ -27,7 +27,7 @@
 	</Dialog>
 </template>
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref } from "vue";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
 import { useToast } from "primevue/usetoast";
@@ -36,7 +36,6 @@ import { trans } from "laravel-vue-i18n";
 import MiniIcon from "@/components/icons/MiniIcon.vue";
 
 const props = defineProps<{
-	url: string;
 	title: string;
 }>();
 const toast = useToast();
@@ -44,7 +43,7 @@ const toast = useToast();
 const qrCodeOpen = ref(false);
 
 const visible = defineModel<boolean>("visible", { default: false });
-const url = ref(props.url);
+const url = ref(window.location.href);
 const title = ref(props.title);
 
 function copyToClipboard() {
@@ -79,12 +78,4 @@ function openFacebook() {
 function openMailto() {
 	window.open(`mailto:?subject=${encodeURIComponent(title.value)}&body=${encodeURIComponent(url.value)}`);
 }
-
-watch(
-	() => [props.url, props.title],
-	([newUrl, newTitle], [_oldUrl, _oldTitle]) => {
-		url.value = newUrl;
-		title.value = newTitle;
-	},
-);
 </script>
