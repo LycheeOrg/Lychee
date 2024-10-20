@@ -53,6 +53,7 @@
 				</div>
 				<PhotoThumbPanel
 					v-if="layout !== null && photos.length > 0"
+					:photo-layout="configForMenu.photo_layout"
 					:header="photoHeader"
 					:photos="photos"
 					:album="undefined"
@@ -185,6 +186,7 @@ const configForMenu = computed<App.Http.Resources.GalleryConfigs.AlbumConfig>(()
 		is_search_accessible: false,
 		is_nsfw_warning_visible: false,
 		album_thumb_css_aspect_ratio: "aspect-square",
+		photo_layout: "justified",
 	};
 });
 const albumForMenu = albumid.value !== "" ? album : null;

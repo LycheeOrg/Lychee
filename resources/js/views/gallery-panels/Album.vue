@@ -61,6 +61,7 @@
 					:photos="photos"
 					:album="album"
 					:gallery-config="layout"
+					:photo-layout="config.photo_layout"
 					:selected-photos="selectedPhotosIds"
 					@clicked="photoClick"
 					@contexted="photoMenuOpen"

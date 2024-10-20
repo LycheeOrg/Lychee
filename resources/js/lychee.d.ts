@@ -179,6 +179,7 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		is_search_accessible: boolean;
 		is_nsfw_warning_visible: boolean;
 		album_thumb_css_aspect_ratio: App.Enum.AspectRatioCSSType;
+		photo_layout: App.Enum.PhotoLayoutType;
 	};
 	export type FooterConfig = {
 		footer_additional_text: string;
@@ -229,7 +230,6 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		attribution: string;
 	};
 	export type PhotoLayoutConfig = {
-		photos_layout: App.Enum.PhotoLayoutType;
 		photo_layout_justified_row_height: number;
 		photo_layout_masonry_column_width: number;
 		photo_layout_grid_column_width: number;
