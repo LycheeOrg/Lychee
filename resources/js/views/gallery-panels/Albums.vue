@@ -38,20 +38,23 @@
 			@clicked="albumClick"
 			@contexted="albumMenuOpen"
 		/>
-		<AlbumThumbPanel
-			v-if="sharedAlbums.length > 0"
-			header="lychee.SHARED_ALBUMS"
-			:album="undefined"
-			:albums="sharedAlbums"
-			:user="user"
-			:config="albumPanelConfig"
-			:is-alone="!albums.length"
-			:are-nsfw-visible="are_nsfw_visible"
-			:idx-shift="albums.length"
-			:selected-albums="selectedAlbumsIds"
-			@clicked="albumClick"
-			@contexted="albumMenuOpen"
-		/>
+
+		<template v-for="sharedAlbum in sharedAlbums">
+			<AlbumThumbPanel
+				v-if="sharedAlbums.length > 0"
+				:header="sharedAlbum.owner"
+				:album="undefined"
+				:albums="sharedAlbum.albums"
+				:user="user"
+				:config="albumPanelConfig"
+				:is-alone="!albums.length"
+				:are-nsfw-visible="are_nsfw_visible"
+				:idx-shift="sharedAlbum.iter"
+				:selected-albums="selectedAlbumsIds"
+				@clicked="albumClick"
+				@contexted="albumMenuOpen"
+			/>
+		</template>
 	</div>
 	<ContextMenu ref="menu" :model="Menu" :class="Menu.length === 0 ? 'hidden' : ''">
 		<template #item="{ item, props }">
@@ -136,7 +139,6 @@ import Divider from "primevue/divider";
 import { Collapse } from "vue-collapsed";
 import AlbumService from "@/services/album-service";
 import { useRouter } from "vue-router";
-import { Uploadable } from "@/components/modals/UploadPanel.vue";
 import { useMouseEvents } from "@/composables/album/uploadEvents";
 
 const auth = useAuthStore();
