@@ -32,7 +32,17 @@
 						>{{ $t("lychee.UPLOAD_PHOTO") }}</Button
 					>
 				</div>
-				<AlbumHero v-if="!noData" :album="album" @open-sharing-modal="toggleShareAlbum" />
+				<AlbumHero v-if="!noData" :album="album" @open-sharing-modal="toggleShareAlbum" @open-statistics="toggleStatistics" />
+				<template v-if="is_se_enabled">
+					<AlbumStatistics
+						v-if="photos !== null && photos.length > 0"
+						:photos="photos"
+						:config="config"
+						:album="album"
+						v-model:visible="areStatisticsOpen"
+						:key="'statistics_' + album.id"
+					/>
+				</template>
 				<AlbumThumbPanel
 					v-if="children !== null && children.length > 0"
 					header="lychee.ALBUMS"
@@ -188,6 +198,7 @@ import LoginModal from "@/components/modals/LoginModal.vue";
 import Button from "primevue/button";
 import { useMouseEvents } from "@/composables/album/uploadEvents";
 import GalleryFooter from "@/components/footers/GalleryFooter.vue";
+import AlbumStatistics from "@/components/drawers/AlbumStatistics.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -203,7 +214,7 @@ const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
 lycheeStore.resetSearch();
 
-const { are_nsfw_visible, is_full_screen, is_login_open, nsfw_consented, is_slideshow_active, is_upload_visible, list_upload_files } =
+const { are_nsfw_visible, is_full_screen, is_login_open, nsfw_consented, is_slideshow_active, is_upload_visible, list_upload_files, is_se_enabled } =
 	storeToRefs(lycheeStore);
 
 // Reset the slideshow.
@@ -246,6 +257,14 @@ const {
 	toggleCopy,
 	toggleUpload,
 } = useGalleryModals(is_upload_visible);
+
+const areStatisticsOpen = ref(false);
+
+function toggleStatistics() {
+	if (is_se_enabled) {
+		areStatisticsOpen.value = !areStatisticsOpen.value;
+	}
+}
 
 const {
 	selectedPhotosIdx,

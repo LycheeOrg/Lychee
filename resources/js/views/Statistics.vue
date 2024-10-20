@@ -98,9 +98,8 @@ import ToggleSwitch from "primevue/toggleswitch";
 import { onKeyStroke } from "@vueuse/core";
 import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
 import { usePreviewData } from "@/composables/preview/getPreviewInfo";
-import SETag from "@/components/icons/SETag.vue";
 
-type TotalAlbum = {
+export type TotalAlbum = {
 	num_photos: number;
 	num_albums: number;
 	size: number;
