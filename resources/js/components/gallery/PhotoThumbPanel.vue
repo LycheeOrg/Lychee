@@ -1,20 +1,16 @@
 <template>
 	<Panel id="lychee_view_content" :header="$t(props.header)" class="w-full border-0">
 		<template #icons>
-			<a class="px-1 cursor-pointer group" @click="(layout.photos_layout = 'square') && activateLayout()" :title="$t('lychee.LAYOUT_SQUARES')">
+			<a class="px-1 cursor-pointer group" @click="(layout = 'square') && activateLayout()" :title="$t('lychee.LAYOUT_SQUARES')">
 				<MiniIcon icon="squares" fill="fill-transparent" :class="squareClass" />
 			</a>
-			<a
-				class="px-1 cursor-pointer group"
-				@click="(layout.photos_layout = 'justified') && activateLayout()"
-				:title="$t('lychee.LAYOUT_JUSTIFIED')"
-			>
+			<a class="px-1 cursor-pointer group" @click="(layout = 'justified') && activateLayout()" :title="$t('lychee.LAYOUT_JUSTIFIED')">
 				<MiniIcon icon="justified" fill="" :class="justifiedClass" />
 			</a>
-			<a class="px-1 cursor-pointer group" @click="(layout.photos_layout = 'masonry') && activateLayout()" :title="$t('lychee.LAYOUT_MASONRY')">
+			<a class="px-1 cursor-pointer group" @click="(layout = 'masonry') && activateLayout()" :title="$t('lychee.LAYOUT_MASONRY')">
 				<MiniIcon icon="masonry" fill="fill-transparent" :class="masonryClass" />
 			</a>
-			<a class="px-1 cursor-pointer group" @click="(layout.photos_layout = 'grid') && activateLayout()" :title="$t('lychee.LAYOUT_GRID')">
+			<a class="px-1 cursor-pointer group" @click="(layout = 'grid') && activateLayout()" :title="$t('lychee.LAYOUT_GRID')">
 				<MiniIcon icon="grid" fill="fill-transparent" :class="gridClass" />
 			</a>
 		</template>
@@ -41,6 +37,7 @@ import { useLayouts } from "@/layouts/PhotoLayout";
 const props = defineProps<{
 	header: string;
 	photos: { [key: number]: App.Http.Resources.Models.PhotoResource };
+	photoLayout: App.Enum.PhotoLayoutType;
 	album:
 		| App.Http.Resources.Models.AlbumResource
 		| App.Http.Resources.Models.TagAlbumResource
@@ -59,7 +56,7 @@ const maySelect = (idx: number, e: MouseEvent) => emits("clicked", idx, e);
 const menuOpen = (idx: number, e: MouseEvent) => emits("contexted", idx, e);
 
 // Layouts stuff
-const { activateLayout, layout, squareClass, justifiedClass, masonryClass, gridClass } = useLayouts(props.galleryConfig);
+const { activateLayout, layout, squareClass, justifiedClass, masonryClass, gridClass } = useLayouts(props.galleryConfig, props.photoLayout);
 onMounted(() => activateLayout());
 onUpdated(() => activateLayout());
 </script>

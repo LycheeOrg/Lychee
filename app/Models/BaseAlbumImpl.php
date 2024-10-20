@@ -8,6 +8,7 @@ use App\Contracts\Models\HasRandomID;
 use App\DTO\PhotoSortingCriterion;
 use App\Enum\ColumnSortingType;
 use App\Enum\OrderSortingType;
+use App\Enum\PhotoLayoutType;
 use App\Models\Builders\BaseAlbumImplBuilder;
 use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\HasBidirectionalRelationships;
@@ -94,6 +95,7 @@ use Illuminate\Support\Facades\Auth;
  * @property Carbon                           $updated_at
  * @property string                           $title
  * @property string|null                      $description
+ * @property PhotoLayoutType|null             $photo_layout
  * @property int                              $owner_id
  * @property User                             $owner
  * @property bool                             $is_nsfw
@@ -178,6 +180,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		'copyright' => null,
 		// Special visibility attributes
 		'is_nsfw' => false,
+		'photo_layout' => null,
 	];
 
 	/**
@@ -190,6 +193,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		'updated_at' => 'datetime',
 		'is_nsfw' => 'boolean',
 		'owner_id' => 'integer',
+		'photo_layout' => PhotoLayoutType::class,
 	];
 
 	/**
@@ -280,4 +284,26 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		$this->attributes['sorting_col'] = $sorting?->column->value;
 		$this->attributes['sorting_order'] = $sorting?->order->value;
 	}
+
+	// /**
+	//  * Defines accessor for the Aspect Ratio.
+	//  *
+	//  * @return PhotoLayoutType|null
+	//  */
+	// protected function getPhotoLayoutAttribute(): ?PhotoLayoutType
+	// {
+	// 	return PhotoLayoutType::tryFrom($this->attributes['photo_layout']);
+	// }
+
+	// /**
+	//  * Defines setter for Aspect Ratio.
+	//  *
+	//  * @param AspectRatioType|null $aspectRatio
+	//  *
+	//  * @return void
+	//  */
+	// protected function setPhotoLayoutAttribute(?PhotoLayoutType $aspectRatio): void
+	// {
+	// 	$this->attributes['photo_layout'] = $aspectRatio?->value;
+	// }
 }

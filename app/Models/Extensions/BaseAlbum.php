@@ -30,6 +30,7 @@ use Illuminate\Support\Carbon;
  * @property string|null                      $description
  * @property bool                             $is_nsfw
  * @property string|null                      $copyright
+ * @property PhotoLayoutType|null             $photo_layout
  * @property int                              $owner_id
  * @property User                             $owner
  * @property Collection<int,AccessPermission> $access_permissions
