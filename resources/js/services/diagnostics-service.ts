@@ -16,23 +16,23 @@ export type UpdateProfileRequest = {
 
 const DiagnosticsService = {
 	errors(): Promise<AxiosResponse<App.Http.Resources.Diagnostics.ErrorLine[]>> {
-		return axios.get(`${Constants.API_URL}Diagnostics`, { data: {} });
+		return axios.get(`${Constants.getApiUrl()}Diagnostics`, { data: {} });
 	},
 
 	info(): Promise<AxiosResponse<string[]>> {
-		return axios.get(`${Constants.API_URL}Diagnostics::info`, { data: {} });
+		return axios.get(`${Constants.getApiUrl()}Diagnostics::info`, { data: {} });
 	},
 
 	space(): Promise<AxiosResponse<string[]>> {
-		return axios.get(`${Constants.API_URL}Diagnostics::space`, { data: {} });
+		return axios.get(`${Constants.getApiUrl()}Diagnostics::space`, { data: {} });
 	},
 
 	config(): Promise<AxiosResponse<string[]>> {
-		return axios.get(`${Constants.API_URL}Diagnostics::config`, { data: {} });
+		return axios.get(`${Constants.getApiUrl()}Diagnostics::config`, { data: {} });
 	},
 
 	permissions(): Promise<AxiosResponse<App.Http.Resources.Diagnostics.Permissions>> {
-		return axios.get(`${Constants.API_URL}Diagnostics::permissions`, { data: {} });
+		return axios.get(`${Constants.getApiUrl()}Diagnostics::permissions`, { data: {} });
 	},
 };
 

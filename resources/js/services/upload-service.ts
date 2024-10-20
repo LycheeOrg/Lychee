@@ -12,7 +12,7 @@ export type UploadData = {
 
 const UploadService = {
 	getSetUp(): Promise<AxiosResponse<App.Http.Resources.GalleryConfigs.UploadConfig>> {
-		return axios.get(`${Constants.API_URL}Gallery::getUploadLimits`, { data: {} });
+		return axios.get(`${Constants.getApiUrl()}Gallery::getUploadLimits`, { data: {} });
 	},
 
 	upload(info: UploadData, abortController: AbortController): Promise<AxiosResponse<App.Http.Resources.Editable.UploadMetaResource>> {
@@ -36,7 +36,7 @@ const UploadService = {
 			transformRequest: [(data) => data],
 		};
 
-		return axios.post(`${Constants.API_URL}Photo`, formData, config);
+		return axios.post(`${Constants.getApiUrl()}Photo`, formData, config);
 	},
 };
 

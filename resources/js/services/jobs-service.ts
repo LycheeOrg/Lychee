@@ -11,7 +11,7 @@ export type UpdateProfileRequest = {
 
 const JobService = {
 	list(): Promise<AxiosResponse<PaginatedResponse<App.Http.Resources.Models.JobHistoryResource>>> {
-		return axios.get(`${Constants.API_URL}Jobs`, { data: {} });
+		return axios.get(`${Constants.getApiUrl()}Jobs`, { data: {} });
 	},
 };
 
