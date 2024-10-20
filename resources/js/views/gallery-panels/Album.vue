@@ -56,6 +56,7 @@
 					@clicked="photoClick"
 					@contexted="photoMenuOpen"
 				/>
+				<GalleryFooter v-once />
 			</div>
 			<SensitiveWarning v-if="showNsfwWarning" @click="consent" />
 			<ShareAlbum v-model:visible="isShareAlbumVisible" :title="album.title" :url="route.path" />
@@ -186,6 +187,7 @@ import Unlock from "@/components/forms/album/Unlock.vue";
 import LoginModal from "@/components/modals/LoginModal.vue";
 import Button from "primevue/button";
 import { useMouseEvents } from "@/composables/album/uploadEvents";
+import GalleryFooter from "@/components/footers/GalleryFooter.vue";
 
 const route = useRoute();
 const router = useRouter();
