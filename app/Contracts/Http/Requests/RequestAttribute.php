@@ -46,6 +46,7 @@ class RequestAttribute
 	public const PHOTO_SORTING_ORDER_ATTRIBUTE = 'photo_sorting_order';
 	public const ALBUM_SORTING_COLUMN_ATTRIBUTE = 'album_sorting_column';
 	public const ALBUM_SORTING_ORDER_ATTRIBUTE = 'album_sorting_order';
+	public const ALBUM_PHOTO_LAYOUT = 'photo_layout';
 
 	public const PERMISSION_ID = 'perm_id';
 	public const IS_COMPACT_ATTRIBUTE = 'is_compact';

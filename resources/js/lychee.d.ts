@@ -143,6 +143,7 @@ declare namespace App.Http.Resources.Editable {
 		photo_sorting: App.DTO.PhotoSortingCriterion | null;
 		album_sorting: App.DTO.AlbumSortingCriterion | null;
 		aspect_ratio: App.Enum.AspectRatioType | null;
+		photo_layout: any | null;
 		header_id: string | null;
 		cover_id: string | null;
 		tags: Array<string>;

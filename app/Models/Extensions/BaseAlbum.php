@@ -6,6 +6,7 @@ use App\Constants\RandomID;
 use App\Contracts\Models\AbstractAlbum;
 use App\Contracts\Models\HasRandomID;
 use App\DTO\PhotoSortingCriterion;
+use App\Enum\PhotoLayoutType;
 use App\Models\AccessPermission;
 use App\Models\BaseAlbumImpl;
 use App\Models\User;
