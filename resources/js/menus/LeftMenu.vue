@@ -42,6 +42,7 @@ import { useAuthStore } from "@/stores/Auth";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import AlbumService from "@/services/album-service";
 import SETag from "@/components/icons/SETag.vue";
+import Constants from "@/services/constants";
 
 type MenyType =
 	| {
@@ -104,7 +105,7 @@ function logout() {
 		initData.value = undefined;
 		authStore.setUser(null);
 		AlbumService.clearCache();
-		window.location.href = "/gallery";
+		window.location.href = Constants.BASE_URL + "/gallery";
 	});
 }
 
