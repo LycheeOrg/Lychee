@@ -30,7 +30,7 @@ class SpaceSizeVariantRequest extends BaseApiRequest implements HasAbstractAlbum
 			return Gate::check(UserPolicy::CAN_EDIT, [User::class]);
 		}
 
-		return Gate::check(AlbumPolicy::CAN_ACCESS, [AbstractAlbum::class, $this->album]);
+		return Auth::check() && Gate::check(AlbumPolicy::CAN_ACCESS, [AbstractAlbum::class, $this->album]);
 	}
 
 	/**

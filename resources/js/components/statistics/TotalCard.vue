@@ -1,7 +1,7 @@
 <template>
-	<Card>
+	<Card class="w-56 flex-shrink-0" :pt:body:class="'p-0 pb-4'">
 		<template #content>
-			<div class="flex flex-wrap">
+			<div class="flex flex-wrap w-full">
 				<span class="w-full font-bold text-xl">{{ "Total" }}</span>
 				<span class="w-20 text-muted-color-emphasis">{{ "Photos" }}:</span>
 				<span class="w-[calc(100%-5rem)] font-bold">{{ props.total.num_photos }}</span>

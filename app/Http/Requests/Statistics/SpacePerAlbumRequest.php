@@ -30,7 +30,7 @@ class SpacePerAlbumRequest extends BaseApiRequest implements HasAbstractAlbum, H
 			return Gate::check(SettingsPolicy::CAN_SEE_STATISTICS, [Configs::class]);
 		}
 
-		return Gate::check(AlbumPolicy::CAN_ACCESS, [AbstractAlbum::class, $this->album]);
+		return Auth::check() && Gate::check(AlbumPolicy::CAN_ACCESS, [AbstractAlbum::class, $this->album]);
 	}
 
 	/**

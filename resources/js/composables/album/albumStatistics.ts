@@ -1,3 +1,5 @@
+import { TotalAlbum } from "@/components/statistics/TotalCard.vue";
+
 export type DataForTable = { key: string; value: number };
 
 export type PhotoStats = {
@@ -83,7 +85,25 @@ export function useAlbumsStatistics() {
 		return data.sort((a, b) => b.value - a.value);
 	}
 
+	function computeTotal(albumsStats: App.Http.Resources.Statistics.Album[]): TotalAlbum {
+		const sumData: TotalAlbum = {
+			size: 0,
+			num_photos: 0,
+			num_albums: 0,
+		};
+
+		albumsStats.reduce((acc, a) => {
+			sumData.size += a.size;
+			sumData.num_photos += a.num_photos;
+			return acc;
+		}, sumData);
+
+		sumData.num_albums = albumsStats.length;
+		return sumData;
+	}
+
 	return {
 		getStatistics,
+		computeTotal,
 	};
 }

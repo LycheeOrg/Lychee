@@ -46,14 +46,14 @@
 					<i class="pi pi-share-alt" />
 				</a>
 				<a
-					v-if="is_se_enabled"
+					v-if="is_se_enabled && user?.id !== null"
 					class="flex-shrink-0 px-3 cursor-pointer inline-block transform duration-300 hover:scale-150 hover:text-color"
 					v-on:click="openStatistics"
 				>
 					<i class="pi pi-chart-scatter text-primary-emphasis" />
 				</a>
 				<a
-					v-if="is_se_preview_enabled"
+					v-if="is_se_preview_enabled && user?.id !== null"
 					class="flex-shrink-0 px-3 cursor-not-allowed text-primary-emphasis"
 					v-tooltip.left="'Statistics available in the Supporter Edition'"
 				>
@@ -70,12 +70,15 @@
 </template>
 <script setup lang="ts">
 import AlbumService from "@/services/album-service";
+import { useAuthStore } from "@/stores/Auth";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import Card from "primevue/card";
 
+const auth = useAuthStore();
 const lycheeStore = useLycheeStateStore();
 const { is_se_enabled, is_se_preview_enabled } = storeToRefs(lycheeStore);
+const { user } = storeToRefs(auth);
 
 const props = defineProps<{
 	album: App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.TagAlbumResource | App.Http.Resources.Models.SmartAlbumResource;

@@ -26,10 +26,12 @@ import StatisticsService from "@/services/statistics-service";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import { usePreviewData } from "@/composables/preview/getPreviewInfo";
+import { useAlbumsStatistics } from "@/composables/album/albumStatistics";
 
 const lycheeStore = useLycheeStateStore();
 const { is_se_preview_enabled, are_nsfw_visible } = storeToRefs(lycheeStore);
 const { getAlbumSizeData } = usePreviewData();
+const { computeTotal } = useAlbumsStatistics();
 
 const props = defineProps<{
 	showUsername: boolean;
@@ -50,12 +52,12 @@ function loadAlbumSpace() {
 	if (is_se_preview_enabled.value === true) {
 		getAlbumSizeData().then(function (data) {
 			albumSpace.value = data;
-			emits("total", getTotalAlbumData());
+			emits("total", computeTotal(data));
 		});
 	} else {
 		StatisticsService.getAlbumSpace().then(function (response) {
 			albumSpace.value = response.data;
-			emits("total", getTotalAlbumData());
+			emits("total", computeTotal(response.data));
 		});
 	}
 }
@@ -66,23 +68,6 @@ function loadTotalAlbumSpace() {
 	} else {
 		StatisticsService.getTotalAlbumSpace().then((response) => (albumSpace.value = response.data));
 	}
-}
-
-function getTotalAlbumData(): TotalAlbum {
-	const sumData: TotalAlbum = {
-		size: 0,
-		num_photos: 0,
-		num_albums: 0,
-	};
-
-	albumData.value?.reduce((acc, a) => {
-		sumData.size += a.size;
-		sumData.num_photos += a.num_photos;
-		return acc;
-	}, sumData);
-
-	sumData.num_albums = albumData.value?.length ?? 0;
-	return sumData;
 }
 
 if (props.isTotal) {

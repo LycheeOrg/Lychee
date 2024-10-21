@@ -1,16 +1,16 @@
 <template>
 	<MeterGroup :value="sizeVariantSpaceMeter" v-if="sizeVariantSpaceMeter && sizeVariantSpaceMeter.length > 0">
 		<template #label="{ value }">
-			<div class="flex flex-wrap gap-4 w-full sm:justify-between justify-center">
+			<div class="flex flex-wrap gap-2 xl:gap-6 w-full sm:justify-between justify-center">
 				<template v-for="val of value" :key="val.label">
 					<Card class="w-2/5 sm:w-auto border border-surface shadow-none">
 						<template #content>
 							<div class="flex justify-between gap-8">
 								<div class="flex gap-1 flex-col">
-									<span class="text-xs sm:text-sm"
-										><span class="rounded-full h-3 w-3 inline-block mr-1 sm:mr-2" :style="'background-color: ' + val.color"></span
-										>{{ val.label }}</span
-									>
+									<span class="text-xs sm:text-sm">
+										<span class="rounded-full h-3 w-3 inline-block mr-1 sm:mr-2" :style="'background-color: ' + val.color" />
+										{{ val.label }}
+									</span>
 									<span class="font-bold text-base">{{ val.size }}</span>
 								</div>
 							</div>
