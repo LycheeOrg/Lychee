@@ -33,7 +33,7 @@
 					>
 				</div>
 				<AlbumHero v-if="!noData" :album="album" @open-sharing-modal="toggleShareAlbum" @open-statistics="toggleStatistics" />
-				<template v-if="is_se_enabled">
+				<template v-if="is_se_enabled && user?.id !== null">
 					<AlbumStatistics
 						:photos="photos"
 						:config="config"

@@ -146,7 +146,18 @@ class Spaces
 	public function getSpacePerAlbum(?string $album_id = null, ?int $owner_id = null)
 	{
 		$query = DB::table('albums')
-			->when($album_id !== null, fn ($query) => $query->where('albums.id', '=', $album_id))
+			->when($album_id !== null,
+				fn ($query) => $query
+					->joinSub(
+						query: DB::table('albums', 'parent')->select('parent.id', 'parent._lft', 'parent._rgt'),
+						as: 'parent',
+						first: function (JoinClause $join) {
+							$join->on('albums._lft', '>=', 'parent._lft')
+								->on('albums._rgt', '<=', 'parent._rgt');
+						}
+					)
+					->where('parent.id', '=', $album_id)
+			)
 			->when($owner_id !== null, fn ($query) => $query->joinSub(
 				query: DB::table('base_albums')->select(['base_albums.id', 'base_albums.owner_id']),
 				as: 'base_albums',
@@ -258,7 +269,18 @@ class Spaces
 	public function getPhotoCountPerAlbum(?string $album_id = null, ?int $owner_id = null)
 	{
 		$query = DB::table('albums')
-			->when($album_id !== null, fn ($query) => $query->where('albums.id', '=', $album_id))
+			->when($album_id !== null,
+				fn ($query) => $query
+					->joinSub(
+						query: DB::table('albums', 'parent')->select('parent.id', 'parent._lft', 'parent._rgt'),
+						as: 'parent',
+						first: function (JoinClause $join) {
+							$join->on('albums._lft', '>=', 'parent._lft')
+								->on('albums._rgt', '<=', 'parent._rgt');
+						}
+					)
+					->where('parent.id', '=', $album_id)
+			)
 			->joinSub(
 				query: DB::table('base_albums')->select(['base_albums.id', 'base_albums.owner_id', 'base_albums.title', 'base_albums.is_nsfw']),
 				as: 'base_albums',
