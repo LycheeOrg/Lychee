@@ -60,7 +60,7 @@
 			</DataTable>
 			<DataTable :value="photosData.model" scrollable size="small" scrollHeight="13rem" class="max-w-xs w-full" :dt="dtScheme">
 				<Column field="key" header="ISO"></Column>
-				<Column field="value" header="Count"></Column>
+				<Column field="value" header=""></Column>
 				<template #empty> No data. </template>
 			</DataTable>
 		</Panel>
