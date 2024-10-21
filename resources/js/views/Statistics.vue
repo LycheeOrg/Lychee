@@ -16,7 +16,9 @@
 		This is a preview of the upcoming statistics page.<br />
 		The data shown here are randomly generated and do not reflect your server.
 	</Panel>
-	<SizeVariantMeter v-if="load" />
+	<Panel class="max-w-5xl mx-auto border-0">
+		<SizeVariantMeter v-if="load" :album-id="null" />
+	</Panel>
 	<Panel class="max-w-5xl mx-auto border-0" :pt:header:class="'hidden'">
 		<TotalCard v-if="total" :total="total" />
 		<div class="py-4" v-if="load && total">

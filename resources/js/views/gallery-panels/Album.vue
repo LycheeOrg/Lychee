@@ -35,7 +35,6 @@
 				<AlbumHero v-if="!noData" :album="album" @open-sharing-modal="toggleShareAlbum" @open-statistics="toggleStatistics" />
 				<template v-if="is_se_enabled">
 					<AlbumStatistics
-						v-if="photos !== null && photos.length > 0"
 						:photos="photos"
 						:config="config"
 						:album="album"
