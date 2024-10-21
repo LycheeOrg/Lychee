@@ -1,42 +1,42 @@
 <template>
-    <Panel v-if="sizeVariantSpaceMeter !== undefined" class="max-w-5xl mx-auto border-0">
-    <MeterGroup :value="sizeVariantSpaceMeter" v-if="sizeVariantSpaceMeter.length > 0">
-        <template #label="{ value }">
-            <div class="flex flex-wrap gap-4 w-full sm:justify-between justify-center">
-                <template v-for="val of value" :key="val.label">
-                    <Card class="w-2/5 sm:w-auto border border-surface shadow-none">
-                        <template #content>
-                            <div class="flex justify-between gap-8">
-                                <div class="flex gap-1 flex-col">
-                                    <span class="text-xs sm:text-sm"
-                                        ><span
-                                            class="rounded-full h-3 w-3 inline-block mr-1 sm:mr-2"
-                                            :style="'background-color: ' + val.color"
-                                        ></span
-                                        >{{ val.label }}</span
-                                    >
-                                    <span class="font-bold text-base">{{ val.size }}</span>
-                                </div>
-                            </div>
-                        </template>
-                    </Card>
-                </template>
-            </div>
-        </template>
-    </MeterGroup>
-    <div v-else class="text-center">User does not have data on server.</div>
-</Panel>
+	<Panel v-if="sizeVariantSpaceMeter !== undefined" class="max-w-5xl mx-auto border-0">
+		<MeterGroup :value="sizeVariantSpaceMeter" v-if="sizeVariantSpaceMeter.length > 0">
+			<template #label="{ value }">
+				<div class="flex flex-wrap gap-4 w-full sm:justify-between justify-center">
+					<template v-for="val of value" :key="val.label">
+						<Card class="w-2/5 sm:w-auto border border-surface shadow-none">
+							<template #content>
+								<div class="flex justify-between gap-8">
+									<div class="flex gap-1 flex-col">
+										<span class="text-xs sm:text-sm"
+											><span
+												class="rounded-full h-3 w-3 inline-block mr-1 sm:mr-2"
+												:style="'background-color: ' + val.color"
+											></span
+											>{{ val.label }}</span
+										>
+										<span class="font-bold text-base">{{ val.size }}</span>
+									</div>
+								</div>
+							</template>
+						</Card>
+					</template>
+				</div>
+			</template>
+		</MeterGroup>
+		<div v-else class="text-center">User does not have data on server.</div>
+	</Panel>
 </template>
 <script setup lang="ts">
-import { usePreviewData } from '@/composables/preview/getPreviewInfo';
-import StatisticsService from '@/services/statistics-service';
-import { useLycheeStateStore } from '@/stores/LycheeState';
-import { sizeToUnit, sizeVariantToColour } from '@/utils/StatsSizeVariantToColours';
-import { storeToRefs } from 'pinia';
-import Card from 'primevue/card';
-import MeterGroup from 'primevue/metergroup';
-import Panel from 'primevue/panel';
-import { ref } from 'vue';
+import { usePreviewData } from "@/composables/preview/getPreviewInfo";
+import StatisticsService from "@/services/statistics-service";
+import { useLycheeStateStore } from "@/stores/LycheeState";
+import { sizeToUnit, sizeVariantToColour } from "@/utils/StatsSizeVariantToColours";
+import { storeToRefs } from "pinia";
+import Card from "primevue/card";
+import MeterGroup from "primevue/metergroup";
+import Panel from "primevue/panel";
+import { ref } from "vue";
 
 type SizeVairantData = {
 	label: string;
@@ -75,11 +75,10 @@ function prepSizeVariantData() {
 }
 
 if (is_se_preview_enabled.value === true) {
-		const { getSizeVariantSizeData } = usePreviewData();
-		sizeVariantSpace.value = getSizeVariantSizeData();
-		prepSizeVariantData();
+	const { getSizeVariantSizeData } = usePreviewData();
+	sizeVariantSpace.value = getSizeVariantSizeData();
+	prepSizeVariantData();
 } else {
-    loadSizeVariantSpace();
+	loadSizeVariantSpace();
 }
-
 </script>
