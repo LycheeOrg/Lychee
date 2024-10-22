@@ -5,12 +5,14 @@ namespace App\Http\Resources\Models;
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\DateOrderingType;
 use App\Http\Resources\Models\Utils\AlbumProtectionPolicy;
+use App\Http\Resources\Models\Utils\TimelineData;
 use App\Http\Resources\Rights\AlbumRightsResource;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\TagAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
@@ -39,7 +41,12 @@ class ThumbAlbumResource extends Data
 	public ?string $formatted_min_max = null;
 	public ?string $owner = null;
 
+	private Carbon $created_at_carbon;
+	private ?Carbon $min_taken_at_carbon = null;
+	private ?Carbon $max_taken_at_carbon = null;
+
 	public AlbumRightsResource $rights;
+	public ?TimelineData $timeline = null;
 
 	public function __construct(AbstractAlbum $data)
 	{
@@ -53,12 +60,15 @@ class ThumbAlbumResource extends Data
 			$policy = AlbumProtectionPolicy::ofSmartAlbum($data);
 		} else {
 			/** @var BaseAlbum $data */
-			$this->max_taken_at = $data->max_taken_at?->format($date_format);
-			$this->min_taken_at = $data->min_taken_at?->format($date_format);
+			$this->min_taken_at_carbon = $data->min_taken_at;
+			$this->max_taken_at_carbon = $data->max_taken_at;
+			$this->max_taken_at = $this->max_taken_at_carbon?->format($date_format);
+			$this->min_taken_at = $this->min_taken_at_carbon?->format($date_format);
 
 			$this->formatMinMaxDate();
 
-			$this->created_at = $data->created_at->format($date_format);
+			$this->created_at_carbon = $data->created_at;
+			$this->created_at = $this->created_at_carbon->format($date_format);
 			$policy = AlbumProtectionPolicy::ofBaseAlbum($data);
 			$this->description = Str::limit($data->description, 100);
 			$this->owner = $data->owner->username;
@@ -102,5 +112,25 @@ class ThumbAlbumResource extends Data
 		} else {
 			$this->formatted_min_max = $this->min_taken_at . ' - ' . $this->max_taken_at;
 		}
+	}
+
+	/**
+	 * Accessors to the Carbon instances.
+	 *
+	 * @return Carbon
+	 */
+	public function created_at_carbon(): Carbon
+	{
+		return $this->created_at_carbon;
+	}
+
+	public function min_taken_at_carbon(): ?Carbon
+	{
+		return $this->min_taken_at_carbon;
+	}
+
+	public function max_taken_at_carbon(): ?Carbon
+	{
+		return $this->max_taken_at_carbon;
 	}
 }

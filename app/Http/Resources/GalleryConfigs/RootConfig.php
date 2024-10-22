@@ -5,6 +5,7 @@ namespace App\Http\Resources\GalleryConfigs;
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\AspectRatioCSSType;
 use App\Enum\AspectRatioType;
+use App\Enum\TimelineAlbumGranularity;
 use App\Factories\AlbumFactory;
 use App\Models\Configs;
 use App\Models\Photo;
@@ -20,6 +21,7 @@ class RootConfig extends Data
 {
 	public bool $is_map_accessible = false;
 	public bool $is_mod_frame_enabled = false;
+	public bool $is_timeline_enabled = false;
 	public bool $is_search_accessible = false;
 	public bool $show_keybinding_help_button = false;
 	#[LiteralTypeScriptType('App.Enum.AspectRatioType')]
@@ -30,6 +32,7 @@ class RootConfig extends Data
 	public bool $back_button_enabled;
 	public string $back_button_text;
 	public string $back_button_url;
+	public TimelineAlbumGranularity $timeline_album_granularity;
 
 	public function __construct()
 	{
@@ -38,6 +41,7 @@ class RootConfig extends Data
 		$public_display = Auth::check() || Configs::getValueAsBool('map_display_public');
 		$this->is_map_accessible = $count_locations && $map_display && $public_display;
 		$this->is_mod_frame_enabled = $this->checkModFrameEnabled();
+		$this->is_timeline_enabled = Configs::getValueAsBool('timeline_enable');
 		$this->is_search_accessible = Auth::check() || Configs::getValueAsBool('search_public');
 		$this->album_thumb_css_aspect_ratio = Configs::getValueAsEnum('default_album_thumb_aspect_ratio', AspectRatioType::class)->css();
 		$this->show_keybinding_help_button = Configs::getValueAsBool('show_keybinding_help_button');
@@ -45,6 +49,7 @@ class RootConfig extends Data
 		$this->back_button_enabled = Configs::getValueAsBool('back_button_enabled');
 		$this->back_button_text = Configs::getValueAsString('back_button_text');
 		$this->back_button_url = Configs::getValueAsString('back_button_url');
+		$this->timeline_album_granularity = Configs::getValueAsEnum('timeline_album_granularity', TimelineAlbumGranularity::class);
 	}
 
 	private function checkModFrameEnabled(): bool

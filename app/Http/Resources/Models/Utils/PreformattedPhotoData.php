@@ -3,6 +3,7 @@
 namespace App\Http\Resources\Models\Utils;
 
 use App\Enum\LicenseType;
+use App\Enum\TimelinePhotoGranularity;
 use App\Facades\Helpers;
 use App\Http\Resources\Models\SizeVariantResource;
 use App\Models\Configs;
@@ -30,6 +31,7 @@ class PreformattedPhotoData extends Data
 	public ?string $altitude;
 	public string $license;
 	public string $description;
+	public TimelineData $timeline;
 
 	public function __construct(Photo $photo, ?SizeVariantResource $original = null)
 	{
@@ -40,6 +42,7 @@ class PreformattedPhotoData extends Data
 		$this->created_at = $photo->created_at->format($date_format_uploaded);
 		$this->taken_at = $photo->taken_at?->format($date_format_taken_at);
 		$this->date_overlay = ($photo->taken_at ?? $photo->created_at)->format($overlay_date_format) ?? '';
+		$this->timeline = TimelineData::fromPhoto($photo, Configs::getValueAsEnum('timeline_photo_granularity', TimelinePhotoGranularity::class));
 
 		$this->shutter = str_replace('s', 'sec', $photo->shutter ?? '');
 		$this->aperture = str_replace('f/', '', $photo->aperture ?? '');

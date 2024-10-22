@@ -36,12 +36,14 @@ const emits = defineEmits<{
 	clicked: [idx: number, event: MouseEvent];
 	contexted: [idx: number, event: MouseEvent];
 }>();
+
 const maySelect = (idx: number, e: MouseEvent) => {
 	if (props.idxShift < 0) {
 		return;
 	}
 	emits("clicked", idx, e);
 };
+
 const menuOpen = (idx: number, e: MouseEvent) => {
 	if (props.idxShift < 0) {
 		return;

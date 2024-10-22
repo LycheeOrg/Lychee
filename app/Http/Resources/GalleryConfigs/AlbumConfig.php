@@ -6,6 +6,8 @@ use App\Contracts\Models\AbstractAlbum;
 use App\Enum\AspectRatioCSSType;
 use App\Enum\AspectRatioType;
 use App\Enum\PhotoLayoutType;
+use App\Enum\TimelineAlbumGranularity;
+use App\Enum\TimelinePhotoGranularity;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
@@ -28,6 +30,8 @@ class AlbumConfig extends Data
 	public bool $is_nsfw_warning_visible;
 	public AspectRatioCSSType $album_thumb_css_aspect_ratio;
 	public PhotoLayoutType $photo_layout;
+	public TimelineAlbumGranularity $timeline_album_granularity;
+	public TimelinePhotoGranularity $timeline_photo_granularity;
 
 	public function __construct(AbstractAlbum $album)
 	{
@@ -42,6 +46,8 @@ class AlbumConfig extends Data
 			$album instanceof BaseAlbum &&
 			$album->is_nsfw &&
 			(Auth::check() ? Configs::getValueAsBool('nsfw_warning_admin') : Configs::getValueAsBool('nsfw_warning'));
+		$this->timeline_album_granularity = Configs::getValueAsEnum('timeline_album_granularity', TimelineAlbumGranularity::class);
+		$this->timeline_photo_granularity = Configs::getValueAsEnum('timeline_photo_granularity', TimelinePhotoGranularity::class);
 
 		$this->setIsMapAccessible();
 		$this->setIsSearchAccessible($this->is_base_album);
