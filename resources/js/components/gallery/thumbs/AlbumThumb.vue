@@ -52,6 +52,7 @@ import { useLycheeStateStore } from "@/stores/LycheeState";
 import AlbumThumbOverlay from "./AlbumThumbOverlay.vue";
 import AlbumThumbDecorations from "./AlbumThumbDecorations.vue";
 import { storeToRefs } from "pinia";
+import Constants from "@/services/constants";
 
 export type AlbumThumbConfig = {
 	album_thumb_css_aspect_ratio: string;
@@ -85,5 +86,5 @@ const linkClass = computed(
 );
 auth.getUser();
 
-const play_icon = ref((window.assets_url ?? "") + "/img/play-icon.png");
+const play_icon = ref(Constants.BASE_URL + "/img/play-icon.png");
 </script>

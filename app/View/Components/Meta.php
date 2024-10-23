@@ -26,6 +26,7 @@ class Meta extends Component
 	public string $siteOwner;
 	public string $imageUrl;
 	public string $pageUrl;
+	public string $baseUrl;
 	public bool $rssEnable;
 	public string $userCssUrl;
 	public string $userJsUrl;
@@ -64,6 +65,7 @@ class Meta extends Component
 		$this->rssEnable = Configs::getValueAsBool('rss_enable');
 		$this->userCssUrl = self::getUserCustomFiles('user.css');
 		$this->userJsUrl = self::getUserCustomFiles('custom.js');
+		$this->baseUrl = url('/');
 	}
 
 	/**
