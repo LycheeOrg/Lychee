@@ -70,7 +70,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		nsfw_consented: [] as string[],
 
 		// Dropbox API key
-		dropbox_api_key: "",
+		dropbox_api_key: "disabled",
 	}),
 	getters: {
 		isSearchActive(): boolean {
