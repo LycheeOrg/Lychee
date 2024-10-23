@@ -1,5 +1,15 @@
 import { computed, Ref, ref } from "vue";
 
+export type AddMenuItem = {
+	label: string;
+	icon: string;
+	callback: () => void;
+	if?: boolean;
+} | {
+	is_divider: boolean;
+	if?: boolean;
+}
+
 type Callbacks = {
 	toggleCreateAlbum: () => void;
 	toggleUpload: () => void;
@@ -19,7 +29,7 @@ export function useContextMenuAlbumAdd(
 ) {
 	const addmenu = ref(); // ! Reference to the context menu
 	const addMenu = computed(function () {
-		const menu = [
+		const menu: AddMenuItem[] = [
 			{
 				label: "lychee.UPLOAD_PHOTO",
 				icon: "pi pi-upload",

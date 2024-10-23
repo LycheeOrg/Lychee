@@ -1,26 +1,38 @@
 <template>
 	<Drawer v-model:visible="left_menu_open">
 		<Menu :model="items" v-if="initData" class="!border-none">
-			<template #submenulabel="{ item }">
-				<span class="text-primary-emphasis font-bold" :class="item.access !== false ? '' : 'hidden'">{{ $t(item.label) }}</span>
+			<template #submenuheader="{ item }">
+				<span class="text-primary-emphasis font-bold" :class="item.access !== false ? '' : 'hidden'">
+					<!-- @vue-ignore -->
+					{{ $t(item.label) }}
+				</span>
 			</template>
 			<template #item="{ item, props }">
 				<template v-if="item.access">
 					<router-link v-if="item.route" v-slot="{ href, navigate }" :to="item.route" custom>
 						<a v-ripple :href="href" v-bind="props.action" @click="navigate">
-							<MiniIcon :icon="item.icon" :class="'w-3 h-3'" />
-							<span class="ml-2">{{ $t(item.label) }}</span>
+							<MiniIcon :icon="item.icon ?? ''" :class="'w-3 h-3'" />
+							<span class="ml-2">
+								<!-- @vue-ignore -->
+								{{ $t(item.label) }}
+							</span>
 							<SETag v-if="item.seTag" />
 						</a>
 					</router-link>
 					<a v-if="item.url" v-ripple :href="item.url" :target="item.target" v-bind="props.action">
-						<MiniIcon :icon="item.icon" :class="'w-3 h-3'" />
-						<span class="ml-2">{{ $t(item.label) }}</span>
+						<MiniIcon :icon="item.icon ?? ''" :class="'w-3 h-3'" />
+						<span class="ml-2">
+							<!-- @vue-ignore -->
+							{{ $t(item.label) }}
+						</span>
 						<SETag v-if="item.seTag" />
 					</a>
 					<a v-if="!item.route && !item.url" v-ripple v-bind="props.action">
-						<MiniIcon :icon="item.icon" :class="'w-3 h-3'" />
-						<span class="ml-2">{{ $t(item.label) }}</span>
+						<MiniIcon :icon="item.icon ?? ''" :class="'w-3 h-3'" />
+						<span class="ml-2">
+							<!-- @vue-ignore -->
+							{{ $t(item.label) }}
+						</span>
 						<SETag v-if="item.seTag" />
 					</a>
 				</template>

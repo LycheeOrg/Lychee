@@ -37,6 +37,7 @@ type SizeVairantData = {
 	value: number;
 	size: string;
 	color: string;
+	icon: string;
 };
 
 const props = defineProps<{
@@ -68,6 +69,7 @@ function prepSizeVariantData() {
 			value: (sv.size / total) * 100,
 			size: sizeToUnit(sv.size),
 			color: sizeVariantToColour(sv.type),
+			icon: '',
 		};
 	});
 }
