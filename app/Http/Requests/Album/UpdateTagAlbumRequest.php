@@ -4,6 +4,7 @@ namespace App\Http\Requests\Album;
 
 use App\Contracts\Http\Requests\HasCopyright;
 use App\Contracts\Http\Requests\HasDescription;
+use App\Contracts\Http\Requests\HasPhotoLayout;
 use App\Contracts\Http\Requests\HasPhotoSortingCriterion;
 use App\Contracts\Http\Requests\HasTagAlbum;
 use App\Contracts\Http\Requests\HasTags;
@@ -12,10 +13,12 @@ use App\Contracts\Http\Requests\RequestAttribute;
 use App\DTO\PhotoSortingCriterion;
 use App\Enum\ColumnSortingPhotoType;
 use App\Enum\OrderSortingType;
+use App\Enum\PhotoLayoutType;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\Authorize\AuthorizeCanEditAlbumTrait;
 use App\Http\Requests\Traits\HasCopyrightTrait;
 use App\Http\Requests\Traits\HasDescriptionTrait;
+use App\Http\Requests\Traits\HasPhotoLayoutTrait;
 use App\Http\Requests\Traits\HasPhotoSortingCriterionTrait;
 use App\Http\Requests\Traits\HasTagAlbumTrait;
 use App\Http\Requests\Traits\HasTagsTrait;
@@ -28,7 +31,7 @@ use App\Rules\TitleRule;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Validation\ValidationException;
 
-class UpdateTagAlbumRequest extends BaseApiRequest implements HasTagAlbum, HasTitle, HasDescription, HasPhotoSortingCriterion, HasCopyright, HasTags
+class UpdateTagAlbumRequest extends BaseApiRequest implements HasTagAlbum, HasTitle, HasDescription, HasPhotoSortingCriterion, HasCopyright, HasTags, HasPhotoLayout
 {
 	use HasTagAlbumTrait;
 	use HasTitleTrait;
@@ -36,6 +39,7 @@ class UpdateTagAlbumRequest extends BaseApiRequest implements HasTagAlbum, HasTi
 	use HasPhotoSortingCriterionTrait;
 	use HasCopyrightTrait;
 	use HasTagsTrait;
+	use HasPhotoLayoutTrait;
 	use AuthorizeCanEditAlbumTrait;
 
 	/**
@@ -55,6 +59,7 @@ class UpdateTagAlbumRequest extends BaseApiRequest implements HasTagAlbum, HasTi
 			RequestAttribute::TAGS_ATTRIBUTE => 'required|array|min:1',
 			RequestAttribute::TAGS_ATTRIBUTE . '.*' => 'required|string|min:1',
 			RequestAttribute::COPYRIGHT_ATTRIBUTE => ['present', 'nullable', new CopyrightRule()],
+			RequestAttribute::ALBUM_PHOTO_LAYOUT => ['present', 'nullable', new Enum(PhotoLayoutType::class)],
 		];
 	}
 
@@ -82,6 +87,7 @@ class UpdateTagAlbumRequest extends BaseApiRequest implements HasTagAlbum, HasTi
 			null :
 			new PhotoSortingCriterion($photoColumn->toColumnSortingType(), $photoOrder);
 
+		$this->photoLayout = PhotoLayoutType::tryFrom($values[RequestAttribute::ALBUM_PHOTO_LAYOUT]);
 		$this->copyright = $values[RequestAttribute::COPYRIGHT_ATTRIBUTE];
 		$this->tags = $values[RequestAttribute::TAGS_ATTRIBUTE];
 	}

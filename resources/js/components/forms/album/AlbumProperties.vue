@@ -182,6 +182,30 @@
 						</FloatLabel>
 					</div>
 				</template>
+				<div class="h-10 my-2 pt-4">
+					<FloatLabel variant="on">
+						<Select
+							id="photoLayout"
+							class="w-72 border-none"
+							v-model="photoLayout"
+							:options="photoLayoutOptions"
+							optionLabel="label"
+							showClear
+						>
+							<template #value="slotProps">
+								<div v-if="slotProps.value" class="flex items-center">
+									<div>{{ $t(slotProps.value.label) }}</div>
+								</div>
+							</template>
+							<template #option="slotProps">
+								<div class="flex items-center">
+									<div>{{ $t(slotProps.option.label) }}</div>
+								</div>
+							</template>
+						</Select>
+						<label for="photoLayout">Set photo layout</label>
+					</FloatLabel>
+				</div>
 				<div v-if="!is_model_album" class="mb-8 h-10">
 					<FloatLabel variant="on">
 						<AutoComplete
@@ -217,6 +241,7 @@ import {
 	sortingOrdersOptions,
 	licenseOptions,
 	aspectRationOptions,
+	photoLayoutOptions,
 	SelectOption,
 	SelectBuilders,
 } from "@/config/constants";
@@ -244,6 +269,7 @@ const photoSortingColumn = ref(undefined as SelectOption<App.Enum.ColumnSortingP
 const photoSortingOrder = ref(undefined as SelectOption<App.Enum.OrderSortingType> | undefined);
 const albumSortingColumn = ref(undefined as SelectOption<App.Enum.ColumnSortingAlbumType> | undefined);
 const albumSortingOrder = ref(undefined as SelectOption<App.Enum.OrderSortingType> | undefined);
+const photoLayout = ref(undefined as SelectOption<App.Enum.PhotoLayoutType> | undefined);
 const license = ref(undefined as SelectOption<App.Enum.LicenseType> | undefined);
 const copyright = ref(undefined as undefined | string);
 const tags = ref([] as string[]);
@@ -294,6 +320,7 @@ function load(editable: App.Http.Resources.Editable.EditableBaseAlbumResource, p
 	photoSortingOrder.value = SelectBuilders.buildSortingOrder(editable.photo_sorting?.order);
 	albumSortingColumn.value = SelectBuilders.buildAlbumSorting(editable.album_sorting?.column);
 	albumSortingOrder.value = SelectBuilders.buildSortingOrder(editable.album_sorting?.order);
+	photoLayout.value = SelectBuilders.buildPhotoLayout(editable.photo_layout);
 	license.value = SelectBuilders.buildLicense(editable.license);
 	aspectRatio.value = SelectBuilders.buildAspectRatio(editable.aspect_ratio);
 	header_id.value = buildHeaderId(editable.header_id, photos);
@@ -324,6 +351,7 @@ function saveAlbum() {
 		copyright: copyright.value ?? null,
 		header_id: header_id.value?.id === "compact" ? null : (header_id.value?.id ?? null),
 		is_compact: header_id.value?.id === "compact",
+		photo_layout: photoLayout.value?.value ?? null,
 	};
 	AlbumService.updateAlbum(data)
 		.then(() => {
@@ -349,6 +377,7 @@ function saveTagAlbum() {
 		photo_sorting_column: photoSortingColumn.value?.value ?? null,
 		photo_sorting_order: photoSortingOrder.value?.value ?? null,
 		copyright: copyright.value ?? null,
+		photo_layout: photoLayout.value?.value ?? null,
 	};
 	AlbumService.updateTag(data)
 		.then(() => {
