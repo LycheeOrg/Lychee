@@ -89,7 +89,7 @@ const password = ref(undefined as string | undefined);
 const may_edit_own_settings = ref(props.user?.may_edit_own_settings ?? false);
 const may_upload = ref(props.user?.may_upload ?? false);
 const has_quota = ref(props.user?.quota_kb !== undefined && props.user?.quota_kb !== null);
-const quota_kb = ref(props.user?.quota_kb?.toString() ?? '0');
+const quota_kb = ref(props.user?.quota_kb?.toString() ?? "0");
 
 const toast = useToast();
 const emits = defineEmits<{
@@ -117,7 +117,7 @@ function createUser() {
 			may_edit_own_settings.value = false;
 			username.value = undefined;
 			has_quota.value = false;
-			quota_kb.value = '0';
+			quota_kb.value = "0";
 			toast.add({ severity: "success", summary: "Success", detail: "User created", life: 3000 });
 			emits("refresh");
 		})
@@ -148,7 +148,7 @@ function editUser() {
 			may_edit_own_settings.value = false;
 			username.value = undefined;
 			has_quota.value = false;
-			quota_kb.value = '0';
+			quota_kb.value = "0";
 			toast.add({ severity: "success", summary: "Change saved!", detail: "User updated", life: 3000 });
 			emits("refresh");
 		})
@@ -165,7 +165,7 @@ watch(
 		may_edit_own_settings.value = newUser?.may_edit_own_settings ?? false;
 		may_upload.value = newUser?.may_upload ?? false;
 		has_quota.value = newUser?.quota_kb !== undefined && newUser?.quota_kb !== null;
-		quota_kb.value = newUser?.quota_kb?.toString() ?? '0';
+		quota_kb.value = newUser?.quota_kb?.toString() ?? "0";
 	},
 );
 </script>

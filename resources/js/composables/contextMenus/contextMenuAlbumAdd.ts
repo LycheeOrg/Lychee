@@ -1,14 +1,16 @@
 import { computed, Ref, ref } from "vue";
 
-export type AddMenuItem = {
-	label: string;
-	icon: string;
-	callback: () => void;
-	if?: boolean;
-} | {
-	is_divider: boolean;
-	if?: boolean;
-}
+export type AddMenuItem =
+	| {
+			label: string;
+			icon: string;
+			callback: () => void;
+			if?: boolean;
+	  }
+	| {
+			is_divider: boolean;
+			if?: boolean;
+	  };
 
 type Callbacks = {
 	toggleCreateAlbum: () => void;

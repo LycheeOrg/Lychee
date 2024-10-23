@@ -69,7 +69,7 @@ function prepSizeVariantData() {
 			value: (sv.size / total) * 100,
 			size: sizeToUnit(sv.size),
 			color: sizeVariantToColour(sv.type),
-			icon: '',
+			icon: "",
 		};
 	});
 }
