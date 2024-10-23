@@ -14,6 +14,7 @@
 					<a
 						:href="item.link"
 						class="nav-link block hover:text-primary-400 border-l border-solid border-surface-700 hover:border-primary-400 px-4 capitalize"
+						@click.prevent="goto(item.link)"
 					>
 						<span>{{ item.label }}</span>
 					</a>
@@ -211,7 +212,7 @@ const sections = computed(function () {
 	return Object.keys(configs.value.configs).map((key) => {
 		return {
 			label: key,
-			link: "/settings#" + key,
+			link: "#" + key,
 		};
 	});
 });
@@ -253,6 +254,15 @@ function save() {
 		.catch((e) => {
 			toast.add({ severity: "error", summary: "Error!", detail: e.response.data.message, life: 3000 });
 		});
+}
+
+function goto(section: string) {
+	console.log(section);
+	const el = document.getElementById(section.slice(1));
+	console.log(el);
+	if (el) {
+		el.scrollIntoView({ behavior: "smooth" });
+	}
 }
 
 load();
