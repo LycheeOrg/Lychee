@@ -211,7 +211,7 @@ const sections = computed(function () {
 	return Object.keys(configs.value.configs).map((key) => {
 		return {
 			label: key,
-			link: "#" + key,
+			link: "/settings#" + key,
 		};
 	});
 });
