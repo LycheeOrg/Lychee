@@ -68,18 +68,23 @@
 </template>
 <script setup lang="ts">
 import { Ref, ref } from "vue";
-import { RouterLink } from "vue-router";
+import { RouterLink, useRouter } from "vue-router";
 import InitService from "@/services/init-service";
 import LandingFooter from "@/components/footers/LandingFooter.vue";
 
 const introVisible = ref(true);
 
 const initdata = ref(undefined) as Ref<undefined | App.Http.Resources.GalleryConfigs.LandingPageResource>;
+const router = useRouter();
 
 InitService.fetchLandingData()
 	.then((data) => {
-		initdata.value = data.data;
-		setTimeout(() => (introVisible.value = false), 4000);
+		if (data.data.landing_page_enable === false) {
+			router.push("/gallery");
+		} else {
+			initdata.value = data.data;
+			setTimeout(() => (introVisible.value = false), 4000);
+		}
 	})
 	.catch((error) => {
 		console.error(error);
