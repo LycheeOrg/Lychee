@@ -48,7 +48,7 @@ use Kalnoy\Nestedset\QueryBuilder as NSQueryBuilder;
  * @method        $this              whereNull(string|array $columns, string $boolean = 'and', bool $not = false)
  * @method        $this              orderByDesc($column)
  *
- * @extends NSQueryBuilder<string,Album>
+ * @extends NSQueryBuilder<Album>
  */
 class AlbumBuilder extends NSQueryBuilder
 {
@@ -64,7 +64,7 @@ class AlbumBuilder extends NSQueryBuilder
 	 *
 	 * @param string[]|string $columns
 	 *
-	 * @return Album[]
+	 * @return array<int,Album>
 	 *
 	 * @throws InternalLycheeException
 	 */

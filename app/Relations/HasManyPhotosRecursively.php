@@ -12,7 +12,11 @@ use App\Policies\AlbumQueryPolicy;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Gate;
 
-/** @disregard */
+/**
+ * @disregard
+ *
+ * @extends BaseHasManyPhotos<Album>
+ */
 class HasManyPhotosRecursively extends BaseHasManyPhotos
 {
 	protected AlbumQueryPolicy $albumQueryPolicy;
@@ -34,8 +38,6 @@ class HasManyPhotosRecursively extends BaseHasManyPhotos
 		 * because it was set in the constructor as `$owningAlbum`.
 		 *
 		 * @noinspection PhpIncompatibleReturnTypeInspection
-		 *
-		 * @phpstan-ignore-next-line
 		 */
 		return $this->parent;
 	}

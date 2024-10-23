@@ -15,7 +15,7 @@ use function Safe\scandir;
 if (!function_exists('renv')) {
 	function renv(string $cst, ?string $default = null): string
 	{
-		return rtrim(env($cst, $default) ?? '', '/');
+		return rtrim((string) (env($cst, $default) ?? ''), '/');
 	}
 }
 
@@ -76,7 +76,7 @@ return [
 
 	'url' => renv('APP_URL', 'http://localhost'),
 
-	'dir_url' => env('APP_DIR', '') === '' ? '' : ('/' . trim(env('APP_DIR'), '/')),
+	'dir_url' => env('APP_DIR', '') === '' ? '' : ('/' . trim((string) (env('APP_DIR') ?? ''), '/')),
 
 	'asset_url' => null,
 
@@ -151,7 +151,7 @@ return [
 	| Allows to define class names of diagnostics checks that will be skipped.
 	|
 	*/
-	'skip_diagnostics_checks' => explode(',', env('SKIP_DIAGNOSTICS_CHECKS', '')),
+	'skip_diagnostics_checks' => explode(',', (string) env('SKIP_DIAGNOSTICS_CHECKS', '')),
 
 	/*
 	|--------------------------------------------------------------------------

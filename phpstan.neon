@@ -50,18 +50,18 @@ parameters:
 		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::exists\(\).#'
 		- '#Dynamic call to static method App\\Models\\Builders\\.*::orderByDesc\(\).#'
 		- '#Dynamic call to static method App\\Models\\Builders\\.*::selectRaw\(\).#'
-		- '#Call to an undefined method Illuminate\\Database\\Eloquent\\.*::with(Only)?\(\)#'
+		# - '#Call to an undefined method Illuminate\\Database\\Eloquent\\.*::with(Only)?\(\)#'
 		# - '#Call to an undefined method App\\Relations\\HasManyPhotosRecursively::whereNotNull\(\)#'
 		# - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Builder|Illuminate\\Database\\Eloquent\\Relations\\Relation::whereNotNull\(\).#'
 		- '#Call to protected method asDateTime\(\) of class Illuminate\\Database\\Eloquent\\Model.#'
 
 		# Covariance - LSP princinple: https://en.wikipedia.org/wiki/Liskov_substitution_principle
-		-
-			message: '#Parameter \#1 \$column \(array<string>\|Closure\|Illuminate\\Database\\Query\\Expression\|string\) of method .* should be contravariant with parameter \$column \(array<int\|string, mixed>\|\(Closure.*\)\|\(Closure.*\)\|Illuminate\\Contracts\\Database\\Query\\Expression\|string\) of method .*#'
-			paths:
-				- app/Eloquent/FixedQueryBuilderTrait.php
-		- '#Parameter \#1 \$models .* of method .*::initRelation\(\) should be contravariant with parameter \$models .* of method .*::initRelation\(\)#'
-		- '#Parameter \#(1|2) \$(models|albums|photos|results) .* of method .*::(match|addEagerConstraints)\(\) should be contravariant with parameter \$(models|albums|photos|results) .* of method .*::(match|addEagerConstraints)\(\)#'
+		# -
+		# 	message: '#Parameter \#1 \$column \(array<string>\|Closure\|Illuminate\\Database\\Query\\Expression\|string\) of method .* should be contravariant with parameter \$column \(array<int\|string, mixed>\|\(Closure.*\)\|\(Closure.*\)\|Illuminate\\Contracts\\Database\\Query\\Expression\|string\) of method .*#'
+		# 	paths:
+		# 		- app/Eloquent/FixedQueryBuilderTrait.php
+		# - '#Parameter \#1 \$models .* of method .*::initRelation\(\) should be contravariant with parameter \$models .* of method .*::initRelation\(\)#'
+		# - '#Parameter \#(1|2) \$(models|albums|photos|results) .* of method .*::(match|addEagerConstraints)\(\) should be contravariant with parameter \$(models|albums|photos|results) .* of method .*::(match|addEagerConstraints)\(\)#'
 		- '#Parameter .* of method .*::replicate\(\) should be contravariant with parameter .* of method .*::replicate\(\)#' 
 		- '#Parameter .* of method .*::save\(\) should be contravariant with parameter .* of method .*::save\(\)#' 
 		- '#Parameter .* of method .*::newEloquentBuilder\(\) should be contravariant with parameter .* of method Kalnoy\\Nestedset\\Node<.*>::newEloquentBuilder\(\)#'

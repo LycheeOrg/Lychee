@@ -5,9 +5,11 @@ namespace App\Relations;
 use App\DTO\SortingCriterion;
 use App\Eloquent\FixedQueryBuilder;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
+use App\Models\Album;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\Photo;
+use App\Models\TagAlbum;
 use App\Policies\PhotoQueryPolicy;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -17,13 +19,18 @@ use Illuminate\Database\Eloquent\Relations\Relation;
  * direct parent of the queried photos, but include the photo due to some
  * indirect condition.
  *
- * @extends Relation<Photo>
+ * @template TDeclaringModel of TagAlbum|Album
+ *
+ * @extends Relation<Photo,TDeclaringModel,Collection<int,Photo>>
  */
 abstract class BaseHasManyPhotos extends Relation
 {
 	protected PhotoQueryPolicy $photoQueryPolicy;
 
-	public function __construct(BaseAlbum $owningAlbum)
+	/**
+	 * @param TagAlbum|Album $owningAlbum
+	 */
+	public function __construct(TagAlbum|Album $owningAlbum)
 	{
 		// Sic! We must initialize attributes of this class before we call
 		// the parent constructor.
@@ -48,6 +55,7 @@ abstract class BaseHasManyPhotos extends Relation
 		// Moreover, it is impossible to pass `null`.
 		// As a work-around we store the owning album in our own attribute
 		// `$owningAlbum` and always use that instead of `$parent`.
+		/** @var Album|TagAlbum $owningAlbum */
 		parent::__construct(
 			// Sic! We also must load the album eagerly.
 			// This relation is not used by albums which own the queried
@@ -56,6 +64,7 @@ abstract class BaseHasManyPhotos extends Relation
 			// Hence, the actually owning albums of the photos are not
 			// necessarily loaded.
 			Photo::query()->with(['album', 'size_variants', 'size_variants.sym_links']),
+			// @phpstan-ignore-next-line
 			$owningAlbum
 		);
 	}
@@ -83,8 +92,6 @@ abstract class BaseHasManyPhotos extends Relation
 		 * because it was set in the constructor as `$owningAlbum`.
 		 *
 		 * @noinspection PhpIncompatibleReturnTypeInspection
-		 *
-		 * @phpstan-ignore-next-line
 		 */
 		return $this->parent;
 	}
@@ -96,14 +103,14 @@ abstract class BaseHasManyPhotos extends Relation
 	 * In this case, the default value is an empty collection of
 	 * {@link \App\Models\Photo}.
 	 *
-	 * @param array<int,BaseAlbum> $models   a list of owning models, i.e. a list of albums
-	 * @param string               $relation the name of the relation on the owning models
+	 * @param array<int,TagAlbum|Album> $models   a list of owning models, i.e. a list of albums
+	 * @param string                    $relation the name of the relation on the owning models
 	 *
-	 * @return array<int,BaseAlbum> always returns $models
+	 * @return array<int,TagAlbum|Album> always returns $models
 	 */
 	public function initRelation(array $models, $relation): array
 	{
-		/** @var BaseAlbum $model */
+		/** @var TagAlbum|Album $model */
 		foreach ($models as $model) {
 			$model->setRelation($relation, $this->related->newCollection());
 		}

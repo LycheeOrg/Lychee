@@ -28,7 +28,7 @@ class TagAlbumBuilder extends FixedQueryBuilder
 	 *
 	 * @param array<string>|string $columns
 	 *
-	 * @return TagAlbum[]
+	 * @return array<int,TagAlbum>
 	 *
 	 * @throws QueryBuilderException
 	 */

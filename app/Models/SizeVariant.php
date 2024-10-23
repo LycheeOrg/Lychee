@@ -140,7 +140,7 @@ class SizeVariant extends Model
 	 * Returns the association to the photo which this size variant belongs
 	 * to.
 	 *
-	 * @return BelongsTo<Photo,SizeVariant>
+	 * @return BelongsTo<Photo,$this>
 	 */
 	public function photo(): BelongsTo
 	{
@@ -151,7 +151,7 @@ class SizeVariant extends Model
 	 * Returns the association to the symbolics links which point to this
 	 * size variant.
 	 *
-	 * @return HasManyBidirectionally<SymLink,SizeVariant>
+	 * @return HasManyBidirectionally<SymLink,$this>
 	 */
 	public function sym_links(): HasManyBidirectionally
 	{

@@ -39,9 +39,9 @@ class ListAlbums extends Action
 		$query = (new SortingDecorator($unfiltered))
 			->orderBy($sorting->column, $sorting->order);
 
-		/** @var NsCollection<int,string,Album> $albums */
+		/** @var NsCollection<Album> $albums */
 		$albums = $query->get();
-		/** @var NsCollection<int,string,Album> $tree */
+		/** @var NsCollection<Album> $tree */
 		$tree = $albums->toTree(null);
 
 		$flat_tree = $this->flatten($tree);
@@ -66,8 +66,8 @@ class ListAlbums extends Action
 	/**
 	 * Flatten the tree and create bread crumb paths.
 	 *
-	 * @param NsCollection<int,string,Album>|Collection<int,Album> $collection
-	 * @param string                                               $prefix
+	 * @param NsCollection<Album>|Collection<int,Album> $collection
+	 * @param string                                    $prefix
 	 *
 	 * @return TAlbumSaved[]
 	 */

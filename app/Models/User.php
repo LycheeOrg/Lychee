@@ -128,7 +128,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	/**
 	 * Return the albums owned by the user.
 	 *
-	 * @return HasMany<Album>
+	 * @return HasMany<Album,$this>
 	 */
 	public function albums(): HasMany
 	{
@@ -139,7 +139,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	/**
 	 * Return the photos owned by the user.
 	 *
-	 * @return HasMany<Photo>
+	 * @return HasMany<Photo,$this>
 	 */
 	public function photos(): HasMany
 	{
@@ -149,7 +149,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	/**
 	 * Return the albums shared to the user.
 	 *
-	 * @return BelongsToMany<BaseAlbumImpl>
+	 * @return BelongsToMany<BaseAlbumImpl,$this>
 	 */
 	public function shared(): BelongsToMany
 	{
@@ -164,7 +164,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	/**
 	 * Return the Oauth credentials owned by the user.
 	 *
-	 * @return HasMany<OauthCredential>
+	 * @return HasMany<OauthCredential,$this>
 	 */
 	public function oauthCredentials(): HasMany
 	{
@@ -208,7 +208,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	 */
 	public function delete(): bool
 	{
-		/** @var HasMany<Photo|Album>[] $ownershipRelations */
+		/** @var HasMany<Photo|Album,$this>[] $ownershipRelations */
 		$ownershipRelations = [$this->photos(), $this->albums()];
 		$hasAny = false;
 

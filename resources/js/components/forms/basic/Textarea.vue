@@ -16,7 +16,7 @@
 import { ref } from "vue";
 import Textarea, { TextareaPassThroughOptions } from "primevue/textarea";
 import type { PassThroughOptions } from "primevue/passthrough";
-import type { DesignToken, PassThrough } from "@primevue/core";
+import type { DesignToken, Nullable, PassThrough } from "@primevue/core";
 
 const props = defineProps<{
 	autoResize?: boolean | undefined;
@@ -30,7 +30,7 @@ const props = defineProps<{
 	class?: string;
 }>();
 
-const modelValue = defineModel();
+const modelValue = defineModel<Nullable<string>>();
 const classValue = ref(
 	(props.class ?? "") +
 		" p-3 w-full border-t-transparent border-r-transparent border-b border-l hover:border-b-primary-400 hover:border-l-primary-400 focus:border-b-primary-400 focus:border-l-primary-400",

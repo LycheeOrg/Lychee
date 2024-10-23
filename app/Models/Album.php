@@ -124,11 +124,11 @@ use Kalnoy\Nestedset\NodeTrait;
  *
  * // * @mixin \Eloquent
  *
- * @implements Node<string,Album>
+ * @implements Node<Album>
  */
 class Album extends BaseAlbum implements Node
 {
-	/** @phpstan-use NodeTrait<string,Album> */
+	/** @phpstan-use NodeTrait<Album> */
 	use NodeTrait;
 	use ToArrayThrowsNotImplemented;
 	/** @phpstan-use HasFactory<\Database\Factories\AlbumFactory> */
@@ -182,7 +182,7 @@ class Album extends BaseAlbum implements Node
 	 *
 	 * @return HasManyChildPhotos
 	 */
-	public function photos(): HasManyChildPhotos
+	public function photos(): HasManyChildPhotos // @phpstan-ignore-line
 	{
 		return new HasManyChildPhotos($this);
 	}
@@ -216,14 +216,14 @@ class Album extends BaseAlbum implements Node
 	/**
 	 * Get query for descendants of the node.
 	 *
-	 * @return DescendantsRelation<string,Album>
+	 * @return DescendantsRelation<Album>
 	 *
 	 * @throws QueryBuilderException
 	 */
 	public function descendants(): DescendantsRelation
 	{
 		try {
-			/** @var DescendantsRelation<string,Album> */
+			/** @var DescendantsRelation<Album> */
 			return new DescendantsRelation($this->newQuery(), $this);
 			// @codeCoverageIgnoreStart
 		} catch (\Throwable $e) {
@@ -235,7 +235,7 @@ class Album extends BaseAlbum implements Node
 	/**
 	 * Return the relationship between an album and its cover.
 	 *
-	 * @return HasOne<Photo>
+	 * @return HasOne<Photo,$this>
 	 */
 	public function cover(): HasOne
 	{
@@ -245,7 +245,7 @@ class Album extends BaseAlbum implements Node
 	/**
 	 * Return the relationship between an album and its header.
 	 *
-	 * @return HasOne<Photo>
+	 * @return HasOne<Photo,$this>
 	 */
 	public function header(): HasOne
 	{

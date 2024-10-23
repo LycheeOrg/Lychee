@@ -53,6 +53,7 @@ const AlbumService = {
 	clearCache(album_id: string | null = null): void {
 		const axiosWithCache = axios as unknown as AxiosCacheInstance;
 		if (!album_id) {
+			// @ts-expect-error
 			axiosWithCache.storage.clear();
 		} else {
 			axiosWithCache.storage.remove("album_" + album_id);

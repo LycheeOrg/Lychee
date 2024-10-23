@@ -22,7 +22,7 @@
 			<div class="max-w-3xl" id="allSettings">
 				<Fieldset
 					v-for="(configGroup, key, index) in configs.configs"
-					:legend="key"
+					:legend="key.toString()"
 					:toggleable="true"
 					class="border-b-0 border-r-0 rounded-r-none rounded-b-none mb-4 hover:border-primary-500 pt-2"
 					:pt:legendlabel:class="'capitalize'"

@@ -184,7 +184,7 @@ class Photo extends Model
 	/**
 	 * Return the relationship between a Photo and its Album.
 	 *
-	 * @return BelongsTo<Album,Photo>
+	 * @return BelongsTo<Album,$this>
 	 */
 	public function album(): BelongsTo
 	{
@@ -194,7 +194,7 @@ class Photo extends Model
 	/**
 	 * Return the relationship between a Photo and its Owner.
 	 *
-	 * @return BelongsTo<User,Photo>
+	 * @return BelongsTo<User,$this>
 	 */
 	public function owner(): BelongsTo
 	{

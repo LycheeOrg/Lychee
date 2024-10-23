@@ -62,7 +62,7 @@ import InputText from "@/components/forms/basic/InputText.vue";
 import ProfileService from "@/services/profile-service";
 import { useToast } from "primevue/usetoast";
 
-const visible = defineModel();
+const visible = defineModel<boolean>();
 
 const isDisabled = ref(true);
 const token = ref(undefined as undefined | string);

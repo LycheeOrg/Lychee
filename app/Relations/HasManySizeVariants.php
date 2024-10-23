@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * @extends HasMany<SizeVariant>
+ * @extends HasMany<SizeVariant,Photo>
  */
 class HasManySizeVariants extends HasMany
 {
@@ -24,7 +24,7 @@ class HasManySizeVariants extends HasMany
 	{
 		parent::__construct(
 			SizeVariant::query(),
-			$owningPhoto, /** @phpstan-ignore-line */
+			$owningPhoto,
 			'photo_id',
 			'id'
 		);

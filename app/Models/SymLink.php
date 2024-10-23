@@ -90,7 +90,7 @@ class SymLink extends Model
 	}
 
 	/**
-	 * @return BelongsTo<SizeVariant,SymLink>
+	 * @return BelongsTo<SizeVariant,$this>
 	 */
 	public function size_variant(): BelongsTo
 	{

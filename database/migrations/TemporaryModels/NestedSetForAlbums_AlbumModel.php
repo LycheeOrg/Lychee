@@ -18,11 +18,11 @@ use Kalnoy\Nestedset\NodeTrait;
  * Unfortunately, we need the `fixTree()` algorithm and there is no
  * implementation which uses low-level DB queries.
  *
- * @implements Node<string,RefactorAlbumModel_AlbumModel>
+ * @implements Node<RefactorAlbumModel_AlbumModel>
  */
 class NestedSetForAlbums_AlbumModel extends Model implements Node
 {
-	/** @phpstan-use NodeTrait<string,NestedSetForAlbums_AlbumModel> */
+	/** @phpstan-use NodeTrait<NestedSetForAlbums_AlbumModel> */
 	use NodeTrait;
 
 	protected $table = 'albums';
