@@ -3,19 +3,19 @@ import Constants from "./constants";
 
 const InitService = {
 	fetchLandingData(): Promise<AxiosResponse<App.Http.Resources.GalleryConfigs.LandingPageResource>> {
-		return axios.get(`${Constants.API_URL}LandingPage`, { data: {} });
+		return axios.get(`${Constants.getApiUrl()}LandingPage`, { data: {} });
 	},
 
 	fetchInitData(): Promise<AxiosResponse<App.Http.Resources.GalleryConfigs.InitConfig>> {
-		return axios.get(`${Constants.API_URL}Gallery::Init`, { data: {} });
+		return axios.get(`${Constants.getApiUrl()}Gallery::Init`, { data: {} });
 	},
 
 	fetchGlobalRights(): Promise<AxiosResponse<App.Http.Resources.Rights.GlobalRightsResource>> {
-		return axios.get(`${Constants.API_URL}Auth::rights`, { data: {} });
+		return axios.get(`${Constants.getApiUrl()}Auth::rights`, { data: {} });
 	},
 
 	fetchVersion(): Promise<AxiosResponse<App.Http.Resources.Root.VersionResource>> {
-		return axios.get(`${Constants.API_URL}Version`, { data: {} });
+		return axios.get(`${Constants.getApiUrl()}Version`, { data: {} });
 	},
 	fetchFooter(): Promise<AxiosResponse<App.Http.Resources.GalleryConfigs.FooterConfig>> {
 		return axios.get(`${Constants.API_URL}Gallery::Footer`, { data: {} });
