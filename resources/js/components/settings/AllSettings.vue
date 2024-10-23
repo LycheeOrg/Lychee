@@ -38,7 +38,9 @@
 								</template>
 								<template v-else>
 									<!-- Special keys -->
-									<VersionField v-if="config.key === 'version'" :config="config" />
+									<template v-if="config.key === 'version'">
+										<!-- version is not modifiable in easy settings. -->
+									</template>
 									<ZipSliderField v-else-if="config.key === 'zip_deflate_level'" :config="config" @filled="update" @reset="reset" />
 									<SelectOptionsField
 										v-else-if="config.key === 'default_license'"
@@ -176,7 +178,6 @@ import { useToast } from "primevue/usetoast";
 import StringField from "@/components/forms/settings/StringField.vue";
 import BoolField from "@/components/forms/settings/BoolField.vue";
 import NumberField from "@/components/forms/settings/NumberField.vue";
-import VersionField from "@/components/forms/settings/VersionField.vue";
 import SliderField from "@/components/forms/settings/SliderField.vue";
 import SelectField from "@/components/forms/settings/SelectField.vue";
 import SelectOptionsField from "@/components/forms/settings/SelectOptionsField.vue";
