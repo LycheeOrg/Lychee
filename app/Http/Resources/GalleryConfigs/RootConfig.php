@@ -22,6 +22,7 @@ class RootConfig extends Data
 	public bool $is_map_accessible = false;
 	public bool $is_mod_frame_enabled = false;
 	public bool $is_timeline_enabled = false;
+	public bool $is_album_timeline_enabled = false;
 	public bool $is_search_accessible = false;
 	public bool $show_keybinding_help_button = false;
 	#[LiteralTypeScriptType('App.Enum.AspectRatioType')]
@@ -36,20 +37,31 @@ class RootConfig extends Data
 
 	public function __construct()
 	{
+		$is_logged_in = Auth::check();
 		$count_locations = Photo::whereNotNull('latitude')->whereNotNull('longitude')->count() > 0;
 		$map_display = Configs::getValueAsBool('map_display');
-		$public_display = Auth::check() || Configs::getValueAsBool('map_display_public');
+		$public_display = $is_logged_in || Configs::getValueAsBool('map_display_public');
+
 		$this->is_map_accessible = $count_locations && $map_display && $public_display;
 		$this->is_mod_frame_enabled = $this->checkModFrameEnabled();
-		$this->is_timeline_enabled = Configs::getValueAsBool('timeline_enable');
-		$this->is_search_accessible = Auth::check() || Configs::getValueAsBool('search_public');
+
+		$timeline_enabled = Configs::getValueAsBool('timeline_enable');
+		$timeline_public = Configs::getValueAsBool('timeline_public');
+		$this->is_timeline_enabled = $timeline_enabled && ($is_logged_in || $timeline_public);
+
+		$timeline_albums_enabled = Configs::getValueAsBool('timeline_albums_enable');
+		$timeline_albums_public = Configs::getValueAsBool('timeline_albums_public');
+		$this->is_album_timeline_enabled = $timeline_albums_enabled && ($is_logged_in || $timeline_albums_public);
+		$this->timeline_album_granularity = Configs::getValueAsEnum('timeline_album_granularity', TimelineAlbumGranularity::class);
+
+		$this->is_search_accessible = $is_logged_in || Configs::getValueAsBool('search_public');
+
 		$this->album_thumb_css_aspect_ratio = Configs::getValueAsEnum('default_album_thumb_aspect_ratio', AspectRatioType::class)->css();
 		$this->show_keybinding_help_button = Configs::getValueAsBool('show_keybinding_help_button');
 		$this->login_button_position = Configs::getValueAsString('login_button_position');
 		$this->back_button_enabled = Configs::getValueAsBool('back_button_enabled');
 		$this->back_button_text = Configs::getValueAsString('back_button_text');
 		$this->back_button_url = Configs::getValueAsString('back_button_url');
-		$this->timeline_album_granularity = Configs::getValueAsEnum('timeline_album_granularity', TimelineAlbumGranularity::class);
 	}
 
 	private function checkModFrameEnabled(): bool

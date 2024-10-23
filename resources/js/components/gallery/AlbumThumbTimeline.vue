@@ -1,6 +1,6 @@
 <template>
 	<Panel :header="'Timeline'" :toggleable="!isAlone" :pt:header:class="headerClass" class="border-0 w-full">
-		<Timeline :value="albumsTimeLine" :pt:eventopposite:class="'hidden'" class="mt-4">
+		<Timeline v-if="is_timeline_left_border_visible" :value="albumsTimeLine" :pt:eventopposite:class="'hidden'" class="mt-4">
 			<template #content="slotProps">
 				<div class="flex flex-wrap flex-row flex-shrink w-full justify-start gap-1 sm:gap-2 md:gap-4 pb-8">
 					<div class="w-full text-left font-semibold text-muted-color-emphasis text-lg">{{ slotProps.item.header }}</div>
@@ -11,13 +11,34 @@
 							:album="album"
 							:cover_id="null"
 							:config="props.config"
-							v-if="!album.is_nsfw || props.areNsfwVisible"
+							v-if="!album.is_nsfw || are_nsfw_visible"
 							:is-selected="props.selectedAlbums.includes(album.id)"
 						/>
 					</template>
 				</div>
 			</template>
 		</Timeline>
+		<div v-else>
+			<template v-for="albumTimeline in albumsTimeLine">
+				<div
+					v-if="albumTimeline.data.filter((a) => !a.is_nsfw || are_nsfw_visible).length > 0"
+					class="flex flex-wrap flex-row flex-shrink w-full justify-start gap-1 sm:gap-2 md:gap-4 pb-8"
+				>
+					<div class="w-full text-left font-semibold text-muted-color-emphasis text-lg">{{ albumTimeline.header }}</div>
+					<template v-for="(album, idx) in albumTimeline.data">
+						<AlbumThumb
+							@click="maySelect(idx + albumTimeline.iter + props.idxShift, $event)"
+							@contextmenu.prevent="menuOpen(idx + albumTimeline.iter + props.idxShift, $event)"
+							:album="album"
+							:cover_id="null"
+							:config="props.config"
+							v-if="!album.is_nsfw || are_nsfw_visible"
+							:is-selected="props.selectedAlbums.includes(album.id)"
+						/>
+					</template>
+				</div>
+			</template>
+		</div>
 	</Panel>
 </template>
 <script setup lang="ts">
@@ -26,9 +47,13 @@ import AlbumThumb, { AlbumThumbConfig } from "@/components/gallery/thumbs/AlbumT
 import { computed } from "vue";
 import { SplitData, useSplitter } from "@/composables/album/splitter";
 import Timeline from "primevue/timeline";
+import { useLycheeStateStore } from "@/stores/LycheeState";
+import { storeToRefs } from "pinia";
+
+const lycheeStore = useLycheeStateStore();
+const { are_nsfw_visible, is_timeline_left_border_visible } = storeToRefs(lycheeStore);
 
 const props = defineProps<{
-	areNsfwVisible: boolean;
 	header: string;
 	album: App.Http.Resources.Models.AlbumResource | undefined | null;
 	albums: { [key: number]: App.Http.Resources.Models.ThumbAlbumResource };
@@ -64,7 +89,7 @@ const albumsTimeLine = computed<SplitData<App.Http.Resources.Models.ThumbAlbumRe
 	spliter(
 		props.albums as App.Http.Resources.Models.ThumbAlbumResource[],
 		(a: App.Http.Resources.Models.ThumbAlbumResource) => a.timeline?.timeDate ?? "",
-		(a: App.Http.Resources.Models.ThumbAlbumResource) => a.timeline?.format ?? "",
+		(a: App.Http.Resources.Models.ThumbAlbumResource) => a.timeline?.format ?? "Others",
 	),
 );
 

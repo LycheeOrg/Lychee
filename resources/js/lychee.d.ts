@@ -200,23 +200,23 @@ declare namespace App.Http.Resources.GalleryConfigs {
 	export type InitConfig = {
 		is_debug_enabled: boolean;
 		are_nsfw_visible: boolean;
-		is_nsfw_warning_visible: boolean;
 		is_nsfw_background_blurred: boolean;
 		nsfw_banner_override: string;
 		is_nsfw_banner_backdrop_blurred: boolean;
 		show_keybinding_help_popup: boolean;
 		image_overlay_type: App.Enum.ImageOverlayType;
-		display_thumb_album_overlay: App.Enum.ThumbOverlayVisibilityType;
-		display_thumb_photo_overlay: App.Enum.ThumbOverlayVisibilityType;
-		clockwork_url: string | null;
-		album_subtitle_type: App.Enum.ThumbAlbumSubtitleType;
 		can_rotate: boolean;
 		can_autoplay: boolean;
+		display_thumb_album_overlay: App.Enum.ThumbOverlayVisibilityType;
+		display_thumb_photo_overlay: App.Enum.ThumbOverlayVisibilityType;
+		album_subtitle_type: App.Enum.ThumbAlbumSubtitleType;
 		album_decoration: App.Enum.AlbumDecorationType;
 		album_decoration_orientation: App.Enum.AlbumDecorationOrientation;
+		clockwork_url: string | null;
+		slideshow_timeout: number;
+		is_timeline_left_border_visible: boolean;
 		title: string;
 		dropbox_api_key: string;
-		slideshow_timeout: number;
 		is_se_enabled: boolean;
 		is_se_preview_enabled: boolean;
 		is_se_info_hidden: boolean;
@@ -248,6 +248,7 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		is_map_accessible: boolean;
 		is_mod_frame_enabled: boolean;
 		is_timeline_enabled: boolean;
+		is_album_timeline_enabled: boolean;
 		is_search_accessible: boolean;
 		show_keybinding_help_button: boolean;
 		album_thumb_css_aspect_ratio: App.Enum.AspectRatioType;
