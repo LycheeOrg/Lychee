@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Actions\Statistics\Spaces;
 use App\Http\Requests\Statistics\SpacePerAlbumRequest;
 use App\Http\Requests\Statistics\SpacePerUserRequest;
+use App\Http\Requests\Statistics\SpaceSizeVariantRequest;
 use App\Http\Resources\Statistics\Album;
 use App\Http\Resources\Statistics\Sizes;
 use App\Http\Resources\Statistics\UserSpace;
@@ -29,16 +30,19 @@ class StatisticsController extends Controller
 	}
 
 	/**
-	 * @param SpacePerUserRequest $request
-	 * @param Spaces              $spaces
+	 * @param SpaceSizeVariantRequest $request
+	 * @param Spaces                  $spaces
 	 *
 	 * @return Collection<int,Sizes>
 	 */
-	public function getSpacePerSizeVariantType(SpacePerUserRequest $request, Spaces $spaces): Collection
+	public function getSpacePerSizeVariantType(SpaceSizeVariantRequest $request, Spaces $spaces): Collection
 	{
-		$spaceData = $spaces->getSpacePerSizeVariantType(
-			owner_id: $request->ownerId()
-		);
+		$albumId = $request->album()?->id;
+		$ownerId = $albumId === null ? $request->ownerId() : null;
+
+		$spaceData = $albumId === null
+			? $spaces->getSpacePerSizeVariantTypePerUser(owner_id: $ownerId)
+			: $spaces->getSpacePerSizeVariantTypePerAlbum(album_id: $albumId);
 
 		return Sizes::collect($spaceData);
 	}
