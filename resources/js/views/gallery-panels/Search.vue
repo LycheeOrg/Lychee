@@ -210,6 +210,8 @@ const configForMenu = computed<App.Http.Resources.GalleryConfigs.AlbumConfig>(()
 		is_nsfw_warning_visible: false,
 		album_thumb_css_aspect_ratio: "aspect-square",
 		photo_layout: "justified",
+		timeline_album_granularity: "year",
+		timeline_photo_granularity: "day",
 	};
 });
 const albumForMenu = albumid.value !== "" ? album : null;
