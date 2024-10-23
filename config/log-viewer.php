@@ -5,7 +5,7 @@ use Opcodes\LogViewer\LogLevels\LevelClass;
 if (!function_exists('renv')) {
 	function renv(string $cst, ?string $default = null): string
 	{
-		return rtrim(env($cst, $default) ?? '', '/');
+		return rtrim((string) (env($cst, $default) ?? ''), '/');
 	}
 }
 
@@ -19,7 +19,7 @@ if (!function_exists('renv')) {
 if (!function_exists('renv_cond')) {
 	function renv_cond(string $cst): string
 	{
-		return env($cst, '') === '' ? '' : ('/' . trim(env($cst), '/'));
+		return env($cst, '') === '' ? '' : ('/' . trim((string) env($cst), '/'));
 	}
 }
 
@@ -128,7 +128,7 @@ return [
 
 	'hosts' => [
 		'local' => [
-			'name' => ucfirst(env('APP_ENV', 'local')),
+			'name' => ucfirst((string) env('APP_ENV', 'local')),
 		],
 
 		// 'staging' => [

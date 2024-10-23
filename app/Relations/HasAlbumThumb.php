@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Gate;
 /**
  * @mixin Builder<Photo>
  *
- * @extends Relation<Photo>
+ * @extends Relation<Photo,Album,Thumb|null>
  *
  * @disregard P1037
  */
