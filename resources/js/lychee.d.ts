@@ -413,6 +413,7 @@ declare namespace App.Http.Resources.Models {
 		num_photos: number;
 		created_at: string;
 		formatted_min_max: string | null;
+		owner: string | null;
 		rights: App.Http.Resources.Rights.AlbumRightsResource;
 	};
 	export type ThumbResource = {
