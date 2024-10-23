@@ -1,8 +1,3 @@
-// Route::get('/Diagnostics', [Admin\DiagnosticsController::class, 'errors']);
-// Route::get('/Diagnostics::info', [Admin\DiagnosticsController::class, 'info']);
-// Route::get('/Diagnostics::space', [Admin\DiagnosticsController::class, 'space']);
-// Route::get('/Diagnostics::config', [Admin\DiagnosticsController::class, 'config']);
-
 import axios, { type AxiosResponse } from "axios";
 import Constants from "./constants";
 

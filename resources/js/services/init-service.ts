@@ -18,7 +18,7 @@ const InitService = {
 		return axios.get(`${Constants.getApiUrl()}Version`, { data: {} });
 	},
 	fetchFooter(): Promise<AxiosResponse<App.Http.Resources.GalleryConfigs.FooterConfig>> {
-		return axios.get(`${Constants.API_URL}Gallery::Footer`, { data: {} });
+		return axios.get(`${Constants.getApiUrl()}Gallery::Footer`, { data: {} });
 	},
 };
 
