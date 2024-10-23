@@ -1,5 +1,5 @@
 <template>
-	<Drawer v-model:visible="left_menu_open">
+	<Drawer v-model:visible="left_menu_open" :pt:content:class="'flex flex-col justify-start gap-10'">
 		<Menu :model="items" v-if="initData" class="!border-none">
 			<template #submenuheader="{ item }">
 				<span class="text-primary-emphasis font-bold" :class="item.access !== false ? '' : 'hidden'">
@@ -81,7 +81,7 @@ const authStore = useAuthStore();
 const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
 
-const { left_menu_open, clockwork_url, is_se_enabled, is_se_preview_enabled } = storeToRefs(lycheeStore);
+const { left_menu_open, clockwork_url, is_se_enabled, is_se_preview_enabled, is_se_info_hidden } = storeToRefs(lycheeStore);
 const { user } = storeToRefs(authStore);
 authStore.getUser();
 
@@ -182,6 +182,12 @@ function loadMenu() {
 					route: "/jobs",
 					access: initData.value.settings.can_see_logs ?? false,
 				},
+				{
+					label: "Clockwork App",
+					icon: "telescope",
+					url: clockwork_url.value ?? "",
+					access: clockwork_url.value !== null && (initData.value.settings.can_access_dev_tools ?? false),
+				},
 			],
 		},
 		{
@@ -220,22 +226,23 @@ function loadMenu() {
 				},
 			],
 		},
-
 		{
-			label: "lychee.ABOUT_LYCHEE",
-			icon: "info",
-			access: true,
-			command: () => (openLycheeAbout.value = true),
+			label: "Lychee",
+			items: [
+				{
+					label: "About",
+					icon: "info",
+					access: true,
+					command: () => (openLycheeAbout.value = true),
+				},
+				{
+					label: "Source",
+					icon: "book",
+					access: true,
+					url: "https://github.com/LycheeOrg/Lychee",
+				},
+			],
 		},
 	];
-
-	if (clockwork_url.value && initData.value.settings.can_access_dev_tools) {
-		items.value.push({
-			label: "Clockwork App",
-			icon: "telescope",
-			url: clockwork_url.value,
-			access: initData.value.settings.can_edit ?? false,
-		});
-	}
 }
 </script>
