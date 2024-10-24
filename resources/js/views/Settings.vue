@@ -1,9 +1,7 @@
 <template>
 	<Toolbar class="w-full border-0 h-14">
 		<template #start>
-			<router-link :to="{ name: 'gallery' }">
-				<Button icon="pi pi-angle-left" class="mr-2" severity="secondary" text />
-			</router-link>
+			<OpenLeftMenu />
 		</template>
 
 		<template #center>
@@ -33,7 +31,6 @@
 	</Tabs>
 </template>
 <script setup lang="ts">
-import Button from "primevue/button";
 import Tabs from "primevue/tabs";
 import TabList from "primevue/tablist";
 import Tab from "primevue/tab";
@@ -42,4 +39,5 @@ import TabPanel from "primevue/tabpanel";
 import Toolbar from "primevue/toolbar";
 import AllSettings from "@/components/settings/AllSettings.vue";
 import EasySettings from "@/components/settings/EasySettings.vue";
+import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
 </script>

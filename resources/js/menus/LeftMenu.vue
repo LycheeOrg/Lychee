@@ -1,5 +1,14 @@
 <template>
 	<Drawer v-model:visible="left_menu_open" :pt:content:class="'flex flex-col justify-start gap-10'">
+		<template #header>
+			<div class="flex items-center gap-2 text-muted-color hover:text-primary-400">
+				<router-link v-if="!isGallery" v-slot="{ href, navigate }" to="/gallery" custom>
+					<a v-ripple :href="href" @click="navigate">
+						<span class="text-lg font-bold pl-3">Back to Gallery</span>
+					</a>
+				</router-link>
+			</div>
+		</template>
 		<Menu :model="items" v-if="initData" class="!border-none">
 			<template #submenuheader="{ item }">
 				<span class="text-primary-emphasis font-bold" :class="item.access !== false ? '' : 'hidden'">
@@ -55,6 +64,7 @@ import { useLycheeStateStore } from "@/stores/LycheeState";
 import AlbumService from "@/services/album-service";
 import SETag from "@/components/icons/SETag.vue";
 import Constants from "@/services/constants";
+import { useRoute } from "vue-router";
 
 type MenyType =
 	| {
@@ -74,9 +84,9 @@ type MenyType =
 
 const initData = ref(undefined) as Ref<undefined | App.Http.Resources.Rights.GlobalRightsResource>;
 const openLycheeAbout = ref(false);
-const items = ref([] as MenyType[]);
 const logsEnabled = ref(true);
 
+const route = useRoute();
 const authStore = useAuthStore();
 const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
@@ -104,7 +114,6 @@ function load() {
 	InitService.fetchGlobalRights()
 		.then((data) => {
 			initData.value = data.data;
-			loadMenu();
 		})
 		.catch((error) => {
 			console.error(error);
@@ -131,12 +140,16 @@ const canSeeAdmin = computed(() => {
 	);
 });
 
-function loadMenu() {
+const isGallery = computed(() => {
+	return route.name === "gallery";
+});
+
+const items = computed<MenyType[]>(() => {
 	if (!initData.value) {
-		return;
+		return [];
 	}
 
-	items.value = [
+	return [
 		{
 			label: "Admin",
 			access: canSeeAdmin.value,
@@ -209,13 +222,13 @@ function loadMenu() {
 					label: "Statistics",
 					icon: "bar-chart",
 					route: "/statistics",
-					access: is_se_enabled.value,
+					access: is_se_enabled.value === true,
 				},
 				{
 					label: "Statistics",
 					icon: "bar-chart",
 					route: "/statistics",
-					access: is_se_preview_enabled.value,
+					access: is_se_preview_enabled.value === true,
 					seTag: true,
 				},
 				{
@@ -238,11 +251,141 @@ function loadMenu() {
 				{
 					label: "Source",
 					icon: "book",
-					access: true,
+					access: is_se_info_hidden.value === false,
 					url: "https://github.com/LycheeOrg/Lychee",
+				},
+				{
+					label: "Support",
+					icon: "heart",
+					access: is_se_info_hidden.value === false,
+					url: "https://lycheeorg.github.io/get-supporter-edition/",
 				},
 			],
 		},
 	];
-}
+});
+
+// function loadMenu() {
+
+// 	items.value = [
+// 		{
+// 			label: "lychee.GALLERY",
+// 			icon: "image",
+// 			route: "/gallery",
+// 			access: !isGallery.value,
+// 		},
+// 		{
+// 			label: "Admin",
+// 			access: canSeeAdmin.value,
+// 			items: [
+// 				{
+// 					label: "lychee.SETTINGS",
+// 					icon: "cog",
+// 					route: "/settings",
+// 					access: initData.value.settings.can_edit ?? false,
+// 				},
+// 				{
+// 					label: "lychee.USERS",
+// 					icon: "people",
+// 					route: "/users",
+// 					access: initData.value.user_management.can_edit ?? false,
+// 				},
+// 				{
+// 					label: "lychee.DIAGNOSTICS",
+// 					icon: "wrench",
+// 					route: "/diagnostics",
+// 					access: initData.value.settings.can_see_diagnostics ?? false,
+// 				},
+// 				{
+// 					label: "maintenance.title",
+// 					icon: "timer",
+// 					route: "/maintenance",
+// 					access: initData.value.settings.can_edit ?? false,
+// 				},
+// 				{
+// 					label: "lychee.LOGS",
+// 					icon: "excerpt",
+// 					url: "/Logs",
+// 					access: (initData.value.settings.can_see_logs ?? false) && logsEnabled.value,
+// 				},
+// 				{
+// 					label: "lychee.LOGS",
+// 					icon: "excerpt",
+// 					access: (initData.value.settings.can_see_logs ?? false) && !logsEnabled.value,
+// 				},
+// 				{
+// 					label: "lychee.JOBS",
+// 					icon: "project",
+// 					route: "/jobs",
+// 					access: initData.value.settings.can_see_logs ?? false,
+// 				},
+// 				{
+// 					label: "Clockwork App",
+// 					icon: "telescope",
+// 					url: clockwork_url.value ?? "",
+// 					access: clockwork_url.value !== null && (initData.value.settings.can_access_dev_tools ?? false),
+// 				},
+// 			],
+// 		},
+// 		{
+// 			label: "lychee.PROFILE",
+// 			items: [
+// 				{
+// 					label: "User",
+// 					icon: "person",
+// 					route: "/profile",
+// 					access: initData.value.user.can_edit ?? false,
+// 				},
+// 				{
+// 					label: "lychee.SHARING",
+// 					icon: "cloud",
+// 					route: "/sharing",
+// 					access: initData.value.root_album.can_upload ?? false,
+// 				},
+// 				{
+// 					label: "Statistics",
+// 					icon: "bar-chart",
+// 					route: "/statistics",
+// 					access: is_se_enabled.value === true,
+// 				},
+// 				{
+// 					label: "Statistics",
+// 					icon: "bar-chart",
+// 					route: "/statistics",
+// 					access: is_se_preview_enabled.value === true,
+// 					seTag: true,
+// 				},
+// 				{
+// 					label: "lychee.SIGN_OUT",
+// 					icon: "account-logout",
+// 					access: true,
+// 					command: logout,
+// 				},
+// 			],
+// 		},
+// 		{
+// 			label: "Lychee",
+// 			items: [
+// 				{
+// 					label: "About",
+// 					icon: "info",
+// 					access: true,
+// 					command: () => (openLycheeAbout.value = true),
+// 				},
+// 				{
+// 					label: "Source",
+// 					icon: "book",
+// 					access: true,
+// 					url: "https://github.com/LycheeOrg/Lychee",
+// 				},
+// 				{
+// 					label: "Support",
+// 					icon: "heart",
+// 					access: is_se_info_hidden.value === false,
+// 					url: "https://lycheeorg.github.io/get-supporter-edition/",
+// 				}
+// 			],
+// 		},
+// 	];
+// }
 </script>
