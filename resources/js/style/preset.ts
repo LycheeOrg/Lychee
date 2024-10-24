@@ -401,7 +401,6 @@ const LycheePrimeVueConfig = {
 						border: {
 							color: "{surface.800}",
 						},
-						// color: "{surface.0}",
 					},
 				},
 			},
