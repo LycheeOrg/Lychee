@@ -5,7 +5,7 @@ namespace App\Enum;
 /**
  * Enum DateOrderingType.
  *
- * Determine which date to present furst in a a minx max situation.
+ * Determine which date to present first in a min max situation.
  */
 enum DateOrderingType: string
 {
