@@ -33,13 +33,19 @@ const search = defineModel<string>("search", { required: true });
 
 const emits = defineEmits<{
 	search: [terms: string];
+	clear: [];
 }>();
 
 const isValid = computed<boolean>(() => {
-	return search.value === '' || search.value.length >= props.searchMinimumLengh;
+	return search.value === "" || search.value.length >= props.searchMinimumLengh;
 });
 
 const debouncedFn = useDebounceFn(() => {
+	if (search.value === "" || !isValid.value) {
+		emits("clear");
+		return;
+	}
+
 	if (search.value !== undefined && search.value.length >= props.searchMinimumLengh) {
 		emits("search", search.value);
 	}
