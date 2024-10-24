@@ -17,7 +17,7 @@
 	<Tabs value="0" class="max-w-5xl mx-auto">
 		<TabList>
 			<Tab value="0">Basic</Tab>
-			<Tab value="1"><i class="pi pi-exclamation-triangle mr-2" />{{ $t("lychee.MORE") }}</Tab>
+			<Tab value="1"><i class="pi pi-exclamation-triangle mr-2 text-orange-500" />All settings</Tab>
 		</TabList>
 		<TabPanels :pt:root:class="'px-0'">
 			<TabPanel value="0">
