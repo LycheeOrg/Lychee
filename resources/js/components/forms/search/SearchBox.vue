@@ -36,10 +36,12 @@ const emits = defineEmits<{
 }>();
 
 const isValid = computed<boolean>(() => {
-	return search.value === "" || search.value.length >= props.searchMinimumLengh;
+	return search.value === '' || search.value.length >= props.searchMinimumLengh;
 });
 
 const debouncedFn = useDebounceFn(() => {
-	emits("search", search.value);
+	if (search.value !== undefined && search.value.length >= props.searchMinimumLengh) {
+		emits("search", search.value);
+	}
 }, 1000);
 </script>
