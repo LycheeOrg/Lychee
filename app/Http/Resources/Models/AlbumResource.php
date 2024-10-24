@@ -2,13 +2,17 @@
 
 namespace App\Http\Resources\Models;
 
+use App\Enum\ColumnSortingType;
+use App\Enum\TimelineAlbumGranularity;
 use App\Http\Resources\Editable\EditableBaseAlbumResource;
 use App\Http\Resources\Models\Utils\AlbumProtectionPolicy;
 use App\Http\Resources\Models\Utils\PreFormattedAlbumData;
+use App\Http\Resources\Models\Utils\TimelineData;
 use App\Http\Resources\Rights\AlbumRightsResource;
 use App\Http\Resources\Traits\HasHeaderUrl;
 use App\Http\Resources\Traits\HasPrepPhotoCollection;
 use App\Models\Album;
+use App\Models\Configs;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Spatie\LaravelData\Data;
@@ -73,6 +77,12 @@ class AlbumResource extends Data
 		$this->albums = $album->relationLoaded('children') ? ThumbAlbumResource::collect($album->children) : null;
 		$this->photos = $album->relationLoaded('photos') ? PhotoResource::collect($album->photos) : null;
 		$this->prepPhotosCollection();
+
+		if ($this->albums->count() > 0) {
+			$sorting = $album->album_sorting?->column ?? Configs::getValueAsEnum('sorting_albums_col', ColumnSortingType::class);
+			$album_granularity = Configs::getValueAsEnum('timeline_album_granularity', TimelineAlbumGranularity::class);
+			$this->albums = TimelineData::setTimeLineDataForAlbums($this->albums, $sorting, $album_granularity);
+		}
 
 		// thumb
 		$this->cover_id = $album->cover_id;

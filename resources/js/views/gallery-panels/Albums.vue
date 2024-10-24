@@ -20,34 +20,46 @@
 			:user="user"
 			:config="albumPanelConfig"
 			:is-alone="!albums.length"
-			:are-nsfw-visible="false"
 			:idx-shift="-1"
 			:selected-albums="[]"
 		/>
-		<AlbumThumbPanel
-			v-if="albums.length > 0"
-			header="lychee.ALBUMS"
-			:album="null"
-			:albums="albums"
-			:user="user"
-			:config="albumPanelConfig"
-			:is-alone="!sharedAlbums.length && !smartAlbums.length"
-			:are-nsfw-visible="are_nsfw_visible"
-			:idx-shift="0"
-			:selected-albums="selectedAlbumsIds"
-			@clicked="albumClick"
-			@contexted="albumMenuOpen"
-		/>
+		<template v-if="albums.length > 0">
+			<AlbumThumbPanel
+				v-if="!rootConfig.is_album_timeline_enabled"
+				header="lychee.ALBUMS"
+				:album="null"
+				:albums="albums"
+				:user="user"
+				:config="albumPanelConfig"
+				:is-alone="!sharedAlbums.length && !smartAlbums.length"
+				:idx-shift="0"
+				:selected-albums="selectedAlbumsIds"
+				@clicked="albumClick"
+				@contexted="albumMenuOpen"
+			/>
+			<AlbumThumbTimeline
+				v-if="rootConfig.is_album_timeline_enabled"
+				header="lychee.ALBUMS"
+				:album="null"
+				:albums="albums"
+				:user="user"
+				:config="albumPanelConfig"
+				:is-alone="!sharedAlbums.length && !smartAlbums.length"
+				:idx-shift="0"
+				:selected-albums="selectedAlbumsIds"
+				@clicked="albumClick"
+				@contexted="albumMenuOpen"
+			/>
+		</template>
 		<template v-for="sharedAlbum in sharedAlbums">
 			<AlbumThumbPanel
 				v-if="sharedAlbums.length > 0"
-				:header="sharedAlbum.owner"
+				:header="sharedAlbum.header"
 				:album="undefined"
-				:albums="sharedAlbum.albums"
+				:albums="sharedAlbum.data"
 				:user="user"
 				:config="albumPanelConfig"
 				:is-alone="!albums.length"
-				:are-nsfw-visible="are_nsfw_visible"
 				:idx-shift="sharedAlbum.iter"
 				:selected-albums="selectedAlbumsIds"
 				@clicked="albumClick"
@@ -144,6 +156,7 @@ import AlbumService from "@/services/album-service";
 import { useRouter } from "vue-router";
 import { useMouseEvents } from "@/composables/album/uploadEvents";
 import GalleryFooter from "@/components/footers/GalleryFooter.vue";
+import AlbumThumbTimeline from "@/components/gallery/AlbumThumbTimeline.vue";
 
 const auth = useAuthStore();
 const router = useRouter();

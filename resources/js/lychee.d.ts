@@ -81,6 +81,8 @@ declare namespace App.Enum {
 	export type StorageDiskType = "images" | "s3";
 	export type ThumbAlbumSubtitleType = "description" | "takedate" | "creation" | "oldstyle";
 	export type ThumbOverlayVisibilityType = "never" | "always" | "hover";
+	export type TimelineAlbumGranularity = "year" | "month" | "day";
+	export type TimelinePhotoGranularity = "year" | "month" | "day" | "hour";
 	export type UpdateStatus = 0 | 1 | 2 | 3;
 	export type VersionChannelType = "release" | "git" | "tag";
 }
@@ -143,7 +145,7 @@ declare namespace App.Http.Resources.Editable {
 		photo_sorting: App.DTO.PhotoSortingCriterion | null;
 		album_sorting: App.DTO.AlbumSortingCriterion | null;
 		aspect_ratio: App.Enum.AspectRatioType | null;
-		photo_layout: any | null;
+		photo_layout: App.Enum.PhotoLayoutType | null;
 		header_id: string | null;
 		cover_id: string | null;
 		tags: Array<string>;
@@ -181,6 +183,8 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		is_nsfw_warning_visible: boolean;
 		album_thumb_css_aspect_ratio: App.Enum.AspectRatioCSSType;
 		photo_layout: App.Enum.PhotoLayoutType;
+		timeline_album_granularity: App.Enum.TimelineAlbumGranularity;
+		timeline_photo_granularity: App.Enum.TimelinePhotoGranularity;
 	};
 	export type FooterConfig = {
 		footer_additional_text: string;
@@ -196,23 +200,23 @@ declare namespace App.Http.Resources.GalleryConfigs {
 	export type InitConfig = {
 		is_debug_enabled: boolean;
 		are_nsfw_visible: boolean;
-		is_nsfw_warning_visible: boolean;
 		is_nsfw_background_blurred: boolean;
 		nsfw_banner_override: string;
 		is_nsfw_banner_backdrop_blurred: boolean;
 		show_keybinding_help_popup: boolean;
 		image_overlay_type: App.Enum.ImageOverlayType;
-		display_thumb_album_overlay: App.Enum.ThumbOverlayVisibilityType;
-		display_thumb_photo_overlay: App.Enum.ThumbOverlayVisibilityType;
-		clockwork_url: string | null;
-		album_subtitle_type: App.Enum.ThumbAlbumSubtitleType;
 		can_rotate: boolean;
 		can_autoplay: boolean;
+		display_thumb_album_overlay: App.Enum.ThumbOverlayVisibilityType;
+		display_thumb_photo_overlay: App.Enum.ThumbOverlayVisibilityType;
+		album_subtitle_type: App.Enum.ThumbAlbumSubtitleType;
 		album_decoration: App.Enum.AlbumDecorationType;
 		album_decoration_orientation: App.Enum.AlbumDecorationOrientation;
+		clockwork_url: string | null;
+		slideshow_timeout: number;
+		is_timeline_left_border_visible: boolean;
 		title: string;
 		dropbox_api_key: string;
-		slideshow_timeout: number;
 		is_se_enabled: boolean;
 		is_se_preview_enabled: boolean;
 		is_se_info_hidden: boolean;
@@ -243,6 +247,8 @@ declare namespace App.Http.Resources.GalleryConfigs {
 	export type RootConfig = {
 		is_map_accessible: boolean;
 		is_mod_frame_enabled: boolean;
+		is_timeline_enabled: boolean;
+		is_album_timeline_enabled: boolean;
 		is_search_accessible: boolean;
 		show_keybinding_help_button: boolean;
 		album_thumb_css_aspect_ratio: App.Enum.AspectRatioType;
@@ -250,6 +256,7 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		back_button_enabled: boolean;
 		back_button_text: string;
 		back_button_url: string;
+		timeline_album_granularity: App.Enum.TimelineAlbumGranularity;
 	};
 	export type UploadConfig = {
 		upload_processing_limit: number;
@@ -415,6 +422,7 @@ declare namespace App.Http.Resources.Models {
 		formatted_min_max: string | null;
 		owner: string | null;
 		rights: App.Http.Resources.Rights.AlbumRightsResource;
+		timeline: App.Http.Resources.Models.Utils.TimelineData | null;
 	};
 	export type ThumbResource = {
 		id: string;
@@ -491,6 +499,11 @@ declare namespace App.Http.Resources.Models.Utils {
 		altitude: string | null;
 		license: string;
 		description: string;
+		timeline: App.Http.Resources.Models.Utils.TimelineData;
+	};
+	export type TimelineData = {
+		timeDate: string;
+		format: string;
 	};
 	export type UserToken = {
 		token: string;
