@@ -1,9 +1,7 @@
 <template>
 	<Toolbar class="w-full border-0 h-14">
 		<template #start>
-			<router-link :to="{ name: 'gallery' }">
-				<Button icon="pi pi-angle-left" class="mr-2" severity="secondary" text />
-			</router-link>
+			<OpenLeftMenu />
 		</template>
 
 		<template #center>
@@ -33,7 +31,6 @@
 	</div>
 </template>
 <script setup lang="ts">
-import Button from "primevue/button";
 import Toolbar from "primevue/toolbar";
 import MaintenanceCleaning from "@/components/maintenance/MaintenanceCleaning.vue";
 import MaintenanceFilesize from "@/components/maintenance/MaintenanceFilesize.vue";
@@ -42,4 +39,5 @@ import MaintenanceFixTree from "@/components/maintenance/MaintenanceFixTree.vue"
 import MaintenanceGenSizevariants from "@/components/maintenance/MaintenanceGenSizevariants.vue";
 import MaintenanceOptimize from "@/components/maintenance/MaintenanceOptimize.vue";
 import MaintenanceUpdate from "@/components/maintenance/MaintenanceUpdate.vue";
+import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
 </script>

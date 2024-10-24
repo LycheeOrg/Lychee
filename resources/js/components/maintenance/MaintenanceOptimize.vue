@@ -27,15 +27,22 @@ import Card from "primevue/card";
 import ProgressSpinner from "primevue/progressspinner";
 import ScrollPanel from "primevue/scrollpanel";
 import MaintenanceService from "@/services/maintenance-service";
+import { useToast } from "primevue/usetoast";
 
 const data = ref([] as string[]);
 const loading = ref(false);
+const toast = useToast();
 
 function exec() {
 	loading.value = true;
-	MaintenanceService.optimizeDo().then((response) => {
-		data.value = response.data;
-	});
+	MaintenanceService.optimizeDo()
+		.then((response) => {
+			data.value = response.data;
+		})
+		.catch((e) => {
+			toast.add({ severity: "error", summary: "Error", detail: e.response.data.message, life: 3000 });
+			loading.value = false;
+		});
 }
 </script>
 

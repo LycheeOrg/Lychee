@@ -30,11 +30,13 @@ import Button from "primevue/button";
 import Card from "primevue/card";
 import ScrollPanel from "primevue/scrollpanel";
 import MaintenanceService from "@/services/maintenance-service";
+import { useToast } from "primevue/usetoast";
 
 const data = ref(undefined as App.Http.Resources.Diagnostics.UpdateInfo | undefined);
 const canCheck = ref(true);
 const canUpdate = ref(false);
 const loading = ref(false);
+const toast = useToast();
 
 function load() {
 	MaintenanceService.updateGet().then((response) => {
@@ -49,11 +51,16 @@ function check() {
 	loading.value = true;
 	canCheck.value = false;
 
-	MaintenanceService.updateCheck().then((response) => {
-		(data.value as App.Http.Resources.Diagnostics.UpdateInfo).extra = response.data.extra;
-		canUpdate.value = response.data.can_update;
-		loading.value = false;
-	});
+	MaintenanceService.updateCheck()
+		.then((response) => {
+			(data.value as App.Http.Resources.Diagnostics.UpdateInfo).extra = response.data.extra;
+			canUpdate.value = response.data.can_update;
+			loading.value = false;
+		})
+		.catch((e) => {
+			toast.add({ severity: "error", summary: "Error", detail: e.response.data.message, life: 3000 });
+			loading.value = false;
+		});
 }
 
 load();

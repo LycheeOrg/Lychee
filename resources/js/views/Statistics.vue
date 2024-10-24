@@ -1,9 +1,7 @@
 <template>
 	<Toolbar class="w-full border-0 h-14">
 		<template #start>
-			<router-link :to="{ name: 'gallery' }">
-				<Button icon="pi pi-angle-left" class="mr-2" severity="secondary" text />
-			</router-link>
+			<OpenLeftMenu />
 		</template>
 
 		<template #center>
@@ -43,6 +41,7 @@ import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
 import SizeVariantMeter from "@/components/statistics/SizeVariantMeter.vue";
 import TotalCard, { TotalAlbum } from "@/components/statistics/TotalCard.vue";
 import AlbumsTable from "@/components/statistics/AlbumsTable.vue";
+import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
 
 const router = useRouter();
 const user = ref(undefined as undefined | App.Http.Resources.Models.UserResource);

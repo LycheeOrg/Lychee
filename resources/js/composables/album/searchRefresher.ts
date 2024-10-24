@@ -59,6 +59,14 @@ export function useSearch(albumid: Ref<string>, lycheeStore: LycheeStateStore, s
 		});
 	}
 
+	function clear() {
+		albums.value = [];
+		photos.value = [];
+		from.value = 0;
+		per_page.value = 0;
+		total.value = 0;
+	}
+
 	return {
 		albums,
 		photos,
@@ -72,6 +80,7 @@ export function useSearch(albumid: Ref<string>, lycheeStore: LycheeStateStore, s
 		albumHeader,
 		searchInit,
 		search,
+		clear,
 		refresh,
 	};
 }

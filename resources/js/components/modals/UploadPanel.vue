@@ -3,12 +3,14 @@
 		<template #container="{ closeCallback }">
 			<div v-if="setup">
 				<div v-if="counts.files > 0" class="m-4 flex flex-wrap justify-center">
-					<span class="w-full text-center">Completed: {{ counts.completed }} / {{ counts.files }}</span>
+					<span v-if="counts.completed === counts.files" class="w-full text-center text-muted-color-emphasis font-bold">Completed</span>
+					<span v-else class="w-full text-center">Uploaded: {{ counts.completed }} / {{ counts.files }}</span>
 					<ProgressBar
-						:class="'w-full'"
+						class="w-full"
 						:value="Math.round((counts.completed * 100) / counts.files)"
 						:show-value="false"
 						:pt:value:class="'duration-300'"
+						:class="counts.completed === counts.files ? 'successProgressBarSeverity' : ''"
 					></ProgressBar>
 				</div>
 				<ScrollPanel v-if="counts.files > 0" class="w-96 h-48 m-4 p-1 mr-5" :pt:scrollbar:class="'opacity-100'">

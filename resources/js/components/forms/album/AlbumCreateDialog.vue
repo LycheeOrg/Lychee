@@ -13,7 +13,7 @@
 					<Button @click="closeCallback" severity="secondary" class="w-full font-bold border-none rounded-bl-xl">
 						{{ $t("lychee.CANCEL") }}
 					</Button>
-					<Button @click="create" severity="contrast" class="font-bold w-full border-none rounded-none rounded-br-xl">
+					<Button @click="create" severity="contrast" class="font-bold w-full border-none rounded-none rounded-br-xl" :disabled="!isValid">
 						{{ $t("lychee.CREATE_ALBUM") }}
 					</Button>
 				</div>
@@ -25,10 +25,11 @@
 import AlbumService from "@/services/album-service";
 import Dialog from "primevue/dialog";
 import InputText from "@/components/forms/basic/InputText.vue";
-import { ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import FloatLabel from "primevue/floatlabel";
 import Button from "primevue/button";
+import { useToast } from "primevue/usetoast";
 
 const props = defineProps<{
 	parentId: string | null;
@@ -37,24 +38,31 @@ const props = defineProps<{
 const visible = defineModel("visible", { default: false });
 const parentId = ref(props.parentId);
 
+const toast = useToast();
 const router = useRouter();
 
 const title = ref(undefined as undefined | string);
 
+const isValid = computed(() => title.value !== undefined && title.value.length > 0 && title.value.length <= 100);
+
 function create() {
-	if (!title.value) {
+	if (!isValid.value) {
 		return;
 	}
 
 	AlbumService.createAlbum({
-		title: title.value,
+		title: title.value as string,
 		parent_id: parentId.value,
-	}).then((response) => {
-		title.value = undefined;
-		visible.value = false;
-		AlbumService.clearCache(parentId.value);
-		router.push(`/gallery/${response.data}`);
-	});
+	})
+		.then((response) => {
+			title.value = undefined;
+			visible.value = false;
+			AlbumService.clearCache(parentId.value);
+			router.push(`/gallery/${response.data}`);
+		})
+		.catch((error) => {
+			toast.add({ severity: "error", summary: "Oups", detail: error.message });
+		});
 }
 
 watch(

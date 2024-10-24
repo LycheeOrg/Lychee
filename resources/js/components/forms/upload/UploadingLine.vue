@@ -1,7 +1,7 @@
 <template>
 	<div class="w-full flex flex-col" :id="'upload' + index">
 		<div class="flex gap-x-4 justify-between relative" :class="errorFlexClass">
-			<span class="text-ellipsis min-w-0 w-full overflow-hidden text-nowrap">{{ file.name }}</span>
+			<span class="text-ellipsis min-w-0 w-full overflow-hidden text-nowrap text-muted-color">{{ file.name }}</span>
 			<span :class="statusClass" v-if="progress < 100 && progress > 0">{{ progress }}%</span>
 			<span :class="statusClass">{{ statusMessage }}</span>
 		</div>

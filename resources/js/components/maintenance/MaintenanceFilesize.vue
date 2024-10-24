@@ -46,10 +46,15 @@ function load() {
 
 function exec() {
 	loading.value = true;
-	MaintenanceService.missingFileSizesDo().then((response) => {
-		toast.add({ severity: "success", summary: "Success", life: 3000 });
-		loading.value = false;
-	});
+	MaintenanceService.missingFileSizesDo()
+		.then((response) => {
+			toast.add({ severity: "success", summary: "Success", life: 3000 });
+			loading.value = false;
+		})
+		.catch((e) => {
+			toast.add({ severity: "error", summary: "Error", detail: e.response.data.message, life: 3000 });
+			loading.value = false;
+		});
 }
 
 load();

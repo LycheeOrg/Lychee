@@ -66,7 +66,7 @@ return [
 	|
 	*/
 
-	'back_to_system_url' => renv('APP_URL', 'http://localhost') . renv_cond('APP_DIR'),
+	'back_to_system_url' => renv('APP_URL', 'http://localhost') . renv_cond('APP_DIR') . '/gallery',
 
 	'back_to_system_label' => null, // Displayed by default: "Back to {{ app.name }}"
 
