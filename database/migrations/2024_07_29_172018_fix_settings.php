@@ -18,7 +18,7 @@ return new class() extends Migration {
 		DB::table('configs')->where('key', '=', 'sm_youtube_url')->update(['description' => 'Url of youtube profile']);
 		DB::table('configs')->where('key', '=', 'footer_show_copyright')->update(['description' => 'Display copyright in footer.']);
 		DB::table('configs')->where('key', '=', 'footer_additional_text')->update(['description' => 'Additional text of the footer.']);
-		DB::table('configs')->where('key', '=', 'footer_show_social_media')->update(['description' => 'Show socials media links in footer.']);
+		DB::table('configs')->where('key', '=', 'footer_show_social_media')->update(['description' => 'Show social media links in footer.']);
 		DB::table('configs')->where('key', '=', 'grants_download')->update(['description' => 'Grants download by default.']);
 		DB::table('configs')->where('key', '=', 'nsfw_banner_override')->update(['description' => 'Custom warning text instead of default.']);
 	}
