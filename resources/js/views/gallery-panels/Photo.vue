@@ -111,7 +111,7 @@
 					/>
 					<DockButton
 						pi="image"
-						:class="photo.is_starred ? 'fill-yellow-500 lg:hover:fill-yellow-100' : 'fill-white lg:hover:fill-yellow-500'"
+						class="lg:hover:text-primary-500 text-white"
 						v-tooltip.bottom="$t('lychee.SET_HEADER')"
 						v-on:click="setAlbumHeader()"
 					/>
