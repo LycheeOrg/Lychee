@@ -151,7 +151,7 @@ parameters:
 				- tests
 
 		-
-			message: '#Access to private property App\\Models\\Extensions\\SizeVariants::\$(original|small(2x)?|thumb(2x)?|medium(2x)?)#'
+			message: '#Access to private property App\\Models\\Extensions\\SizeVariants::\$(original|small(2x)?|thumb(2x)?|medium(2x)?|placeholder)#'
 			paths:
 				- tests
 		-

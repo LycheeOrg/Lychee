@@ -493,6 +493,7 @@ return [
 	'PHOTO_SMALL_HIDPI' => 'Miniaturansicht HiDPI',
 	'PHOTO_THUMB' => 'Quadratische Miniaturansicht',
 	'PHOTO_THUMB_HIDPI' => 'Quadratische Miniaturansicht HiDPI',
+	'PHOTO_PLACEHOLDER' => 'Low Quality Image Placeholder',
 	'PHOTO_THUMBNAIL' => 'Foto-Vorschau',
 	'PHOTO_LIVE_VIDEO' => 'Video des Live-Fotos',
 	'PHOTO_VIEW' => 'Lychees Foto-Ansicht:',

@@ -493,6 +493,7 @@ return [
 	'PHOTO_SMALL_HIDPI' => 'Pequena HiDPI',
 	'PHOTO_THUMB' => 'Quadrada pequena',
 	'PHOTO_THUMB_HIDPI' => 'Quadrada pequena HiDPI',
+	'PHOTO_PLACEHOLDER' => 'Low Quality Image Placeholder',
 	'PHOTO_THUMBNAIL' => 'Photo thumbnail',
 	'PHOTO_LIVE_VIDEO' => 'Video parte de fotografia ao vivo',
 	'PHOTO_VIEW' => 'Vista de Fotografia Lychee:',

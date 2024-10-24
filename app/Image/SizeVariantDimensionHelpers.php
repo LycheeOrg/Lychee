@@ -60,6 +60,7 @@ class SizeVariantDimensionHelpers
 			SizeVariantType::MEDIUM2X => Configs::getValueAsBool('medium_2x'),
 			SizeVariantType::SMALL2X => Configs::getValueAsBool('small_2x'),
 			SizeVariantType::THUMB2X => Configs::getValueAsBool('thumb_2x'),
+			SizeVariantType::PLACEHOLDER => Configs::getValueAsBool('low_quality_image_placeholder'),
 			SizeVariantType::SMALL, SizeVariantType::MEDIUM, SizeVariantType::THUMB => true,
 			default => throw new InvalidSizeVariantException('unknown size variant: ' . $sizeVariant->value),
 		};
@@ -78,7 +79,7 @@ class SizeVariantDimensionHelpers
 	public function isLargeEnough(ImageDimension $realDim, ImageDimension $maxDim, SizeVariantType $sizeVariant): bool
 	{
 		return match ($sizeVariant) {
-			SizeVariantType::THUMB => true,
+			SizeVariantType::THUMB, SizeVariantType::PLACEHOLDER => true,
 			SizeVariantType::THUMB2X => $realDim->width >= $maxDim->width && $realDim->height >= $maxDim->height,
 			default => ($realDim->width >= $maxDim->width && $maxDim->width !== 0) || ($realDim->height >= $maxDim->height && $maxDim->height !== 0),
 		};
@@ -98,6 +99,7 @@ class SizeVariantDimensionHelpers
 			SizeVariantType::SMALL => Configs::getValueAsInt('small_max_width'),
 			SizeVariantType::THUMB2X => SizeVariantDefaultFactory::THUMBNAIL2X_DIM,
 			SizeVariantType::THUMB => SizeVariantDefaultFactory::THUMBNAIL_DIM,
+			SizeVariantType::PLACEHOLDER => SizeVariantDefaultFactory::PLACEHOLDER_DIM,
 			default => throw new InvalidSizeVariantException('No applicable for original'),
 		};
 	}
@@ -116,6 +118,7 @@ class SizeVariantDimensionHelpers
 			SizeVariantType::SMALL => Configs::getValueAsInt('small_max_height'),
 			SizeVariantType::THUMB2X => SizeVariantDefaultFactory::THUMBNAIL2X_DIM,
 			SizeVariantType::THUMB => SizeVariantDefaultFactory::THUMBNAIL_DIM,
+			SizeVariantType::PLACEHOLDER => SizeVariantDefaultFactory::PLACEHOLDER_DIM,
 			default => throw new InvalidSizeVariantException('unknown size variant: ' . $sizeVariant->value),
 		};
 	}

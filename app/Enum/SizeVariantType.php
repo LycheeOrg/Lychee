@@ -16,6 +16,7 @@ enum SizeVariantType: int
 	case SMALL = 4;
 	case THUMB2X = 5;
 	case THUMB = 6;
+	case PLACEHOLDER = 7;
 
 	/**
 	 * Given a sizeVariantType return the associated name.
@@ -25,6 +26,7 @@ enum SizeVariantType: int
 	public function name(): string
 	{
 		return match ($this) {
+			self::PLACEHOLDER => 'placeholder',
 			self::THUMB => 'thumb',
 			self::THUMB2X => 'thumb2x',
 			self::SMALL => 'small',
@@ -43,6 +45,7 @@ enum SizeVariantType: int
 	public function localization(): string
 	{
 		return match ($this) {
+			self::PLACEHOLDER => __('lychee.PHOTO_PLACEHOLDER'),
 			self::THUMB => __('lychee.PHOTO_THUMB'),
 			self::THUMB2X => __('lychee.PHOTO_THUMB_HIDPI'),
 			self::SMALL => __('lychee.PHOTO_SMALL'),

@@ -28,6 +28,7 @@ class SizeVariantDefaultFactory implements SizeVariantFactory
 {
 	public const THUMBNAIL_DIM = 200;
 	public const THUMBNAIL2X_DIM = 400;
+	public const PLACEHOLDER_DIM = 16;
 
 	/** @var ImageHandlerInterface the image handler (gd, imagick, ...) which is used to generate image files */
 	protected ImageHandlerInterface $referenceImage;
@@ -105,6 +106,7 @@ class SizeVariantDefaultFactory implements SizeVariantFactory
 	public function createSizeVariants(): Collection
 	{
 		$allVariants = [
+			SizeVariantType::PLACEHOLDER,
 			SizeVariantType::THUMB,
 			SizeVariantType::THUMB2X,
 			SizeVariantType::SMALL,
@@ -176,7 +178,7 @@ class SizeVariantDefaultFactory implements SizeVariantFactory
 	private function createSizeVariantInternal(SizeVariantType $sizeVariant, ImageDimension $maxDim): SizeVariant
 	{
 		$svImage = match ($sizeVariant) {
-			SizeVariantType::THUMB, SizeVariantType::THUMB2X => $this->referenceImage->cloneAndCrop($maxDim),
+			SizeVariantType::THUMB, SizeVariantType::THUMB2X, SizeVariantType::PLACEHOLDER => $this->referenceImage->cloneAndCrop($maxDim),
 			default => $this->referenceImage->cloneAndScale($maxDim),
 		};
 
