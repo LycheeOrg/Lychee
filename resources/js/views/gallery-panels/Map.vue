@@ -114,7 +114,7 @@ function fetchData() {
 }
 
 function open() {
-	// Define how the photos on the map should look like
+	// Define how the photos on the map should look
 	// @ts-expect-error
 	photoLayer.value = L.photo.cluster().on("click", function (e: any) {
 		const photo: MapPhotoEntry = {
