@@ -125,7 +125,7 @@ export const SelectBuilders = {
 		return licenseOptions.find((option) => option.value === value) || undefined;
 	},
 
-	buildPhotoLayout(value: string | App.Enum.PhotoLayoutType | undefined): SelectOption<App.Enum.PhotoLayoutType> | undefined {
+	buildPhotoLayout(value: string | App.Enum.PhotoLayoutType | null): SelectOption<App.Enum.PhotoLayoutType> | undefined {
 		return photoLayoutOptions.find((option) => option.value === value) || undefined;
 	},
 
