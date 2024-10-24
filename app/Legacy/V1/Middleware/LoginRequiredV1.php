@@ -2,7 +2,6 @@
 
 namespace App\Legacy\V1\Middleware;
 
-use App\Assets\Features;
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
@@ -11,7 +10,6 @@ use App\Models\Configs;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 
 /**
  * Class LoginRequiredV1.
@@ -40,11 +38,6 @@ class LoginRequiredV1
 	{
 		// We are logged in. Proceed.
 		if (Auth::user() !== null) {
-			return $next($request);
-		}
-
-		$dir_url = config('app.dir_url');
-		if (Features::inactive('livewire') && !Str::startsWith($request->getRequestUri(), $dir_url . '/livewire/')) {
 			return $next($request);
 		}
 

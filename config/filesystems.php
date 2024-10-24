@@ -112,7 +112,7 @@ return [
 		'dist' => [
 			'driver' => 'local',
 			'root' => env('LYCHEE_DIST', public_path('dist/')),
-			'url' => env('LYCHEE_DIST_URL', 'dist/'),
+			'url' => env('LYCHEE_DIST_URL', '/dist/'),
 			'visibility' => 'public',
 		],
 
@@ -131,30 +131,30 @@ return [
 
 		// We use this space to temporarily store images when uploading.
 		// Mostly chunks and incomplete images are placed here
-		'livewire-upload' => [
+		'image-upload' => [
 			'driver' => 'local',
-			'root' => env('LYCHEE_TMP_UPLOAD', storage_path('livewire-tmp')),
+			'root' => env('LYCHEE_TMP_UPLOAD', storage_path('tmp/uploads')),
 			'visibility' => 'private',
 		],
 
 		// We use this space to process the images,
 		'image-jobs' => [
 			'driver' => 'local',
-			'root' => env('LYCHEE_IMAGE_JOBS', storage_path('image-jobs')),
+			'root' => env('LYCHEE_IMAGE_JOBS', storage_path('tmp/jobs')),
 			'visibility' => 'private',
 		],
 
 		// This is where we extract zip files before importing them.
 		'extract-jobs' => [
 			'driver' => 'local',
-			'root' => env('LYCHEE_EXTRACT_JOBS', storage_path('extract-jobs')),
+			'root' => env('LYCHEE_EXTRACT_JOBS', storage_path('tmp/extract')),
 			'visibility' => 'private',
 		],
 
 		// For tests purposes
 		'tmp-for-tests' => [
 			'driver' => 'local',
-			'root' => storage_path('image-tmp/'),
+			'root' => storage_path('tmp/uploads'),
 			'visibility' => 'private',
 		],
 	],

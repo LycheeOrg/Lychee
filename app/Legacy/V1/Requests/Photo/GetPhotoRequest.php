@@ -3,10 +3,10 @@
 namespace App\Legacy\V1\Requests\Photo;
 
 use App\Http\Requests\BaseApiRequest;
-use App\Http\RuleSets\Photo\GetPhotoRuleSet;
 use App\Legacy\V1\Contracts\Http\Requests\HasPhoto;
 use App\Legacy\V1\Contracts\Http\Requests\RequestAttribute;
 use App\Legacy\V1\Requests\Traits\HasPhotoTrait;
+use App\Legacy\V1\RuleSets\Photo\GetPhotoRuleSet;
 use App\Models\Photo;
 use App\Policies\PhotoPolicy;
 use Illuminate\Support\Facades\Gate;

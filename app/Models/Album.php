@@ -131,6 +131,7 @@ class Album extends BaseAlbum implements Node
 	/** @phpstan-use NodeTrait<string,Album> */
 	use NodeTrait;
 	use ToArrayThrowsNotImplemented;
+	/** @phpstan-use HasFactory<\Database\Factories\AlbumFactory> */
 	use HasFactory;
 
 	/**
@@ -224,9 +225,11 @@ class Album extends BaseAlbum implements Node
 		try {
 			/** @var DescendantsRelation<string,Album> */
 			return new DescendantsRelation($this->newQuery(), $this);
+			// @codeCoverageIgnoreStart
 		} catch (\Throwable $e) {
 			throw new QueryBuilderException($e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -252,19 +255,23 @@ class Album extends BaseAlbum implements Node
 	/**
 	 * Return the License used by the album.
 	 *
-	 * @param string $value
+	 * @param string|LicenseType|null $value
 	 *
 	 * @return LicenseType
 	 *
 	 * @throws ConfigurationKeyMissingException
 	 */
-	protected function getLicenseAttribute(string $value): LicenseType
+	protected function getLicenseAttribute(string|LicenseType|null $value): LicenseType
 	{
-		if ($value === 'none') {
+		if ($value === null || $value === 'none' || $value === LicenseType::NONE) {
 			return Configs::getValueAsEnum('default_license', LicenseType::class);
 		}
 
-		return LicenseType::from($value);
+		if (is_string($value)) {
+			return LicenseType::from($value);
+		}
+
+		return $value;
 	}
 
 	/**
@@ -292,6 +299,8 @@ class Album extends BaseAlbum implements Node
 	 * Hence, we must avoid any attempt to delete the descendants twice.
 	 *
 	 * @return void
+	 *
+	 * @codeCoverageIgnore
 	 */
 	protected function deleteDescendants(): void
 	{

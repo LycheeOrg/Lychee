@@ -3,10 +3,10 @@
 namespace App\Legacy\V1\Requests\Photo;
 
 use App\Http\Requests\BaseApiRequest;
-use App\Http\RuleSets\Photo\DeletePhotosRuleSet;
 use App\Legacy\V1\Contracts\Http\Requests\HasPhotoIDs;
 use App\Legacy\V1\Contracts\Http\Requests\RequestAttribute;
 use App\Legacy\V1\Requests\Traits\HasPhotoIDsTrait;
+use App\Legacy\V1\RuleSets\Photo\DeletePhotosRuleSet;
 use App\Models\Photo;
 use App\Policies\PhotoPolicy;
 use Illuminate\Support\Facades\Gate;

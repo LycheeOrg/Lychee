@@ -5,24 +5,23 @@ namespace App\Actions\Photo;
 use App\Exceptions\ModelDBException;
 use App\Models\Album;
 use App\Models\Photo;
-use Illuminate\Database\Eloquent\Collection as EloquentCollection;
-use Illuminate\Support\Collection as BaseCollection;
+use Illuminate\Support\Collection;
 
 class Duplicate
 {
 	/**
 	 * Duplicates a set of photos.
 	 *
-	 * @param EloquentCollection<int,Photo> $photos the source photos
-	 * @param Album|null                    $album  the destination album; `null` means root album
+	 * @param Collection<int,Photo> $photos the source photos
+	 * @param Album|null            $album  the destination album; `null` means root album
 	 *
-	 * @return BaseCollection<int,Photo> the duplicates
+	 * @return Collection<int,Photo> the duplicates
 	 *
 	 * @throws ModelDBException
 	 */
-	public function do(EloquentCollection $photos, ?Album $album): BaseCollection
+	public function do(Collection $photos, ?Album $album): Collection
 	{
-		$duplicates = new BaseCollection();
+		$duplicates = new Collection();
 		/** @var Photo $photo */
 		foreach ($photos as $photo) {
 			$duplicate = $photo->replicate();

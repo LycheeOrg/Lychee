@@ -32,7 +32,7 @@ else
     echo ""
     printf "${YELLOW}Please install prettier, e.g.:${NO_COLOR}"
     echo ""
-    echo "  npm run install"
+    echo "  npm ci"
     echo ""
 fi
 

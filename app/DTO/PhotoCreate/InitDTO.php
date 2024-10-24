@@ -42,7 +42,7 @@ class InitDTO
 		ImportParam $parameters,
 		NativeLocalFile $sourceFile,
 		AbstractAlbum|null $album,
-		int|null $fileLastModifiedTime = null
+		int|null $fileLastModifiedTime = null,
 	) {
 		$this->sourceFile = $sourceFile;
 		$this->importMode = $parameters->importMode;

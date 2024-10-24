@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" bootstrap="vendor/autoload.php" colors="true" processIsolation="false" stopOnFailure="false" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.1/phpunit.xsd">
+  <coverage>
+    <report>
+      <clover outputFile="clover.xml"/>
+      <text outputFile="php://stdout" showUncoveredFiles="false"/>
+    </report>
+  </coverage>
+  <testsuites>
+    <testsuite name="Unit">
+      <directory suffix="Test.php">./tests/Unit</directory>
+    </testsuite>
+    <testsuite name="Feature_v1">
+      <directory suffix="Test.php">./tests/Feature_v1</directory>
+      <exclude>./tests/Feature_v1/Base/BasePhotoTest.php</exclude>
+      <exclude>./tests/Feature_v1/Base/BasePhotosRotateTest.php</exclude>
+      <exclude>./tests/Feature_v1/Base/BaseSharingTest.php</exclude>
+      <exclude>./tests/Feature_v1/LibUnitTests/AlbumsUnitTest.php</exclude>
+      <exclude>./tests/Feature_v1/LibUnitTests/PhotosUnitTest.php</exclude>
+      <exclude>./tests/Feature_v1/LibUnitTests/RootAlbumUnitTest.php</exclude>
+      <exclude>./tests/Feature_v1/LibUnitTests/SessionUnitTest.php</exclude>
+      <exclude>./tests/Feature_v1/LibUnitTests/SharingUnitTest.php</exclude>
+      <exclude>./tests/Feature_v1/LibUnitTests/UsersUnitTest.php</exclude>
+    </testsuite>
+    <testsuite name="Feature_v2">
+      <directory suffix="Test.php">./tests/Feature_v2</directory>
+      <exclude>./tests/Feature_v2/Base/BaseApiV2Test.php</exclude>
+      <exclude>./tests/Feature_v2/Base/BaseV2Test.php</exclude>
+    </testsuite>
+  </testsuites>
+  <extensions>
+    <bootstrap class="Tests\BootExtension"/>
+  </extensions>
+  <logging/>
+  <php>
+    <env name="APP_ENV" value="testing"/>
+    <env name="DB_LOG_SQL" value="true"/>
+    <env name="DB_LOG_SQL_EXPLAIN" value="true"/>
+    <env name="BCRYPT_ROUNDS" value="4"/>
+    <env name="CACHE_DRIVER" value="array"/>
+    <env name="SESSION_DRIVER" value="array"/>
+    <env name="QUEUE_CONNECTION" value="sync"/>
+    <env name="MAIL_DRIVER" value="array"/>
+  </php>
+  <source>
+    <include>
+      <directory suffix=".php">
+        ./app
+      </directory>
+    </include>
+  </source>
+</phpunit>

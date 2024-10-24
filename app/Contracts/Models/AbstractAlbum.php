@@ -5,8 +5,6 @@ namespace App\Contracts\Models;
 use App\Models\AccessPermission;
 use App\Models\Extensions\Thumb;
 use App\Models\Photo;
-use Illuminate\Contracts\Support\Arrayable;
-use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -29,10 +27,8 @@ use Illuminate\Database\Eloquent\Relations\Relation;
  * @property Collection<int,Photo>            $photos
  * @property Thumb|null                       $thumb
  * @property Collection<int,AccessPermission> $access_permissions
- *
- * @extends Arrayable<string,string|int|float|string[]|null>
  */
-interface AbstractAlbum extends \JsonSerializable, Arrayable, Jsonable
+interface AbstractAlbum
 {
 	/**
 	 * @return Relation<Photo>|Builder<Photo>

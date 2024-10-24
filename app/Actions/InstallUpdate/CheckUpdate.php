@@ -43,7 +43,7 @@ class CheckUpdate
 			return match (false) {
 				MigrationCheck::isUpToDate() => UpdateStatus::REQUIRE_MIGRATION,
 				$this->fileVersion->isUpToDate() => UpdateStatus::NOT_UP_TO_DATE,
-				default => UpdateStatus::UP_TO_DATE
+				default => UpdateStatus::UP_TO_DATE,
 			};
 			// @codeCoverageIgnoreEnd
 		}

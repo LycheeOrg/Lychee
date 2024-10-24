@@ -74,10 +74,12 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	 */
 	public function photos(): Builder
 	{
-		return $this->photoQueryPolicy
+		$query = $this->photoQueryPolicy
 			->applySearchabilityFilter(
 				Photo::query()->with(['album', 'size_variants', 'size_variants.sym_links'])
 			)->where($this->smartPhotoCondition);
+
+		return $query;
 	}
 
 	/**

@@ -2,10 +2,10 @@
 
 namespace App\Actions\Album;
 
-use App\DTO\AlbumProtectionPolicy;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\InvalidPropertyException;
 use App\Exceptions\ModelDBException;
+use App\Http\Resources\Models\Utils\AlbumProtectionPolicy;
 use App\Models\AccessPermission;
 use App\Models\Extensions\BaseAlbum;
 use Illuminate\Support\Facades\Hash;

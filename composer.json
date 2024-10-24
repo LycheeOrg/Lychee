@@ -28,6 +28,10 @@
         {
             "type": "vcs",
             "url": "https://github.com/LycheeOrg/log-viewer"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/LycheeOrg/verify"
         }
     ],
     "license": "MIT",
@@ -53,9 +57,9 @@
         "laminas/laminas-text": "^2.9",
         "laragear/webauthn": "^2.0",
         "laravel/framework": "^11.0",
-        "league/flysystem-aws-s3-v3": "^3.22",
         "laravel/socialite": "^5.11",
-        "livewire/livewire": "^3.0",
+        "league/flysystem-aws-s3-v3": "^3.22",
+        "lychee-org/lycheeverify": "^1.0.2",
         "lychee-org/nestedset": "^9.0",
         "lychee-org/php-exif": "^1.0.4",
         "maennchen/zipstream-php": "^3.1",
@@ -72,9 +76,12 @@
         "socialiteproviders/keycloak": "^5.3",
         "socialiteproviders/microsoft": "^4.2",
         "socialiteproviders/nextcloud": "^4.0",
+        "spatie/enum": "^3.13",
         "spatie/guzzle-rate-limiter-middleware": "^2.0",
+        "spatie/laravel-data": "^4.7",
         "spatie/laravel-feed": "^4.0",
         "spatie/laravel-image-optimizer": "^1.8",
+        "spatie/laravel-typescript-transformer": "^2.4",
         "symfony/cache": "^v6.0.0",
         "thecodingmachine/safe": "^2.4"
     },
@@ -84,16 +91,17 @@
         "ext-zip": "*",
         "barryvdh/laravel-debugbar": "^3.13",
         "barryvdh/laravel-ide-helper": "^3.0",
-        "dedoc/scramble": "^0.10",
+        "brianium/paratest": "^7.4",
+        "fakerphp/faker": "^1.23.0",
         "filp/whoops": "^2.5",
         "friendsofphp/php-cs-fixer": "^3.3",
         "itsgoingd/clockwork": "^5.1",
+        "larastan/larastan": "^2.0",
         "lychee-org/phpstan-lychee": "^v1.0.1",
         "mockery/mockery": "^1.5",
-        "larastan/larastan": "^2.0",
+        "nunomaduro/collision": "^8.3",
         "php-parallel-lint/php-parallel-lint": "^1.3",
-        "phpunit/phpunit": "^10.0",
-        "fakerphp/faker": "^1.23.0"
+        "phpunit/phpunit": "^10.0"
     },
     "autoload": {
         "classmap": [

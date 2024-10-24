@@ -4,7 +4,9 @@ namespace App\DTO;
 
 use App\Enum\ColumnSortingType;
 use App\Enum\OrderSortingType;
+use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
+#[TypeScript()]
 class SortingCriterion extends ArrayableDTO
 {
 	/**

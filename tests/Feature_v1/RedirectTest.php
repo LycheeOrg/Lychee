@@ -26,11 +26,7 @@ class RedirectTest extends AbstractTestCase
 		$response = $this->get('r/aaaaaaaaaaaaaaaaaaaaaaaa');
 
 		$this->assertStatus($response, 302);
-		if (config('feature.livewire') === true) {
-			$response->assertRedirect('gallery/aaaaaaaaaaaaaaaaaaaaaaaa');
-		} else {
-			$response->assertRedirect('gallery#aaaaaaaaaaaaaaaaaaaaaaaa');
-		}
+		$response->assertRedirect('gallery#aaaaaaaaaaaaaaaaaaaaaaaa');
 
 		$response = $this->get('r/aaaaaaaaaaaaaaaaaaaaaaaa/bbbbbbbbbbbbbbbbbbbbbbbb');
 

@@ -330,7 +330,7 @@ abstract class BaseSharingWithNonAdminUser extends BaseSharingTestScenarios
 		?string $publicAlbumThumbID = null,
 		?string $recentAlbumThumbID = null,
 		?string $onThisDayAlbumThumbID = null,
-		array $expectedAlbumJson = []
+		array $expectedAlbumJson = [],
 	): array {
 		return [
 			'smart_albums' => [
@@ -350,7 +350,7 @@ abstract class BaseSharingWithNonAdminUser extends BaseSharingTestScenarios
 		?string $starredAlbumThumbID = null,
 		?string $publicAlbumThumbID = null,
 		?string $recentAlbumThumbID = null,
-		array $expectedAlbumJson = []
+		array $expectedAlbumJson = [],
 	): ?array {
 		return null;
 	}

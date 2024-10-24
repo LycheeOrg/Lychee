@@ -4,8 +4,8 @@ namespace App\Legacy\V1\Controllers;
 
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\Internal\QueryBuilderException;
-use App\Http\Requests\Legacy\TranslateIDRequest;
 use App\Legacy\Legacy;
+use App\Legacy\V1\Requests\Legacy\TranslateIDRequest;
 use Illuminate\Routing\Controller;
 
 /**

@@ -80,7 +80,7 @@ class SizeVariantDimensionHelpers
 		return match ($sizeVariant) {
 			SizeVariantType::THUMB => true,
 			SizeVariantType::THUMB2X => $realDim->width >= $maxDim->width && $realDim->height >= $maxDim->height,
-			default => ($realDim->width >= $maxDim->width && $maxDim->width !== 0) || ($realDim->height >= $maxDim->height && $maxDim->height !== 0)
+			default => ($realDim->width >= $maxDim->width && $maxDim->width !== 0) || ($realDim->height >= $maxDim->height && $maxDim->height !== 0),
 		};
 	}
 

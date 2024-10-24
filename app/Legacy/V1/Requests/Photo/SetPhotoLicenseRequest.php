@@ -4,13 +4,13 @@ namespace App\Legacy\V1\Requests\Photo;
 
 use App\Enum\LicenseType;
 use App\Http\Requests\BaseApiRequest;
-use App\Http\RuleSets\Photo\SetPhotoLicenseRuleSet;
 use App\Legacy\V1\Contracts\Http\Requests\HasLicense;
 use App\Legacy\V1\Contracts\Http\Requests\HasPhoto;
 use App\Legacy\V1\Contracts\Http\Requests\RequestAttribute;
 use App\Legacy\V1\Requests\Traits\Authorize\AuthorizeCanEditPhotoTrait;
 use App\Legacy\V1\Requests\Traits\HasLicenseTrait;
 use App\Legacy\V1\Requests\Traits\HasPhotoTrait;
+use App\Legacy\V1\RuleSets\Photo\SetPhotoLicenseRuleSet;
 use App\Models\Photo;
 
 class SetPhotoLicenseRequest extends BaseApiRequest implements HasPhoto, HasLicense
