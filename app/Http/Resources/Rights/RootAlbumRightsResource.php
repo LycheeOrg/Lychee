@@ -16,7 +16,7 @@ class RootAlbumRightsResource extends Data
 
 	public function __construct()
 	{
-		$this->can_edit = Gate::check(AlbumPolicy::CAN_UPLOAD, [AbstractAlbum::class, null]);
+		$this->can_edit = Gate::check(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, null]);
 		$this->can_upload = Gate::check(AlbumPolicy::CAN_UPLOAD, [AbstractAlbum::class, null]);
 	}
 }

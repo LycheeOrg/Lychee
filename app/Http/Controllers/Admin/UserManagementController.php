@@ -17,12 +17,12 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
 /**
- * Controller responsible for the config.
+ * Controller responsible for user management.
  */
 class UserManagementController extends Controller
 {
 	/**
-	 * Get the list of users for management purposes..
+	 * Get the list of users for management purposes.
 	 *
 	 * @param ManagmentListUsersRequest $request
 	 * @param Spaces                    $spaces

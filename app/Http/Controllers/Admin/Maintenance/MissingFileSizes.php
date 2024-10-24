@@ -55,7 +55,7 @@ class MissingFileSizes extends Controller
 	}
 
 	/**
-	 * Check how many images needs to be created.
+	 * Check how many images have missing file sizes..
 	 *
 	 * @return int
 	 */

@@ -79,7 +79,6 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 				Photo::query()->with(['album', 'size_variants', 'size_variants.sym_links'])
 			)->where($this->smartPhotoCondition);
 
-		// dd($query->toSql());
 		return $query;
 	}
 

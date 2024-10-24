@@ -169,7 +169,6 @@ function uploadNext(searchIndex = 0, max_processing_limit: number | undefined = 
 }
 
 function uploadCompleted(index: number, status: "done" | "error") {
-	// countCompleted.value++;
 	list_upload_files.value[index].status = status;
 
 	const isUploading = uploadNext(index, 1);

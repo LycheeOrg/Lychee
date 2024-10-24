@@ -30,8 +30,6 @@ class Cleaning extends Controller
 		}
 
 		$results = [];
-		$dirs = [];
-		$files = [];
 		foreach (new \DirectoryIterator($request->path()) as $fileInfo) {
 			if ($fileInfo->isDot()) {
 				continue;
@@ -42,11 +40,9 @@ class Cleaning extends Controller
 			$results[] = sprintf(__('maintenance.cleaning.result'), $fileInfo->getFilename());
 
 			if ($fileInfo->isDir()) {
-				$dirs[] = $fileInfo->getRealPath();
 				rmdir($fileInfo->getRealPath());
 				continue;
 			}
-			$files[] = $fileInfo->getRealPath();
 			unlink($fileInfo->getRealPath());
 		}
 

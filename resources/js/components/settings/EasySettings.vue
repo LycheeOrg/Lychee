@@ -41,7 +41,7 @@
 				<ToggleSwitch id="enable_se_preview" v-model="enable_se_preview" class="text-sm" @update:model-value="savePreview" />
 			</p>
 			<p class="flex flex-wrap justify-between">
-				<label for="disable_se_call_for_actions">{{ "Hide this Lychee SE registrations forms, I am happy with Lyche as-is. :)" }}</label>
+				<label for="disable_se_call_for_actions">{{ "Hide this Lychee SE registration form. I am happy with Lychee as-is. :)" }}</label>
 				<ToggleSwitch
 					id="disable_se_call_for_actions"
 					v-model="disable_se_call_for_actions"

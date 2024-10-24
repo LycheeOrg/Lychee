@@ -53,7 +53,7 @@ use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
- * Controller responsible for the config.
+ * Controller responsible for an album.
  */
 class AlbumController extends Controller
 {

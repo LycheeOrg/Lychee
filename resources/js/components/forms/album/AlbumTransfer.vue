@@ -36,7 +36,7 @@ const router = useRouter();
 const newOwner = ref(undefined as undefined | App.Http.Resources.Models.LightUserResource);
 const confirmation = computed(() =>
 	sprintf(
-		"Are you sure you want to transfer to %s the ownership of album “%s” and all the photos in contains? You access to this album and will be lost.",
+		"Are you sure you want to transfer to %s the ownership of album “%s” and all the photos it contains? Your access to this album will be lost.",
 		newOwner.value?.username,
 		props.album.title,
 	),
@@ -47,15 +47,9 @@ function execute() {
 		return;
 	}
 	AlbumService.transfer(props.album.id, newOwner.value.id).then(() => {
-		// Check if user can administrate. Otherwise redirect to gallery
-		// if (props.is_model_album) {
-		// 	const album = props.album as App.Http.Resources.Models.AlbumResource;
-		// 	album.parent_id ? router.push(`/gallery/${album.parent_id}`) : router.push("/gallery");
-		// } else {
 		router.push("/gallery");
 		// @ts-expect-error
 		AlbumService.clearCache(props.album?.parent_id);
-		// }
 	});
 }
 

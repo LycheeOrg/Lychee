@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Gate;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
- * Controller responsible for the authentication of the user.
+ * Controller responsible for the Vue front end.
  */
 class VueController extends Controller
 {

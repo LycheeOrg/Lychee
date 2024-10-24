@@ -15,14 +15,7 @@ use Spatie\TypeScriptTransformer\Attributes\LiteralTypeScriptType;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
 /**
- * Data Transfer Object (DTO) to transmit the top albums to the client.
- *
- * This DTO differentiates between albums which are owned by the user and
- * "shared" albums which the user does not own, but is allowed to see.
- * The term "shared album" might be a little misleading here.
- * Albums which are owned by the user himself may also be shared (with
- * other users.)
- * Actually, in this context "shared albums" means "foreign albums".
+ * Result of a Search query.
  */
 #[TypeScript()]
 class ResultsResource extends Data

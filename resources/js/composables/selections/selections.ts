@@ -148,8 +148,8 @@ export function useSelection(
 			return;
 		}
 
-		// Picture is selected.
-		// We remove all pictures from latest click till current idx
+		// Album is selected.
+		// We remove all albums from latest click till current idx
 		if (isAlbumSelected(idx)) {
 			// @ts-expect-error lastAlbumClicked is always defined here
 			const idx_min = Math.min(lastAlbumClicked.value, idx);

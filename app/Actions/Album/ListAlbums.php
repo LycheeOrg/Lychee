@@ -105,7 +105,7 @@ class ListAlbums extends Action
 	{
 		$len = strlen($title);
 
-		if ($len < self::SHORTEN_BY) {
+		if ($len <= self::SHORTEN_BY) {
 			return $title;
 		}
 		/** @var Collection<int,string> $title_split */

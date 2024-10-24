@@ -17,7 +17,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\View\View;
 
 /**
- * This modules takes care of displaying updates
+ * This module takes care of displaying updates
  * and checkimg if new versions are available.
  */
 class UpdateController extends Controller
@@ -116,8 +116,8 @@ class UpdateController extends Controller
 	 * {@link ApplyUpdate::migrate()} while `MigrationController::view`
 	 * uses {@link \App\Actions\InstallUpdate\ApplyMigration::migrate()}.
 	 * However, both methods are very similar, too.
-	 * The whole code around installation/upgrade/migration should
-	 * thoroughly be revised an refactored.
+	 * The whole code around installation/upgrade/migration should be
+	 * thoroughly revised and refactored.
 	 *
 	 * @param MigrateRequest $request
 	 *

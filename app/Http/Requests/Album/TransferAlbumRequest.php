@@ -47,7 +47,7 @@ class TransferAlbumRequest extends BaseApiRequest implements HasBaseAlbum, HasUs
 		/** @var int $user_id */
 		$user_id = $values[RequestAttribute::USER_ID_ATTRIBUTE];
 		$this->user2 = User::findOrFail($user_id);
-		// As we are going to delete the albums anyway, we don't load the
+		// We don't need the full albums, just the IDs, so we don't load the
 		// models for efficiency reasons.
 		// Instead, we use mass deletion via low-level SQL queries later.
 		$this->album = $this->albumFactory->findBaseAlbumOrFail($values[RequestAttribute::ALBUM_ID_ATTRIBUTE]);

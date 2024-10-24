@@ -56,7 +56,7 @@ class FromUrlRequest extends BaseApiRequest implements HasAlbum
 
 		// The replacement below looks suspicious.
 		// If it was really necessary, then there would be much more special
-		// characters (e.i. for example umlauts in international domain names)
+		// characters (for example umlauts in international domain names)
 		// which would require replacement by their corresponding %-encoding.
 		// However, I assume that the PHP method `fopen` is happily fine with
 		// any character and internally handles special characters itself.

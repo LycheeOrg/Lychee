@@ -303,7 +303,7 @@ class Create
 	{
 		$verify = resolve(Verify::class);
 
-		// if the installation is not validated
+		// if the installation is not validated or
 		// if the user is not a supporter, we skip.
 		if (!$verify->validate() || !$verify->is_supporter()) {
 			return;

@@ -164,7 +164,6 @@ function executeMovePhoto() {
 		AlbumService.clearCache(destination_id.value);
 
 		emits("moved");
-		// Todo emit that we moved things.
 	});
 }
 </script>

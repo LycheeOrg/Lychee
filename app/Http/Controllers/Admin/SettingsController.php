@@ -52,7 +52,7 @@ class SettingsController extends Controller
 	}
 
 	/**
-	 * Takes the js input text and put it into `dist/custom.js`.
+	 * Takes the js input text and puts it into `dist/custom.js`.
 	 * This allows admins to actually execute custom js code on their
 	 * Lychee-Laravel installation.
 	 *

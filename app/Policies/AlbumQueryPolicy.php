@@ -377,7 +377,7 @@ class AlbumQueryPolicy
 	}
 
 	/**
-	 * Adds the conditions of an sensitive album by recursion to the query.
+	 * Adds the conditions of a sensitive album by recursion to the query.
 	 *
 	 * An album is called _recursive sensitive_, if it is marked as sensitive or contains a sensitive parent.
 	 *
@@ -395,7 +395,7 @@ class AlbumQueryPolicy
 	 *
 	 * @param BaseBuilder     $builder     the album query which shall be
 	 *                                     restricted
-	 * @param int|string|null $originLeft  optionally constraints the search
+	 * @param int|string|null $originLeft  optionally constrains the search
 	 *                                     base; an integer value is
 	 *                                     interpreted a raw left bound of the
 	 *                                     search base; a string value is
@@ -438,7 +438,7 @@ class AlbumQueryPolicy
 
 			// ... to the target ...
 			$builder
-				// (We must include the target into the list of outers nodes,
+				// (We must include the target into the list of outer nodes,
 				// because we must also check whether the target is unreachable.)
 				->whereColumn('outers._lft', '<=', 'albums._lft')
 				->whereColumn('outers._rgt', '>=', 'albums._rgt');

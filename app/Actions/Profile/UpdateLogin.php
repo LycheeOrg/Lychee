@@ -32,16 +32,14 @@ class UpdateLogin
 		}
 
 		// Check if username already exists
-		if (User::query()->where('username', '=', $username)->where('id', '!=', $user->id)->count() !== 0) {
+		if (User::query()->where('username', '=', $username)->count() !== 0) {
 			Log::channel('login')->warning(__METHOD__ . ':' . __LINE__ . sprintf('User (%s) tried to change their identity to (%s) from %s', $user->username, $username, $ip));
 			throw new ConflictingPropertyException('Username already exists.');
 		}
 
 		// Change username
-		if ($username !== $user->username) {
-			Log::channel('login')->notice(__METHOD__ . ':' . __LINE__ . sprintf('User (%s) changed their identity for (%s) from %s', $user->username, $username, $ip));
-			$user->username = $username;
-		}
+		Log::channel('login')->notice(__METHOD__ . ':' . __LINE__ . sprintf('User (%s) changed their identity to (%s) from %s', $user->username, $username, $ip));
+		$user->username = $username;
 
 		return $user;
 	}

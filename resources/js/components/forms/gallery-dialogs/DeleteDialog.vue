@@ -104,7 +104,6 @@ function executeDeletePhoto() {
 		});
 		AlbumService.clearCache(props.parentId);
 		emits("deleted");
-		// Todo emit that we moved things.
 	});
 }
 </script>

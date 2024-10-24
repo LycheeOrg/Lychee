@@ -61,7 +61,6 @@ class AlbumResource extends Data
 		$this->copyright = $album->copyright;
 
 		// attributes
-		// $this->description = $album->description;
 		$this->track_url = $album->track_url;
 		$this->license = $album->license->localization();
 		// TODO: Investigate later why this string is 24 characters long.

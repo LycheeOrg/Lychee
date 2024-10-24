@@ -12,9 +12,9 @@ use App\Rules\RandomIDRule;
 use Illuminate\Support\Facades\Gate;
 
 /**
- * Represents a request for setting the shares of specific albums.
+ * Represents a request for listing the shares of a specific album.
  *
- * Only the owner (or the admin) of the album can set the shares.
+ * Only the owner of the album (or the admin) can set the shares.
  */
 class ListSharingRequest extends BaseApiRequest implements HasBaseAlbum
 {

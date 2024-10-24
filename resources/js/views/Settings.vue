@@ -23,7 +23,6 @@
 		</TabList>
 		<TabPanels :pt:root:class="'px-0'">
 			<TabPanel value="0">
-				<!-- <span class="font-bold text-red-500 text-center w-full inline-block text-3xl">STILL WORK IN PROGRESS HERE (nothing works).</span> -->
 				<EasySettings />
 			</TabPanel>
 			<TabPanel value="1">

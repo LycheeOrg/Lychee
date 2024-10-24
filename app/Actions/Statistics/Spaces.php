@@ -141,7 +141,7 @@ class Spaces
 	}
 
 	/**
-	 * Same as above but with full size.
+	 * Same as above but with full size (including sub-albums).
 	 *
 	 * @param string|null $album_id
 	 * @param int|null    $owner_id
@@ -201,7 +201,7 @@ class Spaces
 	}
 
 	/**
-	 * Return size statistics per album.
+	 * Return size statistics (number of photos rather than bytes) per album.
 	 *
 	 * @param string|null $album_id
 	 * @param int|null    $owner_id
@@ -267,7 +267,7 @@ class Spaces
 	}
 
 	/**
-	 * Same as above but with full size.
+	 * Same as above but including sub-albums.
 	 *
 	 * @param string|null $album_id
 	 * @param int|null    $owner_id

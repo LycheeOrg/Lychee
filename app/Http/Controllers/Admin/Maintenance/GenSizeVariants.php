@@ -52,7 +52,7 @@ class GenSizeVariants extends Controller
 	}
 
 	/**
-	 * Check how many images needs to be created.
+	 * Check how many images need to be created.
 	 *
 	 * @return int
 	 */

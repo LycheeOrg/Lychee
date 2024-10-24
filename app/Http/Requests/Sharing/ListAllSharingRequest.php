@@ -8,9 +8,9 @@ use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\Gate;
 
 /**
- * Represents a request for the list of all the access permissions controllable by a user..
+ * Represents a request for the list of all the access permissions controllable by a user.
  *
- * Only the owner (or the admin) of the album can set the shares.
+ * Only the owner of the album (or the admin) can set the shares.
  */
 class ListAllSharingRequest extends AbstractEmptyRequest
 {

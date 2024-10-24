@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Gate;
 /**
  * Represents a request for deleting the shares of specific albums.
  *
- * Only the owner (or the admin) of the album can set the shares.
+ * Only the owner of the album (or the admin) can set the shares.
  */
 class DeleteSharingRequest extends BaseApiRequest implements HasAlbumIds, HasUserIds, HasAccessPermission
 {

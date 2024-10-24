@@ -8,7 +8,7 @@
 					</p>
 					<ul class="pl-5">
 						<li class="list-decimal list-outside">Long process required to keep the browser window open.</li>
-						<li class="list-decimal list-outside">Sessions time-out were breaking the import.</li>
+						<li class="list-decimal list-outside">Session time-outs were breaking the import.</li>
 						<li class="list-decimal list-outside">
 							A more efficient command line alternative is available:<br />
 							<pre class="inline-block font-mono text-muted-color-emphasis text-sm">php artisan lychee:sync</pre>

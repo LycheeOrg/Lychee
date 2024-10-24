@@ -13,7 +13,7 @@
 		<template #end> </template>
 	</Toolbar>
 	<Panel v-if="is_se_preview_enabled" class="text-center">
-		This is a preview of the upcoming statistics page.<br />
+		This is a preview of the statistics page available in Lychee SE.<br />
 		The data shown here are randomly generated and do not reflect your server.
 	</Panel>
 	<Panel v-if="sizeVariantSpaceMeter !== undefined" class="max-w-5xl mx-auto border-0">

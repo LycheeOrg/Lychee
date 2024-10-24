@@ -21,7 +21,7 @@ class FrameController
 	}
 
 	/**
-	 * Return an image and the timeout if the frame is supported..
+	 * Return an image and the timeout if the frame is supported.
 	 *
 	 * @param FrameRequest $request
 	 *
@@ -77,10 +77,12 @@ class FrameController
 			return null;
 		}
 
-		// default query
-		$query = $this->photoQueryPolicy->applySearchabilityFilter(Photo::query()->with(['album', 'size_variants', 'size_variants.sym_links']));
+		$query = null;
 
-		if ($album !== null) {
+		// default query
+		if ($album === null) {
+			$query = $this->photoQueryPolicy->applySearchabilityFilter(Photo::query()->with(['album', 'size_variants', 'size_variants.sym_links']));
+		} else {
 			$query = $album->photos()->with(['album', 'size_variants', 'size_variants.sym_links']);
 		}
 
