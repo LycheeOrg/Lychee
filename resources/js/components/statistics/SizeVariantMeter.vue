@@ -32,7 +32,7 @@ import Card from "primevue/card";
 import MeterGroup from "primevue/metergroup";
 import { ref } from "vue";
 
-type SizeVairantData = {
+type SizeVariantData = {
 	label: string;
 	value: number;
 	size: string;
@@ -46,7 +46,7 @@ const props = defineProps<{
 
 const lycheeStore = useLycheeStateStore();
 const sizeVariantSpace = ref(undefined as undefined | App.Http.Resources.Statistics.Sizes[]);
-const sizeVariantSpaceMeter = ref(undefined as undefined | SizeVairantData[]);
+const sizeVariantSpaceMeter = ref(undefined as undefined | SizeVariantData[]);
 
 const { is_se_preview_enabled } = storeToRefs(lycheeStore);
 
