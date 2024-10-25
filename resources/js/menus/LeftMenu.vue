@@ -78,8 +78,7 @@ watch(
 		if (newValue === null) {
 			initData.value = undefined;
 		}
-
-		if (newValue !== null && newValue.id !== oldValue?.id) {
+		else if (newValue.id !== oldValue?.id) {
 			load();
 		}
 	},
