@@ -1,26 +1,47 @@
 <template>
-	<Drawer v-model:visible="left_menu_open">
+	<Drawer v-model:visible="left_menu_open" :pt:content:class="'flex flex-col justify-start gap-10'">
+		<template #header>
+			<div class="flex items-center gap-2 text-muted-color hover:text-primary-400">
+				<router-link v-if="!isGallery" v-slot="{ href, navigate }" to="/gallery" custom>
+					<a v-ripple :href="href" @click="navigate">
+						<span class="text-lg font-bold pl-3">Back to Gallery</span>
+					</a>
+				</router-link>
+			</div>
+		</template>
 		<Menu :model="items" v-if="initData" class="!border-none">
-			<template #submenulabel="{ item }">
-				<span class="text-primary-emphasis font-bold" :class="item.access !== false ? '' : 'hidden'">{{ $t(item.label) }}</span>
+			<template #submenuheader="{ item }">
+				<span class="text-primary-emphasis font-bold" :class="item.access !== false ? '' : 'hidden'">
+					<!-- @vue-ignore -->
+					{{ $t(item.label) }}
+				</span>
 			</template>
 			<template #item="{ item, props }">
 				<template v-if="item.access">
 					<router-link v-if="item.route" v-slot="{ href, navigate }" :to="item.route" custom>
 						<a v-ripple :href="href" v-bind="props.action" @click="navigate">
-							<MiniIcon :icon="item.icon" :class="'w-3 h-3'" />
-							<span class="ml-2">{{ $t(item.label) }}</span>
+							<MiniIcon :icon="item.icon ?? ''" :class="'w-3 h-3'" />
+							<span class="ml-2">
+								<!-- @vue-ignore -->
+								{{ $t(item.label) }}
+							</span>
 							<SETag v-if="item.seTag" />
 						</a>
 					</router-link>
 					<a v-if="item.url" v-ripple :href="item.url" :target="item.target" v-bind="props.action">
-						<MiniIcon :icon="item.icon" :class="'w-3 h-3'" />
-						<span class="ml-2">{{ $t(item.label) }}</span>
+						<MiniIcon :icon="item.icon ?? ''" :class="'w-3 h-3'" />
+						<span class="ml-2">
+							<!-- @vue-ignore -->
+							{{ $t(item.label) }}
+						</span>
 						<SETag v-if="item.seTag" />
 					</a>
 					<a v-if="!item.route && !item.url" v-ripple v-bind="props.action">
-						<MiniIcon :icon="item.icon" :class="'w-3 h-3'" />
-						<span class="ml-2">{{ $t(item.label) }}</span>
+						<MiniIcon :icon="item.icon ?? ''" :class="'w-3 h-3'" />
+						<span class="ml-2">
+							<!-- @vue-ignore -->
+							{{ $t(item.label) }}
+						</span>
 						<SETag v-if="item.seTag" />
 					</a>
 				</template>
@@ -43,6 +64,7 @@ import { useLycheeStateStore } from "@/stores/LycheeState";
 import AlbumService from "@/services/album-service";
 import SETag from "@/components/icons/SETag.vue";
 import Constants from "@/services/constants";
+import { useRoute } from "vue-router";
 
 type MenyType =
 	| {
@@ -62,14 +84,14 @@ type MenyType =
 
 const initData = ref(undefined) as Ref<undefined | App.Http.Resources.Rights.GlobalRightsResource>;
 const openLycheeAbout = ref(false);
-const items = ref([] as MenyType[]);
 const logsEnabled = ref(true);
 
+const route = useRoute();
 const authStore = useAuthStore();
 const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
 
-const { left_menu_open, clockwork_url, is_se_enabled, is_se_preview_enabled } = storeToRefs(lycheeStore);
+const { left_menu_open, clockwork_url, is_se_enabled, is_se_preview_enabled, is_se_info_hidden } = storeToRefs(lycheeStore);
 const { user } = storeToRefs(authStore);
 authStore.getUser();
 
@@ -92,7 +114,6 @@ function load() {
 	InitService.fetchGlobalRights()
 		.then((data) => {
 			initData.value = data.data;
-			loadMenu();
 		})
 		.catch((error) => {
 			console.error(error);
@@ -119,12 +140,16 @@ const canSeeAdmin = computed(() => {
 	);
 });
 
-function loadMenu() {
+const isGallery = computed(() => {
+	return route.name === "gallery";
+});
+
+const items = computed<MenyType[]>(() => {
 	if (!initData.value) {
-		return;
+		return [];
 	}
 
-	items.value = [
+	return [
 		{
 			label: "Admin",
 			access: canSeeAdmin.value,
@@ -170,6 +195,12 @@ function loadMenu() {
 					route: "/jobs",
 					access: initData.value.settings.can_see_logs ?? false,
 				},
+				{
+					label: "Clockwork App",
+					icon: "telescope",
+					url: clockwork_url.value ?? "",
+					access: clockwork_url.value !== null && (initData.value.settings.can_access_dev_tools ?? false),
+				},
 			],
 		},
 		{
@@ -191,13 +222,13 @@ function loadMenu() {
 					label: "Statistics",
 					icon: "bar-chart",
 					route: "/statistics",
-					access: is_se_enabled.value,
+					access: is_se_enabled.value === true,
 				},
 				{
 					label: "Statistics",
 					icon: "bar-chart",
 					route: "/statistics",
-					access: is_se_preview_enabled.value,
+					access: is_se_preview_enabled.value === true,
 					seTag: true,
 				},
 				{
@@ -208,22 +239,29 @@ function loadMenu() {
 				},
 			],
 		},
-
 		{
-			label: "lychee.ABOUT_LYCHEE",
-			icon: "info",
-			access: true,
-			command: () => (openLycheeAbout.value = true),
+			label: "Lychee",
+			items: [
+				{
+					label: "About",
+					icon: "info",
+					access: true,
+					command: () => (openLycheeAbout.value = true),
+				},
+				{
+					label: "Source",
+					icon: "book",
+					access: is_se_info_hidden.value === false,
+					url: "https://github.com/LycheeOrg/Lychee",
+				},
+				{
+					label: "Support",
+					icon: "heart",
+					access: is_se_info_hidden.value === false,
+					url: "https://lycheeorg.github.io/get-supporter-edition/",
+				},
+			],
 		},
 	];
-
-	if (clockwork_url.value && initData.value.settings.can_access_dev_tools) {
-		items.value.push({
-			label: "Clockwork App",
-			icon: "telescope",
-			url: clockwork_url.value,
-			access: initData.value.settings.can_edit ?? false,
-		});
-	}
-}
+});
 </script>
