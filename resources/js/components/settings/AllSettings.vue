@@ -258,9 +258,7 @@ function save() {
 }
 
 function goto(section: string) {
-	console.log(section);
 	const el = document.getElementById(section.slice(1));
-	console.log(el);
 	if (el) {
 		el.scrollIntoView({ behavior: "smooth" });
 	}

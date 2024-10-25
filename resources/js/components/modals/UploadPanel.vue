@@ -151,12 +151,9 @@ function uploadNext(searchIndex = 0, max_processing_limit: number | undefined = 
 			break;
 		}
 	}
-	console.log("searchIndex", searchIndex);
-	console.log("offset", offset);
 
 	// Compute processing limit : min between the provided max and the number of waiting.
 	const processing_limit = Math.min(max_processing_limit ?? setup.value?.upload_processing_limit ?? 1, counts.value.waiting);
-	console.log("processing limit", processing_limit);
 
 	// Start uploading chunks.
 	for (let i = 0; i < processing_limit; i++) {
