@@ -155,7 +155,10 @@
 					<Divider v-if="item.is_divider" />
 					<a v-else v-ripple v-bind="props.action" @click="item.callback">
 						<span :class="item.icon" />
-						<span class="ml-2">{{ $t(item.label) }}</span>
+						<span class="ml-2">
+							<!-- @vue-ignore -->
+							{{ $t(item.label) }}
+						</span>
 					</a>
 				</template>
 			</ContextMenu>

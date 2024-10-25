@@ -104,7 +104,7 @@ class AccessPermission extends Model
 	/**
 	 * Returns the relationship between an AccessPermission and its associated album.
 	 *
-	 * @return BelongsTo<BaseAlbumImpl,AccessPermission>
+	 * @return BelongsTo<BaseAlbumImpl,$this>
 	 */
 	public function album(): BelongsTo
 	{
@@ -114,7 +114,7 @@ class AccessPermission extends Model
 	/**
 	 * Returns the relationship between an AccessPermission and its applied User.
 	 *
-	 * @return BelongsTo<User,AccessPermission>
+	 * @return BelongsTo<User,$this>
 	 */
 	public function user(): BelongsTo
 	{

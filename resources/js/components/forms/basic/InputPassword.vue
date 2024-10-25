@@ -16,7 +16,7 @@
 import { ref } from "vue";
 import InputText, { InputTextPassThroughOptions } from "primevue/inputtext";
 import type { PassThroughOptions } from "primevue/passthrough";
-import type { DesignToken, PassThrough } from "@primevue/core";
+import type { DesignToken, Nullable, PassThrough } from "@primevue/core";
 
 const props = defineProps<{
 	size?: "small" | "large" | undefined;
@@ -30,6 +30,6 @@ const props = defineProps<{
 	class?: string;
 }>();
 
-const modelValue = defineModel();
+const modelValue = defineModel<Nullable<string>>();
 const classValue = ref((props.class ?? "") + " border-0 p-3 w-full border-b hover:border-b-danger-600 focus:border-b-danger-600");
 </script>
