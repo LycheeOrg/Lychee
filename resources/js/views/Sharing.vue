@@ -10,7 +10,7 @@
 	</Toolbar>
 	<Panel class="border-none p-9 mx-auto max-w-3xl" v-if="perms !== undefined" pt:header:class="hidden">
 		<div class="w-full mb-9 text-center text-muted-color-emphasis">
-			This page gives an overview and edit the sharing rights associated with albums.
+			This page gives an overview of and the ability to edit the sharing rights associated with albums.
 		</div>
 		<div class="flex flex-col text-muted-color-emphasis">
 			<div class="flex items-center">
