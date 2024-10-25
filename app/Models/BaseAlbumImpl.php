@@ -214,7 +214,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	/**
 	 * Returns the relationship between an album and its owner.
 	 *
-	 * @return BelongsTo<User,BaseAlbumImpl>
+	 * @return BelongsTo<User,$this>
 	 */
 	public function owner(): BelongsTo
 	{
@@ -225,7 +225,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	 * Returns the relationship between an album and all users with whom
 	 * this album is shared.
 	 *
-	 * @return BelongsToMany<User>
+	 * @return BelongsToMany<User,$this>
 	 */
 	public function shared_with(): BelongsToMany
 	{
@@ -240,7 +240,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	/**
 	 * Returns the relationship between an album and its associated permissions.
 	 *
-	 * @return hasMany<AccessPermission>
+	 * @return hasMany<AccessPermission,$this>
 	 */
 	public function access_permissions(): hasMany
 	{
