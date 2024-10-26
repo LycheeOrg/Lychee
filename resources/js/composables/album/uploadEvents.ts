@@ -16,7 +16,7 @@ export function useMouseEvents(
 	}
 
 	function dropUpload(e: DragEvent) {
-		console.log("dropUpload");
+		// console.log("dropUpload");
 		if (rights.value?.can_upload !== true) {
 			return;
 		}
@@ -26,7 +26,7 @@ export function useMouseEvents(
 		if (e.dataTransfer === null) {
 			return;
 		}
-		console.log(e.dataTransfer.files.length);
+		// console.log(e.dataTransfer.files.length);
 
 		if (e.dataTransfer.files.length > 0) {
 			for (let i = 0; i < e.dataTransfer.files.length; i++) {
@@ -41,7 +41,7 @@ export function useMouseEvents(
 	}
 
 	function onPaste(e: ClipboardEvent) {
-		console.log("onPaste");
+		// console.log("onPaste");
 		if (shouldIgnoreKeystroke()) {
 			return;
 		}

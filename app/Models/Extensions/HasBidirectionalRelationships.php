@@ -69,7 +69,7 @@ trait HasBidirectionalRelationships
 	 * @param string|null                 $localKey
 	 * @param string|null                 $foreignMethodName
 	 *
-	 * @return HasManyBidirectionally<TRelatedModel,self>
+	 * @return HasManyBidirectionally<TRelatedModel,$this>
 	 */
 	public function hasManyBidirectionally(string $related, ?string $foreignKey = null, ?string $localKey = null, ?string $foreignMethodName = null): HasManyBidirectionally
 	{
