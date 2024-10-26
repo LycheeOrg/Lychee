@@ -9,6 +9,7 @@ use App\Contracts\Http\Requests\HasCopyright;
 use App\Contracts\Http\Requests\HasDescription;
 use App\Contracts\Http\Requests\HasLicense;
 use App\Contracts\Http\Requests\HasPhoto;
+use App\Contracts\Http\Requests\HasPhotoLayout;
 use App\Contracts\Http\Requests\HasPhotoSortingCriterion;
 use App\Contracts\Http\Requests\HasTitle;
 use App\Contracts\Http\Requests\RequestAttribute;
@@ -20,6 +21,7 @@ use App\Enum\ColumnSortingAlbumType;
 use App\Enum\ColumnSortingPhotoType;
 use App\Enum\LicenseType;
 use App\Enum\OrderSortingType;
+use App\Enum\PhotoLayoutType;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasAlbumSortingCriterionTrait;
 use App\Http\Requests\Traits\HasAlbumTrait;
@@ -28,6 +30,7 @@ use App\Http\Requests\Traits\HasCompactBooleanTrait;
 use App\Http\Requests\Traits\HasCopyrightTrait;
 use App\Http\Requests\Traits\HasDescriptionTrait;
 use App\Http\Requests\Traits\HasLicenseTrait;
+use App\Http\Requests\Traits\HasPhotoLayoutTrait;
 use App\Http\Requests\Traits\HasPhotoSortingCriterionTrait;
 use App\Http\Requests\Traits\HasPhotoTrait;
 use App\Http\Requests\Traits\HasTitleTrait;
@@ -42,7 +45,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Validation\ValidationException;
 
-class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, HasDescription, HasLicense, HasPhotoSortingCriterion, HasAlbumSortingCriterion, HasCopyright, HasPhoto, HasCompactBoolean
+class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, HasDescription, HasLicense, HasPhotoSortingCriterion, HasAlbumSortingCriterion, HasCopyright, HasPhoto, HasCompactBoolean, HasPhotoLayout
 {
 	use HasAlbumTrait;
 	use HasLicenseTrait;
@@ -54,6 +57,7 @@ class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, H
 	use HasPhotoSortingCriterionTrait;
 	use HasAlbumSortingCriterionTrait;
 	use HasCopyrightTrait;
+	use HasPhotoLayoutTrait;
 
 	public function authorize(): bool
 	{
@@ -84,6 +88,7 @@ class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, H
 				'nullable', new Enum(OrderSortingType::class),
 			],
 			RequestAttribute::ALBUM_ASPECT_RATIO_ATTRIBUTE => ['present', 'nullable', new Enum(AspectRatioType::class)],
+			RequestAttribute::ALBUM_PHOTO_LAYOUT => ['present', 'nullable', new Enum(PhotoLayoutType::class)],
 			RequestAttribute::COPYRIGHT_ATTRIBUTE => ['present', 'nullable', new CopyrightRule()],
 			RequestAttribute::IS_COMPACT_ATTRIBUTE => ['required', 'boolean'],
 			RequestAttribute::HEADER_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
@@ -123,6 +128,7 @@ class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, H
 			new AlbumSortingCriterion($albumColumn->toColumnSortingType(), $albumOrder);
 
 		$this->aspectRatio = AspectRatioType::tryFrom($values[RequestAttribute::ALBUM_ASPECT_RATIO_ATTRIBUTE]);
+		$this->photoLayout = PhotoLayoutType::tryFrom($values[RequestAttribute::ALBUM_PHOTO_LAYOUT]);
 		$this->copyright = $values[RequestAttribute::COPYRIGHT_ATTRIBUTE];
 
 		$this->is_compact = static::toBoolean($values[RequestAttribute::IS_COMPACT_ATTRIBUTE]);

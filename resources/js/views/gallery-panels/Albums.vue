@@ -38,20 +38,22 @@
 			@clicked="albumClick"
 			@contexted="albumMenuOpen"
 		/>
-		<AlbumThumbPanel
-			v-if="sharedAlbums.length > 0"
-			header="lychee.SHARED_ALBUMS"
-			:album="undefined"
-			:albums="sharedAlbums"
-			:user="user"
-			:config="albumPanelConfig"
-			:is-alone="!albums.length"
-			:are-nsfw-visible="are_nsfw_visible"
-			:idx-shift="albums.length"
-			:selected-albums="selectedAlbumsIds"
-			@clicked="albumClick"
-			@contexted="albumMenuOpen"
-		/>
+		<template v-for="sharedAlbum in sharedAlbums">
+			<AlbumThumbPanel
+				v-if="sharedAlbums.length > 0"
+				:header="sharedAlbum.owner"
+				:album="undefined"
+				:albums="sharedAlbum.albums"
+				:user="user"
+				:config="albumPanelConfig"
+				:is-alone="!albums.length"
+				:are-nsfw-visible="are_nsfw_visible"
+				:idx-shift="sharedAlbum.iter"
+				:selected-albums="selectedAlbumsIds"
+				@clicked="albumClick"
+				@contexted="albumMenuOpen"
+			/>
+		</template>
 		<GalleryFooter v-once />
 	</div>
 	<ContextMenu ref="menu" :model="Menu" :class="Menu.length === 0 ? 'hidden' : ''">
@@ -59,7 +61,10 @@
 			<Divider v-if="item.is_divider" />
 			<a v-else v-ripple v-bind="props.action" @click="item.callback">
 				<span :class="item.icon" />
-				<span class="ml-2">{{ $t(item.label) }}</span>
+				<span class="ml-2">
+					<!-- @vue-ignore -->
+					{{ $t(item.label) }}
+				</span>
 			</a>
 		</template>
 	</ContextMenu>

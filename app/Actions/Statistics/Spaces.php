@@ -63,7 +63,7 @@ class Spaces
 	 *
 	 * @return Collection<int,array{type:SizeVariantType,size:int}>
 	 */
-	public function getSpacePerSizeVariantType(?int $owner_id = null): Collection
+	public function getSpacePerSizeVariantTypePerUser(?int $owner_id = null): Collection
 	{
 		return DB::table('size_variants')
 			->when($owner_id !== null, fn ($query) => $query
@@ -89,6 +89,53 @@ class Spaces
 	}
 
 	/**
+	 * Return the amount of data stored on the server (optionally for an album).
+	 *
+	 * @param string $album_id
+	 *
+	 * @return Collection<int,array{type:SizeVariantType,size:int}>
+	 */
+	public function getSpacePerSizeVariantTypePerAlbum(string $album_id): Collection
+	{
+		$query = DB::table('albums')
+			->where('albums.id', '=', $album_id)
+			->joinSub(
+				query: DB::table('albums', 'descendants')->select('descendants.id', 'descendants._lft', 'descendants._rgt'),
+				as: 'descendants',
+				first: function (JoinClause $join) {
+					$join->on('albums._lft', '<=', 'descendants._lft')
+						->on('albums._rgt', '>=', 'descendants._rgt');
+				}
+			)
+			->joinSub(
+				query: DB::table('photos'),
+				as: 'photos',
+				first: 'photos.album_id',
+				operator: '=',
+				second: 'descendants.id',
+			)
+			->joinSub(
+				query: DB::table('size_variants')->select(['size_variants.id', 'size_variants.photo_id', 'size_variants.type', 'size_variants.filesize']),
+				as: 'size_variants',
+				first: 'size_variants.photo_id',
+				operator: '=',
+				second: 'photos.id',
+			)
+			->select(
+				'size_variants.type',
+				DB::raw('SUM(size_variants.filesize) as size')
+			)
+			->groupBy('size_variants.type')
+			->orderBy('size_variants.type', 'asc');
+
+		return $query->get()
+			->map(fn ($item) => [
+				'type' => SizeVariantType::from($item->type),
+				'size' => intval($item->size),
+			]);
+	}
+
+	/**
 	 * Return size statistics per album.
 	 *
 	 * @param string|null $album_id
@@ -99,7 +146,18 @@ class Spaces
 	public function getSpacePerAlbum(?string $album_id = null, ?int $owner_id = null)
 	{
 		$query = DB::table('albums')
-			->when($album_id !== null, fn ($query) => $query->where('albums.id', '=', $album_id))
+			->when($album_id !== null,
+				fn ($query) => $query
+					->joinSub(
+						query: DB::table('albums', 'parent')->select('parent.id', 'parent._lft', 'parent._rgt'),
+						as: 'parent',
+						first: function (JoinClause $join) {
+							$join->on('albums._lft', '>=', 'parent._lft')
+								->on('albums._rgt', '<=', 'parent._rgt');
+						}
+					)
+					->where('parent.id', '=', $album_id)
+			)
 			->when($owner_id !== null, fn ($query) => $query->joinSub(
 				query: DB::table('base_albums')->select(['base_albums.id', 'base_albums.owner_id']),
 				as: 'base_albums',
@@ -211,7 +269,18 @@ class Spaces
 	public function getPhotoCountPerAlbum(?string $album_id = null, ?int $owner_id = null)
 	{
 		$query = DB::table('albums')
-			->when($album_id !== null, fn ($query) => $query->where('albums.id', '=', $album_id))
+			->when($album_id !== null,
+				fn ($query) => $query
+					->joinSub(
+						query: DB::table('albums', 'parent')->select('parent.id', 'parent._lft', 'parent._rgt'),
+						as: 'parent',
+						first: function (JoinClause $join) {
+							$join->on('albums._lft', '>=', 'parent._lft')
+								->on('albums._rgt', '<=', 'parent._rgt');
+						}
+					)
+					->where('parent.id', '=', $album_id)
+			)
 			->joinSub(
 				query: DB::table('base_albums')->select(['base_albums.id', 'base_albums.owner_id', 'base_albums.title', 'base_albums.is_nsfw']),
 				as: 'base_albums',

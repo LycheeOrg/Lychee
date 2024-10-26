@@ -24,7 +24,7 @@
 				@click="lycheeStore.toggleLogin()"
 			/>
 			<!-- Logged in. -->
-			<Button v-if="user.id" @click="openLeftMenu" icon="pi pi-bars" class="mr-2 border-none" severity="secondary" text />
+			<OpenLeftMenu v-if="user.id" />
 		</template>
 
 		<template #center>
@@ -74,7 +74,10 @@
 			<Divider v-if="item.is_divider" />
 			<a v-else v-ripple v-bind="props.action" @click="item.callback">
 				<span :class="item.icon" />
-				<span class="ml-2">{{ $t(item.label) }}</span>
+				<span class="ml-2">
+					<!-- @vue-ignore -->
+					{{ $t(item.label) }}
+				</span>
 			</a>
 		</template>
 	</ContextMenu>
@@ -103,6 +106,7 @@ import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
 import WebAuthnService from "@/services/webauthn-service";
 import { useRouter } from "vue-router";
 import DropBox from "../modals/DropBox.vue";
+import OpenLeftMenu from "./OpenLeftMenu.vue";
 
 const props = defineProps<{
 	user: App.Http.Resources.Models.UserResource;
