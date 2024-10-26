@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "98c3bd77cb220e44b8187f60936e80fd",
+    "content-hash": "649bd36880d31be8c6c9a84330f276fd",
     "packages": [
         {
             "name": "amphp/amp",
@@ -1019,24 +1019,24 @@
         },
         {
             "name": "bepsvpt/secure-headers",
-            "version": "7.5.0",
+            "version": "8.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bepsvpt/secure-headers.git",
-                "reference": "946c4050bae960ccc50579dd2d24a2ca3cb7cdf9"
+                "reference": "d2a520195221eac497c753893eb03c81572ab330"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bepsvpt/secure-headers/zipball/946c4050bae960ccc50579dd2d24a2ca3cb7cdf9",
-                "reference": "946c4050bae960ccc50579dd2d24a2ca3cb7cdf9",
+                "url": "https://api.github.com/repos/bepsvpt/secure-headers/zipball/d2a520195221eac497c753893eb03c81572ab330",
+                "reference": "d2a520195221eac497c753893eb03c81572ab330",
                 "shasum": ""
             },
             "require": {
+                "ext-json": "*",
                 "php": "^7.0 || ^8.0"
             },
             "require-dev": {
                 "ergebnis/composer-normalize": "^2.42",
-                "ext-json": "*",
                 "ext-xdebug": "*",
                 "laravel/pint": "^1.14",
                 "orchestra/testbench": "^3.1 || ^4.18 || ^5.20 || ^6.43 || ^7.41 || ^8.22 || ^9.0",
@@ -1066,7 +1066,7 @@
             "authors": [
                 {
                     "name": "bepsvpt",
-                    "email": "og7lsrszah6y3lz@infinitefa.email"
+                    "email": "6ibrl@cpp.tw"
                 }
             ],
             "description": "Add security related headers to HTTP response. The package includes Service Providers for easy Laravel integration.",
@@ -1085,7 +1085,7 @@
             ],
             "support": {
                 "issues": "https://github.com/bepsvpt/secure-headers/issues",
-                "source": "https://github.com/bepsvpt/secure-headers/tree/7.5.0"
+                "source": "https://github.com/bepsvpt/secure-headers/tree/8.0.0"
             },
             "funding": [
                 {
@@ -1093,7 +1093,7 @@
                     "type": "open_collective"
                 }
             ],
-            "time": "2024-03-14T01:20:05+00:00"
+            "time": "2024-10-13T11:50:22+00:00"
         },
         {
             "name": "brick/math",
