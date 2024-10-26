@@ -15,15 +15,21 @@
 				<template #end> </template>
 			</Toolbar>
 		</Collapse>
-		<SearchBox v-if="searchMinimumLengh !== undefined" :search-minimum-lengh="searchMinimumLengh" v-model:search="search_term" @search="search" />
-		<template v-if="isSearching">
+		<SearchBox
+			v-if="searchMinimumLengh !== undefined"
+			:search-minimum-lengh="searchMinimumLengh"
+			v-model:search="search_term"
+			@search="search"
+			@clear="clear"
+		/>
+		<template v-if="isSearching === true">
 			<div class="flex w-full h-full items-center justify-center text-xl text-muted-color">
 				<span class="block">
 					{{ "Searching..." }}
 				</span>
 			</div>
 		</template>
-		<template v-if="noData">
+		<template v-if="isSearching === false && noData">
 			<div class="flex w-full h-full items-center justify-center text-xl text-muted-color">
 				<span class="block">
 					{{ "Nothing to see here" }}
@@ -53,6 +59,7 @@
 				</div>
 				<PhotoThumbPanel
 					v-if="layout !== null && photos.length > 0"
+					:photo-layout="configForMenu.photo_layout"
 					:header="photoHeader"
 					:photos="photos"
 					:album="undefined"
@@ -110,7 +117,10 @@
 					<Divider v-if="item.is_divider" />
 					<a v-else v-ripple v-bind="props.action" @click="item.callback">
 						<span :class="item.icon" />
-						<span class="ml-2">{{ $t(item.label) }}</span>
+						<span class="ml-2">
+							<!-- @vue-ignore -->
+							{{ $t(item.label) }}
+						</span>
 					</a>
 				</template>
 			</ContextMenu>
@@ -133,9 +143,9 @@ import { storeToRefs } from "pinia";
 import Button from "primevue/button";
 import Toolbar from "primevue/toolbar";
 import Paginator from "primevue/paginator";
-import { computed, Ref, ref } from "vue";
+import { computed, ref } from "vue";
 import { Collapse } from "vue-collapsed";
-import { useRoute, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 import { useSearch } from "@/composables/album/searchRefresher";
 import { trans } from "laravel-vue-i18n";
 import Divider from "primevue/divider";
@@ -167,8 +177,22 @@ const auth = useAuthStore();
 const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
 const { are_nsfw_visible, is_full_screen, search_page, search_term, is_login_open, nsfw_consented, is_upload_visible } = storeToRefs(lycheeStore);
-const { albums, photos, noData, searchMinimumLengh, isSearching, from, per_page, total, photoHeader, albumHeader, searchInit, search, refresh } =
-	useSearch(albumid, lycheeStore, search_term, search_page);
+const {
+	albums,
+	photos,
+	noData,
+	searchMinimumLengh,
+	isSearching,
+	from,
+	per_page,
+	total,
+	photoHeader,
+	albumHeader,
+	searchInit,
+	search,
+	clear,
+	refresh,
+} = useSearch(albumid, lycheeStore, search_term, search_page);
 const { album, config, layout, loadAlbum, loadLayout } = useAlbumRefresher(albumid, auth, is_login_open, nsfw_consented);
 
 const configForMenu = computed<App.Http.Resources.GalleryConfigs.AlbumConfig>(() => {
@@ -185,6 +209,7 @@ const configForMenu = computed<App.Http.Resources.GalleryConfigs.AlbumConfig>(()
 		is_search_accessible: false,
 		is_nsfw_warning_visible: false,
 		album_thumb_css_aspect_ratio: "aspect-square",
+		photo_layout: "justified",
 	};
 });
 const albumForMenu = albumid.value !== "" ? album : null;

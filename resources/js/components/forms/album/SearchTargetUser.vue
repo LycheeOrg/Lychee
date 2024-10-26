@@ -25,7 +25,7 @@
 	</Select>
 </template>
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import Select from "primevue/select";
 import UsersService from "@/services/users-service";
 
@@ -44,13 +44,12 @@ const emits = defineEmits<{
 
 const options = ref(undefined as undefined | App.Http.Resources.Models.LightUserResource[]);
 const selectedTarget = ref(undefined as App.Http.Resources.Models.LightUserResource | undefined);
+const userList = ref(undefined as App.Http.Resources.Models.LightUserResource[] | undefined);
 
 function load() {
 	UsersService.get().then((response) => {
-		options.value = response.data.filter((user) => !props.filteredUsersIds.includes(user.id));
-		if (options.value.length === 0) {
-			emits("no-target");
-		}
+		userList.value = response.data;
+		filterUsers();
 	});
 }
 
@@ -63,4 +62,17 @@ function selected() {
 
 	emits("selected", selectedTarget.value);
 }
+
+function filterUsers() {
+	if (userList.value === undefined) {
+		return;
+	}
+
+	options.value = userList.value.filter((user) => !props.filteredUsersIds.includes(user.id));
+	if (options.value.length === 0) {
+		emits("no-target");
+	}
+}
+
+watch(() => props.filteredUsersIds, filterUsers);
 </script>

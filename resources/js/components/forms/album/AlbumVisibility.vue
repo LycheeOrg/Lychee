@@ -96,7 +96,7 @@
 	</Card>
 </template>
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import Card from "primevue/card";
 import ToggleSwitch from "primevue/toggleswitch";
 import FloatLabel from "primevue/floatlabel";
@@ -132,7 +132,7 @@ function save() {
 
 	AlbumService.updateProtectionPolicy(data)
 		.then(() => {
-			toast.add({ severity: "success", summary: "Success", detail: "Permission deleted", life: 3000 });
+			toast.add({ severity: "success", summary: "Success", detail: "Permission updated", life: 3000 });
 			AlbumService.clearCache(albumId.value);
 			if (props.config.is_model_album) {
 				// @ts-expect-error

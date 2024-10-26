@@ -14,11 +14,11 @@ type HasId = {
 
 const UsersService = {
 	count(): Promise<AxiosResponse<number>> {
-		return axios.get(`${Constants.API_URL}Users::count`, { data: {} });
+		return axios.get(`${Constants.getApiUrl()}Users::count`, { data: {} });
 	},
 
 	get(): Promise<AxiosResponse<App.Http.Resources.Models.LightUserResource[]>> {
-		return axios.get(`${Constants.API_URL}Users`, { data: {} });
+		return axios.get(`${Constants.getApiUrl()}Users`, { data: {} });
 	},
 };
 

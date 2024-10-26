@@ -1,22 +1,15 @@
 <template>
 	<div class="flex">
-		<div class="w-5/12 flex items-center">
+		<div class="w-5/12 flex items-center text-muted-color">
 			<span v-if="props.withAlbum" class="w-full">{{ props.perm.album_title }}</span>
 			<span class="w-full">{{ props.perm.username }}</span>
 		</div>
-		<div class="w-1/12 flex justify-center items-center">
+		<div class="w-1/2 flex items-center justify-around">
+			<Checkbox v-model="grantsReadAccess" :binary="true" disabled />
 			<Checkbox v-model="grantsFullPhotoAccess" :binary="true" @update:model-value="edit" />
-		</div>
-		<div class="w-1/12 flex justify-center items-center">
 			<Checkbox v-model="grantsDownload" :binary="true" @update:model-value="edit" />
-		</div>
-		<div class="w-1/12 flex justify-center items-center">
 			<Checkbox v-model="grantsUpload" :binary="true" @update:model-value="edit" />
-		</div>
-		<div class="w-1/12 flex justify-center items-center">
 			<Checkbox v-model="grantsEdit" :binary="true" @update:model-value="edit" />
-		</div>
-		<div class="w-1/12 flex justify-center items-center">
 			<Checkbox v-model="grantsDelete" :binary="true" @update:model-value="edit" />
 		</div>
 		<Button @click="deletePermission" class="border-0 bg-surface text-danger-600 hover:bg-danger-700 hover:text-white w-1/6">
@@ -47,6 +40,7 @@ const grantsDownload = ref(false);
 const grantsUpload = ref(false);
 const grantsEdit = ref(false);
 const grantsDelete = ref(false);
+const grantsReadAccess = ref(true);
 
 function load(permisison: App.Http.Resources.Models.AccessPermissionResource) {
 	grantsFullPhotoAccess.value = permisison.grants_full_photo_access;

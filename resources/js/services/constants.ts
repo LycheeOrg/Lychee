@@ -1,5 +1,9 @@
 const Constants = {
 	API_URL: "/api/v2/",
+	BASE_URL: document.querySelector("base")?.getAttribute("href") || "",
+	getApiUrl(): string {
+		return this.BASE_URL + this.API_URL;
+	},
 };
 
 export type PaginatedResponse<T> = {

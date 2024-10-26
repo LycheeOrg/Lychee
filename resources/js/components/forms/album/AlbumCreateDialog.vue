@@ -13,7 +13,7 @@
 					<Button @click="closeCallback" severity="secondary" class="w-full font-bold border-none rounded-bl-xl">
 						{{ $t("lychee.CANCEL") }}
 					</Button>
-					<Button @click="create" severity="contrast" class="font-bold w-full border-none rounded-none rounded-br-xl">
+					<Button @click="create" severity="contrast" class="font-bold w-full border-none rounded-none rounded-br-xl" :disabled="!isValid">
 						{{ $t("lychee.CREATE_ALBUM") }}
 					</Button>
 				</div>
@@ -25,10 +25,11 @@
 import AlbumService from "@/services/album-service";
 import Dialog from "primevue/dialog";
 import InputText from "@/components/forms/basic/InputText.vue";
-import { ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import FloatLabel from "primevue/floatlabel";
 import Button from "primevue/button";
+import { useToast } from "primevue/usetoast";
 
 const props = defineProps<{
 	parentId: string | null;
@@ -37,48 +38,38 @@ const props = defineProps<{
 const visible = defineModel("visible", { default: false });
 const parentId = ref(props.parentId);
 
+const toast = useToast();
 const router = useRouter();
 
 const title = ref(undefined as undefined | string);
 
+const isValid = computed(() => title.value !== undefined && title.value.length > 0 && title.value.length <= 100);
+
 function create() {
-	if (!title.value) {
+	if (!isValid.value) {
 		return;
 	}
 
 	AlbumService.createAlbum({
-		title: title.value,
+		title: title.value as string,
 		parent_id: parentId.value,
-	}).then((response) => {
-		visible.value = false;
-		AlbumService.clearCache(parentId.value);
-		router.push(`/gallery/${response.data}`);
-	});
+	})
+		.then((response) => {
+			title.value = undefined;
+			visible.value = false;
+			AlbumService.clearCache(parentId.value);
+			router.push(`/gallery/${response.data}`);
+		})
+		.catch((error) => {
+			toast.add({ severity: "error", summary: "Oups", detail: error.message });
+		});
 }
 
 watch(
 	() => props.parentId,
 	(newAlbumID, _oldAlbumID) => {
+		title.value = undefined;
 		parentId.value = newAlbumID as string | null;
 	},
 );
 </script>
-<!-- <div>
-    <div class="p-9">
-        <p class="mb-5 text-text-main-200 text-sm/4">{{ __('lychee.TITLE_NEW_ALBUM') }}</p>
-        <form>
-            <div class="my-3 first:mt-0 last:mb-0">
-                <x-forms.inputs.text class="w-full" autocapitalize="off" wire:model="title"
-                    x-intersect="$el.focus()"
-                    placeholder="{{ __('lychee.UNTITLED') }}" :has_error="$errors->has('title')" />
-            </div>
-        </form>
-    </div>
-    <div class="flex w-full box-border">
-        <x-forms.buttons.cancel class="border-t border-t-bg-800 rounded-bl-md w-full"
-            wire:click="close">{{ __('lychee.CANCEL') }}</x-forms.buttons.cancel>
-        <x-forms.buttons.action class="border-t border-t-bg-800 rounded-br-md w-full"
-            @keydown.enter.window="$wire.submit()"
-            wire:click="submit">{{ __('lychee.CREATE_ALBUM') }}</x-forms.buttons.action>
-    </div>
-</div> -->

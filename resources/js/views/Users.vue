@@ -2,9 +2,7 @@
 	<CreateEditUser class="mt-10" @refresh="load" v-model:visible="isCreateUserVisible" :user="selectedUser" :is-edit="isEdit" />
 	<Toolbar class="w-full border-0 h-14">
 		<template #start>
-			<router-link :to="{ name: 'gallery' }">
-				<Button icon="pi pi-angle-left" class="mr-2" severity="secondary" text />
-			</router-link>
+			<OpenLeftMenu />
 		</template>
 
 		<template #center>
@@ -74,6 +72,7 @@ import ListUser from "@/components/forms/users/ListUser.vue";
 import { useToast } from "primevue/usetoast";
 import { storeToRefs } from "pinia";
 import { useLycheeStateStore } from "@/stores/LycheeState";
+import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
 
 const lycheeStore = useLycheeStateStore();
 lycheeStore.init();

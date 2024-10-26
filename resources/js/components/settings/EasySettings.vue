@@ -302,7 +302,6 @@ function load() {
 		const configurations = [] as App.Http.Resources.Models.ConfigResource[];
 		Object.values(decapsulated.configs).forEach((value) => Object.values(value).forEach((value) => configurations.push(value)));
 
-		// console.log(configurations);
 		lang.value = configurations.find((config) => config.key === "lang");
 
 		dark_mode_enabled.value = configurations.find((config) => config.key === "dark_mode_enabled");
