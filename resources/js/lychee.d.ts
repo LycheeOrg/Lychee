@@ -143,6 +143,7 @@ declare namespace App.Http.Resources.Editable {
 		photo_sorting: App.DTO.PhotoSortingCriterion | null;
 		album_sorting: App.DTO.AlbumSortingCriterion | null;
 		aspect_ratio: App.Enum.AspectRatioType | null;
+		photo_layout: any | null;
 		header_id: string | null;
 		cover_id: string | null;
 		tags: Array<string>;
@@ -179,6 +180,7 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		is_search_accessible: boolean;
 		is_nsfw_warning_visible: boolean;
 		album_thumb_css_aspect_ratio: App.Enum.AspectRatioCSSType;
+		photo_layout: App.Enum.PhotoLayoutType;
 	};
 	export type FooterConfig = {
 		footer_additional_text: string;
@@ -229,7 +231,6 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		attribution: string;
 	};
 	export type PhotoLayoutConfig = {
-		photos_layout: App.Enum.PhotoLayoutType;
 		photo_layout_justified_row_height: number;
 		photo_layout_masonry_column_width: number;
 		photo_layout_grid_column_width: number;
@@ -412,6 +413,7 @@ declare namespace App.Http.Resources.Models {
 		num_photos: number;
 		created_at: string;
 		formatted_min_max: string | null;
+		owner: string | null;
 		rights: App.Http.Resources.Rights.AlbumRightsResource;
 	};
 	export type ThumbResource = {

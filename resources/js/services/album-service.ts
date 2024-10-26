@@ -22,6 +22,7 @@ export type UpdateAbumData = {
 	album_sorting_column: App.Enum.ColumnSortingAlbumType | null;
 	album_sorting_order: App.Enum.OrderSortingType | null;
 	album_aspect_ratio: App.Enum.AspectRatioType | null;
+	photo_layout: App.Enum.PhotoLayoutType | null;
 	copyright: string | null;
 	header_id: string | null;
 	is_compact: boolean;
@@ -35,6 +36,7 @@ export type UpdateTagAlbumData = {
 	photo_sorting_column: App.Enum.ColumnSortingPhotoType | null;
 	photo_sorting_order: App.Enum.OrderSortingType | null;
 	copyright: string | null;
+	photo_layout: App.Enum.PhotoLayoutType | null;
 };
 
 export type UpdateProtectionPolicyData = {
@@ -51,6 +53,7 @@ const AlbumService = {
 	clearCache(album_id: string | null = null): void {
 		const axiosWithCache = axios as unknown as AxiosCacheInstance;
 		if (!album_id) {
+			// @ts-expect-error
 			axiosWithCache.storage.clear();
 		} else {
 			axiosWithCache.storage.remove("album_" + album_id);

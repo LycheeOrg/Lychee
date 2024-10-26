@@ -10,7 +10,7 @@
 	</div>
 	<Card class="w-full">
 		<template #content>
-			<div class="w-full flex flex-row-reverse">
+			<div class="w-full flex flex-row-reverse items-start">
 				<div class="order-1 flex flex-col w-full">
 					<h1 v-if="!props.album.preFormattedData.url" class="font-bold text-2xl">{{ props.album.title }}</h1>
 					<span v-if="props.album.preFormattedData.created_at" class="block text-muted-color text-sm">
@@ -31,7 +31,7 @@
 				</div>
 				<a
 					v-if="props.album.rights.can_download"
-					class="flex-shrink-0 px-3 cursor-pointer text-muted-color inline-block transform duration-300 hover:scale-125 hover:text-color"
+					class="flex-shrink-0 px-3 cursor-pointer text-muted-color inline-block transform duration-300 hover:scale-150 hover:text-color"
 					:title="$t('lychee.DOWNLOAD_ALBUM')"
 					@click="download"
 				>
@@ -39,11 +39,25 @@
 				</a>
 				<a
 					v-if="props.album.rights.can_share"
-					class="flex-shrink-0 px-3 cursor-pointer text-muted-color inline-block transform duration-300 hover:scale-125 hover:text-color"
+					class="flex-shrink-0 px-3 cursor-pointer text-muted-color inline-block transform duration-300 hover:scale-150 hover:text-color"
 					:title="$t('lychee.SHARE_ALBUM')"
 					v-on:click="openSharingModal"
 				>
 					<i class="pi pi-share-alt" />
+				</a>
+				<a
+					v-if="is_se_enabled && user?.id !== null"
+					class="flex-shrink-0 px-3 cursor-pointer inline-block transform duration-300 hover:scale-150 hover:text-color"
+					v-on:click="openStatistics"
+				>
+					<i class="pi pi-chart-scatter text-primary-emphasis" />
+				</a>
+				<a
+					v-if="is_se_preview_enabled && user?.id !== null"
+					class="flex-shrink-0 px-3 cursor-not-allowed text-primary-emphasis"
+					v-tooltip.left="'Statistics available in the Supporter Edition'"
+				>
+					<i class="pi pi-chart-scatter" />
 				</a>
 			</div>
 			<div
@@ -56,19 +70,31 @@
 </template>
 <script setup lang="ts">
 import AlbumService from "@/services/album-service";
+import { useAuthStore } from "@/stores/Auth";
+import { useLycheeStateStore } from "@/stores/LycheeState";
+import { storeToRefs } from "pinia";
 import Card from "primevue/card";
+
+const auth = useAuthStore();
+const lycheeStore = useLycheeStateStore();
+const { is_se_enabled, is_se_preview_enabled } = storeToRefs(lycheeStore);
+const { user } = storeToRefs(auth);
 
 const props = defineProps<{
 	album: App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.TagAlbumResource | App.Http.Resources.Models.SmartAlbumResource;
-	// config: App.Http.Resources.GalleryConfigs.AlbumConfig;
 }>();
 
 const emits = defineEmits<{
 	"open-sharing-modal": [];
+	"open-statistics": [];
 }>();
 
 function openSharingModal() {
 	emits("open-sharing-modal");
+}
+
+function openStatistics() {
+	emits("open-statistics");
 }
 
 function download() {

@@ -1,9 +1,7 @@
 <template>
 	<Toolbar class="w-full border-0 h-14">
 		<template #start>
-			<router-link :to="{ name: 'gallery' }">
-				<Button icon="pi pi-angle-left" class="mr-2" severity="secondary" text />
-			</router-link>
+			<OpenLeftMenu />
 		</template>
 
 		<template #center>
@@ -25,10 +23,10 @@
 </template>
 <script setup lang="ts">
 import { ref } from "vue";
-import Button from "primevue/button";
 import Panel from "primevue/panel";
 import Toolbar from "primevue/toolbar";
 import JobService from "@/services/jobs-service";
+import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
 
 const jobs = ref([] as App.Http.Resources.Models.JobHistoryResource[]);
 function load() {
