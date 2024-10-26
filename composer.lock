@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "649bd36880d31be8c6c9a84330f276fd",
+    "content-hash": "36cdd996970357461a310c92dd47fe80",
     "packages": [
         {
             "name": "amphp/amp",
@@ -921,16 +921,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.324.9",
+            "version": "3.324.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "e6cb2597e6365c420f42d218a3a4e82a20df700d"
+                "reference": "a667ca29db288af083c3d8cff2e7f32d89fd4cf0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/e6cb2597e6365c420f42d218a3a4e82a20df700d",
-                "reference": "e6cb2597e6365c420f42d218a3a4e82a20df700d",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/a667ca29db288af083c3d8cff2e7f32d89fd4cf0",
+                "reference": "a667ca29db288af083c3d8cff2e7f32d89fd4cf0",
                 "shasum": ""
             },
             "require": {
@@ -1013,9 +1013,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.324.9"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.324.11"
             },
-            "time": "2024-10-23T18:06:30+00:00"
+            "time": "2024-10-25T18:07:16+00:00"
         },
         {
             "name": "bepsvpt/secure-headers",
@@ -3351,16 +3351,16 @@
         },
         {
             "name": "laragear/webauthn",
-            "version": "v2.0.3",
+            "version": "v3.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Laragear/WebAuthn.git",
-                "reference": "15b29db0edb0a12c0fa45c404e57b0d5f1789465"
+                "reference": "5136b8fee90abb5c0b50b644594fb3142191f3b9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Laragear/WebAuthn/zipball/15b29db0edb0a12c0fa45c404e57b0d5f1789465",
-                "reference": "15b29db0edb0a12c0fa45c404e57b0d5f1789465",
+                "url": "https://api.github.com/repos/Laragear/WebAuthn/zipball/5136b8fee90abb5c0b50b644594fb3142191f3b9",
+                "reference": "5136b8fee90abb5c0b50b644594fb3142191f3b9",
                 "shasum": ""
             },
             "require": {
@@ -3437,7 +3437,7 @@
                     "type": "Paypal"
                 }
             ],
-            "time": "2024-03-18T22:38:29+00:00"
+            "time": "2024-08-15T07:50:06+00:00"
         },
         {
             "name": "laravel/framework",
