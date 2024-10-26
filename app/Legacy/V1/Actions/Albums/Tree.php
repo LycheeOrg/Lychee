@@ -62,9 +62,9 @@ class Tree
 		}
 		$query->orderBy($this->sorting->column, $this->sorting->order);
 
-		/** @var NsCollection<int,string,Album> $albums */
+		/** @var NsCollection<Album> $albums */
 		$albums = $query->get();
-		/** @var ?NsCollection<int,string,Album> $sharedAlbums */
+		/** @var ?NsCollection<Album> $sharedAlbums */
 		$sharedAlbums = null;
 		$userID = Auth::id();
 		if ($userID !== null) {
@@ -75,8 +75,8 @@ class Tree
 			// (sub)-tree and then `toTree` will return garbage as it does
 			// not find connected paths within `$albums` or `$sharedAlbums`,
 			// resp.
-			/** @var NsCollection<int,string,Album> $albums */
-			/** @var ?NsCollection<int,string,Album> $sharedAlbums */
+			/** @var NsCollection<Album> $albums */
+			/** @var ?NsCollection<Album> $sharedAlbums */
 			list($albums, $sharedAlbums) = $albums->partition(fn (Album $album) => $album->owner_id === $userID);
 		}
 

@@ -7,25 +7,25 @@ export type SetConfigRequest = {
 
 const SettingsService = {
 	getAll(): Promise<AxiosResponse<App.Http.Resources.Collections.ConfigCollectionResource>> {
-		return axios.get(`${Constants.API_URL}Settings`, { data: {} });
+		return axios.get(`${Constants.getApiUrl()}Settings`, { data: {} });
 	},
 	setConfigs(data: SetConfigRequest): Promise<AxiosResponse<App.Http.Resources.Collections.ConfigCollectionResource>> {
-		return axios.post(`${Constants.API_URL}Settings::setConfigs`, data);
+		return axios.post(`${Constants.getApiUrl()}Settings::setConfigs`, data);
 	},
 	getLanguages(): Promise<AxiosResponse<string[]>> {
-		return axios.get(`${Constants.API_URL}Settings::getLanguages`, { data: {} });
+		return axios.get(`${Constants.getApiUrl()}Settings::getLanguages`, { data: {} });
 	},
 	setJs(jsData: string): Promise<AxiosResponse> {
-		return axios.post(`${Constants.API_URL}Settings::setJS`, { js: jsData });
+		return axios.post(`${Constants.getApiUrl()}Settings::setJS`, { js: jsData });
 	},
 	setCss(cssData: string): Promise<AxiosResponse> {
-		return axios.post(`${Constants.API_URL}Settings::setCSS`, { css: cssData });
+		return axios.post(`${Constants.getApiUrl()}Settings::setCSS`, { css: cssData });
 	},
 	getJs(): Promise<AxiosResponse> {
-		return axios.get(`${window.assets_url ?? ""}/dist/custom.js`);
+		return axios.get(`${Constants.BASE_URL}/dist/custom.js`);
 	},
 	getCss(): Promise<AxiosResponse> {
-		return axios.get(`${window.assets_url ?? ""}/dist/user.css`);
+		return axios.get(`${Constants.BASE_URL}/dist/user.css`);
 	},
 };
 

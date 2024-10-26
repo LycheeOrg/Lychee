@@ -11,7 +11,7 @@
 if (!function_exists('renv')) {
 	function renv(string $cst, ?string $default = null): string
 	{
-		return rtrim(env($cst, $default) ?? '', '/');
+		return rtrim((string) (env($cst, $default) ?? ''), '/');
 	}
 }
 
@@ -25,7 +25,7 @@ if (!function_exists('renv')) {
 if (!function_exists('renv_cond')) {
 	function renv_cond(string $cst): string
 	{
-		return env($cst, '') === '' ? '' : ('/' . trim(env($cst), '/'));
+		return env($cst, '') === '' ? '' : ('/' . trim((string) env($cst), '/'));
 	}
 }
 
@@ -73,7 +73,7 @@ return [
 		// Lychee uses the disk "images" to store the media files
 		'images' => [
 			'driver' => 'local',
-			'root' => env('LYCHEE_UPLOADS', public_path(env('LYCHEE_UPLOADS_DIR', 'uploads/'))),
+			'root' => env('LYCHEE_UPLOADS', public_path((string) env('LYCHEE_UPLOADS_DIR', 'uploads/'))),
 			'url' => env('LYCHEE_UPLOADS_URL', '') !== '' ? renv('LYCHEE_UPLOADS_URL')
 				: (renv('APP_URL', '') . renv_cond('APP_DIR') . '/' .
 					renv('LYCHEE_UPLOADS_DIR', 'uploads')),
@@ -112,7 +112,7 @@ return [
 		'dist' => [
 			'driver' => 'local',
 			'root' => env('LYCHEE_DIST', public_path('dist/')),
-			'url' => env('LYCHEE_DIST_URL', '/dist/'),
+			'url' => env('LYCHEE_DIST_URL', renv_cond('APP_DIR') . '/dist/'),
 			'visibility' => 'public',
 		],
 
