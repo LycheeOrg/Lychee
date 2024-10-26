@@ -16,7 +16,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Laragear\WebAuthn\ByteBuffer;
-use Laragear\WebAuthn\Challenge;
+use Laragear\WebAuthn\Challenge\Challenge;
 use Tests\AbstractTestCase;
 use Tests\Traits\RequiresEmptyWebAuthnCredentials;
 
