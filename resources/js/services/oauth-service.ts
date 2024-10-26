@@ -3,7 +3,7 @@ import Constants from "./constants";
 
 const OauthService = {
 	list(): Promise<AxiosResponse<App.Http.Resources.Oauth.OauthRegistrationData[] | App.Enum.OauthProvidersType[]>> {
-		return axios.get(`${Constants.API_URL}Oauth`, { data: {} });
+		return axios.get(`${Constants.getApiUrl()}Oauth`, { data: {} });
 	},
 
 	providerIcon(provider: App.Enum.OauthProvidersType): string {
@@ -30,7 +30,7 @@ const OauthService = {
 	},
 
 	clear(provider: string): Promise<AxiosResponse> {
-		return axios.delete(`${Constants.API_URL}Oauth`, { data: { provider: provider } });
+		return axios.delete(`${Constants.getApiUrl()}Oauth`, { data: { provider: provider } });
 	},
 };
 
