@@ -11,6 +11,7 @@ use Laragear\WebAuthn\Assertion\Validator\AssertionValidation;
 use Laragear\WebAuthn\Assertion\Validator\AssertionValidator;
 use Laragear\WebAuthn\Http\Requests\AssertedRequest;
 use Laragear\WebAuthn\Http\Requests\AssertionRequest;
+use Laragear\WebAuthn\JsonTransport;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -64,8 +65,10 @@ class WebAuthnLoginController
 			throw new HttpException(Response::HTTP_UNPROCESSABLE_ENTITY, 'Associated user does not exists.');
 		}
 
+		$jsonTransport = new JsonTransport($request->only(AssertionValidation::REQUEST_KEYS));
+
 		$credential = $validator
-			->send(new AssertionValidation($request, $associatedUser))
+			->send(new AssertionValidation($jsonTransport, $associatedUser))
 			->thenReturn()
 			->credential;
 

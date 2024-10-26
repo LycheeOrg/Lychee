@@ -43,7 +43,7 @@ jobs:
           egress-policy: audit
 
       - name: Checkout code
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Set Up Imagick, FFmpeg & Exiftools
         run: |
@@ -58,7 +58,7 @@ jobs:
           mysql -uroot -proot -e 'create database homestead_test;'
 
       - name: Setup PHP Action
-        uses: shivammathur/setup-php@a4e22b60bbb9c1021113f2860347b0759f66fe5d # 2.30.0
+        uses: shivammathur/setup-php@c541c155eee45413f5b09a52248675b1a2575231 # 2.31.1
         with:
           php-version: ${{ matrix.php-version }}
           extensions: ${{ env.extensions }}

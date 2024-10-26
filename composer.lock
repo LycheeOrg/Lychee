@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "98c3bd77cb220e44b8187f60936e80fd",
+    "content-hash": "944eebb86d8d8411624c23982cf8a9c4",
     "packages": [
         {
             "name": "amphp/amp",
@@ -921,16 +921,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.324.9",
+            "version": "3.324.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "e6cb2597e6365c420f42d218a3a4e82a20df700d"
+                "reference": "a667ca29db288af083c3d8cff2e7f32d89fd4cf0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/e6cb2597e6365c420f42d218a3a4e82a20df700d",
-                "reference": "e6cb2597e6365c420f42d218a3a4e82a20df700d",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/a667ca29db288af083c3d8cff2e7f32d89fd4cf0",
+                "reference": "a667ca29db288af083c3d8cff2e7f32d89fd4cf0",
                 "shasum": ""
             },
             "require": {
@@ -1013,30 +1013,30 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.324.9"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.324.11"
             },
-            "time": "2024-10-23T18:06:30+00:00"
+            "time": "2024-10-25T18:07:16+00:00"
         },
         {
             "name": "bepsvpt/secure-headers",
-            "version": "7.5.0",
+            "version": "8.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bepsvpt/secure-headers.git",
-                "reference": "946c4050bae960ccc50579dd2d24a2ca3cb7cdf9"
+                "reference": "d2a520195221eac497c753893eb03c81572ab330"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bepsvpt/secure-headers/zipball/946c4050bae960ccc50579dd2d24a2ca3cb7cdf9",
-                "reference": "946c4050bae960ccc50579dd2d24a2ca3cb7cdf9",
+                "url": "https://api.github.com/repos/bepsvpt/secure-headers/zipball/d2a520195221eac497c753893eb03c81572ab330",
+                "reference": "d2a520195221eac497c753893eb03c81572ab330",
                 "shasum": ""
             },
             "require": {
+                "ext-json": "*",
                 "php": "^7.0 || ^8.0"
             },
             "require-dev": {
                 "ergebnis/composer-normalize": "^2.42",
-                "ext-json": "*",
                 "ext-xdebug": "*",
                 "laravel/pint": "^1.14",
                 "orchestra/testbench": "^3.1 || ^4.18 || ^5.20 || ^6.43 || ^7.41 || ^8.22 || ^9.0",
@@ -1066,7 +1066,7 @@
             "authors": [
                 {
                     "name": "bepsvpt",
-                    "email": "og7lsrszah6y3lz@infinitefa.email"
+                    "email": "6ibrl@cpp.tw"
                 }
             ],
             "description": "Add security related headers to HTTP response. The package includes Service Providers for easy Laravel integration.",
@@ -1085,7 +1085,7 @@
             ],
             "support": {
                 "issues": "https://github.com/bepsvpt/secure-headers/issues",
-                "source": "https://github.com/bepsvpt/secure-headers/tree/7.5.0"
+                "source": "https://github.com/bepsvpt/secure-headers/tree/8.0.0"
             },
             "funding": [
                 {
@@ -1093,7 +1093,7 @@
                     "type": "open_collective"
                 }
             ],
-            "time": "2024-03-14T01:20:05+00:00"
+            "time": "2024-10-13T11:50:22+00:00"
         },
         {
             "name": "brick/math",
@@ -3351,16 +3351,16 @@
         },
         {
             "name": "laragear/webauthn",
-            "version": "v2.0.3",
+            "version": "v3.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Laragear/WebAuthn.git",
-                "reference": "15b29db0edb0a12c0fa45c404e57b0d5f1789465"
+                "reference": "5136b8fee90abb5c0b50b644594fb3142191f3b9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Laragear/WebAuthn/zipball/15b29db0edb0a12c0fa45c404e57b0d5f1789465",
-                "reference": "15b29db0edb0a12c0fa45c404e57b0d5f1789465",
+                "url": "https://api.github.com/repos/Laragear/WebAuthn/zipball/5136b8fee90abb5c0b50b644594fb3142191f3b9",
+                "reference": "5136b8fee90abb5c0b50b644594fb3142191f3b9",
                 "shasum": ""
             },
             "require": {
@@ -3437,7 +3437,7 @@
                     "type": "Paypal"
                 }
             ],
-            "time": "2024-03-18T22:38:29+00:00"
+            "time": "2024-08-15T07:50:06+00:00"
         },
         {
             "name": "laravel/framework",
@@ -8752,31 +8752,32 @@
         },
         {
             "name": "symfony/cache",
-            "version": "v6.4.12",
+            "version": "v7.1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/cache.git",
-                "reference": "a463451b7f6ac4a47b98dbfc78ec2d3560c759d8"
+                "reference": "86e5296b10e4dec8c8441056ca606aedb8a3be0a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/cache/zipball/a463451b7f6ac4a47b98dbfc78ec2d3560c759d8",
-                "reference": "a463451b7f6ac4a47b98dbfc78ec2d3560c759d8",
+                "url": "https://api.github.com/repos/symfony/cache/zipball/86e5296b10e4dec8c8441056ca606aedb8a3be0a",
+                "reference": "86e5296b10e4dec8c8441056ca606aedb8a3be0a",
                 "shasum": ""
             },
             "require": {
-                "php": ">=8.1",
+                "php": ">=8.2",
                 "psr/cache": "^2.0|^3.0",
                 "psr/log": "^1.1|^2|^3",
                 "symfony/cache-contracts": "^2.5|^3",
+                "symfony/deprecation-contracts": "^2.5|^3.0",
                 "symfony/service-contracts": "^2.5|^3",
-                "symfony/var-exporter": "^6.3.6|^7.0"
+                "symfony/var-exporter": "^6.4|^7.0"
             },
             "conflict": {
-                "doctrine/dbal": "<2.13.1",
-                "symfony/dependency-injection": "<5.4",
-                "symfony/http-kernel": "<5.4",
-                "symfony/var-dumper": "<5.4"
+                "doctrine/dbal": "<3.6",
+                "symfony/dependency-injection": "<6.4",
+                "symfony/http-kernel": "<6.4",
+                "symfony/var-dumper": "<6.4"
             },
             "provide": {
                 "psr/cache-implementation": "2.0|3.0",
@@ -8785,15 +8786,15 @@
             },
             "require-dev": {
                 "cache/integration-tests": "dev-master",
-                "doctrine/dbal": "^2.13.1|^3|^4",
+                "doctrine/dbal": "^3.6|^4",
                 "predis/predis": "^1.1|^2.0",
                 "psr/simple-cache": "^1.0|^2.0|^3.0",
-                "symfony/config": "^5.4|^6.0|^7.0",
-                "symfony/dependency-injection": "^5.4|^6.0|^7.0",
-                "symfony/filesystem": "^5.4|^6.0|^7.0",
-                "symfony/http-kernel": "^5.4|^6.0|^7.0",
-                "symfony/messenger": "^5.4|^6.0|^7.0",
-                "symfony/var-dumper": "^5.4|^6.0|^7.0"
+                "symfony/config": "^6.4|^7.0",
+                "symfony/dependency-injection": "^6.4|^7.0",
+                "symfony/filesystem": "^6.4|^7.0",
+                "symfony/http-kernel": "^6.4|^7.0",
+                "symfony/messenger": "^6.4|^7.0",
+                "symfony/var-dumper": "^6.4|^7.0"
             },
             "type": "library",
             "autoload": {
@@ -8828,7 +8829,7 @@
                 "psr6"
             ],
             "support": {
-                "source": "https://github.com/symfony/cache/tree/v6.4.12"
+                "source": "https://github.com/symfony/cache/tree/v7.1.5"
             },
             "funding": [
                 {
@@ -8844,7 +8845,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-09-16T16:01:33+00:00"
+            "time": "2024-09-17T09:16:35+00:00"
         },
         {
             "name": "symfony/cache-contracts",

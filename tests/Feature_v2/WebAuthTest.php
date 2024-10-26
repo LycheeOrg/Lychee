@@ -15,7 +15,7 @@ namespace Tests\Feature_v2;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Laragear\WebAuthn\ByteBuffer;
-use Laragear\WebAuthn\Challenge;
+use Laragear\WebAuthn\Challenge\Challenge;
 use Tests\Feature_v2\Base\BaseApiV2Test;
 
 class WebAuthTest extends BaseApiV2Test
