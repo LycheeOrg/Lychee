@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "98c3bd77cb220e44b8187f60936e80fd",
+    "content-hash": "d8d988ac399f77bd36ec05a9c9f41a99",
     "packages": [
         {
             "name": "amphp/amp",
@@ -3351,16 +3351,16 @@
         },
         {
             "name": "laragear/webauthn",
-            "version": "v2.0.3",
+            "version": "v3.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Laragear/WebAuthn.git",
-                "reference": "15b29db0edb0a12c0fa45c404e57b0d5f1789465"
+                "reference": "5136b8fee90abb5c0b50b644594fb3142191f3b9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Laragear/WebAuthn/zipball/15b29db0edb0a12c0fa45c404e57b0d5f1789465",
-                "reference": "15b29db0edb0a12c0fa45c404e57b0d5f1789465",
+                "url": "https://api.github.com/repos/Laragear/WebAuthn/zipball/5136b8fee90abb5c0b50b644594fb3142191f3b9",
+                "reference": "5136b8fee90abb5c0b50b644594fb3142191f3b9",
                 "shasum": ""
             },
             "require": {
@@ -3437,7 +3437,7 @@
                     "type": "Paypal"
                 }
             ],
-            "time": "2024-03-18T22:38:29+00:00"
+            "time": "2024-08-15T07:50:06+00:00"
         },
         {
             "name": "laravel/framework",
