@@ -22,8 +22,14 @@ class Save
 	 * @throws InvalidPropertyException
 	 * @throws ModelDBException
 	 */
-	public function do(User $user, string $username, ?string $password, bool $mayUpload, bool $mayEditOwnSettings): void
-	{
+	public function do(User $user,
+		string $username,
+		?string $password,
+		bool $mayUpload,
+		bool $mayEditOwnSettings,
+		?int $quota_kb = null,
+		?string $note = null,
+	): void {
 		if (User::query()
 			->where('username', '=', $username)
 			->where('id', '!=', $user->id)
@@ -32,9 +38,16 @@ class Save
 			throw new ConflictingPropertyException('Username already exists');
 		}
 
+		if ($quota_kb === 0) {
+			$default = \Configs::getValueAsInt('default_user_quota');
+			$quota_kb = $default === 0 ? null : $default;
+		}
+
 		$user->username = $username;
 		$user->may_upload = $mayUpload;
 		$user->may_edit_own_settings = $mayEditOwnSettings;
+		$user->note = $note;
+		$user->quota_kb = $quota_kb;
 		if ($password !== null && $password !== '') {
 			$user->password = Hash::make($password);
 		}

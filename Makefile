@@ -100,6 +100,7 @@ formatting:
 		echo "  composer install"; \
 		echo ""; \
 	fi
+	npm run format
 
 phpstan:
 	vendor/bin/phpstan analyze
@@ -139,3 +140,15 @@ build/%.done: tests/Feature_v1/%.php build
 	vendor/bin/phpunit --no-coverage --filter $* && touch build/$*.done
 
 all_tests: $(TEST_DONE)
+
+test_unit:
+	vendor/bin/phpunit --testsuite Unit --stop-on-failure --stop-on-error --no-coverage --log-junit report_unit.xml
+
+test_v1:
+	vendor/bin/phpunit --testsuite Feature_v1 --stop-on-failure --stop-on-error --no-coverage --log-junit report_v1.xml
+
+test_v2:
+	vendor/bin/phpunit --testsuite Feature_v2 --stop-on-failure --stop-on-error --no-coverage --log-junit report_v2.xml
+
+gen_typescript_types:
+	php artisan typescript:transform

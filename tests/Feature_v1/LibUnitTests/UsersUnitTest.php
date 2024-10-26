@@ -33,11 +33,11 @@ class UsersUnitTest
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *
-	 * @return TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function list(
 		int $expectedStatusCode = 200,
-		?string $assertSee = null
+		?string $assertSee = null,
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/Users::list');
 		$this->assertStatus($response, $expectedStatusCode);
@@ -52,11 +52,11 @@ class UsersUnitTest
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *
-	 * @return TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function init(
 		int $expectedStatusCode = 200,
-		?string $assertSee = null
+		?string $assertSee = null,
 	): TestResponse {
 		$response = $this->testCase->postJson('/php/index.php');
 		$this->assertStatus($response, $expectedStatusCode);
@@ -77,7 +77,7 @@ class UsersUnitTest
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *
-	 * @return TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function add(
 		string $username,
@@ -85,7 +85,7 @@ class UsersUnitTest
 		bool $mayUpload = true,
 		bool $mayEditOwnSettings = true,
 		int $expectedStatusCode = 201,
-		?string $assertSee = null
+		?string $assertSee = null,
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/Users::create', [
 			'username' => $username,
@@ -108,12 +108,12 @@ class UsersUnitTest
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *
-	 * @return TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function delete(
 		int $id,
 		int $expectedStatusCode = 204,
-		?string $assertSee = null
+		?string $assertSee = null,
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/Users::delete', [
 			'id' => $id,
@@ -137,7 +137,7 @@ class UsersUnitTest
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *
-	 * @return TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function save(
 		int $id,
@@ -146,7 +146,7 @@ class UsersUnitTest
 		bool $mayUpload = true,
 		bool $mayEditOwnSettings = true,
 		int $expectedStatusCode = 204,
-		?string $assertSee = null
+		?string $assertSee = null,
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/Users::save', [
 			'id' => $id,
@@ -170,12 +170,12 @@ class UsersUnitTest
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *
-	 * @return TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function update_email(
 		?string $email,
 		int $expectedStatusCode = 204,
-		?string $assertSee = null
+		?string $assertSee = null,
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/User::setEmail', [
 			'email' => $email,
@@ -194,11 +194,11 @@ class UsersUnitTest
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *
-	 * @return TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function get_email(
 		int $expectedStatusCode = 200,
-		?string $assertSee = null
+		?string $assertSee = null,
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/User::getAuthenticatedUser');
 		$this->assertStatus($response, $expectedStatusCode);
@@ -215,11 +215,11 @@ class UsersUnitTest
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *
-	 * @return TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function get_user(
 		int $expectedStatusCode = 200,
-		string|array|null $assertSee = null
+		string|array|null $assertSee = null,
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/User::getAuthenticatedUser');
 		$this->assertStatus($response, $expectedStatusCode);
@@ -236,11 +236,11 @@ class UsersUnitTest
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *
-	 * @return TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function reset_token(
 		int $expectedStatusCode = 200,
-		?string $assertSee = null
+		?string $assertSee = null,
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/User::resetToken');
 		$this->assertStatus($response, $expectedStatusCode);
@@ -257,11 +257,11 @@ class UsersUnitTest
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *
-	 * @return TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function unset_token(
 		int $expectedStatusCode = 204,
-		?string $assertSee = null
+		?string $assertSee = null,
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/User::unsetToken');
 		$this->assertStatus($response, $expectedStatusCode);

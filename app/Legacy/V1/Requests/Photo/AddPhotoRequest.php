@@ -3,11 +3,11 @@
 namespace App\Legacy\V1\Requests\Photo;
 
 use App\Http\Requests\BaseApiRequest;
-use App\Http\RuleSets\Photo\AddPhotoRuleSet;
 use App\Legacy\V1\Contracts\Http\Requests\HasAbstractAlbum;
 use App\Legacy\V1\Contracts\Http\Requests\RequestAttribute;
 use App\Legacy\V1\Requests\Traits\Authorize\AuthorizeCanEditAlbumTrait;
 use App\Legacy\V1\Requests\Traits\HasAbstractAlbumTrait;
+use App\Legacy\V1\RuleSets\Photo\AddPhotoRuleSet;
 use Illuminate\Http\UploadedFile;
 
 class AddPhotoRequest extends BaseApiRequest implements HasAbstractAlbum

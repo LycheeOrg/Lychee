@@ -3,11 +3,11 @@
 namespace App\Legacy\V1\Requests\Photo;
 
 use App\Http\Requests\BaseApiRequest;
-use App\Http\RuleSets\Photo\RotatePhotoRuleSet;
 use App\Legacy\V1\Contracts\Http\Requests\HasPhoto;
 use App\Legacy\V1\Contracts\Http\Requests\RequestAttribute;
 use App\Legacy\V1\Requests\Traits\Authorize\AuthorizeCanEditPhotoTrait;
 use App\Legacy\V1\Requests\Traits\HasPhotoTrait;
+use App\Legacy\V1\RuleSets\Photo\RotatePhotoRuleSet;
 use App\Models\Photo;
 
 class RotatePhotoRequest extends BaseApiRequest implements HasPhoto

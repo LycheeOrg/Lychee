@@ -35,13 +35,13 @@ class SessionUnitTest
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *
-	 * @return TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function login(
 		string $username,
 		string $password,
 		int $expectedStatusCode = 204,
-		?string $assertSee = null
+		?string $assertSee = null,
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/Session::login', [
 			'username' => $username,
@@ -59,11 +59,11 @@ class SessionUnitTest
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *
-	 * @return TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function init(
 		int $expectedStatusCode = 200,
-		?string $assertSee = null
+		?string $assertSee = null,
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/Session::init');
 		$this->assertStatus($response, $expectedStatusCode);
@@ -77,7 +77,7 @@ class SessionUnitTest
 	/**
 	 * Logging out.
 	 *
-	 * @return TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function logout(): TestResponse
 	{
@@ -96,14 +96,14 @@ class SessionUnitTest
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *
-	 * @return TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function update_login(
 		string $login,
 		string $password,
 		string $oldPassword,
 		int $expectedStatusCode = 200,
-		?string $assertSee = null
+		?string $assertSee = null,
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/User::updateLogin', [
 			'username' => $login,

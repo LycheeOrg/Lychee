@@ -35,14 +35,14 @@ class PhotosUnitTest
 	 * @param UploadedFile $file
 	 * @param string|null  $albumID
 	 *
-	 * @return TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function upload(
 		UploadedFile $file,
 		?string $albumID = null,
 		int|array $expectedStatusCodes = 201,
 		?string $assertSee = null,
-		?int $fileLastModifiedTime = 1678824303000
+		?int $fileLastModifiedTime = 1678824303000,
 	): TestResponse {
 		$params = [
 			'albumID' => $albumID,
@@ -112,12 +112,12 @@ class PhotosUnitTest
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *
-	 * @return TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function get(
 		string $photo_id,
 		int $expectedStatusCode = 200,
-		?string $assertSee = null
+		?string $assertSee = null,
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/Photo::get', [
 			'photoID' => $photo_id,
@@ -142,7 +142,7 @@ class PhotosUnitTest
 		string $id,
 		string $title,
 		int $expectedStatusCode = 204,
-		?string $assertSee = null
+		?string $assertSee = null,
 	): void {
 		/**
 		 * Try to set the title.
@@ -169,7 +169,7 @@ class PhotosUnitTest
 		string $id,
 		string $description,
 		int $expectedStatusCode = 204,
-		?string $assertSee = null
+		?string $assertSee = null,
 	): void {
 		$response = $this->testCase->postJson(
 			'/api/Photo::setDescription', [
@@ -195,7 +195,7 @@ class PhotosUnitTest
 		array $ids,
 		bool $isStarred,
 		int $expectedStatusCode = 204,
-		?string $assertSee = null
+		?string $assertSee = null,
 	): void {
 		$response = $this->testCase->postJson('/api/Photo::setStar', [
 			'photoIDs' => $ids,
@@ -221,7 +221,7 @@ class PhotosUnitTest
 		array $tags,
 		bool $override = true,
 		int $expectedStatusCode = 204,
-		?string $assertSee = null
+		?string $assertSee = null,
 	): void {
 		$response = $this->testCase->postJson('/api/Photo::setTags', [
 			'photoIDs' => $ids,
@@ -246,7 +246,7 @@ class PhotosUnitTest
 		string $id,
 		string $license,
 		int $expectedStatusCode = 204,
-		?string $assertSee = null
+		?string $assertSee = null,
 	): void {
 		$response = $this->testCase->postJson(
 			'/api/Photo::setLicense', [
@@ -272,7 +272,7 @@ class PhotosUnitTest
 		string $id,
 		string $date,
 		int $expectedStatusCode = 204,
-		?string $assertSee = null
+		?string $assertSee = null,
 	): void {
 		$response = $this->testCase->postJson(
 			'/api/Photo::setUploadDate', [
@@ -298,7 +298,7 @@ class PhotosUnitTest
 		string $album_id,
 		array $ids,
 		int $expectedStatusCode = 204,
-		?string $assertSee = null
+		?string $assertSee = null,
 	): void {
 		$response = $this->testCase->postJson(
 			'/api/Photo::setAlbum', [
@@ -320,13 +320,13 @@ class PhotosUnitTest
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *
-	 * @return TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function duplicate(
 		array $ids,
 		?string $targetAlbumID,
 		int $expectedStatusCode = 201,
-		?string $assertSee = null
+		?string $assertSee = null,
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/Photo::duplicate', [
 			'photoIDs' => $ids,
@@ -346,12 +346,12 @@ class PhotosUnitTest
 	 * @param string[] $ids
 	 * @param string   $kind
 	 *
-	 * @return TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function download(
 		array $ids,
 		string $kind,
-		int $expectedStatusCode = 200
+		int $expectedStatusCode = 200,
 	): TestResponse {
 		$response = $this->testCase->getWithParameters(
 			'/api/Photo::getArchive', [
@@ -382,7 +382,7 @@ class PhotosUnitTest
 	public function delete(
 		array $ids,
 		int $expectedStatusCode = 204,
-		?string $assertSee = null
+		?string $assertSee = null,
 	): void {
 		$response = $this->testCase->postJson('/api/Photo::delete', [
 			'photoIDs' => $ids,
@@ -415,7 +415,7 @@ class PhotosUnitTest
 		?bool $import_via_symlink = null,
 		?bool $resync_metadata = null,
 		int $expectedStatusCode = 200,
-		?string $assertSee = null
+		?string $assertSee = null,
 	): string {
 		$requestParams = [
 			'albumID' => $album_id,
@@ -459,13 +459,13 @@ class PhotosUnitTest
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *
-	 * @return TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function importFromUrl(
 		array $urls,
 		?string $album_id = null,
 		int $expectedStatusCode = 200,
-		?string $assertSee = null
+		?string $assertSee = null,
 	): TestResponse {
 		$response = $this->testCase->postJson(
 			'/api/Import::url', [
@@ -489,13 +489,13 @@ class PhotosUnitTest
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *
-	 * @return TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function rotate(
 		string $id,
 		int $direction,
 		int $expectedStatusCode = 200,
-		?string $assertSee = null
+		?string $assertSee = null,
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/PhotoEditor::rotate', [
 			'photoID' => $id,

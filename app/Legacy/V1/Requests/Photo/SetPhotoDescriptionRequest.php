@@ -3,13 +3,13 @@
 namespace App\Legacy\V1\Requests\Photo;
 
 use App\Http\Requests\BaseApiRequest;
-use App\Http\RuleSets\Photo\SetPhotoDescriptionRuleSet;
 use App\Legacy\V1\Contracts\Http\Requests\HasDescription;
 use App\Legacy\V1\Contracts\Http\Requests\HasPhoto;
 use App\Legacy\V1\Contracts\Http\Requests\RequestAttribute;
 use App\Legacy\V1\Requests\Traits\Authorize\AuthorizeCanEditPhotoTrait;
 use App\Legacy\V1\Requests\Traits\HasDescriptionTrait;
 use App\Legacy\V1\Requests\Traits\HasPhotoTrait;
+use App\Legacy\V1\RuleSets\Photo\SetPhotoDescriptionRuleSet;
 use App\Models\Photo;
 
 class SetPhotoDescriptionRequest extends BaseApiRequest implements HasPhoto, HasDescription

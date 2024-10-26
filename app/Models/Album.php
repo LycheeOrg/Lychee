@@ -124,13 +124,14 @@ use Kalnoy\Nestedset\NodeTrait;
  *
  * // * @mixin \Eloquent
  *
- * @implements Node<string,Album>
+ * @implements Node<Album>
  */
 class Album extends BaseAlbum implements Node
 {
-	/** @phpstan-use NodeTrait<string,Album> */
+	/** @phpstan-use NodeTrait<Album> */
 	use NodeTrait;
 	use ToArrayThrowsNotImplemented;
+	/** @phpstan-use HasFactory<\Database\Factories\AlbumFactory> */
 	use HasFactory;
 
 	/**
@@ -181,7 +182,7 @@ class Album extends BaseAlbum implements Node
 	 *
 	 * @return HasManyChildPhotos
 	 */
-	public function photos(): HasManyChildPhotos
+	public function photos(): HasManyChildPhotos // @phpstan-ignore-line
 	{
 		return new HasManyChildPhotos($this);
 	}
@@ -215,24 +216,26 @@ class Album extends BaseAlbum implements Node
 	/**
 	 * Get query for descendants of the node.
 	 *
-	 * @return DescendantsRelation<string,Album>
+	 * @return DescendantsRelation<Album>
 	 *
 	 * @throws QueryBuilderException
 	 */
 	public function descendants(): DescendantsRelation
 	{
 		try {
-			/** @var DescendantsRelation<string,Album> */
+			/** @var DescendantsRelation<Album> */
 			return new DescendantsRelation($this->newQuery(), $this);
+			// @codeCoverageIgnoreStart
 		} catch (\Throwable $e) {
 			throw new QueryBuilderException($e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
 	 * Return the relationship between an album and its cover.
 	 *
-	 * @return HasOne<Photo>
+	 * @return HasOne<Photo,$this>
 	 */
 	public function cover(): HasOne
 	{
@@ -242,7 +245,7 @@ class Album extends BaseAlbum implements Node
 	/**
 	 * Return the relationship between an album and its header.
 	 *
-	 * @return HasOne<Photo>
+	 * @return HasOne<Photo,$this>
 	 */
 	public function header(): HasOne
 	{
@@ -252,19 +255,23 @@ class Album extends BaseAlbum implements Node
 	/**
 	 * Return the License used by the album.
 	 *
-	 * @param string $value
+	 * @param string|LicenseType|null $value
 	 *
 	 * @return LicenseType
 	 *
 	 * @throws ConfigurationKeyMissingException
 	 */
-	protected function getLicenseAttribute(string $value): LicenseType
+	protected function getLicenseAttribute(string|LicenseType|null $value): LicenseType
 	{
-		if ($value === 'none') {
+		if ($value === null || $value === 'none' || $value === LicenseType::NONE) {
 			return Configs::getValueAsEnum('default_license', LicenseType::class);
 		}
 
-		return LicenseType::from($value);
+		if (is_string($value)) {
+			return LicenseType::from($value);
+		}
+
+		return $value;
 	}
 
 	/**
@@ -292,6 +299,8 @@ class Album extends BaseAlbum implements Node
 	 * Hence, we must avoid any attempt to delete the descendants twice.
 	 *
 	 * @return void
+	 *
+	 * @codeCoverageIgnore
 	 */
 	protected function deleteDescendants(): void
 	{

@@ -8,6 +8,7 @@ use App\Models\Builders\AccessPermissionBuilder;
 use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\UTCBasedTimes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -60,6 +61,8 @@ class AccessPermission extends Model
 	use UTCBasedTimes;
 	use HasAttributesPatch;
 	use ThrowsConsistentExceptions;
+	/** @phpstan-use HasFactory<\Database\Factories\AccessPermissionFactory> */
+	use HasFactory;
 
 	protected $casts = [
 		'created_at' => 'datetime',
@@ -101,7 +104,7 @@ class AccessPermission extends Model
 	/**
 	 * Returns the relationship between an AccessPermission and its associated album.
 	 *
-	 * @return BelongsTo<BaseAlbumImpl,AccessPermission>
+	 * @return BelongsTo<BaseAlbumImpl,$this>
 	 */
 	public function album(): BelongsTo
 	{
@@ -111,7 +114,7 @@ class AccessPermission extends Model
 	/**
 	 * Returns the relationship between an AccessPermission and its applied User.
 	 *
-	 * @return BelongsTo<User,AccessPermission>
+	 * @return BelongsTo<User,$this>
 	 */
 	public function user(): BelongsTo
 	{

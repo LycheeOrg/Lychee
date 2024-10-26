@@ -66,12 +66,10 @@ class ConfigSanityCheck implements DiagnosticPipe
 	 */
 	private function checkDropBoxKeyWarning(array &$data): void
 	{
-		if (!isset($this->settings['dropbox_key'])) {
-			$data[]
-				= 'Warning: Dropbox import not working. No property for dropbox_key.';
-		} elseif ($this->settings['dropbox_key'] === '') {
-			$data[]
-				= 'Warning: Dropbox import not working. dropbox_key is empty.';
+		$dropbox = Configs::getValueAsString('dropbox_key');
+		if ($dropbox === '') {
+			$data[] = 'Warning: Dropbox import not working. dropbox_key is empty.';
+			$data[] = 'Info: To hide this Dropbox warning, set the dropbox_key to "disabled"';
 		}
 	}
 

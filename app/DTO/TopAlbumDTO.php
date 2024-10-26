@@ -4,7 +4,7 @@ namespace App\DTO;
 
 use Illuminate\Support\Collection;
 
-class TopAlbumDTO extends ArrayableDTO
+class TopAlbumDTO
 {
 	/**
 	 * Sorting criterion.
@@ -18,7 +18,7 @@ class TopAlbumDTO extends ArrayableDTO
 		public Collection $smart_albums,
 		public Collection $tag_albums,
 		public Collection $albums,
-		public ?Collection $shared_albums = null
+		public ?Collection $shared_albums = null,
 	) {
 	}
 }

@@ -17,12 +17,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use Tests\AbstractTestCase;
-use Tests\Traits\CatchFailures;
 
 class LogsTest extends AbstractTestCase
 {
-	use CatchFailures;
-
 	private string $saveUsername;
 	private string $savedPassword;
 	private User $admin;

@@ -504,7 +504,7 @@ class SharingSpecialTest extends BaseSharingTest
 	protected function generateExpectedRootJson(
 		?string $recentAlbumThumbID = null,
 		?string $onThisDayAlbumThumbID = null,
-		array $expectedAlbumJson = []
+		array $expectedAlbumJson = [],
 	): array {
 		return [
 			'smart_albums' => [
@@ -529,7 +529,7 @@ class SharingSpecialTest extends BaseSharingTest
 	protected function generateExpectedSmartAlbumJson(
 		bool $isPublic,
 		?string $thumbID = null,
-		array $expectedPhotos = []
+		array $expectedPhotos = [],
 	): array {
 		return [
 			'thumb' => $this->generateExpectedThumbJson($thumbID),

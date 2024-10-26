@@ -7,8 +7,8 @@ use App\Enum\StorageDiskType;
 use App\Exceptions\Handler;
 use App\Exceptions\Internal\InvalidConfigOption;
 use App\Facades\Helpers;
+use App\Http\Controllers\Gallery\PhotoController;
 use App\Image\Files\ProcessableJobFile;
-use App\Livewire\Components\Forms\Add\Upload;
 use App\Models\SymLink;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\Storage;
@@ -117,7 +117,7 @@ class BasicPermissionCheck implements DiagnosticPipe
 			Storage::disk(StorageDiskType::LOCAL->value),
 			Storage::disk(SymLink::DISK_NAME),
 			Storage::disk(ProcessableJobFile::DISK_NAME),
-			Storage::disk(Upload::DISK_NAME),
+			Storage::disk(PhotoController::DISK_NAME),
 		];
 
 		foreach ($disks as $disk) {
@@ -243,7 +243,7 @@ class BasicPermissionCheck implements DiagnosticPipe
 						(!is_writable($path) && !is_readable($path)) => 'neither readable nor writable',
 						!is_writable($path) => 'not writable',
 						!is_readable($path) => 'not readable',
-						default => ''
+						default => '',
 					};
 					$data[] = sprintf('Error: %s is %s by %s', $this->anonymize($path), $problem, $this->groupNames);
 				}

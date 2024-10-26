@@ -8,8 +8,6 @@ use App\Actions\InstallUpdate\Pipes\ArtisanViewClear;
 use App\Actions\InstallUpdate\Pipes\QueryExceptionChecker;
 use App\Actions\InstallUpdate\Pipes\Spacer;
 use App\Exceptions\InstallationFailedException;
-use App\Exceptions\Internal\FrameworkException;
-use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\View\View;
 use Illuminate\Pipeline\Pipeline;
 use Illuminate\Routing\Controller;
@@ -23,8 +21,6 @@ class MigrationController extends Controller
 	 * Migrates the Lychee DB and generates a new API key.
 	 *
 	 * @return View
-	 *
-	 * @throws FrameworkException
 	 */
 	public function view(): View
 	{
@@ -46,15 +42,11 @@ class MigrationController extends Controller
 			$hasErrors = true;
 		}
 
-		try {
-			return view('install.migrate', [
-				'title' => 'Lychee-installer',
-				'step' => 4,
-				'lines' => $output,
-				'errors' => $hasErrors,
-			]);
-		} catch (BindingResolutionException $e) {
-			throw new FrameworkException('Laravel\'s view component', $e);
-		}
+		return view('install.migrate', [
+			'title' => 'Lychee-installer',
+			'step' => 4,
+			'lines' => $output,
+			'errors' => $hasErrors,
+		]);
 	}
 }

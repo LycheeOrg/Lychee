@@ -33,11 +33,11 @@ class SharingUnitTest
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *
-	 * @return TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function list(
-		int $expectedStatusCode = 200,
-		?string $assertSee = null
+		int $expectedStatusCode = 201,
+		?string $assertSee = null,
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/Sharing::list');
 		$this->assertStatus($response, $expectedStatusCode);
@@ -56,13 +56,13 @@ class SharingUnitTest
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *
-	 * @return TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function add(
 		array $albumIDs,
 		array $userIDs,
 		int $expectedStatusCode = 204,
-		?string $assertSee = null
+		?string $assertSee = null,
 	): TestResponse {
 		$response = $this->testCase->postJson(
 			'/api/Sharing::add', [

@@ -10,7 +10,6 @@ use App\Image\Files\BaseMediaFile;
 use App\Metadata\Extractor;
 use App\Models\Photo;
 use Illuminate\Console\Command;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Safe\Exceptions\InfoException;
 use function Safe\filemtime;
 use function Safe\set_time_limit;
@@ -52,7 +51,7 @@ class ExifLens extends Command
 			}
 
 			// we use lens because this is the one which is most likely to be empty.
-			$photos = Photo::query()->with(['size_variants' => function (HasMany $r) {
+			$photos = Photo::query()->with(['size_variants' => function ($r) {
 				$r->where('type', '=', SizeVariantType::ORIGINAL);
 			}])
 				->where('lens', '=', '')

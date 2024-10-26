@@ -268,14 +268,14 @@ class GdHandler extends BaseImageHandler
 				3 => -180,
 				5, 6 => -90,
 				7, 8 => 90,
-				default => throw new ImageProcessingException('Image orientation out of range')
+				default => throw new ImageProcessingException('Image orientation out of range'),
 			};
 
 			$flip = match ($orientation) {
 				0, 1, 3, 6, 8 => 0,
 				2, 7, 5 => IMG_FLIP_HORIZONTAL,
 				4 => IMG_FLIP_VERTICAL,
-				default => throw new ImageProcessingException('Image orientation out of range')
+				default => throw new ImageProcessingException('Image orientation out of range'),
 			};
 
 			if ($angle !== 0) {
@@ -423,7 +423,7 @@ class GdHandler extends BaseImageHandler
 		int $dst_h,
 		int $src_w,
 		int $src_h,
-		int $quality = 4
+		int $quality = 4,
 	): void {
 		try {
 			if ($quality < 5 && (($dst_w * $quality) < $src_w || ($dst_h * $quality) < $src_h)) {

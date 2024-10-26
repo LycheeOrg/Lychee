@@ -23,6 +23,7 @@ $rules = [
 	'array_indentation' => true,
 	'fully_qualified_strict_types' => false,
 	'backtick_to_shell_exec' => true,
+	'new_with_parentheses' => true,
 	'increment_style' => ['style' => 'post'],
 	'indentation_type' => true,
 	'multiline_comment_opening_closing' => true,

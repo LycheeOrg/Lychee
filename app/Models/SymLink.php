@@ -90,7 +90,7 @@ class SymLink extends Model
 	}
 
 	/**
-	 * @return BelongsTo<SizeVariant,SymLink>
+	 * @return BelongsTo<SizeVariant,$this>
 	 */
 	public function size_variant(): BelongsTo
 	{
@@ -142,7 +142,7 @@ class SymLink extends Model
 	 * If this method cannot create the symbolic link, then this method
 	 * cancels the insert operation.
 	 *
-	 * @param Builder<SizeVariant> $query
+	 * @param Builder<static> $query
 	 *
 	 * @return bool
 	 *

@@ -16,6 +16,7 @@ use App\Actions\Diagnostics\Pipes\Checks\IniSettingsCheck;
 use App\Actions\Diagnostics\Pipes\Checks\MigrationCheck;
 use App\Actions\Diagnostics\Pipes\Checks\PHPVersionCheck;
 use App\Actions\Diagnostics\Pipes\Checks\SmallMediumExistsCheck;
+use App\Actions\Diagnostics\Pipes\Checks\SupporterCheck;
 use App\Actions\Diagnostics\Pipes\Checks\TimezoneCheck;
 use App\Actions\Diagnostics\Pipes\Checks\UpdatableCheck;
 use Illuminate\Pipeline\Pipeline;
@@ -44,6 +45,7 @@ class Errors
 		DBIntegrityCheck::class,
 		SmallMediumExistsCheck::class,
 		CountSizeVariantsCheck::class,
+		SupporterCheck::class,
 	];
 
 	/**

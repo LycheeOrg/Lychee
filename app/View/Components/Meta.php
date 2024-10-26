@@ -2,10 +2,14 @@
 
 namespace App\View\Components;
 
+use App\Contracts\Models\AbstractAlbum;
 use App\Exceptions\ConfigurationKeyMissingException;
-use App\Legacy\V1\Controllers\IndexController;
+use App\Http\Resources\Traits\HasHeaderUrl;
 use App\Models\Configs;
+use App\Models\Extensions\BaseAlbum;
+use App\Models\Photo;
 use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\Component;
 use Illuminate\View\View;
 
@@ -15,15 +19,17 @@ use Illuminate\View\View;
  */
 class Meta extends Component
 {
+	use HasHeaderUrl;
+
 	public string $pageTitle;
 	public string $pageDescription;
 	public string $siteOwner;
 	public string $imageUrl;
 	public string $pageUrl;
+	public string $baseUrl;
 	public bool $rssEnable;
 	public string $userCssUrl;
 	public string $userJsUrl;
-	public string $frame;
 
 	/**
 	 * Initialize the footer once for all.
@@ -32,33 +38,34 @@ class Meta extends Component
 	 */
 	public function __construct()
 	{
-		$siteTitle = Configs::getValueAsString('site_title');
-		$title = '';
-		$description = '';
-		$imageUrl = '';
+		$this->pageTitle = Configs::getValueAsString('site_title');
+		$this->pageDescription = '';
+		$this->imageUrl = '';
 
-		// if ($this->photoId !== null) {
-		// 	$photo = Photo::findOrFail($this->photoId);
-		// 	$title = $photo->title;
-		// 	$description = $photo->description;
-		// 	$imageUrl = url()->to($photo->size_variants->getMedium()?->url ?? $photo->size_variants->getOriginal()->url);
-		// } elseif ($this->albumId !== null) {
-		// 	$albumFactory = resolve(AlbumFactory::class);
-		// 	$album = $albumFactory->findAbstractAlbumOrFail($this->albumId, false);
-		// 	$title = $album->title;
-		// 	$description = $album instanceof BaseAlbum ? $album->description : '';
-		// 	$imageUrl = url()->to($album->thumb->thumbUrl ?? '');
-		// }
+		if (session()->has('album')) {
+			/** @var AbstractAlbum $album */
+			$album = session()->get('album');
+			$this->pageTitle = $album->title;
+			if ($album instanceof BaseAlbum) {
+				$this->pageDescription = $album->description ?? Configs::getValueAsString('site_title');
+			}
+			$this->imageUrl = $this->getHeaderUrl($album) ?? '';
+		}
 
-		$this->pageTitle = $siteTitle . (!blank($siteTitle) && !blank($title) ? ' – ' : '') . $title;
-		$this->pageDescription = !blank($description) ? $description . ' – via Lychee' : '';
+		if (session()->has('photo')) {
+			/** @var Photo $photo */
+			$photo = session()->get('photo');
+			$this->pageTitle = $photo->title;
+			$this->pageDescription = $photo->description ?? Configs::getValueAsString('site_title');
+			$this->imageUrl = $photo->size_variants->getSmall()->url;
+		}
+
 		$this->siteOwner = Configs::getValueAsString('site_owner');
-		$this->imageUrl = $imageUrl;
 		$this->pageUrl = url()->current();
 		$this->rssEnable = Configs::getValueAsBool('rss_enable');
-		$this->userCssUrl = IndexController::getUserCustomFiles('user.css');
-		$this->userJsUrl = IndexController::getUserCustomFiles('custom.js');
-		$this->frame = '';
+		$this->userCssUrl = self::getUserCustomFiles('user.css');
+		$this->userJsUrl = self::getUserCustomFiles('custom.js');
+		$this->baseUrl = url('/');
 	}
 
 	/**
@@ -71,5 +78,24 @@ class Meta extends Component
 	public function render(): View
 	{
 		return view('components.meta');
+	}
+
+	/**
+	 * Returns user.css url with cache busting if file has been updated.
+	 *
+	 * @param string $fileName
+	 *
+	 * @return string
+	 */
+	public static function getUserCustomFiles(string $fileName): string
+	{
+		$cssCacheBusting = '';
+		/** @disregard P1013 */
+		if (Storage::disk('dist')->fileExists($fileName)) {
+			$cssCacheBusting = '?' . Storage::disk('dist')->lastModified($fileName);
+		}
+
+		/** @disregard P1013 */
+		return Storage::disk('dist')->url($fileName) . $cssCacheBusting;
 	}
 }

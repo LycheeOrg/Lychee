@@ -66,7 +66,7 @@ class FromServer
 			'm' => 1024 * 1024,
 			'g' => 1024 * 1024 * 1024,
 			't' => 1024 * 1024 * 1024 * 1024,
-			default => 1
+			default => 1,
 			// @codeCoverageIgnoreEnd
 		};
 

@@ -2,7 +2,7 @@
 codecov:
   require_ci_to_pass: true
   notify:
-    after_n_builds: 9
+    after_n_builds: 6
     wait_for_ci: true
 comment:
   behavior: default
@@ -24,7 +24,16 @@ ignore:
 - "^app/Console/.*"
 - "^app/Exceptions/.*"
 - "^app/Http/Middleware/VerifyCsrfToken.*"
+- "^app/Http/Middleware/VerifyCsrfToken.*"
 - "^app/Providers/BroadcastServiceProvider.*"
+- "^app/Jobs/UploadSizeVariantToS3Job.php"
+# We do not test those
+- "^app/Mail/.*"
+- "^app/Notifications/.*"
+# Legacy shit
+- "^app/Legacy/Actions/Photo/.*"
+- "^app/Livewire/.*"
+- "^app/View/.*"
 parsers:
   gcov:
     branch_detection:

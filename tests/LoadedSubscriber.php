@@ -12,10 +12,17 @@ use PHPUnit\Event\TestSuite\LoadedSubscriber as LoadedSubscriberInterface;
 final class LoadedSubscriber implements LoadedSubscriberInterface
 {
 	use CreatesApplication;
+	use MigrateApplication;
 
 	public function notify(Loaded $event): void
 	{
 		$this->createApplication();
+		$this->migrateApplication();
+
+		if (config('features.vuejs') === true) {
+			return;
+		}
+
 		/** @var User|null $admin */
 		$admin = User::find(1);
 		if ($admin === null) {

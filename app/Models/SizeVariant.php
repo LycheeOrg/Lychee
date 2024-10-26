@@ -9,6 +9,7 @@ use App\Enum\StorageDiskType;
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
+use App\Http\Resources\Models\SizeVariantResource;
 use App\Image\Files\FlysystemFile;
 use App\Models\Builders\SizeVariantBuilder;
 use App\Models\Extensions\HasAttributesPatch;
@@ -37,7 +38,6 @@ use League\Flysystem\Local\LocalFilesystemAdapter;
  * @property SizeVariantType      $type
  * @property string               $short_path
  * @property string               $url
- * @property string               $full_path
  * @property int                  $width
  * @property int                  $height
  * @property float                $ratio
@@ -73,6 +73,7 @@ class SizeVariant extends Model
 	use HasBidirectionalRelationships;
 	use ThrowsConsistentExceptions;
 	use ToArrayThrowsNotImplemented;
+	/** @phpstan-use HasFactory<\Database\Factories\SizeVariantFactory> */
 	use HasFactory;
 
 	/**
@@ -89,7 +90,6 @@ class SizeVariant extends Model
 	protected $casts = [
 		'id' => 'integer',
 		'type' => SizeVariantType::class,
-		'full_path' => MustNotSetCast::class . ':short_path',
 		'url' => MustNotSetCast::class . ':short_path',
 		'width' => 'integer',
 		'height' => 'integer',
@@ -140,7 +140,7 @@ class SizeVariant extends Model
 	 * Returns the association to the photo which this size variant belongs
 	 * to.
 	 *
-	 * @return BelongsTo<Photo,SizeVariant>
+	 * @return BelongsTo<Photo,$this>
 	 */
 	public function photo(): BelongsTo
 	{
@@ -151,7 +151,7 @@ class SizeVariant extends Model
 	 * Returns the association to the symbolics links which point to this
 	 * size variant.
 	 *
-	 * @return HasManyBidirectionally<SymLink,SizeVariant>
+	 * @return HasManyBidirectionally<SymLink,$this>
 	 */
 	public function sym_links(): HasManyBidirectionally
 	{
@@ -188,7 +188,9 @@ class SizeVariant extends Model
 		/** @disregard P1013 */
 		$storageAdapter = $imageDisk->getAdapter();
 		if ($storageAdapter instanceof AwsS3V3Adapter) {
+			// @codeCoverageIgnoreStart
 			return $this->getAwsUrl();
+			// @codeCoverageIgnoreEnd
 		}
 
 		if ($storageAdapter instanceof LocalFilesystemAdapter) {
@@ -202,6 +204,8 @@ class SizeVariant extends Model
 	 * Retrieve the tempary url from AWS if possible.
 	 *
 	 * @return string
+	 *
+	 * @codeCoverageIgnore
 	 */
 	private function getAwsUrl(): string
 	{
@@ -242,24 +246,6 @@ class SizeVariant extends Model
 		return $symLink->url;
 	}
 
-	/**
-	 * Accessor for the "virtual" attribute {@link SizeVariant::$full_path}.
-	 *
-	 * Returns the full path of the size variant as it needs to be input into
-	 * some low-level PHP functions like `unlink`.
-	 * This is a convenient method and wraps {@link SizeVariant::$short_path}
-	 * into {@link \Illuminate\Support\Facades\Storage::path()}.
-	 *
-	 * TODO: Remove this method eventually, we must not use paths.
-	 *
-	 * @return string the full path of the file
-	 */
-	public function getFullPathAttribute(): string
-	{
-		/** @disregard P1013 */
-		return Storage::disk($this->storage_disk->value)->path($this->short_path);
-	}
-
 	public function getFile(): FlysystemFile
 	{
 		return new FlysystemFile(
@@ -279,5 +265,10 @@ class SizeVariant extends Model
 		$fileDeleter = (new Delete())->do([$this->id]);
 		$this->exists = false;
 		$fileDeleter->do();
+	}
+
+	public function toResource(bool $noUrl = false): SizeVariantResource
+	{
+		return new SizeVariantResource($this, noUrl: $noUrl);
 	}
 }

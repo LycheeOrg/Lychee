@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * @extends HasMany<SizeVariant>
+ * @extends HasMany<SizeVariant,Photo>
  */
 class HasManySizeVariants extends HasMany
 {
@@ -24,7 +24,7 @@ class HasManySizeVariants extends HasMany
 	{
 		parent::__construct(
 			SizeVariant::query(),
-			$owningPhoto, /** @phpstan-ignore-line */
+			$owningPhoto,
 			'photo_id',
 			'id'
 		);
@@ -62,7 +62,7 @@ class HasManySizeVariants extends HasMany
 	 * @param Photo[] $models
 	 * @param string  $relation
 	 *
-	 * @return Photo[]
+	 * @return array<int,Photo>
 	 */
 	public function initRelation(array $models, $relation): array
 	{
@@ -89,7 +89,7 @@ class HasManySizeVariants extends HasMany
 	 * @param Collection<int,SizeVariant> $results  the unified collection of all child models of all parent models
 	 * @param string                      $relation the name of the relation from the parent to the child models
 	 *
-	 * @return Photo[]
+	 * @return array<int,Photo>
 	 */
 	public function match(array $models, Collection $results, $relation): array
 	{

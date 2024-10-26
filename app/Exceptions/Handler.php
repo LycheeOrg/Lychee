@@ -16,7 +16,7 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Illuminate\Foundation\ViteManifestNotFoundException;
+use Illuminate\Foundation\ViteException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -98,7 +98,7 @@ class Handler extends ExceptionHandler
 		TokenMismatchException::class,
 		SessionExpiredException::class,
 		NoWriteAccessOnLogsExceptions::class,
-		ViteManifestNotFoundException::class,
+		ViteException::class,
 	];
 
 	/** @var array<int,class-string<HttpExceptionHandler>> */
@@ -114,7 +114,7 @@ class Handler extends ExceptionHandler
 
 	/** @var array<int,class-string<\Throwable>> */
 	protected $force_exception_to_http = [
-		ViteManifestNotFoundException::class,
+		ViteException::class,
 	];
 
 	/**

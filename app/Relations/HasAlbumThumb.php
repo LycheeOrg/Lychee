@@ -14,7 +14,6 @@ use App\Policies\AlbumQueryPolicy;
 use App\Policies\PhotoQueryPolicy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Support\Facades\Auth;
@@ -23,7 +22,9 @@ use Illuminate\Support\Facades\Gate;
 /**
  * @mixin Builder<Photo>
  *
- * @extends Relation<Photo>
+ * @extends Relation<Photo,Album,Thumb|null>
+ *
+ * @disregard P1037
  */
 class HasAlbumThumb extends Relation
 {
@@ -41,7 +42,7 @@ class HasAlbumThumb extends Relation
 		$this->photoQueryPolicy = resolve(PhotoQueryPolicy::class);
 		$this->sorting = PhotoSortingCriterion::createDefault();
 		parent::__construct(
-			Photo::query()->with(['size_variants' => (fn (HasMany $r) => Thumb::sizeVariantsFilter($r))]),
+			Photo::query()->with(['size_variants' => (fn ($r) => Thumb::sizeVariantsFilter($r))]),
 			$parent
 		);
 	}

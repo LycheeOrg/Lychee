@@ -32,7 +32,9 @@ class AdminAuthentication
 		// For version up to 4.0.8 the admin password is stored in the settings
 		/** @codeCoverageIgnore */
 		if ($db_version_number->toInteger() <= 40008) {
+			// @codeCoverageIgnoreStart
 			return self::logAsAdminFromConfig($username, $password, $ip);
+			// @codeCoverageIgnoreEnd
 		}
 
 		// For version up to 4.6.3

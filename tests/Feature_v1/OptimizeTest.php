@@ -15,12 +15,9 @@ namespace Tests\Feature_v1;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Tests\AbstractTestCase;
-use Tests\Traits\CatchFailures;
 
 class OptimizeTest extends AbstractTestCase
 {
-	use CatchFailures;
-
 	public function testDoNotLogged(): void
 	{
 		$response = $this->get('/Optimize', []);

@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Schema;
 class OptimizeDb extends BaseOptimizer
 {
 	/**
-	 * @return array<int, string>
+	 * @return array<int,string>
 	 */
 	public function do(): array
 	{

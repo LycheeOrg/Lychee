@@ -60,8 +60,6 @@ class HasManyChildPhotos extends HasManyBidirectionally
 		 * because it was set in the constructor as `$owningAlbum`.
 		 *
 		 * @noinspection PhpIncompatibleReturnTypeInspection
-		 *
-		 * @phpstan-ignore-next-line
 		 */
 		return $this->parent;
 	}
@@ -119,7 +117,7 @@ class HasManyChildPhotos extends HasManyBidirectionally
 	 * @param Collection<int,Photo> $results  the unified collection of all child models of all parent models
 	 * @param string                $relation the name of the relation from the parent to the child models
 	 *
-	 * @return Album[]
+	 * @return array<int,Album>
 	 *
 	 * @throws \LogicException
 	 * @throws InvalidCastException

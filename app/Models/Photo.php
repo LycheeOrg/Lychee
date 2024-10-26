@@ -121,6 +121,7 @@ use function Safe\preg_match;
  */
 class Photo extends Model
 {
+	/** @phpstan-use HasFactory<\Database\Factories\PhotoFactory> */
 	use HasFactory;
 	use UTCBasedTimes;
 	use HasAttributesPatch;
@@ -183,7 +184,7 @@ class Photo extends Model
 	/**
 	 * Return the relationship between a Photo and its Album.
 	 *
-	 * @return BelongsTo<Album,Photo>
+	 * @return BelongsTo<Album,$this>
 	 */
 	public function album(): BelongsTo
 	{
@@ -193,7 +194,7 @@ class Photo extends Model
 	/**
 	 * Return the relationship between a Photo and its Owner.
 	 *
-	 * @return BelongsTo<User,Photo>
+	 * @return BelongsTo<User,$this>
 	 */
 	public function owner(): BelongsTo
 	{
@@ -290,16 +291,6 @@ class Photo extends Model
 	}
 
 	/**
-	 * This is to avoid loading the license from configs & albums.
-	 *
-	 * @return ?string
-	 */
-	public function getOriginalLicense(): ?string
-	{
-		return $this->attributes['license'];
-	}
-
-	/**
 	 * Accessor for attribute `focal`.
 	 *
 	 * In case the photo is a video (why it is called a photo then, btw?), the
@@ -380,7 +371,9 @@ class Photo extends Model
 	public function isPhoto(): bool
 	{
 		if ($this->type === null || $this->type === '') {
+			// @codeCoverageIgnoreStart
 			throw new IllegalOrderOfOperationException('Photo::isPhoto() must not be called before Photo::$type has been set');
+			// @codeCoverageIgnoreEnd
 		}
 
 		return BaseMediaFile::isSupportedImageMimeType($this->type);
@@ -396,7 +389,9 @@ class Photo extends Model
 	public function isVideo(): bool
 	{
 		if ($this->type === null || $this->type === '') {
+			// @codeCoverageIgnoreStart
 			throw new IllegalOrderOfOperationException('Photo::isVideo() must not be called before Photo::$type has been set');
+			// @codeCoverageIgnoreEnd
 		}
 
 		return BaseMediaFile::isSupportedVideoMimeType($this->type);

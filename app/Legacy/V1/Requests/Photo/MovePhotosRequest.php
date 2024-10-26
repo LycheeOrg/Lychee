@@ -3,13 +3,13 @@
 namespace App\Legacy\V1\Requests\Photo;
 
 use App\Http\Requests\BaseApiRequest;
-use App\Http\RuleSets\Photo\MovePhotosRuleSet;
 use App\Legacy\V1\Contracts\Http\Requests\HasAlbum;
 use App\Legacy\V1\Contracts\Http\Requests\HasPhotos;
 use App\Legacy\V1\Contracts\Http\Requests\RequestAttribute;
 use App\Legacy\V1\Requests\Traits\Authorize\AuthorizeCanEditPhotosAlbumTrait;
 use App\Legacy\V1\Requests\Traits\HasAlbumTrait;
 use App\Legacy\V1\Requests\Traits\HasPhotosTrait;
+use App\Legacy\V1\RuleSets\Photo\MovePhotosRuleSet;
 use App\Models\Album;
 use App\Models\Photo;
 

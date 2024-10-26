@@ -318,12 +318,12 @@ class SearchTest extends BasePhotoTest
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *
-	 * @return TestResponse
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	protected function runSearch(
 		string $term,
 		int $expectedStatusCode = 200,
-		?string $assertSee = null
+		?string $assertSee = null,
 	): TestResponse {
 		$response = $this->postJson(
 			'/api/Search::run',

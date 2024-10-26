@@ -5,7 +5,6 @@ namespace App\Assets;
 use App\Exceptions\Internal\ZeroModuloException;
 use Illuminate\Support\Facades\File;
 use function Safe\ini_get;
-use function Safe\parse_url;
 
 class Helpers
 {
@@ -52,35 +51,6 @@ class Helpers
 		}
 
 		return (string) $shortId;
-	}
-
-	/**
-	 * Returns the extension of the filename (path or URI) or an empty string.
-	 *
-	 * @param string $filename
-	 * @param bool   $isURI
-	 *
-	 * @return string extension of the filename starting with a dot
-	 */
-	public function getExtension(string $filename, bool $isURI = false): string
-	{
-		// If $filename is an URI, get only the path component
-		if ($isURI === true) {
-			/** @var string $filename this is true because PHP_URL_PATH is specified */
-			$filename = parse_url($filename, PHP_URL_PATH);
-		}
-
-		$extension = pathinfo($filename, PATHINFO_EXTENSION);
-
-		// Special cases
-		// https://github.com/electerious/Lychee/issues/482
-		list($extension) = explode(':', $extension, 2);
-
-		if ($extension !== '') {
-			$extension = '.' . $extension;
-		}
-
-		return $extension;
 	}
 
 	/**

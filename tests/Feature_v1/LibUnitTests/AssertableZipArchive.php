@@ -26,7 +26,7 @@ class AssertableZipArchive extends \ZipArchive
 	/**
 	 * Creates an assertable ZIP archive from the given response.
 	 *
-	 * @param TestResponse $response
+	 * @param TestResponse<\Illuminate\Http\JsonResponse> $response
 	 *
 	 * @return self
 	 */

@@ -4,12 +4,12 @@ namespace App\Legacy\V1\Requests\Album;
 
 use App\Contracts\Models\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
-use App\Http\RuleSets\Album\SetAlbumHeaderRuleSet;
 use App\Legacy\V1\Contracts\Http\Requests\HasAlbum;
 use App\Legacy\V1\Contracts\Http\Requests\HasPhoto;
 use App\Legacy\V1\Contracts\Http\Requests\RequestAttribute;
 use App\Legacy\V1\Requests\Traits\HasAlbumTrait;
 use App\Legacy\V1\Requests\Traits\HasPhotoTrait;
+use App\Legacy\V1\RuleSets\Album\SetAlbumHeaderRuleSet;
 use App\Models\Album;
 use App\Models\Photo;
 use App\Policies\AlbumPolicy;

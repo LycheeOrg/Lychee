@@ -1,9 +1,10 @@
-<link type="text/css" rel="stylesheet" href="{{ URL::asset('dist/user.css') }}">
-<script defer type="text/javascript" src="{{ URL::asset('dist/custom.js') }}"></script>
+<base href="{{ $baseUrl }}" />
+<link type="text/css" rel="stylesheet" href="{{ $userCssUrl }}">
+<script defer type="text/javascript" src="{{ $userJsUrl }}"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=4.0, user-scalable=yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="generator" content="Lychee v4">
+<meta name="mobile-web-app-status-bar-style" content="black">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="generator" content="Lychee v6">
 <!--General Meta Data -->
 <title>{{ $pageTitle }}</title>
 <meta name="description" content="{{ $pageDescription }}">

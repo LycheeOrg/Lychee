@@ -19,8 +19,8 @@ else
         composer install
         if command -v npm > /dev/null; then
             printf "\n${ORANGE}npm detected${NO_COLOR}\n"
-            echo "npm install --no-audit --no-fund"
-            npm install --no-audit --no-fund
+            echo "npm ci --no-audit --no-fund"
+            npm ci --no-audit --no-fund
         else
             printf "\n${RED}npm not found. Development will likely not be possible${NO_COLOR}\n"
         fi
@@ -30,8 +30,8 @@ else
         composer install --no-dev --prefer-dist
         if command -v npm > /dev/null; then
             printf "\n${ORANGE}npm detected${NO_COLOR}\n"
-            echo "npm install --no-audit --no-fund"
-            npm install --no-audit --no-fund
+            echo "npm ci --no-audit --no-fund"
+            npm ci --no-audit --no-fund
             echo "npm run build"
             npm run build
         else

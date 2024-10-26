@@ -27,6 +27,8 @@ class JsonRequestFunctions implements JsonRequest
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @codeCoverageIgnore
 	 */
 	public function clear_cache(): void
 	{
@@ -42,7 +44,9 @@ class JsonRequestFunctions implements JsonRequest
 	{
 		$age = Cache::get($this->url . '_age');
 		if (!$age instanceof \DateTimeInterface) {
+			// @codeCoverageIgnoreStart
 			return 'unknown';
+			// @codeCoverageIgnoreEnd
 		}
 		try {
 			$text = match (0) {
@@ -52,13 +56,15 @@ class JsonRequestFunctions implements JsonRequest
 				now()->diffInWeeks($age) => now()->diffInDays($age) . ' days',
 				now()->diffInMonths($age) => now()->diffInWeeks($age) . ' weeks',
 				now()->diffInYears($age) => now()->diffInMonths($age) . ' months',
-				default => now()->diffInYears($age) . ' years'
+				default => now()->diffInYears($age) . ' years',
 			};
 
 			return $text . ' ago';
+			// @codeCoverageIgnoreStart
 		} catch (\Throwable) {
 			return 'unknown';
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -79,6 +85,7 @@ class JsonRequestFunctions implements JsonRequest
 			}
 
 			return $this->decodedJson;
+			// @codeCoverageIgnoreStart
 		} catch (JsonRequestFailedException $e) {
 			Log::error(__METHOD__ . ':' . __LINE__ . ' ' . $e->getMessage());
 		} catch (\JsonException $e) {
@@ -87,6 +94,7 @@ class JsonRequestFunctions implements JsonRequest
 		$this->clear_cache();
 
 		return null;
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -112,12 +120,16 @@ class JsonRequestFunctions implements JsonRequest
 
 			$raw = file_get_contents($this->url, false, $context);
 			if ($raw === '') {
+				// @codeCoverageIgnoreStart
 				throw new JsonRequestFailedException('file_get_contents() failed');
+				// @codeCoverageIgnoreEnd
 			}
 
 			return $raw;
+			// @codeCoverageIgnoreStart
 		} catch (\Throwable $e) {
 			throw new JsonRequestFailedException('Could not fetch ' . $this->url, $e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 }
