@@ -82,7 +82,7 @@
         "spatie/laravel-feed": "^4.0",
         "spatie/laravel-image-optimizer": "^1.8",
         "spatie/laravel-typescript-transformer": "^2.4",
-        "symfony/cache": "^v6.0.0",
+        "symfony/cache": "^v7.1.5",
         "thecodingmachine/safe": "^2.4"
     },
     "require-dev": {
