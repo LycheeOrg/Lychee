@@ -63,37 +63,28 @@
 				</RouterLink>
 			</div>
 		</div>
-		<LandingFooter
-			:show_socials="initdata.footer_show_social_media"
-			:facebook="initdata.sm_facebook_url"
-			:flickr="initdata.sm_flickr_url"
-			:twitter="initdata.sm_twitter_url"
-			:instagram="initdata.sm_instagram_url"
-			:youtube="initdata.sm_youtube_url"
-			:copyright="copyright"
-			:personalText="initdata.footer_additional_text"
-			:show_copy_right="initdata.footer_show_copyright"
-			:site_copyright_begin="initdata.site_copyright_begin"
-			:site_copyright_end="initdata.site_copyright_end"
-			:site_owner="initdata.site_owner"
-		/>
+		<LandingFooter :footerData="initdata.footer" />
 	</main>
 </template>
 <script setup lang="ts">
 import { Ref, ref } from "vue";
-import { RouterLink } from "vue-router";
+import { RouterLink, useRouter } from "vue-router";
 import InitService from "@/services/init-service";
 import LandingFooter from "@/components/footers/LandingFooter.vue";
 
 const introVisible = ref(true);
-const copyright = ref("");
 
 const initdata = ref(undefined) as Ref<undefined | App.Http.Resources.GalleryConfigs.LandingPageResource>;
+const router = useRouter();
 
 InitService.fetchLandingData()
 	.then((data) => {
-		initdata.value = data.data;
-		setTimeout(() => (introVisible.value = false), 4000);
+		if (data.data.landing_page_enable === false) {
+			router.push("/gallery");
+		} else {
+			initdata.value = data.data;
+			setTimeout(() => (introVisible.value = false), 4000);
+		}
 	})
 	.catch((error) => {
 		console.error(error);

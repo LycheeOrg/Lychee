@@ -7,6 +7,7 @@ use App\Models\Extensions\Thumb;
 use App\Models\Photo;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 
 /**
@@ -31,7 +32,7 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 interface AbstractAlbum
 {
 	/**
-	 * @return Relation<Photo>|Builder<Photo>
+	 * @return Relation<Photo,AbstractAlbum&Model,Collection<int,Photo>>|Builder<Photo>
 	 */
 	public function photos(): Relation|Builder;
 
