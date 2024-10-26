@@ -11,13 +11,13 @@ export type UpdateProfileRequest = {
 
 const ProfileService = {
 	update(data: UpdateProfileRequest): Promise<AxiosResponse<App.Http.Resources.Models.UserResource>> {
-		return axios.post(`${Constants.API_URL}Profile::update`, data);
+		return axios.post(`${Constants.getApiUrl()}Profile::update`, data);
 	},
 	resetToken(): Promise<AxiosResponse<App.Http.Resources.Models.Utils.UserToken>> {
-		return axios.post(`${Constants.API_URL}Profile::resetToken`, {});
+		return axios.post(`${Constants.getApiUrl()}Profile::resetToken`, {});
 	},
 	unsetToken(): Promise<AxiosResponse<any>> {
-		return axios.post(`${Constants.API_URL}Profile::unsetToken`, {});
+		return axios.post(`${Constants.getApiUrl()}Profile::unsetToken`, {});
 	},
 };
 

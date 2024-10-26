@@ -5,6 +5,7 @@ namespace App\Http\Resources\GalleryConfigs;
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\AspectRatioCSSType;
 use App\Enum\AspectRatioType;
+use App\Enum\PhotoLayoutType;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
@@ -26,6 +27,7 @@ class AlbumConfig extends Data
 	public bool $is_search_accessible;
 	public bool $is_nsfw_warning_visible;
 	public AspectRatioCSSType $album_thumb_css_aspect_ratio;
+	public PhotoLayoutType $photo_layout;
 
 	public function __construct(AbstractAlbum $album)
 	{
@@ -49,6 +51,8 @@ class AlbumConfig extends Data
 		} else {
 			$this->album_thumb_css_aspect_ratio = Configs::getValueAsEnum('default_album_thumb_aspect_ratio', AspectRatioType::class)->css();
 		}
+
+		$this->photo_layout = (($album instanceof BaseAlbum) ? $album->photo_layout : null) ?? Configs::getValueAsEnum('layout', PhotoLayoutType::class);
 	}
 
 	public function setIsMapAccessible(): void

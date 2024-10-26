@@ -2,9 +2,7 @@
 	<div class="h-svh overflow-y-auto">
 		<Toolbar class="w-full border-0 h-14">
 			<template #start>
-				<router-link :to="{ name: 'gallery' }">
-					<Button icon="pi pi-angle-left" class="mr-2" severity="secondary" text />
-				</router-link>
+				<OpenLeftMenu />
 			</template>
 
 			<template #center>
@@ -24,4 +22,5 @@ import Toolbar from "primevue/toolbar";
 import SetLogin from "@/components/forms/profile/SetLogin.vue";
 import SetSecondFactor from "@/components/forms/profile/SetSecondFactor.vue";
 import SetOauth from "@/components/forms/profile/SetOauth.vue";
+import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
 </script>

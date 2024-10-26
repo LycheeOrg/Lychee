@@ -17,19 +17,19 @@ type HasId = {
 
 const UserManagementService = {
 	get(): Promise<AxiosResponse<App.Http.Resources.Models.UserManagementResource[]>> {
-		return axios.get(`${Constants.API_URL}UserManagement`, { data: {} });
+		return axios.get(`${Constants.getApiUrl()}UserManagement`, { data: {} });
 	},
 
 	create(data: UserManagementCreateRequest): Promise<AxiosResponse<App.Http.Resources.Models.UserManagementResource>> {
-		return axios.post(`${Constants.API_URL}UserManagement::create`, data);
+		return axios.post(`${Constants.getApiUrl()}UserManagement::create`, data);
 	},
 
 	edit(data: UserManagementCreateRequest & HasId): Promise<AxiosResponse<App.Http.Resources.Models.UserManagementResource>> {
-		return axios.post(`${Constants.API_URL}UserManagement::save`, data);
+		return axios.post(`${Constants.getApiUrl()}UserManagement::save`, data);
 	},
 
 	delete(data: HasId): Promise<AxiosResponse<App.Http.Resources.Models.UserManagementResource>> {
-		return axios.post(`${Constants.API_URL}UserManagement::delete`, data);
+		return axios.post(`${Constants.getApiUrl()}UserManagement::delete`, data);
 	},
 };
 

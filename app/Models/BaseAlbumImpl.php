@@ -8,6 +8,7 @@ use App\Contracts\Models\HasRandomID;
 use App\DTO\PhotoSortingCriterion;
 use App\Enum\ColumnSortingType;
 use App\Enum\OrderSortingType;
+use App\Enum\PhotoLayoutType;
 use App\Models\Builders\BaseAlbumImplBuilder;
 use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\HasBidirectionalRelationships;
@@ -94,6 +95,7 @@ use Illuminate\Support\Facades\Auth;
  * @property Carbon                           $updated_at
  * @property string                           $title
  * @property string|null                      $description
+ * @property PhotoLayoutType|null             $photo_layout
  * @property int                              $owner_id
  * @property User                             $owner
  * @property bool                             $is_nsfw
@@ -178,6 +180,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		'copyright' => null,
 		// Special visibility attributes
 		'is_nsfw' => false,
+		'photo_layout' => null,
 	];
 
 	/**
@@ -190,6 +193,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		'updated_at' => 'datetime',
 		'is_nsfw' => 'boolean',
 		'owner_id' => 'integer',
+		'photo_layout' => PhotoLayoutType::class,
 	];
 
 	/**
@@ -210,7 +214,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	/**
 	 * Returns the relationship between an album and its owner.
 	 *
-	 * @return BelongsTo<User,BaseAlbumImpl>
+	 * @return BelongsTo<User,$this>
 	 */
 	public function owner(): BelongsTo
 	{
@@ -221,7 +225,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	 * Returns the relationship between an album and all users with whom
 	 * this album is shared.
 	 *
-	 * @return BelongsToMany<User>
+	 * @return BelongsToMany<User,$this>
 	 */
 	public function shared_with(): BelongsToMany
 	{
@@ -236,7 +240,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	/**
 	 * Returns the relationship between an album and its associated permissions.
 	 *
-	 * @return hasMany<AccessPermission>
+	 * @return hasMany<AccessPermission,$this>
 	 */
 	public function access_permissions(): hasMany
 	{

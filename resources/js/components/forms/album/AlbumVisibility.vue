@@ -145,17 +145,4 @@ function save() {
 			console.error(error);
 		});
 }
-
-watch(
-	() => props.album,
-	(newAlbum) => {
-		is_public.value = newAlbum.policy.is_public;
-		is_link_required.value = newAlbum.policy.is_link_required;
-		is_nsfw.value = newAlbum.policy.is_nsfw;
-		grants_full_photo_access.value = newAlbum.policy.grants_full_photo_access;
-		grants_download.value = newAlbum.policy.grants_download;
-		is_password_required.value = newAlbum.policy.is_password_required;
-		password.value = "";
-	},
-);
 </script>

@@ -10,9 +10,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @template TRelatedModel of \Illuminate\Database\Eloquent\Model
- * @template TParentModel of \Illuminate\Database\Eloquent\Model
+ * @template TDeclaringModel of \Illuminate\Database\Eloquent\Model
  *
- * @extends HasMany<TRelatedModel>
+ * @extends HasMany<TRelatedModel,TDeclaringModel>
  */
 class HasManyBidirectionally extends HasMany implements BidirectionalRelation
 {
@@ -20,7 +20,7 @@ class HasManyBidirectionally extends HasMany implements BidirectionalRelation
 
 	/**
 	 * @param Builder<TRelatedModel> $query
-	 * @param TParentModel           $parent
+	 * @param TDeclaringModel        $parent
 	 * @param string                 $foreignKey
 	 * @param string                 $localKey
 	 * @param string                 $foreignMethodName
@@ -29,7 +29,6 @@ class HasManyBidirectionally extends HasMany implements BidirectionalRelation
 	 */
 	public function __construct(Builder $query, Model $parent, string $foreignKey, string $localKey, string $foreignMethodName)
 	{
-		/** @phpstan-ignore-next-line */
 		parent::__construct($query, $parent, $foreignKey, $localKey);
 		$this->foreignMethodName = $foreignMethodName;
 	}
@@ -42,11 +41,11 @@ class HasManyBidirectionally extends HasMany implements BidirectionalRelation
 	 * but additionally sets the reverse association of the child object
 	 * back to its parent object.
 	 *
-	 * @param TParentModel[]                $models   an array of parent models
+	 * @param TDeclaringModel[]             $models   an array of parent models
 	 * @param Collection<int,TRelatedModel> $results  the unified collection of all child models of all parent models
 	 * @param string                        $relation the name of the relation from the parent to the child models
 	 *
-	 * @return array<int,TParentModel>
+	 * @return array<int,TDeclaringModel>
 	 */
 	public function match(array $models, Collection $results, $relation): array
 	{
