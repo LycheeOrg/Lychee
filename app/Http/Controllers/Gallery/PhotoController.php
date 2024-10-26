@@ -34,6 +34,7 @@ use App\Http\Resources\Models\PhotoResource;
 use App\Image\Files\NativeLocalFile;
 use App\Image\Files\ProcessableJobFile;
 use App\Image\Files\UploadedFile;
+use App\Jobs\ExtractZip;
 use App\Jobs\ProcessImageJob;
 use App\Jobs\WatermarkerJob;
 use App\Models\Configs;
@@ -93,6 +94,14 @@ class PhotoController extends Controller
 		$final->delete();
 		$processable_file->close();
 		// End of work-around
+
+		if (Configs::getValueAsBool('extract_zip_on_upload') &&
+			\Str::endsWith($processableFile->getPath(), '.zip')) {
+			ExtractZip::dispatch($processableFile, $album?->id, $file_last_modified_time);
+			$meta->stage = FileStatus::DONE;
+
+			return $meta;
+		}
 
 		if (Configs::getValueAsBool('use_job_queues')) {
 			ProcessImageJob::dispatch($processable_file, $album, $file_last_modified_time);
