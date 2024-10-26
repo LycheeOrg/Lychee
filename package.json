@@ -39,7 +39,7 @@
         "laravel-vite-plugin": "^1.0.1",
         "laravel-vue-i18n": "^2.7.7",
         "leaflet": "^1.9.4",
-        "leaflet-gpx": "^1.7.0",
+        "leaflet-gpx": "^2.1.2",
         "leaflet-rotatedmarker": "^0.2.0",
         "leaflet.markercluster": "^1.5.3",
         "pinia": "^2.1.7",
