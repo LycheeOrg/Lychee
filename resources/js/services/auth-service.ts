@@ -4,7 +4,7 @@ import Constants from "./constants";
 const AuthService = {
 	login(username: string, password: string): Promise<AxiosResponse<any>> {
 		return axios.post(
-			`${Constants.API_URL}Auth::login`,
+			`${Constants.getApiUrl()}Auth::login`,
 			{
 				username: username,
 				password: password,
@@ -20,15 +20,15 @@ const AuthService = {
 	},
 
 	logout(): Promise<AxiosResponse<any>> {
-		return axios.post(`${Constants.API_URL}Auth::logout`, {});
+		return axios.post(`${Constants.getApiUrl()}Auth::logout`, {});
 	},
 
 	user(): Promise<AxiosResponse<App.Http.Resources.Models.UserResource>> {
-		return axios.get(`${Constants.API_URL}Auth::user`, { data: {} });
+		return axios.get(`${Constants.getApiUrl()}Auth::user`, { data: {} });
 	},
 
 	config(): Promise<AxiosResponse<App.Http.Resources.Root.AuthConfig>> {
-		return axios.get(`${Constants.API_URL}Auth::config`, { data: {} });
+		return axios.get(`${Constants.getApiUrl()}Auth::config`, { data: {} });
 	},
 };
 

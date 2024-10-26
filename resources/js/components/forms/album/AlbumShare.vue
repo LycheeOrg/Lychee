@@ -1,7 +1,7 @@
 <template>
 	<Card class="sm:p-4 xl:px-9 max-w-3xl w-full" v-if="perms !== undefined">
 		<template #content>
-			<div class="flex text-muted-color">
+			<div class="flex text-muted-color-emphasis">
 				<div class="w-5/12 flex">
 					<span class="w-full">{{ $t("lychee.USERNAME") }}</span>
 				</div>

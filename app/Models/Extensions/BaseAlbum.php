@@ -6,6 +6,7 @@ use App\Constants\RandomID;
 use App\Contracts\Models\AbstractAlbum;
 use App\Contracts\Models\HasRandomID;
 use App\DTO\PhotoSortingCriterion;
+use App\Enum\PhotoLayoutType;
 use App\Models\AccessPermission;
 use App\Models\BaseAlbumImpl;
 use App\Models\User;
@@ -30,6 +31,7 @@ use Illuminate\Support\Carbon;
  * @property string|null                      $description
  * @property bool                             $is_nsfw
  * @property string|null                      $copyright
+ * @property PhotoLayoutType|null             $photo_layout
  * @property int                              $owner_id
  * @property User                             $owner
  * @property Collection<int,AccessPermission> $access_permissions
@@ -58,7 +60,7 @@ abstract class BaseAlbum extends Model implements AbstractAlbum, HasRandomID
 	public $incrementing = false;
 
 	/**
-	 * @return BelongsTo<BaseAlbumImpl,self>
+	 * @return BelongsTo<BaseAlbumImpl,$this>
 	 */
 	public function base_class(): BelongsTo
 	{
@@ -79,7 +81,7 @@ abstract class BaseAlbum extends Model implements AbstractAlbum, HasRandomID
 	 * Returns the relationship between an album and all users with whom
 	 * this album is shared.
 	 *
-	 * @return BelongsToMany<User>
+	 * @return BelongsToMany<User,BaseAlbumImpl>
 	 */
 	public function shared_with(): BelongsToMany
 	{
@@ -89,7 +91,7 @@ abstract class BaseAlbum extends Model implements AbstractAlbum, HasRandomID
 	/**
 	 * Returns the relationship between an album and its associated permissions.
 	 *
-	 * @return HasMany<AccessPermission>
+	 * @return HasMany<AccessPermission,BaseAlbumImpl>
 	 */
 	public function access_permissions(): HasMany
 	{
@@ -117,7 +119,7 @@ abstract class BaseAlbum extends Model implements AbstractAlbum, HasRandomID
 	}
 
 	/**
-	 * @return Relation<\App\Models\Photo>
+	 * @return Relation<\App\Models\Photo,AbstractAlbum&Model,Collection<int,\App\Models\Photo>>
 	 */
 	abstract public function photos(): Relation;
 
