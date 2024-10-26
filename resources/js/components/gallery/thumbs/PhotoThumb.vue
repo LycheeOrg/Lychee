@@ -53,6 +53,7 @@ import MiniIcon from "@/components/icons/MiniIcon.vue";
 import ThumbBadge from "@/components/gallery/thumbs/ThumbBadge.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
+import Constants from "@/services/constants";
 
 const props = defineProps<{
 	isSelected: boolean;
@@ -66,8 +67,8 @@ const props = defineProps<{
 
 const auth = useAuthStore();
 const lycheeStore = useLycheeStateStore();
-const srcPlay = ref((window.assets_url ?? "") + "/img/play-icon.png");
-const srcNoImage = ref((window.assets_url ?? "") + "/img/no_images.svg");
+const srcPlay = ref(Constants.BASE_URL + "/img/play-icon.png");
+const srcNoImage = ref(Constants.BASE_URL + "/img/no_images.svg");
 
 // @ts-expect-error
 const is_cover_id = computed(() => props.album?.cover_id === props.photo.id);

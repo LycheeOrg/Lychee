@@ -39,7 +39,6 @@ export function useAlbumRefresher(albumId: Ref<string>, auth: AuthStore, isLogin
 					smartAlbum.value = data.data.resource as App.Http.Resources.Models.SmartAlbumResource;
 				}
 				photos.value = album.value?.photos ?? [];
-
 				isAlbumConsented.value = nsfw_consented.value.find((e) => e === albumId.value) !== undefined;
 			})
 			.catch((error) => {

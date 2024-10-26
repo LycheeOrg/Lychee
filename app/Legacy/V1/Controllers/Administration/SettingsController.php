@@ -33,6 +33,7 @@ use App\Models\Configs;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
@@ -403,6 +404,9 @@ class SettingsController extends Controller
 		return Configs::query()
 			->orderBy('cat')
 			->orderBy('id')
+			// Only display settings which are not part of SE
+			->where('level', '=', 0)
+			->whereNotIn('key', ['email'])
 			->get();
 	}
 
@@ -419,7 +423,16 @@ class SettingsController extends Controller
 	public function saveAll(GetSetAllSettingsRequest $request): void
 	{
 		$lastException = null;
-		foreach ($request->except(['_token', 'function', '/api/Settings::saveAll']) as $key => $value) {
+		// Select all the SE settings.
+		$except = DB::table('configs')
+			->select('key')
+			->where('level', '=', '1')
+			->pluck('key')
+			// Concat bunch of things coming from the POST request.
+			->concat(['_token', 'function', '/api/Settings::saveAll'])
+			// Convert to array.
+			->all();
+		foreach ($request->except($except) as $key => $value) {
 			$value ??= '';
 			try {
 				Configs::set($key, $value);

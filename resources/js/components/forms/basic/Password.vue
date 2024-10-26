@@ -216,6 +216,6 @@ const props = defineProps<{
 // 	class?: string;
 // }>();
 
-const modelValue = defineModel();
+const modelValue = defineModel<Nullable<string>>();
 const inputClass = ref((props.inputClass ?? "") + " border-0 p-3 w-full border-b hover:border-b-danger-600 focus:border-b-danger-600");
 </script>

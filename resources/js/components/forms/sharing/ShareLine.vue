@@ -1,6 +1,6 @@
 <template>
 	<div class="flex">
-		<div class="w-5/12 flex items-center">
+		<div class="w-5/12 flex items-center text-muted-color">
 			<span v-if="props.withAlbum" class="w-full">{{ props.perm.album_title }}</span>
 			<span class="w-full">{{ props.perm.username }}</span>
 		</div>
