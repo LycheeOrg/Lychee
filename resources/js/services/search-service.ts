@@ -7,11 +7,14 @@ const SearchService = {
 		// We hard tag the request so that it is not repeated per album.
 		// We do not need to query this for each different album as the result will be the same.
 		const requester = axios as unknown as AxiosCacheInstance;
-		return requester.get(`${Constants.API_URL}Search::init?album_id=${album_id === undefined ? "" : album_id}`, { data: {}, id: "search_init" });
+		return requester.get(`${Constants.getApiUrl()}Search::init?album_id=${album_id === undefined ? "" : album_id}`, {
+			data: {},
+			id: "search_init",
+		});
 	},
 
 	search(album_id: string | undefined, terms: string, page: number = 1): Promise<AxiosResponse<App.Http.Resources.Search.ResultsResource>> {
-		return axios.get(`${Constants.API_URL}Search`, { params: { album_id: album_id, terms: btoa(terms), page: page }, data: {} });
+		return axios.get(`${Constants.getApiUrl()}Search`, { params: { album_id: album_id, terms: btoa(terms), page: page }, data: {} });
 	},
 };
 

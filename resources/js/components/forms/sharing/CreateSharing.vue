@@ -7,19 +7,12 @@
 		<div class="w-5/12 flex" v-if="!newShareUser">
 			<SearchTargetUser @selected="selectUser" :filtered-users-ids="props.filteredUsersIds" />
 		</div>
-		<div class="w-1/12 flex justify-center items-center">
+		<div class="w-1/2 flex items-center justify-around">
+			<Checkbox v-model="grantsReadAccess" :binary="true" disabled />
 			<Checkbox v-model="grantsFullPhotoAccess" :binary="true" />
-		</div>
-		<div class="w-1/12 flex justify-center items-center">
 			<Checkbox v-model="grantsDownload" :binary="true" />
-		</div>
-		<div class="w-1/12 flex justify-center items-center">
 			<Checkbox v-model="grantsUpload" :binary="true" />
-		</div>
-		<div class="w-1/12 flex justify-center items-center">
 			<Checkbox v-model="grantsEdit" :binary="true" />
-		</div>
-		<div class="w-1/12 flex justify-center items-center">
 			<Checkbox v-model="grantsDelete" :binary="true" />
 		</div>
 		<Button @click="create" :disabled="!newShareUser" class="border-0 bg-surface text-create-600 hover:bg-create-600 hover:text-white w-1/6">
@@ -58,6 +51,7 @@ const grantsDownload = ref(false);
 const grantsUpload = ref(false);
 const grantsEdit = ref(false);
 const grantsDelete = ref(false);
+const grantsReadAccess = ref(true);
 
 function selectUser(target: App.Http.Resources.Models.LightUserResource) {
 	newShareUser.value = target;

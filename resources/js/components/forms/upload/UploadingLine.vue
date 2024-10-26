@@ -1,7 +1,7 @@
 <template>
 	<div class="w-full flex flex-col" :id="'upload' + index">
 		<div class="flex gap-x-4 justify-between relative" :class="errorFlexClass">
-			<span class="text-ellipsis min-w-0 w-full overflow-hidden text-nowrap">{{ file.name }}</span>
+			<span class="text-ellipsis min-w-0 w-full overflow-hidden text-nowrap text-muted-color">{{ file.name }}</span>
 			<span :class="statusClass" v-if="progress < 100 && progress > 0">{{ progress }}%</span>
 			<span :class="statusClass">{{ statusMessage }}</span>
 		</div>
@@ -117,8 +117,16 @@ function process() {
 			}
 		})
 		.catch((error) => {
-			if (error.response.status === 413) {
-				errorMessage.value = error.response.data.message;
+			// prettier-ignore
+			switch (error.response.status) {
+				case 413: errorMessage.value = error.response.data.message; break;
+				case 422: errorMessage.value = error.response.data.message; break;
+				case 500: errorMessage.value = "Something went wrong, check the logs.";
+					if (error.response.data.message.includes("Failed to open stream: Permission denied")) {
+						errorMessage.value = "Failed to open stream: Permission denied";
+					}
+					break;
+				default: break;
 			}
 			progress.value = 100;
 			status.value = "error";

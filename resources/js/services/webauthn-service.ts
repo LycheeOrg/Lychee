@@ -9,18 +9,18 @@ type LoginParam = {
 
 const WebAuthnService = {
 	get(): Promise<AxiosResponse<App.Http.Resources.Models.WebAuthnResource[]>> {
-		return axios.get(`${Constants.API_URL}WebAuthn`, { data: {} });
+		return axios.get(`${Constants.getApiUrl()}WebAuthn`, { data: {} });
 	},
 
 	edit(id: string, alias: string): Promise<AxiosResponse> {
-		return axios.patch(`${Constants.API_URL}WebAuthn`, {
+		return axios.patch(`${Constants.getApiUrl()}WebAuthn`, {
 			id: id,
 			alias: alias,
 		});
 	},
 
 	delete(id: string): Promise<AxiosResponse<App.Http.Resources.Models.UserManagementResource>> {
-		return axios.delete(`${Constants.API_URL}WebAuthn`, { data: { id: id } });
+		return axios.delete(`${Constants.getApiUrl()}WebAuthn`, { data: { id: id } });
 	},
 
 	login(username: string | null, user_id: number | null): Promise<JSON | ReadableStream> {
@@ -33,7 +33,7 @@ const WebAuthnService = {
 		}
 
 		return new WebAuthn(
-			{ login: `${Constants.API_URL}WebAuthn::login`, loginOptions: `${Constants.API_URL}WebAuthn::login/options` },
+			{ login: `${Constants.getApiUrl()}WebAuthn::login`, loginOptions: `${Constants.getApiUrl()}WebAuthn::login/options` },
 			{},
 			false,
 		).login(params);
@@ -42,8 +42,8 @@ const WebAuthnService = {
 	register(): Promise<JSON | ReadableStream> {
 		return new WebAuthn(
 			{
-				register: `${Constants.API_URL}WebAuthn::register`,
-				registerOptions: `${Constants.API_URL}WebAuthn::register/options`,
+				register: `${Constants.getApiUrl()}WebAuthn::register`,
+				registerOptions: `${Constants.getApiUrl()}WebAuthn::register/options`,
 			},
 			{},
 			false,

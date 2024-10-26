@@ -7,9 +7,7 @@
 <head>
     <meta charset="UTF-8">
     <x-meta />
-    {{-- @include('components.meta.index') --}}
     @vite(['resources/js/app.ts','resources/sass/app.scss'])
-    {!! "<script>window.assets_url = '" . URL::asset('') . "'; console.log('" . URL::asset('') . "')</script>" !!}
 </head>
 @if((Configs::get()['dark_mode_enabled'] ?? '1') == '1')
     <body class="antialiased dark">

@@ -287,11 +287,44 @@ const LycheePrimeVueConfig = {
 		},
 		checkbox: {
 			colorScheme: {
-				light: {},
+				light: {
+					disabled: {
+						background: "{surface.100}",
+						border: "{surface.100}",
+					},
+					checked: {
+						disabled: {
+							border: {
+								color: "{surface.100}",
+							},
+						},
+					},
+					icon: {
+						disabled: {
+							color: "{primary-500}",
+						},
+					},
+				},
 				dark: {
 					background: "{surface.800}",
 					border: {
 						color: "{surface.700}",
+					},
+					disabled: {
+						background: "{surface.700}",
+						border: "{surface.700}",
+					},
+					checked: {
+						disabled: {
+							border: {
+								color: "{surface.700}",
+							},
+						},
+					},
+					icon: {
+						disabled: {
+							color: "{primary-500}",
+						},
 					},
 				},
 			},
@@ -348,6 +381,25 @@ const LycheePrimeVueConfig = {
 					handle: {
 						disabled: {
 							background: "{surface.700}",
+						},
+					},
+				},
+			},
+		},
+		drawer: {
+			colorScheme: {
+				light: {
+					root: {
+						// background: "{surface.0}",
+						// color: "{surface.700}",
+					},
+				},
+				dark: {
+					root: {
+						background: "{surface.900}",
+						color: "{surface.200}",
+						border: {
+							color: "{surface.800}",
 						},
 					},
 				},
@@ -464,26 +516,20 @@ const LycheePrimeVueConfig = {
 							dark: {
 								color: "{primary.500}",
 								background: "color-mix(in srgb, {primary.50}, transparent 84%)",
-								// background: "{surface.800}"
 							},
 						},
 					},
 					hover: {
 						colorScheme: {
-							light: {
-								// color: "{primary.500}"
-							},
+							light: {},
 							dark: {
 								color: "{primary.500}",
 								background: "color-mix(in srgb, {primary.50}, transparent 92%)",
-								// background: "{surface.800}"
 							},
 						},
 					},
 				},
 			},
-			// vackground: var(--p-paginator-nav-button-selected-background);
-			// color: var(--p-paginator-nav-button-selected-color);
 		},
 		datatable: {
 			header: {
@@ -513,13 +559,15 @@ const LycheePrimeVueConfig = {
 							color: "{surface.700}",
 						},
 						cell: {
+							border: {
+								color: "{surface.700}",
+							},
 							background: "{surface.800}",
 							hoverBackground: "{surface.700}",
 							color: "{surface.200}",
 							hoverColor: "{surface.200}",
 						},
 					},
-
 					row: {
 						color: "{surface.300}",
 					},
@@ -552,10 +600,10 @@ const LycheePrimeVueConfig = {
 						// color: "{surface.0}",
 					},
 					item: {
-						// color: "{surface.400}",
+						color: "{surface.400}",
 						focus: {
 							background: "transparent",
-							color: "{primary.500}",
+							color: "{primary.400}",
 						},
 					},
 				},

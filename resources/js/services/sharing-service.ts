@@ -22,23 +22,23 @@ export type EditSharingData = {
 
 const SharingService = {
 	get(album_id: string): Promise<AxiosResponse<App.Http.Resources.Models.AccessPermissionResource[]>> {
-		return axios.get(`${Constants.API_URL}Sharing`, { params: { album_id: album_id }, data: {} });
+		return axios.get(`${Constants.getApiUrl()}Sharing`, { params: { album_id: album_id }, data: {} });
 	},
 
 	add(data: CreateSharingData): Promise<AxiosResponse<App.Http.Resources.Models.AccessPermissionResource[]>> {
-		return axios.post(`${Constants.API_URL}Sharing`, data);
+		return axios.post(`${Constants.getApiUrl()}Sharing`, data);
 	},
 
 	edit(data: EditSharingData): Promise<AxiosResponse<App.Http.Resources.Models.AccessPermissionResource>> {
-		return axios.patch(`${Constants.API_URL}Sharing`, data);
+		return axios.patch(`${Constants.getApiUrl()}Sharing`, data);
 	},
 
 	delete(sharing_id: number): Promise<AxiosResponse> {
-		return axios.delete(`${Constants.API_URL}Sharing`, { data: { perm_id: sharing_id } });
+		return axios.delete(`${Constants.getApiUrl()}Sharing`, { data: { perm_id: sharing_id } });
 	},
 
 	list(): Promise<AxiosResponse<App.Http.Resources.Models.AccessPermissionResource[]>> {
-		return axios.get(`${Constants.API_URL}Sharing::all`, { data: {} });
+		return axios.get(`${Constants.getApiUrl()}Sharing::all`, { data: {} });
 	},
 };
 

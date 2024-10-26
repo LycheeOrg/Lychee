@@ -10,7 +10,11 @@ use App\Models\TagAlbum;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
-/** @disregard */
+/**
+ * @disregard
+ *
+ * @extends BaseHasManyPhotos<TagAlbum>
+ */
 class HasManyPhotosByTag extends BaseHasManyPhotos
 {
 	public function __construct(TagAlbum $owningAlbum)
@@ -31,7 +35,6 @@ class HasManyPhotosByTag extends BaseHasManyPhotos
 	public function addConstraints(): void
 	{
 		if (static::$constraints) {
-			/** @phpstan-ignore-next-line */
 			$this->addEagerConstraints([$this->parent]);
 		}
 	}
