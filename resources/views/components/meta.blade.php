@@ -1,3 +1,4 @@
+<base href="{{ $baseUrl }}" />
 <link type="text/css" rel="stylesheet" href="{{ $userCssUrl }}">
 <script defer type="text/javascript" src="{{ $userJsUrl }}"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=4.0, user-scalable=yes">

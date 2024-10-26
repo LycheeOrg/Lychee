@@ -17,7 +17,7 @@
 import { ref } from "vue";
 import InputText, { InputTextPassThroughOptions } from "primevue/inputtext";
 import type { PassThroughOptions } from "primevue/passthrough";
-import type { DesignToken, PassThrough } from "@primevue/core";
+import type { DesignToken, Nullable, PassThrough } from "@primevue/core";
 
 const props = defineProps<{
 	size?: "small" | "large" | undefined;
@@ -32,6 +32,6 @@ const props = defineProps<{
 }>();
 
 const emits = defineEmits(["updated"]);
-const modelValue = defineModel();
+const modelValue = defineModel<Nullable<string>>();
 const classValue = ref((props.class ?? "") + " border-0 p-3 w-full border-b hover:border-b-primary-400 focus:border-b-primary-400");
 </script>

@@ -16,6 +16,7 @@
 	</span>
 </template>
 <script setup lang="ts">
+import Constants from "@/services/constants";
 import { watch, ref, computed } from "vue";
 
 const props = defineProps<{
@@ -28,7 +29,7 @@ const src = ref("");
 const srcSet = ref("");
 const assets_url = ref(window.assets_url ?? "");
 const classList = computed(() => {
-	if (src.value === assets_url.value + "/img/no_images.svg" || src.value === assets_url.value + "/img/password.svg") {
+	if (src.value === Constants.BASE_URL + "/img/no_images.svg" || src.value === Constants.BASE_URL + "/img/password.svg") {
 		return "invert brightness-25 dark:invert-0 dark:brightness-100";
 	}
 	return "";
@@ -36,17 +37,17 @@ const classList = computed(() => {
 
 function load(thumb: App.Http.Resources.Models.ThumbResource | undefined | null, isPasswordProtected: boolean) {
 	if (thumb?.thumb === "uploads/thumb/") {
-		src.value = assets_url.value + "/img/placeholder.png";
+		src.value = Constants.BASE_URL + "/img/placeholder.png";
 		if (thumb.type.includes("video")) {
-			src.value = assets_url.value + "/img/play-icon.png";
+			src.value = Constants.BASE_URL + "/img/play-icon.png";
 		}
 		if (thumb.type.includes("raw")) {
-			src.value = assets_url.value + "/img/no_images.svg";
+			src.value = Constants.BASE_URL + "/img/no_images.svg";
 		}
 	} else {
 		src.value = isNotEmpty(thumb?.thumb)
 			? (thumb?.thumb as string)
-			: assets_url.value + (isPasswordProtected ? "/img/password.svg" : "/img/no_images.svg");
+			: Constants.BASE_URL + (isPasswordProtected ? "/img/password.svg" : "/img/no_images.svg");
 	}
 	srcSet.value = isNotEmpty(thumb?.thumb2x) ? (thumb?.thumb2x as string) : "";
 }

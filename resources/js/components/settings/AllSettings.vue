@@ -13,7 +13,8 @@
 				<template #item="{ item, props }">
 					<a
 						:href="item.link"
-						class="nav-link block text-muted-color hover:text-primary-500 border-l border-solid border-surface-700 hover:border-primary-500 px-4 transition-all duration-300 capitalize"
+						class="nav-link block hover:text-primary-400 border-l border-solid border-surface-700 hover:border-primary-400 px-4 capitalize"
+						@click.prevent="goto(item.link)"
 					>
 						<span>{{ item.label }}</span>
 					</a>
@@ -22,7 +23,7 @@
 			<div class="max-w-3xl" id="allSettings">
 				<Fieldset
 					v-for="(configGroup, key, index) in configs.configs"
-					:legend="key"
+					:legend="key.toString()"
 					:toggleable="true"
 					class="border-b-0 border-r-0 rounded-r-none rounded-b-none mb-4 hover:border-primary-500 pt-2"
 					:pt:legendlabel:class="'capitalize'"
@@ -37,7 +38,9 @@
 								</template>
 								<template v-else>
 									<!-- Special keys -->
-									<VersionField v-if="config.key === 'version'" :config="config" />
+									<template v-if="config.key === 'version'">
+										<!-- version is not modifiable in easy settings. -->
+									</template>
 									<ZipSliderField v-else-if="config.key === 'zip_deflate_level'" :config="config" @filled="update" @reset="reset" />
 									<SelectOptionsField
 										v-else-if="config.key === 'default_license'"
@@ -175,7 +178,6 @@ import { useToast } from "primevue/usetoast";
 import StringField from "@/components/forms/settings/StringField.vue";
 import BoolField from "@/components/forms/settings/BoolField.vue";
 import NumberField from "@/components/forms/settings/NumberField.vue";
-import VersionField from "@/components/forms/settings/VersionField.vue";
 import SliderField from "@/components/forms/settings/SliderField.vue";
 import SelectField from "@/components/forms/settings/SelectField.vue";
 import SelectOptionsField from "@/components/forms/settings/SelectOptionsField.vue";
@@ -253,6 +255,13 @@ function save() {
 		.catch((e) => {
 			toast.add({ severity: "error", summary: "Error!", detail: e.response.data.message, life: 3000 });
 		});
+}
+
+function goto(section: string) {
+	const el = document.getElementById(section.slice(1));
+	if (el) {
+		el.scrollIntoView({ behavior: "smooth" });
+	}
 }
 
 load();

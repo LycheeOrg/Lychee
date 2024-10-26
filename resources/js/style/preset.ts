@@ -386,6 +386,25 @@ const LycheePrimeVueConfig = {
 				},
 			},
 		},
+		drawer: {
+			colorScheme: {
+				light: {
+					root: {
+						// background: "{surface.0}",
+						// color: "{surface.700}",
+					},
+				},
+				dark: {
+					root: {
+						background: "{surface.900}",
+						color: "{surface.200}",
+						border: {
+							color: "{surface.800}",
+						},
+					},
+				},
+			},
+		},
 		toolbar: {
 			root: {
 				padding: "0 0.5rem",
@@ -497,26 +516,20 @@ const LycheePrimeVueConfig = {
 							dark: {
 								color: "{primary.500}",
 								background: "color-mix(in srgb, {primary.50}, transparent 84%)",
-								// background: "{surface.800}"
 							},
 						},
 					},
 					hover: {
 						colorScheme: {
-							light: {
-								// color: "{primary.500}"
-							},
+							light: {},
 							dark: {
 								color: "{primary.500}",
 								background: "color-mix(in srgb, {primary.50}, transparent 92%)",
-								// background: "{surface.800}"
 							},
 						},
 					},
 				},
 			},
-			// vackground: var(--p-paginator-nav-button-selected-background);
-			// color: var(--p-paginator-nav-button-selected-color);
 		},
 		datatable: {
 			header: {
@@ -546,13 +559,15 @@ const LycheePrimeVueConfig = {
 							color: "{surface.700}",
 						},
 						cell: {
+							border: {
+								color: "{surface.700}",
+							},
 							background: "{surface.800}",
 							hoverBackground: "{surface.700}",
 							color: "{surface.200}",
 							hoverColor: "{surface.200}",
 						},
 					},
-
 					row: {
 						color: "{surface.300}",
 					},
@@ -585,10 +600,10 @@ const LycheePrimeVueConfig = {
 						// color: "{surface.0}",
 					},
 					item: {
-						// color: "{surface.400}",
+						color: "{surface.400}",
 						focus: {
 							background: "transparent",
-							color: "{primary.500}",
+							color: "{primary.400}",
 						},
 					},
 				},
