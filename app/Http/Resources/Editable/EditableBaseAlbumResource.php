@@ -6,6 +6,7 @@ use App\DTO\AlbumSortingCriterion;
 use App\DTO\PhotoSortingCriterion;
 use App\Enum\AspectRatioType;
 use App\Enum\LicenseType;
+use App\Enum\PhotoLayoutType;
 use App\Models\Album;
 use App\Models\TagAlbum;
 use Spatie\LaravelData\Data;
@@ -22,6 +23,7 @@ class EditableBaseAlbumResource extends Data
 	public ?PhotoSortingCriterion $photo_sorting;
 	public ?AlbumSortingCriterion $album_sorting;
 	public ?AspectRatioType $aspect_ratio;
+	public ?PhotoLayoutType $photo_layout;
 	public ?string $header_id;
 	public ?string $cover_id;
 	/** @var string[] */
@@ -40,6 +42,7 @@ class EditableBaseAlbumResource extends Data
 		$this->album_sorting = null;
 		$this->header_id = null;
 		$this->cover_id = null;
+		$this->photo_layout = $album->photo_layout;
 
 		if ($album instanceof Album) {
 			$this->is_model_album = true;

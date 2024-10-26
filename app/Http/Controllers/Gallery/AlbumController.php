@@ -110,6 +110,7 @@ class AlbumController extends Controller
 		$album->copyright = $request->copyright();
 		$album->photo_sorting = $request->photoSortingCriterion();
 		$album->album_sorting = $request->albumSortingCriterion();
+		$album->photo_layout = $request->photoLayout();
 
 		$album = $setHeader->do(
 			album: $album,
@@ -131,6 +132,7 @@ class AlbumController extends Controller
 		$album->show_tags = $request->tags();
 		$album->copyright = $request->copyright();
 		$album->photo_sorting = $request->photoSortingCriterion();
+		$album->photo_layout = $request->photoLayout();
 		$album->save();
 
 		return EditableBaseAlbumResource::fromModel($album);
