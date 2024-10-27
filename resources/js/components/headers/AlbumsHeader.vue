@@ -1,6 +1,6 @@
 <template>
-	<LoginModal v-if="user.id === null" v-model:visible="is_login_open" @logged-in="refresh" @open-webauthn="isWebAuthnOpen = true" />
-	<WebauthnModal v-if="user.id === null && !isWebAuthnUnavailable" v-model:visible="isWebAuthnOpen" @logged-in="refresh" />
+	<LoginModal v-if="props.user.id === null" v-model:visible="is_login_open" @logged-in="refresh" @open-webauthn="isWebAuthnOpen = true" />
+	<WebauthnModal v-if="props.user.id === null && !isWebAuthnUnavailable" v-model:visible="isWebAuthnOpen" @logged-in="refresh" />
 	<UploadPanel v-if="canUpload" @refresh="refresh" />
 	<ImportFromServer v-if="canUpload" v-model:visible="isImportFromServerOpen" />
 	<ImportFromLink v-if="canUpload" v-model:visible="isImportFromLinkOpen" :parent-id="null" />
@@ -14,9 +14,9 @@
 	>
 		<template #start>
 			<!-- Not logged in. -->
-			<BackLinkButton v-if="user.id === null && !isLoginLeft" :config="props.config" />
+			<BackLinkButton v-if="props.user.id === null && !isLoginLeft" :config="props.config" />
 			<Button
-				v-if="user.id === null && isLoginLeft"
+				v-if="props.user.id === null && isLoginLeft"
 				icon="pi pi-sign-in"
 				class="border-none"
 				severity="secondary"
@@ -46,7 +46,7 @@
 					</template>
 				</template>
 				<!-- Not logged in. -->
-				<BackLinkButton v-if="user.id === null && isLoginLeft" :config="props.config" />
+				<BackLinkButton v-if="props.user.id === null && isLoginLeft" :config="props.config" />
 			</div>
 			<SpeedDial
 				:model="menu"
@@ -138,10 +138,9 @@ const emits = defineEmits<{
 // 	'UPLOAD_TRACK' => 'Upload track',
 // 	'DELETE_TRACK' => 'Delete track',
 const lycheeStore = useLycheeStateStore();
-const { left_menu_open, is_login_open, dropbox_api_key, is_upload_visible } = storeToRefs(lycheeStore);
+const { is_login_open, dropbox_api_key, is_upload_visible } = storeToRefs(lycheeStore);
 const isWebAuthnOpen = ref(false);
 const router = useRouter();
-const openLeftMenu = () => (left_menu_open.value = !left_menu_open.value);
 
 const {
 	isCreateAlbumOpen,
@@ -271,7 +270,7 @@ const menu = computed(() =>
 			icon: "pi pi-sign-in",
 			type: "fn",
 			callback: lycheeStore.toggleLogin,
-			if: props.user.id === null && !isLoginLeft,
+			if: props.user.id === null && !isLoginLeft.value,
 		},
 		{
 			icon: "pi pi-question-circle",
