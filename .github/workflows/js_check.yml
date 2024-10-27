@@ -3,6 +3,9 @@ name: Check JS
 on:
   workflow_call:
 
+permissions:
+  contents: read
+
 jobs:
   check_js:
     name: Node ${{ matrix.node-version }}
