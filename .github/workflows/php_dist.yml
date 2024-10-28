@@ -3,6 +3,9 @@ name: PHP Dist
 on:
   workflow_call:
 
+permissions:
+  contents: read
+
 jobs:
   php_dist:
     name: ${{ matrix.php-version }} - ${{ matrix.sql-versions }}
