@@ -7,6 +7,7 @@ import i18n from 'laravel-vue-i18n/vite';
 
 /** @type {import('vite').UserConfig} */
 export default defineConfig({
+  base: './',
   plugins: [
     laravel({
       input: [
