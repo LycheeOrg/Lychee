@@ -37,7 +37,7 @@
         "axios-cache-interceptor": "^1.5.3",
         "justified-layout": "^4.1.0",
         "laravel-vite-plugin": "^1.0.1",
-        "laravel-vue-i18n": "^2.7.7",
+        "laravel-vue-i18n": "^2.7.8",
         "leaflet": "^1.9.4",
         "leaflet-gpx": "^2.1.2",
         "leaflet-rotatedmarker": "^0.2.0",
