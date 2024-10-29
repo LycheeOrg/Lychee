@@ -15,7 +15,7 @@
 		<div class="flex flex-col text-muted-color-emphasis">
 			<div class="flex items-center">
 				<div class="w-5/12 flex items-center">
-					<span class="w-full">{{ $t("lychee.ALBUM_TITLE") }}</span>
+					<span class="w-full">{{ "Album Title" }}</span>
 					<span class="w-full">{{ $t("lychee.USERNAME") }}</span>
 				</div>
 				<div class="w-1/2 flex items-center justify-around">
