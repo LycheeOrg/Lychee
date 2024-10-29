@@ -8752,16 +8752,16 @@
         },
         {
             "name": "symfony/cache",
-            "version": "v7.1.5",
+            "version": "v7.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/cache.git",
-                "reference": "86e5296b10e4dec8c8441056ca606aedb8a3be0a"
+                "reference": "567ef6de47fdcba56eb6c0b344b857d1fce1cce0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/cache/zipball/86e5296b10e4dec8c8441056ca606aedb8a3be0a",
-                "reference": "86e5296b10e4dec8c8441056ca606aedb8a3be0a",
+                "url": "https://api.github.com/repos/symfony/cache/zipball/567ef6de47fdcba56eb6c0b344b857d1fce1cce0",
+                "reference": "567ef6de47fdcba56eb6c0b344b857d1fce1cce0",
                 "shasum": ""
             },
             "require": {
@@ -8829,7 +8829,7 @@
                 "psr6"
             ],
             "support": {
-                "source": "https://github.com/symfony/cache/tree/v7.1.5"
+                "source": "https://github.com/symfony/cache/tree/v7.1.6"
             },
             "funding": [
                 {
@@ -8845,7 +8845,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-09-17T09:16:35+00:00"
+            "time": "2024-10-25T15:39:55+00:00"
         },
         {
             "name": "symfony/cache-contracts",
@@ -11151,16 +11151,16 @@
         },
         {
             "name": "symfony/var-exporter",
-            "version": "v7.1.2",
+            "version": "v7.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/var-exporter.git",
-                "reference": "b80a669a2264609f07f1667f891dbfca25eba44c"
+                "reference": "90173ef89c40e7c8c616653241048705f84130ef"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/var-exporter/zipball/b80a669a2264609f07f1667f891dbfca25eba44c",
-                "reference": "b80a669a2264609f07f1667f891dbfca25eba44c",
+                "url": "https://api.github.com/repos/symfony/var-exporter/zipball/90173ef89c40e7c8c616653241048705f84130ef",
+                "reference": "90173ef89c40e7c8c616653241048705f84130ef",
                 "shasum": ""
             },
             "require": {
@@ -11207,7 +11207,7 @@
                 "serialize"
             ],
             "support": {
-                "source": "https://github.com/symfony/var-exporter/tree/v7.1.2"
+                "source": "https://github.com/symfony/var-exporter/tree/v7.1.6"
             },
             "funding": [
                 {
@@ -11223,7 +11223,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-06-28T08:00:31+00:00"
+            "time": "2024-09-25T14:20:29+00:00"
         },
         {
             "name": "thecodingmachine/safe",
