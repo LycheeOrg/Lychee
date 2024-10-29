@@ -192,7 +192,7 @@ jobs:
             node-version: 20
 
       - name: Install
-        run: npm install
+        run: npm ci
 
       - name: Compile Front-end
         run: npm run build
