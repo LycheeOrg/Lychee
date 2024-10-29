@@ -1,7 +1,9 @@
 <template>
 	<div class="flex">
 		<div class="w-5/12 flex items-center text-muted-color">
-			<span v-if="props.withAlbum" class="w-full">{{ props.perm.album_title }}</span>
+			<span v-if="props.withAlbum" class="w-full">
+				<router-link :to="{ name: 'album', params: { albumid: props.perm.album_id } }">{{ props.perm.album_title }}</router-link>
+			</span>
 			<span class="w-full">{{ props.perm.username }}</span>
 		</div>
 		<div class="w-1/2 flex items-center justify-around">

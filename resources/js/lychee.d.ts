@@ -143,7 +143,7 @@ declare namespace App.Http.Resources.Editable {
 		photo_sorting: App.DTO.PhotoSortingCriterion | null;
 		album_sorting: App.DTO.AlbumSortingCriterion | null;
 		aspect_ratio: App.Enum.AspectRatioType | null;
-		photo_layout: any | null;
+		photo_layout: App.Enum.PhotoLayoutType | null;
 		header_id: string | null;
 		cover_id: string | null;
 		tags: Array<string>;
@@ -270,6 +270,7 @@ declare namespace App.Http.Resources.Models {
 		user_id: number | null;
 		username: string | null;
 		album_title: string | null;
+		album_id: string | null;
 		grants_full_photo_access: boolean;
 		grants_download: boolean;
 		grants_upload: boolean;
