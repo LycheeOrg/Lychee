@@ -179,7 +179,7 @@ const items = computed<MenyType[]>(() => {
 				{
 					label: "lychee.LOGS",
 					icon: "excerpt",
-					url: "/Logs",
+					url: Constants.BASE_URL + "/Logs",
 					access: (initData.value.settings.can_see_logs ?? false) && logsEnabled.value,
 				},
 				{
