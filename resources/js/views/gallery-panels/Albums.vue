@@ -20,7 +20,6 @@
 			:user="user"
 			:config="albumPanelConfig"
 			:is-alone="!albums.length"
-			:are-nsfw-visible="false"
 			:idx-shift="-1"
 			:selected-albums="[]"
 		/>
@@ -32,7 +31,6 @@
 			:user="user"
 			:config="albumPanelConfig"
 			:is-alone="!sharedAlbums.length && !smartAlbums.length"
-			:are-nsfw-visible="are_nsfw_visible"
 			:idx-shift="0"
 			:selected-albums="selectedAlbumsIds"
 			@clicked="albumClick"
@@ -41,13 +39,12 @@
 		<template v-for="sharedAlbum in sharedAlbums">
 			<AlbumThumbPanel
 				v-if="sharedAlbums.length > 0"
-				:header="sharedAlbum.owner"
+				:header="sharedAlbum.header"
 				:album="undefined"
-				:albums="sharedAlbum.albums"
+				:albums="sharedAlbum.data"
 				:user="user"
 				:config="albumPanelConfig"
 				:is-alone="!albums.length"
-				:are-nsfw-visible="are_nsfw_visible"
 				:idx-shift="sharedAlbum.iter"
 				:selected-albums="selectedAlbumsIds"
 				@clicked="albumClick"
