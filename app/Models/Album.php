@@ -466,7 +466,7 @@ class Album extends BaseAlbum implements Node
 	/**
 	 * Returns the criterion acc. to which **albums** inside the album shall be sorted.
 	 *
-	 * @return AlbumSortingCriterion the attribute acc. to which **albums** inside the album shall be sorted
+	 * @return AlbumSortingCriterion
 	 */
 	public function getEffectiveAlbumSorting(): AlbumSortingCriterion
 	{
