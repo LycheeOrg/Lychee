@@ -8,7 +8,7 @@ composer:
 npm-build:
 	rm -r public/build 2> /dev/null || true
 	rm -r node_modules 2> /dev/null || true
-	npm install
+	npm ci
 	npm run build
 
 dist-gen: clean composer npm-build

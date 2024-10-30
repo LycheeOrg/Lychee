@@ -159,6 +159,10 @@ jobs:
       - tests_legacy
       - check_js
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
     env:
       extensions: bcmath, curl, dom, gd, imagick, json, libxml, mbstring, pcntl, pdo, pdo_sqlite, pdo_mysql, pdo_pgsql, pgsql, sqlite3, zip
 
@@ -178,29 +182,50 @@ jobs:
           extensions: ${{ env.extensions }}
           coverage: none
 
-      - name: Install Composer dependencies
-        uses: ramsey/composer-install@57532f8be5bda426838819c5ee9afb8af389d51a # 3.0.0
-        with:
-          composer-options: --no-dev
-
       - name: Use Node.js 20
         uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
         with:
             node-version: 20
 
-      - name: Install
-        run: npm ci
-
-      - name: Compile Front-end
-        run: npm run build
-
       - name: Build Dist
         run: |
           make clean dist
+          mv Lychee-Dist.zip Lychee.zip
 
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
         with:
-          name: Lychee-Dist.zip
+          name: Lychee.zip
           path: Lychee.zip
           if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`
+
+      - name: Attest
+        uses: actions/attest-build-provenance@1c608d11d69870c2092266b3f9a6f3abbf17002c # v1.4.3
+        with:
+          # Path to the artifact serving as the subject of the attestation. Must
+          # specify exactly one of "subject-path" or "subject-digest". May contain a
+          # glob pattern or list of paths (total subject count cannot exceed 2500).
+          subject-path: '${{ github.workspace }}/Lychee.zip'
+
+          # SHA256 digest of the subject for the attestation. Must be in the form
+          # "sha256:hex_digest" (e.g. "sha256:abc123..."). Must specify exactly one
+          # of "subject-path" or "subject-digest".
+          # subject-digest:
+
+          # Subject name as it should appear in the attestation. Required unless
+          # "subject-path" is specified, in which case it will be inferred from the
+          # path.
+          # subject-name: Lychee
+
+          # Whether to push the attestation to the image registry. Requires that the
+          # "subject-name" parameter specify the fully-qualified image name and that
+          # the "subject-digest" parameter be specified. Defaults to false.
+          # push-to-registry:
+
+          # Whether to attach a list of generated attestations to the workflow run
+          # summary page. Defaults to true.
+          # show-summary:
+
+          # The GitHub token used to make authenticated API requests. Default is
+          # ${{ github.token }}
+          github-token: ${{ github.token }}
