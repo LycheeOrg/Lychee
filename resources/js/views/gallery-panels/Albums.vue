@@ -24,6 +24,7 @@
 			:selected-albums="[]"
 		/>
 		<AlbumThumbPanel
+			v-if="albums.length > 0"
 			header="lychee.ALBUMS"
 			:album="null"
 			:albums="albums"
