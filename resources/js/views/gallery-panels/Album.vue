@@ -49,7 +49,6 @@
 					:albums="children"
 					:config="albumPanelConfig"
 					:is-alone="!photos?.length"
-					:are-nsfw-visible="are_nsfw_visible"
 					@clicked="albumClick"
 					@contexted="albumMenuOpen"
 					:idx-shift="0"
