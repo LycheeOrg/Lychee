@@ -3,6 +3,7 @@
 namespace App\Assets;
 
 use App\Exceptions\Internal\ZeroModuloException;
+use Exception;
 use Illuminate\Support\Facades\File;
 use function Safe\ini_get;
 
@@ -260,5 +261,24 @@ class Helpers
 		$replacement = str_repeat('*', $censored_length);
 
 		return substr_replace($string, $replacement, $start, $censored_length);
+	}
+
+	/**
+	 * Format exception trace as text.
+	 *
+	 * @param \Exception $e
+	 *
+	 * @return string
+	 *
+	 * @codeCoverageIgnore
+	 */
+	public function exceptionTraceToText(\Exception $e): string
+	{
+		$renderer = new ArrayToTextTable();
+
+		return $renderer->getTable(collect($e->getTrace())->map(fn (array $err) => [
+			'class' => $err['class'] ?? $err['file'] ?? '?',
+			'line' => $err['line'] ?? '?',
+			'function' => $err['function']])->all());
 	}
 }

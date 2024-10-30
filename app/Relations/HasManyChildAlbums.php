@@ -3,7 +3,6 @@
 namespace App\Relations;
 
 use App\Contracts\Exceptions\InternalLycheeException;
-use App\DTO\AlbumSortingCriterion;
 use App\Enum\OrderSortingType;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Models\Album;
@@ -19,7 +18,6 @@ use Illuminate\Database\Eloquent\Model;
 class HasManyChildAlbums extends HasManyBidirectionally
 {
 	protected AlbumQueryPolicy $albumQueryPolicy;
-	private AlbumSortingCriterion $sorting;
 
 	public function __construct(Album $owningAlbum)
 	{
@@ -28,7 +26,7 @@ class HasManyChildAlbums extends HasManyBidirectionally
 		// The parent constructor calls `addConstraints` and thus our own
 		// attributes must be initialized by then
 		$this->albumQueryPolicy = resolve(AlbumQueryPolicy::class);
-		$this->sorting = $owningAlbum->album_sorting ?? AlbumSortingCriterion::createDefault();
+
 		parent::__construct(
 			$owningAlbum->newQuery(),
 			$owningAlbum,
@@ -85,11 +83,15 @@ class HasManyChildAlbums extends HasManyBidirectionally
 			return $this->related->newCollection();
 		}
 
+		$albumSorting = $this->getParent()->getEffectiveAlbumSorting();
+
 		/** @var SortingDecorator<Album> */
 		$sortingDecorator = new SortingDecorator($this->query);
 
 		return $sortingDecorator
-			->orderBy($this->sorting->column, $this->sorting->order)
+			->orderBy(
+				$albumSorting->column,
+				$albumSorting->order)
 			->get();
 	}
 
@@ -113,8 +115,9 @@ class HasManyChildAlbums extends HasManyBidirectionally
 			if (isset($dictionary[$key = $this->getDictionaryKey($model->getAttribute($this->localKey))])) {
 				/** @var Collection<int,Album> $childrenOfModel */
 				$childrenOfModel = $this->getRelationValue($dictionary, $key, 'many');
+				$sorting = $model->getEffectiveAlbumSorting();
 				$childrenOfModel = $childrenOfModel
-					->sortBy($this->sorting->column->value, SORT_NATURAL | SORT_FLAG_CASE, $this->sorting->order === OrderSortingType::DESC)
+					->sortBy($sorting->column->value, SORT_NATURAL | SORT_FLAG_CASE, $sorting->order === OrderSortingType::DESC)
 					->values();
 				$model->setRelation($relation, $childrenOfModel);
 				// This is the newly added code which sets this method apart
