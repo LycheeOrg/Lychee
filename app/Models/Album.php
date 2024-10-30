@@ -462,4 +462,14 @@ class Album extends BaseAlbum implements Node
 		$this->attributes['album_sorting_col'] = $sorting?->column->value;
 		$this->attributes['album_sorting_order'] = $sorting?->order->value;
 	}
+
+	/**
+	 * Returns the criterion acc. to which **albums** inside the album shall be sorted.
+	 *
+	 * @return AlbumSortingCriterion
+	 */
+	public function getEffectiveAlbumSorting(): AlbumSortingCriterion
+	{
+		return $this->getAlbumSortingAttribute() ?? AlbumSortingCriterion::createDefault();
+	}
 }
