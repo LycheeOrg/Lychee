@@ -37,6 +37,7 @@ import "leaflet-gpx/gpx.js";
 import { useToast } from "primevue/usetoast";
 import Toolbar from "primevue/toolbar";
 import { onKeyStroke } from "@vueuse/core";
+import Constants from "@/services/constants";
 
 type MapPhotoEntry = {
 	lat?: number | null;
@@ -89,9 +90,9 @@ function mapInit() {
 	// @ts-ignore
 	delete L.Icon.Default.prototype._getIconUrl;
 	L.Icon.Default.mergeOptions({
-		iconRetinaUrl: window.assets_url + "img/marker-icon-2x.png",
-		iconUrl: window.assets_url + "img/marker-icon.png",
-		shadowUrl: window.assets_url + "img/marker-shadow.png",
+		iconRetinaUrl: Constants.BASE_URL + "/img/marker-icon-2x.png",
+		iconUrl: Constants.BASE_URL + "/img/marker-icon.png",
+		shadowUrl: Constants.BASE_URL + "/img/marker-shadow.png",
 	});
 
 	if (map_provider.value !== undefined) {

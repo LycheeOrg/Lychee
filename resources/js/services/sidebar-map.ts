@@ -6,22 +6,20 @@ import "leaflet/dist/leaflet.css";
 import "@lychee-org/leaflet.photo/Leaflet.Photo.css";
 import { Ref, ref } from "vue";
 import AlbumService from "./album-service";
+import Constants from "./constants";
 
 export default class SidebarMap {
 	layer: string;
 	attribution: string;
-	url_asset: string;
 
 	constructor() {
 		this.layer = "";
 		this.attribution = "";
-		this.url_asset = "";
 	}
 
 	displayOnMap(latitude: number, longitude: number) {
 		const mapData = document.getElementById("leaflet_map_single_photo");
 		this.layer = mapData?.dataset.layer ?? "";
-		this.url_asset = mapData?.dataset.asset ?? "";
 		this.attribution = mapData?.dataset.provider ?? "";
 
 		// Leaflet searches for icon in same directory as js file -> paths needs
@@ -29,9 +27,9 @@ export default class SidebarMap {
 		// @ts-expect-error
 		delete L.Icon.Default.prototype._getIconUrl;
 		L.Icon.Default.mergeOptions({
-			iconRetinaUrl: this.url_asset + "img/marker-icon-2x.png",
-			iconUrl: this.url_asset + "img/marker-icon.png",
-			shadowUrl: this.url_asset + "img/marker-shadow.png",
+			iconRetinaUrl: Constants.BASE_URL + "/img/marker-icon-2x.png",
+			iconUrl: Constants.BASE_URL + "/img/marker-icon.png",
+			shadowUrl: Constants.BASE_URL + "/img/marker-shadow.png",
 		});
 
 		// kill the map if it exists
@@ -55,7 +53,6 @@ export function useSidebarMap(latitudeValue: number | null, longitudeValue: numb
 	const longitude = ref(longitudeValue);
 
 	const map = ref(undefined) as Ref<undefined | SidebarMap>;
-	const assets_url = ref(window.assets_url);
 	const map_provider = ref(undefined) as Ref<undefined | App.Http.Resources.GalleryConfigs.MapProviderData>;
 
 	function onMount() {
@@ -80,7 +77,6 @@ export function useSidebarMap(latitudeValue: number | null, longitudeValue: numb
 	return {
 		latitude,
 		longitude,
-		assets_url,
 		map,
 		map_provider,
 		load,
