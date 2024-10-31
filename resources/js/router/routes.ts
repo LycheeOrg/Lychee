@@ -124,14 +124,12 @@ const routes_ = [
 	},
 ];
 
-
-if (import.meta.MODE !== 'build' &&
-	import.meta.env.VITE_LOCAL_DEV === 'true') {
+if (import.meta.MODE !== "build" && import.meta.env.VITE_LOCAL_DEV === "true") {
 	routes_.push({
 		name: "local-dev",
 		path: "/vite/index.html",
 		component: Landing,
 	});
-};
+}
 
 export const routes = routes_;
