@@ -124,7 +124,8 @@ const routes_ = [
 	},
 ];
 
-if (import.meta.MODE !== "build" && import.meta.env.VITE_LOCAL_DEV === "true") {
+console.log(import.meta.env);
+if (import.meta.env.MODE === "development" && import.meta.env.VITE_LOCAL_DEV === "true") {
 	routes_.push({
 		name: "local-dev",
 		path: "/vite/index.html",
