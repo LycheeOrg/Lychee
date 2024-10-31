@@ -27,7 +27,6 @@ const props = defineProps<{
 
 const src = ref("");
 const srcSet = ref("");
-const assets_url = ref(window.assets_url ?? "");
 const classList = computed(() => {
 	if (src.value === Constants.BASE_URL + "/img/no_images.svg" || src.value === Constants.BASE_URL + "/img/password.svg") {
 		return "invert brightness-25 dark:invert-0 dark:brightness-100";
