@@ -20,6 +20,7 @@
 				"
 				data-overlay="false"
 				draggable="false"
+				:loading="props.isLazy ? 'lazy' : 'eager'"
 			/>
 		</span>
 		<div class="overlay w-full absolute bottom-0 m-0 bg-gradient-to-t from-[#00000066] text-shadow-sm" :class="cssOverlay">
@@ -57,6 +58,7 @@ import Constants from "@/services/constants";
 
 const props = defineProps<{
 	isSelected: boolean;
+	isLazy: boolean;
 	album:
 		| App.Http.Resources.Models.AlbumResource
 		| App.Http.Resources.Models.TagAlbumResource

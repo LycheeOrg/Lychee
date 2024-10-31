@@ -22,6 +22,7 @@
 					:is-selected="props.selectedPhotos.includes(photo.id)"
 					:photo="photo"
 					:album="props.album"
+					:is-lazy="idx > 10"
 				/>
 			</template>
 		</div>
