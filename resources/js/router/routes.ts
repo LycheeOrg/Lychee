@@ -124,7 +124,6 @@ const routes_ = [
 	},
 ];
 
-console.log(import.meta.env);
 if (import.meta.env.MODE === "development" && import.meta.env.VITE_LOCAL_DEV === "true") {
 	routes_.push({
 		name: "local-dev",
