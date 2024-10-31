@@ -1,21 +1,20 @@
 import { fileURLToPath, URL } from 'node:url';
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv, UserConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import vue from '@vitejs/plugin-vue';
 import i18n from 'laravel-vue-i18n/vite';
-// import path from "path";
 
-/** @type {import('vite').UserConfig} */
-export default defineConfig({
+const laravelPlugin = laravel({
+    input: [
+      'resources/sass/app.scss',
+      'resources/js/app.ts',
+    ],
+    refresh: true,
+  })
+
+const baseConfig =   {
   base: './',
   plugins: [
-    laravel({
-      input: [
-        'resources/sass/app.scss',
-        'resources/js/app.ts',
-      ],
-      refresh: true,
-    }),
     vue(
     {
       template: {
@@ -67,4 +66,40 @@ export default defineConfig({
       },
     }
   }
-});
+} as UserConfig;
+
+
+/** @type {import('vite').UserConfig} */
+export default defineConfig(
+  ({ command, mode, isSsrBuild, isPreview }) => {
+    const config = baseConfig;
+    if (command === 'serve') {
+      const env = loadEnv(mode, process.cwd(), '')
+
+      console.log("LOCAL VITE MODE detected")
+      console.log("api calls will be forwarded to:")
+      console.log(env.VITE_HTTP_PROXY_TARGET);
+      if (env.VITE_LOCAL_DEV === 'true') {
+        if (config.server === undefined) {
+          throw new Error('server config is missing');
+        }
+        config.server.open = 'vite/index.html';
+        config.server.proxy =  {
+          '/api/': env.VITE_HTTP_PROXY_TARGET,
+        }
+        return config;
+      }
+
+      return {
+        // dev specific config
+      }
+      
+    } else { // command === 'build'
+      if (config.plugins === undefined) {
+        throw new Error('plugins list is missing');
+      }
+
+      config.plugins.push(laravelPlugin);
+      return config;
+    }
+  });

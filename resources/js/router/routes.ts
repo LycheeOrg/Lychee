@@ -15,7 +15,7 @@ import Frame from "@/views/gallery-panels/Frame.vue";
 import Map from "@/views/gallery-panels/Map.vue";
 import Statistics from "@/views/Statistics.vue";
 
-export const routes = [
+const routes_ = [
 	{
 		name: "landing",
 		path: "/",
@@ -123,3 +123,13 @@ export const routes = [
 		component: Users,
 	},
 ];
+
+if (import.meta.env.MODE === "development" && import.meta.env.VITE_LOCAL_DEV === "true") {
+	routes_.push({
+		name: "local-dev",
+		path: "/vite/index.html",
+		component: Landing,
+	});
+}
+
+export const routes = routes_;
