@@ -15,7 +15,7 @@
         "@types/alpinejs": "^3.13.6",
         "@types/leaflet": "^1.9.8",
         "@types/leaflet-rotatedmarker": "^0.2.5",
-        "@types/leaflet.markercluster": "^1.5.4",
+        "@types/leaflet.markercluster": "^1.5.5",
         "@types/mousetrap": "^1.6.15",
         "@types/node": "^22.8.2",
         "@types/photoswipe": "^4.1.6",
