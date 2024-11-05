@@ -166,6 +166,3 @@ parameters:
 
 		-
 			message: '#Dynamic call to static method Illuminate\\Session\\Store::(has|get|now)\(\).#'
-
-		# Lychee verify
-		- '#Parameter \#1 \$paths of method .*::addFiles\(\) expects .*Collection<int\|string, string\|null>, .*Collection<int, string\|null> given.#'
