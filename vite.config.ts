@@ -73,15 +73,26 @@ const baseConfig =   {
 export default defineConfig(
   ({ command, mode, isSsrBuild, isPreview }) => {
     const config = baseConfig;
+    const env = loadEnv(mode, process.cwd(), '')
+
+    if (config.server === undefined) {
+      throw new Error('server config is missing');
+    }
+    if (config.plugins === undefined) {
+      throw new Error('plugins list is missing');
+    }
+
     if (command === 'serve') {
-      const env = loadEnv(mode, process.cwd(), '')
 
       console.log("LOCAL VITE MODE detected")
-      console.log("api calls will be forwarded to:")
-      console.log(env.VITE_HTTP_PROXY_TARGET);
+      if (env.VITE_HTTP_PROXY_TARGET !== undefined) {
+        console.log("api calls will be forwarded to:")
+        console.log(env.VITE_HTTP_PROXY_TARGET);
+      }
+
       if (env.VITE_LOCAL_DEV === 'true') {
-        if (config.server === undefined) {
-          throw new Error('server config is missing');
+        if (env.VITE_HTTP_PROXY_TARGET === undefined) {
+          throw new Error('VITE_HTTP_PROXY_TARGET is missing');
         }
         config.server.open = 'vite/index.html';
         config.server.proxy =  {
@@ -89,17 +100,9 @@ export default defineConfig(
         }
         return config;
       }
-
-      return {
-        // dev specific config
-      }
-      
-    } else { // command === 'build'
-      if (config.plugins === undefined) {
-        throw new Error('plugins list is missing');
-      }
-
-      config.plugins.push(laravelPlugin);
-      return config;
     }
+
+    // command === 'build'
+    config.plugins.push(laravelPlugin);
+    return config;
   });
