@@ -70,6 +70,9 @@ export function usePhotoBaseFunction(photoId: Ref<string>) {
 			return 0;
 		}
 		if (photo.value?.precomputed.is_raw) {
+			if (photo.value?.size_variants.medium !== null) {
+				return 2;
+			}
 			return 1;
 		}
 
