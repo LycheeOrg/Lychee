@@ -60,8 +60,8 @@ class FileDeleter
 	/**
 	 * Give the possility to add files with their associated storage to the deleter.
 	 *
-	 * @param Collection<int|string,string|null> $paths
-	 * @param string                             $diskName
+	 * @param Collection<int,string> $paths
+	 * @param string                 $diskName
 	 *
 	 * @return void
 	 */
