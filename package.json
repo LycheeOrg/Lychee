@@ -63,5 +63,8 @@
     },
     "browserslist": [
         "defaults and fully supports es6-module"
-    ]
+    ],
+    "overrides": {
+        "rollup": "npm:@rollup/wasm-node"
+    }
 }
