@@ -493,6 +493,7 @@ return [
 	'PHOTO_SMALL_HIDPI' => 'Miniatyr HiDPI',
 	'PHOTO_THUMB' => 'Kvadratisk miniatyr',
 	'PHOTO_THUMB_HIDPI' => 'Kvadratisk miniatyr HiDPI',
+	'PHOTO_PLACEHOLDER' => 'Low Quality Image Placeholder',
 	'PHOTO_THUMBNAIL' => 'Photo thumbnail',
 	'PHOTO_LIVE_VIDEO' => 'Filmdel av livebilde',
 	'PHOTO_VIEW' => 'Lychee Bildevisning:',

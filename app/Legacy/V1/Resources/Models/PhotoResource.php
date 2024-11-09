@@ -59,6 +59,7 @@ class PhotoResource extends JsonResource
 		$small2x = $size_variants?->getSizeVariant(SizeVariantType::SMALL2X);
 		$thumb = $size_variants?->getSizeVariant(SizeVariantType::THUMB);
 		$thumb2x = $size_variants?->getSizeVariant(SizeVariantType::THUMB2X);
+		$placeholder = $size_variants?->getSizeVariant(SizeVariantType::PLACEHOLDER);
 
 		return [
 			'id' => $this->resource->id,
@@ -92,6 +93,7 @@ class PhotoResource extends JsonResource
 				'small2x' => $small2x === null ? null : SizeVariantResource::make($small2x)->toArray($request),
 				'thumb' => $thumb === null ? null : SizeVariantResource::make($thumb)->toArray($request),
 				'thumb2x' => $thumb2x === null ? null : SizeVariantResource::make($thumb2x)->toArray($request),
+				'placeholder' => $placeholder === null ? null : SizeVariantResource::make($placeholder)->toArray($request),
 			],
 			'tags' => $this->resource->tags,
 			'taken_at' => $this->resource->taken_at?->toIso8601String(),

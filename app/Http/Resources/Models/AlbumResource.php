@@ -75,7 +75,7 @@ class AlbumResource extends Data
 
 		// thumb
 		$this->cover_id = $album->cover_id;
-		$this->thumb = ThumbResource::make($album->thumb?->id, $album->thumb?->type, $album->thumb?->thumbUrl, $album->thumb?->thumb2xUrl);
+		$this->thumb = ThumbResource::make($album->thumb?->id, $album->thumb?->type, $album->thumb?->thumbUrl, $album->thumb?->thumb2xUrl, $album->thumb?->placeholderUrl);
 
 		// security
 		$this->policy = AlbumProtectionPolicy::ofBaseAlbum($album);

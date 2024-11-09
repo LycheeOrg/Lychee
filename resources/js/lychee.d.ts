@@ -76,7 +76,7 @@ declare namespace App.Enum {
 	export type OrderSortingType = "ASC" | "DESC";
 	export type PhotoLayoutType = "square" | "justified" | "unjustified" | "masonry" | "grid";
 	export type SeverityType = "emergency" | "alert" | "critical" | "error" | "warning" | "notice" | "info" | "debug";
-	export type SizeVariantType = 0 | 1 | 2 | 3 | 4 | 5 | 6;
+	export type SizeVariantType = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 	export type SmartAlbumType = "unsorted" | "starred" | "recent" | "on_this_day";
 	export type StorageDiskType = "images" | "s3";
 	export type ThumbAlbumSubtitleType = "description" | "takedate" | "creation" | "oldstyle";
@@ -367,6 +367,7 @@ declare namespace App.Http.Resources.Models {
 		small: App.Http.Resources.Models.SizeVariantResource | null;
 		thumb2x: App.Http.Resources.Models.SizeVariantResource | null;
 		thumb: App.Http.Resources.Models.SizeVariantResource | null;
+		placeholder: App.Http.Resources.Models.SizeVariantResource | null;
 	};
 	export type SmartAlbumResource = {
 		id: string;
@@ -421,6 +422,7 @@ declare namespace App.Http.Resources.Models {
 		type: string;
 		thumb: string | null;
 		thumb2x: string | null;
+		placeholder: string | null;
 	};
 	export type UserManagementResource = {
 		id: number;

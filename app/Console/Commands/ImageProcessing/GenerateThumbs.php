@@ -20,6 +20,7 @@ class GenerateThumbs extends Command
 	 * @var array<string,SizeVariantType>
 	 */
 	public const SIZE_VARIANTS = [
+		'placeholder' => SizeVariantType::PLACEHOLDER,
 		'thumb' => SizeVariantType::THUMB,
 		'thumb2x' => SizeVariantType::THUMB2X,
 		'small' => SizeVariantType::SMALL,

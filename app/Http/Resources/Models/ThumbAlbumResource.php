@@ -46,7 +46,7 @@ class ThumbAlbumResource extends Data
 		$date_format = Configs::getValueAsString('date_format_album_thumb');
 
 		$this->id = $data->id;
-		$this->thumb = $data->thumb === null ? null : new ThumbResource($data->thumb->id, $data->thumb->type, $data->thumb->thumbUrl, $data->thumb->thumb2xUrl);
+		$this->thumb = $data->thumb === null ? null : new ThumbResource($data->thumb->id, $data->thumb->type, $data->thumb->thumbUrl, $data->thumb->thumb2xUrl, $data->thumb->placeholderUrl);
 		$this->title = $data->title;
 
 		if ($data instanceof BaseSmartAlbum) {

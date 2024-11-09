@@ -493,6 +493,7 @@ return [
 	'PHOTO_SMALL_HIDPI' => '小 HiDPI',
 	'PHOTO_THUMB' => '正方形サムネイル',
 	'PHOTO_THUMB_HIDPI' => '正方形サムネイル HiDPI',
+	'PHOTO_PLACEHOLDER' => 'Low Quality Image Placeholder',
 	'PHOTO_THUMBNAIL' => 'サムネイル',
 	'PHOTO_LIVE_VIDEO' => 'ライブフォトのビデオ部分',
 	'PHOTO_VIEW' => 'Lychee の写真表示：',

@@ -22,6 +22,7 @@
 		<MaintenanceGenSizevariants :sv="2" />
 		<MaintenanceGenSizevariants :sv="3" />
 		<MaintenanceGenSizevariants :sv="4" />
+		<MaintenanceGenSizevariants :sv="7" />
 		<MaintenanceFixJobs />
 		<MaintenanceFixTree />
 		<MaintenanceFilesize />

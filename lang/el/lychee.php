@@ -493,6 +493,7 @@ return [
 	'PHOTO_SMALL_HIDPI' => 'Μικρογραφία HiDPI',
 	'PHOTO_THUMB' => 'Τετράγωνη Μικρογραφία',
 	'PHOTO_THUMB_HIDPI' => 'Τετράγωνη Μικρογραφία HiDPI',
+	'PHOTO_PLACEHOLDER' => 'Low Quality Image Placeholder',
 	'PHOTO_THUMBNAIL' => 'Photo thumbnail',
 	'PHOTO_LIVE_VIDEO' => 'Video part of live-photo',
 	'PHOTO_VIEW' => 'Lychee Προβολή Φωτογραφιών:',

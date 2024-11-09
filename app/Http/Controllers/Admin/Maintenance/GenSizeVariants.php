@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\Maintenance;
 use App\Contracts\Models\SizeVariantFactory;
 use App\Enum\SizeVariantType;
 use App\Http\Requests\Maintenance\CreateThumbsRequest;
+use App\Image\PlaceholderEncoder;
 use App\Image\SizeVariantDimensionHelpers;
 use App\Models\Photo;
 use App\Models\SizeVariant;
@@ -24,7 +25,7 @@ class GenSizeVariants extends Controller
 	 *
 	 * @return void
 	 */
-	public function do(CreateThumbsRequest $request, SizeVariantFactory $sizeVariantFactory): void
+	public function do(CreateThumbsRequest $request, SizeVariantFactory $sizeVariantFactory, PlaceholderEncoder $placeholderEncoder): void
 	{
 		$photos = Photo::query()
 			->where('type', 'like', 'image/%')
@@ -41,6 +42,9 @@ class GenSizeVariants extends Controller
 			// @codeCoverageIgnoreStart
 			$sizeVariantFactory->init($photo);
 			$sizeVariant = $sizeVariantFactory->createSizeVariantCond($request->kind());
+			if ($request->kind() === SizeVariantType::PLACEHOLDER && $sizeVariant !== null) {
+				$placeholderEncoder->do($sizeVariant);
+			}
 			if ($sizeVariant !== null) {
 				$generated++;
 				Log::notice($request->kind()->value . ' (' . $sizeVariant->width . 'x' . $sizeVariant->height . ') for ' . $photo->title . ' created.');

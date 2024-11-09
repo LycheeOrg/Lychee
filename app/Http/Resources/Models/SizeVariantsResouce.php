@@ -19,6 +19,7 @@ class SizeVariantsResouce extends Data
 	public ?SizeVariantResource $small;
 	public ?SizeVariantResource $thumb2x;
 	public ?SizeVariantResource $thumb;
+	public ?SizeVariantResource $placeholder;
 
 	public function __construct(Photo $photo)
 	{
@@ -34,6 +35,7 @@ class SizeVariantsResouce extends Data
 		$small2x = $size_variants?->getSizeVariant(SizeVariantType::SMALL2X);
 		$thumb = $size_variants?->getSizeVariant(SizeVariantType::THUMB);
 		$thumb2x = $size_variants?->getSizeVariant(SizeVariantType::THUMB2X);
+		$placeholder = $size_variants?->getSizeVariant(SizeVariantType::PLACEHOLDER);
 
 		$this->medium = $medium?->toResource();
 		$this->medium2x = $medium2x?->toResource();
@@ -42,5 +44,6 @@ class SizeVariantsResouce extends Data
 		$this->small2x = $small2x?->toResource();
 		$this->thumb = $thumb?->toResource();
 		$this->thumb2x = $thumb2x?->toResource();
+		$this->placeholder = $placeholder?->toResource();
 	}
 }
