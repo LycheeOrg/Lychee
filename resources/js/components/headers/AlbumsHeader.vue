@@ -1,12 +1,12 @@
 <template>
 	<LoginModal v-if="props.user.id === null" v-model:visible="is_login_open" @logged-in="refresh" @open-webauthn="isWebAuthnOpen = true" />
 	<WebauthnModal v-if="props.user.id === null && !isWebAuthnUnavailable" v-model:visible="isWebAuthnOpen" @logged-in="refresh" />
-	<UploadPanel v-if="canUpload" @refresh="refresh" />
+	<UploadPanel v-if="canUpload" @refresh="refresh" key="upload_modal" />
 	<ImportFromServer v-if="canUpload" v-model:visible="isImportFromServerOpen" />
 	<ImportFromLink v-if="canUpload" v-model:visible="isImportFromLinkOpen" :parent-id="null" />
 	<DropBox v-if="canUpload" v-model:visible="isImportFromDropboxOpen" :album-id="null" />
-	<AlbumCreateDialog v-if="canUpload" v-model:visible="isCreateAlbumOpen" :parent-id="null" />
-	<AlbumCreateTagDialog v-if="canUpload" v-model:visible="isCreateTagAlbumOpen" />
+	<AlbumCreateDialog v-if="canUpload" v-model:visible="isCreateAlbumOpen" :parent-id="null" key="create_album_modal" />
+	<AlbumCreateTagDialog v-if="canUpload" v-model:visible="isCreateTagAlbumOpen" key="create_tag_album_modal" />
 	<Toolbar
 		class="w-full border-0 h-14"
 		:pt:root:class="'flex-nowrap relative'"

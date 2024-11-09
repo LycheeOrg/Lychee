@@ -1,5 +1,5 @@
 <template>
-	<UploadPanel v-if="canUpload" @refresh="refresh" />
+	<UploadPanel v-if="canUpload" @refresh="refresh" key="upload_modal" />
 	<DropBox v-if="canUpload" v-model:visible="isImportFromDropboxOpen" :album-id="props.album.id" />
 	<ImportFromLink v-if="canUpload" v-model:visible="isImportFromLinkOpen" :parent-id="props.album.id" @refresh="refresh" />
 	<AlbumCreateDialog
@@ -7,6 +7,7 @@
 		v-model:visible="isCreateAlbumOpen"
 		v-model:parent-id="props.album.id"
 		@close="isCreateAlbumOpen = false"
+		key="create_album_modal"
 	/>
 	<Toolbar class="w-full border-0 h-14" v-if="album">
 		<template #start>

@@ -1,19 +1,20 @@
-import Diagnostics from "@/views/Diagnostics.vue";
-import Jobs from "@/views/Jobs.vue";
-import Landing from "@/views/Landing.vue";
-import Maintenance from "@/views/Maintenance.vue";
-import Profile from "@/views/Profile.vue";
-import Settings from "@/views/Settings.vue";
-import Sharing from "@/views/Sharing.vue";
-import Users from "@/views/Users.vue";
 import Album from "@/views/gallery-panels/Album.vue";
 import Albums from "@/views/gallery-panels/Albums.vue";
 import Photo from "@/views/gallery-panels/Photo.vue";
-import Search from "@/views/gallery-panels/Search.vue";
-import Permissions from "@/views/Permissions.vue";
-import Frame from "@/views/gallery-panels/Frame.vue";
-import Map from "@/views/gallery-panels/Map.vue";
-import Statistics from "@/views/Statistics.vue";
+
+const Landing = () => import("@/views/Landing.vue");
+const Frame = () => import("@/views/gallery-panels/Frame.vue");
+const Search = () => import("@/views/gallery-panels/Search.vue");
+const MapView = () => import("@/views/gallery-panels/Map.vue");
+const Permissions = () => import("@/views/Permissions.vue");
+const Users = () => import("@/views/Users.vue");
+const Sharing = () => import("@/views/Sharing.vue");
+const Settings = () => import("@/views/Settings.vue");
+const Profile = () => import("@/views/Profile.vue");
+const Maintenance = () => import("@/views/Maintenance.vue");
+const Diagnostics = () => import("@/views/Diagnostics.vue");
+const Statistics = () => import("@/views/Statistics.vue");
+const Jobs = () => import("@/views/Jobs.vue");
 
 const routes_ = [
 	{
@@ -52,12 +53,12 @@ const routes_ = [
 	{
 		name: "map",
 		path: "/map",
-		component: Map,
+		component: MapView,
 	},
 	{
 		name: "map-with-album",
 		path: "/map/:albumid",
-		component: Map,
+		component: MapView,
 		props: true,
 	},
 	{

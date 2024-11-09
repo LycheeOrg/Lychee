@@ -13,11 +13,11 @@
 				</div>
 			</div>
 			<div v-else>
-				<div class="p-9" v-if="error_no_target">
+				<div class="p-9" v-if="error_no_target === false">
 					<span class="font-bold">
 						{{ question }}
 					</span>
-					<SearchTargetAlbum :album-id="parentId" @selected="selected" @no-target="error_no_target = true" />
+					<SearchTargetAlbum :album-id="undefined" @selected="selected" @no-target="error_no_target = true" />
 				</div>
 				<div v-else class="p-9">
 					<p class="text-center text-muted-color">{{ "No album to copy to." }}</p>
@@ -96,14 +96,13 @@ function execute() {
 	PhotoService.copy(destination_id.value, photoCopiedIds).then(() => {
 		toast.add({
 			severity: "success",
-			summary: "Photo moved",
+			summary: "Photo copied",
 			life: 3000,
 		});
-		// Clear the cache for the current album and the destination album
+		// Clear the cache for the destination album
 		AlbumService.clearCache(destination_id.value);
 
 		emits("copy");
-		// Todo emit that we moved things.
 	});
 }
 </script>
