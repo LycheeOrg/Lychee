@@ -23,6 +23,9 @@ export function sizeVariantToColour(sv: App.Enum.SizeVariantType): string {
 		// thumb
 		case 6:
 			return documentStyle.getPropertyValue("--p-sky-100");
+		// placeholder
+		case 7:
+			return documentStyle.getPropertyValue("--p-sky-50");
 	}
 }
 

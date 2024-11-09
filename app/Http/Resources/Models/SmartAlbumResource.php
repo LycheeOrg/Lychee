@@ -37,7 +37,7 @@ class SmartAlbumResource extends Data
 		$this->photos = $smartAlbum->relationLoaded('photos') ? PhotoResource::collect($smartAlbum->getPhotos()) : null;
 		$this->prepPhotosCollection();
 
-		$this->thumb = ThumbResource::make($smartAlbum->thumb?->id, $smartAlbum->thumb?->type, $smartAlbum->thumb?->thumbUrl, $smartAlbum->thumb?->thumb2xUrl);
+		$this->thumb = ThumbResource::make($smartAlbum->thumb?->id, $smartAlbum->thumb?->type, $smartAlbum->thumb?->thumbUrl, $smartAlbum->thumb?->thumb2xUrl, $smartAlbum->thumb?->placeholderUrl);
 		$this->policy = AlbumProtectionPolicy::ofSmartAlbum($smartAlbum);
 		$this->rights = new AlbumRightsResource($smartAlbum);
 		$url = $this->getHeaderUrl($smartAlbum);

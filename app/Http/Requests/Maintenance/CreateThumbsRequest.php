@@ -20,6 +20,7 @@ class CreateThumbsRequest extends BaseApiRequest
 			RequestAttribute::SIZE_VARIANT_ATTRIBUTE => [
 				'required',
 				Rule::in([
+					SizeVariantType::PLACEHOLDER,
 					SizeVariantType::SMALL->value,
 					SizeVariantType::SMALL2X->value,
 					SizeVariantType::MEDIUM->value,
