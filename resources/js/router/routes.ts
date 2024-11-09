@@ -5,7 +5,7 @@ import Photo from "@/views/gallery-panels/Photo.vue";
 const Landing = () => import("@/views/Landing.vue");
 const Frame = () => import("@/views/gallery-panels/Frame.vue");
 const Search = () => import("@/views/gallery-panels/Search.vue");
-const Map = () => import("@/views/gallery-panels/Map.vue");
+const MapView = () => import("@/views/gallery-panels/Map.vue");
 const Permissions = () => import("@/views/Permissions.vue");
 const Users = () => import("@/views/Users.vue");
 const Sharing = () => import("@/views/Sharing.vue");
@@ -53,12 +53,12 @@ const routes_ = [
 	{
 		name: "map",
 		path: "/map",
-		component: Map,
+		component: MapView,
 	},
 	{
 		name: "map-with-album",
 		path: "/map/:albumid",
-		component: Map,
+		component: MapView,
 		props: true,
 	},
 	{

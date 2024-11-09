@@ -7,6 +7,7 @@
 		v-model:visible="isCreateAlbumOpen"
 		v-model:parent-id="props.album.id"
 		@close="isCreateAlbumOpen = false"
+		key="create_album_modal"
 	/>
 	<Toolbar class="w-full border-0 h-14" v-if="album">
 		<template #start>

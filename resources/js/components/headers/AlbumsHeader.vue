@@ -5,8 +5,8 @@
 	<ImportFromServer v-if="canUpload" v-model:visible="isImportFromServerOpen" />
 	<ImportFromLink v-if="canUpload" v-model:visible="isImportFromLinkOpen" :parent-id="null" />
 	<DropBox v-if="canUpload" v-model:visible="isImportFromDropboxOpen" :album-id="null" />
-	<AlbumCreateDialog v-if="canUpload" v-model:visible="isCreateAlbumOpen" :parent-id="null" />
-	<AlbumCreateTagDialog v-if="canUpload" v-model:visible="isCreateTagAlbumOpen" />
+	<AlbumCreateDialog v-if="canUpload" v-model:visible="isCreateAlbumOpen" :parent-id="null" key="create_album_modal" />
+	<AlbumCreateTagDialog v-if="canUpload" v-model:visible="isCreateTagAlbumOpen" key="create_tag_album_modal" />
 	<Toolbar
 		class="w-full border-0 h-14"
 		:pt:root:class="'flex-nowrap relative'"
