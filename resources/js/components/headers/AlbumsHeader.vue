@@ -299,8 +299,6 @@ const menu = computed(() =>
 	].filter((item) => item.if),
 ) as ComputedRef<MenuRight[]>;
 
-console.log(screen.orientation);
-
 // bubble up.
 function refresh() {
 	emits("refresh");
