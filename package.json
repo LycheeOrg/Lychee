@@ -43,7 +43,7 @@
         "leaflet-rotatedmarker": "^0.2.0",
         "leaflet.markercluster": "^1.5.3",
         "pinia": "^2.1.7",
-        "postcss": "^8.4.33",
+        "postcss": "^8.4.49",
         "prettier": "^3.2.4",
         "primeicons": "^7.0.0",
         "primevue": "^4.0.0-rc.2",
