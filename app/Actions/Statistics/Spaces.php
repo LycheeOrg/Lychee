@@ -34,7 +34,9 @@ class Spaces
 				type: 'left'
 			)
 			->joinSub(
-				query: DB::table('size_variants')->select(['size_variants.photo_id', 'size_variants.filesize']),
+				query: DB::table('size_variants')
+					->select(['size_variants.photo_id', 'size_variants.filesize'])
+					->where('size_variants.type', '!=', 7),
 				as: 'size_variants',
 				first: 'size_variants.photo_id',
 				operator: '=',
@@ -79,6 +81,7 @@ class Spaces
 				'size_variants.type',
 				DB::raw('SUM(size_variants.filesize) as size')
 			)
+			->where('size_variants.type', '!=', 7)
 			->groupBy('size_variants.type')
 			->orderBy('size_variants.type', 'asc')
 			->get()
@@ -115,7 +118,9 @@ class Spaces
 				second: 'descendants.id',
 			)
 			->joinSub(
-				query: DB::table('size_variants')->select(['size_variants.id', 'size_variants.photo_id', 'size_variants.type', 'size_variants.filesize']),
+				query: DB::table('size_variants')
+					->select(['size_variants.id', 'size_variants.photo_id', 'size_variants.type', 'size_variants.filesize'])
+					->where('size_variants.type', '!=', 7),
 				as: 'size_variants',
 				first: 'size_variants.photo_id',
 				operator: '=',
@@ -174,7 +179,9 @@ class Spaces
 				second: 'albums.id'
 			)
 			->joinSub(
-				query: DB::table('size_variants')->select(['size_variants.id', 'size_variants.photo_id', 'size_variants.filesize']),
+				query: DB::table('size_variants')
+					->select(['size_variants.id', 'size_variants.photo_id', 'size_variants.filesize'])
+					->where('size_variants.type', '!=', 7),
 				as: 'size_variants',
 				first: 'size_variants.photo_id',
 				operator: '=',
@@ -234,7 +241,9 @@ class Spaces
 				second: 'descendants.id'
 			)
 			->joinSub(
-				query: DB::table('size_variants')->select(['size_variants.id', 'size_variants.photo_id', 'size_variants.filesize']),
+				query: DB::table('size_variants')
+					->select(['size_variants.id', 'size_variants.photo_id', 'size_variants.filesize'])
+					->where('size_variants.type', '!=', 7),
 				as: 'size_variants',
 				first: 'size_variants.photo_id',
 				operator: '=',
