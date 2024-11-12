@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Models;
 
+use App\Models\Extensions\Thumb;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
@@ -24,24 +25,18 @@ class ThumbResource extends Data
 	}
 
 	/**
-	 * @param string|null $id
-	 * @param string|null $type
-	 * @param string|null $thumbUrl
-	 * @param string|null $thumb2xUrl
-	 * @param string|null $placeholderUrl
+	 * Produce a thumb resource from a Thumb object if existing.
 	 *
-	 * @return ($id is null ? null : ThumbResource)
+	 * @param Thumb|null $thumb
+	 *
+	 * @return ThumbResource|null
 	 */
-	public static function make(?string $id, ?string $type, ?string $thumbUrl, ?string $thumb2xUrl = null, ?string $placeholderUrl = null): ?self
+	public static function fromModel(?Thumb $thumb): ?self
 	{
-		if ($id === null) {
+		if ($thumb === null) {
 			return null;
 		}
 
-		/** @var string $id */
-		/** @var string $type */
-		/** @var string $thumbUrl */
-		/** @var string $placeholderUrl */
-		return new self($id, $type, $thumbUrl, $thumb2xUrl, $placeholderUrl);
+		return new self($thumb->id, $thumb->type, $thumb->thumbUrl, $thumb->thumb2xUrl, $thumb->placeholderUrl);
 	}
 }
