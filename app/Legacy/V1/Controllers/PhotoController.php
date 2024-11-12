@@ -82,7 +82,10 @@ class PhotoController extends Controller
 		$randomAlbumId = Configs::getValueAsString('random_album_id');
 
 		if ($randomAlbumId === '') {
-			$query = $photoQueryPolicy->applySearchabilityFilter(Photo::query()->with(['album', 'size_variants', 'size_variants.sym_links']));
+			$query = $photoQueryPolicy->applySearchabilityFilter(
+				query: Photo::query()->with(['album', 'size_variants', 'size_variants.sym_links']),
+				origin: null,
+				include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_frame'));
 		} else {
 			$query = $this->albumFactory->findAbstractAlbumOrFail($randomAlbumId)
 									 ->photos()

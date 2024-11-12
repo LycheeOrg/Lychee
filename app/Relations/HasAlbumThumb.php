@@ -80,7 +80,10 @@ class HasAlbumThumb extends Relation
 				$this->where('photos.id', '=', $album->cover_id);
 			} else {
 				$this->photoQueryPolicy
-					->applySearchabilityFilter($this->getRelationQuery(), $album);
+					->applySearchabilityFilter(
+						query: $this->getRelationQuery(),
+						origin: $album,
+						include_nsfw: $album->is_nsfw);
 			}
 		}
 	}

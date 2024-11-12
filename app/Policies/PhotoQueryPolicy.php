@@ -7,7 +7,6 @@ use App\Eloquent\FixedQueryBuilder;
 use App\Exceptions\Internal\InvalidQueryModelException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Album;
-use App\Models\Configs;
 use App\Models\Photo;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as BaseBuilder;
@@ -87,14 +86,15 @@ class PhotoQueryPolicy
 	 * The method simply assumes that the user has already legitimately
 	 * accessed the origin album, if the caller provides an album model.
 	 *
-	 * @param FixedQueryBuilder<Photo> $query  the photo query which shall be restricted
-	 * @param Album|null               $origin the optional top album which is used as a search base
+	 * @param FixedQueryBuilder<Photo> $query        the photo query which shall be restricted
+	 * @param Album|null               $origin       the optional top album which is used as a search base
+	 * @param bool                     $include_nsfw include also the photos in sensitive albums
 	 *
 	 * @return FixedQueryBuilder<Photo> the restricted photo query
 	 *
 	 * @throws InternalLycheeException
 	 */
-	public function applySearchabilityFilter(FixedQueryBuilder $query, ?Album $origin = null): FixedQueryBuilder
+	public function applySearchabilityFilter(FixedQueryBuilder $query, ?Album $origin = null, bool $include_nsfw = true): FixedQueryBuilder
 	{
 		$this->prepareModelQueryOrFail($query, true, false);
 
@@ -107,7 +107,7 @@ class PhotoQueryPolicy
 				->where('albums._rgt', '<=', $origin->_rgt);
 		}
 
-		if (Configs::getValueAsBool('hide_nsfw_in_smart_albums_and_search')) {
+		if (!$include_nsfw) {
 			$query->where(fn (Builder $query) => $this->appendSensitivityConditions($query->getQuery(), $origin?->_lft, $origin?->_rgt));
 		}
 
@@ -232,11 +232,11 @@ class PhotoQueryPolicy
 			//      root album, they must only see their own photos or public
 			//      photos (this is different to any other album: if users are
 			//      allowed to access an album, they may also see its content)
-			$query->orWhereNull('photos.album_id');
-
-			if ($userId !== null) {
-				$query->orWhere('photos.owner_id', '=', $userId);
-			}
+			$query->orWhere(
+				fn ($q) => $q
+					->whereNull('photos.album_id')
+					->where('photos.owner_id', '=', $userId)
+			);
 		} catch (\Throwable $e) {
 			throw new QueryBuilderException($e);
 		}

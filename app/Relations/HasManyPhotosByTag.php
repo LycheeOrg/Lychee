@@ -5,6 +5,7 @@ namespace App\Relations;
 use App\Contracts\Exceptions\InternalLycheeException;
 use App\Enum\OrderSortingType;
 use App\Exceptions\Internal\NotImplementedException;
+use App\Models\Configs;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\TagAlbum;
 use Illuminate\Database\Eloquent\Builder;
@@ -63,7 +64,11 @@ class HasManyPhotosByTag extends BaseHasManyPhotos
 		$tags = $album->show_tags;
 
 		$this->photoQueryPolicy
-			->applySearchabilityFilter($this->getRelationQuery())
+			->applySearchabilityFilter(
+				$this->getRelationQuery(),
+				origin: null,
+				include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_smart_albums')
+			)
 			->where(function (Builder $q) use ($tags) {
 				// Filter for requested tags
 				foreach ($tags as $tag) {
