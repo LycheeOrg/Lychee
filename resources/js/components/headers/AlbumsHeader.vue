@@ -287,15 +287,15 @@ const menu = computed(() =>
 		{
 			icon: "pi pi-eye-slash",
 			type: "fn",
-			callback: () => lycheeStore.are_nsfw_visible = false,
-			if: isTouchDevice() && lycheeStore.are_nsfw_visible
+			callback: () => (lycheeStore.are_nsfw_visible = false),
+			if: isTouchDevice() && lycheeStore.are_nsfw_visible,
 		},
 		{
 			icon: "pi pi-eye",
 			type: "fn",
-			callback: () => lycheeStore.are_nsfw_visible = true,
-			if: isTouchDevice() && !lycheeStore.are_nsfw_visible
-		}
+			callback: () => (lycheeStore.are_nsfw_visible = true),
+			if: isTouchDevice() && !lycheeStore.are_nsfw_visible,
+		},
 	].filter((item) => item.if),
 ) as ComputedRef<MenuRight[]>;
 
