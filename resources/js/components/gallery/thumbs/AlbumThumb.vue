@@ -44,7 +44,7 @@
 	</router-link>
 </template>
 <script setup lang="ts">
-import { computed, ref, type Ref } from "vue";
+import { computed, ref } from "vue";
 import ThumbBadge from "@/components/gallery/thumbs/ThumbBadge.vue";
 import AlbumThumbImage from "@/components/gallery/thumbs/AlbumThumbImage.vue";
 import { useAuthStore } from "@/stores/Auth";

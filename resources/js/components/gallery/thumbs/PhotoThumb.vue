@@ -12,6 +12,16 @@
 			:class="(props.photo.precomputed.is_video ? 'video' : '') + ' ' + (props.photo.precomputed.is_livephoto ? 'livephoto' : '')"
 		>
 			<img
+				v-show="props.photo.size_variants.placeholder?.url"
+				:alt="$t('lychee.PHOTO_PLACEHOLDER')"
+				class="absolute w-full h-full top-0 left-0 blur-md"
+				:class="{ 'animate-fadeout animate-fill-forwards': isImageLoaded }"
+				:src="props.photo.size_variants.placeholder?.url ?? ''"
+				data-overlay="false"
+				draggable="false"
+			/>
+
+			<img
 				alt="Photo thumbnail"
 				class="h-full w-full border-none object-cover object-center"
 				:src="props.photo.size_variants.small?.url ?? props.photo.size_variants.thumb?.url ?? srcNoImage"
@@ -21,6 +31,7 @@
 				data-overlay="false"
 				draggable="false"
 				:loading="props.isLazy ? 'lazy' : 'eager'"
+				@load="onImageLoad"
 			/>
 		</span>
 		<div class="overlay w-full absolute bottom-0 m-0 bg-gradient-to-t from-[#00000066] text-shadow-sm" :class="cssOverlay">
@@ -48,13 +59,15 @@
 	</router-link>
 </template>
 <script setup lang="ts">
-import { computed, ref, type Ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { useAuthStore } from "@/stores/Auth";
 import MiniIcon from "@/components/icons/MiniIcon.vue";
 import ThumbBadge from "@/components/gallery/thumbs/ThumbBadge.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
-import Constants from "@/services/constants";
+import { useImageHelpers } from "@/utils/Helpers";
+
+const { getNoImageIcon, getPlayIcon } = useImageHelpers();
 
 const props = defineProps<{
 	isSelected: boolean;
@@ -69,8 +82,13 @@ const props = defineProps<{
 
 const auth = useAuthStore();
 const lycheeStore = useLycheeStateStore();
-const srcPlay = ref(Constants.BASE_URL + "/img/play-icon.png");
-const srcNoImage = ref(Constants.BASE_URL + "/img/no_images.svg");
+const srcPlay = ref(getPlayIcon());
+const srcNoImage = ref(getNoImageIcon());
+const isImageLoaded = ref(false);
+
+function onImageLoad() {
+	isImageLoaded.value = true;
+}
 
 // @ts-expect-error
 const is_cover_id = computed(() => props.album?.cover_id === props.photo.id);
@@ -97,4 +115,11 @@ const cssOverlay = computed(() => {
 	}
 	return "";
 });
+
+watch(
+	() => props.photo,
+	() => {
+		isImageLoaded.value = false;
+	},
+);
 </script>
