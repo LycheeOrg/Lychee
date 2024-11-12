@@ -76,3 +76,7 @@ export function disableCtrlA(): void {
 		false,
 	);
 }
+
+export function isTouchDevice(): boolean {
+	return "ontouchstart" in document.documentElement || navigator.maxTouchPoints > 0;
+}

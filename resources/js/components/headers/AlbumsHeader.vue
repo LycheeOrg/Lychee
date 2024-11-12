@@ -97,7 +97,7 @@ import AlbumCreateTagDialog from "@/components/forms/album/AlbumCreateTagDialog.
 import { computed, ComputedRef, ref } from "vue";
 import { onKeyStroke } from "@vueuse/core";
 import { useLycheeStateStore } from "@/stores/LycheeState";
-import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
+import { isTouchDevice, shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
 import { storeToRefs } from "pinia";
 import BackLinkButton from "./BackLinkButton.vue";
 import { useContextMenuAlbumsAdd } from "@/composables/contextMenus/contextMenuAlbumsAdd";
@@ -284,8 +284,22 @@ const menu = computed(() =>
 			callback: openAddMenu,
 			if: props.rights.can_upload,
 		},
+		{
+			icon: "pi pi-eye-slash",
+			type: "fn",
+			callback: () => lycheeStore.are_nsfw_visible = false,
+			if: isTouchDevice() && lycheeStore.are_nsfw_visible
+		},
+		{
+			icon: "pi pi-eye",
+			type: "fn",
+			callback: () => lycheeStore.are_nsfw_visible = true,
+			if: isTouchDevice() && !lycheeStore.are_nsfw_visible
+		}
 	].filter((item) => item.if),
 ) as ComputedRef<MenuRight[]>;
+
+console.log(screen.orientation);
 
 // bubble up.
 function refresh() {
