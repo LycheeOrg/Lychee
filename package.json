@@ -21,7 +21,7 @@
         "@types/photoswipe": "^4.1.6",
         "@types/qrcode": "^1.5.5",
         "@types/sprintf-js": "^1.1.4",
-        "@vitejs/plugin-vue": "^5.1.4",
+        "@vitejs/plugin-vue": "^5.1.5",
         "sass": "^1.80.6",
         "vue-tsc": "^2.1.8"
     },
