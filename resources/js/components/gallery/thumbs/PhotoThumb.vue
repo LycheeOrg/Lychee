@@ -8,7 +8,7 @@
 		:data-album-id="props.album?.id"
 	>
 		<span
-			class="thumbimg w-full h-full border-none"
+			class="thumbimg absolute w-full h-full border-none overflow-hidden"
 			:class="(props.photo.precomputed.is_video ? 'video' : '') + ' ' + (props.photo.precomputed.is_livephoto ? 'livephoto' : '')"
 		>
 			<img
