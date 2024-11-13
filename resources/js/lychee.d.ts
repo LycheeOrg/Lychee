@@ -381,7 +381,7 @@ declare namespace App.Http.Resources.Models {
 	export type TagAlbumResource = {
 		id: string;
 		title: string;
-		owner_name: string;
+		owner_name: string | null;
 		copyright: string | null;
 		is_tag_album: boolean;
 		show_tags: Array<string>;

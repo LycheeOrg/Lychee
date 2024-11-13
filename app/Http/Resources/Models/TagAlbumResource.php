@@ -23,7 +23,7 @@ class TagAlbumResource extends Data
 
 	public string $id;
 	public string $title;
-	public string $owner_name;
+	public ?string $owner_name;
 	public ?string $copyright;
 	public bool $is_tag_album;
 
