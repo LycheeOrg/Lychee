@@ -26,8 +26,13 @@ const props = defineProps<{
 const router = useRouter();
 const title = computed(() => sprintf(trans("lychee.DELETE_ALBUM_CONFIRMATION"), props.album.title));
 
+const emits = defineEmits<{
+	deleted: [];
+}>();
+
 function execute() {
 	AlbumService.delete([props.album.id]).then(() => {
+		emits("deleted");
 		if (props.is_model_album) {
 			const album = props.album as App.Http.Resources.Models.AlbumResource;
 			AlbumService.clearCache(album.parent_id);
