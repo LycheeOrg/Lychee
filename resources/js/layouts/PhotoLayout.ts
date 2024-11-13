@@ -4,7 +4,6 @@ import { useJustify } from "./useJustify";
 import { useMasonry } from "./useMasonry";
 import { useGrid } from "./useGrid";
 import AlbumService from "@/services/album-service";
-import TimelineService from "@/services/timeline-service";
 
 export function useLayouts(
 	config: App.Http.Resources.GalleryConfigs.PhotoLayoutConfig,
@@ -64,16 +63,9 @@ export function useGetLayoutConfig() {
 		});
 	}
 
-	function loadLayoutTimeline() {
-		TimelineService.init().then((data) => {
-			layout.value = data.data.photo_layout;
-		});
-	}
-
 	return {
 		layout,
 		layoutConfig,
 		loadLayoutConfig,
-		loadLayoutTimeline,
 	};
 }
