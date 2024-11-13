@@ -117,11 +117,11 @@ export const SelectBuilders = {
 		return albumSortingColumnsOptions.find((option) => option.value === value) || undefined;
 	},
 
-	buildAspectRatio(value: string | App.Enum.AspectRatioType | null): SelectOption<App.Enum.AspectRatioType> | undefined {
+	buildAspectRatio(value: string | App.Enum.AspectRatioType | undefined): SelectOption<App.Enum.AspectRatioType> | undefined {
 		return aspectRationOptions.find((option) => option.value === value) || undefined;
 	},
 
-	buildLicense(value: string | App.Enum.LicenseType | null): SelectOption<App.Enum.LicenseType> | undefined {
+	buildLicense(value: string | App.Enum.LicenseType | undefined): SelectOption<App.Enum.LicenseType> | undefined {
 		return licenseOptions.find((option) => option.value === value) || undefined;
 	},
 

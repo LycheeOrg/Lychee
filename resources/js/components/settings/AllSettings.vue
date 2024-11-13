@@ -89,9 +89,8 @@
 										@filled="update"
 										@reset="reset"
 									/>
-
 									<SelectOptionsField
-										v-else-if="config.key === 'layout'"
+										v-else-if="config.type === 'square|justified|masonry|grid'"
 										:config="config"
 										:options="photoLayoutOptions"
 										:mapper="SelectBuilders.buildPhotoLayout"

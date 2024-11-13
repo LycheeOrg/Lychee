@@ -564,6 +564,7 @@ declare namespace App.Http.Resources.Root {
 declare namespace App.Http.Resources.Search {
 	export type InitResource = {
 		search_minimum_length: number;
+		photo_layout: App.Enum.PhotoLayoutType;
 	};
 	export type ResultsResource = {
 		albums: App.Http.Resources.Models.ThumbAlbumResource[] | Array<any>;

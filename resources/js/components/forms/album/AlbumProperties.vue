@@ -321,8 +321,8 @@ function load(editable: App.Http.Resources.Editable.EditableBaseAlbumResource, p
 	albumSortingColumn.value = SelectBuilders.buildAlbumSorting(editable.album_sorting?.column);
 	albumSortingOrder.value = SelectBuilders.buildSortingOrder(editable.album_sorting?.order);
 	photoLayout.value = SelectBuilders.buildPhotoLayout(editable.photo_layout ?? undefined);
-	license.value = SelectBuilders.buildLicense(editable.license);
-	aspectRatio.value = SelectBuilders.buildAspectRatio(editable.aspect_ratio);
+	license.value = SelectBuilders.buildLicense(editable.license ?? undefined);
+	aspectRatio.value = SelectBuilders.buildAspectRatio(editable.aspect_ratio ?? undefined);
 	header_id.value = buildHeaderId(editable.header_id, photos);
 	tags.value = editable.tags;
 }

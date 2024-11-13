@@ -1,20 +1,20 @@
-import { computed, ref } from "vue";
+import { computed, Ref, ref } from "vue";
 import { useSquare } from "./useSquare";
 import { useJustify } from "./useJustify";
 import { useMasonry } from "./useMasonry";
 import { useGrid } from "./useGrid";
+import AlbumService from "@/services/album-service";
 
-export function useLayouts(config: App.Http.Resources.GalleryConfigs.PhotoLayoutConfig, photo_layout: App.Enum.PhotoLayoutType) {
+export function useLayouts(
+	config: App.Http.Resources.GalleryConfigs.PhotoLayoutConfig,
+	layout: Ref<App.Enum.PhotoLayoutType>,
+	elemId: string = "photoListing",
+) {
 	const configRef = ref(config);
-	const layout = ref(photo_layout);
-	const BASE = "my-0 w-5 h-5 mr-0 ml-0 transition-all duration-300 group-hover:scale-150 group-hover:stroke-black dark:group-hover:stroke-white ";
-	const squareClass = computed(() => BASE + (layout.value === "square" ? "stroke-primary-400" : "stroke-neutral-400"));
-	const justifiedClass = computed(() => BASE + (layout.value === "justified" ? "fill-primary-400" : "fill-neutral-400"));
-	const masonryClass = computed(() => BASE + (layout.value === "masonry" ? "stroke-primary-400" : "stroke-neutral-400"));
-	const gridClass = computed(() => BASE + (layout.value === "grid" ? "stroke-primary-400" : "stroke-neutral-400"));
+	const elementId = elemId;
 
 	function activateLayout() {
-		const photoListing = document.getElementById("photoListing");
+		const photoListing = document.getElementById(elementId);
 		if (photoListing === null) {
 			return; // Nothing to do
 		}
@@ -33,11 +33,38 @@ export function useLayouts(config: App.Http.Resources.GalleryConfigs.PhotoLayout
 	}
 
 	return {
-		layout,
+		activateLayout,
+	};
+}
+
+export function useLayoutClass(layout: Ref<App.Enum.PhotoLayoutType>) {
+	const BASE = "my-0 w-5 h-5 mr-0 ml-0 transition-all duration-300 group-hover:scale-150 group-hover:stroke-black dark:group-hover:stroke-white ";
+	const squareClass = computed(() => BASE + (layout.value === "square" ? "stroke-primary-400" : "stroke-neutral-400"));
+	const justifiedClass = computed(() => BASE + (layout.value === "justified" ? "fill-primary-400" : "fill-neutral-400"));
+	const masonryClass = computed(() => BASE + (layout.value === "masonry" ? "stroke-primary-400" : "stroke-neutral-400"));
+	const gridClass = computed(() => BASE + (layout.value === "grid" ? "stroke-primary-400" : "stroke-neutral-400"));
+
+	return {
 		squareClass,
 		justifiedClass,
 		masonryClass,
 		gridClass,
-		activateLayout,
+	};
+}
+
+export function useGetLayoutConfig() {
+	const layoutConfig = ref(null) as Ref<null | App.Http.Resources.GalleryConfigs.PhotoLayoutConfig>;
+	const layout = ref("square") as Ref<App.Enum.PhotoLayoutType>;
+
+	function loadLayoutConfig() {
+		AlbumService.getLayout().then((data) => {
+			layoutConfig.value = data.data;
+		});
+	}
+
+	return {
+		layout,
+		layoutConfig,
+		loadLayoutConfig,
 	};
 }
