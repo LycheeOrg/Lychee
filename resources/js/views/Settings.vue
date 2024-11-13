@@ -28,6 +28,7 @@
 			</TabPanel>
 		</TabPanels>
 	</Tabs>
+	<ScrollTop :threshold="50" />
 </template>
 <script setup lang="ts">
 import Tabs from "primevue/tabs";
@@ -39,4 +40,11 @@ import Toolbar from "primevue/toolbar";
 import AllSettings from "@/components/settings/AllSettings.vue";
 import EasySettings from "@/components/settings/EasySettings.vue";
 import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
+import ScrollTop from "primevue/scrolltop";
 </script>
+<style lang="css">
+/* Kill the border of ScrollTop */
+.p-scrolltop {
+	border: none;
+}
+</style>
