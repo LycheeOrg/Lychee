@@ -668,3 +668,17 @@ declare namespace App.Http.Resources.Statistics {
 		size: number;
 	};
 }
+declare namespace App.Http.Resources.Timeline {
+	export type InitResource = {
+		photo_layout: App.Enum.PhotoLayoutType;
+	};
+	export type TimelineResource = {
+		photos: App.Http.Resources.Models.PhotoResource[] | Array<any>;
+		current_page: number;
+		from: number;
+		last_page: number;
+		per_page: number;
+		to: number;
+		total: number;
+	};
+}
