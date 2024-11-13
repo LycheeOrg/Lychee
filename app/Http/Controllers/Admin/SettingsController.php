@@ -20,6 +20,7 @@ class SettingsController extends Controller
 	public function getAll(GetAllConfigsRequest $request): ConfigCollectionResource
 	{
 		$editable_configs = Configs::query()
+			->when(config('features.hide-lychee-SE', false) === true, fn ($q) => $q->where('cat', '!=', 'lychee SE'))
 			->when(!$request->is_se() && !Configs::getValueAsBool('enable_se_preview'), fn ($q) => $q->where('level', '=', 0))
 			->orderBy('cat', 'asc')->get();
 
