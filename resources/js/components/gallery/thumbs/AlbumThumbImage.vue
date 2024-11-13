@@ -27,8 +27,10 @@
 	</span>
 </template>
 <script setup lang="ts">
-import Constants from "@/services/constants";
+import { useImageHelpers } from "@/utils/Helpers";
 import { watch, ref, computed } from "vue";
+
+const { isNotEmpty, getPlayIcon, getPlaceholderIcon, getNoImageIcon, getPaswwordIcon } = useImageHelpers();
 
 const props = defineProps<{
 	thumb: App.Http.Resources.Models.ThumbResource | undefined | null;
@@ -41,8 +43,7 @@ const src = ref("");
 const srcSet = ref("");
 const placeholderSrc = ref("");
 const classObject = computed(() => ({
-	"invert brightness-25 dark:invert-0 dark:brightness-100":
-		src.value === Constants.BASE_URL + "/img/no_images.svg" || src.value === Constants.BASE_URL + "/img/password.svg",
+	"invert brightness-25 dark:invert-0 dark:brightness-100": src.value === getNoImageIcon() || src.value === getPaswwordIcon(),
 	invisible: !isImageLoaded.value,
 }));
 
@@ -55,23 +56,17 @@ function load(thumb: App.Http.Resources.Models.ThumbResource | undefined | null,
 		placeholderSrc.value = thumb?.placeholder as string;
 	}
 	if (thumb?.thumb === "uploads/thumb/") {
-		src.value = Constants.BASE_URL + "/img/placeholder.png";
+		src.value = getPlaceholderIcon();
 		if (thumb.type.includes("video")) {
-			src.value = Constants.BASE_URL + "/img/play-icon.png";
+			src.value = getPlayIcon();
 		}
 		if (thumb.type.includes("raw")) {
-			src.value = Constants.BASE_URL + "/img/no_images.svg";
+			src.value = getNoImageIcon();
 		}
 	} else {
-		src.value = isNotEmpty(thumb?.thumb)
-			? (thumb?.thumb as string)
-			: Constants.BASE_URL + (isPasswordProtected ? "/img/password.svg" : "/img/no_images.svg");
+		src.value = isNotEmpty(thumb?.thumb) ? (thumb?.thumb as string) : isPasswordProtected ? getPaswwordIcon() : getNoImageIcon();
 	}
 	srcSet.value = isNotEmpty(thumb?.thumb2x) ? (thumb?.thumb2x as string) : "";
-}
-
-function isNotEmpty(link: string | null | undefined): boolean {
-	return link !== "" && link !== null && link !== undefined;
 }
 
 load(props.thumb, props.isPasswordProtected);
