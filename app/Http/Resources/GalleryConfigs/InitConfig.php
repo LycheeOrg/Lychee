@@ -47,6 +47,9 @@ class InitConfig extends Data
 	// Slideshow setting
 	public int $slideshow_timeout;
 
+	// Timeline settings
+	public bool $is_timeline_left_border_visible;
+
 	// Site title & dropbox key if logged in as admin.
 	public string $title;
 	public string $dropbox_api_key;
@@ -90,6 +93,9 @@ class InitConfig extends Data
 
 		// Slideshow settings
 		$this->slideshow_timeout = Configs::getValueAsInt('slideshow_timeout');
+
+		// Timeline settings
+		$this->is_timeline_left_border_visible = Configs::getValueAsBool('timeline_left_border_enabled');
 
 		// Site title & dropbox key if logged in as admin.
 		$this->title = Configs::getValueAsString('site_title');

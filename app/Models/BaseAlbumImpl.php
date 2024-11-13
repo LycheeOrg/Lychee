@@ -9,6 +9,7 @@ use App\DTO\PhotoSortingCriterion;
 use App\Enum\ColumnSortingType;
 use App\Enum\OrderSortingType;
 use App\Enum\PhotoLayoutType;
+use App\Enum\TimelinePhotoGranularity;
 use App\Models\Builders\BaseAlbumImplBuilder;
 use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\HasBidirectionalRelationships;
@@ -96,6 +97,7 @@ use Illuminate\Support\Facades\Auth;
  * @property string                           $title
  * @property string|null                      $description
  * @property PhotoLayoutType|null             $photo_layout
+ * @property TimelinePhotoGranularity         $photo_timeline
  * @property int                              $owner_id
  * @property User                             $owner
  * @property bool                             $is_nsfw
@@ -283,5 +285,49 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	{
 		$this->attributes['sorting_col'] = $sorting?->column->value;
 		$this->attributes['sorting_order'] = $sorting?->order->value;
+	}
+
+	/**
+	 * Defines accessor for the Aspect Ratio.
+	 *
+	 * @return PhotoLayoutType|null
+	 */
+	protected function getPhotoLayoutAttribute(): ?PhotoLayoutType
+	{
+		return PhotoLayoutType::tryFrom($this->attributes['photo_layout']);
+	}
+
+	/**
+	 * Defines setter for Aspect Ratio.
+	 *
+	 * @param PhotoLayoutType|null $aspectRatio
+	 *
+	 * @return void
+	 */
+	protected function setPhotoLayoutAttribute(?PhotoLayoutType $aspectRatio): void
+	{
+		$this->attributes['photo_layout'] = $aspectRatio?->value;
+	}
+
+	/**
+	 * Defines accessor for the Photo Timeline.
+	 *
+	 * @return TimelinePhotoGranularity|null
+	 */
+	protected function getPhotoTimelineAttribute(): ?TimelinePhotoGranularity
+	{
+		return TimelinePhotoGranularity::tryFrom($this->attributes['photo_timeline']);
+	}
+
+	/**
+	 * Defines setter for Photo Timeline.
+	 *
+	 * @param TimelinePhotoGranularity|null $photo_timeline
+	 *
+	 * @return void
+	 */
+	protected function setPhotoTimelineAttribute(?TimelinePhotoGranularity $photo_timeline): void
+	{
+		$this->attributes['photo_timeline'] = $photo_timeline?->value;
 	}
 }

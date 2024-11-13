@@ -1,5 +1,5 @@
 <template>
-	<Card class="sm:p-4 xl:px-9 max-sm:w-full sm:min-w-[32rem] flex-shrink-0">
+	<Card class="sm:p-4 xl:px-9 max-sm:w-full sm:min-w-[48rem] flex-shrink-0">
 		<template #content>
 			<form>
 				<div class="h-12">
@@ -157,7 +157,7 @@
 							<label for="copyright">{{ $t("lychee.ALBUM_SET_COPYRIGHT") }}</label>
 						</FloatLabel>
 					</div>
-					<div class="h-10 my-2 pt-4">
+					<div class="sm:h-10 my-2 pt-4 flex flex-wrap gap-y-4">
 						<FloatLabel variant="on">
 							<Select
 								id="aspectRatio"
@@ -180,9 +180,31 @@
 							</Select>
 							<label for="aspectRatio">Set album thumbs aspect ratio</label>
 						</FloatLabel>
+						<FloatLabel variant="on">
+							<Select
+								id="albumTimeline"
+								class="w-72 border-none"
+								v-model="albumTimeline"
+								:options="albumTimelineOptions"
+								optionLabel="label"
+								showClear
+							>
+								<template #value="slotProps">
+									<div v-if="slotProps.value" class="flex items-center">
+										<div>{{ $t(slotProps.value.label) }}</div>
+									</div>
+								</template>
+								<template #option="slotProps">
+									<div class="flex items-center">
+										<div>{{ $t(slotProps.option.label) }}</div>
+									</div>
+								</template>
+							</Select>
+							<label for="albumTimeline">Set album timeline mode</label>
+						</FloatLabel>
 					</div>
 				</template>
-				<div class="h-10 my-2 pt-4">
+				<div class="sm:h-10 my-2 pt-4 flex flex-wrap gap-y-4">
 					<FloatLabel variant="on">
 						<Select
 							id="photoLayout"
@@ -205,7 +227,32 @@
 						</Select>
 						<label for="photoLayout">Set photo layout</label>
 					</FloatLabel>
+					<FloatLabel variant="on">
+						<Select
+							id="photoTimeline"
+							class="w-72 border-none"
+							v-model="photoTimeline"
+							:options="photoTimelineOptions"
+							optionLabel="label"
+							showClear
+						>
+							<template #value="slotProps">
+								<div v-if="slotProps.value" class="flex items-center">
+									<div>{{ $t(slotProps.value.label) }}</div>
+								</div>
+							</template>
+							<template #option="slotProps">
+								<div class="flex items-center">
+									<div>{{ $t(slotProps.option.label) }}</div>
+								</div>
+							</template>
+						</Select>
+						<label for="photoTimeline">Set photo timeline mode</label>
+					</FloatLabel>
 				</div>
+
+				<div v-if="is_model_album" class="h-10 my-2 pt-4"></div>
+
 				<div v-if="!is_model_album" class="mb-8 h-10">
 					<FloatLabel variant="on">
 						<AutoComplete
@@ -244,16 +291,23 @@ import {
 	photoLayoutOptions,
 	SelectOption,
 	SelectBuilders,
+	timelinePhotoGranularityOptions,
+	timelineAlbumGranularityOptions,
 } from "@/config/constants";
 import { useToast } from "primevue/usetoast";
 import { trans } from "laravel-vue-i18n";
 import AutoComplete from "primevue/autocomplete";
+import { useLycheeStateStore } from "@/stores/LycheeState";
+import { storeToRefs } from "pinia";
 
 type HeaderOption = {
 	id: string;
 	title?: string;
 	thumb?: string | null;
 };
+
+const LycheeState = useLycheeStateStore();
+const { is_se_enabled } = storeToRefs(LycheeState);
 
 const props = defineProps<{
 	editable: App.Http.Resources.Editable.EditableBaseAlbumResource;
@@ -270,11 +324,29 @@ const photoSortingOrder = ref<SelectOption<App.Enum.OrderSortingType> | undefine
 const albumSortingColumn = ref<SelectOption<App.Enum.ColumnSortingAlbumType> | undefined>(undefined);
 const albumSortingOrder = ref<SelectOption<App.Enum.OrderSortingType> | undefined>(undefined);
 const photoLayout = ref<SelectOption<App.Enum.PhotoLayoutType> | undefined>(undefined);
+const photoTimeline = ref<SelectOption<App.Enum.TimelinePhotoGranularity> | undefined>(undefined);
+const albumTimeline = ref<SelectOption<App.Enum.TimelineAlbumGranularity> | undefined>(undefined);
 const license = ref<SelectOption<App.Enum.LicenseType> | undefined>(undefined);
 const copyright = ref<string | undefined>(undefined);
 const tags = ref<string[]>([]);
 const aspectRatio = ref<SelectOption<App.Enum.AspectRatioType> | undefined>(undefined);
 const header_id = ref<HeaderOption | undefined>(undefined);
+
+const photoTimelineOptions = computed(() => {
+	if (is_se_enabled.value) {
+		return timelinePhotoGranularityOptions;
+	}
+
+	return timelinePhotoGranularityOptions.slice(0, 2);
+});
+
+const albumTimelineOptions = computed(() => {
+	if (is_se_enabled.value) {
+		return timelineAlbumGranularityOptions;
+	}
+
+	return timelineAlbumGranularityOptions.slice(0, 2);
+});
 
 const headersOptions = computed(() => {
 	const list: HeaderOption[] = [
@@ -323,6 +395,8 @@ function load(editable: App.Http.Resources.Editable.EditableBaseAlbumResource, p
 	photoLayout.value = SelectBuilders.buildPhotoLayout(editable.photo_layout ?? undefined);
 	license.value = SelectBuilders.buildLicense(editable.license ?? undefined);
 	aspectRatio.value = SelectBuilders.buildAspectRatio(editable.aspect_ratio ?? undefined);
+	albumTimeline.value = SelectBuilders.buildTimelineAlbumGranularity(editable.album_timeline ?? undefined);
+	photoTimeline.value = SelectBuilders.buildTimelinePhotoGranularity(editable.photo_timeline ?? undefined);
 	header_id.value = buildHeaderId(editable.header_id, photos);
 	tags.value = editable.tags;
 }
@@ -352,6 +426,8 @@ function saveAlbum() {
 		header_id: header_id.value?.id === "compact" ? null : (header_id.value?.id ?? null),
 		is_compact: header_id.value?.id === "compact",
 		photo_layout: photoLayout.value?.value ?? null,
+		album_timeline: albumTimeline.value?.value ?? null,
+		photo_timeline: photoTimeline.value?.value ?? null,
 	};
 	AlbumService.updateAlbum(data)
 		.then(() => {
@@ -378,6 +454,7 @@ function saveTagAlbum() {
 		photo_sorting_order: photoSortingOrder.value?.value ?? null,
 		copyright: copyright.value ?? null,
 		photo_layout: photoLayout.value?.value ?? null,
+		photo_timeline: photoTimeline.value?.value ?? null,
 	};
 	AlbumService.updateTag(data)
 		.then(() => {

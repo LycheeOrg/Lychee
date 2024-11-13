@@ -40,7 +40,7 @@ const maySelect = (idx: number, e: MouseEvent) => emits("clicked", idx, e);
 const menuOpen = (idx: number, e: MouseEvent) => emits("contexted", idx, e);
 
 // Layouts stuff
-const { activateLayout } = useLayouts(props.galleryConfig, layout, "photoListing" + props.iter);
+const { activateLayout } = useLayouts(props.galleryConfig, layout, isTimeline, "photoListing" + props.iter);
 onMounted(() => activateLayout());
 onUpdated(() => activateLayout());
 </script>

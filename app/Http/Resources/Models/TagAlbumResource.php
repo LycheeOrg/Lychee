@@ -5,9 +5,11 @@ namespace App\Http\Resources\Models;
 use App\Http\Resources\Editable\EditableBaseAlbumResource;
 use App\Http\Resources\Models\Utils\AlbumProtectionPolicy;
 use App\Http\Resources\Models\Utils\PreFormattedAlbumData;
+use App\Http\Resources\Models\Utils\TimelineData;
 use App\Http\Resources\Rights\AlbumRightsResource;
 use App\Http\Resources\Traits\HasHeaderUrl;
 use App\Http\Resources\Traits\HasPrepPhotoCollection;
+use App\Http\Resources\Traits\HasTimelineData;
 use App\Models\TagAlbum;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -20,6 +22,7 @@ class TagAlbumResource extends Data
 {
 	use HasPrepPhotoCollection;
 	use HasHeaderUrl;
+	use HasTimelineData;
 
 	public string $id;
 	public string $title;
@@ -55,7 +58,14 @@ class TagAlbumResource extends Data
 
 		// children
 		$this->photos = $tagAlbum->relationLoaded('photos') ? PhotoResource::collect($tagAlbum->photos) : null;
-		$this->prepPhotosCollection();
+		if ($this->photos !== null) {
+			// Prep collection with first and last link + which id is next.
+			$this->prepPhotosCollection();
+
+			// setup timeline data
+			$photo_granularity = $this->getPhotoTimeline($tagAlbum->photo_timeline);
+			$this->photos = TimelineData::setTimeLineDataForPhotos($this->photos, $photo_granularity);
+		}
 
 		// thumb
 		$this->thumb = ThumbResource::fromModel($tagAlbum->thumb);

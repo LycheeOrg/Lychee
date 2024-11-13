@@ -11,6 +11,8 @@ use App\Contracts\Http\Requests\HasLicense;
 use App\Contracts\Http\Requests\HasPhoto;
 use App\Contracts\Http\Requests\HasPhotoLayout;
 use App\Contracts\Http\Requests\HasPhotoSortingCriterion;
+use App\Contracts\Http\Requests\HasTimelineAlbum;
+use App\Contracts\Http\Requests\HasTimelinePhoto;
 use App\Contracts\Http\Requests\HasTitle;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Contracts\Models\AbstractAlbum;
@@ -22,6 +24,8 @@ use App\Enum\ColumnSortingPhotoType;
 use App\Enum\LicenseType;
 use App\Enum\OrderSortingType;
 use App\Enum\PhotoLayoutType;
+use App\Enum\TimelineAlbumGranularity;
+use App\Enum\TimelinePhotoGranularity;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasAlbumSortingCriterionTrait;
 use App\Http\Requests\Traits\HasAlbumTrait;
@@ -33,19 +37,22 @@ use App\Http\Requests\Traits\HasLicenseTrait;
 use App\Http\Requests\Traits\HasPhotoLayoutTrait;
 use App\Http\Requests\Traits\HasPhotoSortingCriterionTrait;
 use App\Http\Requests\Traits\HasPhotoTrait;
+use App\Http\Requests\Traits\HasTimelineAlbumTrait;
+use App\Http\Requests\Traits\HasTimelinePhotoTrait;
 use App\Http\Requests\Traits\HasTitleTrait;
 use App\Models\Album;
 use App\Models\Photo;
 use App\Policies\AlbumPolicy;
 use App\Rules\CopyrightRule;
 use App\Rules\DescriptionRule;
+use App\Rules\EnumRequireSupportRule;
 use App\Rules\RandomIDRule;
 use App\Rules\TitleRule;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Validation\ValidationException;
 
-class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, HasDescription, HasLicense, HasPhotoSortingCriterion, HasAlbumSortingCriterion, HasCopyright, HasPhoto, HasCompactBoolean, HasPhotoLayout
+class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, HasDescription, HasLicense, HasPhotoSortingCriterion, HasAlbumSortingCriterion, HasCopyright, HasPhoto, HasCompactBoolean, HasPhotoLayout, HasTimelineAlbum, HasTimelinePhoto
 {
 	use HasAlbumTrait;
 	use HasLicenseTrait;
@@ -58,6 +65,8 @@ class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, H
 	use HasAlbumSortingCriterionTrait;
 	use HasCopyrightTrait;
 	use HasPhotoLayoutTrait;
+	use HasTimelineAlbumTrait;
+	use HasTimelinePhotoTrait;
 
 	public function authorize(): bool
 	{
@@ -92,6 +101,8 @@ class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, H
 			RequestAttribute::COPYRIGHT_ATTRIBUTE => ['present', 'nullable', new CopyrightRule()],
 			RequestAttribute::IS_COMPACT_ATTRIBUTE => ['required', 'boolean'],
 			RequestAttribute::HEADER_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
+			RequestAttribute::ALBUM_TIMELINE_ALBUM => ['present', 'nullable', new Enum(TimelineAlbumGranularity::class), new EnumRequireSupportRule(TimelinePhotoGranularity::class, [TimelinePhotoGranularity::DEFAULT, TimelinePhotoGranularity::DISABLED], $this->verify)],
+			RequestAttribute::ALBUM_TIMELINE_PHOTO => ['present', 'nullable', new Enum(TimelinePhotoGranularity::class), new EnumRequireSupportRule(TimelinePhotoGranularity::class, [TimelinePhotoGranularity::DEFAULT, TimelinePhotoGranularity::DISABLED], $this->verify)],
 		];
 	}
 
@@ -129,6 +140,9 @@ class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, H
 
 		$this->aspectRatio = AspectRatioType::tryFrom($values[RequestAttribute::ALBUM_ASPECT_RATIO_ATTRIBUTE]);
 		$this->photoLayout = PhotoLayoutType::tryFrom($values[RequestAttribute::ALBUM_PHOTO_LAYOUT]);
+		$this->album_timeline = TimelineAlbumGranularity::tryFrom($values[RequestAttribute::ALBUM_TIMELINE_ALBUM]);
+		$this->photo_timeline = TimelinePhotoGranularity::tryFrom($values[RequestAttribute::ALBUM_TIMELINE_PHOTO]);
+
 		$this->copyright = $values[RequestAttribute::COPYRIGHT_ATTRIBUTE];
 
 		$this->is_compact = static::toBoolean($values[RequestAttribute::IS_COMPACT_ATTRIBUTE]);

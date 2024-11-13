@@ -4,6 +4,7 @@
 			<PhotoThumbPanelControl v-model:layout="layout" />
 		</template>
 		<PhotoThumbPanelList
+			v-if="isTimeline === false"
 			:photos="props.photos"
 			:layout="layout"
 			:album="props.album"
@@ -12,14 +13,42 @@
 			:iter="0"
 			@clicked="propagateClicked"
 			@contexted="propagateMenuOpen"
+			:isTimeline="isTimeline"
 		/>
+		<template v-else>
+			<Timeline v-if="is_timeline_left_border_visible" :value="photosTimeLine" :pt:eventopposite:class="'hidden'" class="mt-4">
+				<template #content="slotProps">
+					<div class="flex flex-wrap flex-row flex-shrink w-full justify-start gap-1 sm:gap-2 md:gap-4 pb-8">
+						<div class="w-full text-left font-semibold text-muted-color-emphasis text-lg">{{ slotProps.item.header }}</div>
+						<PhotoThumbPanelList
+							:photos="slotProps.item.data"
+							:layout="layout"
+							:album="props.album"
+							:galleryConfig="props.galleryConfig"
+							:selectedPhotos="props.selectedPhotos"
+							:iter="slotProps.item.iter"
+							:isTimeline="isTimeline"
+							@clicked="propagateClicked"
+							@contexted="propagateMenuOpen"
+						/>
+					</div>
+				</template>
+			</Timeline>
+		</template>
 	</Panel>
 </template>
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import Panel from "primevue/panel";
+import { useLycheeStateStore } from "@/stores/LycheeState";
+import { storeToRefs } from "pinia";
+import { SplitData, useSplitter } from "@/composables/album/splitter";
+import Timeline from "primevue/timeline";
 import PhotoThumbPanelList from "./PhotoThumbPanelList.vue";
 import PhotoThumbPanelControl from "./PhotoThumbPanelControl.vue";
+
+const lycheeStore = useLycheeStateStore();
+const { is_timeline_left_border_visible } = storeToRefs(lycheeStore);
 
 const props = defineProps<{
 	header: string;
@@ -32,9 +61,11 @@ const props = defineProps<{
 		| undefined;
 	galleryConfig: App.Http.Resources.GalleryConfigs.PhotoLayoutConfig;
 	selectedPhotos: string[];
+	isTimeline: boolean;
 }>();
 
 const layout = ref(props.photoLayout);
+const isTimeline = ref(props.isTimeline);
 
 // bubble up.
 const emits = defineEmits<{
@@ -49,4 +80,14 @@ const propagateClicked = (idx: number, e: MouseEvent) => {
 const propagateMenuOpen = (idx: number, e: MouseEvent) => {
 	emits("contexted", idx, e);
 };
+
+const { spliter } = useSplitter();
+
+const photosTimeLine = computed<SplitData<App.Http.Resources.Models.PhotoResource>[]>(() =>
+	spliter(
+		props.photos as App.Http.Resources.Models.PhotoResource[],
+		(p: App.Http.Resources.Models.PhotoResource) => p.timeline?.timeDate ?? "",
+		(p: App.Http.Resources.Models.PhotoResource) => p.timeline?.format ?? "Others",
+	),
+);
 </script>

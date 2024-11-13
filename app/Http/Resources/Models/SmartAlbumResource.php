@@ -2,11 +2,14 @@
 
 namespace App\Http\Resources\Models;
 
+use App\Enum\TimelinePhotoGranularity;
 use App\Http\Resources\Models\Utils\AlbumProtectionPolicy;
 use App\Http\Resources\Models\Utils\PreFormattedAlbumData;
+use App\Http\Resources\Models\Utils\TimelineData;
 use App\Http\Resources\Rights\AlbumRightsResource;
 use App\Http\Resources\Traits\HasHeaderUrl;
 use App\Http\Resources\Traits\HasPrepPhotoCollection;
+use App\Models\Configs;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Support\Collection;
 use Spatie\LaravelData\Data;
@@ -36,6 +39,14 @@ class SmartAlbumResource extends Data
 		/** @phpstan-ignore-next-line */
 		$this->photos = $smartAlbum->relationLoaded('photos') ? PhotoResource::collect($smartAlbum->getPhotos()) : null;
 		$this->prepPhotosCollection();
+		if ($this->photos !== null) {
+			// Prep collection with first and last link + which id is next.
+			$this->prepPhotosCollection();
+
+			// setup timeline data
+			$photo_granularity = Configs::getValueAsEnum('timeline_photo_granularity', TimelinePhotoGranularity::class);
+			$this->photos = TimelineData::setTimeLineDataForPhotos($this->photos, $photo_granularity);
+		}
 
 		$this->thumb = ThumbResource::fromModel($smartAlbum->thumb);
 		$this->policy = AlbumProtectionPolicy::ofSmartAlbum($smartAlbum);
