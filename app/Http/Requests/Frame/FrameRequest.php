@@ -10,7 +10,7 @@ use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasAbstractAlbumTrait;
 use App\Models\Configs;
 use App\Policies\AlbumPolicy;
-use App\Rules\RandomIDRule;
+use App\Rules\AlbumIDRule;
 use Illuminate\Support\Facades\Gate;
 
 class FrameRequest extends BaseApiRequest implements HasAbstractAlbum
@@ -31,7 +31,7 @@ class FrameRequest extends BaseApiRequest implements HasAbstractAlbum
 	public function rules(): array
 	{
 		return [
-			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['sometimes', new RandomIDRule(true)],
+			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['sometimes', new AlbumIDRule(true)],
 		];
 	}
 
