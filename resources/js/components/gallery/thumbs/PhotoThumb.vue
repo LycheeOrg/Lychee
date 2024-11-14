@@ -26,7 +26,9 @@
 				class="h-full w-full border-none object-cover object-center"
 				:src="props.photo.size_variants.small?.url ?? props.photo.size_variants.thumb?.url ?? srcNoImage"
 				:srcset="
-					props.photo.size_variants.small2x ? props.photo.size_variants.small + ' 1x, ' + props.photo.size_variants.small2x + ' 2x' : ''
+					props.photo.size_variants.small2x?.url
+						? props.photo.size_variants.small?.url + ' 1x, ' + props.photo.size_variants.small2x.url + ' 2x'
+						: ''
 				"
 				data-overlay="false"
 				draggable="false"
