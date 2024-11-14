@@ -50,12 +50,12 @@ class JsonRequestFunctions implements JsonRequest
 		}
 		try {
 			$text = match (0) {
-				now()->diffInMinutes($age) => now()->diffInSeconds($age) . ' seconds',
-				now()->diffInHours($age) => now()->diffInMinutes($age) . ' minutes',
-				now()->diffInDays($age) => now()->diffInHours($age) . ' hours',
-				now()->diffInWeeks($age) => now()->diffInDays($age) . ' days',
-				now()->diffInMonths($age) => now()->diffInWeeks($age) . ' weeks',
-				now()->diffInYears($age) => now()->diffInMonths($age) . ' months',
+				(int) now()->diffInMinutes($age) => (int) -now()->diffInSeconds($age) . ' seconds',
+				(int) now()->diffInHours($age) => (int) -now()->diffInMinutes($age) . ' minutes',
+				(int) now()->diffInDays($age) => (int) -now()->diffInHours($age) . ' hours',
+				(int) now()->diffInWeeks($age) => (int) -now()->diffInDays($age) . ' days',
+				(int) now()->diffInMonths($age) => (int) -now()->diffInWeeks($age) . ' weeks',
+				(int) now()->diffInYears($age) => (int) -now()->diffInMonths($age) . ' months',
 				default => now()->diffInYears($age) . ' years',
 			};
 
