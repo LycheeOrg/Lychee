@@ -53,7 +53,7 @@ function onImageLoad() {
 
 function load(thumb: App.Http.Resources.Models.ThumbResource | undefined | null, isPasswordProtected: boolean) {
 	if (isNotEmpty(thumb?.placeholder)) {
-		placeholderSrc.value = thumb?.placeholder as string;
+		placeholderSrc.value = thumb.placeholder;
 	}
 	if (thumb?.thumb === "uploads/thumb/") {
 		src.value = getPlaceholderIcon();
@@ -64,9 +64,9 @@ function load(thumb: App.Http.Resources.Models.ThumbResource | undefined | null,
 			src.value = getNoImageIcon();
 		}
 	} else {
-		src.value = isNotEmpty(thumb?.thumb) ? (thumb?.thumb as string) : isPasswordProtected ? getPaswwordIcon() : getNoImageIcon();
+		src.value = isNotEmpty(thumb?.thumb) ? thumb.thumb : isPasswordProtected ? getPaswwordIcon() : getNoImageIcon();
 	}
-	srcSet.value = isNotEmpty(thumb?.thumb2x) ? (thumb?.thumb2x as string) : "";
+	srcSet.value = isNotEmpty(thumb?.thumb2x) ? thumb.thumb2x : "";
 }
 
 load(props.thumb, props.isPasswordProtected);

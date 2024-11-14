@@ -34,7 +34,7 @@
 					id="image"
 					alt="placeholder"
 					class="absolute m-auto w-auto h-auto animate-zoomIn bg-contain bg-center bg-no-repeat"
-					:src="placeholder"
+					:src="getPlaceholderIcon()"
 				/>
 				<!-- This is a normal image: medium or original -->
 				<img
@@ -165,6 +165,7 @@ import { useSlideshowFunction } from "@/composables/photo/slideshow";
 import { useToast } from "primevue/usetoast";
 import type { UseSwipeDirection } from "@vueuse/core";
 import { useSwipe } from "@vueuse/core";
+import { useImageHelpers } from "@/utils/Helpers";
 
 const swipe = ref<HTMLElement | null>(null);
 
@@ -183,8 +184,9 @@ const { is_upload_visible } = storeToRefs(lycheeStore);
 const { isDeleteVisible, toggleDelete, isMoveVisible, toggleMove } = useGalleryModals(is_upload_visible);
 
 const photoId = ref(props.photoid);
-const { photo, album, photos, placeholder, previousStyle, nextStyle, srcSetMedium, style, imageViewMode, refresh, hasPrevious, hasNext } =
+const { photo, album, photos, previousStyle, nextStyle, srcSetMedium, style, imageViewMode, refresh, hasPrevious, hasNext } =
 	usePhotoBaseFunction(photoId);
+const { getPlaceholderIcon } = useImageHelpers();
 
 const { is_full_screen, is_edit_open, are_details_open, is_slideshow_active, slideshow_timeout } = storeToRefs(lycheeStore);
 
