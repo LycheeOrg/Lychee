@@ -131,7 +131,7 @@ export default defineConfig(({ command, mode, isSsrBuild, isPreview }) => {
 			config.server.proxy = {
 				"/api/": env.VITE_HTTP_PROXY_TARGET,
 			};
-      config.plugins.push(localDevelopMiddleware);
+			config.plugins.push(localDevelopMiddleware);
 			return config;
 		}
 	}
