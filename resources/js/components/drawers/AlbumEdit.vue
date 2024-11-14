@@ -58,7 +58,13 @@
 		<div class="w-full xl:w-5/6 flex justify-center flex-wrap mb-4 sm:mt-7 pl-7" v-if="activeTab === 3 && (canDelete || canTransfer)">
 			<!-- @vue-expect-error -->
 			<AlbumTransfer v-if="canTransfer" :album="props.album" :key="'transfer_' + props.album.id" />
-			<AlbumDelete v-if="canDelete" :album="props.album" :is_model_album="props.config.is_model_album" :key="'delete_' + props.album.id" />
+			<AlbumDelete
+				v-if="canDelete"
+				:album="props.album"
+				:is_model_album="props.config.is_model_album"
+				:key="'delete_' + props.album.id"
+				@deleted="close"
+			/>
 		</div>
 	</Collapse>
 </template>
@@ -96,4 +102,9 @@ const canShare = computed(() => props.album.rights.can_share_with_users && numUs
 const canMove = computed(() => props.config.is_model_album && props.album.rights.can_move);
 const canTransfer = computed(() => props.config.is_base_album && numUsers.value > 1 && props.album.rights.can_transfer);
 const canDelete = computed(() => props.config.is_base_album && props.album.rights.can_delete);
+
+function close() {
+	activeTab.value = 0;
+	are_details_open.value = false;
+}
 </script>
