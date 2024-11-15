@@ -1,7 +1,7 @@
 import Constants from "@/services/constants";
 
 export function useImageHelpers() {
-	function isNotEmpty(link: string | null | undefined): boolean {
+	function isNotEmpty(link: string | null | undefined): link is string {
 		return link !== "" && link !== null && link !== undefined;
 	}
 

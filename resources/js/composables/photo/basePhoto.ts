@@ -1,12 +1,9 @@
-import Constants from "@/services/constants";
 import { computed, Ref, ref } from "vue";
 
 export function usePhotoBaseFunction(photoId: Ref<string>) {
 	const photo = ref(undefined) as Ref<App.Http.Resources.Models.PhotoResource | undefined>;
 	const album = ref(null) as Ref<App.Http.Resources.Models.AbstractAlbumResource | null>;
 	const photos = ref([]) as Ref<App.Http.Resources.Models.PhotoResource[]>;
-
-	const placeholder = Constants.BASE_URL + "/img/placeholder.png";
 
 	function hasPrevious(): boolean {
 		return photo.value?.previous_photo_id !== null;
@@ -96,7 +93,6 @@ export function usePhotoBaseFunction(photoId: Ref<string>) {
 		photo,
 		album,
 		photos,
-		placeholder,
 		previousStyle,
 		nextStyle,
 		srcSetMedium,
