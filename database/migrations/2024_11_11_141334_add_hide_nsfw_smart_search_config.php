@@ -67,7 +67,7 @@ return new class() extends BaseConfigMigration {
 				'cat' => 'Mod RSS',
 				'type_range' => self::BOOL,
 				'description' => 'Do not show sensitive photos in RSS',
-				'details' => 'Pictures placed in sensive albums will not be shown in RSS feed.',
+				'details' => 'Pictures placed in sensive albums will not be shown in the RSS feed.',
 				'is_secret' => false,
 				'level' => 0,
 			],
