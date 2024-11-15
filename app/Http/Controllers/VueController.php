@@ -72,11 +72,6 @@ class VueController extends Controller
 	private function check(AbstractAlbum $album): bool
 	{
 		$result = Gate::check(AlbumPolicy::CAN_ACCESS, [AbstractAlbum::class, $album]);
-
-		// In case of a password protected album, we must throw an exception
-		// with a special error message ("Password required") such that the
-		// front-end shows the password dialog if a password is set, but
-		// does not show the dialog otherwise.
 		if (
 			!$result &&
 			$album instanceof BaseAlbum &&
