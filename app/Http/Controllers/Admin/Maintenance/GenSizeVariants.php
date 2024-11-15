@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\Maintenance;
 
 use App\Contracts\Models\SizeVariantFactory;
 use App\Enum\SizeVariantType;
+use App\Exceptions\MediaFileOperationException;
 use App\Http\Requests\Maintenance\CreateThumbsRequest;
 use App\Image\PlaceholderEncoder;
 use App\Image\SizeVariantDimensionHelpers;
@@ -41,15 +42,19 @@ class GenSizeVariants extends Controller
 		foreach ($photos as $photo) {
 			// @codeCoverageIgnoreStart
 			$sizeVariantFactory->init($photo);
-			$sizeVariant = $sizeVariantFactory->createSizeVariantCond($request->kind());
-			if ($request->kind() === SizeVariantType::PLACEHOLDER && $sizeVariant !== null) {
-				$placeholderEncoder->do($sizeVariant);
-			}
-			if ($sizeVariant !== null) {
-				$generated++;
-				Log::notice($request->kind()->value . ' (' . $sizeVariant->width . 'x' . $sizeVariant->height . ') for ' . $photo->title . ' created.');
-			} else {
-				Log::error('Did not create ' . $request->kind()->value . ' for ' . $photo->title . '.');
+			try {
+				$sizeVariant = $sizeVariantFactory->createSizeVariantCond($request->kind());
+				if ($request->kind() === SizeVariantType::PLACEHOLDER && $sizeVariant !== null) {
+					$placeholderEncoder->do($sizeVariant);
+				}
+				if ($sizeVariant !== null) {
+					$generated++;
+					Log::notice($request->kind()->value . ' (' . $sizeVariant->width . 'x' . $sizeVariant->height . ') for ' . $photo->title . ' created.');
+				} else {
+					Log::error('Did not create ' . $request->kind()->value . ' for ' . $photo->title . '.');
+				}
+			} catch (MediaFileOperationException $e) {
+				Log::error('Failed to create ' . $request->kind()->value . ' for photo id ' . $photo->id . '');
 			}
 			// @codeCoverageIgnoreEnd
 		}

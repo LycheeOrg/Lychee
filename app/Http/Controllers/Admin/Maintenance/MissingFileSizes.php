@@ -44,7 +44,7 @@ class MissingFileSizes extends Controller
 					} else {
 						$generated++;
 					}
-				} catch (UnableToRetrieveMetadata $e) {
+				} catch (UnableToRetrieveMetadata) {
 					Log::error($variant->id . ' : Failed to get filesize for ' . $variantFile->getRelativePath() . '.');
 				}
 			} else {

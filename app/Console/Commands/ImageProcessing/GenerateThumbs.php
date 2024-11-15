@@ -6,6 +6,7 @@ use App\Contracts\Exceptions\ExternalLycheeException;
 use App\Contracts\Exceptions\LycheeException;
 use App\Contracts\Models\SizeVariantFactory;
 use App\Enum\SizeVariantType;
+use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\UnexpectedException;
 use App\Models\Photo;
 use Illuminate\Console\Command;
@@ -101,12 +102,19 @@ class GenerateThumbs extends Command
 			$sizeVariantFactory = resolve(SizeVariantFactory::class);
 			/** @var Photo $photo */
 			foreach ($photos as $photo) {
-				$sizeVariantFactory->init($photo);
-				$sizeVariant = $sizeVariantFactory->createSizeVariantCond($sizeVariantType);
+				$sizeVariant = null;
+
+				try {
+					$sizeVariantFactory->init($photo);
+					$sizeVariant = $sizeVariantFactory->createSizeVariantCond($sizeVariantType);
+				} catch (MediaFileOperationException $e) {
+					$sizeVariant = null;
+				}
+
 				if ($sizeVariant !== null) {
 					$this->line('   ' . $sizeVariantName . ' (' . $sizeVariant->width . 'x' . $sizeVariant->height . ') for ' . $photo->title . ' created.');
 				} else {
-					$this->line('   Did not create ' . $sizeVariantName . ' for ' . $photo->title . '.');
+					$this->line('   Did not create ' . $sizeVariantName . ' for ' . $photo->id . ' .');
 				}
 				$bar->advance();
 			}
