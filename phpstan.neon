@@ -165,4 +165,4 @@ parameters:
 				- tests
 
 		-
-			message: '#Dynamic call to static method Illuminate\\Session\\Store::(has|get|now)\(\).#'
+			message: '#Dynamic call to static method Illuminate\\Session\\Store::(has|get|now|forget)\(\).#'

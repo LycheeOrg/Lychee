@@ -31,6 +31,10 @@ class Meta extends Component
 	public string $userCssUrl;
 	public string $userJsUrl;
 
+	private bool $access = true;
+	private ?AbstractAlbum $album = null;
+	private ?Photo $photo = null;
+
 	/**
 	 * Initialize the footer once for all.
 	 *
@@ -38,34 +42,49 @@ class Meta extends Component
 	 */
 	public function __construct()
 	{
-		$this->pageTitle = Configs::getValueAsString('site_title');
-		$this->pageDescription = '';
-		$this->imageUrl = '';
-
-		if (session()->has('album')) {
-			/** @var AbstractAlbum $album */
-			$album = session()->get('album');
-			$this->pageTitle = $album->title;
-			if ($album instanceof BaseAlbum) {
-				$this->pageDescription = $album->description ?? Configs::getValueAsString('site_title');
-			}
-			$this->imageUrl = $this->getHeaderUrl($album) ?? '';
-		}
-
-		if (session()->has('photo')) {
-			/** @var Photo $photo */
-			$photo = session()->get('photo');
-			$this->pageTitle = $photo->title;
-			$this->pageDescription = $photo->description ?? Configs::getValueAsString('site_title');
-			$this->imageUrl = $photo->size_variants->getSmall()->url;
-		}
-
+		// default data
 		$this->siteOwner = Configs::getValueAsString('site_owner');
 		$this->pageUrl = url()->current();
 		$this->rssEnable = Configs::getValueAsBool('rss_enable');
 		$this->userCssUrl = self::getUserCustomFiles('user.css');
 		$this->userJsUrl = self::getUserCustomFiles('custom.js');
 		$this->baseUrl = url('/');
+
+		$this->pageTitle = Configs::getValueAsString('site_title');
+		$this->pageDescription = '';
+		$this->imageUrl = Configs::getValueAsString('landing_background');
+
+		// processing photo and album data
+		if (session()->has('access')) {
+			$this->access = session()->get('access');
+			session()->forget('access');
+		}
+		if (session()->has('album')) {
+			$this->album = session()->get('album');
+			session()->forget('album');
+		}
+		if (session()->has('photo')) {
+			$this->photo = session()->get('photo');
+			session()->forget('photo');
+		}
+
+		if ($this->access === false) {
+			return;
+		}
+
+		if ($this->album !== null) {
+			$this->pageTitle = $this->album->title;
+			if ($this->album instanceof BaseAlbum) {
+				$this->pageDescription = $this->album->description ?? Configs::getValueAsString('site_title');
+			}
+			$this->imageUrl = $this->getHeaderUrl($this->album) ?? $this->imageUrl;
+		}
+
+		if ($this->photo !== null) {
+			$this->pageTitle = $this->photo->title;
+			$this->pageDescription = $this->photo->description ?? Configs::getValueAsString('site_title');
+			$this->imageUrl = $this->photo->size_variants->getSmall()->url;
+		}
 	}
 
 	/**
