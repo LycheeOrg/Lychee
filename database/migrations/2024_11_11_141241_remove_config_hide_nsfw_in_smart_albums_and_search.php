@@ -1,8 +1,8 @@
 <?php
 
-use App\Models\Extensions\BaseConfigMigration;
+use App\Models\Extensions\BaseConfigMigrationReversed;
 
-return new class() extends BaseConfigMigration {
+return new class() extends BaseConfigMigrationReversed {
 	public function getConfigs(): array
 	{
 		return [

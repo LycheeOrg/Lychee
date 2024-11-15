@@ -6,6 +6,7 @@ use App\Contracts\Exceptions\InternalLycheeException;
 use App\DTO\PhotoSortingCriterion;
 use App\Eloquent\FixedQueryBuilder;
 use App\Models\Album;
+use App\Models\Configs;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\Photo;
 use App\Policies\PhotoQueryPolicy;
@@ -50,8 +51,9 @@ class PhotoSearch
 	public function sqlQuery(array $terms, ?Album $album = null): Builder
 	{
 		$query = $this->photoQueryPolicy->applySearchabilityFilter(
-			Photo::query()->with(['album', 'size_variants', 'size_variants.sym_links']),
-			$album
+			query: Photo::query()->with(['album', 'size_variants', 'size_variants.sym_links']),
+			origin: $album,
+			include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_search')
 		);
 
 		foreach ($terms as $term) {

@@ -30,7 +30,7 @@ class PositionData
 	public function do(): PositionDataResource
 	{
 		$photoQuery = $this->photoQueryPolicy->applySearchabilityFilter(
-			Photo::query()
+			query: Photo::query()
 				->with([
 					'album' => function ($b) {
 						// The album is required for photos to properly
@@ -51,7 +51,9 @@ class PositionData
 					'size_variants.sym_links',
 				])
 				->whereNotNull('latitude')
-				->whereNotNull('longitude')
+				->whereNotNull('longitude'),
+			origin: null,
+			include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_map')
 		);
 
 		return new PositionDataResource(null, null, $photoQuery->get(), null);

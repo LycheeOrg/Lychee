@@ -78,7 +78,11 @@ class HasManyPhotosRecursively extends BaseHasManyPhotos
 		}
 
 		$this->photoQueryPolicy
-			->applySearchabilityFilter($this->getRelationQuery(), $albums[0]);
+			->applySearchabilityFilter(
+				query: $this->getRelationQuery(),
+				origin: $albums[0],
+				include_nsfw: true
+			);
 	}
 
 	/**
