@@ -237,7 +237,7 @@ const {
 	toggleTag,
 	isCopyVisible,
 	toggleCopy,
-} = useGalleryModals(is_upload_visible);
+} = useGalleryModals(togglableStore);
 
 const {
 	selectedPhotosIdx,

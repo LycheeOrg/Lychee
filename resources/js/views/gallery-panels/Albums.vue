@@ -1,5 +1,9 @@
 <template>
+	<UploadPanel v-if="rootRights?.can_upload" @refresh="refresh" key="upload_modal" />
 	<KeybindingsHelp v-model:visible="isKeybindingsHelpOpen" v-if="user?.id" />
+	<AlbumCreateDialog v-if="rootRights?.can_upload" :parent-id="null" key="create_album_modal" />
+	<AlbumCreateTagDialog v-if="rootRights?.can_upload" key="create_tag_album_modal" />
+
 	<div v-if="rootConfig && rootRights" @click="unselect" class="h-svh overflow-y-auto">
 		<Collapse :when="!is_full_screen">
 			<AlbumsHeader
@@ -142,6 +146,9 @@ import { useRouter } from "vue-router";
 import { useMouseEvents } from "@/composables/album/uploadEvents";
 import GalleryFooter from "@/components/footers/GalleryFooter.vue";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
+import UploadPanel from "@/components/modals/UploadPanel.vue";
+import AlbumCreateDialog from "@/components/forms/album/AlbumCreateDialog.vue";
+import AlbumCreateTagDialog from "@/components/forms/album/AlbumCreateTagDialog.vue";
 
 const auth = useAuthStore();
 const router = useRouter();
@@ -169,7 +176,7 @@ const { selectedAlbum, selectedAlbumsIdx, selectedAlbums, selectedAlbumsIds, alb
 
 // Modals for Albums
 const { isDeleteVisible, toggleDelete, isMergeAlbumVisible, toggleMergeAlbum, isMoveVisible, toggleMove, isRenameVisible, toggleRename } =
-	useGalleryModals(is_upload_visible);
+	useGalleryModals(togglableStore);
 
 // Unused.
 const photoCallbacks = {

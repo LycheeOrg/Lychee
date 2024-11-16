@@ -1,4 +1,6 @@
 <template>
+	<UploadPanel v-if="album?.rights.can_upload" @refresh="refresh" key="upload_modal" />
+	<AlbumCreateDialog v-if="album?.rights.can_upload && config?.is_model_album" v-model:parent-id="album.id" key="create_album_modal" />
 	<div class="h-svh overflow-y-hidden">
 		<!-- Trick to avoid the scroll bar to appear on the right when switching to full screen -->
 		<Collapse :when="!is_full_screen">
@@ -202,6 +204,8 @@ import { useMouseEvents } from "@/composables/album/uploadEvents";
 import GalleryFooter from "@/components/footers/GalleryFooter.vue";
 import AlbumStatistics from "@/components/drawers/AlbumStatistics.vue";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
+import UploadPanel from "@/components/modals/UploadPanel.vue";
+import AlbumCreateDialog from "@/components/forms/album/AlbumCreateDialog.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -260,7 +264,7 @@ const {
 	isCopyVisible,
 	toggleCopy,
 	toggleUpload,
-} = useGalleryModals(is_upload_visible);
+} = useGalleryModals(togglableStore);
 
 const areStatisticsOpen = ref(false);
 

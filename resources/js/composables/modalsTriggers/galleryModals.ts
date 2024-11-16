@@ -1,10 +1,13 @@
-import { Ref, ref } from "vue";
+import { TogglablesStateStore } from "@/stores/ModalsState";
+import { ref } from "vue";
 
-export function useGalleryModals(is_upload_visible: Ref<boolean>) {
-	const isCreateAlbumOpen = ref(false);
-
+export function useGalleryModals(togglableStore: TogglablesStateStore) {
 	function toggleCreateAlbum() {
-		isCreateAlbumOpen.value = !isCreateAlbumOpen.value;
+		togglableStore.is_create_album_visible = !togglableStore.is_create_album_visible;
+	}
+
+	function toggleCreateTagAlbum() {
+		togglableStore.is_create_tag_album_visible = !togglableStore.is_create_tag_album_visible;
 	}
 
 	const isRenameVisible = ref(false);
@@ -50,7 +53,7 @@ export function useGalleryModals(is_upload_visible: Ref<boolean>) {
 	}
 
 	function toggleUpload() {
-		is_upload_visible.value = !is_upload_visible.value;
+		togglableStore.is_upload_visible = !togglableStore.is_upload_visible;
 	}
 
 	const isTagVisible = ref(false);
@@ -66,8 +69,8 @@ export function useGalleryModals(is_upload_visible: Ref<boolean>) {
 	}
 
 	return {
-		isCreateAlbumOpen,
 		toggleCreateAlbum,
+		toggleCreateTagAlbum,
 		isDeleteVisible,
 		toggleDelete,
 		isMergeAlbumVisible,

@@ -15,6 +15,10 @@ export const useTogglablesStateStore = defineStore("togglables-store", {
 		is_upload_visible: false,
 		list_upload_files: [] as Uploadable[],
 
+		// create albums
+		is_create_album_visible: false,
+		is_create_tag_album_visible: false,
+
 		// Photo toggleables
 		is_edit_open: false,
 		are_details_open: false,

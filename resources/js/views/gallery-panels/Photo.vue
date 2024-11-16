@@ -181,9 +181,9 @@ const toast = useToast();
 const togglableStore = useTogglablesStateStore();
 const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
-const { is_upload_visible, is_full_screen, is_edit_open, are_details_open, is_slideshow_active } = storeToRefs(togglableStore);
+const { is_full_screen, is_edit_open, are_details_open, is_slideshow_active } = storeToRefs(togglableStore);
 
-const { isDeleteVisible, toggleDelete, isMoveVisible, toggleMove } = useGalleryModals(is_upload_visible);
+const { isDeleteVisible, toggleDelete, isMoveVisible, toggleMove } = useGalleryModals(togglableStore);
 
 const photoId = ref(props.photoid);
 const { photo, album, photos, previousStyle, nextStyle, srcSetMedium, style, imageViewMode, refresh, hasPrevious, hasNext } =

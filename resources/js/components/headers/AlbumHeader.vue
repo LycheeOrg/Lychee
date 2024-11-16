@@ -1,14 +1,6 @@
 <template>
-	<UploadPanel v-if="canUpload" @refresh="refresh" key="upload_modal" />
 	<DropBox v-if="canUpload" v-model:visible="isImportFromDropboxOpen" :album-id="props.album.id" />
 	<ImportFromLink v-if="canUpload" v-model:visible="isImportFromLinkOpen" :parent-id="props.album.id" @refresh="refresh" />
-	<AlbumCreateDialog
-		v-if="canUpload && props.config.is_model_album"
-		v-model:visible="isCreateAlbumOpen"
-		v-model:parent-id="props.album.id"
-		@close="isCreateAlbumOpen = false"
-		key="create_album_modal"
-	/>
 	<Toolbar class="w-full border-0 h-14" v-if="album">
 		<template #start>
 			<Button icon="pi pi-angle-left" class="mr-2 border-none" severity="secondary" text @click="goBack" />
@@ -73,9 +65,8 @@
 <script setup lang="ts">
 import Button from "primevue/button";
 import Toolbar from "primevue/toolbar";
-import { computed, ref } from "vue";
+import { computed } from "vue";
 import { useRouter } from "vue-router";
-import UploadPanel from "@/components/modals/UploadPanel.vue";
 import { onKeyStroke } from "@vueuse/core";
 import AlbumCreateDialog from "@/components/forms/album/AlbumCreateDialog.vue";
 import ContextMenu from "primevue/contextmenu";
@@ -101,12 +92,11 @@ const togglableStore = useTogglablesStateStore();
 const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
 const { dropbox_api_key } = storeToRefs(lycheeStore);
-const { are_details_open, is_login_open, is_upload_visible } = storeToRefs(togglableStore);
+const { are_details_open, is_login_open, is_upload_visible, is_create_album_visible } = storeToRefs(togglableStore);
 
 const hasCoordinates = computed(() => props.album.photos.find((photo) => photo.latitude !== null && photo.longitude !== null) !== undefined);
 
 const {
-	isCreateAlbumOpen,
 	toggleCreateAlbum,
 	isDeleteVisible,
 	toggleDelete,
@@ -123,7 +113,7 @@ const {
 	isImportFromDropboxOpen,
 	toggleImportFromDropbox,
 	toggleUpload,
-} = useGalleryModals(is_upload_visible);
+} = useGalleryModals(togglableStore);
 
 const emits = defineEmits<{
 	refresh: [];
@@ -185,7 +175,7 @@ function refresh() {
 	emits("refresh");
 }
 
-onKeyStroke("n", () => !shouldIgnoreKeystroke() && (isCreateAlbumOpen.value = true));
+onKeyStroke("n", () => !shouldIgnoreKeystroke() && (is_create_album_visible.value = true));
 onKeyStroke("u", () => !shouldIgnoreKeystroke() && (is_upload_visible.value = true));
 onKeyStroke("i", () => !shouldIgnoreKeystroke() && toggleDetails());
 onKeyStroke("l", () => !shouldIgnoreKeystroke() && props.user.id === null && (is_login_open.value = true));
