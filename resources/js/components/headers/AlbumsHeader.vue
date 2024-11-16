@@ -21,7 +21,7 @@
 				class="border-none"
 				severity="secondary"
 				text
-				@click="lycheeStore.toggleLogin()"
+				@click="togglableStore.toggleLogin()"
 			/>
 			<!-- Logged in. -->
 			<OpenLeftMenu v-if="user.id" />
@@ -107,6 +107,7 @@ import WebAuthnService from "@/services/webauthn-service";
 import { useRouter } from "vue-router";
 import DropBox from "../modals/DropBox.vue";
 import OpenLeftMenu from "./OpenLeftMenu.vue";
+import { useTogglablesStateStore } from "@/stores/ModalsState";
 
 const props = defineProps<{
 	user: App.Http.Resources.Models.UserResource;
@@ -138,7 +139,11 @@ const emits = defineEmits<{
 // 	'UPLOAD_TRACK' => 'Upload track',
 // 	'DELETE_TRACK' => 'Delete track',
 const lycheeStore = useLycheeStateStore();
-const { is_login_open, dropbox_api_key, is_upload_visible } = storeToRefs(lycheeStore);
+const togglableStore = useTogglablesStateStore();
+
+const { dropbox_api_key } = storeToRefs(lycheeStore);
+const { is_login_open, is_upload_visible } = storeToRefs(togglableStore);
+
 const isWebAuthnOpen = ref(false);
 const router = useRouter();
 
@@ -229,7 +234,7 @@ onKeyStroke("escape", () => {
 		return;
 	}
 
-	lycheeStore.left_menu_open = false;
+	togglableStore.left_menu_open = false;
 });
 
 type Link = {
@@ -269,7 +274,7 @@ const menu = computed(() =>
 		{
 			icon: "pi pi-sign-in",
 			type: "fn",
-			callback: lycheeStore.toggleLogin,
+			callback: togglableStore.toggleLogin,
 			if: props.user.id === null && !isLoginLeft.value,
 		},
 		{

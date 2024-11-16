@@ -1,7 +1,7 @@
 <template>
 	<Toolbar class="w-full border-0 h-14">
 		<template #start>
-			<Button @click="openLeftMenu" icon="pi pi-bars" class="mr-2 border-none" severity="secondary" text />
+			<Button @click="togglableStore.toggleLeftMenu" icon="pi pi-bars" class="mr-2 border-none" severity="secondary" text />
 			<!-- <router-link :to="{ name: 'gallery' }">
 				<Button icon="pi pi-angle-left" class="mr-2" severity="secondary" text />
 			</router-link> -->
@@ -27,13 +27,10 @@ import ErrorsDiagnotics from "@/components/diagnostics/ErrorsDiagnostics.vue";
 import SpaceDiagnostics from "@/components/diagnostics/SpaceDiagnostics.vue";
 import { useAuthStore } from "@/stores/Auth";
 import { storeToRefs } from "pinia";
-import { useLycheeStateStore } from "@/stores/LycheeState";
+import { useTogglablesStateStore } from "@/stores/ModalsState";
 
 const authStore = useAuthStore();
 const { user } = storeToRefs(authStore);
 authStore.getUser();
-
-const lycheeStore = useLycheeStateStore();
-const { left_menu_open } = storeToRefs(lycheeStore);
-const openLeftMenu = () => (left_menu_open.value = !left_menu_open.value);
+const togglableStore = useTogglablesStateStore();
 </script>

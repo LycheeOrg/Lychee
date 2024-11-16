@@ -141,14 +141,18 @@ import AlbumService from "@/services/album-service";
 import { useRouter } from "vue-router";
 import { useMouseEvents } from "@/composables/album/uploadEvents";
 import GalleryFooter from "@/components/footers/GalleryFooter.vue";
+import { useTogglablesStateStore } from "@/stores/ModalsState";
 
 const auth = useAuthStore();
 const router = useRouter();
 const lycheeStore = useLycheeStateStore();
-lycheeStore.init();
-lycheeStore.resetSearch();
+const togglableStore = useTogglablesStateStore();
 
-const { are_nsfw_visible, is_full_screen, is_login_open, title, is_upload_visible, list_upload_files } = storeToRefs(lycheeStore);
+lycheeStore.init();
+togglableStore.resetSearch();
+
+const { is_full_screen, is_login_open, is_upload_visible, list_upload_files } = storeToRefs(togglableStore);
+const { are_nsfw_visible, title } = storeToRefs(lycheeStore);
 
 const photos = ref([]); // unused.
 
@@ -218,7 +222,7 @@ const albumPanelConfig = computed<AlbumThumbConfig>(() => ({
 refresh();
 
 onKeyStroke("h", () => !shouldIgnoreKeystroke() && (are_nsfw_visible.value = !are_nsfw_visible.value));
-onKeyStroke("f", () => !shouldIgnoreKeystroke() && lycheeStore.toggleFullScreen());
+onKeyStroke("f", () => !shouldIgnoreKeystroke() && togglableStore.toggleFullScreen());
 onKeyStroke(" ", () => !shouldIgnoreKeystroke() && unselect());
 onKeyStroke("m", () => !shouldIgnoreKeystroke() && rootRights.value?.can_edit && hasSelection() && toggleMove());
 onKeyStroke(["Delete", "Backspace"], () => !shouldIgnoreKeystroke() && rootRights.value?.can_edit && hasSelection() && toggleDelete());

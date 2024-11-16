@@ -38,6 +38,7 @@ import { useToast } from "primevue/usetoast";
 import Toolbar from "primevue/toolbar";
 import { onKeyStroke } from "@vueuse/core";
 import Constants from "@/services/constants";
+import { useTogglablesStateStore } from "@/stores/ModalsState";
 
 type MapPhotoEntry = {
 	lat?: number | null;
@@ -58,6 +59,7 @@ const props = defineProps<{
 
 const toast = useToast();
 const router = useRouter();
+const togglableStore = useTogglablesStateStore();
 const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
 
@@ -68,7 +70,7 @@ function goBack() {
 		router.push({ name: "gallery" });
 	}
 }
-const { is_full_screen } = storeToRefs(lycheeStore);
+const { is_full_screen } = storeToRefs(togglableStore);
 
 // Map stuff.
 const camera_date = trans("lychee.CAMERA_DATE");

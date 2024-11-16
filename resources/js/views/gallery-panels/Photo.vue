@@ -166,6 +166,7 @@ import { useToast } from "primevue/usetoast";
 import type { UseSwipeDirection } from "@vueuse/core";
 import { useSwipe } from "@vueuse/core";
 import { useImageHelpers } from "@/utils/Helpers";
+import { useTogglablesStateStore } from "@/stores/ModalsState";
 
 const swipe = ref<HTMLElement | null>(null);
 
@@ -177,9 +178,10 @@ const props = defineProps<{
 const router = useRouter();
 const route = useRoute();
 const toast = useToast();
+const togglableStore = useTogglablesStateStore();
 const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
-const { is_upload_visible } = storeToRefs(lycheeStore);
+const { is_upload_visible, is_full_screen, is_edit_open, are_details_open, is_slideshow_active } = storeToRefs(togglableStore);
 
 const { isDeleteVisible, toggleDelete, isMoveVisible, toggleMove } = useGalleryModals(is_upload_visible);
 
@@ -188,7 +190,7 @@ const { photo, album, photos, previousStyle, nextStyle, srcSetMedium, style, ima
 	usePhotoBaseFunction(photoId);
 const { getPlaceholderIcon } = useImageHelpers();
 
-const { is_full_screen, is_edit_open, are_details_open, is_slideshow_active, slideshow_timeout } = storeToRefs(lycheeStore);
+const { slideshow_timeout } = storeToRefs(lycheeStore);
 
 function getNext() {
 	router.push({ name: "photo", params: { albumid: props.albumid, photoid: photo.value?.next_photo_id ?? "" } });
@@ -201,10 +203,10 @@ function getPrevious() {
 const { slideshow, start, next, previous } = useSlideshowFunction(1000, is_slideshow_active, slideshow_timeout, getNext, getPrevious);
 
 function load() {
-	if (lycheeStore.isSearchActive) {
-		const albumId = lycheeStore.search_album_id;
-		const page = lycheeStore.search_page;
-		const term = lycheeStore.search_term;
+	if (togglableStore.isSearchActive) {
+		const albumId = togglableStore.search_album_id;
+		const page = togglableStore.search_page;
+		const term = togglableStore.search_term;
 		SearchService.search(albumId, term, page).then((response) => {
 			photos.value = response.data.photos;
 			refresh();
@@ -231,12 +233,12 @@ function updated() {
 }
 
 function goBack() {
-	if (lycheeStore.isSearchActive && lycheeStore.search_album_id === null) {
+	if (togglableStore.isSearchActive && togglableStore.search_album_id === null) {
 		router.push({ name: "search" });
 		return;
 	}
-	if (lycheeStore.isSearchActive) {
-		router.push({ name: "search-with-album", params: { albumid: lycheeStore.search_album_id } });
+	if (togglableStore.isSearchActive) {
+		router.push({ name: "search-with-album", params: { albumid: togglableStore.search_album_id } });
 		return;
 	}
 
@@ -292,7 +294,7 @@ onKeyStroke("ArrowLeft", () => !shouldIgnoreKeystroke() && hasPrevious() && prev
 onKeyStroke("ArrowRight", () => !shouldIgnoreKeystroke() && hasNext() && next(true));
 onKeyStroke("o", () => !shouldIgnoreKeystroke() && rotateOverlay());
 onKeyStroke(" ", () => !shouldIgnoreKeystroke() && slideshow());
-onKeyStroke("f", () => !shouldIgnoreKeystroke() && lycheeStore.toggleFullScreen());
+onKeyStroke("f", () => !shouldIgnoreKeystroke() && togglableStore.toggleFullScreen());
 
 // Priviledged operations
 onKeyStroke("m", () => !shouldIgnoreKeystroke() && photo.value?.rights.can_edit && toggleMove());

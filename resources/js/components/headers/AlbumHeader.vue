@@ -88,6 +88,7 @@ import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import AlbumService from "@/services/album-service";
 import DropBox from "../modals/DropBox.vue";
+import { useTogglablesStateStore } from "@/stores/ModalsState";
 
 const props = defineProps<{
 	config: App.Http.Resources.GalleryConfigs.AlbumConfig;
@@ -96,9 +97,11 @@ const props = defineProps<{
 }>();
 
 const toggleDetails = () => (are_details_open.value = !are_details_open.value);
+const togglableStore = useTogglablesStateStore();
 const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
-const { are_details_open, is_login_open, dropbox_api_key, is_upload_visible } = storeToRefs(lycheeStore);
+const { dropbox_api_key } = storeToRefs(lycheeStore);
+const { are_details_open, is_login_open, is_upload_visible } = storeToRefs(togglableStore);
 
 const hasCoordinates = computed(() => props.album.photos.find((photo) => photo.latitude !== null && photo.longitude !== null) !== undefined);
 

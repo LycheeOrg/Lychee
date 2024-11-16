@@ -89,16 +89,16 @@ import UploadService from "@/services/upload-service";
 import ProgressBar from "primevue/progressbar";
 import AlbumService from "@/services/album-service";
 import { useRoute } from "vue-router";
-import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
+import { useTogglablesStateStore } from "@/stores/ModalsState";
 
 export type Uploadable = {
 	file: File;
 	status: "uploading" | "waiting" | "done" | "error";
 };
 
-const lycheeStore = useLycheeStateStore();
-const { is_upload_visible, list_upload_files } = storeToRefs(lycheeStore);
+const togglableStore = useTogglablesStateStore();
+const { is_upload_visible, list_upload_files } = storeToRefs(togglableStore);
 const route = useRoute();
 
 const setup = ref(undefined as undefined | App.Http.Resources.GalleryConfigs.UploadConfig);

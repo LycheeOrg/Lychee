@@ -201,6 +201,7 @@ import Button from "primevue/button";
 import { useMouseEvents } from "@/composables/album/uploadEvents";
 import GalleryFooter from "@/components/footers/GalleryFooter.vue";
 import AlbumStatistics from "@/components/drawers/AlbumStatistics.vue";
+import { useTogglablesStateStore } from "@/stores/ModalsState";
 
 const route = useRoute();
 const router = useRouter();
@@ -212,12 +213,13 @@ const props = defineProps<{
 const albumid = ref(props.albumid);
 // flag to open login modal if necessary
 const auth = useAuthStore();
+const togglableStore = useTogglablesStateStore();
 const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
-lycheeStore.resetSearch();
+togglableStore.resetSearch();
 
-const { are_nsfw_visible, is_full_screen, is_login_open, nsfw_consented, is_slideshow_active, is_upload_visible, list_upload_files, is_se_enabled } =
-	storeToRefs(lycheeStore);
+const { is_full_screen, is_login_open, is_slideshow_active, is_upload_visible, list_upload_files } = storeToRefs(togglableStore);
+const { are_nsfw_visible, nsfw_consented, is_se_enabled } = storeToRefs(lycheeStore);
 
 // Reset the slideshow.
 is_slideshow_active.value = false;
@@ -364,7 +366,7 @@ loadLayout();
 refresh();
 
 onKeyStroke("h", () => !shouldIgnoreKeystroke() && (are_nsfw_visible.value = !are_nsfw_visible.value));
-onKeyStroke("f", () => !shouldIgnoreKeystroke() && lycheeStore.toggleFullScreen());
+onKeyStroke("f", () => !shouldIgnoreKeystroke() && togglableStore.toggleFullScreen());
 onKeyStroke(" ", () => !shouldIgnoreKeystroke() && unselect());
 
 // Privileged actions
