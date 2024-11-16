@@ -16,15 +16,15 @@ export function useAlbumRefresher(albumId: Ref<string>, auth: AuthStore, isLogin
 	const config = ref<App.Http.Resources.GalleryConfigs.AlbumConfig | undefined>(undefined);
 	const rights = computed(() => album.value?.rights ?? undefined);
 
-	function loadUser() {
-		auth.getUser().then((data: App.Http.Resources.Models.UserResource) => {
+	function loadUser(): Promise<void> {
+		return auth.getUser().then((data: App.Http.Resources.Models.UserResource) => {
 			user.value = data;
 			loadAlbum();
 		});
 	}
 
-	function loadAlbum() {
-		AlbumService.get(albumId.value)
+	function loadAlbum(): Promise<void> {
+		return AlbumService.get(albumId.value)
 			.then((data) => {
 				isPasswordProtected.value = false;
 				config.value = data.data.config;
@@ -54,14 +54,14 @@ export function useAlbumRefresher(albumId: Ref<string>, auth: AuthStore, isLogin
 			});
 	}
 
-	function loadLayout() {
-		AlbumService.getLayout().then((data) => {
+	function loadLayout(): Promise<void> {
+		return AlbumService.getLayout().then((data) => {
 			layout.value = data.data;
 		});
 	}
 
-	function refresh() {
-		loadUser();
+	function refresh(): Promise<void> {
+		return loadUser();
 	}
 
 	return {

@@ -1,5 +1,5 @@
 import { Uploadable } from "@/components/modals/UploadPanel.vue";
-import InitService from "@/services/init-service";
+
 import { defineStore } from "pinia";
 
 export type TogglablesStateStore = ReturnType<typeof useTogglablesStateStore>;
@@ -28,6 +28,9 @@ export const useTogglablesStateStore = defineStore("togglables-store", {
 		search_term: "",
 		search_album_id: undefined as string | undefined,
 		search_page: 1,
+
+		// Scroll memory
+		scroll_memory: {} as Record<string, number>,
 	}),
 	getters: {
 		isSearchActive(): boolean {
@@ -51,6 +54,25 @@ export const useTogglablesStateStore = defineStore("togglables-store", {
 			this.search_term = "";
 			this.search_album_id = undefined;
 			this.search_page = 1;
+		},
+
+		rememberScrollPage(elem: HTMLElement, path: string) {
+			this.scroll_memory[path] = elem.scrollTop;
+		},
+
+		recoverScrollPage(elem: HTMLElement, path: string) {
+			if (!(path in this.scroll_memory)) {
+				return;
+			}
+			const scroll = this.scroll_memory[path];
+			if (scroll) {
+				elem.scrollTop = scroll;
+				// Smooth scrolling
+				// elem.scrollTo({
+				// 	top: scroll,
+				// 	behavior: "smooth",
+				// });
+			}
 		},
 	},
 });

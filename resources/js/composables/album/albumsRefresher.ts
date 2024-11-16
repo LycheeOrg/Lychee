@@ -15,7 +15,7 @@ export function useAlbumsRefresher(auth: AuthStore, lycheeStore: LycheeStateStor
 	const rootRights = ref<App.Http.Resources.Rights.RootAlbumRightsResource | undefined>(undefined);
 	const selectableAlbums = computed(() => albums.value.concat(sharedAlbums.value.map((album) => album.data).flat()));
 
-	function refresh() {
+	function refresh(): Promise<void> {
 		auth.getUser().then((data) => {
 			user.value = data;
 
@@ -26,7 +26,7 @@ export function useAlbumsRefresher(auth: AuthStore, lycheeStore: LycheeStateStor
 			}
 		});
 
-		AlbumService.getAll()
+		return AlbumService.getAll()
 			.then((data) => {
 				smartAlbums.value = (data.data.smart_albums as App.Http.Resources.Models.ThumbAlbumResource[]) ?? [];
 				albums.value = data.data.albums as App.Http.Resources.Models.ThumbAlbumResource[];
