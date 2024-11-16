@@ -29,7 +29,7 @@ import ScrollPanel from "primevue/scrollpanel";
 import MaintenanceService from "@/services/maintenance-service";
 import { useToast } from "primevue/usetoast";
 
-const data = ref([] as string[]);
+const data = ref<string[]>([]);
 const loading = ref(false);
 const toast = useToast();
 

@@ -70,8 +70,8 @@ type LycheeException = {
 const lycheeStore = useLycheeStateStore();
 const { is_debug_enabled } = storeToRefs(lycheeStore);
 
-const lycheeError = ref(null) as Ref<null | LycheeException>;
-const jsError = ref(null) as Ref<null | ErrorEvent>;
+const lycheeError = ref<LycheeException | null>(null);
+const jsError = ref<ErrorEvent | null>(null);
 
 window.addEventListener("error", function (e: Event) {
 	console.log("error", e);

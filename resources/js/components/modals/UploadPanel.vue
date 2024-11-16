@@ -101,7 +101,7 @@ const togglableStore = useTogglablesStateStore();
 const { is_upload_visible, list_upload_files } = storeToRefs(togglableStore);
 const route = useRoute();
 
-const setup = ref(undefined as undefined | App.Http.Resources.GalleryConfigs.UploadConfig);
+const setup = ref<App.Http.Resources.GalleryConfigs.UploadConfig | undefined>(undefined);
 const albumId = ref(route.params.albumid ?? (null as string | null)) as Ref<string | null>;
 
 const emits = defineEmits<{

@@ -4,16 +4,16 @@ import { computed, Ref, ref } from "vue";
 
 export function useAlbumRefresher(albumId: Ref<string>, auth: AuthStore, isLoginOpen: Ref<boolean>, nsfw_consented: Ref<string[]>) {
 	const isPasswordProtected = ref(false);
-	const user = ref(undefined) as Ref<undefined | App.Http.Resources.Models.UserResource>;
-	const modelAlbum = ref(undefined as undefined | App.Http.Resources.Models.AlbumResource);
-	const tagAlbum = ref(undefined as undefined | App.Http.Resources.Models.TagAlbumResource);
-	const smartAlbum = ref(undefined as undefined | App.Http.Resources.Models.SmartAlbumResource);
+	const user = ref<App.Http.Resources.Models.UserResource | undefined>(undefined);
+	const modelAlbum = ref<App.Http.Resources.Models.AlbumResource | undefined>(undefined);
+	const tagAlbum = ref<App.Http.Resources.Models.TagAlbumResource | undefined>(undefined);
+	const smartAlbum = ref<App.Http.Resources.Models.SmartAlbumResource | undefined>(undefined);
 	const album = computed(() => modelAlbum.value || tagAlbum.value || smartAlbum.value);
-	const layout = ref(null) as Ref<null | App.Http.Resources.GalleryConfigs.PhotoLayoutConfig>;
+	const layout = ref<App.Http.Resources.GalleryConfigs.PhotoLayoutConfig | null>(null);
 	const isAlbumConsented = ref(false);
 
-	const photos = ref([]) as Ref<App.Http.Resources.Models.PhotoResource[]>;
-	const config = ref(undefined) as Ref<undefined | App.Http.Resources.GalleryConfigs.AlbumConfig>;
+	const photos = ref<App.Http.Resources.Models.PhotoResource[]>([]);
+	const config = ref<App.Http.Resources.GalleryConfigs.AlbumConfig | undefined>(undefined);
 	const rights = computed(() => album.value?.rights ?? undefined);
 
 	function loadUser() {

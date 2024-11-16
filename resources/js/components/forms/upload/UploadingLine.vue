@@ -49,7 +49,7 @@ const meta = ref({
 	total_chunks: Math.ceil(size.value / props.chunkSize),
 } as App.Http.Resources.Editable.UploadMetaResource);
 const controller = ref(new AbortController());
-const errorMessage = ref(undefined as string | undefined);
+const errorMessage = ref<string | undefined>(undefined);
 
 // prettier-ignore
 const statusMessage = computed(() => {

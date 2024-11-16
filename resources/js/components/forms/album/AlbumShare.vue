@@ -36,7 +36,7 @@ const props = defineProps<{
 
 const toast = useToast();
 
-const perms = ref(undefined as undefined | App.Http.Resources.Models.AccessPermissionResource[]);
+const perms = ref<App.Http.Resources.Models.AccessPermissionResource[] | undefined>(undefined);
 
 function load() {
 	SharingService.get(props.album.id).then((response) => {

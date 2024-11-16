@@ -7,7 +7,7 @@ export function useSearch(albumid: Ref<string>, togglableStore: TogglablesStateS
 	const albums = ref<App.Http.Resources.Models.ThumbAlbumResource[]>([]);
 	const photos = ref<App.Http.Resources.Models.PhotoResource[]>([]);
 	const noData = computed<boolean>(() => albums.value.length === 0 && photos.value.length === 0);
-	const searchMinimumLengh = ref(undefined as number | undefined);
+	const searchMinimumLengh = ref<number | undefined>(undefined);
 	const isSearching = ref(false);
 	const from = ref(0);
 	const per_page = ref(0);

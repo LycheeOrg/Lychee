@@ -42,9 +42,9 @@ const emits = defineEmits<{
 	"no-target": [];
 }>();
 
-const options = ref(undefined as undefined | App.Http.Resources.Models.LightUserResource[]);
-const selectedTarget = ref(undefined as App.Http.Resources.Models.LightUserResource | undefined);
-const userList = ref(undefined as App.Http.Resources.Models.LightUserResource[] | undefined);
+const options = ref<App.Http.Resources.Models.LightUserResource[] | undefined>(undefined);
+const selectedTarget = ref<App.Http.Resources.Models.LightUserResource | undefined>(undefined);
+const userList = ref<App.Http.Resources.Models.LightUserResource[] | undefined>(undefined);
 
 function load() {
 	UsersService.get().then((response) => {

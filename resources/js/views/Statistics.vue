@@ -43,12 +43,12 @@ import AlbumsTable from "@/components/statistics/AlbumsTable.vue";
 import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
 
 const router = useRouter();
-const user = ref(undefined as undefined | App.Http.Resources.Models.UserResource);
+const user = ref<App.Http.Resources.Models.UserResource | undefined>(undefined);
 const authStore = useAuthStore();
 const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
 
-const total = ref(undefined as undefined | TotalAlbum);
+const total = ref<TotalAlbum | undefined>(undefined);
 const is_collapsed = ref(false);
 const load = ref(false);
 

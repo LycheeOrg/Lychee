@@ -34,8 +34,8 @@ const props = defineProps<{
 
 const toast = useToast();
 const router = useRouter();
-const titleMovedTo = ref(undefined as string | undefined);
-const destination_id = ref(undefined as string | undefined | null);
+const titleMovedTo = ref<string | undefined>(undefined);
+const destination_id = ref<string | undefined | null>(undefined);
 const confirmation = computed(() => sprintf(trans("lychee.ALBUM_MOVE"), props.album.title, titleMovedTo.value));
 const error_no_target = ref(false);
 

@@ -65,7 +65,7 @@ import { useToast } from "primevue/usetoast";
 const visible = defineModel<boolean>();
 
 const isDisabled = ref(true);
-const token = ref(undefined as undefined | string);
+const token = ref<string | undefined>(undefined);
 const tokenText = ref("");
 const toast = useToast();
 

@@ -74,12 +74,12 @@ import { trans } from "laravel-vue-i18n";
 
 const isApiTokenOpen = ref(false);
 
-const user = ref(undefined as undefined | App.Http.Resources.Models.UserResource);
-const oldPassword = ref(undefined as undefined | string);
-const username = ref(undefined as undefined | string);
-const password = ref(undefined as undefined | string);
-const password_confirmation = ref(undefined as undefined | string);
-const email = ref(undefined as undefined | string);
+const user = ref<App.Http.Resources.Models.UserResource | undefined>(undefined);
+const oldPassword = ref<string | undefined>(undefined);
+const username = ref<string | undefined>(undefined);
+const password = ref<string | undefined>(undefined);
+const password_confirmation = ref<string | undefined>(undefined);
+const email = ref<string | undefined>(undefined);
 
 const loginTitle = computed(() => trans("lychee.PROFILE"));
 

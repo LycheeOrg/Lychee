@@ -33,7 +33,7 @@ import ProgressSpinner from "primevue/progressspinner";
 import ScrollPanel from "primevue/scrollpanel";
 import MaintenanceService from "@/services/maintenance-service";
 
-const data = ref(undefined as App.Http.Resources.Diagnostics.TreeState | undefined);
+const data = ref<App.Http.Resources.Diagnostics.TreeState | undefined>(undefined);
 const loading = ref(false);
 const toast = useToast();
 

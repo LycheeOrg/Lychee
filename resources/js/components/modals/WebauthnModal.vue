@@ -40,7 +40,7 @@ const emits = defineEmits<{
 
 const authStore = useAuthStore();
 const username = ref("");
-const userId = ref(null as null | number);
+const userId = ref<number | null>(null);
 
 function login() {
 	WebAuthnService.login(username.value, userId.value)

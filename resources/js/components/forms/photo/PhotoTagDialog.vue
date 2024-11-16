@@ -66,7 +66,7 @@ const question = computed(() => {
 });
 
 const shallOverride = ref(false);
-const tags = ref([] as string[]);
+const tags = ref<string[]>([]);
 
 function close() {
 	visible.value = false;

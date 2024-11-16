@@ -52,8 +52,8 @@ export function useSidebarMap(latitudeValue: number | null, longitudeValue: numb
 	const latitude = ref(latitudeValue);
 	const longitude = ref(longitudeValue);
 
-	const map = ref(undefined) as Ref<undefined | SidebarMap>;
-	const map_provider = ref(undefined) as Ref<undefined | App.Http.Resources.GalleryConfigs.MapProviderData>;
+	const map = ref<SidebarMap | undefined>(undefined);
+	const map_provider = ref<App.Http.Resources.GalleryConfigs.MapProviderData | undefined>(undefined);
 
 	function onMount() {
 		if (!map.value) {

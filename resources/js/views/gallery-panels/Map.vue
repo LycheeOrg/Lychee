@@ -74,12 +74,12 @@ const { is_full_screen } = storeToRefs(togglableStore);
 
 // Map stuff.
 const camera_date = trans("lychee.CAMERA_DATE");
-const map_provider = ref(undefined) as Ref<undefined | App.Http.Resources.GalleryConfigs.MapProviderData>;
+const map_provider = ref<App.Http.Resources.GalleryConfigs.MapProviderData | undefined>(undefined);
 const map = ref(undefined) as Ref<L.Map | undefined>;
-const bounds = ref(undefined as undefined | LatLngBoundsLiteral);
-const photoLayer = ref(undefined as any);
-const trackLayer = ref(undefined as any);
-const data = ref(undefined as undefined | App.Http.Resources.Collections.PositionDataResource);
+const bounds = ref<LatLngBoundsLiteral | undefined>(undefined);
+const photoLayer = ref<any>(undefined);
+const trackLayer = ref<any>(undefined);
+const data = ref<App.Http.Resources.Collections.PositionDataResource | undefined>(undefined);
 
 function loadMapProvider() {
 	AlbumService.getMapProvider().then((data) => {

@@ -41,7 +41,7 @@ const parentId = ref(props.parentId);
 const toast = useToast();
 const router = useRouter();
 
-const title = ref(undefined as undefined | string);
+const title = ref<string | undefined>(undefined);
 
 const isValid = computed(() => title.value !== undefined && title.value.length > 0 && title.value.length <= 100);
 

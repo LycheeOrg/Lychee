@@ -28,7 +28,7 @@ import Toolbar from "primevue/toolbar";
 import JobService from "@/services/jobs-service";
 import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
 
-const jobs = ref([] as App.Http.Resources.Models.JobHistoryResource[]);
+const jobs = ref<App.Http.Resources.Models.JobHistoryResource[]>([]);
 function load() {
 	JobService.list().then((response) => {
 		jobs.value = response.data.data;

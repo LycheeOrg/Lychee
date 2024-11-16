@@ -43,7 +43,7 @@ const emits = defineEmits<{
 	total: [total: TotalAlbum];
 }>();
 
-const albumSpace = ref(undefined as undefined | App.Http.Resources.Statistics.Album[]);
+const albumSpace = ref<App.Http.Resources.Statistics.Album[] | undefined>(undefined);
 const albumData = computed(() => {
 	return albumSpace.value?.filter((a) => !a.is_nsfw || are_nsfw_visible.value);
 });

@@ -44,7 +44,7 @@ import Toolbar from "primevue/toolbar";
 import { useToast } from "primevue/usetoast";
 import { ref } from "vue";
 
-const perms = ref(undefined as undefined | App.Http.Resources.Models.AccessPermissionResource[]);
+const perms = ref<App.Http.Resources.Models.AccessPermissionResource[] | undefined>(undefined);
 const toast = useToast();
 
 SharingService.list().then((response) => {

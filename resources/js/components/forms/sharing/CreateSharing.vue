@@ -45,7 +45,7 @@ const emits = defineEmits<{
 	createdPermission: [];
 }>();
 
-const newShareUser = ref(undefined as undefined | App.Http.Resources.Models.LightUserResource);
+const newShareUser = ref<App.Http.Resources.Models.LightUserResource | undefined>(undefined);
 const grantsFullPhotoAccess = ref(false);
 const grantsDownload = ref(false);
 const grantsUpload = ref(false);

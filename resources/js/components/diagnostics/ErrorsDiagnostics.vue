@@ -12,7 +12,7 @@ import { ref } from "vue";
 import Panel from "primevue/panel";
 import DiagnosticsService from "@/services/diagnostics-service";
 
-const errors = ref(undefined as App.Http.Resources.Diagnostics.ErrorLine[] | undefined);
+const errors = ref<App.Http.Resources.Diagnostics.ErrorLine[] | undefined>(undefined);
 
 function load() {
 	DiagnosticsService.errors().then((response) => {

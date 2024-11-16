@@ -42,7 +42,7 @@ const emits = defineEmits<{
 	updated: [];
 }>();
 
-const title = ref(undefined as undefined | string);
+const title = ref<string | undefined>(undefined);
 
 const question = computed(() => {
 	if (props.photo) {

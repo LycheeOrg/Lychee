@@ -88,9 +88,9 @@ const props = defineProps<{
 const { getStatistics } = useAlbumsStatistics();
 
 const photosData = ref(getStatistics(props.photos));
-const totalAlbumSpace = ref(undefined as undefined | App.Http.Resources.Statistics.Album);
+const totalAlbumSpace = ref<App.Http.Resources.Statistics.Album | undefined>(undefined);
 
-const total = ref(undefined as undefined | TotalAlbum);
+const total = ref<TotalAlbum | undefined>(undefined);
 
 if (props.config.is_model_album) {
 	StatisticsService.getTotalAlbumSpace(props.album.id).then((response) => {

@@ -1,9 +1,9 @@
 import { computed, Ref, ref } from "vue";
 
 export function usePhotoBaseFunction(photoId: Ref<string>) {
-	const photo = ref(undefined) as Ref<App.Http.Resources.Models.PhotoResource | undefined>;
-	const album = ref(null) as Ref<App.Http.Resources.Models.AbstractAlbumResource | null>;
-	const photos = ref([]) as Ref<App.Http.Resources.Models.PhotoResource[]>;
+	const photo = ref<App.Http.Resources.Models.PhotoResource | undefined>(undefined);
+	const album = ref<App.Http.Resources.Models.AbstractAlbumResource | null>(null);
+	const photos = ref<App.Http.Resources.Models.PhotoResource[]>([]);
 
 	function hasPrevious(): boolean {
 		return photo.value?.previous_photo_id !== null;

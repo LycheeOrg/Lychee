@@ -70,7 +70,7 @@ import RegisterLychee from "./RegisterLychee.vue";
 const visible = defineModel("visible") as Ref<boolean>;
 const registerLycheeVisible = ref(false);
 const description = ref(sprintf(trans("lychee.ABOUT_DESCRIPTION"), "https://LycheeOrg.github.io"));
-const version = ref(undefined) as Ref<undefined | App.Http.Resources.Root.VersionResource>;
+const version = ref<App.Http.Resources.Root.VersionResource | undefined>(undefined);
 const lycheeStore = useLycheeStateStore();
 
 const { is_se_enabled, is_se_info_hidden } = storeToRefs(lycheeStore);

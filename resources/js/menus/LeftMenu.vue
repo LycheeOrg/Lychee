@@ -83,7 +83,7 @@ type MenyType =
 			items: MenyType[];
 	  };
 
-const initData = ref(undefined) as Ref<undefined | App.Http.Resources.Rights.GlobalRightsResource>;
+const initData = ref<App.Http.Resources.Rights.GlobalRightsResource | undefined>(undefined);
 const openLycheeAbout = ref(false);
 const logsEnabled = ref(true);
 

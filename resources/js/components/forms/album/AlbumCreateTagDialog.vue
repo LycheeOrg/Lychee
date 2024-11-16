@@ -51,8 +51,8 @@ const toast = useToast();
 const router = useRouter();
 const visible = ref(props.visible);
 
-const title = ref(undefined as undefined | string);
-const tags = ref([] as string[]);
+const title = ref<string | undefined>(undefined);
+const tags = ref<string[]>([]);
 
 const isValid = computed(() => title.value !== undefined && title.value.length > 0 && title.value.length <= 100);
 

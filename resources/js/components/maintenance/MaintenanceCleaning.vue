@@ -32,7 +32,7 @@ import { trans } from "laravel-vue-i18n";
 
 const props = defineProps<{ path: string }>();
 
-const data = ref(undefined as App.Http.Resources.Diagnostics.CleaningState | undefined);
+const data = ref<App.Http.Resources.Diagnostics.CleaningState | undefined>(undefined);
 const loading = ref(false);
 const toast = useToast();
 

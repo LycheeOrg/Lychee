@@ -52,8 +52,8 @@ const emits = defineEmits<{
 }>();
 
 const toast = useToast();
-const titleCopyTo = ref(undefined as string | undefined);
-const destination_id = ref(undefined as string | undefined | null);
+const titleCopyTo = ref<string | undefined>(undefined);
+const destination_id = ref<string | undefined | null>(undefined);
 const error_no_target = ref(false);
 
 function selected(target: App.Http.Resources.Models.TargetAlbumResource) {
