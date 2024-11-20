@@ -1,12 +1,9 @@
 <template>
 	<LoginModal v-if="props.user.id === null" v-model:visible="is_login_open" @logged-in="refresh" @open-webauthn="isWebAuthnOpen = true" />
 	<WebauthnModal v-if="props.user.id === null && !isWebAuthnUnavailable" v-model:visible="isWebAuthnOpen" @logged-in="refresh" />
-	<UploadPanel v-if="canUpload" @refresh="refresh" key="upload_modal" />
 	<ImportFromServer v-if="canUpload" v-model:visible="isImportFromServerOpen" />
 	<ImportFromLink v-if="canUpload" v-model:visible="isImportFromLinkOpen" :parent-id="null" />
 	<DropBox v-if="canUpload" v-model:visible="isImportFromDropboxOpen" :album-id="null" />
-	<AlbumCreateDialog v-if="canUpload" v-model:visible="isCreateAlbumOpen" :parent-id="null" key="create_album_modal" />
-	<AlbumCreateTagDialog v-if="canUpload" v-model:visible="isCreateTagAlbumOpen" key="create_tag_album_modal" />
 	<Toolbar
 		class="w-full border-0 h-14"
 		:pt:root:class="'flex-nowrap relative'"
@@ -21,7 +18,7 @@
 				class="border-none"
 				severity="secondary"
 				text
-				@click="lycheeStore.toggleLogin()"
+				@click="togglableStore.toggleLogin()"
 			/>
 			<!-- Logged in. -->
 			<OpenLeftMenu v-if="user.id" />
@@ -87,13 +84,10 @@ import Button from "primevue/button";
 import SpeedDial from "primevue/speeddial";
 import Toolbar from "primevue/toolbar";
 import ContextMenu from "primevue/contextmenu";
-import UploadPanel from "@/components/modals/UploadPanel.vue";
 import WebauthnModal from "@/components/modals/WebauthnModal.vue";
 import LoginModal from "@/components/modals/LoginModal.vue";
 import ImportFromLink from "@/components/modals/ImportFromLink.vue";
 import ImportFromServer from "@/components/modals/ImportFromServer.vue";
-import AlbumCreateDialog from "@/components/forms/album/AlbumCreateDialog.vue";
-import AlbumCreateTagDialog from "@/components/forms/album/AlbumCreateTagDialog.vue";
 import { computed, ComputedRef, ref } from "vue";
 import { onKeyStroke } from "@vueuse/core";
 import { useLycheeStateStore } from "@/stores/LycheeState";
@@ -107,6 +101,7 @@ import WebAuthnService from "@/services/webauthn-service";
 import { useRouter } from "vue-router";
 import DropBox from "../modals/DropBox.vue";
 import OpenLeftMenu from "./OpenLeftMenu.vue";
+import { useTogglablesStateStore } from "@/stores/ModalsState";
 
 const props = defineProps<{
 	user: App.Http.Resources.Models.UserResource;
@@ -138,13 +133,17 @@ const emits = defineEmits<{
 // 	'UPLOAD_TRACK' => 'Upload track',
 // 	'DELETE_TRACK' => 'Delete track',
 const lycheeStore = useLycheeStateStore();
-const { is_login_open, dropbox_api_key, is_upload_visible } = storeToRefs(lycheeStore);
+const togglableStore = useTogglablesStateStore();
+
+const { dropbox_api_key } = storeToRefs(lycheeStore);
+const { is_login_open, is_upload_visible, is_create_album_visible, is_create_tag_album_visible } = storeToRefs(togglableStore);
+
 const isWebAuthnOpen = ref(false);
 const router = useRouter();
 
 const {
-	isCreateAlbumOpen,
 	toggleCreateAlbum,
+	toggleCreateTagAlbum,
 	isDeleteVisible,
 	toggleDelete,
 	isMergeAlbumVisible,
@@ -160,14 +159,15 @@ const {
 	isImportFromDropboxOpen,
 	toggleImportFromDropbox,
 	toggleUpload,
-} = useGalleryModals(is_upload_visible);
+} = useGalleryModals(togglableStore);
 
-const { addmenu, addMenu, isImportFromServerOpen, isCreateTagAlbumOpen } = useContextMenuAlbumsAdd(
+const { addmenu, addMenu, isImportFromServerOpen } = useContextMenuAlbumsAdd(
 	{
 		toggleUpload: toggleUpload,
 		toggleCreateAlbum: toggleCreateAlbum,
 		toggleImportFromLink: toggleImportFromLink,
 		toggleImportFromDropbox: toggleImportFromDropbox,
+		toggleCreateTagAlbum: toggleCreateTagAlbum,
 	},
 	dropbox_api_key,
 );
@@ -189,7 +189,7 @@ function openSearch() {
 	router.push({ name: "search" });
 }
 
-onKeyStroke("n", () => !shouldIgnoreKeystroke() && props.rights.can_upload && (isCreateAlbumOpen.value = true));
+onKeyStroke("n", () => !shouldIgnoreKeystroke() && props.rights.can_upload && (is_create_album_visible.value = true));
 onKeyStroke("u", () => !shouldIgnoreKeystroke() && props.rights.can_upload && (is_upload_visible.value = true));
 onKeyStroke("l", () => !shouldIgnoreKeystroke() && props.user.id === null && (is_login_open.value = true));
 onKeyStroke("k", () => !shouldIgnoreKeystroke() && props.user.id === null && !isWebAuthnUnavailable.value && (isWebAuthnOpen.value = true));
@@ -216,12 +216,12 @@ onKeyStroke("escape", () => {
 		is_upload_visible.value = false;
 		return;
 	}
-	if (isCreateAlbumOpen.value) {
-		isCreateAlbumOpen.value = false;
+	if (is_create_album_visible.value) {
+		is_create_album_visible.value = false;
 		return;
 	}
-	if (isCreateTagAlbumOpen.value) {
-		isCreateTagAlbumOpen.value = false;
+	if (is_create_tag_album_visible.value) {
+		is_create_tag_album_visible.value = false;
 		return;
 	}
 	if (isImportFromServerOpen.value) {
@@ -229,7 +229,7 @@ onKeyStroke("escape", () => {
 		return;
 	}
 
-	lycheeStore.left_menu_open = false;
+	togglableStore.left_menu_open = false;
 });
 
 type Link = {
@@ -269,7 +269,7 @@ const menu = computed(() =>
 		{
 			icon: "pi pi-sign-in",
 			type: "fn",
-			callback: lycheeStore.toggleLogin,
+			callback: togglableStore.toggleLogin,
 			if: props.user.id === null && !isLoginLeft.value,
 		},
 		{

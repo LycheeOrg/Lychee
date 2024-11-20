@@ -78,18 +78,16 @@ import AlbumDelete from "@/components/forms/album/AlbumDelete.vue";
 import AlbumMove from "../forms/album/AlbumMove.vue";
 import AlbumTransfer from "../forms/album/AlbumTransfer.vue";
 import AlbumShare from "../forms/album/AlbumShare.vue";
-import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
+import { useTogglablesStateStore } from "@/stores/ModalsState";
 
 const props = defineProps<{
 	album: App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.SmartAlbumResource | App.Http.Resources.Models.TagAlbumResource;
 	config: App.Http.Resources.GalleryConfigs.AlbumConfig;
 }>();
 
-const lycheeStore = useLycheeStateStore();
-lycheeStore.init();
-
-const { are_details_open } = storeToRefs(lycheeStore);
+const togglableStore = useTogglablesStateStore();
+const { are_details_open } = storeToRefs(togglableStore);
 
 const activeTab = ref(0);
 const numUsers = ref(0);

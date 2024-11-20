@@ -1,4 +1,3 @@
-import { Uploadable } from "@/components/modals/UploadPanel.vue";
 import InitService from "@/services/init-service";
 import { defineStore } from "pinia";
 
@@ -13,27 +12,8 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		// Debug mode (is default to true to see the first crash)
 		is_debug_enabled: true,
 
-		// togglables
-		left_menu_open: false,
-		is_full_screen: false,
-		is_login_open: false,
-
-		// upload
-		is_upload_visible: false,
-		list_upload_files: [] as Uploadable[],
-
-		// Photo toggleables
-		is_edit_open: false,
-		are_details_open: false,
-		is_slideshow_active: false,
-
 		// Photo config
 		slideshow_timeout: 5,
-
-		// Search stuff
-		search_term: "",
-		search_album_id: undefined as string | undefined,
-		search_page: 1,
 
 		// configs for nsfw
 		are_nsfw_visible: false,
@@ -70,11 +50,6 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		is_se_preview_enabled: false,
 		is_se_info_hidden: false,
 	}),
-	getters: {
-		isSearchActive(): boolean {
-			return this.search_term !== "";
-		},
-	},
 	actions: {
 		init() {
 			// Check if already initialized
@@ -135,20 +110,6 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					const event = new CustomEvent("error", { detail: error.response.data });
 					window.dispatchEvent(event);
 				});
-		},
-
-		toggleFullScreen() {
-			this.is_full_screen = !this.is_full_screen;
-		},
-
-		toggleLogin() {
-			this.is_login_open = !this.is_login_open;
-		},
-
-		resetSearch() {
-			this.search_term = "";
-			this.search_album_id = undefined;
-			this.search_page = 1;
 		},
 	},
 });

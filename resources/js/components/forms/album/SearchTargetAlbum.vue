@@ -33,14 +33,14 @@ const props = defineProps<{
 	albumId: string | undefined;
 }>();
 
-const albumId = ref(props.albumId ?? (null as string | null));
+const albumId = ref<string | null>(props.albumId ?? null);
 const emits = defineEmits<{
 	selected: [target: App.Http.Resources.Models.TargetAlbumResource];
 	"no-target": [];
 }>();
 
-const options = ref(undefined as undefined | App.Http.Resources.Models.TargetAlbumResource[]);
-const selectedTarget = ref(undefined as App.Http.Resources.Models.TargetAlbumResource | undefined);
+const options = ref<App.Http.Resources.Models.TargetAlbumResource[] | undefined>(undefined);
+const selectedTarget = ref<App.Http.Resources.Models.TargetAlbumResource | undefined>(undefined);
 
 function load() {
 	AlbumService.getTargetListAlbums(albumId.value).then((response) => {

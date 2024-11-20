@@ -30,7 +30,7 @@ const props = defineProps<{
 	config: App.Http.Resources.Models.ConfigResource;
 }>();
 
-const val = ref(props.config.value as string);
+const val = ref<string>(props.config.value);
 
 const changed = computed(() => val.value !== props.config.value);
 

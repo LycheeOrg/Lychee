@@ -30,7 +30,7 @@ import MaintenanceService from "@/services/maintenance-service";
 import { sprintf } from "sprintf-js";
 import { trans } from "laravel-vue-i18n";
 
-const data = ref(undefined as number | undefined);
+const data = ref<number | undefined>(undefined);
 const loading = ref(false);
 const toast = useToast();
 

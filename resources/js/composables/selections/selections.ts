@@ -5,8 +5,8 @@ export function useSelection(
 	photos: Ref<{ [key: number]: App.Http.Resources.Models.PhotoResource }>,
 	albums: Ref<{ [key: number]: App.Http.Resources.Models.ThumbAlbumResource }>,
 ) {
-	const selectedPhotosIdx = ref([] as number[]);
-	const selectedAlbumsIdx = ref([] as number[]);
+	const selectedPhotosIdx = ref<number[]>([]);
+	const selectedAlbumsIdx = ref<number[]>([]);
 	const selectedPhoto = computed(() => (selectedPhotosIdx.value.length === 1 ? photos.value[selectedPhotosIdx.value[0]] : undefined));
 	const selectedAlbum = computed(() => (selectedAlbumsIdx.value.length === 1 ? albums.value[selectedAlbumsIdx.value[0]] : undefined));
 	const selectedPhotos = computed(() =>
@@ -19,8 +19,8 @@ export function useSelection(
 	const selectedAlbumsIds = computed(() => selectedAlbums.value.map((a) => a.id));
 
 	// We save the last clicked index so we can do selections with shift.
-	const lastPhotoClicked = ref(undefined as number | undefined);
-	const lastAlbumClicked = ref(undefined as number | undefined);
+	const lastPhotoClicked = ref<number | undefined>(undefined);
+	const lastAlbumClicked = ref<number | undefined>(undefined);
 
 	const isPhotoSelected = (idx: number) => selectedPhotosIdx.value.includes(idx);
 	const isAlbumSelected = (idx: number) => selectedAlbumsIdx.value.includes(idx);

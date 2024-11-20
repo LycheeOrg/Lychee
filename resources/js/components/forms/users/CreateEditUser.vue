@@ -82,10 +82,10 @@ const props = defineProps<{
 	isEdit: boolean;
 }>();
 
-const id = ref(props.user?.id);
-const username = ref(props.user?.username);
-const note = ref(props.user?.note ?? undefined);
-const password = ref(undefined as string | undefined);
+const id = ref<number | undefined>(props.user?.id);
+const username = ref<string | undefined>(props.user?.username);
+const note = ref<string | undefined>(props.user?.note ?? undefined);
+const password = ref<string | undefined>(undefined);
 const may_edit_own_settings = ref(props.user?.may_edit_own_settings ?? false);
 const may_upload = ref(props.user?.may_upload ?? false);
 const has_quota = ref(props.user?.quota_kb !== undefined && props.user?.quota_kb !== null);

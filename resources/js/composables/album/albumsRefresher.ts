@@ -6,16 +6,16 @@ import { SplitData, useSplitter } from "./splitter";
 
 export function useAlbumsRefresher(auth: AuthStore, lycheeStore: LycheeStateStore, isLoginOpen: Ref<boolean>) {
 	const { spliter } = useSplitter();
-	const user = ref(undefined) as Ref<undefined | App.Http.Resources.Models.UserResource>;
+	const user = ref<App.Http.Resources.Models.UserResource | undefined>(undefined);
 	const isKeybindingsHelpOpen = ref(false);
-	const smartAlbums = ref([]) as Ref<App.Http.Resources.Models.ThumbAlbumResource[]>;
-	const albums = ref([]) as Ref<App.Http.Resources.Models.ThumbAlbumResource[]>;
-	const sharedAlbums = ref([]) as Ref<SplitData<App.Http.Resources.Models.ThumbAlbumResource>[]>;
-	const rootConfig = ref(undefined) as Ref<undefined | App.Http.Resources.GalleryConfigs.RootConfig>;
-	const rootRights = ref(undefined) as Ref<undefined | App.Http.Resources.Rights.RootAlbumRightsResource>;
+	const smartAlbums = ref<App.Http.Resources.Models.ThumbAlbumResource[]>([]);
+	const albums = ref<App.Http.Resources.Models.ThumbAlbumResource[]>([]);
+	const sharedAlbums = ref<SplitData<App.Http.Resources.Models.ThumbAlbumResource>[]>([]);
+	const rootConfig = ref<App.Http.Resources.GalleryConfigs.RootConfig | undefined>(undefined);
+	const rootRights = ref<App.Http.Resources.Rights.RootAlbumRightsResource | undefined>(undefined);
 	const selectableAlbums = computed(() => albums.value.concat(sharedAlbums.value.map((album) => album.data).flat()));
 
-	function refresh() {
+	function refresh(): Promise<void> {
 		auth.getUser().then((data) => {
 			user.value = data;
 
@@ -26,7 +26,7 @@ export function useAlbumsRefresher(auth: AuthStore, lycheeStore: LycheeStateStor
 			}
 		});
 
-		AlbumService.getAll()
+		return AlbumService.getAll()
 			.then((data) => {
 				smartAlbums.value = (data.data.smart_albums as App.Http.Resources.Models.ThumbAlbumResource[]) ?? [];
 				albums.value = data.data.albums as App.Http.Resources.Models.ThumbAlbumResource[];

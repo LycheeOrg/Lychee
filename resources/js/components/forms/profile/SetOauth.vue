@@ -39,7 +39,7 @@ type OauthData = {
 	icon: string;
 };
 
-const oauths = ref(undefined as undefined | OauthData[]);
+const oauths = ref<OauthData[] | undefined>(undefined);
 const title = computed(() => {
 	if (oauths.value === undefined) {
 		return trans("lychee.LOADING");

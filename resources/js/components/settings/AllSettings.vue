@@ -202,9 +202,9 @@ import SettingsService from "@/services/settings-service";
 
 const toast = useToast();
 const oldStyle = ref(false);
-const active = ref([] as string[]);
-const configs = ref(undefined as undefined | App.Http.Resources.Collections.ConfigCollectionResource);
-const modified = ref([] as App.Http.Resources.Editable.EditableConfigResource[]);
+const active = ref<string[]>([]);
+const configs = ref<App.Http.Resources.Collections.ConfigCollectionResource | undefined>(undefined);
+const modified = ref<App.Http.Resources.Editable.EditableConfigResource[]>([]);
 const sections = computed(function () {
 	if (!configs.value) {
 		return [];

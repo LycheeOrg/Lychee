@@ -83,7 +83,7 @@ const lycheeStore = useLycheeStateStore();
 const { is_se_enabled } = storeToRefs(lycheeStore);
 const invalidPassword = ref(false);
 
-const oauths = ref(undefined as undefined | OauthProvider[]);
+const oauths = ref<OauthProvider[] | undefined>(undefined);
 
 function login() {
 	AuthService.login(username.value, password.value)

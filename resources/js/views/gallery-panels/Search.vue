@@ -158,6 +158,7 @@ import MoveDialog from "@/components/forms/gallery-dialogs/MoveDialog.vue";
 import DeleteDialog from "@/components/forms/gallery-dialogs/DeleteDialog.vue";
 import PhotoService from "@/services/photo-service";
 import AlbumService from "@/services/album-service";
+import { useTogglablesStateStore } from "@/stores/ModalsState";
 
 const router = useRouter();
 const props = defineProps<{
@@ -175,8 +176,10 @@ function goBack() {
 
 const auth = useAuthStore();
 const lycheeStore = useLycheeStateStore();
+const togglableStore = useTogglablesStateStore();
 lycheeStore.init();
-const { are_nsfw_visible, is_full_screen, search_page, search_term, is_login_open, nsfw_consented, is_upload_visible } = storeToRefs(lycheeStore);
+const { is_full_screen, search_page, search_term, is_login_open, is_upload_visible } = storeToRefs(togglableStore);
+const { are_nsfw_visible, nsfw_consented } = storeToRefs(lycheeStore);
 const {
 	albums,
 	photos,
@@ -192,7 +195,7 @@ const {
 	search,
 	clear,
 	refresh,
-} = useSearch(albumid, lycheeStore, search_term, search_page);
+} = useSearch(albumid, togglableStore, search_term, search_page);
 const { album, config, layout, loadAlbum, loadLayout } = useAlbumRefresher(albumid, auth, is_login_open, nsfw_consented);
 
 const configForMenu = computed<App.Http.Resources.GalleryConfigs.AlbumConfig>(() => {
@@ -234,7 +237,7 @@ const {
 	toggleTag,
 	isCopyVisible,
 	toggleCopy,
-} = useGalleryModals(is_upload_visible);
+} = useGalleryModals(togglableStore);
 
 const {
 	selectedPhotosIdx,
@@ -317,8 +320,8 @@ if (albumid.value !== "") {
 searchInit();
 loadLayout();
 
-if (lycheeStore.isSearchActive) {
-	search(lycheeStore.search_term);
+if (togglableStore.isSearchActive) {
+	search(togglableStore.search_term);
 }
 
 onKeyStroke("Escape", () => {

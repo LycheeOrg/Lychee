@@ -31,7 +31,7 @@ import { trans } from "laravel-vue-i18n";
 import Button from "primevue/button";
 import Fieldset from "primevue/fieldset";
 
-const u2f = ref(undefined as App.Http.Resources.Models.WebAuthnResource[] | undefined);
+const u2f = ref<App.Http.Resources.Models.WebAuthnResource[] | undefined>(undefined);
 const toast = useToast();
 
 const isWebAuthnUnavailable = computed(() => WebAuthnService.isWebAuthnUnavailable());

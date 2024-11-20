@@ -47,7 +47,7 @@ import MaintenanceService from "@/services/maintenance-service";
 import { useToast } from "primevue/usetoast";
 
 const visible = defineModel("visible") as Ref<boolean>;
-const licenseKey = ref(undefined) as Ref<undefined | string>;
+const licenseKey = ref<string | undefined>(undefined);
 const lycheeStore = useLycheeStateStore();
 const toast = useToast();
 

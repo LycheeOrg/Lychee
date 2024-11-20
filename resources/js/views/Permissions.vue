@@ -39,8 +39,8 @@ import Button from "primevue/button";
 import DiagnosticsService from "@/services/diagnostics-service";
 
 const same = ref(true);
-const left = ref([] as string[]);
-const right = ref([] as string[]);
+const left = ref<string[]>([]);
+const right = ref<string[]>([]);
 
 DiagnosticsService.permissions().then((response) => {
 	left.value = response.data.left.split("\n");

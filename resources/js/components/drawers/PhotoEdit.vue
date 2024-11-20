@@ -82,13 +82,13 @@ const props = defineProps<{
 const toast = useToast();
 const isEditOpen = defineModel("isEditOpen", { default: false }) as Ref<boolean>;
 
-const photo_id = ref(undefined as string | undefined);
-const title = ref(undefined as string | undefined);
-const description = ref(undefined as string | undefined);
-const uploadDate = ref(undefined as Date | undefined);
-const tags = ref([] as string[]);
-const license = ref(undefined as SelectOption<App.Enum.LicenseType> | undefined);
-const uploadTz = ref(undefined as string | undefined);
+const photo_id = ref<string | undefined>(undefined);
+const title = ref<string | undefined>(undefined);
+const description = ref<string | undefined>(undefined);
+const uploadDate = ref<Date | undefined>(undefined);
+const tags = ref<string[]>([]);
+const license = ref<SelectOption<App.Enum.LicenseType> | undefined>(undefined);
+const uploadTz = ref<string | undefined>(undefined);
 
 // TODO: updating exif data later
 

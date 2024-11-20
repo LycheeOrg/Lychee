@@ -26,7 +26,7 @@ const props = defineProps<{
 	config: App.Http.Resources.Models.ConfigResource;
 }>();
 
-const val = ref((props.config.value === "1") as boolean);
+const val = ref<boolean>(props.config.value === "1");
 
 const changed = computed(() => val.value !== (props.config.value === "1"));
 

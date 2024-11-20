@@ -1,13 +1,13 @@
 import SearchService from "@/services/search-service";
-import { LycheeStateStore } from "@/stores/LycheeState";
+import { TogglablesStateStore } from "@/stores/ModalsState";
 import { trans } from "laravel-vue-i18n";
 import { computed, ref, Ref } from "vue";
 
-export function useSearch(albumid: Ref<string>, lycheeStore: LycheeStateStore, search_term: Ref<string>, search_page: Ref<number>) {
+export function useSearch(albumid: Ref<string>, togglableStore: TogglablesStateStore, search_term: Ref<string>, search_page: Ref<number>) {
 	const albums = ref<App.Http.Resources.Models.ThumbAlbumResource[]>([]);
 	const photos = ref<App.Http.Resources.Models.PhotoResource[]>([]);
 	const noData = computed<boolean>(() => albums.value.length === 0 && photos.value.length === 0);
-	const searchMinimumLengh = ref(undefined as number | undefined);
+	const searchMinimumLengh = ref<number | undefined>(undefined);
 	const isSearching = ref(false);
 	const from = ref(0);
 	const per_page = ref(0);
@@ -33,7 +33,7 @@ export function useSearch(albumid: Ref<string>, lycheeStore: LycheeStateStore, s
 			photos.value = [];
 			return;
 		}
-		lycheeStore.search_album_id = albumid.value;
+		togglableStore.search_album_id = albumid.value;
 		search_term.value = terms;
 		isSearching.value = true;
 		SearchService.search(albumid.value, search_term.value, search_page.value).then((response) => {

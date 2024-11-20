@@ -32,7 +32,7 @@ import ScrollPanel from "primevue/scrollpanel";
 import MaintenanceService from "@/services/maintenance-service";
 import { useToast } from "primevue/usetoast";
 
-const data = ref(undefined as App.Http.Resources.Diagnostics.UpdateInfo | undefined);
+const data = ref<App.Http.Resources.Diagnostics.UpdateInfo | undefined>(undefined);
 const canCheck = ref(true);
 const canUpdate = ref(false);
 const loading = ref(false);

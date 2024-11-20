@@ -1,14 +1,14 @@
-import { computed, Ref, ref } from "vue";
+import { Ref, ref } from "vue";
 
 type Callbacks = {
 	toggleUpload: () => void;
 	toggleImportFromLink: () => void;
 	toggleCreateAlbum: () => void;
+	toggleCreateTagAlbum: () => void;
 	toggleImportFromDropbox: () => void;
 };
 
 export function useContextMenuAlbumsAdd(callbacks: Callbacks, dropbox_api_key: Ref<string>) {
-	const isCreateTagAlbumOpen = ref(false);
 	const isImportFromServerOpen = ref(false);
 
 	const addmenu = ref(); // ! Reference to the context menu
@@ -49,7 +49,7 @@ export function useContextMenuAlbumsAdd(callbacks: Callbacks, dropbox_api_key: R
 			{
 				label: "lychee.NEW_TAG_ALBUM",
 				icon: "pi pi-tags",
-				callback: () => (isCreateTagAlbumOpen.value = true),
+				callback: () => callbacks.toggleCreateTagAlbum,
 			},
 		].filter((item) => item.if === undefined || item.if !== false),
 	);
@@ -62,7 +62,6 @@ export function useContextMenuAlbumsAdd(callbacks: Callbacks, dropbox_api_key: R
 		addmenu,
 		addMenu,
 		openAddMenu,
-		isCreateTagAlbumOpen,
 		isImportFromServerOpen,
 	};
 }

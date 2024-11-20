@@ -65,6 +65,7 @@ import AlbumService from "@/services/album-service";
 import SETag from "@/components/icons/SETag.vue";
 import Constants from "@/services/constants";
 import { useRoute } from "vue-router";
+import { useTogglablesStateStore } from "@/stores/ModalsState";
 
 type MenyType =
 	| {
@@ -82,16 +83,18 @@ type MenyType =
 			items: MenyType[];
 	  };
 
-const initData = ref(undefined) as Ref<undefined | App.Http.Resources.Rights.GlobalRightsResource>;
+const initData = ref<App.Http.Resources.Rights.GlobalRightsResource | undefined>(undefined);
 const openLycheeAbout = ref(false);
 const logsEnabled = ref(true);
 
 const route = useRoute();
 const authStore = useAuthStore();
 const lycheeStore = useLycheeStateStore();
+const togglableStore = useTogglablesStateStore();
 lycheeStore.init();
 
-const { left_menu_open, clockwork_url, is_se_enabled, is_se_preview_enabled, is_se_info_hidden } = storeToRefs(lycheeStore);
+const { left_menu_open } = storeToRefs(togglableStore);
+const { clockwork_url, is_se_enabled, is_se_preview_enabled, is_se_info_hidden } = storeToRefs(lycheeStore);
 const { user } = storeToRefs(authStore);
 authStore.getUser();
 
@@ -120,7 +123,7 @@ function load() {
 
 function logout() {
 	AuthService.logout().then(() => {
-		lycheeStore.left_menu_open = false;
+		left_menu_open.value = false;
 		initData.value = undefined;
 		authStore.setUser(null);
 		AlbumService.clearCache();

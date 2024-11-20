@@ -25,7 +25,7 @@
 		/>
 		<AlbumThumbOverlay v-if="props.config.display_thumb_album_overlay !== 'never'" :album="props.album" :config="props.config" />
 		<span v-if="album.thumb?.type.includes('video')" class="w-full h-full absolute hover:opacity-70 transition-opacity duration-300">
-			<img class="h-full w-full" alt="play" :src="play_icon" />
+			<img class="h-full w-full" alt="play" :src="getPlayIcon()" />
 		</span>
 		<div v-if="user?.id !== null" class="badges absolute mt-[-1px] ml-1 top-0 left-0">
 			<ThumbBadge v-if="props.album.is_nsfw" class="bg-[#ff82ee]" icon="warning" />
@@ -53,6 +53,7 @@ import AlbumThumbOverlay from "./AlbumThumbOverlay.vue";
 import AlbumThumbDecorations from "./AlbumThumbDecorations.vue";
 import { storeToRefs } from "pinia";
 import Constants from "@/services/constants";
+import { useImageHelpers } from "@/utils/Helpers";
 
 export type AlbumThumbConfig = {
 	album_thumb_css_aspect_ratio: string;
@@ -71,6 +72,7 @@ const props = defineProps<{
 
 const auth = useAuthStore();
 const lycheeStore = useLycheeStateStore();
+const { getPlayIcon } = useImageHelpers();
 const { user } = storeToRefs(auth);
 
 const cssClass = computed(() => {
@@ -85,6 +87,4 @@ const linkClass = computed(
 	() => props.config.album_thumb_css_aspect_ratio + (lycheeStore.is_nsfw_background_blurred && props.album.is_nsfw ? " blurred" : ""),
 );
 auth.getUser();
-
-const play_icon = ref(Constants.BASE_URL + "/img/play-icon.png");
 </script>

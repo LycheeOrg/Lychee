@@ -34,7 +34,7 @@ const props = defineProps<{
 	sv: App.Enum.SizeVariantType;
 }>();
 
-const data = ref(undefined as number | undefined);
+const data = ref<number | undefined>(undefined);
 const loading = ref(false);
 const toast = useToast();
 

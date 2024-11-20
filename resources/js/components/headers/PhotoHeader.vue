@@ -41,8 +41,8 @@ import { useRouter } from "vue-router";
 import { onKeyStroke } from "@vueuse/core";
 import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
 import DownloadPhoto from "../modals/DownloadPhoto.vue";
-import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
+import { useTogglablesStateStore } from "@/stores/ModalsState";
 
 const router = useRouter();
 const emits = defineEmits<{
@@ -54,21 +54,20 @@ const props = defineProps<{
 	photo: App.Http.Resources.Models.PhotoResource;
 }>();
 
-const lycheeStore = useLycheeStateStore();
-lycheeStore.init();
-const { is_full_screen, is_edit_open, are_details_open, is_slideshow_active } = storeToRefs(lycheeStore);
+const togglableStore = useTogglablesStateStore();
+const { is_full_screen, is_edit_open, are_details_open, is_slideshow_active } = storeToRefs(togglableStore);
 const isDownloadOpen = ref(false);
 
 onKeyStroke("i", () => !shouldIgnoreKeystroke() && toggleDetails());
 onKeyStroke("e", () => !shouldIgnoreKeystroke() && props.photo.rights.can_edit && toggleEdit());
 
 function goBack() {
-	if (lycheeStore.isSearchActive && !lycheeStore.search_album_id) {
+	if (togglableStore.isSearchActive && !togglableStore.search_album_id) {
 		router.push({ name: "search" });
 		return;
 	}
-	if (lycheeStore.isSearchActive) {
-		router.push({ name: "search-with-album", params: { albumid: lycheeStore.search_album_id } });
+	if (togglableStore.isSearchActive) {
+		router.push({ name: "search-with-album", params: { albumid: togglableStore.search_album_id } });
 		return;
 	}
 	router.push({ name: "album", params: { albumid: props.albumid } });

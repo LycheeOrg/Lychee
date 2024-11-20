@@ -45,8 +45,8 @@ const props = defineProps<{
 }>();
 
 const lycheeStore = useLycheeStateStore();
-const sizeVariantSpace = ref(undefined as undefined | App.Http.Resources.Statistics.Sizes[]);
-const sizeVariantSpaceMeter = ref(undefined as undefined | SizeVariantData[]);
+const sizeVariantSpace = ref<App.Http.Resources.Statistics.Sizes[] | undefined>(undefined);
+const sizeVariantSpaceMeter = ref<SizeVariantData[] | undefined>(undefined);
 
 const { is_se_preview_enabled } = storeToRefs(lycheeStore);
 

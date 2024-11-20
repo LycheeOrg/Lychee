@@ -37,7 +37,7 @@ const props = defineProps<{
 	config: App.Http.Resources.Models.ConfigResource;
 }>();
 
-const val = ref(Number(props.config.value));
+const val = ref<number>(Number(props.config.value));
 
 const changed = computed(() => val.value !== Number(props.config.value));
 

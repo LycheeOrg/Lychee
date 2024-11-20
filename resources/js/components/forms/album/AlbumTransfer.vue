@@ -33,7 +33,7 @@ const props = defineProps<{
 }>();
 
 const router = useRouter();
-const newOwner = ref(undefined as undefined | App.Http.Resources.Models.LightUserResource);
+const newOwner = ref<App.Http.Resources.Models.LightUserResource | undefined>(undefined);
 const confirmation = computed(() =>
 	sprintf(
 		"Are you sure you want to transfer to %s the ownership of album “%s” and all the photos it contains? Your access to this album will be lost.",

@@ -9,7 +9,7 @@ import { ref } from "vue";
 import Panel from "primevue/panel";
 import DiagnosticsService from "@/services/diagnostics-service";
 
-const infos = ref(undefined as string[] | undefined);
+const infos = ref<string[] | undefined>(undefined);
 
 function load() {
 	DiagnosticsService.info().then((response) => {

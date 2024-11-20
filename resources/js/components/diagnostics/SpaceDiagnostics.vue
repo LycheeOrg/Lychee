@@ -13,7 +13,7 @@ import Panel from "primevue/panel";
 import DiagnosticsService from "@/services/diagnostics-service";
 
 const requested = ref(false);
-const space = ref(undefined as string[] | undefined);
+const space = ref<string[] | undefined>(undefined);
 
 function load() {
 	requested.value = true;

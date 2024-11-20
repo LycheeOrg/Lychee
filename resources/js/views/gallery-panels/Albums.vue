@@ -1,6 +1,10 @@
 <template>
+	<UploadPanel v-if="rootRights?.can_upload" @refresh="refresh" key="upload_modal" />
 	<KeybindingsHelp v-model:visible="isKeybindingsHelpOpen" v-if="user?.id" />
-	<div v-if="rootConfig && rootRights" @click="unselect" class="h-svh overflow-y-auto">
+	<AlbumCreateDialog v-if="rootRights?.can_upload" :parent-id="null" key="create_album_modal" />
+	<AlbumCreateTagDialog v-if="rootRights?.can_upload" key="create_tag_album_modal" />
+
+	<div v-if="rootConfig && rootRights" @click="unselect" class="h-svh overflow-y-auto" id="galleryView" v-on:scroll="onScroll">
 		<Collapse :when="!is_full_screen">
 			<AlbumsHeader
 				v-if="user"
@@ -141,14 +145,24 @@ import AlbumService from "@/services/album-service";
 import { useRouter } from "vue-router";
 import { useMouseEvents } from "@/composables/album/uploadEvents";
 import GalleryFooter from "@/components/footers/GalleryFooter.vue";
+import { useTogglablesStateStore } from "@/stores/ModalsState";
+import UploadPanel from "@/components/modals/UploadPanel.vue";
+import AlbumCreateDialog from "@/components/forms/album/AlbumCreateDialog.vue";
+import AlbumCreateTagDialog from "@/components/forms/album/AlbumCreateTagDialog.vue";
+import { useScrollable } from "@/composables/album/scrollable";
 
 const auth = useAuthStore();
 const router = useRouter();
 const lycheeStore = useLycheeStateStore();
-lycheeStore.init();
-lycheeStore.resetSearch();
+const togglableStore = useTogglablesStateStore();
 
-const { are_nsfw_visible, is_full_screen, is_login_open, title, is_upload_visible, list_upload_files } = storeToRefs(lycheeStore);
+lycheeStore.init();
+togglableStore.resetSearch();
+const albumid = ref("gallery");
+
+const { onScroll, setScroll } = useScrollable(togglableStore, albumid);
+const { is_full_screen, is_login_open, is_upload_visible, list_upload_files } = storeToRefs(togglableStore);
+const { are_nsfw_visible, title } = storeToRefs(lycheeStore);
 
 const photos = ref([]); // unused.
 
@@ -165,7 +179,7 @@ const { selectedAlbum, selectedAlbumsIdx, selectedAlbums, selectedAlbumsIds, alb
 
 // Modals for Albums
 const { isDeleteVisible, toggleDelete, isMergeAlbumVisible, toggleMergeAlbum, isMoveVisible, toggleMove, isRenameVisible, toggleRename } =
-	useGalleryModals(is_upload_visible);
+	useGalleryModals(togglableStore);
 
 // Unused.
 const photoCallbacks = {
@@ -215,10 +229,10 @@ const albumPanelConfig = computed<AlbumThumbConfig>(() => ({
 	album_decoration_orientation: lycheeStore.album_decoration_orientation,
 }));
 
-refresh();
+refresh().then(setScroll);
 
 onKeyStroke("h", () => !shouldIgnoreKeystroke() && (are_nsfw_visible.value = !are_nsfw_visible.value));
-onKeyStroke("f", () => !shouldIgnoreKeystroke() && lycheeStore.toggleFullScreen());
+onKeyStroke("f", () => !shouldIgnoreKeystroke() && togglableStore.toggleFullScreen());
 onKeyStroke(" ", () => !shouldIgnoreKeystroke() && unselect());
 onKeyStroke("m", () => !shouldIgnoreKeystroke() && rootRights.value?.can_edit && hasSelection() && toggleMove());
 onKeyStroke(["Delete", "Backspace"], () => !shouldIgnoreKeystroke() && rootRights.value?.can_edit && hasSelection() && toggleDelete());

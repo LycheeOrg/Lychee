@@ -1,4 +1,6 @@
 <template>
+	<UploadPanel v-if="album?.rights.can_upload" @refresh="refresh" key="upload_modal" />
+	<AlbumCreateDialog v-if="album?.rights.can_upload && config?.is_model_album" v-model:parent-id="album.id" key="create_album_modal" />
 	<div class="h-svh overflow-y-hidden">
 		<!-- Trick to avoid the scroll bar to appear on the right when switching to full screen -->
 		<Collapse :when="!is_full_screen">
@@ -15,8 +17,10 @@
 		<Unlock :albumid="albumid" :visible="isPasswordProtected" @reload="refresh" @fail="is_login_open = true" />
 		<template v-if="config && album">
 			<div
+				id="galleryView"
 				class="relative flex flex-wrap content-start w-full justify-start overflow-y-auto"
 				:class="is_full_screen ? 'h-svh' : 'h-[calc(100vh-3.5rem)]'"
+				v-on:scroll="onScroll"
 			>
 				<AlbumEdit v-if="album.rights.can_edit" :album="album" :config="config" />
 				<div v-if="noData" class="flex w-full flex-col h-full items-center justify-center text-xl text-muted-color gap-8">
@@ -201,6 +205,10 @@ import Button from "primevue/button";
 import { useMouseEvents } from "@/composables/album/uploadEvents";
 import GalleryFooter from "@/components/footers/GalleryFooter.vue";
 import AlbumStatistics from "@/components/drawers/AlbumStatistics.vue";
+import { useTogglablesStateStore } from "@/stores/ModalsState";
+import UploadPanel from "@/components/modals/UploadPanel.vue";
+import AlbumCreateDialog from "@/components/forms/album/AlbumCreateDialog.vue";
+import { useScrollable } from "@/composables/album/scrollable";
 
 const route = useRoute();
 const router = useRouter();
@@ -212,12 +220,14 @@ const props = defineProps<{
 const albumid = ref(props.albumid);
 // flag to open login modal if necessary
 const auth = useAuthStore();
+const togglableStore = useTogglablesStateStore();
 const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
-lycheeStore.resetSearch();
+togglableStore.resetSearch();
 
-const { are_nsfw_visible, is_full_screen, is_login_open, nsfw_consented, is_slideshow_active, is_upload_visible, list_upload_files, is_se_enabled } =
-	storeToRefs(lycheeStore);
+const { onScroll, setScroll } = useScrollable(togglableStore, albumid);
+const { is_full_screen, is_login_open, is_slideshow_active, is_upload_visible, list_upload_files } = storeToRefs(togglableStore);
+const { are_nsfw_visible, nsfw_consented, is_se_enabled } = storeToRefs(lycheeStore);
 
 // Reset the slideshow.
 is_slideshow_active.value = false;
@@ -258,7 +268,7 @@ const {
 	isCopyVisible,
 	toggleCopy,
 	toggleUpload,
-} = useGalleryModals(is_upload_visible);
+} = useGalleryModals(togglableStore);
 
 const areStatisticsOpen = ref(false);
 
@@ -361,10 +371,10 @@ function consent() {
 
 loadLayout();
 
-refresh();
+refresh().then(setScroll);
 
 onKeyStroke("h", () => !shouldIgnoreKeystroke() && (are_nsfw_visible.value = !are_nsfw_visible.value));
-onKeyStroke("f", () => !shouldIgnoreKeystroke() && lycheeStore.toggleFullScreen());
+onKeyStroke("f", () => !shouldIgnoreKeystroke() && togglableStore.toggleFullScreen());
 onKeyStroke(" ", () => !shouldIgnoreKeystroke() && unselect());
 
 // Privileged actions
@@ -393,7 +403,7 @@ watch(
 		window.addEventListener("paste", onPaste);
 		window.addEventListener("dragover", dragEnd);
 		window.addEventListener("drop", dropUpload);
-		refresh();
+		refresh().then(setScroll);
 	},
 );
 </script>

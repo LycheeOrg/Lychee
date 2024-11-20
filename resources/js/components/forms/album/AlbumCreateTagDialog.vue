@@ -1,5 +1,11 @@
 <template>
-	<Dialog v-model:visible="visible" pt:root:class="border-none" modal :dismissable-mask="true">
+	<Dialog
+		v-model:visible="is_create_tag_album_visible"
+		pt:root:class="border-none"
+		modal
+		:dismissable-mask="true"
+		@close="is_create_tag_album_visible = false"
+	>
 		<template #container="{ closeCallback }">
 			<div v-focustrap class="flex flex-col relative max-w-full text-sm rounded-md pt-9">
 				<p class="mb-5 px-9">{{ $t("lychee.NEW_TAG_ALBUM") }}</p>
@@ -42,17 +48,17 @@ import InputText from "@/components/forms/basic/InputText.vue";
 import Button from "primevue/button";
 import AutoComplete from "primevue/autocomplete";
 import { useToast } from "primevue/usetoast";
-
-const props = defineProps<{
-	visible: boolean;
-}>();
+import { useTogglablesStateStore } from "@/stores/ModalsState";
+import { storeToRefs } from "pinia";
 
 const toast = useToast();
 const router = useRouter();
-const visible = ref(props.visible);
 
-const title = ref(undefined as undefined | string);
-const tags = ref([] as string[]);
+const togglableStore = useTogglablesStateStore();
+const { is_create_tag_album_visible } = storeToRefs(togglableStore);
+
+const title = ref<string | undefined>(undefined);
+const tags = ref<string[]>([]);
 
 const isValid = computed(() => title.value !== undefined && title.value.length > 0 && title.value.length <= 100);
 
@@ -73,13 +79,6 @@ function create() {
 			toast.add({ severity: "error", summary: "Oups", detail: error.message });
 		});
 }
-
-watch(
-	() => props.visible,
-	(newVisible, _oldVisible) => {
-		visible.value = newVisible;
-	},
-);
 </script>
 <style lang="css">
 .p-inputchips-input {

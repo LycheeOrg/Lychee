@@ -78,7 +78,7 @@ const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
 const { is_se_preview_enabled, is_se_enabled } = storeToRefs(lycheeStore);
 
-const users = ref([] as App.Http.Resources.Models.UserManagementResource[]);
+const users = ref<App.Http.Resources.Models.UserManagementResource[]>([]);
 const isCreateUserVisible = ref(false);
 const totalUsedSpace = ref(0);
 

@@ -238,7 +238,7 @@ import MaintenanceService from "@/services/maintenance-service";
 
 const toast = useToast();
 
-const configs = ref(undefined as undefined | App.Http.Resources.Collections.ConfigCollectionResource);
+const configs = ref<App.Http.Resources.Collections.ConfigCollectionResource | undefined>(undefined);
 const dropbox_key = ref<string | undefined>(undefined);
 const photoSortingColumn = ref<App.Http.Resources.Models.ConfigResource | undefined>(undefined);
 const photoSortingOrder = ref<App.Http.Resources.Models.ConfigResource | undefined>(undefined);

@@ -21,7 +21,7 @@ type Props = {
 const props = defineProps<Props>();
 
 const val = ref(props.config.value);
-const options = ref([] as string[]);
+const options = ref<string[]>([]);
 
 const changed = computed(() => val.value !== props.config.value);
 

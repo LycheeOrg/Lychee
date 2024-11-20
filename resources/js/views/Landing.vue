@@ -74,7 +74,7 @@ import LandingFooter from "@/components/footers/LandingFooter.vue";
 
 const introVisible = ref(true);
 
-const initdata = ref(undefined) as Ref<undefined | App.Http.Resources.GalleryConfigs.LandingPageResource>;
+const initdata = ref<App.Http.Resources.GalleryConfigs.LandingPageResource | undefined>(undefined);
 const router = useRouter();
 
 InitService.fetchLandingData()
