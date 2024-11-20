@@ -12,7 +12,7 @@ export function useSearch(albumid: Ref<string>, togglableStore: TogglablesStateS
 	const from = ref(0);
 	const per_page = ref(0);
 	const total = ref(0);
-	const layout = ref("square" as App.Enum.PhotoLayoutType);
+	const layout = ref<App.Enum.PhotoLayoutType>("square");
 
 	const photoHeader = computed(() => {
 		return trans("lychee.PHOTOS") + " (" + total.value + ")";
