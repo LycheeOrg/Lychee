@@ -72,7 +72,17 @@ declare namespace App.Enum {
 		| "CC-BY-NC-SA-3.0"
 		| "CC-BY-NC-SA-4.0";
 	export type MapProviders = "Wikimedia" | "OpenStreetMap.org" | "OpenStreetMap.de" | "OpenStreetMap.fr" | "RRZE";
-	export type OauthProvidersType = "amazon" | "apple" | "authentik" | "facebook" | "github" | "google" | "mastodon" | "microsoft" | "nextcloud" | "keycloak";
+	export type OauthProvidersType =
+		| "amazon"
+		| "apple"
+		| "authentik"
+		| "facebook"
+		| "github"
+		| "google"
+		| "mastodon"
+		| "microsoft"
+		| "nextcloud"
+		| "keycloak";
 	export type OrderSortingType = "ASC" | "DESC";
 	export type PhotoLayoutType = "square" | "justified" | "unjustified" | "masonry" | "grid";
 	export type SeverityType = "emergency" | "alert" | "critical" | "error" | "warning" | "notice" | "info" | "debug";
