@@ -70,6 +70,7 @@
         "revolution/socialite-mastodon": "^1.4",
         "socialiteproviders/amazon": "^4.1",
         "socialiteproviders/apple": "^5.6",
+        "socialiteproviders/authentik": "^5.2",
         "socialiteproviders/facebook": "^4.1",
         "socialiteproviders/github": "^4.1",
         "socialiteproviders/google": "^4.1",

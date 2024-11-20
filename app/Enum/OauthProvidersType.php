@@ -15,6 +15,7 @@ enum OauthProvidersType: string
 
 	case AMAZON = 'amazon';
 	case APPLE = 'apple';
+	case AUTHENTIK = 'authentik';
 	case FACEBOOK = 'facebook';
 	case GITHUB = 'github';
 	case GOOGLE = 'google';

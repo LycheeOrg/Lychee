@@ -51,6 +51,13 @@ return [
 		'redirect' => env('APPLE_REDIRECT_URI', '/auth/apple/redirect'),
 	],
 
+	'authentik' => [
+		'client_id' => env('AUTHENTIK_CLIENT_ID'),
+		'client_secret' => env('AUTHENTIK_CLIENT_SECRET'),
+		'redirect' => env('AUTHENTIK_REDIRECT_URI'),
+		'base_url' => env('AUTHENTIK_BASE_URL'),
+	],
+
 	'facebook' => [
 		'client_id' => env('FACEBOOK_CLIENT_ID'),
 		'client_secret' => env('FACEBOOK_CLIENT_SECRET'),
