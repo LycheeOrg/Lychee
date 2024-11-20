@@ -96,24 +96,8 @@ const { are_details_open, is_login_open, is_upload_visible, is_create_album_visi
 
 const hasCoordinates = computed(() => props.album.photos.find((photo) => photo.latitude !== null && photo.longitude !== null) !== undefined);
 
-const {
-	toggleCreateAlbum,
-	isDeleteVisible,
-	toggleDelete,
-	isMergeAlbumVisible,
-	toggleMergeAlbum,
-	isMoveVisible,
-	toggleMove,
-	isRenameVisible,
-	toggleRename,
-	isShareAlbumVisible,
-	toggleShareAlbum,
-	isImportFromLinkOpen,
-	toggleImportFromLink,
-	isImportFromDropboxOpen,
-	toggleImportFromDropbox,
-	toggleUpload,
-} = useGalleryModals(togglableStore);
+const { toggleCreateAlbum, isImportFromLinkOpen, toggleImportFromLink, isImportFromDropboxOpen, toggleImportFromDropbox, toggleUpload } =
+	useGalleryModals(togglableStore);
 
 const emits = defineEmits<{
 	refresh: [];

@@ -1,4 +1,4 @@
-import { computed, Ref, ref } from "vue";
+import { Ref, ref } from "vue";
 
 type Callbacks = {
 	toggleUpload: () => void;

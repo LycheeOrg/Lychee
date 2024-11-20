@@ -1,4 +1,4 @@
-import { Ref, ref } from "vue";
+import { Ref } from "vue";
 
 export function useSlideshowFunction(
 	delay: number,
