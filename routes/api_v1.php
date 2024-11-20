@@ -174,7 +174,7 @@ Route::post('/Settings::setLocationShowPublic', [AdministrationSettingsControlle
 Route::post('/Settings::setCSS', [AdministrationSettingsController::class, 'setCSS']);
 Route::post('/Settings::setJS', [AdministrationSettingsController::class, 'setJS']);
 Route::post('/Settings::getAll', [AdministrationSettingsController::class, 'getAll']);
-Route::post('/Settings::saveAll', [AdministrationSettingsController::class, 'saveAll']);
+Route::post('/Settings::saveAll', [AdministrationSettingsController::class, 'saveAll'])->middleware(['config_integrity']);
 Route::post('/Settings::setAlbumDecoration', [AdministrationSettingsController::class, 'setAlbumDecoration']);
 Route::post('/Settings::setOverlayType', [AdministrationSettingsController::class, 'setImageOverlayType']);
 Route::post('/Settings::setNSFWVisible', [AdministrationSettingsController::class, 'setNSFWVisible']);
