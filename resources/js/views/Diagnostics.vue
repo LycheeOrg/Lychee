@@ -48,9 +48,8 @@ function copy() {
 	const Configuration = document.getElementById("ConfigurationData");
 	const errorLines = errors?.innerText.split("\n") ?? [];
 	let errorText = "";
-	for (let i = 0; i < errorLines.length; i++) {
+	for (let i = 0; i < errorLines.length; i+=2) {
 		errorText += `${errorLines[i].padEnd(7)}: ${errorLines[i + 1]}\n`;
-		i += 1;
 	}
 
 	const toClipBoard = `Errors:\n${"-".repeat(20)}\n${errorText}\n\n\nInfo:\n${"-".repeat(20)}\n${info?.innerText}\n\n\nConfig:\n${"-".repeat(20)}\n${Configuration?.innerText}`;
