@@ -14,9 +14,14 @@ import DiagnosticsService from "@/services/diagnostics-service";
 
 const errors = ref<App.Http.Resources.Diagnostics.ErrorLine[] | undefined>(undefined);
 
+const emits = defineEmits<{
+	loaded: [data: App.Http.Resources.Diagnostics.ErrorLine[]];
+}>();
+
 function load() {
 	DiagnosticsService.errors().then((response) => {
 		errors.value = response.data;
+		emits("loaded", response.data);
 	});
 }
 

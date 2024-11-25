@@ -10,10 +10,14 @@ import Panel from "primevue/panel";
 import DiagnosticsService from "@/services/diagnostics-service";
 
 const infos = ref<string[] | undefined>(undefined);
+const emits = defineEmits<{
+	loaded: [data: string[]];
+}>();
 
 function load() {
 	DiagnosticsService.info().then((response) => {
 		infos.value = response.data;
+		emits("loaded", response.data);
 	});
 }
 

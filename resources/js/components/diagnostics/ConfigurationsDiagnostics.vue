@@ -11,9 +11,14 @@ import DiagnosticsService from "@/services/diagnostics-service";
 
 const configs = ref<string[] | undefined>(undefined);
 
+const emits = defineEmits<{
+	loaded: [data: string[]];
+}>();
+
 function load() {
 	DiagnosticsService.config().then((response) => {
 		configs.value = response.data;
+		emits("loaded", response.data);
 	});
 }
 
