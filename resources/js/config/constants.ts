@@ -104,6 +104,23 @@ export const toolsOptions: SelectOption<string>[] = [
 	{ value: "2", label: "discover" },
 ];
 
+export const timelinePhotoGranularityOptions: SelectOption<App.Enum.TimelinePhotoGranularity>[] = [
+	{ value: "default", label: "default" },
+	{ value: "disabled", label: "disabled" },
+	{ value: "year", label: "year" },
+	{ value: "month", label: "month" },
+	{ value: "day", label: "day" },
+	{ value: "hour", label: "hour" },
+];
+
+export const timelineAlbumGranularityOptions: SelectOption<App.Enum.TimelineAlbumGranularity>[] = [
+	{ value: "default", label: "default" },
+	{ value: "disabled", label: "disabled" },
+	{ value: "year", label: "year" },
+	{ value: "month", label: "month" },
+	{ value: "day", label: "day" },
+];
+
 export const SelectBuilders = {
 	buildPhotoSorting(value: string | App.Enum.ColumnSortingType | undefined): SelectOption<App.Enum.ColumnSortingPhotoType> | undefined {
 		return photoSortingColumnsOptions.find((option) => option.value === value) || undefined;
@@ -143,5 +160,17 @@ export const SelectBuilders = {
 
 	buildToolSelection(value: string | undefined): SelectOption<string> | undefined {
 		return toolsOptions.find((option) => option.value === value) || undefined;
+	},
+
+	buildTimelinePhotoGranularity(
+		value: string | App.Enum.TimelinePhotoGranularity | undefined,
+	): SelectOption<App.Enum.TimelinePhotoGranularity> | undefined {
+		return timelinePhotoGranularityOptions.find((option) => option.value === value) || undefined;
+	},
+
+	buildTimelineAlbumGranularity(
+		value: string | App.Enum.TimelineAlbumGranularity | undefined,
+	): SelectOption<App.Enum.TimelineAlbumGranularity> | undefined {
+		return timelineAlbumGranularityOptions.find((option) => option.value === value) || undefined;
 	},
 };

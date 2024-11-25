@@ -7,6 +7,7 @@ use App\Contracts\Models\AbstractAlbum;
 use App\Contracts\Models\HasRandomID;
 use App\DTO\PhotoSortingCriterion;
 use App\Enum\PhotoLayoutType;
+use App\Enum\TimelinePhotoGranularity;
 use App\Models\AccessPermission;
 use App\Models\BaseAlbumImpl;
 use App\Models\User;
@@ -32,6 +33,7 @@ use Illuminate\Support\Carbon;
  * @property bool                             $is_nsfw
  * @property string|null                      $copyright
  * @property PhotoLayoutType|null             $photo_layout
+ * @property TimelinePhotoGranularity         $photo_timeline
  * @property int                              $owner_id
  * @property User                             $owner
  * @property Collection<int,AccessPermission> $access_permissions

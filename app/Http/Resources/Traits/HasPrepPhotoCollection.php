@@ -13,10 +13,6 @@ trait HasPrepPhotoCollection
 {
 	private function prepPhotosCollection(): void
 	{
-		if ($this->photos === null) {
-			return;
-		}
-
 		$previous_photo = null;
 		$this->photos->each(function (PhotoResource &$photo) use (&$previous_photo) {
 			if ($previous_photo !== null) {

@@ -5,9 +5,11 @@ namespace App\Http\Resources\Models;
 use App\Enum\LicenseType;
 use App\Http\Resources\Models\Utils\PreComputedPhotoData;
 use App\Http\Resources\Models\Utils\PreformattedPhotoData;
+use App\Http\Resources\Models\Utils\TimelineData;
 use App\Http\Resources\Rights\PhotoRightsResource;
 use App\Models\Configs;
 use App\Models\Photo;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
@@ -50,6 +52,9 @@ class PhotoResource extends Data
 	public ?string $previous_photo_id;
 	public PreformattedPhotoData $preformatted;
 	public PreComputedPhotoData $precomputed;
+	public ?TimelineData $timeline = null;
+
+	private Carbon $timeline_data_carbon;
 
 	public function __construct(Photo $photo)
 	{
@@ -87,6 +92,8 @@ class PhotoResource extends Data
 		$this->previous_photo_id = null;
 		$this->preformatted = new PreformattedPhotoData($photo, $this->size_variants->original);
 		$this->precomputed = new PreComputedPhotoData($photo);
+
+		$this->timeline_data_carbon = $photo->taken_at ?? $photo->created_at;
 	}
 
 	public static function fromModel(Photo $photo): PhotoResource
@@ -98,5 +105,15 @@ class PhotoResource extends Data
 	{
 		$showLocation = Configs::getValueAsBool('location_show') && (Auth::check() || Configs::getValueAsBool('location_show_public'));
 		$this->location = $showLocation ? $photo->location : null;
+	}
+
+	/**
+	 * Accessors to the Carbon instances.
+	 *
+	 * @return Carbon
+	 */
+	public function timeline_date_carbon(): Carbon
+	{
+		return $this->timeline_data_carbon;
 	}
 }

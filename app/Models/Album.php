@@ -8,6 +8,7 @@ use App\Enum\AspectRatioType;
 use App\Enum\ColumnSortingType;
 use App\Enum\LicenseType;
 use App\Enum\OrderSortingType;
+use App\Enum\TimelineAlbumGranularity;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\MediaFileOperationException;
@@ -33,25 +34,26 @@ use Kalnoy\Nestedset\NodeTrait;
 /**
  * Class Album.
  *
- * @property string                $id
- * @property string|null           $parent_id
- * @property Album|null            $parent
- * @property Collection<int,Album> $children
- * @property int                   $num_children             The number of children.
- * @property Collection<int,Photo> $all_photos
- * @property int                   $num_photos               The number of photos in this album (excluding photos in subalbums).
- * @property LicenseType           $license
- * @property string|null           $cover_id
- * @property Photo|null            $cover
- * @property string|null           $header_id
- * @property Photo|null            $header
- * @property string|null           $track_short_path
- * @property string|null           $track_url
- * @property AspectRatioType|null  $album_thumb_aspect_ratio
- * @property int                   $_lft
- * @property int                   $_rgt
- * @property BaseAlbumImpl         $base_class
- * @property User|null             $owner
+ * @property string                   $id
+ * @property string|null              $parent_id
+ * @property Album|null               $parent
+ * @property Collection<int,Album>    $children
+ * @property int                      $num_children             The number of children.
+ * @property Collection<int,Photo>    $all_photos
+ * @property int                      $num_photos               The number of photos in this album (excluding photos in subalbums).
+ * @property LicenseType              $license
+ * @property string|null              $cover_id
+ * @property Photo|null               $cover
+ * @property string|null              $header_id
+ * @property Photo|null               $header
+ * @property string|null              $track_short_path
+ * @property string|null              $track_url
+ * @property AspectRatioType|null     $album_thumb_aspect_ratio
+ * @property TimelineAlbumGranularity $album_timeline
+ * @property int                      $_lft
+ * @property int                      $_rgt
+ * @property BaseAlbumImpl            $base_class
+ * @property User|null                $owner
  *
  * @method static AlbumBuilder|Album query()                       Begin querying the model.
  * @method static AlbumBuilder|Album with(array|string $relations) Begin querying the model with eager loading.
@@ -148,6 +150,7 @@ class Album extends BaseAlbum implements Node
 	protected $attributes = [
 		'id' => null,
 		'parent_id' => null,
+		'album_timeline' => null,
 		'license' => 'none',
 		'cover_id' => null,
 		'header_id' => null,
@@ -167,6 +170,7 @@ class Album extends BaseAlbum implements Node
 		'num_children' => 'integer',
 		'num_photos' => 'integer',
 		'album_thumb_aspect_ratio' => AspectRatioType::class,
+		'album_timeline' => TimelineAlbumGranularity::class,
 		'_lft' => 'integer',
 		'_rgt' => 'integer',
 	];
@@ -383,6 +387,28 @@ class Album extends BaseAlbum implements Node
 	protected function setAlbumThumbAspectRatioAttribute(?AspectRatioType $aspectRatio): void
 	{
 		$this->attributes['album_thumb_aspect_ratio'] = $aspectRatio?->value;
+	}
+
+	/**
+	 * Defines accessor for the Album Timeline.
+	 *
+	 * @return TimelineAlbumGranularity|null
+	 */
+	protected function getAlbumTimelineAttribute(): ?TimelineAlbumGranularity
+	{
+		return TimelineAlbumGranularity::tryFrom($this->attributes['album_timeline']);
+	}
+
+	/**
+	 * Defines setter for Album Timeline.
+	 *
+	 * @param TimelineAlbumGranularity|null $album_timeline
+	 *
+	 * @return void
+	 */
+	protected function setAlbumTimelineAttribute(?TimelineAlbumGranularity $album_timeline): void
+	{
+		$this->attributes['album_timeline'] = $album_timeline?->value;
 	}
 
 	/**

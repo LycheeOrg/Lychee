@@ -26,6 +26,8 @@ export type UpdateAbumData = {
 	copyright: string | null;
 	header_id: string | null;
 	is_compact: boolean;
+	album_timeline: App.Enum.TimelineAlbumGranularity | null;
+	photo_timeline: App.Enum.TimelinePhotoGranularity | null;
 };
 
 export type UpdateTagAlbumData = {
@@ -37,6 +39,7 @@ export type UpdateTagAlbumData = {
 	photo_sorting_order: App.Enum.OrderSortingType | null;
 	copyright: string | null;
 	photo_layout: App.Enum.PhotoLayoutType | null;
+	photo_timeline: App.Enum.TimelinePhotoGranularity | null;
 };
 
 export type UpdateProtectionPolicyData = {
