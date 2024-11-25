@@ -51,6 +51,7 @@ class ListShare
 
 			// Existing albums which can be shared optionally filtered by
 			// album ID and/or owner ID
+			/** @var Collection<int,object{id:string,title:string}> $albums */
 			$albums = DB::table('base_albums')
 				->leftJoin('albums', 'albums.id', '=', 'base_albums.id')
 				->select(['base_albums.id', 'title', 'parent_id'])
@@ -60,15 +61,18 @@ class ListShare
 				->get();
 			$this->linkAlbums($albums);
 			$albums->each(function ($album) {
+				/** @phpstan-ignore-next-line */
 				$album->title = $this->breadcrumbPath($album);
 			});
 			$albums->each(function ($album) {
+				/** @var object{parent_id:string,parent:object} $album */
 				unset($album->parent_id);
 				unset($album->parent);
 			});
 
 			// Existing users with whom an album can be shared optionally
 			// filtered by participant ID
+			/** @var Collection<int,object{id:int,username:string}> $users */
 			$users = DB::table('users')->select(['id', 'username'])
 				->when($participant !== null, fn ($q) => $q->where('id', '=', $participant->id))
 				->when($participant === null, fn ($q) => $q->where('may_administrate', '=', false))
