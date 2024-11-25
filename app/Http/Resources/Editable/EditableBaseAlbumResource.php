@@ -7,6 +7,8 @@ use App\DTO\PhotoSortingCriterion;
 use App\Enum\AspectRatioType;
 use App\Enum\LicenseType;
 use App\Enum\PhotoLayoutType;
+use App\Enum\TimelineAlbumGranularity;
+use App\Enum\TimelinePhotoGranularity;
 use App\Models\Album;
 use App\Models\TagAlbum;
 use Spatie\LaravelData\Data;
@@ -26,6 +28,8 @@ class EditableBaseAlbumResource extends Data
 	public ?PhotoLayoutType $photo_layout;
 	public ?string $header_id;
 	public ?string $cover_id;
+	public ?TimelineAlbumGranularity $album_timeline;
+	public ?TimelinePhotoGranularity $photo_timeline;
 	/** @var string[] */
 	public array $tags;
 	public bool $is_model_album;
@@ -43,6 +47,8 @@ class EditableBaseAlbumResource extends Data
 		$this->header_id = null;
 		$this->cover_id = null;
 		$this->photo_layout = $album->photo_layout;
+		$this->album_timeline = null;
+		$this->photo_timeline = $album->photo_timeline;
 
 		if ($album instanceof Album) {
 			$this->is_model_album = true;
@@ -51,6 +57,7 @@ class EditableBaseAlbumResource extends Data
 			$this->header_id = $album->header_id;
 			$this->cover_id = $album->cover_id;
 			$this->aspect_ratio = $album->album_thumb_aspect_ratio;
+			$this->album_timeline = $album->album_timeline;
 		}
 
 		if ($album instanceof TagAlbum) {

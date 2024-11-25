@@ -3,9 +3,13 @@
 namespace App\Http\Resources\Collections;
 
 use App\DTO\TopAlbumDTO;
+use App\Enum\ColumnSortingType;
+use App\Enum\TimelineAlbumGranularity;
 use App\Http\Resources\GalleryConfigs\RootConfig;
 use App\Http\Resources\Models\ThumbAlbumResource;
+use App\Http\Resources\Models\Utils\TimelineData;
 use App\Http\Resources\Rights\RootAlbumRightsResource;
+use App\Models\Configs;
 use Illuminate\Support\Collection;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
@@ -54,6 +58,9 @@ class RootAlbumResource extends Data
 		$this->smart_albums = $smart_albums;
 		$this->tag_albums = $tag_albums;
 		$this->albums = $albums;
+		$sorting = Configs::getValueAsEnum('sorting_albums_col', ColumnSortingType::class);
+		$album_granularity = Configs::getValueAsEnum('timeline_albums_granularity', TimelineAlbumGranularity::class);
+		$this->albums = TimelineData::setTimeLineDataForAlbums($this->albums, $sorting, $album_granularity);
 		$this->shared_albums = $shared_albums;
 		$this->config = $config;
 		$this->rights = $rights;

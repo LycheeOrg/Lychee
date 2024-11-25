@@ -1,39 +1,54 @@
 <template>
 	<Panel id="lychee_view_content" :header="$t(props.header)" class="w-full border-0">
 		<template #icons>
-			<a class="px-1 cursor-pointer group" @click="(layout = 'square') && activateLayout()" :title="$t('lychee.LAYOUT_SQUARES')">
-				<MiniIcon icon="squares" fill="fill-transparent" :class="squareClass" />
-			</a>
-			<a class="px-1 cursor-pointer group" @click="(layout = 'justified') && activateLayout()" :title="$t('lychee.LAYOUT_JUSTIFIED')">
-				<MiniIcon icon="justified" fill="" :class="justifiedClass" />
-			</a>
-			<a class="px-1 cursor-pointer group" @click="(layout = 'masonry') && activateLayout()" :title="$t('lychee.LAYOUT_MASONRY')">
-				<MiniIcon icon="masonry" fill="fill-transparent" :class="masonryClass" />
-			</a>
-			<a class="px-1 cursor-pointer group" @click="(layout = 'grid') && activateLayout()" :title="$t('lychee.LAYOUT_GRID')">
-				<MiniIcon icon="grid" fill="fill-transparent" :class="gridClass" />
-			</a>
+			<PhotoThumbPanelControl v-model:layout="layout" />
 		</template>
-		<div class="relative flex flex-wrap flex-row flex-shrink w-full justify-start align-top" id="photoListing">
-			<template v-for="(photo, idx) in props.photos">
-				<PhotoThumb
-					@click="maySelect(idx, $event)"
-					@contextmenu.prevent="menuOpen(idx, $event)"
-					:is-selected="props.selectedPhotos.includes(photo.id)"
-					:photo="photo"
-					:album="props.album"
-					:is-lazy="idx > 10"
-				/>
-			</template>
-		</div>
+		<PhotoThumbPanelList
+			v-if="isTimeline === false"
+			:photos="props.photos"
+			:layout="layout"
+			:album="props.album"
+			:galleryConfig="props.galleryConfig"
+			:selectedPhotos="props.selectedPhotos"
+			:iter="0"
+			@clicked="propagateClicked"
+			@contexted="propagateMenuOpen"
+			:isTimeline="isTimeline"
+		/>
+		<template v-else>
+			<Timeline v-if="is_timeline_left_border_visible" :value="photosTimeLine" :pt:eventopposite:class="'hidden'" class="mt-4">
+				<template #content="slotProps">
+					<div class="flex flex-wrap flex-row flex-shrink w-full justify-start gap-1 sm:gap-2 md:gap-4 pb-8">
+						<div class="w-full text-left font-semibold text-muted-color-emphasis text-lg">{{ slotProps.item.header }}</div>
+						<PhotoThumbPanelList
+							:photos="slotProps.item.data"
+							:layout="layout"
+							:album="props.album"
+							:galleryConfig="props.galleryConfig"
+							:selectedPhotos="props.selectedPhotos"
+							:iter="slotProps.item.iter"
+							:isTimeline="isTimeline"
+							@clicked="propagateClicked"
+							@contexted="propagateMenuOpen"
+						/>
+					</div>
+				</template>
+			</Timeline>
+		</template>
 	</Panel>
 </template>
 <script setup lang="ts">
-import { onMounted, onUpdated } from "vue";
+import { computed, ref } from "vue";
 import Panel from "primevue/panel";
-import PhotoThumb from "@/components/gallery/thumbs/PhotoThumb.vue";
-import MiniIcon from "@/components/icons/MiniIcon.vue";
-import { useLayouts } from "@/layouts/PhotoLayout";
+import { useLycheeStateStore } from "@/stores/LycheeState";
+import { storeToRefs } from "pinia";
+import { SplitData, useSplitter } from "@/composables/album/splitter";
+import Timeline from "primevue/timeline";
+import PhotoThumbPanelList from "./PhotoThumbPanelList.vue";
+import PhotoThumbPanelControl from "./PhotoThumbPanelControl.vue";
+
+const lycheeStore = useLycheeStateStore();
+const { is_timeline_left_border_visible } = storeToRefs(lycheeStore);
 
 const props = defineProps<{
 	header: string;
@@ -46,18 +61,33 @@ const props = defineProps<{
 		| undefined;
 	galleryConfig: App.Http.Resources.GalleryConfigs.PhotoLayoutConfig;
 	selectedPhotos: string[];
+	isTimeline: boolean;
 }>();
+
+const layout = ref(props.photoLayout);
+const isTimeline = ref(props.isTimeline);
 
 // bubble up.
 const emits = defineEmits<{
 	clicked: [idx: number, event: MouseEvent];
 	contexted: [idx: number, event: MouseEvent];
 }>();
-const maySelect = (idx: number, e: MouseEvent) => emits("clicked", idx, e);
-const menuOpen = (idx: number, e: MouseEvent) => emits("contexted", idx, e);
 
-// Layouts stuff
-const { activateLayout, layout, squareClass, justifiedClass, masonryClass, gridClass } = useLayouts(props.galleryConfig, props.photoLayout);
-onMounted(() => activateLayout());
-onUpdated(() => activateLayout());
+const propagateClicked = (idx: number, e: MouseEvent) => {
+	emits("clicked", idx, e);
+};
+
+const propagateMenuOpen = (idx: number, e: MouseEvent) => {
+	emits("contexted", idx, e);
+};
+
+const { spliter } = useSplitter();
+
+const photosTimeLine = computed<SplitData<App.Http.Resources.Models.PhotoResource>[]>(() =>
+	spliter(
+		props.photos as App.Http.Resources.Models.PhotoResource[],
+		(p: App.Http.Resources.Models.PhotoResource) => p.timeline?.timeDate ?? "",
+		(p: App.Http.Resources.Models.PhotoResource) => p.timeline?.format ?? "Others",
+	),
+);
 </script>

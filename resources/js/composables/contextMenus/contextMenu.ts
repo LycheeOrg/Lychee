@@ -1,19 +1,19 @@
 import { computed, Ref, ref } from "vue";
 
 type Selectors = {
-	config: Ref<App.Http.Resources.GalleryConfigs.AlbumConfig | undefined> | null;
-	album: Ref<
+	config?: Ref<App.Http.Resources.GalleryConfigs.AlbumConfig | undefined>;
+	album?: Ref<
 		| App.Http.Resources.Models.AlbumResource
 		| App.Http.Resources.Models.TagAlbumResource
 		| App.Http.Resources.Models.SmartAlbumResource
 		| undefined
-	> | null;
-	selectedPhotosIdx: Ref<number[]> | undefined;
-	selectedPhoto: Ref<App.Http.Resources.Models.PhotoResource | undefined> | undefined;
-	selectedPhotos: Ref<App.Http.Resources.Models.PhotoResource[]> | undefined;
-	selectedAlbumIdx: Ref<number[]>;
-	selectedAlbum: Ref<App.Http.Resources.Models.ThumbAlbumResource | undefined>;
-	selectedAlbums: Ref<App.Http.Resources.Models.ThumbAlbumResource[]>;
+	>;
+	selectedPhotosIdx?: Ref<number[]>;
+	selectedPhoto?: Ref<App.Http.Resources.Models.PhotoResource | undefined>;
+	selectedPhotos?: Ref<App.Http.Resources.Models.PhotoResource[]>;
+	selectedAlbumIdx?: Ref<number[]>;
+	selectedAlbum?: Ref<App.Http.Resources.Models.ThumbAlbumResource | undefined>;
+	selectedAlbums?: Ref<App.Http.Resources.Models.ThumbAlbumResource[]>;
 };
 
 type PhotoCallbacks = {
@@ -73,10 +73,10 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 		if (selectors.selectedPhotos !== undefined && selectors.selectedPhotos.value.length > 1) {
 			menu = photosMenu();
 		}
-		if (selectors.selectedAlbum.value !== undefined) {
+		if (selectors.selectedAlbum !== undefined && selectors.selectedAlbum.value !== undefined) {
 			menu = albumMenu();
 		}
-		if (selectors.selectedAlbums.value.length > 1) {
+		if (selectors.selectedAlbums !== undefined && selectors.selectedAlbums.value.length > 1) {
 			menu = albumsMenu();
 		}
 		return menu.filter((item) => item.access !== false);

@@ -53,20 +53,22 @@
 					@contexted="albumMenuOpen"
 					:idx-shift="0"
 					:selected-albums="selectedAlbumsIds"
+					:is-timeline="false"
 				/>
 				<div class="flex justify-center w-full" v-if="photos.length > 0">
 					<Paginator :total-records="total" :rows="per_page" v-model:first="from" @update:first="refresh" :always-show="false" />
 				</div>
 				<PhotoThumbPanel
-					v-if="layout !== null && photos.length > 0"
-					:photo-layout="configForMenu.photo_layout"
+					v-if="layoutConfig !== null && photos.length > 0"
+					:photo-layout="layout"
 					:header="photoHeader"
 					:photos="photos"
 					:album="undefined"
-					:gallery-config="layout"
+					:gallery-config="layoutConfig"
 					:selected-photos="selectedPhotosIds"
 					@clicked="photoClick"
 					@contexted="photoMenuOpen"
+					:is-timeline="configForMenu.is_photo_timeline_enabled"
 				/>
 			</div>
 
@@ -159,6 +161,7 @@ import DeleteDialog from "@/components/forms/gallery-dialogs/DeleteDialog.vue";
 import PhotoService from "@/services/photo-service";
 import AlbumService from "@/services/album-service";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
+import { useGetLayoutConfig } from "@/layouts/PhotoLayout";
 
 const router = useRouter();
 const props = defineProps<{
@@ -182,6 +185,7 @@ const { is_full_screen, search_page, search_term, is_login_open, is_upload_visib
 const { are_nsfw_visible, nsfw_consented } = storeToRefs(lycheeStore);
 const {
 	albums,
+	layout,
 	photos,
 	noData,
 	searchMinimumLengh,
@@ -196,7 +200,8 @@ const {
 	clear,
 	refresh,
 } = useSearch(albumid, togglableStore, search_term, search_page);
-const { album, config, layout, loadAlbum, loadLayout } = useAlbumRefresher(albumid, auth, is_login_open, nsfw_consented);
+const { layoutConfig, loadLayoutConfig } = useGetLayoutConfig();
+const { album, config, loadAlbum } = useAlbumRefresher(albumid, auth, is_login_open, nsfw_consented);
 
 const configForMenu = computed<App.Http.Resources.GalleryConfigs.AlbumConfig>(() => {
 	if (config.value !== undefined) {
@@ -213,9 +218,13 @@ const configForMenu = computed<App.Http.Resources.GalleryConfigs.AlbumConfig>(()
 		is_nsfw_warning_visible: false,
 		album_thumb_css_aspect_ratio: "aspect-square",
 		photo_layout: "justified",
+		timeline_album_granularity: "year",
+		timeline_photo_granularity: "day",
+		is_album_timeline_enabled: false,
+		is_photo_timeline_enabled: false,
 	};
 });
-const albumForMenu = albumid.value !== "" ? album : null;
+const albumForMenu = albumid.value !== "" ? album : undefined;
 
 const title = computed<string>(() => {
 	if (album.value === undefined) {
@@ -318,7 +327,7 @@ if (albumid.value !== "") {
 }
 
 searchInit();
-loadLayout();
+loadLayoutConfig();
 
 if (togglableStore.isSearchActive) {
 	search(togglableStore.search_term);

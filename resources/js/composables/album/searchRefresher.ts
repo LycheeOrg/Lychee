@@ -12,6 +12,7 @@ export function useSearch(albumid: Ref<string>, togglableStore: TogglablesStateS
 	const from = ref(0);
 	const per_page = ref(0);
 	const total = ref(0);
+	const layout = ref<App.Enum.PhotoLayoutType>("square");
 
 	const photoHeader = computed(() => {
 		return trans("lychee.PHOTOS") + " (" + total.value + ")";
@@ -24,6 +25,7 @@ export function useSearch(albumid: Ref<string>, togglableStore: TogglablesStateS
 	function searchInit() {
 		SearchService.init(albumid.value).then((response) => {
 			searchMinimumLengh.value = response.data.search_minimum_length;
+			layout.value = response.data.photo_layout;
 		});
 	}
 
@@ -68,6 +70,7 @@ export function useSearch(albumid: Ref<string>, togglableStore: TogglablesStateS
 	}
 
 	return {
+		layout,
 		albums,
 		photos,
 		noData,

@@ -473,6 +473,26 @@ const LycheePrimeVueConfig = {
 				},
 			},
 		},
+		timeline: {
+			colorScheme: {
+				dark: {
+					event: {
+						marker: {
+							background: "{surface.800}",
+							border: {
+								color: "{surface.700}",
+							},
+							content: {
+								background: "{primary.600}",
+							},
+						},
+						connector: {
+							color: "{surface.700}",
+						},
+					},
+				},
+			},
+		},
 		paginator: {
 			colorScheme: {
 				light: {

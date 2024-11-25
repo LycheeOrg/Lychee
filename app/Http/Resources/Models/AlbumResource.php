@@ -2,13 +2,17 @@
 
 namespace App\Http\Resources\Models;
 
+use App\Enum\ColumnSortingType;
 use App\Http\Resources\Editable\EditableBaseAlbumResource;
 use App\Http\Resources\Models\Utils\AlbumProtectionPolicy;
 use App\Http\Resources\Models\Utils\PreFormattedAlbumData;
+use App\Http\Resources\Models\Utils\TimelineData;
 use App\Http\Resources\Rights\AlbumRightsResource;
 use App\Http\Resources\Traits\HasHeaderUrl;
 use App\Http\Resources\Traits\HasPrepPhotoCollection;
+use App\Http\Resources\Traits\HasTimelineData;
 use App\Models\Album;
+use App\Models\Configs;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Spatie\LaravelData\Data;
@@ -20,6 +24,7 @@ class AlbumResource extends Data
 {
 	use HasPrepPhotoCollection;
 	use HasHeaderUrl;
+	use HasTimelineData;
 
 	public string $id;
 	public string $title;
@@ -71,7 +76,21 @@ class AlbumResource extends Data
 		$this->has_albums = !$album->isLeaf();
 		$this->albums = $album->relationLoaded('children') ? ThumbAlbumResource::collect($album->children) : null;
 		$this->photos = $album->relationLoaded('photos') ? PhotoResource::collect($album->photos) : null;
-		$this->prepPhotosCollection();
+		if ($this->photos !== null) {
+			// Prep collection with first and last link + which id is next.
+			$this->prepPhotosCollection();
+
+			// setup timeline data
+			$photo_granularity = $this->getPhotoTimeline($album->photo_timeline);
+			$this->photos = TimelineData::setTimeLineDataForPhotos($this->photos, $photo_granularity);
+		}
+
+		if ($this->albums->count() > 0) {
+			// setup timeline data
+			$sorting = $album->album_sorting?->column ?? Configs::getValueAsEnum('sorting_albums_col', ColumnSortingType::class);
+			$album_granularity = $this->getAlbumTimeline($album->album_timeline);
+			$this->albums = TimelineData::setTimeLineDataForAlbums($this->albums, $sorting, $album_granularity);
+		}
 
 		// thumb
 		$this->cover_id = $album->cover_id;

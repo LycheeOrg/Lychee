@@ -26,20 +26,23 @@
 			:is-alone="!albums.length"
 			:idx-shift="-1"
 			:selected-albums="[]"
+			:is-timeline="false"
 		/>
-		<AlbumThumbPanel
-			v-if="albums.length > 0"
-			header="lychee.ALBUMS"
-			:album="null"
-			:albums="albums"
-			:user="user"
-			:config="albumPanelConfig"
-			:is-alone="!sharedAlbums.length && !smartAlbums.length"
-			:idx-shift="0"
-			:selected-albums="selectedAlbumsIds"
-			@clicked="albumClick"
-			@contexted="albumMenuOpen"
-		/>
+		<template v-if="albums.length > 0">
+			<AlbumThumbPanel
+				:is-timeline="rootConfig.is_album_timeline_enabled"
+				header="lychee.ALBUMS"
+				:album="null"
+				:albums="albums"
+				:user="user"
+				:config="albumPanelConfig"
+				:is-alone="!sharedAlbums.length && !smartAlbums.length"
+				:idx-shift="0"
+				:selected-albums="selectedAlbumsIds"
+				@clicked="albumClick"
+				@contexted="albumMenuOpen"
+			/>
+		</template>
 		<template v-for="sharedAlbum in sharedAlbums">
 			<AlbumThumbPanel
 				v-if="sharedAlbums.length > 0"
@@ -53,6 +56,7 @@
 				:selected-albums="selectedAlbumsIds"
 				@clicked="albumClick"
 				@contexted="albumMenuOpen"
+				:is-timeline="false"
 			/>
 		</template>
 		<GalleryFooter v-once />
@@ -150,6 +154,7 @@ import UploadPanel from "@/components/modals/UploadPanel.vue";
 import AlbumCreateDialog from "@/components/forms/album/AlbumCreateDialog.vue";
 import AlbumCreateTagDialog from "@/components/forms/album/AlbumCreateTagDialog.vue";
 import { useScrollable } from "@/composables/album/scrollable";
+import { EmptyPhotoCallbacks } from "@/utils/Helpers";
 
 const auth = useAuthStore();
 const router = useRouter();
@@ -181,20 +186,6 @@ const { selectedAlbum, selectedAlbumsIdx, selectedAlbums, selectedAlbumsIds, alb
 const { isDeleteVisible, toggleDelete, isMergeAlbumVisible, toggleMergeAlbum, isMoveVisible, toggleMove, isRenameVisible, toggleRename } =
 	useGalleryModals(togglableStore);
 
-// Unused.
-const photoCallbacks = {
-	star: () => {},
-	unstar: () => {},
-	setAsCover: () => {},
-	setAsHeader: () => {},
-	toggleTag: () => {},
-	toggleRename: () => {},
-	toggleCopyTo: () => {},
-	toggleMove: () => {},
-	toggleDelete: () => {},
-	toggleDownload: () => {},
-};
-
 const albumCallbacks = {
 	setAsCover: () => {},
 	toggleRename: toggleRename,
@@ -208,16 +199,11 @@ const albumCallbacks = {
 
 const { menu, Menu, albumMenuOpen } = useContextMenu(
 	{
-		config: null,
-		album: null,
-		selectedPhoto: undefined,
-		selectedPhotos: undefined,
-		selectedPhotosIdx: undefined,
 		selectedAlbum: selectedAlbum,
 		selectedAlbums: selectedAlbums,
 		selectedAlbumIdx: selectedAlbumsIdx,
 	},
-	photoCallbacks,
+	EmptyPhotoCallbacks,
 	albumCallbacks,
 );
 

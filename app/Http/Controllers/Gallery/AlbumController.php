@@ -112,6 +112,9 @@ class AlbumController extends Controller
 		$album->album_sorting = $request->albumSortingCriterion();
 		$album->photo_layout = $request->photoLayout();
 
+		$album->album_timeline = $request->album_timeline();
+		$album->photo_timeline = $request->photo_timeline();
+
 		$album = $setHeader->do(
 			album: $album,
 			is_compact: $request->is_compact(),
@@ -133,6 +136,7 @@ class AlbumController extends Controller
 		$album->copyright = $request->copyright();
 		$album->photo_sorting = $request->photoSortingCriterion();
 		$album->photo_layout = $request->photoLayout();
+		$album->photo_timeline = $request->photo_timeline();
 		$album->save();
 
 		return EditableBaseAlbumResource::fromModel($album);

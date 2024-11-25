@@ -32,6 +32,8 @@ class AlbumUpdateTest extends BaseApiV2Test
 			'copyright' => '',
 			'is_compact' => false,
 			'header_id' => null,
+			'album_timeline' => null,
+			'photo_timeline' => null,
 		]);
 		$this->assertUnauthorized($response);
 
@@ -49,6 +51,8 @@ class AlbumUpdateTest extends BaseApiV2Test
 			'copyright' => '',
 			'is_compact' => false,
 			'header_id' => null,
+			'album_timeline' => null,
+			'photo_timeline' => null,
 		]);
 		$this->assertForbidden($response);
 	}
@@ -69,6 +73,8 @@ class AlbumUpdateTest extends BaseApiV2Test
 			'copyright' => '',
 			'is_compact' => false,
 			'header_id' => null,
+			'album_timeline' => null,
+			'photo_timeline' => null,
 		]);
 		$this->assertOk($response);
 	}
@@ -84,6 +90,7 @@ class AlbumUpdateTest extends BaseApiV2Test
 			'photo_sorting_order' => 'ASC',
 			'copyright' => '',
 			'photo_layout' => null,
+			'photo_timeline' => null,
 		]);
 		$this->assertUnauthorized($response);
 
@@ -96,6 +103,7 @@ class AlbumUpdateTest extends BaseApiV2Test
 			'photo_sorting_order' => 'ASC',
 			'copyright' => '',
 			'photo_layout' => null,
+			'photo_timeline' => null,
 		]);
 		$this->assertForbidden($response);
 	}
@@ -111,6 +119,7 @@ class AlbumUpdateTest extends BaseApiV2Test
 			'photo_sorting_order' => 'ASC',
 			'copyright' => '',
 			'photo_layout' => null,
+			'photo_timeline' => null,
 		]);
 		$this->assertOk($response);
 

@@ -6,6 +6,9 @@ use App\Contracts\Models\AbstractAlbum;
 use App\Enum\AspectRatioCSSType;
 use App\Enum\AspectRatioType;
 use App\Enum\PhotoLayoutType;
+use App\Enum\TimelineAlbumGranularity;
+use App\Enum\TimelinePhotoGranularity;
+use App\Http\Resources\Traits\HasTimelineData;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
@@ -18,6 +21,8 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 #[TypeScript()]
 class AlbumConfig extends Data
 {
+	use HasTimelineData;
+
 	public bool $is_base_album;
 	public bool $is_model_album;
 	public bool $is_accessible;
@@ -28,6 +33,8 @@ class AlbumConfig extends Data
 	public bool $is_nsfw_warning_visible;
 	public AspectRatioCSSType $album_thumb_css_aspect_ratio;
 	public PhotoLayoutType $photo_layout;
+	public bool $is_album_timeline_enabled = false;
+	public bool $is_photo_timeline_enabled = false;
 
 	public function __construct(AbstractAlbum $album)
 	{
@@ -53,6 +60,24 @@ class AlbumConfig extends Data
 		}
 
 		$this->photo_layout = (($album instanceof BaseAlbum) ? $album->photo_layout : null) ?? Configs::getValueAsEnum('layout', PhotoLayoutType::class);
+
+		// Set default values.
+		$this->is_photo_timeline_enabled = Configs::getValueAsBool('timeline_photos_enabled');
+		$this->is_album_timeline_enabled = Configs::getValueAsBool('timeline_albums_enabled');
+
+		if ($album instanceof Album) {
+			$this->is_album_timeline_enabled = $album->album_timeline !== null || $this->is_album_timeline_enabled;
+			$this->is_album_timeline_enabled = $album->album_timeline !== TimelineAlbumGranularity::DISABLED && $this->is_album_timeline_enabled;
+		}
+
+		if ($album instanceof BaseAlbum) {
+			$this->is_photo_timeline_enabled = $album->photo_timeline !== null || $this->is_photo_timeline_enabled;
+			$this->is_photo_timeline_enabled = $album->photo_timeline !== TimelinePhotoGranularity::DISABLED && $this->is_photo_timeline_enabled;
+		}
+
+		// Masking to require login for timeline or allow it to be public.
+		$this->is_photo_timeline_enabled = $this->is_photo_timeline_enabled && (Configs::getValueAsBool('timeline_photos_public') || Auth::check());
+		$this->is_album_timeline_enabled = $this->is_album_timeline_enabled && (Configs::getValueAsBool('timeline_albums_public') || Auth::check());
 	}
 
 	public function setIsMapAccessible(): void

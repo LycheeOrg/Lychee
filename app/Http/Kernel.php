@@ -93,5 +93,6 @@ class Kernel extends HttpKernel
 		'login_required' => \App\Http\Middleware\LoginRequired::class,
 		'cache_control' => \App\Http\Middleware\CacheControl::class,
 		'support' => \LycheeVerify\Http\Middleware\VerifySupporterStatus::class,
+		'config_integrity' => \App\Http\Middleware\ConfigIntegrity::class,
 	];
 }
