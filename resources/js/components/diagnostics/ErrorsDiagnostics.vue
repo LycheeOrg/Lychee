@@ -1,5 +1,5 @@
 <template>
-	<Panel header="Errors" class="border-none max-w-7xl mx-auto" :pt:contentcontainer:id="'ErrorsData'">
+	<Panel header="Errors" class="border-none max-w-7xl mx-auto">
 		<div v-if="!errors" class="text-sky-400 font-bold">Loading...</div>
 		<div v-else v-for="error in errors" class="flex">
 			<div class="w-24 capitalize" :class="getCss(error.type)">{{ error.type }}</div>
@@ -15,13 +15,13 @@ import DiagnosticsService from "@/services/diagnostics-service";
 const errors = ref<App.Http.Resources.Diagnostics.ErrorLine[] | undefined>(undefined);
 
 const emits = defineEmits<{
-	loaded: [];
+	loaded: [data: App.Http.Resources.Diagnostics.ErrorLine[]];
 }>();
 
 function load() {
 	DiagnosticsService.errors().then((response) => {
 		errors.value = response.data;
-		emits("loaded");
+		emits("loaded", response.data);
 	});
 }
 

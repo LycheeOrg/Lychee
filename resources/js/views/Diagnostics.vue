@@ -12,10 +12,10 @@
 			<Button :disabled="!canCopy" text aria-label="Copy" icon="pi pi-copy" v-tooltip="'Copy diagnostics to clipboard'" @click="copy" />
 		</template>
 	</Toolbar>
-	<ErrorsDiagnotics @loaded="errorLoaded = true" />
-	<InfoDiagnostics v-if="user?.id" @loaded="infoLoaded = true" />
+	<ErrorsDiagnotics @loaded="loadError" />
+	<InfoDiagnostics v-if="user?.id" @loaded="loadInfo" />
 	<SpaceDiagnostics v-if="user?.id" />
-	<ConfigurationsDiagnostics v-if="user?.id" @loaded="configurationLoaded = true" />
+	<ConfigurationsDiagnostics v-if="user?.id" @loaded="loadConfig" />
 </template>
 <script setup lang="ts">
 import { ref, computed } from "vue";
@@ -36,23 +36,39 @@ authStore.getUser();
 const togglableStore = useTogglablesStateStore();
 
 const toast = useToast();
-const errorLoaded = ref<boolean>(false);
-const infoLoaded = ref<boolean>(false);
-const configurationLoaded = ref<boolean>(false);
 
-const canCopy = computed(() => errorLoaded.value && infoLoaded.value && configurationLoaded.value);
+const errorLoaded = ref<App.Http.Resources.Diagnostics.ErrorLine[] | undefined>(undefined);
+const infoLoaded = ref<string[] | undefined>(undefined);
+const configurationLoaded = ref<string[] | undefined>(undefined);
+
+const canCopy = computed(() => errorLoaded.value !== undefined && infoLoaded.value !== undefined && configurationLoaded.value !== undefined);
+
+function loadError(val: App.Http.Resources.Diagnostics.ErrorLine[]) {
+	errorLoaded.value = val;
+}
+
+function loadInfo(val: string[]) {
+	infoLoaded.value = val;
+}
+
+function loadConfig(val: string[]) {
+	configurationLoaded.value = val;
+}
 
 function copy() {
-	const errors = document.getElementById("ErrorsData");
-	const info = document.getElementById("InfoData");
-	const Configuration = document.getElementById("ConfigurationData");
-	const errorLines = errors?.innerText.split("\n") ?? [];
-	let errorText = "";
-	for (let i = 0; i < errorLines.length; i+=2) {
-		errorText += `${errorLines[i].padEnd(7)}: ${errorLines[i + 1]}\n`;
+	if (!canCopy) {
+		return;
 	}
 
-	const toClipBoard = `Errors:\n${"-".repeat(20)}\n${errorText}\n\n\nInfo:\n${"-".repeat(20)}\n${info?.innerText}\n\n\nConfig:\n${"-".repeat(20)}\n${Configuration?.innerText}`;
+	console.log(errorLoaded.value);
+	const errorText = errorLoaded.value
+		?.filter((errorLine) => errorLine.type !== undefined)
+		.map((errorLines) => `${errorLines.type.padEnd(7)}: ${errorLines.line}`)
+		.join("\n");
+	const infoText = infoLoaded.value?.join("\n");
+	const configurationText = configurationLoaded.value?.join("\n");
+
+	const toClipBoard = `Errors:\n${"-".repeat(20)}\n${errorText}\n\n\nInfo:\n${"-".repeat(20)}\n${infoText}\n\n\nConfig:\n${"-".repeat(20)}\n${configurationText}`;
 
 	navigator.clipboard
 		.writeText(toClipBoard)
