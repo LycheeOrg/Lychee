@@ -218,8 +218,6 @@ const configForMenu = computed<App.Http.Resources.GalleryConfigs.AlbumConfig>(()
 		is_nsfw_warning_visible: false,
 		album_thumb_css_aspect_ratio: "aspect-square",
 		photo_layout: "justified",
-		timeline_album_granularity: "year",
-		timeline_photo_granularity: "day",
 		is_album_timeline_enabled: false,
 		is_photo_timeline_enabled: false,
 	};

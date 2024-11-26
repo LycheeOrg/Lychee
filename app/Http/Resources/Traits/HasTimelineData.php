@@ -21,12 +21,12 @@ trait HasTimelineData
 
 	private function getPhotoTimeline(?TimelinePhotoGranularity $candidate): TimelinePhotoGranularity
 	{
-		$default_timeline_photo_granularity = Configs::getValueAsEnum('timeline_photos_granularity', TimelinePhotoGranularity::class);
+		$default_timeline_photos_granularity = Configs::getValueAsEnum('timeline_photos_granularity', TimelinePhotoGranularity::class);
 
 		if ($candidate === TimelinePhotoGranularity::DEFAULT || $candidate === TimelinePhotoGranularity::DISABLED) {
-			return $default_timeline_photo_granularity;
+			return $default_timeline_photos_granularity;
 		}
 
-		return $candidate ?? $default_timeline_photo_granularity;
+		return $candidate ?? $default_timeline_photos_granularity;
 	}
 }
