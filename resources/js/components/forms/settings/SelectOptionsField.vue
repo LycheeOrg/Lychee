@@ -22,6 +22,7 @@
 			</Select>
 		</div>
 	</div>
+	<div v-if="props.config.details" class="w-full text-muted-color text-sm -mt-4" v-html="props.config.details" />
 </template>
 
 <script setup lang="ts" generic="T extends string">
