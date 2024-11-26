@@ -44,7 +44,7 @@ class SmartAlbumResource extends Data
 			$this->prepPhotosCollection();
 
 			// setup timeline data
-			$photo_granularity = Configs::getValueAsEnum('timeline_photo_granularity', TimelinePhotoGranularity::class);
+			$photo_granularity = Configs::getValueAsEnum('timeline_photos_granularity', TimelinePhotoGranularity::class);
 			$this->photos = TimelineData::setTimeLineDataForPhotos($this->photos, $photo_granularity);
 		}
 
