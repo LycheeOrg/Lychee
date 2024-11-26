@@ -49,7 +49,7 @@ export function useContextMenuAlbumsAdd(callbacks: Callbacks, dropbox_api_key: R
 			{
 				label: "lychee.NEW_TAG_ALBUM",
 				icon: "pi pi-tags",
-				callback: () => callbacks.toggleCreateTagAlbum,
+				callback: callbacks.toggleCreateTagAlbum,
 			},
 		].filter((item) => item.if === undefined || item.if !== false),
 	);
