@@ -190,13 +190,13 @@ jobs:
 
       - name: Build Dist
         run: |
-          make clean dist-clean
+          make clean dist
 
       - name: Upload build artifact
         uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
         with:
           name: Lychee.zip
-          path: Lychee
+          path: Lychee.zip
           if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`
 
       - name: Download generated artifact 
@@ -257,12 +257,12 @@ jobs:
         uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.18
         with:
           name: Lychee.zip
-          path: '${{ github.workspace }}/Lychee.zip'
+          # path: '${{ github.workspace }}/Lychee.zip'
       
       # https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#using-an-intermediate-environment-variable
       - name: Sign image with a key
         run: |
-          DIGEST=$(shasum -a 256 artifact | cut -d' ' -f 1) && echo "$DIGEST"
+          DIGEST=$(shasum -a 256 Lychee.zip | cut -d' ' -f 1) && echo "$DIGEST"
           cosign sign --yes --key env://COSIGN_PRIVATE_KEY --output-signature sig.asc $DIGEST
         env:
           COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
