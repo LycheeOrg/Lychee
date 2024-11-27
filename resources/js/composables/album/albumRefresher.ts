@@ -1,7 +1,7 @@
 import AlbumService from "@/services/album-service";
 import { AuthStore } from "@/stores/Auth";
 import { computed, Ref, ref } from "vue";
-import axios, { AxiosError } from 'axios'
+import axios, { AxiosError } from "axios";
 
 export function useAlbumRefresher(albumId: Ref<string>, auth: AuthStore, isLoginOpen: Ref<boolean>, nsfw_consented: Ref<string[]>) {
 	const isPasswordProtected = ref(false);
