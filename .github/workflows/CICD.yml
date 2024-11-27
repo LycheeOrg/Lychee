@@ -198,12 +198,6 @@ jobs:
           path: Lychee.zip
           if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`
 
-      - name: Download generated artifact 
-        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.18
-        with:
-          name: Lychee.zip
-          # path: '${{ github.workspace }}/Lychee.zip'
-
       - name: Attest
         uses: actions/attest-build-provenance@ef244123eb79f2f7a7e75d99086184180e6d0018 # v1.4.4
         with:
