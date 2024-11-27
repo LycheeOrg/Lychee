@@ -266,7 +266,6 @@ jobs:
             Lychee.zip.asc
             Lychee.zip
           token: ${{ secrets.GITHUB_TOKEN }}
-          draft: true
           generate_release_notes: true
           make_latest: true
           
