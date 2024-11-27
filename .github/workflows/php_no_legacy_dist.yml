@@ -71,11 +71,6 @@ jobs:
           extensions: ${{ env.extensions }}
           tools: pecl, composer
 
-      - name: Install Composer dependencies
-        uses: ramsey/composer-install@57532f8be5bda426838819c5ee9afb8af389d51a # 3.0.0
-        with:
-          composer-options: --no-dev
-
       - name: Build Dist
         run: |
           make dist-clean

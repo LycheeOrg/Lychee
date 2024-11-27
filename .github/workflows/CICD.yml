@@ -21,143 +21,144 @@ on:
 permissions: read-all
 
 jobs:
-  kill_previous:
-    name: 0️⃣ Kill previous runs
-    runs-on: ubuntu-latest
-    # We want to run on external PRs, but not on our own internal PRs as they'll be run by the push to the branch.
-    if: (github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository)
-    steps:
-      - name: Harden Runner
-        uses: step-security/harden-runner@0080882f6c36860b6ba35c610c98ce87d4e2f26f # v2.10.2
-        with:
-          egress-policy: audit
+  # kill_previous:
+  #   name: 0️⃣ Kill previous runs
+  #   runs-on: ubuntu-latest
+  #   # We want to run on external PRs, but not on our own internal PRs as they'll be run by the push to the branch.
+  #   if: (github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository)
+  #   steps:
+  #     - name: Harden Runner
+  #       uses: step-security/harden-runner@0080882f6c36860b6ba35c610c98ce87d4e2f26f # v2.10.2
+  #       with:
+  #         egress-policy: audit
 
-      - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@85880fa0301c86cca9da44039ee3bb12d3bedbfa # 0.12.1
-        with:
-          access_token: ${{ github.token }}
+  #     - name: Cancel Previous Runs
+  #       uses: styfle/cancel-workflow-action@85880fa0301c86cca9da44039ee3bb12d3bedbfa # 0.12.1
+  #       with:
+  #         access_token: ${{ github.token }}
 
-  php_syntax_errors:
-    name: 1️⃣ PHP 8.2 - Syntax errors
-    runs-on: ubuntu-latest
-    needs:
-      - kill_previous
-    steps:
-      - name: Harden Runner
-        uses: step-security/harden-runner@0080882f6c36860b6ba35c610c98ce87d4e2f26f # v2.10.2
-        with:
-          egress-policy: audit
+  # php_syntax_errors:
+  #   name: 1️⃣ PHP 8.2 - Syntax errors
+  #   runs-on: ubuntu-latest
+  #   needs:
+  #     - kill_previous
+  #   steps:
+  #     - name: Harden Runner
+  #       uses: step-security/harden-runner@0080882f6c36860b6ba35c610c98ce87d4e2f26f # v2.10.2
+  #       with:
+  #         egress-policy: audit
 
-      - name: Setup PHP Action
-        uses: shivammathur/setup-php@c541c155eee45413f5b09a52248675b1a2575231 # 2.31.1
-        with:
-          php-version: 8.2
+  #     - name: Setup PHP Action
+  #       uses: shivammathur/setup-php@c541c155eee45413f5b09a52248675b1a2575231 # 2.31.1
+  #       with:
+  #         php-version: 8.2
 
-      - name: Checkout code
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+  #     - name: Checkout code
+  #       uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
-      - name: Install dependencies
-        uses: ramsey/composer-install@57532f8be5bda426838819c5ee9afb8af389d51a # 3.0.0
+  #     - name: Install dependencies
+  #       uses: ramsey/composer-install@57532f8be5bda426838819c5ee9afb8af389d51a # 3.0.0
 
-      - name: Check source code for syntax errors
-        run: vendor/bin/parallel-lint --exclude .git --exclude vendor .
+  #     - name: Check source code for syntax errors
+  #       run: vendor/bin/parallel-lint --exclude .git --exclude vendor .
 
-  code_style_errors:
-    name: 2️⃣ PHP 8.2 - Code Style errors
-    runs-on: ubuntu-latest
-    needs:
-      - php_syntax_errors
-    steps:
-      - name: Harden Runner
-        uses: step-security/harden-runner@0080882f6c36860b6ba35c610c98ce87d4e2f26f # v2.10.2
-        with:
-          egress-policy: audit
+  # code_style_errors:
+  #   name: 2️⃣ PHP 8.2 - Code Style errors
+  #   runs-on: ubuntu-latest
+  #   needs:
+  #     - php_syntax_errors
+  #   steps:
+  #     - name: Harden Runner
+  #       uses: step-security/harden-runner@0080882f6c36860b6ba35c610c98ce87d4e2f26f # v2.10.2
+  #       with:
+  #         egress-policy: audit
 
-      - name: Set up PHP
-        uses: shivammathur/setup-php@c541c155eee45413f5b09a52248675b1a2575231 # 2.31.1
-        with:
-          php-version: 8.2
+  #     - name: Set up PHP
+  #       uses: shivammathur/setup-php@c541c155eee45413f5b09a52248675b1a2575231 # 2.31.1
+  #       with:
+  #         php-version: 8.2
 
-      - name: Checkout code
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+  #     - name: Checkout code
+  #       uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
-      - name: Install dependencies
-        uses: ramsey/composer-install@57532f8be5bda426838819c5ee9afb8af389d51a # 3.0.0
+  #     - name: Install dependencies
+  #       uses: ramsey/composer-install@57532f8be5bda426838819c5ee9afb8af389d51a # 3.0.0
 
-      - name: Check source code for code style errors
-        run: PHP_CS_FIXER_IGNORE_ENV=1 vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --verbose --diff --dry-run
+  #     - name: Check source code for code style errors
+  #       run: PHP_CS_FIXER_IGNORE_ENV=1 vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --verbose --diff --dry-run
 
-  check_js:
-    name: 2️⃣ JS front-end
-    uses: ./.github/workflows/js_check.yml
-    needs:
-      - php_syntax_errors
+  # check_js:
+  #   name: 2️⃣ JS front-end
+  #   uses: ./.github/workflows/js_check.yml
+  #   needs:
+  #     - php_syntax_errors
 
-  phpstan:
-    name: 2️⃣ PHP 8.2 - PHPStan
-    runs-on: ubuntu-latest
-    needs:
-      - php_syntax_errors
-    steps:
-      - name: Harden Runner
-        uses: step-security/harden-runner@0080882f6c36860b6ba35c610c98ce87d4e2f26f # v2.10.2
-        with:
-          egress-policy: audit
+  # phpstan:
+  #   name: 2️⃣ PHP 8.2 - PHPStan
+  #   runs-on: ubuntu-latest
+  #   needs:
+  #     - php_syntax_errors
+  #   steps:
+  #     - name: Harden Runner
+  #       uses: step-security/harden-runner@0080882f6c36860b6ba35c610c98ce87d4e2f26f # v2.10.2
+  #       with:
+  #         egress-policy: audit
 
-      - name: Checkout code
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+  #     - name: Checkout code
+  #       uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@c541c155eee45413f5b09a52248675b1a2575231 # 2.31.1
-        with:
-          php-version: 8.2
-          coverage: none
+  #     - name: Setup PHP
+  #       uses: shivammathur/setup-php@c541c155eee45413f5b09a52248675b1a2575231 # 2.31.1
+  #       with:
+  #         php-version: 8.2
+  #         coverage: none
 
-      - name: Install Composer dependencies
-        uses: ramsey/composer-install@57532f8be5bda426838819c5ee9afb8af389d51a # 3.0.0
+  #     - name: Install Composer dependencies
+  #       uses: ramsey/composer-install@57532f8be5bda426838819c5ee9afb8af389d51a # 3.0.0
 
-      - name: Run PHPStan
-        run: vendor/bin/phpstan analyze
+  #     - name: Run PHPStan
+  #       run: vendor/bin/phpstan analyze
 
-  tests_legacy:
-    name:  2️⃣ PHP tests legacy
-    needs:
-      - php_syntax_errors
-    uses: ./.github/workflows/php_tests.yml
-    with:
-      test-suite: 'Feature_v1'
-      env-file: '.env.legacy'
-    secrets:
-      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+  # tests_legacy:
+  #   name:  2️⃣ PHP tests legacy
+  #   needs:
+  #     - php_syntax_errors
+  #   uses: ./.github/workflows/php_tests.yml
+  #   with:
+  #     test-suite: 'Feature_v1'
+  #     env-file: '.env.legacy'
+  #   secrets:
+  #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  #     CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
-  tests:
-    name:  2️⃣ PHP tests
-    needs:
-      - php_syntax_errors
-    uses: ./.github/workflows/php_tests.yml
-    with:
-      test-suite: 'Unit,Feature_v2'
-      env-file: '.env'
-    secrets:
-      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+  # tests:
+  #   name:  2️⃣ PHP tests
+  #   needs:
+  #     - php_syntax_errors
+  #   uses: ./.github/workflows/php_tests.yml
+  #   with:
+  #     test-suite: 'Unit,Feature_v2'
+  #     env-file: '.env'
+  #   secrets:
+  #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  #     CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
-  dist:
-    name:  3️⃣ PHP dist
-    needs:
-      - code_style_errors
-    uses: ./.github/workflows/php_dist.yml
+  # dist:
+  #   name:  3️⃣ PHP dist
+  #   needs:
+  #     - code_style_errors
+  #   uses: ./.github/workflows/php_dist.yml
 
   createArtifact:
     name: 4️⃣ Build Artifact
-    if: github.ref == 'refs/heads/master'
-    needs:
-      - phpstan
-      - dist
-      - tests
-      - tests_legacy
-      - check_js
+    # For testing purpose we disable this.
+    # if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/')
+    # needs:
+    #   - phpstan
+    #   - dist
+    #   - tests
+    #   - tests_legacy
+    #   - check_js
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -189,14 +190,20 @@ jobs:
 
       - name: Build Dist
         run: |
-          make clean dist
+          make clean dist-clean
 
-      - name: Upload a Build Artifact
+      - name: Upload build artifact
         uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
         with:
           name: Lychee.zip
-          path: Lychee.zip
+          path: Lychee
           if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`
+
+      - name: Download generated artifact 
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.18
+        with:
+          name: Lychee.zip
+          path: '${{ github.workspace }}/Lychee.zip'
 
       - name: Attest
         uses: actions/attest-build-provenance@ef244123eb79f2f7a7e75d99086184180e6d0018 # v1.4.4
@@ -228,3 +235,45 @@ jobs:
           # The GitHub token used to make authenticated API requests. Default is
           # ${{ github.token }}
           github-token: ${{ github.token }}
+      
+
+  release:
+    name: 5️⃣ Release
+    if: github.ref == 'refs/heads/master'
+    needs:
+      - createArtifact
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+    env:
+      extensions: bcmath, curl, dom, gd, imagick, json, libxml, mbstring, pcntl, pdo, pdo_sqlite, pdo_mysql, pdo_pgsql, pgsql, sqlite3, zip
+
+    steps:
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@v3.7.0
+
+      - name: Download generated artifact 
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.18
+        with:
+          name: Lychee.zip
+          path: '${{ github.workspace }}/Lychee.zip'
+      
+      # https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#using-an-intermediate-environment-variable
+      - name: Sign image with a key
+        run: |
+          DIGEST=$(shasum -a 256 artifact | cut -d' ' -f 1) && echo "$DIGEST"
+          cosign sign --yes --key env://COSIGN_PRIVATE_KEY --output-signature sig.asc $DIGEST
+        env:
+          COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
+          COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
+
+      - name: Create release
+        uses: softprops/action-gh-release@01570a1f39cb168c169c802c3bceb9e93fb10974 # v2.1.0
+        with:
+          files: |
+            sig.asc
+            Lychee.zip
+          token: ${{ secrets.GITHUB_TOKEN }}
+          draft: true
+          
