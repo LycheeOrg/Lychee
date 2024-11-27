@@ -385,7 +385,7 @@ onMounted(async () => {
 	setScroll();
 
 	loading.value = false;
-})
+});
 
 onKeyStroke("h", () => !shouldIgnoreKeystroke() && (are_nsfw_visible.value = !are_nsfw_visible.value));
 onKeyStroke("f", () => !shouldIgnoreKeystroke() && togglableStore.toggleFullScreen());
