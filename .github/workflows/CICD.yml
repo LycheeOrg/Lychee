@@ -260,10 +260,9 @@ jobs:
           # path: '${{ github.workspace }}/Lychee.zip'
       
       # https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#using-an-intermediate-environment-variable
-      - name: Sign image with a key
+      - name: Sign release with a key
         run: |
-          DIGEST=$(shasum -a 256 Lychee.zip | cut -d' ' -f 1) && echo "$DIGEST"
-          cosign sign --yes --key env://COSIGN_PRIVATE_KEY --output-signature sig.asc $DIGEST
+          cosign sign-blob --yes --key env://COSIGN_PRIVATE_KEY --output-signature sig.asc Lychee.zip
         env:
           COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
           COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
