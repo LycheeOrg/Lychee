@@ -134,7 +134,7 @@ class ListAlbums extends Action
 			$resulting_len = $title_lengths->sum();
 		} while ($len_to_reduce < $resulting_len);
 
-		$title_split = $title_split->map(fn ($v) => Str::limit($v, $unit_target_len, '…'));
+		$title_split = $title_split->map(fn ($v) => Str::limit($v, $unit_target_len > 0 ? $unit_target_len : 0, '…'));
 
 		return implode('/', $title_split->all()) . '/' . $last_elem;
 	}
