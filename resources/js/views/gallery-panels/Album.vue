@@ -1,4 +1,5 @@
 <template>
+	<ProgressSpinner v-if="loading" class="w-full"></ProgressSpinner>
 	<UploadPanel v-if="album?.rights.can_upload" @refresh="refresh" key="upload_modal" />
 	<AlbumCreateDialog v-if="album?.rights.can_upload && config?.is_model_album" v-model:parent-id="album.id" key="create_album_modal" />
 	<div class="h-svh overflow-y-hidden">
@@ -172,8 +173,9 @@
 </template>
 <script setup lang="ts">
 import { useAuthStore } from "@/stores/Auth";
-import { computed, ref, watch } from "vue";
+import { computed, ref, watch, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import ProgressSpinner from "primevue/progressspinner";
 import AlbumThumbPanel from "@/components/gallery/AlbumThumbPanel.vue";
 import PhotoThumbPanel from "@/components/gallery/PhotoThumbPanel.vue";
 import ShareAlbum from "@/components/modals/ShareAlbum.vue";
@@ -276,6 +278,7 @@ const {
 } = useGalleryModals(togglableStore);
 
 const areStatisticsOpen = ref(false);
+const loading = ref(false);
 
 function toggleStatistics() {
 	if (is_se_enabled) {
@@ -374,9 +377,15 @@ function consent() {
 	isAlbumConsented.value = true;
 }
 
-loadLayoutConfig();
+onMounted(async () => {
+	loading.value = true;
 
-refresh().then(setScroll);
+	loadLayoutConfig();
+	await refresh();
+	setScroll();
+
+	loading.value = false;
+})
 
 onKeyStroke("h", () => !shouldIgnoreKeystroke() && (are_nsfw_visible.value = !are_nsfw_visible.value));
 onKeyStroke("f", () => !shouldIgnoreKeystroke() && togglableStore.toggleFullScreen());
@@ -408,6 +417,7 @@ watch(
 		window.addEventListener("paste", onPaste);
 		window.addEventListener("dragover", dragEnd);
 		window.addEventListener("drop", dropUpload);
+		console.log("Album view changed albumid to", newId);
 		refresh().then(setScroll);
 	},
 );

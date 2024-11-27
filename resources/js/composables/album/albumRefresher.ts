@@ -15,42 +15,41 @@ export function useAlbumRefresher(albumId: Ref<string>, auth: AuthStore, isLogin
 	const config = ref<App.Http.Resources.GalleryConfigs.AlbumConfig | undefined>(undefined);
 	const rights = computed(() => album.value?.rights ?? undefined);
 
-	function loadUser(): Promise<void> {
-		return auth.getUser().then((data: App.Http.Resources.Models.UserResource) => {
-			user.value = data;
-			loadAlbum();
-		});
+	async function loadUser(): Promise<void> {
+		const userResponse = await auth.getUser();
+		user.value = userResponse;
+		await loadAlbum();
 	}
 
-	function loadAlbum(): Promise<void> {
-		return AlbumService.get(albumId.value)
-			.then((data) => {
-				isPasswordProtected.value = false;
-				config.value = data.data.config;
-				modelAlbum.value = undefined;
-				tagAlbum.value = undefined;
-				smartAlbum.value = undefined;
-				if (data.data.config.is_model_album) {
-					modelAlbum.value = data.data.resource as App.Http.Resources.Models.AlbumResource;
-				} else if (data.data.config.is_base_album) {
-					tagAlbum.value = data.data.resource as App.Http.Resources.Models.TagAlbumResource;
-				} else {
-					smartAlbum.value = data.data.resource as App.Http.Resources.Models.SmartAlbumResource;
-				}
-				photos.value = album.value?.photos ?? [];
-				isAlbumConsented.value = nsfw_consented.value.find((e) => e === albumId.value) !== undefined;
-			})
-			.catch((error) => {
-				if (error.response.status === 401 && error.response.data.message === "Password required") {
-					isPasswordProtected.value = true;
-				} else if (error.response.status === 403 && error.response.data.message === "Password required") {
-					isPasswordProtected.value = true;
-				} else if (error.response.status === 401) {
-					isLoginOpen.value = true;
-				} else {
-					console.error(error);
-				}
-			});
+	async function loadAlbum(): Promise<void> {
+		try {
+			const albumResponse = await AlbumService.get(albumId.value);
+
+			isPasswordProtected.value = false;
+			config.value = albumResponse.data.config;
+			modelAlbum.value = undefined;
+			tagAlbum.value = undefined;
+			smartAlbum.value = undefined;
+			if (albumResponse.data.config.is_model_album) {
+				modelAlbum.value = albumResponse.data.resource as App.Http.Resources.Models.AlbumResource;
+			} else if (albumResponse.data.config.is_base_album) {
+				tagAlbum.value = albumResponse.data.resource as App.Http.Resources.Models.TagAlbumResource;
+			} else {
+				smartAlbum.value = albumResponse.data.resource as App.Http.Resources.Models.SmartAlbumResource;
+			}
+			photos.value = album.value?.photos ?? [];
+			isAlbumConsented.value = nsfw_consented.value.find((e) => e === albumId.value) !== undefined;
+		} catch (error) {
+			if (error.response.status === 401 && error.response.data.message === "Password required") {
+				isPasswordProtected.value = true;
+			} else if (error.response.status === 403 && error.response.data.message === "Password required") {
+				isPasswordProtected.value = true;
+			} else if (error.response.status === 401) {
+				isLoginOpen.value = true;
+			} else {
+				console.error(error);
+			}
+		}
 	}
 
 	function refresh(): Promise<void> {
