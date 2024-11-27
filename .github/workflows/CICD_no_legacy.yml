@@ -181,21 +181,10 @@ jobs:
           extensions: ${{ env.extensions }}
           coverage: none
 
-      - name: Install Composer dependencies
-        uses: ramsey/composer-install@57532f8be5bda426838819c5ee9afb8af389d51a # 3.0.0
-        with:
-          composer-options: --no-dev
-
       - name: Use Node.js 20
         uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
         with:
             node-version: 20
-
-      - name: Install
-        run: npm ci
-
-      - name: Compile Front-end
-        run: npm run build
 
       - name: Build Dist
         run: |
@@ -204,6 +193,6 @@ jobs:
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
         with:
-          name: Lychee-Dist.zip
+          name: Lychee-No-Legacy.zip
           path: Lychee.zip
           if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`
