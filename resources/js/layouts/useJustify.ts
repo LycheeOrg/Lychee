@@ -1,13 +1,16 @@
+import { TimelineData } from "./PhotoLayout";
 import { ChildNodeWithDataStyle } from "./types";
 import createJustifiedLayout from "justified-layout";
 
-export function useJustify(el: HTMLElement, photoDefaultHeight: number = 320, isTimeline: boolean) {
+export function useJustify(el: HTMLElement, photoDefaultHeight: number = 320, timelineData: TimelineData) {
 	const baseElem = document.getElementById("lychee_view_content");
 	if (!baseElem) {
 		return;
 	}
-	const containerDefaultWidth = parseInt(getComputedStyle(baseElem).width) - 86;
-	const containerWidth = isTimeline ? Math.min(parseInt(getComputedStyle(el).width), containerDefaultWidth) : parseInt(getComputedStyle(el).width);
+	const containerDefaultWidth = parseInt(getComputedStyle(baseElem).width) - 36 - (timelineData.isLeftBorderVisible ? 50 : 0);
+	const containerWidth = timelineData.isTimeline
+		? Math.min(parseInt(getComputedStyle(el).width), containerDefaultWidth)
+		: parseInt(getComputedStyle(el).width);
 
 	// @ts-expect-error
 	const justifiedItems: ChildNodeWithDataStyle[] = [...el.childNodes].filter((gridItem) => gridItem.nodeType === 1);

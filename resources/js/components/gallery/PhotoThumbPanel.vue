@@ -34,6 +34,24 @@
 					</div>
 				</template>
 			</Timeline>
+			<div v-else>
+				<template v-for="photoTimeline in photosTimeLine">
+					<div class="flex flex-wrap flex-row flex-shrink w-full justify-start gap-1 sm:gap-2 md:gap-4 pb-8">
+						<div class="w-full text-left font-semibold text-muted-color-emphasis text-lg">{{ photoTimeline.header }}</div>
+						<PhotoThumbPanelList
+							:photos="photoTimeline.data"
+							:layout="layout"
+							:album="props.album"
+							:galleryConfig="props.galleryConfig"
+							:selectedPhotos="props.selectedPhotos"
+							:iter="photoTimeline.iter"
+							:isTimeline="isTimeline"
+							@clicked="propagateClicked"
+							@contexted="propagateMenuOpen"
+						/>
+					</div>
+				</template>
+			</div>
 		</template>
 	</Panel>
 </template>
