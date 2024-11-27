@@ -417,7 +417,6 @@ watch(
 		window.addEventListener("paste", onPaste);
 		window.addEventListener("dragover", dragEnd);
 		window.addEventListener("drop", dropUpload);
-		console.log("Album view changed albumid to", newId);
 		refresh().then(setScroll);
 	},
 );
