@@ -27,7 +27,7 @@ const AxiosConfig = {
 			},
 			function (error: any): Promise<never> {
 				if (
-					["Password required", "Password is invalid", "Album is not enabled for password-based access"].find(
+					["Password required", "Password is invalid", "Album is not enabled for password-based access", "Login required."].find(
 						(e) => e === error.response.data.message,
 					) !== undefined
 				) {

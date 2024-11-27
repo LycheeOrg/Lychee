@@ -1,5 +1,7 @@
 <template>
 	<UploadPanel v-if="album?.rights.can_upload" @refresh="refresh" key="upload_modal" />
+	<LoginModal v-if="user?.id === null" @logged-in="refresh" />
+	<WebauthnModal v-if="user?.id === null" @logged-in="refresh" />
 	<AlbumCreateDialog v-if="album?.rights.can_upload && config?.is_model_album" v-model:parent-id="album.id" key="create_album_modal" />
 	<div class="h-svh overflow-y-hidden">
 		<!-- Trick to avoid the scroll bar to appear on the right when switching to full screen -->
@@ -13,7 +15,6 @@
 				@toggle-slide-show="toggleSlideShow"
 			/>
 		</Collapse>
-		<LoginModal v-if="user?.id === null" v-model:visible="is_login_open" @logged-in="refresh" />
 		<Unlock :albumid="albumid" :visible="isPasswordProtected" @reload="refresh" @fail="is_login_open = true" />
 		<template v-if="config && album">
 			<div
@@ -212,6 +213,7 @@ import UploadPanel from "@/components/modals/UploadPanel.vue";
 import AlbumCreateDialog from "@/components/forms/album/AlbumCreateDialog.vue";
 import { useScrollable } from "@/composables/album/scrollable";
 import { useGetLayoutConfig } from "@/layouts/PhotoLayout";
+import WebauthnModal from "@/components/modals/WebauthnModal.vue";
 
 const route = useRoute();
 const router = useRouter();

@@ -1,5 +1,5 @@
 <template>
-	<Dialog v-model:visible="visible" modal pt:root:class="border-none" pt:mask:style="backdrop-filter: blur(2px)">
+	<Dialog v-model:visible="is_login_open" modal pt:root:class="border-none" pt:mask:style="backdrop-filter: blur(2px)">
 		<template #container="{ closeCallback }">
 			<form v-focustrap class="flex flex-col gap-4 relative max-w-full text-sm rounded-md pt-9">
 				<div class="flex justify-center gap-2">
@@ -49,7 +49,7 @@
 </template>
 
 <script setup lang="ts">
-import { Ref, ref } from "vue";
+import { ref } from "vue";
 import FloatLabel from "primevue/floatlabel";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
@@ -62,12 +62,10 @@ import AlbumService from "@/services/album-service";
 import OauthService from "@/services/oauth-service";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
-
-const visible = defineModel("visible", { default: false }) as Ref<boolean>;
+import { useTogglablesStateStore } from "@/stores/ModalsState";
 
 const emits = defineEmits<{
 	"logged-in": [];
-	"open-webauthn": [];
 }>();
 
 type OauthProvider = {
@@ -79,8 +77,10 @@ type OauthProvider = {
 const username = ref("");
 const password = ref("");
 const authStore = useAuthStore();
+const togglableStore = useTogglablesStateStore();
 const lycheeStore = useLycheeStateStore();
 const { is_se_enabled } = storeToRefs(lycheeStore);
+const { is_login_open, is_webauthn_open } = storeToRefs(togglableStore);
 const invalidPassword = ref(false);
 
 const oauths = ref<OauthProvider[] | undefined>(undefined);
@@ -88,7 +88,7 @@ const oauths = ref<OauthProvider[] | undefined>(undefined);
 function login() {
 	AuthService.login(username.value, password.value)
 		.then(() => {
-			visible.value = false;
+			is_login_open.value = false;
 			authStore.setUser(null);
 			invalidPassword.value = false;
 			AlbumService.clearCache();
@@ -120,10 +120,10 @@ function mapToOauths(provider: App.Enum.OauthProvidersType): OauthProvider {
 fetchOauths();
 
 function openWebAuthn() {
-	visible.value = false;
+	is_login_open.value = false;
+	is_webauthn_open.value = true;
 	username.value = "";
 	password.value = "";
 	invalidPassword.value = false;
-	emits("open-webauthn");
 }
 </script>
