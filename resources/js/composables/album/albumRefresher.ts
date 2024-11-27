@@ -1,6 +1,7 @@
 import AlbumService from "@/services/album-service";
 import { AuthStore } from "@/stores/Auth";
 import { computed, Ref, ref } from "vue";
+import axios, { AxiosError } from 'axios'
 
 export function useAlbumRefresher(albumId: Ref<string>, auth: AuthStore, isLoginOpen: Ref<boolean>, nsfw_consented: Ref<string[]>) {
 	const isPasswordProtected = ref(false);
@@ -39,13 +40,16 @@ export function useAlbumRefresher(albumId: Ref<string>, auth: AuthStore, isLogin
 			}
 			photos.value = album.value?.photos ?? [];
 			isAlbumConsented.value = nsfw_consented.value.find((e) => e === albumId.value) !== undefined;
-		} catch (error) {
-			if (error.response.status === 401 && error.response.data.message === "Password required") {
-				isPasswordProtected.value = true;
-			} else if (error.response.status === 403 && error.response.data.message === "Password required") {
-				isPasswordProtected.value = true;
-			} else if (error.response.status === 401) {
-				isLoginOpen.value = true;
+		} catch (error: unknown) {
+			if (axios.isAxiosError(error)) {
+				const axiosError = error as AxiosError;
+				if (axiosError.response?.status === 401 && axiosError.response?.data?.message === "Password required") {
+					isPasswordProtected.value = true;
+				} else if (axiosError.response?.status === 403 && axiosError.response?.data?.message === "Password required") {
+					isPasswordProtected.value = true;
+				} else if (axiosError.response?.status === 401) {
+					isLoginOpen.value = true;
+				}
 			} else {
 				console.error(error);
 			}
