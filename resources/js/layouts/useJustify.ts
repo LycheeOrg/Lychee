@@ -1,16 +1,17 @@
 import { TimelineData } from "./PhotoLayout";
 import { ChildNodeWithDataStyle } from "./types";
 import createJustifiedLayout from "justified-layout";
+import { isTouchDevice } from "@/utils/keybindings-utils";
 
 export function useJustify(el: HTMLElement, photoDefaultHeight: number = 320, timelineData: TimelineData) {
 	const baseElem = document.getElementById("lychee_view_content");
 	if (!baseElem) {
 		return;
 	}
-	const containerDefaultWidth = parseInt(getComputedStyle(baseElem).width) - 36 - (timelineData.isLeftBorderVisible ? 50 : 0);
-	const containerWidth = timelineData.isTimeline
-		? Math.min(parseInt(getComputedStyle(el).width), containerDefaultWidth)
-		: parseInt(getComputedStyle(el).width);
+
+	const width = getWidth(baseElem, el, timelineData);
+	// console.log("width")
+	// console.log(width)
 
 	// @ts-expect-error
 	const justifiedItems: ChildNodeWithDataStyle[] = [...el.childNodes].filter((gridItem) => gridItem.nodeType === 1);
@@ -21,7 +22,7 @@ export function useJustify(el: HTMLElement, photoDefaultHeight: number = 320, ti
 		return height > 0 ? width / height : 1;
 	});
 	const layoutGeometry = createJustifiedLayout(ratio, {
-		containerWidth: containerWidth,
+		containerWidth: width,
 		containerPadding: 0,
 		targetRowHeight: photoDefaultHeight,
 	});
@@ -40,4 +41,46 @@ export function useJustify(el: HTMLElement, photoDefaultHeight: number = 320, ti
 		e.style.height = layoutGeometry.boxes[i].height + "px";
 		e.style.left = layoutGeometry.boxes[i].left + "px";
 	});
+}
+
+function getWidth(baseElem: HTMLElement, el: HTMLElement, timelineData: TimelineData): number {
+	const styles = getComputedStyle(baseElem);
+	const padding = parseFloat(styles.paddingLeft) + parseFloat(styles.paddingRight);
+	const baseWidth = Math.floor(baseElem.offsetWidth - padding);
+	const widthEl = parseInt(getComputedStyle(el).width);
+	const paddingLeftRight = 2 * 18;
+
+	let scrollBarWidth = 15;
+	const galleryView = document.getElementById("galleryView");
+
+	if (scrollbarVisible(galleryView)) {
+		// It is already counted.
+		scrollBarWidth = 0;
+	}
+
+	if (isTouchDevice()) {
+		scrollBarWidth = 0;
+	}
+
+	// console.log("baseWidth - paddingLeftRight - scrollBarWidth")
+	// console.log(baseWidth - paddingLeftRight - scrollBarWidth)
+	// console.log("el.width")
+	// console.log(widthEl)
+
+	const width = Math.min(widthEl, baseWidth - paddingLeftRight - scrollBarWidth);
+
+	let timeLineBorder = 0;
+	if (timelineData.isTimeline.value === true && timelineData.isLeftBorderVisible.value === true) {
+		timeLineBorder = 50;
+	}
+
+	return width - timeLineBorder;
+}
+
+function scrollbarVisible(el: HTMLElement | null): boolean {
+	if (!el) {
+		return true;
+	}
+
+	return el.scrollHeight > el.clientHeight;
 }
