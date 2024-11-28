@@ -26,6 +26,7 @@ export function useContextMenuAlbumAdd(
 		| App.Http.Resources.Models.AlbumResource
 		| App.Http.Resources.Models.TagAlbumResource
 		| App.Http.Resources.Models.SmartAlbumResource,
+	config: App.Http.Resources.GalleryConfigs.AlbumConfig,
 	callbacks: Callbacks,
 	dropbox_api_key: Ref<string>,
 ) {
@@ -53,11 +54,13 @@ export function useContextMenuAlbumAdd(
 			},
 			{
 				is_divider: true,
+				if: config.is_model_album,
 			},
 			{
 				label: "lychee.NEW_ALBUM",
 				icon: "pi pi-folder",
 				callback: callbacks.toggleCreateAlbum,
+				if: config.is_model_album,
 			},
 		];
 
@@ -67,14 +70,17 @@ export function useContextMenuAlbumAdd(
 				label: "lychee.DELETE_TRACK",
 				icon: "pi pi-compass",
 				callback: callbacks.deleteTrack,
+				if: config.is_model_album,
 			});
 		} else {
 			menu.push({
 				label: "lychee.UPLOAD_TRACK",
 				icon: "pi pi-compass",
 				callback: callbacks.toggleUploadTrack,
+				if: config.is_model_album,
 			});
 		}
+
 		return menu.filter((item) => item.if === undefined || item.if !== false);
 	});
 
