@@ -5,11 +5,9 @@ namespace App\Http\Requests\Album;
 use App\Contracts\Http\Requests\HasAlbums;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Contracts\Models\AbstractAlbum;
-use App\Exceptions\PasswordRequiredException;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasAlbumsTrait;
 use App\Models\Album;
-use App\Models\Extensions\BaseAlbum;
 use App\Policies\AlbumPolicy;
 use App\Rules\AlbumIDRule;
 use Illuminate\Support\Facades\Gate;
@@ -27,21 +25,7 @@ class TargetListAlbumRequest extends BaseApiRequest implements HasAlbums
 	 */
 	public function authorize(): bool
 	{
-		$result = Gate::check(AlbumPolicy::CAN_ACCESS, [AbstractAlbum::class, $this->album]);
-
-		// In case of a password protected album, we must throw an exception
-		// with a special error message ("Password required") such that the
-		// front-end shows the password dialog if a password is set, but
-		// does not show the dialog otherwise.
-		if (
-			!$result &&
-			$this->album instanceof BaseAlbum &&
-			$this->album->public_permissions()?->password !== null
-		) {
-			throw new PasswordRequiredException();
-		}
-
-		return $result;
+		return Gate::check(AlbumPolicy::CAN_EDIT_ID, [AbstractAlbum::class, $this->albums->map(fn (Album $album): string => $album->id)->toArray()]);
 	}
 
 	/**
