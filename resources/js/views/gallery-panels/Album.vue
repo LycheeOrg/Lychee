@@ -1,5 +1,5 @@
 <template>
-	<ProgressSpinner v-if="loading" class="w-full"></ProgressSpinner>
+	<ProgressBar v-if="isLoading" mode="indeterminate" class="rounded-none absolute w-full" :pt:value:class="'rounded-none'" />
 	<UploadPanel v-if="album?.rights.can_upload" @refresh="refresh" key="upload_modal" />
 	<LoginModal v-if="user?.id === null" @logged-in="refresh" />
 	<WebauthnModal v-if="user?.id === null" @logged-in="refresh" />
@@ -176,7 +176,6 @@
 import { useAuthStore } from "@/stores/Auth";
 import { computed, ref, watch, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import ProgressSpinner from "primevue/progressspinner";
 import AlbumThumbPanel from "@/components/gallery/AlbumThumbPanel.vue";
 import PhotoThumbPanel from "@/components/gallery/PhotoThumbPanel.vue";
 import ShareAlbum from "@/components/modals/ShareAlbum.vue";
@@ -216,6 +215,7 @@ import AlbumCreateDialog from "@/components/forms/album/AlbumCreateDialog.vue";
 import { useScrollable } from "@/composables/album/scrollable";
 import { useGetLayoutConfig } from "@/layouts/PhotoLayout";
 import WebauthnModal from "@/components/modals/WebauthnModal.vue";
+import ProgressBar from "primevue/progressbar";
 
 const route = useRoute();
 const router = useRouter();
@@ -250,7 +250,7 @@ function toggleSlideShow() {
 const { layoutConfig, loadLayoutConfig } = useGetLayoutConfig();
 
 // Set up Album ID reference. This one is updated at each page change.
-const { isAlbumConsented, isPasswordProtected, user, modelAlbum, album, rights, photos, config, refresh } = useAlbumRefresher(
+const { isAlbumConsented, isPasswordProtected, isLoading, user, modelAlbum, album, rights, photos, config, refresh } = useAlbumRefresher(
 	albumid,
 	auth,
 	is_login_open,
@@ -280,7 +280,6 @@ const {
 } = useGalleryModals(togglableStore);
 
 const areStatisticsOpen = ref(false);
-const loading = ref(false);
 
 function toggleStatistics() {
 	if (is_se_enabled) {
@@ -380,13 +379,8 @@ function consent() {
 }
 
 onMounted(async () => {
-	loading.value = true;
-
-	loadLayoutConfig();
-	await refresh();
+	await Promise.all([loadLayoutConfig(), refresh()]);
 	setScroll();
-
-	loading.value = false;
 });
 
 onKeyStroke("h", () => !shouldIgnoreKeystroke() && (are_nsfw_visible.value = !are_nsfw_visible.value));
@@ -415,6 +409,7 @@ watch(
 	() => route.params.albumid,
 	(newId, _oldId) => {
 		unselect();
+
 		albumid.value = newId as string;
 		window.addEventListener("paste", onPaste);
 		window.addEventListener("dragover", dragEnd);

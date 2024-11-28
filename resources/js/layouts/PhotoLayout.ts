@@ -62,8 +62,8 @@ export function useGetLayoutConfig() {
 	const layoutConfig = ref(null) as Ref<null | App.Http.Resources.GalleryConfigs.PhotoLayoutConfig>;
 	const layout = ref("square") as Ref<App.Enum.PhotoLayoutType>;
 
-	function loadLayoutConfig() {
-		AlbumService.getLayout().then((data) => {
+	function loadLayoutConfig(): Promise<void> {
+		return AlbumService.getLayout().then((data) => {
 			layoutConfig.value = data.data;
 		});
 	}
