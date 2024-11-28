@@ -9,7 +9,7 @@
 			</div>
 			<div v-else-if="error_no_target === false">
 				<span class="font-bold">{{ "Move to" }}</span>
-				<SearchTargetAlbum :album-id="props.album.id" @selected="selected" @no-target="error_no_target = true" />
+				<SearchTargetAlbum :album-ids="[props.album.id]" @selected="selected" @no-target="error_no_target = true" />
 			</div>
 			<div v-else>
 				<p class="text-center text-muted-color">{{ "No album to move to" }}</p>

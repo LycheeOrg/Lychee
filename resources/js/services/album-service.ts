@@ -114,8 +114,8 @@ const AlbumService = {
 		return axios.delete(`${Constants.getApiUrl()}Album`, { data: { album_ids: album_ids } });
 	},
 
-	getTargetListAlbums(album_id: string | null): Promise<AxiosResponse<App.Http.Resources.Models.TargetAlbumResource[]>> {
-		return axios.get(`${Constants.getApiUrl()}Album::getTargetListAlbums`, { params: { album_id: album_id }, data: {} });
+	getTargetListAlbums(album_ids: string[] | null): Promise<AxiosResponse<App.Http.Resources.Models.TargetAlbumResource[]>> {
+		return axios.get(`${Constants.getApiUrl()}Album::getTargetListAlbums`, { params: { album_ids: album_ids }, data: {} });
 	},
 
 	move(dest: string | null, album_ids: string[]): Promise<AxiosResponse> {
