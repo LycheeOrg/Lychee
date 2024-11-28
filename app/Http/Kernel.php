@@ -94,5 +94,6 @@ class Kernel extends HttpKernel
 		'cache_control' => \App\Http\Middleware\CacheControl::class,
 		'support' => \LycheeVerify\Http\Middleware\VerifySupporterStatus::class,
 		'config_integrity' => \App\Http\Middleware\ConfigIntegrity::class,
+		'unlock_with_password' => \App\Http\Middleware\UnlockWithPassword::class,
 	];
 }

@@ -21,8 +21,8 @@ Route::feeds();
 
 Route::get('/', [VueController::class, 'view'])->name('home')->middleware(['migration:complete']);
 Route::get('/gallery', [VueController::class, 'view'])->name('gallery')->middleware(['migration:complete']);
-Route::get('/gallery/{albumId}', [VueController::class, 'view'])->name('gallery-album')->middleware(['migration:complete']);
-Route::get('/gallery/{albumId}/{photoId}', [VueController::class, 'view'])->name('gallery-photo')->middleware(['migration:complete']);
+Route::get('/gallery/{albumId}', [VueController::class, 'view'])->name('gallery-album')->middleware(['migration:complete', 'unlock_with_password']);
+Route::get('/gallery/{albumId}/{photoId}', [VueController::class, 'view'])->name('gallery-photo')->middleware(['migration:complete', 'unlock_with_password']);
 
 Route::get('/frame', [VueController::class, 'view'])->name('frame')->middleware(['migration:complete']);
 Route::get('/frame/{albumId}', [VueController::class, 'view'])->name('frame')->middleware(['migration:complete']);
