@@ -17,7 +17,7 @@
 					<span class="font-bold">
 						{{ question }}
 					</span>
-					<SearchTargetAlbum :album-id="undefined" @selected="selected" @no-target="error_no_target = true" />
+					<SearchTargetAlbum :album-ids="undefined" @selected="selected" @no-target="error_no_target = true" />
 				</div>
 				<div v-else class="p-9">
 					<p class="text-center text-muted-color">{{ "No album to copy to." }}</p>

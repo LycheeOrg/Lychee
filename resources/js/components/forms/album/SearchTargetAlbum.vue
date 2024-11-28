@@ -30,10 +30,10 @@ import AlbumService from "@/services/album-service";
 import Select from "primevue/select";
 
 const props = defineProps<{
-	albumId: string | undefined;
+	albumIds: string[] | undefined;
 }>();
 
-const albumId = ref<string | null>(props.albumId ?? null);
+const albumIds = ref<string[] | null>(props.albumIds ?? null);
 const emits = defineEmits<{
 	selected: [target: App.Http.Resources.Models.TargetAlbumResource];
 	"no-target": [];
@@ -43,7 +43,7 @@ const options = ref<App.Http.Resources.Models.TargetAlbumResource[] | undefined>
 const selectedTarget = ref<App.Http.Resources.Models.TargetAlbumResource | undefined>(undefined);
 
 function load() {
-	AlbumService.getTargetListAlbums(albumId.value).then((response) => {
+	AlbumService.getTargetListAlbums(albumIds.value).then((response) => {
 		options.value = response.data;
 		if (options.value.length === 0) {
 			emits("no-target");
@@ -62,9 +62,9 @@ function selected() {
 }
 
 watch(
-	() => props.albumId,
+	() => props.albumIds,
 	(newAlbumId, _oldAlbumId) => {
-		albumId.value = newAlbumId ?? null;
+		albumIds.value = newAlbumId ?? null;
 		load();
 	},
 );

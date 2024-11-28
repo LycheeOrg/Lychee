@@ -18,16 +18,16 @@ class AlbumListTest extends BaseApiV2Test
 {
 	public function testListTargetAlbumUnauthorizedForbidden(): void
 	{
-		$response = $this->getJson('Album::getTargetListAlbums?album_id=' . $this->album1->id);
+		$response = $this->getJson('Album::getTargetListAlbums?album_ids[]=' . $this->album1->id);
 		$this->assertUnauthorized($response);
 
-		$response = $this->actingAs($this->userLocked)->getJson('Album::getTargetListAlbums?album_id=' . $this->album1->id);
+		$response = $this->actingAs($this->userLocked)->getJson('Album::getTargetListAlbums?album_ids[]=' . $this->album1->id);
 		$this->assertForbidden($response);
 	}
 
 	public function testListTargetAlbumAuthorizedOwner(): void
 	{
-		$response = $this->actingAs($this->admin)->getJson('Album::getTargetListAlbums?album_id=' . $this->album1->id);
+		$response = $this->actingAs($this->admin)->getJson('Album::getTargetListAlbums?album_ids[]=' . $this->album1->id);
 		$this->assertOk($response);
 		$response->assertDontSee($this->subAlbum1->id);
 	}
