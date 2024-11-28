@@ -48,7 +48,7 @@
 			</template>
 		</template>
 	</Toolbar>
-	<ContextMenu ref="addmenu" :model="addMenu" v-if="props.album.rights.can_upload && props.config.is_model_album">
+	<ContextMenu ref="addmenu" :model="addMenu" v-if="props.album.rights.can_upload">
 		<template #item="{ item, props }">
 			<Divider v-if="item.is_divider" />
 			<a v-else v-ripple v-bind="props.action" @click="item.callback">
@@ -68,7 +68,6 @@ import Toolbar from "primevue/toolbar";
 import { computed } from "vue";
 import { useRouter } from "vue-router";
 import { onKeyStroke } from "@vueuse/core";
-import AlbumCreateDialog from "@/components/forms/album/AlbumCreateDialog.vue";
 import ContextMenu from "primevue/contextmenu";
 import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
 import ImportFromLink from "@/components/modals/ImportFromLink.vue";
@@ -126,6 +125,7 @@ function deleteTrack() {
 
 const { addmenu, addMenu, openAddMenu } = useContextMenuAlbumAdd(
 	props.album,
+	props.config,
 	{
 		toggleUpload,
 		toggleCreateAlbum,
