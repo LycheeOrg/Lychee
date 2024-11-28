@@ -3,6 +3,8 @@
 	<KeybindingsHelp v-model:visible="isKeybindingsHelpOpen" v-if="user?.id" />
 	<AlbumCreateDialog v-if="rootRights?.can_upload" :parent-id="null" key="create_album_modal" />
 	<AlbumCreateTagDialog v-if="rootRights?.can_upload" key="create_tag_album_modal" />
+	<LoginModal v-if="user?.id === null" @logged-in="refresh" />
+	<WebauthnModal v-if="user?.id === null" @logged-in="refresh" />
 
 	<div v-if="rootConfig && rootRights" @click="unselect" class="h-svh overflow-y-auto" id="galleryView" v-on:scroll="onScroll">
 		<Collapse :when="!is_full_screen">
@@ -155,6 +157,8 @@ import AlbumCreateDialog from "@/components/forms/album/AlbumCreateDialog.vue";
 import AlbumCreateTagDialog from "@/components/forms/album/AlbumCreateTagDialog.vue";
 import { useScrollable } from "@/composables/album/scrollable";
 import { EmptyPhotoCallbacks } from "@/utils/Helpers";
+import WebauthnModal from "@/components/modals/WebauthnModal.vue";
+import LoginModal from "@/components/modals/LoginModal.vue";
 
 const auth = useAuthStore();
 const router = useRouter();
@@ -166,7 +170,7 @@ togglableStore.resetSearch();
 const albumid = ref("gallery");
 
 const { onScroll, setScroll } = useScrollable(togglableStore, albumid);
-const { is_full_screen, is_login_open, is_upload_visible, list_upload_files } = storeToRefs(togglableStore);
+const { is_full_screen, is_login_open, is_upload_visible, list_upload_files, is_webauthn_open } = storeToRefs(togglableStore);
 const { are_nsfw_visible, title } = storeToRefs(lycheeStore);
 
 const photos = ref([]); // unused.
@@ -224,6 +228,8 @@ onKeyStroke("m", () => !shouldIgnoreKeystroke() && rootRights.value?.can_edit &&
 onKeyStroke(["Delete", "Backspace"], () => !shouldIgnoreKeystroke() && rootRights.value?.can_edit && hasSelection() && toggleDelete());
 
 onKeyStroke([getModKey(), "a"], () => !shouldIgnoreKeystroke() && selectEverything());
+onKeyStroke("l", () => !shouldIgnoreKeystroke() && user.value?.id === null && (is_login_open.value = true));
+onKeyStroke("k", () => !shouldIgnoreKeystroke() && user.value?.id === null && (is_webauthn_open.value = true));
 
 const { onPaste, dragEnd, dropUpload } = useMouseEvents(rootRights, is_upload_visible, list_upload_files);
 

@@ -22,11 +22,6 @@
 
 #### A great looking and easy-to-use photo-management-system.
 
-*The Lychee project was moved to [LycheeOrg](https://github.com/LycheeOrg) on the 1st of April 2018. We would like to thank electerious (Tobias Reich) for creating Lychee and for giving us the opportunity to make this project live on.*
-
-
-Upgrade from v3 is straight forward. [Upgrade. &#187;](https://lycheeorg.github.io/docs/upgrade.html)
-
 Lychee is a free photo-management tool, which runs on your server or web-space. Installing is a matter of seconds. Upload, manage and share photos like from a native application. Lychee comes with everything you need and all your photos are stored securely. Read more on our [website](https://LycheeOrg.github.io).
 
 ## Notice: `master` & `alpha` branches
@@ -115,7 +110,7 @@ You can customize lychee with your own css code. Here you can find a list of ava
 
 ## Troubleshooting
 
-Take a look at the [Documentation](https://lycheeorg.github.io/docs/), particularly the [FAQ](https://lycheeorg.github.io/docs/faq_troubleshooting.html) if you have problems. Discovered a bug? Please create an issue [here](https://github.com/LycheeOrg/Lychee/issues) on GitHub! You can also contact us directly on [gitter (login with your github account)](https://gitter.im/LycheeOrg/Lobby) or on [discord &#187;][discord]
+Take a look at the [Documentation](https://lycheeorg.github.io/docs/), particularly the [FAQ](https://lycheeorg.github.io/docs/faq_troubleshooting.html) if you have problems. Discovered a bug? Please create an issue [here](https://github.com/LycheeOrg/Lychee/issues) on GitHub! You can also contact us directly on [gitter (login with your github account)](https://gitter.im/LycheeOrg/Lobby) or on [discord &#187;][discord].
 
 ## Open Source Community Support
 

@@ -1,6 +1,4 @@
 <template>
-	<LoginModal v-if="props.user.id === null" v-model:visible="is_login_open" @logged-in="refresh" @open-webauthn="isWebAuthnOpen = true" />
-	<WebauthnModal v-if="props.user.id === null && !isWebAuthnUnavailable" v-model:visible="isWebAuthnOpen" @logged-in="refresh" />
 	<ImportFromServer v-if="canUpload" v-model:visible="isImportFromServerOpen" />
 	<ImportFromLink v-if="canUpload" v-model:visible="isImportFromLinkOpen" :parent-id="null" />
 	<DropBox v-if="canUpload" v-model:visible="isImportFromDropboxOpen" :album-id="null" />
@@ -175,8 +173,6 @@ const { addmenu, addMenu, isImportFromServerOpen } = useContextMenuAlbumsAdd(
 const canUpload = computed(() => props.user.id !== null);
 const isLoginLeft = computed(() => props.config.login_button_position === "left");
 
-const isWebAuthnUnavailable = computed(() => WebAuthnService.isWebAuthnUnavailable());
-
 function openAddMenu(event: Event) {
 	addmenu.value.show(event);
 }
@@ -191,8 +187,6 @@ function openSearch() {
 
 onKeyStroke("n", () => !shouldIgnoreKeystroke() && props.rights.can_upload && (is_create_album_visible.value = true));
 onKeyStroke("u", () => !shouldIgnoreKeystroke() && props.rights.can_upload && (is_upload_visible.value = true));
-onKeyStroke("l", () => !shouldIgnoreKeystroke() && props.user.id === null && (is_login_open.value = true));
-onKeyStroke("k", () => !shouldIgnoreKeystroke() && props.user.id === null && !isWebAuthnUnavailable.value && (isWebAuthnOpen.value = true));
 onKeyStroke("/", () => !shouldIgnoreKeystroke() && props.config.is_search_accessible && openSearch());
 
 // on key stroke escape:

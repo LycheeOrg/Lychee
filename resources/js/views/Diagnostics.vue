@@ -60,7 +60,6 @@ function copy() {
 		return;
 	}
 
-	console.log(errorLoaded.value);
 	const errorText = errorLoaded.value
 		?.filter((errorLine) => errorLine.type !== undefined)
 		.map((errorLines) => `${errorLines.type.padEnd(7)}: ${errorLines.line}`)

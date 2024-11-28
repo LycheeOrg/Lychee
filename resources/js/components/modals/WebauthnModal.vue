@@ -1,5 +1,5 @@
 <template>
-	<Dialog v-model:visible="visible" modal pt:root:class="border-none" pt:mask:style="backdrop-filter: blur(2px)">
+	<Dialog v-model:visible="visible" modal pt:root:class="border-none" pt:mask:style="backdrop-filter: blur(2px)" v-if="!isWebAuthnUnavailable">
 		<template #container="{ closeCallback }">
 			<form v-focustrap class="flex flex-col gap-4 relative max-w-full text-sm rounded-md pt-9">
 				<div class="inline-flex flex-col gap-2 px-9">
@@ -25,7 +25,7 @@ import Dialog from "primevue/dialog";
 import FloatLabel from "primevue/floatlabel";
 import Button from "primevue/button";
 import { useToast } from "primevue/usetoast";
-import { Ref, ref } from "vue";
+import { computed, Ref, ref } from "vue";
 import InputText from "../forms/basic/InputText.vue";
 import { trans } from "laravel-vue-i18n";
 import WebAuthnService from "@/services/webauthn-service";
@@ -37,6 +37,8 @@ const visible = defineModel("visible", { default: false }) as Ref<boolean>;
 const emits = defineEmits<{
 	"logged-in": [];
 }>();
+
+const isWebAuthnUnavailable = computed<boolean>(() => WebAuthnService.isWebAuthnUnavailable());
 
 const authStore = useAuthStore();
 const username = ref("");

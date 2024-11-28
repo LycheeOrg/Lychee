@@ -5,7 +5,7 @@
 				<p class="mb-5 px-9">{{ $t("lychee.ALBUM_PASSWORD_REQUIRED") }}</p>
 				<div class="inline-flex flex-col gap-2 px-9">
 					<FloatLabel variant="on">
-						<InputText id="albumPassword" v-model="password" @keydown.enter="unlock" />
+						<InputPassword id="albumPassword" v-model="password" @keydown.enter="unlock" />
 						<label class="" for="albumPassword">{{ $t("lychee.PASSWORD") }}</label>
 					</FloatLabel>
 				</div>
@@ -32,7 +32,7 @@ import Button from "primevue/button";
 import Dialog from "primevue/dialog";
 import FloatLabel from "primevue/floatlabel";
 import { computed, ref } from "vue";
-import InputText from "../basic/InputText.vue";
+import InputPassword from "../basic/InputPassword.vue";
 
 const props = defineProps<{
 	albumid: string;
