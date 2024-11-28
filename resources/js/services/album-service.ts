@@ -73,9 +73,9 @@ const AlbumService = {
 		return requester.get(`${Constants.getApiUrl()}Albums`, { data: {}, id: "albums" });
 	},
 
-	async get(album_id: string): Promise<AxiosResponse<App.Http.Resources.Models.AbstractAlbumResource>> {
+	get(album_id: string): Promise<AxiosResponse<App.Http.Resources.Models.AbstractAlbumResource>> {
 		const requester = axios as unknown as AxiosCacheInstance;
-		return await requester.get(`${Constants.getApiUrl()}Album`, { params: { album_id: album_id }, data: {}, id: "album_" + album_id });
+		return requester.get(`${Constants.getApiUrl()}Album`, { params: { album_id: album_id }, data: {}, id: "album_" + album_id });
 	},
 
 	unlock(album_id: string, password: string): Promise<AxiosResponse> {
