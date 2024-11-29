@@ -1,4 +1,5 @@
 <template>
+	<ProgressBar v-if="isLoading" mode="indeterminate" class="rounded-none absolute w-full z-10" :pt:value:class="'rounded-none'" />
 	<UploadPanel v-if="rootRights?.can_upload" @refresh="refresh" key="upload_modal" />
 	<KeybindingsHelp v-model:visible="isKeybindingsHelpOpen" v-if="user?.id" />
 	<AlbumCreateDialog v-if="rootRights?.can_upload" :parent-id="null" key="create_album_modal" />
@@ -128,7 +129,7 @@
 <script setup lang="ts">
 import AlbumThumbPanel from "@/components/gallery/AlbumThumbPanel.vue";
 import { useAuthStore } from "@/stores/Auth";
-import { computed, ref } from "vue";
+import { computed, ref, onMounted } from "vue";
 import AlbumsHeader from "@/components/headers/AlbumsHeader.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
@@ -159,6 +160,7 @@ import { useScrollable } from "@/composables/album/scrollable";
 import { EmptyPhotoCallbacks } from "@/utils/Helpers";
 import WebauthnModal from "@/components/modals/WebauthnModal.vue";
 import LoginModal from "@/components/modals/LoginModal.vue";
+import ProgressBar from "primevue/progressbar";
 
 const auth = useAuthStore();
 const router = useRouter();
@@ -175,11 +177,8 @@ const { are_nsfw_visible, title } = storeToRefs(lycheeStore);
 
 const photos = ref([]); // unused.
 
-const { user, isKeybindingsHelpOpen, smartAlbums, albums, sharedAlbums, rootConfig, rootRights, selectableAlbums, refresh } = useAlbumsRefresher(
-	auth,
-	lycheeStore,
-	is_login_open,
-);
+const { user, isLoading, isKeybindingsHelpOpen, smartAlbums, albums, sharedAlbums, rootConfig, rootRights, selectableAlbums, refresh } =
+	useAlbumsRefresher(auth, lycheeStore, is_login_open);
 
 const { selectedAlbum, selectedAlbumsIdx, selectedAlbums, selectedAlbumsIds, albumClick, selectEverything, unselect, hasSelection } = useSelection(
 	photos,
@@ -219,7 +218,10 @@ const albumPanelConfig = computed<AlbumThumbConfig>(() => ({
 	album_decoration_orientation: lycheeStore.album_decoration_orientation,
 }));
 
-refresh().then(setScroll);
+onMounted(async () => {
+	await refresh();
+	setScroll();
+});
 
 onKeyStroke("h", () => !shouldIgnoreKeystroke() && (are_nsfw_visible.value = !are_nsfw_visible.value));
 onKeyStroke("f", () => !shouldIgnoreKeystroke() && togglableStore.toggleFullScreen());
