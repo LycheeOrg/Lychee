@@ -15,6 +15,7 @@ const Maintenance = () => import("@/views/Maintenance.vue");
 const Diagnostics = () => import("@/views/Diagnostics.vue");
 const Statistics = () => import("@/views/Statistics.vue");
 const Jobs = () => import("@/views/Jobs.vue");
+const FixTree = () => import("@/views/FixTree.vue");
 
 const routes_ = [
 	{
@@ -97,6 +98,11 @@ const routes_ = [
 		name: "maintenance",
 		path: "/maintenance",
 		component: Maintenance,
+	},
+	{
+		name: "tree",
+		path: "/fixTree",
+		component: FixTree,
 	},
 	{
 		name: "profile",
