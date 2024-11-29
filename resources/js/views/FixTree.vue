@@ -12,9 +12,10 @@
 		<template #end> </template>
 	</Toolbar>
 	<div class="text-muted-color text-center mt-2 p-2">
-		This page allows you to re-order your albums manually.<br />
+		This page allows you to re-order and fix your albums manually.<br />
 		<span class="text-danger-700 text-lg font-bold"
-			><i class="pi text-danger-700 pi-exclamation-triangle mr-2" />You can really break installation here, modify at your own risks.</span
+			><i class="pi text-danger-700 pi-exclamation-triangle mr-2" />You can really break your Lychee installation here, modify values at your
+			own risks.</span
 		>
 	</div>
 
