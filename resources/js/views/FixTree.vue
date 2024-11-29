@@ -13,6 +13,7 @@
 	</Toolbar>
 	<div class="text-muted-color text-center mt-2 p-2">
 		This page allows you to re-order and fix your albums manually.<br />
+		Before any modifications, we strongly recommend you to read about Nested Set tree structures.<br />
 		<span class="text-danger-700 text-lg font-bold"
 			><i class="pi text-danger-700 pi-exclamation-triangle mr-2" />You can really break your Lychee installation here, modify values at your
 			own risks.</span
@@ -24,6 +25,19 @@
 			<Button text severity="secondary" class="border-none px-8 font-bold" @click="fetch">Reset</Button>
 			<Button severity="warn" class="border-none px-8 font-bold" @click="check">Check</Button>
 			<Button severity="danger" class="border-none px-8 font-bold" @click="apply">Apply</Button>
+		</div>
+		<div
+			class="mt-8 pb-2 flex justify-between hover:bg-primary-emphasis/5 gap-8 items-center font-bold text-lg text-color-emphasis border-b border-b-white/50"
+		>
+			<div class="w-1/2">Title</div>
+			<div class="flex w-1/4 gap-4">
+				<div class="w-full pl-4">Left</div>
+				<div class="w-full pl-4">Right</div>
+			</div>
+			<div class="flex w-1/4 justify-between">
+				<div class="w-full">Id</div>
+				<div class="w-full text-right">Parent Id</div>
+			</div>
 		</div>
 		<FixTreeLine
 			v-for="album in albums"

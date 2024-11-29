@@ -17,7 +17,7 @@
 				>{{ props.album.title }}</span
 			>
 		</div>
-		<div class="flex w-1/4">
+		<div class="flex w-1/4 gap-4">
 			<div class="flex">
 				<InputNumber
 					class="border-0 w-full px-2"
