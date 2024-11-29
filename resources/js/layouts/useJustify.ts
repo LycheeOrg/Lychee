@@ -10,8 +10,6 @@ export function useJustify(el: HTMLElement, photoDefaultHeight: number = 320, ti
 	}
 
 	const width = getWidth(baseElem, el, timelineData);
-	// console.log("width")
-	// console.log(width)
 
 	// @ts-expect-error
 	const justifiedItems: ChildNodeWithDataStyle[] = [...el.childNodes].filter((gridItem) => gridItem.nodeType === 1);
@@ -61,11 +59,6 @@ function getWidth(baseElem: HTMLElement, el: HTMLElement, timelineData: Timeline
 	if (isTouchDevice()) {
 		scrollBarWidth = 0;
 	}
-
-	// console.log("baseWidth - paddingLeftRight - scrollBarWidth")
-	// console.log(baseWidth - paddingLeftRight - scrollBarWidth)
-	// console.log("el.width")
-	// console.log(widthEl)
 
 	const width = Math.min(widthEl, baseWidth - paddingLeftRight - scrollBarWidth);
 
