@@ -1,4 +1,4 @@
-import { computed, Ref } from "vue";
+import { computed, ref, Ref } from "vue";
 
 export type Augmented = {
 	prefix: string;
@@ -20,6 +20,8 @@ export function useTreeOperations(
 	originalAlbums: Ref<App.Http.Resources.Diagnostics.AlbumTree[] | undefined>,
 	albums: Ref<AugmentedAlbum[] | undefined>,
 ) {
+	const isValidated = ref(false);
+
 	function validate() {
 		if (albums.value === undefined) {
 			return true;
@@ -89,6 +91,8 @@ export function useTreeOperations(
 				}
 			}
 		}
+
+		isValidated.value = validate();
 	}
 
 	function hasDuplicateLft(album: App.Http.Resources.Diagnostics.AlbumTree): boolean {
@@ -197,6 +201,7 @@ export function useTreeOperations(
 	}
 
 	return {
+		isValidated,
 		validate,
 		prepareAlbums,
 		check,

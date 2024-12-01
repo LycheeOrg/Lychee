@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Gate;
 class FullTreeUpdateRequest extends BaseApiRequest
 {
 	/**
-	 * @var array<int,array{id:string,_lft:int,_rgt:int}>
+	 * @var array<int,array{id:string,_lft:int,_rgt:int,parent_id:string|null}>
 	 */
 	private array $albums;
 
@@ -31,6 +31,7 @@ class FullTreeUpdateRequest extends BaseApiRequest
 			'albums.*.id' => ['required', new AlbumIDRule(false)],
 			'albums.*._lft' => 'required|integer|min:1',
 			'albums.*._rgt' => 'required|integer|min:1',
+			'albums.*.parent_id' => [new AlbumIDRule(true)],
 		];
 	}
 

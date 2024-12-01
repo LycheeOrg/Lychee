@@ -1,5 +1,5 @@
 <template>
-	<div class="flex justify-between hover:bg-primary-emphasis/5 gap-8 items-center">
+	<div class="flex justify-between hover:bg-primary-emphasis/5 gap-8 items-center md:max-w-3xl lg:max-w-5xl xl:max-w-7xl mx-auto">
 		<div class="w-1/2" @mouseenter="setHoverId">
 			<span v-if="props.album.prefix.length > 4" class="font-mono" v-html="props.album.prefix.slice(0, -2)" />
 			<span
@@ -46,7 +46,7 @@
 				<Button text severity="secondary" icon="pi pi-angle-down" class="py-0.5" @click="decrementRgt" />
 			</div>
 		</div>
-		<div class="flex w-1/4 justify-between">
+		<div class="flex w-1/4 justify-between items-center">
 			<div
 				@mouseenter="setHoverId"
 				:class="{
@@ -54,18 +54,48 @@
 				}"
 			>
 				{{ props.album.trimmedId }}
-				<span v-if="props.album.isDuplicate_lft" class="ml-2 text-warning-600 pi pi-chevron-circle-left" />
-				<span v-if="props.album.isDuplicate_rgt" class="ml-2 text-warning-600 pi pi-chevron-circle-right" />
+				<LeftWarn v-if="props.album.isDuplicate_lft" class="ml-2" />
+				<RightWarn v-if="props.album.isDuplicate_rgt" class="ml-2" />
 			</div>
-			<span
-				@mouseenter="setHoverParent"
-				:class="{
-					' text-muted-color-emphasis': props.album.trimmedParentId === 'root',
-					'!text-danger-600 font-bold': !props.album.isExpectedParentId,
-					'font-bold text-primary-emphasis': isHoverParent,
-				}"
-				>{{ props.album.trimmedParentId }}</span
-			>
+			<Inplace ref="inplace">
+				<template #display>
+					<span
+						@mouseenter="setHoverParent"
+						:class="{
+							' text-muted-color-emphasis': props.album.trimmedParentId === 'root',
+							'!text-danger-600 font-bold': !props.album.isExpectedParentId,
+							'font-bold text-primary-emphasis': isHoverParent,
+						}"
+						>{{ (parentId ?? "root").slice(0, 6) }}</span
+					>
+				</template>
+				<template #content>
+					<Select
+						class="border-none"
+						v-model="parentId"
+						filter
+						resetFilterOnHide
+						showClear
+						:options="props.parentIdOptions"
+						@update:modelValue="updateParentId"
+						@hide="close"
+					>
+						<template #value="slotProps">
+							<div v-if="slotProps.value">
+								{{ slotProps.value.slice(0, 6) }}
+							</div>
+							<span v-else>
+								{{ "root" }}
+							</span>
+						</template>
+						<template #option="slotProps">
+							<div>
+								{{ slotProps.option.slice(0, 6) }}
+							</div>
+						</template>
+					</Select>
+				</template>
+			</Inplace>
 		</div>
 	</div>
 </template>
@@ -74,15 +104,23 @@ import { ref, type Ref, watch } from "vue";
 import { AugmentedAlbum } from "@/composables/album/treeOperations";
 import InputNumber from "primevue/inputnumber";
 import Button from "primevue/button";
+import LeftWarn from "./mini/LeftWarn.vue";
+import RightWarn from "./mini/RightWarn.vue";
+import Inplace from "primevue/inplace";
+import Select from "primevue/select";
 
 const props = defineProps<{
 	album: AugmentedAlbum;
 	isHoverId: boolean;
 	isHoverParent: boolean;
+	parentIdOptions: string[];
 }>();
+
+const inplace = ref();
 
 const lft = defineModel("lft") as Ref<number>;
 const rgt = defineModel("rgt") as Ref<number>;
+const parentId = defineModel("parentId") as Ref<string | null | undefined>;
 
 const isHoverId = ref<boolean>(props.isHoverId);
 const isHoverParent = ref<boolean>(props.isHoverParent);
@@ -117,6 +155,16 @@ function incrementRgt() {
 
 function decrementRgt() {
 	emits("decrementRgt");
+}
+
+function updateParentId(val: string) {
+	// guarantee we never have undefined.
+	parentId.value = val ?? null;
+	close();
+}
+
+function close() {
+	inplace.value.close();
 }
 
 watch(

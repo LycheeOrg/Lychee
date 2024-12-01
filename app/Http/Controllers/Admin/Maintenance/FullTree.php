@@ -8,7 +8,6 @@ use App\Http\Requests\Maintenance\MaintenanceRequest;
 use App\Http\Resources\Diagnostics\AlbumTree;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 
 /**
  * Maybe the album tree is broken.
@@ -23,13 +22,9 @@ class FullTree extends Controller
 	 */
 	public function do(FullTreeUpdateRequest $request): void
 	{
-		DB::beginTransaction();
-
 		$keyName = 'id';
 		$albumInstance = new Album();
-		batch()->updateMultipleCondition($albumInstance, $request->albums(), $keyName);
-
-		DB::commit();
+		batch()->update($albumInstance, $request->albums(), $keyName);
 	}
 
 	/**
