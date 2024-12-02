@@ -8099,16 +8099,16 @@
         },
         {
             "name": "spatie/guzzle-rate-limiter-middleware",
-            "version": "2.0.1",
+            "version": "2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/guzzle-rate-limiter-middleware.git",
-                "reference": "8679f7a22e46edc182046f18b83bacbc627b0600"
+                "reference": "096966730d24a5c056a69465ae458f9339e1945a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/guzzle-rate-limiter-middleware/zipball/8679f7a22e46edc182046f18b83bacbc627b0600",
-                "reference": "8679f7a22e46edc182046f18b83bacbc627b0600",
+                "url": "https://api.github.com/repos/spatie/guzzle-rate-limiter-middleware/zipball/096966730d24a5c056a69465ae458f9339e1945a",
+                "reference": "096966730d24a5c056a69465ae458f9339e1945a",
                 "shasum": ""
             },
             "require": {
@@ -8145,9 +8145,9 @@
             ],
             "support": {
                 "issues": "https://github.com/spatie/guzzle-rate-limiter-middleware/issues",
-                "source": "https://github.com/spatie/guzzle-rate-limiter-middleware/tree/2.0.1"
+                "source": "https://github.com/spatie/guzzle-rate-limiter-middleware/tree/2.1.0"
             },
-            "time": "2020-12-19T18:47:06+00:00"
+            "time": "2024-12-02T08:42:25+00:00"
         },
         {
             "name": "spatie/image-optimizer",
@@ -9209,16 +9209,16 @@
         },
         {
             "name": "symfony/deprecation-contracts",
-            "version": "v3.5.0",
+            "version": "v3.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/deprecation-contracts.git",
-                "reference": "0e0d29ce1f20deffb4ab1b016a7257c4f1e789a1"
+                "reference": "74c71c939a79f7d5bf3c1ce9f5ea37ba0114c6f6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/deprecation-contracts/zipball/0e0d29ce1f20deffb4ab1b016a7257c4f1e789a1",
-                "reference": "0e0d29ce1f20deffb4ab1b016a7257c4f1e789a1",
+                "url": "https://api.github.com/repos/symfony/deprecation-contracts/zipball/74c71c939a79f7d5bf3c1ce9f5ea37ba0114c6f6",
+                "reference": "74c71c939a79f7d5bf3c1ce9f5ea37ba0114c6f6",
                 "shasum": ""
             },
             "require": {
@@ -9256,7 +9256,7 @@
             "description": "A generic function and convention to trigger deprecation notices",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/deprecation-contracts/tree/v3.5.0"
+                "source": "https://github.com/symfony/deprecation-contracts/tree/v3.5.1"
             },
             "funding": [
                 {
@@ -9272,7 +9272,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-04-18T09:32:20+00:00"
+            "time": "2024-09-25T14:20:29+00:00"
         },
         {
             "name": "symfony/error-handler",
