@@ -8103,16 +8103,16 @@
         },
         {
             "name": "spatie/guzzle-rate-limiter-middleware",
-            "version": "2.0.1",
+            "version": "2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/guzzle-rate-limiter-middleware.git",
-                "reference": "8679f7a22e46edc182046f18b83bacbc627b0600"
+                "reference": "096966730d24a5c056a69465ae458f9339e1945a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/guzzle-rate-limiter-middleware/zipball/8679f7a22e46edc182046f18b83bacbc627b0600",
-                "reference": "8679f7a22e46edc182046f18b83bacbc627b0600",
+                "url": "https://api.github.com/repos/spatie/guzzle-rate-limiter-middleware/zipball/096966730d24a5c056a69465ae458f9339e1945a",
+                "reference": "096966730d24a5c056a69465ae458f9339e1945a",
                 "shasum": ""
             },
             "require": {
@@ -8149,9 +8149,9 @@
             ],
             "support": {
                 "issues": "https://github.com/spatie/guzzle-rate-limiter-middleware/issues",
-                "source": "https://github.com/spatie/guzzle-rate-limiter-middleware/tree/2.0.1"
+                "source": "https://github.com/spatie/guzzle-rate-limiter-middleware/tree/2.1.0"
             },
-            "time": "2020-12-19T18:47:06+00:00"
+            "time": "2024-12-02T08:42:25+00:00"
         },
         {
             "name": "spatie/image-optimizer",
