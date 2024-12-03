@@ -1,3 +1,5 @@
+import { set } from "@vueuse/core";
+import { ToastServiceMethods } from "primevue/toastservice";
 import { computed, ref, Ref } from "vue";
 
 export type Augmented = {
@@ -19,19 +21,56 @@ export type AugmentedAlbum = App.Http.Resources.Diagnostics.AlbumTree & Augmente
 export function useTreeOperations(
 	originalAlbums: Ref<App.Http.Resources.Diagnostics.AlbumTree[] | undefined>,
 	albums: Ref<AugmentedAlbum[] | undefined>,
+	toast: ToastServiceMethods,
 ) {
 	const isValidated = ref(false);
+	const errors = ref<string[]>([]);
 
-	function validate() {
+	function isError(album: AugmentedAlbum): boolean {
+		return (
+			album._lft === null ||
+			album._rgt === null ||
+			album._lft === 0 ||
+			album._rgt === 0 ||
+			album.isDuplicate_lft ||
+			album.isDuplicate_rgt ||
+			!album.isExpectedParentId
+		);
+	}
+
+	function setErrors(): void {
 		if (albums.value === undefined) {
-			return true;
+			errors.value = [];
+			return;
 		}
 
-		const errors = albums.value.filter(
-			(a) =>
-				a._lft === null || a._rgt === null || a._lft === 0 || a._rgt === 0 || a.isDuplicate_lft || a.isDuplicate_rgt || !a.isExpectedParentId,
-		);
-		return errors.length === 0;
+		errors.value = albums.value.filter(isError).map((a) => {
+			if (a._lft === null || a._lft === 0) {
+				return `Album ${a.id.slice(0, 6)} has an invalid left value.`;
+			}
+			if (a._rgt === null || a._rgt === 0) {
+				return `Album ${a.id.slice(0, 6)} has an invalid right value.`;
+			}
+			if (a._lft >= a._rgt) {
+				return `Album ${a.id.slice(0, 6)} has an invalid left/right values. Left should be strictly smaller than right: ${a._lft} < ${a._rgt}.`;
+			}
+			if (a.isDuplicate_lft) {
+				return `Album ${a.id.slice(0, 6)} has a duplicate left value ${a._lft}.`;
+			}
+			if (a.isDuplicate_rgt) {
+				return `Album ${a.id.slice(0, 6)} has a duplicate right value  ${a._rgt}.`;
+			}
+			if (!a.isExpectedParentId) {
+				return `Album ${a.id.slice(0, 6)} has an unexpected parent id ${a.parent_id ?? "root"}.`;
+			}
+			return `Album ${a.id.slice(0, 6)} has an unknown error.`;
+		});
+	}
+
+	function validate() {
+		setErrors();
+
+		return errors.value.length === 0;
 	}
 
 	function prepareAlbums() {
@@ -51,6 +90,12 @@ export function useTreeOperations(
 			const isDuplicate_rgt = hasDuplicateRgt(album);
 
 			let isExpectedParentId = true;
+			// If current lft is greater than the last rgt,
+			// we are no longer a child of the last album. We pop out the pile until we are smaller than _rgt of the pile.
+			while (pile.length > 0 && (album._lft > pile[pile.length - 1].rgt || album._rgt > pile[pile.length - 1].rgt)) {
+				pile.pop();
+			}
+
 			if (pile.length > 0) {
 				// We are inside an album
 				const last = pile[pile.length - 1];
@@ -73,22 +118,6 @@ export function useTreeOperations(
 			if (album._rgt > album._lft + 1) {
 				// We are a parent
 				pile.push({ parentId: album.id, rgt: album._rgt });
-			} else {
-				// We are a leaf
-				let breakOut = pile.length === 0;
-				let currentRgt = album._rgt;
-
-				while (!breakOut) {
-					const last = pile[pile.length - 1];
-					if (last.rgt === currentRgt + 1) {
-						// We are the last leaf of the album
-						pile.pop();
-						currentRgt = last.rgt;
-						breakOut = pile.length === 0;
-					} else {
-						breakOut = true;
-					}
-				}
 			}
 		}
 
@@ -114,6 +143,7 @@ export function useTreeOperations(
 	function check() {
 		originalAlbums.value = albums.value?.sort((a, b) => a._lft - b._lft);
 		prepareAlbums();
+		errors.value.forEach((e) => toast.add({ severity: "error", summary: "Error", detail: e, life: 3000 }));
 	}
 
 	// We increment all the nodes left and right by 1.
@@ -202,6 +232,7 @@ export function useTreeOperations(
 
 	return {
 		isValidated,
+		setErrors,
 		validate,
 		prepareAlbums,
 		check,

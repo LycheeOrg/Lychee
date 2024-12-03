@@ -43,9 +43,9 @@
 		>
 			<Button text severity="secondary" class="border-none px-8 font-bold" @click="fetch">Reset</Button>
 			<Button severity="warn" class="border-none px-8 font-bold" @click="check">Check</Button>
-			<Button severity="danger" class="border-none px-8 font-bold" @click="apply"
-				><i class="pi pi-exclamation-triangle" v-if="!isValidated" />Apply</Button
-			>
+			<Button severity="danger" class="border-none px-8 font-bold" @click="apply">
+				<i class="pi pi-exclamation-triangle" v-if="!isValidated" />Apply
+			</Button>
 		</div>
 		<VirtualScroller :items="albums" :itemSize="50" class="h-screen">
 			<template v-slot:item="{ item, options }">
@@ -110,6 +110,7 @@ const albumIds = ref<string[]>([]);
 const { isValidated, validate, prepareAlbums, check, incrementLft, incrementRgt, decrementLft, decrementRgt } = useTreeOperations(
 	originalAlbums,
 	albums,
+	toast,
 );
 
 function fetch() {
@@ -131,7 +132,12 @@ function apply() {
 	}
 
 	if (!validate()) {
-		toast.add({ severity: "error", summary: "Invalid tree!", detail: "We are not applying this as this is guaranteed to be a broken state." });
+		toast.add({
+			severity: "error",
+			summary: "Invalid tree!",
+			detail: "We are not applying this as this is guaranteed to be a broken state.",
+			life: 3000,
+		});
 		return;
 	}
 
