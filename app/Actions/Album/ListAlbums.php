@@ -19,21 +19,26 @@ class ListAlbums extends Action
 	private const SHORTEN_BY = 80;
 
 	/**
-	 * @param int|null    $lft
-	 * @param int|null    $rgt
-	 * @param string|null $parent_id
+	 * @param Collection<int,Album> $albumsFiltering
+	 * @param string|null           $parent_id
 	 *
 	 * @return TAlbumSaved[]
 	 */
-	public function do(?int $lft, ?int $rgt, ?string $parent_id): array
+	public function do(Collection $albumsFiltering, ?string $parent_id): array
 	{
 		$albumQueryPolicy = resolve(AlbumQueryPolicy::class);
 		$unfiltered = $albumQueryPolicy->applyReachabilityFilter(
 			// We remove all sub albums
 			// Otherwise it would create cyclic dependency
 			Album::query()
-				->when($lft !== null,
-					fn ($q) => $q->where('_lft', '<', $lft)->orWhere('_rgt', '>', $rgt))
+				->when($albumsFiltering->count() > 0,
+					function ($q) use ($albumsFiltering) {
+						$albumsFiltering->each(
+							fn ($a) => $q->whereNot(fn ($q1) => $q1->where('_lft', '>=', $a->_lft)->where('_rgt', '<=', $a->_rgt))
+						);
+
+						return $q;
+					})
 		);
 		$sorting = AlbumSortingCriterion::createDefault();
 		$query = (new SortingDecorator($unfiltered))

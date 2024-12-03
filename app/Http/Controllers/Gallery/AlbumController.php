@@ -191,14 +191,10 @@ class AlbumController extends Controller
 	 */
 	public function getTargetListAlbums(TargetListAlbumRequest $request, ListAlbums $listAlbums)
 	{
-		if ($request->album() instanceof Album) {
-			/** @var Album $album */
-			$album = $request->album();
+		$albums = $request->albums();
+		$parent_id = $albums->count() > 0 ? $albums->first()->parent_id : null;
 
-			return TargetAlbumResource::collect($listAlbums->do($album->_lft, $album->_rgt, $album->parent_id));
-		}
-
-		return TargetAlbumResource::collect($listAlbums->do(null, null, null));
+		return TargetAlbumResource::collect($listAlbums->do($albums, $parent_id));
 	}
 
 	/**

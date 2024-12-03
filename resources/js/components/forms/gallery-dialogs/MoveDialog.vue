@@ -17,7 +17,7 @@
 					<span class="font-bold">
 						{{ question }}
 					</span>
-					<SearchTargetAlbum :album-id="parentId" @selected="selected" @no-target="error_no_target = true" />
+					<SearchTargetAlbum :album-ids="headIds" @selected="selected" @no-target="error_no_target = true" />
 				</div>
 				<div v-else class="p-9">
 					<p class="text-center text-muted-color">{{ "No album to move to." }}</p>
@@ -69,6 +69,14 @@ function close() {
 	destination_id.value = undefined;
 	visible.value = false;
 }
+
+const headIds = computed(() => {
+	if (props.photo || (props.photoIds && props.photoIds?.length > 0)) {
+		return undefined;
+	}
+
+	return props.albumIds;
+});
 
 const question = computed(() => {
 	if (props.photoIds && props.photoIds?.length > 1) {
