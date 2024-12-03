@@ -44,7 +44,7 @@ function getWidth(timelineData: TimelineData): number {
 	if (isTouchDevice()) {
 		scrollBarWidth = 0;
 	}
-	
+
 	const width = Math.min(baseWidth - paddingLeftRight - scrollBarWidth);
 
 	let timeLineBorder = 0;
