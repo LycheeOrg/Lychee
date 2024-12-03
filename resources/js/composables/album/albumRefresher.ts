@@ -4,6 +4,7 @@ import { computed, Ref, ref } from "vue";
 
 export function useAlbumRefresher(albumId: Ref<string>, auth: AuthStore, isLoginOpen: Ref<boolean>, nsfw_consented: Ref<string[]>) {
 	const isPasswordProtected = ref(false);
+	const isLoading = ref(false);
 	const user = ref<App.Http.Resources.Models.UserResource | undefined>(undefined);
 	const modelAlbum = ref<App.Http.Resources.Models.AlbumResource | undefined>(undefined);
 	const tagAlbum = ref<App.Http.Resources.Models.TagAlbumResource | undefined>(undefined);
@@ -23,6 +24,8 @@ export function useAlbumRefresher(albumId: Ref<string>, auth: AuthStore, isLogin
 	}
 
 	function loadAlbum(): Promise<void> {
+		isLoading.value = true;
+
 		return AlbumService.get(albumId.value)
 			.then((data) => {
 				isPasswordProtected.value = false;
@@ -50,6 +53,9 @@ export function useAlbumRefresher(albumId: Ref<string>, auth: AuthStore, isLogin
 				} else {
 					console.error(error);
 				}
+			})
+			.finally(() => {
+				isLoading.value = false;
 			});
 	}
 
@@ -60,6 +66,7 @@ export function useAlbumRefresher(albumId: Ref<string>, auth: AuthStore, isLogin
 	return {
 		isAlbumConsented,
 		isPasswordProtected,
+		isLoading,
 		albumId,
 		user,
 		modelAlbum,
