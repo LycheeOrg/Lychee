@@ -4,12 +4,7 @@ import createJustifiedLayout from "justified-layout";
 import { isTouchDevice } from "@/utils/keybindings-utils";
 
 export function useJustify(el: HTMLElement, photoDefaultHeight: number = 320, timelineData: TimelineData) {
-	const baseElem = document.getElementById("lychee_view_content");
-	if (!baseElem) {
-		return;
-	}
-
-	const width = getWidth(baseElem, el, timelineData);
+	const width = getWidth(timelineData);
 
 	// @ts-expect-error
 	const justifiedItems: ChildNodeWithDataStyle[] = [...el.childNodes].filter((gridItem) => gridItem.nodeType === 1);
@@ -41,26 +36,16 @@ export function useJustify(el: HTMLElement, photoDefaultHeight: number = 320, ti
 	});
 }
 
-function getWidth(baseElem: HTMLElement, el: HTMLElement, timelineData: TimelineData): number {
-	const styles = getComputedStyle(baseElem);
-	const padding = parseFloat(styles.paddingLeft) + parseFloat(styles.paddingRight);
-	const baseWidth = Math.floor(baseElem.offsetWidth - padding);
-	const widthEl = parseInt(getComputedStyle(el).width);
+function getWidth(timelineData: TimelineData): number {
+	const baseWidth = window.innerWidth;
 	const paddingLeftRight = 2 * 18;
 
 	let scrollBarWidth = 15;
-	const galleryView = document.getElementById("galleryView");
-
-	if (scrollbarVisible(galleryView)) {
-		// It is already counted.
-		scrollBarWidth = 0;
-	}
-
 	if (isTouchDevice()) {
 		scrollBarWidth = 0;
 	}
-
-	const width = Math.min(widthEl, baseWidth - paddingLeftRight - scrollBarWidth);
+	
+	const width = Math.min(baseWidth - paddingLeftRight - scrollBarWidth);
 
 	let timeLineBorder = 0;
 	if (timelineData.isTimeline.value === true && timelineData.isLeftBorderVisible.value === true) {
@@ -68,12 +53,4 @@ function getWidth(baseElem: HTMLElement, el: HTMLElement, timelineData: Timeline
 	}
 
 	return width - timeLineBorder;
-}
-
-function scrollbarVisible(el: HTMLElement | null): boolean {
-	if (!el) {
-		return true;
-	}
-
-	return el.scrollHeight > el.clientHeight;
 }
