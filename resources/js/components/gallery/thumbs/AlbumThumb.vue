@@ -1,7 +1,7 @@
 <template>
 	<router-link
 		:to="{ name: 'album', params: { albumid: album.id } }"
-		class="album-thumb block relative w-[calc(33vw-1rem)] sm:w-[calc(25vw-1rem)] md:w-[calc(19vw-1rem)] lg:w-[calc(16vw-1rem)] xl:w-[calc(14vw-1rem)] 2xl:w-[calc(12vw-0.75rem)] 3xl:w-[calc(12vw-0.75rem)] 4xl:w-52 animate-zoomIn group"
+		class="album-thumb block relative sm:w-[calc(25vw-1rem)] md:w-[calc(19vw-1rem)] lg:w-[calc(16vw-1rem)] xl:w-[calc(14vw-1rem)] 2xl:w-[calc(12vw-0.75rem)] 3xl:w-[calc(12vw-0.75rem)] 4xl:w-52 animate-zoomIn group"
 		:class="linkClass"
 		:data-id="props.album.id"
 	>
@@ -52,7 +52,6 @@ import { useLycheeStateStore } from "@/stores/LycheeState";
 import AlbumThumbOverlay from "./AlbumThumbOverlay.vue";
 import AlbumThumbDecorations from "./AlbumThumbDecorations.vue";
 import { storeToRefs } from "pinia";
-import Constants from "@/services/constants";
 import { useImageHelpers } from "@/utils/Helpers";
 
 export type AlbumThumbConfig = {
@@ -84,7 +83,12 @@ const cssClass = computed(() => {
 });
 
 const linkClass = computed(
-	() => props.config.album_thumb_css_aspect_ratio + (lycheeStore.is_nsfw_background_blurred && props.album.is_nsfw ? " blurred" : ""),
+	() =>
+		(lycheeStore.number_albums_per_row_mobile === 1 ? "w-[calc(100%-1rem)] " : "") +
+		(lycheeStore.number_albums_per_row_mobile === 2 ? "w-[calc(50%-1rem)] " : "") +
+		(lycheeStore.number_albums_per_row_mobile === 3 ? "w-[calc(33%-1rem)] " : "") +
+		props.config.album_thumb_css_aspect_ratio +
+		(lycheeStore.is_nsfw_background_blurred && props.album.is_nsfw ? " blurred" : ""),
 );
 auth.getUser();
 </script>

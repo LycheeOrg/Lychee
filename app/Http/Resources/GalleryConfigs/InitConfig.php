@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\URL;
 use LycheeVerify\Verify;
 use Spatie\LaravelData\Data;
+use Spatie\TypeScriptTransformer\Attributes\LiteralTypeScriptType;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
 #[TypeScript()]
@@ -40,6 +41,8 @@ class InitConfig extends Data
 	public ThumbAlbumSubtitleType $album_subtitle_type;
 	public AlbumDecorationType $album_decoration;
 	public AlbumDecorationOrientation $album_decoration_orientation;
+	#[LiteralTypeScriptType('1|2|3')]
+	public int $number_albums_per_row_mobile;
 
 	// Clockwork
 	public ?string $clockwork_url;
@@ -87,6 +90,7 @@ class InitConfig extends Data
 		$this->album_subtitle_type = Configs::getValueAsEnum('album_subtitle_type', ThumbAlbumSubtitleType::class);
 		$this->album_decoration = Configs::getValueAsEnum('album_decoration', AlbumDecorationType::class);
 		$this->album_decoration_orientation = Configs::getValueAsEnum('album_decoration_orientation', AlbumDecorationOrientation::class);
+		$this->number_albums_per_row_mobile = Configs::getValueAsInt('number_albums_per_row_mobile');
 
 		// Clockwork
 		$this->has_clockwork_in_menu();

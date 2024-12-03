@@ -28,7 +28,7 @@
 					<span class="inline-block mt-4 font-bold text-danger-600" v-if="licenseKey && licenseKeyIsInvValid">Invalid license key</span>
 				</div>
 				<Button
-					class="w-1/4 border-none font-bold bg-primary-500/20 hover:bg-primary-500"
+					class="w-1/4 border-none font-bold bg-primary-500/20 hover:bg-primary-500 hover:text-surface-0"
 					v-if="!is_se_enabled"
 					@click="register"
 					severity="contrast"
