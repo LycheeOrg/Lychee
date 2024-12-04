@@ -235,9 +235,13 @@ onKeyStroke("k", () => !shouldIgnoreKeystroke() && user.value?.id === null && (i
 
 const { onPaste, dragEnd, dropUpload } = useMouseEvents(rootRights, is_upload_visible, list_upload_files);
 
-window.addEventListener("paste", onPaste);
-window.addEventListener("dragover", dragEnd);
-window.addEventListener("drop", dropUpload);
+onMounted(() => {
+	window.addEventListener("paste", onPaste);
+	window.addEventListener("dragover", dragEnd);
+	window.addEventListener("drop", dropUpload);
+	togglableStore.left_menu_open = false;
+});
+
 router.afterEach(() => {
 	window.removeEventListener("paste", onPaste);
 	window.removeEventListener("dragover", dragEnd);
