@@ -1,6 +1,12 @@
 import axios, { type AxiosResponse } from "axios";
 import Constants from "./constants";
 
+export type UpdateTreeData = {
+	id: string;
+	_lft: number;
+	_rgt: number;
+};
+
 const MaintenanceService = {
 	updateGet(): Promise<AxiosResponse<App.Http.Resources.Diagnostics.UpdateInfo>> {
 		return axios.get(`${Constants.getApiUrl()}Maintenance::update`, { data: {} });
@@ -50,6 +56,14 @@ const MaintenanceService = {
 
 	register(key: string): Promise<AxiosResponse<App.Http.Resources.GalleryConfigs.RegisterData>> {
 		return axios.post(`${Constants.getApiUrl()}Maintenance::register`, { key: key });
+	},
+
+	fullTreeGet(): Promise<AxiosResponse<App.Http.Resources.Diagnostics.AlbumTree[]>> {
+		return axios.get(`${Constants.getApiUrl()}Maintenance::fullTree`, { data: {} });
+	},
+
+	updateFullTree(albums: UpdateTreeData[]): Promise<AxiosResponse> {
+		return axios.post(`${Constants.getApiUrl()}Maintenance::fullTree`, { albums: albums });
 	},
 };
 

@@ -15,27 +15,25 @@
 				</div>
 				<ProgressSpinner v-if="loading" class="w-full"></ProgressSpinner>
 			</ScrollPanel>
-			<!-- <div class="flex gap-4 mt-1">
-				<Button v-if="fixable && !loading" severity="primary" class="w-full border-none" @click="exec">{{
+			<div class="flex gap-4 mt-1">
+				<Button as="router-link" to="/fixTree" v-if="fixable && !loading" severity="primary" class="w-full border-none">{{
 					$t("maintenance.fix-tree.button")
 				}}</Button>
-			</div> -->
+			</div>
 		</template>
 	</Card>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from "vue";
-// import Button from "primevue/button";
 import Card from "primevue/card";
-import { useToast } from "primevue/usetoast";
 import ProgressSpinner from "primevue/progressspinner";
 import ScrollPanel from "primevue/scrollpanel";
 import MaintenanceService from "@/services/maintenance-service";
+import Button from "primevue/button";
 
 const data = ref<App.Http.Resources.Diagnostics.TreeState | undefined>(undefined);
 const loading = ref(false);
-const toast = useToast();
 
 const fixable = computed(() => {
 	return data.value && (data.value.oddness > 0 || data.value.duplicates > 0 || data.value.wrong_parent > 0 || data.value.missing_parent > 0);
@@ -45,17 +43,6 @@ function load() {
 		data.value = response.data;
 	});
 }
-
-// function exec() {
-// 	loading.value = true;
-// 	MaintenanceService.treeDo().then((response) => {
-// 		toast.add({ severity: "success", summary: "Success", life: 3000 });
-// 		loading.value = false;
-// 	}).catch((e) => {
-// 		toast.add({ severity: "error", summary: "Error", detail: e.response.data.message,  life: 3000 });
-// 		loading.value = false;
-// 	});
-// }
 
 load();
 </script>

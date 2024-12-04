@@ -45,6 +45,7 @@ Route::get('/maintenance', [VueController::class, 'view'])->middleware(['migrati
 Route::get('/users', [VueController::class, 'view'])->middleware(['migration:complete']);
 Route::get('/settings', [VueController::class, 'view'])->middleware(['migration:complete']);
 Route::get('/permissions', [VueController::class, 'view'])->middleware(['migration:complete']);
+Route::get('/fixTree', [VueController::class, 'view'])->middleware(['migration:complete']);
 
 Route::match(['get', 'post'], '/migrate', [Admin\UpdateController::class, 'migrate'])
 	->name('migrate')

@@ -786,6 +786,16 @@ const LycheePrimeVueConfig = {
 				},
 			},
 		},
+		inplace: {
+			colorScheme: {
+				light: {
+					displayHoverBackground: "transparent",
+				},
+				dark: {
+					displayHoverBackground: "transparent",
+				},
+			},
+		},
 		inputtext: {
 			background: "transparent",
 			padding: {

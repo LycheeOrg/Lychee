@@ -63,6 +63,7 @@
         "lychee-org/nestedset": "^9.0",
         "lychee-org/php-exif": "^1.0.4",
         "maennchen/zipstream-php": "^3.1",
+        "mavinoo/laravel-batch": "^2.4",
         "opcodesio/log-viewer": "dev-lycheeOrg",
         "php-ffmpeg/php-ffmpeg": "^1.0",
         "php-http/guzzle7-adapter": "^1.0",
