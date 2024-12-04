@@ -224,6 +224,7 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		album_subtitle_type: App.Enum.ThumbAlbumSubtitleType;
 		album_decoration: App.Enum.AlbumDecorationType;
 		album_decoration_orientation: App.Enum.AlbumDecorationOrientation;
+		number_albums_per_row_mobile: 1 | 2 | 3;
 		clockwork_url: string | null;
 		slideshow_timeout: number;
 		is_timeline_left_border_visible: boolean;

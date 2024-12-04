@@ -37,6 +37,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		album_subtitle_type: "OLDSTYLE" as App.Enum.ThumbAlbumSubtitleType,
 		album_decoration: "LAYERS" as App.Enum.AlbumDecorationType,
 		album_decoration_orientation: "ROW" as App.Enum.AlbumDecorationOrientation,
+		number_albums_per_row_mobile: 3 as 1 | 2 | 3,
 
 		// menu stuff
 		clockwork_url: "" as null | string,
@@ -107,6 +108,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.is_se_enabled = data.is_se_enabled;
 					this.is_se_preview_enabled = data.is_se_preview_enabled;
 					this.is_se_info_hidden = data.is_se_info_hidden;
+					this.number_albums_per_row_mobile = data.number_albums_per_row_mobile;
 				})
 				.catch((error) => {
 					// In this specific case, even though it has been possibly disabled, we really need to see the error.
