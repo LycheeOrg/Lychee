@@ -5,11 +5,11 @@
 			The height of the footer is always the natural height
 			of its child elements
 			-->
-		<div id="home_socials" class="w-full" style="display: none" v-if="footerData.footer_show_social_media">
+		<div id="home_socials" class="w-full" v-if="footerData.footer_show_social_media">
 			<a
 				v-if="footerData.sm_facebook_url !== ''"
 				:href="footerData.sm_facebook_url"
-				class="socialicons"
+				class="socials socialicons"
 				id="facebook"
 				target="_blank"
 				rel="noopener"
@@ -17,7 +17,7 @@
 			<a
 				v-if="footerData.sm_flickr_url !== ''"
 				:href="footerData.sm_flickr_url"
-				class="socialicons"
+				class="socials socialicons"
 				id="flickr"
 				target="_blank"
 				rel="noopener"
@@ -25,7 +25,7 @@
 			<a
 				v-if="footerData.sm_twitter_url !== ''"
 				:href="footerData.sm_twitter_url"
-				class="socialicons"
+				class="socials socialicons"
 				id="twitter"
 				target="_blank"
 				rel="noopener"
@@ -33,7 +33,7 @@
 			<a
 				v-if="footerData.sm_instagram_url !== ''"
 				:href="footerData.sm_instagram_url"
-				class="socialicons"
+				class="socials socialicons"
 				id="instagram"
 				target="_blank"
 				rel="noopener"
@@ -41,7 +41,7 @@
 			<a
 				v-if="footerData.sm_youtube_url !== ''"
 				:href="footerData.sm_youtube_url"
-				class="socialicons"
+				class="socials socialicons"
 				id="youtube"
 				target="_blank"
 				rel="noopener"
