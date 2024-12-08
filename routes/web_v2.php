@@ -27,6 +27,8 @@ Route::get('/gallery/{albumId}/{photoId}', [VueController::class, 'view'])->name
 Route::get('/frame', [VueController::class, 'view'])->name('frame')->middleware(['migration:complete']);
 Route::get('/frame/{albumId}', [VueController::class, 'view'])->name('frame')->middleware(['migration:complete']);
 
+Route::get('/timeline', [VueController::class, 'view'])->name('map')->middleware(['migration:complete']);
+
 Route::get('/map', [VueController::class, 'view'])->name('map')->middleware(['migration:complete']);
 Route::get('/map/{albumId}', [VueController::class, 'view'])->name('map')->middleware(['migration:complete']);
 
