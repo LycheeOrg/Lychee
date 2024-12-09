@@ -3228,16 +3228,16 @@
         },
         {
             "name": "laminas/laminas-text",
-            "version": "2.12.0",
+            "version": "2.12.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-text.git",
-                "reference": "6e9a39b85d3b718d36fb1c7c452dbd32531ff4f8"
+                "reference": "3f36bbf7517b66448fcbd82c6c03d0110431ba1f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-text/zipball/6e9a39b85d3b718d36fb1c7c452dbd32531ff4f8",
-                "reference": "6e9a39b85d3b718d36fb1c7c452dbd32531ff4f8",
+                "url": "https://api.github.com/repos/laminas/laminas-text/zipball/3f36bbf7517b66448fcbd82c6c03d0110431ba1f",
+                "reference": "3f36bbf7517b66448fcbd82c6c03d0110431ba1f",
                 "shasum": ""
             },
             "require": {
@@ -3284,7 +3284,8 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2024-11-13T21:28:26+00:00"
+            "abandoned": true,
+            "time": "2024-12-05T16:44:33+00:00"
         },
         {
             "name": "laragear/meta-model",
