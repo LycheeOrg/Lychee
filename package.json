@@ -33,7 +33,7 @@
         "@types/justified-layout": "^4.1.4",
         "@vueuse/core": "^11.2.0",
         "autoprefixer": "^10.4.19",
-        "axios": "^1.7.6",
+        "axios": "^1.7.9",
         "axios-cache-interceptor": "^1.5.3",
         "justified-layout": "^4.1.0",
         "laravel-vite-plugin": "^1.0.6",
