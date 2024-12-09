@@ -12790,16 +12790,16 @@
         },
         {
             "name": "itsgoingd/clockwork",
-            "version": "v5.3.1",
+            "version": "v5.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/itsgoingd/clockwork.git",
-                "reference": "7b0c40418df761f7a78e88762a323386a139d83d"
+                "reference": "ffd1f1626830005e92461a538ad58372641e065a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/itsgoingd/clockwork/zipball/7b0c40418df761f7a78e88762a323386a139d83d",
-                "reference": "7b0c40418df761f7a78e88762a323386a139d83d",
+                "url": "https://api.github.com/repos/itsgoingd/clockwork/zipball/ffd1f1626830005e92461a538ad58372641e065a",
+                "reference": "ffd1f1626830005e92461a538ad58372641e065a",
                 "shasum": ""
             },
             "require": {
@@ -12817,12 +12817,12 @@
             "type": "library",
             "extra": {
                 "laravel": {
-                    "providers": [
-                        "Clockwork\\Support\\Laravel\\ClockworkServiceProvider"
-                    ],
                     "aliases": {
                         "Clockwork": "Clockwork\\Support\\Laravel\\Facade"
-                    }
+                    },
+                    "providers": [
+                        "Clockwork\\Support\\Laravel\\ClockworkServiceProvider"
+                    ]
                 }
             },
             "autoload": {
@@ -12854,7 +12854,7 @@
             ],
             "support": {
                 "issues": "https://github.com/itsgoingd/clockwork/issues",
-                "source": "https://github.com/itsgoingd/clockwork/tree/v5.3.1"
+                "source": "https://github.com/itsgoingd/clockwork/tree/v5.3.2"
             },
             "funding": [
                 {
@@ -12862,7 +12862,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-11-19T17:25:22+00:00"
+            "time": "2024-12-02T22:59:59+00:00"
         },
         {
             "name": "jean85/pretty-package-versions",
