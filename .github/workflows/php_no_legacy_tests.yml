@@ -118,7 +118,7 @@ jobs:
 
       - name: SonarCloud Scan
         if: ${{ env.SONAR_TOKEN }}
-        uses: SonarSource/sonarcloud-github-action@982992a35a56c6bebd7c76c65e5c3e4c18e634c8 # master
+        uses: SonarSource/sonarcloud-github-action@02ef91109b2d589e757aefcfb2854c2783fd7b19 # master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
