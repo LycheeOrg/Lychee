@@ -146,7 +146,7 @@ export function useTreeOperations(
 		errors.value.forEach((e) => toast.add({ severity: "error", summary: "Error", detail: e, life: 3000 }));
 	}
 
-	// We increment all the nodes left and right by 1.
+	// We increment all the nodes' (>= lft) left and right by 1.
 	function incrementLft(id: string) {
 		if (albums.value === undefined) {
 			return;
