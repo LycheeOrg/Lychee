@@ -135,7 +135,7 @@ function apply() {
 		toast.add({
 			severity: "error",
 			summary: "Invalid tree!",
-			detail: "We are not applying this as this is guaranteed to be a broken state.",
+			detail: "We are not applying this as it is guaranteed to be a broken state.",
 			life: 3000,
 		});
 		return;
