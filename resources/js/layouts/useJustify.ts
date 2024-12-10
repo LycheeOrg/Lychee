@@ -1,16 +1,10 @@
 import { TimelineData } from "./PhotoLayout";
 import { ChildNodeWithDataStyle } from "./types";
 import createJustifiedLayout from "justified-layout";
+import { isTouchDevice } from "@/utils/keybindings-utils";
 
 export function useJustify(el: HTMLElement, photoDefaultHeight: number = 320, timelineData: TimelineData) {
-	const baseElem = document.getElementById("lychee_view_content");
-	if (!baseElem) {
-		return;
-	}
-	const containerDefaultWidth = parseInt(getComputedStyle(baseElem).width) - 36 - (timelineData.isLeftBorderVisible ? 50 : 0);
-	const containerWidth = timelineData.isTimeline
-		? Math.min(parseInt(getComputedStyle(el).width), containerDefaultWidth)
-		: parseInt(getComputedStyle(el).width);
+	const width = getWidth(timelineData);
 
 	// @ts-expect-error
 	const justifiedItems: ChildNodeWithDataStyle[] = [...el.childNodes].filter((gridItem) => gridItem.nodeType === 1);
@@ -21,7 +15,7 @@ export function useJustify(el: HTMLElement, photoDefaultHeight: number = 320, ti
 		return height > 0 ? width / height : 1;
 	});
 	const layoutGeometry = createJustifiedLayout(ratio, {
-		containerWidth: containerWidth,
+		containerWidth: width,
 		containerPadding: 0,
 		targetRowHeight: photoDefaultHeight,
 	});
@@ -40,4 +34,23 @@ export function useJustify(el: HTMLElement, photoDefaultHeight: number = 320, ti
 		e.style.height = layoutGeometry.boxes[i].height + "px";
 		e.style.left = layoutGeometry.boxes[i].left + "px";
 	});
+}
+
+function getWidth(timelineData: TimelineData): number {
+	const baseWidth = window.innerWidth;
+	const paddingLeftRight = 2 * 18;
+
+	let scrollBarWidth = 15;
+	if (isTouchDevice()) {
+		scrollBarWidth = 0;
+	}
+
+	const width = Math.min(baseWidth - paddingLeftRight - scrollBarWidth);
+
+	let timeLineBorder = 0;
+	if (timelineData.isTimeline.value === true && timelineData.isLeftBorderVisible.value === true) {
+		timeLineBorder = 50;
+	}
+
+	return width - timeLineBorder;
 }
