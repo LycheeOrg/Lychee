@@ -56,7 +56,7 @@
 		<div v-if="user?.id" class="badges absolute mt-[-1px] ml-1 top-0 left-0">
 			<ThumbBadge v-if="props.photo.is_starred" class="bg-yellow-500" icon="star" />
 			<ThumbBadge v-if="is_cover_id" class="bg-yellow-500" icon="folder-cover" />
-			<ThumbBadge v-if="is_header_id" class="bg-slate-400" pi="image" />
+			<ThumbBadge v-if="is_header_id" class="bg-slate-400 hidden sm:block" pi="image" />
 		</div>
 	</router-link>
 </template>
