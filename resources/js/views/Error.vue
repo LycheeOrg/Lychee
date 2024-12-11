@@ -37,10 +37,10 @@
 import { ref } from "vue";
 import Divider from "primevue/divider";
 import Message from "primevue/message";
+import Button from "primevue/button";
 import Panel from "primevue/panel";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
-import Button from "primevue/button";
 
 type Trace = {
 	class: string;

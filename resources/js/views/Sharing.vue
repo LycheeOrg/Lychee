@@ -36,13 +36,13 @@
 	</Panel>
 </template>
 <script setup lang="ts">
+import { ref } from "vue";
 import ShareLine from "@/components/forms/sharing/ShareLine.vue";
 import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
 import SharingService from "@/services/sharing-service";
 import Panel from "primevue/panel";
 import Toolbar from "primevue/toolbar";
 import { useToast } from "primevue/usetoast";
-import { ref } from "vue";
 
 const perms = ref<App.Http.Resources.Models.AccessPermissionResource[] | undefined>(undefined);
 const toast = useToast();
