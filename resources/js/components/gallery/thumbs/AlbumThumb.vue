@@ -44,7 +44,7 @@
 	</router-link>
 </template>
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed } from "vue";
 import ThumbBadge from "@/components/gallery/thumbs/ThumbBadge.vue";
 import AlbumThumbImage from "@/components/gallery/thumbs/AlbumThumbImage.vue";
 import { useAuthStore } from "@/stores/Auth";
@@ -84,9 +84,9 @@ const cssClass = computed(() => {
 
 const linkClass = computed(
 	() =>
-		(lycheeStore.number_albums_per_row_mobile === 1 ? "w-[calc(100%-1rem)] " : "") +
-		(lycheeStore.number_albums_per_row_mobile === 2 ? "w-[calc(50%-1rem)] " : "") +
-		(lycheeStore.number_albums_per_row_mobile === 3 ? "w-[calc(33%-1rem)] " : "") +
+		(lycheeStore.number_albums_per_row_mobile === 1 ? "w-[calc(100%)] " : "") +
+		(lycheeStore.number_albums_per_row_mobile === 2 ? "w-[calc(50%-0.25rem)] " : "") +
+		(lycheeStore.number_albums_per_row_mobile === 3 ? "w-[calc(33%-0.25rem)] " : "") +
 		props.config.album_thumb_css_aspect_ratio +
 		(lycheeStore.is_nsfw_background_blurred && props.album.is_nsfw ? " blurred" : ""),
 );
