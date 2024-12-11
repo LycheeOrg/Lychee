@@ -116,6 +116,13 @@ declare namespace App.Http.Resources.Collections {
 	};
 }
 declare namespace App.Http.Resources.Diagnostics {
+	export type AlbumTree = {
+		id: string;
+		title: string;
+		parent_id: string | null;
+		_lft: number;
+		_rgt: number;
+	};
 	export type CleaningState = {
 		path: string;
 		base: string;

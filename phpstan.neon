@@ -166,3 +166,6 @@ parameters:
 
 		-
 			message: '#Dynamic call to static method Illuminate\\Session\\Store::(has|get|now|forget)\(\).#'
+
+		-
+			message: '#Dynamic call to static method Kalnoy\\Nestedset\\QueryBuilder<.*>::(join|select|orderBy)\(\)#'	
