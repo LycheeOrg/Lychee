@@ -17,7 +17,6 @@
 	</div>
 </template>
 <script setup lang="ts">
-import Button from "primevue/button";
 import Toolbar from "primevue/toolbar";
 import SetLogin from "@/components/forms/profile/SetLogin.vue";
 import SetSecondFactor from "@/components/forms/profile/SetSecondFactor.vue";

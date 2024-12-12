@@ -67,7 +67,7 @@
 	</main>
 </template>
 <script setup lang="ts">
-import { Ref, ref } from "vue";
+import { ref } from "vue";
 import { RouterLink, useRouter } from "vue-router";
 import InitService from "@/services/init-service";
 import LandingFooter from "@/components/footers/LandingFooter.vue";

@@ -87,19 +87,19 @@
 import { ref, onMounted } from "vue";
 import MaintenanceService from "@/services/maintenance-service";
 import Toolbar from "primevue/toolbar";
-import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
 import ProgressBar from "primevue/progressbar";
 import Button from "primevue/button";
+import ScrollTop from "primevue/scrolltop";
+import VirtualScroller from "primevue/virtualscroller";
+import { useToast } from "primevue/usetoast";
 import AlbumService from "@/services/album-service";
 import { AugmentedAlbum, useTreeOperations } from "@/composables/album/treeOperations";
-import { useToast } from "primevue/usetoast";
+import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
 import FixTreeLine from "@/components/maintenance/FixTreeLine.vue";
 import Left from "@/components/maintenance/mini/Left.vue";
 import Right from "@/components/maintenance/mini/Right.vue";
 import LeftWarn from "@/components/maintenance/mini/LeftWarn.vue";
 import RightWarn from "@/components/maintenance/mini/RightWarn.vue";
-import ScrollTop from "primevue/scrolltop";
-import VirtualScroller from "primevue/virtualscroller";
 
 const albums = ref<AugmentedAlbum[] | undefined>(undefined);
 const originalAlbums = ref<App.Http.Resources.Diagnostics.AlbumTree[] | undefined>(undefined);
