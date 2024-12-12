@@ -23,7 +23,7 @@
 				</div>
 				<div class="inline-flex flex-col gap-2 px-9">
 					<FloatLabel variant="on">
-						<InputText id="username" v-model="username" autocomplete="username" />
+						<InputText id="username" v-model="username" autocomplete="username" :autofocus="true" />
 						<label class="" for="username">{{ $t("lychee.USERNAME") }}</label>
 					</FloatLabel>
 				</div>

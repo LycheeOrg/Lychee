@@ -1,9 +1,9 @@
 <template>
-	<Dialog v-model:visible="visible" class="border-none max-w-lg w-full">
+	<Dialog v-model:visible="visible" modal class="border-none max-w-lg w-full">
 		<template #container="{ closeCallback }">
 			<div class="p-9 w-full flex flex-col gap-2 justify-center">
 				<FloatLabel class="w-full" variant="on">
-					<InputText id="username" v-model="username" aria-label="Username" />
+					<InputText id="username" v-model="username" aria-label="Username" :autofocus="true"/>
 					<label class="" for="username">{{ $t("lychee.USERNAME") }}</label>
 				</FloatLabel>
 				<FloatLabel class="w-full" variant="on">
@@ -60,6 +60,7 @@
 </template>
 <script setup lang="ts">
 import { Ref, ref, watch } from "vue";
+import Dialog from "primevue/dialog";
 import Button from "primevue/button";
 import Checkbox from "primevue/checkbox";
 import FloatLabel from "primevue/floatlabel";
@@ -67,7 +68,6 @@ import { useToast } from "primevue/usetoast";
 import InputText from "@/components/forms/basic/InputText.vue";
 import InputPassword from "@/components/forms/basic/InputPassword.vue";
 import UserManagementService from "@/services/user-management-service";
-import Dialog from "primevue/dialog";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import Textarea from "../basic/Textarea.vue";
@@ -82,6 +82,7 @@ const props = defineProps<{
 	isEdit: boolean;
 }>();
 
+const usernameInputRef = ref<HTMLInputElement>()
 const id = ref<number | undefined>(props.user?.id);
 const username = ref<string | undefined>(props.user?.username);
 const note = ref<string | undefined>(props.user?.note ?? undefined);
