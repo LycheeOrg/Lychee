@@ -82,7 +82,6 @@ const props = defineProps<{
 	isEdit: boolean;
 }>();
 
-const usernameInputRef = ref<HTMLInputElement>()
 const id = ref<number | undefined>(props.user?.id);
 const username = ref<string | undefined>(props.user?.username);
 const note = ref<string | undefined>(props.user?.note ?? undefined);
