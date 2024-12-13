@@ -3,7 +3,7 @@
 		<template #container="{ closeCallback }">
 			<div class="p-9 w-full flex flex-col gap-2 justify-center">
 				<FloatLabel class="w-full" variant="on">
-					<InputText id="username" v-model="username" aria-label="Username" :autofocus="true"/>
+					<InputText id="username" v-model="username" aria-label="Username" :autofocus="true" />
 					<label class="" for="username">{{ $t("lychee.USERNAME") }}</label>
 				</FloatLabel>
 				<FloatLabel class="w-full" variant="on">

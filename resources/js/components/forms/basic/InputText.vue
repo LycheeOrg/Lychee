@@ -20,20 +20,23 @@ import InputText, { InputTextPassThroughOptions } from "primevue/inputtext";
 import type { PassThroughOptions } from "primevue/passthrough";
 import type { DesignToken, Nullable, PassThrough } from "@primevue/core";
 
-const props = withDefaults(defineProps<{
-	size?: "small" | "large" | undefined;
-	invalid?: boolean | undefined;
-	variant?: "outlined" | "filled" | undefined;
-	fluid?: boolean;
-	dt?: DesignToken<any>;
-	pt?: PassThrough<InputTextPassThroughOptions>;
-	ptOptions?: PassThroughOptions;
-	unstyled?: boolean;
-	class?: string;
-	autofocus?: boolean;
-}>(), {
-	autofocus: false
-});
+const props = withDefaults(
+	defineProps<{
+		size?: "small" | "large" | undefined;
+		invalid?: boolean | undefined;
+		variant?: "outlined" | "filled" | undefined;
+		fluid?: boolean;
+		dt?: DesignToken<any>;
+		pt?: PassThrough<InputTextPassThroughOptions>;
+		ptOptions?: PassThroughOptions;
+		unstyled?: boolean;
+		class?: string;
+		autofocus?: boolean;
+	}>(),
+	{
+		autofocus: false,
+	},
+);
 
 const emits = defineEmits(["updated"]);
 const modelValue = defineModel<Nullable<string>>();
