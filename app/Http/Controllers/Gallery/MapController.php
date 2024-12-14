@@ -8,7 +8,6 @@ use App\Http\Requests\Map\MapDataRequest;
 use App\Http\Resources\Collections\PositionDataResource;
 use App\Http\Resources\GalleryConfigs\MapProviderData;
 use App\Models\Configs;
-use Spatie\LaravelData\Data;
 
 class MapController
 {
@@ -21,7 +20,7 @@ class MapController
 		$this->albumPositionData = resolve(AlbumPositionData::class);
 	}
 
-	public function getProvider(): Data
+	public function getProvider(): MapProviderData
 	{
 		return new MapProviderData();
 	}
@@ -33,7 +32,7 @@ class MapController
 	 *
 	 * @return PositionDataResource
 	 */
-	public function getData(MapDataRequest $request): Data
+	public function getData(MapDataRequest $request): PositionDataResource
 	{
 		$album = $request->album();
 

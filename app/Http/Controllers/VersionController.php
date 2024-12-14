@@ -4,16 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\Root\VersionResource;
 use Illuminate\Routing\Controller;
-use Spatie\LaravelData\Data;
 
 class VersionController extends Controller
 {
 	/**
 	 * Retrieve the data about updates (so that it is not fully blocking).
 	 *
-	 * @return Data
+	 * @return VersionResource
 	 */
-	public function get(): Data
+	public function get(): VersionResource
 	{
 		return new VersionResource();
 	}

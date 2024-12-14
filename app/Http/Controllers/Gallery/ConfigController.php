@@ -7,7 +7,6 @@ use App\Http\Resources\GalleryConfigs\InitConfig;
 use App\Http\Resources\GalleryConfigs\PhotoLayoutConfig;
 use App\Http\Resources\GalleryConfigs\UploadConfig;
 use Illuminate\Routing\Controller;
-use Spatie\LaravelData\Data;
 
 /**
  * Controller responsible for the config.
@@ -17,9 +16,9 @@ class ConfigController extends Controller
 	/**
 	 * Return global gallery config.
 	 *
-	 * @return Data
+	 * @return InitConfig
 	 */
-	public function getInit(): Data
+	public function getInit(): InitConfig
 	{
 		return new InitConfig();
 	}
@@ -27,7 +26,7 @@ class ConfigController extends Controller
 	/**
 	 * Return gallery layout info.
 	 */
-	public function getGalleryLayout(): Data
+	public function getGalleryLayout(): PhotoLayoutConfig
 	{
 		return new PhotoLayoutConfig();
 	}
@@ -35,9 +34,9 @@ class ConfigController extends Controller
 	/**
 	 * Return the configuration of the uploader.
 	 *
-	 * @return Data
+	 * @return UploadConfig
 	 */
-	public function getUploadCOnfig(): Data
+	public function getUploadCOnfig(): UploadConfig
 	{
 		return new UploadConfig();
 	}
@@ -45,9 +44,9 @@ class ConfigController extends Controller
 	/**
 	 * Return global gallery config.
 	 *
-	 * @return Data
+	 * @return FooterConfig
 	 */
-	public function getFooter(): Data
+	public function getFooter(): FooterConfig
 	{
 		return new FooterConfig();
 	}

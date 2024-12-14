@@ -13,7 +13,6 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
-use Spatie\LaravelData\Data;
 
 /**
  * Controller responsible for the authentication of the user.
@@ -59,7 +58,7 @@ class AuthController extends Controller
 	/**
 	 * Get the global rights of the current user.
 	 */
-	public function getGlobalRights(): Data
+	public function getGlobalRights(): GlobalRightsResource
 	{
 		return new GlobalRightsResource();
 	}
@@ -67,9 +66,9 @@ class AuthController extends Controller
 	/**
 	 * First function being called via AJAX.
 	 *
-	 * @return Data
+	 * @return UserResource
 	 */
-	public function getCurrentUser(): Data
+	public function getCurrentUser(): UserResource
 	{
 		/** @var User|null $user */
 		$user = Auth::user();
@@ -80,9 +79,9 @@ class AuthController extends Controller
 	/**
 	 * Return the configuration for the authentication.
 	 *
-	 * @return Data
+	 * @return AuthConfig
 	 */
-	public function getConfig(): Data
+	public function getConfig(): AuthConfig
 	{
 		return new AuthConfig();
 	}
