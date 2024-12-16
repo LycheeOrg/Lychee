@@ -13,6 +13,8 @@ use Spatie\Feed\FeedItem;
 class RSSController extends Controller
 {
 	/**
+	 * Get the RSS Feed.
+	 *
 	 * @param Generate $generate
 	 *
 	 * @return Collection<int,FeedItem>

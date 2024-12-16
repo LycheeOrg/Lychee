@@ -29,6 +29,14 @@ class UpdateController extends Controller
 		$this->applyUpdate = $applyUpdate;
 	}
 
+	/**
+	 * Retrieve Update data from the server.
+	 *
+	 * @param UpdateRequest $request
+	 * @param VersionInfo   $versionInfo
+	 *
+	 * @return UpdateInfo
+	 */
 	public function get(UpdateRequest $request, VersionInfo $versionInfo): UpdateInfo
 	{
 		/** @var VersionChannelType $channelName */

@@ -13,6 +13,8 @@ use Illuminate\Routing\Controller;
 class AlbumsController extends Controller
 {
 	/**
+	 * Retrieve all the albums at the root.
+	 *
 	 * @return RootAlbumResource returns the top albums
 	 */
 	public function get(Top $top): RootAlbumResource

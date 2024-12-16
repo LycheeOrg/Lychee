@@ -14,18 +14,7 @@ use Illuminate\Routing\Controller;
 class FixTree extends Controller
 {
 	/**
-	 * Clean the path from all files excluding $this->skip.
-	 *
-	 * @return int
-	 */
-	public function do(MaintenanceRequest $request): int
-	{
-		return Album::query()->fixTree();
-	}
-
-	/**
-	 * Check whether there are files to be removed.
-	 * If not, we will not display the module to reduce complexity.
+	 * Check whether the Album tree is correct.
 	 *
 	 * @return TreeState
 	 */

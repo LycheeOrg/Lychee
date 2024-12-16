@@ -83,6 +83,13 @@ class AlbumController extends Controller
 		return new AbstractAlbumResource($config, $albumResource);
 	}
 
+	/**
+	 * Create an album.
+	 *
+	 * @param AddAlbumRequest $request
+	 *
+	 * @return string
+	 */
 	public function createAlbum(AddAlbumRequest $request): string
 	{
 		/** @var int $ownerId */
@@ -92,11 +99,25 @@ class AlbumController extends Controller
 		return $create->create($request->title(), $request->parent_album())->id;
 	}
 
+	/**
+	 * Create a tag album.
+	 *
+	 * @param AddAlbumRequest $request
+	 *
+	 * @return string
+	 */
 	public function createTagAlbum(AddTagAlbumRequest $request, CreateTagAlbum $create): string
 	{
 		return $create->create($request->title(), $request->tags())->id;
 	}
 
+	/**
+	 * Update the info of an Album.
+	 *
+	 * @param AddAlbumRequest $request
+	 *
+	 * @return EditableBaseAlbumResource
+	 */
 	public function updateAlbum(UpdateAlbumRequest $request, SetHeader $setHeader): EditableBaseAlbumResource
 	{
 		$album = $request->album();
@@ -124,6 +145,13 @@ class AlbumController extends Controller
 		return EditableBaseAlbumResource::fromModel($album);
 	}
 
+	/**
+	 * Update the info of a Tag Album.
+	 *
+	 * @param UpdateTagAlbumRequest $request
+	 *
+	 * @return EditableBaseAlbumResource
+	 */
 	public function updateTagAlbum(UpdateTagAlbumRequest $request): EditableBaseAlbumResource
 	{
 		$album = $request->album();
@@ -142,6 +170,15 @@ class AlbumController extends Controller
 		return EditableBaseAlbumResource::fromModel($album);
 	}
 
+	/**
+	 * Update the protection policy of an Abstract Album.
+	 *
+	 * @param SetAlbumProtectionPolicyRequest $request
+	 * @param SetProtectionPolicy             $setProtectionPolicy
+	 * @param SetSmartProtectionPolicy        $setSmartProtectionPolicy
+	 *
+	 * @return AlbumProtectionPolicy
+	 */
 	public function updateProtectionPolicy(SetAlbumProtectionPolicyRequest $request,
 		SetProtectionPolicy $setProtectionPolicy,
 		SetSmartProtectionPolicy $setSmartProtectionPolicy): AlbumProtectionPolicy
@@ -224,6 +261,8 @@ class AlbumController extends Controller
 	}
 
 	/**
+	 * Transfer the ownership of the album to another user.
+	 *
 	 * @param TransferAlbumRequest $request
 	 * @param Transfer             $transfer
 	 *
@@ -235,6 +274,8 @@ class AlbumController extends Controller
 	}
 
 	/**
+	 * Set the album cover (the square thumb).
+	 *
 	 * @param SetAsCoverRequest $request
 	 *
 	 * @return void
@@ -247,6 +288,8 @@ class AlbumController extends Controller
 	}
 
 	/**
+	 * Set the album header (the hero banner).
+	 *
 	 * @param $request
 	 *
 	 * @return void

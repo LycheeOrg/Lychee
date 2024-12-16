@@ -22,6 +22,8 @@ use Illuminate\Support\Facades\Auth;
 class SharingController extends Controller
 {
 	/**
+	 * Create a new Sharing link between a user and an album.
+	 *
 	 * @param AddSharingRequest $request
 	 * @param Share             $share
 	 *

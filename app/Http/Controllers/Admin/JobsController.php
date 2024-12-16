@@ -13,6 +13,8 @@ use Spatie\LaravelData\PaginatedDataCollection;
 class JobsController extends Controller
 {
 	/**
+	 * List jobs executed on the server and the pending ones.
+	 *
 	 * @param ShowJobsRequest $request
 	 *
 	 * @return PaginatedDataCollection<(int|string),JobHistoryResource>

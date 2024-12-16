@@ -11,6 +11,8 @@ use LycheeVerify\Verify;
 class RegisterController extends Controller
 {
 	/**
+	 * Register the Lychee Supporter Edition license key.
+	 *
 	 * @param RegisterRequest $request
 	 *
 	 * @return RegisterData

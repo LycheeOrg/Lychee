@@ -15,6 +15,8 @@ use Illuminate\Support\Collection;
 class StatisticsController extends Controller
 {
 	/**
+	 * Fetch the used space per user.
+	 *
 	 * @param SpacePerUserRequest $request
 	 * @param Spaces              $spaces
 	 *
@@ -30,6 +32,8 @@ class StatisticsController extends Controller
 	}
 
 	/**
+	 * Fetch the used space per SizeVariant type.
+	 *
 	 * @param SpaceSizeVariantRequest $request
 	 * @param Spaces                  $spaces
 	 *
@@ -48,6 +52,8 @@ class StatisticsController extends Controller
 	}
 
 	/**
+	 * Fetch the used space and number of photos per Album (without descendants).
+	 *
 	 * @param SpacePerAlbumRequest $request
 	 * @param Spaces               $spaces
 	 *
@@ -72,6 +78,7 @@ class StatisticsController extends Controller
 	}
 
 	/**
+	 * Fetch the used space and number of photos per Album with descendants
 	 * ! Slow query.
 	 *
 	 * @param SpacePerAlbumRequest $request

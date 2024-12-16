@@ -15,6 +15,13 @@ use Illuminate\Support\Facades\Auth;
  */
 class UsersController extends Controller
 {
+	/**
+	 * Count the number of registered users.
+	 *
+	 * @param UsersRequest $_request
+	 *
+	 * @return int
+	 */
 	public function count(UsersRequest $_request): int
 	{
 		return User::count();

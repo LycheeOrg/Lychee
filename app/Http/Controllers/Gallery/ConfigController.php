@@ -42,7 +42,7 @@ class ConfigController extends Controller
 	}
 
 	/**
-	 * Return global gallery config.
+	 * Return the Footer data.
 	 *
 	 * @return FooterConfig
 	 */

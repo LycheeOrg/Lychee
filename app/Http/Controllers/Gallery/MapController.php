@@ -20,13 +20,18 @@ class MapController
 		$this->albumPositionData = resolve(AlbumPositionData::class);
 	}
 
+	/**
+	 * Return the configuration data for the Map.
+	 *
+	 * @return MapProviderData
+	 */
 	public function getProvider(): MapProviderData
 	{
 		return new MapProviderData();
 	}
 
 	/**
-	 * Return an image and the timeout if the frame is supported..
+	 * Return the Map data for an album or root.
 	 *
 	 * @param MapDataRequest $request
 	 *
