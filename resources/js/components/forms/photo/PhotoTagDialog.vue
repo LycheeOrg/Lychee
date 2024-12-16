@@ -2,8 +2,12 @@
 	<Dialog v-model:visible="visible" pt:root:class="border-none" modal :dismissable-mask="true">
 		<template #container="{ closeCallback }">
 			<div class="p-9 text-center text-muted-color">
-				<p class="mb-5 text-sm/4">
+				<p class="text-sm/8">
 					{{ question }}
+					<br />
+					<span class="text-muted-color-emphasis">
+						<i class="text-warning-600 pi pi-exclamation-triangle mr-2" />Press Enter to confirm each tag.
+					</span>
 				</p>
 				<div class="my-3 first:mt-0 last:mb-0">
 					<AutoComplete
@@ -40,7 +44,6 @@ import { sprintf } from "sprintf-js";
 import { useToast } from "primevue/usetoast";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
-import { trans } from "laravel-vue-i18n";
 import Checkbox from "primevue/checkbox";
 import AutoComplete from "primevue/autocomplete";
 
@@ -60,9 +63,9 @@ const toast = useToast();
 
 const question = computed(() => {
 	if (props.photo) {
-		return trans("lychee.PHOTO_NEW_TAGS");
+		return sprintf("Enter your tags for this photo.");
 	}
-	return sprintf(trans("lychee.PHOTOS_NEW_TAGS"), props.photoIds?.length);
+	return sprintf("Enter your tags for all %d selected photos. Existing tags will be overwritten.", props.photoIds?.length);
 });
 
 const shallOverride = ref(false);
