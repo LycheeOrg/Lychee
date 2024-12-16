@@ -64,7 +64,7 @@ class DataToResponse extends TypeToSchemaExtension
 	}
 
 	/**
-	 * Given a type we.
+	 * Given a pure reflected PHP type, we return the corresponding Scramble type equivalent before Generator conversion.
 	 *
 	 * @return Type
 	 *
