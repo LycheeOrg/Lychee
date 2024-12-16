@@ -5,9 +5,9 @@
 				<p class="text-sm/8">
 					{{ question }}
 					<br />
-					<span class="text-muted-color-emphasis"
-						><i class="text-warning-600 pi pi-exclamation-triangle mr-2" />Press Enter to confirm each tag.</span
-					>
+					<span class="text-muted-color-emphasis">
+						<i class="text-warning-600 pi pi-exclamation-triangle mr-2" />Press Enter to confirm each tag.
+					</span>
 				</p>
 				<div class="my-3 first:mt-0 last:mb-0">
 					<AutoComplete
