@@ -4,16 +4,18 @@ namespace App\Http\Resources\OpenApi;
 
 use App\Exceptions\Internal\LycheeLogicException;
 use Dedoc\Scramble\Extensions\TypeToSchemaExtension;
-use Dedoc\Scramble\Support\Generator\Combined\AnyOf;
-use Dedoc\Scramble\Support\Generator\Types\ArrayType;
-use Dedoc\Scramble\Support\Generator\Types\BooleanType;
-use Dedoc\Scramble\Support\Generator\Types\IntegerType;
-use Dedoc\Scramble\Support\Generator\Types\NullType;
-use Dedoc\Scramble\Support\Generator\Types\NumberType;
-use Dedoc\Scramble\Support\Generator\Types\ObjectType;
-use Dedoc\Scramble\Support\Generator\Types\StringType;
+use Dedoc\Scramble\Support\Generator\Reference;
+use Dedoc\Scramble\Support\Generator\Types\ObjectType as OpenApiObjectType;
 use Dedoc\Scramble\Support\Generator\Types\Type as OpenApiType;
+use Dedoc\Scramble\Support\Type\ArrayType;
+use Dedoc\Scramble\Support\Type\BooleanType;
+use Dedoc\Scramble\Support\Type\FloatType;
+use Dedoc\Scramble\Support\Type\IntegerType;
+use Dedoc\Scramble\Support\Type\NullType;
+use Dedoc\Scramble\Support\Type\ObjectType;
+use Dedoc\Scramble\Support\Type\StringType;
 use Dedoc\Scramble\Support\Type\Type;
+use Dedoc\Scramble\Support\Type\Union;
 use Spatie\LaravelData\Data;
 
 class DataToResponse extends TypeToSchemaExtension
@@ -36,23 +38,40 @@ class DataToResponse extends TypeToSchemaExtension
 	 */
 	public function toSchema(Type $type): ?OpenApiType
 	{
-		/** @phpstan-ignore-next-line */
-		$classDef = $this->infer->analyzeClass($type->name);
+		$reflect = new \ReflectionClass($type->name);
+		$props = $reflect->getProperties(\ReflectionProperty::IS_PUBLIC);
 
-		return $this->toObjectType($classDef->name);
+		$ret = new OpenApiObjectType();
+		/** @phpstan-ignore-next-line */
+		collect($props)->each(function ($prop) use ($ret) {
+			$toConvertType = $this->convertReflected($prop->getType());
+			$ret->addProperty($prop->name, $this->openApiTransformer->transform($toConvertType));
+		});
+
+		return $ret;
+	}
+
+	/**
+	 * Set a reference to that object in the return.
+	 *
+	 * @param ObjectType $type
+	 *
+	 * @return Reference
+	 */
+	public function reference(ObjectType $type): Reference
+	{
+		return new Reference('schemas', $type->name, $this->components);
 	}
 
 	/**
 	 * Given a type we.
 	 *
-	 * @param \ReflectionNamedType|\ReflectionUnionType|\ReflectionIntersectionType|null $type
-	 *
-	 * @return OpenApiType
+	 * @return Type
 	 *
 	 * @throws \InvalidArgumentException
 	 * @throws LycheeLogicException
 	 */
-	private function convertReflected(\ReflectionNamedType|\ReflectionUnionType|\ReflectionIntersectionType|null $type): OpenApiType
+	private function convertReflected(\ReflectionNamedType|\ReflectionUnionType|null $type): Type
 	{
 		if ($type === null) {
 			return new NullType();
@@ -66,68 +85,42 @@ class DataToResponse extends TypeToSchemaExtension
 			throw new LycheeLogicException('Intersection types are not supported.');
 		}
 
+		/** @phpstan-ignore-next-line @disregard */
 		if ($type->isBuiltin()) {
 			return $this->handleBuiltin($type->getName());
 		}
 
-		return $this->toObjectType($type->getName());
+		if ($type->getName() === 'Spatie\LaravelData\Data') {
+			throw new LycheeLogicException('Spatie\LaravelData\Data should not be used as return type.');
+		}
+
+		if ($type->getName() === 'Illuminate\Support\Collection') {
+			// Refactor me later.
+			return new ArrayType();
+		}
+
+		return new ObjectType($type->getName());
 	}
 
-	private function handleUnionType(\ReflectionUnionType $union): OpenApiType
+	private function handleUnionType(\ReflectionUnionType $union): Type
 	{
-		$anyOf = new AnyOf();
+		/** @phpstan-ignore-next-line @disregard */
 		$types = collect($union->getTypes())->map(fn ($type) => $this->convertReflected($type))->all();
-		$anyOf->setItems($types);
+		$unionType = new Union($types);
 
-		return $anyOf;
+		return $unionType;
 	}
 
-	private function handleBuiltin(string $type): OpenApiType
+	private function handleBuiltin(string $type): Type
 	{
 		return match ($type) {
 			'null' => new NullType(),
 			'int' => new IntegerType(),
-			'float' => new NumberType(),
+			'float' => new FloatType(),
 			'bool' => new BooleanType(),
 			'array' => new ArrayType(),
 			'string' => new StringType(),
 			default => throw new LycheeLogicException('Unknown type: ' . $type),
 		};
-	}
-
-	/** @phpstan-ignore-next-line */
-	private function handleBackedEnum(\ReflectionClass $enum): OpenApiType
-	{
-		$ret = new StringType();
-		$types = collect($enum->getConstants())->map(fn ($type) => $type->value)->all();
-		$ret->enum($types);
-
-		return $ret;
-	}
-
-	private function toObjectType(string $name): OpenApiType
-	{
-		/** @phpstan-ignore-next-line */
-		$reflect = new \ReflectionClass($name);
-		if ($reflect->implementsInterface(\BackedEnum::class)) {
-			return $this->handleBackedEnum($reflect);
-		}
-
-		$props = $reflect->getProperties(\ReflectionProperty::IS_PUBLIC);
-		if ($props === []) {
-			if ($reflect->name === 'Spatie\LaravelData\Data') {
-				throw new LycheeLogicException('Spatie\LaravelData\Data should not be used as return type.');
-			}
-			if ($reflect->name === 'Illuminate\Support\Collection') {
-				// Refactor me later.
-				return new ArrayType();
-			}
-		}
-
-		$ret = new ObjectType();
-		/** @phpstan-ignore-next-line */
-		collect($props)->each(fn ($prop) => $ret->addProperty($prop->name, $this->convertReflected($prop->getType())));
-
-		return $ret;
 	}
 }

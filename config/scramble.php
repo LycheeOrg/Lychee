@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Resources\OpenApi\DataToResponse;
-use Dedoc\Scramble\Http\Middleware\RestrictedDocsAccess;
 
 return [
 	/*

@@ -25,7 +25,7 @@ class SharingController extends Controller
 	 * @param AddSharingRequest $request
 	 * @param Share             $share
 	 *
-	 * @return array<string|int, \App\Http\Resources\Models\AccessPermissionResource>
+	 * @return array<string|int,AccessPermissionResource>
 	 */
 	public function create(AddSharingRequest $request, Share $share): array
 	{
