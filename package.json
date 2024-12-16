@@ -12,7 +12,7 @@
         "@lychee-org/leaflet.photo": "^1.0.0",
         "@popperjs/core": "^2.11.6",
         "@tailwindcss/typography": "^0.5.12",
-        "@types/alpinejs": "^3.13.6",
+        "@types/alpinejs": "^3.13.11",
         "@types/leaflet": "^1.9.8",
         "@types/leaflet-rotatedmarker": "^0.2.5",
         "@types/leaflet.markercluster": "^1.5.5",
