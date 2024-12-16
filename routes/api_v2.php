@@ -201,7 +201,6 @@ Route::post('/Maintenance::cleaning', [Admin\Maintenance\Cleaning::class, 'do'])
 Route::get('/Maintenance::jobs', [Admin\Maintenance\FixJobs::class, 'check']);
 Route::post('/Maintenance::jobs', [Admin\Maintenance\FixJobs::class, 'do']);
 Route::get('/Maintenance::tree', [Admin\Maintenance\FixTree::class, 'check']);
-Route::post('/Maintenance::tree', [Admin\Maintenance\FixTree::class, 'do']);
 Route::get('/Maintenance::genSizeVariants', [Admin\Maintenance\GenSizeVariants::class, 'check']);
 Route::post('/Maintenance::genSizeVariants', [Admin\Maintenance\GenSizeVariants::class, 'do']);
 Route::get('/Maintenance::missingFileSize', [Admin\Maintenance\MissingFileSizes::class, 'check']);
