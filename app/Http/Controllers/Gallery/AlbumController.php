@@ -102,7 +102,7 @@ class AlbumController extends Controller
 	/**
 	 * Create a tag album.
 	 *
-	 * @param AddAlbumRequest $request
+	 * @param AddTagAlbumRequest $request
 	 *
 	 * @return string
 	 */
@@ -114,7 +114,7 @@ class AlbumController extends Controller
 	/**
 	 * Update the info of an Album.
 	 *
-	 * @param AddAlbumRequest $request
+	 * @param UpdateAlbumRequest $request
 	 *
 	 * @return EditableBaseAlbumResource
 	 */

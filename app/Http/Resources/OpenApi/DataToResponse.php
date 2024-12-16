@@ -38,11 +38,11 @@ class DataToResponse extends TypeToSchemaExtension
 	 */
 	public function toSchema(Type $type): ?OpenApiType
 	{
+		/** @phpstan-ignore-next-line */
 		$reflect = new \ReflectionClass($type->name);
 		$props = $reflect->getProperties(\ReflectionProperty::IS_PUBLIC);
 
 		$ret = new OpenApiObjectType();
-		/** @phpstan-ignore-next-line */
 		collect($props)->each(function ($prop) use ($ret) {
 			$toConvertType = $this->convertReflected($prop->getType());
 			$ret->addProperty($prop->name, $this->openApiTransformer->transform($toConvertType));
@@ -71,7 +71,7 @@ class DataToResponse extends TypeToSchemaExtension
 	 * @throws \InvalidArgumentException
 	 * @throws LycheeLogicException
 	 */
-	private function convertReflected(\ReflectionNamedType|\ReflectionUnionType|null $type): Type
+	private function convertReflected(\ReflectionNamedType|\ReflectionUnionType|\ReflectionType|null $type): Type
 	{
 		if ($type === null) {
 			return new NullType();
@@ -85,26 +85,24 @@ class DataToResponse extends TypeToSchemaExtension
 			throw new LycheeLogicException('Intersection types are not supported.');
 		}
 
-		/** @phpstan-ignore-next-line @disregard */
+		if (!$type instanceof \ReflectionNamedType) {
+			throw new LycheeLogicException('Unexpected reflection type.');
+		}
+
+		$name = $type->getName();
 		if ($type->isBuiltin()) {
-			return $this->handleBuiltin($type->getName());
+			return $this->handleBuiltin($name);
 		}
 
-		if ($type->getName() === 'Spatie\LaravelData\Data') {
-			throw new LycheeLogicException('Spatie\LaravelData\Data should not be used as return type.');
-		}
-
-		if ($type->getName() === 'Illuminate\Support\Collection') {
-			// Refactor me later.
-			return new ArrayType();
-		}
-
-		return new ObjectType($type->getName());
+		return match ($name) {
+			'Spatie\LaravelData\Data' => throw new LycheeLogicException('Spatie\LaravelData\Data should not be used as return type.'),
+			'Illuminate\Support\Collection' => new ArrayType(), // refactor me later.
+			default => new ObjectType($name),
+		};
 	}
 
 	private function handleUnionType(\ReflectionUnionType $union): Type
 	{
-		/** @phpstan-ignore-next-line @disregard */
 		$types = collect($union->getTypes())->map(fn ($type) => $this->convertReflected($type))->all();
 		$unionType = new Union($types);
 
