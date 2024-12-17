@@ -41,6 +41,13 @@ class PhotoController extends Controller
 {
 	public const DISK_NAME = 'image-upload';
 
+	/**
+	 * Upload a picture.
+	 *
+	 * @param UploadPhotoRequest $request
+	 *
+	 * @return UploadMetaResource
+	 */
 	public function upload(UploadPhotoRequest $request): UploadMetaResource
 	{
 		$meta = $request->meta();
@@ -95,6 +102,14 @@ class PhotoController extends Controller
 		return $meta;
 	}
 
+	/**
+	 * Upload a picture from a URL.
+	 *
+	 * @param FromUrlRequest $request
+	 * @param FromUrl        $fromUrl
+	 *
+	 * @return string
+	 */
 	public function fromUrl(FromUrlRequest $request, FromUrl $fromUrl): string
 	{
 		/** @var int $userId */
@@ -104,6 +119,13 @@ class PhotoController extends Controller
 		return 'success';
 	}
 
+	/**
+	 * Update the info of a picture.
+	 *
+	 * @param EditPhotoRequest $request
+	 *
+	 * @return PhotoResource
+	 */
 	public function update(EditPhotoRequest $request): PhotoResource
 	{
 		$photo = $request->photo();

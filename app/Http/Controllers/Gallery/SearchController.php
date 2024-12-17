@@ -15,7 +15,6 @@ use App\Models\Configs;
 use App\Models\Photo;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Routing\Controller;
-use Spatie\LaravelData\Data;
 
 /**
  * Controller responsible for the config.
@@ -29,7 +28,7 @@ class SearchController extends Controller
 	 *
 	 * @return InitResource
 	 */
-	public function init(InitSearchRequest $request): Data
+	public function init(InitSearchRequest $request): InitResource
 	{
 		return new InitResource();
 	}

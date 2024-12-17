@@ -17,6 +17,13 @@ use Illuminate\Support\Facades\Storage;
  */
 class SettingsController extends Controller
 {
+	/**
+	 * Fetch all the settings available in Lychee.
+	 *
+	 * @param GetAllConfigsRequest $request
+	 *
+	 * @return ConfigCollectionResource
+	 */
 	public function getAll(GetAllConfigsRequest $request): ConfigCollectionResource
 	{
 		$editable_configs = Configs::query()
@@ -27,6 +34,13 @@ class SettingsController extends Controller
 		return new ConfigCollectionResource($editable_configs);
 	}
 
+	/**
+	 * Set a limited number of configurations with the new values.
+	 *
+	 * @param SetConfigsRequest $request
+	 *
+	 * @return ConfigCollectionResource
+	 */
 	public function setConfigs(SetConfigsRequest $request): ConfigCollectionResource
 	{
 		$configs = $request->configs();

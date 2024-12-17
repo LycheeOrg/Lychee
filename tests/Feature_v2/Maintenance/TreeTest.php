@@ -20,26 +20,17 @@ class TreeTest extends BaseApiV2Test
 	{
 		$response = $this->getJsonWithData('Maintenance::tree', []);
 		$this->assertUnauthorized($response);
-
-		$response = $this->postJson('Maintenance::tree');
-		$this->assertUnauthorized($response);
 	}
 
 	public function testUser(): void
 	{
 		$response = $this->actingAs($this->userLocked)->getJsonWithData('Maintenance::tree');
 		$this->assertForbidden($response);
-
-		$response = $this->actingAs($this->userLocked)->postJson('Maintenance::tree');
-		$this->assertForbidden($response);
 	}
 
 	public function testAdmin(): void
 	{
 		$response = $this->actingAs($this->admin)->getJsonWithData('Maintenance::tree');
-		$this->assertOk($response);
-
-		$response = $this->actingAs($this->admin)->postJson('Maintenance::tree');
 		$this->assertOk($response);
 	}
 }

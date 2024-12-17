@@ -22,10 +22,12 @@ use Illuminate\Support\Facades\Auth;
 class SharingController extends Controller
 {
 	/**
+	 * Create a new Sharing link between a user and an album.
+	 *
 	 * @param AddSharingRequest $request
 	 * @param Share             $share
 	 *
-	 * @return array<string|int, \App\Http\Resources\Models\AccessPermissionResource>
+	 * @return array<string|int,AccessPermissionResource>
 	 */
 	public function create(AddSharingRequest $request, Share $share): array
 	{

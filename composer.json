@@ -50,6 +50,7 @@
         "ext-tokenizer": "*",
         "ext-xml": "*",
         "bepsvpt/secure-headers": "^8.0",
+        "dedoc/scramble": "^0.11.30",
         "doctrine/dbal": "^3.1",
         "geocoder-php/cache-provider": "^4.3",
         "geocoder-php/nominatim-provider": "^5.5",

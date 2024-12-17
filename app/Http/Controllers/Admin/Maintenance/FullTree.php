@@ -16,7 +16,8 @@ use Illuminate\Support\Collection;
 class FullTree extends Controller
 {
 	/**
-	 * Clean the path from all files excluding $this->skip.
+	 * Apply the fix suggested.
+	 * ! This may break the installation. Not our problem.
 	 *
 	 * @return void
 	 */
@@ -28,8 +29,7 @@ class FullTree extends Controller
 	}
 
 	/**
-	 * Check whether there are files to be removed.
-	 * If not, we will not display the module to reduce complexity.
+	 * Display the current full tree of albums.
 	 *
 	 * @return Collection<int,AlbumTree>
 	 */

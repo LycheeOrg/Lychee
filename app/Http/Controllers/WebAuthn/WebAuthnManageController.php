@@ -30,6 +30,8 @@ class WebAuthnManageController
 	}
 
 	/**
+	 * Delete a WebAuthn credential.
+	 *
 	 * @throws UnauthenticatedException
 	 */
 	public function delete(DeleteCredentialRequest $request): void
