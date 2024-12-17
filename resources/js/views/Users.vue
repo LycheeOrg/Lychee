@@ -73,6 +73,7 @@ import { useToast } from "primevue/usetoast";
 import { storeToRefs } from "pinia";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
+import UsersService from "@/services/users-service";
 
 const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
@@ -98,6 +99,10 @@ function load() {
 function deleteUser(id: number) {
 	UserManagementService.delete({ id: id }).then(() => {
 		toast.add({ severity: "success", summary: "Success", detail: "User deleted" });
+
+		// Clear user count as it is cachable.
+		UsersService.clearCount();
+
 		load();
 	});
 }
