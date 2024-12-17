@@ -72,6 +72,7 @@ import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import Textarea from "../basic/Textarea.vue";
 import SETag from "@/components/icons/SETag.vue";
+import UsersService from "@/services/users-service";
 
 const lycheeStore = useLycheeStateStore();
 const { is_se_preview_enabled, is_se_enabled } = storeToRefs(lycheeStore);
@@ -120,6 +121,9 @@ function createUser() {
 			quota_kb.value = "0";
 			toast.add({ severity: "success", summary: "Success", detail: "User created", life: 3000 });
 			emits("refresh");
+
+			// Clear user count as it is cachable.
+			UsersService.clearCount();
 		})
 		.catch((e) => {
 			toast.add({ severity: "error", summary: "Error", detail: e.response.data.message, life: 3000 });
