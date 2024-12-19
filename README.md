@@ -14,41 +14,36 @@
 [![Website][website-shield]](https://lycheeorg.github.io)
 [![Documentation][docs-shield]](https://lycheeorg.github.io/docs/)
 [![Changelog][changelog-shield]](https://lycheeorg.github.io/docs/releases.html)
-[![Front end repository][frontend-shield]](https://github.com/LycheeOrg/Lychee-front)
 [![Docker repository][docker-shield]](https://github.com/LycheeOrg/Lychee-Docker)
 [![Gitter][gitter-shield]](https://gitter.im/LycheeOrg/Lobby)
 [![Discord][discord-shield]][discord]
 
+# Lychee: A Stunning and User-Friendly Photo Management System
 
-#### A great looking and easy-to-use photo-management-system.
+Lychee is a free, open-source photo-management tool that runs on your server or web space. Installation is quick and easy, taking just seconds. With Lychee, you can upload, manage, and share your photos seamlessly, just like using a native application. It comes with all the essential features you need, ensuring your photos are stored securely. Read more on our [website](https://LycheeOrg.github.io).
 
-Lychee is a free photo-management tool, which runs on your server or web-space. Installing is a matter of seconds. Upload, manage and share photos like from a native application. Lychee comes with everything you need and all your photos are stored securely. Read more on our [website](https://LycheeOrg.github.io).
+For even more advanced features, consider the Supporter Edition (SE). The SE version offers additional functionality to enhance your experience. Learn more about the Supporter Edition and its benefits [here](https://lycheeorg.github.io/get-supporter-edition).
 
-## Notice: `master` & `alpha` branches
-
-As LycheeOrg is a very small team, we do not have many maintainers. Most of us have an active work/family life, and as a result, it is no longer possible for us to apply proper 4-eyes principle in the coding reviews.
-
-In order to keep our high code quality, the following changes have been applied.
-
-- `master` stays as a stable branch and contains 4-eyes peer-reviewed pull-requests.
-- `alpha` contains the latest changes (i.e. the above mentionned PR) merged with minimal review.
-
-With this change, we hope to strike a balance between decently paced development (on `alpha`) and maintaining a robust core (on `master`).
-
-On Docker, `nightly`/`dev` continues to refer to the latest `master` commit.
-The `alpha` tag is updated daily with the content of the associated branch.
-
-That being said, if you like the gallery and would like to contribute, do not hesitate to open pull request. If you would like to see more functionalities added and help us push Lychee, [Join the team!](https://lycheeorg.github.io/docs/contributions.html#joining-the-team)
-
-### Support the Team
+## Support the Team
 
 We aim to maintain a free open-source photography library with high quality of code.<br>
 Being in control of our own data, our own pictures is something that we value above all.
 
 Through [contributions, donations, and sponsorship](https://github.com/sponsors/LycheeOrg), you allow Lychee to thrive. Your donations directly support demo server costs, continuous enhancements, and most importantly bug fixes!
 
-
 ## Installation
+
+There are three deployment options available. The simplest is **Docker deployment**, as all dependencies are already predefined and configured.
+
+### File-based deployment
+
+Copy the extracted Zip file from https://github.com/LycheeOrg/Lychee/releases to your webserver
+
+### Docker deployment
+
+Alternatively, an official Docker image can be found at [LycheeOrg/Lychee-Docker](https://github.com/LycheeOrg/Lychee-Docker) or on Docker Hub as [lycheeorg/lychee](https://hub.docker.com/r/lycheeorg/lychee).
+
+### Build from Source deployment
 
 To run Lychee, everything you need is a web-server with PHP 8.2 or later and a database (MySQL/MariaDB, PostgreSQL or SQLite). Follow the instructions to install Lychee on your server. This version of Lychee is built on the Laravel framework. To install:
 
@@ -62,25 +57,21 @@ To run Lychee, everything you need is a web-server with PHP 8.2 or later and a d
 
 See detailed instructions on the [Installation](https://lycheeorg.github.io/docs/installation.html) page of our documentation.
 
-### Docker
-
-Alternatively, an official Docker image can be found at [LycheeOrg/Lychee-Docker](https://github.com/LycheeOrg/Lychee-Docker) or on Docker Hub as [lycheeorg/lychee](https://hub.docker.com/r/lycheeorg/lychee).
-
 ### Update
 
-Updating is as easy as it should be.  [Update &#187;](https://lycheeorg.github.io/docs/update.html)
+Updating is as easy as it should be. [Update &#187;](https://lycheeorg.github.io/docs/update.html)
+
+## Configuration
 
 ### Settings
 
 Sign in and click the gear in the top left corner to change your settings. [Settings &#187;][1]
 
-### Build
-
-Lychee is ready to use, right out of the box. If you want to contribute and edit CSS or JS files, you need to rebuild [Lychee-front](https://github.com/LycheeOrg/Lychee-front). [Build &#187;](https://lycheeorg.github.io/docs/frontend.html)
-
-## Advanced Features
+### Advanced Features
 
 Lychee is ready to use straight after installation, but some features require a little more configuration.
+
+## Documentation
 
 ### Keyboard Shortcuts
 
@@ -102,15 +93,25 @@ Lychee uses [ImageMagick](https://www.imagemagick.org) when installed on your se
 
 In order to use the new photos email notification you will need to have configured the **MAIL_** variables in your .env to your mail provider & [setup cron](https://laravel.com/docs/scheduling#running-the-scheduler). Once that is complete you then toggle **Send new photos notification emails** in the [settings][1]. Your users will be able to opt-in to the email notifications by entering their email address in the **Notifications** setting in the sidebar. Photo notifications will be grouped and sent out once a week to the site admin, album owner & anyone who the album is shared with, if their email has been added. The admin or user who added the photo to an album, will not receive a email notification for the photos they added.
 
-## Customizing
-
-You can customize lychee with your own css code. Here you can find a list of available themes.
-
-- [lychee-flat-white-theme](https://github.com/Renset/lychee-flat-white-theme)
-
 ## Troubleshooting
 
 Take a look at the [Documentation](https://lycheeorg.github.io/docs/), particularly the [FAQ](https://lycheeorg.github.io/docs/faq_troubleshooting.html) if you have problems. Discovered a bug? Please create an issue [here](https://github.com/LycheeOrg/Lychee/issues) on GitHub! You can also contact us directly on [gitter (login with your github account)](https://gitter.im/LycheeOrg/Lobby) or on [discord &#187;][discord].
+
+## Notice: `master` & `alpha` branches
+
+As LycheeOrg is a very small team, we do not have many maintainers. Most of us have an active work/family life, and as a result, it is no longer possible for us to apply proper 4-eyes principle in the coding reviews.
+
+In order to keep our high code quality, the following changes have been applied.
+
+- `master` stays as a stable branch and contains 4-eyes peer-reviewed pull-requests.
+- `alpha` contains the latest changes (i.e. the above mentionned PR) merged with minimal review.
+
+With this change, we hope to strike a balance between decently paced development (on `alpha`) and maintaining a robust core (on `master`).
+
+On Docker, `nightly`/`dev` continues to refer to the latest `master` commit.
+The `alpha` tag is updated daily with the content of the associated branch.
+
+That being said, if you like the gallery and would like to contribute, do not hesitate to open pull request. If you would like to see more functionalities added and help us push Lychee, [Join the team!](https://lycheeorg.github.io/docs/contributions.html#joining-the-team)
 
 ## Open Source Community Support
 
@@ -130,7 +131,6 @@ We would like to thank Jetbrains for supporting us with their [Open Source Devel
 [website-shield]: https://img.shields.io/badge/-Website-informational.svg?logo=data:image/png;base64,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
 [docs-shield]: https://img.shields.io/badge/-Documentation-informational.svg?logo=data:image/png;base64,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
 [changelog-shield]: https://img.shields.io/badge/-Changelog-informational.svg?logo=data:image/png;base64,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
-[frontend-shield]: https://img.shields.io/badge/-Lychee--Front-informational.svg?logo=github
 [docker-shield]: https://img.shields.io/badge/-Lychee--Docker-informational.svg?logo=github
 [gitter-shield]: https://img.shields.io/gitter/room/LycheeOrg/Lobby.svg?logo=gitter
 [jetbrains-opensource]: https://www.jetbrains.com/community/opensource/
