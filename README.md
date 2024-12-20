@@ -35,13 +35,13 @@ Through [contributions, donations, and sponsorship](https://github.com/sponsors/
 
 There are three deployment options available. The simplest is **Docker deployment**, as all dependencies are already predefined and configured.
 
-### File-based deployment
-
-Copy the extracted Zip file from https://github.com/LycheeOrg/Lychee/releases to your webserver
-
 ### Docker deployment
 
 Alternatively, an official Docker image can be found at [LycheeOrg/Lychee-Docker](https://github.com/LycheeOrg/Lychee-Docker) or on Docker Hub as [lycheeorg/lychee](https://hub.docker.com/r/lycheeorg/lychee).
+
+### File-based deployment
+
+Copy the extracted Zip file from https://github.com/LycheeOrg/Lychee/releases to your webserver
 
 ### Build from Source deployment
 
