@@ -1,6 +1,6 @@
 <template>
-	<div class="w-full flex flex-wrap md:flex-nowrap gap-2 justify-center items-center">
-		<div class="w-3/6 flex flex-wrap">
+	<div class="w-full flex flex-wrap md:flex-nowrap items-center">
+		<div class="w-9/12 lg:w-8/12 flex flex-wrap">
 			<div class="w-2/3">
 				{{ props.user.username }}
 				<i class="pi pi-crown text-orange-400" v-if="props.user.may_administrate" v-tooltip.top="'admin user'"></i>
@@ -29,12 +29,12 @@
 				/>
 			</template>
 		</div>
-		<Button @click="editUser" severity="contrast" class="border-none w-1/6" :disabled="props.user.may_administrate">
+		<Button @click="editUser" severity="contrast" class="border-none w-1/12 lg:w-2/12" :disabled="props.user.may_administrate">
 			<i class="pi pi-user-edit" /><span class="hidden md:inline">{{ $t("Edit") }}</span>
 		</Button>
 		<Button
 			@click="deleteUser"
-			class="border-none bg-surface text-danger-600 hover:bg-danger-700 hover:text-white w-1/6"
+			class="border-none bg-surface text-danger-600 hover:bg-danger-700 hover:text-white w-1/12 lg:w-2/12"
 			:disabled="props.user.may_administrate"
 		>
 			<i class="pi pi-user-minus" /><span class="hidden md:inline">{{ $t("lychee.DELETE") }}</span></Button

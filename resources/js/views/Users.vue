@@ -9,71 +9,89 @@
 			{{ $t("lychee.USERS") }}
 		</template>
 
-		<template #end> </template>
+		<template #end></template>
 	</Toolbar>
-	<Panel class="border-0 max-w-3xl mx-auto">
-		<div class="w-full mb-10 text-muted-color-emphasis flex items-center gap-4">
-			<div>
-				<p>This page allows you to manage users.</p>
-				<ul class="mt-1">
-					<li class="ml-4 pt-2"><i class="pi pi-upload" /> : When selected, the user can upload content.</li>
-					<li class="ml-4 pt-2"><i class="pi pi-lock-open" /> : When selected, the user can modify their profile (username, password).</li>
-					<li class="ml-4 pt-2" v-if="is_se_enabled">
-						<i class="pi pi-chart-pie" /> : When set, the user has a space quota for pictures (in kB).
-					</li>
-				</ul>
-			</div>
-			<Button @click="createUser" severity="primary" class="border-none p-3">Create a new user</Button>
-		</div>
-		<div class="flex flex-col">
-			<div class="flex flex-wrap md:flex-nowrap gap-2 justify-center border-b border-solid border-b-surface-700 mb-4 pb-4">
-				<div class="w-3/6 flex">
-					<span class="w-2/3 font-bold">{{ $t("lychee.USERNAME") }}</span>
-					<div class="w-1/3 flex justify-evenly">
-						<span class="w-full text-center" v-tooltip.top="'When selected, the user can upload content.'"
-							><i class="pi pi-upload"
-						/></span>
-						<span class="w-full text-center" v-tooltip.top="'When selected, the user can modify their profile (username, password).'">
-							<i class="pi pi-lock-open" />
-						</span>
-						<span
-							v-if="isQuotaEnabled"
-							class="w-full text-center"
-							v-tooltip.top="'When selected, the user is limited in the quatity of picture they can upload (in kB).'"
-						>
-							<i class="pi pi-chart-pie" />
-						</span>
-					</div>
+	<Panel class="border-0 max-w-6xl mx-auto">
+		<div class="flex flex-wrap justify-center">
+			<div class="w-full lg:w-2/3 xl:w-3/6">
+				<p class="text-muted-color-emphasis">This page allows you to manage users.</p>
+				<div class="flex justify-end mt-8 mb-8">
+					<Button @click="createUser" severity="primary" class="border-none p-3">Create a new user</Button>
 				</div>
-				<span class="w-1/6"></span>
-				<span class="w-1/6"></span>
-			</div>
+				<div class="flex flex-col">
+					<div class="flex flex-wrap md:flex-nowrap border-b border-solid border-b-surface-700 mb-4 pb-4">
+						<div class="w-9/12 lg:w-8/12 flex">
+							<span class="w-2/3 font-bold">{{ $t("lychee.USERNAME") }}</span>
+							<div class="w-1/3 flex justify-evenly">
+								<span class="w-full text-center" v-tooltip.top="'When selected, the user can upload content.'"
+									><i class="pi pi-upload"
+								/></span>
+								<span
+									class="w-full text-center"
+									v-tooltip.top="'When selected, the user can modify their profile (username, password).'"
+								>
+									<i class="pi pi-lock-open" />
+								</span>
+								<span
+									v-if="isQuotaEnabled"
+									class="w-full text-center"
+									v-tooltip.top="'When selected, the user is limited in the quatity of picture they can upload (in kB).'"
+								>
+									<i class="pi pi-chart-pie" />
+								</span>
+							</div>
+						</div>
+						<span class="w-1/12 lg:w-2/12"></span>
+						<span class="w-1/12 lg:w-2/12"></span>
+					</div>
 
-			<ListUser
-				v-for="user in users"
-				:key="user.id"
-				:user="user"
-				@delete-user="deleteUser"
-				@edit-user="editUser"
-				:total-used-space="totalUsedSpace"
-				:is-quota-enabled="isQuotaEnabled"
-			/>
+					<ListUser
+						v-for="user in users"
+						:key="user.id"
+						:user="user"
+						@delete-user="deleteUser"
+						@edit-user="editUser"
+						:total-used-space="totalUsedSpace"
+						:is-quota-enabled="isQuotaEnabled"
+					/>
+				</div>
+			</div>
+			<Card class="text-muted-color w-full lg:w-2/3 xl:w-2/6 xl:pl-12" :pt:body:class="'px-0 lg:pt-0'">
+				<template #title>Legend</template>
+				<template #content>
+					<ul class="text-sm">
+						<li class="ml-2 pt-2 flex items-start gap-x-4">
+							<i class="pi pi-upload"></i>
+							<span>When selected, the user can upload content.</span>
+						</li>
+						<li class="ml-2 pt-2 flex items-start gap-x-4">
+							<i class="pi pi-lock-open"></i>
+							<span>When selected, the user can modify their profile (username, password).</span>
+						</li>
+						<li class="ml-2 pt-2 flex items-start gap-x-4" v-if="is_se_enabled">
+							<i class="pi pi-chart-pie"></i>
+							<span>When set, the user has a space quota for pictures (in kB).</span>
+						</li>
+					</ul>
+				</template>
+			</Card>
 		</div>
 	</Panel>
 </template>
 <script setup lang="ts">
 import { computed, ref } from "vue";
+import { storeToRefs } from "pinia";
 import Button from "primevue/button";
 import Panel from "primevue/panel";
 import Toolbar from "primevue/toolbar";
-import CreateEditUser from "@/components/forms/users/CreateEditUser.vue";
-import UserManagementService from "@/services/user-management-service";
-import ListUser from "@/components/forms/users/ListUser.vue";
+import Card from "primevue/card";
 import { useToast } from "primevue/usetoast";
-import { storeToRefs } from "pinia";
-import { useLycheeStateStore } from "@/stores/LycheeState";
+import CreateEditUser from "@/components/forms/users/CreateEditUser.vue";
+import ListUser from "@/components/forms/users/ListUser.vue";
 import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
+import UserManagementService from "@/services/user-management-service";
 import UsersService from "@/services/users-service";
+import { useLycheeStateStore } from "@/stores/LycheeState";
 
 const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
