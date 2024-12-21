@@ -29,7 +29,7 @@
 				/>
 			</template>
 		</div>
-		<Button @click="editUser" severity="contrast" class="border-none w-2/12 lg:w-2/12" :disabled="props.user.may_administrate">
+		<Button @click="editUser" severity="contrast" class="border-none w-1/12 lg:w-2/12" :disabled="props.user.may_administrate">
 			<i class="pi pi-user-edit" /><span class="hidden md:inline">{{ $t("Edit") }}</span>
 		</Button>
 		<Button

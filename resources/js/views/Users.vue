@@ -12,11 +12,9 @@
 		<template #end></template>
 	</Toolbar>
 	<Panel class="border-0 max-w-6xl mx-auto">
-		<div>
-			<p>This page allows you to manage users.</p>
-		</div>
-		<div class="flex flex-wrap justify-between">
+		<div class="flex flex-wrap justify-center">
 			<div class="w-full lg:w-2/3 xl:w-3/6">
+				<p class="text-muted-color-emphasis">This page allows you to manage users.</p>
 				<div class="flex justify-end mt-8 mb-8">
 					<Button @click="createUser" severity="primary" class="border-none p-3">Create a new user</Button>
 				</div>
@@ -28,7 +26,10 @@
 								<span class="w-full text-center" v-tooltip.top="'When selected, the user can upload content.'"
 									><i class="pi pi-upload"
 								/></span>
-								<span class="w-full text-center" v-tooltip.top="'When selected, the user can modify their profile (username, password).'">
+								<span
+									class="w-full text-center"
+									v-tooltip.top="'When selected, the user can modify their profile (username, password).'"
+								>
 									<i class="pi pi-lock-open" />
 								</span>
 								<span
@@ -55,27 +56,25 @@
 					/>
 				</div>
 			</div>
-			<div class="w-full lg:w-2/3 xl:w-2/6 pl-0 xl:pl-12">
-				<Card class="text-gray-500">
-					<template #title>Legend</template>
-					<template #content>
-						<ul class="text-sm">
-							<li class="ml-2 pt-2 flex items-start gap-x-4">
-								<i class="pi pi-upload"></i>
-								<span>When selected, the user can upload content.</span>
-							</li>
-							<li class="ml-2 pt-2 flex items-start gap-x-4">
-								<i class="pi pi-lock-open"></i>
-								<span>When selected, the user can modify their profile (username, password).</span>
-							</li>
-							<li class="ml-2 pt-2 flex items-start gap-x-4" v-if="is_se_enabled">
-								<i class="pi pi-chart-pie"></i>
-								<span>When set, the user has a space quota for pictures (in kB).</span>
-							</li>
-						</ul>
-					</template>
-				</Card>
-			</div>
+			<Card class="text-muted-color w-full lg:w-2/3 xl:w-2/6 xl:pl-12" :pt:body:class="'px-0 lg:pt-0'">
+				<template #title>Legend</template>
+				<template #content>
+					<ul class="text-sm">
+						<li class="ml-2 pt-2 flex items-start gap-x-4">
+							<i class="pi pi-upload"></i>
+							<span>When selected, the user can upload content.</span>
+						</li>
+						<li class="ml-2 pt-2 flex items-start gap-x-4">
+							<i class="pi pi-lock-open"></i>
+							<span>When selected, the user can modify their profile (username, password).</span>
+						</li>
+						<li class="ml-2 pt-2 flex items-start gap-x-4" v-if="is_se_enabled">
+							<i class="pi pi-chart-pie"></i>
+							<span>When set, the user has a space quota for pictures (in kB).</span>
+						</li>
+					</ul>
+				</template>
+			</Card>
 		</div>
 	</Panel>
 </template>
@@ -85,7 +84,7 @@ import { storeToRefs } from "pinia";
 import Button from "primevue/button";
 import Panel from "primevue/panel";
 import Toolbar from "primevue/toolbar";
-import Card from 'primevue/card';
+import Card from "primevue/card";
 import { useToast } from "primevue/usetoast";
 import CreateEditUser from "@/components/forms/users/CreateEditUser.vue";
 import ListUser from "@/components/forms/users/ListUser.vue";
