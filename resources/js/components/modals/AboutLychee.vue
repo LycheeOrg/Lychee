@@ -1,12 +1,12 @@
 <template>
-	<Dialog v-model:visible="visible" modal pt:root:class="border-none" pt:mask:style="backdrop-filter: blur(2px)" @hide="closeCallback">
+	<Dialog v-model:visible="visible" modal pt:root:class="border-none m-3" pt:mask:style="backdrop-filter: blur(2px)" @hide="closeCallback">
 		<template #container="{ closeCallback }">
-			<div class="flex flex-col gap-4 bg-gradient-to-b from-bg-300 to-bg-400 relative w-[500px] text-sm rounded-md text-muted-color">
+			<div class="flex flex-col gap-4 bg-gradient-to-b from-bg-300 to-bg-400 relative max-w-[500px] text-sm rounded-md text-muted-color">
 				<div class="p-9 text-muted-color-emphasis" v-if="version">
 					<h1 class="mb-6 text-center text-xl font-bold">
 						Lychee
-						<span class="text-primary-500" v-if="is_se_enabled">SE</span>
 						<span class="version-number">{{ version.version ?? "" }}</span>
+						<span class="text-primary-500" v-if="is_se_enabled"> SE</span>
 						<span class="text-sm font-normal up-to-date-release text-center" v-if="version.is_new_release_available">
 							–
 							<a
