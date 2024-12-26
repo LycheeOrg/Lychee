@@ -20,13 +20,7 @@ class PagesTest extends BaseV2Test
 	{
 		collect([
 			'/',
-			'/settings',
 			'/diagnostics',
-			'/jobs',
-			'/sharing',
-			'/users',
-			'/maintenance',
-			'/profile',
 			'/gallery',
 			'/gallery/' . $this->album4->id,
 			'/gallery/' . $this->album4->id . '/' . $this->photo4->id,
@@ -41,6 +35,21 @@ class PagesTest extends BaseV2Test
 			$response = $this->get($addr);
 			$this->assertOk($response);
 			$response->assertViewIs('vueapp');
+		});
+	}
+
+	public function testRedirect(): void
+	{
+		collect([
+			'/settings',
+			'/jobs',
+			'/sharing',
+			'/users',
+			'/maintenance',
+			'/profile',
+		])->each(function ($addr) {
+			$response = $this->get($addr);
+			$this->assertRedirect($response);
 		});
 	}
 
