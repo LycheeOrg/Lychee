@@ -1,5 +1,12 @@
 <template>
-	<Button as="a" :href="props.config.back_button_url" severity="secondary" text class="border-none">
+	<Button
+		as="a"
+		:href="props.config.back_button_url"
+		severity="secondary"
+		text
+		class="border-none"
+		:class="props.config.back_button_enabled ? '' : 'hidden'"
+	>
 		<i class="pi pi-home sm:hidden" />
 		<span class="hidden sm:inline">{{ props.config.back_button_text }}</span>
 	</Button>
