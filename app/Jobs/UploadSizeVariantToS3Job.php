@@ -86,6 +86,10 @@ class UploadSizeVariantToS3Job implements ShouldQueue
 
 		$photo = Photo::query()->where('id', '=', $this->variant->photo_id)->first();
 
+		if ($photo->live_photo_short_path === null) {
+			return;
+		}
+
 		Storage::disk(StorageDiskType::S3->value)->writeStream(
 			$photo->live_photo_short_path,
 			Storage::disk(StorageDiskType::LOCAL->value)->readStream($photo->live_photo_short_path)
