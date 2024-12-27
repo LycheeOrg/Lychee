@@ -5,7 +5,7 @@
 			The height of the footer is always the natural height
 			of its child elements
 			-->
-		<div id="home_socials" class="w-full" v-if="footerData.footer_show_social_media">
+		<div id="home_socials" class="w-full text-muted-color text-base space-x-2" v-if="footerData.footer_show_social_media">
 			<a
 				v-if="footerData.sm_facebook_url !== ''"
 				:href="footerData.sm_facebook_url"
