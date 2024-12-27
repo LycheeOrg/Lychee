@@ -7,15 +7,24 @@
 <head>
     <meta charset="UTF-8">
     <x-meta />
+    <style>
+        body.dark {
+            /* var(--p-surface-900); */
+            /* = var(--p-zinc-900);  */
+            background-color: #18181b;
+        }
+    </style>
     @vite(['resources/js/app.ts','resources/sass/app.scss'])
+    {{-- @vite(['resources/sass/app.scss']) --}}
 </head>
 @if((Configs::get()['dark_mode_enabled'] ?? '1') == '1')
     <body class="antialiased dark">
 @else
     <body class="antialiased">
 @endif
-        <x-warning-misconfiguration />
+    <x-warning-misconfiguration />
     @include('includes.svg')
+    @include('includes.lychee')
 	<div id="app" class="w-full3">
         <app/>
 	</div>
