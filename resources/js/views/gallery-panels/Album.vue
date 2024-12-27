@@ -14,6 +14,7 @@
 				:user="user"
 				@refresh="refresh"
 				@toggle-slide-show="toggleSlideShow"
+				@toggle-details="toggleDetails"
 			/>
 		</Collapse>
 		<Unlock :albumid="albumid" :visible="isPasswordProtected" @reload="refresh" @fail="is_login_open = true" />
@@ -232,7 +233,7 @@ const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
 togglableStore.resetSearch();
 
-const { onScroll, setScroll } = useScrollable(togglableStore, albumid);
+const { onScroll, setScroll, scrollToTop } = useScrollable(togglableStore, albumid);
 const { is_full_screen, is_login_open, is_slideshow_active, is_upload_visible, list_upload_files } = storeToRefs(togglableStore);
 const { are_nsfw_visible, nsfw_consented, is_se_enabled } = storeToRefs(lycheeStore);
 
@@ -285,6 +286,10 @@ function toggleStatistics() {
 	if (is_se_enabled) {
 		areStatisticsOpen.value = !areStatisticsOpen.value;
 	}
+}
+
+function toggleDetails() {
+	scrollToTop();
 }
 
 const {

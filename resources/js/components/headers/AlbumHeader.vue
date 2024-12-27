@@ -86,7 +86,6 @@ const props = defineProps<{
 	user: App.Http.Resources.Models.UserResource;
 }>();
 
-const toggleDetails = () => (are_details_open.value = !are_details_open.value);
 const togglableStore = useTogglablesStateStore();
 const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
@@ -101,6 +100,7 @@ const { toggleCreateAlbum, isImportFromLinkOpen, toggleImportFromLink, isImportF
 const emits = defineEmits<{
 	refresh: [];
 	toggleSlideShow: [];
+	toggleDetails: [];
 }>();
 
 function toggleUploadTrack() {
@@ -109,6 +109,13 @@ function toggleUploadTrack() {
 
 function toggleSlideShow() {
 	emits("toggleSlideShow");
+}
+
+function toggleDetails() {
+	are_details_open.value = !are_details_open.value;
+	if (are_details_open.value) {
+		emits("toggleDetails");
+	}
 }
 
 function uploadTrack(e: Event) {

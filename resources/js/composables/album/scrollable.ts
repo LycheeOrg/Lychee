@@ -21,8 +21,14 @@ export function useScrollable(toggleableStore: TogglablesStateStore, path: Ref<s
 		}
 	}
 
+	function scrollToTop() {
+		const e = document.getElementById("galleryView") as HTMLElement;
+		e.scrollTop = 0;
+	}
+
 	return {
 		onScroll,
 		setScroll,
+		scrollToTop,
 	};
 }
