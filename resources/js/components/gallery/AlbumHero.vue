@@ -104,7 +104,6 @@ const props = defineProps<{
 	hasHidden: boolean;
 }>();
 
-console.log(props.hasHidden);
 const emits = defineEmits<{
 	"open-sharing-modal": [];
 	"open-statistics": [];
