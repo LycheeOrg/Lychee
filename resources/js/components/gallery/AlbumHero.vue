@@ -59,6 +59,24 @@
 				>
 					<i class="pi pi-chart-scatter" />
 				</a>
+				<template v-if="isTouchDevice() && user?.id !== null">
+					<a
+						v-if="props.hasHidden && lycheeStore.are_nsfw_visible"
+						class="flex-shrink-0 px-3 cursor-pointer text-muted-color inline-block transform duration-300 hover:scale-150 hover:text-color"
+						:title="'show hidden'"
+						@click="lycheeStore.are_nsfw_visible = false"
+					>
+						<i class="pi pi pi-eye-slash" />
+					</a>
+					<a
+						v-if="props.hasHidden && !lycheeStore.are_nsfw_visible"
+						class="flex-shrink-0 px-3 cursor-pointer text-muted-color inline-block transform duration-300 hover:scale-150 hover:text-color"
+						:title="'show hidden'"
+						@click="lycheeStore.are_nsfw_visible = true"
+					>
+						<i class="pi pi-eye" />
+					</a>
+				</template>
 			</div>
 			<div
 				v-if="props.album.preFormattedData.description"
@@ -72,18 +90,21 @@
 import AlbumService from "@/services/album-service";
 import { useAuthStore } from "@/stores/Auth";
 import { useLycheeStateStore } from "@/stores/LycheeState";
+import { isTouchDevice } from "@/utils/keybindings-utils";
 import { storeToRefs } from "pinia";
 import Card from "primevue/card";
 
 const auth = useAuthStore();
 const lycheeStore = useLycheeStateStore();
-const { is_se_enabled, is_se_preview_enabled } = storeToRefs(lycheeStore);
+const { is_se_enabled, is_se_preview_enabled, are_nsfw_visible } = storeToRefs(lycheeStore);
 const { user } = storeToRefs(auth);
 
 const props = defineProps<{
 	album: App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.TagAlbumResource | App.Http.Resources.Models.SmartAlbumResource;
+	hasHidden: boolean;
 }>();
 
+console.log(props.hasHidden);
 const emits = defineEmits<{
 	"open-sharing-modal": [];
 	"open-statistics": [];

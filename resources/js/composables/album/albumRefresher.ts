@@ -11,6 +11,7 @@ export function useAlbumRefresher(albumId: Ref<string>, auth: AuthStore, isLogin
 	const smartAlbum = ref<App.Http.Resources.Models.SmartAlbumResource | undefined>(undefined);
 	const album = computed(() => modelAlbum.value || tagAlbum.value || smartAlbum.value);
 	const isAlbumConsented = ref(false);
+	const hasHidden = computed(() => modelAlbum.value !== undefined && modelAlbum.value.albums.filter((album) => album.is_nsfw).length > 0);
 
 	const photos = ref<App.Http.Resources.Models.PhotoResource[]>([]);
 	const config = ref<App.Http.Resources.GalleryConfigs.AlbumConfig | undefined>(undefined);
@@ -76,6 +77,7 @@ export function useAlbumRefresher(albumId: Ref<string>, auth: AuthStore, isLogin
 		rights,
 		photos,
 		config,
+		hasHidden,
 		loadUser,
 		loadAlbum,
 		refresh,

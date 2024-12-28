@@ -112,6 +112,7 @@ const props = defineProps<{
 		back_button_url: string;
 		login_button_position: string;
 	};
+	hasHidden: boolean;
 }>();
 
 const emits = defineEmits<{
@@ -279,13 +280,13 @@ const menu = computed(() =>
 			icon: "pi pi-eye-slash",
 			type: "fn",
 			callback: () => (lycheeStore.are_nsfw_visible = false),
-			if: isTouchDevice() && lycheeStore.are_nsfw_visible,
+			if: isTouchDevice() && props.hasHidden && lycheeStore.are_nsfw_visible,
 		},
 		{
 			icon: "pi pi-eye",
 			type: "fn",
 			callback: () => (lycheeStore.are_nsfw_visible = true),
-			if: isTouchDevice() && !lycheeStore.are_nsfw_visible,
+			if: isTouchDevice() && props.hasHidden && !lycheeStore.are_nsfw_visible,
 		},
 	].filter((item) => item.if),
 ) as ComputedRef<MenuRight[]>;
