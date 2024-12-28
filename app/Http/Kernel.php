@@ -72,6 +72,7 @@ class Kernel extends HttpKernel
 			\Illuminate\View\Middleware\ShareErrorsFromSession::class,
 			\App\Http\Middleware\VerifyCsrfToken::class,
 			\Illuminate\Routing\Middleware\SubstituteBindings::class,
+			'response_cache',
 		],
 	];
 
@@ -95,5 +96,6 @@ class Kernel extends HttpKernel
 		'support' => \LycheeVerify\Http\Middleware\VerifySupporterStatus::class,
 		'config_integrity' => \App\Http\Middleware\ConfigIntegrity::class,
 		'unlock_with_password' => \App\Http\Middleware\UnlockWithPassword::class,
+		'response_cache' => \App\Http\Middleware\ResponseCache::class,
 	];
 }
