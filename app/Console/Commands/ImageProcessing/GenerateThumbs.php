@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands\ImageProcessing;
 
+use App\Assets\Features;
 use App\Contracts\Exceptions\ExternalLycheeException;
 use App\Contracts\Exceptions\LycheeException;
 use App\Contracts\Models\SizeVariantFactory;
@@ -60,6 +61,13 @@ class GenerateThumbs extends Command
 
 				return 1;
 			}
+
+			if (Features::active('use-s3')) {
+				$this->error('This tool does not support S3 file storage.');
+
+				return 1;
+			}
+
 			$sizeVariantType = self::SIZE_VARIANTS[$sizeVariantName];
 
 			$amount = (int) $this->argument('amount');
