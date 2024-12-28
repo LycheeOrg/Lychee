@@ -3,6 +3,7 @@
 namespace App\Metadata\Cache;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 final readonly class RouteCacheManager
@@ -183,5 +184,15 @@ final readonly class RouteCacheManager
 		}
 
 		return $keys;
+	}
+
+	public function clearTag(string $tag): void
+	{
+		$keys = $this->retrieveKeysForTag($tag);
+		// TODO: refine.
+
+		foreach ($keys as $key) {
+			Cache::forget($key);
+		}
 	}
 }
