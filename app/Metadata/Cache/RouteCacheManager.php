@@ -63,7 +63,7 @@ final readonly class RouteCacheManager
 
 			'api/v2/Search' => false, // TODO: how to support pagination ?? new RouteCacheConfig(tag: 'gallery', user_dependant: true, extra: ['album_id', 'terms']),
 			'api/v2/Search::init' => new RouteCacheConfig(tag: 'settings'),
-			'api/v2/Settings' => new RouteCacheConfig(tag: 'settings'),
+			'api/v2/Settings' => new RouteCacheConfig(tag: 'settings', user_dependant: true),
 			'api/v2/Settings::getLanguages' => new RouteCacheConfig(tag: 'settings'),
 			'api/v2/Sharing' => new RouteCacheConfig(tag: 'gallery', user_dependant: true, extra: ['album_id']),
 			'api/v2/Sharing::all' => new RouteCacheConfig(tag: 'gallery', user_dependant: true),
@@ -90,14 +90,12 @@ final readonly class RouteCacheManager
 			return false;
 		}
 
-		Log::info('ResponseCache: Cache config for ' . $uri);
-
 		return $this->cache_list[$uri];
 	}
 
 	public function getKey(Request $request, RouteCacheConfig $config): string
 	{
-		$key = self::REQUEST . $request->url();
+		$key = self::REQUEST . $request->route()->uri;
 
 		// If the request is user dependant, we add the user id to the key.
 		// That way we ensure that this does not contaminate between logged in and looged out users.
