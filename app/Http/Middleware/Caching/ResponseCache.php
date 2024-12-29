@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Middleware;
+namespace App\Http\Middleware\Caching;
 
 use App\Metadata\Cache\RouteCacheConfig;
 use App\Metadata\Cache\RouteCacheManager;
@@ -25,8 +25,8 @@ class ResponseCache
 	/**
 	 * Handle an incoming request.
 	 *
-	 * @param Request  $request
-	 * @param \Closure $next
+	 * @param Request                                                                                           $request
+	 * @param \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse) $next
 	 *
 	 * @return Response
 	 *
@@ -43,7 +43,7 @@ class ResponseCache
 			return $next($request);
 		}
 
-		$config = $this->route_cache_manager->getConfig($request->route()->uri);
+		$config = $this->route_cache_manager->get_config($request->route()->uri);
 
 		// Check with the route manager if we can cache this route.
 		if ($config === false) {
@@ -72,7 +72,7 @@ class ResponseCache
 			return $next($request);
 		}
 
-		$key = $this->route_cache_manager->getKey($request, $config);
+		$key = $this->route_cache_manager->get_key($request, $config);
 
 		return Cache::remember($key, Configs::getValueAsInt('cache_ttl'), fn () => $next($request));
 	}
@@ -87,7 +87,7 @@ class ResponseCache
 	 */
 	private function cacheWithTags(Request $request, \Closure $next, RouteCacheConfig $config): mixed
 	{
-		$key = $this->route_cache_manager->getKey($request, $config);
+		$key = $this->route_cache_manager->get_key($request, $config);
 
 		return Cache::tags([$config->tag])->remember($key, Configs::getValueAsInt('cache_ttl'), fn () => $next($request));
 	}

@@ -1,8 +1,6 @@
 <?php
 
-// app/Http/Middleware/CacheControlMiddleware.php
-
-namespace App\Http\Middleware;
+namespace App\Http\Middleware\Caching;
 
 use Illuminate\Http\Request;
 

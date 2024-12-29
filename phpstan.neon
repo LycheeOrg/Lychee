@@ -126,7 +126,7 @@ parameters:
 		# 	paths:
 		# 		- tests
 		-
-			message: '#Dynamic call to static method PHPUnit\\Framework\\Assert::assert(Is)?(Not)?(True|False|Equals|Int|Null|Empty|Count)\(\)#'
+			message: '#Dynamic call to static method PHPUnit\\Framework\\Assert::assert(Is)?(Not)?(True|False|Equals|Int|Null|Empty|Count|Array|Object)\(\)#'
 			paths:
 				- tests
 		-
@@ -134,7 +134,7 @@ parameters:
 			paths:
 				- tests
 		-
-			message: '#Dynamic call to static method PHPUnit\\Framework\\Assert::assertString(Not)?(Contains|Ends|Starts)(String|With)\(\)#'
+			message: '#Dynamic call to static method PHPUnit\\Framework\\Assert::assert(String)?(Not)?(Contains|Ends|Starts)(String|With)?\(\)#'
 			paths:
 				- tests
 		-
