@@ -2,8 +2,10 @@
 
 namespace App\Metadata\Cache;
 
+use App\Contracts\Http\Requests\RequestAttribute;
+use App\Enum\CacheTag;
+use App\Exceptions\Internal\LycheeLogicException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 final readonly class RouteCacheManager
@@ -23,28 +25,28 @@ final readonly class RouteCacheManager
 	public function __construct()
 	{
 		$this->cache_list = [
-			'api/v2/Album' => new RouteCacheConfig(tag: 'gallery', user_dependant: true, extra: ['album_id']),
+			'api/v2/Album' => new RouteCacheConfig(tag: CacheTag::GALLERY, user_dependant: true, extra: [RequestAttribute::ALBUM_ID_ATTRIBUTE]),
 			'api/v2/Album::getTargetListAlbums' => false, // TODO: cache me later.
-			'api/v2/Albums' => new RouteCacheConfig(tag: 'gallery', user_dependant: true),
-			'api/v2/Auth::config' => new RouteCacheConfig(tag: 'auth', user_dependant: true),
-			'api/v2/Auth::rights' => new RouteCacheConfig(tag: 'auth', user_dependant: true),
-			'api/v2/Auth::user' => new RouteCacheConfig(tag: 'user', user_dependant: true),
+			'api/v2/Albums' => new RouteCacheConfig(tag: CacheTag::GALLERY, user_dependant: true),
+			'api/v2/Auth::config' => new RouteCacheConfig(tag: CacheTag::SETTINGS, user_dependant: true),
+			'api/v2/Auth::rights' => new RouteCacheConfig(tag: CacheTag::SETTINGS, user_dependant: true),
+			'api/v2/Auth::user' => new RouteCacheConfig(tag: CacheTag::USER, user_dependant: true),
 			'api/v2/Diagnostics' => false,
 			'api/v2/Diagnostics::config' => false,
-			'api/v2/Diagnostics::info' => new RouteCacheConfig(tag: 'settings', user_dependant: true),
-			'api/v2/Diagnostics::permissions' => new RouteCacheConfig(tag: 'settings', user_dependant: true),
-			'api/v2/Diagnostics::space' => new RouteCacheConfig(tag: 'settings', user_dependant: true),
+			'api/v2/Diagnostics::info' => new RouteCacheConfig(tag: CacheTag::SETTINGS, user_dependant: true),
+			'api/v2/Diagnostics::permissions' => new RouteCacheConfig(tag: CacheTag::SETTINGS, user_dependant: true),
+			'api/v2/Diagnostics::space' => new RouteCacheConfig(tag: CacheTag::SETTINGS, user_dependant: true),
 
 			// Response must be different for each call.
 			'api/v2/Frame' => false,
 
-			'api/v2/Gallery::Footer' => new RouteCacheConfig(tag: 'settings'),
-			'api/v2/Gallery::Init' => new RouteCacheConfig(tag: 'settings'),
-			'api/v2/Gallery::getLayout' => new RouteCacheConfig(tag: 'settings'),
-			'api/v2/Gallery::getUploadLimits' => new RouteCacheConfig(tag: 'settings'),
+			'api/v2/Gallery::Footer' => new RouteCacheConfig(tag: CacheTag::SETTINGS),
+			'api/v2/Gallery::Init' => new RouteCacheConfig(tag: CacheTag::SETTINGS),
+			'api/v2/Gallery::getLayout' => new RouteCacheConfig(tag: CacheTag::SETTINGS),
+			'api/v2/Gallery::getUploadLimits' => new RouteCacheConfig(tag: CacheTag::SETTINGS),
 
 			'api/v2/Jobs' => false, // TODO: fix me later
-			'api/v2/LandingPage' => new RouteCacheConfig(tag: 'settings'),
+			'api/v2/LandingPage' => new RouteCacheConfig(tag: CacheTag::SETTINGS),
 
 			// We do not need to cache those.
 			'api/v2/Maintenance::cleaning' => false,
@@ -55,26 +57,26 @@ final readonly class RouteCacheManager
 			'api/v2/Maintenance::tree' => false,
 			'api/v2/Maintenance::update' => false,
 
-			'api/v2/Map' => new RouteCacheConfig(tag: 'gallery', user_dependant: true, extra: ['album_id']),
-			'api/v2/Map::provider' => new RouteCacheConfig(tag: 'settings'),
-			'api/v2/Oauth' => new RouteCacheConfig(tag: 'user', user_dependant: true),
+			'api/v2/Map' => new RouteCacheConfig(tag: CacheTag::GALLERY, user_dependant: true, extra: [RequestAttribute::ALBUM_ID_ATTRIBUTE]),
+			'api/v2/Map::provider' => new RouteCacheConfig(tag: CacheTag::SETTINGS),
+			'api/v2/Oauth' => new RouteCacheConfig(tag: CacheTag::USER, user_dependant: true),
 
 			// Response must be different for each call.
 			'api/v2/Photo::random' => false,
 
-			'api/v2/Search' => false, // TODO: how to support pagination ?? new RouteCacheConfig(tag: 'gallery', user_dependant: true, extra: ['album_id', 'terms']),
-			'api/v2/Search::init' => new RouteCacheConfig(tag: 'settings'),
-			'api/v2/Settings' => new RouteCacheConfig(tag: 'settings', user_dependant: true),
-			'api/v2/Settings::getLanguages' => new RouteCacheConfig(tag: 'settings'),
-			'api/v2/Sharing' => new RouteCacheConfig(tag: 'gallery', user_dependant: true, extra: ['album_id']),
-			'api/v2/Sharing::all' => new RouteCacheConfig(tag: 'gallery', user_dependant: true),
-			'api/v2/Statistics::albumSpace' => new RouteCacheConfig(tag: 'statistics', user_dependant: true),
-			'api/v2/Statistics::sizeVariantSpace' => new RouteCacheConfig(tag: 'statistics', user_dependant: true),
-			'api/v2/Statistics::totalAlbumSpace' => new RouteCacheConfig(tag: 'statistics', user_dependant: true),
-			'api/v2/Statistics::userSpace' => new RouteCacheConfig(tag: 'statistics', user_dependant: true),
-			'api/v2/UserManagement' => new RouteCacheConfig(tag: 'users', user_dependant: true),
-			'api/v2/Users' => new RouteCacheConfig(tag: 'users', user_dependant: true),
-			'api/v2/Users::count' => new RouteCacheConfig(tag: 'users', user_dependant: true),
+			'api/v2/Search' => false, // TODO: how to support pagination ?? new RouteCacheConfig(tag: CacheTag::GALLERY, user_dependant: true, extra: ['album_id', 'terms']),
+			'api/v2/Search::init' => new RouteCacheConfig(tag: CacheTag::SETTINGS),
+			'api/v2/Settings' => new RouteCacheConfig(tag: CacheTag::SETTINGS, user_dependant: true),
+			'api/v2/Settings::getLanguages' => new RouteCacheConfig(tag: CacheTag::SETTINGS),
+			'api/v2/Sharing' => new RouteCacheConfig(tag: CacheTag::GALLERY, user_dependant: true, extra: [RequestAttribute::ALBUM_ID_ATTRIBUTE]),
+			'api/v2/Sharing::all' => new RouteCacheConfig(tag: CacheTag::GALLERY, user_dependant: true),
+			'api/v2/Statistics::albumSpace' => new RouteCacheConfig(tag: CacheTag::STATISTICS, user_dependant: true),
+			'api/v2/Statistics::sizeVariantSpace' => new RouteCacheConfig(tag: CacheTag::STATISTICS, user_dependant: true),
+			'api/v2/Statistics::totalAlbumSpace' => new RouteCacheConfig(tag: CacheTag::STATISTICS, user_dependant: true),
+			'api/v2/Statistics::userSpace' => new RouteCacheConfig(tag: CacheTag::STATISTICS, user_dependant: true),
+			'api/v2/UserManagement' => new RouteCacheConfig(tag: CacheTag::USERS, user_dependant: true),
+			'api/v2/Users' => new RouteCacheConfig(tag: CacheTag::USERS, user_dependant: true),
+			'api/v2/Users::count' => new RouteCacheConfig(tag: CacheTag::USERS, user_dependant: true),
 			'api/v2/Version' => false,
 			'api/v2/WebAuthn' => false,
 
@@ -83,7 +85,7 @@ final readonly class RouteCacheManager
 		];
 	}
 
-	public function getConfig(string $uri): RouteCacheConfig|false
+	public function get_config(string $uri): RouteCacheConfig|false
 	{
 		if (!array_key_exists($uri, $this->cache_list)) {
 			Log::warning('ResponseCache: No cache config for ' . $uri);
@@ -94,7 +96,7 @@ final readonly class RouteCacheManager
 		return $this->cache_list[$uri];
 	}
 
-	public function getKey(Request $request, RouteCacheConfig $config): string
+	public function get_key(Request $request, RouteCacheConfig $config): string
 	{
 		$key = self::REQUEST . $request->route()->uri;
 
@@ -119,15 +121,25 @@ final readonly class RouteCacheManager
 	/**
 	 * Generate a key for the cache.
 	 *
-	 * @param RouteCacheConfig     $config
 	 * @param string               $uri
 	 * @param int|null             $userId
 	 * @param array<string,string> $extras
+	 * @param ?RouteCacheConfig    $config
 	 *
 	 * @return string
 	 */
-	public function genKey(RouteCacheConfig $config, string $uri, ?int $userId, array $extras): string
-	{
+	public function gen_key(
+		string $uri,
+		?int $userId = null,
+		array $extras = [],
+		?RouteCacheConfig $config = null,
+	): string {
+		$config ??= $this->cache_list[$uri] ?? throw new LycheeLogicException('No cache config for ' . $uri);
+
+		if ($config === false) {
+			throw new LycheeLogicException($uri . ' is not supposed to be cached.');
+		}
+
 		$key = self::REQUEST . $uri;
 
 		// If the request is user dependant, we add the user id to the key.
@@ -152,9 +164,9 @@ final readonly class RouteCacheManager
 	 *
 	 * @param string $uri
 	 *
-	 * @return string|false
+	 * @return CacheTag|false
 	 */
-	public function getTag(string $uri): string|false
+	public function get_tag(string $uri): CacheTag|false
 	{
 		if (!array_key_exists($uri, $this->cache_list)) {
 			return false;
@@ -170,29 +182,26 @@ final readonly class RouteCacheManager
 	/**
 	 * Given a tag, return all the routes associated to this tag.
 	 *
-	 * @param string $tag
+	 * @param CacheTag $tag
 	 *
 	 * @return string[]
 	 */
-	public function retrieveKeysForTag(string $tag): array
+	public function retrieve_keys_for_tag(CacheTag $tag, bool $with_extra = false, bool $without_extra = false): array
 	{
 		$keys = [];
 		foreach ($this->cache_list as $uri => $value) {
-			if (is_array($value) && array_key_exists('tag', $value) && $value['tag'] === $tag) {
+			if (
+				$value !== false &&
+				$value->tag === $tag &&
+				// Either with extra is set to false => ignore condition
+				// Or with extra is set to true and we have extra parameters => ignore condition
+				($with_extra === false || count($value->extra) > 0) &&
+				($without_extra === false || count($value->extra) === 0)
+			) {
 				$keys[] = $uri;
 			}
 		}
 
 		return $keys;
-	}
-
-	public function clearTag(string $tag): void
-	{
-		$keys = $this->retrieveKeysForTag($tag);
-		// TODO: refine.
-
-		foreach ($keys as $key) {
-			Cache::forget($key);
-		}
 	}
 }

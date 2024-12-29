@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enum\CacheTag;
+use App\Events\TaggedRouteCacheUpdated;
 use App\Exceptions\InsufficientFilesystemPermissions;
 use App\Http\Requests\Settings\GetAllConfigsRequest;
 use App\Http\Requests\Settings\SetConfigsRequest;
@@ -49,6 +51,7 @@ class SettingsController extends Controller
 		});
 
 		Configs::invalidateCache();
+		TaggedRouteCacheUpdated::dispatch(CacheTag::SETTINGS);
 
 		return new ConfigCollectionResource(Configs::orderBy('cat', 'asc')->get());
 	}
