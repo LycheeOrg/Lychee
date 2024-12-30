@@ -21,7 +21,7 @@ import { useSlideshowFunction } from "@/composables/photo/slideshow";
 import AlbumService from "@/services/album-service";
 import { onKeyStroke } from "@vueuse/core";
 import Button from "primevue/button";
-import { ref } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 
 const props = defineProps<{
@@ -52,7 +52,20 @@ function start() {
 	});
 }
 
-start();
+onMounted(() => {
+	let elem = document.getElementsByTagName("body")[0];
+
+	elem.requestFullscreen()
+		.then(() => {})
+		.catch((err) => console.log(err));
+
+	start();
+});
+
+onUnmounted(() => {
+	document.exitFullscreen();
+	clearTimeouts();
+});
 
 function goBack() {
 	clearTimeouts();
