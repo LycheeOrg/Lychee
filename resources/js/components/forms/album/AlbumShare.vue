@@ -7,7 +7,7 @@
 				</div>
 				<div class="w-1/2 flex justify-around items-center">
 					<i class="pi pi-eye" v-tooltip.top="'Grants read access'" />
-					<i class="pi pi-window-maximize" v-tooltip.top="'Grants full photo access'" />
+					<i class="pi pi-window-maximize" v-tooltip.top="'Grants original photo access'" />
 					<i class="pi pi-download" v-tooltip.top="'Grants download'" />
 					<i class="pi pi-upload" v-tooltip.top="'Grants upload'" />
 					<i class="pi pi-file-edit" v-tooltip.top="'Grants edit'" />
