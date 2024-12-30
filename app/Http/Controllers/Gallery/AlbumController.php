@@ -240,11 +240,6 @@ class AlbumController extends Controller
 	 */
 	public function delete(DeleteAlbumsRequest $request, Delete $delete): void
 	{
-		Album::select('parent_id')
-			->whereIn('id', $request->albumIds())
-			->get()
-			->each(fn (Album $album) => AlbumRouteCacheUpdated::dispatch($album->parent_id ?? ''));
-
 		$fileDeleter = $delete->do($request->albumIds());
 		App::terminating(fn () => $fileDeleter->do());
 	}

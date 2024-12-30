@@ -6,8 +6,8 @@ use App\Enum\CacheTag;
 use App\Enum\SmartAlbumType;
 use App\Events\AlbumRouteCacheUpdated;
 use App\Metadata\Cache\RouteCacheManager;
-use App\Models\BaseAlbumImpl;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class AlbumCacheCleaner
 {
@@ -73,8 +73,8 @@ class AlbumCacheCleaner
 	{
 		// The long way.
 		$cached_routes_with_extra = $this->route_cache_manager->retrieve_keys_for_tag(CacheTag::GALLERY, with_extra: true);
-		BaseAlbumImpl::select('id')->get()->each(function (BaseAlbumImpl $album) use ($cached_routes_with_extra) {
-			$extra = ['album_id' => $album->id];
+		DB::table('base_albums')->select('id')->pluck('id')->each(function ($id) use ($cached_routes_with_extra) {
+			$extra = ['album_id' => $id];
 			foreach ($cached_routes_with_extra as $route) {
 				$cache_key = $this->route_cache_manager->gen_key(uri: $route, extras: $extra);
 				Cache::forget($cache_key);
