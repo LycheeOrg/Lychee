@@ -8,17 +8,17 @@ return new class() extends BaseConfigMigration {
 		return [
 			[
 				'key' => 'cache_enabled',
-				'value' => '1',
+				'value' => '0',
 				'cat' => 'Mod Cache',
 				'type_range' => self::BOOL,
 				'description' => 'Enable caching of responses given requests.',
-				'details' => 'This will significantly speed up the response time of Lychee.',
+				'details' => 'This will significantly speed up the response time of Lychee. <span class="pi pi-exclamation-triangle text-orange-500"></span> If you are using password protected albums, you should not enable this.',
 				'is_secret' => false,
 				'level' => 0,
 			],
 			[
 				'key' => 'cache_event_logging',
-				'value' => '1', // TODO: flip to false
+				'value' => '0',
 				'cat' => 'Mod Cache',
 				'type_range' => self::BOOL,
 				'description' => 'Add log lines for events related to caching.',
@@ -28,11 +28,11 @@ return new class() extends BaseConfigMigration {
 			],
 			[
 				'key' => 'cache_ttl',
-				'value' => '60',
+				'value' => '300',
 				'cat' => 'Mod Cache',
 				'type_range' => self::POSITIVE,
 				'description' => 'Number of seconds responses should be cached.',
-				'details' => '',
+				'details' => 'Longer TTL will save more resources but may result in outdated responses.',
 				'is_secret' => false,
 				'level' => 1,
 			],
