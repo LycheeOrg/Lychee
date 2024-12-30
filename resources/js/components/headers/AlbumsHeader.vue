@@ -82,21 +82,21 @@ import Button from "primevue/button";
 import SpeedDial from "primevue/speeddial";
 import Toolbar from "primevue/toolbar";
 import ContextMenu from "primevue/contextmenu";
+import Divider from "primevue/divider";
 import ImportFromLink from "@/components/modals/ImportFromLink.vue";
 import ImportFromServer from "@/components/modals/ImportFromServer.vue";
 import { computed, ComputedRef, ref } from "vue";
 import { onKeyStroke } from "@vueuse/core";
-import { useLycheeStateStore } from "@/stores/LycheeState";
-import { isTouchDevice, shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
-import { storeToRefs } from "pinia";
-import BackLinkButton from "./BackLinkButton.vue";
-import { useContextMenuAlbumsAdd } from "@/composables/contextMenus/contextMenuAlbumsAdd";
-import Divider from "primevue/divider";
-import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
 import { useRouter } from "vue-router";
-import DropBox from "../modals/DropBox.vue";
-import OpenLeftMenu from "./OpenLeftMenu.vue";
+import { storeToRefs } from "pinia";
+import { useLycheeStateStore } from "@/stores/LycheeState";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
+import { isTouchDevice, shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
+import { useContextMenuAlbumsAdd } from "@/composables/contextMenus/contextMenuAlbumsAdd";
+import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
+import DropBox from "../modals/DropBox.vue";
+import BackLinkButton from "./BackLinkButton.vue";
+import OpenLeftMenu from "./OpenLeftMenu.vue";
 
 const props = defineProps<{
 	user: App.Http.Resources.Models.UserResource;
@@ -119,7 +119,7 @@ const emits = defineEmits<{
 	help: [];
 }>();
 
-// 'UPLOAD_PHOTO' => 'Upload Photo',
+//  'UPLOAD_PHOTO' => 'Upload Photo',
 // 	'IMPORT_LINK' => 'Import from Link',
 // 	'IMPORT_DROPBOX' => 'Import from Dropbox',
 // 	'IMPORT_SERVER' => 'Import from Server',
@@ -267,7 +267,7 @@ const menu = computed(() =>
 			icon: "pi pi-question-circle",
 			type: "fn",
 			callback: openHelp,
-			if: props.user.id !== null && props.config.show_keybinding_help_button,
+			if: !isTouchDevice() && props.user.id !== null && props.config.show_keybinding_help_button,
 		},
 		{
 			icon: "pi pi-plus",
