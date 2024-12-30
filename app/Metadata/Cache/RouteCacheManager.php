@@ -6,6 +6,7 @@ use App\Contracts\Http\Requests\RequestAttribute;
 use App\Enum\CacheTag;
 use App\Exceptions\Internal\LycheeLogicException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 final readonly class RouteCacheManager
@@ -65,7 +66,7 @@ final readonly class RouteCacheManager
 			'api/v2/Photo::random' => false,
 
 			'api/v2/Search' => false, // TODO: how to support pagination ?? new RouteCacheConfig(tag: CacheTag::GALLERY, user_dependant: true, extra: ['album_id', 'terms']),
-			'api/v2/Search::init' => new RouteCacheConfig(tag: CacheTag::SETTINGS),
+			'api/v2/Search::init' => false,
 			'api/v2/Settings' => new RouteCacheConfig(tag: CacheTag::SETTINGS, user_dependant: true),
 			'api/v2/Settings::getLanguages' => new RouteCacheConfig(tag: CacheTag::SETTINGS),
 			'api/v2/Sharing' => new RouteCacheConfig(tag: CacheTag::GALLERY, user_dependant: true, extra: [RequestAttribute::ALBUM_ID_ATTRIBUTE]),
@@ -103,14 +104,14 @@ final readonly class RouteCacheManager
 		// If the request is user dependant, we add the user id to the key.
 		// That way we ensure that this does not contaminate between logged in and looged out users.
 		if ($config->user_dependant) {
-			$key .= self::USER . $request->user?->getId();
+			$key .= self::USER . Auth::id();
 		}
 
 		if (count($config->extra) > 0) {
 			$key .= self::EXTRA;
 			foreach ($config->extra as $extra) {
 				/** @var string $vals */
-				$vals = $request->query($extra) ?? '';
+				$vals = $request->input($extra) ?? '';
 				$key .= ':' . $vals;
 			}
 		}

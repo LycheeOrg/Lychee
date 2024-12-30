@@ -89,6 +89,6 @@ class ResponseCache
 	{
 		$key = $this->route_cache_manager->get_key($request, $config);
 
-		return Cache::tags([$config->tag])->remember($key, Configs::getValueAsInt('cache_ttl'), fn () => $next($request));
+		return Cache::tags([$config->tag->value])->remember($key, Configs::getValueAsInt('cache_ttl'), fn () => $next($request));
 	}
 }
