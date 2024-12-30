@@ -129,7 +129,7 @@
 <script setup lang="ts">
 import AlbumThumbPanel from "@/components/gallery/AlbumThumbPanel.vue";
 import { useAuthStore } from "@/stores/Auth";
-import { computed, ref, onMounted } from "vue";
+import { computed, ref, onMounted, onUnmounted } from "vue";
 import AlbumsHeader from "@/components/headers/AlbumsHeader.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
@@ -218,11 +218,6 @@ const albumPanelConfig = computed<AlbumThumbConfig>(() => ({
 	album_decoration_orientation: lycheeStore.album_decoration_orientation,
 }));
 
-onMounted(async () => {
-	await refresh();
-	setScroll();
-});
-
 onKeyStroke("h", () => !shouldIgnoreKeystroke() && (are_nsfw_visible.value = !are_nsfw_visible.value));
 onKeyStroke("f", () => !shouldIgnoreKeystroke() && togglableStore.toggleFullScreen());
 onKeyStroke(" ", () => !shouldIgnoreKeystroke() && unselect());
@@ -242,7 +237,12 @@ onMounted(() => {
 	togglableStore.left_menu_open = false;
 });
 
-router.afterEach(() => {
+onMounted(async () => {
+	await refresh();
+	setScroll();
+});
+
+onUnmounted(() => {
 	window.removeEventListener("paste", onPaste);
 	window.removeEventListener("dragover", dragEnd);
 	window.removeEventListener("drop", dropUpload);

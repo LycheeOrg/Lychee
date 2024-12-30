@@ -9,25 +9,27 @@
 				<Button icon="pi pi-angle-left" class="mr-2" severity="secondary" text @click="goBack" />
 			</template>
 			<template #end>
-				<Button text icon="pi pi-play" class="mr-2" severity="secondary" @click="toggleSlideShow" />
-				<Button
-					v-if="props.photo.rights.can_access_full_photo && props.photo.size_variants.original?.url"
-					text
-					icon="pi pi-window-maximize"
-					class="mr-2 font-bold"
-					severity="secondary"
-					@click="openInNewTab(props.photo.size_variants.original.url)"
-				/>
-				<Button
-					v-if="props.photo.rights.can_download"
-					text
-					icon="pi pi-cloud-download"
-					class="mr-2"
-					severity="secondary"
-					@click="isDownloadOpen = !isDownloadOpen"
-				/>
-				<Button v-if="props.photo.rights.can_edit" text icon="pi pi-pencil" class="mr-2" severity="secondary" @click="toggleEdit" />
-				<Button icon="pi pi-info" class="mr-2" severity="secondary" text @click="toggleDetails" />
+				<div :class="is_slideshow_active ? 'hidden' : 'flex'">
+					<Button text icon="pi pi-play" class="mr-2" severity="secondary" @click="toggleSlideShow" />
+					<Button
+						v-if="props.photo.rights.can_access_full_photo && props.photo.size_variants.original?.url"
+						text
+						icon="pi pi-window-maximize"
+						class="mr-2 font-bold"
+						severity="secondary"
+						@click="openInNewTab(props.photo.size_variants.original.url)"
+					/>
+					<Button
+						v-if="props.photo.rights.can_download"
+						text
+						icon="pi pi-cloud-download"
+						class="mr-2"
+						severity="secondary"
+						@click="isDownloadOpen = !isDownloadOpen"
+					/>
+					<Button v-if="props.photo.rights.can_edit" text icon="pi pi-pencil" class="mr-2" severity="secondary" @click="toggleEdit" />
+					<Button icon="pi pi-info" class="mr-2" severity="secondary" text @click="toggleDetails" />
+				</div>
 			</template>
 		</Toolbar>
 	</header>

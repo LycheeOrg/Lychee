@@ -84,5 +84,6 @@ export function useSlideshowFunction(
 		next,
 		previous,
 		clearTimeouts,
+		stop,
 	};
 }
