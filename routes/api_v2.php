@@ -209,6 +209,8 @@ Route::post('/Maintenance::optimize', [Admin\Maintenance\Optimize::class, 'do'])
 Route::post('/Maintenance::register', Admin\Maintenance\RegisterController::class);
 Route::get('/Maintenance::fullTree', [Admin\Maintenance\FullTree::class, 'check']);
 Route::post('/Maintenance::fullTree', [Admin\Maintenance\FullTree::class, 'do']);
+Route::get('/Maintenance::countDuplicates', [Admin\Maintenance\DuplicateFinder::class, 'check']);
+Route::get('/Maintenance::searchDuplicates', [Admin\Maintenance\DuplicateFinder::class, 'get']);
 
 /**
  * STATISTICS.
