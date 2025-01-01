@@ -2,7 +2,7 @@
 	<div
 		id="shutter"
 		class="absolute w-screen h-dvh bg-surface-950 transition-opacity duration-1000 ease-in-out top-0 left-0"
-		:class="is_slideshow_active ? 'z-50 opacity-0' : ''"
+		:class="is_slideshow_active ? 'z-50 opacity-0 pointer-events-none' : ''"
 	></div>
 	<div class="absolute top-0 left-0 w-full flex h-full overflow-hidden bg-black" v-if="photo">
 		<PhotoHeader :albumid="props.albumid" :photo="photo" @slideshow="slideshow" />
@@ -147,7 +147,7 @@ import NextPrevious from "@/components/gallery/photo/NextPrevious.vue";
 import AlbumService from "@/services/album-service";
 import PhotoDetails from "@/components/drawers/PhotoDetails.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
-import { ref, watch } from "vue";
+import { ref, watch, onMounted, onUnmounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import PhotoHeader from "@/components/headers/PhotoHeader.vue";
 import PhotoEdit from "@/components/drawers/PhotoEdit.vue";
@@ -200,7 +200,7 @@ function getPrevious() {
 	router.push({ name: "photo", params: { albumid: props.albumid, photoid: photo.value?.previous_photo_id ?? "" } });
 }
 
-const { slideshow, start, next, previous } = useSlideshowFunction(1000, is_slideshow_active, slideshow_timeout, getNext, getPrevious);
+const { slideshow, start, next, previous, stop } = useSlideshowFunction(1000, is_slideshow_active, slideshow_timeout, getNext, getPrevious);
 
 function load() {
 	if (togglableStore.isSearchActive) {
@@ -286,10 +286,6 @@ function rotateOverlay() {
 	}
 }
 
-if (is_slideshow_active.value) {
-	start();
-}
-
 onKeyStroke("ArrowLeft", () => !shouldIgnoreKeystroke() && hasPrevious() && previous(true));
 onKeyStroke("ArrowRight", () => !shouldIgnoreKeystroke() && hasNext() && next(true));
 onKeyStroke("o", () => !shouldIgnoreKeystroke() && rotateOverlay());
@@ -317,7 +313,6 @@ function scrollTo(event: WheelEvent) {
 		previous(true);
 	}
 }
-window.addEventListener("wheel", scrollTo);
 
 useSwipe(swipe, {
 	onSwipe(_e: TouchEvent) {},
@@ -332,18 +327,25 @@ useSwipe(swipe, {
 	},
 });
 
-load();
+onMounted(() => {
+	if (is_slideshow_active.value) {
+		start();
+	}
+
+	window.addEventListener("wheel", scrollTo);
+	load();
+});
+
+onUnmounted(() => {
+	stop();
+	window.removeEventListener("wheel", scrollTo);
+});
 
 watch(
 	() => route.params.photoid,
 	(newId, _oldId) => {
 		photoId.value = newId as string;
-		window.addEventListener("wheel", scrollTo);
 		refresh();
 	},
 );
-
-router.afterEach(() => {
-	window.removeEventListener("wheel", scrollTo);
-});
 </script>

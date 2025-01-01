@@ -35,7 +35,7 @@
 					:title="$t('lychee.DOWNLOAD_ALBUM')"
 					@click="download"
 				>
-					<i class="pi pi-download" />
+					<i class="pi pi-cloud-download" />
 				</a>
 				<a
 					v-if="props.album.rights.can_share"

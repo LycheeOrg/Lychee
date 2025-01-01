@@ -175,7 +175,7 @@
 </template>
 <script setup lang="ts">
 import { useAuthStore } from "@/stores/Auth";
-import { computed, ref, watch, onMounted } from "vue";
+import { computed, ref, watch, onMounted, onUnmounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import AlbumThumbPanel from "@/components/gallery/AlbumThumbPanel.vue";
 import PhotoThumbPanel from "@/components/gallery/PhotoThumbPanel.vue";
@@ -237,8 +237,6 @@ const { onScroll, setScroll, scrollToTop } = useScrollable(togglableStore, album
 const { is_full_screen, is_login_open, is_slideshow_active, is_upload_visible, list_upload_files } = storeToRefs(togglableStore);
 const { are_nsfw_visible, nsfw_consented, is_se_enabled } = storeToRefs(lycheeStore);
 
-// Reset the slideshow.
-is_slideshow_active.value = false;
 function toggleSlideShow() {
 	if (album.value === undefined || album.value.photos.length === 0) {
 		return;
@@ -383,11 +381,6 @@ function consent() {
 	isAlbumConsented.value = true;
 }
 
-onMounted(async () => {
-	await Promise.all([loadLayoutConfig(), refresh()]);
-	setScroll();
-});
-
 onKeyStroke("h", () => !shouldIgnoreKeystroke() && (are_nsfw_visible.value = !are_nsfw_visible.value));
 onKeyStroke("f", () => !shouldIgnoreKeystroke() && togglableStore.toggleFullScreen());
 onKeyStroke(" ", () => !shouldIgnoreKeystroke() && unselect());
@@ -400,11 +393,21 @@ onKeyStroke([getModKey(), "a"], () => !shouldIgnoreKeystroke() && selectEverythi
 
 const { onPaste, dragEnd, dropUpload } = useMouseEvents(rights, is_upload_visible, list_upload_files);
 
-window.addEventListener("paste", onPaste);
-window.addEventListener("dragover", dragEnd);
-window.addEventListener("drop", dropUpload);
+onMounted(() => {
+	// Reset the slideshow.
+	is_slideshow_active.value = false;
 
-router.afterEach(() => {
+	window.addEventListener("paste", onPaste);
+	window.addEventListener("dragover", dragEnd);
+	window.addEventListener("drop", dropUpload);
+});
+
+onMounted(async () => {
+	await Promise.all([loadLayoutConfig(), refresh()]);
+	setScroll();
+});
+
+onUnmounted(() => {
 	window.removeEventListener("paste", onPaste);
 	window.removeEventListener("dragover", dragEnd);
 	window.removeEventListener("drop", dropUpload);
@@ -416,9 +419,6 @@ watch(
 		unselect();
 
 		albumid.value = newId as string;
-		window.addEventListener("paste", onPaste);
-		window.addEventListener("dragover", dragEnd);
-		window.addEventListener("drop", dropUpload);
 		refresh().then(setScroll);
 	},
 );

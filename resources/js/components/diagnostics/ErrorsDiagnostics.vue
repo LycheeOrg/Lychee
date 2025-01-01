@@ -1,5 +1,5 @@
 <template>
-	<Panel header="Errors" class="border-none max-w-7xl mx-auto">
+	<Panel header="Self-Diagnostic" class="border-none max-w-7xl mx-auto">
 		<div v-if="!errors" class="text-sky-400 font-bold">Loading...</div>
 		<div v-else v-for="error in errors" class="flex">
 			<div class="w-24 capitalize" :class="getCss(error.type)">{{ error.type }}</div>
