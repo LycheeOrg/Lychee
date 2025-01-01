@@ -1,5 +1,11 @@
 <template>
-	<Dialog v-model:visible="visible" modal pt:root:class="border-none" pt:mask:style="backdrop-filter: blur(2px)" v-if="!isWebAuthnUnavailable">
+	<Dialog
+		v-model:visible="is_webauthn_open"
+		modal
+		pt:root:class="border-none"
+		pt:mask:style="backdrop-filter: blur(2px)"
+		v-if="!isWebAuthnUnavailable"
+	>
 		<template #container="{ closeCallback }">
 			<form v-focustrap class="flex flex-col gap-4 relative max-w-full text-sm rounded-md pt-9">
 				<div class="inline-flex flex-col gap-2 px-9">
@@ -30,15 +36,19 @@ import InputText from "../forms/basic/InputText.vue";
 import { trans } from "laravel-vue-i18n";
 import WebAuthnService from "@/services/webauthn-service";
 import { useAuthStore } from "@/stores/Auth";
+import { useTogglablesStateStore } from "@/stores/ModalsState";
 import AlbumService from "@/services/album-service";
+import { storeToRefs } from "pinia";
 
 const toast = useToast();
-const visible = defineModel("visible", { default: false }) as Ref<boolean>;
 const emits = defineEmits<{
 	"logged-in": [];
 }>();
 
+const togglableStore = useTogglablesStateStore();
+
 const isWebAuthnUnavailable = computed<boolean>(() => WebAuthnService.isWebAuthnUnavailable());
+const { is_webauthn_open } = storeToRefs(togglableStore);
 
 const authStore = useAuthStore();
 const username = ref("");
@@ -52,7 +62,7 @@ function login() {
 				summary: trans("lychee.U2F_AUTHENTIFICATION_SUCCESS"),
 				life: 3000,
 			});
-			visible.value = false;
+			is_webauthn_open.value = false;
 			authStore.setUser(null);
 			AlbumService.clearCache();
 			emits("logged-in");
