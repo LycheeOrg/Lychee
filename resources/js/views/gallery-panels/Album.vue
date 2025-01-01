@@ -1,5 +1,5 @@
 <template>
-	<ProgressBar v-if="isLoading" mode="indeterminate" class="rounded-none absolute w-full" :pt:value:class="'rounded-none'" />
+	<LoadingProgress v-model:loading="isLoading" />
 	<UploadPanel v-if="album?.rights.can_upload" @refresh="refresh" key="upload_modal" />
 	<LoginModal v-if="user?.id === null" @logged-in="refresh" />
 	<WebauthnModal v-if="user?.id === null" @logged-in="refresh" />
@@ -216,7 +216,7 @@ import AlbumCreateDialog from "@/components/forms/album/AlbumCreateDialog.vue";
 import { useScrollable } from "@/composables/album/scrollable";
 import { useGetLayoutConfig } from "@/layouts/PhotoLayout";
 import WebauthnModal from "@/components/modals/WebauthnModal.vue";
-import ProgressBar from "primevue/progressbar";
+import LoadingProgress from "@/components/gallery/LoadingProgress.vue";
 
 const route = useRoute();
 const router = useRouter();

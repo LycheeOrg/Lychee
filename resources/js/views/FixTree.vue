@@ -1,5 +1,5 @@
 <template>
-	<ProgressBar v-if="albums === undefined" mode="indeterminate" class="rounded-none absolute w-full" :pt:value:class="'rounded-none'" />
+	<LoadingProgress v-model:loading="isLoading" />
 	<Toolbar class="w-full border-0 h-14">
 		<template #start>
 			<OpenLeftMenu />
@@ -87,7 +87,6 @@
 import { ref, onMounted } from "vue";
 import MaintenanceService from "@/services/maintenance-service";
 import Toolbar from "primevue/toolbar";
-import ProgressBar from "primevue/progressbar";
 import Button from "primevue/button";
 import ScrollTop from "primevue/scrolltop";
 import VirtualScroller from "primevue/virtualscroller";
@@ -100,12 +99,14 @@ import Left from "@/components/maintenance/mini/Left.vue";
 import Right from "@/components/maintenance/mini/Right.vue";
 import LeftWarn from "@/components/maintenance/mini/LeftWarn.vue";
 import RightWarn from "@/components/maintenance/mini/RightWarn.vue";
+import LoadingProgress from "@/components/gallery/LoadingProgress.vue";
 
 const albums = ref<AugmentedAlbum[] | undefined>(undefined);
 const originalAlbums = ref<App.Http.Resources.Diagnostics.AlbumTree[] | undefined>(undefined);
 const hoverId = ref<string | undefined>(undefined);
 const toast = useToast();
 const albumIds = ref<string[]>([]);
+const isLoading = ref(true);
 
 const { isValidated, validate, prepareAlbums, check, incrementLft, incrementRgt, decrementLft, decrementRgt } = useTreeOperations(
 	originalAlbums,
@@ -115,9 +116,11 @@ const { isValidated, validate, prepareAlbums, check, incrementLft, incrementRgt,
 
 function fetch() {
 	albums.value = undefined;
+	isLoading.value = true;
 	MaintenanceService.fullTreeGet().then((data) => {
 		originalAlbums.value = data.data;
 		albumIds.value = originalAlbums.value.map((a) => a.id);
+		isLoading.value = false;
 		prepareAlbums();
 	});
 }
