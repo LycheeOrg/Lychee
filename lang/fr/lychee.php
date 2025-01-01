@@ -48,7 +48,7 @@ return [
 	'ENABLE_TOKEN' => 'Activer le token d’API',
 	'DISABLED_TOKEN_STATUS_MSG' => 'Désactiver',
 	'TOKEN_BUTTON' => 'API Token...',
-	'TOKEN_NOT_AVAILABLE' => 'Vous avez déjà consulté ce token.',
+	'TOKEN_NOT_AVAILABLE' => 'Vous avez déjà vu ce token.',
 	'TOKEN_WAIT' => 'Patientez...',
 
 	'SMART_ALBUMS' => 'Albums intelligents',
