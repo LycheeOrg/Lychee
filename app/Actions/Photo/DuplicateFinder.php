@@ -38,14 +38,14 @@ class DuplicateFinder
 	 * @param bool $with_checksum_constraint Requires the duplicates to have the same checksum
 	 * @param bool $with_title_constraint    Requires the duplicates to have the same title
 	 *
-	 * @return Collection<int,object{album_id:string,album_title:string,photo_id:string,photo_title:string,checksum:string}>
+	 * @return Collection<int,object{album_id:string,album_title:string,photo_id:string,photo_title:string,checksum:string,short_path:string|null,storage_disk:string|null}>
 	 */
 	public function search(
 		bool $with_album_constraint,
 		bool $with_checksum_constraint,
 		bool $with_title_constraint,
 	): Collection {
-		/** @var Collection<int,object{album_id:string,album_title:string,photo_id:string,photo_title:string,checksum:string}> */
+		/** @var Collection<int,object{album_id:string,album_title:string,photo_id:string,photo_title:string,checksum:string,short_path:string|null,storage_disk:string|null}> */
 		return $this->query($with_album_constraint, $with_checksum_constraint, $with_title_constraint)
 			->get();
 	}
@@ -78,6 +78,10 @@ class DuplicateFinder
 					->when($with_checksum_constraint, fn ($q) => $q->on('photos.checksum', '=', 'p2.checksum'))
 					->when($with_title_constraint, fn ($q) => $q->on('photos.album_id', '=', 'p2.album_id'))
 			)
+			->join(
+				'size_variants', 'size_variants.photo_id', '=', 'photos.id', 'left'
+			)
+			->where('size_variants.type', '=', 4)
 			->where('photos.id', '<>', 'p2.id')
 			->select([
 				'base_albums.id as album_id',
@@ -86,6 +90,8 @@ class DuplicateFinder
 				'photos.title as photo_title',
 				'photos.created_at as photo_created_at',
 				'photos.checksum',
+				'size_variants.short_path as short_path',
+				'size_variant.storage_disk as storage_disk',
 			])
 			->when($with_checksum_constraint, fn ($q) => $q->orderBy('photos.checksum', 'asc'))
 			->when(!$with_checksum_constraint, fn ($q) => $q->orderBy('photos.title', 'asc'))

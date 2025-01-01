@@ -2,21 +2,26 @@
 
 namespace App\Http\Resources\Models\Duplicates;
 
+use App\Enum\SizeVariantType;
+use App\Models\Extensions\HasUrlGenerator;
 use Spatie\LaravelData\Data;
 
 class Duplicate extends Data
 {
+	use HasUrlGenerator;
+
 	public function __construct(
 		public string $album_id,
 		public string $album_title,
 		public string $photo_id,
 		public string $photo_title,
 		public string $checksum,
+		public ?string $url,
 	) {
 	}
 
 	/**
-	 * @param object{album_id:string,album_title:string,photo_id:string,photo_title:string,checksum:string} $model
+	 * @param object{album_id:string,album_title:string,photo_id:string,photo_title:string,checksum:string,short_path:string|null,storage_disk:string|null} $model
 	 *
 	 * @return Duplicate
 	 */
@@ -28,6 +33,7 @@ class Duplicate extends Data
 			photo_id: $model->photo_id,
 			photo_title: $model->photo_title,
 			checksum: $model->checksum,
+			url: $model->short_path === null ? null : self::pathToUrl($model->short_path, $model->storage_disk, SizeVariantType::SMALL),
 		);
 	}
 }
