@@ -477,6 +477,21 @@ declare namespace App.Http.Resources.Models {
 		created_at: string;
 	};
 }
+declare namespace App.Http.Resources.Models.Duplicates {
+	export type Duplicate = {
+		album_id: string;
+		album_title: string;
+		photo_id: string;
+		photo_title: string;
+		checksum: string;
+		url: string | null;
+	};
+	export type DuplicateCount = {
+		pure_duplicates: number;
+		title_duplicates: number;
+		duplicates_within_album: number;
+	};
+}
 declare namespace App.Http.Resources.Models.Utils {
 	export type AlbumProtectionPolicy = {
 		is_public: boolean;

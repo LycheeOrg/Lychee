@@ -5,7 +5,9 @@ namespace App\Http\Resources\Models\Duplicates;
 use App\Enum\SizeVariantType;
 use App\Models\Extensions\HasUrlGenerator;
 use Spatie\LaravelData\Data;
+use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
+#[TypeScript()]
 class Duplicate extends Data
 {
 	use HasUrlGenerator;
