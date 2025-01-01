@@ -35,17 +35,17 @@ Route::get('/search', [VueController::class, 'view'])->middleware(['migration:co
 Route::get('/search/{albumId}', [VueController::class, 'view'])->middleware(['migration:complete']);
 Route::get('/search/{albumId}/{photoId}', [VueController::class, 'view'])->middleware(['migration:complete']);
 
-Route::get('/profile', [VueController::class, 'view'])->name('profile')->middleware(['migration:complete']);
-Route::get('/users', [VueController::class, 'view'])->middleware(['migration:complete']);
-Route::get('/sharing', [VueController::class, 'view'])->middleware(['migration:complete']);
-Route::get('/jobs', [VueController::class, 'view'])->middleware(['migration:complete']);
+Route::get('/profile', [VueController::class, 'view'])->name('profile')->middleware(['migration:complete', 'login_required:always']);
+Route::get('/users', [VueController::class, 'view'])->middleware(['migration:complete', 'login_required:always']);
+Route::get('/sharing', [VueController::class, 'view'])->middleware(['migration:complete', 'login_required:always']);
+Route::get('/jobs', [VueController::class, 'view'])->middleware(['migration:complete', 'login_required:always']);
 Route::get('/diagnostics', [VueController::class, 'view'])->middleware(['migration:complete']);
-Route::get('/statistics', [VueController::class, 'view'])->middleware(['migration:complete']);
-Route::get('/maintenance', [VueController::class, 'view'])->middleware(['migration:complete']);
-Route::get('/users', [VueController::class, 'view'])->middleware(['migration:complete']);
-Route::get('/settings', [VueController::class, 'view'])->middleware(['migration:complete']);
-Route::get('/permissions', [VueController::class, 'view'])->middleware(['migration:complete']);
-Route::get('/fixTree', [VueController::class, 'view'])->middleware(['migration:complete']);
+Route::get('/statistics', [VueController::class, 'view'])->middleware(['migration:complete', 'login_required:always']);
+Route::get('/maintenance', [VueController::class, 'view'])->middleware(['migration:complete', 'login_required:always']);
+Route::get('/users', [VueController::class, 'view'])->middleware(['migration:complete', 'login_required:always']);
+Route::get('/settings', [VueController::class, 'view'])->middleware(['migration:complete', 'login_required:always']);
+Route::get('/permissions', [VueController::class, 'view'])->middleware(['migration:complete', 'login_required:always']);
+Route::get('/fixTree', [VueController::class, 'view'])->middleware(['migration:complete', 'login_required:always']);
 
 Route::match(['get', 'post'], '/migrate', [Admin\UpdateController::class, 'migrate'])
 	->name('migrate')

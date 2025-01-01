@@ -19,6 +19,7 @@ class LoginRequired
 {
 	public const ROOT = 'root';
 	public const ALBUM = 'album';
+	public const ALWAYS = 'always';
 
 	/**
 	 * Handle an incoming request.
@@ -35,13 +36,17 @@ class LoginRequired
 	 */
 	public function handle(Request $request, \Closure $next, string $requiredStatus): mixed
 	{
-		if (in_array($requiredStatus, [self::ALBUM, self::ROOT], true) === false) {
+		if (in_array($requiredStatus, [self::ALBUM, self::ROOT, self::ALWAYS], true) === false) {
 			throw new LycheeInvalidArgumentException($requiredStatus . ' is not a valid login requirement.');
 		}
 
 		// We are logged in. Proceed.
 		if (Auth::user() !== null) {
 			return $next($request);
+		}
+
+		if ($requiredStatus === self::ALWAYS) {
+			return redirect()->route('gallery');
 		}
 
 		if (!Configs::getValueAsBool('login_required')) {
