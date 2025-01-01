@@ -76,7 +76,7 @@ class DuplicateFinder
 				fn ($join) => $join->on('photos.id', '<>', 'p2.id')
 					->when($with_title_constraint, fn ($q) => $q->on('photos.title', '=', 'p2.title'))
 					->when($with_checksum_constraint, fn ($q) => $q->on('photos.checksum', '=', 'p2.checksum'))
-					->when($with_title_constraint, fn ($q) => $q->on('photos.album_id', '=', 'p2.album_id'))
+					->when($with_album_constraint, fn ($q) => $q->on('photos.album_id', '=', 'p2.album_id'))
 			)
 			->join(
 				'size_variants', 'size_variants.photo_id', '=', 'photos.id', 'left'
@@ -91,7 +91,7 @@ class DuplicateFinder
 				'photos.created_at as photo_created_at',
 				'photos.checksum',
 				'size_variants.short_path as short_path',
-				'size_variant.storage_disk as storage_disk',
+				'size_variants.storage_disk as storage_disk',
 			])
 			->when($with_checksum_constraint, fn ($q) => $q->orderBy('photos.checksum', 'asc'))
 			->when(!$with_checksum_constraint, fn ($q) => $q->orderBy('photos.title', 'asc'))

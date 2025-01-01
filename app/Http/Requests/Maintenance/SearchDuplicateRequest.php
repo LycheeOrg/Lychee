@@ -43,8 +43,8 @@ class SearchDuplicateRequest extends BaseApiRequest
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->with_album_constraint = $values['with_album_constraint'];
-		$this->with_checksum_constraint = $values['with_checksum_constraint'];
-		$this->with_title_constraint = $values['with_title_constraint'];
+		$this->with_album_constraint = static::toBoolean($values['with_album_constraint']);
+		$this->with_checksum_constraint = static::toBoolean($values['with_checksum_constraint']);
+		$this->with_title_constraint = static::toBoolean($values['with_title_constraint']);
 	}
 }
