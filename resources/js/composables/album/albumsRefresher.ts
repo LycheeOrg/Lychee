@@ -15,6 +15,7 @@ export function useAlbumsRefresher(auth: AuthStore, lycheeStore: LycheeStateStor
 	const rootConfig = ref<App.Http.Resources.GalleryConfigs.RootConfig | undefined>(undefined);
 	const rootRights = ref<App.Http.Resources.Rights.RootAlbumRightsResource | undefined>(undefined);
 	const selectableAlbums = computed(() => albums.value.concat(sharedAlbums.value.map((album) => album.data).flat()));
+	const hasHidden = computed(() => selectableAlbums.value.filter((album) => album.is_nsfw).length > 0);
 
 	function refresh(): Promise<[void, void]> {
 		isLoading.value = true;
@@ -73,6 +74,7 @@ export function useAlbumsRefresher(auth: AuthStore, lycheeStore: LycheeStateStor
 		rootConfig,
 		rootRights,
 		selectableAlbums,
+		hasHidden,
 		refresh,
 	};
 }

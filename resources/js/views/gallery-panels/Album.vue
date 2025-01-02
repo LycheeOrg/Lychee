@@ -39,7 +39,13 @@
 						>{{ $t("lychee.UPLOAD_PHOTO") }}</Button
 					>
 				</div>
-				<AlbumHero v-if="!noData" :album="album" @open-sharing-modal="toggleShareAlbum" @open-statistics="toggleStatistics" />
+				<AlbumHero
+					v-if="!noData"
+					:album="album"
+					:has-hidden="hasHidden"
+					@open-sharing-modal="toggleShareAlbum"
+					@open-statistics="toggleStatistics"
+				/>
 				<template v-if="is_se_enabled && user?.id !== null">
 					<AlbumStatistics
 						:photos="photos"
@@ -249,7 +255,7 @@ function toggleSlideShow() {
 const { layoutConfig, loadLayoutConfig } = useGetLayoutConfig();
 
 // Set up Album ID reference. This one is updated at each page change.
-const { isAlbumConsented, isPasswordProtected, isLoading, user, modelAlbum, album, rights, photos, config, refresh } = useAlbumRefresher(
+const { isAlbumConsented, isPasswordProtected, isLoading, user, modelAlbum, album, rights, photos, config, hasHidden, refresh } = useAlbumRefresher(
 	albumid,
 	auth,
 	is_login_open,

@@ -17,6 +17,7 @@
 				@refresh="refresh"
 				@help="isKeybindingsHelpOpen = true"
 				:config="rootConfig"
+				:has-hidden="hasHidden"
 			/>
 		</Collapse>
 		<AlbumThumbPanel
@@ -177,7 +178,7 @@ const { are_nsfw_visible, title } = storeToRefs(lycheeStore);
 
 const photos = ref([]); // unused.
 
-const { user, isLoading, isKeybindingsHelpOpen, smartAlbums, albums, sharedAlbums, rootConfig, rootRights, selectableAlbums, refresh } =
+const { user, isLoading, isKeybindingsHelpOpen, smartAlbums, albums, sharedAlbums, rootConfig, rootRights, selectableAlbums, hasHidden, refresh } =
 	useAlbumsRefresher(auth, lycheeStore, is_login_open);
 
 const { selectedAlbum, selectedAlbumsIdx, selectedAlbums, selectedAlbumsIds, albumClick, selectEverything, unselect, hasSelection } = useSelection(
