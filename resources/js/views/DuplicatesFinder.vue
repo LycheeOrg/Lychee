@@ -56,6 +56,7 @@
 			<div severity="warn" v-if="!isValid">
 				<i class="text-warning-700 pi pi-exclamation-triangle mr-2" /> At least the checksum or title condition must be checked.
 			</div>
+            <div class="text-muted-color mt-2 p-2" v-if="duplicates !== undefined">{{ duplicates?.length }} duplicates found!</div>
 
 			<!-- <h2 class="text-muted-color-emphasis text-lg font-bold"><i class="pi pi-question-circle mr-2" />Help</h2>
 			<ul>

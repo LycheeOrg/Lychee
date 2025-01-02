@@ -42,8 +42,6 @@ import Card from "primevue/card";
 import ProgressSpinner from "primevue/progressspinner";
 import ScrollPanel from "primevue/scrollpanel";
 import MaintenanceService from "@/services/maintenance-service";
-// import { sprintf } from "sprintf-js";
-// import { trans } from "laravel-vue-i18n";
 
 const data = ref<App.Http.Resources.Models.Duplicates.DuplicateCount | undefined>(undefined);
 const loading = ref(false);
