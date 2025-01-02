@@ -25,15 +25,15 @@ Route::get('/gallery/{albumId}', [VueController::class, 'view'])->name('gallery-
 Route::get('/gallery/{albumId}/{photoId}', [VueController::class, 'view'])->name('gallery-photo')->middleware(['migration:complete', 'unlock_with_password']);
 
 Route::get('/frame', [VueController::class, 'view'])->name('frame')->middleware(['migration:complete']);
-Route::get('/frame/{albumId}', [VueController::class, 'view'])->name('frame')->middleware(['migration:complete']);
+Route::get('/frame/{albumId}', [VueController::class, 'view'])->name('frame-album')->middleware(['migration:complete']);
 
 Route::get('/map', [VueController::class, 'view'])->name('map')->middleware(['migration:complete']);
-Route::get('/map/{albumId}', [VueController::class, 'view'])->name('map')->middleware(['migration:complete']);
+Route::get('/map/{albumId}', [VueController::class, 'view'])->name('map-album')->middleware(['migration:complete']);
 
 // later
-Route::get('/search', [VueController::class, 'view'])->middleware(['migration:complete']);
-Route::get('/search/{albumId}', [VueController::class, 'view'])->middleware(['migration:complete']);
-Route::get('/search/{albumId}/{photoId}', [VueController::class, 'view'])->middleware(['migration:complete']);
+Route::get('/search', [VueController::class, 'view'])->name('search')->middleware(['migration:complete']);
+Route::get('/search/{albumId}', [VueController::class, 'view'])->name('search-album')->middleware(['migration:complete']);
+Route::get('/search/{albumId}/{photoId}', [VueController::class, 'view'])->name('search-photo')->middleware(['migration:complete']);
 
 Route::get('/profile', [VueController::class, 'view'])->name('profile')->middleware(['migration:complete', 'login_required:always']);
 Route::get('/users', [VueController::class, 'view'])->middleware(['migration:complete', 'login_required:always']);
