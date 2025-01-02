@@ -31,9 +31,9 @@ Route::get('/map', [VueController::class, 'view'])->name('map')->middleware(['mi
 Route::get('/map/{albumId}', [VueController::class, 'view'])->name('map-album')->middleware(['migration:complete']);
 
 // later
-Route::get('/search', [VueController::class, 'view'])->name("search")->middleware(['migration:complete']);
-Route::get('/search/{albumId}', [VueController::class, 'view'])->name("search-album")->middleware(['migration:complete']);
-Route::get('/search/{albumId}/{photoId}', [VueController::class, 'view'])->name("search-photo")->middleware(['migration:complete']);
+Route::get('/search', [VueController::class, 'view'])->name('search')->middleware(['migration:complete']);
+Route::get('/search/{albumId}', [VueController::class, 'view'])->name('search-album')->middleware(['migration:complete']);
+Route::get('/search/{albumId}/{photoId}', [VueController::class, 'view'])->name('search-photo')->middleware(['migration:complete']);
 
 Route::get('/profile', [VueController::class, 'view'])->name('profile')->middleware(['migration:complete']);
 Route::get('/users', [VueController::class, 'view'])->middleware(['migration:complete']);
