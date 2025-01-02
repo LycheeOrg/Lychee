@@ -121,7 +121,7 @@ return [
 	'UPLOAD_TRACK' => 'Ajouter une trace',
 	'DELETE_TRACK' => 'Supprimer la trace',
 
-	'TITLE_NEW_ALBUM' => 'Saisissez le titre de album :',
+	'TITLE_NEW_ALBUM' => 'Saisissez le titre du nouvel album :',
 	'UNTITLED' => 'Sans titre',
 	'UNSORTED' => 'Non-triés',
 	'STARRED' => 'Favoris',
@@ -277,7 +277,7 @@ return [
 	'PHOTO_SHARE_BUTTON_VISIBLE_EXPL' => 'Les utilisateurs anonymes peuvent voir les liens de partage sur les média sociaux.',
 	'PHOTO_PASSWORD_PROT' => 'Protéger par un mot de passe.',
 	'PHOTO_PASSWORD_PROT_EXPL' => 'Les utilisateurs anonymes ont besoin d’un mot de passe partagé pour voir cette photo.',
-	'PHOTO_EDIT_SHARING_TEXT' => 'Les propriétés de partages de cette photo seront changés pour les photos suivantes :',
+	'PHOTO_EDIT_SHARING_TEXT' => 'Les propriétés de partages de cette photo seront changées pour les photos suivantes :',
 	'PHOTO_NO_EDIT_SHARING_TEXT' => 'Parce que cette photo est dans un album public, elle hérite des propriétés de partage de l’album. Sa visibilité est indiquée ci-dessous pour votre information.',
 	'PHOTO_EDIT_GLOBAL_SHARING_TEXT' => 'La visibilité de cette photo est ajustable avec les paramètres généraux de Lychee. Sa visibilité est indiquée ci-dessous pour information.',
 	'PHOTO_NEW_CREATED_AT' => 'Saisissez la date de téléversement de cette photo. mm/dd/yyyy, hh:mm [am/pm]',
@@ -408,9 +408,9 @@ return [
 
 	'LAYOUT_TYPE' => 'Affichage des photos :',
 	'LAYOUT_SQUARES' => 'Miniatures carrées',
-	'LAYOUT_JUSTIFIED' => 'Mode proportionnel justifié',
-	'LAYOUT_MASONRY' => 'Mode proportionnel, en mosaïque',
-	'LAYOUT_GRID' => 'Mode proportionnel, grille',
+	'LAYOUT_JUSTIFIED' => 'Mode proportionnel, justifié',
+	'LAYOUT_MASONRY' => 'Mode proportionnel, en maçonnerie',
+	'LAYOUT_GRID' => 'Mode proportionnel, en grille',
 	'LAYOUT_UNJUSTIFIED' => 'mode proportionnel, non-justifié',
 	'SET_LAYOUT' => 'Modifier l’affichage',
 
@@ -479,7 +479,7 @@ return [
 	'UPLOAD_IMPORT_CANCELLED' => 'Import annulé',
 
 	'ABOUT_SUBTITLE' => 'Hébergement personnalisé de photo à votre façon !',
-	'ABOUT_DESCRIPTION' => '<a target=’_blank’ href=’%s’>Lychee</a> est une outil de gestion de galerie gratuit qui fonctionne sur votre propre serveur. L’installation est rapide. Uploadez, gérez et partagez vos photos comme avec une application propre. Lychee vous fourni tout ce dont vous avez besoin et vos photos sont stockées en sécurité chez vous.',
+	'ABOUT_DESCRIPTION' => '<a target==\'_blank\' href=\'%s\'>Lychee</a> est une outil de gestion de galerie gratuit qui fonctionne sur votre propre serveur. L’installation est rapide. Uploadez, gérez et partagez vos photos comme avec une application propre. Lychee vous fourni tout ce dont vous avez besoin et vos photos sont stockées en sécurité chez vous.',
 	'FOOTER_COPYRIGHT' => 'Toutes les images de ce site Web sont protégées par le droit d’auteur par %1$s © %2$s',
 	'HOSTED_WITH_LYCHEE' => 'Hébergé par Lychee',
 
@@ -493,7 +493,7 @@ return [
 	'PHOTO_SMALL_HIDPI' => 'Petite taille HiDPI',
 	'PHOTO_THUMB' => 'Mignature carrée',
 	'PHOTO_THUMB_HIDPI' => 'Miniature carrée HiDPI',
-	'PHOTO_PLACEHOLDER' => 'Espace réservé pour image de basse qualité"',
+	'PHOTO_PLACEHOLDER' => 'Miniature de 32 bit"',
 	'PHOTO_THUMBNAIL' => 'Photo miniature',
 	'PHOTO_LIVE_VIDEO' => 'Partie vidéo d’une live-photo',
 	'PHOTO_VIEW' => 'Vue photo de Lychee :',
