@@ -13,7 +13,9 @@
 	</Toolbar>
 	<div class="text-muted-color text-center mt-2 p-2">
 		{{ $t("On this page you will find the duplicates pictures found in your database.") }}
-		<p v-if="groupedDuplicates !== undefined"><span class="text-muted-color-emphasis">{{ duplicates?.length }}</span> duplicates found!</p>
+		<p v-if="groupedDuplicates !== undefined">
+			<span class="text-muted-color-emphasis">{{ duplicates?.length }}</span> duplicates found!
+		</p>
 	</div>
 	<div class="text-muted-color">
 		<div class="md:max-w-3xl lg:max-w-5xl xl:max-w-7xl mt-9 mx-auto">
@@ -61,7 +63,9 @@
 		<div class="flex justify-between md:max-w-3xl lg:max-w-5xl xl:max-w-7xl mx-auto gap-4 xl:gap-8">
 			<div class="w-1/4 flex flex-col flex-none">
 				<img :src="hoverImgSrc" class="w-full" />
-				<div class="text-center mt-2 font-bold text-muted-color-emphasis"><span class="inline-block w-full text-ellipsis text-nowrap whitespace-nowrap overflow-hidden">{{ hoverTitle }}</span></div>
+				<div class="text-center mt-2 font-bold text-muted-color-emphasis">
+					<span class="inline-block w-full text-ellipsis text-nowrap whitespace-nowrap overflow-hidden">{{ hoverTitle }}</span>
+				</div>
 			</div>
 			<VirtualScroller :items="groupedDuplicates" :itemSize="10" class="h-screen w-full">
 				<template v-slot:item="{ item, options }">
@@ -143,9 +147,17 @@ function groupData() {
 	}
 
 	if (withChecksumConstraint.value) {
-		groupedDuplicates.value = spliter(duplicates.value, (a) => a.checksum, (a) => a.checksum);
+		groupedDuplicates.value = spliter(
+			duplicates.value,
+			(a) => a.checksum,
+			(a) => a.checksum,
+		);
 	} else {
-		groupedDuplicates.value = spliter(duplicates.value, (a) => a.photo_title, (a) => a.photo_title);
+		groupedDuplicates.value = spliter(
+			duplicates.value,
+			(a) => a.photo_title,
+			(a) => a.photo_title,
+		);
 	}
 }
 
