@@ -14,7 +14,11 @@
 					</span>
 				</div>
 				<div class="w-1/4 flex gap-2 group">
-					<router-link :to="{ name: 'album', params: { albumid: duplicate.album_id } }" target="_blank" class="">
+					<router-link
+						:to="{ name: 'photo', params: { albumid: duplicate.album_id, photoid: duplicate.photo_id } }"
+						target="_blank"
+						class=""
+					>
 						<i class="pi pi-link text-primary-emphasis hover:text-primary-emphasis-alt"></i>
 					</router-link>
 					<span class="w-full inline-block whitespace-nowrap text-ellipsis overflow-hidden">

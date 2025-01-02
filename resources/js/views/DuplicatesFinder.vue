@@ -12,15 +12,20 @@
 		<template #end> </template>
 	</Toolbar>
 	<div class="text-muted-color text-center mt-2 p-2">
-		{{ $t("On this page you will find the duplicates pictures found in your database.") }}
-		<p v-if="groupedDuplicates !== undefined">
+		<p class="mb-4">
+			{{ $t("On this page you will find the duplicates pictures found in your database.") }}
+		</p>
+		<p v-if="isValid && groupedDuplicates !== undefined">
 			<span class="text-muted-color-emphasis">{{ duplicates?.length }}</span> duplicates found!
+		</p>
+		<p class="text-muted-color-emphasis" v-if="!isValid">
+			<i class="text-warning-700 pi pi-exclamation-triangle mr-2" /> At least the checksum or title condition must be checked.
 		</p>
 	</div>
 	<div class="text-muted-color">
-		<div class="md:max-w-3xl lg:max-w-5xl xl:max-w-7xl mt-9 mx-auto">
+		<div class="md:max-w-md mt-2 mb-16 mx-auto">
 			<ul class="mb-4" v-if="is_se_enabled || is_se_preview_enabled">
-				<li class="ml-2 pt-1 flex items-start gap-x-4">
+				<li class="ml-2 pt-1 flex items-center gap-x-4">
 					<Checkbox
 						v-model="withChecksumConstraint"
 						binary
@@ -28,11 +33,11 @@
 						:disabled="is_se_preview_enabled"
 						@update:modelValue="fetch"
 					/>
-					<label for="withChecksumConstraint" :class="{ 'text-muted-color-emphasis': isValid, 'text-warning-600': !isValid }"
-						>Checksum must match.</label
-					>
+					<label for="withChecksumConstraint" :class="{ 'text-muted-color-emphasis': isValid, 'text-warning-600': !isValid }">
+						Checksum must match.
+					</label>
 				</li>
-				<li class="ml-2 pt-1 flex items-start gap-x-4">
+				<li class="ml-2 pt-1 flex items-center gap-x-4">
 					<Checkbox
 						v-model="withTitleConstraint"
 						binary
@@ -40,11 +45,12 @@
 						:disabled="is_se_preview_enabled"
 						@update:modelValue="fetch"
 					/>
-					<label for="withTitleConstraint" :class="{ 'text-muted-color-emphasis': isValid, 'text-warning-600': !isValid }"
-						>Title must match. <SETag
-					/></label>
+					<label for="withTitleConstraint" :class="{ 'text-muted-color-emphasis': isValid, 'text-warning-600': !isValid }">
+						Title must match.
+					</label>
+					<SETag />
 				</li>
-				<li class="ml-2 pt-1 flex items-start gap-x-4">
+				<li class="ml-2 pt-1 flex items-center gap-x-4">
 					<Checkbox
 						v-model="withAlbumConstraint"
 						binary
@@ -52,13 +58,10 @@
 						:disabled="is_se_preview_enabled"
 						@update:modelValue="fetch"
 					/>
-					<label for="withAlbumConstraint" class="text-muted-color">Must be in the same albums <SETag /></label>
+					<label for="withAlbumConstraint" class="text-muted-color"> Must be in the same albums </label>
+					<SETag />
 				</li>
 			</ul>
-
-			<div severity="warn" v-if="!isValid">
-				<i class="text-warning-700 pi pi-exclamation-triangle mr-2" /> At least the checksum or title condition must be checked.
-			</div>
 		</div>
 		<div class="flex justify-between md:max-w-3xl lg:max-w-5xl xl:max-w-7xl mx-auto gap-4 xl:gap-8">
 			<div class="w-1/4 flex flex-col flex-none">
