@@ -10,17 +10,17 @@
 			</div>
 		</template>
 		<template #content>
-			<ScrollPanel class="w-full h-40 text-sm text-muted-color">
-				<div class="w-full text-left" v-if="!loading">
+			<div class="w-full h-40 text-sm text-muted-color">
+				<div class="w-full text-left">
 					<h2 class="mb-4">{{ $t("This module counts potential duplicates betwen pictures.") }}</h2>
 					<p v-if="data !== undefined && data.pure_duplicates + data.duplicates_within_album + data.title_duplicates > 0">
 						{{ $t("Duplicates over all albums") }}: {{ data.pure_duplicates }}<br />
 						{{ $t("Title duplicates per albums") }}: {{ data.title_duplicates }}<br />
 						{{ $t("Duplicates per albums") }}: {{ data.duplicates_within_album }}<br />
 					</p>
+					<ProgressSpinner v-if="data === undefined" class="w-full"></ProgressSpinner>
 				</div>
-				<ProgressSpinner v-if="loading" class="w-full"></ProgressSpinner>
-			</ScrollPanel>
+			</div>
 			<div class="flex gap-4 mt-1">
 				<Button
 					as="router-link"
@@ -40,11 +40,9 @@ import { ref } from "vue";
 import Button from "primevue/button";
 import Card from "primevue/card";
 import ProgressSpinner from "primevue/progressspinner";
-import ScrollPanel from "primevue/scrollpanel";
 import MaintenanceService from "@/services/maintenance-service";
 
 const data = ref<App.Http.Resources.Models.Duplicates.DuplicateCount | undefined>(undefined);
-const loading = ref(false);
 
 const title = ref("Duplicates");
 

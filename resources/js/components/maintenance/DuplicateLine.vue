@@ -1,29 +1,40 @@
 <template>
-	<div class="flex justify-between hover:bg-primary-emphasis/5 gap-8 items-center md:max-w-3xl lg:max-w-5xl xl:max-w-7xl mx-auto">
-		<div class="w-1/4 flex items-center just">
-			<span class="w-full inline-block whitespace-nowrap text-ellipsis overflow-hidden">
-				{{ props.duplicate.album_title }}
-			</span>
-			<router-link :to="{ name: 'album', params: { albumid: props.duplicate.album_id } }" target="_blank" class="">
-				<i class="pi pi-link hover:text-primary-emphasis"></i>
-			</router-link>
+	<div class="hover:bg-primary-emphasis/5">
+	<template v-for="duplicate in props.duplicates.data">
+		<div class="flex justify-between hover:text-color-emphasis gap-8 items-center" @mouseover="hover(duplicate.url??'', duplicate.photo_title)">
+			<div class="w-1/4 flex items-center gap-2 group">
+				<router-link :to="{ name: 'album', params: { albumid: duplicate.album_id } }" target="_blank" class="">
+					<i class="pi pi-link text-primary-emphasis hover:text-primary-emphasis-alt"></i>
+				</router-link>
+				<span class="w-full inline-block whitespace-nowrap text-ellipsis overflow-hidden">
+					{{ duplicate.album_title }}
+				</span>
+			</div>
+			<div class="w-1/4 flex gap-2 group">
+				<router-link :to="{ name: 'album', params: { albumid: duplicate.album_id } }" target="_blank" class="">
+					<i class="pi pi-link text-primary-emphasis hover:text-primary-emphasis-alt"></i>
+				</router-link>
+				<span class="w-full inline-block whitespace-nowrap text-ellipsis overflow-hidden">
+					{{ duplicate.photo_title }}
+				</span>
+			</div>
+			<div class="w-1/4 font-mono text-xs">{{ duplicate.checksum.slice(0, 12) }}</div>
 		</div>
-		<div class="w-1/4 flex gap-2">
-			<span
-				class="w-full inline-block whitespace-nowrap text-ellipsis overflow-hidden"
-				v-tooltip="{ value: '<img src=' + props.duplicate.url + ' />', escape: false, pt: { arrow: { class: 'hidden' } } }"
-			>
-				{{ props.duplicate.photo_title }}
-			</span>
-			<router-link :to="{ name: 'album', params: { albumid: props.duplicate.album_id } }" target="_blank" class="">
-				<i class="pi pi-link hover:text-primary-emphasis"></i>
-			</router-link>
-		</div>
-		<div class="w-1/4 font-mono text-xs">{{ props.duplicate.checksum.slice(12) }}</div>
+	</template>
 	</div>
 </template>
 <script setup lang="ts">
+import { type SplitData } from '@/composables/album/splitter';
+
 const props = defineProps<{
-	duplicate: App.Http.Resources.Models.Duplicates.Duplicate;
+	duplicates: SplitData<App.Http.Resources.Models.Duplicates.Duplicate>;
 }>();
+
+const emits = defineEmits<{
+	hover: [src: string, title: string];
+}>();
+
+function hover(url: string, title: string) {
+	emits("hover", url, title);
+}
 </script>
