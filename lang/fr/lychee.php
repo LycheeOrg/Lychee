@@ -71,7 +71,7 @@ return [
 	'DELETE_ALBUM' => 'Supprimer l’album',
 	'MOVE_ALBUM' => 'Déplacer l’album',
 	'FULLSCREEN_ENTER' => 'Entrer en mode plein écran',
-	'FULLSCREEN_EXIT' => 'Quitter le mode plein écran',
+	'FULLSCREEN_EXIT' => 'Sortir du mode plein écran',
 
 	'SHARING_ALBUM_USERS' => 'Partager l’album avec des utilisateurs',
 	'WAIT_FETCH_DATA' => 'Merci de patienter le temps que les données soient récupérées…',
