@@ -344,7 +344,7 @@ return [
 
 		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/child-src
 		'child-src' => [
-			'allow' => explode(',', (string) env('SECURITY_HEADER_CSP_CHILD_SRC', ''))
+			'allow' => explode(',', (string) env('SECURITY_HEADER_CSP_CHILD_SRC', '')),
 		],
 
 		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/connect-src
@@ -360,13 +360,13 @@ return [
 
 		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/font-src
 		'font-src' => [
-			'allow' => explode(',', (string) env('SECURITY_HEADER_CSP_FONT_SRC', ''))
+			'allow' => explode(',', (string) env('SECURITY_HEADER_CSP_FONT_SRC', '')),
 		],
 
 		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/form-action
 		'form-action' => [
 			'self' => true,
-			'allow' => explode(',', (string) env('SECURITY_HEADER_CSP_FORM_ACTION', ''))
+			'allow' => explode(',', (string) env('SECURITY_HEADER_CSP_FORM_ACTION', '')),
 		],
 
 		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/frame-ancestors
@@ -375,7 +375,7 @@ return [
 
 		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/frame-src
 		'frame-src' => [
-			'allow' => explode(',', (string) env('SECURITY_HEADER_CSP_FRAME_SRC', ''))
+			'allow' => explode(',', (string) env('SECURITY_HEADER_CSP_FRAME_SRC', '')),
 		],
 
 		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/img-src
