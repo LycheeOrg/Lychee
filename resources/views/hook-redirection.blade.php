@@ -1,4 +1,3 @@
-<x-layouts.app>
 <div 
 	id="redirectData"
 	data-gallery="{{ $gallery }}"
@@ -21,4 +20,3 @@
 		window.location = base;
 	}
 </script>
-</x-layouts.app>
