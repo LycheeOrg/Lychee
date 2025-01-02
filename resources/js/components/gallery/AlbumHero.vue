@@ -63,7 +63,7 @@
 					<a
 						v-if="props.hasHidden && lycheeStore.are_nsfw_visible"
 						class="flex-shrink-0 px-3 cursor-pointer text-muted-color inline-block transform duration-300 hover:scale-150 hover:text-color"
-						:title="'show hidden'"
+						:title="'hide hidden'"
 						@click="lycheeStore.are_nsfw_visible = false"
 					>
 						<i class="pi pi pi-eye-slash" />
