@@ -344,6 +344,7 @@ return [
 
 		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/child-src
 		'child-src' => [
+			'allow' => explode(',', (string) env('SECURITY_HEADER_CSP_CHILD_SRC', '')),
 		],
 
 		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/connect-src
@@ -359,11 +360,13 @@ return [
 
 		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/font-src
 		'font-src' => [
+			'allow' => explode(',', (string) env('SECURITY_HEADER_CSP_FONT_SRC', '')),
 		],
 
 		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/form-action
 		'form-action' => [
 			'self' => true,
+			'allow' => explode(',', (string) env('SECURITY_HEADER_CSP_FORM_ACTION', '')),
 		],
 
 		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/frame-ancestors
@@ -372,6 +375,7 @@ return [
 
 		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/frame-src
 		'frame-src' => [
+			'allow' => explode(',', (string) env('SECURITY_HEADER_CSP_FRAME_SRC', '')),
 		],
 
 		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/img-src
@@ -398,7 +402,8 @@ return [
 				[
 					// @phpstan-ignore-next-line
 					str_replace(parse_url(env('AWS_URL'), PHP_URL_PATH), '', env('AWS_URL')),
-				]
+				],
+				explode(',', (string) env('SECURITY_HEADER_CSP_IMG_SRC', ''))
 			),
 		],
 
@@ -418,7 +423,8 @@ return [
 				[
 					// @phpstan-ignore-next-line
 					str_replace(parse_url(env('AWS_URL'), PHP_URL_PATH), '', env('AWS_URL')),
-				]
+				],
+				explode(',', (string) env('SECURITY_HEADER_CSP_MEDIA_SRC', ''))
 			),
 		],
 
