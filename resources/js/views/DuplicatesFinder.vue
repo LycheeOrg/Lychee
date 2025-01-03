@@ -64,33 +64,37 @@
 			</ul>
 		</div>
 		<div class="flex justify-between md:max-w-3xl lg:max-w-5xl xl:max-w-7xl mx-auto gap-4 xl:gap-8">
+			<div class="w-1/4 flex-none"></div>
+			<div class="pb-2 w-full flex justify-between items-center font-bold text-lg text-color-emphasis border-b border-b-white/50">
+				<div class=""><i class="pi pi-trash text-transparent mr-2" /></div>
+				<div class="w-1/3">Album</div>
+				<div class="w-1/3">Photo</div>
+				<div class="w-1/4">Checksum</div>
+			</div>
+		</div>
+		<div class="flex justify-between md:max-w-3xl lg:max-w-5xl xl:max-w-7xl mx-auto gap-4 xl:gap-8">
 			<div class="w-1/4 flex flex-col flex-none">
+				<Button
+					severity="danger"
+					class="w-full font-bold border-none mb-4"
+					@click="isDeleteVisible = true"
+					:disabled="selectedIds.length === 0"
+					>{{ $t("Delete selected") }}</Button
+				>
+
 				<img :src="hoverImgSrc" class="w-full" />
 				<div class="text-center mt-2 font-bold text-muted-color-emphasis">
 					<span class="inline-block w-full text-ellipsis text-nowrap whitespace-nowrap overflow-hidden">{{ hoverTitle }}</span>
 				</div>
 			</div>
-			<VirtualScroller :items="groupedDuplicates" :itemSize="10" class="h-screen w-full">
+			<VirtualScroller :items="groupedDuplicates" :itemSize="50" class="h-screen w-full">
 				<template v-slot:item="{ item, options }">
-					<template v-if="options.first">
-						<div
-							class="pb-2 flex justify-between md:max-w-3xl lg:max-w-5xl xl:max-w-7xl mx-auto hover:bg-primary-emphasis/5 gap-8 items-center font-bold text-lg text-color-emphasis border-b border-b-white/50"
-						>
-							<div class="w-1/4">Album</div>
-							<div class="w-1/4">Photo</div>
-							<div class="w-1/4">Checksum</div>
-							<!-- <div class="flex w-1/4 justify-between">
-								<div class="w-full">Id</div>
-								<div class="w-full text-right">Parent Id</div>
-							</div> -->
-						</div>
-					</template>
-					<DuplicateLine :duplicates="item" @hover="onHover" />
+					<DuplicateLine :duplicates="item" :selected-ids="selectedIds" @hover="onHover" @click="onClick" />
 				</template>
 			</VirtualScroller>
 		</div>
 	</div>
-	<ScrollTop />
+	<DeleteDialog v-model:visible="isDeleteVisible" :parent-id="undefined" :photo-ids="selectedIds" @deleted="onDeleted" />
 </template>
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
@@ -98,7 +102,6 @@ import MaintenanceService from "@/services/maintenance-service";
 import Toolbar from "primevue/toolbar";
 import ProgressBar from "primevue/progressbar";
 import Button from "primevue/button";
-import ScrollTop from "primevue/scrolltop";
 import VirtualScroller from "primevue/virtualscroller";
 import { useToast } from "primevue/usetoast";
 import Checkbox from "primevue/checkbox";
@@ -108,9 +111,12 @@ import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import SETag from "@/components/icons/SETag.vue";
 import { type SplitData, useSplitter } from "@/composables/album/splitter";
+import DeleteDialog from "@/components/forms/gallery-dialogs/DeleteDialog.vue";
 
 const duplicates = ref<App.Http.Resources.Models.Duplicates.Duplicate[] | undefined>(undefined);
 const groupedDuplicates = ref<SplitData<App.Http.Resources.Models.Duplicates.Duplicate>[] | undefined>(undefined);
+const isDeleteVisible = ref(false);
+const selectedIds = ref<string[]>([]);
 const toast = useToast();
 const lycheeStore = useLycheeStateStore();
 
@@ -130,6 +136,24 @@ function onHover(src: string, title: string) {
 	hoverTitle.value = title;
 }
 
+function onClick(id: string) {
+	const index = selectedIds.value.indexOf(id);
+	if (index === -1) {
+		selectedIds.value.push(id);
+	} else {
+		selectedIds.value.splice(index, 1);
+	}
+}
+
+function onDeleted() {
+	// Remove the deleted photos (no need to fetch data again).
+	duplicates.value = duplicates.value?.filter((duplicate) => !selectedIds.value.includes(duplicate.photo_id));
+	groupData();
+
+	// Remove groups with only one element => no duplicates
+	groupedDuplicates.value = groupedDuplicates.value?.filter((group) => group.data.length > 1);
+}
+
 function fetch() {
 	if (!isValid.value) {
 		return;
@@ -137,6 +161,9 @@ function fetch() {
 
 	duplicates.value = undefined;
 	groupedDuplicates.value = undefined;
+	selectedIds.value = [];
+	hoverImgSrc.value = "";
+	hoverTitle.value = "";
 
 	MaintenanceService.getDuplicates(withAlbumConstraint.value, withChecksumConstraint.value, withTitleConstraint.value).then((response) => {
 		duplicates.value = response.data;
