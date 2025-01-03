@@ -339,7 +339,7 @@ const photoCallbacks = {
 	toggleMove: toggleMove,
 	toggleDelete: toggleDelete,
 	toggleDownload: () => {
-		AlbumService.download(selectedPhotosIds.value);
+		PhotoService.download(selectedPhotosIds.value);
 	},
 };
 
