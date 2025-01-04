@@ -1,9 +1,15 @@
 <template>
 	<div>
 		<div class="flex items-center justify-between gap-x-4 flex-wrap sm:flex-nowrap">
-			<label class="w-full" :class="props.config.require_se ? 'text-primary-emphasis' : 'text-muted-color-emphasis'" :for="props.config.key">{{
-				props.config.documentation
-			}}</label>
+			<label
+				:for="props.config.key"
+				:class="{
+					'w-full': true,
+					'text-primary-emphasis': props.config.require_se,
+					'text-muted-color-emphasis': !props.config.require_se,
+				}"
+				v-html="props.label ?? props.config.documentation"
+			/>
 			<FloatLabel class="w-full flex-grow">
 				<IconField>
 					<InputText :id="props.config.key" type="text" class="!py-1" v-model="val" @update:modelValue="update" />
@@ -16,7 +22,11 @@
 				</IconField>
 			</FloatLabel>
 		</div>
-		<div v-if="props.config.details" class="text-muted-color text-sm hidden sm:block" v-html="props.config.details" />
+		<div
+			v-if="props.config.details || details !== undefined"
+			class="text-muted-color text-sm hidden sm:block"
+			v-html="props.details ?? props.config.details"
+		/>
 	</div>
 </template>
 <script setup lang="ts">
@@ -28,6 +38,8 @@ import InputText from "@/components/forms/basic/InputText.vue";
 
 const props = defineProps<{
 	config: App.Http.Resources.Models.ConfigResource;
+	label?: string;
+	details?: string;
 }>();
 
 const val = ref<string>(props.config.value);

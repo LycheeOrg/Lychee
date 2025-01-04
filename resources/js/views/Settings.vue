@@ -5,19 +5,16 @@
 		</template>
 
 		<template #center>
-			{{ $t("lychee.SETTINGS") }}
+			{{ $t("settings.title") }}
 		</template>
 
 		<template #end> </template>
 	</Toolbar>
-	<div class="text-center sm:hidden font-bold text-danger-700 py-3">
-		For better a experience on the Settings page,<br />
-		we recommend you use a larger screen.
-	</div>
+	<div class="text-center sm:hidden font-bold text-danger-700 py-3" v-html="$t('settings.small_screen')" />
 	<Tabs value="0" class="max-w-5xl mx-auto">
 		<TabList>
-			<Tab value="0">Basic</Tab>
-			<Tab value="1"><i class="pi pi-exclamation-triangle mr-2 text-orange-500" />All settings</Tab>
+			<Tab value="0">{{ $t("settings.tabs.basic") }}</Tab>
+			<Tab value="1"><i class="pi pi-exclamation-triangle mr-2 text-orange-500" />{{ $t("settings.tabs.all_settings") }}</Tab>
 		</TabList>
 		<TabPanels :pt:root:class="'px-0'">
 			<TabPanel value="0">
