@@ -24,7 +24,7 @@
 				</div>
 				<div class="w-full flex items-center text-muted-color" v-if="has_quota === true">
 					<InputText id="quotaKb" v-model="quota_kb" aria-label="quotaKb" class="!w-1/2" />
-					<label class="pl-4 w-1/2" for="quotaKb">{{ $t("users.create_edit.quote_kb") }}</label>
+					<label class="pl-4 w-1/2" for="quotaKb">{{ $t("users.create_edit.quota_kb") }}</label>
 				</div>
 				<div class="w-full flex items-center text-muted-color pt-2" v-if="is_se_enabled">
 					<FloatLabel variant="on">
