@@ -9,8 +9,6 @@ type Callbacks = {
 };
 
 export function useContextMenuAlbumsAdd(callbacks: Callbacks, dropbox_api_key: Ref<string>) {
-	const isImportFromServerOpen = ref(false);
-
 	const addmenu = ref(); // ! Reference to the context menu
 	const addMenu = ref(
 		[
@@ -33,11 +31,6 @@ export function useContextMenuAlbumsAdd(callbacks: Callbacks, dropbox_api_key: R
 				callback: callbacks.toggleImportFromDropbox,
 				if: dropbox_api_key.value !== "disabled",
 			},
-			// {
-			// 	label: "lychee.IMPORT_SERVER",
-			// 	icon: "pi pi-server",
-			// 	callback: () => (isImportFromServerOpen.value = true),
-			// },
 			{
 				is_divider: true,
 			},
@@ -62,6 +55,5 @@ export function useContextMenuAlbumsAdd(callbacks: Callbacks, dropbox_api_key: R
 		addmenu,
 		addMenu,
 		openAddMenu,
-		isImportFromServerOpen,
 	};
 }
