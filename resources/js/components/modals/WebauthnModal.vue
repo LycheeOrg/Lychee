@@ -11,15 +11,15 @@
 				<div class="inline-flex flex-col gap-2 px-9">
 					<FloatLabel variant="on">
 						<InputText id="username" v-model="username" />
-						<label class="" for="username">{{ $t("lychee.USERNAME") }}</label>
+						<label class="" for="username">{{ $t("dialogs.login.username") }}</label>
 					</FloatLabel>
 				</div>
 				<div class="flex items-center mt-9">
 					<Button @click="closeCallback" severity="secondary" class="w-full font-bold border-none rounded-none rounded-bl-xl flex-shrink-2">
-						{{ $t("lychee.CANCEL") }}
+						{{ $t("dialogs.button.cancel") }}
 					</Button>
 					<Button @click="login" severity="contrast" class="w-full font-bold border-none rounded-none rounded-br-xl flex-shrink">
-						{{ $t("lychee.U2F") }}
+						{{ $t("dialogs.webauthn.u2f") }}
 					</Button>
 				</div>
 			</form>
@@ -59,7 +59,7 @@ function login() {
 		.then(function () {
 			toast.add({
 				severity: "success",
-				summary: trans("lychee.U2F_AUTHENTIFICATION_SUCCESS"),
+				summary: trans("dialogs.webauthn.success"),
 				life: 3000,
 			});
 			is_webauthn_open.value = false;
@@ -70,7 +70,7 @@ function login() {
 		.catch((e) =>
 			toast.add({
 				severity: "error",
-				summary: trans("lychee.ERROR_TEXT"),
+				summary: trans("dialogs.webauthn.error"),
 				detail: e.response.data.message,
 				life: 3000,
 			}),

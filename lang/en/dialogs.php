@@ -86,4 +86,9 @@ return [
 		'finished' => 'Finished',
 		'failed_error' => 'Upload failed. The server returned an error!',
 	],
+	'webauthn' => [
+		'u2f' => 'U2F',
+		'success' => 'Authentication successful!',
+		'error' => 'Whoops, it looks like something went wrong. Please reload the site and try again!',
+	],
 ];
