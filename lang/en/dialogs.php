@@ -60,9 +60,9 @@ return [
 		'keep_hidden' => 'We will keep it hiden.',
 	],
 	'login' => [
-		'title' => 'Login',
-		'button' => 'Login',
-		'forgot' => 'Forgot password?',
-		'register' => 'Register',
+		'username' => 'Username',
+		'password' => 'Password',
+		'unknown_invalid' => 'Unknown user or invalid password.',
+		'signin' => 'Sign-In',
 	],
 ];
