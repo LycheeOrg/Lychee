@@ -8,6 +8,7 @@ return [
 	*/
 	'button' => [
 		'close' => 'Close',
+		'cancel' => 'Cancel',
 	],
 	'about' => [
 		'subtitle' => 'Self-hosted photo-management done right',
@@ -16,6 +17,9 @@ return [
 		'thank_you' => 'Thank you for your support!',
 		'get_supporter_or_register' => 'Get exclusive features and support the development of Lychee.<br />Unlock the <a href="https://lycheeorg.github.io/get-supporter-edition/" class="text-primary-500 underline">Supporter Edition</a> or register your License key',
 		'here' => 'here',
+	],
+	'dropbox' => [
+		'not_configured' => 'Dropbox is not configured.',
 	],
 	'login' => [
 		'title' => 'Login',
