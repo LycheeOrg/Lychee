@@ -5,14 +5,13 @@
 		</template>
 
 		<template #center>
-			{{ "Statistics" }}
+			{{ $t("statistics.title") }}
 		</template>
 
 		<template #end> </template>
 	</Toolbar>
 	<Panel v-if="is_se_preview_enabled" class="text-center">
-		This is a preview of the statistics page available in Lychee SE.<br />
-		The data shown here are randomly generated and do not reflect your server.
+		<div v-html="$t('statistics.preview')" />
 	</Panel>
 	<Panel class="max-w-5xl mx-auto border-0">
 		<SizeVariantMeter v-if="load" :album-id="null" />
@@ -20,7 +19,7 @@
 	<Panel class="max-w-5xl mx-auto border-0" :pt:header:class="'hidden'">
 		<TotalCard v-if="total" :total="total" />
 		<div class="py-4" v-if="load && total">
-			<ToggleSwitch v-model="is_collapsed" class="text-sm"></ToggleSwitch> {{ "Collapse albums sizes" }}
+			<ToggleSwitch v-model="is_collapsed" class="text-sm"></ToggleSwitch> {{ $t("statistics.collapse") }}
 		</div>
 		<AlbumsTable v-if="load" v-show="!is_collapsed" :show-username="true" :is-total="false" :album-id="undefined" @total="total = $event" />
 		<AlbumsTable v-if="load" v-show="is_collapsed" :show-username="true" :is-total="true" :album-id="undefined" />

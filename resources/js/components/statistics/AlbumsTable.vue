@@ -7,11 +7,11 @@
 		:loading="albumData === undefined"
 		v-if="albumData === undefined || albumData.length > 0"
 	>
-		<Column v-if="props.showUsername" field="username" header="Owner" class="w-32"></Column>
-		<Column field="title" sortable header="Title"></Column>
-		<Column field="num_photos" sortable header="Photos" class="w-16"></Column>
-		<Column field="num_descendants" sortable header="Children" class="w-16"></Column>
-		<Column field="size" header="Size" sortable class="w-32">
+		<Column v-if="props.showUsername" field="username" :header="$t('statistics.table.username')" class="w-32"></Column>
+		<Column field="title" sortable :header="$t('statistics.table.title')"></Column>
+		<Column field="num_photos" sortable :header="$t('statistics.table.photos')" class="w-16"></Column>
+		<Column field="num_descendants" sortable :header="$t('statistics.table.descendants')" class="w-16"></Column>
+		<Column field="size" :header="$t('statistics.table.size')" sortable class="w-32">
 			<template #body="slotProps">{{ sizeToUnit(slotProps.data.size) }}</template>
 		</Column>
 	</DataTable>

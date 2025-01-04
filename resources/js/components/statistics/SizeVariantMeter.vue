@@ -20,7 +20,7 @@
 			</div>
 		</template>
 	</MeterGroup>
-	<div v-else class="text-center">User does not have data on server.</div>
+	<div v-else class="text-center">{{ $t("statistics.no_data") }}</div>
 </template>
 <script setup lang="ts">
 import { usePreviewData } from "@/composables/preview/getPreviewInfo";
