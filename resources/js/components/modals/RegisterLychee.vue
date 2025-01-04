@@ -3,23 +3,23 @@
 		<template #container="{ closeCallback }">
 			<div class="flex flex-col gap-4 bg-gradient-to-b from-bg-300 to-bg-400 relative max-w-[500px] text-sm rounded-md text-muted-color">
 				<div class="p-9 text-muted-color-emphasis">
-					<h2 class="my-6 font-bold text-center" v-if="is_se_enabled">Thank you for your support!</h2>
+					<h2 class="my-6 font-bold text-center" v-if="is_se_enabled">{{ $t("dialogs.about.thank_you") }}</h2>
 					<template v-if="!is_se_enabled">
-						<h2 class="my-6 font-bold text-center">Enter your license key below:</h2>
+						<h2 class="my-6 font-bold text-center">{{ $t("dialogs.register.enter_license") }}</h2>
 						<p class="text-muted-color text-center">
 							<FloatLabel variant="on">
 								<InputText v-model="licenseKey" id="licenseKey" class="w-full" @update:model-value="licenseKeyIsInvValid = false" />
-								<label for="licenseKey">{{ "License key" }}</label>
+								<label for="licenseKey">{{ $t("dialogs.register.license_key") }}</label>
 							</FloatLabel>
 							<span class="inline-block mt-4 font-bold text-danger-600" v-if="licenseKey && licenseKeyIsInvValid">
-								Invalid license key
+								{{ $t("dialogs.register.invalid_license") }}
 							</span>
 						</p>
 					</template>
 				</div>
 				<div class="flex justify-center">
 					<Button @click="closeCallback" severity="info" class="w-full font-bold border-none rounded-none rounded-bl-xl">
-						{{ $t("lychee.CLOSE") }}
+						{{ $t("dialogs.button.close") }}
 					</Button>
 					<Button
 						v-if="!is_se_enabled"
@@ -28,7 +28,7 @@
 						:disabled="!isValidForm"
 						class="w-full font-bold border-none rounded-none rounded-br-xl"
 					>
-						{{ "Register" }}
+						{{ $t("dialogs.register.register") }}
 					</Button>
 				</div>
 			</div>
@@ -45,6 +45,7 @@ import InputText from "../forms/basic/InputText.vue";
 import FloatLabel from "primevue/floatlabel";
 import MaintenanceService from "@/services/maintenance-service";
 import { useToast } from "primevue/usetoast";
+import { trans } from "laravel-vue-i18n";
 
 const visible = defineModel("visible") as Ref<boolean>;
 const licenseKey = ref<string | undefined>(undefined);
@@ -77,7 +78,7 @@ function register() {
 				visible.value = false;
 				toast.add({
 					severity: "success",
-					summary: "Thank you for your support.",
+					summary: trans("dialogs.about.thank_you"),
 					life: 5000,
 				});
 			} else {

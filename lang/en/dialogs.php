@@ -65,4 +65,10 @@ return [
 		'unknown_invalid' => 'Unknown user or invalid password.',
 		'signin' => 'Sign-In',
 	],
+	'register' => [
+		'enter_license' => 'Enter your license key below:',
+		'license_key' => 'License key',
+		'invalid_license' => 'Invalid license key.',
+		'register' => 'Register',
+	],
 ];
