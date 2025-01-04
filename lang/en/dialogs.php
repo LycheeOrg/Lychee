@@ -71,4 +71,7 @@ return [
 		'invalid_license' => 'Invalid license key.',
 		'register' => 'Register',
 	],
+	'share_album' => [
+		'url_copied' => 'Copied URL to clipboard!',
+	],
 ];
