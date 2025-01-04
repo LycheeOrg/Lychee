@@ -21,6 +21,10 @@ return [
 	'dropbox' => [
 		'not_configured' => 'Dropbox is not configured.',
 	],
+	'import_from_link' => [
+		'instructions' => 'Please enter the direct link to a photo to import it:',
+		'import' => 'Import',
+	],
 	'login' => [
 		'title' => 'Login',
 		'button' => 'Login',
