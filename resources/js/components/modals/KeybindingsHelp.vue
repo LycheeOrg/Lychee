@@ -24,12 +24,12 @@
 					</DataTable>
 					<div class="w-full flex justify-center my-4">
 						<Checkbox v-model="doNotShowAgain" :binary="true" inputId="doNotShowAgain" />
-						<label for="doNotShowAgain" class="ml-2 text-sm text-muted-color"> Don't show this again </label>
+						<label for="doNotShowAgain" class="ml-2 text-sm text-muted-color">{{ $t("dialogs.keybindings.don_t_show_again") }}</label>
 					</div>
 				</div>
 				<div class="flex justify-center">
 					<Button @click="closeCallback" severity="secondary" class="w-full font-bold border-none rounded-none rounded-bl-xl rounded-br-xl">
-						{{ $t("lychee.CLOSE") }}
+						{{ $t("dialogs.button.close") }}
 					</Button>
 				</div>
 			</div>
@@ -48,6 +48,7 @@ import { ref } from "vue";
 import { useToast } from "primevue/usetoast";
 import { onKeyStroke } from "@vueuse/core";
 import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
+import { trans } from "laravel-vue-i18n";
 
 const visible = defineModel("visible", { default: false });
 
@@ -69,7 +70,7 @@ function closeCallback() {
 		}).then(() => {
 			toast.add({
 				severity: "success",
-				summary: "We will keep it hiden.",
+				summary: trans("dialogs.keybindings.keep_hidden"),
 				life: 2000,
 			});
 		});
@@ -77,61 +78,59 @@ function closeCallback() {
 }
 const shortcutsList = ref([
 	{
-		header: "Site-wide Shortcuts",
+		header: trans("dialogs.keybindings.side_wide"),
 		shortcuts: [
-			{ action: "Back/Cancel", key: "Esc" },
-			{ action: "Confirm", key: "Enter" },
-			{ action: "Login", key: "l" },
-			{ action: "Toggle full screen", key: "f" },
-			{ action: "Toggle Sensitive albums", key: "h" },
+			{ action: trans("back_cancel"), key: "Esc" },
+			{ action: trans("confirm"), key: "Enter" },
+			{ action: trans("login"), key: "l" },
+			{ action: trans("toggle_full_screen"), key: "f" },
+			{ action: trans("toggle_sensitive_albums"), key: "h" },
 			// { action: "Login with U2F", key: "k" },
 		],
 	},
 	{
-		header: "Albums Shortcuts",
+		header: trans("dialogs.keybindings.albums"),
 		shortcuts: [
-			{ action: "New album", key: "n" },
-			{ action: "Upload photos", key: "u" },
-			{ action: "Search", key: "/" },
-			{ action: "Show this modal", key: "?" },
-			// { action: "Toggle Sensitive albums", key: "h" },
-			{ action: "Select all", key: "ctrl/cmd a" },
-			{ action: "Move selection", key: "m" },
-			{ action: "Delete selection", key: "BckSpace" },
+			{ action: trans("dialogs.keybindings.new_album"), key: "n" },
+			{ action: trans("dialogs.keybindings.upload_photos"), key: "u" },
+			{ action: trans("dialogs.keybindings.search"), key: "/" },
+			{ action: trans("dialogs.keybindings.show_this_modal"), key: "?" },
+			{ action: trans("dialogs.keybindings.select_all"), key: "ctrl/cmd a" },
+			{ action: trans("dialogs.keybindings.move_selection"), key: "m" },
+			{ action: trans("dialogs.keybindings.delete_selection"), key: "BckSpace" },
 		],
 	},
 	{
-		header: "Album Shortcuts",
+		header: trans("dialogs.keybindings.album"),
 		shortcuts: [
-			{ action: "New album", key: "n" },
-			{ action: "Upload photos", key: "u" },
-			{ action: "Search", key: "/" },
-			{ action: "Start/Stop slideshow", key: "Space" },
-			{ action: "Select all", key: "ctrl/cmd a" },
-			{ action: "Move selection", key: "m" },
-			{ action: "Delete selection", key: "BckSpace" },
-			{ action: "Toggle panel", key: "i" },
-			// { action: "Select all albums or photos", key: "ctrl a" },
+			{ action: trans("dialogs.keybindings.new_album"), key: "n" },
+			{ action: trans("dialogs.keybindings.upload_photos"), key: "u" },
+			{ action: trans("dialogs.keybindings.search"), key: "/" },
+			{ action: trans("dialogs.keybindings.slideshow"), key: "Space" },
+			{ action: trans("dialogs.keybindings.select_all"), key: "ctrl/cmd a" },
+			{ action: trans("dialogs.keybindings.move_selection"), key: "m" },
+			{ action: trans("dialogs.keybindings.delete_selection"), key: "BckSpace" },
+			{ action: trans("dialogs.keybindings.toggle"), key: "i" },
 		],
 	},
 	{
-		header: "Photo Shortcuts",
+		header: trans("dialogs.keybindings.photo"),
 		shortcuts: [
-			{ action: "Previous photo", key: "←" },
-			{ action: "Next photo", key: "→" },
+			{ action: trans("dialogs.keybindings.previous"), key: "←" },
+			{ action: trans("dialogs.keybindings.next"), key: "→" },
 			// { action: 'Rate 1 star', key: "1" },
 			// { action: 'Rate 2 star', key: "2" },
 			// { action: 'Rate 3 star', key: "3" },
 			// { action: 'Rate 4 star', key: "4" },
 			// { action: 'Rate 5 star', key: "5" },
 			// TODO: implement this.
-			{ action: "Cycle overlay mode", key: "o" },
-			{ action: "Start/Stop slideshow", key: "Space" },
-			{ action: "Star photo", key: "s" },
-			{ action: "Move photo", key: "m" },
-			{ action: "Delete the photo", key: "BckSpace" },
-			{ action: "Edit information", key: "e" },
-			{ action: "Show information", key: "i" },
+			{ action: trans("dialogs.keybindings.cycle"), key: "o" },
+			{ action: trans("dialogs.keybindings.slideshow"), key: "Space" },
+			{ action: trans("dialogs.keybindings.star"), key: "s" },
+			{ action: trans("dialogs.keybindings.move"), key: "m" },
+			{ action: trans("dialogs.keybindings.delete"), key: "BckSpace" },
+			{ action: trans("dialogs.keybindings.edit"), key: "e" },
+			{ action: trans("dialogs.keybindings.show_hide_meta"), key: "i" },
 			// { action: "Rotate counter clock wise", key: "ctrl ←" },
 			// { action: "Rotate clockwise", key: "ctrl →" },
 		],
