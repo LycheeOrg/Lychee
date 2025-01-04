@@ -74,4 +74,16 @@ return [
 	'share_album' => [
 		'url_copied' => 'Copied URL to clipboard!',
 	],
+	'upload' => [
+		'completed' => 'Completed',
+		'uploaded' => 'Uploaded:',
+		'release' => 'Release file to upload!',
+		'select' => 'Click here to select files to upload',
+		'drag' => '(Or drag files to the page)',
+		'loading' => 'Loading',
+		'resume' => 'Resume',
+		'uploading' => 'Uploading',
+		'finished' => 'Finished',
+		'failed_error' => 'Upload failed. The server returned an error!',
+	],
 ];

@@ -6,14 +6,14 @@
 			<span :class="statusClass">{{ statusMessage }}</span>
 		</div>
 		<span class="text-center w-full hidden group-hover:block text-danger-700 cursor-pointer" @click="controller.abort()">{{
-			$t("lychee.CANCEL")
+			$t("dialogs.button.cancel")
 		}}</span>
 		<ProgressBar :class="progressClass" :value="progressBar" :show-value="false" :pt:value:class="'duration-300'"></ProgressBar>
 	</div>
 </template>
 <script setup lang="ts">
 import UploadService, { UploadData } from "@/services/upload-service";
-import { AxiosProgressEvent } from "axios";
+import { type AxiosProgressEvent } from "axios";
 import { trans } from "laravel-vue-i18n";
 import ProgressBar from "primevue/progressbar";
 import { computed, ref, watch } from "vue";
@@ -54,9 +54,9 @@ const errorMessage = ref<string | undefined>(undefined);
 // prettier-ignore
 const statusMessage = computed(() => {
 	switch (status.value) {
-		case "uploading": return trans("lychee.UPLOAD_UPLOADING");
-		case "done":      return trans("lychee.UPLOAD_FINISHED");
-		case "error":     return errorMessage ?? trans("lychee.UPLOAD_FAILED_ERROR");
+		case "uploading": return trans("dialogs.upload.uploading");
+		case "done":      return trans("dialogs.upload.finished");
+		case "error":     return errorMessage ?? trans("dialogs.upload.failed_error");
 		default:          return "";
 	}
 });
