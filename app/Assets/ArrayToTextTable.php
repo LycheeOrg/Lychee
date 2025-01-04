@@ -14,8 +14,8 @@
 
 namespace App\Assets;
 
-use Laminas\Text\Table\Decorator\DecoratorInterface;
-use Laminas\Text\Table\Decorator\Unicode;
+use App\Contracts\Laminas\DecoratorInterface;
+use App\Metadata\Laminas\Unicode;
 use Safe\Exceptions\MbstringException;
 use Safe\Exceptions\PcreException;
 use function Safe\mb_internal_encoding;

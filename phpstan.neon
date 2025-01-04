@@ -169,3 +169,8 @@ parameters:
 
 		-
 			message: '#Dynamic call to static method Kalnoy\\Nestedset\\QueryBuilder<.*>::(join|select|orderBy)\(\)#'	
+		
+		-
+			message: '#Dynamic call to static method Illuminate\\Http\\Response::getContent\(\)#'
+			paths:
+				- tests

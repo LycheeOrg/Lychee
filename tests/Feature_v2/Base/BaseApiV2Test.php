@@ -12,6 +12,7 @@
 
 namespace Tests\Feature_v2\Base;
 
+use Illuminate\Support\Uri;
 use Illuminate\Testing\TestResponse;
 
 abstract class BaseApiV2Test extends BaseV2Test
@@ -21,8 +22,8 @@ abstract class BaseApiV2Test extends BaseV2Test
 	/**
 	 * Visit the given URI with a GET request.
 	 *
-	 * @param string $uri
-	 * @param array  $headers
+	 * @param Uri|string $uri
+	 * @param array      $headers
 	 *
 	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
@@ -34,9 +35,9 @@ abstract class BaseApiV2Test extends BaseV2Test
 	/**
 	 * Visit the given URI with a POST request.
 	 *
-	 * @param string $uri
-	 * @param array  $data
-	 * @param array  $headers
+	 * @param Uri|string $uri
+	 * @param array      $data
+	 * @param array      $headers
 	 *
 	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
@@ -66,9 +67,9 @@ abstract class BaseApiV2Test extends BaseV2Test
 	/**
 	 * Visit the given URI with a GET request, expecting a JSON response.
 	 *
-	 * @param string $uri
-	 * @param array  $headers
-	 * @param int    $options
+	 * @param Uri|string $uri
+	 * @param array      $headers
+	 * @param int        $options
 	 *
 	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
@@ -80,10 +81,10 @@ abstract class BaseApiV2Test extends BaseV2Test
 	/**
 	 * Visit the given URI with a POST request, expecting a JSON response.
 	 *
-	 * @param string $uri
-	 * @param array  $data
-	 * @param array  $headers
-	 * @param int    $options
+	 * @param Uri|string $uri
+	 * @param array      $data
+	 * @param array      $headers
+	 * @param int        $options
 	 *
 	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
@@ -95,10 +96,10 @@ abstract class BaseApiV2Test extends BaseV2Test
 	/**
 	 * Visit the given URI with a PATCH request, expecting a JSON response.
 	 *
-	 * @param string $uri
-	 * @param array  $data
-	 * @param array  $headers
-	 * @param int    $options
+	 * @param Uri|string $uri
+	 * @param array      $data
+	 * @param array      $headers
+	 * @param int        $options
 	 *
 	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
@@ -110,10 +111,10 @@ abstract class BaseApiV2Test extends BaseV2Test
 	/**
 	 * Visit the given URI with a DELETE request, expecting a JSON response.
 	 *
-	 * @param string $uri
-	 * @param array  $data
-	 * @param array  $headers
-	 * @param int    $options
+	 * @param Uri|string $uri
+	 * @param array      $data
+	 * @param array      $headers
+	 * @param int        $options
 	 *
 	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
