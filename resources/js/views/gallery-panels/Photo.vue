@@ -19,6 +19,7 @@
 					width="auto"
 					height="auto"
 					id="image"
+					ref="videoElement"
 					controls
 					class="absolute m-auto w-auto h-auto"
 					:class="is_full_screen || is_slideshow_active ? 'max-w-full max-h-full' : 'max-wh-full-56'"
@@ -169,7 +170,7 @@ import { useImageHelpers } from "@/utils/Helpers";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 
 const swipe = ref<HTMLElement | null>(null);
-
+const videoElement = ref<HTMLVideoElement | null>(null);
 const props = defineProps<{
 	albumid: string;
 	photoid: string;
@@ -313,6 +314,19 @@ function scrollTo(event: WheelEvent) {
 		previous(true);
 	}
 }
+
+watch(
+	() => photo.value,
+	(newPhoto) => {
+		if (newPhoto) {
+			const videoElementValue = videoElement.value;
+			if (newPhoto.precomputed?.is_video && videoElementValue) {
+				videoElementValue.src = newPhoto.size_variants?.original?.url ?? "";
+				videoElementValue.load();
+			}
+		}
+	},
+);
 
 useSwipe(swipe, {
 	onSwipe(_e: TouchEvent) {},
