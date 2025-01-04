@@ -1,5 +1,5 @@
 <template>
-	<Panel header="Info" v-if="infos" class="border-none max-w-7xl mx-auto">
+	<Panel :header="$t('diagnostics.info')" v-if="infos" class="border-none max-w-7xl mx-auto">
 		<pre><div v-for="info in infos" class=" text-muted-color font-mono text-sm">{{ info }}</div>
 		</pre>
 	</Panel>
