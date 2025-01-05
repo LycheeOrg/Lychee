@@ -10,7 +10,7 @@
 					</template>
 					<template v-if="props.photo.precomputed.is_livephoto">
 						<Button severity="contrast" class="w-full dark:border-surface-900" @click="download(7)">
-							<i class="pi pi-cloud-download"></i> {{ $t("lychee.PHOTO_LIVE_VIDEO") }} - {{ props.photo.preformatted.resolution }}
+							<i class="pi pi-cloud-download"></i> {{ $t("gallery.live_video") }} - {{ props.photo.preformatted.resolution }}
 						</Button>
 					</template>
 				</div>
