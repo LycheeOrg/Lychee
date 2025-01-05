@@ -139,6 +139,15 @@ return [
 		'warning' => 'This action can not be undone!',
 		'transfer' => 'Transfer ownership of album and photos',
 	],
+	'merge' => [
+		'merge_to' => 'Merge %s to:',
+		'merge_to_multiple' => 'Merge %d albums to:',
+		'no_albums' => 'No albums to merge to.',
+		'confirm' => 'Are you sure you want to merge the album “%1$s” into the album “%2$s”?',
+		'confirm_multiple' => 'Are you sure you want to merge all selected albums into the album “%s”?',
+		'merge' => 'Merge',
+		'merged' => 'Album(s) merged to %s!',
+	],
 	'unlock' => [
 		'password_required' => 'This album is protected by a password. Enter the password below to view the photos of this album:',
 		'password' => 'Password',
@@ -159,7 +168,7 @@ return [
 		'confirm' => 'Copy %s to %s.',
 		'confirm_multiple' => 'Copy %d photos to %s.',
 		'copy' => 'Copy',
-		'copied' => 'Photos copied!',
+		'copied' => 'Photo(s) copied!',
 	],
 	'target_user' => [
 		'placeholder' => 'Select user',
