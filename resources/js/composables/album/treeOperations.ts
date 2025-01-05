@@ -1,5 +1,7 @@
 import { set } from "@vueuse/core";
+import { trans } from "laravel-vue-i18n";
 import { ToastServiceMethods } from "primevue/toastservice";
+import { sprintf } from "sprintf-js";
 import { computed, ref, Ref } from "vue";
 
 export type Augmented = {
@@ -46,24 +48,24 @@ export function useTreeOperations(
 
 		errors.value = albums.value.filter(isError).map((a) => {
 			if (a._lft === null || a._lft === 0) {
-				return `Album ${a.id.slice(0, 6)} has an invalid left value.`;
+				return sprintf(trans("fix-tree.errors.invalid_left"), a.id.slice(0, 6)); // `Album ${a.id.slice(0, 6)} has an invalid left value.`;
 			}
 			if (a._rgt === null || a._rgt === 0) {
-				return `Album ${a.id.slice(0, 6)} has an invalid right value.`;
+				return sprintf(trans("fix-tree.errors.invalid_right"), a.id.slice(0, 6)); // `Album ${a.id.slice(0, 6)} has an invalid right value.`;
 			}
 			if (a._lft >= a._rgt) {
-				return `Album ${a.id.slice(0, 6)} has an invalid left/right values. Left should be strictly smaller than right: ${a._lft} < ${a._rgt}.`;
+				return sprintf(trans("fix-tree.errors.invalid_left_right"), a.id.slice(0, 6), a._lft, a._rgt); // `Album ${a.id.slice(0, 6)} has an invalid left/right values. Left should be strictly smaller than right: ${a._lft} < ${a._rgt}.`;
 			}
 			if (a.isDuplicate_lft) {
-				return `Album ${a.id.slice(0, 6)} has a duplicate left value ${a._lft}.`;
+				return sprintf(trans("fix-tree.errors.duplicate_left"), a.id.slice(0, 6), a._lft); // `Album ${a.id.slice(0, 6)} has a duplicate left value ${a._lft}.`;
 			}
 			if (a.isDuplicate_rgt) {
-				return `Album ${a.id.slice(0, 6)} has a duplicate right value  ${a._rgt}.`;
+				return sprintf(trans("fix-tree.errors.duplicate_right"), a.id.slice(0, 6), a._rgt); // `Album ${a.id.slice(0, 6)} has a duplicate right value  ${a._rgt}.`;
 			}
 			if (!a.isExpectedParentId) {
-				return `Album ${a.id.slice(0, 6)} has an unexpected parent id ${a.parent_id ?? "root"}.`;
+				return sprintf(trans("fix-tree.errors.parent"), a.id.slice(0, 6), a.parent_id ?? "root"); // `Album ${a.id.slice(0, 6)} has an unexpected parent id ${a.parent_id ?? "root"}.`;
 			}
-			return `Album ${a.id.slice(0, 6)} has an unknown error.`;
+			return sprintf(trans("fix-tree.errors.unknown"), a.id.slice(0, 6)); // `Album ${a.id.slice(0, 6)} has an unknown error.`;
 		});
 	}
 
@@ -143,7 +145,7 @@ export function useTreeOperations(
 	function check() {
 		originalAlbums.value = albums.value?.sort((a, b) => a._lft - b._lft);
 		prepareAlbums();
-		errors.value.forEach((e) => toast.add({ severity: "error", summary: "Error", detail: e, life: 3000 }));
+		errors.value.forEach((e) => toast.add({ severity: "error", summary: trans("toasts.error"), detail: e, life: 3000 }));
 	}
 
 	// We increment all the nodes' (>= lft) left and right by 1.
