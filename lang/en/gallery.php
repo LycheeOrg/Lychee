@@ -28,6 +28,7 @@ return [
 
 	'map' => [
 		'error_gpx' => 'Error loading GPX file',
+		'osm_contributors' => 'OpenStreetMap contributors',
 	],
 
 	'search' => [
@@ -177,10 +178,6 @@ return [
 		'header' => 'Sensitive content',
 		'description' => 'This album contains sensitive content which some people may find offensive or disturbing.',
 		'consent' => 'Tap to consent.',
-	],
-
-	'map' => [
-		'osm_contributors' => 'OpenStreetMap contributors',
 	],
 
 	'menus' => [
