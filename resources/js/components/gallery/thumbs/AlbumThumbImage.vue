@@ -5,7 +5,7 @@
 	>
 		<img
 			v-show="placeholderSrc"
-			:alt="$t('lychee.PHOTO_PLACEHOLDER')"
+			:alt="$t('gallery.placeholder')"
 			class="absolute w-full h-full top-0 left-0 blur-md"
 			:class="{ 'animate-fadeout animate-fill-forwards': isImageLoaded }"
 			:src="placeholderSrc"
@@ -14,7 +14,7 @@
 			loading="lazy"
 		/>
 		<img
-			:alt="$t('lychee.PHOTO_THUMBNAIL')"
+			:alt="$t('gallery.thumbnail')"
 			class="w-full h-full m-0 p-0 border-0 object-cover"
 			:class="classObject"
 			:src="src"

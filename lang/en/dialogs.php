@@ -144,6 +144,23 @@ return [
 		'password' => 'Password',
 		'unlock' => 'Unlock',
 	],
+	'photo_tags' => [
+		'question' => 'Enter your tags for this photo.',
+		'question_multiple' => 'Enter your tags for all %d selected photos. Existing tags will be overwritten.',
+		'no_tags' => 'No Tags',
+		'set_tags' => 'Set Tags',
+		'updated' => 'Tags updated!',
+		'tags_override_info' => 'If this is unchecked, the tags will be added to the existing tags of the photo.',
+	],
+	'photo_copy' => [
+		'no_albums' => 'No albums to copy to',
+		'copy_to' => 'Copy %s to:',
+		'copy_to_multiple' => 'Copy %d photos to:',
+		'confirm' => 'Copy %s to %s.',
+		'confirm_multiple' => 'Copy %d photos to %s.',
+		'copy' => 'Copy',
+		'copied' => 'Photos copied!',
+	],
 	'target_user' => [
 		'placeholder' => 'Select user',
 	],

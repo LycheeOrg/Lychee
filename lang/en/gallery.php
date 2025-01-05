@@ -12,6 +12,17 @@ return [
 	'albums' => 'Albums',
 	'root' => 'Albums',
 
+	'original' => 'Original',
+	'medium' => 'Medium',
+	'medium_hidpi' => 'Medium HiDPI',
+	'small' => 'Thumb',
+	'small_hidpi' => 'Thumb HiDPI',
+	'thumb' => 'Square thumb',
+	'thumb_hidpi' => 'Square thumb HiDPI',
+	'placeholder' => 'Low Quality Image Placeholder',
+	'thumbnail' => 'Photo thumbnail',
+	'live_video' => 'Video part of live-photo',
+
 	'camera_data' => 'Camera date',
 
 	'map' => [
@@ -45,7 +56,7 @@ return [
 			'created' => 'Created',
 			'copyright' => 'Copyright',
 			'subalbums' => 'Subalbums',
-			'images' => 'Pictures',
+			'images' => 'Photos',
 			'download' => 'Download Album',
 			'share' => 'Share Album',
 			'stats_only_se' => 'Statistics available in the Supporter Edition',
@@ -58,6 +69,13 @@ return [
 			'model' => 'Model',
 			'aperture' => 'Aperture',
 			'no_data' => 'No data',
+		],
+
+		'layout' => [
+			'squares' => 'Square thumbnails',
+			'justified' => 'With aspect, justified',
+			'masonry' => 'With aspect, masonry',
+			'grid' => 'With aspect, grid',
 		],
 
 		'properties' => [
