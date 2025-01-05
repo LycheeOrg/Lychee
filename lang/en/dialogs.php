@@ -11,6 +11,7 @@ return [
 		'cancel' => 'Cancel',
 		'save' => 'Save',
 		'delete' => 'Delete',
+		'move' => 'Move',
 	],
 	'about' => [
 		'subtitle' => 'Self-hosted photo-management done right',
@@ -109,9 +110,12 @@ return [
 		'confirm_multiple' => 'Are you sure you want to move all selected albums into the album “%s”?',
 		'move_single' => 'Move Album',
 		'move_to' => 'Move to',
+		'move_to_single' => 'Move %s to:',
+		'move_to_multiple' => 'Move %d albums to:',
 		'no_album_target' => 'No album to move to',
 		'moved_single' => 'Album moved!',
 		'moved_single_details' => '%1$s moved to %2$s',
+		'moved_details' => 'Album(s) moved to %s',
 	],
 	'new_album' => [
 		'menu' => 'Create Album',
@@ -129,6 +133,7 @@ return [
 	],
 	'delete_album' => [
 		'confirmation' => 'Are you sure you want to delete the album “%s” and all of the photos it contains?',
+		'confirmation_multiple' => 'Are you sure you want to delete all %d selected albums and all of the photos they contain?',
 		'warning' => 'This action can not be undone!',
 		'delete' => 'Delete Album and Photos',
 	],
@@ -139,13 +144,18 @@ return [
 		'warning' => 'This action can not be undone!',
 		'transfer' => 'Transfer ownership of album and photos',
 	],
+	'rename' => [
+		'photo' => 'Enter a new title for this photo:',
+		'album' => 'Enter a new title for this album:',
+		'rename' => 'Rename',
+	],
 	'merge' => [
 		'merge_to' => 'Merge %s to:',
 		'merge_to_multiple' => 'Merge %d albums to:',
 		'no_albums' => 'No albums to merge to.',
 		'confirm' => 'Are you sure you want to merge the album “%1$s” into the album “%2$s”?',
 		'confirm_multiple' => 'Are you sure you want to merge all selected albums into the album “%s”?',
-		'merge' => 'Merge',
+		'merge' => 'Merge Albums',
 		'merged' => 'Album(s) merged to %s!',
 	],
 	'unlock' => [
@@ -169,6 +179,18 @@ return [
 		'confirm_multiple' => 'Copy %d photos to %s.',
 		'copy' => 'Copy',
 		'copied' => 'Photo(s) copied!',
+	],
+	'photo_delete' => [
+		'confirm' => 'Are you sure you want to delete the photo “%s”?',
+		'confirm_multiple' => 'Are you sure you want to delete all %d selected photo?',
+		'deleted' => 'Photo(s) deleted!',
+	],
+	'move_photo' => [
+		'move_single' => 'Move %s to:',
+		'move_multiple' => 'Move %d photos to:',
+		'confirm' => 'Move %s to %s.',
+		'confirm_multiple' => 'Move %d photos to %s.',
+		'moved' => 'Photo(s) moved to %s!',
 	],
 	'target_user' => [
 		'placeholder' => 'Select user',

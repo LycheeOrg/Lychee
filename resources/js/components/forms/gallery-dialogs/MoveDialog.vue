@@ -5,10 +5,10 @@
 				<p class="p-9 text-center text-muted-color">{{ confirmation }}</p>
 				<div class="flex">
 					<Button severity="secondary" class="font-bold w-full border-none rounded-none rounded-bl-xl" @click="close">
-						{{ $t("lychee.CANCEL") }}
+						{{ $t("dialogs.button.cancel") }}
 					</Button>
 					<Button severity="contrast" class="font-bold w-full border-none rounded-none rounded-br-xl" @click="execute">
-						{{ $t("lychee.MOVE") }}
+						{{ $t("dialogs.button.move") }}
 					</Button>
 				</div>
 			</div>
@@ -20,10 +20,10 @@
 					<SearchTargetAlbum :album-ids="headIds" @selected="selected" @no-target="error_no_target = true" />
 				</div>
 				<div v-else class="p-9">
-					<p class="text-center text-muted-color">{{ "No album to move to." }}</p>
+					<p class="text-center text-muted-color">{{ $t("dialogs.move_album.no_album_target") }}</p>
 				</div>
 				<Button class="w-full font-bold rounded-none rounded-bl-xl rounded-br-xl border-none" severity="secondary" @click="closeCallback">
-					{{ $t("lychee.CANCEL") }}
+					{{ $t("dialogs.button.cancel") }}
 				</Button>
 			</div>
 		</template>
@@ -80,15 +80,15 @@ const headIds = computed(() => {
 
 const question = computed(() => {
 	if (props.photoIds && props.photoIds?.length > 1) {
-		return sprintf("Move %d photos to:", props.photoIds?.length);
+		return sprintf(trans("dialog.move_photo.move_multiple"), props.photoIds?.length);
 	}
 	if (props.albumIds && props.albumIds?.length > 1) {
-		return sprintf("Move %d albums to:", props.albumIds?.length);
+		return sprintf(trans("dialog.move_album.move_to_multiple"), props.albumIds?.length);
 	}
 	if (props.photo) {
-		return sprintf("Move %s to:", props.photo.title);
+		return sprintf(trans("dialog.move_photo.move_single"), props.photo.title);
 	}
-	return sprintf("Move %s to:", props.album?.title);
+	return sprintf(trans("dialog.move_album.move_to_single"), props.album?.title);
 });
 
 const confirmation = computed(() => {
@@ -100,16 +100,16 @@ const confirmation = computed(() => {
 
 function moveConfirmationPhoto() {
 	if (props.photo) {
-		return sprintf("Move %s to %s.", props.photo.title, titleMovedTo.value);
+		return sprintf(trans("dialog.move_photo.confirm"), props.photo.title, titleMovedTo.value);
 	}
-	return sprintf("Move %d photos to %s.", props.photoIds?.length, titleMovedTo.value);
+	return sprintf(trans("dialog.move_photo.confirm_multiple"), props.photoIds?.length, titleMovedTo.value);
 }
 
 function moveConfirmationAlbum() {
 	if (props.album) {
-		return sprintf(trans("lychee.ALBUM_MOVE"), props.album.title, titleMovedTo.value);
+		return sprintf(trans("dialogs.move_album.confirm_single"), props.album.title, titleMovedTo.value);
 	}
-	return sprintf(trans("lychee.ALBUMS_MOVE"), titleMovedTo.value);
+	return sprintf(trans("dialogs.move_album.confirm_multiple"), titleMovedTo.value);
 }
 
 function execute() {
@@ -135,7 +135,7 @@ function executeMoveAlbum() {
 		AlbumService.clearCache(destination_id.value);
 		toast.add({
 			severity: "success",
-			summary: "Album(s) moved to " + titleMovedTo.value,
+			summary: sprintf(trans("dialogs.move_album.moved_details"), titleMovedTo.value),
 			life: 3000,
 		});
 		AlbumService.clearCache(destination_id.value);
@@ -164,7 +164,7 @@ function executeMovePhoto() {
 	PhotoService.move(destination_id.value, photoMovedIds).then(() => {
 		toast.add({
 			severity: "success",
-			summary: "Photo moved",
+			summary: sprintf(trans("dialogs.move_photo.moved"), titleMovedTo.value),
 			life: 3000,
 		});
 		// Clear the cache for the current album and the destination album
