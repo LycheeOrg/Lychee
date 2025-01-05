@@ -5,7 +5,7 @@
 		v-model="selectedTarget"
 		@update:modelValue="selected"
 		filter
-		placeholder="Select user"
+		:placeholder="$t('dialogs.target_user.placeholder')"
 		:loading="options === undefined"
 		:options="options"
 		optionLabel="username"
