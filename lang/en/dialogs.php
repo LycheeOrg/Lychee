@@ -88,6 +88,31 @@ return [
 		'finished' => 'Finished',
 		'failed_error' => 'Upload failed. The server returned an error!',
 	],
+	'visibility' => [
+		'public' => 'Public',
+		'public_expl' => 'Anonymous users can access this album, subject to the restrictions below.',
+		'full' => 'Original',
+		'full_expl' => 'Anonymous users can behold full-resolution photos.',
+		'hidden' => 'Hidden',
+		'hidden_expl' => 'Anonymous users need a direct link to access this album.',
+		'downloadable' => 'Downloadable',
+		'downloadable_expl' => 'Anonymous users can download this album.',
+		'password' => 'Password',
+		'password_prot' => 'Password protected',
+		'password_prot_expl' => 'Anonymous users need a shared password to access this album.',
+		'nsfw' => 'Sensitive',
+		'nsfw_expl' => 'Album contains sensitive content.',
+		'visibility_updated' => 'Visibility updated.',
+	],
+	'move_album' => [
+		'confirm_single' => 'Are you sure you want to move the album “%1$s” into the album “%2$s”?',
+		'confirm_multiple' => 'Are you sure you want to move all selected albums into the album “%s”?',
+		'move_single' => 'Move Album',
+		'move_to' => 'Move to',
+		'no_album_target' => 'No album to move to',
+		'moved_single' => 'Album moved!',
+		'moved_single_details' => '%1$s moved to %2$s',
+	],
 	'new_album' => [
 		'menu' => 'Create Album',
 		'info' => 'Enter a title for the new album:',
@@ -116,6 +141,9 @@ return [
 	],
 	'target_user' => [
 		'placeholder' => 'Select user',
+	],
+	'target_album' => [
+		'placeholder' => 'Select album',
 	],
 	'webauthn' => [
 		'u2f' => 'U2F',
