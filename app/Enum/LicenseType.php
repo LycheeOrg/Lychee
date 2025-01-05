@@ -54,7 +54,7 @@ enum LicenseType: string
 	{
 		return [
 			self::NONE->value => 'None',
-			self::RESERVED->value => __('lychee.ALBUM_RESERVED'),
+			self::RESERVED->value => __('gallery.album_reserved'),
 			self::CC0->value => 'CC0 - Public Domain',
 			self::CC_BY_1_0->value => 'CC Attribution 1.0',
 			self::CC_BY_2_0->value => 'CC Attribution 2.0',

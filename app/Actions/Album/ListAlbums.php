@@ -57,9 +57,9 @@ class ListAlbums extends Action
 				$flat_tree,
 				[
 					'id' => null,
-					'title' => __('lychee.ROOT'),
-					'original' => __('lychee.ROOT'),
-					'short_title' => __('lychee.ROOT'),
+					'title' => __('gallery.root'),
+					'original' => __('gallery.root'),
+					'short_title' => __('gallery.root'),
 					'thumb' => URL::asset('img/no_images.svg'),
 				]
 			);

@@ -127,7 +127,7 @@ class PhotoResource extends JsonResource
 
 			'shutter' => str_replace('s', 'sec', $this->resource->shutter ?? ''),
 			'aperture' => str_replace('f/', '', $this->resource->aperture ?? ''),
-			'iso' => sprintf(__('lychee.PHOTO_ISO'), $this->resource->iso),
+			'iso' => sprintf(__('gallery.photo.details.iso'), $this->resource->iso),
 			'lens' => ($this->resource->lens === '' || $this->resource->lens === null) ? '' : sprintf('(%s)', $this->resource->lens),
 
 			'duration' => Helpers::secondsToHMS(intval($this->resource->aperture)),

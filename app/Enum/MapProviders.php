@@ -29,10 +29,10 @@ enum MapProviders: string
 	{
 		return match ($this) {
 			self::Wikimedia => '<a href="https://wikimediafoundation.org/wiki/Maps_Terms_of_Use">Wikimedia</a>',
-			self::OpenStreetMapOrg => '&copy; <a href="https://openstreetmap.org/copyright">' . __('lychee.OSM_CONTRIBUTORS') . '</a>',
-			self::OpenStreetMapDe => '&copy; <a href="https://openstreetmap.org/copyright">' . __('lychee.OSM_CONTRIBUTORS') . '</a>',
-			self::OpenStreetMapFr => '&copy; <a href="https://openstreetmap.org/copyright">' . __('lychee.OSM_CONTRIBUTORS') . '</a>',
-			self::RRZE => '&copy; <a href="https://openstreetmap.org/copyright">' . __('lychee.OSM_CONTRIBUTORS') . '</a>',
+			self::OpenStreetMapOrg => '&copy; <a href="https://openstreetmap.org/copyright">' . __('gallery.map.osm_contributors') . '</a>',
+			self::OpenStreetMapDe => '&copy; <a href="https://openstreetmap.org/copyright">' . __('gallery.map.osm_contributors') . '</a>',
+			self::OpenStreetMapFr => '&copy; <a href="https://openstreetmap.org/copyright">' . __('gallery.map.osm_contributors') . '</a>',
+			self::RRZE => '&copy; <a href="https://openstreetmap.org/copyright">' . __('gallery.map.osm_contributors') . '</a>',
 		};
 	}
 }

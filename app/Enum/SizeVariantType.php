@@ -45,14 +45,14 @@ enum SizeVariantType: int
 	public function localization(): string
 	{
 		return match ($this) {
-			self::PLACEHOLDER => __('lychee.PHOTO_PLACEHOLDER'),
-			self::THUMB => __('lychee.PHOTO_THUMB'),
-			self::THUMB2X => __('lychee.PHOTO_THUMB_HIDPI'),
-			self::SMALL => __('lychee.PHOTO_SMALL'),
-			self::SMALL2X => __('lychee.PHOTO_SMALL_HIDPI'),
-			self::MEDIUM => __('lychee.PHOTO_MEDIUM'),
-			self::MEDIUM2X => __('lychee.PHOTO_MEDIUM_HIDPI'),
-			self::ORIGINAL => __('lychee.PHOTO_ORIGINAL'),
+			self::PLACEHOLDER => __('gallery.placeholder'),
+			self::THUMB => __('gallery.thumb'),
+			self::THUMB2X => __('gallery.thumb_hidpi'),
+			self::SMALL => __('gallery.small'),
+			self::SMALL2X => __('gallery.small_hidpi'),
+			self::MEDIUM => __('gallery.medium'),
+			self::MEDIUM2X => __('gallery.medium_hidpi'),
+			self::ORIGINAL => __('gallery.original'),
 		};
 	}
 }

@@ -43,7 +43,7 @@ class PreformattedPhotoData extends Data
 
 		$this->shutter = str_replace('s', 'sec', $photo->shutter ?? '');
 		$this->aperture = str_replace('f/', '', $photo->aperture ?? '');
-		$this->iso = sprintf(__('lychee.PHOTO_ISO'), $photo->iso);
+		$this->iso = sprintf(__('gallery.photo.details.iso'), $photo->iso);
 		$this->lens = ($photo->lens === '' || $photo->lens === null) ? '' : sprintf('(%s)', $photo->lens);
 
 		$this->duration = Helpers::secondsToHMS(intval($photo->aperture));

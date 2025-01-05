@@ -52,7 +52,7 @@ class ProcessImageJob implements ShouldQueue
 		$this->originalBaseName = $file->getOriginalBasename();
 
 		$this->albumID = null;
-		$album_name = __('lychee.UNSORTED');
+		$album_name = __('gallery.smart_album.unsorted');
 
 		if ($album instanceof AbstractAlbum) {
 			$this->albumID = $album->id;

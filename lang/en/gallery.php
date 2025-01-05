@@ -8,7 +8,7 @@ return [
 	*/
 	'title' => 'Gallery',
 
-	'smart_album' => 'Smart albums',
+	'smart_albums' => 'Smart albums',
 	'albums' => 'Albums',
 	'root' => 'Albums',
 
@@ -24,6 +24,7 @@ return [
 	'live_video' => 'Video part of live-photo',
 
 	'camera_data' => 'Camera date',
+	'album_reserved' => 'All Rights Reserved',
 
 	'map' => [
 		'error_gpx' => 'Error loading GPX file',
@@ -37,6 +38,14 @@ return [
 		'minimum_chars' => 'Minimum %s characters required.',
 		'photos' => 'Photos (%s)',
 		'albums' => 'Albums (%s)',
+	],
+
+	'smart_album' => [
+		'unsorted' => 'Unsorted',
+		'starred' => 'Starred',
+		'recent' => 'Recent',
+		'public' => 'Public',
+		'on_this_day' => 'On This Day',
 	],
 
 	'album' => [
@@ -152,5 +161,9 @@ return [
 		'header' => 'Sensitive content',
 		'description' => 'This album contains sensitive content which some people may find offensive or disturbing.',
 		'consent' => 'Tap to consent.',
+	],
+
+	'map' => [
+		'osm_contributors' => 'OpenStreetMap contributors',
 	],
 ];
