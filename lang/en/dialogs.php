@@ -139,6 +139,11 @@ return [
 		'warning' => 'This action can not be undone!',
 		'transfer' => 'Transfer ownership of album and photos',
 	],
+	'unlock' => [
+		'password_required' => 'This album is protected by a password. Enter the password below to view the photos of this album:',
+		'password' => 'Password',
+		'unlock' => 'Unlock',
+	],
 	'target_user' => [
 		'placeholder' => 'Select user',
 	],
