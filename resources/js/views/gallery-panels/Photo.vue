@@ -187,8 +187,10 @@ const { is_full_screen, is_edit_open, are_details_open, is_slideshow_active } = 
 const { isDeleteVisible, toggleDelete, isMoveVisible, toggleMove } = useGalleryModals(togglableStore);
 
 const photoId = ref(props.photoid);
-const { photo, album, photos, previousStyle, nextStyle, srcSetMedium, style, imageViewMode, refresh, hasPrevious, hasNext } =
-	usePhotoBaseFunction(photoId);
+const { photo, album, photos, previousStyle, nextStyle, srcSetMedium, style, imageViewMode, refresh, hasPrevious, hasNext } = usePhotoBaseFunction(
+	photoId,
+	videoElement,
+);
 const { getPlaceholderIcon } = useImageHelpers();
 
 const { slideshow_timeout } = storeToRefs(lycheeStore);
@@ -314,19 +316,6 @@ function scrollTo(event: WheelEvent) {
 		previous(true);
 	}
 }
-
-watch(
-	() => photo.value,
-	(newPhoto) => {
-		if (newPhoto) {
-			const videoElementValue = videoElement.value;
-			if (newPhoto.precomputed?.is_video && videoElementValue) {
-				videoElementValue.src = newPhoto.size_variants?.original?.url ?? "";
-				videoElementValue.load();
-			}
-		}
-	},
-);
 
 useSwipe(swipe, {
 	onSwipe(_e: TouchEvent) {},

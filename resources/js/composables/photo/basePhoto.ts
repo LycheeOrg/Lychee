@@ -1,6 +1,6 @@
 import { computed, Ref, ref } from "vue";
 
-export function usePhotoBaseFunction(photoId: Ref<string>) {
+export function usePhotoBaseFunction(photoId: Ref<string>, videoElement: Ref<HTMLVideoElement | null>) {
 	const photo = ref<App.Http.Resources.Models.PhotoResource | undefined>(undefined);
 	const album = ref<App.Http.Resources.Models.AbstractAlbumResource | null>(null);
 	const photos = ref<App.Http.Resources.Models.PhotoResource[]>([]);
@@ -87,6 +87,13 @@ export function usePhotoBaseFunction(photoId: Ref<string>) {
 
 	function refresh(): void {
 		photo.value = photos.value.find((p: App.Http.Resources.Models.PhotoResource) => p.id === photoId.value);
+
+		// handle videos.
+		const videoElementValue = videoElement.value;
+		if (photo.value?.precomputed?.is_video && videoElementValue) {
+			videoElementValue.src = photo.value?.size_variants?.original?.url ?? "";
+			videoElementValue.load();
+		}
 	}
 
 	return {
