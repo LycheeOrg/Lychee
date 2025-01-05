@@ -14,7 +14,7 @@ return [
 	],
 	'toasts' => [
 		'change_saved' => 'Change saved!',
-		'detail' => 'Settings have been modified as per request',
+		'details' => 'Settings have been modified as per request',
 		'error' => 'Error!',
 		'error_load_css' => 'Could not load dist/user.css',
 		'error_load_js' => 'Could not load dist/custom.js',

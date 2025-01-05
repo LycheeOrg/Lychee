@@ -250,7 +250,7 @@ function save() {
 	SettingsService.setConfigs({ configs: modified.value })
 		.then(() => {
 			modified.value = [];
-			toast.add({ severity: "success", summary: trans("settings.toasts.change_saved"), detail: trans("settings.toasts.detail"), life: 3000 });
+			toast.add({ severity: "success", summary: trans("settings.toasts.change_saved"), detail: trans("settings.toasts.details"), life: 3000 });
 			load();
 		})
 		.catch((e) => {

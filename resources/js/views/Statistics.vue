@@ -10,8 +10,8 @@
 
 		<template #end> </template>
 	</Toolbar>
-	<Panel v-if="is_se_preview_enabled" class="text-center">
-		<div v-html="$t('statistics.preview')" />
+	<Panel v-if="is_se_preview_enabled" class="text-center border-0 text-muted-color-emphasis">
+		<div v-html="$t('statistics.preview_text')" />
 	</Panel>
 	<Panel class="max-w-5xl mx-auto border-0">
 		<SizeVariantMeter v-if="load" :album-id="null" />
