@@ -1,6 +1,7 @@
 import SearchService from "@/services/search-service";
 import { TogglablesStateStore } from "@/stores/ModalsState";
 import { trans } from "laravel-vue-i18n";
+import { sprintf } from "sprintf-js";
 import { computed, ref, Ref } from "vue";
 
 export function useSearch(albumid: Ref<string>, togglableStore: TogglablesStateStore, search_term: Ref<string>, search_page: Ref<number>) {
@@ -15,11 +16,11 @@ export function useSearch(albumid: Ref<string>, togglableStore: TogglablesStateS
 	const layout = ref<App.Enum.PhotoLayoutType>("square");
 
 	const photoHeader = computed(() => {
-		return trans("lychee.PHOTOS") + " (" + total.value + ")";
+		return sprintf(trans("gallery.search.photos"), total.value);
 	});
 
 	const albumHeader = computed(() => {
-		return trans("lychee.ALBUMS") + " (" + albums.value.length + ")";
+		return sprintf(trans("gallery.search.albums"), albums.value.length);
 	});
 
 	function searchInit() {

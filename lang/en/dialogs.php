@@ -93,4 +93,7 @@ return [
 		'success' => 'Authentication successful!',
 		'error' => 'Whoops, it looks like something went wrong. Please reload the site and try again!',
 	],
+	'se' => [
+		'available' => 'Available in the Supporter Edition',
+	],
 ];

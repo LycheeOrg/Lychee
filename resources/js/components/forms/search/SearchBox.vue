@@ -10,12 +10,12 @@
 					type="text"
 					v-model="search"
 					:invalid="!isValid"
-					:placeholder="$t('lychee.SEARCH')"
+					:placeholder="$t('gallery.search.searchbox')"
 					@updated="debouncedFn"
 				/>
 			</div>
 			<div class="items-center text-danger-700 w-full text-center" :class="!isValid ? 'opacity-100' : 'opacity-0'">
-				Minimum {{ props.searchMinimumLengh }} characters required.
+				{{ sprintf($t("gallery.search.minimum_chars"), props.searchMinimumLengh) }}
 			</div>
 		</div>
 	</div>
@@ -24,6 +24,7 @@
 import InputText from "@/components/forms/basic/InputText.vue";
 import { computed } from "@vue/reactivity";
 import { useDebounceFn } from "@vueuse/core";
+import { sprintf } from "sprintf-js";
 
 const props = defineProps<{
 	searchMinimumLengh: number;
