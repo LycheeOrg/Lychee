@@ -9,7 +9,7 @@
 				:class="activeTab === 0 ? 'bg-primary-500/5' : ''"
 				v-on:click="activeTab = 0"
 			>
-				{{ $t("lychee.ABOUT_ALBUM") }}
+				{{ $t("gallery.album.tab.about") }}
 			</li>
 			<li
 				v-if="canShare"
@@ -17,7 +17,7 @@
 				:class="activeTab === 1 ? 'bg-primary-500/5' : ''"
 				v-on:click="activeTab = 1"
 			>
-				{{ $t("lychee.SHARE_ALBUM") }}
+				{{ $t("gallery.album.tab.share") }}
 			</li>
 			<li
 				v-if="canMove"
@@ -25,7 +25,7 @@
 				:class="activeTab === 2 ? 'bg-primary-500/5' : ''"
 				v-on:click="activeTab = 2"
 			>
-				{{ $t("lychee.MOVE_ALBUM") }}
+				{{ $t("gallery.album.tab.move") }}
 			</li>
 			<li
 				v-if="canDelete || canTransfer"
@@ -33,7 +33,7 @@
 				:class="activeTab === 3 ? 'bg-red-700/10' : ''"
 				v-on:click="activeTab = 3"
 			>
-				{{ "DANGER ZONE" }}
+				{{ $t("gallery.album.tab.danger") }}
 			</li>
 		</ul>
 		<div class="w-full xl:w-5/6 flex justify-center flex-wrap mb-4 sm:mt-7 pl-7" v-if="activeTab === 0">

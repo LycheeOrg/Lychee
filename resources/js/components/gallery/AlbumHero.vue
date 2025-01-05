@@ -3,9 +3,9 @@
 		<img class="absolute block top-0 left-0 w-full h-full object-cover object-center z-0" :src="props.album.preFormattedData.url" />
 		<div class="h-full pl-7 pt-7 relative text-shadow-sm w-full bg-gradient-to-b from-black/20 via-80%">
 			<h1 class="font-bold text-4xl text-surface-0">{{ props.album.title }}</h1>
-			<span v-if="props.album.preFormattedData.min_max_text" class="text-surface-200 text-sm">{{
-				props.album.preFormattedData.min_max_text
-			}}</span>
+			<span v-if="props.album.preFormattedData.min_max_text" class="text-surface-200 text-sm">
+				{{ props.album.preFormattedData.min_max_text }}
+			</span>
 		</div>
 	</div>
 	<Card class="w-full">
@@ -14,16 +14,16 @@
 				<div class="order-1 flex flex-col w-full">
 					<h1 v-if="!props.album.preFormattedData.url" class="font-bold text-2xl">{{ props.album.title }}</h1>
 					<span v-if="props.album.preFormattedData.created_at" class="block text-muted-color text-sm">
-						{{ $t("lychee.ALBUM_CREATED") }} {{ props.album.preFormattedData.created_at }}
+						{{ $t("gallery.album.hero.created") }} {{ props.album.preFormattedData.created_at }}
 					</span>
 					<span v-if="props.album.preFormattedData.copyright" class="block text-muted-color text-sm">
-						{{ $t("lychee.ALBUM_COPYRIGHT") }} {{ props.album.preFormattedData.copyright }}
+						{{ $t("gallery.album.hero.copyright") }} {{ props.album.preFormattedData.copyright }}
 					</span>
 					<span v-if="props.album.preFormattedData.num_children" class="block text-muted-color text-sm">
-						{{ props.album.preFormattedData.num_children }} {{ $t("lychee.ALBUM_SUBALBUMS") }}
+						{{ props.album.preFormattedData.num_children }} {{ $t("gallery.album.hero.subalbums") }}
 					</span>
 					<span v-if="props.album.preFormattedData.num_photos" class="block text-muted-color text-sm">
-						{{ props.album.preFormattedData.num_photos }} {{ $t("lychee.ALBUM_IMAGES") }}
+						{{ props.album.preFormattedData.num_photos }} {{ $t("gallery.album.hero.images") }}
 						<span v-if="props.album.preFormattedData.license" class="text-muted-color text-sm">
 							&mdash; {{ props.album.preFormattedData.license }}
 						</span>
@@ -32,7 +32,7 @@
 				<a
 					v-if="props.album.rights.can_download"
 					class="flex-shrink-0 px-3 cursor-pointer text-muted-color inline-block transform duration-300 hover:scale-150 hover:text-color"
-					:title="$t('lychee.DOWNLOAD_ALBUM')"
+					:title="$t('gallery.album.hero.download')"
 					@click="download"
 				>
 					<i class="pi pi-cloud-download" />
@@ -40,7 +40,7 @@
 				<a
 					v-if="props.album.rights.can_share"
 					class="flex-shrink-0 px-3 cursor-pointer text-muted-color inline-block transform duration-300 hover:scale-150 hover:text-color"
-					:title="$t('lychee.SHARE_ALBUM')"
+					:title="$t('gallery.album.hero.share')"
 					v-on:click="openSharingModal"
 				>
 					<i class="pi pi-share-alt" />
@@ -55,7 +55,7 @@
 				<a
 					v-if="is_se_preview_enabled && user?.id !== null"
 					class="flex-shrink-0 px-3 cursor-not-allowed text-primary-emphasis"
-					v-tooltip.left="'Statistics available in the Supporter Edition'"
+					v-tooltip.left="$t('gallery.album.hero.stats_only_se')"
 				>
 					<i class="pi pi-chart-scatter" />
 				</a>

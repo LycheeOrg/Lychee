@@ -10,6 +10,7 @@ return [
 
 	'smart_album' => 'Smart albums',
 	'albums' => 'Albums',
+	'root' => 'Albums',
 
 	'camera_data' => 'Camera date',
 
@@ -32,6 +33,32 @@ return [
 		'header_photos' => 'Photos',
 		'no_results' => 'Nothing to see here',
 		'upload' => 'Upload photos',
+
+		'tabs' => [
+			'about' => 'About Album',
+			'share' => 'Share Album',
+			'move' => 'Move Album',
+			'danger' => 'DANGER ZONE',
+		],
+
+		'hero' => [
+			'created' => 'Created',
+			'copyright' => 'Copyright',
+			'subalbums' => 'Subalbums',
+			'images' => 'Pictures',
+			'download' => 'Download Album',
+			'share' => 'Share Album',
+			'stats_only_se' => 'Statistics available in the Supporter Edition',
+		],
+
+		'stats' => [
+			'lens' => 'Lens',
+			'shutter' => 'Shutter speed',
+			'iso' => 'ISO',
+			'model' => 'Model',
+			'aperture' => 'Aperture',
+			'no_data' => 'No data',
+		],
 
 		'properties' => [
 			'title' => 'Title',

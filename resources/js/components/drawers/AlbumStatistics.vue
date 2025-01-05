@@ -18,9 +18,9 @@
 				class="max-w-xs w-full border-r-surface-300 dark:border-r-surface-700 border-r"
 				:dt="dtScheme"
 			>
-				<Column field="key" header="Lens"></Column>
+				<Column field="key" :header="$t('gallery.album.stats.lens')"></Column>
 				<Column field="value" header=""></Column>
-				<template #empty> No data. </template>
+				<template #empty>{{ $t("gallery.album.stats.no_data") }}</template>
 			</DataTable>
 			<DataTable
 				:value="photosData.shutter"
@@ -30,9 +30,9 @@
 				class="max-w-xs w-full border-r-surface-300 dark:border-r-surface-700 border-r"
 				:dt="dtScheme"
 			>
-				<Column field="key" header="Shutter speed"></Column>
+				<Column field="key" :header="$t('gallery.album.stats.shutter')"></Column>
 				<Column field="value" header=""></Column>
-				<template #empty> No data. </template>
+				<template #empty>{{ $t("gallery.album.stats.no_data") }}</template>
 			</DataTable>
 			<DataTable
 				:value="photosData.aperture"
@@ -42,9 +42,9 @@
 				class="max-w-xs w-full border-r-surface-300 dark:border-r-surface-700 border-r"
 				:dt="dtScheme"
 			>
-				<Column field="key" header="Aperture"></Column>
+				<Column field="key" :header="$t('gallery.album.stats.aperture')"></Column>
 				<Column field="value" header=""></Column>
-				<template #empty> No data. </template>
+				<template #empty>{{ $t("gallery.album.stats.no_data") }}</template>
 			</DataTable>
 			<DataTable
 				:value="photosData.iso"
@@ -54,14 +54,14 @@
 				class="max-w-xs w-full border-r-surface-300 dark:border-r-surface-700 border-r"
 				:dt="dtScheme"
 			>
-				<Column field="key" header="ISO"></Column>
+				<Column field="key" :header="$t('gallery.album.stats.iso')"></Column>
 				<Column field="value" header=""></Column>
-				<template #empty> No data. </template>
+				<template #empty>{{ $t("gallery.album.stats.no_data") }}</template>
 			</DataTable>
 			<DataTable :value="photosData.model" scrollable size="small" scrollHeight="13rem" class="max-w-xs w-full" :dt="dtScheme">
-				<Column field="key" header="Model"></Column>
+				<Column field="key" :header="$t('gallery.album.stats.model')"></Column>
 				<Column field="value" header=""></Column>
-				<template #empty> No data. </template>
+				<template #empty>{{ $t("gallery.album.stats.no_data") }}</template>
 			</DataTable>
 		</Panel>
 	</Collapse>
