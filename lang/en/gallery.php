@@ -32,6 +32,24 @@ return [
 		'header_photos' => 'Photos',
 		'no_results' => 'Nothing to see here',
 		'upload' => 'Upload photos',
+
+		'properties' => [
+			'title' => 'Title',
+			'description' => 'Description',
+			'photo_ordering' => 'Order photos by',
+			'children_ordering' => 'Order albums by',
+			'asc/desc' => 'asc/desc',
+			'header' => 'Set Album Header',
+			'compact_header' => 'Use Compact Header',
+			'license' => 'Set License',
+			'copyright' => 'Set copyright',
+			'aspect_ratio' => 'Set album thumbs aspect ratio',
+			'album_timeline' => 'Set album timeline mode',
+			'photo_timeline' => 'Set photo timeline mode',
+			'layout' => 'Set photo layout',
+			'show_tags' => 'Set tags to show',
+			'tags_required' => 'Tags are required.',
+		],
 	],
 
 	'nsfw' => [
