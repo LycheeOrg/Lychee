@@ -15,9 +15,9 @@
 			<div id="menu" class="w-full translate-y-[-300px] opacity-0 animate-landingAnimateDown">
 				<ul class="menu list-none">
 					<li class="menu-item relative block float-right pt-6 pb-5 px-3">
-						<RouterLink to="/gallery" class="cursor-pointer block text-xs uppercase font-normal text-surface-0 hover:text-muted-color">{{
-							$t("lychee.GALLERY")
-						}}</RouterLink>
+						<RouterLink to="/gallery" class="cursor-pointer block text-xs uppercase font-normal text-surface-0 hover:text-muted-color">
+							{{ $t("landing.gallery") }}
+						</RouterLink>
 					</li>
 				</ul>
 			</div>
@@ -33,9 +33,9 @@
 					{{ initdata.landing_title }}
 				</h1>
 				<h2>
-					<span class="text-center text-base text-muted-color uppercase font-extralight animate-landingIntroPopIn">{{
-						initdata.landing_subtitle
-					}}</span>
+					<span class="text-center text-base text-muted-color uppercase font-extralight animate-landingIntroPopIn">
+						{{ initdata.landing_subtitle }}
+					</span>
 				</h2>
 			</div>
 		</div>
@@ -49,14 +49,14 @@
 				</ul>
 			</div>
 			<div class="flex w-full h-1/2 absolute top-1/2 left-0 items-center justify-center animate-landingEnterPopIn opacity-0">
-				<span class="text-transparent uppercase text-3xl filter-shadow-darker py-10 px-40">ACCESS THE {{ $t("lychee.GALLERY") }}</span>
+				<span class="text-transparent uppercase text-3xl filter-shadow-darker py-10 px-40">{{ $t("landing.access_gallery") }}</span>
 			</div>
 			<div class="flex w-full h-1/2 absolute top-1/3 md:top-1/2 left-0 items-center justify-center animate-landingEnterPopIn opacity-0">
 				<RouterLink
 					to="/gallery"
 					class="cursor-pointer block text-2xl uppercase text-surface-0 hover:scale-125 transition-all duration-300 p-10 filter-shadow text-center"
 				>
-					ACCESS THE {{ $t("lychee.GALLERY") }}<br class="md:hidden" />
+					{{ $t("landing.access_gallery") }}<br class="md:hidden" />
 					<i class="pi pi-angle-right animate-pulseTo0 text-2xl animate-infinite"></i>
 					<i class="pi pi-angle-right animate-pulseTo0 text-2xl animate-delay-500 animate-infinite -ml-1"></i>
 					<i class="pi pi-angle-right animate-pulseTo0 text-2xl animate-delay-1000 animate-infinite -ml-1"></i>
