@@ -6,7 +6,7 @@
 			</template>
 
 			<template #center>
-				{{ $t("lychee.PROFILE") }}
+				{{ $t("profile.title") }}
 			</template>
 
 			<template #end> </template>

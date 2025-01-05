@@ -9,6 +9,8 @@ return [
 	'button' => [
 		'close' => 'Close',
 		'cancel' => 'Cancel',
+		'save' => 'Save',
+		'delete' => 'Delete',
 	],
 	'about' => [
 		'subtitle' => 'Self-hosted photo-management done right',
