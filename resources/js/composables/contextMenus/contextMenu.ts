@@ -89,14 +89,14 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 
 		if (selectedPhoto.is_starred) {
 			menuItems.push({
-				label: "lychee.UNSTAR",
+				label: "gallery.menus.unstar",
 				icon: "pi pi-star",
 				callback: photoCallbacks.unstar,
 				access: selectedPhoto.rights.can_edit,
 			});
 		} else {
 			menuItems.push({
-				label: "lychee.STAR",
+				label: "gallery.menus.star",
 				icon: "pi pi-star",
 				callback: photoCallbacks.star,
 				access: selectedPhoto.rights.can_edit,
@@ -106,21 +106,21 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 		if (selectors.config!.value?.is_model_album) {
 			const parent_album = selectors.album!.value as App.Http.Resources.Models.AlbumResource;
 			menuItems.push({
-				label: "lychee.SET_COVER",
+				label: "gallery.menus.set_cover",
 				icon: "pi pi-id-card",
 				callback: photoCallbacks.setAsCover,
 				access: parent_album.rights.can_edit ?? false,
 			});
 			if (parent_album.header_id === selectedPhoto.id) {
 				menuItems.push({
-					label: "lychee.REMOVE_HEADER",
+					label: "gallery.menus.remove_header",
 					icon: "pi pi-image",
 					callback: photoCallbacks.setAsHeader,
 					access: parent_album.rights.can_edit ?? false,
 				});
 			} else {
 				menuItems.push({
-					label: "lychee.SET_HEADER",
+					label: "gallery.menus.set_header",
 					icon: "pi pi-image",
 					callback: photoCallbacks.setAsHeader,
 					access: parent_album.rights.can_edit ?? false,
@@ -131,7 +131,7 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 		menuItems.push(
 			...[
 				{
-					label: "lychee.TAG",
+					label: "gallery.menus.tag",
 					icon: "pi pi-tag",
 					callback: photoCallbacks.toggleTag,
 					access: selectedPhoto.rights.can_edit,
@@ -141,31 +141,31 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 					access: selectedPhoto.rights.can_edit,
 				},
 				{
-					label: "lychee.RENAME",
+					label: "gallery.menus.rename",
 					icon: "pi pi-pencil",
 					callback: photoCallbacks.toggleRename,
 					access: selectedPhoto.rights.can_edit,
 				},
 				{
-					label: "lychee.COPY_TO",
+					label: "gallery.menus.copy_to",
 					icon: "pi pi-copy",
 					callback: photoCallbacks.toggleCopyTo,
 					access: selectedPhoto.rights.can_edit,
 				},
 				{
-					label: "lychee.MOVE",
+					label: "gallery.menus.move",
 					icon: "pi pi-arrow-right-arrow-left",
 					callback: photoCallbacks.toggleMove,
 					access: selectedPhoto.rights.can_edit,
 				},
 				{
-					label: "lychee.DELETE",
+					label: "gallery.menus.delete",
 					icon: "pi pi-trash",
 					callback: photoCallbacks.toggleDelete,
 					access: selectors.album!.value?.rights.can_delete ?? false,
 				},
 				{
-					label: "lychee.DOWNLOAD",
+					label: "gallery.menus.download",
 					icon: "pi pi-cloud-download",
 					callback: photoCallbacks.toggleDownload,
 					access: selectedPhoto.rights.can_download,
@@ -181,14 +181,14 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 		const menuItems = [];
 		if (selectors.selectedPhotos!.value.reduce((acc, photo) => acc && photo.is_starred, true)) {
 			menuItems.push({
-				label: "lychee.UNSTAR_ALL",
+				label: "gallery.menus.unstar_all",
 				icon: "pi pi-star",
 				callback: photoCallbacks.unstar,
 				access: selectors.selectedPhotos!.value.reduce(canEdit, true),
 			});
 		} else {
 			menuItems.push({
-				label: "lychee.STAR_ALL",
+				label: "gallery.menus.star_all",
 				icon: "pi pi-star",
 				callback: photoCallbacks.star,
 				access: selectors.selectedPhotos!.value.reduce(canEdit, true),
@@ -198,7 +198,7 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 		menuItems.push(
 			...[
 				{
-					label: "lychee.TAG_ALL",
+					label: "gallery.menus.tag_all",
 					icon: "pi pi-tag",
 					callback: photoCallbacks.toggleTag,
 					access: selectors.selectedPhotos!.value.reduce(canEdit, true),
@@ -208,25 +208,25 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 					access: selectors.selectedPhotos!.value.reduce(canEdit, true),
 				},
 				{
-					label: "lychee.COPY_ALL_TO",
+					label: "gallery.menus.copy_all_to",
 					icon: "pi pi-copy",
 					callback: photoCallbacks.toggleCopyTo,
 					access: selectors.selectedPhotos!.value.reduce(canEdit, true),
 				},
 				{
-					label: "lychee.MOVE_ALL",
+					label: "gallery.menus.move_all",
 					icon: "pi pi-arrow-right-arrow-left",
 					callback: photoCallbacks.toggleMove,
 					access: selectors.selectedPhotos!.value.reduce(canEdit, true),
 				},
 				{
-					label: "lychee.DELETE_ALL",
+					label: "gallery.menus.delete_all",
 					icon: "pi pi-trash",
 					callback: photoCallbacks.toggleDelete,
 					access: selectors.selectedPhotos!.value.reduce(canEdit, true),
 				},
 				{
-					label: "lychee.DOWNLOAD_ALL",
+					label: "gallery.menus.download_all",
 					icon: "pi pi-cloud-download",
 					callback: photoCallbacks.toggleDownload,
 					access: selectors.selectedPhotos!.value.reduce(canDownload, true),
@@ -243,7 +243,7 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 
 		if (selectors.config?.value?.is_model_album) {
 			menuItems.push({
-				label: "lychee.SET_COVER",
+				label: "gallery.menus.set_cover",
 				icon: "pi pi-id-card",
 				callback: albumCallbacks.setAsCover,
 				access: selectors.album?.value?.rights.can_edit ?? false,
@@ -253,31 +253,31 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 		menuItems.push(
 			...[
 				{
-					label: "lychee.RENAME",
+					label: "gallery.menus.rename",
 					icon: "pi pi-pencil",
 					callback: albumCallbacks.toggleRename,
 					access: selectedAlbum.rights.can_edit ?? false,
 				},
 				{
-					label: "lychee.MERGE",
+					label: "gallery.menus.merge",
 					icon: "pi pi-paperclip",
 					callback: albumCallbacks.toggleMerge,
 					access: selectedAlbum.rights.can_move ?? false,
 				},
 				{
-					label: "lychee.MOVE",
+					label: "gallery.menus.move",
 					icon: "pi pi-arrow-right-arrow-left",
 					callback: albumCallbacks.toggleMove,
 					access: selectedAlbum.rights.can_move ?? false,
 				},
 				{
-					label: "lychee.DELETE",
+					label: "gallery.menus.delete",
 					icon: "pi pi-trash",
 					callback: albumCallbacks.toggleDelete,
 					access: selectedAlbum.rights.can_delete ?? false,
 				},
 				{
-					label: "lychee.DOWNLOAD",
+					label: "gallery.menus.download",
 					icon: "pi pi-cloud-download",
 					callback: albumCallbacks.toggleDownload,
 					access: selectedAlbum.rights.can_download ?? false,
@@ -291,25 +291,25 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 	function albumsMenu() {
 		return [
 			{
-				label: "lychee.MERGE_ALL",
+				label: "gallery.menus.merge_all",
 				icon: "pi pi-paperclip",
 				callback: albumCallbacks.toggleMerge,
 				access: selectors.selectedAlbums?.value.reduce(canMove, true),
 			},
 			{
-				label: "lychee.MOVE_ALL",
+				label: "gallery.menus.move_all",
 				icon: "pi pi-arrow-right-arrow-left",
 				callback: albumCallbacks.toggleMove,
 				access: selectors.selectedAlbums?.value.reduce(canMove, true),
 			},
 			{
-				label: "lychee.DELETE_ALL",
+				label: "gallery.menus.delete_all",
 				icon: "pi pi-trash",
 				callback: albumCallbacks.toggleDelete,
 				access: selectors.selectedAlbums?.value.reduce(canDelete, true),
 			},
 			{
-				label: "lychee.DOWNLOAD_ALL",
+				label: "gallery.menus.download_all",
 				icon: "pi pi-cloud-download",
 				callback: albumCallbacks.toggleDownload,
 				access: selectors.selectedAlbums?.value.reduce(canDownload, true),

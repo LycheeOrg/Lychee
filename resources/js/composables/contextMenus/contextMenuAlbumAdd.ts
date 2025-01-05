@@ -34,7 +34,7 @@ export function useContextMenuAlbumAdd(
 	const addMenu = computed(function () {
 		const menu: AddMenuItem[] = [
 			{
-				label: "lychee.UPLOAD_PHOTO",
+				label: "gallery.menus.upload_photo",
 				icon: "pi pi-upload",
 				callback: callbacks.toggleUpload,
 			},
@@ -42,12 +42,12 @@ export function useContextMenuAlbumAdd(
 				is_divider: true,
 			},
 			{
-				label: "lychee.IMPORT_LINK",
+				label: "gallery.menus.import_link",
 				icon: "pi pi-link",
 				callback: callbacks.toggleImportFromLink,
 			},
 			{
-				label: "lychee.IMPORT_DROPBOX",
+				label: "gallery.menus.import_dropbox",
 				icon: "pi pi-box",
 				callback: callbacks.toggleImportFromDropbox,
 				if: dropbox_api_key.value !== "disabled",
@@ -57,7 +57,7 @@ export function useContextMenuAlbumAdd(
 				if: config.is_model_album,
 			},
 			{
-				label: "lychee.NEW_ALBUM",
+				label: "gallery.menus.new_album",
 				icon: "pi pi-folder",
 				callback: callbacks.toggleCreateAlbum,
 				if: config.is_model_album,
@@ -67,14 +67,14 @@ export function useContextMenuAlbumAdd(
 		const album: App.Http.Resources.Models.AlbumResource = abstractAlbum as App.Http.Resources.Models.AlbumResource;
 		if (album.track_url !== null) {
 			menu.push({
-				label: "lychee.DELETE_TRACK",
+				label: "gallery.menus.delete_track",
 				icon: "pi pi-compass",
 				callback: callbacks.deleteTrack,
 				if: config.is_model_album,
 			});
 		} else {
 			menu.push({
-				label: "lychee.UPLOAD_TRACK",
+				label: "gallery.menus.upload_track",
 				icon: "pi pi-compass",
 				callback: callbacks.toggleUploadTrack,
 				if: config.is_model_album,

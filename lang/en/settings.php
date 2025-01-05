@@ -77,4 +77,10 @@ return [
 		'change_detected' => 'Some settings changed.',
 		'save' => 'Save',
 	],
+
+	'tool_option' => [
+		'disabled' => 'disabled',
+		'enabled' => 'enabled',
+		'discover' => 'discover',
+	],
 ];
