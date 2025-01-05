@@ -15,6 +15,7 @@ return [
 	'load_space' => 'Load space usage.',
 	'configuration' => 'Configuration',
 	'loading' => 'Loading...',
+	'identical_content' => 'Identical content',
 
 	'toast' => [
 		'info' => 'Info',
