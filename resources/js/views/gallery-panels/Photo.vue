@@ -19,6 +19,7 @@
 					width="auto"
 					height="auto"
 					id="image"
+					ref="videoElement"
 					controls
 					class="absolute m-auto w-auto h-auto"
 					:class="is_full_screen || is_slideshow_active ? 'max-w-full max-h-full' : 'max-wh-full-56'"
@@ -169,7 +170,7 @@ import { useImageHelpers } from "@/utils/Helpers";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 
 const swipe = ref<HTMLElement | null>(null);
-
+const videoElement = ref<HTMLVideoElement | null>(null);
 const props = defineProps<{
 	albumid: string;
 	photoid: string;
@@ -186,8 +187,10 @@ const { is_full_screen, is_edit_open, are_details_open, is_slideshow_active } = 
 const { isDeleteVisible, toggleDelete, isMoveVisible, toggleMove } = useGalleryModals(togglableStore);
 
 const photoId = ref(props.photoid);
-const { photo, album, photos, previousStyle, nextStyle, srcSetMedium, style, imageViewMode, refresh, hasPrevious, hasNext } =
-	usePhotoBaseFunction(photoId);
+const { photo, album, photos, previousStyle, nextStyle, srcSetMedium, style, imageViewMode, refresh, hasPrevious, hasNext } = usePhotoBaseFunction(
+	photoId,
+	videoElement,
+);
 const { getPlaceholderIcon } = useImageHelpers();
 
 const { slideshow_timeout } = storeToRefs(lycheeStore);
