@@ -23,7 +23,7 @@
 
 		<template #center>
 			<span class="sm:hidden font-bold">
-				{{ $t("lychee.ALBUMS") }}
+				{{ $t("gallery.albums") }}
 			</span>
 			<span class="hidden sm:block font-bold text-sm lg:text-base text-center w-full">{{ props.title }}</span>
 		</template>
