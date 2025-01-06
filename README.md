@@ -123,7 +123,7 @@ We would like to thank Jetbrains for supporting us with their [Open Source Devel
 [build-status-shield]: https://img.shields.io/github/actions/workflow/status/LycheeOrg/Lychee/CICD.yml?branch=master
 [codecov-shield]: https://codecov.io/gh/LycheeOrg/Lychee/branch/master/graph/badge.svg
 [release-shield]: https://img.shields.io/github/release/LycheeOrg/Lychee.svg
-[php-shield]: https://img.shields.io/badge/PHP-8.2%20|%208.3-blue
+[php-shield]: https://img.shields.io/badge/PHP-8.e%20|%208.4-blue
 [license-shield]: https://img.shields.io/github/license/LycheeOrg/Lychee.svg
 [cii-shield]: https://img.shields.io/cii/summary/2855.svg
 [ossf-shield]: https://api.securityscorecards.dev/projects/github.com/LycheeOrg/Lychee/badge
