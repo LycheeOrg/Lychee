@@ -26,7 +26,7 @@ jobs:
   tests:
     permissions:
       contents: read  # for actions/checkout to fetch code
-      pull-requests: read  # for SonarSource/sonarcloud-github-action to determine which PR to decorate
+      pull-requests: read  # for SonarSource/sonarqube-scan-action to determine which PR to decorate
     name: ${{ matrix.php-version }} - ${{ matrix.sql-versions }} -- ${{ inputs.test-suite }}
     runs-on: ubuntu-latest
     strategy:
@@ -118,7 +118,7 @@ jobs:
 
       - name: SonarCloud Scan
         if: ${{ env.SONAR_TOKEN }}
-        uses: SonarSource/sonarcloud-github-action@02ef91109b2d589e757aefcfb2854c2783fd7b19 # master
+        uses: SonarSource/sonarqube-scan-action@bfd4e558cda28cda6b5defafb9232d191be8c203 # v4.2.1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
