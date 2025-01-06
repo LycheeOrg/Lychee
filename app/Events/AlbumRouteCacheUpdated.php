@@ -13,7 +13,15 @@ class AlbumRouteCacheUpdated
 	use SerializesModels;
 
 	/**
-	 * Create a new event instance.
+	 * This event is fired when the gallery is updated.
+	 * Note that:
+	 * - if $album_id is null, then all routes are to be cleared.
+	 * - if $album_id is '', then only the root is updated.
+	 * - if $album_id is an id, then only that id is updated.
+	 *
+	 * @param string|null $album_id
+	 *
+	 * @return void
 	 */
 	public function __construct(public ?string $album_id = null)
 	{

@@ -2,12 +2,10 @@
 
 namespace App\Http\Middleware\Caching;
 
-use App\Metadata\Cache\RouteCacheConfig;
 use App\Metadata\Cache\RouteCacheManager;
+use App\Metadata\Cache\RouteCacher;
 use App\Models\Configs;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -15,11 +13,10 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class ResponseCache
 {
-	private RouteCacheManager $route_cache_manager;
-
-	public function __construct(RouteCacheManager $route_cache_manager)
-	{
-		$this->route_cache_manager = $route_cache_manager;
+	public function __construct(
+		private RouteCacheManager $route_cache_manager,
+		private RouteCacher $route_cacher,
+	) {
 	}
 
 	/**
@@ -43,52 +40,21 @@ class ResponseCache
 			return $next($request);
 		}
 
-		$config = $this->route_cache_manager->get_config($request->route()->uri);
+		$uri = $request->route()->uri;
+		$config = $this->route_cache_manager->get_config($uri);
 
 		// Check with the route manager if we can cache this route.
 		if ($config === false) {
 			return $next($request);
 		}
 
-		if (Cache::supportsTags()) {
-			return $this->cacheWithTags($request, $next, $config);
-		}
-
-		return $this->chacheWithoutTags($request, $next, $config);
-	}
-
-	/**
-	 * This is the light version of caching: we cache only if the user is not logged in.
-	 *
-	 * @param Request  $request
-	 * @param \Closure $next
-	 *
-	 * @return mixed
-	 */
-	private function chacheWithoutTags(Request $request, \Closure $next, RouteCacheConfig $config): mixed
-	{
-		// We do not cache this.
-		if ($config->user_dependant && Auth::user() !== null) {
-			return $next($request);
-		}
-
 		$key = $this->route_cache_manager->get_key($request, $config);
 
-		return Cache::remember($key, Configs::getValueAsInt('cache_ttl'), fn () => $next($request));
-	}
+		$extras = [];
+		foreach ($config->extra as $extra) {
+			$extras[] = $request->input($extra) ?? '';
+		}
 
-	/**
-	 * This is the stronger version of caching.
-	 *
-	 * @param Request  $request
-	 * @param \Closure $next
-	 *
-	 * @return mixed
-	 */
-	private function cacheWithTags(Request $request, \Closure $next, RouteCacheConfig $config): mixed
-	{
-		$key = $this->route_cache_manager->get_key($request, $config);
-
-		return Cache::tags([$config->tag->value])->remember($key, Configs::getValueAsInt('cache_ttl'), fn () => $next($request));
+		return $this->route_cacher->remember($key, $uri, Configs::getValueAsInt('cache_ttl'), fn () => $next($request), $extras);
 	}
 }

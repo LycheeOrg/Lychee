@@ -6,9 +6,11 @@ use App\Enum\CacheTag;
 use App\Enum\SmartAlbumType;
 use App\Events\AlbumRouteCacheUpdated;
 use App\Metadata\Cache\RouteCacheManager;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
+use App\Metadata\Cache\RouteCacher;
 
+/**
+ * We react to AlbumRouteCacheUpdated events and clear the associated cache.
+ */
 class AlbumCacheCleaner
 {
 	/**
@@ -16,6 +18,7 @@ class AlbumCacheCleaner
 	 */
 	public function __construct(
 		private RouteCacheManager $route_cache_manager,
+		private RouteCacher $route_cacher,
 	) {
 	}
 
@@ -24,97 +27,33 @@ class AlbumCacheCleaner
 	 */
 	public function handle(AlbumRouteCacheUpdated $event): void
 	{
-		// The quick way.
-		if (Cache::supportsTags()) {
-			Cache::tags(CacheTag::GALLERY->value)->flush();
-
-			return;
-		}
-
-		$this->dropCachedRoutesWithoutExtra();
-
-		// By default we refresh all the smart albums.
-		$this->handleSmartAlbums();
-
 		if ($event->album_id === null) {
-			$this->handleAllAlbums();
+			// this is a clear all.
+			$routes = $this->route_cache_manager->retrieve_routes_for_tag(CacheTag::GALLERY);
+			foreach ($routes as $route) {
+				$this->route_cacher->forgetRoute($route);
+			}
 
 			return;
 		}
 
-		// Root album => already taken care of with the route without extra.
+		$routes = $this->route_cache_manager->retrieve_routes_for_tag(CacheTag::GALLERY, with_extra: false, without_extra: true);
+		foreach ($routes as $route) {
+			$this->route_cacher->forgetRoute($route);
+		}
+
 		if ($event->album_id === '') {
+			$this->route_cacher->forgetRoute('api/Albums::get');
+
+			// this is a clear all.
 			return;
 		}
 
-		$this->handleAlbumId($event->album_id);
-	}
-
-	/**
-	 * Drop cache for all routes without extra (meaning which do not depend on album_id).
-	 *
-	 * @return void
-	 */
-	private function dropCachedRoutesWithoutExtra(): void
-	{
-		$cached_routes_without_extra = $this->route_cache_manager->retrieve_keys_for_tag(CacheTag::GALLERY, without_extra: true);
-		foreach ($cached_routes_without_extra as $route) {
-			$cache_key = $this->route_cache_manager->gen_key(uri: $route);
-			Cache::forget($cache_key);
-		}
-	}
-
-	/**
-	 * Drop cache for all routes related to albums.
-	 *
-	 * @return void
-	 */
-	private function handleAllAlbums(): void
-	{
-		// The long way.
-		$cached_routes_with_extra = $this->route_cache_manager->retrieve_keys_for_tag(CacheTag::GALLERY, with_extra: true);
-		DB::table('base_albums')->select('id')->pluck('id')->each(function ($id) use ($cached_routes_with_extra) {
-			$extra = ['album_id' => $id];
-			foreach ($cached_routes_with_extra as $route) {
-				$cache_key = $this->route_cache_manager->gen_key(uri: $route, extras: $extra);
-				Cache::forget($cache_key);
-			}
+		// Clear smart albums. Simple.
+		collect(SmartAlbumType::cases())->each(function (SmartAlbumType $type) {
+			$this->route_cacher->forgetTag($type->value);
 		});
-	}
 
-	/**
-	 * Drop cache fro all routes related to an album.
-	 *
-	 * @param string $album_id
-	 *
-	 * @return void
-	 */
-	private function handleAlbumId(string $album_id): void
-	{
-		$cached_routes_with_extra = $this->route_cache_manager->retrieve_keys_for_tag(CacheTag::GALLERY, with_extra: true);
-		$extra = ['album_id' => $album_id];
-
-		foreach ($cached_routes_with_extra as $route) {
-			$cache_key = $this->route_cache_manager->gen_key(uri: $route, extras: $extra);
-			Cache::forget($cache_key);
-		}
-	}
-
-	/**
-	 * Drop cache for all smart albums too.
-	 *
-	 * @return void
-	 */
-	private function handleSmartAlbums(): void
-	{
-		$cached_routes_with_extra = $this->route_cache_manager->retrieve_keys_for_tag(CacheTag::GALLERY, with_extra: true);
-		// Also reset smart albums ;)
-		collect(SmartAlbumType::cases())->each(function (SmartAlbumType $type) use ($cached_routes_with_extra) {
-			$extra = ['album_id' => $type->value];
-			foreach ($cached_routes_with_extra as $route) {
-				$cache_key = $this->route_cache_manager->gen_key(uri: $route, extras: $extra);
-				Cache::forget($cache_key);
-			}
-		});
+		$this->route_cacher->forgetTag($event->album_id);
 	}
 }
