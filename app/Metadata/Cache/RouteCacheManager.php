@@ -4,16 +4,16 @@ namespace App\Metadata\Cache;
 
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Enum\CacheTag;
-use App\Exceptions\Internal\LycheeLogicException;
+use App\Facades\Helpers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 final readonly class RouteCacheManager
 {
-	public const REQUEST = 'R:';
-	public const USER = '|U:';
-	public const EXTRA = '|E:';
+	public const REQUEST = 'REQ:';
+	public const USER = '|USR:';
+	public const EXTRA = '|EXT:';
 
 	/** @var array<string,false|RouteCacheConfig> */
 	private array $cache_list;
@@ -99,61 +99,12 @@ final readonly class RouteCacheManager
 
 	public function get_key(Request $request, RouteCacheConfig $config): string
 	{
-		$key = self::REQUEST . $request->route()->uri;
+		$key = self::REQUEST . Helpers::getUriWithQueryString($request);
 
 		// If the request is user dependant, we add the user id to the key.
 		// That way we ensure that this does not contaminate between logged in and looged out users.
 		if ($config->user_dependant) {
 			$key .= self::USER . Auth::id();
-		}
-
-		if (count($config->extra) > 0) {
-			$key .= self::EXTRA;
-			foreach ($config->extra as $extra) {
-				/** @var string $vals */
-				$vals = $request->input($extra) ?? '';
-				$key .= ':' . $vals;
-			}
-		}
-
-		return $key;
-	}
-
-	/**
-	 * Generate a key for the cache.
-	 *
-	 * @param string               $uri
-	 * @param int|null             $userId
-	 * @param array<string,string> $extras
-	 * @param ?RouteCacheConfig    $config
-	 *
-	 * @return string
-	 */
-	public function gen_key(
-		string $uri,
-		?int $userId = null,
-		array $extras = [],
-		?RouteCacheConfig $config = null,
-	): string {
-		$config ??= $this->cache_list[$uri] ?? throw new LycheeLogicException('No cache config for ' . $uri);
-
-		if ($config === false) {
-			throw new LycheeLogicException($uri . ' is not supposed to be cached.');
-		}
-
-		$key = self::REQUEST . $uri;
-
-		// If the request is user dependant, we add the user id to the key.
-		// That way we ensure that this does not contaminate between logged in and looged out users.
-		if ($config->user_dependant) {
-			$key .= self::USER . $userId;
-		}
-
-		if (count($config->extra) > 0) {
-			$key .= self::EXTRA;
-			foreach ($config->extra as $extra) {
-				$key .= ':' . ($extras[$extra] ?? '');
-			}
 		}
 
 		return $key;
@@ -187,9 +138,9 @@ final readonly class RouteCacheManager
 	 *
 	 * @return string[]
 	 */
-	public function retrieve_keys_for_tag(CacheTag $tag, bool $with_extra = false, bool $without_extra = false): array
+	public function retrieve_routes_for_tag(CacheTag $tag, bool $with_extra = false, bool $without_extra = false): array
 	{
-		$keys = [];
+		$routes = [];
 		foreach ($this->cache_list as $uri => $value) {
 			if (
 				$value !== false &&
@@ -199,10 +150,10 @@ final readonly class RouteCacheManager
 				($with_extra === false || count($value->extra) > 0) &&
 				($without_extra === false || count($value->extra) === 0)
 			) {
-				$keys[] = $uri;
+				$routes[] = $uri;
 			}
 		}
 
-		return $keys;
+		return $routes;
 	}
 }

@@ -31,6 +31,7 @@ use App\Policies\SettingsPolicy;
 use Illuminate\Cache\Events\CacheHit;
 use Illuminate\Cache\Events\CacheMissed;
 use Illuminate\Cache\Events\KeyForgotten;
+use Illuminate\Cache\Events\KeyWritten;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -99,6 +100,7 @@ class AppServiceProvider extends ServiceProvider
 		Event::listen(CacheHit::class, CacheListener::class . '@handle');
 		Event::listen(CacheMissed::class, CacheListener::class . '@handle');
 		Event::listen(KeyForgotten::class, CacheListener::class . '@handle');
+		Event::listen(KeyWritten::class, CacheListener::class . '@handle');
 
 		Event::listen(AlbumRouteCacheUpdated::class, AlbumCacheCleaner::class . '@handle');
 		Event::listen(TaggedRouteCacheUpdated::class, TaggedRouteCacheCleaner::class . '@handle');
