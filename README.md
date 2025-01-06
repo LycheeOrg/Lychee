@@ -1,7 +1,7 @@
 <p align="center"><a href="https://lycheeorg.github.io"><img src="https://raw.githubusercontent.com/LycheeOrg/Lychee/master/Banner.png" width="400px" alt="@LycheeOrg"></a></p>
 
 [![GitHub Release][release-shield]](https://github.com/LycheeOrg/Lychee/releases)
-[![PHP 8.2 & 8.3][php-shield]](https://lycheeorg.github.io/docs/#server-requirements)
+[![PHP 8.3 & 8.4][php-shield]](https://lycheeorg.github.io/docs/#server-requirements)
 [![MIT License][license-shield]](https://github.com/LycheeOrg/Lychee/blob/master/LICENSE)
 [![Downloads][download-shield]](https://github.com/LycheeOrg/Lychee/releases)
 <br>
@@ -45,7 +45,7 @@ Copy the extracted Zip file from https://github.com/LycheeOrg/Lychee/releases to
 
 ### Build from Source deployment
 
-To run Lychee, everything you need is a web-server with PHP 8.2 or later and a database (MySQL/MariaDB, PostgreSQL or SQLite). Follow the instructions to install Lychee on your server. This version of Lychee is built on the Laravel framework. To install:
+To run Lychee, everything you need is a web-server with PHP 8.3 or later and a database (MySQL/MariaDB, PostgreSQL or SQLite). Follow the instructions to install Lychee on your server. This version of Lychee is built on the Laravel framework. To install:
 
 1. Clone this repo to your server and set the web root to `lychee/public`
 2. Run `composer install --no-dev` to install dependencies

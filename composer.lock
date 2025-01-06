@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "70ee25bfaf7e2d43950fe8d0b09bb79c",
+    "content-hash": "b612dc095eb23dbb82b9efc3d06acc04",
     "packages": [
         {
             "name": "amphp/amp",
@@ -870,16 +870,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.336.8",
+            "version": "3.336.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "933da0d1b9b1ac9b37d5e32e127d4581b1aabaf6"
+                "reference": "bbc76138ed66f593dc2ae529c95fe1f794e6d77f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/933da0d1b9b1ac9b37d5e32e127d4581b1aabaf6",
-                "reference": "933da0d1b9b1ac9b37d5e32e127d4581b1aabaf6",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/bbc76138ed66f593dc2ae529c95fe1f794e6d77f",
+                "reference": "bbc76138ed66f593dc2ae529c95fe1f794e6d77f",
                 "shasum": ""
             },
             "require": {
@@ -962,9 +962,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.336.8"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.336.9"
             },
-            "time": "2025-01-03T19:06:11+00:00"
+            "time": "2025-01-06T19:06:42+00:00"
         },
         {
             "name": "bepsvpt/secure-headers",
@@ -15537,29 +15537,29 @@
         },
         {
             "name": "slam/phpstan-extensions",
-            "version": "v6.4.1",
+            "version": "v6.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Slamdunk/phpstan-extensions.git",
-                "reference": "389ac3a952b64386dda56becf376c16c493edccb"
+                "reference": "dd0d6fd86a714ea533382d2b2ddaf44472669e5c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Slamdunk/phpstan-extensions/zipball/389ac3a952b64386dda56becf376c16c493edccb",
-                "reference": "389ac3a952b64386dda56becf376c16c493edccb",
+                "url": "https://api.github.com/repos/Slamdunk/phpstan-extensions/zipball/dd0d6fd86a714ea533382d2b2ddaf44472669e5c",
+                "reference": "dd0d6fd86a714ea533382d2b2ddaf44472669e5c",
                 "shasum": ""
             },
             "require": {
-                "php": "~8.2.0 || ~8.3.0",
-                "phpstan/phpstan": "^1.11.8"
+                "php": "~8.3.0 || ~8.4.0",
+                "phpstan/phpstan": "^1.12.4"
             },
             "require-dev": {
                 "nette/di": "^3.2.2",
                 "nette/neon": "^3.4.3",
-                "nikic/php-parser": "^4.19.1 || ^5.0.2",
+                "nikic/php-parser": "^4.19.2 || ^5.2.0",
                 "phpstan/phpstan-phpunit": "^1.4.0",
-                "phpunit/phpunit": "^11.2.9",
-                "slam/php-cs-fixer-extensions": "^3.11.1"
+                "phpunit/phpunit": "^11.3.6",
+                "slam/php-cs-fixer-extensions": "^3.12.0"
             },
             "type": "phpstan-extension",
             "extra": {
@@ -15588,7 +15588,7 @@
             "description": "Slam extension of phpstan",
             "support": {
                 "issues": "https://github.com/Slamdunk/phpstan-extensions/issues",
-                "source": "https://github.com/Slamdunk/phpstan-extensions/tree/v6.4.1"
+                "source": "https://github.com/Slamdunk/phpstan-extensions/tree/v6.5.0"
             },
             "funding": [
                 {
@@ -15600,7 +15600,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-08-01T13:49:19+00:00"
+            "time": "2024-09-25T06:39:09+00:00"
         },
         {
             "name": "squizlabs/php_codesniffer",
@@ -16123,7 +16123,7 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": "^8.2",
+        "php": "^8.3",
         "ext-bcmath": "*",
         "ext-ctype": "*",
         "ext-exif": "*",
@@ -16142,7 +16142,7 @@
         "ext-zip": "*"
     },
     "platform-overrides": {
-        "php": "8.2"
+        "php": "8.3"
     },
     "plugin-api-version": "2.6.0"
 }
