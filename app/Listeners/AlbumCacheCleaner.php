@@ -42,18 +42,13 @@ class AlbumCacheCleaner
 			$this->route_cacher->forgetRoute($route);
 		}
 
-		if ($event->album_id === '') {
-			$this->route_cacher->forgetRoute('api/Albums::get');
-
-			// this is a clear all.
-			return;
-		}
-
 		// Clear smart albums. Simple.
 		collect(SmartAlbumType::cases())->each(function (SmartAlbumType $type) {
 			$this->route_cacher->forgetTag($type->value);
 		});
 
-		$this->route_cacher->forgetTag($event->album_id);
+		if ($event->album_id !== '') {
+			$this->route_cacher->forgetTag($event->album_id);
+		}
 	}
 }
