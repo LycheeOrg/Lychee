@@ -10,7 +10,7 @@ class RequirementsChecker
 	/**
 	 * Minimum PHP Version Supported.
 	 */
-	public const MIN_PHP_VERSION = '8.0.0';
+	public const MIN_PHP_VERSION = '8.2.0';
 
 	/**
 	 * Check for the server requirements.

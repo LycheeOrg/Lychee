@@ -20,8 +20,8 @@ body:
     attributes:
       label: Which PHP version are you using?
       options:
+        - PHP 8.4
         - PHP 8.3
-        - PHP 8.2
     validations:
       required: true
 
