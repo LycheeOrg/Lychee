@@ -3,6 +3,12 @@ import CSRF from "./csrf-getter";
 // import { setupCache } from "axios-cache-interceptor/dev";
 import { setupCache } from "axios-cache-interceptor";
 
+let currentRedirectionURL = "";
+
+window.addEventListener("unload", () => {
+	currentRedirectionURL = "";
+});
+
 const AxiosConfig = {
 	axiosSetUp() {
 		// setupCache(axios, { debug: console.log });
@@ -45,8 +51,10 @@ const AxiosConfig = {
 					} else {
 						errorMsg = error.message;
 					}
-					if (error.response.status == 419) {
+					if (error.response.status == 419 && currentRedirectionURL === "") {
+						alert("Session timed out! Click ok to get redirected to the main page!");
 						window.location.href = "/";
+						currentRedirectionURL = "/";
 					}
 					if (error.response.status !== 404) {
 						const event = new CustomEvent("error", { detail: error.response.data });

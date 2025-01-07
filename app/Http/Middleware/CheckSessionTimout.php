@@ -29,6 +29,7 @@ class CheckSessionTimout
 
 		if (Auth::guest()) {
 			Cookie::queue(Cookie::forget('lastActivityTime'));
+			$lastActivity = null;
 		}
 
 		fwrite(STDOUT, print_r('Last activity after Auth::guest(): ', true) . $lastActivity . PHP_EOL);
@@ -36,7 +37,7 @@ class CheckSessionTimout
 		if ($lastActivity && (now()->timestamp - $lastActivity > $timeout)) {
 			Cookie::queue(Cookie::forget('lastActivityTime'));
 			fwrite(STDOUT, print_r('Throwing session expired exception', true) . PHP_EOL);
-			throw new SessionExpiredException(SessionExpiredException::HTTP_LOGIN_TIMEOUT);
+			throw new SessionExpiredException();
 		}
 
 		fwrite(STDOUT, print_r('Type of Last activity: ', true) . gettype($lastActivity) . PHP_EOL);

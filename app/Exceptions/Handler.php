@@ -213,7 +213,7 @@ class Handler extends ExceptionHandler
 	protected function mapException(\Throwable $e): \Throwable
 	{
 		if ($e instanceof TokenMismatchException) {
-			return new SessionExpiredException(SessionExpiredException::HTTP_PAGE_EXPIRED, SessionExpiredException::DEFAULT_MESSAGE, $e);
+			return new SessionExpiredException(SessionExpiredException::DEFAULT_MESSAGE, $e);
 		}
 
 		if ($e instanceof AuthenticationException) {
