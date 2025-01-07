@@ -11,9 +11,9 @@ class PHPVersionCheck implements DiagnosticPipe
 {
 	// We only support the actively supported version of php.
 	// See here: https://www.php.net/supported-versions.php
-	public const PHP_ERROR = 8.1;
-	public const PHP_WARNING = 8.2;
-	public const PHP_LATEST = 8.3;
+	public const PHP_ERROR = 8.2;
+	public const PHP_WARNING = 8.3;
+	public const PHP_LATEST = 8.4;
 
 	/**
 	 * {@inheritDoc}
