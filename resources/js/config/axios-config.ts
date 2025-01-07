@@ -41,6 +41,10 @@ const AxiosConfig = {
 					} else {
 						errorMsg = error.message;
 					}
+					if (error.response.status == 419) {
+						console.log(error);
+						window.location.href = "/";
+					}
 					if (error.response.status !== 404) {
 						const event = new CustomEvent("error", { detail: error.response.data });
 						window.dispatchEvent(event);
