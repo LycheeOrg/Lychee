@@ -11,8 +11,12 @@ const AxiosConfig = {
 		axios.interceptors.request.use(
 			// @ts-expect-error
 			function (config: AxiosRequestConfig) {
-				const token = CSRF.get();
-				(config.headers as AxiosRequestHeaders)["X-XSRF-TOKEN"] = token;
+				try {
+					const token = CSRF.get();
+					(config.headers as AxiosRequestHeaders)["X-XSRF-TOKEN"] = token;
+				} catch (error) {
+					console.log(error);
+				}
 				(config.headers as AxiosRequestHeaders)["Content-Type"] = "application/json";
 				return config;
 			},
@@ -28,7 +32,7 @@ const AxiosConfig = {
 			function (error: any): Promise<never> {
 				if (
 					["Password required", "Password is invalid", "Album is not enabled for password-based access", "Login required."].find(
-						(e) => e === error.response.data.message,
+						(e) => e === error.response?.data?.message,
 					) !== undefined
 				) {
 					return Promise.reject(error);
@@ -42,7 +46,6 @@ const AxiosConfig = {
 						errorMsg = error.message;
 					}
 					if (error.response.status == 419) {
-						console.log(error);
 						window.location.href = "/";
 					}
 					if (error.response.status !== 404) {
