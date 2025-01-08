@@ -3,10 +3,10 @@ import CSRF from "./csrf-getter";
 // import { setupCache } from "axios-cache-interceptor/dev";
 import { setupCache } from "axios-cache-interceptor";
 
-let currentRedirectionURL = "";
+let isReloadingPage = false;
 
 window.addEventListener("unload", () => {
-	currentRedirectionURL = "";
+	isReloadingPage = false;
 });
 
 const AxiosConfig = {
@@ -51,10 +51,10 @@ const AxiosConfig = {
 					} else {
 						errorMsg = error.message;
 					}
-					if (error.response.status == 419 && currentRedirectionURL === "") {
-						alert("Session timed out! Click ok to get redirected to the main page!");
-						window.location.href = "/";
-						currentRedirectionURL = "/";
+					if (error.response.status == 419 && isReloadingPage == false) {
+						alert("Session timed out! Click ok to reload the page");
+						window.location.reload();
+						isReloadingPage = true;
 					}
 					if (error.response.status !== 404) {
 						const event = new CustomEvent("error", { detail: error.response.data });
