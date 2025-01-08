@@ -11,7 +11,7 @@
 		<li class="list__item list__title {{ $phpSupportInfo['supported'] ? 'success' : 'error' }}">
 		<strong>{{ ucfirst($type) }}</strong>
 		@if ($type == 'php')
-			<strong><small>(version {{ $phpSupportInfo['minimum'] }} minimum required)</small></strong>
+			<strong><small>(version {{ $phpSupportInfo['minimum'] }} or higher required)</small></strong>
 			<span class="float-right">
 				<strong>{{ $phpSupportInfo['current'] }}</strong>
 				<i class="fa fa-fw fa-{{ $phpSupportInfo['supported'] ? 'check-circle-o' : 'exclamation-circle' }} row-icon" aria-hidden="true"></i>
