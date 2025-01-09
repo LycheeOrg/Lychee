@@ -2,7 +2,7 @@
 	<div class="w-full flex flex-wrap md:flex-nowrap gap-2 justify-center items-center h-12">
 		<span class="w-1/4 text-sm text-muted-color">{{ formattedCreatedAt }}</span>
 		<InputText v-model="alias" class="!w-1/2 pb-1" aria-label="Alias" :invalid="isInvalid" />
-		<span v-if="isInvalid" class="w-1/4 text-xs text-muted-color text-center">{{ $t("profile.u2f.5_cars") }}</span>
+		<span v-if="isInvalid" class="w-1/4 text-xs text-muted-color text-center">{{ $t("profile.u2f.5_chars") }}</span>
 		<Button
 			v-if="isModified && !isInvalid"
 			@click="saveU2F"

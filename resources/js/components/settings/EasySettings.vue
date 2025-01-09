@@ -177,7 +177,7 @@
 				</div>
 			</div>
 		</Fieldset>
-		<Fieldset :legend="$t('settings.egolocation.header')" class="border-b-0 border-r-0 rounded-r-none rounded-b-none">
+		<Fieldset :legend="$t('settings.geolocation.header')" class="border-b-0 border-r-0 rounded-r-none rounded-b-none">
 			<div class="flex flex-col gap-4">
 				<BoolField :label="$t('settings.geolocation.map_display')" v-if="map_display !== undefined" :config="map_display" @filled="save" />
 				<BoolField
