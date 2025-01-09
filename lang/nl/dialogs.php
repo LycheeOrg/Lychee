@@ -60,7 +60,7 @@ return [
 		'edit' => 'Edit information',
 		'show_hide_meta' => 'Show information',
 
-		'keep_hidden' => 'We will keep it hiden.',
+		'keep_hidden' => 'We will keep it hidden.',
 	],
 	'login' => [
 		'username' => 'Username',
@@ -93,7 +93,7 @@ return [
 		'public' => 'Public',
 		'public_expl' => 'Anonymous users can access this album, subject to the restrictions below.',
 		'full' => 'Original',
-		'full_expl' => 'Anonymous users can behold full-resolution photos.',
+		'full_expl' => 'Anonymous users can view full-resolution photos.',
 		'hidden' => 'Hidden',
 		'hidden_expl' => 'Anonymous users need a direct link to access this album.',
 		'downloadable' => 'Downloadable',
@@ -139,7 +139,7 @@ return [
 	],
 	'transfer' => [
 		'query' => 'Transfer ownership of album to',
-		'confirmation' => 'Are you sure you want to transfer to "%s" the ownership of album “%s” and all the photos it contains?',
+		'confirmation' => 'Are you sure you want to transfer the ownership of album “%s” and all the photos it contains to "%s"?',
 		'lost_access_warning' => 'Your access to this album will be lost.',
 		'warning' => 'This action can not be undone!',
 		'transfer' => 'Transfer ownership of album and photos',
@@ -182,7 +182,7 @@ return [
 	],
 	'photo_delete' => [
 		'confirm' => 'Are you sure you want to delete the photo “%s”?',
-		'confirm_multiple' => 'Are you sure you want to delete all %d selected photo?',
+		'confirm_multiple' => 'Are you sure you want to delete all %d selected photos?',
 		'deleted' => 'Photo(s) deleted!',
 	],
 	'move_photo' => [

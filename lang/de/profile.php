@@ -50,7 +50,7 @@ return [
 		'empty' => 'Credentials list is empty!',
 		'not_secure' => 'Environment not secured. U2F not available.',
 		'new' => 'Register new device.',
-		'credential_deleted' => 'Credentials deleted!',
+		'credential_deleted' => 'Credential deleted!',
 		'credential_updated' => 'Credential updated!',
 		'credential_registred' => 'Registration successful!',
 		'5_chars' => 'At least 5 chars.',

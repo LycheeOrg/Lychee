@@ -11,13 +11,13 @@ return [
 	'admin' => 'Admin',
 	'clockwork' => 'Clockwork App',
 	'logs' => 'Show Logs',
-	'jobs' => 'Show job history',
+	'jobs' => 'Show Job History',
 	'user' => 'User',
 
-	'sign_out' => 'Sign out',
+	'sign_out' => 'Sign Out',
 
 	'about' => 'About',
-	'api' => 'API documentation',
-	'source_code' => 'Source code',
+	'api' => 'API Documentation',
+	'source_code' => 'Source Code',
 	'support' => 'Support',
 ];

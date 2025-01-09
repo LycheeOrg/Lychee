@@ -35,7 +35,7 @@ return [
 		'call4action' => 'Get exclusive features and support the development of Lychee. Unlock the <a href="https://lycheeorg.github.io/get-supporter-edition/" class="text-primary-500 underline">SE edition</a>.',
 		'preview' => 'Enable preview of Lychee SE features',
 		'hide_call4action' => 'Hide this Lychee SE registration form. I am happy with Lychee as-is. :)',
-		'hide_warning' => 'If enabled, the only way to register your license key will be via the More Tab above. Changes are applied on page reload.',
+		'hide_warning' => 'If enabled, the only way to register your license key will be via the More tab above. Changes are applied on page reload.',
 	],
 	'dropbox' => [
 		'header' => 'Dropbox',
@@ -65,7 +65,7 @@ return [
 		'map_include_subalbums' => 'Includes pictures of the sub albums on the map',
 		'location_decoding' => 'Use GPS location decoding',
 		'location_show' => 'Show location extracted from GPS coordinates',
-		'location_show_public' => 'Anonymous users can acess the extracted location from GPS coordinates',
+		'location_show_public' => 'Anonymous users can access the extracted location from GPS coordinates',
 	],
 	'advanced' => [
 		'header' => 'Advanced Customization',
