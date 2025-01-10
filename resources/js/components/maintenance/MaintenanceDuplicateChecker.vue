@@ -6,17 +6,17 @@
 	>
 		<template #title>
 			<div class="text-center">
-				{{ title }}
+				{{ $t("maintenance.duplicate-finder.title") }}
 			</div>
 		</template>
 		<template #content>
 			<div class="w-full h-40 text-sm text-muted-color">
 				<div class="w-full text-left">
-					<h2 class="mb-4">{{ $t("This module counts potential duplicates betwen pictures.") }}</h2>
+					<h2 class="mb-4">{{ $t("maintenance.duplicate-finder.description") }}</h2>
 					<p v-if="data !== undefined && data.pure_duplicates + data.duplicates_within_album + data.title_duplicates > 0">
-						{{ $t("Duplicates over all albums") }}: {{ data.pure_duplicates }}<br />
-						{{ $t("Title duplicates per albums") }}: {{ data.title_duplicates }}<br />
-						{{ $t("Duplicates per albums") }}: {{ data.duplicates_within_album }}<br />
+						{{ $t("maintenance.duplicate-finder.duplicates-all") }}: {{ data.pure_duplicates }}<br />
+						{{ $t("maintenance.duplicate-finder.duplicates-title") }}: {{ data.title_duplicates }}<br />
+						{{ $t("maintenance.duplicate-finder.duplicates-per-album") }}: {{ data.duplicates_within_album }}<br />
 					</p>
 					<ProgressSpinner v-if="data === undefined" class="w-full"></ProgressSpinner>
 				</div>
@@ -28,7 +28,7 @@
 					v-if="data !== undefined && data.pure_duplicates"
 					severity="primary"
 					class="w-full border-none self-end"
-					>{{ $t("Display duplicates") }}</Button
+					>{{ $t("maintenance.duplicate-finder.show") }}</Button
 				>
 			</div>
 		</template>
@@ -44,7 +44,7 @@ import MaintenanceService from "@/services/maintenance-service";
 
 const data = ref<App.Http.Resources.Models.Duplicates.DuplicateCount | undefined>(undefined);
 
-const title = ref("Duplicates");
+const title = ref();
 
 function load() {
 	MaintenanceService.getDuplicatesCount().then((response) => {
