@@ -14,6 +14,7 @@
 
 namespace Tests\Feature_v2\Statistics;
 
+use App\Models\Configs;
 use LycheeVerify\Http\Middleware\VerifySupporterStatus;
 use Tests\Feature_v2\Base\BaseApiV2Test;
 
@@ -21,6 +22,9 @@ class AlbumSpaceTest extends BaseApiV2Test
 {
 	public function testAlbumSpaceTestUnauthorized(): void
 	{
+		Configs::set('cache_enabled', '0');
+		Configs::invalidateCache();
+
 		$response = $this->getJson('Statistics::albumSpace');
 		$this->assertSupporterRequired($response);
 

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin\Maintenance;
 
+use App\Enum\CacheTag;
+use App\Events\TaggedRouteCacheUpdated;
 use App\Http\Requests\Maintenance\RegisterRequest;
 use App\Http\Resources\GalleryConfigs\RegisterData;
 use App\Models\Configs;
@@ -28,6 +30,8 @@ class RegisterController extends Controller
 
 		// Not valid, reset the key.
 		Configs::set('license_key', '');
+
+		TaggedRouteCacheUpdated::dispatch(CacheTag::SETTINGS);
 
 		return new RegisterData(false);
 	}
