@@ -6,20 +6,20 @@
 		</template>
 
 		<template #center>
-			{{ $t("maintenance.title") }}
+			{{ $t("duplicate-finder.title") }}
 		</template>
 
 		<template #end> </template>
 	</Toolbar>
 	<div class="text-muted-color text-center mt-2 p-2">
 		<p class="mb-4">
-			{{ $t("On this page you will find the duplicates pictures found in your database.") }}
+			{{ $t("duplicate-finder.intro") }}
 		</p>
 		<p v-if="isValid && groupedDuplicates !== undefined">
-			<span class="text-muted-color-emphasis">{{ duplicates?.length }}</span> duplicates found!
+			<span class="text-muted-color-emphasis">{{ duplicates?.length }}</span> {{ $t("duplicate-finder.found") }}
 		</p>
 		<p class="text-muted-color-emphasis" v-if="!isValid">
-			<i class="text-warning-700 pi pi-exclamation-triangle mr-2" /> At least the checksum or title condition must be checked.
+			<i class="text-warning-700 pi pi-exclamation-triangle mr-2" /> {{ $t("duplicate-finder.invalid-search") }}
 		</p>
 	</div>
 	<div class="text-muted-color">
@@ -34,7 +34,7 @@
 						@update:modelValue="fetch"
 					/>
 					<label for="withChecksumConstraint" :class="{ 'text-muted-color-emphasis': isValid, 'text-warning-600': !isValid }">
-						Checksum must match.
+						{{ $t("duplicate-finder.checksum-must-match") }}
 					</label>
 				</li>
 				<li class="ml-2 pt-1 flex items-center gap-x-4">
@@ -46,7 +46,7 @@
 						@update:modelValue="fetch"
 					/>
 					<label for="withTitleConstraint" :class="{ 'text-muted-color-emphasis': isValid, 'text-warning-600': !isValid }">
-						Title must match.
+						{{ $t("duplicate-finder.title-must-match") }}
 					</label>
 					<SETag />
 				</li>
@@ -58,7 +58,7 @@
 						:disabled="is_se_preview_enabled"
 						@update:modelValue="fetch"
 					/>
-					<label for="withAlbumConstraint" class="text-muted-color"> Must be in the same albums </label>
+					<label for="withAlbumConstraint" class="text-muted-color"> {{ $t("duplicate-finder.must-be-in-same-album") }} </label>
 					<SETag />
 				</li>
 			</ul>
@@ -67,9 +67,9 @@
 			<div class="w-1/4 flex-none"></div>
 			<div class="pb-2 w-full flex justify-between items-center font-bold text-lg text-color-emphasis border-b border-b-white/50">
 				<div class=""><i class="pi pi-trash text-transparent mr-2" /></div>
-				<div class="w-1/3">Album</div>
-				<div class="w-1/3">Photo</div>
-				<div class="w-1/4">Checksum</div>
+				<div class="w-1/3">{{ $t("duplicate-finder.columns.album") }}</div>
+				<div class="w-1/3">{{ $t("duplicate-finder.columns.photo") }}</div>
+				<div class="w-1/4">{{ $t("duplicate-finder.columns.checksum") }}</div>
 			</div>
 		</div>
 		<div class="flex justify-between md:max-w-3xl lg:max-w-5xl xl:max-w-7xl mx-auto gap-4 xl:gap-8">
@@ -79,7 +79,7 @@
 					class="w-full font-bold border-none mb-4"
 					@click="isDeleteVisible = true"
 					:disabled="selectedIds.length === 0"
-					>{{ $t("Delete selected") }}</Button
+					>{{ $t("duplicate-finder.delete-selected") }}</Button
 				>
 
 				<img :src="hoverImgSrc" class="w-full" />
@@ -103,7 +103,6 @@ import Toolbar from "primevue/toolbar";
 import ProgressBar from "primevue/progressbar";
 import Button from "primevue/button";
 import VirtualScroller from "primevue/virtualscroller";
-import { useToast } from "primevue/usetoast";
 import Checkbox from "primevue/checkbox";
 import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
 import DuplicateLine from "@/components/maintenance/DuplicateLine.vue";
@@ -117,7 +116,6 @@ const duplicates = ref<App.Http.Resources.Models.Duplicates.Duplicate[] | undefi
 const groupedDuplicates = ref<SplitData<App.Http.Resources.Models.Duplicates.Duplicate>[] | undefined>(undefined);
 const isDeleteVisible = ref(false);
 const selectedIds = ref<string[]>([]);
-const toast = useToast();
 const lycheeStore = useLycheeStateStore();
 
 const { spliter } = useSplitter();
