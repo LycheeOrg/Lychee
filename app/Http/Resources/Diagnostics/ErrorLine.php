@@ -13,10 +13,10 @@ class ErrorLine extends Data
 	/**
 	 * Create a Diagnostic Info.
 	 *
-	 * @param MessageType  $type
-	 * @param string       $message
-	 * @param class-string $from
-	 * @param string[]     $details
+	 * @param MessageType $type
+	 * @param string      $message
+	 * @param string      $from
+	 * @param string[]    $details
 	 */
 	public function __construct(
 		public MessageType $type,
