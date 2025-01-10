@@ -13,9 +13,9 @@
 			</ScrollPanel>
 		</template>
 		<template #footer>
-			<Button v-if="canCheck" severity="primary" class="w-full border-none" @click="check">{{ $t("lychee.CHECK_FOR_UPDATE") }}</Button>
+			<Button v-if="canCheck" severity="primary" class="w-full border-none" @click="check">{{ $t("maintenance.update.check-button") }}</Button>
 			<Button v-if="canUpdate" severity="primary" class="w-full border-none" href="/Update" target="_blank" rel="noopener">{{
-				$t("lychee.UPDATE")
+				$t("maintenance.update.update-button")
 			}}</Button>
 			<div v-if="!canCheck && !canUpdate && !loading" class="w-full text-center">
 				{{ $t("maintenance.update.no-pending-updates") }}
@@ -31,6 +31,7 @@ import Card from "primevue/card";
 import ScrollPanel from "primevue/scrollpanel";
 import MaintenanceService from "@/services/maintenance-service";
 import { useToast } from "primevue/usetoast";
+import { trans } from "laravel-vue-i18n";
 
 const data = ref<App.Http.Resources.Diagnostics.UpdateInfo | undefined>(undefined);
 const canCheck = ref(true);
@@ -58,7 +59,7 @@ function check() {
 			loading.value = false;
 		})
 		.catch((e) => {
-			toast.add({ severity: "error", summary: "Error", detail: e.response.data.message, life: 3000 });
+			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response.data.message, life: 3000 });
 			loading.value = false;
 		});
 }

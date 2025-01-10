@@ -5,7 +5,7 @@
 		v-model="selectedTarget"
 		@update:modelValue="selected"
 		filter
-		placeholder="Select album"
+		:placeholder="$t('dialogs.target_album.placeholder')"
 		:loading="options === undefined"
 		:options="options"
 		optionLabel="original"

@@ -4,34 +4,34 @@
 			<OpenLeftMenu />
 		</template>
 		<template #center>
-			{{ $t("lychee.SHARING") }}
+			{{ $t("sharing.title") }}
 		</template>
 		<template #end> </template>
 	</Toolbar>
 	<Panel class="border-none p-9 mx-auto max-w-3xl" v-if="perms !== undefined" pt:header:class="hidden">
 		<div class="w-full mb-9 text-center text-muted-color-emphasis">
-			This page gives an overview of and the ability to edit the sharing rights associated with albums.
+			{{ $t("sharing.info") }}
 		</div>
 		<div class="flex flex-col text-muted-color-emphasis">
 			<div class="flex items-center">
 				<div class="w-5/12 flex items-center">
-					<span class="w-full">{{ "Album Title" }}</span>
-					<span class="w-full">{{ $t("lychee.USERNAME") }}</span>
+					<span class="w-full">{{ $t("sharing.album_title") }}</span>
+					<span class="w-full">{{ $t("sharing.username") }}</span>
 				</div>
 				<div class="w-1/2 flex items-center justify-around">
-					<i class="pi pi-eye" v-tooltip.top="'Grants read access'" />
-					<i class="pi pi-window-maximize" v-tooltip.top="'Grants full photo access'" />
-					<i class="pi pi-cloud-download" v-tooltip.top="'Grants download'" />
-					<i class="pi pi-upload" v-tooltip.top="'Grants upload'" />
-					<i class="pi pi-file-edit" v-tooltip.top="'Grants edit'" />
-					<i class="pi pi-trash" v-tooltip.top="'Grants delete'" />
+					<i class="pi pi-eye" v-tooltip.top="$t('sharing.grants.read')" />
+					<i class="pi pi-window-maximize" v-tooltip.top="$t('sharing.grants.original')" />
+					<i class="pi pi-cloud-download" v-tooltip.top="$t('sharing.grants.download')" />
+					<i class="pi pi-upload" v-tooltip.top="$t('sharing.grants.upload')" />
+					<i class="pi pi-file-edit" v-tooltip.top="$t('sharing.grants.edit')" />
+					<i class="pi pi-trash" v-tooltip.top="$t('sharing.grants.delete')" />
 				</div>
 				<div class="w-1/6"></div>
 			</div>
 			<template v-if="perms?.length > 0">
 				<ShareLine v-for="perm in perms" :perm="perm" @delete="deletePermission" :with-album="true" />
 			</template>
-			<p v-else class="text-center">Sharing list is empty</p>
+			<p v-else class="text-center">{{ $t("sharing.no_data") }}</p>
 		</div>
 	</Panel>
 </template>
@@ -43,6 +43,7 @@ import SharingService from "@/services/sharing-service";
 import Panel from "primevue/panel";
 import Toolbar from "primevue/toolbar";
 import { useToast } from "primevue/usetoast";
+import { trans } from "laravel-vue-i18n";
 
 const perms = ref<App.Http.Resources.Models.AccessPermissionResource[] | undefined>(undefined);
 const toast = useToast();
@@ -58,7 +59,7 @@ function deletePermission(id: number) {
 	}
 
 	SharingService.delete(id).then(() => {
-		toast.add({ severity: "success", summary: "Success", detail: "Permission deleted", life: 3000 });
+		toast.add({ severity: "success", summary: trans("toasts.success"), detail: trans("sharing.permission_deleted"), life: 3000 });
 		perms.value = permissions.filter((perm) => perm.id !== id);
 	});
 }

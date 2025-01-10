@@ -4,8 +4,8 @@
 			<form>
 				<div class="h-12">
 					<ToggleSwitch v-model="is_public" class="mr-2 translate-y-1" @change="save" />
-					<label for="pp_dialog_public_check" class="font-bold">{{ $t("lychee.ALBUM_PUBLIC") }}</label>
-					<p class="my-1.5">{{ $t("lychee.ALBUM_PUBLIC_EXPL") }}</p>
+					<label for="pp_dialog_public_check" class="font-bold">{{ $t("dialogs.visibility.public") }}</label>
+					<p class="my-1.5">{{ $t("dialogs.visibility.public_expl") }}</p>
 				</div>
 				<Collapse v-if="props.config.is_base_album" :when="is_public">
 					<div
@@ -19,8 +19,8 @@
 							class="-ml-10 mr-2 translate-y-1"
 							@change="save"
 						/>
-						<label class="font-bold" for="pp_dialog_full_check">{{ $t("lychee.ALBUM_FULL") }}</label>
-						<p class="my-1.5">{{ $t("lychee.ALBUM_FULL_EXPL") }}</p>
+						<label class="font-bold" for="pp_dialog_full_check">{{ $t("dialogs.visibility.full") }}</label>
+						<p class="my-1.5">{{ $t("dialogs.visibility.full_expl") }}</p>
 					</div>
 					<div
 						class="relative h-12 my-4 pl-9 transition-color duration-300"
@@ -33,8 +33,8 @@
 							class="-ml-10 mr-2 translate-y-1"
 							@change="save"
 						/>
-						<label class="font-bold" for="pp_dialog_link_check">{{ $t("lychee.ALBUM_HIDDEN") }}</label>
-						<p class="my-1.5">{{ $t("lychee.ALBUM_HIDDEN_EXPL") }}</p>
+						<label class="font-bold" for="pp_dialog_link_check">{{ $t("dialogs.visibility.hidden") }}</label>
+						<p class="my-1.5">{{ $t("dialogs.visibility.hidden_expl") }}</p>
 					</div>
 					<div
 						class="relative h-12 my-4 pl-9 transition-color duration-300"
@@ -47,8 +47,8 @@
 							class="-ml-10 mr-2 translate-y-1"
 							@change="save"
 						/>
-						<label class="font-bold" for="pp_dialog_downloadable_check">{{ $t("lychee.ALBUM_DOWNLOADABLE") }}</label>
-						<p class="my-1.5">{{ $t("lychee.ALBUM_DOWNLOADABLE_EXPL") }}</p>
+						<label class="font-bold" for="pp_dialog_downloadable_check">{{ $t("dialogs.visibility.downloadable") }}</label>
+						<p class="my-1.5">{{ $t("dialogs.visibility.downloadable_expl") }}</p>
 					</div>
 					<div
 						class="relative my-4 pl-9 transition-color duration-300"
@@ -61,11 +61,11 @@
 							class="-ml-10 mr-2 translate-y-1"
 							@change="save"
 						/>
-						<label class="font-bold" for="pp_dialog_password_check">{{ $t("lychee.ALBUM_PASSWORD_PROT") }}</label>
-						<p class="mt-1.5 mb-4">{{ $t("lychee.ALBUM_PASSWORD_PROT_EXPL") }}</p>
+						<label class="font-bold" for="pp_dialog_password_check">{{ $t("dialogs.visibility.password_prot") }}</label>
+						<p class="mt-1.5 mb-4">{{ $t("dialogs.visibility.password_prot_expl") }}</p>
 						<FloatLabel v-if="is_password_required">
 							<InputPassword id="password" v-model="password" autocomplete="new-password" @change="save" />
-							<label for="password">{{ $t("lychee.ALBUM_PASSWORD") }}</label>
+							<label for="password">{{ $t("dialogs.visibility.password") }}</label>
 						</FloatLabel>
 					</div>
 				</Collapse>
@@ -86,9 +86,9 @@
 							@change="save"
 						/>
 						<label for="pp_dialog_nsfw_check" class="font-bold" :class="is_nsfw ? ' text-red-700' : ''">{{
-							$t("lychee.ALBUM_NSFW")
+							$t("dialogs.visibility.nsfw")
 						}}</label>
-						<p class="my-1.5">{{ $t("lychee.ALBUM_NSFW_EXPL") }}</p>
+						<p class="my-1.5">{{ $t("dialogs.visibility.nsfw_expl") }}</p>
 					</div>
 				</form>
 			</template>
@@ -104,6 +104,7 @@ import InputPassword from "@/components/forms/basic/InputPassword.vue";
 import AlbumService, { UpdateProtectionPolicyData } from "@/services/album-service";
 import { useToast } from "primevue/usetoast";
 import { Collapse } from "vue-collapsed";
+import { trans } from "laravel-vue-i18n";
 
 const props = defineProps<{
 	album: App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.SmartAlbumResource | App.Http.Resources.Models.TagAlbumResource;
@@ -132,7 +133,7 @@ function save() {
 
 	AlbumService.updateProtectionPolicy(data)
 		.then(() => {
-			toast.add({ severity: "success", summary: "Success", detail: "Permission updated", life: 3000 });
+			toast.add({ severity: "success", summary: trans("toasts.success"), detail: trans("dialogs.visibility.visibility_updated"), life: 3000 });
 			AlbumService.clearCache(albumId.value);
 			if (props.config.is_model_album) {
 				// @ts-expect-error

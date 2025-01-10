@@ -8,19 +8,19 @@
 	>
 		<template #container="{ closeCallback }">
 			<div v-focustrap class="flex flex-col relative max-w-full text-sm rounded-md pt-9">
-				<p class="mb-5 px-9">{{ $t("lychee.TITLE_NEW_ALBUM") }}</p>
+				<p class="mb-5 px-9">{{ $t("dialogs.new_album.info") }}</p>
 				<div class="inline-flex flex-col gap-2 px-9">
 					<FloatLabel variant="on">
 						<InputText id="title" v-model="title" />
-						<label class="" for="title">{{ $t("lychee.ALBUM_TITLE") }}</label>
+						<label class="" for="title">{{ $t("dialogs.new_album.title") }}</label>
 					</FloatLabel>
 				</div>
 				<div class="flex items-center mt-9">
 					<Button @click="closeCallback" severity="secondary" class="w-full font-bold border-none rounded-bl-xl">
-						{{ $t("lychee.CANCEL") }}
+						{{ $t("dialogs.button.cancel") }}
 					</Button>
 					<Button @click="create" severity="contrast" class="font-bold w-full border-none rounded-none rounded-br-xl" :disabled="!isValid">
-						{{ $t("lychee.CREATE_ALBUM") }}
+						{{ $t("dialogs.new_album.create") }}
 					</Button>
 				</div>
 			</div>

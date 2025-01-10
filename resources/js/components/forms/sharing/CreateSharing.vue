@@ -16,7 +16,7 @@
 			<Checkbox v-model="grantsDelete" :binary="true" />
 		</div>
 		<Button @click="create" :disabled="!newShareUser" class="border-0 bg-surface text-create-600 hover:bg-create-600 hover:text-white w-1/6">
-			<i class="pi pi-user-plus" /><span class="hidden md:inline">{{ $t("lychee.SHARE") }}</span>
+			<i class="pi pi-user-plus" /><span class="hidden md:inline">{{ $t("sharing.share") }}</span>
 		</Button>
 	</div>
 </template>
@@ -27,6 +27,7 @@ import Checkbox from "primevue/checkbox";
 import { useToast } from "primevue/usetoast";
 import SearchTargetUser from "../album/SearchTargetUser.vue";
 import SharingService from "@/services/sharing-service";
+import { trans } from "laravel-vue-i18n";
 
 const props = withDefaults(
 	defineProps<{
@@ -81,7 +82,7 @@ function create() {
 	};
 
 	SharingService.add(data).then(() => {
-		toast.add({ severity: "success", summary: "Success", detail: "Permission created", life: 3000 });
+		toast.add({ severity: "success", summary: trans("toasts.success"), detail: trans("sharing.permission_created"), life: 3000 });
 		reset();
 		emits("createdPermission");
 	});

@@ -4,7 +4,7 @@
 			<div class="flex items-center gap-2 text-muted-color hover:text-primary-400">
 				<router-link v-if="!isGallery" v-slot="{ href, navigate }" to="/gallery" custom>
 					<a v-ripple :href="href" @click="navigate">
-						<span class="text-lg font-bold pl-3">Back to Gallery</span>
+						<span class="text-lg font-bold pl-3">{{ $t("left-menu.back_to_gallery") }}</span>
 					</a>
 				</router-link>
 			</div>
@@ -51,7 +51,7 @@
 	</Drawer>
 </template>
 <script setup lang="ts">
-import { computed, Ref, ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import { storeToRefs } from "pinia";
 import Drawer from "primevue/drawer";
 import Menu from "primevue/menu";
@@ -152,23 +152,23 @@ const items = computed<MenyType[]>(() => {
 
 	return [
 		{
-			label: "Admin",
+			label: "left-menu.admin",
 			access: canSeeAdmin.value,
 			items: [
 				{
-					label: "lychee.SETTINGS",
+					label: "settings.title",
 					icon: "cog",
 					route: "/settings",
 					access: initData.value.settings.can_edit ?? false,
 				},
 				{
-					label: "lychee.USERS",
+					label: "users.title",
 					icon: "people",
 					route: "/users",
 					access: initData.value.user_management.can_edit ?? false,
 				},
 				{
-					label: "lychee.DIAGNOSTICS",
+					label: "diagnostics.title",
 					icon: "wrench",
 					route: "/diagnostics",
 					access: initData.value.settings.can_see_diagnostics ?? false,
@@ -180,24 +180,24 @@ const items = computed<MenyType[]>(() => {
 					access: initData.value.settings.can_edit ?? false,
 				},
 				{
-					label: "lychee.LOGS",
+					label: "left-menu.logs",
 					icon: "excerpt",
 					url: Constants.BASE_URL + "/Logs",
 					access: (initData.value.settings.can_see_logs ?? false) && logsEnabled.value,
 				},
 				{
-					label: "lychee.LOGS",
+					label: "left-menu.logs",
 					icon: "excerpt",
 					access: (initData.value.settings.can_see_logs ?? false) && !logsEnabled.value,
 				},
 				{
-					label: "lychee.JOBS",
+					label: "left-menu.jobs",
 					icon: "project",
 					route: "/jobs",
 					access: initData.value.settings.can_see_logs ?? false,
 				},
 				{
-					label: "Clockwork App",
+					label: "left-menu.clockwork",
 					icon: "telescope",
 					url: clockwork_url.value ?? "",
 					access: clockwork_url.value !== null && (initData.value.settings.can_access_dev_tools ?? false),
@@ -205,35 +205,35 @@ const items = computed<MenyType[]>(() => {
 			],
 		},
 		{
-			label: "lychee.PROFILE",
+			label: "profile.title",
 			items: [
 				{
-					label: "User",
+					label: "left-menu.user",
 					icon: "person",
 					route: "/profile",
 					access: initData.value.user.can_edit ?? false,
 				},
 				{
-					label: "lychee.SHARING",
+					label: "sharing.title",
 					icon: "cloud",
 					route: "/sharing",
 					access: initData.value.root_album.can_upload ?? false,
 				},
 				{
-					label: "Statistics",
+					label: "statistics.title",
 					icon: "bar-chart",
 					route: "/statistics",
 					access: is_se_enabled.value === true,
 				},
 				{
-					label: "Statistics",
+					label: "statistics.title",
 					icon: "bar-chart",
 					route: "/statistics",
 					access: is_se_preview_enabled.value === true,
 					seTag: true,
 				},
 				{
-					label: "lychee.SIGN_OUT",
+					label: "left-menu.sign_out",
 					icon: "account-logout",
 					access: true,
 					command: logout,
@@ -244,19 +244,25 @@ const items = computed<MenyType[]>(() => {
 			label: "Lychee",
 			items: [
 				{
-					label: "About",
+					label: "left-menu.about",
 					icon: "info",
 					access: true,
 					command: () => (openLycheeAbout.value = true),
 				},
 				{
-					label: "Source",
+					label: "left-menu.api",
 					icon: "book",
+					access: initData.value.settings.can_edit ?? false,
+					url: "/docs/api",
+				},
+				{
+					label: "left-menu.source_code",
+					icon: "code",
 					access: is_se_info_hidden.value === false,
 					url: "https://github.com/LycheeOrg/Lychee",
 				},
 				{
-					label: "Support",
+					label: "left-menu.support",
 					icon: "heart",
 					access: is_se_info_hidden.value === false,
 					url: "https://lycheeorg.github.io/get-supporter-edition/",

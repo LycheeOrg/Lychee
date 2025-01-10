@@ -15,18 +15,15 @@
 					<div class="flex flex-col justify-center gap-2 px-9 w-full items-center">
 						<template v-if="token === undefined">
 							<span>{{ tokenText }}</span>
-							<a v-if="isDisabled" severity="contrast" class="cursor-pointer font-bold text-primary-500 underline" @click="resetToken"
-								>Create a new token</a
-							>
-							<a v-else severity="contrast" class="cursor-pointer font-bold text-primary-500 underline" @click="resetToken"
-								>Reset the token</a
-							>
+							<a v-if="isDisabled" severity="contrast" class="cursor-pointer font-bold text-primary-500 underline" @click="resetToken">
+								{{ $t("profile.token.create") }}
+							</a>
+							<a v-else severity="contrast" class="cursor-pointer font-bold text-primary-500 underline" @click="resetToken">
+								{{ $t("profile.token.reset") }}
+							</a>
 						</template>
 						<template v-else>
-							<span
-								><i class="text-danger-600 pi pi-exclamation-triangle mr-2" />This token will not be displayed again. Copy it and keep
-								it in a safe place.</span
-							>
+							<span><i class="text-danger-600 pi pi-exclamation-triangle mr-2" />{{ $t("profile.token.warning") }}</span>
 							<InputText
 								class="flex-grow[4] bg-transparent w-full pt-1 pb-0 px-0.5 h-7 border-b border-b-solid focus:border-b-primary-500 disabled:italic disabled:text-center inline-block"
 								v-model="token"
@@ -37,7 +34,7 @@
 				</div>
 				<div class="flex justify-center mt-9">
 					<Button @click="close" severity="secondary" class="w-full border-none font-bold rounded-none rounded-bl-lg">
-						{{ $t("lychee.CLOSE") }}
+						{{ $t("dialogs.button.close") }}
 					</Button>
 					<Button
 						@click="disable"
@@ -45,7 +42,7 @@
 						severity="danger"
 						class="w-full border-none font-bold rounded-none rounded-br-lg"
 					>
-						Disable
+						{{ $t("profile.token.disable") }}
 					</Button>
 				</div>
 			</form>
@@ -86,7 +83,7 @@ function disable() {
 	ProfileService.unsetToken().then(() => {
 		toast.add({
 			severity: "success",
-			summary: "Token disabled",
+			summary: trans("profile.token.disabled"),
 			life: 3000,
 		});
 		visible.value = false;
@@ -95,7 +92,7 @@ function disable() {
 
 watch(visible, (_value) => {
 	AuthService.user().then((response) => {
-		tokenText.value = response.data.has_token ? trans("lychee.TOKEN_NOT_AVAILABLE") : "No token API have been generated.";
+		tokenText.value = response.data.has_token ? trans("profile.token.unavailable") : trans("profile.token.no_data");
 		isDisabled.value = !response.data.has_token;
 	});
 });

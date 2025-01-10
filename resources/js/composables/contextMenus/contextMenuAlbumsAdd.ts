@@ -9,13 +9,11 @@ type Callbacks = {
 };
 
 export function useContextMenuAlbumsAdd(callbacks: Callbacks, dropbox_api_key: Ref<string>) {
-	const isImportFromServerOpen = ref(false);
-
 	const addmenu = ref(); // ! Reference to the context menu
 	const addMenu = ref(
 		[
 			{
-				label: "lychee.UPLOAD_PHOTO",
+				label: "gallery.menus.upload_photo",
 				icon: "pi pi-upload",
 				callback: callbacks.toggleUpload,
 			},
@@ -23,31 +21,26 @@ export function useContextMenuAlbumsAdd(callbacks: Callbacks, dropbox_api_key: R
 				is_divider: true,
 			},
 			{
-				label: "lychee.IMPORT_LINK",
+				label: "gallery.menus.import_link",
 				icon: "pi pi-link",
 				callback: callbacks.toggleImportFromLink,
 			},
 			{
-				label: "lychee.IMPORT_DROPBOX",
+				label: "gallery.menus.import_dropbox",
 				icon: "pi pi-box",
 				callback: callbacks.toggleImportFromDropbox,
 				if: dropbox_api_key.value !== "disabled",
 			},
-			// {
-			// 	label: "lychee.IMPORT_SERVER",
-			// 	icon: "pi pi-server",
-			// 	callback: () => (isImportFromServerOpen.value = true),
-			// },
 			{
 				is_divider: true,
 			},
 			{
-				label: "lychee.NEW_ALBUM",
+				label: "gallery.menus.new_album",
 				icon: "pi pi-folder",
 				callback: callbacks.toggleCreateAlbum,
 			},
 			{
-				label: "lychee.NEW_TAG_ALBUM",
+				label: "gallery.menus.new_tag_album",
 				icon: "pi pi-tags",
 				callback: callbacks.toggleCreateTagAlbum,
 			},
@@ -62,6 +55,5 @@ export function useContextMenuAlbumsAdd(callbacks: Callbacks, dropbox_api_key: R
 		addmenu,
 		addMenu,
 		openAddMenu,
-		isImportFromServerOpen,
 	};
 }

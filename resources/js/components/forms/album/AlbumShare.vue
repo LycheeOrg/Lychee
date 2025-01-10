@@ -3,15 +3,15 @@
 		<template #content>
 			<div class="flex text-muted-color-emphasis">
 				<div class="w-5/12 flex">
-					<span class="w-full">{{ $t("lychee.USERNAME") }}</span>
+					<span class="w-full">{{ $t("sharing.username") }}</span>
 				</div>
 				<div class="w-1/2 flex justify-around items-center">
-					<i class="pi pi-eye" v-tooltip.top="'Grants read access'" />
-					<i class="pi pi-window-maximize" v-tooltip.top="'Grants access to original photo'" />
-					<i class="pi pi-cloud-download" v-tooltip.top="'Grants download'" />
-					<i class="pi pi-upload" v-tooltip.top="'Grants upload'" />
-					<i class="pi pi-file-edit" v-tooltip.top="'Grants edit'" />
-					<i class="pi pi-trash" v-tooltip.top="'Grants delete'" />
+					<i class="pi pi-eye" v-tooltip.top="$t('sharing.grants.read')" />
+					<i class="pi pi-window-maximize" v-tooltip.top="$t('sharing.grants.original')" />
+					<i class="pi pi-cloud-download" v-tooltip.top="$t('sharing.grants.download')" />
+					<i class="pi pi-upload" v-tooltip.top="$t('sharing.grants.upload')" />
+					<i class="pi pi-file-edit" v-tooltip.top="$t('sharing.grants.edit')" />
+					<i class="pi pi-trash" v-tooltip.top="$t('sharing.grants.delete')" />
 				</div>
 				<div class="w-1/6"></div>
 			</div>
@@ -28,6 +28,7 @@ import { useToast } from "primevue/usetoast";
 import SharingService from "@/services/sharing-service";
 import ShareLine from "@/components/forms/sharing/ShareLine.vue";
 import CreateSharing from "../sharing/CreateSharing.vue";
+import { trans } from "laravel-vue-i18n";
 
 const props = defineProps<{
 	withAlbum: boolean;
@@ -60,7 +61,7 @@ function deletePermission(id: number) {
 	}
 
 	SharingService.delete(id).then(() => {
-		toast.add({ severity: "success", summary: "Success", detail: "Permission deleted", life: 3000 });
+		toast.add({ severity: "success", summary: trans("toasts.success"), detail: trans("sharing.permission_deleted"), life: 3000 });
 		perms.value = permissions.filter((perm) => perm.id !== id);
 	});
 }

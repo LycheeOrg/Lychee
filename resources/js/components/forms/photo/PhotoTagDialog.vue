@@ -16,21 +16,21 @@
 						:typeahead="false"
 						multiple
 						class="pt-3 border-b hover:border-b-0"
-						:placeholder="$t('lychee.NO_TAGS')"
+						:placeholder="$t('dialogs.photo_tags.no_tags')"
 						pt:inputmultiple:class="w-full border-t-0 border-l-0 border-r-0 border-b hover:border-b-primary-400 focus:border-b-primary-400"
 					/>
 				</div>
 				<div>
 					<Checkbox v-model="shallOverride" :binary="true" inputId="shallOverride" />
-					<label for="shallOverride" class="ml-2 text-sm text-muted-color">{{ $t("lychee.TAGS_OVERRIDE_INFO") }}</label>
+					<label for="shallOverride" class="ml-2 text-sm text-muted-color">{{ $t("dialogs.photo_tags.tags_override_info") }}</label>
 				</div>
 			</div>
 			<div class="flex">
 				<Button severity="secondary" class="font-bold w-full border-none rounded-none rounded-bl-xl" @click="close">
-					{{ $t("lychee.CANCEL") }}
+					{{ $t("dialogs.button.cancel") }}
 				</Button>
 				<Button severity="contrast" class="font-bold w-full border-none rounded-none rounded-br-xl" @click="execute">
-					{{ $t("lychee.PHOTO_SET_TAGS") }}
+					{{ $t("dialogs.photo_tags.set_tags") }}
 				</Button>
 			</div>
 		</template>
@@ -46,6 +46,7 @@ import Button from "primevue/button";
 import Dialog from "primevue/dialog";
 import Checkbox from "primevue/checkbox";
 import AutoComplete from "primevue/autocomplete";
+import { trans } from "laravel-vue-i18n";
 
 const props = defineProps<{
 	parentId: string | undefined;
@@ -63,9 +64,9 @@ const toast = useToast();
 
 const question = computed(() => {
 	if (props.photo) {
-		return sprintf("Enter your tags for this photo.");
+		return trans("dialogs.photo_tags.question");
 	}
-	return sprintf("Enter your tags for all %d selected photos. Existing tags will be overwritten.", props.photoIds?.length);
+	return sprintf(trans("dialogs.photo_tags.question_multiple"), props.photoIds?.length);
 });
 
 const shallOverride = ref(false);
@@ -92,7 +93,7 @@ function execute() {
 	PhotoService.tags(photoTaggedIds, tags.value, shallOverride.value).then(() => {
 		toast.add({
 			severity: "success",
-			summary: "tags updated",
+			summary: trans("dialogs.photo_tags.updated"),
 			life: 3000,
 		});
 		AlbumService.clearCache(props.parentId);

@@ -31,7 +31,7 @@ class LangTest extends AbstractTestCase
 	{
 		/** @disregard P1013 */
 		static::assertEquals('en', app()->getLocale());
-		static::assertEquals('OK', __('lychee.SUCCESS'));
+		static::assertEquals('Gallery', __('gallery.title'));
 
 		$this->msgSection = (new ConsoleOutput())->section();
 
@@ -55,7 +55,7 @@ class LangTest extends AbstractTestCase
 		app()->setLocale('ZK');
 		/** @disregard P1013 */
 		static::assertEquals('ZK', app()->getLocale());
-		static::assertEquals('OK', __('lychee.SUCCESS'));
+		static::assertEquals('Gallery', __('gallery.title'));
 	}
 
 	private function recursiveCheck(array $expected, array $candidate, string $locale, string $file, string $prefix = ''): void

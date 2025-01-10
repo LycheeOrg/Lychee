@@ -6,7 +6,7 @@
 		</template>
 
 		<template #center>
-			{{ $t("lychee.USERS") }}
+			{{ $t("users.title") }}
 		</template>
 
 		<template #end></template>
@@ -14,29 +14,20 @@
 	<Panel class="border-0 max-w-6xl mx-auto">
 		<div class="flex flex-wrap justify-center">
 			<div class="w-full lg:w-2/3 xl:w-3/6">
-				<p class="text-muted-color-emphasis">This page allows you to manage users.</p>
+				<p class="text-muted-color-emphasis">{{ $t("users.description") }}</p>
 				<div class="flex justify-end mt-8 mb-8">
-					<Button @click="createUser" severity="primary" class="border-none p-3">Create a new user</Button>
+					<Button @click="createUser" severity="primary" class="border-none p-3">{{ $t("users.create") }}</Button>
 				</div>
 				<div class="flex flex-col">
 					<div class="flex flex-wrap md:flex-nowrap border-b border-solid border-b-surface-700 mb-4 pb-4">
 						<div class="w-9/12 lg:w-8/12 flex">
-							<span class="w-2/3 font-bold">{{ $t("lychee.USERNAME") }}</span>
+							<span class="w-2/3 font-bold">{{ $t("users.username") }}</span>
 							<div class="w-1/3 flex justify-evenly">
-								<span class="w-full text-center" v-tooltip.top="'When selected, the user can upload content.'"
-									><i class="pi pi-upload"
-								/></span>
-								<span
-									class="w-full text-center"
-									v-tooltip.top="'When selected, the user can modify their profile (username, password).'"
-								>
+								<span class="w-full text-center" v-tooltip.top="$t('users.upload_rights')"><i class="pi pi-upload" /></span>
+								<span class="w-full text-center" v-tooltip.top="$t('users.edit_rights')">
 									<i class="pi pi-lock-open" />
 								</span>
-								<span
-									v-if="isQuotaEnabled"
-									class="w-full text-center"
-									v-tooltip.top="'When selected, the user is limited in the quatity of picture they can upload (in kB).'"
-								>
+								<span v-if="isQuotaEnabled" class="w-full text-center" v-tooltip.top="$t('users.quota')">
 									<i class="pi pi-chart-pie" />
 								</span>
 							</div>
@@ -57,7 +48,7 @@
 				</div>
 			</div>
 			<Card class="text-muted-color w-full lg:w-2/3 xl:w-2/6 xl:pl-12" :pt:body:class="'px-0 lg:pt-0'">
-				<template #title>Legend</template>
+				<template #title>{{ $t("users.legend") }}</template>
 				<template #content>
 					<ul class="text-sm">
 						<li class="ml-2 pt-2 flex items-start gap-x-4">
@@ -70,7 +61,7 @@
 						</li>
 						<li class="ml-2 pt-2 flex items-start gap-x-4" v-if="is_se_enabled">
 							<i class="pi pi-chart-pie"></i>
-							<span>When set, the user has a space quota for pictures (in kB).</span>
+							<span>{{ $t("users.quota") }}</span>
 						</li>
 					</ul>
 				</template>
@@ -92,6 +83,7 @@ import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
 import UserManagementService from "@/services/user-management-service";
 import UsersService from "@/services/users-service";
 import { useLycheeStateStore } from "@/stores/LycheeState";
+import { trans } from "laravel-vue-i18n";
 
 const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
@@ -116,7 +108,7 @@ function load() {
 
 function deleteUser(id: number) {
 	UserManagementService.delete({ id: id }).then(() => {
-		toast.add({ severity: "success", summary: "Success", detail: "User deleted" });
+		toast.add({ severity: "success", summary: "Success", detail: trans("users.user_deleted") });
 
 		// Clear user count as it is cachable.
 		UsersService.clearCount();

@@ -102,7 +102,7 @@ class PhotosUnitTest
 			]
 		);
 		$response->assertUnprocessable();
-		$response->assertSee('The file must be a file');
+		$response->assertSee('The file field must be a file');
 	}
 
 	/**

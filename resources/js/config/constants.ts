@@ -4,25 +4,25 @@ export type SelectOption<T> = {
 };
 
 export const photoSortingColumnsOptions: SelectOption<App.Enum.ColumnSortingPhotoType>[] = [
-	{ value: "created_at", label: "lychee.SORT_PHOTO_SELECT_1" },
-	{ value: "taken_at", label: "lychee.SORT_PHOTO_SELECT_2" },
-	{ value: "title", label: "lychee.SORT_PHOTO_SELECT_3" },
-	{ value: "description", label: "lychee.SORT_PHOTO_SELECT_4" },
-	{ value: "is_starred", label: "lychee.SORT_PHOTO_SELECT_6" },
-	{ value: "type", label: "lychee.SORT_PHOTO_SELECT_7" },
+	{ value: "created_at", label: "gallery.sort.photo_select_1" },
+	{ value: "taken_at", label: "gallery.sort.photo_select_2" },
+	{ value: "title", label: "gallery.sort.photo_select_3" },
+	{ value: "description", label: "gallery.sort.photo_select_4" },
+	{ value: "is_starred", label: "gallery.sort.photo_select_6" },
+	{ value: "type", label: "gallery.sort.photo_select_7" },
 ];
 
 export const sortingOrdersOptions: SelectOption<App.Enum.OrderSortingType>[] = [
-	{ value: "ASC", label: "lychee.SORT_ASCENDING" },
-	{ value: "DESC", label: "lychee.SORT_DESCENDING" },
+	{ value: "ASC", label: "gallery.sort.ascending" },
+	{ value: "DESC", label: "gallery.sort.descending" },
 ];
 
 export const albumSortingColumnsOptions: SelectOption<App.Enum.ColumnSortingAlbumType>[] = [
-	{ value: "created_at", label: "lychee.SORT_ALBUM_SELECT_1" },
-	{ value: "title", label: "lychee.SORT_ALBUM_SELECT_2" },
-	{ value: "description", label: "lychee.SORT_ALBUM_SELECT_3" },
-	{ value: "min_taken_at", label: "lychee.SORT_ALBUM_SELECT_6" },
-	{ value: "max_taken_at", label: "lychee.SORT_ALBUM_SELECT_5" },
+	{ value: "created_at", label: "gallery.sort.album_select_1" },
+	{ value: "title", label: "gallery.sort.album_select_2" },
+	{ value: "description", label: "gallery.sort.album_select_3" },
+	{ value: "min_taken_at", label: "gallery.sort.album_select_6" },
+	{ value: "max_taken_at", label: "gallery.sort.album_select_5" },
 ];
 
 export const aspectRationOptions: SelectOption<App.Enum.AspectRatioType>[] = [
@@ -36,7 +36,7 @@ export const aspectRationOptions: SelectOption<App.Enum.AspectRatioType>[] = [
 
 export const licenseOptions: SelectOption<App.Enum.LicenseType>[] = [
 	{ value: "none", label: "None" },
-	{ value: "reserved", label: "lychee.ALBUM_RESERVED" },
+	{ value: "reserved", label: "gallery.album_reserved" },
 	{ value: "CC0", label: "CC0 - Public Domain" },
 	{ value: "CC-BY-1.0", label: "CC Attribution 1.0" },
 	{ value: "CC-BY-2.0", label: "CC Attribution 2.0" },
@@ -71,16 +71,16 @@ export const licenseOptions: SelectOption<App.Enum.LicenseType>[] = [
 ];
 
 export const photoLayoutOptions: SelectOption<App.Enum.PhotoLayoutType>[] = [
-	{ value: "square", label: "lychee.LAYOUT_SQUARES" },
-	{ value: "justified", label: "lychee.LAYOUT_JUSTIFIED" },
-	{ value: "masonry", label: "lychee.LAYOUT_MASONRY" },
-	{ value: "grid", label: "lychee.LAYOUT_GRID" },
+	{ value: "square", label: "gallery.layout.squares" },
+	{ value: "justified", label: "gallery.layout.justified" },
+	{ value: "masonry", label: "gallery.layout.masonry" },
+	{ value: "grid", label: "gallery.layout.grid" },
 ];
 
 export const defaultAlbumProtectionOptions: SelectOption<string>[] = [
-	{ value: "1", label: "private" },
-	{ value: "2", label: "public" },
-	{ value: "3", label: "inherit from parent" },
+	{ value: "1", label: "gallery.albums_protection.private" },
+	{ value: "2", label: "gallery.albums_protection.public" },
+	{ value: "3", label: "gallery.albums_protection.inherit_from_parent" },
 ];
 
 export const mapProvidersOptions: SelectOption<App.Enum.MapProviders>[] = [
@@ -92,33 +92,33 @@ export const mapProvidersOptions: SelectOption<App.Enum.MapProviders>[] = [
 ];
 
 export const overlayOptions: SelectOption<App.Enum.ImageOverlayType>[] = [
-	{ value: "exif", label: "lychee.OVERLAY_EXIF" },
-	{ value: "desc", label: "lychee.OVERLAY_DESCRIPTION" },
-	{ value: "date", label: "lychee.OVERLAY_DATE" },
-	{ value: "none", label: "lychee.OVERLAY_NONE" },
+	{ value: "exif", label: "gallery.overlay.exif" },
+	{ value: "desc", label: "gallery.overlay.description" },
+	{ value: "date", label: "gallery.overlay.date" },
+	{ value: "none", label: "gallery.overlay.none" },
 ];
 
 export const toolsOptions: SelectOption<string>[] = [
-	{ value: "0", label: "disabled" },
-	{ value: "1", label: "enabled" },
-	{ value: "2", label: "discover" },
+	{ value: "0", label: "settings.tool_option.disabled" },
+	{ value: "1", label: "settings.tool_option.enabled" },
+	{ value: "2", label: "settings.tool_option.discover" },
 ];
 
 export const timelinePhotoGranularityOptions: SelectOption<App.Enum.TimelinePhotoGranularity>[] = [
-	{ value: "default", label: "default" },
-	{ value: "disabled", label: "disabled" },
-	{ value: "year", label: "year" },
-	{ value: "month", label: "month" },
-	{ value: "day", label: "day" },
-	{ value: "hour", label: "hour" },
+	{ value: "default", label: "gallery.timeline.default" },
+	{ value: "disabled", label: "gallery.timeline.disabled" },
+	{ value: "year", label: "gallery.timeline.year" },
+	{ value: "month", label: "gallery.timeline.month" },
+	{ value: "day", label: "gallery.timeline.day" },
+	{ value: "hour", label: "gallery.timeline.hour" },
 ];
 
 export const timelineAlbumGranularityOptions: SelectOption<App.Enum.TimelineAlbumGranularity>[] = [
-	{ value: "default", label: "default" },
-	{ value: "disabled", label: "disabled" },
-	{ value: "year", label: "year" },
-	{ value: "month", label: "month" },
-	{ value: "day", label: "day" },
+	{ value: "default", label: "gallery.timeline.default" },
+	{ value: "disabled", label: "gallery.timeline.disabled" },
+	{ value: "year", label: "gallery.timeline.year" },
+	{ value: "month", label: "gallery.timeline.month" },
+	{ value: "day", label: "gallery.timeline.day" },
 ];
 
 export const SelectBuilders = {

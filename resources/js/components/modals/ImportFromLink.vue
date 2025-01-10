@@ -3,7 +3,7 @@
 		<template #container="{ closeCallback }">
 			<div class="flex flex-col gap-4 bg-gradient-to-b from-bg-300 to-bg-400 relative max-w-full rounded-md text-muted-color">
 				<div class="p-9">
-					<p class="mb-5 text-muted-color-emphasis text-base">{{ $t("lychee.UPLOAD_IMPORT_INSTR") }}</p>
+					<p class="mb-5 text-muted-color-emphasis text-base">{{ $t("dialogs.import_from_link.instructions") }}</p>
 					<form>
 						<div class="my-3 first:mt-0 last:mb-0">
 							<Textarea
@@ -20,14 +20,14 @@
 				</div>
 				<div class="flex justify-center">
 					<Button severity="secondary" class="w-full font-bold border-none rounded-none rounded-bl-xl" @click="closeCallback">{{
-						$t("lychee.CANCEL")
+						$t("dialogs.button.cancel")
 					}}</Button>
 					<Button
 						severity="contrast"
 						class="w-full font-bold border-none rounded-none rounded-br-xl"
 						@click="submit"
 						:disabled="!isValidInput || urls.length === 0"
-						>{{ $t("lychee.UPLOAD_IMPORT") }}</Button
+						>{{ $t("dialogs.import_from_link.import") }}</Button
 					>
 				</div>
 			</div>

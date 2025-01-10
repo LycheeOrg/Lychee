@@ -7,7 +7,7 @@
 		</template>
 
 		<template #center>
-			{{ $t("lychee.DIAGNOSTICS") }}
+			{{ $t("diagnostics.title") }}
 		</template>
 
 		<template #end> </template>
@@ -20,7 +20,7 @@
 					<pre v-if="left[i] !== right[i]" class="text-create-600">{{ i }} - {{ left[i] }}</pre>
 					<pre v-if="left[i] !== right[i]" class="text-danger-600">{{ i }} + {{ right[i] }}</pre>
 				</template>
-				<pre v-if="same" class="font-bold text-create-700 text-center">Identical content</pre>
+				<pre v-if="same" class="font-bold text-create-700 text-center">{{ $t("diagnostics.identical_content") }}</pre>
 			</div>
 			<div></div>
 		</div>

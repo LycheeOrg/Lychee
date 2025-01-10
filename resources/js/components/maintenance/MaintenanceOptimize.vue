@@ -28,6 +28,7 @@ import ProgressSpinner from "primevue/progressspinner";
 import ScrollPanel from "primevue/scrollpanel";
 import MaintenanceService from "@/services/maintenance-service";
 import { useToast } from "primevue/usetoast";
+import { trans } from "laravel-vue-i18n";
 
 const data = ref<string[]>([]);
 const loading = ref(false);
@@ -40,7 +41,7 @@ function exec() {
 			data.value = response.data;
 		})
 		.catch((e) => {
-			toast.add({ severity: "error", summary: "Error", detail: e.response.data.message, life: 3000 });
+			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response.data.message, life: 3000 });
 			loading.value = false;
 		});
 }

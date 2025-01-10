@@ -2,23 +2,25 @@
 	<Card class="sm:p-4 xl:px-9 max-w-3xl">
 		<template #content>
 			<div v-if="titleMovedTo !== undefined">
-				<p class="mb-4 text-center text-muted-color">{{ confirmation }}</p>
+				<p class="mb-4 text-center text-muted-color">
+					{{ sprintf($t("dialogs.move_album.confirm_single"), props.album.title, titleMovedTo) }}
+				</p>
 				<Button class="text-primary-500 font-bold hover:text-white hover:bg-primary-400 w-full bg-transparent border-none" @click="execute">
-					{{ $t("lychee.MOVE_ALBUM") }}
+					{{ $t("dialogs.move_album.move_single") }}
 				</Button>
 			</div>
 			<div v-else-if="error_no_target === false">
-				<span class="font-bold">{{ "Move to" }}</span>
+				<span class="font-bold">{{ $t("dialogs.move_album.move_to") }}</span>
 				<SearchTargetAlbum :album-ids="[props.album.id]" @selected="selected" @no-target="error_no_target = true" />
 			</div>
 			<div v-else>
-				<p class="text-center text-muted-color">{{ "No album to move to" }}</p>
+				<p class="text-center text-muted-color">{{ $t("dialogs.move_album.no_album_target") }}</p>
 			</div>
 		</template>
 	</Card>
 </template>
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { ref } from "vue";
 import { useRouter } from "vue-router";
 import Button from "primevue/button";
 import Card from "primevue/card";
@@ -36,7 +38,6 @@ const toast = useToast();
 const router = useRouter();
 const titleMovedTo = ref<string | undefined>(undefined);
 const destination_id = ref<string | undefined | null>(undefined);
-const confirmation = computed(() => sprintf(trans("lychee.ALBUM_MOVE"), props.album.title, titleMovedTo.value));
 const error_no_target = ref(false);
 
 function selected(target: App.Http.Resources.Models.TargetAlbumResource) {
@@ -53,8 +54,8 @@ function execute() {
 		AlbumService.clearCache(props.album.parent_id);
 		toast.add({
 			severity: "success",
-			summary: "Album moved!",
-			detail: props.album.title + " moved to " + titleMovedTo.value,
+			summary: trans("dialogs.move_album.moved_single"),
+			detail: sprintf(trans("dialogs.move_album.moved_single_details"), props.album.title, titleMovedTo.value),
 			life: 3000,
 		});
 		router.push(`/gallery/${props.album.id}`);

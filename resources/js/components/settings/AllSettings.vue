@@ -2,11 +2,13 @@
 	<div v-if="configs">
 		<div class="flex gap-4 w-full h-11" v-if="!modified.length">
 			<ToggleSwitch v-model="oldStyle" class="text-sm translate-y-1" input-id="oldStyleToggle"></ToggleSwitch>
-			<label for="oldStyleToggle" class="text-muted-color">Old settings style</label>
+			<label for="oldStyleToggle" class="text-muted-color">{{ $t("settings.all.old_setting_style") }}</label>
 		</div>
 		<div v-if="modified.length" class="sticky z-30 w-full top-0 flex bg-white dark:bg-surface-800 h-11">
-			<Message severity="warn" class="w-full" v-if="modified.length">Some settings changed.</Message>
-			<Button @click="save" class="bg-danger-800 border-none text-white font-bold px-8 hover:bg-danger-700">Save</Button>
+			<Message severity="warn" class="w-full" v-if="modified.length">{{ $t("settings.all.change_detected") }}</Message>
+			<Button @click="save" class="bg-danger-800 border-none text-white font-bold px-8 hover:bg-danger-700">{{
+				$t("settings.all.save")
+			}}</Button>
 		</div>
 		<div class="flex relative items-start flex-row-reverse justify-between">
 			<Menu :model="sections" class="top-11 border-none hidden sticky sm:block" id="navMain">
@@ -198,6 +200,7 @@ import {
 // @ts-expect-error
 import scrollSpy from "@sidsbrmnn/scrollspy";
 import SettingsService from "@/services/settings-service";
+import { trans } from "laravel-vue-i18n";
 
 const toast = useToast();
 const oldStyle = ref(false);
@@ -247,11 +250,11 @@ function save() {
 	SettingsService.setConfigs({ configs: modified.value })
 		.then(() => {
 			modified.value = [];
-			toast.add({ severity: "success", summary: "Change saved!", detail: "Settings have been modified as per request", life: 3000 });
+			toast.add({ severity: "success", summary: trans("settings.toasts.change_saved"), detail: trans("settings.toasts.details"), life: 3000 });
 			load();
 		})
 		.catch((e) => {
-			toast.add({ severity: "error", summary: "Error!", detail: e.response.data.message, life: 3000 });
+			toast.add({ severity: "error", summary: trans("settings.toasts.error"), detail: e.response.data.message, life: 3000 });
 		});
 }
 

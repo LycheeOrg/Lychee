@@ -22,7 +22,7 @@
 		</Collapse>
 		<AlbumThumbPanel
 			v-if="smartAlbums.length > 0"
-			header="lychee.SMART_ALBUMS"
+			header="gallery.smart_albums"
 			:album="undefined"
 			:albums="smartAlbums"
 			:user="user"
@@ -35,7 +35,7 @@
 		<template v-if="albums.length > 0">
 			<AlbumThumbPanel
 				:is-timeline="rootConfig.is_album_timeline_enabled"
-				header="lychee.ALBUMS"
+				header="gallery.albums"
 				:album="null"
 				:albums="albums"
 				:user="user"
@@ -150,7 +150,6 @@ import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
 import Divider from "primevue/divider";
 import { Collapse } from "vue-collapsed";
 import AlbumService from "@/services/album-service";
-import { useRouter } from "vue-router";
 import { useMouseEvents } from "@/composables/album/uploadEvents";
 import GalleryFooter from "@/components/footers/GalleryFooter.vue";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
@@ -164,7 +163,6 @@ import LoginModal from "@/components/modals/LoginModal.vue";
 import LoadingProgress from "@/components/gallery/LoadingProgress.vue";
 
 const auth = useAuthStore();
-const router = useRouter();
 const lycheeStore = useLycheeStateStore();
 const togglableStore = useTogglablesStateStore();
 

@@ -1,5 +1,5 @@
 <template>
-	<Tag class="text-3xs rounded py-0.5" v-if="!is_se_info_hidden" v-tooltip="'Available in the Supporter Edition'">SE</Tag>
+	<Tag class="text-3xs rounded py-0.5" v-if="!is_se_info_hidden" v-tooltip="$t('dialogs.se.available')">SE</Tag>
 </template>
 <script lang="ts" setup>
 import { useLycheeStateStore } from "@/stores/LycheeState";

@@ -8,7 +8,7 @@
 				</template>
 				<template #center>
 					<span class="sm:hidden font-bold">
-						{{ $t("lychee.SEARCH") }}
+						{{ $t("gallery.search.title") }}
 					</span>
 					<span class="hidden sm:block font-bold text-sm lg:text-base text-center w-full">{{ title }}</span>
 				</template>
@@ -25,14 +25,14 @@
 		<template v-if="isSearching === true">
 			<div class="flex w-full h-full items-center justify-center text-xl text-muted-color">
 				<span class="block">
-					{{ "Searching..." }}
+					{{ $t("gallery.search.searching") }}
 				</span>
 			</div>
 		</template>
 		<template v-if="isSearching === false && noData">
 			<div class="flex w-full h-full items-center justify-center text-xl text-muted-color">
 				<span class="block">
-					{{ "Nothing to see here" }}
+					{{ $t("gallery.search.no_results") }}
 				</span>
 			</div>
 		</template>

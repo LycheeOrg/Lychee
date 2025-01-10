@@ -5,13 +5,13 @@
 		</template>
 
 		<template #center>
-			{{ $t("lychee.JOBS") }}
+			{{ $t("jobs.title") }}
 		</template>
 
 		<template #end> </template>
 	</Toolbar>
 	<Panel class="max-w-5xl mx-auto border-none">
-		<div v-if="jobs.length === 0" class="text-center">No Jobs have been executed yet.</div>
+		<div v-if="jobs.length === 0" class="text-center">{{ $t("jobs.no_data") }}</div>
 		<div class="flex text-xs sm:text-base flex-wrap sm:flex-nowrap" v-for="job in jobs">
 			<span class="hidden sm:inline-block sm:w-1/4 text-muted-color">{{ prettyDate(job.created_at) }}</span>
 			<span class="w-1/6 sm:w-1/4" :class="textCss(job.status)">{{ job.status }}</span>

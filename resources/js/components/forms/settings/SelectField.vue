@@ -1,8 +1,14 @@
 <template>
 	<div class="flex gap-4 items-center justify-between">
-		<label :for="props.config.key" class="w-full" :class="props.config.require_se ? 'text-primary-emphasis' : 'text-muted-color-emphasis'">{{
-			props.config.documentation
-		}}</label>
+		<label
+			:for="props.config.key"
+			:class="{
+				'w-full': true,
+				'text-primary-emphasis': props.config.require_se,
+				'text-muted-color-emphasis': !props.config.require_se,
+			}"
+			v-html="props.label ?? props.config.documentation"
+		/>
 		<div class="flex gap-4 items-center">
 			<ResetField v-if="changed" @click="reset" />
 			<Select :id="props.config.key" class="border-none" v-model="val" :options="options" @update:modelValue="update" />
@@ -17,6 +23,7 @@ import ResetField from "@/components/forms/settings/ResetField.vue";
 
 type Props = {
 	config: App.Http.Resources.Models.ConfigResource;
+	label?: string;
 };
 
 const props = defineProps<Props>();

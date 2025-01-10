@@ -1,5 +1,4 @@
 <template>
-	<ImportFromServer v-if="canUpload" v-model:visible="isImportFromServerOpen" />
 	<ImportFromLink v-if="canUpload" v-model:visible="isImportFromLinkOpen" :parent-id="null" />
 	<DropBox v-if="canUpload" v-model:visible="isImportFromDropboxOpen" :album-id="null" />
 	<Toolbar
@@ -24,7 +23,7 @@
 
 		<template #center>
 			<span class="sm:hidden font-bold">
-				{{ $t("lychee.ALBUMS") }}
+				{{ $t("gallery.albums") }}
 			</span>
 			<span class="hidden sm:block font-bold text-sm lg:text-base text-center w-full">{{ props.title }}</span>
 		</template>
@@ -84,7 +83,6 @@ import Toolbar from "primevue/toolbar";
 import ContextMenu from "primevue/contextmenu";
 import Divider from "primevue/divider";
 import ImportFromLink from "@/components/modals/ImportFromLink.vue";
-import ImportFromServer from "@/components/modals/ImportFromServer.vue";
 import { computed, ComputedRef, ref } from "vue";
 import { onKeyStroke } from "@vueuse/core";
 import { useRouter } from "vue-router";
@@ -157,7 +155,7 @@ const {
 	toggleUpload,
 } = useGalleryModals(togglableStore);
 
-const { addmenu, addMenu, isImportFromServerOpen } = useContextMenuAlbumsAdd(
+const { addmenu, addMenu } = useContextMenuAlbumsAdd(
 	{
 		toggleUpload: toggleUpload,
 		toggleCreateAlbum: toggleCreateAlbum,
@@ -214,10 +212,6 @@ onKeyStroke("escape", () => {
 	}
 	if (is_create_tag_album_visible.value) {
 		is_create_tag_album_visible.value = false;
-		return;
-	}
-	if (isImportFromServerOpen.value) {
-		isImportFromServerOpen.value = false;
 		return;
 	}
 

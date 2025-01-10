@@ -48,11 +48,11 @@ function exec() {
 	loading.value = true;
 	MaintenanceService.jobsDo()
 		.then((response) => {
-			toast.add({ severity: "success", summary: "Success", life: 3000 });
+			toast.add({ severity: "success", summary: trans("toasts.success"), life: 3000 });
 			loading.value = false;
 		})
 		.catch((e) => {
-			toast.add({ severity: "error", summary: "Error", detail: e.response.data.message, life: 3000 });
+			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response.data.message, life: 3000 });
 			loading.value = false;
 		});
 }
