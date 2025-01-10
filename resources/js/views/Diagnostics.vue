@@ -61,14 +61,11 @@ function copy() {
 		return;
 	}
 
-	const errorText = errorLoaded.value
-		?.filter((errorLine) => errorLine.type !== undefined)
-		.map((errorLines) => `${errorLines.type.padEnd(7)}: ${errorLines.line}`)
-		.join("\n");
+	const errorText = errorLoaded.value.join("\n");
 	const infoText = infoLoaded.value?.join("\n");
 	const configurationText = configurationLoaded.value?.join("\n");
 
-	const toClipBoard = `Errors:\n${"-".repeat(20)}\n${errorText}\n\n\nInfo:\n${"-".repeat(20)}\n${infoText}\n\n\nConfig:\n${"-".repeat(20)}\n${configurationText}`;
+	const toClipBoard = `Self-diagnosis:\n${"-".repeat(20)}\n${errorText}\n\n\nInfo:\n${"-".repeat(20)}\n${infoText}\n\n\nConfig:\n${"-".repeat(20)}\n${configurationText}`;
 
 	navigator.clipboard
 		.writeText(toClipBoard)

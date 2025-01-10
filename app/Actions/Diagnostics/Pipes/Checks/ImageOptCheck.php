@@ -3,6 +3,7 @@
 namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
+use App\DTO\DiagnosticData;
 use App\Facades\Helpers;
 use App\Models\Configs;
 use Illuminate\Support\Facades\Schema;
@@ -52,11 +53,11 @@ class ImageOptCheck implements DiagnosticPipe
 			foreach ($tools as $tool) {
 				$path = exec('command -v ' . $binaryPath . $tool->binaryName());
 				if ($path === '') {
-					$data[] = 'Warning: lossless_optimization set to 1 but ' . $binaryPath . $tool->binaryName() . ' not found!';
+					$data[] = DiagnosticData::warn('lossless_optimization set to 1 but ' . $binaryPath . $tool->binaryName() . ' not found!', self::class);
 				}
 			}
 		} else {
-			$data[] = 'Warning: lossless_optimization set to 1 but exec() is not enabled.';
+			$data[] = DiagnosticData::warn('lossless_optimization set to 1 but exec() is not enabled.', self::class);
 		}
 
 		return $next($data);

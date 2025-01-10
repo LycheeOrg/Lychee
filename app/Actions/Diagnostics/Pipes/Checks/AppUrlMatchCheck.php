@@ -3,6 +3,7 @@
 namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
+use App\DTO\DiagnosticData;
 use App\Facades\Helpers;
 use Safe\Exceptions\PcreException;
 use function Safe\preg_match;
@@ -27,8 +28,7 @@ class AppUrlMatchCheck implements DiagnosticPipe
 		$dir_url = config('app.dir_url');
 		if (config('app.url') === 'http://localhost') {
 			// @codeCoverageIgnoreStart
-			$data[] = 'Warning: APP_URL is still set to default, this will break access to all your images';
-			$data[] = self::INVISIBLE_WARNING . 'and assets if you are using Lychee behind a sub-domain.';
+			$data[] = DiagnosticData::warn('APP_URL is still set to default, this will break access to all your images and assets if you are using Lychee behind a sub-domain.', self::class);
 			// @codeCoverageIgnoreEnd
 		}
 
@@ -40,63 +40,63 @@ class AppUrlMatchCheck implements DiagnosticPipe
 
 		if ($bad !== '') {
 			// @codeCoverageIgnoreStart
-			$data[] = sprintf(
-				'Error: APP_URL (%s) contains a sub-path (%s).',
-				$censored_app_url,
-				$censored_bad,
-			);
-			$data[] = sprintf(
-				self::INVISIBLE_ERROR . 'Instead set APP_DIR to (%s) and APP_URL to (%s) in your .env',
-				$censored_bad,
-				$censored_current,
+			$data[] = DiagnosticData::error(
+				sprintf('APP_URL (%s) contains a sub-path (%s).', $censored_app_url, $censored_bad),
+				self::class,
+				[
+					sprintf('Instead set APP_DIR to (%s) and APP_URL to (%s) in your .env', $censored_bad, $censored_current),
+				]
 			);
 			// @codeCoverageIgnoreEnd
 		}
 
 		if ($bad !== '') {
 			// @codeCoverageIgnoreStart
-			$data[] = sprintf(
-				'Warning: APP_URL (%s) contains a sub-path (%s).',
-				$censored_app_url,
-				$censored_bad
+			$data[] = DiagnosticData::error(
+				sprintf('APP_URL (%s) contains a sub-path (%s).', $censored_app_url, $censored_bad),
+				self::class,
+				['This may impact your WebAuthn authentication.']
 			);
-			$data[] = self::INVISIBLE_WARNING . 'This may impact your WebAuthn authentication.';
 			// @codeCoverageIgnoreEnd
 		}
 
 		if (!$this->checkUrlMatchCurrentHost()) {
 			// @codeCoverageIgnoreStart
-			$data[] = sprintf(
-				'Error: APP_URL (%s) does not match the current url (%s).',
-				$censored_app_url,
-				$censored_current,
+			$data[] = DiagnosticData::error(
+				sprintf('APP_URL (%s) does not match the current url (%s).', $censored_app_url, $censored_current),
+				self::class,
+				['This will break WebAuthn authentication.']
 			);
-			$data[] = self::INVISIBLE_ERROR . 'This will break WebAuthn authentication.';
 			// @codeCoverageIgnoreEnd
 		}
 
 		$config_url_imgage = config('filesystems.disks.images.url');
 		if ($config_url_imgage === '') {
 			// @codeCoverageIgnoreStart
-			$data[] = 'Error: LYCHEE_UPLOADS_URL is set and empty. This will prevent images to be displayed. Remove the line from your .env';
+			$data[] = DiagnosticData::error(
+				'LYCHEE_UPLOADS_URL is set and empty. This will prevent images to be displayed. Remove the line from your .env',
+				self::class
+			);
 			// @codeCoverageIgnoreEnd
 		}
 
 		if (!str_starts_with($config_url_imgage, '/') && !str_starts_with($config_url_imgage, 'http')) {
 			// @codeCoverageIgnoreStart
-			$data[] = 'Error: LYCHEE_UPLOADS_URL is set but starts with neither a / nor http.';
-			$data[] = self::INVISIBLE_ERROR . 'This will prevent images from being displayed. Remove the line from your .env';
+			$data[] = DiagnosticData::error(
+				'LYCHEE_UPLOADS_URL is set but starts with neither a / nor http.',
+				self::class,
+				['This will prevent images from being displayed. Remove the line from your .env']
+			);
 			// @codeCoverageIgnoreEnd
 		}
 
 		if (($config_url . $dir_url . '/uploads') === $config_url_imgage && !$this->checkUrlMatchCurrentHost()) {
 			// @codeCoverageIgnoreStart
-			$data[] = sprintf(
-				'Error: APP_URL (%s) does not match the current url (%s).',
-				$censored_app_url,
-				$censored_current
+			$data[] = DiagnosticData::error(
+				sprintf('APP_URL (%s) does not match the current url (%s).', $censored_app_url, $censored_current),
+				self::class,
+				['This will prevent images from being properly displayed.']
 			);
-			$data[] = self::INVISIBLE_ERROR . 'This will prevent images from being properly displayed.';
 			// @codeCoverageIgnoreEnd
 		}
 

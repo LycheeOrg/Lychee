@@ -3,7 +3,7 @@
 namespace App\Actions\Diagnostics\Pipes\Infos;
 
 use App\Actions\Diagnostics\Diagnostics;
-use App\Contracts\DiagnosticPipe;
+use App\Contracts\DiagnosticStringPipe;
 use App\Facades\Helpers;
 use App\Http\Resources\GalleryConfigs\UploadConfig;
 use Carbon\CarbonTimeZone;
@@ -14,7 +14,7 @@ use function Safe\ini_get;
 /**
  * What system are we running on?
  */
-class SystemInfo implements DiagnosticPipe
+class SystemInfo implements DiagnosticStringPipe
 {
 	/**
 	 * {@inheritDoc}

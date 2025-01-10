@@ -3,14 +3,14 @@
 namespace App\Actions\Diagnostics\Pipes\Infos;
 
 use App\Actions\Diagnostics\Diagnostics;
-use App\Contracts\DiagnosticPipe;
+use App\Contracts\DiagnosticStringPipe;
 use App\Facades\Helpers;
 use App\Models\Configs;
 
 /**
  * Info on what image processing we have available.
  */
-class ExtensionsInfo implements DiagnosticPipe
+class ExtensionsInfo implements DiagnosticStringPipe
 {
 	/**
 	 * {@inheritDoc}

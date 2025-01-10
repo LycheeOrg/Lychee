@@ -3,13 +3,13 @@
 namespace App\Actions\Diagnostics\Pipes\Infos;
 
 use App\Actions\Diagnostics\Diagnostics;
-use App\Contracts\DiagnosticPipe;
+use App\Contracts\DiagnosticStringPipe;
 use Illuminate\Support\Facades\DB;
 
 /**
  * Instead of listing all Foreign key as in the Errors, we just check their number.
  */
-class CountForeignKeyInfo implements DiagnosticPipe
+class CountForeignKeyInfo implements DiagnosticStringPipe
 {
 	/**
 	 * {@inheritDoc}
