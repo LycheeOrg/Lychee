@@ -14,6 +14,7 @@ use App\Image\Files\FlysystemFile;
 use App\Models\Builders\SizeVariantBuilder;
 use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\HasBidirectionalRelationships;
+use App\Models\Extensions\HasUrlGenerator;
 use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\ToArrayThrowsNotImplemented;
 use App\Models\Extensions\UTCBasedTimes;
@@ -22,9 +23,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use League\Flysystem\AwsS3V3\AwsS3V3Adapter;
 use League\Flysystem\Local\LocalFilesystemAdapter;
 
 /**
@@ -75,6 +74,8 @@ class SizeVariant extends Model
 	use ToArrayThrowsNotImplemented;
 	/** @phpstan-use HasFactory<\Database\Factories\SizeVariantFactory> */
 	use HasFactory;
+
+	use HasUrlGenerator;
 
 	/**
 	 * This model has no own timestamps as it is inseparably bound to its
@@ -175,57 +176,26 @@ class SizeVariant extends Model
 	 */
 	public function getUrlAttribute(): string
 	{
+		$url = self::pathToUrl(
+			$this->short_path,
+			$this->storage_disk->value,
+			$this->type,
+		);
+
+		if ($url !== null) {
+			return $url;
+		}
+
+		// We are using the symlink option.
 		$imageDisk = Storage::disk($this->storage_disk->value);
-
-		if ($this->type === SizeVariantType::PLACEHOLDER) {
-			return 'data:image/webp;base64,' . $this->short_path;
-		}
-
-		if (
-			!Configs::getValueAsBool('SL_enable') ||
-			(!Configs::getValueAsBool('SL_for_admin') && Auth::user()?->may_administrate === true)
-		) {
-			/** @disregard P1013 */
-			return $imageDisk->url($this->short_path);
-		}
-
 		/** @disregard P1013 */
 		$storageAdapter = $imageDisk->getAdapter();
-		if ($storageAdapter instanceof AwsS3V3Adapter) {
-			// @codeCoverageIgnoreStart
-			return $this->getAwsUrl();
-			// @codeCoverageIgnoreEnd
-		}
 
 		if ($storageAdapter instanceof LocalFilesystemAdapter) {
 			return $this->getSymLinkUrl();
 		}
 
 		throw new ConfigurationException('the chosen storage adapter "' . get_class($storageAdapter) . '" does not support the symbolic linking feature');
-	}
-
-	/**
-	 * Retrieve the tempary url from AWS if possible.
-	 *
-	 * @return string
-	 *
-	 * @codeCoverageIgnore
-	 */
-	private function getAwsUrl(): string
-	{
-		// In order to allow a grace period, we create a new symbolic link,
-		$maxLifetime = Configs::getValueAsInt('SL_life_time_days') * 24 * 60 * 60;
-		$imageDisk = Storage::disk($this->storage_disk->value);
-
-		// Return the public URL in case the S3 bucket is set to public, otherwise generate a temporary URL
-		$visibility = config('filesystems.disks.s3.visibility', 'private');
-		if ($visibility === 'public') {
-			/** @disregard P1013 */
-			return $imageDisk->url($this->short_path);
-		}
-
-		/** @disregard P1013 */
-		return $imageDisk->temporaryUrl($this->short_path, now()->addSeconds($maxLifetime));
 	}
 
 	/**
