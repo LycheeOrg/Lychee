@@ -107,13 +107,13 @@
 					<DockButton
 						icon="star"
 						:class="photo.is_starred ? 'fill-yellow-500 lg:hover:fill-yellow-100' : 'fill-white lg:hover:fill-yellow-500'"
-						v-tooltip.bottom="photo.is_starred ? $t('lychee.UNSTAR') : $t('lychee.STAR')"
+						v-tooltip.bottom="photo.is_starred ? $t('gallery.photo.action.unstar') : $t('gallery.photo.action.star')"
 						v-on:click="toggleStar()"
 					/>
 					<DockButton
 						pi="image"
 						class="lg:hover:text-primary-500 text-white"
-						v-tooltip.bottom="$t('lychee.SET_HEADER')"
+						v-tooltip.bottom="$t('gallery.photo.action.set_album_header')"
 						v-on:click="setAlbumHeader()"
 					/>
 
@@ -124,13 +124,13 @@
 					<DockButton
 						icon="transfer"
 						class="fill-white lg:hover:fill-primary-500"
-						v-tooltip.bottom="$t('lychee.MOVE')"
+						v-tooltip.bottom="$t('gallery.photo.action.move')"
 						v-on:click="toggleMove"
 					/>
 					<DockButton
 						icon="trash"
 						class="fill-red-600 lg:fill-white lg:hover:fill-red-600"
-						v-tooltip.bottom="$t('lychee.DELETE')"
+						v-tooltip.bottom="$t('gallery.photo.action.delete')"
 						v-on:click="toggleDelete"
 					/>
 				</span>
@@ -168,6 +168,7 @@ import type { UseSwipeDirection } from "@vueuse/core";
 import { useSwipe } from "@vueuse/core";
 import { useImageHelpers } from "@/utils/Helpers";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
+import { trans } from "laravel-vue-i18n";
 
 const swipe = ref<HTMLElement | null>(null);
 const videoElement = ref<HTMLVideoElement | null>(null);
@@ -273,7 +274,7 @@ function rotatePhotoCW() {
 
 function setAlbumHeader() {
 	PhotoService.setAsHeader(photoId.value, props.albumid, false).then(() => {
-		toast.add({ severity: "success", summary: "Success", detail: "Header set", life: 2000 });
+		toast.add({ severity: "success", summary: trans("toasts.success"), detail: trans("gallery.photo.action.header_set"), life: 2000 });
 		AlbumService.clearCache(props.albumid);
 		refresh();
 	});

@@ -2,13 +2,16 @@
 	<Dialog v-model:visible="visible" pt:root:class="border-none" modal :dismissable-mask="true">
 		<template #container="{ closeCallback }">
 			<div>
-				<p class="p-9 text-center text-muted-color max-w-xl text-wrap">{{ confirmation }}</p>
+				<p class="p-9 text-center text-muted-color max-w-xl text-wrap">
+					{{ confirmation }}<br />
+					<span class="text-warning-700"><i class="pi pi-exclamation-triangle mr-2" />{{ $t("dialogs.delete_album.warning") }}</span>
+				</p>
 				<div class="flex">
 					<Button severity="secondary" class="w-full border-none rounded-none rounded-bl-xl font-bold" @click="closeCallback">
-						{{ $t("lychee.CANCEL") }}
+						{{ $t("dialogs.button.cancel") }}
 					</Button>
 					<Button severity="danger" class="w-full border-none rounded-none rounded-br-xl font-bold" @click="execute">
-						{{ $t("lychee.DELETE") }}
+						{{ $t("dialog.button.delete") }}
 					</Button>
 				</div>
 			</div>
@@ -49,16 +52,16 @@ const confirmation = computed(() => {
 
 function deleteConfirmationPhoto() {
 	if (props.photo) {
-		return sprintf(trans("lychee.PHOTO_DELETE_CONFIRMATION"), props.photo.title);
+		return sprintf(trans("dialogs.photo_delete.confirm"), props.photo.title);
 	}
-	return sprintf(trans("lychee.PHOTO_DELETE_ALL"), props.photoIds?.length);
+	return sprintf(trans("dialogs.photo_delete.confirm_multiple"), props.photoIds?.length);
 }
 
 function deleteConfirmationAlbum() {
 	if (props.album) {
-		return sprintf(trans("lychee.DELETE_ALBUM_CONFIRMATION"), props.album.title);
+		return sprintf(trans("dialogs.delete_album.confirmation"), props.album.title);
 	}
-	return sprintf(trans("lychee.DELETE_ALBUMS_CONFIRMATION"), props.albumIds?.length);
+	return sprintf(trans("dialogs.delete_album.confirmation_multiple"), props.albumIds?.length);
 }
 
 function execute() {
@@ -99,7 +102,7 @@ function executeDeletePhoto() {
 	PhotoService.delete(photoDeletedIds).then(() => {
 		toast.add({
 			severity: "success",
-			summary: "Photo deleted",
+			summary: trans("dialogs.photo_delete.deleted"),
 			life: 3000,
 		});
 		AlbumService.clearCache(props.parentId);

@@ -3,8 +3,10 @@
 		<template #container="{ closeCallback }">
 			<div v-if="setup">
 				<div v-if="counts.files > 0" class="m-4 flex flex-wrap justify-center">
-					<span v-if="counts.completed === counts.files" class="w-full text-center text-muted-color-emphasis font-bold">Completed</span>
-					<span v-else class="w-full text-center">Uploaded: {{ counts.completed }} / {{ counts.files }}</span>
+					<span v-if="counts.completed === counts.files" class="w-full text-center text-muted-color-emphasis font-bold">{{
+						$t("dialogs.upload.completed")
+					}}</span>
+					<span v-else class="w-full text-center">{{ $t("dialogs.upload.uploaded") }} {{ counts.completed }} / {{ counts.files }}</span>
 					<ProgressBar
 						class="w-full"
 						:value="Math.round((counts.completed * 100) / counts.files)"
@@ -33,20 +35,20 @@
 						v-on:drop="upload"
 						v-show="isDropping"
 					>
-						<span class="text-3xl">Release file to upload!</span>
+						<span class="text-3xl">{{ $t("dialogs.upload.release") }}</span>
 					</div>
 					<label
 						class="flex flex-col items-center justify-center hover:text-muted-color-emphasis dark:border-surface-900 dark:hover:bg-surface-900/10 dark:hover:border-surface-950 border shadow cursor-pointer h-1/2 rounded-2xl p-6"
 						for="myFiles"
 					>
-						<h3 class="text-xl text-center">Click here to select files to upload</h3>
-						<em class="italic text-muted-color-emphasis hover:text-muted-color">(Or drag files to the page)</em>
+						<h3 class="text-xl text-center">{{ $t("dialogs.upload.select") }}</h3>
+						<em class="italic text-muted-color-emphasis hover:text-muted-color">{{ $t("dialogs.upload.drag") }}</em>
 					</label>
 					<input v-on:change="upload" type="file" id="myFiles" multiple class="hidden" />
 				</div>
 			</div>
 			<div v-else>
-				{{ $t("lychee.LOADING") }}
+				{{ $t("dialogs.upload.loading") }}
 			</div>
 			<div class="flex justify-center">
 				<Button
@@ -55,7 +57,7 @@
 					severity="secondary"
 					class="w-full font-bold border-none border-1 rounded-none rounded-bl-xl"
 				>
-					{{ $t("lychee.CANCEL") }}
+					{{ $t("dialogs.button.cancel") }}
 				</Button>
 				<Button
 					v-if="!showResume"
@@ -65,7 +67,7 @@
 					:class="showCancel ? '' : 'rounded-bl-xl'"
 					:disabled="showCancel"
 				>
-					{{ $t("lychee.CLOSE") }}
+					{{ $t("dialogs.button.close") }}
 				</Button>
 				<Button
 					v-else
@@ -73,7 +75,7 @@
 					severity="contrast"
 					class="w-full font-bold border-none border-1 rounded-none rounded-br-xl"
 				>
-					{{ "Resume" }}
+					{{ $t("dialogs.upload.resume") }}
 				</Button>
 			</div>
 		</template>

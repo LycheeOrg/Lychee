@@ -1,7 +1,7 @@
 <template>
-	<Panel header="Space" class="border-none max-w-7xl mx-auto">
-		<Button icon="pi pi-refresh" class="w-48 border-none font-bold" @click="load" v-if="!requested">Load space usage.</Button>
-		<div v-if="requested && !space" class="text-sky-400 font-bold">Loading...</div>
+	<Panel :header="$t('diagnostics.space')" class="border-none max-w-7xl mx-auto">
+		<Button icon="pi pi-refresh" class="w-48 border-none font-bold" @click="load" v-if="!requested">{{ $t("diagnostics.load_space") }}</Button>
+		<div v-if="requested && !space" class="text-sky-400 font-bold">{{ $t("diagnostics.loading") }}</div>
 		<pre v-if="space"><div v-for="space in space" class=" text-muted-color font-mono">{{ space }}</div>
 		</pre>
 	</Panel>

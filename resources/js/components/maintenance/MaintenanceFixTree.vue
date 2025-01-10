@@ -31,17 +31,27 @@ import ProgressSpinner from "primevue/progressspinner";
 import ScrollPanel from "primevue/scrollpanel";
 import MaintenanceService from "@/services/maintenance-service";
 import Button from "primevue/button";
+import { useToast } from "primevue/usetoast";
+import { trans } from "laravel-vue-i18n";
 
 const data = ref<App.Http.Resources.Diagnostics.TreeState | undefined>(undefined);
 const loading = ref(false);
+const toast = useToast();
 
 const fixable = computed(() => {
 	return data.value && (data.value.oddness > 0 || data.value.duplicates > 0 || data.value.wrong_parent > 0 || data.value.missing_parent > 0);
 });
 function load() {
-	MaintenanceService.treeGet().then((response) => {
-		data.value = response.data;
-	});
+	loading.value = true;
+	MaintenanceService.treeGet()
+		.then((response) => {
+			data.value = response.data;
+			loading.value = false;
+		})
+		.catch((e) => {
+			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response.data.message, life: 3000 });
+			loading.value = false;
+		});
 }
 
 load();

@@ -38,6 +38,6 @@ class FooterConfig extends Data
 			$copy_right_year = $copy_right_year . '-' . $site_copyright_end;
 		}
 
-		$this->copyright = $copy_right_year !== '' ? sprintf(__('lychee.FOOTER_COPYRIGHT'), $site_owner, $copy_right_year) : '';
+		$this->copyright = $copy_right_year !== '' ? sprintf(__('landing.copyright'), $site_owner, $copy_right_year) : '';
 	}
 }

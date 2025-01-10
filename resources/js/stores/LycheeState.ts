@@ -46,7 +46,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		is_timeline_left_border_visible: true,
 
 		// Site title & Dropbox API key
-		title: "lychee.GALLERY",
+		title: "gallery.title",
 		dropbox_api_key: "disabled",
 
 		// Lychee Supporter Edition

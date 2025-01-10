@@ -1,21 +1,22 @@
 <template>
 	<Card class="sm:p-4 xl:px-9 max-w-3xl">
 		<template #content>
-			<p class="mb-4 text-center">{{ title }}</p>
+			<p class="mb-4 text-center">
+				{{ sprintf($t("dialogs.delete_album.confirmation"), props.album.title) }}<br />
+				<span class="text-warning-700"><i class="pi pi-exclamation-triangle mr-2" />{{ $t("dialogs.delete_album.warning") }}</span>
+			</p>
 			<Button class="text-danger-800 font-bold hover:text-white hover:bg-danger-800 w-full bg-transparent border-none" @click="execute">
-				{{ $t("lychee.DELETE_ALBUM_QUESTION") }}
+				{{ $t("dialogs.delete_album.delete") }}
 			</Button>
 		</template>
 	</Card>
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
 import { useRouter } from "vue-router";
 import Button from "primevue/button";
 import Card from "primevue/card";
 import AlbumService from "@/services/album-service";
-import { trans } from "laravel-vue-i18n";
 import { sprintf } from "sprintf-js";
 
 const props = defineProps<{
@@ -24,7 +25,6 @@ const props = defineProps<{
 }>();
 
 const router = useRouter();
-const title = computed(() => sprintf(trans("lychee.DELETE_ALBUM_CONFIRMATION"), props.album.title));
 
 const emits = defineEmits<{
 	deleted: [];

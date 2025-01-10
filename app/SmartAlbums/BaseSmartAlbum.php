@@ -57,7 +57,7 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 		try {
 			$this->photoQueryPolicy = resolve(PhotoQueryPolicy::class);
 			$this->id = $id->value;
-			$this->title = __('lychee.' . $id->name) ?? $id->name;
+			$this->title = __('gallery.smart_album.' . strtolower($id->name)) ?? $id->name;
 			$this->smartPhotoCondition = $smartCondition;
 			/** @var AccessPermission|null $perm */
 			$perm = AccessPermission::query()->where('base_album_id', '=', $id->value)->first();

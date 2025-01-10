@@ -5,10 +5,10 @@
 				<p class="p-9 text-center text-muted-color">{{ confirmation }}</p>
 				<div class="flex">
 					<Button severity="secondary" class="font-bold w-full border-none rounded-none rounded-bl-xl" @click="close">
-						{{ $t("lychee.CANCEL") }}
+						{{ $t("dialogs.button.cancel") }}
 					</Button>
 					<Button severity="contrast" class="font-bold w-full border-none rounded-none rounded-br-xl" @click="execute">
-						{{ "Copy" }}
+						{{ $t("dialogs.photo_copy.copy") }}
 					</Button>
 				</div>
 			</div>
@@ -20,10 +20,10 @@
 					<SearchTargetAlbum :album-ids="undefined" @selected="selected" @no-target="error_no_target = true" />
 				</div>
 				<div v-else class="p-9">
-					<p class="text-center text-muted-color">{{ "No album to copy to." }}</p>
+					<p class="text-center text-muted-color">{{ $t("dialogs.photo_copy.no_albums") }}</p>
 				</div>
 				<Button class="w-full font-bold rounded-none rounded-bl-xl rounded-br-xl border-none" severity="secondary" @click="closeCallback">
-					{{ $t("lychee.CANCEL") }}
+					{{ $t("dialogs.button.cancel") }}
 				</Button>
 			</div>
 		</template>
@@ -38,6 +38,7 @@ import SearchTargetAlbum from "@/components/forms/album/SearchTargetAlbum.vue";
 import { useToast } from "primevue/usetoast";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
+import { trans } from "laravel-vue-i18n";
 
 const props = defineProps<{
 	parentId: string | undefined;
@@ -69,16 +70,16 @@ function close() {
 
 const question = computed(() => {
 	if (props.photo) {
-		return sprintf("Copy %s to:", props.photo?.title);
+		return sprintf(trans("dialog.photo_copy.copy_to"), props.photo?.title);
 	}
-	return sprintf("Copy %d photos to:", props.photoIds?.length);
+	return sprintf(trans("dialog.photo_copy.copy_to_multiple"), props.photoIds?.length);
 });
 
 const confirmation = computed(() => {
 	if (props.photo) {
-		return sprintf("Copy %s to %s.", props.photo.title, titleCopyTo.value);
+		return sprintf(trans("dialog.photo_copy.confirm"), props.photo.title, titleCopyTo.value);
 	}
-	return sprintf("Copy %d photos to %s.", props.photoIds?.length, titleCopyTo.value);
+	return sprintf(trans("dialog.photo_copy.confirm_multiple"), props.photoIds?.length, titleCopyTo.value);
 });
 
 function execute() {
@@ -96,7 +97,7 @@ function execute() {
 	PhotoService.copy(destination_id.value, photoCopiedIds).then(() => {
 		toast.add({
 			severity: "success",
-			summary: "Photo copied",
+			summary: trans("dialog.photo_copy.copied"),
 			life: 3000,
 		});
 		// Clear the cache for the destination album

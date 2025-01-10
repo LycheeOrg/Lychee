@@ -10,10 +10,10 @@
 				</p>
 				<div class="flex">
 					<Button severity="secondary" class="w-full border-none rounded-none rounded-bl-xl font-bold" @click="closeCallback">
-						{{ $t("lychee.CANCEL") }}
+						{{ $t("dialogs.button.cancel") }}
 					</Button>
 					<Button severity="danger" class="w-full border-none rounded-none rounded-br-xl font-bold" @click="execute">
-						{{ $t("lychee.RENAME") }}
+						{{ $t("dialogs.rename.rename") }}
 					</Button>
 				</div>
 			</div>
@@ -46,9 +46,9 @@ const title = ref<string | undefined>(undefined);
 
 const question = computed(() => {
 	if (props.photo) {
-		return trans("lychee.PHOTO_NEW_TITLE");
+		return trans("dialogs.rename.photo");
 	}
-	return trans("lychee.ALBUM_NEW_TITLE");
+	return trans("dialogs.rename.album");
 });
 
 function execute() {

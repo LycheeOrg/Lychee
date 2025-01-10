@@ -19,9 +19,9 @@
 					closeCallback();
 				"
 				severity="secondary"
-				:label="trans('lychee.CLOSE')"
+				:label="trans('dialogs.button.close')"
 				class="font-bold border-none w-full select-none border-t border-t-black/20 rounded-none rounded-bl-xl rounded-br-xl"
-				>{{ trans("lychee.CLOSE") }}</Button
+				>{{ trans("dialogs.button.close") }}</Button
 			>
 		</template>
 	</Dialog>
@@ -49,7 +49,7 @@ const title = ref(props.title);
 function copyToClipboard() {
 	navigator.clipboard
 		.writeText(url.value)
-		.then(() => toast.add({ severity: "info", summary: "Info", detail: trans("lychee.URL_COPIED_TO_CLIPBOARD"), life: 3000 }));
+		.then(() => toast.add({ severity: "info", summary: "Info", detail: trans("dialogs.share_album.url_copied"), life: 3000 }));
 }
 
 function openQrCode() {

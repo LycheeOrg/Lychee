@@ -3,24 +3,24 @@
 		<Card id="lychee_sidebar" v-if="props.photo" class="h-full pr-4 break-words max-w-4xl mx-auto">
 			<template #content>
 				<form class="w-full flex flex-col md:gap-y-4 md:grid md:grid-cols-[200px_minmax(auto,_1fr)] justify-center">
-					<label for="title" class="font-bold self-center">{{ $t("lychee.PHOTO_SET_TITLE") }}</label>
+					<label for="title" class="font-bold self-center">{{ $t("gallery.photo.edit.set_title") }}</label>
 					<InputText id="title" type="text" v-model="title" :invalid="!title" />
 
-					<label for="description" class="font-bold mt-4 md:mt-0">{{ $t("lychee.PHOTO_SET_DESCRIPTION") }}</label>
+					<label for="description" class="font-bold mt-4 md:mt-0">{{ $t("gallery.photo.edit.set_description") }}</label>
 					<Textarea id="description" class="w-full h-48" v-model="description" rows="5" cols="30" />
 
-					<label for="tags" class="font-bold h-11 mt-4 md:mt-0 self-center">{{ $t("lychee.PHOTO_SET_TAGS") }}</label>
+					<label for="tags" class="font-bold h-11 mt-4 md:mt-0 self-center">{{ $t("gallery.photo.edit.set_tags") }}</label>
 					<AutoComplete
 						id="tags"
 						v-model="tags"
 						:typeahead="false"
 						multiple
 						class="border-b hover:border-b-0"
-						:placeholder="$t('lychee.NO_TAGS')"
+						:placeholder="$t('gallery.photo.edit.no_tags')"
 						pt:inputmultiple:class="w-full border-t-0 border-l-0 border-r-0 border-b hover:border-b-primary-400 focus:border-b-primary-400"
 					/>
 
-					<label for="uploadDate" class="font-bold mt-4 md:mt-0 self-center">{{ $t("lychee.PHOTO_SET_CREATED_AT") }}</label>
+					<label for="uploadDate" class="font-bold mt-4 md:mt-0 self-center">{{ $t("gallery.photo.edit.set_created_at") }}</label>
 					<DatePicker
 						id="uploadDate"
 						v-model="uploadDate"
@@ -32,7 +32,7 @@
 						class="border-0 p-0 w-full border-b hover:border-b-primary-400 focus:border-b-primary-400"
 					/>
 
-					<label for="license" class="font-bold mt-4 md:mt-0 self-center">{{ $t("lychee.SET_LICENSE") }}</label>
+					<label for="license" class="font-bold mt-4 md:mt-0 self-center">{{ $t("gallery.photo.edit.set_license") }}</label>
 					<Select
 						id="license"
 						class="w-72 border-none"
@@ -54,7 +54,7 @@
 						</template>
 					</Select>
 					<Button severity="primary" class="w-full col-span-2 font-bold border-none" @click="save">
-						{{ $t("lychee.SAVE") }}
+						{{ $t("dialogs.button.save") }}
 					</Button>
 				</form>
 			</template>

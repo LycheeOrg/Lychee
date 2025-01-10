@@ -28,7 +28,7 @@
 				<AlbumEdit v-if="album.rights.can_edit" :album="album" :config="config" />
 				<div v-if="noData" class="flex w-full flex-col h-full items-center justify-center text-xl text-muted-color gap-8">
 					<span class="block">
-						{{ "Nothing to see here" }}
+						{{ $t("gallery.album.no_results") }}
 					</span>
 					<Button
 						v-if="album.rights.can_upload"
@@ -36,7 +36,7 @@
 						@click="toggleUpload"
 						class="rounded max-w-xs w-full border-none font-bold"
 						icon="pi pi-upload"
-						>{{ $t("lychee.UPLOAD_PHOTO") }}</Button
+						>{{ $t("gallery.album.upload") }}</Button
 					>
 				</div>
 				<AlbumHero
@@ -57,7 +57,7 @@
 				</template>
 				<AlbumThumbPanel
 					v-if="children !== null && children.length > 0"
-					header="lychee.ALBUMS"
+					header="gallery.album.header_albums"
 					:album="modelAlbum"
 					:albums="children"
 					:config="albumPanelConfig"
@@ -70,7 +70,7 @@
 				/>
 				<PhotoThumbPanel
 					v-if="layoutConfig !== null && photos !== null && photos.length > 0"
-					header="lychee.PHOTOS"
+					header="gallery.album.header_photos"
 					:photos="photos"
 					:album="album"
 					:gallery-config="layoutConfig"

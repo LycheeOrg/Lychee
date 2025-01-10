@@ -1,31 +1,35 @@
 <template>
 	<div v-if="configs" class="max-w-2xl mx-auto">
-		<Fieldset legend="System" class="border-b-0 border-r-0 rounded-r-none rounded-b-none">
+		<Fieldset :legend="$t('settings.system.header')" class="border-b-0 border-r-0 rounded-r-none rounded-b-none">
 			<div class="flex flex-col gap-4 mb-8">
-				<BoolField v-if="dark_mode_enabled !== undefined" :config="dark_mode_enabled" @filled="saveDarkMode" />
-				<SelectLang v-if="lang !== undefined" :config="lang" />
+				<BoolField
+					v-if="dark_mode_enabled !== undefined"
+					:label="$t('settings.system.use_dark_mode')"
+					:config="dark_mode_enabled"
+					@filled="saveDarkMode"
+				/>
+				<SelectLang v-if="lang !== undefined" :label="$t('settings.system.language')" :config="lang" />
 				<div class="flex flex-wrap justify-between">
-					<label for="pp_dialog_nsfw_visible">{{ $t("lychee.NSFW_VISIBLE_TEXT_1") }}</label>
+					<label for="pp_dialog_nsfw_visible">{{ $t("settings.system.nsfw_album_visibility") }}</label>
 					<ToggleSwitch id="pp_dialog_nsfw_visible" v-model="nsfwVisible" class="text-sm" @update:model-value="updateNSFW" />
-					<p class="my-1.5 text-muted-color w-full" v-html="nsfwText2"></p>
+					<p class="my-1.5 text-muted-color w-full" v-html="$t('settings.system.nsfw_album_explanation')"></p>
 				</div>
 			</div>
 		</Fieldset>
 		<Fieldset class="border-b-0 border-r-0 rounded-r-none rounded-b-none" v-if="!is_se_enabled && !is_se_info_hidden">
 			<template #legend>
-				<div class="font-bold">Lychee <span class="text-primary-emphasis">SE</span></div>
+				<div class="font-bold" v-html="$t('settings.lychee_se.header')" />
 			</template>
-			<p class="mb-2">
-				Get exclusive features and support the development of Lychee. Unlock the
-				<a href="https://lycheeorg.github.io/get-supporter-edition/" class="text-primary-500 underline">SE edition</a>.
-			</p>
+			<p class="mb-2" v-html="$t('settings.lychee_se.call4action')" />
 			<div class="mb-8 flex items-start" v-if="!is_se_enabled">
 				<div class="w-3/4">
 					<FloatLabel variant="on">
 						<InputText v-model="licenseKey" id="licenseKey" class="w-full" @update:model-value="licenseKeyIsInvValid = false" />
-						<label for="licenseKey">{{ "License key" }}</label>
+						<label for="licenseKey">{{ $t("dialogs.register.license_key") }}</label>
 					</FloatLabel>
-					<span class="inline-block mt-4 font-bold text-danger-600" v-if="licenseKey && licenseKeyIsInvValid">Invalid license key</span>
+					<span class="inline-block mt-4 font-bold text-danger-600" v-if="licenseKey && licenseKeyIsInvValid">{{
+						$t("dialogs.register.invalid_license")
+					}}</span>
 				</div>
 				<Button
 					class="w-1/4 border-none font-bold bg-primary-500/20 hover:bg-primary-500 hover:text-surface-0"
@@ -33,15 +37,15 @@
 					@click="register"
 					severity="contrast"
 					:disabled="!isValidRegistrationForm"
-					>{{ "Register" }}
+					>{{ $t("dialogs.register.register") }}
 				</Button>
 			</div>
 			<p class="flex flex-wrap justify-between my-6">
-				<label for="enable_se_preview">{{ "Enable preview of Lychee SE features" }}</label>
+				<label for="enable_se_preview">{{ $t("settings.lychee_se.preview") }}</label>
 				<ToggleSwitch id="enable_se_preview" v-model="enable_se_preview" class="text-sm" @update:model-value="savePreview" />
 			</p>
 			<p class="flex flex-wrap justify-between">
-				<label for="disable_se_call_for_actions">{{ "Hide this Lychee SE registration form. I am happy with Lychee as-is. :)" }}</label>
+				<label for="disable_se_call_for_actions">{{ $t("settings.lychee_se.hide_call4action") }}</label>
 				<ToggleSwitch
 					id="disable_se_call_for_actions"
 					v-model="disable_se_call_for_actions"
@@ -49,14 +53,18 @@
 					@update:model-value="saveHideC4A"
 				/>
 				<span class="mt-1 w-full text-muted-color"
-					><i class="pi pi-exclamation-triangle text-orange-500 mr-2" />If enabled, the only way to register your license key will be via
-					the More Tab above. Changes are applied on page reload.</span
+					><i class="pi pi-exclamation-triangle text-orange-500 mr-2" />{{ $t("settings.lychee_se.hide_warning") }}</span
 				>
 			</p>
 		</Fieldset>
-		<Fieldset legend="Dropbox" class="border-b-0 border-r-0 rounded-r-none rounded-b-none" :toggleable="true" :collapsed="true">
+		<Fieldset
+			:legend="$t('settings.dropbox.header')"
+			class="border-b-0 border-r-0 rounded-r-none rounded-b-none"
+			:toggleable="true"
+			:collapsed="true"
+		>
 			<p class="mb-4 text-muted-color">
-				In order to import photos from your Dropbox, you need a valid drop-ins app key from their website.
+				{{ $t("settings.dropbox.instruction") }}
 				<a href="https://www.dropbox.com/developers/saver" class="pl-2 border-b border-dashed border-b-primary-500 text-primary-500">
 					<i class="pi pi-link"></i>
 				</a>
@@ -64,18 +72,19 @@
 			<div class="flex gap-4">
 				<FloatLabel class="w-full flex-grow" variant="on">
 					<InputPassword id="api_key" type="text" v-model="dropbox_key" />
-					<label for="api_key" class="text-muted-color">{{ $t("lychee.SETTINGS_DROPBOX_KEY") }}</label>
+					<label for="api_key" class="text-muted-color">{{ $t("settings.dropbox.api_key") }}</label>
 				</FloatLabel>
 				<Button severity="contrast" class="w-full border-none bg-primary-500/20 hover:bg-primary-500" @click="saveDropboxKey">{{
-					$t("lychee.DROPBOX_TITLE")
+					$t("settings.dropbox.set_key")
 				}}</Button>
 			</div>
 		</Fieldset>
-		<Fieldset legend="Gallery" class="border-b-0 border-r-0 rounded-r-none rounded-b-none">
+		<Fieldset :legend="$t('settings.gallery.header')" class="border-b-0 border-r-0 rounded-r-none rounded-b-none">
 			<div class="flex flex-col mb-6">
 				<!-- ALBUM ORDER -->
 				<SelectOptionsField
 					v-if="photoSortingColumn !== undefined"
+					:label="$t('settings.gallery.photo_order_column')"
 					:config="photoSortingColumn"
 					:options="photoSortingColumnsOptions"
 					:mapper="SelectBuilders.buildPhotoSorting"
@@ -83,6 +92,7 @@
 				/>
 				<SelectOptionsField
 					v-if="photoSortingOrder !== undefined"
+					:label="$t('settings.gallery.photo_order_direction')"
 					:config="photoSortingOrder"
 					:options="sortingOrdersOptions"
 					:mapper="SelectBuilders.buildSortingOrder"
@@ -90,14 +100,16 @@
 				/>
 				<SelectOptionsField
 					v-if="albumSortingColumn !== undefined"
+					:label="$t('settings.gallery.album_order_column')"
 					:config="albumSortingColumn"
 					:options="albumSortingColumnsOptions"
 					:mapper="SelectBuilders.buildAlbumSorting"
 					@filled="save"
 				/>
+				<div class="mb-4" />
 				<SelectOptionsField
-					class="mb-6"
 					v-if="albumSortingOrder !== undefined"
+					:label="$t('settings.gallery.album_order_direction')"
 					:config="albumSortingOrder"
 					:options="sortingOrdersOptions"
 					:mapper="SelectBuilders.buildSortingOrder"
@@ -105,23 +117,36 @@
 				/>
 				<SelectOptionsField
 					v-if="aspectRatio !== undefined"
+					:label="$t('settings.gallery.aspect_ratio')"
 					:config="aspectRatio"
 					:options="aspectRationOptions"
 					:mapper="SelectBuilders.buildAspectRatio"
 					@filled="save"
 				/>
 				<SelectOptionsField
-					class="mb-6"
 					v-if="layout !== undefined"
+					:label="$t('settings.gallery.photo_layout')"
 					:config="layout"
 					:options="photoLayoutOptions"
 					:mapper="SelectBuilders.buildPhotoLayout"
 					@filled="save"
 				/>
-				<SelectField v-if="album_decoration !== undefined" :config="album_decoration" @filled="save" />
-				<SelectField v-if="album_decoration_orientation !== undefined" :config="album_decoration_orientation" @filled="save" />
+				<div class="mb-4" />
+				<SelectField
+					v-if="album_decoration !== undefined"
+					:label="$t('settings.gallery.album_decoration')"
+					:config="album_decoration"
+					@filled="save"
+				/>
+				<SelectField
+					v-if="album_decoration_orientation !== undefined"
+					:label="$t('settings.gallery.album_decoration_direction')"
+					:config="album_decoration_orientation"
+					@filled="save"
+				/>
 				<SelectOptionsField
 					v-if="image_overlay_type !== undefined"
+					:label="$t('settings.gallery.photo_overlay')"
 					:config="image_overlay_type"
 					:options="overlayOptions"
 					:mapper="SelectBuilders.buildOverlay"
@@ -132,6 +157,7 @@
 			<div class="flex flex-col">
 				<SelectOptionsField
 					v-if="default_license !== undefined"
+					:label="$t('settings.gallery.license_default')"
 					:config="default_license"
 					:options="licenseOptions"
 					:mapper="SelectBuilders.buildLicense"
@@ -139,7 +165,7 @@
 				/>
 				<div class="mb-4 text-muted-color">
 					<p>
-						{{ $t("lychee.ALBUM_LICENSE_HELP") }}
+						{{ $t("settings.gallery.license_help") }}
 						<a
 							href="https://creativecommons.org/choose/"
 							target="_blank"
@@ -151,32 +177,63 @@
 				</div>
 			</div>
 		</Fieldset>
-		<Fieldset legend="Geo-location" class="border-b-0 border-r-0 rounded-r-none rounded-b-none">
+		<Fieldset :legend="$t('settings.geolocation.header')" class="border-b-0 border-r-0 rounded-r-none rounded-b-none">
 			<div class="flex flex-col gap-4">
-				<BoolField v-if="map_display !== undefined" :config="map_display" @filled="save" />
-				<BoolField v-if="map_display_public !== undefined" :config="map_display_public" @filled="save" />
+				<BoolField :label="$t('settings.geolocation.map_display')" v-if="map_display !== undefined" :config="map_display" @filled="save" />
+				<BoolField
+					:label="$t('settings.geolocation.map_display_public')"
+					v-if="map_display_public !== undefined"
+					:config="map_display_public"
+					@filled="save"
+				/>
 				<SelectOptionsField
+					:label="$t('settings.geolocation.map_provider')"
 					v-if="map_provider !== undefined"
 					:config="map_provider"
 					:options="mapProvidersOptions"
 					:mapper="SelectBuilders.buildMapProvider"
 					@filled="save"
 				/>
-				<BoolField v-if="map_include_subalbums !== undefined" :config="map_include_subalbums" @filled="save" />
-				<BoolField v-if="location_decoding !== undefined" :config="location_decoding" @filled="save" />
-				<BoolField v-if="location_show !== undefined" :config="location_show" @filled="save" />
-				<BoolField v-if="location_show_public !== undefined" :config="location_show_public" @filled="save" />
+				<BoolField
+					:label="$t('settings.geolocation.map_include_subalbums')"
+					v-if="map_include_subalbums !== undefined"
+					:config="map_include_subalbums"
+					@filled="save"
+				/>
+				<BoolField
+					:label="$t('settings.geolocation.location_decoding')"
+					v-if="location_decoding !== undefined"
+					:config="location_decoding"
+					@filled="save"
+				/>
+				<BoolField
+					:label="$t('settings.geolocation.location_show')"
+					v-if="location_show !== undefined"
+					:config="location_show"
+					@filled="save"
+				/>
+				<BoolField
+					:label="$t('settings.geolocation.location_show_public')"
+					v-if="location_show_public !== undefined"
+					:config="location_show_public"
+					@filled="save"
+				/>
 			</div>
 		</Fieldset>
-		<Fieldset legend="Advanced Customization" class="border-b-0 border-r-0 rounded-r-none rounded-b-none" :toggleable="true" :collapsed="true">
+		<Fieldset
+			:legend="$t('settings.advanced.header')"
+			class="border-b-0 border-r-0 rounded-r-none rounded-b-none"
+			:toggleable="true"
+			:collapsed="true"
+		>
 			<div class="flex flex-col gap-4">
 				<div>
 					<Textarea v-model="css" class="w-full h-48" rows="10" cols="30" />
-					<Button severity="primary" class="w-full border-none font-bold" @click="saveCss">{{ $t("lychee.CSS_TITLE") }}</Button>
+					<Button severity="primary" class="w-full border-none font-bold" @click="saveCss">{{ $t("settings.advanced.change_css") }}</Button>
 				</div>
 				<div>
 					<Textarea v-model="js" class="w-full h-48" rows="10" cols="30" />
-					<Button severity="primary" class="w-full border-none font-bold" @click="saveJs">{{ $t("lychee.JS_TITLE") }}</Button>
+					<Button severity="primary" class="w-full border-none font-bold" @click="saveJs">{{ $t("settings.advanced.change_js") }}</Button>
 				</div>
 			</div>
 		</Fieldset>
@@ -286,19 +343,17 @@ function save(configKey: string, value: string) {
 			},
 		],
 	}).then(() => {
-		toast.add({ severity: "success", summary: "Change saved!", detail: "Settings have been modified as per request", life: 3000 });
+		toast.add({ severity: "success", summary: trans("settings.toasts.change_saved"), detail: trans("settings.toasts.details"), life: 3000 });
 		load();
 	});
 }
 
-const nsfwText2 = computed(() => {
-	return trans("lychee.NSFW_VISIBLE_TEXT_2");
-});
-
 function load() {
 	SettingsService.getAll().then((response) => {
 		configs.value = response.data;
-		const decapsulated: App.Http.Resources.Collections.ConfigCollectionResource = toRaw(configs.value);
+		const decapsulated: App.Http.Resources.Collections.ConfigCollectionResource = toRaw(
+			configs.value,
+		) as App.Http.Resources.Collections.ConfigCollectionResource;
 		const configurations = [] as App.Http.Resources.Models.ConfigResource[];
 		Object.values(decapsulated.configs).forEach((value) => Object.values(value).forEach((value) => configurations.push(value)));
 
@@ -337,7 +392,7 @@ function load() {
 			css.value = response.data;
 		})
 		.catch(() => {
-			toast.add({ severity: "error", summary: "Error!", detail: "Could not load dist/user.css", life: 3000 });
+			toast.add({ severity: "error", summary: trans("settings.toasts.error"), detail: trans("settings.toasts.error_load_css"), life: 3000 });
 		});
 
 	SettingsService.getJs()
@@ -345,7 +400,7 @@ function load() {
 			js.value = response.data;
 		})
 		.catch(() => {
-			toast.add({ severity: "error", summary: "Error!", detail: "Could not load dist/custom.js", life: 3000 });
+			toast.add({ severity: "error", summary: trans("settings.toasts.error"), detail: trans("settings.toasts.error_load_js"), life: 3000 });
 		});
 }
 
@@ -384,8 +439,8 @@ function register() {
 				is_se_info_hidden.value = false;
 				toast.add({
 					severity: "success",
-					summary: "Thank you for your support.",
-					detail: "Reload your page for full functionalities.",
+					summary: trans("settings.toasts.thank_you"),
+					detail: trans("settings.toasts.reload"),
 					life: 5000,
 				});
 			} else {
@@ -400,20 +455,20 @@ function register() {
 function saveCss() {
 	SettingsService.setCss(css.value ?? "")
 		.then(() => {
-			toast.add({ severity: "success", summary: "Change saved!", life: 3000 });
+			toast.add({ severity: "success", summary: trans("settings.toasts.change_saved"), life: 3000 });
 		})
 		.catch(() => {
-			toast.add({ severity: "error", summary: "Error!", detail: "Could not save CSS", life: 3000 });
+			toast.add({ severity: "error", summary: trans("settings.toasts.error"), detail: trans("settings.toasts.error_save_css"), life: 3000 });
 		});
 }
 
 function saveJs() {
 	SettingsService.setJs(js.value ?? "")
 		.then(() => {
-			toast.add({ severity: "success", summary: "Change saved!", life: 3000 });
+			toast.add({ severity: "success", summary: trans("settings.toasts.change_saved"), life: 3000 });
 		})
 		.catch(() => {
-			toast.add({ severity: "error", summary: "Error!", detail: "Could not save JS", life: 3000 });
+			toast.add({ severity: "error", summary: trans("settings.toasts.error"), detail: trans("settings.toasts.error_save_js"), life: 3000 });
 		});
 }
 

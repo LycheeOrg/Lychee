@@ -7,19 +7,19 @@
 		v-if="oauths !== undefined"
 	>
 		<div class="pt-5" v-if="oauths.length === 0">
-			<p>{{ $t("oauth.SET_UP_CREDENTIALS") }}</p>
+			<p>{{ $t("profile.oauth.setup_env") }}</p>
 		</div>
 		<template v-else>
 			<div v-for="oauth in oauths" class=" text-text-main-100 {{ $oauthData->isEnabled ? '' : 'hover:text-primary-400'}}">
 				<i class="align-middle w-4" :class="oauth.icon + (oauth.isEnabled ? 'text-create-600' : '')"></i>
 				<span class="ml-2" v-if="oauth.isEnabled">
-					{{ sprintf($t("oauth.TOKEN_REGISTERED"), capitalize(oauth.providerType)) }}
+					{{ sprintf($t("profile.oauth.token_registered"), capitalize(oauth.providerType)) }}
 					<a @click="clear(oauth.providerType)" class="ml-2 cursor-pointer italic text-text-main-400 hover:text-danger-800"
-						>({{ $t("oauth.RESET") }})</a
+						>({{ $t("profile.oauth.reset") }})</a
 					>
 				</span>
 				<a v-else :href="oauth.registrationRoute" class="ml-2 cursor-pointer">
-					{{ sprintf($t("oauth.SET_UP"), capitalize(oauth.providerType)) }}
+					{{ sprintf($t("profile.oauth.setup"), capitalize(oauth.providerType)) }}
 				</a>
 			</div>
 		</template>
@@ -41,15 +41,11 @@ type OauthData = {
 
 const oauths = ref<OauthData[] | undefined>(undefined);
 const title = computed(() => {
-	if (oauths.value === undefined) {
-		return trans("lychee.LOADING");
-	}
-
 	if (oauths.value?.length === 0) {
-		return trans("oauth.NOT_AVAILABLE");
+		return trans("profile.oauth.header_not_available");
 	}
 
-	return trans("oauth.SET_UP_OAUTH");
+	return trans("profile.oauth.header");
 });
 
 function refresh() {

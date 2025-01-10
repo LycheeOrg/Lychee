@@ -2,10 +2,15 @@
 	<Card class="sm:p-4 xl:px-9 max-w-3xl w-full">
 		<template #content>
 			<div v-if="newOwner !== undefined">
-				<p class="w-full mb-4 text-center text-muted-color">{{ confirmation }}<br />{{ "This action can’t be undone!" }}</p>
+				<p class="w-full mb-4 text-center text-muted-color-emphasis">
+					{{ sprintf($t("dialogs.transfer.confirmation"), newOwner.username, props.album.title) }}<br />
+					<span class="text-warning-700"><i class="pi pi-exclamation-triangle mr-2" />{{ $t("dialogs.transfer.lost_access_warning") }}</span
+					><br />
+					<span class="text-warning-700"><i class="pi pi-exclamation-triangle mr-2" />{{ $t("dialogs.transfer.warning") }}</span>
+				</p>
 			</div>
 			<div v-else class="text-center w-full">
-				<span class="font-bold">{{ "Transfer ownership of album to" }}</span>
+				<span class="font-bold">{{ $t("dialogs.transfer.query") }}</span>
 				<SearchTargetUser :album="album" @selected="selected" />
 			</div>
 			<Button
@@ -13,14 +18,14 @@
 				:disabled="newOwner === undefined"
 				@click="execute"
 			>
-				{{ "Transfer ownership of album and photos" }}
+				{{ $t("dialogs.transfer.transfer") }}
 			</Button>
 		</template>
 	</Card>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { ref } from "vue";
 import { useRouter } from "vue-router";
 import Button from "primevue/button";
 import Card from "primevue/card";
@@ -34,13 +39,6 @@ const props = defineProps<{
 
 const router = useRouter();
 const newOwner = ref<App.Http.Resources.Models.LightUserResource | undefined>(undefined);
-const confirmation = computed(() =>
-	sprintf(
-		"Are you sure you want to transfer to %s the ownership of album “%s” and all the photos it contains? Your access to this album will be lost.",
-		newOwner.value?.username,
-		props.album.title,
-	),
-);
 
 function execute() {
 	if (newOwner.value === undefined) {

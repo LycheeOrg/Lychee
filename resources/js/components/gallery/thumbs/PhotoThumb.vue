@@ -13,7 +13,7 @@
 		>
 			<img
 				v-show="props.photo.size_variants.placeholder?.url"
-				:alt="$t('lychee.PHOTO_PLACEHOLDER')"
+				:alt="$t('gallery.placeholder')"
 				class="absolute w-full h-full top-0 left-0 blur-md"
 				:class="{ 'animate-fadeout animate-fill-forwards': isImageLoaded }"
 				:src="props.photo.size_variants.placeholder?.url ?? ''"
@@ -22,7 +22,7 @@
 			/>
 
 			<img
-				alt="Photo thumbnail"
+				:alt="$t('gallery.thumbnail')"
 				class="h-full w-full border-none object-cover object-center"
 				:src="props.photo.size_variants.small?.url ?? props.photo.size_variants.thumb?.url ?? srcNoImage"
 				:srcset="

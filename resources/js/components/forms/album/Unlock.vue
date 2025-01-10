@@ -2,16 +2,16 @@
 	<Dialog v-model:visible="visible" modal pt:root:class="border-none" pt:mask:style="backdrop-filter: blur(2px)">
 		<template #container="{ closeCallback }">
 			<div v-focustrap class="flex flex-col relative max-w-xl text-sm rounded-md pt-9">
-				<p class="mb-5 px-9">{{ $t("lychee.ALBUM_PASSWORD_REQUIRED") }}</p>
+				<p class="mb-5 px-9">{{ $t("dialogs.unlock.password_required") }}</p>
 				<div class="inline-flex flex-col gap-2 px-9">
 					<FloatLabel variant="on">
 						<InputPassword id="albumPassword" v-model="password" @keydown.enter="unlock" />
-						<label class="" for="albumPassword">{{ $t("lychee.PASSWORD") }}</label>
+						<label class="" for="albumPassword">{{ $t("dialogs.unlock.password") }}</label>
 					</FloatLabel>
 				</div>
 				<div class="flex items-center mt-9">
 					<Button @click="hide" severity="secondary" class="w-full font-bold border-none rounded-bl-xl">
-						{{ $t("lychee.CANCEL") }}
+						{{ $t("dialogs.button.cancel") }}
 					</Button>
 					<Button
 						severity="contrast"
@@ -19,7 +19,7 @@
 						:disabled="!deactivate"
 						@click="unlock"
 					>
-						{{ $t("lychee.ENTER") }}
+						{{ $t("dialogs.unlock.unlock") }}
 					</Button>
 				</div>
 			</div>

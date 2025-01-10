@@ -5,11 +5,11 @@
 		</template>
 
 		<template #center>
-			{{ $t("lychee.DIAGNOSTICS") }}
+			{{ $t("diagnostics.title") }}
 		</template>
 
 		<template #end>
-			<Button :disabled="!canCopy" text aria-label="Copy" icon="pi pi-copy" v-tooltip="'Copy diagnostics to clipboard'" @click="copy" />
+			<Button :disabled="!canCopy" text aria-label="Copy" icon="pi pi-copy" v-tooltip="$t('diagnostics.copy_to_clipboard')" @click="copy" />
 		</template>
 	</Toolbar>
 	<ErrorsDiagnotics @loaded="loadError" />
@@ -29,6 +29,7 @@ import { useAuthStore } from "@/stores/Auth";
 import { storeToRefs } from "pinia";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { useToast } from "primevue/usetoast";
+import { trans } from "laravel-vue-i18n";
 
 const authStore = useAuthStore();
 const { user } = storeToRefs(authStore);
@@ -71,6 +72,6 @@ function copy() {
 
 	navigator.clipboard
 		.writeText(toClipBoard)
-		.then(() => toast.add({ severity: "info", summary: "Info", detail: "Diagnostic copied to clipboard", life: 3000 }));
+		.then(() => toast.add({ severity: "info", summary: trans("diagnostics.toast.info"), detail: trans("diagnostics.toast.copy"), life: 3000 }));
 }
 </script>

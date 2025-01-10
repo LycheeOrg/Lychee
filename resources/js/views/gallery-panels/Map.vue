@@ -73,7 +73,7 @@ function goBack() {
 const { is_full_screen } = storeToRefs(togglableStore);
 
 // Map stuff.
-const camera_date = trans("lychee.CAMERA_DATE");
+const camera_date = trans("gallery.camera_date");
 const map_provider = ref<App.Http.Resources.GalleryConfigs.MapProviderData | undefined>(undefined);
 const map = ref(undefined) as Ref<L.Map | undefined>;
 const bounds = ref<LatLngBoundsLiteral | undefined>(undefined);
@@ -243,7 +243,7 @@ function addContentsToMap() {
 			},
 		})
 			.on("error", function (e: any) {
-				toast.add({ severity: "error", summary: "Error loading GPX file", detail: e.err, life: 3000 });
+				toast.add({ severity: "error", summary: trans("gallery.map.error_gpx"), detail: e.err, life: 3000 });
 			})
 			.on("loaded", function (e: any) {
 				if (photos.length === 0) {

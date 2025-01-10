@@ -5,28 +5,28 @@
 				<p class="p-9 text-center text-muted-color">{{ confirmation }}</p>
 				<div class="flex">
 					<Button severity="secondary" class="font-bold w-full border-none rounded-none rounded-bl-xl" @click="close">
-						{{ $t("lychee.CANCEL") }}
+						{{ $t("dialogs.button.cancel") }}
 					</Button>
 					<Button severity="contrast" class="font-bold w-full border-none rounded-none rounded-br-xl" @click="execute">
-						{{ $t("lychee.MERGE") }}
+						{{ $t("dialogs.merge.merge") }}
 					</Button>
 				</div>
 			</div>
 			<div v-else>
 				<div class="p-9" v-if="error_no_target === false">
 					<span v-if="props.album" class="font-bold">
-						{{ sprintf("Merge %s to:", props.album.title) }}
+						{{ sprintf($t("dialogs.merge.merge_to"), props.album.title) }}
 					</span>
 					<span v-else class="font-bold">
-						{{ sprintf("Merge %d albums to:", props.albumIds?.length) }}
+						{{ sprintf($t("dialogs.merge.merge_to_multiple"), props.albumIds?.length) }}
 					</span>
 					<SearchTargetAlbum :album-ids="albumIds" @selected="selected" @no-target="error_no_target = true" />
 				</div>
 				<div v-else class="p-9">
-					<p class="text-center text-muted-color">{{ "No album to merge to." }}</p>
+					<p class="text-center text-muted-color">{{ $t("dialogs.merge.no_albums") }}</p>
 				</div>
 				<Button class="w-full font-bold rounded-none rounded-bl-xl rounded-br-xl border-none" severity="secondary" @click="closeCallback">
-					{{ $t("lychee.CANCEL") }}
+					{{ $t("dialogs.button.cancel") }}
 				</Button>
 			</div>
 		</template>
@@ -61,9 +61,9 @@ const error_no_target = ref(false);
 
 const confirmation = computed(() => {
 	if (props.album) {
-		return sprintf(trans("lychee.ALBUM_MERGE"), props.album.title, titleMovedTo.value);
+		return sprintf(trans("dialog.merge.confirm"), props.album.title, titleMovedTo.value);
 	}
-	return sprintf(trans("lychee.ALBUMS_MERGE"), titleMovedTo.value);
+	return sprintf(trans("dialog.merge.confirm_multiple"), titleMovedTo.value);
 });
 
 function selected(target: App.Http.Resources.Models.TargetAlbumResource) {
@@ -93,7 +93,7 @@ function execute() {
 		AlbumService.clearCache(destination_id.value);
 		toast.add({
 			severity: "success",
-			summary: "Album(s) merged to " + titleMovedTo.value,
+			summary: sprintf(trans("dialog.merge.merged"), titleMovedTo.value),
 			life: 3000,
 		});
 		AlbumService.clearCache(destination_id.value);

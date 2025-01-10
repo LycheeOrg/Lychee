@@ -4,38 +4,38 @@
 			<div class="p-9 w-full flex flex-col gap-2 justify-center">
 				<FloatLabel class="w-full" variant="on">
 					<InputText id="username" v-model="username" aria-label="Username" :autofocus="true" />
-					<label class="" for="username">{{ $t("lychee.USERNAME") }}</label>
+					<label class="" for="username">{{ $t("users.username") }}</label>
 				</FloatLabel>
 				<FloatLabel class="w-full" variant="on">
 					<InputPassword id="password" v-model="password" aria-label="Password" />
-					<label class="" for="password">{{ $t("lychee.PASSWORD") }}</label>
+					<label class="" for="password">{{ $t("users.password") }}</label>
 				</FloatLabel>
 				<div class="w-full items-center text-muted-color">
 					<Checkbox inputId="mayUpload" v-model="may_upload" :binary="true" />
-					<label for="mayUpload" class="ml-2 cursor-pointer3">User can upload content.</label>
+					<label for="mayUpload" class="ml-2 cursor-pointer3">{{ $t("users.create_edit.upload_rights") }}</label>
 				</div>
 				<div class="w-full items-center text-muted-color">
 					<Checkbox inputId="mayEdit" v-model="may_edit_own_settings" :binary="true" />
-					<label for="mayEdit" class="ml-2 cursor-pointer">User can modify their profile (username, password).</label>
+					<label for="mayEdit" class="ml-2 cursor-pointer">{{ $t("users.create_edit.edit_rights") }}</label>
 				</div>
 				<div class="w-full items-center text-muted-color" v-if="is_se_enabled || is_se_preview_enabled">
 					<Checkbox inputId="hasQuota" v-model="has_quota" :binary="true" />
-					<label for="hasQuota" class="ml-2 cursor-pointer">User has quota limit. <SETag /></label>
+					<label for="hasQuota" class="ml-2 cursor-pointer">{{ $t("users.create_edit.quota") }} <SETag /></label>
 				</div>
 				<div class="w-full flex items-center text-muted-color" v-if="has_quota === true">
-					<InputText id="quota_kb" v-model="quota_kb" aria-label="quota_kb" class="!w-1/2" />
-					<label class="pl-4 w-1/2" for="username">{{ "quota in kB (0 for default)" }}</label>
+					<InputText id="quotaKb" v-model="quota_kb" aria-label="quotaKb" class="!w-1/2" />
+					<label class="pl-4 w-1/2" for="quotaKb">{{ $t("users.create_edit.quota_kb") }}</label>
 				</div>
 				<div class="w-full flex items-center text-muted-color pt-2" v-if="is_se_enabled">
 					<FloatLabel variant="on">
 						<Textarea id="note" class="w-full h-18" v-model="note" rows="2" cols="40" />
-						<label for="note">{{ "Admin note (not publically visible)" }}</label>
+						<label for="note">{{ $t("users.create_edit.note") }}</label>
 					</FloatLabel>
 				</div>
 			</div>
 			<div class="flex">
 				<Button @click="closeCallback" severity="secondary" class="w-full border-0 rounded-none rounded-bl-lg font-bold">
-					{{ $t("lychee.CANCEL") }}
+					{{ $t("dialogs.button.cancel") }}
 				</Button>
 				<Button
 					v-if="!props.isEdit"
@@ -43,7 +43,7 @@
 					class="w-full border-0 bg-surface text-create-600 hover:bg-create-600 hover:text-white rounded-none rounded-br-lg font-bold"
 					:disabled="username === undefined || password === undefined || username === '' || password === ''"
 				>
-					<i class="pi pi-user-plus" /><span class="hidden md:inline">{{ $t("lychee.CREATE") }}</span>
+					<i class="pi pi-user-plus" /><span class="hidden md:inline">{{ $t("users.create_edit.create") }}</span>
 				</Button>
 				<Button
 					v-else
@@ -52,7 +52,7 @@
 					class="w-full border-0 rounded-none rounded-br-lg font-bold"
 					:disabled="username === undefined || username === ''"
 				>
-					<i class="pi pi-user-edit" /><span class="hidden md:inline">{{ $t("Edit") }}</span>
+					<i class="pi pi-user-edit" /><span class="hidden md:inline">{{ $t("users.create_edit.edit") }}</span>
 				</Button>
 			</div>
 		</template>
@@ -73,6 +73,7 @@ import { storeToRefs } from "pinia";
 import Textarea from "../basic/Textarea.vue";
 import SETag from "@/components/icons/SETag.vue";
 import UsersService from "@/services/users-service";
+import { trans } from "laravel-vue-i18n";
 
 const lycheeStore = useLycheeStateStore();
 const { is_se_preview_enabled, is_se_enabled } = storeToRefs(lycheeStore);
@@ -119,14 +120,14 @@ function createUser() {
 			username.value = undefined;
 			has_quota.value = false;
 			quota_kb.value = "0";
-			toast.add({ severity: "success", summary: "Success", detail: "User created", life: 3000 });
+			toast.add({ severity: "success", summary: trans("toasts.success"), detail: trans("users.user_created"), life: 3000 });
 			emits("refresh");
 
 			// Clear user count as it is cachable.
 			UsersService.clearCount();
 		})
 		.catch((e) => {
-			toast.add({ severity: "error", summary: "Error", detail: e.response.data.message, life: 3000 });
+			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response.data.message, life: 3000 });
 		});
 }
 
@@ -153,11 +154,11 @@ function editUser() {
 			username.value = undefined;
 			has_quota.value = false;
 			quota_kb.value = "0";
-			toast.add({ severity: "success", summary: "Change saved!", detail: "User updated", life: 3000 });
+			toast.add({ severity: "success", summary: trans("users.change_saved"), detail: trans("users.user_updated"), life: 3000 });
 			emits("refresh");
 		})
 		.catch((e) => {
-			toast.add({ severity: "error", summary: "Error", detail: e.response.data.message, life: 3000 });
+			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response.data.message, life: 3000 });
 		});
 }
 

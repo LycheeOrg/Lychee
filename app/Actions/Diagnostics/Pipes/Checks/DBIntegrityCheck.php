@@ -33,7 +33,7 @@ class DBIntegrityCheck implements DiagnosticPipe
 			->get();
 
 		foreach ($photos as $photo) {
-			$data[] = 'Error: Photo without Original found -- ' . $photo->title . ' in ' . ($photo->album?->title ?? __('lychee.UNSORTED'));
+			$data[] = 'Error: Photo without Original found -- ' . $photo->title . ' in ' . ($photo->album?->title ?? __('gallery.smart_album.unsorted'));
 		}
 
 		return $next($data);

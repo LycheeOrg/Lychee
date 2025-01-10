@@ -5,13 +5,13 @@
 				<div class="h-12">
 					<FloatLabel variant="on">
 						<InputText id="title" type="text" v-model="title" />
-						<label for="title">{{ $t("lychee.ALBUM_TITLE") }}</label>
+						<label for="title">{{ $t("gallery.album.properties.title") }}</label>
 					</FloatLabel>
 				</div>
 				<div class="my-4 h-48">
 					<FloatLabel variant="on">
 						<Textarea id="description" class="w-full h-48" v-model="description" rows="6" cols="30" />
-						<label for="description">{{ $t("lychee.ALBUM_DESCRIPTION") }}</label>
+						<label for="description">{{ $t("gallery.album.properties.description") }}</label>
 					</FloatLabel>
 				</div>
 				<div class="my-2 h-10 flex">
@@ -35,7 +35,7 @@
 								</div>
 							</template>
 						</Select>
-						<label for="photoSortingColumn">{{ $t("lychee.ALBUM_PHOTO_ORDERING") }}</label>
+						<label for="photoSortingColumn">{{ $t("gallery.album.properties.photo_ordering") }}</label>
 					</FloatLabel>
 					<FloatLabel variant="on">
 						<Select
@@ -57,7 +57,7 @@
 								</div>
 							</template>
 						</Select>
-						<label for="photoSortingOrder">asc/desc</label>
+						<label for="photoSortingOrder">{{ $t("gallery.album.properties.asc/desc") }}</label>
 					</FloatLabel>
 				</div>
 				<template v-if="is_model_album">
@@ -82,7 +82,7 @@
 									</div>
 								</template>
 							</Select>
-							<label for="albumSortingColumn">{{ $t("lychee.ALBUM_CHILDREN_ORDERING") }}</label>
+							<label for="albumSortingColumn">{{ $t("gallery.album.properties.children_ordering") }}</label>
 						</FloatLabel>
 						<FloatLabel variant="on">
 							<Select
@@ -104,7 +104,7 @@
 									</div>
 								</template>
 							</Select>
-							<label for="albumSortingOrder">asc/desc</label>
+							<label for="albumSortingOrder">{{ $t("gallery.album.properties.asc/desc") }}</label>
 						</FloatLabel>
 					</div>
 					<div class="h-10 my-2">
@@ -113,7 +113,7 @@
 								<template #value="slotProps">
 									<div v-if="slotProps.value && slotProps.value.id === 'compact'">
 										<i class="pi pi-arrow-down-left-and-arrow-up-right-to-center" />
-										<span class="ml-4 text-left">{{ $t("lychee.SET_COMPACT_HEADER") }}</span>
+										<span class="ml-4 text-left">{{ $t("gallery.album.properties.compact_header") }}</span>
 									</div>
 									<div v-else-if="slotProps.value" class="flex items-center">
 										<img :src="slotProps.value.thumb" alt="poster" class="w-4 rounded-sm" />
@@ -123,7 +123,7 @@
 								<template #option="slotProps">
 									<div v-if="slotProps.option.id === 'compact'" class="flex items-center">
 										<i class="pi pi-arrow-down-left-and-arrow-up-right-to-center" />
-										<span class="ml-4 text-left">{{ $t("lychee.SET_COMPACT_HEADER") }}</span>
+										<span class="ml-4 text-left">{{ $t("gallery.album.properties.compact_header") }}</span>
 									</div>
 									<div v-else class="flex items-center">
 										<img :src="slotProps.option.thumb" alt="poster" class="w-4 rounded-sm" />
@@ -131,7 +131,7 @@
 									</div>
 								</template>
 							</Select>
-							<label for="header">{{ $t("lychee.SET_HEADER") }}</label>
+							<label for="header">{{ $t("gallery.album.properties.header") }}</label>
 						</FloatLabel>
 					</div>
 					<div class="h-10 my-2">
@@ -148,13 +148,13 @@
 									</div>
 								</template>
 							</Select>
-							<label for="license">{{ $t("lychee.ALBUM_SET_LICENSE") }}</label>
+							<label for="license">{{ $t("gallery.album.properties.license") }}</label>
 						</FloatLabel>
 					</div>
 					<div class="my-2">
 						<FloatLabel variant="on">
 							<InputText id="copyright" v-model="copyright" />
-							<label for="copyright">{{ $t("lychee.ALBUM_SET_COPYRIGHT") }}</label>
+							<label for="copyright">{{ $t("gallery.album.properties.copyright") }}</label>
 						</FloatLabel>
 					</div>
 					<div class="sm:h-10 my-2 pt-4 flex flex-wrap gap-y-4">
@@ -178,7 +178,7 @@
 									</div>
 								</template>
 							</Select>
-							<label for="aspectRatio">Set album thumbs aspect ratio</label>
+							<label for="aspectRatio">{{ $t("gallery.album.properties.aspect_ratio") }}</label>
 						</FloatLabel>
 						<FloatLabel variant="on">
 							<Select
@@ -200,7 +200,7 @@
 									</div>
 								</template>
 							</Select>
-							<label for="albumTimeline">Set album timeline mode</label>
+							<label for="albumTimeline">{{ $t("gallery.album.properties.album_timeline") }}</label>
 						</FloatLabel>
 					</div>
 				</template>
@@ -225,7 +225,7 @@
 								</div>
 							</template>
 						</Select>
-						<label for="photoLayout">Set photo layout</label>
+						<label for="photoLayout">{{ $t("gallery.album.properties.layout") }}</label>
 					</FloatLabel>
 					<FloatLabel variant="on">
 						<Select
@@ -247,7 +247,7 @@
 								</div>
 							</template>
 						</Select>
-						<label for="photoTimeline">Set photo timeline mode</label>
+						<label for="photoTimeline">{{ $t("gallery.album.properties.photo_timeline") }}</label>
 					</FloatLabel>
 				</div>
 
@@ -263,11 +263,11 @@
 							class="pt-3 border-b hover:border-b-0 w-full"
 							pt:inputmultiple:class="w-full border-t-0 border-l-0 border-r-0 border-b hover:border-b-primary-400 focus:border-b-primary-400"
 						/>
-						<label for="tags">{{ $t("lychee.ALBUM_SET_SHOWTAGS") }}</label>
+						<label for="tags">{{ $t("gallery.album.properties.show_tags") }}</label>
 					</FloatLabel>
 				</div>
 				<Button class="p-3 mt-4 w-full font-bold border-none text-white hover:bg-primary-500 hover:text-surface-0 flex-shrink" @click="save">
-					{{ $t("lychee.SAVE") }}
+					{{ $t("dialogs.button.save") }}
 				</Button>
 			</form>
 		</template>
@@ -352,7 +352,7 @@ const headersOptions = computed(() => {
 	const list: HeaderOption[] = [
 		{
 			id: "compact",
-			title: trans("lychee.SET_COMPACT_HEADER"),
+			title: trans("gallery.album.properties.compact_header"),
 		},
 	];
 	list.push(
@@ -431,7 +431,7 @@ function saveAlbum() {
 	};
 	AlbumService.updateAlbum(data)
 		.then(() => {
-			toast.add({ severity: "success", summary: "Success", life: 3000 });
+			toast.add({ severity: "success", summary: trans("toast.success"), life: 3000 });
 			AlbumService.clearCache(albumId.value);
 		})
 		.catch((error) => {
@@ -441,7 +441,7 @@ function saveAlbum() {
 
 function saveTagAlbum() {
 	if (tags.value.length === 0) {
-		toast.add({ severity: "error", summary: "Error", detail: "Tags are required", life: 3000 });
+		toast.add({ severity: "error", summary: trans("toasts.error"), detail: trans("gallery.album.properties.tags_required"), life: 3000 });
 		return;
 	}
 
@@ -458,7 +458,7 @@ function saveTagAlbum() {
 	};
 	AlbumService.updateTag(data)
 		.then(() => {
-			toast.add({ severity: "success", summary: "Success", life: 3000 });
+			toast.add({ severity: "success", summary: trans("toasts.success"), life: 3000 });
 			AlbumService.clearCache(albumId.value);
 		})
 		.catch((error) => {
