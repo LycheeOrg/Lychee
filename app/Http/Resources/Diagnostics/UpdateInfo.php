@@ -13,6 +13,7 @@ class UpdateInfo extends Data
 		public string $info,
 		public string $extra,
 		public VersionChannelType $channelName,
+		public bool $isDocker,
 	) {
 	}
 }

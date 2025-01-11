@@ -1,6 +1,6 @@
 <template>
 	<Card
-		v-if="data"
+		v-if="data && data.isDocker !== true"
 		class="min-h-40 dark:bg-surface-800 shadow shadow-surface-950/30 rounded-lg relative"
 		pt:body:class="min-h-40 h-full"
 		pt:content:class="h-full flex justify-between flex-col"
