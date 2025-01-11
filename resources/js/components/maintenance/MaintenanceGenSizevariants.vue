@@ -11,7 +11,7 @@
 			</div>
 		</template>
 		<template #content>
-			<ScrollPanel class="w-full h-56 text-sm text-muted-color">
+			<ScrollPanel class="w-full h-40 text-sm text-muted-color">
 				<div v-html="description" class="w-full text-center"></div>
 				<ProgressSpinner v-if="loading" class="w-full"></ProgressSpinner>
 			</ScrollPanel>
