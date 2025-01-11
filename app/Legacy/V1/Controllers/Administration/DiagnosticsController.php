@@ -9,6 +9,8 @@ use App\Actions\Diagnostics\Space;
 use App\Actions\InstallUpdate\CheckUpdate;
 use App\Constants\AccessPermissionConstants as APC;
 use App\Contracts\Exceptions\LycheeException;
+use App\DTO\DiagnosticData;
+use App\Enum\MessageType;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthorizedException;
@@ -56,11 +58,36 @@ class DiagnosticsController extends Controller
 
 		$authorized = $this->isAuthorized();
 
-		$errors = $collectErrors->get(config('app.skip_diagnostics_checks') ?? []);
+		$errors = $this->formatErrors($collectErrors->get(config('app.skip_diagnostics_checks') ?? []));
 		$infos = $authorized ? $collectInfo->get() : [self::ERROR_MSG];
 		$configs = $authorized ? $collectConfig->get() : [self::ERROR_MSG];
 
 		return new DiagnosticInfo($errors, $infos, $configs, $checkUpdate->getCode());
+	}
+
+	/**
+	 * Format the block.
+	 *
+	 * @param DiagnosticData[] $array
+	 *
+	 * @return string[] list of messages
+	 */
+	private function formatErrors(array $array): array
+	{
+		$ret = [];
+		foreach ($array as $elem) {
+			$prefix = match ($elem->type) {
+				MessageType::ERROR => 'Error: ',
+				MessageType::WARNING => 'Warning: ',
+				default => 'Info: ',
+			};
+			$ret[] = $prefix . $elem->message;
+			foreach ($elem->details as $detail) {
+				$ret[] = '         ' . $detail;
+			}
+		}
+
+		return $ret;
 	}
 
 	/**

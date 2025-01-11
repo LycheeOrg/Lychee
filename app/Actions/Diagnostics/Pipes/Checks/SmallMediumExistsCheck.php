@@ -3,6 +3,7 @@
 namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
+use App\DTO\DiagnosticData;
 use App\Enum\SizeVariantType;
 use App\Image\SizeVariantDimensionHelpers;
 use App\Models\SizeVariant;
@@ -22,8 +23,8 @@ class SmallMediumExistsCheck implements DiagnosticPipe
 	public const MAX_NUM_MEDIUM = 'max_num_medium';
 	public const MAX_NUM_SMALL2X = 'max_num_small2x';
 	public const MAX_NUM_MEDIUM2X = 'max_num_medium2x';
-	public const INFO_MSG = 'Info: Found %d %s that could be generated.';
-	public const INFO_LINE = '     You can use `php artisan lychee:generate_thumbs %s %d` to generate them.';
+	public const INFO_MSG = 'Found %d %s that could be generated.';
+	public const INFO_LINE = 'You can use `php artisan lychee:generate_thumbs %s %d` to generate them.';
 
 	/**
 	 * {@inheritDoc}
@@ -108,26 +109,38 @@ class SmallMediumExistsCheck implements DiagnosticPipe
 
 		$num = $result->{self::MAX_NUM_SMALL} - $result->{self::NUM_SMALL}; // @phpstan-ignore-line
 		if ($num > 0) {
-			$data[] = sprintf(self::INFO_MSG, $num, SizeVariantType::SMALL->name());
-			$data[] = sprintf(self::INFO_LINE, SizeVariantType::SMALL->name(), $num);
+			$data[] = DiagnosticData::info(
+				sprintf(self::INFO_MSG, $num, SizeVariantType::SMALL->name()),
+				self::class,
+				[sprintf(self::INFO_LINE, SizeVariantType::SMALL->name(), $num)]
+			);
 		}
 
 		$num = $result->{self::MAX_NUM_SMALL2X} - $result->{self::NUM_SMALL2X}; // @phpstan-ignore-line
 		if ($num > 0 && $svHelpers->isEnabledByConfiguration(SizeVariantType::SMALL2X)) {
-			$data[] = sprintf(self::INFO_MSG, $num, SizeVariantType::SMALL2X->name());
-			$data[] = sprintf(self::INFO_LINE, SizeVariantType::SMALL2X->name(), $num);
+			$data[] = DiagnosticData::info(
+				sprintf(self::INFO_MSG, $num, SizeVariantType::SMALL2X->name()),
+				self::class,
+				[sprintf(self::INFO_LINE, SizeVariantType::SMALL2X->name(), $num)]
+			);
 		}
 
 		$num = $result->{self::MAX_NUM_MEDIUM} - $result->{self::NUM_MEDIUM}; // @phpstan-ignore-line
 		if ($num > 0) {
-			$data[] = sprintf(self::INFO_MSG, $num, SizeVariantType::MEDIUM->name());
-			$data[] = sprintf(self::INFO_LINE, SizeVariantType::MEDIUM->name(), $num);
+			$data[] = DiagnosticData::info(
+				sprintf(self::INFO_MSG, $num, SizeVariantType::MEDIUM->name()),
+				self::class,
+				[sprintf(self::INFO_LINE, SizeVariantType::MEDIUM->name(), $num)]
+			);
 		}
 
 		$num = $result->{self::MAX_NUM_MEDIUM2X} - $result->{self::NUM_MEDIUM2X}; // @phpstan-ignore-line
 		if ($num > 0 && $svHelpers->isEnabledByConfiguration(SizeVariantType::MEDIUM2X)) {
-			$data[] = sprintf(self::INFO_MSG, $num, SizeVariantType::MEDIUM2X->name());
-			$data[] = sprintf(self::INFO_LINE, SizeVariantType::MEDIUM2X->name(), $num);
+			$data[] = DiagnosticData::info(
+				sprintf(self::INFO_MSG, $num, SizeVariantType::MEDIUM2X->name()),
+				self::class,
+				[sprintf(self::INFO_LINE, SizeVariantType::MEDIUM2X->name(), $num)]
+			);
 		}
 
 		return $next($data);

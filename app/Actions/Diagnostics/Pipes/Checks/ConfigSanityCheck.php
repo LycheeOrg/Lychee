@@ -3,6 +3,7 @@
 namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
+use App\DTO\DiagnosticData;
 use App\Models\Configs;
 use Illuminate\Support\Facades\Schema;
 
@@ -12,9 +13,6 @@ use Illuminate\Support\Facades\Schema;
  */
 class ConfigSanityCheck implements DiagnosticPipe
 {
-	/** @var array<string,string> */
-	private array $settings;
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -24,43 +22,16 @@ class ConfigSanityCheck implements DiagnosticPipe
 			return $next($data);
 		}
 
-		// Load settings
-		$this->settings = Configs::get();
-
-		$this->checkKeysExistsAndSet($data);
-
 		$this->sanity($data);
-
 		$this->checkDropBoxKeyWarning($data);
 
 		return $next($data);
 	}
 
 	/**
-	 * Check that a certain set of configuration exists in the database.
-	 *
-	 * @param array<int,string> $data
-	 *
-	 * @return void
-	 */
-	private function checkKeysExistsAndSet(array &$data): void
-	{
-		$keys_checked = [
-			'sorting_photos_col', 'sorting_albums_col',
-			'imagick', 'skip_duplicates', 'check_for_updates', 'version',
-		];
-
-		foreach ($keys_checked as $key) {
-			if (!isset($this->settings[$key])) {
-				$data[] = 'Error: ' . $key . ' not set in database';
-			}
-		}
-	}
-
-	/**
 	 * Warning if the Dropbox key does not exists.
 	 *
-	 * @param array<int,string> $data
+	 * @param DiagnosticData[] $data
 	 *
 	 * @return void
 	 */
@@ -68,15 +39,15 @@ class ConfigSanityCheck implements DiagnosticPipe
 	{
 		$dropbox = Configs::getValueAsString('dropbox_key');
 		if ($dropbox === '') {
-			$data[] = 'Warning: Dropbox import not working. dropbox_key is empty.';
-			$data[] = 'Info: To hide this Dropbox warning, set the dropbox_key to "disabled"';
+			$data[] = DiagnosticData::warn('Dropbox import not working. dropbox_key is empty.', self::class);
+			$data[] = DiagnosticData::info('To hide this Dropbox warning, set the dropbox_key to "disabled".', self::class);
 		}
 	}
 
 	/**
 	 * Sanity check of the config.
 	 *
-	 * @param array<int,string> $return
+	 * @param DiagnosticData[] $return
 	 */
 	private function sanity(array &$return): void
 	{
@@ -85,7 +56,7 @@ class ConfigSanityCheck implements DiagnosticPipe
 		foreach ($configs as $config) {
 			$message = $config->sanity($config->value);
 			if ($message !== '') {
-				$return[] = $message;
+				$return[] = DiagnosticData::error(str_replace('Error: ', '', $message), self::class);
 			}
 		}
 	}

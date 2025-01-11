@@ -3,6 +3,7 @@
 namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
+use App\DTO\DiagnosticData;
 use App\Models\Configs;
 use LycheeVerify\Verify;
 
@@ -33,7 +34,7 @@ class SupporterCheck implements DiagnosticPipe
 
 		if (!$this->verify->is_supporter()) {
 			// @codeCoverageIgnoreStart
-			$data[] = 'Info: Have you considered supporting Lychee? :)';
+			$data[] = DiagnosticData::info('Have you considered supporting Lychee? :)', self::class);
 			// @codeCoverageIgnoreEnd
 		}
 

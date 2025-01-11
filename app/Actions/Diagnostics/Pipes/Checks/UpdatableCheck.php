@@ -3,6 +3,7 @@
 namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
+use App\DTO\DiagnosticData;
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\ExternalComponentMissingException;
 use App\Exceptions\InsufficientFilesystemPermissions;
@@ -40,11 +41,11 @@ class UpdatableCheck implements DiagnosticPipe
 				self::assertUpdatability();
 				// @codeCoverageIgnoreStart
 			} catch (ExternalComponentMissingException $e) {
-				$data[] = 'Info: ' . $e->getMessage();
+				$data[] = DiagnosticData::info($e->getMessage(), self::class);
 			} catch (ConfigurationException $e) {
-				$data[] = 'Warning: ' . $e->getMessage();
+				$data[] = DiagnosticData::warn($e->getMessage(), self::class);
 			} catch (InsufficientFilesystemPermissions|VersionControlException $e) {
-				$data[] = 'Error: ' . $e->getMessage();
+				$data[] = DiagnosticData::error($e->getMessage(), self::class);
 			}
 			// @codeCoverageIgnoreEnd
 		}

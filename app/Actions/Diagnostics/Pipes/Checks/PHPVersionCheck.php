@@ -3,6 +3,7 @@
 namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
+use App\DTO\DiagnosticData;
 
 /**
  * We want to make sure that our users are using the correct version of PHP.
@@ -28,7 +29,7 @@ class PHPVersionCheck implements DiagnosticPipe
 	}
 
 	/**
-	 * @param array<int,string> $data
+	 * @param DiagnosticData[] $data
 	 *
 	 * @return void
 	 */
@@ -38,19 +39,19 @@ class PHPVersionCheck implements DiagnosticPipe
 		// I hereby solemnly declare this code as covered !
 		if (floatval(phpversion()) <= self::PHP_ERROR) {
 			// @codeCoverageIgnoreStart
-			$data[] = 'Error: Upgrade to PHP ' . self::PHP_WARNING . ' or higher';
+			$data[] = DiagnosticData::error('Upgrade to PHP ' . self::PHP_WARNING . ' or higher', self::class);
 		// @codeCoverageIgnoreEnd
 		} elseif (floatval(phpversion()) < self::PHP_WARNING) {
 			// @codeCoverageIgnoreStart
-			$data[] = 'Warning: Upgrade to PHP ' . self::PHP_LATEST . ' or higher';
+			$data[] = DiagnosticData::warn('Upgrade to PHP ' . self::PHP_LATEST . ' or higher', self::class);
 		// @codeCoverageIgnoreEnd
 		} elseif (floatval(phpversion()) < self::PHP_LATEST) {
-			$data[] = 'Info: Latest version of PHP is ' . self::PHP_LATEST;
+			$data[] = DiagnosticData::info('Latest version of PHP is ' . self::PHP_LATEST, self::class);
 		}
 	}
 
 	/**
-	 * @param array<int,string> $data
+	 * @param DiagnosticData[] $data
 	 *
 	 * @return void
 	 */
@@ -59,13 +60,13 @@ class PHPVersionCheck implements DiagnosticPipe
 		// 32 or 64 bits ?
 		if (PHP_INT_MAX === 2147483647) {
 			// @codeCoverageIgnoreStart
-			$data[] = 'Warning: Using 32 bit PHP, recommended upgrade to 64 bit';
+			$data[] = DiagnosticData::warn('Using 32 bit PHP, recommended upgrade to 64 bit', self::class);
 			// @codeCoverageIgnoreEnd
 		}
 	}
 
 	/**
-	 * @param array<int,string> $data
+	 * @param DiagnosticData[] $data
 	 *
 	 * @return void
 	 */
@@ -96,7 +97,7 @@ class PHPVersionCheck implements DiagnosticPipe
 		foreach ($extensions as $extension) {
 			if (!extension_loaded($extension)) {
 				// @codeCoverageIgnoreStart
-				$data[] = 'Error: PHP ' . $extension . ' extension not activated';
+				$data[] = DiagnosticData::error('PHP ' . $extension . ' extension not activated', self::class);
 				// @codeCoverageIgnoreEnd
 			}
 		}

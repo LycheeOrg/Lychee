@@ -3,6 +3,7 @@
 namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
+use App\DTO\DiagnosticData;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -31,7 +32,7 @@ class ForeignKeyListInfo implements DiagnosticPipe
 	}
 
 	/**
-	 * @param array<int,string> $data
+	 * @param DiagnosticData[] $data
 	 *
 	 * @return void
 	 */
@@ -40,12 +41,15 @@ class ForeignKeyListInfo implements DiagnosticPipe
 		$fks = DB::select("SELECT m.name , p.* FROM sqlite_master m JOIN pragma_foreign_key_list(m.name) p ON m.name != p.\"table\" WHERE m.type = 'table' ORDER BY m.name;");
 
 		foreach ($fks as $fk) {
-			$data[] = sprintf('Foreign key: %-30s → %-20s : %s', $fk->name . '.' . $fk->from, $fk->table . '.' . $fk->to, strval($fk->on_update));
+			$data[] = DiagnosticData::info(
+				sprintf('Foreign key: %-30s → %-20s : %s', $fk->name . '.' . $fk->from, $fk->table . '.' . $fk->to, strval($fk->on_update)),
+				self::class
+			);
 		}
 	}
 
 	/**
-	 * @param array<int,string> $data
+	 * @param DiagnosticData[] $data
 	 *
 	 * @return void
 	 */
@@ -60,15 +64,15 @@ group by fks.constraint_schema, fks.table_name, fks.unique_constraint_schema, fk
 order by fks.constraint_schema, fks.table_name;
 ');
 		foreach ($fks as $fk) {
-			$data[] = sprintf('Foreign key: %-30s → %-20s : %s',
-				$fk->TABLE_NAME . '.' . $fk->COLUMN_NAME,
-				$fk->REFERENCED_TABLE_NAME . '.' . $fk->REFERENCED_COLUMN_NAME,
-				strval($fk->UPDATE_RULE));
+			$data[] = DiagnosticData::info(
+				sprintf('Foreign key: %-30s → %-20s : %s', $fk->TABLE_NAME . '.' . $fk->COLUMN_NAME, $fk->REFERENCED_TABLE_NAME . '.' . $fk->REFERENCED_COLUMN_NAME, strval($fk->UPDATE_RULE)),
+				self::class
+			);
 		}
 	}
 
 	/**
-	 * @param array<int,string> $data
+	 * @param DiagnosticData[] $data
 	 *
 	 * @return void
 	 */
@@ -89,10 +93,7 @@ JOIN information_schema.constraint_column_usage AS ccu
 WHERE tc.constraint_type = \'FOREIGN KEY\';');
 
 		foreach ($fks as $fk) {
-			$data[] = sprintf('Foreign key: %-30s → %-20s',
-				$fk->table_name . '.' . $fk->column_name,
-				$fk->foreign_table_name . '.' . $fk->foreign_column_name);
+			$data[] = DiagnosticData::info(sprintf('Foreign key: %-30s → %-20s', $fk->table_name . '.' . $fk->column_name, $fk->foreign_table_name . '.' . $fk->foreign_column_name), self::class);
 		}
 	}
 }
-

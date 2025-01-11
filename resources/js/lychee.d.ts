@@ -72,6 +72,7 @@ declare namespace App.Enum {
 		| "CC-BY-NC-SA-3.0"
 		| "CC-BY-NC-SA-4.0";
 	export type MapProviders = "Wikimedia" | "OpenStreetMap.org" | "OpenStreetMap.de" | "OpenStreetMap.fr" | "RRZE";
+	export type MessageType = "info" | "warning" | "error";
 	export type OauthProvidersType =
 		| "amazon"
 		| "apple"
@@ -129,8 +130,10 @@ declare namespace App.Http.Resources.Diagnostics {
 		is_not_empty: boolean;
 	};
 	export type ErrorLine = {
-		type: string;
-		line: string;
+		type: App.Enum.MessageType;
+		message: string;
+		from: string;
+		details: Array<any>;
 	};
 	export type Permissions = {
 		left: string;
