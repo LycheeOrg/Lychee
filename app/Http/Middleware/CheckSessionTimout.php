@@ -25,7 +25,7 @@ class CheckSessionTimout
 		$timeout = config('session.lifetime') * 60;
 		$lastActivity = Cookie::get('lastActivityTime');
 
-		if (Auth::guest()) {
+		if (Auth::guest() && !$lastActivity) {
 			Cookie::queue(Cookie::forget('lastActivityTime'));
 		}
 

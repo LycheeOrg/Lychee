@@ -5,6 +5,10 @@ import { setupCache } from "axios-cache-interceptor";
 
 let isReloadingPage = false;
 
+window.addEventListener("load", () => {
+	isReloadingPage = false;
+});
+
 window.addEventListener("unload", () => {
 	isReloadingPage = false;
 });
