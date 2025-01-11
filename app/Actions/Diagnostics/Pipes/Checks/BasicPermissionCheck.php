@@ -3,6 +3,7 @@
 namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
+use App\DTO\DiagnosticData;
 use App\Enum\StorageDiskType;
 use App\Exceptions\Handler;
 use App\Exceptions\Internal\InvalidConfigOption;
@@ -71,7 +72,7 @@ class BasicPermissionCheck implements DiagnosticPipe
 	/**
 	 * Check all the folders with the correct permissions.
 	 *
-	 * @param array<int,string> $data
+	 * @param DiagnosticData[] $data
 	 *
 	 * @return void
 	 */
@@ -91,7 +92,7 @@ class BasicPermissionCheck implements DiagnosticPipe
 			$groupIDsOrFalse = posix_getgroups();
 			// @codeCoverageIgnoreStart
 		} catch (PosixException) {
-			$data[] = 'Error: Could not determine groups of process';
+			$data[] = DiagnosticData::error('Could not determine groups of process', self::class);
 
 			return;
 		}
@@ -128,17 +129,17 @@ class BasicPermissionCheck implements DiagnosticPipe
 
 		if ($this->numOwnerIssues > self::MAX_ISSUE_REPORTS_PER_TYPE) {
 			// @codeCoverageIgnoreStart
-			$data[] = sprintf('Warning: %d more directories with wrong owner', $this->numOwnerIssues - self::MAX_ISSUE_REPORTS_PER_TYPE);
+			$data[] = DiagnosticData::warn(sprintf('%d more directories with wrong owner', $this->numOwnerIssues - self::MAX_ISSUE_REPORTS_PER_TYPE), self::class);
 			// @codeCoverageIgnoreEnd
 		}
 		if ($this->numPermissionIssues > self::MAX_ISSUE_REPORTS_PER_TYPE) {
 			// @codeCoverageIgnoreStart
-			$data[] = sprintf('Warning: %d more directories with wrong permissions', $this->numPermissionIssues - self::MAX_ISSUE_REPORTS_PER_TYPE);
+			$data[] = DiagnosticData::warn(sprintf('%d more directories with wrong permissions', $this->numPermissionIssues - self::MAX_ISSUE_REPORTS_PER_TYPE), self::class);
 			// @codeCoverageIgnoreEnd
 		}
 		if ($this->numAccessIssues > self::MAX_ISSUE_REPORTS_PER_TYPE) {
 			// @codeCoverageIgnoreStart
-			$data[] = sprintf('Warning: %d more inaccessible directories', $this->numAccessIssues - self::MAX_ISSUE_REPORTS_PER_TYPE);
+			$data[] = DiagnosticData::warn(sprintf('%d more inaccessible directories', $this->numAccessIssues - self::MAX_ISSUE_REPORTS_PER_TYPE), self::class);
 			// @codeCoverageIgnoreEnd
 		}
 	}
@@ -146,7 +147,7 @@ class BasicPermissionCheck implements DiagnosticPipe
 	/**
 	 * Check if user.css has the correct permissions.
 	 *
-	 * @param array<int,string> $data
+	 * @param DiagnosticData[] $data
 	 *
 	 * @return void
 	 */
@@ -155,10 +156,11 @@ class BasicPermissionCheck implements DiagnosticPipe
 		$p = Storage::disk('dist')->path('user.css');
 		if (!Helpers::hasPermissions($p)) {
 			// @codeCoverageIgnoreStart
-			$data[] = sprintf("Warning: '%s' does not exist or has insufficient read/write privileges.", $this->anonymize($p));
+			$data[] = DiagnosticData::warn(sprintf("'%s' does not exist or has insufficient read/write privileges.", $this->anonymize($p)), self::class);
+
 			$p = Storage::disk('dist')->path('');
 			if (!Helpers::hasPermissions($p)) {
-				$data[] = sprintf("Warning: '%s' has insufficient read/write privileges.", $this->anonymize($p));
+				$data[] = DiagnosticData::warn(sprintf("'%s' has insufficient read/write privileges.", $this->anonymize($p)), self::class);
 			}
 			// @codeCoverageIgnoreEnd
 		}
@@ -170,8 +172,8 @@ class BasicPermissionCheck implements DiagnosticPipe
 	 * For efficiency reasons only the directory permissions are checked,
 	 * not the permissions of every single file.
 	 *
-	 * @param string   $path the path of the directory or file to check
-	 * @param string[] $data the list of errors to append to
+	 * @param string           $path the path of the directory or file to check
+	 * @param DiagnosticData[] $data the list of errors to append to
 	 *
 	 * @noinspection PhpComposerExtensionStubsInspection
 	 */
@@ -186,7 +188,7 @@ class BasicPermissionCheck implements DiagnosticPipe
 				$actualPerm = fileperms($path);
 				// @codeCoverageIgnoreStart
 			} catch (FilesystemException) {
-				$data[] = sprintf('Warning: Unable to determine permissions for %s' . PHP_EOL, $this->anonymize($path));
+				$data[] = DiagnosticData::warn(sprintf('Unable to determine permissions for %s', $this->anonymize($path)), self::class);
 
 				return;
 			}
@@ -216,7 +218,7 @@ class BasicPermissionCheck implements DiagnosticPipe
 				// @codeCoverageIgnoreStart
 				$this->numOwnerIssues++;
 				if ($this->numOwnerIssues <= self::MAX_ISSUE_REPORTS_PER_TYPE) {
-					$data[] = sprintf('Warning: %s is owned by group %s, but should be owned by one out of %s', $this->anonymize($path), $owningGroupName, $this->groupNames);
+					$data[] = DiagnosticData::warn(sprintf('%s is owned by group %s, but should be owned by one out of %s', $this->anonymize($path), $owningGroupName, $this->groupNames), self::class);
 				}
 				// @codeCoverageIgnoreEnd
 			}
@@ -225,12 +227,7 @@ class BasicPermissionCheck implements DiagnosticPipe
 				// @codeCoverageIgnoreStart
 				$this->numPermissionIssues++;
 				if ($this->numPermissionIssues <= self::MAX_ISSUE_REPORTS_PER_TYPE) {
-					$data[] = sprintf(
-						'Warning: %s has permissions %04o, but should have %04o',
-						$this->anonymize($path),
-						$actualPerm,
-						$expectedPerm
-					);
+					$data[] = DiagnosticData::warn(sprintf('%s has permissions %04o, but should have %04o', $this->anonymize($path), $actualPerm, $expectedPerm), self::class);
 				}
 				// @codeCoverageIgnoreEnd
 			}
@@ -245,7 +242,7 @@ class BasicPermissionCheck implements DiagnosticPipe
 						!is_readable($path) => 'not readable',
 						default => '',
 					};
-					$data[] = sprintf('Error: %s is %s by %s', $this->anonymize($path), $problem, $this->groupNames);
+					$data[] = DiagnosticData::error(sprintf('%s is %s by %s', $this->anonymize($path), $problem, $this->groupNames), self::class);
 				}
 				// @codeCoverageIgnoreEnd
 			}
@@ -258,7 +255,7 @@ class BasicPermissionCheck implements DiagnosticPipe
 			}
 			// @codeCoverageIgnoreStart
 		} catch (\Exception $e) {
-			$data[] = 'Error: ' . $e->getMessage();
+			$data[] = DiagnosticData::error($e->getMessage(), self::class);
 			Handler::reportSafely($e);
 		}
 		// @codeCoverageIgnoreEnd

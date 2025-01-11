@@ -7,6 +7,8 @@ use App\Actions\Diagnostics\Errors;
 use App\Actions\Diagnostics\Info;
 use App\Console\Commands\Utilities\Colorize;
 use App\Contracts\Exceptions\ExternalLycheeException;
+use App\DTO\DiagnosticData;
+use App\Enum\MessageType;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\UnexpectedException;
 use Illuminate\Console\Command;
@@ -66,6 +68,30 @@ class Diagnostics extends Command
 	}
 
 	/**
+	 * Format the block.
+	 *
+	 * @param string           $str
+	 * @param DiagnosticData[] $array
+	 */
+	private function blockDiagnostic(string $str, array $array): void
+	{
+		$this->line($this->col->cyan($str));
+		$this->line($this->col->cyan(str_pad('', strlen($str), '-')));
+
+		foreach ($array as $elem) {
+			$prefix = match ($elem->type) {
+				MessageType::ERROR => $this->col->red('Error: '),
+				MessageType::WARNING => $this->col->yellow('Warning: '),
+				default => $this->col->green('Info: '),
+			};
+			$this->line($prefix . $elem->message);
+			foreach ($elem->details as $detail) {
+				$this->line('         ' . $detail);
+			}
+		}
+	}
+
+	/**
 	 * Execute the console command.
 	 *
 	 * @return int
@@ -84,7 +110,7 @@ class Diagnostics extends Command
 		try {
 			$this->line('');
 			$this->line('');
-			$this->block('Diagnostics', resolve(Errors::class)->get($skip_diagnostics));
+			$this->blockDiagnostic('Smart Diagnostics', resolve(Errors::class)->get($skip_diagnostics));
 			$this->line('');
 			$this->block('System Information', resolve(Info::class)->get());
 			$this->line('');

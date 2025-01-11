@@ -3,6 +3,7 @@
 namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
+use App\DTO\DiagnosticData;
 
 /**
  * Verify that GD support the correct images extensions.
@@ -18,12 +19,12 @@ class GDSupportCheck implements DiagnosticPipe
 			$gdVersion = gd_info();
 			if (!$gdVersion['JPEG Support']) {
 				// @codeCoverageIgnoreStart
-				$data[] = 'Error: PHP gd extension without jpeg support';
+				$data[] = DiagnosticData::error('PHP gd extension without jpeg support', self::class);
 				// @codeCoverageIgnoreEnd
 			}
 			if (!$gdVersion['PNG Support']) {
 				// @codeCoverageIgnoreStart
-				$data[] = 'Error: PHP gd extension without png support';
+				$data[] = DiagnosticData::error('PHP gd extension without png support', self::class);
 				// @codeCoverageIgnoreEnd
 			}
 			if (
@@ -31,12 +32,12 @@ class GDSupportCheck implements DiagnosticPipe
 				!$gdVersion['GIF Create Support']
 			) {
 				// @codeCoverageIgnoreStart
-				$data[] = 'Error: PHP gd extension without full gif support';
+				$data[] = DiagnosticData::error('PHP gd extension without full gif support', self::class);
 				// @codeCoverageIgnoreEnd
 			}
 			if (!$gdVersion['WebP Support']) {
 				// @codeCoverageIgnoreStart
-				$data[] = 'Error: PHP gd extension without WebP support';
+				$data[] = DiagnosticData::error('PHP gd extension without WebP support', self::class);
 				// @codeCoverageIgnoreEnd
 			}
 		}

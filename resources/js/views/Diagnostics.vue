@@ -38,13 +38,13 @@ const togglableStore = useTogglablesStateStore();
 
 const toast = useToast();
 
-const errorLoaded = ref<App.Http.Resources.Diagnostics.ErrorLine[] | undefined>(undefined);
+const errorLoaded = ref<string[] | undefined>(undefined);
 const infoLoaded = ref<string[] | undefined>(undefined);
 const configurationLoaded = ref<string[] | undefined>(undefined);
 
 const canCopy = computed(() => errorLoaded.value !== undefined && infoLoaded.value !== undefined && configurationLoaded.value !== undefined);
 
-function loadError(val: App.Http.Resources.Diagnostics.ErrorLine[]) {
+function loadError(val: string[]) {
 	errorLoaded.value = val;
 }
 
@@ -61,14 +61,11 @@ function copy() {
 		return;
 	}
 
-	const errorText = errorLoaded.value
-		?.filter((errorLine) => errorLine.type !== undefined)
-		.map((errorLines) => `${errorLines.type.padEnd(7)}: ${errorLines.line}`)
-		.join("\n");
-	const infoText = infoLoaded.value?.join("\n");
-	const configurationText = configurationLoaded.value?.join("\n");
+	const errorText: string = errorLoaded.value?.join("\n") ?? "";
+	const infoText: string = infoLoaded.value?.join("\n") ?? "";
+	const configurationText: string = configurationLoaded.value?.join("\n") ?? "";
 
-	const toClipBoard = `Errors:\n${"-".repeat(20)}\n${errorText}\n\n\nInfo:\n${"-".repeat(20)}\n${infoText}\n\n\nConfig:\n${"-".repeat(20)}\n${configurationText}`;
+	const toClipBoard = `Self-diagnosis:\n${"-".repeat(20)}\n${errorText}\n\n\nInfo:\n${"-".repeat(20)}\n${infoText}\n\n\nConfig:\n${"-".repeat(20)}\n${configurationText}`;
 
 	navigator.clipboard
 		.writeText(toClipBoard)

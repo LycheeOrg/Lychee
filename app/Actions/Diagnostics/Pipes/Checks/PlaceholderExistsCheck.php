@@ -3,6 +3,7 @@
 namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
+use App\DTO\DiagnosticData;
 use App\Enum\SizeVariantType;
 use App\Image\SizeVariantDimensionHelpers;
 use App\Models\SizeVariant;
@@ -14,10 +15,10 @@ use Illuminate\Support\Facades\Schema;
  */
 class PlaceholderExistsCheck implements DiagnosticPipe
 {
-	public const INFO_MSG_MISSING = 'Info: Found %d placeholders that could be generated.';
-	public const INFO_LINE_MISSING = '     You can use `php artisan lychee:generate_thumbs placeholder %d` to generate them.';
-	public const INFO_MSG_UNENCODED = 'Info: Found %d placeholder images that have not been encoded.';
-	public const INFO_LINE_UNENCODED = '     You can use `php artisan lychee:encode_placeholders %d` to encode them.';
+	public const INFO_MSG_MISSING = 'Found %d placeholders that could be generated.';
+	public const INFO_LINE_MISSING = 'You can use `php artisan lychee:generate_thumbs placeholder %d` to generate them.';
+	public const INFO_MSG_UNENCODED = 'Found %d placeholder images that have not been encoded.';
+	public const INFO_LINE_UNENCODED = 'You can use `php artisan lychee:encode_placeholders %d` to encode them.';
 
 	/**
 	 * {@inheritDoc}
@@ -59,14 +60,12 @@ class PlaceholderExistsCheck implements DiagnosticPipe
 
 		$num = $result->num_unencoded_placeholder;
 		if ($num > 0) {
-			$data[] = sprintf(self::INFO_MSG_UNENCODED, $num);
-			$data[] = sprintf(self::INFO_LINE_UNENCODED, $num);
+			$data[] = DiagnosticData::info(sprintf(self::INFO_MSG_UNENCODED, $num), self::class, [sprintf(self::INFO_LINE_UNENCODED, $num)]);
 		}
 
 		$num = $result->max_num_placeholder - $result->num_placeholder;
 		if ($num > 0) {
-			$data[] = sprintf(self::INFO_MSG_MISSING, $num);
-			$data[] = sprintf(self::INFO_LINE_MISSING, $num);
+			$data[] = DiagnosticData::info(sprintf(self::INFO_MSG_MISSING, $num), self::class, [sprintf(self::INFO_LINE_MISSING, $num)]);
 		}
 
 		return $next($data);

@@ -3,6 +3,7 @@
 namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
+use App\DTO\DiagnosticData;
 use App\Models\Photo;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -33,7 +34,7 @@ class DBIntegrityCheck implements DiagnosticPipe
 			->get();
 
 		foreach ($photos as $photo) {
-			$data[] = 'Error: Photo without Original found -- ' . $photo->title . ' in ' . ($photo->album?->title ?? __('gallery.smart_album.unsorted'));
+			$data[] = DiagnosticData::error('Photo without Original found -- ' . $photo->title . ' in ' . ($photo->album?->title ?? __('gallery.smart_album.unsorted')), self::class);
 		}
 
 		return $next($data);
