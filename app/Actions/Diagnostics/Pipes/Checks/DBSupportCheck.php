@@ -4,7 +4,6 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
-use App\Enum\MessageType;
 
 /**
  * Check that the database is supported.
@@ -31,14 +30,14 @@ class DBSupportCheck implements DiagnosticPipe
 				$found = true;
 				if (!extension_loaded($db_possibility[1])) {
 					// @codeCoverageIgnoreStart
-					$data[] = DiagnosticData::from(MessageType::ERROR, $db_possibility[0] . ' db driver selected and PHP ' . $db_possibility[1] . ' extension not activated', self::class);
+					$data[] = DiagnosticData::error($db_possibility[0] . ' db driver selected and PHP ' . $db_possibility[1] . ' extension not activated', self::class);
 					// @codeCoverageIgnoreEnd
 				}
 			}
 		}
 		if (!$found) {
 			// @codeCoverageIgnoreStart
-			$data[] = DiagnosticData::from(MessageType::ERROR, 'could not find the database solution for ' . config('database.default'), self::class);
+			$data[] = DiagnosticData::error('could not find the database solution for ' . config('database.default'), self::class);
 			// @codeCoverageIgnoreEnd
 		}
 

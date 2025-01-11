@@ -69,19 +69,4 @@ class DiagnosticData
 	{
 		return new DiagnosticData(MessageType::INFO, $message, $from, $details);
 	}
-
-	/**
-	 * Quick static builder.
-	 *
-	 * @param MessageType  $type
-	 * @param string       $message
-	 * @param class-string $from
-	 * @param string[]     $details
-	 *
-	 * @return DiagnosticData
-	 */
-	public static function from(MessageType $type, string $message, string $from, array $details = []): DiagnosticData
-	{
-		return new DiagnosticData($type, $message, $from, $details);
-	}
 }
