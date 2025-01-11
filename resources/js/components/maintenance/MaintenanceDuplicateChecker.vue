@@ -36,7 +36,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import Button from "primevue/button";
 import Card from "primevue/card";
 import ProgressSpinner from "primevue/progressspinner";
@@ -44,16 +44,13 @@ import MaintenanceService from "@/services/maintenance-service";
 
 const data = ref<App.Http.Resources.Models.Duplicates.DuplicateCount | undefined>(undefined);
 
-const title = ref();
-
 function load() {
 	MaintenanceService.getDuplicatesCount().then((response) => {
-		console.log(response.data);
 		data.value = response.data;
 	});
 }
 
-load();
+onMounted(load);
 </script>
 
 <style lang="css" scoped>
