@@ -153,6 +153,7 @@ declare namespace App.Http.Resources.Diagnostics {
 		info: string;
 		extra: string;
 		channelName: App.Enum.VersionChannelType;
+		isDocker: boolean;
 	};
 }
 declare namespace App.Http.Resources.Editable {

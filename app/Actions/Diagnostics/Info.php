@@ -3,6 +3,7 @@
 namespace App\Actions\Diagnostics;
 
 use App\Actions\Diagnostics\Pipes\Infos\CountForeignKeyInfo;
+use App\Actions\Diagnostics\Pipes\Infos\DockerVersionInfo;
 use App\Actions\Diagnostics\Pipes\Infos\ExtensionsInfo;
 use App\Actions\Diagnostics\Pipes\Infos\InstallTypeInfo;
 use App\Actions\Diagnostics\Pipes\Infos\SystemInfo;
@@ -18,6 +19,7 @@ class Info
 	 */
 	private $pipes = [
 		VersionInfo::class,
+		DockerVersionInfo::class,
 		InstallTypeInfo::class,
 		SystemInfo::class,
 		ExtensionsInfo::class,
