@@ -2,6 +2,7 @@ import axios, { type AxiosRequestConfig, type AxiosRequestHeaders, type AxiosRes
 import CSRF from "./csrf-getter";
 // import { setupCache } from "axios-cache-interceptor/dev";
 import { setupCache } from "axios-cache-interceptor";
+import { trans } from "laravel-vue-i18n";
 
 let isReloadingPage = false;
 
@@ -56,7 +57,7 @@ const AxiosConfig = {
 						errorMsg = error.message;
 					}
 					if (error.response.status == 419 && isReloadingPage == false) {
-						alert("Session timed out! Click ok to reload the page");
+						alert(trans("lychee.ERROR_SESSION_RELOAD"));
 						window.location.reload();
 						isReloadingPage = true;
 					}

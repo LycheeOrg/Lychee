@@ -523,6 +523,7 @@ return [
 	'ERROR_ALBUM_NOT_FOUND' => 'Error: album %s not found',
 	'ERROR_DROPBOX_KEY' => 'Error: Dropbox key not set',
 	'ERROR_SESSION' => 'Session expired.',
+	'ERROR_SESSION_RELOAD' => 'Session expired. Click OK to reload the page',
 	'CAMERA_DATE' => 'Camera date',
 	'NEW_PASSWORD' => 'new password',
 	'ALLOW_UPLOADS' => 'Allow uploads',
