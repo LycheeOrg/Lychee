@@ -20,5 +20,10 @@ return [
 		'checksum' => 'Checksum',
 	],
 
+	'warning' => [
+		'no-original-left' => 'No original left.',
+		'keep-one' => 'You selected all duplicates in this group. Please chose at least one duplicate to keep.',
+	],
+
 	'delete-selected' => 'Delete selected',
 ];
