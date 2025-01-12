@@ -18,7 +18,12 @@
 					<Button @click="closeCallback" severity="info" class="w-full font-bold border-none rounded-none rounded-bl-xl">
 						{{ $t("dialogs.session_expired.reload") }}
 					</Button>
-					<Button as="router-link" to="gallery" severity="contrast" class="w-full font-bold border-none rounded-none rounded-br-xl">
+					<Button
+						as="router-link"
+						:to="{ name: 'gallery' }"
+						severity="contrast"
+						class="w-full font-bold border-none rounded-none rounded-br-xl"
+					>
 						{{ $t("dialogs.session_expired.go_to_gallery") }}
 					</Button>
 				</div>
