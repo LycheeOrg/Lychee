@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
 use Symfony\Component\HttpFoundation\Response;
 
-class CheckSessionTimout
+class CheckSessionTimeout
 {
 	/**
 	 * This middleware is used to reliably track session time of a logged-in user. It does so
@@ -25,11 +25,11 @@ class CheckSessionTimout
 		$timeout = config('session.lifetime') * 60;
 		$lastActivity = Cookie::get('lastActivityTime');
 
-		if (Auth::guest() && !$lastActivity) {
+		if (Auth::guest() && (!is_string($lastActivity) || $lastActivity === '')) {
 			Cookie::queue(Cookie::forget('lastActivityTime'));
 		}
 
-		if ($lastActivity && (now()->timestamp - $lastActivity > $timeout)) {
+		if (is_string($lastActivity) && $lastActivity !== '' && ((int)now()->timestamp - (int)$lastActivity > $timeout)) {
 			Cookie::queue(Cookie::forget('lastActivityTime'));
 			throw new SessionExpiredException();
 		}
