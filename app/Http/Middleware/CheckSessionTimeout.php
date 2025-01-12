@@ -29,7 +29,7 @@ class CheckSessionTimeout
 			Cookie::queue(Cookie::forget('lastActivityTime'));
 		}
 
-		if (is_string($lastActivity) && $lastActivity !== '' && ((int)now()->timestamp - (int)$lastActivity > $timeout)) {
+		if (is_string($lastActivity) && $lastActivity !== '' && ((int) now()->timestamp - (int) $lastActivity > $timeout)) {
 			Cookie::queue(Cookie::forget('lastActivityTime'));
 			throw new SessionExpiredException();
 		}
