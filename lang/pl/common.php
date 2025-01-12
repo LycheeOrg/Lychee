@@ -8,6 +8,6 @@ return [
 	*/
 
 	'errors' => [
-		'SESION_RELOAD' => 'Session expired. Click OK to reload the page',
+		'SESSION_RELOAD' => 'Session expired. Click OK to reload the page',
 	],
 ];

@@ -10,6 +10,7 @@ use App\Models\Extensions\BaseAlbum;
 use App\Models\Photo;
 use App\Policies\AlbumPolicy;
 use App\Policies\PhotoPolicy;
+use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\View\View;
@@ -53,7 +54,7 @@ class VueController extends Controller
 				Gate::authorize(PhotoPolicy::CAN_SEE, [Photo::class, $photo]);
 				session()->now('photo', $photo);
 			}
-		} catch (\Exception $e) {
+		} catch (Exception $e) {
 			if ($e instanceof ModelNotFoundException) {
 				throw new NotFoundHttpException();
 			} else {
