@@ -27,7 +27,6 @@ const AxiosConfig = {
 				return config;
 			},
 			function (error: any) {
-				console.log("error", error);
 				return Promise.reject(error);
 			},
 		);
@@ -38,7 +37,7 @@ const AxiosConfig = {
 			},
 			function (error: any): Promise<never> {
 				if (
-					error.response?.data?.message !== undefined &&
+					error.response?.data?.message &&
 					["Password required", "Password is invalid", "Album is not enabled for password-based access", "Login required."].find(
 						(e) => e === error.response.data.message,
 					) !== undefined
