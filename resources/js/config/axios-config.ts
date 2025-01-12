@@ -57,7 +57,7 @@ const AxiosConfig = {
 						errorMsg = error.message;
 					}
 					if (error.response.status == 419 && isReloadingPage == false) {
-						alert(trans("lychee.ERROR_SESSION_RELOAD"));
+						alert(trans("common.errors.SESSION_RELOAD"));
 						window.location.reload();
 						isReloadingPage = true;
 					}
