@@ -220,10 +220,6 @@ class Handler extends ExceptionHandler
 			return new UnauthenticatedException(UnauthenticatedException::DEFAULT_MESSAGE, $e);
 		}
 
-		if ($e instanceof UnauthorizedException) {
-			return new UnauthorizedException(UnauthorizedException::DEFAULT_MESSAGE, $e);
-		}
-
 		return parent::mapException($e);
 	}
 
