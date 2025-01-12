@@ -49,8 +49,12 @@
 	</div>
 </template>
 <script setup lang="ts">
+import { ref, watch } from "vue";
 import { type SplitData } from "@/composables/album/splitter";
+import { useToast } from "primevue/usetoast";
+import { trans } from "laravel-vue-i18n";
 
+const toast = useToast();
 const props = defineProps<{
 	duplicates: SplitData<App.Http.Resources.Models.Duplicates.Duplicate>;
 	selectedIds: string[];
@@ -68,4 +72,33 @@ function hover(url: string, title: string) {
 function click(id: string) {
 	emits("click", id);
 }
+
+// Warn if all duplicates are selected
+// Because this mean that no original is left
+const warned = ref(false);
+
+watch(
+	() => props.selectedIds,
+	(newSelectedIds) => {
+		if (newSelectedIds.length === 0) {
+			return;
+		}
+
+		if (props.duplicates.data.filter((duplicate) => !newSelectedIds.includes(duplicate.photo_id)).length > 0) {
+			warned.value = false;
+			return;
+		}
+
+		if (warned.value === false) {
+			toast.add({
+				severity: "warn",
+				summary: trans("duplicate-finder.warning.no-original-left"),
+				detail: trans("duplicate-finder.warning.keep-one"),
+				life: 5000,
+			});
+			warned.value = true;
+		}
+	},
+	{ deep: true },
+);
 </script>
