@@ -23,14 +23,11 @@ class DockerVersionInfo implements DiagnosticStringPipe
 	{
 		$docker = 'false';
 		if ($this->isDocker()) {
-			if ($this->isLinuxServer()) {
-				$docker = 'linuxserver.io';
-			}
-			if ($this->isLycheeOrg()) {
-				$docker = 'lycheeorg';
-			}
-
-			$docker = 'custom';
+			$docker = match (true) {
+				$this->isLinuxServer() => 'linuxserver.io',
+				$this->isLycheeOrg() => 'lycheeorg',
+				default => 'custom',
+			};
 		}
 
 		$data[] = Diagnostics::line('Docker:', $docker);
