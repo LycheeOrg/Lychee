@@ -53,12 +53,8 @@ class VueController extends Controller
 				Gate::authorize(PhotoPolicy::CAN_SEE, [Photo::class, $photo]);
 				session()->now('photo', $photo);
 			}
-		} catch (\Exception $e) {
-			if ($e instanceof ModelNotFoundException) {
-				throw new NotFoundHttpException();
-			} else {
-				throw $e;
-			}
+		} catch (ModelNotFoundException) {
+			throw new NotFoundHttpException();
 		}
 
 		return view('vueapp');
