@@ -116,14 +116,10 @@ function save() {
 		tags: tags.value ?? [],
 		license: license.value?.value ?? "none",
 		upload_date: uploadDate.value?.toISOString().slice(0, 16) + uploadTz.value,
-	})
-		.then((response) => {
-			toast.add({ severity: "success", summary: "Success", life: 3000 });
-			load(response.data);
-		})
-		.catch((error) => {
-			console.error(error);
-		});
+	}).then((response) => {
+		toast.add({ severity: "success", summary: "Success", life: 3000 });
+		load(response.data);
+	});
 }
 
 load(props.photo);

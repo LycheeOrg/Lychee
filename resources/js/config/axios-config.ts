@@ -2,17 +2,6 @@ import axios, { type AxiosRequestConfig, type AxiosRequestHeaders, type AxiosRes
 import CSRF from "./csrf-getter";
 // import { setupCache } from "axios-cache-interceptor/dev";
 import { setupCache } from "axios-cache-interceptor";
-import { trans } from "laravel-vue-i18n";
-
-let isReloadingPage = false;
-
-window.addEventListener("load", () => {
-	isReloadingPage = false;
-});
-
-window.addEventListener("unload", () => {
-	isReloadingPage = false;
-});
 
 const AxiosConfig = {
 	axiosSetUp() {
@@ -26,12 +15,19 @@ const AxiosConfig = {
 					const token = CSRF.get();
 					(config.headers as AxiosRequestHeaders)["X-XSRF-TOKEN"] = token;
 				} catch (error) {
-					console.log(error);
+					// Cookie expired!
+					const event = new CustomEvent("session_expired");
+					window.dispatchEvent(event);
+
+					// We reject to ensure that the request is not even sent.
+					return Promise.reject("session_expired");
 				}
+
 				(config.headers as AxiosRequestHeaders)["Content-Type"] = "application/json";
 				return config;
 			},
 			function (error: any) {
+				console.log("error", error);
 				return Promise.reject(error);
 			},
 		);
@@ -42,8 +38,9 @@ const AxiosConfig = {
 			},
 			function (error: any): Promise<never> {
 				if (
+					error.response?.data?.message !== undefined &&
 					["Password required", "Password is invalid", "Album is not enabled for password-based access", "Login required."].find(
-						(e) => e === error.response?.data?.message,
+						(e) => e === error.response.data.message,
 					) !== undefined
 				) {
 					return Promise.reject(error);
@@ -56,10 +53,9 @@ const AxiosConfig = {
 					} else {
 						errorMsg = error.message;
 					}
-					if (error.response.status == 419 && isReloadingPage == false) {
-						alert(trans("common.errors.SESSION_RELOAD"));
-						window.location.reload();
-						isReloadingPage = true;
+					if (error.response.status === 419) {
+						const event = new CustomEvent("session_expired");
+						window.dispatchEvent(event);
 					}
 					if (error.response.status !== 404) {
 						const event = new CustomEvent("error", { detail: error.response.data });
@@ -70,18 +66,6 @@ const AxiosConfig = {
 				return Promise.reject(error);
 			},
 		);
-	},
-	handleError(error: any) {
-		if (error.response) {
-			console.log(error.response.data);
-			console.log(error.response.status);
-			console.log(error.response.headers);
-		} else if (error.request) {
-			console.log(error.request);
-		} else {
-			console.log("Error", error.message);
-			console.log(error);
-		}
 	},
 };
 

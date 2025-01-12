@@ -112,13 +112,9 @@ watch(
 load();
 
 function load() {
-	InitService.fetchGlobalRights()
-		.then((data) => {
-			initData.value = data.data;
-		})
-		.catch((error) => {
-			console.error(error);
-		});
+	InitService.fetchGlobalRights().then((data) => {
+		initData.value = data.data;
+	});
 }
 
 function logout() {

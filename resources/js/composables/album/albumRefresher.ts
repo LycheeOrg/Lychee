@@ -45,11 +45,11 @@ export function useAlbumRefresher(albumId: Ref<string>, auth: AuthStore, isLogin
 				isAlbumConsented.value = nsfw_consented.value.find((e) => e === albumId.value) !== undefined;
 			})
 			.catch((error) => {
-				if (error.response.status === 401 && error.response.data.message === "Password required") {
+				if (error.response && error.response.status === 401 && error.response.data.message === "Password required") {
 					isPasswordProtected.value = true;
-				} else if (error.response.status === 403 && error.response.data.message === "Password required") {
+				} else if (error.response && error.response.status === 403 && error.response.data.message === "Password required") {
 					isPasswordProtected.value = true;
-				} else if (error.response.status === 401) {
+				} else if (error.response && error.response.status === 401) {
 					isLoginOpen.value = true;
 				} else {
 					console.error(error);
