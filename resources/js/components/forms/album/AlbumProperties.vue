@@ -429,14 +429,10 @@ function saveAlbum() {
 		album_timeline: albumTimeline.value?.value ?? null,
 		photo_timeline: photoTimeline.value?.value ?? null,
 	};
-	AlbumService.updateAlbum(data)
-		.then(() => {
-			toast.add({ severity: "success", summary: trans("toast.success"), life: 3000 });
-			AlbumService.clearCache(albumId.value);
-		})
-		.catch((error) => {
-			console.error(error);
-		});
+	AlbumService.updateAlbum(data).then(() => {
+		toast.add({ severity: "success", summary: trans("toast.success"), life: 3000 });
+		AlbumService.clearCache(albumId.value);
+	});
 }
 
 function saveTagAlbum() {
@@ -456,14 +452,10 @@ function saveTagAlbum() {
 		photo_layout: photoLayout.value?.value ?? null,
 		photo_timeline: photoTimeline.value?.value ?? null,
 	};
-	AlbumService.updateTag(data)
-		.then(() => {
-			toast.add({ severity: "success", summary: trans("toasts.success"), life: 3000 });
-			AlbumService.clearCache(albumId.value);
-		})
-		.catch((error) => {
-			console.error(error);
-		});
+	AlbumService.updateTag(data).then(() => {
+		toast.add({ severity: "success", summary: trans("toasts.success"), life: 3000 });
+		AlbumService.clearCache(albumId.value);
+	});
 }
 
 watch(

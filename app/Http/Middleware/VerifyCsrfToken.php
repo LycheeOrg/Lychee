@@ -43,4 +43,20 @@ class VerifyCsrfToken extends Middleware
 
 		return parent::handle($request, $next);
 	}
+
+	/**
+	 * Determine if the HTTP request uses a ‘read’ verb.
+	 *
+	 * @param \Illuminate\Http\Request $request
+	 *
+	 * @return bool
+	 */
+	protected function isReading($request)
+	{
+		if (str_starts_with($request->route()->uri, 'api/v2')) {
+			return false;
+		}
+
+		return parent::isReading($request);
+	}
 }
