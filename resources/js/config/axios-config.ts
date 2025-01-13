@@ -16,11 +16,10 @@ const AxiosConfig = {
 					(config.headers as AxiosRequestHeaders)["X-XSRF-TOKEN"] = token;
 				} catch (error) {
 					// Cookie expired!
-					const event = new CustomEvent("session_expired");
-					window.dispatchEvent(event);
-
+					// const event = new CustomEvent("session_expired");
+					// window.dispatchEvent(event);
 					// We reject to ensure that the request is not even sent.
-					return Promise.reject("session_expired");
+					// return Promise.reject("session_expired");
 				}
 
 				(config.headers as AxiosRequestHeaders)["Content-Type"] = "application/json";
@@ -45,21 +44,15 @@ const AxiosConfig = {
 					return Promise.reject(error);
 				}
 
-				if (error.response && error.response.status && !isNaN(error.response.status)) {
-					let errorMsg: string;
-					if (error.response.data.detail && error.response.status) {
-						errorMsg = `Status: ${error.response.status}, ${error.response.data.detail}`;
-					} else {
-						errorMsg = error.message;
-					}
-					if (error.response.status === 419) {
-						const event = new CustomEvent("session_expired");
-						window.dispatchEvent(event);
-					}
-					if (error.response.status !== 404) {
-						const event = new CustomEvent("error", { detail: error.response.data });
-						window.dispatchEvent(event);
-					}
+				if (error.response && error.response.status === 419) {
+					const event = new CustomEvent("session_expired");
+					window.dispatchEvent(event);
+					return Promise.reject(error);
+				}
+
+				if (error.response && error.response.status && !isNaN(error.response.status) && error.response.status !== 404) {
+					const event = new CustomEvent("error", { detail: error.response.data });
+					window.dispatchEvent(event);
 				}
 
 				return Promise.reject(error);
