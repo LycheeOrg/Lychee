@@ -204,7 +204,14 @@ function getPrevious() {
 	router.push({ name: "photo", params: { albumid: props.albumid, photoid: photo.value?.previous_photo_id ?? "" } });
 }
 
-const { slideshow, start, next, previous, stop } = useSlideshowFunction(1000, is_slideshow_active, slideshow_timeout, getNext, getPrevious);
+const { slideshow, start, next, previous, stop } = useSlideshowFunction(
+	1000,
+	is_slideshow_active,
+	slideshow_timeout,
+	videoElement,
+	getNext,
+	getPrevious,
+);
 
 function load() {
 	if (togglableStore.isSearchActive) {

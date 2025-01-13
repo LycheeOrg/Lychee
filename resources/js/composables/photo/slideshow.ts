@@ -4,6 +4,7 @@ export function useSlideshowFunction(
 	delay: number,
 	is_slideshow_active: Ref<boolean>,
 	slide_show_interval: Ref<number>,
+	videoElement: Ref<HTMLVideoElement | null>,
 	getNext: () => void,
 	getPrevious?: () => void,
 ) {
@@ -38,6 +39,22 @@ export function useSlideshowFunction(
 		}
 	}
 
+	function removeVideoElementListeners() {
+		if (videoElement.value == null) return;
+
+		videoElement.value.removeEventListener("ended", videoEndedEventListener);
+	}
+
+	function videoEndedEventListener(event: Event) {
+		curtainDown();
+		window.setTimeout(() => {
+			removeVideoElementListeners();
+			getNext();
+		}, delay);
+		window.setTimeout(() => curtainUp(), delay * 2); // We wait 500ms for the next photo to be loaded.
+		window.setTimeout(() => next(), delay * 2 + 1000 * slide_show_interval.value); // Set timeout for next iteration.
+	}
+
 	function curtainDown() {
 		document.getElementById("shutter")?.classList?.remove("opacity-0");
 	}
@@ -47,12 +64,19 @@ export function useSlideshowFunction(
 	}
 
 	function next(immediate: boolean = false) {
+		removeVideoElementListeners();
 		if (!is_slideshow_active.value || immediate) {
 			getNext();
 			return;
 		}
 
 		clearTimeouts();
+
+		if (videoElement.value && !videoElement.value.ended) {
+			videoElement.value?.addEventListener("ended", videoEndedEventListener);
+			return;
+		}
+
 		curtainDown(); // takes 500ms
 		window.setTimeout(() => getNext(), delay); // hence we wait 500ms for curtain to be down
 		window.setTimeout(() => curtainUp(), delay * 2); // We wait 500ms for the next photo to be loaded.
@@ -64,12 +88,19 @@ export function useSlideshowFunction(
 			return;
 		}
 
+		removeVideoElementListeners();
+
 		if (!is_slideshow_active.value || immediate) {
 			getPrevious();
 			return;
 		}
 
 		clearTimeouts();
+
+		if (videoElement.value && !videoElement.value.ended) {
+			videoElement.value?.addEventListener("ended", videoEndedEventListener);
+		}
+
 		curtainDown(); // takes 500ms
 		window.setTimeout(() => getPrevious(), 500); // hence we wait 500ms for curtain to be down
 		window.setTimeout(() => curtainUp(), 1000); // We wait 500ms for the next photo to be loaded.
