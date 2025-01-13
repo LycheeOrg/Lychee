@@ -11,8 +11,17 @@ const AxiosConfig = {
 		axios.interceptors.request.use(
 			// @ts-expect-error
 			function (config: AxiosRequestConfig) {
-				const token = CSRF.get();
-				(config.headers as AxiosRequestHeaders)["X-XSRF-TOKEN"] = token;
+				try {
+					const token = CSRF.get();
+					(config.headers as AxiosRequestHeaders)["X-XSRF-TOKEN"] = token;
+				} catch (error) {
+					// Cookie expired!
+					// const event = new CustomEvent("session_expired");
+					// window.dispatchEvent(event);
+					// We reject to ensure that the request is not even sent.
+					// return Promise.reject("session_expired");
+				}
+
 				(config.headers as AxiosRequestHeaders)["Content-Type"] = "application/json";
 				return config;
 			},
@@ -27,6 +36,7 @@ const AxiosConfig = {
 			},
 			function (error: any): Promise<never> {
 				if (
+					error.response?.data?.message &&
 					["Password required", "Password is invalid", "Album is not enabled for password-based access", "Login required."].find(
 						(e) => e === error.response.data.message,
 					) !== undefined
@@ -34,34 +44,20 @@ const AxiosConfig = {
 					return Promise.reject(error);
 				}
 
-				if (error.response && error.response.status && !isNaN(error.response.status)) {
-					let errorMsg: string;
-					if (error.response.data.detail && error.response.status) {
-						errorMsg = `Status: ${error.response.status}, ${error.response.data.detail}`;
-					} else {
-						errorMsg = error.message;
-					}
-					if (error.response.status !== 404) {
-						const event = new CustomEvent("error", { detail: error.response.data });
-						window.dispatchEvent(event);
-					}
+				if (error.response && error.response.status === 419) {
+					const event = new CustomEvent("session_expired");
+					window.dispatchEvent(event);
+					return Promise.reject(error);
+				}
+
+				if (error.response && error.response.status && !isNaN(error.response.status) && error.response.status !== 404) {
+					const event = new CustomEvent("error", { detail: error.response.data });
+					window.dispatchEvent(event);
 				}
 
 				return Promise.reject(error);
 			},
 		);
-	},
-	handleError(error: any) {
-		if (error.response) {
-			console.log(error.response.data);
-			console.log(error.response.status);
-			console.log(error.response.headers);
-		} else if (error.request) {
-			console.log(error.request);
-		} else {
-			console.log("Error", error.message);
-			console.log(error);
-		}
 	},
 };
 

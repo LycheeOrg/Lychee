@@ -206,4 +206,10 @@ return [
 	'se' => [
 		'available' => 'Available in the Supporter Edition',
 	],
+	'session_expired' => [
+		'title' => 'Session expired',
+		'message' => 'Your session has expired.<br />Please reload the page.',
+		'reload' => 'Reload',
+		'go_to_gallery' => 'Go to the Gallery',
+	],
 ];
