@@ -4,9 +4,8 @@
 		modal
 		pt:root:class="border-none m-3  max-w-md w-full"
 		pt:mask:style="backdrop-filter: blur(2px)"
-		@hide="closeAndReload"
 	>
-		<template #container="{ closeCallback }">
+		<template #container>
 			<div class="flex flex-col gap-4 bg-gradient-to-b from-bg-300 to-bg-400 relative text-sm rounded-md text-muted-color">
 				<div class="p-9 text-muted-color-emphasis">
 					<h1 class="mb-6 text-center text-2xl font-bold text-warning-700">
@@ -15,7 +14,7 @@
 					<p class="text-muted-color text-center" v-html="$t('dialogs.session_expired.message')" />
 				</div>
 				<div class="flex justify-center">
-					<Button @click="closeCallback" severity="info" class="w-full font-bold border-none rounded-none rounded-bl-xl">
+					<Button @click="closeAndReload" severity="info" class="w-full font-bold border-none rounded-none rounded-bl-xl">
 						{{ $t("dialogs.session_expired.reload") }}
 					</Button>
 					<Button @click="gotoGallery" severity="contrast" class="w-full font-bold border-none rounded-none rounded-br-xl">
@@ -36,12 +35,10 @@ const visible = defineModel("visible", { default: false }) as Ref<boolean>;
 const router = useRouter();
 
 function closeAndReload() {
-	visible.value = false;
 	location.reload();
 }
 
-async function gotoGallery() {
-	await router.push({ name: "gallery" });
-	visible.value = false;
+function gotoGallery() {
+	location.href = router.resolve({  name: "gallery" }).href;
 }
 </script>
