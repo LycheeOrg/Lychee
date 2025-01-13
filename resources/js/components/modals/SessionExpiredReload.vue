@@ -1,10 +1,5 @@
 <template>
-	<Dialog
-		v-model:visible="visible"
-		modal
-		pt:root:class="border-none m-3  max-w-md w-full"
-		pt:mask:style="backdrop-filter: blur(2px)"
-	>
+	<Dialog v-model:visible="visible" modal pt:root:class="border-none m-3  max-w-md w-full" pt:mask:style="backdrop-filter: blur(2px)">
 		<template #container>
 			<div class="flex flex-col gap-4 bg-gradient-to-b from-bg-300 to-bg-400 relative text-sm rounded-md text-muted-color">
 				<div class="p-9 text-muted-color-emphasis">
@@ -39,6 +34,6 @@ function closeAndReload() {
 }
 
 function gotoGallery() {
-	location.href = router.resolve({  name: "gallery" }).href;
+	location.href = router.resolve({ name: "gallery" }).href;
 }
 </script>
