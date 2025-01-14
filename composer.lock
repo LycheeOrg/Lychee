@@ -1285,16 +1285,16 @@
         },
         {
             "name": "dedoc/scramble",
-            "version": "v0.11.32",
+            "version": "v0.11.33",
             "source": {
                 "type": "git",
                 "url": "https://github.com/dedoc/scramble.git",
-                "reference": "ead211489155c9a427cd5f223c4c1bf4ef1da843"
+                "reference": "3c44e2ec517045590cb36b165967283fd5798edc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dedoc/scramble/zipball/ead211489155c9a427cd5f223c4c1bf4ef1da843",
-                "reference": "ead211489155c9a427cd5f223c4c1bf4ef1da843",
+                "url": "https://api.github.com/repos/dedoc/scramble/zipball/3c44e2ec517045590cb36b165967283fd5798edc",
+                "reference": "3c44e2ec517045590cb36b165967283fd5798edc",
                 "shasum": ""
             },
             "require": {
@@ -1312,6 +1312,7 @@
                 "pestphp/pest": "^2.34",
                 "pestphp/pest-plugin-laravel": "^2.3",
                 "phpunit/phpunit": "^10.5",
+                "spatie/laravel-permission": "^6.10",
                 "spatie/pest-plugin-snapshots": "^2.1"
             },
             "type": "library",
@@ -1348,7 +1349,7 @@
             ],
             "support": {
                 "issues": "https://github.com/dedoc/scramble/issues",
-                "source": "https://github.com/dedoc/scramble/tree/v0.11.32"
+                "source": "https://github.com/dedoc/scramble/tree/v0.11.33"
             },
             "funding": [
                 {
@@ -1356,7 +1357,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-01-05T21:41:02+00:00"
+            "time": "2025-01-08T07:53:14+00:00"
         },
         {
             "name": "dflydev/dot-access-data",
