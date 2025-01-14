@@ -3255,16 +3255,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v11.37.0",
+            "version": "v11.38.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "6cb103d2024b087eae207654b3f4b26646119ba5"
+                "reference": "5d964a15efc8fffcb175aed3976796c0420bcf99"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/6cb103d2024b087eae207654b3f4b26646119ba5",
-                "reference": "6cb103d2024b087eae207654b3f4b26646119ba5",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/5d964a15efc8fffcb175aed3976796c0420bcf99",
+                "reference": "5d964a15efc8fffcb175aed3976796c0420bcf99",
                 "shasum": ""
             },
             "require": {
@@ -3465,20 +3465,20 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2025-01-02T20:10:21+00:00"
+            "time": "2025-01-14T14:53:42+00:00"
         },
         {
             "name": "laravel/prompts",
-            "version": "v0.3.2",
+            "version": "v0.3.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/prompts.git",
-                "reference": "0e0535747c6b8d6d10adca8b68293cf4517abb0f"
+                "reference": "749395fcd5f8f7530fe1f00dfa84eb22c83d94ea"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/prompts/zipball/0e0535747c6b8d6d10adca8b68293cf4517abb0f",
-                "reference": "0e0535747c6b8d6d10adca8b68293cf4517abb0f",
+                "url": "https://api.github.com/repos/laravel/prompts/zipball/749395fcd5f8f7530fe1f00dfa84eb22c83d94ea",
+                "reference": "749395fcd5f8f7530fe1f00dfa84eb22c83d94ea",
                 "shasum": ""
             },
             "require": {
@@ -3522,9 +3522,9 @@
             "description": "Add beautiful and user-friendly forms to your command-line applications.",
             "support": {
                 "issues": "https://github.com/laravel/prompts/issues",
-                "source": "https://github.com/laravel/prompts/tree/v0.3.2"
+                "source": "https://github.com/laravel/prompts/tree/v0.3.3"
             },
-            "time": "2024-11-12T14:59:47+00:00"
+            "time": "2024-12-30T15:53:31+00:00"
         },
         {
             "name": "laravel/serializable-closure",
@@ -11778,16 +11778,16 @@
         },
         {
             "name": "barryvdh/laravel-ide-helper",
-            "version": "v3.5.3",
+            "version": "v3.5.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/barryvdh/laravel-ide-helper.git",
-                "reference": "271682a2a6d57691e1c7ff378f44e4ae6ac2aba0"
+                "reference": "980a87e250fc2a7558bc46e07f61c7594500ea53"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/barryvdh/laravel-ide-helper/zipball/271682a2a6d57691e1c7ff378f44e4ae6ac2aba0",
-                "reference": "271682a2a6d57691e1c7ff378f44e4ae6ac2aba0",
+                "url": "https://api.github.com/repos/barryvdh/laravel-ide-helper/zipball/980a87e250fc2a7558bc46e07f61c7594500ea53",
+                "reference": "980a87e250fc2a7558bc46e07f61c7594500ea53",
                 "shasum": ""
             },
             "require": {
@@ -11856,7 +11856,7 @@
             ],
             "support": {
                 "issues": "https://github.com/barryvdh/laravel-ide-helper/issues",
-                "source": "https://github.com/barryvdh/laravel-ide-helper/tree/v3.5.3"
+                "source": "https://github.com/barryvdh/laravel-ide-helper/tree/v3.5.4"
             },
             "funding": [
                 {
@@ -11868,7 +11868,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-01-08T10:01:30+00:00"
+            "time": "2025-01-14T09:07:00+00:00"
         },
         {
             "name": "barryvdh/reflection-docblock",
