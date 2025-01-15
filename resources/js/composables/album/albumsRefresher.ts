@@ -51,7 +51,7 @@ export function useAlbumsRefresher(auth: AuthStore, lycheeStore: LycheeStateStor
 			})
 			.catch((error) => {
 				// We are required to login :)
-				if (error.response.status === 401) {
+				if (error.response && error.response.status === 401) {
 					isLoginOpen.value = true;
 					console.error("require login");
 				} else {

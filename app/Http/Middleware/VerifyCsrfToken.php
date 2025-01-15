@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2017-2018 Tobias Reich
+ * Copyright (c) 2018-2025 LycheeOrg.
+ */
+
 namespace App\Http\Middleware;
 
 use App\Services\Auth\SessionOrTokenGuard;
@@ -42,5 +48,21 @@ class VerifyCsrfToken extends Middleware
 		}
 
 		return parent::handle($request, $next);
+	}
+
+	/**
+	 * Determine if the HTTP request uses a ‘read’ verb.
+	 *
+	 * @param \Illuminate\Http\Request $request
+	 *
+	 * @return bool
+	 */
+	protected function isReading($request)
+	{
+		if (str_starts_with($request->route()->uri, 'api/v2')) {
+			return false;
+		}
+
+		return parent::isReading($request);
 	}
 }
