@@ -19,33 +19,31 @@ export function useSlideshowFunction(
 
 	function start() {
 		is_slideshow_active.value = true;
-		curtainDown();
-		window.setTimeout(() => curtainUp(), delay); // We wait 500ms for the next photo to be loaded.
-		window.setTimeout(() => next(), delay + 1000 * slide_show_interval.value); // Set timeout for next iteration.
+		startSlideShow();
 	}
 
 	function stop() {
 		clearTimeouts();
 		curtainUp();
+		removeVideoElementListeners();
 		is_slideshow_active.value = false;
 	}
 
 	// We need to be able to clear all the timeouts so that the next and previous functions can be called without any issues.
 	function clearTimeouts() {
 		// https://stackoverflow.com/a/8860203
-		var id = window.setTimeout(function () {}, 0);
+		var id = window.setTimeout(function () { }, 0);
 		while (id--) {
 			window.clearTimeout(id); // will do nothing if no timeout with id is present
 		}
 	}
 
 	function removeVideoElementListeners() {
-		if (videoElement.value == null) return;
-
-		videoElement.value.removeEventListener("ended", videoEndedEventListener);
+		videoElement.value?.removeEventListener("ended", videoEndedEventListener);
 	}
 
 	function videoEndedEventListener(event: Event) {
+		console.log("Video ended");
 		curtainDown();
 		window.setTimeout(() => {
 			removeVideoElementListeners();
@@ -64,19 +62,45 @@ export function useSlideshowFunction(
 	}
 
 	function next(immediate: boolean = false) {
+
 		removeVideoElementListeners();
-		if (!is_slideshow_active.value || immediate) {
+
+		if (immediate && is_slideshow_active.value == false) {
+			console.log("Immediate or not running slideshow");
 			getNext();
 			return;
 		}
 
-		clearTimeouts();
-
-		if (videoElement.value && !videoElement.value.ended) {
-			videoElement.value?.addEventListener("ended", videoEndedEventListener);
+		if (immediate && is_slideshow_active.value == true) {
+			console.log("Immediate and running slideshow");
+			clearTimeouts();
+			getNext();
+			window.setTimeout(() => next(), delay * 2 + 1000 * slide_show_interval.value); // Set timeout for next iteration.
 			return;
 		}
 
+		if (!immediate && is_slideshow_active.value == true) {
+			if (videoElement.value && !videoElement.value.ended) {
+				console.log("Not immediate but running slideshow and video not ended");
+				clearTimeouts();
+				videoElement.value?.addEventListener("ended", videoEndedEventListener);
+
+				return;
+			}
+			console.log("Not immediate but running slideshow");
+			clearTimeouts();
+			continueSlideShow();
+		}
+
+	}
+
+	function startSlideShow() {
+		curtainDown();
+		window.setTimeout(() => curtainUp(), delay); // We wait 500ms for the next photo to be loaded.
+		window.setTimeout(() => next(), delay + 1000 * slide_show_interval.value); // Set timeout for next iteration.
+	}
+
+	function continueSlideShow() {
 		curtainDown(); // takes 500ms
 		window.setTimeout(() => getNext(), delay); // hence we wait 500ms for curtain to be down
 		window.setTimeout(() => curtainUp(), delay * 2); // We wait 500ms for the next photo to be loaded.
@@ -84,11 +108,10 @@ export function useSlideshowFunction(
 	}
 
 	function previous(immediate: boolean = false) {
+		removeVideoElementListeners();
 		if (getPrevious === undefined) {
 			return;
 		}
-
-		removeVideoElementListeners();
 
 		if (!is_slideshow_active.value || immediate) {
 			getPrevious();
