@@ -1,7 +1,7 @@
-<p align="center"><a href="https://lycheeorg.github.io"><img src="https://raw.githubusercontent.com/LycheeOrg/Lychee/master/Banner.png" width="400px" alt="@LycheeOrg"></a></p>
+<p align="center"><a href="https://lycheeorg.dev"><img src="https://raw.githubusercontent.com/LycheeOrg/Lychee/master/Banner.png" width="400px" alt="@LycheeOrg"></a></p>
 
 [![GitHub Release][release-shield]](https://github.com/LycheeOrg/Lychee/releases)
-[![PHP 8.3 & 8.4][php-shield]](https://lycheeorg.github.io/docs/#server-requirements)
+[![PHP 8.3 & 8.4][php-shield]](https://lycheeorg.dev/docs/#server-requirements)
 [![MIT License][license-shield]](https://github.com/LycheeOrg/Lychee/blob/master/LICENSE)
 [![Downloads][download-shield]](https://github.com/LycheeOrg/Lychee/releases)
 <br>
@@ -11,18 +11,18 @@
 [![OpenSSF Scorecard][ossf-shield]](https://securityscorecards.dev/viewer/?uri=github.com/LycheeOrg/Lychee)
 [![Quality Gate Status][sonar-shield]](https://sonarcloud.io/dashboard?id=LycheeOrg_Lychee-Laravel)
 <br>
-[![Website][website-shield]](https://lycheeorg.github.io)
-[![Documentation][docs-shield]](https://lycheeorg.github.io/docs/)
-[![Changelog][changelog-shield]](https://lycheeorg.github.io/docs/releases.html)
+[![Website][website-shield]](https://lycheeorg.dev)
+[![Documentation][docs-shield]](https://lycheeorg./docs/)
+[![Changelog][changelog-shield]](https://lycheeorg.dev/docs/releases.html)
 [![Docker repository][docker-shield]](https://github.com/LycheeOrg/Lychee-Docker)
 [![Gitter][gitter-shield]](https://gitter.im/LycheeOrg/Lobby)
 [![Discord][discord-shield]][discord]
 
 # Lychee: A Stunning and User-Friendly Photo Management System
 
-Lychee is a free, open-source photo-management tool that runs on your server or web space. Installation is quick and easy, taking just seconds. With Lychee, you can upload, manage, and share your photos seamlessly, just like using a native application. It comes with all the essential features you need, ensuring your photos are stored securely. Read more on our [website](https://LycheeOrg.github.io).
+Lychee is a free, open-source photo-management tool that runs on your server or web space. Installation is quick and easy, taking just seconds. With Lychee, you can upload, manage, and share your photos seamlessly, just like using a native application. It comes with all the essential features you need, ensuring your photos are stored securely. Read more on our [website](https://LycheeOrg.dev).
 
-For even more advanced features, consider the Supporter Edition (SE). The SE version offers additional functionality to enhance your experience. Learn more about the Supporter Edition and its benefits [here](https://lycheeorg.github.io/get-supporter-edition).
+For even more advanced features, consider the Supporter Edition (SE). The SE version offers additional functionality to enhance your experience. Learn more about the Supporter Edition and its benefits [here](https://lycheeorg.dev/get-supporter-edition).
 
 ## Support the Team
 
@@ -55,11 +55,11 @@ To run Lychee, everything you need is a web-server with PHP 8.3 or later and a d
 6. Generate your secret key with `php artisan key:generate`
 7. Migrate your database with `php artisan migrate` to create a new database or migrate an existing Lychee installation to the latest framework.
 
-See detailed instructions on the [Installation](https://lycheeorg.github.io/docs/installation.html) page of our documentation.
+See detailed instructions on the [Installation](https://lycheeorg.dev/docs/installation.html) page of our documentation.
 
 ### Update
 
-Updating is as easy as it should be. [Update &#187;](https://lycheeorg.github.io/docs/update.html)
+Updating is as easy as it should be. [Update &#187;](https://lycheeorg.dev/docs/update.html)
 
 ## Configuration
 
@@ -75,7 +75,7 @@ Lychee is ready to use straight after installation, but some features require a 
 
 ### Keyboard Shortcuts
 
-These shortcuts will help you to use Lychee even faster. [Keyboard Shortcuts &#187;](https://lycheeorg.github.io/docs/keyboard.html)
+These shortcuts will help you to use Lychee even faster. [Keyboard Shortcuts &#187;](https://lycheeorg.dev/docs/keyboard.html)
 
 ### Dropbox import
 
@@ -95,7 +95,7 @@ In order to use the new photos email notification you will need to have configur
 
 ## Troubleshooting
 
-Take a look at the [Documentation](https://lycheeorg.github.io/docs/), particularly the [FAQ](https://lycheeorg.github.io/docs/faq_troubleshooting.html) if you have problems. Discovered a bug? Please create an issue [here](https://github.com/LycheeOrg/Lychee/issues) on GitHub! You can also contact us directly on [gitter (login with your github account)](https://gitter.im/LycheeOrg/Lobby) or on [discord &#187;][discord].
+Take a look at the [Documentation](https://lycheeorg.dev/docs/), particularly the [FAQ](https://lycheeorg.dev/docs/faq_troubleshooting.html) if you have problems. Discovered a bug? Please create an issue [here](https://github.com/LycheeOrg/Lychee/issues) on GitHub! You can also contact us directly on [gitter (login with your github account)](https://gitter.im/LycheeOrg/Lobby) or on [discord &#187;][discord].
 
 ## Notice: `master` & `alpha` branches
 
@@ -111,7 +111,7 @@ With this change, we hope to strike a balance between decently paced development
 On Docker, `nightly`/`dev` continues to refer to the latest `master` commit.
 The `alpha` tag is updated daily with the content of the associated branch.
 
-That being said, if you like the gallery and would like to contribute, do not hesitate to open pull request. If you would like to see more functionalities added and help us push Lychee, [Join the team!](https://lycheeorg.github.io/docs/contributions.html#joining-the-team)
+That being said, if you like the gallery and would like to contribute, do not hesitate to open pull request. If you would like to see more functionalities added and help us push Lychee, [Join the team!](https://lycheeorg.dev/docs/contributions.html#joining-the-team)
 
 ## Open Source Community Support
 
@@ -119,7 +119,7 @@ That being said, if you like the gallery and would like to contribute, do not he
 
 We would like to thank Jetbrains for supporting us with their [Open Source Development - Community Support][jetbrains-opensource] program.
 
-[1]: https://lycheeorg.github.io/docs/settings.html
+[1]: https://lycheeorg.dev/docs/settings.html
 [build-status-shield]: https://img.shields.io/github/actions/workflow/status/LycheeOrg/Lychee/CICD.yml?branch=master
 [codecov-shield]: https://codecov.io/gh/LycheeOrg/Lychee/branch/master/graph/badge.svg
 [release-shield]: https://img.shields.io/github/release/LycheeOrg/Lychee.svg
