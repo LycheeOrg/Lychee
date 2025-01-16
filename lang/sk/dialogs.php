@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2017-2018 Tobias Reich
+ * Copyright (c) 2018-2025 LycheeOrg.
+ */
+
 return [
 	/*
 	|--------------------------------------------------------------------------
@@ -205,5 +211,11 @@ return [
 	],
 	'se' => [
 		'available' => 'Available in the Supporter Edition',
+	],
+	'session_expired' => [
+		'title' => 'Session expired',
+		'message' => 'Your session has expired.<br />Please reload the page.',
+		'reload' => 'Reload',
+		'go_to_gallery' => 'Go to the Gallery',
 	],
 ];

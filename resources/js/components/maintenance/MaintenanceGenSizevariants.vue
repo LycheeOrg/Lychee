@@ -1,12 +1,17 @@
 <template>
-	<Card v-if="data !== undefined && data > 0" class="min-h-40 dark:bg-surface-800 shadow shadow-surface-950/30 rounded-lg relative">
+	<Card
+		v-if="data !== undefined && data > 0"
+		class="min-h-40 dark:bg-surface-800 shadow shadow-surface-950/30 rounded-lg relative"
+		pt:body:class="min-h-40 h-full"
+		pt:content:class="h-full flex justify-between flex-col"
+	>
 		<template #title>
 			<div class="text-center">
 				{{ title }}
 			</div>
 		</template>
 		<template #content>
-			<ScrollPanel class="w-full h-56 text-sm text-muted-color">
+			<ScrollPanel class="w-full h-40 text-sm text-muted-color">
 				<div v-html="description" class="w-full text-center"></div>
 				<ProgressSpinner v-if="loading" class="w-full"></ProgressSpinner>
 			</ScrollPanel>

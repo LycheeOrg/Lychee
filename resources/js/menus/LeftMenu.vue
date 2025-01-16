@@ -2,7 +2,7 @@
 	<Drawer v-model:visible="left_menu_open" :pt:content:class="'flex flex-col justify-start gap-10'">
 		<template #header>
 			<div class="flex items-center gap-2 text-muted-color hover:text-primary-400">
-				<router-link v-if="!isGallery" v-slot="{ href, navigate }" to="/gallery" custom>
+				<router-link v-if="!isGallery" v-slot="{ href, navigate }" :to="{ name: 'gallery' }" custom>
 					<a v-ripple :href="href" @click="navigate">
 						<span class="text-lg font-bold pl-3">{{ $t("left-menu.back_to_gallery") }}</span>
 					</a>
@@ -112,13 +112,9 @@ watch(
 load();
 
 function load() {
-	InitService.fetchGlobalRights()
-		.then((data) => {
-			initData.value = data.data;
-		})
-		.catch((error) => {
-			console.error(error);
-		});
+	InitService.fetchGlobalRights().then((data) => {
+		initData.value = data.data;
+	});
 }
 
 function logout() {

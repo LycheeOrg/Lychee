@@ -1,5 +1,10 @@
 <template>
-	<Card v-if="data !== undefined && fixable" class="min-h-40 dark:bg-surface-800 shadow shadow-surface-950/30 rounded-lg relative">
+	<Card
+		v-if="data !== undefined && fixable"
+		class="min-h-40 dark:bg-surface-800 shadow shadow-surface-950/30 rounded-lg relative"
+		pt:body:class="min-h-40 h-full"
+		pt:content:class="h-full flex justify-between flex-col"
+	>
 		<template #title>
 			<div class="text-center">
 				{{ $t("maintenance.fix-tree.title") }}
@@ -16,7 +21,7 @@
 				<ProgressSpinner v-if="loading" class="w-full"></ProgressSpinner>
 			</ScrollPanel>
 			<div class="flex gap-4 mt-1">
-				<Button as="router-link" to="/fixTree" v-if="fixable && !loading" severity="primary" class="w-full border-none">{{
+				<Button as="router-link" :to="{ name: 'tree' }" v-if="fixable && !loading" severity="primary" class="w-full border-none">{{
 					$t("maintenance.fix-tree.button")
 				}}</Button>
 			</div>

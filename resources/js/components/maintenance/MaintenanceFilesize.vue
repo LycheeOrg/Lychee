@@ -1,5 +1,10 @@
 <template>
-	<Card v-if="data !== undefined && data > 0" class="min-h-40 dark:bg-surface-800 shadow shadow-surface-950/30 rounded-lg relative">
+	<Card
+		v-if="data !== undefined && data > 0"
+		class="min-h-40 dark:bg-surface-800 shadow shadow-surface-950/30 rounded-lg relative"
+		pt:body:class="min-h-40 h-full"
+		pt:content:class="h-full flex justify-between flex-col"
+	>
 		<template #title>
 			<div class="text-center">
 				{{ $t("maintenance.fill-filesize-sizevariants.title") }}

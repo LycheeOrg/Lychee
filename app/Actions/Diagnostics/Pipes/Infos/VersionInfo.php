@@ -1,9 +1,15 @@
 <?php
 
+/**
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2017-2018 Tobias Reich
+ * Copyright (c) 2018-2025 LycheeOrg.
+ */
+
 namespace App\Actions\Diagnostics\Pipes\Infos;
 
 use App\Actions\Diagnostics\Diagnostics;
-use App\Contracts\DiagnosticPipe;
+use App\Contracts\DiagnosticStringPipe;
 use App\DTO\LycheeGitInfo;
 use App\Enum\VersionChannelType;
 use App\Metadata\Versions\FileVersion;
@@ -15,7 +21,7 @@ use LycheeVerify\Verify;
 /**
  * Which version of Lychee are we using?
  */
-class VersionInfo implements DiagnosticPipe
+class VersionInfo implements DiagnosticStringPipe
 {
 	public function __construct(
 		private InstalledVersion $installedVersion,

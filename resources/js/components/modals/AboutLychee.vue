@@ -73,13 +73,9 @@ const lycheeStore = useLycheeStateStore();
 
 const { is_se_enabled, is_se_info_hidden } = storeToRefs(lycheeStore);
 
-InitService.fetchVersion()
-	.then((data) => {
-		version.value = data.data;
-	})
-	.catch((error) => {
-		console.error(error);
-	});
+InitService.fetchVersion().then((data) => {
+	version.value = data.data;
+});
 
 function closeCallback() {
 	visible.value = false;
