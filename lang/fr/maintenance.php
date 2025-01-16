@@ -56,4 +56,9 @@ return [
 		'update-button' => 'Mettre à jour',
 		'no-pending-updates' => 'Aucune mise-à-jour disponible',
 	],
+	'flush-cache' => [
+		'title' => 'Flush Cache',
+		'description' => 'Flush the cache of every user to solve invalidation problems.',
+		'button' => 'Flush',
+	],
 ];
