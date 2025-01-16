@@ -1,8 +1,15 @@
 <?php
 
+/**
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2017-2018 Tobias Reich
+ * Copyright (c) 2018-2025 LycheeOrg.
+ */
+
 namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
+use App\DTO\DiagnosticData;
 
 /**
  * Check that the database is supported.
@@ -29,14 +36,14 @@ class DBSupportCheck implements DiagnosticPipe
 				$found = true;
 				if (!extension_loaded($db_possibility[1])) {
 					// @codeCoverageIgnoreStart
-					$data[] = 'Error: ' . $db_possibility[0] . ' db driver selected and PHP ' . $db_possibility[1] . ' extension not activated';
+					$data[] = DiagnosticData::error($db_possibility[0] . ' db driver selected and PHP ' . $db_possibility[1] . ' extension not activated', self::class);
 					// @codeCoverageIgnoreEnd
 				}
 			}
 		}
 		if (!$found) {
 			// @codeCoverageIgnoreStart
-			$data[] = 'Error: could not find the database solution for ' . config('database.default');
+			$data[] = DiagnosticData::error('could not find the database solution for ' . config('database.default'), self::class);
 			// @codeCoverageIgnoreEnd
 		}
 

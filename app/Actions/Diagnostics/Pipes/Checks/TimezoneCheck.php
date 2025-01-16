@@ -1,8 +1,15 @@
 <?php
 
+/**
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2017-2018 Tobias Reich
+ * Copyright (c) 2018-2025 LycheeOrg.
+ */
+
 namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
+use App\DTO\DiagnosticData;
 use Carbon\CarbonTimeZone;
 
 /**
@@ -18,8 +25,7 @@ class TimezoneCheck implements DiagnosticPipe
 		$timezone = CarbonTimeZone::create(config('app.timezone'));
 		if ($timezone === null) {
 			// @codeCoverageIgnoreStart
-			$data[]
-				= 'Error: Could not retrieve timezone; you might experience strange results when importing photos without explicit EXIF timezone';
+			$data[] = DiagnosticData::error('Could not retrieve timezone; you might experience strange results when importing photos without explicit EXIF timezone', self::class);
 
 			return $next($data);
 			// @codeCoverageIgnoreEnd
@@ -29,8 +35,7 @@ class TimezoneCheck implements DiagnosticPipe
 		$tzArray = explode('/', $timezoneName);
 
 		if (count($tzArray) !== 2 || $tzArray[0] === 'Etc') {
-			$data[]
-				= 'Warning: Default timezone not properly set; you might experience strange results when importing photos without explicit EXIF timezone';
+			$data[] = DiagnosticData::warn('Default timezone not properly set; you might experience strange results when importing photos without explicit EXIF timezone', self::class);
 		}
 
 		return $next($data);

@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2017-2018 Tobias Reich
+ * Copyright (c) 2018-2025 LycheeOrg.
+ */
+
 namespace App\Actions\Diagnostics;
 
 use App\Actions\Diagnostics\Pipes\Checks\AdminUserExistsCheck;
@@ -20,6 +26,7 @@ use App\Actions\Diagnostics\Pipes\Checks\SmallMediumExistsCheck;
 use App\Actions\Diagnostics\Pipes\Checks\SupporterCheck;
 use App\Actions\Diagnostics\Pipes\Checks\TimezoneCheck;
 use App\Actions\Diagnostics\Pipes\Checks\UpdatableCheck;
+use App\DTO\DiagnosticData;
 use Illuminate\Pipeline\Pipeline;
 
 class Errors
@@ -55,14 +62,14 @@ class Errors
 	 *
 	 * @param string[] $skip class names of checks that will be skipped
 	 *
-	 * @return string[] array of messages
+	 * @return DiagnosticData[] array of messages
 	 */
 	public function get(array $skip = []): array
 	{
 		$filteredPipes = collect($this->pipes);
 		$this->pipes = $filteredPipes->reject(fn ($p) => in_array((new \ReflectionClass($p))->getShortName(), $skip, true))->all();
 
-		/** @var string[] $errors */
+		/** @var DiagnosticData[] $errors */
 		$errors = [];
 
 		return app(Pipeline::class)

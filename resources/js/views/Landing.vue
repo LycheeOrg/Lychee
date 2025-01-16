@@ -77,16 +77,12 @@ const introVisible = ref(true);
 const initdata = ref<App.Http.Resources.GalleryConfigs.LandingPageResource | undefined>(undefined);
 const router = useRouter();
 
-InitService.fetchLandingData()
-	.then((data) => {
-		if (data.data.landing_page_enable === false) {
-			router.push("/gallery");
-		} else {
-			initdata.value = data.data;
-			setTimeout(() => (introVisible.value = false), 4000);
-		}
-	})
-	.catch((error) => {
-		console.error(error);
-	});
+InitService.fetchLandingData().then((data) => {
+	if (data.data.landing_page_enable === false) {
+		router.push("/gallery");
+	} else {
+		initdata.value = data.data;
+		setTimeout(() => (introVisible.value = false), 4000);
+	}
+});
 </script>

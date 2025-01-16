@@ -1,8 +1,15 @@
 <?php
 
+/**
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2017-2018 Tobias Reich
+ * Copyright (c) 2018-2025 LycheeOrg.
+ */
+
 namespace App\Http\Controllers\Admin;
 
 use App\Actions\Diagnostics\Pipes\Checks\UpdatableCheck;
+use App\Actions\Diagnostics\Pipes\Infos\DockerVersionInfo;
 use App\Actions\Diagnostics\Pipes\Infos\VersionInfo;
 use App\Actions\InstallUpdate\ApplyUpdate;
 use App\Contracts\Exceptions\LycheeException;
@@ -32,12 +39,13 @@ class UpdateController extends Controller
 	/**
 	 * Retrieve Update data from the server.
 	 *
-	 * @param UpdateRequest $request
-	 * @param VersionInfo   $versionInfo
+	 * @param UpdateRequest     $request
+	 * @param VersionInfo       $versionInfo
+	 * @param DockerVersionInfo $dockerVersionInfo
 	 *
 	 * @return UpdateInfo
 	 */
-	public function get(UpdateRequest $request, VersionInfo $versionInfo): UpdateInfo
+	public function get(UpdateRequest $request, VersionInfo $versionInfo, DockerVersionInfo $dockerVersionInfo): UpdateInfo
 	{
 		/** @var VersionChannelType $channelName */
 		$channelName = $versionInfo->getChannelName();
@@ -57,7 +65,7 @@ class UpdateController extends Controller
 			}
 		}
 
-		return new UpdateInfo($info, $extra, $channelName);
+		return new UpdateInfo($info, $extra, $channelName, $dockerVersionInfo->isDocker());
 	}
 
 	/**
@@ -65,9 +73,9 @@ class UpdateController extends Controller
 	 *
 	 * @return UpdateCheckInfo
 	 */
-	public function check(UpdateRequest $request, GitHubVersion $gitHubFunctions, VersionInfo $versionInfo): UpdateCheckInfo
+	public function check(UpdateRequest $request, GitHubVersion $gitHubFunctions, VersionInfo $versionInfo, DockerVersionInfo $dockerVersionInfo): UpdateCheckInfo
 	{
-		return new UpdateCheckInfo($gitHubFunctions->getBehindTest(), !$gitHubFunctions->isUpToDate() || !$versionInfo->fileVersion->isUpToDate());
+		return new UpdateCheckInfo($gitHubFunctions->getBehindTest(), !$dockerVersionInfo->isDocker() && (!$gitHubFunctions->isUpToDate() || !$versionInfo->fileVersion->isUpToDate()));
 	}
 
 	/**

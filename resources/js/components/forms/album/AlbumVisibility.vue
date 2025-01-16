@@ -131,19 +131,15 @@ function save() {
 		password: password.value,
 	};
 
-	AlbumService.updateProtectionPolicy(data)
-		.then(() => {
-			toast.add({ severity: "success", summary: trans("toasts.success"), detail: trans("dialogs.visibility.visibility_updated"), life: 3000 });
-			AlbumService.clearCache(albumId.value);
-			if (props.config.is_model_album) {
-				// @ts-expect-error
-				AlbumService.clearCache(props.album.parent_id);
-			} else {
-				AlbumService.clearAlbums();
-			}
-		})
-		.catch((error) => {
-			console.error(error);
-		});
+	AlbumService.updateProtectionPolicy(data).then(() => {
+		toast.add({ severity: "success", summary: trans("toasts.success"), detail: trans("dialogs.visibility.visibility_updated"), life: 3000 });
+		AlbumService.clearCache(albumId.value);
+		if (props.config.is_model_album) {
+			// @ts-expect-error
+			AlbumService.clearCache(props.album.parent_id);
+		} else {
+			AlbumService.clearAlbums();
+		}
+	});
 }
 </script>
