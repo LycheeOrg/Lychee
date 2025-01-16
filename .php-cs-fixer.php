@@ -47,6 +47,7 @@ $rules = [
 		'only_booleans' => true,
 		'position' => 'end',
 	],
+	// 'header_comment' => ['header' => "SPDX-License-Identifier: MIT\nCopyright (c) 2017-2018 Tobias Reich\nCopyright (c) 2018-2025 LycheeOrg", 'comment_type' => 'PHPDoc', 'location' => 'after_open', 'separate' => 'bottom'],
 ];
 $config = new PhpCsFixer\Config();
 

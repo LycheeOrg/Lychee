@@ -32,6 +32,7 @@
 			</Message>
 		</div>
 	</template>
+	<SessionExpiredReload v-model:visible="sessionExpired" />
 </template>
 <script setup lang="ts">
 import { ref } from "vue";
@@ -41,6 +42,7 @@ import Button from "primevue/button";
 import Panel from "primevue/panel";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
+import SessionExpiredReload from "@/components/modals/SessionExpiredReload.vue";
 
 type Trace = {
 	class: string;
@@ -73,6 +75,8 @@ const { is_debug_enabled } = storeToRefs(lycheeStore);
 const lycheeError = ref<LycheeException | null>(null);
 const jsError = ref<ErrorEvent | null>(null);
 
+const sessionExpired = ref(false);
+
 window.addEventListener("error", function (e: Event) {
 	console.log("error", e);
 	// @ts-expect-error
@@ -87,6 +91,10 @@ window.addEventListener("error", function (e: Event) {
 		// @ts-expect-error
 		jsError.value = e as ErrorEvent;
 	}
+});
+
+window.addEventListener("session_expired", function (e: Event) {
+	sessionExpired.value = true;
 });
 
 function closeError() {

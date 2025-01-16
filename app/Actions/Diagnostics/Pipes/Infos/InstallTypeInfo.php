@@ -1,10 +1,16 @@
 <?php
 
+/**
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2017-2018 Tobias Reich
+ * Copyright (c) 2018-2025 LycheeOrg.
+ */
+
 namespace App\Actions\Diagnostics\Pipes\Infos;
 
 use App\Actions\Diagnostics\Diagnostics;
 use App\Assets\Features;
-use App\Contracts\DiagnosticPipe;
+use App\Contracts\DiagnosticStringPipe;
 use App\Metadata\Versions\InstalledVersion;
 use LycheeVerify\Verify;
 
@@ -12,7 +18,7 @@ use LycheeVerify\Verify;
  * What kind of Lychee install we are looking at?
  * Composer? Dev? Release?
  */
-class InstallTypeInfo implements DiagnosticPipe
+class InstallTypeInfo implements DiagnosticStringPipe
 {
 	public function __construct(
 		private InstalledVersion $installedVersion,

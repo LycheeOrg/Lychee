@@ -1,6 +1,14 @@
 <?php
 
+/**
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2017-2018 Tobias Reich
+ * Copyright (c) 2018-2025 LycheeOrg.
+ */
+
 namespace App\Contracts;
+
+use App\DTO\DiagnosticData;
 
 /**
  * Basic definition of a Diagnostic pipe.
@@ -11,10 +19,10 @@ namespace App\Contracts;
 interface DiagnosticPipe
 {
 	/**
-	 * @param array<int,string>                                    &$data
-	 * @param \Closure(array<int,string> $data): array<int,string> $next
+	 * @param DiagnosticData[]                                   &$data
+	 * @param \Closure(DiagnosticData[] $data): DiagnosticData[] $next
 	 *
-	 * @return array<int,string>
+	 * @return DiagnosticData[]
 	 */
 	public function handle(array &$data, \Closure $next): array;
 }

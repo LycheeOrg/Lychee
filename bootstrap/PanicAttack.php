@@ -1,6 +1,12 @@
 <?php
 
 /**
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2017-2018 Tobias Reich
+ * Copyright (c) 2018-2025 LycheeOrg.
+ */
+
+/**
  * Basic PanicAttack class.
  *
  * Used only in case of emergency: e.g. vendor not found

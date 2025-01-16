@@ -409,8 +409,17 @@ onMounted(() => {
 });
 
 onMounted(async () => {
-	await Promise.all([loadLayoutConfig(), refresh()]);
-	setScroll();
+	const results = await Promise.allSettled([loadLayoutConfig(), refresh()]);
+
+	results.forEach((result, index) => {
+		if (result.status === "rejected") {
+			console.warn(`Promise ${index} reject with reason: ${result.reason}`);
+		}
+	});
+
+	if (results.every((result) => result.status === "fulfilled")) {
+		setScroll();
+	}
 });
 
 onUnmounted(() => {
