@@ -32,7 +32,7 @@ export function useSlideshowFunction(
 	// We need to be able to clear all the timeouts so that the next and previous functions can be called without any issues.
 	function clearTimeouts() {
 		// https://stackoverflow.com/a/8860203
-		var id = window.setTimeout(function () { }, 0);
+		var id = window.setTimeout(function () {}, 0);
 		while (id--) {
 			window.clearTimeout(id); // will do nothing if no timeout with id is present
 		}
@@ -62,15 +62,25 @@ export function useSlideshowFunction(
 	}
 
 	function next(immediate: boolean = false) {
-
 		removeVideoElementListeners();
 
+		/**
+		 * If immediate is true and slideshow is not active then we need to get
+		 * the next photo immediatel
+		 */
 		if (immediate && is_slideshow_active.value == false) {
 			console.log("Immediate or not running slideshow");
 			getNext();
 			return;
 		}
 
+		/**
+		 * If immediate is true and slideshow is active then we need get the
+		 * next photo immediately but add a timeout delay for loading the next
+		 * photo i.e. continue the slideshow
+		 */
+
+		//
 		if (immediate && is_slideshow_active.value == true) {
 			console.log("Immediate and running slideshow");
 			clearTimeouts();
@@ -79,19 +89,24 @@ export function useSlideshowFunction(
 			return;
 		}
 
-		if (!immediate && is_slideshow_active.value == true) {
-			if (videoElement.value && !videoElement.value.ended) {
-				console.log("Not immediate but running slideshow and video not ended");
-				clearTimeouts();
-				videoElement.value?.addEventListener("ended", videoEndedEventListener);
+		/**
+		 * Handle the remaining scenario i.e immediate is false and slideshow is
+		 * active.
+		 */
 
-				return;
-			}
-			console.log("Not immediate but running slideshow");
+		/**
+		 * If current photo type is video then handle the slideshow timings
+		 * in such a way that the video finishes before moving on to next photo */
+
+		if (videoElement.value && !videoElement.value.ended) {
+			console.log("Not immediate but running slideshow and video not ended");
 			clearTimeouts();
-			continueSlideShow();
+			videoElement.value?.addEventListener("ended", videoEndedEventListener);
+			return;
 		}
-
+		console.log("Not immediate but running slideshow");
+		clearTimeouts();
+		continueNextSlideShow();
 	}
 
 	function startSlideShow() {
@@ -100,34 +115,70 @@ export function useSlideshowFunction(
 		window.setTimeout(() => next(), delay + 1000 * slide_show_interval.value); // Set timeout for next iteration.
 	}
 
-	function continueSlideShow() {
+	function continueNextSlideShow() {
 		curtainDown(); // takes 500ms
 		window.setTimeout(() => getNext(), delay); // hence we wait 500ms for curtain to be down
 		window.setTimeout(() => curtainUp(), delay * 2); // We wait 500ms for the next photo to be loaded.
 		window.setTimeout(() => next(), delay * 2 + 1000 * slide_show_interval.value); // Set timeout for next iteration.
 	}
 
+	function continuePreviousSlideShow() {
+		curtainDown(); // takes 500ms
+		window.setTimeout(() => getPrevious?.(), 500); // hence we wait 500ms for curtain to be down
+		window.setTimeout(() => curtainUp(), 1000); // We wait 500ms for the next photo to be loaded.
+		window.setTimeout(() => next(), 1000 * slide_show_interval.value); // Set timeout for next iteration.
+	}
+
 	function previous(immediate: boolean = false) {
 		removeVideoElementListeners();
+
 		if (getPrevious === undefined) {
 			return;
 		}
 
-		if (!is_slideshow_active.value || immediate) {
+		/**
+		 * If immediate is true and slideshow is not active then we need to get
+		 * the previous photo immediately
+		 */
+		if (immediate && is_slideshow_active.value == false) {
+			console.log("Immediate or not running slideshow");
 			getPrevious();
 			return;
 		}
 
-		clearTimeouts();
+		/**
+		 * If immediate is true and slideshow is active then we need get the
+		 * previous photo immediately but add a timeout delay for loading the next
+		 * photo i.e. continue the slideshow
+		 */
 
-		if (videoElement.value && !videoElement.value.ended) {
-			videoElement.value?.addEventListener("ended", videoEndedEventListener);
+		//
+		if (immediate && is_slideshow_active.value == true) {
+			console.log("Immediate and running slideshow");
+			clearTimeouts();
+			getPrevious();
+			window.setTimeout(() => next(), 1000 * slide_show_interval.value); // Set timeout for next iteration.
+			return;
 		}
 
-		curtainDown(); // takes 500ms
-		window.setTimeout(() => getPrevious(), 500); // hence we wait 500ms for curtain to be down
-		window.setTimeout(() => curtainUp(), 1000); // We wait 500ms for the next photo to be loaded.
-		window.setTimeout(() => next(), 1000 * slide_show_interval.value); // Set timeout for next iteration.
+		/**
+		 * Handle the remaining scenario i.e immediate is false and slideshow is
+		 * active.
+		 */
+
+		/**
+		 * If current photo type is video then handle the slideshow timings
+		 * in such a way that the video finishes before moving on to next photo */
+
+		if (videoElement.value && !videoElement.value.ended) {
+			console.log("Not immediate but running slideshow and video not ended");
+			clearTimeouts();
+			videoElement.value?.addEventListener("ended", videoEndedEventListener);
+			return;
+		}
+		console.log("Not immediate but running slideshow");
+		clearTimeouts();
+		continuePreviousSlideShow();
 	}
 
 	return {
