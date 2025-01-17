@@ -39,6 +39,9 @@ class SharingTest extends BaseApiV2Test
 		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Sharing', ['album_id' => $this->album1->id]);
 		$this->assertOk($response);
 
+		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Sharing::all');
+		$this->assertOk($response);
+
 		$response = $this->actingAs($this->userMayUpload1)->patchJson('Sharing', [
 			'perm_id' => $this->perm1->id,
 			'grants_edit' => true,
@@ -59,5 +62,16 @@ class SharingTest extends BaseApiV2Test
 			'grants_upload' => true,
 		]);
 		$this->assertOk($response);
+
+		$response = $this->actingAs($this->userMayUpload2)->getJsonWithData('Sharing', ['album_id' => $this->album2->id]);
+		$this->assertOk($response);
+		$response->assertJsonCount('1');
+
+		$id = $response->json()[0]['id'];
+		$response = $this->actingAs($this->userMayUpload1)->deleteJson('Sharing', ['perm_id' => $id]);
+		$this->assertForbidden($response);
+
+		$response = $this->actingAs($this->userMayUpload2)->deleteJson('Sharing', ['perm_id' => $id]);
+		$this->assertNoContent($response);
 	}
 }

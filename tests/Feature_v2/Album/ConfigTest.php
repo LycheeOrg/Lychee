@@ -32,5 +32,8 @@ class ConfigTest extends BaseApiV2Test
 
 		$response = $this->getJson('Gallery::getUploadLimits');
 		$this->assertOk($response);
+
+		$response = $this->getJson('Gallery::Footer');
+		$this->assertOk($response);
 	}
 }
