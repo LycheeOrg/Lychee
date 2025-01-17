@@ -13,6 +13,8 @@ use App\Legacy\V1\Contracts\Http\Requests\RequestAttribute;
 
 /**
  * Rules applied when deleting a credential.
+ *
+ * @codeCoverageIgnore
  */
 class DeleteCredentialRuleSet implements RuleSet
 {

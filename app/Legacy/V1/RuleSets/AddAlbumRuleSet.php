@@ -13,6 +13,9 @@ use App\Legacy\V1\Contracts\Http\Requests\RequestAttribute;
 use App\Rules\RandomIDRule;
 use App\Rules\TitleRule;
 
+/**
+ * @codeCoverageIgnore Legacy stuff
+ */
 class AddAlbumRuleSet implements RuleSet
 {
 	public static function rules(): array

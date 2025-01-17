@@ -15,6 +15,8 @@ use App\Rules\RandomIDRule;
 
 /**
  * Rules applied when changing the protection policies of an album.
+ *
+ * @codeCoverageIgnore Legacy stuff
  */
 class SetAlbumProtectionPolicyRuleSet implements RuleSet
 {

@@ -61,6 +61,8 @@ final class RedirectController extends Controller
 	 *
 	 * @throws LycheeException
 	 * @throws ModelNotFoundException
+	 *
+	 * @codeCoverageIgnore Legacy stuff
 	 */
 	public function photo(Request $request, string $albumID, ?string $photoID): SymfonyResponse
 	{
@@ -101,6 +103,8 @@ final class RedirectController extends Controller
 	 * Otherwise attach a JS hook if legacy is enabled.
 	 *
 	 * @return View|SymfonyResponse
+	 *
+	 * @codeCoverageIgnore Legacy stuff
 	 */
 	public function view(): View|SymfonyResponse
 	{

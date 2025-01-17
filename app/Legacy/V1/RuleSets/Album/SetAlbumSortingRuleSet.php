@@ -17,6 +17,8 @@ use Illuminate\Validation\Rules\Enum;
 
 /**
  * Rules applied when changing the sorting mode inside an album.
+ *
+ * @codeCoverageIgnore Legacy stuff
  */
 class SetAlbumSortingRuleSet implements RuleSet
 {
