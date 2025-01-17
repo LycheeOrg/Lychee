@@ -21,6 +21,10 @@ use Illuminate\Support\Facades\Session;
 use Laravel\Socialite\Contracts\User as ContractsUser;
 use Laravel\Socialite\Facades\Socialite;
 
+/**
+ * @codeCoverageIgnore
+ * This code is untestable as it is tightly coupled with the Socialite facade.
+ */
 class Oauth
 {
 	public const OAUTH_REGISTER = 'register';

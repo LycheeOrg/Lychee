@@ -18,6 +18,9 @@
 
 namespace Tests\Unit;
 
+use App\DTO\BacktraceRecord;
+use App\DTO\ImportEventReport;
+use App\DTO\ImportProgressReport;
 use App\Enum\AspectRatioCSSType;
 use App\Enum\AspectRatioType;
 use App\Enum\MapProviders;
@@ -55,5 +58,46 @@ class CoverageTest extends AbstractTestCase
 		self::assertEquals('&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>', MapProviders::RRZE->getAtributionHtml());
 
 		self::assertEquals(AspectRatioCSSType::aspect2by3, AspectRatioType::aspect2by3->css());
+	}
+
+	public function testBackTraceReccord(): void
+	{
+		$record = new BacktraceRecord(
+			file: 'file',
+			line: 1,
+			class: 'class',
+			function: 'function',
+		);
+
+		self::assertEquals('file', $record->getFile());
+		self::assertEquals('function', $record->getFunction());
+		self::assertEquals('class', $record->getClass());
+		self::assertEquals(['file' => 'file', 'line' => 1, 'method' => 'class::function'], $record->toArray());
+	}
+
+	public function testImportProgressReport(): void
+	{
+		$report = ImportProgressReport::create(
+			path: 'path',
+			progress: 1,
+		);
+		self::assertEquals('path: 1%', $report->toCLIString());
+	}
+
+	public function testImportEventReport(): void
+	{
+		$report = ImportEventReport::createWarning(
+			subtype: 'subtype',
+			path: 'path',
+			message: 'message',
+		);
+		self::assertEquals('path: message', $report->toCLIString());
+
+		$report = ImportEventReport::createWarning(
+			subtype: 'subtype',
+			path: null,
+			message: 'message',
+		);
+		self::assertEquals('message', $report->toCLIString());
 	}
 }

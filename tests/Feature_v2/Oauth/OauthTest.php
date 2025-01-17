@@ -46,4 +46,8 @@ class OauthTest extends BaseApiV2Test
 		$response = $this->actingAs($this->userMayUpload1)->deleteJson('Oauth', ['provider' => 'github']);
 		$this->assertNoContent($response);
 	}
+
+	public function testOauthRegistration(): void
+	{
+	}
 }

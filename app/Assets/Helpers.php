@@ -135,8 +135,10 @@ class Helpers
 		$exp = intval(floor(log($bytes) / log(1024.0)));
 
 		if ($exp >= sizeof($symbols)) {
+			// @codeCoverageIgnoreStart
 			// if the number is too large, we fall back to the largest available symbol
 			$exp = sizeof($symbols) - 1;
+			// @codeCoverageIgnoreEnd
 		}
 
 		return sprintf('%.2f %s', ($bytes / pow(1024, $exp)), $symbols[$exp]);
