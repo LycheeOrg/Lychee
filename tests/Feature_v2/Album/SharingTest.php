@@ -65,7 +65,7 @@ class SharingTest extends BaseApiV2Test
 
 		$response = $this->actingAs($this->userMayUpload2)->getJsonWithData('Sharing', ['album_id' => $this->album2->id]);
 		$this->assertOk($response);
-		$response->assertJsonCount('1');
+		$response->assertJsonCount(1);
 
 		$id = $response->json()[0]['id'];
 		$response = $this->actingAs($this->userMayUpload1)->deleteJson('Sharing', ['perm_id' => $id]);
