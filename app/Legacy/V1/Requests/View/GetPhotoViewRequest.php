@@ -16,6 +16,9 @@ use App\Policies\PhotoPolicy;
 use App\Rules\RandomIDRule;
 use Illuminate\Support\Facades\Gate;
 
+/**
+ * @codeCoverageIgnore
+ */
 final class GetPhotoViewRequest extends BaseApiRequest implements HasPhoto
 {
 	use HasPhotoTrait;

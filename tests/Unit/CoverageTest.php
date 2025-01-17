@@ -25,6 +25,8 @@ use App\Enum\AspectRatioCSSType;
 use App\Enum\AspectRatioType;
 use App\Enum\MapProviders;
 use App\Enum\SmartAlbumType;
+use App\Exceptions\Internal\LycheeInvalidArgumentException;
+use App\SmartAlbums\UnsortedAlbum;
 use Tests\AbstractTestCase;
 
 class CoverageTest extends AbstractTestCase
@@ -99,5 +101,38 @@ class CoverageTest extends AbstractTestCase
 			message: 'message',
 		);
 		self::assertEquals('message', $report->toCLIString());
+	}
+
+	public function testBaseSmartAlbumException(): void
+	{
+		self::expectException(LycheeInvalidArgumentException::class);
+
+		$album = new UnsortedAlbum();
+		$album->__get('');
+	}
+
+	public function testBaseSmartAlbumException2(): void
+	{
+		self::expectException(LycheeInvalidArgumentException::class);
+
+		$album = new UnsortedAlbum();
+		$album->__get('something');
+	}
+
+	public function testBaseSmartAlbumPhotos(): void
+	{
+		$album = new UnsortedAlbum();
+		$data = $album->__get('Photos');
+		self::assertEmpty($data);
+
+		$data = $album->getPhotos();
+		self::assertEmpty($data);
+
+		$album->setPublic();
+		$album->setPublic();
+		$data = $album->getPhotos();
+		self::assertEmpty($data);
+		$album->setPrivate();
+		$album->setPrivate();
 	}
 }

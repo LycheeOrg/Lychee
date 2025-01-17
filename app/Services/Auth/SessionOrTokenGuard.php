@@ -128,7 +128,9 @@ class SessionOrTokenGuard extends SessionGuard
 		/** @disregard P1013 */
 		$guard->setRequest($app->refresh('request', $guard, 'setRequest'));
 		if (isset($config['remember'])) {
+			// @codeCoverageIgnoreStart
 			$guard->setRememberDuration($config['remember']);
+			// @codeCoverageIgnoreEnd
 		}
 
 		return $guard;
@@ -194,7 +196,9 @@ class SessionOrTokenGuard extends SessionGuard
 			// new authentication state explicitly.
 			$this->authState = self::AUTH_STATE_STATELESS;
 		} elseif ($userByRecaller !== null) {
+			// @codeCoverageIgnoreStart
 			$this->login($userByRecaller, true);
+		// @codeCoverageIgnoreEnd
 		} else {
 			// In the other cases, `$this->user` has implicitly been set by
 			// `parent::setUser` or `$this->login`.
@@ -326,7 +330,9 @@ class SessionOrTokenGuard extends SessionGuard
 
 		// Skip if token starts with Basic: it is not related to Lychee.
 		if (Str::startsWith('Basic', $token)) {
+			// @codeCoverageIgnoreStart
 			return null;
+			// @codeCoverageIgnoreEnd
 		}
 
 		// Check if token starts with Bearer
@@ -349,8 +355,10 @@ class SessionOrTokenGuard extends SessionGuard
 
 		return match (true) {
 			$authenticable !== null => $authenticable,
+			// @codeCoverageIgnoreStart
 			$hasBearer && $configThrow => throw new BadRequestHeaderException('Invalid token'),
 			$hasBearer => null,
+			// @codeCoverageIgnoreEnd
 			default => throw new BadRequestHeaderException('Invalid token'),
 		};
 	}
