@@ -32,7 +32,7 @@ export function useSlideshowFunction(
 	// We need to be able to clear all the timeouts so that the next and previous functions can be called without any issues.
 	function clearTimeouts() {
 		// https://stackoverflow.com/a/8860203
-		var id = window.setTimeout(function () { }, 0);
+		var id = window.setTimeout(function () {}, 0);
 		while (id--) {
 			window.clearTimeout(id); // will do nothing if no timeout with id is present
 		}
@@ -62,7 +62,6 @@ export function useSlideshowFunction(
 	}
 
 	function next(immediate: boolean = false) {
-
 		removeVideoElementListeners();
 
 		if (immediate && is_slideshow_active.value == false) {
@@ -91,7 +90,6 @@ export function useSlideshowFunction(
 			clearTimeouts();
 			continueSlideShow();
 		}
-
 	}
 
 	function startSlideShow() {

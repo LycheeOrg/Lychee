@@ -84,14 +84,14 @@
 				<!-- <x-gallery.photo.overlay /> -->
 			</div>
 			<NextPrevious
-				v-if="photo.previous_photo_id !== null"
+				v-if="photo.previous_photo_id !== null && !is_slideshow_active"
 				:albumId="props.albumid"
 				:photoId="photo.previous_photo_id"
 				:is_next="false"
 				:style="previousStyle"
 			/>
 			<NextPrevious
-				v-if="photo.next_photo_id !== null"
+				v-if="photo.next_photo_id !== null && !is_slideshow_active"
 				:albumId="props.albumid"
 				:photoId="photo.next_photo_id"
 				:is_next="true"
