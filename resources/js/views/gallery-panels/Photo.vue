@@ -302,6 +302,7 @@ onKeyStroke("ArrowRight", () => !shouldIgnoreKeystroke() && hasNext() && next(tr
 onKeyStroke("o", () => !shouldIgnoreKeystroke() && rotateOverlay());
 onKeyStroke(" ", () => !shouldIgnoreKeystroke() && slideshow());
 onKeyStroke("f", () => !shouldIgnoreKeystroke() && togglableStore.toggleFullScreen());
+onKeyStroke("Escape", () => !shouldIgnoreKeystroke() && is_slideshow_active.value && stop());
 
 // Priviledged operations
 onKeyStroke("m", () => !shouldIgnoreKeystroke() && photo.value?.rights.can_edit && toggleMove());
