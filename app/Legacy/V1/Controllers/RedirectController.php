@@ -23,7 +23,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
-class RedirectController extends Controller
+final class RedirectController extends Controller
 {
 	protected Unlock $unlock;
 	protected AlbumFactory $albumFactory;

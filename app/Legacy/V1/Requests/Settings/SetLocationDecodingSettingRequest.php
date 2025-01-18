@@ -8,7 +8,7 @@
 
 namespace App\Legacy\V1\Requests\Settings;
 
-class SetLocationDecodingSettingRequest extends AbstractSettingRequest
+final class SetLocationDecodingSettingRequest extends AbstractSettingRequest
 {
 	public const ATTRIBUTE = 'location_decoding';
 

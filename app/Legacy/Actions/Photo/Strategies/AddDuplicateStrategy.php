@@ -16,7 +16,7 @@ use App\Models\Photo;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Log;
 
-class AddDuplicateStrategy extends AbstractAddStrategy
+final class AddDuplicateStrategy extends AbstractAddStrategy
 {
 	public function __construct(ImportParam $parameters, Photo $existing)
 	{

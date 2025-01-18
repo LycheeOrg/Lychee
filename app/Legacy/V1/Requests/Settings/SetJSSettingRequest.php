@@ -8,7 +8,7 @@
 
 namespace App\Legacy\V1\Requests\Settings;
 
-class SetJSSettingRequest extends AbstractSettingRequest
+final class SetJSSettingRequest extends AbstractSettingRequest
 {
 	public const ATTRIBUTE = 'js';
 

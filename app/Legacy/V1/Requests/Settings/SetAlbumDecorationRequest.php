@@ -17,7 +17,7 @@ use App\Policies\SettingsPolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Enum;
 
-class SetAlbumDecorationRequest extends BaseApiRequest
+final class SetAlbumDecorationRequest extends BaseApiRequest
 {
 	protected AlbumDecorationType $albumDecoration;
 	protected AlbumDecorationOrientation $albumDecorationOrientation;

@@ -11,7 +11,7 @@ namespace App\Legacy\V1\DTO;
 use App\DTO\ArrayableDTO;
 use App\Enum\UpdateStatus;
 
-class DiagnosticInfo extends ArrayableDTO
+final class DiagnosticInfo extends ArrayableDTO
 {
 	/**
 	 * @param string[]     $errors  list of error messages

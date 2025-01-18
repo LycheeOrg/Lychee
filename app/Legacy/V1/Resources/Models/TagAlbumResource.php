@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Auth;
 /**
  * Format a Tag album with all the required data.
  */
-class TagAlbumResource extends JsonResource
+final class TagAlbumResource extends JsonResource
 {
 	use WithStatus;
 

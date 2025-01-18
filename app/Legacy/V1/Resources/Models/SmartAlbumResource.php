@@ -17,7 +17,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 /**
  * Converts a Smart album into a resource with all the required data.
  */
-class SmartAlbumResource extends JsonResource
+final class SmartAlbumResource extends JsonResource
 {
 	public function __construct(BaseSmartAlbum $smartAlbum)
 	{

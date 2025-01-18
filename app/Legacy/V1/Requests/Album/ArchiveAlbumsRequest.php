@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Gate;
 /**
  * @implements HasAlbums<\App\Contracts\Models\AbstractAlbum>
  */
-class ArchiveAlbumsRequest extends BaseApiRequest implements HasAlbums
+final class ArchiveAlbumsRequest extends BaseApiRequest implements HasAlbums
 {
 	/** @use HasAlbumsTrait<AbstractAlbum> */
 	use HasAlbumsTrait;

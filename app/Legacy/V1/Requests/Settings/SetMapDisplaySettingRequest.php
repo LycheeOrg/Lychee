@@ -8,7 +8,7 @@
 
 namespace App\Legacy\V1\Requests\Settings;
 
-class SetMapDisplaySettingRequest extends AbstractSettingRequest
+final class SetMapDisplaySettingRequest extends AbstractSettingRequest
 {
 	public const ATTRIBUTE = 'map_display';
 

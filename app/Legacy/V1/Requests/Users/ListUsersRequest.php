@@ -13,7 +13,7 @@ use App\Models\User;
 use App\Policies\UserPolicy;
 use Illuminate\Support\Facades\Gate;
 
-class ListUsersRequest extends AbstractEmptyRequest
+final class ListUsersRequest extends AbstractEmptyRequest
 {
 	/**
 	 * {@inheritDoc}

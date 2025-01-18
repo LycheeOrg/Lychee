@@ -30,7 +30,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 use Spatie\Feed\Helpers\FeedContentType;
 
-class ConfigurationResource extends JsonResource
+final class ConfigurationResource extends JsonResource
 {
 	public function __construct()
 	{

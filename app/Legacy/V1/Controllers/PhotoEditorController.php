@@ -16,7 +16,7 @@ use App\Legacy\V1\Resources\Models\PhotoResource;
 use App\Models\Configs;
 use Illuminate\Routing\Controller;
 
-class PhotoEditorController extends Controller
+final class PhotoEditorController extends Controller
 {
 	/**
 	 * Given a photoID and a direction (+1: 90° clockwise, -1: 90° counterclockwise) rotate an image.

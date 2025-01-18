@@ -20,7 +20,7 @@ use App\Policies\SettingsPolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\In;
 
-class SetSmartAlbumVisibilityRequest extends BaseApiRequest implements HasAbstractAlbum, HasIsPublic
+final class SetSmartAlbumVisibilityRequest extends BaseApiRequest implements HasAbstractAlbum, HasIsPublic
 {
 	use HasAbstractAlbumTrait;
 	use HasIsPublicTrait;

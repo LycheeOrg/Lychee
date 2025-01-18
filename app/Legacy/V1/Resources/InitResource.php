@@ -16,7 +16,7 @@ use App\Models\Configs;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 
-class InitResource extends JsonResource
+final class InitResource extends JsonResource
 {
 	public function __construct()
 	{

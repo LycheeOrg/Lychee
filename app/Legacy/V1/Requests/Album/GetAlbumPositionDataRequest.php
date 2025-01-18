@@ -17,7 +17,7 @@ use App\Policies\AlbumPolicy;
 use App\Rules\AlbumIDRule;
 use Illuminate\Support\Facades\Gate;
 
-class GetAlbumPositionDataRequest extends BaseApiRequest implements HasAbstractAlbum
+final class GetAlbumPositionDataRequest extends BaseApiRequest implements HasAbstractAlbum
 {
 	use HasAbstractAlbumTrait;
 

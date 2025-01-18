@@ -53,7 +53,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
  *
  * TODO: Refactor this, see problem description above.
  */
-class ImportController extends Controller
+final class ImportController extends Controller
 {
 	/**
 	 * @param ImportFromUrlRequest $request

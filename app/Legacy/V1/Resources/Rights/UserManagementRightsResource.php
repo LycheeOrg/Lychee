@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Gate;
 /**
  * Data Transfer Object (DTO) to transmit the rights of an user on different user accounts.
  */
-class UserManagementRightsResource extends JsonResource
+final class UserManagementRightsResource extends JsonResource
 {
 	public function __construct()
 	{

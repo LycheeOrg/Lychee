@@ -15,7 +15,7 @@ use Illuminate\Support\Collection;
 /**
  * Resource returned when querying for pictures on the map.
  */
-class PositionDataResource extends JsonResource
+final class PositionDataResource extends JsonResource
 {
 	public ?string $id;
 	public ?string $title;

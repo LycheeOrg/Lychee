@@ -8,7 +8,7 @@
 
 namespace App\Legacy\V1\Requests\Settings;
 
-class SetNewPhotosNotificationSettingRequest extends AbstractSettingRequest
+final class SetNewPhotosNotificationSettingRequest extends AbstractSettingRequest
 {
 	public const ATTRIBUTE = 'new_photos_notification';
 

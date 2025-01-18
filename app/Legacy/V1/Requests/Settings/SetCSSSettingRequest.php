@@ -8,7 +8,7 @@
 
 namespace App\Legacy\V1\Requests\Settings;
 
-class SetCSSSettingRequest extends AbstractSettingRequest
+final class SetCSSSettingRequest extends AbstractSettingRequest
 {
 	public const ATTRIBUTE = 'css';
 

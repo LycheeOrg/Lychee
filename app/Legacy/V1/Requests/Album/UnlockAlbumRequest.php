@@ -16,7 +16,7 @@ use App\Legacy\V1\Requests\Traits\HasBaseAlbumTrait;
 use App\Legacy\V1\Requests\Traits\HasPasswordTrait;
 use App\Legacy\V1\RuleSets\Album\UnlockAlbumRuleSet;
 
-class UnlockAlbumRequest extends BaseApiRequest implements HasBaseAlbum, HasPassword
+final class UnlockAlbumRequest extends BaseApiRequest implements HasBaseAlbum, HasPassword
 {
 	use HasBaseAlbumTrait;
 	use HasPasswordTrait;

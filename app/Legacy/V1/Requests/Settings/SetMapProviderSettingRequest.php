@@ -11,7 +11,7 @@ namespace App\Legacy\V1\Requests\Settings;
 use App\Enum\MapProviders;
 use Illuminate\Validation\Rules\Enum;
 
-class SetMapProviderSettingRequest extends AbstractSettingRequest
+final class SetMapProviderSettingRequest extends AbstractSettingRequest
 {
 	public const ATTRIBUTE = 'map_provider';
 

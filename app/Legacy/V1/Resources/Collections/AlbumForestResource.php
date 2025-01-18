@@ -15,7 +15,7 @@ use Illuminate\Support\Collection;
 /**
  * Resource returned when querying for the full tree of acccessible albums.
  */
-class AlbumForestResource extends JsonResource
+final class AlbumForestResource extends JsonResource
 {
 	/**
 	 * @param Collection<int,\App\Contracts\Models\AbstractAlbum>      $albums

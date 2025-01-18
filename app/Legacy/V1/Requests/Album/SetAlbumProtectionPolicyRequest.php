@@ -19,7 +19,7 @@ use App\Legacy\V1\Requests\Traits\HasPasswordTrait;
 use App\Rules\PasswordRule;
 use App\Rules\RandomIDRule;
 
-class SetAlbumProtectionPolicyRequest extends BaseApiRequest implements HasBaseAlbum, HasPassword
+final class SetAlbumProtectionPolicyRequest extends BaseApiRequest implements HasBaseAlbum, HasPassword
 {
 	use HasBaseAlbumTrait;
 	use HasPasswordTrait;

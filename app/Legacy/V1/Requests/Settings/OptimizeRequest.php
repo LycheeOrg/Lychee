@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Gate;
 /**
  * @mixin Request
  */
-class OptimizeRequest extends AbstractEmptyRequest
+final class OptimizeRequest extends AbstractEmptyRequest
 {
 	/**
 	 * {@inheritDoc}

@@ -34,7 +34,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use function Safe\json_encode;
 
-class DiagnosticsController extends Controller
+final class DiagnosticsController extends Controller
 {
 	public const ERROR_MSG = 'You must have administrator rights to see this.';
 

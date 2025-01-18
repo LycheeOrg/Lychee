@@ -14,7 +14,7 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 /**
  * Provide stronger typechecking for Album collections.
  */
-class AlbumCollectionResource extends ResourceCollection
+final class AlbumCollectionResource extends ResourceCollection
 {
 	/**
 	 * The resource that this resource collects.

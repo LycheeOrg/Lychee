@@ -16,7 +16,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 /**
  * Format a User for user management tasks, only give the required info.
  */
-class UserManagementResource extends JsonResource
+final class UserManagementResource extends JsonResource
 {
 	use WithStatus;
 

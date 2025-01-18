@@ -35,7 +35,7 @@ use App\SmartAlbums\StarredAlbum;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use function Safe\filemtime;
 
-class Create
+final class Create
 {
 	/** @var ImportParam the strategy parameters prepared and compiled by this class */
 	protected ImportParam $strategyParameters;

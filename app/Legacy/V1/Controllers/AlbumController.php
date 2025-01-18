@@ -57,7 +57,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
-class AlbumController extends Controller
+final class AlbumController extends Controller
 {
 	/**
 	 * Add a new Album.

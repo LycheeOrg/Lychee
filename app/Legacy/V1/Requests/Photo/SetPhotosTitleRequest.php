@@ -18,7 +18,7 @@ use App\Legacy\V1\Requests\Traits\HasTitleTrait;
 use App\Legacy\V1\RuleSets\Photo\SetPhotosTitleRuleSet;
 use App\Models\Photo;
 
-class SetPhotosTitleRequest extends BaseApiRequest implements HasPhotos, HasTitle
+final class SetPhotosTitleRequest extends BaseApiRequest implements HasPhotos, HasTitle
 {
 	use HasPhotosTrait;
 	use HasTitleTrait;

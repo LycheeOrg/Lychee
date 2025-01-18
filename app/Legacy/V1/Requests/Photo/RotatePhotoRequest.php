@@ -16,7 +16,7 @@ use App\Legacy\V1\Requests\Traits\HasPhotoTrait;
 use App\Legacy\V1\RuleSets\Photo\RotatePhotoRuleSet;
 use App\Models\Photo;
 
-class RotatePhotoRequest extends BaseApiRequest implements HasPhoto
+final class RotatePhotoRequest extends BaseApiRequest implements HasPhoto
 {
 	use HasPhotoTrait;
 	use AuthorizeCanEditPhotoTrait;

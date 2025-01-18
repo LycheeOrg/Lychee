@@ -17,7 +17,7 @@ use App\Models\User;
 use App\Policies\UserPolicy;
 use Illuminate\Support\Facades\Gate;
 
-class ChangeLoginRequest extends BaseApiRequest implements HasPassword
+final class ChangeLoginRequest extends BaseApiRequest implements HasPassword
 {
 	use HasPasswordTrait;
 

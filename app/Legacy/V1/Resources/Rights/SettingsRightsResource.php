@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Gate;
 /**
  * Data Transfer Object (DTO) to transmit the rights of an user on the application settings.
  */
-class SettingsRightsResource extends JsonResource
+final class SettingsRightsResource extends JsonResource
 {
 	public function __construct()
 	{

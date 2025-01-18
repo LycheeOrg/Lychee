@@ -22,7 +22,7 @@ use Illuminate\Support\Collection as BaseCollection;
 use Illuminate\Support\Facades\Auth;
 use Kalnoy\Nestedset\Collection as NsCollection;
 
-class Tree
+final class Tree
 {
 	private AlbumQueryPolicy $albumQueryPolicy;
 	private AlbumSortingCriterion $sorting;

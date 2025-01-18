@@ -27,7 +27,7 @@ use Illuminate\Support\Facades\Gate;
 /**
  * @mixin Request
  */
-class MigrateRequest extends BaseApiRequest implements HasUsername, HasPassword
+final class MigrateRequest extends BaseApiRequest implements HasUsername, HasPassword
 {
 	use HasUsernameTrait;
 	use HasPasswordTrait;

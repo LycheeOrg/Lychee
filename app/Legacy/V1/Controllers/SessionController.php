@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 
-class SessionController extends Controller
+final class SessionController extends Controller
 {
 	/**
 	 * First function being called via AJAX.

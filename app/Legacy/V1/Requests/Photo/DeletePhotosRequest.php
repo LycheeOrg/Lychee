@@ -17,7 +17,7 @@ use App\Models\Photo;
 use App\Policies\PhotoPolicy;
 use Illuminate\Support\Facades\Gate;
 
-class DeletePhotosRequest extends BaseApiRequest implements HasPhotoIDs
+final class DeletePhotosRequest extends BaseApiRequest implements HasPhotoIDs
 {
 	use HasPhotoIDsTrait;
 

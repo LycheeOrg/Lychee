@@ -17,7 +17,7 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
  * It does not provides with the next/previous photo connection.
  * This aims to solve this problem.
  */
-class PhotoCollectionResource extends ResourceCollection
+final class PhotoCollectionResource extends ResourceCollection
 {
 	/**
 	 * The resource that this resource collects.

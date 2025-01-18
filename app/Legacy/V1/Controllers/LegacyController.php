@@ -19,7 +19,7 @@ use Illuminate\Routing\Controller;
  *
  * API calls which should not exist. ;-)
  */
-class LegacyController extends Controller
+final class LegacyController extends Controller
 {
 	/**
 	 * Translates IDs from legacy to modern format.

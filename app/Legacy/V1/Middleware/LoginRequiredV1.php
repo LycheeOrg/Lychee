@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Log;
  *
  * This middleware is ensures that only logged in users can access Lychee.
  */
-class LoginRequiredV1
+final class LoginRequiredV1
 {
 	public const ROOT = 'root';
 	public const ALBUM = 'album';

@@ -19,7 +19,7 @@ use App\Models\User;
 use App\Policies\UserPolicy;
 use Illuminate\Support\Facades\Gate;
 
-class AddUserRequest extends BaseApiRequest implements HasUsername, HasPassword
+final class AddUserRequest extends BaseApiRequest implements HasUsername, HasPassword
 {
 	use HasUsernameTrait;
 	use HasPasswordTrait;

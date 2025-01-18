@@ -17,7 +17,7 @@ use App\Policies\SettingsPolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Enum;
 
-class SetSortingSettingsRequest extends BaseApiRequest
+final class SetSortingSettingsRequest extends BaseApiRequest
 {
 	public const PHOTO_SORTING_COLUMN_ATTRIBUTE = 'sorting_photos_column';
 	public const PHOTO_SORTING_ORDER_ATTRIBUTE = 'sorting_photos_order';

@@ -21,7 +21,7 @@ use App\Models\Album;
 /**
  * @implements HasAlbums<Album>
  */
-class MoveAlbumsRequest extends BaseApiRequest implements HasAlbum, HasAlbums
+final class MoveAlbumsRequest extends BaseApiRequest implements HasAlbum, HasAlbums
 {
 	use HasAlbumTrait;
 	/** @phpstan-use HasAlbumsTrait<Album> */

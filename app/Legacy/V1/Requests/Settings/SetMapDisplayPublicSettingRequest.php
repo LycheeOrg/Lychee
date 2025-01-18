@@ -8,7 +8,7 @@
 
 namespace App\Legacy\V1\Requests\Settings;
 
-class SetMapDisplayPublicSettingRequest extends AbstractSettingRequest
+final class SetMapDisplayPublicSettingRequest extends AbstractSettingRequest
 {
 	public const ATTRIBUTE = 'map_display_public';
 

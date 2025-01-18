@@ -16,7 +16,7 @@ use App\Legacy\V1\Requests\Traits\HasAlbumTrait;
 use App\Legacy\V1\RuleSets\Album\BasicAlbumIdRuleSet;
 use App\Models\Album;
 
-class DeleteTrackRequest extends BaseApiRequest implements HasAlbum
+final class DeleteTrackRequest extends BaseApiRequest implements HasAlbum
 {
 	use HasAlbumTrait;
 	use AuthorizeCanEditAlbumTrait;

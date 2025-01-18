@@ -27,7 +27,7 @@ use Illuminate\Support\Facades\Gate;
  *
  * @implements HasAlbums<\App\Models\Album|\App\Models\TagAlbum>
  */
-class SetAlbumsTitleRequest extends BaseApiRequest implements HasTitle, HasAlbums
+final class SetAlbumsTitleRequest extends BaseApiRequest implements HasTitle, HasAlbums
 {
 	use HasTitleTrait;
 	/** @use HasAlbumsTrait<\App\Models\Album|\App\Models\TagAlbum> */

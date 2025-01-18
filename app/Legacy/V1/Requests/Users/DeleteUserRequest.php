@@ -17,7 +17,7 @@ use App\Policies\UserPolicy;
 use App\Rules\IntegerIDRule;
 use Illuminate\Support\Facades\Gate;
 
-class DeleteUserRequest extends BaseApiRequest implements HasUser
+final class DeleteUserRequest extends BaseApiRequest implements HasUser
 {
 	use HasUserTrait;
 

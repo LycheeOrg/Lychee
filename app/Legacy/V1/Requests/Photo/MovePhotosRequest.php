@@ -19,7 +19,7 @@ use App\Legacy\V1\RuleSets\Photo\MovePhotosRuleSet;
 use App\Models\Album;
 use App\Models\Photo;
 
-class MovePhotosRequest extends BaseApiRequest implements HasPhotos, HasAlbum
+final class MovePhotosRequest extends BaseApiRequest implements HasPhotos, HasAlbum
 {
 	use HasPhotosTrait;
 	use HasAlbumTrait;
