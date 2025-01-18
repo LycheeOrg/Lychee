@@ -13,6 +13,9 @@ use App\Http\Requests\AbstractEmptyRequest;
 use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\Gate;
 
+/**
+ * @codeCoverageIgnore Legacy stuff
+ */
 final class CancelImportServerRequest extends AbstractEmptyRequest
 {
 	/**

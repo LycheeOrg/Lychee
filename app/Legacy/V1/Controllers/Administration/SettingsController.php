@@ -187,6 +187,8 @@ final class SettingsController extends Controller
 	 * @return void
 	 *
 	 * @throws InvalidConfigOption
+	 *
+	 * @codeCoverageIgnore
 	 */
 	public function setAlbumDecoration(SetAlbumDecorationRequest $request): void
 	{
@@ -368,9 +370,11 @@ final class SettingsController extends Controller
 		/** @var string $css */
 		$css = $request->getSettingValue();
 		if (Storage::disk('dist')->put('user.css', $css) === false) {
+			// @codeCoverageIgnoreStart
 			if (Storage::disk('dist')->get('user.css') !== $css) {
 				throw new InsufficientFilesystemPermissions('Could not save CSS');
 			}
+			// @codeCoverageIgnoreEnd
 		}
 	}
 
@@ -384,6 +388,8 @@ final class SettingsController extends Controller
 	 * @return void
 	 *
 	 * @throws InsufficientFilesystemPermissions
+	 *
+	 * @codeCoverageIgnore
 	 */
 	public function setJS(SetJSSettingRequest $request): void
 	{
@@ -442,12 +448,16 @@ final class SettingsController extends Controller
 			$value ??= '';
 			try {
 				Configs::set($key, $value);
+				// @codeCoverageIgnoreStart
 			} catch (InvalidConfigOption $e) {
 				$lastException = $e;
 			}
+			// @codeCoverageIgnoreEnd
 		}
 		if ($lastException !== null) {
+			// @codeCoverageIgnoreStart
 			throw $lastException;
+			// @codeCoverageIgnoreEnd
 		}
 	}
 }

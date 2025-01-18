@@ -16,6 +16,9 @@ use App\Legacy\V1\Requests\Traits\HasAlbumTrait;
 use App\Legacy\V1\RuleSets\Album\BasicAlbumIdRuleSet;
 use App\Models\Album;
 
+/**
+ * @codeCoverageIgnore Legacy stuff
+ */
 final class DeleteTrackRequest extends BaseApiRequest implements HasAlbum
 {
 	use HasAlbumTrait;

@@ -105,12 +105,14 @@ final class AlbumController extends Controller
 	 */
 	public function get(GetAlbumRequest $request): AlbumResource|TagAlbumResource|SmartAlbumResource
 	{
+		// @codeCoverageIgnoreStart
 		return match (true) {
 			$request->album() instanceof BaseSmartAlbum => SmartAlbumResource::make($request->album()),
 			$request->album() instanceof TagAlbum => TagAlbumResource::make($request->album()),
 			$request->album() instanceof Album => AlbumResource::make($request->album()),
 			default => throw new LycheeLogicException('This should not happen'),
 		};
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -276,6 +278,8 @@ final class AlbumController extends Controller
 	 *
 	 * @throws MediaFileOperationException
 	 * @throws ModelDBException
+	 *
+	 * @codeCoverageIgnore
 	 */
 	public function setTrack(SetAlbumTrackRequest $request): void
 	{
@@ -290,6 +294,8 @@ final class AlbumController extends Controller
 	 * @return void
 	 *
 	 * @throws ModelDBException
+	 *
+	 * @codeCoverageIgnore
 	 */
 	public function deleteTrack(DeleteTrackRequest $request): void
 	{
@@ -353,6 +359,8 @@ final class AlbumController extends Controller
 	 * @return void
 	 *
 	 * @throws ModelDBException
+	 *
+	 * @codeCoverageIgnore
 	 */
 	public function setNSFW(SetAlbumNSFWRequest $request): void
 	{

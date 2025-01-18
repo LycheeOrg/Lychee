@@ -64,7 +64,9 @@ final class IndexController extends Controller
 					'additional_footer_text' => Configs::getValueAsString('footer_additional_text'),
 				];
 				if (Configs::getValueAsString('site_copyright_begin') !== Configs::getValueAsString('site_copyright_end')) {
+					// @codeCoverageIgnoreStart
 					$infos['copyright_year'] = Configs::getValueAsString('site_copyright_begin') . '-' . Configs::getValueAsString('site_copyright_end');
+					// @codeCoverageIgnoreEnd
 				}
 
 				$title = Configs::getValueAsString('site_title');
@@ -85,9 +87,11 @@ final class IndexController extends Controller
 			}
 
 			return $this->frontend();
+			// @codeCoverageIgnoreStart
 		} catch (BindingResolutionException $e) {
 			throw new FrameworkException('Laravel\'s container component', $e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -143,6 +147,8 @@ final class IndexController extends Controller
 	 * @throws FrameworkException
 	 * @throws ModelDBException
 	 * @throws ConfigurationKeyMissingException
+	 *
+	 * @codeCoverageIgnore
 	 */
 	public function frame(): View
 	{
@@ -170,6 +176,8 @@ final class IndexController extends Controller
 	 * @throws FrameworkException
 	 * @throws ConfigurationKeyMissingException
 	 * @throws ModelDBException
+	 *
+	 * @codeCoverageIgnore
 	 */
 	public function view(GetPhotoViewRequest $request): View
 	{
@@ -212,9 +220,11 @@ final class IndexController extends Controller
 				'userCssUrl' => self::getUserCustomFiles('user.css'),
 				'userJsUrl' => self::getUserCustomFiles('custom.js'),
 			]);
+			// @codeCoverageIgnoreStart
 		} catch (BindingResolutionException $e) {
 			throw new FrameworkException('Laravel\'s container component', $e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**

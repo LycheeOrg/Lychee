@@ -17,6 +17,8 @@ use App\Rules\RandomIDRule;
 
 /**
  * Class SetAlbumNSFWRequest.
+ *
+ * @codeCoverageIgnore Legacy stuff
  */
 final class SetAlbumNSFWRequest extends BaseApiRequest implements HasBaseAlbum
 {

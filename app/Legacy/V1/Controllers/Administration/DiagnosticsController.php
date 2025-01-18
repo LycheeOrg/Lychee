@@ -89,7 +89,9 @@ final class DiagnosticsController extends Controller
 			};
 			$ret[] = $prefix . $elem->message;
 			foreach ($elem->details as $detail) {
+				// @codeCoverageIgnoreStart
 				$ret[] = '         ' . $detail;
+				// @codeCoverageIgnoreEnd
 			}
 		}
 
@@ -109,9 +111,11 @@ final class DiagnosticsController extends Controller
 	{
 		try {
 			return view('diagnostics', $this->get());
+			// @codeCoverageIgnoreStart
 		} catch (BindingResolutionException $e) {
 			throw new FrameworkException('Laravel\'s view component', $e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -135,7 +139,9 @@ final class DiagnosticsController extends Controller
 	public function getFullAccessPermissions(AlbumQueryPolicy $albumQueryPolicy): View
 	{
 		if (!$this->isAuthorized() && config('app.debug') !== true) {
+			// @codeCoverageIgnoreStart
 			throw new UnauthorizedException();
+			// @codeCoverageIgnoreEnd
 		}
 
 		$data1 = AccessPermission::query()
@@ -191,6 +197,7 @@ final class DiagnosticsController extends Controller
 			->orderBy(APC::BASE_ALBUM_ID)
 			->get()
 			->map(function ($e) {
+				// @codeCoverageIgnoreStart
 				$e->is_link_required = $e->is_link_required === 1;
 				$e->grants_download = $e->grants_download === 1;
 				$e->grants_upload = $e->grants_upload === 1;
@@ -199,6 +206,7 @@ final class DiagnosticsController extends Controller
 				$e->grants_full_photo_access = $e->grants_full_photo_access === 1;
 
 				return $e;
+				// @codeCoverageIgnoreEnd
 			});
 
 		return view('access-permissions', ['data1' => json_encode($data1, JSON_PRETTY_PRINT), 'data2' => json_encode($data2, JSON_PRETTY_PRINT)]);
