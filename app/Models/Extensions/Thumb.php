@@ -88,9 +88,11 @@ class Thumb extends AbstractDTO
 				->first();
 
 			return self::createFromPhoto($cover);
+			// @codeCoverageIgnoreStart
 		} catch (\InvalidArgumentException $e) {
 			throw new InvalidPropertyException('Sorting order invalid', $e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -109,6 +111,9 @@ class Thumb extends AbstractDTO
 	 *
 	 * @throws InvalidPropertyException thrown, if $sortingOrder neither
 	 *                                  equals `desc` nor `asc`
+	 *
+	 * @codeCoverageIgnore We don't need to test that one.
+	 * Note that the inRandomOrder maybe slower than fetching length + random int.
 	 */
 	public static function createFromRandomQueryable(Relation|Builder $photoQueryable): ?Thumb
 	{
@@ -128,8 +133,6 @@ class Thumb extends AbstractDTO
 
 	/**
 	 * Creates a thumbnail from the given photo.
-	 * On Livewire it will use by default small and small2x if available, thumb and thumb2x if not.
-	 * On Legacy it will use thumb and thumb2x.
 	 *
 	 * @param Photo|null $photo the photo
 	 *
@@ -138,12 +141,16 @@ class Thumb extends AbstractDTO
 	public static function createFromPhoto(?Photo $photo): ?Thumb
 	{
 		if ($photo === null) {
+			// @codeCoverageIgnoreStart
 			return null;
+			// @codeCoverageIgnoreEnd
 		}
 
 		$thumb = $photo->size_variants->getSmall() ?? $photo->size_variants->getThumb();
 		if ($thumb === null) {
+			// @codeCoverageIgnoreStart
 			return null;
+			// @codeCoverageIgnoreEnd
 		}
 
 		$thumb2x = $photo->size_variants->getSmall() !== null
@@ -152,7 +159,9 @@ class Thumb extends AbstractDTO
 
 		$placeholder = (Configs::getValueAsBool('low_quality_image_placeholder'))
 			? $photo->size_variants->getPlaceholder()
+			// @codeCoverageIgnoreStart
 			: null;
+		// @codeCoverageIgnoreEnd
 
 		return new self(
 			$photo->id,

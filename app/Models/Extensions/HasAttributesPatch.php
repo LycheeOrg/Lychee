@@ -8,6 +8,7 @@
 
 namespace App\Models\Extensions;
 
+use App\Exceptions\Internal\LycheeLogicException;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Database\Eloquent\InvalidCastException;
 
@@ -23,6 +24,7 @@ trait HasAttributesPatch
 	 */
 	protected function mutateAttributeForArray($key, $value)
 	{
+		throw new LycheeLogicException('Unexpected array cast');
 		if ($this->hasGetMutator($key)) {
 			$value = $this->mutateAttribute($key, $value);
 		}

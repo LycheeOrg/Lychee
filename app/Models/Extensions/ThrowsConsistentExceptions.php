@@ -8,6 +8,7 @@
 
 namespace App\Models\Extensions;
 
+use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\ModelDBException;
 use Illuminate\Database\Eloquent\JsonEncodingException;
 use Illuminate\Support\Str;
@@ -138,6 +139,8 @@ trait ThrowsConsistentExceptions
 	 */
 	public function toJson($options = 0): string
 	{
+		// See if we can delete this.
+		throw new LycheeLogicException('Error encoding model [' . get_class($this) . '] to JSON');
 		try {
 			// Note, we must not use the option `JSON_THROW_ON_ERROR` here,
 			// because this does not clear `json_last_error()` from any

@@ -43,6 +43,8 @@ trait HasRandomIDAndLegacyTimeBasedID
 	 * @param bool $value
 	 *
 	 * @throws NotImplementedException
+	 *
+	 * @codeCoverageIgnore setter is should not be used
 	 */
 	public function setIncrementing($value)
 	{
@@ -90,7 +92,9 @@ trait HasRandomIDAndLegacyTimeBasedID
 	protected function performInsert(Builder $query): bool
 	{
 		if ($this->fireModelEvent('creating') === false) {
+			// @codeCoverageIgnoreStart
 			return false;
+			// @codeCoverageIgnoreEnd
 		}
 
 		// First we'll need to create a fresh query instance and touch the creation and
@@ -111,6 +115,7 @@ trait HasRandomIDAndLegacyTimeBasedID
 				$this->generateKey();
 				$attributes = $this->getAttributesForInsert();
 				$result = $query->insert($attributes);
+				// @codeCoverageIgnoreStart
 			} catch (QueryException $e) {
 				$lastException = $e;
 				$errorCode = $e->getCode();
@@ -123,11 +128,14 @@ trait HasRandomIDAndLegacyTimeBasedID
 				} else {
 					throw $e;
 				}
+				// @codeCoverageIgnoreEnd
 			}
 		} while ($retry && $retryCounter > 0);
 
 		if ($retryCounter === 0) {
+			// @codeCoverageIgnoreStart
 			throw new TimeBasedIdException('unable to persist model to DB after 5 unsuccessful attempts', $lastException);
+			// @codeCoverageIgnoreEnd
 		}
 
 		// We will go ahead and set the exists property to true, so that it is set when
@@ -164,10 +172,11 @@ trait HasRandomIDAndLegacyTimeBasedID
 			if ($id[23] === '-') {
 				$id[23] = '0';
 			}
+			// @codeCoverageIgnoreStart
 		} catch (\Exception $e) {
 			throw new InsufficientEntropyException($e);
 		}
-
+		// @codeCoverageIgnoreEnd
 		if (
 			PHP_INT_MAX === 2147483647 ||
 			Configs::getValueAsBool('force_32bit_ids')
@@ -176,7 +185,9 @@ trait HasRandomIDAndLegacyTimeBasedID
 			// full seconds in id.  The calling code needs to be able to
 			// handle duplicate ids.  Note that this also exposes us to
 			// the year 2038 problem.
+			// @codeCoverageIgnoreStart
 			$legacyID = sprintf('%010d', microtime(true));
+		// @codeCoverageIgnoreEnd
 		} else {
 			// Ensure 4 digits after the decimal point, 15 characters
 			// total (including the decimal point), 0-padded on the

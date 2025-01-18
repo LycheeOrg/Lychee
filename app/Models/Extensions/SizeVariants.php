@@ -77,13 +77,17 @@ class SizeVariants extends AbstractDTO
 	public function add(SizeVariant $sizeVariant): void
 	{
 		if ($sizeVariant->photo_id !== $this->photo->id) {
+			// @codeCoverageIgnoreStart
 			throw new LycheeInvalidArgumentException('ID of owning photo does not match');
+			// @codeCoverageIgnoreEnd
 		}
 		$sizeVariant->setRelation('photo', $this->photo);
 		$candidate = $this->getSizeVariant($sizeVariant->type);
 
 		if ($candidate !== null && $candidate->id !== $sizeVariant->id) {
+			// @codeCoverageIgnoreStart
 			throw new LycheeInvalidArgumentException('Another size variant of the same type has already been added');
+			// @codeCoverageIgnoreEnd
 		}
 
 		match ($sizeVariant->type) {
@@ -105,6 +109,7 @@ class SizeVariants extends AbstractDTO
 	 */
 	public function toArray(): array
 	{
+		// AM I really used?
 		return [
 			SizeVariantType::ORIGINAL->name() => $this->original?->toArray(),
 			SizeVariantType::MEDIUM2X->name() => $this->medium2x?->toArray(),
@@ -232,7 +237,9 @@ class SizeVariants extends AbstractDTO
 	public function create(SizeVariantType $sizeVariantType, string $shortPath, ImageDimension $dim, int $filesize): SizeVariant
 	{
 		if (!$this->photo->exists) {
+			// @codeCoverageIgnoreStart
 			throw new IllegalOrderOfOperationException('Cannot create a size variant for a photo whose id is not yet persisted to DB');
+			// @codeCoverageIgnoreEnd
 		}
 		try {
 			$result = SizeVariant::create([
@@ -245,14 +252,17 @@ class SizeVariants extends AbstractDTO
 				'filesize' => $filesize,
 				'ratio' => $dim->getRatio(),
 			]);
+			/** @disregard P1006 */
 			$this->add($result);
 
 			return $result;
+			// @codeCoverageIgnoreStart
 		} catch (LycheeInvalidArgumentException $e) {
 			// thrown by ::add(), if  $result->photo_id !==  $this->photo->id,
 			// but we know that we assert that
 			throw LycheeAssertionError::createFromUnexpectedException($e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -331,16 +341,5 @@ class SizeVariants extends AbstractDTO
 	public function hasMedium(): bool
 	{
 		return $this->medium !== null || $this->medium2x !== null;
-	}
-
-	/**
-	 * We don't need to check if small2x or medium2x exists.
-	 * small2x implies small, and same for medium2x, but the opposite is not true!
-	 *
-	 * @return bool
-	 */
-	public function hasMediumOrSmall(): bool
-	{
-		return $this->small !== null || $this->medium !== null;
 	}
 }

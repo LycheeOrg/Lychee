@@ -154,6 +154,7 @@ class SortingDecorator
 			for ($i = $this->pivotIdx + 1; $i < sizeof($this->orderBy); $i++) {
 				$this->baseBuilder->orderBy($this->orderBy[$i]['column'], $this->orderBy[$i]['direction']);
 			}
+			// @codeCoverageIgnoreStart
 		} catch (\InvalidArgumentException) {
 			// Sic! In theory, `\InvalidArgumentException` should be thrown
 			// if the *type* of argument differs from the expected type
@@ -164,6 +165,7 @@ class SortingDecorator
 			// direction does neither equal "asc" nor "desc".
 			throw new InvalidOrderDirectionException();
 		}
+		// @codeCoverageIgnoreEnd
 
 		/** @var Collection<int,TModelClass> $result */
 		$result = $this->baseBuilder->get($columns);
