@@ -18,6 +18,7 @@
 
 namespace Tests\Feature_v2\Maintenance;
 
+use function Safe\mkdir;
 use function Safe\touch;
 use Tests\Feature_v2\Base\BaseApiV2Test;
 

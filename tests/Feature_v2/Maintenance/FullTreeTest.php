@@ -30,10 +30,10 @@ class FullTreeTest extends BaseApiV2Test
 		$response = $this->postJson('Maintenance::fullTree', []);
 		$this->assertUnprocessable($response);
 
-		$response = $this->putJson('Maintenance::fullTree', [
+		$response = $this->postJson('Maintenance::fullTree', [
 			'albums' => [
 				[
-					'id' => '1',
+					'id' => '123456789012345678901234',
 					'_lft' => 1,
 					'_rgt' => 2,
 					'parent_id' => null,
@@ -51,10 +51,10 @@ class FullTreeTest extends BaseApiV2Test
 		$response = $this->actingAs($this->userLocked)->postJson('Maintenance::fullTree', []);
 		$this->assertUnprocessable($response);
 
-		$response = $this->actingAs($this->userLocked)->putJson('Maintenance::fullTree', [
+		$response = $this->actingAs($this->userLocked)->postJson('Maintenance::fullTree', [
 			'albums' => [
 				[
-					'id' => '1',
+					'id' => '123456789012345678901234',
 					'_lft' => 1,
 					'_rgt' => 2,
 					'parent_id' => null,
