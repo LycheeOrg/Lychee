@@ -71,6 +71,7 @@ class CleaningTest extends BaseApiV2Test
 	public function testAdminWithFiles(): void
 	{
 		touch(storage_path('tmp/extract/') . '/delete-me.txt');
+		mkdir(storage_path('tmp/extract/something'));
 		$response = $this->actingAs($this->admin)->getJsonWithData('Maintenance::cleaning', ['path' => 'filesystems.disks.extract-jobs.root']);
 		$this->assertOk($response);
 

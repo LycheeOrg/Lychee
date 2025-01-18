@@ -66,16 +66,20 @@ class Cleaning extends Controller
 		$cleaning_state = new CleaningState($request->path(), false);
 
 		if (!is_dir($request->path())) {
+			// @codeCoverageIgnoreStart This should not happen. path is very constrained by Lychee config.
 			Log::warning('directory ' . $request->path() . ' not found!');
 			$cleaning_state->is_not_empty = false;
 
 			return $cleaning_state;
+			// @codeCoverageIgnoreEnd
 		}
 
 		if (!(new \FilesystemIterator($request->path()))->valid()) {
+			// @codeCoverageIgnoreStart This should not happen. path is very constrained by Lychee config.
 			$cleaning_state->is_not_empty = false;
 
 			return $cleaning_state;
+			// @codeCoverageIgnoreEnd
 		}
 
 		$files_found = false;

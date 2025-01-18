@@ -60,6 +60,10 @@ class GenSizeVariantsTest extends BaseApiV2Test
 		$response = $this->actingAs($this->admin)->getJsonWithData('Maintenance::genSizeVariants', ['variant' => 4]);
 		$this->assertOk($response);
 
+		$response = $this->actingAs($this->admin)->getJsonWithData('Maintenance::genSizeVariants', ['variant' => 1]);
+		$this->assertOk($response);
+		self::assertEquals(0, $response->json());
+
 		$response = $this->actingAs($this->admin)->postJson('Maintenance::genSizeVariants');
 		$this->assertUnprocessable($response);
 
