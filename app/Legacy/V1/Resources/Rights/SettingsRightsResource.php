@@ -36,7 +36,6 @@ final class SettingsRightsResource extends JsonResource
 		return [
 			'can_edit' => Gate::check(SettingsPolicy::CAN_EDIT, [Configs::class]),
 			'can_see_logs' => Gate::check(SettingsPolicy::CAN_SEE_LOGS, [Configs::class]),
-			'can_clear_logs' => Gate::check(SettingsPolicy::CAN_CLEAR_LOGS, [Configs::class]),
 			'can_see_diagnostics' => Gate::check(SettingsPolicy::CAN_SEE_DIAGNOSTICS, [Configs::class]),
 			'can_update' => Gate::check(SettingsPolicy::CAN_UPDATE, [Configs::class]),
 		];

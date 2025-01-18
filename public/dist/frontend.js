@@ -5434,7 +5434,6 @@ $(".u2f_view").append(build.u2f(credential));settings.bind("#CredentialDelete"+c
  *
  * @property {boolean} can_edit
  * @property {boolean} can_see_logs
- * @property {boolean} can_clear_logs
  * @property {boolean} can_see_diagnostics
  * @property {boolean} can_update
  */ /**

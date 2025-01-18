@@ -441,6 +441,8 @@ class Album extends BaseAlbum implements Node
 	 *
 	 * @throws ModelDBException
 	 * @throws MediaFileOperationException
+	 *
+	 * @codeCoverageIgnore tested Locally
 	 */
 	public function setTrack(UploadedFile $file): void
 	{
@@ -466,6 +468,8 @@ class Album extends BaseAlbum implements Node
 	 * @return void
 	 *
 	 * @throws ModelDBException
+	 *
+	 * @codeCoverageIgnore tested Locally
 	 */
 	public function deleteTrack(): void
 	{
