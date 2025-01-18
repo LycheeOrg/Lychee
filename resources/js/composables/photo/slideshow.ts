@@ -79,7 +79,7 @@ export function useSlideshowFunction(
 		 */
 
 		//
-		if (immediate && is_slideshow_active.value == true) {
+		if (immediate && is_slideshow_active.value === true) {
 			clearTimeouts();
 			getNext();
 			window.setTimeout(() => next(), delay * 2 + 1000 * slide_show_interval.value); // Set timeout for next iteration.
