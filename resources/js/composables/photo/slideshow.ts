@@ -67,7 +67,7 @@ export function useSlideshowFunction(
 		 * If immediate is true and slideshow is not active then we need to get
 		 * the next photo immediately
 		 */
-		if (immediate && is_slideshow_active.value == false) {
+		if (immediate && is_slideshow_active.value === false) {
 			getNext();
 			return;
 		}
