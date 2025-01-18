@@ -97,7 +97,7 @@ export function useSlideshowFunction(
 
 		if (videoElement.value && !videoElement.value.ended) {
 			clearTimeouts();
-			videoElement.value?.addEventListener("ended", videoEndedEventListener);
+			videoElement.value.addEventListener("ended", videoEndedEventListener);
 			return;
 		}
 		clearTimeouts();
