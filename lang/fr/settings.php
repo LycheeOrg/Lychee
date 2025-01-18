@@ -38,7 +38,7 @@ return [
 	],
 	'lychee_se' => [
 		'header' => 'Lychee <span class="text-primary-emphasis">SE</span>',
-		'call4action' => 'Get exclusive features and support the development of Lychee. Unlock the <a href="https://lycheeorg.github.io/get-supporter-edition/" class="text-primary-500 underline">SE edition</a>.',
+		'call4action' => 'Get exclusive features and support the development of Lychee. Unlock the <a href="https://lycheeorg.dev/get-supporter-edition/" class="text-primary-500 underline">SE edition</a>.',
 		'preview' => 'Enable preview of Lychee SE features',
 		'hide_call4action' => 'Hide this Lychee SE registration form. I am happy with Lychee as-is. :)',
 		'hide_warning' => 'If enabled, the only way to register your license key will be via the More tab above. Changes are applied on page reload.',

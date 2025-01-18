@@ -1,12 +1,12 @@
 {
     "name": "lychee-org/lychee",
     "description": "A great looking and easy-to-use photo-management-system you can run on your server, to manage and share photos.",
-    "homepage": "https://lycheeorg.github.io/",
+    "homepage": "https://lycheeorg.dev/",
     "readme": "README.md",
     "support": {
         "source": "https://github.com/LycheeOrg/Lychee",
         "issues": "https://github.com/LycheeOrg/Lychee/issues",
-        "docs": "https://lycheeorg.github.io/docs/",
+        "docs": "https://lycheeorg.dev/docs/",
         "chat": "https://gitter.im/LycheeOrg/Lobby"
     },
     "keywords": [

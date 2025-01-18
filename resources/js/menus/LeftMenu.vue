@@ -261,7 +261,7 @@ const items = computed<MenyType[]>(() => {
 					label: "left-menu.support",
 					icon: "heart",
 					access: is_se_info_hidden.value === false,
-					url: "https://lycheeorg.github.io/get-supporter-edition/",
+					url: "https://lycheeorg.dev/get-supporter-edition/",
 				},
 			],
 		},

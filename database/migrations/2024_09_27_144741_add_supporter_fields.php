@@ -30,7 +30,7 @@ return new class() extends BaseConfigMigration {
 				'cat' => self::SE,
 				'type_range' => self::STRING,
 				'description' => 'Lychee License key',
-				'details' => 'Get Supporter Edition here: https://lycheeorg.github.io/get-supporter-edition',
+				'details' => 'Get Supporter Edition here: https://lycheeorg.dev/get-supporter-edition',
 			],
 			[
 				'key' => 'disable_se_call_for_actions',

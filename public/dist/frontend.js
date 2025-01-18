@@ -2951,7 +2951,7 @@ clearTimeout(loadingBar._timeout);setTimeout(function(){return loadingBar.dom().
  */var lychee={/**
 	 * The version of the backend in human-readable
 	 * @type {Version}
-	 */version:null,updateGit:"https://github.com/LycheeOrg/Lychee",updateURL:"https://github.com/LycheeOrg/Lychee/releases",website:"https://LycheeOrg.github.io",publicMode:false,viewMode:false,grants_full_photo_access:true,grants_download:false,public_photos_hidden:true,share_button_visible:false,/**
+	 */version:null,updateGit:"https://github.com/LycheeOrg/Lychee",updateURL:"https://github.com/LycheeOrg/Lychee/releases",website:"https://lycheeorg.dev",publicMode:false,viewMode:false,grants_full_photo_access:true,grants_download:false,public_photos_hidden:true,share_button_visible:false,/**
 	 * The authenticated user or `null` if unauthenticated
 	 * @type {?User}
 	 */user:null,/**

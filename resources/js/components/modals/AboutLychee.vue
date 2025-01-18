@@ -32,9 +32,7 @@
 					</h1>
 					<h2 class="my-6 font-bold text-center">
 						{{ $t("dialogs.about.subtitle") }}<br />
-						<a href="https://LycheeOrg.github.io" target="_blank" class="text-center text-primary-500 underline"
-							>https://LycheeOrg.github.io</a
-						>
+						<a href="https://lycheeorg.dev" target="_blank" class="text-center text-primary-500 underline">https://lycheeorg.dev</a>
 					</h2>
 
 					<p class="text-muted-color text-center">{{ $t("dialogs.about.description") }}</p>

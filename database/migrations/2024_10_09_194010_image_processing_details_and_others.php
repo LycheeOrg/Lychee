@@ -25,7 +25,7 @@ return new class() extends Migration {
 			'date_format_hero_created_at',
 			'date_format_album_thumb',
 		])->update(['details' => 'See <a class="underline" href="https://www.php.net/manual/en/datetime.format.php">datetime.format.php</a>']);
-		DB::table('configs')->where('key', 'license_key')->update(['details' => 'Get Supporter Edition here: <a class="underline" href="https://lycheeorg.github.io/get-supporter-edition">https://lycheeorg.github.io/get-supporter-edition</a>']);
+		DB::table('configs')->where('key', 'license_key')->update(['details' => 'Get Supporter Edition here: <a class="underline" href="https://lycheeorg.dev/get-supporter-edition">https://lycheeorg.dev/get-supporter-edition</a>']);
 	}
 
 	/**

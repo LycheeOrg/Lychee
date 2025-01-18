@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Schema;
  * FileVersion provides information about the code version.
  * It is the value contained in version.md.
  *
- * Up-to-date is checked against the release data in https://lycheeorg.github.io/update.json
+ * Up-to-date is checked against the release data in https://lycheeorg.dev/update.json
  * This part is done via the UpdateRequest class.
  */
 class FileVersion implements VersionControl, HasVersion
