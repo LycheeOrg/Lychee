@@ -24,7 +24,7 @@ use Illuminate\Support\Collection;
  * other users.)
  * Actually, in this context "shared albums" means "foreign albums".
  */
-class TopAlbumsResource extends JsonResource
+final class TopAlbumsResource extends JsonResource
 {
 	/**
 	 * @param Collection<int,\App\SmartAlbums\BaseSmartAlbum> $smart_albums

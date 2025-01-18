@@ -8,7 +8,7 @@
 
 namespace App\Legacy\V1\Requests\Settings;
 
-class SetPublicSearchSettingRequest extends AbstractSettingRequest
+final class SetPublicSearchSettingRequest extends AbstractSettingRequest
 {
 	public const ATTRIBUTE = 'search_public';
 

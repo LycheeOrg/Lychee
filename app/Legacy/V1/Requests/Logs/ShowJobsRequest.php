@@ -13,7 +13,7 @@ use App\Models\Configs;
 use App\Policies\SettingsPolicy;
 use Illuminate\Support\Facades\Gate;
 
-class ShowJobsRequest extends AbstractEmptyRequest
+final class ShowJobsRequest extends AbstractEmptyRequest
 {
 	/**
 	 * {@inheritDoc}

@@ -19,7 +19,7 @@ use App\Legacy\V1\Resources\Collections\TopAlbumsResource;
 use App\Models\Configs;
 use Illuminate\Routing\Controller;
 
-class AlbumsController extends Controller
+final class AlbumsController extends Controller
 {
 	/**
 	 * @return TopAlbumsResource returns the top albums

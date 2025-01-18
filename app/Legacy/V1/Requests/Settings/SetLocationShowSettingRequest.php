@@ -8,7 +8,7 @@
 
 namespace App\Legacy\V1\Requests\Settings;
 
-class SetLocationShowSettingRequest extends AbstractSettingRequest
+final class SetLocationShowSettingRequest extends AbstractSettingRequest
 {
 	public const ATTRIBUTE = 'location_show';
 

@@ -15,7 +15,7 @@ use App\Legacy\V1\Requests\Search\SearchRequest;
 use App\Legacy\V1\Resources\SearchResource;
 use Illuminate\Routing\Controller;
 
-class SearchController extends Controller
+final class SearchController extends Controller
 {
 	/**
 	 * Given a string split it by spaces to get terms and make a like search on the database.

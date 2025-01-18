@@ -19,7 +19,7 @@ use App\Models\Extensions\BaseAlbum;
 use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\Gate;
 
-class GetAlbumRequest extends BaseApiRequest implements HasAbstractAlbum
+final class GetAlbumRequest extends BaseApiRequest implements HasAbstractAlbum
 {
 	use HasAbstractAlbumTrait;
 

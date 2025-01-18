@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Auth;
 /**
  * Basic album conversion when using get().
  */
-class AlbumResource extends JsonResource
+final class AlbumResource extends JsonResource
 {
 	use WithStatus;
 

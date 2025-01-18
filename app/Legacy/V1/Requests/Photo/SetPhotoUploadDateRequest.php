@@ -19,7 +19,7 @@ use App\Legacy\V1\RuleSets\Photo\SetPhotoUploadDateRuleSet;
 use App\Models\Photo;
 use Illuminate\Support\Carbon;
 
-class SetPhotoUploadDateRequest extends BaseApiRequest implements HasPhoto, HasDate
+final class SetPhotoUploadDateRequest extends BaseApiRequest implements HasPhoto, HasDate
 {
 	use HasPhotoTrait;
 	use HasDateTrait;

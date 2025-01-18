@@ -18,7 +18,7 @@ use App\Legacy\V1\Requests\Traits\HasDescriptionTrait;
 use App\Rules\DescriptionRule;
 use App\Rules\RandomIDRule;
 
-class SetAlbumDescriptionRequest extends BaseApiRequest implements HasBaseAlbum, HasDescription
+final class SetAlbumDescriptionRequest extends BaseApiRequest implements HasBaseAlbum, HasDescription
 {
 	use HasBaseAlbumTrait;
 	use HasDescriptionTrait;

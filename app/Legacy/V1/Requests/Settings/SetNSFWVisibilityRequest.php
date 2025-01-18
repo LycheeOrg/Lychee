@@ -8,7 +8,7 @@
 
 namespace App\Legacy\V1\Requests\Settings;
 
-class SetNSFWVisibilityRequest extends AbstractSettingRequest
+final class SetNSFWVisibilityRequest extends AbstractSettingRequest
 {
 	public const ATTRIBUTE = 'nsfw_visible';
 

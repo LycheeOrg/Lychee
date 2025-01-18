@@ -19,7 +19,7 @@ use App\Legacy\V1\RuleSets\Album\AddTagAlbumRuleSet;
 use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\Gate;
 
-class AddTagAlbumRequest extends BaseApiRequest implements HasTitle, HasTags
+final class AddTagAlbumRequest extends BaseApiRequest implements HasTitle, HasTags
 {
 	use HasTitleTrait;
 	use HasTagsTrait;

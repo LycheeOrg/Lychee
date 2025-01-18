@@ -15,7 +15,7 @@ use App\Legacy\V1\Requests\Settings\OptimizeRequest;
 use Illuminate\Routing\Controller;
 use Illuminate\View\View;
 
-class OptimizeController extends Controller
+final class OptimizeController extends Controller
 {
 	protected OptimizeDb $optimizeDb;
 	protected OptimizeTables $optimizeTables;

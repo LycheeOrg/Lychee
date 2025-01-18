@@ -11,7 +11,7 @@ namespace App\Legacy\V1\Requests\Settings;
 use App\Enum\LicenseType;
 use Illuminate\Validation\Rules\Enum;
 
-class SetDefaultLicenseSettingRequest extends AbstractSettingRequest
+final class SetDefaultLicenseSettingRequest extends AbstractSettingRequest
 {
 	public function rules(): array
 	{

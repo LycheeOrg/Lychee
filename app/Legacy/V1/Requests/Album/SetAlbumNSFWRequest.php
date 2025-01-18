@@ -18,7 +18,7 @@ use App\Rules\RandomIDRule;
 /**
  * Class SetAlbumNSFWRequest.
  */
-class SetAlbumNSFWRequest extends BaseApiRequest implements HasBaseAlbum
+final class SetAlbumNSFWRequest extends BaseApiRequest implements HasBaseAlbum
 {
 	use HasBaseAlbumTrait;
 	use AuthorizeCanEditAlbumTrait;

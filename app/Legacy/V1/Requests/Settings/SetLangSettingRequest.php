@@ -10,7 +10,7 @@ namespace App\Legacy\V1\Requests\Settings;
 
 use Illuminate\Validation\Rule;
 
-class SetLangSettingRequest extends AbstractSettingRequest
+final class SetLangSettingRequest extends AbstractSettingRequest
 {
 	public const ATTRIBUTE = 'lang';
 

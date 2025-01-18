@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Log;
 /**
  * Stuff we need to delete in the future.
  */
-class Legacy
+final class Legacy
 {
 	public static function isLegacyModelID(string $id): bool
 	{

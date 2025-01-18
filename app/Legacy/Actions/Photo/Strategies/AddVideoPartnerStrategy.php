@@ -32,7 +32,7 @@ use Illuminate\Support\Facades\Storage;
  * This allows to use {@link MediaFile} as the source of the video, because
  * no EXIF data needs to be extracted from the video.
  */
-class AddVideoPartnerStrategy extends AbstractAddStrategy
+final class AddVideoPartnerStrategy extends AbstractAddStrategy
 {
 	protected BaseMediaFile $videoSourceFile;
 

@@ -21,7 +21,7 @@ use App\Legacy\V1\Requests\Traits\HasSortingCriterionTrait;
 use App\Rules\RandomIDRule;
 use Illuminate\Validation\Rules\Enum;
 
-class SetAlbumSortingRequest extends BaseApiRequest implements HasBaseAlbum, HasSortingCriterion
+final class SetAlbumSortingRequest extends BaseApiRequest implements HasBaseAlbum, HasSortingCriterion
 {
 	use HasBaseAlbumTrait;
 	use HasSortingCriterionTrait;

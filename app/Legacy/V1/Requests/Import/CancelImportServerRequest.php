@@ -13,7 +13,7 @@ use App\Http\Requests\AbstractEmptyRequest;
 use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\Gate;
 
-class CancelImportServerRequest extends AbstractEmptyRequest
+final class CancelImportServerRequest extends AbstractEmptyRequest
 {
 	/**
 	 * {@inheritDoc}

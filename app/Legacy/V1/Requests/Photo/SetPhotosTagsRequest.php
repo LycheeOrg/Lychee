@@ -18,7 +18,7 @@ use App\Legacy\V1\Requests\Traits\HasTagsTrait;
 use App\Legacy\V1\RuleSets\Photo\SetPhotosTagsRuleSet;
 use App\Models\Photo;
 
-class SetPhotosTagsRequest extends BaseApiRequest implements HasPhotos, HasTags
+final class SetPhotosTagsRequest extends BaseApiRequest implements HasPhotos, HasTags
 {
 	use HasPhotosTrait;
 	use HasTagsTrait;

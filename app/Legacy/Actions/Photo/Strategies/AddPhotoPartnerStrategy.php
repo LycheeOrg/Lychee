@@ -25,7 +25,7 @@ use App\Models\Photo;
  * requires the photo file to be a native, local file in order to be able to
  * extract EXIF data.
  */
-class AddPhotoPartnerStrategy extends AddStandaloneStrategy
+final class AddPhotoPartnerStrategy extends AddStandaloneStrategy
 {
 	protected Photo $existingVideo;
 

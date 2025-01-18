@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 
-class UpdateLogin
+final class UpdateLogin
 {
 	/**
 	 * Changes and modifies login parameters of CURRENT user (may be admin).

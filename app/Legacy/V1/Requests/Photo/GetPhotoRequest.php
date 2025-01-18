@@ -17,7 +17,7 @@ use App\Models\Photo;
 use App\Policies\PhotoPolicy;
 use Illuminate\Support\Facades\Gate;
 
-class GetPhotoRequest extends BaseApiRequest implements HasPhoto
+final class GetPhotoRequest extends BaseApiRequest implements HasPhoto
 {
 	use HasPhotoTrait;
 

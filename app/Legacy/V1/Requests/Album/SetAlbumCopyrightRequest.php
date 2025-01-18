@@ -18,7 +18,7 @@ use App\Legacy\V1\Requests\Traits\HasCopyrightTrait;
 use App\Rules\CopyrightRule;
 use App\Rules\RandomIDRule;
 
-class SetAlbumCopyrightRequest extends BaseApiRequest implements HasBaseAlbum, HasCopyright
+final class SetAlbumCopyrightRequest extends BaseApiRequest implements HasBaseAlbum, HasCopyright
 {
 	use HasBaseAlbumTrait;
 	use HasCopyrightTrait;

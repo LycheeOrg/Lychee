@@ -17,7 +17,7 @@ use App\Models\TagAlbum;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Collection;
 
-class SearchResource extends JsonResource
+final class SearchResource extends JsonResource
 {
 	/**
 	 * @param Collection<int,\App\Models\Album>    $albums

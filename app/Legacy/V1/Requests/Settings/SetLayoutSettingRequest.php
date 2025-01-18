@@ -11,7 +11,7 @@ namespace App\Legacy\V1\Requests\Settings;
 use App\Enum\PhotoLayoutType;
 use Illuminate\Validation\Rules\Enum;
 
-class SetLayoutSettingRequest extends AbstractSettingRequest
+final class SetLayoutSettingRequest extends AbstractSettingRequest
 {
 	public const ATTRIBUTE = 'layout';
 

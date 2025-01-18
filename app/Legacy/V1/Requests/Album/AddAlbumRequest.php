@@ -20,7 +20,7 @@ use App\Models\Album;
 use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\Gate;
 
-class AddAlbumRequest extends BaseApiRequest implements HasTitle, HasParentAlbum
+final class AddAlbumRequest extends BaseApiRequest implements HasTitle, HasParentAlbum
 {
 	use HasTitleTrait;
 	use HasParentAlbumTrait;

@@ -49,7 +49,7 @@ use Illuminate\View\View;
  *
  * TODO: Revise and refactor the whole logic around installation/upgrade/migration.
  */
-class UpdateController extends Controller
+final class UpdateController extends Controller
 {
 	protected ApplyUpdate $applyUpdate;
 

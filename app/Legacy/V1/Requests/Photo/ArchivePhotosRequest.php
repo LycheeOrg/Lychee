@@ -20,7 +20,7 @@ use App\Models\Photo;
 use App\Policies\PhotoPolicy;
 use Illuminate\Support\Facades\Gate;
 
-class ArchivePhotosRequest extends BaseApiRequest implements HasPhotos, HasSizeVariant
+final class ArchivePhotosRequest extends BaseApiRequest implements HasPhotos, HasSizeVariant
 {
 	use HasPhotosTrait;
 	use HasSizeVariantTrait;

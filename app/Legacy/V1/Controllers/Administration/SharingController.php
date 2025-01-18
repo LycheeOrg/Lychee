@@ -22,7 +22,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 
-class SharingController extends Controller
+final class SharingController extends Controller
 {
 	/**
 	 * Returns the list of sharing permissions wrt. the authenticated user.

@@ -15,7 +15,7 @@ use App\Models\User;
 use App\Policies\UserPolicy;
 use Illuminate\Support\Facades\Gate;
 
-class SetEmailRequest extends BaseApiRequest
+final class SetEmailRequest extends BaseApiRequest
 {
 	protected ?string $email = null;
 

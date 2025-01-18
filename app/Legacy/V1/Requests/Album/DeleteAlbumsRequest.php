@@ -17,7 +17,7 @@ use App\Models\Album;
 use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\Gate;
 
-class DeleteAlbumsRequest extends BaseApiRequest implements HasAlbumIDs
+final class DeleteAlbumsRequest extends BaseApiRequest implements HasAlbumIDs
 {
 	use HasAlbumIDsTrait;
 

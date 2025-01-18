@@ -16,7 +16,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 /**
  * Format a User for their own profile.
  */
-class UserResource extends JsonResource
+final class UserResource extends JsonResource
 {
 	use WithStatus;
 

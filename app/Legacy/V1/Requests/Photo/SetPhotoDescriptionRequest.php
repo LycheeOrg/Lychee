@@ -18,7 +18,7 @@ use App\Legacy\V1\Requests\Traits\HasPhotoTrait;
 use App\Legacy\V1\RuleSets\Photo\SetPhotoDescriptionRuleSet;
 use App\Models\Photo;
 
-class SetPhotoDescriptionRequest extends BaseApiRequest implements HasPhoto, HasDescription
+final class SetPhotoDescriptionRequest extends BaseApiRequest implements HasPhoto, HasDescription
 {
 	use HasPhotoTrait;
 	use HasDescriptionTrait;

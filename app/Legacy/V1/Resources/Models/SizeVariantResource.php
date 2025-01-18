@@ -15,7 +15,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * Size variant conversions.
  * Supports a noUrl flag which will remove the url on output.
  */
-class SizeVariantResource extends JsonResource
+final class SizeVariantResource extends JsonResource
 {
 	private bool $noUrl = false;
 

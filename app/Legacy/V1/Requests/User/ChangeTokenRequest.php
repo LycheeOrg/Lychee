@@ -13,7 +13,7 @@ use App\Models\User;
 use App\Policies\UserPolicy;
 use Illuminate\Support\Facades\Gate;
 
-class ChangeTokenRequest extends AbstractEmptyRequest
+final class ChangeTokenRequest extends AbstractEmptyRequest
 {
 	/**
 	 * {@inheritDoc}

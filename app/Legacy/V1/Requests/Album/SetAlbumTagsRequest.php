@@ -18,7 +18,7 @@ use App\Legacy\V1\Requests\Traits\HasTagsTrait;
 use App\Legacy\V1\RuleSets\Album\SetAlbumTagRuleSet;
 use App\Models\TagAlbum;
 
-class SetAlbumTagsRequest extends BaseApiRequest implements HasTagAlbum, HasTags
+final class SetAlbumTagsRequest extends BaseApiRequest implements HasTagAlbum, HasTags
 {
 	use HasTagAlbumTrait;
 	use HasTagsTrait;

@@ -12,7 +12,7 @@ use App\Http\Requests\BaseApiRequest;
 use App\Models\Configs;
 use Illuminate\Support\Facades\Auth;
 
-class SearchRequest extends BaseApiRequest
+final class SearchRequest extends BaseApiRequest
 {
 	public const TERM_ATTRIBUTE = 'term';
 

@@ -43,7 +43,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
-class SettingsController extends Controller
+final class SettingsController extends Controller
 {
 	/**
 	 * Define the default sorting type.

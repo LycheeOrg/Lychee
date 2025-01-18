@@ -8,7 +8,7 @@
 
 namespace App\Legacy\V1\Requests\Settings;
 
-class SetMapIncludeSubAlbumsSettingRequest extends AbstractSettingRequest
+final class SetMapIncludeSubAlbumsSettingRequest extends AbstractSettingRequest
 {
 	public const ATTRIBUTE = 'map_include_subalbums';
 

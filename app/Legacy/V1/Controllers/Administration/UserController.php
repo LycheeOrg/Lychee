@@ -23,7 +23,7 @@ use App\Models\User;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 
-class UserController extends Controller
+final class UserController extends Controller
 {
 	/**
 	 * Update the Login information of the current user.

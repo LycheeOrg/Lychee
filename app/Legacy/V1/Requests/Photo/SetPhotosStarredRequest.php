@@ -19,7 +19,7 @@ use App\Models\Photo;
 /**
  * Class SetPhotosStarredRequest.
  */
-class SetPhotosStarredRequest extends BaseApiRequest implements HasPhotos
+final class SetPhotosStarredRequest extends BaseApiRequest implements HasPhotos
 {
 	use HasPhotosTrait;
 	use AuthorizeCanEditPhotosTrait;

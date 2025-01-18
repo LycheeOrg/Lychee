@@ -30,7 +30,7 @@ use Illuminate\Support\Facades\Gate;
  *
  * @property Photo $resource
  */
-class PhotoResource extends JsonResource
+final class PhotoResource extends JsonResource
 {
 	use WithStatus;
 

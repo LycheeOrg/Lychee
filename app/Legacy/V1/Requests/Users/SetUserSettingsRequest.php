@@ -21,7 +21,7 @@ use App\Models\User;
 use App\Policies\UserPolicy;
 use Illuminate\Support\Facades\Gate;
 
-class SetUserSettingsRequest extends BaseApiRequest implements HasUsername, HasPassword, HasUser
+final class SetUserSettingsRequest extends BaseApiRequest implements HasUsername, HasPassword, HasUser
 {
 	use HasUsernameTrait;
 	use HasPasswordTrait;

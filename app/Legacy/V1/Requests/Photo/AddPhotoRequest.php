@@ -16,7 +16,7 @@ use App\Legacy\V1\Requests\Traits\HasAbstractAlbumTrait;
 use App\Legacy\V1\RuleSets\Photo\AddPhotoRuleSet;
 use Illuminate\Http\UploadedFile;
 
-class AddPhotoRequest extends BaseApiRequest implements HasAbstractAlbum
+final class AddPhotoRequest extends BaseApiRequest implements HasAbstractAlbum
 {
 	use HasAbstractAlbumTrait;
 	use AuthorizeCanEditAlbumTrait;

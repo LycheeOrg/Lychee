@@ -16,7 +16,7 @@ use App\Policies\PhotoPolicy;
 use App\Rules\RandomIDRule;
 use Illuminate\Support\Facades\Gate;
 
-class GetPhotoViewRequest extends BaseApiRequest implements HasPhoto
+final class GetPhotoViewRequest extends BaseApiRequest implements HasPhoto
 {
 	use HasPhotoTrait;
 	public const URL_QUERY_PARAM = 'p';

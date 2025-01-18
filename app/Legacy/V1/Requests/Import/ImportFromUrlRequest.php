@@ -16,7 +16,7 @@ use App\Legacy\V1\Requests\Traits\HasAlbumTrait;
 use App\Legacy\V1\RuleSets\Import\ImportFromUrlRuleSet;
 use App\Models\Album;
 
-class ImportFromUrlRequest extends BaseApiRequest implements HasAlbum
+final class ImportFromUrlRequest extends BaseApiRequest implements HasAlbum
 {
 	use HasAlbumTrait;
 	use AuthorizeCanEditAlbumTrait;

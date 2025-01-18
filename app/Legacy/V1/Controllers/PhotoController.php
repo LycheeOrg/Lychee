@@ -44,7 +44,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\App;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
-class PhotoController extends Controller
+final class PhotoController extends Controller
 {
 	/**
 	 * @param SymLinkFunctions $symLinkFunctions

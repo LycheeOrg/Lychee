@@ -23,7 +23,7 @@ use Illuminate\View\View;
 use function Safe\file_get_contents;
 use function Safe\phpinfo;
 
-class IndexController extends Controller
+final class IndexController extends Controller
 {
 	private SymLinkFunctions $symLinkFunctions;
 

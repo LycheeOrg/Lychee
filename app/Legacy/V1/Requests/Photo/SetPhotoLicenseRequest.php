@@ -19,7 +19,7 @@ use App\Legacy\V1\Requests\Traits\HasPhotoTrait;
 use App\Legacy\V1\RuleSets\Photo\SetPhotoLicenseRuleSet;
 use App\Models\Photo;
 
-class SetPhotoLicenseRequest extends BaseApiRequest implements HasPhoto, HasLicense
+final class SetPhotoLicenseRequest extends BaseApiRequest implements HasPhoto, HasLicense
 {
 	use HasPhotoTrait;
 	use HasLicenseTrait;

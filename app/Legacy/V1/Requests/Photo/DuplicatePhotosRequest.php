@@ -19,7 +19,7 @@ use App\Legacy\V1\RuleSets\Photo\DuplicatePhotosRuleSet;
 use App\Models\Album;
 use App\Models\Photo;
 
-class DuplicatePhotosRequest extends BaseApiRequest implements HasPhotos, HasAlbum
+final class DuplicatePhotosRequest extends BaseApiRequest implements HasPhotos, HasAlbum
 {
 	use HasPhotosTrait;
 	use HasAlbumTrait;

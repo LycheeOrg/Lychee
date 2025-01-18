@@ -8,7 +8,7 @@
 
 namespace App\Legacy\V1\Requests\Settings;
 
-class SetDropboxKeySettingRequest extends AbstractSettingRequest
+final class SetDropboxKeySettingRequest extends AbstractSettingRequest
 {
 	public function rules(): array
 	{

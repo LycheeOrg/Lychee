@@ -17,7 +17,7 @@ use App\Models\Album;
 use App\Rules\AlbumIDRule;
 use Illuminate\Http\UploadedFile;
 
-class SetAlbumTrackRequest extends BaseApiRequest implements HasAlbum
+final class SetAlbumTrackRequest extends BaseApiRequest implements HasAlbum
 {
 	use HasAlbumTrait;
 	use AuthorizeCanEditAlbumTrait;

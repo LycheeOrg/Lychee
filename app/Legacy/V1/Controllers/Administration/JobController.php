@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Routing\Controller;
 use Illuminate\View\View;
 
-class JobController extends Controller
+final class JobController extends Controller
 {
 	/**
 	 * @param string $order

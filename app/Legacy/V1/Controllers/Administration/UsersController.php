@@ -26,7 +26,7 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 
-class UsersController extends Controller
+final class UsersController extends Controller
 {
 	/**
 	 * @return ResourceCollection<UserManagementResource>

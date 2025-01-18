@@ -11,7 +11,7 @@ namespace App\Legacy\V1\Requests\Settings;
 use App\Enum\ImageOverlayType;
 use Illuminate\Validation\Rules\Enum;
 
-class SetImageOverlaySettingRequest extends AbstractSettingRequest
+final class SetImageOverlaySettingRequest extends AbstractSettingRequest
 {
 	public const ATTRIBUTE = 'image_overlay_type';
 

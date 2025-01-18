@@ -14,7 +14,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 /**
  * Slimmed-down when requesting the tree of accessible albums.
  */
-class AlbumTreeResource extends JsonResource
+final class AlbumTreeResource extends JsonResource
 {
 	/**
 	 * Album to slim down.

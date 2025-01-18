@@ -20,7 +20,7 @@ use App\Models\Album;
 use App\Rules\RandomIDRule;
 use Illuminate\Validation\Rules\Enum;
 
-class SetAlbumLicenseRequest extends BaseApiRequest implements HasAlbum, HasLicense
+final class SetAlbumLicenseRequest extends BaseApiRequest implements HasAlbum, HasLicense
 {
 	use HasAlbumTrait;
 	use HasLicenseTrait;

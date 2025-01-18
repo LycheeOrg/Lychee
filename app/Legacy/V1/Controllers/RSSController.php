@@ -16,7 +16,10 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Collection;
 use Spatie\Feed\FeedItem;
 
-class RSSController extends Controller
+/**
+ * @codeCoverageIgnore Legacy stuff
+ */
+final class RSSController extends Controller
 {
 	/**
 	 * @param Generate $generate

@@ -22,7 +22,7 @@ use App\Policies\AlbumPolicy;
 use App\Policies\PhotoPolicy;
 use Illuminate\Support\Facades\Gate;
 
-class SetAlbumHeaderRequest extends BaseApiRequest implements HasAlbum, HasPhoto
+final class SetAlbumHeaderRequest extends BaseApiRequest implements HasAlbum, HasPhoto
 {
 	use HasAlbumTrait;
 	use HasPhotoTrait;

@@ -36,7 +36,7 @@ use Illuminate\Support\Facades\Gate;
  * user ID or owner ID or an album ID they own in the request.
  * Only the admin is allowed to make an unrestricted query.
  */
-class ListSharingRequest extends BaseApiRequest implements HasBaseAlbum
+final class ListSharingRequest extends BaseApiRequest implements HasBaseAlbum
 {
 	use HasBaseAlbumTrait;
 	public const OWNER_ID_ATTRIBUTE = 'ownerID';

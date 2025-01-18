@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Gate;
 /**
  * Data Transfer Object (DTO) to transmit the rights of an user at the root level.
  */
-class RootAlbumRightsResource extends JsonResource
+final class RootAlbumRightsResource extends JsonResource
 {
 	public function __construct()
 	{

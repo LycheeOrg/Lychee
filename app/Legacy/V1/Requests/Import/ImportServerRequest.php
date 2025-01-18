@@ -20,7 +20,7 @@ use App\Models\Configs;
 use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\Gate;
 
-class ImportServerRequest extends BaseApiRequest implements HasAlbum
+final class ImportServerRequest extends BaseApiRequest implements HasAlbum
 {
 	use HasAlbumTrait;
 
