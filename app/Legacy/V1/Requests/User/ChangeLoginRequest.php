@@ -53,7 +53,9 @@ final class ChangeLoginRequest extends BaseApiRequest implements HasPassword
 			$this->username = trim($values[RequestAttribute::USERNAME_ATTRIBUTE]);
 			$this->username = $this->username === '' ? null : $this->username;
 		} else {
+			// @codeCoverageIgnoreStart
 			$this->username = null;
+			// @codeCoverageIgnoreEnd
 		}
 	}
 

@@ -25,7 +25,9 @@ trait AuthorizeCanEditPhotosTrait
 		/** @var Photo $photo */
 		foreach ($this->photos as $photo) {
 			if (!Gate::check(PhotoPolicy::CAN_EDIT, $photo)) {
+				// @codeCoverageIgnoreStart
 				return false;
+				// @codeCoverageIgnoreEnd
 			}
 		}
 

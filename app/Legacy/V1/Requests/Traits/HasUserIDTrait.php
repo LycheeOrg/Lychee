@@ -8,6 +8,9 @@
 
 namespace App\Legacy\V1\Requests\Traits;
 
+/**
+ * @codeCoverageIgnore Legacy stuff
+ */
 trait HasUserIDTrait
 {
 	/**

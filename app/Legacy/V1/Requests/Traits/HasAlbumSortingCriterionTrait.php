@@ -10,6 +10,9 @@ namespace App\Legacy\V1\Requests\Traits;
 
 use App\DTO\AlbumSortingCriterion;
 
+/**
+ * @codeCoverageIgnore Legacy stuff
+ */
 trait HasAlbumSortingCriterionTrait
 {
 	protected ?AlbumSortingCriterion $albumSortingCriterion = null;

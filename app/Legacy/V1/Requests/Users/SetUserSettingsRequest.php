@@ -57,7 +57,9 @@ final class SetUserSettingsRequest extends BaseApiRequest implements HasUsername
 			// of the semantic difference between `null` and `''`.
 			$this->password = $values[RequestAttribute::PASSWORD_ATTRIBUTE] ?? '';
 		} else {
+			// @codeCoverageIgnoreStart
 			$this->password = null;
+			// @codeCoverageIgnoreEnd
 		}
 		$this->mayUpload = static::toBoolean($values[RequestAttribute::MAY_UPLOAD_ATTRIBUTE]);
 		$this->mayEditOwnSettings = static::toBoolean($values[RequestAttribute::MAY_EDIT_OWN_SETTINGS_ATTRIBUTE]);

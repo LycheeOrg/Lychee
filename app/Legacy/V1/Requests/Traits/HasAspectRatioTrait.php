@@ -10,6 +10,9 @@ namespace App\Legacy\V1\Requests\Traits;
 
 use App\Enum\AspectRatioType;
 
+/**
+ * @codeCoverageIgnore Legacy stuff
+ */
 trait HasAspectRatioTrait
 {
 	protected ?AspectRatioType $aspectRatio = null;

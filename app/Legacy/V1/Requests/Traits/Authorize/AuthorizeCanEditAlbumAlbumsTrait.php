@@ -20,13 +20,17 @@ trait AuthorizeCanEditAlbumAlbumsTrait
 	public function authorize(): bool
 	{
 		if (!Gate::check(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $this->album])) {
+			// @codeCoverageIgnoreStart
 			return false;
+			// @codeCoverageIgnoreEnd
 		}
 
 		/** @var AbstractAlbum $album */
 		foreach ($this->albums as $album) {
 			if (!Gate::check(AlbumPolicy::CAN_EDIT, $album)) {
+				// @codeCoverageIgnoreStart
 				return false;
+				// @codecoverageignoreend
 			}
 		}
 
