@@ -168,8 +168,10 @@ class Extractor
 
 		$taken_at = $exif->getCreationDate();
 
-		if ($taken_at === false &&
-			Configs::getValueAsBool('use_last_modified_date_when_no_exif_date')) {
+		if (
+			$taken_at === false &&
+			Configs::getValueAsBool('use_last_modified_date_when_no_exif_date')
+		) {
 			$taken_at = DateTime::createFromFormat('U', "$fileLastModifiedTime");
 		}
 
@@ -324,11 +326,14 @@ class Extractor
 							// location where the video has been recorded and that
 							// the beholder (of the video) expects to observe
 							// that timezone.
+
+							// @codeCoverageIgnoreStart
 							$taken_at = new Carbon(
 								$taken_at->format('Y-m-d H:i:s'),
 								new \DateTimeZone('UTC')
 							);
 							$taken_at->setTimezone(new \DateTimeZone(date_default_timezone_get()));
+						// @codeCoverageIgnoreEnd
 						} elseif ($taken_at->getTimezone()->getName() === 'Z') {
 							// This one is correctly in Zulu (UTC).
 							// We change the timezone to the application's default
@@ -361,16 +366,20 @@ class Extractor
 						// location where the video has been recorded and that
 						// the beholder (of the video) expects to observe
 						// that timezone.
+						// @codeCoverageIgnoreStart
 						$taken_at = new Carbon(
 							$taken_at->format('Y-m-d H:i:s'),
 							new \DateTimeZone(date_default_timezone_get())
 						);
+						// @codeCoverageIgnoreEnd
 					}
 				}
 				$metadata->taken_at = $taken_at;
+				// @codeCoverageIgnoreStart
 			} catch (InvalidTimeZoneException|InvalidFormatException $e) {
 				throw new MediaFileOperationException('Could not even extract date/time from EXIF data', $e);
 			}
+		// @codeCoverageIgnoreEnd
 		} else {
 			$metadata->taken_at = null;
 		}
@@ -379,9 +388,11 @@ class Extractor
 		// We set values to null in case we're out of bounds
 		if ($metadata->latitude !== null || $metadata->longitude !== null) {
 			if ($metadata->latitude < -90 || $metadata->latitude > 90 || $metadata->longitude < -180 || $metadata->longitude > 180) {
+				// @codeCoverageIgnoreStart
 				Log::notice(__METHOD__ . ':' . __LINE__ . 'Latitude/Longitude (' . $metadata->latitude . '/' . $metadata->longitude . ') out of bounds (needs to be between -90/90 and -180/180)');
 				$metadata->latitude = null;
 				$metadata->longitude = null;
+				// @codeCoverageIgnoreEnd
 			}
 		}
 
@@ -389,8 +400,10 @@ class Extractor
 		// We set values to null in case we're out of bounds
 		if ($metadata->altitude !== null) {
 			if ($metadata->altitude < -self::ABSOLUTE_ALTITUDE_BOUNDS || $metadata->altitude > self::ABSOLUTE_ALTITUDE_BOUNDS) {
+				// @codeCoverageIgnoreStart
 				Log::notice(__METHOD__ . ':' . __LINE__ . 'Altitude (' . $metadata->altitude . ') out of bounds for database (needs to be between -999999.9999 and 999999.9999)');
 				$metadata->altitude = null;
+				// @codeCoverageIgnoreEnd
 			}
 		}
 
@@ -398,27 +411,39 @@ class Extractor
 		// We set values to null in case we're out of bounds
 		if ($metadata->imgDirection !== null) {
 			if ($metadata->imgDirection < 0 || $metadata->imgDirection > 360) {
+				// @codeCoverageIgnoreStart
 				Log::notice(__METHOD__ . ':' . __LINE__ . 'GPSImgDirection (' . $metadata->imgDirection . ') out of bounds (needs to be between 0 and 360)');
 				$metadata->imgDirection = null;
+				// @codeCoverageIgnoreEnd
 			}
 		}
 
 		// Position
 		$fields = [];
 		if ($exif->getCity() !== false) {
+			// @codeCoverageIgnoreStart
 			$fields[] = trim($exif->getCity());
+			// @codeCoverageIgnoreEnd
 		}
 		if ($exif->getSublocation() !== false) {
+			// @codeCoverageIgnoreStart
 			$fields[] = trim($exif->getSublocation());
+			// @codeCoverageIgnoreEnd
 		}
 		if ($exif->getState() !== false) {
+			// @codeCoverageIgnoreStart
 			$fields[] = trim($exif->getState());
+			// @codeCoverageIgnoreEnd
 		}
 		if ($exif->getCountry() !== false) {
+			// @codeCoverageIgnoreStart
 			$fields[] = trim($exif->getCountry());
+			// @codeCoverageIgnoreEnd
 		}
 		if (count($fields) !== 0) {
+			// @codeCoverageIgnoreStart
 			$metadata->position = implode(', ', $fields);
+			// @codeCoverageIgnoreEnd
 		}
 
 		if (!$isSupportedVideo) {

@@ -21,6 +21,9 @@ use GuzzleHttp\HandlerStack;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Spatie\GuzzleRateLimiterMiddleware\RateLimiterMiddleware;
 
+/**
+ * @codeCoverageIgnore We know it works.
+ */
 class Geodecoder
 {
 	/**

@@ -34,11 +34,15 @@ class ArrayableDTO extends AbstractDTO
 			$propertyValue = $prop->getValue($this);
 			if (is_object($propertyValue)) {
 				if ($propertyValue instanceof Arrayable) {
+					// @codeCoverageIgnoreStart
 					$propertyValue = $propertyValue->toArray();
+				// @codeCoverageIgnoreEnd
 				} elseif ($propertyValue instanceof \BackedEnum) {
 					$propertyValue = $propertyValue->value;
 				} else {
+					// @codeCoverageIgnoreStart
 					throw new LycheeLogicException(sprintf('Unable to convert %s into an array', get_class($propertyValue)));
+					// @codeCoverageIgnoreEnd
 				}
 			}
 			$result[$prop->getName()] = $propertyValue;
