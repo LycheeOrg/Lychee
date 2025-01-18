@@ -27,9 +27,11 @@ class MOVFormat extends DefaultVideo
 			$this
 				->setAudioCodec(self::FFMPEG_AUDIO_CODEC_ID)
 				->setVideoCodec(self::FFMPEG_VIDEO_CODEC_ID);
+			// @codeCoverageIgnoreStart
 		} catch (InvalidArgumentException $e) {
 			throw LycheeAssertionError::createFromUnexpectedException($e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**

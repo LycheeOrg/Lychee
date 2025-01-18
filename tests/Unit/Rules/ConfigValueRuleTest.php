@@ -18,24 +18,16 @@
 
 namespace Tests\Unit\Rules;
 
-use App\Constants\RandomID;
-use App\Rules\RandomIDListRule;
+use App\Exceptions\Internal\LycheeLogicException;
+use App\Rules\ConfigValueRule;
 use Tests\AbstractTestCase;
 
-class RandomIDListRuleTest extends AbstractTestCase
+class ConfigValueRuleTest extends AbstractTestCase
 {
 	public function testNegative(): void
 	{
-		$rule = new RandomIDListRule();
-		$msg = $rule->message();
-		$expected = ':attribute must be a comma-separated string of strings with ' . RandomID::ID_LENGTH . ' characters each.';
-
-		self::assertEquals($expected, $msg);
-	}
-
-	public function testPasse(): void
-	{
-		$rule = new RandomIDListRule();
-		self::assertFalse($rule->passes('something', null));
+		self::expectException(LycheeLogicException::class);
+		$rule = new ConfigValueRule();
+		$rule->passes('something', null);
 	}
 }

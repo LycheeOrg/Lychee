@@ -161,10 +161,10 @@ class CoverageTest extends AbstractTestCase
 	public function testAlbumFactory(): void
 	{
 		$factory = resolve(AlbumFactory::class);
-		self::assertCount(1, $factory->findAbstractAlbumsOrFail(['unsorted'], false));
+		self::assertCount(1, $factory->findAbstractAlbumsOrFail([UnsortedAlbum::ID], false));
 
 		self::expectException(ModelNotFoundException::class);
-		$factory->findBaseAlbumsOrFail(['unsorted'], false);
+		$factory->findBaseAlbumsOrFail([UnsortedAlbum::ID], false);
 	}
 
 	public function testJobFailing(): void
@@ -185,7 +185,7 @@ class CoverageTest extends AbstractTestCase
 		$file = new ProcessableJobFile('.jpg', 'something');
 		$job = new ProcessImageJob(
 			$file,
-			null,
+			UnsortedAlbum::ID,
 			null
 		);
 		$job->failed(new LycheeInvalidArgumentException('something'));

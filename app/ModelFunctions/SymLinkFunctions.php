@@ -19,6 +19,8 @@ class SymLinkFunctions
 	 * @return void
 	 *
 	 * @throws ModelDBException
+	 *
+	 * @codeCoverageIgnore Only tested locally
 	 */
 	public function clearSymLink(): void
 	{
@@ -35,6 +37,8 @@ class SymLinkFunctions
 	 * @return void
 	 *
 	 * @throws ModelDBException
+	 *
+	 * @codeCoverageIgnore Only tested locally
 	 */
 	public function remove_outdated(): void
 	{

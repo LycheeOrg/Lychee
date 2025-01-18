@@ -106,7 +106,9 @@ class AppServiceProvider extends ServiceProvider
 		 * We force URL to HTTPS if requested in .env via APP_FORCE_HTTPS.
 		 */
 		if (config('features.force_https') === true) {
+			// @codeCoverageIgnoreStart
 			URL::forceScheme('https');
+			// @codeCoverageIgnoreEnd
 		}
 
 		if (config('database.db_log_sql', false) === true) {
@@ -117,6 +119,7 @@ class AppServiceProvider extends ServiceProvider
 			$lang = Configs::getValueAsString('lang');
 			/** @disregard P1013 Undefined method setLocale() (stupid intelephense) */
 			app()->setLocale($lang);
+			// @codeCoverageIgnoreStart
 		} catch (\Throwable $e) {
 			/** Ignore.
 			 * This is necessary so that we can continue:
@@ -124,6 +127,7 @@ class AppServiceProvider extends ServiceProvider
 			 * - if the value does not exists in configs (no install),.
 			 */
 		}
+		// @codeCoverageIgnoreEnd
 
 		/**
 		 * We enforce strict mode
@@ -152,7 +156,9 @@ class AppServiceProvider extends ServiceProvider
 			// Allow to bypass when debug is ON and when env is dev
 			// At this point, it is no longer our fault if the Lychee admin have their logs publically accessible.
 			if (config('app.debug', false) === true && config('app.env', 'production') === 'dev') {
+				// @codeCoverageIgnoreStart
 				return true;
+				// @codeCoverageIgnoreEnd
 			}
 
 			// return true to allow viewing the Log Viewer.

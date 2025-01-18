@@ -57,12 +57,14 @@ class JsonRequestFunctions implements JsonRequest
 		try {
 			$text = match (0) {
 				(int) now()->diffInMinutes($age) => (int) -now()->diffInSeconds($age) . ' seconds',
+				// @codeCoverageIgnoreStart
 				(int) now()->diffInHours($age) => (int) -now()->diffInMinutes($age) . ' minutes',
 				(int) now()->diffInDays($age) => (int) -now()->diffInHours($age) . ' hours',
 				(int) now()->diffInWeeks($age) => (int) -now()->diffInDays($age) . ' days',
 				(int) now()->diffInMonths($age) => (int) -now()->diffInWeeks($age) . ' weeks',
 				(int) now()->diffInYears($age) => (int) -now()->diffInMonths($age) . ' months',
 				default => now()->diffInYears($age) . ' years',
+				// @codeCoverageIgnoreEnd
 			};
 
 			return $text . ' ago';

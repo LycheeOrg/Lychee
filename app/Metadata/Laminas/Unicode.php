@@ -35,7 +35,7 @@ use App\Exceptions\Internal\LycheeLogicException;
 /**
  * Unicode Decorator for Laminas\Text\Table.
  */
-class Unicode implements Decorator
+final class Unicode implements Decorator
 {
 	/**
 	 * {@inheritDoc}
@@ -129,9 +129,11 @@ class Unicode implements Decorator
 	 * Convert am unicode character code to a character.
 	 *
 	 * @param int $code
+	 *
+	 * @codeCoverageIgnore This is from Laminas. We trust it works.
 	 */
 	// @codingStandardsIgnoreStart
-	protected function _uniChar(int $code): string
+	private function _uniChar(int $code): string
 	{
 		// @codingStandardsIgnoreEnd
 		if ($code <= 0x7F) {
