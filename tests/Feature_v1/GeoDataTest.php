@@ -153,7 +153,7 @@ class GeoDataTest extends AbstractTestCase
 			Configs::set(TestConstants::CONFIG_MAP_DISPLAY, true);
 			static::assertEquals(true, Configs::getValueAsBool(TestConstants::CONFIG_MAP_DISPLAY));
 			$positionDataResponse = $this->root_album_tests->getPositionData();
-			/** @var \App\Legacy\V1\Resources\Collections\PositionDataResource $positionData */
+			/** @var \App\Http\Resources\Collections\PositionDataResource $positionData */
 			$positionData = static::convertJsonToObject($positionDataResponse);
 			static::assertIsObject($positionData);
 			static::assertTrue(property_exists($positionData, 'photos'));
@@ -169,7 +169,7 @@ class GeoDataTest extends AbstractTestCase
 			Configs::set(TestConstants::CONFIG_MAP_DISPLAY, true);
 			static::assertEquals(true, Configs::getValueAsBool(TestConstants::CONFIG_MAP_DISPLAY));
 			$positionDataResponse = $this->albums_tests->getPositionData($albumID, false);
-			/** @var \App\Legacy\V1\Resources\Collections\PositionDataResource $positionData */
+			/** @var \App\Http\Resources\Collections\PositionDataResource $positionData */
 			$positionData = static::convertJsonToObject($positionDataResponse);
 			static::assertIsObject($positionData);
 			static::assertTrue(property_exists($positionData, 'photos'));
