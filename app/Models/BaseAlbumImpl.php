@@ -17,7 +17,6 @@ use App\Enum\OrderSortingType;
 use App\Enum\PhotoLayoutType;
 use App\Enum\TimelinePhotoGranularity;
 use App\Models\Builders\BaseAlbumImplBuilder;
-use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\HasBidirectionalRelationships;
 use App\Models\Extensions\HasRandomIDAndLegacyTimeBasedID;
 use App\Models\Extensions\ThrowsConsistentExceptions;
@@ -142,7 +141,6 @@ use Illuminate\Support\Facades\Auth;
  */
 class BaseAlbumImpl extends Model implements HasRandomID
 {
-	use HasAttributesPatch;
 	/** @phpstan-use HasRandomIDAndLegacyTimeBasedID<BaseAlbumImpl> */
 	use HasRandomIDAndLegacyTimeBasedID;
 	use ThrowsConsistentExceptions;

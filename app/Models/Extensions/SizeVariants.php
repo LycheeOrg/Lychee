@@ -233,6 +233,8 @@ class SizeVariants extends AbstractDTO
 	 *
 	 * @throws IllegalOrderOfOperationException
 	 * @throws ModelDBException
+	 *
+	 * @disregard P1006
 	 */
 	public function create(SizeVariantType $sizeVariantType, string $shortPath, ImageDimension $dim, int $filesize): SizeVariant
 	{

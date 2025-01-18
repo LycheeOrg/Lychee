@@ -14,7 +14,6 @@ use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
 use App\Image\Files\FlysystemFile;
 use App\Models\Builders\SymLinkBuilder;
-use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\UTCBasedTimes;
 use Carbon\Exceptions\InvalidTimeZoneException;
@@ -61,7 +60,6 @@ use function Safe\unlink;
 class SymLink extends Model
 {
 	use UTCBasedTimes;
-	use HasAttributesPatch;
 	use ThrowsConsistentExceptions {
 		ThrowsConsistentExceptions::delete as private internalDelete;
 	}
@@ -136,9 +134,11 @@ class SymLink extends Model
 		try {
 			/** @disregard P1013 */
 			return Storage::disk(self::DISK_NAME)->url($this->short_path);
+			// @codeCoverageIgnoreStart
 		} catch (\RuntimeException $e) {
 			throw new FrameworkException('Laravel\'s storage component', $e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -167,9 +167,11 @@ class SymLink extends Model
 				unlink($symAbsolutePath);
 			}
 			symlink($origRealPath, $symAbsolutePath);
+			// @codeCoverageIgnoreStart
 		} catch (FilesystemException $e) {
 			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
+		// @codeCoverageIgnoreEnd
 		$this->short_path = $symShortPath;
 
 		return parent::performInsert($query);

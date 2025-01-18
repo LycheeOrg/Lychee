@@ -30,7 +30,7 @@ trait AuthorizeCanEditAlbumAlbumsTrait
 			if (!Gate::check(AlbumPolicy::CAN_EDIT, $album)) {
 				// @codeCoverageIgnoreStart
 				return false;
-				// @codecoverageignoreend
+				// @codeCoverageIgnoreEnd
 			}
 		}
 

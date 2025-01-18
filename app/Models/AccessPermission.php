@@ -11,7 +11,6 @@ namespace App\Models;
 use App\Constants\AccessPermissionConstants as APC;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Models\Builders\AccessPermissionBuilder;
-use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\UTCBasedTimes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -65,7 +64,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class AccessPermission extends Model
 {
 	use UTCBasedTimes;
-	use HasAttributesPatch;
 	use ThrowsConsistentExceptions;
 	/** @phpstan-use HasFactory<\Database\Factories\AccessPermissionFactory> */
 	use HasFactory;

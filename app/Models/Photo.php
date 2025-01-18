@@ -23,7 +23,6 @@ use App\Exceptions\ModelDBException;
 use App\Facades\Helpers;
 use App\Image\Files\BaseMediaFile;
 use App\Models\Builders\PhotoBuilder;
-use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\HasBidirectionalRelationships;
 use App\Models\Extensions\HasRandomIDAndLegacyTimeBasedID;
 use App\Models\Extensions\SizeVariants;
@@ -130,7 +129,6 @@ class Photo extends Model
 	/** @phpstan-use HasFactory<\Database\Factories\PhotoFactory> */
 	use HasFactory;
 	use UTCBasedTimes;
-	use HasAttributesPatch;
 	/** @phpstan-use HasRandomIDAndLegacyTimeBasedID<Photo> */
 	use HasRandomIDAndLegacyTimeBasedID;
 	use ThrowsConsistentExceptions;
@@ -260,10 +258,12 @@ class Photo extends Model
 			}
 
 			return $shutter;
+			// @codeCoverageIgnoreStart
 		} catch (ZeroModuloException $e) {
 			// this should not happen as we covered the case $b = 0;
 			throw LycheeAssertionError::createFromUnexpectedException($e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
