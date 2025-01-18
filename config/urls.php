@@ -7,7 +7,7 @@ return [
 			'commits' => 'https://api.github.com/repos/LycheeOrg/Lychee/commits',
 			'tags' => 'https://api.github.com/repos/LycheeOrg/Lychee/tags',
 		],
-		'json' => 'https://lycheeorg.github.io/update.json',
+		'json' => 'https://lycheeorg.dev/update.json',
 	],
 	'git' => [
 		'pull' => 'https://github.com/LycheeOrg/Lychee.git',

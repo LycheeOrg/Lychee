@@ -67,7 +67,7 @@ class EnumRequireSupportRule implements ValidationRule
 			return;
 		}
 
-		$fail('Error: This functionality is only available in the Supporter Edition of Lychee. See here: https://lycheeorg.github.io/get-supporter-edition/');
+		$fail('Error: This functionality is only available in the Supporter Edition of Lychee. See here: https://lycheeorg.dev/get-supporter-edition/');
 	}
 
 	/**

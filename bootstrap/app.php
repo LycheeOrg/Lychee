@@ -1,6 +1,6 @@
 <?php
 
-ini_set('user_agent', 'Lychee/4 (https://lycheeorg.github.io/)');
+ini_set('user_agent', 'Lychee/6 (https://lycheeorg.dev/)');
 
 /*
  * Ensure that the umask does not deny any user or group permissions,
