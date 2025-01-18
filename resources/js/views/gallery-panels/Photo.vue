@@ -84,14 +84,14 @@
 				<!-- <x-gallery.photo.overlay /> -->
 			</div>
 			<NextPrevious
-				v-if="photo.previous_photo_id !== null"
+				v-if="photo.previous_photo_id !== null && !is_slideshow_active"
 				:albumId="props.albumid"
 				:photoId="photo.previous_photo_id"
 				:is_next="false"
 				:style="previousStyle"
 			/>
 			<NextPrevious
-				v-if="photo.next_photo_id !== null"
+				v-if="photo.next_photo_id !== null && !is_slideshow_active"
 				:albumId="props.albumid"
 				:photoId="photo.next_photo_id"
 				:is_next="true"
@@ -204,7 +204,14 @@ function getPrevious() {
 	router.push({ name: "photo", params: { albumid: props.albumid, photoid: photo.value?.previous_photo_id ?? "" } });
 }
 
-const { slideshow, start, next, previous, stop } = useSlideshowFunction(1000, is_slideshow_active, slideshow_timeout, getNext, getPrevious);
+const { slideshow, start, next, previous, stop } = useSlideshowFunction(
+	1000,
+	is_slideshow_active,
+	slideshow_timeout,
+	videoElement,
+	getNext,
+	getPrevious,
+);
 
 function load() {
 	if (togglableStore.isSearchActive) {
@@ -295,6 +302,7 @@ onKeyStroke("ArrowRight", () => !shouldIgnoreKeystroke() && hasNext() && next(tr
 onKeyStroke("o", () => !shouldIgnoreKeystroke() && rotateOverlay());
 onKeyStroke(" ", () => !shouldIgnoreKeystroke() && slideshow());
 onKeyStroke("f", () => !shouldIgnoreKeystroke() && togglableStore.toggleFullScreen());
+onKeyStroke("Escape", () => !shouldIgnoreKeystroke() && is_slideshow_active.value && stop());
 
 // Priviledged operations
 onKeyStroke("m", () => !shouldIgnoreKeystroke() && photo.value?.rights.can_edit && toggleMove());

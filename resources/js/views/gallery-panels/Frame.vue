@@ -42,7 +42,7 @@ function getNext() {
 	});
 }
 
-const { slideshow, clearTimeouts } = useSlideshowFunction(1000, is_slideshow_active, refreshTimeout, getNext, undefined);
+const { slideshow, clearTimeouts } = useSlideshowFunction(1000, is_slideshow_active, refreshTimeout, ref(null), getNext, undefined);
 
 function start() {
 	AlbumService.frame(props.albumid ?? null).then((response) => {
