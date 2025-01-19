@@ -39,7 +39,6 @@ parameters:
 		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::where(Not)?(Null|In|Between|Exists|Column|Year|Month|Day)?\(\).#'
 		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::delete\(\)#'
 		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::without\(\)#'
-		# - '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::with\(\)#'
 		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::count\(\).#'
 		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::update\(\).#'
 		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::inRandomOrder\(\).#'
@@ -50,18 +49,9 @@ parameters:
 		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::exists\(\).#'
 		- '#Dynamic call to static method App\\Models\\Builders\\.*::orderByDesc\(\).#'
 		- '#Dynamic call to static method App\\Models\\Builders\\.*::selectRaw\(\).#'
-		# - '#Call to an undefined method Illuminate\\Database\\Eloquent\\.*::with(Only)?\(\)#'
-		# - '#Call to an undefined method App\\Relations\\HasManyPhotosRecursively::whereNotNull\(\)#'
-		# - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Builder|Illuminate\\Database\\Eloquent\\Relations\\Relation::whereNotNull\(\).#'
 		- '#Call to protected method asDateTime\(\) of class Illuminate\\Database\\Eloquent\\Model.#'
 
 		# Covariance - LSP princinple: https://en.wikipedia.org/wiki/Liskov_substitution_principle
-		# -
-		# 	message: '#Parameter \#1 \$column \(array<string>\|Closure\|Illuminate\\Database\\Query\\Expression\|string\) of method .* should be contravariant with parameter \$column \(array<int\|string, mixed>\|\(Closure.*\)\|\(Closure.*\)\|Illuminate\\Contracts\\Database\\Query\\Expression\|string\) of method .*#'
-		# 	paths:
-		# 		- app/Eloquent/FixedQueryBuilderTrait.php
-		# - '#Parameter \#1 \$models .* of method .*::initRelation\(\) should be contravariant with parameter \$models .* of method .*::initRelation\(\)#'
-		# - '#Parameter \#(1|2) \$(models|albums|photos|results) .* of method .*::(match|addEagerConstraints)\(\) should be contravariant with parameter \$(models|albums|photos|results) .* of method .*::(match|addEagerConstraints)\(\)#'
 		- '#Parameter .* of method .*::replicate\(\) should be contravariant with parameter .* of method .*::replicate\(\)#' 
 		- '#Parameter .* of method .*::save\(\) should be contravariant with parameter .* of method .*::save\(\)#' 
 		- '#Parameter .* of method .*::newEloquentBuilder\(\) should be contravariant with parameter .* of method Kalnoy\\Nestedset\\Node<.*>::newEloquentBuilder\(\)#'
@@ -75,22 +65,8 @@ parameters:
 		- '#Dynamic call to static method Illuminate\\Foundation\\Application::getCachedConfigPath\(\).#'
 		- '#Dynamic call to static method Illuminate\\Foundation\\Application::getCachedRoutesPath\(\).#'
 
-
-		# - '#Access to an undefined property Laragear\\WebAuthn\\Models\\WebAuthnCredential::\$authenticatable_id#'
-
 		# False positive as stub code for PHP has not yet been updated to 2nd parameter, see https://github.com/php/doc-en/issues/1529 and https://www.php.net/imagick.writeimagefile
 		# - '#Method Imagick::writeImageFile\(\) invoked with 2 parameters, 1 required#'
-
-		# Synth
-		# -
-		# 	message: '#Variable property access on .*#'
-		# 	paths:
-		# 		- app/Livewire/Synth 
-
-		# -
-		# 	message: '#Parameter .* of method App\\Livewire\\Synth\\.* should be contravariant with parameter .* of method Livewire\\Mechanisms\\HandleComponents\\Synthesizers\\Synth::.*#'
-		# 	paths:
-		# 		- app/Livewire/Synth 
 
 		# Migrations
 		-
@@ -117,26 +93,6 @@ parameters:
 			message: '#no value type specified in iterable type array.#'
 			paths:
 				- tests
-		# - 
-		# 	message: '#Dynamic call to static method Illuminate\\Testing\\TestResponse::assert(Forbidden|ViewIs|Unauthorized|Ok|Status)#'
-		# 	paths:
-		# 		- tests
-		# - 
-		# 	message: '#Call to an undefined method Illuminate\\Testing\\TestResponse::(assert)?(SeeLivewire|dispatch|call|Set|Count)#'
-		# 	paths:
-		# 		- tests
-		# -
-		# 	message: '#Dynamic call to static method PHPUnit\\Framework\\Assert::assert(Is)?(Not)?(True|False|Equals|Int|Null|Empty|Count)\(\)#'
-		# 	paths:
-		# 		- tests
-		# -
-		# 	message: '#Dynamic call to static method PHPUnit\\Framework\\Assert::assertFile(DoesNot)?Exists?\(\)#'
-		# 	paths:
-		# 		- tests
-		# -
-		# 	message: '#Dynamic call to static method PHPUnit\\Framework\\Assert::assertString(Not)?(Contains|Ends|Starts)(String|With)\(\)#'
-		# 	paths:
-		# 		- tests
 		-
 			message: '#Dynamic call to static method Symfony\\Component\\HttpFoundation\\Response::get(Content|StatusCode)\(\)#'
 			paths:
@@ -149,7 +105,6 @@ parameters:
 			message: '#Cannot call method .* on Illuminate\\Testing\\PendingCommand\|int.#'
 			paths:
 				- tests
-
 		-
 			message: '#Access to private property App\\Models\\Extensions\\SizeVariants::\$(original|small(2x)?|thumb(2x)?|medium(2x)?|placeholder)#'
 			paths:
