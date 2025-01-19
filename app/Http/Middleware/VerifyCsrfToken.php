@@ -24,6 +24,7 @@ class VerifyCsrfToken extends Middleware
 		// entry points...
 		'/php/index.php',
 		'/api/Session::init',
+		'/api/v2/Zip',
 	];
 
 	/**
