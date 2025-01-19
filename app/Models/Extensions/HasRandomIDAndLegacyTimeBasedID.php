@@ -44,7 +44,7 @@ trait HasRandomIDAndLegacyTimeBasedID
 	 *
 	 * @throws NotImplementedException
 	 *
-	 * @codeCoverageIgnore setter is should not be used
+	 * @codeCoverageIgnore setter should not be used
 	 */
 	public function setIncrementing($value)
 	{
