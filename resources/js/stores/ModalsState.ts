@@ -32,6 +32,7 @@ export const useTogglablesStateStore = defineStore("togglables-store", {
 
 		// Scroll memory
 		scroll_memory: {} as Record<string, number>,
+		scroll_photo_id: undefined as string | undefined,
 	}),
 	getters: {
 		isSearchActive(): boolean {
