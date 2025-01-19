@@ -15,9 +15,13 @@ use App\Enum\SizeVariantType;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\InvalidSizeVariantException;
+use App\Exceptions\Internal\LycheeLogicException;
+use App\Image\Files\BaseMediaFile;
 use App\Image\Files\FlysystemFile;
 use App\Models\Configs;
 use App\Models\Photo;
+use Composer\InstalledVersions;
+use Composer\Semver\VersionParser;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Safe\Exceptions\InfoException;
@@ -28,10 +32,9 @@ use function Safe\set_time_limit;
 use function Safe\stream_copy_to_stream;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\StreamedResponse;
-use ZipStream\CompressionMethod as ZipMethod;
 use ZipStream\ZipStream;
 
-class Archive
+abstract class BaseArchive
 {
 	public const BAD_CHARS = [
 		"\x00", "\x01", "\x02", "\x03", "\x04", "\x05", "\x06", "\x07",
@@ -42,6 +45,23 @@ class Archive
 	];
 
 	protected int $deflateLevel = -1;
+
+	/**
+	 * Resolve which version of the archive to use.
+	 *
+	 * @return BaseArchive
+	 */
+	public static function resolve(): self
+	{
+		if (InstalledVersions::satisfies(new VersionParser(), 'maennchen/zipstream-php', '^3.1')) {
+			return new Archive64();
+		}
+		if (InstalledVersions::satisfies(new VersionParser(), 'maennchen/zipstream-php', '^2.1')) {
+			return new Archive32();
+		}
+
+		throw new LycheeLogicException('Unsupported version of maennchen/zipstream-php');
+	}
 
 	/**
 	 * Returns a response for a downloadable file.
@@ -147,7 +167,7 @@ class Archive
 		$this->deflateLevel = Configs::getValueAsInt('zip_deflate_level');
 
 		$responseGenerator = function () use ($downloadVariant, $photos) {
-			$zip = new ZipStream(enableZip64: Configs::getValueAsBool('zip64'), defaultEnableZeroHeader: true, sendHttpHeaders: false);
+			$zip = $this->createZip();
 
 			// We first need to scan the whole array of files to avoid
 			// problems with duplicate file names.
@@ -238,9 +258,7 @@ class Archive
 						);
 					} while (array_key_exists($filename, $uniqueFilenames));
 				}
-				$zip->addFileFromStream(fileName: $filename, stream: $archiveFileInfo->file->read(),
-					compressionMethod: $this->deflateLevel === -1 ? ZipMethod::STORE : ZipMethod::DEFLATE,
-					deflateLevel: $this->deflateLevel);
+				$this->addFileToZip($zip, $filename, $archiveFileInfo->file, null);
 				$archiveFileInfo->file->close();
 				// Reset the execution timeout for every iteration.
 				try {
@@ -273,6 +291,15 @@ class Archive
 
 		return $response;
 	}
+
+	abstract protected function addFileToZip(ZipStream $zip, string $fileName, FlysystemFile|BaseMediaFile $file, Photo|null $photo): void;
+
+	/**
+	 * @return ZipStream
+	 *
+	 * @throws ConfigurationKeyMissingException
+	 */
+	abstract protected function createZip(): ZipStream;
 
 	/**
 	 * Creates a {@link ArchiveFileInfo} for the indicated photo and variant.

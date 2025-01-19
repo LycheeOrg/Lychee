@@ -12,6 +12,9 @@ use App\Contracts\Models\AbstractAlbum;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Handler;
 use App\Exceptions\Internal\FrameworkException;
+use App\Exceptions\Internal\LycheeLogicException;
+use App\Image\Files\BaseMediaFile;
+use App\Image\Files\FlysystemFile;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Photo;
@@ -19,6 +22,8 @@ use App\Models\TagAlbum;
 use App\Policies\AlbumPolicy;
 use App\Policies\PhotoPolicy;
 use App\SmartAlbums\BaseSmartAlbum;
+use Composer\InstalledVersions;
+use Composer\Semver\VersionParser;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Gate;
@@ -27,12 +32,11 @@ use function Safe\ini_get;
 use function Safe\set_time_limit;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\StreamedResponse;
-use ZipStream\CompressionMethod as ZipMethod;
 use ZipStream\Exception\FileNotFoundException;
 use ZipStream\Exception\FileNotReadableException;
 use ZipStream\ZipStream;
 
-class Archive extends Action
+abstract class BaseArchive extends Action
 {
 	public const BAD_CHARS = [
 		"\x00", "\x01", "\x02", "\x03", "\x04", "\x05", "\x06", "\x07",
@@ -43,6 +47,23 @@ class Archive extends Action
 	];
 
 	protected int $deflateLevel = -1;
+
+	/**
+	 * Resolve which version of the archive to use.
+	 *
+	 * @return BaseArchive
+	 */
+	public static function resolve(): self
+	{
+		if (InstalledVersions::satisfies(new VersionParser(), 'maennchen/zipstream-php', '^3.1')) {
+			return new Archive64();
+		}
+		if (InstalledVersions::satisfies(new VersionParser(), 'maennchen/zipstream-php', '^2.1')) {
+			return new Archive32();
+		}
+
+		throw new LycheeLogicException('Unsupported version of maennchen/zipstream-php');
+	}
 
 	/**
 	 * @param Collection<int,AbstractAlbum> $albums
@@ -66,10 +87,7 @@ class Archive extends Action
 		$this->deflateLevel = Configs::getValueAsInt('zip_deflate_level');
 
 		$responseGenerator = function () use ($albums) {
-			$zip = new ZipStream(defaultCompressionMethod: $this->deflateLevel === -1 ? ZipMethod::STORE : ZipMethod::DEFLATE,
-				defaultDeflateLevel: $this->deflateLevel,
-				enableZip64: Configs::getValueAsBool('zip64'),
-				defaultEnableZeroHeader: true, sendHttpHeaders: false);
+			$zip = $this->createZip();
 
 			$usedDirNames = [];
 			foreach ($albums as $album) {
@@ -104,6 +122,13 @@ class Archive extends Action
 
 		return $response;
 	}
+
+	/**
+	 * @return ZipStream
+	 *
+	 * @throws ConfigurationKeyMissingException
+	 */
+	abstract protected function createZip(): ZipStream;
 
 	/**
 	 * Create the title of the ZIP archive.
@@ -227,7 +252,7 @@ class Archive extends Action
 				} catch (InfoException) {
 					// Silently do nothing, if `set_time_limit` is denied.
 				}
-				$zip->addFileFromStream(fileName: $fileName, stream: $file->read(), comment: $photo->title, lastModificationDateTime: $photo->taken_at);
+				$this->addFileToZip($zip, $fileName, $file, $photo);
 				$file->close();
 			} catch (\Throwable $e) {
 				Handler::reportSafely($e);
@@ -248,4 +273,6 @@ class Archive extends Action
 			}
 		}
 	}
+
+	abstract protected function addFileToZip(ZipStream $zip, string $fileName, FlysystemFile|BaseMediaFile $file, Photo|null $photo): void;
 }
