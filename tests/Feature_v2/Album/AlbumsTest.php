@@ -26,7 +26,7 @@ class AlbumsTest extends BaseApiV2Test
 	{
 		$response = $this->getJson('Albums');
 		$this->assertOk($response);
-		$this->assertCount(0, $response->json('smart_albums'));
+		self::assertCount(0, $response->json('smart_albums'));
 		$response->assertSee($this->album4->id);
 		$response->assertJson([
 			'smart_albums' => [],
@@ -59,7 +59,7 @@ class AlbumsTest extends BaseApiV2Test
 	{
 		$response = $this->actingAs($this->userMayUpload1)->getJson('Albums');
 		$this->assertOk($response);
-		$this->assertCount(4, $response->json('smart_albums'));
+		self::assertCount(4, $response->json('smart_albums'));
 		$response->assertSee($this->album1->id);
 		$response->assertSee($this->album4->id);
 		$response->assertJson([

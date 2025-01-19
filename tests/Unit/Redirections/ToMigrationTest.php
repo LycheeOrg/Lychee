@@ -26,7 +26,7 @@ class ToMigrationTest extends AbstractTestCase
 	public function testRedirection(): void
 	{
 		$response = ToMigration::go();
-		$this->assertEquals(307, $response->getStatusCode());
-		$this->assertEquals(route('migrate'), $response->headers->get('Location'));
+		self::assertEquals(307, $response->getStatusCode());
+		self::assertEquals(route('migrate'), $response->headers->get('Location'));
 	}
 }

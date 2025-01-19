@@ -26,7 +26,7 @@ class ToHomeTest extends AbstractTestCase
 	public function testRedirection(): void
 	{
 		$response = ToHome::go();
-		$this->assertEquals(307, $response->getStatusCode());
-		$this->assertEquals(route('home'), $response->headers->get('Location'));
+		self::assertEquals(307, $response->getStatusCode());
+		self::assertEquals(route('home'), $response->headers->get('Location'));
 	}
 }

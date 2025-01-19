@@ -120,7 +120,7 @@ class UpdateTest extends AbstractTestCase
 
 		// check that Legacy did change the username
 		$adminUser = User::query()->findOrFail(1);
-		$this->assertEquals('test_login', $adminUser->username);
+		self::assertEquals('test_login', $adminUser->username);
 
 		// clean up
 		Auth::logout();

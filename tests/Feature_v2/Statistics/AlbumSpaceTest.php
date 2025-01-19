@@ -36,23 +36,23 @@ class AlbumSpaceTest extends BaseApiV2Test
 	{
 		$response = $this->withoutMiddleware(VerifySupporterStatus::class)->actingAs($this->userMayUpload1)->getJson('Statistics::albumSpace');
 		$this->assertOk($response);
-		$this->assertCount(2, $response->json());
-		$this->assertEquals($this->album1->title, $response->json()[0]['title']);
-		$this->assertEquals($this->subAlbum1->title, $response->json()[1]['title']);
+		self::assertCount(2, $response->json());
+		self::assertEquals($this->album1->title, $response->json()[0]['title']);
+		self::assertEquals($this->subAlbum1->title, $response->json()[1]['title']);
 
 		$response = $this->withoutMiddleware(VerifySupporterStatus::class)->actingAs($this->userMayUpload1)->getJson('Statistics::albumSpace?album_id=' . $this->album1->id);
 		$this->assertOk($response);
-		$this->assertCount(2, $response->json());
-		$this->assertEquals($this->album1->title, $response->json()[0]['title']);
-		$this->assertEquals($this->subAlbum1->title, $response->json()[1]['title']);
+		self::assertCount(2, $response->json());
+		self::assertEquals($this->album1->title, $response->json()[0]['title']);
+		self::assertEquals($this->subAlbum1->title, $response->json()[1]['title']);
 
 		$response = $this->withoutMiddleware(VerifySupporterStatus::class)->actingAs($this->userMayUpload1)->getJson('Statistics::albumSpace?album_id=' . $this->subAlbum1->id);
 		$this->assertOk($response);
-		$this->assertCount(1, $response->json());
-		$this->assertEquals($this->subAlbum1->title, $response->json()[0]['title']);
+		self::assertCount(1, $response->json());
+		self::assertEquals($this->subAlbum1->title, $response->json()[0]['title']);
 
 		$response = $this->withoutMiddleware(VerifySupporterStatus::class)->actingAs($this->admin)->getJson('Statistics::albumSpace');
 		$this->assertOk($response);
-		$this->assertCount(7, $response->json());
+		self::assertCount(7, $response->json());
 	}
 }

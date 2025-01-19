@@ -59,7 +59,7 @@ class MigrationStatusTest extends AbstractTestCase
 		$request = $this->mock(Request::class);
 
 		$middleware = new MigrationStatus($mock);
-		$this->assertEquals(1, $middleware->handle($request, fn () => 1, 'incomplete'), MigrationAlreadyCompletedException::class);
+		self::assertEquals(1, $middleware->handle($request, fn () => 1, 'incomplete'), MigrationAlreadyCompletedException::class);
 	}
 
 	public function testExceptionWrongParam(): void

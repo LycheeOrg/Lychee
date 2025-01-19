@@ -50,9 +50,9 @@ class CommandVideoDataTest extends BasePhotoTest
 		// Get updated video and check if thumb has been re-created
 		/** @var \App\Models\Photo $photo2 */
 		$photo2 = static::convertJsonToObject($this->photos_tests->get($photo1->id));
-		$this->assertNotNull($photo2->size_variants->thumb);
-		$this->assertEquals($photo1->size_variants->thumb->width, $photo2->size_variants->thumb->width);
-		$this->assertEquals($photo1->size_variants->thumb->height, $photo2->size_variants->thumb->height);
-		$this->assertFileExists(public_path($this->dropUrlPrefix($photo2->size_variants->thumb->url)));
+		self::assertNotNull($photo2->size_variants->thumb);
+		self::assertEquals($photo1->size_variants->thumb->width, $photo2->size_variants->thumb->width);
+		self::assertEquals($photo1->size_variants->thumb->height, $photo2->size_variants->thumb->height);
+		self::assertFileExists(public_path($this->dropUrlPrefix($photo2->size_variants->thumb->url)));
 	}
 }

@@ -35,15 +35,15 @@ class GitRemoteTest extends AbstractTestCase
 		$data = json_decode(File::get(base_path('tests/Samples/commits.json')));
 
 		$countBehind = $remote->countBehind($data, 'fail');
-		$this->assertEquals(30, $countBehind);
+		self::assertEquals(30, $countBehind);
 
 		$countBehind = $remote->countBehind([], 'fail');
-		$this->assertFalse($countBehind);
+		self::assertFalse($countBehind);
 
 		$countBehind = $remote->countBehind($data, 'f3854cf');
-		$this->assertEquals(1, $countBehind);
+		self::assertEquals(1, $countBehind);
 
-		$this->assertEquals('commits', $remote->getType());
+		self::assertEquals('commits', $remote->getType());
 	}
 
 	public function testTags(): void
@@ -55,21 +55,21 @@ class GitRemoteTest extends AbstractTestCase
 		$data = json_decode(File::get(base_path('tests/Samples/tags.json')));
 
 		$countBehind = $remote->countBehind($data, 'fail');
-		$this->assertEquals(30, $countBehind);
+		self::assertEquals(30, $countBehind);
 
 		$countBehind = $remote->countBehind($data, '1144961');
-		$this->assertEquals(4, $countBehind);
+		self::assertEquals(4, $countBehind);
 
 		// This test will fail in the future when v4.6.2 is further than 30 versions away.
 		$countBehind = $remote->countBehind($data, '296db84');
-		$this->assertNotEquals(30, $countBehind);
+		self::assertNotEquals(30, $countBehind);
 
 		$tagName = $remote->getTagName($data, '296db84');
-		$this->assertEquals('v4.6.2', $tagName);
+		self::assertEquals('v4.6.2', $tagName);
 
 		$tagName = $remote->getTagName([], 'fail');
-		$this->assertEquals('', $tagName);
+		self::assertEquals('', $tagName);
 
-		$this->assertEquals('tags', $remote->getType());
+		self::assertEquals('tags', $remote->getType());
 	}
 }
