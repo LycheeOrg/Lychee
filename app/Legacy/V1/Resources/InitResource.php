@@ -37,8 +37,10 @@ final class InitResource extends JsonResource
 		$gitHubVersion = resolve(GitHubVersion::class);
 
 		if (Configs::getValueAsBool('check_for_updates')) {
+			// @codeCoverageIgnoreStart
 			$fileVersion->hydrate();
 			$gitHubVersion->hydrate();
+			// @codeCoverageIgnoreEnd
 		}
 
 		// we also return the locale

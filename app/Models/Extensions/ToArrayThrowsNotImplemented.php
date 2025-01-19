@@ -16,9 +16,6 @@ use Illuminate\Support\Facades\Route;
  *
  * Now that we use Resources toArray should no longer be used.
  * Throw an exception if we encounter this function in the code.
- *
- * Because Livewire uses toArray to serialize models when passing them to sub components,
- * we still need to allow those cases. Those can be detected by the Route::is() call
  */
 trait ToArrayThrowsNotImplemented
 {
@@ -26,6 +23,8 @@ trait ToArrayThrowsNotImplemented
 	 * @return array<string,mixed>
 	 *
 	 * @throws NotImplementedException
+	 *
+	 * @codeCoverageIgnore We should never reach this code
 	 */
 	final public function toArray(): array
 	{

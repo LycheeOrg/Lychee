@@ -10,7 +10,6 @@ namespace App\Models;
 
 use App\Enum\OauthProvidersType;
 use App\Models\Builders\OauthCredentialBuilder;
-use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\UTCBasedTimes;
 use Illuminate\Database\Eloquent\Model;
@@ -30,7 +29,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class OauthCredential extends Model
 {
 	use UTCBasedTimes;
-	use HasAttributesPatch;
 	use ThrowsConsistentExceptions;
 
 	protected $fillable = [
@@ -54,6 +52,8 @@ class OauthCredential extends Model
 	 * Return the relationship between a Photo and its Album.
 	 *
 	 * @return BelongsTo<User,$this>
+	 *
+	 * @codeCoverageIgnore Tested locally.
 	 */
 	public function user(): BelongsTo
 	{

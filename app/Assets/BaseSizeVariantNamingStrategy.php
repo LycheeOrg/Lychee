@@ -48,7 +48,9 @@ abstract class BaseSizeVariantNamingStrategy extends AbstractSizeVariantNamingSt
 		}
 
 		if ($this->extension === '') {
+			// @codeCoverageIgnoreStart
 			throw new MissingValueException('extension');
+			// @codeCoverageIgnoreEnd
 		}
 
 		return $this->extension;

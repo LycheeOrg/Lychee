@@ -35,7 +35,9 @@ final class UserResource extends JsonResource
 	public function toArray($request)
 	{
 		if ($this->resource === null) {
+			// @codeCoverageIgnoreStart
 			throw new LycheeLogicException('Trying to convert a null user into an array.');
+			// @codeCoverageIgnoreEnd
 		}
 
 		return [

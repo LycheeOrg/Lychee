@@ -18,7 +18,6 @@ use App\Exceptions\ModelDBException;
 use App\Http\Resources\Models\SizeVariantResource;
 use App\Image\Files\FlysystemFile;
 use App\Models\Builders\SizeVariantBuilder;
-use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\HasBidirectionalRelationships;
 use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\ToArrayThrowsNotImplemented;
@@ -75,7 +74,6 @@ use League\Flysystem\Local\LocalFilesystemAdapter;
 class SizeVariant extends Model
 {
 	use UTCBasedTimes;
-	use HasAttributesPatch;
 	use HasBidirectionalRelationships;
 	use ThrowsConsistentExceptions;
 	use ToArrayThrowsNotImplemented;
@@ -207,7 +205,9 @@ class SizeVariant extends Model
 			return $this->getSymLinkUrl();
 		}
 
+		// @codeCoverageIgnoreStart
 		throw new ConfigurationException('the chosen storage adapter "' . get_class($storageAdapter) . '" does not support the symbolic linking feature');
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**

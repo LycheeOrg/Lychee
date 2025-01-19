@@ -68,9 +68,11 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 			/** @var AccessPermission|null $perm */
 			$perm = AccessPermission::query()->where('base_album_id', '=', $id->value)->first();
 			$this->publicPermissions = $perm;
+			// @codeCoverageIgnoreStart
 		} catch (BindingResolutionException $e) {
 			throw new FrameworkException('Laravel\'s service container', $e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -136,7 +138,9 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 			* user.
 			*/
 		$this->thumb ??= Configs::getValueAsBool('SA_random_thumbs')
+			// @codeCoverageIgnoreStart
 			? Thumb::createFromRandomQueryable($this->photos())
+			// @codeCoverageIgnoreEnd
 			: $this->thumb = Thumb::createFromQueryable(
 				$this->photos(),
 				PhotoSortingCriterion::createDefault()

@@ -573,7 +573,6 @@ declare namespace App.Http.Resources.Rights {
 	export type SettingsRightsResource = {
 		can_edit: boolean;
 		can_see_logs: boolean;
-		can_clear_logs: boolean;
 		can_see_diagnostics: boolean;
 		can_update: boolean;
 		can_access_dev_tools: boolean;

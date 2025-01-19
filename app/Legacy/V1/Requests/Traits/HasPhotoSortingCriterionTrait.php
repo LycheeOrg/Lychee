@@ -10,6 +10,9 @@ namespace App\Legacy\V1\Requests\Traits;
 
 use App\DTO\PhotoSortingCriterion;
 
+/**
+ * @codeCoverageIgnore Legacy stuff
+ */
 trait HasPhotoSortingCriterionTrait
 {
 	protected ?PhotoSortingCriterion $photoSortingCriterion = null;

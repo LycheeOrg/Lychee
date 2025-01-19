@@ -43,7 +43,6 @@ class AuthTest extends BaseApiV2Test
 			'settings' => [
 				'can_edit' => false,
 				'can_see_logs' => false,
-				'can_clear_logs' => false,
 				'can_see_diagnostics' => false,
 				'can_update' => false,
 			],

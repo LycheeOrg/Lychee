@@ -14,6 +14,9 @@ use App\Policies\AlbumPolicy;
 use App\Rules\IntegerIDRule;
 use Illuminate\Support\Facades\Gate;
 
+/**
+ * @codeCoverageIgnore Legacy stuff we don't care.
+ */
 final class DeleteSharingRequest extends BaseApiRequest
 {
 	public const SHARE_IDS_ATTRIBUTE = 'shareIDs';

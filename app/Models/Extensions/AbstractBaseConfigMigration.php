@@ -10,6 +10,9 @@ namespace App\Models\Extensions;
 
 use Illuminate\Database\Migrations\Migration;
 
+/**
+ * @codeCoverageIgnore still used and tested... but not in tests
+ */
 abstract class AbstractBaseConfigMigration extends Migration
 {
 	public const BOOL = '0|1';

@@ -17,6 +17,9 @@ use App\Policies\SettingsPolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Enum;
 
+/**
+ * @codeCoverageIgnore Legacy stuff
+ */
 final class SetAlbumDecorationRequest extends BaseApiRequest
 {
 	protected AlbumDecorationType $albumDecoration;

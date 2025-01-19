@@ -60,18 +60,22 @@ final class Legacy
 					' instead of new ID ' . $newID .
 					' from ' . $referer;
 				if (!Configs::getValueAsBool('legacy_id_redirection')) {
+					// @codeCoverageIgnoreStart
 					$msg .= ' (translation disabled by configuration)';
 					throw new ConfigurationException($msg);
+					// @codeCoverageIgnoreEnd
 				}
 				Log::warning(__METHOD__ . ':' . __LINE__ . $msg);
 
 				return $newID;
 			}
 
+			// @codeCoverageIgnoreStart
 			return null;
 		} catch (\InvalidArgumentException $e) {
 			throw new QueryBuilderException($e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**

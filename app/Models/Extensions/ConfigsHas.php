@@ -44,22 +44,28 @@ trait ConfigsHas
 			if (Helpers::isExecAvailable()) {
 				try {
 					$cmd_output = exec('command -v exiftool');
+					// @codeCoverageIgnoreStart
 				} catch (\Exception $e) {
 					$cmd_output = false;
 					Handler::reportSafely(new ExternalComponentMissingException('could not find exiftool; `has_exiftool` will be set to 0', $e));
 				}
+				// @codeCoverageIgnoreEnd
 				$path = $cmd_output === false ? '' : $cmd_output;
 				$has_exiftool = $path === '' ? 0 : 1;
 			} else {
+				// @codeCoverageIgnoreStart
 				$has_exiftool = 0;
+				// @codeCoverageIgnoreEnd
 			}
 
 			try {
 				self::set('has_exiftool', $has_exiftool);
+				// @codeCoverageIgnoreStart
 			} catch (InvalidConfigOption|QueryBuilderException $e) {
 				// If we could not save the detected setting, still proceed
 				Handler::reportSafely($e);
 			}
+			// @codeCoverageIgnoreEnd
 		}
 
 		return $has_exiftool === 1;
@@ -82,22 +88,28 @@ trait ConfigsHas
 			if (Helpers::isExecAvailable()) {
 				try {
 					$cmd_output = exec('command -v ffmpeg');
+					// @codeCoverageIgnoreStart
 				} catch (\Exception $e) {
 					$cmd_output = false;
 					Handler::reportSafely(new ExternalComponentMissingException('could not find ffmpeg; `has_ffmpeg` will be set to 0', $e));
 				}
+				// @codeCoverageIgnoreEnd
 				$path = $cmd_output === false ? '' : $cmd_output;
 				$has_ffmpeg = $path === '' ? 0 : 1;
 			} else {
+				// @codeCoverageIgnoreStart
 				$has_ffmpeg = 0;
+				// @codeCoverageIgnoreEnd
 			}
 
 			try {
 				self::set('has_ffmpeg', $has_ffmpeg);
+				// @codeCoverageIgnoreStart
 			} catch (InvalidConfigOption|QueryBuilderException $e) {
 				// If we could not save the detected setting, still proceed
 				Handler::reportSafely($e);
 			}
+			// @codeCoverageIgnoreEnd
 		}
 
 		return $has_ffmpeg === 1;

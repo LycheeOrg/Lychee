@@ -42,4 +42,23 @@ class FrameTest extends BaseApiV2Test
 			'timeout' => 30,
 		]);
 	}
+
+	public function testException(): void
+	{
+		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Frame', ['album_id' => null]);
+		$this->assertStatus($response, 500);
+		$response->assertSee('PhotoCollectionEmptyException');
+	}
+
+	public function testRandom(): void
+	{
+		$response = $this->actingAs($this->userMayUpload1)->postJson('Photo::star', [
+			'photo_ids' => [$this->photo1->id],
+			'is_starred' => true,
+		]);
+		$this->assertNoContent($response);
+
+		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Photo::random', ['album_id' => null]);
+		$this->assertOk($response);
+	}
 }

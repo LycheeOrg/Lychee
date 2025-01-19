@@ -8,6 +8,9 @@
 
 namespace App\Legacy\V1\Requests\Settings;
 
+/**
+ * @codeCoverageIgnore Legacy stuff
+ */
 final class SetJSSettingRequest extends AbstractSettingRequest
 {
 	public const ATTRIBUTE = 'js';

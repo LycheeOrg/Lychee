@@ -11,7 +11,7 @@ namespace App\Http\Requests\Maintenance;
 use App\Http\Requests\BaseApiRequest;
 use App\Models\Configs;
 use App\Policies\SettingsPolicy;
-use App\Rules\AlbumIDRule;
+use App\Rules\RandomIDRule;
 use Illuminate\Support\Facades\Gate;
 
 class FullTreeUpdateRequest extends BaseApiRequest
@@ -34,10 +34,10 @@ class FullTreeUpdateRequest extends BaseApiRequest
 		return [
 			'albums' => 'required|array|min:1',
 			'albums.*' => 'required|array',
-			'albums.*.id' => ['required', new AlbumIDRule(false)],
+			'albums.*.id' => ['required', new RandomIDRule(false)],
 			'albums.*._lft' => 'required|integer|min:1',
 			'albums.*._rgt' => 'required|integer|min:1',
-			'albums.*.parent_id' => [new AlbumIDRule(true)],
+			'albums.*.parent_id' => [new RandomIDRule(true)],
 		];
 	}
 

@@ -52,6 +52,7 @@ final class ConfigurationResource extends JsonResource
 		$rss_feeds = [];
 
 		if (Configs::getValueAsBool('rss_enable')) {
+			// @codeCoverageIgnoreStart
 			try {
 				/** @var array<string, array{format: ?string, title: ?string}> $feeds */
 				$feeds = resolve(Repository::class)->get('feed.feeds', []);
@@ -70,6 +71,7 @@ final class ConfigurationResource extends JsonResource
 				Handler::reportSafely($e);
 				$rss_feeds = [];
 			}
+			// @codeCoverageIgnoreEnd
 		}
 
 		/** @phpstan-ignore-next-line */

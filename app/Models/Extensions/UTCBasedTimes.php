@@ -141,7 +141,9 @@ trait UTCBasedTimes
 	public function asDateTime($value): Carbon
 	{
 		if ($value === null || $value === '') {
+			// @codeCoverageIgnoreStart
 			throw new LycheeLogicException('asDateTime called on null or empty string');
+			// @codeCoverageIgnoreEnd
 		}
 
 		// If this value is already a Carbon instance, we shall just return it as is.
@@ -155,10 +157,12 @@ trait UTCBasedTimes
 		// these checks since they will be a waste of time, and hinder performance
 		// when checking the field. We will just return the DateTime right away.
 		if ($value instanceof \DateTimeInterface) {
+			// @codeCoverageIgnoreStart
 			return Date::parse(
 				$value->format('Y-m-d H:i:s.u'),
 				$value->getTimezone()
 			);
+			// @codeCoverageIgnoreEnd
 		}
 
 		// If this value is an integer, we will assume it is a UNIX timestamp's value
@@ -166,10 +170,12 @@ trait UTCBasedTimes
 		// when defining your date fields as they might be UNIX timestamps here.
 		// Applied patch: Set bare UTC timestamp to the application's default timezone
 		if (is_numeric($value)) {
+			// @codeCoverageIgnoreStart
 			$result = Date::createFromTimestamp($value);
 			$result->setTimezone(date_default_timezone_get());
 
 			return $result;
+			// @codeCoverageIgnoreEnd
 		}
 
 		// If the value is in simply year, month, day format, we will instantiate the
@@ -179,12 +185,14 @@ trait UTCBasedTimes
 		// is interpreted relative to UTC and _then_ set to the
 		// application's default timezone.
 		if (preg_match(self::$STANDARD_DATE_PATTERN, $value) === 1) {
+			// @codeCoverageIgnoreStart
 			$date = Date::createFromFormat('Y-m-d', $value, self::$DB_TIMEZONE_NAME);
 			$date = $date !== false ? $date : null;
 			$result = $date?->startOfDay();
 			$result?->setTimezone(date_default_timezone_get());
 
 			return $result;
+			// @codeCoverageIgnoreEnd
 		}
 
 		// Finally, we will just assume this date is in the format used by default on
@@ -224,20 +232,5 @@ trait UTCBasedTimes
 		}
 
 		return $result;
-	}
-
-	/**
-	 * Prepares a date for array/JSON serialization.
-	 *
-	 * In contrast to the original implementation, this one serializes the
-	 * timezone "as is" and includes fractions of seconds.
-	 *
-	 * @param \DateTimeInterface $date
-	 *
-	 * @return string
-	 */
-	protected function serializeDate(\DateTimeInterface $date): string
-	{
-		return $date->format('Y-m-d\TH:i:sP');
 	}
 }

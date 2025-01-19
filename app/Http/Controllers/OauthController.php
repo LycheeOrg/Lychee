@@ -39,6 +39,8 @@ class OauthController extends Controller
 	 * @param string $provider
 	 *
 	 * @return Redirector|RedirectResponse
+	 *
+	 * @codeCoverageIgnore
 	 */
 	public function redirected(string $provider)
 	{
@@ -63,6 +65,8 @@ class OauthController extends Controller
 	 * @param string $provider
 	 *
 	 * @return HttpFoundationRedirectResponse
+	 *
+	 * @codeCoverageIgnore
 	 */
 	public function authenticate(string $provider)
 	{
@@ -81,6 +85,8 @@ class OauthController extends Controller
 	 * @param string $provider
 	 *
 	 * @return HttpFoundationRedirectResponse
+	 *
+	 * @codeCoverageIgnore
 	 */
 	public function register(string $provider)
 	{

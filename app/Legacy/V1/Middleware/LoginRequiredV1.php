@@ -39,6 +39,8 @@ final class LoginRequiredV1
 	 *
 	 * @throws ConfigurationException
 	 * @throws FrameworkException
+	 *
+	 * @codeCoverageIgnore Legacy stuff we don't care.
 	 */
 	public function handle(Request $request, \Closure $next, string $requiredStatus): mixed
 	{

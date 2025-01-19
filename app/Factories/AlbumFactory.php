@@ -11,7 +11,6 @@ namespace App\Factories;
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\SmartAlbumType;
 use App\Exceptions\Internal\InvalidSmartIdException;
-use App\Exceptions\Internal\LycheeAssertionError;
 use App\Models\Album;
 use App\Models\BaseAlbumImpl;
 use App\Models\Extensions\BaseAlbum;
@@ -140,8 +139,7 @@ class AlbumFactory
 
 		$smartAlbums = [];
 		foreach ($smartAlbumIDs as $smartID) {
-			$smartAlbumType = SmartAlbumType::tryFrom($smartID)
-				?? throw LycheeAssertionError::createFromUnexpectedException(new InvalidSmartIdException($smartID));
+			$smartAlbumType = SmartAlbumType::from($smartID);
 			$smartAlbums[] = $this->createSmartAlbum($smartAlbumType, $withRelations);
 		}
 

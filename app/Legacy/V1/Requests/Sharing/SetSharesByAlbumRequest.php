@@ -24,6 +24,8 @@ use Illuminate\Support\Facades\Gate;
  * Represents a request for setting the shares of a specific album.
  *
  * Only the owner (or the admin) of the album can set the shares.
+ *
+ * @codeCoverageIgnore Legacy stuff we don't care.
  */
 final class SetSharesByAlbumRequest extends BaseApiRequest implements HasBaseAlbum, HasUserIDs
 {

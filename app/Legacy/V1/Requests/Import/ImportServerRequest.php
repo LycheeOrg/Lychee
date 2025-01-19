@@ -54,7 +54,9 @@ final class ImportServerRequest extends BaseApiRequest implements HasAlbum
 		$albumID = $values[RequestAttribute::ALBUM_ID_ATTRIBUTE];
 		$this->album = $albumID === null ?
 			null :
+			// @codeCoverageIgnoreStart
 			Album::query()->findOrFail($albumID);
+		// @codeCoverageIgnoreEnd
 		$this->paths = $values[RequestAttribute::PATH_ATTRIBUTE];
 		$this->importMode = new ImportMode(
 			isset($values[RequestAttribute::DELETE_IMPORTED_ATTRIBUTE]) ?

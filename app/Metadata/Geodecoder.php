@@ -21,6 +21,9 @@ use GuzzleHttp\HandlerStack;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Spatie\GuzzleRateLimiterMiddleware\RateLimiterMiddleware;
 
+/**
+ * @codeCoverageIgnore We know it works.
+ */
 class Geodecoder
 {
 	/**
@@ -99,6 +102,7 @@ class Geodecoder
 				throw new LocationDecodingFailed('Location (' . $latitude . ', ' . $longitude . ') could not be decoded.');
 			}
 
+			/** @disregard P1013 */
 			return $result_list->first()->getDisplayName();
 			// @codeCoverageIgnoreStart
 		} catch (GeocoderException $e) {

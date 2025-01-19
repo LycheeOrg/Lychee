@@ -9,7 +9,6 @@
 namespace App\Models\Extensions;
 
 use App\Actions\SizeVariant\Delete;
-use App\DTO\AbstractDTO;
 use App\DTO\ImageDimension;
 use App\Enum\SizeVariantType;
 use App\Enum\StorageDiskType;
@@ -26,10 +25,8 @@ use Illuminate\Support\Collection as BaseCollection;
 
 /**
  * Class SizeVariants.
- *
- * @extends AbstractDTO<array<string,string>|null>
  */
-class SizeVariants extends AbstractDTO
+class SizeVariants
 {
 	/** @var Photo the parent object this object is tied to */
 	private Photo $photo;
@@ -77,13 +74,17 @@ class SizeVariants extends AbstractDTO
 	public function add(SizeVariant $sizeVariant): void
 	{
 		if ($sizeVariant->photo_id !== $this->photo->id) {
+			// @codeCoverageIgnoreStart
 			throw new LycheeInvalidArgumentException('ID of owning photo does not match');
+			// @codeCoverageIgnoreEnd
 		}
 		$sizeVariant->setRelation('photo', $this->photo);
 		$candidate = $this->getSizeVariant($sizeVariant->type);
 
 		if ($candidate !== null && $candidate->id !== $sizeVariant->id) {
+			// @codeCoverageIgnoreStart
 			throw new LycheeInvalidArgumentException('Another size variant of the same type has already been added');
+			// @codeCoverageIgnoreEnd
 		}
 
 		match ($sizeVariant->type) {
@@ -96,25 +97,6 @@ class SizeVariants extends AbstractDTO
 			SizeVariantType::THUMB => $this->thumb = $sizeVariant,
 			SizeVariantType::PLACEHOLDER => $this->placeholder = $sizeVariant,
 		};
-	}
-
-	/**
-	 * Serializes this object into an array.
-	 *
-	 * @return array<string,array<string,string>|null> The serialized properties of this object
-	 */
-	public function toArray(): array
-	{
-		return [
-			SizeVariantType::ORIGINAL->name() => $this->original?->toArray(),
-			SizeVariantType::MEDIUM2X->name() => $this->medium2x?->toArray(),
-			SizeVariantType::MEDIUM->name() => $this->medium?->toArray(),
-			SizeVariantType::SMALL2X->name() => $this->small2x?->toArray(),
-			SizeVariantType::SMALL->name() => $this->small?->toArray(),
-			SizeVariantType::THUMB2X->name() => $this->thumb2x?->toArray(),
-			SizeVariantType::THUMB->name() => $this->thumb?->toArray(),
-			SizeVariantType::PLACEHOLDER->name() => $this->placeholder?->toArray(),
-		];
 	}
 
 	/**
@@ -228,11 +210,15 @@ class SizeVariants extends AbstractDTO
 	 *
 	 * @throws IllegalOrderOfOperationException
 	 * @throws ModelDBException
+	 *
+	 * @disregard P1006
 	 */
 	public function create(SizeVariantType $sizeVariantType, string $shortPath, ImageDimension $dim, int $filesize): SizeVariant
 	{
 		if (!$this->photo->exists) {
+			// @codeCoverageIgnoreStart
 			throw new IllegalOrderOfOperationException('Cannot create a size variant for a photo whose id is not yet persisted to DB');
+			// @codeCoverageIgnoreEnd
 		}
 		try {
 			$result = SizeVariant::create([
@@ -245,14 +231,17 @@ class SizeVariants extends AbstractDTO
 				'filesize' => $filesize,
 				'ratio' => $dim->getRatio(),
 			]);
+			/** @disregard P1006 */
 			$this->add($result);
 
 			return $result;
+			// @codeCoverageIgnoreStart
 		} catch (LycheeInvalidArgumentException $e) {
 			// thrown by ::add(), if  $result->photo_id !==  $this->photo->id,
 			// but we know that we assert that
 			throw LycheeAssertionError::createFromUnexpectedException($e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -331,16 +320,5 @@ class SizeVariants extends AbstractDTO
 	public function hasMedium(): bool
 	{
 		return $this->medium !== null || $this->medium2x !== null;
-	}
-
-	/**
-	 * We don't need to check if small2x or medium2x exists.
-	 * small2x implies small, and same for medium2x, but the opposite is not true!
-	 *
-	 * @return bool
-	 */
-	public function hasMediumOrSmall(): bool
-	{
-		return $this->small !== null || $this->medium !== null;
 	}
 }

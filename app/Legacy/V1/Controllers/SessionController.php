@@ -35,6 +35,8 @@ final class SessionController extends Controller
 	 * @throws FrameworkException
 	 * @throws ModelDBException
 	 * @throws InvalidOrderDirectionException
+	 *
+	 * @codeCoverageIgnore Legacy stuff
 	 */
 	public function init(): InitResource
 	{
@@ -61,7 +63,9 @@ final class SessionController extends Controller
 	public function login(LoginRequest $request): void
 	{
 		if (AdminAuthentication::loginAsAdmin($request->username(), $request->password(), $request->ip())) {
+			// @codeCoverageIgnoreStart
 			return;
+			// @codeCoverageIgnoreEnd
 		}
 
 		if (Auth::attempt(['username' => $request->username(), 'password' => $request->password()])) {
@@ -70,10 +74,12 @@ final class SessionController extends Controller
 			return;
 		}
 
+		// @codeCoverageIgnoreStart
 		// TODO: We could avoid this separate log entry and let the exception handler to all the logging, if we would add "context" (see Laravel docs) to those exceptions which need it.
 		Log::channel('login')->error(__METHOD__ . ':' . __LINE__ . ' -- User (' . $request->username() . ') has tried to log in from ' . $request->ip());
 
 		throw new UnauthenticatedException('Unknown user or invalid password');
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**

@@ -63,6 +63,8 @@ final class SharingController extends Controller
 	 * @param SetSharesByAlbumRequest $request
 	 *
 	 * @return void
+	 *
+	 * @codeCoverageIgnore Legacy stuff
 	 */
 	public function setByAlbum(SetSharesByAlbumRequest $request): void
 	{
@@ -102,7 +104,8 @@ final class SharingController extends Controller
 					APC::GRANTS_DOWNLOAD => Configs::getValueAsBool('grants_download'),
 					APC::GRANTS_FULL_PHOTO_ACCESS => Configs::getValueAsBool('grants_full_photo_access'),
 				],
-				false);
+				false
+			);
 		}
 	}
 
@@ -118,6 +121,8 @@ final class SharingController extends Controller
 	 * @return void
 	 *
 	 * @throws QueryBuilderException
+	 *
+	 * @codeCoverageIgnore Legacy stuff
 	 */
 	public function delete(DeleteSharingRequest $request): void
 	{

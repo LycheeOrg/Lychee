@@ -33,7 +33,9 @@ final class ArchiveAlbumsRequest extends BaseApiRequest implements HasAlbums
 		/** @var AbstractAlbum $album */
 		foreach ($this->albums as $album) {
 			if (!Gate::check(AlbumPolicy::CAN_ACCESS, $album)) {
+				// @codeCoverageIgnoreStart
 				return false;
+				// @codeCoverageIgnoreEnd
 			}
 		}
 

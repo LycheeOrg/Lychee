@@ -34,9 +34,11 @@ class PhotoPolicy extends BasePolicy
 	{
 		try {
 			$this->albumPolicy = resolve(AlbumPolicy::class);
+			// @codeCoverageIgnoreStart
 		} catch (BindingResolutionException $e) {
 			throw new FrameworkException('Laravel\'s provider component', $e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**

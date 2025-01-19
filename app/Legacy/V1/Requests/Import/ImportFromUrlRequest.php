@@ -43,7 +43,9 @@ final class ImportFromUrlRequest extends BaseApiRequest implements HasAlbum
 		$albumID = $values[RequestAttribute::ALBUM_ID_ATTRIBUTE];
 		$this->album = $albumID === null ?
 			null :
+			// @codeCoverageIgnoreStart
 			Album::query()->findOrFail($albumID);
+		// @codeCoverageIgnoreEnd
 		// The replacement below looks suspicious.
 		// If it was really necessary, then there would be much more special
 		// characters (e.i. for example umlauts in international domain names)

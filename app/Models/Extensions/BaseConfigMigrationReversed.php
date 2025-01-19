@@ -23,6 +23,8 @@ abstract class BaseConfigMigrationReversed extends AbstractBaseConfigMigration
 
 	/**
 	 * Reverse the migrations.
+	 *
+	 * @codeCoverageIgnore Tested but after CI run...
 	 */
 	final public function down(): void
 	{

@@ -13,6 +13,9 @@ use App\Legacy\V1\Contracts\Http\Requests\RequestAttribute;
 use App\Rules\PasswordRule;
 use App\Rules\UsernameRule;
 
+/**
+ * @codeCoverageIgnore Legacy stuff
+ */
 class LoginRuleSet implements RuleSet
 {
 	public static function rules(): array

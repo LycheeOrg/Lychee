@@ -10,6 +10,9 @@ namespace App\Legacy\V1\Requests\Traits;
 
 use App\Models\User;
 
+/**
+ * @codeCoverageIgnore Legacy stuff
+ */
 trait HasOptionalUserTrait
 {
 	/**

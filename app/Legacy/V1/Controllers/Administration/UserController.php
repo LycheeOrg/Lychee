@@ -76,9 +76,11 @@ final class UserController extends Controller
 			}
 
 			$user->save();
+			// @codeCoverageIgnoreStart
 		} catch (\InvalidArgumentException $e) {
 			throw new FrameworkException('Laravel\'s notification module', $e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**

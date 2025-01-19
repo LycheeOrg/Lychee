@@ -16,7 +16,6 @@ use App\Legacy\V1\Requests\Import\CancelImportServerRequest;
 use App\Legacy\V1\Requests\Import\ImportFromUrlRequest;
 use App\Legacy\V1\Requests\Import\ImportServerRequest;
 use App\Legacy\V1\Resources\Models\PhotoResource;
-use App\Models\Photo;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -47,7 +46,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
  * types are consistent and the best of both worlds: a streamed collection.
  * In other words, the streamed response should immediately send back a
  * `[`-character to the client (the beginning of the collection), then
- * send back a JSONized {@link Photo} as soon as it has been imported
+ * send back a JSONized {@link \App\Models\Photo} as soon as it has been imported
  * (element of the collection, and send a final `]`-character (the end of
  * the collection).
  *
@@ -91,6 +90,8 @@ final class ImportController extends Controller
 
 	/**
 	 * @return void
+	 *
+	 * @codeCoverageIgnore
 	 */
 	public function serverCancel(CancelImportServerRequest $request): void
 	{

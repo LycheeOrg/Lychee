@@ -32,4 +32,10 @@ class RandomIDListRuleTest extends AbstractTestCase
 
 		self::assertEquals($expected, $msg);
 	}
+
+	public function testPasse(): void
+	{
+		$rule = new RandomIDListRule();
+		self::assertFalse($rule->passes('something', null));
+	}
 }

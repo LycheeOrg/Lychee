@@ -87,4 +87,64 @@ class UpdateSettingsTest extends BaseApiV2Test
 		]);
 		$this->assertCreated($response);
 	}
+
+	public function testUpdateCssForbidden(): void
+	{
+		$response = $this->postJson('Settings::setCSS', []);
+		$this->assertUnprocessable($response);
+
+		$response = $this->postJson('Settings::setCSS', [
+			'css' => 'body { background-color: red; }',
+		]);
+		$this->assertUnauthorized($response);
+
+		$response = $this->actingAs($this->userMayUpload1)->postJson('Settings::setCSS', []);
+		$this->assertUnprocessable($response);
+
+		$response = $this->actingAs($this->userMayUpload1)->postJson('Settings::setCSS', [
+			'css' => 'body { background-color: red; }',
+		]);
+		$this->assertForbidden($response);
+	}
+
+	public function testUpdateCssAdmin(): void
+	{
+		$response = $this->actingAs($this->admin)->postJson('Settings::setCSS', []);
+		$this->assertUnprocessable($response);
+
+		$response = $this->actingAs($this->admin)->postJson('Settings::setCSS', [
+			'css' => 'body { background-color: red; }',
+		]);
+		$this->assertNoContent($response);
+	}
+
+	public function testupdateJsForbiddne(): void
+	{
+		$response = $this->postJson('Settings::setJS', []);
+		$this->assertUnprocessable($response);
+
+		$response = $this->postJson('Settings::setJS', [
+			'js' => 'console.log("Hello World!");',
+		]);
+		$this->assertUnauthorized($response);
+
+		$response = $this->actingAs($this->userMayUpload1)->postJson('Settings::setJS', []);
+		$this->assertUnprocessable($response);
+
+		$response = $this->actingAs($this->userMayUpload1)->postJson('Settings::setJS', [
+			'js' => 'console.log("Hello World!");',
+		]);
+		$this->assertForbidden($response);
+	}
+
+	public function testUpdateJsAdmin(): void
+	{
+		$response = $this->actingAs($this->admin)->postJson('Settings::setJS', []);
+		$this->assertUnprocessable($response);
+
+		$response = $this->actingAs($this->admin)->postJson('Settings::setJS', [
+			'js' => 'console.log("Hello World!");',
+		]);
+		$this->assertNoContent($response);
+	}
 }

@@ -18,7 +18,6 @@ class SettingsPolicy extends BasePolicy
 {
 	public const CAN_EDIT = 'canEdit';
 	public const CAN_SEE_LOGS = 'canSeeLogs';
-	public const CAN_CLEAR_LOGS = 'canClearLogs';
 	public const CAN_SEE_DIAGNOSTICS = 'canSeeDiagnostics';
 	public const CAN_SEE_STATISTICS = 'canSeeStatistics';
 	public const CAN_UPDATE = 'canUpdate';
@@ -47,19 +46,6 @@ class SettingsPolicy extends BasePolicy
 	public function canSeeLogs(?User $user): bool
 	{
 		return $user?->may_administrate === true;
-	}
-
-	/**
-	 * This function returns false as it is bypassed by the before()
-	 * which directly checks for admin rights.
-	 *
-	 * @param User $user
-	 *
-	 * @return bool
-	 */
-	public function canClearLogs(User $user): bool
-	{
-		return false;
 	}
 
 	/**
