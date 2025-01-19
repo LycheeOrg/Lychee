@@ -39,6 +39,6 @@ rm -fr routes/web-admin-v1.php
 sed -i "\#^.*login_required_v1#d" ./app/Http/Kernel.php
 
 sed -i '11d;50,56d;60,64d;68,75d' ./app/Providers/RouteServiceProvider.php
-sed -i '104,112d' phpstan.neon
+sed -i '104,111d' phpstan.neon
 
 		
