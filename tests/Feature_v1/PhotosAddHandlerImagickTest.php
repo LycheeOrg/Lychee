@@ -61,9 +61,9 @@ class PhotosAddHandlerImagickTest extends BasePhotosAddHandler
 				AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_TIFF)
 			));
 
-			$this->assertStringEndsWith('.tif', $photo->size_variants->original->url);
-			$this->assertEquals(TestConstants::MIME_TYPE_IMG_TIFF, $photo->type);
-			$this->assertNotNull($photo->size_variants->thumb);
+			self::assertStringEndsWith('.tif', $photo->size_variants->original->url);
+			self::assertEquals(TestConstants::MIME_TYPE_IMG_TIFF, $photo->type);
+			self::assertNotNull($photo->size_variants->thumb);
 		} finally {
 			static::setAcceptedRawFormats($acceptedRawFormats);
 		}

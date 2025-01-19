@@ -44,7 +44,7 @@ class CommandGhostbusterTest extends Base\BasePhotoTest
 			$this->dropUrlPrefix($photo->size_variants->thumb2x?->url),
 			$this->dropUrlPrefix($photo->size_variants->thumb->url),
 		], [null]);
-		$this->assertNotEmpty($fileURLs);
+		self::assertNotEmpty($fileURLs);
 
 		// Remove photo and size variants from DB manually; note we must
 		// not use an API call as this would also remove the files, and we
@@ -58,7 +58,7 @@ class CommandGhostbusterTest extends Base\BasePhotoTest
 
 		// Ensure that files are still there
 		foreach ($fileURLs as $fileURL) {
-			$this->assertFileExists(public_path($fileURL));
+			self::assertFileExists(public_path($fileURL));
 		}
 
 		// Ghostbuster, ...
@@ -69,7 +69,7 @@ class CommandGhostbusterTest extends Base\BasePhotoTest
 
 		// Ensure that files are gone
 		foreach ($fileURLs as $fileURL) {
-			$this->assertFileDoesNotExist(public_path($fileURL));
+			self::assertFileDoesNotExist(public_path($fileURL));
 		}
 	}
 
@@ -93,7 +93,7 @@ class CommandGhostbusterTest extends Base\BasePhotoTest
 			$this->dropUrlPrefix($photo->size_variants->thumb2x?->url),
 			$this->dropUrlPrefix($photo->size_variants->thumb->url),
 		], [null]);
-		$this->assertNotEmpty($fileURLs);
+		self::assertNotEmpty($fileURLs);
 
 		// Remove original file
 		\Safe\unlink(public_path($this->dropUrlPrefix($originalFileURL)));
@@ -106,20 +106,20 @@ class CommandGhostbusterTest extends Base\BasePhotoTest
 			->assertSuccessful();
 
 		// Ensure that photo, size variants and all other size variants are gone
-		$this->assertEquals(
+		self::assertEquals(
 			0,
 			DB::table('photos')
 				->where('id', '=', $photo->id)
 				->count()
 		);
-		$this->assertEquals(
+		self::assertEquals(
 			0,
 			DB::table('size_variants')
 				->where('photo_id', '=', $photo->id)
 				->count()
 		);
 		foreach ($fileURLs as $fileURL) {
-			$this->assertFileDoesNotExist(public_path($fileURL));
+			self::assertFileDoesNotExist(public_path($fileURL));
 		}
 	}
 }

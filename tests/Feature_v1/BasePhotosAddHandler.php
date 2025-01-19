@@ -241,7 +241,7 @@ abstract class BasePhotosAddHandler extends BasePhotoTest
 		$photo = static::convertJsonToObject($this->photos_tests->upload(
 			AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_PNG)
 		));
-		$this->assertStringEndsWith('.png', $photo->size_variants->original->url);
+		self::assertStringEndsWith('.png', $photo->size_variants->original->url);
 	}
 
 	public function testGIFUpload(): void
@@ -250,7 +250,7 @@ abstract class BasePhotosAddHandler extends BasePhotoTest
 		$photo = static::convertJsonToObject($this->photos_tests->upload(
 			AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_GIF)
 		));
-		$this->assertStringEndsWith('.gif', $photo->size_variants->original->url);
+		self::assertStringEndsWith('.gif', $photo->size_variants->original->url);
 	}
 
 	public function testWEBPUpload(): void
@@ -259,7 +259,7 @@ abstract class BasePhotosAddHandler extends BasePhotoTest
 		$photo = static::convertJsonToObject($this->photos_tests->upload(
 			AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_WEBP)
 		));
-		$this->assertStringEndsWith('.webp', $photo->size_variants->original->url);
+		self::assertStringEndsWith('.webp', $photo->size_variants->original->url);
 	}
 
 	/**
@@ -281,11 +281,11 @@ abstract class BasePhotosAddHandler extends BasePhotoTest
 			null,
 			[200, 201]
 		));
-		$this->assertEquals($photo->id, $video->id);
-		$this->assertEquals('E905E6C6-C747-4805-942F-9904A0281F02', $video->live_photo_content_id);
-		$this->assertStringEndsWith('.mov', $video->live_photo_url);
-		$this->assertEquals(pathinfo($video->live_photo_url, PATHINFO_DIRNAME), pathinfo($video->size_variants->original->url, PATHINFO_DIRNAME));
-		$this->assertEquals(pathinfo($video->live_photo_url, PATHINFO_FILENAME), pathinfo($video->size_variants->original->url, PATHINFO_FILENAME));
+		self::assertEquals($photo->id, $video->id);
+		self::assertEquals('E905E6C6-C747-4805-942F-9904A0281F02', $video->live_photo_content_id);
+		self::assertStringEndsWith('.mov', $video->live_photo_url);
+		self::assertEquals(pathinfo($video->live_photo_url, PATHINFO_DIRNAME), pathinfo($video->size_variants->original->url, PATHINFO_DIRNAME));
+		self::assertEquals(pathinfo($video->live_photo_url, PATHINFO_FILENAME), pathinfo($video->size_variants->original->url, PATHINFO_FILENAME));
 	}
 
 	/**
@@ -307,13 +307,13 @@ abstract class BasePhotosAddHandler extends BasePhotoTest
 			null,
 			[200, 201] // associated image to video.
 		));
-		$this->assertEquals('E905E6C6-C747-4805-942F-9904A0281F02', $photo->live_photo_content_id);
-		$this->assertStringEndsWith('.mov', $photo->live_photo_url);
-		$this->assertEquals(pathinfo($photo->live_photo_url, PATHINFO_DIRNAME), pathinfo($photo->size_variants->original->url, PATHINFO_DIRNAME));
-		$this->assertEquals(pathinfo($photo->live_photo_url, PATHINFO_FILENAME), pathinfo($photo->size_variants->original->url, PATHINFO_FILENAME));
+		self::assertEquals('E905E6C6-C747-4805-942F-9904A0281F02', $photo->live_photo_content_id);
+		self::assertStringEndsWith('.mov', $photo->live_photo_url);
+		self::assertEquals(pathinfo($photo->live_photo_url, PATHINFO_DIRNAME), pathinfo($photo->size_variants->original->url, PATHINFO_DIRNAME));
+		self::assertEquals(pathinfo($photo->live_photo_url, PATHINFO_FILENAME), pathinfo($photo->size_variants->original->url, PATHINFO_FILENAME));
 
 		// The initially uploaded video should have been deleted
-		$this->assertEquals(0, DB::table('photos')->where('id', '=', $video->id)->count());
+		self::assertEquals(0, DB::table('photos')->where('id', '=', $video->id)->count());
 	}
 
 	/**
@@ -331,9 +331,9 @@ abstract class BasePhotosAddHandler extends BasePhotoTest
 			AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_GMP_IMAGE)
 		));
 
-		$this->assertStringEndsWith('.mov', $photo->live_photo_url);
-		$this->assertEquals(pathinfo($photo->live_photo_url, PATHINFO_DIRNAME), pathinfo($photo->size_variants->original->url, PATHINFO_DIRNAME));
-		$this->assertEquals(pathinfo($photo->live_photo_url, PATHINFO_FILENAME), pathinfo($photo->size_variants->original->url, PATHINFO_FILENAME));
+		self::assertStringEndsWith('.mov', $photo->live_photo_url);
+		self::assertEquals(pathinfo($photo->live_photo_url, PATHINFO_DIRNAME), pathinfo($photo->size_variants->original->url, PATHINFO_DIRNAME));
+		self::assertEquals(pathinfo($photo->live_photo_url, PATHINFO_FILENAME), pathinfo($photo->size_variants->original->url, PATHINFO_FILENAME));
 	}
 
 	/**

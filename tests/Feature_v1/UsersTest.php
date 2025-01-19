@@ -107,7 +107,7 @@ class UsersTest extends AbstractTestCase
 
 		// 4
 		$content = $response->getContent();
-		$this->assertNotFalse($content);
+		self::assertNotFalse($content);
 		$t = json_decode($content);
 		$id = end($t)->id;
 		$response->assertJsonFragment([
@@ -142,7 +142,7 @@ class UsersTest extends AbstractTestCase
 			mayEditOwnSettings: false);
 		$response = $users_test->list();
 		$content = $response->getContent();
-		$this->assertNotFalse($content);
+		self::assertNotFalse($content);
 		$t = json_decode($content);
 		$id2 = end($t)->id;
 
@@ -237,8 +237,8 @@ class UsersTest extends AbstractTestCase
 			expectedStatusCode: 409,
 			assertSee: 'Username already exists');
 
-		$this->assertEquals($user->password, Auth::user()->password);
-		$this->assertTrue(Hash::check('password_testing', Auth::user()->password));
+		self::assertEquals($user->password, Auth::user()->password);
+		self::assertTrue(Hash::check('password_testing', Auth::user()->password));
 
 		// 26
 		$sessions_test->update_login(

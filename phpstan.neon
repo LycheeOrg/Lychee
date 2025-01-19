@@ -125,18 +125,18 @@ parameters:
 		# 	message: '#Call to an undefined method Illuminate\\Testing\\TestResponse::(assert)?(SeeLivewire|dispatch|call|Set|Count)#'
 		# 	paths:
 		# 		- tests
-		-
-			message: '#Dynamic call to static method PHPUnit\\Framework\\Assert::assert(Is)?(Not)?(True|False|Equals|Int|Null|Empty|Count)\(\)#'
-			paths:
-				- tests
-		-
-			message: '#Dynamic call to static method PHPUnit\\Framework\\Assert::assertFile(DoesNot)?Exists?\(\)#'
-			paths:
-				- tests
-		-
-			message: '#Dynamic call to static method PHPUnit\\Framework\\Assert::assertString(Not)?(Contains|Ends|Starts)(String|With)\(\)#'
-			paths:
-				- tests
+		# -
+		# 	message: '#Dynamic call to static method PHPUnit\\Framework\\Assert::assert(Is)?(Not)?(True|False|Equals|Int|Null|Empty|Count)\(\)#'
+		# 	paths:
+		# 		- tests
+		# -
+		# 	message: '#Dynamic call to static method PHPUnit\\Framework\\Assert::assertFile(DoesNot)?Exists?\(\)#'
+		# 	paths:
+		# 		- tests
+		# -
+		# 	message: '#Dynamic call to static method PHPUnit\\Framework\\Assert::assertString(Not)?(Contains|Ends|Starts)(String|With)\(\)#'
+		# 	paths:
+		# 		- tests
 		-
 			message: '#Dynamic call to static method Symfony\\Component\\HttpFoundation\\Response::get(Content|StatusCode)\(\)#'
 			paths:

@@ -47,6 +47,6 @@ class RegisterTest extends BaseApiV2Test
 			'key' => 'invalid',
 		]);
 		$this->assertCreated($response);
-		$this->assertFalse($response->json('success'));
+		self::assertFalse($response->json('success'));
 	}
 }

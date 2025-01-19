@@ -46,7 +46,7 @@ class LoginRequiredTest extends AbstractTestCase
 		Configs::invalidateCache();
 		$request = $this->mock(Request::class);
 		$middleware = new LoginRequired();
-		$this->assertEquals(1, $middleware->handle($request, fn () => 1, 'album'));
+		self::assertEquals(1, $middleware->handle($request, fn () => 1, 'album'));
 	}
 
 	public function testExceptionWrongParam(): void

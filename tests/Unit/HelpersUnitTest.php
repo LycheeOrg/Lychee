@@ -32,8 +32,8 @@ class HelpersUnitTest extends AbstractTestCase
 	 */
 	public function testTrancateIf32(): void
 	{
-		$this->assertEquals('1', Helpers::trancateIf32('10000', 0, 1000)); // check first call => returns 1
-		$this->assertEquals('2', Helpers::trancateIf32('10000', 1, 1000)); // check equal => returns +1
-		$this->assertEquals('5', Helpers::trancateIf32('50000', 2, 1000)); // check if normal higher => returns higher
+		self::assertEquals('1', Helpers::trancateIf32('10000', 0, 1000)); // check first call => returns 1
+		self::assertEquals('2', Helpers::trancateIf32('10000', 1, 1000)); // check equal => returns +1
+		self::assertEquals('5', Helpers::trancateIf32('50000', 2, 1000)); // check if normal higher => returns higher
 	}
 }

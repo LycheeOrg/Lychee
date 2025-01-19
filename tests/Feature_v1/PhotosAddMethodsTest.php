@@ -41,7 +41,7 @@ class PhotosAddMethodsTest extends BasePhotoTest
 	{
 		// import the photo
 		copy(base_path(TestConstants::SAMPLE_FILE_NIGHT_IMAGE), static::importPath('night.jpg'));
-		$this->assertEquals(true, file_exists(static::importPath('night.jpg')));
+		self::assertEquals(true, file_exists(static::importPath('night.jpg')));
 		$this->photos_tests->importFromServer(
 			path: static::importPath(),
 			album_id: null,
@@ -49,7 +49,7 @@ class PhotosAddMethodsTest extends BasePhotoTest
 			skip_duplicates: false,
 			import_via_symlink: false);
 		// check if the file has been moved
-		$this->assertEquals(false, file_exists(static::importPath('night.jpg')));
+		self::assertEquals(false, file_exists(static::importPath('night.jpg')));
 	}
 
 	public function testImportViaCopy(): void
@@ -64,7 +64,7 @@ class PhotosAddMethodsTest extends BasePhotoTest
 			import_via_symlink: false);
 
 		// check if the file is still there
-		$this->assertEquals(true, file_exists(static::importPath('night.jpg')));
+		self::assertEquals(true, file_exists(static::importPath('night.jpg')));
 	}
 
 	public function testImportViaSymlink(): void
@@ -76,7 +76,7 @@ class PhotosAddMethodsTest extends BasePhotoTest
 		$this->photos_tests->importFromServer(static::importPath(), null, false, false, true);
 
 		// check if the file is still there
-		$this->assertEquals(true, file_exists(static::importPath('night.jpg')));
+		self::assertEquals(true, file_exists(static::importPath('night.jpg')));
 
 		// get the path of the photo object and check whether it is truly a symbolic link
 		$ids_after = static::getRecentPhotoIDs();
@@ -85,7 +85,7 @@ class PhotosAddMethodsTest extends BasePhotoTest
 		$photo = static::convertJsonToObject($this->photos_tests->get($photo_id));
 		/** @disregard */
 		$symlink_path = public_path($this->dropUrlPrefix($photo->size_variants->original->url));
-		$this->assertEquals(true, is_link($symlink_path));
+		self::assertEquals(true, is_link($symlink_path));
 	}
 
 	public function testImportSkipDuplicateWithResync(): void
@@ -109,8 +109,8 @@ class PhotosAddMethodsTest extends BasePhotoTest
 		// import the photo a second time and request re-sync
 		copy(base_path(TestConstants::SAMPLE_FILE_NIGHT_IMAGE), static::importPath('night.jpg'));
 		$report = $this->photos_tests->importFromServer(static::importPath(), null, false, true, false, true);
-		$this->assertStringNotContainsString('PhotoSkippedException', $report);
-		$this->assertStringContainsString('PhotoResyncedException', $report);
+		self::assertStringNotContainsString('PhotoSkippedException', $report);
+		self::assertStringContainsString('PhotoResyncedException', $report);
 
 		// The first photo is expected to have changed
 		$response = $this->photos_tests->get($first_id);
@@ -131,8 +131,8 @@ class PhotosAddMethodsTest extends BasePhotoTest
 		// import the photo a second time and skip the duplicate
 		copy(base_path(TestConstants::SAMPLE_FILE_NIGHT_IMAGE), static::importPath('night.jpg'));
 		$report = $this->photos_tests->importFromServer(static::importPath(), null, false, true, false, false);
-		$this->assertStringContainsString('PhotoSkippedException', $report);
-		$this->assertStringNotContainsString('PhotoResyncedException', $report);
+		self::assertStringContainsString('PhotoSkippedException', $report);
+		self::assertStringNotContainsString('PhotoResyncedException', $report);
 	}
 
 	public function testImportDuplicateWithoutResync(): void
@@ -163,8 +163,8 @@ class PhotosAddMethodsTest extends BasePhotoTest
 		copy(base_path(TestConstants::SAMPLE_FILE_NIGHT_IMAGE), static::importPath('night.jpg'));
 		$this->photos_tests->importFromServer(static::importPath(), null, false, false);
 		$report = $this->photos_tests->importFromServer(static::importPath(), null, false, false);
-		$this->assertStringNotContainsString('PhotoSkippedException', $report);
-		$this->assertStringNotContainsString('PhotoResyncedException', $report);
+		self::assertStringNotContainsString('PhotoSkippedException', $report);
+		self::assertStringNotContainsString('PhotoResyncedException', $report);
 
 		// The original photo (which has been duplicated) should still
 		// miss the meta-data which we removed intentionally
@@ -193,27 +193,27 @@ class PhotosAddMethodsTest extends BasePhotoTest
 		$this->photos_tests->importFromServer(static::importPath(), null, false, false, true);
 
 		// check if the files are still there
-		$this->assertEquals(true, file_exists(static::importPath('train.jpg')));
-		$this->assertEquals(true, file_exists(static::importPath('train.mov')));
+		self::assertEquals(true, file_exists(static::importPath('train.jpg')));
+		self::assertEquals(true, file_exists(static::importPath('train.mov')));
 
 		// get the path of the photo object
 		$ids_after = static::getRecentPhotoIDs();
 		$photo_id = $ids_after->diff($ids_before)->first();
 		/** @var \App\Models\Photo $photo */
 		$photo = static::convertJsonToObject($this->photos_tests->get($photo_id));
-		$this->assertEquals('E905E6C6-C747-4805-942F-9904A0281F02', $photo->live_photo_content_id);
-		$this->assertStringEndsWith('.mov', $photo->live_photo_url);
+		self::assertEquals('E905E6C6-C747-4805-942F-9904A0281F02', $photo->live_photo_content_id);
+		self::assertStringEndsWith('.mov', $photo->live_photo_url);
 		/** @disregard */
-		$this->assertEquals(pathinfo($photo->live_photo_url, PATHINFO_DIRNAME), pathinfo($photo->size_variants->original->url, PATHINFO_DIRNAME));
+		self::assertEquals(pathinfo($photo->live_photo_url, PATHINFO_DIRNAME), pathinfo($photo->size_variants->original->url, PATHINFO_DIRNAME));
 		/** @disregard */
-		$this->assertEquals(pathinfo($photo->live_photo_url, PATHINFO_FILENAME), pathinfo($photo->size_variants->original->url, PATHINFO_FILENAME));
+		self::assertEquals(pathinfo($photo->live_photo_url, PATHINFO_FILENAME), pathinfo($photo->size_variants->original->url, PATHINFO_FILENAME));
 
 		// get the paths of the original size variant and the live photo and check whether they are truly symbolic links
 		/** @disregard */
 		$symlink_path1 = public_path($this->dropUrlPrefix($photo->size_variants->original->url));
 		$symlink_path2 = public_path($this->dropUrlPrefix($photo->live_photo_url));
-		$this->assertEquals(true, is_link($symlink_path1));
-		$this->assertEquals(true, is_link($symlink_path2));
+		self::assertEquals(true, is_link($symlink_path1));
+		self::assertEquals(true, is_link($symlink_path2));
 	}
 
 	public function testImportFromUrl(): void

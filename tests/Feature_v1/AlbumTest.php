@@ -785,15 +785,15 @@ class AlbumTest extends AbstractTestCase
 
 		$this->albums_tests->set_cover($albumID, $photoID1);
 		$coverID = $this->albums_tests->get($albumID)->offsetGet('cover_id');
-		$this->assertEquals($photoID1, $coverID);
+		self::assertEquals($photoID1, $coverID);
 
 		$this->albums_tests->set_cover($albumID, $photoID2);
 		$coverID = $this->albums_tests->get($albumID)->offsetGet('cover_id');
-		$this->assertEquals($photoID2, $coverID);
+		self::assertEquals($photoID2, $coverID);
 
 		$this->albums_tests->set_cover($albumID, null);
 		$coverID = $this->albums_tests->get($albumID)->offsetGet('cover_id');
-		$this->assertEquals($initialCoverID, $coverID);
+		self::assertEquals($initialCoverID, $coverID);
 
 		Auth::logout();
 		Session::flush();
@@ -847,15 +847,15 @@ class AlbumTest extends AbstractTestCase
 
 		$this->albums_tests->set_header($albumID, $photoID1);
 		$headerID = $this->albums_tests->get($albumID)->offsetGet('header_id');
-		$this->assertEquals($photoID1, $headerID);
+		self::assertEquals($photoID1, $headerID);
 
 		$this->albums_tests->set_header($albumID, $photoID2);
 		$headerID = $this->albums_tests->get($albumID)->offsetGet('header_id');
-		$this->assertEquals($photoID2, $headerID);
+		self::assertEquals($photoID2, $headerID);
 
 		$this->albums_tests->set_header($albumID, null);
 		$headerID = $this->albums_tests->get($albumID)->offsetGet('header_id');
-		$this->assertEquals($initialHeaderID, $headerID);
+		self::assertEquals($initialHeaderID, $headerID);
 
 		Auth::logout();
 		Session::flush();

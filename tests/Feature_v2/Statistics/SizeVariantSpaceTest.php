@@ -37,13 +37,13 @@ class SizeVariantSpaceTest extends BaseApiV2Test
 	{
 		$response = $this->withoutMiddleware(VerifySupporterStatus::class)->actingAs($this->userMayUpload1)->getJson('Statistics::sizeVariantSpace');
 		$this->assertOk($response);
-		$this->assertCount(7, $response->json());
-		$this->assertEquals(SizeVariantType::ORIGINAL->value, $response->json()[0]['type']);
-		$this->assertEquals(SizeVariantType::MEDIUM2X->value, $response->json()[1]['type']);
-		$this->assertEquals(SizeVariantType::MEDIUM->value, $response->json()[2]['type']);
-		$this->assertEquals(SizeVariantType::SMALL2X->value, $response->json()[3]['type']);
-		$this->assertEquals(SizeVariantType::SMALL->value, $response->json()[4]['type']);
-		$this->assertEquals(SizeVariantType::THUMB2X->value, $response->json()[5]['type']);
-		$this->assertEquals(SizeVariantType::THUMB->value, $response->json()[6]['type']);
+		self::assertCount(7, $response->json());
+		self::assertEquals(SizeVariantType::ORIGINAL->value, $response->json()[0]['type']);
+		self::assertEquals(SizeVariantType::MEDIUM2X->value, $response->json()[1]['type']);
+		self::assertEquals(SizeVariantType::MEDIUM->value, $response->json()[2]['type']);
+		self::assertEquals(SizeVariantType::SMALL2X->value, $response->json()[3]['type']);
+		self::assertEquals(SizeVariantType::SMALL->value, $response->json()[4]['type']);
+		self::assertEquals(SizeVariantType::THUMB2X->value, $response->json()[5]['type']);
+		self::assertEquals(SizeVariantType::THUMB->value, $response->json()[6]['type']);
 	}
 }

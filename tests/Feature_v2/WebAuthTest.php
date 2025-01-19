@@ -421,7 +421,7 @@ class WebAuthTest extends BaseApiV2Test
 
 		$responseList = $this->getJson('WebAuthn');
 		$this->assertOk($responseList);
-		$this->assertEquals('something', $responseList->json()[0]['alias']);
+		self::assertEquals('something', $responseList->json()[0]['alias']);
 
 		$responseDelete = $this->deleteJson('WebAuthn', ['id' => '_Xlz-khgFhDdkvOWyy_YqC54ExkYyp1o6HAQiybqLST-9RGBndpgI06TQygIYI7ZL2dayCMYm6J1-bXyl72obA']);
 		$this->assertNoContent($responseDelete);

@@ -193,7 +193,7 @@ class PhotosDownloadTest extends Base\BasePhotoTest
 			'Photo.jpg'
 		));
 		$fileContent = $download->streamedContent();
-		$this->assertEquals(file_get_contents(base_path(TestConstants::SAMPLE_FILE_SUNSET_IMAGE)), $fileContent);
+		self::assertEquals(file_get_contents(base_path(TestConstants::SAMPLE_FILE_SUNSET_IMAGE)), $fileContent);
 	}
 
 	/**

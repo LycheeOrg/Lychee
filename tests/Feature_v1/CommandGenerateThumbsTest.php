@@ -70,9 +70,9 @@ class CommandGenerateThumbsTest extends BasePhotoTest
 		// Get updated photo and check if size variant has been re-created
 		/** @var \App\Models\Photo $photo2 */
 		$photo2 = static::convertJsonToObject($this->photos_tests->get($photo1->id));
-		$this->assertNotNull($photo2->size_variants->small);
-		$this->assertEquals($photo1->size_variants->small->width, $photo2->size_variants->small->width);
-		$this->assertEquals($photo1->size_variants->small->height, $photo2->size_variants->small->height);
-		$this->assertFileExists(public_path($this->dropUrlPrefix($photo2->size_variants->small->url)));
+		self::assertNotNull($photo2->size_variants->small);
+		self::assertEquals($photo1->size_variants->small->width, $photo2->size_variants->small->width);
+		self::assertEquals($photo1->size_variants->small->height, $photo2->size_variants->small->height);
+		self::assertFileExists(public_path($this->dropUrlPrefix($photo2->size_variants->small->url)));
 	}
 }

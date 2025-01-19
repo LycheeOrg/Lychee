@@ -36,8 +36,8 @@ class UserSpaceTest extends BaseApiV2Test
 	{
 		$response = $this->withoutMiddleware(VerifySupporterStatus::class)->actingAs($this->userMayUpload1)->getJson('Statistics::userSpace');
 		$this->assertOk($response);
-		$this->assertCount(1, $response->json());
-		$this->assertEquals($this->userMayUpload1->username(), $response->json()[0]['username']);
+		self::assertCount(1, $response->json());
+		self::assertEquals($this->userMayUpload1->username(), $response->json()[0]['username']);
 	}
 
 	public function testUserSpaceAdmin(): void
@@ -45,6 +45,6 @@ class UserSpaceTest extends BaseApiV2Test
 		$response = $this->withoutMiddleware(VerifySupporterStatus::class)->actingAs($this->admin)->getJson('Statistics::userSpace');
 		$this->assertOk($response);
 		// We have 5 registered users during the tests.
-		$this->assertCount(5, $response->json());
+		self::assertCount(5, $response->json());
 	}
 }
