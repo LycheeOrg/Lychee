@@ -9,7 +9,6 @@
 namespace App\Models\Extensions;
 
 use App\Actions\SizeVariant\Delete;
-use App\DTO\AbstractDTO;
 use App\DTO\ImageDimension;
 use App\Enum\SizeVariantType;
 use App\Enum\StorageDiskType;
@@ -26,10 +25,8 @@ use Illuminate\Support\Collection as BaseCollection;
 
 /**
  * Class SizeVariants.
- *
- * @extends AbstractDTO<array<string,string>|null>
  */
-class SizeVariants extends AbstractDTO
+class SizeVariants
 {
 	/** @var Photo the parent object this object is tied to */
 	private Photo $photo;
@@ -100,26 +97,6 @@ class SizeVariants extends AbstractDTO
 			SizeVariantType::THUMB => $this->thumb = $sizeVariant,
 			SizeVariantType::PLACEHOLDER => $this->placeholder = $sizeVariant,
 		};
-	}
-
-	/**
-	 * Serializes this object into an array.
-	 *
-	 * @return array<string,array<string,string>|null> The serialized properties of this object
-	 */
-	public function toArray(): array
-	{
-		// AM I really used?
-		return [
-			SizeVariantType::ORIGINAL->name() => $this->original?->toArray(),
-			SizeVariantType::MEDIUM2X->name() => $this->medium2x?->toArray(),
-			SizeVariantType::MEDIUM->name() => $this->medium?->toArray(),
-			SizeVariantType::SMALL2X->name() => $this->small2x?->toArray(),
-			SizeVariantType::SMALL->name() => $this->small?->toArray(),
-			SizeVariantType::THUMB2X->name() => $this->thumb2x?->toArray(),
-			SizeVariantType::THUMB->name() => $this->thumb?->toArray(),
-			SizeVariantType::PLACEHOLDER->name() => $this->placeholder?->toArray(),
-		];
 	}
 
 	/**
