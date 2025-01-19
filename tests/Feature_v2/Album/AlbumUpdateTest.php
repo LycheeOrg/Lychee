@@ -145,7 +145,7 @@ class AlbumUpdateTest extends BaseApiV2Test
 				'photos' => [],
 			],
 		]);
-		$this->assertCount(0, $response->json('resource.photos'));
+		self::assertCount(0, $response->json('resource.photos'));
 	}
 
 	public function testUpdateProtectionPolicyUnauthorizedForbidden(): void
@@ -229,7 +229,7 @@ class AlbumUpdateTest extends BaseApiV2Test
 		// Check that album is indeed public
 		$response = $this->getJson('Albums');
 		$this->assertOk($response);
-		$this->assertCount(0, $response->json('smart_albums'));
+		self::assertCount(0, $response->json('smart_albums'));
 		$response->assertSee($this->album1->id);
 
 		// Set as nsfw
@@ -257,7 +257,7 @@ class AlbumUpdateTest extends BaseApiV2Test
 
 		$response = $this->getJson('Albums');
 		$this->assertOk($response);
-		$this->assertCount(0, $response->json('smart_albums'));
+		self::assertCount(0, $response->json('smart_albums'));
 		$response->assertJson([
 			'albums' => [
 				[
@@ -302,7 +302,7 @@ class AlbumUpdateTest extends BaseApiV2Test
 		// Check that album is indeed hidden
 		$response = $this->getJson('Albums');
 		$this->assertOk($response);
-		$this->assertCount(0, $response->json('smart_albums'));
+		self::assertCount(0, $response->json('smart_albums'));
 		$response->assertDontSee($this->album1->id);
 
 		// Set with password
@@ -332,7 +332,7 @@ class AlbumUpdateTest extends BaseApiV2Test
 		// Check that album is indeed visible but locked
 		$response = $this->getJson('Albums');
 		$this->assertOk($response);
-		$this->assertCount(0, $response->json('smart_albums'));
+		self::assertCount(0, $response->json('smart_albums'));
 		$response->assertJson([
 			'albums' => [
 				[

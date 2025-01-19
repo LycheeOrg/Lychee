@@ -56,6 +56,6 @@ class CommandTakeDateTest extends BasePhotoTest
 		$file_time = \Safe\filemtime(public_path($this->dropUrlPrefix($photo->size_variants->original->url)));
 		$carbon = new Carbon($photo->created_at);
 
-		$this->assertEquals($file_time, $carbon->getTimestamp());
+		self::assertEquals($file_time, $carbon->getTimestamp());
 	}
 }

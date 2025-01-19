@@ -194,7 +194,7 @@ class SettingsTest extends AbstractTestCase
 	{
 		$this->send('/Settings::setCSS', ['css' => 'test']);
 		$css = File::get(base_path('public/dist/user.css'));
-		$this->assertEquals('test', $css);
+		self::assertEquals('test', $css);
 		$this->send('/Settings::setCSS', ['css' => '']);
 	}
 

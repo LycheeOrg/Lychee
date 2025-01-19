@@ -26,6 +26,6 @@ class ToAdminSetterTest extends AbstractTestCase
 	public function testRedirection(): void
 	{
 		$response = ToAdminSetter::go();
-		$this->assertEquals(307, $response->getStatusCode());
+		self::assertEquals(307, $response->getStatusCode());
 	}
 }
