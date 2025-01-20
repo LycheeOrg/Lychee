@@ -17,12 +17,11 @@ export function useScrollable(toggleableStore: TogglablesStateStore, path: Ref<s
 		if (e === null) {
 			setTimeout(() => setScroll(_v, iter + 1), 100);
 		} else {
-			const thumbElement = document.querySelector(`[data-id="${toggleableStore.scroll_photo_id}"]`);
+			const thumbElement = document.querySelector(`[data-id="${toggleableStore.scroll_photo_id}"]`) as HTMLElement;
 			if (!thumbElement) {
 				toggleableStore.recoverScrollPage(e, path.value);
 			} else {
-				thumbElement.scrollIntoView();
-				toggleableStore.scroll_photo_id = undefined;
+				toggleableStore.recoverAndResetScrollThumb(thumbElement);
 			}
 		}
 	}

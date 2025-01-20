@@ -76,5 +76,17 @@ export const useTogglablesStateStore = defineStore("togglables-store", {
 				// });
 			}
 		},
+
+		rememberScrollThumb(photo_id: string | undefined) {
+			this.scroll_photo_id = photo_id;
+		},
+
+		recoverAndResetScrollThumb(thumbElem: HTMLElement) {
+			if (thumbElem) {
+				thumbElem.scrollIntoView();
+			}
+
+			this.scroll_photo_id = undefined;
+		},
 	},
 });

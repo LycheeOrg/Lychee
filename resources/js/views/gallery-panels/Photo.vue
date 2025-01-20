@@ -349,7 +349,7 @@ watch(
 	() => route.params.photoid,
 	(newId, _oldId) => {
 		photoId.value = newId as string;
-		togglableStore.scroll_photo_id = photoId.value;
+		togglableStore.rememberScrollThumb(photoId.value);
 		refresh();
 	},
 );
