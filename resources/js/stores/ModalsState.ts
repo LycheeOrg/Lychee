@@ -32,6 +32,7 @@ export const useTogglablesStateStore = defineStore("togglables-store", {
 
 		// Scroll memory
 		scroll_memory: {} as Record<string, number>,
+		scroll_photo_id: undefined as string | undefined,
 	}),
 	getters: {
 		isSearchActive(): boolean {
@@ -74,6 +75,18 @@ export const useTogglablesStateStore = defineStore("togglables-store", {
 				// 	behavior: "smooth",
 				// });
 			}
+		},
+
+		rememberScrollThumb(photo_id: string | undefined) {
+			this.scroll_photo_id = photo_id;
+		},
+
+		recoverAndResetScrollThumb(thumbElem: HTMLElement) {
+			if (thumbElem) {
+				thumbElem.scrollIntoView();
+			}
+
+			this.scroll_photo_id = undefined;
 		},
 	},
 });
