@@ -16,6 +16,7 @@ use App\Models\Configs;
 use App\Models\Photo;
 use Composer\InstalledVersions;
 use Composer\Semver\VersionParser;
+use ZipStream\CompressionMethod as ZipMethod;
 use ZipStream\ZipStream;
 
 trait Zip31Trait
