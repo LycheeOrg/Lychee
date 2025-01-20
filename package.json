@@ -16,7 +16,7 @@
         "@types/leaflet-rotatedmarker": "^0.2.5",
         "@types/leaflet.markercluster": "^1.5.5",
         "@types/mousetrap": "^1.6.15",
-        "@types/node": "^22.10.6",
+        "@types/node": "^22.10.7",
         "@types/photoswipe": "^4.1.6",
         "@types/qrcode": "^1.5.5",
         "@types/sprintf-js": "^1.1.4",
