@@ -21,8 +21,8 @@
 				<div v-if="perms.length === 0">
 					<p class="text-muted-color text-center py-3">{{ $t("sharing.no_data") }}</p>
 				</div>
-				<Button @click="dialogVisible = true" severity="contrast" class="p-3 w-full mt-4 font-bold border-none rounded-xl">
-					{{ $t("sharing.add_new_access_permission") }}
+				<Button @click="dialogVisible = true" class="p-3 mt-4 w-full font-bold border-none rounded-bl-xl">
+					{{ $t("sharing.share") }}
 				</Button>
 			</template>
 		</template>
