@@ -16,9 +16,21 @@
 				<div class="w-1/6"></div>
 			</div>
 			<ShareLine v-for="perm in perms" :perm="perm" @delete="deletePermission" :with-album="props.withAlbum" />
-			<CreateSharing :withAlbum="props.withAlbum" :album="props.album" @createdPermission="load" :filtered-users-ids="sharedUserIds" />
+			<div v-if="perms.length === 0">
+				<p class="text-muted-color text-center py-3">{{ $t("sharing.no_data") }}</p>
+			</div>
+			<Button @click="dialogVisible = true" class="p-3 mt-4 w-full font-bold border-none rounded-bl-xl">
+				{{ $t("sharing.share") }}
+			</Button>
 		</template>
 	</Card>
+	<AlbumCreateShareDialog
+		v-if="!props.withAlbum"
+		v-model:visible="dialogVisible"
+		:album="props.album"
+		@createdPermission="load"
+		:filtered-users-ids="sharedUserIds"
+	/>
 </template>
 
 <script setup lang="ts">
@@ -27,8 +39,9 @@ import Card from "primevue/card";
 import { useToast } from "primevue/usetoast";
 import SharingService from "@/services/sharing-service";
 import ShareLine from "@/components/forms/sharing/ShareLine.vue";
-import CreateSharing from "../sharing/CreateSharing.vue";
 import { trans } from "laravel-vue-i18n";
+import AlbumCreateShareDialog from "./AlbumCreateShareDialog.vue";
+import Button from "primevue/button";
 
 const props = defineProps<{
 	withAlbum: boolean;
@@ -38,6 +51,8 @@ const props = defineProps<{
 const toast = useToast();
 
 const perms = ref<App.Http.Resources.Models.AccessPermissionResource[] | undefined>(undefined);
+
+const dialogVisible = ref(false);
 
 function load() {
 	SharingService.get(props.album.id).then((response) => {
