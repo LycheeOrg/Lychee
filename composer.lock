@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b612dc095eb23dbb82b9efc3d06acc04",
+    "content-hash": "b08f4590770c706cff9b40ed7dbcc762",
     "packages": [
         {
             "name": "amphp/amp",
@@ -968,21 +968,21 @@
         },
         {
             "name": "bepsvpt/secure-headers",
-            "version": "8.0.0",
+            "version": "9.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bepsvpt/secure-headers.git",
-                "reference": "d2a520195221eac497c753893eb03c81572ab330"
+                "reference": "7efbc3d8b988051b5ff81c4cacd1d12e875528ed"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bepsvpt/secure-headers/zipball/d2a520195221eac497c753893eb03c81572ab330",
-                "reference": "d2a520195221eac497c753893eb03c81572ab330",
+                "url": "https://api.github.com/repos/bepsvpt/secure-headers/zipball/7efbc3d8b988051b5ff81c4cacd1d12e875528ed",
+                "reference": "7efbc3d8b988051b5ff81c4cacd1d12e875528ed",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
-                "php": "^7.0 || ^8.0"
+                "php": "^7.1 || ^8.0"
             },
             "require-dev": {
                 "ergebnis/composer-normalize": "^2.42",
@@ -1030,11 +1030,12 @@
                 "hsts",
                 "https",
                 "laravel",
+                "permissions-policy",
                 "referrer-policy"
             ],
             "support": {
                 "issues": "https://github.com/bepsvpt/secure-headers/issues",
-                "source": "https://github.com/bepsvpt/secure-headers/tree/8.0.0"
+                "source": "https://github.com/bepsvpt/secure-headers/tree/9.0.0"
             },
             "funding": [
                 {
@@ -1042,7 +1043,7 @@
                     "type": "open_collective"
                 }
             ],
-            "time": "2024-10-13T11:50:22+00:00"
+            "time": "2025-01-18T07:18:04+00:00"
         },
         {
             "name": "brick/math",
@@ -3255,16 +3256,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v11.38.0",
+            "version": "v11.38.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "5d964a15efc8fffcb175aed3976796c0420bcf99"
+                "reference": "9d290aa90fcad44048bedca5219d2b872e98772a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/5d964a15efc8fffcb175aed3976796c0420bcf99",
-                "reference": "5d964a15efc8fffcb175aed3976796c0420bcf99",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/9d290aa90fcad44048bedca5219d2b872e98772a",
+                "reference": "9d290aa90fcad44048bedca5219d2b872e98772a",
                 "shasum": ""
             },
             "require": {
@@ -3465,7 +3466,7 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2025-01-14T14:53:42+00:00"
+            "time": "2025-01-15T00:06:46+00:00"
         },
         {
             "name": "laravel/prompts",
