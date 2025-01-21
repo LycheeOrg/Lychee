@@ -29,9 +29,9 @@ class DuplicateFinder extends Controller
 	 */
 	public function check(MaintenanceRequest $request, PhotoDuplicateFinder $duplicateFinder): DuplicateCount
 	{
-		$pure_duplicates = $duplicateFinder->checkCount(with_album_constraint: false, with_checksum_constraint: true, with_title_constraint: false);
-		$title_duplicates = $duplicateFinder->checkCount(with_album_constraint: true, with_checksum_constraint: false, with_title_constraint: true);
-		$duplicates_with_album = $duplicateFinder->checkCount(with_album_constraint: true, with_checksum_constraint: true, with_title_constraint: false);
+		$pure_duplicates = $duplicateFinder->checkCount(must_be_within_same_album: false, must_have_same_checksum: true, must_have_same_title: false);
+		$title_duplicates = $duplicateFinder->checkCount(must_be_within_same_album: true, must_have_same_checksum: false, must_have_same_title: true);
+		$duplicates_with_album = $duplicateFinder->checkCount(must_be_within_same_album: true, must_have_same_checksum: true, must_have_same_title: false);
 
 		return new DuplicateCount(
 			pure_duplicates: $pure_duplicates,
@@ -51,9 +51,9 @@ class DuplicateFinder extends Controller
 	public function get(SearchDuplicateRequest $request, PhotoDuplicateFinder $duplicateFinder): Collection
 	{
 		return $duplicateFinder->search(
-			with_album_constraint: $request->with_album_constraint, // false,
-			with_checksum_constraint: $request->with_checksum_constraint, // true,
-			with_title_constraint: $request->with_title_constraint, // false
+			must_be_within_same_album: $request->with_album_constraint, // false,
+			must_have_same_checksum: $request->with_checksum_constraint, // true,
+			must_have_same_title: $request->with_title_constraint, // false
 		)->map(fn (object $model) => Duplicate::fromModel($model));
 	}
 }
