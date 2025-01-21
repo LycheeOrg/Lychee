@@ -23,46 +23,44 @@ class DuplicateFinder
 	/**
 	 * Quickly count the number of duplicates candidates.
 	 *
-	 * @param bool $with_album_constraint    Requires the duplicates to be in the same album
-	 * @param bool $with_checksum_constraint Requires the duplicates to have the same checksum
-	 * @param bool $with_title_constraint    Requires the duplicates to have the same title
+	 * @param bool $must_be_within_same_album Requires the duplicates to be in the same album
+	 * @param bool $must_have_same_checksum   Requires the duplicates to have the same checksum
+	 * @param bool $must_have_same_title      Requires the duplicates to have the same title
 	 *
 	 * @return int
 	 */
 	public function checkCount(
-		bool $with_album_constraint,
-		bool $with_checksum_constraint,
-		bool $with_title_constraint,
+		bool $must_be_within_same_album,
+		bool $must_have_same_checksum,
+		bool $must_have_same_title,
 	): int {
-		return $this->query($with_album_constraint, $with_checksum_constraint, $with_title_constraint)
+		return $this->query($must_be_within_same_album, $must_have_same_checksum, $must_have_same_title)
 			->count();
 	}
 
 	/**
 	 * Return the list of duplicates candidate.
 	 *
-	 * @param bool $with_album_constraint    Requires the duplicates to be in the same album
-	 * @param bool $with_checksum_constraint Requires the duplicates to have the same checksum
-	 * @param bool $with_title_constraint    Requires the duplicates to have the same title
+	 * @param bool $must_be_within_same_album Requires the duplicates to be in the same album
+	 * @param bool $must_have_same_checksum   Requires the duplicates to have the same checksum
+	 * @param bool $must_have_same_title      Requires the duplicates to have the same title
 	 *
 	 * @return Collection<int,object{album_id:string,album_title:string,photo_id:string,photo_title:string,checksum:string,short_path:string|null,storage_disk:string|null}>
 	 */
 	public function search(
-		bool $with_album_constraint,
-		bool $with_checksum_constraint,
-		bool $with_title_constraint,
+		bool $must_be_within_same_album,
+		bool $must_have_same_checksum,
+		bool $must_have_same_title,
 	): Collection {
 		/** @var Collection<int,object{album_id:string,album_title:string,photo_id:string,photo_title:string,checksum:string,short_path:string|null,storage_disk:string|null}> */
-		// dd($this->query($with_album_constraint, $with_checksum_constraint, $with_title_constraint)
-		// 	->toSql());
-		return $this->query($with_album_constraint, $with_checksum_constraint, $with_title_constraint)
+		return $this->query($must_be_within_same_album, $must_have_same_checksum, $must_have_same_title)
 			->get();
 	}
 
 	/**
-	 * @param bool $with_album_constraint    Requires the duplicates to be in the same album
-	 * @param bool $with_checksum_constraint Requires the duplicates to have the same checksum
-	 * @param bool $with_title_constraint    Requires the duplicates to have the same title
+	 * @param bool $must_be_within_same_album Requires the duplicates to be in the same album
+	 * @param bool $must_have_same_checksum   Requires the duplicates to have the same checksum
+	 * @param bool $must_have_same_title      Requires the duplicates to have the same title
 	 *
 	 * @return Builder
 	 *
@@ -70,11 +68,11 @@ class DuplicateFinder
 	 * @throws QueryBuilderException
 	 */
 	private function query(
-		bool $with_album_constraint,
-		bool $with_checksum_constraint,
-		bool $with_title_constraint,
+		bool $must_be_within_same_album,
+		bool $must_have_same_checksum,
+		bool $must_have_same_title,
 	): Builder {
-		if (!$with_album_constraint && !$with_checksum_constraint && !$with_title_constraint) {
+		if (!$must_be_within_same_album && !$must_have_same_checksum && !$must_have_same_title) {
 			throw new LycheeLogicException('At least one constraint must be enabled.');
 		}
 
@@ -83,7 +81,7 @@ class DuplicateFinder
 			->join(
 				'size_variants', 'size_variants.photo_id', '=', 'photos.id', 'left'
 			)
-			->whereIn('photos.id', $this->getDuplicatesIdsQuery($with_album_constraint, $with_checksum_constraint, $with_title_constraint))
+			->whereIn('photos.id', $this->getDuplicatesIdsQuery($must_be_within_same_album, $must_have_same_checksum, $must_have_same_title))
 			->where('size_variants.type', '=', 4)
 			->select([
 				'base_albums.id as album_id',
@@ -95,23 +93,23 @@ class DuplicateFinder
 				'size_variants.short_path as short_path',
 				'size_variants.storage_disk as storage_disk',
 			])
-			->when($with_checksum_constraint, fn ($q) => $q->orderBy('photos.checksum', 'asc'))
-			->when(!$with_checksum_constraint, fn ($q) => $q->orderBy('photos.title', 'asc'))
+			->when($must_have_same_checksum, fn ($q) => $q->orderBy('photos.checksum', 'asc'))
+			->when(!$must_have_same_checksum, fn ($q) => $q->orderBy('photos.title', 'asc'))
 			->toBase();
 	}
 
 	private function getDuplicatesIdsQuery(
-		bool $with_album_constraint,
-		bool $with_checksum_constraint,
-		bool $with_title_constraint,
+		bool $must_be_within_same_album,
+		bool $must_have_same_checksum,
+		bool $must_have_same_title,
 	): Builder {
 		return DB::table('photos', 'p1')->select('p1.id')
 			->join(
 				'photos as p2',
 				fn ($join) => $join->on('p1.id', '<>', 'p2.id')
-					->when($with_title_constraint, fn ($q) => $q->on('p1.title', '=', 'p2.title'))
-					->when($with_checksum_constraint, fn ($q) => $q->on('p1.checksum', '=', 'p2.checksum'))
-					->when($with_album_constraint, fn ($q) => $q->on('p1.album_id', '=', 'p2.album_id'))
+					->when($must_have_same_title, fn ($q) => $q->on('p1.title', '=', 'p2.title'))
+					->when($must_have_same_checksum, fn ($q) => $q->on('p1.checksum', '=', 'p2.checksum'))
+					->when($must_be_within_same_album, fn ($q) => $q->on('p1.album_id', '=', 'p2.album_id'))
 			);
 	}
 }
