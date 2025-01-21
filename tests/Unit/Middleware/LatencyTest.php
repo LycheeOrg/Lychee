@@ -34,8 +34,6 @@ class LatencyTest extends AbstractTestCase
 		$middleware = new Latency();
 
 		$start = microtime(true);
-		// Parameter #2 $next of method App\Http\Middleware\Latency::handle() expects Closure(Illuminate\Http\Request): (Illuminate\Http\RedirectResponse|Illuminate\Http\Response), Closure(): 1 given.
-		// @phpstan-ignore-next-line
 		$middleware->handle($request, fn () => 1);
 		$end = microtime(true);
 		self::assertGreaterThan(1, $end - $start);
@@ -48,8 +46,6 @@ class LatencyTest extends AbstractTestCase
 		$middleware = new Latency();
 
 		$start = microtime(true);
-		// Parameter #2 $next of method App\Http\Middleware\Latency::handle() expects Closure(Illuminate\Http\Request): (Illuminate\Http\RedirectResponse|Illuminate\Http\Response), Closure(): 1 given.
-		// @phpstan-ignore-next-line
 		$middleware->handle($request, fn () => 1);
 		$end = microtime(true);
 		self::assertLessThan(1, $end - $start);
