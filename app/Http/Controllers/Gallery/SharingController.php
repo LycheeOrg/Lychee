@@ -15,6 +15,7 @@ use App\Http\Requests\Sharing\DeleteSharingRequest;
 use App\Http\Requests\Sharing\EditSharingRequest;
 use App\Http\Requests\Sharing\ListAllSharingRequest;
 use App\Http\Requests\Sharing\ListSharingRequest;
+use App\Http\Requests\Sharing\PropagateSharingRequest;
 use App\Http\Resources\Models\AccessPermissionResource;
 use App\Models\AccessPermission;
 use App\Models\BaseAlbumImpl;
@@ -121,5 +122,20 @@ class SharingController extends Controller
 	public function delete(DeleteSharingRequest $request): void
 	{
 		AccessPermission::query()->where('id', '=', $request->perm()->id)->delete();
+	}
+
+	public function propagate(PropagateSharingRequest $request): void
+	{
+		$album = $request->album();
+		$permissions = $album->accessPermissions()->whereNotNull('user_id')->get();
+		if ($request->shallOverride) {
+			// override permission for all descendants albums.
+			// Faster done by:
+			// 1. clearing all the permissions.
+			// 2. applying the new permissions.
+		} else {
+			// for each descendant, create a new permission if it does not exist.
+			// or update the existing permission.
+		}
 	}
 }
