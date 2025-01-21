@@ -1,5 +1,5 @@
 <template>
-	<Card class="sm:p-4 xl:px-9 max-w-3xl w-full" v-if="perms !== undefined">
+	<Card class="sm:p-4 xl:px-9 max-w-3xl w-full py-0" v-if="perms !== undefined" pt:body:class="p-0">
 		<template #content>
 			<div class="flex text-muted-color-emphasis">
 				<div class="w-5/12 flex">
@@ -19,8 +19,8 @@
 			<div v-if="perms.length === 0">
 				<p class="text-muted-color text-center py-3">{{ $t("sharing.no_data") }}</p>
 			</div>
-			<Button @click="dialogVisible = true" class="p-3 mt-4 w-full font-bold border-none rounded-bl-xl">
-				{{ $t("sharing.share") }}
+			<Button @click="dialogVisible = true" severity="contrast" class="p-3 w-full mt-4 font-bold border-none rounded-xl">
+				{{ $t("sharing.add_new_access_permission") }}
 			</Button>
 		</template>
 	</Card>

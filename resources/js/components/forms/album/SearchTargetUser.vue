@@ -18,14 +18,13 @@
 		</template>
 		<template #option="slotProps">
 			<div class="flex items-center">
-				<!-- <img :src="slotProps.option.thumb" alt="poster" class="w-4 rounded-sm" /> -->
 				<span class="text-left">{{ slotProps.option.username }}</span>
 			</div>
 		</template>
 	</Select>
 </template>
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { onMounted, ref, watch } from "vue";
 import Select from "primevue/select";
 import UsersService from "@/services/users-service";
 
@@ -53,8 +52,6 @@ function load() {
 	});
 }
 
-load();
-
 function selected() {
 	if (selectedTarget.value === undefined) {
 		return;
@@ -73,6 +70,8 @@ function filterUsers() {
 		emits("no-target");
 	}
 }
+
+onMounted(load);
 
 watch(() => props.filteredUsersIds, filterUsers);
 </script>
