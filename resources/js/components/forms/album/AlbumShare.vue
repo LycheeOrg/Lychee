@@ -1,27 +1,30 @@
 <template>
-	<Card class="sm:p-4 xl:px-9 max-w-3xl w-full py-0" v-if="perms !== undefined" pt:body:class="p-0">
+	<Card class="sm:p-4 xl:px-9 max-w-3xl w-full py-0" pt:body:class="p-0" pt:content:class="flex justify-center flex-col">
 		<template #content>
-			<div class="flex text-muted-color-emphasis">
-				<div class="w-5/12 flex">
-					<span class="w-full">{{ $t("sharing.username") }}</span>
+			<ProgressSpinner v-if="perms === undefined" />
+			<template v-else>
+				<div class="flex text-muted-color-emphasis">
+					<div class="w-5/12 flex">
+						<span class="w-full">{{ $t("sharing.username") }}</span>
+					</div>
+					<div class="w-1/2 flex justify-around items-center">
+						<i class="pi pi-eye" v-tooltip.top="$t('sharing.grants.read')" />
+						<i class="pi pi-window-maximize" v-tooltip.top="$t('sharing.grants.original')" />
+						<i class="pi pi-cloud-download" v-tooltip.top="$t('sharing.grants.download')" />
+						<i class="pi pi-upload" v-tooltip.top="$t('sharing.grants.upload')" />
+						<i class="pi pi-file-edit" v-tooltip.top="$t('sharing.grants.edit')" />
+						<i class="pi pi-trash" v-tooltip.top="$t('sharing.grants.delete')" />
+					</div>
+					<div class="w-1/6"></div>
 				</div>
-				<div class="w-1/2 flex justify-around items-center">
-					<i class="pi pi-eye" v-tooltip.top="$t('sharing.grants.read')" />
-					<i class="pi pi-window-maximize" v-tooltip.top="$t('sharing.grants.original')" />
-					<i class="pi pi-cloud-download" v-tooltip.top="$t('sharing.grants.download')" />
-					<i class="pi pi-upload" v-tooltip.top="$t('sharing.grants.upload')" />
-					<i class="pi pi-file-edit" v-tooltip.top="$t('sharing.grants.edit')" />
-					<i class="pi pi-trash" v-tooltip.top="$t('sharing.grants.delete')" />
+				<ShareLine v-for="perm in perms" :perm="perm" @delete="deletePermission" :with-album="props.withAlbum" />
+				<div v-if="perms.length === 0">
+					<p class="text-muted-color text-center py-3">{{ $t("sharing.no_data") }}</p>
 				</div>
-				<div class="w-1/6"></div>
-			</div>
-			<ShareLine v-for="perm in perms" :perm="perm" @delete="deletePermission" :with-album="props.withAlbum" />
-			<div v-if="perms.length === 0">
-				<p class="text-muted-color text-center py-3">{{ $t("sharing.no_data") }}</p>
-			</div>
-			<Button @click="dialogVisible = true" severity="contrast" class="p-3 w-full mt-4 font-bold border-none rounded-xl">
-				{{ $t("sharing.add_new_access_permission") }}
-			</Button>
+				<Button @click="dialogVisible = true" severity="contrast" class="p-3 w-full mt-4 font-bold border-none rounded-xl">
+					{{ $t("sharing.add_new_access_permission") }}
+				</Button>
+			</template>
 		</template>
 	</Card>
 	<AlbumCreateShareDialog
@@ -42,6 +45,7 @@ import ShareLine from "@/components/forms/sharing/ShareLine.vue";
 import { trans } from "laravel-vue-i18n";
 import AlbumCreateShareDialog from "./AlbumCreateShareDialog.vue";
 import Button from "primevue/button";
+import ProgressSpinner from "primevue/progressspinner";
 
 const props = defineProps<{
 	withAlbum: boolean;
