@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\DB;
  */
 class ConfigIntegrity
 {
-	private const SE_FIELDS = [
+	public const SE_FIELDS = [
 		'default_user_quota',
 		'timeline_photos_granularity',
 		'timeline_albums_granularity',
