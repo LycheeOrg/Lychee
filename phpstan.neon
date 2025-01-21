@@ -129,3 +129,9 @@ parameters:
 			message: '#Dynamic call to static method Illuminate\\Http\\Response::getContent\(\)#'
 			paths:
 				- tests
+		
+		-	# for the tests we need to pass a closure, but we really don't care about it.
+			message: '#Parameter \#2 \$next of method App\\Http\\Middleware\\.*::handle\(\) expects Closure\(Illuminate\\Http\\Request\): \(Illuminate\\Http\\RedirectResponse\|Illuminate\\Http\\Response\), Closure\(\): .* given\.#'
+			paths:
+				- tests
+		

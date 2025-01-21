@@ -82,4 +82,12 @@ return [
 	|--------------------------------------------------------------------------
 	*/
 	'hide-lychee-SE' => (bool) env('HIDE_LYCHEE_SE_CONFIG', false),
+
+	/*
+	 |--------------------------------------------------------------------------
+	 | Add latency on requests to simulate slower network. Time in ms.
+	 | Disabled on production environment.
+	 |--------------------------------------------------------------------------
+	 */
+	'latency' => env('APP_ENV', 'production') === 'production' ? 0 : (int) env('APP_DEBUG_LATENCY', 0),
 ];
