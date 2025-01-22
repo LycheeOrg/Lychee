@@ -13,7 +13,7 @@ return new class() extends BaseConfigMigration {
 	{
 		return [
 			[
-				'key' => 'pixelfed',
+				'key' => 'sm_pixelfed_url',
 				'value' => '', // default -> empty URL
 				'cat' => 'Footer',
 				'type_range' => self::STRING,
@@ -23,7 +23,7 @@ return new class() extends BaseConfigMigration {
 				'level' => 0,
 			],
 			[
-				'key' => 'mastodon',
+				'key' => 'sm_mastodon_url',
 				'value' => '', // default -> empty URL
 				'cat' => 'Footer',
 				'type_range' => self::STRING,
