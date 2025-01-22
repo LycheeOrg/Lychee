@@ -1,0 +1,37 @@
+<?php
+
+/**
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2017-2018 Tobias Reich
+ * Copyright (c) 2018-2025 LycheeOrg.
+ */
+
+use App\Models\Extensions\BaseConfigMigration;
+
+return new class() extends BaseConfigMigration {
+	public function getConfigs(): array
+	{
+		return [
+			[
+				'key' => 'pixelfed',
+				'value' => '', // default -> empty URL
+				'cat' => 'Footer',
+				'type_range' => self::STRING,
+				'description' => 'The url shows the link to your choosen pixelfed account',
+				'details' => 'If you add your choosen pixelfed url, you get a link to your pixelfed instance in the footer',
+				'is_secret' => true, // please check if true is really the right default value?
+				'level' => 0,
+			],
+			[
+				'key' => 'mastodon',
+				'value' => '', // default -> empty URL
+				'cat' => 'Footer',
+				'type_range' => self::STRING,
+				'description' => 'The url shows the link to your choosen mastodon account',
+				'details' => 'If you add your choosen mastodon url, you get a link to your mastodon instance in the footer',
+				'is_secret' => true, // please check if true is really the right default value?
+				'level' => 0,
+			],
+		];
+	}
+};
