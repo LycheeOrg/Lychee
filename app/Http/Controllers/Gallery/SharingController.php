@@ -8,6 +8,7 @@
 
 namespace App\Http\Controllers\Gallery;
 
+use App\Actions\Sharing\Propagate;
 use App\Actions\Sharing\Share;
 use App\Constants\AccessPermissionConstants as APC;
 use App\Exceptions\Internal\LycheeLogicException;
@@ -133,24 +134,17 @@ class SharingController extends Controller
 	 *
 	 * @return void
 	 */
-	public function propagate(PropagateSharingRequest $request): void
+	public function propagate(PropagateSharingRequest $request, Propagate $propagate): void
 	{
 		$album = $request->album();
 		if (!$album instanceof Album) {
 			throw new LycheeLogicException('Only albums can have any descandants.');
 		}
 
-		$descendants = $album->descendants()->get();
-		$permissions = $album->accessPermissions()->whereNotNull('user_id')->get();
-
 		if ($request->shallOverride) {
-			// override permission for all descendants albums.
-			// Faster done by:
-			// 1. clearing all the permissions.
-			// 2. applying the new permissions.
+			$propagate->overwrite($album);
 		} else {
-			// for each descendant, create a new permission if it does not exist.
-			// or update the existing permission.
+			$propagate->update($album);
 		}
 	}
 }
