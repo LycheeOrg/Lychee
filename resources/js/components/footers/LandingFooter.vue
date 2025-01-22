@@ -41,6 +41,22 @@
 				target="_blank"
 				rel="noopener"
 			></a>
+			<a
+				v-if="props.footerData.sm_pixelfed_url !== ''"
+				:href="props.footerData.sm_pixelfed_url"
+				class="inline-block hover:scale-150 hover:text-muted-color transition-all ease-in-out duration-300 text-surface-0 socials text-2xl my-4 mx-5 socialicons"
+				id="pixelfed"
+				target="_blank"
+				rel="noopener"
+			></a>
+			<a
+				v-if="props.footerData.sm_mastodon_url !== ''"
+				:href="props.footerData.sm_mastodon_url"
+				class="inline-block hover:scale-150 hover:text-muted-color transition-all ease-in-out duration-300 text-surface-0 socials text-2xl my-4 mx-5 socialicons"
+				id="mastodon"
+				target="_blank"
+				rel="noopener"
+			></a>
 		</div>
 		<p
 			v-if="props.footerData.footer_show_copyright"
