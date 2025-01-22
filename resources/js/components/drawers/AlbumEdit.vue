@@ -49,7 +49,7 @@
 		<!-- @if($this->flags->is_base_album)  -->
 		<div class="w-full xl:w-5/6 flex justify-center flex-wrap mb-4 sm:mt-7 pl-7" v-if="activeTab === 1 && canShare">
 			<!-- @vue-expect-error -->
-			<AlbumShare :album="props.album" :with-album="false" :key="'share_' + props.album.id" />
+			<AlbumShare :album="props.album" :key="'share_' + props.album.id" />
 		</div>
 		<div class="w-full xl:w-5/6 flex justify-center flex-wrap mb-4 sm:mt-7 pl-7" v-if="activeTab === 2 && canMove">
 			<!-- @vue-expect-error -->

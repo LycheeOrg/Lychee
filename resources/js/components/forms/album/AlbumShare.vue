@@ -17,27 +17,27 @@
 					</div>
 					<div class="w-1/6"></div>
 				</div>
-				<ShareLine v-for="perm in perms" :perm="perm" @delete="deletePermission" :with-album="props.withAlbum" />
+				<ShareLine v-for="perm in perms" :perm="perm" @delete="deletePermission" :with-album="false" />
 				<div v-if="perms.length === 0">
 					<p class="text-muted-color text-center py-3">{{ $t("sharing.no_data") }}</p>
 				</div>
 				<Button @click="dialogVisible = true" severity="contrast" class="p-3 w-full mt-4 font-bold border-none rounded-xl">
 					{{ $t("sharing.add_new_access_permission") }}
 				</Button>
+				<Button @click="propagateUpdate" severity="danger" class="p-3 w-full mt-4 font-bold border-none rounded-xl">
+					{{ "Propagate (update)" }}
+				</Button>
+				<Button @click="propagateOverwrite" severity="danger" class="p-3 w-full mt-4 font-bold border-none rounded-xl">
+					{{ "Propagate (overwrite)" }}
+				</Button>
 			</template>
 		</template>
 	</Card>
-	<AlbumCreateShareDialog
-		v-if="!props.withAlbum"
-		v-model:visible="dialogVisible"
-		:album="props.album"
-		@createdPermission="load"
-		:filtered-users-ids="sharedUserIds"
-	/>
+	<AlbumCreateShareDialog v-model:visible="dialogVisible" :album="props.album" @createdPermission="load" :filtered-users-ids="sharedUserIds" />
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import Card from "primevue/card";
 import { useToast } from "primevue/usetoast";
 import SharingService from "@/services/sharing-service";
@@ -48,7 +48,6 @@ import Button from "primevue/button";
 import ProgressSpinner from "primevue/progressspinner";
 
 const props = defineProps<{
-	withAlbum: boolean;
 	album: App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.TagAlbumResource;
 }>();
 
@@ -71,7 +70,17 @@ const sharedUserIds = computed((): number[] => {
 	return perms.value.map((perm) => perm.user_id) as number[];
 });
 
-load();
+function propagateUpdate() {
+	SharingService.propagate({ album_id: props.album.id, shall_override: false }).then(() => {
+		toast.add({ severity: "success", summary: trans("toasts.success"), detail: trans("sharing.permission_updated"), life: 3000 });
+	});
+}
+
+function propagateOverwrite() {
+	SharingService.propagate({ album_id: props.album.id, shall_override: true }).then(() => {
+		toast.add({ severity: "success", summary: trans("toasts.success"), detail: trans("sharing.permission_overwritten"), life: 3000 });
+	});
+}
 
 function deletePermission(id: number) {
 	const permissions = perms.value;
@@ -84,4 +93,8 @@ function deletePermission(id: number) {
 		perms.value = permissions.filter((perm) => perm.id !== id);
 	});
 }
+
+onMounted(() => {
+	load();
+});
 </script>
