@@ -17,9 +17,9 @@ return new class() extends BaseConfigMigration {
 				'value' => '', // default -> empty URL
 				'cat' => 'Footer',
 				'type_range' => self::STRING,
-				'description' => 'The url shows the link to your choosen pixelfed account',
-				'details' => 'If you add your choosen pixelfed url, you get a link to your pixelfed instance in the footer',
-				'is_secret' => true, // please check if true is really the right default value?
+				'description' => 'Url of pixelfed profile',
+				'details' => '',
+				'is_secret' => true,
 				'level' => 0,
 			],
 			[
@@ -27,9 +27,9 @@ return new class() extends BaseConfigMigration {
 				'value' => '', // default -> empty URL
 				'cat' => 'Footer',
 				'type_range' => self::STRING,
-				'description' => 'The url shows the link to your choosen mastodon account',
-				'details' => 'If you add your choosen mastodon url, you get a link to your mastodon instance in the footer',
-				'is_secret' => true, // please check if true is really the right default value?
+				'description' => 'Url of mastodon profile',
+				'details' => '',
+				'is_secret' => true,
 				'level' => 0,
 			],
 		];
