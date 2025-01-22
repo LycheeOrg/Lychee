@@ -46,6 +46,22 @@
 				target="_blank"
 				rel="noopener"
 			></a>
+			<a
+				v-if="footerData.sm_pixelfed_url !== ''"
+				:href="footerData.sm_pixelfed_url"
+				class="socials socialicons"
+				id="pixelfed"
+				target="_blank"
+				rel="noopener"
+			></a>
+			<a
+				v-if="footerData.sm_mastodon_url !== ''"
+				:href="footerData.sm_mastodon_url"
+				class="socials socialicons"
+				id="mastodon"
+				target="_blank"
+				rel="noopener"
+			></a>
 		</div>
 		<p
 			v-if="footerData.footer_show_copyright && footerData.copyright !== ''"
