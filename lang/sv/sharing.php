@@ -25,8 +25,8 @@ return [
 	'propagate' => 'Propagate',
 
 	'propagate_help' => 'Propagate the current access permissions to all descendants<br>(sub-albums and their respective sub-albums etc)',
-	'propagate_default' => 'By default, existing permissions (album-user)<br>are updated and the missing ones added.<br>Additional permissions not present in list are left untouched.',
-	'propagate_overwrite' => 'Overwrite the existing permissions instead of updating.<br>This will also remove all permissions not present in the list.',
+	'propagate_default' => 'By default, existing permissions (album-user)<br>are updated and the missing ones added.<br>Additional permissions not present in this list are left untouched.',
+	'propagate_overwrite' => 'Overwrite the existing permissions instead of updating.<br>This will also remove all permissions not present in this list.',
 	'propagate_warning' => 'This action cannot be undone.',
 
 	'permission_overwritten' => 'Propagation successful! Permission overwritten!',
