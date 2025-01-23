@@ -21,18 +21,27 @@
 				<div v-if="perms.length === 0">
 					<p class="text-muted-color text-center py-3">{{ $t("sharing.no_data") }}</p>
 				</div>
-				<Button @click="dialogVisible = true" severity="contrast" class="p-3 w-full mt-4 font-bold border-none rounded-xl">
-					{{ $t("sharing.add_new_access_permission") }}
-				</Button>
-				<Button @click="propagateUpdate" severity="danger" class="p-3 w-full mt-4 font-bold border-none rounded-xl">
-					{{ "Propagate (update)" }}
-				</Button>
-				<Button @click="propagateOverwrite" severity="danger" class="p-3 w-full mt-4 font-bold border-none rounded-xl">
-					{{ "Propagate (overwrite)" }}
-				</Button>
+				<div class="flex gap-4">
+					<Button
+						@click="dialogVisible = true"
+						icon="pi pi-plus"
+						severity="primary"
+						class="p-3 w-full mt-4 font-bold border-none rounded-xl"
+						:label="$t('sharing.add_new_access_permission')"
+					></Button>
+					<Button
+						@click="dialogPropagateVisible = true"
+						icon="pi pi-forward"
+						severity="danger"
+						:disabled="perms.length === 0"
+						class="p-3 w-full mt-4 font-bold border-none rounded-xl disabled:opacity-50"
+						:label="$t('sharing.propagate')"
+					></Button>
+				</div>
 			</template>
 		</template>
 	</Card>
+	<ConfirmSharingDialog v-model:visible="dialogPropagateVisible" :album="props.album" />
 	<AlbumCreateShareDialog v-model:visible="dialogVisible" :album="props.album" @createdPermission="load" :filtered-users-ids="sharedUserIds" />
 </template>
 
@@ -46,6 +55,7 @@ import { trans } from "laravel-vue-i18n";
 import AlbumCreateShareDialog from "./AlbumCreateShareDialog.vue";
 import Button from "primevue/button";
 import ProgressSpinner from "primevue/progressspinner";
+import ConfirmSharingDialog from "./ConfirmSharingDialog.vue";
 
 const props = defineProps<{
 	album: App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.TagAlbumResource;
@@ -56,6 +66,7 @@ const toast = useToast();
 const perms = ref<App.Http.Resources.Models.AccessPermissionResource[] | undefined>(undefined);
 
 const dialogVisible = ref(false);
+const dialogPropagateVisible = ref(false);
 
 function load() {
 	SharingService.get(props.album.id).then((response) => {
@@ -69,18 +80,6 @@ const sharedUserIds = computed((): number[] => {
 	}
 	return perms.value.map((perm) => perm.user_id) as number[];
 });
-
-function propagateUpdate() {
-	SharingService.propagate({ album_id: props.album.id, shall_override: false }).then(() => {
-		toast.add({ severity: "success", summary: trans("toasts.success"), detail: trans("sharing.permission_updated"), life: 3000 });
-	});
-}
-
-function propagateOverwrite() {
-	SharingService.propagate({ album_id: props.album.id, shall_override: true }).then(() => {
-		toast.add({ severity: "success", summary: trans("toasts.success"), detail: trans("sharing.permission_overwritten"), life: 3000 });
-	});
-}
 
 function deletePermission(id: number) {
 	const permissions = perms.value;
