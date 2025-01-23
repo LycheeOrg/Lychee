@@ -11,7 +11,7 @@ namespace App\Actions\Sharing;
 use App\Constants\AccessPermissionConstants as APC;
 use App\Models\AccessPermission;
 use App\Models\Album;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 
@@ -33,17 +33,17 @@ class Propagate
 		}
 		// for each descendant, create a new permission if it does not exist.
 		// or update the existing permission.
-		/** @var Collection<int,Album> $descendants */
-		$descendants = $album->descendants()->get();
+		/** @var Collection<int,string> $descendants */
+		$descendants = $album->descendants()->select('id')->pluck('id');
 		$permissions = $album->access_permissions()->whereNotNull('user_id')->get();
 
 		// This is super inefficient.
 		// It would be better to do it in a single query...
 		// But how?
-		$descendants->each(function (Album $descendant, int|string $idx) use ($permissions) {
+		$descendants->each(function (string $descendant, int|string $idx) use ($permissions) {
 			$permissions->each(function (AccessPermission $permission) use ($descendant) {
-				AccessPermission::updateOrCreate([
-					APC::BASE_ALBUM_ID => $descendant->id,
+				$perm = AccessPermission::updateOrCreate([
+					APC::BASE_ALBUM_ID => $descendant,
 					APC::USER_ID => $permission->user_id,
 				], [
 					APC::GRANTS_FULL_PHOTO_ACCESS => $permission->grants_full_photo_access,
@@ -52,6 +52,7 @@ class Propagate
 					APC::GRANTS_EDIT => $permission->grants_edit,
 					APC::GRANTS_DELETE => $permission->grants_delete,
 				]);
+				$perm->save();
 			});
 		});
 
