@@ -21,6 +21,7 @@ return [
 	'share' => 'Share',
 	'add_new_access_permission' => 'Add a new access permission',
 	'permission_deleted' => 'Permission deleted!',
+	'permission_created' => 'Permission created!',
 	'propagate' => 'Propagate',
 
 	'propagate_help' => 'Propagate the current access permissions to all descendants<br>(sub-albums and their respective sub-albums etc)',
