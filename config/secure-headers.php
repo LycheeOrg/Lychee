@@ -3,112 +3,181 @@
 use function Safe\parse_url;
 
 return [
-	/*
-	 * Server
+	/**
+	 * Server.
 	 *
-	 * Reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Server
+	 * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Server
 	 *
 	 * Note: when server is empty string, it will not add to response header
 	 */
-
 	'server' => '',
 
-	/*
-	 * X-Content-Type-Options
+	/**
+	 * X-Content-Type-Options.
 	 *
-	 * Reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options
+	 * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options
 	 *
 	 * Available Value: 'nosniff'
 	 */
-
 	'x-content-type-options' => 'nosniff',
 
-	/*
-	 * X-Download-Options
+	/**
+	 * X-DNS-Prefetch-Control.
 	 *
-	 * Reference: https://msdn.microsoft.com/en-us/library/jj542450(v=vs.85).aspx
+	 * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-DNS-Prefetch-Control
+	 *
+	 * Available Value: 'on', 'off'
+	 */
+	'x-dns-prefetch-control' => '',
+
+	/**
+	 * X-Download-Options.
+	 *
+	 * @see https://msdn.microsoft.com/en-us/library/jj542450(v=vs.85).aspx
 	 *
 	 * Available Value: 'noopen'
 	 */
-
 	'x-download-options' => 'noopen',
 
-	/*
-	 * X-Frame-Options
+	/**
+	 * X-Frame-Options.
 	 *
-	 * Reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
+	 * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
 	 *
 	 * Available Value: 'deny', 'sameorigin'
 	 */
-
 	'x-frame-options' => 'deny',    // deny because we don't use frame.
 
-	/*
-	 * X-Permitted-Cross-Domain-Policies
+	/**
+	 * X-Permitted-Cross-Domain-Policies.
 	 *
-	 * Reference: https://www.adobe.com/devnet/adobe-media-server/articles/cross-domain-xml-for-streaming.html
+	 * @see https://www.adobe.com/devnet/adobe-media-server/articles/cross-domain-xml-for-streaming.html
 	 *
 	 * Available Value: 'all', 'none', 'master-only', 'by-content-type', 'by-ftp-filename'
 	 */
-
 	'x-permitted-cross-domain-policies' => 'none',
 
-	/*
-	 * X-XSS-Protection
+	/**
+	 * X-Powered-By.
 	 *
-	 * Reference: https://blogs.msdn.microsoft.com/ieinternals/2011/01/31/controlling-the-xss-filter
+	 * Note: it will not add to response header if the value is empty string.
+	 *
+	 * Also, verify that expose_php is turned Off in php.ini.
+	 * Otherwise, the header will still be included in the response.
+	 *
+	 * @see https://github.com/bepsvpt/secure-headers/issues/58#issuecomment-782332442
+	 */
+	'x-powered-by' => '',
+
+	/**
+	 * X-XSS-Protection.
+	 *
+	 * @see https://blogs.msdn.microsoft.com/ieinternals/2011/01/31/controlling-the-xss-filter
+	 * @deprecated The X-XSS-Protection is no longer recommended for use; please use Content-Security-Policy (CSP) instead.
 	 *
 	 * Available Value: '1', '0', '1; mode=block'
 	 */
-
 	'x-xss-protection' => '1; mode=block',
 
-	/*
-	 * Referrer-Policy
+	/**
+	 * Referrer-Policy.
 	 *
-	 * Reference: https://w3c.github.io/webappsec-referrer-policy
+	 * @see https://w3c.github.io/webappsec-referrer-policy
 	 *
 	 * Available Value: 'no-referrer', 'no-referrer-when-downgrade', 'origin', 'origin-when-cross-origin',
 	 *                  'same-origin', 'strict-origin', 'strict-origin-when-cross-origin', 'unsafe-url'
 	 */
-
 	'referrer-policy' => 'no-referrer',
 
-	/*
-	 * Clear-Site-Data
+	/**
+	 * Cross-Origin-Embedder-Policy.
 	 *
-	 * Reference: https://w3c.github.io/webappsec-clear-site-data/
+	 * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cross-Origin-Embedder-Policy
+	 *
+	 * Available Value: 'unsafe-none', 'require-corp', 'credentialless'
 	 */
+	'cross-origin-embedder-policy' => 'unsafe-none',
 
+	/**
+	 * Cross-Origin-Opener-Policy.
+	 *
+	 * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cross-Origin-Opener-Policy
+	 *
+	 * Available Value: 'unsafe-none', 'same-origin-allow-popups', 'same-origin'
+	 */
+	'cross-origin-opener-policy' => 'unsafe-none',
+
+	/**
+	 * Cross-Origin-Resource-Policy.
+	 *
+	 * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cross-Origin-Resource-Policy
+	 *
+	 * Available Value: 'same-site', 'same-origin', 'cross-origin'
+	 */
+	'cross-origin-resource-policy' => 'cross-origin',
+
+	/**
+	 * Clear-Site-Data.
+	 *
+	 * @see https://w3c.github.io/webappsec-clear-site-data/
+	 */
 	'clear-site-data' => [
 		'enable' => false,
 		'all' => false,
 		'cache' => true,
+		'clientHints' => true,
 		'cookies' => true,
 		'storage' => true,
 		'executionContexts' => true,
 	],
 
-	/*
-	 * HTTP Strict Transport Security
+	/**
+	 * HTTP Strict Transport Security.
 	 *
-	 * Reference: https://developer.mozilla.org/en-US/docs/Web/Security/HTTP_strict_transport_security
+	 * @see https://developer.mozilla.org/en-US/docs/Web/Security/HTTP_strict_transport_security
 	 *
 	 * Please ensure your website had set up ssl/tls before enable hsts.
 	 */
-
 	'hsts' => [
 		'enable' => env('SECURITY_HEADER_HSTS_ENABLE', false),
 		'max-age' => 15552000,
 		'include-sub-domains' => false,
+		'preload' => false,
 	],
 
-	/*
-	 * Expect-CT
+	/**
+	 * Reporting Endpoints.
 	 *
-	 * Reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Expect-CT
+	 * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Reporting-Endpoints
+	 *
+	 * Note: The array key is the endpoint name, and the value is the URL.
 	 */
+	'reporting' => [
+		// 'csp' => 'https://example.com/csp-reports',
+		// 'nel' => 'https://example.com/nel-reports',
+	],
 
+	/**
+	 * Network Error Logging.
+	 *
+	 * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Network_Error_Logging
+	 * @see https://developer.mozilla.org/en-US/docs/Web/API/Reporting_API
+	 */
+	'nel' => [
+		'enable' => false,
+		// The name of reporting API, not the endpoint URL.
+		'report-to' => '',
+		'max-age' => 86400,
+		'include-subdomains' => false,
+		'success-fraction' => 0.0,
+		'failure-fraction' => 1.0,
+	],
+
+	/**
+	 * Expect-CT.
+	 *
+	 * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Expect-CT
+	 */
 	'expect-ct' => [
 		'enable' => false,
 		'max-age' => 2147483648,
@@ -116,206 +185,333 @@ return [
 		'report-uri' => null,
 	],
 
-	/*
-	 * Public Key Pinning
+	/**
+	 * Feature Policy.
 	 *
-	 * Reference: https://developer.mozilla.org/en-US/docs/Web/Security/Public_Key_Pinning
+	 * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy
 	 *
-	 * hpkp will be ignored if hashes is empty.
+	 * 'none', '*' and 'self allow' are mutually exclusive,
+	 * the priority is 'none' > '*' > 'self allow'.
 	 */
-
-	'hpkp' => [
-		'hashes' => [
-			// 'sha256-hash-value',
-		],
-		'include-sub-domains' => false,
-		'max-age' => 15552000,
-		'report-only' => false,
-		'report-uri' => null,
-	],
-
-	/*
-	 * Feature Policy
-	 *
-	 * Reference: https://wicg.github.io/feature-policy/
-	 */
-
-	'feature-policy' => [
+	'permissions-policy' => [
 		'enable' => true,
 
-		/*
-		 * Each directive details can be found on:
-		 *
-		 * https://github.com/WICG/feature-policy/blob/master/features.md
-		 *
-		 * 'none', '*' and 'self allow' are mutually exclusive,
-		 * the priority is 'none' > '*' > 'self allow'.
-		 */
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/accelerometer
+		'accelerometer' => [
+			'none' => false,
+			'*' => false,
+			'self' => true,
+			'origins' => [],
+		],
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/ambient-light-sensor
+		'ambient-light-sensor' => [
+			'none' => false,
+			'*' => false,
+			'self' => true,
+			'origins' => [],
+		],
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/attribution-reporting
+		'attribution-reporting' => [
+			'none' => false,
+			'*' => true,
+			'self' => false,
+			'origins' => [],
+		],
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/autoplay
 		'autoplay' => [
 			'none' => false,
 			'*' => false,
 			'self' => true,
-			'allow' => [
+			'origins' => [
 				// 'url',
 			],
 		],
 
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/bluetooth
+		'bluetooth' => [
+			'none' => false,
+			'*' => false,
+			'self' => true,
+			'origins' => [],
+		],
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/browsing-topics
+		'browsing-topics' => [
+			'none' => false,
+			'*' => true,
+			'self' => false,
+			'origins' => [],
+		],
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/camera
 		'camera' => [
 			'none' => false,
 			'*' => false,
 			'self' => false,
-			'allow' => [
+			'origins' => [
 				// 'url',
 			],
 		],
 
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/compute-pressure
+		'compute-pressure' => [
+			'none' => false,
+			'*' => false,
+			'self' => true,
+			'origins' => [],
+		],
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/compute-pressure
+		'cross-origin-isolated' => [
+			'none' => false,
+			'*' => false,
+			'self' => true,
+			'origins' => [],
+		],
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/display-capture
+		'display-capture' => [
+			'none' => false,
+			'*' => false,
+			'self' => true,
+			'origins' => [],
+		],
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/document-domain
+		'document-domain' => [
+			'none' => false,
+			'*' => true,
+			'self' => false,
+			'origins' => [],
+		],
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/encrypted-media
 		'encrypted-media' => [
 			'none' => false,
 			'*' => false,
 			'self' => true,
-			'allow' => [
+			'origins' => [
 				// 'url',
 			],
 		],
 
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/fullscreen
 		'fullscreen' => [
 			'none' => false,
 			'*' => false,
 			'self' => true,
-			'allow' => [
+			'origins' => [
 				// 'url',
 			],
 		],
 
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/gamepad
+		'gamepad' => [
+			'none' => false,
+			'*' => false,
+			'self' => true,
+			'origins' => [],
+		],
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/geolocation
 		'geolocation' => [
 			'none' => false,
 			'*' => false,
 			'self' => false,
-			'allow' => [
+			'origins' => [
 				// 'url',
 			],
 		],
 
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/gyroscope
+		'gyroscope' => [
+			'none' => false,
+			'*' => false,
+			'self' => true,
+			'origins' => [],
+		],
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/hid
+		'hid' => [
+			'none' => false,
+			'*' => false,
+			'self' => true,
+			'origins' => [],
+		],
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/identity-credentials-get
+		'identity-credentials-get' => [
+			'none' => false,
+			'*' => false,
+			'self' => true,
+			'origins' => [],
+		],
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/idle-detection
+		'idle-detection' => [
+			'none' => false,
+			'*' => false,
+			'self' => true,
+			'origins' => [],
+		],
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/local-fonts
+		'local-fonts' => [
+			'none' => false,
+			'*' => false,
+			'self' => true,
+			'origins' => [],
+		],
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/magnetometer
+		'magnetometer' => [
+			'none' => false,
+			'*' => false,
+			'self' => true,
+			'origins' => [],
+		],
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/microphone
 		'microphone' => [
 			'none' => false,
 			'*' => false,
-			'self' => false,
-			'allow' => [
-				// 'url',
-			],
+			'self' => true,
+			'origins' => [],
 		],
 
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/midi
 		'midi' => [
 			'none' => false,
 			'*' => false,
 			'self' => false,
-			'allow' => [
+			'origins' => [
 				// 'url',
 			],
 		],
 
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/otp-credentials
+		'otp-credentials' => [
+			'none' => false,
+			'*' => false,
+			'self' => true,
+			'origins' => [],
+		],
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/payment
 		'payment' => [
 			'none' => false,
 			'*' => false,
 			'self' => false,
-			'allow' => [
+			'origins' => [
 				// 'url',
 			],
 		],
 
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/picture-in-picture
 		'picture-in-picture' => [
 			'none' => false,
 			'*' => true,
 			'self' => false,
-			'allow' => [
+			'origins' => [
 				// 'url',
 			],
 		],
 
-		'accelerometer' => [
-			'none' => false,
-			'*' => false,
-			'self' => false,
-			'allow' => [
-				// 'url',
-			],
-		],
-
-		'ambient-light-sensor' => [
-			'none' => false,
-			'*' => false,
-			'self' => false,
-			'allow' => [
-				// 'url',
-			],
-		],
-
-		'gyroscope' => [
-			'none' => false,
-			'*' => false,
-			'self' => false,
-			'allow' => [
-				// 'url',
-			],
-		],
-
-		'magnetometer' => [
-			'none' => false,
-			'*' => false,
-			'self' => false,
-			'allow' => [
-				// 'url',
-			],
-		],
-
-		'speaker' => [
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/publickey-credentials-create
+		'publickey-credentials-create' => [
 			'none' => false,
 			'*' => false,
 			'self' => true,
-			'allow' => [
-				// 'url',
-			],
+			'origins' => [],
 		],
 
-		'sync-xhr' => [
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/publickey-credentials-get
+		'publickey-credentials-get' => [
+			'none' => false,
+			'*' => false,
+			'self' => true,
+			'origins' => [],
+		],
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/screen-wake-lock
+		'screen-wake-lock' => [
+			'none' => false,
+			'*' => false,
+			'self' => true,
+			'origins' => [],
+		],
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/serial
+		'serial' => [
+			'none' => false,
+			'*' => false,
+			'self' => true,
+			'origins' => [],
+		],
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/speaker-selection
+		'speaker-selection' => [
+			'none' => false,
+			'*' => false,
+			'self' => true,
+			'origins' => [],
+		],
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/storage-access
+		'storage-access' => [
 			'none' => false,
 			'*' => true,
 			'self' => false,
-			'allow' => [
-				// 'url',
-			],
+			'origins' => [],
 		],
 
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/usb
 		'usb' => [
 			'none' => false,
 			'*' => false,
-			'self' => false,
-			'allow' => [
-				// 'url',
-			],
+			'self' => true,
+			'origins' => [],
 		],
 
-		'vr' => [
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/web-share
+		'web-share' => [
 			'none' => false,
 			'*' => false,
 			'self' => true,
-			'allow' => [
-				// 'url',
-			],
+			'origins' => [],
+		],
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/window-management
+		'window-management' => [
+			'none' => false,
+			'*' => false,
+			'self' => true,
+			'origins' => [],
+		],
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/xr-spatial-tracking
+		'xr-spatial-tracking' => [
+			'none' => false,
+			'*' => false,
+			'self' => true,
+			'origins' => [],
 		],
 	],
 
-	/*
-	 * Content Security Policy
+	/**
+	 * Content Security Policy.
 	 *
-	 * Reference: https://developer.mozilla.org/en-US/docs/Web/Security/CSP
+	 * @see https://developer.mozilla.org/en-US/docs/Web/Security/CSP
 	 *
 	 * csp will be ignored if custom-csp is not null. To disable csp, set custom-csp to empty string.
 	 *
 	 * Note: custom-csp does not support report-only.
 	 */
 
-	/*
+	/**
 	 * There is no easy way to use CSP with debug bar at the moment, so we disable CSP if debug bar is enabled.
 	 */
 	'csp' => [
@@ -515,6 +711,7 @@ return [
 			// https://www.w3.org/TR/CSP3/#strict-dynamic-usage
 			'strict-dynamic' => false,
 
+			// Those should be removed if we drop v4 legacy support completely.
 			'hashes' => [
 				'sha256' => [
 					// 'sha256-hash-value-with-base64-encode',
@@ -537,36 +734,35 @@ return [
 					// upload.check()
 					'CL4mGy9ZhHM+PkLDZsWVuM25kEFBv3FXlmWe/O9Unmc=',
 
-					/*
-	const hashMatch = document.location.hash.replace("#", "").split("/");
-	const albumID = hashMatch[0] ?? '';
-	const photoID = hashMatch[1] ?? '';
-	const elem = document.getElementById('redirectData');
-	const gallery = elem.dataset.gallery;
-	const base = elem.dataset.redirect;
-
-	if (photoID !== '') {
-		window.location = gallery + '/' + albumID + '/' + photoID;
-	} else if (albumID !== '') {
-		window.location = gallery + '/' + albumID;
-	} else {
-		window.location = base;
-	}
- */
+					/**
+					 * const hashMatch = document.location.hash.replace("#", "").split("/");
+					 * const albumID = hashMatch[0] ?? '';
+					 * const photoID = hashMatch[1] ?? '';
+					 * const elem = document.getElementById('redirectData');
+					 * const gallery = elem.dataset.gallery;
+					 * const base = elem.dataset.redirect;.
+					 *
+					 * if (photoID !== '') {
+					 * window.location = gallery + '/' + albumID + '/' + photoID;
+					 * } else if (albumID !== '') {
+					 * window.location = gallery + '/' + albumID;
+					 * } else {
+					 * window.location = base;
+					 * }
+					 */
 					'okzzdI+OgeNYCr3oJXDZ/rPI5WwGyiU5V/RwOQrv5zE=',
 
-					/*
-	document.addEventListener("DOMContentLoaded", function(event) {
-		document.querySelector("form").addEventListener("submit", function(e){
-			document.querySelector("form").hidden = true;
-			var text = document.createElement("div");
-			text.innerHTML = "Migration started. <b>DO NOT REFRESH THE PAGE</b>.";
-			document.querySelector(".form").appendChild(text);
-			// e.preventDefault();    //stop form from submitting
-		});
-	});
-
-*/
+					/**
+					 * document.addEventListener("DOMContentLoaded", function(event) {
+					 * document.querySelector("form").addEventListener("submit", function(e){
+					 * document.querySelector("form").hidden = true;
+					 * var text = document.createElement("div");
+					 * text.innerHTML = "Migration started. <b>DO NOT REFRESH THE PAGE</b>.";
+					 * document.querySelector(".form").appendChild(text);
+					 * // e.preventDefault();    //stop form from submitting
+					 * });
+					 * });.
+					 */
 					'hHvKTS0wUaMuiFMar2j4TbjYjlLQMR/c5b0bA9DLi6g=',
 				],
 
