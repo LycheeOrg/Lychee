@@ -19,6 +19,7 @@ return [
 	'username' => 'Username',
 	'no_data' => 'Sharing list is empty.',
 	'share' => 'Share',
+	'add_new_access_permission' => 'Add a new access permission',
 	'permission_deleted' => 'Permission deleted!',
 	'permission_created' => 'Permission created!',
 
