@@ -52,6 +52,7 @@ Route::get('/users', [VueController::class, 'view'])->middleware(['migration:com
 Route::get('/settings', [VueController::class, 'view'])->middleware(['migration:complete', 'login_required:always']);
 Route::get('/permissions', [VueController::class, 'view'])->middleware(['migration:complete', 'login_required:always']);
 Route::get('/fixTree', [VueController::class, 'view'])->middleware(['migration:complete', 'login_required:always']);
+Route::get('/duplicatesFinder', [VueController::class, 'view'])->middleware(['migration:complete', 'login_required:always']);
 
 Route::match(['get', 'post'], '/migrate', [Admin\UpdateController::class, 'migrate'])
 	->name('migrate')
