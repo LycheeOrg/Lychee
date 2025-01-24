@@ -50,6 +50,7 @@ class PhotoResource extends Data
 	public array $tags;
 	public ?string $taken_at;
 	public ?string $taken_at_orig_tz;
+	public bool $is_taken_at_modified;
 	public string $title;
 	public string $type;
 	public string $updated_at;
@@ -88,8 +89,9 @@ class PhotoResource extends Data
 		$this->shutter = $photo->shutter;
 		$this->size_variants = new SizeVariantsResouce($photo);
 		$this->tags = $photo->tags;
-		$this->taken_at = $photo->taken_at?->toIso8601String();
+		$this->taken_at = ($photo->taken_at_mod ?? $photo->taken_at)?->toIso8601String();
 		$this->taken_at_orig_tz = $photo->taken_at_orig_tz;
+		$this->is_taken_at_modified = $photo->taken_at_mod !== null;
 		$this->title = $photo->title;
 		$this->type = $photo->type;
 		$this->updated_at = $photo->updated_at->toIso8601String();
@@ -99,7 +101,7 @@ class PhotoResource extends Data
 		$this->preformatted = new PreformattedPhotoData($photo, $this->size_variants->original);
 		$this->precomputed = new PreComputedPhotoData($photo);
 
-		$this->timeline_data_carbon = $photo->taken_at ?? $photo->created_at;
+		$this->timeline_data_carbon = $photo->taken_at_mod ?? $photo->taken_at ?? $photo->created_at;
 	}
 
 	public static function fromModel(Photo $photo): PhotoResource

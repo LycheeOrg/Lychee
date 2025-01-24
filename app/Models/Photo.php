@@ -69,6 +69,7 @@ use function Safe\preg_match;
  * @property string       $original_checksum
  * @property LicenseType  $license
  * @property Carbon       $created_at
+ * @property Carbon       $taken_at_mod
  * @property Carbon       $updated_at
  * @property string|null  $live_photo_content_id
  * @property string|null  $live_photo_checksum
@@ -154,6 +155,7 @@ class Photo extends Model
 		'updated_at' => 'datetime',
 		'taken_at' => DateTimeWithTimezoneCast::class,
 		'live_photo_url' => MustNotSetCast::class . ':live_photo_short_path',
+		'taken_at_mod' => 'datetime',
 		'owner_id' => 'integer',
 		'is_starred' => 'boolean',
 		'tags' => ArrayCast::class,
