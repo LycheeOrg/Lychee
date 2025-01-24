@@ -183,7 +183,6 @@ class SharingTest extends BaseApiV2Test
 			'shall_override' => true,
 		]);
 		$this->assertNoContent($response);
-		// self::assertEquals(2, AccessPermission::where(APC::BASE_ALBUM_ID, '=', $this->subAlbum1->id)->count());
 		self::assertEquals(0,
 			AccessPermission::query()
 				->where(APC::BASE_ALBUM_ID, '=', $this->subAlbum1->id)
