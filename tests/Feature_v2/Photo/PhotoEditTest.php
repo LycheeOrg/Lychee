@@ -33,6 +33,7 @@ class PhotoEditTest extends BaseApiV2Test
 			'description' => 'new description',
 			'tags' => ['tag1'],
 			'license' => 'none',
+			'taken_at' => null,
 			'upload_date' => '2021-01-01',
 		]);
 		$this->assertUnauthorized($response);
@@ -43,6 +44,7 @@ class PhotoEditTest extends BaseApiV2Test
 			'description' => 'new description',
 			'tags' => ['tag1'],
 			'license' => 'none',
+			'taken_at' => null,
 			'upload_date' => '2021-01-01',
 		]);
 		$this->assertForbidden($response);
@@ -59,6 +61,7 @@ class PhotoEditTest extends BaseApiV2Test
 			'description' => 'new description',
 			'tags' => ['tag1'],
 			'license' => 'none',
+			'taken_at' => null,
 			'upload_date' => '2021-01-01',
 		]);
 		$this->assertOk($response);
@@ -75,6 +78,70 @@ class PhotoEditTest extends BaseApiV2Test
 						'description' => 'new description',
 						'tags' => ['tag1'],
 						'license' => 'none',
+						'is_taken_at_modified' => false,
+						'created_at' => '2021-01-01T00:00:00+00:00',
+					],
+				],
+			],
+		]);
+
+		// Test setting taken_at
+		$response = $this->actingAs($this->userMayUpload1)->patchJson('Photo', [
+			'photo_id' => $this->photo1->id,
+			'title' => 'new title',
+			'description' => 'new description',
+			'tags' => ['tag1'],
+			'license' => 'none',
+			'taken_at' => '2021-01-01T00:00:00+00:00',
+			'upload_date' => '2021-01-01',
+		]);
+		$this->assertOk($response);
+
+		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album', ['album_id' => $this->album1->id]);
+		$this->assertOk($response);
+		$response->assertJson([
+			'config' => [],
+			'resource' => [
+				'photos' => [
+					[
+						'id' => $this->photo1->id,
+						'title' => 'new title',
+						'description' => 'new description',
+						'tags' => ['tag1'],
+						'license' => 'none',
+						'taken_at' => '2021-01-01T00:00:00+00:00',
+						'is_taken_at_modified' => true,
+						'created_at' => '2021-01-01T00:00:00+00:00',
+					],
+				],
+			],
+		]);
+
+		// Reset taken_at
+		$response = $this->actingAs($this->userMayUpload1)->patchJson('Photo', [
+			'photo_id' => $this->photo1->id,
+			'title' => 'new title',
+			'description' => 'new description',
+			'tags' => ['tag1'],
+			'license' => 'none',
+			'taken_at' => null,
+			'upload_date' => '2021-01-01',
+		]);
+		$this->assertOk($response);
+
+		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album', ['album_id' => $this->album1->id]);
+		$this->assertOk($response);
+		$response->assertJson([
+			'config' => [],
+			'resource' => [
+				'photos' => [
+					[
+						'id' => $this->photo1->id,
+						'title' => 'new title',
+						'description' => 'new description',
+						'tags' => ['tag1'],
+						'license' => 'none',
+						'is_taken_at_modified' => false,
 						'created_at' => '2021-01-01T00:00:00+00:00',
 					],
 				],

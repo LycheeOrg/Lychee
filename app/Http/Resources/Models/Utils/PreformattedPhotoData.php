@@ -44,8 +44,8 @@ class PreformattedPhotoData extends Data
 		$date_format_taken_at = Configs::getValueAsString('date_format_sidebar_taken_at');
 
 		$this->created_at = $photo->created_at->format($date_format_uploaded);
-		$this->taken_at = $photo->taken_at?->format($date_format_taken_at);
-		$this->date_overlay = ($photo->taken_at ?? $photo->created_at)->format($overlay_date_format) ?? '';
+		$this->taken_at = ($photo->taken_at_mod ?? $photo->taken_at)?->format($date_format_taken_at);
+		$this->date_overlay = ($photo->taken_at_mod ?? $photo->taken_at ?? $photo->created_at)->format($overlay_date_format) ?? '';
 
 		$this->shutter = str_replace('s', 'sec', $photo->shutter ?? '');
 		$this->aperture = str_replace('f/', '', $photo->aperture ?? '');
