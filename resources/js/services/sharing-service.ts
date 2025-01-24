@@ -20,6 +20,11 @@ export type EditSharingData = {
 	grants_delete: boolean;
 };
 
+export type PropagateSharingData = {
+	album_id: string;
+	shall_override: boolean;
+};
+
 const SharingService = {
 	get(album_id: string): Promise<AxiosResponse<App.Http.Resources.Models.AccessPermissionResource[]>> {
 		return axios.get(`${Constants.getApiUrl()}Sharing`, { params: { album_id: album_id }, data: {} });
@@ -31,6 +36,10 @@ const SharingService = {
 
 	edit(data: EditSharingData): Promise<AxiosResponse<App.Http.Resources.Models.AccessPermissionResource>> {
 		return axios.patch(`${Constants.getApiUrl()}Sharing`, data);
+	},
+
+	propagate(data: PropagateSharingData): Promise<AxiosResponse> {
+		return axios.put(`${Constants.getApiUrl()}Sharing`, data);
 	},
 
 	delete(sharing_id: number): Promise<AxiosResponse> {

@@ -17,27 +17,36 @@
 					</div>
 					<div class="w-1/6"></div>
 				</div>
-				<ShareLine v-for="perm in perms" :perm="perm" @delete="deletePermission" :with-album="props.withAlbum" />
+				<ShareLine v-for="perm in perms" :perm="perm" @delete="deletePermission" :with-album="false" />
 				<div v-if="perms.length === 0">
 					<p class="text-muted-color text-center py-3">{{ $t("sharing.no_data") }}</p>
 				</div>
-				<Button @click="dialogVisible = true" severity="contrast" class="p-3 w-full mt-4 font-bold border-none rounded-xl">
-					{{ $t("sharing.add_new_access_permission") }}
-				</Button>
+				<div class="flex gap-4">
+					<Button
+						@click="dialogVisible = true"
+						icon="pi pi-plus"
+						severity="primary"
+						class="p-3 w-full mt-4 font-bold border-none rounded-xl"
+						:label="$t('sharing.add_new_access_permission')"
+					></Button>
+					<Button
+						@click="dialogPropagateVisible = true"
+						icon="pi pi-forward"
+						severity="danger"
+						:disabled="perms.length === 0"
+						class="p-3 w-full mt-4 font-bold border-none rounded-xl disabled:opacity-50"
+						:label="$t('sharing.propagate')"
+					></Button>
+				</div>
 			</template>
 		</template>
 	</Card>
-	<AlbumCreateShareDialog
-		v-if="!props.withAlbum"
-		v-model:visible="dialogVisible"
-		:album="props.album"
-		@createdPermission="load"
-		:filtered-users-ids="sharedUserIds"
-	/>
+	<ConfirmSharingDialog v-model:visible="dialogPropagateVisible" :album="props.album" />
+	<AlbumCreateShareDialog v-model:visible="dialogVisible" :album="props.album" @createdPermission="load" :filtered-users-ids="sharedUserIds" />
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import Card from "primevue/card";
 import { useToast } from "primevue/usetoast";
 import SharingService from "@/services/sharing-service";
@@ -46,9 +55,9 @@ import { trans } from "laravel-vue-i18n";
 import AlbumCreateShareDialog from "./AlbumCreateShareDialog.vue";
 import Button from "primevue/button";
 import ProgressSpinner from "primevue/progressspinner";
+import ConfirmSharingDialog from "./ConfirmSharingDialog.vue";
 
 const props = defineProps<{
-	withAlbum: boolean;
 	album: App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.TagAlbumResource;
 }>();
 
@@ -57,6 +66,7 @@ const toast = useToast();
 const perms = ref<App.Http.Resources.Models.AccessPermissionResource[] | undefined>(undefined);
 
 const dialogVisible = ref(false);
+const dialogPropagateVisible = ref(false);
 
 function load() {
 	SharingService.get(props.album.id).then((response) => {
@@ -71,8 +81,6 @@ const sharedUserIds = computed((): number[] => {
 	return perms.value.map((perm) => perm.user_id) as number[];
 });
 
-load();
-
 function deletePermission(id: number) {
 	const permissions = perms.value;
 	if (permissions === undefined) {
@@ -84,4 +92,8 @@ function deletePermission(id: number) {
 		perms.value = permissions.filter((perm) => perm.id !== id);
 	});
 }
+
+onMounted(() => {
+	load();
+});
 </script>
