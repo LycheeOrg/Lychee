@@ -20,6 +20,14 @@ return [
 		'description' => 'Remove all contents from <span class="font-mono">%s</span>',
 		'button' => 'Clean',
 	],
+	'duplicate-finder' => [
+		'title' => 'Duplicates',
+		'description' => 'This module counts potential duplicates betwen pictures.',
+		'duplicates-all' => 'Duplicates over all albums',
+		'duplicates-title' => 'Title duplicates per albums',
+		'duplicates-per-album' => 'Duplicates per albums',
+		'show' => 'Show duplicates',
+	],
 	'fix-jobs' => [
 		'title' => 'Fixing Jobs History',
 		'description' => 'Mark jobs with status <span class="text-ready-400">%s</span> or <span class="text-primary-500">%s</span> as <span class="text-danger-700">%s</span>.',

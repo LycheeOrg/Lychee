@@ -20,6 +20,14 @@ return [
 		'description' => '<span class="font-mono">%s</span> からすべてのコンテンツを削除します',
 		'button' => '削除',
 	],
+	'duplicate-finder' => [
+		'title' => 'Duplicates',
+		'description' => 'This module counts potential duplicates betwen pictures.',
+		'duplicates-all' => 'Duplicates over all albums',
+		'duplicates-title' => 'Title duplicates per albums',
+		'duplicates-per-album' => 'Duplicates per albums',
+		'show' => 'Show duplicates',
+	],
 	'fix-jobs' => [
 		'title' => 'ジョブ履歴の修正',
 		'description' => 'ステータスが <span class="text-ready-400">%s</span> または <span class="text-primary-500">%s</span> のジョブを <span class="text-danger-700">%s</span> としてマークします。',
