@@ -55,14 +55,18 @@ function propagate() {
 		shall_override: shallOverride.value,
 	};
 
-	SharingService.propagate(data).then(() => {
-		if (shallOverride.value) {
-			toast.add({ severity: "success", summary: trans("toasts.success"), detail: trans("sharing.permission_overwritten"), life: 3000 });
-		} else {
-			toast.add({ severity: "success", summary: trans("toasts.success"), detail: trans("sharing.permission_updated"), life: 3000 });
-		}
-		visible.value = false;
-		reset();
-	});
+	SharingService.propagate(data)
+		.then(() => {
+			if (shallOverride.value) {
+				toast.add({ severity: "success", summary: trans("toasts.success"), detail: trans("sharing.permission_overwritten"), life: 3000 });
+			} else {
+				toast.add({ severity: "success", summary: trans("toasts.success"), detail: trans("sharing.permission_updated"), life: 3000 });
+			}
+			visible.value = false;
+			reset();
+		})
+		.catch((error) => {
+			toast.add({ severity: "error", summary: error.response.data.message, life: 3000 });
+		});
 }
 </script>
