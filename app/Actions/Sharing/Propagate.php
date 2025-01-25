@@ -15,10 +15,11 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 
-class Propagate
+final class Propagate
 {
 	/**
 	 * Update all descendants with the current album access permissions.
+	 * This is run in a DB transaction for safety.
 	 *
 	 * @param Album $album
 	 *
@@ -28,9 +29,24 @@ class Propagate
 	{
 		if (!App::runningUnitTests()) {
 			// @codeCoverageIgnoreStart
-			DB::beginTransaction();
+			DB::transaction(fn () => $this->applyUpdate($album));
+
+			return;
 			// @codeCoverageIgnoreEnd
 		}
+
+		$this->applyUpdate($album);
+	}
+
+	/**
+	 * Apply the current album access permissions to all descendants.
+	 *
+	 * @param Album $album
+	 *
+	 * @return void
+	 */
+	private function applyUpdate(Album $album): void
+	{
 		// for each descendant, create a new permission if it does not exist.
 		// or update the existing permission.
 		/** @var Collection<int,string> $descendants */
@@ -55,12 +71,6 @@ class Propagate
 				$perm->save();
 			});
 		});
-
-		if (!App::runningUnitTests()) {
-			// @codeCoverageIgnoreStart
-			DB::commit();
-			// @codeCoverageIgnoreEnd
-		}
 	}
 
 	/**
@@ -74,10 +84,24 @@ class Propagate
 	{
 		if (!App::runningUnitTests()) {
 			// @codeCoverageIgnoreStart
-			DB::beginTransaction();
+			DB::transaction(fn () => $this->applyOverwrite($album));
+
+			return;
 			// @codeCoverageIgnoreEnd
 		}
 
+		$this->applyOverwrite($album);
+	}
+
+	/**
+	 * Apply the overwrite of all descendants with the current album access permissions.
+	 *
+	 * @param Album $album
+	 *
+	 * @return void
+	 */
+	private function applyOverwrite(Album $album): void
+	{
 		// override permission for all descendants albums.
 		// Faster done by:
 		// 1. clearing all the permissions.
@@ -120,11 +144,5 @@ class Propagate
 		);
 
 		DB::table(APC::ACCESS_PERMISSIONS)->insert($new_perm);
-
-		if (!App::runningUnitTests()) {
-			// @codeCoverageIgnoreStart
-			DB::commit();
-			// @codeCoverageIgnoreEnd
-		}
 	}
 }
