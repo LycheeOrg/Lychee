@@ -357,6 +357,7 @@ watch(
 	() => route.params.photoid,
 	(newId, _oldId) => {
 		photoId.value = newId as string;
+		togglableStore.rememberScrollThumb(photoId.value);
 		refresh();
 	},
 );
