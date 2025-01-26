@@ -69,6 +69,7 @@ onUnmounted(() => {
 
 function goBack() {
 	clearTimeouts();
+	document.exitFullscreen();
 
 	if (props.albumid !== undefined) {
 		router.push({ name: "album", params: { albumid: props.albumid } });
@@ -79,5 +80,9 @@ function goBack() {
 
 onKeyStroke("Escape", () => {
 	goBack();
+});
+
+onMounted(() => {
+	document.documentElement.requestFullscreen();
 });
 </script>
