@@ -82,6 +82,7 @@ abstract class AbstractAddStrategy
 		}
 		if ($this->photo->taken_at === null) {
 			$this->photo->taken_at = $this->parameters->exifInfo->taken_at;
+			$this->photo->initial_taken_at = $this->parameters->exifInfo->taken_at;
 		}
 		if ($this->photo->latitude === null) {
 			$this->photo->latitude = $this->parameters->exifInfo->latitude;

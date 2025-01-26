@@ -66,6 +66,7 @@ class HydrateMetadata implements SharedPipe
 		}
 		if ($state->photo->taken_at === null) {
 			$state->photo->taken_at = $state->exifInfo->taken_at;
+			$state->photo->initial_taken_at = $state->exifInfo->taken_at;
 		}
 		if ($state->photo->latitude === null) {
 			$state->photo->latitude = $state->exifInfo->latitude;

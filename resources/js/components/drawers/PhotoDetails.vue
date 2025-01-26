@@ -2,9 +2,9 @@
 	<aside
 		id="lychee_sidebar_container"
 		class="h-full relative transition-all overflow-x-clip overflow-y-scroll bg-bg-800"
-		:class="areDetailsOpen ? 'w-[360px]' : 'w-0 translate-x-full'"
+		:class="areDetailsOpen ? 'w-[380px]' : 'w-0 translate-x-full'"
 	>
-		<Card id="lychee_sidebar" v-if="props.photo" class="w-[360px] h-full pr-4 break-words">
+		<Card id="lychee_sidebar" v-if="props.photo" class="w-[380px] h-full pr-4 break-words">
 			<template #content>
 				<div class="grid grid-cols-[auto minmax(0, 1fr)] mt-8">
 					<h1 class="col-span-2 text-center text-lg font-bold my-4">
@@ -64,8 +64,12 @@
 					<h2 v-if="props.photo.precomputed.has_exif" class="col-span-2 text-muted-color font-bold px-3 pt-4 pb-3">
 						{{ $t("gallery.photo.details.camera") }}
 					</h2>
-					<span class="py-0.5 px-3 text-sm" v-if="props.photo.preformatted.taken_at">{{ $t("gallery.photo.details.captured") }}</span>
-					<span class="py-0.5 pl-0 text-sm" v-if="props.photo.preformatted.taken_at">{{ props.photo.preformatted.taken_at }}</span>
+					<span class="py-0.5 px-3 text-sm" v-if="props.photo.preformatted.taken_at"
+						>{{ $t("gallery.photo.details.captured")
+						}}<span v-if="props.photo.precomputed.is_taken_at_modified" class="ml-1 text-warning-600">*</span></span
+					>
+					<span class="py-0.5 pl-0 text-sm">{{ props.photo.preformatted.taken_at }}</span>
+
 					<span class="py-0.5 px-3 text-sm" v-if="props.photo.make">{{ $t("gallery.photo.details.make") }}</span>
 					<span class="py-0.5 pl-0 text-sm" v-if="props.photo.make">{{ props.photo.make }}</span>
 					<span class="py-0.5 px-3 text-sm" v-if="props.photo.model">{{ $t("gallery.photo.details.type") }}</span>

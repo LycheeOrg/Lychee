@@ -796,7 +796,22 @@ const LycheePrimeVueConfig = {
 				},
 			},
 		},
+		inputgroup: {
+			addon: {
+				background: "transparent",
+			},
+		},
 		inputtext: {
+			disabled: {
+				colorScheme: {
+					light: {
+						background: "{surface.700}",
+					},
+					dark: {
+						background: "var(--surface-950)",
+					},
+				},
+			},
 			background: "transparent",
 			padding: {
 				x: "1rem",
