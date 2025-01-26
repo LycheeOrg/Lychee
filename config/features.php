@@ -90,4 +90,14 @@ return [
 	 |--------------------------------------------------------------------------
 	 */
 	'latency' => env('APP_ENV', 'production') === 'production' ? 0 : (int) env('APP_DEBUG_LATENCY', 0),
+
+	/*
+	 |--------------------------------------------------------------------------
+	 | Require the API requests to have the header "content-type: application/json"
+	 | or "content-type: multipart/form-data" depending on the type.
+	 |
+	 | Note that this prevents the use of the API from the API documentation page.
+	 |--------------------------------------------------------------------------
+	 */
+	'require-content-type' => (bool) env('REQUIRE_CONTENT_TYPE_ENABLED', true),
 ];
