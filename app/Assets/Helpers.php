@@ -10,6 +10,7 @@ namespace App\Assets;
 
 use App\Exceptions\Internal\ZeroModuloException;
 use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use function Safe\ini_get;
 
@@ -288,5 +289,24 @@ class Helpers
 			'class' => $err['class'] ?? $err['file'] ?? '?',
 			'line' => $err['line'] ?? '?',
 			'function' => $err['function']])->all());
+	}
+
+	/**
+	 * Given a request return the uri WITH the query paramters.
+	 * This makes sure that we handle the case where the query parameters are empty or contains an album id or pagination.
+	 *
+	 * @param Request $request
+	 *
+	 * @return string
+	 */
+	public function getUriWithQueryString(Request $request): string
+	{
+		/** @var array<string,mixed>|null $query */
+		$query = $request->query();
+		if ($query === null || $query === []) {
+			return $request->path();
+		}
+
+		return $request->path() . '?' . http_build_query($query);
 	}
 }

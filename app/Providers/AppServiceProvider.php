@@ -14,9 +14,14 @@ use App\Assets\Helpers;
 use App\Assets\SizeVariantGroupedWithRandomSuffixNamingStrategy;
 use App\Contracts\Models\AbstractSizeVariantNamingStrategy;
 use App\Contracts\Models\SizeVariantFactory;
+use App\Events\AlbumRouteCacheUpdated;
+use App\Events\TaggedRouteCacheUpdated;
 use App\Factories\AlbumFactory;
 use App\Image\SizeVariantDefaultFactory;
 use App\Image\StreamStatFilter;
+use App\Listeners\AlbumCacheCleaner;
+use App\Listeners\CacheListener;
+use App\Listeners\TaggedRouteCacheCleaner;
 use App\Metadata\Json\CommitsRequest;
 use App\Metadata\Json\UpdateRequest;
 use App\Metadata\Versions\FileVersion;
@@ -29,11 +34,16 @@ use App\Models\Configs;
 use App\Policies\AlbumQueryPolicy;
 use App\Policies\PhotoQueryPolicy;
 use App\Policies\SettingsPolicy;
+use Illuminate\Cache\Events\CacheHit;
+use Illuminate\Cache\Events\CacheMissed;
+use Illuminate\Cache\Events\KeyForgotten;
+use Illuminate\Cache\Events\KeyWritten;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
@@ -93,6 +103,14 @@ class AppServiceProvider extends ServiceProvider
 	 */
 	public function boot()
 	{
+		Event::listen(CacheHit::class, CacheListener::class . '@handle');
+		Event::listen(CacheMissed::class, CacheListener::class . '@handle');
+		Event::listen(KeyForgotten::class, CacheListener::class . '@handle');
+		Event::listen(KeyWritten::class, CacheListener::class . '@handle');
+
+		Event::listen(AlbumRouteCacheUpdated::class, AlbumCacheCleaner::class . '@handle');
+		Event::listen(TaggedRouteCacheUpdated::class, TaggedRouteCacheCleaner::class . '@handle');
+
 		// Prohibits: db:wipe, migrate:fresh, migrate:refresh, and migrate:reset
 		DB::prohibitDestructiveCommands(config('app.env', 'production') !== 'dev');
 

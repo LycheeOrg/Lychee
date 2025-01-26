@@ -56,4 +56,9 @@ return [
 		'update-button' => '更新',
 		'no-pending-updates' => '保留中の更新はありません',
 	],
+	'flush-cache' => [
+		'title' => 'Flush Cache',
+		'description' => 'Flush the cache of every user to solve invalidation problems.',
+		'button' => 'Flush',
+	],
 ];

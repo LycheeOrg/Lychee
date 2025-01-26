@@ -54,6 +54,10 @@ const MaintenanceService = {
 		return axios.post(`${Constants.getApiUrl()}Maintenance::optimize`, {});
 	},
 
+	flushDo(): Promise<AxiosResponse<string[]>> {
+		return axios.post(`${Constants.getApiUrl()}Maintenance::flushCache`, {});
+	},
+
 	register(key: string): Promise<AxiosResponse<App.Http.Resources.GalleryConfigs.RegisterData>> {
 		return axios.post(`${Constants.getApiUrl()}Maintenance::register`, { key: key });
 	},
