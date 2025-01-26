@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f6942fd7d8dc8703d45e8a6f1f7a249c",
+    "content-hash": "7bded5e2fd2645e04162fbabc63b9a94",
     "packages": [
         {
             "name": "amphp/amp",
@@ -12719,16 +12719,16 @@
         },
         {
             "name": "dominikb/composer-license-checker",
-            "version": "2.6.0",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/dominikb/composer-license-checker.git",
-                "reference": "22c2bb46acc5ab71d828ab9589be5a2820f8b221"
+                "reference": "707e59bc467c5c3a63229bce742e101eb89b2be5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dominikb/composer-license-checker/zipball/22c2bb46acc5ab71d828ab9589be5a2820f8b221",
-                "reference": "22c2bb46acc5ab71d828ab9589be5a2820f8b221",
+                "url": "https://api.github.com/repos/dominikb/composer-license-checker/zipball/707e59bc467c5c3a63229bce742e101eb89b2be5",
+                "reference": "707e59bc467c5c3a63229bce742e101eb89b2be5",
                 "shasum": ""
             },
             "require": {
@@ -12747,6 +12747,7 @@
                 "phpunit/phpunit": "^9.3",
                 "symfony/var-dumper": "^4.2 || ^5.2 || ^6.0 || ^7.0"
             },
+            "default-branch": true,
             "bin": [
                 "composer-license-checker"
             ],
@@ -12778,9 +12779,9 @@
             ],
             "support": {
                 "issues": "https://github.com/dominikb/composer-license-checker/issues",
-                "source": "https://github.com/dominikb/composer-license-checker/tree/2.6.0"
+                "source": "https://github.com/dominikb/composer-license-checker/tree/master"
             },
-            "time": "2024-07-06T14:35:50+00:00"
+            "time": "2025-01-26T19:44:45+00:00"
         },
         {
             "name": "fakerphp/faker",
@@ -16971,7 +16972,8 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "opcodesio/log-viewer": 20
+        "opcodesio/log-viewer": 20,
+        "dominikb/composer-license-checker": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
