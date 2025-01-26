@@ -131,6 +131,33 @@ jobs:
       - name: Run PHPStan
         run: vendor/bin/phpstan analyze
 
+  license:
+    name: 2️⃣ PHP 8.3 - License Check
+    runs-on: ubuntu-latest
+    needs:
+      - php_syntax_errors
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@c95a14d0e5bab51a9f56296a4eb0e416910cd350 # v2.10.3
+        with:
+          egress-policy: audit
+
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@9e72090525849c5e82e596468b86eb55e9cc5401 # 2.32.0
+        with:
+          php-version: 8.3
+          coverage: none
+
+      - name: Install Composer dependencies
+        uses: ramsey/composer-install@57532f8be5bda426838819c5ee9afb8af389d51a # 3.0.0
+
+      # We ban GPL-2.0-or-later, we don't want that viral thing in Lychee: We want to keep our MIT license.
+      - name: Run License Checker
+        run: vendor/bin/composer-licence-checker check -b GPL-2.0-or-later --no-dev
+
   tests:
     name:  2️⃣ PHP tests
     needs:
