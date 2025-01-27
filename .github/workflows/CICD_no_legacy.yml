@@ -156,7 +156,7 @@ jobs:
 
       # We ban GPL-2.0-or-later, we don't want that viral thing in Lychee: We want to keep our MIT license.
       - name: Run License Checker
-        run: vendor/bin/composer-license-checker check -b GPL-2.0-or-later --no-dev
+        run: vendor/bin/composer-license-checker check -b GPL-2.0-or-later -b GPL-2.0-only -b GPL-3.0-only -b GPL-3.0-or-later -b AGPL-1.0-only -b AGPL-1.0-or-later -b AGPL-3.0-only -b AGPL-3.0-or-later -b LGPL-2.0-only -b LGPL-2.0-or-later -b LGPL-2.1-only -b LGPL-2.1-or-later -b LGPL-3.0-only -b LGPL-3.0-or-later --no-dev
 
   tests:
     name:  2️⃣ PHP tests
