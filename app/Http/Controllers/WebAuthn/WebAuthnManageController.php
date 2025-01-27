@@ -13,10 +13,11 @@ use App\Http\Requests\WebAuthn\DeleteCredentialRequest;
 use App\Http\Requests\WebAuthn\EditCredentialRequest;
 use App\Http\Requests\WebAuthn\ListCredentialsRequest;
 use App\Http\Resources\Models\WebAuthnResource;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
-class WebAuthnManageController
+class WebAuthnManageController extends Controller
 {
 	/**
 	 * List all the WebAuthn users credentials.

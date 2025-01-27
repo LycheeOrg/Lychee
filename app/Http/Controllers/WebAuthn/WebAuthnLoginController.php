@@ -12,6 +12,7 @@ use App\Exceptions\UnauthenticatedException;
 use App\Models\User;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Support\Responsable;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Laragear\WebAuthn\Assertion\Validator\AssertionValidation;
 use Laragear\WebAuthn\Assertion\Validator\AssertionValidator;
@@ -21,7 +22,7 @@ use Laragear\WebAuthn\JsonTransport;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
-class WebAuthnLoginController
+class WebAuthnLoginController extends Controller
 {
 	/**
 	 * Returns the challenge to assertion.
