@@ -51,6 +51,14 @@
 								'border-dashed': !is_taken_at_modified,
 							}"
 						/>
+						<InputGroupAddon
+							:class="{
+								'border-t-0 border-r-0 rounded-br-none hover:border-b-primary-400': true,
+								'border-dashed': !is_taken_at_modified,
+							}"
+						>
+							<InputText class="border-none" v-model="takenAtTz" placeholder="+00:00" :disabled="!is_taken_at_modified" />
+						</InputGroupAddon>
 					</InputGroup>
 					<div></div>
 					<div
@@ -131,13 +139,13 @@ function load(photo: App.Http.Resources.Models.PhotoResource) {
 	description.value = photo.description;
 	tags.value = photo.tags;
 
-	const dataDate = (photo.created_at ?? "").slice(0, 16);
-	uploadTz.value = (photo.created_at ?? "").slice(16);
+	const dataDate = (photo.created_at ?? "").slice(0, 19);
+	uploadTz.value = (photo.created_at ?? "").slice(19);
 	uploadDate.value = new Date(dataDate);
 	is_taken_at_modified.value = photo.precomputed.is_taken_at_modified;
 
-	const takenDate = (photo.taken_at ?? "").slice(0, 16);
-	takenAtTz.value = (photo.taken_at ?? "").slice(16);
+	const takenDate = (photo.taken_at ?? "").slice(0, 19);
+	takenAtTz.value = (photo.taken_at ?? "").slice(19);
 	takenAtDate.value = new Date(takenDate);
 
 	license.value = SelectBuilders.buildLicense(photo.license);
@@ -148,14 +156,14 @@ function save() {
 		return;
 	}
 
-	const takenDate = takenAtDate.value === undefined ? null : takenAtDate.value.toISOString().slice(0, 16) + takenAtTz.value;
+	const takenDate = takenAtDate.value === undefined ? null : takenAtDate.value.toISOString().slice(0, 19) + takenAtTz.value;
 
 	PhotoService.update(photo_id.value, {
 		title: title.value,
 		description: description.value ?? "",
 		tags: tags.value ?? [],
 		license: license.value?.value ?? "none",
-		upload_date: uploadDate.value?.toISOString().slice(0, 16) + uploadTz.value,
+		upload_date: uploadDate.value?.toISOString().slice(0, 19) + uploadTz.value,
 		taken_at: is_taken_at_modified.value ? takenDate : null,
 	}).then((response) => {
 		toast.add({ severity: "success", summary: "Success", life: 3000 });
