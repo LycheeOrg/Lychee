@@ -314,6 +314,12 @@ function scrollTo(event: WheelEvent) {
 		return;
 	}
 
+	if (is_edit_open.value) {
+		// We do nothing! Otherwise we are switching photos without noticing.
+		// especially with trackpads.
+		return;
+	}
+
 	if (route.name !== "photo") {
 		return;
 	}
