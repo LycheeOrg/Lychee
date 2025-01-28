@@ -66,7 +66,6 @@
 								:invalid="!takenAtTz"
 								class="border-none"
 							></Select>
-							<!-- <InputText class="border-none" v-model="takenAtTz" placeholder="+00:00" :disabled="!is_taken_at_modified" /> -->
 						</InputGroupAddon>
 					</InputGroup>
 					<div></div>
@@ -139,9 +138,6 @@ const is_taken_at_modified = ref<boolean>(false);
 const license = ref<SelectOption<App.Enum.LicenseType> | undefined>(undefined);
 const uploadTz = ref<string | undefined>(undefined);
 const takenAtTz = ref<string | undefined>(undefined);
-
-// TODO: updating exif data later
-// console.log(timeZoneOptions)
 
 function load(photo: App.Http.Resources.Models.PhotoResource) {
 	photo_id.value = photo.id;
