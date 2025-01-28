@@ -57,7 +57,16 @@
 								'border-dashed': !is_taken_at_modified,
 							}"
 						>
-							<InputText class="border-none" v-model="takenAtTz" placeholder="+00:00" :disabled="!is_taken_at_modified" />
+							<Select
+								v-model="takenAtTz"
+								:options="timeZoneOptions"
+								option-label="label"
+								option-value="value"
+								:disabled="!is_taken_at_modified"
+								:invalid="!takenAtTz"
+								class="border-none"
+							></Select>
+							<!-- <InputText class="border-none" v-model="takenAtTz" placeholder="+00:00" :disabled="!is_taken_at_modified" /> -->
 						</InputGroupAddon>
 					</InputGroup>
 					<div></div>
@@ -100,7 +109,7 @@ import Card from "primevue/card";
 import Drawer from "primevue/drawer";
 import { ref, Ref, watch } from "vue";
 import InputText from "@/components/forms/basic/InputText.vue";
-import { licenseOptions, SelectOption, SelectBuilders } from "@/config/constants";
+import { licenseOptions, SelectOption, SelectBuilders, timeZoneOptions } from "@/config/constants";
 import Select from "primevue/select";
 import Textarea from "@/components/forms/basic/Textarea.vue";
 import DatePicker from "primevue/datepicker";
@@ -132,6 +141,7 @@ const uploadTz = ref<string | undefined>(undefined);
 const takenAtTz = ref<string | undefined>(undefined);
 
 // TODO: updating exif data later
+// console.log(timeZoneOptions)
 
 function load(photo: App.Http.Resources.Models.PhotoResource) {
 	photo_id.value = photo.id;

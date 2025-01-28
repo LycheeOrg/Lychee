@@ -972,6 +972,9 @@ const LycheePrimeVueConfig = {
 					},
 				},
 				dark: {
+					disabled: {
+						background: "transparent",
+					},
 					option: {
 						color: "{surface.400}",
 						focus: {
