@@ -119,7 +119,7 @@ return new class() extends Migration {
 				'key' => 'version',
 				'value' => '040000',
 				'cat' => self::ADMIN,
-				'type_range' => 'INT',
+				'type_range' => 'int',
 				'confidentiality' => '0',
 			],
 			[
