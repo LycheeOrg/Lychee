@@ -13,7 +13,7 @@ return [
 	|--------------------------------------------------------------------------
 	*/
 	'title' => 'Maintenance',
-	'intro' => 'On this page you will find the duplicates pictures found in your database.',
+	'intro' => 'On this page you will find the duplicate pictures found in your database.',
 	'found' => ' duplicates found!',
 	'invalid-search' => ' At least the checksum or title condition must be checked.',
 	'checksum-must-match' => 'Checksum must match.',
