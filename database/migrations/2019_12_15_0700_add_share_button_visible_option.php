@@ -17,8 +17,6 @@ return new class() extends Migration {
 	 */
 	public function up(): void
 	{
-		defined('BOOL') or define('BOOL', '0|1');
-
 		Schema::table('albums', function (Blueprint $table) {
 			$table->boolean('share_button_visible')->after('downloadable')->default(false);
 		});
@@ -33,7 +31,7 @@ return new class() extends Migration {
 			'key' => 'share_button_visible',
 			'value' => '0',
 			'cat' => 'config',
-			'type_range' => BOOL,
+			'type_range' => '0|1',
 			'confidentiality' => '0',
 		]);
 	}

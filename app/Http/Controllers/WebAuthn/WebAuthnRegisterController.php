@@ -10,11 +10,12 @@ namespace App\Http\Controllers\WebAuthn;
 
 use App\Exceptions\UnauthenticatedException;
 use Illuminate\Contracts\Support\Responsable;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Laragear\WebAuthn\Http\Requests\AttestationRequest;
 use Laragear\WebAuthn\Http\Requests\AttestedRequest;
 
-class WebAuthnRegisterController
+class WebAuthnRegisterController extends Controller
 {
 	/**
 	 * Returns a challenge to be verified by the user device.
