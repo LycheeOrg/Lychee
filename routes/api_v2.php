@@ -74,6 +74,7 @@ Route::get('/Map::provider', [Gallery\MapController::class, 'getProvider'])->mid
  */
 Route::get('/Sharing', [Gallery\SharingController::class, 'list']);
 Route::post('/Sharing', [Gallery\SharingController::class, 'create']);
+Route::put('/Sharing', [Gallery\SharingController::class, 'propagate']);
 Route::patch('/Sharing', [Gallery\SharingController::class, 'edit']);
 Route::delete('/Sharing', [Gallery\SharingController::class, 'delete']);
 Route::get('/Sharing::all', [Gallery\SharingController::class, 'listAll']);
