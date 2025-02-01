@@ -121,6 +121,39 @@ export const timelineAlbumGranularityOptions: SelectOption<App.Enum.TimelineAlbu
 	{ value: "day", label: "gallery.timeline.day" },
 ];
 
+export const timeZoneOptions: SelectOption<string>[] = [
+	{ value: "-12:00", label: "-12:00 Uninhabited areas (Baker Island)" },
+	{ value: "-11:00", label: "-11:00 Niue Time" },
+	{ value: "-10:00", label: "-10:00 HST Hawaii Standard Time" },
+	{ value: "-09:00", label: "-09:00 AKST Alaska Standard Time" },
+	{ value: "-08:00", label: "-08:00 PST Pacific Standard Time (US)" },
+	{ value: "-07:00", label: "-07:00 MST Mountain Standard Time (US)" },
+	{ value: "-06:00", label: "-06:00 CST (US) Central Standard Time (US)" },
+	{ value: "-05:00", label: "-05:00 EST/ACT Eastern Standard Time (US)/Acre Time" },
+	{ value: "-04:00", label: "-04:00 AMT Amazon Time" },
+	{ value: "-03:30", label: "-03:30 NST Newfoundland Standard Time" },
+	{ value: "-03:00", label: "-03:00 ADT Atlantic Daylight Time" },
+	{ value: "-02:00", label: "-02:00 South Georgia and Sandwich Islands" },
+	{ value: "-01:00", label: "-01:00 Azores Time" },
+	{ value: "+00:00", label: "+00:00 UTC/GMT Coordinated Universal Time/Greenwich Mean Time" },
+	{ value: "+01:00", label: "+01:00 CET/BST Central European Time/British Summer Time" },
+	{ value: "+02:00", label: "+02:00 EET/CEST Eastern European Time/Central European Summer Time" },
+	{ value: "+03:00", label: "+03:00 MSK/AST/EEST Moscow Standard Time/Arabian Standard Time/Eastern European Summer Time" },
+	{ value: "+03:30", label: "+03:30 IRST Iran Standard Time" },
+	{ value: "+04:00", label: "+04:00 GST/AZT Gulf Standard Time/Azerbaijan Time" },
+	{ value: "+04:30", label: "+04:30 AFT Afghanistan Time" },
+	{ value: "+05:00", label: "+05:00 PKT Pakistan Standard Time" },
+	{ value: "+05:30", label: "+05:30 IST Indian Standard Time" },
+	{ value: "+06:00", label: "+06:00 Bhutan Time" },
+	{ value: "+07:00", label: "+07:00 ICT Indochina Time" },
+	{ value: "+08:00", label: "+08:00 CST (China)/HKT China Standard Time/Hong Kong Time" },
+	{ value: "+09:00", label: "+09:00 JST/KST Japan Standard Time/Korea Standard Time" },
+	{ value: "+09:30", label: "+09:30 ACST Australian Central Standard Time" },
+	{ value: "+10:00", label: "+10:00 AEST Australian Eastern Standard Time" },
+	{ value: "+11:00", label: "+11:00 Solomon Islands Time" },
+	{ value: "+12:00", label: "+12:00 NZST New Zealand Standard Time" },
+];
+
 export const SelectBuilders = {
 	buildPhotoSorting(value: string | App.Enum.ColumnSortingType | undefined): SelectOption<App.Enum.ColumnSortingPhotoType> | undefined {
 		return photoSortingColumnsOptions.find((option) => option.value === value) || undefined;

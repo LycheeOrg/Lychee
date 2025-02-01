@@ -80,15 +80,15 @@ const headIds = computed(() => {
 
 const question = computed(() => {
 	if (props.photoIds && props.photoIds?.length > 1) {
-		return sprintf(trans("dialog.move_photo.move_multiple"), props.photoIds?.length);
+		return sprintf(trans("dialogs.move_photo.move_multiple"), props.photoIds?.length);
 	}
 	if (props.albumIds && props.albumIds?.length > 1) {
-		return sprintf(trans("dialog.move_album.move_to_multiple"), props.albumIds?.length);
+		return sprintf(trans("dialogs.move_album.move_to_multiple"), props.albumIds?.length);
 	}
 	if (props.photo) {
-		return sprintf(trans("dialog.move_photo.move_single"), props.photo.title);
+		return sprintf(trans("dialogs.move_photo.move_single"), props.photo.title);
 	}
-	return sprintf(trans("dialog.move_album.move_to_single"), props.album?.title);
+	return sprintf(trans("dialogs.move_album.move_to_single"), props.album?.title);
 });
 
 const confirmation = computed(() => {
@@ -100,9 +100,9 @@ const confirmation = computed(() => {
 
 function moveConfirmationPhoto() {
 	if (props.photo) {
-		return sprintf(trans("dialog.move_photo.confirm"), props.photo.title, titleMovedTo.value);
+		return sprintf(trans("dialogs.move_photo.confirm"), props.photo.title, titleMovedTo.value);
 	}
-	return sprintf(trans("dialog.move_photo.confirm_multiple"), props.photoIds?.length, titleMovedTo.value);
+	return sprintf(trans("dialogs.move_photo.confirm_multiple"), props.photoIds?.length, titleMovedTo.value);
 }
 
 function moveConfirmationAlbum() {

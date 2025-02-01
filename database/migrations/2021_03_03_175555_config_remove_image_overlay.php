@@ -24,8 +24,6 @@ return new class() extends Migration {
 	 */
 	public function down(): void
 	{
-		defined('BOOL') or define('BOOL', '0|1');
-
 		DB::table('configs')->where('key', '=', 'image_overlay_type')->update(['type_range' => 'exif|desc|takedate']);
 
 		DB::table('configs')->insert([
@@ -33,7 +31,7 @@ return new class() extends Migration {
 				'key' => 'image_overlay',
 				'value' => '1',
 				'cat' => 'Gallery',
-				'type_range' => BOOL,
+				'type_range' => '0|1',
 				'confidentiality' => '0',
 			],
 		]);

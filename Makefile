@@ -152,3 +152,6 @@ test_v2:
 
 gen_typescript_types:
 	php artisan typescript:transform
+
+class-leak:
+	vendor/bin/class-leak check app database/migrations config --skip-type Illuminate\\View\\Component

@@ -29,7 +29,9 @@ return [
 		/*
 		 * Description rendered on the home page of the API documentation (`/docs/api`).
 		 */
-		'description' => '',
+		'description' => '**NOTE:** In order to use the API from this page (with the Send API Request button), you will need to disable the _"content-type"_ middleware.<br>
+		This is done by setting your `REQUIRE_CONTENT_TYPE_ENABLED=false` in your `.env`.<br>
+		After testing, we recommend setting back this value to `true` and adding the content-type header to your requests.',
 	],
 
 	/*

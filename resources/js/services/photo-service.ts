@@ -7,6 +7,7 @@ export type PhotoUpdateRequest = {
 	tags: string[];
 	license: App.Enum.LicenseType;
 	upload_date: string;
+	taken_at: string | null;
 };
 
 const PhotoService = {

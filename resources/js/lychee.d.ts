@@ -497,6 +497,7 @@ declare namespace App.Http.Resources.Models.Utils {
 		is_camera_date: boolean;
 		has_exif: boolean;
 		has_location: boolean;
+		is_taken_at_modified: boolean;
 	};
 	export type PreFormattedAlbumData = {
 		url: string | null;

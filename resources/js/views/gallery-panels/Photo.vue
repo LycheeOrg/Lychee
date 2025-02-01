@@ -314,6 +314,12 @@ function scrollTo(event: WheelEvent) {
 		return;
 	}
 
+	if (is_edit_open.value) {
+		// We do nothing! Otherwise we are switching photos without noticing.
+		// especially with trackpads.
+		return;
+	}
+
 	if (route.name !== "photo") {
 		return;
 	}
@@ -357,6 +363,7 @@ watch(
 	() => route.params.photoid,
 	(newId, _oldId) => {
 		photoId.value = newId as string;
+		togglableStore.rememberScrollThumb(photoId.value);
 		refresh();
 	},
 );

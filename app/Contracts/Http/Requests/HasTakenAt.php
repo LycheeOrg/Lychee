@@ -8,10 +8,12 @@
 
 namespace App\Contracts\Http\Requests;
 
-interface HasUserId
+use Illuminate\Support\Carbon;
+
+interface HasTakenAt
 {
 	/**
-	 * @return int
+	 * @return Carbon|null
 	 */
-	public function userId(): int;
+	public function takenAt(): ?Carbon;
 }

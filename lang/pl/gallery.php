@@ -177,6 +177,8 @@ return [
 			'no_tags' => 'No Tags',
 			'set_tags' => 'Set Tags',
 			'set_created_at' => 'Set Upload Date',
+			'set_taken_at' => 'Set Taken Date',
+			'set_taken_at_info' => 'When set, a star %s will be displayed to indicate that this date is not the original EXIF date.<br>Untick the checkbox and save to reset to the original date.',
 		],
 	],
 

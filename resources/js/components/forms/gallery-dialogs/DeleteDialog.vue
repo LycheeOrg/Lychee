@@ -11,7 +11,7 @@
 						{{ $t("dialogs.button.cancel") }}
 					</Button>
 					<Button severity="danger" class="w-full border-none rounded-none rounded-br-xl font-bold" @click="execute">
-						{{ $t("dialog.button.delete") }}
+						{{ $t("dialogs.button.delete") }}
 					</Button>
 				</div>
 			</div>

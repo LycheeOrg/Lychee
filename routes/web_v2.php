@@ -10,6 +10,8 @@ namespace App\Http\Controllers;
 
 use App\Enum\OauthProvidersType;
 use App\Legacy\V1\Controllers\RedirectController;
+use Illuminate\Foundation\Events\DiagnosingHealth;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -24,6 +26,12 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::feeds();
+
+Route::get('/up', function () {
+	Event::dispatch(new DiagnosingHealth());
+
+	return view('health-up');
+});
 
 Route::get('/', [VueController::class, 'view'])->name('home')->middleware(['migration:complete']);
 Route::get('/gallery', [VueController::class, 'view'])->name('gallery')->middleware(['migration:complete']);

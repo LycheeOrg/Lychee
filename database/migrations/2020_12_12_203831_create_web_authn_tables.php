@@ -19,8 +19,6 @@ return new class() extends Migration {
 	 */
 	public function up(): void
 	{
-		defined('STRING') or define('STRING', 'string');
-
 		Schema::create('web_authn_credentials', function (Blueprint $table) {
 			$table->string('id', 255);
 
@@ -43,7 +41,7 @@ return new class() extends Migration {
 
 			$table->timestamps();
 			$table->softDeletes(self::DELETED_AT);
-			DB::table('configs')->where('key', '=', 'username')->orWhere('key', '=', 'password')->update(['type_range' => STRING]);
+			DB::table('configs')->where('key', '=', 'username')->orWhere('key', '=', 'password')->update(['type_range' => 'string']);
 
 			$table->primary(['id', 'user_id']);
 		});
@@ -54,10 +52,8 @@ return new class() extends Migration {
 	 */
 	public function down(): void
 	{
-		defined('STRING_REQ') or define('STRING_REQ', 'string_required');
-
 		if (Schema::hasTable('configs')) {
-			DB::table('configs')->where('key', '=', 'username')->orWhere('key', '=', 'password')->update(['type_range' => STRING_REQ]);
+			DB::table('configs')->where('key', '=', 'username')->orWhere('key', '=', 'password')->update(['type_range' => 'string_required']);
 		}
 		Schema::dropIfExists('web_authn_credentials');
 	}

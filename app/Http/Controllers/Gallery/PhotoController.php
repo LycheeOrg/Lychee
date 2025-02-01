@@ -140,6 +140,10 @@ class PhotoController extends Controller
 		$photo->created_at = $request->uploadDate();
 		$photo->tags = $request->tags();
 		$photo->license = $request->license()->value;
+
+		// if the request takenAt is null, then we set the initial value back.
+		$photo->taken_at = $request->takenAt() ?? $photo->initial_taken_at;
+
 		$photo->save();
 
 		return PhotoResource::fromModel($photo);

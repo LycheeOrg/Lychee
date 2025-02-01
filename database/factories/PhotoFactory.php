@@ -37,6 +37,8 @@ class PhotoFactory extends Factory
 	 */
 	public function definition(): array
 	{
+		$now = now();
+
 		return [
 			'title' => 'CR_' . fake()->numerify('####'),
 			'description' => null,
@@ -50,8 +52,10 @@ class PhotoFactory extends Factory
 			'lens' => 'EF200mm f/2L IS',
 			'shutter' => '1/320 s',
 			'focal' => '200mm',
-			'taken_at' => now(),
+			'initial_taken_at' => $now,
 			'taken_at_orig_tz' => null,
+			'taken_at' => $now,
+			'initial_taken_at_orig_tz' => null,
 			'is_starred' => false,
 			'album_id' => null,
 			'checksum' => sha1(rand()),

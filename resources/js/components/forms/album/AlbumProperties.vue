@@ -266,7 +266,7 @@
 						<label for="tags">{{ $t("gallery.album.properties.show_tags") }}</label>
 					</FloatLabel>
 				</div>
-				<Button class="p-3 mt-4 w-full font-bold border-none text-white hover:bg-primary-500 hover:text-surface-0 flex-shrink" @click="save">
+				<Button class="p-3 mt-4 w-full font-bold border-none flex-shrink" @click="save">
 					{{ $t("dialogs.button.save") }}
 				</Button>
 			</form>
@@ -430,7 +430,7 @@ function saveAlbum() {
 		photo_timeline: photoTimeline.value?.value ?? null,
 	};
 	AlbumService.updateAlbum(data).then(() => {
-		toast.add({ severity: "success", summary: trans("toast.success"), life: 3000 });
+		toast.add({ severity: "success", summary: trans("toasts.success"), life: 3000 });
 		AlbumService.clearCache(albumId.value);
 	});
 }

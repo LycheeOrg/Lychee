@@ -40,6 +40,11 @@ class ContentType
 	 */
 	public function handle(Request $request, \Closure $next, string $contentType): mixed
 	{
+		// Skip if check is disabled
+		if (config('features.require-content-type') === false) {
+			return $next($request);
+		}
+
 		if ($contentType === self::JSON) {
 			if (!$request->isJson()) {
 				throw new UnexpectedContentType(self::JSON);

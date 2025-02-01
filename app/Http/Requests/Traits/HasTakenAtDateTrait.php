@@ -8,18 +8,17 @@
 
 namespace App\Http\Requests\Traits;
 
-trait HasUserIdTrait
+use Illuminate\Support\Carbon;
+
+trait HasTakenAtDateTrait
 {
-	/**
-	 * @var int
-	 */
-	protected int $userId;
+	protected ?Carbon $taken_at = null;
 
 	/**
-	 * @return int
+	 * @return Carbon|null
 	 */
-	public function userId(): int
+	public function takenAt(): ?Carbon
 	{
-		return $this->userId;
+		return $this->taken_at;
 	}
 }

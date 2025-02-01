@@ -61,6 +61,8 @@ use function Safe\preg_match;
  * @property string|null  $location
  * @property Carbon|null  $taken_at
  * @property string|null  $taken_at_orig_tz
+ * @property Carbon|null  $initial_taken_at
+ * @property string|null  $initial_taken_at_orig_tz
  * @property bool         $is_starred
  * @property string|null  $live_photo_short_path
  * @property string|null  $live_photo_url
@@ -153,7 +155,9 @@ class Photo extends Model
 		'created_at' => 'datetime',
 		'updated_at' => 'datetime',
 		'taken_at' => DateTimeWithTimezoneCast::class,
+		'initial_taken_at' => DateTimeWithTimezoneCast::class,
 		'live_photo_url' => MustNotSetCast::class . ':live_photo_short_path',
+		'taken_at_mod' => 'datetime',
 		'owner_id' => 'integer',
 		'is_starred' => 'boolean',
 		'tags' => ArrayCast::class,
