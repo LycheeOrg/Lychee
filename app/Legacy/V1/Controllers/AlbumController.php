@@ -9,6 +9,7 @@
 namespace App\Legacy\V1\Controllers;
 
 use App\Actions\Album\Archive;
+use App\Actions\Album\BaseArchive;
 use App\Actions\Album\Create;
 use App\Actions\Album\CreateTagAlbum;
 use App\Actions\Album\Delete;
@@ -387,14 +388,13 @@ final class AlbumController extends Controller
 	 * Return the archive of the pictures of the album and its sub-albums.
 	 *
 	 * @param ArchiveAlbumsRequest $request
-	 * @param Archive              $archive
 	 *
 	 * @return StreamedResponse
 	 *
 	 * @throws LycheeException
 	 */
-	public function getArchive(ArchiveAlbumsRequest $request, Archive $archive): StreamedResponse
+	public function getArchive(ArchiveAlbumsRequest $request): StreamedResponse
 	{
-		return $archive->do($request->albums());
+		return BaseArchive::resolve()->do($request->albums());
 	}
 }
