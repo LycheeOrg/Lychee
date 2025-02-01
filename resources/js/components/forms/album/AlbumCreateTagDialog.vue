@@ -12,7 +12,7 @@
 				<div class="inline-flex flex-col gap-3 px-9">
 					<FloatLabel variant="on">
 						<InputText id="title" v-model="title" />
-						<label class="" for="title">{{ $t("dialogs.new_tag_album.title") }}</label>
+						<label for="title">{{ $t("dialogs.new_tag_album.title") }}</label>
 					</FloatLabel>
 					<FloatLabel variant="on">
 						<AutoComplete

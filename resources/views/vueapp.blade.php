@@ -7,7 +7,7 @@
 <head>
     <meta charset="UTF-8">
     <x-meta />
-    @vite(['resources/js/app.ts','resources/sass/app.scss'])
+    @vite(['resources/js/app.ts','resources/sass/app.css'])
 </head>
 @if((Configs::get()['dark_mode_enabled'] ?? '1') == '1')
     <body class="antialiased dark">

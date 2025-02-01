@@ -6,11 +6,11 @@
 		<Button
 			v-if="isModified && !isInvalid"
 			@click="saveU2F"
-			class="border-0 text-primary-500 bg-surface hover:bg-primary-400 hover:text-white w-1/4"
+			class="border-0 text-primary-500 bg-transparent hover:bg-primary-400 hover:text-white w-1/4"
 		>
 			<i class="pi pi-save" /><span class="hidden md:inline">{{ $t("dialogs.button.save") }}</span></Button
 		>
-		<Button v-if="!isModified" @click="deleteU2F" class="border-0 bg-surface text-danger-600 hover:bg-danger-700 hover:text-white w-1/4">
+		<Button v-if="!isModified" @click="deleteU2F" class="border-0 bg-transparent text-danger-600 hover:bg-danger-700 hover:text-white w-1/4">
 			<i class="pi pi-trash" /><span class="hidden md:inline">{{ $t("dialogs.button.delete") }}</span></Button
 		>
 	</div>

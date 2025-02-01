@@ -1,7 +1,9 @@
 <template>
 	<div
-		class="flex items-center justify-center w-full flex-wrap mt-5 mb-5 bg-none transition-all"
-		:class="search.length < props.searchMinimumLengh ? 'h-4/5' : ''"
+		:class="{
+			'flex items-center justify-center w-full flex-wrap mt-5 mb-5 bg-none transition-all': true,
+			'h-4/5': search.length < props.searchMinimumLengh,
+		}"
 	>
 		<div class="w-full flex items-center flex-wrap justify-center">
 			<div class="items-center relative text-right">
@@ -14,7 +16,13 @@
 					@updated="debouncedFn"
 				/>
 			</div>
-			<div class="items-center text-danger-700 w-full text-center" :class="!isValid ? 'opacity-100' : 'opacity-0'">
+			<div
+				:class="{
+					'items-center text-danger-700 w-full text-center': true,
+					'opacity-100': !isValid,
+					'opacity-0': isValid,
+				}"
+			>
 				{{ sprintf($t("gallery.search.minimum_chars"), props.searchMinimumLengh) }}
 			</div>
 		</div>

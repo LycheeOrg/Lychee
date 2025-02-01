@@ -11,14 +11,14 @@
 				<div class="inline-flex flex-col gap-2 px-9">
 					<FloatLabel variant="on">
 						<InputText id="username" v-model="username" />
-						<label class="" for="username">{{ $t("dialogs.login.username") }}</label>
+						<label for="username">{{ $t("dialogs.login.username") }}</label>
 					</FloatLabel>
 				</div>
 				<div class="flex items-center mt-9">
-					<Button @click="closeCallback" severity="secondary" class="w-full font-bold border-none rounded-none rounded-bl-xl flex-shrink-2">
+					<Button @click="closeCallback" severity="secondary" class="w-full font-bold border-none rounded-none rounded-bl-xl shrink-2">
 						{{ $t("dialogs.button.cancel") }}
 					</Button>
-					<Button @click="login" severity="contrast" class="w-full font-bold border-none rounded-none rounded-br-xl flex-shrink">
+					<Button @click="login" severity="contrast" class="w-full font-bold border-none rounded-none rounded-br-xl shrink">
 						{{ $t("dialogs.webauthn.u2f") }}
 					</Button>
 				</div>

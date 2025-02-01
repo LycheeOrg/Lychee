@@ -1,7 +1,10 @@
 <template>
 	<div
-		class="overlay absolute mb-[1px] mx-[1px] p-0 border-0 w-[calc(100%-2px)] bottom-0 bg-gradient-to-t from-[#00000099] text-shadow-sm"
-		:class="cssOverlay"
+		class=""
+		:class="{
+			'overlay absolute mb-[1px] mx-[1px] p-0 border-0 w-[calc(100%-2px)] bottom-0 bg-gradient-to-t from-[#00000099] text-shadow-sm': true,
+			'opacity-0 group-hover:opacity-100 transition-all ease-out': props.config.display_thumb_album_overlay === 'hover',
+		}"
 	>
 		<h1
 			class="w-full pt-3 pb-1 pr-1 pl-2 sm:pl-3 md:pl-4 text-sm text-surface-0 font-bold text-ellipsis whitespace-nowrap overflow-x-hidden"
@@ -36,18 +39,10 @@
 	</div>
 </template>
 <script setup lang="ts">
-import { computed } from "vue";
 import { AlbumThumbConfig } from "./AlbumThumb.vue";
 
 const props = defineProps<{
 	album: App.Http.Resources.Models.ThumbAlbumResource;
 	config: AlbumThumbConfig;
 }>();
-
-const cssOverlay = computed(() => {
-	if (props.config.display_thumb_album_overlay === "hover") {
-		return "opacity-0 group-hover:opacity-100 transition-all ease-out";
-	}
-	return "";
-});
 </script>

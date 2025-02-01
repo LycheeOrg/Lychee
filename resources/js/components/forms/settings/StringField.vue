@@ -10,7 +10,7 @@
 				}"
 				v-html="props.label ?? props.config.documentation"
 			/>
-			<FloatLabel class="w-full flex-grow">
+			<FloatLabel class="w-full grow">
 				<IconField>
 					<InputText :id="props.config.key" type="text" class="!py-1" v-model="val" @update:modelValue="update" />
 					<InputIcon

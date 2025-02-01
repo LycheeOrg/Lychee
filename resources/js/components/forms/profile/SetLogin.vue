@@ -12,7 +12,7 @@
 				</div>
 				<FloatLabel variant="on">
 					<InputPassword id="oldPassword" v-model="oldPassword" :invalid="!oldPassword && hasChanged" />
-					<label class="" for="oldPassword">{{ $t("profile.login.current_password") }}</label>
+					<label for="oldPassword">{{ $t("profile.login.current_password") }}</label>
 				</FloatLabel>
 			</div>
 			<div class="w-full mt-2">
@@ -21,15 +21,15 @@
 				</div>
 				<FloatLabel variant="on">
 					<InputText id="username" v-model="username" />
-					<label class="" for="username">{{ $t("profile.login.username") }}</label>
+					<label for="username">{{ $t("profile.login.username") }}</label>
 				</FloatLabel>
 				<FloatLabel class="mt-4" variant="on">
 					<InputPassword id="password" v-model="password" />
-					<label class="" for="password">{{ $t("profile.login.new_password") }}</label>
+					<label for="password">{{ $t("profile.login.new_password") }}</label>
 				</FloatLabel>
 				<FloatLabel class="mt-4" variant="on">
 					<InputPassword id="password_confirmation" v-model="password_confirmation" :invalid="password !== password_confirmation" />
-					<label class="" for="password_confirmation">{{ $t("profile.login.confirm_new_password") }}</label>
+					<label for="password_confirmation">{{ $t("profile.login.confirm_new_password") }}</label>
 				</FloatLabel>
 			</div>
 			<div class="w-full mt-2">
@@ -38,16 +38,16 @@
 				</div>
 				<FloatLabel variant="on">
 					<InputText id="email" v-model="email" />
-					<label class="" for="email">{{ $t("profile.login.email") }}</label>
+					<label for="email">{{ $t("profile.login.email") }}</label>
 				</FloatLabel>
 			</div>
 			<div class="flex w-full mt-4">
-				<Button severity="contrast" class="w-full font-bold border-none flex-shrink rounded-none rounded-bl-xl rounded-tl-xl" @click="save">
+				<Button severity="contrast" class="w-full font-bold border-none shrink rounded-none rounded-bl-xl rounded-tl-xl" @click="save">
 					{{ $t("profile.login.change") }}
 				</Button>
 				<Button
 					severity="secondary"
-					class="w-full font-bold border-none flex-shrink rounded-none rounded-br-xl rounded-tr-xl"
+					class="w-full font-bold border-none shrink rounded-none rounded-br-xl rounded-tr-xl"
 					@click="isApiTokenOpen = !isApiTokenOpen"
 				>
 					{{ $t("profile.login.api_token") }}

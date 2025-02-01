@@ -39,7 +39,7 @@
 					<Button
 						@click="create"
 						:disabled="!newShareUser"
-						class="font-bold w-full border-none rounded-none bg-surface text-create-600 hover:bg-create-600 hover:text-white rounded-br-xl"
+						class="font-bold w-full border-none rounded-none bg-transparent text-create-600 hover:bg-create-600 hover:text-white rounded-br-xl"
 					>
 						<i class="pi pi-user-plus" /><span class="hidden md:inline">{{ $t("sharing.share") }}</span>
 					</Button>

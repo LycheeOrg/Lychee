@@ -1,8 +1,11 @@
 <template>
 	<aside
 		id="lychee_sidebar_container"
-		class="h-full relative transition-all overflow-x-clip overflow-y-scroll bg-bg-800"
-		:class="areDetailsOpen ? 'w-[380px]' : 'w-0 translate-x-full'"
+		:class="{
+			'h-full relative transition-all overflow-x-clip overflow-y-scroll bg-bg-800': true,
+			'w-[380px]': areDetailsOpen,
+			'w-0 translate-x-full': !areDetailsOpen,
+		}"
 	>
 		<Card id="lychee_sidebar" v-if="props.photo" class="w-[380px] h-full pr-4 break-words">
 			<template #content>
