@@ -1,6 +1,6 @@
 <template>
 	<Panel v-if="props.isTimeline === false" :header="$t(props.header)" :toggleable="!isAlone" :pt:header:class="headerClass" class="border-0 w-full">
-		<div class="flex flex-wrap flex-row flex-shrink w-full justify-start gap-1 sm:gap-2 md:gap-4 pt-4">
+		<div class="flex flex-wrap flex-row shrink w-full justify-start gap-1 sm:gap-2 md:gap-4 pt-4">
 			<AlbumThumbPanelList
 				:albums="props.albums"
 				:album="props.album"
@@ -16,7 +16,7 @@
 	<Panel v-else :header="'Timeline'" :toggleable="!isAlone" :pt:header:class="headerClass" class="border-0 w-full">
 		<Timeline v-if="is_timeline_left_border_visible" :value="albumsTimeLine" :pt:eventopposite:class="'hidden'" class="mt-4">
 			<template #content="slotProps">
-				<div class="flex flex-wrap flex-row flex-shrink w-full justify-start gap-1 sm:gap-2 md:gap-4 pb-8">
+				<div class="flex flex-wrap flex-row shrink w-full justify-start gap-1 sm:gap-2 md:gap-4 pb-8">
 					<div class="w-full text-left font-semibold text-muted-color-emphasis text-lg">{{ slotProps.item.header }}</div>
 					<AlbumThumbPanelList
 						:albums="slotProps.item.data"
@@ -35,7 +35,7 @@
 			<template v-for="albumTimeline in albumsTimeLine">
 				<div
 					v-if="albumTimeline.data.filter((a) => !a.is_nsfw || are_nsfw_visible).length > 0"
-					class="flex flex-wrap flex-row flex-shrink w-full justify-start gap-1 sm:gap-2 md:gap-4 pb-8"
+					class="flex flex-wrap flex-row shrink w-full justify-start gap-1 sm:gap-2 md:gap-4 pb-8"
 				>
 					<div class="w-full text-left font-semibold text-muted-color-emphasis text-lg">{{ albumTimeline.header }}</div>
 					<AlbumThumbPanelList

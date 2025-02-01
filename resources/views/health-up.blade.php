@@ -6,7 +6,7 @@
 
         <title>{{ config('app.name', 'Laravel') }}</title>
 
-        @vite('resources/sass/app.scss')
+        @vite('resources/sass/app.css')
     </head>
     <body class="antialiased dark">
         <div class="relative sm:flex sm:justify-center sm:items-center min-h-screen bg-gray-100 selection:bg-red-500 selection:text-white">

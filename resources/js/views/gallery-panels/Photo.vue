@@ -1,8 +1,10 @@
 <template>
 	<div
 		id="shutter"
-		class="absolute w-screen h-dvh bg-surface-950 transition-opacity duration-1000 ease-in-out top-0 left-0"
-		:class="is_slideshow_active ? 'z-50 opacity-0 pointer-events-none' : ''"
+		:class="{
+			'absolute w-screen h-dvh bg-surface-950 transition-opacity duration-1000 ease-in-out top-0 left-0': true,
+			'z-50 opacity-0 pointer-events-none': is_slideshow_active,
+		}"
 	></div>
 	<div class="absolute top-0 left-0 w-full flex h-full overflow-hidden bg-black" v-if="photo">
 		<PhotoHeader :albumid="props.albumid" :photo="photo" @slideshow="slideshow" />
