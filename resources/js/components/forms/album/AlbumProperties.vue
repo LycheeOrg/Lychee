@@ -430,7 +430,7 @@ function saveAlbum() {
 		photo_timeline: photoTimeline.value?.value ?? null,
 	};
 	AlbumService.updateAlbum(data).then(() => {
-		toast.add({ severity: "success", summary: trans("toast.success"), life: 3000 });
+		toast.add({ severity: "success", summary: trans("toasts.success"), life: 3000 });
 		AlbumService.clearCache(albumId.value);
 	});
 }
