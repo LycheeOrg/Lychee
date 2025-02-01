@@ -49,6 +49,6 @@ trait Zip31Trait
 		}
 
 		/** @disregard */
-		$zip->addFileFromStream(fileName: $fileName, stream: $file->read(), comment: $photo->title, lastModificationDateTime: $photo->taken_at);
+		$zip->addFileFromStream(fileName: $fileName, stream: $file->read(), comment: $photo->title, lastModificationDateTime: $photo->taken_at ?? $photo->created_at);
 	}
 }

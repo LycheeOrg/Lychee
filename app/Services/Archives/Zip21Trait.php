@@ -29,6 +29,7 @@ trait Zip21Trait
 	{
 		if (InstalledVersions::satisfies(new VersionParser(), 'maennchen/zipstream-php', '^2.1')) {
 			$options = new \ZipStream\Option\Archive();
+			$options->setContentType('application/octet-stream');
 			$options->setDeflateLevel($this->deflateLevel);
 			$options->setZeroHeader(true);
 			$options->setEnableZip64(Configs::getValueAsBool('zip64'));
@@ -50,7 +51,7 @@ trait Zip21Trait
 
 		$options = new \ZipStream\Option\File();
 		$options->setComment($photo->title);
-		$options->setTime($photo->taken_at);
+		$options->setTime($photo->taken_at ?? $photo->created_at);
 		$zip->addFileFromStream(name: $fileName, stream: $file->read(), options: $options);
 	}
 }
