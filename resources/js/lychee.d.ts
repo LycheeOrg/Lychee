@@ -219,6 +219,8 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		sm_instagram_url: string;
 		sm_twitter_url: string;
 		sm_youtube_url: string;
+		sm_pixelfed_url: string;
+		sm_mastodon_url: string;
 	};
 	export type InitConfig = {
 		is_debug_enabled: boolean;
