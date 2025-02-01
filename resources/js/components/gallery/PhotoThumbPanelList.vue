@@ -1,5 +1,5 @@
 <template>
-	<div class="relative flex flex-wrap flex-row flex-shrink w-full justify-start align-top" :id="'photoListing' + props.iter">
+	<div class="relative flex flex-wrap flex-row shrink w-full justify-start align-top" :id="'photoListing' + props.iter">
 		<template v-for="(photo, idx) in props.photos">
 			<PhotoThumb
 				@click="maySelect(idx + iter, $event)"

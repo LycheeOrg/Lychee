@@ -1,5 +1,5 @@
 <template>
-	<Card class="sm:p-4 xl:px-9 max-sm:w-full sm:min-w-[48rem] flex-shrink-0">
+	<Card class="sm:p-4 xl:px-9 max-sm:w-full sm:min-w-[48rem] shrink-0">
 		<template #content>
 			<form>
 				<div class="h-12">
@@ -266,7 +266,7 @@
 						<label for="tags">{{ $t("gallery.album.properties.show_tags") }}</label>
 					</FloatLabel>
 				</div>
-				<Button class="p-3 mt-4 w-full font-bold border-none flex-shrink" @click="save">
+				<Button class="p-3 mt-4 w-full font-bold border-none shrink" @click="save">
 					{{ $t("dialogs.button.save") }}
 				</Button>
 			</form>

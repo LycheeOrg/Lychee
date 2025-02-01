@@ -3,9 +3,10 @@ import { ConfigEnv, defineConfig, loadEnv, PluginOption, UserConfig } from "vite
 import laravel from "laravel-vite-plugin";
 import vue from "@vitejs/plugin-vue";
 import i18n from "laravel-vue-i18n/vite";
+import tailwindcss from "@tailwindcss/vite";
 
 const laravelPlugin = laravel({
-	input: ["resources/sass/app.scss", "resources/js/app.ts"],
+	input: ["resources/sass/app.css", "resources/js/app.ts"],
 	refresh: true,
 });
 
@@ -59,6 +60,7 @@ const localDevelopMiddleware: PluginOption = {
 const baseConfig = {
 	base: "./",
 	plugins: [
+		tailwindcss(),
 		vue({ template: { transformAssetUrls: { base: null, includeAbsolute: false } } }),
 		i18n(),
 	],
@@ -93,13 +95,6 @@ const baseConfig = {
 						return id.toString().split("node_modules/")[1].split("/")[0].toString();
 					}
 				},
-			},
-		},
-	},
-	css: {
-		preprocessorOptions: {
-			scss: {
-				api: "modern",
 			},
 		},
 	},

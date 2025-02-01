@@ -25,7 +25,7 @@
 						<template v-else>
 							<span><i class="text-danger-600 pi pi-exclamation-triangle mr-2" />{{ $t("profile.token.warning") }}</span>
 							<InputText
-								class="flex-grow[4] bg-transparent w-full pt-1 pb-0 px-0.5 h-7 border-b border-b-solid focus:border-b-primary-500 disabled:italic disabled:text-center inline-block"
+								class="grow-4 bg-transparent w-full pt-1 pb-0 px-0.5 h-7 border-b border-b-solid focus:border-b-primary-500 disabled:italic disabled:text-center inline-block"
 								v-model="token"
 								:readonly="true"
 							/>

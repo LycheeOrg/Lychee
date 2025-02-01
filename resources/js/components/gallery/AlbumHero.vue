@@ -31,7 +31,7 @@
 				</div>
 				<a
 					v-if="props.album.rights.can_download"
-					class="flex-shrink-0 px-3 cursor-pointer text-muted-color inline-block transform duration-300 hover:scale-150 hover:text-color"
+					class="shrink-0 px-3 cursor-pointer text-muted-color inline-block transform duration-300 hover:scale-150 hover:text-color"
 					:title="$t('gallery.album.hero.download')"
 					@click="download"
 				>
@@ -39,7 +39,7 @@
 				</a>
 				<a
 					v-if="props.album.rights.can_share"
-					class="flex-shrink-0 px-3 cursor-pointer text-muted-color inline-block transform duration-300 hover:scale-150 hover:text-color"
+					class="shrink-0 px-3 cursor-pointer text-muted-color inline-block transform duration-300 hover:scale-150 hover:text-color"
 					:title="$t('gallery.album.hero.share')"
 					v-on:click="openSharingModal"
 				>
@@ -47,14 +47,14 @@
 				</a>
 				<a
 					v-if="is_se_enabled && user?.id !== null"
-					class="flex-shrink-0 px-3 cursor-pointer inline-block transform duration-300 hover:scale-150 hover:text-color"
+					class="shrink-0 px-3 cursor-pointer inline-block transform duration-300 hover:scale-150 hover:text-color"
 					v-on:click="openStatistics"
 				>
 					<i class="pi pi-chart-scatter text-primary-emphasis" />
 				</a>
 				<a
 					v-if="is_se_preview_enabled && user?.id !== null"
-					class="flex-shrink-0 px-3 cursor-not-allowed text-primary-emphasis"
+					class="shrink-0 px-3 cursor-not-allowed text-primary-emphasis"
 					v-tooltip.left="$t('gallery.album.hero.stats_only_se')"
 				>
 					<i class="pi pi-chart-scatter" />
@@ -62,7 +62,7 @@
 				<template v-if="isTouchDevice() && user?.id !== null">
 					<a
 						v-if="props.hasHidden && lycheeStore.are_nsfw_visible"
-						class="flex-shrink-0 px-3 cursor-pointer text-muted-color inline-block transform duration-300 hover:scale-150 hover:text-color"
+						class="shrink-0 px-3 cursor-pointer text-muted-color inline-block transform duration-300 hover:scale-150 hover:text-color"
 						:title="'hide hidden'"
 						@click="lycheeStore.are_nsfw_visible = false"
 					>
@@ -70,7 +70,7 @@
 					</a>
 					<a
 						v-if="props.hasHidden && !lycheeStore.are_nsfw_visible"
-						class="flex-shrink-0 px-3 cursor-pointer text-muted-color inline-block transform duration-300 hover:scale-150 hover:text-color"
+						class="shrink-0 px-3 cursor-pointer text-muted-color inline-block transform duration-300 hover:scale-150 hover:text-color"
 						:title="'show hidden'"
 						@click="lycheeStore.are_nsfw_visible = true"
 					>

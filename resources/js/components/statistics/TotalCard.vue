@@ -1,5 +1,5 @@
 <template>
-	<Card class="w-56 flex-shrink-0" :pt:body:class="'p-0 pb-4'">
+	<Card class="w-56 shrink-0" :pt:body:class="'p-0 pb-4'">
 		<template #content>
 			<div class="flex flex-wrap w-full">
 				<span class="w-full font-bold text-xl">{{ $t("statistics.total.total") }}</span>

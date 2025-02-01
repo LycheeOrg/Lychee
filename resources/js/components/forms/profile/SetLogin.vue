@@ -42,12 +42,12 @@
 				</FloatLabel>
 			</div>
 			<div class="flex w-full mt-4">
-				<Button severity="contrast" class="w-full font-bold border-none flex-shrink rounded-none rounded-bl-xl rounded-tl-xl" @click="save">
+				<Button severity="contrast" class="w-full font-bold border-none shrink rounded-none rounded-bl-xl rounded-tl-xl" @click="save">
 					{{ $t("profile.login.change") }}
 				</Button>
 				<Button
 					severity="secondary"
-					class="w-full font-bold border-none flex-shrink rounded-none rounded-br-xl rounded-tr-xl"
+					class="w-full font-bold border-none shrink rounded-none rounded-br-xl rounded-tr-xl"
 					@click="isApiTokenOpen = !isApiTokenOpen"
 				>
 					{{ $t("profile.login.api_token") }}
