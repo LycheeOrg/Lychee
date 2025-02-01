@@ -11,7 +11,7 @@
 				<div class="inline-flex flex-col gap-2 px-9">
 					<FloatLabel variant="on">
 						<InputText id="username" v-model="username" />
-						<label class="" for="username">{{ $t("dialogs.login.username") }}</label>
+						<label for="username">{{ $t("dialogs.login.username") }}</label>
 					</FloatLabel>
 				</div>
 				<div class="flex items-center mt-9">

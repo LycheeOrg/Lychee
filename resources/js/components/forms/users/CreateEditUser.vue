@@ -4,11 +4,11 @@
 			<div class="p-9 w-full flex flex-col gap-2 justify-center">
 				<FloatLabel class="w-full" variant="on">
 					<InputText id="username" v-model="username" aria-label="Username" :autofocus="true" />
-					<label class="" for="username">{{ $t("users.username") }}</label>
+					<label for="username">{{ $t("users.username") }}</label>
 				</FloatLabel>
 				<FloatLabel class="w-full" variant="on">
 					<InputPassword id="password" v-model="password" aria-label="Password" />
-					<label class="" for="password">{{ $t("users.password") }}</label>
+					<label for="password">{{ $t("users.password") }}</label>
 				</FloatLabel>
 				<div class="w-full items-center text-muted-color">
 					<Checkbox inputId="mayUpload" v-model="may_upload" :binary="true" />
