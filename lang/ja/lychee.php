@@ -367,7 +367,7 @@ return [
 	'SORT_CHANGE' => '並べ替えを変更',
 
 	'DROPBOX_TITLE' => 'Dropboxキーを設定',
-	'DROPBOX_TEXT' => "Dropbox から写真をインポートするには、<a href='https://www.dropbox.com/developers/saver' class='text-text-main-200 border-b border-dashed border-neutral-400'>Dropbox の Web サイト</a>から有効なドロップイン アプリ キーを取得する必要があります。パーソナルキーを生成し、以下に入力します。",
+	'DROPBOX_TEXT' => "Dropbox から写真をインポートするには、<a href='https://www.dropbox.com/developers/saver' class='text-muted-color-emphasis border-b border-dashed border-neutral-400'>Dropbox の Web サイト</a>から有効なドロップイン アプリ キーを取得する必要があります。パーソナルキーを生成し、以下に入力します。",
 
 	'LANG_TEXT' => 'Lycheeの言語を変更する：',
 	'LANG_TITLE' => '言語を変更する',
