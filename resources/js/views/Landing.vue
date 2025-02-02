@@ -86,7 +86,6 @@ InitService.fetchLandingData().then((data) => {
 	}
 });
 </script>
-
 <style lang="css" scoped>
 .animate-landingAnimateDown {
 	opacity: 0;
