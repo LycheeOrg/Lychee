@@ -56,12 +56,13 @@ class ProfileController extends Controller
 		);
 
 		$currentUser->save();
+
+		TaggedRouteCacheUpdated::dispatch(CacheTag::USER);
+
 		// Update the session with the new credentials of the user.
 		// Otherwise, the session is out-of-sync and falsely assumes the user
 		// to be unauthenticated upon the next request.
 		Auth::login($currentUser);
-
-		TaggedRouteCacheUpdated::dispatch(CacheTag::USER);
 
 		return new UserResource($currentUser);
 	}
@@ -94,8 +95,8 @@ class ProfileController extends Controller
 	 */
 	public function unsetToken(ChangeTokenRequest $request, TokenDisable $tokenDisable): void
 	{
-		TaggedRouteCacheUpdated::dispatch(CacheTag::USER);
-
 		$tokenDisable->do();
+
+		TaggedRouteCacheUpdated::dispatch(CacheTag::USER);
 	}
 }
