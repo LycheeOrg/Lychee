@@ -8,6 +8,8 @@
 
 namespace App\Http\Controllers\WebAuthn;
 
+use App\Enum\CacheTag;
+use App\Events\TaggedRouteCacheUpdated;
 use App\Exceptions\UnauthenticatedException;
 use App\Http\Requests\WebAuthn\DeleteCredentialRequest;
 use App\Http\Requests\WebAuthn\EditCredentialRequest;
@@ -47,6 +49,8 @@ class WebAuthnManageController extends Controller
 		$user = Auth::user() ?? throw new UnauthenticatedException();
 
 		$user->webAuthnCredentials()->where('id', $request->getId())->delete();
+
+		TaggedRouteCacheUpdated::dispatch(CacheTag::USER);
 	}
 
 	/**
@@ -61,5 +65,7 @@ class WebAuthnManageController extends Controller
 		$credential = $request->getCredential();
 		$credential->alias = $request->getAlias();
 		$credential->save();
+
+		TaggedRouteCacheUpdated::dispatch(CacheTag::USER);
 	}
 }

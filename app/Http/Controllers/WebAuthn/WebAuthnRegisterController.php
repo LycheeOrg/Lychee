@@ -8,6 +8,8 @@
 
 namespace App\Http\Controllers\WebAuthn;
 
+use App\Enum\CacheTag;
+use App\Events\TaggedRouteCacheUpdated;
 use App\Exceptions\UnauthenticatedException;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Routing\Controller;
@@ -46,5 +48,7 @@ class WebAuthnRegisterController extends Controller
 		/** @disregard P1014 */
 		$request->user = Auth::user() ?? throw new UnauthenticatedException();
 		$request->save();
+
+		TaggedRouteCacheUpdated::dispatch(CacheTag::USER);
 	}
 }
