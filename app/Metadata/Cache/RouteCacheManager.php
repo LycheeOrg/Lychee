@@ -22,7 +22,7 @@ final readonly class RouteCacheManager
 	public const EXTRA = '|EXT:';
 
 	/** @var array<string,false|RouteCacheConfig> */
-	private array $cache_list;
+	public readonly array $cache_list;
 
 	/**
 	 * Initalize the cache list.
