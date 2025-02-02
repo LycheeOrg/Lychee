@@ -10,11 +10,11 @@
 			<p>{{ $t("profile.oauth.setup_env") }}</p>
 		</div>
 		<template v-else>
-			<div v-for="oauth in oauths" class=" text-text-main-100 {{ $oauthData->isEnabled ? '' : 'hover:text-primary-400'}}">
+			<div v-for="oauth in oauths" class=" text-muted-color-emphasis {{ $oauthData->isEnabled ? '' : 'hover:text-primary-400'}}">
 				<i class="align-middle w-4" :class="oauth.icon + (oauth.isEnabled ? 'text-create-600' : '')"></i>
 				<span class="ml-2" v-if="oauth.isEnabled">
 					{{ sprintf($t("profile.oauth.token_registered"), capitalize(oauth.providerType)) }}
-					<a @click="clear(oauth.providerType)" class="ml-2 cursor-pointer italic text-text-main-400 hover:text-danger-800"
+					<a @click="clear(oauth.providerType)" class="ml-2 cursor-pointer italic text-muted-color hover:text-danger-800"
 						>({{ $t("profile.oauth.reset") }})</a
 					>
 				</span>

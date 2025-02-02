@@ -1,5 +1,5 @@
 <template>
-	<div id="image_overlay" class="absolute bottom-7 left-7 text-text-main-0 text-shadow text-white" v-if="props.imageOverlayType !== 'none'">
+	<div id="image_overlay" class="absolute bottom-7 left-7 text-shadow text-white" v-if="props.imageOverlayType !== 'none'">
 		<h1 class="text-xl sm:text-3xl text-surface-200" x-text="photo.title">{{ props.photo.title }}</h1>
 		<p
 			class="mt-1 text-base sm:text-xl text-surface-400 prose prose-invert"

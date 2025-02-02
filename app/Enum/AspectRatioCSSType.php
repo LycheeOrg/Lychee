@@ -15,10 +15,10 @@ namespace App\Enum;
  */
 enum AspectRatioCSSType: string
 {
-	case aspect5by4 = 'aspect-5/4';
-	case aspect4by5 = 'aspect-4/5';
-	case aspect3by2 = 'aspect-3/2';
+	case aspect5by4 = 'aspect-5x4';
+	case aspect4by5 = 'aspect-4x5';
+	case aspect3by2 = 'aspect-3x2';
 	case aspect1by1 = 'aspect-square';
-	case aspect2by3 = 'aspect-2/3';
+	case aspect2by3 = 'aspect-2x3';
 	case aspect1byx9 = 'aspect-video';
 }
