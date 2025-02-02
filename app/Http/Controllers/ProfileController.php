@@ -11,6 +11,8 @@ namespace App\Http\Controllers;
 use App\Actions\Profile\UpdateLogin;
 use App\Actions\User\TokenDisable;
 use App\Actions\User\TokenReset;
+use App\Enum\CacheTag;
+use App\Events\TaggedRouteCacheUpdated;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;
 use App\Http\Requests\Profile\ChangeTokenRequest;
@@ -54,6 +56,9 @@ class ProfileController extends Controller
 		);
 
 		$currentUser->save();
+
+		TaggedRouteCacheUpdated::dispatch(CacheTag::USER);
+
 		// Update the session with the new credentials of the user.
 		// Otherwise, the session is out-of-sync and falsely assumes the user
 		// to be unauthenticated upon the next request.
@@ -75,6 +80,8 @@ class ProfileController extends Controller
 	{
 		$token = $tokenReset->do();
 
+		TaggedRouteCacheUpdated::dispatch(CacheTag::USER);
+
 		return new UserToken($token);
 	}
 
@@ -89,5 +96,7 @@ class ProfileController extends Controller
 	public function unsetToken(ChangeTokenRequest $request, TokenDisable $tokenDisable): void
 	{
 		$tokenDisable->do();
+
+		TaggedRouteCacheUpdated::dispatch(CacheTag::USER);
 	}
 }

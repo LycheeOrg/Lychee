@@ -77,6 +77,8 @@ class Kernel extends HttpKernel
 			\App\Http\Middleware\VerifyCsrfToken::class,
 			\Illuminate\Routing\Middleware\SubstituteBindings::class,
 			\App\Http\Middleware\Latency::class,
+			'response_cache',
+			'album_cache_refresher',
 		],
 	];
 
@@ -96,9 +98,11 @@ class Kernel extends HttpKernel
 		'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
 		'login_required_v1' => \App\Legacy\V1\Middleware\LoginRequiredV1::class, // remove me in non-legacy build
 		'login_required' => \App\Http\Middleware\LoginRequired::class,
-		'cache_control' => \App\Http\Middleware\CacheControl::class,
+		'cache_control' => \App\Http\Middleware\Caching\CacheControl::class,
 		'support' => \LycheeVerify\Http\Middleware\VerifySupporterStatus::class,
 		'config_integrity' => \App\Http\Middleware\ConfigIntegrity::class,
 		'unlock_with_password' => \App\Http\Middleware\UnlockWithPassword::class,
+		'response_cache' => \App\Http\Middleware\Caching\ResponseCache::class,
+		'album_cache_refresher' => \App\Http\Middleware\Caching\AlbumRouteCacheRefresher::class,
 	];
 }

@@ -21,6 +21,7 @@ use App\Actions\Album\SetSmartProtectionPolicy;
 use App\Actions\Album\Transfer;
 use App\Actions\Album\Unlock;
 use App\Actions\Photo\Archive as PhotoArchive;
+use App\Events\AlbumRouteCacheUpdated;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\UnauthenticatedException;
 use App\Http\Requests\Album\AddAlbumRequest;
@@ -114,6 +115,9 @@ class AlbumController extends Controller
 	 */
 	public function createTagAlbum(AddTagAlbumRequest $request, CreateTagAlbum $create): string
 	{
+		// Root
+		AlbumRouteCacheUpdated::dispatch('');
+
 		return $create->create($request->title(), $request->tags())->id;
 	}
 
@@ -146,7 +150,8 @@ class AlbumController extends Controller
 			album: $album,
 			is_compact: $request->is_compact(),
 			photo: $request->photo(),
-			shall_override: true);
+			shall_override: true
+		);
 
 		return EditableBaseAlbumResource::fromModel($album);
 	}
@@ -173,6 +178,7 @@ class AlbumController extends Controller
 		$album->photo_timeline = $request->photo_timeline();
 		$album->save();
 
+		// Root
 		return EditableBaseAlbumResource::fromModel($album);
 	}
 
@@ -185,26 +191,46 @@ class AlbumController extends Controller
 	 *
 	 * @return AlbumProtectionPolicy
 	 */
-	public function updateProtectionPolicy(SetAlbumProtectionPolicyRequest $request,
+	public function updateProtectionPolicy(
+		SetAlbumProtectionPolicyRequest $request,
 		SetProtectionPolicy $setProtectionPolicy,
-		SetSmartProtectionPolicy $setSmartProtectionPolicy): AlbumProtectionPolicy
-	{
+		SetSmartProtectionPolicy $setSmartProtectionPolicy,
+	): AlbumProtectionPolicy {
 		if ($request->album() instanceof BaseSmartAlbum) {
-			$setSmartProtectionPolicy->do(
-				$request->album(),
-				$request->albumProtectionPolicy()->is_public
-			);
-
-			return AlbumProtectionPolicy::ofSmartAlbum($request->album());
+			return $this->updateProtectionPolicySmart($request->album(), $request->albumProtectionPolicy()->is_public, $setSmartProtectionPolicy);
 		}
 
 		/** @var BaseAlbum $album */
 		$album = $request->album();
-		$setProtectionPolicy->do(
+
+		return $this->updateProtectionPolicyBase(
 			$album,
 			$request->albumProtectionPolicy(),
 			$request->isPasswordProvided(),
-			$request->password()
+			$request->password(),
+			$setProtectionPolicy
+		);
+	}
+
+	private function updateProtectionPolicySmart(BaseSmartAlbum $album, bool $is_public, SetSmartProtectionPolicy $setSmartProtectionPolicy): AlbumProtectionPolicy
+	{
+		$setSmartProtectionPolicy->do($album, $is_public);
+
+		return AlbumProtectionPolicy::ofSmartAlbum($album);
+	}
+
+	private function updateProtectionPolicyBase(
+		BaseAlbum $album,
+		AlbumProtectionPolicy $protectionPolicy,
+		bool $shallSetPassword,
+		?string $password,
+		SetProtectionPolicy $setProtectionPolicy): AlbumProtectionPolicy
+	{
+		$setProtectionPolicy->do(
+			$album,
+			$protectionPolicy,
+			$shallSetPassword,
+			$password
 		);
 
 		return AlbumProtectionPolicy::ofBaseAlbum($album->refresh());
@@ -250,6 +276,7 @@ class AlbumController extends Controller
 	 */
 	public function merge(MergeAlbumsRequest $request, Merge $merge): void
 	{
+		$request->albums()->each(fn (Album $album) => AlbumRouteCacheUpdated::dispatch($album->id));
 		$merge->do($request->album(), $request->albums());
 	}
 
@@ -263,6 +290,7 @@ class AlbumController extends Controller
 	 */
 	public function move(MoveAlbumsRequest $request, Move $move): void
 	{
+		$request->albums()->each(fn (Album $album) => AlbumRouteCacheUpdated::dispatch($album->id));
 		$move->do($request->album(), $request->albums());
 	}
 

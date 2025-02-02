@@ -8,6 +8,7 @@
 
 namespace App\Http\Controllers\Admin\Maintenance;
 
+use App\Events\AlbumRouteCacheUpdated;
 use App\Http\Controllers\Admin\Maintenance\Model\Album;
 use App\Http\Requests\Maintenance\FullTreeUpdateRequest;
 use App\Http\Requests\Maintenance\MaintenanceRequest;
@@ -32,6 +33,8 @@ class FullTree extends Controller
 		$keyName = 'id';
 		$albumInstance = new Album();
 		batch()->update($albumInstance, $request->albums(), $keyName);
+
+		AlbumRouteCacheUpdated::dispatch();
 	}
 
 	/**
