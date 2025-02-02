@@ -38,10 +38,13 @@ final readonly class RouteCacheManager
 			'api/v2/Auth::config' => new RouteCacheConfig(tag: CacheTag::SETTINGS, user_dependant: true),
 			'api/v2/Auth::rights' => new RouteCacheConfig(tag: CacheTag::SETTINGS, user_dependant: true),
 			'api/v2/Auth::user' => new RouteCacheConfig(tag: CacheTag::USER, user_dependant: true),
+
+			// We do not want to cache diagnostics errors and config as they are a debugging tool. The MUST represent the state of Lychee at any time.
 			'api/v2/Diagnostics' => false,
 			'api/v2/Diagnostics::config' => false,
-			'api/v2/Diagnostics::info' => new RouteCacheConfig(tag: CacheTag::SETTINGS, user_dependant: true),
-			'api/v2/Diagnostics::permissions' => new RouteCacheConfig(tag: CacheTag::SETTINGS, user_dependant: true),
+			'api/v2/Diagnostics::info' => false,
+			'api/v2/Diagnostics::permissions' => false,
+			// We can cache the space computation because it is not changing often and very computationally heavy.
 			'api/v2/Diagnostics::space' => new RouteCacheConfig(tag: CacheTag::SETTINGS, user_dependant: true),
 
 			// Response must be different for each call.
@@ -67,12 +70,16 @@ final readonly class RouteCacheManager
 			'api/v2/Map' => new RouteCacheConfig(tag: CacheTag::GALLERY, user_dependant: true, extra: [RequestAttribute::ALBUM_ID_ATTRIBUTE]),
 			'api/v2/Map::provider' => new RouteCacheConfig(tag: CacheTag::SETTINGS),
 			'api/v2/Oauth' => new RouteCacheConfig(tag: CacheTag::USER, user_dependant: true),
+			'api/v2/WebAuthn' => new RouteCacheConfig(tag: CacheTag::USER, user_dependant: true),
 
 			// Response must be different for each call.
 			'api/v2/Photo::random' => false,
 
-			'api/v2/Search' => false, // TODO: how to support pagination ?? new RouteCacheConfig(tag: CacheTag::GALLERY, user_dependant: true, extra: ['album_id', 'terms']),
-			'api/v2/Search::init' => false,
+			// Ideally we should cache the search results, unfortunately it is not clear how to handle the pagination and the parts of the query.
+			// Furthermore the result of the serach depends of the user. Making the caching strategy more complex.
+			// TODO: how to support pagination ?? new RouteCacheConfig(tag: CacheTag::GALLERY, user_dependant: true, extra: ['album_id', 'terms']),
+			'api/v2/Search' => false,
+			'api/v2/Search::init' => new RouteCacheConfig(tag: CacheTag::SETTINGS),
 			'api/v2/Settings' => new RouteCacheConfig(tag: CacheTag::SETTINGS, user_dependant: true),
 			'api/v2/Settings::getLanguages' => new RouteCacheConfig(tag: CacheTag::SETTINGS),
 			'api/v2/Sharing' => new RouteCacheConfig(tag: CacheTag::GALLERY, user_dependant: true, extra: [RequestAttribute::ALBUM_ID_ATTRIBUTE]),
@@ -85,7 +92,6 @@ final readonly class RouteCacheManager
 			'api/v2/Users' => new RouteCacheConfig(tag: CacheTag::USERS, user_dependant: true),
 			'api/v2/Users::count' => new RouteCacheConfig(tag: CacheTag::USERS, user_dependant: true),
 			'api/v2/Version' => false,
-			'api/v2/WebAuthn' => false,
 
 			// This is returning a stream, we do not cache it.
 			'api/v2/Zip' => false,
