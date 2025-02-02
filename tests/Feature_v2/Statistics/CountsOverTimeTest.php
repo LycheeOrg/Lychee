@@ -43,13 +43,13 @@ class CountsOverTimeTest extends BaseApiV2Test
 			'type' => 'created_at',
 		]);
 		$this->assertOk($response);
-		self::assertCount(1, $response->json());
+		self::assertCount(4, $response->json());
 
 		$response = $this->withoutMiddleware(VerifySupporterStatus::class)->actingAs($this->admin)->getJsonWithData('Statistics::getCountsOverTime', [
 			'type' => 'taken_at',
 		]);
 		$this->assertOk($response);
-		self::assertCount(1, $response->json());
+		self::assertCount(4, $response->json());
 
 		// dd($response->json());
 		// self::assertEquals($this->userMayUpload1->username(), $response->json()[0]['username']);
