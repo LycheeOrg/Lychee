@@ -31,4 +31,12 @@ return [
 		'descendants' => 'Children',
 		'size' => 'Size',
 	],
+	'punch_card' => [
+		'title' => 'Activity',
+		'photo-taken' => '%d photos taken',
+		'with-exif' => 'with exif data',
+		'less' => 'Less',
+		'more' => 'More',
+		'tooltip' => '%d photos on %s',
+	],
 ];
