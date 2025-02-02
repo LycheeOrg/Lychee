@@ -8,15 +8,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Statistics\Counts;
 use App\Actions\Statistics\Spaces;
+use App\Enum\CountType;
+use App\Http\Requests\Statistics\CountsRequest;
 use App\Http\Requests\Statistics\SpacePerAlbumRequest;
 use App\Http\Requests\Statistics\SpacePerUserRequest;
 use App\Http\Requests\Statistics\SpaceSizeVariantRequest;
 use App\Http\Resources\Statistics\Album;
+use App\Http\Resources\Statistics\CountsData;
 use App\Http\Resources\Statistics\Sizes;
 use App\Http\Resources\Statistics\UserSpace;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 
 class StatisticsController extends Controller
 {
@@ -108,5 +113,32 @@ class StatisticsController extends Controller
 		$zipped = $spaceData->zip($countData);
 
 		return $zipped->map(fn ($z) => new Album($z[0], $z[1]));
+	}
+
+	/**
+	 * Fetch the number of uploads/taken_at over time.
+	 *
+	 * @param CountsRequest $request
+	 * @param Counts        $counts  Dependency injection
+	 *
+	 * @return CountsData
+	 */
+	public function getPhotoCountOverTime(CountsRequest $request, Counts $counts): CountsData
+	{
+		if ($request->type === CountType::TAKEN_AT) {
+			$data = $counts->getTakenAtCountOverTime(
+				Auth::user()?->id,
+				min_date: $request->min,
+				max_date: $request->max,
+			);
+		} else {
+			$data = $counts->getCreatedAtCountOverTime(
+				Auth::user()?->id,
+				min_date: $request->min,
+				max_date: $request->max,
+			);
+		}
+
+		return new CountsData($data);
 	}
 }
