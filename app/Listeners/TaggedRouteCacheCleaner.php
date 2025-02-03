@@ -28,7 +28,7 @@ class TaggedRouteCacheCleaner
 	 */
 	public function handle(TaggedRouteCacheUpdated $event): void
 	{
-		$cached_routes = $this->route_cache_manager->retrieve_routes_for_tag($event->tag);
+		$cached_routes = $this->route_cache_manager->retrieve_routes_for_tag($event->tag, 0);
 		foreach ($cached_routes as $route) {
 			$this->route_cacher->forgetRoute($route);
 		}

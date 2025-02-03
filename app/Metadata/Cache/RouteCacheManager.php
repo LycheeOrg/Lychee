@@ -21,6 +21,9 @@ final readonly class RouteCacheManager
 	public const USER = '|USR:';
 	public const EXTRA = '|EXT:';
 
+	public const ONLY_WITH_EXTRA = 1;
+	public const ONLY_WITHOUT_EXTRA = 2;
+
 	/** @var array<string,false|RouteCacheConfig> */
 	private array $cache_list;
 
@@ -147,10 +150,11 @@ final readonly class RouteCacheManager
 	 * Given a tag, return all the routes associated to this tag.
 	 *
 	 * @param CacheTag $tag
+	 * @param int      $flag composed of RouteCacheManager::ONLY_WITH_EXTRA and RouteCacheManager::ONLY_WITHOUT_EXTRA
 	 *
 	 * @return string[]
 	 */
-	public function retrieve_routes_for_tag(CacheTag $tag, bool $with_extra = false, bool $without_extra = false): array
+	public function retrieve_routes_for_tag(CacheTag $tag, int $flag): array
 	{
 		$routes = [];
 		foreach ($this->cache_list as $uri => $value) {
@@ -159,8 +163,8 @@ final readonly class RouteCacheManager
 				$value->tag === $tag &&
 				// Either with extra is set to false => ignore condition
 				// Or with extra is set to true and we have extra parameters => ignore condition
-				($with_extra === false || count($value->extra) > 0) &&
-				($without_extra === false || count($value->extra) === 0)
+				(($flag & self::ONLY_WITH_EXTRA) === 0 || count($value->extra) > 0) &&
+				(($flag & self::ONLY_WITHOUT_EXTRA) === 0 || count($value->extra) === 0)
 			) {
 				$routes[] = $uri;
 			}

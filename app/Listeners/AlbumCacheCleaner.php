@@ -35,7 +35,7 @@ class AlbumCacheCleaner
 	{
 		if ($event->album_id === null) {
 			// this is a clear all.
-			$routes = $this->route_cache_manager->retrieve_routes_for_tag(CacheTag::GALLERY);
+			$routes = $this->route_cache_manager->retrieve_routes_for_tag(CacheTag::GALLERY, 0);
 			foreach ($routes as $route) {
 				$this->route_cacher->forgetRoute($route);
 			}
@@ -43,7 +43,7 @@ class AlbumCacheCleaner
 			return;
 		}
 
-		$routes = $this->route_cache_manager->retrieve_routes_for_tag(CacheTag::GALLERY, with_extra: false, without_extra: true);
+		$routes = $this->route_cache_manager->retrieve_routes_for_tag(CacheTag::GALLERY, RouteCacheManager::ONLY_WITHOUT_EXTRA);
 		foreach ($routes as $route) {
 			$this->route_cacher->forgetRoute($route);
 		}
