@@ -64,8 +64,6 @@ class ProfileController extends Controller
 		// to be unauthenticated upon the next request.
 		Auth::login($currentUser);
 
-		TaggedRouteCacheUpdated::dispatch(CacheTag::USER);
-
 		return new UserResource($currentUser);
 	}
 
@@ -97,8 +95,6 @@ class ProfileController extends Controller
 	 */
 	public function unsetToken(ChangeTokenRequest $request, TokenDisable $tokenDisable): void
 	{
-		TaggedRouteCacheUpdated::dispatch(CacheTag::USER);
-
 		$tokenDisable->do();
 
 		TaggedRouteCacheUpdated::dispatch(CacheTag::USER);
