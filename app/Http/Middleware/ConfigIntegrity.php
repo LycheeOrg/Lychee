@@ -29,6 +29,7 @@ class ConfigIntegrity
 		'timeline_album_date_format_month',
 		'timeline_album_date_format_day',
 		'number_albums_per_row_mobile',
+		'cache_ttl',
 	];
 
 	/**

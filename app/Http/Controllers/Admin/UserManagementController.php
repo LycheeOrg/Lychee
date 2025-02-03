@@ -11,6 +11,8 @@ namespace App\Http\Controllers\Admin;
 use App\Actions\Statistics\Spaces;
 use App\Actions\User\Create;
 use App\Actions\User\Save;
+use App\Enum\CacheTag;
+use App\Events\TaggedRouteCacheUpdated;
 use App\Exceptions\UnauthorizedException;
 use App\Http\Requests\UserManagement\AddUserRequest;
 use App\Http\Requests\UserManagement\DeleteUserRequest;
@@ -66,6 +68,8 @@ class UserManagementController extends Controller
 			quota_kb: $request->quota_kb(),
 			note: $request->note()
 		);
+
+		TaggedRouteCacheUpdated::dispatch(CacheTag::USERS);
 	}
 
 	/**
@@ -84,6 +88,8 @@ class UserManagementController extends Controller
 			throw new UnauthorizedException('You are not allowed to delete yourself');
 		}
 		$request->user2()->delete();
+
+		TaggedRouteCacheUpdated::dispatch(CacheTag::USERS);
 	}
 
 	/**
@@ -104,6 +110,8 @@ class UserManagementController extends Controller
 			quota_kb: $request->quota_kb(),
 			note: $request->note()
 		);
+
+		TaggedRouteCacheUpdated::dispatch(CacheTag::USERS);
 
 		return new UserManagementResource($user, ['id' => $user->id, 'size' => 0], $request->is_se());
 	}

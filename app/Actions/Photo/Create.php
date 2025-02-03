@@ -32,10 +32,10 @@ use App\Exceptions\QuotaExceededException;
 use App\Image\Files\NativeLocalFile;
 use App\Legacy\Actions\Photo\Create as LegacyPhotoCreate;
 use App\Models\Photo;
+use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Pipeline\Pipeline;
 use LycheeVerify\Verify;
-use User;
 
 class Create
 {
@@ -218,6 +218,7 @@ class Create
 			// If source file could not be put into final destination, remove
 			// freshly created photo from DB to avoid having "zombie" entries.
 			try {
+				/** @disregard */
 				$dto->getPhoto()->delete();
 			} catch (\Throwable) {
 				// Sic! If anything goes wrong here, we still throw the original exception
@@ -317,7 +318,7 @@ class Create
 			return;
 		}
 
-		$user = \User::find($this->strategyParameters->intendedOwnerId) ?? throw new ModelNotFoundException();
+		$user = User::find($this->strategyParameters->intendedOwnerId) ?? throw new ModelNotFoundException();
 
 		// User does not have quota
 		if ($user->quota_kb === null) {
