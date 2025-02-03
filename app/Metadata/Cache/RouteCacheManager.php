@@ -161,8 +161,8 @@ final readonly class RouteCacheManager
 			if (
 				$value !== false &&
 				$value->tag === $tag &&
-				// Either with extra is set to false => ignore condition
-				// Or with extra is set to true and we have extra parameters => ignore condition
+				// Either with ONLY_WITH_EXTRA flag not set => ignore condition
+				// Or with ONLY_WITH_EXTRA flag set and we have extra parameters => ignore condition
 				(($flag & self::ONLY_WITH_EXTRA) === 0 || count($value->extra) > 0) &&
 				(($flag & self::ONLY_WITHOUT_EXTRA) === 0 || count($value->extra) === 0)
 			) {
