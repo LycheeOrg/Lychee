@@ -25,7 +25,7 @@ final readonly class RouteCacheManager
 	public const ONLY_WITHOUT_EXTRA = 2;
 
 	/** @var array<string,false|RouteCacheConfig> */
-	private array $cache_list;
+	public readonly array $cache_list;
 
 	/**
 	 * Initalize the cache list.
