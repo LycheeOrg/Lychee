@@ -31,6 +31,7 @@ declare namespace App.Enum {
 		| "is_starred"
 		| "type";
 	export type ConfigType = "int" | "positive" | "string" | "string_required" | "0|1" | "0|1|2" | "" | "license" | "map_provider";
+	export type CountType = "taken_at" | "created_at";
 	export type DateOrderingType = "older_younger" | "younger_older";
 	export type DbDriverType = "mysql" | "pgsql" | "sqlite";
 	export type DefaultAlbumProtectionType = 1 | 2 | 3;
@@ -656,6 +657,18 @@ declare namespace App.Http.Resources.Statistics {
 		num_photos: number;
 		num_descendants: number;
 		size: number;
+	};
+	export type CountsData = {
+		data: Array<App.Http.Resources.Statistics.DayCount>;
+		low_number_of_shoots_per_day: number;
+		medium_number_of_shoots_per_day: number;
+		high_number_of_shoots_per_day: number;
+		min_created_at: string;
+		min_taken_at: string;
+	};
+	export type DayCount = {
+		date: string;
+		count: number;
 	};
 	export type Sizes = {
 		type: App.Enum.SizeVariantType;

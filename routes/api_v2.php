@@ -227,6 +227,7 @@ Route::get('/Statistics::userSpace', [StatisticsController::class, 'getSpacePerU
 Route::get('/Statistics::sizeVariantSpace', [StatisticsController::class, 'getSpacePerSizeVariantType'])->middleware(['support:se']);
 Route::get('/Statistics::albumSpace', [StatisticsController::class, 'getSpacePerAlbum'])->middleware(['support:se']);
 Route::get('/Statistics::totalAlbumSpace', [StatisticsController::class, 'getTotalSpacePerAlbum'])->middleware(['support:se']);
+Route::get('/Statistics::getCountsOverTime', [StatisticsController::class, 'getPhotoCountOverTime'])->middleware(['support:se']);
 
 /**
  * UPDATE.
