@@ -12,7 +12,7 @@
 				<div class="inline-flex flex-col gap-2 px-9">
 					<FloatLabel variant="on">
 						<InputText id="title" v-model="title" />
-						<label class="" for="title">{{ $t("dialogs.new_album.title") }}</label>
+						<label for="title">{{ $t("dialogs.new_album.title") }}</label>
 					</FloatLabel>
 				</div>
 				<div class="flex items-center mt-9">

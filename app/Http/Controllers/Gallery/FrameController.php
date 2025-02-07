@@ -16,8 +16,9 @@ use App\Http\Resources\Models\PhotoResource;
 use App\Models\Configs;
 use App\Models\Photo;
 use App\Policies\PhotoQueryPolicy;
+use Illuminate\Routing\Controller;
 
-class FrameController
+class FrameController extends Controller
 {
 	private PhotoQueryPolicy $photoQueryPolicy;
 

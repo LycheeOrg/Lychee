@@ -1,7 +1,7 @@
 <template>
 	<div class="h-screen w-screen">
 		<img v-if="imgSrc !== ''" alt="image background" class="absolute w-screen h-screen object-cover blur-lg object-center" :src="imgSrc" />
-		<div class="w-screen h-screen flex justify-center items-center flex-wrap bg-repeat bg-noise">
+		<div class="w-screen h-screen flex justify-center items-center flex-wrap bg-repeat bg-[url(/img/noise.png)]">
 			<img
 				v-if="imgSrc !== ''"
 				alt="Random Image"
@@ -69,6 +69,7 @@ onUnmounted(() => {
 
 function goBack() {
 	clearTimeouts();
+	document.exitFullscreen();
 
 	if (props.albumid !== undefined) {
 		router.push({ name: "album", params: { albumid: props.albumid } });
@@ -79,5 +80,9 @@ function goBack() {
 
 onKeyStroke("Escape", () => {
 	goBack();
+});
+
+onMounted(() => {
+	document.documentElement.requestFullscreen();
 });
 </script>

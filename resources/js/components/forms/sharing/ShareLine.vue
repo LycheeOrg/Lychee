@@ -16,7 +16,7 @@
 			<Checkbox v-model="grantsEdit" :binary="true" @update:model-value="edit" />
 			<Checkbox v-model="grantsDelete" :binary="true" @update:model-value="edit" />
 		</div>
-		<Button @click="deletePermission" class="border-0 bg-surface text-danger-600 hover:bg-danger-700 hover:text-white w-1/6">
+		<Button @click="deletePermission" class="border-0 bg-transparent text-danger-600 hover:bg-danger-700 hover:text-white w-1/6">
 			<i class="pi pi-user-minus" /><span class="hidden md:inline">{{ $t("dialogs.button.delete") }}</span>
 		</Button>
 	</div>

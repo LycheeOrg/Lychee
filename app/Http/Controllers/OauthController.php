@@ -9,7 +9,9 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Oauth\Oauth as OauthAction;
+use App\Enum\CacheTag;
 use App\Enum\OauthProvidersType;
+use App\Events\TaggedRouteCacheUpdated;
 use App\Exceptions\UnauthenticatedException;
 use App\Exceptions\UnauthorizedException;
 use App\Http\Requests\Profile\ClearOauthRequest;
@@ -98,6 +100,8 @@ class OauthController extends Controller
 		$providerEnum = $this->oauth->validateProviderOrDie($provider);
 		Session::put($providerEnum->value, OauthAction::OAUTH_REGISTER);
 
+		TaggedRouteCacheUpdated::dispatch(CacheTag::USER);
+
 		return Socialite::driver($providerEnum->value)->redirect();
 	}
 
@@ -127,6 +131,8 @@ class OauthController extends Controller
 		/** @var User $user */
 		$user = Auth::user() ?? throw new UnauthenticatedException();
 		$user->oauthCredentials()->where('provider', '=', $request->provider())->delete();
+
+		TaggedRouteCacheUpdated::dispatch(CacheTag::USER);
 	}
 
 	/**

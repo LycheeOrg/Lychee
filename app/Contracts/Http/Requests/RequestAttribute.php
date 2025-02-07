@@ -33,6 +33,7 @@ class RequestAttribute
 
 	public const TITLE_ATTRIBUTE = 'title';
 	public const UPLOAD_DATE_ATTRIBUTE = 'upload_date';
+	public const TAKEN_DATE_ATTRIBUTE = 'taken_at';
 	public const DESCRIPTION_ATTRIBUTE = 'description';
 	public const LICENSE_ATTRIBUTE = 'license';
 	public const ASPECT_RATIO_ATTRIBUTE = 'aspect_ratio';

@@ -4,11 +4,11 @@
 			<div class="p-9 w-full flex flex-col gap-2 justify-center">
 				<FloatLabel class="w-full" variant="on">
 					<InputText id="username" v-model="username" aria-label="Username" :autofocus="true" />
-					<label class="" for="username">{{ $t("users.username") }}</label>
+					<label for="username">{{ $t("users.username") }}</label>
 				</FloatLabel>
 				<FloatLabel class="w-full" variant="on">
 					<InputPassword id="password" v-model="password" aria-label="Password" />
-					<label class="" for="password">{{ $t("users.password") }}</label>
+					<label for="password">{{ $t("users.password") }}</label>
 				</FloatLabel>
 				<div class="w-full items-center text-muted-color">
 					<Checkbox inputId="mayUpload" v-model="may_upload" :binary="true" />
@@ -40,7 +40,7 @@
 				<Button
 					v-if="!props.isEdit"
 					@click="createUser"
-					class="w-full border-0 bg-surface text-create-600 hover:bg-create-600 hover:text-white rounded-none rounded-br-lg font-bold"
+					class="w-full border-0 bg-transparent text-create-600 hover:bg-create-600 hover:text-white rounded-none rounded-br-lg font-bold"
 					:disabled="username === undefined || password === undefined || username === '' || password === ''"
 				>
 					<i class="pi pi-user-plus" /><span class="hidden md:inline">{{ $t("users.create_edit.create") }}</span>

@@ -8,15 +8,19 @@
 
 namespace App\Http\Controllers\Gallery;
 
+use App\Actions\Sharing\Propagate;
 use App\Actions\Sharing\Share;
 use App\Constants\AccessPermissionConstants as APC;
+use App\Exceptions\Internal\LycheeLogicException;
 use App\Http\Requests\Sharing\AddSharingRequest;
 use App\Http\Requests\Sharing\DeleteSharingRequest;
 use App\Http\Requests\Sharing\EditSharingRequest;
 use App\Http\Requests\Sharing\ListAllSharingRequest;
 use App\Http\Requests\Sharing\ListSharingRequest;
+use App\Http\Requests\Sharing\PropagateSharingRequest;
 use App\Http\Resources\Models\AccessPermissionResource;
 use App\Models\AccessPermission;
+use App\Models\Album;
 use App\Models\BaseAlbumImpl;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Collection;
@@ -121,5 +125,26 @@ class SharingController extends Controller
 	public function delete(DeleteSharingRequest $request): void
 	{
 		AccessPermission::query()->where('id', '=', $request->perm()->id)->delete();
+	}
+
+	/**
+	 * Propagate sharing permissions.
+	 *
+	 * @param PropagateSharingRequest $request
+	 *
+	 * @return void
+	 */
+	public function propagate(PropagateSharingRequest $request, Propagate $propagate): void
+	{
+		$album = $request->album();
+		if (!$album instanceof Album) {
+			throw new LycheeLogicException('Only albums can have any descandants.');
+		}
+
+		if ($request->shallOverride) {
+			$propagate->overwrite($album);
+		} else {
+			$propagate->update($album);
+		}
 	}
 }

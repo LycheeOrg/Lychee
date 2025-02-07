@@ -74,6 +74,7 @@ Route::get('/Map::provider', [Gallery\MapController::class, 'getProvider'])->mid
  */
 Route::get('/Sharing', [Gallery\SharingController::class, 'list']);
 Route::post('/Sharing', [Gallery\SharingController::class, 'create']);
+Route::put('/Sharing', [Gallery\SharingController::class, 'propagate']);
 Route::patch('/Sharing', [Gallery\SharingController::class, 'edit']);
 Route::delete('/Sharing', [Gallery\SharingController::class, 'delete']);
 Route::get('/Sharing::all', [Gallery\SharingController::class, 'listAll']);
@@ -212,6 +213,7 @@ Route::post('/Maintenance::genSizeVariants', [Admin\Maintenance\GenSizeVariants:
 Route::get('/Maintenance::missingFileSize', [Admin\Maintenance\MissingFileSizes::class, 'check']);
 Route::post('/Maintenance::missingFileSize', [Admin\Maintenance\MissingFileSizes::class, 'do']);
 Route::post('/Maintenance::optimize', [Admin\Maintenance\Optimize::class, 'do']);
+Route::post('/Maintenance::flushCache', [Admin\Maintenance\FlushCache::class, 'do']);
 Route::post('/Maintenance::register', Admin\Maintenance\RegisterController::class);
 Route::get('/Maintenance::fullTree', [Admin\Maintenance\FullTree::class, 'check']);
 Route::post('/Maintenance::fullTree', [Admin\Maintenance\FullTree::class, 'do']);

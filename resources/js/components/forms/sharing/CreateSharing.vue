@@ -15,7 +15,7 @@
 			<Checkbox v-model="grantsEdit" :binary="true" />
 			<Checkbox v-model="grantsDelete" :binary="true" />
 		</div>
-		<Button @click="create" :disabled="!newShareUser" class="border-0 bg-surface text-create-600 hover:bg-create-600 hover:text-white w-1/6">
+		<Button @click="create" :disabled="!newShareUser" class="border-0 bg-transparent text-create-600 hover:bg-create-600 hover:text-white w-1/6">
 			<i class="pi pi-user-plus" /><span class="hidden md:inline">{{ $t("sharing.share") }}</span>
 		</Button>
 	</div>

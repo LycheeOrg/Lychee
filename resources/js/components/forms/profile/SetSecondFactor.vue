@@ -15,7 +15,7 @@
 			<h1 class="p-3 text-center w-full">{{ $t("profile.u2f.not_secure") }}</h1>
 		</div>
 		<div class="w-full mt-4" v-if="!isWebAuthnUnavailable">
-			<Button class="border-0 bg-surface text-create-600 font-bold hover:bg-create-600 hover:text-white w-full" @click="register">
+			<Button class="border-0 bg-transparent text-create-600 font-bold hover:bg-create-600 hover:text-white w-full" @click="register">
 				{{ $t("profile.u2f.new") }}
 			</Button>
 		</div>

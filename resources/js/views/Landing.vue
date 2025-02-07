@@ -1,7 +1,7 @@
 <template>
 	<main v-if="initdata" id="landing" class="w-screen h-screen bg-black roboto overflow-hidden">
 		<div id="header" class="fixed top-0 left-0 right-0 z-50 overflow-y-hidden">
-			<div id="logo" class="float-left p-4 text-surface-0 translate-y-[-300px] opacity-0 animate-landingAnimateDown">
+			<div id="logo" class="float-left p-4 text-surface-0 animate-landingAnimateDown">
 				<a href="#">
 					<h1 class="text-lg font-bold uppercase text-center roboto">
 						{{ initdata.landing_title }}
@@ -12,7 +12,7 @@
 		</div>
 
 		<div id="menu_wrap" class="fixed top-0 right-0 z-50 w-4/5 overflow-y-hidden">
-			<div id="menu" class="w-full translate-y-[-300px] opacity-0 animate-landingAnimateDown">
+			<div id="menu" class="w-full animate-landingAnimateDown">
 				<ul class="menu list-none">
 					<li class="menu-item relative block float-right pt-6 pb-5 px-3">
 						<RouterLink to="/gallery" class="cursor-pointer block text-xs uppercase font-normal text-surface-0 hover:text-muted-color">
@@ -86,3 +86,26 @@ InitService.fetchLandingData().then((data) => {
 	}
 });
 </script>
+<style lang="css" scoped>
+.animate-landingAnimateDown {
+	opacity: 0;
+	translate: translateY(-300px);
+	animation-name: landingAnimateDown;
+	animation-duration: 2s;
+	animation-timing-function: ease-in-out;
+	animation-delay: 3s;
+	animation-direction: forwards;
+	animation-fill-mode: forwards;
+}
+
+@keyframes landingAnimateDown {
+	0% {
+		transform: translateY(-300px);
+		opacity: 0;
+	}
+	100% {
+		transform: translateY(0);
+		opacity: 1;
+	}
+}
+</style>

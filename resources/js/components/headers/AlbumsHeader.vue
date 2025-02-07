@@ -85,11 +85,11 @@ import Divider from "primevue/divider";
 import ImportFromLink from "@/components/modals/ImportFromLink.vue";
 import { computed, ComputedRef, ref } from "vue";
 import { onKeyStroke } from "@vueuse/core";
-import { useRouter } from "vue-router";
-import { storeToRefs } from "pinia";
 import { useLycheeStateStore } from "@/stores/LycheeState";
-import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { isTouchDevice, shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
+import { storeToRefs } from "pinia";
+import { useRouter } from "vue-router";
+import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { useContextMenuAlbumsAdd } from "@/composables/contextMenus/contextMenuAlbumsAdd";
 import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
 import DropBox from "../modals/DropBox.vue";
@@ -132,22 +132,11 @@ const togglableStore = useTogglablesStateStore();
 const { dropbox_api_key } = storeToRefs(lycheeStore);
 const { is_login_open, is_upload_visible, is_create_album_visible, is_create_tag_album_visible } = storeToRefs(togglableStore);
 
-const isWebAuthnOpen = ref(false);
 const router = useRouter();
 
 const {
 	toggleCreateAlbum,
 	toggleCreateTagAlbum,
-	isDeleteVisible,
-	toggleDelete,
-	isMergeAlbumVisible,
-	toggleMergeAlbum,
-	isMoveVisible,
-	toggleMove,
-	isRenameVisible,
-	toggleRename,
-	isShareAlbumVisible,
-	toggleShareAlbum,
 	isImportFromLinkOpen,
 	toggleImportFromLink,
 	isImportFromDropboxOpen,
@@ -262,7 +251,7 @@ const menu = computed(() =>
 			icon: "pi pi-question-circle",
 			type: "fn",
 			callback: openHelp,
-			if: !isTouchDevice() && props.user.id !== null && props.config.show_keybinding_help_button,
+			if: !isTouchDevice() && props.user.id !== null && props.config.show_keybinding_help_button && document.body.scrollWidth > 800,
 		},
 		{
 			icon: "pi pi-plus",

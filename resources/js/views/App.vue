@@ -16,12 +16,12 @@ import { disableCtrlA } from "@/utils/keybindings-utils";
 disableCtrlA();
 </script>
 
-<style lang="scss">
+<style lang="css">
 body {
 	background-color: var(--p-surface-0);
+}
 
-	&.dark {
-		background-color: var(--p-surface-900);
-	}
+body.dark {
+	background-color: var(--p-surface-900);
 }
 </style>
