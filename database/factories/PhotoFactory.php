@@ -135,6 +135,35 @@ class PhotoFactory extends Factory
 	}
 
 	/**
+	 * define checksum for that picture.
+	 *
+	 * @return self
+	 */
+	public function with_checksum(string $checksum): self
+	{
+		return $this->state(function (array $attributes) use ($checksum) {
+			return [
+				'checksum' => $checksum,
+				'original_checksum' => $checksum,
+			];
+		});
+	}
+
+	/**
+	 * define title for that picture.
+	 *
+	 * @return self
+	 */
+	public function with_title(string $title): self
+	{
+		return $this->state(function (array $attributes) use ($title) {
+			return [
+				'title' => $title,
+			];
+		});
+	}
+
+	/**
 	 * Configure the model factory.
 	 * We create 7 random Size Variants.
 	 */
