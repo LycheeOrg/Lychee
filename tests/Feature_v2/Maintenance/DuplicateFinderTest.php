@@ -18,6 +18,9 @@
 
 namespace Tests\Feature_v2\Maintenance;
 
+use App\Actions\Photo\DuplicateFinder;
+use App\Models\Album;
+use App\Models\Photo;
 use Tests\Feature_v2\Base\BaseApiV2Test;
 
 class DuplicateFinderTest extends BaseApiV2Test
@@ -94,5 +97,89 @@ class DuplicateFinderTest extends BaseApiV2Test
 			'with_title_constraint' => true,
 		]);
 		$this->assertUnprocessable($response);
+	}
+
+	public function testActionCountDuplicates(): void
+	{
+		// First we create the following images:
+		$album = Album::factory()->as_root()->owned_by($this->admin)->create();
+		$album2 = Album::factory()->as_root()->owned_by($this->admin)->create();
+		$photo1 = Photo::factory()->owned_by($this->admin)->with_checksum('1234567890abcdef')->with_title('duplicate')->in($album)->create();
+		$photo2 = Photo::factory()->owned_by($this->admin)->with_checksum('1234567890abcdef')->with_title('duplicate2')->in($album)->create();
+		$photo3 = Photo::factory()->owned_by($this->admin)->with_checksum('1234567890abcdef')->with_title('duplicate')->in($album2)->create();
+		$photo4 = Photo::factory()->owned_by($this->admin)->with_checksum('1234567890abcde')->with_title('duplicate2')->in($album)->create();
+
+		$response = $this->actingAs($this->admin)->getJsonWithData('Maintenance::countDuplicates');
+		$this->assertOk($response);
+		$response->assertJson([
+			'pure_duplicates' => 3, // 3 duplicates with the same checksum
+			'title_duplicates' => 2, // 2 duplicates with same title in same album
+			'duplicates_within_album' => 2, // 2 duplicates with same checksum and in same album
+		]);
+
+		$response = $this->getJsonWithData('Maintenance::searchDuplicates', [
+			'with_album_constraint' => false,
+			'with_checksum_constraint' => true,
+			'with_title_constraint' => false,
+		]);
+		$this->assertOk($response);
+		// We have 3 checksum duplicates in total: 1,2,3
+		$response->assertSee($photo1->id);
+		$response->assertSee($photo2->id);
+		$response->assertSee($photo3->id);
+		$response->assertDontSee($photo4->id);
+
+		// We cannot test further with requests due to the SE limitations.
+		// So we directly interact with Action class.
+
+		$duplicate_finder = new DuplicateFinder();
+
+		/** @var Collection<int,object{album_id:string,album_title:string,photo_id:string,photo_title:string,checksum:string,short_path:string|null,storage_disk:string|null}> */
+		$collection = $duplicate_finder->search(
+			must_be_within_same_album: true,
+			must_have_same_checksum: true,
+			must_have_same_title: false);
+
+		// We have 2 checksum duplicates in the same album: 1,2
+		$this->assertTrue($collection->contains('photo_id', $photo1->id));
+		$this->assertTrue($collection->contains('photo_id', $photo2->id));
+		$this->assertFalse($collection->contains('photo_id', $photo3->id));
+		$this->assertFalse($collection->contains('photo_id', $photo4->id));
+
+		$collection = $duplicate_finder->search(
+			must_be_within_same_album: true,
+			must_have_same_checksum: true,
+			must_have_same_title: true);
+
+		// We have 0 checksum duplicates in the same album with the same title
+		$this->assertFalse($collection->contains('photo_id', $photo1->id));
+		$this->assertFalse($collection->contains('photo_id', $photo2->id));
+		$this->assertFalse($collection->contains('photo_id', $photo3->id));
+		$this->assertFalse($collection->contains('photo_id', $photo4->id));
+
+		$collection = $duplicate_finder->search(
+			must_be_within_same_album: true,
+			must_have_same_checksum: false,
+			must_have_same_title: true);
+
+		// We have 2 title duplicates in the same album: 2,4
+		$this->assertFalse($collection->contains('photo_id', $photo1->id));
+		$this->assertTrue($collection->contains('photo_id', $photo2->id));
+		$this->assertFalse($collection->contains('photo_id', $photo3->id));
+		$this->assertTrue($collection->contains('photo_id', $photo4->id));
+
+		// Create photo 5: same as photo 1.
+		$photo5 = Photo::factory()->owned_by($this->admin)->with_checksum('1234567890abcdef')->with_title('duplicate')->in($album)->create();
+		$collection = $duplicate_finder->search(
+			must_be_within_same_album: true,
+			must_have_same_checksum: true,
+			must_have_same_title: true);
+
+		// We have 1 checksum duplicates in the same album with the same title: 1,5
+		$this->assertTrue($collection->contains('photo_id', $photo1->id));
+		$this->assertTrue($collection->contains('photo_id', $photo5->id));
+		$this->assertFalse($collection->contains('photo_id', $photo2->id));
+		$this->assertFalse($collection->contains('photo_id', $photo3->id));
+		$this->assertFalse($collection->contains('photo_id', $photo4->id));
 	}
 }
