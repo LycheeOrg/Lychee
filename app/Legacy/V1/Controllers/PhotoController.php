@@ -9,6 +9,7 @@
 namespace App\Legacy\V1\Controllers;
 
 use App\Actions\Photo\Archive;
+use App\Actions\Photo\BaseArchive;
 use App\Actions\Photo\Delete;
 use App\Actions\Photo\Duplicate;
 use App\Actions\Photo\Move;
@@ -313,15 +314,14 @@ final class PhotoController extends Controller
 	 * Return the archive of pictures or just a picture if only one.
 	 *
 	 * @param ArchivePhotosRequest $request
-	 * @param Archive              $archive
 	 *
 	 * @return SymfonyResponse
 	 *
 	 * @throws LycheeException
 	 */
-	public function getArchive(ArchivePhotosRequest $request, Archive $archive): SymfonyResponse
+	public function getArchive(ArchivePhotosRequest $request): SymfonyResponse
 	{
-		return $archive->do($request->photos(), $request->sizeVariant());
+		return BaseArchive::resolve()->do($request->photos(), $request->sizeVariant());
 	}
 
 	/**
