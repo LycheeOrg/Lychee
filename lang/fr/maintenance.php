@@ -20,6 +20,14 @@ return [
 		'description' => 'Supprimer le contenu de <span class="font-mono">%s</span>',
 		'button' => 'Nettoyer',
 	],
+	'duplicate-finder' => [
+		'title' => 'Duplicates',
+		'description' => 'This module counts potential duplicates betwen pictures.',
+		'duplicates-all' => 'Duplicates over all albums',
+		'duplicates-title' => 'Title duplicates per album',
+		'duplicates-per-album' => 'Duplicates per album',
+		'show' => 'Show duplicates',
+	],
 	'fix-jobs' => [
 		'title' => 'Réparer l’historique des Jobs',
 		'description' => 'Marquer les jobs avec status <span class="text-ready-400">%s</span> ou <span class="text-primary-500">%s</span> comme <span class="text-danger-700">%s</span>.',
