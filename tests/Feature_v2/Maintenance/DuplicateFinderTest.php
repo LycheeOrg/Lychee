@@ -21,6 +21,7 @@ namespace Tests\Feature_v2\Maintenance;
 use App\Actions\Photo\DuplicateFinder;
 use App\Models\Album;
 use App\Models\Photo;
+use Illuminate\Support\Collection;
 use Tests\Feature_v2\Base\BaseApiV2Test;
 
 class DuplicateFinderTest extends BaseApiV2Test
@@ -141,10 +142,10 @@ class DuplicateFinderTest extends BaseApiV2Test
 			must_have_same_title: false);
 
 		// We have 2 checksum duplicates in the same album: 1,2
-		$this->assertTrue($collection->contains('photo_id', $photo1->id));
-		$this->assertTrue($collection->contains('photo_id', $photo2->id));
-		$this->assertFalse($collection->contains('photo_id', $photo3->id));
-		$this->assertFalse($collection->contains('photo_id', $photo4->id));
+		self::assertTrue($collection->contains('photo_id', $photo1->id));
+		self::assertTrue($collection->contains('photo_id', $photo2->id));
+		self::assertFalse($collection->contains('photo_id', $photo3->id));
+		self::assertFalse($collection->contains('photo_id', $photo4->id));
 
 		$collection = $duplicate_finder->search(
 			must_be_within_same_album: true,
@@ -152,10 +153,10 @@ class DuplicateFinderTest extends BaseApiV2Test
 			must_have_same_title: true);
 
 		// We have 0 checksum duplicates in the same album with the same title
-		$this->assertFalse($collection->contains('photo_id', $photo1->id));
-		$this->assertFalse($collection->contains('photo_id', $photo2->id));
-		$this->assertFalse($collection->contains('photo_id', $photo3->id));
-		$this->assertFalse($collection->contains('photo_id', $photo4->id));
+		self::assertFalse($collection->contains('photo_id', $photo1->id));
+		self::assertFalse($collection->contains('photo_id', $photo2->id));
+		self::assertFalse($collection->contains('photo_id', $photo3->id));
+		self::assertFalse($collection->contains('photo_id', $photo4->id));
 
 		$collection = $duplicate_finder->search(
 			must_be_within_same_album: true,
@@ -163,10 +164,10 @@ class DuplicateFinderTest extends BaseApiV2Test
 			must_have_same_title: true);
 
 		// We have 2 title duplicates in the same album: 2,4
-		$this->assertFalse($collection->contains('photo_id', $photo1->id));
-		$this->assertTrue($collection->contains('photo_id', $photo2->id));
-		$this->assertFalse($collection->contains('photo_id', $photo3->id));
-		$this->assertTrue($collection->contains('photo_id', $photo4->id));
+		self::assertFalse($collection->contains('photo_id', $photo1->id));
+		self::assertTrue($collection->contains('photo_id', $photo2->id));
+		self::assertFalse($collection->contains('photo_id', $photo3->id));
+		self::assertTrue($collection->contains('photo_id', $photo4->id));
 
 		// Create photo 5: same as photo 1.
 		$photo5 = Photo::factory()->owned_by($this->admin)->with_checksum('1234567890abcdef')->with_title('duplicate')->in($album)->create();
@@ -176,10 +177,10 @@ class DuplicateFinderTest extends BaseApiV2Test
 			must_have_same_title: true);
 
 		// We have 1 checksum duplicates in the same album with the same title: 1,5
-		$this->assertTrue($collection->contains('photo_id', $photo1->id));
-		$this->assertTrue($collection->contains('photo_id', $photo5->id));
-		$this->assertFalse($collection->contains('photo_id', $photo2->id));
-		$this->assertFalse($collection->contains('photo_id', $photo3->id));
-		$this->assertFalse($collection->contains('photo_id', $photo4->id));
+		self::assertTrue($collection->contains('photo_id', $photo1->id));
+		self::assertTrue($collection->contains('photo_id', $photo5->id));
+		self::assertFalse($collection->contains('photo_id', $photo2->id));
+		self::assertFalse($collection->contains('photo_id', $photo3->id));
+		self::assertFalse($collection->contains('photo_id', $photo4->id));
 	}
 }
