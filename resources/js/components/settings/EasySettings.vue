@@ -70,7 +70,7 @@
 				</a>
 			</p>
 			<div class="flex gap-4">
-				<FloatLabel class="w-full flex-grow" variant="on">
+				<FloatLabel class="w-full grow" variant="on">
 					<InputPassword id="api_key" type="text" v-model="dropbox_key" />
 					<label for="api_key" class="text-muted-color">{{ $t("settings.dropbox.api_key") }}</label>
 				</FloatLabel>

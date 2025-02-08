@@ -18,6 +18,8 @@
 	>
 		<MaintenanceUpdate />
 		<MaintenanceOptimize />
+		<MaintenanceDuplicateChecker />
+		<MaintenanceFlushCache />
 		<MaintenanceGenSizevariants :sv="1" />
 		<MaintenanceGenSizevariants :sv="2" />
 		<MaintenanceGenSizevariants :sv="3" />
@@ -37,8 +39,10 @@ import MaintenanceCleaning from "@/components/maintenance/MaintenanceCleaning.vu
 import MaintenanceFilesize from "@/components/maintenance/MaintenanceFilesize.vue";
 import MaintenanceFixJobs from "@/components/maintenance/MaintenanceFixJobs.vue";
 import MaintenanceFixTree from "@/components/maintenance/MaintenanceFixTree.vue";
+import MaintenanceDuplicateChecker from "@/components/maintenance/MaintenanceDuplicateChecker.vue";
 import MaintenanceGenSizevariants from "@/components/maintenance/MaintenanceGenSizevariants.vue";
 import MaintenanceOptimize from "@/components/maintenance/MaintenanceOptimize.vue";
 import MaintenanceUpdate from "@/components/maintenance/MaintenanceUpdate.vue";
+import MaintenanceFlushCache from "@/components/maintenance/MaintenanceFlushCache.vue";
 import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
 </script>

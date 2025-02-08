@@ -8,13 +8,16 @@
 
 namespace App\Http\Controllers\WebAuthn;
 
+use App\Enum\CacheTag;
+use App\Events\TaggedRouteCacheUpdated;
 use App\Exceptions\UnauthenticatedException;
 use Illuminate\Contracts\Support\Responsable;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Laragear\WebAuthn\Http\Requests\AttestationRequest;
 use Laragear\WebAuthn\Http\Requests\AttestedRequest;
 
-class WebAuthnRegisterController
+class WebAuthnRegisterController extends Controller
 {
 	/**
 	 * Returns a challenge to be verified by the user device.
@@ -45,5 +48,7 @@ class WebAuthnRegisterController
 		/** @disregard P1014 */
 		$request->user = Auth::user() ?? throw new UnauthenticatedException();
 		$request->save();
+
+		TaggedRouteCacheUpdated::dispatch(CacheTag::USER);
 	}
 }

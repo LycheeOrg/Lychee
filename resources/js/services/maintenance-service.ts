@@ -54,6 +54,10 @@ const MaintenanceService = {
 		return axios.post(`${Constants.getApiUrl()}Maintenance::optimize`, {});
 	},
 
+	flushDo(): Promise<AxiosResponse<string[]>> {
+		return axios.post(`${Constants.getApiUrl()}Maintenance::flushCache`, {});
+	},
+
 	register(key: string): Promise<AxiosResponse<App.Http.Resources.GalleryConfigs.RegisterData>> {
 		return axios.post(`${Constants.getApiUrl()}Maintenance::register`, { key: key });
 	},
@@ -64,6 +68,25 @@ const MaintenanceService = {
 
 	updateFullTree(albums: UpdateTreeData[]): Promise<AxiosResponse> {
 		return axios.post(`${Constants.getApiUrl()}Maintenance::fullTree`, { albums: albums });
+	},
+
+	getDuplicatesCount(): Promise<AxiosResponse<App.Http.Resources.Models.Duplicates.DuplicateCount>> {
+		return axios.get(`${Constants.getApiUrl()}Maintenance::countDuplicates`, { data: {} });
+	},
+
+	getDuplicates(
+		withAlbumConstraint: boolean,
+		withChecksumConstraint: boolean,
+		withTitleConstraint: boolean,
+	): Promise<AxiosResponse<App.Http.Resources.Models.Duplicates.Duplicate[]>> {
+		return axios.get(`${Constants.getApiUrl()}Maintenance::searchDuplicates`, {
+			data: {},
+			params: {
+				with_album_constraint: withAlbumConstraint,
+				with_checksum_constraint: withChecksumConstraint,
+				with_title_constraint: withTitleConstraint,
+			},
+		});
 	},
 };
 

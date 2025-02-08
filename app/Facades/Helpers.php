@@ -28,6 +28,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static int    convertSize(string $size)
  * @method static string decimalToDegreeMinutesSeconds(float $decimal, bool $type)
  * @method static string censor(string $string, float  $percentOfClear = 0.5)
+ * @method static string getUriWithQueryString(\Illuminate\Http\Request $request): string
  */
 class Helpers extends Facade
 {

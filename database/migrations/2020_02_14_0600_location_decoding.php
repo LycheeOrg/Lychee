@@ -17,35 +17,32 @@ return new class() extends Migration {
 	 */
 	public function up(): void
 	{
-		defined('BOOL') or define('BOOL', '0|1');
-		defined('INT') or define('INT', 'int');
-
 		DB::table('configs')->insert([
 			'key' => 'location_decoding',
 			'value' => '0',
 			'cat' => 'Mod Map',
-			'type_range' => BOOL,
+			'type_range' => '0|1',
 			'confidentiality' => '0',
 		]);
 		DB::table('configs')->insert([
 			'key' => 'location_decoding_timeout',
 			'value' => 30,
 			'cat' => 'Mod Map',
-			'type_range' => INT,
+			'type_range' => 'int',
 			'confidentiality' => '0',
 		]);
 		DB::table('configs')->insert([
 			'key' => 'location_show',
 			'value' => '1',
 			'cat' => 'Mod Map',
-			'type_range' => BOOL,
+			'type_range' => '0|1',
 			'confidentiality' => '0',
 		]);
 		DB::table('configs')->insert([
 			'key' => 'location_show_public',
 			'value' => '0',
 			'cat' => 'Mod Map',
-			'type_range' => BOOL,
+			'type_range' => '0|1',
 			'confidentiality' => '0',
 		]);
 

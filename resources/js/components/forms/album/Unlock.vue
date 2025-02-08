@@ -6,7 +6,7 @@
 				<div class="inline-flex flex-col gap-2 px-9">
 					<FloatLabel variant="on">
 						<InputPassword id="albumPassword" v-model="password" @keydown.enter="unlock" />
-						<label class="" for="albumPassword">{{ $t("dialogs.unlock.password") }}</label>
+						<label for="albumPassword">{{ $t("dialogs.unlock.password") }}</label>
 					</FloatLabel>
 				</div>
 				<div class="flex items-center mt-9">

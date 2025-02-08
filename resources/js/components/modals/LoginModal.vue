@@ -24,22 +24,22 @@
 				<div class="inline-flex flex-col gap-2 px-9">
 					<FloatLabel variant="on">
 						<InputText id="username" v-model="username" autocomplete="username" :autofocus="true" />
-						<label class="" for="username">{{ $t("dialogs.login.username") }}</label>
+						<label for="username">{{ $t("dialogs.login.username") }}</label>
 					</FloatLabel>
 				</div>
 				<div class="inline-flex flex-col gap-2 px-9">
 					<FloatLabel variant="on">
 						<InputPassword id="password" v-model="password" @keydown.enter="login" autocomplete="current-password" />
-						<label class="" for="password">{{ $t("dialogs.login.password") }}</label>
+						<label for="password">{{ $t("dialogs.login.password") }}</label>
 					</FloatLabel>
 					<Message v-if="invalidPassword" severity="error">{{ $t("dialog.login.unknown_invalid") }}</Message>
 				</div>
 				<div class="px-9 text-muted-color text-right font-semibold">Lychee <span class="text-primary-500" v-if="is_se_enabled">SE</span></div>
 				<div class="flex items-center mt-9">
-					<Button @click="closeCallback" severity="secondary" class="w-full font-bold border-none rounded-none rounded-bl-xl flex-shrink">
+					<Button @click="closeCallback" severity="secondary" class="w-full font-bold border-none rounded-none rounded-bl-xl shrink">
 						{{ $t("dialogs.button.cancel") }}
 					</Button>
-					<Button @click="login" severity="contrast" class="w-full font-bold border-none rounded-none rounded-br-xl flex-shrink">
+					<Button @click="login" severity="contrast" class="w-full font-bold border-none rounded-none rounded-br-xl shrink">
 						{{ $t("dialogs.login.signin") }}
 					</Button>
 				</div>

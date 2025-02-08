@@ -20,6 +20,14 @@ return [
 		'description' => 'Remove all contents from <span class="font-mono">%s</span>',
 		'button' => 'Clean',
 	],
+	'duplicate-finder' => [
+		'title' => 'Duplicates',
+		'description' => 'This module counts potential duplicates betwen pictures.',
+		'duplicates-all' => 'Duplicates over all albums',
+		'duplicates-title' => 'Title duplicates per album',
+		'duplicates-per-album' => 'Duplicates per album',
+		'show' => 'Show duplicates',
+	],
 	'fix-jobs' => [
 		'title' => 'Fixing Jobs History',
 		'description' => 'Mark jobs with status <span class="text-ready-400">%s</span> or <span class="text-primary-500">%s</span> as <span class="text-danger-700">%s</span>.',
@@ -56,5 +64,10 @@ return [
 		'check-button' => 'Check for updates',
 		'update-button' => 'Update',
 		'no-pending-updates' => 'No pending update.',
+	],
+	'flush-cache' => [
+		'title' => 'Flush Cache',
+		'description' => 'Flush the cache of every user to solve invalidation problems.',
+		'button' => 'Flush',
 	],
 ];

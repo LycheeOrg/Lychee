@@ -115,6 +115,21 @@ abstract class BaseApiV2Test extends BaseV2Test
 	}
 
 	/**
+	 * Visit the given URI with a PUT request, expecting a JSON response.
+	 *
+	 * @param Uri|string $uri
+	 * @param array      $data
+	 * @param array      $headers
+	 * @param int        $options
+	 *
+	 * @return TestResponse<\Illuminate\Http\JsonResponse>
+	 */
+	public function putJson($uri, array $data = [], array $headers = [], $options = 0)
+	{
+		return $this->json('PUT', self::API_PREFIX . ltrim($uri, '/'), $data, $headers, $options);
+	}
+
+	/**
 	 * Visit the given URI with a DELETE request, expecting a JSON response.
 	 *
 	 * @param Uri|string $uri

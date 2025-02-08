@@ -19,7 +19,7 @@ import { definePreset } from "@primevue/themes";
 import LycheePrimeVueConfig from "./style/preset";
 import FocusTrap from "primevue/focustrap";
 import Tooltip from "primevue/tooltip";
-import "../sass/app.scss";
+import "../sass/app.css";
 
 declare global {
 	var assets_url: string;
@@ -55,7 +55,7 @@ app.use(PrimeVue, {
 			// cssLayer: false,
 			cssLayer: {
 				name: "primevue",
-				order: "tailwind-base, primevue, tailwind-utilities",
+				order: "base, primevue",
 			},
 			darkModeSelector: ".dark",
 		},

@@ -1,7 +1,10 @@
 <template>
 	<router-link
 		:to="{ name: 'photo', params: { albumid: props.album?.id ?? 'search', photoid: props.photo.id } }"
-		:class="cssClass"
+		:class="{
+			'photo group shadow-md shadow-black/25 animate-zoomIn transition-all ease-in duration-200 block absolute': true,
+			'outline outline-1.5 outline-primary-500': props.isSelected,
+		}"
 		:data-width="props.photo.size_variants.original?.width"
 		:data-height="props.photo.size_variants.original?.height"
 		:data-id="props.photo.id"
@@ -36,7 +39,13 @@
 				@load="onImageLoad"
 			/>
 		</span>
-		<div class="overlay w-full absolute bottom-0 m-0 bg-gradient-to-t from-[#00000066] text-shadow-sm" :class="cssOverlay">
+		<div
+			:class="{
+				'overlay w-full absolute bottom-0 m-0 bg-gradient-to-t from-[#00000066] text-shadow-sm': true,
+				'opacity-0 group-hover:opacity-100 transition-all ease-out': lycheeStore.display_thumb_photo_overlay === 'hover',
+				hidden: lycheeStore.display_thumb_photo_overlay === 'never',
+			}"
+		>
 			<h1 class="min-h-[19px] mt-3 mb-1 ml-3 text-surface-0 text-base font-bold overflow-hidden whitespace-nowrap text-ellipsis">
 				{{ props.photo.title }}
 			</h1>
@@ -99,24 +108,6 @@ const is_header_id = computed(() => props.album?.header_id === props.photo.id);
 
 const { user } = storeToRefs(auth);
 auth.getUser();
-
-const cssClass = computed(() => {
-	let css = "photo group shadow-md shadow-black/25 animate-zoomIn transition-all ease-in duration-200 block absolute";
-	if (props.isSelected) {
-		css += " outline outline-1.5 outline-primary-500";
-	}
-	return css;
-});
-
-const cssOverlay = computed(() => {
-	if (lycheeStore.display_thumb_photo_overlay === "never") {
-		return "hidden";
-	}
-	if (lycheeStore.display_thumb_photo_overlay === "hover") {
-		return "opacity-0 group-hover:opacity-100 transition-all ease-out";
-	}
-	return "";
-});
 
 watch(
 	() => props.photo,

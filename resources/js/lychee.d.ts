@@ -15,7 +15,7 @@ declare namespace App.DTO {
 declare namespace App.Enum {
 	export type AlbumDecorationOrientation = "row" | "row-reverse" | "column" | "column-reverse";
 	export type AlbumDecorationType = "none" | "layers" | "album" | "photo" | "all";
-	export type AspectRatioCSSType = "aspect-5/4" | "aspect-4/5" | "aspect-3/2" | "aspect-square" | "aspect-2/3" | "aspect-video";
+	export type AspectRatioCSSType = "aspect-5x4" | "aspect-4x5" | "aspect-3x2" | "aspect-square" | "aspect-2x3" | "aspect-video";
 	export type AspectRatioType = "5/4" | "3/2" | "1/1" | "2/3" | "4/5" | "16/9";
 	export type ColumnSortingAlbumType = "owner_id" | "created_at" | "title" | "description" | "min_taken_at" | "max_taken_at";
 	export type ColumnSortingPhotoType = "owner_id" | "created_at" | "title" | "description" | "taken_at" | "is_starred" | "type";
@@ -481,6 +481,21 @@ declare namespace App.Http.Resources.Models {
 		created_at: string;
 	};
 }
+declare namespace App.Http.Resources.Models.Duplicates {
+	export type Duplicate = {
+		album_id: string;
+		album_title: string;
+		photo_id: string;
+		photo_title: string;
+		checksum: string;
+		url: string | null;
+	};
+	export type DuplicateCount = {
+		pure_duplicates: number;
+		title_duplicates: number;
+		duplicates_within_album: number;
+	};
+}
 declare namespace App.Http.Resources.Models.Utils {
 	export type AlbumProtectionPolicy = {
 		is_public: boolean;
@@ -497,6 +512,7 @@ declare namespace App.Http.Resources.Models.Utils {
 		is_camera_date: boolean;
 		has_exif: boolean;
 		has_location: boolean;
+		is_taken_at_modified: boolean;
 	};
 	export type PreFormattedAlbumData = {
 		url: string | null;

@@ -1,0 +1,254 @@
+@import "./fonts.css";
+@import "@fortawesome/fontawesome-free/css/all.css";
+@import "primeicons/primeicons.css";
+@import "leaflet/dist/leaflet.css";
+@import "leaflet.markercluster/dist/MarkerCluster.css";
+@import "@lychee-org/leaflet.photo/Leaflet.Photo.css";
+
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+@plugin "tailwindcss-primeui";
+
+/*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+	*,
+	::after,
+	::before,
+	::backdrop,
+	::file-selector-button {
+		border-color: var(--color-gray-200, currentColor);
+	}
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Typography plugin */
+@utility prose {
+	a {
+		text-underline-offset: 0.2rem;
+		text-decoration: underline dashed;
+	}
+}
+
+@theme {
+	--color-ready-400: var(--ready);
+	--color-danger-600: var(--danger);
+	--color-danger-700: var(--danger-dark);
+	--color-danger-800: var(--danger-darker);
+	--color-warning-600: var(--warning);
+	--color-warning-700: var(--warning-dark);
+	--color-create-600: var(--create);
+	--color-create-700: var(--create-dark);
+
+	--text-2xs: 0.65rem;
+	--text-2xs--line-height: 0.8rem;
+	--text-3xs: 0.55rem;
+	--text-3xs--line-height: 0.7rem;
+
+	--brightness-25: 0.25;
+	--brightness-175: 1.75;
+
+	--animate-pulseTo0: pulseToNull 2s infinite;
+
+	/* --animate-fadeIn: fadeIn 0.3s forwards cubic-bezier(0.51, 0.92, 0.24, 1); */
+	--animate-fadeOut: fadeOut 0.3s forwards cubic-bezier(0.51, 0.92, 0.24, 1);
+	--animate-zoomIn: zoomIn 0.2s forwards cubic-bezier(0.51, 0.92, 0.24, 1);
+	/* --animate-zoomOut: zoomOut 0.2s forwards cubic-bezier(0.51, 0.92, 0.24, 1); */
+	/* --animate-moveUp: moveUp 0.3s forwards cubic-bezier(0.51, 0.92, 0.24, 1); */
+	/* --animate-scaleIn: scaleIn 0.3s forwards cubic-bezier(0.51, 0.92, 0.24, 1.2); */
+	/* --animate-scaleOut: scaleOut 0.3s forwards cubic-bezier(0.51, 0.92, 0.24, 1.2); */
+	/* --animate-slowFadeIn: fadeIn 2s forwards cubic-bezier(0.51, 0.92, 0.24, 1); */
+	/* --animate-slowFadeOut: fadeOut 2s forwards cubic-bezier(0.51, 0.92, 0.24, 1); */
+	/* --animate-slowZoomIn: zoomIn 2s forwards cubic-bezier(0.51, 0.92, 0.24, 1); */
+	/* --animate-slowZoomOut: zoomOut 2s forwards cubic-bezier(0.51, 0.92, 0.24, 1); */
+	/* --animate-slowMoveUp: moveUp 2s forwards cubic-bezier(0.51, 0.92, 0.24, 1); */
+	/* --animate-slowPopIn: popIn 2s forwards cubic-bezier(0.51, 0.92, 0.24, 1); */
+	--animate-landingIntroPopIn: popIn 2s forwards ease-in-out;
+	--animate-landingIntroFadeOut: fadeOut 2s 2s forwards ease-in-out; /* delayed by 2s; */
+	--animate-landingSlidesPopIn: popIn 2s 3s forwards ease-in-out; /* delayed by 3s; */
+	--animate-landingEnterPopIn: zoomIn 2s 4s forwards ease-in-out; /* delayed by 4s; */
+}
+@keyframes pulseToNull {
+	50% {
+		opacity: 0.1;
+	}
+}
+@keyframes fadeIn {
+	0% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+@keyframes fadeOut {
+	0% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0;
+	}
+}
+@keyframes moveUp {
+	0% {
+		transform: translateY(80px);
+	}
+	100% {
+		transform: translateY(0);
+	}
+}
+@keyframes zoomIn {
+	0% {
+		opacity: 0;
+		transform: scale(0.8);
+	}
+	100% {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+@keyframes zoomOut {
+	0% {
+		opacity: 1;
+		transform: scale(1);
+	}
+	100% {
+		opacity: 0;
+		transform: scale(0.8);
+	}
+}
+@keyframes popIn {
+	0% {
+		opacity: 0;
+		transform: scale(1.1);
+	}
+	100% {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+@keyframes scaleIn {
+	0% {
+		transform: scale(0);
+	}
+	100% {
+		transform: scale(1);
+	}
+}
+@keyframes scaleOut {
+	0% {
+		transform: scale(1);
+	}
+	100% {
+		transform: scale(0);
+	}
+}
+:root {
+	--danger: #dc2626;
+	--danger-dark: #b91c1c;
+	--danger-darker: #991b1b;
+
+	--success: #22c55e;
+
+	--create: #16a34a;
+	--create-dark: #15803d;
+
+	--ready: #fbbf24;
+
+	--warning: #fb923c;
+	--warning-dark: #ea580c;
+
+	--aspect-4x5: 4 / 5;
+	--aspect-5x4: 5 / 4;
+	--aspect-2x3: 2 / 3;
+	--aspect-3x2: 3 / 2;
+
+	--aspect-square: 1 / 1;
+	--aspect-video: 16 / 9;
+}
+
+html {
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+/* Remove all ugly outlines */
+* {
+	/* outline: 2px solid transparent; */
+	outline-offset: 0px;
+}
+
+.filter-shadow {
+	filter: drop-shadow(0 0 0.5rem black);
+}
+
+.filter-shadow-darker {
+	filter: drop-shadow(0 0 1rem black) drop-shadow(0 0 2rem black) drop-shadow(0 0 4rem black);
+}
+
+.menu-shadow {
+	box-shadow: 3px 3px 8px -2px rgba(0, 0, 0, 0.7);
+}
+
+.box-shadow {
+	box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.7);
+}
+
+.text-shadow {
+	text-shadow: 1px 1px 2px #000;
+}
+
+.text-shadow-sm {
+	text-shadow: 0 1px 3px #00000066;
+}
+
+.max-wh-full-56 {
+	max-width: calc(100% - 56px);
+	max-height: calc(100% - 56px);
+}
+
+input:checked + .slider:before {
+	transform: translateX(20px);
+	background-color: #fff;
+}
+
+input:checked + .slider {
+	background-color: rgb(14 165 233);
+}
+
+input:checked ~ .checkbox svg {
+	opacity: 1;
+	-ms-transform: scale(1);
+	-webkit-transform: scale(1);
+	transform: scale(1);
+}
+
+.markdown a {
+	text-underline-offset: 0.2rem;
+	text-decoration: underline dashed;
+}
+
+/* Trick to change the calendar picker color in chrome */
+::-webkit-calendar-picker-indicator {
+	filter: invert(54%) sepia(85%) saturate(2054%) hue-rotate(166deg) brightness(93%) contrast(97%);
+}
+
+.drop-shadow-black {
+	--tw-drop-shadow: drop-shadow(0 0 1px rgba(0, 0, 0, 0.3)) drop-shadow(0 0 10px rgba(0, 0, 0, 0.3));
+}
+
+.blurred span {
+	overflow: hidden;
+}
+
+.blurred img {
+	/* Safari 6.0 - 9.0 */
+	-webkit-filter: blur(5px);
+	filter: blur(5px);
+}

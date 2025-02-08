@@ -11,11 +11,21 @@
 		</template>
 
 		<template #end>
-			<Button icon="pi pi-play" class="border-none" severity="secondary" text @click="toggleSlideShow" v-if="props.album.photos.length > 0" />
+			<Button
+				v-tooltip.bottom="'Start slideshow'"
+				icon="pi pi-play"
+				class="border-none"
+				severity="secondary"
+				text
+				@click="toggleSlideShow"
+				v-if="props.album.photos.length > 0"
+				label=""
+			/>
 			<router-link
 				:to="{ name: 'frame-with-album', params: { albumid: props.album.id } }"
 				v-if="props.config.is_mod_frame_enabled"
 				class="hidden sm:block"
+				v-tooltip="'Frame'"
 			>
 				<Button icon="pi pi-desktop" class="border-none" severity="secondary" text />
 			</router-link>

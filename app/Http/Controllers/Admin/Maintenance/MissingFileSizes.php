@@ -9,6 +9,7 @@
 namespace App\Http\Controllers\Admin\Maintenance;
 
 use App\Enum\StorageDiskType;
+use App\Events\AlbumRouteCacheUpdated;
 use App\Http\Requests\Maintenance\MaintenanceRequest;
 use App\Models\SizeVariant;
 use Illuminate\Routing\Controller;
@@ -58,6 +59,8 @@ class MissingFileSizes extends Controller
 			}
 			// @codeCoverageIgnoreEnd
 		}
+
+		AlbumRouteCacheUpdated::dispatch();
 	}
 
 	/**

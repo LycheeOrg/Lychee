@@ -84,6 +84,7 @@ export function useSelection(
 	function handlePhotoShift(idx: number, e: Event): void {
 		if (selectedPhotos.value.length === 0) {
 			addToPhotoSelection(idx);
+			lastPhotoClicked.value = idx;
 			return;
 		}
 
@@ -145,6 +146,7 @@ export function useSelection(
 	function handleAlbumShift(idx: number, e: Event): void {
 		if (selectedAlbums.value.length === 0) {
 			addToAlbumSelection(idx);
+			lastAlbumClicked.value = idx;
 			return;
 		}
 

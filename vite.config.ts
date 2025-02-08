@@ -1,11 +1,12 @@
 import { fileURLToPath, URL } from "node:url";
-import { defineConfig, loadEnv, PluginOption, UserConfig } from "vite";
+import { ConfigEnv, defineConfig, loadEnv, PluginOption, UserConfig } from "vite";
 import laravel from "laravel-vite-plugin";
 import vue from "@vitejs/plugin-vue";
 import i18n from "laravel-vue-i18n/vite";
+import tailwindcss from "@tailwindcss/vite";
 
 const laravelPlugin = laravel({
-	input: ["resources/sass/app.scss", "resources/js/app.ts"],
+	input: ["resources/sass/app.css", "resources/js/app.ts"],
 	refresh: true,
 });
 
@@ -59,10 +60,12 @@ const localDevelopMiddleware: PluginOption = {
 const baseConfig = {
 	base: "./",
 	plugins: [
+		tailwindcss(),
 		vue({ template: { transformAssetUrls: { base: null, includeAbsolute: false } } }),
 		i18n(),
 	],
 	server: {
+		// cors: true, // Worst case scenario
 		watch: {
 			ignored: [
 				"**/.*/**",
@@ -95,17 +98,19 @@ const baseConfig = {
 			},
 		},
 	},
-	css: {
-		preprocessorOptions: {
-			scss: {
-				api: "modern",
-			},
-		},
-	},
 } as UserConfig;
 
+function getCorsSettings(env: Record<string, string>) {
+	return {
+		"origin": env.APP_URL ?? 'http://localhost',
+		"methods": "GET",
+		"preflightContinue": false,
+		"optionsSuccessStatus": 204
+	};
+}
+
 /** @type {import('vite').UserConfig} */
-export default defineConfig(({ command, mode, isSsrBuild, isPreview }) => {
+export default defineConfig(({ command, mode, isSsrBuild, isPreview } : ConfigEnv) : UserConfig => {
 	const config = baseConfig;
 	const env = loadEnv(mode, process.cwd(), "");
 
@@ -115,6 +120,8 @@ export default defineConfig(({ command, mode, isSsrBuild, isPreview }) => {
 	if (config.plugins === undefined) {
 		throw new Error("plugins list is missing");
 	}
+
+	config.server.cors = getCorsSettings(env);
 
 	if (command === "serve") {
 		console.log("LOCAL VITE MODE detected");
