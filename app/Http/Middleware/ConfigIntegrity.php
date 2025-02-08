@@ -30,6 +30,9 @@ class ConfigIntegrity
 		'timeline_album_date_format_day',
 		'number_albums_per_row_mobile',
 		'cache_ttl',
+		'low_number_of_shoots_per_day',
+		'medium_number_of_shoots_per_day',
+		'high_number_of_shoots_per_day',
 	];
 
 	/**
