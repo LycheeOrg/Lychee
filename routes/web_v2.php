@@ -10,6 +10,7 @@ namespace App\Http\Controllers;
 
 use App\Enum\OauthProvidersType;
 use App\Legacy\V1\Controllers\RedirectController;
+use Dedoc\Scramble\Scramble;
 use Illuminate\Foundation\Events\DiagnosingHealth;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
@@ -79,6 +80,9 @@ Route::get('/auth/{provider}/register', [OauthController::class, 'register'])->n
  */
 Route::get('/r/{albumID}/{photoID}', [RedirectController::class, 'photo'])->middleware(['migration:complete']);
 Route::get('/r/{albumID}', [RedirectController::class, 'album'])->middleware(['migration:complete']);
+
+// We need to register this manually.
+Scramble::registerUiRoute(path: 'docs/api')->name('scramble.docs.ui');
 
 // This route must be defined last because it is a catch all.
 Route::match(['get', 'post'], '{path}', HoneyPotController::class)->where('path', '.*');
