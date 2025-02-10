@@ -8,7 +8,7 @@
 
 namespace App\Http\Controllers\Gallery;
 
-use App\Actions\Album\Archive as AlbumArchive;
+use App\Actions\Album\BaseArchive as AlbumBaseArchive;
 use App\Actions\Album\Create;
 use App\Actions\Album\CreateTagAlbum;
 use App\Actions\Album\Delete;
@@ -20,7 +20,7 @@ use App\Actions\Album\SetProtectionPolicy;
 use App\Actions\Album\SetSmartProtectionPolicy;
 use App\Actions\Album\Transfer;
 use App\Actions\Album\Unlock;
-use App\Actions\Photo\Archive as PhotoArchive;
+use App\Actions\Photo\BaseArchive as PhotoBaseArchive;
 use App\Events\AlbumRouteCacheUpdated;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\UnauthenticatedException;
@@ -350,19 +350,17 @@ class AlbumController extends Controller
 	/**
 	 * Return the archive of the pictures of the album and its sub-albums.
 	 *
-	 * @param ZipRequest   $request
-	 * @param AlbumArchive $album_archive
-	 * @param PhotoArchive $photo_archive
+	 * @param ZipRequest $request
 	 *
 	 * @return StreamedResponse
 	 */
-	public function getArchive(ZipRequest $request, AlbumArchive $album_archive, PhotoArchive $photo_archive): StreamedResponse
+	public function getArchive(ZipRequest $request): StreamedResponse
 	{
 		if ($request->albums()->count() > 0) {
-			return $album_archive->do($request->albums());
+			return AlbumBaseArchive::resolve()->do($request->albums());
 		}
 
-		return $photo_archive->do($request->photos(), $request->sizeVariant());
+		return PhotoBaseArchive::resolve()->do($request->photos(), $request->sizeVariant());
 	}
 
 	/**
