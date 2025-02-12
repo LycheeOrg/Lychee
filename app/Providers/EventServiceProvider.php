@@ -12,6 +12,7 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use SocialiteProviders\Amazon\AmazonExtendSocialite;
 use SocialiteProviders\Apple\AppleExtendSocialite;
+use SocialiteProviders\Authelia\AutheliaExtendSocialite;
 use SocialiteProviders\Authentik\AuthentikExtendSocialite;
 use SocialiteProviders\Facebook\FacebookExtendSocialite;
 use SocialiteProviders\GitHub\GitHubExtendSocialite;
@@ -35,6 +36,7 @@ class EventServiceProvider extends ServiceProvider
 		SocialiteWasCalled::class => [
 			AmazonExtendSocialite::class . '@handle',
 			AppleExtendSocialite::class . '@handle',
+			AutheliaExtendSocialite::class . '@handle',
 			AuthentikExtendSocialite::class . '@handle',
 			FacebookExtendSocialite::class . '@handle',
 			GitHubExtendSocialite::class . '@handle',

@@ -51,6 +51,13 @@ return [
 		'redirect' => env('APPLE_REDIRECT_URI', '/auth/apple/redirect'),
 	],
 
+	'authelia' => [
+		'client_id' => env('AUTHELIA_CLIENT_ID'),
+		'client_secret' => env('AUTHELIA_CLIENT_SECRET'),
+		'redirect' => env('AUTHELIA_REDIRECT_URI'),
+		'base_url' => env('AUTHELIA_BASE_URL'),
+	],
+
 	'authentik' => [
 		'client_id' => env('AUTHENTIK_CLIENT_ID'),
 		'client_secret' => env('AUTHENTIK_CLIENT_SECRET'),

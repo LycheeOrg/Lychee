@@ -76,6 +76,7 @@ declare namespace App.Enum {
 	export type OauthProvidersType =
 		| "amazon"
 		| "apple"
+		| "authelia"
 		| "authentik"
 		| "facebook"
 		| "github"
