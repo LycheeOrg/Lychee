@@ -1,6 +1,6 @@
 <template>
-	<router-link
-		:to="{ name: 'photo', params: { albumid: props.album?.id ?? 'search', photoid: props.photo.id } }"
+	<a
+		@click="openPhoto"
 		:class="{
 			'photo group shadow-md shadow-black/25 animate-zoomIn transition-all ease-in duration-200 block absolute': true,
 			'outline outline-1.5 outline-primary-500': props.isSelected,
@@ -41,6 +41,35 @@
 		</span>
 		<div
 			:class="{
+				'absolute top-0 right-0 flex justify-center items-center h-8 w-8 text-surface-0 text-2xl': true,
+				'md:opacity-0 md:group-hover:opacity-50 md:transition-all md:ease-out': !isFavourite,
+			}"
+		>
+			<span
+				:class="{
+					pi: true,
+					'pi-heart-fill': isFavourite,
+					'pi-heart': !isFavourite,
+				}"
+			></span>
+		</div>
+		<div
+			:class="{
+				'absolute top-0 right-0 flex justify-center items-center h-8 w-8 text-surface-0 text-2xl': true,
+				'md:opacity-0 md:hover:opacity-100 md:transition-all md:ease-out': !isFavourite,
+			}"
+			@click="toggleFavourite"
+		>
+			<span
+				:class="{
+					pi: true,
+					'pi-heart': isFavourite,
+					'pi-heart-fill': !isFavourite,
+				}"
+			></span>
+		</div>
+		<div
+			:class="{
 				'overlay w-full absolute bottom-0 m-0 bg-gradient-to-t from-[#00000066] text-shadow-sm': true,
 				'opacity-0 group-hover:opacity-100 transition-all ease-out': lycheeStore.display_thumb_photo_overlay === 'hover',
 				hidden: lycheeStore.display_thumb_photo_overlay === 'never',
@@ -67,7 +96,7 @@
 			<ThumbBadge v-if="is_cover_id" class="bg-yellow-500" icon="folder-cover" />
 			<ThumbBadge v-if="is_header_id" class="bg-slate-400 hidden sm:block" pi="image" />
 		</div>
-	</router-link>
+	</a>
 </template>
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
@@ -77,8 +106,12 @@ import ThumbBadge from "@/components/gallery/thumbs/ThumbBadge.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import { useImageHelpers } from "@/utils/Helpers";
+import { useFavouriteStore } from "@/stores/FavouriteState";
+import { useRouter } from "vue-router";
+import { ctrlKeyState, metaKeyState, shiftKeyState } from "@/utils/keybindings-utils";
 
 const { getNoImageIcon, getPlayIcon } = useImageHelpers();
+const router = useRouter();
 
 const props = defineProps<{
 	isSelected: boolean;
@@ -92,6 +125,7 @@ const props = defineProps<{
 }>();
 
 const auth = useAuthStore();
+const favourites = useFavouriteStore();
 const lycheeStore = useLycheeStateStore();
 const srcPlay = ref(getPlayIcon());
 const srcNoImage = ref(getNoImageIcon());
@@ -101,10 +135,27 @@ function onImageLoad() {
 	isImageLoaded.value = true;
 }
 
+function toggleFavourite(e: Event) {
+	e.stopPropagation();
+	favourites.toggle(props.photo);
+	console.log(favourites.photos);
+}
+
+function openPhoto() {
+	if (ctrlKeyState.value || metaKeyState.value || shiftKeyState.value) {
+		return;
+	}
+	router.push({
+		name: "photo",
+		params: { albumid: props.album?.id ?? "search", photoid: props.photo.id },
+	});
+}
+
 // @ts-expect-error
 const is_cover_id = computed(() => props.album?.cover_id === props.photo.id);
 // @ts-expect-error
 const is_header_id = computed(() => props.album?.header_id === props.photo.id);
+const isFavourite = computed(() => favourites.getPhotoIds.includes(props.photo.id));
 
 const { user } = storeToRefs(auth);
 auth.getUser();
