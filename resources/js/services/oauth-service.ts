@@ -12,6 +12,8 @@ const OauthService = {
 				return "fa-brands fa-apple";
 			case "amazon":
 				return "fa-brands fa-amazon";
+			case "authelia":
+				return "fa-solid fa-key";
 			case "authentik":
 				return "fa-solid fa-key";
 			case "facebook":
