@@ -315,7 +315,7 @@ const {
 } = useSelection(photos, children);
 
 function photoClick(idx: number, e: Event): void {
-	router.push({ name: "photo", params: { albumid: albumid.value, photoid: photos.value[idx].id } });	
+	router.push({ name: "photo", params: { albumid: albumid.value, photoid: photos.value[idx].id } });
 }
 
 const photoCallbacks = {
