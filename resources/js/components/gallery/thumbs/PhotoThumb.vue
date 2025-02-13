@@ -1,6 +1,5 @@
 <template>
 	<a
-		@click="openPhoto"
 		:class="{
 			'photo group shadow-md shadow-black/25 animate-zoomIn transition-all ease-in duration-200 block absolute': true,
 			'outline outline-1.5 outline-primary-500': props.isSelected,
@@ -41,7 +40,7 @@
 		</span>
 		<div
 			:class="{
-				'absolute top-0 right-0 flex justify-center items-center h-8 w-8 text-surface-0 text-2xl': true,
+				'absolute top-0 right-0 flex justify-center items-center h-8 w-8 text-surface-0 text-2xl filter-shadow': true,
 				'md:opacity-0 md:group-hover:opacity-50 md:transition-all md:ease-out': !isFavourite,
 			}"
 		>
@@ -55,8 +54,8 @@
 		</div>
 		<div
 			:class="{
-				'absolute top-0 right-0 flex justify-center items-center h-8 w-8 text-surface-0 text-2xl': true,
-				'md:opacity-0 md:hover:opacity-100 md:transition-all md:ease-out': !isFavourite,
+				'absolute top-0 right-0 flex justify-center items-center h-8 w-8 text-surface-0 text-2xl cursor-pointer': true,
+				'opacity-0 md:opacity-0 md:hover:opacity-100 md:transition-all md:ease-out': !isFavourite,
 			}"
 			@click="toggleFavourite"
 		>
@@ -107,11 +106,8 @@ import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import { useImageHelpers } from "@/utils/Helpers";
 import { useFavouriteStore } from "@/stores/FavouriteState";
-import { useRouter } from "vue-router";
-import { ctrlKeyState, metaKeyState, shiftKeyState } from "@/utils/keybindings-utils";
 
 const { getNoImageIcon, getPlayIcon } = useImageHelpers();
-const router = useRouter();
 
 const props = defineProps<{
 	isSelected: boolean;
@@ -139,16 +135,6 @@ function toggleFavourite(e: Event) {
 	e.stopPropagation();
 	favourites.toggle(props.photo);
 	console.log(favourites.photos);
-}
-
-function openPhoto() {
-	if (ctrlKeyState.value || metaKeyState.value || shiftKeyState.value) {
-		return;
-	}
-	router.push({
-		name: "photo",
-		params: { albumid: props.album?.id ?? "search", photoid: props.photo.id },
-	});
 }
 
 // @ts-expect-error

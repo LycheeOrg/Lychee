@@ -48,7 +48,7 @@ export function useSelection(
 		selectedAlbumsIdx.value = selectedAlbumsIdx.value.filter((i) => i !== idx);
 	}
 
-	function photoClick(idx: number, e: Event): void {
+	function photoSelect(idx: number, e: Event): void {
 		// clear the Album selection.
 		selectedAlbumsIdx.value = [];
 
@@ -213,7 +213,7 @@ export function useSelection(
 		selectedAlbums,
 		selectedPhotosIds,
 		selectedAlbumsIds,
-		photoClick,
+		photoSelect,
 		albumClick,
 		selectEverything,
 		unselect,
