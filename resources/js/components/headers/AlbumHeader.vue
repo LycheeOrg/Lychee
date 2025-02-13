@@ -11,12 +11,7 @@
 		</template>
 
 		<template #end>
-			<router-link
-				:to="{ name: 'favourites' }"
-				v-if="(favourites.photos?.length ?? 0) > 0"
-				class="hidden sm:block"
-				v-tooltip="'Favourites'"
-			>
+			<router-link :to="{ name: 'favourites' }" v-if="(favourites.photos?.length ?? 0) > 0" class="hidden sm:block" v-tooltip="'Favourites'">
 				<Button icon="pi pi-heart" class="border-none" severity="secondary" text />
 			</router-link>
 			<Button

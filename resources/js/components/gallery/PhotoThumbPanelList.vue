@@ -49,13 +49,12 @@ const emits = defineEmits<{
 }>();
 
 const maySelect = (idx: number, e: MouseEvent) => {
-	if (ctrlKeyState.value || metaKeyState.value || shiftKeyState.value)
-	{
+	if (ctrlKeyState.value || metaKeyState.value || shiftKeyState.value) {
 		emits("selected", idx, e);
-		return;		
+		return;
 	}
 	emits("clicked", idx, e);
-}
+};
 
 const menuOpen = (idx: number, e: MouseEvent) => emits("contexted", idx, e);
 
