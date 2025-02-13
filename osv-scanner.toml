@@ -1,0 +1,3 @@
+[[IgnoredVulns]]
+id = "GHSA-67mh-4wv8-2f99"
+reason = "We do not use the esbuild dev server. We use the vite one: see https://github.com/vitejs/vite/pull/19389#issuecomment-2651836759"
