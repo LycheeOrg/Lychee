@@ -11,13 +11,13 @@ export type PhotoFavourite = {
 export const useFavouriteStore = defineStore("favourite-store", {
 	state: () => ({
 		// We define it as undefine to make sure that no matter what happens we are considering
-		photos: undefined as PhotoFavourite[] | undefined,
+		photos: undefined as App.Http.Resources.Models.PhotoResource[] | undefined,
 	}),
 	getters: {
 		getPhotoIds(): string[] {
-			return this.photos?.map((p) => p.photoId) ?? [];
+			return this.photos?.map((p) => p.id) ?? [];
 		},
-		getPhotos(): PhotoFavourite[] {
+		getPhotos(): App.Http.Resources.Models.PhotoResource[] {
 			return this.photos ?? [];
 		},
 	},
@@ -26,29 +26,20 @@ export const useFavouriteStore = defineStore("favourite-store", {
 			if (!this.photos) {
 				this.photos = [];
 			}
-			this.photos.push({
-				photoId: photo.id,
-				albumId: photo.album_id ?? undefined,
-				thumb:
-					photo.size_variants.small2x?.url ??
-					photo.size_variants.small?.url ??
-					photo.size_variants.thumb2x?.url ??
-					photo.size_variants.thumb?.url ??
-					undefined,
-			});
+			this.photos.push(photo);
 		},
 		removePhoto(photoId: string) {
 			if (!this.photos) {
 				return;
 			}
-			this.photos = this.photos.filter((p: PhotoFavourite) => p.photoId !== photoId);
+			this.photos = this.photos.filter((p: App.Http.Resources.Models.PhotoResource) => p.id !== photoId);
 		},
 		toggle(photo: App.Http.Resources.Models.PhotoResource) {
 			if (!this.photos) {
 				this.photos = [];
 			}
 
-			if (this.photos.some((p: PhotoFavourite) => p.photoId === photo.id)) {
+			if (this.photos.some((p: App.Http.Resources.Models.PhotoResource) => p.id === photo.id)) {
 				this.removePhoto(photo.id);
 			} else {
 				this.addPhoto(photo);

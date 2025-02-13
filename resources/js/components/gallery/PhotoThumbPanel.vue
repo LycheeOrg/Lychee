@@ -1,7 +1,7 @@
 <template>
 	<Panel id="lychee_view_content" :header="$t(props.header)" class="w-full border-0">
 		<template #icons>
-			<PhotoThumbPanelControl v-model:layout="layout" />
+			<PhotoThumbPanelControl v-if="withControl" v-model:layout="layout" />
 		</template>
 		<PhotoThumbPanelList
 			v-if="isTimeline === false"
@@ -30,6 +30,7 @@
 							:isTimeline="isTimeline"
 							@clicked="propagateClicked"
 							@contexted="propagateMenuOpen"
+							@selected="propagateSelected"
 						/>
 					</div>
 				</template>
@@ -48,6 +49,7 @@
 							:isTimeline="isTimeline"
 							@clicked="propagateClicked"
 							@contexted="propagateMenuOpen"
+							@selected="propagateSelected"
 						/>
 					</div>
 				</template>
@@ -80,6 +82,7 @@ const props = defineProps<{
 	galleryConfig: App.Http.Resources.GalleryConfigs.PhotoLayoutConfig;
 	selectedPhotos: string[];
 	isTimeline: boolean;
+	withControl: boolean;
 }>();
 
 const layout = ref(props.photoLayout);
@@ -88,8 +91,13 @@ const isTimeline = ref(props.isTimeline);
 // bubble up.
 const emits = defineEmits<{
 	clicked: [idx: number, event: MouseEvent];
+	selected: [idx: number, event: MouseEvent];
 	contexted: [idx: number, event: MouseEvent];
 }>();
+
+const propagateSelected = (idx: number, e: MouseEvent) => {
+	emits("selected", idx, e);
+};
 
 const propagateClicked = (idx: number, e: MouseEvent) => {
 	emits("clicked", idx, e);

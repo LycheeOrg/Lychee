@@ -77,8 +77,10 @@
 					:photo-layout="config.photo_layout"
 					:selected-photos="selectedPhotosIds"
 					@clicked="photoClick"
+					@selected="photoSelect"
 					@contexted="photoMenuOpen"
 					:is-timeline="config.is_photo_timeline_enabled"
+					:with-control="true"
 				/>
 				<GalleryFooter v-once />
 			</div>
@@ -305,12 +307,16 @@ const {
 	selectedAlbums,
 	selectedPhotosIds,
 	selectedAlbumsIds,
-	photoClick,
+	photoSelect,
 	albumClick,
 	selectEverything,
 	unselect,
 	hasSelection,
 } = useSelection(photos, children);
+
+function photoClick(idx: number, e: Event): void {
+	router.push({ name: "photo", params: { albumid: albumid.value, photoid: photos.value[idx].id } });	
+}
 
 const photoCallbacks = {
 	star: () => {

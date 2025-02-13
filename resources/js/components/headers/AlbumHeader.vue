@@ -11,6 +11,14 @@
 		</template>
 
 		<template #end>
+			<router-link
+				:to="{ name: 'favourites' }"
+				v-if="(favourites.photos?.length ?? 0) > 0"
+				class="hidden sm:block"
+				v-tooltip="'Favourites'"
+			>
+				<Button icon="pi pi-heart" class="border-none" severity="secondary" text />
+			</router-link>
 			<Button
 				v-tooltip.bottom="'Start slideshow'"
 				icon="pi pi-play"
@@ -89,6 +97,7 @@ import { storeToRefs } from "pinia";
 import AlbumService from "@/services/album-service";
 import DropBox from "../modals/DropBox.vue";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
+import { useFavouriteStore } from "@/stores/FavouriteState";
 
 const props = defineProps<{
 	config: App.Http.Resources.GalleryConfigs.AlbumConfig;
@@ -98,6 +107,8 @@ const props = defineProps<{
 
 const togglableStore = useTogglablesStateStore();
 const lycheeStore = useLycheeStateStore();
+const favourites = useFavouriteStore();
+
 lycheeStore.init();
 const { dropbox_api_key } = storeToRefs(lycheeStore);
 const { are_details_open, is_login_open, is_upload_visible, is_create_album_visible } = storeToRefs(togglableStore);
