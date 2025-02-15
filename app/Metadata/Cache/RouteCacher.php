@@ -11,6 +11,7 @@ namespace App\Metadata\Cache;
 use App\Exceptions\Internal\LycheeLogicException;
 use Closure;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 /**
  * RouteCacher also associate the route data with the cache key.
@@ -51,13 +52,18 @@ class RouteCacher
 		}
 
 		$value = $callback();
-		Cache::put($key, $value, $ttl);
+		try {
+			Cache::put($key, $value, $ttl);
 
-		// Update the list of keys for the given route.
-		$this->rememberRoute($route, $key);
+			// Update the list of keys for the given route.
+			$this->rememberRoute($route, $key);
 
-		// Update the tags for the given key.
-		$this->rememberTags($tags, $key);
+			// Update the tags for the given key.
+			$this->rememberTags($tags, $key);
+		} catch (\Exception $e) {
+			// If we can't cache the value, we will just return the value.
+			Log::error(__METHOD__ . ':' . __LINE__ . ' Could not cache the value.', ['exception' => $e]);
+		}
 
 		return $value;
 	}
