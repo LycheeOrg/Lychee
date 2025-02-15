@@ -17,6 +17,7 @@ return new class() extends Migration {
 	 */
 	public function up(): void
 	{
+		DB::table('configs')->where('key', 'cache_ttl')->update(['value' => '86400']);
 		DB::table('configs')->where('key', 'version')->update(['value' => '060301']);
 	}
 
@@ -27,6 +28,7 @@ return new class() extends Migration {
 	 */
 	public function down(): void
 	{
+		DB::table('configs')->where('key', 'cache_ttl')->update(['value' => '300']);
 		DB::table('configs')->where('key', 'version')->update(['value' => '060300']);
 	}
 };
