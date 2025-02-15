@@ -32,7 +32,7 @@
 						<InputPassword id="password" v-model="password" @keydown.enter="login" autocomplete="current-password" />
 						<label for="password">{{ $t("dialogs.login.password") }}</label>
 					</FloatLabel>
-					<Message v-if="invalidPassword" severity="error">{{ $t("dialog.login.unknown_invalid") }}</Message>
+					<Message v-if="invalidPassword" severity="error">{{ $t("dialogs.login.unknown_invalid") }}</Message>
 				</div>
 				<div class="px-9 text-muted-color text-right font-semibold">Lychee <span class="text-primary-500" v-if="is_se_enabled">SE</span></div>
 				<div class="flex items-center mt-9">

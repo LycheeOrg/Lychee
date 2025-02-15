@@ -61,9 +61,9 @@ const error_no_target = ref(false);
 
 const confirmation = computed(() => {
 	if (props.album) {
-		return sprintf(trans("dialog.merge.confirm"), props.album.title, titleMovedTo.value);
+		return sprintf(trans("dialogs.merge.confirm"), props.album.title, titleMovedTo.value);
 	}
-	return sprintf(trans("dialog.merge.confirm_multiple"), titleMovedTo.value);
+	return sprintf(trans("dialogs.merge.confirm_multiple"), titleMovedTo.value);
 });
 
 function selected(target: App.Http.Resources.Models.TargetAlbumResource) {
@@ -93,7 +93,7 @@ function execute() {
 		AlbumService.clearCache(destination_id.value);
 		toast.add({
 			severity: "success",
-			summary: sprintf(trans("dialog.merge.merged"), titleMovedTo.value),
+			summary: sprintf(trans("dialogs.merge.merged"), titleMovedTo.value),
 			life: 3000,
 		});
 		AlbumService.clearCache(destination_id.value);
