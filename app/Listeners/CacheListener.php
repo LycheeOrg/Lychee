@@ -38,7 +38,9 @@ class CacheListener
 			CacheHit::class => Log::debug('CacheListener: Hit for ' . $event->key),
 			KeyForgotten::class => Log::info('CacheListener: Forgetting key ' . $event->key),
 			KeyWritten::class => $this->keyWritten($event),
+			// @codeCoverageIgnoreStart
 			default => '',
+			// @codeCoverageIgnoreEnd
 		};
 	}
 

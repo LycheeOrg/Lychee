@@ -60,10 +60,13 @@ class RouteCacher
 
 			// Update the tags for the given key.
 			$this->rememberTags($tags, $key);
+			// @codeCoverageIgnoreStart
 		} catch (\Exception $e) {
+			// @codeCoverageIgnoreStart
 			// If we can't cache the value, we will just return the value.
 			Log::error(__METHOD__ . ':' . __LINE__ . ' Could not cache the value.', ['exception' => $e]);
 		}
+		// @codeCoverageIgnoreEnd
 
 		return $value;
 	}
