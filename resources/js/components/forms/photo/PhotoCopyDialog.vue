@@ -70,16 +70,16 @@ function close() {
 
 const question = computed(() => {
 	if (props.photo) {
-		return sprintf(trans("dialog.photo_copy.copy_to"), props.photo?.title);
+		return sprintf(trans("dialogs.photo_copy.copy_to"), props.photo?.title);
 	}
-	return sprintf(trans("dialog.photo_copy.copy_to_multiple"), props.photoIds?.length);
+	return sprintf(trans("dialogs.photo_copy.copy_to_multiple"), props.photoIds?.length);
 });
 
 const confirmation = computed(() => {
 	if (props.photo) {
-		return sprintf(trans("dialog.photo_copy.confirm"), props.photo.title, titleCopyTo.value);
+		return sprintf(trans("dialogs.photo_copy.confirm"), props.photo.title, titleCopyTo.value);
 	}
-	return sprintf(trans("dialog.photo_copy.confirm_multiple"), props.photoIds?.length, titleCopyTo.value);
+	return sprintf(trans("dialogs.photo_copy.confirm_multiple"), props.photoIds?.length, titleCopyTo.value);
 });
 
 function execute() {
@@ -97,7 +97,7 @@ function execute() {
 	PhotoService.copy(destination_id.value, photoCopiedIds).then(() => {
 		toast.add({
 			severity: "success",
-			summary: trans("dialog.photo_copy.copied"),
+			summary: trans("dialogs.photo_copy.copied"),
 			life: 3000,
 		});
 		// Clear the cache for the destination album
