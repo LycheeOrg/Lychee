@@ -29,11 +29,11 @@ use Tests\AbstractTestCase;
 
 class CacheListenerTest extends AbstractTestCase
 {
-	public static function tearDownAfterClass(): void
+	public function tearDown(): void
 	{
 		Configs::where('key', 'cache_event_logging')->update(['value' => '0']);
 		Configs::invalidateCache();
-		parent::tearDownAfterClass();
+		parent::tearDown();
 	}
 
 	public function testCacheListenerNever(): void
