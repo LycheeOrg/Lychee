@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\DB;
  * Do note that this number may be slightly off due to the way we store pictures in the database:
  * row are duplicates for pictures, but the file is stored only once.
  */
-class Spaces
+final class Spaces
 {
 	/**
 	 * Return the amount of data stored on the server (optionally for a user).

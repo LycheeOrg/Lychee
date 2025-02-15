@@ -16,6 +16,7 @@
 	<Panel class="max-w-5xl mx-auto border-0">
 		<SizeVariantMeter v-if="load" :album-id="null" />
 	</Panel>
+	<Activity v-if="!is_se_preview_enabled" />
 	<Panel class="max-w-5xl mx-auto border-0" :pt:header:class="'hidden'">
 		<TotalCard v-if="total" :total="total" />
 		<div class="py-4" v-if="load && total">
@@ -40,6 +41,7 @@ import SizeVariantMeter from "@/components/statistics/SizeVariantMeter.vue";
 import TotalCard, { TotalAlbum } from "@/components/statistics/TotalCard.vue";
 import AlbumsTable from "@/components/statistics/AlbumsTable.vue";
 import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
+import Activity from "@/components/statistics/Activity.vue";
 
 const router = useRouter();
 const user = ref<App.Http.Resources.Models.UserResource | undefined>(undefined);
