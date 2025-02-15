@@ -63,7 +63,7 @@ const years = computed(() => {
 	}
 
 	const maxYear = new Date().getFullYear();
-	const minYear = isTakenAt.value ? minCreatedAt.value : minCreatedAt.value;
+	const minYear = isTakenAt.value ? minTakenAt.value : minCreatedAt.value;
 	const listYears = [];
 	for (var i = maxYear; i >= minYear; i--) {
 		listYears.push(i);
