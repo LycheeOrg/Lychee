@@ -16,7 +16,7 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Tests\Unit;
+namespace Tests\Unit\Caching;
 
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Metadata\Cache\RouteCacher;

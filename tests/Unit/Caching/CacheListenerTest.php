@@ -16,7 +16,7 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Tests\Unit;
+namespace Tests\Unit\Caching;
 
 use App\Listeners\CacheListener;
 use App\Models\Configs;
