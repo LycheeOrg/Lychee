@@ -28,6 +28,9 @@
                 @foreach($item->category as $category)
                     <category>{{ $category }}</category>
                 @endforeach
+				@if($item->__isset('enclosure'))
+				<enclosure url="{{ url($item->enclosure) }}" length="{{ $item->enclosureLength }}" type="{{ $item->enclosureType }}" />
+				@endif
             </item>
         @endforeach
     </channel>
