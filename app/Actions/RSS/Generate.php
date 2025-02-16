@@ -41,6 +41,10 @@ class Generate
 	{
 		$page_link = $this->create_link_to_page($photo_model);
 		$sizeVariant = $photo_model->size_variants->getOriginal();
+		$catArr = [];
+		if ($photo_model->album_id !== null) {
+			$catArr[] = $photo_model->album->title;
+		}
 		$feedItem = [
 			'id' => $page_link,
 			'title' => $photo_model->title,
@@ -51,6 +55,7 @@ class Generate
 			'enclosureType' => $photo_model->type,
 			'enclosureLength' => $sizeVariant->filesize,
 			'authorName' => $photo_model->owner->username,
+			'category' => $catArr,
 		];
 
 		return FeedItem::create($feedItem);
