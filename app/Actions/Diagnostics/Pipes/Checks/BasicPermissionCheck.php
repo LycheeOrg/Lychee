@@ -16,6 +16,7 @@ use App\Exceptions\Internal\InvalidConfigOption;
 use App\Facades\Helpers;
 use App\Http\Controllers\Gallery\PhotoController;
 use App\Image\Files\ProcessableJobFile;
+use App\Models\Configs;
 use App\Models\SymLink;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\Storage;
@@ -170,6 +171,9 @@ class BasicPermissionCheck implements DiagnosticPipe
 			}
 			// @codeCoverageIgnoreEnd
 		}
+		if (Configs::getValueAsBool('disable_recursive_permission_check')) {
+			$data[] = DiagnosticData::info('Full directory permission check is disabled', self::class);
+		}
 	}
 
 	/**
@@ -254,6 +258,9 @@ class BasicPermissionCheck implements DiagnosticPipe
 			}
 
 			$dir = new \DirectoryIterator($path);
+			if (Configs::getValueAsBool('disable_recursive_permission_check')) {
+				return;
+			}
 			foreach ($dir as $dirEntry) {
 				if ($dirEntry->isDir() && !$dirEntry->isDot()) {
 					$this->checkDirectoryPermissionsRecursively($dirEntry->getPathname(), $data);
