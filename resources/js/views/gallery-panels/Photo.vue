@@ -99,7 +99,7 @@
 				:is_next="true"
 				:style="nextStyle"
 			/>
-			<Overlay :photo="photo" :image-overlay-type="lycheeStore.image_overlay_type" />
+			<Overlay :photo="photo" :image-overlay-type="lycheeStore.image_overlay_type" v-if="!is_exif_disabled" />
 			<div
 				v-if="photo?.rights.can_edit && !is_edit_open"
 				class="absolute top-0 sm:h-1/4 w-full sm:w-1/2 left-1/2 -translate-x-1/2 opacity-50 lg:opacity-10 group lg:hover:opacity-100 transition-opacity duration-500 ease-in-out z-20 mt-14 sm:mt-0"
@@ -138,7 +138,12 @@
 				</span>
 			</div>
 		</div>
-		<PhotoDetails v-model:are-details-open="are_details_open" :photo="photo" :is-map-visible="album?.config.is_map_accessible ?? false" />
+		<PhotoDetails
+			v-model:are-details-open="are_details_open"
+			:photo="photo"
+			:is-map-visible="album?.config.is_map_accessible ?? false"
+			v-if="!is_exif_disabled"
+		/>
 	</div>
 	<PhotoEdit v-if="photo?.rights.can_edit" :photo="photo" v-model:visible="is_edit_open" />
 	<MoveDialog :photo="photo" v-model:visible="isMoveVisible" :parent-id="props.albumid" @moved="updated" />
@@ -196,7 +201,7 @@ const { photo, album, photos, previousStyle, nextStyle, srcSetMedium, style, ima
 );
 const { getPlaceholderIcon } = useImageHelpers();
 
-const { slideshow_timeout } = storeToRefs(lycheeStore);
+const { slideshow_timeout, is_exif_disabled } = storeToRefs(lycheeStore);
 
 function getNext() {
 	router.push({ name: "photo", params: { albumid: props.albumid, photoid: photo.value?.next_photo_id ?? "" } });

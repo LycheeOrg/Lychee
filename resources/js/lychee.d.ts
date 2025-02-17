@@ -17,6 +17,7 @@ declare namespace App.Enum {
 	export type AlbumDecorationType = "none" | "layers" | "album" | "photo" | "all";
 	export type AspectRatioCSSType = "aspect-5x4" | "aspect-4x5" | "aspect-3x2" | "aspect-square" | "aspect-2x3" | "aspect-video";
 	export type AspectRatioType = "5/4" | "3/2" | "1/1" | "2/3" | "4/5" | "16/9";
+	export type CacheTag = "gallery" | "auth" | "user" | "settings" | "statistics" | "users";
 	export type ColumnSortingAlbumType = "owner_id" | "created_at" | "title" | "description" | "min_taken_at" | "max_taken_at";
 	export type ColumnSortingPhotoType = "owner_id" | "created_at" | "title" | "description" | "taken_at" | "is_starred" | "type";
 	export type ColumnSortingType =
@@ -231,6 +232,7 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		image_overlay_type: App.Enum.ImageOverlayType;
 		can_rotate: boolean;
 		can_autoplay: boolean;
+		is_exif_disabled: boolean;
 		display_thumb_album_overlay: App.Enum.ThumbOverlayVisibilityType;
 		display_thumb_photo_overlay: App.Enum.ThumbOverlayVisibilityType;
 		album_subtitle_type: App.Enum.ThumbAlbumSubtitleType;

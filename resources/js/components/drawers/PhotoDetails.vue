@@ -16,9 +16,10 @@
 					<h2 class="col-span-2 text-muted-color font-bold px-3 pt-4 pb-3">
 						{{ $t("gallery.photo.details.basics") }}
 					</h2>
-					<span class="py-0.5 px-3 text-sm">{{ $t("gallery.photo.details.title") }}</span>
-					<span class="py-0.5 pl-0 text-sm">{{ props.photo.title }}</span>
-
+					<template v-if="props.photo.title">
+						<span class="py-0.5 px-3 text-sm">{{ $t("gallery.photo.details.title") }}</span>
+						<span class="py-0.5 pl-0 text-sm">{{ props.photo.title }}</span>
+					</template>
 					<span class="py-0.5 px-3 text-sm">{{ $t("gallery.photo.details.uploaded") }}</span>
 					<span class="py-0.5 pl-0 text-sm">{{ props.photo.preformatted.created_at }}</span>
 

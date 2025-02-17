@@ -28,7 +28,7 @@
 						@click="isDownloadOpen = !isDownloadOpen"
 					/>
 					<Button v-if="props.photo.rights.can_edit" text icon="pi pi-pencil" class="mr-2" severity="secondary" @click="toggleEdit" />
-					<Button icon="pi pi-info" class="mr-2" severity="secondary" text @click="toggleDetails" />
+					<Button icon="pi pi-info" class="mr-2" severity="secondary" text @click="toggleDetails" v-if="!is_exif_disabled" />
 				</div>
 			</template>
 		</Toolbar>
@@ -45,6 +45,7 @@ import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
 import DownloadPhoto from "../modals/DownloadPhoto.vue";
 import { storeToRefs } from "pinia";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
+import { useLycheeStateStore } from "@/stores/LycheeState";
 
 const router = useRouter();
 const emits = defineEmits<{
@@ -59,6 +60,8 @@ const props = defineProps<{
 const togglableStore = useTogglablesStateStore();
 const { is_full_screen, is_edit_open, are_details_open, is_slideshow_active } = storeToRefs(togglableStore);
 const isDownloadOpen = ref(false);
+const lycheeStore = useLycheeStateStore();
+const { is_exif_disabled } = storeToRefs(lycheeStore);
 
 onKeyStroke("i", () => !shouldIgnoreKeystroke() && toggleDetails());
 onKeyStroke("e", () => !shouldIgnoreKeystroke() && props.photo.rights.can_edit && toggleEdit());
@@ -76,7 +79,7 @@ function goBack() {
 }
 
 function toggleDetails() {
-	are_details_open.value = !are_details_open.value;
+	are_details_open.value = !are_details_open.value && !is_exif_disabled.value;
 }
 
 function toggleEdit() {
