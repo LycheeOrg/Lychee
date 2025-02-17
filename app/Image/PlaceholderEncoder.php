@@ -12,6 +12,7 @@ use App\Contracts\Image\MediaFile;
 use App\Exceptions\MediaFileOperationException;
 use App\Image\Files\InMemoryBuffer;
 use App\Models\SizeVariant;
+use Illuminate\Support\Facades\Log;
 use Safe\Exceptions\FilesystemException;
 use Safe\Exceptions\ImageException;
 use Safe\Exceptions\StreamException;
@@ -63,6 +64,10 @@ class PlaceholderEncoder
 
 			// delete original file since we now have no reference to it
 			$originalFile->delete();
+		} catch (MediaFileOperationException $e) {
+			// Log the error, delete the size variant and continue with the next placeholder
+			Log::error($e->getMessage(), [$e]);
+			$sizeVariant->delete();
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException('Failed to encode placeholder to base64', $e);
 		}

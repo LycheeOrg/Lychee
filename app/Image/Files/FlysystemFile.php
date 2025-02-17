@@ -44,7 +44,7 @@ class FlysystemFile extends BaseMediaFile
 			$this->stream = $this->disk->readStream($this->relativePath);
 			if (!is_resource($this->stream)) {
 				$this->stream = null;
-				throw new FlySystemLycheeException('Filesystem::readStream failed');
+				throw new FlySystemLycheeException('Filesystem::readStream failed on ' . $this->relativePath);
 			}
 		} catch (\ErrorException|FilesystemException|FileNotFoundException $e) {
 			throw new MediaFileOperationException($e->getMessage(), $e);
