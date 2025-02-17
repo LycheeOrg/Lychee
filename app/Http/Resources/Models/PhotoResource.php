@@ -90,7 +90,7 @@ class PhotoResource extends Data
 		$this->tags = $photo->tags;
 		$this->taken_at = $photo->taken_at?->toIso8601String();
 		$this->taken_at_orig_tz = $photo->taken_at_orig_tz;
-		$this->title = $photo->title;
+		$this->title = (Configs::getValueAsBool('file_name_hidden') && Auth::guest()) ? '' : $photo->title;
 		$this->type = $photo->type;
 		$this->updated_at = $photo->updated_at->toIso8601String();
 		$this->rights = new PhotoRightsResource($photo);
