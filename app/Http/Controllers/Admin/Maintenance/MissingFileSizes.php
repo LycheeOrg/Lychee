@@ -11,6 +11,7 @@ namespace App\Http\Controllers\Admin\Maintenance;
 use App\Enum\StorageDiskType;
 use App\Events\AlbumRouteCacheUpdated;
 use App\Http\Requests\Maintenance\MaintenanceRequest;
+use App\Models\Configs;
 use App\Models\SizeVariant;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Log;
@@ -36,7 +37,7 @@ class MissingFileSizes extends Controller
 			->where('filesize', '=', 0)
 			->orderBy('id');
 		// Internally, only holds $limit entries at once
-		$variants = $variants_query->lazyById(500);
+		$variants = $variants_query->lazyById(Configs::getValueAsInt('maintenance_processing_limit'));
 
 		$generated = 0;
 
