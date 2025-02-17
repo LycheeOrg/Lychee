@@ -75,6 +75,7 @@ final readonly class RouteCacheManager
 			'api/v2/Map' => new RouteCacheConfig(tag: CacheTag::GALLERY, user_dependant: true, extra: [RequestAttribute::ALBUM_ID_ATTRIBUTE]),
 			'api/v2/Map::provider' => new RouteCacheConfig(tag: CacheTag::SETTINGS),
 			'api/v2/Oauth' => new RouteCacheConfig(tag: CacheTag::USER, user_dependant: true),
+			'api/v2/Oauth::providers' => new RouteCacheConfig(tag: CacheTag::SETTINGS),
 			'api/v2/WebAuthn' => new RouteCacheConfig(tag: CacheTag::USER, user_dependant: true),
 
 			// Response must be different for each call.

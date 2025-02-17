@@ -29,7 +29,7 @@ class OauthTest extends BaseApiV2Test
 		Config::set('services.github.client_secret', 'something');
 		Config::set('services.github.redirect', 'something');
 
-		$response = $this->getJson('OauthProviders');
+		$response = $this->getJson('Oauth::providers');
 		$this->assertOk($response);
 		$response->assertJson(['github']);
 
@@ -46,7 +46,7 @@ class OauthTest extends BaseApiV2Test
 		Config::set('services.github.client_secret', 'something');
 		Config::set('services.github.redirect', 'something');
 
-		$response = $this->actingAs($this->userMayUpload1)->getJson('OauthProviders');
+		$response = $this->actingAs($this->userMayUpload1)->getJson('Oauth::providers');
 		$this->assertOk($response);
 		$response->assertJson(['github']);
 

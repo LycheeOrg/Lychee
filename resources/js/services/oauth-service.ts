@@ -3,7 +3,7 @@ import Constants from "./constants";
 
 const OauthService = {
 	listProviders(): Promise<AxiosResponse<App.Enum.OauthProvidersType[]>> {
-		return axios.get(`${Constants.getApiUrl()}OauthProviders`, { data: {} });
+		return axios.get(`${Constants.getApiUrl()}Oauth::providers`, { data: {} });
 	},
 
 	list(): Promise<AxiosResponse<App.Http.Resources.Oauth.OauthRegistrationData[]>> {
