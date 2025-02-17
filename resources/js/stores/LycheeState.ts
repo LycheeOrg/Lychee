@@ -28,7 +28,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		can_rotate: false,
 		can_autoplay: false,
 		is_exif_disabled: false,
-		is_favourite_enabled: false, 
+		is_favourite_enabled: false,
 
 		// keybinding help
 		show_keybinding_help_popup: false,
