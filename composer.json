@@ -50,6 +50,7 @@
         "ext-tokenizer": "*",
         "ext-xml": "*",
         "bepsvpt/secure-headers": "^9.0",
+        "composer/semver": "^3.4",
         "dedoc/scramble": "^0.12.2",
         "doctrine/dbal": "^3.1",
         "geocoder-php/cache-provider": "^4.3",
