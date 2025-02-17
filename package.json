@@ -16,13 +16,13 @@
         "@types/leaflet-rotatedmarker": "^0.2.5",
         "@types/leaflet.markercluster": "^1.5.5",
         "@types/mousetrap": "^1.6.15",
-        "@types/node": "^22.13.0",
+        "@types/node": "^22.13.4",
         "@types/photoswipe": "^4.1.6",
         "@types/qrcode": "^1.5.5",
         "@types/sprintf-js": "^1.1.4",
         "@vitejs/plugin-vue": "^5.1.5",
-        "sass": "^1.84.0",
-        "vue-tsc": "^2.1.8"
+        "sass": "^1.85.0",
+        "vue-tsc": "^2.2.2"
     },
     "dependencies": {
         "@fortawesome/fontawesome-free": "^6.7.1",
