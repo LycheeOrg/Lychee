@@ -29,7 +29,7 @@ return new class() extends BaseConfigMigration {
 				'type_range' => self::BOOL,
 				'description' => 'Do not show the photo title to anonymous users.',
 				'details' => 'Logged in user will still have access to the title.',
-				'is_secret' => true,
+				'is_secret' => false,
 				'level' => 1,
 			],
 		];
