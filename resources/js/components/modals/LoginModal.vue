@@ -59,7 +59,6 @@ import InputText from "@/components/forms/basic/InputText.vue";
 import InputPassword from "@/components/forms/basic/InputPassword.vue";
 import { useAuthStore } from "@/stores/Auth";
 import AlbumService from "@/services/album-service";
-import OauthService from "@/services/oauth-service";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
@@ -101,23 +100,9 @@ function login() {
 		});
 }
 
-function fetchOauths() {
-	OauthService.list()
-		.then((res) => {
-			oauths.value = (res.data as App.Enum.OauthProvidersType[]).map(mapToOauths);
-		})
-		.catch((e) => {
-			console.error(e);
-		});
-}
-
-function mapToOauths(provider: App.Enum.OauthProvidersType): OauthProvider {
-	let icon = OauthService.providerIcon(provider);
-	let url = `/auth/${provider}/authenticate`;
-	return { url, icon, provider };
-}
-
-fetchOauths();
+authStore.getOauthData().then((data) => {
+	oauths.value = data;
+});
 
 function openWebAuthn() {
 	is_login_open.value = false;

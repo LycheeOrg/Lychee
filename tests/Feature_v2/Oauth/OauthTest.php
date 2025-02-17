@@ -29,12 +29,26 @@ class OauthTest extends BaseApiV2Test
 		Config::set('services.github.client_secret', 'something');
 		Config::set('services.github.redirect', 'something');
 
-		$response = $this->getJson('Oauth');
+		$response = $this->getJson('OauthProviders');
 		$this->assertOk($response);
 		$response->assertJson(['github']);
 
 		$response = $this->deleteJson('Oauth', ['provider' => 'github']);
 		$this->assertUnauthorized($response);
+
+		$response = $this->getJson('Oauth');
+		$this->assertUnauthorized($response);
+	}
+
+	public function testUser(): void
+	{
+		Config::set('services.github.client_id', 'something');
+		Config::set('services.github.client_secret', 'something');
+		Config::set('services.github.redirect', 'something');
+
+		$response = $this->actingAs($this->userMayUpload1)->getJson('OauthProviders');
+		$this->assertOk($response);
+		$response->assertJson(['github']);
 
 		$response = $this->actingAs($this->userMayUpload1)->getJson('Oauth');
 		$this->assertOk($response);

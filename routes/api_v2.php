@@ -172,7 +172,8 @@ Route::post('/WebAuthn::login', [WebAuthn\WebAuthnLoginController::class, 'login
 // This route returns different results depending whether we are authenticated or not:
 // If Authenticated: list of the registrated Oauth providers
 // If not Authenticated: list of the available Oauth providers
-Route::get('/Oauth', [OauthController::class, 'list']);
+Route::get('/OauthProviders', [OauthController::class, 'listProviders']);
+Route::get('/Oauth', [OauthController::class, 'listForUser']);
 Route::delete('/Oauth', [OauthController::class, 'clear']);
 
 /**
