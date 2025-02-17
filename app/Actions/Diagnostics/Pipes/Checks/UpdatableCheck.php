@@ -8,6 +8,7 @@
 
 namespace App\Actions\Diagnostics\Pipes\Checks;
 
+use App\Actions\Diagnostics\Pipes\Infos\DockerVersionInfo;
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
 use App\Exceptions\ConfigurationException;
@@ -26,15 +27,13 @@ use function Safe\exec;
  */
 class UpdatableCheck implements DiagnosticPipe
 {
-	private InstalledVersion $installedVersion;
-
 	/**
 	 * @param InstalledVersion $installedVersion
 	 */
 	public function __construct(
-		InstalledVersion $installedVersion,
+		private InstalledVersion $installedVersion,
+		private DockerVersionInfo $dockerVersionInfo,
 	) {
-		$this->installedVersion = $installedVersion;
 	}
 
 	/**
@@ -42,7 +41,7 @@ class UpdatableCheck implements DiagnosticPipe
 	 */
 	public function handle(array &$data, \Closure $next): array
 	{
-		if (!$this->installedVersion->isRelease()) {
+		if (!$this->installedVersion->isRelease() && !$this->dockerVersionInfo->isDocker()) {
 			try {
 				self::assertUpdatability();
 				// @codeCoverageIgnoreStart
