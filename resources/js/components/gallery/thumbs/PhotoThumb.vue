@@ -38,40 +38,12 @@
 				@load="onImageLoad"
 			/>
 		</span>
-		<div
-			:class="{
-				'absolute top-0 right-0 flex justify-center items-center h-8 w-8 text-surface-0 text-2xl filter-shadow': true,
-				'md:opacity-0 md:group-hover:opacity-50 md:transition-all md:ease-out': !isFavourite,
-			}"
-		>
-			<span
-				:class="{
-					pi: true,
-					'pi-heart-fill': isFavourite,
-					'pi-heart': !isFavourite,
-				}"
-			></span>
-		</div>
-		<div
-			:class="{
-				'absolute top-0 right-0 flex justify-center items-center h-8 w-8 text-surface-0 text-2xl cursor-pointer': true,
-				'opacity-0 md:opacity-0 md:hover:opacity-100 md:transition-all md:ease-out': !isFavourite,
-			}"
-			@click="toggleFavourite"
-		>
-			<span
-				:class="{
-					pi: true,
-					'pi-heart': isFavourite,
-					'pi-heart-fill': !isFavourite,
-				}"
-			></span>
-		</div>
+		<ThumbFavourite v-if="is_favourite_enabled" :is-favourite="isFavourite" @click="toggleFavourite" />
 		<div
 			:class="{
 				'overlay w-full absolute bottom-0 m-0 bg-gradient-to-t from-[#00000066] text-shadow-sm': true,
-				'opacity-0 group-hover:opacity-100 transition-all ease-out': lycheeStore.display_thumb_photo_overlay === 'hover',
-				hidden: lycheeStore.display_thumb_photo_overlay === 'never',
+				'opacity-0 group-hover:opacity-100 transition-all ease-out': display_thumb_photo_overlay === 'hover',
+				hidden: display_thumb_photo_overlay === 'never',
 			}"
 		>
 			<h1 class="min-h-[19px] mt-3 mb-1 ml-3 text-surface-0 text-base font-bold overflow-hidden whitespace-nowrap text-ellipsis">
@@ -106,6 +78,7 @@ import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import { useImageHelpers } from "@/utils/Helpers";
 import { useFavouriteStore } from "@/stores/FavouriteState";
+import ThumbFavourite from "./ThumbFavourite.vue";
 
 const { getNoImageIcon, getPlayIcon } = useImageHelpers();
 
@@ -127,14 +100,14 @@ const srcPlay = ref(getPlayIcon());
 const srcNoImage = ref(getNoImageIcon());
 const isImageLoaded = ref(false);
 
+const { is_favourite_enabled, display_thumb_photo_overlay } = storeToRefs(lycheeStore);
+
 function onImageLoad() {
 	isImageLoaded.value = true;
 }
 
-function toggleFavourite(e: Event) {
-	e.stopPropagation();
+function toggleFavourite() {
 	favourites.toggle(props.photo);
-	console.log(favourites.photos);
 }
 
 // @ts-expect-error

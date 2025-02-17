@@ -13,11 +13,11 @@ return new class() extends BaseConfigMigration {
 	{
 		return [
 			[
-				'key' => 'client_side_favourite',
+				'key' => 'client_side_favourite_enabled',
 				'value' => '0',
 				'cat' => 'Mod Pro',
 				'type_range' => self::BOOL,
-				'description' => 'Allow visitors to mark some pictures as favourite.',
+				'description' => 'Allow visitors to mark pictures as their favourite.',
 				'details' => 'The favourites are persisted in the browser local storage.',
 				'is_secret' => false,
 				'level' => 1,
