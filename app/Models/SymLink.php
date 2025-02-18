@@ -27,7 +27,7 @@ use function Safe\symlink;
 use function Safe\unlink;
 
 /**
- * App\SymLink.
+ * App\Models\SymLink.
  *
  * @property int         $id
  * @property int         $size_variant_id
