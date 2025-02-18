@@ -222,7 +222,7 @@ const sections = computed(function () {
 function load() {
 	SettingsService.getAll().then((response) => {
 		configs.value = response.data as App.Http.Resources.Models.ConfigCategoryResource[];
-		active.value = configs.value.map((c ,i: number) => i.toString());
+		active.value = configs.value.map((c, i: number) => i.toString());
 	});
 }
 
