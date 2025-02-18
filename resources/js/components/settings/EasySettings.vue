@@ -295,7 +295,7 @@ import MaintenanceService from "@/services/maintenance-service";
 
 const toast = useToast();
 
-const configs = ref<App.Http.Resources.Collections.ConfigCollectionResource | undefined>(undefined);
+const configs = ref<App.Http.Resources.Models.ConfigCategoryResource[] | undefined>(undefined);
 const dropbox_key = ref<string | undefined>(undefined);
 const photoSortingColumn = ref<App.Http.Resources.Models.ConfigResource | undefined>(undefined);
 const photoSortingOrder = ref<App.Http.Resources.Models.ConfigResource | undefined>(undefined);
@@ -351,14 +351,10 @@ function save(configKey: string, value: string) {
 function load() {
 	SettingsService.getAll().then((response) => {
 		configs.value = response.data;
-		const decapsulated: App.Http.Resources.Collections.ConfigCollectionResource = toRaw(
-			configs.value,
-		) as App.Http.Resources.Collections.ConfigCollectionResource;
 		const configurations = [] as App.Http.Resources.Models.ConfigResource[];
-		Object.values(decapsulated.configs).forEach((value) => Object.values(value).forEach((value) => configurations.push(value)));
+		configs.value?.forEach((config) => (config.configs as App.Http.Resources.Models.ConfigResource[]).forEach((value) => configurations.push(value)));
 
 		lang.value = configurations.find((config) => config.key === "lang");
-
 		dark_mode_enabled.value = configurations.find((config) => config.key === "dark_mode_enabled");
 		nsfwVisible.value = configurations.find((config) => config.key === "nsfw_visible")?.value === "1";
 		dropbox_key.value = configurations.find((config) => config.key === "dropbox_key")?.value ?? "";

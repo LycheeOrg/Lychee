@@ -24,15 +24,15 @@
 			</Menu>
 			<div class="max-w-3xl" id="allSettings">
 				<Fieldset
-					v-for="(configGroup, key, index) in configs.configs"
-					:legend="key.toString()"
+					v-for="(configGroup, key, index) in configs"
+					:legend="configGroup.name"
 					:toggleable="true"
 					class="border-b-0 border-r-0 rounded-r-none rounded-b-none mb-4 hover:border-primary-500 pt-2"
 					:pt:legendlabel:class="'capitalize'"
 					:id="key"
 				>
 					<div class="flex flex-col gap-4">
-						<template v-for="config in configGroup">
+						<template v-for="config in configGroup.configs">
 							<template v-if="show(config)">
 								<template v-if="oldStyle">
 									<OldField :config="config" @filled="update" @reset="reset" />
@@ -205,15 +205,15 @@ import { trans } from "laravel-vue-i18n";
 const toast = useToast();
 const oldStyle = ref(false);
 const active = ref<string[]>([]);
-const configs = ref<App.Http.Resources.Collections.ConfigCollectionResource | undefined>(undefined);
+const configs = ref<App.Http.Resources.Models.ConfigCategoryResource[] | undefined>(undefined);
 const modified = ref<App.Http.Resources.Editable.EditableConfigResource[]>([]);
 const sections = computed(function () {
 	if (!configs.value) {
 		return [];
 	}
-	return Object.keys(configs.value.configs).map((key) => {
+	return configs.value.map((c, key) => {
 		return {
-			label: key,
+			label: c.name,
 			link: "#" + key,
 		};
 	});
@@ -221,8 +221,8 @@ const sections = computed(function () {
 
 function load() {
 	SettingsService.getAll().then((response) => {
-		configs.value = response.data as App.Http.Resources.Collections.ConfigCollectionResource;
-		active.value = [...Array(Object.keys(configs.value.configs).length).keys()].map((i: number) => i.toString());
+		configs.value = response.data as App.Http.Resources.Models.ConfigCategoryResource[];
+		active.value = configs.value.map((c ,i: number) => i.toString());
 	});
 }
 
