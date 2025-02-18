@@ -352,7 +352,9 @@ function load() {
 	SettingsService.getAll().then((response) => {
 		configs.value = response.data;
 		const configurations = [] as App.Http.Resources.Models.ConfigResource[];
-		configs.value?.forEach((config) => (config.configs as App.Http.Resources.Models.ConfigResource[]).forEach((value) => configurations.push(value)));
+		configs.value?.forEach((config) =>
+			(config.configs as App.Http.Resources.Models.ConfigResource[]).forEach((value) => configurations.push(value)),
+		);
 
 		lang.value = configurations.find((config) => config.key === "lang");
 		dark_mode_enabled.value = configurations.find((config) => config.key === "dark_mode_enabled");
