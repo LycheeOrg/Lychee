@@ -56,7 +56,7 @@
         "geocoder-php/cache-provider": "^4.3",
         "geocoder-php/nominatim-provider": "^5.5",
         "graham-campbell/markdown": "^15.0",
-        "laragear/webauthn": "^3.1",
+        "laragear/webauthn": "^4.0",
         "laravel/framework": "^11.0",
         "laravel/socialite": "^5.11",
         "league/flysystem-aws-s3-v3": "^3.22",

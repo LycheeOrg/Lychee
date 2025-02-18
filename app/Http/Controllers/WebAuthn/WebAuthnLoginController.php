@@ -111,7 +111,7 @@ class WebAuthnLoginController extends Controller
 	{
 		/** @var User|null $user */
 		$user = User::whereHas('webAuthnCredentials',
-			fn ($query) => $query->whereKey($credentials['id'])->whereEnabled()
+			fn ($query) => $query->where('id', '=', $credentials['id'])->whereNull('disabled_at')
 		)->first();
 
 		return $user;

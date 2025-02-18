@@ -161,6 +161,7 @@ return new class() extends Migration {
 		});
 		$needsConversion = $this->needsConversion();
 		DB::beginTransaction();
+		/** @var array<int,object{id:int,created_at_tmp:string|null,updated_at_tmp:string|null}> */
 		$entities = DB::table($tableName)->select([
 			self::ID_COL_NAME,
 			self::CREATED_AT_COL_NAME . '_tmp',
@@ -239,6 +240,7 @@ return new class() extends Migration {
 		});
 		$needsConversion = $this->needsConversion();
 		DB::beginTransaction();
+		/** @var array<int,object{id:int,created_at_tmp:string|null,updated_at_tmp:string|null}> */
 		$entities = DB::table($tableName)->select([
 			self::ID_COL_NAME,
 			self::CREATED_AT_COL_NAME . '_tmp',
@@ -288,6 +290,7 @@ return new class() extends Migration {
 		});
 		$needsConversion = $this->needsConversion();
 		DB::beginTransaction();
+		/** @var array<int,object{id:int,takestamp:string|null}> */
 		$photos = DB::table(self::PHOTOS_TABLE_NAME)->select([
 			self::ID_COL_NAME,
 			self::PHOTO_TAKESTAMP_COL_NAME,
@@ -328,6 +331,7 @@ return new class() extends Migration {
 		});
 		$needsConversion = $this->needsConversion();
 		DB::beginTransaction();
+		/** @var array<int,object{id:int,taken_at:string|null,taken_at_orig_tz:string|null}> */
 		$photos = DB::table(self::PHOTOS_TABLE_NAME)->select([
 			self::ID_COL_NAME,
 			self::PHOTO_TAKEN_AT_COL_NAME,

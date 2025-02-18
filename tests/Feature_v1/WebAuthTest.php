@@ -62,7 +62,7 @@ class WebAuthTest extends AbstractTestCase
 		$response->assertJson([
 			'rp' => ['name' => 'Lychee'],
 			'authenticatorSelection' => ['userVerification' => 'discouraged'],
-			'user' => ['name' => null, 'displayName' => 'admin'],
+			'user' => ['name' => 'admin#localhost', 'displayName' => 'admin'],
 			'pubKeyCredParams' => [['type' => 'public-key', 'alg' => -7], ['type' => 'public-key', 'alg' => -257]],
 			'attestation' => 'none',
 			'excludeCredentials' => [],

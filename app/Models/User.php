@@ -30,6 +30,7 @@ use Illuminate\Support\Facades\Auth;
 use Laragear\WebAuthn\Contracts\WebAuthnAuthenticatable;
 use Laragear\WebAuthn\Models\WebAuthnCredential;
 use Laragear\WebAuthn\WebAuthnAuthentication;
+use Laragear\WebAuthn\WebAuthnData;
 use function Safe\mb_convert_encoding;
 
 /**
@@ -241,5 +242,14 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 		WebAuthnCredential::query()->where('authenticatable_id', '=', $this->id)->delete();
 
 		return $this->parentDelete();
+	}
+
+	/**
+	 * Returns displayable data to be used to create WebAuthn Credentials.
+	 * The default function use email and name, however in Lyche the email is optional.
+	 */
+	public function webAuthnData(): WebAuthnData
+	{
+		return WebAuthnData::make($this->email ?? ($this->name . '#' . request()->httpHost()), $this->name);
 	}
 }
