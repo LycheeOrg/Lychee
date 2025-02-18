@@ -37,11 +37,10 @@ const props = defineProps<{
 	low: number;
 	medium: number;
 	high: number;
-	data: DayCount[];
+	data: App.Http.Resources.Statistics.DayCount[];
 	year: number | undefined;
 }>();
 
-type DayCount = { date: string; count: number };
 type DayData = { date: Date; count: number };
 type MonthCol = { month: string; colspan: number };
 
@@ -51,7 +50,7 @@ const weeks = ref<DayData[][]>([]);
 const months = ref<MonthCol[]>([]);
 const days = ref<number[]>([0, 1, 2, 3, 4, 5, 6]);
 
-function transformData(data: DayCount[], year: number | undefined) {
+function transformData(data: App.Http.Resources.Statistics.DayCount[], year: number | undefined) {
 	weeks.value = [];
 	let startDate: Date;
 
