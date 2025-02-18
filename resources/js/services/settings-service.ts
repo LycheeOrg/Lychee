@@ -6,10 +6,10 @@ export type SetConfigRequest = {
 };
 
 const SettingsService = {
-	getAll(): Promise<AxiosResponse<App.Http.Resources.Collections.ConfigCollectionResource>> {
+	getAll(): Promise<AxiosResponse<App.Http.Resources.Models.ConfigCategoryResource[]>> {
 		return axios.get(`${Constants.getApiUrl()}Settings`, { data: {} });
 	},
-	setConfigs(data: SetConfigRequest): Promise<AxiosResponse<App.Http.Resources.Collections.ConfigCollectionResource>> {
+	setConfigs(data: SetConfigRequest): Promise<AxiosResponse<App.Http.Resources.Models.ConfigCategoryResource[]>> {
 		return axios.post(`${Constants.getApiUrl()}Settings::setConfigs`, data);
 	},
 	getLanguages(): Promise<AxiosResponse<string[]>> {

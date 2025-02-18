@@ -101,9 +101,6 @@ declare namespace App.Enum {
 	export type VersionChannelType = "release" | "git" | "tag";
 }
 declare namespace App.Http.Resources.Collections {
-	export type ConfigCollectionResource = {
-		configs: { [key: string]: Array<App.Http.Resources.Models.ConfigResource> };
-	};
 	export type PositionDataResource = {
 		id: string | null;
 		title: string | null;

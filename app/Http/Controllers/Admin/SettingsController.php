@@ -16,7 +16,6 @@ use App\Http\Requests\Settings\GetAllConfigsRequest;
 use App\Http\Requests\Settings\SetConfigsRequest;
 use App\Http\Requests\Settings\SetCSSSettingRequest;
 use App\Http\Requests\Settings\SetJSSettingRequest;
-use App\Http\Resources\Collections\ConfigCollectionResource;
 use App\Http\Resources\Models\ConfigCategoryResource;
 use App\Models\ConfigCategory;
 use App\Models\Configs;
@@ -54,10 +53,11 @@ class SettingsController extends Controller
 	 * Set a limited number of configurations with the new values.
 	 *
 	 * @param SetConfigsRequest $request
+	 * @param DockerVersionInfo $docker_info
 	 *
-	 * @return ConfigCollectionResource
+	 * @return Collection<int,ConfigCategoryResource>
 	 */
-	public function setConfigs(SetConfigsRequest $request): ConfigCollectionResource
+	public function setConfigs(SetConfigsRequest $request, DockerVersionInfo $docker_info): Collection
 	{
 		$configs = $request->configs();
 		$configs->each(function ($config) {
@@ -67,7 +67,13 @@ class SettingsController extends Controller
 		Configs::invalidateCache();
 		TaggedRouteCacheUpdated::dispatch(CacheTag::SETTINGS);
 
-		return new ConfigCollectionResource(Configs::orderBy('cat', 'asc')->get());
+		$editable_configs = ConfigCategory::with([
+			'configs' => fn ($query) => $query->when(config('features.hide-lychee-SE', false) === true, fn ($q) => $q->where('cat', '!=', 'lychee SE'))
+				->when($docker_info->isDocker(), fn ($q) => $q->where('no_docker', '!==', true))
+				->when(!$request->is_se() && !Configs::getValueAsBool('enable_se_preview'), fn ($q) => $q->where('level', '=', 0)),
+		])->orderBy('order', 'asc')->get();
+
+		return ConfigCategoryResource::collect($editable_configs)->filter(fn ($cat) => $cat->configs->isNotEmpty());
 	}
 
 	/**
