@@ -28,6 +28,7 @@ return new class() extends Migration {
 
 		DB::beginTransaction();
 
+		/** @var array<int,object{id:int,size:string}> */
 		$photos = DB::table(self::TABLE_NAME)
 			->select([self::ID_COL_NAME, self::OLD_COL_NAME])
 			->lazyById();
@@ -72,6 +73,7 @@ return new class() extends Migration {
 
 		DB::beginTransaction();
 
+		/** @var array<int,object{id:int,filesize:int}> */
 		$photos = DB::table(self::TABLE_NAME)
 			->select([self::ID_COL_NAME, self::NEW_COL_NAME])
 			->lazyById();

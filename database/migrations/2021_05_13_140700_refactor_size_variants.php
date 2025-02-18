@@ -44,6 +44,7 @@ return new class() extends Migration {
 		});
 
 		DB::beginTransaction();
+		/** @var array<int,object{id:int}> */
 		$photos = DB::table(self::PHOTOS_TABLE_NAME)->select([
 			self::ID_COL_NAME,
 			self::SMALL_COL_NAME,
@@ -101,6 +102,7 @@ return new class() extends Migration {
 		});
 
 		DB::beginTransaction();
+		/** @var array<int,object{id:int}> */
 		$photos = DB::table(self::PHOTOS_TABLE_NAME)->select([
 			self::ID_COL_NAME,
 			self::SMALL_WIDTH_COL_NAME,

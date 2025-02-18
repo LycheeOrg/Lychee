@@ -62,6 +62,7 @@ return new class() extends Migration {
 		});
 
 		DB::beginTransaction();
+		/** @var array<int,object{id:int,created_at:string|null,taken_at:string|null,taken_at_orig_tz:string|null,updated_at:string|null}> */
 		$photos = DB::table(self::PHOTOS_TABLE_NAME)->select([
 			self::ID_COL_NAME,
 			self::PHOTO_CREATED_AT_COL_NAME,
