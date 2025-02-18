@@ -41,7 +41,8 @@ class SettingsController extends Controller
 	 */
 	public function getAll(GetAllConfigsRequest $request, DockerVersionInfo $docker_info): Collection
 	{
-		$editable_configs = ConfigCategory::with(['configs' => fn ($query) => $query->when(config('features.hide-lychee-SE', false) === true, fn ($q) => $q->where('cat', '!=', 'lychee SE'))
+		$editable_configs = ConfigCategory::with([
+			'configs' => fn ($query) => $query->when(config('features.hide-lychee-SE', false) === true, fn ($q) => $q->where('cat', '!=', 'lychee SE'))
 				->when($docker_info->isDocker(), fn ($q) => $q->where('no_docker', '!==', true))
 				->when(!$request->is_se() && !Configs::getValueAsBool('enable_se_preview'), fn ($q) => $q->where('level', '=', 0)),
 		])->orderBy('order', 'asc')->get();
