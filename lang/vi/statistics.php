@@ -31,4 +31,18 @@ return [
 		'descendants' => 'Children',
 		'size' => 'Size',
 	],
+	'punch_card' => [
+		'title' => 'Activity',
+		'photo-taken' => '%d photos taken',
+		'photo-taken-in' => '%d photos taken in %d',
+		'photo-uploaded' => '%d photos uploaded',
+		'photo-uploaded-in' => '%d photos uploaded in %d',
+		'with-exif' => 'with exif data',
+		'less' => 'Less',
+		'more' => 'More',
+		'tooltip' => '%d photos on %s',
+		'created_at' => 'Upload date',
+		'taken_at' => 'Exif date',
+		'caption' => 'Each column represents a week.',
+	],
 ];

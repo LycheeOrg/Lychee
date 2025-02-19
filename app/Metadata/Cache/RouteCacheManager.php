@@ -92,6 +92,7 @@ final readonly class RouteCacheManager
 			'api/v2/Statistics::albumSpace' => new RouteCacheConfig(tag: CacheTag::STATISTICS, user_dependant: true),
 			'api/v2/Statistics::sizeVariantSpace' => new RouteCacheConfig(tag: CacheTag::STATISTICS, user_dependant: true),
 			'api/v2/Statistics::totalAlbumSpace' => new RouteCacheConfig(tag: CacheTag::STATISTICS, user_dependant: true),
+			'api/v2/Statistics::getCountsOverTime' => new RouteCacheConfig(tag: CacheTag::STATISTICS, user_dependant: true),
 			'api/v2/Statistics::userSpace' => new RouteCacheConfig(tag: CacheTag::STATISTICS, user_dependant: true),
 			'api/v2/UserManagement' => new RouteCacheConfig(tag: CacheTag::USERS, user_dependant: true),
 			'api/v2/Users' => new RouteCacheConfig(tag: CacheTag::USERS, user_dependant: true),

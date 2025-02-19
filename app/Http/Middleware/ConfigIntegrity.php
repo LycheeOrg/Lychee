@@ -32,6 +32,9 @@ class ConfigIntegrity
 		'cache_ttl',
 		'exif_disabled_for_all',
 		'file_name_hidden',
+		'low_number_of_shoots_per_day',
+		'medium_number_of_shoots_per_day',
+		'high_number_of_shoots_per_day',
 	];
 
 	/**
