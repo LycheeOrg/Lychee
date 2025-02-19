@@ -46,6 +46,8 @@ return [
 	'extensions' => [
 		League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension::class,
 		League\CommonMark\Extension\Table\TableExtension::class,
+		League\CommonMark\Extension\Attributes\AttributesExtension::class,
+		League\CommonMark\Extension\Autolink\AutolinkExtension::class,
 	],
 
 	/*
@@ -92,6 +94,10 @@ return [
 		'use_asterisk' => true,
 		'use_underscore' => true,
 		'unordered_list_markers' => ['-', '+', '*'],
+		'autolink' => [
+			'allowed_protocols' => ['https'], // defaults to ['https', 'http', 'ftp']
+			'default_protocol' => 'https', // defaults to 'http'
+		],
 	],
 
 	/*
