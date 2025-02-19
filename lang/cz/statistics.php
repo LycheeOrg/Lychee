@@ -43,6 +43,6 @@ return [
 		'tooltip' => '%d photos on %s',
 		'created_at' => 'Upload date',
 		'taken_at' => 'Exif date',
-		'caption' => 'Each column represent a week.',
+		'caption' => 'Each column represents a week.',
 	],
 ];
