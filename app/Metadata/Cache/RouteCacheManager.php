@@ -57,6 +57,7 @@ final readonly class RouteCacheManager
 			'api/v2/Gallery::Init' => new RouteCacheConfig(tag: CacheTag::SETTINGS),
 			'api/v2/Gallery::getLayout' => new RouteCacheConfig(tag: CacheTag::SETTINGS),
 			'api/v2/Gallery::getUploadLimits' => new RouteCacheConfig(tag: CacheTag::SETTINGS),
+			'api/v2/Timeline' => false,
 
 			'api/v2/Jobs' => false, // TODO: fix me later
 			'api/v2/LandingPage' => new RouteCacheConfig(tag: CacheTag::SETTINGS),
