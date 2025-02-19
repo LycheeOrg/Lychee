@@ -10,10 +10,17 @@
 				/>
 				<SelectLang v-if="lang !== undefined" :label="$t('settings.system.language')" :config="lang" />
 				<div class="flex flex-wrap justify-between">
-					<label for="pp_dialog_nsfw_visible">{{ $t("settings.system.nsfw_album_visibility") }}</label>
+					<label for="pp_dialog_nsfw_visible" class="text-muted-color-emphasis">{{ $t("settings.system.nsfw_album_visibility") }}</label>
 					<ToggleSwitch id="pp_dialog_nsfw_visible" v-model="nsfwVisible" class="text-sm" @update:model-value="updateNSFW" />
 					<p class="my-1.5 text-muted-color w-full" v-html="$t('settings.system.nsfw_album_explanation')"></p>
 				</div>
+				<BoolField
+					v-if="cache_enabled !== undefined"
+					:label="$t('settings.system.cache_enabled')"
+					:config="cache_enabled"
+					:details="$t('settings.system.cache_enabled_details')"
+					@filled="save"
+				/>
 			</div>
 		</Fieldset>
 		<Fieldset class="border-b-0 border-r-0 rounded-r-none rounded-b-none" v-if="!is_se_enabled && !is_se_info_hidden">
@@ -311,6 +318,7 @@ const layout = ref<App.Http.Resources.Models.ConfigResource | undefined>(undefin
 const nsfwVisible = ref<boolean | undefined>(undefined);
 
 const dark_mode_enabled = ref<App.Http.Resources.Models.ConfigResource | undefined>(undefined);
+const cache_enabled = ref<App.Http.Resources.Models.ConfigResource | undefined>(undefined);
 
 const map_display = ref<App.Http.Resources.Models.ConfigResource | undefined>(undefined);
 const map_display_public = ref<App.Http.Resources.Models.ConfigResource | undefined>(undefined);
@@ -362,6 +370,7 @@ function load() {
 		dark_mode_enabled.value = configurations.find((config) => config.key === "dark_mode_enabled");
 		nsfwVisible.value = configurations.find((config) => config.key === "nsfw_visible")?.value === "1";
 		dropbox_key.value = configurations.find((config) => config.key === "dropbox_key")?.value ?? "";
+		cache_enabled.value = configurations.find((config) => config.key === "cache_enabled");
 
 		photoSortingColumn.value = configurations.find((config) => config.key === "sorting_photos_col");
 		photoSortingOrder.value = configurations.find((config) => config.key === "sorting_photos_order");

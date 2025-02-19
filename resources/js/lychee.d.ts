@@ -573,6 +573,7 @@ declare namespace App.Http.Resources.Rights {
 		can_delete: boolean;
 		can_transfer: boolean;
 		can_access_original: boolean;
+		can_pasword_protect: boolean;
 	};
 	export type GlobalRightsResource = {
 		root_album: App.Http.Resources.Rights.RootAlbumRightsResource;
