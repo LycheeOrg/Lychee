@@ -3,14 +3,19 @@
 		<thead>
 			<tr>
 				<td></td>
-				<td v-for="(m, i) in months" :key="`mo${i}${m.month}${m.colspan}`" :colspan="m.colspan" class="text-xs">{{ m.month }}</td>
+				<template v-for="(m, i) in months" :key="`mo${i}${m.month}${m.colspan}`">
+					<td :colspan="m.colspan" class="text-xs">{{ m.colspan > 1 ? m.month : "" }}</td>
+				</template>
 			</tr>
 		</thead>
 		<tbody>
 			<tr v-for="(d, i) in days" :key="`d${d}:${genDayKey(d)}`">
 				<td class="text-2xs w-8">{{ i % 2 ? "" : formatDay(d) }}</td>
 				<template v-for="(week, i) in weeks" :key="`week${i}:${genWeekKey(week)}`">
-					<td v-if="week[d].count < 0" class="h-3 w-3 m-0.5 rounded-xs"></td>
+					<td
+						v-if="week[d].count < 0 || (props.year !== undefined && week[d].date.getFullYear() > props.year)"
+						class="h-3 w-3 m-0.5 rounded-xs"
+					></td>
 					<td
 						v-else
 						v-tooltip.top="{ value: format(week[d]), dt: { maxWidth: '500px' } }"
@@ -21,6 +26,7 @@
 							'bg-sky-300 dark:bg-sky-300/80': week[d].count >= low && week[d].count < medium,
 							'bg-sky-500 dark:bg-sky-500/80': week[d].count >= medium && week[d].count < high,
 							'bg-sky-700 dark:bg-sky-700': week[d].count >= high,
+							'!border-sky-400': week[d].date.getMonth() === 0 && week[d].date.getDate() === 1,
 						}"
 					></td>
 				</template>
@@ -68,7 +74,7 @@ function transformData(data: App.Http.Resources.Statistics.DayCount[], year: num
 	}
 	const offset = day;
 
-	for (let w = 0; w < 52; w++) {
+	for (let w = 0; w < 53; w++) {
 		let week: DayData[] = [];
 
 		// First loop to fill the week.
@@ -78,13 +84,31 @@ function transformData(data: App.Http.Resources.Statistics.DayCount[], year: num
 			week.push({ date, count: -1 });
 		}
 
-		for (let d = day; d < 7; d++) {
-			let date = new Date(startDate);
-			date.setDate(startDate.getDate() + w * 7 + d - offset);
-			const candidate = date.toISOString().slice(0, 10);
-			const count = data.find((c) => c.date === candidate)?.count ?? 0;
-			week.push({ date, count });
+		if (w < 52 || year !== undefined) {
+			for (let d = day; d < 7; d++) {
+				let date = new Date(startDate);
+				date.setDate(startDate.getDate() + w * 7 + d - offset);
+				const candidate = date.toISOString().slice(0, 10);
+				const count = data.find((c) => c.date === candidate)?.count ?? 0;
+				week.push({ date, count });
+			}
+		} else {
+			// Last week: w = 52
+			for (let d = day; d < 3; d++) {
+				let date = new Date(startDate);
+				date.setDate(startDate.getDate() + w * 7 + d - offset);
+				const candidate = date.toISOString().slice(0, 10);
+				const count = data.find((c) => c.date === candidate)?.count ?? 0;
+				week.push({ date, count });
+			}
+			// We are in the future
+			for (let d = 3; d < 7; d++) {
+				let date = new Date(startDate);
+				date.setDate(startDate.getDate() + w * 7 + d);
+				week.push({ date, count: -1 });
+			}
 		}
+
 		day = 0;
 		weeks.value.push(week);
 	}
