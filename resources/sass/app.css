@@ -74,6 +74,13 @@
 	--animate-landingIntroFadeOut: fadeOut 2s 2s forwards ease-in-out; /* delayed by 2s; */
 	--animate-landingSlidesPopIn: popIn 2s 3s forwards ease-in-out; /* delayed by 3s; */
 	--animate-landingEnterPopIn: zoomIn 2s 4s forwards ease-in-out; /* delayed by 4s; */
+
+	--aspect-4x5: 4 / 5;
+	--aspect-5x4: 5 / 4;
+	--aspect-2x3: 2 / 3;
+	--aspect-3x2: 3 / 2;
+	--aspect-square: 1 / 1;
+	--aspect-video: 16 / 9;
 }
 @keyframes pulseToNull {
 	50% {
@@ -164,14 +171,6 @@
 
 	--warning: #fb923c;
 	--warning-dark: #ea580c;
-
-	--aspect-4x5: 4 / 5;
-	--aspect-5x4: 5 / 4;
-	--aspect-2x3: 2 / 3;
-	--aspect-3x2: 3 / 2;
-
-	--aspect-square: 1 / 1;
-	--aspect-video: 16 / 9;
 }
 
 html {

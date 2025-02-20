@@ -2,7 +2,18 @@
 	<router-link
 		:to="{ name: 'album', params: { albumid: album.id } }"
 		class="album-thumb block relative sm:w-[calc(25vw-1rem)] md:w-[calc(19vw-1rem)] lg:w-[calc(16vw-1rem)] xl:w-[calc(14vw-1rem)] 2xl:w-[calc(12vw-0.75rem)] 3xl:w-[calc(12vw-0.75rem)] 4xl:w-52 animate-zoomIn group"
-		:class="linkClass"
+		:class="{
+			'w-[calc(100%)]': lycheeStore.number_albums_per_row_mobile === 1,
+			'w-[calc(50%-0.25rem)]': lycheeStore.number_albums_per_row_mobile === 2,
+			'w-[calc(33%-0.25rem)]': lycheeStore.number_albums_per_row_mobile === 3,
+			'blurred': lycheeStore.is_nsfw_background_blurred && props.album.is_nsfw,
+			'aspect-4x5': 'aspect-4x5' === props.config.album_thumb_css_aspect_ratio,
+			'aspect-5x4': 'aspect-5x4' === props.config.album_thumb_css_aspect_ratio,
+			'aspect-2x3': 'aspect-2x3' === props.config.album_thumb_css_aspect_ratio,
+			'aspect-3x2': 'aspect-3x2' === props.config.album_thumb_css_aspect_ratio,
+			'aspect-square': 'aspect-square' === props.config.album_thumb_css_aspect_ratio,
+			'aspect-video': 'aspect-video' === props.config.album_thumb_css_aspect_ratio,
+		}"
 		:data-id="props.album.id"
 	>
 		<AlbumThumbImage
@@ -82,13 +93,5 @@ const cssClass = computed(() => {
 	return css;
 });
 
-const linkClass = computed(
-	() =>
-		(lycheeStore.number_albums_per_row_mobile === 1 ? "w-[calc(100%)] " : "") +
-		(lycheeStore.number_albums_per_row_mobile === 2 ? "w-[calc(50%-0.25rem)] " : "") +
-		(lycheeStore.number_albums_per_row_mobile === 3 ? "w-[calc(33%-0.25rem)] " : "") +
-		props.config.album_thumb_css_aspect_ratio +
-		(lycheeStore.is_nsfw_background_blurred && props.album.is_nsfw ? " blurred" : ""),
-);
 auth.getUser();
 </script>
