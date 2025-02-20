@@ -6,7 +6,7 @@
 			'w-[calc(100%)]': lycheeStore.number_albums_per_row_mobile === 1,
 			'w-[calc(50%-0.25rem)]': lycheeStore.number_albums_per_row_mobile === 2,
 			'w-[calc(33%-0.25rem)]': lycheeStore.number_albums_per_row_mobile === 3,
-			'blurred': lycheeStore.is_nsfw_background_blurred && props.album.is_nsfw,
+			blurred: lycheeStore.is_nsfw_background_blurred && props.album.is_nsfw,
 			'aspect-4x5': 'aspect-4x5' === props.config.album_thumb_css_aspect_ratio,
 			'aspect-5x4': 'aspect-5x4' === props.config.album_thumb_css_aspect_ratio,
 			'aspect-2x3': 'aspect-2x3' === props.config.album_thumb_css_aspect_ratio,
