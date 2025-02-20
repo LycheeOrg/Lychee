@@ -155,3 +155,18 @@ gen_typescript_types:
 
 class-leak:
 	vendor/bin/class-leak check app database/migrations config --skip-type Illuminate\\View\\Component
+
+docker-build:
+	cd docker-context && docker build -t lychee-lang .
+
+docker-run:
+	docker run -p 8080:80 -p 5173:5173 \
+	-e PUID=1000 \
+	-e PGID=1000 \
+	-v ./lang/:/var/www/html/Lychee/lang \
+	-v ./docker-context/conf:/conf \
+	-v ./docker-context/uploads:/uploads \
+	-v ./docker-context/sym:/sym \
+	-v ./docker-context/logs:/logs \
+	-v ./docker-context/lychee-tmp:/lychee-tmp \
+	lychee-lang
