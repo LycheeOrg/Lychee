@@ -65,8 +65,8 @@ const baseConfig = {
 		i18n(),
 	],
 	server: {
-		host: '127.0.0.1',
-		// cors: true, // Worst case scenario
+		host: true,
+		cors: true, // Worst case scenario
 		watch: {
 			ignored: [
 				"**/.*/**",
@@ -122,7 +122,9 @@ export default defineConfig(({ command, mode, isSsrBuild, isPreview } : ConfigEn
 		throw new Error("plugins list is missing");
 	}
 
-	config.server.cors = getCorsSettings(env);
+	if (config.server.cors !== true) {
+		config.server.cors = getCorsSettings(env);
+	}
 
 	if (command === "serve") {
 		console.log("LOCAL VITE MODE detected");
