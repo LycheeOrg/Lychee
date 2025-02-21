@@ -12,9 +12,6 @@ on:
         type: string
         description: 'The env files to use'
     secrets:
-      SONAR_TOKEN:
-        required: true
-        description: 'sonar token secret'
       CODECOV_TOKEN: 
         required: true
         description: 'codecov token secret'
@@ -26,7 +23,7 @@ jobs:
   tests:
     permissions:
       contents: read  # for actions/checkout to fetch code
-      pull-requests: read  # for SonarSource/sonarcloud-github-action to determine which PR to decorate
+      pull-requests: read 
     name: ${{ matrix.php-version }} - ${{ matrix.sql-versions }} -- ${{ inputs.test-suite }}
     runs-on: ubuntu-latest
     strategy:
@@ -111,10 +108,3 @@ jobs:
         uses: codecov/codecov-action@13ce06bfc6bbe3ecf90edbbf1bc32fe5978ca1d3 # v5.3.1
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-
-      - name: SonarCloud Scan
-        if: ${{ env.SONAR_TOKEN }}
-        uses: SonarSource/sonarqube-scan-action@0303d6b62e310685c0e34d0b9cde218036885c4d # v5.0.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
