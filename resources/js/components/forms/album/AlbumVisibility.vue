@@ -13,9 +13,8 @@
 						:class="is_public ? 'text-muted-color-emphasis' : 'text-muted-color'"
 					>
 						<ToggleSwitch
-							id="pp_dialog_full_check"
+							input-id="pp_dialog_full_check"
 							v-model="grants_full_photo_access"
-							:disabled="!is_public"
 							class="-ml-10 mr-2 translate-y-1"
 							@change="save"
 						/>
@@ -26,13 +25,7 @@
 						class="relative h-12 my-4 pl-9 transition-color duration-300"
 						:class="is_public ? 'text-muted-color-emphasis' : 'text-muted-color'"
 					>
-						<ToggleSwitch
-							id="pp_dialog_link_check"
-							v-model="is_link_required"
-							:disabled="!is_public"
-							class="-ml-10 mr-2 translate-y-1"
-							@change="save"
-						/>
+						<ToggleSwitch input-id="pp_dialog_link_check" v-model="is_link_required" class="-ml-10 mr-2 translate-y-1" @change="save" />
 						<label class="font-bold" for="pp_dialog_link_check">{{ $t("dialogs.visibility.hidden") }}</label>
 						<p class="my-1.5">{{ $t("dialogs.visibility.hidden_expl") }}</p>
 					</div>
@@ -41,9 +34,8 @@
 						:class="is_public ? 'text-muted-color-emphasis' : 'text-muted-color'"
 					>
 						<ToggleSwitch
-							id="pp_dialog_downloadable_check"
+							input-id="pp_dialog_downloadable_check"
 							v-model="grants_download"
-							:disabled="!is_public"
 							class="-ml-10 mr-2 translate-y-1"
 							@change="save"
 						/>
@@ -51,13 +43,31 @@
 						<p class="my-1.5">{{ $t("dialogs.visibility.downloadable_expl") }}</p>
 					</div>
 					<div
+						v-if="!can_pasword_protect && is_password_required"
 						class="relative my-4 pl-9 transition-color duration-300"
 						:class="is_public ? 'text-muted-color-emphasis' : 'text-muted-color'"
 					>
 						<ToggleSwitch
-							id="pp_dialog_password_check"
+							input-id="pp_dialog_password_check_2"
 							v-model="is_password_required"
-							:disabled="!is_public"
+							class="-ml-10 mr-2 translate-y-1 group"
+							:pt:slider:class="'group-has-checked:bg-danger-700'"
+							@change="save"
+						/>
+						<label class="font-bold inline-flex items-center gap-2" for="pp_dialog_password_check_2">
+							<span class="border-b border-dashed border-danger-700">{{ $t("dialogs.visibility.password_prot") }}</span>
+							<i class="pi pi-exclamation-triangle text-danger-700" />
+						</label>
+						<p class="mt-1.5 mb-4 text-danger-600/80" v-html="$t('dialogs.visibility.password_prop_not_compatible')"></p>
+					</div>
+					<div
+						v-else-if="can_pasword_protect"
+						class="relative my-4 pl-9 transition-color duration-300"
+						:class="is_public ? 'text-muted-color-emphasis' : 'text-muted-color'"
+					>
+						<ToggleSwitch
+							input-id="pp_dialog_password_check"
+							v-model="is_password_required"
 							class="-ml-10 mr-2 translate-y-1"
 							@change="save"
 						/>
@@ -75,7 +85,7 @@
 				<form>
 					<div class="relative h-12 my-4 transition-color duration-300">
 						<ToggleSwitch
-							id="pp_dialog_nsfw_check"
+							input-id="pp_dialog_nsfw_check"
 							v-model="is_nsfw"
 							class="mr-2 translate-y-1"
 							style="
@@ -96,7 +106,7 @@
 	</Card>
 </template>
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref } from "vue";
 import Card from "primevue/card";
 import ToggleSwitch from "primevue/toggleswitch";
 import FloatLabel from "primevue/floatlabel";
@@ -119,6 +129,7 @@ const grants_full_photo_access = ref<boolean>(props.album.policy.grants_full_pho
 const grants_download = ref<boolean>(props.album.policy.grants_download);
 const is_password_required = ref<boolean>(props.album.policy.is_password_required);
 const password = ref<string>("");
+const can_pasword_protect = ref<boolean>(props.album.rights.can_pasword_protect);
 
 function save() {
 	const data: UpdateProtectionPolicyData = {
@@ -128,7 +139,7 @@ function save() {
 		is_nsfw: is_nsfw.value,
 		grants_full_photo_access: grants_full_photo_access.value,
 		grants_download: grants_download.value,
-		password: password.value,
+		password: is_password_required.value ? password.value : undefined,
 	};
 
 	AlbumService.updateProtectionPolicy(data).then(() => {

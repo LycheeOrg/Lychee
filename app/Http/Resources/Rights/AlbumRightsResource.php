@@ -10,6 +10,7 @@ namespace App\Http\Resources\Rights;
 
 use App\Contracts\Models\AbstractAlbum;
 use App\Models\Album;
+use App\Models\Configs;
 use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\Gate;
 use Spatie\LaravelData\Data;
@@ -27,6 +28,7 @@ class AlbumRightsResource extends Data
 	public bool $can_delete = false;
 	public bool $can_transfer = false;
 	public bool $can_access_original = false;
+	public bool $can_pasword_protect = false;
 
 	/**
 	 * Given an album, returns the access rights associated to it.
@@ -42,5 +44,6 @@ class AlbumRightsResource extends Data
 		$this->can_delete = Gate::check(AlbumPolicy::CAN_DELETE, [AbstractAlbum::class, $abstractAlbum]);
 		$this->can_transfer = Gate::check(AlbumPolicy::CAN_TRANSFER, [AbstractAlbum::class, $abstractAlbum]);
 		$this->can_access_original = Gate::check(AlbumPolicy::CAN_ACCESS_FULL_PHOTO, [AbstractAlbum::class, $abstractAlbum]);
+		$this->can_pasword_protect = !Configs::getValueAsBool('cache_enabled');
 	}
 }
