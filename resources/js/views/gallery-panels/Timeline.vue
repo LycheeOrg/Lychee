@@ -11,6 +11,7 @@
 				@refresh="refresh"
 				@help="isKeybindingsHelpOpen = true"
 				:config="rootConfig"
+				:has-hidden="false"
 			/>
 		</Collapse>
 		<PhotoThumbPanel
@@ -108,14 +109,17 @@ import PhotoCopyDialog from "@/components/forms/photo/PhotoCopyDialog.vue";
 import ScrollTop from "primevue/scrolltop";
 import TimelineService from "@/services/timeline-service";
 import { EmptyAlbumCallbacks } from "@/utils/Helpers";
+import { useTogglablesStateStore } from "@/stores/ModalsState";
 
 const auth = useAuthStore();
 const router = useRouter();
 const lycheeStore = useLycheeStateStore();
+const togglableStore = useTogglablesStateStore();
 lycheeStore.init();
-lycheeStore.resetSearch();
+togglableStore.resetSearch();
 
-const { are_nsfw_visible, is_full_screen, is_login_open, title, is_upload_visible, list_upload_files } = storeToRefs(lycheeStore);
+const { are_nsfw_visible, title } = storeToRefs(lycheeStore);
+const { is_full_screen, is_login_open, is_upload_visible, list_upload_files } = storeToRefs(togglableStore);
 
 const photos = ref([] as App.Http.Resources.Models.PhotoResource[]); // unused.
 const albums = ref([]); // unused.
@@ -147,12 +151,18 @@ function loadMore() {
 		return;
 	}
 	page.value += 1;
-	TimelineService.timeline(page.value).then((response) => {
-		console.log(response.data.last_page);
-		console.log(page.value);
-		photos.value.push(...response.data.photos);
-		lastPage.value = response.data.last_page;
-	});
+	TimelineService.timeline(page.value)
+		.then((response) => {
+			console.log(response.data.last_page);
+			console.log(page.value);
+			photos.value.push(...response.data.photos);
+			lastPage.value = response.data.last_page;
+		})
+		.catch((error) => {
+			if (error.response.status === 401) {
+				router.push({ name: "gallery" });
+			}
+		});
 }
 
 // Modals for Albums
@@ -167,7 +177,7 @@ const {
 	toggleTag,
 	isCopyVisible,
 	toggleCopy,
-} = useGalleryModals(is_upload_visible);
+} = useGalleryModals(togglableStore);
 
 const photoCallbacks = {
 	star: () => {
@@ -203,7 +213,7 @@ const { menu, Menu, photoMenuOpen } = useContextMenu(
 refresh();
 
 onKeyStroke("h", () => !shouldIgnoreKeystroke() && (are_nsfw_visible.value = !are_nsfw_visible.value));
-onKeyStroke("f", () => !shouldIgnoreKeystroke() && lycheeStore.toggleFullScreen());
+onKeyStroke("f", () => !shouldIgnoreKeystroke() && togglableStore.toggleFullScreen());
 onKeyStroke(" ", () => !shouldIgnoreKeystroke() && unselect());
 onKeyStroke("m", () => !shouldIgnoreKeystroke() && rootRights.value?.can_edit && hasSelection() && toggleMove());
 onKeyStroke(["Delete", "Backspace"], () => !shouldIgnoreKeystroke() && rootRights.value?.can_edit && hasSelection() && toggleDelete());
