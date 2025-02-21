@@ -9,6 +9,7 @@
 namespace App\Http\Resources\Models;
 
 use App\Models\ConfigCategory;
+use Illuminate\Support\Collection;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
@@ -18,8 +19,8 @@ class ConfigCategoryResource extends Data
 	public string $cat;
 	public string $name;
 	public string $description;
-	/** @var array<string,ConfigResource[]> */
-	public array $configs;
+	/** @var Collection<int,ConfigResource> */
+	public Collection $configs;
 
 	public function __construct(ConfigCategory $c)
 	{

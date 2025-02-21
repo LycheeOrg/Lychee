@@ -17,9 +17,11 @@ use App\Http\Requests\Settings\SetConfigsRequest;
 use App\Http\Requests\Settings\SetCSSSettingRequest;
 use App\Http\Requests\Settings\SetJSSettingRequest;
 use App\Http\Resources\Collections\ConfigCollectionResource;
+use App\Http\Resources\Models\ConfigCategoryResource;
 use App\Models\ConfigCategory;
 use App\Models\Configs;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -32,20 +34,19 @@ class SettingsController extends Controller
 	 *
 	 * @param GetAllConfigsRequest $request
 	 * @param DockerVersionInfo    $docker_info
+	 * @param GetAllConfigsRequest $request
+	 * @param DockerVersionInfo    $docker_info
 	 *
-	 * @return ConfigCollectionResource
+	 * @return Collection<int,ConfigCategoryResource>
 	 */
-	public function getAll(GetAllConfigsRequest $request, DockerVersionInfo $docker_info): ConfigCollectionResource
+	public function getAll(GetAllConfigsRequest $request, DockerVersionInfo $docker_info): Collection
 	{
-		dd(ConfigCategory::with('configs')->orderBy('order', 'asc')->get());
+		$editable_configs = ConfigCategory::with(['configs' => fn ($query) => $query->when(config('features.hide-lychee-SE', false) === true, fn ($q) => $q->where('cat', '!=', 'lychee SE'))
+				->when($docker_info->isDocker(), fn ($q) => $q->where('no_docker', '!==', true))
+				->when(!$request->is_se() && !Configs::getValueAsBool('enable_se_preview'), fn ($q) => $q->where('level', '=', 0)),
+		])->orderBy('order', 'asc')->get();
 
-		$editable_configs = Configs::query()
-			->when(config('features.hide-lychee-SE', false) === true, fn ($q) => $q->where('cat', '!=', 'lychee SE'))
-			->when($docker_info->isDocker(), fn ($q) => $q->where('no_docker', '!==', true))
-			->when(!$request->is_se() && !Configs::getValueAsBool('enable_se_preview'), fn ($q) => $q->where('level', '=', 0))
-			->orderBy('cat', 'asc')->get();
-
-		return new ConfigCollectionResource($editable_configs);
+		return ConfigCategoryResource::collect($editable_configs)->filter(fn ($cat) => $cat->configs->isNotEmpty());
 	}
 
 	/**

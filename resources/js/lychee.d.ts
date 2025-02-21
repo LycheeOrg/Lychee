@@ -332,6 +332,12 @@ declare namespace App.Http.Resources.Models {
 		preFormattedData: App.Http.Resources.Models.Utils.PreFormattedAlbumData;
 		editable: App.Http.Resources.Editable.EditableBaseAlbumResource | null;
 	};
+	export type ConfigCategoryResource = {
+		cat: string;
+		name: string;
+		description: string;
+		configs: { [key: number]: App.Http.Resources.Models.ConfigResource } | Array<any>;
+	};
 	export type ConfigResource = {
 		key: string;
 		type: App.Enum.ConfigType | string;
