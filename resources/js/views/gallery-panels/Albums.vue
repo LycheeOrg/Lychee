@@ -64,6 +64,7 @@
 			/>
 		</template>
 		<GalleryFooter v-once />
+		<ScrollTop target="parent" />
 	</div>
 	<ContextMenu ref="menu" :model="Menu" :class="Menu.length === 0 ? 'hidden' : ''">
 		<template #item="{ item, props }">
@@ -148,6 +149,7 @@ import DeleteDialog from "@/components/forms/gallery-dialogs/DeleteDialog.vue";
 import RenameDialog from "@/components/forms/gallery-dialogs/RenameDialog.vue";
 import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
 import Divider from "primevue/divider";
+import ScrollTop from "primevue/scrolltop";
 import { Collapse } from "vue-collapsed";
 import AlbumService from "@/services/album-service";
 import { useMouseEvents } from "@/composables/album/uploadEvents";
