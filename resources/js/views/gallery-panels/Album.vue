@@ -81,6 +81,7 @@
 					:is-timeline="config.is_photo_timeline_enabled"
 				/>
 				<GalleryFooter v-once />
+				<ScrollTop target="parent" />
 			</div>
 			<SensitiveWarning v-if="showNsfwWarning" @click="consent" />
 			<ShareAlbum v-model:visible="isShareAlbumVisible" :title="album.title" :key="'share_modal_' + album.id" />
@@ -195,6 +196,7 @@ import { getModKey, shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
 import { storeToRefs } from "pinia";
 import { useSelection } from "@/composables/selections/selections";
 import Divider from "primevue/divider";
+import ScrollTop from "primevue/scrolltop";
 import ContextMenu from "primevue/contextmenu";
 import { useAlbumRefresher } from "@/composables/album/albumRefresher";
 import { useContextMenu } from "@/composables/contextMenus/contextMenu";
