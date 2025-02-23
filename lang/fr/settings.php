@@ -35,6 +35,8 @@ return [
 		'language' => 'Language used by Lychee',
 		'nsfw_album_visibility' => 'Make Sensitive albums visible by default.',
 		'nsfw_album_explanation' => 'If the album is public, it is still accessible, just hidden from the view and <b>can be revealed by pressing <kbd>H</kbd></b>.',
+		'cache_enabled' => 'Enable caching of responses.',
+		'cache_enabled_details' => 'This will significantly speed up the response time of Lychee.<br> <i class="pi pi-exclamation-triangle text-warning-600 mr-2"></i>If you are using password protected albums, you should not enable this.',
 	],
 	'lychee_se' => [
 		'header' => 'Lychee <span class="text-primary-emphasis">SE</span>',
