@@ -1366,20 +1366,20 @@
         },
         {
             "name": "dedoc/scramble",
-            "version": "v0.12.9",
+            "version": "v0.12.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/dedoc/scramble.git",
-                "reference": "6da32ea6803d81de9048fc5b18499028c0513edc"
+                "reference": "996dc8db3e09e7f893d4883dfdfa8f2839fee531"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dedoc/scramble/zipball/6da32ea6803d81de9048fc5b18499028c0513edc",
-                "reference": "6da32ea6803d81de9048fc5b18499028c0513edc",
+                "url": "https://api.github.com/repos/dedoc/scramble/zipball/996dc8db3e09e7f893d4883dfdfa8f2839fee531",
+                "reference": "996dc8db3e09e7f893d4883dfdfa8f2839fee531",
                 "shasum": ""
             },
             "require": {
-                "illuminate/contracts": "^10.0|^11.0",
+                "illuminate/contracts": "^10.0|^11.0|^12.0",
                 "myclabs/deep-copy": "^1.12",
                 "nikic/php-parser": "^5.0",
                 "php": "^8.1",
@@ -1389,10 +1389,10 @@
             "require-dev": {
                 "laravel/pint": "^v1.1.0",
                 "nunomaduro/collision": "^7.0|^8.0",
-                "orchestra/testbench": "^8.0|^9.0",
-                "pestphp/pest": "^2.34",
-                "pestphp/pest-plugin-laravel": "^2.3",
-                "phpunit/phpunit": "^10.5",
+                "orchestra/testbench": "^8.0|^9.0|^10.0",
+                "pestphp/pest": "^2.34|^3.7",
+                "pestphp/pest-plugin-laravel": "^2.3|^3.1",
+                "phpunit/phpunit": "^10.5|^11.5.3",
                 "spatie/laravel-permission": "^6.10",
                 "spatie/pest-plugin-snapshots": "^2.1"
             },
@@ -1430,7 +1430,7 @@
             ],
             "support": {
                 "issues": "https://github.com/dedoc/scramble/issues",
-                "source": "https://github.com/dedoc/scramble/tree/v0.12.9"
+                "source": "https://github.com/dedoc/scramble/tree/v0.12.10"
             },
             "funding": [
                 {
@@ -1438,7 +1438,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-02-17T13:50:16+00:00"
+            "time": "2025-02-24T20:12:29+00:00"
         },
         {
             "name": "dflydev/dot-access-data",
@@ -3336,16 +3336,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v11.42.1",
+            "version": "v11.44.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "ff392f42f6c55cc774ce75553a11c6b031da67f8"
+                "reference": "e9a33da34815ac1ed46c7e4c477a775f4592f0a7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/ff392f42f6c55cc774ce75553a11c6b031da67f8",
-                "reference": "ff392f42f6c55cc774ce75553a11c6b031da67f8",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/e9a33da34815ac1ed46c7e4c477a775f4592f0a7",
+                "reference": "e9a33da34815ac1ed46c7e4c477a775f4592f0a7",
                 "shasum": ""
             },
             "require": {
@@ -3547,7 +3547,7 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2025-02-12T20:58:18+00:00"
+            "time": "2025-02-24T13:08:54+00:00"
         },
         {
             "name": "laravel/prompts",
@@ -5173,16 +5173,16 @@
         },
         {
             "name": "nesbot/carbon",
-            "version": "3.8.5",
+            "version": "3.8.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/CarbonPHP/carbon.git",
-                "reference": "b1a53a27898639579a67de42e8ced5d5386aa9a4"
+                "reference": "ff2f20cf83bd4d503720632ce8a426dc747bf7fd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/CarbonPHP/carbon/zipball/b1a53a27898639579a67de42e8ced5d5386aa9a4",
-                "reference": "b1a53a27898639579a67de42e8ced5d5386aa9a4",
+                "url": "https://api.github.com/repos/CarbonPHP/carbon/zipball/ff2f20cf83bd4d503720632ce8a426dc747bf7fd",
+                "reference": "ff2f20cf83bd4d503720632ce8a426dc747bf7fd",
                 "shasum": ""
             },
             "require": {
@@ -5275,7 +5275,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-02-11T16:28:45+00:00"
+            "time": "2025-02-20T17:33:38+00:00"
         },
         {
             "name": "nette/schema",
@@ -6680,16 +6680,16 @@
         },
         {
             "name": "phpstan/phpdoc-parser",
-            "version": "2.0.2",
+            "version": "2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpdoc-parser.git",
-                "reference": "51087f87dcce2663e1fed4dfd4e56eccd580297e"
+                "reference": "9b30d6fd026b2c132b3985ce6b23bec09ab3aa68"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpdoc-parser/zipball/51087f87dcce2663e1fed4dfd4e56eccd580297e",
-                "reference": "51087f87dcce2663e1fed4dfd4e56eccd580297e",
+                "url": "https://api.github.com/repos/phpstan/phpdoc-parser/zipball/9b30d6fd026b2c132b3985ce6b23bec09ab3aa68",
+                "reference": "9b30d6fd026b2c132b3985ce6b23bec09ab3aa68",
                 "shasum": ""
             },
             "require": {
@@ -6721,9 +6721,9 @@
             "description": "PHPDoc parser with support for nullable, intersection and generic types",
             "support": {
                 "issues": "https://github.com/phpstan/phpdoc-parser/issues",
-                "source": "https://github.com/phpstan/phpdoc-parser/tree/2.0.2"
+                "source": "https://github.com/phpstan/phpdoc-parser/tree/2.1.0"
             },
-            "time": "2025-02-17T20:25:51+00:00"
+            "time": "2025-02-19T13:28:12+00:00"
         },
         {
             "name": "psr/cache",
@@ -8451,26 +8451,26 @@
         },
         {
             "name": "spatie/laravel-image-optimizer",
-            "version": "1.8.0",
+            "version": "1.8.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/laravel-image-optimizer.git",
-                "reference": "024752cba691fee3cd1800000b6aa3da3b8b2474"
+                "reference": "6681a48097009bba1800f0215190816df22fe116"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/laravel-image-optimizer/zipball/024752cba691fee3cd1800000b6aa3da3b8b2474",
-                "reference": "024752cba691fee3cd1800000b6aa3da3b8b2474",
+                "url": "https://api.github.com/repos/spatie/laravel-image-optimizer/zipball/6681a48097009bba1800f0215190816df22fe116",
+                "reference": "6681a48097009bba1800f0215190816df22fe116",
                 "shasum": ""
             },
             "require": {
-                "laravel/framework": "^8.0|^9.0|^10.0|^11.0",
+                "laravel/framework": "^8.0|^9.0|^10.0|^11.0|^12.0",
                 "php": "^8.0",
                 "spatie/image-optimizer": "^1.2.0"
             },
             "require-dev": {
-                "orchestra/testbench": "^6.23|^7.0|^8.0|^9.0",
-                "phpunit/phpunit": "^9.4|^10.5"
+                "orchestra/testbench": "^6.23|^7.0|^8.0|^9.0|^10.0",
+                "phpunit/phpunit": "^9.4|^10.5|^11.5.3"
             },
             "type": "library",
             "extra": {
@@ -8507,7 +8507,7 @@
                 "spatie"
             ],
             "support": {
-                "source": "https://github.com/spatie/laravel-image-optimizer/tree/1.8.0"
+                "source": "https://github.com/spatie/laravel-image-optimizer/tree/1.8.2"
             },
             "funding": [
                 {
@@ -8515,7 +8515,7 @@
                     "type": "custom"
                 }
             ],
-            "time": "2024-02-29T10:55:08+00:00"
+            "time": "2025-02-21T14:01:59+00:00"
         },
         {
             "name": "spatie/laravel-package-tools",
