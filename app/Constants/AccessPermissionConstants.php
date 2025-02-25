@@ -17,6 +17,7 @@ class AccessPermissionConstants
 	// Id names
 	public const BASE_ALBUM_ID = 'base_album_id';
 	public const USER_ID = 'user_id';
+	public const USER_GROUP_ID = 'user_group_id';
 
 	// Attributes name
 	public const IS_LINK_REQUIRED = 'is_link_required';
