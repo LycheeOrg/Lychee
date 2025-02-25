@@ -150,8 +150,8 @@
 	<DeleteDialog :photo="photo" v-model:visible="isDeleteVisible" :parent-id="props.albumid" @deleted="updated" />
 </template>
 <script setup lang="ts">
-import DockButton from "@/components/gallery/photo/DockButton.vue";
-import NextPrevious from "@/components/gallery/photo/NextPrevious.vue";
+import DockButton from "@/components/gallery/photoModule/DockButton.vue";
+import NextPrevious from "@/components/gallery/photoModule/NextPrevious.vue";
 import AlbumService from "@/services/album-service";
 import PhotoDetails from "@/components/drawers/PhotoDetails.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
@@ -162,7 +162,7 @@ import PhotoEdit from "@/components/drawers/PhotoEdit.vue";
 import PhotoService from "@/services/photo-service";
 import { onKeyStroke } from "@vueuse/core";
 import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
-import Overlay from "@/components/gallery/photo/Overlay.vue";
+import Overlay from "@/components/gallery/photoModule/Overlay.vue";
 import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
 import MoveDialog from "@/components/forms/gallery-dialogs/MoveDialog.vue";
 import DeleteDialog from "@/components/forms/gallery-dialogs/DeleteDialog.vue";
