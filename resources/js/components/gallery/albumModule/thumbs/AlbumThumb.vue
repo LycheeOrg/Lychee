@@ -56,8 +56,8 @@
 </template>
 <script setup lang="ts">
 import { computed } from "vue";
-import ThumbBadge from "@/components/gallery/thumbs/ThumbBadge.vue";
-import AlbumThumbImage from "@/components/gallery/thumbs/AlbumThumbImage.vue";
+import ThumbBadge from "@/components/gallery/albumModule/thumbs/ThumbBadge.vue";
+import AlbumThumbImage from "@/components/gallery/albumModule/thumbs/AlbumThumbImage.vue";
 import { useAuthStore } from "@/stores/Auth";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import AlbumThumbOverlay from "./AlbumThumbOverlay.vue";

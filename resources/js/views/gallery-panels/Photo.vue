@@ -109,13 +109,13 @@
 					<DockButton
 						icon="star"
 						:class="photo.is_starred ? 'fill-yellow-500 lg:hover:fill-yellow-100' : 'fill-white lg:hover:fill-yellow-500'"
-						v-tooltip.bottom="photo.is_starred ? $t('gallery.photo.action.unstar') : $t('gallery.photo.action.star')"
+						v-tooltip.bottom="photo.is_starred ? $t('gallery.photo.actions.unstar') : $t('gallery.photo.actions.star')"
 						v-on:click="toggleStar()"
 					/>
 					<DockButton
 						pi="image"
 						class="lg:hover:text-primary-500 text-white"
-						v-tooltip.bottom="$t('gallery.photo.action.set_album_header')"
+						v-tooltip.bottom="$t('gallery.photo.actions.set_album_header')"
 						v-on:click="setAlbumHeader()"
 					/>
 
@@ -126,13 +126,13 @@
 					<DockButton
 						icon="transfer"
 						class="fill-white lg:hover:fill-primary-500"
-						v-tooltip.bottom="$t('gallery.photo.action.move')"
+						v-tooltip.bottom="$t('gallery.photo.actions.move')"
 						v-on:click="toggleMove"
 					/>
 					<DockButton
 						icon="trash"
 						class="fill-red-600 lg:fill-white lg:hover:fill-red-600"
-						v-tooltip.bottom="$t('gallery.photo.action.delete')"
+						v-tooltip.bottom="$t('gallery.photo.actions.delete')"
 						v-on:click="toggleDelete"
 					/>
 				</span>
@@ -150,8 +150,8 @@
 	<DeleteDialog :photo="photo" v-model:visible="isDeleteVisible" :parent-id="props.albumid" @deleted="updated" />
 </template>
 <script setup lang="ts">
-import DockButton from "@/components/gallery/photo/DockButton.vue";
-import NextPrevious from "@/components/gallery/photo/NextPrevious.vue";
+import DockButton from "@/components/gallery/photoModule/DockButton.vue";
+import NextPrevious from "@/components/gallery/photoModule/NextPrevious.vue";
 import AlbumService from "@/services/album-service";
 import PhotoDetails from "@/components/drawers/PhotoDetails.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
@@ -162,7 +162,7 @@ import PhotoEdit from "@/components/drawers/PhotoEdit.vue";
 import PhotoService from "@/services/photo-service";
 import { onKeyStroke } from "@vueuse/core";
 import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
-import Overlay from "@/components/gallery/photo/Overlay.vue";
+import Overlay from "@/components/gallery/photoModule/Overlay.vue";
 import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
 import MoveDialog from "@/components/forms/gallery-dialogs/MoveDialog.vue";
 import DeleteDialog from "@/components/forms/gallery-dialogs/DeleteDialog.vue";
@@ -288,7 +288,7 @@ function rotatePhotoCW() {
 
 function setAlbumHeader() {
 	PhotoService.setAsHeader(photoId.value, props.albumid, false).then(() => {
-		toast.add({ severity: "success", summary: trans("toasts.success"), detail: trans("gallery.photo.action.header_set"), life: 2000 });
+		toast.add({ severity: "success", summary: trans("toasts.success"), detail: trans("gallery.photo.actions.header_set"), life: 2000 });
 		AlbumService.clearCache(props.albumid);
 		refresh();
 	});

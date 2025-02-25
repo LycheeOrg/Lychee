@@ -117,7 +117,7 @@
 import { Ref } from "vue";
 import { sprintf } from "sprintf-js";
 import Card from "primevue/card";
-import MapInclude from "../gallery/photo/MapInclude.vue";
+import MapInclude from "../gallery/photoModule/MapInclude.vue";
 
 const props = defineProps<{
 	photo: App.Http.Resources.Models.PhotoResource | undefined;
