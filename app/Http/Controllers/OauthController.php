@@ -15,6 +15,7 @@ use App\Events\TaggedRouteCacheUpdated;
 use App\Exceptions\UnauthenticatedException;
 use App\Exceptions\UnauthorizedException;
 use App\Http\Requests\Profile\ClearOauthRequest;
+use App\Http\Requests\Profile\OauthListRequest;
 use App\Http\Resources\Oauth\OauthRegistrationData;
 use App\Models\OauthCredential;
 use App\Models\User;
@@ -106,20 +107,6 @@ class OauthController extends Controller
 	}
 
 	/**
-	 * List Oauth data.
-	 *
-	 * @return OauthRegistrationData[]|OauthProvidersType[]
-	 */
-	public function list(): array
-	{
-		if (Auth::check()) {
-			return $this->withUserData();
-		}
-
-		return $this->available();
-	}
-
-	/**
 	 * Delete the Oauth registration for a user.
 	 *
 	 * @param ClearOauthRequest $request
@@ -140,7 +127,7 @@ class OauthController extends Controller
 	 *
 	 * @return OauthRegistrationData[]
 	 */
-	private function withUserData(): array
+	public function listForUser(OauthListRequest $request): array
 	{
 		$oauthData = [];
 
@@ -177,7 +164,7 @@ class OauthController extends Controller
 	 *
 	 * @return OauthProvidersType[]
 	 */
-	private function available(): array
+	public function listProviders(): array
 	{
 		$oauthAvailable = [];
 
