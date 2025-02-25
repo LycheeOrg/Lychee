@@ -162,7 +162,7 @@ import { useScrollable } from "@/composables/album/scrollable";
 import { EmptyPhotoCallbacks } from "@/utils/Helpers";
 import WebauthnModal from "@/components/modals/WebauthnModal.vue";
 import LoginModal from "@/components/modals/LoginModal.vue";
-import LoadingProgress from "@/components/gallery/LoadingProgress.vue";
+import LoadingProgress from "@/components/loading/LoadingProgress.vue";
 
 const auth = useAuthStore();
 const lycheeStore = useLycheeStateStore();

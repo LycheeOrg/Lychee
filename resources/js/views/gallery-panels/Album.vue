@@ -224,13 +224,14 @@ import AlbumCreateDialog from "@/components/forms/album/AlbumCreateDialog.vue";
 import { useScrollable } from "@/composables/album/scrollable";
 import { useGetLayoutConfig } from "@/layouts/PhotoLayout";
 import WebauthnModal from "@/components/modals/WebauthnModal.vue";
-import LoadingProgress from "@/components/gallery/LoadingProgress.vue";
+import LoadingProgress from "@/components/loading/LoadingProgress.vue";
 
 const route = useRoute();
 const router = useRouter();
 
 const props = defineProps<{
 	albumid: string;
+	photoid?: string;
 }>();
 
 const albumid = ref(props.albumid);
