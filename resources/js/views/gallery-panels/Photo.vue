@@ -109,13 +109,13 @@
 					<DockButton
 						icon="star"
 						:class="photo.is_starred ? 'fill-yellow-500 lg:hover:fill-yellow-100' : 'fill-white lg:hover:fill-yellow-500'"
-						v-tooltip.bottom="photo.is_starred ? $t('gallery.photo.action.unstar') : $t('gallery.photo.action.star')"
+						v-tooltip.bottom="photo.is_starred ? $t('gallery.photo.actions.unstar') : $t('gallery.photo.actions.star')"
 						v-on:click="toggleStar()"
 					/>
 					<DockButton
 						pi="image"
 						class="lg:hover:text-primary-500 text-white"
-						v-tooltip.bottom="$t('gallery.photo.action.set_album_header')"
+						v-tooltip.bottom="$t('gallery.photo.actions.set_album_header')"
 						v-on:click="setAlbumHeader()"
 					/>
 
@@ -126,13 +126,13 @@
 					<DockButton
 						icon="transfer"
 						class="fill-white lg:hover:fill-primary-500"
-						v-tooltip.bottom="$t('gallery.photo.action.move')"
+						v-tooltip.bottom="$t('gallery.photo.actions.move')"
 						v-on:click="toggleMove"
 					/>
 					<DockButton
 						icon="trash"
 						class="fill-red-600 lg:fill-white lg:hover:fill-red-600"
-						v-tooltip.bottom="$t('gallery.photo.action.delete')"
+						v-tooltip.bottom="$t('gallery.photo.actions.delete')"
 						v-on:click="toggleDelete"
 					/>
 				</span>
@@ -288,7 +288,7 @@ function rotatePhotoCW() {
 
 function setAlbumHeader() {
 	PhotoService.setAsHeader(photoId.value, props.albumid, false).then(() => {
-		toast.add({ severity: "success", summary: trans("toasts.success"), detail: trans("gallery.photo.action.header_set"), life: 2000 });
+		toast.add({ severity: "success", summary: trans("toasts.success"), detail: trans("gallery.photo.actions.header_set"), life: 2000 });
 		AlbumService.clearCache(props.albumid);
 		refresh();
 	});
