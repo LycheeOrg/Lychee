@@ -21,6 +21,7 @@ use App\Actions\Diagnostics\Pipes\Checks\GDSupportCheck;
 use App\Actions\Diagnostics\Pipes\Checks\ImageOptCheck;
 use App\Actions\Diagnostics\Pipes\Checks\IniSettingsCheck;
 use App\Actions\Diagnostics\Pipes\Checks\MigrationCheck;
+use App\Actions\Diagnostics\Pipes\Checks\OpCacheCheck;
 use App\Actions\Diagnostics\Pipes\Checks\PHPVersionCheck;
 use App\Actions\Diagnostics\Pipes\Checks\PlaceholderExistsCheck;
 use App\Actions\Diagnostics\Pipes\Checks\SmallMediumExistsCheck;
@@ -48,6 +49,7 @@ class Errors
 		AppUrlMatchCheck::class,
 		MigrationCheck::class,
 		PHPVersionCheck::class,
+		OpCacheCheck::class,
 		TimezoneCheck::class,
 		UpdatableCheck::class,
 		ForeignKeyListInfo::class,
