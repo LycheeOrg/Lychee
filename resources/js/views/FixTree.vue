@@ -97,7 +97,7 @@ import AlbumService from "@/services/album-service";
 import { AugmentedAlbum, useTreeOperations } from "@/composables/album/treeOperations";
 import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
 import FixTreeLine from "@/components/maintenance/FixTreeLine.vue";
-import LoadingProgress from "@/components/gallery/LoadingProgress.vue";
+import LoadingProgress from "@/components/loading/LoadingProgress.vue";
 import { sprintf } from "sprintf-js";
 import { trans } from "laravel-vue-i18n";
 
