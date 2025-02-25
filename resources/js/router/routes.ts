@@ -3,6 +3,8 @@ import Albums from "@/views/gallery-panels/Albums.vue";
 import Photo from "@/views/gallery-panels/Photo.vue";
 
 const Landing = () => import("@/views/Landing.vue");
+const Home = () => import("@/views/Home.vue");
+const Timeline = () => import("@/views/gallery-panels/Timeline.vue");
 const Frame = () => import("@/views/gallery-panels/Frame.vue");
 const Search = () => import("@/views/gallery-panels/Search.vue");
 const MapView = () => import("@/views/gallery-panels/Map.vue");
@@ -37,6 +39,11 @@ const routes_ = [
 		props: true,
 	},
 	{
+		name: "home",
+		path: "/home",
+		component: Home,
+	},
+	{
 		name: "gallery",
 		path: "/gallery",
 		component: Albums,
@@ -46,6 +53,11 @@ const routes_ = [
 		path: "/frame/:albumid",
 		component: Frame,
 		props: true,
+	},
+	{
+		name: "timeline",
+		path: "/timeline",
+		component: Timeline,
 	},
 	{
 		name: "frame",
