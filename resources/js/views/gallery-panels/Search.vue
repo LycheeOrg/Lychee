@@ -131,9 +131,9 @@
 </template>
 <script setup lang="ts">
 import SearchBox from "@/components/forms/search/SearchBox.vue";
-import AlbumThumbPanel from "@/components/gallery/AlbumThumbPanel.vue";
-import PhotoThumbPanel from "@/components/gallery/PhotoThumbPanel.vue";
-import { AlbumThumbConfig } from "@/components/gallery/thumbs/AlbumThumb.vue";
+import AlbumThumbPanel from "@/components/gallery/albumModule/AlbumThumbPanel.vue";
+import PhotoThumbPanel from "@/components/gallery/albumModule/PhotoThumbPanel.vue";
+import { AlbumThumbConfig } from "@/components/gallery/albumModule/thumbs/AlbumThumb.vue";
 import { useAlbumRefresher } from "@/composables/album/albumRefresher";
 import { useContextMenu } from "@/composables/contextMenus/contextMenu";
 import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
