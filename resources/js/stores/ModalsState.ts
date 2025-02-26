@@ -33,7 +33,22 @@ export const useTogglablesStateStore = defineStore("togglables-store", {
 		// Scroll memory
 		scroll_memory: {} as Record<string, number>,
 		scroll_photo_id: undefined as string | undefined,
+
+		// Modals
+		is_rename_visible: false,
+		is_move_visible: false,
+		is_delete_visible: false,
+		is_merge_album_visible: false,
+		is_share_album_visible: false,
+		is_import_from_link_open: false,
+		is_tag_visible: false,
+		is_copy_visible: false,
+
+		// Selections Ids
+		selectedPhotosIdx: [] as number[],
+		selectedAlbumsIdx: [] as number[],
 	}),
+
 	getters: {
 		isSearchActive(): boolean {
 			return this.search_term !== "";

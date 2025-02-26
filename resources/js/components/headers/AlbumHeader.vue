@@ -1,6 +1,6 @@
 <template>
-	<ImportFromLink v-if="canUpload" v-model:visible="isImportFromLinkOpen" :parent-id="props.album.id" @refresh="refresh" />
-	<DropBox v-if="canUpload" v-model:visible="isImportFromDropboxOpen" :album-id="props.album.id" />
+	<ImportFromLink v-if="canUpload" v-model:visible="is_import_from_link_open" :parent-id="props.album.id" @refresh="refresh" />
+	<DropBox v-if="canUpload" v-model:visible="is_import_from_dropbox_open" :album-id="props.album.id" />
 	<Toolbar class="w-full border-0 h-14" v-if="album">
 		<template #start>
 			<Button icon="pi pi-angle-left" class="mr-2 border-none" severity="secondary" text @click="goBack" />
@@ -104,7 +104,7 @@ const { are_details_open, is_login_open, is_upload_visible, is_create_album_visi
 
 const hasCoordinates = computed(() => props.album.photos.find((photo) => photo.latitude !== null && photo.longitude !== null) !== undefined);
 
-const { toggleCreateAlbum, isImportFromLinkOpen, toggleImportFromLink, isImportFromDropboxOpen, toggleImportFromDropbox, toggleUpload } =
+const { toggleCreateAlbum, is_import_from_link_open, toggleImportFromLink, is_import_from_dropbox_open, toggleImportFromDropbox, toggleUpload } =
 	useGalleryModals(togglableStore);
 
 const emits = defineEmits<{
@@ -176,11 +176,6 @@ function refresh() {
 	emits("refresh");
 }
 
-onKeyStroke("n", () => !shouldIgnoreKeystroke() && (is_create_album_visible.value = true));
-onKeyStroke("u", () => !shouldIgnoreKeystroke() && (is_upload_visible.value = true));
-onKeyStroke("i", () => !shouldIgnoreKeystroke() && toggleDetails());
-onKeyStroke("l", () => !shouldIgnoreKeystroke() && props.user.id === null && (is_login_open.value = true));
-onKeyStroke("/", () => !shouldIgnoreKeystroke() && props.config.is_search_accessible && openSearch());
 // on key stroke escape:
 // 1. lose focus
 // 2. close modals

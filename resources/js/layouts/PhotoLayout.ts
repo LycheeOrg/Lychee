@@ -59,7 +59,7 @@ export function useLayoutClass(layout: Ref<App.Enum.PhotoLayoutType>) {
 }
 
 export function useGetLayoutConfig() {
-	const layoutConfig = ref(null) as Ref<null | App.Http.Resources.GalleryConfigs.PhotoLayoutConfig>;
+	const layoutConfig = ref(undefined) as Ref<undefined | App.Http.Resources.GalleryConfigs.PhotoLayoutConfig>;
 	const layout = ref("square") as Ref<App.Enum.PhotoLayoutType>;
 
 	function loadLayoutConfig(): Promise<void> {
