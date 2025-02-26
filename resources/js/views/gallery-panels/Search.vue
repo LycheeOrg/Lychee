@@ -59,7 +59,7 @@
 					<Paginator :total-records="total" :rows="per_page" v-model:first="from" @update:first="refresh" :always-show="false" />
 				</div>
 				<PhotoThumbPanel
-					v-if="layoutConfig !== null && photos.length > 0"
+					v-if="layoutConfig && photos.length > 0"
 					:photo-layout="layout"
 					:header="photoHeader"
 					:photos="photos"
@@ -74,21 +74,21 @@
 
 			<!-- Dialogs -->
 			<PhotoTagDialog
-				v-model:visible="isTagVisible"
+				v-model:visible="is_tag_visible"
 				:parent-id="albumid"
 				:photo="selectedPhoto"
 				:photo-ids="selectedPhotosIds"
 				@tagged="refresh"
 			/>
 			<PhotoCopyDialog
-				v-model:visible="isCopyVisible"
+				v-model:visible="is_copy_visible"
 				:parent-id="albumid"
 				:photo="selectedPhoto"
 				:photo-ids="selectedPhotosIds"
 				@copied="refresh"
 			/>
 			<MoveDialog
-				v-model:visible="isMoveVisible"
+				v-model:visible="is_move_visible"
 				:parent-id="albumid"
 				:photo="selectedPhoto"
 				:photo-ids="selectedPhotosIds"
@@ -97,7 +97,7 @@
 				@moved="refresh"
 			/>
 			<DeleteDialog
-				v-model:visible="isDeleteVisible"
+				v-model:visible="is_delete_visible"
 				:parent-id="albumid"
 				:photo="selectedPhoto"
 				:photo-ids="selectedPhotosIds"
@@ -105,9 +105,15 @@
 				:album-ids="selectedAlbumsIds"
 				@deleted="refresh"
 			/>
-			<RenameDialog v-model:visible="isRenameVisible" :parent-id="undefined" :album="selectedAlbum" :photo="selectedPhoto" @renamed="refresh" />
+			<RenameDialog
+				v-model:visible="is_rename_visible"
+				:parent-id="undefined"
+				:album="selectedAlbum"
+				:photo="selectedPhoto"
+				@renamed="refresh"
+			/>
 			<AlbumMergeDialog
-				v-model:visible="isMergeAlbumVisible"
+				v-model:visible="is_merge_album_visible"
 				:parent-id="albumid"
 				:album="selectedAlbum"
 				:album-ids="selectedAlbumsIds"
@@ -232,17 +238,17 @@ const title = computed<string>(() => {
 });
 
 const {
-	isDeleteVisible,
+	is_delete_visible,
 	toggleDelete,
-	isMergeAlbumVisible,
+	is_merge_album_visible,
 	toggleMergeAlbum,
-	isMoveVisible,
+	is_move_visible,
 	toggleMove,
-	isRenameVisible,
+	is_rename_visible,
 	toggleRename,
-	isTagVisible,
+	is_tag_visible,
 	toggleTag,
-	isCopyVisible,
+	is_copy_visible,
 	toggleCopy,
 } = useGalleryModals(togglableStore);
 
@@ -257,7 +263,7 @@ const {
 	selectedAlbumsIds,
 	photoClick,
 	albumClick,
-} = useSelection(photos, albums);
+} = useSelection(photos, albums, togglableStore);
 
 const photoCallbacks = {
 	star: () => {
