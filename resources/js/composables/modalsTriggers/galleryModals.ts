@@ -1,7 +1,20 @@
 import { TogglablesStateStore } from "@/stores/ModalsState";
+import { storeToRefs } from "pinia";
 import { ref } from "vue";
 
 export function useGalleryModals(togglableStore: TogglablesStateStore) {
+	const {
+		is_upload_visible,
+		is_rename_visible,
+		is_move_visible,
+		is_delete_visible,
+		is_merge_album_visible,
+		is_share_album_visible,
+		is_import_from_link_open,
+		is_tag_visible,
+		is_copy_visible,
+	} = storeToRefs(togglableStore);
+
 	function toggleCreateAlbum() {
 		togglableStore.is_create_album_visible = !togglableStore.is_create_album_visible;
 	}
@@ -10,85 +23,69 @@ export function useGalleryModals(togglableStore: TogglablesStateStore) {
 		togglableStore.is_create_tag_album_visible = !togglableStore.is_create_tag_album_visible;
 	}
 
-	const isRenameVisible = ref(false);
-
 	function toggleRename() {
-		isRenameVisible.value = !isRenameVisible.value;
+		is_rename_visible.value = !is_rename_visible.value;
 	}
-
-	const isMoveVisible = ref(false);
 
 	function toggleMove() {
-		isMoveVisible.value = !isMoveVisible.value;
+		is_move_visible.value = !is_move_visible.value;
 	}
-
-	const isDeleteVisible = ref(false);
 
 	function toggleDelete() {
-		isDeleteVisible.value = !isDeleteVisible.value;
+		is_delete_visible.value = !is_delete_visible.value;
 	}
-
-	const isMergeAlbumVisible = ref(false);
 
 	function toggleMergeAlbum() {
-		isMergeAlbumVisible.value = !isMergeAlbumVisible.value;
+		is_merge_album_visible.value = !is_merge_album_visible.value;
 	}
-
-	const isShareAlbumVisible = ref(false);
 
 	function toggleShareAlbum() {
-		isShareAlbumVisible.value = !isShareAlbumVisible.value;
+		is_share_album_visible.value = !is_share_album_visible.value;
 	}
-
-	const isImportFromLinkOpen = ref(false);
 
 	function toggleImportFromLink() {
-		isImportFromLinkOpen.value = !isImportFromLinkOpen.value;
+		is_import_from_link_open.value = !is_import_from_link_open.value;
 	}
 
-	const isImportFromDropboxOpen = ref(false);
+	const is_import_from_dropbox_open = ref(false);
 
 	function toggleImportFromDropbox() {
-		isImportFromDropboxOpen.value = !isImportFromDropboxOpen.value;
+		is_import_from_dropbox_open.value = !is_import_from_dropbox_open.value;
 	}
 
 	function toggleUpload() {
-		togglableStore.is_upload_visible = !togglableStore.is_upload_visible;
+		is_upload_visible.value = !is_upload_visible.value;
 	}
-
-	const isTagVisible = ref(false);
 
 	function toggleTag() {
-		isTagVisible.value = !isTagVisible.value;
+		is_tag_visible.value = !is_tag_visible.value;
 	}
 
-	const isCopyVisible = ref(false);
-
 	function toggleCopy() {
-		isCopyVisible.value = !isCopyVisible.value;
+		is_copy_visible.value = !is_copy_visible.value;
 	}
 
 	return {
 		toggleCreateAlbum,
 		toggleCreateTagAlbum,
-		isDeleteVisible,
+		is_delete_visible,
 		toggleDelete,
-		isMergeAlbumVisible,
+		is_merge_album_visible,
 		toggleMergeAlbum,
-		isMoveVisible,
+		is_move_visible,
 		toggleMove,
-		isRenameVisible,
+		is_rename_visible,
 		toggleRename,
-		isShareAlbumVisible,
+		is_share_album_visible,
 		toggleShareAlbum,
-		isImportFromLinkOpen,
+		is_import_from_link_open,
 		toggleImportFromLink,
-		isImportFromDropboxOpen,
+		is_import_from_dropbox_open,
 		toggleImportFromDropbox,
 		toggleUpload,
-		isTagVisible,
+		is_tag_visible,
 		toggleTag,
-		isCopyVisible,
+		is_copy_visible,
 		toggleCopy,
 	};
 }
