@@ -12,19 +12,19 @@ return [
 	| Diagnostics page
 	|--------------------------------------------------------------------------
 	*/
-	'title' => 'Diagnostics',
+	'title' => '系统诊断',
 
-	'copy_to_clipboard' => 'Copy diagnostics to clipboard',
-	'self-diagnosis' => 'Self-diagnosis',
-	'info' => 'Info',
-	'space' => 'Space',
-	'load_space' => 'Load space usage.',
-	'configuration' => 'Configuration',
-	'loading' => 'Loading...',
-	'identical_content' => 'Identical content',
+	'copy_to_clipboard' => '复制诊断信息到剪贴板',
+	'self-diagnosis' => '自我诊断',
+	'info' => '信息',
+	'space' => '空间',
+	'load_space' => '加载空间使用情况',
+	'configuration' => '配置',
+	'loading' => '加载中...',
+	'identical_content' => '重复内容',
 
 	'toast' => [
-		'info' => 'Info',
-		'copy' => 'Diagnostics copied to clipboard!',
+		'info' => '提示',
+		'copy' => '诊断信息已复制到剪贴板！',
 	],
 ];

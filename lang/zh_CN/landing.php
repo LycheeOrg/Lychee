@@ -12,8 +12,8 @@ return [
 	| Landing page
 	|--------------------------------------------------------------------------
 	*/
-	'gallery' => 'Gallery',
-	'access_gallery' => 'Access the gallery',
-	'hosted_with_lychee' => 'Hosted with Lychee',
-	'copyright' => 'All images on this website are subject to copyright by %1$s © %2$s',
+	'gallery' => '相册',
+	'access_gallery' => '访问相册',
+	'hosted_with_lychee' => '由 Lychee 提供支持',
+	'copyright' => '本网站所有图片版权归 %1$s 所有 © %2$s',
 ];

@@ -12,7 +12,7 @@ return [
 	| Jobs page
 	|--------------------------------------------------------------------------
 	*/
-	'title' => 'Jobs',
+	'title' => '任务',
 
-	'no_data' => 'No Jobs have been executed yet.',
+	'no_data' => '尚未执行任何任务。',
 ];

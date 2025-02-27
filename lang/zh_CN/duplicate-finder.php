@@ -12,24 +12,24 @@ return [
 	| Duplicate Finder Page
 	|--------------------------------------------------------------------------
 	*/
-	'title' => 'Maintenance',
-	'intro' => 'On this page you will find the duplicate pictures found in your database.',
-	'found' => ' duplicates found!',
-	'invalid-search' => ' At least the checksum or title condition must be checked.',
-	'checksum-must-match' => 'Checksum must match.',
-	'title-must-match' => 'Title must match.',
-	'must-be-in-same-album' => 'Must be in the same album.',
+	'title' => '维护',
+	'intro' => '在此页面中，您可以查看数据库中发现的重复照片。',
+	'found' => ' 个重复项！',
+	'invalid-search' => ' 至少需要选择校验和或标题条件之一。',
+	'checksum-must-match' => '校验和必须匹配。',
+	'title-must-match' => '标题必须匹配。',
+	'must-be-in-same-album' => '必须在同一相册中。',
 
 	'columns' => [
-		'album' => 'Album',
-		'photo' => 'Photo',
-		'checksum' => 'Checksum',
+		'album' => '相册',
+		'photo' => '照片',
+		'checksum' => '校验和',
 	],
 
 	'warning' => [
-		'no-original-left' => 'No original left.',
-		'keep-one' => 'You selected all duplicates in this group. Please chose at least one duplicate to keep.',
+		'no-original-left' => '没有原始文件。',
+		'keep-one' => '您选择了此组中的所有重复项。请至少保留一个副本。',
 	],
 
-	'delete-selected' => 'Delete selected',
+	'delete-selected' => '删除所选',
 ];
