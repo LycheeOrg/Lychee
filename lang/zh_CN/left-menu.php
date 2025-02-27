@@ -12,18 +12,18 @@ return [
 	| Left Menu
 	|--------------------------------------------------------------------------
 	*/
-	'back_to_gallery' => 'Back to Gallery',
+	'back_to_gallery' => '返回相册',
 
-	'admin' => 'Admin',
-	'clockwork' => 'Clockwork App',
-	'logs' => 'Show Logs',
-	'jobs' => 'Show Job History',
-	'user' => 'User',
+	'admin' => '管理',
+	'clockwork' => 'Clockwork 应用',
+	'logs' => '查看日志',
+	'jobs' => '查看任务历史',
+	'user' => '用户',
 
-	'sign_out' => 'Sign Out',
+	'sign_out' => '退出登录',
 
-	'about' => 'About',
-	'api' => 'API Documentation',
-	'source_code' => 'Source Code',
-	'support' => 'Support',
+	'about' => '关于',
+	'api' => 'API 文档',
+	'source_code' => '源代码',
+	'support' => '支持',
 ];
