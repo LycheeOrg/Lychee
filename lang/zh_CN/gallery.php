@@ -30,7 +30,7 @@ return [
 	'live_video' => '实况照片视频部分',
 
 	'camera_data' => '相机日期',
-	'album_reserved' => '版权所有',
+	'album_reserved' => '所有权利保留',
 
 	'map' => [
 		'error_gpx' => '加载 GPX 文件出错',
@@ -133,10 +133,10 @@ return [
 		'actions' => [
 			'star' => '标星',
 			'unstar' => '取消标星',
-			'set_album_header' => '设为相册封面',
+			'set_album_header' => '设为相册页眉图片',
 			'move' => '移动',
 			'delete' => '删除',
-			'header_set' => '已设为封面',
+			'header_set' => '已设为页眉图片',
 		],
 
 		'details' => [
@@ -196,8 +196,8 @@ return [
 		'tag' => '标签',
 		'tag_all' => '为所选添加标签',
 		'set_cover' => '设为相册封面',
-		'remove_header' => '移除相册封面',
-		'set_header' => '设置相册封面',
+		'remove_header' => '移除相册页眉图片',
+		'set_header' => '设置相册页眉图片',
 		'copy_to' => '复制到…',
 		'copy_all_to' => '复制所选到…',
 		'rename' => '重命名',

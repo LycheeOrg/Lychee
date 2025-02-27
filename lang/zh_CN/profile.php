@@ -51,11 +51,11 @@ return [
 	],
 
 	'u2f' => [
-		'header' => '通行密钥/MFA/2FA',
+		'header' => 'Passkey/MFA/2FA',
 		'info' => '这仅提供使用 WebAuthn 进行身份验证的功能，以替代用户名和密码。',
 		'empty' => '凭据列表为空！',
 		'not_secure' => '环境不安全。U2F 不可用。',
-		'new' => '注册新设备。',
+		'new' => '注册新设备',
 		'credential_deleted' => '凭据已删除！',
 		'credential_updated' => '凭据已更新！',
 		'credential_registred' => '注册成功！',
