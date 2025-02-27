@@ -2,7 +2,11 @@ import axios, { type AxiosResponse } from "axios";
 import Constants from "./constants";
 
 const OauthService = {
-	list(): Promise<AxiosResponse<App.Http.Resources.Oauth.OauthRegistrationData[] | App.Enum.OauthProvidersType[]>> {
+	listProviders(): Promise<AxiosResponse<App.Enum.OauthProvidersType[]>> {
+		return axios.get(`${Constants.getApiUrl()}Oauth::providers`, { data: {} });
+	},
+
+	list(): Promise<AxiosResponse<App.Http.Resources.Oauth.OauthRegistrationData[]>> {
 		return axios.get(`${Constants.getApiUrl()}Oauth`, { data: {} });
 	},
 
