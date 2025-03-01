@@ -20,13 +20,12 @@
 import { sizeToUnit } from "@/utils/StatsSizeVariantToColours";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
-import { TotalAlbum } from "./TotalCard.vue";
 import { computed, ref } from "vue";
 import StatisticsService from "@/services/statistics-service";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import { usePreviewData } from "@/composables/preview/getPreviewInfo";
-import { useAlbumsStatistics } from "@/composables/album/albumStatistics";
+import { TotalAlbum, useAlbumsStatistics } from "@/composables/album/albumStatistics";
 
 const lycheeStore = useLycheeStateStore();
 const { is_se_preview_enabled, are_nsfw_visible } = storeToRefs(lycheeStore);

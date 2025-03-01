@@ -38,7 +38,7 @@
 		<span v-if="album.thumb?.type.includes('video')" class="w-full h-full absolute hover:opacity-70 transition-opacity duration-300">
 			<img class="h-full w-full" alt="play" :src="getPlayIcon()" />
 		</span>
-		<div v-if="user?.id !== null" class="badges absolute mt-[-1px] ml-1 top-0 left-0">
+		<div v-if="user?.id !== null" class="badges absolute mt-[-1px] ml-1 top-0 left-0 flex">
 			<ThumbBadge v-if="props.album.is_nsfw" class="bg-[#ff82ee]" icon="warning" />
 			<ThumbBadge v-if="props.album.id === 'starred'" class="bg-yellow-500" icon="star" />
 			<ThumbBadge v-if="props.album.id === 'unsorted'" class="bg-red-700" icon="list" />
