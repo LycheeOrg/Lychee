@@ -129,7 +129,7 @@
 	/>
 </template>
 <script setup lang="ts">
-import AlbumThumbPanel from "@/components/gallery/AlbumThumbPanel.vue";
+import AlbumThumbPanel from "@/components/gallery/albumModule/AlbumThumbPanel.vue";
 import { useAuthStore } from "@/stores/Auth";
 import { computed, ref, onMounted, onUnmounted } from "vue";
 import AlbumsHeader from "@/components/headers/AlbumsHeader.vue";
@@ -142,7 +142,7 @@ import { useSelection } from "@/composables/selections/selections";
 import { useContextMenu } from "@/composables/contextMenus/contextMenu";
 import ContextMenu from "primevue/contextmenu";
 import { useAlbumsRefresher } from "@/composables/album/albumsRefresher";
-import { AlbumThumbConfig } from "@/components/gallery/thumbs/AlbumThumb.vue";
+import { AlbumThumbConfig } from "@/components/gallery/albumModule/thumbs/AlbumThumb.vue";
 import MoveDialog from "@/components/forms/gallery-dialogs/MoveDialog.vue";
 import AlbumMergeDialog from "@/components/forms/gallery-dialogs/AlbumMergeDialog.vue";
 import DeleteDialog from "@/components/forms/gallery-dialogs/DeleteDialog.vue";
@@ -162,7 +162,7 @@ import { useScrollable } from "@/composables/album/scrollable";
 import { EmptyPhotoCallbacks } from "@/utils/Helpers";
 import WebauthnModal from "@/components/modals/WebauthnModal.vue";
 import LoginModal from "@/components/modals/LoginModal.vue";
-import LoadingProgress from "@/components/gallery/LoadingProgress.vue";
+import LoadingProgress from "@/components/loading/LoadingProgress.vue";
 
 const auth = useAuthStore();
 const lycheeStore = useLycheeStateStore();

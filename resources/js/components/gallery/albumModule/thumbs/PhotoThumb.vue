@@ -73,7 +73,7 @@
 import { computed, ref, watch } from "vue";
 import { useAuthStore } from "@/stores/Auth";
 import MiniIcon from "@/components/icons/MiniIcon.vue";
-import ThumbBadge from "@/components/gallery/thumbs/ThumbBadge.vue";
+import ThumbBadge from "@/components/gallery/albumModule/thumbs/ThumbBadge.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import { useImageHelpers } from "@/utils/Helpers";

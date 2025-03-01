@@ -12,7 +12,7 @@
 	</template>
 </template>
 <script setup lang="ts">
-import AlbumThumb, { AlbumThumbConfig } from "@/components/gallery/thumbs/AlbumThumb.vue";
+import AlbumThumb, { AlbumThumbConfig } from "@/components/gallery/albumModule/thumbs/AlbumThumb.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 

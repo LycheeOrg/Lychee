@@ -55,7 +55,7 @@
 </template>
 <script setup lang="ts">
 import Panel from "primevue/panel";
-import { AlbumThumbConfig } from "@/components/gallery/thumbs/AlbumThumb.vue";
+import { AlbumThumbConfig } from "@/components/gallery/albumModule/thumbs/AlbumThumb.vue";
 import { computed } from "vue";
 import { SplitData, useSplitter } from "@/composables/album/splitter";
 import Timeline from "primevue/timeline";
