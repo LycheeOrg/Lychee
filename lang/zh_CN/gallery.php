@@ -39,7 +39,6 @@ return [
 
 	'search' => [
 		'title' => '搜索',
-		'searching' => '搜索中…',
 		'no_results' => '没有找到匹配的内容。',
 		'searchbox' => '搜索…',
 		'minimum_chars' => '至少需要 %s 个字符。',
