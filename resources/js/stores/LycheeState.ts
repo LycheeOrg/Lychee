@@ -57,22 +57,22 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		is_se_info_hidden: false,
 	}),
 	actions: {
-		init() {
+		init(): Promise<void> {
 			// Check if already initialized
 			if (this.is_init) {
-				return;
+				return Promise.resolve();
 			}
-			this.load();
+			return this.load();
 		},
 
-		load() {
+		load(): Promise<void> {
 			// semaphore to avoid multiple calls
 			if (this.is_loading) {
-				return;
+				return Promise.resolve();
 			}
 			this.is_loading = true;
 
-			InitService.fetchInitData()
+			return InitService.fetchInitData()
 				.then((response) => {
 					this.is_init = true;
 					this.is_loading = false;
