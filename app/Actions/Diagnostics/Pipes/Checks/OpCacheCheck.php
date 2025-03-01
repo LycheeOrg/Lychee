@@ -12,7 +12,7 @@ use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
 
 /**
- * We want to make sure that our users are using the correct version of PHP.
+ * We want to make sure that our users are using OPcache for faster php code execution.
  */
 class OpCacheCheck implements DiagnosticPipe
 {
@@ -29,8 +29,6 @@ class OpCacheCheck implements DiagnosticPipe
 			$opcache_conf['directives']['opcache.enable'] === '0'
 		) {
 			$data[] = DiagnosticData::warn('OPcache is not enabled.', self::class, ['Enabling it will improve performance.']);
-
-			return $next($data);
 		}
 
 		return $next($data);
