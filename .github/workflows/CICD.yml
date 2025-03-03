@@ -224,7 +224,7 @@ jobs:
           if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`
 
       - name: Attest
-        uses: actions/attest-build-provenance@520d128f165991a6c774bcb264f323e3d70747f4 # v2.2.0
+        uses: actions/attest-build-provenance@bd77c077858b8d561b7a36cbe48ef4cc642ca39d # v2.2.2
         with:
           # Path to the artifact serving as the subject of the attestation. Must
           # specify exactly one of "subject-path" or "subject-digest". May contain a
