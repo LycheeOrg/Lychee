@@ -55,7 +55,7 @@
         "doctrine/dbal": "^3.1",
         "geocoder-php/cache-provider": "^4.3",
         "geocoder-php/nominatim-provider": "^5.5",
-        "graham-campbell/markdown": "^15.0",
+        "graham-campbell/markdown": "^16.0",
         "laragear/webauthn": "^4.0",
         "laravel/framework": "^11.0",
         "laravel/socialite": "^5.11",
