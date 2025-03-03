@@ -40,5 +40,4 @@ function propagateClick(e: MouseEvent) {
 	e.stopPropagation();
 	emits("click");
 }
-console.log("ThumbFavourite.vue");
 </script>
