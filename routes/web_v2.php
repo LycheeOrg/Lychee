@@ -35,6 +35,7 @@ Route::get('/up', function () {
 });
 
 Route::get('/', [VueController::class, 'view'])->name('home')->middleware(['migration:complete']);
+Route::get('/home', [VueController::class, 'view'])->name('homepage')->middleware(['migration:complete']);
 Route::get('/gallery', [VueController::class, 'view'])->name('gallery')->middleware(['migration:complete']);
 Route::get('/gallery/favourites', [VueController::class, 'view'])->name('gallery-favourites')->middleware(['migration:complete']);
 Route::get('/gallery/{albumId}', [VueController::class, 'view'])->name('gallery-album')->middleware(['migration:complete', 'unlock_with_password']);

@@ -6,7 +6,7 @@
  * Copyright (c) 2018-2025 LycheeOrg.
  */
 
-namespace App\Http\Requests\Photo;
+namespace App\Http\Requests\Timeline;
 
 use App\Http\Requests\AbstractEmptyRequest;
 use App\Models\Configs;
@@ -23,6 +23,6 @@ class GetTimelineRequest extends AbstractEmptyRequest
 			return false;
 		}
 
-		return Configs::getValueAsBool('timeline_photos_enabled');
+		return Configs::getValueAsBool('timeline_page_enabled');
 	}
 }

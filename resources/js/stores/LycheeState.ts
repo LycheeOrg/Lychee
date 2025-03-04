@@ -50,6 +50,8 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		// Site title & Dropbox API key
 		title: "gallery.title",
 		dropbox_api_key: "disabled",
+		default_homepage: "gallery",
+		is_timeline_page_enabled: false,
 
 		// Lychee Supporter Edition
 		is_se_enabled: false,
@@ -113,6 +115,8 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.is_se_preview_enabled = data.is_se_preview_enabled;
 					this.is_se_info_hidden = data.is_se_info_hidden;
 					this.number_albums_per_row_mobile = data.number_albums_per_row_mobile;
+					this.default_homepage = data.default_homepage;
+					this.is_timeline_page_enabled = data.is_timeline_page_enabled;
 				})
 				.catch((error) => {
 					// In this specific case, even though it has been possibly disabled, we really need to see the error.

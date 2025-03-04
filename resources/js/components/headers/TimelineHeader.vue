@@ -232,10 +232,10 @@ const menu = computed(() =>
 			if: (favourites.photos?.length ?? 0) > 0,
 		},
 		{
-			to: { name: "timeline" },
+			to: { name: "gallery" },
 			type: "link",
-			icon: "pi pi-clock",
-			if: lycheeStore.is_favourite_enabled,
+			icon: "pi pi-book",
+			if: (favourites.photos?.length ?? 0) > 0,
 		},
 		{
 			to: { name: "frame" },

@@ -9,7 +9,7 @@
 namespace App\Http\Controllers\Gallery;
 
 use App\Actions\Photo\Timeline;
-use App\Http\Requests\Photo\GetTimelineRequest;
+use App\Http\Requests\Timeline\GetTimelineRequest;
 use App\Http\Resources\Timeline\InitResource;
 use App\Http\Resources\Timeline\TimelineResource;
 use App\Models\Configs;
@@ -39,7 +39,7 @@ class TimelineController extends Controller
 	 *
 	 * @return InitResource
 	 */
-	public function init(GetTimelineRequest $request): Data
+	public function init(): Data
 	{
 		return new InitResource();
 	}

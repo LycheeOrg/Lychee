@@ -4,7 +4,6 @@ import { useJustify } from "./useJustify";
 import { useMasonry } from "./useMasonry";
 import { useGrid } from "./useGrid";
 import AlbumService from "@/services/album-service";
-import TimelineService from "@/services/timeline-service";
 
 export type TimelineData = {
 	isTimeline: Ref<boolean>;
@@ -28,7 +27,7 @@ export function useLayouts(
 
 		switch (layout.value) {
 			case "square":
-				return useSquare(photoListing, configRef.value.photo_layout_square_column_width, configRef.value.photo_layout_gap);
+				return useSquare(photoListing, configRef.value.photo_layout_square_column_width, configRef.value.photo_layout_gap, timelineData);
 			case "justified":
 			case "unjustified":
 				return useJustify(photoListing, configRef.value.photo_layout_justified_row_height, timelineData);
@@ -61,7 +60,6 @@ export function useLayoutClass(layout: Ref<App.Enum.PhotoLayoutType>) {
 
 export function useGetLayoutConfig() {
 	const layoutConfig = ref(undefined) as Ref<undefined | App.Http.Resources.GalleryConfigs.PhotoLayoutConfig>;
-	const layout = ref("square") as Ref<App.Enum.PhotoLayoutType>;
 
 	function loadLayoutConfig(): Promise<void> {
 		return AlbumService.getLayout().then((data) => {
@@ -69,16 +67,8 @@ export function useGetLayoutConfig() {
 		});
 	}
 
-	function loadLayoutTimeline() {
-		TimelineService.init().then((data) => {
-			layout.value = data.data.photo_layout;
-		});
-	}
-
 	return {
-		layout,
 		layoutConfig,
 		loadLayoutConfig,
-		loadLayoutTimeline,
 	};
 }
