@@ -5,7 +5,7 @@ import { Router } from "vue-router";
 
 export function useTimelineRefresher(router: Router, auth: AuthStore) {
 	const isLoading = ref(false);
-    const user = ref<App.Http.Resources.Models.UserResource | undefined>(undefined);
+	const user = ref<App.Http.Resources.Models.UserResource | undefined>(undefined);
 
 	const page = ref(0);
 	const lastPage = ref(0);
@@ -13,19 +13,19 @@ export function useTimelineRefresher(router: Router, auth: AuthStore) {
 
 	const layout = ref<App.Enum.PhotoLayoutType>("square");
 	const isTimelineEnabled = ref(false);
-    const rootConfig = ref<App.Http.Resources.GalleryConfigs.RootConfig | undefined>(undefined);
-    const rootRights = ref<App.Http.Resources.Rights.RootAlbumRightsResource | undefined>(undefined);
+	const rootConfig = ref<App.Http.Resources.GalleryConfigs.RootConfig | undefined>(undefined);
+	const rootRights = ref<App.Http.Resources.Rights.RootAlbumRightsResource | undefined>(undefined);
 
 	function loadTimelineConfig(): Promise<void> {
 		return TimelineService.init().then((response) => {
 			layout.value = response.data.photo_layout;
 			isTimelineEnabled.value = response.data.is_timeline_page_enabled;
-            rootConfig.value = response.data.config;
-            rootRights.value = response.data.rights;
-    });
+			rootConfig.value = response.data.config;
+			rootRights.value = response.data.rights;
+		});
 	}
 
-    function loadUser(): Promise<void> {
+	function loadUser(): Promise<void> {
 		return auth.getUser().then((data: App.Http.Resources.Models.UserResource) => {
 			user.value = data;
 		});
@@ -52,9 +52,9 @@ export function useTimelineRefresher(router: Router, auth: AuthStore) {
 	}
 
 	return {
-        user,
-        rootConfig,
-        rootRights,
+		user,
+		rootConfig,
+		rootRights,
 		isLoading,
 		page,
 		lastPage,
@@ -63,6 +63,6 @@ export function useTimelineRefresher(router: Router, auth: AuthStore) {
 		isTimelineEnabled,
 		loadTimelineConfig,
 		loadMore,
-        loadUser,
+		loadUser,
 	};
 }

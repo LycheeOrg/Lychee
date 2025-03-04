@@ -23,16 +23,16 @@
 			@selected="photoSelect"
 			:is-timeline="true"
 			:with-control="true"
-			/>
-			<!-- Photo panel -->
-			<PhotoPanel
-				v-if="photo"
-				:photo="photo"
-				:photos="photos"
-				:album-id="photo?.album_id"
-				:is-map-visible="rootConfig?.is_map_accessible ?? false"
-			/>
-			<!-- @toggle-slide-show="slideshow"
+		/>
+		<!-- Photo panel -->
+		<PhotoPanel
+			v-if="photo"
+			:photo="photo"
+			:photos="photos"
+			:album-id="photo?.album_id"
+			:is-map-visible="rootConfig?.is_map_accessible ?? false"
+		/>
+		<!-- @toggle-slide-show="slideshow"
 				@rotate-overlay="rotateOverlay"
 				@rotate-photo-c-w="rotatePhotoCW"
 				@rotate-photo-c-c-w="rotatePhotoCCW"
@@ -45,7 +45,7 @@
 				@next="() => next(true)"
 				@previous="() => previous(true)" -->
 
-			<div class="sentinel" ref="sentinel"></div>
+		<div class="sentinel" ref="sentinel"></div>
 		<ProgressSpinner class="flex justify-center" v-if="isLoading" />
 		<ScrollTop target="parent" :threshold="50" />
 		<!-- Dialogs -->
@@ -133,7 +133,6 @@ import { onMounted } from "vue";
 import ProgressSpinner from "primevue/progressspinner";
 import PhotoPanel from "@/components/gallery/photoModule/PhotoPanel.vue";
 
-
 const auth = useAuthStore();
 const router = useRouter();
 const lycheeStore = useLycheeStateStore();
@@ -149,7 +148,8 @@ const { is_full_screen, is_login_open, is_upload_visible, list_upload_files } = 
 const albums = ref([]); // unused.
 
 const { layoutConfig, loadLayoutConfig } = useGetLayoutConfig();
-const { user, loadUser, rootConfig, rootRights, page, lastPage, photos, layout, isTimelineEnabled, loadTimelineConfig, loadMore, isLoading } = useTimelineRefresher(router, auth);
+const { user, loadUser, rootConfig, rootRights, page, lastPage, photos, layout, isTimelineEnabled, loadTimelineConfig, loadMore, isLoading } =
+	useTimelineRefresher(router, auth);
 // const { user, isKeybindingsHelpOpen, rootConfig, rootRights, refresh } = useAlbumsRefresher(auth, lycheeStore, is_login_open);
 
 // const { photo } = usePhotoRoute(router, photos);
@@ -157,7 +157,7 @@ const { user, loadUser, rootConfig, rootRights, page, lastPage, photos, layout, 
 const { selectedPhotosIdx, selectedPhoto, selectedPhotos, selectedPhotosIds, photoSelect, hasSelection, unselect, selectEverything } = useSelection(
 	photos,
 	albums,
-	togglableStore
+	togglableStore,
 );
 
 const sentinel = ref(null);
