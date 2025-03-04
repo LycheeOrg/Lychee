@@ -4,7 +4,7 @@ import { trans } from "laravel-vue-i18n";
 import { sprintf } from "sprintf-js";
 import { computed, ref, Ref } from "vue";
 
-export function useSearch(albumId: Ref<string>, togglableStore: TogglablesStateStore, search_term: Ref<string>, search_page: Ref<number>) {
+export function useSearch(albumId: Ref<string>, search_term: Ref<string>, search_page: Ref<number>) {
 	const isSearching = ref(false);
 
 	// Search results
@@ -44,7 +44,6 @@ export function useSearch(albumId: Ref<string>, togglableStore: TogglablesStateS
 			return Promise.resolve();
 		}
 
-		togglableStore.search_album_id = albumId.value;
 		search_term.value = terms;
 		isSearching.value = true;
 		return SearchService.search(albumId.value, search_term.value, search_page.value).then((response) => {
