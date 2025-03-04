@@ -32,7 +32,6 @@ import InputText from "../basic/InputText.vue";
 import FloatLabel from "primevue/floatlabel";
 
 const props = defineProps<{
-	parentId: string | undefined;
 	album?: App.Http.Resources.Models.ThumbAlbumResource;
 	photo?: App.Http.Resources.Models.PhotoResource;
 }>();
