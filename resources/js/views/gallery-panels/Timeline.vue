@@ -1,4 +1,8 @@
 <template>
+	<LoadingProgress v-model:loading="isLoading" />
+	<LoginModal v-if="user?.id === null" />
+	<WebauthnModal v-if="user?.id === null" />
+
 	<div v-if="rootConfig && rootRights" class="h-svh overflow-y-auto">
 		<Collapse :when="!is_full_screen">
 			<TimelineHeader
@@ -132,13 +136,15 @@ import TimelineHeader from "@/components/headers/TimelineHeader.vue";
 import { onMounted } from "vue";
 import ProgressSpinner from "primevue/progressspinner";
 import PhotoPanel from "@/components/gallery/photoModule/PhotoPanel.vue";
+import LoadingProgress from "@/components/loading/LoadingProgress.vue";
+import LoginModal from "@/components/modals/LoginModal.vue";
+import WebauthnModal from "@/components/modals/WebauthnModal.vue";
 
 const auth = useAuthStore();
 const router = useRouter();
 const lycheeStore = useLycheeStateStore();
 const togglableStore = useTogglablesStateStore();
 lycheeStore.init();
-togglableStore.resetSearch();
 
 const photo = ref<undefined | App.Http.Resources.Models.PhotoResource>(undefined);
 
