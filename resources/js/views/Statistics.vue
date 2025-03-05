@@ -18,10 +18,10 @@
 	</Panel>
 	<Activity v-if="!is_se_preview_enabled" />
 	<Panel class="max-w-5xl mx-auto border-0" :pt:header:class="'hidden'">
-		<TotalCard v-if="total" :total="total" />
-		<div class="py-4" v-if="load && total">
-			<ToggleSwitch v-model="is_collapsed" class="text-sm"></ToggleSwitch> {{ $t("statistics.collapse") }}
-		</div>
+		<template v-if="load && total !== undefined && showTotal">
+			<TotalCard :total="total" />
+			<div class="py-4"><ToggleSwitch v-model="is_collapsed" class="text-sm"></ToggleSwitch> {{ $t("statistics.collapse") }}</div>
+		</template>
 		<AlbumsTable v-if="load" v-show="!is_collapsed" :show-username="true" :is-total="false" :album-id="undefined" @total="total = $event" />
 		<AlbumsTable v-if="load" v-show="is_collapsed" :show-username="true" :is-total="true" :album-id="undefined" />
 	</Panel>
@@ -42,6 +42,8 @@ import TotalCard, { TotalAlbum } from "@/components/statistics/TotalCard.vue";
 import AlbumsTable from "@/components/statistics/AlbumsTable.vue";
 import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
 import Activity from "@/components/statistics/Activity.vue";
+import { computed } from "vue";
+import { Ref } from "vue";
 
 const router = useRouter();
 const user = ref<App.Http.Resources.Models.UserResource | undefined>(undefined);
@@ -54,6 +56,8 @@ const is_collapsed = ref(false);
 const load = ref(false);
 
 const { is_se_preview_enabled, are_nsfw_visible } = storeToRefs(lycheeStore);
+
+const showTotal = computed(() => total.value !== undefined && (total.value.num_albums > 0 || total.value?.num_photos > 0 || total.value?.size > 0));
 
 authStore.getUser().then((data) => {
 	user.value = data;

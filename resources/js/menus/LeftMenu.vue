@@ -48,6 +48,52 @@
 			</template>
 		</Menu>
 		<AboutLychee v-model:visible="openLycheeAbout" />
+		<div class="mt-auto">
+			<Menu :model="profileItems" v-if="initData" class="!border-none">
+				<template #item="{ item, props }">
+					<template v-if="item.access">
+						<router-link v-if="item.route" v-slot="{ href, navigate }" :to="item.route" custom>
+							<a v-ripple :href="href" v-bind="props.action" @click="navigate">
+								<MiniIcon :icon="item.icon ?? ''" :class="'w-3 h-3'" />
+								<span class="ml-2">
+									<!-- @vue-ignore -->
+									{{ $t(item.label) }}
+								</span>
+								<SETag v-if="item.seTag" />
+							</a>
+						</router-link>
+						<a v-if="item.url" v-ripple :href="item.url" :target="item.target" v-bind="props.action">
+							<MiniIcon :icon="item.icon ?? ''" :class="'w-3 h-3'" />
+							<span class="ml-2">
+								<!-- @vue-ignore -->
+								{{ $t(item.label) }}
+							</span>
+							<SETag v-if="item.seTag" />
+						</a>
+						<a v-if="!item.route && !item.url" v-ripple v-bind="props.action">
+							<MiniIcon :icon="item.icon ?? ''" :class="'w-3 h-3'" />
+							<span class="ml-2">
+								<!-- @vue-ignore -->
+								{{ $t(item.label) }}
+							</span>
+							<SETag v-if="item.seTag" />
+						</a>
+					</template>
+				</template>
+			</Menu>
+			<div class="border-t border-surface-700 pt-2 p-(--p-navigation-item-padding) flex justify-between pr-0">
+				<div class="flex items-center gap-2">
+					<MiniIcon icon="person" :class="'w-3 h-3'" />
+					<div class="capitalize ml-2 text-muted-color">
+						{{ authStore.user?.username }}
+						<i class="pi pi-crown text-orange-400 text-xs" v-if="canSeeAdmin"></i>
+					</div>
+				</div>
+				<Button text severity="secondary" class="cursor-pointer" @click="logout">
+					<MiniIcon icon="account-logout" :class="'w-4 h-4'" />
+				</Button>
+			</div>
+		</div>
 	</Drawer>
 </template>
 <script setup lang="ts">
@@ -66,6 +112,7 @@ import SETag from "@/components/icons/SETag.vue";
 import Constants from "@/services/constants";
 import { useRoute } from "vue-router";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
+import Button from "primevue/button";
 
 type MenyType =
 	| {
@@ -201,42 +248,6 @@ const items = computed<MenyType[]>(() => {
 			],
 		},
 		{
-			label: "profile.title",
-			items: [
-				{
-					label: "left-menu.user",
-					icon: "person",
-					route: "/profile",
-					access: initData.value.user.can_edit ?? false,
-				},
-				{
-					label: "sharing.title",
-					icon: "cloud",
-					route: "/sharing",
-					access: initData.value.root_album.can_upload ?? false,
-				},
-				{
-					label: "statistics.title",
-					icon: "bar-chart",
-					route: "/statistics",
-					access: is_se_enabled.value === true,
-				},
-				{
-					label: "statistics.title",
-					icon: "bar-chart",
-					route: "/statistics",
-					access: is_se_preview_enabled.value === true,
-					seTag: true,
-				},
-				{
-					label: "left-menu.sign_out",
-					icon: "account-logout",
-					access: true,
-					command: logout,
-				},
-			],
-		},
-		{
 			label: "Lychee",
 			items: [
 				{
@@ -264,6 +275,39 @@ const items = computed<MenyType[]>(() => {
 					url: "https://lycheeorg.dev/get-supporter-edition/",
 				},
 			],
+		},
+	];
+});
+
+const profileItems = computed<MenyType[]>(() => {
+	if (!initData.value) {
+		return [];
+	}
+	return [
+		{
+			label: "left-menu.user",
+			icon: "person",
+			route: "/profile",
+			access: initData.value.user.can_edit ?? false,
+		},
+		{
+			label: "sharing.title",
+			icon: "cloud",
+			route: "/sharing",
+			access: initData.value.root_album.can_upload ?? false,
+		},
+		{
+			label: "statistics.title",
+			icon: "bar-chart",
+			route: "/statistics",
+			access: is_se_enabled.value === true,
+		},
+		{
+			label: "statistics.title",
+			icon: "bar-chart",
+			route: "/statistics",
+			access: is_se_preview_enabled.value === true,
+			seTag: true,
 		},
 	];
 });
