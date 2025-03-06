@@ -7,7 +7,8 @@ export function useTimelineRefresher(router: Router, auth: AuthStore) {
 	const isLoading = ref(false);
 	const user = ref<App.Http.Resources.Models.UserResource | undefined>(undefined);
 
-	const page = ref(0);
+	const minPage = ref(0);
+	const maxPage = ref(0);
 	const lastPage = ref(0);
 	const photos = ref<App.Http.Resources.Models.PhotoResource[]>([]);
 
@@ -38,7 +39,27 @@ export function useTimelineRefresher(router: Router, auth: AuthStore) {
 			.then((response) => {
 				photos.value = response.data.photos;
 				lastPage.value = response.data.last_page;
-				page.value = response.data.current_page;
+				maxPage.value = response.data.current_page;
+				minPage.value = response.data.current_page;
+				isLoading.value = false;
+			})
+			.catch((error) => {
+				isLoading.value = false;
+				if (error.response.status === 401) {
+					router.push({ name: "gallery" });
+				}
+			});
+	}
+
+	function loadLess() {
+		if (minPage.value === 0) {
+			return;
+		}
+		isLoading.value = true;
+		minPage.value -= 1;
+		return TimelineService.timeline(minPage.value)
+			.then((response) => {
+				photos.value.unshift(...response.data.photos);
 				isLoading.value = false;
 			})
 			.catch((error) => {
@@ -50,12 +71,12 @@ export function useTimelineRefresher(router: Router, auth: AuthStore) {
 	}
 
 	function loadMore() {
-		if (page.value > lastPage.value) {
+		if (maxPage.value > lastPage.value) {
 			return;
 		}
 		isLoading.value = true;
-		page.value += 1;
-		return TimelineService.timeline(page.value)
+		maxPage.value += 1;
+		return TimelineService.timeline(maxPage.value)
 			.then((response) => {
 				photos.value.push(...response.data.photos);
 				lastPage.value = response.data.last_page;
@@ -80,13 +101,15 @@ export function useTimelineRefresher(router: Router, auth: AuthStore) {
 		rootConfig,
 		rootRights,
 		isLoading,
-		page,
+		maxPage,
+		minPage,
 		lastPage,
 		photos,
 		layout,
 		isTimelineEnabled,
 		loadTimelineConfig,
 		initialLoad,
+		loadLess,
 		loadMore,
 		loadDates,
 		loadUser,

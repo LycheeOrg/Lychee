@@ -7,6 +7,10 @@
 		<Collapse :when="!is_full_screen">
 			<TimelineHeader v-if="user" :user="user" :title="title" :rights="rootRights" :config="rootConfig" :has-hidden="false" />
 		</Collapse>
+		<div v-if="minPage > 0" class="flex justify-center">
+			<Button @click="loadLess" label="gallery.album.load_more" v-if="!isLoading" />
+			<ProgressSpinner class="" v-if="isLoading" />
+		</div>
 		<PhotoThumbPanel
 			v-if="layoutConfig !== undefined && photos !== null && photos.length > 0"
 			header="gallery.album.header_photos"
@@ -41,7 +45,7 @@
 				@next="() => next(true)"
 				@previous="() => previous(true)" -->
 
-		<div class="sentinel" ref="sentinel"></div>
+		<div class="sentinel" ref="sentinel" v-if="maxPage < lastPage"></div>
 		<ProgressSpinner class="flex justify-center" v-if="isLoading" />
 		<ScrollTop target="parent" :threshold="50" />
 		<!-- Dialogs -->
@@ -132,6 +136,7 @@ import LoadingProgress from "@/components/loading/LoadingProgress.vue";
 import LoginModal from "@/components/modals/LoginModal.vue";
 import WebauthnModal from "@/components/modals/WebauthnModal.vue";
 import { watch } from "vue";
+import Button from "primevue/button";
 
 const props = defineProps<{
 	date?: string;
@@ -159,13 +164,15 @@ const {
 	loadUser,
 	rootConfig,
 	rootRights,
-	page,
+	minPage,
+	maxPage,
 	lastPage,
 	photos,
 	layout,
 	isTimelineEnabled,
 	loadTimelineConfig,
 	initialLoad,
+	loadLess,
 	loadMore,
 	loadDates,
 	isLoading,
