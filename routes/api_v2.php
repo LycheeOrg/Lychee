@@ -31,6 +31,7 @@ Route::get('/Gallery::getLayout', [Gallery\ConfigController::class, 'getGalleryL
 Route::get('/Gallery::getUploadLimits', [Gallery\ConfigController::class, 'getUploadCOnfig'])->middleware(['cache_control']);
 
 Route::get('/Timeline', [Gallery\TimelineController::class, '__invoke'])->middleware(['cache_control']);
+Route::get('/Timeline::dates', [Gallery\TimelineController::class, 'dates'])->middleware(['cache_control']);
 Route::get('/Timeline::init', [Gallery\TimelineController::class, 'init'])->middleware(['cache_control']);
 
 /**

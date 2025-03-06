@@ -15,6 +15,7 @@ export function useTimelineRefresher(router: Router, auth: AuthStore) {
 	const isTimelineEnabled = ref(false);
 	const rootConfig = ref<App.Http.Resources.GalleryConfigs.RootConfig | undefined>(undefined);
 	const rootRights = ref<App.Http.Resources.Rights.RootAlbumRightsResource | undefined>(undefined);
+	const dates = ref<string[]>([]);
 
 	function loadTimelineConfig(): Promise<void> {
 		return TimelineService.init().then((response) => {
@@ -29,6 +30,23 @@ export function useTimelineRefresher(router: Router, auth: AuthStore) {
 		return auth.getUser().then((data: App.Http.Resources.Models.UserResource) => {
 			user.value = data;
 		});
+	}
+
+	function initialLoad(date: string) {
+		isLoading.value = true;
+		return TimelineService.datedTimeline(date)
+			.then((response) => {
+				photos.value = response.data.photos;
+				lastPage.value = response.data.last_page;
+				page.value = response.data.current_page;
+				isLoading.value = false;
+			})
+			.catch((error) => {
+				isLoading.value = false;
+				if (error.response.status === 401) {
+					router.push({ name: "gallery" });
+				}
+			});
 	}
 
 	function loadMore() {
@@ -51,6 +69,12 @@ export function useTimelineRefresher(router: Router, auth: AuthStore) {
 			});
 	}
 
+	function loadDates() {
+		return TimelineService.dates().then((response) => {
+			dates.value = response.data;
+		});
+	}
+
 	return {
 		user,
 		rootConfig,
@@ -62,7 +86,9 @@ export function useTimelineRefresher(router: Router, auth: AuthStore) {
 		layout,
 		isTimelineEnabled,
 		loadTimelineConfig,
+		initialLoad,
 		loadMore,
+		loadDates,
 		loadUser,
 	};
 }

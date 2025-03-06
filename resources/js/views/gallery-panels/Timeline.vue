@@ -5,15 +5,7 @@
 
 	<div v-if="rootConfig && rootRights" class="h-svh overflow-y-auto">
 		<Collapse :when="!is_full_screen">
-			<TimelineHeader
-				v-if="user"
-				:user="user"
-				:title="title"
-				:rights="rootRights"
-				@refresh="loadMore"
-				:config="rootConfig"
-				:has-hidden="false"
-			/>
+			<TimelineHeader v-if="user" :user="user" :title="title" :rights="rootRights" :config="rootConfig" :has-hidden="false" />
 		</Collapse>
 		<PhotoThumbPanel
 			v-if="layoutConfig !== undefined && photos !== null && photos.length > 0"
@@ -120,7 +112,7 @@ import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
 import Divider from "primevue/divider";
 import { Collapse } from "vue-collapsed";
 import AlbumService from "@/services/album-service";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { useMouseEvents } from "@/composables/album/uploadEvents";
 import GalleryFooter from "@/components/footers/GalleryFooter.vue";
 import PhotoService from "@/services/photo-service";
@@ -139,11 +131,19 @@ import PhotoPanel from "@/components/gallery/photoModule/PhotoPanel.vue";
 import LoadingProgress from "@/components/loading/LoadingProgress.vue";
 import LoginModal from "@/components/modals/LoginModal.vue";
 import WebauthnModal from "@/components/modals/WebauthnModal.vue";
+import { watch } from "vue";
+
+const props = defineProps<{
+	date?: string;
+	photoId?: string;
+}>();
 
 const auth = useAuthStore();
+const route = useRoute();
 const router = useRouter();
 const lycheeStore = useLycheeStateStore();
 const togglableStore = useTogglablesStateStore();
+const photoId = ref<undefined | string>(undefined);
 lycheeStore.init();
 
 const photo = ref<undefined | App.Http.Resources.Models.PhotoResource>(undefined);
@@ -154,8 +154,22 @@ const { is_full_screen, is_login_open, is_upload_visible, list_upload_files } = 
 const albums = ref([]); // unused.
 
 const { layoutConfig, loadLayoutConfig } = useGetLayoutConfig();
-const { user, loadUser, rootConfig, rootRights, page, lastPage, photos, layout, isTimelineEnabled, loadTimelineConfig, loadMore, isLoading } =
-	useTimelineRefresher(router, auth);
+const {
+	user,
+	loadUser,
+	rootConfig,
+	rootRights,
+	page,
+	lastPage,
+	photos,
+	layout,
+	isTimelineEnabled,
+	loadTimelineConfig,
+	initialLoad,
+	loadMore,
+	loadDates,
+	isLoading,
+} = useTimelineRefresher(router, auth);
 // const { user, isKeybindingsHelpOpen, rootConfig, rootRights, refresh } = useAlbumsRefresher(auth, lycheeStore, is_login_open);
 
 // const { photo } = usePhotoRoute(router, photos);
@@ -168,12 +182,6 @@ const { selectedPhotosIdx, selectedPhoto, selectedPhotos, selectedPhotosIds, pho
 
 const sentinel = ref(null);
 
-const { stop } = useIntersectionObserver(sentinel, ([{ isIntersecting }]) => {
-	if (isIntersecting) {
-		loadMore();
-	}
-});
-
 onMounted(async () => {
 	await loadTimelineConfig();
 
@@ -184,8 +192,17 @@ onMounted(async () => {
 
 	await loadLayoutConfig();
 	loadUser();
-	loadMore();
+	loadDates();
+	console.log(props.date);
+	await initialLoad(props.date ?? "");
+
+	const { stop } = useIntersectionObserver(sentinel, ([{ isIntersecting }]) => {
+		if (isIntersecting) {
+			loadMore();
+		}
+	});
 });
+
 // Modals for Albums
 const {
 	is_delete_visible,
@@ -251,6 +268,24 @@ const {
 // 	window.removeEventListener("dragover", dragEnd);
 // 	window.removeEventListener("drop", dropUpload);
 // });
+
+// watch(
+// 	() => [route.params.photoid],
+// 	([newPhotoId], _) => {
+// 		unselect();
+
+// 		photoId.value = newPhotoId as string;
+// 		if (photoId.value !== undefined) {
+// 			togglableStore.rememberScrollThumb(photoId.value);
+// 		}
+
+// 		// refresh().then(() => {
+// 		// 	if (photoId.value === undefined) {
+// 		// 		setScroll();
+// 		// 	}
+// 		// });
+// 	},
+// );
 </script>
 <style lang="css">
 /* Kill the border of ScrollTop */

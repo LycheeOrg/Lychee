@@ -65,6 +65,18 @@ const routes_ = [
 		component: Timeline,
 	},
 	{
+		name: "timeline-with-date",
+		path: "/timeline/:date",
+		component: Timeline,
+		props: true,
+	},
+	{
+		name: "timeline-with-photo",
+		path: "/timeline/:date/:photoId",
+		component: Timeline,
+		props: true,
+	},
+	{
 		name: "frame",
 		path: "/frame",
 		component: Frame,
