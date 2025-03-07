@@ -57,7 +57,7 @@ const load = ref(false);
 
 const { is_se_preview_enabled, are_nsfw_visible } = storeToRefs(lycheeStore);
 
-const showTotal = computed(() => total.value !== undefined && (total.value.num_albums > 0 || total.value?.num_photos > 0 || total.value?.size > 0));
+const showTotal = computed(() => total.value !== undefined && (total.value.num_albums > 0 || total.value.num_photos > 0 || total.value.size > 0));
 
 authStore.getUser().then((data) => {
 	user.value = data;
