@@ -15,9 +15,9 @@ use App\Contracts\Models\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasAbstractAlbumTrait;
 use App\Http\Requests\Traits\HasOwnerIdTrait;
-use App\Models\User;
+use App\Models\Configs;
 use App\Policies\AlbumPolicy;
-use App\Policies\UserPolicy;
+use App\Policies\SettingsPolicy;
 use App\Rules\RandomIDRule;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
@@ -33,7 +33,7 @@ class SpaceSizeVariantRequest extends BaseApiRequest implements HasAbstractAlbum
 	public function authorize(): bool
 	{
 		if ($this->album === null) {
-			return Gate::check(UserPolicy::CAN_EDIT, [User::class]);
+			return Gate::check(SettingsPolicy::CAN_SEE_STATISTICS, [Configs::class]);
 		}
 
 		return Auth::check() && Gate::check(AlbumPolicy::CAN_ACCESS, [AbstractAlbum::class, $this->album]);
