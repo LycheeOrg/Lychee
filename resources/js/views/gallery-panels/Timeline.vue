@@ -7,8 +7,15 @@
 		<Collapse :when="!is_full_screen">
 			<TimelineHeader v-if="user" :user="user" :title="title" :rights="rootRights" :config="rootConfig" :has-hidden="false" />
 		</Collapse>
-		<div v-if="minPage > 0" class="flex justify-center">
-			<Button @click="loadLess" label="gallery.album.load_more" v-if="!isLoading" />
+		<div v-if="minPage > 0" class="flex justify-center pt-2">
+			<Button
+				text
+				icon="pi pi-angle-double-up"
+				severity="secondary"
+				@click="loadLess"
+				:label="$t('gallery.timeline.load_previous')"
+				v-if="!isLoading"
+			/>
 			<ProgressSpinner class="" v-if="isLoading" />
 		</div>
 		<PhotoThumbPanel

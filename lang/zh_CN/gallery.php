@@ -239,4 +239,8 @@ return [
 		'public' => '公开',
 		'inherit_from_parent' => '继承自父级',
 	],
+
+	'timeline' => [
+		'load_previous' => 'Load previous',
+	],
 ];

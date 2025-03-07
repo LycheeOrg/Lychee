@@ -239,4 +239,8 @@ return [
 		'public' => 'public',
 		'inherit_from_parent' => 'inherit from parent',
 	],
+
+	'timeline' => [
+		'load_previous' => 'Load previous',
+	],
 ];
