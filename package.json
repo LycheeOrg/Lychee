@@ -32,7 +32,7 @@
         "@types/dropbox-chooser": "^1.0.8",
         "@types/justified-layout": "^4.1.4",
         "@vueuse/core": "^12.7.0",
-        "axios": "^1.7.9",
+        "axios": "^1.8.2",
         "axios-cache-interceptor": "^1.5.3",
         "justified-layout": "^4.1.0",
         "laravel-vite-plugin": "^1.1.1",
