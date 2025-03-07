@@ -9,6 +9,25 @@
     <x-meta />
     @vite(['resources/js/app.ts','resources/sass/app.css'])
 </head>
+{{-- Dirty work around but hey, backward compatibility... --}}
+@if(Features::active('legacy_v4_redirect'))
+<script>
+	const hashMatch = document.location.hash.replace("#", "").split("/");
+	const albumID = hashMatch[0] ?? '';
+	const photoID = hashMatch[1] ?? '';
+
+	if (photoID !== '') {
+		window.location = @php
+            echo '"'.route('gallery').'/"'
+        @endphp + albumID + '/' + photoID;
+	} else if (albumID !== '') {
+		window.location = @php
+            echo '"'.route('gallery').'/"'
+        @endphp + albumID;
+	}
+</script>
+@endif
+{{-- End of work around... --}}
 @if((Configs::get()['dark_mode_enabled'] ?? '1') == '1')
     <body class="antialiased dark">
 @else
