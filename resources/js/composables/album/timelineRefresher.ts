@@ -1,9 +1,9 @@
 import TimelineService from "@/services/timeline-service";
 import { AuthStore } from "@/stores/Auth";
-import { ref } from "vue";
+import { Ref, ref } from "vue";
 import { Router } from "vue-router";
 
-export function useTimelineRefresher(router: Router, auth: AuthStore) {
+export function useTimelineRefresher(photoId: Ref<string | undefined>, router: Router, auth: AuthStore) {
 	const isLoading = ref(false);
 	const user = ref<App.Http.Resources.Models.UserResource | undefined>(undefined);
 
@@ -11,6 +11,7 @@ export function useTimelineRefresher(router: Router, auth: AuthStore) {
 	const maxPage = ref(0);
 	const lastPage = ref(0);
 	const photos = ref<App.Http.Resources.Models.PhotoResource[]>([]);
+	const photo = ref<undefined | App.Http.Resources.Models.PhotoResource>(undefined);
 
 	const layout = ref<App.Enum.PhotoLayoutType>("square");
 	const isTimelineEnabled = ref(false);
@@ -42,6 +43,7 @@ export function useTimelineRefresher(router: Router, auth: AuthStore) {
 				maxPage.value = response.data.current_page;
 				minPage.value = response.data.current_page;
 				isLoading.value = false;
+				loadPhoto();
 			})
 			.catch((error) => {
 				isLoading.value = false;
@@ -52,7 +54,7 @@ export function useTimelineRefresher(router: Router, auth: AuthStore) {
 	}
 
 	function loadLess() {
-		if (minPage.value === 0) {
+		if (minPage.value === 1) {
 			return;
 		}
 		isLoading.value = true;
@@ -96,6 +98,12 @@ export function useTimelineRefresher(router: Router, auth: AuthStore) {
 		});
 	}
 
+	function loadPhoto() {
+		if (photoId.value) {
+			photo.value = photos.value.find((photo: App.Http.Resources.Models.PhotoResource) => photo.id === photoId.value);
+		}
+	}
+
 	return {
 		user,
 		rootConfig,
@@ -105,6 +113,7 @@ export function useTimelineRefresher(router: Router, auth: AuthStore) {
 		minPage,
 		lastPage,
 		photos,
+		photo,
 		layout,
 		isTimelineEnabled,
 		loadTimelineConfig,
@@ -113,5 +122,6 @@ export function useTimelineRefresher(router: Router, auth: AuthStore) {
 		loadMore,
 		loadDates,
 		loadUser,
+		loadPhoto,
 	};
 }

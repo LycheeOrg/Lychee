@@ -7,6 +7,9 @@ export function usePhotoRoute(router: Router) {
 		if (currentRoute.startsWith("search")) {
 			return { name: "search-photo", params: { albumid: albumId ?? ALL, photoid: photoId } };
 		}
+		if (currentRoute.startsWith("timeline")) {
+			return { name: "search-photo", params: { albumid: albumId ?? ALL, photoid: photoId } };
+		}
 		return { name: "photo", params: { albumid: albumId ?? ALL, photoid: photoId } };
 	}
 

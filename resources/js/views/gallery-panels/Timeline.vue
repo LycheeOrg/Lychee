@@ -7,7 +7,7 @@
 		<Collapse :when="!is_full_screen">
 			<TimelineHeader v-if="user" :user="user" :title="title" :rights="rootRights" :config="rootConfig" :has-hidden="false" />
 		</Collapse>
-		<div v-if="minPage > 0" class="flex justify-center pt-2">
+		<div v-if="minPage > 1" class="flex justify-center pt-2">
 			<Button
 				text
 				icon="pi pi-angle-double-up"
@@ -155,10 +155,8 @@ const route = useRoute();
 const router = useRouter();
 const lycheeStore = useLycheeStateStore();
 const togglableStore = useTogglablesStateStore();
-const photoId = ref<undefined | string>(undefined);
+const photoId = ref<undefined | string>(props.photoId);
 lycheeStore.init();
-
-const photo = ref<undefined | App.Http.Resources.Models.PhotoResource>(undefined);
 
 const { are_nsfw_visible, title } = storeToRefs(lycheeStore);
 const { is_full_screen, is_login_open, is_upload_visible, list_upload_files } = storeToRefs(togglableStore);
@@ -175,6 +173,7 @@ const {
 	maxPage,
 	lastPage,
 	photos,
+	photo,
 	layout,
 	isTimelineEnabled,
 	loadTimelineConfig,
@@ -182,8 +181,9 @@ const {
 	loadLess,
 	loadMore,
 	loadDates,
+	loadPhoto,
 	isLoading,
-} = useTimelineRefresher(router, auth);
+} = useTimelineRefresher(photoId, router, auth);
 // const { user, isKeybindingsHelpOpen, rootConfig, rootRights, refresh } = useAlbumsRefresher(auth, lycheeStore, is_login_open);
 
 // const { photo } = usePhotoRoute(router, photos);
@@ -196,6 +196,14 @@ const { selectedPhotosIdx, selectedPhoto, selectedPhotos, selectedPhotosIds, pho
 
 const sentinel = ref(null);
 
+function registerSentinel() {
+	const { stop } = useIntersectionObserver(sentinel, ([{ isIntersecting }]) => {
+		if (isIntersecting) {
+			loadMore();
+		}
+	});
+}
+
 onMounted(async () => {
 	await loadTimelineConfig();
 
@@ -207,14 +215,8 @@ onMounted(async () => {
 	await loadLayoutConfig();
 	loadUser();
 	loadDates();
-	console.log(props.date);
 	await initialLoad(props.date ?? "");
-
-	const { stop } = useIntersectionObserver(sentinel, ([{ isIntersecting }]) => {
-		if (isIntersecting) {
-			loadMore();
-		}
-	});
+	registerSentinel();
 });
 
 // Modals for Albums
@@ -283,23 +285,18 @@ const {
 // 	window.removeEventListener("drop", dropUpload);
 // });
 
-// watch(
-// 	() => [route.params.photoid],
-// 	([newPhotoId], _) => {
-// 		unselect();
+watch(
+	() => [route.params.photoid],
+	([newPhotoId], _) => {
+		unselect();
 
-// 		photoId.value = newPhotoId as string;
-// 		if (photoId.value !== undefined) {
-// 			togglableStore.rememberScrollThumb(photoId.value);
-// 		}
-
-// 		// refresh().then(() => {
-// 		// 	if (photoId.value === undefined) {
-// 		// 		setScroll();
-// 		// 	}
-// 		// });
-// 	},
-// );
+		photoId.value = newPhotoId as string;
+		loadPhoto();
+		if (photoId.value !== undefined) {
+			togglableStore.rememberScrollThumb(photoId.value);
+		}
+	},
+);
 </script>
 <style lang="css">
 /* Kill the border of ScrollTop */
