@@ -26,11 +26,12 @@ class AcceptContentType
 	public const HTML = 'html';
 
 	/**
-	 * The URIs that should be excluded from CSRF verification.
+	 * The URIs that should be excluded from AcceptContentType verification.
 	 *
 	 * @var array<int,string>
 	 */
 	protected $except = [
+		'/feed',
 	];
 
 	/**
