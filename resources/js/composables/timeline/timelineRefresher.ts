@@ -1,5 +1,6 @@
 import TimelineService from "@/services/timeline-service";
 import { AuthStore } from "@/stores/Auth";
+import { AxiosResponse } from "axios";
 import { Ref, ref } from "vue";
 import { Router } from "vue-router";
 
@@ -34,23 +35,30 @@ export function useTimelineRefresher(photoId: Ref<string | undefined>, router: R
 		});
 	}
 
-	function initialLoad(date: string) {
+	function initialLoad(date: string, photoId: string | undefined) {
 		isLoading.value = true;
-		return TimelineService.datedTimeline(date)
-			.then((response) => {
-				photos.value = response.data.photos;
-				lastPage.value = response.data.last_page;
-				maxPage.value = response.data.current_page;
-				minPage.value = response.data.current_page;
-				isLoading.value = false;
-				loadPhoto();
-			})
-			.catch((error) => {
-				isLoading.value = false;
-				if (error.response.status === 401) {
-					router.push({ name: "gallery" });
-				}
-			});
+		if (photoId) {
+			return TimelineService.photoIdedTimeline(photoId).then(_parseResponse).catch(_parseError);
+		}
+
+		return TimelineService.datedTimeline(date).then(_parseResponse).catch(_parseError);
+	}
+
+	function _parseResponse(response: AxiosResponse<App.Http.Resources.Timeline.TimelineResource>) {
+		photos.value = response.data.photos;
+		lastPage.value = response.data.last_page;
+		maxPage.value = response.data.current_page;
+		minPage.value = response.data.current_page;
+		isLoading.value = false;
+		loadDate();
+		loadPhoto();
+	}
+
+	function _parseError(error: any) {
+		isLoading.value = false;
+		if (error.response.status === 401) {
+			router.push({ name: "gallery" });
+		}
 	}
 
 	function loadLess() {
@@ -104,6 +112,17 @@ export function useTimelineRefresher(photoId: Ref<string | undefined>, router: R
 		}
 	}
 
+	function loadDate(date: string | null = null) {
+		if (date === null && !router.currentRoute.value.params.date === undefined) {
+			// We push the first date of the timeline, this ensures that the timeline is always loaded with a date
+			router.push({ name: "timeline-with-date", params: { date: photos.value[0].timeline?.timeDate } });
+		}
+
+		if (date) {
+			router.push({ name: "timeline-with-date", params: { date } });
+		}
+	}
+
 	return {
 		user,
 		rootConfig,
@@ -120,6 +139,7 @@ export function useTimelineRefresher(photoId: Ref<string | undefined>, router: R
 		initialLoad,
 		loadLess,
 		loadMore,
+		loadDate,
 		loadDates,
 		loadUser,
 		loadPhoto,

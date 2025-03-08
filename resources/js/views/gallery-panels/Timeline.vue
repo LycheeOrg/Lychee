@@ -26,7 +26,7 @@
 			:gallery-config="layoutConfig"
 			:photo-layout="layout"
 			:selected-photos="selectedPhotosIds"
-			@clicked="() => {}"
+			@clicked="photoClick"
 			@selected="photoSelect"
 			:is-timeline="true"
 			:with-control="true"
@@ -36,7 +36,7 @@
 			v-if="photo"
 			:photo="photo"
 			:photos="photos"
-			:album-id="photo?.album_id"
+			:album-id="photo?.album_id ?? 'unsorted'"
 			:is-map-visible="rootConfig?.is_map_accessible ?? false"
 		/>
 		<!-- @toggle-slide-show="slideshow"
@@ -133,7 +133,7 @@ import PhotoCopyDialog from "@/components/forms/photo/PhotoCopyDialog.vue";
 import ScrollTop from "primevue/scrolltop";
 import { EmptyAlbumCallbacks } from "@/utils/Helpers";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
-import { useTimelineRefresher } from "@/composables/album/timelineRefresher";
+import { useTimelineRefresher } from "@/composables/timeline/timelineRefresher";
 import PhotoThumbPanel from "@/components/gallery/albumModule/PhotoThumbPanel.vue";
 import TimelineHeader from "@/components/headers/TimelineHeader.vue";
 import { onMounted } from "vue";
@@ -144,6 +144,9 @@ import LoginModal from "@/components/modals/LoginModal.vue";
 import WebauthnModal from "@/components/modals/WebauthnModal.vue";
 import { watch } from "vue";
 import Button from "primevue/button";
+import { ALL } from "@/config/constants";
+import { usePhotoRoute } from "@/composables/photo/photoRoute";
+import { useRouteDateUpdater } from "@/composables/timeline/routeDateUpdater";
 
 const props = defineProps<{
 	date?: string;
@@ -180,6 +183,7 @@ const {
 	initialLoad,
 	loadLess,
 	loadMore,
+	loadDate,
 	loadDates,
 	loadPhoto,
 	isLoading,
@@ -194,14 +198,14 @@ const { selectedPhotosIdx, selectedPhoto, selectedPhotos, selectedPhotosIds, pho
 	togglableStore,
 );
 
+const { photoRoute } = usePhotoRoute(router);
+
 const sentinel = ref(null);
 
-function registerSentinel() {
-	const { stop } = useIntersectionObserver(sentinel, ([{ isIntersecting }]) => {
-		if (isIntersecting) {
-			loadMore();
-		}
-	});
+const { registerSentinel, registerScrollSpy } = useRouteDateUpdater(sentinel, loadMore, loadDate);
+
+function photoClick(idx: number, e: MouseEvent) {
+	router.push(photoRoute(ALL, photos.value[idx].id));
 }
 
 onMounted(async () => {
@@ -215,8 +219,9 @@ onMounted(async () => {
 	await loadLayoutConfig();
 	loadUser();
 	loadDates();
-	await initialLoad(props.date ?? "");
+	await initialLoad(props.date ?? "", props.photoId);
 	registerSentinel();
+	registerScrollSpy();
 });
 
 // Modals for Albums
@@ -286,7 +291,7 @@ const {
 // });
 
 watch(
-	() => [route.params.photoid],
+	() => [route.params.photoId],
 	([newPhotoId], _) => {
 		unselect();
 

@@ -2,6 +2,10 @@ import axios, { type AxiosResponse } from "axios";
 import Constants from "./constants";
 
 const TimelineService = {
+	photoIdedTimeline(photoId: string): Promise<AxiosResponse<App.Http.Resources.Timeline.TimelineResource>> {
+		return axios.get(`${Constants.getApiUrl()}Timeline`, { params: { photo_id: photoId }, data: {} });
+	},
+
 	datedTimeline(date: string): Promise<AxiosResponse<App.Http.Resources.Timeline.TimelineResource>> {
 		return axios.get(`${Constants.getApiUrl()}Timeline`, { params: { date: date }, data: {} });
 	},

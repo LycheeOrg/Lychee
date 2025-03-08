@@ -70,7 +70,7 @@ class Timeline
 
 		return $this->photoQueryPolicy->applySearchabilityFilter(
 			query: Photo::query()
-				->where($order->value, '>', $date->format('Y-m-d H:i:s'))
+				->where($order->value, '>', $date->format('Y-m-d'))
 				->whereNotNull($order->value),
 			origin: null,
 			include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_timeline')
@@ -102,9 +102,9 @@ class Timeline
 					query: Photo::query()->select($order->value)->where('id', $photo->id),
 					as: 'sub',
 					first: 'sub.' . $order->value,
-					operator: '>',
+					operator: '<',
 					second: 'photos.' . $order->value)
-				->whereNotNull($order->value),
+				->whereNotNull('photos.' . $order->value),
 			origin: null,
 			include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_timeline')
 		)->count();

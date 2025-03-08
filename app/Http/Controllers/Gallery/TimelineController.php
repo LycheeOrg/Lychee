@@ -39,10 +39,10 @@ class TimelineController extends Controller
 
 		if ($request->photo() !== null) {
 			$youngers = $timeline->countYoungerFromPhoto($request->photo());
-			Paginator::currentPageResolver(fn () => max(0, floor($youngers / $pagination_limit) - 1));
+			Paginator::currentPageResolver(fn () => ceil($youngers / $pagination_limit));
 		} elseif ($request->date !== null) {
 			$youngers = $timeline->countYoungerFromDate($request->date);
-			Paginator::currentPageResolver(fn () => max(0, floor($youngers / $pagination_limit) - 1));
+			Paginator::currentPageResolver(fn () => ceil($youngers / $pagination_limit));
 		}
 
 		/** @var LengthAwarePaginator<Photo> $photoResults */

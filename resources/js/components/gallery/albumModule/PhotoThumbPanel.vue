@@ -19,7 +19,11 @@
 		<template v-else>
 			<Timeline v-if="is_timeline_left_border_visible" :value="photosTimeLine" :pt:eventopposite:class="'hidden'" class="mt-4">
 				<template #content="slotProps">
-					<div class="flex flex-wrap flex-row shrink w-full justify-start gap-1 sm:gap-2 md:gap-4 pb-8">
+					<div
+						data-type="timelineBlock"
+						:data-date="slotProps.item.data[0].timeline.timeDate"
+						class="flex flex-wrap flex-row shrink w-full justify-start gap-1 sm:gap-2 md:gap-4 pb-8"
+					>
 						<div class="w-full text-left font-semibold text-muted-color-emphasis text-lg">{{ slotProps.item.header }}</div>
 						<PhotoThumbPanelList
 							:photos="slotProps.item.data"
@@ -38,7 +42,11 @@
 			</Timeline>
 			<div v-else>
 				<template v-for="photoTimeline in photosTimeLine">
-					<div class="flex flex-wrap flex-row shrink w-full justify-start gap-1 sm:gap-2 md:gap-4 pb-8">
+					<div
+						data-type="timelineBlock"
+						:data-date="photoTimeline.data[0].timeline?.timeDate"
+						class="flex flex-wrap flex-row shrink w-full justify-start gap-1 sm:gap-2 md:gap-4 pb-8"
+					>
 						<div class="w-full text-left font-semibold text-muted-color-emphasis text-lg">{{ photoTimeline.header }}</div>
 						<PhotoThumbPanelList
 							:photos="photoTimeline.data"
