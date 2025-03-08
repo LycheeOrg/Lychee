@@ -69,6 +69,7 @@ return [
 	],
 
 	'timeline' => [
+		'load_previous' => 'Load previous',
 		'default' => '默认',
 		'disabled' => '禁用',
 		'year' => '年',
@@ -238,9 +239,5 @@ return [
 		'private' => '私密',
 		'public' => '公开',
 		'inherit_from_parent' => '继承自父级',
-	],
-
-	'timeline' => [
-		'load_previous' => 'Load previous',
 	],
 ];

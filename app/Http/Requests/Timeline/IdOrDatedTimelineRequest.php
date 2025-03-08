@@ -8,14 +8,20 @@
 
 namespace App\Http\Requests\Timeline;
 
+use App\Contracts\Http\Requests\HasPhoto;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Http\Requests\BaseApiRequest;
+use App\Http\Requests\Traits\HasPhotoTrait;
 use App\Models\Configs;
+use App\Models\Photo;
+use App\Rules\RandomIDRule;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 
-class DatedTimelineRequest extends BaseApiRequest
+class IdOrDatedTimelineRequest extends BaseApiRequest implements HasPhoto
 {
+	use HasPhotoTrait;
+
 	public ?Carbon $date = null;
 
 	/**
@@ -26,7 +32,8 @@ class DatedTimelineRequest extends BaseApiRequest
 	public function rules(): array
 	{
 		return [
-			RequestAttribute::DATE_ATTRIBUTE => 'nullable|date|sometimes',
+			RequestAttribute::PHOTO_ID_ATTRIBUTE => ['nullable', 'sometimes', new RandomIDRule(false)],
+			RequestAttribute::DATE_ATTRIBUTE => ['nullable', 'date', 'sometimes'],
 		];
 	}
 
@@ -52,6 +59,12 @@ class DatedTimelineRequest extends BaseApiRequest
 		// We only set this one if it is not null
 		if (isset($values[RequestAttribute::DATE_ATTRIBUTE])) {
 			$this->date = Carbon::parse($values[RequestAttribute::DATE_ATTRIBUTE]);
+		}
+
+		if (isset($values[RequestAttribute::PHOTO_ID_ATTRIBUTE])) {
+			/** @var string $photoId */
+			$photoId = $values[RequestAttribute::PHOTO_ID_ATTRIBUTE];
+			$this->photo = Photo::query()->findOrFail($photoId);
 		}
 	}
 }

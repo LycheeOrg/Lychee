@@ -57,7 +57,7 @@ class Timeline
 	 *
 	 * @return int
 	 */
-	public function countYounger(Carbon $date): int
+	public function countYoungerFromDate(Carbon $date): int
 	{
 		$order = Configs::getValueAsEnum('timeline_photos_order', ColumnSortingPhotoType::class);
 
@@ -78,9 +78,42 @@ class Timeline
 	}
 
 	/**
+	 * Return the number of pictures that are younger than this.
+	 * We use this to dertermine the current page given a photo.
+	 *
+	 * @param Photo $photo
+	 *
+	 * @return int
+	 */
+	public function countYoungerFromPhoto(Photo $photo): int
+	{
+		$order = Configs::getValueAsEnum('timeline_photos_order', ColumnSortingPhotoType::class);
+
+		// Safe default (should not be needed).
+		// @codeCoverageIgnoreStart
+		if (!in_array($order, [ColumnSortingPhotoType::CREATED_AT, ColumnSortingPhotoType::TAKEN_AT], true)) {
+			$order = ColumnSortingPhotoType::TAKEN_AT;
+		}
+		// @codeCoverageIgnoreEnd
+
+		return $this->photoQueryPolicy->applySearchabilityFilter(
+			query: Photo::query()
+				->joinSub(
+					query: Photo::query()->select($order->value)->where('id', $photo->id),
+					as: 'sub',
+					first: 'sub.' . $order->value,
+					operator: '>',
+					second: 'photos.' . $order->value)
+				->whereNotNull($order->value),
+			origin: null,
+			include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_timeline')
+		)->count();
+	}
+
+	/**
 	 * Get all the dates of the timeline.
 	 *
-	 * @return array
+	 * @return string[]
 	 */
 	public function dates(): array
 	{

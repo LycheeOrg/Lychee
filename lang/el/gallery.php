@@ -69,6 +69,7 @@ return [
 	],
 
 	'timeline' => [
+		'load_previous' => 'Load previous',
 		'default' => 'default',
 		'disabled' => 'disabled',
 		'year' => 'Year',
@@ -238,9 +239,5 @@ return [
 		'private' => 'private',
 		'public' => 'public',
 		'inherit_from_parent' => 'inherit from parent',
-	],
-
-	'timeline' => [
-		'load_previous' => 'Load previous',
 	],
 ];

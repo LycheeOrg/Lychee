@@ -9,8 +9,8 @@
 namespace App\Http\Controllers\Gallery;
 
 use App\Actions\Photo\Timeline;
-use App\Http\Requests\Timeline\DatedTimelineRequest;
 use App\Http\Requests\Timeline\GetTimelineRequest;
+use App\Http\Requests\Timeline\IdOrDatedTimelineRequest;
 use App\Http\Resources\Timeline\InitResource;
 use App\Http\Resources\Timeline\TimelineResource;
 use App\Models\Configs;
@@ -25,12 +25,23 @@ use Spatie\LaravelData\Data;
  */
 class TimelineController extends Controller
 {
-	public function __invoke(DatedTimelineRequest $request, Timeline $timeline): Data
+	/**
+	 * Return the photos given some contraints.
+	 *
+	 * @param IdOrDatedTimelineRequest $request
+	 * @param Timeline                 $timeline
+	 *
+	 * @return Data
+	 */
+	public function __invoke(IdOrDatedTimelineRequest $request, Timeline $timeline): Data
 	{
 		$pagination_limit = Configs::getValueAsInt('timeline_photos_pagination_limit');
 
-		if ($request->date !== null) {
-			$youngers = $timeline->countYounger($request->date);
+		if ($request->photo() !== null) {
+			$youngers = $timeline->countYoungerFromPhoto($request->photo());
+			Paginator::currentPageResolver(fn () => max(0, floor($youngers / $pagination_limit) - 1));
+		} elseif ($request->date !== null) {
+			$youngers = $timeline->countYoungerFromDate($request->date);
 			Paginator::currentPageResolver(fn () => max(0, floor($youngers / $pagination_limit) - 1));
 		}
 
@@ -57,7 +68,7 @@ class TimelineController extends Controller
 	 * @param GetTimelineRequest $request
 	 * @param Timeline           $timeline
 	 *
-	 * @return array
+	 * @return string[]
 	 */
 	public function dates(GetTimelineRequest $request, Timeline $timeline): array
 	{
