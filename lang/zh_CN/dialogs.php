@@ -104,6 +104,8 @@ return [
 		'hidden_expl' => '匿名用户需要直接链接才能访问此相册。',
 		'downloadable' => '可下载',
 		'downloadable_expl' => '匿名用户可以下载此相册。',
+		'upload' => 'Allow uploads',
+		'upload_expl' => '<i class="pi pi-exclamation-triangle text-warning-700 mr-1"></i> Anonymous users can upload photos to this album.',
 		'password' => '密码',
 		'password_prot' => '密码保护',
 		'password_prot_expl' => '匿名用户需要共享密码才能访问此相册。',

@@ -104,6 +104,8 @@ return [
 		'hidden_expl' => 'Anonymous users need a direct link to access this album.',
 		'downloadable' => 'Downloadable',
 		'downloadable_expl' => 'Anonymous users can download this album.',
+		'upload' => 'Allow uploads',
+		'upload_expl' => '<i class="pi pi-exclamation-triangle text-warning-700 mr-1"></i> Anonymous users can upload photos to this album.',
 		'password' => 'Password',
 		'password_prot' => 'Password protected',
 		'password_prot_expl' => 'Anonymous users need a shared password to access this album.',
