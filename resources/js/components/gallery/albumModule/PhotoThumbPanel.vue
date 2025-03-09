@@ -17,7 +17,7 @@
 			:isTimeline="isTimeline"
 		/>
 		<template v-else>
-			<Timeline v-if="is_timeline_left_border_visible" :value="photosTimeLine" :pt:eventopposite:class="'hidden'" class="mt-4">
+			<Timeline v-if="isLeftBorderVisible" :value="photosTimeLine" :pt:eventopposite:class="'hidden'" class="mt-4">
 				<template #content="slotProps">
 					<div
 						data-type="timelineBlock"
@@ -75,6 +75,7 @@ import { SplitData, useSplitter } from "@/composables/album/splitter";
 import Timeline from "primevue/timeline";
 import PhotoThumbPanelList from "./PhotoThumbPanelList.vue";
 import PhotoThumbPanelControl from "./PhotoThumbPanelControl.vue";
+import { isTouchDevice } from "@/utils/keybindings-utils";
 
 const lycheeStore = useLycheeStateStore();
 const { is_timeline_left_border_visible } = storeToRefs(lycheeStore);
@@ -96,6 +97,9 @@ const props = defineProps<{
 
 const layout = ref(props.photoLayout);
 const isTimeline = ref(props.isTimeline);
+
+// We do not show the left border on touch devices (mostly phones) due to limited real estate.
+const isLeftBorderVisible = computed(() => is_timeline_left_border_visible && !isTouchDevice());
 
 // bubble up.
 const emits = defineEmits<{

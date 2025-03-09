@@ -125,6 +125,7 @@ export function useTimelineRefresher(photoId: Ref<string | undefined>, router: R
 
 	return {
 		user,
+		dates,
 		rootConfig,
 		rootRights,
 		isLoading,

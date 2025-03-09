@@ -1,5 +1,6 @@
 import { isTouchDevice } from "@/utils/keybindings-utils";
 import { TimelineData } from "./PhotoLayout";
+import { useRoute } from "vue-router";
 
 export function getWidth(timelineData: TimelineData): number {
 	const baseWidth = window.innerWidth;
@@ -13,9 +14,16 @@ export function getWidth(timelineData: TimelineData): number {
 	const width = Math.min(baseWidth - paddingLeftRight - scrollBarWidth);
 
 	let timeLineBorder = 0;
-	if (timelineData.isTimeline.value === true && timelineData.isLeftBorderVisible.value === true) {
+	if (timelineData.isTimeline.value === true && (timelineData.isLeftBorderVisible.value && !isTouchDevice()) === true) {
 		timeLineBorder = 50;
 	}
+
+	const route = useRoute();
+	const routeName = route.name as String; 
+	if (routeName.includes("timeline")) {
+		timeLineBorder = 50;
+	}
+
 
 	return width - timeLineBorder;
 }

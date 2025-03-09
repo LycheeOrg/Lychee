@@ -29,7 +29,7 @@
 			@clicked="photoClick"
 			@selected="photoSelect"
 			:is-timeline="true"
-			:with-control="true"
+			:with-control="false"
 		/>
 		<!-- Photo panel -->
 		<PhotoPanel
@@ -54,7 +54,8 @@
 
 		<div class="sentinel" ref="sentinel" v-if="maxPage < lastPage"></div>
 		<ProgressSpinner class="flex justify-center" v-if="isLoading" />
-		<ScrollTop target="parent" :threshold="50" v-if="photo !== undefined" />
+		<TimelineDates :dates="dates" v-if="photo === undefined" />
+		<ScrollTop target="parent" :threshold="50" v-if="photo === undefined" />
 		<!-- Dialogs -->
 		<!-- <PhotoTagDialog
 			v-model:visible="is_tag_visible"
@@ -152,6 +153,7 @@ import { getNextPreviousPhoto } from "@/composables/photo/getNextPreviousPhoto";
 import { useSlideshowFunction } from "@/composables/photo/slideshow";
 import { useHasNextPreviousPhoto } from "@/composables/photo/hasNextPreviousPhoto";
 import { useToast } from "primevue/usetoast";
+import TimelineDates from "@/components/gallery/timelineModule/TimelineDates.vue";
 
 const props = defineProps<{
 	date?: string;
@@ -180,6 +182,7 @@ const albums = ref([]); // unused.
 const { layoutConfig, loadLayoutConfig } = useGetLayoutConfig();
 const {
 	user,
+	dates,
 	loadUser,
 	rootConfig,
 	rootRights,
@@ -335,6 +338,7 @@ const {
 // 	window.removeEventListener("drop", dropUpload);
 // });
 
+onKeyStroke("f", () => !shouldIgnoreKeystroke() && photo.value === undefined && togglableStore.toggleFullScreen());
 onKeyStroke("ArrowLeft", () => !shouldIgnoreKeystroke() && photo.value !== undefined && hasPrevious() && previous(true));
 onKeyStroke("ArrowRight", () => !shouldIgnoreKeystroke() && photo.value !== undefined && hasNext() && next(true));
 onKeyStroke("o", () => !shouldIgnoreKeystroke() && photo.value !== undefined && rotateOverlay());
