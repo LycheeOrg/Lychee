@@ -146,8 +146,8 @@
 		/>
 	</div>
 	<PhotoEdit v-if="photo?.rights.can_edit" :photo="photo" v-model:visible="is_edit_open" />
-	<MoveDialog :photo="photo" v-model:visible="isMoveVisible" :parent-id="props.albumid" @moved="updated" />
-	<DeleteDialog :photo="photo" v-model:visible="isDeleteVisible" :parent-id="props.albumid" @deleted="updated" />
+	<MoveDialog :photo="photo" v-model:visible="is_move_visible" :parent-id="props.albumid" @moved="updated" />
+	<DeleteDialog :photo="photo" v-model:visible="is_delete_visible" :parent-id="props.albumid" @deleted="updated" />
 </template>
 <script setup lang="ts">
 import DockButton from "@/components/gallery/photoModule/DockButton.vue";
@@ -192,7 +192,7 @@ const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
 const { is_full_screen, is_edit_open, are_details_open, is_slideshow_active } = storeToRefs(togglableStore);
 
-const { isDeleteVisible, toggleDelete, isMoveVisible, toggleMove } = useGalleryModals(togglableStore);
+const { is_delete_visible, toggleDelete, is_move_visible, toggleMove } = useGalleryModals(togglableStore);
 
 const photoId = ref(props.photoid);
 const { photo, album, photos, previousStyle, nextStyle, srcSetMedium, style, imageViewMode, refresh, hasPrevious, hasNext } = usePhotoBaseFunction(

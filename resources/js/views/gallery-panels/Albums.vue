@@ -80,7 +80,7 @@
 	</ContextMenu>
 	<!-- Dialogs for albums -->
 	<MoveDialog
-		v-model:visible="isMoveVisible"
+		v-model:visible="is_move_visible"
 		:parent-id="undefined"
 		:album="selectedAlbum"
 		:album-ids="selectedAlbumsIds"
@@ -92,7 +92,7 @@
 		"
 	/>
 	<AlbumMergeDialog
-		v-model:visible="isMergeAlbumVisible"
+		v-model:visible="is_merge_album_visible"
 		:parent-id="undefined"
 		:album="selectedAlbum"
 		:album-ids="selectedAlbumsIds"
@@ -104,7 +104,7 @@
 		"
 	/>
 	<DeleteDialog
-		v-model:visible="isDeleteVisible"
+		v-model:visible="is_delete_visible"
 		:parent-id="undefined"
 		:album="selectedAlbum"
 		:album-ids="selectedAlbumsIds"
@@ -117,7 +117,7 @@
 	/>
 	<RenameDialog
 		v-if="selectedAlbum"
-		v-model:visible="isRenameVisible"
+		v-model:visible="is_rename_visible"
 		:parent-id="undefined"
 		:album="selectedAlbum"
 		@renamed="
@@ -184,10 +184,11 @@ const { user, isLoading, isKeybindingsHelpOpen, smartAlbums, albums, sharedAlbum
 const { selectedAlbum, selectedAlbumsIdx, selectedAlbums, selectedAlbumsIds, albumClick, selectEverything, unselect, hasSelection } = useSelection(
 	photos,
 	selectableAlbums,
+	togglableStore,
 );
 
 // Modals for Albums
-const { isDeleteVisible, toggleDelete, isMergeAlbumVisible, toggleMergeAlbum, isMoveVisible, toggleMove, isRenameVisible, toggleRename } =
+const { is_delete_visible, toggleDelete, is_merge_album_visible, toggleMergeAlbum, is_move_visible, toggleMove, is_rename_visible, toggleRename } =
 	useGalleryModals(togglableStore);
 
 const albumCallbacks = {

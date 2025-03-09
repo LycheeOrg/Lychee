@@ -1,12 +1,14 @@
+import { TogglablesStateStore } from "@/stores/ModalsState";
 import { modKey, shiftKeyState } from "@/utils/keybindings-utils";
+import { storeToRefs } from "pinia";
 import { computed, Ref, ref } from "vue";
 
 export function useSelection(
 	photos: Ref<{ [key: number]: App.Http.Resources.Models.PhotoResource }>,
 	albums: Ref<{ [key: number]: App.Http.Resources.Models.ThumbAlbumResource }>,
+	togglableStore: TogglablesStateStore,
 ) {
-	const selectedPhotosIdx = ref<number[]>([]);
-	const selectedAlbumsIdx = ref<number[]>([]);
+	const { selectedPhotosIdx, selectedAlbumsIdx } = storeToRefs(togglableStore);
 	const selectedPhoto = computed(() => (selectedPhotosIdx.value.length === 1 ? photos.value[selectedPhotosIdx.value[0]] : undefined));
 	const selectedAlbum = computed(() => (selectedAlbumsIdx.value.length === 1 ? albums.value[selectedAlbumsIdx.value[0]] : undefined));
 	const selectedPhotos = computed(() =>
