@@ -156,6 +156,7 @@ class AlbumUpdateTest extends BaseApiV2Test
 			'is_link_required' => false,
 			'is_nsfw' => false,
 			'grants_download' => false,
+			'grants_upload' => false,
 			'grants_full_photo_access' => false,
 		]);
 		$this->assertUnauthorized($response);
@@ -166,6 +167,7 @@ class AlbumUpdateTest extends BaseApiV2Test
 			'is_link_required' => false,
 			'is_nsfw' => false,
 			'grants_download' => false,
+			'grants_upload' => false,
 			'grants_full_photo_access' => false,
 		]);
 		$this->assertForbidden($response);
@@ -176,6 +178,7 @@ class AlbumUpdateTest extends BaseApiV2Test
 			'is_link_required' => false,
 			'is_nsfw' => false,
 			'grants_download' => false,
+			'grants_upload' => false,
 			'grants_full_photo_access' => false,
 		]);
 		$this->assertForbidden($response);
@@ -190,6 +193,7 @@ class AlbumUpdateTest extends BaseApiV2Test
 			'is_link_required' => false,
 			'is_nsfw' => false,
 			'grants_download' => false,
+			'grants_upload' => false,
 			'grants_full_photo_access' => false,
 		]);
 		$this->assertCreated($response);
@@ -199,6 +203,7 @@ class AlbumUpdateTest extends BaseApiV2Test
 			'is_password_required' => false,
 			'is_nsfw' => false,
 			'grants_download' => false,
+			'grants_upload' => false,
 			'grants_full_photo_access' => false,
 		]);
 
@@ -208,6 +213,7 @@ class AlbumUpdateTest extends BaseApiV2Test
 			'is_link_required' => false,
 			'is_nsfw' => false,
 			'grants_download' => false,
+			'grants_upload' => false,
 			'grants_full_photo_access' => false,
 		]);
 		$this->assertCreated($response);
@@ -218,6 +224,7 @@ class AlbumUpdateTest extends BaseApiV2Test
 			'is_link_required' => false,
 			'is_nsfw' => false,
 			'grants_download' => false,
+			'grants_upload' => false,
 			'grants_full_photo_access' => false,
 		]);
 		$this->assertCreated($response);
@@ -239,6 +246,7 @@ class AlbumUpdateTest extends BaseApiV2Test
 			'is_link_required' => false,
 			'is_nsfw' => true,
 			'grants_download' => false,
+			'grants_upload' => false,
 			'grants_full_photo_access' => false,
 		]);
 		$this->assertCreated($response);
@@ -248,6 +256,7 @@ class AlbumUpdateTest extends BaseApiV2Test
 			'is_password_required' => false,
 			'is_nsfw' => true,
 			'grants_download' => false,
+			'grants_upload' => false,
 			'grants_full_photo_access' => false,
 		]);
 
@@ -283,6 +292,7 @@ class AlbumUpdateTest extends BaseApiV2Test
 			'is_link_required' => true,
 			'is_nsfw' => false,
 			'grants_download' => false,
+			'grants_upload' => false,
 			'grants_full_photo_access' => false,
 		]);
 		$this->assertCreated($response);
@@ -292,6 +302,7 @@ class AlbumUpdateTest extends BaseApiV2Test
 			'is_password_required' => false,
 			'is_nsfw' => false,
 			'grants_download' => false,
+			'grants_upload' => false,
 			'grants_full_photo_access' => false,
 		]);
 
@@ -313,6 +324,7 @@ class AlbumUpdateTest extends BaseApiV2Test
 			'is_nsfw' => false,
 			'password' => 'something',
 			'grants_download' => false,
+			'grants_upload' => false,
 			'grants_full_photo_access' => false,
 		]);
 		$this->assertCreated($response);
@@ -322,6 +334,7 @@ class AlbumUpdateTest extends BaseApiV2Test
 			'is_password_required' => true,
 			'is_nsfw' => false,
 			'grants_download' => false,
+			'grants_upload' => false,
 			'grants_full_photo_access' => false,
 		]);
 

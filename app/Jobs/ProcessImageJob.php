@@ -12,12 +12,16 @@ use App\Actions\Photo\Create;
 use App\Contracts\Models\AbstractAlbum;
 use App\DTO\ImportMode;
 use App\Enum\JobStatus;
+use App\Exceptions\OwnerRequiredException;
 use App\Factories\AlbumFactory;
 use App\Image\Files\ProcessableJobFile;
 use App\Image\Files\TemporaryJobFile;
+use App\Models\Album;
 use App\Models\Configs;
 use App\Models\JobHistory;
 use App\Models\Photo;
+use App\Models\TagAlbum;
+use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -51,26 +55,33 @@ class ProcessImageJob implements ShouldQueue
 	 */
 	public function __construct(
 		ProcessableJobFile $file,
-		string|AbstractAlbum|null $album,
+		string|AbstractAlbum|null $abstractAlbum,
 		?int $fileLastModifiedTime,
 	) {
 		$this->filePath = $file->getPath();
 		$this->originalBaseName = $file->getOriginalBasename();
 
 		$this->albumID = null;
-		$album_name = __('gallery.smart_album.unsorted');
 
-		if ($album instanceof AbstractAlbum) {
-			$this->albumID = $album->id;
-			$album_name = $album->title;
+		/** @var AbstractAlbum|null */
+		$album = null;
+
+		if (is_string($abstractAlbum)) {
+			$album = resolve(AlbumFactory::class)->findAbstractAlbumOrFail($abstractAlbum);
+		} elseif ($abstractAlbum instanceof AbstractAlbum) {
+			$album = $abstractAlbum;
 		}
 
-		if (is_string($album)) {
-			$this->albumID = $album;
-			$album_name = resolve(AlbumFactory::class)->findAbstractAlbumOrFail($this->albumID)->title;
+		$this->albumID = $album?->id;
+		$album_name = $album?->title ?? __('gallery.smart_album.unsorted');
+		$user_id = Auth::user()?->id;
+		if ($user_id === null && ($album === null || $album instanceof BaseSmartAlbum)) {
+			throw new OwnerRequiredException();
+		} else {
+			/** @var Album|TagAlbum $album */
+			$this->userId = $user_id ?? $album?->owner_id ?? throw new OwnerRequiredException();
 		}
 
-		$this->userId = Auth::user()->id;
 		$this->fileLastModifiedTime = $fileLastModifiedTime;
 
 		// Set up our new history record.

@@ -192,11 +192,11 @@ class AlbumPolicy extends BasePolicy
 	 *
 	 * @throws ConfigurationKeyMissingException
 	 */
-	public function canUpload(User $user, ?AbstractAlbum $abstractAlbum = null): bool
+	public function canUpload(?User $user, ?AbstractAlbum $abstractAlbum = null): bool
 	{
 		// The upload right on the root album is directly determined by the user's capabilities.
 		if ($abstractAlbum === null || !$abstractAlbum instanceof BaseAlbum) {
-			return $user->may_upload;
+			return $user?->may_upload ?? false;
 		}
 
 		return $this->isOwner($user, $abstractAlbum) ||

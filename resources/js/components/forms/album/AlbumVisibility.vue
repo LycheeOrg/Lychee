@@ -43,6 +43,28 @@
 						<p class="my-1.5">{{ $t("dialogs.visibility.downloadable_expl") }}</p>
 					</div>
 					<div
+						class="relative h-12 my-4 pl-9 transition-color duration-300"
+						:class="is_public ? 'text-muted-color-emphasis' : 'text-muted-color'"
+						v-if="is_se_enabled || is_se_preview_enabled"
+					>
+						<ToggleSwitch
+							input-id="pp_dialog_upload_check"
+							v-model="grants_upload"
+							:disabled="!is_se_enabled"
+							class="-ml-10 mr-2 translate-y-1"
+							style="
+								--p-toggleswitch-checked-background: var(--p-red-800);
+								--p-toggleswitch-checked-hover-background: var(--p-red-900);
+								--p-toggleswitch-hover-background: var(--p-red-900);
+							"
+							@change="save"
+						/>
+						<label class="font-bold inline-flex items-center" for="pp_dialog_upload_check"
+							>{{ $t("dialogs.visibility.upload") }} <SETag class="ml-2" v-if="is_se_preview_enabled"
+						/></label>
+						<p class="my-1.5" v-html="$t('dialogs.visibility.upload_expl')"></p>
+					</div>
+					<div
 						v-if="!can_pasword_protect && is_password_required"
 						class="relative my-4 pl-9 transition-color duration-300"
 						:class="is_public ? 'text-muted-color-emphasis' : 'text-muted-color'"
@@ -115,6 +137,9 @@ import AlbumService, { UpdateProtectionPolicyData } from "@/services/album-servi
 import { useToast } from "primevue/usetoast";
 import { Collapse } from "vue-collapsed";
 import { trans } from "laravel-vue-i18n";
+import { useLycheeStateStore } from "@/stores/LycheeState";
+import { storeToRefs } from "pinia";
+import SETag from "@/components/icons/SETag.vue";
 
 const props = defineProps<{
 	album: App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.SmartAlbumResource | App.Http.Resources.Models.TagAlbumResource;
@@ -130,6 +155,10 @@ const grants_download = ref<boolean>(props.album.policy.grants_download);
 const is_password_required = ref<boolean>(props.album.policy.is_password_required);
 const password = ref<string>("");
 const can_pasword_protect = ref<boolean>(props.album.rights.can_pasword_protect);
+const grants_upload = ref<boolean>(props.album.policy.grants_upload);
+
+const lycheeStore = useLycheeStateStore();
+const { is_se_enabled, is_se_preview_enabled } = storeToRefs(lycheeStore);
 
 function save() {
 	const data: UpdateProtectionPolicyData = {
@@ -139,6 +168,7 @@ function save() {
 		is_nsfw: is_nsfw.value,
 		grants_full_photo_access: grants_full_photo_access.value,
 		grants_download: grants_download.value,
+		grants_upload: grants_upload.value,
 		password: is_password_required.value ? password.value : undefined,
 	};
 

@@ -36,6 +36,7 @@ class AlbumProtectionPolicy extends Data
 		public bool $is_nsfw,
 		public bool $grants_full_photo_access,
 		public bool $grants_download,
+		public bool $grants_upload,
 		public bool $is_password_required = false, // Only used when sending info to the front-end
 	) {
 	}
@@ -55,6 +56,7 @@ class AlbumProtectionPolicy extends Data
 			is_nsfw: $baseAlbum->is_nsfw,
 			grants_full_photo_access: $baseAlbum->public_permissions()?->grants_full_photo_access === true,
 			grants_download: $baseAlbum->public_permissions()?->grants_download === true,
+			grants_upload: $baseAlbum->public_permissions()?->grants_upload === true,
 			is_password_required: $baseAlbum->public_permissions()?->password !== null,
 		);
 	}
@@ -74,6 +76,7 @@ class AlbumProtectionPolicy extends Data
 			is_nsfw: false,
 			grants_full_photo_access: $baseSmartAlbum->public_permissions()?->grants_full_photo_access === true,
 			grants_download: $baseSmartAlbum->public_permissions()?->grants_download === true,
+			grants_upload: false,
 			is_password_required: false,
 		);
 	}

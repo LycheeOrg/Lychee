@@ -18,6 +18,7 @@ use App\Http\Requests\Traits\HasPasswordTrait;
 use App\Http\Resources\Models\Utils\AlbumProtectionPolicy;
 use App\Policies\AlbumPolicy;
 use App\Rules\AlbumIDRule;
+use App\Rules\BooleanRequireSupportRule;
 use App\Rules\PasswordRule;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Support\Facades\Auth;
@@ -56,6 +57,7 @@ class SetAlbumProtectionPolicyRequest extends BaseApiRequest implements HasAbstr
 			RequestAttribute::IS_NSFW_ATTRIBUTE => 'required|boolean',
 			RequestAttribute::GRANTS_DOWNLOAD_ATTRIBUTE => 'required|boolean',
 			RequestAttribute::GRANTS_FULL_PHOTO_ACCESS_ATTRIBUTE => 'required|boolean',
+			RequestAttribute::GRANTS_UPLOAD_ATTRIBUTE => ['required', 'boolean', new BooleanRequireSupportRule(false, $this->verify)],
 		];
 	}
 
@@ -73,6 +75,7 @@ class SetAlbumProtectionPolicyRequest extends BaseApiRequest implements HasAbstr
 			is_nsfw: static::toBoolean($values[RequestAttribute::IS_NSFW_ATTRIBUTE]),
 			grants_full_photo_access: static::toBoolean($values[RequestAttribute::GRANTS_FULL_PHOTO_ACCESS_ATTRIBUTE]),
 			grants_download: static::toBoolean($values[RequestAttribute::GRANTS_DOWNLOAD_ATTRIBUTE]),
+			grants_upload: static::toBoolean($values[RequestAttribute::GRANTS_UPLOAD_ATTRIBUTE]),
 		);
 		$this->isPasswordProvided = array_key_exists(RequestAttribute::PASSWORD_ATTRIBUTE, $values);
 		$this->password = $this->isPasswordProvided ? $values[RequestAttribute::PASSWORD_ATTRIBUTE] : null;
