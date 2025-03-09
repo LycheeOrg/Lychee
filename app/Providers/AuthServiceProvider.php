@@ -14,9 +14,11 @@ use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Photo;
 use App\Models\User;
+use App\Models\UserGroup;
 use App\Policies\AlbumPolicy;
 use App\Policies\PhotoPolicy;
 use App\Policies\SettingsPolicy;
+use App\Policies\UserGroupPolicy;
 use App\Policies\UserPolicy;
 use App\Services\Auth\SessionOrTokenGuard;
 use App\SmartAlbums\BaseSmartAlbum;
@@ -43,6 +45,7 @@ class AuthServiceProvider extends ServiceProvider
 		AbstractAlbum::class => AlbumPolicy::class,
 
 		Configs::class => SettingsPolicy::class,
+		UserGroup::class => UserGroupPolicy::class,
 	];
 
 	/**
