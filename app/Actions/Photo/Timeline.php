@@ -11,6 +11,8 @@ namespace App\Actions\Photo;
 use App\Eloquent\FixedQueryBuilder;
 use App\Enum\ColumnSortingPhotoType;
 use App\Enum\OrderSortingType;
+use App\Enum\TimelinePhotoGranularity;
+use App\Exceptions\Internal\LycheeLogicException;
 use App\Models\Configs;
 use App\Models\Photo;
 use App\Policies\PhotoQueryPolicy;
@@ -20,10 +22,12 @@ use Illuminate\Support\Carbon;
 class Timeline
 {
 	protected PhotoQueryPolicy $photoQueryPolicy;
+	private TimelinePhotoGranularity $photo_granularity;
 
 	public function __construct(PhotoQueryPolicy $photoQueryPolicy)
 	{
 		$this->photoQueryPolicy = $photoQueryPolicy;
+		$this->photo_granularity = Configs::getValueAsEnum('timeline_photos_granularity', TimelinePhotoGranularity::class);
 	}
 
 	/**
@@ -68,9 +72,11 @@ class Timeline
 		}
 		// @codeCoverageIgnoreEnd
 
+		$date_format = $this->getDateFormat(false);
+
 		return $this->photoQueryPolicy->applySearchabilityFilter(
 			query: Photo::query()
-				->where($order->value, '>', $date->format('Y-m-d'))
+				->where($order->value, '>', $date->format($date_format))
 				->whereNotNull($order->value),
 			origin: null,
 			include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_timeline')
@@ -103,7 +109,8 @@ class Timeline
 					as: 'sub',
 					first: 'sub.' . $order->value,
 					operator: '<',
-					second: 'photos.' . $order->value)
+					second: 'photos.' . $order->value
+				)
 				->whereNotNull('photos.' . $order->value),
 			origin: null,
 			include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_timeline')
@@ -126,14 +133,29 @@ class Timeline
 		}
 		// @codeCoverageIgnoreEnd
 
+		$date_format = $this->getDateFormat(true);
+
 		return $this->photoQueryPolicy->applySearchabilityFilter(
 			query: Photo::query()
-				->selectRaw('DATE_FORMAT(' . $order->value . ', "%Y-%m-%d") as date')
+				->selectRaw('DATE_FORMAT(' . $order->value . ', "' . $date_format . '") as date')
 				->whereNotNull($order->value),
 			origin: null,
 			include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_timeline')
 		)->groupBy('date')
 			->orderBy('date', OrderSortingType::DESC->value)
 			->pluck('date')->all();
+	}
+
+	public function getDateFormat(bool $is_sql): string
+	{
+		$p = $is_sql ? '%' : '';
+
+		return match ($this->photo_granularity) {
+			TimelinePhotoGranularity::YEAR => $p . 'Y',
+			TimelinePhotoGranularity::MONTH => $p . 'Y-' . $p . 'm',
+			TimelinePhotoGranularity::DAY => $p . 'Y-' . $p . 'm-' . $p . 'd',
+			TimelinePhotoGranularity::HOUR => $p . 'Y-' . $p . 'm-' . $p . 'd ' . $p . 'H:00',
+			TimelinePhotoGranularity::DEFAULT, TimelinePhotoGranularity::DISABLED => throw new LycheeLogicException('default & disabled are not a valid granularity for photos'),
+		};
 	}
 }
