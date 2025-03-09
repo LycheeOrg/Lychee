@@ -113,7 +113,7 @@ export function useTimelineRefresher(photoId: Ref<string | undefined>, router: R
 	}
 
 	function loadDate(date: string | null = null) {
-		if (date === null && !router.currentRoute.value.params.date === undefined) {
+		if (date === null && router.currentRoute.value.params.date === undefined) {
 			// We push the first date of the timeline, this ensures that the timeline is always loaded with a date
 			router.push({ name: "timeline-with-date", params: { date: photos.value[0].timeline?.timeDate } });
 		}

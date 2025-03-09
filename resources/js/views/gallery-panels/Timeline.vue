@@ -38,23 +38,23 @@
 			:photos="photos"
 			:album-id="photo?.album_id ?? 'unsorted'"
 			:is-map-visible="rootConfig?.is_map_accessible ?? false"
+			@toggle-slide-show="slideshow"
+			@rotate-overlay="rotateOverlay"
+			@rotate-photo-c-w="rotatePhotoCW"
+			@rotate-photo-c-c-w="rotatePhotoCCW"
+			@set-album-header="setAlbumHeader"
+			@toggle-star="toggleStar"
+			@toggle-move="toggleMove"
+			@toggle-delete="toggleDelete"
+			@go-back="goBack"
+			@next="() => next(true)"
+			@previous="() => previous(true)"
 		/>
-		<!-- @toggle-slide-show="slideshow"
-				@rotate-overlay="rotateOverlay"
-				@rotate-photo-c-w="rotatePhotoCW"
-				@rotate-photo-c-c-w="rotatePhotoCCW"
-				@set-album-header="setAlbumHeader"
-				@toggle-star="toggleStar"
-				@toggle-move="toggleMove"
-				@toggle-delete="toggleDelete"
-				@updated="refreshPhoto"
-				@go-back="goBack"
-				@next="() => next(true)"
-				@previous="() => previous(true)" -->
+		<!-- @updated="refreshPhoto" -->
 
 		<div class="sentinel" ref="sentinel" v-if="maxPage < lastPage"></div>
 		<ProgressSpinner class="flex justify-center" v-if="isLoading" />
-		<ScrollTop target="parent" :threshold="50" />
+		<ScrollTop target="parent" :threshold="50" v-if="photo !== undefined" />
 		<!-- Dialogs -->
 		<!-- <PhotoTagDialog
 			v-model:visible="is_tag_visible"
@@ -147,12 +147,18 @@ import Button from "primevue/button";
 import { ALL } from "@/config/constants";
 import { usePhotoRoute } from "@/composables/photo/photoRoute";
 import { useRouteDateUpdater } from "@/composables/timeline/routeDateUpdater";
+import { usePhotoActions } from "@/composables/album/photoActions";
+import { getNextPreviousPhoto } from "@/composables/photo/getNextPreviousPhoto";
+import { useSlideshowFunction } from "@/composables/photo/slideshow";
+import { useHasNextPreviousPhoto } from "@/composables/photo/hasNextPreviousPhoto";
+import { useToast } from "primevue/usetoast";
 
 const props = defineProps<{
 	date?: string;
 	photoId?: string;
 }>();
 
+const toast = useToast();
 const auth = useAuthStore();
 const route = useRoute();
 const router = useRouter();
@@ -161,8 +167,13 @@ const togglableStore = useTogglablesStateStore();
 const photoId = ref<undefined | string>(props.photoId);
 lycheeStore.init();
 
-const { are_nsfw_visible, title } = storeToRefs(lycheeStore);
-const { is_full_screen, is_login_open, is_upload_visible, list_upload_files } = storeToRefs(togglableStore);
+// unused? Hard to say...
+const videoElement = ref<HTMLVideoElement | null>(null);
+const albumId = ref(null);
+
+const { are_nsfw_visible, title, slideshow_timeout } = storeToRefs(lycheeStore);
+const { is_full_screen, is_login_open, is_upload_visible, list_upload_files, is_slideshow_active, is_photo_edit_open, are_details_open } =
+	storeToRefs(togglableStore);
 
 const albums = ref([]); // unused.
 
@@ -188,9 +199,6 @@ const {
 	loadPhoto,
 	isLoading,
 } = useTimelineRefresher(photoId, router, auth);
-// const { user, isKeybindingsHelpOpen, rootConfig, rootRights, refresh } = useAlbumsRefresher(auth, lycheeStore, is_login_open);
-
-// const { photo } = usePhotoRoute(router, photos);
 
 const { selectedPhotosIdx, selectedPhoto, selectedPhotos, selectedPhotosIds, photoSelect, hasSelection, unselect, selectEverything } = useSelection(
 	photos,
@@ -205,7 +213,44 @@ const sentinel = ref(null);
 const { registerSentinel, registerScrollSpy } = useRouteDateUpdater(sentinel, loadMore, loadDate);
 
 function photoClick(idx: number, e: MouseEvent) {
-	router.push(photoRoute(ALL, photos.value[idx].id));
+	router.push(photoRoute(photos.value[idx].id));
+}
+
+const { toggleStar, rotatePhotoCCW, rotatePhotoCW, setAlbumHeader, rotateOverlay } = usePhotoActions(photo, albumId, toast, lycheeStore);
+
+const { getNext, getPrevious } = getNextPreviousPhoto(router, photo);
+const { slideshow, next, previous, stop } = useSlideshowFunction(1000, is_slideshow_active, slideshow_timeout, videoElement, getNext, getPrevious);
+const { hasNext, hasPrevious } = useHasNextPreviousPhoto(photo);
+
+function toggleDetails() {
+	is_photo_edit_open.value = false;
+	are_details_open.value = !are_details_open.value;
+}
+
+function toggleEdit() {
+	if (photo.value !== undefined) {
+		are_details_open.value = false;
+		is_photo_edit_open.value = !is_photo_edit_open.value;
+		return;
+	}
+}
+
+function goBack() {
+	if (is_slideshow_active.value) {
+		stop();
+	}
+
+	if (is_photo_edit_open.value === true) {
+		is_photo_edit_open.value = false;
+		return;
+	}
+
+	if (photoId.value !== undefined) {
+		loadDate(photo.value?.timeline?.timeDate);
+		photoId.value = undefined;
+		photo.value = undefined;
+		return;
+	}
 }
 
 onMounted(async () => {
@@ -289,6 +334,69 @@ const {
 // 	window.removeEventListener("dragover", dragEnd);
 // 	window.removeEventListener("drop", dropUpload);
 // });
+
+onKeyStroke("ArrowLeft", () => !shouldIgnoreKeystroke() && photo.value !== undefined && hasPrevious() && previous(true));
+onKeyStroke("ArrowRight", () => !shouldIgnoreKeystroke() && photo.value !== undefined && hasNext() && next(true));
+onKeyStroke("o", () => !shouldIgnoreKeystroke() && photo.value !== undefined && rotateOverlay());
+onKeyStroke(" ", () => !shouldIgnoreKeystroke() && photo.value !== undefined && slideshow());
+onKeyStroke("i", () => !shouldIgnoreKeystroke() && photo.value !== undefined && toggleDetails());
+onKeyStroke("f", () => !shouldIgnoreKeystroke() && photo.value !== undefined && togglableStore.toggleFullScreen());
+onKeyStroke("Escape", () => !shouldIgnoreKeystroke() && photo.value !== undefined && is_slideshow_active.value && stop());
+
+// Priviledged Photo operations
+onKeyStroke("m", () => !shouldIgnoreKeystroke() && photo.value !== undefined && photo.value.rights.can_edit && toggleMove());
+onKeyStroke("e", () => !shouldIgnoreKeystroke() && photo.value !== undefined && photo.value.rights.can_edit && toggleEdit());
+onKeyStroke("s", () => !shouldIgnoreKeystroke() && photo.value !== undefined && photo.value.rights.can_edit && toggleStar());
+onKeyStroke(["Delete", "Backspace"], () => !shouldIgnoreKeystroke() && photo.value !== undefined && toggleDelete());
+
+// on key stroke escape:
+// 1. lose focus
+// 2. close modals
+// 3. go back
+onKeyStroke("Escape", () => {
+	// 1. lose focus
+	if (shouldIgnoreKeystroke() && document.activeElement instanceof HTMLElement) {
+		document.activeElement.blur();
+		return;
+	}
+
+	if (are_details_open.value) {
+		are_details_open.value = false;
+		return;
+	}
+
+	if (is_move_visible.value) {
+		is_move_visible.value = false;
+		return;
+	}
+
+	if (is_delete_visible.value) {
+		is_delete_visible.value = false;
+		return;
+	}
+
+	if (is_rename_visible.value) {
+		is_rename_visible.value = false;
+		return;
+	}
+
+	if (is_tag_visible.value) {
+		is_tag_visible.value = false;
+		return;
+	}
+
+	if (is_copy_visible.value) {
+		is_copy_visible.value = false;
+		return;
+	}
+
+	if (is_move_visible.value) {
+		is_move_visible.value = false;
+		return;
+	}
+
+	goBack();
+});
 
 watch(
 	() => [route.params.photoId],
