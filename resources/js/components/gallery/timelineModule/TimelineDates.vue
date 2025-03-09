@@ -5,11 +5,11 @@
 			'right-6': !isTouch,
 			'right-2': isTouch,
 			'pt-14': !is_full_screen,
-			'bg-gradient-to-l from-(--p-surface-0) dark:from-(--p-surface-900) text-shadow-sm  group pb-48': true,
+			'bg-gradient-to-l from-(--p-surface-0) dark:from-(--p-surface-900) text-shadow-sm  group pb-24': true,
 		}"
 	>
 		<div v-for="yearChunk in dates" :key="yearChunk.header" class="flex flex-col">
-			<span class="font-semibold text-lg text-color-emphasis">{{ yearChunk.header }}</span>
+			<span class="font-semibold text-lg text-muted-color-emphasis">{{ yearChunk.header }}</span>
 			<span
 				v-for="monthChunk in yearChunk.data"
 				:class="{
