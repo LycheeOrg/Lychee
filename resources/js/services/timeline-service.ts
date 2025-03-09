@@ -18,7 +18,7 @@ const TimelineService = {
 		return axios.get(`${Constants.getApiUrl()}Timeline::init`, { data: {} });
 	},
 
-	dates(): Promise<AxiosResponse<string[]>> {
+	dates(): Promise<AxiosResponse<App.Http.Resources.Models.Utils.TimelineData[]>> {
 		return axios.get(`${Constants.getApiUrl()}Timeline::dates`, { data: {} });
 	},
 };

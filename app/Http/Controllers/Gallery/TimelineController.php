@@ -11,6 +11,7 @@ namespace App\Http\Controllers\Gallery;
 use App\Actions\Photo\Timeline;
 use App\Http\Requests\Timeline\GetTimelineRequest;
 use App\Http\Requests\Timeline\IdOrDatedTimelineRequest;
+use App\Http\Resources\Models\Utils\TimelineData;
 use App\Http\Resources\Timeline\InitResource;
 use App\Http\Resources\Timeline\TimelineResource;
 use App\Models\Configs;
@@ -68,10 +69,10 @@ class TimelineController extends Controller
 	 * @param GetTimelineRequest $request
 	 * @param Timeline           $timeline
 	 *
-	 * @return string[]
+	 * @return TimelineData[]
 	 */
 	public function dates(GetTimelineRequest $request, Timeline $timeline): array
 	{
-		return $timeline->dates();
+		return $timeline->dates()->map(fn (string $date) => TimelineData::fromDate($date))->toArray();
 	}
 }

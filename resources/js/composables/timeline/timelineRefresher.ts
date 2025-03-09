@@ -18,7 +18,7 @@ export function useTimelineRefresher(photoId: Ref<string | undefined>, router: R
 	const isTimelineEnabled = ref(false);
 	const rootConfig = ref<App.Http.Resources.GalleryConfigs.RootConfig | undefined>(undefined);
 	const rootRights = ref<App.Http.Resources.Rights.RootAlbumRightsResource | undefined>(undefined);
-	const dates = ref<string[]>([]);
+	const dates = ref<App.Http.Resources.Models.Utils.TimelineData[]>([]);
 
 	function loadTimelineConfig(): Promise<void> {
 		return TimelineService.init().then((response) => {

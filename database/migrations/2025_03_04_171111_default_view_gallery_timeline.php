@@ -11,6 +11,7 @@ use App\Models\Extensions\BaseConfigMigration;
 return new class() extends BaseConfigMigration {
 	public const TIMELINE = 'Mod Timeline';
 	public const CONFIG = 'config';
+	public const STRING_REQ = 'string_required';
 
 	public function getConfigs(): array
 	{
@@ -34,6 +35,46 @@ return new class() extends BaseConfigMigration {
 				'details' => '',
 				'is_secret' => false,
 				'level' => 0,
+			],
+			[
+				'key' => 'timeline_quick_access_date_format_year',
+				'value' => 'Y',
+				'cat' => self::TIMELINE,
+				'type_range' => self::STRING_REQ,
+				'description' => 'Format the quick access year granularity in the timeline page',
+				'details' => 'See <a class="underline" href="https://www.php.net/manual/en/datetime.format.php">datetime.format.php</a>',
+				'is_secret' => false,
+				'level' => 1,
+			],
+			[
+				'key' => 'timeline_quick_access_date_format_month',
+				'value' => 'M Y',
+				'cat' => self::TIMELINE,
+				'type_range' => self::STRING_REQ,
+				'description' => 'Format the quick access month granularity in the timeline page',
+				'details' => 'See <a class="underline" href="https://www.php.net/manual/en/datetime.format.php">datetime.format.php</a>',
+				'is_secret' => false,
+				'level' => 1,
+			],
+			[
+				'key' => 'timeline_quick_access_date_format_day',
+				'value' => 'j M',
+				'cat' => self::TIMELINE,
+				'type_range' => self::STRING_REQ,
+				'description' => 'Format the quick access day granularity in the timeline page',
+				'details' => 'See <a class="underline" href="https://www.php.net/manual/en/datetime.format.php">datetime.format.php</a>',
+				'is_secret' => false,
+				'level' => 1,
+			],
+			[
+				'key' => 'timeline_quick_access_date_format_hour',
+				'value' => 'g:i',
+				'cat' => self::TIMELINE,
+				'type_range' => self::STRING_REQ,
+				'description' => 'Format the quick access hour granularity in the timeline page',
+				'details' => 'See <a class="underline" href="https://www.php.net/manual/en/datetime.format.php">datetime.format.php</a>',
+				'is_secret' => false,
+				'level' => 1,
 			],
 		];
 	}

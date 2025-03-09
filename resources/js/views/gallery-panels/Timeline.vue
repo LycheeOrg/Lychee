@@ -54,7 +54,7 @@
 
 		<div class="sentinel" ref="sentinel" v-if="maxPage < lastPage"></div>
 		<ProgressSpinner class="flex justify-center" v-if="isLoading" />
-		<TimelineDates :dates="dates" v-if="photo === undefined" />
+		<TimelineDates :dates="dates" v-if="photo === undefined" @load="goToDate" />
 		<ScrollTop target="parent" :threshold="50" v-if="photo === undefined" />
 		<!-- Dialogs -->
 		<!-- <PhotoTagDialog
@@ -224,6 +224,11 @@ const { toggleStar, rotatePhotoCCW, rotatePhotoCW, setAlbumHeader, rotateOverlay
 const { getNext, getPrevious } = getNextPreviousPhoto(router, photo);
 const { slideshow, next, previous, stop } = useSlideshowFunction(1000, is_slideshow_active, slideshow_timeout, videoElement, getNext, getPrevious);
 const { hasNext, hasPrevious } = useHasNextPreviousPhoto(photo);
+
+function goToDate(date: string) {
+	loadDate(date);
+	initialLoad(date, undefined);
+}
 
 function toggleDetails() {
 	is_photo_edit_open.value = false;

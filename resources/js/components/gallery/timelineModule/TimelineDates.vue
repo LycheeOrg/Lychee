@@ -1,7 +1,7 @@
 <template>
 	<div
 		:class="{
-			'absolute flex flex-col text-muted-color-emphasis text-right top-0 h-full overflow-y-scroll no-scrollbar': true,
+			'absolute flex flex-col text-muted-color text-right top-0 h-full overflow-y-scroll no-scrollbar': true,
 			'right-6': !isTouch,
 			'right-2': isTouch,
 			'pt-14': !is_full_screen,
@@ -9,21 +9,16 @@
 		}"
 	>
 		<div v-for="yearChunk in dates" :key="yearChunk.header" class="flex flex-col">
-			<span class="font-semibold text-lg">{{ yearChunk.header }}</span>
-			<!-- <span :class="{
-            'text-3xs text-muted-color text-right scale-50 origin-right': true,
-            'inline-block group-hover:hidden': !isTouch,
-            'hidden': isTouch,
-            }"><i class="pi pi-circle-fill" /></span> -->
+			<span class="font-semibold text-lg text-color-emphasis">{{ yearChunk.header }}</span>
 			<span
 				v-for="monthChunk in yearChunk.data"
 				:class="{
-					'cursor-pointer text-muted-color transition-all duration-150 scale-75 ease-in-out origin-right': true,
-					'hover:text-primary-500 group-hover:inline-block hover:scale-100 hidden': !isTouch,
+					'cursor-pointer transition-all duration-150 scale-75 ease-in-out origin-right': true,
+					'hover:text-primary-emphasis hover:font-bold group-hover:inline-block hover:scale-100 hidden': !isTouch,
 				}"
-				:key="monthChunk.header"
-				@click="emits('load', monthChunk.data[0])"
-				>{{ monthChunk.header }}
+				:key="monthChunk.timeDate"
+				@click="emits('load', monthChunk.timeDate)"
+				>{{ monthChunk.format }}
 			</span>
 		</div>
 	</div>
@@ -37,7 +32,7 @@ import { ref } from "vue";
 import { computed } from "vue";
 
 const props = defineProps<{
-	dates: string[];
+	dates: App.Http.Resources.Models.Utils.TimelineData[];
 }>();
 
 const { spliter } = useSplitter();
@@ -46,15 +41,10 @@ const togglableStore = useTogglablesStateStore();
 const { is_full_screen } = storeToRefs(togglableStore);
 
 const dates = computed(() => {
-	const splitMonth = spliter(
-		props.dates,
-		(d) => d.split("-")[0] + d.split("-")[1],
-		(d) => d.split("-")[0] + "-" + d.split("-")[1],
-	);
 	return spliter(
-		splitMonth,
-		(d) => d.header.split("-")[0],
-		(d) => d.header.split("-")[0],
+		props.dates,
+		(d) => d.timeDate.split("-")[0],
+		(d) => d.timeDate.split("-")[0],
 	);
 });
 
