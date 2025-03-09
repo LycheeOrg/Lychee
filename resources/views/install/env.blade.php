@@ -7,6 +7,8 @@ active
 @section('content')
 <ul class="list">
 	<li class="list__item list__item--env"><span><i class="fa fa-warning" aria-hidden="true"></i> <strong>Lychee does not create the database.</strong></span></li>
+	<li class="list__item list__item--env"><span><i class="fa fa-warning" aria-hidden="true"></i> Database password can include special characters like <code class="folder">!@#$%^&</code> but then the string must be enclodes in quotes.
+		For example: <code class="folder">DB_PASSWORD="lychee!@#$%^&"</code></span></li>
 	<li class="list__item list__item--env">1 - Manually create your database and then enter the sql details bellow.</li>
 	<li class="list__item list__item--env">2 - If you are migrating from the v3, copy your pictures from <br>
 		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code class="folder">version3/uploads/</code> to <code class="folder">version4/public/uploads/</code>.</li>
