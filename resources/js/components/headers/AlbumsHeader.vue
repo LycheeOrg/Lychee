@@ -232,6 +232,12 @@ const menu = computed(() =>
 			if: (favourites.photos?.length ?? 0) > 0,
 		},
 		{
+			to: { name: "timeline" },
+			type: "link",
+			icon: "pi pi-clock",
+			if: lycheeStore.is_favourite_enabled,
+		},
+		{
 			to: { name: "frame" },
 			type: "link",
 			icon: "pi pi-desktop",

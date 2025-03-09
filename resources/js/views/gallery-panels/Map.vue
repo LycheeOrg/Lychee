@@ -54,7 +54,7 @@ type MapPhotoEntry = {
 };
 
 const props = defineProps<{
-	albumid?: string;
+	albumId?: string;
 }>();
 
 const toast = useToast();
@@ -64,8 +64,8 @@ const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
 
 function goBack() {
-	if (props.albumid !== undefined) {
-		router.push({ name: "album", params: { albumid: props.albumid } });
+	if (props.albumId !== undefined) {
+		router.push({ name: "album", params: { albumid: props.albumId } });
 	} else {
 		router.push({ name: "gallery" });
 	}
@@ -110,7 +110,7 @@ function mapInit() {
 }
 
 function fetchData() {
-	AlbumService.getMapData(props.albumid).then((mapData) => {
+	AlbumService.getMapData(props.albumId).then((mapData) => {
 		data.value = mapData.data;
 		addContentsToMap();
 	});

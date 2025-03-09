@@ -230,7 +230,7 @@ const { albumsForSelection, photosForSelection, noData, configForMenu, title } =
 const { layoutConfig, loadLayoutConfig } = useGetLayoutConfig();
 
 const { hasPrevious, hasNext } = useHasNextPreviousPhoto(photo);
-const { getNext, getPrevious } = getNextPreviousPhoto(router, albumId, photo);
+const { getNext, getPrevious } = getNextPreviousPhoto(router, photo);
 const { slideshow, next, previous, stop } = useSlideshowFunction(1000, is_slideshow_active, slideshow_timeout, videoElement, getNext, getPrevious);
 
 const {

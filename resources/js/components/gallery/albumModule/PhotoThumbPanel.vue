@@ -17,9 +17,13 @@
 			:isTimeline="isTimeline"
 		/>
 		<template v-else>
-			<Timeline v-if="is_timeline_left_border_visible" :value="photosTimeLine" :pt:eventopposite:class="'hidden'" class="mt-4">
+			<Timeline v-if="isLeftBorderVisible" :value="photosTimeLine" :pt:eventopposite:class="'hidden'" class="mt-4">
 				<template #content="slotProps">
-					<div class="flex flex-wrap flex-row shrink w-full justify-start gap-1 sm:gap-2 md:gap-4 pb-8">
+					<div
+						data-type="timelineBlock"
+						:data-date="slotProps.item.data[0].timeline.timeDate"
+						class="flex flex-wrap flex-row shrink w-full justify-start gap-1 sm:gap-2 md:gap-4 pb-8"
+					>
 						<div class="w-full text-left font-semibold text-muted-color-emphasis text-lg">{{ slotProps.item.header }}</div>
 						<PhotoThumbPanelList
 							:photos="slotProps.item.data"
@@ -38,7 +42,11 @@
 			</Timeline>
 			<div v-else>
 				<template v-for="photoTimeline in photosTimeLine">
-					<div class="flex flex-wrap flex-row shrink w-full justify-start gap-1 sm:gap-2 md:gap-4 pb-8">
+					<div
+						data-type="timelineBlock"
+						:data-date="photoTimeline.data[0].timeline?.timeDate"
+						class="flex flex-wrap flex-row shrink w-full justify-start gap-1 sm:gap-2 md:gap-4 pb-8"
+					>
 						<div class="w-full text-left font-semibold text-muted-color-emphasis text-lg">{{ photoTimeline.header }}</div>
 						<PhotoThumbPanelList
 							:photos="photoTimeline.data"
@@ -67,6 +75,7 @@ import { SplitData, useSplitter } from "@/composables/album/splitter";
 import Timeline from "primevue/timeline";
 import PhotoThumbPanelList from "./PhotoThumbPanelList.vue";
 import PhotoThumbPanelControl from "./PhotoThumbPanelControl.vue";
+import { isTouchDevice } from "@/utils/keybindings-utils";
 
 const lycheeStore = useLycheeStateStore();
 const { is_timeline_left_border_visible } = storeToRefs(lycheeStore);
@@ -88,6 +97,9 @@ const props = defineProps<{
 
 const layout = ref(props.photoLayout);
 const isTimeline = ref(props.isTimeline);
+
+// We do not show the left border on touch devices (mostly phones) due to limited real estate.
+const isLeftBorderVisible = computed(() => is_timeline_left_border_visible && !isTouchDevice());
 
 // bubble up.
 const emits = defineEmits<{
