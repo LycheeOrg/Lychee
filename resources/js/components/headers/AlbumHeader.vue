@@ -13,7 +13,7 @@
 		<template #end>
 			<router-link
 				:to="{ name: 'favourites' }"
-				v-if="(favourites.photos?.length ?? 0) > 0"
+				v-if="is_favourite_enabled && (favourites.photos?.length ?? 0) > 0"
 				class="hidden sm:block"
 				v-tooltip.bottom="'Favourites'"
 			>
@@ -30,7 +30,7 @@
 				label=""
 			/>
 			<router-link
-				:to="{ name: 'frame-with-album', params: { albumid: props.album.id } }"
+				:to="{ name: 'frame-with-album', params: { albumId: props.album.id } }"
 				v-if="props.config.is_mod_frame_enabled"
 				class="hidden sm:block"
 				v-tooltip="'Frame'"
@@ -38,7 +38,7 @@
 				<Button icon="pi pi-desktop" class="border-none" severity="secondary" text />
 			</router-link>
 			<router-link
-				:to="{ name: 'map-with-album', params: { albumid: props.album.id } }"
+				:to="{ name: 'map-with-album', params: { albumId: props.album.id } }"
 				v-if="props.config.is_map_accessible && hasCoordinates"
 				class="hidden sm:block"
 			>
@@ -105,7 +105,7 @@ const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
 const favourites = useFavouriteStore();
 
-const { dropbox_api_key } = storeToRefs(lycheeStore);
+const { dropbox_api_key, is_favourite_enabled } = storeToRefs(lycheeStore);
 const { is_album_edit_open } = storeToRefs(togglableStore);
 
 const hasCoordinates = computed(() => props.album.photos.find((photo) => photo.latitude !== null && photo.longitude !== null) !== undefined);
