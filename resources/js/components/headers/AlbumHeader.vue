@@ -1,9 +1,9 @@
 <template>
-	<ImportFromLink v-if="canUpload" v-model:visible="is_import_from_link_open" :parent-id="props.album.id" @refresh="refresh" />
+	<ImportFromLink v-if="canUpload" v-model:visible="is_import_from_link_open" :parent-id="props.album.id" @refresh="emits('refresh')" />
 	<DropBox v-if="canUpload" v-model:visible="is_import_from_dropbox_open" :album-id="props.album.id" />
 	<Toolbar class="w-full border-0 h-14" v-if="album">
 		<template #start>
-			<Button icon="pi pi-angle-left" class="mr-2 border-none" severity="secondary" text @click="goBack" />
+			<Button icon="pi pi-angle-left" class="mr-2 border-none" severity="secondary" text @click="emits('goBack')" />
 		</template>
 
 		<template #center>
@@ -17,7 +17,7 @@
 				class="border-none"
 				severity="secondary"
 				text
-				@click="toggleSlideShow"
+				@click="emits('toggleSlideShow')"
 				v-if="props.album.photos.length > 0"
 				label=""
 			/>
@@ -41,19 +41,17 @@
 				class="border-none hidden sm:block"
 				severity="secondary"
 				text
-				@click="openSearch"
+				@click="emits('openSearch')"
 				v-if="props.config.is_search_accessible"
 			/>
 			<Button icon="pi pi-plus" class="border-none" severity="secondary" text @click="openAddMenu" v-if="props.album.rights.can_upload" />
 			<template v-if="props.album.rights.can_edit">
-				<Button v-if="!are_details_open" icon="pi pi-angle-down" severity="secondary" text class="mr-2 border-none" @click="toggleDetails" />
 				<Button
-					v-if="are_details_open"
-					icon="pi pi-angle-up"
+					:icon="is_album_edit_open ? 'pi pi-angle-up' : 'pi pi-angle-down'"
 					severity="secondary"
-					class="mr-2 text-primary-400 border-none"
+					:class="{ 'mr-2 border-none': true, 'text-primary-400': is_album_edit_open }"
 					text
-					@click="toggleDetails"
+					@click="emits('toggleEdit')"
 				/>
 			</template>
 		</template>
@@ -76,10 +74,7 @@
 import Button from "primevue/button";
 import Toolbar from "primevue/toolbar";
 import { computed } from "vue";
-import { useRouter } from "vue-router";
-import { onKeyStroke } from "@vueuse/core";
 import ContextMenu from "primevue/contextmenu";
-import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
 import ImportFromLink from "@/components/modals/ImportFromLink.vue";
 import { useContextMenuAlbumAdd } from "@/composables/contextMenus/contextMenuAlbumAdd";
 import Divider from "primevue/divider";
@@ -99,8 +94,9 @@ const props = defineProps<{
 const togglableStore = useTogglablesStateStore();
 const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
+
 const { dropbox_api_key } = storeToRefs(lycheeStore);
-const { are_details_open, is_login_open, is_upload_visible, is_create_album_visible } = storeToRefs(togglableStore);
+const { is_album_edit_open } = storeToRefs(togglableStore);
 
 const hasCoordinates = computed(() => props.album.photos.find((photo) => photo.latitude !== null && photo.longitude !== null) !== undefined);
 
@@ -110,22 +106,13 @@ const { toggleCreateAlbum, is_import_from_link_open, toggleImportFromLink, is_im
 const emits = defineEmits<{
 	refresh: [];
 	toggleSlideShow: [];
-	toggleDetails: [];
+	toggleEdit: [];
+	goBack: [];
+	openSearch: [];
 }>();
 
 function toggleUploadTrack() {
 	document.getElementById("upload_track_file")?.click();
-}
-
-function toggleSlideShow() {
-	emits("toggleSlideShow");
-}
-
-function toggleDetails() {
-	are_details_open.value = !are_details_open.value;
-	if (are_details_open.value) {
-		emits("toggleDetails");
-	}
 }
 
 function uploadTrack(e: Event) {
@@ -154,44 +141,5 @@ const { addmenu, addMenu, openAddMenu } = useContextMenuAlbumAdd(
 	dropbox_api_key,
 );
 
-const router = useRouter();
 const canUpload = computed(() => props.user.id !== null && props.album.rights.can_upload === true);
-
-function goBack() {
-	are_details_open.value = false;
-
-	if (props.config.is_model_album === true && (props.album as App.Http.Resources.Models.AlbumResource | null)?.parent_id !== null) {
-		router.push({ name: "album", params: { albumid: (props.album as App.Http.Resources.Models.AlbumResource | null)?.parent_id } });
-	} else {
-		router.push({ name: "gallery" });
-	}
-}
-
-function openSearch() {
-	router.push({ name: "search-with-album", params: { albumid: props.album.id } });
-}
-
-// bubble up.
-function refresh() {
-	emits("refresh");
-}
-
-// on key stroke escape:
-// 1. lose focus
-// 2. close modals
-// 3. go back
-onKeyStroke("Escape", () => {
-	// 1. lose focus
-	if (shouldIgnoreKeystroke() && document.activeElement instanceof HTMLElement) {
-		document.activeElement.blur();
-		return;
-	}
-
-	if (are_details_open.value) {
-		toggleDetails();
-		return;
-	}
-
-	goBack();
-});
 </script>

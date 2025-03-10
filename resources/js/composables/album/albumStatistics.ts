@@ -1,4 +1,8 @@
-import { TotalAlbum } from "@/components/statistics/TotalCard.vue";
+export type TotalAlbum = {
+	num_photos: number;
+	num_albums: number;
+	size: number;
+};
 
 export type DataForTable = { key: string; value: number };
 

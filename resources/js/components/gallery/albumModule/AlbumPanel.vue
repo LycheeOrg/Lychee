@@ -9,7 +9,8 @@
 				:user="user"
 				@refresh="emits('refresh')"
 				@toggle-slide-show="emits('toggleSlideShow')"
-				@toggle-details="emits('scrollToTop')"
+				@toggle-edit="emits('toggleEdit')"
+				@go-back="emits('goBack')"
 			/>
 		</Collapse>
 		<template v-if="config && album">
@@ -74,7 +75,7 @@
 					:is-timeline="config.is_photo_timeline_enabled"
 				/>
 				<GalleryFooter v-once />
-				<ScrollTop target="parent" />
+				<ScrollTop v-if="!props.isPhotoOpen" target="parent" />
 			</div>
 			<ShareAlbum v-model:visible="is_share_album_visible" :title="album.title" :key="'share_modal_' + album.id" />
 
@@ -129,6 +130,7 @@ const props = defineProps<{
 	config: App.Http.Resources.GalleryConfigs.AlbumConfig | undefined;
 	user: App.Http.Resources.Models.UserResource | undefined;
 	layoutConfig: App.Http.Resources.GalleryConfigs.PhotoLayoutConfig;
+	isPhotoOpen: boolean;
 }>();
 
 const modelAlbum = ref(props.modelAlbum);
@@ -144,8 +146,10 @@ const layoutConfig = ref(props.layoutConfig);
 
 const emits = defineEmits<{
 	refresh: [];
+	toggleEdit: [];
 	toggleSlideShow: [];
 	scrollToTop: [];
+	goBack: [];
 }>();
 
 const { is_full_screen } = storeToRefs(togglableStore);
@@ -250,3 +254,9 @@ const { menu, Menu, photoMenuOpen, albumMenuOpen } = useContextMenu(
 	albumCallbacks,
 );
 </script>
+<style lang="css">
+/* Kill the border of ScrollTop */
+.p-scrolltop {
+	border: none;
+}
+</style>

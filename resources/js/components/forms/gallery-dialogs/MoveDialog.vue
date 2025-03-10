@@ -171,6 +171,9 @@ function executeMovePhoto() {
 		AlbumService.clearCache(props.parentId);
 		AlbumService.clearCache(destination_id.value);
 
+		// RESET !
+		destination_id.value = undefined;
+
 		emits("moved");
 	});
 }

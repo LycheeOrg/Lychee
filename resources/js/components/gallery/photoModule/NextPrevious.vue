@@ -1,7 +1,7 @@
 <template>
 	<div class="absolute w-1/6 h-1/2 top-1/2 -translate-y-1/2 group" :class="props.is_next ? 'right-0' : 'left-0'">
 		<router-link
-			:to="{ name: 'photo', params: { albumid: props.albumId, photoid: props.photoId } }"
+			:to="photoRoute(props.albumId, props.photoId)"
 			:id="props.is_next ? 'nextButton' : 'previousButton'"
 			:class="{
 				'absolute top-1/2 border border-solid border-neutral-200 -mt-5 py-2 px-3 transition-all opacity-0 group-hover:opacity-100 bg-cover': true,
@@ -16,6 +16,8 @@
 </template>
 <script setup lang="ts">
 import MiniIcon from "@/components/icons/MiniIcon.vue";
+import { usePhotoRoute } from "@/composables/photo/photoRoute";
+import { useTogglablesStateStore } from "@/stores/ModalsState";
 
 const props = defineProps<{
 	is_next: boolean;
@@ -23,4 +25,7 @@ const props = defineProps<{
 	photoId: string;
 	style: string;
 }>();
+
+const togglableStore = useTogglablesStateStore();
+const { photoRoute } = usePhotoRoute(togglableStore);
 </script>
