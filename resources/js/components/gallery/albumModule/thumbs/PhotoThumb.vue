@@ -1,6 +1,6 @@
 <template>
 	<router-link
-		:to="{ name: 'photo', params: { albumid: props.album?.id ?? 'search', photoid: props.photo.id } }"
+		:to="photoRoute(props.album?.id, props.photo.id)"
 		:class="{
 			'photo group shadow-md shadow-black/25 animate-zoomIn transition-all ease-in duration-200 block absolute': true,
 			'outline outline-1.5 outline-primary-500': props.isSelected,
@@ -42,8 +42,8 @@
 		<div
 			:class="{
 				'overlay w-full absolute bottom-0 m-0 bg-gradient-to-t from-[#00000066] text-shadow-sm': true,
-				'opacity-0 group-hover:opacity-100 transition-all ease-out': lycheeStore.display_thumb_photo_overlay === 'hover',
-				hidden: lycheeStore.display_thumb_photo_overlay === 'never',
+				'opacity-0 group-hover:opacity-100 transition-all ease-out': display_thumb_photo_overlay === 'hover',
+				hidden: display_thumb_photo_overlay === 'never',
 			}"
 		>
 			<h1 class="min-h-[19px] mt-3 mb-1 ml-3 text-surface-0 text-base font-bold overflow-hidden whitespace-nowrap text-ellipsis">
@@ -62,7 +62,7 @@
 			<img class="absolute aspect-square w-fit h-fit" alt="play" :src="srcPlay" />
 		</div>
 		<!-- TODO: make me an option. -->
-		<div v-if="user?.id" class="badges absolute mt-[-1px] ml-1 top-0 left-0">
+		<div v-if="user?.id" class="badges absolute mt-[-1px] ml-1 top-0 left-0 flex">
 			<ThumbBadge v-if="props.photo.is_starred" class="bg-yellow-500" icon="star" />
 			<ThumbBadge v-if="is_cover_id" class="bg-yellow-500" icon="folder-cover" />
 			<ThumbBadge v-if="is_header_id" class="bg-slate-400 hidden sm:block" pi="image" />
@@ -77,6 +77,8 @@ import ThumbBadge from "@/components/gallery/albumModule/thumbs/ThumbBadge.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import { useImageHelpers } from "@/utils/Helpers";
+import { useTogglablesStateStore } from "@/stores/ModalsState";
+import { usePhotoRoute } from "@/composables/photo/photoRoute";
 
 const { getNoImageIcon, getPlayIcon } = useImageHelpers();
 
@@ -92,7 +94,13 @@ const props = defineProps<{
 }>();
 
 const auth = useAuthStore();
+const { user } = storeToRefs(auth);
 const lycheeStore = useLycheeStateStore();
+const { display_thumb_photo_overlay } = storeToRefs(lycheeStore);
+
+const togglableStore = useTogglablesStateStore();
+const { photoRoute } = usePhotoRoute(togglableStore);
+
 const srcPlay = ref(getPlayIcon());
 const srcNoImage = ref(getNoImageIcon());
 const isImageLoaded = ref(false);
@@ -106,12 +114,14 @@ const is_cover_id = computed(() => props.album?.cover_id === props.photo.id);
 // @ts-expect-error
 const is_header_id = computed(() => props.album?.header_id === props.photo.id);
 
-const { user } = storeToRefs(auth);
-auth.getUser();
-
 watch(
-	() => props.photo,
-	() => {
+	() => props.photo.id,
+	(newId, oldId) => {
+		if (newId === oldId) {
+			// No blur to be added needed
+			return;
+		}
+
 		isImageLoaded.value = false;
 	},
 );
