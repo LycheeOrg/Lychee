@@ -6,25 +6,33 @@
 			'right-2': isTouch,
 			'bg-gradient-to-l from-(--p-surface-0) pt-14 dark:from-(--p-surface-900) text-shadow-sm group pb-24': true,
 		}"
+		@mouseleave="scrollToView"
 	>
 		<div v-for="yearChunk in dates" :key="yearChunk.header" class="">
 			<span
-				class="sticky top-0 font-semibold drop-shadow-md text-3xl scale-75 text-muted-color-emphasis group-hover:scale-100 transition-all duration-150 origin-right"
-				>{{ yearChunk.header }}</span
+				:class="{
+					'sticky top-0 font-semibold drop-shadow-md text-3xl scale-75 text-muted-color-emphasis': true,
+					'group-hover:scale-100 transition-all duration-150 origin-right': true,
+				}"
 			>
-			<div class="date-wrapper group-hover:grid-rows-[1]">
-				<div class="overflow-hidden">
-					<template v-for="monthChunk in yearChunk.data" :key="monthChunk.timeDate">
-						<span
-							:class="{
-								'cursor-pointer transition-all duration-150 scale-75 ease-in-out origin-right': true,
-								'hover:text-primary-emphasis hover:font-bold hover:scale-100': !isTouch,
-							}"
-							@click="emits('load', monthChunk.timeDate)"
-							>{{ monthChunk.format }}
-						</span>
-						<br />
-					</template>
+				{{ yearChunk.header }}
+			</span>
+			<!-- We only apply the hover property for items bellow the current scrolling year,
+			 	this avoids the upper part of the element to scroll up and down and some jerky behaviours.  -->
+			<div :class="{ 'date-wrapper group-hover:grid-rows-[1]': currentYear > parseInt(yearChunk.header, 10) }">
+				<div class="overflow-hidden flex flex-col">
+					<span
+						v-for="monthChunk in yearChunk.data"
+						:key="monthChunk.timeDate"
+						:data-date-pointer="monthChunk.timeDate"
+						:class="{
+							'cursor-pointer transition-all duration-150 scale-75 ease-in-out origin-right': true,
+							'hover:text-primary-emphasis hover:font-bold hover:scale-100': !isTouch,
+							'scale-125 text-primary-emphasis font-bold': currentDate === monthChunk.timeDate,
+						}"
+						@click="emits('load', monthChunk.timeDate)"
+						>{{ monthChunk.format }}
+					</span>
 				</div>
 			</div>
 		</div>
@@ -32,20 +40,20 @@
 </template>
 <script setup lang="ts">
 import { useSplitter } from "@/composables/album/splitter";
-import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { isTouchDevice } from "@/utils/keybindings-utils";
-import { storeToRefs } from "pinia";
+import { useDebounceFn } from "@vueuse/core";
 import { ref } from "vue";
+import { onMounted } from "vue";
+import { watch } from "vue";
 import { computed } from "vue";
+import { useRoute } from "vue-router";
 
+const route = useRoute();
 const props = defineProps<{
 	dates: App.Http.Resources.Models.Utils.TimelineData[];
 }>();
 
 const { spliter } = useSplitter();
-
-const togglableStore = useTogglablesStateStore();
-const { is_full_screen } = storeToRefs(togglableStore);
 
 const dates = computed(() => {
 	return spliter(
@@ -55,11 +63,33 @@ const dates = computed(() => {
 	);
 });
 
+const currentDate = computed(() => route.params.date as string);
+const currentYear = computed(() => parseInt(currentDate.value.split("-")[0], 10));
+
 const isTouch = ref(isTouchDevice());
 
 const emits = defineEmits<{
 	load: [date: string];
 }>();
+
+// Scroll magic side
+// Select the current date and center it in the view
+const scrollToView = useDebounceFn(() => {
+	const el = document.querySelector(`[data-date-pointer="${currentDate.value}"]`);
+	if (el) {
+		el.scrollIntoView({ behavior: "smooth", block: "center" });
+	}
+}, 100);
+
+// If the date change, we update!
+watch(() => route.params.date, scrollToView, { immediate: true });
+
+// Also do that at when loading the component
+onMounted(() =>
+	// But wait! if we do it too early the dom is not rendered and this does not work.
+	// Let's wait 500ms for the rendering, then select the element.
+	setTimeout(scrollToView, 500),
+);
 </script>
 <style>
 .date-wrapper {
@@ -70,15 +100,5 @@ const emits = defineEmits<{
 	&:is(:where(.group):hover *) {
 		grid-template-rows: 1fr;
 	}
-}
-
-/* .group-hover\:grid-rows-\[1\] {
-    &:is(:where(.group):hover *) {
-		grid-template-rows: 1fr;
-    }
-} */
-
-.inner {
-	overflow: hidden;
 }
 </style>
