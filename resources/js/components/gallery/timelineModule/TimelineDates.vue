@@ -11,7 +11,7 @@
 		<div v-for="yearChunk in dates" :key="yearChunk.header" class="">
 			<span
 				:class="{
-					'sticky top-0 font-semibold drop-shadow-md text-3xl scale-75 text-muted-color-emphasis': true,
+					'sticky top-0 font-semibold z-10 shadow-surface-950 drop-shadow-md text-3xl scale-75 text-muted-color-emphasis': true,
 					'group-hover:scale-100 transition-all duration-150 origin-right': true,
 				}"
 			>

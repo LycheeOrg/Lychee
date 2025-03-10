@@ -16,7 +16,7 @@
 				:label="$t('gallery.timeline.load_previous')"
 				v-if="!isLoading"
 			/>
-			<ProgressSpinner class="" v-if="isLoading" />
+			<ProgressSpinner class="" v-if="isLoading && !isTouchDevice()" />
 		</div>
 		<PhotoThumbPanel
 			v-if="layoutConfig !== undefined && photos !== null && photos.length > 0"
@@ -53,7 +53,7 @@
 		<!-- @updated="refreshPhoto" -->
 
 		<div class="sentinel" ref="sentinel" v-if="maxPage < lastPage"></div>
-		<ProgressSpinner class="flex justify-center" v-if="isLoading" />
+		<ProgressSpinner class="flex justify-center" v-if="isLoading && !isTouchDevice()" />
 		<TimelineDates :dates="dates" v-if="photo === undefined" @load="goToDate" />
 		<ScrollTop target="parent" :threshold="50" v-if="photo === undefined" />
 		<!-- Dialogs -->
@@ -111,7 +111,7 @@ import { ref } from "vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import { onKeyStroke, useIntersectionObserver } from "@vueuse/core";
-import { getModKey, shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
+import { getModKey, isTouchDevice, shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
 import KeybindingsHelp from "@/components/modals/KeybindingsHelp.vue";
 import { useSelection } from "@/composables/selections/selections";
 import { useContextMenu } from "@/composables/contextMenus/contextMenu";
