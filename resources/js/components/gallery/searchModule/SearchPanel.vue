@@ -2,8 +2,8 @@
 	<SearchBox
 		v-if="props.searchMinimumLengh !== undefined"
 		:search-minimum-lengh="props.searchMinimumLengh"
-		v-model:search="search_term"
-		@search="emits('search', search_term)"
+		v-model:search="search"
+		@search="emits('search', search)"
 		@clear="emits('clear')"
 	/>
 	<div v-else-if="props.noData" class="flex w-full justify-center text-xl text-muted-color">
@@ -14,8 +14,6 @@
 </template>
 <script setup lang="ts">
 import SearchBox from "@/components/forms/search/SearchBox.vue";
-import { useTogglablesStateStore } from "@/stores/ModalsState";
-import { storeToRefs } from "pinia";
 
 const emits = defineEmits<{
 	clear: [];
@@ -28,6 +26,5 @@ const props = defineProps<{
 	noData: boolean;
 }>();
 
-const togglableStore = useTogglablesStateStore();
-const { search_term } = storeToRefs(togglableStore);
+const search = defineModel<string>("search", { default: "" });
 </script>

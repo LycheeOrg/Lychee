@@ -1,6 +1,10 @@
-import { Uploadable } from "@/components/modals/UploadPanel.vue";
 import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
 import { Ref } from "vue";
+
+export type Uploadable = {
+	file: File;
+	status: "uploading" | "waiting" | "done" | "error";
+};
 
 export function useMouseEvents(
 	rights: Ref<undefined | { can_upload: boolean }>,
