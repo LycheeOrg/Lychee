@@ -28,6 +28,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		can_rotate: false,
 		can_autoplay: false,
 		is_exif_disabled: false,
+		is_favourite_enabled: false,
 
 		// keybinding help
 		show_keybinding_help_popup: false,
@@ -91,6 +92,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.can_rotate = data.can_rotate;
 					this.can_autoplay = data.can_autoplay;
 					this.is_exif_disabled = data.is_exif_disabled;
+					this.is_favourite_enabled = data.is_favourite_enabled;
 
 					this.display_thumb_album_overlay = data.display_thumb_album_overlay;
 					this.display_thumb_photo_overlay = data.display_thumb_photo_overlay;

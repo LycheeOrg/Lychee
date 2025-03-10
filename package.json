@@ -46,6 +46,7 @@
         "leaflet-rotatedmarker": "^0.2.0",
         "leaflet.markercluster": "^1.5.3",
         "pinia": "^3.0.0",
+        "pinia-plugin-persistedstate": "^4.2.0",
         "prettier": "^3.5.3",
         "primeicons": "^7.0.0",
         "primevue": "^4.3.1",

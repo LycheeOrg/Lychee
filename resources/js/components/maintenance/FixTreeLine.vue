@@ -27,7 +27,6 @@
 					mode="decimal"
 					:step="1"
 					placeholder="_lft"
-					@update:modelValue="console.log($event)"
 				/>
 				<Button text severity="secondary" icon="pi pi-angle-up" class="py-0.5" @click="incrementLft" />
 				<Button text severity="secondary" icon="pi pi-angle-down" class="py-0.5" @click="decrementLft" />
