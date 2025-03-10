@@ -71,8 +71,10 @@
 					:photo-layout="config.photo_layout"
 					:selected-photos="selectedPhotosIds"
 					@clicked="photoClick"
+					@selected="photoSelect"
 					@contexted="photoMenuOpen"
 					:is-timeline="config.is_photo_timeline_enabled"
+					:with-control="true"
 				/>
 				<GalleryFooter v-once />
 				<ScrollTop v-if="!props.isPhotoOpen" target="parent" />
@@ -119,6 +121,10 @@ import Button from "primevue/button";
 import GalleryFooter from "@/components/footers/GalleryFooter.vue";
 import AlbumStatistics from "@/components/drawers/AlbumStatistics.vue";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
+import { usePhotoRoute } from "@/composables/photo/photoRoute";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 
 const props = defineProps<{
 	modelAlbum: App.Http.Resources.Models.AlbumResource | undefined;
@@ -170,9 +176,15 @@ const {
 	selectedAlbums,
 	selectedPhotosIds,
 	selectedAlbumsIds,
-	photoClick,
+	photoSelect,
 	albumClick,
 } = useSelection(photos, children, togglableStore);
+
+const { photoRoute } = usePhotoRoute(togglableStore);
+
+function photoClick(idx: number, e: MouseEvent) {
+	router.push(photoRoute(album.value?.id, photos.value[idx].id));
+}
 
 const areStatisticsOpen = ref(false);
 function toggleStatistics() {

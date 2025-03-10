@@ -2,6 +2,7 @@ import Album from "@/views/gallery-panels/Album.vue";
 import Albums from "@/views/gallery-panels/Albums.vue";
 
 const Landing = () => import("@/views/Landing.vue");
+const Favourites = () => import("@/views/gallery-panels/Favourites.vue");
 const Frame = () => import("@/views/gallery-panels/Frame.vue");
 const Search = () => import("@/views/gallery-panels/Search.vue");
 const MapView = () => import("@/views/gallery-panels/Map.vue");
@@ -22,6 +23,11 @@ const routes_ = [
 		name: "landing",
 		path: "/",
 		component: Landing,
+	},
+	{
+		name: "favourites",
+		path: "/gallery/favourites",
+		component: Favourites,
 	},
 	{
 		name: "photo",

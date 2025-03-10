@@ -24,9 +24,10 @@
 		:album="undefined"
 		:gallery-config="props.layoutConfig"
 		:selected-photos="selectedPhotosIds"
-		@clicked="photoClick"
+		@selected="photoSelect"
 		@contexted="photoMenuOpen"
 		:is-timeline="props.isPhotoTimelineEnabled"
+		:with-control="true"
 	/>
 	<div class="flex justify-center w-full" v-if="photos.length > 0">
 		<Paginator :total-records="total" :rows="rows" v-model:first="first" @update:first="emits('refresh')" :always-show="false" />
@@ -93,7 +94,7 @@ const emits = defineEmits<{
 const photos = ref(props.photos);
 const children = ref(props.albums);
 
-const { selectedPhotosIds, selectedAlbumsIds, photoClick, albumClick } = useSelection(photos, children, togglableStore);
+const { selectedPhotosIds, selectedAlbumsIds, photoSelect, albumClick } = useSelection(photos, children, togglableStore);
 
 const { menu, Menu, photoMenuOpen, albumMenuOpen } = useContextMenu(props.selectors, props.photoCallbacks, props.albumCallbacks);
 </script>
