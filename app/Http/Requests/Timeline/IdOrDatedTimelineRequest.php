@@ -10,6 +10,7 @@ namespace App\Http\Requests\Timeline;
 
 use App\Contracts\Http\Requests\HasPhoto;
 use App\Contracts\Http\Requests\RequestAttribute;
+use App\Enum\TimelinePhotoGranularity;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasPhotoTrait;
 use App\Models\Configs;
@@ -17,6 +18,7 @@ use App\Models\Photo;
 use App\Rules\RandomIDRule;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class IdOrDatedTimelineRequest extends BaseApiRequest implements HasPhoto
 {
@@ -31,9 +33,15 @@ class IdOrDatedTimelineRequest extends BaseApiRequest implements HasPhoto
 	 */
 	public function rules(): array
 	{
+		$granularity = Configs::getValueAsEnum('timeline_photos_granularity', TimelinePhotoGranularity::class);
+		$format = $granularity->format();
+
 		return [
 			RequestAttribute::PHOTO_ID_ATTRIBUTE => ['nullable', 'sometimes', new RandomIDRule(false)],
-			RequestAttribute::DATE_ATTRIBUTE => ['nullable', 'date', 'sometimes'],
+			// We validate the date format directly instead of
+			// Rule::date()->format($format) <- this tries to validate for the date first, then the string.
+			// For some stupid reason, a single year like 2024 is not recognized as a date.
+			RequestAttribute::DATE_ATTRIBUTE => ['nullable', 'sometimes', 'date_format:' . $format],
 		];
 	}
 
@@ -58,7 +66,11 @@ class IdOrDatedTimelineRequest extends BaseApiRequest implements HasPhoto
 	{
 		// We only set this one if it is not null
 		if (isset($values[RequestAttribute::DATE_ATTRIBUTE])) {
-			$this->date = Carbon::parse($values[RequestAttribute::DATE_ATTRIBUTE]);
+			$granularity = Configs::getValueAsEnum('timeline_photos_granularity', TimelinePhotoGranularity::class);
+			$format = $granularity->format();
+
+			// Validate format.
+			$this->date = Carbon::createFromFormat($format, $values[RequestAttribute::DATE_ATTRIBUTE]);
 		}
 
 		if (isset($values[RequestAttribute::PHOTO_ID_ATTRIBUTE])) {

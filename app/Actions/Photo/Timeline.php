@@ -75,7 +75,7 @@ class Timeline
 
 		return $this->photoQueryPolicy->applySearchabilityFilter(
 			query: Photo::query()
-				->where($order->value, '>', $date->format($this->photo_granularity->format()))
+				->where($order->value, '>', $date)
 				->whereNotNull($order->value),
 			origin: null,
 			include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_timeline')
@@ -136,7 +136,7 @@ class Timeline
 			TimelinePhotoGranularity::YEAR => '%Y',
 			TimelinePhotoGranularity::MONTH => '%Y-%m',
 			TimelinePhotoGranularity::DAY => '%Y-%m-%d',
-			TimelinePhotoGranularity::HOUR => '%Y-%m-%d %H',
+			TimelinePhotoGranularity::HOUR => '%Y-%m-%dT%H',
 			TimelinePhotoGranularity::DEFAULT, TimelinePhotoGranularity::DISABLED => throw new TimelineGranularityException(),
 		};
 

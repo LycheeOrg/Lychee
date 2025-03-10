@@ -116,7 +116,7 @@ class TimelineData extends Data
 		$timeline_date_format_day = Configs::getValueAsString('timeline_quick_access_date_format_day');
 		$timeline_date_format_hour = Configs::getValueAsString('timeline_quick_access_date_format_hour');
 
-		$carbon = Carbon::parse($date);
+		$carbon = $granularity === TimelinePhotoGranularity::YEAR ? Carbon::createFromDate($date) : Carbon::parse($date);
 
 		$format = match ($granularity) {
 			TimelinePhotoGranularity::YEAR => $carbon->format($timeline_date_format_year),

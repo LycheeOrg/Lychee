@@ -48,7 +48,7 @@ return new class() extends BaseConfigMigration {
 			],
 			[
 				'key' => 'timeline_quick_access_date_format_month',
-				'value' => 'M Y',
+				'value' => 'M',
 				'cat' => self::TIMELINE,
 				'type_range' => self::STRING_REQ,
 				'description' => 'Format the quick access month granularity in the timeline page',
@@ -68,7 +68,7 @@ return new class() extends BaseConfigMigration {
 			],
 			[
 				'key' => 'timeline_quick_access_date_format_hour',
-				'value' => 'g:i',
+				'value' => 'h M, g:i',
 				'cat' => self::TIMELINE,
 				'type_range' => self::STRING_REQ,
 				'description' => 'Format the quick access hour granularity in the timeline page',

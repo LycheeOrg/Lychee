@@ -29,7 +29,7 @@
 						:class="{
 							'cursor-pointer transition-all duration-150 scale-75 ease-in-out origin-right': true,
 							'hover:text-primary-emphasis hover:font-bold hover:scale-100': !isTouch,
-							'scale-125 text-primary-emphasis font-bold': currentDate === monthChunk.timeDate,
+							'scale-110  text-primary-emphasis font-bold': currentDate === monthChunk.timeDate,
 						}"
 						@click="emits('load', monthChunk.timeDate)"
 						>{{ monthChunk.format }}
