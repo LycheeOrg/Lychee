@@ -11,8 +11,9 @@
 		<div v-for="yearChunk in dates" :key="yearChunk.header" class="">
 			<span
 				:class="{
-					'sticky top-0 font-semibold z-10 shadow-surface-950 drop-shadow-md text-3xl scale-75 text-muted-color-emphasis': true,
+					'sticky inline-block top-0 font-semibold z-10 shadow-surface-950 drop-shadow-md text-3xl scale-75 text-muted-color-emphasis': true,
 					'group-hover:scale-100 transition-all duration-150 origin-right': true,
+					'scale-100': currentYear === parseInt(yearChunk.header, 10),
 				}"
 			>
 				{{ yearChunk.header }}
@@ -63,7 +64,7 @@ const dates = computed(() => {
 	);
 });
 
-const currentDate = computed(() => route.params.date as string);
+const currentDate = computed(() => (route.params.date as string | undefined) ?? "");
 const currentYear = computed(() => parseInt(currentDate.value.split("-")[0], 10));
 
 const isTouch = ref(isTouchDevice());
@@ -75,6 +76,10 @@ const emits = defineEmits<{
 // Scroll magic side
 // Select the current date and center it in the view
 const scrollToView = useDebounceFn(() => {
+	if (!currentDate.value) {
+		return;
+	}
+
 	const el = document.querySelector(`[data-date-pointer="${currentDate.value}"]`);
 	if (el) {
 		el.scrollIntoView({ behavior: "smooth", block: "center" });
