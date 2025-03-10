@@ -23,7 +23,7 @@
 
 		<template #center>
 			<span class="sm:hidden font-bold">
-				{{ $t("gallery.albums") }}
+				{{ $t("gallery.timeline.title") }}
 			</span>
 			<span class="hidden sm:block font-bold text-sm lg:text-base text-center w-full">{{ props.title }}</span>
 		</template>
