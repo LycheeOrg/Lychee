@@ -1,5 +1,4 @@
-import { Uploadable } from "@/components/modals/UploadPanel.vue";
-
+import { Uploadable } from "@/composables/album/uploadEvents";
 import { defineStore } from "pinia";
 
 export type TogglablesStateStore = ReturnType<typeof useTogglablesStateStore>;
@@ -28,11 +27,6 @@ export const useTogglablesStateStore = defineStore("togglables-store", {
 		are_details_open: false,
 		is_slideshow_active: false,
 
-		// Search stuff
-		search_term: "",
-		search_album_id: undefined as string | undefined,
-		search_page: 1,
-
 		// Scroll memory
 		scroll_memory: {} as Record<string, number>,
 		scroll_photo_id: undefined as string | undefined,
@@ -51,12 +45,6 @@ export const useTogglablesStateStore = defineStore("togglables-store", {
 		selectedPhotosIdx: [] as number[],
 		selectedAlbumsIdx: [] as number[],
 	}),
-
-	getters: {
-		isSearchActive(): boolean {
-			return this.search_term !== "";
-		},
-	},
 	actions: {
 		toggleFullScreen() {
 			this.is_full_screen = !this.is_full_screen;
@@ -68,12 +56,6 @@ export const useTogglablesStateStore = defineStore("togglables-store", {
 
 		toggleLeftMenu() {
 			this.left_menu_open = !this.left_menu_open;
-		},
-
-		resetSearch() {
-			this.search_term = "";
-			this.search_album_id = undefined;
-			this.search_page = 1;
 		},
 
 		rememberScrollPage(elem: HTMLElement, path: string) {
