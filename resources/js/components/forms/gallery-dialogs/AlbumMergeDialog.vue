@@ -105,6 +105,10 @@ function execute() {
 		} else {
 			AlbumService.clearCache(props.parentId);
 		}
+
+		// RESET !
+		destination_id.value = undefined;
+
 		emits("merged");
 	});
 }
