@@ -44,7 +44,7 @@ final class InitResource extends JsonResource
 		}
 
 		// we also return the locale
-		$locale = include base_path('lang/' . app()->getLocale() . '/lychee.php');
+		$locale = include base_path('app/Legacy/Lang/' . app()->getLocale() . '/lychee.php');
 
 		return [
 			'user' => $this->when(Auth::check(), UserResource::make(Auth::user()), null),

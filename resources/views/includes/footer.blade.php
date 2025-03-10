@@ -24,7 +24,7 @@
 
     @if($infos['copyright_enable'] == '1')
         <p class="home_copyright">
-			{!! sprintf(__('lychee.FOOTER_COPYRIGHT'), $infos['owner'], $infos['copyright_year']) !!}</p>
+			{!! sprintf(__('landing.copyright'), $infos['owner'], $infos['copyright_year']) !!}</p>
     @endif
 
     @if($infos['additional_footer_text'] != '')
@@ -33,6 +33,6 @@
 
 
     @if($page_config['show_hosted_by'])
-        <p class="hosted_by"><a rel="noopener noreferrer" target="_blank" href="https://lycheeorg.dev" tabindex="-1">{{ __('lychee.HOSTED_WITH_LYCHEE') }}</a></p>
+        <p class="hosted_by"><a rel="noopener noreferrer" target="_blank" href="https://lycheeorg.dev" tabindex="-1">{{ __('landing.hosted_with_lychee') }}</a></p>
     @endif
 </div>
