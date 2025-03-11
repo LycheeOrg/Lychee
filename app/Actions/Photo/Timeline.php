@@ -12,6 +12,7 @@ use App\Eloquent\FixedQueryBuilder;
 use App\Enum\ColumnSortingPhotoType;
 use App\Enum\OrderSortingType;
 use App\Enum\TimelinePhotoGranularity;
+use App\Exceptions\Internal\LycheeInvalidArgumentException;
 use App\Exceptions\Internal\TimelineGranularityException;
 use App\Models\Configs;
 use App\Models\Photo;
@@ -19,6 +20,7 @@ use App\Policies\PhotoQueryPolicy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class Timeline
 {
@@ -132,17 +134,29 @@ class Timeline
 		}
 		// @codeCoverageIgnoreEnd
 
+		// This is among the ugliest piece of code I had ever to write...
+		$is_driver_pgsql = DB::getDriverName() === 'pgsql';
+
+		$formatter = match (DB::getDriverName()) {
+			'sqlite' => 'strftime("%2$s", %1$s)',
+			'mysql' => 'DATE_FORMAT(%s, "%s")',
+			'mariadb' => 'DATE_FORMAT(%s, "%s")',
+			'pgsql' => "to_char(%s, '%s')",
+			default => throw new LycheeInvalidArgumentException('Unsupported database driver'),
+		};
+
 		$date_format = match ($this->photo_granularity) {
-			TimelinePhotoGranularity::YEAR => '%Y',
-			TimelinePhotoGranularity::MONTH => '%Y-%m',
-			TimelinePhotoGranularity::DAY => '%Y-%m-%d',
-			TimelinePhotoGranularity::HOUR => '%Y-%m-%dT%H',
+			TimelinePhotoGranularity::YEAR => $is_driver_pgsql ? 'YYYY' : '%Y',
+			TimelinePhotoGranularity::MONTH => $is_driver_pgsql ? 'YYYY-mm' : '%Y-%m',
+			TimelinePhotoGranularity::DAY => $is_driver_pgsql ? 'YYYY-MM-DD' : '%Y-%m-%d',
+			TimelinePhotoGranularity::HOUR => $is_driver_pgsql ? 'YYYY-MM-DD"T"HH24' : '%Y-%m-%dT%H', // hoepfully this is correct
 			TimelinePhotoGranularity::DEFAULT, TimelinePhotoGranularity::DISABLED => throw new TimelineGranularityException(),
 		};
 
 		return $this->photoQueryPolicy->applySearchabilityFilter(
 			query: Photo::query()
-				->selectRaw('DATE_FORMAT(' . $order->value . ', "' . $date_format . '") as date')
+
+				->selectRaw(sprintf($formatter, $order->value, $date_format) . ' as date')
 				->whereNotNull($order->value),
 			origin: null,
 			include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_timeline')
