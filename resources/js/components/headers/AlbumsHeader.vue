@@ -33,6 +33,7 @@
 			<div :class="menu.length > 1 ? 'hidden sm:block' : ''">
 				<template v-for="item in menu">
 					<template v-if="item.type === 'link'">
+						<!-- @vue-ignore -->
 						<Button as="router-link" :to="item.to" :icon="item.icon" class="border-none" severity="secondary" text />
 					</template>
 					<template v-else>

@@ -1,4 +1,6 @@
-const LycheePrimeVueConfig = {
+import { Preset } from "@primeuix/themes/types";
+
+const LycheePrimeVueConfig: Preset = {
 	semantic: {
 		focusRing: {
 			width: "1px",
@@ -165,16 +167,12 @@ const LycheePrimeVueConfig = {
 		autocomplete: {
 			colorScheme: {
 				dark: {
-					background: "transparent",
-					color: "{surface.300}",
-					border: {
-						radius: 0,
-						color: "transparent",
-					},
-					hover: {
-						border: {
-							color: "transparent",
-						},
+					root: {
+						background: "transparent",
+						color: "{surface.300}",
+						borderRadius: "0",
+						borderColor: "transparent",
+						hoverBorderColor: "transparent",
 					},
 				},
 			},
@@ -182,104 +180,84 @@ const LycheePrimeVueConfig = {
 		chip: {
 			colorScheme: {
 				dark: {
-					background: "{surface.900}",
+					root: {
+						background: "{surface.900}",
+					},
 				},
 			},
 		},
 		button: {
-			padding: {
-				x: "0.75rem",
-				y: "0.75rem",
+			root: {
+				paddingX: "0.75rem",
+				paddingY: "0.75rem",
 			},
 			colorScheme: {
 				light: {
-					contrast: {
-						color: "{primary.500}",
-						background: "transparent",
-						hover: {
-							background: "{primary.500}",
-							color: "{surface.0}",
+					root: {
+						contrast: {
+							color: "{primary.500}",
+							background: "transparent",
+							hoverBackground: "{primary.500}",
+							hoverColor: "{surface.0}",
 						},
-					},
-					danger: {
-						color: "{surface.0}",
-						background: "{red.600}",
-						hover: {
-							background: "{red.700}",
+						danger: {
 							color: "{surface.0}",
+							background: "{red.600}",
+							hoverBackground: "{red.700}",
+							hoverColor: "{surface.0}",
 						},
 					},
 				},
 				dark: {
-					primary: {
-						color: "{surface.0}",
-						background: "{primary.500}",
-						hover: {
-							background: "{primary.600}",
+					root: {
+						primary: {
 							color: "{surface.0}",
-						},
-						active: {
-							background: "{primary.700}",
-							color: "{surface.0}",
-						},
-					},
-					contrast: {
-						// Primary with transparent background
-						color: "{primary.500}",
-						background: "transparent",
-						hover: {
 							background: "{primary.500}",
+							hoverBackground: "{primary.600}",
+							hoverColor: "{surface.0}",
+							activeBackground: "{primary.700}",
+							activeColor: "{surface.0}",
+						},
+						contrast: {
+							// Primary with transparent background
+							color: "{primary.500}",
+							background: "transparent",
+							hoverBackground: "{primary.500}",
+							hoverColor: "{surface.0}",
+							activeBackground: "{primary.500}",
+							activeColor: "{surface.0}",
+						},
+						secondary: {
+							// gray with transparent background
+							color: "{text.mutedColor}",
+							background: "transparent",
+							hoverBackground: "color-mix(in srgb, {surface.700}, transparent 76%)",
+							hoverColor: "{red.700}",
+							activeBackground: "color-mix(in srgb, {surface.700}, transparent 76%)",
+							activeColor: "{red.700}",
+						},
+						warn: {
+							color: "{surface.100}",
+							background: "{surface.700}",
+							borderColor: "{surface.800}",
+							hoverBackground: "{surface.600}",
+							hoverColor: "{surface.0}",
+							activeBackground: "{surface.600}",
+							activeColor: "{surface.0}",
+						},
+						info: {
+							color: "{text.mutedColor}",
+							background: "transparent",
+							hoverBackground: "color-mix(in srgb, {surface.700}, transparent 76%)",
+							hoverColor: "{text.hoverMutedColor}",
+							activeBackground: "color-mix(in srgb, {surface.700}, transparent 76%)",
+							activeColor: "{text.hoverMutedColor}",
+						},
+						danger: {
 							color: "{surface.0}",
-						},
-						active: {
-							background: "{primary.500}",
-							color: "{surface.0}",
-						},
-					},
-					secondary: {
-						// gray with transparent background
-						color: "{text.mutedColor}",
-						background: "transparent",
-						hover: {
-							background: "color-mix(in srgb, {surface.700}, transparent 76%)",
-							color: "{red.700}",
-						},
-						active: {
-							background: "color-mix(in srgb, {surface.700}, transparent 76%)",
-							color: "{red.700}",
-						},
-					},
-					warn: {
-						color: "{surface.100}",
-						background: "{surface.700}",
-						borderColor: "{surface.800}",
-						hover: {
-							background: "{surface.600}",
-							color: "{surface.0}",
-						},
-						active: {
-							background: "{surface.600}",
-							color: "{surface.0}",
-						},
-					},
-					info: {
-						color: "{text.mutedColor}",
-						background: "transparent",
-						hover: {
-							background: "color-mix(in srgb, {surface.700}, transparent 76%)",
-							color: "{text.hoverMutedColor}",
-						},
-						active: {
-							background: "color-mix(in srgb, {surface.700}, transparent 76%)",
-							color: "{text.hoverMutedColor}",
-						},
-					},
-					danger: {
-						color: "{surface.0}",
-						background: "{red.800}",
-						hover: {
-							background: "{red.700}",
-							color: "{surface.0}",
+							background: "{red.800}",
+							hoverBackground: "{red.700}",
+							hoverColor: "{surface.0}",
 						},
 					},
 				},
@@ -288,43 +266,24 @@ const LycheePrimeVueConfig = {
 		checkbox: {
 			colorScheme: {
 				light: {
-					disabled: {
-						background: "{surface.100}",
-						border: "{surface.100}",
-					},
-					checked: {
-						disabled: {
-							border: {
-								color: "{surface.100}",
-							},
-						},
+					root: {
+						disabledBackground: "{surface.100}",
+						// disabledBorder: "{surface.100}",
+						checkedDisabledBorderColor: "{surface.100}",
 					},
 					icon: {
-						disabled: {
-							color: "{primary-500}",
-						},
+						disabledColor: "{primary-500}",
 					},
 				},
 				dark: {
-					background: "{surface.800}",
-					border: {
-						color: "{surface.700}",
-					},
-					disabled: {
-						background: "{surface.700}",
-						border: "{surface.700}",
-					},
-					checked: {
-						disabled: {
-							border: {
-								color: "{surface.700}",
-							},
-						},
+					root: {
+						background: "{surface.800}",
+						borderColor: "{surface.700}",
+						disabledBackground: "{surface.700}",
+						checkedDisabledBorderColor: "{surface.700}",
 					},
 					icon: {
-						disabled: {
-							color: "{primary-500}",
-						},
+						disabledColor: "{primary-500}",
 					},
 				},
 			},
@@ -335,21 +294,31 @@ const LycheePrimeVueConfig = {
 			},
 			colorScheme: {
 				light: {
-					boderColor: "{surface.300}",
+					root: {
+						borderColor: "{surface.300}",
+					},
 				},
 				dark: {
-					borderColor: "{surface.900}",
+					root: {
+						borderColor: "{surface.900}",
+					},
 				},
 			},
 		},
 		progressbar: {
-			height: "0.25rem",
+			root: {
+				height: "0.25rem",
+			},
 			colorScheme: {
 				light: {
-					background: "{surface.300}",
+					root: {
+						background: "{surface.300}",
+					},
 				},
 				dark: {
-					background: "{surface.700}",
+					root: {
+						background: "{surface.700}",
+					},
 				},
 			},
 		},
@@ -357,31 +326,31 @@ const LycheePrimeVueConfig = {
 			colorScheme: {
 				light: {},
 				dark: {
-					color: {
-						1: "{primary.400}",
-						2: "{primary.500}",
-						3: "{primary.600}",
-						4: "{primary.700}",
+					root: {
+						colorOne: "{primary.400}",
+						colorTwo: "{primary.500}",
+						colorThree: "{primary.600}",
+						colorFour: "{primary.700}",
 					},
 				},
 			},
 		},
 		toggleswitch: {
-			width: "2rem",
-			height: "1rem",
-			gap: "0.25rem",
-			handle: {
-				size: "0.65rem",
+			root: {
+				width: "2rem",
+				height: "1rem",
+				gap: "0.25rem",
+				// handle: {
+				// 	size: "0.65rem",
+				// },
 			},
 			colorScheme: {
 				dark: {
-					disabled: {
-						background: "{surface.800}",
+					root: {
+						disabledBackground: "{surface.800}",
 					},
 					handle: {
-						disabled: {
-							background: "{surface.700}",
-						},
+						disabledBackground: "{surface.700}",
 					},
 				},
 			},
@@ -398,9 +367,7 @@ const LycheePrimeVueConfig = {
 					root: {
 						background: "{surface.900}",
 						color: "{surface.200}",
-						border: {
-							color: "{surface.800}",
-						},
+						borderColor: "{surface.800}",
 					},
 				},
 			},
@@ -451,9 +418,7 @@ const LycheePrimeVueConfig = {
 			colorScheme: {
 				light: {
 					root: {
-						border: {
-							radius: 0,
-						},
+						borderRadius: "0",
 					},
 					header: {
 						color: "{surface.700}",
@@ -461,9 +426,7 @@ const LycheePrimeVueConfig = {
 				},
 				dark: {
 					root: {
-						border: {
-							radius: 0,
-						},
+						borderRadius: "0",
 						background: "{surface.900}",
 						color: "{surface.0}",
 					},
@@ -476,19 +439,15 @@ const LycheePrimeVueConfig = {
 		timeline: {
 			colorScheme: {
 				dark: {
-					event: {
-						marker: {
-							background: "{surface.800}",
-							border: {
-								color: "{surface.700}",
-							},
-							content: {
-								background: "{primary.600}",
-							},
+					eventMarker: {
+						background: "{surface.800}",
+						borderColor: "{surface.700}",
+						content: {
+							background: "{primary.600}",
 						},
-						connector: {
-							color: "{surface.700}",
-						},
+					},
+					eventConnector: {
+						color: "{surface.700}",
 					},
 				},
 			},
@@ -496,57 +455,23 @@ const LycheePrimeVueConfig = {
 		paginator: {
 			colorScheme: {
 				light: {
-					// root: {
-					// 	border: {
-					// 		radius: 0,
-					// 	},
-					// },
-					// header: {
-					// 	color: "{surface.700}",
-					// },
+					root: {},
+					navButton: {
+						hoverBackground: "color-mix(in srgb, {primary.50}, transparent 92%)",
+						hoverColor: "{primary.500}",
+						selectedBackground: "color-mix(in srgb, {primary.50}, transparent 84%)",
+						selectedColor: "{primary.500}",
+					},
 				},
 				dark: {
-					background: "transparent",
-					// color: "{surface.200}",
-					// root: {
-					// 	border: {
-					// 		radius: 0,
-					// 	},
-					// 	background: "{surface.900}",
-					// 	color: "{surface.0}",
-					// },
-					// header: {
-					// 	color: "{surface.300}",
-					// },
-				},
-			},
-			nav: {
-				button: {
-					colorScheme: {
-						light: {},
-						dark: {
-							color: "{surface.300}",
-						},
+					root: {
+						background: "transparent",
 					},
-					selected: {
-						colorScheme: {
-							light: {
-								color: "{primary.500}",
-							},
-							dark: {
-								color: "{primary.500}",
-								background: "color-mix(in srgb, {primary.50}, transparent 84%)",
-							},
-						},
-					},
-					hover: {
-						colorScheme: {
-							light: {},
-							dark: {
-								color: "{primary.500}",
-								background: "color-mix(in srgb, {primary.50}, transparent 92%)",
-							},
-						},
+					navButton: {
+						hoverBackground: "color-mix(in srgb, {primary.50}, transparent 92%)",
+						hoverColor: "{primary.500}",
+						selectedBackground: "color-mix(in srgb, {primary.50}, transparent 84%)",
+						selectedColor: "{primary.500}",
 					},
 				},
 			},
@@ -567,34 +492,27 @@ const LycheePrimeVueConfig = {
 						color: "{surface.700}",
 					},
 					bodyCell: {
-						border: {
-							color: "{surface.300}",
-						},
+						borderColor: "{surface.300}",
 					},
 				},
 				dark: {
 					header: {
 						color: "{surface.200}",
-						border: {
-							color: "{surface.700}",
-						},
-						cell: {
-							border: {
-								color: "{surface.700}",
-							},
-							background: "{surface.800}",
-							hoverBackground: "{surface.700}",
-							color: "{surface.200}",
-							hoverColor: "{surface.200}",
-						},
+						borderColor: "{surface.700}",
+					},
+
+					headerCell: {
+						borderColor: "{surface.700}",
+						background: "{surface.800}",
+						hoverBackground: "{surface.700}",
+						color: "{surface.200}",
+						hoverColor: "{surface.200}",
 					},
 					row: {
 						color: "{surface.300}",
 					},
 					bodyCell: {
-						border: {
-							color: "{surface.700}",
-						},
+						borderColor: "{surface.700}",
 					},
 				},
 			},
@@ -603,9 +521,7 @@ const LycheePrimeVueConfig = {
 			colorScheme: {
 				light: {
 					root: {
-						border: {
-							radius: 0,
-						},
+						borderRadius: "0",
 					},
 					item: {
 						// color: "{surface.700}",
@@ -613,18 +529,14 @@ const LycheePrimeVueConfig = {
 				},
 				dark: {
 					root: {
-						border: {
-							radius: 0,
-						},
+						borderRadius: "0",
 						background: "transparent",
 						// color: "{surface.0}",
 					},
 					item: {
 						color: "{surface.400}",
-						focus: {
-							background: "transparent",
-							color: "{primary.400}",
-						},
+						focusBackground: "transparent",
+						focusColor: "{primary.400}",
 					},
 				},
 			},
@@ -644,17 +556,13 @@ const LycheePrimeVueConfig = {
 					root: {
 						background: "{surface.800}",
 						color: "{surface.200}",
-						border: {
-							color: "{surface.900}",
-						},
+						borderColor: "{surface.900}",
 					},
 					item: {
 						color: "{surface.400}",
 						padding: "0.1rem 0.75rem",
-						focus: {
-							background: "linear-gradient({primary.500}, {primary.600})",
-							color: "{surface.0}",
-						},
+						focusBackground: "linear-gradient({primary.500}, {primary.600})",
+						focusColor: "{surface.0}",
 					},
 					// option: {
 					// 	color: "{surface.400}",
@@ -684,15 +592,11 @@ const LycheePrimeVueConfig = {
 					},
 					legend: {
 						background: "{surface.900}",
-						hover: {
-							background: "{surface.800}",
-							color: "{surface.0}",
-						},
+						hoverBackground: "{surface.800}",
+						hoverColor: "{surface.0}",
 					},
-					"toggle-icon": {
-						hover: {
-							color: "{primary.500}",
-						},
+					toggleIcon: {
+						hoverColor: "{primary.500}",
 					},
 				},
 			},
@@ -701,9 +605,7 @@ const LycheePrimeVueConfig = {
 			colorScheme: {
 				light: {
 					root: {
-						border: {
-							radius: 0,
-						},
+						borderRadius: "0",
 						background: "{surface.0}",
 						color: "{surface.700}",
 						shadow: "none",
@@ -711,9 +613,7 @@ const LycheePrimeVueConfig = {
 				},
 				dark: {
 					root: {
-						border: {
-							radius: 0,
-						},
+						borderRadius: "0",
 						background: "{surface.900}",
 						color: "{surface.0}",
 					},
@@ -724,57 +624,35 @@ const LycheePrimeVueConfig = {
 			},
 		},
 		tabs: {
-			tablist: {
-				colorScheme: {
-					light: {
+			colorScheme: {
+				light: {
+					tab: {
 						background: "transparent",
-						border: {
-							color: "{surface.300}",
-						},
+						borderColor: "{surface.300}",
+						hoverColor: "{primary.600}",
+						hoverBorderColor: "{primary.600}",
 					},
-					dark: {
+					tabpanel: {
 						background: "transparent",
-						border: {
-							color: "{surface.700}",
-						},
 					},
-				},
-			},
-			tab: {
-				colorScheme: {
-					light: {
+					tablist: {
 						background: "transparent",
-						border: {
-							color: "{surface.300}",
-						},
-						hover: {
-							color: "{primary.600}",
-							border: {
-								color: "{primary.600}",
-							},
-						},
-					},
-					dark: {
-						background: "transparent",
-						border: {
-							color: "{surface.700}",
-						},
-						hover: {
-							color: "{primary.600}",
-							border: {
-								color: "{primary.600}",
-							},
-						},
+						borderColor: "{surface.300}",
 					},
 				},
-			},
-			tabpanel: {
-				colorScheme: {
-					light: {
+				dark: {
+					tab: {
+						background: "transparent",
+						borderColor: "{surface.700}",
+						hoverColor: "{primary.600}",
+						hoverBorderColor: "{primary.600}",
+					},
+					tabpanel: {
 						background: "transparent",
 					},
-					dark: {
+					tablist: {
 						background: "transparent",
+						borderColor: "{surface.700}",
 					},
 				},
 			},
@@ -789,10 +667,14 @@ const LycheePrimeVueConfig = {
 		inplace: {
 			colorScheme: {
 				light: {
-					displayHoverBackground: "transparent",
+					root: {
+						displayHoverBackground: "transparent",
+					},
 				},
 				dark: {
-					displayHoverBackground: "transparent",
+					root: {
+						displayHoverBackground: "transparent",
+					},
 				},
 			},
 		},
@@ -802,53 +684,48 @@ const LycheePrimeVueConfig = {
 			},
 		},
 		inputtext: {
-			disabled: {
-				colorScheme: {
-					light: {
-						background: "{surface.700}",
-					},
-					dark: {
-						background: "var(--surface-950)",
-					},
-				},
+			root: {
+				paddingX: "1rem",
+				paddingY: "0.25rem",
+				borderRadius: "0",
+				transitionDuration: "0",
+				shadow: "none",
 			},
-			background: "transparent",
-			padding: {
-				x: "1rem",
-				y: "0.25rem",
-			},
-			border: {
-				radius: 0,
-			},
-			transition: {
-				duration: 0,
-			},
-			shadow: "none",
 			colorScheme: {
 				light: {
-					color: "{surface.700}",
+					root: {
+						color: "{surface.700}",
+						background: "transparent",
+						disabledBackground: "{surface.700}",
+					},
 				},
 				dark: {
-					color: "{surface.300}",
+					root: {
+						color: "{surface.300}",
+						background: "transparent",
+						disabledBackground: "{surface.950}",
+					},
 				},
 			},
 		},
 		inputchips: {
-			background: "transparent",
-			border: {
-				radius: 0,
-				color: "transparent",
+			root: {
+				background: "transparent",
+				borderRadius: "0",
+				borderColor: "transparent",
+				transitionDuration: "0",
+				shadow: "none",
 			},
-			transition: {
-				duration: 0,
-			},
-			shadow: "none",
 			colorScheme: {
 				light: {
-					color: "{surface.700}",
+					root: {
+						color: "{surface.700}",
+					},
 				},
 				dark: {
-					color: "{surface.300}",
+					root: {
+						color: "{surface.300}",
+					},
 				},
 			},
 		},
@@ -885,6 +762,8 @@ const LycheePrimeVueConfig = {
 						borderColor: "{content.border.color}",
 						color: "{content.color}",
 						padding: "0 0 0.5rem 0",
+					},
+					title: {
 						fontWeight: "500",
 						gap: "0.5rem",
 					},
@@ -943,70 +822,60 @@ const LycheePrimeVueConfig = {
 			},
 		},
 		select: {
-			background: "transparent",
-			border: {
-				radius: 0,
-			},
-			padding: {
-				x: "1rem",
-				y: "0.25rem",
+			root: {
+				background: "transparent",
+				borderRadius: "0",
+				paddingX: "1rem",
+				paddingY: "0.25rem",
+				transitionDuration: "0",
+				shadow: "none",
 			},
 			option: {
 				padding: "0 1rem",
-				border: {
-					radius: 0,
-				},
+				borderRadius: "0",
 			},
-			transition: {
-				duration: 0,
-			},
-			shadow: "none",
 			colorScheme: {
 				light: {
 					option: {
 						color: "{surface.500}",
-						focus: {
-							background: "linear-gradient({primary.500}, {primary.600})",
-							color: "{surface.0}",
-						},
+						focusBackground: "linear-gradient({primary.500}, {primary.600})",
+						focusColor: "{surface.0}",
 					},
 				},
 				dark: {
-					disabled: {
-						background: "transparent",
+					root: {
+						disabledBackground: "transparent",
+						color: "{surface.300}",
 					},
 					option: {
 						color: "{surface.400}",
-						focus: {
-							background: "linear-gradient({primary.500}, {primary.600})",
-							color: "{surface.0}",
-						},
+						focusBackground: "linear-gradient({primary.500}, {primary.600})",
+						focusColor: "{surface.0}",
 					},
 					overlay: {
 						background: "{surface.900}",
-						border: {
-							color: "{surface.800}",
-						},
+						borderColor: "{surface.800}",
 					},
-					color: "{surface.300}",
 				},
 			},
 		},
 		textarea: {
-			background: "transparent",
-			border: {
-				radius: 0,
+			root: {
+				background: "transparent",
+				borderRadius: "0",
+				transitionDuration: "0",
+				shadow: "none",
 			},
-			transition: {
-				duration: 0,
-			},
-			shadow: "none",
 			colorScheme: {
 				light: {
-					color: "{surface.700}",
+					root: {
+						color: "{surface.700}",
+					},
 				},
 				dark: {
-					color: "{surface.300}",
+					root: {
+						color: "{surface.300}",
+					},
 				},
 			},
 		},

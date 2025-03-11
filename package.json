@@ -26,7 +26,7 @@
     },
     "dependencies": {
         "@fortawesome/fontawesome-free": "^6.7.1",
-        "@primevue/themes": "^4.3.1",
+        "@primeuix/themes": "^1.0.0",
         "@sidsbrmnn/scrollspy": "^1.1.0",
         "@tailwindcss/vite": "^4.0.12",
         "@types/dropbox-chooser": "^1.0.8",
