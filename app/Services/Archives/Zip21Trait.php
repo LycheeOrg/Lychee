@@ -18,6 +18,13 @@ use Composer\InstalledVersions;
 use Composer\Semver\VersionParser;
 use ZipStream\ZipStream;
 
+/**
+ * This code is untestable as it is tightly coupled with the ZipStream version.
+ * Tests are run with ZipStream version 3.1+.
+ * This code has been tested manually by the developer.
+ *
+ * @codeCoverageIgnore
+ */
 trait Zip21Trait
 {
 	/**

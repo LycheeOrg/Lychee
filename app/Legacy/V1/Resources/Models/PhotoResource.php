@@ -51,9 +51,11 @@ final class PhotoResource extends JsonResource
 	{
 		/** @var SizeVariants|MissingValue $size_variants */
 		$size_variants = $this->whenLoaded('size_variants');
+		// @codeCoverageIgnoreStart
 		if ($size_variants instanceof MissingValue) {
 			$size_variants = null;
 		}
+		// @codeCoverageIgnoreEnd
 		$downgrade = !Gate::check(PhotoPolicy::CAN_ACCESS_FULL_PHOTO, [Photo::class, $this->resource]) &&
 			!$this->resource->isVideo() &&
 			$size_variants?->hasMedium() === true;
