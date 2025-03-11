@@ -61,7 +61,7 @@ jobs:
           sh scripts/delete_legacy.sh
 
       - name: Install dependencies
-        uses: ramsey/composer-install@57532f8be5bda426838819c5ee9afb8af389d51a # 3.0.0
+        uses: ramsey/composer-install@a2636af0004d1c0499ffca16ac0b4cc94df70565 # 3.1.0
 
       - name: Check source code for syntax errors
         run: vendor/bin/parallel-lint --exclude .git --exclude vendor .
@@ -90,7 +90,7 @@ jobs:
           sh scripts/delete_legacy.sh
 
       - name: Install dependencies
-        uses: ramsey/composer-install@57532f8be5bda426838819c5ee9afb8af389d51a # 3.0.0
+        uses: ramsey/composer-install@a2636af0004d1c0499ffca16ac0b4cc94df70565 # 3.1.0
 
       - name: Check source code for code style errors
         run: PHP_CS_FIXER_IGNORE_ENV=1 vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --verbose --diff --dry-run
@@ -126,7 +126,7 @@ jobs:
           coverage: none
 
       - name: Install Composer dependencies
-        uses: ramsey/composer-install@57532f8be5bda426838819c5ee9afb8af389d51a # 3.0.0
+        uses: ramsey/composer-install@a2636af0004d1c0499ffca16ac0b4cc94df70565 # 3.1.0
 
       - name: Run PHPStan
         run: vendor/bin/phpstan analyze
@@ -152,7 +152,7 @@ jobs:
           coverage: none
 
       - name: Install Composer dependencies
-        uses: ramsey/composer-install@57532f8be5bda426838819c5ee9afb8af389d51a # 3.0.0
+        uses: ramsey/composer-install@a2636af0004d1c0499ffca16ac0b4cc94df70565 # 3.1.0
 
       # We ban GPL-2.0-or-later, we don't want that viral thing in Lychee: We want to keep our MIT license.
       - name: Run License Checker
