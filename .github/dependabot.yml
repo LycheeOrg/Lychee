@@ -4,6 +4,10 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    groups:
+      actions-deps:
+        patterns:
+          - "*" # Include all GitHub Actions
 
   - package-ecosystem: npm
     directory: /
