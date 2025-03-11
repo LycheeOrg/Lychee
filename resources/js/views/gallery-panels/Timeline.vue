@@ -1,7 +1,7 @@
 <template>
 	<LoadingProgress v-model:loading="isLoading" />
-	<LoginModal v-if="user?.id === null" />
-	<WebauthnModal v-if="user?.id === null" />
+	<LoginModal v-if="user?.id === null" @logged-in="refresh" />
+	<WebauthnModal v-if="user?.id === null" @logged-in="refresh" />
 
 	<div v-if="rootConfig && rootRights" class="h-svh overflow-y-auto">
 		<Collapse :when="!is_full_screen">
@@ -28,6 +28,7 @@
 			:selected-photos="selectedPhotosIds"
 			@clicked="photoClick"
 			@selected="photoSelect"
+			@contexted="photoMenuOpen"
 			:is-timeline="true"
 			:with-control="false"
 		/>
@@ -56,52 +57,85 @@
 		<ProgressSpinner class="flex justify-center" v-if="isLoading && !isTouchDevice()" />
 		<TimelineDates :dates="dates" v-if="photo === undefined" @load="goToDate" />
 		<ScrollTop target="parent" :threshold="50" v-if="photo === undefined" />
-		<!-- Dialogs -->
-		<!-- <PhotoTagDialog
-			v-model:visible="is_tag_visible"
-			:parent-id="undefined"
-			:photo="selectedPhoto"
-			:photo-ids="selectedPhotosIds"
-			@tagged="refresh"
-		/>
-		<PhotoCopyDialog
-			v-model:visible="is_copy_visible"
-			:parent-id="undefined"
-			:photo="selectedPhoto"
-			:photo-ids="selectedPhotosIds"
-			@copied="refresh"
-		/>
-		<MoveDialog
-			v-model:visible="is_move_visible"
-			:parent-id="undefined"
-			:photo="selectedPhoto"
-			:photo-ids="selectedPhotosIds"
-			:album="undefined"
-			:album-ids="[]"
-			@moved="refresh"
-		/> -->
-		<!-- <DeleteDialog
-			v-model:visible="is_delete_visible"
-			:parent-id="undefined"
-			:photo="selectedPhoto"
-			:photo-ids="selectedPhotosIds"
-			:album="undefined"
-			:album-ids="[]"
-			@deleted="refresh"
-		/> -->
-		<!-- <RenameDialog v-model:visible="is_rename_visible" :parent-id="undefined" :album="undefined" :photo="selectedPhoto" @renamed="refresh" /> -->
 
-		<!-- <ContextMenu ref="menu" :model="Menu" :class="Menu.length === 0 ? 'hidden' : ''">
+		<!-- Dialogs -->
+		<template v-if="photo">
+			<PhotoTagDialog
+				v-model:visible="is_tag_visible"
+				:parent-id="photo.album_id ?? 'unsorted'"
+				:photo="selectedPhoto"
+				:photo-ids="selectedPhotosIds"
+				@tagged="
+					() => {
+						unselect();
+						refresh();
+					}
+				"
+			/>
+			<PhotoCopyDialog
+				v-model:visible="is_copy_visible"
+				:parent-id="photo.album_id ?? 'unsorted'"
+				:photo="selectedPhoto"
+				:photo-ids="selectedPhotosIds"
+				@copied="
+					() => {
+						unselect();
+						refresh();
+					}
+				"
+			/>
+			<PhotoEdit v-if="photo?.rights.can_edit" :photo="photo" v-model:visible="is_photo_edit_open" />
+			<MoveDialog :photo="photo" v-model:visible="is_move_visible" :parent-id="photo.album_id ?? 'unsorted'" @moved="refresh" />
+			<DeleteDialog :photo="photo" v-model:visible="is_delete_visible" :parent-id="photo.album_id ?? 'unsorted'" @deleted="refresh" />
+		</template>
+		<template v-else>
+			<!-- Dialogs -->
+			<PhotoTagDialog
+				v-model:visible="is_tag_visible"
+				:parent-id="undefined"
+				:photo="selectedPhoto"
+				:photo-ids="selectedPhotosIds"
+				@tagged="refresh"
+			/>
+			<PhotoCopyDialog
+				v-model:visible="is_copy_visible"
+				:parent-id="undefined"
+				:photo="selectedPhoto"
+				:photo-ids="selectedPhotosIds"
+				@copied="refresh"
+			/>
+			<MoveDialog
+				v-model:visible="is_move_visible"
+				:parent-id="undefined"
+				:photo="selectedPhoto"
+				:photo-ids="selectedPhotosIds"
+				:album="undefined"
+				:album-ids="[]"
+				@moved="refresh"
+			/>
+			<DeleteDialog
+				v-model:visible="is_delete_visible"
+				:parent-id="undefined"
+				:photo="selectedPhoto"
+				:photo-ids="selectedPhotosIds"
+				:album="undefined"
+				:album-ids="[]"
+				@deleted="refresh"
+			/>
+			<RenameDialog v-model:visible="is_rename_visible" :parent-id="undefined" :album="undefined" :photo="selectedPhoto" @renamed="refresh" />
+		</template>
+		<ContextMenu ref="menu" :model="Menu" :class="Menu.length === 0 ? 'hidden' : ''">
 			<template #item="{ item, props }">
 				<Divider v-if="item.is_divider" />
 				<a v-else v-ripple v-bind="props.action" @click="item.callback">
 					<span :class="item.icon" />
 					<span class="ml-2">
+						<!-- @vue-ignore -->
 						{{ $t(item.label) }}
 					</span>
 				</a>
 			</template>
-		</ContextMenu> -->
+		</ContextMenu>
 		<GalleryFooter v-once />
 	</div>
 </template>
@@ -139,6 +173,19 @@ import { useSlideshowFunction } from "@/composables/photo/slideshow";
 import { useHasNextPreviousPhoto } from "@/composables/photo/hasNextPreviousPhoto";
 import { useToast } from "primevue/usetoast";
 import TimelineDates from "@/components/gallery/timelineModule/TimelineDates.vue";
+import PhotoTagDialog from "@/components/forms/photo/PhotoTagDialog.vue";
+import PhotoCopyDialog from "@/components/forms/photo/PhotoCopyDialog.vue";
+import PhotoEdit from "@/components/drawers/PhotoEdit.vue";
+import MoveDialog from "@/components/forms/gallery-dialogs/MoveDialog.vue";
+import DeleteDialog from "@/components/forms/gallery-dialogs/DeleteDialog.vue";
+import { useContextMenu } from "@/composables/contextMenus/contextMenu";
+import PhotoService from "@/services/photo-service";
+import AlbumService from "@/services/album-service";
+import { EmptyAlbumCallbacks } from "@/utils/Helpers";
+import Divider from "primevue/divider";
+import ContextMenu from "primevue/contextmenu";
+import { useMouseEvents } from "@/composables/album/uploadEvents";
+import RenameDialog from "@/components/forms/gallery-dialogs/RenameDialog.vue";
 
 const props = defineProps<{
 	date?: string;
@@ -158,7 +205,7 @@ lycheeStore.init();
 const videoElement = ref<HTMLVideoElement | null>(null);
 const albumId = ref(null);
 
-const { are_nsfw_visible, title, slideshow_timeout } = storeToRefs(lycheeStore);
+const { title, slideshow_timeout } = storeToRefs(lycheeStore);
 const { is_full_screen, is_login_open, is_upload_visible, list_upload_files, is_slideshow_active, is_photo_edit_open, are_details_open } =
 	storeToRefs(togglableStore);
 
@@ -246,18 +293,18 @@ function goBack() {
 	}
 }
 
-onMounted(async () => {
+async function refresh() {
 	await loadTimelineConfig();
-
 	if (!isTimelineEnabled.value) {
 		// Bye.
 		router.push({ name: "gallery" });
 	}
-
-	await loadLayoutConfig();
-	loadUser();
-	loadDates();
+	await Promise.all([loadLayoutConfig(), loadUser(), loadDates()]);
 	await initialLoad(props.date ?? "", props.photoId);
+}
+
+onMounted(async () => {
+	await refresh();
 	registerSentinel();
 	registerScrollSpy();
 });
@@ -276,59 +323,57 @@ const {
 	toggleCopy,
 } = useGalleryModals(togglableStore);
 
-// const photoCallbacks = {
-// 	star: () => {
-// 		PhotoService.star(selectedPhotosIds.value, true);
-// 		AlbumService.clearCache();
-// 		refresh();
-// 	},
-// 	unstar: () => {
-// 		PhotoService.star(selectedPhotosIds.value, false);
-// 		AlbumService.clearCache();
-// 		refresh();
-// 	},
-// 	setAsCover: () => {},
-// 	setAsHeader: () => {},
-// 	toggleTag: toggleTag,
-// 	toggleRename: toggleRename,
-// 	toggleCopyTo: toggleCopy,
-// 	toggleMove: toggleMove,
-// 	toggleDelete: toggleDelete,
-// 	toggleDownload: () => {},
-// };
+const photoCallbacks = {
+	star: () => {
+		PhotoService.star(selectedPhotosIds.value, true);
+		AlbumService.clearCache();
+		refresh();
+	},
+	unstar: () => {
+		PhotoService.star(selectedPhotosIds.value, false);
+		AlbumService.clearCache();
+		refresh();
+	},
+	setAsCover: () => {},
+	setAsHeader: () => {},
+	toggleTag: toggleTag,
+	toggleRename: toggleRename,
+	toggleCopyTo: toggleCopy,
+	toggleMove: toggleMove,
+	toggleDelete: toggleDelete,
+	toggleDownload: () => {},
+};
 
-// const { menu, Menu, photoMenuOpen } = useContextMenu(
-// 	{
-// 		selectedPhoto: selectedPhoto,
-// 		selectedPhotos: selectedPhotos,
-// 		selectedPhotosIdx: selectedPhotosIdx,
-// 	},
-// 	photoCallbacks,
-// 	EmptyAlbumCallbacks,
-// );
+const { menu, Menu, photoMenuOpen } = useContextMenu(
+	{
+		selectedPhoto: selectedPhoto,
+		selectedPhotos: selectedPhotos,
+		selectedPhotosIdx: selectedPhotosIdx,
+	},
+	photoCallbacks,
+	EmptyAlbumCallbacks,
+);
 
-// refresh();
+const { onPaste, dragEnd, dropUpload } = useMouseEvents(rootRights, is_upload_visible, list_upload_files);
 
-// onKeyStroke("h", () => !shouldIgnoreKeystroke() && (are_nsfw_visible.value = !are_nsfw_visible.value));
-// onKeyStroke("f", () => !shouldIgnoreKeystroke() && togglableStore.toggleFullScreen());
-// onKeyStroke(" ", () => !shouldIgnoreKeystroke() && unselect());
-// onKeyStroke("m", () => !shouldIgnoreKeystroke() && rootRights.value?.can_edit && hasSelection() && toggleMove());
-// onKeyStroke(["Delete", "Backspace"], () => !shouldIgnoreKeystroke() && rootRights.value?.can_edit && hasSelection() && toggleDelete());
+window.addEventListener("paste", onPaste);
+window.addEventListener("dragover", dragEnd);
+window.addEventListener("drop", dropUpload);
+router.afterEach(() => {
+	window.removeEventListener("paste", onPaste);
+	window.removeEventListener("dragover", dragEnd);
+	window.removeEventListener("drop", dropUpload);
+});
 
-// onKeyStroke([getModKey(), "a"], () => !shouldIgnoreKeystroke() && selectEverything());
+function openSearch() {
+	router.push({ name: "search" });
+}
 
-// const { onPaste, dragEnd, dropUpload } = useMouseEvents(rootRights, is_upload_visible, list_upload_files);
-
-// window.addEventListener("paste", onPaste);
-// window.addEventListener("dragover", dragEnd);
-// window.addEventListener("drop", dropUpload);
-// router.afterEach(() => {
-// 	window.removeEventListener("paste", onPaste);
-// 	window.removeEventListener("dragover", dragEnd);
-// 	window.removeEventListener("drop", dropUpload);
-// });
-
+onKeyStroke("l", () => !shouldIgnoreKeystroke() && photo.value === undefined && user.value?.id === null && (is_login_open.value = true));
+onKeyStroke("/", () => !shouldIgnoreKeystroke() && photo.value === undefined && rootConfig.value?.is_search_accessible && openSearch());
 onKeyStroke("f", () => !shouldIgnoreKeystroke() && photo.value === undefined && togglableStore.toggleFullScreen());
+onKeyStroke("u", () => !shouldIgnoreKeystroke() && photo.value === undefined && (is_upload_visible.value = true));
+
 onKeyStroke("ArrowLeft", () => !shouldIgnoreKeystroke() && photo.value !== undefined && hasPrevious() && previous(true));
 onKeyStroke("ArrowRight", () => !shouldIgnoreKeystroke() && photo.value !== undefined && hasNext() && next(true));
 onKeyStroke("o", () => !shouldIgnoreKeystroke() && photo.value !== undefined && rotateOverlay());
@@ -348,6 +393,10 @@ onKeyStroke(["Delete", "Backspace"], () => !shouldIgnoreKeystroke() && photo.val
 // 2. close modals
 // 3. go back
 onKeyStroke("Escape", () => {
+	if (is_slideshow_active.value) {
+		return;
+	}
+
 	// 1. lose focus
 	if (shouldIgnoreKeystroke() && document.activeElement instanceof HTMLElement) {
 		document.activeElement.blur();

@@ -171,7 +171,7 @@ function logout() {
 		initData.value = undefined;
 		authStore.setUser(null);
 		AlbumService.clearCache();
-		window.location.href = Constants.BASE_URL + "/gallery";
+		window.location.href = Constants.BASE_URL + "/home";
 	});
 }
 
