@@ -1,3 +1,6 @@
+// This constant is used to define albums that should not be queried to server (e.g. in search).
+export const ALL = "all";
+
 export type SelectOption<T> = {
 	value: T;
 	label: string;

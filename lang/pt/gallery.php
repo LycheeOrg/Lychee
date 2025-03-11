@@ -39,7 +39,6 @@ return [
 
 	'search' => [
 		'title' => 'Search',
-		'searching' => 'Searching…',
 		'no_results' => 'Nothing matches your search query.',
 		'searchbox' => 'Search…',
 		'minimum_chars' => 'Minimum %s characters required.',

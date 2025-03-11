@@ -1,5 +1,5 @@
 <template>
-	<Collapse class="w-full flex justify-center flex-wrap flex-row-reverse" :when="are_details_open">
+	<Collapse class="w-full flex justify-center flex-wrap flex-row-reverse" :when="is_album_edit_open">
 		<ul
 			v-if="props.config.is_base_album"
 			class="sm:mt-7 sm:px-7 mb-4 text-sm w-full xl:w-1/6 xl:px-9 max-xl:w-full max-xl:flex max-xl:justify-center"
@@ -87,7 +87,7 @@ const props = defineProps<{
 }>();
 
 const togglableStore = useTogglablesStateStore();
-const { are_details_open } = storeToRefs(togglableStore);
+const { is_album_edit_open } = storeToRefs(togglableStore);
 
 const activeTab = ref(0);
 const numUsers = ref(0);
@@ -103,6 +103,6 @@ const canDelete = computed(() => props.config.is_base_album && props.album.right
 
 function close() {
 	activeTab.value = 0;
-	are_details_open.value = false;
+	is_album_edit_open.value = false;
 }
 </script>

@@ -16,14 +16,9 @@
 	</Card>
 </template>
 <script setup lang="ts">
+import { TotalAlbum } from "@/composables/album/albumStatistics";
 import { sizeToUnit } from "@/utils/StatsSizeVariantToColours";
 import Card from "primevue/card";
-
-export type TotalAlbum = {
-	num_photos: number;
-	num_albums: number;
-	size: number;
-};
 
 const props = defineProps<{ total: TotalAlbum }>();
 </script>
