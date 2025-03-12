@@ -64,7 +64,7 @@ authStore.getUser().then((data) => {
 
 	// Not logged in. Bye.
 	if (user.value.id === null) {
-		router.push({ name: "gallery" });
+		router.push({ name: "home" });
 	}
 
 	load.value = true;
