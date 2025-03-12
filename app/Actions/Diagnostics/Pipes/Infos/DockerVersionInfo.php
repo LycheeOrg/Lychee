@@ -10,6 +10,7 @@ namespace App\Actions\Diagnostics\Pipes\Infos;
 
 use App\Actions\Diagnostics\Diagnostics;
 use App\Contracts\DiagnosticStringPipe;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Which version of Lychee are we using?
@@ -42,7 +43,14 @@ class DockerVersionInfo implements DiagnosticStringPipe
 	 */
 	public function isDocker(): bool
 	{
-		return is_file('/.dockerenv');
+		try {
+			return is_file('/.dockerenv');
+		} catch (\Exception $e) {
+			// Silent catch.
+			Log::warning($e);
+
+			return false;
+		}
 	}
 
 	/**
