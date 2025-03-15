@@ -2,10 +2,10 @@
 	<div
 		:class="{
 			'flex w-full overflow-hidden transition-all duration-200 ease-out': true,
-			'h-11': !isGeneral,
-			'h-0': isGeneral,
+			'h-11': !isCollapsed,
+			'h-0': isCollapsed,
 		}"
-		v-if="!props.isVisible"
+		v-if="!props.isSaveVisible"
 	>
 		<div
 			:class="{
@@ -14,9 +14,15 @@
 				'w-0': are_all_settings_enabled,
 			}"
 		></div>
-		<div class="flex w-full gap-4 justify-between pl-6">
-			<div class="flex gap-2 items-center w-full">
-				<ToggleSwitch v-model="is_expert_mode" input-id="expertModeToggle"></ToggleSwitch>
+		<div class="flex w-full gap-4 justify-start pl-6">
+			<div
+				:class="{
+					'flex gap-2 items-center w-full': true,
+					'opacity-50': !props.hasExperts,
+					'opacity-100': props.hasExperts,
+				}"
+			>
+				<ToggleSwitch v-model="is_expert_mode" input-id="expertModeToggle" :disabled="!props.hasExperts"></ToggleSwitch>
 				<label for="expertModeToggle" class="text-muted-color">{{ $t("Expert Mode") }}<i class="pi pi-graduation-cap ml-2"></i></label>
 			</div>
 			<div class="flex gap-2 items-center w-full">
@@ -48,8 +54,9 @@ import ToggleSwitch from "primevue/toggleswitch";
 import { onMounted } from "vue";
 
 const props = defineProps<{
-	isVisible: boolean;
-	isGeneral: boolean;
+	isSaveVisible: boolean;
+	hasExperts: boolean;
+	isCollapsed: boolean;
 }>();
 
 const lycheeStore = useLycheeStateStore();

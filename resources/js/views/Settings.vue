@@ -13,14 +13,20 @@
 	<div class="text-center lg:hidden font-bold text-danger-700 py-3" v-html="$t('settings.small_screen')"></div>
 	<div class="pl-[calc(100vw-100%)] flex justify-center">
 		<div class="max-w-6xl w-full">
-			<ConfirmSave :is-visible="modified.length > 0" :is-general="is_collapsed" @save="save" @ready="isReady = true" />
+			<ConfirmSave
+				:is-save-visible="modified.length > 0"
+				:is-collapsed="isCollapsed"
+				:has-experts="hasExperts"
+				@save="save"
+				@ready="isReady = true"
+			/>
 			<template v-if="isReady && configs !== undefined">
-				<div class="flex" v-if="!are_all_settings_enabled">
+				<div class="flex gap-4" v-if="!are_all_settings_enabled">
 					<div class="w-3xs shrink-0">
-						<Menu :model="menu" :pt:root:class="'border-0 sticky top-11'"> </Menu>
+						<Menu :model="menu" :pt:root:class="'border-0 sticky top-11'" :pt:separator:class="'mb-2'"> </Menu>
 					</div>
 					<div class="w-full">
-						<EasySettings :configs="configs" :hash="hash" v-if="tab === ''" />
+						<EasySettings :configs="configs" :hash="hash" v-if="tab === ''" @refresh="load" />
 						<CssJs v-if="tab === 'CssJs'" />
 						<template v-for="config in configs" :id="config.cat">
 							<Fieldset
@@ -63,9 +69,17 @@ import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import { MenuItem } from "primevue/menuitem";
 import CssJs from "@/components/settings/CssJs.vue";
+import { useRoute, useRouter } from "vue-router";
+import { watch } from "vue";
+
+const props = defineProps<{
+	tab: string | undefined;
+}>();
 
 const toast = useToast();
-const tab = ref("");
+const tab = ref(props.tab);
+const router = useRouter();
+const route = useRoute();
 const isReady = ref(false);
 const configs = ref<App.Http.Resources.Models.ConfigCategoryResource[] | undefined>(undefined);
 const hash = ref("");
@@ -75,8 +89,16 @@ const { are_all_settings_enabled } = storeToRefs(lycheeStore);
 
 const { spliter } = useSplitter();
 
-const is_collapsed = computed(() => {
-	return tab.value === "" && !are_all_settings_enabled.value;
+const isCollapsed = computed(() => {
+	return (tab.value === "" || tab.value === "CssJs") && !are_all_settings_enabled.value;
+});
+
+const hasExperts = computed(() => {
+	if (configs.value === undefined) {
+		return false;
+	}
+
+	return configs.value?.filter((c) => c.cat === tab.value).some((c) => c.configs.some((config) => config.is_expert));
 });
 
 const menu = computed(() => {
@@ -106,36 +128,37 @@ const menu = computed(() => {
 		},
 	);
 
-	const categoryGroups: MenuItem[] = categories.map((m) => {
-		return {
-			label: trans(m.header),
-			items: m.data.map((c) => {
+	const menu: MenuItem[] = [];
+	menu.push({
+		label: trans("settings.groups.general"),
+		command: () => router.push({ name: "settings", params: { tab: "" } }),
+	});
+	categories.forEach((c) => {
+		menu.push({
+			separator: true,
+		});
+		menu.push({
+			label: trans(c.header),
+			items: c.data.map((item) => {
 				return {
-					label: c.name,
-					command: () => (tab.value = c.cat),
+					label: item.name,
+					command: () => router.push({ name: "settings", params: { tab: item.cat } }),
 				};
 			}),
-		};
+		});
 	});
-
-	categoryGroups.unshift({
-		label: trans("settings.groups.general"),
-		command: () => (tab.value = ""),
-	});
-
-	categoryGroups[categoryGroups.length - 1].items?.push({
+	menu[menu.length - 1].items?.push({
 		label: trans("settings.cssjs.header"),
-		command: () => (tab.value = "CssJs"),
+		command: () => router.push({ name: "settings", params: { tab: "CssJs" } }),
 	});
 
-	return categoryGroups;
+	return menu;
 });
 
 function load() {
 	SettingsService.getAll().then((response) => {
 		configs.value = response.data as App.Http.Resources.Models.ConfigCategoryResource[];
 		hash.value = Math.random().toString(16).substring(2, 12);
-		console.log(hash.value);
 	});
 }
 
@@ -162,6 +185,7 @@ function reset(configKey: string) {
 function save() {
 	SettingsService.setConfigs({ configs: modified.value })
 		.then(() => {
+			setDarkMode(); // This is a hack to set the dark mode immediately
 			modified.value = [];
 			toast.add({ severity: "success", summary: trans("settings.toasts.change_saved"), detail: trans("settings.toasts.details"), life: 3000 });
 			load();
@@ -171,9 +195,25 @@ function save() {
 		});
 }
 
+function setDarkMode() {
+	const isDark = modified.value.find((c) => c.key === "dark_mode_enabled")?.value;
+	if (isDark === "1") {
+		document.body.classList.add("dark");
+	} else if (isDark === "0") {
+		document.body.classList.remove("dark");
+	}
+}
+
 onMounted(() => {
 	load();
 });
+
+watch(
+	() => route.params.tab,
+	(newTab, _oldTab) => {
+		tab.value = newTab as string | undefined;
+	},
+);
 </script>
 <style lang="css">
 /* Kill the border of ScrollTop */

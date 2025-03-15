@@ -398,9 +398,9 @@ onMounted(() => {
 });
 
 watch(
-	() => [props.configs, props.hash],
-	([newConfigs, newHash], _) => {
-		load(newConfigs as App.Http.Resources.Models.ConfigCategoryResource[]);
+	() => props.hash,
+	() => {
+		load(props.configs);
 	},
 );
 </script>
