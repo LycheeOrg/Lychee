@@ -6,10 +6,13 @@ export type SetConfigRequest = {
 };
 
 const SettingsService = {
-	getAll(): Promise<AxiosResponse<App.Http.Resources.Collections.ConfigCollectionResource>> {
+	getAll(): Promise<AxiosResponse<App.Http.Resources.Models.ConfigCategoryResource[]>> {
 		return axios.get(`${Constants.getApiUrl()}Settings`, { data: {} });
 	},
-	setConfigs(data: SetConfigRequest): Promise<AxiosResponse<App.Http.Resources.Collections.ConfigCollectionResource>> {
+	init(): Promise<AxiosResponse<App.Http.Resources.GalleryConfigs.SettingsConfig>> {
+		return axios.get(`${Constants.getApiUrl()}Settings::init`, { data: {} });
+	},
+	setConfigs(data: SetConfigRequest): Promise<AxiosResponse<App.Http.Resources.Models.ConfigCategoryResource[]>> {
 		return axios.post(`${Constants.getApiUrl()}Settings::setConfigs`, data);
 	},
 	getLanguages(): Promise<AxiosResponse<string[]>> {
