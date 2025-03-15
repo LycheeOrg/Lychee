@@ -99,7 +99,7 @@ return new class() extends Migration {
 	private function upOrdering(): void
 	{
 		Schema::table('configs', function (Blueprint $table): void {
-			$table->unsignedSmallInteger(self::COL_ORDER)->default(65535)->after(self::COL_NOT_ON_DOCKER);
+			$table->unsignedSmallInteger(self::COL_ORDER)->default(32767)->after(self::COL_NOT_ON_DOCKER);
 		});
 
 		DB::table('configs')->where('key', 'config_sort_albums_by')->update([self::COL_ORDER => 0]);

@@ -90,7 +90,7 @@ return new class() extends Migration {
 				'type_range' => 'positive',
 				'description' => 'Defines default horizontal swipe tolerance for mobile interactions',
 				'details' => '',
-				'order' => 65535,
+				'order' => 32767,
 			],
 			[
 				'key' => 'swipe_tolerance_y',
@@ -99,7 +99,7 @@ return new class() extends Migration {
 				'type_range' => 'positive',
 				'description' => 'Defines default vertical swipe tolerance for mobile interactions',
 				'details' => '',
-				'order' => 65535,
+				'order' => 32767,
 			],
 			[
 				'key' => 'current_job_processing_visible',
@@ -108,7 +108,7 @@ return new class() extends Migration {
 				'type_range' => '0|1',
 				'description' => 'Make the processing job queue visible by default',
 				'details' => '',
-				'order' => 65535,
+				'order' => 32767,
 			],
 		]);
 	}

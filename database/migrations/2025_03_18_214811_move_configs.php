@@ -11,7 +11,7 @@ use Illuminate\Database\Migrations\Migration;
 return new class() extends Migration {
 	public const CAT = 'cat';
 	public const ORDER = 'order';
-	public const MAX_ORDER = 65535;
+	public const MAX_ORDER = 32767;
 
 	public const CONFIG = 'config';
 	public const ADMIN = 'Admin';
