@@ -85,7 +85,7 @@ class UpdateSettingsTest extends BaseApiV2Test
 				],
 			],
 		]);
-		$this->assertCreated($response);
+		$this->assertOk($response);
 	}
 
 	public function testUpdateCssForbidden(): void
