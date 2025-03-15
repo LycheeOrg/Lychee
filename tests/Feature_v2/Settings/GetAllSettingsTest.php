@@ -27,7 +27,7 @@ class GetAllSettingsTest extends BaseApiV2Test
 		$response = $this->getJson('Settings');
 		$this->assertUnauthorized($response);
 
-		$response = $this->actingAs($this->userMayUpload1)->getJson('Settings::init');
+		$response = $this->getJson('Settings::init');
 		$this->assertUnauthorized($response);
 
 		$response = $this->getJson('Settings::getLanguages');

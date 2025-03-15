@@ -9,22 +9,15 @@
 namespace App\Http\Requests\Settings;
 
 use App\Contracts\Http\Requests\HasConfigs;
-use App\Contracts\Http\Requests\HasSeStatusBoolean;
 use App\Contracts\Http\Requests\RequestAttribute;
-use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasConfigsTrait;
-use App\Http\Requests\Traits\HasSeStatusBooleanTrait;
 use App\Http\Resources\Editable\EditableConfigResource;
-use App\Models\Configs;
-use App\Policies\SettingsPolicy;
 use App\Rules\ConfigKeyRequireSupportRule;
 use App\Rules\ConfigKeyRule;
 use App\Rules\ConfigValueRule;
-use Illuminate\Support\Facades\Gate;
 
-class SetConfigsRequest extends BaseApiRequest implements HasConfigs, HasSeStatusBoolean
+class SetConfigsRequest extends GetAllConfigsRequest implements HasConfigs
 {
-	use HasSeStatusBooleanTrait;
 	use HasConfigsTrait;
 
 	/**
@@ -34,14 +27,6 @@ class SetConfigsRequest extends BaseApiRequest implements HasConfigs, HasSeStatu
 	 * @var bool
 	 */
 	protected $stopOnFirstFailure = true;
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function authorize(): bool
-	{
-		return Gate::check(SettingsPolicy::CAN_EDIT, [Configs::class]);
-	}
 
 	/**
 	 * {@inheritDoc}

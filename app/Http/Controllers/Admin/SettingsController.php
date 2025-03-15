@@ -68,13 +68,7 @@ class SettingsController extends Controller
 		Configs::invalidateCache();
 		TaggedRouteCacheUpdated::dispatch(CacheTag::SETTINGS);
 
-		$editable_configs = ConfigCategory::with([
-			'configs' => fn ($query) => $query->when(config('features.hide-lychee-SE', false) === true, fn ($q) => $q->where('cat', '!=', 'lychee SE'))
-				->when($docker_info->isDocker(), fn ($q) => $q->where('no_docker', '!==', true))
-				->when(!$request->is_se() && !Configs::getValueAsBool('enable_se_preview'), fn ($q) => $q->where('level', '=', 0)),
-		])->orderBy('order', 'asc')->get();
-
-		return ConfigCategoryResource::collect($editable_configs)->filter(fn ($cat) => $cat->configs->isNotEmpty());
+		return $this->getAll($request, $docker_info);
 	}
 
 	/**
