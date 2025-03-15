@@ -1,6 +1,6 @@
 <template>
-	<ImportFromLink v-if="canUpload" v-model:visible="isImportFromLinkOpen" :parent-id="null" />
-	<DropBox v-if="canUpload" v-model:visible="isImportFromDropboxOpen" :album-id="null" />
+	<ImportFromLink v-if="canUpload" v-model:visible="is_import_from_link_open" :parent-id="null" />
+	<DropBox v-if="canUpload" v-model:visible="is_import_from_dropbox_open" :album-id="null" />
 	<Toolbar
 		class="w-full border-0 h-14"
 		:pt:root:class="'flex-nowrap relative'"
@@ -138,9 +138,9 @@ const router = useRouter();
 const {
 	toggleCreateAlbum,
 	toggleCreateTagAlbum,
-	isImportFromLinkOpen,
+	is_import_from_link_open,
 	toggleImportFromLink,
-	isImportFromDropboxOpen,
+	is_import_from_dropbox_open,
 	toggleImportFromDropbox,
 	toggleUpload,
 } = useGalleryModals(togglableStore);
