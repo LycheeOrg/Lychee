@@ -20,7 +20,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 
 /**
- * Class TagAlbum.
+ * App\Models\TagAlbum.
  *
  * @property string[] $show_tags
  *

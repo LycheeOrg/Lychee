@@ -117,8 +117,9 @@ const routes_ = [
 	},
 	{
 		name: "settings",
-		path: "/settings",
+		path: "/settings/:tab?",
 		component: Settings,
+		props: true,
 	},
 	{
 		name: "sharing",
