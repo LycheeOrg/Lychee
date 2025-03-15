@@ -21,9 +21,9 @@
 				@ready="isReady = true"
 			/>
 			<template v-if="isReady && configs !== undefined">
-				<div class="flex gap-4" v-if="!are_all_settings_enabled">
-					<div class="w-3xs shrink-0">
-						<Menu :model="menu" :pt:root:class="'border-0 sticky top-11 mt-2'"> </Menu>
+				<div class="flex gap-4 flex-wrap lg:flex-nowrap" v-if="!are_all_settings_enabled">
+					<div class="w-full lg:w-3xs shrink-0">
+						<Menu :model="menu" :pt:root:class="'border-0 lg:sticky top-11 mt-2'"> </Menu>
 					</div>
 					<div class="w-full">
 						<EasySettings :configs="configs" :hash="hash" v-if="tab === ''" @refresh="load" />

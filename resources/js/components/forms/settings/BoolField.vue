@@ -1,6 +1,6 @@
 <template>
 	<div class="w-full">
-		<div class="w-full flex gap-4 justify-between flex-wrap sm:flex-nowrap h-8 items-center">
+		<div class="w-full flex gap-4 justify-between flex-wrap sm:flex-nowrap min-h-8 items-center">
 			<label
 				:for="props.config.key"
 				class="w-1/2 sm:w-full"
