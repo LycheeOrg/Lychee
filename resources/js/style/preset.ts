@@ -517,6 +517,9 @@ const LycheePrimeVueConfig: Preset = {
 				borderRadius: "0",
 				background: "transparent",
 			},
+			submenuLabel: {
+				padding: "1rem 0.75rem 0.5rem 0.75rem",
+			},
 			colorScheme: {
 				light: {
 					root: {},
@@ -539,6 +542,9 @@ const LycheePrimeVueConfig: Preset = {
 					},
 					submenuLabel: {
 						color: "color-mix(in srgb, var(--p-primary-hover-color) calc(100% * 1), transparent)",
+					},
+					separator: {
+						borderColor: "{surface.700}",
 					},
 				},
 			},
