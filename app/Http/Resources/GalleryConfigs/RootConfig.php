@@ -15,6 +15,7 @@ use App\Enum\TimelineAlbumGranularity;
 use App\Factories\AlbumFactory;
 use App\Models\Configs;
 use App\Models\Photo;
+use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
@@ -78,9 +79,11 @@ class RootConfig extends Data
 
 		$factory = resolve(AlbumFactory::class);
 		try {
-			$album = $factory->findAbstractAlbumOrFail(Configs::getValueAsString('random_album_id'));
+			$randomAlbumId = Configs::getValueAsString('random_album_id');
+			$randomAlbumId = ($randomAlbumId !== '') ? $randomAlbumId : null;
+			$album = $factory->findNullalbleAbstractAlbumOrFail($randomAlbumId);
 
-			return Gate::check(\AlbumPolicy::CAN_ACCESS, [AbstractAlbum::class, $album]);
+			return Gate::check(AlbumPolicy::CAN_ACCESS, [AbstractAlbum::class, $album]);
 		} catch (\Throwable) {
 			Log::critical('Could not find random album for frame with ID:' . Configs::getValueAsString('random_album_id'));
 
