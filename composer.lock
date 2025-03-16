@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ae530d0a710c502b4dea86f8dc013591",
+    "content-hash": "489bc23a46b6f53f2e81c750d46cb7d5",
     "packages": [
         {
             "name": "amphp/amp",
@@ -13507,16 +13507,16 @@
         },
         {
             "name": "lychee-org/phpstan-lychee",
-            "version": "v2.0.0",
+            "version": "v2.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/LycheeOrg/phpstan-lychee.git",
-                "reference": "b45b91536ff54013060c1916c99a6c7fd56e7803"
+                "reference": "85fdd4342dc134e65ad3193383fee57f099a1fa8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/LycheeOrg/phpstan-lychee/zipball/b45b91536ff54013060c1916c99a6c7fd56e7803",
-                "reference": "b45b91536ff54013060c1916c99a6c7fd56e7803",
+                "url": "https://api.github.com/repos/LycheeOrg/phpstan-lychee/zipball/85fdd4342dc134e65ad3193383fee57f099a1fa8",
+                "reference": "85fdd4342dc134e65ad3193383fee57f099a1fa8",
                 "shasum": ""
             },
             "require": {
@@ -13549,10 +13549,10 @@
             ],
             "description": "Set of rules for all Lychee related php repo",
             "support": {
-                "source": "https://github.com/LycheeOrg/phpstan-lychee/tree/v2.0.0",
+                "source": "https://github.com/LycheeOrg/phpstan-lychee/tree/v2.0.1",
                 "issues": "https://github.com/LycheeOrg/phpstan-lychee/issues"
             },
-            "time": "2025-03-16T11:06:07+00:00"
+            "time": "2025-03-16T12:26:09+00:00"
         },
         {
             "name": "masterminds/html5",

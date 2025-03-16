@@ -102,7 +102,7 @@
         "friendsofphp/php-cs-fixer": "^3.3",
         "itsgoingd/clockwork": "^5.1",
         "larastan/larastan": "^3.2",
-        "lychee-org/phpstan-lychee": "^2",
+        "lychee-org/phpstan-lychee": "^2.0.1",
         "mockery/mockery": "^1.5",
         "nunomaduro/collision": "^8.3",
         "php-parallel-lint/php-parallel-lint": "^1.3",
