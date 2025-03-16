@@ -111,7 +111,17 @@ function getCorsSettings(env: Record<string, string>) {
 
 /** @type {import('vite').UserConfig} */
 export default defineConfig(({ command, mode, isSsrBuild, isPreview } : ConfigEnv) : UserConfig => {
-	const config = baseConfig;
+	const config = { ...baseConfig };
+
+	if (mode === 'development') {
+		console.log("DEVELOPMENT MODE detected");
+		config.build.sourcemap = true;
+		config.build.minify = false; // Ensure no minification in development
+		config.define = {
+			__VUE_OPTIONS_API__: true,
+			__VUE_PROD_DEVTOOLS__: true,
+		};
+	}
 	const env = loadEnv(mode, process.cwd(), "");
 
 	if (config.server === undefined) {
