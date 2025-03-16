@@ -596,6 +596,7 @@ return [
 				// Add the S3 URL to the list of allowed image sources
 				env('AWS_ACCESS_KEY_ID', '') === '' ? [] :
 				[
+					// @phpstan-ignore-next-line
 					str_replace(parse_url(env('AWS_URL'), PHP_URL_PATH), '', env('AWS_URL')),
 				],
 				explode(',', (string) env('SECURITY_HEADER_CSP_IMG_SRC', ''))
@@ -616,6 +617,7 @@ return [
 				// Add the S3 URL to the list of allowed media sources
 				env('AWS_ACCESS_KEY_ID', '') === '' ? [] :
 				[
+					// @phpstan-ignore-next-line
 					str_replace(parse_url(env('AWS_URL'), PHP_URL_PATH), '', env('AWS_URL')),
 				],
 				explode(',', (string) env('SECURITY_HEADER_CSP_MEDIA_SRC', ''))
