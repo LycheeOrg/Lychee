@@ -1,12 +1,16 @@
 includes:
 	- vendor/larastan/larastan/extension.neon
 	- vendor/lychee-org/phpstan-lychee/phpstan.neon
+	- phpstan-baseline.neon
 parameters:
 	level: 1
 	treatPhpDocTypesAsCertain: false
 	paths:
 		- app
 		- config
+		- lang
+		- database/migrations
+		- scripts
 	excludePaths:
 		- app/Services/Archives # This is creating errors depending if version 2.1 or 3.1 is installed...
 	stubFiles:
