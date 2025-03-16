@@ -31,7 +31,6 @@ class FileUuidRule implements DataAwareRule, ValidationRule
 	 * Set the data under validation.
 	 *
 	 * @param array<string,mixed> $data
-	 *
 	 */
 	public function setData(array $data): static
 	{

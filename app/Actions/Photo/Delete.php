@@ -219,8 +219,7 @@ readonly class Delete
 
 			$liveVariantsShortPathsGrouped = $livePhotoShortPaths->groupBy('storage_disk');
 			$liveVariantsShortPathsGrouped->each(
-				fn ($liveVariantsShortPaths, $disk) =>
-					$this->fileDeleter->addFiles($liveVariantsShortPaths->map(fn ($lv) => $lv->live_photo_short_path), $disk)
+				fn ($liveVariantsShortPaths, $disk) => $this->fileDeleter->addFiles($liveVariantsShortPaths->map(fn ($lv) => $lv->live_photo_short_path), $disk)
 			);
 			// @codeCoverageIgnoreStart
 		} catch (\InvalidArgumentException $e) {

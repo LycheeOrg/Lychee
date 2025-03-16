@@ -40,7 +40,6 @@ class HasManySizeVariants extends HasMany
 	 * Get the results of the relationship.
 	 *
 	 * @return SizeVariants
-	 *
 	 */
 	public function getResults(): SizeVariants
 	{

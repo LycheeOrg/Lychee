@@ -53,7 +53,6 @@ class HasManyChildPhotos extends HasManyBidirectionally
 		 * because it was set in the constructor as `Photo::query()`.
 		 *
 		 * @noinspection PhpIncompatibleReturnTypeInspection
-		 *
 		 */
 		return $this->query;
 	}
