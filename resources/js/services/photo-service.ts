@@ -64,7 +64,7 @@ const PhotoService = {
 	},
 
 	download(photo_ids: string[], download_type: App.Enum.DownloadVariantType = "ORIGINAL"): void {
-		window.open(`${Constants.getApiUrl()}Zip?photo_ids=${photo_ids.join(",")}&variant=${download_type}`, "_blank");
+		location.href = `${Constants.getApiUrl()}Zip?photo_ids=${photo_ids.join(",")}&variant=${download_type}`;
 	},
 };
 
