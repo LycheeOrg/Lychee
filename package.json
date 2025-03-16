@@ -5,6 +5,7 @@
         "check": "vue-tsc --noEmit -p tsconfig.json --composite false --skipLibCheck",
         "dev": "vite",
         "build": "vite build",
+		"build-dev": "vite build --mode development",
         "check-formatting": "prettier --check resources/js/ resources/sass/",
         "format": "prettier --write resources/js/ resources/sass/",
         "vca": "vca -- --dir resources/js"
