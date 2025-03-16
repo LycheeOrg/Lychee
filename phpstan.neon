@@ -6,6 +6,7 @@ parameters:
 	treatPhpDocTypesAsCertain: false
 	paths:
 		- app
+		- config
 	excludePaths:
 		- app/Services/Archives # This is creating errors depending if version 2.1 or 3.1 is installed...
 	stubFiles:
@@ -14,9 +15,7 @@ parameters:
 		- phpstan/stubs/image.stub
 		- phpstan/stubs/imageexception.stub
 	ignoreErrors:
-		# False positive php8.2 + phpstan on interface @property
-
-		# Covariance - LSP princinple: https://en.wikipedia.org/wiki/Liskov_substitution_principle
-
-		# False positive as stub code for PHP has not yet been updated to 2nd parameter, see https://github.com/php/doc-en/issues/1529 and https://www.php.net/imagick.writeimagefile
-		# - '#Method Imagick::writeImageFile\(\) invoked with 2 parameters, 1 required#'
+		-
+			message: '#Cast to bool is forbidden.#'
+			paths:
+				- config
