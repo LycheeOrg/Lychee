@@ -50,7 +50,6 @@ class HasManyChildAlbums extends HasManyBidirectionally
 		 *
 		 * @noinspection PhpIncompatibleReturnTypeInspection
 		 *
-		 * @phpstan-ignore-next-line
 		 */
 		return $this->query;
 	}

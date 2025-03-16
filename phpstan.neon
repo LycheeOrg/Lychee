@@ -1,18 +1,12 @@
 includes:
 	- vendor/larastan/larastan/extension.neon
 	- vendor/lychee-org/phpstan-lychee/phpstan.neon
-
 parameters:
+	level: 0
 	treatPhpDocTypesAsCertain: false
 	paths:
 		- app
-		- scripts
-		- lang
-		- database/migrations
-		- tests
-		- config
 	excludePaths:
-		- database/migrations/2021_12_04_181200_refactor_models.php
 		- app/Services/Archives # This is creating errors depending if version 2.1 or 3.1 is installed...
 	stubFiles:
 		# these can be removed after https://github.com/thecodingmachine/safe/issues/283 has been merged
@@ -21,118 +15,8 @@ parameters:
 		- phpstan/stubs/imageexception.stub
 	ignoreErrors:
 		# False positive php8.2 + phpstan on interface @property
-		- '#Access to an undefined property App\\Contracts\\Models\\AbstractAlbum::\$id#'
-		- '#Access to an undefined property App\\Contracts\\Models\\AbstractAlbum::\$title#'
-		- '#Access to an undefined property App\\Contracts\\Models\\AbstractAlbum::\$thumb#'
-		- '#Access to an undefined property App\\Contracts\\Models\\AbstractAlbum::\$photos#'
-		- '#Access to an undefined property App\\Contracts\\Image\\StreamStats::\$checksum#'
-		- '#Access to an undefined property App\\Contracts\\Image\\StreamStats::\$bytes#'
-
-		# bunch of false positives from Eloquent
-		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::from\(\).#'
-		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::limit\(\).#'
-		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::offset\(\).#'
-		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::take\(\).#'
-		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::truncate\(\).#'
-		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::insert\(\).#'
-		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::select\(\).#'
-		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::orderBy\(\)#'
-		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::where(Not)?(Null|In|Between|Exists|Column|Year|Month|Day)?\(\).#'
-		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::delete\(\)#'
-		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::without\(\)#'
-		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::count\(\).#'
-		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::update\(\).#'
-		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::inRandomOrder\(\).#'
-		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::groupBy\(\).#'
-		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::latest\(\).#'
-		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::first\(\).#'
-		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::skip\(\).#'
-		- '#Dynamic call to static method (Illuminate\\Database\\Query\\Builder|Illuminate\\Database\\Eloquent\\(Builder|Relations\\.*)|App\\Models\\Builders\\.*|App\\Eloquent\\FixedQueryBuilder|App\\Relations\\.*)(<.*>)?::exists\(\).#'
-		- '#Dynamic call to static method App\\Models\\Builders\\.*::orderByDesc\(\).#'
-		- '#Dynamic call to static method App\\Models\\Builders\\.*::selectRaw\(\).#'
-		- '#Call to protected method asDateTime\(\) of class Illuminate\\Database\\Eloquent\\Model.#'
 
 		# Covariance - LSP princinple: https://en.wikipedia.org/wiki/Liskov_substitution_principle
-		- '#Parameter .* of method .*::replicate\(\) should be contravariant with parameter .* of method .*::replicate\(\)#' 
-		- '#Parameter .* of method .*::save\(\) should be contravariant with parameter .* of method .*::save\(\)#' 
-		- '#Parameter .* of method .*::newEloquentBuilder\(\) should be contravariant with parameter .* of method Kalnoy\\Nestedset\\Node<.*>::newEloquentBuilder\(\)#'
-		- '#Parameter .* of method .*::isDirty\(\) should be contravariant with parameter .* of method .*::isDirty\(\)#'
-
-		- '#Call to an undefined( static)? method Kalnoy\\Nestedset\\.*::(whereIn|select|join|leftJoin|orderBy|addSelect|without)\(\)#'
-		- '#Call to an undefined method Geocoder\\Location::getDisplayName\(\)#'
-		- '#Call to an undefined method COM::getfolder\(\).#'
-		- '#Dynamic call to static method Laragear\\WebAuthn\\Http\\Requests\\AssertionRequest::validate\(\).#'
-		- '#Dynamic call to static method Illuminate\\Container\\Container::refresh\(\).#'
-		- '#Dynamic call to static method Illuminate\\Foundation\\Application::getCachedConfigPath\(\).#'
-		- '#Dynamic call to static method Illuminate\\Foundation\\Application::getCachedRoutesPath\(\).#'
 
 		# False positive as stub code for PHP has not yet been updated to 2nd parameter, see https://github.com/php/doc-en/issues/1529 and https://www.php.net/imagick.writeimagefile
 		# - '#Method Imagick::writeImageFile\(\) invoked with 2 parameters, 1 required#'
-
-		# Migrations
-		-
-			message: '#Function define is unsafe to use.#'
-			paths:
-				- database/migrations
-		-
-			message: '#Variable property access on (mixed|object).#'
-			paths:
-				- database/migrations
-		-
-			message: '#Access to an undefined property object::\$value.#'
-			paths:
-				- database/migrations
-
-		# Configs
-		-
-			message: '#Cast to bool is forbidden.#'
-			paths:
-				- config
-
-		# TESTS
-		-
-			message: '#no value type specified in iterable type array.#'
-			paths:
-				- tests
-		-
-			message: '#Dynamic call to static method Symfony\\Component\\HttpFoundation\\Response::get(Content|StatusCode)\(\)#'
-			paths:
-				- tests
-		-
-			message: '#Function "dump\(\)" cannot be used/left in the code: seems you missed some dump debugging function#'
-			paths:
-				- tests
-		-
-			message: '#Cannot call method .* on Illuminate\\Testing\\PendingCommand\|int.#'
-			paths:
-				- tests
-		-
-			message: '#Access to private property App\\Models\\Extensions\\SizeVariants::\$(original|small(2x)?|thumb(2x)?|medium(2x)?|placeholder)#'
-			paths:
-				- tests
-		-
-			message: '#Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage::once\(\).#'
-			paths:
-				- tests
-				
-		-
-			message: '#Parameter \#3 \$fail of method App\\Rules\\.*::validate\(\) expects Closure\(string, string\|null=\): Illuminate\\Translation\\PotentiallyTranslatedString, Closure\(mixed\): void given.#'
-			paths:
-				- tests
-
-		-
-			message: '#Dynamic call to static method Illuminate\\Session\\Store::(has|get|now|forget)\(\).#'
-
-		-
-			message: '#Dynamic call to static method Kalnoy\\Nestedset\\QueryBuilder<.*>::(join|select|orderBy)\(\)#'	
-		
-		-
-			message: '#Dynamic call to static method Illuminate\\Http\\Response::getContent\(\)#'
-			paths:
-				- tests
-		
-		-	# for the tests we need to pass a closure, but we really don't care about it.
-			message: '#Parameter \#2 \$next of method App\\Http\\Middleware\\.*::handle\(\) expects Closure\(Illuminate\\Http\\Request\): \(Illuminate\\Http\\RedirectResponse\|Illuminate\\Http\\Response\), Closure\(\): .* given\.#'
-			paths:
-				- tests
-		
