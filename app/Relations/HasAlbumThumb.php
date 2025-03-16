@@ -64,7 +64,6 @@ class HasAlbumThumb extends Relation
 		 *
 		 * @noinspection PhpIncompatibleReturnTypeInspection
 		 *
-		 * @phpstan-ignore-next-line
 		 */
 		return $this->query;
 	}
@@ -83,7 +82,7 @@ class HasAlbumThumb extends Relation
 			/** @var Album $album */
 			$album = $this->parent;
 			if ($album->cover_id !== null) {
-				$this->where('photos.id', '=', $album->cover_id);
+				$this->query()->where('photos.id', '=', $album->cover_id);
 			} else {
 				$this->photoQueryPolicy
 					->applySearchabilityFilter(
@@ -269,7 +268,6 @@ class HasAlbumThumb extends Relation
 	public function match(array $models, Collection $results, $relation): array
 	{
 		$dictionary = $results->mapToDictionary(function ($result) {
-			/** @phpstan-ignore-next-line undefied property */
 			return [$result->covered_album_id => $result];
 		})->all();
 
