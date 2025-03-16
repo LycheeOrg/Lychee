@@ -30,7 +30,6 @@ class TimezoneCheck implements DiagnosticPipe
 			return $next($data);
 			// @codeCoverageIgnoreEnd
 		}
-		// @phpstan-ignore-next-line : create returns null or object.
 		$timezoneName = $timezone->getName();
 		$tzArray = explode('/', $timezoneName);
 

@@ -42,7 +42,6 @@ class SmartAlbumResource extends Data
 	{
 		$this->id = $smartAlbum->id;
 		$this->title = $smartAlbum->title;
-		/** @phpstan-ignore-next-line */
 		$this->photos = $smartAlbum->relationLoaded('photos') ? PhotoResource::collect($smartAlbum->getPhotos()) : null;
 		$this->prepPhotosCollection();
 		if ($this->photos !== null) {

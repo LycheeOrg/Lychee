@@ -80,7 +80,6 @@ final class Counts
 	 */
 	public function getMinCreatedAt(?int $owner_id = null): string
 	{
-		// @phpstan-ignore-next-line Phpstan does not recognise that the result of the query has the attribute min_created_at
 		return DB::table('photos')
 			->select(DB::raw('min(created_at) as min_created_at'))
 			->when($owner_id !== null, function ($query, $owner_id) {
@@ -98,7 +97,6 @@ final class Counts
 	 */
 	public function getMinTakenAt(?int $owner_id = null): string
 	{
-		// @phpstan-ignore-next-line Phpstan does not recognise that the result of the query has the attribute min_taken_at
 		return DB::table('photos')
 			->select(DB::raw('min(taken_at) as min_taken_at'))
 			->whereNotNull('taken_at')

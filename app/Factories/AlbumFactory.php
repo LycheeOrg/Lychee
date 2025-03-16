@@ -143,7 +143,6 @@ class AlbumFactory
 			$smartAlbums[] = $this->createSmartAlbum($smartAlbumType, $withRelations);
 		}
 
-		/** @phpstan-ignore-next-line phpstan stan complain of incompatibility of types while both are subtypes... */
 		return new Collection(array_merge(
 			$smartAlbums,
 			$this->findBaseAlbumsOrFail($modelAlbumIDs, $withRelations)->all()

@@ -82,7 +82,8 @@ class HasAlbumThumb extends Relation
 			/** @var Album $album */
 			$album = $this->parent;
 			if ($album->cover_id !== null) {
-				$this->query()->where('photos.id', '=', $album->cover_id);
+				// @phpstan-ignore-next-line
+				$this->where('photos.id', '=', $album->cover_id);
 			} else {
 				$this->photoQueryPolicy
 					->applySearchabilityFilter(

@@ -74,7 +74,6 @@ final class ConfigurationResource extends JsonResource
 			// @codeCoverageIgnoreEnd
 		}
 
-		/** @phpstan-ignore-next-line */
 		return [
 			// Computed
 			'lang_available' => $this->when(Auth::check(), config('app.supported_locale')),

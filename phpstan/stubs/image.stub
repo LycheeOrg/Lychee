@@ -117,17 +117,6 @@ function imagewebp(\GdImage $image, $to = null, int $quality = 80): void {}
 
 /**
  * @param \GdImage $image An image, returned by one of the image creation functions, such as imagecreatetruecolor.
- * @param float $angle Rotation angle, in degrees. The rotation angle is interpreted as the number of degrees to rotate the image anticlockwise.
- * @param int $bgd_color Specifies the color of the uncovered zone after the rotation
- * @param int $dummy This parameter is unused.
- * @return \GdImage Returns an image for the rotated image.
- * @throws ImageException
- */
-function imagerotate(\GdImage $image, float $angle, int $bgd_color, int $dummy = 0): \GdImage {}
-
-
-/**
- * @param \GdImage $image An image, returned by one of the image creation functions, such as imagecreatetruecolor.
  * @param int $mode Flip mode, this can be one of the IMG_FLIP_* constants
  * @throws ImageException
  */

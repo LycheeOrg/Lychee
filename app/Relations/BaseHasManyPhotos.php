@@ -70,7 +70,6 @@ abstract class BaseHasManyPhotos extends Relation
 			// Hence, the actually owning albums of the photos are not
 			// necessarily loaded.
 			Photo::query()->with(['album', 'size_variants', 'size_variants.sym_links']),
-			// @phpstan-ignore-next-line
 			$owningAlbum
 		);
 	}
@@ -86,7 +85,6 @@ abstract class BaseHasManyPhotos extends Relation
 		 *
 		 * @noinspection PhpIncompatibleReturnTypeInspection
 		 *
-		 * @phpstan-ignore-next-line
 		 */
 		return $this->query;
 	}

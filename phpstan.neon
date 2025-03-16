@@ -2,7 +2,7 @@ includes:
 	- vendor/larastan/larastan/extension.neon
 	- vendor/lychee-org/phpstan-lychee/phpstan.neon
 parameters:
-	level: 0
+	level: 1
 	treatPhpDocTypesAsCertain: false
 	paths:
 		- app

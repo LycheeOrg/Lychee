@@ -75,7 +75,6 @@ class Top
 			->applyVisibilityFilter(TagAlbum::query()->with(['access_permissions', 'owner']));
 
 		/** @var BaseCollection<int,TagAlbum> $tagAlbums */
-		/** @phpstan-ignore-next-line */
 		$tagAlbums = (new SortingDecorator($tagAlbumQuery))
 			->orderBy($this->sorting->column, $this->sorting->order)
 			->get();
@@ -87,7 +86,6 @@ class Top
 		$userID = Auth::id();
 		if ($userID !== null) {
 			// For authenticated users we group albums by ownership.
-			/** @phpstan-ignore-next-line */
 			$albums = (new SortingDecorator($query))
 				->orderBy(ColumnSortingType::OWNER_ID, OrderSortingType::ASC)
 				->orderBy($this->sorting->column, $this->sorting->order)
@@ -104,7 +102,6 @@ class Top
 			// For anonymous users we don't want to implicitly expose
 			// ownership via sorting.
 			/** @var BaseCollection<int,Album> */
-			/** @phpstan-ignore-next-line */
 			$albums = (new SortingDecorator($query))
 				->orderBy($this->sorting->column, $this->sorting->order)
 				->get();

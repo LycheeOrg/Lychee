@@ -32,8 +32,6 @@ abstract class BaseApiRequest extends FormRequest
 
 	/**
 	 * @throws FrameworkException
-	 *
-	 * @phpstan-ignore-next-line
 	 */
 	public function __construct(
 		array $query = [],

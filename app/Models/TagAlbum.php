@@ -101,7 +101,7 @@ class TagAlbum extends BaseAlbum
 		'thumb',
 	];
 
-	public function photos(): HasManyPhotosByTag // @phpstan-ignore-line
+	public function photos(): HasManyPhotosByTag
 	{
 		return new HasManyPhotosByTag($this);
 	}

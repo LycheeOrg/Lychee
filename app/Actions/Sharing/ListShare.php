@@ -67,7 +67,6 @@ class ListShare
 				->get();
 			$this->linkAlbums($albums);
 			$albums->each(function ($album) {
-				/** @phpstan-ignore-next-line */
 				$album->title = $this->breadcrumbPath($album);
 			});
 			$albums->each(function ($album) {
@@ -116,7 +115,6 @@ class ListShare
 		return implode('/', $title);
 	}
 
-	/** @phpstan-ignore-next-line */
 	private function linkAlbums(Collection $albums): void
 	{
 		if ($albums->isEmpty()) {

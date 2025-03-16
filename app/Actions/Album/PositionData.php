@@ -23,7 +23,6 @@ class PositionData extends Action
 			$album->all_photos() :
 			$album->photos();
 
-		// @phpstan-ignore-next-line
 		$photoRelation
 			->with([
 				'album' => function (BelongsTo $b) {

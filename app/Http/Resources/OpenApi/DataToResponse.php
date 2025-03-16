@@ -44,7 +44,6 @@ class DataToResponse extends TypeToSchemaExtension
 	 */
 	public function toSchema(Type $type): ?OpenApiType
 	{
-		/** @phpstan-ignore-next-line */
 		$reflect = new \ReflectionClass($type->name);
 		$props = $reflect->getProperties(\ReflectionProperty::IS_PUBLIC);
 

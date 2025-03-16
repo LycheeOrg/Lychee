@@ -75,7 +75,7 @@ class ResultsResource extends Data
 	{
 		return new self(
 			albums: ThumbAlbumResource::collect($albums),
-			photos: PhotoResource::collect($photos), // @phpstan-ignore-line
+			photos: PhotoResource::collect($photos),
 		);
 	}
 }
