@@ -79,9 +79,9 @@ class RootConfig extends Data
 
 		$factory = resolve(AlbumFactory::class);
 		try {
-			$randomAlbumId = Configs::getValueAsString('random_album_id');
-			$randomAlbumId = ($randomAlbumId !== '') ? $randomAlbumId : null;
-			$album = $factory->findNullalbleAbstractAlbumOrFail($randomAlbumId);
+			$random_album_id = Configs::getValueAsString('random_album_id');
+			$random_album_id = ($random_album_id !== '') ? $random_album_id : null;
+			$album = $factory->findNullalbleAbstractAlbumOrFail($random_album_id);
 
 			return Gate::check(AlbumPolicy::CAN_ACCESS, [AbstractAlbum::class, $album]);
 		} catch (\Throwable) {
