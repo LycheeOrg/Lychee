@@ -89,7 +89,7 @@ test:
 		echo ""; \
 	fi
 
-formatting:
+formatting: rector
 	@rm .php_cs.cache 2> /dev/null || true
 	@if [ -x "vendor/bin/php-cs-fixer" ]; then \
 		PHP_CS_FIXER_IGNORE_ENV=1 ./vendor/bin/php-cs-fixer fix -v --config=.php-cs-fixer.php; \
@@ -101,6 +101,9 @@ formatting:
 		echo ""; \
 	fi
 	npm run format
+
+rector:
+	 vendor/bin/rector process
 
 phpstan:
 	vendor/bin/phpstan analyze
