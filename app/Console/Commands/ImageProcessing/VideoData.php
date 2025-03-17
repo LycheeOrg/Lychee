@@ -68,7 +68,7 @@ class VideoData extends Command
 			$photos = Photo::query()
 				->with(['size_variants'])
 				->whereIn('type', BaseMediaFile::SUPPORTED_VIDEO_MIME_TYPES)
-				->whereDoesntHave('size_variants', function (Builder $query) {
+				->whereDoesntHave('size_variants', function (Builder $query): void {
 					$query->where('type', '=', SizeVariantType::THUMB);
 				})
 				->take($count)

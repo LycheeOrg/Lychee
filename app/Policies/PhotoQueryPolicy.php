@@ -60,7 +60,7 @@ class PhotoQueryPolicy
 		// We must wrap everything into an outer query to avoid any undesired
 		// effects in case that the original query already contains an
 		// "OR"-clause.
-		$visibilitySubQuery = function (FixedQueryBuilder $query2) use ($userId) {
+		$visibilitySubQuery = function (FixedQueryBuilder $query2) use ($userId): void {
 			$this->albumQueryPolicy->appendAccessibilityConditions($query2->getQuery());
 			if ($userId !== null) {
 				$query2->orWhere('photos.owner_id', '=', $userId);
@@ -121,7 +121,7 @@ class PhotoQueryPolicy
 			return $query;
 		}
 
-		return $query->where(function (Builder $query) use ($origin) {
+		return $query->where(function (Builder $query) use ($origin): void {
 			$this->appendSearchabilityConditions(
 				$query->getQuery(),
 				$origin?->_lft,
@@ -170,7 +170,7 @@ class PhotoQueryPolicy
 
 		try {
 			// there must be no unreachable album between the origin and the photo
-			$query->whereNotExists(function (BaseBuilder $q) use ($originLeft, $originRight) {
+			$query->whereNotExists(function (BaseBuilder $q) use ($originLeft, $originRight): void {
 				$this->albumQueryPolicy->appendUnreachableAlbumsCondition($q, $originLeft, $originRight);
 			});
 
@@ -224,7 +224,7 @@ class PhotoQueryPolicy
 
 		try {
 			// there must be no unreachable album between the origin and the photo
-			$query->whereNotExists(function (BaseBuilder $q) use ($originLeft, $originRight) {
+			$query->whereNotExists(function (BaseBuilder $q) use ($originLeft, $originRight): void {
 				$this->albumQueryPolicy->appendRecursiveSensitiveAlbumsCondition($q, $originLeft, $originRight);
 			});
 

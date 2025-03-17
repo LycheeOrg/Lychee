@@ -49,7 +49,7 @@ class AlbumCacheCleaner
 		}
 
 		// Clear smart albums. Simple.
-		collect(SmartAlbumType::cases())->each(function (SmartAlbumType $type) {
+		collect(SmartAlbumType::cases())->each(function (SmartAlbumType $type): void {
 			$this->route_cacher->forgetTag($type->value);
 		});
 

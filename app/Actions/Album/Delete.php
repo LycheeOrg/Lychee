@@ -125,19 +125,19 @@ class Delete extends Action
 			// As we might have deleted more regular albums as part of a subtree
 			// we simply delete all base albums who neither have an associated
 			// (regular) album or tag album.
-			BaseAlbumImpl::query()->whereNotExists(function (BaseBuilder $baseBuilder) {
+			BaseAlbumImpl::query()->whereNotExists(function (BaseBuilder $baseBuilder): void {
 				$baseBuilder->from('albums')->whereColumn('albums.id', '=', 'base_albums.id');
-			})->whereNotExists(function (BaseBuilder $baseBuilder) {
+			})->whereNotExists(function (BaseBuilder $baseBuilder): void {
 				$baseBuilder->from('tag_albums')->whereColumn('tag_albums.id', '=', 'base_albums.id');
 			})->delete();
 
 			// We also delete the permissions & sharing.
 			// Note that we explicitly avoid the smart albums.
 			AccessPermission::query()
-				->whereNotExists(function (BaseBuilder $baseBuilder) {
+				->whereNotExists(function (BaseBuilder $baseBuilder): void {
 					$baseBuilder->from('albums')->whereColumn('albums.id', '=', APC::ACCESS_PERMISSIONS . '.' . APC::BASE_ALBUM_ID);
 				})
-				->whereNotExists(function (BaseBuilder $baseBuilder) {
+				->whereNotExists(function (BaseBuilder $baseBuilder): void {
 					$baseBuilder->from('tag_albums')->whereColumn('tag_albums.id', '=', APC::ACCESS_PERMISSIONS . '.' . APC::BASE_ALBUM_ID);
 				})
 				->whereNotIn(APC::ACCESS_PERMISSIONS . '.' . APC::BASE_ALBUM_ID, SmartAlbumType::values())

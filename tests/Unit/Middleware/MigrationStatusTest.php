@@ -34,7 +34,7 @@ class MigrationStatusTest extends AbstractTestCase
 
 	public function testExceptionMigrationComplete(): void
 	{
-		$mock = $this->mock(IsMigrated::class, function (MockInterface $mock) {
+		$mock = $this->mock(IsMigrated::class, function (MockInterface $mock): void {
 			$mock->shouldReceive('assert')->once()->andReturn(false);
 		});
 		$request = $this->mock(Request::class);
@@ -45,7 +45,7 @@ class MigrationStatusTest extends AbstractTestCase
 
 	public function testExceptionMigrationIncomplete(): void
 	{
-		$mock = $this->mock(IsMigrated::class, function (MockInterface $mock) {
+		$mock = $this->mock(IsMigrated::class, function (MockInterface $mock): void {
 			$mock->shouldReceive('assert')->once()->andReturn(true);
 		});
 		$request = $this->mock(Request::class);
@@ -53,7 +53,7 @@ class MigrationStatusTest extends AbstractTestCase
 		$middleware = new MigrationStatus($mock);
 		$this->assertThrows(fn () => $middleware->handle($request, fn () => 1, 'incomplete'), MigrationAlreadyCompletedException::class);
 
-		$mock = $this->mock(IsMigrated::class, function (MockInterface $mock) {
+		$mock = $this->mock(IsMigrated::class, function (MockInterface $mock): void {
 			$mock->shouldReceive('assert')->once()->andReturn(false);
 		});
 		$request = $this->mock(Request::class);

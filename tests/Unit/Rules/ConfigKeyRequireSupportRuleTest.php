@@ -30,17 +30,17 @@ class ConfigKeyRequireSupportRuleTest extends AbstractTestCase
 	{
 		$rule = new ConfigKeyRequireSupportRule(verify: $this->getFree());
 		$msg = "don't worry";
-		$rule->validate('', 'version', function ($message) use (&$msg) { $msg = $message; });
+		$rule->validate('', 'version', function ($message) use (&$msg): void { $msg = $message; });
 		$expected = "don't worry";
 		self::assertEquals($expected, $msg);
 
 		$msg = "don't worry";
-		$rule->validate('', 1234567, function ($message) use (&$msg) { $msg = $message; });
+		$rule->validate('', 1234567, function ($message) use (&$msg): void { $msg = $message; });
 		$expected = "don't worry";
 		self::assertEquals($expected, $msg);
 
 		$msg = "don't worry";
-		$rule->validate('', 'not_a_real_key', function ($message) use (&$msg) { $msg = $message; });
+		$rule->validate('', 'not_a_real_key', function ($message) use (&$msg): void { $msg = $message; });
 		$expected = "don't worry";
 		self::assertEquals($expected, $msg);
 	}
@@ -49,7 +49,7 @@ class ConfigKeyRequireSupportRuleTest extends AbstractTestCase
 	{
 		$rule = new ConfigKeyRequireSupportRule(verify: $this->getFree());
 		$msg = "don't worry";
-		$rule->validate('', 'default_user_quota', function ($message) use (&$msg) { $msg = $message; });
+		$rule->validate('', 'default_user_quota', function ($message) use (&$msg): void { $msg = $message; });
 		$expected = "don't worry";
 		self::assertNotEquals($expected, $msg);
 	}
@@ -58,7 +58,7 @@ class ConfigKeyRequireSupportRuleTest extends AbstractTestCase
 	{
 		$rule = new ConfigKeyRequireSupportRule(verify: $this->getSupporter());
 		$msg = "don't worry";
-		$rule->validate('', 'default_user_quota', function ($message) use (&$msg) { $msg = $message; });
+		$rule->validate('', 'default_user_quota', function ($message) use (&$msg): void { $msg = $message; });
 		$expected = "don't worry";
 		self::assertEquals($expected, $msg);
 	}

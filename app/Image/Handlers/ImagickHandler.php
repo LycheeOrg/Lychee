@@ -86,7 +86,7 @@ class ImagickHandler extends BaseImageHandler
 			// Remove metadata to save some bytes
 			$this->imImage->stripImage();
 			// Re-add  color profiles
-			if (key_exists('icc', $profiles)) {
+			if (array_key_exists('icc', $profiles)) {
 				$this->imImage->profileImage('icc', $profiles['icc']);
 			}
 

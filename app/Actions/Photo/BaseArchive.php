@@ -114,7 +114,7 @@ abstract class BaseArchive
 	{
 		$archiveFileInfo = $this->extractFileInfo($photo, $downloadVariant);
 
-		$responseGenerator = function () use ($archiveFileInfo) {
+		$responseGenerator = function () use ($archiveFileInfo): void {
 			$outputStream = fopen('php://output', 'wb');
 			stream_copy_to_stream($archiveFileInfo->file->read(), $outputStream);
 			$archiveFileInfo->file->close();
@@ -166,7 +166,7 @@ abstract class BaseArchive
 	{
 		$this->deflateLevel = Configs::getValueAsInt('zip_deflate_level');
 
-		$responseGenerator = function () use ($downloadVariant, $photos) {
+		$responseGenerator = function () use ($downloadVariant, $photos): void {
 			$zip = $this->createZip();
 
 			// We first need to scan the whole array of files to avoid

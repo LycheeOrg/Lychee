@@ -110,7 +110,7 @@ class Diagnostics extends Command
 		$skip_diagnostics = config('app.skip_diagnostics_checks');
 		/** @var string[] $options */
 		$options = $this->option('skip');
-		if (sizeof($options) > 0) {
+		if (count($options) > 0) {
 			$skip_diagnostics = $options;
 		}
 		try {

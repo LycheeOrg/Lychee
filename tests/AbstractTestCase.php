@@ -116,7 +116,7 @@ abstract class AbstractTestCase extends BaseTestCase
 			->subDays(Configs::getValueAsInt('recent_age'))
 			->setTimezone('UTC')
 			->format('Y-m-d H:i:s');
-		$recentFilter = function (Builder $query) use ($strRecent) {
+		$recentFilter = function (Builder $query) use ($strRecent): void {
 			$query->where('created_at', '>=', $strRecent);
 		};
 

@@ -105,7 +105,7 @@ class SortingDecorator
 		];
 
 		if (in_array($column, self::POSTPONE_COLUMNS, true)) {
-			$this->pivotIdx = sizeof($this->orderBy) - 1;
+			$this->pivotIdx = count($this->orderBy) - 1;
 		}
 
 		return $this;
@@ -130,7 +130,7 @@ class SortingDecorator
 		];
 
 		if (in_array($column, self::POSTPONE_COLUMNS, true)) {
-			$this->pivotIdx = sizeof($this->orderBy) - 1;
+			$this->pivotIdx = count($this->orderBy) - 1;
 		}
 
 		return $this;
@@ -151,7 +151,7 @@ class SortingDecorator
 		// lower significance than the least significant criterion which
 		// requires natural sorting.
 		try {
-			for ($i = $this->pivotIdx + 1; $i < sizeof($this->orderBy); $i++) {
+			for ($i = $this->pivotIdx + 1; $i < count($this->orderBy); $i++) {
 				$this->baseBuilder->orderBy($this->orderBy[$i]['column'], $this->orderBy[$i]['direction']);
 			}
 			// @codeCoverageIgnoreStart

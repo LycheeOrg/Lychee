@@ -48,7 +48,7 @@ class DataToResponse extends TypeToSchemaExtension
 		$props = $reflect->getProperties(\ReflectionProperty::IS_PUBLIC);
 
 		$ret = new OpenApiObjectType();
-		collect($props)->each(function ($prop) use ($ret) {
+		collect($props)->each(function ($prop) use ($ret): void {
 			$toConvertType = $this->convertReflected($prop->getType());
 			$ret->addProperty($prop->name, $this->openApiTransformer->transform($toConvertType));
 		});

@@ -33,7 +33,7 @@ class OnThisDayAlbum extends BaseSmartAlbum
 
 		parent::__construct(
 			SmartAlbumType::ON_THIS_DAY,
-			function (Builder $query) use ($today) {
+			function (Builder $query) use ($today): void {
 				$query->where(fn (Builder $q) => $q
 					->whereMonth('photos.taken_at', '=', $today->month)
 					->whereDay('photos.taken_at', '=', $today->day))

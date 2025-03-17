@@ -56,8 +56,8 @@ final class Propagate
 		// This is super inefficient.
 		// It would be better to do it in a single query...
 		// But how?
-		$descendants->each(function (string $descendant, int|string $idx) use ($permissions) {
-			$permissions->each(function (AccessPermission $permission) use ($descendant) {
+		$descendants->each(function (string $descendant, int|string $idx) use ($permissions): void {
+			$permissions->each(function (AccessPermission $permission) use ($descendant): void {
 				$perm = AccessPermission::updateOrCreate([
 					APC::BASE_ALBUM_ID => $descendant,
 					APC::USER_ID => $permission->user_id,

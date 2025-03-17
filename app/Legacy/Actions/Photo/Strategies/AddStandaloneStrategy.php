@@ -215,7 +215,7 @@ class AddStandaloneStrategy extends AbstractAddStrategy
 
 				if (Features::active('use-s3')) {
 					// If enabled, upload all size variants to the remote bucket and delete the local files after that
-					$variants->each(function (SizeVariant $variant) {
+					$variants->each(function (SizeVariant $variant): void {
 						if (Configs::getValueAsBool('use_job_queues')) {
 							UploadSizeVariantToS3Job::dispatch($variant);
 						} else {

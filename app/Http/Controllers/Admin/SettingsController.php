@@ -52,7 +52,7 @@ class SettingsController extends Controller
 	public function setConfigs(SetConfigsRequest $request): ConfigCollectionResource
 	{
 		$configs = $request->configs();
-		$configs->each(function ($config) {
+		$configs->each(function ($config): void {
 			Configs::query()->where('key', $config->key)->update(['value' => $config->value ?? '']);
 		});
 

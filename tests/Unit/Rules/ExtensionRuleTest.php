@@ -31,7 +31,7 @@ class ExtensionRuleTest extends AbstractTestCase
 		$rule = new ExtensionRule();
 		$rule->setData([]);
 		$msg = '';
-		$rule->validate('attr', null, function ($message) use (&$msg) { $msg = $message; });
+		$rule->validate('attr', null, function ($message) use (&$msg): void { $msg = $message; });
 	}
 
 	public function testNegative(): void
@@ -41,65 +41,65 @@ class ExtensionRuleTest extends AbstractTestCase
 		// First silent fail: chunk_number = 0
 		$rule->setData([]);
 		$msg = "don't worry";
-		$rule->validate('extension', null, function ($message) use (&$msg) { $msg = $message; });
+		$rule->validate('extension', null, function ($message) use (&$msg): void { $msg = $message; });
 		$expected = "don't worry";
 		self::assertEquals($expected, $msg);
 
 		// Second silent fail: chunk_number = 1
 		$rule->setData(['chunk_number' => 1]);
 		$msg = "don't worry";
-		$rule->validate('extension', null, function ($message) use (&$msg) { $msg = $message; });
+		$rule->validate('extension', null, function ($message) use (&$msg): void { $msg = $message; });
 		$expected = "don't worry";
 		self::assertEquals($expected, $msg);
 
 		$rule->setData(['chunk_number' => 1]);
 		$msg = "don't worry";
-		$rule->validate('extension', 'not null', function ($message) use (&$msg) { $msg = $message; });
+		$rule->validate('extension', 'not null', function ($message) use (&$msg): void { $msg = $message; });
 		$expected = 'Error: Expected NULL in :attribute , got not null.';
 		self::assertEquals($expected, $msg);
 
 		$rule->setData(['chunk_number' => 2]);
 		$msg = "don't worry";
-		$rule->validate('extension', 123456, function ($message) use (&$msg) { $msg = $message; });
+		$rule->validate('extension', 123456, function ($message) use (&$msg): void { $msg = $message; });
 		$expected = ':attribute is not a string.';
 		self::assertEquals($expected, $msg);
 
 		$rule->setData(['chunk_number' => 2]);
 		$msg = "don't worry";
-		$rule->validate('extension', 'jpg', function ($message) use (&$msg) { $msg = $message; });
+		$rule->validate('extension', 'jpg', function ($message) use (&$msg): void { $msg = $message; });
 		$expected = ':attribute is not a valid extension.'; // true because we do not want the .
 		self::assertEquals($expected, $msg);
 
 		// Third silent fail
 		$rule->setData(['chunk_number' => 2]);
 		$msg = "don't worry";
-		$rule->validate('extension', '.jpg', function ($message) use (&$msg) { $msg = $message; });
+		$rule->validate('extension', '.jpg', function ($message) use (&$msg): void { $msg = $message; });
 		$expected = "don't worry";
 		self::assertEquals($expected, $msg);
 
 		$rule->setData(['chunk_number' => 2, 'file_name' => 'file.png']);
 		$msg = "don't worry";
-		$rule->validate('extension', '.jpg', function ($message) use (&$msg) { $msg = $message; });
+		$rule->validate('extension', '.jpg', function ($message) use (&$msg): void { $msg = $message; });
 		$expected = 'Error: Expected .png in :attribute, got .jpg.';
 		self::assertEquals($expected, $msg);
 
 		// Fourth silent fail
 		$rule->setData(['chunk_number' => 2, 'file_name' => 'file.png']);
 		$msg = "don't worry";
-		$rule->validate('extension', '.png', function ($message) use (&$msg) { $msg = $message; });
+		$rule->validate('extension', '.png', function ($message) use (&$msg): void { $msg = $message; });
 		$expected = "don't worry";
 		self::assertEquals($expected, $msg);
 
 		$rule->setData(['chunk_number' => 2, 'file_name' => 'file.png', 'uuid_name' => '1234567890.jpg']);
 		$msg = "don't worry";
-		$rule->validate('extension', '.png', function ($message) use (&$msg) { $msg = $message; });
+		$rule->validate('extension', '.png', function ($message) use (&$msg): void { $msg = $message; });
 		$expected = 'Error: Expected .jpg in :attribute, got .png.';
 		self::assertEquals($expected, $msg);
 
 		// No fails.
 		$rule->setData(['chunk_number' => 2, 'file_name' => 'file.png', 'uuid_name' => '1234567890.png']);
 		$msg = "don't worry";
-		$rule->validate('extension', '.png', function ($message) use (&$msg) { $msg = $message; });
+		$rule->validate('extension', '.png', function ($message) use (&$msg): void { $msg = $message; });
 		$expected = "don't worry";
 		self::assertEquals($expected, $msg);
 	}

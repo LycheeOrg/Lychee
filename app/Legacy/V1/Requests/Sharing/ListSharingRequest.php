@@ -97,7 +97,7 @@ final class ListSharingRequest extends BaseApiRequest implements HasBaseAlbum
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->album = key_exists(RequestAttribute::ALBUM_ID_ATTRIBUTE, $values) ?
+		$this->album = array_key_exists(RequestAttribute::ALBUM_ID_ATTRIBUTE, $values) ?
 			// @codeCoverageIgnoreStart
 			$this->albumFactory->findBaseAlbumOrFail($values[RequestAttribute::ALBUM_ID_ATTRIBUTE]) :
 			// @codeCoverageIgnoreEnd
@@ -105,14 +105,14 @@ final class ListSharingRequest extends BaseApiRequest implements HasBaseAlbum
 
 		$this->owner = null;
 		$this->participant = null;
-		if (key_exists(self::OWNER_ID_ATTRIBUTE, $values)) {
+		if (array_key_exists(self::OWNER_ID_ATTRIBUTE, $values)) {
 			// @codeCoverageIgnoreStart
 			/** @var int $ownerID */
 			$ownerID = $values[self::OWNER_ID_ATTRIBUTE];
 			$this->owner = User::query()->findOrFail($ownerID);
 			// @codeCoverageIgnoreEnd
 		}
-		if (key_exists(self::PARTICIPANT_ID_ATTRIBUTE, $values)) {
+		if (array_key_exists(self::PARTICIPANT_ID_ATTRIBUTE, $values)) {
 			// @codeCoverageIgnoreStart
 			/** @var int $participantID */
 			$participantID = $values[self::PARTICIPANT_ID_ATTRIBUTE];

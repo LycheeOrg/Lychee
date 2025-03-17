@@ -32,19 +32,19 @@ class RequireSupportRuleTest extends AbstractTestCase
 	{
 		$rule = new BooleanRequireSupportRule(verify: $this->getFree(), expected: true);
 		$msg = "don't worry";
-		$rule->validate('', true, function ($message) use (&$msg) { $msg = $message; });
+		$rule->validate('', true, function ($message) use (&$msg): void { $msg = $message; });
 		$expected = "don't worry";
 		self::assertEquals($expected, $msg);
 
 		$rule = new StringRequireSupportRule(verify: $this->getFree(), expected: 'something');
 		$msg = "don't worry";
-		$rule->validate('', 'something', function ($message) use (&$msg) { $msg = $message; });
+		$rule->validate('', 'something', function ($message) use (&$msg): void { $msg = $message; });
 		$expected = "don't worry";
 		self::assertEquals($expected, $msg);
 
 		$rule = new IntegerRequireSupportRule(verify: $this->getFree(), expected: 1);
 		$msg = "don't worry";
-		$rule->validate('', 1, function ($message) use (&$msg) { $msg = $message; });
+		$rule->validate('', 1, function ($message) use (&$msg): void { $msg = $message; });
 		$expected = "don't worry";
 		self::assertEquals($expected, $msg);
 	}
@@ -53,19 +53,19 @@ class RequireSupportRuleTest extends AbstractTestCase
 	{
 		$rule = new BooleanRequireSupportRule(verify: $this->getFree(), expected: true);
 		$msg = "don't worry";
-		$rule->validate('', 'value', function ($message) use (&$msg) { $msg = $message; });
+		$rule->validate('', 'value', function ($message) use (&$msg): void { $msg = $message; });
 		$expected = "don't worry";
 		self::assertNotEquals($expected, $msg);
 
 		$rule = new StringRequireSupportRule(verify: $this->getFree(), expected: 'something');
 		$msg = "don't worry";
-		$rule->validate('', 'value', function ($message) use (&$msg) { $msg = $message; });
+		$rule->validate('', 'value', function ($message) use (&$msg): void { $msg = $message; });
 		$expected = "don't worry";
 		self::assertNotEquals($expected, $msg);
 
 		$rule = new IntegerRequireSupportRule(verify: $this->getFree(), expected: 1);
 		$msg = "don't worry";
-		$rule->validate('', 3, function ($message) use (&$msg) { $msg = $message; });
+		$rule->validate('', 3, function ($message) use (&$msg): void { $msg = $message; });
 		$expected = "don't worry";
 		self::assertNotEquals($expected, $msg);
 	}
@@ -74,19 +74,19 @@ class RequireSupportRuleTest extends AbstractTestCase
 	{
 		$rule = new BooleanRequireSupportRule(verify: $this->getSupporter(), expected: true);
 		$msg = "don't worry";
-		$rule->validate('', '', function ($message) use (&$msg) { $msg = $message; });
+		$rule->validate('', '', function ($message) use (&$msg): void { $msg = $message; });
 		$expected = "don't worry";
 		self::assertEquals($expected, $msg);
 
 		$rule = new StringRequireSupportRule(verify: $this->getSupporter(), expected: 'something');
 		$msg = "don't worry";
-		$rule->validate('', '', function ($message) use (&$msg) { $msg = $message; });
+		$rule->validate('', '', function ($message) use (&$msg): void { $msg = $message; });
 		$expected = "don't worry";
 		self::assertEquals($expected, $msg);
 
 		$rule = new IntegerRequireSupportRule(verify: $this->getSupporter(), expected: 1);
 		$msg = "don't worry";
-		$rule->validate('', '', function ($message) use (&$msg) { $msg = $message; });
+		$rule->validate('', '', function ($message) use (&$msg): void { $msg = $message; });
 		$expected = "don't worry";
 		self::assertEquals($expected, $msg);
 	}
@@ -95,19 +95,19 @@ class RequireSupportRuleTest extends AbstractTestCase
 	{
 		$rule = new BooleanRequireSupportRule(verify: $this->getSupporter(), expected: true);
 		$msg = "don't worry";
-		$rule->validate('', 'value', function ($message) use (&$msg) { $msg = $message; });
+		$rule->validate('', 'value', function ($message) use (&$msg): void { $msg = $message; });
 		$expected = "don't worry";
 		self::assertEquals($expected, $msg);
 
 		$rule = new StringRequireSupportRule(verify: $this->getSupporter(), expected: 'something');
 		$msg = "don't worry";
-		$rule->validate('', 'value', function ($message) use (&$msg) { $msg = $message; });
+		$rule->validate('', 'value', function ($message) use (&$msg): void { $msg = $message; });
 		$expected = "don't worry";
 		self::assertEquals($expected, $msg);
 
 		$rule = new IntegerRequireSupportRule(verify: $this->getSupporter(), expected: 1);
 		$msg = "don't worry";
-		$rule->validate('', 3, function ($message) use (&$msg) { $msg = $message; });
+		$rule->validate('', 3, function ($message) use (&$msg): void { $msg = $message; });
 		$expected = "don't worry";
 		self::assertEquals($expected, $msg);
 	}
