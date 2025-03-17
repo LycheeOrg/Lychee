@@ -46,7 +46,6 @@ final class MergeAlbumsRequest extends BaseApiRequest implements HasAlbum, HasAl
 		/** @var array<int,string> $ids */
 		$ids = $values[RequestAttribute::ALBUM_IDS_ATTRIBUTE];
 		$this->album = Album::query()->findOrFail($id);
-		// @phpstan-ignore-next-line
 		$this->albums = Album::query()
 			->with(['children'])
 			->findOrFail($ids);

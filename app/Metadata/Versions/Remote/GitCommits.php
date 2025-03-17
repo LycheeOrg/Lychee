@@ -60,7 +60,7 @@ class GitCommits extends AbstractGitRemote implements GitRemote
 	 */
 	protected function dataToName(object $data): string
 	{
-		return $this->trim($data->sha); // @phpstan-ignore-line : Access to an undefined property object::$sha
+		return $this->trim($data->sha);
 	}
 
 	/**
@@ -68,6 +68,6 @@ class GitCommits extends AbstractGitRemote implements GitRemote
 	 */
 	protected function dataToSha(object $data): string
 	{
-		return $this->trim($data->sha); // @phpstan-ignore-line : Access to an undefined property object::$sha
+		return $this->trim($data->sha);
 	}
 }

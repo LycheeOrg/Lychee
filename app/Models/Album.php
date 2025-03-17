@@ -192,7 +192,7 @@ class Album extends BaseAlbum implements Node
 	 *
 	 * @return HasManyChildPhotos
 	 */
-	public function photos(): HasManyChildPhotos // @phpstan-ignore-line
+	public function photos(): HasManyChildPhotos
 	{
 		return new HasManyChildPhotos($this);
 	}

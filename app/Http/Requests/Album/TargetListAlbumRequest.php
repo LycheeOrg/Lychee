@@ -51,7 +51,6 @@ class TargetListAlbumRequest extends BaseApiRequest implements HasAlbums
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		$album_ids = $values[RequestAttribute::ALBUM_IDS_ATTRIBUTE] ?? [];
-		/** @phpstan-ignore-next-line */
 		$this->albums = $this->albumFactory->findAbstractAlbumsOrFail($album_ids);
 	}
 }

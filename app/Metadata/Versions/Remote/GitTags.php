@@ -54,7 +54,7 @@ class GitTags extends AbstractGitRemote implements GitRemote
 	protected function dataToName(object $data): string
 	{
 		// Tags have a name
-		return $data->name;  // @phpstan-ignore-line : Access to an undefined property object::$name
+		return $data->name;
 	}
 
 	/**
@@ -63,7 +63,7 @@ class GitTags extends AbstractGitRemote implements GitRemote
 	protected function dataToSha(object $data): string
 	{
 		// In this specific case we
-		return $this->trim($data->commit->sha);  // @phpstan-ignore-line : Access to an undefined property object::$commit
+		return $this->trim($data->commit->sha);
 	}
 
 	/**

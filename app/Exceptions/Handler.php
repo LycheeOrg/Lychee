@@ -443,7 +443,6 @@ class Handler extends ExceptionHandler
 		} while ($e = $e->getPrevious());
 		try {
 			Log::log($severity->value, $msg);
-			/** @phpstan-ignore-next-line // Yes it is thrown, trust me.... */
 		} catch (\UnexpectedValueException $e2) {
 			throw new NoWriteAccessOnLogsExceptions($e2);
 			// abort(507, 'Could not write in the logs. Check that storage/logs/ and containing files have proper permissions.');

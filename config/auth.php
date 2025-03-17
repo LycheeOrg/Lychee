@@ -39,7 +39,7 @@ return [
 
 	'guards' => [
 		'lychee' => [
-			'driver' => env('ENABLE_BEARER_TOKEN_AUTH', env('ENABLE_TOKEN_AUTH', true)) ? 'session-or-token' : 'session', // @phpstan-ignore-line
+			'driver' => env('ENABLE_BEARER_TOKEN_AUTH', env('ENABLE_TOKEN_AUTH', true)) ? 'session-or-token' : 'session',
 			'provider' => 'users',
 		],
 	],

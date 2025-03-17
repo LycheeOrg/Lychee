@@ -139,7 +139,6 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	 */
 	public function albums(): HasMany
 	{
-		/** @phpstan-ignore-next-line */
 		return $this->hasMany(BaseAlbumImpl::class, 'owner_id', 'id');
 	}
 
@@ -185,7 +184,6 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	 */
 	public function username(): string
 	{
-		// @phpstan-ignore-next-line This is temporary and should hopefully be fixed soon by Safe with proper type hinting.
 		return mb_convert_encoding($this->username, 'UTF-8');
 	}
 

@@ -49,7 +49,7 @@ class Thumb extends AbstractDTO
 	 *
 	 * @return HasMany<Photo,$this>
 	 */
-	public static function sizeVariantsFilter(HasMany $relation): HasMany // @phpstan-ignore-line
+	public static function sizeVariantsFilter(HasMany $relation): HasMany
 	{
 		$svAlbumThumbs = [SizeVariantType::THUMB, SizeVariantType::THUMB2X, SizeVariantType::PLACEHOLDER];
 		if (Features::active('vuejs')) {

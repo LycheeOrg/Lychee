@@ -37,8 +37,6 @@ class ConfigValueRule implements DataAwareRule, ValidationRule
 	 * Set the data under validation.
 	 *
 	 * @param array<string,mixed> $data
-	 *
-	 * @phpstan-ignore-next-line
 	 */
 	public function setData(array $data): static
 	{

@@ -63,8 +63,6 @@ class HasAlbumThumb extends Relation
 		 * because it was set in the constructor as `Photo::query()`.
 		 *
 		 * @noinspection PhpIncompatibleReturnTypeInspection
-		 *
-		 * @phpstan-ignore-next-line
 		 */
 		return $this->query;
 	}
@@ -83,6 +81,7 @@ class HasAlbumThumb extends Relation
 			/** @var Album $album */
 			$album = $this->parent;
 			if ($album->cover_id !== null) {
+				// @phpstan-ignore-next-line
 				$this->where('photos.id', '=', $album->cover_id);
 			} else {
 				$this->photoQueryPolicy
@@ -269,7 +268,6 @@ class HasAlbumThumb extends Relation
 	public function match(array $models, Collection $results, $relation): array
 	{
 		$dictionary = $results->mapToDictionary(function ($result) {
-			/** @phpstan-ignore-next-line undefied property */
 			return [$result->covered_album_id => $result];
 		})->all();
 

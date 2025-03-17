@@ -40,15 +40,13 @@ class HasManySizeVariants extends HasMany
 	 * Get the results of the relationship.
 	 *
 	 * @internal The parent class allows to return `mixed`, hence it is
-	 * perfectly fine to return `SizeVariants` acc. to Liskov's substitution
-	 * principle.
-	 * However, the buggy `larastan` ruleset lies to PhpStan about the return
-	 * type.
-	 * Hence, we must ignore the false positive here.
+	 *  perfectly fine to return `SizeVariants` acc. to Liskov's substitution
+	 *  principle.
+	 *  However, the buggy `larastan` ruleset lies to PhpStan about the return
+	 *  type.
+	 *  Hence, we must ignore the false positive here.
 	 *
 	 * @return SizeVariants
-	 *
-	 * @phpstan-ignore-next-line
 	 */
 	public function getResults(): SizeVariants
 	{

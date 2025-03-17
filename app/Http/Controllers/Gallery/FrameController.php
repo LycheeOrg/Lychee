@@ -98,8 +98,6 @@ class FrameController extends Controller
 		}
 
 		/** @var ?Photo $photo */
-		// PHPStan does not understand that `firstOrFail` returns `Photo`, but assumes that it returns `Model`
-		// @phpstan-ignore-next-line
 		$photo = $query->inRandomOrder()->first();
 		if ($photo === null) {
 			$album === null ? throw new PhotoCollectionEmptyException() : throw new PhotoCollectionEmptyException('Photo collection of ' . $album->title . ' is empty');
