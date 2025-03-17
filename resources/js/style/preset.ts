@@ -323,16 +323,11 @@ const LycheePrimeVueConfig: Preset = {
 			},
 		},
 		progressspinner: {
-			colorScheme: {
-				light: {},
-				dark: {
-					root: {
-						colorOne: "{primary.400}",
-						colorTwo: "{primary.500}",
-						colorThree: "{primary.600}",
-						colorFour: "{primary.700}",
-					},
-				},
+			root: {
+				colorOne: "{primary.400}",
+				colorTwo: "{primary.500}",
+				colorThree: "{primary.600}",
+				colorFour: "{primary.700}",
 			},
 		},
 		toggleswitch: {
@@ -340,9 +335,9 @@ const LycheePrimeVueConfig: Preset = {
 				width: "2rem",
 				height: "1rem",
 				gap: "0.25rem",
-				// handle: {
-				// 	size: "0.65rem",
-				// },
+			},
+			handle: {
+				size: "0.75rem",
 			},
 			colorScheme: {
 				dark: {
