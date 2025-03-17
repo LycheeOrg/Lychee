@@ -38,14 +38,14 @@ class PositionData
 		$photoQuery = $this->photoQueryPolicy->applySearchabilityFilter(
 			query: Photo::query()
 				->with([
-					'album' => function ($b) {
+					'album' => function ($b): void {
 						// The album is required for photos to properly
 						// determine access and visibility rights; but we
 						// don't need to determine the cover and thumbnail for
 						// each album
 						$b->without(['cover', 'thumb']);
 					},
-					'size_variants' => function ($r) {
+					'size_variants' => function ($r): void {
 						// The web GUI only uses the small and thumb size
 						// variants to show photos on a map; so we can save
 						// hydrating the larger size variants

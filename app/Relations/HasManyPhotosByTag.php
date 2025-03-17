@@ -75,7 +75,7 @@ class HasManyPhotosByTag extends BaseHasManyPhotos
 				origin: null,
 				include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_smart_albums')
 			)
-			->where(function (Builder $q) use ($tags) {
+			->where(function (Builder $q) use ($tags): void {
 				// Filter for requested tags
 				foreach ($tags as $tag) {
 					$q->where('tags', 'like', '%' . trim($tag) . '%');

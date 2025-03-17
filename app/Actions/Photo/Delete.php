@@ -122,7 +122,7 @@ readonly class Delete
 				->from('size_variants as sv')
 				->select(['sv.short_path', 'sv.storage_disk'])
 				->join('photos as p', 'p.id', '=', 'sv.photo_id')
-				->leftJoin('photos as dup', function (JoinClause $join) use ($photoIDs) {
+				->leftJoin('photos as dup', function (JoinClause $join) use ($photoIDs): void {
 					$join
 						->on('dup.checksum', '=', 'p.checksum')
 						->whereNotIn('dup.id', $photoIDs);
@@ -163,7 +163,7 @@ readonly class Delete
 				->from('size_variants as sv')
 				->select(['sv.short_path', 'sv.storage_disk'])
 				->join('photos as p', 'p.id', '=', 'sv.photo_id')
-				->leftJoin('photos as dup', function (JoinClause $join) use ($albumIDs) {
+				->leftJoin('photos as dup', function (JoinClause $join) use ($albumIDs): void {
 					$join
 						->on('dup.checksum', '=', 'p.checksum')
 						->whereNotIn('dup.album_id', $albumIDs);
@@ -202,12 +202,12 @@ readonly class Delete
 			$livePhotoShortPaths = Photo::query()
 				->from('photos as p')
 				->select(['p.live_photo_short_path', 'sv.storage_disk'])
-				->join('size_variants as sv', function (JoinClause $join) {
+				->join('size_variants as sv', function (JoinClause $join): void {
 					$join
 						->on('sv.photo_id', '=', 'p.id')
 						->where('sv.type', '=', SizeVariantType::ORIGINAL);
 				})
-				->leftJoin('photos as dup', function (JoinClause $join) use ($photoIDs) {
+				->leftJoin('photos as dup', function (JoinClause $join) use ($photoIDs): void {
 					$join
 						->on('dup.live_photo_checksum', '=', 'p.live_photo_checksum')
 						->whereNotIn('dup.id', $photoIDs);
@@ -251,12 +251,12 @@ readonly class Delete
 			$livePhotoShortPaths = Photo::query()
 				->from('photos as p')
 				->select(['p.live_photo_short_path', 'sv.storage_disk'])
-				->join('size_variants as sv', function (JoinClause $join) {
+				->join('size_variants as sv', function (JoinClause $join): void {
 					$join
 						->on('sv.photo_id', '=', 'p.id')
 						->where('sv.type', '=', SizeVariantType::ORIGINAL);
 				})
-				->leftJoin('photos as dup', function (JoinClause $join) use ($albumIDs) {
+				->leftJoin('photos as dup', function (JoinClause $join) use ($albumIDs): void {
 					$join
 						->on('dup.live_photo_checksum', '=', 'p.live_photo_checksum')
 						->whereNotIn('dup.album_id', $albumIDs);
@@ -356,7 +356,7 @@ readonly class Delete
 		try {
 			if (count($photoIDs) !== 0) {
 				SymLink::query()
-					->whereExists(function (BaseBuilder $query) use ($photoIDs) {
+					->whereExists(function (BaseBuilder $query) use ($photoIDs): void {
 						$query
 							->from('size_variants', 'sv')
 							->whereColumn('sv.id', '=', 'sym_links.size_variant_id')
@@ -366,7 +366,7 @@ readonly class Delete
 			}
 			if (count($albumIDs) !== 0) {
 				SymLink::query()
-					->whereExists(function (BaseBuilder $query) use ($albumIDs) {
+					->whereExists(function (BaseBuilder $query) use ($albumIDs): void {
 						$query
 							->from('size_variants', 'sv')
 							->whereColumn('sv.id', '=', 'sym_links.size_variant_id')
@@ -382,7 +382,7 @@ readonly class Delete
 			}
 			if (count($albumIDs) !== 0) {
 				SizeVariant::query()
-					->whereExists(function (BaseBuilder $query) use ($albumIDs) {
+					->whereExists(function (BaseBuilder $query) use ($albumIDs): void {
 						$query
 							->from('photos', 'p')
 							->whereColumn('p.id', '=', 'size_variants.photo_id')

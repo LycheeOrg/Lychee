@@ -32,7 +32,7 @@ class FromServer
 		$response->headers->set('Cache-Control', 'no-store');
 		// nginx-specific voodoo, as per https://symfony.com/doc/current/components/http_foundation.html#streaming-a-response
 		$response->headers->set('X-Accel-Buffering', 'no');
-		$response->setCallback(function () use ($paths, $album, $exec) {
+		$response->setCallback(function () use ($paths, $album, $exec): void {
 			// Surround the response by `[]` to make it a valid JSON array.
 			echo '[';
 			foreach ($paths as $path) {

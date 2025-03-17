@@ -97,7 +97,7 @@ class GenerateThumbs extends Command
 			$photos = Photo::query()
 				->where('type', 'like', 'image/%')
 				->with('size_variants')
-				->whereDoesntHave('size_variants', function (Builder $query) use ($sizeVariantType) {
+				->whereDoesntHave('size_variants', function (Builder $query) use ($sizeVariantType): void {
 					$query->where('type', '=', $sizeVariantType);
 				})
 				->take($amount)

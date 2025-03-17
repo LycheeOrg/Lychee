@@ -66,10 +66,10 @@ class ListShare
 				->orderBy('title', 'ASC')
 				->get();
 			$this->linkAlbums($albums);
-			$albums->each(function ($album) {
+			$albums->each(function ($album): void {
 				$album->title = $this->breadcrumbPath($album);
 			});
-			$albums->each(function ($album) {
+			$albums->each(function ($album): void {
 				/** @var object{parent_id:string,parent:object} $album */
 				unset($album->parent_id);
 				unset($album->parent);
@@ -83,7 +83,7 @@ class ListShare
 				->when($participant === null, fn ($q) => $q->where('may_administrate', '=', false))
 				->orderBy('username', 'ASC')
 				->get()
-				->each(function ($user) {
+				->each(function ($user): void {
 					$user->id = intval($user->id);
 				});
 

@@ -197,7 +197,7 @@ class HasAlbumThumb extends Relation
 			->limit(1);
 
 		if (Auth::user()?->may_administrate !== true) {
-			$bestPhotoIDSelect->where(function (Builder $query2) {
+			$bestPhotoIDSelect->where(function (Builder $query2): void {
 				$this->photoQueryPolicy->appendSearchabilityConditions(
 					$query2->getQuery(),
 					'covered_albums._lft',
@@ -206,7 +206,7 @@ class HasAlbumThumb extends Relation
 			});
 		}
 
-		$album2Cover = function (BaseBuilder $builder) use ($bestPhotoIDSelect, $albumKeys) {
+		$album2Cover = function (BaseBuilder $builder) use ($bestPhotoIDSelect, $albumKeys): void {
 			$builder
 				->from('albums as covered_albums')
 				->join('base_albums', 'base_albums.id', '=', 'covered_albums.id');
@@ -220,7 +220,7 @@ class HasAlbumThumb extends Relation
 				->addSelect(['photo_id' => $bestPhotoIDSelect])
 				->whereIn('covered_albums.id', $albumKeys);
 			if (Auth::user()?->may_administrate !== true) {
-				$builder->where(function (BaseBuilder $q) {
+				$builder->where(function (BaseBuilder $q): void {
 					$this->albumQueryPolicy->appendAccessibilityConditions($q);
 				});
 			}

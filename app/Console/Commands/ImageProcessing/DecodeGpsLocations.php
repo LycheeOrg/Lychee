@@ -53,7 +53,7 @@ class DecodeGpsLocations extends Command
 		$photos = Photo::query()
 			->whereNotNull('latitude')
 			->whereNotNull('longitude')->where(
-				function ($query) {
+				function ($query): void {
 					$query->where('location', '=', '')->orWhereNull('location');
 				}
 			)

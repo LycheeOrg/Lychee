@@ -65,7 +65,7 @@ class AlbumQueryPolicy
 		// "OR"-clause.
 		// The sub-query only uses properties (i.e. columns) which are
 		// defined on the common base model for all albums.
-		$visibilitySubQuery = function (AlbumBuilder|TagAlbumBuilder $query2) use ($userID) {
+		$visibilitySubQuery = function (AlbumBuilder|TagAlbumBuilder $query2) use ($userID): void {
 			$query2
 				// We laverage that IS_LINK_REQUIRED is NULL if the album is NOT shared publically (left join).
 				->where(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_LINK_REQUIRED, '=', false)
@@ -178,7 +178,7 @@ class AlbumQueryPolicy
 		// "OR"-clause.
 		// The sub-query only uses properties (i.e. columns) which are
 		// defined on the common base model for all albums.
-		$reachabilitySubQuery = function (Builder $query2) use ($unlockedAlbumIDs, $userID) {
+		$reachabilitySubQuery = function (Builder $query2) use ($unlockedAlbumIDs, $userID): void {
 			$query2
 				->where(
 					// Album is visible and not password protected.
@@ -259,7 +259,7 @@ class AlbumQueryPolicy
 		// Ensures that only those albums of the original query are
 		// returned for which a path from the origin to the album exist
 		// such that there are no blocked albums on the path to the album.
-		return $query->whereNotExists(function (BaseBuilder $q) {
+		return $query->whereNotExists(function (BaseBuilder $q): void {
 			$this->appendUnreachableAlbumsCondition(
 				$q,
 				null,

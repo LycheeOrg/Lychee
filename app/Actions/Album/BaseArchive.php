@@ -86,7 +86,7 @@ abstract class BaseArchive extends Action
 
 		$this->deflateLevel = Configs::getValueAsInt('zip_deflate_level');
 
-		$responseGenerator = function () use ($albums) {
+		$responseGenerator = function () use ($albums): void {
 			$zip = $this->createZip();
 
 			$usedDirNames = [];

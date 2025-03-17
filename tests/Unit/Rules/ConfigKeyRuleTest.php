@@ -27,7 +27,7 @@ class ConfigKeyRuleTest extends AbstractTestCase
 	{
 		$rule = new ConfigKeyRule();
 		$msg = "don't worry";
-		$rule->validate('', 'version', function ($message) use (&$msg) { $msg = $message; });
+		$rule->validate('', 'version', function ($message) use (&$msg): void { $msg = $message; });
 		$expected = "don't worry";
 		self::assertEquals($expected, $msg);
 	}
@@ -36,12 +36,12 @@ class ConfigKeyRuleTest extends AbstractTestCase
 	{
 		$rule = new ConfigKeyRule();
 		$msg = "don't worry";
-		$rule->validate('', 1234567, function ($message) use (&$msg) { $msg = $message; });
+		$rule->validate('', 1234567, function ($message) use (&$msg): void { $msg = $message; });
 		$expected = "don't worry";
 		self::assertNotEquals($expected, $msg);
 
 		$msg = "don't worry";
-		$rule->validate('', 'not_a_real_key', function ($message) use (&$msg) { $msg = $message; });
+		$rule->validate('', 'not_a_real_key', function ($message) use (&$msg): void { $msg = $message; });
 		$expected = "don't worry";
 		self::assertNotEquals($expected, $msg);
 	}

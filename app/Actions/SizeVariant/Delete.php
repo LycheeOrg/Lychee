@@ -69,7 +69,7 @@ class Delete
 			$sizeVariants = SizeVariant::query()
 				->from('size_variants as sv')
 				->select(['sv.short_path', 'sv.storage_disk'])
-				->leftJoin('size_variants as dup', function (JoinClause $join) use ($svIDs) {
+				->leftJoin('size_variants as dup', function (JoinClause $join) use ($svIDs): void {
 					$join
 						->on('dup.short_path', '=', 'sv.short_path')
 						->whereNotIn('dup.id', $svIDs);

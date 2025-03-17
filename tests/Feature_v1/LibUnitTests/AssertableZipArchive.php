@@ -84,7 +84,7 @@ class AssertableZipArchive extends \ZipArchive
 		foreach ($expectedFiles as $fileName => $fileStat) {
 			$this->assertContainsFile(
 				$fileName,
-				key_exists(self::ZIP_STAT_SIZE, $fileStat) ? $fileStat[self::ZIP_STAT_SIZE] : null
+				array_key_exists(self::ZIP_STAT_SIZE, $fileStat) ? $fileStat[self::ZIP_STAT_SIZE] : null
 			);
 		}
 	}

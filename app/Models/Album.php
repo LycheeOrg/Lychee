@@ -344,7 +344,7 @@ class Album extends BaseAlbum implements Node
 		$rgt = $this->_rgt;
 
 		BaseAlbumImpl::query()
-			->whereExists(function (BaseBuilder $q) use ($lft, $rgt) {
+			->whereExists(function (BaseBuilder $q) use ($lft, $rgt): void {
 				$q
 					->from('albums')
 					->whereColumn('base_albums.id', '=', 'albums.id')
@@ -352,7 +352,7 @@ class Album extends BaseAlbum implements Node
 			})
 			->update(['owner_id' => $this->owner_id]);
 		Photo::query()
-			->whereExists(function (BaseBuilder $q) use ($lft, $rgt) {
+			->whereExists(function (BaseBuilder $q) use ($lft, $rgt): void {
 				$q
 					->from('albums')
 					->whereColumn('photos.album_id', '=', 'albums.id')

@@ -31,7 +31,7 @@ class FileUuidRuleTest extends AbstractTestCase
 		$rule = new FileUuidRule();
 		$rule->setData([]);
 		$msg = '';
-		$rule->validate('attr', null, function ($message) use (&$msg) { $msg = $message; });
+		$rule->validate('attr', null, function ($message) use (&$msg): void { $msg = $message; });
 	}
 
 	public function testNegative(): void
@@ -41,45 +41,45 @@ class FileUuidRuleTest extends AbstractTestCase
 		// First silent fail: chunk_number = 0
 		$rule->setData([]);
 		$msg = "don't worry";
-		$rule->validate('uuid_name', null, function ($message) use (&$msg) { $msg = $message; });
+		$rule->validate('uuid_name', null, function ($message) use (&$msg): void { $msg = $message; });
 		$expected = "don't worry";
 		self::assertEquals($expected, $msg);
 
 		// Second silent fail: chunk_number = 1
 		$rule->setData(['chunk_number' => 1]);
 		$msg = "don't worry";
-		$rule->validate('uuid_name', null, function ($message) use (&$msg) { $msg = $message; });
+		$rule->validate('uuid_name', null, function ($message) use (&$msg): void { $msg = $message; });
 		$expected = "don't worry";
 		self::assertEquals($expected, $msg);
 
 		$rule->setData(['chunk_number' => 1]);
 		$msg = "don't worry";
-		$rule->validate('uuid_name', 'not null', function ($message) use (&$msg) { $msg = $message; });
+		$rule->validate('uuid_name', 'not null', function ($message) use (&$msg): void { $msg = $message; });
 		$expected = 'Error: Expected NULL in :attribute , got not null.';
 		self::assertEquals($expected, $msg);
 
 		$rule->setData(['chunk_number' => 2]);
 		$msg = "don't worry";
-		$rule->validate('uuid_name', 123456, function ($message) use (&$msg) { $msg = $message; });
+		$rule->validate('uuid_name', 123456, function ($message) use (&$msg): void { $msg = $message; });
 		$expected = ':attribute is not a string.';
 		self::assertEquals($expected, $msg);
 
 		// Third silent fail
 		$rule->setData(['chunk_number' => 2]);
 		$msg = "don't worry";
-		$rule->validate('uuid_name', '1234567890.jpg', function ($message) use (&$msg) { $msg = $message; });
+		$rule->validate('uuid_name', '1234567890.jpg', function ($message) use (&$msg): void { $msg = $message; });
 		$expected = "don't worry";
 		self::assertEquals($expected, $msg);
 
 		$rule->setData(['chunk_number' => 2, 'file_name' => 'file.png']);
 		$msg = "don't worry";
-		$rule->validate('uuid_name', '.jpg', function ($message) use (&$msg) { $msg = $message; });
+		$rule->validate('uuid_name', '.jpg', function ($message) use (&$msg): void { $msg = $message; });
 		$expected = ':attribute is not a valid random string.';
 		self::assertEquals($expected, $msg);
 
 		$rule->setData(['chunk_number' => 2, 'file_name' => 'file.png']);
 		$msg = "don't worry";
-		$rule->validate('uuid_name', '1234567890123456.png', function ($message) use (&$msg) { $msg = $message; });
+		$rule->validate('uuid_name', '1234567890123456.png', function ($message) use (&$msg): void { $msg = $message; });
 		$expected = ':attribute is not a valid target file.';
 		self::assertEquals($expected, $msg);
 	}

@@ -33,7 +33,7 @@ class HasAdminUserTest extends AbstractTestCase
 
 	public function testExceptionAdminUnset(): void
 	{
-		$mock = $this->mock(HasAdminUser::class, function (MockInterface $mock) {
+		$mock = $this->mock(HasAdminUser::class, function (MockInterface $mock): void {
 			$mock->shouldReceive('assert')->once()->andReturn(false);
 		});
 		$request = $this->mock(Request::class);

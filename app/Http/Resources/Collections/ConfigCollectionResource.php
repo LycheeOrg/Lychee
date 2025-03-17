@@ -34,7 +34,7 @@ class ConfigCollectionResource extends Data
 			// Group by category
 			->chunkWhile(fn (Configs $value, int $key, Collection $chunk) => $value->cat === $chunk->last()->cat)
 			// For each category, map the configs to ConfigResource
-			->each(function (Collection $chunk) {
+			->each(function (Collection $chunk): void {
 				$configs_data = ConfigResource::collect($chunk->all());
 				$this->configs[$chunk->first()->cat] = $configs_data;
 			});

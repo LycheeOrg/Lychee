@@ -37,7 +37,7 @@ class PagesTest extends BaseV2Test
 			'/search',
 			'/search/' . $this->album4->id,
 			'/search/' . $this->album4->id . '/' . $this->photo4->id,
-		])->each(function ($addr) {
+		])->each(function ($addr): void {
 			$response = $this->get($addr);
 			$this->assertOk($response);
 			$response->assertViewIs('vueapp');
@@ -53,7 +53,7 @@ class PagesTest extends BaseV2Test
 			'/users',
 			'/maintenance',
 			'/profile',
-		])->each(function ($addr) {
+		])->each(function ($addr): void {
 			$response = $this->get($addr);
 			$this->assertRedirect($response);
 		});

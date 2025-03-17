@@ -20,7 +20,7 @@ trait HasPrepPhotoCollection
 	private function prepPhotosCollection(): void
 	{
 		$previous_photo = null;
-		$this->photos->each(function (PhotoResource &$photo) use (&$previous_photo) {
+		$this->photos->each(function (PhotoResource &$photo) use (&$previous_photo): void {
 			if ($previous_photo !== null) {
 				$previous_photo->next_photo_id = $photo->id;
 			}

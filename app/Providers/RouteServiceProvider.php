@@ -47,7 +47,7 @@ class RouteServiceProvider extends ServiceProvider
 		// Note: `web.php` must be registered last, because it contains a
 		// "catch all" route and the routes are considered in a "first match"
 		// fashion.
-		$this->routes(function () {
+		$this->routes(function (): void {
 			Features::when('vuejs', fn () => $this->getLycheeV6Routes(), fn () => $this->getLegacyRoutes());
 		});
 	}

@@ -111,7 +111,7 @@ final class Spaces
 			->joinSub(
 				query: DB::table('albums', 'descendants')->select('descendants.id', 'descendants._lft', 'descendants._rgt'),
 				as: 'descendants',
-				first: function (JoinClause $join) {
+				first: function (JoinClause $join): void {
 					$join->on('albums._lft', '<=', 'descendants._lft')
 						->on('albums._rgt', '>=', 'descendants._rgt');
 				}
@@ -162,7 +162,7 @@ final class Spaces
 					->joinSub(
 						query: DB::table('albums', 'parent')->select('parent.id', 'parent._lft', 'parent._rgt'),
 						as: 'parent',
-						first: function (JoinClause $join) {
+						first: function (JoinClause $join): void {
 							$join->on('albums._lft', '>=', 'parent._lft')
 								->on('albums._rgt', '<=', 'parent._rgt');
 						}
@@ -234,7 +234,7 @@ final class Spaces
 			->joinSub(
 				query: DB::table('albums', 'descendants')->select('descendants.id', 'descendants._lft', 'descendants._rgt'),
 				as: 'descendants',
-				first: function (JoinClause $join) {
+				first: function (JoinClause $join): void {
 					$join->on('albums._lft', '<=', 'descendants._lft')
 						->on('albums._rgt', '>=', 'descendants._rgt');
 				}
@@ -289,7 +289,7 @@ final class Spaces
 					->joinSub(
 						query: DB::table('albums', 'parent')->select('parent.id', 'parent._lft', 'parent._rgt'),
 						as: 'parent',
-						first: function (JoinClause $join) {
+						first: function (JoinClause $join): void {
 							$join->on('albums._lft', '>=', 'parent._lft')
 								->on('albums._rgt', '<=', 'parent._rgt');
 						}
@@ -373,7 +373,7 @@ final class Spaces
 			->joinSub(
 				query: DB::table('albums', 'descendants')->select('descendants.id', 'descendants._lft', 'descendants._rgt'),
 				as: 'descendants',
-				first: function (JoinClause $join) {
+				first: function (JoinClause $join): void {
 					$join->on('albums._lft', '<=', 'descendants._lft')
 						->on('albums._rgt', '>=', 'descendants._rgt');
 				}

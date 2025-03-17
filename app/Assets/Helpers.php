@@ -75,7 +75,7 @@ class Helpers
 		return
 			file_exists($path) &&
 			is_readable($path) &&
-			is_writeable($path);
+			is_writable($path);
 	}
 
 	/**
@@ -93,7 +93,7 @@ class Helpers
 			file_exists($path) === true &&
 			is_readable($path) === true &&
 			is_executable($path) === true &&
-			is_writeable($path) === true
+			is_writable($path) === true
 		) {
 			return true;
 		}
@@ -135,10 +135,10 @@ class Helpers
 		];
 		$exp = intval(floor(log($bytes) / log(1024.0)));
 
-		if ($exp >= sizeof($symbols)) {
+		if ($exp >= count($symbols)) {
 			// @codeCoverageIgnoreStart
 			// if the number is too large, we fall back to the largest available symbol
-			$exp = sizeof($symbols) - 1;
+			$exp = count($symbols) - 1;
 			// @codeCoverageIgnoreEnd
 		}
 
