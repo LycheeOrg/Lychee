@@ -12,6 +12,6 @@ return [
 	| Toasts
 	|--------------------------------------------------------------------------
 	*/
-	'error' => 'Error',
-	'success' => 'Success',
+	'error' => 'Błąd',
+	'success' => 'Sukces',
 ];
