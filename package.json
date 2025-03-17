@@ -24,7 +24,7 @@
         "@types/qrcode": "^1.5.5",
         "@types/sprintf-js": "^1.1.4",
         "@typescript-eslint/parser": "^8.26.1",
-        "@vitejs/plugin-vue": "^5.1.5",
+        "@vitejs/plugin-vue": "^5.2.3",
         "sass": "^1.85.1",
         "vue-tsc": "^2.2.8"
     },
