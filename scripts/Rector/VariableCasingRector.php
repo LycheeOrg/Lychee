@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Scripts\Rector;
 
+use Illuminate\Support\Str;
 use PhpParser\Node;
 use PhpParser\Node\Expr\Variable;
 use Rector\Rector\AbstractRector;
@@ -47,7 +48,7 @@ final class VariableCasingRector extends AbstractRector
 			return null;
 		}
 
-		$camelCasedName = $this->toCamelCase($node->name);
+		$camelCasedName = Str::camel($node->name);
 
 		// Skip if it's already in the correct format
 		if ($camelCasedName === $node->name) {
@@ -58,10 +59,5 @@ final class VariableCasingRector extends AbstractRector
 		$node->name = $camelCasedName;
 
 		return $node;
-	}
-
-	private function toCamelCase(string $name): string
-	{
-		return lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $name))));
 	}
 }
