@@ -56,9 +56,9 @@ class EncodePlaceholders extends Command
 				return 0;
 			}
 
-			$placeholderEncoder = new PlaceholderEncoder();
+			$placeholder_encoder = new PlaceholderEncoder();
 			foreach ($placeholders as $placeholder) {
-				$placeholderEncoder->do($placeholder);
+				$placeholder_encoder->do($placeholder);
 			}
 
 			return 0;

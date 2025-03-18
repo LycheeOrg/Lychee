@@ -56,10 +56,10 @@ class SetConfigsRequest extends BaseApiRequest implements HasConfigs
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$editableConfigs = [];
+		$editable_configs = [];
 		foreach ($values[RequestAttribute::CONFIGS_ATTRIBUTE] as $config) {
-			$editableConfigs[] = new EditableConfigResource($config[RequestAttribute::CONFIGS_KEY_ATTRIBUTE], $config[RequestAttribute::CONFIGS_VALUE_ATTRIBUTE]);
+			$editable_configs[] = new EditableConfigResource($config[RequestAttribute::CONFIGS_KEY_ATTRIBUTE], $config[RequestAttribute::CONFIGS_VALUE_ATTRIBUTE]);
 		}
-		$this->configs = collect($editableConfigs);
+		$this->configs = collect($editable_configs);
 	}
 }

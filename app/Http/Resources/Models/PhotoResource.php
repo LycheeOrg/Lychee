@@ -109,8 +109,8 @@ class PhotoResource extends Data
 
 	private function setLocation(Photo $photo): void
 	{
-		$showLocation = Configs::getValueAsBool('location_show') && (Auth::check() || Configs::getValueAsBool('location_show_public'));
-		$this->location = $showLocation ? $photo->location : null;
+		$show_location = Configs::getValueAsBool('location_show') && (Auth::check() || Configs::getValueAsBool('location_show_public'));
+		$this->location = $show_location ? $photo->location : null;
 	}
 
 	/**

@@ -35,7 +35,7 @@ final class RequirementsController extends Controller
 	 */
 	public function view(): View
 	{
-		$phpSupportInfo = $this->requirements->checkPHPVersion(
+		$php_support_info = $this->requirements->checkPHPVersion(
 			$this->config->get_core()['minPhpVersion']
 		);
 		$reqs = $this->requirements->check(
@@ -45,7 +45,7 @@ final class RequirementsController extends Controller
 		return view('install.requirements', [
 			'title' => 'Lychee-installer',
 			'step' => 1,
-			'phpSupportInfo' => $phpSupportInfo,
+			'phpSupportInfo' => $php_support_info,
 			'requirements' => $reqs['requirements'],
 			'errors' => $reqs['errors'] ?? null,
 		]);

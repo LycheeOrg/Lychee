@@ -35,9 +35,9 @@ class MigrationStatus
 
 	private IsMigrated $isMigrated;
 
-	public function __construct(IsMigrated $isMigrated)
+	public function __construct(IsMigrated $is_migrated)
 	{
-		$this->isMigrated = $isMigrated;
+		$this->isMigrated = $is_migrated;
 	}
 
 	/**
@@ -54,15 +54,15 @@ class MigrationStatus
 	 *
 	 * @throws LycheeException
 	 */
-	public function handle(Request $request, \Closure $next, string $requiredStatus): mixed
+	public function handle(Request $request, \Closure $next, string $required_status): mixed
 	{
-		if ($requiredStatus === self::COMPLETE) {
+		if ($required_status === self::COMPLETE) {
 			if ($this->isMigrated->assert()) {
 				return $next($request);
 			} else {
 				throw new MigrationRequiredException();
 			}
-		} elseif ($requiredStatus === self::INCOMPLETE) {
+		} elseif ($required_status === self::INCOMPLETE) {
 			if ($this->isMigrated->assert()) {
 				throw new MigrationAlreadyCompletedException();
 			} else {

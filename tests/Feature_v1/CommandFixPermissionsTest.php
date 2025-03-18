@@ -44,28 +44,28 @@ class CommandFixPermissionsTest extends Base\BasePhotoTest
 			static::createUploadedFile(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE)
 		));
 
-		$filePath = public_path($this->dropUrlPrefix($photo->size_variants->original->url));
-		$dirPath = pathinfo($filePath, PATHINFO_DIRNAME);
+		$file_path = public_path($this->dropUrlPrefix($photo->size_variants->original->url));
+		$dir_path = pathinfo($file_path, PATHINFO_DIRNAME);
 
-		static::skipIfNotFileOwner($filePath);
-		static::skipIfNotFileOwner($dirPath);
+		static::skipIfNotFileOwner($file_path);
+		static::skipIfNotFileOwner($dir_path);
 
-		chmod($filePath, 00400);
-		chmod($dirPath, 00500);
-
-		$this->artisan(self::COMMAND, ['--dry-run' => 0])->assertSuccessful();
-
-		clearstatcache(true);
-		self::assertEquals(00664, fileperms($filePath) & 07777);
-		self::assertEquals(02775, fileperms($dirPath) & 07777);
-
-		chmod($filePath, 00777);
-		chmod($dirPath, 06777);
+		chmod($file_path, 00400);
+		chmod($dir_path, 00500);
 
 		$this->artisan(self::COMMAND, ['--dry-run' => 0])->assertSuccessful();
 
 		clearstatcache(true);
-		self::assertEquals(00664, fileperms($filePath) & 07777);
-		self::assertEquals(02775, fileperms($dirPath) & 07777);
+		self::assertEquals(00664, fileperms($file_path) & 07777);
+		self::assertEquals(02775, fileperms($dir_path) & 07777);
+
+		chmod($file_path, 00777);
+		chmod($dir_path, 06777);
+
+		$this->artisan(self::COMMAND, ['--dry-run' => 0])->assertSuccessful();
+
+		clearstatcache(true);
+		self::assertEquals(00664, fileperms($file_path) & 07777);
+		self::assertEquals(02775, fileperms($dir_path) & 07777);
 	}
 }

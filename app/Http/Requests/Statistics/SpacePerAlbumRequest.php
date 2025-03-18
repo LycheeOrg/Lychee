@@ -55,8 +55,8 @@ class SpacePerAlbumRequest extends BaseApiRequest implements HasAbstractAlbum, H
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		/** @var string|null */
-		$albumID = $values[RequestAttribute::ALBUM_ID_ATTRIBUTE] ?? null;
-		$this->album = $this->albumFactory->findNullalbleAbstractAlbumOrFail($albumID);
+		$album_i_d = $values[RequestAttribute::ALBUM_ID_ATTRIBUTE] ?? null;
+		$this->album = $this->albumFactory->findNullalbleAbstractAlbumOrFail($album_i_d);
 
 		// Filter only to user if user is not admin
 		if (Auth::check() && Auth::user()?->may_administrate !== true) {

@@ -73,19 +73,19 @@ class Delete extends Action
 	 * @throws ModelNotFoundException
 	 * @throws UnauthenticatedException
 	 */
-	public function do(array $albumIDs): FileDeleter
+	public function do(array $album_i_ds): FileDeleter
 	{
 		try {
-			$unsortedPhotoIDs = [];
+			$unsorted_photo_i_ds = [];
 
 			// Among the smart albums, the unsorted album is special,
 			// because it provides deletion of photos
-			if (in_array(UnsortedAlbum::ID, $albumIDs, true)) {
+			if (in_array(UnsortedAlbum::ID, $album_i_ds, true)) {
 				$query = UnsortedAlbum::getInstance()->photos();
 				if (Auth::user()?->may_administrate !== true) {
 					$query->where('owner_id', '=', Auth::id() ?? throw new UnauthenticatedException());
 				}
-				$unsortedPhotoIDs = $query->pluck('id')->all();
+				$unsorted_photo_i_ds = $query->pluck('id')->all();
 			}
 
 			// Only regular albums are owners of photos, so we only need to
@@ -96,54 +96,54 @@ class Delete extends Action
 			$albums = Album::query()
 				->without(['cover', 'thumb'])
 				->select(['id', 'parent_id', '_lft', '_rgt', 'track_short_path'])
-				->findMany($albumIDs);
+				->findMany($album_i_ds);
 
-			$recursiveAlbumIDs = $albums->pluck('id')->all(); // only IDs which refer to regular albums are incubators for recursive IDs
-			$recursiveAlbumTracks = $albums->pluck('track_short_path');
+			$recursive_album_i_ds = $albums->pluck('id')->all(); // only IDs which refer to regular albums are incubators for recursive IDs
+			$recursive_album_tracks = $albums->pluck('track_short_path');
 
 			/** @var Album $album */
 			foreach ($albums as $album) {
 				// Collect all (aka recursive) sub-albums in each album
-				$subAlbums = $album->descendants()->without(['cover', 'thumb'])->select(['id', 'track_short_path'])->get();
-				$recursiveAlbumIDs = array_merge($recursiveAlbumIDs, $subAlbums->pluck('id')->all());
-				$recursiveAlbumTracks = $recursiveAlbumTracks->merge($subAlbums->pluck('track_short_path'));
+				$sub_albums = $album->descendants()->without(['cover', 'thumb'])->select(['id', 'track_short_path'])->get();
+				$recursive_album_i_ds = array_merge($recursive_album_i_ds, $sub_albums->pluck('id')->all());
+				$recursive_album_tracks = $recursive_album_tracks->merge($sub_albums->pluck('track_short_path'));
 			}
 			// prune the null values
-			$recursiveAlbumTracks = $recursiveAlbumTracks->filter(fn ($val) => $val !== null);
+			$recursive_album_tracks = $recursive_album_tracks->filter(fn ($val) => $val !== null);
 
 			// Delete the photos from DB and obtain the list of files which need
 			// to be deleted later
-			$fileDeleter = (new PhotoDelete())->do($unsortedPhotoIDs, $recursiveAlbumIDs);
-			$fileDeleter->addFiles($recursiveAlbumTracks, StorageDiskType::LOCAL->value);
+			$file_deleter = (new PhotoDelete())->do($unsorted_photo_i_ds, $recursive_album_i_ds);
+			$file_deleter->addFiles($recursive_album_tracks, StorageDiskType::LOCAL->value);
 
 			// Remove the sub-forest spanned by the regular albums
 			$this->deleteSubForest($albums);
-			TagAlbum::query()->whereIn('id', $albumIDs)->delete();
+			TagAlbum::query()->whereIn('id', $album_i_ds)->delete();
 
 			// Note, we may need to delete more base albums than those whose
 			// ID is in `$albumIDs`.
 			// As we might have deleted more regular albums as part of a subtree
 			// we simply delete all base albums who neither have an associated
 			// (regular) album or tag album.
-			BaseAlbumImpl::query()->whereNotExists(function (BaseBuilder $baseBuilder): void {
-				$baseBuilder->from('albums')->whereColumn('albums.id', '=', 'base_albums.id');
-			})->whereNotExists(function (BaseBuilder $baseBuilder): void {
-				$baseBuilder->from('tag_albums')->whereColumn('tag_albums.id', '=', 'base_albums.id');
+			BaseAlbumImpl::query()->whereNotExists(function (BaseBuilder $base_builder): void {
+				$base_builder->from('albums')->whereColumn('albums.id', '=', 'base_albums.id');
+			})->whereNotExists(function (BaseBuilder $base_builder): void {
+				$base_builder->from('tag_albums')->whereColumn('tag_albums.id', '=', 'base_albums.id');
 			})->delete();
 
 			// We also delete the permissions & sharing.
 			// Note that we explicitly avoid the smart albums.
 			AccessPermission::query()
-				->whereNotExists(function (BaseBuilder $baseBuilder): void {
-					$baseBuilder->from('albums')->whereColumn('albums.id', '=', APC::ACCESS_PERMISSIONS . '.' . APC::BASE_ALBUM_ID);
+				->whereNotExists(function (BaseBuilder $base_builder): void {
+					$base_builder->from('albums')->whereColumn('albums.id', '=', APC::ACCESS_PERMISSIONS . '.' . APC::BASE_ALBUM_ID);
 				})
-				->whereNotExists(function (BaseBuilder $baseBuilder): void {
-					$baseBuilder->from('tag_albums')->whereColumn('tag_albums.id', '=', APC::ACCESS_PERMISSIONS . '.' . APC::BASE_ALBUM_ID);
+				->whereNotExists(function (BaseBuilder $base_builder): void {
+					$base_builder->from('tag_albums')->whereColumn('tag_albums.id', '=', APC::ACCESS_PERMISSIONS . '.' . APC::BASE_ALBUM_ID);
 				})
 				->whereNotIn(APC::ACCESS_PERMISSIONS . '.' . APC::BASE_ALBUM_ID, SmartAlbumType::values())
 				->delete();
 
-			return $fileDeleter;
+			return $file_deleter;
 			// @codeCoverageIgnoreStart
 		} catch (QueryBuilderException|InternalLycheeException $e) {
 			try {
@@ -202,30 +202,30 @@ class Delete extends Action
 		}
 
 		/** @var array<array{lft: int, rgt:int}> $pendingGapsToMake */
-		$pendingGapsToMake = [];
-		$deleteQuery = Album::query();
+		$pending_gaps_to_make = [];
+		$delete_query = Album::query();
 		// First collect all albums to delete in a single query and
 		// memorize which indices need to be updated later.
 		/** @var Album $album */
 		foreach ($albums as $album) {
-			$pendingGapsToMake[] = [
+			$pending_gaps_to_make[] = [
 				'lft' => $album->getLft(),
 				'rgt' => $album->getRgt(),
 			];
-			$deleteQuery->whereDescendantOf($album, 'or', false, true);
+			$delete_query->whereDescendantOf($album, 'or', false, true);
 		}
 		// For MySQL deletion must be done in correct order otherwise the
 		// foreign key constraint to `parent_id` fails.
-		$deleteQuery->orderBy('_lft', 'desc')->delete();
+		$delete_query->orderBy('_lft', 'desc')->delete();
 		// _After all_ albums have been deleted, remove the gaps which
 		// have been created by the removed albums.
 		// Note, the gaps must be removed beginning with the highest
 		// values first otherwise the later indices won't be correct.
 		// To save some DB queries, we could implement a "makeMultiGap".
-		usort($pendingGapsToMake, fn ($a, $b) => $b['lft'] <=> $a['lft']);
-		foreach ($pendingGapsToMake as $pendingGap) {
-			$height = $pendingGap['rgt'] - $pendingGap['lft'] + 1;
-			(new Album())->newNestedSetQuery()->makeGap($pendingGap['rgt'] + 1, -$height);
+		usort($pending_gaps_to_make, fn ($a, $b) => $b['lft'] <=> $a['lft']);
+		foreach ($pending_gaps_to_make as $pending_gap) {
+			$height = $pending_gap['rgt'] - $pending_gap['lft'] + 1;
+			(new Album())->newNestedSetQuery()->makeGap($pending_gap['rgt'] + 1, -$height);
 			Album::$actionsPerformed++;
 		}
 	}

@@ -24,11 +24,11 @@ class AlbumIDListRule implements ValidationRule
 		if (!is_string($value)) {
 			return false;
 		}
-		$albumIDs = explode(',', $value);
-		$idRule = new AlbumIDRule(false);
+		$album_i_ds = explode(',', $value);
+		$id_rule = new AlbumIDRule(false);
 		$success = true;
-		foreach ($albumIDs as $albumID) {
-			$success = $success && $idRule->passes('', $albumID);
+		foreach ($album_i_ds as $album_i_d) {
+			$success = $success && $id_rule->passes('', $album_i_d);
 		}
 
 		return $success;

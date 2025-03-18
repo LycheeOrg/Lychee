@@ -44,13 +44,13 @@ class JobsTest extends BaseApiV2Test
 
 	public function testAdmin(): void
 	{
-		$jobHistory = new JobHistory();
-		$jobHistory->owner_id = $this->admin->id;
-		$jobHistory->job = 'Maintenance::jobs';
-		$jobHistory->status = JobStatus::STARTED;
-		$jobHistory->created_at = now();
-		$jobHistory->updated_at = now();
-		$jobHistory->save();
+		$job_history = new JobHistory();
+		$job_history->owner_id = $this->admin->id;
+		$job_history->job = 'Maintenance::jobs';
+		$job_history->status = JobStatus::STARTED;
+		$job_history->created_at = now();
+		$job_history->updated_at = now();
+		$job_history->save();
 
 		$response = $this->actingAs($this->admin)->getJsonWithData('Maintenance::jobs');
 		$this->assertOk($response);

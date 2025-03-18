@@ -36,12 +36,12 @@ final class UpdateLogin
 	 * @throws ConflictingPropertyException
 	 * @throws ModelDBException
 	 */
-	public function do(?string $username, string $password, string $oldPassword, string $ip): User
+	public function do(?string $username, string $password, string $old_password, string $ip): User
 	{
 		/** @var User $user */
 		$user = Auth::user() ?? throw new UnauthenticatedException();
 
-		if (!Hash::check($oldPassword, $user->password)) {
+		if (!Hash::check($old_password, $user->password)) {
 			Log::channel('login')->notice(__METHOD__ . ':' . __LINE__ . sprintf('User (%s) tried to change their identity from %s', $user->username, $ip));
 
 			throw new UnauthenticatedException('Previous password is invalid');

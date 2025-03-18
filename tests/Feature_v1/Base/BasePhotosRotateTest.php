@@ -112,25 +112,25 @@ abstract class BasePhotosRotateTest extends BasePhotoTest
 
 	public function testDuplicatePhotoRotation(): void
 	{
-		$photoResponse1 = $this->photos_tests->upload(
+		$photo_response1 = $this->photos_tests->upload(
 			AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE)
 		);
-		$photoID1 = $photoResponse1->offsetGet('id');
-		$photoResponse2 = $this->photos_tests->duplicate(
-			[$photoID1], null
+		$photo_i_d1 = $photo_response1->offsetGet('id');
+		$photo_response2 = $this->photos_tests->duplicate(
+			[$photo_i_d1], null
 		);
-		$photoID2 = $photoResponse2->json()[0]['id'];
+		$photo_i_d2 = $photo_response2->json()[0]['id'];
 
-		static::assertNotEquals($photoID1, $photoID2);
+		static::assertNotEquals($photo_i_d1, $photo_i_d2);
 
-		$photoResponse1->assertJson([
+		$photo_response1->assertJson([
 			'size_variants' => [
 				'small' => ['width' => 540, 'height' => 360],
 				'medium' => ['width' => 1620, 'height' => 1080],
 				'original' => ['width' => 6720, 'height' => 4480],
 			],
 		]);
-		$photoResponse2->assertJson([
+		$photo_response2->assertJson([
 			0 => [
 				'size_variants' => [
 					'small' => ['width' => 540, 'height' => 360],
@@ -140,9 +140,9 @@ abstract class BasePhotosRotateTest extends BasePhotoTest
 			],
 		]);
 
-		$this->photos_tests->rotate($photoID1, 1);
-		$photoResponse2New = $this->photos_tests->get($photoID2);
-		$photoResponse2New->assertJson([
+		$this->photos_tests->rotate($photo_i_d1, 1);
+		$photo_response2_new = $this->photos_tests->get($photo_i_d2);
+		$photo_response2_new->assertJson([
 			'size_variants' => [
 				'small' => ['width' => 240, 'height' => 360],
 				'medium' => ['width' => 720, 'height' => 1080],

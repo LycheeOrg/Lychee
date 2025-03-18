@@ -76,23 +76,23 @@ readonly class Delete
 	 *
 	 * @throws ModelDBException
 	 */
-	public function do(array $photoIDs, array $albumIDs = []): FileDeleter
+	public function do(array $photo_i_ds, array $album_i_ds = []): FileDeleter
 	{
 		// TODO: replace this with pipelines, This is typically the kind of pattern.
 		try {
-			$this->collectSizeVariantPathsByPhotoID($photoIDs);
-			$this->collectSizeVariantPathsByAlbumID($albumIDs);
-			$this->collectLivePhotoPathsByPhotoID($photoIDs);
-			$this->collectLivePhotoPathsByAlbumID($albumIDs);
-			$this->collectSymLinksByPhotoID($photoIDs);
-			$this->collectSymLinksByAlbumID($albumIDs);
-			$this->deleteDBRecords($photoIDs, $albumIDs);
+			$this->collectSizeVariantPathsByPhotoID($photo_i_ds);
+			$this->collectSizeVariantPathsByAlbumID($album_i_ds);
+			$this->collectLivePhotoPathsByPhotoID($photo_i_ds);
+			$this->collectLivePhotoPathsByAlbumID($album_i_ds);
+			$this->collectSymLinksByPhotoID($photo_i_ds);
+			$this->collectSymLinksByAlbumID($album_i_ds);
+			$this->deleteDBRecords($photo_i_ds, $album_i_ds);
 			// @codeCoverageIgnoreStart
 		} catch (QueryBuilderException $e) {
 			throw ModelDBException::create('photos', 'deleting', $e);
 		}
 		// @codeCoverageIgnoreEnd
-		Album::query()->whereIn('header_id', $photoIDs)->update(['header_id' => null]);
+		Album::query()->whereIn('header_id', $photo_i_ds)->update(['header_id' => null]);
 
 		return $this->fileDeleter;
 	}
@@ -110,27 +110,27 @@ readonly class Delete
 	 *
 	 * @throws QueryBuilderException
 	 */
-	private function collectSizeVariantPathsByPhotoID(array $photoIDs): void
+	private function collectSizeVariantPathsByPhotoID(array $photo_i_ds): void
 	{
 		try {
-			if (count($photoIDs) === 0) {
+			if (count($photo_i_ds) === 0) {
 				return;
 			}
 
 			// Maybe consider doing multiple queries for the different storage types.
-			$sizeVariants = SizeVariant::query()
+			$size_variants = SizeVariant::query()
 				->from('size_variants as sv')
 				->select(['sv.short_path', 'sv.storage_disk'])
 				->join('photos as p', 'p.id', '=', 'sv.photo_id')
-				->leftJoin('photos as dup', function (JoinClause $join) use ($photoIDs): void {
+				->leftJoin('photos as dup', function (JoinClause $join) use ($photo_i_ds): void {
 					$join
 						->on('dup.checksum', '=', 'p.checksum')
-						->whereNotIn('dup.id', $photoIDs);
+						->whereNotIn('dup.id', $photo_i_ds);
 				})
-				->whereIn('p.id', $photoIDs)
+				->whereIn('p.id', $photo_i_ds)
 				->whereNull('dup.id')
 				->get();
-			$this->fileDeleter->addSizeVariants($sizeVariants);
+			$this->fileDeleter->addSizeVariants($size_variants);
 			// @codeCoverageIgnoreStart
 		} catch (\InvalidArgumentException $e) {
 			throw LycheeAssertionError::createFromUnexpectedException($e);
@@ -151,27 +151,27 @@ readonly class Delete
 	 *
 	 * @throws QueryBuilderException
 	 */
-	private function collectSizeVariantPathsByAlbumID(array $albumIDs): void
+	private function collectSizeVariantPathsByAlbumID(array $album_i_ds): void
 	{
 		try {
-			if (count($albumIDs) === 0) {
+			if (count($album_i_ds) === 0) {
 				return;
 			}
 
 			// Maybe consider doing multiple queries for the different storage types.
-			$sizeVariants = SizeVariant::query()
+			$size_variants = SizeVariant::query()
 				->from('size_variants as sv')
 				->select(['sv.short_path', 'sv.storage_disk'])
 				->join('photos as p', 'p.id', '=', 'sv.photo_id')
-				->leftJoin('photos as dup', function (JoinClause $join) use ($albumIDs): void {
+				->leftJoin('photos as dup', function (JoinClause $join) use ($album_i_ds): void {
 					$join
 						->on('dup.checksum', '=', 'p.checksum')
-						->whereNotIn('dup.album_id', $albumIDs);
+						->whereNotIn('dup.album_id', $album_i_ds);
 				})
-				->whereIn('p.album_id', $albumIDs)
+				->whereIn('p.album_id', $album_i_ds)
 				->whereNull('dup.id')
 				->get();
-			$this->fileDeleter->addSizeVariants($sizeVariants);
+			$this->fileDeleter->addSizeVariants($size_variants);
 			// @codeCoverageIgnoreStart
 		} catch (\InvalidArgumentException $e) {
 			throw LycheeAssertionError::createFromUnexpectedException($e);
@@ -192,14 +192,14 @@ readonly class Delete
 	 *
 	 * @throws QueryBuilderException
 	 */
-	private function collectLivePhotoPathsByPhotoID(array $photoIDs)
+	private function collectLivePhotoPathsByPhotoID(array $photo_i_ds)
 	{
 		try {
-			if (count($photoIDs) === 0) {
+			if (count($photo_i_ds) === 0) {
 				return;
 			}
 
-			$livePhotoShortPaths = Photo::query()
+			$live_photo_short_paths = Photo::query()
 				->from('photos as p')
 				->select(['p.live_photo_short_path', 'sv.storage_disk'])
 				->join('size_variants as sv', function (JoinClause $join): void {
@@ -207,19 +207,19 @@ readonly class Delete
 						->on('sv.photo_id', '=', 'p.id')
 						->where('sv.type', '=', SizeVariantType::ORIGINAL);
 				})
-				->leftJoin('photos as dup', function (JoinClause $join) use ($photoIDs): void {
+				->leftJoin('photos as dup', function (JoinClause $join) use ($photo_i_ds): void {
 					$join
 						->on('dup.live_photo_checksum', '=', 'p.live_photo_checksum')
-						->whereNotIn('dup.id', $photoIDs);
+						->whereNotIn('dup.id', $photo_i_ds);
 				})
-				->whereIn('p.id', $photoIDs)
+				->whereIn('p.id', $photo_i_ds)
 				->whereNull('dup.id')
 				->whereNotNull('p.live_photo_short_path')
 				->get(['p.live_photo_short_path', 'sv.storage_disk']);
 
-			$liveVariantsShortPathsGrouped = $livePhotoShortPaths->groupBy('storage_disk');
-			$liveVariantsShortPathsGrouped->each(
-				fn ($liveVariantsShortPaths, $disk) => $this->fileDeleter->addFiles($liveVariantsShortPaths->map(fn ($lv) => $lv->live_photo_short_path), $disk)
+			$live_variants_short_paths_grouped = $live_photo_short_paths->groupBy('storage_disk');
+			$live_variants_short_paths_grouped->each(
+				fn ($live_variants_short_paths, $disk) => $this->fileDeleter->addFiles($live_variants_short_paths->map(fn ($lv) => $lv->live_photo_short_path), $disk)
 			);
 			// @codeCoverageIgnoreStart
 		} catch (\InvalidArgumentException $e) {
@@ -241,14 +241,14 @@ readonly class Delete
 	 *
 	 * @throws QueryBuilderException
 	 */
-	private function collectLivePhotoPathsByAlbumID(array $albumIDs)
+	private function collectLivePhotoPathsByAlbumID(array $album_i_ds)
 	{
 		try {
-			if (count($albumIDs) === 0) {
+			if (count($album_i_ds) === 0) {
 				return;
 			}
 
-			$livePhotoShortPaths = Photo::query()
+			$live_photo_short_paths = Photo::query()
 				->from('photos as p')
 				->select(['p.live_photo_short_path', 'sv.storage_disk'])
 				->join('size_variants as sv', function (JoinClause $join): void {
@@ -256,19 +256,19 @@ readonly class Delete
 						->on('sv.photo_id', '=', 'p.id')
 						->where('sv.type', '=', SizeVariantType::ORIGINAL);
 				})
-				->leftJoin('photos as dup', function (JoinClause $join) use ($albumIDs): void {
+				->leftJoin('photos as dup', function (JoinClause $join) use ($album_i_ds): void {
 					$join
 						->on('dup.live_photo_checksum', '=', 'p.live_photo_checksum')
-						->whereNotIn('dup.album_id', $albumIDs);
+						->whereNotIn('dup.album_id', $album_i_ds);
 				})
-				->whereIn('p.album_id', $albumIDs)
+				->whereIn('p.album_id', $album_i_ds)
 				->whereNull('dup.id')
 				->whereNotNull('p.live_photo_short_path')
 				->get(['p.live_photo_short_path', 'sv.storage_disk']);
 
-			$liveVariantsShortPathsGrouped = $livePhotoShortPaths->groupBy('storage_disk');
-			$liveVariantsShortPathsGrouped->each(
-				fn ($liveVariantsShortPaths, $disk) => $this->fileDeleter->addFiles($liveVariantsShortPaths->map(fn ($lv) => $lv->live_photo_short_path), $disk)
+			$live_variants_short_paths_grouped = $live_photo_short_paths->groupBy('storage_disk');
+			$live_variants_short_paths_grouped->each(
+				fn ($live_variants_short_paths, $disk) => $this->fileDeleter->addFiles($live_variants_short_paths->map(fn ($lv) => $lv->live_photo_short_path), $disk)
 			);
 			// @codeCoverageIgnoreStart
 		} catch (\InvalidArgumentException $e) {
@@ -286,20 +286,20 @@ readonly class Delete
 	 *
 	 * @throws QueryBuilderException
 	 */
-	private function collectSymLinksByPhotoID(array $photoIDs): void
+	private function collectSymLinksByPhotoID(array $photo_i_ds): void
 	{
 		try {
-			if (count($photoIDs) === 0) {
+			if (count($photo_i_ds) === 0) {
 				return;
 			}
 
-			$symLinkPaths = SymLink::query()
+			$sym_link_paths = SymLink::query()
 				->from('sym_links', 'sl')
 				->select(['sl.short_path'])
 				->join('size_variants as sv', 'sv.id', '=', 'sl.size_variant_id')
-				->whereIn('sv.photo_id', $photoIDs)
+				->whereIn('sv.photo_id', $photo_i_ds)
 				->pluck('sl.short_path');
-			$this->fileDeleter->addSymbolicLinks($symLinkPaths);
+			$this->fileDeleter->addSymbolicLinks($sym_link_paths);
 			// @codeCoverageIgnoreStart
 		} catch (\InvalidArgumentException $e) {
 			throw LycheeAssertionError::createFromUnexpectedException($e);
@@ -316,21 +316,21 @@ readonly class Delete
 	 *
 	 * @throws QueryBuilderException
 	 */
-	private function collectSymLinksByAlbumID(array $albumIDs): void
+	private function collectSymLinksByAlbumID(array $album_i_ds): void
 	{
 		try {
-			if (count($albumIDs) === 0) {
+			if (count($album_i_ds) === 0) {
 				return;
 			}
 
-			$symLinkPaths = SymLink::query()
+			$sym_link_paths = SymLink::query()
 				->from('sym_links', 'sl')
 				->select(['sl.short_path'])
 				->join('size_variants as sv', 'sv.id', '=', 'sl.size_variant_id')
 				->join('photos as p', 'p.id', '=', 'sv.photo_id')
-				->whereIn('p.album_id', $albumIDs)
+				->whereIn('p.album_id', $album_i_ds)
 				->pluck('sl.short_path');
-			$this->fileDeleter->addSymbolicLinks($symLinkPaths);
+			$this->fileDeleter->addSymbolicLinks($sym_link_paths);
 			// @codeCoverageIgnoreStart
 		} catch (\InvalidArgumentException $e) {
 			throw LycheeAssertionError::createFromUnexpectedException($e);
@@ -351,50 +351,50 @@ readonly class Delete
 	 *
 	 * @throws QueryBuilderException
 	 */
-	private function deleteDBRecords(array $photoIDs, array $albumIDs): void
+	private function deleteDBRecords(array $photo_i_ds, array $album_i_ds): void
 	{
 		try {
-			if (count($photoIDs) !== 0) {
+			if (count($photo_i_ds) !== 0) {
 				SymLink::query()
-					->whereExists(function (BaseBuilder $query) use ($photoIDs): void {
+					->whereExists(function (BaseBuilder $query) use ($photo_i_ds): void {
 						$query
 							->from('size_variants', 'sv')
 							->whereColumn('sv.id', '=', 'sym_links.size_variant_id')
-							->whereIn('photo_id', $photoIDs);
+							->whereIn('photo_id', $photo_i_ds);
 					})
 					->delete();
 			}
-			if (count($albumIDs) !== 0) {
+			if (count($album_i_ds) !== 0) {
 				SymLink::query()
-					->whereExists(function (BaseBuilder $query) use ($albumIDs): void {
+					->whereExists(function (BaseBuilder $query) use ($album_i_ds): void {
 						$query
 							->from('size_variants', 'sv')
 							->whereColumn('sv.id', '=', 'sym_links.size_variant_id')
 							->join('photos', 'photos.id', '=', 'sv.photo_id')
-							->whereIn('photos.album_id', $albumIDs);
+							->whereIn('photos.album_id', $album_i_ds);
 					})
 					->delete();
 			}
-			if (count($photoIDs) !== 0) {
+			if (count($photo_i_ds) !== 0) {
 				SizeVariant::query()
-					->whereIn('size_variants.photo_id', $photoIDs)
+					->whereIn('size_variants.photo_id', $photo_i_ds)
 					->delete();
 			}
-			if (count($albumIDs) !== 0) {
+			if (count($album_i_ds) !== 0) {
 				SizeVariant::query()
-					->whereExists(function (BaseBuilder $query) use ($albumIDs): void {
+					->whereExists(function (BaseBuilder $query) use ($album_i_ds): void {
 						$query
 							->from('photos', 'p')
 							->whereColumn('p.id', '=', 'size_variants.photo_id')
-							->whereIn('p.album_id', $albumIDs);
+							->whereIn('p.album_id', $album_i_ds);
 					})
 					->delete();
 			}
-			if (count($photoIDs) !== 0) {
-				Photo::query()->whereIn('id', $photoIDs)->delete();
+			if (count($photo_i_ds) !== 0) {
+				Photo::query()->whereIn('id', $photo_i_ds)->delete();
 			}
-			if (count($albumIDs) !== 0) {
-				Photo::query()->whereIn('album_id', $albumIDs)->delete();
+			if (count($album_i_ds) !== 0) {
+				Photo::query()->whereIn('album_id', $album_i_ds)->delete();
 			}
 			// @codeCoverageIgnoreStart
 		} catch (\InvalidArgumentException $e) {

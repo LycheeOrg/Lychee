@@ -145,53 +145,53 @@ abstract class BaseSharingTest extends BasePhotoTest
 	 *
 	 * @return array
 	 */
-	protected function generateExpectedPhotoJson(string $samplePhotoID, string $photoID, ?string $albumID, array $attrToMerge = []): array
+	protected function generateExpectedPhotoJson(string $sample_photo_i_d, string $photo_i_d, ?string $album_i_d, array $attr_to_merge = []): array
 	{
-		$json = TestConstants::EXPECTED_PHOTO_JSON[$samplePhotoID];
-		$json['id'] = $photoID;
-		$json['album_id'] = $albumID;
+		$json = TestConstants::EXPECTED_PHOTO_JSON[$sample_photo_i_d];
+		$json['id'] = $photo_i_d;
+		$json['album_id'] = $album_i_d;
 
-		return array_replace_recursive($json, $attrToMerge);
+		return array_replace_recursive($json, $attr_to_merge);
 	}
 
-	protected function generateExpectedThumbJson(?string $photoID): array|null
+	protected function generateExpectedThumbJson(?string $photo_i_d): array|null
 	{
-		return $photoID === null ? null : ['id' => $photoID, 'type' => 'image/jpeg'];
+		return $photo_i_d === null ? null : ['id' => $photo_i_d, 'type' => 'image/jpeg'];
 	}
 
-	protected function generateExpectedAlbumJson(string $albumID, string $albumTitle, ?string $parentAlbumID = null, ?string $thumbID = null, array $attrToMerge = []): array
+	protected function generateExpectedAlbumJson(string $album_i_d, string $album_title, ?string $parent_album_i_d = null, ?string $thumb_i_d = null, array $attr_to_merge = []): array
 	{
 		return array_replace_recursive([
-			'id' => $albumID,
-			'title' => $albumTitle,
-			'thumb' => $this->generateExpectedThumbJson($thumbID),
-			'parent_id' => $parentAlbumID,
-		], $attrToMerge);
+			'id' => $album_i_d,
+			'title' => $album_title,
+			'thumb' => $this->generateExpectedThumbJson($thumb_i_d),
+			'parent_id' => $parent_album_i_d,
+		], $attr_to_merge);
 	}
 
 	protected function generateExpectedSmartAlbumJson(
-		bool $isPublic,
-		?string $thumbID = null,
-		array $expectedPhotos = [],
+		bool $is_public,
+		?string $thumb_i_d = null,
+		array $expected_photos = [],
 	): array {
 		return [
-			'thumb' => $this->generateExpectedThumbJson($thumbID),
-			'photos' => $expectedPhotos,
-			'policy' => ['is_public' => $isPublic],
+			'thumb' => $this->generateExpectedThumbJson($thumb_i_d),
+			'photos' => $expected_photos,
+			'policy' => ['is_public' => $is_public],
 		];
 	}
 
-	protected function ensurePhotosWereTakenOnThisDay(string ...$photoIDs): void
+	protected function ensurePhotosWereTakenOnThisDay(string ...$photo_i_ds): void
 	{
 		DB::table('photos')
-			->whereIn('id', $photoIDs)
+			->whereIn('id', $photo_i_ds)
 			->update(['taken_at' => (Carbon::today())->subYear()->format('Y-m-d H:i:s.u')]);
 	}
 
-	protected function ensurePhotosWereNotTakenOnThisDay(string ...$photoIDs): void
+	protected function ensurePhotosWereNotTakenOnThisDay(string ...$photo_i_ds): void
 	{
 		DB::table('photos')
-			->whereIn('id', $photoIDs)
+			->whereIn('id', $photo_i_ds)
 			->update(['taken_at' => (Carbon::today())->subMonth()->format('Y-m-d H:i:s.u')]);
 	}
 }

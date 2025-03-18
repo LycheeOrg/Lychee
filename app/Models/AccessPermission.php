@@ -134,9 +134,9 @@ class AccessPermission extends Model
 	 *
 	 * @return AccessPermission
 	 */
-	public static function ofAccessPermission(AccessPermission $accessPermission): self
+	public static function ofAccessPermission(AccessPermission $access_permission): self
 	{
-		return $accessPermission->replicate([APC::PASSWORD, APC::BASE_ALBUM_ID]);
+		return $access_permission->replicate([APC::PASSWORD, APC::BASE_ALBUM_ID]);
 	}
 
 	/**
@@ -166,10 +166,10 @@ class AccessPermission extends Model
 	 *
 	 * @return AccessPermission
 	 */
-	public static function withGrantFullPermissionsToUser(int $userId): self
+	public static function withGrantFullPermissionsToUser(int $user_id): self
 	{
 		return new AccessPermission([
-			APC::USER_ID => $userId,
+			APC::USER_ID => $user_id,
 			APC::GRANTS_FULL_PHOTO_ACCESS => true,
 			APC::GRANTS_DOWNLOAD => true,
 			APC::GRANTS_UPLOAD => true,

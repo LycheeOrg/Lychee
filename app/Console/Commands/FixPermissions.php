@@ -95,51 +95,51 @@ class FixPermissions extends Command
 	private function fixPermissionsRecursively(string $path): void
 	{
 		try {
-			$actualPerm = fileperms($path);
+			$actual_perm = fileperms($path);
 
 			// `fileperms` also returns the higher bits of the inode mode.
 			// Hence, we must AND it with 07777 to only get what we are
 			// interested in
-			$actualPerm &= 07777;
+			$actual_perm &= 07777;
 
-			$ownerId = fileowner($path);
-			$fileType = filetype($path);
+			$owner_id = fileowner($path);
+			$file_type = filetype($path);
 
-			$expectedPerm = match ($fileType) {
+			$expected_perm = match ($file_type) {
 				'dir' => BasicPermissionCheck::getConfiguredDirectoryPerm(),
 				'file' => BasicPermissionCheck::getConfiguredFilePerm(),
-				default => $actualPerm, // we do not care for links and other special files
+				default => $actual_perm, // we do not care for links and other special files
 			};
 
-			if ($expectedPerm !== $actualPerm) {
+			if ($expected_perm !== $actual_perm) {
 				$this->warn(
-					sprintf('%s has permissions %04o, but should have %04o', $path, $actualPerm, $expectedPerm)
+					sprintf('%s has permissions %04o, but should have %04o', $path, $actual_perm, $expected_perm)
 				);
 
 				if ($this->isDryRun) {
 					$this->info(sprintf(
-						'  => Would change permissions of %s from %04o to %04o', $path, $actualPerm, $expectedPerm
+						'  => Would change permissions of %s from %04o to %04o', $path, $actual_perm, $expected_perm
 					));
 					$this->changesExpected++;
 				} else {
-					if ($ownerId === $this->effUserId) {
+					if ($owner_id === $this->effUserId) {
 						$this->info(sprintf(
-							'  => Changing permissions of %s from %04o to %04o', $path, $actualPerm, $expectedPerm
+							'  => Changing permissions of %s from %04o to %04o', $path, $actual_perm, $expected_perm
 						));
-						chmod($path, $expectedPerm);
+						chmod($path, $expected_perm);
 					} else {
 						$this->error(
-							sprintf('Cannot change permissions of %s from %04o to %04o as current user is not the owner', $path, $actualPerm, $expectedPerm)
+							sprintf('Cannot change permissions of %s from %04o to %04o as current user is not the owner', $path, $actual_perm, $expected_perm)
 						);
 					}
 				}
 			}
 
-			if ($fileType === 'dir') {
+			if ($file_type === 'dir') {
 				$dir = new \DirectoryIterator($path);
-				foreach ($dir as $dirEntry) {
-					if ($dirEntry->isDir() && !$dirEntry->isDot() || $dirEntry->isFile()) {
-						$this->fixPermissionsRecursively($dirEntry->getPathname());
+				foreach ($dir as $dir_entry) {
+					if ($dir_entry->isDir() && !$dir_entry->isDot() || $dir_entry->isFile()) {
+						$this->fixPermissionsRecursively($dir_entry->getPathname());
 					}
 				}
 			}

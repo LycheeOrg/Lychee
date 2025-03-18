@@ -175,15 +175,15 @@ final class PhotoResource extends JsonResource
 
 	private function genExifHash(): string
 	{
-		$exifHash = $this->resource->make;
-		$exifHash .= $this->resource->model;
-		$exifHash .= $this->resource->shutter;
+		$exif_hash = $this->resource->make;
+		$exif_hash .= $this->resource->model;
+		$exif_hash .= $this->resource->shutter;
 		if (!$this->resource->isVideo()) {
-			$exifHash .= $this->resource->aperture;
-			$exifHash .= $this->resource->focal;
+			$exif_hash .= $this->resource->aperture;
+			$exif_hash .= $this->resource->focal;
 		}
-		$exifHash .= $this->resource->iso;
+		$exif_hash .= $this->resource->iso;
 
-		return $exifHash;
+		return $exif_hash;
 	}
 }

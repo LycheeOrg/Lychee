@@ -99,9 +99,9 @@ abstract class BasePhotosAddHandler extends BasePhotoTest
 				'placeholder' => ['width' => 16, 'height' => 16],
 			],
 		]);
-		$responseContent = $response->getContent();
-		if ($responseContent !== false) {
-			$photo = \Safe\json_decode($responseContent)->size_variants->placeholder;
+		$response_content = $response->getContent();
+		if ($response_content !== false) {
+			$photo = \Safe\json_decode($response_content)->size_variants->placeholder;
 			// check for the file signature in the decoded base64 data.
 			Assert::assertStringContainsString('WEBPVP8', \Safe\base64_decode($photo->url));
 			Assert::assertLessThan(190, $photo->filesize);
@@ -437,10 +437,10 @@ abstract class BasePhotosAddHandler extends BasePhotoTest
 	 */
 	public function testVideoUploadWithoutFFmpeg(): void
 	{
-		$hasExifTool = Configs::getValueAsInt(TestConstants::CONFIG_HAS_EXIF_TOOL);
+		$has_exif_tool = Configs::getValueAsInt(TestConstants::CONFIG_HAS_EXIF_TOOL);
 		Configs::set(TestConstants::CONFIG_HAS_EXIF_TOOL, 0);
 
-		$hasFFMpeg = Configs::getValueAsInt(TestConstants::CONFIG_HAS_FFMPEG);
+		$has_f_f_mpeg = Configs::getValueAsInt(TestConstants::CONFIG_HAS_FFMPEG);
 		Configs::set(TestConstants::CONFIG_HAS_FFMPEG, 0);
 
 		file_put_contents(storage_path('logs/daily-' . date('Y-m-d') . '.log'), '');
@@ -477,8 +477,8 @@ abstract class BasePhotosAddHandler extends BasePhotoTest
 		// of an error message in the log.
 		self::assertNotEmpty(file_get_contents(storage_path('logs/daily-' . date('Y-m-d') . '.log')));
 
-		Configs::set(TestConstants::CONFIG_HAS_FFMPEG, $hasFFMpeg);
-		Configs::set(TestConstants::CONFIG_HAS_EXIF_TOOL, $hasExifTool);
+		Configs::set(TestConstants::CONFIG_HAS_FFMPEG, $has_f_f_mpeg);
+		Configs::set(TestConstants::CONFIG_HAS_EXIF_TOOL, $has_exif_tool);
 	}
 
 	/**
@@ -490,7 +490,7 @@ abstract class BasePhotosAddHandler extends BasePhotoTest
 	 */
 	public function testPhotoUploadWithUndefinedExifTag(): void
 	{
-		$hasExifTool = Configs::getValueAsBool(TestConstants::CONFIG_HAS_EXIF_TOOL);
+		$has_exif_tool = Configs::getValueAsBool(TestConstants::CONFIG_HAS_EXIF_TOOL);
 		Configs::set(TestConstants::CONFIG_HAS_EXIF_TOOL, false);
 
 		$response = $this->photos_tests->upload(
@@ -518,7 +518,7 @@ abstract class BasePhotosAddHandler extends BasePhotoTest
 			],
 		]);
 
-		Configs::set(TestConstants::CONFIG_HAS_EXIF_TOOL, $hasExifTool);
+		Configs::set(TestConstants::CONFIG_HAS_EXIF_TOOL, $has_exif_tool);
 	}
 
 	public function testUploadMultibyteTitle(): void
@@ -563,10 +563,10 @@ abstract class BasePhotosAddHandler extends BasePhotoTest
 
 	public function testUploadMultibyteTitleWithoutExifTool(): void
 	{
-		$hasExifTool = Configs::getValueAsBool(TestConstants::CONFIG_HAS_EXIF_TOOL);
+		$has_exif_tool = Configs::getValueAsBool(TestConstants::CONFIG_HAS_EXIF_TOOL);
 		Configs::set(TestConstants::CONFIG_HAS_EXIF_TOOL, false);
 		$this->testUploadMultibyteTitle();
-		Configs::set(TestConstants::CONFIG_HAS_EXIF_TOOL, $hasExifTool);
+		Configs::set(TestConstants::CONFIG_HAS_EXIF_TOOL, $has_exif_tool);
 	}
 
 	/**
@@ -577,7 +577,7 @@ abstract class BasePhotosAddHandler extends BasePhotoTest
 	 */
 	public function testTakenAtForPhotoUploadWithoutExif(): void
 	{
-		$useLastModifiedDate = Configs::getValueAsBool(TestConstants::CONFIG_USE_LAST_MODIFIED_DATE_WHEN_NO_EXIF);
+		$use_last_modified_date = Configs::getValueAsBool(TestConstants::CONFIG_USE_LAST_MODIFIED_DATE_WHEN_NO_EXIF);
 		Configs::set(TestConstants::CONFIG_USE_LAST_MODIFIED_DATE_WHEN_NO_EXIF, true);
 
 		$response = $this->photos_tests->upload(
@@ -588,7 +588,7 @@ abstract class BasePhotosAddHandler extends BasePhotoTest
 			'taken_at_orig_tz' => '+00:00',
 		]);
 
-		Configs::set(TestConstants::CONFIG_USE_LAST_MODIFIED_DATE_WHEN_NO_EXIF, $useLastModifiedDate);
+		Configs::set(TestConstants::CONFIG_USE_LAST_MODIFIED_DATE_WHEN_NO_EXIF, $use_last_modified_date);
 	}
 
 	/**
@@ -599,7 +599,7 @@ abstract class BasePhotosAddHandler extends BasePhotoTest
 	 */
 	public function testTakenAtForPhotoUploadWithoutExif2(): void
 	{
-		$useLastModifiedDate = Configs::getValueAsBool(TestConstants::CONFIG_USE_LAST_MODIFIED_DATE_WHEN_NO_EXIF);
+		$use_last_modified_date = Configs::getValueAsBool(TestConstants::CONFIG_USE_LAST_MODIFIED_DATE_WHEN_NO_EXIF);
 		Configs::set(TestConstants::CONFIG_USE_LAST_MODIFIED_DATE_WHEN_NO_EXIF, true);
 
 		$response = $this->photos_tests->upload(
@@ -611,7 +611,7 @@ abstract class BasePhotosAddHandler extends BasePhotoTest
 			'taken_at_orig_tz' => '+00:00',
 		]);
 
-		Configs::set(TestConstants::CONFIG_USE_LAST_MODIFIED_DATE_WHEN_NO_EXIF, $useLastModifiedDate);
+		Configs::set(TestConstants::CONFIG_USE_LAST_MODIFIED_DATE_WHEN_NO_EXIF, $use_last_modified_date);
 	}
 
 	/**
@@ -639,7 +639,7 @@ abstract class BasePhotosAddHandler extends BasePhotoTest
 	 */
 	public function testTakenAtForPhotoUploadWithExif(): void
 	{
-		$useLastModifiedDate = Configs::getValueAsBool(TestConstants::CONFIG_USE_LAST_MODIFIED_DATE_WHEN_NO_EXIF);
+		$use_last_modified_date = Configs::getValueAsBool(TestConstants::CONFIG_USE_LAST_MODIFIED_DATE_WHEN_NO_EXIF);
 		Configs::set(TestConstants::CONFIG_USE_LAST_MODIFIED_DATE_WHEN_NO_EXIF, true);
 
 		$response = $this->photos_tests->upload(
@@ -650,6 +650,6 @@ abstract class BasePhotosAddHandler extends BasePhotoTest
 			'taken_at_orig_tz' => '+02:00',
 		]);
 
-		Configs::set(TestConstants::CONFIG_USE_LAST_MODIFIED_DATE_WHEN_NO_EXIF, $useLastModifiedDate);
+		Configs::set(TestConstants::CONFIG_USE_LAST_MODIFIED_DATE_WHEN_NO_EXIF, $use_last_modified_date);
 	}
 }

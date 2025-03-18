@@ -62,12 +62,12 @@ final class ImportController extends Controller
 	 *
 	 * @throws MassImportException
 	 */
-	public function url(ImportFromUrlRequest $request, FromUrl $fromUrl): AnonymousResourceCollection
+	public function url(ImportFromUrlRequest $request, FromUrl $from_url): AnonymousResourceCollection
 	{
 		/** @var int $currentUserId */
-		$currentUserId = Auth::id() ?? throw new UnauthenticatedException();
+		$current_user_id = Auth::id() ?? throw new UnauthenticatedException();
 
-		$photos = $fromUrl->do($request->urls(), $request->album(), $currentUserId);
+		$photos = $from_url->do($request->urls(), $request->album(), $current_user_id);
 
 		return PhotoResource::collection($photos);
 	}
@@ -78,13 +78,13 @@ final class ImportController extends Controller
 	 *
 	 * @return StreamedResponse
 	 */
-	public function server(ImportServerRequest $request, FromServer $fromServer): StreamedResponse
+	public function server(ImportServerRequest $request, FromServer $from_server): StreamedResponse
 	{
 		/** @var int $currentUserId */
-		$currentUserId = Auth::id() ?? throw new UnauthenticatedException();
+		$current_user_id = Auth::id() ?? throw new UnauthenticatedException();
 
-		return $fromServer->do(
-			$request->paths(), $request->album(), $request->importMode(), $currentUserId
+		return $from_server->do(
+			$request->paths(), $request->album(), $request->importMode(), $current_user_id
 		);
 	}
 

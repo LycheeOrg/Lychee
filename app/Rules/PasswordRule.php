@@ -10,8 +10,8 @@ namespace App\Rules;
 
 class PasswordRule extends StringRule
 {
-	public function __construct(bool $isNullable)
+	public function __construct(bool $is_nullable)
 	{
-		parent::__construct($isNullable, 100);
+		parent::__construct($is_nullable, 100);
 	}
 }

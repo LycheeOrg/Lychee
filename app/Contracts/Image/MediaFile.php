@@ -50,7 +50,7 @@ interface MediaFile extends BinaryBlob
 	 *
 	 * @throws MediaFileOperationException
 	 */
-	public function write($stream, bool $collectStatistics = false): ?StreamStats;
+	public function write($stream, bool $collect_statistics = false): ?StreamStats;
 
 	/**
 	 * Deletes the file.
@@ -77,7 +77,7 @@ interface MediaFile extends BinaryBlob
 	 *
 	 * @throws MediaFileOperationException
 	 */
-	public function move(string $newPath): void;
+	public function move(string $new_path): void;
 
 	/** Checks if the file exists.
 	 *
@@ -155,7 +155,7 @@ interface MediaFile extends BinaryBlob
 	 *
 	 * @return bool
 	 */
-	public static function isSupportedImageMimeType(string $mimeType): bool;
+	public static function isSupportedImageMimeType(string $mime_type): bool;
 
 	/**
 	 * Checks if the given MIME type designates a supported video type.
@@ -164,7 +164,7 @@ interface MediaFile extends BinaryBlob
 	 *
 	 * @return bool
 	 */
-	public static function isSupportedVideoMimeType(string $mimeType): bool;
+	public static function isSupportedVideoMimeType(string $mime_type): bool;
 
 	/**
 	 * Checks if the given file extension is a supported image extension.

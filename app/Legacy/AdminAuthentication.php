@@ -49,16 +49,16 @@ class AdminAuthentication
 		// We consider this risk to be too small to actually mitigate it.
 
 		/** @var User|null $adminUser */
-		$adminUser = User::query()->find($admin_id);
+		$admin_user = User::query()->find($admin_id);
 
 		// Admin User exists, so we check against it.
-		if ($adminUser !== null && Hash::check($username, $adminUser->username) && Hash::check($password, $adminUser->password)) {
-			Auth::login($adminUser);
+		if ($admin_user !== null && Hash::check($username, $admin_user->username) && Hash::check($password, $admin_user->password)) {
+			Auth::login($admin_user);
 			Log::channel('login')->notice(__METHOD__ . ':' . __LINE__ . ' User (' . $username . ') has logged in from ' . $ip);
 
 			// update the admin username so we do not need to go through here anymore.
-			$adminUser->username = $username;
-			$adminUser->save();
+			$admin_user->username = $username;
+			$admin_user->save();
 
 			return true;
 		}
@@ -86,12 +86,12 @@ class AdminAuthentication
 			// Prior version 4.6.3 we are using ID 0 as admin
 			// We create admin at ID 0 because the 2022_12_10_183251_increment_user_i_ds will be taking care to push it to 1.
 			/** @var User $adminUser */
-			$adminUser = User::query()->findOrNew(0);
-			$adminUser->username = $username;
-			$adminUser->password = Hash::make($password);
-			$adminUser->save();
+			$admin_user = User::query()->findOrNew(0);
+			$admin_user->username = $username;
+			$admin_user->password = Hash::make($password);
+			$admin_user->save();
 
-			Auth::login($adminUser);
+			Auth::login($admin_user);
 			Log::channel('login')->notice(__METHOD__ . ':' . __LINE__ . ' User (' . $username . ') has logged in from ' . $ip . ' (legacy)');
 
 			return true;

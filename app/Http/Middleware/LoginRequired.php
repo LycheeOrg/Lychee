@@ -40,10 +40,10 @@ class LoginRequired
 	 * @throws ConfigurationException
 	 * @throws FrameworkException
 	 */
-	public function handle(Request $request, \Closure $next, string $requiredStatus): mixed
+	public function handle(Request $request, \Closure $next, string $required_status): mixed
 	{
-		if (in_array($requiredStatus, [self::ALBUM, self::ROOT, self::ALWAYS], true) === false) {
-			throw new LycheeInvalidArgumentException($requiredStatus . ' is not a valid login requirement.');
+		if (in_array($required_status, [self::ALBUM, self::ROOT, self::ALWAYS], true) === false) {
+			throw new LycheeInvalidArgumentException($required_status . ' is not a valid login requirement.');
 		}
 
 		// We are logged in. Proceed.
@@ -51,7 +51,7 @@ class LoginRequired
 			return $next($request);
 		}
 
-		if ($requiredStatus === self::ALWAYS) {
+		if ($required_status === self::ALWAYS) {
 			return redirect()->route('gallery');
 		}
 
@@ -60,7 +60,7 @@ class LoginRequired
 			return $next($request);
 		}
 
-		if ($requiredStatus === self::ALBUM && Configs::getValueAsBool('login_required_root_only')) {
+		if ($required_status === self::ALBUM && Configs::getValueAsBool('login_required_root_only')) {
 			return $next($request);
 		}
 

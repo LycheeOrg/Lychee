@@ -24,9 +24,9 @@ use Illuminate\Database\Eloquent\Collection;
  */
 class HasManyPhotosByTag extends BaseHasManyPhotos
 {
-	public function __construct(TagAlbum $owningAlbum)
+	public function __construct(TagAlbum $owning_album)
 	{
-		parent::__construct($owningAlbum);
+		parent::__construct($owning_album);
 	}
 
 	/**

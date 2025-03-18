@@ -19,11 +19,11 @@ class VideoPartnerDTO implements PhotoDTO
 	public string $videoPath;
 
 	public function __construct(
-		public readonly BaseMediaFile $videoFile,
+		public readonly BaseMediaFile $video_file,
 		// The resulting photo
 		public readonly Photo $photo,
-		public readonly bool $shallImportViaSymlink,
-		public readonly bool $shallDeleteImported,
+		public readonly bool $shall_import_via_symlink,
+		public readonly bool $shall_delete_imported,
 	) {
 	}
 
@@ -32,13 +32,13 @@ class VideoPartnerDTO implements PhotoDTO
 		return $this->photo;
 	}
 
-	public static function ofInit(InitDTO $initDTO): VideoPartnerDTO
+	public static function ofInit(InitDTO $init_d_t_o): VideoPartnerDTO
 	{
 		return new VideoPartnerDTO(
-			videoFile: $initDTO->sourceFile,
-			photo: $initDTO->livePartner,
-			shallImportViaSymlink: $initDTO->importMode->shallImportViaSymlink,
-			shallDeleteImported: $initDTO->importMode->shallDeleteImported,
+			videoFile: $init_d_t_o->sourceFile,
+			photo: $init_d_t_o->livePartner,
+			shallImportViaSymlink: $init_d_t_o->importMode->shallImportViaSymlink,
+			shallDeleteImported: $init_d_t_o->importMode->shallDeleteImported,
 		);
 	}
 }

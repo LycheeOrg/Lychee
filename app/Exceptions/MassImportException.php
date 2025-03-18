@@ -33,19 +33,19 @@ class MassImportException extends BaseLycheeException
 	 *
 	 * @throws LycheeDomainException
 	 */
-	public function __construct(array $listOfExceptions)
+	public function __construct(array $list_of_exceptions)
 	{
-		if (count($listOfExceptions) === 1) {
+		if (count($list_of_exceptions) === 1) {
 			$msg = 'A photo could not be imported';
-			$prev = reset($listOfExceptions);
-		} elseif (count($listOfExceptions) > 1) {
+			$prev = reset($list_of_exceptions);
+		} elseif (count($list_of_exceptions) > 1) {
 			$msg = 'Several photos could not be imported';
 			$prev = null;
 		} else {
 			throw new LycheeDomainException('$listOfExceptions must not be empty');
 		}
 		parent::__construct(Response::HTTP_UNPROCESSABLE_ENTITY, $msg, $prev);
-		$this->previousExceptions = $listOfExceptions;
+		$this->previousExceptions = $list_of_exceptions;
 	}
 
 	/**

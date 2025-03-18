@@ -40,9 +40,9 @@ final class Create
 	/** @var ImportParam the strategy parameters prepared and compiled by this class */
 	protected ImportParam $strategyParameters;
 
-	public function __construct(?ImportMode $importMode, int $intendedOwnerId)
+	public function __construct(?ImportMode $import_mode, int $intended_owner_id)
 	{
-		$this->strategyParameters = new ImportParam($importMode, $intendedOwnerId);
+		$this->strategyParameters = new ImportParam($import_mode, $intended_owner_id);
 	}
 
 	/**
@@ -63,23 +63,23 @@ final class Create
 	 * @throws ModelNotFoundException
 	 * @throws LycheeException
 	 */
-	public function add(NativeLocalFile $sourceFile, ?AbstractAlbum $album, ?int $fileLastModifiedTime = null): Photo
+	public function add(NativeLocalFile $source_file, ?AbstractAlbum $album, ?int $file_last_modified_time = null): Photo
 	{
-		$fileLastModifiedTime ??= filemtime($sourceFile->getRealPath());
+		$file_last_modified_time ??= filemtime($source_file->getRealPath());
 
-		$sourceFile->assertIsSupportedMediaOrAcceptedRaw();
+		$source_file->assertIsSupportedMediaOrAcceptedRaw();
 
 		// Fill in information about targeted parent album
 		// throws InvalidPropertyException
 		$this->initParentAlbum($album);
 
 		// Fill in metadata extracted from source file
-		$this->loadFileMetadata($sourceFile, $fileLastModifiedTime);
+		$this->loadFileMetadata($source_file, $file_last_modified_time);
 
 		// Look up potential duplicates/partners in order to select the
 		// proper strategy
-		$duplicate = $this->get_duplicate(StreamStat::createFromLocalFile($sourceFile)->checksum);
-		$livePartner = $this->findLivePartner(
+		$duplicate = $this->get_duplicate(StreamStat::createFromLocalFile($source_file)->checksum);
+		$live_partner = $this->findLivePartner(
 			$this->strategyParameters->exifInfo->livePhotoContentID,
 			$this->strategyParameters->exifInfo->type,
 			$this->strategyParameters->album
@@ -96,16 +96,16 @@ final class Create
 		if ($duplicate !== null) {
 			$strategy = new AddDuplicateStrategy($this->strategyParameters, $duplicate);
 		} else {
-			if ($livePartner === null) {
-				$strategy = new AddStandaloneStrategy($this->strategyParameters, $sourceFile);
+			if ($live_partner === null) {
+				$strategy = new AddStandaloneStrategy($this->strategyParameters, $source_file);
 			} else {
-				if ($sourceFile->isSupportedVideo()) {
-					$strategy = new AddVideoPartnerStrategy($this->strategyParameters, $sourceFile, $livePartner);
-				} elseif ($sourceFile->isSupportedImage()) {
-					$strategy = new AddPhotoPartnerStrategy($this->strategyParameters, $sourceFile, $livePartner);
+				if ($source_file->isSupportedVideo()) {
+					$strategy = new AddVideoPartnerStrategy($this->strategyParameters, $source_file, $live_partner);
+				} elseif ($source_file->isSupportedImage()) {
+					$strategy = new AddPhotoPartnerStrategy($this->strategyParameters, $source_file, $live_partner);
 				} else {
 					// Accepted, but unsupported raw files are added as stand-alone files
-					$strategy = new AddStandaloneStrategy($this->strategyParameters, $sourceFile);
+					$strategy = new AddStandaloneStrategy($this->strategyParameters, $source_file);
 				}
 			}
 		}
@@ -133,16 +133,16 @@ final class Create
 	 * @throws MediaFileOperationException
 	 * @throws ExternalComponentFailedException
 	 */
-	protected function loadFileMetadata(NativeLocalFile $sourceFile, int $fileLastModifiedTime): void
+	protected function loadFileMetadata(NativeLocalFile $source_file, int $file_last_modified_time): void
 	{
-		$this->strategyParameters->exifInfo = Extractor::createFromFile($sourceFile, $fileLastModifiedTime);
+		$this->strategyParameters->exifInfo = Extractor::createFromFile($source_file, $file_last_modified_time);
 
 		// Use basename of file if IPTC title missing
 		if (
 			$this->strategyParameters->exifInfo->title === null ||
 			$this->strategyParameters->exifInfo->title === ''
 		) {
-			$this->strategyParameters->exifInfo->title = substr($sourceFile->getOriginalBasename(), 0, 98);
+			$this->strategyParameters->exifInfo->title = substr($source_file->getOriginalBasename(), 0, 98);
 		}
 	}
 
@@ -165,32 +165,32 @@ final class Create
 	 * @throws QueryBuilderException
 	 */
 	protected function findLivePartner(
-		?string $contentID,
-		string $mimeType,
+		?string $content_i_d,
+		string $mime_type,
 		?Album $album,
 	): ?Photo {
 		try {
-			$livePartner = null;
+			$live_partner = null;
 			// find a potential partner which has the same content id
-			if ($contentID !== null) {
+			if ($content_i_d !== null) {
 				/** @var Photo|null $livePartner */
-				$livePartner = Photo::query()
-					->where('live_photo_content_id', '=', $contentID)
+				$live_partner = Photo::query()
+					->where('live_photo_content_id', '=', $content_i_d)
 					->where('album_id', '=', $album?->id)
 					->whereNull('live_photo_short_path')->first();
 			}
 			// if a potential partner has been found, ensure that it is of a
 			// different kind then the uploaded media.
 			if (
-				$livePartner !== null && !(
-					BaseMediaFile::isSupportedImageMimeType($mimeType) && $livePartner->isVideo() ||
-					BaseMediaFile::isSupportedVideoMimeType($mimeType) && $livePartner->isPhoto()
+				$live_partner !== null && !(
+					BaseMediaFile::isSupportedImageMimeType($mime_type) && $live_partner->isVideo() ||
+					BaseMediaFile::isSupportedVideoMimeType($mime_type) && $live_partner->isPhoto()
 				)
 			) {
-				$livePartner = null;
+				$live_partner = null;
 			}
 
-			return $livePartner;
+			return $live_partner;
 		} catch (IllegalOrderOfOperationException $e) {
 			throw LycheeAssertionError::createFromUnexpectedException($e);
 		}

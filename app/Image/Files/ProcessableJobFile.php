@@ -35,11 +35,11 @@ class ProcessableJobFile extends NativeLocalFile
 	 *
 	 * @throws MediaFileOperationException
 	 */
-	public function __construct(string $fileExtension, string $fakeBaseName = '')
+	public function __construct(string $file_extension, string $fake_base_name = '')
 	{
-		$tempFilePath = $this->load($fileExtension);
-		parent::__construct($tempFilePath);
-		$this->fakeBaseName = $fakeBaseName;
+		$temp_file_path = $this->load($file_extension);
+		parent::__construct($temp_file_path);
+		$this->fakeBaseName = $fake_base_name;
 	}
 
 	/**
@@ -47,13 +47,13 @@ class ProcessableJobFile extends NativeLocalFile
 	 */
 	protected function getFileBasePath(): string
 	{
-		$tempDirPath = Storage::disk(self::DISK_NAME)->path('');
+		$temp_dir_path = Storage::disk(self::DISK_NAME)->path('');
 
-		if (!file_exists($tempDirPath)) {
-			mkdir($tempDirPath);
+		if (!file_exists($temp_dir_path)) {
+			mkdir($temp_dir_path);
 		}
 
-		return $tempDirPath;
+		return $temp_dir_path;
 	}
 
 	/**

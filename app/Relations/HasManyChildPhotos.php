@@ -27,7 +27,7 @@ class HasManyChildPhotos extends HasManyBidirectionally
 {
 	protected PhotoQueryPolicy $photoQueryPolicy;
 
-	public function __construct(Album $owningAlbum)
+	public function __construct(Album $owning_album)
 	{
 		// Sic! We must initialize attributes of this class before we call
 		// the parent constructor.
@@ -36,7 +36,7 @@ class HasManyChildPhotos extends HasManyBidirectionally
 		$this->photoQueryPolicy = resolve(PhotoQueryPolicy::class);
 		parent::__construct(
 			Photo::query(),
-			$owningAlbum,
+			$owning_album,
 			'album_id',
 			'id',
 			'album'
@@ -101,15 +101,15 @@ class HasManyChildPhotos extends HasManyBidirectionally
 			return $this->related->newCollection();
 		}
 
-		$albumSorting = $this->getParent()->getEffectivePhotoSorting();
+		$album_sorting = $this->getParent()->getEffectivePhotoSorting();
 
 		/** @var SortingDecorator<Photo> */
-		$sortingDecorator = new SortingDecorator($this->query);
+		$sorting_decorator = new SortingDecorator($this->query);
 
-		return $sortingDecorator
+		return $sorting_decorator
 			->orderPhotosBy(
-				$albumSorting->column,
-				$albumSorting->order
+				$album_sorting->column,
+				$album_sorting->order
 			)
 			->get();
 	}
@@ -137,22 +137,22 @@ class HasManyChildPhotos extends HasManyBidirectionally
 		foreach ($models as $model) {
 			if (isset($dictionary[$key = $this->getDictionaryKey($model->getAttribute($this->localKey))])) {
 				/** @var Collection<int,Photo> $childrenOfModel */
-				$childrenOfModel = $this->getRelationValue($dictionary, $key, 'many');
+				$children_of_model = $this->getRelationValue($dictionary, $key, 'many');
 				$sorting = $model->getEffectivePhotoSorting();
-				$childrenOfModel = $childrenOfModel
+				$children_of_model = $children_of_model
 					->sortBy(
 						$sorting->column->value,
 						in_array($sorting->column, SortingDecorator::POSTPONE_COLUMNS, true) ? SORT_NATURAL | SORT_FLAG_CASE : SORT_REGULAR,
 						$sorting->order === OrderSortingType::DESC
 					)
 					->values();
-				$model->setRelation($relation, $childrenOfModel);
+				$model->setRelation($relation, $children_of_model);
 				// This is the newly added code which sets this method apart
 				// from the original method and additionally sets the
 				// reverse link
 				/** @var Model $childModel */
-				foreach ($childrenOfModel as $childModel) {
-					$childModel->setRelation($this->foreignMethodName, $model);
+				foreach ($children_of_model as $child_model) {
+					$child_model->setRelation($this->foreignMethodName, $model);
 				}
 			}
 		}

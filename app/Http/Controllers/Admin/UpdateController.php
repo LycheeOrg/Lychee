@@ -31,9 +31,9 @@ class UpdateController extends Controller
 {
 	protected ApplyUpdate $applyUpdate;
 
-	public function __construct(ApplyUpdate $applyUpdate)
+	public function __construct(ApplyUpdate $apply_update)
 	{
-		$this->applyUpdate = $applyUpdate;
+		$this->applyUpdate = $apply_update;
 	}
 
 	/**
@@ -45,19 +45,19 @@ class UpdateController extends Controller
 	 *
 	 * @return UpdateInfo
 	 */
-	public function get(UpdateRequest $request, VersionInfo $versionInfo, DockerVersionInfo $dockerVersionInfo): UpdateInfo
+	public function get(UpdateRequest $request, VersionInfo $version_info, DockerVersionInfo $docker_version_info): UpdateInfo
 	{
 		/** @var VersionChannelType $channelName */
-		$channelName = $versionInfo->getChannelName();
-		$info = $versionInfo->fileVersion->getVersion()->toString();
+		$channel_name = $version_info->getChannelName();
+		$info = $version_info->fileVersion->getVersion()->toString();
 		$extra = '';
 
-		if ($channelName !== VersionChannelType::RELEASE) {
-			if ($versionInfo->gitHubFunctions->localHead !== null) {
-				$branch = $versionInfo->gitHubFunctions->localBranch ?? '??';
-				$commit = $versionInfo->gitHubFunctions->localHead ?? '??';
+		if ($channel_name !== VersionChannelType::RELEASE) {
+			if ($version_info->gitHubFunctions->localHead !== null) {
+				$branch = $version_info->gitHubFunctions->localBranch ?? '??';
+				$commit = $version_info->gitHubFunctions->localHead ?? '??';
 				$info = sprintf('%s (%s)', $branch, $commit);
-				$extra = $versionInfo->gitHubFunctions->getBehindTest();
+				$extra = $version_info->gitHubFunctions->getBehindTest();
 			} else {
 				// @codeCoverageIgnoreStart
 				$info = 'No git data found.';
@@ -65,7 +65,7 @@ class UpdateController extends Controller
 			}
 		}
 
-		return new UpdateInfo($info, $extra, $channelName, $dockerVersionInfo->isDocker());
+		return new UpdateInfo($info, $extra, $channel_name, $docker_version_info->isDocker());
 	}
 
 	/**
@@ -73,9 +73,9 @@ class UpdateController extends Controller
 	 *
 	 * @return UpdateCheckInfo
 	 */
-	public function check(UpdateRequest $request, GitHubVersion $gitHubFunctions, VersionInfo $versionInfo, DockerVersionInfo $dockerVersionInfo): UpdateCheckInfo
+	public function check(UpdateRequest $request, GitHubVersion $git_hub_functions, VersionInfo $version_info, DockerVersionInfo $docker_version_info): UpdateCheckInfo
 	{
-		return new UpdateCheckInfo($gitHubFunctions->getBehindTest(), !$dockerVersionInfo->isDocker() && (!$gitHubFunctions->isUpToDate() || !$versionInfo->fileVersion->isUpToDate()));
+		return new UpdateCheckInfo($git_hub_functions->getBehindTest(), !$docker_version_info->isDocker() && (!$git_hub_functions->isUpToDate() || !$version_info->fileVersion->isUpToDate()));
 	}
 
 	/**

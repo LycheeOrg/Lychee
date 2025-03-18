@@ -23,9 +23,9 @@ class StringRule implements ValidationRule
 	 * @param bool $isNullable determines whether `null` is acceptable
 	 * @param int  $limit      the maximum number of allowed characters; `0` means unlimited
 	 */
-	public function __construct(bool $isNullable, int $limit = 0)
+	public function __construct(bool $is_nullable, int $limit = 0)
 	{
-		$this->isNullable = $isNullable;
+		$this->isNullable = $is_nullable;
 		$this->limit = $limit;
 	}
 

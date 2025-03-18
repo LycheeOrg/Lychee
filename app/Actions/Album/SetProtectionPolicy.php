@@ -33,14 +33,14 @@ class SetProtectionPolicy extends Action
 	 * @throws ModelDBException
 	 * @throws FrameworkException
 	 */
-	public function do(BaseAlbum $album, AlbumProtectionPolicy $protectionPolicy, bool $shallSetPassword, ?string $password): void
+	public function do(BaseAlbum $album, AlbumProtectionPolicy $protection_policy, bool $shall_set_password, ?string $password): void
 	{
-		$album->is_nsfw = $protectionPolicy->is_nsfw;
+		$album->is_nsfw = $protection_policy->is_nsfw;
 		$album->save();
 
 		$active_permissions = $album->public_permissions();
 
-		if (!$protectionPolicy->is_public) {
+		if (!$protection_policy->is_public) {
 			$active_permissions?->delete();
 
 			return;
@@ -48,16 +48,16 @@ class SetProtectionPolicy extends Action
 
 		// Security attributes of the album itself independent of a particular user
 		$active_permissions ??= new AccessPermission();
-		$active_permissions->is_link_required = $protectionPolicy->is_link_required;
-		$active_permissions->grants_full_photo_access = $protectionPolicy->grants_full_photo_access;
-		$active_permissions->grants_download = $protectionPolicy->grants_download;
-		$active_permissions->grants_upload = $protectionPolicy->grants_upload;
+		$active_permissions->is_link_required = $protection_policy->is_link_required;
+		$active_permissions->grants_full_photo_access = $protection_policy->grants_full_photo_access;
+		$active_permissions->grants_download = $protection_policy->grants_download;
+		$active_permissions->grants_upload = $protection_policy->grants_upload;
 		$active_permissions->base_album_id = $album->id;
 
 		// $album->public_permissions = $active_permissions;
 
 		// Set password if provided
-		if ($shallSetPassword) {
+		if ($shall_set_password) {
 			// password is provided => there is a change
 			if ($password !== null) {
 				// password is not null => we update the value with the hash

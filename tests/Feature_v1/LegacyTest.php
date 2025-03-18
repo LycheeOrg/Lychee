@@ -65,25 +65,25 @@ class LegacyTest extends AbstractTestCase
 	public function testLegacyConversion(): void
 	{
 		Auth::loginUsingId(1);
-		$albumID = $this->albums_tests->add(null, 'Test Album')->offsetGet('id');
-		$photoID = $this->photos_tests->upload(
+		$album_i_d = $this->albums_tests->add(null, 'Test Album')->offsetGet('id');
+		$photo_i_d = $this->photos_tests->upload(
 			AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE),
-			$albumID
+			$album_i_d
 		)->offsetGet('id');
 
 		/** @var \App\Models\Photo $photo */
-		$photo = Photo::find($photoID);
-		$legacyPhotoID = $photo->legacy_id;
+		$photo = Photo::find($photo_i_d);
+		$legacy_photo_i_d = $photo->legacy_id;
 
 		/** @var \App\Models\Album $album */
-		$album = Album::find($albumID);
-		$legacyAlbumID = $album->legacy_id;
+		$album = Album::find($album_i_d);
+		$legacy_album_i_d = $album->legacy_id;
 
 		$response = $this->postJson('/api/Legacy::translateLegacyModelIDs', [
-			'albumID' => $legacyAlbumID,
-			'photoID' => $legacyPhotoID,
+			'albumID' => $legacy_album_i_d,
+			'photoID' => $legacy_photo_i_d,
 		]);
-		$response->assertJson(['photoID' => $photoID, 'albumID' => $albumID]);
+		$response->assertJson(['photoID' => $photo_i_d, 'albumID' => $album_i_d]);
 
 		Auth::logout();
 		Session::flush();

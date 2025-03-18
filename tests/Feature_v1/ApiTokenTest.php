@@ -69,12 +69,12 @@ class ApiTokenTest extends AbstractTestCase
 	 */
 	public function testChangeOfTokensWithoutSession(): void
 	{
-		$adminToken = $this->resetAdminToken();
-		list($userId, $userToken) = $this->createUserWithToken('userMultiTokenTest', 'password');
+		$admin_token = $this->resetAdminToken();
+		list($user_id, $user_token) = $this->createUserWithToken('userMultiTokenTest', 'password');
 
 		// perform a request as admin
 		$response = $this->postJson('/api/User::getAuthenticatedUser', [], [
-			'Authorization' => $adminToken,
+			'Authorization' => $admin_token,
 		]);
 		$this->assertStatus($response, 200);
 		$response->assertSee([
@@ -93,11 +93,11 @@ class ApiTokenTest extends AbstractTestCase
 		$this->refreshApplication();
 
 		$response = $this->postJson('/api/User::getAuthenticatedUser', [], [
-			'Authorization' => $userToken,
+			'Authorization' => $user_token,
 		]);
 		$this->assertStatus($response, 200);
 		$response->assertSee([
-			'id' => $userId,
+			'id' => $user_id,
 		], false);
 	}
 
@@ -109,12 +109,12 @@ class ApiTokenTest extends AbstractTestCase
 	 */
 	public function testForbiddenChangeOfTokensInSameSession(): void
 	{
-		$adminToken = $this->resetAdminToken();
-		list(, $userToken) = $this->createUserWithToken('userMultiTokenTest', 'password');
+		$admin_token = $this->resetAdminToken();
+		list(, $user_token) = $this->createUserWithToken('userMultiTokenTest', 'password');
 
 		// perform a request as admin
 		$response = $this->postJson('/api/User::getAuthenticatedUser', [], [
-			'Authorization' => $adminToken,
+			'Authorization' => $admin_token,
 		]);
 		$this->assertStatus($response, 200);
 		$response->assertSee([
@@ -137,7 +137,7 @@ class ApiTokenTest extends AbstractTestCase
 		// anything explicitly about it.
 		// See: https://github.com/laravel/framework/discussions/44088.
 		$response = $this->postJson('/api/User::getAuthenticatedUser', [], [
-			'Authorization' => $userToken,
+			'Authorization' => $user_token,
 		]);
 		$this->assertStatus($response, 401);
 	}
@@ -152,15 +152,15 @@ class ApiTokenTest extends AbstractTestCase
 	 */
 	public function testLoginAndLogoutWithToken(): void
 	{
-		list($userId, $userToken) = $this->createUserWithToken('user', 'pwd');
+		list($user_id, $user_token) = $this->createUserWithToken('user', 'pwd');
 
 		// Do some request authenticated by token
 		$response = $this->postJson('/api/User::getAuthenticatedUser', [], [
-			'Authorization' => $userToken,
+			'Authorization' => $user_token,
 		]);
 		$this->assertStatus($response, 200);
 		$response->assertSee([
-			'id' => $userId,
+			'id' => $user_id,
 		], false);
 
 		// We need to call this to mimic the behaviour of real-world
@@ -177,7 +177,7 @@ class ApiTokenTest extends AbstractTestCase
 			'username' => 'user',
 			'password' => 'pwd',
 		], [
-			'Authorization' => $userToken,
+			'Authorization' => $user_token,
 		]);
 		$this->assertStatus($response, 204);
 
@@ -187,14 +187,14 @@ class ApiTokenTest extends AbstractTestCase
 		$response = $this->postJson('/api/User::getAuthenticatedUser');
 		$this->assertStatus($response, 200);
 		$response->assertSee([
-			'id' => $userId,
+			'id' => $user_id,
 		], false);
 
 		Auth::forgetGuards();
 
 		// Ensure that we can log out (stateful) while still providing the token
 		$response = $this->postJson('/api/Session::logout', [], [
-			'Authorization' => $userToken,
+			'Authorization' => $user_token,
 		]);
 		$this->assertStatus($response, 204);
 
@@ -214,13 +214,13 @@ class ApiTokenTest extends AbstractTestCase
 	public function testLoginWithDifferentUserThanToken(): void
 	{
 		$this->createUserWithToken('user1', 'pwd1');
-		list(, $userToken2) = $this->createUserWithToken('user2', 'pwd2');
+		list(, $user_token2) = $this->createUserWithToken('user2', 'pwd2');
 
 		$response = $this->postJson('/api/Session::login', [
 			'username' => 'user1',
 			'password' => 'pwd1',
 		], [
-			'Authorization' => $userToken2,
+			'Authorization' => $user_token2,
 		]);
 		$this->assertStatus($response, 400);
 	}
@@ -233,8 +233,8 @@ class ApiTokenTest extends AbstractTestCase
 	 */
 	public function testProvideDifferentTokenThanLogin(): void
 	{
-		list($userId1) = $this->createUserWithToken('user1', 'pwd1');
-		list(, $userToken2) = $this->createUserWithToken('user2', 'pwd2');
+		list($user_id1) = $this->createUserWithToken('user1', 'pwd1');
+		list(, $user_token2) = $this->createUserWithToken('user2', 'pwd2');
 
 		// Login normally and stateful without a token
 		$response = $this->postJson('/api/Session::login', [
@@ -245,7 +245,7 @@ class ApiTokenTest extends AbstractTestCase
 		$response = $this->postJson('/api/User::getAuthenticatedUser');
 		$this->assertStatus($response, 200);
 		$response->assertSee([
-			'id' => $userId1,
+			'id' => $user_id1,
 		], false);
 
 		// We need to call this to mimic the behaviour of real-world
@@ -259,7 +259,7 @@ class ApiTokenTest extends AbstractTestCase
 
 		// Do some request and provide wrong token
 		$response = $this->postJson('/api/User::getAuthenticatedUser', [], [
-			'Authorization' => $userToken2,
+			'Authorization' => $user_token2,
 		]);
 		$this->assertStatus($response, 400);
 	}
@@ -283,10 +283,10 @@ class ApiTokenTest extends AbstractTestCase
 	 *
 	 * @return array{0: int, 1: string} ID and token of new user
 	 */
-	protected function createUserWithToken(string $userName, string $password): array
+	protected function createUserWithToken(string $user_name, string $password): array
 	{
 		Auth::loginUsingId(1);
-		$id = $this->users_tests->add($userName, $password)->offsetGet('id');
+		$id = $this->users_tests->add($user_name, $password)->offsetGet('id');
 		Auth::logout();
 		Session::flush();
 		Auth::loginUsingId($id);

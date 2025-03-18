@@ -141,32 +141,32 @@ class GdHandler extends BaseImageHandler
 	public function load(MediaFile $file): void
 	{
 		try {
-			$inMemoryBuffer = new InMemoryBuffer();
+			$in_memory_buffer = new InMemoryBuffer();
 			$this->reset();
 
-			$originalStream = $file->read();
-			if (stream_get_meta_data($originalStream)['seekable']) {
-				$inputStream = $originalStream;
+			$original_stream = $file->read();
+			if (stream_get_meta_data($original_stream)['seekable']) {
+				$input_stream = $original_stream;
 			} else {
 				// We make an in-memory copy of the provided stream,
 				// because we must be able to seek/rewind the stream.
 				// For example, a readable stream from a remote location (i.e.
 				// a "download" stream) is only forward readable once.
-				$inMemoryBuffer->write($originalStream);
-				$inputStream = $inMemoryBuffer->read();
+				$in_memory_buffer->write($original_stream);
+				$input_stream = $in_memory_buffer->read();
 			}
 
-			$imgBinary = stream_get_contents($inputStream);
-			rewind($inputStream);
+			$img_binary = stream_get_contents($input_stream);
+			rewind($input_stream);
 
 			// Determine the type of image, so that we can later save the
 			// image using the same type
 			error_clear_last();
-			$gdImgStat = getimagesizefromstring($imgBinary);
-			if ($gdImgStat === false) {
+			$gd_img_stat = getimagesizefromstring($img_binary);
+			if ($gd_img_stat === false) {
 				throw ImageException::createFromPhpError();
 			} else {
-				$this->gdImageType = $gdImgStat[2];
+				$this->gdImageType = $gd_img_stat[2];
 			}
 			if (!in_array($this->gdImageType, self::SUPPORTED_IMAGE_TYPES, true)) {
 				$this->reset();
@@ -176,7 +176,7 @@ class GdHandler extends BaseImageHandler
 			// Load image
 			error_clear_last();
 			/** @var \GdImage $img */
-			$img = imagecreatefromstring($imgBinary);
+			$img = imagecreatefromstring($img_binary);
 			$this->gdImage = $img;
 
 			// Get EXIF data to determine whether rotation is required
@@ -194,11 +194,11 @@ class GdHandler extends BaseImageHandler
 				// manually, if we need to throw an exception.
 				// TODO: Replace `exif_read_data` by `\Safe\exif_read_data` after https://github.com/thecodingmachine/safe/issues/215 has been resolved
 				// @phpstan-ignore-next-line
-				$exifData = @exif_read_data($inputStream);
-				$phpError = error_get_last();
-				if ($exifData === false || $phpError !== null) {
+				$exif_data = @exif_read_data($input_stream);
+				$php_error = error_get_last();
+				if ($exif_data === false || $php_error !== null) {
 					$exception = ImageException::createFromPhpError();
-					if ($exifData === false) {
+					if ($exif_data === false) {
 						// something went wrong catastrophically, throw the
 						// exception as `exif_read_data` would have done without @
 						throw $exception;
@@ -212,14 +212,14 @@ class GdHandler extends BaseImageHandler
 				}
 
 				// Auto-rotate image
-				$orientation = array_key_exists('Orientation', $exifData) && is_numeric($exifData['Orientation']) ? (int) $exifData['Orientation'] : 1;
+				$orientation = array_key_exists('Orientation', $exif_data) && is_numeric($exif_data['Orientation']) ? (int) $exif_data['Orientation'] : 1;
 				$this->autoRotate($orientation);
 			}
 		} catch (\ErrorException $e) {
 			$this->reset();
 			throw new MediaFileOperationException('Failed to load image', $e);
 		} finally {
-			$inMemoryBuffer->close();
+			$in_memory_buffer->close();
 			$file->close();
 		}
 	}
@@ -227,7 +227,7 @@ class GdHandler extends BaseImageHandler
 	/**
 	 * {@inheritDoc}
 	 */
-	public function save(MediaFile $file, bool $collectStatistics = false): ?StreamStats
+	public function save(MediaFile $file, bool $collect_statistics = false): ?StreamStats
 	{
 		if ($this->gdImage === null) {
 			throw new MediaFileOperationException('No image loaded');
@@ -236,22 +236,22 @@ class GdHandler extends BaseImageHandler
 			// We write the image into a memory buffer first, because
 			// we don't know if the file is a local file (or hosted elsewhere)
 			// and if the file supports seekable streams
-			$inMemoryBuffer = new InMemoryBuffer();
+			$in_memory_buffer = new InMemoryBuffer();
 
 			match ($this->gdImageType) {
 				IMAGETYPE_JPEG,
-				IMAGETYPE_JPEG2000 => imagejpeg($this->gdImage, $inMemoryBuffer->stream(), $this->compressionQuality),
-				IMAGETYPE_PNG => imagepng($this->gdImage, $inMemoryBuffer->stream()),
-				IMAGETYPE_GIF => imagegif($this->gdImage, $inMemoryBuffer->stream()),
-				IMAGETYPE_WEBP => imagewebp($this->gdImage, $inMemoryBuffer->stream()),
+				IMAGETYPE_JPEG2000 => imagejpeg($this->gdImage, $in_memory_buffer->stream(), $this->compressionQuality),
+				IMAGETYPE_PNG => imagepng($this->gdImage, $in_memory_buffer->stream()),
+				IMAGETYPE_GIF => imagegif($this->gdImage, $in_memory_buffer->stream()),
+				IMAGETYPE_WEBP => imagewebp($this->gdImage, $in_memory_buffer->stream()),
 				default => throw new \AssertionError('uncovered image type'),
 			};
 
-			$streamStat = $file->write($inMemoryBuffer->read(), $collectStatistics);
+			$stream_stat = $file->write($in_memory_buffer->read(), $collect_statistics);
 			$file->close();
-			$inMemoryBuffer->close();
+			$in_memory_buffer->close();
 
-			return parent::applyLosslessOptimizationConditionally($file) ?? $streamStat;
+			return parent::applyLosslessOptimizationConditionally($file) ?? $stream_stat;
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException('Failed to save image', $e);
 		}
@@ -299,30 +299,30 @@ class GdHandler extends BaseImageHandler
 	/**
 	 * {@inheritdoc}
 	 */
-	public function cloneAndScale(ImageDimension $dstDim): ImageHandlerInterface
+	public function cloneAndScale(ImageDimension $dst_dim): ImageHandlerInterface
 	{
 		try {
-			$srcDim = $this->getDimensions();
+			$src_dim = $this->getDimensions();
 
-			if ($dstDim->width === 0 && $dstDim->height !== 0) {
-				$scale = $dstDim->height / $srcDim->height;
-			} elseif ($dstDim->width !== 0 && $dstDim->height === 0) {
-				$scale = $dstDim->width / $srcDim->width;
-			} elseif ($dstDim->width !== 0 && $dstDim->height !== 0) {
-				$scale = min($dstDim->width / $srcDim->width, $dstDim->height / $srcDim->height);
+			if ($dst_dim->width === 0 && $dst_dim->height !== 0) {
+				$scale = $dst_dim->height / $src_dim->height;
+			} elseif ($dst_dim->width !== 0 && $dst_dim->height === 0) {
+				$scale = $dst_dim->width / $src_dim->width;
+			} elseif ($dst_dim->width !== 0 && $dst_dim->height !== 0) {
+				$scale = min($dst_dim->width / $src_dim->width, $dst_dim->height / $src_dim->height);
 			} else {
 				throw new LycheeDomainException('Width and height must not be zero simultaneously');
 			}
 
-			$width = (int) round($scale * $srcDim->width);
-			$height = (int) round($scale * $srcDim->height);
+			$width = (int) round($scale * $src_dim->width);
+			$height = (int) round($scale * $src_dim->height);
 
-			$clonedGdImage = imagecreatetruecolor($width, $height);
-			$this->fastImageCopyResampled($clonedGdImage, $this->gdImage, 0, 0, 0, 0, $width, $height, $srcDim->width, $srcDim->height);
+			$cloned_gd_image = imagecreatetruecolor($width, $height);
+			$this->fastImageCopyResampled($cloned_gd_image, $this->gdImage, 0, 0, 0, 0, $width, $height, $src_dim->width, $src_dim->height);
 
 			$clone = new self();
 			$clone->compressionQuality = $this->compressionQuality;
-			$clone->gdImage = $clonedGdImage;
+			$clone->gdImage = $cloned_gd_image;
 			$clone->gdImageType = $this->gdImageType;
 
 			return $clone;
@@ -335,35 +335,35 @@ class GdHandler extends BaseImageHandler
 	/**
 	 * {@inheritdoc}
 	 */
-	public function cloneAndCrop(ImageDimension $dstDim): ImageHandlerInterface
+	public function cloneAndCrop(ImageDimension $dst_dim): ImageHandlerInterface
 	{
 		try {
-			$srcDim = $this->getDimensions();
+			$src_dim = $this->getDimensions();
 
-			$srcWHRatio = $srcDim->width / $srcDim->height;
-			$dstWHRatio = $dstDim->width / $dstDim->height;
+			$src_w_h_ratio = $src_dim->width / $src_dim->height;
+			$dst_w_h_ratio = $dst_dim->width / $dst_dim->height;
 
-			if ($dstWHRatio > $srcWHRatio) {
+			if ($dst_w_h_ratio > $src_w_h_ratio) {
 				// The designated ratio is wider than the source ratio
 				// Hence, we must crop off the height
-				$width = $srcDim->width;
+				$width = $src_dim->width;
 				$x = 0;
-				$height = (int) round($srcDim->width / $dstWHRatio);
-				$y = (int) round(($srcDim->height - $height) / 2);
+				$height = (int) round($src_dim->width / $dst_w_h_ratio);
+				$y = (int) round(($src_dim->height - $height) / 2);
 			} else {
 				// Inverse case: we must crop off the width
-				$width = (int) round($srcDim->height * $dstWHRatio);
-				$x = (int) round(($srcDim->width - $width) / 2);
-				$height = $srcDim->height;
+				$width = (int) round($src_dim->height * $dst_w_h_ratio);
+				$x = (int) round(($src_dim->width - $width) / 2);
+				$height = $src_dim->height;
 				$y = 0;
 			}
 
-			$clonedGdImage = imagecreatetruecolor($dstDim->width, $dstDim->height);
-			$this->fastImageCopyResampled($clonedGdImage, $this->gdImage, 0, 0, $x, $y, $dstDim->width, $dstDim->height, $width, $height);
+			$cloned_gd_image = imagecreatetruecolor($dst_dim->width, $dst_dim->height);
+			$this->fastImageCopyResampled($cloned_gd_image, $this->gdImage, 0, 0, $x, $y, $dst_dim->width, $dst_dim->height, $width, $height);
 
 			$clone = new self();
 			$clone->compressionQuality = $this->compressionQuality;
-			$clone->gdImage = $clonedGdImage;
+			$clone->gdImage = $cloned_gd_image;
 			$clone->gdImageType = $this->gdImageType;
 
 			return $clone;
@@ -484,11 +484,11 @@ class GdHandler extends BaseImageHandler
 	{
 		error_clear_last();
 		// @phpstan-ignore-next-line
-		$safeResult = \imagerotate($image, $angle, $background_color);
-		if ($safeResult === false) {
+		$safe_result = \imagerotate($image, $angle, $background_color);
+		if ($safe_result === false) {
 			throw ImageException::createFromPhpError();
 		}
 
-		return $safeResult;
+		return $safe_result;
 	}
 }

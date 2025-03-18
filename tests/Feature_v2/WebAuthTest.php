@@ -56,8 +56,8 @@ class WebAuthTest extends BaseApiV2Test
 		$this->assertOk($response);
 
 		// retrieve the challenge from the Session
-		$challengeRetrieved = Session::get(config('webauthn.challenge.key'));
-		$clg = $challengeRetrieved->data->toBase64Url();
+		$challenge_retrieved = Session::get(config('webauthn.challenge.key'));
+		$clg = $challenge_retrieved->data->toBase64Url();
 
 		$response->assertJson([
 			'rp' => ['name' => 'Lychee'],
@@ -117,11 +117,11 @@ class WebAuthTest extends BaseApiV2Test
 		$this->assertNoContent($response); // code 204
 
 		// Check that it is indeed in the list
-		$responseList = $this->actingAs($this->admin)->getJson('WebAuthn');
-		$this->assertOk($responseList); // code 200
+		$response_list = $this->actingAs($this->admin)->getJson('WebAuthn');
+		$this->assertOk($response_list); // code 200
 
 		// Check that the key is indeed in the list
-		$responseList->assertJson([
+		$response_list->assertJson([
 			0 => ['id' => 'kudbBp8jSUfho6ksyUPhPOMsC2ZLXmUJgkxvZd1zi8AXO6dnXfcRQg9xbTNA5PLcoIbn0ZQbsj4De6bvRy_Cgg'],
 		]);
 
@@ -153,11 +153,11 @@ class WebAuthTest extends BaseApiV2Test
 		]);
 		$this->assertUnprocessable($response); // Challenge is expired
 
-		$responseList = $this->actingAs($this->admin)->getJson('WebAuthn');
-		$this->assertOk($responseList); // code 200
+		$response_list = $this->actingAs($this->admin)->getJson('WebAuthn');
+		$this->assertOk($response_list); // code 200
 
 		// check that the key has not been added to the list
-		$responseList->assertJsonMissing([
+		$response_list->assertJsonMissing([
 			0 => ['id' => 'kudbBp8jSUfho6ksyUPhPOMsC2ZLXmUJgkxvZd1zi8AXO6dnXfcRQg9xbTNA5PLcoIbn0ZQbsj4De6bvRy_Cgg'],
 		]);
 
@@ -201,8 +201,8 @@ class WebAuthTest extends BaseApiV2Test
 		$response = $this->postJson('WebAuthn::login/options', ['user_id' => $this->admin->id]);
 		$this->assertOk($response);
 
-		$challengeRetrieved = Session::get(config('webauthn.challenge.key'));
-		$clg = $challengeRetrieved->data->toBase64Url();
+		$challenge_retrieved = Session::get(config('webauthn.challenge.key'));
+		$clg = $challenge_retrieved->data->toBase64Url();
 
 		$response->assertJson([
 			'timeout' => 60000,
@@ -229,8 +229,8 @@ class WebAuthTest extends BaseApiV2Test
 		$response = $this->postJson('WebAuthn::login/options', ['username' => $this->admin->username]);
 		$this->assertOk($response);
 
-		$challengeRetrieved = Session::get(config('webauthn.challenge.key'));
-		$clg = $challengeRetrieved->data->toBase64Url();
+		$challenge_retrieved = Session::get(config('webauthn.challenge.key'));
+		$clg = $challenge_retrieved->data->toBase64Url();
 
 		$response->assertJson([
 			'timeout' => 60000,
@@ -257,8 +257,8 @@ class WebAuthTest extends BaseApiV2Test
 		$response = $this->postJson('WebAuthn::login/options', []);
 		$this->assertOk($response);
 
-		$challengeRetrieved = Session::get(config('webauthn.challenge.key'));
-		$clg = $challengeRetrieved->data->toBase64Url();
+		$challenge_retrieved = Session::get(config('webauthn.challenge.key'));
+		$clg = $challenge_retrieved->data->toBase64Url();
 
 		$response->assertJson([
 			'timeout' => 60000,
@@ -385,8 +385,8 @@ class WebAuthTest extends BaseApiV2Test
 	{
 		$this->createCredentials();
 
-		$responseList = $this->getJson('WebAuthn');
-		$this->assertUnauthorized($responseList);
+		$response_list = $this->getJson('WebAuthn');
+		$this->assertUnauthorized($response_list);
 	}
 
 	/**
@@ -398,11 +398,11 @@ class WebAuthTest extends BaseApiV2Test
 	{
 		$this->createCredentials();
 
-		$responseEdit = $this->patchJson('WebAuthn', ['id' => '_Xlz-khgFhDdkvOWyy_YqC54ExkYyp1o6HAQiybqLST-9RGBndpgI06TQygIYI7ZL2dayCMYm6J1-bXyl72obA', 'alias' => 'something']);
-		$this->assertUnauthorized($responseEdit);
+		$response_edit = $this->patchJson('WebAuthn', ['id' => '_Xlz-khgFhDdkvOWyy_YqC54ExkYyp1o6HAQiybqLST-9RGBndpgI06TQygIYI7ZL2dayCMYm6J1-bXyl72obA', 'alias' => 'something']);
+		$this->assertUnauthorized($response_edit);
 
-		$responseDelete = $this->deleteJson('WebAuthn', ['id' => '_Xlz-khgFhDdkvOWyy_YqC54ExkYyp1o6HAQiybqLST-9RGBndpgI06TQygIYI7ZL2dayCMYm6J1-bXyl72obA']);
-		$this->assertUnauthorized($responseDelete);
+		$response_delete = $this->deleteJson('WebAuthn', ['id' => '_Xlz-khgFhDdkvOWyy_YqC54ExkYyp1o6HAQiybqLST-9RGBndpgI06TQygIYI7ZL2dayCMYm6J1-bXyl72obA']);
+		$this->assertUnauthorized($response_delete);
 	}
 
 	/**
@@ -416,15 +416,15 @@ class WebAuthTest extends BaseApiV2Test
 
 		Auth::loginUsingId($this->admin->id);
 
-		$responseEdit = $this->patchJson('WebAuthn', ['id' => '_Xlz-khgFhDdkvOWyy_YqC54ExkYyp1o6HAQiybqLST-9RGBndpgI06TQygIYI7ZL2dayCMYm6J1-bXyl72obA', 'alias' => 'something']);
-		$this->assertNoContent($responseEdit);
+		$response_edit = $this->patchJson('WebAuthn', ['id' => '_Xlz-khgFhDdkvOWyy_YqC54ExkYyp1o6HAQiybqLST-9RGBndpgI06TQygIYI7ZL2dayCMYm6J1-bXyl72obA', 'alias' => 'something']);
+		$this->assertNoContent($response_edit);
 
-		$responseList = $this->getJson('WebAuthn');
-		$this->assertOk($responseList);
-		self::assertEquals('something', $responseList->json()[0]['alias']);
+		$response_list = $this->getJson('WebAuthn');
+		$this->assertOk($response_list);
+		self::assertEquals('something', $response_list->json()[0]['alias']);
 
-		$responseDelete = $this->deleteJson('WebAuthn', ['id' => '_Xlz-khgFhDdkvOWyy_YqC54ExkYyp1o6HAQiybqLST-9RGBndpgI06TQygIYI7ZL2dayCMYm6J1-bXyl72obA']);
-		$this->assertNoContent($responseDelete);
+		$response_delete = $this->deleteJson('WebAuthn', ['id' => '_Xlz-khgFhDdkvOWyy_YqC54ExkYyp1o6HAQiybqLST-9RGBndpgI06TQygIYI7ZL2dayCMYm6J1-bXyl72obA']);
+		$this->assertNoContent($response_delete);
 		Auth::logout();
 		Session::flush();
 	}

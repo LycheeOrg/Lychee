@@ -28,9 +28,9 @@ class SharingUnitTest
 
 	private AbstractTestCase $testCase;
 
-	public function __construct(AbstractTestCase $testCase)
+	public function __construct(AbstractTestCase $test_case)
 	{
-		$this->testCase = $testCase;
+		$this->testCase = $test_case;
 	}
 
 	/**
@@ -42,13 +42,13 @@ class SharingUnitTest
 	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function list(
-		int $expectedStatusCode = 201,
-		?string $assertSee = null,
+		int $expected_status_code = 201,
+		?string $assert_see = null,
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/Sharing::list');
-		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee !== null) {
-			$response->assertSee($assertSee, false);
+		$this->assertStatus($response, $expected_status_code);
+		if ($assert_see !== null) {
+			$response->assertSee($assert_see, false);
 		}
 
 		return $response;
@@ -65,19 +65,19 @@ class SharingUnitTest
 	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function add(
-		array $albumIDs,
-		array $userIDs,
-		int $expectedStatusCode = 204,
-		?string $assertSee = null,
+		array $album_i_ds,
+		array $user_i_ds,
+		int $expected_status_code = 204,
+		?string $assert_see = null,
 	): TestResponse {
 		$response = $this->testCase->postJson(
 			'/api/Sharing::add', [
-				'albumIDs' => $albumIDs,
-				'userIDs' => $userIDs,
+				'albumIDs' => $album_i_ds,
+				'userIDs' => $user_i_ds,
 			]);
-		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee !== null) {
-			$response->assertSee($assertSee, false);
+		$this->assertStatus($response, $expected_status_code);
+		if ($assert_see !== null) {
+			$response->assertSee($assert_see, false);
 		}
 
 		return $response;

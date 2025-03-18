@@ -22,14 +22,14 @@ class AlbumSortingCriterion extends SortingCriterion
 	 */
 	public static function createDefault(): self
 	{
-		$columnSorting = Configs::getValueAsEnum('sorting_albums_col', ColumnSortingAlbumType::class);
-		$columnSorting = $columnSorting?->toColumnSortingType();
+		$column_sorting = Configs::getValueAsEnum('sorting_albums_col', ColumnSortingAlbumType::class);
+		$column_sorting = $column_sorting?->toColumnSortingType();
 
-		$orderSorting = Configs::getValueAsEnum('sorting_albums_order', OrderSortingType::class);
+		$order_sorting = Configs::getValueAsEnum('sorting_albums_order', OrderSortingType::class);
 
 		return new self(
-			$columnSorting ?? ColumnSortingType::CREATED_AT,
-			$orderSorting ?? OrderSortingType::ASC
+			$column_sorting ?? ColumnSortingType::CREATED_AT,
+			$order_sorting ?? OrderSortingType::ASC
 		);
 	}
 }

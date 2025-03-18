@@ -42,7 +42,7 @@ interface ImageHandlerInterface
 	 *
 	 * @throws MediaFileOperationException
 	 */
-	public function save(MediaFile $file, bool $collectStatistics = false): ?StreamStats;
+	public function save(MediaFile $file, bool $collect_statistics = false): ?StreamStats;
 
 	/**
 	 * Frees all internal resources.
@@ -74,7 +74,7 @@ interface ImageHandlerInterface
 	 * @throws ImageProcessingException
 	 * @throws LycheeDomainException
 	 */
-	public function cloneAndScale(ImageDimension $dstDim): ImageHandlerInterface;
+	public function cloneAndScale(ImageDimension $dst_dim): ImageHandlerInterface;
 
 	/**
 	 * Clones and crops the image to the designated dimensions.
@@ -85,7 +85,7 @@ interface ImageHandlerInterface
 	 *
 	 * @throws ImageProcessingException
 	 */
-	public function cloneAndCrop(ImageDimension $dstDim): ImageHandlerInterface;
+	public function cloneAndCrop(ImageDimension $dst_dim): ImageHandlerInterface;
 
 	/**
 	 * Rotates the imaged based on the given angle.

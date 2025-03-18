@@ -71,26 +71,26 @@ trait RequiresEmptyPhotos
 	 *
 	 * @return void
 	 */
-	private static function cleanupHelper(string $dirPath): void
+	private static function cleanupHelper(string $dir_path): void
 	{
-		if (!is_dir($dirPath)) {
+		if (!is_dir($dir_path)) {
 			return;
 		}
-		if (fileowner($dirPath) === self::$effUserId) {
-			\Safe\chmod($dirPath, 02775);
+		if (fileowner($dir_path) === self::$effUserId) {
+			\Safe\chmod($dir_path, 02775);
 		}
-		$dirEntries = scandir($dirPath);
-		foreach ($dirEntries as $dirEntry) {
-			if (in_array($dirEntry, ['.', '..', 'index.html', '.gitignore'], true)) {
+		$dir_entries = scandir($dir_path);
+		foreach ($dir_entries as $dir_entry) {
+			if (in_array($dir_entry, ['.', '..', 'index.html', '.gitignore'], true)) {
 				continue;
 			}
 
-			$dirEntryPath = $dirPath . DIRECTORY_SEPARATOR . $dirEntry;
-			if (is_dir($dirEntryPath) && !is_link($dirEntryPath)) {
-				self::cleanupHelper($dirEntryPath);
+			$dir_entry_path = $dir_path . DIRECTORY_SEPARATOR . $dir_entry;
+			if (is_dir($dir_entry_path) && !is_link($dir_entry_path)) {
+				self::cleanupHelper($dir_entry_path);
 			}
-			if (is_file($dirEntryPath) || is_link($dirEntryPath)) {
-				unlink($dirEntryPath);
+			if (is_file($dir_entry_path) || is_link($dir_entry_path)) {
+				unlink($dir_entry_path);
 			}
 		}
 	}

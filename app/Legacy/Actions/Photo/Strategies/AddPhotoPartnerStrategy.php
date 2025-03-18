@@ -29,10 +29,10 @@ final class AddPhotoPartnerStrategy extends AddStandaloneStrategy
 {
 	protected Photo $existingVideo;
 
-	public function __construct(ImportParam $parameters, NativeLocalFile $photoSourceFile, Photo $existingVideo)
+	public function __construct(ImportParam $parameters, NativeLocalFile $photo_source_file, Photo $existing_video)
 	{
-		parent::__construct($parameters, $photoSourceFile);
-		$this->existingVideo = $existingVideo;
+		parent::__construct($parameters, $photo_source_file);
+		$this->existingVideo = $existing_video;
 	}
 
 	/**
@@ -58,12 +58,12 @@ final class AddPhotoPartnerStrategy extends AddStandaloneStrategy
 			new ImportMode(deleteImported: true),
 			$this->parameters->intendedOwnerId
 		);
-		$videoStrategy = new AddVideoPartnerStrategy(
+		$video_strategy = new AddVideoPartnerStrategy(
 			$parameters,
 			$this->existingVideo->size_variants->getOriginal()->getFile(),
 			$this->photo
 		);
-		$videoStrategy->do();
+		$video_strategy->do();
 
 		// If the video is uploaded already, we must copy over the checksum
 		$this->photo->live_photo_checksum = $this->existingVideo->checksum;

@@ -27,14 +27,14 @@ class HasManyPhotosRecursively extends BaseHasManyPhotos
 {
 	protected AlbumQueryPolicy $albumQueryPolicy;
 
-	public function __construct(Album $owningAlbum)
+	public function __construct(Album $owning_album)
 	{
 		// Sic! We must initialize attributes of this class before we call
 		// the parent constructor.
 		// The parent constructor calls `addConstraints` and thus our own
 		// attributes must be initialized by then
 		$this->albumQueryPolicy = resolve(AlbumQueryPolicy::class);
-		parent::__construct($owningAlbum);
+		parent::__construct($owning_album);
 	}
 
 	public function getParent(): Album

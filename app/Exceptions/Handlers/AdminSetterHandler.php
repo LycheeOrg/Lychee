@@ -52,24 +52,24 @@ class AdminSetterHandler implements HttpExceptionHandler
 	/**
 	 * {@inheritDoc}
 	 */
-	public function renderHttpException(SymfonyResponse $defaultResponse, HttpException $e): SymfonyResponse
+	public function renderHttpException(SymfonyResponse $default_response, HttpException $e): SymfonyResponse
 	{
 		try {
 			if ($this->toAdminSetter) {
-				$redirectResponse = ToAdminSetter::go();
-				$contentType = $defaultResponse->headers->get('Content-Type');
-				if ($contentType !== null && $contentType !== '') {
-					$redirectResponse->headers->set('Content-Type', $contentType);
-					$content = $defaultResponse->getContent();
-					$redirectResponse->setContent($content !== false ? $content : null);
+				$redirect_response = ToAdminSetter::go();
+				$content_type = $default_response->headers->get('Content-Type');
+				if ($content_type !== null && $content_type !== '') {
+					$redirect_response->headers->set('Content-Type', $content_type);
+					$content = $default_response->getContent();
+					$redirect_response->setContent($content !== false ? $content : null);
 				}
 
-				return $redirectResponse;
+				return $redirect_response;
 			} else {
-				return $defaultResponse;
+				return $default_response;
 			}
 		} catch (\Throwable) {
-			return $defaultResponse;
+			return $default_response;
 		}
 	}
 }

@@ -39,8 +39,8 @@ trait InteractWithSmartAlbums
 			StarredAlbum::class,
 			UnsortedAlbum::class,
 			OnThisDayAlbum::class,
-		] as $smartAlbumClass) {
-			$reflection = new \ReflectionClass($smartAlbumClass);
+		] as $smart_album_class) {
+			$reflection = new \ReflectionClass($smart_album_class);
 			$reflection->setStaticPropertyValue('instance', null);
 		}
 	}

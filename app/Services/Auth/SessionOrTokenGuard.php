@@ -121,8 +121,8 @@ class SessionOrTokenGuard extends SessionGuard
 	 */
 	public static function createGuard(Application $app, string $name, array $config): self
 	{
-		$userProvider = Auth::createUserProvider($config['provider']);
-		$guard = new self($name, $userProvider, $app->make('session.store'));
+		$user_provider = Auth::createUserProvider($config['provider']);
+		$guard = new self($name, $user_provider, $app->make('session.store'));
 		$guard->setCookieJar($app->make('cookie'));
 		$guard->setDispatcher($app->make('events'));
 		/** @disregard P1013 */
@@ -159,26 +159,26 @@ class SessionOrTokenGuard extends SessionGuard
 		}
 
 		// First, try to get a user by token.
-		$userByToken = $this->getUserByToken();
+		$user_by_token = $this->getUserByToken();
 
 		// Second, try to get a user by stored user ID on the session.
-		$userIdBySession = $this->session->get($this->getName());
-		$userBySession = $userIdBySession !== null ? $this->provider->retrieveById($userIdBySession) : null;
+		$user_id_by_session = $this->session->get($this->getName());
+		$user_by_session = $user_id_by_session !== null ? $this->provider->retrieveById($user_id_by_session) : null;
 
 		// Third, if `$userBySession` is null, but we decrypt a "recaller"
 		// cookie we attempt to pull the user data from that cookie which
 		// serves as a remember-me cookie
-		$recaller = $userBySession === null ? $this->recaller() : null;
-		$userByRecaller = $recaller !== null ? $this->userFromRecaller($recaller) : null;
+		$recaller = $user_by_session === null ? $this->recaller() : null;
+		$user_by_recaller = $recaller !== null ? $this->userFromRecaller($recaller) : null;
 
 		// We step through the different combinations which may happen,
 		// because we use a combination of token and session.
-		if ($userBySession !== null) {
-			if ($userByToken === null || $userBySession->getAuthIdentifier() === $userByToken->getAuthIdentifier()) {
+		if ($user_by_session !== null) {
+			if ($user_by_token === null || $user_by_session->getAuthIdentifier() === $user_by_token->getAuthIdentifier()) {
 				// We are good, no contradiction!
 				// We call the parent method here to skip the additional token
 				// check added by the overwritten method of this class.
-				parent::setUser($userBySession);
+				parent::setUser($user_by_session);
 				// `setUser()` sets `authState` to stateless, but here we
 				// used the user from a previous session _without_ logging in
 				// again, hence we must set `authState` explicitly.
@@ -186,18 +186,18 @@ class SessionOrTokenGuard extends SessionGuard
 			} else {
 				throw new BadRequestHeaderException('Token- and session-based user mismatch');
 			}
-		} elseif ($userByToken !== null) {
+		} elseif ($user_by_token !== null) {
 			// A token-based authentication is considered stateless, so we
 			// call `setUser` and not `login`.
 			// We call the parent method here to skip the additional token
 			// check added by the overwritten method of this class.
-			parent::setUser($userByToken);
+			parent::setUser($user_by_token);
 			// As we called the parent method `setUser`, we must set the
 			// new authentication state explicitly.
 			$this->authState = self::AUTH_STATE_STATELESS;
-		} elseif ($userByRecaller !== null) {
+		} elseif ($user_by_recaller !== null) {
 			// @codeCoverageIgnoreStart
-			$this->login($userByRecaller, true);
+			$this->login($user_by_recaller, true);
 		// @codeCoverageIgnoreEnd
 		} else {
 			// In the other cases, `$this->user` has implicitly been set by
@@ -244,8 +244,8 @@ class SessionOrTokenGuard extends SessionGuard
 	 */
 	public function setUser(Authenticatable $user): static
 	{
-		$userByToken = $this->getUserByToken();
-		if ($userByToken !== null && $user->getAuthIdentifier() !== $userByToken->getAuthIdentifier()) {
+		$user_by_token = $this->getUserByToken();
+		if ($user_by_token !== null && $user->getAuthIdentifier() !== $user_by_token->getAuthIdentifier()) {
 			throw new BadRequestHeaderException('Cannot set another user than the one provided by the API token');
 		}
 		parent::setUser($user);
@@ -296,13 +296,13 @@ class SessionOrTokenGuard extends SessionGuard
 		$this->authState = self::AUTH_STATE_UNAUTHENTICATED;
 
 		// Re-authenticate as token-based user if given.
-		$userByToken = $this->getUserByToken();
-		if ($userByToken !== null) {
+		$user_by_token = $this->getUserByToken();
+		if ($user_by_token !== null) {
 			// A token-based authentication is considered stateless, so we
 			// call `setUser` and not `login`.
 			// We call the parent method here to skip the additional token
 			// check added by the overwritten method of this class.
-			parent::setUser($userByToken);
+			parent::setUser($user_by_token);
 			// As we called the parent method `setUser`, we must set the
 			// new authentication state explicitly.
 			$this->authState = self::AUTH_STATE_STATELESS;
@@ -336,14 +336,14 @@ class SessionOrTokenGuard extends SessionGuard
 		}
 
 		// Check if token starts with Bearer
-		$hasBearer = Str::startsWith('Bearer', $token);
+		$has_bearer = Str::startsWith('Bearer', $token);
 		/** @var bool $configLog */
-		$configLog = config('auth.token_guard.log_warn_no_scheme_bearer');
+		$config_log = config('auth.token_guard.log_warn_no_scheme_bearer');
 		/** @var bool $configThrow */
-		$configThrow = config('auth.token_guard.fail_bearer_authenticable_not_found', true);
+		$config_throw = config('auth.token_guard.fail_bearer_authenticable_not_found', true);
 
 		// If Token does not start with Bearer
-		if (!$hasBearer && $configLog) {
+		if (!$has_bearer && $config_log) {
 			Log::warning('Auth token found, but Bearer prefix not provided.');
 		}
 
@@ -356,8 +356,8 @@ class SessionOrTokenGuard extends SessionGuard
 		return match (true) {
 			$authenticable !== null => $authenticable,
 			// @codeCoverageIgnoreStart
-			$hasBearer && $configThrow => throw new BadRequestHeaderException('Invalid token'),
-			$hasBearer => null,
+			$has_bearer && $config_throw => throw new BadRequestHeaderException('Invalid token'),
+			$has_bearer => null,
 			// @codeCoverageIgnoreEnd
 			default => throw new BadRequestHeaderException('Invalid token'),
 		};

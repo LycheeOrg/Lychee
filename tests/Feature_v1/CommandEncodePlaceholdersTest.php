@@ -39,7 +39,7 @@ class CommandEncodePlaceholdersTest extends BasePhotoTest
 
 	public function testPlaceholderEncoding(): void
 	{
-		$originalConfig = Configs::getValueAsBool('low_quality_image_placeholder');
+		$original_config = Configs::getValueAsBool('low_quality_image_placeholder');
 		Configs::set('low_quality_image_placeholder', true);
 
 		/** @var \App\Models\Photo $photo1 */
@@ -67,6 +67,6 @@ class CommandEncodePlaceholdersTest extends BasePhotoTest
 		// check for the file signature in the decoded base64 data.
 		Assert::assertStringContainsString('WEBPVP8', \Safe\base64_decode($photo2->size_variants->placeholder->url));
 
-		Configs::set('low_quality_image_placeholder', $originalConfig);
+		Configs::set('low_quality_image_placeholder', $original_config);
 	}
 }

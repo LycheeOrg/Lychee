@@ -55,8 +55,8 @@ class ProcessImageJob implements ShouldQueue
 	 */
 	public function __construct(
 		ProcessableJobFile $file,
-		string|AbstractAlbum|null $abstractAlbum,
-		?int $fileLastModifiedTime,
+		string|AbstractAlbum|null $abstract_album,
+		?int $file_last_modified_time,
 	) {
 		$this->filePath = $file->getPath();
 		$this->originalBaseName = $file->getOriginalBasename();
@@ -66,10 +66,10 @@ class ProcessImageJob implements ShouldQueue
 		/** @var AbstractAlbum|null */
 		$album = null;
 
-		if (is_string($abstractAlbum)) {
-			$album = resolve(AlbumFactory::class)->findAbstractAlbumOrFail($abstractAlbum);
-		} elseif ($abstractAlbum instanceof AbstractAlbum) {
-			$album = $abstractAlbum;
+		if (is_string($abstract_album)) {
+			$album = resolve(AlbumFactory::class)->findAbstractAlbumOrFail($abstract_album);
+		} elseif ($abstract_album instanceof AbstractAlbum) {
+			$album = $abstract_album;
 		}
 
 		$this->albumID = $album?->id;
@@ -82,7 +82,7 @@ class ProcessImageJob implements ShouldQueue
 			$this->userId = $user_id ?? $album?->owner_id ?? throw new OwnerRequiredException();
 		}
 
-		$this->fileLastModifiedTime = $fileLastModifiedTime;
+		$this->fileLastModifiedTime = $file_last_modified_time;
 
 		// Set up our new history record.
 		$this->history = new JobHistory();
@@ -99,12 +99,12 @@ class ProcessImageJob implements ShouldQueue
 	 * Here we handle the execution of the image processing.
 	 * This will create the model, reformat the image etc.
 	 */
-	public function handle(AlbumFactory $albumFactory): Photo
+	public function handle(AlbumFactory $album_factory): Photo
 	{
 		$this->history->status = JobStatus::STARTED;
 		$this->history->save();
 
-		$copiedFile = new TemporaryJobFile($this->filePath, $this->originalBaseName);
+		$copied_file = new TemporaryJobFile($this->filePath, $this->originalBaseName);
 
 		// As the file has been uploaded, the (temporary) source file shall be
 		// deleted
@@ -115,10 +115,10 @@ class ProcessImageJob implements ShouldQueue
 
 		$album = null;
 		if ($this->albumID !== null) {
-			$album = $albumFactory->findAbstractAlbumOrFail($this->albumID);
+			$album = $album_factory->findAbstractAlbumOrFail($this->albumID);
 		}
 
-		$photo = $create->add($copiedFile, $album, $this->fileLastModifiedTime);
+		$photo = $create->add($copied_file, $album, $this->fileLastModifiedTime);
 
 		// Once the job has finished, set history status to 1.
 		$this->history->status = JobStatus::SUCCESS;

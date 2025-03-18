@@ -40,9 +40,9 @@ trait CatchFailures
 	 *
 	 * @return void
 	 */
-	protected function assertStatus(TestResponse $response, int|array $expectedStatusCode): void
+	protected function assertStatus(TestResponse $response, int|array $expected_status_code): void
 	{
-		if ($response->getStatusCode() === 500 && $expectedStatusCode !== 500) {
+		if ($response->getStatusCode() === 500 && $expected_status_code !== 500) {
 			$exception = $response->json();
 			if (in_array($exception['exception'], $this->catchFailureSilence, true)) {
 				return;
@@ -50,16 +50,16 @@ trait CatchFailures
 			$this->trimException($exception);
 			dump($exception);
 		}
-		$expectedStatusCodeArray = is_int($expectedStatusCode) ? [$expectedStatusCode] : $expectedStatusCode;
+		$expected_status_code_array = is_int($expected_status_code) ? [$expected_status_code] : $expected_status_code;
 
 		// We remove 204 as it does not have content
 		// We remove 302 because it does not have json data.
-		if (!in_array($response->getStatusCode(), [204, 302, ...$expectedStatusCodeArray], true)) {
+		if (!in_array($response->getStatusCode(), [204, 302, ...$expected_status_code_array], true)) {
 			$exception = $response->json();
 			$this->trimException($exception);
 			dump($exception);
 		}
-		PHPUnit::assertContains($response->getStatusCode(), $expectedStatusCodeArray);
+		PHPUnit::assertContains($response->getStatusCode(), $expected_status_code_array);
 	}
 
 	/**

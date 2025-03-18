@@ -52,13 +52,13 @@ class SizeVariants
 	 *                                        collection of size variants don't
 	 *                                        belong together
 	 */
-	public function __construct(Photo $photo, ?Collection $sizeVariants = null)
+	public function __construct(Photo $photo, ?Collection $size_variants = null)
 	{
 		$this->photo = $photo;
-		if ($sizeVariants !== null) {
+		if ($size_variants !== null) {
 			/** @var SizeVariant $sizeVariant */
-			foreach ($sizeVariants as $sizeVariant) {
-				$this->add($sizeVariant);
+			foreach ($size_variants as $size_variant) {
+				$this->add($size_variant);
 			}
 		}
 	}
@@ -71,31 +71,31 @@ class SizeVariants
 	 * @throws LycheeInvalidArgumentException thrown if ID of owning photo
 	 *                                        does not match
 	 */
-	public function add(SizeVariant $sizeVariant): void
+	public function add(SizeVariant $size_variant): void
 	{
-		if ($sizeVariant->photo_id !== $this->photo->id) {
+		if ($size_variant->photo_id !== $this->photo->id) {
 			// @codeCoverageIgnoreStart
 			throw new LycheeInvalidArgumentException('ID of owning photo does not match');
 			// @codeCoverageIgnoreEnd
 		}
-		$sizeVariant->setRelation('photo', $this->photo);
-		$candidate = $this->getSizeVariant($sizeVariant->type);
+		$size_variant->setRelation('photo', $this->photo);
+		$candidate = $this->getSizeVariant($size_variant->type);
 
-		if ($candidate !== null && $candidate->id !== $sizeVariant->id) {
+		if ($candidate !== null && $candidate->id !== $size_variant->id) {
 			// @codeCoverageIgnoreStart
 			throw new LycheeInvalidArgumentException('Another size variant of the same type has already been added');
 			// @codeCoverageIgnoreEnd
 		}
 
-		match ($sizeVariant->type) {
-			SizeVariantType::ORIGINAL => $this->original = $sizeVariant,
-			SizeVariantType::MEDIUM2X => $this->medium2x = $sizeVariant,
-			SizeVariantType::MEDIUM => $this->medium = $sizeVariant,
-			SizeVariantType::SMALL2X => $this->small2x = $sizeVariant,
-			SizeVariantType::SMALL => $this->small = $sizeVariant,
-			SizeVariantType::THUMB2X => $this->thumb2x = $sizeVariant,
-			SizeVariantType::THUMB => $this->thumb = $sizeVariant,
-			SizeVariantType::PLACEHOLDER => $this->placeholder = $sizeVariant,
+		match ($size_variant->type) {
+			SizeVariantType::ORIGINAL => $this->original = $size_variant,
+			SizeVariantType::MEDIUM2X => $this->medium2x = $size_variant,
+			SizeVariantType::MEDIUM => $this->medium = $size_variant,
+			SizeVariantType::SMALL2X => $this->small2x = $size_variant,
+			SizeVariantType::SMALL => $this->small = $size_variant,
+			SizeVariantType::THUMB2X => $this->thumb2x = $size_variant,
+			SizeVariantType::THUMB => $this->thumb = $size_variant,
+			SizeVariantType::PLACEHOLDER => $this->placeholder = $size_variant,
 		};
 	}
 
@@ -127,9 +127,9 @@ class SizeVariants
 	 *
 	 * @throws InvalidSizeVariantException
 	 */
-	public function getSizeVariant(SizeVariantType $sizeVariantType): ?SizeVariant
+	public function getSizeVariant(SizeVariantType $size_variant_type): ?SizeVariant
 	{
-		return match ($sizeVariantType) {
+		return match ($size_variant_type) {
 			SizeVariantType::ORIGINAL => $this->original,
 			SizeVariantType::MEDIUM2X => $this->medium2x,
 			SizeVariantType::MEDIUM => $this->medium,
@@ -213,7 +213,7 @@ class SizeVariants
 	 *
 	 * @disregard P1006
 	 */
-	public function create(SizeVariantType $sizeVariantType, string $shortPath, ImageDimension $dim, int $filesize): SizeVariant
+	public function create(SizeVariantType $size_variant_type, string $short_path, ImageDimension $dim, int $filesize): SizeVariant
 	{
 		if (!$this->photo->exists) {
 			// @codeCoverageIgnoreStart
@@ -224,8 +224,8 @@ class SizeVariants
 			$result = SizeVariant::create([
 				'photo_id' => $this->photo->id,
 				'storage_disk' => StorageDiskType::LOCAL,
-				'type' => $sizeVariantType,
-				'short_path' => $shortPath,
+				'type' => $size_variant_type,
+				'short_path' => $short_path,
 				'width' => $dim->width,
 				'height' => $dim->height,
 				'filesize' => $filesize,
@@ -281,9 +281,9 @@ class SizeVariants
 	 * @throws ModelDBException
 	 * @throws IllegalOrderOfOperationException
 	 */
-	public function replicate(Photo $duplicatePhoto): SizeVariants
+	public function replicate(Photo $duplicate_photo): SizeVariants
 	{
-		$duplicate = new SizeVariants($duplicatePhoto);
+		$duplicate = new SizeVariants($duplicate_photo);
 		self::replicateSizeVariant($duplicate, $this->original);
 		self::replicateSizeVariant($duplicate, $this->medium2x);
 		self::replicateSizeVariant($duplicate, $this->medium);
@@ -300,14 +300,14 @@ class SizeVariants
 	 * @throws ModelDBException
 	 * @throws IllegalOrderOfOperationException
 	 */
-	private static function replicateSizeVariant(SizeVariants $duplicate, ?SizeVariant $sizeVariant): void
+	private static function replicateSizeVariant(SizeVariants $duplicate, ?SizeVariant $size_variant): void
 	{
-		if ($sizeVariant !== null) {
+		if ($size_variant !== null) {
 			$duplicate->create(
-				$sizeVariant->type,
-				$sizeVariant->short_path,
-				new ImageDimension($sizeVariant->width, $sizeVariant->height),
-				$sizeVariant->filesize
+				$size_variant->type,
+				$size_variant->short_path,
+				new ImageDimension($size_variant->width, $size_variant->height),
+				$size_variant->filesize
 			);
 		}
 	}

@@ -28,9 +28,9 @@ class SessionUnitTest
 
 	private AbstractTestCase $testCase;
 
-	public function __construct(AbstractTestCase $testCase)
+	public function __construct(AbstractTestCase $test_case)
 	{
-		$this->testCase = $testCase;
+		$this->testCase = $test_case;
 	}
 
 	/**
@@ -46,16 +46,16 @@ class SessionUnitTest
 	public function login(
 		string $username,
 		string $password,
-		int $expectedStatusCode = 204,
-		?string $assertSee = null,
+		int $expected_status_code = 204,
+		?string $assert_see = null,
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/Session::login', [
 			'username' => $username,
 			'password' => $password,
 		]);
-		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee !== null) {
-			$response->assertSee($assertSee, false);
+		$this->assertStatus($response, $expected_status_code);
+		if ($assert_see !== null) {
+			$response->assertSee($assert_see, false);
 		}
 
 		return $response;
@@ -68,13 +68,13 @@ class SessionUnitTest
 	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function init(
-		int $expectedStatusCode = 200,
-		?string $assertSee = null,
+		int $expected_status_code = 200,
+		?string $assert_see = null,
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/Session::init');
-		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee !== null) {
-			$response->assertSee($assertSee, false);
+		$this->assertStatus($response, $expected_status_code);
+		if ($assert_see !== null) {
+			$response->assertSee($assert_see, false);
 		}
 
 		return $response;
@@ -107,18 +107,18 @@ class SessionUnitTest
 	public function update_login(
 		string $login,
 		string $password,
-		string $oldPassword,
-		int $expectedStatusCode = 200,
-		?string $assertSee = null,
+		string $old_password,
+		int $expected_status_code = 200,
+		?string $assert_see = null,
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/User::updateLogin', [
 			'username' => $login,
 			'password' => $password,
-			'oldPassword' => $oldPassword,
+			'oldPassword' => $old_password,
 		]);
-		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee !== null) {
-			$response->assertSee($assertSee, false);
+		$this->assertStatus($response, $expected_status_code);
+		if ($assert_see !== null) {
+			$response->assertSee($assert_see, false);
 		}
 
 		return $response;

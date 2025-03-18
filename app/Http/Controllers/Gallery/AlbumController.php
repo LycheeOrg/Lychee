@@ -76,10 +76,10 @@ class AlbumController extends Controller
 	public function get(GetAlbumRequest $request): AbstractAlbumResource
 	{
 		$config = new AlbumConfig($request->album());
-		$albumResource = null;
+		$album_resource = null;
 
 		if ($config->is_accessible) {
-			$albumResource = match (true) {
+			$album_resource = match (true) {
 				$request->album() instanceof BaseSmartAlbum => new SmartAlbumResource($request->album()),
 				$request->album() instanceof TagAlbum => new TagAlbumResource($request->album()),
 				$request->album() instanceof Album => new AlbumResource($request->album()),
@@ -87,7 +87,7 @@ class AlbumController extends Controller
 			};
 		}
 
-		return new AbstractAlbumResource($config, $albumResource);
+		return new AbstractAlbumResource($config, $album_resource);
 	}
 
 	/**
@@ -100,8 +100,8 @@ class AlbumController extends Controller
 	public function createAlbum(AddAlbumRequest $request): string
 	{
 		/** @var int $ownerId */
-		$ownerId = Auth::id() ?? throw new UnauthenticatedException();
-		$create = new Create($ownerId);
+		$owner_id = Auth::id() ?? throw new UnauthenticatedException();
+		$create = new Create($owner_id);
 
 		return $create->create($request->title(), $request->parent_album())->id;
 	}
@@ -128,7 +128,7 @@ class AlbumController extends Controller
 	 *
 	 * @return EditableBaseAlbumResource
 	 */
-	public function updateAlbum(UpdateAlbumRequest $request, SetHeader $setHeader): EditableBaseAlbumResource
+	public function updateAlbum(UpdateAlbumRequest $request, SetHeader $set_header): EditableBaseAlbumResource
 	{
 		$album = $request->album();
 		if ($album === null) {
@@ -146,7 +146,7 @@ class AlbumController extends Controller
 		$album->album_timeline = $request->album_timeline();
 		$album->photo_timeline = $request->photo_timeline();
 
-		$album = $setHeader->do(
+		$album = $set_header->do(
 			album: $album,
 			is_compact: $request->is_compact(),
 			photo: $request->photo(),
@@ -193,11 +193,11 @@ class AlbumController extends Controller
 	 */
 	public function updateProtectionPolicy(
 		SetAlbumProtectionPolicyRequest $request,
-		SetProtectionPolicy $setProtectionPolicy,
-		SetSmartProtectionPolicy $setSmartProtectionPolicy,
+		SetProtectionPolicy $set_protection_policy,
+		SetSmartProtectionPolicy $set_smart_protection_policy,
 	): AlbumProtectionPolicy {
 		if ($request->album() instanceof BaseSmartAlbum) {
-			return $this->updateProtectionPolicySmart($request->album(), $request->albumProtectionPolicy()->is_public, $setSmartProtectionPolicy);
+			return $this->updateProtectionPolicySmart($request->album(), $request->albumProtectionPolicy()->is_public, $set_smart_protection_policy);
 		}
 
 		/** @var BaseAlbum $album */
@@ -208,28 +208,28 @@ class AlbumController extends Controller
 			$request->albumProtectionPolicy(),
 			$request->isPasswordProvided(),
 			$request->password(),
-			$setProtectionPolicy
+			$set_protection_policy
 		);
 	}
 
-	private function updateProtectionPolicySmart(BaseSmartAlbum $album, bool $is_public, SetSmartProtectionPolicy $setSmartProtectionPolicy): AlbumProtectionPolicy
+	private function updateProtectionPolicySmart(BaseSmartAlbum $album, bool $is_public, SetSmartProtectionPolicy $set_smart_protection_policy): AlbumProtectionPolicy
 	{
-		$setSmartProtectionPolicy->do($album, $is_public);
+		$set_smart_protection_policy->do($album, $is_public);
 
 		return AlbumProtectionPolicy::ofSmartAlbum($album);
 	}
 
 	private function updateProtectionPolicyBase(
 		BaseAlbum $album,
-		AlbumProtectionPolicy $protectionPolicy,
-		bool $shallSetPassword,
+		AlbumProtectionPolicy $protection_policy,
+		bool $shall_set_password,
 		?string $password,
-		SetProtectionPolicy $setProtectionPolicy): AlbumProtectionPolicy
+		SetProtectionPolicy $set_protection_policy): AlbumProtectionPolicy
 	{
-		$setProtectionPolicy->do(
+		$set_protection_policy->do(
 			$album,
-			$protectionPolicy,
-			$shallSetPassword,
+			$protection_policy,
+			$shall_set_password,
 			$password
 		);
 
@@ -246,8 +246,8 @@ class AlbumController extends Controller
 	 */
 	public function delete(DeleteAlbumsRequest $request, Delete $delete): void
 	{
-		$fileDeleter = $delete->do($request->albumIds());
-		App::terminating(fn () => $fileDeleter->do());
+		$file_deleter = $delete->do($request->albumIds());
+		App::terminating(fn () => $file_deleter->do());
 	}
 
 	/**
@@ -258,12 +258,12 @@ class AlbumController extends Controller
 	 *
 	 * @return array<string|int,TargetAlbumResource>
 	 */
-	public function getTargetListAlbums(TargetListAlbumRequest $request, ListAlbums $listAlbums)
+	public function getTargetListAlbums(TargetListAlbumRequest $request, ListAlbums $list_albums)
 	{
 		$albums = $request->albums();
 		$parent_id = $albums->count() > 0 ? $albums->first()->parent_id : null;
 
-		return TargetAlbumResource::collect($listAlbums->do($albums, $parent_id));
+		return TargetAlbumResource::collect($list_albums->do($albums, $parent_id));
 	}
 
 	/**
@@ -328,9 +328,9 @@ class AlbumController extends Controller
 	 *
 	 * @return void
 	 */
-	public function header(SetAsHeaderRequest $request, SetHeader $setHeader): void
+	public function header(SetAsHeaderRequest $request, SetHeader $set_header): void
 	{
-		$setHeader->do($request->album(), $request->is_compact(), $request->photo());
+		$set_header->do($request->album(), $request->is_compact(), $request->photo());
 	}
 
 	/**

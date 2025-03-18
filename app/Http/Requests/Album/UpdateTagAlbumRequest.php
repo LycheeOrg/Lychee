@@ -92,12 +92,12 @@ class UpdateTagAlbumRequest extends BaseApiRequest implements HasTagAlbum, HasTi
 		$this->title = $values[RequestAttribute::TITLE_ATTRIBUTE];
 		$this->description = $values[RequestAttribute::DESCRIPTION_ATTRIBUTE];
 
-		$photoColumn = ColumnSortingPhotoType::tryFrom($values[RequestAttribute::PHOTO_SORTING_COLUMN_ATTRIBUTE]);
-		$photoOrder = OrderSortingType::tryFrom($values[RequestAttribute::PHOTO_SORTING_ORDER_ATTRIBUTE]);
+		$photo_column = ColumnSortingPhotoType::tryFrom($values[RequestAttribute::PHOTO_SORTING_COLUMN_ATTRIBUTE]);
+		$photo_order = OrderSortingType::tryFrom($values[RequestAttribute::PHOTO_SORTING_ORDER_ATTRIBUTE]);
 
-		$this->photoSortingCriterion = $photoColumn === null ?
+		$this->photoSortingCriterion = $photo_column === null ?
 			null :
-			new PhotoSortingCriterion($photoColumn->toColumnSortingType(), $photoOrder);
+			new PhotoSortingCriterion($photo_column->toColumnSortingType(), $photo_order);
 
 		$this->photoLayout = PhotoLayoutType::tryFrom($values[RequestAttribute::ALBUM_PHOTO_LAYOUT]);
 		$this->photo_timeline = TimelinePhotoGranularity::tryFrom($values[RequestAttribute::ALBUM_TIMELINE_PHOTO]);

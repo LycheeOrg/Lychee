@@ -10,8 +10,8 @@ namespace App\Exceptions\Internal;
 
 class MissingModelAttributeException extends FailedModelAssumptionException
 {
-	public function __construct(string $modelName, string $attributeName)
+	public function __construct(string $model_name, string $attribute_name)
 	{
-		parent::__construct('Attribute/column "' . $attributeName . '" for model "' . $modelName . '" missing');
+		parent::__construct('Attribute/column "' . $attribute_name . '" for model "' . $model_name . '" missing');
 	}
 }

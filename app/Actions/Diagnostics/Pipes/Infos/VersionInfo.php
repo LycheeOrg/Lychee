@@ -24,9 +24,9 @@ use LycheeVerify\Verify;
 class VersionInfo implements DiagnosticStringPipe
 {
 	public function __construct(
-		private InstalledVersion $installedVersion,
-		public FileVersion $fileVersion,
-		public GitHubVersion $gitHubFunctions,
+		private InstalledVersion $installed_version,
+		public FileVersion $file_version,
+		public GitHubVersion $git_hub_functions,
 		private Verify $verify,
 	) {
 		$this->fileVersion->hydrate(withRemote: false);
@@ -38,21 +38,21 @@ class VersionInfo implements DiagnosticStringPipe
 	public function handle(array &$data, \Closure $next): array
 	{
 		/** @var VersionChannelType $channelName */
-		$channelName = $this->getChannelName();
-		$lycheeInfoString = $this->fileVersion->getVersion()->toString();
+		$channel_name = $this->getChannelName();
+		$lychee_info_string = $this->fileVersion->getVersion()->toString();
 
-		if ($channelName !== VersionChannelType::RELEASE) {
+		if ($channel_name !== VersionChannelType::RELEASE) {
 			if ($this->gitHubFunctions->localHead !== null) {
-				$gitInfo = new LycheeGitInfo($this->gitHubFunctions);
-				$lycheeInfoString = $gitInfo->toString();
+				$git_info = new LycheeGitInfo($this->gitHubFunctions);
+				$lychee_info_string = $git_info->toString();
 			} else {
 				// @codeCoverageIgnoreStart
-				$lycheeInfoString = 'No git data found.';
+				$lychee_info_string = 'No git data found.';
 				// @codeCoverageIgnoreEnd
 			}
 		}
 
-		$data[] = Diagnostics::line($this->getVersionString() . ' (' . $channelName->value . '):', $lycheeInfoString);
+		$data[] = Diagnostics::line($this->getVersionString() . ' (' . $channel_name->value . '):', $lychee_info_string);
 		$data[] = Diagnostics::line('DB Version:', $this->installedVersion->getVersion()->toString());
 		$data[] = '';
 
@@ -66,14 +66,14 @@ class VersionInfo implements DiagnosticStringPipe
 	 */
 	public function getChannelName()
 	{
-		$lycheeChannelName = VersionChannelType::RELEASE;
+		$lychee_channel_name = VersionChannelType::RELEASE;
 
 		if (!$this->installedVersion->isRelease()) {
 			$this->gitHubFunctions->hydrate(withRemote: true, useCache: true);
-			$lycheeChannelName = $this->gitHubFunctions->isRelease() ? VersionChannelType::TAG : VersionChannelType::GIT;
+			$lychee_channel_name = $this->gitHubFunctions->isRelease() ? VersionChannelType::TAG : VersionChannelType::GIT;
 		}
 
-		return $lycheeChannelName;
+		return $lychee_channel_name;
 	}
 
 	/**

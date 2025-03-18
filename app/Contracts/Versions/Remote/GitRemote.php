@@ -17,7 +17,7 @@ interface GitRemote
 	 *
 	 * @return object[]
 	 */
-	public function fetchRemote(bool $useCache): array;
+	public function fetchRemote(bool $use_cache): array;
 
 	/**
 	 * Count the number of elements between current version and remote HEAD.

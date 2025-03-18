@@ -19,9 +19,9 @@ final class SizeVariantResource extends JsonResource
 {
 	private bool $noUrl = false;
 
-	public function __construct(SizeVariant $sizeVariant)
+	public function __construct(SizeVariant $size_variant)
 	{
-		parent::__construct($sizeVariant);
+		parent::__construct($size_variant);
 	}
 
 	/**
@@ -31,9 +31,9 @@ final class SizeVariantResource extends JsonResource
 	 *
 	 * @return SizeVariantResource
 	 */
-	public function setNoUrl(bool $noUrl): self
+	public function setNoUrl(bool $no_url): self
 	{
-		$this->noUrl = $noUrl;
+		$this->noUrl = $no_url;
 
 		return $this;
 	}

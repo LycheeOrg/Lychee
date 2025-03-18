@@ -34,9 +34,9 @@ class SortingDecorator
 	 *
 	 * @return void
 	 */
-	public function __construct(Builder $baseBuilder)
+	public function __construct(Builder $base_builder)
 	{
-		$this->baseBuilder = $baseBuilder;
+		$this->baseBuilder = $base_builder;
 	}
 
 	/**
@@ -175,12 +175,12 @@ class SortingDecorator
 			$column = $this->orderBy[$i]['column'];
 
 			// This conversion is necessary
-			$columnSortingName = str_replace('photos.', '', $column);
-			$columnSortingType = ColumnSortingType::tryFrom($columnSortingName) ?? ColumnSortingType::CREATED_AT;
+			$column_sorting_name = str_replace('photos.', '', $column);
+			$column_sorting_type = ColumnSortingType::tryFrom($column_sorting_name) ?? ColumnSortingType::CREATED_AT;
 
-			$options = in_array($columnSortingType, self::POSTPONE_COLUMNS, true) ? SORT_NATURAL | SORT_FLAG_CASE : SORT_REGULAR;
+			$options = in_array($column_sorting_type, self::POSTPONE_COLUMNS, true) ? SORT_NATURAL | SORT_FLAG_CASE : SORT_REGULAR;
 			$result = $result->sortBy(
-				$columnSortingName,
+				$column_sorting_name,
 				$options,
 				$this->orderBy[$i]['direction'] === OrderSortingType::DESC->value
 			)->values();

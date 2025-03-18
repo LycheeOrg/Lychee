@@ -99,12 +99,12 @@ class UpdateTest extends AbstractTestCase
 	{
 		// Prepare for test: we need to make sure there is an admin user registered.
 		/** @var User $adminUser */
-		$adminUser = User::query()->findOrFail(1);
-		$login = $adminUser->username;
-		$pw = $adminUser->password;
-		$adminUser->username = Hash::make('test_login');
-		$adminUser->password = Hash::make('test_password');
-		$adminUser->save();
+		$admin_user = User::query()->findOrFail(1);
+		$login = $admin_user->username;
+		$pw = $admin_user->password;
+		$admin_user->username = Hash::make('test_login');
+		$admin_user->password = Hash::make('test_password');
+		$admin_user->save();
 
 		// We disable middlewares because they are not what we want to test here.
 		$this->withoutMiddleware();
@@ -119,14 +119,14 @@ class UpdateTest extends AbstractTestCase
 		$this->assertOk($response);
 
 		// check that Legacy did change the username
-		$adminUser = User::query()->findOrFail(1);
-		self::assertEquals('test_login', $adminUser->username);
+		$admin_user = User::query()->findOrFail(1);
+		self::assertEquals('test_login', $admin_user->username);
 
 		// clean up
 		Auth::logout();
 		Session::flush();
-		$adminUser->username = $login;
-		$adminUser->password = $pw;
-		$adminUser->save();
+		$admin_user->username = $login;
+		$admin_user->password = $pw;
+		$admin_user->save();
 	}
 }

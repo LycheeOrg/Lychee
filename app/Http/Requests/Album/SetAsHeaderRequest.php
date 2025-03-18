@@ -69,7 +69,7 @@ class SetAsHeaderRequest extends BaseApiRequest implements HasAlbum, HasPhoto, H
 		}
 
 		/** @var string $photoId */
-		$photoId = $values[RequestAttribute::HEADER_ID_ATTRIBUTE];
-		$this->photo = Photo::query()->findOrFail($photoId);
+		$photo_id = $values[RequestAttribute::HEADER_ID_ATTRIBUTE];
+		$this->photo = Photo::query()->findOrFail($photo_id);
 	}
 }

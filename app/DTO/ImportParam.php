@@ -27,9 +27,9 @@ final class ImportParam
 	/** @var Extractor|null the extracted EXIF information */
 	public ?Extractor $exifInfo = null;
 
-	public function __construct(ImportMode $importMode, int $intendedOwnerId)
+	public function __construct(ImportMode $import_mode, int $intended_owner_id)
 	{
-		$this->importMode = $importMode;
-		$this->intendedOwnerId = $intendedOwnerId;
+		$this->importMode = $import_mode;
+		$this->intendedOwnerId = $intended_owner_id;
 	}
 }

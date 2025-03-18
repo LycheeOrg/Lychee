@@ -38,20 +38,20 @@ class AssertableZipArchive extends \ZipArchive
 	 */
 	public static function createFromResponse(TestResponse $response): self
 	{
-		$memoryBlob = new InMemoryBuffer();
+		$memory_blob = new InMemoryBuffer();
 		fwrite(
-			$memoryBlob->stream(),
+			$memory_blob->stream(),
 			// @phpstan-ignore-next-line
 			$response->baseResponse instanceof StreamedResponse ? $response->streamedContent() : $response->content()
 		);
-		$tmpZipFile = new TemporaryLocalFile('.zip', 'archive');
-		$tmpZipFile->write($memoryBlob->read());
-		$memoryBlob->close();
+		$tmp_zip_file = new TemporaryLocalFile('.zip', 'archive');
+		$tmp_zip_file->write($memory_blob->read());
+		$memory_blob->close();
 
-		$zipArchive = new self();
-		$zipArchive->open($tmpZipFile->getRealPath());
+		$zip_archive = new self();
+		$zip_archive->open($tmp_zip_file->getRealPath());
 
-		return $zipArchive;
+		return $zip_archive;
 	}
 
 	/**
@@ -62,12 +62,12 @@ class AssertableZipArchive extends \ZipArchive
 	 *
 	 * @return void
 	 */
-	public function assertContainsFile(string $fileName, ?int $expectedFileSize): void
+	public function assertContainsFile(string $file_name, ?int $expected_file_size): void
 	{
-		$stat = $this->statName($fileName);
-		PHPUnit::assertNotFalse($stat, 'Could not assert that ZIP archive contains ' . $fileName);
-		if ($expectedFileSize !== null) {
-			PHPUnit::assertEquals($expectedFileSize, $stat[self::ZIP_STAT_SIZE]);
+		$stat = $this->statName($file_name);
+		PHPUnit::assertNotFalse($stat, 'Could not assert that ZIP archive contains ' . $file_name);
+		if ($expected_file_size !== null) {
+			PHPUnit::assertEquals($expected_file_size, $stat[self::ZIP_STAT_SIZE]);
 		}
 	}
 
@@ -78,13 +78,13 @@ class AssertableZipArchive extends \ZipArchive
 	 *
 	 * @return void
 	 */
-	public function assertContainsFilesExactly(array $expectedFiles): void
+	public function assertContainsFilesExactly(array $expected_files): void
 	{
-		PHPUnit::assertCount(count($expectedFiles), $this);
-		foreach ($expectedFiles as $fileName => $fileStat) {
+		PHPUnit::assertCount(count($expected_files), $this);
+		foreach ($expected_files as $file_name => $file_stat) {
 			$this->assertContainsFile(
-				$fileName,
-				array_key_exists(self::ZIP_STAT_SIZE, $fileStat) ? $fileStat[self::ZIP_STAT_SIZE] : null
+				$file_name,
+				array_key_exists(self::ZIP_STAT_SIZE, $file_stat) ? $file_stat[self::ZIP_STAT_SIZE] : null
 			);
 		}
 	}

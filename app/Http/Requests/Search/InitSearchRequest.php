@@ -50,7 +50,7 @@ class InitSearchRequest extends BaseApiRequest implements HasAbstractAlbum
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$albumId = $values[RequestAttribute::ALBUM_ID_ATTRIBUTE] ?? null;
-		$this->album = $this->albumFactory->findNullalbleAbstractAlbumOrFail($albumId);
+		$album_id = $values[RequestAttribute::ALBUM_ID_ATTRIBUTE] ?? null;
+		$this->album = $this->albumFactory->findNullalbleAbstractAlbumOrFail($album_id);
 	}
 }

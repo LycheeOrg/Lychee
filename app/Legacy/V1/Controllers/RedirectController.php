@@ -28,10 +28,10 @@ final class RedirectController extends Controller
 	protected Unlock $unlock;
 	protected AlbumFactory $albumFactory;
 
-	public function __construct(Unlock $unlock, AlbumFactory $albumFactory)
+	public function __construct(Unlock $unlock, AlbumFactory $album_factory)
 	{
 		$this->unlock = $unlock;
-		$this->albumFactory = $albumFactory;
+		$this->albumFactory = $album_factory;
 	}
 
 	/**
@@ -45,9 +45,9 @@ final class RedirectController extends Controller
 	 * @throws LycheeException
 	 * @throws ModelNotFoundException
 	 */
-	public function album(Request $request, string $albumID): SymfonyResponse
+	public function album(Request $request, string $album_i_d): SymfonyResponse
 	{
-		return $this->photo($request, $albumID, null);
+		return $this->photo($request, $album_i_d, null);
 	}
 
 	/**
@@ -64,35 +64,35 @@ final class RedirectController extends Controller
 	 *
 	 * @codeCoverageIgnore Legacy stuff
 	 */
-	public function photo(Request $request, string $albumID, ?string $photoID): SymfonyResponse
+	public function photo(Request $request, string $album_i_d, ?string $photo_i_d): SymfonyResponse
 	{
 		try {
-			if (Legacy::isLegacyModelID($albumID)) {
-				$albumID = Legacy::translateLegacyAlbumID(intval($albumID), $request);
+			if (Legacy::isLegacyModelID($album_i_d)) {
+				$album_i_d = Legacy::translateLegacyAlbumID(intval($album_i_d), $request);
 			}
 
-			if ($photoID !== null && Legacy::isLegacyModelID($photoID)) {
-				$photoID = Legacy::translateLegacyPhotoID(intval($photoID), $request);
+			if ($photo_i_d !== null && Legacy::isLegacyModelID($photo_i_d)) {
+				$photo_i_d = Legacy::translateLegacyPhotoID(intval($photo_i_d), $request);
 			}
 
 			if (
 				$request->filled('password') &&
 				Configs::getValueAsBool('unlock_password_photos_with_url_param')
 			) {
-				$album = $this->albumFactory->findBaseAlbumOrFail($albumID);
+				$album = $this->albumFactory->findBaseAlbumOrFail($album_i_d);
 				$this->unlock->do($album, $request['password']);
 			}
 
 			// If we are using vuejs by default, we redirect to vuejs url intead.
 			if (Features::active('vuejs')) {
-				return $photoID === null ?
-					redirect(route('gallery-album', ['albumId' => $albumID])) :
-					redirect(route('gallery-photo', ['albumId' => $albumID, 'photoId' => $photoID]));
+				return $photo_i_d === null ?
+					redirect(route('gallery-album', ['albumId' => $album_i_d])) :
+					redirect(route('gallery-photo', ['albumId' => $album_i_d, 'photoId' => $photo_i_d]));
 			}
 
-			return $photoID === null ?
-				redirect('gallery#' . $albumID) :
-				redirect('gallery#' . $albumID . '/' . $photoID);
+			return $photo_i_d === null ?
+				redirect('gallery#' . $album_i_d) :
+				redirect('gallery#' . $album_i_d . '/' . $photo_i_d);
 		} catch (BindingResolutionException $e) {
 			throw new FrameworkException('Lychee redirection component', $e);
 		}

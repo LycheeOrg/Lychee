@@ -35,7 +35,7 @@ class CommandGhostbusterTest extends Base\BasePhotoTest
 		// The question mark operator is deliberately omitted for original
 		// and thumb, because these size variants must be generated at least
 		// otherwise we have nothing to test.
-		$fileURLs = array_diff([
+		$file_u_r_ls = array_diff([
 			$this->dropUrlPrefix($photo->size_variants->original->url),
 			$this->dropUrlPrefix($photo->size_variants->medium2x?->url),
 			$this->dropUrlPrefix($photo->size_variants->medium?->url),
@@ -44,7 +44,7 @@ class CommandGhostbusterTest extends Base\BasePhotoTest
 			$this->dropUrlPrefix($photo->size_variants->thumb2x?->url),
 			$this->dropUrlPrefix($photo->size_variants->thumb->url),
 		], [null]);
-		self::assertNotEmpty($fileURLs);
+		self::assertNotEmpty($file_u_r_ls);
 
 		// Remove photo and size variants from DB manually; note we must
 		// not use an API call as this would also remove the files, and we
@@ -57,8 +57,8 @@ class CommandGhostbusterTest extends Base\BasePhotoTest
 			->delete();
 
 		// Ensure that files are still there
-		foreach ($fileURLs as $fileURL) {
-			self::assertFileExists(public_path($fileURL));
+		foreach ($file_u_r_ls as $file_u_r_l) {
+			self::assertFileExists(public_path($file_u_r_l));
 		}
 
 		// Ghostbuster, ...
@@ -68,8 +68,8 @@ class CommandGhostbusterTest extends Base\BasePhotoTest
 			->assertSuccessful();
 
 		// Ensure that files are gone
-		foreach ($fileURLs as $fileURL) {
-			self::assertFileDoesNotExist(public_path($fileURL));
+		foreach ($file_u_r_ls as $file_u_r_l) {
+			self::assertFileDoesNotExist(public_path($file_u_r_l));
 		}
 	}
 
@@ -83,9 +83,9 @@ class CommandGhostbusterTest extends Base\BasePhotoTest
 		// The question mark operator is deliberately omitted for original
 		// and thumb, because these size variants must be generated at least
 		// otherwise we have nothing to test.
-		$originalFileURL = $photo->size_variants->original->url;
-		$fileURLs = array_diff([
-			$this->dropUrlPrefix($originalFileURL),
+		$original_file_u_r_l = $photo->size_variants->original->url;
+		$file_u_r_ls = array_diff([
+			$this->dropUrlPrefix($original_file_u_r_l),
 			$this->dropUrlPrefix($photo->size_variants->medium2x?->url),
 			$this->dropUrlPrefix($photo->size_variants->medium?->url),
 			$this->dropUrlPrefix($photo->size_variants->small2x?->url),
@@ -93,10 +93,10 @@ class CommandGhostbusterTest extends Base\BasePhotoTest
 			$this->dropUrlPrefix($photo->size_variants->thumb2x?->url),
 			$this->dropUrlPrefix($photo->size_variants->thumb->url),
 		], [null]);
-		self::assertNotEmpty($fileURLs);
+		self::assertNotEmpty($file_u_r_ls);
 
 		// Remove original file
-		\Safe\unlink(public_path($this->dropUrlPrefix($originalFileURL)));
+		\Safe\unlink(public_path($this->dropUrlPrefix($original_file_u_r_l)));
 
 		// Ghostbuster, ...
 		$this->artisan(self::COMMAND, [
@@ -118,8 +118,8 @@ class CommandGhostbusterTest extends Base\BasePhotoTest
 				->where('photo_id', '=', $photo->id)
 				->count()
 		);
-		foreach ($fileURLs as $fileURL) {
-			self::assertFileDoesNotExist(public_path($fileURL));
+		foreach ($file_u_r_ls as $file_u_r_l) {
+			self::assertFileDoesNotExist(public_path($file_u_r_l));
 		}
 	}
 }

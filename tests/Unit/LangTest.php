@@ -42,14 +42,14 @@ class LangTest extends AbstractTestCase
 		$this->msgSection = (new ConsoleOutput())->section();
 
 		/** @var array<int,string> $englishDictionaries */
-		$englishDictionaries = collect(array_diff(scandir(base_path('lang/en')), ['..', '.']))->filter(fn ($v) => str_ends_with($v, '.php'))->all();
-		foreach ($englishDictionaries as $dictionaryFile) {
-			$englishDictionary = include base_path('lang/en/' . $dictionaryFile);
-			$availableDictionaries = collect(array_diff(config('app.supported_locale'), ['en']))->filter(fn ($v) => is_dir(base_path('lang/' . $v)))->all();
+		$english_dictionaries = collect(array_diff(scandir(base_path('lang/en')), ['..', '.']))->filter(fn ($v) => str_ends_with($v, '.php'))->all();
+		foreach ($english_dictionaries as $dictionary_file) {
+			$english_dictionary = include base_path('lang/en/' . $dictionary_file);
+			$available_dictionaries = collect(array_diff(config('app.supported_locale'), ['en']))->filter(fn ($v) => is_dir(base_path('lang/' . $v)))->all();
 
-			foreach ($availableDictionaries as $locale) {
-				$dictionary = include base_path('lang/' . $locale . '/' . $dictionaryFile);
-				$this->recursiveCheck($englishDictionary, $dictionary, $locale, $dictionaryFile);
+			foreach ($available_dictionaries as $locale) {
+				$dictionary = include base_path('lang/' . $locale . '/' . $dictionary_file);
+				$this->recursiveCheck($english_dictionary, $dictionary, $locale, $dictionary_file);
 			}
 		}
 		static::assertFalse($this->failed);
@@ -66,15 +66,15 @@ class LangTest extends AbstractTestCase
 
 	private function recursiveCheck(array $expected, array $candidate, string $locale, string $file, string $prefix = ''): void
 	{
-		$missingKeys = array_diff_key($expected, $candidate);
+		$missing_keys = array_diff_key($expected, $candidate);
 
-		foreach ($missingKeys as $key => $value) {
+		foreach ($missing_keys as $key => $value) {
 			$this->msgSection->writeln(sprintf('<comment>Error:</comment> Locale %s %s misses the following key: %s', str_pad($locale, 8), $file, $prefix . $key));
 			$this->failed = true;
 		}
 
-		$extraKeys = array_diff_key($candidate, $expected);
-		foreach ($extraKeys as $key => $value) {
+		$extra_keys = array_diff_key($candidate, $expected);
+		foreach ($extra_keys as $key => $value) {
 			$this->msgSection->writeln(sprintf('<comment>Error:</comment> Locale %s %s has the following extra key: %s', str_pad($locale, 8), $file, $prefix . $key));
 			$this->failed = true;
 		}

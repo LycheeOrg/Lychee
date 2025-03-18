@@ -17,10 +17,10 @@ class IntegerIDRule implements ValidationRule
 	protected bool $isNullable;
 	protected bool $isRelaxed;
 
-	public function __construct(bool $isNullable, bool $isRelaxed = false)
+	public function __construct(bool $is_nullable, bool $is_relaxed = false)
 	{
-		$this->isNullable = $isNullable;
-		$this->isRelaxed = $isRelaxed;
+		$this->isNullable = $is_nullable;
+		$this->isRelaxed = $is_relaxed;
 	}
 
 	/**

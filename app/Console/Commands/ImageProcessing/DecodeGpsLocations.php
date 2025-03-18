@@ -65,12 +65,12 @@ class DecodeGpsLocations extends Command
 			return 0;
 		}
 
-		$cachedProvider = Geodecoder::getGeocoderProvider();
+		$cached_provider = Geodecoder::getGeocoderProvider();
 		/** @var Photo $photo */
 		foreach ($photos as $photo) {
 			$this->line('Processing ' . $photo->title . '...');
 
-			$photo->location = Geodecoder::decodeLocation_core($photo->latitude, $photo->longitude, $cachedProvider);
+			$photo->location = Geodecoder::decodeLocation_core($photo->latitude, $photo->longitude, $cached_provider);
 			$photo->save();
 		}
 

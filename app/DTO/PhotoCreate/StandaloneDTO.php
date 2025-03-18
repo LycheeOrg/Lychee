@@ -32,31 +32,31 @@ class StandaloneDTO implements PhotoDTO
 		// The resulting photo
 		public Photo $photo,
 		// The original photo source file that is imported.
-		public readonly NativeLocalFile $sourceFile,
+		public readonly NativeLocalFile $source_file,
 		// Indicates whether the new photo shall be starred.
 		public readonly bool $is_starred,
 		// The extracted EXIF information (populated during init phase).
-		public readonly Extractor $exifInfo,
+		public readonly Extractor $exif_info,
 		// The intended parent album
 		public readonly ?AbstractAlbum $album,
 		// Indicates the intended owner of the image.
-		public readonly int $intendedOwnerId,
-		public readonly bool $shallImportViaSymlink,
-		public readonly bool $shallDeleteImported,
+		public readonly int $intended_owner_id,
+		public readonly bool $shall_import_via_symlink,
+		public readonly bool $shall_delete_imported,
 	) {
 	}
 
-	public static function ofInit(InitDTO $initDTO): StandaloneDTO
+	public static function ofInit(InitDTO $init_d_t_o): StandaloneDTO
 	{
 		return new StandaloneDTO(
 			photo: new Photo(),
-			sourceFile: $initDTO->sourceFile,
-			is_starred: $initDTO->is_starred,
-			exifInfo: $initDTO->exifInfo,
-			album: $initDTO->album,
-			intendedOwnerId: $initDTO->intendedOwnerId,
-			shallImportViaSymlink: $initDTO->importMode->shallImportViaSymlink,
-			shallDeleteImported: $initDTO->importMode->shallDeleteImported,
+			sourceFile: $init_d_t_o->sourceFile,
+			is_starred: $init_d_t_o->is_starred,
+			exifInfo: $init_d_t_o->exifInfo,
+			album: $init_d_t_o->album,
+			intendedOwnerId: $init_d_t_o->intendedOwnerId,
+			shallImportViaSymlink: $init_d_t_o->importMode->shallImportViaSymlink,
+			shallDeleteImported: $init_d_t_o->importMode->shallDeleteImported,
 		);
 	}
 

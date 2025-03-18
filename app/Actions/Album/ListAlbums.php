@@ -30,16 +30,16 @@ class ListAlbums extends Action
 	 *
 	 * @return TAlbumSaved[]
 	 */
-	public function do(Collection $albumsFiltering, ?string $parent_id): array
+	public function do(Collection $albums_filtering, ?string $parent_id): array
 	{
-		$albumQueryPolicy = resolve(AlbumQueryPolicy::class);
-		$unfiltered = $albumQueryPolicy->applyReachabilityFilter(
+		$album_query_policy = resolve(AlbumQueryPolicy::class);
+		$unfiltered = $album_query_policy->applyReachabilityFilter(
 			// We remove all sub albums
 			// Otherwise it would create cyclic dependency
 			Album::query()
-				->when($albumsFiltering->count() > 0,
-					function ($q) use ($albumsFiltering) {
-						$albumsFiltering->each(
+				->when($albums_filtering->count() > 0,
+					function ($q) use ($albums_filtering) {
+						$albums_filtering->each(
 							fn ($a) => $q->whereNot(fn ($q1) => $q1->where('_lft', '>=', $a->_lft)->where('_rgt', '<=', $a->_rgt))
 						);
 
@@ -85,11 +85,11 @@ class ListAlbums extends Action
 	private function flatten($collection, $prefix = ''): array
 	{
 		/** @var TAlbumSaved[] $flatArray */
-		$flatArray = [];
+		$flat_array = [];
 		foreach ($collection as $node) {
 			$title = $prefix . ($prefix !== '' ? '/' : '') . $node->title;
 			$short_title = $this->shorten($title);
-			$flatArray[] = [
+			$flat_array[] = [
 				'id' => $node->id,
 				'title' => $title,
 				'original' => $node->title,
@@ -97,12 +97,12 @@ class ListAlbums extends Action
 				'thumb' => $node->thumb?->thumbUrl ?? URL::asset('img/no_images.svg'),
 			];
 			if ($node->children !== null) {
-				$flatArray = array_merge($flatArray, $this->flatten($node->children, $title));
+				$flat_array = array_merge($flat_array, $this->flatten($node->children, $title));
 				unset($node->children);
 			}
 		}
 
-		return $flatArray;
+		return $flat_array;
 	}
 
 	/**

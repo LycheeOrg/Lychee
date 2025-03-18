@@ -26,9 +26,9 @@ class UnlockWithPassword
 	private AlbumFactory $albumFactory;
 	private Unlock $unlock;
 
-	public function __construct(AlbumFactory $albumFactory, Unlock $unlock)
+	public function __construct(AlbumFactory $album_factory, Unlock $unlock)
 	{
-		$this->albumFactory = $albumFactory;
+		$this->albumFactory = $album_factory;
 		$this->unlock = $unlock;
 	}
 

@@ -24,12 +24,12 @@ class SizeVariantDimensionHelpers
 	 *
 	 * @throws InvalidSizeVariantException
 	 */
-	public function getMaxDimensions(SizeVariantType $sizeVariant): ImageDimension
+	public function getMaxDimensions(SizeVariantType $size_variant): ImageDimension
 	{
-		$maxWidth = $this->getMaxWidth($sizeVariant);
-		$maxHeight = $this->getMaxHeight($sizeVariant);
+		$max_width = $this->getMaxWidth($size_variant);
+		$max_height = $this->getMaxHeight($size_variant);
 
-		return new ImageDimension($maxWidth, $maxHeight);
+		return new ImageDimension($max_width, $max_height);
 	}
 
 	/**
@@ -55,20 +55,20 @@ class SizeVariantDimensionHelpers
 	 *
 	 * @throws InvalidSizeVariantException
 	 */
-	public function isEnabledByConfiguration(SizeVariantType $sizeVariant): bool
+	public function isEnabledByConfiguration(SizeVariantType $size_variant): bool
 	{
-		$maxDim = $this->getMaxDimensions($sizeVariant);
-		if ($maxDim->width === 0 && $maxDim->height === 0) {
+		$max_dim = $this->getMaxDimensions($size_variant);
+		if ($max_dim->width === 0 && $max_dim->height === 0) {
 			return false;
 		}
 
-		return match ($sizeVariant) {
+		return match ($size_variant) {
 			SizeVariantType::MEDIUM2X => Configs::getValueAsBool('medium_2x'),
 			SizeVariantType::SMALL2X => Configs::getValueAsBool('small_2x'),
 			SizeVariantType::THUMB2X => Configs::getValueAsBool('thumb_2x'),
 			SizeVariantType::PLACEHOLDER => Configs::getValueAsBool('low_quality_image_placeholder'),
 			SizeVariantType::SMALL, SizeVariantType::MEDIUM, SizeVariantType::THUMB => true,
-			default => throw new InvalidSizeVariantException('unknown size variant: ' . $sizeVariant->value),
+			default => throw new InvalidSizeVariantException('unknown size variant: ' . $size_variant->value),
 		};
 	}
 
@@ -82,12 +82,12 @@ class SizeVariantDimensionHelpers
 	 *
 	 * @return bool true, if the size is big enough for creation
 	 */
-	public function isLargeEnough(ImageDimension $realDim, ImageDimension $maxDim, SizeVariantType $sizeVariant): bool
+	public function isLargeEnough(ImageDimension $real_dim, ImageDimension $max_dim, SizeVariantType $size_variant): bool
 	{
-		return match ($sizeVariant) {
+		return match ($size_variant) {
 			SizeVariantType::THUMB, SizeVariantType::PLACEHOLDER => true,
-			SizeVariantType::THUMB2X => $realDim->width >= $maxDim->width && $realDim->height >= $maxDim->height,
-			default => ($realDim->width >= $maxDim->width && $maxDim->width !== 0) || ($realDim->height >= $maxDim->height && $maxDim->height !== 0),
+			SizeVariantType::THUMB2X => $real_dim->width >= $max_dim->width && $real_dim->height >= $max_dim->height,
+			default => ($real_dim->width >= $max_dim->width && $max_dim->width !== 0) || ($real_dim->height >= $max_dim->height && $max_dim->height !== 0),
 		};
 	}
 
@@ -96,9 +96,9 @@ class SizeVariantDimensionHelpers
 	 *
 	 * @return int
 	 */
-	public function getMaxWidth(SizeVariantType $sizeVariant): int
+	public function getMaxWidth(SizeVariantType $size_variant): int
 	{
-		return match ($sizeVariant) {
+		return match ($size_variant) {
 			SizeVariantType::MEDIUM2X => 2 * Configs::getValueAsInt('medium_max_width'),
 			SizeVariantType::MEDIUM => Configs::getValueAsInt('medium_max_width'),
 			SizeVariantType::SMALL2X => 2 * Configs::getValueAsInt('small_max_width'),
@@ -115,9 +115,9 @@ class SizeVariantDimensionHelpers
 	 *
 	 * @return int
 	 */
-	public function getMaxHeight(SizeVariantType $sizeVariant): int
+	public function getMaxHeight(SizeVariantType $size_variant): int
 	{
-		return match ($sizeVariant) {
+		return match ($size_variant) {
 			SizeVariantType::MEDIUM2X => 2 * Configs::getValueAsInt('medium_max_height'),
 			SizeVariantType::MEDIUM => Configs::getValueAsInt('medium_max_height'),
 			SizeVariantType::SMALL2X => 2 * Configs::getValueAsInt('small_max_height'),
@@ -125,7 +125,7 @@ class SizeVariantDimensionHelpers
 			SizeVariantType::THUMB2X => SizeVariantDefaultFactory::THUMBNAIL2X_DIM,
 			SizeVariantType::THUMB => SizeVariantDefaultFactory::THUMBNAIL_DIM,
 			SizeVariantType::PLACEHOLDER => SizeVariantDefaultFactory::PLACEHOLDER_DIM,
-			default => throw new InvalidSizeVariantException('unknown size variant: ' . $sizeVariant->value),
+			default => throw new InvalidSizeVariantException('unknown size variant: ' . $size_variant->value),
 		};
 	}
 }

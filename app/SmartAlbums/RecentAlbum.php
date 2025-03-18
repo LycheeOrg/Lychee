@@ -30,14 +30,14 @@ class RecentAlbum extends BaseSmartAlbum
 	 */
 	protected function __construct()
 	{
-		$strRecent = $this->fromDateTime(
+		$str_recent = $this->fromDateTime(
 			Carbon::now()->subDays(Configs::getValueAsInt('recent_age'))
 		);
 
 		parent::__construct(
 			SmartAlbumType::RECENT,
-			function (Builder $query) use ($strRecent): void {
-				$query->where('photos.created_at', '>=', $strRecent);
+			function (Builder $query) use ($str_recent): void {
+				$query->where('photos.created_at', '>=', $str_recent);
 			}
 		);
 	}

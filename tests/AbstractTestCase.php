@@ -50,12 +50,12 @@ abstract class AbstractTestCase extends BaseTestCase
 	 *
 	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
-	public function getWithParameters(string $uri, array $queryParameters = [], array $headers = []): TestResponse
+	public function getWithParameters(string $uri, array $query_parameters = [], array $headers = []): TestResponse
 	{
 		$server = $this->transformHeadersToServerVars($headers);
 		$cookies = $this->prepareCookiesForRequest();
 
-		return $this->call('GET', $uri, $queryParameters, $cookies, [], $server);
+		return $this->call('GET', $uri, $query_parameters, $cookies, [], $server);
 	}
 
 	/**
@@ -88,15 +88,15 @@ abstract class AbstractTestCase extends BaseTestCase
 	 *
 	 * @return UploadedFile
 	 */
-	protected static function createUploadedFile(string $sampleFilePath): UploadedFile
+	protected static function createUploadedFile(string $sample_file_path): UploadedFile
 	{
-		$tmpFilename = tempnam(sys_get_temp_dir(), 'lychee');
-		copy(base_path($sampleFilePath), $tmpFilename);
+		$tmp_filename = tempnam(sys_get_temp_dir(), 'lychee');
+		copy(base_path($sample_file_path), $tmp_filename);
 
 		return new UploadedFile(
-			$tmpFilename,
-			pathinfo($sampleFilePath, PATHINFO_BASENAME),
-			TestConstants::SAMPLE_FILES_2_MIME[$sampleFilePath],
+			$tmp_filename,
+			pathinfo($sample_file_path, PATHINFO_BASENAME),
+			TestConstants::SAMPLE_FILES_2_MIME[$sample_file_path],
 			UPLOAD_ERR_OK,
 			true
 		);
@@ -112,15 +112,15 @@ abstract class AbstractTestCase extends BaseTestCase
 	 */
 	protected static function getRecentPhotoIDs(): BaseCollection
 	{
-		$strRecent = Carbon::now()
+		$str_recent = Carbon::now()
 			->subDays(Configs::getValueAsInt('recent_age'))
 			->setTimezone('UTC')
 			->format('Y-m-d H:i:s');
-		$recentFilter = function (Builder $query) use ($strRecent): void {
-			$query->where('created_at', '>=', $strRecent);
+		$recent_filter = function (Builder $query) use ($str_recent): void {
+			$query->where('created_at', '>=', $str_recent);
 		};
 
-		return Photo::query()->select('id')->where($recentFilter)->pluck('id');
+		return Photo::query()->select('id')->where($recent_filter)->pluck('id');
 	}
 
 	/**

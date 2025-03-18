@@ -17,13 +17,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class PositionData extends Action
 {
-	public function get(AbstractAlbum $album, bool $includeSubAlbums = false): PositionDataResource
+	public function get(AbstractAlbum $album, bool $include_sub_albums = false): PositionDataResource
 	{
-		$photoRelation = ($album instanceof Album && $includeSubAlbums) ?
+		$photo_relation = ($album instanceof Album && $include_sub_albums) ?
 			$album->all_photos() :
 			$album->photos();
 
-		$photoRelation
+		$photo_relation
 			->with([
 				'album' => function (BelongsTo $b): void {
 					// The album is required for photos to properly
@@ -46,6 +46,6 @@ class PositionData extends Action
 			->whereNotNull('latitude')
 			->whereNotNull('longitude');
 
-		return new PositionDataResource($album->id, $album->title, $photoRelation->get(), $album instanceof Album ? $album->track_url : null);
+		return new PositionDataResource($album->id, $album->title, $photo_relation->get(), $album instanceof Album ? $album->track_url : null);
 	}
 }

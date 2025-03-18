@@ -308,9 +308,9 @@ class UsersTest extends AbstractTestCase
 
 		Auth::loginUsingId(1);
 
-		$oldToken = $users_test->reset_token()->offsetGet('token');
-		$newToken = $users_test->reset_token()->offsetGet('token');
-		self::assertNotEquals($oldToken, $newToken);
+		$old_token = $users_test->reset_token()->offsetGet('token');
+		$new_token = $users_test->reset_token()->offsetGet('token');
+		self::assertNotEquals($old_token, $new_token);
 
 		Auth::logout();
 	}
@@ -321,12 +321,12 @@ class UsersTest extends AbstractTestCase
 
 		Auth::loginUsingId(1);
 
-		$oldToken = $users_test->reset_token()->offsetGet('token');
-		self::assertNotNull($oldToken);
+		$old_token = $users_test->reset_token()->offsetGet('token');
+		self::assertNotNull($old_token);
 
 		$users_test->unset_token();
-		$userResponse = $users_test->get_user();
-		$userResponse->assertJson([
+		$user_response = $users_test->get_user();
+		$user_response->assertJson([
 			'has_token' => false,
 		]);
 

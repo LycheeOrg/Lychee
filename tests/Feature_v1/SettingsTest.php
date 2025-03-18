@@ -33,14 +33,14 @@ class SettingsTest extends AbstractTestCase
 		string $url,
 		array $params,
 		int $status = 204,
-		?string $assertSee = null): void
+		?string $assert_see = null): void
 	{
 		Auth::loginUsingId(1);
 
 		$response = $this->postJson('/api' . $url, $params);
 		$this->assertStatus($response, $status);
-		if ($assertSee !== null) {
-			$response->assertSee($assertSee);
+		if ($assert_see !== null) {
+			$response->assertSee($assert_see);
 		}
 
 		Auth::logout();
@@ -52,20 +52,20 @@ class SettingsTest extends AbstractTestCase
 		string $key,
 		string|bool|int $value,
 		int $status = 204,
-		?string $assertSee = null): void
+		?string $assert_see = null): void
 	{
-		$oldVal = Configs::getValue($key);
+		$old_val = Configs::getValue($key);
 		Auth::loginUsingId(1);
 
 		$response = $this->postJson('/api' . $url, [$key => $value]);
 		$this->assertStatus($response, $status);
-		if ($assertSee !== null) {
-			$response->assertSee($assertSee);
+		if ($assert_see !== null) {
+			$response->assertSee($assert_see);
 		}
 
 		Auth::logout();
 		Session::flush();
-		Configs::set($key, $oldVal);
+		Configs::set($key, $old_val);
 	}
 
 	// Route::post('/Settings::setSorting', [Administration\SettingsController::class, 'setSorting']);

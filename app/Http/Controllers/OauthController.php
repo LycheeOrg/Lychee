@@ -47,17 +47,17 @@ class OauthController extends Controller
 	 */
 	public function redirected(string $provider)
 	{
-		$providerEnum = $this->oauth->validateProviderOrDie($provider);
+		$provider_enum = $this->oauth->validateProviderOrDie($provider);
 
 		// We are already logged in: Registration operation
 		if (Auth::check()) {
-			$this->oauth->registerOrDie($providerEnum);
+			$this->oauth->registerOrDie($provider_enum);
 
 			return redirect(route('profile'));
 		}
 
 		// Authentication operation
-		$this->oauth->authenticateOrDie($providerEnum);
+		$this->oauth->authenticateOrDie($provider_enum);
 
 		return redirect(route('gallery'));
 	}
@@ -77,9 +77,9 @@ class OauthController extends Controller
 			throw new UnauthorizedException('User already authenticated.');
 		}
 
-		$providerEnum = $this->oauth->validateProviderOrDie($provider);
+		$provider_enum = $this->oauth->validateProviderOrDie($provider);
 
-		return Socialite::driver($providerEnum->value)->redirect();
+		return Socialite::driver($provider_enum->value)->redirect();
 	}
 
 	/**
@@ -98,12 +98,12 @@ class OauthController extends Controller
 			throw new UnauthorizedException('Registration attempted but not initialized.');
 		}
 
-		$providerEnum = $this->oauth->validateProviderOrDie($provider);
-		Session::put($providerEnum->value, OauthAction::OAUTH_REGISTER);
+		$provider_enum = $this->oauth->validateProviderOrDie($provider);
+		Session::put($provider_enum->value, OauthAction::OAUTH_REGISTER);
 
 		TaggedRouteCacheUpdated::dispatch(CacheTag::USER);
 
-		return Socialite::driver($providerEnum->value)->redirect();
+		return Socialite::driver($provider_enum->value)->redirect();
 	}
 
 	/**
@@ -129,7 +129,7 @@ class OauthController extends Controller
 	 */
 	public function listForUser(OauthListRequest $request): array
 	{
-		$oauthData = [];
+		$oauth_data = [];
 
 		/** @var User $user */
 		$user = Auth::user() ?? throw new UnauthenticatedException();
@@ -149,14 +149,14 @@ class OauthController extends Controller
 				expiration: now()->addMinutes(5),
 				absolute: false);
 
-			$oauthData[] = new OauthRegistrationData(
+			$oauth_data[] = new OauthRegistrationData(
 				providerType: $provider,
 				isEnabled: $credentials->search(fn (OauthCredential $c) => $c->provider === $provider) !== false,
 				registrationRoute: $route,
 			);
 		}
 
-		return $oauthData;
+		return $oauth_data;
 	}
 
 	/**
@@ -166,17 +166,17 @@ class OauthController extends Controller
 	 */
 	public function listProviders(): array
 	{
-		$oauthAvailable = [];
+		$oauth_available = [];
 
-		foreach (OauthProvidersType::cases() as $oauthProvider) {
-			$client_id = config('services.' . $oauthProvider->value . '.client_id');
+		foreach (OauthProvidersType::cases() as $oauth_provider) {
+			$client_id = config('services.' . $oauth_provider->value . '.client_id');
 			if ($client_id === null || $client_id === '') {
 				continue;
 			}
 
-			$oauthAvailable[] = $oauthProvider;
+			$oauth_available[] = $oauth_provider;
 		}
 
-		return $oauthAvailable;
+		return $oauth_available;
 	}
 }

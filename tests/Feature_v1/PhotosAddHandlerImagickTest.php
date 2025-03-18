@@ -52,7 +52,7 @@ class PhotosAddHandlerImagickTest extends BasePhotosAddHandler
 	 */
 	public function testAcceptedRawUpload(): void
 	{
-		$acceptedRawFormats = static::getAcceptedRawFormats();
+		$accepted_raw_formats = static::getAcceptedRawFormats();
 		try {
 			static::setAcceptedRawFormats('.tif');
 
@@ -65,7 +65,7 @@ class PhotosAddHandlerImagickTest extends BasePhotosAddHandler
 			self::assertEquals(TestConstants::MIME_TYPE_IMG_TIFF, $photo->type);
 			self::assertNotNull($photo->size_variants->thumb);
 		} finally {
-			static::setAcceptedRawFormats($acceptedRawFormats);
+			static::setAcceptedRawFormats($accepted_raw_formats);
 		}
 	}
 }

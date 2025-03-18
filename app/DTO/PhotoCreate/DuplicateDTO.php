@@ -22,16 +22,16 @@ class DuplicateDTO implements PhotoDTO
 	public bool $hasBeenReSynced;
 
 	public function __construct(
-		public readonly bool $shallResyncMetadata,
-		public readonly bool $shallSkipDuplicates,
+		public readonly bool $shall_resync_metadata,
+		public readonly bool $shall_skip_duplicates,
 		// Indicates the intended owner of the image.
-		public readonly int $intendedOwnerId,
+		public readonly int $intended_owner_id,
 
 		// Indicates whether the new photo shall be starred.
 		public readonly bool $is_starred,
 
 		// The extracted EXIF information (populated during init phase).
-		public readonly Extractor $exifInfo,
+		public readonly Extractor $exif_info,
 
 		// The intended parent album
 		public readonly ?AbstractAlbum $album,
@@ -41,16 +41,16 @@ class DuplicateDTO implements PhotoDTO
 	) {
 	}
 
-	public static function ofInit(InitDTO $initDTO): DuplicateDTO
+	public static function ofInit(InitDTO $init_d_t_o): DuplicateDTO
 	{
 		return new DuplicateDTO(
-			shallResyncMetadata: $initDTO->importMode->shallResyncMetadata,
-			shallSkipDuplicates: $initDTO->importMode->shallSkipDuplicates,
-			intendedOwnerId: $initDTO->intendedOwnerId,
-			is_starred: $initDTO->is_starred,
-			exifInfo: $initDTO->exifInfo,
-			album: $initDTO->album,
-			photo: $initDTO->duplicate,
+			shallResyncMetadata: $init_d_t_o->importMode->shallResyncMetadata,
+			shallSkipDuplicates: $init_d_t_o->importMode->shallSkipDuplicates,
+			intendedOwnerId: $init_d_t_o->intendedOwnerId,
+			is_starred: $init_d_t_o->is_starred,
+			exifInfo: $init_d_t_o->exifInfo,
+			album: $init_d_t_o->album,
+			photo: $init_d_t_o->duplicate,
 		);
 	}
 

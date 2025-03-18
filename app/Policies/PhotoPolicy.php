@@ -122,24 +122,24 @@ class PhotoPolicy extends BasePolicy
 	 *
 	 * @throws QueryBuilderException
 	 */
-	public function canEditById(User $user, array $photoIDs): bool
+	public function canEditById(User $user, array $photo_i_ds): bool
 	{
 		// Make IDs unique as otherwise count will fail.
-		$photoIDs = array_unique($photoIDs);
+		$photo_i_ds = array_unique($photo_i_ds);
 
 		if (
 			$user->may_upload &&
 			Photo::query()
-			->whereIn('id', $photoIDs)
+			->whereIn('id', $photo_i_ds)
 			->where('owner_id', $user->id)
-			->count() === count($photoIDs)
+			->count() === count($photo_i_ds)
 		) {
 			return true;
 		}
 
 		$parents_id = Photo::query()
 			->select('album_id')
-			->whereIn('id', $photoIDs)
+			->whereIn('id', $photo_i_ds)
 			->groupBy('album_id')
 			->pluck('album_id')->all();
 
@@ -195,17 +195,17 @@ class PhotoPolicy extends BasePolicy
 	 *
 	 * @throws QueryBuilderException
 	 */
-	public function canDeleteById(User $user, array $photoIDs): bool
+	public function canDeleteById(User $user, array $photo_i_ds): bool
 	{
 		// Make IDs unique as otherwise count will fail.
-		$photoIDs = array_unique($photoIDs);
+		$photo_i_ds = array_unique($photo_i_ds);
 
 		if (
 			$user->may_upload &&
 			Photo::query()
-			->whereIn('id', $photoIDs)
+			->whereIn('id', $photo_i_ds)
 			->where('owner_id', $user->id)
-			->count() === count($photoIDs)
+			->count() === count($photo_i_ds)
 		) {
 			return true;
 		}
@@ -213,18 +213,18 @@ class PhotoPolicy extends BasePolicy
 		// If there are any photos which are not in albums at this point, we fail.
 		if (Photo::query()
 			->whereNull('album_id')
-			->whereIn('id', $photoIDs)
+			->whereIn('id', $photo_i_ds)
 			->count() > 0
 		) {
 			return false;
 		}
 
-		$parentIDs = Photo::query()
+		$parent_i_ds = Photo::query()
 			->select('album_id')
-			->whereIn('id', $photoIDs)
+			->whereIn('id', $photo_i_ds)
 			->groupBy('album_id')
 			->pluck('album_id')->all();
 
-		return $this->albumPolicy->canDeleteById($user, $parentIDs);
+		return $this->albumPolicy->canDeleteById($user, $parent_i_ds);
 	}
 }

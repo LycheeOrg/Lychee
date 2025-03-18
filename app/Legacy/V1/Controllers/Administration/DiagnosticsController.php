@@ -57,18 +57,18 @@ final class DiagnosticsController extends Controller
 	 */
 	public function get(): DiagnosticInfo
 	{
-		$collectErrors = resolve(Errors::class);
-		$collectInfo = resolve(Info::class);
-		$collectConfig = resolve(Configuration::class);
-		$checkUpdate = resolve(CheckUpdate::class);
+		$collect_errors = resolve(Errors::class);
+		$collect_info = resolve(Info::class);
+		$collect_config = resolve(Configuration::class);
+		$check_update = resolve(CheckUpdate::class);
 
 		$authorized = $this->isAuthorized();
 
-		$errors = $this->formatErrors($collectErrors->get(config('app.skip_diagnostics_checks') ?? []));
-		$infos = $authorized ? $collectInfo->get() : [self::ERROR_MSG];
-		$configs = $authorized ? $collectConfig->get() : [self::ERROR_MSG];
+		$errors = $this->formatErrors($collect_errors->get(config('app.skip_diagnostics_checks') ?? []));
+		$infos = $authorized ? $collect_info->get() : [self::ERROR_MSG];
+		$configs = $authorized ? $collect_config->get() : [self::ERROR_MSG];
 
-		return new DiagnosticInfo($errors, $infos, $configs, $checkUpdate->getCode());
+		return new DiagnosticInfo($errors, $infos, $configs, $check_update->getCode());
 	}
 
 	/**
@@ -136,7 +136,7 @@ final class DiagnosticsController extends Controller
 	 *
 	 * @return View
 	 */
-	public function getFullAccessPermissions(AlbumQueryPolicy $albumQueryPolicy): View
+	public function getFullAccessPermissions(AlbumQueryPolicy $album_query_policy): View
 	{
 		if (!$this->isAuthorized() && config('app.debug') !== true) {
 			// @codeCoverageIgnoreStart
@@ -180,7 +180,7 @@ final class DiagnosticsController extends Controller
 			->get();
 
 		$query2 = DB::table('base_albums');
-		$albumQueryPolicy->joinSubComputedAccessPermissions($query2, 'base_albums.id', 'inner', '', true);
+		$album_query_policy->joinSubComputedAccessPermissions($query2, 'base_albums.id', 'inner', '', true);
 		$data2 = $query2
 			->select([
 				APC::BASE_ALBUM_ID,

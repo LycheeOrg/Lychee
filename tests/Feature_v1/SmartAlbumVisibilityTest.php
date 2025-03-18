@@ -108,14 +108,14 @@ class SmartAlbumVisibilityTest extends AbstractTestCase
 		string $url,
 		array $params,
 		int $status = 204,
-		?string $assertSee = null): void
+		?string $assert_see = null): void
 	{
 		Auth::loginUsingId(1);
 
 		$response = $this->postJson('/api' . $url, $params);
 		$this->assertStatus($response, $status);
-		if ($assertSee !== null) {
-			$response->assertSee($assertSee);
+		if ($assert_see !== null) {
+			$response->assertSee($assert_see);
 		}
 
 		Auth::logout();

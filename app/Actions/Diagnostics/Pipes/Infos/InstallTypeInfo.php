@@ -21,7 +21,7 @@ use LycheeVerify\Verify;
 class InstallTypeInfo implements DiagnosticStringPipe
 {
 	public function __construct(
-		private InstalledVersion $installedVersion,
+		private InstalledVersion $installed_version,
 		private Verify $verify)
 	{
 	}

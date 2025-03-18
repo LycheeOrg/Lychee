@@ -53,7 +53,7 @@ class PhotosAddHandlerGDTest extends BasePhotosAddHandler
 	 */
 	public function testAcceptedRawUpload(): void
 	{
-		$acceptedRawFormats = static::getAcceptedRawFormats();
+		$accepted_raw_formats = static::getAcceptedRawFormats();
 		try {
 			static::setAcceptedRawFormats('.tif');
 
@@ -65,7 +65,7 @@ class PhotosAddHandlerGDTest extends BasePhotosAddHandler
 			static::assertStringEndsWith('.tif', $photo->size_variants->original->url);
 			static::assertNull($photo->size_variants->thumb);
 		} finally {
-			static::setAcceptedRawFormats($acceptedRawFormats);
+			static::setAcceptedRawFormats($accepted_raw_formats);
 		}
 	}
 }

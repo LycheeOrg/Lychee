@@ -50,8 +50,8 @@ class RenamePhotoRequest extends BaseApiRequest implements HasTitle, HasPhoto
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		/** @var string $photoID */
-		$photoID = $values[RequestAttribute::PHOTO_ID_ATTRIBUTE];
-		$this->photo = Photo::query()->findOrFail($photoID);
+		$photo_i_d = $values[RequestAttribute::PHOTO_ID_ATTRIBUTE];
+		$this->photo = Photo::query()->findOrFail($photo_i_d);
 		$this->title = $values[RequestAttribute::TITLE_ATTRIBUTE];
 	}
 }

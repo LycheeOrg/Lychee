@@ -35,9 +35,9 @@ class AdminUserStatus
 
 	private HasAdminUser $hasAdminUser;
 
-	public function __construct(HasAdminUser $hasAdminUser)
+	public function __construct(HasAdminUser $has_admin_user)
 	{
-		$this->hasAdminUser = $hasAdminUser;
+		$this->hasAdminUser = $has_admin_user;
 	}
 
 	/**
@@ -54,15 +54,15 @@ class AdminUserStatus
 	 *
 	 * @throws LycheeException
 	 */
-	public function handle(Request $request, \Closure $next, string $requiredStatus): mixed
+	public function handle(Request $request, \Closure $next, string $required_status): mixed
 	{
-		if ($requiredStatus === self::SET) {
+		if ($required_status === self::SET) {
 			if ($this->hasAdminUser->assert()) {
 				return $next($request);
 			} else {
 				throw new AdminUserRequiredException();
 			}
-		} elseif ($requiredStatus === self::UNSET) {
+		} elseif ($required_status === self::UNSET) {
 			if ($this->hasAdminUser->assert()) {
 				throw new AdminUserAlreadySetException();
 			} else {

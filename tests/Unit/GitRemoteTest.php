@@ -34,14 +34,14 @@ class GitRemoteTest extends AbstractTestCase
 		// due to api call limitations, $data can be empty...
 		$data = json_decode(File::get(base_path('tests/Samples/commits.json')));
 
-		$countBehind = $remote->countBehind($data, 'fail');
-		self::assertEquals(30, $countBehind);
+		$count_behind = $remote->countBehind($data, 'fail');
+		self::assertEquals(30, $count_behind);
 
-		$countBehind = $remote->countBehind([], 'fail');
-		self::assertFalse($countBehind);
+		$count_behind = $remote->countBehind([], 'fail');
+		self::assertFalse($count_behind);
 
-		$countBehind = $remote->countBehind($data, 'f3854cf');
-		self::assertEquals(1, $countBehind);
+		$count_behind = $remote->countBehind($data, 'f3854cf');
+		self::assertEquals(1, $count_behind);
 
 		self::assertEquals('commits', $remote->getType());
 	}
@@ -54,21 +54,21 @@ class GitRemoteTest extends AbstractTestCase
 		// due to api call limitations, $data can be empty...
 		$data = json_decode(File::get(base_path('tests/Samples/tags.json')));
 
-		$countBehind = $remote->countBehind($data, 'fail');
-		self::assertEquals(30, $countBehind);
+		$count_behind = $remote->countBehind($data, 'fail');
+		self::assertEquals(30, $count_behind);
 
-		$countBehind = $remote->countBehind($data, '1144961');
-		self::assertEquals(4, $countBehind);
+		$count_behind = $remote->countBehind($data, '1144961');
+		self::assertEquals(4, $count_behind);
 
 		// This test will fail in the future when v4.6.2 is further than 30 versions away.
-		$countBehind = $remote->countBehind($data, '296db84');
-		self::assertNotEquals(30, $countBehind);
+		$count_behind = $remote->countBehind($data, '296db84');
+		self::assertNotEquals(30, $count_behind);
 
-		$tagName = $remote->getTagName($data, '296db84');
-		self::assertEquals('v4.6.2', $tagName);
+		$tag_name = $remote->getTagName($data, '296db84');
+		self::assertEquals('v4.6.2', $tag_name);
 
-		$tagName = $remote->getTagName([], 'fail');
-		self::assertEquals('', $tagName);
+		$tag_name = $remote->getTagName([], 'fail');
+		self::assertEquals('', $tag_name);
 
 		self::assertEquals('tags', $remote->getType());
 	}

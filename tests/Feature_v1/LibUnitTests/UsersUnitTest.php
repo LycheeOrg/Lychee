@@ -28,9 +28,9 @@ class UsersUnitTest
 
 	private AbstractTestCase $testCase;
 
-	public function __construct(AbstractTestCase $testCase)
+	public function __construct(AbstractTestCase $test_case)
 	{
-		$this->testCase = $testCase;
+		$this->testCase = $test_case;
 	}
 
 	/**
@@ -42,13 +42,13 @@ class UsersUnitTest
 	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function list(
-		int $expectedStatusCode = 200,
-		?string $assertSee = null,
+		int $expected_status_code = 200,
+		?string $assert_see = null,
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/Users::list');
-		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee !== null) {
-			$response->assertSee($assertSee, false);
+		$this->assertStatus($response, $expected_status_code);
+		if ($assert_see !== null) {
+			$response->assertSee($assert_see, false);
 		}
 
 		return $response;
@@ -61,13 +61,13 @@ class UsersUnitTest
 	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function init(
-		int $expectedStatusCode = 200,
-		?string $assertSee = null,
+		int $expected_status_code = 200,
+		?string $assert_see = null,
 	): TestResponse {
 		$response = $this->testCase->postJson('/php/index.php');
-		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee !== null) {
-			$response->assertSee($assertSee, false);
+		$this->assertStatus($response, $expected_status_code);
+		if ($assert_see !== null) {
+			$response->assertSee($assert_see, false);
 		}
 
 		return $response;
@@ -88,20 +88,20 @@ class UsersUnitTest
 	public function add(
 		string $username,
 		string $password,
-		bool $mayUpload = true,
-		bool $mayEditOwnSettings = true,
-		int $expectedStatusCode = 201,
-		?string $assertSee = null,
+		bool $may_upload = true,
+		bool $may_edit_own_settings = true,
+		int $expected_status_code = 201,
+		?string $assert_see = null,
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/Users::create', [
 			'username' => $username,
 			'password' => $password,
-			'may_upload' => $mayUpload,
-			'may_edit_own_settings' => $mayEditOwnSettings,
+			'may_upload' => $may_upload,
+			'may_edit_own_settings' => $may_edit_own_settings,
 		]);
-		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee !== null) {
-			$response->assertSee($assertSee, false);
+		$this->assertStatus($response, $expected_status_code);
+		if ($assert_see !== null) {
+			$response->assertSee($assert_see, false);
 		}
 
 		return $response;
@@ -118,15 +118,15 @@ class UsersUnitTest
 	 */
 	public function delete(
 		int $id,
-		int $expectedStatusCode = 204,
-		?string $assertSee = null,
+		int $expected_status_code = 204,
+		?string $assert_see = null,
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/Users::delete', [
 			'id' => $id,
 		]);
-		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee !== null) {
-			$response->assertSee($assertSee, false);
+		$this->assertStatus($response, $expected_status_code);
+		if ($assert_see !== null) {
+			$response->assertSee($assert_see, false);
 		}
 
 		return $response;
@@ -149,21 +149,21 @@ class UsersUnitTest
 		int $id,
 		string $username,
 		string $password,
-		bool $mayUpload = true,
-		bool $mayEditOwnSettings = true,
-		int $expectedStatusCode = 204,
-		?string $assertSee = null,
+		bool $may_upload = true,
+		bool $may_edit_own_settings = true,
+		int $expected_status_code = 204,
+		?string $assert_see = null,
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/Users::save', [
 			'id' => $id,
 			'username' => $username,
 			'password' => $password,
-			'may_upload' => $mayUpload,
-			'may_edit_own_settings' => $mayEditOwnSettings,
+			'may_upload' => $may_upload,
+			'may_edit_own_settings' => $may_edit_own_settings,
 		]);
-		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee !== null) {
-			$response->assertSee($assertSee, false);
+		$this->assertStatus($response, $expected_status_code);
+		if ($assert_see !== null) {
+			$response->assertSee($assert_see, false);
 		}
 
 		return $response;
@@ -180,15 +180,15 @@ class UsersUnitTest
 	 */
 	public function update_email(
 		?string $email,
-		int $expectedStatusCode = 204,
-		?string $assertSee = null,
+		int $expected_status_code = 204,
+		?string $assert_see = null,
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/User::setEmail', [
 			'email' => $email,
 		]);
-		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee !== null) {
-			$response->assertSee($assertSee, false);
+		$this->assertStatus($response, $expected_status_code);
+		if ($assert_see !== null) {
+			$response->assertSee($assert_see, false);
 		}
 
 		return $response;
@@ -203,13 +203,13 @@ class UsersUnitTest
 	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function get_email(
-		int $expectedStatusCode = 200,
-		?string $assertSee = null,
+		int $expected_status_code = 200,
+		?string $assert_see = null,
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/User::getAuthenticatedUser');
-		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee !== null) {
-			$response->assertSee($assertSee, false);
+		$this->assertStatus($response, $expected_status_code);
+		if ($assert_see !== null) {
+			$response->assertSee($assert_see, false);
 		}
 
 		return $response;
@@ -224,13 +224,13 @@ class UsersUnitTest
 	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function get_user(
-		int $expectedStatusCode = 200,
-		string|array|null $assertSee = null,
+		int $expected_status_code = 200,
+		string|array|null $assert_see = null,
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/User::getAuthenticatedUser');
-		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee !== null) {
-			$response->assertSee($assertSee, false);
+		$this->assertStatus($response, $expected_status_code);
+		if ($assert_see !== null) {
+			$response->assertSee($assert_see, false);
 		}
 
 		return $response;
@@ -245,13 +245,13 @@ class UsersUnitTest
 	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function reset_token(
-		int $expectedStatusCode = 200,
-		?string $assertSee = null,
+		int $expected_status_code = 200,
+		?string $assert_see = null,
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/User::resetToken');
-		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee !== null) {
-			$response->assertSee($assertSee, false);
+		$this->assertStatus($response, $expected_status_code);
+		if ($assert_see !== null) {
+			$response->assertSee($assert_see, false);
 		}
 
 		return $response;
@@ -266,13 +266,13 @@ class UsersUnitTest
 	 * @return TestResponse<\Illuminate\Http\JsonResponse>
 	 */
 	public function unset_token(
-		int $expectedStatusCode = 204,
-		?string $assertSee = null,
+		int $expected_status_code = 204,
+		?string $assert_see = null,
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/User::unsetToken');
-		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee !== null) {
-			$response->assertSee($assertSee, false);
+		$this->assertStatus($response, $expected_status_code);
+		if ($assert_see !== null) {
+			$response->assertSee($assert_see, false);
 		}
 
 		return $response;

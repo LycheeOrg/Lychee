@@ -40,12 +40,12 @@ class Oauth
 	 */
 	public function validateProviderOrDie(string $provider): OauthProvidersType
 	{
-		$providerEnum = OauthProvidersType::tryFrom($provider);
-		if ($providerEnum === null) {
+		$provider_enum = OauthProvidersType::tryFrom($provider);
+		if ($provider_enum === null) {
 			throw new LycheeInvalidArgumentException('unkown Oauth provider type');
 		}
 
-		return $providerEnum;
+		return $provider_enum;
 	}
 
 	/**
@@ -143,11 +143,11 @@ class Oauth
 		$user = Socialite::driver($provider->value)->user();
 
 		/** @var User $authedUser */
-		$authedUser = Auth::user();
+		$authed_user = Auth::user();
 
 		$count_existing = OauthCredential::query()
 			->where('provider', '=', $provider)
-			->where('user_id', '=', $authedUser->id)
+			->where('user_id', '=', $authed_user->id)
 			->count();
 		if ($count_existing > 0) {
 			throw new LycheeLogicException('Oauth credential for that provider already exists.');
@@ -155,7 +155,7 @@ class Oauth
 
 		$this->saveOauth(
 			provider: $provider,
-			authedUser_id: $authedUser->id,
+			authedUser_id: $authed_user->id,
 			oauth_id: $user->getId());
 
 		return true;
@@ -170,11 +170,11 @@ class Oauth
 	 *
 	 * @return void
 	 */
-	private function saveOauth(OauthProvidersType $provider, int $authedUser_id, string $oauth_id): void
+	private function saveOauth(OauthProvidersType $provider, int $authed_user_id, string $oauth_id): void
 	{
 		$credential = OauthCredential::create([
 			'provider' => $provider,
-			'user_id' => $authedUser_id,
+			'user_id' => $authed_user_id,
 			'token_id' => $oauth_id,
 		]);
 		$credential->save();

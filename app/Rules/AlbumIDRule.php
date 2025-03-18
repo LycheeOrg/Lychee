@@ -18,9 +18,9 @@ class AlbumIDRule implements ValidationRule
 
 	protected bool $isNullable;
 
-	public function __construct(bool $isNullable)
+	public function __construct(bool $is_nullable)
 	{
-		$this->isNullable = $isNullable;
+		$this->isNullable = $is_nullable;
 	}
 
 	/**

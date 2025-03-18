@@ -128,11 +128,11 @@ class NotificationTest extends AbstractTestCase
 		Configs::set('new_photos_notification', '1');
 
 		Auth::loginUsingId(1);
-		$albumID = $this->albums_tests->add(null, 'Album 1')->offsetGet('id');
-		$photoID = $this->photos_tests->upload(
+		$album_i_d = $this->albums_tests->add(null, 'Album 1')->offsetGet('id');
+		$photo_i_d = $this->photos_tests->upload(
 			self::createUploadedFile(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE))->offsetGet('id');
 
-		$this->photos_tests->set_album($albumID, [$photoID]);
+		$this->photos_tests->set_album($album_i_d, [$photo_i_d]);
 
 		Configs::set('new_photos_notification', $init_config_value);
 	}

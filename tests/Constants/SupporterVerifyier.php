@@ -41,11 +41,11 @@ class SupporterVerifyier implements VerifyInterface
 		}
 	}
 
-	public function when(mixed $valIfTrue, mixed $valIfFalse, Status $required_status = Status::SUPPORTER_EDITION): mixed
+	public function when(mixed $val_if_true, mixed $val_if_false, Status $required_status = Status::SUPPORTER_EDITION): mixed
 	{
-		$retValue = $this->check($required_status) ? $valIfTrue : $valIfFalse;
+		$ret_value = $this->check($required_status) ? $val_if_true : $val_if_false;
 
-		return is_callable($retValue) ? $retValue() : $retValue;
+		return is_callable($ret_value) ? $ret_value() : $ret_value;
 	}
 
 	public function validate(): bool

@@ -56,9 +56,9 @@ class ArrayToTextTable
 	 *
 	 * @return void
 	 */
-	public function __construct(array $rawData = [])
+	public function __construct(array $raw_data = [])
 	{
-		$this->setData($rawData)
+		$this->setData($raw_data)
 			->setDecorator(new Unicode())
 			->setIgnoredKeys([])
 			->setIndentation('')
@@ -84,22 +84,22 @@ class ArrayToTextTable
 	 * @throws PcreException
 	 * @throws MbstringException
 	 */
-	public function getTable(?array $rawData = null): string
+	public function getTable(?array $raw_data = null): string
 	{
-		if (!is_null($rawData)) {
-			$this->setData($rawData);
+		if (!is_null($raw_data)) {
+			$this->setData($raw_data);
 		}
 
 		$data = $this->prepare();
 		$i = $this->indentation;
 		$d = $this->decorator;
 
-		$displayKeys = $this->displayKeys;
-		if ($displayKeys === 'auto') {
-			$displayKeys = false;
+		$display_keys = $this->displayKeys;
+		if ($display_keys === 'auto') {
+			$display_keys = false;
 			foreach ($this->keys as $key) {
 				if (!is_int($key)) {
-					$displayKeys = true;
+					$display_keys = true;
 					break;
 				}
 			}
@@ -107,12 +107,12 @@ class ArrayToTextTable
 
 		$table = $i . $this->line($d->getTopLeft(), $d->getHorizontal(), $d->getHorizontalDown(), $d->getTopRight()) . PHP_EOL;
 
-		if ($displayKeys === true || $displayKeys === 'auto') {
-			$keysRow = array_combine($this->keys, $this->keys);
+		if ($display_keys === true || $display_keys === 'auto') {
+			$keys_row = array_combine($this->keys, $this->keys);
 			if ($this->upperKeys) {
-				$keysRow = array_map('mb_strtoupper', $keysRow);
+				$keys_row = array_map('mb_strtoupper', $keys_row);
 			}
-			$table .= $i . implode(PHP_EOL, $this->row($keysRow, $this->keysAlignment)) . PHP_EOL;
+			$table .= $i . implode(PHP_EOL, $this->row($keys_row, $this->keysAlignment)) . PHP_EOL;
 
 			$table .= $i . $this->line($d->getVerticalRight(), $d->getHorizontal(), $d->getCross(), $d->getVerticalLeft()) . PHP_EOL;
 		}
@@ -137,16 +137,16 @@ class ArrayToTextTable
 			$data = [];
 		}
 
-		$arrayData = [];
+		$array_data = [];
 		foreach ($data as $row) {
 			if (is_array($row)) {
-				$arrayData[] = $row;
+				$array_data[] = $row;
 			} elseif (is_object($row)) {
-				$arrayData[] = get_object_vars($row);
+				$array_data[] = get_object_vars($row);
 			}
 		}
 
-		$this->data = $arrayData;
+		$this->data = $array_data;
 
 		return $this;
 	}
@@ -165,30 +165,30 @@ class ArrayToTextTable
 		return $this;
 	}
 
-	public function setDisplayKeys(string|bool $displayKeys): self
+	public function setDisplayKeys(string|bool $display_keys): self
 	{
-		$this->displayKeys = $displayKeys;
+		$this->displayKeys = $display_keys;
 
 		return $this;
 	}
 
-	public function setUpperKeys(bool $upperKeys): self
+	public function setUpperKeys(bool $upper_keys): self
 	{
-		$this->upperKeys = $upperKeys;
+		$this->upperKeys = $upper_keys;
 
 		return $this;
 	}
 
-	public function setKeysAlignment(int $keysAlignment): self
+	public function setKeysAlignment(int $keys_alignment): self
 	{
-		$this->keysAlignment = $keysAlignment;
+		$this->keysAlignment = $keys_alignment;
 
 		return $this;
 	}
 
-	public function setValuesAlignment(int $valuesAlignment): self
+	public function setValuesAlignment(int $values_alignment): self
 	{
-		$this->valuesAlignment = $valuesAlignment;
+		$this->valuesAlignment = $values_alignment;
 
 		return $this;
 	}
@@ -205,9 +205,9 @@ class ArrayToTextTable
 	 *
 	 * @return ArrayToTextTable
 	 */
-	public function setIgnoredKeys(array $ignoredKeys): self
+	public function setIgnoredKeys(array $ignored_keys): self
 	{
-		$this->ignoredKeys = $ignoredKeys;
+		$this->ignoredKeys = $ignored_keys;
 
 		return $this;
 	}
@@ -246,16 +246,16 @@ class ArrayToTextTable
 			$height = max($height, count($data[$key]));
 		}
 
-		$rowLines = [];
+		$row_lines = [];
 		for ($i = 0; $i < $height; $i++) {
-			$rowLine = [];
+			$row_line = [];
 			foreach ($data as $key => $value) {
-				$rowLine[$key] = isset($value[$i]) ? $value[$i] : '';
+				$row_line[$key] = isset($value[$i]) ? $value[$i] : '';
 			}
-			$rowLines[] = $this->rowLine($rowLine, $alignment);
+			$row_lines[] = $this->rowLine($row_line, $alignment);
 		}
 
-		return $rowLines;
+		return $row_lines;
 	}
 
 	/**
@@ -313,8 +313,8 @@ class ArrayToTextTable
 		}
 
 		foreach ($data as $row) {
-			foreach ($row as $columnKey => $columnValue) {
-				$this->setWidth($columnKey, $columnValue);
+			foreach ($row as $column_key => $column_value) {
+				$this->setWidth($column_key, $column_value);
 			}
 		}
 

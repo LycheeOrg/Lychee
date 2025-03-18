@@ -33,15 +33,15 @@ class CachingConfigTest extends BaseApiV2Test
 	{
 		$this->msgSection = (new ConsoleOutput())->section();
 
-		$routeCollection = Route::getRoutes();
-		$getRoutes = array_filter($routeCollection->getRoutesByMethod()['GET'], fn ($r) => str_starts_with($r->uri(), ltrim(self::API_PREFIX, '/')));
-		$getRoutesUri = array_map(fn ($r) => $r->uri(), $getRoutes);
+		$route_collection = Route::getRoutes();
+		$get_routes = array_filter($route_collection->getRoutesByMethod()['GET'], fn ($r) => str_starts_with($r->uri(), ltrim(self::API_PREFIX, '/')));
+		$get_routes_uri = array_map(fn ($r) => $r->uri(), $get_routes);
 
-		$routeManage = new RouteCacheManager();
-		$routeCachedConfigured = array_keys($routeManage->cache_list);
-		$missingKeys = array_diff($getRoutesUri, $routeCachedConfigured);
+		$route_manage = new RouteCacheManager();
+		$route_cached_configured = array_keys($route_manage->cache_list);
+		$missing_keys = array_diff($get_routes_uri, $route_cached_configured);
 
-		foreach ($missingKeys as $key) {
+		foreach ($missing_keys as $key) {
 			$this->msgSection->writeln(sprintf('<comment>Error:</comment>  %s is missing in RouteCacheManager.php', $key));
 			$this->failed = true;
 		}

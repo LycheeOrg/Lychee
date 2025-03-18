@@ -19,12 +19,12 @@ class OptimizeTables extends BaseOptimizer
 	public function do(): array
 	{
 		$ret = ['Optimizing tables.'];
-		$driverName = $this->getDriverType($ret);
+		$driver_name = $this->getDriverType($ret);
 		/** @var array{name:string,schema:?string,size:int,comment:?string,collation:?string,engine:?string}[] */
 		$tables = Schema::getTables();
 
 		/** @var string|null $sql */
-		$sql = match ($driverName) {
+		$sql = match ($driver_name) {
 			DbDriverType::MYSQL => 'ANALYZE TABLE ',
 			DbDriverType::PGSQL => 'ANALYZE ',
 			DbDriverType::SQLITE => 'ANALYZE ',

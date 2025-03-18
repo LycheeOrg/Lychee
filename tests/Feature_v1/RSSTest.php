@@ -87,10 +87,10 @@ class RSSTest extends AbstractTestCase
 			Auth::loginUsingId(1);
 
 			// create an album
-			$albumID = $this->albums_tests->add(null, 'test_album')->offsetGet('id');
+			$album_i_d = $this->albums_tests->add(null, 'test_album')->offsetGet('id');
 
 			// upload a picture
-			$photoID = $this->photos_tests->upload(
+			$photo_i_d = $this->photos_tests->upload(
 				AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE)
 			)->offsetGet('id');
 
@@ -99,14 +99,14 @@ class RSSTest extends AbstractTestCase
 			$this->assertOk($response);
 
 			// move picture to album
-			$this->photos_tests->set_album($albumID, [$photoID]);
-			$this->albums_tests->set_protection_policy($albumID);
+			$this->photos_tests->set_album($album_i_d, [$photo_i_d]);
+			$this->albums_tests->set_protection_policy($album_i_d);
 
 			// try to get the RSS feed.
 			$response = $this->get('/feed');
 			$this->assertOk($response);
 
-			$this->albums_tests->delete([$albumID]);
+			$this->albums_tests->delete([$album_i_d]);
 		} finally {
 			Configs::set('rss_enable', $init_config_value);
 			Configs::set('grants_full_photo_access', $init_full_photo);

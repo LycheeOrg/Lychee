@@ -101,7 +101,7 @@ class Takedate extends Command
 			$limit = intval($this->argument('limit'));
 			$offset = intval($this->argument('offset'));
 			$timeout = intval($this->argument('time'));
-			$setCreationTime = $this->option('set-upload-time') === true;
+			$set_creation_time = $this->option('set-upload-time') === true;
 			$force = $this->option('force') === true;
 			try {
 				set_time_limit($timeout);
@@ -111,17 +111,17 @@ class Takedate extends Command
 
 			// For faster iteration we eagerly load the original size variant,
 			// but only the original size variant
-			$photoQuery = Photo::query()->with(['size_variants' => function ($r): void {
+			$photo_query = Photo::query()->with(['size_variants' => function ($r): void {
 				$r->where('type', '=', SizeVariantType::ORIGINAL);
 			}]);
 
 			if (!$force) {
-				$photoQuery->whereNull('taken_at');
+				$photo_query->whereNull('taken_at');
 			}
 
 			// ATTENTION: We must call `count` first, otherwise `offset` and
 			// `limit` won't have an effect.
-			$count = $photoQuery->count();
+			$count = $photo_query->count();
 			if ($count === 0) {
 				$this->line('No pictures require takedate updates.');
 
@@ -129,14 +129,14 @@ class Takedate extends Command
 			}
 
 			// We must stipulate a particular order, otherwise `offset` and `limit` have random effects
-			$photoQuery->orderBy('id');
+			$photo_query->orderBy('id');
 
 			if ($offset !== 0) {
-				$photoQuery->offset($offset);
+				$photo_query->offset($offset);
 			}
 
 			if ($limit !== 0) {
-				$photoQuery->limit($limit);
+				$photo_query->limit($limit);
 			}
 
 			$this->progressBar->setMaxSteps($limit === 0 ? $count : min($count, $limit));
@@ -144,13 +144,13 @@ class Takedate extends Command
 			// Unfortunately, `->getLazy` ignores `offset` and `limit`, so we must
 			// use a regular collection which might run out of memory for large
 			// values of `limit`.
-			$photos = $photoQuery->get();
+			$photos = $photo_query->get();
 			/** @var Photo $photo */
 			foreach ($photos as $photo) {
 				$this->progressBar->advance();
-				$localFile = $photo->size_variants->getOriginal()->getFile()->toLocalFile();
+				$local_file = $photo->size_variants->getOriginal()->getFile()->toLocalFile();
 
-				$info = Extractor::createFromFile($localFile, filemtime($localFile->getRealPath()));
+				$info = Extractor::createFromFile($local_file, filemtime($local_file->getRealPath()));
 				if ($info->taken_at !== null) {
 					// Note: `equalTo` only checks if two times indicate the same
 					// instant of time on the universe's timeline, i.e. equality
@@ -168,8 +168,8 @@ class Takedate extends Command
 					$this->printWarning($photo, 'Failed to extract takestamp data from media file.');
 				}
 
-				if ($setCreationTime) {
-					$created_at = $localFile->lastModified();
+				if ($set_creation_time) {
+					$created_at = $local_file->lastModified();
 					if ($created_at === $photo->created_at->timestamp) {
 						$this->printInfo($photo, 'Upload time up-to-date.');
 					} else {

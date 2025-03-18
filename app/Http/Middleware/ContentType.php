@@ -38,18 +38,18 @@ class ContentType
 	 * @throws UnexpectedContentType
 	 * @throws LycheeInvalidArgumentException
 	 */
-	public function handle(Request $request, \Closure $next, string $contentType): mixed
+	public function handle(Request $request, \Closure $next, string $content_type): mixed
 	{
 		// Skip if check is disabled
 		if (config('features.require-content-type') === false) {
 			return $next($request);
 		}
 
-		if ($contentType === self::JSON) {
+		if ($content_type === self::JSON) {
 			if (!$request->isJson()) {
 				throw new UnexpectedContentType(self::JSON);
 			}
-		} elseif ($contentType === self::MULTIPART) {
+		} elseif ($content_type === self::MULTIPART) {
 			if ($request->getContentTypeFormat() !== 'form') {
 				throw new UnexpectedContentType(self::MULTIPART);
 			}

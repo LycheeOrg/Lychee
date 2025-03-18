@@ -44,7 +44,7 @@ class GitHubVersion implements VersionControl, HasIsRelease
 	/**
 	 * {@inheritDoc}
 	 */
-	public function hydrate(bool $withRemote = true, bool $useCache = true): void
+	public function hydrate(bool $with_remote = true, bool $use_cache = true): void
 	{
 		// Firs we check if we are tag or commit mode.
 		// If we could not even access .git/HEAD. So we probably are in file release mode.
@@ -58,8 +58,8 @@ class GitHubVersion implements VersionControl, HasIsRelease
 		$this->hydrateLocalBranch();
 		$this->hydrateLocalHead(); // Only if GitCommits
 
-		if ($withRemote) {
-			$this->hydrateRemote($useCache);
+		if ($with_remote) {
+			$this->hydrateRemote($use_cache);
 		}
 	}
 
@@ -170,17 +170,17 @@ class GitHubVersion implements VersionControl, HasIsRelease
 
 		// We get the branch name
 		$branch_path = base_path('.git/HEAD');
-		$branchOrCommit = File::get($branch_path);
+		$branch_or_commit = File::get($branch_path);
 
 		if ($this->remote instanceof GitCommits) {
 			// This is "normal" behaviour
-			$branch = explode('/', $branchOrCommit, 3);
+			$branch = explode('/', $branch_or_commit, 3);
 			$this->localBranch = trim($branch[2]);
 		} else {
 			// @codeCoverageIgnoreStart
 			// This is tagged/CICD behaviour
 			// we leave localBranch as null so that we know that we are not on master
-			$this->localHead = $this->trim($branchOrCommit);
+			$this->localHead = $this->trim($branch_or_commit);
 			// @codeCoverageIgnoreEnd
 		}
 	}
@@ -216,8 +216,8 @@ class GitHubVersion implements VersionControl, HasIsRelease
 			return;
 			// @codeCoverageIgnoreEnd
 		}
-		$commitID = File::get($commit_path);
-		$this->localHead = $this->trim($commitID);
+		$commit_i_d = File::get($commit_path);
+		$this->localHead = $this->trim($commit_i_d);
 	}
 
 	/**
@@ -229,7 +229,7 @@ class GitHubVersion implements VersionControl, HasIsRelease
 	 *
 	 * @codeCoverageIgnore the code path here depends whether you are on a PR or on master...
 	 */
-	private function hydrateRemote(bool $useCache): void
+	private function hydrateRemote(bool $use_cache): void
 	{
 		// We do not fetch when local branch is not master.
 		// We do not fetch when the localHead is not set.
@@ -237,7 +237,7 @@ class GitHubVersion implements VersionControl, HasIsRelease
 			return;
 		}
 
-		$data = $this->remote->fetchRemote($useCache);
+		$data = $this->remote->fetchRemote($use_cache);
 		$this->countBehind = $this->remote->countBehind($data, $this->localHead);
 
 		if ($this->remote instanceof GitTags) {

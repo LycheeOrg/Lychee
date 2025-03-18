@@ -30,7 +30,7 @@ final class AddDuplicateStrategy extends AbstractAddStrategy
 	 */
 	public function do(): Photo
 	{
-		$hasBeenReSynced = false;
+		$has_been_re_synced = false;
 
 		// At least update the existing photo with additional metadata if
 		// available
@@ -39,12 +39,12 @@ final class AddDuplicateStrategy extends AbstractAddStrategy
 			if ($this->photo->isDirty()) {
 				Log::notice(__METHOD__ . ':' . __LINE__ . ' Updating metadata of existing photo.');
 				$this->photo->save();
-				$hasBeenReSynced = true;
+				$has_been_re_synced = true;
 			}
 		}
 
 		if ($this->parameters->importMode->shallSkipDuplicates) {
-			if ($hasBeenReSynced) {
+			if ($has_been_re_synced) {
 				throw new PhotoResyncedException();
 			} else {
 				throw new PhotoSkippedException();

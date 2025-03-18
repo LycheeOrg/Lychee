@@ -53,11 +53,11 @@ class InstallTest extends AbstractTestCase
 		 * Get previous config
 		 */
 
-		$prevAppKey = config('app.key');
+		$prev_app_key = config('app.key');
 		config(['app.key' => null]);
 		$response = $this->get('install/');
 		$this->assertOk($response);
-		config(['app.key' => $prevAppKey]);
+		config(['app.key' => $prev_app_key]);
 
 		$response = $this->get('/');
 		$this->assertOk($response);
@@ -174,8 +174,8 @@ class InstallTest extends AbstractTestCase
 				// which results in errors because trying to insert a user with ID = 1.
 				// Thus, we need to reset the index to the greatest ID + 1
 				/** @var User $lastUser */
-				$lastUser = User::query()->orderByDesc('id')->first();
-				DB::statement('ALTER SEQUENCE users_id_seq1 RESTART WITH ' . strval($lastUser->id + 1));
+				$last_user = User::query()->orderByDesc('id')->first();
+				DB::statement('ALTER SEQUENCE users_id_seq1 RESTART WITH ' . strval($last_user->id + 1));
 			}
 		} elseif (!$admin->may_administrate) {
 			$admin->may_administrate = true;

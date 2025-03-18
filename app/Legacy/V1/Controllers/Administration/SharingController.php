@@ -34,9 +34,9 @@ final class SharingController extends Controller
 	 *
 	 * @throws QueryBuilderException
 	 */
-	public function list(ListSharingRequest $request, ListShare $listShare): SharesResource
+	public function list(ListSharingRequest $request, ListShare $list_share): SharesResource
 	{
-		return $listShare->do($request->participant(), $request->owner(), $request->album());
+		return $list_share->do($request->participant(), $request->owner(), $request->album());
 	}
 
 	/**
@@ -88,17 +88,17 @@ final class SharingController extends Controller
 	 *
 	 * @return void
 	 */
-	private function updateLinks(array $userIds, array $albumIDs): void
+	private function updateLinks(array $user_ids, array $album_i_ds): void
 	{
 		/** @var Collection<int,User> $users */
 		$users = User::query()
-			->whereIn('id', $userIds)
+			->whereIn('id', $user_ids)
 			->get();
 
 		/** @var User $user */
 		foreach ($users as $user) {
 			$user->shared()->syncWithPivotValues(
-				$albumIDs,
+				$album_i_ds,
 				[
 					APC::IS_LINK_REQUIRED => false, // In sharing no required link is needed
 					APC::GRANTS_DOWNLOAD => Configs::getValueAsBool('grants_download'),

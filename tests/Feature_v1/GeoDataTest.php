@@ -74,12 +74,12 @@ class GeoDataTest extends AbstractTestCase
 		$map_display_value = Configs::getValue(TestConstants::CONFIG_MAP_DISPLAY);
 
 		try {
-			$photoResponse = $this->photos_tests->upload(
+			$photo_response = $this->photos_tests->upload(
 				AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE)
 			);
-			$photoID = $photoResponse->offsetGet('id');
+			$photo_i_d = $photo_response->offsetGet('id');
 
-			$this->albums_tests->get(UnsortedAlbum::ID, 200, $photoID);
+			$this->albums_tests->get(UnsortedAlbum::ID, 200, $photo_i_d);
 			/*
 			 * Check some Exif data
 			 * The metadata extractor is unable to extract an explicit timezone
@@ -94,9 +94,9 @@ class GeoDataTest extends AbstractTestCase
 			$taken_at = Carbon::create(
 				2011, 8, 17, 16, 39, 37
 			);
-			$photoResponse->assertJson(
+			$photo_response->assertJson(
 				[
-					'id' => $photoID,
+					'id' => $photo_i_d,
 					'title' => 'mongolia',
 					'type' => TestConstants::MIME_TYPE_IMG_JPEG,
 					'iso' => '200',
@@ -131,16 +131,16 @@ class GeoDataTest extends AbstractTestCase
 				]
 			);
 
-			$albumResponse = $this->albums_tests->add(null, 'test_mongolia');
-			$albumID = $albumResponse->offsetGet('id');
-			$this->photos_tests->set_album($albumID, [$photoID]);
+			$album_response = $this->albums_tests->add(null, 'test_mongolia');
+			$album_i_d = $album_response->offsetGet('id');
+			$this->photos_tests->set_album($album_i_d, [$photo_i_d]);
 			$this->clearCachedSmartAlbums();
-			$this->albums_tests->get(UnsortedAlbum::ID, 200, null, $photoID);
-			$albumResponse = $this->albums_tests->get($albumID);
+			$this->albums_tests->get(UnsortedAlbum::ID, 200, null, $photo_i_d);
+			$album_response = $this->albums_tests->get($album_i_d);
 			/** @var \App\Models\Album $album */
-			$album = static::convertJsonToObject($albumResponse);
+			$album = static::convertJsonToObject($album_response);
 			static::assertCount(1, $album->photos);
-			static::assertEquals($photoID, $album->photos[0]->id);
+			static::assertEquals($photo_i_d, $album->photos[0]->id);
 
 			// now we test position Data
 
@@ -152,29 +152,29 @@ class GeoDataTest extends AbstractTestCase
 			// set to true
 			Configs::set(TestConstants::CONFIG_MAP_DISPLAY, true);
 			static::assertEquals(true, Configs::getValueAsBool(TestConstants::CONFIG_MAP_DISPLAY));
-			$positionDataResponse = $this->root_album_tests->getPositionData();
+			$position_data_response = $this->root_album_tests->getPositionData();
 			/** @var \App\Http\Resources\Collections\PositionDataResource $positionData */
-			$positionData = static::convertJsonToObject($positionDataResponse);
-			static::assertIsObject($positionData);
-			static::assertTrue(property_exists($positionData, 'photos'));
-			static::assertCount(1, $positionData->photos);
-			static::assertEquals($photoID, $positionData->photos[0]->id);
+			$position_data = static::convertJsonToObject($position_data_response);
+			static::assertIsObject($position_data);
+			static::assertTrue(property_exists($position_data, 'photos'));
+			static::assertCount(1, $position_data->photos);
+			static::assertEquals($photo_i_d, $position_data->photos[0]->id);
 
 			// set to false
 			Configs::set(TestConstants::CONFIG_MAP_DISPLAY, false);
 			static::assertEquals(false, Configs::getValueAsBool(TestConstants::CONFIG_MAP_DISPLAY));
-			$this->albums_tests->getPositionData($albumID, false);
+			$this->albums_tests->getPositionData($album_i_d, false);
 
 			// set to true
 			Configs::set(TestConstants::CONFIG_MAP_DISPLAY, true);
 			static::assertEquals(true, Configs::getValueAsBool(TestConstants::CONFIG_MAP_DISPLAY));
-			$positionDataResponse = $this->albums_tests->getPositionData($albumID, false);
+			$position_data_response = $this->albums_tests->getPositionData($album_i_d, false);
 			/** @var \App\Http\Resources\Collections\PositionDataResource $positionData */
-			$positionData = static::convertJsonToObject($positionDataResponse);
-			static::assertIsObject($positionData);
-			static::assertTrue(property_exists($positionData, 'photos'));
-			static::assertCount(1, $positionData->photos);
-			static::assertEquals($photoID, $positionData->photos[0]->id);
+			$position_data = static::convertJsonToObject($position_data_response);
+			static::assertIsObject($position_data);
+			static::assertTrue(property_exists($position_data, 'photos'));
+			static::assertCount(1, $position_data->photos);
+			static::assertEquals($photo_i_d, $position_data->photos[0]->id);
 		} finally {
 			Configs::set(TestConstants::CONFIG_MAP_DISPLAY, $map_display_value);
 		}
@@ -195,11 +195,11 @@ class GeoDataTest extends AbstractTestCase
 	 */
 	public function testThumbnailsInsideHiddenAlbum(): void
 	{
-		$isRecentPublic = RecentAlbum::getInstance()->public_permissions() !== null;
-		$isPublicSearchEnabled = Configs::getValueAsBool(TestConstants::CONFIG_PUBLIC_SEARCH);
-		$displayMap = Configs::getValueAsBool(TestConstants::CONFIG_MAP_DISPLAY);
-		$displayMapPublicly = Configs::getValueAsBool(TestConstants::CONFIG_MAP_DISPLAY_PUBLIC);
-		$includeSubAlbums = Configs::getValueAsBool(TestConstants::CONFIG_MAP_INCLUDE_SUBALBUMS);
+		$is_recent_public = RecentAlbum::getInstance()->public_permissions() !== null;
+		$is_public_search_enabled = Configs::getValueAsBool(TestConstants::CONFIG_PUBLIC_SEARCH);
+		$display_map = Configs::getValueAsBool(TestConstants::CONFIG_MAP_DISPLAY);
+		$display_map_publicly = Configs::getValueAsBool(TestConstants::CONFIG_MAP_DISPLAY_PUBLIC);
+		$include_sub_albums = Configs::getValueAsBool(TestConstants::CONFIG_MAP_INCLUDE_SUBALBUMS);
 
 		try {
 			Auth::loginUsingId(1);
@@ -209,34 +209,34 @@ class GeoDataTest extends AbstractTestCase
 			Configs::set(TestConstants::CONFIG_MAP_DISPLAY_PUBLIC, true);
 			Configs::set(TestConstants::CONFIG_MAP_INCLUDE_SUBALBUMS, true);
 
-			$albumID1 = $this->albums_tests->add(null, 'Test Album 1')->offsetGet('id');
-			$albumID11 = $this->albums_tests->add($albumID1, 'Test Album 1.1')->offsetGet('id');
-			$albumID12 = $this->albums_tests->add($albumID1, 'Test Album 1.2')->offsetGet('id');
-			$albumID121 = $this->albums_tests->add($albumID12, 'Test Album 1.2.1')->offsetGet('id');
-			$albumID13 = $this->albums_tests->add($albumID1, 'Test Album 1.3')->offsetGet('id');
+			$album_i_d1 = $this->albums_tests->add(null, 'Test Album 1')->offsetGet('id');
+			$album_i_d11 = $this->albums_tests->add($album_i_d1, 'Test Album 1.1')->offsetGet('id');
+			$album_i_d12 = $this->albums_tests->add($album_i_d1, 'Test Album 1.2')->offsetGet('id');
+			$album_i_d121 = $this->albums_tests->add($album_i_d12, 'Test Album 1.2.1')->offsetGet('id');
+			$album_i_d13 = $this->albums_tests->add($album_i_d1, 'Test Album 1.3')->offsetGet('id');
 
-			$photoID1 = $this->photos_tests->upload(
-				AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_AARHUS), $albumID1
+			$photo_i_d1 = $this->photos_tests->upload(
+				AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_AARHUS), $album_i_d1
 			)->offsetGet('id');
-			$photoID11 = $this->photos_tests->upload(
-				AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_ETTLINGEN), $albumID11
+			$photo_i_d11 = $this->photos_tests->upload(
+				AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_ETTLINGEN), $album_i_d11
 			)->offsetGet('id');
-			$photoID12 = $this->photos_tests->upload(
-				AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_TRAIN_IMAGE), $albumID12
+			$photo_i_d12 = $this->photos_tests->upload(
+				AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_TRAIN_IMAGE), $album_i_d12
 			)->offsetGet('id');
-			$photoID121 = $this->photos_tests->upload(
-				AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_HOCHUFERWEG), $albumID121
+			$photo_i_d121 = $this->photos_tests->upload(
+				AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_HOCHUFERWEG), $album_i_d121
 			)->offsetGet('id');
-			$photoID13 = $this->photos_tests->upload(
-				AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE), $albumID13
+			$photo_i_d13 = $this->photos_tests->upload(
+				AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE), $album_i_d13
 			)->offsetGet('id');
 
-			$this->albums_tests->set_protection_policy(id: $albumID1, grants_full_photo_access: true, is_public: true, is_link_required: true);
+			$this->albums_tests->set_protection_policy(id: $album_i_d1, grants_full_photo_access: true, is_public: true, is_link_required: true);
 			// Sic! We do not make album 1.1 public to ensure that the
 			// search filter does not include too much
-			$this->albums_tests->set_protection_policy($albumID12);
-			$this->albums_tests->set_protection_policy($albumID121);
-			$this->albums_tests->set_protection_policy($albumID13);
+			$this->albums_tests->set_protection_policy($album_i_d12);
+			$this->albums_tests->set_protection_policy($album_i_d121);
+			$this->albums_tests->set_protection_policy($album_i_d13);
 
 			Auth::logout();
 			Session::flush();
@@ -248,8 +248,8 @@ class GeoDataTest extends AbstractTestCase
 			// accidentally see the expected data, because we see the
 			// corresponding photos anyway.
 
-			$responseForRoot = $this->root_album_tests->get();
-			$responseForRoot->assertJson([
+			$response_for_root = $this->root_album_tests->get();
+			$response_for_root->assertJson([
 				'smart_albums' => [
 					'recent' => ['thumb' => null],
 				],
@@ -257,74 +257,74 @@ class GeoDataTest extends AbstractTestCase
 				'albums' => [],
 				'shared_albums' => [],
 			]);
-			$responseForRoot->assertJsonMissing([
+			$response_for_root->assertJsonMissing([
 				'unsorted' => null,
 				'starred' => null,
 				'on_this_day' => null,
 			]);
-			foreach ([$albumID1, $photoID1, $photoID11, $photoID12, $photoID121, $photoID13] as $id) {
-				$responseForRoot->assertJsonMissing(['id' => $id]);
+			foreach ([$album_i_d1, $photo_i_d1, $photo_i_d11, $photo_i_d12, $photo_i_d121, $photo_i_d13] as $id) {
+				$response_for_root->assertJsonMissing(['id' => $id]);
 			}
 
-			$responseForRecent = $this->albums_tests->get(RecentAlbum::ID);
-			$responseForRecent->assertJson([
+			$response_for_recent = $this->albums_tests->get(RecentAlbum::ID);
+			$response_for_recent->assertJson([
 				'thumb' => null,
 				'photos' => [],
 			]);
-			foreach ([$photoID11, $photoID12, $photoID121, $photoID13] as $id) {
-				$responseForRecent->assertJsonMissing(['id' => $id]);
+			foreach ([$photo_i_d11, $photo_i_d12, $photo_i_d121, $photo_i_d13] as $id) {
+				$response_for_recent->assertJsonMissing(['id' => $id]);
 			}
 
 			// Fetch positional data for the hidden, but public albums and
 			// check whether we see the correct thumbnails
-			$response = $this->albums_tests->getPositionData($albumID1, false);
+			$response = $this->albums_tests->getPositionData($album_i_d1, false);
 			$response->assertJson([
-				'id' => $albumID1,
+				'id' => $album_i_d1,
 				'title' => 'Test Album 1',
-				'photos' => [['id' => $photoID1, 'title' => 'aarhus']],
+				'photos' => [['id' => $photo_i_d1, 'title' => 'aarhus']],
 			]);
-			foreach ([$photoID11, $photoID12, $photoID121, $photoID13] as $id) {
+			foreach ([$photo_i_d11, $photo_i_d12, $photo_i_d121, $photo_i_d13] as $id) {
 				$response->assertJsonMissing(['id' => $id]);
 			}
 
-			$response = $this->albums_tests->getPositionData($albumID1, true);
+			$response = $this->albums_tests->getPositionData($album_i_d1, true);
 			$response->assertJson([
-				'id' => $albumID1,
+				'id' => $album_i_d1,
 				'title' => 'Test Album 1',
 			]);
-			$response->assertJsonFragment(['id' => $photoID1, 'title' => 'aarhus']);
-			$response->assertJsonFragment(['id' => $photoID12, 'title' => 'train']);
-			$response->assertJsonFragment(['id' => $photoID121,	'title' => 'hochuferweg']);
-			$response->assertJsonFragment(['id' => $photoID13, 'title' => 'mongolia']);
-			$response->assertJsonMissing(['id' => $photoID11]); // photo 1.1 has not been made public
+			$response->assertJsonFragment(['id' => $photo_i_d1, 'title' => 'aarhus']);
+			$response->assertJsonFragment(['id' => $photo_i_d12, 'title' => 'train']);
+			$response->assertJsonFragment(['id' => $photo_i_d121,	'title' => 'hochuferweg']);
+			$response->assertJsonFragment(['id' => $photo_i_d13, 'title' => 'mongolia']);
+			$response->assertJsonMissing(['id' => $photo_i_d11]); // photo 1.1 has not been made public
 
-			$response = $this->albums_tests->getPositionData($albumID12, false);
+			$response = $this->albums_tests->getPositionData($album_i_d12, false);
 			$response->assertJson([
-				'id' => $albumID12,
+				'id' => $album_i_d12,
 				'title' => 'Test Album 1.2',
-				'photos' => [['id' => $photoID12, 'title' => 'train']],
+				'photos' => [['id' => $photo_i_d12, 'title' => 'train']],
 			]);
-			foreach ([$photoID1, $photoID11, $photoID121, $photoID13] as $id) {
+			foreach ([$photo_i_d1, $photo_i_d11, $photo_i_d121, $photo_i_d13] as $id) {
 				$response->assertJsonMissing(['id' => $id]);
 			}
 
-			$response = $this->albums_tests->getPositionData($albumID12, true);
-			$response->assertJson(['id' => $albumID12, 'title' => 'Test Album 1.2']);
-			$response->assertJsonFragment(['id' => $photoID12, 'title' => 'train']);
-			$response->assertJsonFragment(['id' => $photoID121,	'title' => 'hochuferweg']);
-			foreach ([$photoID1, $photoID11, $photoID13] as $id) {
+			$response = $this->albums_tests->getPositionData($album_i_d12, true);
+			$response->assertJson(['id' => $album_i_d12, 'title' => 'Test Album 1.2']);
+			$response->assertJsonFragment(['id' => $photo_i_d12, 'title' => 'train']);
+			$response->assertJsonFragment(['id' => $photo_i_d121,	'title' => 'hochuferweg']);
+			foreach ([$photo_i_d1, $photo_i_d11, $photo_i_d13] as $id) {
 				$response->assertJsonMissing(['id' => $id]);
 			}
 		} finally {
-			Configs::set(TestConstants::CONFIG_PUBLIC_SEARCH, $isPublicSearchEnabled);
-			if ($isRecentPublic) {
+			Configs::set(TestConstants::CONFIG_PUBLIC_SEARCH, $is_public_search_enabled);
+			if ($is_recent_public) {
 				RecentAlbum::getInstance()->setPublic();
 			} else {
 				RecentAlbum::getInstance()->setPrivate();
 			}
-			Configs::set(TestConstants::CONFIG_MAP_DISPLAY, $displayMap);
-			Configs::set(TestConstants::CONFIG_MAP_DISPLAY_PUBLIC, $displayMapPublicly);
-			Configs::set(TestConstants::CONFIG_MAP_INCLUDE_SUBALBUMS, $includeSubAlbums);
+			Configs::set(TestConstants::CONFIG_MAP_DISPLAY, $display_map);
+			Configs::set(TestConstants::CONFIG_MAP_DISPLAY_PUBLIC, $display_map_publicly);
+			Configs::set(TestConstants::CONFIG_MAP_INCLUDE_SUBALBUMS, $include_sub_albums);
 			Auth::logout();
 			Session::flush();
 		}

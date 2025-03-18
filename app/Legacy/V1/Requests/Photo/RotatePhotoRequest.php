@@ -37,10 +37,10 @@ final class RotatePhotoRequest extends BaseApiRequest implements HasPhoto
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		/** @var ?string $photoID */
-		$photoID = $values[RequestAttribute::PHOTO_ID_ATTRIBUTE];
+		$photo_i_d = $values[RequestAttribute::PHOTO_ID_ATTRIBUTE];
 		$this->photo = Photo::query()
 			->with(['size_variants'])
-			->findOrFail($photoID);
+			->findOrFail($photo_i_d);
 		$this->direction = intval($values[RequestAttribute::DIRECTION_ATTRIBUTE]);
 	}
 

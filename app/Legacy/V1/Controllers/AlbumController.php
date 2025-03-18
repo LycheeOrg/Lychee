@@ -72,9 +72,9 @@ final class AlbumController extends Controller
 	public function add(AddAlbumRequest $request): AlbumResource
 	{
 		/** @var int $ownerId */
-		$ownerId = Auth::id() ?? throw new UnauthenticatedException();
+		$owner_id = Auth::id() ?? throw new UnauthenticatedException();
 
-		$create = new Create($ownerId);
+		$create = new Create($owner_id);
 		$album = $create->create($request->title(), $request->parentAlbum());
 
 		return AlbumResource::make($album)->setStatus(201);
@@ -92,9 +92,9 @@ final class AlbumController extends Controller
 	 */
 	public function addTagAlbum(AddTagAlbumRequest $request, CreateTagAlbum $create): TagAlbumResource
 	{
-		$tagAlbum = $create->create($request->title(), $request->tags());
+		$tag_album = $create->create($request->title(), $request->tags());
 
-		return TagAlbumResource::make($tagAlbum)->setStatus(201);
+		return TagAlbumResource::make($tag_album)->setStatus(201);
 	}
 
 	/**
@@ -124,9 +124,9 @@ final class AlbumController extends Controller
 	 *
 	 * @return PositionDataResource
 	 */
-	public function getPositionData(GetAlbumPositionDataRequest $request, PositionData $positionData): PositionDataResource
+	public function getPositionData(GetAlbumPositionDataRequest $request, PositionData $position_data): PositionDataResource
 	{
-		return $positionData->get($request->album(), $request->includeSubAlbums());
+		return $position_data->get($request->album(), $request->includeSubAlbums());
 	}
 
 	/**
@@ -172,9 +172,9 @@ final class AlbumController extends Controller
 	 *
 	 * @throws LycheeException
 	 */
-	public function setProtectionPolicy(SetAlbumProtectionPolicyRequest $request, SetProtectionPolicy $setProtectionPolicy): void
+	public function setProtectionPolicy(SetAlbumProtectionPolicyRequest $request, SetProtectionPolicy $set_protection_policy): void
 	{
-		$setProtectionPolicy->do(
+		$set_protection_policy->do(
 			$request->album(),
 			$request->albumProtectionPolicy(),
 			$request->isPasswordProvided(),
@@ -316,8 +316,8 @@ final class AlbumController extends Controller
 	 */
 	public function delete(DeleteAlbumsRequest $request, Delete $delete): void
 	{
-		$fileDeleter = $delete->do($request->albumIDs());
-		App::terminating(fn () => $fileDeleter->do());
+		$file_deleter = $delete->do($request->albumIDs());
+		App::terminating(fn () => $file_deleter->do());
 	}
 
 	/**

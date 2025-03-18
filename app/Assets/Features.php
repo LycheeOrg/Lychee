@@ -22,11 +22,11 @@ final class Features
 	 *
 	 * @return bool is active
 	 */
-	public static function active(string $featureName): bool
+	public static function active(string $feature_name): bool
 	{
-		self::exists($featureName);
+		self::exists($feature_name);
 
-		return config('features.' . $featureName) === true;
+		return config('features.' . $feature_name) === true;
 	}
 
 	/**
@@ -36,11 +36,11 @@ final class Features
 	 *
 	 * @return bool is inactive
 	 */
-	public static function inactive(string $featureName): bool
+	public static function inactive(string $feature_name): bool
 	{
-		self::exists($featureName);
+		self::exists($feature_name);
 
-		return config('features.' . $featureName) === false;
+		return config('features.' . $feature_name) === false;
 	}
 
 	/**
@@ -50,11 +50,11 @@ final class Features
 	 *
 	 * @return bool is inactive
 	 */
-	public static function allAreActive(array $featureNames): bool
+	public static function allAreActive(array $feature_names): bool
 	{
 		return array_reduce(
-			$featureNames,
-			fn ($bool, $featureName) => $bool && self::active($featureName),
+			$feature_names,
+			fn ($bool, $feature_name) => $bool && self::active($feature_name),
 			true);
 	}
 
@@ -65,11 +65,11 @@ final class Features
 	 *
 	 * @return bool is inactive
 	 */
-	public static function someAreActive(array $featureNames): bool
+	public static function someAreActive(array $feature_names): bool
 	{
 		return array_reduce(
-			$featureNames,
-			fn (bool $bool, string $featureName) => $bool || self::active($featureName),
+			$feature_names,
+			fn (bool $bool, string $feature_name) => $bool || self::active($feature_name),
 			false);
 	}
 
@@ -80,11 +80,11 @@ final class Features
 	 *
 	 * @return bool is inactive
 	 */
-	public static function allAreInactive(array $featureNames): bool
+	public static function allAreInactive(array $feature_names): bool
 	{
 		return array_reduce(
-			$featureNames,
-			fn (bool $bool, string $featureName) => $bool && self::inactive($featureName),
+			$feature_names,
+			fn (bool $bool, string $feature_name) => $bool && self::inactive($feature_name),
 			true);
 	}
 
@@ -95,11 +95,11 @@ final class Features
 	 *
 	 * @return bool is inactive
 	 */
-	public static function someAreInactive(array $featureNames): bool
+	public static function someAreInactive(array $feature_names): bool
 	{
 		return array_reduce(
-			$featureNames,
-			fn (bool $bool, string $featureName) => $bool || self::inactive($featureName),
+			$feature_names,
+			fn (bool $bool, string $feature_name) => $bool || self::inactive($feature_name),
 			false);
 	}
 
@@ -114,14 +114,14 @@ final class Features
 	 *
 	 * @return T
 	 */
-	public static function when(string|array $featureNames, mixed $valIfTrue, mixed $valIfFalse): mixed
+	public static function when(string|array $feature_names, mixed $val_if_true, mixed $val_if_false): mixed
 	{
-		$retValue = match (is_array($featureNames)) {
-			true => self::allAreActive($featureNames) ? $valIfTrue : $valIfFalse,
-			false => self::active($featureNames) ? $valIfTrue : $valIfFalse,
+		$ret_value = match (is_array($feature_names)) {
+			true => self::allAreActive($feature_names) ? $val_if_true : $val_if_false,
+			false => self::active($feature_names) ? $val_if_true : $val_if_false,
 		};
 
-		return is_callable($retValue) ? $retValue() : $retValue;
+		return is_callable($ret_value) ? $ret_value() : $ret_value;
 	}
 
 	/**
@@ -134,10 +134,10 @@ final class Features
 	 *
 	 * @throws FeaturesDoesNotExistsException
 	 */
-	private static function exists(string $featureName): void
+	private static function exists(string $feature_name): void
 	{
-		if (!is_bool(config('features.' . $featureName))) {
-			throw new FeaturesDoesNotExistsException(sprintf('No feature with name %s found.', $featureName));
+		if (!is_bool(config('features.' . $feature_name))) {
+			throw new FeaturesDoesNotExistsException(sprintf('No feature with name %s found.', $feature_name));
 		}
 	}
 }

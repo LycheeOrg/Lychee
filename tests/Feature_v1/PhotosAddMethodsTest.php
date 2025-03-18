@@ -264,7 +264,7 @@ class PhotosAddMethodsTest extends BasePhotoTest
 	 */
 	public function testRawImportFromUrl(): void
 	{
-		$acceptedRawFormats = Configs::getValueAsString(TestConstants::CONFIG_RAW_FORMATS);
+		$accepted_raw_formats = Configs::getValueAsString(TestConstants::CONFIG_RAW_FORMATS);
 		try {
 			Configs::set(TestConstants::CONFIG_RAW_FORMATS, '.tif');
 			$reflection = new \ReflectionClass(BaseMediaFile::class);
@@ -285,13 +285,13 @@ class PhotosAddMethodsTest extends BasePhotoTest
 				],
 			]]);
 		} finally {
-			Configs::set(TestConstants::CONFIG_RAW_FORMATS, $acceptedRawFormats);
+			Configs::set(TestConstants::CONFIG_RAW_FORMATS, $accepted_raw_formats);
 		}
 	}
 
 	public function testJobUploadWithFaking(): void
 	{
-		$useJobQueues = Configs::getValueAsString(TestConstants::CONFIG_USE_JOB_QUEUES);
+		$use_job_queues = Configs::getValueAsString(TestConstants::CONFIG_USE_JOB_QUEUES);
 		try {
 			Configs::set(TestConstants::CONFIG_USE_JOB_QUEUES, '1');
 
@@ -307,14 +307,14 @@ class PhotosAddMethodsTest extends BasePhotoTest
 			self::assertEquals(1, JobHistory::where('status', '=', '0')->count());
 			self::assertEquals(1, Queue::size());
 		} finally {
-			Configs::set(TestConstants::CONFIG_USE_JOB_QUEUES, $useJobQueues);
+			Configs::set(TestConstants::CONFIG_USE_JOB_QUEUES, $use_job_queues);
 		}
 	}
 
 	public function testJobUploadWithoutFaking(): void
 	{
-		$useJobQueues = Configs::getValueAsString(TestConstants::CONFIG_USE_JOB_QUEUES);
-		$defaultQueue = Config::get('queue.default', 'sync');
+		$use_job_queues = Configs::getValueAsString(TestConstants::CONFIG_USE_JOB_QUEUES);
+		$default_queue = Config::get('queue.default', 'sync');
 		try {
 			Configs::set(TestConstants::CONFIG_USE_JOB_QUEUES, '1');
 			Config::set('queue.default', 'sync');
@@ -329,8 +329,8 @@ class PhotosAddMethodsTest extends BasePhotoTest
 
 			self::assertEquals(1, Photo::query()->count());
 		} finally {
-			Configs::set(TestConstants::CONFIG_USE_JOB_QUEUES, $useJobQueues);
-			Config::set('queue.default', $defaultQueue);
+			Configs::set(TestConstants::CONFIG_USE_JOB_QUEUES, $use_job_queues);
+			Config::set('queue.default', $default_queue);
 		}
 	}
 }

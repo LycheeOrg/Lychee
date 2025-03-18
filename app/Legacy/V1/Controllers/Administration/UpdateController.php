@@ -53,9 +53,9 @@ final class UpdateController extends Controller
 {
 	protected ApplyUpdate $applyUpdate;
 
-	public function __construct(ApplyUpdate $applyUpdate)
+	public function __construct(ApplyUpdate $apply_update)
 	{
-		$this->applyUpdate = $applyUpdate;
+		$this->applyUpdate = $apply_update;
 	}
 
 	/**
@@ -70,10 +70,10 @@ final class UpdateController extends Controller
 	 */
 	public function check(UpdateRequest $request): array
 	{
-		$gitHubFunctions = resolve(GitHubVersion::class);
-		$gitHubFunctions->hydrate(true, false);
+		$git_hub_functions = resolve(GitHubVersion::class);
+		$git_hub_functions->hydrate(true, false);
 
-		return ['updateStatus' => $gitHubFunctions->getBehindTest()];
+		return ['updateStatus' => $git_hub_functions->getBehindTest()];
 	}
 
 	/**

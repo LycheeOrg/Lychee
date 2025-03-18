@@ -46,16 +46,16 @@ class InitDTO
 
 	public function __construct(
 		ImportParam $parameters,
-		NativeLocalFile $sourceFile,
+		NativeLocalFile $source_file,
 		AbstractAlbum|null $album,
-		int|null $fileLastModifiedTime = null,
+		int|null $file_last_modified_time = null,
 	) {
-		$this->sourceFile = $sourceFile;
+		$this->sourceFile = $source_file;
 		$this->importMode = $parameters->importMode;
 		$this->intendedOwnerId = $parameters->intendedOwnerId;
 		$this->is_starred = $parameters->is_starred;
 		$this->exifInfo = $parameters->exifInfo;
 		$this->album = $album;
-		$this->fileLastModifiedTime = $fileLastModifiedTime;
+		$this->fileLastModifiedTime = $file_last_modified_time;
 	}
 }

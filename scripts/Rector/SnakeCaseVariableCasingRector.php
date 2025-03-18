@@ -1,14 +1,15 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Scripts\Rector;
 
+use Illuminate\Support\Str;
 use PhpParser\Node;
 use PhpParser\Node\Expr\Variable;
 use Rector\Rector\AbstractRector;
 use Symplify\RuleDocGenerator\ValueObject\CodeSample\CodeSample;
 use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
-use Illuminate\Support\Str;
 
 final class SnakeCaseVariableCasingRector extends AbstractRector
 {

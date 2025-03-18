@@ -29,9 +29,9 @@ trait InteractsWithRaw
 		return Configs::getValueAsString(TestConstants::CONFIG_RAW_FORMATS);
 	}
 
-	public static function setAcceptedRawFormats(string $acceptedRawFormats): void
+	public static function setAcceptedRawFormats(string $accepted_raw_formats): void
 	{
-		Configs::set(TestConstants::CONFIG_RAW_FORMATS, $acceptedRawFormats);
+		Configs::set(TestConstants::CONFIG_RAW_FORMATS, $accepted_raw_formats);
 		$reflection = new \ReflectionClass(BaseMediaFile::class);
 		$reflection->setStaticPropertyValue('cachedAcceptedRawFileExtensions', []);
 	}

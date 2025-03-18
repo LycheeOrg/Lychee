@@ -43,9 +43,9 @@ final class GetPhotoRequest extends BaseApiRequest implements HasPhoto
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		/** @var ?string $photoID */
-		$photoID = $values[RequestAttribute::PHOTO_ID_ATTRIBUTE];
+		$photo_i_d = $values[RequestAttribute::PHOTO_ID_ATTRIBUTE];
 		$this->photo = Photo::query()
 			->with(['size_variants', 'size_variants.sym_links'])
-			->findOrFail($photoID);
+			->findOrFail($photo_i_d);
 	}
 }

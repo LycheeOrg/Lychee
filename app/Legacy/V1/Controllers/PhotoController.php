@@ -52,8 +52,8 @@ final class PhotoController extends Controller
 	 * @param AlbumFactory     $albumFactory
 	 */
 	public function __construct(
-		private SymLinkFunctions $symLinkFunctions,
-		private AlbumFactory $albumFactory,
+		private SymLinkFunctions $sym_link_functions,
+		private AlbumFactory $album_factory,
 	) {
 	}
 
@@ -84,19 +84,19 @@ final class PhotoController extends Controller
 	 *
 	 * @noinspection PhpIncompatibleReturnTypeInspection
 	 */
-	public function getRandom(PhotoQueryPolicy $photoQueryPolicy): PhotoResource
+	public function getRandom(PhotoQueryPolicy $photo_query_policy): PhotoResource
 	{
-		$randomAlbumId = Configs::getValueAsString('random_album_id');
+		$random_album_id = Configs::getValueAsString('random_album_id');
 
-		if ($randomAlbumId === '') {
+		if ($random_album_id === '') {
 			// @codeCoverageIgnoreStart
-			$query = $photoQueryPolicy->applySearchabilityFilter(
+			$query = $photo_query_policy->applySearchabilityFilter(
 				query: Photo::query()->with(['album', 'size_variants', 'size_variants.sym_links']),
 				origin: null,
 				include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_frame'));
 		// @codeCoverageIgnoreEnd
 		} else {
-			$query = $this->albumFactory->findAbstractAlbumOrFail($randomAlbumId)
+			$query = $this->albumFactory->findAbstractAlbumOrFail($random_album_id)
 									 ->photos()
 									 ->with(['album', 'size_variants', 'size_variants.sym_links']);
 		}
@@ -135,29 +135,29 @@ final class PhotoController extends Controller
 		// image than the Lychee installation.
 		// Hence, we must make a deep copy.
 		// TODO: Remove this code again, if all other TODOs regarding MIME and file handling are properly refactored and we have stopped using absolute file paths as the least common denominator to pass around files.
-		$uploadedFile = new UploadedFile($request->uploadedFile());
-		$processableFile = new ProcessableJobFile(
-			$uploadedFile->getOriginalExtension(),
-			$uploadedFile->getOriginalBasename()
+		$uploaded_file = new UploadedFile($request->uploadedFile());
+		$processable_file = new ProcessableJobFile(
+			$uploaded_file->getOriginalExtension(),
+			$uploaded_file->getOriginalBasename()
 		);
-		$processableFile->write($uploadedFile->read());
+		$processable_file->write($uploaded_file->read());
 
-		$uploadedFile->close();
-		$uploadedFile->delete();
-		$processableFile->close();
+		$uploaded_file->close();
+		$uploaded_file->delete();
+		$processable_file->close();
 		// End of work-around
 
 		if (Configs::getValueAsBool('use_job_queues')) {
-			ProcessImageJob::dispatch($processableFile, $request->album(), $request->fileLastModifiedTime());
+			ProcessImageJob::dispatch($processable_file, $request->album(), $request->fileLastModifiedTime());
 
 			return new JsonResponse(null, 201);
 		}
 
-		$job = new ProcessImageJob($processableFile, $request->album(), $request->fileLastModifiedTime());
+		$job = new ProcessImageJob($processable_file, $request->album(), $request->fileLastModifiedTime());
 		$photo = $job->handle($this->albumFactory);
-		$isNew = $photo->created_at->toIso8601String() === $photo->updated_at->toIso8601String();
+		$is_new = $photo->created_at->toIso8601String() === $photo->updated_at->toIso8601String();
 
-		return PhotoResource::make($photo)->setStatus($isNew ? 201 : 200);
+		return PhotoResource::make($photo)->setStatus($is_new ? 201 : 200);
 	}
 
 	/**
@@ -288,8 +288,8 @@ final class PhotoController extends Controller
 	 */
 	public function delete(DeletePhotosRequest $request, Delete $delete): void
 	{
-		$fileDeleter = $delete->do($request->photoIDs());
-		App::terminating(fn () => $fileDeleter->do());
+		$file_deleter = $delete->do($request->photoIDs());
+		App::terminating(fn () => $file_deleter->do());
 	}
 
 	/**

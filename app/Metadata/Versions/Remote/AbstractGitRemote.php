@@ -45,12 +45,12 @@ abstract class AbstractGitRemote implements GitRemote
 	/**
 	 * {@inheritDoc}
 	 */
-	public function fetchRemote(bool $useCache): array
+	public function fetchRemote(bool $use_cache): array
 	{
 		$request = $this->getRequest();
 
 		// We fetch the commits
-		$data = $request->get_json($useCache);
+		$data = $request->get_json($use_cache);
 		if (!is_array($data) || count($data) === 0) {
 			// if $gitData is null we already logged the problem
 			// @codeCoverageIgnoreStart

@@ -67,7 +67,7 @@ class GoogleMotionPictureHandler extends VideoHandler
 	 * @throws InvalidConfigOption
 	 * @throws MediaFileOperationException
 	 */
-	public function load(NativeLocalFile $file, int $videoLength = 0): void
+	public function load(NativeLocalFile $file, int $video_length = 0): void
 	{
 		if (!Configs::hasFFmpeg()) {
 			throw new ConfigurationException('FFmpeg is disabled by configuration');
@@ -75,20 +75,20 @@ class GoogleMotionPictureHandler extends VideoHandler
 
 		try {
 			$this->workingCopy = new TemporaryLocalFile(self::PRELIMINARY_VIDEO_FILE_EXTENSION, $file->getBasename());
-			$readStream = $file->read();
-			if ($videoLength !== 0) {
-				fseek($readStream, -$videoLength, SEEK_END);
+			$read_stream = $file->read();
+			if ($video_length !== 0) {
+				fseek($read_stream, -$video_length, SEEK_END);
 			}
-			$this->workingCopy->write($readStream);
+			$this->workingCopy->write($read_stream);
 			$file->close();
 
 			$ffmpeg = FFMpeg::create([
 				'ffmpeg.binaries' => Configs::getValueAsString('ffmpeg_path'),
 				'ffprobe.binaries' => Configs::getValueAsString('ffprobe_path'),
 			]);
-			$audioOrVideo = $ffmpeg->open($this->workingCopy->getRealPath());
-			if ($audioOrVideo instanceof Video) {
-				$this->video = $audioOrVideo;
+			$audio_or_video = $ffmpeg->open($this->workingCopy->getRealPath());
+			if ($audio_or_video instanceof Video) {
+				$this->video = $audio_or_video;
 			} else {
 				throw new MediaFileOperationException('No video stream found');
 			}

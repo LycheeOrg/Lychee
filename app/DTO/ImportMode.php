@@ -19,16 +19,16 @@ final readonly class ImportMode
 	public bool $shallResyncMetadata;
 
 	public function __construct(
-		bool $deleteImported = false,
-		bool $skipDuplicates = false,
-		bool $importViaSymlink = false,
-		bool $resyncMetadata = false,
+		bool $delete_imported = false,
+		bool $skip_duplicates = false,
+		bool $import_via_symlink = false,
+		bool $resync_metadata = false,
 	) {
-		$this->shallDeleteImported = $deleteImported;
-		$this->shallSkipDuplicates = $skipDuplicates;
+		$this->shallDeleteImported = $delete_imported;
+		$this->shallSkipDuplicates = $skip_duplicates;
 		// avoid incompatible settings (delete originals takes precedence over symbolic links)
-		$this->shallImportViaSymlink = $deleteImported ? false : $importViaSymlink;
+		$this->shallImportViaSymlink = $delete_imported ? false : $import_via_symlink;
 		// (re-syncing metadata makes no sense when importing duplicates)
-		$this->shallResyncMetadata = !$skipDuplicates ? false : $resyncMetadata;
+		$this->shallResyncMetadata = !$skip_duplicates ? false : $resync_metadata;
 	}
 }

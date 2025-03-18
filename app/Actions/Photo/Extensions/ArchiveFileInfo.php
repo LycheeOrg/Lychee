@@ -54,8 +54,8 @@ final readonly class ArchiveFileInfo
 	 * @param BaseMediaFile $file              the source file
 	 */
 	public function __construct(
-		private string $baseFilename,
-		private string $baseFilenameAddon,
+		private string $base_filename,
+		private string $base_filename_addon,
 		public BaseMediaFile $file)
 	{
 	}
@@ -68,8 +68,8 @@ final readonly class ArchiveFileInfo
 	 *
 	 * @return string the filename
 	 */
-	public function getFilename(string $extraAddon = ''): string
+	public function getFilename(string $extra_addon = ''): string
 	{
-		return $this->baseFilename . $this->baseFilenameAddon . $extraAddon . $this->file->getExtension();
+		return $this->baseFilename . $this->baseFilenameAddon . $extra_addon . $this->file->getExtension();
 	}
 }

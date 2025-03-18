@@ -24,19 +24,19 @@ class Move extends Action
 	 * @throws ModelNotFoundException
 	 * @throws ModelDBException
 	 */
-	public function do(?Album $targetAlbum, Collection $albums): void
+	public function do(?Album $target_album, Collection $albums): void
 	{
 		// Move source albums into target
-		if ($targetAlbum !== null) {
+		if ($target_album !== null) {
 			/** @var Album $album */
 			foreach ($albums as $album) {
 				// Don't set attribute `parent_id` manually, but use specialized
 				// methods of the nested set `NodeTrait` to keep the enumeration
 				// of the tree consistent
 				// `appendNode` also internally calls `save` on the model
-				$targetAlbum->appendNode($album);
+				$target_album->appendNode($album);
 			}
-			$targetAlbum->fixOwnershipOfChildren();
+			$target_album->fixOwnershipOfChildren();
 		} else {
 			/** @var Album $album */
 			foreach ($albums as $album) {

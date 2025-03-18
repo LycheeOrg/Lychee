@@ -47,10 +47,10 @@ final class AddAlbumRequest extends BaseApiRequest implements HasTitle, HasParen
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		/** @var string|null */
-		$parentAlbumID = $values[RequestAttribute::PARENT_ID_ATTRIBUTE];
-		$this->parentAlbum = $parentAlbumID === null ?
+		$parent_album_i_d = $values[RequestAttribute::PARENT_ID_ATTRIBUTE];
+		$this->parentAlbum = $parent_album_i_d === null ?
 			null :
-			Album::query()->findOrFail($parentAlbumID);
+			Album::query()->findOrFail($parent_album_i_d);
 		$this->title = $values[RequestAttribute::TITLE_ATTRIBUTE];
 	}
 }

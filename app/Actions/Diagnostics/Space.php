@@ -14,9 +14,9 @@ class Space
 {
 	private DiskUsage $diskUsage;
 
-	public function __construct(DiskUsage $diskUsage)
+	public function __construct(DiskUsage $disk_usage)
 	{
-		$this->diskUsage = $diskUsage;
+		$this->diskUsage = $disk_usage;
 	}
 
 	/**

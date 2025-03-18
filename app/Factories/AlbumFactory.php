@@ -47,14 +47,14 @@ class AlbumFactory
 	 * @throws InvalidSmartIdException should not be thrown; otherwise this
 	 *                                 indicates an internal bug
 	 */
-	public function findAbstractAlbumOrFail(string $albumID, bool $withRelations = true): AbstractAlbum
+	public function findAbstractAlbumOrFail(string $album_i_d, bool $with_relations = true): AbstractAlbum
 	{
-		$smartAlbumType = SmartAlbumType::tryFrom($albumID);
-		if ($smartAlbumType !== null) {
-			return $this->createSmartAlbum($smartAlbumType, $withRelations);
+		$smart_album_type = SmartAlbumType::tryFrom($album_i_d);
+		if ($smart_album_type !== null) {
+			return $this->createSmartAlbum($smart_album_type, $with_relations);
 		}
 
-		return $this->findBaseAlbumOrFail($albumID, $withRelations);
+		return $this->findBaseAlbumOrFail($album_i_d, $with_relations);
 	}
 
 	/**
@@ -71,13 +71,13 @@ class AlbumFactory
 	 * @throws InvalidSmartIdException should not be thrown; otherwise this
 	 *                                 indicates an internal bug
 	 */
-	public function findNullalbleAbstractAlbumOrFail(?string $albumID, bool $withRelations = true): ?AbstractAlbum
+	public function findNullalbleAbstractAlbumOrFail(?string $album_i_d, bool $with_relations = true): ?AbstractAlbum
 	{
-		if ($albumID === null) {
+		if ($album_i_d === null) {
 			return null;
 		}
 
-		return $this->findAbstractAlbumOrFail($albumID, $withRelations);
+		return $this->findAbstractAlbumOrFail($album_i_d, $with_relations);
 	}
 
 	/**
@@ -95,23 +95,23 @@ class AlbumFactory
 	 *
 	 * @noinspection PhpIncompatibleReturnTypeInspection
 	 */
-	public function findBaseAlbumOrFail(string $albumID, bool $withRelations = true): BaseAlbum
+	public function findBaseAlbumOrFail(string $album_i_d, bool $with_relations = true): BaseAlbum
 	{
-		$albumQuery = Album::query();
-		$tagAlbumQuery = TagAlbum::query();
+		$album_query = Album::query();
+		$tag_album_query = TagAlbum::query();
 
-		if ($withRelations) {
-			$albumQuery->with(['access_permissions', 'photos', 'children', 'photos.size_variants']);
-			$tagAlbumQuery->with(['photos']);
+		if ($with_relations) {
+			$album_query->with(['access_permissions', 'photos', 'children', 'photos.size_variants']);
+			$tag_album_query->with(['photos']);
 		}
 
 		try {
-			return $albumQuery->findOrFail($albumID);
+			return $album_query->findOrFail($album_i_d);
 		} catch (ModelNotFoundException) {
 			try {
-				return $tagAlbumQuery->findOrFail($albumID);
+				return $tag_album_query->findOrFail($album_i_d);
 			} catch (ModelNotFoundException) {
-				throw (new ModelNotFoundException())->setModel(BaseAlbumImpl::class, [$albumID]);
+				throw (new ModelNotFoundException())->setModel(BaseAlbumImpl::class, [$album_i_d]);
 			}
 		}
 	}
@@ -130,22 +130,22 @@ class AlbumFactory
 	 *
 	 * @throws ModelNotFoundException
 	 */
-	public function findAbstractAlbumsOrFail(array $albumIDs, bool $withRelations = true): Collection
+	public function findAbstractAlbumsOrFail(array $album_i_ds, bool $with_relations = true): Collection
 	{
 		// Remove root (ID===`null`) and duplicates
-		$albumIDs = array_diff(array_unique($albumIDs), [null]);
-		$smartAlbumIDs = array_intersect($albumIDs, SmartAlbumType::values());
-		$modelAlbumIDs = array_diff($albumIDs, SmartAlbumType::values());
+		$album_i_ds = array_diff(array_unique($album_i_ds), [null]);
+		$smart_album_i_ds = array_intersect($album_i_ds, SmartAlbumType::values());
+		$model_album_i_ds = array_diff($album_i_ds, SmartAlbumType::values());
 
-		$smartAlbums = [];
-		foreach ($smartAlbumIDs as $smartID) {
-			$smartAlbumType = SmartAlbumType::from($smartID);
-			$smartAlbums[] = $this->createSmartAlbum($smartAlbumType, $withRelations);
+		$smart_albums = [];
+		foreach ($smart_album_i_ds as $smart_i_d) {
+			$smart_album_type = SmartAlbumType::from($smart_i_d);
+			$smart_albums[] = $this->createSmartAlbum($smart_album_type, $with_relations);
 		}
 
 		return new Collection(array_merge(
-			$smartAlbums,
-			$this->findBaseAlbumsOrFail($modelAlbumIDs, $withRelations)->all()
+			$smart_albums,
+			$this->findBaseAlbumsOrFail($model_album_i_ds, $with_relations)->all()
 		));
 	}
 
@@ -162,29 +162,29 @@ class AlbumFactory
 	 *
 	 * @throws ModelNotFoundException
 	 */
-	public function findBaseAlbumsOrFail(array $albumIDs, bool $withRelations = true): Collection
+	public function findBaseAlbumsOrFail(array $album_i_ds, bool $with_relations = true): Collection
 	{
 		// Remove root.
 		// Since we count the result we need to ensure that there are no
 		// duplicates.
-		$albumIDs = array_diff(array_unique($albumIDs), [null]);
+		$album_i_ds = array_diff(array_unique($album_i_ds), [null]);
 
-		$tagAlbumQuery = TagAlbum::query();
-		$albumQuery = Album::query();
+		$tag_album_query = TagAlbum::query();
+		$album_query = Album::query();
 
-		if ($withRelations) {
-			$tagAlbumQuery->with(['photos']);
-			$albumQuery->with(['photos', 'children', 'photos.size_variants']);
+		if ($with_relations) {
+			$tag_album_query->with(['photos']);
+			$album_query->with(['photos', 'children', 'photos.size_variants']);
 		}
 
 		/** @var Collection<int,Album|TagAlbum> $result */
 		$result = new Collection(array_merge(
-			$tagAlbumQuery->findMany($albumIDs)->all(),
-			$albumQuery->findMany($albumIDs)->all(),
+			$tag_album_query->findMany($album_i_ds)->all(),
+			$album_query->findMany($album_i_ds)->all(),
 		));
 
-		if ($result->count() !== count($albumIDs)) {
-			throw (new ModelNotFoundException())->setModel(BaseAlbumImpl::class, $albumIDs);
+		if ($result->count() !== count($album_i_ds)) {
+			throw (new ModelNotFoundException())->setModel(BaseAlbumImpl::class, $album_i_ds);
 		}
 
 		return $result;
@@ -202,14 +202,14 @@ class AlbumFactory
 	 *
 	 * @throws InvalidSmartIdException
 	 */
-	public function getAllBuiltInSmartAlbums(bool $withRelations = true): Collection
+	public function getAllBuiltInSmartAlbums(bool $with_relations = true): Collection
 	{
-		$smartAlbums = new Collection();
+		$smart_albums = new Collection();
 		collect(SmartAlbumType::cases())
 			->filter(fn (SmartAlbumType $s) => $s->is_enabled())
-			->each(fn (SmartAlbumType $s) => $smartAlbums->put($s->value, $this->createSmartAlbum($s, $withRelations)));
+			->each(fn (SmartAlbumType $s) => $smart_albums->put($s->value, $this->createSmartAlbum($s, $with_relations)));
 
-		return $smartAlbums;
+		return $smart_albums;
 	}
 
 	/**
@@ -224,17 +224,17 @@ class AlbumFactory
 	 *
 	 * @throws InvalidSmartIdException
 	 */
-	public function createSmartAlbum(SmartAlbumType $smartAlbumId, bool $withRelations = true): BaseSmartAlbum
+	public function createSmartAlbum(SmartAlbumType $smart_album_id, bool $with_relations = true): BaseSmartAlbum
 	{
 		/** @var BaseSmartAlbum $smartAlbum */
-		$smartAlbum = call_user_func(self::BUILTIN_SMARTS_CLASS[$smartAlbumId->value] . '::getInstance');
-		if ($withRelations) {
+		$smart_album = call_user_func(self::BUILTIN_SMARTS_CLASS[$smart_album_id->value] . '::getInstance');
+		if ($with_relations) {
 			// Just try to get the photos.
 			// This loads the relation from DB and caches it.
 			// @phpstan-ignore-next-line : PhpStan will complain about unused variable.
-			$ignore = $smartAlbum->photos;
+			$ignore = $smart_album->photos;
 		}
 
-		return $smartAlbum;
+		return $smart_album;
 	}
 }

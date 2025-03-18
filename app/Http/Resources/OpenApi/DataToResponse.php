@@ -49,8 +49,8 @@ class DataToResponse extends TypeToSchemaExtension
 
 		$ret = new OpenApiObjectType();
 		collect($props)->each(function ($prop) use ($ret): void {
-			$toConvertType = $this->convertReflected($prop->getType());
-			$ret->addProperty($prop->name, $this->openApiTransformer->transform($toConvertType));
+			$to_convert_type = $this->convertReflected($prop->getType());
+			$ret->addProperty($prop->name, $this->openApiTransformer->transform($to_convert_type));
 		});
 
 		return $ret;
@@ -109,9 +109,9 @@ class DataToResponse extends TypeToSchemaExtension
 	private function handleUnionType(\ReflectionUnionType $union): Type
 	{
 		$types = collect($union->getTypes())->map(fn ($type) => $this->convertReflected($type))->all();
-		$unionType = new Union($types);
+		$union_type = new Union($types);
 
-		return $unionType;
+		return $union_type;
 	}
 
 	private function handleBuiltin(string $type): Type

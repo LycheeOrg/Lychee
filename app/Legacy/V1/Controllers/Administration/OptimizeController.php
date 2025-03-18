@@ -20,10 +20,10 @@ final class OptimizeController extends Controller
 	protected OptimizeDb $optimizeDb;
 	protected OptimizeTables $optimizeTables;
 
-	public function __construct(OptimizeDb $optimizeDb, OptimizeTables $optimizeTables)
+	public function __construct(OptimizeDb $optimize_db, OptimizeTables $optimize_tables)
 	{
-		$this->optimizeDb = $optimizeDb;
-		$this->optimizeTables = $optimizeTables;
+		$this->optimizeDb = $optimize_db;
+		$this->optimizeTables = $optimize_tables;
 	}
 
 	/**

@@ -23,9 +23,9 @@ class Generate
 {
 	protected PhotoQueryPolicy $photoQueryPolicy;
 
-	public function __construct(PhotoQueryPolicy $photoQueryPolicy)
+	public function __construct(PhotoQueryPolicy $photo_query_policy)
 	{
-		$this->photoQueryPolicy = $photoQueryPolicy;
+		$this->photoQueryPolicy = $photo_query_policy;
 	}
 
 	private function create_link_to_page(Photo $photo_model): string
@@ -40,25 +40,25 @@ class Generate
 	private function toFeedItem(Photo $photo_model): FeedItem
 	{
 		$page_link = $this->create_link_to_page($photo_model);
-		$sizeVariant = $photo_model->size_variants->getOriginal();
-		$catArr = [];
+		$size_variant = $photo_model->size_variants->getOriginal();
+		$cat_arr = [];
 		if ($photo_model->album_id !== null) {
-			$catArr[] = $photo_model->album->title;
+			$cat_arr[] = $photo_model->album->title;
 		}
-		$feedItem = [
+		$feed_item = [
 			'id' => $page_link,
 			'title' => $photo_model->title,
 			'summary' => $photo_model->description ?? '',
 			'updated' => $photo_model->updated_at,
 			'link' => $page_link,
-			'enclosure' => $sizeVariant->url,
+			'enclosure' => $size_variant->url,
 			'enclosureType' => $photo_model->type,
-			'enclosureLength' => $sizeVariant->filesize,
+			'enclosureLength' => $size_variant->filesize,
 			'authorName' => $photo_model->owner->username,
-			'category' => $catArr,
+			'category' => $cat_arr,
 		];
 
-		return FeedItem::create($feedItem);
+		return FeedItem::create($feed_item);
 	}
 
 	/**
@@ -71,7 +71,7 @@ class Generate
 		$rss_recent = Configs::getValueAsInt('rss_recent_days');
 		$rss_max = Configs::getValueAsInt('rss_max_items');
 		try {
-			$nowMinus = Carbon::now()->subDays($rss_recent)->toDateTimeString();
+			$now_minus = Carbon::now()->subDays($rss_recent)->toDateTimeString();
 		} catch (UnitException|InvalidFormatException $e) {
 			throw new FrameworkException('Date/Time component (Carbon)', $e);
 		}
@@ -83,7 +83,7 @@ class Generate
 				origin: null,
 				include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_rss')
 			)
-			->where('photos.created_at', '>=', $nowMinus)
+			->where('photos.created_at', '>=', $now_minus)
 			->limit($rss_max)
 			->get();
 

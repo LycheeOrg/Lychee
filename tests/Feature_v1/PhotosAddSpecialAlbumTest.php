@@ -79,8 +79,8 @@ class PhotosAddSpecialAlbumTest extends BasePhotoTest
 
 		$this->clearCachedSmartAlbums();
 		/** @var \App\SmartAlbums\BaseSmartAlbum $recentAlbumBefore */
-		$recentAlbumBefore = static::convertJsonToObject($this->albums_tests->get(RecentAlbum::ID));
-		static::assertCount($ids_before->count(), $recentAlbumBefore->photos);
+		$recent_album_before = static::convertJsonToObject($this->albums_tests->get(RecentAlbum::ID));
+		static::assertCount($ids_before->count(), $recent_album_before->photos);
 
 		$photo_id = $this->photos_tests->upload(
 			AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE)
@@ -89,8 +89,8 @@ class PhotosAddSpecialAlbumTest extends BasePhotoTest
 
 		$this->clearCachedSmartAlbums();
 		/** @var \App\SmartAlbums\BaseSmartAlbum $recentAlbumAfter */
-		$recentAlbumAfter = static::convertJsonToObject($this->albums_tests->get(RecentAlbum::ID));
-		static::assertCount($ids_after->count(), $recentAlbumAfter->photos);
+		$recent_album_after = static::convertJsonToObject($this->albums_tests->get(RecentAlbum::ID));
+		static::assertCount($ids_after->count(), $recent_album_after->photos);
 
 		$new_ids = $ids_after->diff($ids_before);
 		static::assertCount(1, $new_ids);
@@ -100,7 +100,7 @@ class PhotosAddSpecialAlbumTest extends BasePhotoTest
 
 		$this->clearCachedSmartAlbums();
 		/** @var \App\SmartAlbums\BaseSmartAlbum $recentAlbum */
-		$recentAlbum = static::convertJsonToObject($this->albums_tests->get(RecentAlbum::ID));
-		static::assertEquals($recentAlbumBefore->photos, $recentAlbum->photos);
+		$recent_album = static::convertJsonToObject($this->albums_tests->get(RecentAlbum::ID));
+		static::assertEquals($recent_album_before->photos, $recent_album->photos);
 	}
 }

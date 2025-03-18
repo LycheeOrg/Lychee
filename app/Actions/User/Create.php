@@ -25,8 +25,8 @@ class Create
 		string $username,
 		string $password,
 		?string $email = null,
-		bool $mayUpload = false,
-		bool $mayEditOwnSettings = false,
+		bool $may_upload = false,
+		bool $may_edit_own_settings = false,
 		?int $quota_kb = null,
 		?string $note = null,
 	): User {
@@ -38,8 +38,8 @@ class Create
 			$quota_kb = $default === 0 ? null : $default;
 		}
 		$user = new User();
-		$user->may_upload = $mayUpload;
-		$user->may_edit_own_settings = $mayEditOwnSettings;
+		$user->may_upload = $may_upload;
+		$user->may_edit_own_settings = $may_edit_own_settings;
 		$user->may_administrate = false;
 		$user->username = $username;
 		$user->email = $email;

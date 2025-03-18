@@ -46,16 +46,16 @@ class FixTree extends Command
 		$this->line('   Wrong parents:   ' . $stat['wrong_parent']);
 		$this->line('   Missing parents: ' . $stat['missing_parent']);
 
-		$totalErrors = $stat['oddness'] + $stat['duplicates'] + $stat['wrong_parent'] + $stat['missing_parent'];
-		if ($totalErrors === 0) {
+		$total_errors = $stat['oddness'] + $stat['duplicates'] + $stat['wrong_parent'] + $stat['missing_parent'];
+		if ($total_errors === 0) {
 			$this->line('Everything OK, nothing to fix.');
 
 			return 0;
 		}
 
-		$this->line('Found ' . $totalErrors . ' errors.');
-		$fixedNodes = $query->fixTree();
-		$this->line('Fixed ' . $fixedNodes . ' nodes.');
+		$this->line('Found ' . $total_errors . ' errors.');
+		$fixed_nodes = $query->fixTree();
+		$this->line('Fixed ' . $fixed_nodes . ' nodes.');
 
 		return 0;
 	}

@@ -36,16 +36,16 @@ abstract class BaseOptimizer
 	 */
 	protected function getDriverType(array &$ret): DbDriverType|null
 	{
-		$driverName = DbDriverType::tryFrom($this->connection->getDriverName());
+		$driver_name = DbDriverType::tryFrom($this->connection->getDriverName());
 
-		$ret[] = match ($driverName) {
+		$ret[] = match ($driver_name) {
 			DbDriverType::MYSQL => 'MySql/MariaDB detected.',
 			DbDriverType::PGSQL => 'PostgreSQL detected.',
 			DbDriverType::SQLITE => 'SQLite detected.',
 			default => 'Warning:Unknown DBMS.',
 		};
 
-		return $driverName;
+		return $driver_name;
 	}
 
 	/**

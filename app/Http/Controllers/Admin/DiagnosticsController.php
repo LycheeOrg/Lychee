@@ -98,7 +98,7 @@ class DiagnosticsController extends Controller
 	 *
 	 * @return Permissions
 	 */
-	public function getFullAccessPermissions(DiagnosticsRequest $_request, AlbumQueryPolicy $albumQueryPolicy): Permissions
+	public function getFullAccessPermissions(DiagnosticsRequest $_request, AlbumQueryPolicy $album_query_policy): Permissions
 	{
 		$data1 = AccessPermission::query()
 			->join('base_albums', 'base_albums.id', '=', APC::BASE_ALBUM_ID)
@@ -136,7 +136,7 @@ class DiagnosticsController extends Controller
 			->get();
 
 		$query2 = DB::table('base_albums');
-		$albumQueryPolicy->joinSubComputedAccessPermissions($query2, 'base_albums.id', 'inner', '', true);
+		$album_query_policy->joinSubComputedAccessPermissions($query2, 'base_albums.id', 'inner', '', true);
 		$data2 = $query2
 			->select([
 				APC::BASE_ALBUM_ID,

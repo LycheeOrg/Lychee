@@ -55,7 +55,7 @@ interface BinaryBlob
 	 *
 	 * @throws MediaFileOperationException
 	 */
-	public function write($stream, bool $collectStatistics = false): ?StreamStats;
+	public function write($stream, bool $collect_statistics = false): ?StreamStats;
 
 	/**
 	 * Closes the internal stream/buffer.

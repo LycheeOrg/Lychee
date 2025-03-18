@@ -23,9 +23,9 @@ class CheckUpdate
 	 * @param FileVersion      $fileVersion
 	 */
 	public function __construct(
-		private GitHubVersion $gitHubFunctions,
-		private InstalledVersion $installedVersion,
-		private FileVersion $fileVersion,
+		private GitHubVersion $git_hub_functions,
+		private InstalledVersion $installed_version,
+		private FileVersion $file_version,
 	) {
 		$this->gitHubFunctions->hydrate();
 		$this->fileVersion->hydrate();

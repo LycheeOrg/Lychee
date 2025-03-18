@@ -23,7 +23,7 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 class TimelineData extends Data
 {
 	public function __construct(
-		public string $timeDate,
+		public string $time_date,
 		public string $format,
 	) {
 	}
@@ -43,7 +43,7 @@ class TimelineData extends Data
 			TimelinePhotoGranularity::DEFAULT, TimelinePhotoGranularity::DISABLED => throw new LycheeLogicException('DEFAULT is not a valid granularity for photos'),
 		};
 
-		$timeDate = match ($granularity) {
+		$time_date = match ($granularity) {
 			TimelinePhotoGranularity::YEAR => $photo->timeline_date_carbon()->format('Y'),
 			TimelinePhotoGranularity::MONTH => $photo->timeline_date_carbon()->format('Y-m'),
 			TimelinePhotoGranularity::DAY => $photo->timeline_date_carbon()->format('Y-m-d'),
@@ -51,15 +51,15 @@ class TimelineData extends Data
 			TimelinePhotoGranularity::DEFAULT, TimelinePhotoGranularity::DISABLED => throw new LycheeLogicException('DEFAULT is not a valid granularity for photos'),
 		};
 
-		return new TimelineData(timeDate: $timeDate, format: $format);
+		return new TimelineData(timeDate: $time_date, format: $format);
 	}
 
-	private static function fromAlbum(ThumbAlbumResource $album, ColumnSortingType $columnSorting, TimelineAlbumGranularity $granularity): ?self
+	private static function fromAlbum(ThumbAlbumResource $album, ColumnSortingType $column_sorting, TimelineAlbumGranularity $granularity): ?self
 	{
 		$timeline_date_format_year = Configs::getValueAsString('timeline_album_date_format_year');
 		$timeline_date_format_month = Configs::getValueAsString('timeline_album_date_format_month');
 		$timeline_date_format_day = Configs::getValueAsString('timeline_album_date_format_day');
-		$date = match ($columnSorting) {
+		$date = match ($column_sorting) {
 			ColumnSortingType::CREATED_AT => $album->created_at_carbon(),
 			ColumnSortingType::MAX_TAKEN_AT => $album->max_taken_at_carbon(),
 			ColumnSortingType::MIN_TAKEN_AT => $album->min_taken_at_carbon(),
@@ -77,14 +77,14 @@ class TimelineData extends Data
 			TimelineAlbumGranularity::DEFAULT, TimelineAlbumGranularity::DISABLED => throw new LycheeLogicException('DEFAULT/DISABLED is not a valid granularity for albums'),
 		};
 
-		$timeDate = match ($granularity) {
+		$time_date = match ($granularity) {
 			TimelineAlbumGranularity::YEAR => $date->format('Y'),
 			TimelineAlbumGranularity::MONTH => $date->format('Y-m'),
 			TimelineAlbumGranularity::DAY => $date->format('Y-m-d'),
 			TimelineAlbumGranularity::DEFAULT, TimelineAlbumGranularity::DISABLED => throw new LycheeLogicException('DEFAULT/DISABLED is not a valid granularity for albums'),
 		};
 
-		return new TimelineData(timeDate: $timeDate, format: $format);
+		return new TimelineData(timeDate: $time_date, format: $format);
 	}
 
 	/**
@@ -94,10 +94,10 @@ class TimelineData extends Data
 	 *
 	 * @return Collection<int,ThumbAlbumResource>
 	 */
-	public static function setTimeLineDataForAlbums(Collection $albums, ColumnSortingType $columnSorting, TimelineAlbumGranularity $granularity): Collection
+	public static function setTimeLineDataForAlbums(Collection $albums, ColumnSortingType $column_sorting, TimelineAlbumGranularity $granularity): Collection
 	{
-		return $albums->map(function (ThumbAlbumResource $album) use ($columnSorting, $granularity) {
-			$album->timeline = TimelineData::fromAlbum($album, $columnSorting, $granularity);
+		return $albums->map(function (ThumbAlbumResource $album) use ($column_sorting, $granularity) {
+			$album->timeline = TimelineData::fromAlbum($album, $column_sorting, $granularity);
 
 			return $album;
 		});

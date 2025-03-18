@@ -45,7 +45,7 @@ class AddStandaloneStrategy extends AbstractAddStrategy
 	/**
 	 * @throws FrameworkException
 	 */
-	public function __construct(ImportParam $parameters, NativeLocalFile $sourceFile)
+	public function __construct(ImportParam $parameters, NativeLocalFile $source_file)
 	{
 		try {
 			parent::__construct($parameters, new Photo());
@@ -63,7 +63,7 @@ class AddStandaloneStrategy extends AbstractAddStrategy
 			// appear in a different order than users expect.
 			$this->photo->updateTimestamps();
 			$this->sourceImage = null;
-			$this->sourceFile = $sourceFile;
+			$this->sourceFile = $source_file;
 			$this->namingStrategy = resolve(AbstractSizeVariantNamingStrategy::class);
 			$this->namingStrategy->setPhoto($this->photo);
 			$this->namingStrategy->setExtension(
@@ -103,10 +103,10 @@ class AddStandaloneStrategy extends AbstractAddStrategy
 		try {
 			try {
 				if ($this->photo->isVideo()) {
-					$videoHandler = new VideoHandler();
-					$videoHandler->load($this->sourceFile);
+					$video_handler = new VideoHandler();
+					$video_handler->load($this->sourceFile);
 					$position = is_numeric($this->photo->aperture) ? floatval($this->photo->aperture) / 2 : 0.0;
-					$this->sourceImage = $videoHandler->extractFrame($position);
+					$this->sourceImage = $video_handler->extractFrame($position);
 				} else {
 					// Load source image if it is a supported photo format
 					$this->sourceImage = new ImageHandler();
@@ -129,16 +129,16 @@ class AddStandaloneStrategy extends AbstractAddStrategy
 			// its (potentially remote) final position
 			if ($this->parameters->exifInfo->microVideoOffset !== 0) {
 				try {
-					$tmpVideoFile = new TemporaryLocalFile(GoogleMotionPictureHandler::FINAL_VIDEO_FILE_EXTENSION, $this->sourceFile->getBasename());
-					$gmpHandler = new GoogleMotionPictureHandler();
-					$gmpHandler->load($this->sourceFile, $this->parameters->exifInfo->microVideoOffset);
-					$gmpHandler->saveVideoStream($tmpVideoFile);
+					$tmp_video_file = new TemporaryLocalFile(GoogleMotionPictureHandler::FINAL_VIDEO_FILE_EXTENSION, $this->sourceFile->getBasename());
+					$gmp_handler = new GoogleMotionPictureHandler();
+					$gmp_handler->load($this->sourceFile, $this->parameters->exifInfo->microVideoOffset);
+					$gmp_handler->saveVideoStream($tmp_video_file);
 				} catch (\Throwable $e) {
 					Handler::reportSafely($e);
-					$tmpVideoFile = null;
+					$tmp_video_file = null;
 				}
 			} else {
-				$tmpVideoFile = null;
+				$tmp_video_file = null;
 			}
 
 			// Create target file and symlink/copy/move source file to
@@ -146,45 +146,45 @@ class AddStandaloneStrategy extends AbstractAddStrategy
 			// If import strategy request to delete the source file.
 			// `$this->sourceFile` will be deleted after this step.
 			// But `$this->sourceImage` remains in memory.
-			$targetFile = $this->namingStrategy->createFile(SizeVariantType::ORIGINAL);
-			$streamStat = $this->putSourceIntoFinalDestination($targetFile);
+			$target_file = $this->namingStrategy->createFile(SizeVariantType::ORIGINAL);
+			$stream_stat = $this->putSourceIntoFinalDestination($target_file);
 
 			// If we have a temporary video file from a Google Motion Picture,
 			// we must move the preliminary extracted video file next to the
 			// final target file
-			if ($tmpVideoFile !== null) {
+			if ($tmp_video_file !== null) {
 				// @TODO S3 How should live videos be handled?
-				$videoTargetPath =
-					pathinfo($targetFile->getRelativePath(), PATHINFO_DIRNAME) .
+				$video_target_path =
+					pathinfo($target_file->getRelativePath(), PATHINFO_DIRNAME) .
 					'/' .
-					pathinfo($targetFile->getRelativePath(), PATHINFO_FILENAME) .
-					$tmpVideoFile->getExtension();
-				$videoTargetFile = new FlysystemFile($targetFile->getDisk(), $videoTargetPath);
-				$videoTargetFile->write($tmpVideoFile->read());
-				$this->photo->live_photo_short_path = $videoTargetFile->getRelativePath();
-				$tmpVideoFile->close();
-				$tmpVideoFile->delete();
-				$tmpVideoFile = null;
+					pathinfo($target_file->getRelativePath(), PATHINFO_FILENAME) .
+					$tmp_video_file->getExtension();
+				$video_target_file = new FlysystemFile($target_file->getDisk(), $video_target_path);
+				$video_target_file->write($tmp_video_file->read());
+				$this->photo->live_photo_short_path = $video_target_file->getRelativePath();
+				$tmp_video_file->close();
+				$tmp_video_file->delete();
+				$tmp_video_file = null;
 			}
 
 			// The original and final checksum may differ, if the photo has
 			// been rotated by `putSourceIntoFinalDestination` while being
 			// moved into final position.
-			$this->photo->checksum = $streamStat->checksum;
+			$this->photo->checksum = $stream_stat->checksum;
 			$this->photo->save();
 
 			// Create original size variant of photo
 			// If the image has been loaded (and potentially auto-rotated)
 			// take the dimension from the image.
 			// As a fallback for media files from which no image could be extracted (e.g. unsupported file formats) we use the EXIF data.
-			$imageDim = $this->sourceImage?->isLoaded() ?
+			$image_dim = $this->sourceImage?->isLoaded() ?
 				$this->sourceImage->getDimensions() :
 				new ImageDimension($this->parameters->exifInfo->width, $this->parameters->exifInfo->height);
-			$originalVariant = $this->photo->size_variants->create(
+			$original_variant = $this->photo->size_variants->create(
 				SizeVariantType::ORIGINAL,
-				$targetFile->getRelativePath(),
-				$imageDim,
-				$streamStat->bytes
+				$target_file->getRelativePath(),
+				$image_dim,
+				$stream_stat->bytes
 			);
 		} catch (LycheeException $e) {
 			// If source file could not be put into final destination, remove
@@ -202,15 +202,15 @@ class AddStandaloneStrategy extends AbstractAddStrategy
 		if ($this->sourceImage?->isLoaded()) {
 			try {
 				/** @var SizeVariantFactory $sizeVariantFactory */
-				$sizeVariantFactory = resolve(SizeVariantFactory::class);
-				$sizeVariantFactory->init($this->photo, $this->sourceImage, $this->namingStrategy);
-				$variants = $sizeVariantFactory->createSizeVariants();
-				$variants->push($originalVariant);
+				$size_variant_factory = resolve(SizeVariantFactory::class);
+				$size_variant_factory->init($this->photo, $this->sourceImage, $this->namingStrategy);
+				$variants = $size_variant_factory->createSizeVariants();
+				$variants->push($original_variant);
 
 				$placeholder = $variants->firstWhere('type', SizeVariantType::PLACEHOLDER);
 				if ($placeholder !== null) {
-					$placeholderEncoder = new PlaceholderEncoder();
-					$placeholderEncoder->do($placeholder);
+					$placeholder_encoder = new PlaceholderEncoder();
+					$placeholder_encoder->do($placeholder);
 				}
 
 				if (Features::active('use-s3')) {
@@ -265,45 +265,45 @@ class AddStandaloneStrategy extends AbstractAddStrategy
 	 * @throws MediaFileOperationException
 	 * @throws ConfigurationException
 	 */
-	private function putSourceIntoFinalDestination(FlysystemFile $targetFile): StreamStats
+	private function putSourceIntoFinalDestination(FlysystemFile $target_file): StreamStats
 	{
 		try {
 			if ($this->parameters->importMode->shallImportViaSymlink) {
-				if (!$targetFile->isLocalFile()) {
+				if (!$target_file->isLocalFile()) {
 					throw new ConfigurationException('Symlinking is only supported on local filesystems');
 				}
-				$targetPath = $targetFile->toLocalFile()->getPath();
-				$sourcePath = $this->sourceFile->getRealPath();
+				$target_path = $target_file->toLocalFile()->getPath();
+				$source_path = $this->sourceFile->getRealPath();
 				// For symlinks we must manually create a non-existing
 				// parent directory.
 				// This mimics the behaviour of Flysystem for regular files.
-				$targetDirectory = pathinfo($targetPath, PATHINFO_DIRNAME);
-				if (!is_dir($targetDirectory)) {
+				$target_directory = pathinfo($target_path, PATHINFO_DIRNAME);
+				if (!is_dir($target_directory)) {
 					$umask = \umask(0);
-					\Safe\mkdir($targetDirectory, BasicPermissionCheck::getConfiguredDirectoryPerm(), true);
+					\Safe\mkdir($target_directory, BasicPermissionCheck::getConfiguredDirectoryPerm(), true);
 					\umask($umask);
 				}
-				\Safe\symlink($sourcePath, $targetPath);
-				$streamStat = StreamStat::createFromLocalFile($this->sourceFile);
+				\Safe\symlink($source_path, $target_path);
+				$stream_stat = StreamStat::createFromLocalFile($this->sourceFile);
 			} else {
-				$shallNormalize = Configs::getValueAsBool('auto_fix_orientation') &&
+				$shall_normalize = Configs::getValueAsBool('auto_fix_orientation') &&
 					$this->sourceImage !== null &&
 					$this->parameters->exifInfo->orientation !== 1;
 
-				if ($shallNormalize) {
+				if ($shall_normalize) {
 					// Saving the loaded image to the final target normalizes
 					// the image orientation. This comes at the cost that
 					// the image is re-encoded and hence its quality might
 					// be reduced.
-					$streamStat = $this->sourceImage->save($targetFile, true);
+					$stream_stat = $this->sourceImage->save($target_file, true);
 				} else {
 					// If the image does not require normalization the
 					// unaltered source file is copied to the final target.
 					// Avoiding a re-encoding prevents any potential quality
 					// loss.
-					$streamStat = $targetFile->write($this->sourceFile->read(), true);
+					$stream_stat = $target_file->write($this->sourceFile->read(), true);
 					$this->sourceFile->close();
-					$targetFile->close();
+					$target_file->close();
 				}
 				if ($this->parameters->importMode->shallDeleteImported) {
 					// This may throw an exception, if the original has been
@@ -321,7 +321,7 @@ class AddStandaloneStrategy extends AbstractAddStrategy
 				}
 			}
 
-			return $streamStat;
+			return $stream_stat;
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException('Could move/copy/symlink source file to final destination', $e);
 		}

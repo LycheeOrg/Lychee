@@ -112,15 +112,15 @@ class Meta extends Component
 	 *
 	 * @return string
 	 */
-	public static function getUserCustomFiles(string $fileName): string
+	public static function getUserCustomFiles(string $file_name): string
 	{
-		$cssCacheBusting = '';
+		$css_cache_busting = '';
 		/** @disregard P1013 */
-		if (Storage::disk('dist')->fileExists($fileName)) {
-			$cssCacheBusting = '?' . Storage::disk('dist')->lastModified($fileName);
+		if (Storage::disk('dist')->fileExists($file_name)) {
+			$css_cache_busting = '?' . Storage::disk('dist')->lastModified($file_name);
 		}
 
 		/** @disregard P1013 */
-		return Storage::disk('dist')->url($fileName) . $cssCacheBusting;
+		return Storage::disk('dist')->url($file_name) . $css_cache_busting;
 	}
 }

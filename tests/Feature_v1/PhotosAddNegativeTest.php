@@ -90,7 +90,7 @@ class PhotosAddNegativeTest extends BasePhotoTest
 	 */
 	public function testRefusedRawUpload(): void
 	{
-		$acceptedRawFormats = static::getAcceptedRawFormats();
+		$accepted_raw_formats = static::getAcceptedRawFormats();
 		try {
 			static::setAcceptedRawFormats('');
 
@@ -101,7 +101,7 @@ class PhotosAddNegativeTest extends BasePhotoTest
 				'MediaFileUnsupportedException'
 			));
 		} finally {
-			static::setAcceptedRawFormats($acceptedRawFormats);
+			static::setAcceptedRawFormats($accepted_raw_formats);
 		}
 	}
 
@@ -117,7 +117,7 @@ class PhotosAddNegativeTest extends BasePhotoTest
 	 */
 	public function testRefusedRawImportFormUrl(): void
 	{
-		$acceptedRawFormats = static::getAcceptedRawFormats();
+		$accepted_raw_formats = static::getAcceptedRawFormats();
 		try {
 			static::setAcceptedRawFormats('');
 
@@ -128,7 +128,7 @@ class PhotosAddNegativeTest extends BasePhotoTest
 				'MediaFileUnsupportedException'
 			);
 		} finally {
-			static::setAcceptedRawFormats($acceptedRawFormats);
+			static::setAcceptedRawFormats($accepted_raw_formats);
 		}
 	}
 
@@ -142,7 +142,7 @@ class PhotosAddNegativeTest extends BasePhotoTest
 	 */
 	public function testRefusedRawImportFormUrlWithoutExtension(): void
 	{
-		$acceptedRawFormats = static::getAcceptedRawFormats();
+		$accepted_raw_formats = static::getAcceptedRawFormats();
 		try {
 			static::setAcceptedRawFormats('');
 
@@ -153,7 +153,7 @@ class PhotosAddNegativeTest extends BasePhotoTest
 				'MediaFileUnsupportedException'
 			);
 		} finally {
-			static::setAcceptedRawFormats($acceptedRawFormats);
+			static::setAcceptedRawFormats($accepted_raw_formats);
 		}
 	}
 
@@ -164,25 +164,25 @@ class PhotosAddNegativeTest extends BasePhotoTest
 	 *
 	 * @return void
 	 */
-	protected static function restrictDirectoryAccess(string $dirPath): void
+	protected static function restrictDirectoryAccess(string $dir_path): void
 	{
-		if (!is_dir($dirPath)) {
+		if (!is_dir($dir_path)) {
 			return;
 		}
-		static::skipIfNotFileOwner($dirPath);
+		static::skipIfNotFileOwner($dir_path);
 
-		$dirEntries = scandir($dirPath);
-		foreach ($dirEntries as $dirEntry) {
-			if (in_array($dirEntry, ['.', '..'], true)) {
+		$dir_entries = scandir($dir_path);
+		foreach ($dir_entries as $dir_entry) {
+			if (in_array($dir_entry, ['.', '..'], true)) {
 				continue;
 			}
 
-			$dirEntryPath = $dirPath . DIRECTORY_SEPARATOR . $dirEntry;
-			if (is_dir($dirEntryPath) && !is_link($dirEntryPath)) {
-				self::restrictDirectoryAccess($dirEntryPath);
+			$dir_entry_path = $dir_path . DIRECTORY_SEPARATOR . $dir_entry;
+			if (is_dir($dir_entry_path) && !is_link($dir_entry_path)) {
+				self::restrictDirectoryAccess($dir_entry_path);
 			}
 		}
 
-		\Safe\chmod($dirPath, 0555);
+		\Safe\chmod($dir_path, 0555);
 	}
 }

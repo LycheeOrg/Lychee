@@ -108,28 +108,28 @@ class Rotate
 
 		// Create new target file for rotated original size variant,
 		// and stream it into the final place
-		$targetFile = $this->namingStrategy->createFile(SizeVariantType::ORIGINAL);
-		$streamStat = $image->save($targetFile, true);
+		$target_file = $this->namingStrategy->createFile(SizeVariantType::ORIGINAL);
+		$stream_stat = $image->save($target_file, true);
 
 		// The checksum has been changed due to rotation.
-		$oldChecksum = $this->photo->checksum;
-		$this->photo->checksum = $streamStat->checksum;
+		$old_checksum = $this->photo->checksum;
+		$this->photo->checksum = $stream_stat->checksum;
 		$this->photo->save();
 
 		// Re-create original size variant of photo
-		$newOriginalSizeVariant = $this->photo->size_variants->create(
+		$new_original_size_variant = $this->photo->size_variants->create(
 			SizeVariantType::ORIGINAL,
-			$targetFile->getRelativePath(),
+			$target_file->getRelativePath(),
 			$image->getDimensions(),
-			$streamStat->bytes
+			$stream_stat->bytes
 		);
 
 		// Re-create remaining size variants
 		try {
 			/** @var SizeVariantFactory $sizeVariantFactory */
-			$sizeVariantFactory = resolve(SizeVariantFactory::class);
-			$sizeVariantFactory->init($this->photo, $image, $this->namingStrategy);
-			$newSizeVariants = $sizeVariantFactory->createSizeVariants();
+			$size_variant_factory = resolve(SizeVariantFactory::class);
+			$size_variant_factory->init($this->photo, $image, $this->namingStrategy);
+			$new_size_variants = $size_variant_factory->createSizeVariants();
 		} catch (\Throwable $t) {
 			// Don't re-throw the exception, because we do not want the
 			// rotation operation to fail completely only due to missing size
@@ -137,16 +137,16 @@ class Rotate
 			// There are just too many options why the creation of size
 			// variants may fail.
 			Handler::reportSafely($t);
-			$newSizeVariants = new Collection();
+			$new_size_variants = new Collection();
 		}
 		// Add new original size variant to collection of newly created
 		// size variants; we need this to correctly update the duplicates
 		// below
-		$newSizeVariants->add($newOriginalSizeVariant);
+		$new_size_variants->add($new_original_size_variant);
 
 		// Deal with duplicates.  We simply update all of them to match.
 		$duplicates = Photo::query()
-			->where('checksum', '=', $oldChecksum)
+			->where('checksum', '=', $old_checksum)
 			->get();
 		/** @var Photo $duplicate */
 		foreach ($duplicates as $duplicate) {
@@ -168,12 +168,12 @@ class Rotate
 			// advantage that the actual files are erased from storage.
 			$duplicate->size_variants->deleteAll();
 			/** @var SizeVariant $newSizeVariant */
-			foreach ($newSizeVariants as $newSizeVariant) {
+			foreach ($new_size_variants as $new_size_variant) {
 				$duplicate->size_variants->create(
-					$newSizeVariant->type,
-					$newSizeVariant->short_path,
-					new ImageDimension($newSizeVariant->width, $newSizeVariant->height),
-					$newSizeVariant->filesize
+					$new_size_variant->type,
+					$new_size_variant->short_path,
+					new ImageDimension($new_size_variant->width, $new_size_variant->height),
+					$new_size_variant->filesize
 				);
 			}
 			$duplicate->save();

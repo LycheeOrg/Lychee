@@ -66,16 +66,16 @@ class WebAuthnLoginController extends Controller
 		if (!$this->isSignedChallenge($credentials)) {
 			throw new HttpException(Response::HTTP_UNPROCESSABLE_ENTITY, 'Response is not signed.');
 		}
-		$associatedUser = $this->retrieveByCredentials($credentials);
+		$associated_user = $this->retrieveByCredentials($credentials);
 
-		if ($associatedUser === null) {
+		if ($associated_user === null) {
 			throw new HttpException(Response::HTTP_UNPROCESSABLE_ENTITY, 'Associated user does not exists.');
 		}
 
-		$jsonTransport = new JsonTransport($request->only(AssertionValidation::REQUEST_KEYS));
+		$json_transport = new JsonTransport($request->only(AssertionValidation::REQUEST_KEYS));
 
 		$credential = $validator
-			->send(new AssertionValidation($jsonTransport, $associatedUser))
+			->send(new AssertionValidation($json_transport, $associated_user))
 			->thenReturn()
 			->credential;
 

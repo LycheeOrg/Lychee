@@ -35,9 +35,9 @@ class InstallationStatus
 
 	private IsInstalled $isInstalled;
 
-	public function __construct(IsInstalled $isInstalled)
+	public function __construct(IsInstalled $is_installed)
 	{
-		$this->isInstalled = $isInstalled;
+		$this->isInstalled = $is_installed;
 	}
 
 	/**
@@ -54,15 +54,15 @@ class InstallationStatus
 	 *
 	 * @throws LycheeException
 	 */
-	public function handle(Request $request, \Closure $next, string $requiredStatus): mixed
+	public function handle(Request $request, \Closure $next, string $required_status): mixed
 	{
-		if ($requiredStatus === self::COMPLETE) {
+		if ($required_status === self::COMPLETE) {
 			if ($this->isInstalled->assert()) {
 				return $next($request);
 			} else {
 				throw new InstallationRequiredException();
 			}
-		} elseif ($requiredStatus === self::INCOMPLETE) {
+		} elseif ($required_status === self::INCOMPLETE) {
 			if ($this->isInstalled->assert()) {
 				throw new InstallationAlreadyCompletedException();
 			} else {

@@ -171,10 +171,10 @@ class PhotosOperationsTest extends BasePhotoTest
 		/**
 		 * We now test interaction with albums.
 		 */
-		$albumID = $this->albums_tests->add(null, 'test_album_2')->offsetGet('id');
+		$album_i_d = $this->albums_tests->add(null, 'test_album_2')->offsetGet('id');
 		$this->photos_tests->set_album('-1', [$id], 422);
-		$this->photos_tests->set_album($albumID, [$id]);
-		$this->albums_tests->download($albumID);
+		$this->photos_tests->set_album($album_i_d, [$id]);
+		$this->albums_tests->download($album_i_d);
 		$this->clearCachedSmartAlbums();
 		$this->albums_tests->get(UnsortedAlbum::ID, 200, null, $id);
 
@@ -182,10 +182,10 @@ class PhotosOperationsTest extends BasePhotoTest
 		 * Test duplication, the duplicate should be completely identical
 		 * except for the IDs.
 		 */
-		$response = $this->photos_tests->duplicate([$id], $albumID);
+		$response = $this->photos_tests->duplicate([$id], $album_i_d);
 		$response->assertJson([
 			0 => [
-				'album_id' => $albumID,
+				'album_id' => $album_i_d,
 				'aperture' => 'f/2.8',
 				'description' => 'A night photography',
 				'focal' => '16 mm',
@@ -223,7 +223,7 @@ class PhotosOperationsTest extends BasePhotoTest
 		 * Get album which should contain both photos.
 		 */
 		/** @var \App\Models\Album $album */
-		$album = static::convertJsonToObject($this->albums_tests->get($albumID));
+		$album = static::convertJsonToObject($this->albums_tests->get($album_i_d));
 		static::assertCount(2, $album->photos);
 
 		$ids = [];
@@ -236,7 +236,7 @@ class PhotosOperationsTest extends BasePhotoTest
 		$this->albums_tests->get(RecentAlbum::ID, 200, null, $ids[0]);
 		$this->albums_tests->get(UnsortedAlbum::ID, 200, null, $ids[1]);
 
-		$this->albums_tests->set_protection_policy($albumID);
+		$this->albums_tests->set_protection_policy($album_i_d);
 
 		/**
 		 * Actually try to display the picture.
@@ -248,9 +248,9 @@ class PhotosOperationsTest extends BasePhotoTest
 		$this->photos_tests->delete([$ids[1]]);
 		$this->photos_tests->get($ids[1], 404);
 		/** @var \App\Models\Album $album */
-		$album = static::convertJsonToObject($this->albums_tests->get($albumID));
+		$album = static::convertJsonToObject($this->albums_tests->get($album_i_d));
 		static::assertCount(0, $album->photos);
-		$this->albums_tests->delete([$albumID]);
+		$this->albums_tests->delete([$album_i_d]);
 
 		$response = $this->postJson('/api/Photo::clearSymLink');
 		$this->assertNoContent($response);
@@ -317,12 +317,12 @@ class PhotosOperationsTest extends BasePhotoTest
 	 */
 	public function testThumbnailsInsideHiddenAlbum(): void
 	{
-		$isRecentPublic = RecentAlbum::getInstance()->public_permissions() !== null;
-		$isPublicSearchEnabled = Configs::getValueAsBool(TestConstants::CONFIG_PUBLIC_SEARCH);
-		$albumSortingColumn = Configs::getValueAsString(TestConstants::CONFIG_ALBUMS_SORTING_COL);
-		$albumSortingOrder = Configs::getValueAsString(TestConstants::CONFIG_ALBUMS_SORTING_ORDER);
-		$photoSortingColumn = Configs::getValueAsString(TestConstants::CONFIG_PHOTOS_SORTING_COL);
-		$photoSortingOrder = Configs::getValueAsString(TestConstants::CONFIG_PHOTOS_SORTING_ORDER);
+		$is_recent_public = RecentAlbum::getInstance()->public_permissions() !== null;
+		$is_public_search_enabled = Configs::getValueAsBool(TestConstants::CONFIG_PUBLIC_SEARCH);
+		$album_sorting_column = Configs::getValueAsString(TestConstants::CONFIG_ALBUMS_SORTING_COL);
+		$album_sorting_order = Configs::getValueAsString(TestConstants::CONFIG_ALBUMS_SORTING_ORDER);
+		$photo_sorting_column = Configs::getValueAsString(TestConstants::CONFIG_PHOTOS_SORTING_COL);
+		$photo_sorting_order = Configs::getValueAsString(TestConstants::CONFIG_PHOTOS_SORTING_ORDER);
 
 		try {
 			Auth::loginUsingId(1);
@@ -336,30 +336,30 @@ class PhotosOperationsTest extends BasePhotoTest
 			// Sic! This out-of-order creation of albums is on purpose in order to
 			// catch errors where the album tree is accidentally ordered as
 			// expected, because we created the albums in correct order
-			$albumID1 = $this->albums_tests->add(null, 'Test Album 1')->offsetGet('id');
-			$albumID12 = $this->albums_tests->add($albumID1, 'Test Album 1.2')->offsetGet('id');
-			$albumID13 = $this->albums_tests->add($albumID1, 'Test Album 1.3')->offsetGet('id');
-			$albumID121 = $this->albums_tests->add($albumID12, 'Test Album 1.2.1')->offsetGet('id');
-			$albumID11 = $this->albums_tests->add($albumID1, 'Test Album 1.1')->offsetGet('id');
+			$album_i_d1 = $this->albums_tests->add(null, 'Test Album 1')->offsetGet('id');
+			$album_i_d12 = $this->albums_tests->add($album_i_d1, 'Test Album 1.2')->offsetGet('id');
+			$album_i_d13 = $this->albums_tests->add($album_i_d1, 'Test Album 1.3')->offsetGet('id');
+			$album_i_d121 = $this->albums_tests->add($album_i_d12, 'Test Album 1.2.1')->offsetGet('id');
+			$album_i_d11 = $this->albums_tests->add($album_i_d1, 'Test Album 1.1')->offsetGet('id');
 
-			$photoID11 = $this->photos_tests->upload(
-				AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE), $albumID11
+			$photo_i_d11 = $this->photos_tests->upload(
+				AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE), $album_i_d11
 			)->offsetGet('id');
-			$photoID13 = $this->photos_tests->upload(
-				AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE), $albumID13
+			$photo_i_d13 = $this->photos_tests->upload(
+				AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE), $album_i_d13
 			)->offsetGet('id');
-			$photoID12 = $this->photos_tests->upload(
-				AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_TRAIN_IMAGE), $albumID12
+			$photo_i_d12 = $this->photos_tests->upload(
+				AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_TRAIN_IMAGE), $album_i_d12
 			)->offsetGet('id');
-			$photoID121 = $this->photos_tests->upload(
-				AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_SUNSET_IMAGE), $albumID121
+			$photo_i_d121 = $this->photos_tests->upload(
+				AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_SUNSET_IMAGE), $album_i_d121
 			)->offsetGet('id');
 
-			$this->albums_tests->set_protection_policy(id: $albumID1, grants_full_photo_access: true, is_public: true, is_link_required: true);
-			$this->albums_tests->set_protection_policy($albumID11);
-			$this->albums_tests->set_protection_policy($albumID12);
-			$this->albums_tests->set_protection_policy($albumID121);
-			$this->albums_tests->set_protection_policy($albumID13);
+			$this->albums_tests->set_protection_policy(id: $album_i_d1, grants_full_photo_access: true, is_public: true, is_link_required: true);
+			$this->albums_tests->set_protection_policy($album_i_d11);
+			$this->albums_tests->set_protection_policy($album_i_d12);
+			$this->albums_tests->set_protection_policy($album_i_d121);
+			$this->albums_tests->set_protection_policy($album_i_d13);
 
 			Auth::logout();
 			Session::flush();
@@ -371,8 +371,8 @@ class PhotosOperationsTest extends BasePhotoTest
 			// accidentally see the expected thumbnails, because we see them
 			// anyway.
 
-			$responseForRoot = $this->root_album_tests->get();
-			$responseForRoot->assertJson([
+			$response_for_root = $this->root_album_tests->get();
+			$response_for_root->assertJson([
 				'smart_albums' => [
 					'recent' => ['thumb' => null],
 				],
@@ -380,75 +380,75 @@ class PhotosOperationsTest extends BasePhotoTest
 				'albums' => [],
 				'shared_albums' => [],
 			]);
-			$responseForRoot->assertJsonMissing([
+			$response_for_root->assertJsonMissing([
 				'unsorted' => null,
 				'starred' => null,
 			]);
-			foreach ([$albumID1, $photoID11, $photoID12, $photoID121, $photoID13] as $id) {
-				$responseForRoot->assertJsonMissing(['id' => $id]);
+			foreach ([$album_i_d1, $photo_i_d11, $photo_i_d12, $photo_i_d121, $photo_i_d13] as $id) {
+				$response_for_root->assertJsonMissing(['id' => $id]);
 			}
 
-			$responseForRecent = $this->albums_tests->get(RecentAlbum::ID);
-			$responseForRecent->assertJson([
+			$response_for_recent = $this->albums_tests->get(RecentAlbum::ID);
+			$response_for_recent->assertJson([
 				'thumb' => null,
 				'photos' => [],
 			]);
-			foreach ([$photoID11, $photoID12, $photoID121, $photoID13] as $id) {
-				$responseForRecent->assertJsonMissing(['id' => $id]);
+			foreach ([$photo_i_d11, $photo_i_d12, $photo_i_d121, $photo_i_d13] as $id) {
+				$response_for_recent->assertJsonMissing(['id' => $id]);
 			}
 
 			// Access the hidden, but public albums and check whether we see
 			// the correct thumbnails
-			$responseForAlbum1 = $this->albums_tests->get($albumID1);
-			$responseForAlbum1->assertJson([
-				'id' => $albumID1,
+			$response_for_album1 = $this->albums_tests->get($album_i_d1);
+			$response_for_album1->assertJson([
+				'id' => $album_i_d1,
 				'parent_id' => null,
 				'title' => 'Test Album 1',
-				'thumb' => ['id' => $photoID121], // photo 1.2.1 "fin de journée" is alphabetically first
+				'thumb' => ['id' => $photo_i_d121], // photo 1.2.1 "fin de journée" is alphabetically first
 				'photos' => [],
 				'albums' => [[
-					'id' => $albumID11,
-					'parent_id' => $albumID1,
+					'id' => $album_i_d11,
+					'parent_id' => $album_i_d1,
 					'title' => 'Test Album 1.1',
-					'thumb' => ['id' => $photoID11],
+					'thumb' => ['id' => $photo_i_d11],
 				], [
-					'id' => $albumID12,
-					'parent_id' => $albumID1,
+					'id' => $album_i_d12,
+					'parent_id' => $album_i_d1,
 					'title' => 'Test Album 1.2',
-					'thumb' => ['id' => $photoID121], // photo 1.2.1 "fin de journée" is alphabetically first
+					'thumb' => ['id' => $photo_i_d121], // photo 1.2.1 "fin de journée" is alphabetically first
 				], [
-					'id' => $albumID13,
-					'parent_id' => $albumID1,
+					'id' => $album_i_d13,
+					'parent_id' => $album_i_d1,
 					'title' => 'Test Album 1.3',
-					'thumb' => ['id' => $photoID13],
+					'thumb' => ['id' => $photo_i_d13],
 				]],
 			]);
 
-			$responseForAlbum12 = $this->albums_tests->get($albumID12);
-			$responseForAlbum12->assertJson([
-				'id' => $albumID12,
-				'parent_id' => $albumID1,
+			$response_for_album12 = $this->albums_tests->get($album_i_d12);
+			$response_for_album12->assertJson([
+				'id' => $album_i_d12,
+				'parent_id' => $album_i_d1,
 				'title' => 'Test Album 1.2',
-				'thumb' => ['id' => $photoID121], // photo 1.2.1 "fin de journée" is alphabetically first
+				'thumb' => ['id' => $photo_i_d121], // photo 1.2.1 "fin de journée" is alphabetically first
 				'photos' => [[
-					'id' => $photoID12,
-					'album_id' => $albumID12,
+					'id' => $photo_i_d12,
+					'album_id' => $album_i_d12,
 					'title' => 'train',
 				]],
 				'albums' => [[
-					'id' => $albumID121,
-					'parent_id' => $albumID12,
+					'id' => $album_i_d121,
+					'parent_id' => $album_i_d12,
 					'title' => 'Test Album 1.2.1',
-					'thumb' => ['id' => $photoID121],
+					'thumb' => ['id' => $photo_i_d121],
 				]],
 			]);
 		} finally {
-			Configs::set(TestConstants::CONFIG_ALBUMS_SORTING_COL, $albumSortingColumn);
-			Configs::set(TestConstants::CONFIG_ALBUMS_SORTING_ORDER, $albumSortingOrder);
-			Configs::set(TestConstants::CONFIG_PHOTOS_SORTING_COL, $photoSortingColumn);
-			Configs::set(TestConstants::CONFIG_PHOTOS_SORTING_ORDER, $photoSortingOrder);
-			Configs::set(TestConstants::CONFIG_PUBLIC_SEARCH, $isPublicSearchEnabled);
-			if ($isRecentPublic) {
+			Configs::set(TestConstants::CONFIG_ALBUMS_SORTING_COL, $album_sorting_column);
+			Configs::set(TestConstants::CONFIG_ALBUMS_SORTING_ORDER, $album_sorting_order);
+			Configs::set(TestConstants::CONFIG_PHOTOS_SORTING_COL, $photo_sorting_column);
+			Configs::set(TestConstants::CONFIG_PHOTOS_SORTING_ORDER, $photo_sorting_order);
+			Configs::set(TestConstants::CONFIG_PUBLIC_SEARCH, $is_public_search_enabled);
+			if ($is_recent_public) {
 				RecentAlbum::getInstance()->setPublic();
 			} else {
 				RecentAlbum::getInstance()->setPrivate();
@@ -461,39 +461,39 @@ class PhotosOperationsTest extends BasePhotoTest
 	public function testDeleteMultiplePhotosByAnonUser(): void
 	{
 		Auth::loginUsingId(1);
-		$albumID = $this->albums_tests->add(null, 'Test Album')->offsetGet('id');
-		$photoID1 = $this->photos_tests->upload(
-			self::createUploadedFile(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE), $albumID
+		$album_i_d = $this->albums_tests->add(null, 'Test Album')->offsetGet('id');
+		$photo_i_d1 = $this->photos_tests->upload(
+			self::createUploadedFile(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE), $album_i_d
 		)->offsetGet('id');
-		$photoID2 = $this->photos_tests->upload(
-			self::createUploadedFile(TestConstants::SAMPLE_FILE_TRAIN_IMAGE), $albumID
+		$photo_i_d2 = $this->photos_tests->upload(
+			self::createUploadedFile(TestConstants::SAMPLE_FILE_TRAIN_IMAGE), $album_i_d
 		)->offsetGet('id');
-		$this->albums_tests->set_protection_policy($albumID);
+		$this->albums_tests->set_protection_policy($album_i_d);
 		Auth::logout();
 		Session::flush();
-		$this->photos_tests->delete([$photoID1, $photoID2], 401);
+		$this->photos_tests->delete([$photo_i_d1, $photo_i_d2], 401);
 	}
 
 	public function testDeleteMultiplePhotosByNonOwner(): void
 	{
 		Auth::loginUsingId(1);
-		$userID1 = $this->users_tests->add('Test user 1', 'Test password 1')->offsetGet('id');
-		$userID2 = $this->users_tests->add('Test user 2', 'Test password 2')->offsetGet('id');
+		$user_i_d1 = $this->users_tests->add('Test user 1', 'Test password 1')->offsetGet('id');
+		$user_i_d2 = $this->users_tests->add('Test user 2', 'Test password 2')->offsetGet('id');
 		Auth::logout();
 		Session::flush();
-		Auth::loginUsingId($userID1);
-		$albumID = $this->albums_tests->add(null, 'Test Album')->offsetGet('id');
-		$photoID1 = $this->photos_tests->upload(
-			self::createUploadedFile(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE), $albumID
+		Auth::loginUsingId($user_i_d1);
+		$album_i_d = $this->albums_tests->add(null, 'Test Album')->offsetGet('id');
+		$photo_i_d1 = $this->photos_tests->upload(
+			self::createUploadedFile(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE), $album_i_d
 		)->offsetGet('id');
-		$photoID2 = $this->photos_tests->upload(
-			self::createUploadedFile(TestConstants::SAMPLE_FILE_TRAIN_IMAGE), $albumID
+		$photo_i_d2 = $this->photos_tests->upload(
+			self::createUploadedFile(TestConstants::SAMPLE_FILE_TRAIN_IMAGE), $album_i_d
 		)->offsetGet('id');
-		$this->sharing_tests->add([$albumID], [$userID2]);
+		$this->sharing_tests->add([$album_i_d], [$user_i_d2]);
 		Auth::logout();
 		Session::flush();
-		Auth::loginUsingId($userID2);
-		$this->photos_tests->delete([$photoID1, $photoID2], 403);
+		Auth::loginUsingId($user_i_d2);
+		$this->photos_tests->delete([$photo_i_d1, $photo_i_d2], 403);
 	}
 
 	/**

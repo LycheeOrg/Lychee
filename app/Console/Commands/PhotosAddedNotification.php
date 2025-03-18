@@ -65,12 +65,12 @@ class PhotosAddedNotification extends Command
 						];
 					}
 
-					$thumbUrl = $photo->size_variants->getThumb()?->url;
+					$thumb_url = $photo->size_variants->getThumb()?->url;
 
 					// Mail clients do not like relative paths.
 					// if url does not start with 'http', it is not absolute...
-					if (!Str::startsWith('http', $thumbUrl)) {
-						$thumbUrl = URL::asset($thumbUrl);
+					if (!Str::startsWith('http', $thumb_url)) {
+						$thumb_url = URL::asset($thumb_url);
 					}
 
 					// If the url config doesn't contain a trailing slash then add it
@@ -82,7 +82,7 @@ class PhotosAddedNotification extends Command
 
 					$photos[$photo->album_id]['photos'][$photo->id] = [
 						'title' => $photo->title,
-						'thumb' => $thumbUrl,
+						'thumb' => $thumb_url,
 						// TODO: Clean this up. There should be a better way to get the URL of a photo than constructing it manually
 						'link' => config('app.url') . $trailing_slash . 'r/' . $photo->album_id . '/' . $photo->id,
 					];

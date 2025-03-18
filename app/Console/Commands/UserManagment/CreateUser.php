@@ -60,19 +60,19 @@ class CreateUser extends Command
 
 		$count = User::query()->count();
 
-		$mayAdministrate = $count < 1 || $this->option('may-administrate') === true;
-		$mayEditOwnSettings = $mayAdministrate || $this->option('may-edit-own-settings') === true;
-		$mayUpload = $mayAdministrate || $this->option('may-upload') === true;
+		$may_administrate = $count < 1 || $this->option('may-administrate') === true;
+		$may_edit_own_settings = $may_administrate || $this->option('may-edit-own-settings') === true;
+		$may_upload = $may_administrate || $this->option('may-upload') === true;
 
 		$user = $this->create->do(
 			username: $username,
 			password: $password,
-			mayUpload: $mayUpload,
-			mayEditOwnSettings: $mayEditOwnSettings);
-		$user->may_administrate = $mayAdministrate;
+			mayUpload: $may_upload,
+			mayEditOwnSettings: $may_edit_own_settings);
+		$user->may_administrate = $may_administrate;
 		$user->save();
 
-		$this->line(sprintf('Successfully created%s user %s ', $mayAdministrate ? ' admin' : '', $username));
+		$this->line(sprintf('Successfully created%s user %s ', $may_administrate ? ' admin' : '', $username));
 
 		return 0;
 	}

@@ -41,9 +41,9 @@ class UserManagementController extends Controller
 	{
 		/** @var Collection<int,User> $users */
 		$users = User::select(['id', 'username', 'may_administrate', 'may_upload', 'may_edit_own_settings', 'quota_kb', 'description', 'note'])->orderBy('id', 'asc')->get();
-		$spacesPerUser = $spaces->getFullSpacePerUser();
+		$spaces_per_user = $spaces->getFullSpacePerUser();
 		/** @var Collection<int,array{0:User,1:array{id:int,username:string,size:int}}> $zipped */
-		$zipped = $users->zip($spacesPerUser);
+		$zipped = $users->zip($spaces_per_user);
 
 		return $zipped->map(fn ($item) => new UserManagementResource($item[0], $item[1], $request->is_se()));
 	}

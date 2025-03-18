@@ -29,9 +29,9 @@ class AlbumsUnitTest
 
 	private AbstractTestCase $testCase;
 
-	public function __construct(AbstractTestCase $testCase)
+	public function __construct(AbstractTestCase $test_case)
 	{
-		$this->testCase = $testCase;
+		$this->testCase = $test_case;
 	}
 
 	/**
@@ -47,16 +47,16 @@ class AlbumsUnitTest
 	public function add(
 		?string $parent_id,
 		string $title,
-		int $expectedStatusCode = 201,
-		?string $assertSee = null,
+		int $expected_status_code = 201,
+		?string $assert_see = null,
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/Album::add', [
 			'title' => $title,
 			'parent_id' => $parent_id,
 		]);
-		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee !== null) {
-			$response->assertSee($assertSee, false);
+		$this->assertStatus($response, $expected_status_code);
+		if ($assert_see !== null) {
+			$response->assertSee($assert_see, false);
 		}
 
 		return $response;
@@ -75,16 +75,16 @@ class AlbumsUnitTest
 	public function addByTags(
 		string $title,
 		array $tags,
-		int $expectedStatusCode = 201,
-		?string $assertSee = null,
+		int $expected_status_code = 201,
+		?string $assert_see = null,
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/Album::addByTags', [
 			'title' => $title,
 			'tags' => $tags,
 		]);
-		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee !== null) {
-			$response->assertSee($assertSee, false);
+		$this->assertStatus($response, $expected_status_code);
+		if ($assert_see !== null) {
+			$response->assertSee($assert_see, false);
 		}
 
 		return $response;
@@ -101,16 +101,16 @@ class AlbumsUnitTest
 	public function move(
 		array $ids,
 		?string $to,
-		int $expectedStatusCode = 204,
-		?string $assertSee = null,
+		int $expected_status_code = 204,
+		?string $assert_see = null,
 	): void {
 		$response = $this->testCase->postJson('/api/Album::move', [
 			'albumID' => $to,
 			'albumIDs' => $ids,
 		]);
-		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee !== null) {
-			$response->assertSee($assertSee, false);
+		$this->assertStatus($response, $expected_status_code);
+		if ($assert_see !== null) {
+			$response->assertSee($assert_see, false);
 		}
 	}
 
@@ -125,16 +125,16 @@ class AlbumsUnitTest
 	public function merge(
 		array $ids,
 		?string $to,
-		int $expectedStatusCode = 204,
-		?string $assertSee = null,
+		int $expected_status_code = 204,
+		?string $assert_see = null,
 	): void {
 		$response = $this->testCase->postJson('/api/Album::merge', [
 			'albumID' => $to,
 			'albumIDs' => $ids,
 		]);
-		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee !== null) {
-			$response->assertSee($assertSee, false);
+		$this->assertStatus($response, $expected_status_code);
+		if ($assert_see !== null) {
+			$response->assertSee($assert_see, false);
 		}
 	}
 
@@ -150,20 +150,20 @@ class AlbumsUnitTest
 	 */
 	public function get(
 		string $id,
-		int $expectedStatusCode = 200,
-		?string $assertSee = null,
-		?string $assertDontSee = null,
+		int $expected_status_code = 200,
+		?string $assert_see = null,
+		?string $assert_dont_see = null,
 	): TestResponse {
 		$response = $this->testCase->postJson(
 			'/api/Album::get',
 			['albumID' => $id]
 		);
-		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee !== null) {
-			$response->assertSee($assertSee, false);
+		$this->assertStatus($response, $expected_status_code);
+		if ($assert_see !== null) {
+			$response->assertSee($assert_see, false);
 		}
-		if ($assertDontSee !== null) {
-			$response->assertDontSee($assertDontSee, false);
+		if ($assert_dont_see !== null) {
+			$response->assertDontSee($assert_dont_see, false);
 		}
 
 		return $response;
@@ -178,16 +178,16 @@ class AlbumsUnitTest
 	public function unlock(
 		string $id,
 		string $password = '',
-		int $expectedStatusCode = 204,
-		?string $assertSee = null,
+		int $expected_status_code = 204,
+		?string $assert_see = null,
 	): void {
 		$response = $this->testCase->postJson(
 			'/api/Album::unlock',
 			['albumID' => $id, 'password' => $password]
 		);
-		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee !== null) {
-			$response->assertSee($assertSee, false);
+		$this->assertStatus($response, $expected_status_code);
+		if ($assert_see !== null) {
+			$response->assertSee($assert_see, false);
 		}
 	}
 
@@ -202,16 +202,16 @@ class AlbumsUnitTest
 	public function set_title(
 		string $id,
 		string $title,
-		int $expectedStatusCode = 204,
-		?string $assertSee = null,
+		int $expected_status_code = 204,
+		?string $assert_see = null,
 	): void {
 		$response = $this->testCase->postJson(
 			'/api/Album::setTitle',
 			['albumIDs' => [$id], 'title' => $title]
 		);
-		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee !== null) {
-			$response->assertSee($assertSee, false);
+		$this->assertStatus($response, $expected_status_code);
+		if ($assert_see !== null) {
+			$response->assertSee($assert_see, false);
 		}
 	}
 
@@ -226,17 +226,17 @@ class AlbumsUnitTest
 	public function set_copyright(
 		string $id,
 		string $copyright,
-		int $expectedStatusCode = 204,
-		?string $assertSee = null,
+		int $expected_status_code = 204,
+		?string $assert_see = null,
 	): void {
 		$response = $this->testCase->postJson(
 			'/api/Album::setCopyright',
 			['albumID' => $id, 'copyright' => $copyright]
 		);
 
-		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee !== null) {
-			$response->assertSee($assertSee, false);
+		$this->assertStatus($response, $expected_status_code);
+		if ($assert_see !== null) {
+			$response->assertSee($assert_see, false);
 		}
 	}
 
@@ -251,16 +251,16 @@ class AlbumsUnitTest
 	public function set_description(
 		string $id,
 		string $description,
-		int $expectedStatusCode = 204,
-		?string $assertSee = null,
+		int $expected_status_code = 204,
+		?string $assert_see = null,
 	): void {
 		$response = $this->testCase->postJson(
 			'/api/Album::setDescription',
 			['albumID' => $id, 'description' => $description]
 		);
-		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee !== null) {
-			$response->assertSee($assertSee, false);
+		$this->assertStatus($response, $expected_status_code);
+		if ($assert_see !== null) {
+			$response->assertSee($assert_see, false);
 		}
 	}
 
@@ -274,17 +274,17 @@ class AlbumsUnitTest
 	 */
 	public function set_cover(
 		string $id,
-		?string $photoID,
-		int $expectedStatusCode = 204,
-		?string $assertSee = null,
+		?string $photo_i_d,
+		int $expected_status_code = 204,
+		?string $assert_see = null,
 	): void {
 		$response = $this->testCase->postJson(
 			'/api/Album::setCover',
-			['albumID' => $id, 'photoID' => $photoID]
+			['albumID' => $id, 'photoID' => $photo_i_d]
 		);
-		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee !== null) {
-			$response->assertSee($assertSee, false);
+		$this->assertStatus($response, $expected_status_code);
+		if ($assert_see !== null) {
+			$response->assertSee($assert_see, false);
 		}
 	}
 
@@ -298,17 +298,17 @@ class AlbumsUnitTest
 	 */
 	public function set_header(
 		string $id,
-		?string $photoID,
-		int $expectedStatusCode = 204,
-		?string $assertSee = null,
+		?string $photo_i_d,
+		int $expected_status_code = 204,
+		?string $assert_see = null,
 	): void {
 		$response = $this->testCase->postJson(
 			'/api/Album::setHeader',
-			['albumID' => $id, 'photoID' => $photoID]
+			['albumID' => $id, 'photoID' => $photo_i_d]
 		);
-		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee !== null) {
-			$response->assertSee($assertSee, false);
+		$this->assertStatus($response, $expected_status_code);
+		if ($assert_see !== null) {
+			$response->assertSee($assert_see, false);
 		}
 	}
 
@@ -323,16 +323,16 @@ class AlbumsUnitTest
 	public function set_license(
 		string $id,
 		string $license,
-		int $expectedStatusCode = 204,
-		?string $assertSee = null,
+		int $expected_status_code = 204,
+		?string $assert_see = null,
 	): void {
 		$response = $this->testCase->postJson('/api/Album::setLicense', [
 			'albumID' => $id,
 			'license' => $license,
 		]);
-		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee !== null) {
-			$response->assertSee($assertSee, false);
+		$this->assertStatus($response, $expected_status_code);
+		if ($assert_see !== null) {
+			$response->assertSee($assert_see, false);
 		}
 	}
 
@@ -347,19 +347,19 @@ class AlbumsUnitTest
 	 */
 	public function set_sorting(
 		string $id,
-		string $sortingCol,
-		string $sortingOrder,
-		int $expectedStatusCode = 204,
-		?string $assertSee = null,
+		string $sorting_col,
+		string $sorting_order,
+		int $expected_status_code = 204,
+		?string $assert_see = null,
 	): void {
 		$response = $this->testCase->postJson('/api/Album::setSorting', [
 			'albumID' => $id,
-			'sorting_column' => $sortingCol,
-			'sorting_order' => $sortingOrder,
+			'sorting_column' => $sorting_col,
+			'sorting_order' => $sorting_order,
 		]);
-		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee !== null) {
-			$response->assertSee($assertSee, false);
+		$this->assertStatus($response, $expected_status_code);
+		if ($assert_see !== null) {
+			$response->assertSee($assert_see, false);
 		}
 	}
 
@@ -387,8 +387,8 @@ class AlbumsUnitTest
 		bool $is_nsfw = false,
 		bool $grants_downloadable = true,
 		?string $password = null,
-		int $expectedStatusCode = 204,
-		?string $assertSee = null,
+		int $expected_status_code = 204,
+		?string $assert_see = null,
 	): void {
 		$params = [
 			'grants_full_photo_access' => $grants_full_photo_access,
@@ -404,9 +404,9 @@ class AlbumsUnitTest
 		}
 
 		$response = $this->testCase->postJson('/api/Album::setProtectionPolicy', $params);
-		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee !== null) {
-			$response->assertSee($assertSee, false);
+		$this->assertStatus($response, $expected_status_code);
+		if ($assert_see !== null) {
+			$response->assertSee($assert_see, false);
 		}
 	}
 
@@ -419,16 +419,16 @@ class AlbumsUnitTest
 	public function set_tags(
 		string $id,
 		array $tags,
-		int $expectedStatusCode = 204,
-		?string $assertSee = null,
+		int $expected_status_code = 204,
+		?string $assert_see = null,
 	): void {
 		$response = $this->testCase->postJson('/api/Album::setShowTags', [
 			'albumID' => $id,
 			'show_tags' => $tags,
 		]);
-		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee !== null) {
-			$response->assertSee($assertSee, false);
+		$this->assertStatus($response, $expected_status_code);
+		if ($assert_see !== null) {
+			$response->assertSee($assert_see, false);
 		}
 	}
 
@@ -468,13 +468,13 @@ class AlbumsUnitTest
 	 */
 	public function delete(
 		array $ids,
-		int $expectedStatusCode = 204,
-		?string $assertSee = null,
+		int $expected_status_code = 204,
+		?string $assert_see = null,
 	): void {
 		$response = $this->testCase->postJson('/api/Album::delete', ['albumIDs' => $ids]);
-		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee !== null) {
-			$response->assertSee($assertSee, false);
+		$this->assertStatus($response, $expected_status_code);
+		if ($assert_see !== null) {
+			$response->assertSee($assert_see, false);
 		}
 	}
 
@@ -490,17 +490,17 @@ class AlbumsUnitTest
 	 */
 	public function getPositionData(
 		string $id,
-		bool $includeSubAlbums,
-		int $expectedStatusCode = 201,
-		?string $assertSee = null,
+		bool $include_sub_albums,
+		int $expected_status_code = 201,
+		?string $assert_see = null,
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/Album::getPositionData', [
 			'albumID' => $id,
-			'includeSubAlbums' => $includeSubAlbums,
+			'includeSubAlbums' => $include_sub_albums,
 		]);
-		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee !== null) {
-			$response->assertSee($assertSee, false);
+		$this->assertStatus($response, $expected_status_code);
+		if ($assert_see !== null) {
+			$response->assertSee($assert_see, false);
 		}
 
 		return $response;

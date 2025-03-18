@@ -130,19 +130,19 @@ class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, H
 		$this->description = $values[RequestAttribute::DESCRIPTION_ATTRIBUTE];
 		$this->license = LicenseType::tryFrom($values[RequestAttribute::LICENSE_ATTRIBUTE]);
 
-		$photoColumn = ColumnSortingPhotoType::tryFrom($values[RequestAttribute::PHOTO_SORTING_COLUMN_ATTRIBUTE]);
-		$photoOrder = OrderSortingType::tryFrom($values[RequestAttribute::PHOTO_SORTING_ORDER_ATTRIBUTE]);
+		$photo_column = ColumnSortingPhotoType::tryFrom($values[RequestAttribute::PHOTO_SORTING_COLUMN_ATTRIBUTE]);
+		$photo_order = OrderSortingType::tryFrom($values[RequestAttribute::PHOTO_SORTING_ORDER_ATTRIBUTE]);
 
-		$this->photoSortingCriterion = $photoColumn === null ?
+		$this->photoSortingCriterion = $photo_column === null ?
 			null :
-			new PhotoSortingCriterion($photoColumn->toColumnSortingType(), $photoOrder);
+			new PhotoSortingCriterion($photo_column->toColumnSortingType(), $photo_order);
 
-		$albumColumn = ColumnSortingPhotoType::tryFrom($values[RequestAttribute::ALBUM_SORTING_COLUMN_ATTRIBUTE]);
-		$albumOrder = OrderSortingType::tryFrom($values[RequestAttribute::ALBUM_SORTING_ORDER_ATTRIBUTE]);
+		$album_column = ColumnSortingPhotoType::tryFrom($values[RequestAttribute::ALBUM_SORTING_COLUMN_ATTRIBUTE]);
+		$album_order = OrderSortingType::tryFrom($values[RequestAttribute::ALBUM_SORTING_ORDER_ATTRIBUTE]);
 
-		$this->albumSortingCriterion = $albumColumn === null ?
+		$this->albumSortingCriterion = $album_column === null ?
 			null :
-			new AlbumSortingCriterion($albumColumn->toColumnSortingType(), $albumOrder);
+			new AlbumSortingCriterion($album_column->toColumnSortingType(), $album_order);
 
 		$this->aspectRatio = AspectRatioType::tryFrom($values[RequestAttribute::ALBUM_ASPECT_RATIO_ATTRIBUTE]);
 		$this->photoLayout = PhotoLayoutType::tryFrom($values[RequestAttribute::ALBUM_PHOTO_LAYOUT]);
@@ -158,7 +158,7 @@ class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, H
 		}
 
 		/** @var string|null $photoId */
-		$photoId = $values[RequestAttribute::HEADER_ID_ATTRIBUTE];
-		$this->photo = $photoId !== null ? Photo::query()->findOrFail($photoId) : null;
+		$photo_id = $values[RequestAttribute::HEADER_ID_ATTRIBUTE];
+		$this->photo = $photo_id !== null ? Photo::query()->findOrFail($photo_id) : null;
 	}
 }

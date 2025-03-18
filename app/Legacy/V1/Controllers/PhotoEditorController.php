@@ -33,8 +33,8 @@ final class PhotoEditorController extends Controller
 			throw new ConfigurationException('support for rotation disabled by configuration');
 		}
 
-		$rotateStrategy = new Rotate($request->photo(), $request->direction());
-		$photo = $rotateStrategy->do();
+		$rotate_strategy = new Rotate($request->photo(), $request->direction());
+		$photo = $rotate_strategy->do();
 
 		return PhotoResource::make($photo);
 	}

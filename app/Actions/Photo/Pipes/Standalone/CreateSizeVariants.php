@@ -22,9 +22,9 @@ class CreateSizeVariants implements StandalonePipe
 		if ($state->sourceImage?->isLoaded()) {
 			try {
 				/** @var SizeVariantFactory $sizeVariantFactory */
-				$sizeVariantFactory = resolve(SizeVariantFactory::class);
-				$sizeVariantFactory->init($state->photo, $state->sourceImage, $state->namingStrategy);
-				$sizeVariantFactory->createSizeVariants();
+				$size_variant_factory = resolve(SizeVariantFactory::class);
+				$size_variant_factory->init($state->photo, $state->sourceImage, $state->namingStrategy);
+				$size_variant_factory->createSizeVariants();
 			} catch (\Throwable $t) {
 				// Don't re-throw the exception, because we do not want the
 				// import to fail completely only due to missing size variants.

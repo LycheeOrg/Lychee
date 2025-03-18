@@ -57,14 +57,14 @@ class SearchTest extends BasePhotoTest
 
 	public function testSearchPhotoByTitle(): void
 	{
-		$photoID1 = $this->photos_tests->upload(
+		$photo_i_d1 = $this->photos_tests->upload(
 			AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE)
 		)->offsetGet('id');
-		$photoID2 = $this->photos_tests->upload(
+		$photo_i_d2 = $this->photos_tests->upload(
 			AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE)
 		)->offsetGet('id');
-		$this->photos_tests->set_title($photoID1, 'photo search');
-		$this->photos_tests->set_title($photoID2, 'do not find me');
+		$this->photos_tests->set_title($photo_i_d1, 'photo search');
+		$this->photos_tests->set_title($photo_i_d2, 'do not find me');
 
 		$response = $this->runSearch('search');
 
@@ -74,7 +74,7 @@ class SearchTest extends BasePhotoTest
 					'album_id' => null,
 					'aperture' => 'f/2.8',
 					'focal' => '16 mm',
-					'id' => $photoID1,
+					'id' => $photo_i_d1,
 					'iso' => '1250',
 					'lens' => 'EF16-35mm f/2.8L USM',
 					'make' => 'Canon',
@@ -106,22 +106,22 @@ class SearchTest extends BasePhotoTest
 		]);
 
 		$response->assertJsonMissing([
-			'id' => $photoID2,
+			'id' => $photo_i_d2,
 		]);
 	}
 
 	public function testSearchPhotoByTag(): void
 	{
-		$photoID1 = $this->photos_tests->upload(
+		$photo_i_d1 = $this->photos_tests->upload(
 			AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE)
 		)->offsetGet('id');
-		$photoID2 = $this->photos_tests->upload(
+		$photo_i_d2 = $this->photos_tests->upload(
 			AbstractTestCase::createUploadedFile(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE)
 		)->offsetGet('id');
-		$this->photos_tests->set_title($photoID1, 'photo search');
-		$this->photos_tests->set_title($photoID2, 'do not find me');
-		$this->photos_tests->set_tag([$photoID1], ['search tag']);
-		$this->photos_tests->set_tag([$photoID2], ['other tag']);
+		$this->photos_tests->set_title($photo_i_d1, 'photo search');
+		$this->photos_tests->set_title($photo_i_d2, 'do not find me');
+		$this->photos_tests->set_tag([$photo_i_d1], ['search tag']);
+		$this->photos_tests->set_tag([$photo_i_d2], ['other tag']);
 
 		$response = $this->runSearch('search');
 
@@ -131,7 +131,7 @@ class SearchTest extends BasePhotoTest
 					'album_id' => null,
 					'aperture' => 'f/2.8',
 					'focal' => '16 mm',
-					'id' => $photoID1,
+					'id' => $photo_i_d1,
 					'iso' => '1250',
 					'lens' => 'EF16-35mm f/2.8L USM',
 					'make' => 'Canon',
@@ -167,22 +167,22 @@ class SearchTest extends BasePhotoTest
 		]);
 
 		$response->assertJsonMissing([
-			'id' => $photoID2,
+			'id' => $photo_i_d2,
 		]);
 	}
 
 	public function testSearchAlbumByTitle(): void
 	{
 		/** @var string $albumID1 */
-		$albumID1 = $this->albums_tests->add(null, 'search')->offsetGet('id');
+		$album_i_d1 = $this->albums_tests->add(null, 'search')->offsetGet('id');
 		/** @var string $albumID2 */
-		$albumID2 = $this->albums_tests->add(null, 'other')->offsetGet('id');
+		$album_i_d2 = $this->albums_tests->add(null, 'other')->offsetGet('id');
 
 		$response = $this->runSearch('search');
 
 		$response->assertJson([
 			'albums' => [[
-				'id' => $albumID1,
+				'id' => $album_i_d1,
 				'title' => 'search',
 			]],
 		]);
@@ -192,13 +192,13 @@ class SearchTest extends BasePhotoTest
 		]);
 
 		$response->assertJsonMissing([
-			'id' => $albumID2,
+			'id' => $album_i_d2,
 		]);
 	}
 
 	public function testDisabledPublicSearchWithAnonUser(): void
 	{
-		$isPublicSearchEnabled = Configs::getValueAsBool(TestConstants::CONFIG_PUBLIC_SEARCH);
+		$is_public_search_enabled = Configs::getValueAsBool(TestConstants::CONFIG_PUBLIC_SEARCH);
 		try {
 			Configs::set(TestConstants::CONFIG_PUBLIC_SEARCH, false);
 			$this->albums_tests->add(null, 'Matching private album')->offsetGet('id');
@@ -206,24 +206,24 @@ class SearchTest extends BasePhotoTest
 			Session::flush();
 			$this->runSearch('Matching', 401);
 		} finally {
-			Configs::set(TestConstants::CONFIG_PUBLIC_SEARCH, $isPublicSearchEnabled);
+			Configs::set(TestConstants::CONFIG_PUBLIC_SEARCH, $is_public_search_enabled);
 		}
 	}
 
 	public function testSearchAlbumByTitleWithAnonUser(): void
 	{
-		$isPublicSearchEnabled = Configs::getValueAsBool(TestConstants::CONFIG_PUBLIC_SEARCH);
+		$is_public_search_enabled = Configs::getValueAsBool(TestConstants::CONFIG_PUBLIC_SEARCH);
 		try {
 			Configs::set(TestConstants::CONFIG_PUBLIC_SEARCH, true);
 
-			$albumID1 = $this->albums_tests->add(null, 'Matching private album')->offsetGet('id');
-			$albumID2 = $this->albums_tests->add(null, 'Matching shared album')->offsetGet('id');
-			$albumID3 = $this->albums_tests->add(null, 'Matching public album')->offsetGet('id');
-			$albumID4 = $this->albums_tests->add(null, 'Other public album')->offsetGet('id');
-			$userID = $this->users_tests->add('Test User', 'Test password')->offsetGet('id');
-			$this->sharing_test->add([$albumID2], [$userID]);
-			$this->albums_tests->set_protection_policy($albumID3);
-			$this->albums_tests->set_protection_policy($albumID4);
+			$album_i_d1 = $this->albums_tests->add(null, 'Matching private album')->offsetGet('id');
+			$album_i_d2 = $this->albums_tests->add(null, 'Matching shared album')->offsetGet('id');
+			$album_i_d3 = $this->albums_tests->add(null, 'Matching public album')->offsetGet('id');
+			$album_i_d4 = $this->albums_tests->add(null, 'Other public album')->offsetGet('id');
+			$user_i_d = $this->users_tests->add('Test User', 'Test password')->offsetGet('id');
+			$this->sharing_test->add([$album_i_d2], [$user_i_d]);
+			$this->albums_tests->set_protection_policy($album_i_d3);
+			$this->albums_tests->set_protection_policy($album_i_d4);
 
 			Auth::logout();
 			Session::flush();
@@ -231,7 +231,7 @@ class SearchTest extends BasePhotoTest
 			$response = $this->runSearch('Matching');
 			$response->assertJson([
 				'albums' => [[
-					'id' => $albumID3,
+					'id' => $album_i_d3,
 					'title' => 'Matching public album',
 				]],
 			]);
@@ -239,71 +239,71 @@ class SearchTest extends BasePhotoTest
 			$response->assertJsonMissing(['title' => 'Matching private album']);
 			$response->assertJsonMissing(['title' => 'Matching shared album']);
 			$response->assertJsonMissing(['title' => 'Other public album']);
-			$response->assertJsonMissing(['id' => $albumID1]);
-			$response->assertJsonMissing(['id' => $albumID2]);
-			$response->assertJsonMissing(['id' => $albumID4]);
+			$response->assertJsonMissing(['id' => $album_i_d1]);
+			$response->assertJsonMissing(['id' => $album_i_d2]);
+			$response->assertJsonMissing(['id' => $album_i_d4]);
 		} finally {
-			Configs::set(TestConstants::CONFIG_PUBLIC_SEARCH, $isPublicSearchEnabled);
+			Configs::set(TestConstants::CONFIG_PUBLIC_SEARCH, $is_public_search_enabled);
 		}
 	}
 
 	public function testSearchAlbumByTitleWithNonAdminUser(): void
 	{
-		$isPublicSearchEnabled = Configs::getValueAsBool(TestConstants::CONFIG_PUBLIC_SEARCH);
-		$albumSortingColumn = Configs::getValueAsString(TestConstants::CONFIG_ALBUMS_SORTING_COL);
-		$albumSortingOrder = Configs::getValueAsString(TestConstants::CONFIG_ALBUMS_SORTING_ORDER);
+		$is_public_search_enabled = Configs::getValueAsBool(TestConstants::CONFIG_PUBLIC_SEARCH);
+		$album_sorting_column = Configs::getValueAsString(TestConstants::CONFIG_ALBUMS_SORTING_COL);
+		$album_sorting_order = Configs::getValueAsString(TestConstants::CONFIG_ALBUMS_SORTING_ORDER);
 		try {
 			Configs::set(TestConstants::CONFIG_PUBLIC_SEARCH, true);
 			Configs::set(TestConstants::CONFIG_ALBUMS_SORTING_COL, 'title');
 			Configs::set(TestConstants::CONFIG_ALBUMS_SORTING_ORDER, 'ASC');
 
-			$albumID1 = $this->albums_tests->add(null, 'Matching private album')->offsetGet('id');
-			$albumID2 = $this->albums_tests->add(null, 'Matching shared album')->offsetGet('id');
-			$albumID3 = $this->albums_tests->add(null, 'Matching public album')->offsetGet('id');
-			$albumID4 = $this->albums_tests->add(null, 'Other public album')->offsetGet('id');
-			$userID = $this->users_tests->add('Test User', 'Test password')->offsetGet('id');
-			$this->sharing_test->add([$albumID2], [$userID]);
-			$this->albums_tests->set_protection_policy($albumID3);
-			$this->albums_tests->set_protection_policy($albumID4);
+			$album_i_d1 = $this->albums_tests->add(null, 'Matching private album')->offsetGet('id');
+			$album_i_d2 = $this->albums_tests->add(null, 'Matching shared album')->offsetGet('id');
+			$album_i_d3 = $this->albums_tests->add(null, 'Matching public album')->offsetGet('id');
+			$album_i_d4 = $this->albums_tests->add(null, 'Other public album')->offsetGet('id');
+			$user_i_d = $this->users_tests->add('Test User', 'Test password')->offsetGet('id');
+			$this->sharing_test->add([$album_i_d2], [$user_i_d]);
+			$this->albums_tests->set_protection_policy($album_i_d3);
+			$this->albums_tests->set_protection_policy($album_i_d4);
 
 			Auth::logout();
 			Session::flush();
-			Auth::loginUsingId($userID);
+			Auth::loginUsingId($user_i_d);
 
 			$response = $this->runSearch('Matching');
 			$response->assertJson([
 				'albums' => [[
-					'id' => $albumID3,
+					'id' => $album_i_d3,
 					'title' => 'Matching public album',
 				], [
-					'id' => $albumID2,
+					'id' => $album_i_d2,
 					'title' => 'Matching shared album',
 				]],
 			]);
 
 			$response->assertJsonMissing(['title' => 'Matching private album']);
 			$response->assertJsonMissing(['title' => 'Other public album']);
-			$response->assertJsonMissing(['id' => $albumID1]);
-			$response->assertJsonMissing(['id' => $albumID4]);
+			$response->assertJsonMissing(['id' => $album_i_d1]);
+			$response->assertJsonMissing(['id' => $album_i_d4]);
 		} finally {
-			Configs::set(TestConstants::CONFIG_ALBUMS_SORTING_COL, $albumSortingColumn);
-			Configs::set(TestConstants::CONFIG_ALBUMS_SORTING_ORDER, $albumSortingOrder);
-			Configs::set(TestConstants::CONFIG_PUBLIC_SEARCH, $isPublicSearchEnabled);
+			Configs::set(TestConstants::CONFIG_ALBUMS_SORTING_COL, $album_sorting_column);
+			Configs::set(TestConstants::CONFIG_ALBUMS_SORTING_ORDER, $album_sorting_order);
+			Configs::set(TestConstants::CONFIG_PUBLIC_SEARCH, $is_public_search_enabled);
 		}
 	}
 
 	public function testSearchTagAlbumByTitle(): void
 	{
 		/** @var string $tagAlbumId1 */
-		$tagAlbumId1 = $this->albums_tests->addByTags('tag search', ['tag1', 'tag2'])->offsetGet('id');
+		$tag_album_id1 = $this->albums_tests->addByTags('tag search', ['tag1', 'tag2'])->offsetGet('id');
 		/** @var string $tagAlbumId2 */
-		$tagAlbumId2 = $this->albums_tests->addByTags('tag other', ['tag3'])->offsetGet('id');
+		$tag_album_id2 = $this->albums_tests->addByTags('tag other', ['tag3'])->offsetGet('id');
 
 		$response = $this->runSearch('search');
 
 		$response->assertJson([
 			'tag_albums' => [[
-				'id' => $tagAlbumId1,
+				'id' => $tag_album_id1,
 				'title' => 'tag search',
 			]],
 		]);
@@ -313,7 +313,7 @@ class SearchTest extends BasePhotoTest
 		]);
 
 		$response->assertJsonMissing([
-			'id' => $tagAlbumId2,
+			'id' => $tag_album_id2,
 		]);
 	}
 
@@ -328,16 +328,16 @@ class SearchTest extends BasePhotoTest
 	 */
 	protected function runSearch(
 		string $term,
-		int $expectedStatusCode = 200,
-		?string $assertSee = null,
+		int $expected_status_code = 200,
+		?string $assert_see = null,
 	): TestResponse {
 		$response = $this->postJson(
 			'/api/Search::run',
 			['term' => $term]
 		);
-		$this->assertStatus($response, $expectedStatusCode);
-		if ($assertSee !== null) {
-			$response->assertSee($assertSee, false);
+		$this->assertStatus($response, $expected_status_code);
+		if ($assert_see !== null) {
+			$response->assertSee($assert_see, false);
 		}
 
 		return $response;

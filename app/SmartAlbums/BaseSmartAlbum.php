@@ -58,13 +58,13 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	 * @throws ConfigurationKeyMissingException
 	 * @throws FrameworkException
 	 */
-	protected function __construct(SmartAlbumType $id, \Closure $smartCondition)
+	protected function __construct(SmartAlbumType $id, \Closure $smart_condition)
 	{
 		try {
 			$this->photoQueryPolicy = resolve(PhotoQueryPolicy::class);
 			$this->id = $id->value;
 			$this->title = __('gallery.smart_album.' . strtolower($id->name)) ?? $id->name;
-			$this->smartPhotoCondition = $smartCondition;
+			$this->smartPhotoCondition = $smart_condition;
 			/** @var AccessPermission|null $perm */
 			$perm = AccessPermission::query()->where('base_album_id', '=', $id->value)->first();
 			$this->publicPermissions = $perm;

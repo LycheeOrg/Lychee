@@ -90,12 +90,12 @@ class Sync extends Command
 			/** @var Album $album */
 			$album = $album_id !== null ? Album::query()->findOrFail($album_id) : null; // in case no ID provided -> import to root folder
 
-			$deleteImported = $this->option('delete_imported') === '1';
-			$importViaSymlink = $this->option('import_via_symlink') === '1';
-			$skipDuplicates = $this->option('skip_duplicates') === '1';
-			$resyncMetadata = $this->option('resync_metadata') === true; // ! Because the option is --resync_metadata the return type of $this->option() is already bool.
+			$delete_imported = $this->option('delete_imported') === '1';
+			$import_via_symlink = $this->option('import_via_symlink') === '1';
+			$skip_duplicates = $this->option('skip_duplicates') === '1';
+			$resync_metadata = $this->option('resync_metadata') === true; // ! Because the option is --resync_metadata the return type of $this->option() is already bool.
 
-			if ($importViaSymlink && $deleteImported) {
+			if ($import_via_symlink && $delete_imported) {
 				$this->error('The settings for import via symbolic links and deletion of imported files are conflicting');
 				$this->info('  Use --import_via_symlink={0|1} and --delete-imported={0|1} explicitly to apply a conflict-free setting');
 
@@ -104,10 +104,10 @@ class Sync extends Command
 
 			$exec = new Exec(
 				new ImportMode(
-					$deleteImported,
-					$skipDuplicates,
-					$importViaSymlink,
-					$resyncMetadata
+					$delete_imported,
+					$skip_duplicates,
+					$import_via_symlink,
+					$resync_metadata
 				),
 				$owner_id,
 				true,

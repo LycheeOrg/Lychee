@@ -43,14 +43,14 @@ class CopyPhotosRequest extends BaseApiRequest implements HasPhotos, HasAlbum
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		/** @var array<int,string> $photosIDs */
-		$photosIDs = $values[RequestAttribute::PHOTO_IDS_ATTRIBUTE];
+		$photos_i_ds = $values[RequestAttribute::PHOTO_IDS_ATTRIBUTE];
 		$this->photos = Photo::query()
 			->with(['size_variants'])
-			->findOrFail($photosIDs);
+			->findOrFail($photos_i_ds);
 		/** @var string|null */
-		$targetAlbumID = $values[RequestAttribute::ALBUM_ID_ATTRIBUTE];
-		$this->album = $targetAlbumID === null ?
+		$target_album_i_d = $values[RequestAttribute::ALBUM_ID_ATTRIBUTE];
+		$this->album = $target_album_i_d === null ?
 			null :
-			Album::query()->findOrFail($targetAlbumID);
+			Album::query()->findOrFail($target_album_i_d);
 	}
 }

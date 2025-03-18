@@ -36,10 +36,10 @@ class MigrateRequest extends BaseApiRequest implements HasUsername, HasPassword
 	 */
 	public function authorize(): bool
 	{
-		$isLoggedIn = Auth::check() || Auth::attempt(['username' => $this->username(), 'password' => $this->password()]);
+		$is_logged_in = Auth::check() || Auth::attempt(['username' => $this->username(), 'password' => $this->password()]);
 
 		// Check if logged in AND is admin
-		return $isLoggedIn && Gate::check(SettingsPolicy::CAN_UPDATE, Configs::class);
+		return $is_logged_in && Gate::check(SettingsPolicy::CAN_UPDATE, Configs::class);
 	}
 
 	/**

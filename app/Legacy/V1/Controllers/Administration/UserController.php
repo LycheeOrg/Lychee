@@ -33,9 +33,9 @@ final class UserController extends Controller
 	 *
 	 * @return UserResource
 	 */
-	public function updateLogin(ChangeLoginRequest $request, UpdateLogin $updateLogin): UserResource
+	public function updateLogin(ChangeLoginRequest $request, UpdateLogin $update_login): UserResource
 	{
-		$currentUser = $updateLogin->do(
+		$current_user = $update_login->do(
 			$request->username(),
 			$request->password(),
 			$request->oldPassword(),
@@ -44,9 +44,9 @@ final class UserController extends Controller
 		// Update the session with the new credentials of the user.
 		// Otherwise, the session is out-of-sync and falsely assumes the user
 		// to be unauthenticated upon the next request.
-		Auth::login($currentUser);
+		Auth::login($current_user);
 
-		return UserResource::make($currentUser);
+		return UserResource::make($current_user);
 	}
 
 	/**
@@ -103,9 +103,9 @@ final class UserController extends Controller
 	 * @throws ModelDBException
 	 * @throws \Exception
 	 */
-	public function resetToken(ChangeTokenRequest $request, TokenReset $tokenReset): array
+	public function resetToken(ChangeTokenRequest $request, TokenReset $token_reset): array
 	{
-		$token = $tokenReset->do();
+		$token = $token_reset->do();
 
 		return ['token' => $token];
 	}
@@ -118,8 +118,8 @@ final class UserController extends Controller
 	 * @throws UnauthenticatedException
 	 * @throws ModelDBException
 	 */
-	public function unsetToken(ChangeTokenRequest $request, TokenDisable $tokenDisable): void
+	public function unsetToken(ChangeTokenRequest $request, TokenDisable $token_disable): void
 	{
-		$tokenDisable->do();
+		$token_disable->do();
 	}
 }

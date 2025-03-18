@@ -45,21 +45,21 @@ class RouteCacherTest extends AbstractTestCase
 
 	public function testRouteCacherHit(): void
 	{
-		$routeCacher = new RouteCacher();
+		$route_cacher = new RouteCacher();
 		Log::shouldReceive('info')->once();
 		Cache::put('key', 60);
 
 		Log::shouldReceive('debug')->once()->with('CacheListener: Hit for key');
 		Log::shouldReceive('info')->never();
 
-		$routeCacher->remember('key', 'route', 60, function () {
+		$route_cacher->remember('key', 'route', 60, function () {
 			return 60;
 		}, ['tags']);
 	}
 
 	public function testRouteCacherMiss(): void
 	{
-		$routeCacher = new RouteCacher();
+		$route_cacher = new RouteCacher();
 		Log::shouldReceive('debug')->once()->with('CacheListener: Miss for key');
 		Log::shouldReceive('debug')->once()->with('CacheListener: Miss for route');
 		Log::shouldReceive('debug')->once()->with('CacheListener: Miss for T:tags');
@@ -67,27 +67,27 @@ class RouteCacherTest extends AbstractTestCase
 		Log::shouldReceive('info')->once()->with('CacheListener: Writing key route');
 		Log::shouldReceive('info')->once()->with('CacheListener: Writing key T:tags');
 
-		$routeCacher->remember('key', 'route', 60, function () {
+		$route_cacher->remember('key', 'route', 60, function () {
 			return 60;
 		}, ['tags']);
 	}
 
 	public function testRouteCacherForgetRouteException(): void
 	{
-		$routeCacher = new RouteCacher();
+		$route_cacher = new RouteCacher();
 		Log::shouldReceive('info')->once();
 		Cache::put('route', [60]);
 
 		Log::shouldReceive('debug')->once()->with('CacheListener: Hit for route');
 
 		$this->expectException(LycheeLogicException::class);
-		$routeCacher->forgetRoute('route');
+		$route_cacher->forgetRoute('route');
 		Cache::forget('route');
 	}
 
 	public function testRouteCacherForgetRoute(): void
 	{
-		$routeCacher = new RouteCacher();
+		$route_cacher = new RouteCacher();
 		Log::shouldReceive('info')->twice();
 		Cache::put('route', ['forgetMe' => 'value']);
 		Cache::put('forgetMe', 'value');
@@ -96,25 +96,25 @@ class RouteCacherTest extends AbstractTestCase
 		Log::shouldReceive('info')->once()->with('CacheListener: Forgetting key forgetMe');
 		Log::shouldReceive('info')->once()->with('CacheListener: Forgetting key route');
 
-		$routeCacher->forgetRoute('route');
+		$route_cacher->forgetRoute('route');
 	}
 
 	public function testRouteCacherForgetTagException(): void
 	{
-		$routeCacher = new RouteCacher();
+		$route_cacher = new RouteCacher();
 		Log::shouldReceive('info')->once();
 		Cache::put('T:tag', [60]);
 
 		Log::shouldReceive('debug')->once()->with('CacheListener: Hit for T:tag');
 
 		$this->expectException(LycheeLogicException::class);
-		$routeCacher->forgetTag('tag');
+		$route_cacher->forgetTag('tag');
 		Cache::forget('T:tag');
 	}
 
 	public function testRouteCacherForgetTag(): void
 	{
-		$routeCacher = new RouteCacher();
+		$route_cacher = new RouteCacher();
 		Log::shouldReceive('info')->twice();
 		Cache::put('T:tag', ['forgetMe' => 'value']);
 		Cache::put('forgetMe', 'value');
@@ -123,6 +123,6 @@ class RouteCacherTest extends AbstractTestCase
 		Log::shouldReceive('info')->once()->with('CacheListener: Forgetting key forgetMe');
 		Log::shouldReceive('info')->once()->with('CacheListener: Forgetting key T:tag');
 
-		$routeCacher->forgetTag('tag');
+		$route_cacher->forgetTag('tag');
 	}
 }

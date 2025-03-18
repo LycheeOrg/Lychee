@@ -37,7 +37,7 @@ class ViteManifestNotFoundHandler implements HttpExceptionHandler
 	/**
 	 * {@inheritDoc}
 	 */
-	public function renderHttpException(SymfonyResponse $defaultResponse, HttpException $e): SymfonyResponse
+	public function renderHttpException(SymfonyResponse $default_response, HttpException $e): SymfonyResponse
 	{
 		return response()->view('error.error', [
 			'code' => $e->getStatusCode(),

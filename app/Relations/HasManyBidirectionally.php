@@ -33,10 +33,10 @@ class HasManyBidirectionally extends HasMany implements BidirectionalRelation
 	 *
 	 * @return void
 	 */
-	public function __construct(Builder $query, Model $parent, string $foreignKey, string $localKey, string $foreignMethodName)
+	public function __construct(Builder $query, Model $parent, string $foreign_key, string $local_key, string $foreign_method_name)
 	{
-		parent::__construct($query, $parent, $foreignKey, $localKey);
-		$this->foreignMethodName = $foreignMethodName;
+		parent::__construct($query, $parent, $foreign_key, $local_key);
+		$this->foreignMethodName = $foreign_method_name;
 	}
 
 	/**
@@ -63,14 +63,14 @@ class HasManyBidirectionally extends HasMany implements BidirectionalRelation
 		foreach ($models as $model) {
 			if (isset($dictionary[$key = $this->getDictionaryKey($model->getAttribute($this->localKey))])) {
 				/** @var Collection<int,TRelatedModel> $childrenOfModel */
-				$childrenOfModel = $this->getRelationValue($dictionary, $key, 'many');
-				$model->setRelation($relation, $childrenOfModel);
+				$children_of_model = $this->getRelationValue($dictionary, $key, 'many');
+				$model->setRelation($relation, $children_of_model);
 				// This is the newly added code which sets this method apart
 				// from the original method and additionally sets the
 				// reverse link
 				/** @var Model $childModel */
-				foreach ($childrenOfModel as $childModel) {
-					$childModel->setRelation($this->foreignMethodName, $model);
+				foreach ($children_of_model as $child_model) {
+					$child_model->setRelation($this->foreignMethodName, $model);
 				}
 			}
 		}

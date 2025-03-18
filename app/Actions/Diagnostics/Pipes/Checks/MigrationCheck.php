@@ -40,22 +40,22 @@ class MigrationCheck implements DiagnosticPipe
 
 	public static function isUpToDate(): bool
 	{
-		$installedVersion = resolve(InstalledVersion::class);
-		$fileVersion = resolve(FileVersion::class);
+		$installed_version = resolve(InstalledVersion::class);
+		$file_version = resolve(FileVersion::class);
 
-		$db_ver = $installedVersion->getVersion();
-		$file_ver = $fileVersion->getVersion();
+		$db_ver = $installed_version->getVersion();
+		$file_ver = $file_version->getVersion();
 
 		return $db_ver->toInteger() === $file_ver->toInteger();
 	}
 
 	private function isInFuture(): bool
 	{
-		$installedVersion = resolve(InstalledVersion::class);
-		$fileVersion = resolve(FileVersion::class);
+		$installed_version = resolve(InstalledVersion::class);
+		$file_version = resolve(FileVersion::class);
 
-		$db_ver = $installedVersion->getVersion();
-		$file_ver = $fileVersion->getVersion();
+		$db_ver = $installed_version->getVersion();
+		$file_ver = $file_version->getVersion();
 
 		return $db_ver->toInteger() > $file_ver->toInteger();
 	}

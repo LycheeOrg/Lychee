@@ -36,5 +36,5 @@ interface HttpExceptionHandler
 	 *
 	 * @return SymfonyResponse
 	 */
-	public function renderHttpException(SymfonyResponse $defaultResponse, HttpException $e): SymfonyResponse;
+	public function renderHttpException(SymfonyResponse $default_response, HttpException $e): SymfonyResponse;
 }

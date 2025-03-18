@@ -34,11 +34,11 @@ class StatisticsController extends Controller
 	 */
 	public function getSpacePerUser(SpacePerUserRequest $request, Spaces $spaces): Collection
 	{
-		$spaceData = $spaces->getFullSpacePerUser(
+		$space_data = $spaces->getFullSpacePerUser(
 			owner_id: $request->ownerId()
 		);
 
-		return UserSpace::collect($spaceData);
+		return UserSpace::collect($space_data);
 	}
 
 	/**
@@ -51,14 +51,14 @@ class StatisticsController extends Controller
 	 */
 	public function getSpacePerSizeVariantType(SpaceSizeVariantRequest $request, Spaces $spaces): Collection
 	{
-		$albumId = $request->album()?->id;
-		$ownerId = $albumId === null ? $request->ownerId() : null;
+		$album_id = $request->album()?->id;
+		$owner_id = $album_id === null ? $request->ownerId() : null;
 
-		$spaceData = $albumId === null
-			? $spaces->getSpacePerSizeVariantTypePerUser(owner_id: $ownerId)
-			: $spaces->getSpacePerSizeVariantTypePerAlbum(album_id: $albumId);
+		$space_data = $album_id === null
+			? $spaces->getSpacePerSizeVariantTypePerUser(owner_id: $owner_id)
+			: $spaces->getSpacePerSizeVariantTypePerAlbum(album_id: $album_id);
 
-		return Sizes::collect($spaceData);
+		return Sizes::collect($space_data);
 	}
 
 	/**
@@ -71,18 +71,18 @@ class StatisticsController extends Controller
 	 */
 	public function getSpacePerAlbum(SpacePerAlbumRequest $request, Spaces $spaces): Collection
 	{
-		$albumId = $request->album()?->id;
-		$ownerId = $albumId === null ? $request->ownerId() : null;
-		$spaceData = $spaces->getSpacePerAlbum(
-			album_id: $albumId,
-			owner_id: $ownerId
+		$album_id = $request->album()?->id;
+		$owner_id = $album_id === null ? $request->ownerId() : null;
+		$space_data = $spaces->getSpacePerAlbum(
+			album_id: $album_id,
+			owner_id: $owner_id
 		);
-		$countData = $spaces->getPhotoCountPerAlbum(
-			album_id: $albumId,
-			owner_id: $ownerId);
+		$count_data = $spaces->getPhotoCountPerAlbum(
+			album_id: $album_id,
+			owner_id: $owner_id);
 
 		/** @var Collection<int,array{0:array{id:string,left:int,right:int,size:int},1:array{id:string,username:string,title:string,is_nsfw:bool,left:int,right:int,num_photos:int,num_descendants:int}}> $zipped */
-		$zipped = $spaceData->zip($countData);
+		$zipped = $space_data->zip($count_data);
 
 		return $zipped->map(fn ($z) => new Album($z[0], $z[1]));
 	}
@@ -98,18 +98,18 @@ class StatisticsController extends Controller
 	 */
 	public function getTotalSpacePerAlbum(SpacePerAlbumRequest $request, Spaces $spaces): Collection
 	{
-		$albumId = $request->album()?->id;
-		$ownerId = $albumId === null ? $request->ownerId() : null;
-		$spaceData = $spaces->getTotalSpacePerAlbum(
-			album_id: $albumId,
-			owner_id: $ownerId
+		$album_id = $request->album()?->id;
+		$owner_id = $album_id === null ? $request->ownerId() : null;
+		$space_data = $spaces->getTotalSpacePerAlbum(
+			album_id: $album_id,
+			owner_id: $owner_id
 		);
-		$countData = $spaces->getTotalPhotoCountPerAlbum(
-			album_id: $albumId,
-			owner_id: $ownerId);
+		$count_data = $spaces->getTotalPhotoCountPerAlbum(
+			album_id: $album_id,
+			owner_id: $owner_id);
 
 		/** @var Collection<int,array{0:array{id:string,left:int,right:int,size:int},1:array{id:string,username:string,title:string,is_nsfw:bool,left:int,right:int,num_photos:int,num_descendants:int}}> $zipped */
-		$zipped = $spaceData->zip($countData);
+		$zipped = $space_data->zip($count_data);
 
 		return $zipped->map(fn ($z) => new Album($z[0], $z[1]));
 	}
