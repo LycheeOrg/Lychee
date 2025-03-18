@@ -43,6 +43,7 @@ else
         php artisan optimize --clever --dont-confirm=assume-no
         echo "php artisan migrate --force"
         php artisan migrate --force
+        php artisan cache:clear
     fi
 fi
 
