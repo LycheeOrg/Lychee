@@ -26,14 +26,14 @@ class CreateTagAlbum extends Action
 	 * @throws ModelDBException
 	 * @throws UnauthenticatedException
 	 */
-	public function create(string $title, array $show_tags): TagAlbum
+	public function create(string $title, array $showTags): TagAlbum
 	{
 		/** @var int */
 		$userId = Auth::id() ?? throw new UnauthenticatedException();
 
 		$album = new TagAlbum();
 		$album->title = $title;
-		$album->show_tags = $show_tags;
+		$album->show_tags = $showTags;
 		$album->owner_id = $userId;
 		$album->save();
 
