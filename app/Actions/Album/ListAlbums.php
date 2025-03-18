@@ -30,7 +30,7 @@ class ListAlbums extends Action
 	 *
 	 * @return TAlbumSaved[]
 	 */
-	public function do(Collection $albumsFiltering, ?string $parent_id): array
+	public function do(Collection $albumsFiltering, ?string $parentId): array
 	{
 		$albumQueryPolicy = resolve(AlbumQueryPolicy::class);
 		$unfiltered = $albumQueryPolicy->applyReachabilityFilter(
@@ -55,12 +55,12 @@ class ListAlbums extends Action
 		/** @var NsCollection<Album> $tree */
 		$tree = $albums->toTree(null);
 
-		$flat_tree = $this->flatten($tree);
+		$flatTree = $this->flatten($tree);
 
 		// Prepend with the possibility to move to root if parent is not already root.
-		if ($parent_id !== null) {
+		if ($parentId !== null) {
 			array_unshift(
-				$flat_tree,
+				$flatTree,
 				[
 					'id' => null,
 					'title' => __('gallery.root'),
@@ -71,7 +71,7 @@ class ListAlbums extends Action
 			);
 		}
 
-		return $flat_tree;
+		return $flatTree;
 	}
 
 	/**
@@ -88,12 +88,12 @@ class ListAlbums extends Action
 		$flatArray = [];
 		foreach ($collection as $node) {
 			$title = $prefix . ($prefix !== '' ? '/' : '') . $node->title;
-			$short_title = $this->shorten($title);
+			$shortTitle = $this->shorten($title);
 			$flatArray[] = [
 				'id' => $node->id,
 				'title' => $title,
 				'original' => $node->title,
-				'short_title' => $short_title,
+				'short_title' => $shortTitle,
 				'thumb' => $node->thumb?->thumbUrl ?? URL::asset('img/no_images.svg'),
 			];
 			if ($node->children !== null) {
@@ -120,33 +120,33 @@ class ListAlbums extends Action
 			return $title;
 		}
 		/** @var Collection<int,string> $title_split */
-		$title_split = collect(explode('/', $title));
-		$last_elem = $title_split->last();
-		$len_last_elem = strlen($last_elem);
+		$titleSplit = collect(explode('/', $title));
+		$lastElem = $titleSplit->last();
+		$lenLastElem = strlen($lastElem);
 
-		$num_chunks = $title_split->count() - 1;
+		$numChunks = $titleSplit->count() - 1;
 
-		if ($num_chunks === 0) {
-			return Str::limit($last_elem, self::SHORTEN_BY, '…');
+		if ($numChunks === 0) {
+			return Str::limit($lastElem, self::SHORTEN_BY, '…');
 		}
 
-		$title_split = $title_split->take($num_chunks);
+		$titleSplit = $titleSplit->take($numChunks);
 		/** @var Collection<int,int> $title_lengths */
-		$title_lengths = $title_split->map(fn ($v) => strlen($v));
+		$titleLengths = $titleSplit->map(fn ($v) => strlen($v));
 
 		// find best target length.
 
-		$len_to_reduce = self::SHORTEN_BY - $len_last_elem - 2 * $num_chunks;
-		$unit_target_len = (int) ceil($len_to_reduce / $num_chunks);
+		$lenToReduce = self::SHORTEN_BY - $lenLastElem - 2 * $numChunks;
+		$unitTargetLen = (int) ceil($lenToReduce / $numChunks);
 
 		do {
-			$unit_target_len--;
-			$title_lengths = $title_lengths->map(fn ($v) => $v <= $unit_target_len ? $v : $unit_target_len + 1);
-			$resulting_len = $title_lengths->sum();
-		} while ($len_to_reduce < $resulting_len);
+			$unitTargetLen--;
+			$titleLengths = $titleLengths->map(fn ($v) => $v <= $unitTargetLen ? $v : $unitTargetLen + 1);
+			$resultingLen = $titleLengths->sum();
+		} while ($lenToReduce < $resultingLen);
 
-		$title_split = $title_split->map(fn ($v) => Str::limit($v, $unit_target_len > 0 ? $unit_target_len : 0, '…'));
+		$titleSplit = $titleSplit->map(fn ($v) => Str::limit($v, $unitTargetLen > 0 ? $unitTargetLen : 0, '…'));
 
-		return implode('/', $title_split->all()) . '/' . $last_elem;
+		return implode('/', $titleSplit->all()) . '/' . $lastElem;
 	}
 }

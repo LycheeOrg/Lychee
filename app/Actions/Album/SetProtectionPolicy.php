@@ -38,21 +38,21 @@ class SetProtectionPolicy extends Action
 		$album->is_nsfw = $protectionPolicy->is_nsfw;
 		$album->save();
 
-		$active_permissions = $album->public_permissions();
+		$activePermissions = $album->public_permissions();
 
 		if (!$protectionPolicy->is_public) {
-			$active_permissions?->delete();
+			$activePermissions?->delete();
 
 			return;
 		}
 
 		// Security attributes of the album itself independent of a particular user
-		$active_permissions ??= new AccessPermission();
-		$active_permissions->is_link_required = $protectionPolicy->is_link_required;
-		$active_permissions->grants_full_photo_access = $protectionPolicy->grants_full_photo_access;
-		$active_permissions->grants_download = $protectionPolicy->grants_download;
-		$active_permissions->grants_upload = $protectionPolicy->grants_upload;
-		$active_permissions->base_album_id = $album->id;
+		$activePermissions ??= new AccessPermission();
+		$activePermissions->is_link_required = $protectionPolicy->is_link_required;
+		$activePermissions->grants_full_photo_access = $protectionPolicy->grants_full_photo_access;
+		$activePermissions->grants_download = $protectionPolicy->grants_download;
+		$activePermissions->grants_upload = $protectionPolicy->grants_upload;
+		$activePermissions->base_album_id = $album->id;
 
 		// $album->public_permissions = $active_permissions;
 
@@ -61,13 +61,13 @@ class SetProtectionPolicy extends Action
 			// password is provided => there is a change
 			if ($password !== null) {
 				// password is not null => we update the value with the hash
-				$active_permissions->password = Hash::make($password);
+				$activePermissions->password = Hash::make($password);
 			} else {
 				// we remove the password
-				$active_permissions->password = null;
+				$activePermissions->password = null;
 			}
 		}
-		$active_permissions->base_album_id = $album->id;
-		$active_permissions->save();
+		$activePermissions->base_album_id = $album->id;
+		$activePermissions->save();
 	}
 }
