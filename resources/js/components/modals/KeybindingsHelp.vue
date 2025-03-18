@@ -4,7 +4,7 @@
 			<div
 				class="flex flex-col gap-4 bg-gradient-to-b from-bg-300 to-bg-400 relative rounded-md text-muted-color max-w-xl lg:max-w-3xl xl:max-w-7xl"
 			>
-				<h1 class="text-center text-xl font-bold w-full border-b border-b-black/20 p-3">Keyboard shortcuts</h1>
+				<h1 class="text-center text-xl font-bold w-full border-b border-b-black/20 p-3">{{ $t("dialogs.keybindings.header") }}</h1>
 				<div class="flex flex-wrap gap-2 justify-center align-top max-h-[80vh] overflow-y-auto px-3">
 					<DataTable v-for="list in shortcutsList" :value="list.shortcuts" :showGridlines="false" :size="'small'">
 						<template #header>
@@ -80,11 +80,11 @@ const shortcutsList = ref([
 	{
 		header: trans("dialogs.keybindings.side_wide"),
 		shortcuts: [
-			{ action: trans("back_cancel"), key: "Esc" },
-			{ action: trans("confirm"), key: "Enter" },
-			{ action: trans("login"), key: "l" },
-			{ action: trans("toggle_full_screen"), key: "f" },
-			{ action: trans("toggle_sensitive_albums"), key: "h" },
+			{ action: trans("dialogs.keybindings.back_cancel"), key: "Esc" },
+			{ action: trans("dialogs.keybindings.confirm"), key: "Enter" },
+			{ action: trans("dialogs.keybindings.login"), key: "l" },
+			{ action: trans("dialogs.keybindings.toggle_full_screen"), key: "f" },
+			{ action: trans("dialogs.keybindings.toggle_sensitive_albums"), key: "h" },
 			// { action: "Login with U2F", key: "k" },
 		],
 	},

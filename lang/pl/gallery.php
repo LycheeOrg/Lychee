@@ -113,8 +113,8 @@ return [
 		'properties' => [
 			'title' => 'Tytuł',
 			'description' => 'Opis',
-			'photo_ordering' => 'Zamów zdjęcia przez',
-			'children_ordering' => 'Uporządkuj album według',
+			'photo_ordering' => 'Sortuj zdjęcia według',
+			'children_ordering' => 'Sortuj albumy według',
 			'asc/desc' => 'asc/desc',
 			'header' => 'Ustawianie nagłówka albumu',
 			'compact_header' => 'Użyj kompaktowego nagłówka',
@@ -221,7 +221,7 @@ return [
 
 	'sort' => [
 		'photo_select_1' => 'Czas przesyłania',
-		'photo_select_2' => 'Take Date',
+		'photo_select_2' => 'Czas wykonania',
 		'photo_select_3' => 'Tytuł',
 		'photo_select_4' => 'Opis',
 		'photo_select_6' => 'Wyróżnienie',

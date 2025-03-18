@@ -35,6 +35,7 @@ return [
 		'import' => 'Import',
 	],
 	'keybindings' => [
+		'header' => 'Keyboard shortcuts',
 		'don_t_show_again' => 'Don\'t show this again',
 		'side_wide' => 'Site-wide Shortcuts',
 		'back_cancel' => 'Back/Cancel',
