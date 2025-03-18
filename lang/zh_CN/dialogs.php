@@ -35,6 +35,7 @@ return [
 		'import' => '导入',
 	],
 	'keybindings' => [
+		'header' => 'Keyboard shortcuts',
 		'don_t_show_again' => '不再显示',
 		'side_wide' => '全局快捷键',
 		'back_cancel' => '返回/取消',

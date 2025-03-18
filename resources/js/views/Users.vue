@@ -53,11 +53,11 @@
 					<ul class="text-sm">
 						<li class="ml-2 pt-2 flex items-start gap-x-4">
 							<i class="pi pi-upload"></i>
-							<span>When selected, the user can upload content.</span>
+							<span>{{ $t("users.upload_rights") }}</span>
 						</li>
 						<li class="ml-2 pt-2 flex items-start gap-x-4">
 							<i class="pi pi-lock-open"></i>
-							<span>When selected, the user can modify their profile (username, password).</span>
+							<span>{{ $t("users.edit_rights") }}</span>
 						</li>
 						<li class="ml-2 pt-2 flex items-start gap-x-4" v-if="is_se_enabled">
 							<i class="pi pi-chart-pie"></i>
