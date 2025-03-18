@@ -3,8 +3,10 @@
 declare(strict_types=1);
 
 use Rector\Config\RectorConfig;
+use Scripts\Rector\SnakeCaseVariableCasingRector;
+// use Scripts\Rector\VariableCasingRector;
 
-return RectorConfig::configure()
+$rectorConfig = RectorConfig::configure()
     ->withPaths([
         __DIR__ . '/app',
         __DIR__ . '/bootstrap',
@@ -21,3 +23,8 @@ return RectorConfig::configure()
     ->withTypeCoverageLevel(0)
     ->withDeadCodeLevel(0)
     ->withCodeQualityLevel(0);
+$rectorConfig->withRules([
+    SnakeCaseVariableCasingRector::class,
+	// VariableCasingRector::class,
+]);
+return $rectorConfig;
