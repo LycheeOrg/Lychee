@@ -12,19 +12,19 @@ return [
 	| Diagnostics page
 	|--------------------------------------------------------------------------
 	*/
-	'title' => 'Diagnostics',
+	'title' => 'Diagnostyka',
 
-	'copy_to_clipboard' => 'Copy diagnostics to clipboard',
-	'self-diagnosis' => 'Self-diagnosis',
+	'copy_to_clipboard' => 'Kopiuj diagnostykę do schowka',
+	'self-diagnosis' => 'Auto-diagnoza',
 	'info' => 'Info',
-	'space' => 'Space',
-	'load_space' => 'Load space usage.',
-	'configuration' => 'Configuration',
-	'loading' => 'Loading...',
-	'identical_content' => 'Identical content',
+	'space' => 'Przestrzeń',
+	'load_space' => 'Wykorzystanie przestrzeni',
+	'configuration' => 'Konfiguracja',
+	'loading' => 'Ładowanie...',
+	'identical_content' => 'Identyczna zawartość',
 
 	'toast' => [
 		'info' => 'Info',
-		'copy' => 'Diagnostics copied to clipboard!',
+		'copy' => 'Diagnostyka skopiowana do schowka !',
 	],
 ];

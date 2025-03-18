@@ -12,18 +12,18 @@ return [
 	| Left Menu
 	|--------------------------------------------------------------------------
 	*/
-	'back_to_gallery' => 'Back to Gallery',
+	'back_to_gallery' => 'Powrót do galerii',
 
-	'admin' => 'Admin',
-	'clockwork' => 'Clockwork App',
-	'logs' => 'Show Logs',
-	'jobs' => 'Show Job History',
-	'user' => 'User',
+	'admin' => 'Administrator',
+	'clockwork' => 'clockwork',
+	'logs' => 'Pokaż dzienniki',
+	'jobs' => 'Pokaż historię zadań',
+	'user' => 'Użytkownik',
 
-	'sign_out' => 'Sign Out',
+	'sign_out' => 'Wyloguj się',
 
-	'about' => 'About',
-	'api' => 'API Documentation',
-	'source_code' => 'Source Code',
-	'support' => 'Support',
+	'about' => 'O',
+	'api' => 'Dokumentacja API',
+	'source_code' => 'Kod źródłowy',
+	'support' => 'Wsparcie',
 ];
