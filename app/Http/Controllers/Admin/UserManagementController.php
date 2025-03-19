@@ -63,8 +63,8 @@ class UserManagementController extends Controller
 			user: $request->user2(),
 			username: $request->username(),
 			password: $request->password(),
-			mayUpload: $request->mayUpload(),
-			mayEditOwnSettings: $request->mayEditOwnSettings(),
+			may_upload: $request->mayUpload(),
+			may_edit_own_settings: $request->mayEditOwnSettings(),
 			quota_kb: $request->quota_kb(),
 			note: $request->note()
 		);
@@ -105,8 +105,8 @@ class UserManagementController extends Controller
 		$user = $create->do(
 			username: $request->username(),
 			password: $request->password(),
-			mayUpload: $request->mayUpload(),
-			mayEditOwnSettings: $request->mayEditOwnSettings(),
+			may_upload: $request->mayUpload(),
+			may_edit_own_settings: $request->mayEditOwnSettings(),
 			quota_kb: $request->quota_kb(),
 			note: $request->note()
 		);
