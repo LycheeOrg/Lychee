@@ -21,7 +21,7 @@ abstract class AbstractBaseConfigMigration extends Migration
 	public const STRING = 'string';
 
 	/**
-	 * @return array<int,array{key:string,value:string,is_secret:bool,cat:string,type_range:string,description:string}>
+	 * @return array<int,array{key:string,value:string,is_secret:bool,cat:string,type_range:string,description:string,order?:int,not_on_docker?:bool,is_expert?:bool}>
 	 */
 	abstract public function getConfigs(): array;
 
