@@ -35,7 +35,7 @@ import { computed, ref } from "vue";
 import InputPassword from "../basic/InputPassword.vue";
 
 const props = defineProps<{
-	albumid: string;
+	albumId: string;
 }>();
 const visible = defineModel("visible", { default: false });
 
@@ -52,10 +52,10 @@ function unlock() {
 		return;
 	}
 
-	AlbumService.unlock(props.albumid, password.value)
+	AlbumService.unlock(props.albumId, password.value)
 		.then((_response) => {
 			AlbumService.clearAlbums();
-			AlbumService.clearCache(props.albumid);
+			AlbumService.clearCache(props.albumId);
 			emits("reload");
 		})
 		.catch((_error) => {
