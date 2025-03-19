@@ -77,7 +77,7 @@ class TimelineResource extends Data
 	public static function fromData(LengthAwarePaginator $photos): self
 	{
 		return new self(
-			photos: PhotoResource::collect($photos), // @phpstan-ignore-line
+			photos: PhotoResource::collect($photos),
 		);
 	}
 }
