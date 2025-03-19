@@ -225,7 +225,6 @@ const {
 	refresh,
 } = useSearch(albumId, search_term, search_page);
 
-
 const { refreshPhoto } = usePhotoRefresher(photo, photos, photoId);
 const { albumsForSelection, photosForSelection, noData, configForMenu, title } = useSearchComputed(config, album, albums, photos, lycheeStore);
 
