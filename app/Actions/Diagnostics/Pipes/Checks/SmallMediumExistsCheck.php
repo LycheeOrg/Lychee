@@ -43,7 +43,7 @@ class SmallMediumExistsCheck implements DiagnosticPipe
 			// @codeCoverageIgnoreEnd
 		}
 
-		$svHelpers = new SizeVariantDimensionHelpers();
+		$sv_helpers = new SizeVariantDimensionHelpers();
 
 		/** @var object{num_small:int,num_medium:int,num_small2x:int,num_medium2x:int,max_num_small:int,max_num_medium:int,max_num_small2x:int,max_num_medium2x:int} $result */
 		$result = DB::query()
@@ -75,8 +75,8 @@ class SmallMediumExistsCheck implements DiagnosticPipe
 			SizeVariant::query()
 			->selectRaw('COUNT(*)')
 			->where(fn ($q) => $q
-				->when($svHelpers->getMaxWidth(SizeVariantType::SMALL) !== 0, fn ($q1) => $q1->where('width', '>', $svHelpers->getMaxWidth(SizeVariantType::SMALL)))
-				->when($svHelpers->getMaxHeight(SizeVariantType::SMALL) !== 0, fn ($q2) => $q2->orWhere('height', '>', $svHelpers->getMaxHeight(SizeVariantType::SMALL)))
+				->when($sv_helpers->getMaxWidth(SizeVariantType::SMALL) !== 0, fn ($q1) => $q1->where('width', '>', $sv_helpers->getMaxWidth(SizeVariantType::SMALL)))
+				->when($sv_helpers->getMaxHeight(SizeVariantType::SMALL) !== 0, fn ($q2) => $q2->orWhere('height', '>', $sv_helpers->getMaxHeight(SizeVariantType::SMALL)))
 			)
 			->where('type', '=', SizeVariantType::ORIGINAL),
 			self::MAX_NUM_SMALL
@@ -85,8 +85,8 @@ class SmallMediumExistsCheck implements DiagnosticPipe
 			SizeVariant::query()
 			->selectRaw('COUNT(*)')
 			->where(fn ($q) => $q
-				->when($svHelpers->getMaxWidth(SizeVariantType::SMALL2X) !== 0, fn ($q1) => $q1->where('width', '>', $svHelpers->getMaxWidth(SizeVariantType::SMALL2X)))
-				->when($svHelpers->getMaxHeight(SizeVariantType::SMALL2X) !== 0, fn ($q2) => $q2->orWhere('height', '>', $svHelpers->getMaxHeight(SizeVariantType::SMALL2X)))
+				->when($sv_helpers->getMaxWidth(SizeVariantType::SMALL2X) !== 0, fn ($q1) => $q1->where('width', '>', $sv_helpers->getMaxWidth(SizeVariantType::SMALL2X)))
+				->when($sv_helpers->getMaxHeight(SizeVariantType::SMALL2X) !== 0, fn ($q2) => $q2->orWhere('height', '>', $sv_helpers->getMaxHeight(SizeVariantType::SMALL2X)))
 			)
 			->where('type', '=', SizeVariantType::ORIGINAL),
 			self::MAX_NUM_SMALL2X
@@ -95,8 +95,8 @@ class SmallMediumExistsCheck implements DiagnosticPipe
 			SizeVariant::query()
 			->selectRaw('COUNT(*)')
 			->where(fn ($q) => $q
-				->when($svHelpers->getMaxWidth(SizeVariantType::MEDIUM) !== 0, fn ($q1) => $q1->where('width', '>', $svHelpers->getMaxWidth(SizeVariantType::MEDIUM)))
-				->when($svHelpers->getMaxHeight(SizeVariantType::MEDIUM) !== 0, fn ($q2) => $q2->orWhere('height', '>', $svHelpers->getMaxHeight(SizeVariantType::MEDIUM)))
+				->when($sv_helpers->getMaxWidth(SizeVariantType::MEDIUM) !== 0, fn ($q1) => $q1->where('width', '>', $sv_helpers->getMaxWidth(SizeVariantType::MEDIUM)))
+				->when($sv_helpers->getMaxHeight(SizeVariantType::MEDIUM) !== 0, fn ($q2) => $q2->orWhere('height', '>', $sv_helpers->getMaxHeight(SizeVariantType::MEDIUM)))
 			)
 			->where('type', '=', SizeVariantType::ORIGINAL),
 			self::MAX_NUM_MEDIUM
@@ -105,8 +105,8 @@ class SmallMediumExistsCheck implements DiagnosticPipe
 			SizeVariant::query()
 			->selectRaw('COUNT(*)')
 			->where(fn ($q) => $q
-				->when($svHelpers->getMaxWidth(SizeVariantType::MEDIUM2X) !== 0, fn ($q1) => $q1->where('width', '>', $svHelpers->getMaxWidth(SizeVariantType::MEDIUM2X)))
-				->when($svHelpers->getMaxHeight(SizeVariantType::MEDIUM2X) !== 0, fn ($q2) => $q2->orWhere('height', '>', $svHelpers->getMaxHeight(SizeVariantType::MEDIUM2X)))
+				->when($sv_helpers->getMaxWidth(SizeVariantType::MEDIUM2X) !== 0, fn ($q1) => $q1->where('width', '>', $sv_helpers->getMaxWidth(SizeVariantType::MEDIUM2X)))
+				->when($sv_helpers->getMaxHeight(SizeVariantType::MEDIUM2X) !== 0, fn ($q2) => $q2->orWhere('height', '>', $sv_helpers->getMaxHeight(SizeVariantType::MEDIUM2X)))
 			)
 			->where('type', '=', SizeVariantType::ORIGINAL),
 			self::MAX_NUM_MEDIUM2X
@@ -123,7 +123,7 @@ class SmallMediumExistsCheck implements DiagnosticPipe
 		}
 
 		$num = $result->{self::MAX_NUM_SMALL2X} - $result->{self::NUM_SMALL2X}; // @phpstan-ignore-line
-		if ($num > 0 && $svHelpers->isEnabledByConfiguration(SizeVariantType::SMALL2X)) {
+		if ($num > 0 && $sv_helpers->isEnabledByConfiguration(SizeVariantType::SMALL2X)) {
 			$data[] = DiagnosticData::info(
 				sprintf(self::INFO_MSG, $num, SizeVariantType::SMALL2X->name()),
 				self::class,
@@ -141,7 +141,7 @@ class SmallMediumExistsCheck implements DiagnosticPipe
 		}
 
 		$num = $result->{self::MAX_NUM_MEDIUM2X} - $result->{self::NUM_MEDIUM2X}; // @phpstan-ignore-line
-		if ($num > 0 && $svHelpers->isEnabledByConfiguration(SizeVariantType::MEDIUM2X)) {
+		if ($num > 0 && $sv_helpers->isEnabledByConfiguration(SizeVariantType::MEDIUM2X)) {
 			$data[] = DiagnosticData::info(
 				sprintf(self::INFO_MSG, $num, SizeVariantType::MEDIUM2X->name()),
 				self::class,

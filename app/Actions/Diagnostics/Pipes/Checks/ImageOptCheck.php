@@ -49,17 +49,17 @@ class ImageOptCheck implements DiagnosticPipe
 		}
 		// @codeCoverageIgnoreStart
 
-		$binaryPath = config('image-optimizer.binary_path');
+		$binary_path = config('image-optimizer.binary_path');
 
-		if ($binaryPath !== '' && substr($binaryPath, -1) !== DIRECTORY_SEPARATOR) {
-			$binaryPath .= DIRECTORY_SEPARATOR;
+		if ($binary_path !== '' && substr($binary_path, -1) !== DIRECTORY_SEPARATOR) {
+			$binary_path .= DIRECTORY_SEPARATOR;
 		}
 
 		if (Helpers::isExecAvailable()) {
 			foreach ($tools as $tool) {
-				$path = exec('command -v ' . $binaryPath . $tool->binaryName());
+				$path = exec('command -v ' . $binary_path . $tool->binaryName());
 				if ($path === '') {
-					$data[] = DiagnosticData::warn('lossless_optimization set to 1 but ' . $binaryPath . $tool->binaryName() . ' not found!', self::class);
+					$data[] = DiagnosticData::warn('lossless_optimization set to 1 but ' . $binary_path . $tool->binaryName() . ' not found!', self::class);
 				}
 			}
 		} else {

@@ -29,34 +29,35 @@ class ExtensionsInfo implements DiagnosticStringPipe
 		// About Imagick version
 		$imagick = extension_loaded('imagick');
 		if ($imagick === true) {
-			$imagickVersion = \Imagick::getVersion();
+			/** @disregard P1009 */
+			$imagick_version = \Imagick::getVersion();
 		} else {
 			// @codeCoverageIgnoreStart
 			$imagick = '-';
 			// @codeCoverageIgnoreEnd
 		}
-		if (!isset($imagickVersion, $imagickVersion['versionNumber'])) {
+		if (!isset($imagick_version, $imagick_version['versionNumber'])) {
 			// @codeCoverageIgnoreStart
-			$imagickVersion = '-';
+			$imagick_version = '-';
 		// @codeCoverageIgnoreEnd
 		} else {
-			$imagickVersion = $imagickVersion['versionNumber'];
+			$imagick_version = $imagick_version['versionNumber'];
 		}
 
 		// About GD version
 		if (function_exists('gd_info')) {
-			$gdVersion = gd_info();
+			$gd_version = gd_info();
 		} else {
 			// @codeCoverageIgnoreStart
-			$gdVersion = ['GD Version' => '-'];
+			$gd_version = ['GD Version' => '-'];
 			// @codeCoverageIgnoreEnd
 		}
 
 		$data[] = Diagnostics::line('exec() Available:', Helpers::isExecAvailable() ? 'yes' : 'no');
 		$data[] = Diagnostics::line('Imagick Available:', (string) $imagick);
 		$data[] = Diagnostics::line('Imagick Enabled:', $settings['imagick'] ?? 'key not found in settings');
-		$data[] = Diagnostics::line('Imagick Version:', (string) $imagickVersion);
-		$data[] = Diagnostics::line('GD Version:', $gdVersion['GD Version']);
+		$data[] = Diagnostics::line('Imagick Version:', (string) $imagick_version);
+		$data[] = Diagnostics::line('GD Version:', $gd_version['GD Version']);
 
 		return $next($data);
 	}

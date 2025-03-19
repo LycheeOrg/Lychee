@@ -96,7 +96,7 @@ class BasicPermissionCheck implements DiagnosticPipe
 		$this->numPermissionIssues = 0;
 		$this->numAccessIssues = 0;
 		try {
-			$groupIDsOrFalse = posix_getgroups();
+			$group_i_ds_or_false = posix_getgroups();
 			// @codeCoverageIgnoreStart
 		} catch (PosixException) {
 			$data[] = DiagnosticData::error('Could not determine groups of process', self::class);
@@ -104,7 +104,7 @@ class BasicPermissionCheck implements DiagnosticPipe
 			return;
 		}
 		// @codeCoverageIgnoreEnd
-		$this->groupIDs = $groupIDsOrFalse;
+		$this->groupIDs = $group_i_ds_or_false;
 		$this->groupIDs[] = posix_getegid();
 		$this->groupIDs[] = posix_getgid();
 		$this->groupIDs = array_unique($this->groupIDs);
@@ -195,7 +195,7 @@ class BasicPermissionCheck implements DiagnosticPipe
 			}
 
 			try {
-				$actualPerm = fileperms($path);
+				$actual_perm = fileperms($path);
 				// @codeCoverageIgnoreStart
 			} catch (FilesystemException) {
 				$data[] = DiagnosticData::warn(sprintf('Unable to determine permissions for %s', $this->anonymize($path)), self::class);
@@ -207,37 +207,37 @@ class BasicPermissionCheck implements DiagnosticPipe
 			// `fileperms` also returns the higher bits of the inode mode.
 			// Hence, we must AND it with 07777 to only get what we are
 			// interested in
-			$actualPerm &= 07777;
-			$owningGroupIdOrFalse = filegroup($path);
-			if ($owningGroupIdOrFalse !== false) {
+			$actual_perm &= 07777;
+			$owning_group_id_or_false = filegroup($path);
+			if ($owning_group_id_or_false !== false) {
 				try {
-					$owningGroupNameOrFalse = posix_getgrgid($owningGroupIdOrFalse);
+					$owning_group_name_or_false = posix_getgrgid($owning_group_id_or_false);
 					// @codeCoverageIgnoreStart
 				} catch (PosixException) {
-					$owningGroupNameOrFalse = false;
+					$owning_group_name_or_false = false;
 				}
 			// @codeCoverageIgnoreEnd
 			} else {
-				$owningGroupNameOrFalse = false;
+				$owning_group_name_or_false = false;
 			}
 			/** @var string $owningGroupName */
-			$owningGroupName = $owningGroupNameOrFalse === false ? '<unknown>' : $owningGroupNameOrFalse['name'];
-			$expectedPerm = self::getConfiguredDirectoryPerm();
+			$owning_group_name = $owning_group_name_or_false === false ? '<unknown>' : $owning_group_name_or_false['name'];
+			$expected_perm = self::getConfiguredDirectoryPerm();
 
-			if (!in_array($owningGroupIdOrFalse, $this->groupIDs, true)) {
+			if (!in_array($owning_group_id_or_false, $this->groupIDs, true)) {
 				// @codeCoverageIgnoreStart
 				$this->numOwnerIssues++;
 				if ($this->numOwnerIssues <= self::MAX_ISSUE_REPORTS_PER_TYPE) {
-					$data[] = DiagnosticData::warn(sprintf('%s is owned by group %s, but should be owned by one out of %s', $this->anonymize($path), $owningGroupName, $this->groupNames), self::class);
+					$data[] = DiagnosticData::warn(sprintf('%s is owned by group %s, but should be owned by one out of %s', $this->anonymize($path), $owning_group_name, $this->groupNames), self::class);
 				}
 				// @codeCoverageIgnoreEnd
 			}
 
-			if ($expectedPerm !== $actualPerm) {
+			if ($expected_perm !== $actual_perm) {
 				// @codeCoverageIgnoreStart
 				$this->numPermissionIssues++;
 				if ($this->numPermissionIssues <= self::MAX_ISSUE_REPORTS_PER_TYPE) {
-					$data[] = DiagnosticData::warn(sprintf('%s has permissions %04o, but should have %04o', $this->anonymize($path), $actualPerm, $expectedPerm), self::class);
+					$data[] = DiagnosticData::warn(sprintf('%s has permissions %04o, but should have %04o', $this->anonymize($path), $actual_perm, $expected_perm), self::class);
 				}
 				// @codeCoverageIgnoreEnd
 			}
@@ -261,9 +261,9 @@ class BasicPermissionCheck implements DiagnosticPipe
 			if (Configs::getValueAsBool('disable_recursive_permission_check')) {
 				return;
 			}
-			foreach ($dir as $dirEntry) {
-				if ($dirEntry->isDir() && !$dirEntry->isDot()) {
-					$this->checkDirectoryPermissionsRecursively($dirEntry->getPathname(), $data);
+			foreach ($dir as $dir_entry) {
+				if ($dir_entry->isDir() && !$dir_entry->isDot()) {
+					$this->checkDirectoryPermissionsRecursively($dir_entry->getPathname(), $data);
 				}
 			}
 			// @codeCoverageIgnoreStart

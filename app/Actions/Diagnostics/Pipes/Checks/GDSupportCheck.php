@@ -22,26 +22,26 @@ class GDSupportCheck implements DiagnosticPipe
 	public function handle(array &$data, \Closure $next): array
 	{
 		if (function_exists('gd_info')) {
-			$gdVersion = gd_info();
-			if (!$gdVersion['JPEG Support']) {
+			$gd_version = gd_info();
+			if (!$gd_version['JPEG Support']) {
 				// @codeCoverageIgnoreStart
 				$data[] = DiagnosticData::error('PHP gd extension without jpeg support', self::class);
 				// @codeCoverageIgnoreEnd
 			}
-			if (!$gdVersion['PNG Support']) {
+			if (!$gd_version['PNG Support']) {
 				// @codeCoverageIgnoreStart
 				$data[] = DiagnosticData::error('PHP gd extension without png support', self::class);
 				// @codeCoverageIgnoreEnd
 			}
 			if (
-				!$gdVersion['GIF Read Support'] ||
-				!$gdVersion['GIF Create Support']
+				!$gd_version['GIF Read Support'] ||
+				!$gd_version['GIF Create Support']
 			) {
 				// @codeCoverageIgnoreStart
 				$data[] = DiagnosticData::error('PHP gd extension without full gif support', self::class);
 				// @codeCoverageIgnoreEnd
 			}
-			if (!$gdVersion['WebP Support']) {
+			if (!$gd_version['WebP Support']) {
 				// @codeCoverageIgnoreStart
 				$data[] = DiagnosticData::error('PHP gd extension without WebP support', self::class);
 				// @codeCoverageIgnoreEnd

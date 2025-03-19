@@ -114,9 +114,9 @@ class IniSettingsCheck implements DiagnosticPipe
 			$data[] = DiagnosticData::warn('zend.assertions is disabled although Lychee is in debug mode. For easier debugging code generation for assertions should be enabled.', self::class);
 		}
 
-		$disabledFunctions = explode(',', ini_get('disable_functions'));
-		$tmpfileExists = function_exists('tmpfile') && !in_array('tmpfile', $disabledFunctions, true);
-		if ($tmpfileExists !== true) {
+		$disabled_functions = explode(',', ini_get('disable_functions'));
+		$tmpfile_exists = function_exists('tmpfile') && !in_array('tmpfile', $disabled_functions, true);
+		if ($tmpfile_exists !== true) {
 			// @codeCoverageIgnoreStart
 			$data[] = DiagnosticData::error('tmpfile() is disabled, this will prevent you from uploading pictures.', self::class);
 			// @codeCoverageIgnoreEnd
