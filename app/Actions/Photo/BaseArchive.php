@@ -44,7 +44,7 @@ abstract class BaseArchive
 		'<', '>', ':', '"', '/', '\\', '|', '?', '*',
 	];
 
-	protected int $deflateLevel = -1;
+	protected int $deflate_level = -1;
 
 	/**
 	 * Resolve which version of the archive to use.
@@ -164,7 +164,7 @@ abstract class BaseArchive
 	 */
 	protected function zip(Collection $photos, DownloadVariantType $downloadVariant): StreamedResponse
 	{
-		$this->deflateLevel = Configs::getValueAsInt('zip_deflate_level');
+		$this->deflate_level = Configs::getValueAsInt('zip_deflate_level');
 
 		$responseGenerator = function () use ($downloadVariant, $photos): void {
 			$zip = $this->createZip();

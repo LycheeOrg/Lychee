@@ -12,7 +12,7 @@ use App\Http\Controllers\Gallery\AlbumController;
 use App\Models\Album;
 use App\Models\Photo;
 
-class SetHeader extends Action
+class SetHeader
 {
 	/**
 	 * Set the header image of the album.

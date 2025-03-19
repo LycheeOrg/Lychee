@@ -13,7 +13,7 @@ use App\Exceptions\UnauthenticatedException;
 use App\Models\TagAlbum;
 use Illuminate\Support\Facades\Auth;
 
-class CreateTagAlbum extends Action
+class CreateTagAlbum
 {
 	/**
 	 * Create a new smart album based on tags.
@@ -29,12 +29,12 @@ class CreateTagAlbum extends Action
 	public function create(string $title, array $show_tags): TagAlbum
 	{
 		/** @var int */
-		$userId = Auth::id() ?? throw new UnauthenticatedException();
+		$user_id = Auth::id() ?? throw new UnauthenticatedException();
 
 		$album = new TagAlbum();
 		$album->title = $title;
 		$album->show_tags = $show_tags;
-		$album->owner_id = $userId;
+		$album->owner_id = $user_id;
 		$album->save();
 
 		return $album;

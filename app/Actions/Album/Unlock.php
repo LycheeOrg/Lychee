@@ -15,14 +15,13 @@ use App\Models\Extensions\BaseAlbum;
 use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\Hash;
 
-class Unlock extends Action
+class Unlock
 {
-	private AlbumPolicy $albumPolicy;
+	private AlbumPolicy $album_policy;
 
 	public function __construct()
 	{
-		parent::__construct();
-		$this->albumPolicy = resolve(AlbumPolicy::class);
+		$this->album_policy = resolve(AlbumPolicy::class);
 	}
 
 	/**
@@ -43,7 +42,7 @@ class Unlock extends Action
 			if (
 				$album_password === null ||
 				$album_password === '' ||
-				$this->albumPolicy->isUnlocked($album)
+				$this->album_policy->isUnlocked($album)
 			) {
 				return;
 			}
@@ -77,7 +76,7 @@ class Unlock extends Action
 		/** @var BaseAlbumImpl $album */
 		foreach ($albums as $album) {
 			if (Hash::check($password, $album->password)) {
-				$this->albumPolicy->unlock($album);
+				$this->album_policy->unlock($album);
 			}
 		}
 	}

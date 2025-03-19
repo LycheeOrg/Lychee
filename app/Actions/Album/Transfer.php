@@ -12,7 +12,7 @@ use App\Models\AccessPermission;
 use App\Models\Album;
 use App\Models\Extensions\BaseAlbum;
 
-class Transfer extends Action
+class Transfer
 {
 	/**
 	 * Moves the given albums into the target.
@@ -20,19 +20,19 @@ class Transfer extends Action
 	 * @param BaseAlbum $baseAlbum
 	 * @param int       $userId
 	 */
-	public function do(BaseAlbum $baseAlbum, int $userId): void
+	public function do(BaseAlbum $base_album, int $user_id): void
 	{
-		$baseAlbum->owner_id = $userId;
-		$baseAlbum->save();
+		$base_album->owner_id = $user_id;
+		$base_album->save();
 
 		// No longer necessary because we transfer the ownership
-		AccessPermission::query()->where('base_album_id', '=', $baseAlbum->id)->where('user_id', '=', $userId)->delete();
+		AccessPermission::query()->where('base_album_id', '=', $base_album->id)->where('user_id', '=', $user_id)->delete();
 
 		// If this is an Album, we also need to fix the children and photos ownership
-		if ($baseAlbum instanceof Album) {
-			$baseAlbum->makeRoot();
-			$baseAlbum->save();
-			$baseAlbum->fixOwnershipOfChildren();
+		if ($base_album instanceof Album) {
+			$base_album->makeRoot();
+			$base_album->save();
+			$base_album->fixOwnershipOfChildren();
 		}
 	}
 }

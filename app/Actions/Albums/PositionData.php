@@ -17,11 +17,11 @@ use App\Policies\PhotoQueryPolicy;
 
 class PositionData
 {
-	protected PhotoQueryPolicy $photoQueryPolicy;
+	protected PhotoQueryPolicy $photo_query_policy;
 
-	public function __construct(PhotoQueryPolicy $photoQueryPolicy)
+	public function __construct(PhotoQueryPolicy $photo_query_policy)
 	{
-		$this->photoQueryPolicy = $photoQueryPolicy;
+		$this->photo_query_policy = $photo_query_policy;
 		// caching to avoid further request
 		Configs::get();
 	}
@@ -35,7 +35,7 @@ class PositionData
 	 */
 	public function do(): PositionDataResource
 	{
-		$photoQuery = $this->photoQueryPolicy->applySearchabilityFilter(
+		$photo_query = $this->photo_query_policy->applySearchabilityFilter(
 			query: Photo::query()
 				->with([
 					'album' => function ($b): void {
@@ -62,6 +62,6 @@ class PositionData
 			include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_map')
 		);
 
-		return new PositionDataResource(null, null, $photoQuery->get(), null);
+		return new PositionDataResource(null, null, $photo_query->get(), null);
 	}
 }
