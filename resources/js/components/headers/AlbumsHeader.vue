@@ -96,6 +96,7 @@ import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
 import DropBox from "../modals/DropBox.vue";
 import BackLinkButton from "./BackLinkButton.vue";
 import OpenLeftMenu from "./OpenLeftMenu.vue";
+import { useFavouriteStore } from "@/stores/FavouriteState";
 
 const props = defineProps<{
 	user: App.Http.Resources.Models.UserResource;
@@ -121,6 +122,7 @@ const emits = defineEmits<{
 
 const lycheeStore = useLycheeStateStore();
 const togglableStore = useTogglablesStateStore();
+const favourites = useFavouriteStore();
 
 const { dropbox_api_key } = storeToRefs(lycheeStore);
 const { is_login_open, is_upload_visible, is_create_album_visible, is_create_tag_album_visible } = storeToRefs(togglableStore);
@@ -216,6 +218,12 @@ type MenuRight = (Item & Link) | (Item & Callback);
 
 const menu = computed(() =>
 	[
+		{
+			to: { name: "favourites" },
+			type: "link",
+			icon: "pi pi-heart",
+			if: (favourites.photos?.length ?? 0) > 0,
+		},
 		{
 			to: { name: "frame" },
 			type: "link",

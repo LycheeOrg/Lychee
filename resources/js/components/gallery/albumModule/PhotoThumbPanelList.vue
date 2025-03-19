@@ -18,6 +18,7 @@ import { onMounted, onUpdated, Ref } from "vue";
 import PhotoThumb from "./thumbs/PhotoThumb.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
+import { ctrlKeyState, metaKeyState, shiftKeyState } from "@/utils/keybindings-utils";
 
 const props = defineProps<{
 	photos: { [key: number]: App.Http.Resources.Models.PhotoResource };
@@ -43,9 +44,16 @@ const timelineData: TimelineData = {
 
 const emits = defineEmits<{
 	clicked: [idx: number, event: MouseEvent];
+	selected: [idx: number, event: MouseEvent];
 	contexted: [idx: number, event: MouseEvent];
 }>();
-const maySelect = (idx: number, e: MouseEvent) => emits("clicked", idx, e);
+const maySelect = (idx: number, e: MouseEvent) => {
+	if (ctrlKeyState.value || metaKeyState.value || shiftKeyState.value) {
+		emits("selected", idx, e);
+		return;
+	}
+	emits("clicked", idx, e);
+};
 const menuOpen = (idx: number, e: MouseEvent) => emits("contexted", idx, e);
 
 // Layouts stuff
