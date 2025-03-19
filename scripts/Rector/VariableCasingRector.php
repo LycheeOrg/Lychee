@@ -48,7 +48,7 @@ final class VariableCasingRector extends AbstractRector
 			return null;
 		}
 
-		$camelCasedName = Str::camel($node->name);
+		$camelCasedName = Str::snake($node->name);
 
 		// Skip if it's already in the correct format
 		if ($camelCasedName === $node->name) {
