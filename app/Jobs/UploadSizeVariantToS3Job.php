@@ -77,6 +77,7 @@ class UploadSizeVariantToS3Job implements ShouldQueue
 		if ($th->getCode() === 999) {
 			$this->release();
 		} else {
+			Log::error(__LINE__ . ':' . __FILE__ . ' Upload failed for ' . $this->variant->short_path);
 			Log::error(__LINE__ . ':' . __FILE__ . ' ' . $th->getMessage(), $th->getTrace());
 		}
 	}
