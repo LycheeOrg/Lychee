@@ -75,13 +75,14 @@ return [
 		'location_show' => '显示从 GPS 坐标提取的位置',
 		'location_show_public' => '匿名用户可以访问从 GPS 坐标提取的位置',
 	],
-	'advanced' => [
-		'header' => '高级自定义',
+	'cssjs' => [
+		'header' => 'Custom CSS & Js',
 		'change_css' => '修改 CSS',
 		'change_js' => '修改 JS',
 	],
 	'all' => [
 		'old_setting_style' => '旧设置样式',
+		'expert_settings' => 'Expert Mode',
 		'change_detected' => '部分设置已更改。',
 		'save' => '保存',
 	],
@@ -90,5 +91,12 @@ return [
 		'disabled' => '已禁用',
 		'enabled' => '已启用',
 		'discover' => '发现',
+	],
+
+	'groups' => [
+		'general' => 'General',
+		'system' => 'System',
+		'modules' => 'Modules',
+		'advanced' => 'Advanced',
 	],
 ];

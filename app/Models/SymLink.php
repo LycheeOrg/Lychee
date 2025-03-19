@@ -9,6 +9,7 @@
 namespace App\Models;
 
 use App\Casts\MustNotSetCast;
+use App\Constants\FileSystem;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
@@ -27,7 +28,7 @@ use function Safe\symlink;
 use function Safe\unlink;
 
 /**
- * App\SymLink.
+ * App\Models\SymLink.
  *
  * @property int         $id
  * @property int         $size_variant_id
@@ -63,8 +64,6 @@ class SymLink extends Model
 	use ThrowsConsistentExceptions {
 		ThrowsConsistentExceptions::delete as private internalDelete;
 	}
-
-	public const DISK_NAME = 'symbolic';
 
 	protected $casts = [
 		'id' => 'integer',
@@ -133,7 +132,7 @@ class SymLink extends Model
 	{
 		try {
 			/** @disregard P1013 */
-			return Storage::disk(self::DISK_NAME)->url($this->short_path);
+			return Storage::disk(FileSystem::SYMLINK)->url($this->short_path);
 			// @codeCoverageIgnoreStart
 		} catch (\RuntimeException $e) {
 			throw new FrameworkException('Laravel\'s storage component', $e);
@@ -161,7 +160,7 @@ class SymLink extends Model
 		$extension = $file->getExtension();
 		$symShortPath = hash('sha256', random_bytes(32) . '|' . $origRealPath) . $extension;
 		/** @disregard P1013 */
-		$symAbsolutePath = Storage::disk(SymLink::DISK_NAME)->path($symShortPath);
+		$symAbsolutePath = Storage::disk(FileSystem::SYMLINK)->path($symShortPath);
 		try {
 			if (is_link($symAbsolutePath)) {
 				unlink($symAbsolutePath);
@@ -192,7 +191,7 @@ class SymLink extends Model
 	{
 		// Laravel and Flysystem does not support symbolic links.
 		// So we must convert it to a local file
-		$flyFile = new FlysystemFile(Storage::disk(self::DISK_NAME), $this->short_path);
+		$flyFile = new FlysystemFile(Storage::disk(FileSystem::SYMLINK), $this->short_path);
 		$symLink = $flyFile->toLocalFile();
 		$symLink->delete();
 

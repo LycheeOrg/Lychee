@@ -8,6 +8,7 @@
 
 namespace App\View\Components;
 
+use App\Constants\FileSystem;
 use App\Contracts\Models\AbstractAlbum;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Http\Resources\Traits\HasHeaderUrl;
@@ -116,11 +117,11 @@ class Meta extends Component
 	{
 		$cssCacheBusting = '';
 		/** @disregard P1013 */
-		if (Storage::disk('dist')->fileExists($fileName)) {
-			$cssCacheBusting = '?' . Storage::disk('dist')->lastModified($fileName);
+		if (Storage::disk(FileSystem::DIST)->fileExists($fileName)) {
+			$cssCacheBusting = '?' . Storage::disk(FileSystem::DIST)->lastModified($fileName);
 		}
 
 		/** @disregard P1013 */
-		return Storage::disk('dist')->url($fileName) . $cssCacheBusting;
+		return Storage::disk(FileSystem::DIST)->url($fileName) . $cssCacheBusting;
 	}
 }
