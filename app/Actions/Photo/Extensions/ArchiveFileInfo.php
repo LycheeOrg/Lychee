@@ -48,14 +48,14 @@ final readonly class ArchiveFileInfo
 	 * The addon enables to create different filenames for different variants
 	 * of the same photo.
 	 *
-	 * @param string        $baseFilename      the base filename (without directory
+	 * @param string        $base_filename      the base filename (without directory
 	 *                                         and extension)
-	 * @param string        $baseFilenameAddon the "addon" to the base filename
+	 * @param string        $base_filename_addon the "addon" to the base filename
 	 * @param BaseMediaFile $file              the source file
 	 */
 	public function __construct(
-		private string $baseFilename,
-		private string $baseFilenameAddon,
+		private string $base_filename,
+		private string $base_filename_addon,
 		public BaseMediaFile $file)
 	{
 	}
@@ -68,8 +68,8 @@ final readonly class ArchiveFileInfo
 	 *
 	 * @return string the filename
 	 */
-	public function getFilename(string $extraAddon = ''): string
+	public function getFilename(string $extra_addon = ''): string
 	{
-		return $this->baseFilename . $this->baseFilenameAddon . $extraAddon . $this->file->getExtension();
+		return $this->base_filename . $this->base_filename_addon . $extra_addon . $this->file->getExtension();
 	}
 }

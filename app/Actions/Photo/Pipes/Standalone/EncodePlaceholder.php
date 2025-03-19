@@ -18,10 +18,10 @@ class EncodePlaceholder implements StandalonePipe
 	public function handle(StandaloneDTO $state, \Closure $next): StandaloneDTO
 	{
 		try {
-			$placeholderEncoder = new PlaceholderEncoder();
+			$placeholder_encoder = new PlaceholderEncoder();
 			$placeholder = $state->getPhoto()->size_variants->getPlaceholder();
 			if ($placeholder !== null) {
-				$placeholderEncoder->do($placeholder);
+				$placeholder_encoder->do($placeholder);
 			}
 
 			return $next($state);

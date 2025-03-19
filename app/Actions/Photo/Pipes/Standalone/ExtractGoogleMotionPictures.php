@@ -28,9 +28,9 @@ class ExtractGoogleMotionPictures implements StandalonePipe
 		// its (potentially remote) final position
 		try {
 			$state->tmpVideoFile = new TemporaryLocalFile(GoogleMotionPictureHandler::FINAL_VIDEO_FILE_EXTENSION, $state->sourceFile->getBasename());
-			$gmpHandler = new GoogleMotionPictureHandler();
-			$gmpHandler->load($state->sourceFile, $state->exifInfo->microVideoOffset);
-			$gmpHandler->saveVideoStream($state->tmpVideoFile);
+			$gmp_handler = new GoogleMotionPictureHandler();
+			$gmp_handler->load($state->sourceFile, $state->exifInfo->microVideoOffset);
+			$gmp_handler->saveVideoStream($state->tmpVideoFile);
 		} catch (\Throwable $e) {
 			Handler::reportSafely($e);
 			$state->tmpVideoFile = null;
