@@ -28,9 +28,9 @@ return new class() extends Migration {
 		// if there is a table to import from
 		if (
 			MovePhotos_Photo::count() === 0 &&
-			Schema::hasTable(env('DB_OLD_LYCHEE_PREFIX', '') . 'lychee_photos')
+			Schema::hasTable(config('features.legacy_v3_db_prefix') . 'lychee_photos')
 		) {
-			$results = DB::table(env('DB_OLD_LYCHEE_PREFIX', '') . 'lychee_photos')->select('*')->orderBy('id', 'asc')->orderBy('album', 'asc')->get();
+			$results = DB::table(config('features.legacy_v3_db_prefix') . 'lychee_photos')->select('*')->orderBy('id', 'asc')->orderBy('album', 'asc')->get();
 			$id = 0;
 			foreach ($results as $result) {
 				$photoAttributes = [];
