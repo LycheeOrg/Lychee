@@ -48,10 +48,10 @@ final readonly class ArchiveFileInfo
 	 * The addon enables to create different filenames for different variants
 	 * of the same photo.
 	 *
-	 * @param string        $base_filename      the base filename (without directory
-	 *                                         and extension)
+	 * @param string        $base_filename       the base filename (without directory
+	 *                                           and extension)
 	 * @param string        $base_filename_addon the "addon" to the base filename
-	 * @param BaseMediaFile $file              the source file
+	 * @param BaseMediaFile $file                the source file
 	 */
 	public function __construct(
 		private string $base_filename,
