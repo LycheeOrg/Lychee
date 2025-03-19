@@ -20,7 +20,7 @@ use Kalnoy\Nestedset\Collection as NsCollection;
 /**
  * @phpstan-type TAlbumSaved array{id:string|null,title:string,original:string,short_title:string,thumb:string}
  */
-class ListAlbums extends Action
+class ListAlbums
 {
 	private const SHORTEN_BY = 80;
 

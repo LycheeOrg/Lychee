@@ -36,7 +36,7 @@ use ZipStream\Exception\FileNotFoundException;
 use ZipStream\Exception\FileNotReadableException;
 use ZipStream\ZipStream;
 
-abstract class BaseArchive extends Action
+abstract class BaseArchive
 {
 	public const BAD_CHARS = [
 		"\x00", "\x01", "\x02", "\x03", "\x04", "\x05", "\x06", "\x07",
@@ -46,7 +46,7 @@ abstract class BaseArchive extends Action
 		'<', '>', ':', '"', '/', '\\', '|', '?', '*',
 	];
 
-	protected int $deflateLevel = -1;
+	protected int $deflate_level = -1;
 
 	/**
 	 * Resolve which version of the archive to use.
@@ -84,7 +84,7 @@ abstract class BaseArchive extends Action
 		// for this specific case we must allow lazy loading.
 		Model::shouldBeStrict(false);
 
-		$this->deflateLevel = Configs::getValueAsInt('zip_deflate_level');
+		$this->deflate_level = Configs::getValueAsInt('zip_deflate_level');
 
 		$response_generator = function () use ($albums): void {
 			$zip = $this->createZip();
@@ -198,11 +198,11 @@ abstract class BaseArchive extends Action
 	 *
 	 * @param AbstractAlbum $album            the album which shall be added
 	 *                                        to the archive
-	 * @param array<string> $usedDirNames     the list of already used
+	 * @param array<string> $used_dir_names     the list of already used
 	 *                                        directory names on the same level
 	 *                                        as `$album`
 	 *                                        ("siblings" of `$album`)
-	 * @param string|null   $fullNameOfParent the fully qualified path name
+	 * @param string|null   $full_name_of_parent the fully qualified path name
 	 *                                        of the parent directory
 	 * @param ZipStream     $zip              the archive
 	 *

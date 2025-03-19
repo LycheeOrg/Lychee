@@ -30,8 +30,8 @@ trait Zip31Trait
 	{
 		if (InstalledVersions::satisfies(new VersionParser(), 'maennchen/zipstream-php', '^3.1')) {
 			/** @disregard */
-			return new ZipStream(defaultCompressionMethod: $this->deflateLevel === -1 ? ZipMethod::STORE : ZipMethod::DEFLATE,
-				defaultDeflateLevel: $this->deflateLevel,
+			return new ZipStream(defaultCompressionMethod: $this->deflate_level === -1 ? ZipMethod::STORE : ZipMethod::DEFLATE,
+				defaultDeflateLevel: $this->deflate_level,
 				enableZip64: Configs::getValueAsBool('zip64'),
 				defaultEnableZeroHeader: true, sendHttpHeaders: false);
 		}
@@ -39,16 +39,16 @@ trait Zip31Trait
 		throw new LycheeLogicException('Unsupported version of maennchen/zipstream-php');
 	}
 
-	protected function addFileToZip(ZipStream $zip, string $fileName, FlysystemFile|BaseMediaFile $file, Photo|null $photo): void
+	protected function addFileToZip(ZipStream $zip, string $file_name, FlysystemFile|BaseMediaFile $file, Photo|null $photo): void
 	{
 		if ($photo === null) {
 			/** @disregard */
-			$zip->addFileFromStream(fileName: $fileName, stream: $file->read());
+			$zip->addFileFromStream(fileName: $file_name, stream: $file->read());
 
 			return;
 		}
 
 		/** @disregard */
-		$zip->addFileFromStream(fileName: $fileName, stream: $file->read(), comment: $photo->title, lastModificationDateTime: $photo->taken_at ?? $photo->created_at);
+		$zip->addFileFromStream(fileName: $file_name, stream: $file->read(), comment: $photo->title, lastModificationDateTime: $photo->taken_at ?? $photo->created_at);
 	}
 }

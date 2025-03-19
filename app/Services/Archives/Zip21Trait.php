@@ -37,7 +37,7 @@ trait Zip21Trait
 		if (InstalledVersions::satisfies(new VersionParser(), 'maennchen/zipstream-php', '^2.1')) {
 			$options = new \ZipStream\Option\Archive();
 			$options->setContentType('application/octet-stream');
-			$options->setDeflateLevel($this->deflateLevel);
+			$options->setDeflateLevel($this->deflate_level);
 			$options->setZeroHeader(true);
 			$options->setEnableZip64(Configs::getValueAsBool('zip64'));
 			$options->setSendHttpHeaders(false);
@@ -48,10 +48,10 @@ trait Zip21Trait
 		throw new LycheeLogicException('Unsupported version of maennchen/zipstream-php');
 	}
 
-	protected function addFileToZip(ZipStream $zip, string $fileName, FlysystemFile|BaseMediaFile $file, Photo|null $photo): void
+	protected function addFileToZip(ZipStream $zip, string $file_name, FlysystemFile|BaseMediaFile $file, Photo|null $photo): void
 	{
 		if ($photo === null) {
-			$zip->addFileFromStream(name: $fileName, stream: $file->read());
+			$zip->addFileFromStream(name: $file_name, stream: $file->read());
 
 			return;
 		}
@@ -59,6 +59,6 @@ trait Zip21Trait
 		$options = new \ZipStream\Option\File();
 		$options->setComment($photo->title);
 		$options->setTime($photo->taken_at ?? $photo->created_at);
-		$zip->addFileFromStream(name: $fileName, stream: $file->read(), options: $options);
+		$zip->addFileFromStream(name: $file_name, stream: $file->read(), options: $options);
 	}
 }

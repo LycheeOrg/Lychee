@@ -15,7 +15,7 @@ use App\Models\Photo;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection;
 
-class Merge extends Action
+class Merge
 {
 	/**
 	 * Merges the content of the given source albums (photos and sub-albums)

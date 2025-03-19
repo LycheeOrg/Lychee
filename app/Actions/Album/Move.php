@@ -13,7 +13,7 @@ use App\Models\Album;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection;
 
-class Move extends Action
+class Move
 {
 	/**
 	 * Moves the given albums into the target.

@@ -15,7 +15,7 @@ use App\Models\Album;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class PositionData extends Action
+class PositionData
 {
 	public function get(AbstractAlbum $album, bool $include_sub_albums = false): PositionDataResource
 	{

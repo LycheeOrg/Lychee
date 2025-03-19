@@ -12,7 +12,7 @@ use App\Models\AccessPermission;
 use App\Models\Album;
 use App\Models\Extensions\BaseAlbum;
 
-class Transfer extends Action
+class Transfer
 {
 	/**
 	 * Moves the given albums into the target.

@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Hash;
 /**
  * Class SetProtectionPolicy.
  */
-class SetProtectionPolicy extends Action
+class SetProtectionPolicy
 {
 	/**
 	 * @param BaseAlbum             $album

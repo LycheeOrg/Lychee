@@ -13,7 +13,7 @@ use App\SmartAlbums\BaseSmartAlbum;
 /**
  * Class SetSmartProtectionPolicy.
  */
-class SetSmartProtectionPolicy extends Action
+class SetSmartProtectionPolicy
 {
 	/**
 	 * @param BaseSmartAlbum $album

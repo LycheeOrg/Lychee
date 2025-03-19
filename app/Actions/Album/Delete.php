@@ -51,7 +51,7 @@ use Safe\Exceptions\ArrayException;
  * Hence, this method collects all files which need to be removed.
  * The caller can then decide to delete them asynchronously.
  */
-class Delete extends Action
+class Delete
 {
 	/**
 	 * Deletes the designated albums (tag albums and regular albums) from the DB.

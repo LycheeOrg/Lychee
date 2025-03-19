@@ -13,7 +13,7 @@ use App\Exceptions\UnauthenticatedException;
 use App\Models\TagAlbum;
 use Illuminate\Support\Facades\Auth;
 
-class CreateTagAlbum extends Action
+class CreateTagAlbum
 {
 	/**
 	 * Create a new smart album based on tags.

@@ -18,16 +18,15 @@ use App\Models\AccessPermission;
 use App\Models\Album;
 use App\Models\Configs;
 
-class Create extends Action
+class Create
 {
 	public function __construct(public readonly int $intended_owner_id)
 	{
-		parent::__construct();
 	}
 
 	/**
 	 * @param string     $title
-	 * @param Album|null $parentAlbum
+	 * @param Album|null $parent_album
 	 *
 	 * @return Album
 	 *
@@ -49,7 +48,7 @@ class Create extends Action
 	 * Setups parent album on album structure.
 	 *
 	 * @param Album      $album
-	 * @param Album|null $parentAlbum
+	 * @param Album|null $parent_album
 	 *
 	 * @throws UnauthenticatedException
 	 */
@@ -72,7 +71,7 @@ class Create extends Action
 	 * Set up the permissions.
 	 *
 	 * @param Album      $album
-	 * @param Album|null $parentAlbum
+	 * @param Album|null $parent_album
 	 *
 	 * @return void
 	 *
@@ -97,7 +96,7 @@ class Create extends Action
 	/**
 	 * Given a parent album, retrieve its access permission and return an array containing copies of them.
 	 *
-	 * @param Album|null $parentAlbum
+	 * @param Album|null $parent_album
 	 *
 	 * @return array<int,AccessPermission> array of access permissions
 	 */

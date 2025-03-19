@@ -15,13 +15,12 @@ use App\Models\Extensions\BaseAlbum;
 use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\Hash;
 
-class Unlock extends Action
+class Unlock
 {
 	private AlbumPolicy $albumPolicy;
 
 	public function __construct()
 	{
-		parent::__construct();
 		$this->albumPolicy = resolve(AlbumPolicy::class);
 	}
 
