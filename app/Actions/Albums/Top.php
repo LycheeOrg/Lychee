@@ -28,18 +28,17 @@ use Illuminate\Support\Facades\Gate;
 
 class Top
 {
-	private AlbumQueryPolicy $albumQueryPolicy;
-	private AlbumFactory $albumFactory;
 	private AlbumSortingCriterion $sorting;
 
 	/**
 	 * @throws InvalidOrderDirectionException
 	 * @throws ConfigurationKeyMissingException
 	 */
-	public function __construct(AlbumFactory $albumFactory, AlbumQueryPolicy $albumQueryPolicy)
+	public function __construct(
+		private AlbumFactory $album_factory,
+		private AlbumQueryPolicy $album_query_policy,
+	)
 	{
-		$this->albumQueryPolicy = $albumQueryPolicy;
-		$this->albumFactory = $albumFactory;
 		$this->sorting = AlbumSortingCriterion::createDefault();
 	}
 
@@ -67,24 +66,24 @@ class Top
 		// Do not eagerly load the relation `photos` for each smart album.
 		// On the albums overview, we only need a thumbnail for each album.
 		/** @var BaseCollection<int,BaseSmartAlbum> $smartAlbums */
-		$smartAlbums = $this->albumFactory
+		$smart_albums = $this->album_factory
 			->getAllBuiltInSmartAlbums(false)
-			->filter(fn ($smartAlbum) => Gate::check(AlbumPolicy::CAN_SEE, $smartAlbum));
+			->filter(fn ($smart_album) => Gate::check(AlbumPolicy::CAN_SEE, $smart_album));
 
-		$tagAlbumQuery = $this->albumQueryPolicy
+		$tag_album_query = $this->album_query_policy
 			->applyVisibilityFilter(TagAlbum::query()->with(['access_permissions', 'owner']));
 
 		/** @var BaseCollection<int,TagAlbum> $tagAlbums */
-		$tagAlbums = (new SortingDecorator($tagAlbumQuery))
+		$tag_albums = (new SortingDecorator($tag_album_query))
 			->orderBy($this->sorting->column, $this->sorting->order)
 			->get();
 
 		/** @return AlbumBuilder $query */
-		$query = $this->albumQueryPolicy
+		$query = $this->album_query_policy
 			->applyVisibilityFilter(Album::query()->with(['access_permissions', 'owner'])->whereIsRoot());
 
-		$userID = Auth::id();
-		if ($userID !== null) {
+		$user_i_d = Auth::id();
+		if ($user_i_d !== null) {
 			// For authenticated users we group albums by ownership.
 			$albums = (new SortingDecorator($query))
 				->orderBy(ColumnSortingType::OWNER_ID, OrderSortingType::ASC)
@@ -95,9 +94,9 @@ class Top
 			 * @var BaseCollection<int,Album> $a
 			 * @var BaseCollection<int,Album> $b
 			 */
-			list($a, $b) = $albums->partition(fn ($album) => $album->owner_id === $userID);
+			list($a, $b) = $albums->partition(fn ($album) => $album->owner_id === $user_i_d);
 
-			return new TopAlbumDTO($smartAlbums, $tagAlbums, $a->values(), $b->values());
+			return new TopAlbumDTO($smart_albums, $tag_albums, $a->values(), $b->values());
 		} else {
 			// For anonymous users we don't want to implicitly expose
 			// ownership via sorting.
@@ -106,7 +105,7 @@ class Top
 				->orderBy($this->sorting->column, $this->sorting->order)
 				->get();
 
-			return new TopAlbumDTO($smartAlbums, $tagAlbums, $albums);
+			return new TopAlbumDTO($smart_albums, $tag_albums, $albums);
 		}
 	}
 }
