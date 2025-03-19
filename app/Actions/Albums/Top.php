@@ -37,8 +37,7 @@ class Top
 	public function __construct(
 		private AlbumFactory $album_factory,
 		private AlbumQueryPolicy $album_query_policy,
-	)
-	{
+	) {
 		$this->sorting = AlbumSortingCriterion::createDefault();
 	}
 

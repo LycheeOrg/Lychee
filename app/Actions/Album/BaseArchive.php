@@ -196,15 +196,11 @@ abstract class BaseArchive
 	/**
 	 * Compresses an album recursively.
 	 *
-	 * @param AbstractAlbum $album            the album which shall be added
-	 *                                        to the archive
-	 * @param array<string> $used_dir_names     the list of already used
-	 *                                        directory names on the same level
-	 *                                        as `$album`
-	 *                                        ("siblings" of `$album`)
-	 * @param string|null   $full_name_of_parent the fully qualified path name
-	 *                                        of the parent directory
-	 * @param ZipStream     $zip              the archive
+	 * @param AbstractAlbum $album               the album which shall be added to the archive
+	 * @param array<string> $used_dir_names      the list of already used directory names on the same level as `$album`
+	 *                                           ("siblings" of `$album`)
+	 * @param string|null   $full_name_of_parent the fully qualified path name of the parent directory
+	 * @param ZipStream     $zip                 the archive
 	 *
 	 * @throws FileNotFoundException
 	 * @throws FileNotReadableException
