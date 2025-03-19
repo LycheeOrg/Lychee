@@ -73,19 +73,19 @@ class Delete
 	 * @throws ModelNotFoundException
 	 * @throws UnauthenticatedException
 	 */
-	public function do(array $album_i_ds): FileDeleter
+	public function do(array $album_ids): FileDeleter
 	{
 		try {
-			$unsorted_photo_i_ds = [];
+			$unsorted_photo_ids = [];
 
 			// Among the smart albums, the unsorted album is special,
 			// because it provides deletion of photos
-			if (in_array(UnsortedAlbum::ID, $album_i_ds, true)) {
+			if (in_array(UnsortedAlbum::ID, $album_ids, true)) {
 				$query = UnsortedAlbum::getInstance()->photos();
 				if (Auth::user()?->may_administrate !== true) {
 					$query->where('owner_id', '=', Auth::id() ?? throw new UnauthenticatedException());
 				}
-				$unsorted_photo_i_ds = $query->pluck('id')->all();
+				$unsorted_photo_ids = $query->pluck('id')->all();
 			}
 
 			// Only regular albums are owners of photos, so we only need to
@@ -96,16 +96,16 @@ class Delete
 			$albums = Album::query()
 				->without(['cover', 'thumb'])
 				->select(['id', 'parent_id', '_lft', '_rgt', 'track_short_path'])
-				->findMany($album_i_ds);
+				->findMany($album_ids);
 
-			$recursive_album_i_ds = $albums->pluck('id')->all(); // only IDs which refer to regular albums are incubators for recursive IDs
+			$recursive_album_ids = $albums->pluck('id')->all(); // only IDs which refer to regular albums are incubators for recursive IDs
 			$recursive_album_tracks = $albums->pluck('track_short_path');
 
 			/** @var Album $album */
 			foreach ($albums as $album) {
 				// Collect all (aka recursive) sub-albums in each album
 				$sub_albums = $album->descendants()->without(['cover', 'thumb'])->select(['id', 'track_short_path'])->get();
-				$recursive_album_i_ds = array_merge($recursive_album_i_ds, $sub_albums->pluck('id')->all());
+				$recursive_album_ids = array_merge($recursive_album_ids, $sub_albums->pluck('id')->all());
 				$recursive_album_tracks = $recursive_album_tracks->merge($sub_albums->pluck('track_short_path'));
 			}
 			// prune the null values
@@ -113,12 +113,12 @@ class Delete
 
 			// Delete the photos from DB and obtain the list of files which need
 			// to be deleted later
-			$file_deleter = (new PhotoDelete())->do($unsorted_photo_i_ds, $recursive_album_i_ds);
+			$file_deleter = (new PhotoDelete())->do($unsorted_photo_ids, $recursive_album_ids);
 			$file_deleter->addFiles($recursive_album_tracks, StorageDiskType::LOCAL->value);
 
 			// Remove the sub-forest spanned by the regular albums
 			$this->deleteSubForest($albums);
-			TagAlbum::query()->whereIn('id', $album_i_ds)->delete();
+			TagAlbum::query()->whereIn('id', $album_ids)->delete();
 
 			// Note, we may need to delete more base albums than those whose
 			// ID is in `$albumIDs`.
