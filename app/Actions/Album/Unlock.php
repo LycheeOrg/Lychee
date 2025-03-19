@@ -17,11 +17,11 @@ use Illuminate\Support\Facades\Hash;
 
 class Unlock
 {
-	private AlbumPolicy $albumPolicy;
+	private AlbumPolicy $album_policy;
 
 	public function __construct()
 	{
-		$this->albumPolicy = resolve(AlbumPolicy::class);
+		$this->album_policy = resolve(AlbumPolicy::class);
 	}
 
 	/**
@@ -42,7 +42,7 @@ class Unlock
 			if (
 				$album_password === null ||
 				$album_password === '' ||
-				$this->albumPolicy->isUnlocked($album)
+				$this->album_policy->isUnlocked($album)
 			) {
 				return;
 			}
@@ -76,7 +76,7 @@ class Unlock
 		/** @var BaseAlbumImpl $album */
 		foreach ($albums as $album) {
 			if (Hash::check($password, $album->password)) {
-				$this->albumPolicy->unlock($album);
+				$this->album_policy->unlock($album);
 			}
 		}
 	}
