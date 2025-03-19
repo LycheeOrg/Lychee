@@ -24,12 +24,12 @@ class SetHeader extends Action
 	 *
 	 * @return Album
 	 */
-	public function do(Album $album, bool $isCompact, ?Photo $photo, bool $shallOverride = false): Album
+	public function do(Album $album, bool $is_compact, ?Photo $photo, bool $shall_override = false): Album
 	{
-		if ($isCompact) {
+		if ($is_compact) {
 			$album->header_id = AlbumController::COMPACT_HEADER;
 		} else {
-			$album->header_id = ($album->header_id !== $photo?->id || $shallOverride) ? $photo?->id : null;
+			$album->header_id = ($album->header_id !== $photo?->id || $shall_override) ? $photo?->id : null;
 		}
 		$album->save();
 

@@ -148,9 +148,9 @@ class AlbumController extends Controller
 
 		$album = $setHeader->do(
 			album: $album,
-			isCompact: $request->is_compact(),
+			is_compact: $request->is_compact(),
 			photo: $request->photo(),
-			shallOverride: true
+			shall_override: true
 		);
 
 		return EditableBaseAlbumResource::fromModel($album);

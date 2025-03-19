@@ -20,7 +20,7 @@ use App\Models\Configs;
 
 class Create extends Action
 {
-	public function __construct(public readonly int $intendedOwnerId)
+	public function __construct(public readonly int $intended_owner_id)
 	{
 		parent::__construct();
 	}
@@ -34,13 +34,13 @@ class Create extends Action
 	 * @throws ModelDBException
 	 * @throws UnauthenticatedException
 	 */
-	public function create(string $title, ?Album $parentAlbum): Album
+	public function create(string $title, ?Album $parent_album): Album
 	{
 		$album = new Album();
 		$album->title = $title;
-		$this->set_parent($album, $parentAlbum);
+		$this->set_parent($album, $parent_album);
 		$album->save();
-		$this->set_permissions($album, $parentAlbum);
+		$this->set_permissions($album, $parent_album);
 
 		return $album;
 	}
@@ -53,17 +53,17 @@ class Create extends Action
 	 *
 	 * @throws UnauthenticatedException
 	 */
-	private function set_parent(Album $album, ?Album $parentAlbum): void
+	private function set_parent(Album $album, ?Album $parent_album): void
 	{
-		if ($parentAlbum !== null) {
+		if ($parent_album !== null) {
 			// Admin can add sub-albums to other users' albums.  Make sure that
 			// the ownership stays with that user.
-			$album->owner_id = $parentAlbum->owner_id;
+			$album->owner_id = $parent_album->owner_id;
 			// Don't set attribute `parent_id` manually, but use specialized
 			// methods of the nested set `NodeTrait`.
-			$album->appendToNode($parentAlbum);
+			$album->appendToNode($parent_album);
 		} else {
-			$album->owner_id = $this->intendedOwnerId;
+			$album->owner_id = $this->intended_owner_id;
 			$album->makeRoot();
 		}
 	}
@@ -79,16 +79,16 @@ class Create extends Action
 	 * @throws UnexpectedException
 	 * @throws ConfigurationKeyMissingException
 	 */
-	private function set_permissions(Album $album, ?Album $parentAlbum): void
+	private function set_permissions(Album $album, ?Album $parent_album): void
 	{
-		$defaultProtectionType = Configs::getValueAsEnum('default_album_protection', DefaultAlbumProtectionType::class);
+		$default_protection_type = Configs::getValueAsEnum('default_album_protection', DefaultAlbumProtectionType::class);
 
-		if ($defaultProtectionType === DefaultAlbumProtectionType::PUBLIC) {
+		if ($default_protection_type === DefaultAlbumProtectionType::PUBLIC) {
 			$album->access_permissions()->saveMany([AccessPermission::ofPublic()]);
 		}
 
-		if ($defaultProtectionType === DefaultAlbumProtectionType::INHERIT && $parentAlbum !== null) {
-			$album->access_permissions()->saveMany($this->copyPermission($parentAlbum));
+		if ($default_protection_type === DefaultAlbumProtectionType::INHERIT && $parent_album !== null) {
+			$album->access_permissions()->saveMany($this->copyPermission($parent_album));
 		}
 
 		$this->grantFullPermissionsToNewOwner($album);
@@ -101,15 +101,15 @@ class Create extends Action
 	 *
 	 * @return array<int,AccessPermission> array of access permissions
 	 */
-	private function copyPermission(?Album $parentAlbum): array
+	private function copyPermission(?Album $parent_album): array
 	{
-		$parentPermissions = $parentAlbum->access_permissions;
-		$copyPermissions = [];
-		foreach ($parentPermissions as $parentPermission) {
-			$copyPermissions[] = AccessPermission::ofAccessPermission($parentPermission);
+		$parent_permissions = $parent_album->access_permissions;
+		$copy_permissions = [];
+		foreach ($parent_permissions as $parent_permission) {
+			$copy_permissions[] = AccessPermission::ofAccessPermission($parent_permission);
 		}
 
-		return $copyPermissions;
+		return $copy_permissions;
 	}
 
 	/**
@@ -122,17 +122,17 @@ class Create extends Action
 	 */
 	private function grantFullPermissionsToNewOwner(Album $album)
 	{
-		if ($album->owner_id === $this->intendedOwnerId) {
+		if ($album->owner_id === $this->intended_owner_id) {
 			return;
 		}
 
 		$album->access_permissions()
-			->where(APC::USER_ID, '=', $this->intendedOwnerId)
+			->where(APC::USER_ID, '=', $this->intended_owner_id)
 			->where(APC::BASE_ALBUM_ID, '=', $album->id)
 			->delete();
 
-		$accessPerm = AccessPermission::withGrantFullPermissionsToUser($this->intendedOwnerId);
+		$access_perm = AccessPermission::withGrantFullPermissionsToUser($this->intended_owner_id);
 
-		$album->access_permissions()->save($accessPerm);
+		$album->access_permissions()->save($access_perm);
 	}
 }

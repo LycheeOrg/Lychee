@@ -28,22 +28,22 @@ class Merge extends Action
 	 * @throws ModelDBException
 	 * @throws QueryBuilderException
 	 */
-	public function do(Album $targetAlbum, Collection $albums): void
+	public function do(Album $target_album, Collection $albums): void
 	{
 		// Merge photos of source albums into target
 		Photo::query()
 			->whereIn('album_id', $albums->pluck('id'))
-			->update(['album_id' => $targetAlbum->id]);
+			->update(['album_id' => $target_album->id]);
 
 		// Merge sub-albums of source albums into target
 		/** @var Album $album */
 		foreach ($albums as $album) {
-			foreach ($album->children as $childAlbum) {
+			foreach ($album->children as $child_album) {
 				// Don't set attribute `parent_id` manually, but use specialized
 				// methods of the nested set `NodeTrait` to keep the enumeration
 				// of the tree consistent
 				// `appendNode` also internally calls `save` on the model
-				$targetAlbum->appendNode($childAlbum);
+				$target_album->appendNode($child_album);
 			}
 		}
 
@@ -54,6 +54,6 @@ class Merge extends Action
 		// moved to the new location.
 		(new Delete())->do($albums->pluck('id')->values()->all());
 
-		$targetAlbum->fixOwnershipOfChildren();
+		$target_album->fixOwnershipOfChildren();
 	}
 }

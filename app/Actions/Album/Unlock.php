@@ -39,15 +39,15 @@ class Unlock extends Action
 	public function do(BaseAlbum $album, string $password): void
 	{
 		if ($album->public_permissions() !== null) {
-			$albumPassword = $album->public_permissions()->password;
+			$album_password = $album->public_permissions()->password;
 			if (
-				$albumPassword === null ||
-				$albumPassword === '' ||
+				$album_password === null ||
+				$album_password === '' ||
 				$this->albumPolicy->isUnlocked($album)
 			) {
 				return;
 			}
-			if (Hash::check($password, $albumPassword)) {
+			if (Hash::check($password, $album_password)) {
 				$this->propagate($password);
 
 				return;

@@ -33,41 +33,41 @@ class SetProtectionPolicy extends Action
 	 * @throws ModelDBException
 	 * @throws FrameworkException
 	 */
-	public function do(BaseAlbum $album, AlbumProtectionPolicy $protectionPolicy, bool $shallSetPassword, ?string $password): void
+	public function do(BaseAlbum $album, AlbumProtectionPolicy $protection_policy, bool $shall_set_password, ?string $password): void
 	{
-		$album->is_nsfw = $protectionPolicy->is_nsfw;
+		$album->is_nsfw = $protection_policy->is_nsfw;
 		$album->save();
 
-		$activePermissions = $album->public_permissions();
+		$active_permissions = $album->public_permissions();
 
-		if (!$protectionPolicy->is_public) {
-			$activePermissions?->delete();
+		if (!$protection_policy->is_public) {
+			$active_permissions?->delete();
 
 			return;
 		}
 
 		// Security attributes of the album itself independent of a particular user
-		$activePermissions ??= new AccessPermission();
-		$activePermissions->is_link_required = $protectionPolicy->is_link_required;
-		$activePermissions->grants_full_photo_access = $protectionPolicy->grants_full_photo_access;
-		$activePermissions->grants_download = $protectionPolicy->grants_download;
-		$activePermissions->grants_upload = $protectionPolicy->grants_upload;
-		$activePermissions->base_album_id = $album->id;
+		$active_permissions ??= new AccessPermission();
+		$active_permissions->is_link_required = $protection_policy->is_link_required;
+		$active_permissions->grants_full_photo_access = $protection_policy->grants_full_photo_access;
+		$active_permissions->grants_download = $protection_policy->grants_download;
+		$active_permissions->grants_upload = $protection_policy->grants_upload;
+		$active_permissions->base_album_id = $album->id;
 
 		// $album->public_permissions = $active_permissions;
 
 		// Set password if provided
-		if ($shallSetPassword) {
+		if ($shall_set_password) {
 			// password is provided => there is a change
 			if ($password !== null) {
 				// password is not null => we update the value with the hash
-				$activePermissions->password = Hash::make($password);
+				$active_permissions->password = Hash::make($password);
 			} else {
 				// we remove the password
-				$activePermissions->password = null;
+				$active_permissions->password = null;
 			}
 		}
-		$activePermissions->base_album_id = $album->id;
-		$activePermissions->save();
+		$active_permissions->base_album_id = $album->id;
+		$active_permissions->save();
 	}
 }

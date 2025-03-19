@@ -30,16 +30,16 @@ class ListAlbums extends Action
 	 *
 	 * @return TAlbumSaved[]
 	 */
-	public function do(Collection $albumsFiltering, ?string $parentId): array
+	public function do(Collection $albums_filtering, ?string $parent_id): array
 	{
-		$albumQueryPolicy = resolve(AlbumQueryPolicy::class);
-		$unfiltered = $albumQueryPolicy->applyReachabilityFilter(
+		$album_query_policy = resolve(AlbumQueryPolicy::class);
+		$unfiltered = $album_query_policy->applyReachabilityFilter(
 			// We remove all sub albums
 			// Otherwise it would create cyclic dependency
 			Album::query()
-				->when($albumsFiltering->count() > 0,
-					function ($q) use ($albumsFiltering) {
-						$albumsFiltering->each(
+				->when($albums_filtering->count() > 0,
+					function ($q) use ($albums_filtering) {
+						$albums_filtering->each(
 							fn ($a) => $q->whereNot(fn ($q1) => $q1->where('_lft', '>=', $a->_lft)->where('_rgt', '<=', $a->_rgt))
 						);
 
@@ -55,12 +55,12 @@ class ListAlbums extends Action
 		/** @var NsCollection<Album> $tree */
 		$tree = $albums->toTree(null);
 
-		$flatTree = $this->flatten($tree);
+		$flat_tree = $this->flatten($tree);
 
 		// Prepend with the possibility to move to root if parent is not already root.
-		if ($parentId !== null) {
+		if ($parent_id !== null) {
 			array_unshift(
-				$flatTree,
+				$flat_tree,
 				[
 					'id' => null,
 					'title' => __('gallery.root'),
@@ -71,7 +71,7 @@ class ListAlbums extends Action
 			);
 		}
 
-		return $flatTree;
+		return $flat_tree;
 	}
 
 	/**
@@ -85,24 +85,24 @@ class ListAlbums extends Action
 	private function flatten($collection, $prefix = ''): array
 	{
 		/** @var TAlbumSaved[] $flatArray */
-		$flatArray = [];
+		$flat_array = [];
 		foreach ($collection as $node) {
 			$title = $prefix . ($prefix !== '' ? '/' : '') . $node->title;
-			$shortTitle = $this->shorten($title);
-			$flatArray[] = [
+			$short_title = $this->shorten($title);
+			$flat_array[] = [
 				'id' => $node->id,
 				'title' => $title,
 				'original' => $node->title,
-				'short_title' => $shortTitle,
+				'short_title' => $short_title,
 				'thumb' => $node->thumb?->thumbUrl ?? URL::asset('img/no_images.svg'),
 			];
 			if ($node->children !== null) {
-				$flatArray = array_merge($flatArray, $this->flatten($node->children, $title));
+				$flat_array = array_merge($flat_array, $this->flatten($node->children, $title));
 				unset($node->children);
 			}
 		}
 
-		return $flatArray;
+		return $flat_array;
 	}
 
 	/**
@@ -120,33 +120,33 @@ class ListAlbums extends Action
 			return $title;
 		}
 		/** @var Collection<int,string> $title_split */
-		$titleSplit = collect(explode('/', $title));
-		$lastElem = $titleSplit->last();
-		$lenLastElem = strlen($lastElem);
+		$title_split = collect(explode('/', $title));
+		$last_elem = $title_split->last();
+		$len_last_elem = strlen($last_elem);
 
-		$numChunks = $titleSplit->count() - 1;
+		$num_chunks = $title_split->count() - 1;
 
-		if ($numChunks === 0) {
-			return Str::limit($lastElem, self::SHORTEN_BY, '…');
+		if ($num_chunks === 0) {
+			return Str::limit($last_elem, self::SHORTEN_BY, '…');
 		}
 
-		$titleSplit = $titleSplit->take($numChunks);
+		$title_split = $title_split->take($num_chunks);
 		/** @var Collection<int,int> $title_lengths */
-		$titleLengths = $titleSplit->map(fn ($v) => strlen($v));
+		$title_lengths = $title_split->map(fn ($v) => strlen($v));
 
 		// find best target length.
 
-		$lenToReduce = self::SHORTEN_BY - $lenLastElem - 2 * $numChunks;
-		$unitTargetLen = (int) ceil($lenToReduce / $numChunks);
+		$len_to_reduce = self::SHORTEN_BY - $len_last_elem - 2 * $num_chunks;
+		$unit_target_len = (int) ceil($len_to_reduce / $num_chunks);
 
 		do {
-			$unitTargetLen--;
-			$titleLengths = $titleLengths->map(fn ($v) => $v <= $unitTargetLen ? $v : $unitTargetLen + 1);
-			$resultingLen = $titleLengths->sum();
-		} while ($lenToReduce < $resultingLen);
+			$unit_target_len--;
+			$title_lengths = $title_lengths->map(fn ($v) => $v <= $unit_target_len ? $v : $unit_target_len + 1);
+			$resulting_len = $title_lengths->sum();
+		} while ($len_to_reduce < $resulting_len);
 
-		$titleSplit = $titleSplit->map(fn ($v) => Str::limit($v, $unitTargetLen > 0 ? $unitTargetLen : 0, '…'));
+		$title_split = $title_split->map(fn ($v) => Str::limit($v, $unit_target_len > 0 ? $unit_target_len : 0, '…'));
 
-		return implode('/', $titleSplit->all()) . '/' . $lastElem;
+		return implode('/', $title_split->all()) . '/' . $last_elem;
 	}
 }

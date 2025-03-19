@@ -86,12 +86,12 @@ abstract class BaseArchive extends Action
 
 		$this->deflateLevel = Configs::getValueAsInt('zip_deflate_level');
 
-		$responseGenerator = function () use ($albums): void {
+		$response_generator = function () use ($albums): void {
 			$zip = $this->createZip();
 
-			$usedDirNames = [];
+			$used_dir_names = [];
 			foreach ($albums as $album) {
-				$this->compressAlbum($album, $usedDirNames, null, $zip);
+				$this->compressAlbum($album, $used_dir_names, null, $zip);
 			}
 
 			// finish the zip stream
@@ -99,13 +99,13 @@ abstract class BaseArchive extends Action
 		};
 
 		try {
-			$response = new StreamedResponse($responseGenerator);
+			$response = new StreamedResponse($response_generator);
 			// Set file type and destination
-			$zipTitle = self::createZipTitle($albums);
+			$zip_title = self::createZipTitle($albums);
 			$disposition = HeaderUtils::makeDisposition(
 				HeaderUtils::DISPOSITION_ATTACHMENT,
-				$zipTitle . '.zip',
-				mb_check_encoding($zipTitle, 'ASCII') ? '' : 'Album.zip'
+				$zip_title . '.zip',
+				mb_check_encoding($zip_title, 'ASCII') ? '' : 'Album.zip'
 			);
 			$response->headers->set('Content-Type', 'application/x-zip');
 			$response->headers->set('Content-Disposition', $disposition);
@@ -157,10 +157,10 @@ abstract class BaseArchive extends Action
 	 */
 	private static function createValidTitle(string $title): string
 	{
-		$validTitle = str_replace(self::BAD_CHARS, '', $title);
-		$validTitle = pathinfo($validTitle, PATHINFO_FILENAME);
+		$valid_title = str_replace(self::BAD_CHARS, '', $title);
+		$valid_title = pathinfo($valid_title, PATHINFO_FILENAME);
 
-		return $validTitle !== '' ? $validTitle : 'Untitled';
+		return $valid_title !== '' ? $valid_title : 'Untitled';
 	}
 
 	/**
@@ -209,20 +209,20 @@ abstract class BaseArchive extends Action
 	 * @throws FileNotFoundException
 	 * @throws FileNotReadableException
 	 */
-	private function compressAlbum(AbstractAlbum $album, array &$usedDirNames, ?string $fullNameOfParent, ZipStream $zip): void
+	private function compressAlbum(AbstractAlbum $album, array &$used_dir_names, ?string $full_name_of_parent, ZipStream $zip): void
 	{
-		$fullNameOfParent = $fullNameOfParent ?? '';
+		$full_name_of_parent = $full_name_of_parent ?? '';
 
 		if (!Gate::check(AlbumPolicy::CAN_DOWNLOAD, [AbstractAlbum::class, $album])) {
 			return;
 		}
 
-		$fullNameOfDirectory = $this->makeUnique(self::createValidTitle($album->title), $usedDirNames);
-		if ($fullNameOfParent !== '') {
-			$fullNameOfDirectory = $fullNameOfParent . '/' . $fullNameOfDirectory;
+		$full_name_of_directory = $this->makeUnique(self::createValidTitle($album->title), $used_dir_names);
+		if ($full_name_of_parent !== '') {
+			$full_name_of_directory = $full_name_of_parent . '/' . $full_name_of_directory;
 		}
 
-		$usedFileNames = [];
+		$used_file_names = [];
 		// TODO: Ensure that the size variant `original` for each photo is eagerly loaded as it is needed below. This must be solved in close coordination with `ArchiveAlbumRequest`.
 		$photos = $album->photos;
 
@@ -243,8 +243,8 @@ abstract class BaseArchive extends Action
 				$file = $photo->size_variants->getOriginal()->getFile();
 
 				// Generate name for file inside the ZIP archive
-				$fileBaseName = $this->makeUnique(self::createValidTitle($photo->title), $usedFileNames);
-				$fileName = $fullNameOfDirectory . '/' . $fileBaseName . $file->getExtension();
+				$file_base_name = $this->makeUnique(self::createValidTitle($photo->title), $used_file_names);
+				$file_name = $full_name_of_directory . '/' . $file_base_name . $file->getExtension();
 
 				// Reset the execution timeout for every iteration.
 				try {
@@ -252,7 +252,7 @@ abstract class BaseArchive extends Action
 				} catch (InfoException) {
 					// Silently do nothing, if `set_time_limit` is denied.
 				}
-				$this->addFileToZip($zip, $fileName, $file, $photo);
+				$this->addFileToZip($zip, $file_name, $file, $photo);
 				$file->close();
 			} catch (\Throwable $e) {
 				Handler::reportSafely($e);
@@ -261,12 +261,12 @@ abstract class BaseArchive extends Action
 
 		// Recursively compress sub-albums
 		if ($album instanceof Album) {
-			$subDirs = [];
+			$sub_dirs = [];
 			// TODO: For higher efficiency, ensure that the photos of each child album together with the original size variant are eagerly loaded.
-			$subAlbums = $album->children;
-			foreach ($subAlbums as $subAlbum) {
+			$sub_albums = $album->children;
+			foreach ($sub_albums as $sub_album) {
 				try {
-					$this->compressAlbum($subAlbum, $subDirs, $fullNameOfDirectory, $zip);
+					$this->compressAlbum($sub_album, $sub_dirs, $full_name_of_directory, $zip);
 				} catch (\Throwable $e) {
 					Handler::reportSafely($e);
 				}
@@ -274,5 +274,5 @@ abstract class BaseArchive extends Action
 		}
 	}
 
-	abstract protected function addFileToZip(ZipStream $zip, string $fileName, FlysystemFile|BaseMediaFile $file, Photo|null $photo): void;
+	abstract protected function addFileToZip(ZipStream $zip, string $file_name, FlysystemFile|BaseMediaFile $file, Photo|null $photo): void;
 }

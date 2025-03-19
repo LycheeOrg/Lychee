@@ -21,9 +21,9 @@ class SetSmartProtectionPolicy extends Action
 	 *
 	 * @return void
 	 */
-	public function do(BaseSmartAlbum $album, bool $isPublic): void
+	public function do(BaseSmartAlbum $album, bool $is_public): void
 	{
-		if ($isPublic) {
+		if ($is_public) {
 			$album->setPublic();
 		} else {
 			$album->setPrivate();
