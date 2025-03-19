@@ -47,7 +47,7 @@ class VueController extends Controller
 	{
 		$albumFactory = resolve(AlbumFactory::class);
 		try {
-			if ($albumId !== null) {
+			if ($albumId !== null && $albumId !== 'all') {
 				$album = $albumFactory->findAbstractAlbumOrFail($albumId, false);
 
 				session()->now('access', $this->check($album));

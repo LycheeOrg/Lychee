@@ -119,14 +119,6 @@ const emits = defineEmits<{
 	help: [];
 }>();
 
-//  'UPLOAD_PHOTO' => 'Upload Photo',
-// 	'IMPORT_LINK' => 'Import from Link',
-// 	'IMPORT_DROPBOX' => 'Import from Dropbox',
-// 	'IMPORT_SERVER' => 'Import from Server',
-// 	'NEW_ALBUM' => 'New Album',
-// 	'NEW_TAG_ALBUM' => 'New Tag Album',
-// 	'UPLOAD_TRACK' => 'Upload track',
-// 	'DELETE_TRACK' => 'Delete track',
 const lycheeStore = useLycheeStateStore();
 const togglableStore = useTogglablesStateStore();
 
