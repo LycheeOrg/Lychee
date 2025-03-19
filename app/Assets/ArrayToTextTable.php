@@ -6,6 +6,9 @@
  * Copyright (c) 2018-2025 LycheeOrg.
  */
 
+// DO NOT RECTORIFY THIS FILE.
+// TODO: add to ignore list.
+
 /**
  * ArrayToTextTable.
  *
