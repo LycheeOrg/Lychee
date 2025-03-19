@@ -24,6 +24,7 @@
 		@refresh="refresh"
 		@toggle-slide-show="toggleSlideShow"
 		@toggle-edit="toggleEdit"
+		@open-search="openSearch"
 		@go-back="goBack"
 	/>
 
@@ -194,7 +195,6 @@ const togglableStore = useTogglablesStateStore();
 const lycheeStore = useLycheeStateStore();
 
 lycheeStore.init();
-togglableStore.resetSearch();
 
 const { are_nsfw_visible, slideshow_timeout } = storeToRefs(lycheeStore);
 const {
@@ -226,7 +226,7 @@ const children = computed<App.Http.Resources.Models.ThumbAlbumResource[]>(() => 
 
 const { toggleStar, rotatePhotoCCW, rotatePhotoCW, setAlbumHeader, rotateOverlay } = usePhotoActions(photo, albumId, toast, lycheeStore);
 
-const { getNext, getPrevious } = getNextPreviousPhoto(togglableStore, router, albumId, photo);
+const { getNext, getPrevious } = getNextPreviousPhoto(router, albumId, photo);
 const { slideshow, next, previous, stop } = useSlideshowFunction(1000, is_slideshow_active, slideshow_timeout, videoElement, getNext, getPrevious);
 const { hasNext, hasPrevious } = useHasNextPreviousPhoto(photo);
 
