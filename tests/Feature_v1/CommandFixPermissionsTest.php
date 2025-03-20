@@ -20,6 +20,8 @@ namespace Tests\Feature_v1;
 
 use function Safe\chmod;
 use function Safe\fileperms;
+
+use App\Actions\Diagnostics\Pipes\Checks\BasicPermissionCheck;
 use Tests\Constants\TestConstants;
 
 class CommandFixPermissionsTest extends Base\BasePhotoTest
@@ -44,7 +46,7 @@ class CommandFixPermissionsTest extends Base\BasePhotoTest
 			static::createUploadedFile(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE)
 		));
 
-		$filePath = public_path($this->dropUrlPrefix($photo->size_variants->original->url));
+		$filePath = public_path($this->dropUrlPrefix($photo->size_variants->getOriginal()->url));
 		$dirPath = pathinfo($filePath, PATHINFO_DIRNAME);
 
 		static::skipIfNotFileOwner($filePath);
@@ -56,8 +58,8 @@ class CommandFixPermissionsTest extends Base\BasePhotoTest
 		$this->artisan(self::COMMAND, ['--dry-run' => 0])->assertSuccessful();
 
 		clearstatcache(true);
-		self::assertEquals(00664, fileperms($filePath) & 07777);
-		self::assertEquals(02775, fileperms($dirPath) & 07777);
+		self::assertEquals(00664, fileperms($filePath) & BasicPermissionCheck::READ_WRITE_ALL);
+		self::assertEquals(02775, fileperms($dirPath) & BasicPermissionCheck::READ_WRITE_ALL);
 
 		chmod($filePath, 00777);
 		chmod($dirPath, 06777);
@@ -65,7 +67,7 @@ class CommandFixPermissionsTest extends Base\BasePhotoTest
 		$this->artisan(self::COMMAND, ['--dry-run' => 0])->assertSuccessful();
 
 		clearstatcache(true);
-		self::assertEquals(00664, fileperms($filePath) & 07777);
-		self::assertEquals(02775, fileperms($dirPath) & 07777);
+		self::assertEquals(00664, fileperms($filePath) & BasicPermissionCheck::READ_WRITE_ALL);
+		self::assertEquals(02775, fileperms($dirPath) & BasicPermissionCheck::READ_WRITE_ALL);
 	}
 }

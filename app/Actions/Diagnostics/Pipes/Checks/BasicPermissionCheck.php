@@ -38,6 +38,7 @@ use function Safe\posix_getgroups;
 class BasicPermissionCheck implements DiagnosticPipe
 {
 	public const MAX_ISSUE_REPORTS_PER_TYPE = 5;
+	public const READ_WRITE_ALL = 07777;
 
 	/**
 	 * @var int[] IDs of all (POSIX) groups to which the process belongs
@@ -96,7 +97,7 @@ class BasicPermissionCheck implements DiagnosticPipe
 		$this->numPermissionIssues = 0;
 		$this->numAccessIssues = 0;
 		try {
-			$group_i_ds_or_false = posix_getgroups();
+			$group_ids_or_false = posix_getgroups();
 			// @codeCoverageIgnoreStart
 		} catch (PosixException) {
 			$data[] = DiagnosticData::error('Could not determine groups of process', self::class);
@@ -104,7 +105,7 @@ class BasicPermissionCheck implements DiagnosticPipe
 			return;
 		}
 		// @codeCoverageIgnoreEnd
-		$this->groupIDs = $group_i_ds_or_false;
+		$this->groupIDs = $group_ids_or_false;
 		$this->groupIDs[] = posix_getegid();
 		$this->groupIDs[] = posix_getgid();
 		$this->groupIDs = array_unique($this->groupIDs);
@@ -207,7 +208,7 @@ class BasicPermissionCheck implements DiagnosticPipe
 			// `fileperms` also returns the higher bits of the inode mode.
 			// Hence, we must AND it with 07777 to only get what we are
 			// interested in
-			$actual_perm &= 07777;
+			$actual_perm &= self::READ_WRITE_ALL;
 			$owning_group_id_or_false = filegroup($path);
 			if ($owning_group_id_or_false !== false) {
 				try {
