@@ -12,7 +12,6 @@ use App\Contracts\Exceptions\ExternalLycheeException;
 use App\Metadata\Geodecoder;
 use App\Models\Photo;
 use Illuminate\Console\Command;
-use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleException;
 
 class DecodeGpsLocations extends Command
 {
@@ -29,16 +28,6 @@ class DecodeGpsLocations extends Command
 	 * @var string
 	 */
 	protected $description = 'Decodes the GPS location data and adds street, city, country, etc. to the tags';
-
-	/**
-	 * Create a new command instance.
-	 *
-	 * @throws SymfonyConsoleException
-	 */
-	public function __construct()
-	{
-		parent::__construct();
-	}
 
 	/**
 	 * Execute the console command.
@@ -65,12 +54,12 @@ class DecodeGpsLocations extends Command
 			return 0;
 		}
 
-		$cachedProvider = Geodecoder::getGeocoderProvider();
+		$cache_provider = Geodecoder::getGeocoderProvider();
 		/** @var Photo $photo */
 		foreach ($photos as $photo) {
 			$this->line('Processing ' . $photo->title . '...');
 
-			$photo->location = Geodecoder::decodeLocation_core($photo->latitude, $photo->longitude, $cachedProvider);
+			$photo->location = Geodecoder::decodeLocation_core($photo->latitude, $photo->longitude, $cache_provider);
 			$photo->save();
 		}
 

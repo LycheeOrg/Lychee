@@ -27,8 +27,8 @@ use Symfony\Component\String\Exception\ExceptionInterface as SymfonyStringExcept
 
 class Takedate extends Command
 {
-	private ConsoleSectionOutput $msgSection;
-	private ProgressBar $progressBar;
+	private ConsoleSectionOutput $msg_section;
+	private ProgressBar $progress_bar;
 
 	private const DATETIME_FORMAT = 'Y-m-d \a\t H:i:s (e)';
 
@@ -59,9 +59,9 @@ class Takedate extends Command
 		// which holds the progress bar.
 		// This way the progress bar remains on the bottom in case too
 		// many warning/errors are spit out.
-		$this->msgSection = $output->section();
-		$this->progressBar = new ProgressBar($output->section());
-		$this->progressBar->setFormat('Photo %current%/%max% [%bar%] %percent:3s%%');
+		$this->msg_section = $output->section();
+		$this->progress_bar = new ProgressBar($output->section());
+		$this->progress_bar->setFormat('Photo %current%/%max% [%bar%] %percent:3s%%');
 	}
 
 	/**
@@ -73,7 +73,7 @@ class Takedate extends Command
 	 */
 	private function printWarning(Photo $photo, string $msg): void
 	{
-		$this->msgSection->writeln('<comment>Warning:</comment> Photo "' . $photo->title . '" (ID=' . $photo->id . '): ' . $msg);
+		$this->msg_section->writeln('<comment>Warning:</comment> Photo "' . $photo->title . '" (ID=' . $photo->id . '): ' . $msg);
 	}
 
 	/**
@@ -85,7 +85,7 @@ class Takedate extends Command
 	 */
 	private function printInfo(Photo $photo, string $msg): void
 	{
-		$this->msgSection->writeln('<info>Info:</info>    Photo "' . $photo->title . '" (ID=' . $photo->id . '): ' . $msg);
+		$this->msg_section->writeln('<info>Info:</info>    Photo "' . $photo->title . '" (ID=' . $photo->id . '): ' . $msg);
 	}
 
 	/**
@@ -101,7 +101,7 @@ class Takedate extends Command
 			$limit = intval($this->argument('limit'));
 			$offset = intval($this->argument('offset'));
 			$timeout = intval($this->argument('time'));
-			$setCreationTime = $this->option('set-upload-time') === true;
+			$set_creation_time = $this->option('set-upload-time') === true;
 			$force = $this->option('force') === true;
 			try {
 				set_time_limit($timeout);
@@ -111,17 +111,17 @@ class Takedate extends Command
 
 			// For faster iteration we eagerly load the original size variant,
 			// but only the original size variant
-			$photoQuery = Photo::query()->with(['size_variants' => function ($r): void {
+			$photo_query = Photo::query()->with(['size_variants' => function ($r): void {
 				$r->where('type', '=', SizeVariantType::ORIGINAL);
 			}]);
 
 			if (!$force) {
-				$photoQuery->whereNull('taken_at');
+				$photo_query->whereNull('taken_at');
 			}
 
 			// ATTENTION: We must call `count` first, otherwise `offset` and
 			// `limit` won't have an effect.
-			$count = $photoQuery->count();
+			$count = $photo_query->count();
 			if ($count === 0) {
 				$this->line('No pictures require takedate updates.');
 
@@ -129,28 +129,28 @@ class Takedate extends Command
 			}
 
 			// We must stipulate a particular order, otherwise `offset` and `limit` have random effects
-			$photoQuery->orderBy('id');
+			$photo_query->orderBy('id');
 
 			if ($offset !== 0) {
-				$photoQuery->offset($offset);
+				$photo_query->offset($offset);
 			}
 
 			if ($limit !== 0) {
-				$photoQuery->limit($limit);
+				$photo_query->limit($limit);
 			}
 
-			$this->progressBar->setMaxSteps($limit === 0 ? $count : min($count, $limit));
+			$this->progress_bar->setMaxSteps($limit === 0 ? $count : min($count, $limit));
 
 			// Unfortunately, `->getLazy` ignores `offset` and `limit`, so we must
 			// use a regular collection which might run out of memory for large
 			// values of `limit`.
-			$photos = $photoQuery->get();
+			$photos = $photo_query->get();
 			/** @var Photo $photo */
 			foreach ($photos as $photo) {
-				$this->progressBar->advance();
-				$localFile = $photo->size_variants->getOriginal()->getFile()->toLocalFile();
+				$this->progress_bar->advance();
+				$local_file = $photo->size_variants->getOriginal()->getFile()->toLocalFile();
 
-				$info = Extractor::createFromFile($localFile, filemtime($localFile->getRealPath()));
+				$info = Extractor::createFromFile($local_file, filemtime($local_file->getRealPath()));
 				if ($info->taken_at !== null) {
 					// Note: `equalTo` only checks if two times indicate the same
 					// instant of time on the universe's timeline, i.e. equality
@@ -168,8 +168,8 @@ class Takedate extends Command
 					$this->printWarning($photo, 'Failed to extract takestamp data from media file.');
 				}
 
-				if ($setCreationTime) {
-					$created_at = $localFile->lastModified();
+				if ($set_creation_time) {
+					$created_at = $local_file->lastModified();
 					if ($created_at === $photo->created_at->timestamp) {
 						$this->printInfo($photo, 'Upload time up-to-date.');
 					} else {

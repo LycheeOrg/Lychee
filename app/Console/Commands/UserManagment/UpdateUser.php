@@ -21,7 +21,7 @@ class UpdateUser extends Command
 	 * @var string
 	 */
 	protected $signature =
-		'lychee:update_user' .
+		'lychee:update_user ' .
 		'{username : username of the user} ' .
 		'{password : password of the user} ';
 

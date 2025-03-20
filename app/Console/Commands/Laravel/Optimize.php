@@ -57,27 +57,28 @@ class Optimize extends OptimizeCommand
 	 */
 	public function handle(): void
 	{
-		$shallBeClever = $this->hasOption('clever') && $this->option('clever') === true;
-		$confirmationDefault = match ($this->option('dont-confirm')) {
+		$shall_be_clever = $this->hasOption('clever') && $this->option('clever') === true;
+		$confirmation_default = match ($this->option('dont-confirm')) {
 			'assume-yes' => true,
 			'assume-no' => false,
 			null => null,
 			default => throw new InvalidOptionException(sprintf('Unexpected option value %s for --dont-confirm', strval($this->option('dont-confirm')))),
 		};
-		$hasPreviousCache = file_exists($this->laravel->getCachedConfigPath()) || file_exists($this->laravel->getCachedRoutesPath());
+		/** @disregard P1013 */
+		$has_previous_cache = file_exists($this->laravel->getCachedConfigPath()) || file_exists($this->laravel->getCachedRoutesPath());
 
 		$this->call('optimize:clear');
 
-		if ($shallBeClever && !$hasPreviousCache) {
+		if ($shall_be_clever && !$has_previous_cache) {
 			return;
 		}
 
 		if ($this->isNonProductive()) {
 			$this->alert('Application not in Production!');
 
-			$hasConfirmed = $confirmationDefault ?? $this->confirm('Do you really wish to run this command?');
+			$has_confirmed = $confirmation_default ?? $this->confirm('Do you really wish to run this command?');
 
-			if (!$hasConfirmed) {
+			if (!$has_confirmed) {
 				$this->comment('Command Canceled!');
 
 				return;

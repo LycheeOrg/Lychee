@@ -81,20 +81,20 @@ class VideoData extends Command
 			}
 
 			// Initialize factory for size variants
-			$sizeVariantFactory = resolve(SizeVariantFactory::class);
+			$size_variant_factory = resolve(SizeVariantFactory::class);
 			/** @var Photo $photo */
 			foreach ($photos as $photo) {
 				$this->line('Processing ' . $photo->title . '...');
-				$originalSizeVariant = $photo->size_variants->getOriginal();
-				$file = $originalSizeVariant->getFile()->toLocalFile();
+				$original_size_variant = $photo->size_variants->getOriginal();
+				$file = $original_size_variant->getFile()->toLocalFile();
 
 				$info = Extractor::createFromFile($file, filemtime($file->getRealPath()));
 
-				if ($originalSizeVariant->width === 0 && $info->width !== 0) {
-					$originalSizeVariant->width = $info->width;
+				if ($original_size_variant->width === 0 && $info->width !== 0) {
+					$original_size_variant->width = $info->width;
 				}
-				if ($originalSizeVariant->height === 0 && $info->height !== 0) {
-					$originalSizeVariant->height = $info->height;
+				if ($original_size_variant->height === 0 && $info->height !== 0) {
+					$original_size_variant->height = $info->height;
 				}
 				if ($photo->focal === null) {
 					$photo->focal = $info->focal;
@@ -113,8 +113,8 @@ class VideoData extends Command
 				}
 
 				// TODO: Fix this line before PR; init needs more parameters
-				$sizeVariantFactory->init($photo);
-				$sizeVariantFactory->createSizeVariants();
+				$size_variant_factory->init($photo);
+				$size_variant_factory->createSizeVariants();
 
 				$photo->save();
 			}
