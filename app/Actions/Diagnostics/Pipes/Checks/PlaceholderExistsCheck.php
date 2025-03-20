@@ -37,8 +37,8 @@ class PlaceholderExistsCheck implements DiagnosticPipe
 			// @codeCoverageIgnoreEnd
 		}
 
-		$svHelpers = new SizeVariantDimensionHelpers();
-		if (!$svHelpers->isEnabledByConfiguration(SizeVariantType::PLACEHOLDER)) {
+		$sv_helpers = new SizeVariantDimensionHelpers();
+		if (!$sv_helpers->isEnabledByConfiguration(SizeVariantType::PLACEHOLDER)) {
 			return $next($data);
 		}
 
