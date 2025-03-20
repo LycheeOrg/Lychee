@@ -76,6 +76,7 @@ class Create
 			return $oldCodePath->add($sourceFile, $album, $fileLastModifiedTime);
 		}
 
+		/** @var InitDTO $initDTO */
 		$initDTO = new InitDTO(
 			parameters: $this->strategyParameters,
 			sourceFile: $sourceFile,
@@ -83,22 +84,34 @@ class Create
 			fileLastModifiedTime: $fileLastModifiedTime
 		);
 
-		/** @var InitDTO $initDTO */
+		$pipes = [
+			Init\AssertSupportedMedia::class,
+			Init\FetchLastModifiedTime::class,
+		];
+
+		if ($this->strategyParameters->importMode->shallResyncMetadata) {
+			$pipes[] = Init\LoadFileMetadata::class;
+		}
+
+		$pipes[] = Init\FindDuplicate::class;
+
 		$initDTO = app(Pipeline::class)
 			->send($initDTO)
-			->through([
-				Init\AssertSupportedMedia::class,
-				Init\FetchLastModifiedTime::class,
-				Init\InitParentAlbum::class,
-				Init\LoadFileMetadata::class,
-				Init\FindDuplicate::class,
-				Init\FindLivePartner::class,
-			])
+			->through($pipes)
 			->thenReturn();
 
 		if ($initDTO->duplicate !== null) {
 			return $this->handleDuplicate($initDTO);
 		}
+
+		$initDTO = app(Pipeline::class)
+			->send($initDTO)
+			->through([
+				Init\InitParentAlbum::class,
+				Init\LoadFileMetadata::class,
+				Init\FindLivePartner::class,
+			])
+			->thenReturn();
 
 		if ($initDTO->livePartner === null) {
 			return $this->handleStandalone($initDTO);
