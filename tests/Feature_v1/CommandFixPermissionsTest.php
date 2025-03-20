@@ -45,7 +45,7 @@ class CommandFixPermissionsTest extends Base\BasePhotoTest
 			static::createUploadedFile(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE)
 		));
 
-		$filePath = public_path($this->dropUrlPrefix($photo->size_variants->getOriginal()->url));
+		$filePath = public_path($this->dropUrlPrefix($photo->size_variants->original->url));
 		$dirPath = pathinfo($filePath, PATHINFO_DIRNAME);
 
 		static::skipIfNotFileOwner($filePath);
