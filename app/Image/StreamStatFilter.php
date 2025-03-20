@@ -19,7 +19,7 @@ class StreamStatFilter extends \php_user_filter
 	public const HASH_ALGO_NAME = 'sha1';
 
 	/** @var \HashContext|null the hash context for progressive hashing */
-	protected ?\HashContext $hashContext = null;
+	protected ?\HashContext $hash_context = null;
 
 	/**
 	 * Called to move streamed data from `$in` to `$out`.
@@ -34,7 +34,7 @@ class StreamStatFilter extends \php_user_filter
 			$consumed += $bucket->datalen;
 			if ($this->params instanceof StreamStat) {
 				$this->params->bytes += $bucket->datalen;
-				\hash_update($this->hashContext, $bucket->data);
+				\hash_update($this->hash_context, $bucket->data);
 			}
 			stream_bucket_append($out, $bucket);
 		}
@@ -52,7 +52,7 @@ class StreamStatFilter extends \php_user_filter
 	public function onClose(): void
 	{
 		if ($this->params instanceof StreamStat) {
-			$this->params->checksum = \hash_final($this->hashContext);
+			$this->params->checksum = \hash_final($this->hash_context);
 		}
 		parent::onClose();
 	}
@@ -68,7 +68,7 @@ class StreamStatFilter extends \php_user_filter
 	{
 		if ($this->params instanceof StreamStat) {
 			$this->params->bytes = 0;
-			$this->hashContext = \hash_init(self::HASH_ALGO_NAME);
+			$this->hash_context = \hash_init(self::HASH_ALGO_NAME);
 		}
 
 		return parent::onCreate();

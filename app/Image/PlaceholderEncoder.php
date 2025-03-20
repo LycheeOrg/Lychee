@@ -51,23 +51,23 @@ class PlaceholderEncoder
 	 *
 	 * @return void
 	 */
-	public function do(SizeVariant $sizeVariant): void
+	public function do(SizeVariant $size_variant): void
 	{
 		try {
-			$originalFile = $sizeVariant->getFile();
-			$workingImage = new InMemoryBuffer();
+			$original_file = $size_variant->getFile();
+			$working_image = new InMemoryBuffer();
 
-			$this->createGdImage($sizeVariant->getFile());
-			$this->compressImage($this->gdImage, $workingImage);
-			$this->encodeBase64Placeholder($workingImage);
-			$this->savePlaceholder($workingImage, $sizeVariant);
+			$this->createGdImage($size_variant->getFile());
+			$this->compressImage($this->gdImage, $working_image);
+			$this->encodeBase64Placeholder($working_image);
+			$this->savePlaceholder($working_image, $size_variant);
 
 			// delete original file since we now have no reference to it
-			$originalFile->delete();
+			$original_file->delete();
 		} catch (MediaFileOperationException $e) {
 			// Log the error, delete the size variant and continue with the next placeholder
 			Log::error($e->getMessage(), [$e]);
-			$sizeVariant->delete();
+			$size_variant->delete();
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException('Failed to encode placeholder to base64', $e);
 		}
@@ -86,28 +86,28 @@ class PlaceholderEncoder
 	 */
 	private function createGdImage(MediaFile $file): void
 	{
-		$inMemoryBuffer = new InMemoryBuffer();
+		$in_memory_buffer = new InMemoryBuffer();
 
-		$originalStream = $file->read();
-		if (stream_get_meta_data($originalStream)['seekable']) {
-			$inputStream = $originalStream;
+		$original_stream = $file->read();
+		if (stream_get_meta_data($original_stream)['seekable']) {
+			$input_stream = $original_stream;
 		} else {
 			// We make an in-memory copy of the provided stream,
 			// because we must be able to seek/rewind the stream.
 			// For example, a readable stream from a remote location (i.e.
 			// a "download" stream) is only forward readable once.
-			$inMemoryBuffer->write($originalStream);
-			$inputStream = $inMemoryBuffer->read();
+			$in_memory_buffer->write($original_stream);
+			$input_stream = $in_memory_buffer->read();
 		}
-		$imgBinary = stream_get_contents($inputStream);
+		$img_binary = stream_get_contents($input_stream);
 
-		rewind($inputStream);
+		rewind($input_stream);
 		/** @var \GdImage $referenceImage */
-		$referenceImage = imagecreatefromstring($imgBinary);
+		$reference_image = imagecreatefromstring($img_binary);
 		// webp does not support palette images
-		imagepalettetotruecolor($referenceImage);
+		imagepalettetotruecolor($reference_image);
 
-		$this->gdImage = $referenceImage;
+		$this->gdImage = $reference_image;
 	}
 
 	/**
@@ -130,9 +130,9 @@ class PlaceholderEncoder
 		// But just in case it isn't we try to compress again.
 		do {
 			// ensure buffer is empty before trying to compress again
-			$emptyStream = \Safe\fopen('php://temp', 'w+');
-			$output->write($emptyStream);
-			\Safe\fclose($emptyStream);
+			$empty_stream = \Safe\fopen('php://temp', 'w+');
+			$output->write($empty_stream);
+			\Safe\fclose($empty_stream);
 
 			imagewebp($source, $output->stream(), $quality);
 			$filesize = \Safe\fstat($output->read())['size'];
@@ -153,13 +153,13 @@ class PlaceholderEncoder
 	 */
 	private function encodeBase64Placeholder(InMemoryBuffer $file): void
 	{
-		$inMemoryBuffer = new InMemoryBuffer();
+		$in_memory_buffer = new InMemoryBuffer();
 
-		stream_filter_append($inMemoryBuffer->read(), 'convert.base64-encode', STREAM_FILTER_WRITE);
-		$inMemoryBuffer->write($file->read());
+		stream_filter_append($in_memory_buffer->read(), 'convert.base64-encode', STREAM_FILTER_WRITE);
+		$in_memory_buffer->write($file->read());
 
-		$file->write($inMemoryBuffer->read());
-		$inMemoryBuffer->close();
+		$file->write($in_memory_buffer->read());
+		$in_memory_buffer->close();
 	}
 
 	/**
@@ -173,13 +173,13 @@ class PlaceholderEncoder
 	 * @throws FilesystemException
 	 * @throws StreamException
 	 */
-	private function savePlaceholder(InMemoryBuffer $file, SizeVariant $sizeVariant): void
+	private function savePlaceholder(InMemoryBuffer $file, SizeVariant $size_variant): void
 	{
-		$base64Length = \Safe\fstat($file->read())['size'];
-		if ($base64Length <= self::BASE64_SIZE_LIMIT) {
-			$sizeVariant->filesize = $base64Length;
-			$sizeVariant->short_path = stream_get_contents($file->read());
-			$sizeVariant->save();
+		$base64_length = \Safe\fstat($file->read())['size'];
+		if ($base64_length <= self::BASE64_SIZE_LIMIT) {
+			$size_variant->filesize = $base64_length;
+			$size_variant->short_path = stream_get_contents($file->read());
+			$size_variant->save();
 		} else {
 			throw new MediaFileOperationException('Encoded image is too large.');
 		}

@@ -37,28 +37,28 @@ class SizeVariantDefaultFactory implements SizeVariantFactory
 	public const PLACEHOLDER_DIM = 16;
 
 	/** @var ImageHandlerInterface the image handler (gd, imagick, ...) which is used to generate image files */
-	protected ImageHandlerInterface $referenceImage;
+	protected ImageHandlerInterface $reference_image;
 	protected ?Photo $photo = null;
-	protected ?AbstractSizeVariantNamingStrategy $namingStrategy = null;
-	protected ?SizeVariantDimensionHelpers $svDimensionHelpers = null;
+	protected ?AbstractSizeVariantNamingStrategy $naming_strategy = null;
+	protected ?SizeVariantDimensionHelpers $sv_dimension_helpers = null;
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function init(Photo $photo, ?ImageHandlerInterface $referenceImage = null, ?AbstractSizeVariantNamingStrategy $namingStrategy = null): void
+	public function init(Photo $photo, ?ImageHandlerInterface $reference_image = null, ?AbstractSizeVariantNamingStrategy $naming_strategy = null): void
 	{
-		$this->svDimensionHelpers = new SizeVariantDimensionHelpers();
+		$this->sv_dimension_helpers = new SizeVariantDimensionHelpers();
 
 		try {
 			$this->photo = $photo;
-			if ($referenceImage !== null && $referenceImage->isLoaded()) {
-				$this->referenceImage = $referenceImage;
+			if ($reference_image !== null && $reference_image->isLoaded()) {
+				$this->reference_image = $reference_image;
 			} else {
 				$this->loadReferenceImage();
 			}
-			$this->namingStrategy = $namingStrategy ?? resolve(AbstractSizeVariantNamingStrategy::class);
+			$this->naming_strategy = $naming_strategy ?? resolve(AbstractSizeVariantNamingStrategy::class);
 			// Ensure that the naming strategy is linked to this photo
-			$this->namingStrategy->setPhoto($this->photo);
+			$this->naming_strategy->setPhoto($this->photo);
 		} catch (BindingResolutionException $e) {
 			throw new FrameworkException('Laravel\'s container component', $e);
 		}
@@ -76,32 +76,32 @@ class SizeVariantDefaultFactory implements SizeVariantFactory
 	 */
 	protected function loadReferenceImage(): void
 	{
-		$originalFile = $this->photo->size_variants->getOriginal()->getFile();
+		$original_file = $this->photo->size_variants->getOriginal()->getFile();
 
 		if (!$this->photo->isVideo()) {
-			$this->referenceImage = new ImageHandler();
-			$this->referenceImage->load($originalFile);
+			$this->reference_image = new ImageHandler();
+			$this->reference_image->load($original_file);
 		} else {
-			if ($originalFile->isLocalFile()) {
+			if ($original_file->isLocalFile()) {
 				// If the original size variant is hosted locally,
 				// we can directly take it as a source file
-				$sourceFile = $originalFile->toLocalFile();
+				$source_file = $original_file->toLocalFile();
 			} else {
 				// If the original size variant is hosted remotely,
 				// we must download it first; we exploit the temporary file
 				// for that
-				$sourceFile = new TemporaryLocalFile($originalFile->getOriginalExtension(), $this->photo->title);
-				$sourceFile->write($originalFile->read(), false, $this->photo->type);
+				$source_file = new TemporaryLocalFile($original_file->getOriginalExtension(), $this->photo->title);
+				$source_file->write($original_file->read(), false, $this->photo->type);
 			}
 
-			$videoHandler = new VideoHandler();
-			$videoHandler->load($sourceFile);
+			$video_handler = new VideoHandler();
+			$video_handler->load($source_file);
 			$position = is_numeric($this->photo->aperture) ? floatval($this->photo->aperture) / 2 : 0.0;
-			$this->referenceImage = $videoHandler->extractFrame($position);
+			$this->reference_image = $video_handler->extractFrame($position);
 
 			// Clean up
-			if ($sourceFile instanceof TemporaryLocalFile) {
-				$sourceFile->delete();
+			if ($source_file instanceof TemporaryLocalFile) {
+				$source_file->delete();
 			}
 		}
 	}
@@ -111,7 +111,7 @@ class SizeVariantDefaultFactory implements SizeVariantFactory
 	 */
 	public function createSizeVariants(): Collection
 	{
-		$allVariants = [
+		$all_variants = [
 			SizeVariantType::PLACEHOLDER,
 			SizeVariantType::THUMB,
 			SizeVariantType::THUMB2X,
@@ -122,7 +122,7 @@ class SizeVariantDefaultFactory implements SizeVariantFactory
 		];
 		$collection = new Collection();
 
-		foreach ($allVariants as $variant) {
+		foreach ($all_variants as $variant) {
 			$sv = $this->createSizeVariantCond($variant);
 			if ($sv !== null) {
 				$collection->add($sv);
@@ -135,28 +135,28 @@ class SizeVariantDefaultFactory implements SizeVariantFactory
 	/**
 	 * {@inheritDoc}
 	 */
-	public function createSizeVariantCond(SizeVariantType $sizeVariant): ?SizeVariant
+	public function createSizeVariantCond(SizeVariantType $size_variant): ?SizeVariant
 	{
-		if ($sizeVariant === SizeVariantType::ORIGINAL) {
+		if ($size_variant === SizeVariantType::ORIGINAL) {
 			throw new InvalidSizeVariantException('createSizeVariantCond() must not be used to create original size');
 		}
-		if (!$this->svDimensionHelpers->isEnabledByConfiguration($sizeVariant)) {
+		if (!$this->sv_dimension_helpers->isEnabledByConfiguration($size_variant)) {
 			return null;
 		}
 		// Don't generate medium size variants for videos, because the current web front-end has no use for it. Let's save some storage space.
-		if ($this->photo->isVideo() && ($sizeVariant === SizeVariantType::MEDIUM || $sizeVariant === SizeVariantType::MEDIUM2X)) {
+		if ($this->photo->isVideo() && ($size_variant === SizeVariantType::MEDIUM || $size_variant === SizeVariantType::MEDIUM2X)) {
 			return null;
 		}
 		// Don't re-create existing size variant
-		if ($this->photo->size_variants->getSizeVariant($sizeVariant) !== null) {
+		if ($this->photo->size_variants->getSizeVariant($size_variant) !== null) {
 			return null;
 		}
 
-		$maxDim = $this->svDimensionHelpers->getMaxDimensions($sizeVariant);
-		$realDim = $this->referenceImage->getDimensions();
+		$max_dim = $this->sv_dimension_helpers->getMaxDimensions($size_variant);
+		$real_dim = $this->reference_image->getDimensions();
 
-		return $this->svDimensionHelpers->isLargeEnough($realDim, $maxDim, $sizeVariant) ?
-			$this->createSizeVariantInternal($sizeVariant, $maxDim) :
+		return $this->sv_dimension_helpers->isLargeEnough($real_dim, $max_dim, $size_variant) ?
+			$this->createSizeVariantInternal($size_variant, $max_dim) :
 			null;
 	}
 
@@ -166,36 +166,35 @@ class SizeVariantDefaultFactory implements SizeVariantFactory
 	 * The method does not check whether the size variant already exist
 	 * and will overwrite an existing one of the same type.
 	 *
-	 * @param SizeVariantType $sizeVariant the desired size variant; admissible
-	 *                                     values are:
-	 *                                     {@link SizeVariantType::THUMB},
-	 *                                     {@link SizeVariantType::THUMB2X},
-	 *                                     {@link SizeVariantType::SMALL},
-	 *                                     {@link SizeVariantType::SMALL2X},
-	 *                                     {@link SizeVariantType::MEDIUM} and
-	 *                                     {@link SizeVariantType::MEDIUM2X}
-	 * @param ImageDimension  $maxDim      the designated dimensions of the
-	 *                                     size variant
+	 * @param SizeVariantType $size_variant the desired size variant; admissible
+	 *                                      values are:
+	 *                                      {@link SizeVariantType::THUMB},
+	 *                                      {@link SizeVariantType::THUMB2X},
+	 *                                      {@link SizeVariantType::SMALL},
+	 *                                      {@link SizeVariantType::SMALL2X},
+	 *                                      {@link SizeVariantType::MEDIUM} and
+	 *                                      {@link SizeVariantType::MEDIUM2X}
+	 * @param ImageDimension  $max_dim      the designated dimensions of the size variant
 	 *
 	 * @return SizeVariant the generated size variant
 	 *
 	 * @throws LycheeException
 	 */
-	private function createSizeVariantInternal(SizeVariantType $sizeVariant, ImageDimension $maxDim): SizeVariant
+	private function createSizeVariantInternal(SizeVariantType $size_variant, ImageDimension $max_dim): SizeVariant
 	{
-		$svImage = match ($sizeVariant) {
-			SizeVariantType::THUMB, SizeVariantType::THUMB2X, SizeVariantType::PLACEHOLDER => $this->referenceImage->cloneAndCrop($maxDim),
-			default => $this->referenceImage->cloneAndScale($maxDim),
+		$sv_image = match ($size_variant) {
+			SizeVariantType::THUMB, SizeVariantType::THUMB2X, SizeVariantType::PLACEHOLDER => $this->reference_image->cloneAndCrop($max_dim),
+			default => $this->reference_image->cloneAndScale($max_dim),
 		};
 
-		$svFile = $this->namingStrategy->createFile($sizeVariant);
-		$svImage->save($svFile);
+		$sv_file = $this->naming_strategy->createFile($size_variant);
+		$sv_image->save($sv_file);
 
 		return $this->photo->size_variants->create(
-			$sizeVariant,
-			$svFile->getRelativePath(),
-			$svImage->getDimensions(),
-			$svFile->getFilesize()
+			$size_variant,
+			$sv_file->getRelativePath(),
+			$sv_image->getDimensions(),
+			$sv_file->getFilesize()
 		);
 	}
 }

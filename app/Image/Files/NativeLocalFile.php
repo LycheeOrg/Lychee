@@ -75,10 +75,10 @@ class NativeLocalFile extends BaseMediaFile
 	 *
 	 * @returns void
 	 */
-	public function write($stream, bool $collectStatistics = false, ?string $mimeType = null): ?StreamStat
+	public function write($stream, bool $collect_statistics = false, ?string $mime_type = null): ?StreamStat
 	{
 		try {
-			$streamStat = $collectStatistics ? static::appendStatFilter($stream) : null;
+			$stream_stat = $collect_statistics ? static::appendStatFilter($stream) : null;
 
 			if (is_resource($this->stream)) {
 				ftruncate($this->stream, 0);
@@ -88,14 +88,14 @@ class NativeLocalFile extends BaseMediaFile
 			}
 			$this->cachedMimeType = null;
 			stream_copy_to_stream($stream, $this->stream);
-			$this->cachedMimeType = $mimeType;
+			$this->cachedMimeType = $mime_type;
 			// File statistics info (filesize, access mode, etc.) are cached
 			// by PHP to avoid costly I/O calls.
 			// If cache is not cleared, an old size may be reported after
 			// write.
 			clearstatcache(true, $this->getPath());
 
-			return $streamStat;
+			return $stream_stat;
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
@@ -113,24 +113,24 @@ class NativeLocalFile extends BaseMediaFile
 	 *
 	 * @returns void
 	 */
-	public function append($stream, bool $collectStatistics = false, ?string $mimeType = null): ?StreamStat
+	public function append($stream, bool $collect_statistics = false, ?string $mime_type = null): ?StreamStat
 	{
 		try {
-			$streamStat = $collectStatistics ? static::appendStatFilter($stream) : null;
+			$stream_stat = $collect_statistics ? static::appendStatFilter($stream) : null;
 
 			if (!is_resource($this->stream)) {
 				$this->stream = fopen($this->getPath(), 'a+b');
 			}
 			$this->cachedMimeType = null;
 			stream_copy_to_stream($stream, $this->stream);
-			$this->cachedMimeType = $mimeType;
+			$this->cachedMimeType = $mime_type;
 			// File statistics info (filesize, access mode, etc.) are cached
 			// by PHP to avoid costly I/O calls.
 			// If cache is not cleared, an old size may be reported after
 			// write.
 			clearstatcache(true, $this->getPath());
 
-			return $streamStat;
+			return $stream_stat;
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
@@ -156,11 +156,11 @@ class NativeLocalFile extends BaseMediaFile
 	/**
 	 * {@inheritDoc}
 	 */
-	public function move(string $newPath): void
+	public function move(string $new_path): void
 	{
 		try {
-			rename($this->path, $newPath);
-			$this->path = $newPath;
+			rename($this->path, $new_path);
+			$this->path = $new_path;
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException($e->getMessage(), $e);
 		}

@@ -58,17 +58,17 @@ class InMemoryBuffer extends AbstractBinaryBlob
 	 *
 	 * @throws MediaFileOperationException
 	 */
-	public function write($stream, bool $collectStatistics = false): ?StreamStat
+	public function write($stream, bool $collect_statistics = false): ?StreamStat
 	{
 		try {
-			$streamStat = $collectStatistics ? static::appendStatFilter($stream) : null;
+			$stream_stat = $collect_statistics ? static::appendStatFilter($stream) : null;
 
 			$this->stream();
 			\Safe\ftruncate($this->stream, 0);
 			\Safe\rewind($this->stream);
 			\Safe\stream_copy_to_stream($stream, $this->stream);
 
-			return $streamStat;
+			return $stream_stat;
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
