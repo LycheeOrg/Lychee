@@ -20,14 +20,14 @@ class PlaceGoogleMotionVideo implements StandalonePipe
 		// we must move the preliminary extracted video file next to the
 		// final target file
 		if ($state->tmpVideoFile !== null) {
-			$videoTargetPath =
+			$video_target_path =
 				pathinfo($state->targetFile->getRelativePath(), PATHINFO_DIRNAME) .
 				'/' .
 				pathinfo($state->targetFile->getRelativePath(), PATHINFO_FILENAME) .
 				$state->tmpVideoFile->getExtension();
-			$videoTargetFile = new FlysystemFile($state->targetFile->getDisk(), $videoTargetPath);
-			$videoTargetFile->write($state->tmpVideoFile->read());
-			$state->photo->live_photo_short_path = $videoTargetFile->getRelativePath();
+			$video_target_file = new FlysystemFile($state->targetFile->getDisk(), $video_target_path);
+			$video_target_file->write($state->tmpVideoFile->read());
+			$state->photo->live_photo_short_path = $video_target_file->getRelativePath();
 			$state->tmpVideoFile->close();
 			$state->tmpVideoFile->delete();
 			$state->tmpVideoFile = null;

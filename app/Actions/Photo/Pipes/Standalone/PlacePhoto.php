@@ -69,37 +69,37 @@ class PlacePhoto implements StandalonePipe
 				if (!$state->targetFile->isLocalFile()) {
 					throw new ConfigurationException('Symlinking is only supported on local filesystems');
 				}
-				$targetPath = $state->targetFile->toLocalFile()->getPath();
-				$sourcePath = $state->sourceFile->getRealPath();
+				$target_path = $state->targetFile->toLocalFile()->getPath();
+				$source_path = $state->sourceFile->getRealPath();
 				// For symlinks we must manually create a non-existing
 				// parent directory.
 				// This mimics the behaviour of Flysystem for regular files.
-				$targetDirectory = pathinfo($targetPath, PATHINFO_DIRNAME);
-				if (!is_dir($targetDirectory)) {
+				$target_directory = pathinfo($target_path, PATHINFO_DIRNAME);
+				if (!is_dir($target_directory)) {
 					$umask = \umask(0);
-					\Safe\mkdir($targetDirectory, BasicPermissionCheck::getConfiguredDirectoryPerm(), true);
+					\Safe\mkdir($target_directory, BasicPermissionCheck::getConfiguredDirectoryPerm(), true);
 					\umask($umask);
 				}
-				\Safe\symlink($sourcePath, $targetPath);
-				$streamStat = StreamStat::createFromLocalFile($state->sourceFile);
+				\Safe\symlink($source_path, $target_path);
+				$stream_stat = StreamStat::createFromLocalFile($state->sourceFile);
 			} else {
-				$shallNormalize = Configs::getValueAsBool('auto_fix_orientation') &&
+				$shall_normalize = Configs::getValueAsBool('auto_fix_orientation') &&
 					$state->sourceImage !== null &&
 					$state->exifInfo->orientation !== 1;
 
-				if ($shallNormalize) {
+				if ($shall_normalize) {
 					// Saving the loaded image to the final target normalizes
 					// the image orientation. This comes at the cost that
 					// the image is re-encoded and hence its quality might
 					// be reduced.
-					$streamStat = $state->sourceImage->save($state->targetFile, true);
+					$stream_stat = $state->sourceImage->save($state->targetFile, true);
 					$this->backupOriginal($state);
 				} else {
 					// If the image does not require normalization the
 					// unaltered source file is copied to the final target.
 					// Avoiding a re-encoding prevents any potential quality
 					// loss.
-					$streamStat = $state->targetFile->write($state->sourceFile->read(), true);
+					$stream_stat = $state->targetFile->write($state->sourceFile->read(), true);
 					$state->sourceFile->close();
 					$state->targetFile->close();
 				}
@@ -119,7 +119,7 @@ class PlacePhoto implements StandalonePipe
 				}
 			}
 
-			return $streamStat;
+			return $stream_stat;
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException('Could move/copy/symlink source file to final destination', $e);
 		}

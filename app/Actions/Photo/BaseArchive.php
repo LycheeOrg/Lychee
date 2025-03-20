@@ -77,12 +77,12 @@ abstract class BaseArchive
 	 *
 	 * @throws LycheeException
 	 */
-	public function do(Collection $photos, DownloadVariantType $downloadVariant): StreamedResponse
+	public function do(Collection $photos, DownloadVariantType $download_variant): StreamedResponse
 	{
 		if ($photos->count() === 1) {
-			$response = $this->file($photos->firstOrFail(), $downloadVariant);
+			$response = $this->file($photos->firstOrFail(), $download_variant);
 		} else {
-			$response = $this->zip($photos, $downloadVariant);
+			$response = $this->zip($photos, $download_variant);
 		}
 
 		return $response;
@@ -110,27 +110,27 @@ abstract class BaseArchive
 	 *
 	 * @throws LycheeException
 	 */
-	protected function file(Photo $photo, DownloadVariantType $downloadVariant): StreamedResponse
+	protected function file(Photo $photo, DownloadVariantType $download_variant): StreamedResponse
 	{
-		$archiveFileInfo = $this->extractFileInfo($photo, $downloadVariant);
+		$archive_file_info = $this->extractFileInfo($photo, $download_variant);
 
-		$responseGenerator = function () use ($archiveFileInfo): void {
-			$outputStream = fopen('php://output', 'wb');
-			stream_copy_to_stream($archiveFileInfo->file->read(), $outputStream);
-			$archiveFileInfo->file->close();
-			fclose($outputStream);
+		$response_generator = function () use ($archive_file_info): void {
+			$output_stream = fopen('php://output', 'wb');
+			stream_copy_to_stream($archive_file_info->file->read(), $output_stream);
+			$archive_file_info->file->close();
+			fclose($output_stream);
 		};
 
 		try {
-			$response = new StreamedResponse($responseGenerator);
+			$response = new StreamedResponse($response_generator);
 			$disposition = HeaderUtils::makeDisposition(
 				HeaderUtils::DISPOSITION_ATTACHMENT,
-				$archiveFileInfo->getFilename(),
-				mb_check_encoding($archiveFileInfo->getFilename(), 'ASCII') ? '' : 'Photo' . $archiveFileInfo->file->getExtension()
+				$archive_file_info->getFilename(),
+				mb_check_encoding($archive_file_info->getFilename(), 'ASCII') ? '' : 'Photo' . $archive_file_info->file->getExtension()
 			);
 			$response->headers->set('Content-Type', $photo->type);
 			$response->headers->set('Content-Disposition', $disposition);
-			$response->headers->set('Content-Length', strval($archiveFileInfo->file->getFilesize()));
+			$response->headers->set('Content-Length', strval($archive_file_info->file->getFilesize()));
 			// Note: Using insecure hashing algorithm is fine here.
 			// The ETag header must only be different for different size variants
 			// Pre-image resistance and collision robustness is not required.
@@ -140,10 +140,10 @@ abstract class BaseArchive
 			// we must avoid illegal characters like `/` and md5 returns a
 			// hexadecimal string.
 			$response->headers->set('ETag', md5(
-				$archiveFileInfo->file->getBasename() .
-				$downloadVariant->value .
+				$archive_file_info->file->getBasename() .
+				$download_variant->value .
 				$photo->updated_at->toAtomString() .
-				$archiveFileInfo->file->getFilesize())
+				$archive_file_info->file->getFilesize())
 			);
 			$response->headers->set('Last-Modified', $photo->updated_at->format(\DateTimeInterface::RFC7231));
 
@@ -162,11 +162,11 @@ abstract class BaseArchive
 	 * @throws FrameworkException
 	 * @throws ConfigurationKeyMissingException
 	 */
-	protected function zip(Collection $photos, DownloadVariantType $downloadVariant): StreamedResponse
+	protected function zip(Collection $photos, DownloadVariantType $download_variant): StreamedResponse
 	{
 		$this->deflate_level = Configs::getValueAsInt('zip_deflate_level');
 
-		$responseGenerator = function () use ($downloadVariant, $photos): void {
+		$response_generator = function () use ($download_variant, $photos): void {
 			$zip = $this->createZip();
 
 			// We first need to scan the whole array of files to avoid
@@ -223,43 +223,43 @@ abstract class BaseArchive
 			// unique file names, then the counter is incremented until the
 			// next "free" file name is found.
 
-			$archiveFileInfos = [];
-			$uniqueFilenames = [];
-			$ambiguousFilenames = [];
+			$archive_file_infos = [];
+			$unique_filenames = [];
+			$ambiguous_filenames = [];
 
 			// Partition the set
 			/** @var Photo $photo */
 			foreach ($photos as $photo) {
-				$archiveFileInfo = $this->extractFileInfo($photo, $downloadVariant);
-				$archiveFileInfos[] = $archiveFileInfo;
-				$filename = $archiveFileInfo->getFilename();
-				if (array_key_exists($filename, $ambiguousFilenames)) {
+				$archive_file_info = $this->extractFileInfo($photo, $download_variant);
+				$archive_file_infos[] = $archive_file_info;
+				$filename = $archive_file_info->getFilename();
+				if (array_key_exists($filename, $ambiguous_filenames)) {
 					// do nothing
-				} elseif (array_key_exists($filename, $uniqueFilenames)) {
-					unset($uniqueFilenames[$filename]);
-					$ambiguousFilenames[$filename] = 0;
+				} elseif (array_key_exists($filename, $unique_filenames)) {
+					unset($unique_filenames[$filename]);
+					$ambiguous_filenames[$filename] = 0;
 				} else {
-					$uniqueFilenames[$filename] = 0;
+					$unique_filenames[$filename] = 0;
 				}
 			}
 
 			/** @var ArchiveFileInfo $archiveFileInfo */
-			foreach ($archiveFileInfos as $archiveFileInfo) {
-				$trueFilename = $archiveFileInfo->getFilename();
-				if (array_key_exists($trueFilename, $uniqueFilenames)) {
+			foreach ($archive_file_infos as $archive_file_info) {
+				$true_filename = $archive_file_info->getFilename();
+				if (array_key_exists($true_filename, $unique_filenames)) {
 					// Easy case: Unique file names are used unaltered
-					$filename = $trueFilename;
+					$filename = $true_filename;
 				} else {
 					do {
 						// Append suffix for multiple copies of same file name
 						// but skip results which exist as a unique file name
-						$filename = $archiveFileInfo->getFilename(
-							'-' . ++$ambiguousFilenames[$trueFilename]
+						$filename = $archive_file_info->getFilename(
+							'-' . ++$ambiguous_filenames[$true_filename]
 						);
-					} while (array_key_exists($filename, $uniqueFilenames));
+					} while (array_key_exists($filename, $unique_filenames));
 				}
-				$this->addFileToZip($zip, $filename, $archiveFileInfo->file, null);
-				$archiveFileInfo->file->close();
+				$this->addFileToZip($zip, $filename, $archive_file_info->file, null);
+				$archive_file_info->file->close();
 				// Reset the execution timeout for every iteration.
 				try {
 					set_time_limit((int) ini_get('max_execution_time'));
@@ -273,7 +273,7 @@ abstract class BaseArchive
 		};
 
 		try {
-			$response = new StreamedResponse($responseGenerator);
+			$response = new StreamedResponse($response_generator);
 			$disposition = HeaderUtils::makeDisposition(
 				HeaderUtils::DISPOSITION_ATTACHMENT,
 				'Photos.zip'
@@ -292,7 +292,7 @@ abstract class BaseArchive
 		return $response;
 	}
 
-	abstract protected function addFileToZip(ZipStream $zip, string $fileName, FlysystemFile|BaseMediaFile $file, Photo|null $photo): void;
+	abstract protected function addFileToZip(ZipStream $zip, string $file_name, FlysystemFile|BaseMediaFile $file, Photo|null $photo): void;
 
 	/**
 	 * @return ZipStream
@@ -311,33 +311,33 @@ abstract class BaseArchive
 	 *
 	 * @throws InvalidSizeVariantException
 	 */
-	protected function extractFileInfo(Photo $photo, DownloadVariantType $downloadVariant): ArchiveFileInfo
+	protected function extractFileInfo(Photo $photo, DownloadVariantType $download_variant): ArchiveFileInfo
 	{
-		$validFilename = str_replace(self::BAD_CHARS, '', $photo->title);
-		$baseFilename = $validFilename !== '' ? $validFilename : 'Untitled';
-		$baseFilename = pathinfo($baseFilename, PATHINFO_FILENAME);
+		$valid_filename = str_replace(self::BAD_CHARS, '', $photo->title);
+		$base_filename = $valid_filename !== '' ? $valid_filename : 'Untitled';
+		$base_filename = pathinfo($base_filename, PATHINFO_FILENAME);
 
-		if ($downloadVariant === DownloadVariantType::LIVEPHOTOVIDEO) {
+		if ($download_variant === DownloadVariantType::LIVEPHOTOVIDEO) {
 			$disk = $photo->size_variants->getSizeVariant(SizeVariantType::ORIGINAL)->storage_disk->value;
-			$sourceFile = new FlysystemFile(Storage::disk($disk), $photo->live_photo_short_path);
-			$baseFilenameAddon = '';
+			$source_file = new FlysystemFile(Storage::disk($disk), $photo->live_photo_short_path);
+			$base_filename_addon = '';
 		} else {
-			$sv = $photo->size_variants->getSizeVariant($downloadVariant->getSizeVariantType());
-			$baseFilenameAddon = '';
+			$sv = $photo->size_variants->getSizeVariant($download_variant->getSizeVariantType());
+			$base_filename_addon = '';
 			if ($sv !== null) {
-				$sourceFile = $sv->getFile();
+				$source_file = $sv->getFile();
 				// The filename of the original size variant shall get no
 				// particular suffix but remain as is.
 				// All other size variants (i.e. the generated, smaller ones)
 				// get size information as suffix.
 				if ($sv->type !== SizeVariantType::ORIGINAL) {
-					$baseFilenameAddon = '-' . $sv->width . 'x' . $sv->height;
+					$base_filename_addon = '-' . $sv->width . 'x' . $sv->height;
 				}
 			} else {
 				throw new InvalidSizeVariantException('Size variant missing');
 			}
 		}
 
-		return new ArchiveFileInfo($baseFilename, $baseFilenameAddon, $sourceFile);
+		return new ArchiveFileInfo($base_filename, $base_filename_addon, $source_file);
 	}
 }
