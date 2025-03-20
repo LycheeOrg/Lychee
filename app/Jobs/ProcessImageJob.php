@@ -44,50 +44,50 @@ class ProcessImageJob implements ShouldQueue
 
 	protected JobHistory $history;
 
-	public string $filePath;
-	public string $originalBaseName;
-	public ?string $albumID;
-	public int $userId;
-	public ?int $fileLastModifiedTime;
+	public string $file_path;
+	public string $original_base_name;
+	public ?string $album_id;
+	public int $user_id;
+	public ?int $file_last_modified_time;
 
 	/**
 	 * Create a new job instance.
 	 */
 	public function __construct(
 		ProcessableJobFile $file,
-		string|AbstractAlbum|null $abstractAlbum,
-		?int $fileLastModifiedTime,
+		string|AbstractAlbum|null $abstract_album,
+		?int $file_last_modified_time,
 	) {
-		$this->filePath = $file->getPath();
-		$this->originalBaseName = $file->getOriginalBasename();
+		$this->file_path = $file->getPath();
+		$this->original_base_name = $file->getOriginalBasename();
 
-		$this->albumID = null;
+		$this->album_id = null;
 
 		/** @var AbstractAlbum|null */
 		$album = null;
 
-		if (is_string($abstractAlbum)) {
-			$album = resolve(AlbumFactory::class)->findAbstractAlbumOrFail($abstractAlbum);
-		} elseif ($abstractAlbum instanceof AbstractAlbum) {
-			$album = $abstractAlbum;
+		if (is_string($abstract_album)) {
+			$album = resolve(AlbumFactory::class)->findAbstractAlbumOrFail($abstract_album);
+		} elseif ($abstract_album instanceof AbstractAlbum) {
+			$album = $abstract_album;
 		}
 
-		$this->albumID = $album?->id;
+		$this->album_id = $album?->id;
 		$album_name = $album?->title ?? __('gallery.smart_album.unsorted');
 		$user_id = Auth::user()?->id;
 		if ($user_id === null && ($album === null || $album instanceof BaseSmartAlbum)) {
 			throw new OwnerRequiredException();
 		} else {
 			/** @var Album|TagAlbum $album */
-			$this->userId = $user_id ?? $album?->owner_id ?? throw new OwnerRequiredException();
+			$this->user_id = $user_id ?? $album?->owner_id ?? throw new OwnerRequiredException();
 		}
 
-		$this->fileLastModifiedTime = $fileLastModifiedTime;
+		$this->file_last_modified_time = $file_last_modified_time;
 
 		// Set up our new history record.
 		$this->history = new JobHistory();
-		$this->history->owner_id = $this->userId;
-		$this->history->job = Str::limit(sprintf('Process Image: %s added to %s.', $this->originalBaseName, $album_name), 200);
+		$this->history->owner_id = $this->user_id;
+		$this->history->job = Str::limit(sprintf('Process Image: %s added to %s.', $this->original_base_name, $album_name), 200);
 		$this->history->status = JobStatus::READY;
 
 		$this->history->save();
@@ -99,26 +99,26 @@ class ProcessImageJob implements ShouldQueue
 	 * Here we handle the execution of the image processing.
 	 * This will create the model, reformat the image etc.
 	 */
-	public function handle(AlbumFactory $albumFactory): Photo
+	public function handle(AlbumFactory $album_factory): Photo
 	{
 		$this->history->status = JobStatus::STARTED;
 		$this->history->save();
 
-		$copiedFile = new TemporaryJobFile($this->filePath, $this->originalBaseName);
+		$copied_file = new TemporaryJobFile($this->file_path, $this->original_base_name);
 
 		// As the file has been uploaded, the (temporary) source file shall be
 		// deleted
 		$create = new Create(
 			new ImportMode(deleteImported: true, skipDuplicates: Configs::getValueAsBool('skip_duplicates')),
-			$this->userId
+			$this->user_id
 		);
 
 		$album = null;
-		if ($this->albumID !== null) {
-			$album = $albumFactory->findAbstractAlbumOrFail($this->albumID);
+		if ($this->album_id !== null) {
+			$album = $album_factory->findAbstractAlbumOrFail($this->album_id);
 		}
 
-		$photo = $create->add($copiedFile, $album, $this->fileLastModifiedTime);
+		$photo = $create->add($copied_file, $album, $this->file_last_modified_time);
 
 		// Once the job has finished, set history status to 1.
 		$this->history->status = JobStatus::SUCCESS;
