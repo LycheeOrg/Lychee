@@ -18,10 +18,9 @@
 
 namespace Tests\Feature_v1;
 
+use App\Actions\Diagnostics\Pipes\Checks\BasicPermissionCheck;
 use function Safe\chmod;
 use function Safe\fileperms;
-
-use App\Actions\Diagnostics\Pipes\Checks\BasicPermissionCheck;
 use Tests\Constants\TestConstants;
 
 class CommandFixPermissionsTest extends Base\BasePhotoTest
