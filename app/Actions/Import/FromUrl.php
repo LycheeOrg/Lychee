@@ -38,13 +38,13 @@ class FromUrl
 	 *
 	 * @throws MassImportException
 	 */
-	public function do(array $urls, ?Album $album, int $intendedOwnerId): Collection
+	public function do(array $urls, ?Album $album, int $intended_owner_id): Collection
 	{
 		$result = new Collection();
 		$exceptions = [];
 		$create = new Create(
 			new ImportMode(deleteImported: true, skipDuplicates: Configs::getValueAsBool('skip_duplicates')),
-			$intendedOwnerId
+			$intended_owner_id
 		);
 
 		foreach ($urls as $url) {
@@ -68,10 +68,10 @@ class FromUrl
 				}
 
 				// Download file
-				$downloadedFile = new DownloadedFile($url);
+				$downloaded_file = new DownloadedFile($url);
 
 				// Import photo/video/raw
-				$result->add($create->add($downloadedFile, $album));
+				$result->add($create->add($downloaded_file, $album));
 			} catch (\Throwable $e) {
 				$exceptions[] = $e;
 				Handler::reportSafely($e);

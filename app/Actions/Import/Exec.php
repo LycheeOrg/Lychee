@@ -56,17 +56,17 @@ class Exec
 	 * @param int        $memLimit            the threshold when a memory warning shall be reported; `0` means unlimited
 	 */
 	public function __construct(
-		ImportMode $importMode,
-		int $intendedOwnerId,
-		bool $enableCLIFormatting,
-		int $memLimit = 0)
+		ImportMode $import_mode,
+		int $intended_owner_id,
+		bool $enable_c_l_i_formatting,
+		int $mem_limit = 0)
 	{
 		Session::forget('cancel');
-		$this->importMode = $importMode;
-		$this->photoCreate = new PhotoCreate($importMode, $intendedOwnerId);
-		$this->albumCreate = new AlbumCreate($intendedOwnerId);
-		$this->enableCLIFormatting = $enableCLIFormatting;
-		$this->memLimit = $memLimit;
+		$this->importMode = $import_mode;
+		$this->photoCreate = new PhotoCreate($import_mode, $intended_owner_id);
+		$this->albumCreate = new AlbumCreate($intended_owner_id);
+		$this->enableCLIFormatting = $enable_c_l_i_formatting;
+		$this->memLimit = $mem_limit;
 	}
 
 	/**
@@ -131,9 +131,9 @@ class Exec
 			if (str_ends_with($path, '/')) {
 				$path = substr($path, 0, -1);
 			}
-			$realPath = realpath($path);
+			$real_path = realpath($path);
 
-			if (is_dir($realPath) === false) {
+			if (is_dir($real_path) === false) {
 				throw new InvalidDirectoryException('Given path is not a directory (' . $path . ')');
 			}
 
@@ -165,15 +165,15 @@ class Exec
 			//
 			// This way we could simply check if the path is anything below `vault`
 			if (
-				$realPath === Storage::path('big') ||
-				$realPath === Storage::path('raw') ||
-				$realPath === Storage::path('original') ||
-				$realPath === Storage::path('medium2x') ||
-				$realPath === Storage::path('medium') ||
-				$realPath === Storage::path('small2x') ||
-				$realPath === Storage::path('small') ||
-				$realPath === Storage::path('thumb2x') ||
-				$realPath === Storage::path('thumb')
+				$real_path === Storage::path('big') ||
+				$real_path === Storage::path('raw') ||
+				$real_path === Storage::path('original') ||
+				$real_path === Storage::path('medium2x') ||
+				$real_path === Storage::path('medium') ||
+				$real_path === Storage::path('small2x') ||
+				$real_path === Storage::path('small') ||
+				$real_path === Storage::path('thumb2x') ||
+				$real_path === Storage::path('thumb')
 			) {
 				throw new ReservedDirectoryException('The given path is a reserved path of Lychee (' . $path . ')');
 			}
@@ -266,7 +266,7 @@ class Exec
 	 */
 	public function do(
 		string $path,
-		?Album $parentAlbum,
+		?Album $parent_album,
 		array $ignore_list = [],
 	): void {
 		try {
@@ -279,10 +279,10 @@ class Exec
 			/** @var string[] $files */
 			$files = glob(preg_quote($path) . '/*');
 
-			$filesTotal = count($files);
-			$filesCount = 0;
+			$files_total = count($files);
+			$files_count = 0;
 			$dirs = [];
-			$lastStatus = microtime(true);
+			$last_status = microtime(true);
 
 			$this->report(ImportProgressReport::create($path, 0));
 			foreach ($files as $file) {
@@ -306,27 +306,27 @@ class Exec
 				// Taking additional delays on the network layer into account,
 				// 1/3 second should be fine.
 				$time = microtime(true);
-				if ($time - $lastStatus >= 0.3) {
-					$this->report(ImportProgressReport::create($path, $filesCount / $filesTotal * 100));
-					$lastStatus = $time;
+				if ($time - $last_status >= 0.3) {
+					$this->report(ImportProgressReport::create($path, $files_count / $files_total * 100));
+					$last_status = $time;
 				}
 
 				// Let's check if we should ignore the file
 				if (self::checkAgainstIgnoreList($file, $ignore_list)) {
-					$filesTotal--;
+					$files_total--;
 					continue;
 				}
 
 				if (is_dir($file)) {
 					$dirs[] = $file;
-					$filesTotal--;
+					$files_total--;
 					continue;
 				}
 
-				$filesCount++;
+				$files_count++;
 
 				try {
-					$this->photoCreate->add(new NativeLocalFile($file), $parentAlbum);
+					$this->photoCreate->add(new NativeLocalFile($file), $parent_album);
 				} catch (\Throwable $e) {
 					$this->report(ImportEventReport::createFromException($e, $file));
 				}
@@ -341,12 +341,12 @@ class Exec
 					Album::query()
 						->select(['albums.*'])
 						->join('base_albums', 'base_albums.id', '=', 'albums.id')
-						->where('albums.parent_id', '=', $parentAlbum?->id)
+						->where('albums.parent_id', '=', $parent_album?->id)
 						->where('base_albums.title', '=', basename($dir))
 						->first() :
 					null;
 				if ($album === null) {
-					$album = $this->albumCreate->create(basename($dir), $parentAlbum);
+					$album = $this->albumCreate->create(basename($dir), $parent_album);
 				}
 				$this->do($dir . '/', $album, $ignore_list);
 			}
