@@ -20,8 +20,8 @@ class GitPull extends AbstractUpdateInstallerPipe
 	 */
 	public function handle(array &$output, \Closure $next): array
 	{
-		$installedVersion = resolve(InstalledVersion::class);
-		if ($installedVersion->isRelease()) {
+		$installed_version = resolve(InstalledVersion::class);
+		if ($installed_version->isRelease()) {
 			// @codeCoverageIgnoreStart
 			return $next($output);
 			// @codeCoverageIgnoreEnd

@@ -17,18 +17,14 @@ use App\Metadata\Versions\InstalledVersion;
 
 class CheckUpdate
 {
-	/**
-	 * @param GitHubVersion    $gitHubFunctions
-	 * @param InstalledVersion $installedVersion
-	 * @param FileVersion      $fileVersion
-	 */
 	public function __construct(
-		private GitHubVersion $gitHubFunctions,
-		private InstalledVersion $installedVersion,
-		private FileVersion $fileVersion,
+		private GitHubVersion $git_hub_functions,
+		private InstalledVersion $installed_version,
+		private FileVersion $file_version,
 	) {
-		$this->gitHubFunctions->hydrate();
-		$this->fileVersion->hydrate();
+		$this->git_hub_functions->hydrate();
+		$this->file_version->hydrate();
+		$this->installed_version = $installed_version;
 	}
 
 	/**
@@ -44,11 +40,11 @@ class CheckUpdate
 	 */
 	public function getCode(): UpdateStatus
 	{
-		if ($this->installedVersion->isRelease()) {
+		if ($this->installed_version->isRelease()) {
 			// @codeCoverageIgnoreStart
 			return match (false) {
 				MigrationCheck::isUpToDate() => UpdateStatus::REQUIRE_MIGRATION,
-				$this->fileVersion->isUpToDate() => UpdateStatus::NOT_UP_TO_DATE,
+				$this->file_version->isUpToDate() => UpdateStatus::NOT_UP_TO_DATE,
 				default => UpdateStatus::UP_TO_DATE,
 			};
 			// @codeCoverageIgnoreEnd
@@ -57,7 +53,7 @@ class CheckUpdate
 		try {
 			UpdatableCheck::assertUpdatability();
 			// @codeCoverageIgnoreStart
-			if (!$this->gitHubFunctions->isUpToDate()) {
+			if (!$this->git_hub_functions->isUpToDate()) {
 				return UpdateStatus::NOT_UP_TO_DATE;
 			} else {
 				return UpdateStatus::UP_TO_DATE;

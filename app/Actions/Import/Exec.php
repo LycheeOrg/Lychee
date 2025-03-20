@@ -58,14 +58,14 @@ class Exec
 	public function __construct(
 		ImportMode $import_mode,
 		int $intended_owner_id,
-		bool $enable_c_l_i_formatting,
+		bool $enable_cli_formatting,
 		int $mem_limit = 0)
 	{
 		Session::forget('cancel');
 		$this->importMode = $import_mode;
 		$this->photoCreate = new PhotoCreate($import_mode, $intended_owner_id);
 		$this->albumCreate = new AlbumCreate($intended_owner_id);
-		$this->enableCLIFormatting = $enable_c_l_i_formatting;
+		$this->enableCLIFormatting = $enable_cli_formatting;
 		$this->memLimit = $mem_limit;
 	}
 

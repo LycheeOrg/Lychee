@@ -70,16 +70,16 @@ class PermissionsChecker
 	 * @param string $permission
 	 * @param int    $isSet
 	 */
-	private function addFile(string $folder, string $permission, int $isSet): void
+	private function addFile(string $folder, string $permission, int $is_set): void
 	{
 		$this->results['permissions'][] = [
 			'folder' => $folder,
-			'permission' => $this->map_perm_set($permission, $isSet),
-			'isSet' => $isSet,
+			'permission' => $this->map_perm_set($permission, $is_set),
+			'isSet' => $is_set,
 		];
 
 		// set error if $isSet is positive
-		if ($isSet > 0) {
+		if ($is_set > 0) {
 			// @codeCoverageIgnoreStart
 			$this->results['errors'] = true;
 			// @codeCoverageIgnoreEnd
@@ -94,7 +94,7 @@ class PermissionsChecker
 	 *
 	 * @return (string|int)[][]
 	 */
-	private function map_perm_set(string $permissions, int $areSet): array
+	private function map_perm_set(string $permissions, int $are_set): array
 	{
 		$array_permission = array_reverse(explode('|', $permissions));
 		$ret = [];
@@ -103,8 +103,8 @@ class PermissionsChecker
 			$perm = str_replace('file_', '', $perm);
 			$perm = str_replace('!', 'not', $perm);
 			$perm = str_replace('is_', ' ', $perm);
-			$ret[$i++] = [$perm, $areSet & 1];
-			$areSet >>= 1;
+			$ret[$i++] = [$perm, $are_set & 1];
+			$are_set >>= 1;
 		}
 
 		return $ret;

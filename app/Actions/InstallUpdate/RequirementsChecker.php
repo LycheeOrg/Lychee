@@ -35,12 +35,12 @@ class RequirementsChecker
 			if ($type === 'php') {
 				// check php requirements
 				foreach ($requirement_ as $requirement) {
-					$hasExtension = extension_loaded($requirement);
-					$results['requirements'][$type][$requirement] = $hasExtension;
+					$has_extension = extension_loaded($requirement);
+					$results['requirements'][$type][$requirement] = $has_extension;
 					// Note: Don't use the short-cut assignment `|=`;
 					// it silently converts the type to integer, because
 					// `|` is not the logical OR, but the bitwise OR.
-					$results['errors'] = $results['errors'] || !$hasExtension;
+					$results['errors'] = $results['errors'] || !$has_extension;
 				}
 
 				if (Helpers::isExecAvailable()) {
@@ -52,9 +52,9 @@ class RequirementsChecker
 				// check apache requirements
 				foreach ($requirement_ as $requirement) {
 					// if function doesn't exist we can't check apache modules
-					$hasModule = !function_exists('apache_get_modules') || in_array($requirement, apache_get_modules(), true);
-					$results['requirements'][$type][$requirement] = $hasModule;
-					$results['errors'] = $results['errors'] || !$hasModule;
+					$has_module = !function_exists('apache_get_modules') || in_array($requirement, apache_get_modules(), true);
+					$results['requirements'][$type][$requirement] = $has_module;
+					$results['errors'] = $results['errors'] || !$has_module;
 				}
 			}
 		}
@@ -69,16 +69,16 @@ class RequirementsChecker
 	 *
 	 * @return array{full:string,current:string,minimum:string,supported:bool}
 	 */
-	public function checkPHPVersion(?string $minPhpVersion = null): array
+	public function checkPHPVersion(?string $min_php_version = null): array
 	{
-		$minVersionPhp = $minPhpVersion ?? self::MIN_PHP_VERSION;
-		$currentPhpVersion = self::getPhpVersionInfo();
-		$supported = version_compare($currentPhpVersion['version'], $minVersionPhp) >= 0;
+		$min_version_php = $min_php_version ?? self::MIN_PHP_VERSION;
+		$current_php_version = self::getPhpVersionInfo();
+		$supported = version_compare($current_php_version['version'], $min_version_php) >= 0;
 
 		return [
-			'full' => $currentPhpVersion['full'],
-			'current' => $currentPhpVersion['version'],
-			'minimum' => $minVersionPhp,
+			'full' => $current_php_version['full'],
+			'current' => $current_php_version['version'],
+			'minimum' => $min_version_php,
 			'supported' => $supported,
 		];
 	}
@@ -90,13 +90,13 @@ class RequirementsChecker
 	 */
 	private static function getPhpVersionInfo(): array
 	{
-		$currentVersionFull = PHP_VERSION;
-		preg_match('#^\d+(\.\d+)*#', $currentVersionFull, $filtered);
-		$currentVersion = $filtered[0];
+		$current_version_full = PHP_VERSION;
+		preg_match('#^\d+(\.\d+)*#', $current_version_full, $filtered);
+		$current_version = $filtered[0];
 
 		return [
-			'full' => $currentVersionFull,
-			'version' => $currentVersion,
+			'full' => $current_version_full,
+			'version' => $current_version,
 		];
 	}
 }
