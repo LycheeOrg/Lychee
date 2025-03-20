@@ -49,15 +49,15 @@ class UpdateController extends Controller
 	{
 		/** @var VersionChannelType $channelName */
 		$channelName = $versionInfo->getChannelName();
-		$info = $versionInfo->fileVersion->getVersion()->toString();
+		$info = $versionInfo->file_version->getVersion()->toString();
 		$extra = '';
 
 		if ($channelName !== VersionChannelType::RELEASE) {
-			if ($versionInfo->gitHubFunctions->localHead !== null) {
-				$branch = $versionInfo->gitHubFunctions->localBranch ?? '??';
-				$commit = $versionInfo->gitHubFunctions->localHead ?? '??';
+			if ($versionInfo->github_functions->localHead !== null) {
+				$branch = $versionInfo->github_functions->localBranch ?? '??';
+				$commit = $versionInfo->github_functions->localHead ?? '??';
 				$info = sprintf('%s (%s)', $branch, $commit);
-				$extra = $versionInfo->gitHubFunctions->getBehindTest();
+				$extra = $versionInfo->github_functions->getBehindTest();
 			} else {
 				// @codeCoverageIgnoreStart
 				$info = 'No git data found.';
@@ -75,7 +75,7 @@ class UpdateController extends Controller
 	 */
 	public function check(UpdateRequest $request, GitHubVersion $gitHubFunctions, VersionInfo $versionInfo, DockerVersionInfo $dockerVersionInfo): UpdateCheckInfo
 	{
-		return new UpdateCheckInfo($gitHubFunctions->getBehindTest(), !$dockerVersionInfo->isDocker() && (!$gitHubFunctions->isUpToDate() || !$versionInfo->fileVersion->isUpToDate()));
+		return new UpdateCheckInfo($gitHubFunctions->getBehindTest(), !$dockerVersionInfo->isDocker() && (!$gitHubFunctions->isUpToDate() || !$versionInfo->file_version->isUpToDate()));
 	}
 
 	/**

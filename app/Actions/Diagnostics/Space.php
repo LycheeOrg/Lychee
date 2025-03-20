@@ -12,11 +12,8 @@ use App\Metadata\DiskUsage;
 
 class Space
 {
-	private DiskUsage $diskUsage;
-
-	public function __construct(DiskUsage $diskUsage)
+	public function __construct(private DiskUsage $disk_usage)
 	{
-		$this->diskUsage = $diskUsage;
 	}
 
 	/**
@@ -27,11 +24,11 @@ class Space
 	public function get(): array
 	{
 		$infos = [];
-		$infos[] = Diagnostics::line('Lychee total space:', $this->diskUsage->get_lychee_space());
-		$infos[] = Diagnostics::line('Upload folder space:', $this->diskUsage->get_lychee_upload_space());
-		$infos[] = Diagnostics::line('System total space:', $this->diskUsage->get_total_space());
-		$infos[] = Diagnostics::line('System free space:', $this->diskUsage->get_free_space() . ' ('
-			. $this->diskUsage->get_free_percent() . ')');
+		$infos[] = Diagnostics::line('Lychee total space:', $this->disk_usage->get_lychee_space());
+		$infos[] = Diagnostics::line('Upload folder space:', $this->disk_usage->get_lychee_upload_space());
+		$infos[] = Diagnostics::line('System total space:', $this->disk_usage->get_total_space());
+		$infos[] = Diagnostics::line('System free space:', $this->disk_usage->get_free_space() . ' ('
+			. $this->disk_usage->get_free_percent() . ')');
 
 		return $infos;
 	}

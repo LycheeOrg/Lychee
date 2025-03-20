@@ -24,12 +24,12 @@ use LycheeVerify\Verify;
 class VersionInfo implements DiagnosticStringPipe
 {
 	public function __construct(
-		private InstalledVersion $installedVersion,
-		public FileVersion $fileVersion,
-		public GitHubVersion $gitHubFunctions,
+		private InstalledVersion $installed_version,
+		public FileVersion $file_version,
+		public GitHubVersion $github_functions,
 		private Verify $verify,
 	) {
-		$this->fileVersion->hydrate(withRemote: false);
+		$this->file_version->hydrate(withRemote: false);
 	}
 
 	/**
@@ -38,22 +38,22 @@ class VersionInfo implements DiagnosticStringPipe
 	public function handle(array &$data, \Closure $next): array
 	{
 		/** @var VersionChannelType $channelName */
-		$channelName = $this->getChannelName();
-		$lycheeInfoString = $this->fileVersion->getVersion()->toString();
+		$channel_name = $this->getChannelName();
+		$lychee_info_string = $this->file_version->getVersion()->toString();
 
-		if ($channelName !== VersionChannelType::RELEASE) {
-			if ($this->gitHubFunctions->localHead !== null) {
-				$gitInfo = new LycheeGitInfo($this->gitHubFunctions);
-				$lycheeInfoString = $gitInfo->toString();
+		if ($channel_name !== VersionChannelType::RELEASE) {
+			if ($this->github_functions->localHead !== null) {
+				$git_info = new LycheeGitInfo($this->github_functions);
+				$lychee_info_string = $git_info->toString();
 			} else {
 				// @codeCoverageIgnoreStart
-				$lycheeInfoString = 'No git data found.';
+				$lychee_info_string = 'No git data found.';
 				// @codeCoverageIgnoreEnd
 			}
 		}
 
-		$data[] = Diagnostics::line($this->getVersionString() . ' (' . $channelName->value . '):', $lycheeInfoString);
-		$data[] = Diagnostics::line('DB Version:', $this->installedVersion->getVersion()->toString());
+		$data[] = Diagnostics::line($this->getVersionString() . ' (' . $channel_name->value . '):', $lychee_info_string);
+		$data[] = Diagnostics::line('DB Version:', $this->installed_version->getVersion()->toString());
 		$data[] = '';
 
 		return $next($data);
@@ -66,14 +66,14 @@ class VersionInfo implements DiagnosticStringPipe
 	 */
 	public function getChannelName()
 	{
-		$lycheeChannelName = VersionChannelType::RELEASE;
+		$lychee_channel_name = VersionChannelType::RELEASE;
 
-		if (!$this->installedVersion->isRelease()) {
-			$this->gitHubFunctions->hydrate(withRemote: true, useCache: true);
-			$lycheeChannelName = $this->gitHubFunctions->isRelease() ? VersionChannelType::TAG : VersionChannelType::GIT;
+		if (!$this->installed_version->isRelease()) {
+			$this->github_functions->hydrate(withRemote: true, useCache: true);
+			$lychee_channel_name = $this->github_functions->isRelease() ? VersionChannelType::TAG : VersionChannelType::GIT;
 		}
 
-		return $lycheeChannelName;
+		return $lychee_channel_name;
 	}
 
 	/**

@@ -100,7 +100,7 @@ class FixPermissions extends Command
 			// `fileperms` also returns the higher bits of the inode mode.
 			// Hence, we must AND it with 07777 to only get what we are
 			// interested in
-			$actual_perm &= 07777;
+			$actual_perm &= BasicPermissionCheck::READ_WRITE_ALL;
 
 			$owner_id = fileowner($path);
 			$file_type = filetype($path);

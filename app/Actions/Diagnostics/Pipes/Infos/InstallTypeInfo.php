@@ -21,7 +21,7 @@ use LycheeVerify\Verify;
 class InstallTypeInfo implements DiagnosticStringPipe
 {
 	public function __construct(
-		private InstalledVersion $installedVersion,
+		private InstalledVersion $installed_version,
 		private Verify $verify)
 	{
 	}
@@ -31,7 +31,7 @@ class InstallTypeInfo implements DiagnosticStringPipe
 	 */
 	public function handle(array &$data, \Closure $next): array
 	{
-		$data[] = Diagnostics::line('composer install:', ($this->installedVersion->isDev() ? 'dev' : '--no-dev') . ($this->verify->validate() ? '' : '*'));
+		$data[] = Diagnostics::line('composer install:', ($this->installed_version->isDev() ? 'dev' : '--no-dev') . ($this->verify->validate() ? '' : '*'));
 		$data[] = Diagnostics::line('APP_ENV:', config('app.env')); // check if production
 		$data[] = Diagnostics::line('APP_DEBUG:', config('app.debug') === true ? 'true' : 'false'); // check if debug is on (will help in case of error 500)
 		$data[] = Diagnostics::line('APP_URL:', config('app.url') !== 'http://localhost' ? 'set' : 'default'); // Some people leave that value by default... It is now breaking their visual.
