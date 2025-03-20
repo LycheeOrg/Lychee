@@ -1055,7 +1055,7 @@ return new class() extends Migration {
 		$albums = DB::table('albums_tmp')->orderBy('_lft')->lazyById();
 		$pgBar->setMaxSteps($albums->count());
 		$mapSorting = function (?string $sortingCol): ?string {
-			if (empty($sortingCol)) {
+			if ($sortingCol === '') {
 				return null;
 			} elseif ($sortingCol === 'id') {
 				return 'created_at';
@@ -1078,7 +1078,7 @@ return new class() extends Migration {
 				'created_at' => $this->calculateBestCreatedAt($album->id, $album->created_at),
 				'updated_at' => $album->updated_at,
 				'title' => $album->title,
-				'description' => empty($album->description) ? null : $album->description,
+				'description' => $album->description === '' ? null : $album->description,
 				'owner_id' => $album->owner_id,
 				'is_public' => $album->public,
 				'grants_full_photo' => $album->full_photo,
@@ -1086,9 +1086,9 @@ return new class() extends Migration {
 				'is_downloadable' => $album->downloadable,
 				'is_share_button_visible' => $album->share_button_visible,
 				'is_nsfw' => $album->nsfw,
-				'password' => empty($album->password) ? null : $album->password,
+				'password' => $album->password === '' ? null : $album->password,
 				'sorting_col' => $mapSorting($album->sorting_col),
-				'sorting_order' => empty($album->sorting_col) ? null : $album->sorting_order,
+				'sorting_order' => $album->sorting_col === '' ? null : $album->sorting_order,
 			]);
 
 			if ($album->smart) {
@@ -1143,23 +1143,23 @@ return new class() extends Migration {
 				'owner_id' => $photo->owner_id,
 				'album_id' => $photo->album_id ? $this->albumIDCache[strval($photo->album_id)] : null,
 				'title' => $photo->title,
-				'description' => empty($photo->description) ? null : $photo->description,
-				'tags' => empty($photo->tags) ? null : $photo->tags,
+				'description' => $photo->description === '' ? null : $photo->description,
+				'tags' => $photo->tags === '' ? null : $photo->tags,
 				'license' => $photo->license,
 				'is_public' => $photo->public,
 				'is_starred' => $photo->star,
-				'iso' => empty($photo->iso) ? null : $photo->iso,
-				'make' => empty($photo->make) ? null : $photo->make,
-				'model' => empty($photo->model) ? null : $photo->model,
-				'lens' => empty($photo->lens) ? null : $photo->lens,
-				'aperture' => empty($photo->aperture) ? null : $photo->aperture,
-				'shutter' => empty($photo->shutter) ? null : $photo->shutter,
-				'focal' => empty($photo->focal) ? null : $photo->focal,
+				'iso' => $photo->iso === '' ? null : $photo->iso,
+				'make' => $photo->make === '' ? null : $photo->make,
+				'model' => $photo->model === '' ? null : $photo->model,
+				'lens' => $photo->lens === '' ? null : $photo->lens,
+				'aperture' => $photo->aperture === '' ? null : $photo->aperture,
+				'shutter' => $photo->shutter === '' ? null : $photo->shutter,
+				'focal' => $photo->focal === '' ? null : $photo->focal,
 				'latitude' => $photo->latitude,
 				'longitude' => $photo->longitude,
 				'altitude' => $photo->altitude,
-				'img_direction' => empty($photo->imgDirection) ? null : $photo->imgDirection,
-				'location' => empty($photo->location) ? null : $photo->location,
+				'img_direction' => $photo->imgDirection === '' ? null : $photo->imgDirection,
+				'location' => $photo->location === '' ? null : $photo->location,
 				'taken_at' => $photo->taken_at,
 				'taken_at_orig_tz' => $photo->taken_at_orig_tz,
 				'type' => $photo->type,
@@ -1226,7 +1226,7 @@ return new class() extends Migration {
 		$baseAlbums = DB::table('base_albums')->lazyById();
 		$pgBar->setMaxSteps($baseAlbums->count());
 		$mapSorting = function (?string $sortingCol): ?string {
-			if (empty($sortingCol)) {
+			if ($sortingCol === '') {
 				return null;
 			} elseif ($sortingCol === 'created_at') {
 				return 'id';
@@ -1248,7 +1248,7 @@ return new class() extends Migration {
 				'created_at' => $oldBaseAlbum->created_at,
 				'updated_at' => $oldBaseAlbum->updated_at,
 				'title' => $oldBaseAlbum->title,
-				'description' => empty($oldBaseAlbum->description) ? '' : $oldBaseAlbum->description,
+				'description' => $oldBaseAlbum->description ?? '',
 				'owner_id' => $oldBaseAlbum->owner_id,
 				'public' => $oldBaseAlbum->is_public,
 				'full_photo' => $oldBaseAlbum->grants_full_photo,
@@ -1256,9 +1256,9 @@ return new class() extends Migration {
 				'downloadable' => $oldBaseAlbum->is_downloadable,
 				'share_button_visible' => $oldBaseAlbum->is_share_button_visible,
 				'nsfw' => $oldBaseAlbum->is_nsfw,
-				'password' => empty($oldBaseAlbum->password) ? null : $oldBaseAlbum->password,
+				'password' => $oldBaseAlbum->password === '' ? null : $oldBaseAlbum->password,
 				'sorting_col' => $mapSorting($oldBaseAlbum->sorting_col),
-				'sorting_order' => empty($oldBaseAlbum->sorting_col) ? null : $oldBaseAlbum->sorting_order,
+				'sorting_order' => $oldBaseAlbum->sorting_col === '' ? null : $oldBaseAlbum->sorting_order,
 			]);
 		}
 
@@ -1326,23 +1326,23 @@ return new class() extends Migration {
 				'owner_id' => $photo->owner_id,
 				'album_id' => $photo->album_id ? $this->albumIDCache[$photo->album_id] : null,
 				'title' => $photo->title,
-				'description' => empty($photo->description) ? '' : $photo->description,
-				'tags' => empty($photo->tags) ? '' : $photo->tags,
+				'description' => $photo->description ?? '',
+				'tags' => $photo->tags ?? '',
 				'license' => $photo->license,
 				'public' => $photo->is_public,
 				'star' => $photo->is_starred,
-				'iso' => empty($photo->iso) ? '' : $photo->iso,
-				'make' => empty($photo->make) ? '' : $photo->make,
-				'model' => empty($photo->model) ? '' : $photo->model,
-				'lens' => empty($photo->lens) ? '' : $photo->lens,
-				'aperture' => empty($photo->aperture) ? '' : $photo->aperture,
-				'shutter' => empty($photo->shutter) ? '' : $photo->shutter,
-				'focal' => empty($photo->focal) ? '' : $photo->focal,
+				'iso' => $photo->iso ?? '',
+				'make' => $photo->make ?? '',
+				'model' => $photo->model ?? '',
+				'lens' => $photo->lens ?? '',
+				'aperture' => $photo->aperture ?? '',
+				'shutter' => $photo->shutter ?? '',
+				'focal' => $photo->focal ?? '',
 				'latitude' => $photo->latitude,
 				'longitude' => $photo->longitude,
 				'altitude' => $photo->altitude,
 				'imgDirection' => $photo->img_direction,
-				'location' => empty($photo->location) ? null : $photo->location,
+				'location' => $photo->location === '' ? null : $photo->location,
 				'taken_at' => $photo->taken_at,
 				'taken_at_orig_tz' => $photo->taken_at_orig_tz,
 				'type' => $photo->type,
@@ -1699,13 +1699,13 @@ return new class() extends Migration {
 			case self::VARIANT_THUMB2X:
 				return self::THUMBNAIL2X_DIM;
 			case self::VARIANT_SMALL:
-				return $photo->small_width ?: 0;
+				return $photo->small_width ?: 0; /** @phpstan-ignore ternary.shortNotAllowed */
 			case self::VARIANT_SMALL2X:
-				return $photo->small2x_width ?: 0;
+				return $photo->small2x_width ?: 0; /** @phpstan-ignore ternary.shortNotAllowed */
 			case self::VARIANT_MEDIUM:
-				return $photo->medium_width ?: 0;
+				return $photo->medium_width ?: 0; /** @phpstan-ignore ternary.shortNotAllowed */
 			case self::VARIANT_MEDIUM2X:
-				return $photo->medium2x_width ?: 0;
+				return $photo->medium2x_width ?: 0; /** @phpstan-ignore ternary.shortNotAllowed */
 			case self::VARIANT_ORIGINAL:
 				return $photo->width;
 			default:
@@ -1724,13 +1724,13 @@ return new class() extends Migration {
 			case self::VARIANT_THUMB2X:
 				return self::THUMBNAIL2X_DIM;
 			case self::VARIANT_SMALL:
-				return $photo->small_height ?: 0;
+				return $photo->small_height ?: 0; /** @phpstan-ignore ternary.shortNotAllowed */
 			case self::VARIANT_SMALL2X:
-				return $photo->small2x_height ?: 0;
+				return $photo->small2x_height ?: 0; /** @phpstan-ignore ternary.shortNotAllowed */
 			case self::VARIANT_MEDIUM:
-				return $photo->medium_height ?: 0;
+				return $photo->medium_height ?: 0; /** @phpstan-ignore ternary.shortNotAllowed */
 			case self::VARIANT_MEDIUM2X:
-				return $photo->medium2x_height ?: 0;
+				return $photo->medium2x_height ?: 0; /** @phpstan-ignore ternary.shortNotAllowed */
 			case self::VARIANT_ORIGINAL:
 				return $photo->height;
 			default:
@@ -1746,7 +1746,7 @@ return new class() extends Migration {
 		if ($variantType === self::VARIANT_ORIGINAL || $variantType === self::VARIANT_THUMB) {
 			return true;
 		} elseif ($variantType === self::VARIANT_THUMB2X) {
-			return (bool) ($photo->thumb2x);
+			return $photo->thumb2x !== '' && $photo->thumb2x !== null;
 		} else {
 			return $this->getWidth($photo, $variantType) !== 0;
 		}
@@ -1927,7 +1927,7 @@ return new class() extends Migration {
 					' with ID ' . $m->id .
 					' which refers to non-existing ' . $foreignModelName .
 					' with ID ' . $m->{$column};
-				if (empty($fixMethod)) {
+				if ($fixMethod === '') {
 					$this->printError($msg);
 				} else {
 					$this->printWarning($msg);

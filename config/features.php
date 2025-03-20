@@ -49,6 +49,8 @@ return [
 	*/
 	'legacy_v4_redirect' => (bool) env('LEGACY_V4_REDIRECT', false),
 
+	'legacy_v3_db_prefix' => env('DB_OLD_LYCHEE_PREFIX', '') !== '',
+
 	/*
 	|--------------------------------------------------------------------------
 	| Log Viewer

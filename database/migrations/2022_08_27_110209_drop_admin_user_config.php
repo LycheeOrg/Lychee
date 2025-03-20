@@ -25,22 +25,20 @@ return new class() extends Migration {
 	 */
 	public function down(): void
 	{
-		defined('STRING_REQ') or define('STRING_REQ', 'string_required');
-
 		DB::table('configs')->insert([
 			[
 				'key' => 'username',
 				'value' => '',
 				'confidentiality' => '4',
 				'cat' => 'Admin',
-				'type_range' => STRING_REQ,
+				'type_range' => 'string_required',
 			],
 			[
 				'key' => 'password',
 				'value' => '',
 				'confidentiality' => '4',
 				'cat' => 'Admin',
-				'type_range' => STRING_REQ,
+				'type_range' => 'string_required',
 			],
 		]
 		);
