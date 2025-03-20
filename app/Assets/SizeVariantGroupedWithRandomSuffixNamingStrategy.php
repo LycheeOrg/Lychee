@@ -75,9 +75,9 @@ class SizeVariantGroupedWithRandomSuffixNamingStrategy extends BaseSizeVariantNa
 		try {
 			parent::setPhoto($photo);
 
-			$origFile = $this->photo?->size_variants->getOriginal()?->getFile();
-			if ($origFile !== null) {
-				$existingRelPath = $origFile->getRelativePath();
+			$orig_file = $this->photo?->size_variants->getOriginal()?->getFile();
+			if ($orig_file !== null) {
+				$existing_rel_path = $orig_file->getRelativePath();
 				$matches = [];
 				// Extract random base path
 				// As the naming strategy has been changed in the past, we must
@@ -104,7 +104,7 @@ class SizeVariantGroupedWithRandomSuffixNamingStrategy extends BaseSizeVariantNa
 					'([0-9a-f]{2})[/\\\\]' .
 					'([0-9a-f]{2})[/\\\\]' .
 					'([0-9a-f]{' . (self::NAME_LENGTH - 4) . '})\.#i',
-					$existingRelPath,
+					$existing_rel_path,
 					$matches
 				) === 1) {
 					// If we have a match, we use the middle path of the original
@@ -129,15 +129,15 @@ class SizeVariantGroupedWithRandomSuffixNamingStrategy extends BaseSizeVariantNa
 	/**
 	 * {@inheritDoc}
 	 */
-	public function createFile(SizeVariantType $sizeVariant, bool $isBackup = false): FlysystemFile
+	public function createFile(SizeVariantType $size_variant, bool $is_backup = false): FlysystemFile
 	{
-		$relativePath =
-			$sizeVariant->name() . DIRECTORY_SEPARATOR .
+		$relative_path =
+			$size_variant->name() . DIRECTORY_SEPARATOR .
 			$this->cachedRndMiddlePath .
-			($isBackup ? '_orig' : '') .
-			$this->generateExtension($sizeVariant);
+			($is_backup ? '_orig' : '') .
+			$this->generateExtension($size_variant);
 
-		return new FlysystemFile(Storage::disk(StorageDiskType::LOCAL->value), $relativePath);
+		return new FlysystemFile(Storage::disk(StorageDiskType::LOCAL->value), $relative_path);
 	}
 
 	/**
@@ -148,14 +148,14 @@ class SizeVariantGroupedWithRandomSuffixNamingStrategy extends BaseSizeVariantNa
 	protected static function createRndMiddlePath(): string
 	{
 		try {
-			$rndStr = bin2hex(random_bytes(self::NAME_LENGTH / 2));
+			$rnd_str = bin2hex(random_bytes(self::NAME_LENGTH / 2));
 
 			return
-				substr($rndStr, 0, 2) .
+				substr($rnd_str, 0, 2) .
 				DIRECTORY_SEPARATOR .
-				substr($rndStr, 2, 2) .
+				substr($rnd_str, 2, 2) .
 				DIRECTORY_SEPARATOR .
-				substr($rndStr, 4);
+				substr($rnd_str, 4);
 			// @codeCoverageIgnoreStart
 		} catch (\Exception $e) {
 			throw new InsufficientEntropyException($e);

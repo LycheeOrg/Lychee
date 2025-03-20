@@ -34,16 +34,16 @@ abstract class BaseSizeVariantNamingStrategy extends AbstractSizeVariantNamingSt
 	 * @throws MissingValueException
 	 * @throws IllegalOrderOfOperationException
 	 */
-	protected function generateExtension(SizeVariantType $sizeVariant): string
+	protected function generateExtension(SizeVariantType $size_variant): string
 	{
-		if ($sizeVariant === SizeVariantType::THUMB ||
-			$sizeVariant === SizeVariantType::THUMB2X ||
-			($sizeVariant !== SizeVariantType::ORIGINAL && !$this->photo->isPhoto())
+		if ($size_variant === SizeVariantType::THUMB ||
+			$size_variant === SizeVariantType::THUMB2X ||
+			($size_variant !== SizeVariantType::ORIGINAL && !$this->photo->isPhoto())
 		) {
 			return self::THUMB_EXTENSION;
 		}
 
-		if ($sizeVariant === SizeVariantType::PLACEHOLDER) {
+		if ($size_variant === SizeVariantType::PLACEHOLDER) {
 			return self::PLACEHOLDER_EXTENSION;
 		}
 
