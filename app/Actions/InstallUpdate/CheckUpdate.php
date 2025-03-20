@@ -18,11 +18,11 @@ use App\Metadata\Versions\InstalledVersion;
 class CheckUpdate
 {
 	public function __construct(
-		private GitHubVersion $git_hub_functions,
+		private GitHubVersion $github_functions,
 		private InstalledVersion $installed_version,
 		private FileVersion $file_version,
 	) {
-		$this->git_hub_functions->hydrate();
+		$this->github_functions->hydrate();
 		$this->file_version->hydrate();
 		$this->installed_version = $installed_version;
 	}
@@ -53,7 +53,7 @@ class CheckUpdate
 		try {
 			UpdatableCheck::assertUpdatability();
 			// @codeCoverageIgnoreStart
-			if (!$this->git_hub_functions->isUpToDate()) {
+			if (!$this->github_functions->isUpToDate()) {
 				return UpdateStatus::NOT_UP_TO_DATE;
 			} else {
 				return UpdateStatus::UP_TO_DATE;
