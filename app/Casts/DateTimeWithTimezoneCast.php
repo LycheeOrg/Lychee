@@ -49,22 +49,22 @@ class DateTimeWithTimezoneCast implements CastsAttributes
 	 */
 	public function get(Model $model, string $key, $value, array $attributes): ?Carbon
 	{
-		$tzKey = $key . self::TZ_ATTRIBUTE_SUFFIX;
+		$tz_key = $key . self::TZ_ATTRIBUTE_SUFFIX;
 		if ($value === null) {
 			return null;
 		}
 		if (!is_string($value)) {
 			throw new LycheeInvalidArgumentException('$value must be an SQL datetime string');
 		}
-		if (array_key_exists($tzKey, $attributes)) {
-			$tz = $attributes[$tzKey];
+		if (array_key_exists($tz_key, $attributes)) {
+			$tz = $attributes[$tz_key];
 		} else {
-			throw new MissingModelAttributeException(get_class($model), $tzKey);
+			throw new MissingModelAttributeException(get_class($model), $tz_key);
 		}
 		// If the datetime value is non-null, then the accompanying timezone
 		// must not be null neither.
 		if (!is_string($tz) || $tz === '') {
-			throw new LycheeDomainException('Column \'' . $key . '\' is not null, but column \'' . $tzKey . '\' is either not a string, an empty string or null');
+			throw new LycheeDomainException('Column \'' . $key . '\' is not null, but column \'' . $tz_key . '\' is either not a string, an empty string or null');
 		}
 		$result = $model->asDateTime($value);
 		$result->setTimezone($tz);
@@ -94,13 +94,13 @@ class DateTimeWithTimezoneCast implements CastsAttributes
 			}
 			throw new LycheeInvalidArgumentException('"' . $type . '" does not implement \DateTimeInterface');
 		}
-		$sqlDatetimeString = $model->fromDateTime($value);
-		$sqlTimezoneString = $value?->getTimezone()->getName();
-		$tzKey = $key . self::TZ_ATTRIBUTE_SUFFIX;
+		$sql_datetime_string = $model->fromDateTime($value);
+		$sql_timezone_string = $value?->getTimezone()->getName();
+		$tz_key = $key . self::TZ_ATTRIBUTE_SUFFIX;
 
 		return [
-			$key => $sqlDatetimeString,
-			$tzKey => $sqlTimezoneString,
+			$key => $sql_datetime_string,
+			$tz_key => $sql_timezone_string,
 		];
 	}
 }
