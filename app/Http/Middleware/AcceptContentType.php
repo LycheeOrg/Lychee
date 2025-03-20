@@ -37,34 +37,32 @@ class AcceptContentType
 	/**
 	 * Handles the incoming request.
 	 *
-	 * @param Request  $request     the incoming request to serve
-	 * @param \Closure $next        the next operation to be applied to the
-	 *                              request
-	 * @param string   $contentType the content type which must be acceptable
-	 *                              by the client; either {@link self::JSON},
-	 *                              {@link self::HTML}, or {@link self::ANY}
+	 * @param Request  $request      the incoming request to serve
+	 * @param \Closure $next         the next operation to be applied to the request
+	 * @param string   $content_type the content type which must be acceptable by the client;
+	 *                               either {@link self::JSON}, {@link self::HTML}, or {@link self::ANY}
 	 *
 	 * @return mixed
 	 *
 	 * @throws UnexpectedContentType
 	 * @throws LycheeInvalidArgumentException
 	 */
-	public function handle(Request $request, \Closure $next, string $contentType): mixed
+	public function handle(Request $request, \Closure $next, string $content_type): mixed
 	{
 		// Skip $except
 		if ($this->inExceptArray($request)) {
 			return $next($request);
 		}
 
-		if ($contentType === self::JSON) {
+		if ($content_type === self::JSON) {
 			if (!$request->expectsJson()) {
 				throw new UnexpectedContentType(self::JSON);
 			}
-		} elseif ($contentType === self::HTML) {
+		} elseif ($content_type === self::HTML) {
 			if (!$request->acceptsHtml()) {
 				throw new UnexpectedContentType(self::HTML);
 			}
-		} elseif ($contentType === self::ANY) {
+		} elseif ($content_type === self::ANY) {
 			// Don't call `$request->acceptsAnyContentType`. It is broken.
 			$acceptable = $request->getAcceptableContentTypes();
 			if (

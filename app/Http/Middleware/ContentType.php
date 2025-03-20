@@ -27,29 +27,27 @@ class ContentType
 	 * Handles the incoming request.
 	 *
 	 * @param Request  $request     the incoming request to serve
-	 * @param \Closure $next        the next operation to be applied to the
-	 *                              request
+	 * @param \Closure $next        the next operation to be applied to the request
 	 * @param string   $contentType the content type of the request's body;
-	 *                              either {@link ContentType::JSON} or
-	 *                              {@link ContentType::MULTIPART}
+	 *                              either {@link ContentType::JSON} or {@link ContentType::MULTIPART}
 	 *
 	 * @return mixed
 	 *
 	 * @throws UnexpectedContentType
 	 * @throws LycheeInvalidArgumentException
 	 */
-	public function handle(Request $request, \Closure $next, string $contentType): mixed
+	public function handle(Request $request, \Closure $next, string $content_type): mixed
 	{
 		// Skip if check is disabled
 		if (config('features.require-content-type') === false) {
 			return $next($request);
 		}
 
-		if ($contentType === self::JSON) {
+		if ($content_type === self::JSON) {
 			if (!$request->isJson()) {
 				throw new UnexpectedContentType(self::JSON);
 			}
-		} elseif ($contentType === self::MULTIPART) {
+		} elseif ($content_type === self::MULTIPART) {
 			if ($request->getContentTypeFormat() !== 'form') {
 				throw new UnexpectedContentType(self::MULTIPART);
 			}
