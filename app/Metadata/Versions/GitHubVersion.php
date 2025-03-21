@@ -36,15 +36,15 @@ class GitHubVersion implements VersionControl, HasIsRelease
 
 	public const MASTER = 'master';
 
-	public ?string $localBranch = null;
-	public ?string $localHead = null;
-	private int|false $countBehind = false;
+	public ?string $local_branch = null;
+	public ?string $local_head = null;
+	private int|false $count_behind = false;
 	private ?GitRemote $remote = null;
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function hydrate(bool $withRemote = true, bool $useCache = true): void
+	public function hydrate(bool $with_remote = true, bool $use_cache = true): void
 	{
 		// Firs we check if we are tag or commit mode.
 		// If we could not even access .git/HEAD. So we probably are in file release mode.
@@ -58,8 +58,8 @@ class GitHubVersion implements VersionControl, HasIsRelease
 		$this->hydrateLocalBranch();
 		$this->hydrateLocalHead(); // Only if GitCommits
 
-		if ($withRemote) {
-			$this->hydrateRemote($useCache);
+		if ($with_remote) {
+			$this->hydrateRemote($use_cache);
 		}
 	}
 
@@ -70,7 +70,7 @@ class GitHubVersion implements VersionControl, HasIsRelease
 	 */
 	public function isRelease(): bool
 	{
-		return $this->remote instanceof GitTags && $this->localBranch !== null;
+		return $this->remote instanceof GitTags && $this->local_branch !== null;
 	}
 
 	/**
@@ -78,7 +78,7 @@ class GitHubVersion implements VersionControl, HasIsRelease
 	 */
 	public function isMasterBranch(): bool
 	{
-		return $this->remote instanceof GitTags || ($this->remote instanceof GitCommits && $this->localBranch === self::MASTER);
+		return $this->remote instanceof GitTags || ($this->remote instanceof GitCommits && $this->local_branch === self::MASTER);
 	}
 
 	/**
@@ -86,7 +86,7 @@ class GitHubVersion implements VersionControl, HasIsRelease
 	 */
 	public function isUpToDate(): bool
 	{
-		return $this->countBehind === 0 || $this->countBehind === false;
+		return $this->count_behind === 0 || $this->count_behind === false;
 	}
 
 	/**
@@ -94,7 +94,7 @@ class GitHubVersion implements VersionControl, HasIsRelease
 	 */
 	public function getBehindTest(): string
 	{
-		return match ($this->countBehind) {
+		return match ($this->count_behind) {
 			// @codeCoverageIgnoreStart
 			false => 'Could not compare.',
 			0 => sprintf('Up to date (%s).', $this->remote->getAgeText() ?? '??'),
@@ -103,7 +103,7 @@ class GitHubVersion implements VersionControl, HasIsRelease
 				$this->remote->getAgeText() ?? '??'),
 			// @codeCoverageIgnoreEnd
 			default => sprintf('%d %s behind %s (%s)',
-				$this->countBehind,
+				$this->count_behind,
 				$this->remote->getType(),
 				$this->remote->getHead() ?? '??',
 				$this->remote->getAgeText() ?? '??'),
@@ -117,7 +117,7 @@ class GitHubVersion implements VersionControl, HasIsRelease
 	{
 		return Helpers::hasFullPermissions(base_path('.git')) &&
 			$this->remote instanceof GitCommits &&
-			Helpers::hasPermissions(base_path('.git/refs/heads/' . $this->localBranch)
+			Helpers::hasPermissions(base_path('.git/refs/heads/' . $this->local_branch)
 			);
 	}
 
@@ -170,17 +170,17 @@ class GitHubVersion implements VersionControl, HasIsRelease
 
 		// We get the branch name
 		$branch_path = base_path('.git/HEAD');
-		$branchOrCommit = File::get($branch_path);
+		$branch_or_commit = File::get($branch_path);
 
 		if ($this->remote instanceof GitCommits) {
 			// This is "normal" behaviour
-			$branch = explode('/', $branchOrCommit, 3);
-			$this->localBranch = trim($branch[2]);
+			$branch = explode('/', $branch_or_commit, 3);
+			$this->local_branch = trim($branch[2]);
 		} else {
 			// @codeCoverageIgnoreStart
 			// This is tagged/CICD behaviour
 			// we leave localBranch as null so that we know that we are not on master
-			$this->localHead = $this->trim($branchOrCommit);
+			$this->local_head = $this->trim($branch_or_commit);
 			// @codeCoverageIgnoreEnd
 		}
 	}
@@ -199,7 +199,7 @@ class GitHubVersion implements VersionControl, HasIsRelease
 		if (
 			$this->remote === null ||
 			$this->remote instanceof GitTags ||
-			$this->localBranch === null
+			$this->local_branch === null
 		) {
 			// @codeCoverageIgnoreStart
 			return;
@@ -207,7 +207,7 @@ class GitHubVersion implements VersionControl, HasIsRelease
 		}
 
 		// We get the branch commit ID
-		$commit_path = base_path('.git/refs/heads/' . $this->localBranch);
+		$commit_path = base_path('.git/refs/heads/' . $this->local_branch);
 		if (!File::exists($commit_path) &&
 			!File::isReadable($commit_path)) {
 			// @codeCoverageIgnoreStart
@@ -216,8 +216,8 @@ class GitHubVersion implements VersionControl, HasIsRelease
 			return;
 			// @codeCoverageIgnoreEnd
 		}
-		$commitID = File::get($commit_path);
-		$this->localHead = $this->trim($commitID);
+		$commit_i_d = File::get($commit_path);
+		$this->local_head = $this->trim($commit_i_d);
 	}
 
 	/**
@@ -229,19 +229,19 @@ class GitHubVersion implements VersionControl, HasIsRelease
 	 *
 	 * @codeCoverageIgnore the code path here depends whether you are on a PR or on master...
 	 */
-	private function hydrateRemote(bool $useCache): void
+	private function hydrateRemote(bool $use_cache): void
 	{
 		// We do not fetch when local branch is not master.
 		// We do not fetch when the localHead is not set.
-		if ($this->remote === null || $this->localHead === null || !$this->isMasterBranch()) {
+		if ($this->remote === null || $this->local_head === null || !$this->isMasterBranch()) {
 			return;
 		}
 
-		$data = $this->remote->fetchRemote($useCache);
-		$this->countBehind = $this->remote->countBehind($data, $this->localHead);
+		$data = $this->remote->fetchRemote($use_cache);
+		$this->count_behind = $this->remote->countBehind($data, $this->local_head);
 
 		if ($this->remote instanceof GitTags) {
-			$this->localBranch = $this->remote->getTagName($data, $this->localHead);
+			$this->local_branch = $this->remote->getTagName($data, $this->local_head);
 		}
 	}
 }

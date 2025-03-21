@@ -24,25 +24,16 @@ use Illuminate\Support\Facades\Schema;
  */
 class InstalledVersion implements HasVersion, HasIsRelease
 {
-	/**
-	 * False if we are using a release.
-	 * We check if the .git folder is present.
-	 */
-	private bool $isGit;
-
-	/**
-	 * true if phpunit is present in vendor/bin/
-	 * We use this to determine if composer install or composer install --no-dev was used.
-	 */
-	private bool $phpUnit;
+	private bool $is_git;
+	private bool $php_unit;
 
 	/**
 	 * Base constructor.
 	 */
 	public function __construct()
 	{
-		$this->isGit = File::exists(base_path('.git'));
-		$this->phpUnit = File::exists(base_path('vendor/bin/phpunit'));
+		$this->is_git = File::exists(base_path('.git'));
+		$this->php_unit = File::exists(base_path('vendor/bin/phpunit'));
 	}
 
 	/**
@@ -50,7 +41,7 @@ class InstalledVersion implements HasVersion, HasIsRelease
 	 */
 	public function isRelease(): bool
 	{
-		return !$this->isGit;
+		return !$this->is_git;
 	}
 
 	/**
@@ -58,7 +49,7 @@ class InstalledVersion implements HasVersion, HasIsRelease
 	 */
 	public function isDev(): bool
 	{
-		return $this->phpUnit;
+		return $this->php_unit;
 	}
 
 	/**

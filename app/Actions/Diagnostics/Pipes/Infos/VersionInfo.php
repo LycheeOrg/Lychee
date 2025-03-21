@@ -29,7 +29,7 @@ class VersionInfo implements DiagnosticStringPipe
 		public GitHubVersion $github_functions,
 		private Verify $verify,
 	) {
-		$this->file_version->hydrate(withRemote: false);
+		$this->file_version->hydrate(with_remote: false);
 	}
 
 	/**
@@ -42,7 +42,7 @@ class VersionInfo implements DiagnosticStringPipe
 		$lychee_info_string = $this->file_version->getVersion()->toString();
 
 		if ($channel_name !== VersionChannelType::RELEASE) {
-			if ($this->github_functions->localHead !== null) {
+			if ($this->github_functions->local_head !== null) {
 				$git_info = new LycheeGitInfo($this->github_functions);
 				$lychee_info_string = $git_info->toString();
 			} else {
@@ -69,7 +69,7 @@ class VersionInfo implements DiagnosticStringPipe
 		$lychee_channel_name = VersionChannelType::RELEASE;
 
 		if (!$this->installed_version->isRelease()) {
-			$this->github_functions->hydrate(withRemote: true, useCache: true);
+			$this->github_functions->hydrate(with_remote: true, use_cache: true);
 			$lychee_channel_name = $this->github_functions->isRelease() ? VersionChannelType::TAG : VersionChannelType::GIT;
 		}
 
