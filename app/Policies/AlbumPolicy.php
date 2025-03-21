@@ -64,14 +64,14 @@ class AlbumPolicy extends BasePolicy
 	 * Hence, the method is only provided for them.
 	 *
 	 * @param User|null      $user
-	 * @param BaseSmartAlbum $smartAlbum
+	 * @param BaseSmartAlbum $smart_album
 	 *
 	 * @return bool true, if the album is visible
 	 */
-	public function canSee(?User $user, BaseSmartAlbum $smartAlbum): bool
+	public function canSee(?User $user, BaseSmartAlbum $smart_album): bool
 	{
 		return ($user?->may_upload === true) ||
-			$smartAlbum->public_permissions() !== null;
+			$smart_album->public_permissions() !== null;
 	}
 
 	/**
@@ -158,50 +158,50 @@ class AlbumPolicy extends BasePolicy
 	 * Check if current user can download the album.
 	 *
 	 * @param User|null          $user
-	 * @param AbstractAlbum|null $abstractAlbum
+	 * @param AbstractAlbum|null $abstract_album
 	 *
 	 * @return bool
 	 *
 	 * @throws ConfigurationKeyMissingException
 	 */
-	public function canDownload(?User $user, ?AbstractAlbum $abstractAlbum): bool
+	public function canDownload(?User $user, ?AbstractAlbum $abstract_album): bool
 	{
 		// The root album always uses the global setting
-		if ($abstractAlbum === null) {
+		if ($abstract_album === null) {
 			return Configs::getValueAsBool('grants_download');
 		}
 
 		// User is logged in
 		// Or User can download.
-		if (!$abstractAlbum instanceof BaseAlbum) {
-			return $user !== null || $abstractAlbum->public_permissions()?->grants_download === true;
+		if (!$abstract_album instanceof BaseAlbum) {
+			return $user !== null || $abstract_album->public_permissions()?->grants_download === true;
 		}
 
-		return $this->isOwner($user, $abstractAlbum) ||
-			$abstractAlbum->current_user_permissions()?->grants_download === true ||
-			$abstractAlbum->public_permissions()?->grants_download === true;
+		return $this->isOwner($user, $abstract_album) ||
+			$abstract_album->current_user_permissions()?->grants_download === true ||
+			$abstract_album->public_permissions()?->grants_download === true;
 	}
 
 	/**
 	 * Check if user is allowed to upload in current albumn.
 	 *
 	 * @param User               $user
-	 * @param AbstractAlbum|null $abstractAlbum
+	 * @param AbstractAlbum|null $abstract_album
 	 *
 	 * @return bool
 	 *
 	 * @throws ConfigurationKeyMissingException
 	 */
-	public function canUpload(?User $user, ?AbstractAlbum $abstractAlbum = null): bool
+	public function canUpload(?User $user, ?AbstractAlbum $abstract_album = null): bool
 	{
 		// The upload right on the root album is directly determined by the user's capabilities.
-		if ($abstractAlbum === null || !$abstractAlbum instanceof BaseAlbum) {
+		if ($abstract_album === null || !$abstract_album instanceof BaseAlbum) {
 			return $user?->may_upload ?? false;
 		}
 
-		return $this->isOwner($user, $abstractAlbum) ||
-			$abstractAlbum->current_user_permissions()?->grants_upload === true ||
-			$abstractAlbum->public_permissions()?->grants_upload === true;
+		return $this->isOwner($user, $abstract_album) ||
+			$abstract_album->current_user_permissions()?->grants_upload === true ||
+			$abstract_album->public_permissions()?->grants_upload === true;
 	}
 
 	/**
@@ -248,30 +248,30 @@ class AlbumPolicy extends BasePolicy
 	 * Check if user is allowed to USE delete in current albumn.
 	 *
 	 * @param User               $user
-	 * @param AbstractAlbum|null $abstractAlbum
+	 * @param AbstractAlbum|null $abstract_album
 	 *
 	 * @return bool
 	 *
 	 * @throws ConfigurationKeyMissingException
 	 */
-	public function canDelete(User $user, ?AbstractAlbum $abstractAlbum = null): bool
+	public function canDelete(User $user, ?AbstractAlbum $abstract_album = null): bool
 	{
-		if ($abstractAlbum instanceof BaseSmartAlbum) {
+		if ($abstract_album instanceof BaseSmartAlbum) {
 			return $user->may_upload;
 		}
 
-		if (!$abstractAlbum instanceof Album) {
+		if (!$abstract_album instanceof Album) {
 			return $user->may_upload;
 		}
 
-		if ($this->isOwner($user, $abstractAlbum)) {
+		if ($this->isOwner($user, $abstract_album)) {
 			return true;
 		}
 
 		/** @var Album $abstractAlbum */
 		if (
 			AccessPermission::query()
-			->where(APC::BASE_ALBUM_ID, '=', $abstractAlbum->parent_id)
+			->where(APC::BASE_ALBUM_ID, '=', $abstract_album->parent_id)
 			->where(APC::USER_ID, '=', $user->id)
 			->where(APC::GRANTS_DELETE, '=', true)
 			->count() === 1
@@ -286,42 +286,42 @@ class AlbumPolicy extends BasePolicy
 	 * Check if user is allowed to USE transfer in current album.
 	 *
 	 * @param User               $user
-	 * @param AbstractAlbum|null $baseAlbum
+	 * @param AbstractAlbum|null $base_album
 	 *
 	 * @return bool
 	 *
 	 * @throws ConfigurationKeyMissingException
 	 */
-	public function canTransfer(User $user, ?AbstractAlbum $baseAlbum = null): bool
+	public function canTransfer(User $user, ?AbstractAlbum $base_album = null): bool
 	{
-		if (!$baseAlbum instanceof BaseAlbum) {
+		if (!$base_album instanceof BaseAlbum) {
 			return false;
 		}
 
-		return $this->isOwner($user, $baseAlbum);
+		return $this->isOwner($user, $base_album);
 	}
 
 	/**
 	 * Checks whether the album-user has the full photo access.
 	 *
 	 * @param User|null          $user
-	 * @param AbstractAlbum|null $abstractAlbum
+	 * @param AbstractAlbum|null $abstract_album
 	 *
 	 * @return bool
 	 */
-	public function canAccessFullPhoto(?User $user, ?AbstractAlbum $abstractAlbum): bool
+	public function canAccessFullPhoto(?User $user, ?AbstractAlbum $abstract_album): bool
 	{
-		if ($abstractAlbum === null || $abstractAlbum instanceof BaseSmartAlbum) {
+		if ($abstract_album === null || $abstract_album instanceof BaseSmartAlbum) {
 			return Configs::getValueAsBool('grants_full_photo_access');
 		}
 
-		/** @var BaseAlbum $abstractAlbum */
-		if ($this->isOwner($user, $abstractAlbum)) {
+		/** @var BaseAlbum $abstract_album */
+		if ($this->isOwner($user, $abstract_album)) {
 			return true;
 		}
 
-		return $abstractAlbum->public_permissions()?->grants_full_photo_access === true ||
-			$abstractAlbum->current_user_permissions()?->grants_full_photo_access === true;
+		return $abstract_album->public_permissions()?->grants_full_photo_access === true ||
+			$abstract_album->current_user_permissions()?->grants_full_photo_access === true;
 	}
 
 	/**
@@ -338,16 +338,16 @@ class AlbumPolicy extends BasePolicy
 	 * instead in order to avoid several DB requests.
 	 *
 	 * @param User              $user
-	 * @param array<int,string> $albumIDs
+	 * @param array<int,string> $album_ids
 	 *
 	 * @return bool
 	 *
 	 * @throws QueryBuilderException
 	 */
-	public function canEditById(User $user, array $albumIDs): bool
+	public function canEditById(User $user, array $album_ids): bool
 	{
-		$albumIDs = $this->uniquify($albumIDs);
-		$num_albums = count($albumIDs);
+		$album_ids = $this->uniquify($album_ids);
+		$num_albums = count($album_ids);
 
 		if ($num_albums === 0) {
 			return $user->may_upload;
@@ -355,7 +355,7 @@ class AlbumPolicy extends BasePolicy
 
 		if (
 			BaseAlbumImpl::query()
-			->whereIn('id', $albumIDs)
+			->whereIn('id', $album_ids)
 			->where('owner_id', '=', $user->id)
 			->count() === $num_albums
 		) {
@@ -364,7 +364,7 @@ class AlbumPolicy extends BasePolicy
 
 		if (
 			AccessPermission::query()
-			->whereIn(APC::BASE_ALBUM_ID, $albumIDs)
+			->whereIn(APC::BASE_ALBUM_ID, $album_ids)
 			->where(APC::USER_ID, '=', $user->id)
 			->where(APC::GRANTS_EDIT, '=', true)
 			->count() === $num_albums
@@ -389,16 +389,16 @@ class AlbumPolicy extends BasePolicy
 	 * instead in order to avoid several DB requests.
 	 *
 	 * @param User              $user
-	 * @param array<int,string> $albumIDs
+	 * @param array<int,string> $album_ids
 	 *
 	 * @return bool
 	 *
 	 * @throws QueryBuilderException
 	 */
-	public function canDeleteById(User $user, array $albumIDs): bool
+	public function canDeleteById(User $user, array $album_ids): bool
 	{
-		$albumIDs = $this->uniquify($albumIDs);
-		$num_albums = count($albumIDs);
+		$album_ids = $this->uniquify($album_ids);
+		$num_albums = count($album_ids);
 
 		if ($num_albums === 0) {
 			return $user->may_upload;
@@ -406,7 +406,7 @@ class AlbumPolicy extends BasePolicy
 
 		if (
 			BaseAlbumImpl::query()
-			->whereIn('id', $albumIDs)
+			->whereIn('id', $album_ids)
 			->where('owner_id', '=', $user->id)
 			->count() === $num_albums
 		) {
@@ -415,7 +415,7 @@ class AlbumPolicy extends BasePolicy
 
 		if (
 			AccessPermission::query()
-			->whereIn(APC::BASE_ALBUM_ID, $albumIDs)
+			->whereIn(APC::BASE_ALBUM_ID, $album_ids)
 			->where(APC::USER_ID, '=', $user->id)
 			->where(APC::GRANTS_DELETE, '=', true)
 			->count() === $num_albums
@@ -434,10 +434,10 @@ class AlbumPolicy extends BasePolicy
 	 *
 	 * @return bool
 	 */
-	public function canShare(?User $user, ?AbstractAlbum $abstractAlbum): bool
+	public function canShare(?User $user, ?AbstractAlbum $abstract_album): bool
 	{
 		// should not be the case, but well.
-		if ($abstractAlbum === null) {
+		if ($abstract_album === null) {
 			return true;
 		}
 
@@ -445,37 +445,37 @@ class AlbumPolicy extends BasePolicy
 			return true;
 		}
 
-		if (!$abstractAlbum instanceof BaseAlbum) {
+		if (!$abstract_album instanceof BaseAlbum) {
 			return false;
 		}
 
-		return $this->isOwner($user, $abstractAlbum);
+		return $this->isOwner($user, $abstract_album);
 	}
 
 	/**
 	 * Check if user can share selected album with another user.
 	 *
 	 * @param User                             $user
-	 * @param AbstractAlbum|BaseAlbumImpl|null $abstractAlbum
+	 * @param AbstractAlbum|BaseAlbumImpl|null $abstract_album
 	 *
 	 * @return bool
 	 */
-	public function canShareWithUsers(User $user, AbstractAlbum|BaseAlbumImpl|null $abstractAlbum): bool
+	public function canShareWithUsers(User $user, AbstractAlbum|BaseAlbumImpl|null $abstract_album): bool
 	{
 		if ($user->may_upload !== true) {
 			return false;
 		}
 
 		// If this is null, this means that we are looking at the list.
-		if ($abstractAlbum === null) {
+		if ($abstract_album === null) {
 			return true;
 		}
 
-		if (!$abstractAlbum instanceof BaseAlbum && !$abstractAlbum instanceof BaseAlbumImpl) {
+		if (!$abstract_album instanceof BaseAlbum && !$abstract_album instanceof BaseAlbumImpl) {
 			return false;
 		}
 
-		return $this->isOwner($user, $abstractAlbum);
+		return $this->isOwner($user, $abstract_album);
 	}
 
 	/**
@@ -483,20 +483,20 @@ class AlbumPolicy extends BasePolicy
 	 * Only owner can share.
 	 *
 	 * @param User              $user
-	 * @param array<int,string> $albumIDs
+	 * @param array<int,string> $album_ids
 	 *
 	 * @return bool
 	 *
 	 * @throws ConfigurationKeyMissingException
 	 */
-	public function canShareById(User $user, array $albumIDs): bool
+	public function canShareById(User $user, array $album_ids): bool
 	{
 		if (!$user->may_upload) {
 			return false;
 		}
 
-		$albumIDs = $this->uniquify($albumIDs);
-		$num_albums = count($albumIDs);
+		$album_ids = $this->uniquify($album_ids);
+		$num_albums = count($album_ids);
 
 		if ($num_albums === 0) {
 			return false;
@@ -504,7 +504,7 @@ class AlbumPolicy extends BasePolicy
 
 		if (
 			BaseAlbumImpl::query()
-			->whereIn('id', $albumIDs)
+			->whereIn('id', $album_ids)
 			->where('owner_id', '=', $user->id)
 			->count() === $num_albums
 		) {
@@ -563,14 +563,14 @@ class AlbumPolicy extends BasePolicy
 	 * Remove root and smart albums, as they get a pass.
 	 * Make IDs unique as otherwise count will fail.
 	 *
-	 * @param array<int,string> $albumIDs
+	 * @param array<int,string> $album_ids
 	 *
 	 * @return array<int,string>
 	 */
-	private function uniquify(array $albumIDs): array
+	private function uniquify(array $album_ids): array
 	{
 		return array_diff(
-			array_unique($albumIDs),
+			array_unique($album_ids),
 			array_keys(SmartAlbumType::values()),
 			[null]
 		);
