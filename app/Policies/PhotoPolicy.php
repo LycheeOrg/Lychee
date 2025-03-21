@@ -17,7 +17,7 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 
 class PhotoPolicy extends BasePolicy
 {
-	protected AlbumPolicy $albumPolicy;
+	protected AlbumPolicy $album_policy;
 
 	public const CAN_SEE = 'canSee';
 	public const CAN_DOWNLOAD = 'canDownload';
@@ -33,7 +33,7 @@ class PhotoPolicy extends BasePolicy
 	public function __construct()
 	{
 		try {
-			$this->albumPolicy = resolve(AlbumPolicy::class);
+			$this->album_policy = resolve(AlbumPolicy::class);
 			// @codeCoverageIgnoreStart
 		} catch (BindingResolutionException $e) {
 			throw new FrameworkException('Laravel\'s provider component', $e);
@@ -68,7 +68,7 @@ class PhotoPolicy extends BasePolicy
 			return true;
 		}
 
-		return $photo->album !== null && $this->albumPolicy->canAccess($user, $photo->album);
+		return $photo->album !== null && $this->album_policy->canAccess($user, $photo->album);
 	}
 
 	/**
@@ -85,7 +85,7 @@ class PhotoPolicy extends BasePolicy
 			return true;
 		}
 
-		return $this->canSee($user, $photo) && $this->albumPolicy->canDownload($user, $photo->album);
+		return $this->canSee($user, $photo) && $this->album_policy->canDownload($user, $photo->album);
 	}
 
 	/**
@@ -109,41 +109,41 @@ class PhotoPolicy extends BasePolicy
 			return true;
 		}
 
-		return $this->canSee($user, $photo) && $this->albumPolicy->canEdit($user, $photo->album);
+		return $this->canSee($user, $photo) && $this->album_policy->canEdit($user, $photo->album);
 	}
 
 	/**
 	 * Checks whether the designated photos are editable by the current user.
 	 *
 	 * @param User     $user
-	 * @param string[] $photoIDs
+	 * @param string[] $photo_ids
 	 *
 	 * @return bool
 	 *
 	 * @throws QueryBuilderException
 	 */
-	public function canEditById(User $user, array $photoIDs): bool
+	public function canEditById(User $user, array $photo_ids): bool
 	{
 		// Make IDs unique as otherwise count will fail.
-		$photoIDs = array_unique($photoIDs);
+		$photo_ids = array_unique($photo_ids);
 
 		if (
 			$user->may_upload &&
 			Photo::query()
-			->whereIn('id', $photoIDs)
+			->whereIn('id', $photo_ids)
 			->where('owner_id', $user->id)
-			->count() === count($photoIDs)
+			->count() === count($photo_ids)
 		) {
 			return true;
 		}
 
 		$parents_id = Photo::query()
 			->select('album_id')
-			->whereIn('id', $photoIDs)
+			->whereIn('id', $photo_ids)
 			->groupBy('album_id')
 			->pluck('album_id')->all();
 
-		return $this->albumPolicy->canEditById($user, $parents_id);
+		return $this->album_policy->canEditById($user, $parents_id);
 	}
 
 	/**
@@ -166,7 +166,7 @@ class PhotoPolicy extends BasePolicy
 			return false;
 		}
 
-		return $this->albumPolicy->canAccessFullPhoto($user, $photo->album);
+		return $this->album_policy->canAccessFullPhoto($user, $photo->album);
 	}
 
 	/**
@@ -182,30 +182,30 @@ class PhotoPolicy extends BasePolicy
 			return true;
 		}
 
-		return $this->canSee($user, $photo) && $this->albumPolicy->canDelete($user, $photo->album);
+		return $this->canSee($user, $photo) && $this->album_policy->canDelete($user, $photo->album);
 	}
 
 	/**
 	 * Checks whether the designated photos are deletable by the current user.
 	 *
 	 * @param User     $user
-	 * @param string[] $photoIDs
+	 * @param string[] $photo_ids
 	 *
 	 * @return bool
 	 *
 	 * @throws QueryBuilderException
 	 */
-	public function canDeleteById(User $user, array $photoIDs): bool
+	public function canDeleteById(User $user, array $photo_ids): bool
 	{
 		// Make IDs unique as otherwise count will fail.
-		$photoIDs = array_unique($photoIDs);
+		$photo_ids = array_unique($photo_ids);
 
 		if (
 			$user->may_upload &&
 			Photo::query()
-			->whereIn('id', $photoIDs)
+			->whereIn('id', $photo_ids)
 			->where('owner_id', $user->id)
-			->count() === count($photoIDs)
+			->count() === count($photo_ids)
 		) {
 			return true;
 		}
@@ -213,18 +213,18 @@ class PhotoPolicy extends BasePolicy
 		// If there are any photos which are not in albums at this point, we fail.
 		if (Photo::query()
 			->whereNull('album_id')
-			->whereIn('id', $photoIDs)
+			->whereIn('id', $photo_ids)
 			->count() > 0
 		) {
 			return false;
 		}
 
-		$parentIDs = Photo::query()
+		$parent_i_ds = Photo::query()
 			->select('album_id')
-			->whereIn('id', $photoIDs)
+			->whereIn('id', $photo_ids)
 			->groupBy('album_id')
 			->pluck('album_id')->all();
 
-		return $this->albumPolicy->canDeleteById($user, $parentIDs);
+		return $this->album_policy->canDeleteById($user, $parent_i_ds);
 	}
 }
