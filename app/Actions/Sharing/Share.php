@@ -21,16 +21,16 @@ class Share
 	 *
 	 * @return AccessPermission
 	 */
-	public function do(AccessPermissionResource $accessPermissionResource, int $user_id, string $base_album_id): AccessPermission
+	public function do(AccessPermissionResource $access_permission_resource, int $user_id, string $base_album_id): AccessPermission
 	{
 		$perm = new AccessPermission();
 		$perm->user_id = $user_id;
 		$perm->base_album_id = $base_album_id;
-		$perm->grants_full_photo_access = $accessPermissionResource->grants_full_photo_access;
-		$perm->grants_download = $accessPermissionResource->grants_download;
-		$perm->grants_upload = $accessPermissionResource->grants_upload;
-		$perm->grants_edit = $accessPermissionResource->grants_edit;
-		$perm->grants_delete = $accessPermissionResource->grants_delete;
+		$perm->grants_full_photo_access = $access_permission_resource->grants_full_photo_access;
+		$perm->grants_download = $access_permission_resource->grants_download;
+		$perm->grants_upload = $access_permission_resource->grants_upload;
+		$perm->grants_edit = $access_permission_resource->grants_edit;
+		$perm->grants_delete = $access_permission_resource->grants_delete;
 		$perm->load('user');
 		$perm->load('album');
 		$perm->save();

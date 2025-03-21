@@ -24,9 +24,9 @@ class AlbumSearch
 {
 	protected AlbumQueryPolicy $albumQueryPolicy;
 
-	public function __construct(AlbumQueryPolicy $albumQueryPolicy)
+	public function __construct(AlbumQueryPolicy $album_query_policy)
 	{
-		$this->albumQueryPolicy = $albumQueryPolicy;
+		$this->albumQueryPolicy = $album_query_policy;
 	}
 
 	/**
@@ -40,14 +40,14 @@ class AlbumSearch
 	{
 		// Note: `applyVisibilityFilter` already adds a JOIN clause with `base_albums`.
 		// No need to add a second JOIN clause.
-		$albumQuery = $this->albumQueryPolicy->applyVisibilityFilter(
+		$album_query = $this->albumQueryPolicy->applyVisibilityFilter(
 			TagAlbum::query()
 		);
-		$this->addSearchCondition($terms, $albumQuery);
+		$this->addSearchCondition($terms, $album_query);
 
 		$sorting = AlbumSortingCriterion::createDefault();
 
-		return (new SortingDecorator($albumQuery))
+		return (new SortingDecorator($album_query))
 			->orderBy($sorting->column, $sorting->order)
 			->get();
 	}
@@ -61,15 +61,15 @@ class AlbumSearch
 	 */
 	public function queryAlbums(array $terms): Collection
 	{
-		$albumQuery = Album::query()
+		$album_query = Album::query()
 			->select(['albums.*'])
 			->join('base_albums', 'base_albums.id', '=', 'albums.id');
-		$this->addSearchCondition($terms, $albumQuery);
-		$this->albumQueryPolicy->applyBrowsabilityFilter($albumQuery);
+		$this->addSearchCondition($terms, $album_query);
+		$this->albumQueryPolicy->applyBrowsabilityFilter($album_query);
 
 		$sorting = AlbumSortingCriterion::createDefault();
 
-		return (new SortingDecorator($albumQuery))
+		return (new SortingDecorator($album_query))
 			->orderBy($sorting->column, $sorting->order)
 			->get();
 	}

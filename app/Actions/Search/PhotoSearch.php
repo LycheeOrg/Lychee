@@ -23,9 +23,9 @@ class PhotoSearch
 {
 	protected PhotoQueryPolicy $photoQueryPolicy;
 
-	public function __construct(PhotoQueryPolicy $photoQueryPolicy)
+	public function __construct(PhotoQueryPolicy $photo_query_policy)
 	{
-		$this->photoQueryPolicy = $photoQueryPolicy;
+		$this->photoQueryPolicy = $photo_query_policy;
 	}
 
 	/**
