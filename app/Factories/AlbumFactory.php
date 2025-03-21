@@ -128,18 +128,18 @@ class AlbumFactory
 	{
 		// Remove root (ID===`null`) and duplicates
 		$album_ids = array_diff(array_unique($album_ids), [null]);
-		$smart_album_i_ds = array_intersect($album_ids, SmartAlbumType::values());
-		$model_album_i_ds = array_diff($album_ids, SmartAlbumType::values());
+		$smart_album_ids = array_intersect($album_ids, SmartAlbumType::values());
+		$model_album_ids = array_diff($album_ids, SmartAlbumType::values());
 
 		$smart_albums = [];
-		foreach ($smart_album_i_ds as $smart_i_d) {
-			$smart_album_type = SmartAlbumType::from($smart_i_d);
+		foreach ($smart_album_ids as $smart_id) {
+			$smart_album_type = SmartAlbumType::from($smart_id);
 			$smart_albums[] = $this->createSmartAlbum($smart_album_type, $with_relations);
 		}
 
 		return new Collection(array_merge(
 			$smart_albums,
-			$this->findBaseAlbumsOrFail($model_album_i_ds, $with_relations)->all()
+			$this->findBaseAlbumsOrFail($model_album_ids, $with_relations)->all()
 		));
 	}
 

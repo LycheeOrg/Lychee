@@ -216,8 +216,8 @@ class GitHubVersion implements VersionControl, HasIsRelease
 			return;
 			// @codeCoverageIgnoreEnd
 		}
-		$commit_i_d = File::get($commit_path);
-		$this->local_head = $this->trim($commit_i_d);
+		$commit_id = File::get($commit_path);
+		$this->local_head = $this->trim($commit_id);
 	}
 
 	/**
