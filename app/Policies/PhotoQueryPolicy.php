@@ -149,7 +149,9 @@ class PhotoQueryPolicy
 	 * They are not wrapped into a nesting braces `()`.
 	 *
 	 * @param BaseBuilder     $query        the photo query which shall be restricted
-	 * @param int|string|null $origin_left  optionally constraints the search base; an integer value is interpreted a raw left bound of the search base; a string value is interpreted as a reference to a column which shall be used as a left bound
+	 * @param int|string|null $origin_left  optionally constraints the search base;
+	 *                                      an integer value is interpreted a raw left bound of the search base;
+	 *                                      a string value is interpreted as a reference to a column which shall be used as a left bound
 	 * @param int|string|null $origin_right like `$origin_left` but for the right bound
 	 *
 	 * @return BaseBuilder the restricted photo query
