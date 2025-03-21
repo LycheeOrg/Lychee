@@ -135,43 +135,43 @@ trait ForwardsToParentImplementation
 	public function delete(): bool
 	{
 		/** @var ?Model $baseClass */
-		$baseClass = $this->base_class;
+		$base_class = $this->base_class;
 
-		$parentException = null;
+		$parent_exception = null;
 		try {
 			// Sic! Don't use `!$parentDelete` in condition, because we also
 			// need to proceed if `$parentDelete === null` .
 			// If Eloquent returns `null` (instead of `true`), this also
 			// indicates a success, and we must go on.
 			// Eloquent, I love you .... not.
-			$parentResult = parent::delete();
-			if ($parentResult === false) {
-				$parentException = new \RuntimeException('Eloquent\Model::delete() returned false');
+			$parent_result = parent::delete();
+			if ($parent_result === false) {
+				$parent_exception = new \RuntimeException('Eloquent\Model::delete() returned false');
 			}
 		} catch (\Throwable $e) {
-			$parentException = $e;
+			$parent_exception = $e;
 		}
-		if ($parentException !== null) {
-			throw ModelDBException::create($this->friendlyModelName(), 'deleting', $parentException);
+		if ($parent_exception !== null) {
+			throw ModelDBException::create($this->friendlyModelName(), 'deleting', $parent_exception);
 		}
 
 		// We must explicitly check if the base_class still exists in order
 		// to avoid an infinite recursion, as the base class will also call
 		// delete() on this class
-		if ($baseClass !== null && $baseClass->exists) {
-			$baseException = null;
+		if ($base_class !== null && $base_class->exists) {
+			$base_exception = null;
 			try {
-				$baseResult = $baseClass->delete();
+				$base_result = $base_class->delete();
 				// Same stupidity as above, if Eloquent returns `null`,
 				// this also indicates a good case.
-				if ($baseResult === false) {
-					$baseException = new \RuntimeException('Eloquent\Model::delete() returned false');
+				if ($base_result === false) {
+					$base_exception = new \RuntimeException('Eloquent\Model::delete() returned false');
 				}
 			} catch (\Throwable $e) {
-				$baseException = $e;
+				$base_exception = $e;
 			}
-			if ($baseException !== null) {
-				throw ModelDBException::create($this->friendlyModelName(), 'deleting', $baseException);
+			if ($base_exception !== null) {
+				throw ModelDBException::create($this->friendlyModelName(), 'deleting', $base_exception);
 			}
 		}
 
@@ -215,9 +215,9 @@ trait ForwardsToParentImplementation
 	 */
 	public function isDirty($attributes = null): bool
 	{
-		$baseIsDirty = $this->relationLoaded('base_class') && $this->getRelation('base_class')->isDirty();
+		$base_is_dirty = $this->relationLoaded('base_class') && $this->getRelation('base_class')->isDirty();
 
-		return $baseIsDirty || $this->hasChanges(
+		return $base_is_dirty || $this->hasChanges(
 			$this->getDirty(),
 			is_array($attributes) ? $attributes : func_get_args()
 		);
@@ -383,20 +383,20 @@ trait ForwardsToParentImplementation
 			// In particular, calling the relation requires that this instance
 			// of a model already has a valid primary key which does not exist
 			// for a freshly created model.
-			$primaryKey = $this->getKey();
+			$primary_key = $this->getKey();
 			if (!$this->exists) {
-				if ($primaryKey !== null) {
+				if ($primary_key !== null) {
 					throw new FailedModelAssumptionException('the primary key must not be set if the model does not exist');
 				}
-				$baseModel = $this->base_class()->getRelated()->newInstance();
-				$this->setRelation('base_class', $baseModel);
+				$base_model = $this->base_class()->getRelated()->newInstance();
+				$this->setRelation('base_class', $base_model);
 
-				return $baseModel;
+				return $base_model;
 			} else {
 				// This model exists, but the relation to the base class
 				// has not yet been loaded.
 				// Load it now.
-				if ($primaryKey === null) {
+				if ($primary_key === null) {
 					throw new FailedModelAssumptionException('the model allegedly exists, but we don\'t have a primary key, cannot load base model');
 				}
 
@@ -484,12 +484,12 @@ trait ForwardsToParentImplementation
 		// on the parent class.
 		// Only if the parent class does not provide such an attribute either,
 		// we write it to the child class.
-		$baseClass = $this->base_class;
+		$base_class = $this->base_class;
 		if (
-			array_key_exists($key, $baseClass->getAttributes()) ||
-			$baseClass->hasSetMutator($key)
+			array_key_exists($key, $base_class->getAttributes()) ||
+			$base_class->hasSetMutator($key)
 		) {
-			$baseClass->setAttribute($key, $value);
+			$base_class->setAttribute($key, $value);
 		} else {
 			$this->attributes[$key] = $value;
 		}

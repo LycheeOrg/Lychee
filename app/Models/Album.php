@@ -292,9 +292,9 @@ class Album extends BaseAlbum implements Node
 	 */
 	public function performDeleteOnModel(): void
 	{
-		$fileDeleter = (new Delete())->do([$this->id]);
+		$file_deleter = (new Delete())->do([$this->id]);
 		$this->exists = false;
-		$fileDeleter->do();
+		$file_deleter->do();
 	}
 
 	/**
@@ -386,13 +386,13 @@ class Album extends BaseAlbum implements Node
 	/**
 	 * Defines setter for Aspect Ratio.
 	 *
-	 * @param AspectRatioType|null $aspectRatio
+	 * @param AspectRatioType|null $aspect_ratio
 	 *
 	 * @return void
 	 */
-	protected function setAlbumThumbAspectRatioAttribute(?AspectRatioType $aspectRatio): void
+	protected function setAlbumThumbAspectRatioAttribute(?AspectRatioType $aspect_ratio): void
 	{
-		$this->attributes['album_thumb_aspect_ratio'] = $aspectRatio?->value;
+		$this->attributes['album_thumb_aspect_ratio'] = $aspect_ratio?->value;
 	}
 
 	/**
@@ -483,14 +483,14 @@ class Album extends BaseAlbum implements Node
 
 	protected function getAlbumSortingAttribute(): ?AlbumSortingCriterion
 	{
-		$sortingColumn = $this->attributes['album_sorting_col'];
-		$sortingOrder = $this->attributes['album_sorting_order'];
+		$sorting_column = $this->attributes['album_sorting_col'];
+		$sorting_order = $this->attributes['album_sorting_order'];
 
-		return ($sortingColumn === null || $sortingOrder === null) ?
+		return ($sorting_column === null || $sorting_order === null) ?
 			null :
 			new AlbumSortingCriterion(
-				ColumnSortingType::from($sortingColumn),
-				OrderSortingType::from($sortingOrder));
+				ColumnSortingType::from($sorting_column),
+				OrderSortingType::from($sorting_order));
 	}
 
 	protected function setAlbumSortingAttribute(?AlbumSortingCriterion $sorting): void

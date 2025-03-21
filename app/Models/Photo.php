@@ -437,11 +437,11 @@ class Photo extends Model
 		// save duplicate so that the photo gets an ID
 		$duplicate->save();
 
-		$areSizeVariantsOriginallyLoaded = $this->relationLoaded('size_variants');
+		$are_size_variants_originally_loaded = $this->relationLoaded('size_variants');
 		// Duplicate the size variants of this instance for the duplicate
-		$duplicatedSizeVariants = $this->size_variants->replicate($duplicate);
-		if ($areSizeVariantsOriginallyLoaded) {
-			$duplicate->setRelation('size_variants', $duplicatedSizeVariants);
+		$duplicated_size_variants = $this->size_variants->replicate($duplicate);
+		if ($are_size_variants_originally_loaded) {
+			$duplicate->setRelation('size_variants', $duplicated_size_variants);
 		}
 
 		return $duplicate;
@@ -455,8 +455,8 @@ class Photo extends Model
 	 */
 	protected function performDeleteOnModel(): void
 	{
-		$fileDeleter = (new Delete())->do([$this->id]);
+		$file_deleter = (new Delete())->do([$this->id]);
 		$this->exists = false;
-		$fileDeleter->do();
+		$file_deleter->do();
 	}
 }

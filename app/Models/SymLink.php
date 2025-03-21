@@ -157,22 +157,22 @@ class SymLink extends Model
 	protected function performInsert(Builder $query): bool
 	{
 		$file = $this->size_variant->getFile()->toLocalFile();
-		$origRealPath = $file->getRealPath();
+		$orig_real_path = $file->getRealPath();
 		$extension = $file->getExtension();
-		$symShortPath = hash('sha256', random_bytes(32) . '|' . $origRealPath) . $extension;
+		$sym_short_path = hash('sha256', random_bytes(32) . '|' . $orig_real_path) . $extension;
 		/** @disregard P1013 */
-		$symAbsolutePath = Storage::disk(SymLink::DISK_NAME)->path($symShortPath);
+		$sym_absolute_path = Storage::disk(SymLink::DISK_NAME)->path($sym_short_path);
 		try {
-			if (is_link($symAbsolutePath)) {
-				unlink($symAbsolutePath);
+			if (is_link($sym_absolute_path)) {
+				unlink($sym_absolute_path);
 			}
-			symlink($origRealPath, $symAbsolutePath);
+			symlink($orig_real_path, $sym_absolute_path);
 			// @codeCoverageIgnoreStart
 		} catch (FilesystemException $e) {
 			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
 		// @codeCoverageIgnoreEnd
-		$this->short_path = $symShortPath;
+		$this->short_path = $sym_short_path;
 
 		return parent::performInsert($query);
 	}
@@ -192,9 +192,9 @@ class SymLink extends Model
 	{
 		// Laravel and Flysystem does not support symbolic links.
 		// So we must convert it to a local file
-		$flyFile = new FlysystemFile(Storage::disk(self::DISK_NAME), $this->short_path);
-		$symLink = $flyFile->toLocalFile();
-		$symLink->delete();
+		$fly_file = new FlysystemFile(Storage::disk(self::DISK_NAME), $this->short_path);
+		$sym_link = $fly_file->toLocalFile();
+		$sym_link->delete();
 
 		return $this->internalDelete();
 	}
