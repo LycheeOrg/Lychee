@@ -318,7 +318,7 @@ class Handler extends ExceptionHandler
 		// on the available extensions (i.e. Whoops, Symfony renderer, etc.)
 		// If we are in non-debug mode, we render our own template that
 		// matches Lychee's style and only contains rudimentary information.
-		$defaultResponse = config('app.debug') === true ?
+		$default_response = config('app.debug') === true ?
 			$this->convertExceptionToResponse($e) :
 			response()->view('error.error', [
 				'code' => $e->getStatusCode(),
@@ -335,11 +335,11 @@ class Handler extends ExceptionHandler
 
 		foreach ($checks as $check) {
 			if ($check->check($e)) {
-				return $check->renderHttpException($defaultResponse, $e);
+				return $check->renderHttpException($default_response, $e);
 			}
 		}
 
-		return $defaultResponse;
+		return $default_response;
 	}
 
 	/**

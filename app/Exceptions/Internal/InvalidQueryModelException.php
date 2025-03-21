@@ -10,8 +10,8 @@ namespace App\Exceptions\Internal;
 
 class InvalidQueryModelException extends LycheeInvalidArgumentException
 {
-	public function __construct(string $modelName)
+	public function __construct(string $model_name)
 	{
-		parent::__construct('The query does not query for ' . $modelName . 's');
+		parent::__construct('The query does not query for ' . $model_name . 's');
 	}
 }
