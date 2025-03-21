@@ -18,17 +18,17 @@ class BranchCheck extends AbstractUpdateInstallerPipe
 	 */
 	public function handle(array &$output, \Closure $next): array
 	{
-		$installedVersion = resolve(InstalledVersion::class);
-		if ($installedVersion->isRelease()) {
+		$installed_version = resolve(InstalledVersion::class);
+		if ($installed_version->isRelease()) {
 			// @codeCoverageIgnoreStart
 			return $next($output);
 			// @codeCoverageIgnoreEnd
 		}
 
-		$githubFunctions = resolve(GitHubVersion::class);
-		$githubFunctions->hydrate(false);
+		$github_functions = resolve(GitHubVersion::class);
+		$github_functions->hydrate(false);
 
-		if ($githubFunctions->isMasterBranch()) {
+		if ($github_functions->isMasterBranch()) {
 			return $next($output);
 		}
 
