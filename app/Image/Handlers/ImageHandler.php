@@ -26,7 +26,7 @@ class ImageHandler extends BaseImageHandler implements ImageHandlerInterface
 	 *
 	 * @var string[]
 	 */
-	protected array $engineClasses = [];
+	protected array $engine_classes = [];
 
 	/**
 	 * The selected image handler.
@@ -42,9 +42,9 @@ class ImageHandler extends BaseImageHandler implements ImageHandlerInterface
 	{
 		parent::__construct();
 		if (Configs::hasImagick()) {
-			$this->engineClasses[] = ImagickHandler::class;
+			$this->engine_classes[] = ImagickHandler::class;
 		}
-		$this->engineClasses[] = GdHandler::class;
+		$this->engine_classes[] = GdHandler::class;
 	}
 
 	public function __clone()
@@ -60,11 +60,11 @@ class ImageHandler extends BaseImageHandler implements ImageHandlerInterface
 	public function load(MediaFile $file): void
 	{
 		$this->reset();
-		$lastException = null;
+		$last_exception = null;
 
-		foreach ($this->engineClasses as $engineClass) {
+		foreach ($this->engine_classes as $engine_class) {
 			try {
-				$engine = new $engineClass();
+				$engine = new $engine_class();
 				if ($engine instanceof ImageHandlerInterface) {
 					$this->engine = $engine;
 					$this->engine->load($file);
@@ -76,20 +76,20 @@ class ImageHandler extends BaseImageHandler implements ImageHandlerInterface
 			} catch (\Throwable $e) {
 				// Report the error to the log, but don't fail yet.
 				Handler::reportSafely($e);
-				$lastException = $e;
+				$last_exception = $e;
 				$this->engine = null;
 			}
 		}
 
-		throw new MediaFileOperationException(self::NO_HANDLER_EXCEPTION_MSG, $lastException);
+		throw new MediaFileOperationException(self::NO_HANDLER_EXCEPTION_MSG, $last_exception);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function save(MediaFile $file, bool $collectStatistics = false): ?StreamStats
+	public function save(MediaFile $file, bool $collect_statistics = false): ?StreamStats
 	{
-		return $this->engine->save($file, $collectStatistics);
+		return $this->engine->save($file, $collect_statistics);
 	}
 
 	/**
@@ -104,17 +104,17 @@ class ImageHandler extends BaseImageHandler implements ImageHandlerInterface
 	/**
 	 * {@inheritDoc}
 	 */
-	public function cloneAndScale(ImageDimension $dstDim): ImageHandlerInterface
+	public function cloneAndScale(ImageDimension $dst_dim): ImageHandlerInterface
 	{
-		return $this->engine->cloneAndScale($dstDim);
+		return $this->engine->cloneAndScale($dst_dim);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function cloneAndCrop(ImageDimension $dstDim): ImageHandlerInterface
+	public function cloneAndCrop(ImageDimension $dst_dim): ImageHandlerInterface
 	{
-		return $this->engine->cloneAndCrop($dstDim);
+		return $this->engine->cloneAndCrop($dst_dim);
 	}
 
 	/**

@@ -75,7 +75,7 @@ abstract class AbstractBinaryBlob implements BinaryBlob
 	 *
 	 * @throws MediaFileOperationException
 	 */
-	abstract public function write($stream, bool $collectStatistics = false): ?StreamStats;
+	abstract public function write($stream, bool $collect_statistics = false): ?StreamStats;
 
 	/**
 	 * Closes the internal stream/buffer.
@@ -114,14 +114,14 @@ abstract class AbstractBinaryBlob implements BinaryBlob
 	 */
 	protected static function appendStatFilter($stream): StreamStat
 	{
-		$streamStat = new StreamStat();
+		$stream_stat = new StreamStat();
 		stream_filter_append(
 			$stream,
 			StreamStatFilter::REGISTERED_NAME,
 			STREAM_FILTER_READ,
-			$streamStat
+			$stream_stat
 		);
 
-		return $streamStat;
+		return $stream_stat;
 	}
 }

@@ -31,36 +31,36 @@ class FileDeleter
 {
 	/**
 	 * @param array<string,Collection<int,string>> $files
-	 * @param Collection<int,SizeVariant>          $sizeVariants
-	 * @param Collection<int,string>               $symbolicLinks
+	 * @param Collection<int,SizeVariant>          $size_variants
+	 * @param Collection<int,string>               $symbolic_links
 	 *
 	 * @return void
 	 */
 	public function __construct(
 		protected array $files = [],
-		protected Collection $sizeVariants = new Collection(),
-		protected Collection $symbolicLinks = new Collection(),
+		protected Collection $size_variants = new Collection(),
+		protected Collection $symbolic_links = new Collection(),
 	) {
 	}
 
 	/**
-	 * @param Collection<int,SizeVariant> $sizeVariants
+	 * @param Collection<int,SizeVariant> $size_variants
 	 *
 	 * @return void
 	 */
-	public function addSizeVariants(Collection $sizeVariants): void
+	public function addSizeVariants(Collection $size_variants): void
 	{
-		$this->sizeVariants = $this->sizeVariants->merge($sizeVariants);
+		$this->size_variants = $this->size_variants->merge($size_variants);
 	}
 
 	/**
-	 * @param Collection<int,string> $symbolicLinks
+	 * @param Collection<int,string> $symbolic_links
 	 *
 	 * @return void
 	 */
-	public function addSymbolicLinks(Collection $symbolicLinks): void
+	public function addSymbolicLinks(Collection $symbolic_links): void
 	{
-		$this->symbolicLinks = $this->symbolicLinks->merge($symbolicLinks);
+		$this->symbolic_links = $this->symbolic_links->merge($symbolic_links);
 	}
 
 	/**
@@ -71,9 +71,9 @@ class FileDeleter
 	 *
 	 * @return void
 	 */
-	public function addFiles(Collection $paths, string $diskName): void
+	public function addFiles(Collection $paths, string $disk_name): void
 	{
-		$this->files[$diskName] = ($this->files[$diskName] ?? new Collection())->merge($paths);
+		$this->files[$disk_name] = ($this->files[$disk_name] ?? new Collection())->merge($paths);
 	}
 
 	/**
@@ -84,7 +84,7 @@ class FileDeleter
 	private function convertSizeVariantsList()
 	{
 		/** @var Collection<string,Collection<int,SizeVariant>> $grouped */
-		$grouped = $this->sizeVariants->groupBy('storage_disk');
+		$grouped = $this->size_variants->groupBy('storage_disk');
 		$grouped->each(
 			fn (Collection $svs, string $k) => $this->files[$k] = ($this->files[$k] ?? new Collection())->merge($svs->pluck('short_path'))
 		);
@@ -100,44 +100,44 @@ class FileDeleter
 	public function do(): void
 	{
 		/** @var \Throwable|null $firstException */
-		$firstException = null;
+		$first_exception = null;
 
 		$this->convertSizeVariantsList();
 
-		foreach ($this->files as $storageType => $fileList) {
-			$disk = Storage::disk($storageType);
+		foreach ($this->files as $storage_type => $file_list) {
+			$disk = Storage::disk($storage_type);
 
 			// If the disk uses the local driver, we use low-level routines as
 			// these are also able to handle symbolic links in case of doubt
-			$isLocalDisk = $disk->getAdapter() instanceof LocalFilesystemAdapter;
-			if ($isLocalDisk) {
-				foreach ($fileList as $file) {
+			$is_local_disk = $disk->getAdapter() instanceof LocalFilesystemAdapter;
+			if ($is_local_disk) {
+				foreach ($file_list as $file) {
 					try {
-						$absolutePath = $disk->path($file);
+						$absolute_path = $disk->path($file);
 						// Note, `file_exist` returns `false` for existing,
 						// but dead links.
 						// So the first part takes care of deleting links no matter
 						// if they are dead or alive.
 						// The latter part deletes (regular) files, but avoids errors
 						// in case the file doesn't exist.
-						if (is_link($absolutePath) || file_exists($absolutePath)) {
-							unlink($absolutePath);
+						if (is_link($absolute_path) || file_exists($absolute_path)) {
+							unlink($absolute_path);
 						}
 					} catch (\Throwable $e) {
-						$firstException = $firstException ?? $e;
+						$first_exception = $first_exception ?? $e;
 					}
 				}
 			} else {
 				// If the disk is not local, we can assume that each file is a regular file
-				foreach ($fileList as $file) {
+				foreach ($file_list as $file) {
 					try {
 						if ($disk->exists($file)) {
 							if (!$disk->delete($file)) {
-								$firstException = $firstException ?? new FileDeletionException($storageType, $file);
+								$first_exception = $first_exception ?? new FileDeletionException($storage_type, $file);
 							}
 						}
 					} catch (\Throwable $e) {
-						$firstException = $firstException ?? $e;
+						$first_exception = $first_exception ?? $e;
 					}
 				}
 			}
@@ -145,22 +145,22 @@ class FileDeleter
 
 		// TODO: When we use proper `File` objects, each file knows its associated disk
 		// In the mean time, we assume that any symbolic link is stored on the same disk
-		$symlinkDisk = Storage::disk(SymLink::DISK_NAME);
-		foreach ($this->symbolicLinks as $symbolicLink) {
+		$symlink_disk = Storage::disk(SymLink::DISK_NAME);
+		foreach ($this->symbolic_links as $symbolic_link) {
 			try {
-				$absolutePath = $symlinkDisk->path($symbolicLink);
+				$absolute_path = $symlink_disk->path($symbolic_link);
 				// Laravel and Flysystem does not support symbolic links.
 				// So we must use low-level methods here.
-				if (is_link($absolutePath) || file_exists($absolutePath)) {
-					unlink($absolutePath);
+				if (is_link($absolute_path) || file_exists($absolute_path)) {
+					unlink($absolute_path);
 				}
 			} catch (\Throwable $e) {
-				$firstException = $firstException ?? $e;
+				$first_exception = $first_exception ?? $e;
 			}
 		}
 
-		if ($firstException !== null) {
-			throw new MediaFileOperationException('Could not delete some files', $firstException);
+		if ($first_exception !== null) {
+			throw new MediaFileOperationException('Could not delete some files', $first_exception);
 		}
 	}
 }

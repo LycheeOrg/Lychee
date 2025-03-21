@@ -53,9 +53,9 @@ class VideoHandler
 				'ffmpeg.binaries' => Configs::getValueAsString('ffmpeg_path'),
 				'ffprobe.binaries' => Configs::getValueAsString('ffprobe_path'),
 			]);
-			$audioOrVideo = $ffmpeg->open($file->getRealPath());
-			if ($audioOrVideo instanceof Video) {
-				$this->video = $audioOrVideo;
+			$audio_or_video = $ffmpeg->open($file->getRealPath());
+			if ($audio_or_video instanceof Video) {
+				$this->video = $audio_or_video;
 			} else {
 				throw new MediaFileOperationException('No video streams found.');
 			}
@@ -77,18 +77,18 @@ class VideoHandler
 	 * @throws ImageProcessingException
 	 * @throws MediaFileUnsupportedException
 	 */
-	public function extractFrame(float $framePosition = 0.0): ImageHandlerInterface
+	public function extractFrame(float $frame_position = 0.0): ImageHandlerInterface
 	{
 		try {
 			// A temporary, local file for the extracted frame
-			$frameFile = new TemporaryLocalFile('.jpg');
-			$frame = $this->video->frame(TimeCode::fromSeconds($framePosition));
-			$frame->save($frameFile->getRealPath());
+			$frame_file = new TemporaryLocalFile('.jpg');
+			$frame = $this->video->frame(TimeCode::fromSeconds($frame_position));
+			$frame->save($frame_file->getRealPath());
 
 			// Load the extracted frame into the image handler
 			$frame = new ImageHandler();
-			$frame->load($frameFile);
-			$frameFile->delete();
+			$frame->load($frame_file);
+			$frame_file->delete();
 
 			return $frame;
 		} catch (RuntimeException $e) {

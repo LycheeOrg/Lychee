@@ -23,14 +23,14 @@ use Spatie\LaravelImageOptimizer\Facades\ImageOptimizer;
 abstract class BaseImageHandler implements ImageHandlerInterface
 {
 	/** @var int the desired compression quality, only used for JPEG during save */
-	protected int $compressionQuality;
+	protected int $compression_quality;
 
 	/**
 	 * @throws ConfigurationKeyMissingException
 	 */
 	public function __construct()
 	{
-		$this->compressionQuality = Configs::getValueAsInt('compression_quality');
+		$this->compression_quality = Configs::getValueAsInt('compression_quality');
 	}
 
 	public function __destruct()
@@ -56,18 +56,18 @@ abstract class BaseImageHandler implements ImageHandlerInterface
 	 * @throws MediaFileOperationException
 	 * @throws ConfigurationKeyMissingException
 	 */
-	protected static function applyLosslessOptimizationConditionally(MediaFile $file, bool $collectStatistics = false): ?StreamStats
+	protected static function applyLosslessOptimizationConditionally(MediaFile $file, bool $collect_statistics = false): ?StreamStats
 	{
 		if (Configs::getValueAsBool('lossless_optimization')) {
 			if ($file instanceof NativeLocalFile) {
 				ImageOptimizer::optimize($file->getRealPath());
 
-				return $collectStatistics ? StreamStat::createFromLocalFile($file) : null;
+				return $collect_statistics ? StreamStat::createFromLocalFile($file) : null;
 			} elseif ($file instanceof FlysystemFile && $file->isLocalFile()) {
-				$localFile = $file->toLocalFile();
-				ImageOptimizer::optimize($localFile->getRealPath());
+				$local_file = $file->toLocalFile();
+				ImageOptimizer::optimize($local_file->getRealPath());
 
-				return $collectStatistics ? StreamStat::createFromLocalFile($localFile) : null;
+				return $collect_statistics ? StreamStat::createFromLocalFile($local_file) : null;
 			} else {
 				Log::warning(__METHOD__ . ':' . __LINE__ . ' Skipping lossless optimization; optimization is requested by configuration but only supported for local files');
 

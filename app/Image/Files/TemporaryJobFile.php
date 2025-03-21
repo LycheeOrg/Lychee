@@ -40,26 +40,26 @@ class TemporaryJobFile extends NativeLocalFile
 	 *
 	 * @throws MediaFileOperationException
 	 */
-	public function __construct(string $filePath, string $fakeBaseName = '')
+	public function __construct(string $file_path, string $fake_base_name = '')
 	{
-		$lastException = null;
-		$retryCounter = 5;
+		$last_exception = null;
+		$retry_counter = 5;
 		do {
 			try {
-				$tempFilePath = $filePath;
-				$retryCounter--;
+				$temp_file_path = $file_path;
+				$retry_counter--;
 				// We open wih c+b because the file already exists (from ProcessableJobFile)
-				$this->stream = fopen($tempFilePath, 'c+b');
+				$this->stream = fopen($temp_file_path, 'c+b');
 			} catch (\ErrorException|\Exception $e) {
-				$tempFilePath = null;
-				$lastException = $e;
+				$temp_file_path = null;
+				$last_exception = $e;
 			}
-		} while ($tempFilePath === null && $retryCounter > 0);
-		if ($tempFilePath === null) {
-			throw new MediaFileOperationException('unable to create temporary file', $lastException);
+		} while ($temp_file_path === null && $retry_counter > 0);
+		if ($temp_file_path === null) {
+			throw new MediaFileOperationException('unable to create temporary file', $last_exception);
 		}
-		parent::__construct($tempFilePath);
-		$this->fakeBaseName = $fakeBaseName;
+		parent::__construct($temp_file_path);
+		$this->fakeBaseName = $fake_base_name;
 	}
 
 	/**
