@@ -33,37 +33,33 @@ class AdminUserStatus
 	public const SET = 'set';
 	public const UNSET = 'unset';
 
-	private HasAdminUser $hasAdminUser;
-
-	public function __construct(HasAdminUser $hasAdminUser)
-	{
-		$this->hasAdminUser = $hasAdminUser;
+	public function __construct(
+		private HasAdminUser $has_admin_user,
+	) {
 	}
 
 	/**
 	 * Handles an incoming request.
 	 *
 	 * @param Request  $request        the incoming request to serve
-	 * @param \Closure $next           the next operation to be applied to the
-	 *                                 request
+	 * @param \Closure $next           the next operation to be applied to the request
 	 * @param string   $requiredStatus the required installation status; either
-	 *                                 {@link self::SET} or
-	 *                                 {@link self::UNSET}
+	 *                                 {@link self::SET} or {@link self::UNSET}
 	 *
 	 * @return mixed
 	 *
 	 * @throws LycheeException
 	 */
-	public function handle(Request $request, \Closure $next, string $requiredStatus): mixed
+	public function handle(Request $request, \Closure $next, string $required_status): mixed
 	{
-		if ($requiredStatus === self::SET) {
-			if ($this->hasAdminUser->assert()) {
+		if ($required_status === self::SET) {
+			if ($this->has_admin_user->assert()) {
 				return $next($request);
 			} else {
 				throw new AdminUserRequiredException();
 			}
-		} elseif ($requiredStatus === self::UNSET) {
-			if ($this->hasAdminUser->assert()) {
+		} elseif ($required_status === self::UNSET) {
+			if ($this->has_admin_user->assert()) {
 				throw new AdminUserAlreadySetException();
 			} else {
 				return $next($request);

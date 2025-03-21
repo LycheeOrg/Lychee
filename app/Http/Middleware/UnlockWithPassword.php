@@ -23,13 +23,10 @@ use Illuminate\Support\Facades\Log;
  */
 class UnlockWithPassword
 {
-	private AlbumFactory $albumFactory;
-	private Unlock $unlock;
-
-	public function __construct(AlbumFactory $albumFactory, Unlock $unlock)
+	public function __construct(
+		private AlbumFactory $album_factory,
+		private Unlock $unlock)
 	{
-		$this->albumFactory = $albumFactory;
-		$this->unlock = $unlock;
 	}
 
 	/**
@@ -62,7 +59,7 @@ class UnlockWithPassword
 		}
 
 		try {
-			$album = $this->albumFactory->findBaseAlbumOrFail($album_id);
+			$album = $this->album_factory->findBaseAlbumOrFail($album_id);
 			$this->unlock->do($album, $request['password']);
 		} catch (\Exception) {
 			// fail silently
