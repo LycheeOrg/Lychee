@@ -61,9 +61,9 @@ class GenerateThumbs extends Command
 	public function handle(): int
 	{
 		try {
-			$sizeVariantName = strval($this->argument('type'));
-			if (!array_key_exists($sizeVariantName, self::SIZE_VARIANTS)) {
-				$this->error(sprintf('Type %s is not one of %s', $sizeVariantName, implode(', ', array_keys(self::SIZE_VARIANTS))));
+			$size_variant_name = strval($this->argument('type'));
+			if (!array_key_exists($size_variant_name, self::SIZE_VARIANTS)) {
+				$this->error(sprintf('Type %s is not one of %s', $size_variant_name, implode(', ', array_keys(self::SIZE_VARIANTS))));
 
 				return 1;
 			}
@@ -74,7 +74,7 @@ class GenerateThumbs extends Command
 				return 1;
 			}
 
-			$sizeVariantType = self::SIZE_VARIANTS[$sizeVariantName];
+			$size_variant_type = self::SIZE_VARIANTS[$size_variant_name];
 
 			$amount = (int) $this->argument('amount');
 			$timeout = (int) $this->argument('timeout');
@@ -89,7 +89,7 @@ class GenerateThumbs extends Command
 				sprintf(
 					'Will attempt to generate up to %d %s images with a timeout of %d seconds...',
 					$amount,
-					$sizeVariantName,
+					$size_variant_name,
 					$timeout
 				)
 			);
@@ -97,14 +97,14 @@ class GenerateThumbs extends Command
 			$photos = Photo::query()
 				->where('type', 'like', 'image/%')
 				->with('size_variants')
-				->whereDoesntHave('size_variants', function (Builder $query) use ($sizeVariantType): void {
-					$query->where('type', '=', $sizeVariantType);
+				->whereDoesntHave('size_variants', function (Builder $query) use ($size_variant_type): void {
+					$query->where('type', '=', $size_variant_type);
 				})
 				->take($amount)
 				->get();
 
 			if (count($photos) === 0) {
-				$this->line('No picture requires ' . $sizeVariantName . '.');
+				$this->line('No picture requires ' . $size_variant_name . '.');
 
 				return 0;
 			}
@@ -113,22 +113,22 @@ class GenerateThumbs extends Command
 			$bar->start();
 
 			// Initialize factory for size variants
-			$sizeVariantFactory = resolve(SizeVariantFactory::class);
+			$size_variant_factory = resolve(SizeVariantFactory::class);
 			/** @var Photo $photo */
 			foreach ($photos as $photo) {
-				$sizeVariant = null;
+				$size_variant = null;
 
 				try {
-					$sizeVariantFactory->init($photo);
-					$sizeVariant = $sizeVariantFactory->createSizeVariantCond($sizeVariantType);
+					$size_variant_factory->init($photo);
+					$size_variant = $size_variant_factory->createSizeVariantCond($size_variant_type);
 				} catch (MediaFileOperationException $e) {
-					$sizeVariant = null;
+					$size_variant = null;
 				}
 
-				if ($sizeVariant !== null) {
-					$this->line('   ' . $sizeVariantName . ' (' . $sizeVariant->width . 'x' . $sizeVariant->height . ') for ' . $photo->title . ' created.');
+				if ($size_variant !== null) {
+					$this->line('   ' . $size_variant_name . ' (' . $size_variant->width . 'x' . $size_variant->height . ') for ' . $photo->title . ' created.');
 				} else {
-					$this->line('   Did not create ' . $sizeVariantName . ' for ' . $photo->id . ' .');
+					$this->line('   Did not create ' . $size_variant_name . ' for ' . $photo->id . ' .');
 				}
 				$bar->advance();
 			}
