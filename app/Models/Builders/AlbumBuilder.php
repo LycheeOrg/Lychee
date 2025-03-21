@@ -17,9 +17,7 @@ use App\Policies\AlbumQueryPolicy;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use InvalidArgumentException;
 use Kalnoy\Nestedset\QueryBuilder as NSQueryBuilder;
-use RuntimeException;
 
 /**
  * Specialized query builder for {@link \App\Models\Album}.
@@ -179,8 +177,8 @@ class AlbumBuilder extends NSQueryBuilder
 	 * Apply Visibiltiy conditions.
 	 * This a simplified version of AlbumQueryPolicy::applyVisibilityFilter().
 	 *
-	 * @param Builder $countQuery
-	 * @param AlbumQueryPolicy $album_query_policy 
+	 * @param Builder          $countQuery
+	 * @param AlbumQueryPolicy $album_query_policy
 	 *
 	 * @return Builder Query with the visibility requirements applied
 	 */
@@ -234,8 +232,8 @@ class AlbumBuilder extends NSQueryBuilder
 	 * Apply Visibiltiy conditions.
 	 * This a simplified version of PhotoQueryPolicy::applyVisibilityFilter().
 	 *
-	 * @param Builder $countQuery
-	 * @param AlbumQueryPolicy $album_query_policy 
+	 * @param Builder          $countQuery
+	 * @param AlbumQueryPolicy $album_query_policy
 	 *
 	 * @return Builder Query with the visibility requirements applied
 	 */
