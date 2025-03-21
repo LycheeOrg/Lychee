@@ -33,7 +33,7 @@ class ListShare
 	 *
 	 * @throws QueryBuilderException
 	 */
-	public function do(?User $participant, ?User $owner, ?BaseAlbum $baseAlbum): SharesResource
+	public function do(?User $participant, ?User $owner, ?BaseAlbum $base_album): SharesResource
 	{
 		try {
 			// Active shares, optionally filtered by album ID, participant ID
@@ -50,7 +50,7 @@ class ListShare
 				->join('base_albums', 'base_album_id', '=', 'base_albums.id')
 				->when($participant !== null, fn ($q) => $q->where('user_base_album.user_id', '=', $participant->id))
 				->when($owner !== null, fn ($q) => $q->where('base_albums.owner_id', '=', $owner->id))
-				->when($baseAlbum !== null, fn ($q) => $q->where('base_albums.id', '=', $baseAlbum->id))
+				->when($base_album !== null, fn ($q) => $q->where('base_albums.id', '=', $base_album->id))
 				->orderBy('title', 'ASC')
 				->orderBy('username', 'ASC')
 				->get();
@@ -62,7 +62,7 @@ class ListShare
 				->leftJoin('albums', 'albums.id', '=', 'base_albums.id')
 				->select(['base_albums.id', 'title', 'parent_id'])
 				->when($owner !== null, fn ($q) => $q->where('owner_id', '=', $owner->id))
-				->when($baseAlbum !== null, fn ($q) => $q->where('base_albums.id', '=', $baseAlbum->id))
+				->when($base_album !== null, fn ($q) => $q->where('base_albums.id', '=', $base_album->id))
 				->orderBy('title', 'ASC')
 				->get();
 			$this->linkAlbums($albums);
@@ -121,7 +121,7 @@ class ListShare
 			return;
 		}
 
-		$groupedAlbums = $albums->groupBy('parent_id');
+		$grouped_albums = $albums->groupBy('parent_id');
 
 		foreach ($albums as $album) {
 			// We must ensure that for each album the property `parent` is
@@ -144,9 +144,9 @@ class ListShare
 			if (!isset($album->parent)) {
 				$album->parent = null;
 			}
-			$childAlbums = $groupedAlbums->get($album->id, []);
-			foreach ($childAlbums as $childAlbum) {
-				$childAlbum->parent = $album;
+			$child_albums = $grouped_albums->get($album->id, []);
+			foreach ($child_albums as $child_album) {
+				$child_album->parent = $album;
 			}
 		}
 	}
