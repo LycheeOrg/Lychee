@@ -58,44 +58,44 @@ class Delete
 	 *
 	 * @throws ModelDBException
 	 */
-	public function do(array $svIDs): FileDeleter
+	public function do(array $sv_i_ds): FileDeleter
 	{
 		try {
-			$fileDeleter = new FileDeleter();
+			$file_deleter = new FileDeleter();
 
 			// Get all short paths of size variants which are going to be deleted.
 			// But exclude those short paths which are duplicated by a size
 			// variant which is not going to be deleted.
-			$sizeVariants = SizeVariant::query()
+			$size_variants = SizeVariant::query()
 				->from('size_variants as sv')
 				->select(['sv.short_path', 'sv.storage_disk'])
-				->leftJoin('size_variants as dup', function (JoinClause $join) use ($svIDs): void {
+				->leftJoin('size_variants as dup', function (JoinClause $join) use ($sv_i_ds): void {
 					$join
 						->on('dup.short_path', '=', 'sv.short_path')
-						->whereNotIn('dup.id', $svIDs);
+						->whereNotIn('dup.id', $sv_i_ds);
 				})
-				->whereIn('sv.id', $svIDs)
+				->whereIn('sv.id', $sv_i_ds)
 				->whereNull('dup.id')
 				->get();
-			$fileDeleter->addSizeVariants($sizeVariants);
+			$file_deleter->addSizeVariants($size_variants);
 
 			// Get all short paths of symbolic links which point to size variants
 			// which are going to be deleted
-			$symLinkPaths = SymLink::query()
+			$sym_link_paths = SymLink::query()
 				->select(['sym_links.short_path'])
-				->whereIn('sym_links.size_variant_id', $svIDs)
+				->whereIn('sym_links.size_variant_id', $sv_i_ds)
 				->pluck('sym_links.short_path');
-			$fileDeleter->addSymbolicLinks($symLinkPaths);
+			$file_deleter->addSymbolicLinks($sym_link_paths);
 
 			// Delete records from DB in "inverse" order to not break foreign keys
 			SymLink::query()
-				->whereIn('sym_links.size_variant_id', $svIDs)
+				->whereIn('sym_links.size_variant_id', $sv_i_ds)
 				->delete();
 			SizeVariant::query()
-				->whereIn('id', $svIDs)
+				->whereIn('id', $sv_i_ds)
 				->delete();
 
-			return $fileDeleter;
+			return $file_deleter;
 			// @codeCoverageIgnoreStart
 		} catch (QueryBuilderException $e) {
 			throw ModelDBException::create('size variants', 'deleting', $e);
