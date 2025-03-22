@@ -27,15 +27,15 @@ class Meta extends Component
 {
 	use HasHeaderUrl;
 
-	public string $pageTitle;
-	public string $pageDescription;
-	public string $siteOwner;
-	public string $imageUrl;
-	public string $pageUrl;
-	public string $baseUrl;
-	public bool $rssEnable;
-	public string $userCssUrl;
-	public string $userJsUrl;
+	public string $page_title;
+	public string $page_description;
+	public string $site_owner;
+	public string $image_url;
+	public string $page_url;
+	public string $base_url;
+	public bool $rss_enable;
+	public string $user_css_url;
+	public string $user_js_url;
 
 	private bool $access = true;
 	private ?AbstractAlbum $album = null;
@@ -49,16 +49,16 @@ class Meta extends Component
 	public function __construct()
 	{
 		// default data
-		$this->siteOwner = Configs::getValueAsString('site_owner');
-		$this->pageUrl = url()->current();
-		$this->rssEnable = Configs::getValueAsBool('rss_enable');
-		$this->userCssUrl = self::getUserCustomFiles('user.css');
-		$this->userJsUrl = self::getUserCustomFiles('custom.js');
-		$this->baseUrl = url('/');
+		$this->site_owner = Configs::getValueAsString('site_owner');
+		$this->page_url = url()->current();
+		$this->rss_enable = Configs::getValueAsBool('rss_enable');
+		$this->user_css_url = self::getUserCustomFiles('user.css');
+		$this->user_js_url = self::getUserCustomFiles('custom.js');
+		$this->base_url = url('/');
 
-		$this->pageTitle = Configs::getValueAsString('site_title');
-		$this->pageDescription = '';
-		$this->imageUrl = Configs::getValueAsString('landing_background');
+		$this->page_title = Configs::getValueAsString('site_title');
+		$this->page_description = '';
+		$this->image_url = Configs::getValueAsString('landing_background');
 
 		// processing photo and album data
 		if (session()->has('access')) {
@@ -79,17 +79,17 @@ class Meta extends Component
 		}
 
 		if ($this->album !== null) {
-			$this->pageTitle = $this->album->title;
+			$this->page_title = $this->album->title;
 			if ($this->album instanceof BaseAlbum) {
-				$this->pageDescription = $this->album->description ?? Configs::getValueAsString('site_title');
+				$this->page_description = $this->album->description ?? Configs::getValueAsString('site_title');
 			}
-			$this->imageUrl = $this->getHeaderUrl($this->album) ?? $this->imageUrl;
+			$this->image_url = $this->getHeaderUrl($this->album) ?? $this->image_url;
 		}
 
 		if ($this->photo !== null) {
-			$this->pageTitle = $this->photo->title;
-			$this->pageDescription = $this->photo->description ?? Configs::getValueAsString('site_title');
-			$this->imageUrl = $this->photo->size_variants->getSmall()->url;
+			$this->page_title = $this->photo->title;
+			$this->page_description = $this->photo->description ?? Configs::getValueAsString('site_title');
+			$this->image_url = $this->photo->size_variants->getSmall()->url;
 		}
 	}
 
@@ -112,15 +112,15 @@ class Meta extends Component
 	 *
 	 * @return string
 	 */
-	public static function getUserCustomFiles(string $fileName): string
+	public static function getUserCustomFiles(string $file_name): string
 	{
-		$cssCacheBusting = '';
+		$css_cache_busting = '';
 		/** @disregard P1013 */
-		if (Storage::disk('dist')->fileExists($fileName)) {
-			$cssCacheBusting = '?' . Storage::disk('dist')->lastModified($fileName);
+		if (Storage::disk('dist')->fileExists($file_name)) {
+			$css_cache_busting = '?' . Storage::disk('dist')->lastModified($file_name);
 		}
 
 		/** @disregard P1013 */
-		return Storage::disk('dist')->url($fileName) . $cssCacheBusting;
+		return Storage::disk('dist')->url($file_name) . $css_cache_busting;
 	}
 }

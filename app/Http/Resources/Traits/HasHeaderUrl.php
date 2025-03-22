@@ -38,18 +38,18 @@ trait HasHeaderUrl
 
 	private function getByQuery(AbstractAlbum $album): ?string
 	{
-		$headerSizeVariant = null;
+		$header_size_variant = null;
 
 		if ($album instanceof Album && $album->header_id !== null) {
-			$headerSizeVariant = SizeVariant::query()
+			$header_size_variant = SizeVariant::query()
 				->where('photo_id', '=', $album->header_id)
 				->whereIn('type', [SizeVariantType::MEDIUM, SizeVariantType::SMALL2X, SizeVariantType::SMALL])
 				->orderBy('type', 'asc')
 				->first();
 		}
 
-		if ($headerSizeVariant !== null) {
-			return $headerSizeVariant->url;
+		if ($header_size_variant !== null) {
+			return $header_size_variant->url;
 		}
 
 		$query_ratio = SizeVariant::query()
