@@ -10,10 +10,10 @@ namespace App\Relations;
 
 trait BidirectionalRelationTrait
 {
-	protected string $foreignMethodName;
+	protected string $foreign_method_name;
 
 	public function getForeignMethodName(): string
 	{
-		return $this->foreignMethodName;
+		return $this->foreign_method_name;
 	}
 }

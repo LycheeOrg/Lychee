@@ -26,11 +26,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class HasManySizeVariants extends HasMany
 {
-	public function __construct(Photo $owningPhoto)
+	public function __construct(Photo $owning_photo)
 	{
 		parent::__construct(
 			SizeVariant::query(),
-			$owningPhoto,
+			$owning_photo,
 			'photo_id',
 			'id'
 		);
@@ -106,8 +106,8 @@ class HasManySizeVariants extends HasMany
 		foreach ($models as $model) {
 			if (isset($dictionary[$key = $this->getDictionaryKey($model->getAttribute($this->localKey))])) {
 				/** @var Collection<int,SizeVariant> $childrenOfModel */
-				$childrenOfModel = $this->getRelationValue($dictionary, $key, 'many');
-				$model->setRelation($relation, new SizeVariants($model, $childrenOfModel));
+				$children_of_model = $this->getRelationValue($dictionary, $key, 'many');
+				$model->setRelation($relation, new SizeVariants($model, $children_of_model));
 			}
 		}
 
