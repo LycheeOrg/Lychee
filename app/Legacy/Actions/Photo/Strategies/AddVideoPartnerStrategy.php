@@ -103,7 +103,7 @@ final class AddVideoPartnerStrategy extends AbstractAddStrategy
 				// AddStandaloneStrategy::putSourceIntoFinalDestination()
 				// except that we can skip the part about normalization of
 				// orientation, because we don't support that for videos.
-				if ($this->parameters->importMode->shallImportViaSymlink) {
+				if ($this->parameters->import_mode->shall_import_via_symlink) {
 					if (!$videoTargetFile->isLocalFile()) {
 						throw new ConfigurationException('Symlinking is only supported on local filesystems');
 					}
@@ -124,7 +124,7 @@ final class AddVideoPartnerStrategy extends AbstractAddStrategy
 					$streamStat = $videoTargetFile->write($this->videoSourceFile->read(), true);
 					$this->videoSourceFile->close();
 					$videoTargetFile->close();
-					if ($this->parameters->importMode->shallDeleteImported) {
+					if ($this->parameters->import_mode->shall_delete_imported) {
 						// This may throw an exception, if the original has been
 						// readable, but is not writable
 						// In this case, the media file will have been copied, but

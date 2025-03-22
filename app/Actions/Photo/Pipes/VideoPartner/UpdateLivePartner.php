@@ -15,8 +15,8 @@ class UpdateLivePartner implements VideoPartnerPipe
 {
 	public function handle(VideoPartnerDTO $state, \Closure $next): VideoPartnerDTO
 	{
-		$state->photo->live_photo_short_path = $state->videoPath;
-		$state->photo->live_photo_checksum = $state->streamStat?->checksum;
+		$state->photo->live_photo_short_path = $state->video_path;
+		$state->photo->live_photo_checksum = $state->stream_stat?->checksum;
 
 		return $next($state);
 	}

@@ -55,8 +55,8 @@ final class AddPhotoPartnerStrategy extends AddStandaloneStrategy
 		// and moves it to the correct destination of a live partner for the
 		// photo.
 		$parameters = new ImportParam(
-			new ImportMode(deleteImported: true),
-			$this->parameters->intendedOwnerId
+			new ImportMode(delete_imported: true),
+			$this->parameters->intended_owner_id
 		);
 		$videoStrategy = new AddVideoPartnerStrategy(
 			$parameters,

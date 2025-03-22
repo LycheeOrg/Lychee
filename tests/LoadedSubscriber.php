@@ -25,7 +25,15 @@ final class LoadedSubscriber implements LoadedSubscriberInterface
 		$this->createApplication();
 		$this->migrateApplication();
 
-		if (config('features.vuejs') === true) {
+		// Detect local run base on the phpunit.xml file
+		if (str_contains($event->testSuite()->name(), 'phpunit.xml') &&
+			str_contains($event->testSuite()->tests()->asArray()[0]->file(), 'Feature_v1') &&
+			config('features.vuejs')) {
+			dd('Wrong configuration, tests are not compatible with VueJS routes');
+		}
+
+		if (config('features.vuejs')) {
+			// When using vuejs we do not initialize the database with 1 admin user (see below).
 			return;
 		}
 

@@ -18,7 +18,7 @@ class BacktraceRecord extends AbstractDTO
 	public const UNKNOWN_PLACEHOLDER = '<unknown>';
 	public const NAMESPACE_SEPARATOR = '::';
 
-	protected string $basePath;
+	protected string $base_path;
 	protected string $file;
 	protected int $line;
 	protected string $class;
@@ -34,7 +34,7 @@ class BacktraceRecord extends AbstractDTO
 	 */
 	public function __construct(string $file = '', int $line = 0, string $class = '', string $function = '')
 	{
-		$this->basePath = base_path();
+		$this->base_path = base_path();
 		$this->file = $file;
 		$this->line = $line;
 		$this->class = $class;
@@ -70,7 +70,7 @@ class BacktraceRecord extends AbstractDTO
 	public function getFileBeautified(): string
 	{
 		return $this->file !== '' ?
-			Str::replaceFirst($this->basePath, '', $this->file) :
+			Str::replaceFirst($this->base_path, '', $this->file) :
 			self::UNKNOWN_PLACEHOLDER;
 	}
 

@@ -18,8 +18,8 @@ class LycheeGitInfo extends ArrayableDTO
 
 	public function __construct(GitHubVersion $gvc)
 	{
-		$this->branch = $gvc->localBranch ?? '??';
-		$this->commit = $gvc->localHead ?? '??';
+		$this->branch = $gvc->local_branch ?? '??';
+		$this->commit = $gvc->local_head ?? '??';
 		$this->additional = $gvc->getBehindTest();
 	}
 

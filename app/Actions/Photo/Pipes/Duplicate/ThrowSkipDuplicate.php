@@ -17,11 +17,11 @@ class ThrowSkipDuplicate implements DuplicatePipe
 {
 	public function handle(DuplicateDTO $state, \Closure $next): DuplicateDTO
 	{
-		if (!$state->shallSkipDuplicates) {
+		if (!$state->shall_skip_duplicates) {
 			return $next($state);
 		}
 
-		if ($state->hasBeenReSynced ?? false) {
+		if ($state->has_been_re_synced ?? false) {
 			throw new PhotoResyncedException();
 		}
 		throw new PhotoSkippedException();
