@@ -23,8 +23,6 @@ trait HasBidirectionalRelationships
 	 *
 	 * @param string $method
 	 *
-	 * @return mixed
-	 *
 	 * @throws \LogicException
 	 */
 	protected function getRelationshipFromMethod($method): mixed
@@ -71,9 +69,6 @@ trait HasBidirectionalRelationships
 	 * @template TRelatedModel of \Illuminate\Database\Eloquent\Model
 	 *
 	 * @param class-string<TRelatedModel> $related
-	 * @param string|null                 $foreignKey
-	 * @param string|null                 $localKey
-	 * @param string|null                 $foreignMethodName
 	 *
 	 * @return HasManyBidirectionally<TRelatedModel,$this>
 	 */
@@ -108,9 +103,6 @@ trait HasBidirectionalRelationships
 	 *
 	 * @param Builder<TRelatedModel> $query
 	 * @param TParentModel           $parent
-	 * @param string                 $foreignKey
-	 * @param string                 $localKey
-	 * @param string                 $foreignMethodName
 	 *
 	 * @return HasManyBidirectionally<TRelatedModel,TParentModel>
 	 */
@@ -121,8 +113,6 @@ trait HasBidirectionalRelationships
 
 	/**
 	 * Get the default foreign method name for this model.
-	 *
-	 * @return string
 	 */
 	public function getForeignProperty(): string
 	{

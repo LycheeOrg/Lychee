@@ -213,7 +213,6 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	 */
 	public function delete(): bool
 	{
-		/** @var HasMany<Photo|Album,$this>[] $ownershipRelations */
 		$ownership_relations = [$this->photos(), $this->albums()];
 		$has_any = false;
 

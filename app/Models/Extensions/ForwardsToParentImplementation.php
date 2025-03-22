@@ -45,8 +45,6 @@ trait ForwardsToParentImplementation
 	/**
 	 * Returns the relationship between this model and the implementation
 	 * of the "parent" class.
-	 *
-	 * @return BelongsTo
 	 */
 	abstract public function base_class(): BelongsTo;
 
@@ -81,8 +79,6 @@ trait ForwardsToParentImplementation
 	 *
 	 * @param Builder<static> $query
 	 *
-	 * @return bool
-	 *
 	 * @throws FailedModelAssumptionException
 	 */
 	protected function performInsert(Builder $query): bool
@@ -109,12 +105,9 @@ trait ForwardsToParentImplementation
 	 * Perform a model update operation.
 	 *
 	 * @param Builder<static> $query
-	 *
-	 * @return bool
 	 */
 	protected function performUpdate(Builder $query): bool
 	{
-		/** @var Model */
 		$base_class = $this->base_class;
 		// touch() also indirectly saves the base_class hence any other
 		// attributes which require an update are also saved
@@ -134,7 +127,6 @@ trait ForwardsToParentImplementation
 	 */
 	public function delete(): bool
 	{
-		/** @var ?Model $baseClass */
 		$base_class = $this->base_class;
 
 		$parent_exception = null;
@@ -210,8 +202,6 @@ trait ForwardsToParentImplementation
 	 * Inspired by {@link \Illuminate\Database\Eloquent\Concerns\HasAttributes::isDirty()}.
 	 *
 	 * @param string[]|string|null $attributes
-	 *
-	 * @return bool
 	 */
 	public function isDirty($attributes = null): bool
 	{
@@ -432,9 +422,6 @@ trait ForwardsToParentImplementation
 	 * {@link \Illuminate\Database\Concerns\HasAttributes::setAttribute()}.
 	 *
 	 * @param string $key
-	 * @param mixed  $value
-	 *
-	 * @return mixed
 	 *
 	 * @throws InvalidCastException
 	 * @throws JsonEncodingException
@@ -499,10 +486,7 @@ trait ForwardsToParentImplementation
 
 	/**
 	 * Unset the value for a given offset.
-	 *
-	 * @param mixed $offset
-	 *
-	 * @return void
+	 * @param int|string $offset
 	 */
 	public function offsetUnset($offset): void
 	{
