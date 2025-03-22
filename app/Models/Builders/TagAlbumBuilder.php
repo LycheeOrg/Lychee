@@ -11,6 +11,7 @@ namespace App\Models\Builders;
 use App\Eloquent\FixedQueryBuilder;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\TagAlbum;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -25,7 +26,8 @@ use Illuminate\Support\Facades\DB;
  * used as a sub-query which will not hydrate actual models.
  * Thus, a global scope unnecessarily complicates queries in many cases.
  *
- * @extends FixedQueryBuilder<\App\Models\TagAlbum>
+ * @template TModelClass of TagAlbum
+ * @extends FixedQueryBuilder<TModelClass>
  */
 class TagAlbumBuilder extends FixedQueryBuilder
 {
