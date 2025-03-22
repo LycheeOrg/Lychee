@@ -29,7 +29,7 @@ final class LoadedSubscriber implements LoadedSubscriberInterface
 		if (str_contains($event->testSuite()->name(), 'phpunit.xml') &&
 			str_contains($event->testSuite()->tests()->asArray()[0]->file(), 'Feature_v1') &&
 			config('features.vuejs')) {
-			dd('Wrong configuration, tests are not compatible with VueJS routes');
+			throw new RuntimeException ('Wrong configuration, tests are not compatible with VueJS routes');
 		}
 
 		if (config('features.vuejs')) {
