@@ -81,8 +81,8 @@ class Top
 		$query = $this->album_query_policy
 			->applyVisibilityFilter(Album::query()->with(['access_permissions', 'owner'])->whereIsRoot());
 
-		$user_i_d = Auth::id();
-		if ($user_i_d !== null) {
+		$user_id = Auth::id();
+		if ($user_id !== null) {
 			// For authenticated users we group albums by ownership.
 			$albums = (new SortingDecorator($query))
 				->orderBy(ColumnSortingType::OWNER_ID, OrderSortingType::ASC)
@@ -93,7 +93,7 @@ class Top
 			 * @var BaseCollection<int,Album> $a
 			 * @var BaseCollection<int,Album> $b
 			 */
-			list($a, $b) = $albums->partition(fn ($album) => $album->owner_id === $user_i_d);
+			list($a, $b) = $albums->partition(fn ($album) => $album->owner_id === $user_id);
 
 			return new TopAlbumDTO($smart_albums, $tag_albums, $a->values(), $b->values());
 		} else {

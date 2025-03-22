@@ -23,19 +23,19 @@ use Illuminate\Database\Eloquent\Model;
  */
 class HasManyChildAlbums extends HasManyBidirectionally
 {
-	protected AlbumQueryPolicy $albumQueryPolicy;
+	protected AlbumQueryPolicy $album_query_policy;
 
-	public function __construct(Album $owningAlbum)
+	public function __construct(Album $owning_album)
 	{
 		// Sic! We must initialize attributes of this class before we call
 		// the parent constructor.
 		// The parent constructor calls `addConstraints` and thus our own
 		// attributes must be initialized by then
-		$this->albumQueryPolicy = resolve(AlbumQueryPolicy::class);
+		$this->album_query_policy = resolve(AlbumQueryPolicy::class);
 
 		parent::__construct(
-			$owningAlbum->newQuery(),
-			$owningAlbum,
+			$owning_album->newQuery(),
+			$owning_album,
 			'parent_id',
 			'id',
 			'parent'
@@ -60,7 +60,7 @@ class HasManyChildAlbums extends HasManyBidirectionally
 	{
 		if (static::$constraints) {
 			parent::addConstraints();
-			$this->albumQueryPolicy->applyVisibilityFilter($this->getRelationQuery());
+			$this->album_query_policy->applyVisibilityFilter($this->getRelationQuery());
 		}
 	}
 
@@ -72,7 +72,7 @@ class HasManyChildAlbums extends HasManyBidirectionally
 	public function addEagerConstraints(array $models)
 	{
 		parent::addEagerConstraints($models);
-		$this->albumQueryPolicy->applyVisibilityFilter($this->getRelationQuery());
+		$this->album_query_policy->applyVisibilityFilter($this->getRelationQuery());
 	}
 
 	/**
@@ -87,15 +87,15 @@ class HasManyChildAlbums extends HasManyBidirectionally
 			return $this->related->newCollection();
 		}
 
-		$albumSorting = $this->getParent()->getEffectiveAlbumSorting();
+		$album_sorting = $this->getParent()->getEffectiveAlbumSorting();
 
 		/** @var SortingDecorator<Album> */
-		$sortingDecorator = new SortingDecorator($this->query);
+		$sorting_decorator = new SortingDecorator($this->query);
 
-		return $sortingDecorator
+		return $sorting_decorator
 			->orderBy(
-				$albumSorting->column,
-				$albumSorting->order)
+				$album_sorting->column,
+				$album_sorting->order)
 			->get();
 	}
 
@@ -118,18 +118,18 @@ class HasManyChildAlbums extends HasManyBidirectionally
 		foreach ($models as $model) {
 			if (isset($dictionary[$key = $this->getDictionaryKey($model->getAttribute($this->localKey))])) {
 				/** @var Collection<int,Album> $childrenOfModel */
-				$childrenOfModel = $this->getRelationValue($dictionary, $key, 'many');
+				$children_of_model = $this->getRelationValue($dictionary, $key, 'many');
 				$sorting = $model->getEffectiveAlbumSorting();
-				$childrenOfModel = $childrenOfModel
+				$children_of_model = $children_of_model
 					->sortBy($sorting->column->value, SORT_NATURAL | SORT_FLAG_CASE, $sorting->order === OrderSortingType::DESC)
 					->values();
-				$model->setRelation($relation, $childrenOfModel);
+				$model->setRelation($relation, $children_of_model);
 				// This is the newly added code which sets this method apart
 				// from the original method and additionally sets the
 				// reverse link
 				/** @var Model $childModel */
-				foreach ($childrenOfModel as $childModel) {
-					$childModel->setRelation($this->foreignMethodName, $model);
+				foreach ($children_of_model as $child_model) {
+					$child_model->setRelation($this->foreign_method_name, $model);
 				}
 			}
 		}

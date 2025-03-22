@@ -59,17 +59,17 @@ trait ThrowsConsistentExceptions
 	 */
 	public function save(array $options = []): bool
 	{
-		$parentException = null;
+		$parent_exception = null;
 		try {
 			// Note, `Model::save` may also return `null` which also indicates a success
 			if (parent::save($options) === false) {
-				$parentException = new \RuntimeException('Eloquent\Model::save() returned false');
+				$parent_exception = new \RuntimeException('Eloquent\Model::save() returned false');
 			}
 		} catch (\Throwable $e) {
-			$parentException = $e;
+			$parent_exception = $e;
 		}
-		if ($parentException !== null) {
-			throw ModelDBException::create($this->friendlyModelName(), $this->wasRecentlyCreated ? 'creating' : 'updating', $parentException);
+		if ($parent_exception !== null) {
+			throw ModelDBException::create($this->friendlyModelName(), $this->wasRecentlyCreated ? 'creating' : 'updating', $parent_exception);
 		}
 
 		return true;
@@ -84,7 +84,7 @@ trait ThrowsConsistentExceptions
 	 */
 	public function delete(): bool
 	{
-		$parentException = null;
+		$parent_exception = null;
 		try {
 			// Sic! Don't use `!$parentDelete` in condition, because we also
 			// need to proceed if `$parentDelete === null` .
@@ -93,13 +93,13 @@ trait ThrowsConsistentExceptions
 			// Eloquent, I love you .... not.
 			$result = parent::delete();
 			if ($result === false) {
-				$parentException = new \RuntimeException('Eloquent\Model::delete() returned false');
+				$parent_exception = new \RuntimeException('Eloquent\Model::delete() returned false');
 			}
 		} catch (\Throwable $e) {
-			$parentException = $e;
+			$parent_exception = $e;
 		}
-		if ($parentException !== null) {
-			throw ModelDBException::create($this->friendlyModelName(), 'deleting', $parentException);
+		if ($parent_exception !== null) {
+			throw ModelDBException::create($this->friendlyModelName(), 'deleting', $parent_exception);
 		}
 
 		return true;

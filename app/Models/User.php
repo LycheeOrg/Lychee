@@ -214,23 +214,23 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	public function delete(): bool
 	{
 		/** @var HasMany<Photo|Album,$this>[] $ownershipRelations */
-		$ownershipRelations = [$this->photos(), $this->albums()];
-		$hasAny = false;
+		$ownership_relations = [$this->photos(), $this->albums()];
+		$has_any = false;
 
-		foreach ($ownershipRelations as $relation) {
-			$hasAny = $hasAny || $relation->count() > 0;
+		foreach ($ownership_relations as $relation) {
+			$has_any = $has_any || $relation->count() > 0;
 		}
 
-		if ($hasAny) {
+		if ($has_any) {
 			// only try update relations if there are any to allow deleting users from migrations (relations are moved before deleting)
 			$now = Carbon::now();
-			$newOwnerID = Auth::id() ?? throw new UnauthenticatedException();
+			$new_owner_id = Auth::id() ?? throw new UnauthenticatedException();
 
-			foreach ($ownershipRelations as $relation) {
+			foreach ($ownership_relations as $relation) {
 				// We must also update the `updated_at` column of the related
 				// models in case clients have cached these models.
 				$relation->update([
-					$relation->getForeignKeyName() => $newOwnerID,
+					$relation->getForeignKeyName() => $new_owner_id,
 					$relation->getRelated()->getUpdatedAtColumn() => $relation->getRelated()->fromDateTime($now),
 				]);
 			}

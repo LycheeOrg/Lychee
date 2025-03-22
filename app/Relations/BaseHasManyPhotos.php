@@ -31,18 +31,18 @@ use Illuminate\Database\Eloquent\Relations\Relation;
  */
 abstract class BaseHasManyPhotos extends Relation
 {
-	protected PhotoQueryPolicy $photoQueryPolicy;
+	protected PhotoQueryPolicy $photo_query_policy;
 
 	/**
 	 * @param TagAlbum|Album $owningAlbum
 	 */
-	public function __construct(TagAlbum|Album $owningAlbum)
+	public function __construct(TagAlbum|Album $owning_album)
 	{
 		// Sic! We must initialize attributes of this class before we call
 		// the parent constructor.
 		// The parent constructor calls `addConstraints` and thus our own
 		// attributes must be initialized by then
-		$this->photoQueryPolicy = resolve(PhotoQueryPolicy::class);
+		$this->photo_query_policy = resolve(PhotoQueryPolicy::class);
 		// This is a hack.
 		// The abstract class
 		// {@link \Illuminate\Database\Eloquent\Relations\Relation}
@@ -70,7 +70,7 @@ abstract class BaseHasManyPhotos extends Relation
 			// Hence, the actually owning albums of the photos are not
 			// necessarily loaded.
 			Photo::query()->with(['album', 'size_variants', 'size_variants.sym_links']),
-			$owningAlbum
+			$owning_album
 		);
 	}
 

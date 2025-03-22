@@ -78,18 +78,18 @@ class JsonRequestFunctions implements JsonRequest
 	/**
 	 * {@inheritDoc}
 	 */
-	public function get_json(bool $useCache = false): mixed
+	public function get_json(bool $use_cache = false): mixed
 	{
 		try {
-			if ($this->decodedJson === null || !$useCache) {
-				$rawResponse = $useCache ? (string) Cache::get($this->url) : '';
-				if ($rawResponse === '') {
-					$rawResponse = $this->fetchFromServer();
-					Cache::put($this->url, $rawResponse, now()->addDays($this->ttl));
+			if ($this->decodedJson === null || !$use_cache) {
+				$raw_response = $use_cache ? (string) Cache::get($this->url) : '';
+				if ($raw_response === '') {
+					$raw_response = $this->fetchFromServer();
+					Cache::put($this->url, $raw_response, now()->addDays($this->ttl));
 					Cache::put($this->url . '_age', now(), now()->addDays($this->ttl));
 				}
 
-				$this->decodedJson = json_decode($rawResponse, false, 512, JSON_THROW_ON_ERROR);
+				$this->decodedJson = json_decode($raw_response, false, 512, JSON_THROW_ON_ERROR);
 			}
 
 			return $this->decodedJson;

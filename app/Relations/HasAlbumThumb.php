@@ -34,8 +34,8 @@ use Illuminate\Support\Facades\Gate;
  */
 class HasAlbumThumb extends Relation
 {
-	protected AlbumQueryPolicy $albumQueryPolicy;
-	protected PhotoQueryPolicy $photoQueryPolicy;
+	protected AlbumQueryPolicy $album_query_policy;
+	protected PhotoQueryPolicy $photo_query_policy;
 	protected PhotoSortingCriterion $sorting;
 
 	public function __construct(Album $parent)
@@ -44,8 +44,8 @@ class HasAlbumThumb extends Relation
 		// the parent constructor.
 		// The parent constructor calls `addConstraints` and thus our own
 		// attributes must be initialized by then
-		$this->albumQueryPolicy = resolve(AlbumQueryPolicy::class);
-		$this->photoQueryPolicy = resolve(PhotoQueryPolicy::class);
+		$this->album_query_policy = resolve(AlbumQueryPolicy::class);
+		$this->photo_query_policy = resolve(PhotoQueryPolicy::class);
 		$this->sorting = PhotoSortingCriterion::createDefault();
 		parent::__construct(
 			Photo::query()->with(['size_variants' => (fn ($r) => Thumb::sizeVariantsFilter($r))]),
@@ -84,7 +84,7 @@ class HasAlbumThumb extends Relation
 				// @phpstan-ignore-next-line
 				$this->where('photos.id', '=', $album->cover_id);
 			} else {
-				$this->photoQueryPolicy
+				$this->photo_query_policy
 					->applySearchabilityFilter(
 						query: $this->getRelationQuery(),
 						origin: $album,
@@ -180,14 +180,14 @@ class HasAlbumThumb extends Relation
 		// cover.
 		// Albums with explicit covers are treated separately in
 		// method `match`.
-		$albumKeys = collect($models)
+		$album_keys = collect($models)
 			->whereNull('cover_id')
 			->unique('id', true)
 			->sortBy('id')
 			->map(fn (Album $album) => $album->getKey())
 			->values();
 
-		$bestPhotoIDSelect = Photo::query()
+		$best_photo_id_select = Photo::query()
 			->select(['photos.id AS photo_id'])
 			->join('albums', 'albums.id', '=', 'photos.album_id')
 			->whereColumn('albums._lft', '>=', 'covered_albums._lft')
@@ -197,8 +197,8 @@ class HasAlbumThumb extends Relation
 			->limit(1);
 
 		if (Auth::user()?->may_administrate !== true) {
-			$bestPhotoIDSelect->where(function (Builder $query2): void {
-				$this->photoQueryPolicy->appendSearchabilityConditions(
+			$best_photo_id_select->where(function (Builder $query2): void {
+				$this->photo_query_policy->appendSearchabilityConditions(
 					$query2->getQuery(),
 					'covered_albums._lft',
 					'covered_albums._rgt'
@@ -206,22 +206,22 @@ class HasAlbumThumb extends Relation
 			});
 		}
 
-		$album2Cover = function (BaseBuilder $builder) use ($bestPhotoIDSelect, $albumKeys): void {
+		$album2_cover = function (BaseBuilder $builder) use ($best_photo_id_select, $album_keys): void {
 			$builder
 				->from('albums as covered_albums')
 				->join('base_albums', 'base_albums.id', '=', 'covered_albums.id');
 
-			$this->albumQueryPolicy->joinSubComputedAccessPermissions(
+			$this->album_query_policy->joinSubComputedAccessPermissions(
 				query: $builder,
 				second: 'base_albums.id'
 			);
 
 			$builder->select(['covered_albums.id AS album_id'])
-				->addSelect(['photo_id' => $bestPhotoIDSelect])
-				->whereIn('covered_albums.id', $albumKeys);
+				->addSelect(['photo_id' => $best_photo_id_select])
+				->whereIn('covered_albums.id', $album_keys);
 			if (Auth::user()?->may_administrate !== true) {
 				$builder->where(function (BaseBuilder $q): void {
-					$this->albumQueryPolicy->appendAccessibilityConditions($q);
+					$this->album_query_policy->appendAccessibilityConditions($q);
 				});
 			}
 		};
@@ -232,7 +232,7 @@ class HasAlbumThumb extends Relation
 				'covers.type as type',
 				'album_2_cover.album_id as covered_album_id',
 			])
-			->from($album2Cover, 'album_2_cover')
+			->from($album2_cover, 'album_2_cover')
 			->join(
 				'photos as covers',
 				'covers.id',
@@ -276,16 +276,16 @@ class HasAlbumThumb extends Relation
 		// matching very convenient and easy work. Then we'll just return them.
 		/** @var Album $album */
 		foreach ($models as $album) {
-			$albumID = $album->id;
+			$album_id = $album->id;
 			if ($album->cover_id !== null) {
 				// We do not execute a query, if `cover_id` is set, because
 				// `Album`always eagerly loads its cover and hence, we already
 				// have it.
 				// See {@link Album::with}
 				$album->setRelation($relation, Thumb::createFromPhoto($album->cover));
-			} elseif (isset($dictionary[$albumID])) {
+			} elseif (isset($dictionary[$album_id])) {
 				/** @var Photo $cover */
-				$cover = reset($dictionary[$albumID]);
+				$cover = reset($dictionary[$album_id]);
 				$album->setRelation($relation, Thumb::createFromPhoto($cover));
 			} else {
 				$album->setRelation($relation, null);

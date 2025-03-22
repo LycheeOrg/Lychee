@@ -38,7 +38,7 @@ trait HasUrlGenerator
 	 */
 	public static function pathToUrl(string $short_path, string $storage_disk, SizeVariantType $type): string|null
 	{
-		$imageDisk = Storage::disk($storage_disk);
+		$image_disk = Storage::disk($storage_disk);
 
 		if ($type === SizeVariantType::PLACEHOLDER) {
 			return 'data:image/webp;base64,' . $short_path;
@@ -49,12 +49,12 @@ trait HasUrlGenerator
 			(!Configs::getValueAsBool('SL_for_admin') && Auth::user()?->may_administrate === true)
 		) {
 			/** @disregard P1013 */
-			return $imageDisk->url($short_path);
+			return $image_disk->url($short_path);
 		}
 
 		/** @disregard P1013 */
-		$storageAdapter = $imageDisk->getAdapter();
-		if ($storageAdapter instanceof AwsS3V3Adapter) {
+		$storage_adapter = $image_disk->getAdapter();
+		if ($storage_adapter instanceof AwsS3V3Adapter) {
 			// @codeCoverageIgnoreStart
 			return self::getAwsUrl($short_path, $storage_disk);
 			// @codeCoverageIgnoreEnd
@@ -73,17 +73,17 @@ trait HasUrlGenerator
 	private static function getAwsUrl(string $short_path, string $storage_disk): string
 	{
 		// In order to allow a grace period, we create a new symbolic link,
-		$maxLifetime = Configs::getValueAsInt('SL_life_time_days') * 24 * 60 * 60;
-		$imageDisk = Storage::disk($storage_disk);
+		$max_lifetime = Configs::getValueAsInt('SL_life_time_days') * 24 * 60 * 60;
+		$image_disk = Storage::disk($storage_disk);
 
 		// Return the public URL in case the S3 bucket is set to public, otherwise generate a temporary URL
 		$visibility = config('filesystems.disks.s3.visibility', 'private');
 		if ($visibility === 'public') {
 			/** @disregard P1013 */
-			return $imageDisk->url($short_path);
+			return $image_disk->url($short_path);
 		}
 
 		/** @disregard P1013 */
-		return $imageDisk->temporaryUrl($short_path, now()->addSeconds($maxLifetime));
+		return $image_disk->temporaryUrl($short_path, now()->addSeconds($max_lifetime));
 	}
 }

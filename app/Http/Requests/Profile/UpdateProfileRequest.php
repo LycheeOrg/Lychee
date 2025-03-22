@@ -44,7 +44,7 @@ class UpdateProfileRequest extends BaseApiRequest implements HasPassword
 			RequestAttribute::USERNAME_ATTRIBUTE => ['required', new UsernameRule(true)],
 			RequestAttribute::PASSWORD_ATTRIBUTE => ['sometimes', 'confirmed', new PasswordRule(false)],
 			RequestAttribute::OLD_PASSWORD_ATTRIBUTE => ['required', new PasswordRule(false), new CurrentPasswordRule()],
-			RequestAttribute::EMAIL_ATTRIBUTE => ['present', 'nullable', 'email:rfc,dns', 'max:100'],
+			RequestAttribute::EMAIL_ATTRIBUTE => ['present', 'nullable', 'email:rfc', 'max:100'],
 		];
 	}
 

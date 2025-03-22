@@ -105,21 +105,21 @@ trait HasRandomIDAndLegacyTimeBasedID
 		}
 
 		$result = false;
-		$retryCounter = 5;
-		$lastException = null;
+		$retry_counter = 5;
+		$last_exception = null;
 
 		do {
 			$retry = false;
 			try {
-				$retryCounter--;
+				$retry_counter--;
 				$this->generateKey();
 				$attributes = $this->getAttributesForInsert();
 				$result = $query->insert($attributes);
 				// @codeCoverageIgnoreStart
 			} catch (QueryException $e) {
-				$lastException = $e;
-				$errorCode = $e->getCode();
-				if ($errorCode === 23000 || $errorCode === 23505 || $errorCode === '23000' || $errorCode === '23505') {
+				$last_exception = $e;
+				$error_code = $e->getCode();
+				if ($error_code === 23000 || $error_code === 23505 || $error_code === '23000' || $error_code === '23505') {
 					// houston, we have a duplicate entry problem
 					// Our ids are based on current system time, so
 					// wait randomly up to 1s before retrying.
@@ -130,11 +130,11 @@ trait HasRandomIDAndLegacyTimeBasedID
 				}
 				// @codeCoverageIgnoreEnd
 			}
-		} while ($retry && $retryCounter > 0);
+		} while ($retry && $retry_counter > 0);
 
-		if ($retryCounter === 0) {
+		if ($retry_counter === 0) {
 			// @codeCoverageIgnoreStart
-			throw new TimeBasedIdException('unable to persist model to DB after 5 unsuccessful attempts', $lastException);
+			throw new TimeBasedIdException('unable to persist model to DB after 5 unsuccessful attempts', $last_exception);
 			// @codeCoverageIgnoreEnd
 		}
 
@@ -186,17 +186,17 @@ trait HasRandomIDAndLegacyTimeBasedID
 			// handle duplicate ids.  Note that this also exposes us to
 			// the year 2038 problem.
 			// @codeCoverageIgnoreStart
-			$legacyID = sprintf('%010d', microtime(true));
+			$legacy_id = sprintf('%010d', microtime(true));
 		// @codeCoverageIgnoreEnd
 		} else {
 			// Ensure 4 digits after the decimal point, 15 characters
 			// total (including the decimal point), 0-padded on the
 			// left if needed (shouldn't be needed unless we move back in
 			// time :-) )
-			$legacyID = sprintf('%015.4f', microtime(true));
-			$legacyID = str_replace('.', '', $legacyID);
+			$legacy_id = sprintf('%015.4f', microtime(true));
+			$legacy_id = str_replace('.', '', $legacy_id);
 		}
 		$this->attributes[$this->getKeyName()] = $id;
-		$this->attributes[RandomID::LEGACY_ID_NAME] = intval($legacyID);
+		$this->attributes[RandomID::LEGACY_ID_NAME] = intval($legacy_id);
 	}
 }

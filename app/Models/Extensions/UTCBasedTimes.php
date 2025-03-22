@@ -92,10 +92,10 @@ trait UTCBasedTimes
 			return null;
 		}
 
-		$carbonTime = $this->asDateTime($value);
-		$carbonTime->setTimezone(self::$DB_TIMEZONE_NAME);
+		$carbon_time = $this->asDateTime($value);
+		$carbon_time->setTimezone(self::$DB_TIMEZONE_NAME);
 
-		return $carbonTime->format(self::$DB_DATETIME_FORMAT);
+		return $carbon_time->format(self::$DB_DATETIME_FORMAT);
 	}
 
 	/**

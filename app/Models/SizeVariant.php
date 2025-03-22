@@ -191,16 +191,16 @@ class SizeVariant extends Model
 		}
 
 		// We are using the symlink option.
-		$imageDisk = Storage::disk($this->storage_disk->value);
+		$image_disk = Storage::disk($this->storage_disk->value);
 		/** @disregard P1013 */
-		$storageAdapter = $imageDisk->getAdapter();
+		$storage_adapter = $image_disk->getAdapter();
 
-		if ($storageAdapter instanceof LocalFilesystemAdapter) {
+		if ($storage_adapter instanceof LocalFilesystemAdapter) {
 			return $this->getSymLinkUrl();
 		}
 
 		// @codeCoverageIgnoreStart
-		throw new ConfigurationException('the chosen storage adapter "' . get_class($storageAdapter) . '" does not support the symbolic linking feature');
+		throw new ConfigurationException('the chosen storage adapter "' . get_class($storage_adapter) . '" does not support the symbolic linking feature');
 		// @codeCoverageIgnoreEnd
 	}
 
@@ -213,17 +213,17 @@ class SizeVariant extends Model
 	{
 		// In order to allow a grace period, we create a new symbolic link,
 		// if the most recent existing link has reached 2/3 of its lifetime
-		$maxLifetime = Configs::getValueAsInt('SL_life_time_days') * 24 * 60 * 60;
-		$gracePeriod = $maxLifetime / 3;
+		$max_lifetime = Configs::getValueAsInt('SL_life_time_days') * 24 * 60 * 60;
+		$grace_period = $max_lifetime / 3;
 
 		/** @var ?SymLink $symLink */
-		$symLink = $this->sym_links()->latest()->first();
-		if ($symLink === null || $symLink->created_at->isBefore(now()->subSeconds($gracePeriod))) {
+		$sym_link = $this->sym_links()->latest()->first();
+		if ($sym_link === null || $sym_link->created_at->isBefore(now()->subSeconds($grace_period))) {
 			/** @var SymLink $symLink */
-			$symLink = $this->sym_links()->create();
+			$sym_link = $this->sym_links()->create();
 		}
 
-		return $symLink->url;
+		return $sym_link->url;
 	}
 
 	public function getFile(): FlysystemFile
@@ -242,13 +242,13 @@ class SizeVariant extends Model
 	 */
 	protected function performDeleteOnModel(): void
 	{
-		$fileDeleter = (new Delete())->do([$this->id]);
+		$file_deleter = (new Delete())->do([$this->id]);
 		$this->exists = false;
-		$fileDeleter->do();
+		$file_deleter->do();
 	}
 
-	public function toResource(bool $noUrl = false): SizeVariantResource
+	public function toResource(bool $no_url = false): SizeVariantResource
 	{
-		return new SizeVariantResource($this, noUrl: $noUrl);
+		return new SizeVariantResource($this, noUrl: $no_url);
 	}
 }

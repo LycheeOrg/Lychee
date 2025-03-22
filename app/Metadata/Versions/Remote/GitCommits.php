@@ -35,7 +35,7 @@ use App\Metadata\Versions\Trimable;
  *  ...
  * },]
  */
-class GitCommits extends AbstractGitRemote implements GitRemote
+final class GitCommits extends AbstractGitRemote implements GitRemote
 {
 	use Trimable;
 

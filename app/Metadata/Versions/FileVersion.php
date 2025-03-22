@@ -28,7 +28,7 @@ use Illuminate\Support\Facades\Schema;
 class FileVersion implements VersionControl, HasVersion
 {
 	public Version $version;
-	public ?Version $remoteVersion = null;
+	public ?Version $remote_version = null;
 
 	/**
 	 * Basic contructor.
@@ -49,14 +49,14 @@ class FileVersion implements VersionControl, HasVersion
 	/**
 	 * {@inheritDoc}
 	 */
-	public function hydrate(bool $withRemote = true, bool $useCache = true): void
+	public function hydrate(bool $with_remote = true, bool $use_cache = true): void
 	{
-		if ($withRemote && Schema::hasTable('configs')) {
-			$updateRequest = resolve(UpdateRequest::class);
-			$json = $updateRequest->get_json($useCache);
+		if ($with_remote && Schema::hasTable('configs')) {
+			$update_request = resolve(UpdateRequest::class);
+			$json = $update_request->get_json($use_cache);
 
 			if ($json !== null) {
-				$this->remoteVersion = Version::createFromString($json->lychee->version);
+				$this->remote_version = Version::createFromString($json->lychee->version);
 			}
 		}
 	}
@@ -74,6 +74,6 @@ class FileVersion implements VersionControl, HasVersion
 	 */
 	public function isUpToDate(): bool
 	{
-		return $this->remoteVersion === null || $this->remoteVersion->toInteger() <= $this->version->toInteger();
+		return $this->remote_version === null || $this->remote_version->toInteger() <= $this->version->toInteger();
 	}
 }

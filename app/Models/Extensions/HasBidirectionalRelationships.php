@@ -77,24 +77,24 @@ trait HasBidirectionalRelationships
 	 *
 	 * @return HasManyBidirectionally<TRelatedModel,$this>
 	 */
-	public function hasManyBidirectionally(string $related, ?string $foreignKey = null, ?string $localKey = null, ?string $foreignMethodName = null): HasManyBidirectionally
+	public function hasManyBidirectionally(string $related, ?string $foreign_key = null, ?string $local_key = null, ?string $foreign_method_name = null): HasManyBidirectionally
 	{
 		/** @var TRelatedModel $instance */
 		$instance = $this->newRelatedInstance($related);
 
-		$foreignKey = $foreignKey ?? $this->getForeignKey();
+		$foreign_key = $foreign_key ?? $this->getForeignKey();
 
-		$localKey = $localKey ?? $this->getKeyName();
+		$local_key = $local_key ?? $this->getKeyName();
 
-		$foreignMethodName = $foreignMethodName ?? $this->getForeignProperty();
+		$foreign_method_name = $foreign_method_name ?? $this->getForeignProperty();
 
 		/** @phpstan-ignore-next-line */
 		return $this->newHasManyBidirectionally(
 			$instance->newQuery(),
 			$this,
-			$instance->getTable() . '.' . $foreignKey,
-			$localKey,
-			$foreignMethodName
+			$instance->getTable() . '.' . $foreign_key,
+			$local_key,
+			$foreign_method_name
 		);
 	}
 
@@ -114,9 +114,9 @@ trait HasBidirectionalRelationships
 	 *
 	 * @return HasManyBidirectionally<TRelatedModel,TParentModel>
 	 */
-	protected function newHasManyBidirectionally(Builder $query, Model $parent, string $foreignKey, string $localKey, string $foreignMethodName): HasManyBidirectionally
+	protected function newHasManyBidirectionally(Builder $query, Model $parent, string $foreign_key, string $local_key, string $foreign_method_name): HasManyBidirectionally
 	{
-		return new HasManyBidirectionally($query, $parent, $foreignKey, $localKey, $foreignMethodName);
+		return new HasManyBidirectionally($query, $parent, $foreign_key, $local_key, $foreign_method_name);
 	}
 
 	/**

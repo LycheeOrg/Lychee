@@ -27,16 +27,16 @@ class SortingDecorator
 	/**
 	 * @var Builder<TModelClass>
 	 */
-	protected Builder $baseBuilder;
+	protected Builder $base_builder;
 
 	/**
-	 * @param Builder<TModelClass> $baseBuilder
+	 * @param Builder<TModelClass> $base_builder
 	 *
 	 * @return void
 	 */
-	public function __construct(Builder $baseBuilder)
+	public function __construct(Builder $base_builder)
 	{
-		$this->baseBuilder = $baseBuilder;
+		$this->base_builder = $base_builder;
 	}
 
 	/**
@@ -49,7 +49,7 @@ class SortingDecorator
 	 * If everything can be sorted on the SQL layer, then the SQL basically
 	 * has to look like that:
 	 *
-	 *     $query->orderBy($orderBy[0])->orderBy($orderBy[1])->...->orderBy($orderBy[length-1])
+	 *     $query->order_by($orderBy[0])->order_by($orderBy[1])->...->order_by($orderBy[length-1])
 	 *
 	 * For SQL the most significant order criterion has to be put first.
 	 *
@@ -67,7 +67,7 @@ class SortingDecorator
 	 *
 	 * @var array<int,array{column:string,direction:string}>
 	 */
-	protected array $orderBy = [];
+	protected array $order_by = [];
 
 	/**
 	 * The index for {@link SortingDecorator::$orderBy} at which we must
@@ -87,7 +87,7 @@ class SortingDecorator
 	 *
 	 * @var int
 	 */
-	protected int $pivotIdx = -1;
+	protected int $pivot_idx = -1;
 
 	/**
 	 * @param ColumnSortingType $column    the column acc. to which the result shall be sorted
@@ -99,13 +99,13 @@ class SortingDecorator
 	 */
 	public function orderBy(ColumnSortingType $column, OrderSortingType $direction): SortingDecorator
 	{
-		$this->orderBy[] = [
+		$this->order_by[] = [
 			'column' => $column->value,
 			'direction' => $direction->value,
 		];
 
 		if (in_array($column, self::POSTPONE_COLUMNS, true)) {
-			$this->pivotIdx = count($this->orderBy) - 1;
+			$this->pivot_idx = count($this->order_by) - 1;
 		}
 
 		return $this;
@@ -124,13 +124,13 @@ class SortingDecorator
 	 */
 	public function orderPhotosBy(ColumnSortingType $column, OrderSortingType $direction): SortingDecorator
 	{
-		$this->orderBy[] = [
+		$this->order_by[] = [
 			'column' => 'photos.' . $column->value,
 			'direction' => $direction->value,
 		];
 
 		if (in_array($column, self::POSTPONE_COLUMNS, true)) {
-			$this->pivotIdx = count($this->orderBy) - 1;
+			$this->pivot_idx = count($this->order_by) - 1;
 		}
 
 		return $this;
@@ -151,8 +151,8 @@ class SortingDecorator
 		// lower significance than the least significant criterion which
 		// requires natural sorting.
 		try {
-			for ($i = $this->pivotIdx + 1; $i < count($this->orderBy); $i++) {
-				$this->baseBuilder->orderBy($this->orderBy[$i]['column'], $this->orderBy[$i]['direction']);
+			for ($i = $this->pivot_idx + 1; $i < count($this->order_by); $i++) {
+				$this->base_builder->orderBy($this->order_by[$i]['column'], $this->order_by[$i]['direction']);
 			}
 			// @codeCoverageIgnoreStart
 		} catch (\InvalidArgumentException) {
@@ -168,21 +168,21 @@ class SortingDecorator
 		// @codeCoverageIgnoreEnd
 
 		/** @var Collection<int,TModelClass> $result */
-		$result = $this->baseBuilder->get($columns);
+		$result = $this->base_builder->get($columns);
 
 		// Sort with PHP for the remaining criteria in reverse order.
-		for ($i = $this->pivotIdx; $i >= 0; $i--) {
-			$column = $this->orderBy[$i]['column'];
+		for ($i = $this->pivot_idx; $i >= 0; $i--) {
+			$column = $this->order_by[$i]['column'];
 
 			// This conversion is necessary
-			$columnSortingName = str_replace('photos.', '', $column);
-			$columnSortingType = ColumnSortingType::tryFrom($columnSortingName) ?? ColumnSortingType::CREATED_AT;
+			$column_sorting_name = str_replace('photos.', '', $column);
+			$column_sorting_type = ColumnSortingType::tryFrom($column_sorting_name) ?? ColumnSortingType::CREATED_AT;
 
-			$options = in_array($columnSortingType, self::POSTPONE_COLUMNS, true) ? SORT_NATURAL | SORT_FLAG_CASE : SORT_REGULAR;
+			$options = in_array($column_sorting_type, self::POSTPONE_COLUMNS, true) ? SORT_NATURAL | SORT_FLAG_CASE : SORT_REGULAR;
 			$result = $result->sortBy(
-				$columnSortingName,
+				$column_sorting_name,
 				$options,
-				$this->orderBy[$i]['direction'] === OrderSortingType::DESC->value
+				$this->order_by[$i]['direction'] === OrderSortingType::DESC->value
 			)->values();
 		}
 

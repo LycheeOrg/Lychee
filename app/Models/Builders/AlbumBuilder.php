@@ -76,26 +76,26 @@ class AlbumBuilder extends NSQueryBuilder
 	 */
 	public function getModels($columns = ['*']): array
 	{
-		$albumQueryPolicy = resolve(AlbumQueryPolicy::class);
-		$baseQuery = $this->getQuery();
+		$album_query_policy = resolve(AlbumQueryPolicy::class);
+		$base_query = $this->getQuery();
 
 		if (
 			($columns === ['*'] || $columns === ['albums.*']) &&
-			($baseQuery->columns === ['*'] || $baseQuery->columns === ['albums.*'] || $baseQuery->columns === null)
+			($base_query->columns === ['*'] || $base_query->columns === ['albums.*'] || $base_query->columns === null)
 		) {
-			$countChildren = DB::table('albums', 'a')
+			$count_children = DB::table('albums', 'a')
 				->selectRaw('COUNT(*)')
 				->whereColumn('a.parent_id', '=', 'albums.id');
 
-			$countPhotos = DB::table('photos', 'p')
+			$count_photos = DB::table('photos', 'p')
 				->selectRaw('COUNT(*)')
 				->whereColumn('p.album_id', '=', 'albums.id');
 
 			$this->addSelect([
 				'min_taken_at' => $this->getTakenAtSQL()->selectRaw('MIN(taken_at)'),
 				'max_taken_at' => $this->getTakenAtSQL()->selectRaw('MAX(taken_at)'),
-				'num_children' => $this->applyVisibilityConditioOnSubalbums($countChildren, $albumQueryPolicy),
-				'num_photos' => $this->applyVisibilityConditioOnPhotos($countPhotos, $albumQueryPolicy),
+				'num_children' => $this->applyVisibilityConditioOnSubalbums($count_children, $album_query_policy),
+				'num_photos' => $this->applyVisibilityConditioOnPhotos($count_photos, $album_query_policy),
 			]);
 		}
 
@@ -177,21 +177,22 @@ class AlbumBuilder extends NSQueryBuilder
 	 * Apply Visibiltiy conditions.
 	 * This a simplified version of AlbumQueryPolicy::applyVisibilityFilter().
 	 *
-	 * @param Builder $countQuery
+	 * @param Builder          $countQuery
+	 * @param AlbumQueryPolicy $album_query_policy
 	 *
 	 * @return Builder Query with the visibility requirements applied
 	 */
-	private function applyVisibilityConditioOnSubalbums(Builder $countQuery, AlbumQueryPolicy $albumQueryPolicy): Builder
+	private function applyVisibilityConditioOnSubalbums(Builder $count_query, AlbumQueryPolicy $album_query_policy): Builder
 	{
 		if (Auth::user()?->may_administrate === true) {
-			return $countQuery;
+			return $count_query;
 		}
 
-		$userID = Auth::id();
+		$user_id = Auth::id();
 
 		// Only join with base_album (used to get owner_id) when user is logged in
-		$countQuery->when(Auth::check(),
-			fn ($q) => $albumQueryPolicy->joinBaseAlbumOwnerId(
+		$count_query->when(Auth::check(),
+			fn ($q) => $album_query_policy->joinBaseAlbumOwnerId(
 				query: $q,
 				second: 'a.id',
 				full: false,
@@ -203,8 +204,8 @@ class AlbumBuilder extends NSQueryBuilder
 		// is also used in the outer `WHERE`-clause.
 		// See `applyVisibilityFilter` and `appendAccessibilityConditions`
 		// in AlbumQueryPolicy.
-		$albumQueryPolicy->joinSubComputedAccessPermissions(
-			query: $countQuery,
+		$album_query_policy->joinSubComputedAccessPermissions(
+			query: $count_query,
 			second: 'a.id',
 			type: 'left',
 		);
@@ -214,46 +215,47 @@ class AlbumBuilder extends NSQueryBuilder
 		// "OR"-clause.
 		// The sub-query only uses properties (i.e. columns) which are
 		// defined on the common base model for all albums.
-		$visibilitySubQuery = function (Builder $query2) use ($userID): void {
+		$visibility_sub_query = function (Builder $query2) use ($user_id): void {
 			$query2
 				// We laverage that IS_LINK_REQUIRED is NULL if the album is NOT shared publically (left join).
 				->where(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_LINK_REQUIRED, '=', false)
-				->when($userID !== null,
+				->when($user_id !== null,
 					// Current user is the owner of the album
 					fn ($q) => $q
-						->orWhere('base_albums.owner_id', '=', $userID));
+						->orWhere('base_albums.owner_id', '=', $user_id));
 		};
 
-		return $countQuery->where($visibilitySubQuery);
+		return $count_query->where($visibility_sub_query);
 	}
 
 	/**
 	 * Apply Visibiltiy conditions.
 	 * This a simplified version of PhotoQueryPolicy::applyVisibilityFilter().
 	 *
-	 * @param Builder $countQuery
+	 * @param Builder          $countQuery
+	 * @param AlbumQueryPolicy $album_query_policy
 	 *
 	 * @return Builder Query with the visibility requirements applied
 	 */
-	private function applyVisibilityConditioOnPhotos(Builder $countQuery, AlbumQueryPolicy $albumQueryPolicy): Builder
+	private function applyVisibilityConditioOnPhotos(Builder $count_query, AlbumQueryPolicy $album_query_policy): Builder
 	{
 		if (Auth::user()?->may_administrate === true) {
-			return $countQuery;
+			return $count_query;
 		}
 
-		$userID = Auth::id();
+		$user_id = Auth::id();
 
 		// Only join with base_album (used to get owner_id) when user is logged in
-		$countQuery->when($userID !== null,
-			fn ($q) => $albumQueryPolicy->joinBaseAlbumOwnerId(
+		$count_query->when($user_id !== null,
+			fn ($q) => $album_query_policy->joinBaseAlbumOwnerId(
 				query: $q,
 				second: 'p.album_id',
 				full: false,
 			)
 		);
 
-		$albumQueryPolicy->joinSubComputedAccessPermissions(
-			query: $countQuery,
+		$album_query_policy->joinSubComputedAccessPermissions(
+			query: $count_query,
 			second: 'p.album_id',
 			type: 'left',
 		);
@@ -261,17 +263,17 @@ class AlbumBuilder extends NSQueryBuilder
 		// We must wrap everything into an outer query to avoid any undesired
 		// effects in case that the original query already contains an
 		// "OR"-clause.
-		$visibilitySubQuery = function ($query2) use ($userID): void {
+		$visibility_sub_query = function ($query2) use ($user_id): void {
 			$query2
 				->where(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_LINK_REQUIRED, '=', false)
-				->when($userID !== null,
+				->when($user_id !== null,
 					fn ($query) => $query
-						->orWhere('base_albums.owner_id', '=', $userID)
-						->orWhere('p.owner_id', '=', $userID)
+						->orWhere('base_albums.owner_id', '=', $user_id)
+						->orWhere('p.owner_id', '=', $user_id)
 				);
 		};
 
-		return $countQuery->where($visibilitySubQuery);
+		return $count_query->where($visibility_sub_query);
 	}
 
 	/**

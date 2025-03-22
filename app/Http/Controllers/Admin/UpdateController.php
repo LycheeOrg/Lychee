@@ -53,9 +53,9 @@ class UpdateController extends Controller
 		$extra = '';
 
 		if ($channelName !== VersionChannelType::RELEASE) {
-			if ($versionInfo->github_functions->localHead !== null) {
-				$branch = $versionInfo->github_functions->localBranch ?? '??';
-				$commit = $versionInfo->github_functions->localHead ?? '??';
+			if ($versionInfo->github_functions->local_head !== null) {
+				$branch = $versionInfo->github_functions->local_branch ?? '??';
+				$commit = $versionInfo->github_functions->local_head ?? '??';
 				$info = sprintf('%s (%s)', $branch, $commit);
 				$extra = $versionInfo->github_functions->getBehindTest();
 			} else {

@@ -39,14 +39,14 @@ class Geodecoder
 			$stack = HandlerStack::create();
 			$stack->push(RateLimiterMiddleware::perSecond(1));
 
-			$httpClient = new \GuzzleHttp\Client([
+			$http_client = new \GuzzleHttp\Client([
 				'handler' => $stack,
 				'timeout' => Configs::getValueAsInt('location_decoding_timeout'),
 			]);
 
-			$httpAdapter = new \Http\Adapter\Guzzle7\Client($httpClient);
+			$http_adapter = new \Http\Adapter\Guzzle7\Client($http_client);
 
-			$provider = new Nominatim($httpAdapter, 'https://nominatim.openstreetmap.org', config('app.name'));
+			$provider = new Nominatim($http_adapter, 'https://nominatim.openstreetmap.org', config('app.name'));
 
 			return new ProviderCache($provider, app('cache.store'));
 		} catch (GeocoderException|GuzzleException|\RuntimeException|BindingResolutionException|\InvalidArgumentException $e) {
@@ -74,9 +74,9 @@ class Geodecoder
 			return null;
 		}
 
-		$cachedProvider = Geodecoder::getGeocoderProvider();
+		$cached_provider = Geodecoder::getGeocoderProvider();
 
-		return Geodecoder::decodeLocation_core($latitude, $longitude, $cachedProvider);
+		return Geodecoder::decodeLocation_core($latitude, $longitude, $cached_provider);
 	}
 
 	/**
@@ -90,10 +90,10 @@ class Geodecoder
 	 *
 	 * @throws LocationDecodingFailed
 	 */
-	public static function decodeLocation_core(float $latitude, float $longitude, ProviderCache $cachedProvider): ?string
+	public static function decodeLocation_core(float $latitude, float $longitude, ProviderCache $cached_provider): ?string
 	{
 		$lang = Configs::getValueAsString('lang');
-		$geocoder = new StatefulGeocoder($cachedProvider, $lang);
+		$geocoder = new StatefulGeocoder($cached_provider, $lang);
 		try {
 			$result_list = $geocoder->reverseQuery(ReverseQuery::fromCoordinates($latitude, $longitude));
 

@@ -25,16 +25,16 @@ use Illuminate\Support\Facades\Gate;
  */
 class HasManyPhotosRecursively extends BaseHasManyPhotos
 {
-	protected AlbumQueryPolicy $albumQueryPolicy;
+	protected AlbumQueryPolicy $album_query_policy;
 
-	public function __construct(Album $owningAlbum)
+	public function __construct(Album $owning_album)
 	{
 		// Sic! We must initialize attributes of this class before we call
 		// the parent constructor.
 		// The parent constructor calls `addConstraints` and thus our own
 		// attributes must be initialized by then
-		$this->albumQueryPolicy = resolve(AlbumQueryPolicy::class);
-		parent::__construct($owningAlbum);
+		$this->album_query_policy = resolve(AlbumQueryPolicy::class);
+		parent::__construct($owning_album);
 	}
 
 	public function getParent(): Album
@@ -83,7 +83,7 @@ class HasManyPhotosRecursively extends BaseHasManyPhotos
 			throw new NotImplementedException('eagerly fetching all photos of an album is not implemented for multiple albums');
 		}
 
-		$this->photoQueryPolicy
+		$this->photo_query_policy
 			->applySearchabilityFilter(
 				query: $this->getRelationQuery(),
 				origin: $albums[0],

@@ -54,10 +54,10 @@ class DiskUsage
 				if (extension_loaded('com_dotnet')) {
 					$obj = new \COM('scripting.filesystemobject');
 					$ref = $obj->getfolder($dir);
-					$totalSize = $ref->size;
+					$total_size = $ref->size;
 					$obj = null;
 
-					return $totalSize;
+					return $total_size;
 				}
 			}
 

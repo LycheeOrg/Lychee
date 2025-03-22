@@ -24,10 +24,10 @@ class SymLinkFunctions
 	 */
 	public function clearSymLink(): void
 	{
-		$symLinks = SymLink::all();
+		$sym_links = SymLink::all();
 		/** @var SymLink $symLink */
-		foreach ($symLinks as $symLink) {
-			$symLink->delete();
+		foreach ($sym_links as $sym_link) {
+			$sym_link->delete();
 		}
 	}
 
@@ -42,10 +42,10 @@ class SymLinkFunctions
 	 */
 	public function remove_outdated(): void
 	{
-		$symLinks = SymLink::expired()->get();
+		$sym_links = SymLink::expired()->get();
 		/** @var SymLink $symLink */
-		foreach ($symLinks as $symLink) {
-			$symLink->delete();
+		foreach ($sym_links as $sym_link) {
+			$sym_link->delete();
 		}
 	}
 }

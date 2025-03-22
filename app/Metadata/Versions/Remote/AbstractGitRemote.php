@@ -14,7 +14,7 @@ use App\Metadata\Json\JsonRequestFunctions;
 abstract class AbstractGitRemote implements GitRemote
 {
 	protected ?string $head = null;
-	protected ?string $headSha = null;
+	protected ?string $head_sha = null;
 	protected ?string $age = null;
 
 	/**
@@ -45,12 +45,12 @@ abstract class AbstractGitRemote implements GitRemote
 	/**
 	 * {@inheritDoc}
 	 */
-	public function fetchRemote(bool $useCache): array
+	final public function fetchRemote(bool $use_cache): array
 	{
 		$request = $this->getRequest();
 
 		// We fetch the commits
-		$data = $request->get_json($useCache);
+		$data = $request->get_json($use_cache);
 		if (!is_array($data) || count($data) === 0) {
 			// if $gitData is null we already logged the problem
 			// @codeCoverageIgnoreStart
@@ -59,7 +59,7 @@ abstract class AbstractGitRemote implements GitRemote
 		}
 
 		$this->head = $this->dataToName($data[0]);
-		$this->headSha = $this->dataToSha($data[0]);
+		$this->head_sha = $this->dataToSha($data[0]);
 		$this->age = $request->get_age_text();
 
 		return $data;
@@ -68,7 +68,7 @@ abstract class AbstractGitRemote implements GitRemote
 	/**
 	 * {@inheritDoc}
 	 */
-	public function countBehind(array $data, string $needle): int|false
+	final public function countBehind(array $data, string $needle): int|false
 	{
 		if (count($data) === 0) {
 			return false;
@@ -90,7 +90,7 @@ abstract class AbstractGitRemote implements GitRemote
 	 *
 	 * @codeCoverageIgnore
 	 */
-	public function getAgeText(): string
+	final public function getAgeText(): string
 	{
 		return $this->age;
 	}
@@ -100,7 +100,7 @@ abstract class AbstractGitRemote implements GitRemote
 	 *
 	 * @codeCoverageIgnore
 	 */
-	public function getHead(): ?string
+	final public function getHead(): ?string
 	{
 		return $this->head;
 	}
@@ -110,8 +110,8 @@ abstract class AbstractGitRemote implements GitRemote
 	 *
 	 * @codeCoverageIgnore
 	 */
-	public function getHeadSha(): ?string
+	final public function getHeadSha(): ?string
 	{
-		return $this->headSha;
+		return $this->head_sha;
 	}
 }

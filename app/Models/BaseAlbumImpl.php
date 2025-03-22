@@ -275,14 +275,14 @@ class BaseAlbumImpl extends Model implements HasRandomID
 
 	protected function getPhotoSortingAttribute(): ?PhotoSortingCriterion
 	{
-		$sortingColumn = $this->attributes['sorting_col'];
-		$sortingOrder = $this->attributes['sorting_order'];
+		$sorting_column = $this->attributes['sorting_col'];
+		$sorting_order = $this->attributes['sorting_order'];
 
-		return ($sortingColumn === null || $sortingOrder === null) ?
+		return ($sorting_column === null || $sorting_order === null) ?
 			null :
 			new PhotoSortingCriterion(
-				ColumnSortingType::from($sortingColumn),
-				OrderSortingType::from($sortingOrder));
+				ColumnSortingType::from($sorting_column),
+				OrderSortingType::from($sorting_order));
 	}
 
 	protected function setPhotoSortingAttribute(?PhotoSortingCriterion $sorting): void
@@ -308,9 +308,9 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	 *
 	 * @return void
 	 */
-	protected function setPhotoLayoutAttribute(?PhotoLayoutType $aspectRatio): void
+	protected function setPhotoLayoutAttribute(?PhotoLayoutType $aspect_ratio): void
 	{
-		$this->attributes['photo_layout'] = $aspectRatio?->value;
+		$this->attributes['photo_layout'] = $aspect_ratio?->value;
 	}
 
 	/**

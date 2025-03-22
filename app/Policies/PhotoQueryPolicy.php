@@ -20,11 +20,11 @@ use Illuminate\Support\Facades\Auth;
 
 class PhotoQueryPolicy
 {
-	protected AlbumQueryPolicy $albumQueryPolicy;
+	protected AlbumQueryPolicy $album_query_policy;
 
 	public function __construct()
 	{
-		$this->albumQueryPolicy = resolve(AlbumQueryPolicy::class);
+		$this->album_query_policy = resolve(AlbumQueryPolicy::class);
 	}
 
 	/**
@@ -55,19 +55,19 @@ class PhotoQueryPolicy
 			return $query;
 		}
 
-		$userId = Auth::id();
+		$user_id = Auth::id();
 
 		// We must wrap everything into an outer query to avoid any undesired
 		// effects in case that the original query already contains an
 		// "OR"-clause.
-		$visibilitySubQuery = function (FixedQueryBuilder $query2) use ($userId): void {
-			$this->albumQueryPolicy->appendAccessibilityConditions($query2->getQuery());
-			if ($userId !== null) {
-				$query2->orWhere('photos.owner_id', '=', $userId);
+		$visibility_sub_query = function (FixedQueryBuilder $query2) use ($user_id): void {
+			$this->album_query_policy->appendAccessibilityConditions($query2->getQuery());
+			if ($user_id !== null) {
+				$query2->orWhere('photos.owner_id', '=', $user_id);
 			}
 		};
 
-		return $query->where($visibilitySubQuery);
+		return $query->where($visibility_sub_query);
 	}
 
 	/**
@@ -148,30 +148,24 @@ class PhotoQueryPolicy
 	 * Moreover, the raw clauses are added.
 	 * They are not wrapped into a nesting braces `()`.
 	 *
-	 * @param BaseBuilder     $query       the photo query which shall be
-	 *                                     restricted
-	 * @param int|string|null $originLeft  optionally constraints the search
-	 *                                     base; an integer value is
-	 *                                     interpreted a raw left bound of the
-	 *                                     search base; a string value is
-	 *                                     interpreted as a reference to a
-	 *                                     column which shall be used as a
-	 *                                     left bound
-	 * @param int|string|null $originRight like `$originLeft` but for the
-	 *                                     right bound
+	 * @param BaseBuilder     $query        the photo query which shall be restricted
+	 * @param int|string|null $origin_left  optionally constraints the search base;
+	 *                                      an integer value is interpreted a raw left bound of the search base;
+	 *                                      a string value is interpreted as a reference to a column which shall be used as a left bound
+	 * @param int|string|null $origin_right like `$origin_left` but for the right bound
 	 *
 	 * @return BaseBuilder the restricted photo query
 	 *
 	 * @throws QueryBuilderException
 	 */
-	public function appendSearchabilityConditions(BaseBuilder $query, int|string|null $originLeft, int|string|null $originRight): BaseBuilder
+	public function appendSearchabilityConditions(BaseBuilder $query, int|string|null $origin_left, int|string|null $origin_right): BaseBuilder
 	{
-		$userId = Auth::id();
+		$user_id = Auth::id();
 
 		try {
 			// there must be no unreachable album between the origin and the photo
-			$query->whereNotExists(function (BaseBuilder $q) use ($originLeft, $originRight): void {
-				$this->albumQueryPolicy->appendUnreachableAlbumsCondition($q, $originLeft, $originRight);
+			$query->whereNotExists(function (BaseBuilder $q) use ($origin_left, $origin_right): void {
+				$this->album_query_policy->appendUnreachableAlbumsCondition($q, $origin_left, $origin_right);
 			});
 
 			// Special care needs to be taken for unsorted photo, i.e. photos on
@@ -186,8 +180,8 @@ class PhotoQueryPolicy
 			//      allowed to access an album, they may also see its content)
 			$query->whereNotNull('photos.album_id');
 
-			if ($userId !== null) {
-				$query->orWhere('photos.owner_id', '=', $userId);
+			if ($user_id !== null) {
+				$query->orWhere('photos.owner_id', '=', $user_id);
 			}
 		} catch (\Throwable $e) {
 			throw new QueryBuilderException($e);
@@ -211,21 +205,20 @@ class PhotoQueryPolicy
 	 * Moreover, the raw clauses are added.
 	 * They are not wrapped into a nesting braces `()`.
 	 *
-	 * @param BaseBuilder $query the photo query which shall be
-	 *                           restricted
+	 * @param BaseBuilder $query the photo query which shall be restricted
 	 *
 	 * @return BaseBuilder the restricted photo query
 	 *
 	 * @throws QueryBuilderException
 	 */
-	public function appendSensitivityConditions(BaseBuilder $query, int|string|null $originLeft, int|string|null $originRight): BaseBuilder
+	private function appendSensitivityConditions(BaseBuilder $query, int|string|null $origin_left, int|string|null $origin_right): BaseBuilder
 	{
-		$userId = Auth::id();
+		$user_id = Auth::id();
 
 		try {
 			// there must be no unreachable album between the origin and the photo
-			$query->whereNotExists(function (BaseBuilder $q) use ($originLeft, $originRight): void {
-				$this->albumQueryPolicy->appendRecursiveSensitiveAlbumsCondition($q, $originLeft, $originRight);
+			$query->whereNotExists(function (BaseBuilder $q) use ($origin_left, $origin_right): void {
+				$this->album_query_policy->appendRecursiveSensitiveAlbumsCondition($q, $origin_left, $origin_right);
 			});
 
 			// Special care needs to be taken for unsorted photo, i.e. photos on
@@ -241,7 +234,7 @@ class PhotoQueryPolicy
 			$query->orWhere(
 				fn ($q) => $q
 					->whereNull('photos.album_id')
-					->where('photos.owner_id', '=', $userId)
+					->where('photos.owner_id', '=', $user_id)
 			);
 		} catch (\Throwable $e) {
 			throw new QueryBuilderException($e);
@@ -259,7 +252,7 @@ class PhotoQueryPolicy
 	 *
 	 * @throws InternalLycheeException
 	 */
-	private function prepareModelQueryOrFail(FixedQueryBuilder $query, bool $addAlbums, bool $addBaseAlbums): void
+	private function prepareModelQueryOrFail(FixedQueryBuilder $query, bool $add_albums, bool $add_base_albums): void
 	{
 		$model = $query->getModel();
 		$table = $query->getQuery()->from;
@@ -271,18 +264,18 @@ class PhotoQueryPolicy
 		// if no specific columns are yet set.
 		// Otherwise, we cannot add a JOIN clause below
 		// without accidentally adding all columns of the join, too.
-		$baseQuery = $query->getQuery();
-		if ($baseQuery->columns === null || count($baseQuery->columns) === 0) {
+		$base_query = $query->getQuery();
+		if ($base_query->columns === null || count($base_query->columns) === 0) {
 			$query->select(['photos.*']);
 		}
-		if ($addAlbums) {
+		if ($add_albums) {
 			$query->leftJoin(
 				table: 'albums',
 				first: 'albums.id',
 				operator: '=',
 				second: 'photos.album_id');
 		}
-		if ($addBaseAlbums) {
+		if ($add_base_albums) {
 			$query->leftJoin(
 				table: 'base_albums',
 				first: 'base_albums.id',
@@ -291,7 +284,7 @@ class PhotoQueryPolicy
 		}
 
 		// Necessary to apply the visibiliy/search conditions
-		$this->albumQueryPolicy->joinSubComputedAccessPermissions(
+		$this->album_query_policy->joinSubComputedAccessPermissions(
 			query: $query,
 			second: 'photos.album_id'
 		);
