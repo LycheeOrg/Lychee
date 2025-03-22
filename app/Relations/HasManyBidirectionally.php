@@ -27,8 +27,8 @@ class HasManyBidirectionally extends HasMany implements BidirectionalRelation
 	/**
 	 * @param Builder<TRelatedModel> $query
 	 * @param TDeclaringModel        $parent
-	 * @param string                 $foreignKey
-	 * @param string                 $localKey
+	 * @param string                 $foreign_key
+	 * @param string                 $local_key
 	 * @param string                 $foreign_method_name
 	 *
 	 * @return void
@@ -62,13 +62,12 @@ class HasManyBidirectionally extends HasMany implements BidirectionalRelation
 		// matching very convenient and easy work. Then we'll just return them.
 		foreach ($models as $model) {
 			if (isset($dictionary[$key = $this->getDictionaryKey($model->getAttribute($this->localKey))])) {
-				/** @var Collection<int,TRelatedModel> $childrenOfModel */
+				/** @var Collection<int,TRelatedModel> $children_of_model */
 				$children_of_model = $this->getRelationValue($dictionary, $key, 'many');
 				$model->setRelation($relation, $children_of_model);
 				// This is the newly added code which sets this method apart
 				// from the original method and additionally sets the
 				// reverse link
-				/** @var Model $childModel */
 				foreach ($children_of_model as $child_model) {
 					$child_model->setRelation($this->foreign_method_name, $model);
 				}

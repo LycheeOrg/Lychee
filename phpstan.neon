@@ -24,3 +24,5 @@ parameters:
 			paths:
 				- config
 		- '#Dynamic call to static method Illuminate\\.*#'
+		- '#Dynamic call to static method App\\Models\\Builders\\PhotoBuilder.*#'
+		- '#Dynamic call to static method App\\Eloquent\\FixedQueryBuilder.*#'
