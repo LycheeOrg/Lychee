@@ -100,7 +100,7 @@ class Create
 			return $this->handleDuplicate($init_dto);
 		}
 
-		if ($init_dto->livePartner === null) {
+		if ($init_dto->live_partner === null) {
 			return $this->handleStandalone($init_dto);
 		}
 
