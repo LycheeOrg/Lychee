@@ -152,7 +152,7 @@ class SortingDecorator
 		// requires natural sorting.
 		try {
 			for ($i = $this->pivot_idx + 1; $i < count($this->order_by); $i++) {
-				$this->base_builder->order_by($this->order_by[$i]['column'], $this->order_by[$i]['direction']);
+				$this->base_builder->orderBy($this->order_by[$i]['column'], $this->order_by[$i]['direction']);
 			}
 			// @codeCoverageIgnoreStart
 		} catch (\InvalidArgumentException) {
