@@ -26,8 +26,8 @@ class UnsortedAlbum extends BaseSmartAlbum
 	public function __construct()
 	{
 		parent::__construct(
-			SmartAlbumType::UNSORTED,
-			fn (Builder $q) => $q->whereNull('photos.album_id')
+			id: SmartAlbumType::UNSORTED,
+			smart_condition: fn (Builder $q) => $q->whereNull('photos.album_id')
 		);
 	}
 
@@ -44,9 +44,9 @@ class UnsortedAlbum extends BaseSmartAlbum
 	 */
 	public function photos(): Builder
 	{
-		if ($this->publicPermissions !== null) {
+		if ($this->public_permissions !== null) {
 			return Photo::query()->with(['album', 'size_variants', 'size_variants.sym_links'])
-			->where($this->smartPhotoCondition);
+			->where($this->smart_photo_condition);
 		}
 
 		return parent::photos();
