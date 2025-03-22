@@ -51,7 +51,7 @@ final class SetSmartAlbumVisibilityRequest extends BaseApiRequest implements Has
 
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->album = $this->albumFactory->findAbstractAlbumOrFail($values[RequestAttribute::ALBUM_ID_ATTRIBUTE]);
+		$this->album = $this->album_factory->findAbstractAlbumOrFail($values[RequestAttribute::ALBUM_ID_ATTRIBUTE]);
 		$this->is_public = self::toBoolean($values[RequestAttribute::IS_PUBLIC_ATTRIBUTE]);
 	}
 }
