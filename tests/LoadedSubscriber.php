@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 use PHPUnit\Event\TestSuite\Loaded;
 use PHPUnit\Event\TestSuite\LoadedSubscriber as LoadedSubscriberInterface;
+use Symfony\Component\Console\Output\ConsoleOutput;
 
 final class LoadedSubscriber implements LoadedSubscriberInterface
 {
@@ -29,7 +30,8 @@ final class LoadedSubscriber implements LoadedSubscriberInterface
 		if (str_contains($event->testSuite()->name(), 'phpunit.xml') &&
 			str_contains($event->testSuite()->tests()->asArray()[0]->file(), 'Feature_v1') &&
 			config('features.vuejs')) {
-			throw new RuntimeException ('Wrong configuration, tests are not compatible with VueJS routes');
+			(new ConsoleOutput())->section()->writeln('<error>Wrong configuration:</error> <options=bold>Tests v1 are not compatible with VUEJS_ENABLED=true.</>');
+			exit(1);
 		}
 
 		if (config('features.vuejs')) {
