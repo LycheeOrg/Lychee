@@ -33,7 +33,10 @@ final class LoadedSubscriber implements LoadedSubscriberInterface
 		}
 
 		if (config('features.vuejs')) {
-			// When using vuejs we do not initialize the database with 1 admin user (see below).
+			// If there are any users in the DB, this tends to crash some tests (because we check exact count of users).
+			if (User::query()->count() > 0) {
+				User::truncate();
+			}
 			return;
 		}
 
