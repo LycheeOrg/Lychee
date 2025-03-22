@@ -11,6 +11,7 @@ namespace App\View\Components;
 use App\Contracts\Models\AbstractAlbum;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Http\Resources\Traits\HasHeaderUrl;
+use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Photo;
@@ -27,6 +28,8 @@ class Meta extends Component
 {
 	use HasHeaderUrl;
 
+	public const string DISK_NAME = 'dist';
+
 	public string $pageTitle;
 	public string $pageDescription;
 	public string $siteOwner;
@@ -38,7 +41,7 @@ class Meta extends Component
 	public string $userJsUrl;
 
 	private bool $access = true;
-	private ?AbstractAlbum $album = null;
+	private ?Album $album = null;
 	private ?Photo $photo = null;
 
 	/**
@@ -116,11 +119,11 @@ class Meta extends Component
 	{
 		$cssCacheBusting = '';
 		/** @disregard P1013 */
-		if (Storage::disk('dist')->fileExists($fileName)) {
-			$cssCacheBusting = '?' . Storage::disk('dist')->lastModified($fileName);
+		if (Storage::disk(self::DISK_NAME)->fileExists($fileName)) {
+			$cssCacheBusting = '?' . Storage::disk(self::DISK_NAME)->lastModified($fileName);
 		}
 
 		/** @disregard P1013 */
-		return Storage::disk('dist')->url($fileName) . $cssCacheBusting;
+		return Storage::disk(self::DISK_NAME)->url($fileName) . $cssCacheBusting;
 	}
 }

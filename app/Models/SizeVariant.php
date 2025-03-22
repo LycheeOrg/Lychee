@@ -216,10 +216,10 @@ class SizeVariant extends Model
 		$max_lifetime = Configs::getValueAsInt('SL_life_time_days') * 24 * 60 * 60;
 		$grace_period = $max_lifetime / 3;
 
-		/** @var ?SymLink $symLink */
+		/** @var ?SymLink $sym_link */
 		$sym_link = $this->sym_links()->latest()->first();
 		if ($sym_link === null || $sym_link->created_at->isBefore(now()->subSeconds($grace_period))) {
-			/** @var SymLink $symLink */
+			/** @var SymLink $sym_link */
 			$sym_link = $this->sym_links()->create();
 		}
 

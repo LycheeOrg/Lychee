@@ -108,8 +108,6 @@ abstract class BaseAlbum extends Model implements AbstractAlbum, HasRandomID
 
 	/**
 	 * Returns the relationship between an album and its associated current user permissions.
-	 *
-	 * @return AccessPermission|null
 	 */
 	public function current_user_permissions(): AccessPermission|null
 	{
@@ -118,8 +116,6 @@ abstract class BaseAlbum extends Model implements AbstractAlbum, HasRandomID
 
 	/**
 	 * Returns the relationship between an album and its associated public permissions.
-	 *
-	 * @return AccessPermission|null
 	 */
 	public function public_permissions(): AccessPermission|null
 	{

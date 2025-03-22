@@ -23,12 +23,6 @@ trait HasUrlGenerator
 	/**
 	 * Given a short, path, storage disk and size variant type, we return the URL formatted data.
 	 *
-	 * @param string          $short_path
-	 * @param string          $storage_disk
-	 * @param SizeVariantType $type
-	 *
-	 * @return string|null
-	 *
 	 * @throws \InvalidArgumentException
 	 * @throws ConfigurationKeyMissingException
 	 * @throws \RuntimeException
@@ -65,8 +59,6 @@ trait HasUrlGenerator
 
 	/**
 	 * Retrieve the tempary url from AWS if possible.
-	 *
-	 * @return string
 	 *
 	 * @codeCoverageIgnore
 	 */

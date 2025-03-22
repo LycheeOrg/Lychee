@@ -53,16 +53,13 @@ class SizeVariants
 	{
 		$this->photo = $photo;
 		if ($size_variants !== null) {
-			/** @var SizeVariant $sizeVariant */
 			foreach ($size_variants as $size_variant) {
 				$this->add($size_variant);
 			}
 		}
 	}
 
-	/**
-	 * @param SizeVariant $sizeVariant
-	 *
+	/*
 	 * @return void
 	 *
 	 * @throws LycheeInvalidArgumentException thrown if ID of owning photo does not match
@@ -144,8 +141,6 @@ class SizeVariants
 
 	/**
 	 * Get Medium2x or fallback to Medium.
-	 *
-	 * @return SizeVariant|null
 	 */
 	public function getMedium2x(): ?SizeVariant
 	{
@@ -154,8 +149,6 @@ class SizeVariants
 
 	/**
 	 * get Medium or fallback to Original.
-	 *
-	 * @return SizeVariant|null
 	 */
 	public function getMedium(): ?SizeVariant
 	{
@@ -164,8 +157,6 @@ class SizeVariants
 
 	/**
 	 * Get Small2x or fallback to Small.
-	 *
-	 * @return SizeVariant|null
 	 */
 	public function getSmall2x(): ?SizeVariant
 	{
@@ -196,16 +187,10 @@ class SizeVariants
 	 * Creates a new instance of {@link \App\Models\SizeVariant} for the
 	 * associated photo and persists it to DB.
 	 *
-	 * @param SizeVariantType $sizeVariantType the type of the desired size variant;
-	 * @param string          $shortPath       the short path of the media file this
-	 *                                         size variant shall point to
-	 * @param ImageDimension  $dim             the width of the size variant
-	 * @param int             $filesize        the filesize of the size variant
+	 * @param ImageDimension $dim      the width of the size variant
+	 * @param int            $filesize the filesize of the size variant
 	 *
 	 * @return SizeVariant The newly created and persisted size variant
-	 *
-	 * @throws IllegalOrderOfOperationException
-	 * @throws ModelDBException
 	 *
 	 * @disregard P1006
 	 */
@@ -242,8 +227,6 @@ class SizeVariants
 
 	/**
 	 * Deletes all size variants incl. the files from storage.
-	 *
-	 * @return void
 	 *
 	 * @throws ModelDBException
 	 * @throws MediaFileOperationException
@@ -310,8 +293,6 @@ class SizeVariants
 
 	/**
 	 * Returns true if at least one version of medium is not null.
-	 *
-	 * @return bool
 	 */
 	public function hasMedium(): bool
 	{

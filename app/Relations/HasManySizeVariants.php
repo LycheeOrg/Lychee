@@ -105,7 +105,7 @@ class HasManySizeVariants extends HasMany
 		/** @var Photo $model */
 		foreach ($models as $model) {
 			if (isset($dictionary[$key = $this->getDictionaryKey($model->getAttribute($this->localKey))])) {
-				/** @var Collection<int,SizeVariant> $childrenOfModel */
+				/** @var Collection<int,SizeVariant> $children_of_model */
 				$children_of_model = $this->getRelationValue($dictionary, $key, 'many');
 				$model->setRelation($relation, new SizeVariants($model, $children_of_model));
 			}

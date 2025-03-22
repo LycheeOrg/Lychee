@@ -84,8 +84,6 @@ class SortingDecorator
 	 * is added.
 	 * Then `$pivotIdx` points to that with the least priority, because from
 	 * there on everything must be sorted in software.
-	 *
-	 * @var int
 	 */
 	protected int $pivot_idx = -1;
 

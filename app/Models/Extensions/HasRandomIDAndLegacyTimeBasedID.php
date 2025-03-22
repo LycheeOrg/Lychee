@@ -29,8 +29,6 @@ trait HasRandomIDAndLegacyTimeBasedID
 {
 	/**
 	 * Get the value indicating whether the IDs are incrementing.
-	 *
-	 * @return bool
 	 */
 	public function getIncrementing(): bool
 	{
@@ -56,8 +54,6 @@ trait HasRandomIDAndLegacyTimeBasedID
 	 *
 	 * @param string $key   name of attribute which is being set
 	 * @param mixed  $value value of attribute
-	 *
-	 * @return mixed
 	 *
 	 * @throws NotImplementedException
 	 * @throws InvalidCastException
@@ -153,8 +149,6 @@ trait HasRandomIDAndLegacyTimeBasedID
 	 *
 	 * The primary key are 144bit true randomness, encoded as Base64.
 	 * The legacy key is based on the current micro-time.
-	 *
-	 * @return void
 	 *
 	 * @throws InsufficientEntropyException
 	 */

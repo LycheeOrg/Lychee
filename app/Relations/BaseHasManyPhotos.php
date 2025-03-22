@@ -34,7 +34,7 @@ abstract class BaseHasManyPhotos extends Relation
 	protected PhotoQueryPolicy $photo_query_policy;
 
 	/**
-	 * @param TagAlbum|Album $owningAlbum
+	 * @param TagAlbum|Album $owning_album
 	 */
 	public function __construct(TagAlbum|Album $owning_album)
 	{
@@ -60,8 +60,8 @@ abstract class BaseHasManyPhotos extends Relation
 		// used by child classes.
 		// Moreover, it is impossible to pass `null`.
 		// As a work-around we store the owning album in our own attribute
-		// `$owningAlbum` and always use that instead of `$parent`.
-		/** @var Album|TagAlbum $owningAlbum */
+		// `$owning_album` and always use that instead of `$parent`.
+		/** @var Album|TagAlbum $owning_album */
 		parent::__construct(
 			// Sic! We also must load the album eagerly.
 			// This relation is not used by albums which own the queried
@@ -138,9 +138,8 @@ abstract class BaseHasManyPhotos extends Relation
 	 */
 	public function getResults(): Collection
 	{
-		/** @var BaseAlbum */
+		/** @var BaseAlbum&TDeclaringModel $parent */
 		$parent = $this->parent;
-		/** @var SortingCriterion $sorting */
 		$sorting = $parent->getEffectivePhotoSorting();
 
 		return (new SortingDecorator($this->getRelationQuery()))

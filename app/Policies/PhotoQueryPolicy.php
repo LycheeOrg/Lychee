@@ -247,8 +247,8 @@ class PhotoQueryPolicy
 	 * Throws an exception if the given query does not query for a photo.
 	 *
 	 * @param FixedQueryBuilder<Photo> $query         the query to prepare
-	 * @param bool                     $addAlbums     if true, joins photo query with (parent) albums
-	 * @param bool                     $addBaseAlbums if true, joins photos query with (parent) base albums
+	 * @param bool                     $add_albums     if true, joins photo query with (parent) albums
+	 * @param bool                     $add_base_albums if true, joins photos query with (parent) base albums
 	 *
 	 * @throws InternalLycheeException
 	 */
