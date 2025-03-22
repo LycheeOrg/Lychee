@@ -40,5 +40,5 @@ const props = withDefaults(
 
 const emits = defineEmits(["updated"]);
 const modelValue = defineModel<Nullable<string>>();
-const classValue = ref((props.class ?? "") + " border-0 p-3 w-full border-b hover:border-b-primary-400 focus:border-b-primary-400");
+const classValue = ref((props.class ?? "") + " border-0 w-full border-b hover:border-b-primary-400 focus:border-b-primary-400");
 </script>

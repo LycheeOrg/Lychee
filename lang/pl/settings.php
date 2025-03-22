@@ -75,13 +75,14 @@ return [
 		'location_show' => 'Pokaż lokalizację wyodrębnioną ze współrzędnych GPS',
 		'location_show_public' => 'Anonimowi użytkownicy mogą uzyskać dostęp do lokalizacji wyodrębnionej ze współrzędnych GPS',
 	],
-	'advanced' => [
-		'header' => 'Zaawansowane dostosowywanie',
+	'cssjs' => [
+		'header' => 'Custom CSS & Js',
 		'change_css' => 'Zmiana CSS',
 		'change_js' => 'Zmiana JS',
 	],
 	'all' => [
 		'old_setting_style' => 'Stary styl ustawień',
+		'expert_settings' => 'Expert Mode',
 		'change_detected' => 'Niektóre ustawienia zostały zmienione.',
 		'save' => 'Zapisz',
 	],
@@ -90,5 +91,12 @@ return [
 		'disabled' => 'wyłączony',
 		'enabled' => 'włączony',
 		'discover' => 'odkryj',
+	],
+
+	'groups' => [
+		'general' => 'General',
+		'system' => 'System',
+		'modules' => 'Modules',
+		'advanced' => 'Advanced',
 	],
 ];

@@ -8,6 +8,7 @@
 
 namespace App\Image\Files;
 
+use App\Constants\FileSystem;
 use App\Exceptions\MediaFileOperationException;
 use Illuminate\Support\Facades\Storage;
 use function Safe\mkdir;
@@ -21,7 +22,6 @@ use function Safe\mkdir;
 class ProcessableJobFile extends NativeLocalFile
 {
 	use LoadTemporaryFileTrait;
-	public const DISK_NAME = 'image-jobs';
 
 	protected string $fakeBaseName;
 
@@ -47,7 +47,7 @@ class ProcessableJobFile extends NativeLocalFile
 	 */
 	protected function getFileBasePath(): string
 	{
-		$temp_dir_path = Storage::disk(self::DISK_NAME)->path('');
+		$temp_dir_path = Storage::disk(FileSystem::IMAGE_JOBS)->path('');
 
 		if (!file_exists($temp_dir_path)) {
 			mkdir($temp_dir_path);

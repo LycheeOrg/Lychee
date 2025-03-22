@@ -38,7 +38,7 @@ use Kalnoy\Nestedset\Node;
 use Kalnoy\Nestedset\NodeTrait;
 
 /**
- * Class Album.
+ * App\Models\Album.
  *
  * @property string                   $id
  * @property string|null              $parent_id
