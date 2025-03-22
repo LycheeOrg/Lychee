@@ -34,7 +34,7 @@ use Kalnoy\Nestedset\QueryBuilder as NSQueryBuilder;
  * Thus, a global scope unnecessarily complicates queries in many cases.
  *
  *
- * @template TModelClass of Configs
+ * @template TModelClass of Album
  * @extends NSQueryBuilder<TModelClass>
  */
 class AlbumBuilder extends NSQueryBuilder
