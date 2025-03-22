@@ -25,12 +25,12 @@ class SharedAlbumResource extends Data
 	 *
 	 * @return void
 	 */
-	public function __construct(object $albumShared)
+	public function __construct(object $album_shared)
 	{
-		$this->id = $albumShared->id;
-		$this->user_id = $albumShared->user_id;
-		$this->album_id = $albumShared->album_id;
-		$this->username = $albumShared->username;
-		$this->title = $albumShared->title;
+		$this->id = $album_shared->id;
+		$this->user_id = $album_shared->user_id;
+		$this->album_id = $album_shared->album_id;
+		$this->username = $album_shared->username;
+		$this->title = $album_shared->title;
 	}
 }

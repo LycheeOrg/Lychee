@@ -38,11 +38,11 @@ class SmartAlbumResource extends Data
 	public AlbumRightsResource $rights;
 	public PreFormattedAlbumData $preFormattedData;
 
-	public function __construct(BaseSmartAlbum $smartAlbum)
+	public function __construct(BaseSmartAlbum $smart_album)
 	{
-		$this->id = $smartAlbum->id;
-		$this->title = $smartAlbum->title;
-		$this->photos = $smartAlbum->relationLoaded('photos') ? PhotoResource::collect($smartAlbum->getPhotos()) : null;
+		$this->id = $smart_album->id;
+		$this->title = $smart_album->title;
+		$this->photos = $smart_album->relationLoaded('photos') ? PhotoResource::collect($smart_album->getPhotos()) : null;
 		$this->prepPhotosCollection();
 		if ($this->photos !== null) {
 			// Prep collection with first and last link + which id is next.
@@ -53,15 +53,15 @@ class SmartAlbumResource extends Data
 			$this->photos = TimelineData::setTimeLineDataForPhotos($this->photos, $photo_granularity);
 		}
 
-		$this->thumb = ThumbResource::fromModel($smartAlbum->thumb);
-		$this->policy = AlbumProtectionPolicy::ofSmartAlbum($smartAlbum);
-		$this->rights = new AlbumRightsResource($smartAlbum);
-		$url = $this->getHeaderUrl($smartAlbum);
-		$this->preFormattedData = new PreFormattedAlbumData($smartAlbum, $url);
+		$this->thumb = ThumbResource::fromModel($smart_album->thumb);
+		$this->policy = AlbumProtectionPolicy::ofSmartAlbum($smart_album);
+		$this->rights = new AlbumRightsResource($smart_album);
+		$url = $this->getHeaderUrl($smart_album);
+		$this->preFormattedData = new PreFormattedAlbumData($smart_album, $url);
 	}
 
-	public static function fromModel(BaseSmartAlbum $smartAlbum): SmartAlbumResource
+	public static function fromModel(BaseSmartAlbum $smart_album): SmartAlbumResource
 	{
-		return new self($smartAlbum);
+		return new self($smart_album);
 	}
 }

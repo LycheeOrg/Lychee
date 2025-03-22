@@ -53,8 +53,8 @@ class OauthTest extends BaseApiV2Test
 		$response = $this->actingAs($this->userMayUpload1)->getJson('Oauth');
 		$this->assertOk($response);
 		$response->assertJson([[
-			'providerType' => 'github',
-			'isEnabled' => false,
+			'provider_type' => 'github',
+			'is_enabled' => false,
 		]]);
 
 		$response = $this->actingAs($this->userMayUpload1)->deleteJson('Oauth', ['provider' => 'github']);

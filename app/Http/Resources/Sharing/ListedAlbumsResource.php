@@ -20,9 +20,9 @@ class ListedAlbumsResource extends Data
 	/**
 	 * @param object{id:string,title:string} $albumListed
 	 */
-	public function __construct(object $albumListed)
+	public function __construct(object $album_listed)
 	{
-		$this->id = $albumListed->id;
-		$this->title = $albumListed->title;
+		$this->id = $album_listed->id;
+		$this->title = $album_listed->title;
 	}
 }

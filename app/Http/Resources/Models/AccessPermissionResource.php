@@ -29,19 +29,19 @@ class AccessPermissionResource extends Data
 	) {
 	}
 
-	public static function fromModel(AccessPermission $accessPermission): AccessPermissionResource
+	public static function fromModel(AccessPermission $access_permission): AccessPermissionResource
 	{
 		return new AccessPermissionResource(
-			id: $accessPermission->id,
-			user_id: $accessPermission->user_id,
-			username: $accessPermission->user->name,
-			album_title: $accessPermission->album->title,
-			album_id: $accessPermission->base_album_id,
-			grants_full_photo_access: $accessPermission->grants_full_photo_access,
-			grants_download: $accessPermission->grants_download,
-			grants_upload: $accessPermission->grants_upload,
-			grants_edit: $accessPermission->grants_edit,
-			grants_delete: $accessPermission->grants_delete
+			id: $access_permission->id,
+			user_id: $access_permission->user_id,
+			username: $access_permission->user->name,
+			album_title: $access_permission->album->title,
+			album_id: $access_permission->base_album_id,
+			grants_full_photo_access: $access_permission->grants_full_photo_access,
+			grants_download: $access_permission->grants_download,
+			grants_upload: $access_permission->grants_upload,
+			grants_edit: $access_permission->grants_edit,
+			grants_delete: $access_permission->grants_delete
 		);
 	}
 }

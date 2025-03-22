@@ -21,13 +21,13 @@ class ThumbResource extends Data
 	public ?string $thumb2x;
 	public ?string $placeholder;
 
-	public function __construct(string $id, string $type, string $thumbUrl, ?string $thumb2xUrl = null, ?string $placeholderUrl = null)
+	public function __construct(string $id, string $type, string $thumb_url, ?string $thumb2x_url = null, ?string $placeholder_url = null)
 	{
 		$this->id = $id;
 		$this->type = $type;
-		$this->thumb = $thumbUrl;
-		$this->thumb2x = $thumb2xUrl;
-		$this->placeholder = $placeholderUrl;
+		$this->thumb = $thumb_url;
+		$this->thumb2x = $thumb2x_url;
+		$this->placeholder = $placeholder_url;
 	}
 
 	/**

@@ -249,6 +249,6 @@ class SizeVariant extends Model
 
 	public function toResource(bool $no_url = false): SizeVariantResource
 	{
-		return new SizeVariantResource($this, noUrl: $no_url);
+		return new SizeVariantResource($this, no_url: $no_url);
 	}
 }

@@ -46,15 +46,15 @@ class PreComputedPhotoData extends Data
 
 	private function genExifHash(Photo $photo): string
 	{
-		$exifHash = $photo->make;
-		$exifHash .= $photo->model;
-		$exifHash .= $photo->shutter;
+		$exif_hash = $photo->make;
+		$exif_hash .= $photo->model;
+		$exif_hash .= $photo->shutter;
 		if (!$photo->isVideo()) {
-			$exifHash .= $photo->aperture;
-			$exifHash .= $photo->focal;
+			$exif_hash .= $photo->aperture;
+			$exif_hash .= $photo->focal;
 		}
-		$exifHash .= $photo->iso;
+		$exif_hash .= $photo->iso;
 
-		return $exifHash;
+		return $exif_hash;
 	}
 }

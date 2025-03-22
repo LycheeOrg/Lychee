@@ -28,17 +28,17 @@ class VersionResource extends Data
 			$this->version = resolve(InstalledVersion::class)->getVersion()->toString();
 		}
 
-		$fileVersion = resolve(FileVersion::class);
-		$gitHubVersion = resolve(GitHubVersion::class);
+		$file_version = resolve(FileVersion::class);
+		$git_hub_version = resolve(GitHubVersion::class);
 
 		if (Configs::getValueAsBool('check_for_updates')) {
 			// @codeCoverageIgnoreStart
-			$fileVersion->hydrate();
-			$gitHubVersion->hydrate();
+			$file_version->hydrate();
+			$git_hub_version->hydrate();
 			// @codeCoverageIgnoreEnd
 		}
 
-		$this->is_new_release_available = !$fileVersion->isUpToDate();
-		$this->is_git_update_available = !$gitHubVersion->isUpToDate();
+		$this->is_new_release_available = !$file_version->isUpToDate();
+		$this->is_git_update_available = !$git_hub_version->isUpToDate();
 	}
 }
