@@ -104,7 +104,7 @@ const { spliter } = useSplitter();
 const photosTimeLine = computed<SplitData<App.Http.Resources.Models.PhotoResource>[]>(() =>
 	spliter(
 		props.photos as App.Http.Resources.Models.PhotoResource[],
-		(p: App.Http.Resources.Models.PhotoResource) => p.timeline?.timeDate ?? "",
+		(p: App.Http.Resources.Models.PhotoResource) => p.timeline?.time_date ?? "",
 		(p: App.Http.Resources.Models.PhotoResource) => p.timeline?.format ?? "Others",
 	),
 );
