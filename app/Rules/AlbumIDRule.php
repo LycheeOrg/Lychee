@@ -12,15 +12,13 @@ use App\Constants\RandomID;
 use App\Enum\SmartAlbumType;
 use Illuminate\Contracts\Validation\ValidationRule;
 
-class AlbumIDRule implements ValidationRule
+final class AlbumIDRule implements ValidationRule
 {
 	use ValidateTrait;
 
-	protected bool $isNullable;
-
-	public function __construct(bool $isNullable)
-	{
-		$this->isNullable = $isNullable;
+	public function __construct(
+		protected bool $is_nullable,
+	) {
 	}
 
 	/**
@@ -29,7 +27,7 @@ class AlbumIDRule implements ValidationRule
 	public function passes(string $attribute, mixed $value): bool
 	{
 		return
-			($value === null && $this->isNullable) ||
+			($value === null && $this->is_nullable) ||
 			strlen($value) === RandomID::ID_LENGTH ||
 			SmartAlbumType::tryFrom($value) !== null;
 	}
@@ -40,7 +38,7 @@ class AlbumIDRule implements ValidationRule
 	public function message(): string
 	{
 		return ':attribute must be' .
-			($this->isNullable ? ' either null, or' : '') .
+			($this->is_nullable ? ' either null, or' : '') .
 			' a string with ' . RandomID::ID_LENGTH . ' characters or one of the built-in IDs ' .
 			implode(', ', SmartAlbumType::values());
 	}

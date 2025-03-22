@@ -14,15 +14,12 @@ use LycheeVerify\Contract\VerifyInterface;
 /**
  * This rule is designed specifically to avoid path injection.
  */
-class BooleanRequireSupportRule implements ValidationRule
+final class BooleanRequireSupportRule implements ValidationRule
 {
-	protected VerifyInterface $verify;
-	protected bool $expected;
-
-	public function __construct(bool $expected, VerifyInterface $verify)
+	public function __construct(
+		protected bool $expected,
+		protected VerifyInterface $verify)
 	{
-		$this->verify = $verify;
-		$this->expected = $expected;
 	}
 
 	/**
