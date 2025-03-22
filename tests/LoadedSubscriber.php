@@ -39,6 +39,7 @@ final class LoadedSubscriber implements LoadedSubscriberInterface
 			if (User::query()->count() > 0) {
 				User::truncate();
 			}
+
 			return;
 		}
 
