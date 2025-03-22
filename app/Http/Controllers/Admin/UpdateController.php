@@ -29,11 +29,8 @@ use Illuminate\View\View;
  */
 class UpdateController extends Controller
 {
-	protected ApplyUpdate $applyUpdate;
-
-	public function __construct(ApplyUpdate $applyUpdate)
+	public function __construct(protected ApplyUpdate $apply_update)
 	{
-		$this->applyUpdate = $applyUpdate;
 	}
 
 	/**
@@ -45,19 +42,19 @@ class UpdateController extends Controller
 	 *
 	 * @return UpdateInfo
 	 */
-	public function get(UpdateRequest $request, VersionInfo $versionInfo, DockerVersionInfo $dockerVersionInfo): UpdateInfo
+	public function get(UpdateRequest $request, VersionInfo $version_info, DockerVersionInfo $docker_version_info): UpdateInfo
 	{
 		/** @var VersionChannelType $channelName */
-		$channelName = $versionInfo->getChannelName();
-		$info = $versionInfo->file_version->getVersion()->toString();
+		$channel_name = $version_info->getChannelName();
+		$info = $version_info->file_version->getVersion()->toString();
 		$extra = '';
 
-		if ($channelName !== VersionChannelType::RELEASE) {
-			if ($versionInfo->github_functions->local_head !== null) {
-				$branch = $versionInfo->github_functions->local_branch ?? '??';
-				$commit = $versionInfo->github_functions->local_head ?? '??';
+		if ($channel_name !== VersionChannelType::RELEASE) {
+			if ($version_info->github_functions->local_head !== null) {
+				$branch = $version_info->github_functions->local_branch ?? '??';
+				$commit = $version_info->github_functions->local_head ?? '??';
 				$info = sprintf('%s (%s)', $branch, $commit);
-				$extra = $versionInfo->github_functions->getBehindTest();
+				$extra = $version_info->github_functions->getBehindTest();
 			} else {
 				// @codeCoverageIgnoreStart
 				$info = 'No git data found.';
@@ -65,7 +62,7 @@ class UpdateController extends Controller
 			}
 		}
 
-		return new UpdateInfo($info, $extra, $channelName, $dockerVersionInfo->isDocker());
+		return new UpdateInfo($info, $extra, $channel_name, $docker_version_info->isDocker());
 	}
 
 	/**
@@ -73,9 +70,9 @@ class UpdateController extends Controller
 	 *
 	 * @return UpdateCheckInfo
 	 */
-	public function check(UpdateRequest $request, GitHubVersion $gitHubFunctions, VersionInfo $versionInfo, DockerVersionInfo $dockerVersionInfo): UpdateCheckInfo
+	public function check(UpdateRequest $request, GitHubVersion $git_hub_functions, VersionInfo $version_info, DockerVersionInfo $docker_version_info): UpdateCheckInfo
 	{
-		return new UpdateCheckInfo($gitHubFunctions->getBehindTest(), !$dockerVersionInfo->isDocker() && (!$gitHubFunctions->isUpToDate() || !$versionInfo->file_version->isUpToDate()));
+		return new UpdateCheckInfo($git_hub_functions->getBehindTest(), !$docker_version_info->isDocker() && (!$git_hub_functions->isUpToDate() || !$version_info->file_version->isUpToDate()));
 	}
 
 	/**
@@ -95,7 +92,7 @@ class UpdateController extends Controller
 	{
 		UpdatableCheck::assertUpdatability();
 
-		return ['updateMsgs' => $this->applyUpdate->run()];
+		return ['updateMsgs' => $this->apply_update->run()];
 	}
 
 	/**
@@ -115,7 +112,7 @@ class UpdateController extends Controller
 	{
 		UpdatableCheck::assertUpdatability();
 
-		$output = $this->applyUpdate->run();
+		$output = $this->apply_update->run();
 
 		return view('update.results', ['code' => '200', 'message' => 'Upgrade results', 'output' => $output]);
 	}
@@ -142,7 +139,7 @@ class UpdateController extends Controller
 	public function migrate(MigrateRequest $request): View|Response
 	{
 		$output = [];
-		$output = $this->applyUpdate->run();
+		$output = $this->apply_update->run();
 
 		return view('update.results', ['code' => '200', 'message' => 'Migration results', 'output' => $output]);
 	}

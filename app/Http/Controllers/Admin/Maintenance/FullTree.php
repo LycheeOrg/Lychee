@@ -30,9 +30,9 @@ class FullTree extends Controller
 	 */
 	public function do(FullTreeUpdateRequest $request): void
 	{
-		$keyName = 'id';
-		$albumInstance = new Album();
-		batch()->update($albumInstance, $request->albums(), $keyName);
+		$key_name = 'id';
+		$album_instance = new Album();
+		batch()->update($album_instance, $request->albums(), $key_name);
 
 		AlbumRouteCacheUpdated::dispatch();
 	}

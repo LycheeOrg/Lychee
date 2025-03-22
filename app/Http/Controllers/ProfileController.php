@@ -34,37 +34,37 @@ class ProfileController extends Controller
 	 *
 	 * @return UserResource
 	 */
-	public function update(UpdateProfileRequest $request, UpdateLogin $updateLogin): UserResource
+	public function update(UpdateProfileRequest $request, UpdateLogin $update_login): UserResource
 	{
 		/** @var User $currentUser */
-		$currentUser = Auth::user();
+		$current_user = Auth::user();
 
 		if ($request->username() !== null &&
 			$request->username() !== '' &&
 			Configs::getValueAsBool('allow_username_change')) {
-			$updateLogin->updateUsername($currentUser, $request->username(), $request->ip());
+			$update_login->updateUsername($current_user, $request->username(), $request->ip());
 		}
 
-		$currentUser = $updateLogin->updatePassword(
-			$currentUser,
+		$current_user = $update_login->updatePassword(
+			$current_user,
 			$request->password()
 		);
 
-		$currentUser = $updateLogin->updateEmail(
-			$currentUser,
+		$current_user = $update_login->updateEmail(
+			$current_user,
 			$request->email()
 		);
 
-		$currentUser->save();
+		$current_user->save();
 
 		TaggedRouteCacheUpdated::dispatch(CacheTag::USER);
 
 		// Update the session with the new credentials of the user.
 		// Otherwise, the session is out-of-sync and falsely assumes the user
 		// to be unauthenticated upon the next request.
-		Auth::login($currentUser);
+		Auth::login($current_user);
 
-		return new UserResource($currentUser);
+		return new UserResource($current_user);
 	}
 
 	/**
@@ -76,9 +76,9 @@ class ProfileController extends Controller
 	 * @throws ModelDBException
 	 * @throws \Exception
 	 */
-	public function resetToken(ChangeTokenRequest $request, TokenReset $tokenReset): UserToken
+	public function resetToken(ChangeTokenRequest $request, TokenReset $token_reset): UserToken
 	{
-		$token = $tokenReset->do();
+		$token = $token_reset->do();
 
 		TaggedRouteCacheUpdated::dispatch(CacheTag::USER);
 
@@ -93,9 +93,9 @@ class ProfileController extends Controller
 	 * @throws UnauthenticatedException
 	 * @throws ModelDBException
 	 */
-	public function unsetToken(ChangeTokenRequest $request, TokenDisable $tokenDisable): void
+	public function unsetToken(ChangeTokenRequest $request, TokenDisable $token_disable): void
 	{
-		$tokenDisable->do();
+		$token_disable->do();
 
 		TaggedRouteCacheUpdated::dispatch(CacheTag::USER);
 	}
