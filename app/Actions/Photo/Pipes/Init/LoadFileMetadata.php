@@ -25,14 +25,14 @@ class LoadFileMetadata implements InitPipe
 	 */
 	public function handle(InitDTO $state, \Closure $next): InitDTO
 	{
-		$state->exifInfo = Extractor::createFromFile($state->sourceFile, $state->fileLastModifiedTime);
+		$state->exif_info = Extractor::createFromFile($state->source_file, $state->file_last_modified_time);
 
 		// Use basename of file if IPTC title missing
 		if (
-			$state->exifInfo->title === null ||
-			$state->exifInfo->title === ''
+			$state->exif_info->title === null ||
+			$state->exif_info->title === ''
 		) {
-			$state->exifInfo->title = substr($state->sourceFile->getOriginalBasename(), 0, 98);
+			$state->exif_info->title = substr($state->source_file->getOriginalBasename(), 0, 98);
 		}
 
 		return $next($state);

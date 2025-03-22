@@ -40,11 +40,11 @@ use LycheeVerify\Verify;
 class Create
 {
 	/** @var ImportParam the strategy parameters prepared and compiled by this class */
-	protected ImportParam $strategyParameters;
+	protected ImportParam $strategy_parameters;
 
 	public function __construct(?ImportMode $import_mode, int $intended_owner_id)
 	{
-		$this->strategyParameters = new ImportParam($import_mode, $intended_owner_id);
+		$this->strategy_parameters = new ImportParam($import_mode, $intended_owner_id);
 	}
 
 	/**
@@ -56,9 +56,9 @@ class Create
 	 * This method may create a new database entry or update an existing
 	 * database entry.
 	 *
-	 * @param NativeLocalFile    $sourceFile           the source file
-	 * @param int|null           $fileLastModifiedTime the timestamp to use if there's no creation date in Exif
-	 * @param AbstractAlbum|null $album                the targeted parent album
+	 * @param NativeLocalFile    $source_file             the source file
+	 * @param int|null           $file_last_modified_time the timestamp to use if there's no creation date in Exif
+	 * @param AbstractAlbum|null $album                   the targeted parent album
 	 *
 	 * @return Photo the newly created or updated photo
 	 *
@@ -71,21 +71,21 @@ class Create
 		$this->checkQuota($source_file);
 
 		if (Features::inactive('create-photo-via-pipes')) {
-			$old_code_path = new LegacyPhotoCreate($this->strategyParameters->importMode, $this->strategyParameters->intendedOwnerId);
+			$old_code_path = new LegacyPhotoCreate($this->strategy_parameters->import_mode, $this->strategy_parameters->intended_owner_id);
 
 			return $old_code_path->add($source_file, $album, $file_last_modified_time);
 		}
 
-		$init_d_t_o = new InitDTO(
-			parameters: $this->strategyParameters,
-			sourceFile: $source_file,
+		$init_dto = new InitDTO(
+			parameters: $this->strategy_parameters,
+			source_file: $source_file,
 			album: $album,
-			fileLastModifiedTime: $file_last_modified_time
+			file_last_modified_time: $file_last_modified_time
 		);
 
 		/** @var InitDTO $initDTO */
-		$init_d_t_o = app(Pipeline::class)
-			->send($init_d_t_o)
+		$init_dto = app(Pipeline::class)
+			->send($init_dto)
 			->through([
 				Init\AssertSupportedMedia::class,
 				Init\FetchLastModifiedTime::class,
@@ -96,21 +96,21 @@ class Create
 			])
 			->thenReturn();
 
-		if ($init_d_t_o->duplicate !== null) {
-			return $this->handleDuplicate($init_d_t_o);
+		if ($init_dto->duplicate !== null) {
+			return $this->handleDuplicate($init_dto);
 		}
 
-		if ($init_d_t_o->livePartner === null) {
-			return $this->handleStandalone($init_d_t_o);
+		if ($init_dto->live_partner === null) {
+			return $this->handleStandalone($init_dto);
 		}
 
 		// livePartner !== null
 		if ($source_file->isSupportedVideo()) {
-			return $this->handleVideoLivePartner($init_d_t_o);
+			return $this->handleVideoLivePartner($init_dto);
 		}
 
 		if ($source_file->isSupportedImage()) {
-			return $this->handlePhotoLivePartner($init_d_t_o);
+			return $this->handlePhotoLivePartner($init_dto);
 		}
 
 		throw new LycheeLogicException('Pipe system for importing video failed');
@@ -126,12 +126,12 @@ class Create
 	 * @throws PhotoResyncedException
 	 * @throws PhotoSkippedException
 	 */
-	private function handleDuplicate(InitDTO $init_d_t_o): Photo
+	private function handleDuplicate(InitDTO $init_dto): Photo
 	{
-		$dto = DuplicateDTO::ofInit($init_d_t_o);
+		$dto = DuplicateDTO::ofInit($init_dto);
 
 		$pipes = [];
-		if ($dto->shallResyncMetadata) {
+		if ($dto->shall_resync_metadata) {
 			$pipes[] = Shared\HydrateMetadata::class;
 			$pipes[] = Duplicate\SaveIfDirty::class;
 		}
@@ -154,9 +154,9 @@ class Create
 		}
 	}
 
-	private function handleStandalone(InitDTO $init_d_t_o): Photo
+	private function handleStandalone(InitDTO $init_dto): Photo
 	{
-		$dto = StandaloneDTO::ofInit($init_d_t_o);
+		$dto = StandaloneDTO::ofInit($init_dto);
 
 		$pipes = [
 			Standalone\FixTimeStamps::class,
@@ -181,9 +181,9 @@ class Create
 		return $this->executePipeOnDTO($pipes, $dto)->getPhoto();
 	}
 
-	private function handleVideoLivePartner(InitDTO $init_d_t_o): Photo
+	private function handleVideoLivePartner(InitDTO $init_dto): Photo
 	{
-		$dto = VideoPartnerDTO::ofInit($init_d_t_o);
+		$dto = VideoPartnerDTO::ofInit($init_dto);
 
 		$pipes = [
 			VideoPartner\GetVideoPath::class,
@@ -239,13 +239,13 @@ class Create
 	 * requires the photo file to be a native, local file in order to be able to
 	 * extract EXIF data.
 	 */
-	private function handlePhotoLivePartner(InitDTO $init_d_t_o): Photo
+	private function handlePhotoLivePartner(InitDTO $init_dto): Photo
 	{
 		// Save old video.
-		$old_video = $init_d_t_o->livePartner;
+		$old_video = $init_dto->live_partner;
 
 		// Import Photo as stand alone.
-		$stand_alone_dto = StandaloneDTO::ofInit($init_d_t_o);
+		$stand_alone_dto = StandaloneDTO::ofInit($init_dto);
 		$stand_alone_pipes = [
 			Standalone\FixTimeStamps::class,
 			Standalone\InitNamingStrategy::class,
@@ -268,10 +268,10 @@ class Create
 		$stand_alone_dto = $this->executePipeOnDTO($stand_alone_pipes, $stand_alone_dto);
 
 		// Use file from video as input for Video Partner and import
-		$video_partner_d_t_o = new VideoPartnerDTO(
-			videoFile: $old_video->size_variants->getOriginal()->getFile(),
-			shallDeleteImported: true,
-			shallImportViaSymlink: false,
+		$video_partner_dto = new VideoPartnerDTO(
+			video_file: $old_video->size_variants->getOriginal()->getFile(),
+			shall_delete_imported: true,
+			shall_import_via_symlink: false,
 			photo: $stand_alone_dto->getPhoto()
 		);
 		$video_partner_pipes = [
@@ -280,11 +280,11 @@ class Create
 			VideoPartner\UpdateLivePartner::class,
 			Shared\Save::class,
 		];
-		$video_partner_d_t_o = $this->executePipeOnDTO($video_partner_pipes, $video_partner_d_t_o);
+		$video_partner_dto = $this->executePipeOnDTO($video_partner_pipes, $video_partner_dto);
 
-		$finalize_d_t_o = new PhotoPartnerDTO(
-			photo: $video_partner_d_t_o->photo,
-			oldVideo: $old_video
+		$finalize_dto = new PhotoPartnerDTO(
+			photo: $video_partner_dto->photo,
+			old_video: $old_video
 		);
 
 		// Finalize
@@ -294,7 +294,7 @@ class Create
 			Shared\Save::class,
 		];
 
-		return $this->executePipeOnDTO($finalize, $finalize_d_t_o)->getPhoto();
+		return $this->executePipeOnDTO($finalize, $finalize_dto)->getPhoto();
 	}
 
 	/**
@@ -318,7 +318,7 @@ class Create
 			return;
 		}
 
-		$user = User::find($this->strategyParameters->intendedOwnerId) ?? throw new ModelNotFoundException();
+		$user = User::find($this->strategy_parameters->intended_owner_id) ?? throw new ModelNotFoundException();
 
 		// User does not have quota
 		if ($user->quota_kb === null) {

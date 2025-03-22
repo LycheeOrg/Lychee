@@ -26,7 +26,7 @@ class AssertSupportedMedia implements InitPipe
 	 */
 	public function handle(InitDTO $state, \Closure $next): InitDTO
 	{
-		$state->sourceFile->assertIsSupportedMediaOrAcceptedRaw();
+		$state->source_file->assertIsSupportedMediaOrAcceptedRaw();
 
 		return $next($state);
 	}

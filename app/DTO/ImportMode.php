@@ -13,22 +13,22 @@ namespace App\DTO;
  */
 final readonly class ImportMode
 {
-	public bool $shallDeleteImported;
-	public bool $shallSkipDuplicates;
-	public bool $shallImportViaSymlink;
-	public bool $shallResyncMetadata;
+	public readonly bool $shall_delete_imported;
+	public readonly bool $shall_skip_duplicates;
+	public readonly bool $shall_import_via_symlink;
+	public readonly bool $shall_resync_metadata;
 
 	public function __construct(
-		bool $deleteImported = false,
-		bool $skipDuplicates = false,
-		bool $importViaSymlink = false,
-		bool $resyncMetadata = false,
+		bool $delete_imported = false,
+		bool $skip_duplicates = false,
+		bool $import_via_symlink = false,
+		bool $resync_metadata = false,
 	) {
-		$this->shallDeleteImported = $deleteImported;
-		$this->shallSkipDuplicates = $skipDuplicates;
+		$this->shall_delete_imported = $delete_imported;
+		$this->shall_skip_duplicates = $skip_duplicates;
 		// avoid incompatible settings (delete originals takes precedence over symbolic links)
-		$this->shallImportViaSymlink = $deleteImported ? false : $importViaSymlink;
+		$this->shall_import_via_symlink = $delete_imported ? false : $import_via_symlink;
 		// (re-syncing metadata makes no sense when importing duplicates)
-		$this->shallResyncMetadata = !$skipDuplicates ? false : $resyncMetadata;
+		$this->shall_resync_metadata = !$skip_duplicates ? false : $resync_metadata;
 	}
 }

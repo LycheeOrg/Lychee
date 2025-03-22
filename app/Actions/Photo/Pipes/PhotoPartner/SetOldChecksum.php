@@ -16,7 +16,7 @@ class SetOldChecksum implements PhotoPartnerPipe
 	public function handle(PhotoPartnerDTO $state, \Closure $next): PhotoPartnerDTO
 	{
 		// As the video is uploaded already, we must copy over the checksum
-		$state->photo->live_photo_checksum = $state->oldVideo->checksum;
+		$state->photo->live_photo_checksum = $state->old_video->checksum;
 
 		return $next($state);
 	}

@@ -32,7 +32,7 @@ abstract class AbstractAddStrategy
 
 	/**
 	 * Hydrates meta-info of the media file from the
-	 * {@link ImportParam::$exifInfo} attribute of the associated
+	 * {@link ImportParam::$exif_info} attribute of the associated
 	 * {@link ImportParam} object into the associated {@link Photo}
 	 * object.
 	 *
@@ -48,59 +48,59 @@ abstract class AbstractAddStrategy
 	protected function hydrateMetadata(): void
 	{
 		if ($this->photo->title === null) {
-			$this->photo->title = $this->parameters->exifInfo->title;
+			$this->photo->title = $this->parameters->exif_info->title;
 		}
 		if ($this->photo->description === null) {
-			$this->photo->description = $this->parameters->exifInfo->description;
+			$this->photo->description = $this->parameters->exif_info->description;
 		}
 		if (count($this->photo->tags) === 0) {
-			$this->photo->tags = $this->parameters->exifInfo->tags;
+			$this->photo->tags = $this->parameters->exif_info->tags;
 		}
 		if ($this->photo->type === null) {
-			$this->photo->type = $this->parameters->exifInfo->type;
+			$this->photo->type = $this->parameters->exif_info->type;
 		}
 		if ($this->photo->iso === null) {
-			$this->photo->iso = $this->parameters->exifInfo->iso;
+			$this->photo->iso = $this->parameters->exif_info->iso;
 		}
 		if ($this->photo->aperture === null) {
-			$this->photo->aperture = $this->parameters->exifInfo->aperture;
+			$this->photo->aperture = $this->parameters->exif_info->aperture;
 		}
 		if ($this->photo->make === null) {
-			$this->photo->make = $this->parameters->exifInfo->make;
+			$this->photo->make = $this->parameters->exif_info->make;
 		}
 		if ($this->photo->model === null) {
-			$this->photo->model = $this->parameters->exifInfo->model;
+			$this->photo->model = $this->parameters->exif_info->model;
 		}
 		if ($this->photo->lens === null) {
-			$this->photo->lens = $this->parameters->exifInfo->lens;
+			$this->photo->lens = $this->parameters->exif_info->lens;
 		}
 		if ($this->photo->shutter === null) {
-			$this->photo->shutter = $this->parameters->exifInfo->shutter;
+			$this->photo->shutter = $this->parameters->exif_info->shutter;
 		}
 		if ($this->photo->focal === null) {
-			$this->photo->focal = $this->parameters->exifInfo->focal;
+			$this->photo->focal = $this->parameters->exif_info->focal;
 		}
 		if ($this->photo->taken_at === null) {
-			$this->photo->taken_at = $this->parameters->exifInfo->taken_at;
-			$this->photo->initial_taken_at = $this->parameters->exifInfo->taken_at;
+			$this->photo->taken_at = $this->parameters->exif_info->taken_at;
+			$this->photo->initial_taken_at = $this->parameters->exif_info->taken_at;
 		}
 		if ($this->photo->latitude === null) {
-			$this->photo->latitude = $this->parameters->exifInfo->latitude;
+			$this->photo->latitude = $this->parameters->exif_info->latitude;
 		}
 		if ($this->photo->longitude === null) {
-			$this->photo->longitude = $this->parameters->exifInfo->longitude;
+			$this->photo->longitude = $this->parameters->exif_info->longitude;
 		}
 		if ($this->photo->altitude === null) {
-			$this->photo->altitude = $this->parameters->exifInfo->altitude;
+			$this->photo->altitude = $this->parameters->exif_info->altitude;
 		}
 		if ($this->photo->img_direction === null) {
-			$this->photo->img_direction = $this->parameters->exifInfo->imgDirection;
+			$this->photo->img_direction = $this->parameters->exif_info->img_direction;
 		}
 		if ($this->photo->location === null) {
-			$this->photo->location = $this->parameters->exifInfo->location;
+			$this->photo->location = $this->parameters->exif_info->location;
 		}
 		if ($this->photo->live_photo_content_id === null) {
-			$this->photo->live_photo_content_id = $this->parameters->exifInfo->livePhotoContentID;
+			$this->photo->live_photo_content_id = $this->parameters->exif_info->live_photo_content_id;
 		}
 	}
 
@@ -120,7 +120,7 @@ abstract class AbstractAddStrategy
 			// Avoid unnecessary DB request, when we access the album of a
 			// photo later (e.g. when a notification is sent).
 			$this->photo->setRelation('album', null);
-			$this->photo->owner_id = $this->parameters->intendedOwnerId;
+			$this->photo->owner_id = $this->parameters->intended_owner_id;
 		}
 	}
 }

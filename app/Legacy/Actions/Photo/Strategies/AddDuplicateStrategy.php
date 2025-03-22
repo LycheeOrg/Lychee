@@ -34,7 +34,7 @@ final class AddDuplicateStrategy extends AbstractAddStrategy
 
 		// At least update the existing photo with additional metadata if
 		// available
-		if ($this->parameters->importMode->shallResyncMetadata) {
+		if ($this->parameters->import_mode->shall_resync_metadata) {
 			$this->hydrateMetadata();
 			if ($this->photo->isDirty()) {
 				Log::notice(__METHOD__ . ':' . __LINE__ . ' Updating metadata of existing photo.');
@@ -43,7 +43,7 @@ final class AddDuplicateStrategy extends AbstractAddStrategy
 			}
 		}
 
-		if ($this->parameters->importMode->shallSkipDuplicates) {
+		if ($this->parameters->import_mode->shall_skip_duplicates) {
 			if ($hasBeenReSynced) {
 				throw new PhotoResyncedException();
 			} else {

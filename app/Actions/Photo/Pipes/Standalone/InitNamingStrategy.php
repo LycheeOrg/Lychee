@@ -16,10 +16,10 @@ class InitNamingStrategy implements StandalonePipe
 {
 	public function handle(StandaloneDTO $state, \Closure $next): StandaloneDTO
 	{
-		$state->namingStrategy = resolve(AbstractSizeVariantNamingStrategy::class);
-		$state->namingStrategy->setPhoto($state->photo);
-		$state->namingStrategy->setExtension(
-			$state->sourceFile->getOriginalExtension()
+		$state->naming_strategy = resolve(AbstractSizeVariantNamingStrategy::class);
+		$state->naming_strategy->setPhoto($state->photo);
+		$state->naming_strategy->setExtension(
+			$state->source_file->getOriginalExtension()
 		);
 
 		return $next($state);

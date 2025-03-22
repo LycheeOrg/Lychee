@@ -28,7 +28,7 @@ class SetParentAndOwnership implements SharedPipe
 			// Avoid unnecessary DB request, when we access the album of a
 			// photo later (e.g. when a notification is sent).
 			$state->photo->setRelation('album', null);
-			$state->photo->owner_id = $state->intendedOwnerId;
+			$state->photo->owner_id = $state->intended_owner_id;
 		}
 
 		return $next($state);

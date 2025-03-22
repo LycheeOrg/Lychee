@@ -43,7 +43,7 @@ class FromUrl
 		$result = new Collection();
 		$exceptions = [];
 		$create = new Create(
-			new ImportMode(deleteImported: true, skipDuplicates: Configs::getValueAsBool('skip_duplicates')),
+			new ImportMode(delete_imported: true, skip_duplicates: Configs::getValueAsBool('skip_duplicates')),
 			$intended_owner_id
 		);
 

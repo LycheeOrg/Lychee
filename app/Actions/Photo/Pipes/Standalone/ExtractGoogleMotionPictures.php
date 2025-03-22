@@ -18,7 +18,7 @@ class ExtractGoogleMotionPictures implements StandalonePipe
 {
 	public function handle(StandaloneDTO $state, \Closure $next): StandaloneDTO
 	{
-		if ($state->exifInfo->microVideoOffset === 0) {
+		if ($state->exif_info->micro_video_offset === 0) {
 			return $next($state);
 		}
 
@@ -27,13 +27,13 @@ class ExtractGoogleMotionPictures implements StandalonePipe
 		// file and stash it away, before the original file is moved into
 		// its (potentially remote) final position
 		try {
-			$state->tmpVideoFile = new TemporaryLocalFile(GoogleMotionPictureHandler::FINAL_VIDEO_FILE_EXTENSION, $state->sourceFile->getBasename());
+			$state->tmp_video_file = new TemporaryLocalFile(GoogleMotionPictureHandler::FINAL_VIDEO_FILE_EXTENSION, $state->source_file->getBasename());
 			$gmp_handler = new GoogleMotionPictureHandler();
-			$gmp_handler->load($state->sourceFile, $state->exifInfo->microVideoOffset);
-			$gmp_handler->saveVideoStream($state->tmpVideoFile);
+			$gmp_handler->load($state->source_file, $state->exif_info->micro_video_offset);
+			$gmp_handler->saveVideoStream($state->tmp_video_file);
 		} catch (\Throwable $e) {
 			Handler::reportSafely($e);
-			$state->tmpVideoFile = null;
+			$state->tmp_video_file = null;
 		}
 
 		return $next($state);

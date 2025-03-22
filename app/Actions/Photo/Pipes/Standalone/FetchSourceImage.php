@@ -21,20 +21,20 @@ class FetchSourceImage implements StandalonePipe
 		try {
 			if ($state->photo->isVideo()) {
 				$video_handler = new VideoHandler();
-				$video_handler->load($state->sourceFile);
+				$video_handler->load($state->source_file);
 				$position = is_numeric($state->photo->aperture) ? floatval($state->photo->aperture) / 2 : 0.0;
-				$state->sourceImage = $video_handler->extractFrame($position);
+				$state->source_image = $video_handler->extractFrame($position);
 			} else {
 				// Load source image if it is a supported photo format
-				$state->sourceImage = new ImageHandler();
-				$state->sourceImage->load($state->sourceFile);
+				$state->source_image = new ImageHandler();
+				$state->source_image->load($state->source_file);
 			}
 		} catch (\Throwable $t) {
 			// This may happen for videos if FFmpeg is not available to
 			// extract a still frame, or for raw files (Imagick may be
 			// able to convert them to jpeg, but there are no
 			// guarantees, and Imagick may not be available).
-			$state->sourceImage = null;
+			$state->source_image = null;
 
 			// Log an error without failing.
 			Handler::reportSafely($t);

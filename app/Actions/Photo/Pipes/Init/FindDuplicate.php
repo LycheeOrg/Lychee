@@ -23,7 +23,7 @@ class FindDuplicate implements InitPipe
 	 */
 	public function handle(InitDTO $state, \Closure $next): InitDTO
 	{
-		$checksum = StreamStat::createFromLocalFile($state->sourceFile)->checksum;
+		$checksum = StreamStat::createFromLocalFile($state->source_file)->checksum;
 
 		$state->duplicate = Photo::query()
 			->where('checksum', '=', $checksum)

@@ -80,8 +80,8 @@ final class Create
 		// proper strategy
 		$duplicate = $this->get_duplicate(StreamStat::createFromLocalFile($sourceFile)->checksum);
 		$livePartner = $this->findLivePartner(
-			$this->strategyParameters->exifInfo->livePhotoContentID,
-			$this->strategyParameters->exifInfo->type,
+			$this->strategyParameters->exif_info->live_photo_content_id,
+			$this->strategyParameters->exif_info->type,
 			$this->strategyParameters->album
 		);
 
@@ -122,7 +122,7 @@ final class Create
 
 	/**
 	 * Extracts the meta-data of the source file and initializes
-	 * {@link ImportParam::$exifInfo} of {@link Create::$strategyParameters}.
+	 * {@link ImportParam::$exif_info} of {@link Create::$strategyParameters}.
 	 *
 	 * @param NativeLocalFile $sourceFile           the source file
 	 * @param int             $fileLastModifiedTime the timestamp to use if there's no creation date in Exif
@@ -135,14 +135,14 @@ final class Create
 	 */
 	protected function loadFileMetadata(NativeLocalFile $sourceFile, int $fileLastModifiedTime): void
 	{
-		$this->strategyParameters->exifInfo = Extractor::createFromFile($sourceFile, $fileLastModifiedTime);
+		$this->strategyParameters->exif_info = Extractor::createFromFile($sourceFile, $fileLastModifiedTime);
 
 		// Use basename of file if IPTC title missing
 		if (
-			$this->strategyParameters->exifInfo->title === null ||
-			$this->strategyParameters->exifInfo->title === ''
+			$this->strategyParameters->exif_info->title === null ||
+			$this->strategyParameters->exif_info->title === ''
 		) {
-			$this->strategyParameters->exifInfo->title = substr($sourceFile->getOriginalBasename(), 0, 98);
+			$this->strategyParameters->exif_info->title = substr($sourceFile->getOriginalBasename(), 0, 98);
 		}
 	}
 

@@ -19,7 +19,7 @@ class PhotoPartnerDTO implements PhotoDTO
 
 	public function __construct(
 		public readonly Photo $photo,
-		public readonly Photo $oldVideo,
+		public readonly Photo $old_video,
 	) {
 	}
 
