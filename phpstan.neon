@@ -3,7 +3,7 @@ includes:
 	- vendor/lychee-org/phpstan-lychee/phpstan.neon
 	- phpstan-baseline.neon
 parameters:
-	level: 1
+	level: 2
 	treatPhpDocTypesAsCertain: false
 	paths:
 		- app
