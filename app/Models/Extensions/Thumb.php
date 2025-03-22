@@ -32,13 +32,13 @@ class Thumb extends AbstractDTO
 	public ?string $thumb2xUrl;
 	public ?string $placeholderUrl;
 
-	protected function __construct(string $id, string $type, string $thumbUrl, ?string $thumb2xUrl = null, ?string $placeholderUrl = null)
+	protected function __construct(string $id, string $type, string $thumb_url, ?string $thumb2x_url = null, ?string $placeholder_url = null)
 	{
 		$this->id = $id;
 		$this->type = $type;
-		$this->thumbUrl = $thumbUrl;
-		$this->thumb2xUrl = $thumb2xUrl;
-		$this->placeholderUrl = $placeholderUrl;
+		$this->thumbUrl = $thumb_url;
+		$this->thumb2xUrl = $thumb2x_url;
+		$this->placeholderUrl = $placeholder_url;
 	}
 
 	/**
@@ -51,12 +51,12 @@ class Thumb extends AbstractDTO
 	 */
 	public static function sizeVariantsFilter(HasMany $relation): HasMany
 	{
-		$svAlbumThumbs = [SizeVariantType::THUMB, SizeVariantType::THUMB2X, SizeVariantType::PLACEHOLDER];
+		$sv_album_thumbs = [SizeVariantType::THUMB, SizeVariantType::THUMB2X, SizeVariantType::PLACEHOLDER];
 		if (Features::active('vuejs')) {
-			$svAlbumThumbs = [SizeVariantType::SMALL, SizeVariantType::SMALL2X, SizeVariantType::THUMB, SizeVariantType::THUMB2X, SizeVariantType::PLACEHOLDER];
+			$sv_album_thumbs = [SizeVariantType::SMALL, SizeVariantType::SMALL2X, SizeVariantType::THUMB, SizeVariantType::THUMB2X, SizeVariantType::PLACEHOLDER];
 		}
 
-		return $relation->whereIn('type', $svAlbumThumbs);
+		return $relation->whereIn('type', $sv_album_thumbs);
 	}
 
 	/**
@@ -68,19 +68,19 @@ class Thumb extends AbstractDTO
 	 * @template TDeclaringModel of \Illuminate\Database\Eloquent\Model
 	 * @template TResult
 	 *
-	 * @param Relation<Photo,TDeclaringModel,TResult>|Builder<Photo> $photoQueryable the relation to or query for {@link Photo} which is used to pick a thumb
-	 * @param SortingCriterion                                       $sorting        the sorting criterion
+	 * @param Relation<Photo,TDeclaringModel,TResult>|Builder<Photo> $photo_queryable the relation to or query for {@link Photo} which is used to pick a thumb
+	 * @param SortingCriterion                                       $sorting         the sorting criterion
 	 *
 	 * @return Thumb|null the created thumbnail; null if the relation is empty
 	 *
 	 * @throws InvalidPropertyException thrown, if $sortingOrder neither
 	 *                                  equals `desc` nor `asc`
 	 */
-	public static function createFromQueryable(Relation|Builder $photoQueryable, SortingCriterion $sorting): ?Thumb
+	public static function createFromQueryable(Relation|Builder $photo_queryable, SortingCriterion $sorting): ?Thumb
 	{
 		try {
 			/** @var Photo|null $cover */
-			$cover = $photoQueryable
+			$cover = $photo_queryable
 				->withOnly(['size_variants' => (fn ($r) => self::sizeVariantsFilter($r))])
 				->orderBy('photos.' . ColumnSortingPhotoType::IS_STARRED->value, OrderSortingType::DESC->value)
 				->orderBy('photos.' . $sorting->column->value, $sorting->order->value)
@@ -105,7 +105,7 @@ class Thumb extends AbstractDTO
 	 * @template TDeclaringModel of \Illuminate\Database\Eloquent\Model
 	 * @template TResult
 	 *
-	 * @param Relation<Photo,TDeclaringModel,TResult>|Builder<Photo> $photoQueryable the relation to or query for {@link Photo} which is used to pick a thumb
+	 * @param Relation<Photo,TDeclaringModel,TResult>|Builder<Photo> $photo_queryable the relation to or query for {@link Photo} which is used to pick a thumb
 	 *
 	 * @return Thumb|null the created thumbnail; null if the relation is empty
 	 *
@@ -115,11 +115,11 @@ class Thumb extends AbstractDTO
 	 * @codeCoverageIgnore We don't need to test that one.
 	 * Note that the inRandomOrder maybe slower than fetching length + random int.
 	 */
-	public static function createFromRandomQueryable(Relation|Builder $photoQueryable): ?Thumb
+	public static function createFromRandomQueryable(Relation|Builder $photo_queryable): ?Thumb
 	{
 		try {
 			/** @var Photo|null $cover */
-			$cover = $photoQueryable
+			$cover = $photo_queryable
 				->withOnly(['size_variants' => (fn ($r) => self::sizeVariantsFilter($r))])
 				->inRandomOrder()
 				->select(['photos.id', 'photos.type'])
