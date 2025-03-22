@@ -12,7 +12,7 @@ use App\Constants\RandomID;
 use App\Enum\SmartAlbumType;
 use Illuminate\Contracts\Validation\ValidationRule;
 
-class AlbumIDListRule implements ValidationRule
+final class AlbumIDListRule implements ValidationRule
 {
 	use ValidateTrait;
 
@@ -24,11 +24,11 @@ class AlbumIDListRule implements ValidationRule
 		if (!is_string($value)) {
 			return false;
 		}
-		$albumIDs = explode(',', $value);
-		$idRule = new AlbumIDRule(false);
+		$album_ids = explode(',', $value);
+		$id_rule = new AlbumIDRule(false);
 		$success = true;
-		foreach ($albumIDs as $albumID) {
-			$success = $success && $idRule->passes('', $albumID);
+		foreach ($album_ids as $album_id) {
+			$success = $success && $id_rule->passes('', $album_id);
 		}
 
 		return $success;

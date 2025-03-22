@@ -11,7 +11,7 @@ namespace App\Rules;
 use App\Models\Configs;
 use Illuminate\Contracts\Validation\ValidationRule;
 
-class ConfigKeyRule implements ValidationRule
+final class ConfigKeyRule implements ValidationRule
 {
 	/**
 	 * {@inheritDoc}

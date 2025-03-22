@@ -12,15 +12,13 @@ use App\Models\Configs;
 use Illuminate\Contracts\Validation\ValidationRule;
 use LycheeVerify\Contract\VerifyInterface;
 
-class ConfigKeyRequireSupportRule implements ValidationRule
+final class ConfigKeyRequireSupportRule implements ValidationRule
 {
 	use ValidateTrait;
 
-	protected VerifyInterface $verify;
-
-	public function __construct(VerifyInterface $verify)
-	{
-		$this->verify = $verify;
+	public function __construct(
+		protected VerifyInterface $verify,
+	) {
 	}
 
 	/**

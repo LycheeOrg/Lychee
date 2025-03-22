@@ -14,7 +14,7 @@ use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
-class CurrentPasswordRule implements ValidationRule
+final class CurrentPasswordRule implements ValidationRule
 {
 	use ValidateTrait;
 

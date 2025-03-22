@@ -18,7 +18,7 @@ use Illuminate\Support\Str;
 /**
  * This rule is designed specifically to avoid path injection.
  */
-class FileUuidRule implements DataAwareRule, ValidationRule
+final class FileUuidRule implements DataAwareRule, ValidationRule
 {
 	/**
 	 * All of the data under validation.

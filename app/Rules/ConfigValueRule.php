@@ -14,7 +14,7 @@ use Illuminate\Contracts\Validation\DataAwareRule;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Support\Collection;
 
-class ConfigValueRule implements DataAwareRule, ValidationRule
+final class ConfigValueRule implements DataAwareRule, ValidationRule
 {
 	use ValidateTrait;
 

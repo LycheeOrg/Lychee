@@ -8,7 +8,7 @@
 
 namespace App\Rules;
 
-class CopyrightRule extends StringRule
+final class CopyrightRule extends StringRule
 {
 	public function __construct()
 	{

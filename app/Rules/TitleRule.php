@@ -8,7 +8,7 @@
 
 namespace App\Rules;
 
-class TitleRule extends StringRule
+final class TitleRule extends StringRule
 {
 	public function __construct()
 	{

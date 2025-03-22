@@ -14,33 +14,22 @@ use LycheeVerify\Contract\VerifyInterface;
 /**
  * This rule is designed specifically to avoid path injection.
  */
-class EnumRequireSupportRule implements ValidationRule
+final class EnumRequireSupportRule implements ValidationRule
 {
-	/**
-	 * The type of the enum.
-	 *
-	 * @var class-string
-	 */
-	protected $type;
-
-	protected VerifyInterface $verify;
-	/** @var array<int,mixed> This is usually a container of allowed values for backed enum */
-	protected array $expected;
-
 	/**
 	 * Create a new rule instance.
 	 *
-	 * @param class-string     $type
-	 * @param array<int,mixed> $expected
+	 * @param class-string     $type     the type of the enum
+	 * @param array<int,mixed> $expected This is usually a container of allowed values for backed enum
 	 * @param VerifyInterface  $verify
 	 *
 	 * @return void
 	 */
-	public function __construct(mixed $type, array $expected, VerifyInterface $verify)
+	public function __construct(
+		protected mixed $type,
+		protected array $expected,
+		protected VerifyInterface $verify)
 	{
-		$this->type = $type;
-		$this->verify = $verify;
-		$this->expected = $expected;
 	}
 
 	/**
