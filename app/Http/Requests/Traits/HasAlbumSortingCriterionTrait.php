@@ -12,13 +12,13 @@ use App\DTO\AlbumSortingCriterion;
 
 trait HasAlbumSortingCriterionTrait
 {
-	protected ?AlbumSortingCriterion $albumSortingCriterion = null;
+	protected ?AlbumSortingCriterion $album_sorting_criterion = null;
 
 	/**
 	 * @return AlbumSortingCriterion|null
 	 */
 	public function albumSortingCriterion(): ?AlbumSortingCriterion
 	{
-		return $this->albumSortingCriterion;
+		return $this->album_sorting_criterion;
 	}
 }

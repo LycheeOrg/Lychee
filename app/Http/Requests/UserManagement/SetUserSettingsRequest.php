@@ -38,8 +38,8 @@ class SetUserSettingsRequest extends BaseApiRequest implements HasUsername, HasP
 	use HasQuotaKBTrait;
 	use HasNoteTrait;
 
-	protected bool $mayUpload = false;
-	protected bool $mayEditOwnSettings = false;
+	protected bool $may_upload = false;
+	protected bool $may_edit_own_settings = false;
 
 	/**
 	 * {@inheritDoc}
@@ -79,11 +79,11 @@ class SetUserSettingsRequest extends BaseApiRequest implements HasUsername, HasP
 		} else {
 			$this->password = null;
 		}
-		$this->mayUpload = static::toBoolean($values[RequestAttribute::MAY_UPLOAD_ATTRIBUTE]);
-		$this->mayEditOwnSettings = static::toBoolean($values[RequestAttribute::MAY_EDIT_OWN_SETTINGS_ATTRIBUTE]);
+		$this->may_upload = static::toBoolean($values[RequestAttribute::MAY_UPLOAD_ATTRIBUTE]);
+		$this->may_edit_own_settings = static::toBoolean($values[RequestAttribute::MAY_EDIT_OWN_SETTINGS_ATTRIBUTE]);
 		/** @var int $userID */
-		$userID = $values[RequestAttribute::ID_ATTRIBUTE];
-		$this->user2 = User::query()->findOrFail($userID);
+		$user_id = $values[RequestAttribute::ID_ATTRIBUTE];
+		$this->user2 = User::query()->findOrFail($user_id);
 		$has_quota = static::toBoolean($values[RequestAttribute::HAS_QUOTA_ATTRIBUTE] ?? false);
 		$this->quota_kb = $has_quota ? intval($values[RequestAttribute::QUOTA_ATTRIBUTE]) : null;
 		$this->note = $values[RequestAttribute::NOTE_ATTRIBUTE] ?? '';
@@ -91,11 +91,11 @@ class SetUserSettingsRequest extends BaseApiRequest implements HasUsername, HasP
 
 	public function mayUpload(): bool
 	{
-		return $this->mayUpload;
+		return $this->may_upload;
 	}
 
 	public function mayEditOwnSettings(): bool
 	{
-		return $this->mayEditOwnSettings;
+		return $this->may_edit_own_settings;
 	}
 }

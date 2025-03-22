@@ -13,13 +13,13 @@ trait HasPhotoIdsTrait
 	/**
 	 * @var string[]
 	 */
-	protected array $photoIds = [];
+	protected array $photo_ids = [];
 
 	/**
 	 * @return string[]
 	 */
 	public function photoIds(): array
 	{
-		return $this->photoIds;
+		return $this->photo_ids;
 	}
 }

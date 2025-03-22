@@ -55,8 +55,8 @@ class GetSearchRequest extends BaseApiRequest implements HasAbstractAlbum, HasTe
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$albumId = $values[RequestAttribute::ALBUM_ID_ATTRIBUTE] ?? null;
-		$this->album = $this->albumFactory->findNullalbleAbstractAlbumOrFail($albumId);
+		$album_id = $values[RequestAttribute::ALBUM_ID_ATTRIBUTE] ?? null;
+		$this->album = $this->album_factory->findNullalbleAbstractAlbumOrFail($album_id);
 
 		// Escape special characters for a LIKE query
 		$this->terms = explode(' ', str_replace(

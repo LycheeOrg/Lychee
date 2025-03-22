@@ -13,13 +13,13 @@ trait HasAlbumIdsTrait
 	/**
 	 * @var string[]
 	 */
-	protected array $albumIds = [];
+	protected array $album_ids = [];
 
 	/**
 	 * @return string[]
 	 */
 	public function albumIds(): array
 	{
-		return $this->albumIds;
+		return $this->album_ids;
 	}
 }

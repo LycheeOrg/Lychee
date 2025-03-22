@@ -50,8 +50,8 @@ class FrameRequest extends BaseApiRequest implements HasAbstractAlbum
 			throw new UnauthorizedException();
 		}
 
-		$randomAlbumId = Configs::getValueAsString('random_album_id');
-		$albumId = $values[RequestAttribute::ALBUM_ID_ATTRIBUTE] ?? (($randomAlbumId !== '') ? $randomAlbumId : null);
-		$this->album = $this->albumFactory->findNullalbleAbstractAlbumOrFail($albumId);
+		$random_album_id = Configs::getValueAsString('random_album_id');
+		$album_id = $values[RequestAttribute::ALBUM_ID_ATTRIBUTE] ?? (($random_album_id !== '') ? $random_album_id : null);
+		$this->album = $this->album_factory->findNullalbleAbstractAlbumOrFail($album_id);
 	}
 }

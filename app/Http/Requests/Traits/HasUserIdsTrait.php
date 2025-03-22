@@ -13,13 +13,13 @@ trait HasUserIdsTrait
 	/**
 	 * @var array<int>
 	 */
-	protected array $userIds = [];
+	protected array $user_ids = [];
 
 	/**
 	 * @return array<int>
 	 */
 	public function userIds(): array
 	{
-		return $this->userIds;
+		return $this->user_ids;
 	}
 }

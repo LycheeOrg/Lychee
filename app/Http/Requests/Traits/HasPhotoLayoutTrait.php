@@ -12,13 +12,13 @@ use App\Enum\PhotoLayoutType;
 
 trait HasPhotoLayoutTrait
 {
-	protected ?PhotoLayoutType $photoLayout = null;
+	protected ?PhotoLayoutType $photo_layout = null;
 
 	/**
 	 * @return PhotoLayoutType|null
 	 */
 	public function photoLayout(): ?PhotoLayoutType
 	{
-		return $this->photoLayout;
+		return $this->photo_layout;
 	}
 }

@@ -12,13 +12,13 @@ use App\Enum\DownloadVariantType;
 
 trait HasSizeVariantTrait
 {
-	protected ?DownloadVariantType $sizeVariant;
+	protected ?DownloadVariantType $size_variant;
 
 	/**
 	 * @return ?DownloadVariantType
 	 */
 	public function sizeVariant(): ?DownloadVariantType
 	{
-		return $this->sizeVariant;
+		return $this->size_variant;
 	}
 }

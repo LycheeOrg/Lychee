@@ -27,8 +27,8 @@ use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
 abstract class BaseApiRequest extends FormRequest
 {
-	protected AlbumFactory $albumFactory;
-	protected VerifyInterface $verify;
+	protected readonly AlbumFactory $album_factory;
+	protected readonly VerifyInterface $verify;
 
 	/**
 	 * @throws FrameworkException
@@ -43,7 +43,7 @@ abstract class BaseApiRequest extends FormRequest
 		$content = null,
 	) {
 		try {
-			$this->albumFactory = resolve(AlbumFactory::class);
+			$this->album_factory = resolve(AlbumFactory::class);
 			$this->verify = resolve(Verify::class);
 			parent::__construct($query, $request, $attributes, $cookies, $files, $server, $content);
 		} catch (BindingResolutionException $e) {

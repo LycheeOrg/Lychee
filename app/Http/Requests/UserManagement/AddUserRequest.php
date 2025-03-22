@@ -37,8 +37,8 @@ class AddUserRequest extends BaseApiRequest implements HasUsername, HasPassword,
 	use HasQuotaKBTrait;
 	use HasNoteTrait;
 
-	protected bool $mayUpload = false;
-	protected bool $mayEditOwnSettings = false;
+	protected bool $may_upload = false;
+	protected bool $may_edit_own_settings = false;
 
 	/**
 	 * {@inheritDoc}
@@ -71,8 +71,8 @@ class AddUserRequest extends BaseApiRequest implements HasUsername, HasPassword,
 	{
 		$this->username = $values[RequestAttribute::USERNAME_ATTRIBUTE];
 		$this->password = $values[RequestAttribute::PASSWORD_ATTRIBUTE];
-		$this->mayUpload = static::toBoolean($values[RequestAttribute::MAY_UPLOAD_ATTRIBUTE]);
-		$this->mayEditOwnSettings = static::toBoolean($values[RequestAttribute::MAY_EDIT_OWN_SETTINGS_ATTRIBUTE]);
+		$this->may_upload = static::toBoolean($values[RequestAttribute::MAY_UPLOAD_ATTRIBUTE]);
+		$this->may_edit_own_settings = static::toBoolean($values[RequestAttribute::MAY_EDIT_OWN_SETTINGS_ATTRIBUTE]);
 		$has_quota = static::toBoolean($values[RequestAttribute::HAS_QUOTA_ATTRIBUTE] ?? false);
 		$this->quota_kb = $has_quota ? intval($values[RequestAttribute::QUOTA_ATTRIBUTE]) : null;
 		$this->note = $values[RequestAttribute::NOTE_ATTRIBUTE] ?? '';
@@ -80,11 +80,11 @@ class AddUserRequest extends BaseApiRequest implements HasUsername, HasPassword,
 
 	public function mayUpload(): bool
 	{
-		return $this->mayUpload;
+		return $this->may_upload;
 	}
 
 	public function mayEditOwnSettings(): bool
 	{
-		return $this->mayEditOwnSettings;
+		return $this->may_edit_own_settings;
 	}
 }

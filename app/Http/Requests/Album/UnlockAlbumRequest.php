@@ -46,7 +46,7 @@ class UnlockAlbumRequest extends BaseApiRequest implements HasBaseAlbum, HasPass
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->album = $this->albumFactory->findBaseAlbumOrFail(
+		$this->album = $this->album_factory->findBaseAlbumOrFail(
 			$values[RequestAttribute::ALBUM_ID_ATTRIBUTE]
 		);
 		$this->password = $values[RequestAttribute::PASSWORD_ATTRIBUTE];

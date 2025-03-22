@@ -12,13 +12,13 @@ use App\Enum\AspectRatioType;
 
 trait HasAspectRatioTrait
 {
-	protected ?AspectRatioType $aspectRatio = null;
+	protected ?AspectRatioType $aspect_ratio = null;
 
 	/**
 	 * @return AspectRatioType|null
 	 */
 	public function aspectRatio(): ?AspectRatioType
 	{
-		return $this->aspectRatio;
+		return $this->aspect_ratio;
 	}
 }

@@ -29,8 +29,8 @@ class SetAlbumProtectionPolicyRequest extends BaseApiRequest implements HasAbstr
 	use HasAbstractAlbumTrait;
 	use HasPasswordTrait;
 
-	protected bool $isPasswordProvided;
-	protected AlbumProtectionPolicy $albumProtectionPolicy;
+	protected bool $is_password_provided;
+	protected AlbumProtectionPolicy $album_protection_policy;
 
 	/**
 	 * {@inheritDoc}
@@ -66,10 +66,10 @@ class SetAlbumProtectionPolicyRequest extends BaseApiRequest implements HasAbstr
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->album = $this->albumFactory->findAbstractAlbumOrFail(
+		$this->album = $this->album_factory->findAbstractAlbumOrFail(
 			$values[RequestAttribute::ALBUM_ID_ATTRIBUTE]
 		);
-		$this->albumProtectionPolicy = new AlbumProtectionPolicy(
+		$this->album_protection_policy = new AlbumProtectionPolicy(
 			is_public: static::toBoolean($values[RequestAttribute::IS_PUBLIC_ATTRIBUTE]),
 			is_link_required: static::toBoolean($values[RequestAttribute::IS_LINK_REQUIRED_ATTRIBUTE]),
 			is_nsfw: static::toBoolean($values[RequestAttribute::IS_NSFW_ATTRIBUTE]),
@@ -77,8 +77,8 @@ class SetAlbumProtectionPolicyRequest extends BaseApiRequest implements HasAbstr
 			grants_download: static::toBoolean($values[RequestAttribute::GRANTS_DOWNLOAD_ATTRIBUTE]),
 			grants_upload: static::toBoolean($values[RequestAttribute::GRANTS_UPLOAD_ATTRIBUTE]),
 		);
-		$this->isPasswordProvided = array_key_exists(RequestAttribute::PASSWORD_ATTRIBUTE, $values);
-		$this->password = $this->isPasswordProvided ? $values[RequestAttribute::PASSWORD_ATTRIBUTE] : null;
+		$this->is_password_provided = array_key_exists(RequestAttribute::PASSWORD_ATTRIBUTE, $values);
+		$this->password = $this->is_password_provided ? $values[RequestAttribute::PASSWORD_ATTRIBUTE] : null;
 	}
 
 	/**
@@ -86,11 +86,11 @@ class SetAlbumProtectionPolicyRequest extends BaseApiRequest implements HasAbstr
 	 */
 	public function albumProtectionPolicy(): AlbumProtectionPolicy
 	{
-		return $this->albumProtectionPolicy;
+		return $this->album_protection_policy;
 	}
 
 	public function isPasswordProvided(): bool
 	{
-		return $this->isPasswordProvided;
+		return $this->is_password_provided;
 	}
 }

@@ -39,7 +39,7 @@ class AddSharingRequest extends BaseApiRequest implements HasAlbumIds, HasUserId
 	 */
 	public function authorize(): bool
 	{
-		return Gate::check(AlbumPolicy::CAN_SHARE_ID, [AbstractAlbum::class, $this->albumIds]);
+		return Gate::check(AlbumPolicy::CAN_SHARE_ID, [AbstractAlbum::class, $this->albumIds()]);
 	}
 
 	/**
@@ -65,9 +65,9 @@ class AddSharingRequest extends BaseApiRequest implements HasAlbumIds, HasUserId
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->albumIds = $values[RequestAttribute::ALBUM_IDS_ATTRIBUTE];
-		$this->userIds = $values[RequestAttribute::USER_IDS_ATTRIBUTE];
-		$this->permResource = new AccessPermissionResource(
+		$this->album_ids = $values[RequestAttribute::ALBUM_IDS_ATTRIBUTE];
+		$this->user_ids = $values[RequestAttribute::USER_IDS_ATTRIBUTE];
+		$this->perm_resource = new AccessPermissionResource(
 			grants_edit: static::toBoolean($values[RequestAttribute::GRANTS_EDIT_ATTRIBUTE]),
 			grants_delete: static::toBoolean($values[RequestAttribute::GRANTS_DELETE_ATTRIBUTE]),
 			grants_download: static::toBoolean($values[RequestAttribute::GRANTS_DOWNLOAD_ATTRIBUTE]),

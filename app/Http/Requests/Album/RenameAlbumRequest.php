@@ -49,7 +49,7 @@ class RenameAlbumRequest extends BaseApiRequest implements HasTitle, HasBaseAlbu
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->album = $this->albumFactory->findBaseAlbumOrFail($values[RequestAttribute::ALBUM_ID_ATTRIBUTE]);
+		$this->album = $this->album_factory->findBaseAlbumOrFail($values[RequestAttribute::ALBUM_ID_ATTRIBUTE]);
 		$this->title = $values[RequestAttribute::TITLE_ATTRIBUTE];
 	}
 }

@@ -51,6 +51,6 @@ class DeleteAlbumsRequest extends BaseApiRequest implements HasBaseAlbum, HasAlb
 		// As we are going to delete the albums anyway, we don't load the
 		// models for efficiency reasons.
 		// Instead, we use mass deletion via low-level SQL queries later.
-		$this->albumIds = $values[RequestAttribute::ALBUM_IDS_ATTRIBUTE];
+		$this->album_ids = $values[RequestAttribute::ALBUM_IDS_ATTRIBUTE];
 	}
 }
