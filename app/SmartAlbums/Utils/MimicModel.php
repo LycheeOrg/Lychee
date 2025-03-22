@@ -35,9 +35,9 @@ trait MimicModel
 			throw new LycheeInvalidArgumentException('property name must not be empty');
 		}
 
-		$studlyKey = Str::studly($key);
-		$getter = 'get' . $studlyKey . 'Attribute';
-		$studlyKey = lcfirst($studlyKey);
+		$studly_key = Str::studly($key);
+		$getter = 'get' . $studly_key . 'Attribute';
+		$studly_key = lcfirst($studly_key);
 
 		if (method_exists($this, $getter)) {
 			/** @phpstan-ignore-next-line PhpStan does not like variadic calls */
@@ -45,11 +45,11 @@ trait MimicModel
 		} elseif (property_exists($this, $key)) {
 			/** @phpstan-ignore-next-line PhpStan does not like variadic calls */
 			return $this->{$key};
-		} elseif (property_exists($this, $studlyKey)) {
+		} elseif (property_exists($this, $studly_key)) {
 			/** @phpstan-ignore-next-line PhpStan does not like variadic calls */
-			return $this->{$studlyKey};
+			return $this->{$studly_key};
 		} else {
-			throw new LycheeInvalidArgumentException('neither property nor getter method exist for [' . $getter . '/' . $key . '/' . $studlyKey . ']');
+			throw new LycheeInvalidArgumentException('neither property nor getter method exist for [' . $getter . '/' . $key . '/' . $studly_key . ']');
 		}
 	}
 
