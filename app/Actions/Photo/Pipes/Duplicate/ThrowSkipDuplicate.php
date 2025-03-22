@@ -21,7 +21,7 @@ class ThrowSkipDuplicate implements DuplicatePipe
 			return $next($state);
 		}
 
-		if ($state->has_been_re_synced ?? false) {
+		if ($state->has_been_resynced ?? false) {
 			throw new PhotoResyncedException();
 		}
 		throw new PhotoSkippedException();
