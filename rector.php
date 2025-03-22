@@ -24,5 +24,10 @@ $rectorConfig = RectorConfig::configure()
     ->withCodeQualityLevel(0);
 $rectorConfig->withRules([
 	VariableCasingRector::class,
+])->withSkip([
+    VariableCasingRector::class => [
+        __DIR__ . '/app/Assets/ArrayToTextTable.php',
+    ],
+    __DIR__ . '/app/Metadata/Laminas/Unicode.php',
 ]);
 return $rectorConfig;
