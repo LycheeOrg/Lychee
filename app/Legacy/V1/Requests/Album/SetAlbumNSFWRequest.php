@@ -43,7 +43,7 @@ final class SetAlbumNSFWRequest extends BaseApiRequest implements HasBaseAlbum
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->album = $this->albumFactory->findBaseAlbumOrFail(
+		$this->album = $this->album_factory->findBaseAlbumOrFail(
 			$values[RequestAttribute::ALBUM_ID_ATTRIBUTE]
 		);
 		$this->isNSFW = static::toBoolean($values[RequestAttribute::IS_NSFW_ATTRIBUTE]);

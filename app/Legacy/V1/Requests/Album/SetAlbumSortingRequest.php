@@ -47,7 +47,7 @@ final class SetAlbumSortingRequest extends BaseApiRequest implements HasBaseAlbu
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->album = $this->albumFactory->findBaseAlbumOrFail($values[RequestAttribute::ALBUM_ID_ATTRIBUTE]);
+		$this->album = $this->album_factory->findBaseAlbumOrFail($values[RequestAttribute::ALBUM_ID_ATTRIBUTE]);
 
 		$column = ColumnSortingPhotoType::tryFrom($values[RequestAttribute::SORTING_COLUMN_ATTRIBUTE]);
 		$order = OrderSortingType::tryFrom($values[RequestAttribute::SORTING_ORDER_ATTRIBUTE]);
