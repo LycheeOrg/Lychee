@@ -18,8 +18,6 @@ use App\Http\Resources\Search\InitResource;
 use App\Http\Resources\Search\ResultsResource;
 use App\Models\Album;
 use App\Models\Configs;
-use App\Models\Photo;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Routing\Controller;
 
 /**
@@ -29,10 +27,6 @@ class SearchController extends Controller
 {
 	/**
 	 * Return init Search.
-	 *
-	 * @param InitSearchRequest $request
-	 *
-	 * @return InitResource
 	 */
 	public function init(InitSearchRequest $request): InitResource
 	{
@@ -41,12 +35,6 @@ class SearchController extends Controller
 
 	/**
 	 * Get the search results given a query.
-	 *
-	 * @param GetSearchRequest $request
-	 * @param AlbumSearch      $albumSearch
-	 * @param PhotoSearch      $photoSearch
-	 *
-	 * @return ResultsResource
 	 */
 	public function search(GetSearchRequest $request, AlbumSearch $album_search, PhotoSearch $photo_search): ResultsResource
 	{
@@ -57,7 +45,6 @@ class SearchController extends Controller
 			$album = null;
 		}
 
-		/** @var LengthAwarePaginator<Photo> $photoResults */
 		/** @disregard P1013 Undefined method withQueryString() (stupid intelephense) */
 		$photo_results = $photo_search
 			->sqlQuery($terms, $album)

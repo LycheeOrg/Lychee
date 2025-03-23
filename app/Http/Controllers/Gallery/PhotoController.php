@@ -49,10 +49,6 @@ class PhotoController extends Controller
 
 	/**
 	 * Upload a picture.
-	 *
-	 * @param UploadPhotoRequest $request
-	 *
-	 * @return UploadMetaResource
 	 */
 	public function upload(UploadPhotoRequest $request): UploadMetaResource
 	{
@@ -110,15 +106,9 @@ class PhotoController extends Controller
 
 	/**
 	 * Upload a picture from a URL.
-	 *
-	 * @param FromUrlRequest $request
-	 * @param FromUrl        $fromUrl
-	 *
-	 * @return string
 	 */
 	public function fromUrl(FromUrlRequest $request, FromUrl $from_url): string
 	{
-		/** @var int $userId */
 		$user_id = Auth::id();
 		$from_url->do($request->urls(), $request->album(), $user_id);
 
@@ -127,10 +117,6 @@ class PhotoController extends Controller
 
 	/**
 	 * Update the info of a picture.
-	 *
-	 * @param EditPhotoRequest $request
-	 *
-	 * @return PhotoResource
 	 */
 	public function update(EditPhotoRequest $request): PhotoResource
 	{
@@ -151,10 +137,6 @@ class PhotoController extends Controller
 
 	/**
 	 * Set the is-starred attribute of the given photos.
-	 *
-	 * @param SetPhotosStarredRequest $request
-	 *
-	 * @return void
 	 */
 	public function star(SetPhotosStarredRequest $request): void
 	{
@@ -166,11 +148,6 @@ class PhotoController extends Controller
 
 	/**
 	 * Moves the photos to an album.
-	 *
-	 * @param MovePhotosRequest $request
-	 * @param Move              $move
-	 *
-	 * @return void
 	 */
 	public function move(MovePhotosRequest $request, Move $move): void
 	{
@@ -179,11 +156,6 @@ class PhotoController extends Controller
 
 	/**
 	 * Delete one or more photos.
-	 *
-	 * @param DeletePhotosRequest $request
-	 * @param Delete              $delete
-	 *
-	 * @return void
 	 */
 	public function delete(DeletePhotosRequest $request, Delete $delete): void
 	{
@@ -193,10 +165,6 @@ class PhotoController extends Controller
 
 	/**
 	 * Given a photoID and a direction (+1: 90° clockwise, -1: 90° counterclockwise) rotate an image.
-	 *
-	 * @param RotatePhotoRequest $request
-	 *
-	 * @return PhotoResource
 	 */
 	public function rotate(RotatePhotoRequest $request): PhotoResource
 	{
@@ -213,11 +181,6 @@ class PhotoController extends Controller
 	/**
 	 * Copy a photos to an album.
 	 * Only the SQL entry is duplicated for space reason.
-	 *
-	 * @param CopyPhotosRequest $request
-	 * @param Duplicate         $duplicate
-	 *
-	 * @return void
 	 */
 	public function copy(CopyPhotosRequest $request, Duplicate $duplicate): void
 	{
@@ -226,10 +189,6 @@ class PhotoController extends Controller
 
 	/**
 	 * Rename a photo.
-	 *
-	 * @param RenamePhotoRequest $request
-	 *
-	 * @return void
 	 */
 	public function rename(RenamePhotoRequest $request): void
 	{
@@ -240,10 +199,6 @@ class PhotoController extends Controller
 
 	/**
 	 * Set the tags of a photo.
-	 *
-	 * @param SetPhotosTagsRequest $request
-	 *
-	 * @return void
 	 */
 	public function tags(SetPhotosTagsRequest $request): void
 	{

@@ -27,9 +27,6 @@ class StatisticsController extends Controller
 	/**
 	 * Fetch the used space per user.
 	 *
-	 * @param SpacePerUserRequest $request
-	 * @param Spaces              $spaces
-	 *
 	 * @return Collection<int,UserSpace>
 	 */
 	public function getSpacePerUser(SpacePerUserRequest $request, Spaces $spaces): Collection
@@ -43,9 +40,6 @@ class StatisticsController extends Controller
 
 	/**
 	 * Fetch the used space per SizeVariant type.
-	 *
-	 * @param SpaceSizeVariantRequest $request
-	 * @param Spaces                  $spaces
 	 *
 	 * @return Collection<int,Sizes>
 	 */
@@ -64,9 +58,6 @@ class StatisticsController extends Controller
 	/**
 	 * Fetch the used space and number of photos per Album (without descendants).
 	 *
-	 * @param SpacePerAlbumRequest $request
-	 * @param Spaces               $spaces
-	 *
 	 * @return Collection<int,Album>
 	 */
 	public function getSpacePerAlbum(SpacePerAlbumRequest $request, Spaces $spaces): Collection
@@ -81,7 +72,6 @@ class StatisticsController extends Controller
 			album_id: $album_id,
 			owner_id: $owner_id);
 
-		/** @var Collection<int,array{0:array{id:string,left:int,right:int,size:int},1:array{id:string,username:string,title:string,is_nsfw:bool,left:int,right:int,num_photos:int,num_descendants:int}}> $zipped */
 		$zipped = $space_data->zip($count_data);
 
 		return $zipped->map(fn ($z) => new Album($z[0], $z[1]));
@@ -90,9 +80,6 @@ class StatisticsController extends Controller
 	/**
 	 * Fetch the used space and number of photos per Album with descendants
 	 * ! Slow query.
-	 *
-	 * @param SpacePerAlbumRequest $request
-	 * @param Spaces               $spaces
 	 *
 	 * @return Collection<int,Album>
 	 */
@@ -108,7 +95,6 @@ class StatisticsController extends Controller
 			album_id: $album_id,
 			owner_id: $owner_id);
 
-		/** @var Collection<int,array{0:array{id:string,left:int,right:int,size:int},1:array{id:string,username:string,title:string,is_nsfw:bool,left:int,right:int,num_photos:int,num_descendants:int}}> $zipped */
 		$zipped = $space_data->zip($count_data);
 
 		return $zipped->map(fn ($z) => new Album($z[0], $z[1]));
@@ -117,10 +103,7 @@ class StatisticsController extends Controller
 	/**
 	 * Fetch the number of uploads/taken_at over time.
 	 *
-	 * @param CountsRequest $request
-	 * @param Counts        $counts  Dependency injection
-	 *
-	 * @return CountsData
+	 * @param Counts $counts Dependency injection
 	 */
 	public function getPhotoCountOverTime(CountsRequest $request, Counts $counts): CountsData
 	{

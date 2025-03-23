@@ -68,10 +68,6 @@ class AlbumController extends Controller
 
 	/**
 	 * Provided an albumID, returns the album.
-	 *
-	 * @param GetAlbumRequest $request
-	 *
-	 * @return AbstractAlbumResource
 	 */
 	public function get(GetAlbumRequest $request): AbstractAlbumResource
 	{
@@ -92,14 +88,9 @@ class AlbumController extends Controller
 
 	/**
 	 * Create an album.
-	 *
-	 * @param AddAlbumRequest $request
-	 *
-	 * @return string
 	 */
 	public function createAlbum(AddAlbumRequest $request): string
 	{
-		/** @var int $ownerId */
 		$owner_id = Auth::id() ?? throw new UnauthenticatedException();
 		$create = new Create($owner_id);
 
@@ -108,10 +99,6 @@ class AlbumController extends Controller
 
 	/**
 	 * Create a tag album.
-	 *
-	 * @param AddTagAlbumRequest $request
-	 *
-	 * @return string
 	 */
 	public function createTagAlbum(AddTagAlbumRequest $request, CreateTagAlbum $create): string
 	{
@@ -123,10 +110,6 @@ class AlbumController extends Controller
 
 	/**
 	 * Update the info of an Album.
-	 *
-	 * @param UpdateAlbumRequest $request
-	 *
-	 * @return EditableBaseAlbumResource
 	 */
 	public function updateAlbum(UpdateAlbumRequest $request, SetHeader $set_header): EditableBaseAlbumResource
 	{
@@ -158,10 +141,6 @@ class AlbumController extends Controller
 
 	/**
 	 * Update the info of a Tag Album.
-	 *
-	 * @param UpdateTagAlbumRequest $request
-	 *
-	 * @return EditableBaseAlbumResource
 	 */
 	public function updateTagAlbum(UpdateTagAlbumRequest $request): EditableBaseAlbumResource
 	{
@@ -184,12 +163,6 @@ class AlbumController extends Controller
 
 	/**
 	 * Update the protection policy of an Abstract Album.
-	 *
-	 * @param SetAlbumProtectionPolicyRequest $request
-	 * @param SetProtectionPolicy             $setProtectionPolicy
-	 * @param SetSmartProtectionPolicy        $setSmartProtectionPolicy
-	 *
-	 * @return AlbumProtectionPolicy
 	 */
 	public function updateProtectionPolicy(
 		SetAlbumProtectionPolicyRequest $request,
@@ -241,8 +214,6 @@ class AlbumController extends Controller
 	 *
 	 * @param DeleteAlbumsRequest $request the request
 	 * @param Delete              $delete  the delete action
-	 *
-	 * @return void
 	 */
 	public function delete(DeleteAlbumsRequest $request, Delete $delete): void
 	{
@@ -252,9 +223,6 @@ class AlbumController extends Controller
 
 	/**
 	 * Get the list of albums.
-	 *
-	 * @param TargetListAlbumRequest $request
-	 * @param ListAlbums             $listAlbums
 	 *
 	 * @return array<string|int,TargetAlbumResource>
 	 */
@@ -268,11 +236,6 @@ class AlbumController extends Controller
 
 	/**
 	 * Merge albums. The first of the list is the destination of the merge.
-	 *
-	 * @param MergeAlbumsRequest $request
-	 * @param Merge              $merge
-	 *
-	 * @return void
 	 */
 	public function merge(MergeAlbumsRequest $request, Merge $merge): void
 	{
@@ -282,11 +245,6 @@ class AlbumController extends Controller
 
 	/**
 	 * Move multiple albums into another album.
-	 *
-	 * @param MoveAlbumsRequest $request
-	 * @param Move              $move
-	 *
-	 * @return void
 	 */
 	public function move(MoveAlbumsRequest $request, Move $move): void
 	{
@@ -296,11 +254,6 @@ class AlbumController extends Controller
 
 	/**
 	 * Transfer the ownership of the album to another user.
-	 *
-	 * @param TransferAlbumRequest $request
-	 * @param Transfer             $transfer
-	 *
-	 * @return void
 	 */
 	public function transfer(TransferAlbumRequest $request, Transfer $transfer): void
 	{
@@ -309,10 +262,6 @@ class AlbumController extends Controller
 
 	/**
 	 * Set the album cover (the square thumb).
-	 *
-	 * @param SetAsCoverRequest $request
-	 *
-	 * @return void
 	 */
 	public function cover(SetAsCoverRequest $request): void
 	{
@@ -323,10 +272,6 @@ class AlbumController extends Controller
 
 	/**
 	 * Set the album header (the hero banner).
-	 *
-	 * @param $request
-	 *
-	 * @return void
 	 */
 	public function header(SetAsHeaderRequest $request, SetHeader $set_header): void
 	{
@@ -335,10 +280,6 @@ class AlbumController extends Controller
 
 	/**
 	 * Rename an album.
-	 *
-	 * @param RenameAlbumRequest $request
-	 *
-	 * @return void
 	 */
 	public function rename(RenameAlbumRequest $request): void
 	{
@@ -349,10 +290,6 @@ class AlbumController extends Controller
 
 	/**
 	 * Return the archive of the pictures of the album and its sub-albums.
-	 *
-	 * @param ZipRequest $request
-	 *
-	 * @return StreamedResponse
 	 */
 	public function getArchive(ZipRequest $request): StreamedResponse
 	{
@@ -365,11 +302,6 @@ class AlbumController extends Controller
 
 	/**
 	 * Provided the albumID and password, return whether the album can be accessed or not.
-	 *
-	 * @param UnlockAlbumRequest $request
-	 * @param Unlock             $unlock
-	 *
-	 * @return void
 	 */
 	public function unlock(UnlockAlbumRequest $request, Unlock $unlock): void
 	{
@@ -378,10 +310,6 @@ class AlbumController extends Controller
 
 	/**
 	 * Upload a track for the Album.
-	 *
-	 * @param SetAlbumTrackRequest $request
-	 *
-	 * @return void
 	 */
 	public function setTrack(SetAlbumTrackRequest $request): void
 	{
@@ -390,10 +318,6 @@ class AlbumController extends Controller
 
 	/**
 	 * Delete a track from the Album.
-	 *
-	 * @param DeleteTrackRequest $request
-	 *
-	 * @return void
 	 */
 	public function deleteTrack(DeleteTrackRequest $request): void
 	{

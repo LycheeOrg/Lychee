@@ -208,17 +208,14 @@ class AlbumFactory
 	/**
 	 * Returns the instance of the built-in smart album with the designated ID.
 	 *
-	 * @param SmartAlbumType $smartAlbumId   the ID of the smart album
+	 * @param SmartAlbumType $smart_album_id the ID of the smart album
 	 * @param bool           $with_relations Eagerly loads the relation {@link BaseSmartAlbum::photos()}
 	 *                                       for the smart album
-	 *
-	 * @return BaseSmartAlbum
 	 *
 	 * @throws InvalidSmartIdException
 	 */
 	public function createSmartAlbum(SmartAlbumType $smart_album_id, bool $with_relations = true): BaseSmartAlbum
 	{
-		/** @var BaseSmartAlbum $smartAlbum */
 		$smart_album = call_user_func(self::BUILTIN_SMARTS_CLASS[$smart_album_id->value] . '::getInstance');
 		if ($with_relations) {
 			// Just try to get the photos.

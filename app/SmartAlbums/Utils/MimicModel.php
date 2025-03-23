@@ -14,7 +14,7 @@ use Illuminate\Support\Str;
 
 trait MimicModel
 {
-	abstract public function toArray(): array;
+	abstract public function toArray();
 
 	/**
 	 * Gets a property dynamically.

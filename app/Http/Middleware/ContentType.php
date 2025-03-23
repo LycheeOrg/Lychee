@@ -26,12 +26,10 @@ class ContentType
 	/**
 	 * Handles the incoming request.
 	 *
-	 * @param Request  $request     the incoming request to serve
-	 * @param \Closure $next        the next operation to be applied to the request
-	 * @param string   $contentType the content type of the request's body;
-	 *                              either {@link ContentType::JSON} or {@link ContentType::MULTIPART}
-	 *
-	 * @return mixed
+	 * @param Request  $request      the incoming request to serve
+	 * @param \Closure $next         the next operation to be applied to the request
+	 * @param string   $content_type the content type of the request's body;
+	 *                               either {@link ContentType::JSON} or {@link ContentType::MULTIPART}
 	 *
 	 * @throws UnexpectedContentType
 	 * @throws LycheeInvalidArgumentException

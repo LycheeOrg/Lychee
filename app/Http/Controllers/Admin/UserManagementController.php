@@ -32,9 +32,6 @@ class UserManagementController extends Controller
 	/**
 	 * Get the list of users for management purposes.
 	 *
-	 * @param ManagmentListUsersRequest $request
-	 * @param Spaces                    $spaces
-	 *
 	 * @return Collection<array-key, UserManagementResource>
 	 */
 	public function list(ManagmentListUsersRequest $request, Spaces $spaces): Collection
@@ -42,7 +39,6 @@ class UserManagementController extends Controller
 		/** @var Collection<int,User> $users */
 		$users = User::select(['id', 'username', 'may_administrate', 'may_upload', 'may_edit_own_settings', 'quota_kb', 'description', 'note'])->orderBy('id', 'asc')->get();
 		$spaces_per_user = $spaces->getFullSpacePerUser();
-		/** @var Collection<int,array{0:User,1:array{id:int,username:string,size:int}}> $zipped */
 		$zipped = $users->zip($spaces_per_user);
 
 		return $zipped->map(fn ($item) => new UserManagementResource($item[0], $item[1], $request->is_se()));
@@ -51,11 +47,6 @@ class UserManagementController extends Controller
 	/**
 	 * Save modification done to a user.
 	 * Note that an admin can change the password of a user at will.
-	 *
-	 * @param SetUserSettingsRequest $request
-	 * @param Save                   $save
-	 *
-	 * @return void
 	 */
 	public function save(SetUserSettingsRequest $request, Save $save): void
 	{
@@ -77,10 +68,6 @@ class UserManagementController extends Controller
 	 *
 	 * The albums and photos owned by the user are re-assigned to the
 	 * admin user.
-	 *
-	 * @param DeleteUserRequest $request
-	 *
-	 * @return void
 	 */
 	public function delete(DeleteUserRequest $request): void
 	{
@@ -94,11 +81,6 @@ class UserManagementController extends Controller
 
 	/**
 	 * Create a new user.
-	 *
-	 * @param AddUserRequest $request
-	 * @param Create         $create
-	 *
-	 * @return UserManagementResource
 	 */
 	public function create(AddUserRequest $request, Create $create): UserManagementResource
 	{

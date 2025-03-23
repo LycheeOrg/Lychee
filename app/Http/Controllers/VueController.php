@@ -33,11 +33,6 @@ class VueController extends Controller
 	public const PASSWORD = 'password';
 
 	/**
-	 * @param string|null $albumId
-	 * @param string|null $photoId
-	 *
-	 * @return View
-	 *
 	 * @throws ModelNotFoundException
 	 * @throws InvalidSmartIdException
 	 * @throws AuthorizationException
@@ -68,8 +63,6 @@ class VueController extends Controller
 
 	/**
 	 * Check if user can access the album.
-	 *
-	 * @param AbstractAlbum $album
 	 *
 	 * @return bool true if access, false if password required
 	 *
