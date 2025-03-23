@@ -109,8 +109,16 @@ phpstan:
 	vendor/bin/phpstan analyze
 
 # Generating new versions
-gen_minor:
+gen_patch:
 	php scripts/gen_release.php
+	git add database
+	git add version.md
+
+release_patch: gen_patch
+	git commit -S -m "bump to version $(shell cat version.md)"
+
+gen_minor:
+	php scripts/gen_release.php minor
 	git add database
 	git add version.md
 
