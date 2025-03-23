@@ -15,12 +15,9 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 #[TypeScript()]
 class AbstractAlbumResource extends Data
 {
-	public AlbumConfig $config;
-	public AlbumResource|SmartAlbumResource|TagAlbumResource|null $resource;
-
-	public function __construct(AlbumConfig $config, AlbumResource|SmartAlbumResource|TagAlbumResource|null $resource)
+	public function __construct(
+		public AlbumConfig $config,
+		public AlbumResource|SmartAlbumResource|TagAlbumResource|null $resource)
 	{
-		$this->config = $config;
-		$this->resource = $resource;
 	}
 }

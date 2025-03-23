@@ -1,6 +1,6 @@
 <template>
 	<Card
-		v-if="data && data.isDocker !== true"
+		v-if="data && data.is_docker !== true"
 		class="min-h-40 dark:bg-surface-800 shadow shadow-surface-950/30 rounded-lg relative"
 		pt:body:class="min-h-40 h-full"
 		pt:content:class="h-full flex justify-between flex-col"
@@ -12,7 +12,7 @@
 		</template>
 		<template #content>
 			<ScrollPanel class="w-full h-40 text-center text-muted-color text-sm">
-				{{ data.channelName }}<br />
+				{{ data.channel_name }}<br />
 				{{ data.info }}<br />
 				{{ data.extra }}
 			</ScrollPanel>

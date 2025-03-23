@@ -150,9 +150,9 @@ class OauthController extends Controller
 				absolute: false);
 
 			$oauth_data[] = new OauthRegistrationData(
-				providerType: $provider,
-				isEnabled: $credentials->search(fn (OauthCredential $c) => $c->provider === $provider) !== false,
-				registrationRoute: $route,
+				provider_type: $provider,
+				is_enabled: $credentials->search(fn (OauthCredential $c) => $c->provider === $provider) !== false,
+				registration_route: $route,
 			);
 		}
 

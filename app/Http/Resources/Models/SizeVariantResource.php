@@ -24,13 +24,13 @@ class SizeVariantResource extends Data
 	public int $width;
 	public ?string $url;
 
-	public function __construct(SizeVariant $sizeVariant, bool $noUrl = false)
+	public function __construct(SizeVariant $size_variant, bool $no_url = false)
 	{
-		$this->type = $sizeVariant->type;
-		$this->locale = $sizeVariant->type->localization();
-		$this->filesize = Helpers::getSymbolByQuantity(floatval($sizeVariant->filesize));
-		$this->height = $sizeVariant->height;
-		$this->width = $sizeVariant->width;
-		$this->url = !$noUrl ? $sizeVariant->url : null;
+		$this->type = $size_variant->type;
+		$this->locale = $size_variant->type->localization();
+		$this->filesize = Helpers::getSymbolByQuantity(floatval($size_variant->filesize));
+		$this->height = $size_variant->height;
+		$this->width = $size_variant->width;
+		$this->url = !$no_url ? $size_variant->url : null;
 	}
 }

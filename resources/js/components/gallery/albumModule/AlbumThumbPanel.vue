@@ -96,7 +96,7 @@ const propagateMenuOpen = (idx: number, e: MouseEvent) => {
 const albumsTimeLine = computed<SplitData<App.Http.Resources.Models.ThumbAlbumResource>[]>(() =>
 	spliter(
 		props.albums as App.Http.Resources.Models.ThumbAlbumResource[],
-		(a: App.Http.Resources.Models.ThumbAlbumResource) => a.timeline?.timeDate ?? "",
+		(a: App.Http.Resources.Models.ThumbAlbumResource) => a.timeline?.time_date ?? "",
 		(a: App.Http.Resources.Models.ThumbAlbumResource) => a.timeline?.format ?? "Others",
 	),
 );

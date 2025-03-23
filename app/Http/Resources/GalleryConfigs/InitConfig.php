@@ -125,12 +125,12 @@ class InitConfig extends Data
 	private function has_clockwork_in_menu(): void
 	{
 		// Defining clockwork URL
-		$clockWorkEnabled = config('clockwork.enable') === true || (config('app.debug') === true && config('clockwork.enable') === null);
-		$clockWorkWeb = config('clockwork.web');
+		$clock_work_enabled = config('clockwork.enable') === true || (config('app.debug') === true && config('clockwork.enable') === null);
+		$clock_work_web = config('clockwork.web');
 
 		$this->clockwork_url = match (true) {
-			$clockWorkEnabled && ($clockWorkWeb === true) => URL::asset('clockwork/app'),
-			is_string($clockWorkWeb) => $clockWorkWeb . '/app',
+			$clock_work_enabled && ($clock_work_web === true) => URL::asset('clockwork/app'),
+			is_string($clock_work_web) => $clock_work_web . '/app',
 			default => null,
 		};
 	}

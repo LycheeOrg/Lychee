@@ -18,8 +18,8 @@ class UpdateInfo extends Data
 	public function __construct(
 		public string $info,
 		public string $extra,
-		public VersionChannelType $channelName,
-		public bool $isDocker,
+		public VersionChannelType $channel_name,
+		public bool $is_docker,
 	) {
 	}
 }

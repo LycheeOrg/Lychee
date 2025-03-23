@@ -56,10 +56,10 @@ function refresh() {
 
 function mapToOauthData(data: App.Http.Resources.Oauth.OauthRegistrationData): OauthData {
 	return {
-		providerType: data.providerType,
-		isEnabled: data.isEnabled,
-		registrationRoute: data.registrationRoute,
-		icon: OauthService.providerIcon(data.providerType),
+		providerType: data.provider_type,
+		isEnabled: data.is_enabled,
+		registrationRoute: data.registration_route,
+		icon: OauthService.providerIcon(data.provider_type),
 	};
 }
 

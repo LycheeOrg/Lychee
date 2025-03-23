@@ -16,9 +16,9 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 class OauthRegistrationData extends Data
 {
 	public function __construct(
-		public OauthProvidersType $providerType,
-		public bool $isEnabled,
-		public string $registrationRoute,
+		public OauthProvidersType $provider_type,
+		public bool $is_enabled,
+		public string $registration_route,
 	) {
 	}
 }

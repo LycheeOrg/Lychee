@@ -155,8 +155,8 @@ declare namespace App.Http.Resources.Diagnostics {
 	export type UpdateInfo = {
 		info: string;
 		extra: string;
-		channelName: App.Enum.VersionChannelType;
-		isDocker: boolean;
+		channel_name: App.Enum.VersionChannelType;
+		is_docker: boolean;
 	};
 }
 declare namespace App.Http.Resources.Editable {
@@ -550,7 +550,7 @@ declare namespace App.Http.Resources.Models.Utils {
 		description: string;
 	};
 	export type TimelineData = {
-		timeDate: string;
+		time_date: string;
 		format: string;
 	};
 	export type UserToken = {
@@ -559,9 +559,9 @@ declare namespace App.Http.Resources.Models.Utils {
 }
 declare namespace App.Http.Resources.Oauth {
 	export type OauthRegistrationData = {
-		providerType: App.Enum.OauthProvidersType;
-		isEnabled: boolean;
-		registrationRoute: string;
+		provider_type: App.Enum.OauthProvidersType;
+		is_enabled: boolean;
+		registration_route: string;
 	};
 }
 declare namespace App.Http.Resources.Rights {
