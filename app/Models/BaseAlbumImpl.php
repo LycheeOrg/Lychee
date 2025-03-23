@@ -31,7 +31,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
 
 /**
- * Class BaseAlbumImpl.
+ * App\Models\BaseAlbumImpl.
  *
  * This class contains the shared implementation of {@link \App\Models\Album}
  * and {@link \App\Models\TagAlbum} which normally would be put into a common

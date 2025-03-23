@@ -513,25 +513,38 @@ const LycheePrimeVueConfig: Preset = {
 			},
 		},
 		menu: {
+			root: {
+				borderRadius: "0",
+				background: "transparent",
+			},
+			submenuLabel: {
+				padding: "1rem 0.75rem 0.5rem 0.75rem",
+			},
 			colorScheme: {
 				light: {
-					root: {
-						borderRadius: "0",
-					},
+					root: {},
 					item: {
 						// color: "{surface.700}",
+					},
+					submenuLabel: {
+						color: "color-mix(in srgb, var(--p-primary-hover-color) calc(100% * 1), transparent)",
 					},
 				},
 				dark: {
 					root: {
 						borderRadius: "0",
-						background: "transparent",
 						// color: "{surface.0}",
 					},
 					item: {
 						color: "{surface.400}",
 						focusBackground: "transparent",
 						focusColor: "{primary.400}",
+					},
+					submenuLabel: {
+						color: "color-mix(in srgb, var(--p-primary-hover-color) calc(100% * 1), transparent)",
+					},
+					separator: {
+						borderColor: "{surface.700}",
 					},
 				},
 			},
@@ -594,6 +607,14 @@ const LycheePrimeVueConfig: Preset = {
 						hoverColor: "{primary.500}",
 					},
 				},
+			},
+		},
+		togglebutton: {
+			root: {
+				padding: "0.15rem",
+			},
+			content: {
+				padding: "0.1rem 0.75rem",
 			},
 		},
 		card: {

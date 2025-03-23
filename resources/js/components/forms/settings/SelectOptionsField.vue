@@ -27,7 +27,7 @@
 	</div>
 	<div
 		v-if="props.config.details || props.details !== undefined"
-		class="w-full text-muted-color text-sm -mt-4"
+		class="w-full text-muted-color text-sm"
 		v-html="props.details ?? props.config.details"
 	/>
 </template>

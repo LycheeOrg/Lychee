@@ -8,10 +8,10 @@
 
 namespace App\Image;
 
+use App\Constants\FileSystem;
 use App\Exceptions\Internal\FileDeletionException;
 use App\Exceptions\MediaFileOperationException;
 use App\Models\SizeVariant;
-use App\Models\SymLink;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use League\Flysystem\Local\LocalFilesystemAdapter;
@@ -145,7 +145,7 @@ class FileDeleter
 
 		// TODO: When we use proper `File` objects, each file knows its associated disk
 		// In the mean time, we assume that any symbolic link is stored on the same disk
-		$symlink_disk = Storage::disk(SymLink::DISK_NAME);
+		$symlink_disk = Storage::disk(FileSystem::SYMLINK);
 		foreach ($this->symbolic_links as $symbolic_link) {
 			try {
 				$absolute_path = $symlink_disk->path($symbolic_link);

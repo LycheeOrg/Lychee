@@ -8,16 +8,14 @@
 
 namespace App\Actions\Diagnostics\Pipes\Checks;
 
+use App\Constants\FileSystem;
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
 use App\Enum\StorageDiskType;
 use App\Exceptions\Handler;
 use App\Exceptions\Internal\InvalidConfigOption;
 use App\Facades\Helpers;
-use App\Http\Controllers\Gallery\PhotoController;
-use App\Image\Files\ProcessableJobFile;
 use App\Models\Configs;
-use App\Models\SymLink;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\Storage;
 use League\Flysystem\Local\LocalFilesystemAdapter;
@@ -124,9 +122,9 @@ class BasicPermissionCheck implements DiagnosticPipe
 
 		$disks = [
 			Storage::disk(StorageDiskType::LOCAL->value),
-			Storage::disk(SymLink::DISK_NAME),
-			Storage::disk(ProcessableJobFile::DISK_NAME),
-			Storage::disk(PhotoController::DISK_NAME),
+			Storage::disk(FileSystem::SYMLINK),
+			Storage::disk(FileSystem::IMAGE_JOBS),
+			Storage::disk(FileSystem::IMAGE_UPLOAD),
 		];
 
 		foreach ($disks as $disk) {
@@ -161,12 +159,12 @@ class BasicPermissionCheck implements DiagnosticPipe
 	 */
 	public function userCSS(array &$data): void
 	{
-		$p = Storage::disk('dist')->path('user.css');
+		$p = Storage::disk(FileSystem::DIST)->path('user.css');
 		if (!Helpers::hasPermissions($p)) {
 			// @codeCoverageIgnoreStart
 			$data[] = DiagnosticData::warn(sprintf("'%s' does not exist or has insufficient read/write privileges.", $this->anonymize($p)), self::class);
 
-			$p = Storage::disk('dist')->path('');
+			$p = Storage::disk(FileSystem::DIST)->path('');
 			if (!Helpers::hasPermissions($p)) {
 				$data[] = DiagnosticData::warn(sprintf("'%s' has insufficient read/write privileges.", $this->anonymize($p)), self::class);
 			}

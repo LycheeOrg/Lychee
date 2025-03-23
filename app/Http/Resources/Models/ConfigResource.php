@@ -21,6 +21,7 @@ class ConfigResource extends Data
 	public string $value;
 	public string $documentation;
 	public string $details;
+	public bool $is_expert;
 	public bool $require_se;
 
 	public function __construct(Configs $c)
@@ -31,6 +32,7 @@ class ConfigResource extends Data
 		$this->documentation = $c->description;
 		$this->details = $c->details;
 		$this->require_se = $c->level > 0;
+		$this->is_expert = $c->is_expert;
 	}
 
 	public static function fromModel(Configs $c): ConfigResource

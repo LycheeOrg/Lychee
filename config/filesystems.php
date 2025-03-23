@@ -8,6 +8,9 @@
  *
  * @return string trimmed result
  */
+
+use App\Constants\FileSystem;
+
 if (!function_exists('renv')) {
 	function renv(string $cst, ?string $default = null): string
 	{
@@ -109,7 +112,7 @@ return [
 		// Lychee uses this disk to store the customized CSS file provided by the user
 		// ATTENTION: This disk MUST ALWAYS point to the local `./public/dist` directory.
 		// TODO: Maybe we should drop this Flysystem disk, because neither the driver nor the root must be changed and hence the whole point of using the Flysystem abstraction is gone.
-		'dist' => [
+		FileSystem::DIST => [
 			'driver' => 'local',
 			'root' => env('LYCHEE_DIST', public_path('dist/')),
 			'url' => env('LYCHEE_DIST_URL', renv_cond('APP_DIR') . '/dist/'),

@@ -194,6 +194,7 @@ Route::get('/Jobs', [Admin\JobsController::class, 'list']);
  * SETTINGS.
  */
 Route::get('/Settings', [Admin\SettingsController::class, 'getAll']);
+Route::get('/Settings::init', [Admin\SettingsController::class, 'getConfig']);
 Route::post('/Settings::setConfigs', [Admin\SettingsController::class, 'setConfigs'])->middleware(['config_integrity']);
 Route::get('/Settings::getLanguages', [Admin\SettingsController::class, 'getLanguages']);
 Route::post('/Settings::setCSS', [Admin\SettingsController::class, 'setCSS']);

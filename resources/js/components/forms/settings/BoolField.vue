@@ -1,20 +1,22 @@
 <template>
-	<div>
-		<div class="flex gap-4 justify-between flex-wrap sm:flex-nowrap">
-			<!-- </IconField> -->
+	<div class="w-full">
+		<div class="w-full flex gap-4 justify-between flex-wrap sm:flex-nowrap min-h-8 items-center">
 			<label
 				:for="props.config.key"
 				class="w-1/2 sm:w-full"
 				:class="props.config.require_se ? 'text-primary-emphasis' : 'text-muted-color-emphasis'"
 				v-html="props.label ?? props.config.documentation"
 			/>
-			<!-- <IconField> -->
 			<span class="flex gap-4">
 				<ResetField v-if="changed" @click="reset" />
 				<ToggleSwitch v-model="val" @update:modelValue="update" :input-id="props.config.key" class="text-sm translate-y-1"></ToggleSwitch>
 			</span>
 		</div>
-		<div v-if="props.config.details || details !== undefined" class="text-muted-color text-sm" v-html="props.details ?? props.config.details" />
+		<div
+			v-if="props.config.details || details !== undefined"
+			class="text-muted-color text-sm w-full"
+			v-html="props.details ?? props.config.details"
+		/>
 	</div>
 </template>
 <script setup lang="ts">
