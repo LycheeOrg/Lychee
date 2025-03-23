@@ -86,7 +86,7 @@ const {
 	hasSelection,
 } = useSelection(photos, children, togglableStore);
 
-const { photoRoute } = usePhotoRoute(togglableStore);
+const { photoRoute } = usePhotoRoute(router);
 
 function photoClick(idx: number, e: MouseEvent) {
 	router.push(photoRoute(photos.value[idx].album_id ?? undefined, photos.value[idx].id));
