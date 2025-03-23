@@ -54,9 +54,9 @@ final class Create
 	 * This method may create a new database entry or update an existing
 	 * database entry.
 	 *
-	 * @param NativeLocalFile    $source_file           the source file
+	 * @param NativeLocalFile    $source_file             the source file
 	 * @param int|null           $file_last_modified_time the timestamp to use if there's no creation date in Exif
-	 * @param AbstractAlbum|null $album                the targeted parent album
+	 * @param AbstractAlbum|null $album                   the targeted parent album
 	 *
 	 * @return Photo the newly created or updated photo
 	 *
@@ -124,7 +124,7 @@ final class Create
 	 * Extracts the meta-data of the source file and initializes
 	 * {@link ImportParam::$exif_info} of {@link Create::$strategy_parameters}.
 	 *
-	 * @param NativeLocalFile $source_file           the source file
+	 * @param NativeLocalFile $source_file             the source file
 	 * @param int             $file_last_modified_time the timestamp to use if there's no creation date in Exif
 	 *
 	 * @return void
@@ -158,7 +158,7 @@ final class Create
 	 *
 	 * @param string|null $content_id the content id to identify a matching partner
 	 * @param string      $mime_type  the mime type of the media which a partner is looked for, e.g. the returned {@link Photo} has an "opposed" mime type
-	 * @param Album|null  $album     the album of which the partner must be member of
+	 * @param Album|null  $album      the album of which the partner must be member of
 	 *
 	 * @return Photo|null The live partner if found
 	 *

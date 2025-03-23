@@ -8,7 +8,6 @@
 
 namespace App\Legacy\Actions\Photo\Strategies;
 
-use App\DTO\ImportParam;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\PhotoResyncedException;
 use App\Exceptions\PhotoSkippedException;

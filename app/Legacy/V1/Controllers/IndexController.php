@@ -193,7 +193,7 @@ final class IndexController extends Controller
 	 *
 	 * @param string|null $title       the specific title; this method prefixes the title with the site title
 	 * @param string|null $description the description; this method appends `' – via Lychee'` to the description
-	 * @param string|null $image_url    an optional URL to an image displayed on the page
+	 * @param string|null $image_url   an optional URL to an image displayed on the page
 	 *
 	 * @throws FrameworkException
 	 * @throws ConfigurationKeyMissingException
