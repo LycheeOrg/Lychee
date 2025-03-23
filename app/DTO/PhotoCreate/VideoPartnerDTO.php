@@ -15,15 +15,15 @@ use App\Models\Photo;
 
 class VideoPartnerDTO implements PhotoDTO
 {
-	public StreamStats|null $streamStat;
-	public string $videoPath;
+	public StreamStats|null $stream_stat;
+	public string $video_path;
 
 	public function __construct(
-		public readonly BaseMediaFile $videoFile,
+		public readonly BaseMediaFile $video_file,
 		// The resulting photo
 		public readonly Photo $photo,
-		public readonly bool $shallImportViaSymlink,
-		public readonly bool $shallDeleteImported,
+		public readonly bool $shall_import_via_symlink,
+		public readonly bool $shall_delete_imported,
 	) {
 	}
 
@@ -32,13 +32,13 @@ class VideoPartnerDTO implements PhotoDTO
 		return $this->photo;
 	}
 
-	public static function ofInit(InitDTO $initDTO): VideoPartnerDTO
+	public static function ofInit(InitDTO $init_dto): VideoPartnerDTO
 	{
 		return new VideoPartnerDTO(
-			videoFile: $initDTO->sourceFile,
-			photo: $initDTO->livePartner,
-			shallImportViaSymlink: $initDTO->importMode->shallImportViaSymlink,
-			shallDeleteImported: $initDTO->importMode->shallDeleteImported,
+			video_file: $init_dto->source_file,
+			photo: $init_dto->live_partner,
+			shall_import_via_symlink: $init_dto->import_mode->shall_import_via_symlink,
+			shall_delete_imported: $init_dto->import_mode->shall_delete_imported,
 		);
 	}
 }

@@ -21,15 +21,15 @@ class CreateOriginalSizeVariant implements StandalonePipe
 		// If the image has been loaded (and potentially auto-rotated)
 		// take the dimension from the image.
 		// As a fallback for media files from which no image could be extracted (e.g. unsupported file formats) we use the EXIF data.
-		$image_dim = $state->sourceImage?->isLoaded() ?
-			$state->sourceImage->getDimensions() :
-			new ImageDimension($state->exifInfo->width, $state->exifInfo->height);
+		$image_dim = $state->source_image?->isLoaded() ?
+			$state->source_image->getDimensions() :
+			new ImageDimension($state->exif_info->width, $state->exif_info->height);
 
 		$state->photo->size_variants->create(
 			SizeVariantType::ORIGINAL,
-			$state->targetFile->getRelativePath(),
+			$state->target_file->getRelativePath(),
 			$image_dim,
-			$state->streamStat->bytes
+			$state->stream_stat->bytes
 		);
 
 		return $next($state);

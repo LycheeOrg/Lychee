@@ -13,23 +13,21 @@ use App\Models\Album;
 
 final class ImportParam
 {
-	public ImportMode $importMode;
-
-	/** @var int Indicates the intended owner of the image. */
-	public int $intendedOwnerId;
-
-	/** @var Album|null the intended parent album */
-	public ?Album $album = null;
-
-	/** @var bool indicates whether the new photo shall be starred */
-	public bool $is_starred = false;
-
-	/** @var Extractor|null the extracted EXIF information */
-	public ?Extractor $exifInfo = null;
-
-	public function __construct(ImportMode $importMode, int $intendedOwnerId)
-	{
-		$this->importMode = $importMode;
-		$this->intendedOwnerId = $intendedOwnerId;
+	/**
+	 * @param ImportMode     $import_mode
+	 * @param int            $intended_owner_id indicates the intended owner of the image
+	 * @param Album|null     $album
+	 * @param bool           $is_starred        indicates whether the new photo shall be starred
+	 * @param Extractor|null $exif_info         the extracted EXIF information
+	 *
+	 * @return void
+	 */
+	public function __construct(
+		public ImportMode $import_mode,
+		public int $intended_owner_id,
+		public Album|null $album = null,
+		public bool $is_starred = false,
+		public Extractor|null $exif_info = null,
+	) {
 	}
 }

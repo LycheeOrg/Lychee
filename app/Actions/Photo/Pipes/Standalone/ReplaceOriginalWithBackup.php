@@ -16,16 +16,16 @@ class ReplaceOriginalWithBackup implements StandalonePipe
 {
 	public function handle(StandaloneDTO $state, \Closure $next): StandaloneDTO
 	{
-		if ($state->backupFile === null) {
+		if ($state->backup_file === null) {
 			return $next($state);
 		}
 
 		if (Configs::getValueAsBool('keep_original_untouched')) {
-			$state->targetFile->write($state->backupFile->read());
-			$state->targetFile->close();
+			$state->target_file->write($state->backup_file->read());
+			$state->target_file->close();
 		}
 
-		$state->backupFile->delete();
+		$state->backup_file->delete();
 
 		return $next($state);
 	}

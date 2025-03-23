@@ -28,7 +28,7 @@ class SetOriginalChecksum implements StandalonePipe
 		//     stream is shorter than the file and followed by additional
 		//     non-image information (e.g. as it is the case for Google
 		//     Live Photos)
-		$state->photo->original_checksum = StreamStat::createFromLocalFile($state->sourceFile)->checksum;
+		$state->photo->original_checksum = StreamStat::createFromLocalFile($state->source_file)->checksum;
 
 		return $next($state);
 	}
