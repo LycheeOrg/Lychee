@@ -3,6 +3,8 @@ import Albums from "@/views/gallery-panels/Albums.vue";
 
 const Landing = () => import("@/views/Landing.vue");
 const Favourites = () => import("@/views/gallery-panels/Favourites.vue");
+const Home = () => import("@/views/Home.vue");
+const Timeline = () => import("@/views/gallery-panels/Timeline.vue");
 const Frame = () => import("@/views/gallery-panels/Frame.vue");
 const Search = () => import("@/views/gallery-panels/Search.vue");
 const MapView = () => import("@/views/gallery-panels/Map.vue");
@@ -31,15 +33,20 @@ const routes_ = [
 	},
 	{
 		name: "photo",
-		path: "/gallery/:albumid/:photoid",
+		path: "/gallery/:albumId/:photoId",
 		component: Album,
 		props: true,
 	},
 	{
 		name: "album",
-		path: "/gallery/:albumid",
+		path: "/gallery/:albumId",
 		component: Album,
 		props: true,
+	},
+	{
+		name: "home",
+		path: "/home",
+		component: Home,
 	},
 	{
 		name: "gallery",
@@ -48,8 +55,25 @@ const routes_ = [
 	},
 	{
 		name: "frame-with-album",
-		path: "/frame/:albumid",
+		path: "/frame/:albumId",
 		component: Frame,
+		props: true,
+	},
+	{
+		name: "timeline",
+		path: "/timeline",
+		component: Timeline,
+	},
+	{
+		name: "timeline-with-date",
+		path: "/timeline/:date",
+		component: Timeline,
+		props: true,
+	},
+	{
+		name: "timeline-with-photo",
+		path: "/timeline/:date/:photoId",
+		component: Timeline,
 		props: true,
 	},
 	{
@@ -64,7 +88,7 @@ const routes_ = [
 	},
 	{
 		name: "map-with-album",
-		path: "/map/:albumid",
+		path: "/map/:albumId",
 		component: MapView,
 		props: true,
 	},
@@ -75,13 +99,13 @@ const routes_ = [
 	},
 	{
 		name: "search-with-album",
-		path: "/search/:albumid",
+		path: "/search/:albumId",
 		component: Search,
 		props: true,
 	},
 	{
 		name: "search-photo",
-		path: "/search/:albumid/:photoid",
+		path: "/search/:albumId/:photoId",
 		component: Search,
 		props: true,
 	},
