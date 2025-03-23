@@ -23,10 +23,10 @@ final class RandomIDListRule implements ValidationRule
 		if (!is_string($value)) {
 			return false;
 		}
-		$random_i_ds = explode(',', $value);
+		$random_ids = explode(',', $value);
 		$id_rule = new RandomIDRule(false);
 		$success = true;
-		foreach ($random_i_ds as $random_i_d) {
+		foreach ($random_ids as $random_i_d) {
 			$success = $success && $id_rule->passes('', $random_i_d);
 		}
 
