@@ -31,7 +31,6 @@ ignore:
 - "^app/Mail/.*"
 - "^app/Notifications/.*"
 # Legacy shit
-- "^app/Legacy/Actions/Photo/.*"
 - "^app/Legacy/Lang/.*"
 - "^app/View/.*"
 parsers:
