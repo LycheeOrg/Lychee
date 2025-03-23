@@ -17,13 +17,10 @@ use Illuminate\View\View;
 
 final class OptimizeController extends Controller
 {
-	protected OptimizeDb $optimizeDb;
-	protected OptimizeTables $optimizeTables;
-
-	public function __construct(OptimizeDb $optimizeDb, OptimizeTables $optimizeTables)
+	public function __construct(
+		private OptimizeDb $optimize_db,
+		private OptimizeTables $optimize_tables)
 	{
-		$this->optimizeDb = $optimizeDb;
-		$this->optimizeTables = $optimizeTables;
 	}
 
 	/**
@@ -35,7 +32,7 @@ final class OptimizeController extends Controller
 	 */
 	public function view(OptimizeRequest $request): View
 	{
-		$result = collect($this->optimizeDb->do())->merge(collect($this->optimizeTables->do()))->all();
+		$result = collect($this->optimize_db->do())->merge(collect($this->optimize_tables->do()))->all();
 
 		return view('list', ['lines' => $result]);
 	}

@@ -38,9 +38,9 @@ final class SetPhotoLicenseRequest extends BaseApiRequest implements HasPhoto, H
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		/** @var ?string $photoID */
-		$photoID = $values[RequestAttribute::PHOTO_ID_ATTRIBUTE];
-		$this->photo = Photo::query()->findOrFail($photoID);
+		/** @var ?string $photo_id */
+		$photo_id = $values[RequestAttribute::PHOTO_ID_ATTRIBUTE];
+		$this->photo = Photo::query()->findOrFail($photo_id);
 		$this->license = LicenseType::tryFrom($values[RequestAttribute::LICENSE_ATTRIBUTE]);
 	}
 }

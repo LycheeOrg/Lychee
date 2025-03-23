@@ -47,10 +47,10 @@ final class GetPhotoViewRequest extends BaseApiRequest implements HasPhoto
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		/** @var ?string $photoID */
-		$photoID = $values[self::URL_QUERY_PARAM];
+		/** @var ?string $photo_id */
+		$photo_id = $values[self::URL_QUERY_PARAM];
 		$this->photo = Photo::query()
 			->with(['album', 'size_variants', 'size_variants.sym_links'])
-			->findOrFail($photoID);
+			->findOrFail($photo_id);
 	}
 }

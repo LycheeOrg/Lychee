@@ -17,11 +17,11 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 final class SizeVariantResource extends JsonResource
 {
-	private bool $noUrl = false;
+	private bool $no_url = false;
 
-	public function __construct(SizeVariant $sizeVariant)
+	public function __construct(SizeVariant $size_variant)
 	{
-		parent::__construct($sizeVariant);
+		parent::__construct($size_variant);
 	}
 
 	/**
@@ -31,9 +31,9 @@ final class SizeVariantResource extends JsonResource
 	 *
 	 * @return SizeVariantResource
 	 */
-	public function setNoUrl(bool $noUrl): self
+	public function setNoUrl(bool $no_url): self
 	{
-		$this->noUrl = $noUrl;
+		$this->no_url = $no_url;
 
 		return $this;
 	}
@@ -52,7 +52,7 @@ final class SizeVariantResource extends JsonResource
 			'filesize' => $this->resource->filesize,
 			'height' => $this->resource->height,
 			'width' => $this->resource->width,
-			'url' => $this->when(!$this->noUrl, $this->resource->url),
+			'url' => $this->when(!$this->no_url, $this->resource->url),
 		];
 	}
 }

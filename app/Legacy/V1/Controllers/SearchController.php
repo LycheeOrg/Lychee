@@ -30,12 +30,12 @@ final class SearchController extends Controller
 	 *
 	 * @throws LycheeException
 	 */
-	public function run(SearchRequest $request, AlbumSearch $albumSearch, PhotoSearch $photoSearch): SearchResource
+	public function run(SearchRequest $request, AlbumSearch $album_search, PhotoSearch $photo_search): SearchResource
 	{
 		return new SearchResource(
-			$albumSearch->queryAlbums($request->terms()),
-			$albumSearch->queryTagAlbums($request->terms()),
-			$photoSearch->query($request->terms())
+			$album_search->queryAlbums($request->terms()),
+			$album_search->queryTagAlbums($request->terms()),
+			$photo_search->query($request->terms())
 		);
 	}
 }

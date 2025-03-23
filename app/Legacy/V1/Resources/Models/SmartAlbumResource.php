@@ -19,9 +19,9 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 final class SmartAlbumResource extends JsonResource
 {
-	public function __construct(BaseSmartAlbum $smartAlbum)
+	public function __construct(BaseSmartAlbum $smart_album)
 	{
-		parent::__construct($smartAlbum);
+		parent::__construct($smart_album);
 	}
 
 	/**

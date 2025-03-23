@@ -30,15 +30,15 @@ final class AlbumRightsResource extends JsonResource
 	 *
 	 * @return void
 	 */
-	public function __construct(AbstractAlbum $abstractAlbum)
+	public function __construct(AbstractAlbum $abstract_album)
 	{
 		// Laravel applies a shortcut when this value === null but not when it is something else.
 		parent::__construct('must_not_be_null');
 
-		$this->can_edit = Gate::check(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $abstractAlbum]);
-		$this->can_share_with_users = Gate::check(AlbumPolicy::CAN_SHARE_WITH_USERS, [AbstractAlbum::class, $abstractAlbum]);
-		$this->can_download = Gate::check(AlbumPolicy::CAN_DOWNLOAD, [AbstractAlbum::class, $abstractAlbum]);
-		$this->can_upload = Gate::check(AlbumPolicy::CAN_UPLOAD, [AbstractAlbum::class, $abstractAlbum]);
+		$this->can_edit = Gate::check(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $abstract_album]);
+		$this->can_share_with_users = Gate::check(AlbumPolicy::CAN_SHARE_WITH_USERS, [AbstractAlbum::class, $abstract_album]);
+		$this->can_download = Gate::check(AlbumPolicy::CAN_DOWNLOAD, [AbstractAlbum::class, $abstract_album]);
+		$this->can_upload = Gate::check(AlbumPolicy::CAN_UPLOAD, [AbstractAlbum::class, $abstract_album]);
 	}
 
 	/**

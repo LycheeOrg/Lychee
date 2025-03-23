@@ -43,9 +43,9 @@ final class SetAlbumLicenseRequest extends BaseApiRequest implements HasAlbum, H
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		/** @var string|null */
-		$albumID = $values[RequestAttribute::ALBUM_ID_ATTRIBUTE];
+		$album_id = $values[RequestAttribute::ALBUM_ID_ATTRIBUTE];
 
-		$this->album = Album::query()->findOrFail($albumID);
+		$this->album = Album::query()->findOrFail($album_id);
 		$this->license = LicenseType::tryFrom($values[RequestAttribute::LICENSE_ATTRIBUTE]);
 	}
 }

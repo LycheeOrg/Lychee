@@ -27,12 +27,12 @@ use App\Models\Photo;
  */
 final class AddPhotoPartnerStrategy extends AddStandaloneStrategy
 {
-	protected Photo $existingVideo;
+	protected Photo $existing_video;
 
-	public function __construct(ImportParam $parameters, NativeLocalFile $photoSourceFile, Photo $existingVideo)
+	public function __construct(ImportParam $parameters, NativeLocalFile $photo_source_file, Photo $existing_video)
 	{
-		parent::__construct($parameters, $photoSourceFile);
-		$this->existingVideo = $existingVideo;
+		parent::__construct($parameters, $photo_source_file);
+		$this->existing_video = $existing_video;
 	}
 
 	/**
@@ -58,20 +58,20 @@ final class AddPhotoPartnerStrategy extends AddStandaloneStrategy
 			new ImportMode(delete_imported: true),
 			$this->parameters->intended_owner_id
 		);
-		$videoStrategy = new AddVideoPartnerStrategy(
+		$video_strategy = new AddVideoPartnerStrategy(
 			$parameters,
-			$this->existingVideo->size_variants->getOriginal()->getFile(),
+			$this->existing_video->size_variants->getOriginal()->getFile(),
 			$this->photo
 		);
-		$videoStrategy->do();
+		$video_strategy->do();
 
 		// If the video is uploaded already, we must copy over the checksum
-		$this->photo->live_photo_checksum = $this->existingVideo->checksum;
+		$this->photo->live_photo_checksum = $this->existing_video->checksum;
 
 		// Delete the existing video from whom we have stolen the video file
 		// `delete()` also takes care of erasing all other size variants
 		// from storage
-		$this->existingVideo->delete();
+		$this->existing_video->delete();
 
 		return $this->photo;
 	}

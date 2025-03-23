@@ -35,15 +35,15 @@ final class LegacyController extends Controller
 	 */
 	public function translateLegacyModelIDs(TranslateIDRequest $request): array
 	{
-		$legacyAlbumID = $request->albumID();
-		$legacyPhotoID = $request->photoID();
+		$legacy_album_id = $request->albumID();
+		$legacy_photo_id = $request->photoID();
 
 		$return = ['albumID' => null, 'photoID' => null];
-		if ($legacyAlbumID !== null) {
+		if ($legacy_album_id !== null) {
 			$return['albumID'] = Legacy::translateLegacyAlbumID($request->albumID(), $request);
 		}
-		if ($legacyPhotoID !== null) {
-			$return['photoID'] = Legacy::translateLegacyPhotoID($legacyPhotoID, $request);
+		if ($legacy_photo_id !== null) {
+			$return['photoID'] = Legacy::translateLegacyPhotoID($legacy_photo_id, $request);
 		}
 
 		return $return;

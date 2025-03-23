@@ -8,7 +8,6 @@
 
 namespace App\Legacy\Actions\Photo\Strategies;
 
-use App\DTO\ImportParam;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\PhotoResyncedException;
 use App\Exceptions\PhotoSkippedException;
@@ -18,11 +17,6 @@ use Illuminate\Support\Facades\Log;
 
 final class AddDuplicateStrategy extends AbstractAddStrategy
 {
-	public function __construct(ImportParam $parameters, Photo $existing)
-	{
-		parent::__construct($parameters, $existing);
-	}
-
 	/**
 	 * @throws PhotoSkippedException
 	 * @throws ModelDBException
@@ -30,7 +24,7 @@ final class AddDuplicateStrategy extends AbstractAddStrategy
 	 */
 	public function do(): Photo
 	{
-		$hasBeenReSynced = false;
+		$has_been_re_synced = false;
 
 		// At least update the existing photo with additional metadata if
 		// available
@@ -39,12 +33,12 @@ final class AddDuplicateStrategy extends AbstractAddStrategy
 			if ($this->photo->isDirty()) {
 				Log::notice(__METHOD__ . ':' . __LINE__ . ' Updating metadata of existing photo.');
 				$this->photo->save();
-				$hasBeenReSynced = true;
+				$has_been_re_synced = true;
 			}
 		}
 
 		if ($this->parameters->import_mode->shall_skip_duplicates) {
-			if ($hasBeenReSynced) {
+			if ($has_been_re_synced) {
 				throw new PhotoResyncedException();
 			} else {
 				throw new PhotoSkippedException();

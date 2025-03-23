@@ -38,11 +38,11 @@ use function Safe\filemtime;
 final class Create
 {
 	/** @var ImportParam the strategy parameters prepared and compiled by this class */
-	protected ImportParam $strategyParameters;
+	protected ImportParam $strategy_parameters;
 
-	public function __construct(?ImportMode $importMode, int $intendedOwnerId)
+	public function __construct(?ImportMode $import_mode, int $intended_owner_id)
 	{
-		$this->strategyParameters = new ImportParam($importMode, $intendedOwnerId);
+		$this->strategy_parameters = new ImportParam($import_mode, $intended_owner_id);
 	}
 
 	/**
@@ -54,35 +54,35 @@ final class Create
 	 * This method may create a new database entry or update an existing
 	 * database entry.
 	 *
-	 * @param NativeLocalFile    $sourceFile           the source file
-	 * @param int|null           $fileLastModifiedTime the timestamp to use if there's no creation date in Exif
-	 * @param AbstractAlbum|null $album                the targeted parent album
+	 * @param NativeLocalFile    $source_file             the source file
+	 * @param int|null           $file_last_modified_time the timestamp to use if there's no creation date in Exif
+	 * @param AbstractAlbum|null $album                   the targeted parent album
 	 *
 	 * @return Photo the newly created or updated photo
 	 *
 	 * @throws ModelNotFoundException
 	 * @throws LycheeException
 	 */
-	public function add(NativeLocalFile $sourceFile, ?AbstractAlbum $album, ?int $fileLastModifiedTime = null): Photo
+	public function add(NativeLocalFile $source_file, ?AbstractAlbum $album, ?int $file_last_modified_time = null): Photo
 	{
-		$fileLastModifiedTime ??= filemtime($sourceFile->getRealPath());
+		$file_last_modified_time ??= filemtime($source_file->getRealPath());
 
-		$sourceFile->assertIsSupportedMediaOrAcceptedRaw();
+		$source_file->assertIsSupportedMediaOrAcceptedRaw();
 
 		// Fill in information about targeted parent album
 		// throws InvalidPropertyException
 		$this->initParentAlbum($album);
 
 		// Fill in metadata extracted from source file
-		$this->loadFileMetadata($sourceFile, $fileLastModifiedTime);
+		$this->loadFileMetadata($source_file, $file_last_modified_time);
 
 		// Look up potential duplicates/partners in order to select the
 		// proper strategy
-		$duplicate = $this->get_duplicate(StreamStat::createFromLocalFile($sourceFile)->checksum);
-		$livePartner = $this->findLivePartner(
-			$this->strategyParameters->exif_info->live_photo_content_id,
-			$this->strategyParameters->exif_info->type,
-			$this->strategyParameters->album
+		$duplicate = $this->get_duplicate(StreamStat::createFromLocalFile($source_file)->checksum);
+		$live_partner = $this->findLivePartner(
+			$this->strategy_parameters->exif_info->live_photo_content_id,
+			$this->strategy_parameters->exif_info->type,
+			$this->strategy_parameters->album
 		);
 
 		/*
@@ -94,18 +94,18 @@ final class Create
 		 *  - a video which is the partner of an already existing photo
 		 */
 		if ($duplicate !== null) {
-			$strategy = new AddDuplicateStrategy($this->strategyParameters, $duplicate);
+			$strategy = new AddDuplicateStrategy($this->strategy_parameters, $duplicate);
 		} else {
-			if ($livePartner === null) {
-				$strategy = new AddStandaloneStrategy($this->strategyParameters, $sourceFile);
+			if ($live_partner === null) {
+				$strategy = new AddStandaloneStrategy($this->strategy_parameters, $source_file);
 			} else {
-				if ($sourceFile->isSupportedVideo()) {
-					$strategy = new AddVideoPartnerStrategy($this->strategyParameters, $sourceFile, $livePartner);
-				} elseif ($sourceFile->isSupportedImage()) {
-					$strategy = new AddPhotoPartnerStrategy($this->strategyParameters, $sourceFile, $livePartner);
+				if ($source_file->isSupportedVideo()) {
+					$strategy = new AddVideoPartnerStrategy($this->strategy_parameters, $source_file, $live_partner);
+				} elseif ($source_file->isSupportedImage()) {
+					$strategy = new AddPhotoPartnerStrategy($this->strategy_parameters, $source_file, $live_partner);
 				} else {
 					// Accepted, but unsupported raw files are added as stand-alone files
-					$strategy = new AddStandaloneStrategy($this->strategyParameters, $sourceFile);
+					$strategy = new AddStandaloneStrategy($this->strategy_parameters, $source_file);
 				}
 			}
 		}
@@ -122,10 +122,10 @@ final class Create
 
 	/**
 	 * Extracts the meta-data of the source file and initializes
-	 * {@link ImportParam::$exif_info} of {@link Create::$strategyParameters}.
+	 * {@link ImportParam::$exif_info} of {@link Create::$strategy_parameters}.
 	 *
-	 * @param NativeLocalFile $sourceFile           the source file
-	 * @param int             $fileLastModifiedTime the timestamp to use if there's no creation date in Exif
+	 * @param NativeLocalFile $source_file             the source file
+	 * @param int             $file_last_modified_time the timestamp to use if there's no creation date in Exif
 	 *
 	 * @return void
 	 *
@@ -133,16 +133,16 @@ final class Create
 	 * @throws MediaFileOperationException
 	 * @throws ExternalComponentFailedException
 	 */
-	protected function loadFileMetadata(NativeLocalFile $sourceFile, int $fileLastModifiedTime): void
+	protected function loadFileMetadata(NativeLocalFile $source_file, int $file_last_modified_time): void
 	{
-		$this->strategyParameters->exif_info = Extractor::createFromFile($sourceFile, $fileLastModifiedTime);
+		$this->strategy_parameters->exif_info = Extractor::createFromFile($source_file, $file_last_modified_time);
 
 		// Use basename of file if IPTC title missing
 		if (
-			$this->strategyParameters->exif_info->title === null ||
-			$this->strategyParameters->exif_info->title === ''
+			$this->strategy_parameters->exif_info->title === null ||
+			$this->strategy_parameters->exif_info->title === ''
 		) {
-			$this->strategyParameters->exif_info->title = substr($sourceFile->getOriginalBasename(), 0, 98);
+			$this->strategy_parameters->exif_info->title = substr($source_file->getOriginalBasename(), 0, 98);
 		}
 	}
 
@@ -156,48 +156,48 @@ final class Create
 	 *    (photo,video) pairs can be partners
 	 *  - which has no live partner yet
 	 *
-	 * @param string|null $contentID the content id to identify a matching partner
-	 * @param string      $mimeType  the mime type of the media which a partner is looked for, e.g. the returned {@link Photo} has an "opposed" mime type
-	 * @param Album|null  $album     the album of which the partner must be member of
+	 * @param string|null $content_id the content id to identify a matching partner
+	 * @param string      $mime_type  the mime type of the media which a partner is looked for, e.g. the returned {@link Photo} has an "opposed" mime type
+	 * @param Album|null  $album      the album of which the partner must be member of
 	 *
 	 * @return Photo|null The live partner if found
 	 *
 	 * @throws QueryBuilderException
 	 */
 	protected function findLivePartner(
-		?string $contentID,
-		string $mimeType,
+		?string $content_id,
+		string $mime_type,
 		?Album $album,
 	): ?Photo {
 		try {
-			$livePartner = null;
+			$live_partner = null;
 			// find a potential partner which has the same content id
-			if ($contentID !== null) {
+			if ($content_id !== null) {
 				/** @var Photo|null $livePartner */
-				$livePartner = Photo::query()
-					->where('live_photo_content_id', '=', $contentID)
+				$live_partner = Photo::query()
+					->where('live_photo_content_id', '=', $content_id)
 					->where('album_id', '=', $album?->id)
 					->whereNull('live_photo_short_path')->first();
 			}
 			// if a potential partner has been found, ensure that it is of a
 			// different kind then the uploaded media.
 			if (
-				$livePartner !== null && !(
-					BaseMediaFile::isSupportedImageMimeType($mimeType) && $livePartner->isVideo() ||
-					BaseMediaFile::isSupportedVideoMimeType($mimeType) && $livePartner->isPhoto()
+				$live_partner !== null && !(
+					BaseMediaFile::isSupportedImageMimeType($mime_type) && $live_partner->isVideo() ||
+					BaseMediaFile::isSupportedVideoMimeType($mime_type) && $live_partner->isPhoto()
 				)
 			) {
-				$livePartner = null;
+				$live_partner = null;
 			}
 
-			return $livePartner;
+			return $live_partner;
 		} catch (IllegalOrderOfOperationException $e) {
 			throw LycheeAssertionError::createFromUnexpectedException($e);
 		}
 	}
 
 	/**
-	 * Sets the (regular) parent album of {@link Create::$strategyParameters}
+	 * Sets the (regular) parent album of {@link Create::$strategy_parameters}
 	 * according to the provided parent album.
 	 *
 	 * If the provided parent album equals `null` or is already a (regular)
@@ -214,13 +214,13 @@ final class Create
 	protected function initParentAlbum(?AbstractAlbum $album = null): void
 	{
 		if ($album === null) {
-			$this->strategyParameters->album = null;
+			$this->strategy_parameters->album = null;
 		} elseif ($album instanceof Album) {
-			$this->strategyParameters->album = $album;
+			$this->strategy_parameters->album = $album;
 		} elseif ($album instanceof BaseSmartAlbum) {
-			$this->strategyParameters->album = null;
+			$this->strategy_parameters->album = null;
 			if ($album instanceof StarredAlbum) {
-				$this->strategyParameters->is_starred = true;
+				$this->strategy_parameters->is_starred = true;
 			}
 		} else {
 			throw new InvalidPropertyException('The given parent album does not support uploading');
