@@ -13,11 +13,11 @@ interface GitRemote
 	/**
 	 * Fetch remote data.
 	 *
-	 * @param bool $useCache
+	 * @param bool $use_cache
 	 *
 	 * @return object[]
 	 */
-	public function fetchRemote(bool $useCache): array;
+	public function fetchRemote(bool $use_cache): array;
 
 	/**
 	 * Count the number of elements between current version and remote HEAD.

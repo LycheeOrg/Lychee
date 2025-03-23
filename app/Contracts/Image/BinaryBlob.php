@@ -48,14 +48,14 @@ interface BinaryBlob
 	/**
 	 * Writes the content of the provided stream into the blob.
 	 *
-	 * @param resource $stream            the input stream which provides the input to write
-	 * @param bool     $collectStatistics if true, the method returns statistics about the stream
+	 * @param resource $stream             the input stream which provides the input to write
+	 * @param bool     $collect_statistics if true, the method returns statistics about the stream
 	 *
 	 * @return ?StreamStats optional statistics about the stream, if requested
 	 *
 	 * @throws MediaFileOperationException
 	 */
-	public function write($stream, bool $collectStatistics = false): ?StreamStats;
+	public function write($stream, bool $collect_statistics = false): ?StreamStats;
 
 	/**
 	 * Closes the internal stream/buffer.

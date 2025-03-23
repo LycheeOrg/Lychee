@@ -35,14 +35,14 @@ interface ImageHandlerInterface
 	/**
 	 * Save the image into the provided file.
 	 *
-	 * @param MediaFile $file              the file to write into
-	 * @param bool      $collectStatistics if true, the method returns statistics about the stream
+	 * @param MediaFile $file               the file to write into
+	 * @param bool      $collect_statistics if true, the method returns statistics about the stream
 	 *
 	 * @return StreamStats|null optional statistics about the stream, if requested
 	 *
 	 * @throws MediaFileOperationException
 	 */
-	public function save(MediaFile $file, bool $collectStatistics = false): ?StreamStats;
+	public function save(MediaFile $file, bool $collect_statistics = false): ?StreamStats;
 
 	/**
 	 * Frees all internal resources.
@@ -67,25 +67,25 @@ interface ImageHandlerInterface
 	 * Either the new width or height may be zero which means that this
 	 * dimension is chosen automatically.
 	 *
-	 * @param ImageDimension $dstDim the designated dimensions
+	 * @param ImageDimension $dst_dim the designated dimensions
 	 *
 	 * @return ImageHandlerInterface the scaled clone
 	 *
 	 * @throws ImageProcessingException
 	 * @throws LycheeDomainException
 	 */
-	public function cloneAndScale(ImageDimension $dstDim): ImageHandlerInterface;
+	public function cloneAndScale(ImageDimension $dst_dim): ImageHandlerInterface;
 
 	/**
 	 * Clones and crops the image to the designated dimensions.
 	 *
-	 * @param ImageDimension $dstDim the designated dimensions
+	 * @param ImageDimension $dst_dim the designated dimensions
 	 *
 	 * @return ImageHandlerInterface the cropped clone
 	 *
 	 * @throws ImageProcessingException
 	 */
-	public function cloneAndCrop(ImageDimension $dstDim): ImageHandlerInterface;
+	public function cloneAndCrop(ImageDimension $dst_dim): ImageHandlerInterface;
 
 	/**
 	 * Rotates the imaged based on the given angle.

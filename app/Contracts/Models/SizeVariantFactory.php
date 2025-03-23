@@ -22,9 +22,9 @@ interface SizeVariantFactory
 	 *
 	 * This factory creates size variants for the passed {@link Photo} object
 	 * with respect to the passed reference image and naming strategy.
-	 * If `$namingStrategy` equals `null`, then the default naming
+	 * If `$naming_strategy` equals `null`, then the default naming
 	 * strategy is used.
-	 * If `$referenceImage` equals `null`, then a reference image is created
+	 * If `$reference_image` equals `null`, then a reference image is created
 	 * from the photo's original size variant.
 	 * This requires that the photo is already linked to an original size
 	 * variant.
@@ -36,12 +36,12 @@ interface SizeVariantFactory
 	 * image matches the original size variant of the photo.
 	 *
 	 * @param Photo                                  $photo
-	 * @param ImageHandlerInterface|null             $referenceImage
-	 * @param AbstractSizeVariantNamingStrategy|null $namingStrategy
+	 * @param ImageHandlerInterface|null             $reference_image
+	 * @param AbstractSizeVariantNamingStrategy|null $naming_strategy
 	 *
 	 * @throws LycheeException
 	 */
-	public function init(Photo $photo, ?ImageHandlerInterface $referenceImage = null, ?AbstractSizeVariantNamingStrategy $namingStrategy = null): void;
+	public function init(Photo $photo, ?ImageHandlerInterface $reference_image = null, ?AbstractSizeVariantNamingStrategy $naming_strategy = null): void;
 
 	/**
 	 * Conditionally creates a size variant for the designated size variant.
@@ -55,20 +55,20 @@ interface SizeVariantFactory
 	 * {@link SizeVariantFactory::createSizeVariant()}.
 	 * Refer there for further information.
 	 *
-	 * @param SizeVariantType $sizeVariant the desired size variant; admissible values
-	 *                                     are:
-	 *                                     {@link SizeVariantType::THUMB},
-	 *                                     {@link SizeVariantType::THUMB2X},
-	 *                                     {@link SizeVariantType::SMALL},
-	 *                                     {@link SizeVariantType::SMALL2X},
-	 *                                     {@link SizeVariantType::MEDIUM} and
-	 *                                     {@link SizeVariantType::MEDIUM2X}
+	 * @param SizeVariantType $size_variant the desired size variant; admissible values
+	 *                                      are:
+	 *                                      {@link SizeVariantType::THUMB},
+	 *                                      {@link SizeVariantType::THUMB2X},
+	 *                                      {@link SizeVariantType::SMALL},
+	 *                                      {@link SizeVariantType::SMALL2X},
+	 *                                      {@link SizeVariantType::MEDIUM} and
+	 *                                      {@link SizeVariantType::MEDIUM2X}
 	 *
 	 * @return SizeVariant|null the freshly created and persisted size variant
 	 *
 	 * @throws LycheeException
 	 */
-	public function createSizeVariantCond(SizeVariantType $sizeVariant): ?SizeVariant;
+	public function createSizeVariantCond(SizeVariantType $size_variant): ?SizeVariant;
 
 	/**
 	 * Creates a selected set of size variants.
