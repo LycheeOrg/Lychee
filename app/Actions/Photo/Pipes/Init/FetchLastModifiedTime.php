@@ -12,7 +12,7 @@ use App\Contracts\PhotoCreate\InitPipe;
 use App\DTO\PhotoCreate\InitDTO;
 
 /**
- * Set fileLastModifiedTime if null.
+ * Set file_last_modified_time if null.
  */
 class FetchLastModifiedTime implements InitPipe
 {
@@ -21,8 +21,8 @@ class FetchLastModifiedTime implements InitPipe
 	 */
 	public function handle(InitDTO $state, \Closure $next): InitDTO
 	{
-		if ($state->fileLastModifiedTime === null) {
-			$state->fileLastModifiedTime ??= $state->sourceFile->lastModified();
+		if ($state->file_last_modified_time === null) {
+			$state->file_last_modified_time ??= $state->source_file->lastModified();
 		}
 
 		return $next($state);

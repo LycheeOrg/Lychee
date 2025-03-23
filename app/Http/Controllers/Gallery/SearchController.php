@@ -48,7 +48,7 @@ class SearchController extends Controller
 	 *
 	 * @return ResultsResource
 	 */
-	public function search(GetSearchRequest $request, AlbumSearch $albumSearch, PhotoSearch $photoSearch): ResultsResource
+	public function search(GetSearchRequest $request, AlbumSearch $album_search, PhotoSearch $photo_search): ResultsResource
 	{
 		$terms = $request->terms();
 		$album = $request->album();
@@ -59,13 +59,13 @@ class SearchController extends Controller
 
 		/** @var LengthAwarePaginator<Photo> $photoResults */
 		/** @disregard P1013 Undefined method withQueryString() (stupid intelephense) */
-		$photoResults = $photoSearch
+		$photo_results = $photo_search
 			->sqlQuery($terms, $album)
 			->orderBy(ColumnSortingPhotoType::TAKEN_AT->value, OrderSortingType::ASC->value)
 			->paginate(Configs::getValueAsInt('search_pagination_limit'));
 
-		$albumResults = $albumSearch->queryAlbums($terms);
+		$album_results = $album_search->queryAlbums($terms);
 
-		return ResultsResource::fromData($albumResults, $photoResults);
+		return ResultsResource::fromData($album_results, $photo_results);
 	}
 }

@@ -55,11 +55,11 @@ class Extractor
 	public ?float $latitude = null;
 	public ?float $longitude = null;
 	public ?float $altitude = null;
-	public ?float $imgDirection = null;
+	public ?float $img_direction = null;
 	/** @var string|null TODO: What is the difference to {@link Extractor::$position}? */
 	public ?string $location = null;
-	public ?string $livePhotoContentID = null;
-	public int $microVideoOffset = 0;
+	public ?string $live_photo_content_id = null;
+	public int $micro_video_offset = 0;
 
 	/**
 	 * Extracts metadata from a file.
@@ -162,9 +162,9 @@ class Extractor
 		$metadata->latitude = ($exif->getLatitude() !== false) ? $exif->getLatitude() : null;
 		$metadata->longitude = ($exif->getLongitude() !== false) ? $exif->getLongitude() : null;
 		$metadata->altitude = ($exif->getAltitude() !== false) ? $exif->getAltitude() : null;
-		$metadata->imgDirection = ($exif->getImgDirection() !== false) ? $exif->getImgDirection() : null;
-		$metadata->livePhotoContentID = ($exif->getContentIdentifier() !== false) ? $exif->getContentIdentifier() : null;
-		$metadata->microVideoOffset = ($exif->getMicroVideoOffset() !== false) ? (int) $exif->getMicroVideoOffset() : 0;
+		$metadata->img_direction = ($exif->getImgDirection() !== false) ? $exif->getImgDirection() : null;
+		$metadata->live_photo_content_id = ($exif->getContentIdentifier() !== false) ? $exif->getContentIdentifier() : null;
+		$metadata->micro_video_offset = ($exif->getMicroVideoOffset() !== false) ? (int) $exif->getMicroVideoOffset() : 0;
 
 		$taken_at = $exif->getCreationDate();
 
@@ -407,13 +407,13 @@ class Extractor
 			}
 		}
 
-		// We need to make sure, imgDirection is between 0 and 360
+		// We need to make sure, img_direction is between 0 and 360
 		// We set values to null in case we're out of bounds
-		if ($metadata->imgDirection !== null) {
-			if ($metadata->imgDirection < 0 || $metadata->imgDirection > 360) {
+		if ($metadata->img_direction !== null) {
+			if ($metadata->img_direction < 0 || $metadata->img_direction > 360) {
 				// @codeCoverageIgnoreStart
-				Log::notice(__METHOD__ . ':' . __LINE__ . 'GPSImgDirection (' . $metadata->imgDirection . ') out of bounds (needs to be between 0 and 360)');
-				$metadata->imgDirection = null;
+				Log::notice(__METHOD__ . ':' . __LINE__ . 'GPSImgDirection (' . $metadata->img_direction . ') out of bounds (needs to be between 0 and 360)');
+				$metadata->img_direction = null;
 				// @codeCoverageIgnoreEnd
 			}
 		}

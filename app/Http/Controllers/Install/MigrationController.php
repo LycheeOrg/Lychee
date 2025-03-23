@@ -31,7 +31,7 @@ class MigrationController extends Controller
 	public function view(): View
 	{
 		$output = [];
-		$hasErrors = false;
+		$has_errors = false;
 		try {
 			$output = app(Pipeline::class)
 				->send($output)
@@ -45,14 +45,14 @@ class MigrationController extends Controller
 				])
 				->thenReturn();
 		} catch (InstallationFailedException) {
-			$hasErrors = true;
+			$has_errors = true;
 		}
 
 		return view('install.migrate', [
 			'title' => 'Lychee-installer',
 			'step' => 4,
 			'lines' => $output,
-			'errors' => $hasErrors,
+			'errors' => $has_errors,
 		]);
 	}
 }
