@@ -16,7 +16,7 @@ use App\Models\Photo;
 
 abstract class AbstractAddStrategy
 {
-	protected function __construct(
+	public function __construct(
 		protected ImportParam $parameters,
 		protected Photo $photo,
 	) {
