@@ -15,6 +15,7 @@ use App\Models\Configs;
  * Specialized query builder for {@link \App\Models\Configs}.
  *
  * @template TModelClass of Configs
+ *
  * @extends FixedQueryBuilder<TModelClass>
  */
 class ConfigsBuilder extends FixedQueryBuilder

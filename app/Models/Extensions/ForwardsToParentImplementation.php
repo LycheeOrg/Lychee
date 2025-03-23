@@ -486,6 +486,7 @@ trait ForwardsToParentImplementation
 
 	/**
 	 * Unset the value for a given offset.
+	 *
 	 * @param int|string $offset
 	 */
 	public function offsetUnset($offset): void

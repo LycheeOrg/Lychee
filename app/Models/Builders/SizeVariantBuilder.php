@@ -15,6 +15,7 @@ use App\Models\SizeVariant;
  * Specialized query builder for {@link \App\Models\SizeVariant}.
  *
  * @template TModelClass of SizeVariant
+ *
  * @extends FixedQueryBuilder<TModelClass>
  */
 class SizeVariantBuilder extends FixedQueryBuilder

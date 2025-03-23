@@ -10,11 +10,9 @@ namespace App\Models\Builders;
 
 use App\Constants\AccessPermissionConstants as APC;
 use App\Contracts\Exceptions\InternalLycheeException;
-use App\Eloquent\FixedQueryBuilder;
 use App\Eloquent\FixedQueryBuilderTrait;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Album;
-use App\Models\Configs;
 use App\Policies\AlbumQueryPolicy;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\Auth;
@@ -33,8 +31,8 @@ use Kalnoy\Nestedset\QueryBuilder as NSQueryBuilder;
  * used as a sub-query which will not hydrate actual models.
  * Thus, a global scope unnecessarily complicates queries in many cases.
  *
- *
  * @template TModelClass of Album
+ *
  * @extends NSQueryBuilder<TModelClass>
  */
 class AlbumBuilder extends NSQueryBuilder

@@ -15,6 +15,7 @@ use App\Models\AccessPermission;
  * Specialized query builder for {@link \App\Models\AccessPermission}.
  *
  * @template TModelClass of AccessPermission
+ *
  * @extends FixedQueryBuilder<TModelClass>
  */
 class AccessPermissionBuilder extends FixedQueryBuilder
