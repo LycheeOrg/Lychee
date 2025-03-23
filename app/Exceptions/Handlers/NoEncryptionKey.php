@@ -30,7 +30,8 @@ class NoEncryptionKey implements HttpExceptionHandler
 			if ($e instanceof MissingAppKeyException) {
 				return true;
 			}
-		} while ($e = $e->getPrevious());
+			$e = $e->getPrevious();
+		} while ($e !== null);
 
 		return false;
 	}

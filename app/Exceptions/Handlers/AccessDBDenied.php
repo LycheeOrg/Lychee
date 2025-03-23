@@ -30,7 +30,8 @@ class AccessDBDenied implements HttpExceptionHandler
 			if ($e instanceof QueryException && str_contains($e->getMessage(), 'Access denied')) {
 				return true;
 			}
-		} while ($e = $e->getPrevious());
+			$e = $e->getPrevious();
+		} while ($e !== null);
 
 		return false;
 	}
