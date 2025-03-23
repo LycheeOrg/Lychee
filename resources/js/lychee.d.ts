@@ -234,6 +234,7 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		can_rotate: boolean;
 		can_autoplay: boolean;
 		is_exif_disabled: boolean;
+		is_favourite_enabled: boolean;
 		display_thumb_album_overlay: App.Enum.ThumbOverlayVisibilityType;
 		display_thumb_photo_overlay: App.Enum.ThumbOverlayVisibilityType;
 		album_subtitle_type: App.Enum.ThumbAlbumSubtitleType;

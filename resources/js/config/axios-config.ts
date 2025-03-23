@@ -5,7 +5,6 @@ import { setupCache } from "axios-cache-interceptor";
 
 const AxiosConfig = {
 	axiosSetUp() {
-		// setupCache(axios, { debug: console.log });
 		setupCache(axios);
 
 		axios.interceptors.request.use(

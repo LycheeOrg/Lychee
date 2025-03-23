@@ -14,6 +14,7 @@ import Aura from "@primeuix/themes/aura";
 import { i18nVue } from "laravel-vue-i18n";
 import ToastService from "primevue/toastservice";
 import AxiosConfig from "@/config/axios-config";
+import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 import AppComponent from "@/views/App.vue";
 import { definePreset } from "@primeuix/themes";
 import LycheePrimeVueConfig from "./style/preset";
@@ -38,6 +39,7 @@ const router = createRouter({
 const LycheePreset = definePreset(Aura, LycheePrimeVueConfig);
 
 const pinia = createPinia();
+pinia.use(piniaPluginPersistedstate);
 
 /**
  * Next, we will create a fresh Vue application instance. You may then begin
