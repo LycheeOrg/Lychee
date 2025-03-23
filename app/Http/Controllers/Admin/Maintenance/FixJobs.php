@@ -23,7 +23,7 @@ use Illuminate\Routing\Controller;
 class FixJobs extends Controller
 {
 	/** @var JobStatus[] */
-	private array $waitingJobsTypes = [JobStatus::READY, JobStatus::STARTED];
+	private array $waiting_jobs_types = [JobStatus::READY, JobStatus::STARTED];
 
 	/**
 	 * Fix alls jobs that are in waiting states and mark them as failures.
@@ -37,7 +37,7 @@ class FixJobs extends Controller
 		}
 
 		JobHistory::query()
-			->whereIn('status', $this->waitingJobsTypes)
+			->whereIn('status', $this->waiting_jobs_types)
 			->update(['status' => JobStatus::FAILURE]);
 	}
 
@@ -49,6 +49,6 @@ class FixJobs extends Controller
 	 */
 	public function check(MaintenanceRequest $_request): int
 	{
-		return JobHistory::whereIn('status', $this->waitingJobsTypes)->count();
+		return JobHistory::whereIn('status', $this->waiting_jobs_types)->count();
 	}
 }

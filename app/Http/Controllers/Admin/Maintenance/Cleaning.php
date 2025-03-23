@@ -36,20 +36,20 @@ class Cleaning extends Controller
 		}
 
 		$results = [];
-		foreach (new \DirectoryIterator($request->path()) as $fileInfo) {
-			if ($fileInfo->isDot()) {
+		foreach (new \DirectoryIterator($request->path()) as $file_info) {
+			if ($file_info->isDot()) {
 				continue;
 			}
-			if (in_array($fileInfo->getFilename(), $this->skip, true)) {
+			if (in_array($file_info->getFilename(), $this->skip, true)) {
 				continue;
 			}
-			$results[] = sprintf(__('maintenance.cleaning.result'), $fileInfo->getFilename());
+			$results[] = sprintf(__('maintenance.cleaning.result'), $file_info->getFilename());
 
-			if ($fileInfo->isDir()) {
-				rmdir($fileInfo->getRealPath());
+			if ($file_info->isDir()) {
+				rmdir($file_info->getRealPath());
 				continue;
 			}
-			unlink($fileInfo->getRealPath());
+			unlink($file_info->getRealPath());
 		}
 
 		return $results;
@@ -83,11 +83,11 @@ class Cleaning extends Controller
 		}
 
 		$files_found = false;
-		foreach (new \DirectoryIterator($request->path()) as $fileInfo) {
-			if ($fileInfo->isDot()) {
+		foreach (new \DirectoryIterator($request->path()) as $file_info) {
+			if ($file_info->isDot()) {
 				continue;
 			}
-			if (in_array($fileInfo->getFilename(), $this->skip, true)) {
+			if (in_array($file_info->getFilename(), $this->skip, true)) {
 				continue;
 			}
 			$files_found = true;

@@ -25,10 +25,10 @@ class Optimize extends Controller
 	 *
 	 * @codeCoverageIgnore
 	 */
-	public function do(MaintenanceRequest $request, OptimizeDb $optimizeDb, OptimizeTables $optimizeTables): array
+	public function do(MaintenanceRequest $request, OptimizeDb $optimize_db, OptimizeTables $optimize_tables): array
 	{
-		return collect($optimizeDb->do())
-			->merge(collect($optimizeTables->do()))
+		return collect($optimize_db->do())
+			->merge(collect($optimize_tables->do()))
 			->all();
 	}
 }

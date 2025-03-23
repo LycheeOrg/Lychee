@@ -43,19 +43,19 @@ class VueController extends Controller
 	 * @throws AuthorizationException
 	 * @throws BindingResolutionException
 	 */
-	public function view(?string $albumId = null, ?string $photoId = null): View
+	public function view(?string $album_id = null, ?string $photo_id = null): View
 	{
-		$albumFactory = resolve(AlbumFactory::class);
+		$album_factory = resolve(AlbumFactory::class);
 		try {
-			if ($albumId !== null) {
-				$album = $albumFactory->findAbstractAlbumOrFail($albumId, false);
+			if ($album_id !== null) {
+				$album = $album_factory->findAbstractAlbumOrFail($album_id, false);
 
 				session()->now('access', $this->check($album));
 				session()->now('album', $album);
 			}
 
-			if ($photoId !== null) {
-				$photo = Photo::findOrFail($photoId);
+			if ($photo_id !== null) {
+				$photo = Photo::findOrFail($photo_id);
 				Gate::authorize(PhotoPolicy::CAN_SEE, [Photo::class, $photo]);
 				session()->now('photo', $photo);
 			}
