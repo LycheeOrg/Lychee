@@ -26,7 +26,7 @@ final class AlbumRightsResource extends JsonResource
 	/**
 	 * Given an album, returns the access rights associated to it.
 	 *
-	 * @param AbstractAlbum $abstractAlbum
+	 * @param AbstractAlbum $abstract_album
 	 *
 	 * @return void
 	 */

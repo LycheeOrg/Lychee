@@ -67,10 +67,10 @@ final class Tree
 
 		/** @var NsCollection<Album> $albums */
 		$albums = $query->get();
-		/** @var ?NsCollection<Album> $sharedAlbums */
+		/** @var ?NsCollection<Album> $shared_albums */
 		$shared_albums = null;
-		$user_i_d = Auth::id();
-		if ($user_i_d !== null) {
+		$user_id = Auth::id();
+		if ($user_id !== null) {
 			// ATTENTION:
 			// For this to work correctly, it is crucial that all child albums
 			// below each top-level album have the same owner!
@@ -78,18 +78,15 @@ final class Tree
 			// (sub)-tree and then `toTree` will return garbage as it does
 			// not find connected paths within `$albums` or `$sharedAlbums`,
 			// resp.
-			/** @var NsCollection<Album> $albums */
-			/** @var ?NsCollection<Album> $sharedAlbums */
-			list($albums, $shared_albums) = $albums->partition(fn (Album $album) => $album->owner_id === $user_i_d);
+			list($albums, $shared_albums) = $albums->partition(fn (Album $album) => $album->owner_id === $user_id);
 		}
 
 		// We must explicitly pass `null` as the ID of the root album
 		// as there are several top-level albums below root.
 		// Otherwise, `toTree` uses the ID of the album with the lowest
 		// `_lft` value as the (wrong) root album.
-		/** @var BaseCollection<int,\App\Contracts\Models\AbstractAlbum> $albumsTree */
+
 		$albums_tree = $albums->toTree(null);
-		/** @var BaseCollection<int,\App\Contracts\Models\AbstractAlbum> $sharedTree */
 		$shared_tree = $shared_albums?->toTree(null);
 
 		return new AlbumForestResource($albums_tree, $shared_tree);

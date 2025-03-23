@@ -42,12 +42,12 @@ final class PhotoCollectionResource extends ResourceCollection
 		$photos = [];
 		$i = 0;
 
-		/** @var PhotoResource $photoResource the photo */
+		/** @var PhotoResource $photo_resource the photo */
 		foreach ($this->collection as $photo_resource) {
 			// We need to specify the return type to inform Phpstan that the appropriate property exists.
 			// Alternatively we could document properly the PhotoResource::toArray() but then the phpdoc
 			// of returns becomes a bit too messy.
-			/** @var array{id:string} $photoArray */
+			/** @var array{id:string} $photo_array */
 			$photo_array = $photo_resource->toArray($request);
 			$photos[] = $photo_array;
 			if ($i > 0) {

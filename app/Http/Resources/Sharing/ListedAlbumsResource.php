@@ -18,7 +18,7 @@ class ListedAlbumsResource extends Data
 	public string $title;
 
 	/**
-	 * @param object{id:string,title:string} $albumListed
+	 * @param object{id:string,title:string} $album_listed
 	 */
 	public function __construct(object $album_listed)
 	{

@@ -34,11 +34,11 @@ final class Legacy
 	/**
 	 * Translates an ID from legacy format to modern format.
 	 *
-	 * @param int     $id        the legacy ID
-	 * @param string  $tableName the table name which should be used to look
-	 *                           up the ID; either `photos` or `base_albums`
-	 * @param Request $request   the request which triggered the lookup
-	 *                           (required for proper logging)
+	 * @param int     $id         the legacy ID
+	 * @param string  $table_name the table name which should be used to look
+	 *                            up the ID; either `photos` or `base_albums`
+	 * @param Request $request    the request which triggered the lookup
+	 *                            (required for proper logging)
 	 *
 	 * @return string|null the modern ID
 	 *
@@ -81,9 +81,9 @@ final class Legacy
 	/**
 	 * Translates an album ID from legacy format to modern format.
 	 *
-	 * @param int     $albumID the legacy ID
-	 * @param Request $request the request which triggered the lookup
-	 *                         (required for proper logging)
+	 * @param int     $album_id the legacy ID
+	 * @param Request $request  the request which triggered the lookup
+	 *                          (required for proper logging)
 	 *
 	 * @return string|null the modern ID
 	 *
@@ -99,9 +99,9 @@ final class Legacy
 	/**
 	 * Translates a photo ID from legacy format to modern format.
 	 *
-	 * @param int     $photoID the legacy ID
-	 * @param Request $request the request which triggered the lookup
-	 *                         (required for proper logging)
+	 * @param int     $photo_id the legacy ID
+	 * @param Request $request  the request which triggered the lookup
+	 *                          (required for proper logging)
 	 *
 	 * @return string|null the modern ID
 	 *

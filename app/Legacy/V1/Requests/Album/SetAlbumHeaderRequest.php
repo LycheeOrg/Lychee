@@ -53,7 +53,7 @@ final class SetAlbumHeaderRequest extends BaseApiRequest implements HasAlbum, Ha
 		$album_id = $values[RequestAttribute::ALBUM_ID_ATTRIBUTE];
 
 		$this->album = Album::query()->findOrFail($album_id);
-		/** @var ?string $photoID */
+		/** @var ?string $photo_id */
 		$photo_id = $values[RequestAttribute::PHOTO_ID_ATTRIBUTE];
 		$this->photo = $photo_id === null ? null : Photo::query()->findOrFail($photo_id);
 	}

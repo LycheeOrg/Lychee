@@ -19,7 +19,7 @@ final class AlbumForestResource extends JsonResource
 {
 	/**
 	 * @param Collection<int,\App\Contracts\Models\AbstractAlbum>      $albums
-	 * @param Collection<int,\App\Contracts\Models\AbstractAlbum>|null $sharedAlbums
+	 * @param Collection<int,\App\Contracts\Models\AbstractAlbum>|null $shared_albums
 	 *
 	 * @return void
 	 */

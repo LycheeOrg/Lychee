@@ -66,7 +66,7 @@ final class AlbumController extends Controller
 	 */
 	public function add(AddAlbumRequest $request): AlbumResource
 	{
-		/** @var int $ownerId */
+		/** @var int $owner_id */
 		$owner_id = Auth::id() ?? throw new UnauthenticatedException();
 
 		$create = new Create($owner_id);

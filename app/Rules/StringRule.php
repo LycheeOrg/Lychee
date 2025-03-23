@@ -17,8 +17,8 @@ class StringRule implements ValidationRule
 	/**
 	 * Constructor.
 	 *
-	 * @param bool $isNullable determines whether `null` is acceptable
-	 * @param int  $limit      the maximum number of allowed characters; `0` means unlimited
+	 * @param bool $is_nullable determines whether `null` is acceptable
+	 * @param int  $limit       the maximum number of allowed characters; `0` means unlimited
 	 */
 	public function __construct(
 		protected bool $is_nullable,
