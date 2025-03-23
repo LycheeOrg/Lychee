@@ -29,6 +29,9 @@ trait MimicModel
 	 */
 	public function __get(mixed $key)
 	{
+		if (!is_string($key)) {
+			throw new LycheeInvalidArgumentException('property name must string');
+		}
 		if ($key === '') {
 			throw new LycheeInvalidArgumentException('property name must not be empty');
 		}
