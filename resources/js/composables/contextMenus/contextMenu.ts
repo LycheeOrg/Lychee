@@ -1,6 +1,6 @@
 import { computed, Ref, ref } from "vue";
 
-type Selectors = {
+export type Selectors = {
 	config?: Ref<App.Http.Resources.GalleryConfigs.AlbumConfig | undefined>;
 	album?: Ref<
 		| App.Http.Resources.Models.AlbumResource
@@ -16,7 +16,7 @@ type Selectors = {
 	selectedAlbums?: Ref<App.Http.Resources.Models.ThumbAlbumResource[]>;
 };
 
-type PhotoCallbacks = {
+export type PhotoCallbacks = {
 	star: () => void;
 	unstar: () => void;
 	setAsCover: () => void;
@@ -29,7 +29,7 @@ type PhotoCallbacks = {
 	toggleDownload: () => void;
 };
 
-type AlbumCallbacks = {
+export type AlbumCallbacks = {
 	setAsCover: () => void;
 	toggleRename: () => void;
 	toggleMerge: () => void;

@@ -38,12 +38,12 @@ import ToggleSwitch from "primevue/toggleswitch";
 import { onKeyStroke } from "@vueuse/core";
 import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
 import SizeVariantMeter from "@/components/statistics/SizeVariantMeter.vue";
-import TotalCard, { TotalAlbum } from "@/components/statistics/TotalCard.vue";
+import TotalCard from "@/components/statistics/TotalCard.vue";
 import AlbumsTable from "@/components/statistics/AlbumsTable.vue";
 import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
 import Activity from "@/components/statistics/Activity.vue";
 import { computed } from "vue";
-import { Ref } from "vue";
+import { TotalAlbum } from "@/composables/album/albumStatistics";
 
 const router = useRouter();
 const user = ref<App.Http.Resources.Models.UserResource | undefined>(undefined);

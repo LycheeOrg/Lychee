@@ -41,6 +41,7 @@ class InitConfig extends Data
 	public bool $can_rotate;
 	public bool $can_autoplay;
 	public bool $is_exif_disabled;
+	public bool $is_favourite_enabled;
 
 	// Thumbs configuration
 	public ThumbOverlayVisibilityType $display_thumb_album_overlay;
@@ -91,6 +92,7 @@ class InitConfig extends Data
 		$this->can_rotate = Configs::getValueAsBool('editor_enabled');
 		$this->can_autoplay = Configs::getValueAsBool('autoplay_enabled');
 		$this->is_exif_disabled = Configs::getValueAsBool('exif_disabled_for_all');
+		$this->is_favourite_enabled = Configs::getValueAsBool('client_side_favourite_enabled');
 
 		// Thumbs configuration
 		$this->display_thumb_album_overlay = Configs::getValueAsEnum('display_thumb_album_overlay', ThumbOverlayVisibilityType::class);

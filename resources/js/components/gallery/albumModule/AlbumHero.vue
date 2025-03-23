@@ -61,18 +61,18 @@
 				</a>
 				<template v-if="isTouchDevice() && user?.id !== null">
 					<a
-						v-if="props.hasHidden && lycheeStore.are_nsfw_visible"
+						v-if="props.hasHidden && are_nsfw_visible"
 						class="shrink-0 px-3 cursor-pointer text-muted-color inline-block transform duration-300 hover:scale-150 hover:text-color"
 						:title="'hide hidden'"
-						@click="lycheeStore.are_nsfw_visible = false"
+						@click="are_nsfw_visible = false"
 					>
 						<i class="pi pi pi-eye-slash" />
 					</a>
 					<a
-						v-if="props.hasHidden && !lycheeStore.are_nsfw_visible"
+						v-if="props.hasHidden && !are_nsfw_visible"
 						class="shrink-0 px-3 cursor-pointer text-muted-color inline-block transform duration-300 hover:scale-150 hover:text-color"
 						:title="'show hidden'"
-						@click="lycheeStore.are_nsfw_visible = true"
+						@click="are_nsfw_visible = true"
 					>
 						<i class="pi pi-eye" />
 					</a>

@@ -1,8 +1,8 @@
 import Album from "@/views/gallery-panels/Album.vue";
 import Albums from "@/views/gallery-panels/Albums.vue";
-import Photo from "@/views/gallery-panels/Photo.vue";
 
 const Landing = () => import("@/views/Landing.vue");
+const Favourites = () => import("@/views/gallery-panels/Favourites.vue");
 const Frame = () => import("@/views/gallery-panels/Frame.vue");
 const Search = () => import("@/views/gallery-panels/Search.vue");
 const MapView = () => import("@/views/gallery-panels/Map.vue");
@@ -25,9 +25,14 @@ const routes_ = [
 		component: Landing,
 	},
 	{
+		name: "favourites",
+		path: "/gallery/favourites",
+		component: Favourites,
+	},
+	{
 		name: "photo",
 		path: "/gallery/:albumid/:photoid",
-		component: Photo,
+		component: Album,
 		props: true,
 	},
 	{
@@ -76,8 +81,8 @@ const routes_ = [
 	},
 	{
 		name: "search-photo",
-		path: "/gallery/:albumid/:photoid",
-		component: Photo,
+		path: "/search/:albumid/:photoid",
+		component: Search,
 		props: true,
 	},
 	{

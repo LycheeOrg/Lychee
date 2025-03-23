@@ -103,6 +103,9 @@ function execute() {
 		// Clear the cache for the destination album
 		AlbumService.clearCache(destination_id.value);
 
+		// RESET !
+		destination_id.value = undefined;
+
 		emits("copy");
 	});
 }

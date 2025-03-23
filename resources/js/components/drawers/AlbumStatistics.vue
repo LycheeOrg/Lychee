@@ -73,8 +73,8 @@ import DataTable from "primevue/datatable";
 import Panel from "primevue/panel";
 import { Ref, ref } from "vue";
 import { Collapse } from "vue-collapsed";
-import TotalCard, { TotalAlbum } from "../statistics/TotalCard.vue";
-import { useAlbumsStatistics } from "@/composables/album/albumStatistics";
+import TotalCard from "../statistics/TotalCard.vue";
+import { TotalAlbum, useAlbumsStatistics } from "@/composables/album/albumStatistics";
 import SizeVariantMeter from "../statistics/SizeVariantMeter.vue";
 
 const areStatisticsOpen = defineModel("visible", { default: false }) as Ref<boolean>;

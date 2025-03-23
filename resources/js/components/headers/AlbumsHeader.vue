@@ -1,6 +1,6 @@
 <template>
-	<ImportFromLink v-if="canUpload" v-model:visible="isImportFromLinkOpen" :parent-id="null" />
-	<DropBox v-if="canUpload" v-model:visible="isImportFromDropboxOpen" :album-id="null" />
+	<ImportFromLink v-if="canUpload" v-model:visible="is_import_from_link_open" :parent-id="null" />
+	<DropBox v-if="canUpload" v-model:visible="is_import_from_dropbox_open" :album-id="null" />
 	<Toolbar
 		class="w-full border-0 h-14"
 		:pt:root:class="'flex-nowrap relative'"
@@ -96,6 +96,7 @@ import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
 import DropBox from "../modals/DropBox.vue";
 import BackLinkButton from "./BackLinkButton.vue";
 import OpenLeftMenu from "./OpenLeftMenu.vue";
+import { useFavouriteStore } from "@/stores/FavouriteState";
 
 const props = defineProps<{
 	user: App.Http.Resources.Models.UserResource;
@@ -119,16 +120,9 @@ const emits = defineEmits<{
 	help: [];
 }>();
 
-//  'UPLOAD_PHOTO' => 'Upload Photo',
-// 	'IMPORT_LINK' => 'Import from Link',
-// 	'IMPORT_DROPBOX' => 'Import from Dropbox',
-// 	'IMPORT_SERVER' => 'Import from Server',
-// 	'NEW_ALBUM' => 'New Album',
-// 	'NEW_TAG_ALBUM' => 'New Tag Album',
-// 	'UPLOAD_TRACK' => 'Upload track',
-// 	'DELETE_TRACK' => 'Delete track',
 const lycheeStore = useLycheeStateStore();
 const togglableStore = useTogglablesStateStore();
+const favourites = useFavouriteStore();
 
 const { dropbox_api_key } = storeToRefs(lycheeStore);
 const { is_login_open, is_upload_visible, is_create_album_visible, is_create_tag_album_visible } = storeToRefs(togglableStore);
@@ -138,9 +132,9 @@ const router = useRouter();
 const {
 	toggleCreateAlbum,
 	toggleCreateTagAlbum,
-	isImportFromLinkOpen,
+	is_import_from_link_open,
 	toggleImportFromLink,
-	isImportFromDropboxOpen,
+	is_import_from_dropbox_open,
 	toggleImportFromDropbox,
 	toggleUpload,
 } = useGalleryModals(togglableStore);
@@ -224,6 +218,12 @@ type MenuRight = (Item & Link) | (Item & Callback);
 
 const menu = computed(() =>
 	[
+		{
+			to: { name: "favourites" },
+			type: "link",
+			icon: "pi pi-heart",
+			if: (favourites.photos?.length ?? 0) > 0,
+		},
 		{
 			to: { name: "frame" },
 			type: "link",

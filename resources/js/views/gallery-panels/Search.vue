@@ -1,157 +1,154 @@
 <template>
+	<LoadingProgress v-model:loading="isSearching" />
+
 	<div class="h-svh overflow-y-hidden">
 		<!-- Trick to avoid the scroll bar to appear on the right when switching to full screen -->
 		<Collapse :when="!is_full_screen">
-			<Toolbar class="w-full border-0 h-14">
-				<template #start>
-					<Button icon="pi pi-angle-left" class="mr-2" severity="secondary" text @click="goBack" />
-				</template>
-				<template #center>
-					<span class="sm:hidden font-bold">
-						{{ $t("gallery.search.title") }}
-					</span>
-					<span class="hidden sm:block font-bold text-sm lg:text-base text-center w-full">{{ title }}</span>
-				</template>
-				<template #end> </template>
-			</Toolbar>
+			<SearchHeader :title="title" @goBack="goBack" />
 		</Collapse>
-		<SearchBox
-			v-if="searchMinimumLengh !== undefined"
-			:search-minimum-lengh="searchMinimumLengh"
-			v-model:search="search_term"
-			@search="search"
-			@clear="clear"
-		/>
-		<template v-if="isSearching === true">
-			<div class="flex w-full h-full items-center justify-center text-xl text-muted-color">
-				<span class="block">
-					{{ $t("gallery.search.searching") }}
-				</span>
-			</div>
-		</template>
-		<template v-if="isSearching === false && noData">
-			<div class="flex w-full h-full items-center justify-center text-xl text-muted-color">
-				<span class="block">
-					{{ $t("gallery.search.no_results") }}
-				</span>
-			</div>
-		</template>
-		<template v-if="!noData">
-			<div
-				class="relative flex flex-wrap content-start w-full justify-start overflow-y-auto"
-				:class="is_full_screen ? 'h-svh' : 'h-[calc(100vh-3.5rem)]'"
-			>
-				<AlbumThumbPanel
-					v-if="albums.length > 0"
-					:header="albumHeader"
-					:album="null"
-					:albums="albums"
-					:config="albumPanelConfig"
-					:is-alone="false"
-					:are-nsfw-visible="are_nsfw_visible"
-					@clicked="albumClick"
-					@contexted="albumMenuOpen"
-					:idx-shift="0"
-					:selected-albums="selectedAlbumsIds"
-					:is-timeline="false"
-				/>
-				<div class="flex justify-center w-full" v-if="photos.length > 0">
-					<Paginator :total-records="total" :rows="per_page" v-model:first="from" @update:first="refresh" :always-show="false" />
-				</div>
-				<PhotoThumbPanel
-					v-if="layoutConfig !== null && photos.length > 0"
-					:photo-layout="layout"
-					:header="photoHeader"
-					:photos="photos"
-					:album="undefined"
-					:gallery-config="layoutConfig"
-					:selected-photos="selectedPhotosIds"
-					@clicked="photoClick"
-					@contexted="photoMenuOpen"
-					:is-timeline="configForMenu.is_photo_timeline_enabled"
-				/>
-			</div>
-
-			<!-- Dialogs -->
-			<PhotoTagDialog
-				v-model:visible="isTagVisible"
-				:parent-id="albumid"
-				:photo="selectedPhoto"
-				:photo-ids="selectedPhotosIds"
-				@tagged="refresh"
+		<div
+			:class="{
+				'relative flex flex-wrap content-start w-full justify-start overflow-y-auto': true,
+				'h-svh': is_full_screen,
+				'h-[calc(100vh-3.5rem)]': !is_full_screen,
+			}"
+		>
+			<SearchPanel
+				:title="title"
+				:searchMinimumLengh="searchMinimumLengh"
+				:isSearching="isSearching"
+				:noData="noData"
+				@clear="clear"
+				@search="search"
 			/>
-			<PhotoCopyDialog
-				v-model:visible="isCopyVisible"
-				:parent-id="albumid"
-				:photo="selectedPhoto"
-				:photo-ids="selectedPhotosIds"
-				@copied="refresh"
+			<ResultPanel
+				v-if="albums !== undefined && photos !== undefined && layoutConfig"
+				:albums="albums"
+				:photos="photos"
+				:total="total"
+				:albumHeader="albumHeader"
+				:photoHeader="photoHeader"
+				:layout="layout"
+				:layoutConfig="layoutConfig"
+				:album-panel-config="albumPanelConfig"
+				:is-photo-timeline-enabled="configForMenu.is_photo_timeline_enabled"
+				:photo-callbacks="photoCallbacks"
+				:album-callbacks="albumCallbacks"
+				:selectors="selectors"
+				v-model:first="from"
+				v-model:rows="per_page"
+				@refresh="refresh"
 			/>
-			<MoveDialog
-				v-model:visible="isMoveVisible"
-				:parent-id="albumid"
-				:photo="selectedPhoto"
-				:photo-ids="selectedPhotosIds"
-				:album="selectedAlbum"
-				:album-ids="selectedAlbumsIds"
-				@moved="refresh"
-			/>
-			<DeleteDialog
-				v-model:visible="isDeleteVisible"
-				:parent-id="albumid"
-				:photo="selectedPhoto"
-				:photo-ids="selectedPhotosIds"
-				:album="selectedAlbum"
-				:album-ids="selectedAlbumsIds"
-				@deleted="refresh"
-			/>
-			<RenameDialog v-model:visible="isRenameVisible" :parent-id="undefined" :album="selectedAlbum" :photo="selectedPhoto" @renamed="refresh" />
-			<AlbumMergeDialog
-				v-model:visible="isMergeAlbumVisible"
-				:parent-id="albumid"
-				:album="selectedAlbum"
-				:album-ids="selectedAlbumsIds"
-				@merged="refresh"
-			/>
-
-			<ContextMenu ref="menu" :model="Menu" :class="Menu.length === 0 ? 'hidden' : ''">
-				<template #item="{ item, props }">
-					<Divider v-if="item.is_divider" />
-					<a v-else v-ripple v-bind="props.action" @click="item.callback">
-						<span :class="item.icon" />
-						<span class="ml-2">
-							<!-- @vue-ignore -->
-							{{ $t(item.label) }}
-						</span>
-					</a>
-				</template>
-			</ContextMenu>
-		</template>
+		</div>
 	</div>
+
+	<!-- Photo panel -->
+	<PhotoPanel
+		v-if="photo"
+		:album-id="albumId"
+		:photo="photo"
+		:photos="photosForSelection"
+		:is-map-visible="config?.is_map_accessible ?? false"
+		@toggle-slide-show="slideshow"
+		@rotate-overlay="rotateOverlay"
+		@rotate-photo-c-w="rotatePhotoCW"
+		@rotate-photo-c-c-w="rotatePhotoCCW"
+		@set-album-header="setAlbumHeader"
+		@toggle-star="toggleStar"
+		@toggle-move="toggleMove"
+		@toggle-delete="toggleDelete"
+		@updated="refresh"
+		@go-back="goBack"
+		@next="() => next(true)"
+		@previous="() => previous(true)"
+	/>
+
+	<!-- Dialogs -->
+	<template v-if="photo">
+		<PhotoTagDialog
+			v-model:visible="is_tag_visible"
+			:parent-id="albumid"
+			:photo="selectedPhoto"
+			:photo-ids="selectedPhotosIds"
+			@tagged="
+				() => {
+					unselect();
+					refresh();
+				}
+			"
+		/>
+		<PhotoCopyDialog
+			v-model:visible="is_copy_visible"
+			:parent-id="albumid"
+			:photo="selectedPhoto"
+			:photo-ids="selectedPhotosIds"
+			@copied="
+				() => {
+					unselect();
+					refresh();
+				}
+			"
+		/>
+		<PhotoEdit v-if="photo?.rights.can_edit" :photo="photo" v-model:visible="is_photo_edit_open" />
+		<MoveDialog :photo="photo" v-model:visible="is_move_visible" :parent-id="props.albumid" @moved="refresh" />
+		<DeleteDialog :photo="photo" v-model:visible="is_delete_visible" :parent-id="props.albumid" @deleted="refresh" />
+	</template>
+	<template v-else-if="!noData">
+		<!-- Dialogs -->
+		<PhotoTagDialog
+			v-model:visible="is_tag_visible"
+			:parent-id="albumid"
+			:photo="selectedPhoto"
+			:photo-ids="selectedPhotosIds"
+			@tagged="refresh"
+		/>
+		<PhotoCopyDialog
+			v-model:visible="is_copy_visible"
+			:parent-id="albumid"
+			:photo="selectedPhoto"
+			:photo-ids="selectedPhotosIds"
+			@copied="refresh"
+		/>
+		<MoveDialog
+			v-model:visible="is_move_visible"
+			:parent-id="albumid"
+			:photo="selectedPhoto"
+			:photo-ids="selectedPhotosIds"
+			:album="selectedAlbum"
+			:album-ids="selectedAlbumsIds"
+			@moved="refresh"
+		/>
+		<DeleteDialog
+			v-model:visible="is_delete_visible"
+			:parent-id="albumid"
+			:photo="selectedPhoto"
+			:photo-ids="selectedPhotosIds"
+			:album="selectedAlbum"
+			:album-ids="selectedAlbumsIds"
+			@deleted="refresh"
+		/>
+		<RenameDialog v-model:visible="is_rename_visible" :parent-id="undefined" :album="selectedAlbum" :photo="selectedPhoto" @renamed="refresh" />
+		<AlbumMergeDialog
+			v-model:visible="is_merge_album_visible"
+			:parent-id="albumid"
+			:album="selectedAlbum"
+			:album-ids="selectedAlbumsIds"
+			@merged="refresh"
+		/>
+	</template>
 </template>
 <script setup lang="ts">
-import SearchBox from "@/components/forms/search/SearchBox.vue";
-import AlbumThumbPanel from "@/components/gallery/albumModule/AlbumThumbPanel.vue";
-import PhotoThumbPanel from "@/components/gallery/albumModule/PhotoThumbPanel.vue";
 import { AlbumThumbConfig } from "@/components/gallery/albumModule/thumbs/AlbumThumb.vue";
 import { useAlbumRefresher } from "@/composables/album/albumRefresher";
-import { useContextMenu } from "@/composables/contextMenus/contextMenu";
 import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
 import { useSelection } from "@/composables/selections/selections";
 import { useAuthStore } from "@/stores/Auth";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { onKeyStroke } from "@vueuse/core";
 import { storeToRefs } from "pinia";
-import Button from "primevue/button";
-import Toolbar from "primevue/toolbar";
-import Paginator from "primevue/paginator";
-import { computed, ref } from "vue";
-import { Collapse } from "vue-collapsed";
-import { useRouter } from "vue-router";
-import { useSearch } from "@/composables/album/searchRefresher";
-import { trans } from "laravel-vue-i18n";
-import Divider from "primevue/divider";
-import ContextMenu from "primevue/contextmenu";
+import { computed, ref, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useSearch } from "@/composables/search/searchRefresher";
 import AlbumMergeDialog from "@/components/forms/gallery-dialogs/AlbumMergeDialog.vue";
 import RenameDialog from "@/components/forms/gallery-dialogs/RenameDialog.vue";
 import PhotoTagDialog from "@/components/forms/photo/PhotoTagDialog.vue";
@@ -162,32 +159,56 @@ import PhotoService from "@/services/photo-service";
 import AlbumService from "@/services/album-service";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { useGetLayoutConfig } from "@/layouts/PhotoLayout";
+import SearchPanel from "@/components/gallery/searchModule/SearchPanel.vue";
+import ResultPanel from "@/components/gallery/searchModule/ResultPanel.vue";
+import { onMounted } from "vue";
+import { useScrollable } from "@/composables/album/scrollable";
+import { useSearchComputed } from "@/composables/search/searchComputed";
+import { ALL } from "@/config/constants";
+import PhotoPanel from "@/components/gallery/photoModule/PhotoPanel.vue";
+import PhotoEdit from "@/components/drawers/PhotoEdit.vue";
+import { usePhotoActions } from "@/composables/album/photoActions";
+import { useToast } from "primevue/usetoast";
+import { useSlideshowFunction } from "@/composables/photo/slideshow";
+import { getNextPreviousPhoto } from "@/composables/photo/getNextPreviousPhoto";
+import { usePhotoRefresher } from "@/composables/photo/hasRefresher";
+import { Collapse } from "vue-collapsed";
+import SearchHeader from "@/components/headers/SearchHeader.vue";
+import LoadingProgress from "@/components/loading/LoadingProgress.vue";
+import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
+import { useHasNextPreviousPhoto } from "@/composables/photo/hasNextPreviousPhoto";
 
+const route = useRoute();
 const router = useRouter();
+const toast = useToast();
+
 const props = defineProps<{
 	albumid?: string;
+	photoid?: string;
 }>();
 
-const albumid = ref(props.albumid ?? "");
-function goBack() {
-	if (props.albumid !== undefined) {
-		router.push({ name: "album", params: { albumid: props.albumid } });
-	} else {
-		router.push({ name: "gallery" });
-	}
-}
+const albumId = ref(props.albumid ?? ALL);
+const photoId = ref(props.photoid);
+
+// unused? Hard to say...
+const videoElement = ref<HTMLVideoElement | null>(null);
 
 const auth = useAuthStore();
 const lycheeStore = useLycheeStateStore();
-const togglableStore = useTogglablesStateStore();
 lycheeStore.init();
-const { is_full_screen, search_page, search_term, is_login_open, is_upload_visible } = storeToRefs(togglableStore);
-const { are_nsfw_visible, nsfw_consented } = storeToRefs(lycheeStore);
+const { slideshow_timeout, are_nsfw_visible } = storeToRefs(lycheeStore);
+
+const togglableStore = useTogglablesStateStore();
+
+const { search_page, search_term, is_login_open, is_slideshow_active, is_photo_edit_open, is_full_screen, are_details_open } =
+	storeToRefs(togglableStore);
+
+const { album, photo, config, loadAlbum } = useAlbumRefresher(albumId, photoId, auth, is_login_open);
+
 const {
 	albums,
-	layout,
 	photos,
-	noData,
+	layout,
 	searchMinimumLengh,
 	isSearching,
 	from,
@@ -199,50 +220,28 @@ const {
 	search,
 	clear,
 	refresh,
-} = useSearch(albumid, togglableStore, search_term, search_page);
+} = useSearch(albumId, togglableStore, search_term, search_page);
+const { refreshPhoto } = usePhotoRefresher(photo, photos, photoId);
+const { albumsForSelection, photosForSelection, noData, configForMenu, title } = useSearchComputed(config, album, albums, photos, lycheeStore);
+
 const { layoutConfig, loadLayoutConfig } = useGetLayoutConfig();
-const { album, config, loadAlbum } = useAlbumRefresher(albumid, auth, is_login_open, nsfw_consented);
 
-const configForMenu = computed<App.Http.Resources.GalleryConfigs.AlbumConfig>(() => {
-	if (config.value !== undefined) {
-		return config.value;
-	}
-	return {
-		is_base_album: false,
-		is_model_album: false,
-		is_accessible: true,
-		is_password_protected: false,
-		is_map_accessible: false,
-		is_mod_frame_enabled: false,
-		is_search_accessible: false,
-		is_nsfw_warning_visible: false,
-		album_thumb_css_aspect_ratio: "aspect-square",
-		photo_layout: "justified",
-		is_album_timeline_enabled: false,
-		is_photo_timeline_enabled: false,
-	};
-});
-const albumForMenu = albumid.value !== "" ? album : undefined;
-
-const title = computed<string>(() => {
-	if (album.value === undefined) {
-		return trans(lycheeStore.title);
-	}
-	return album.value.title;
-});
+const { hasPrevious, hasNext } = useHasNextPreviousPhoto(photo);
+const { getNext, getPrevious } = getNextPreviousPhoto(togglableStore, router, albumId, photo);
+const { slideshow, next, previous, stop } = useSlideshowFunction(1000, is_slideshow_active, slideshow_timeout, videoElement, getNext, getPrevious);
 
 const {
-	isDeleteVisible,
+	is_delete_visible,
 	toggleDelete,
-	isMergeAlbumVisible,
+	is_merge_album_visible,
 	toggleMergeAlbum,
-	isMoveVisible,
+	is_move_visible,
 	toggleMove,
-	isRenameVisible,
+	is_rename_visible,
 	toggleRename,
-	isTagVisible,
+	is_tag_visible,
 	toggleTag,
-	isCopyVisible,
+	is_copy_visible,
 	toggleCopy,
 } = useGalleryModals(togglableStore);
 
@@ -255,9 +254,10 @@ const {
 	selectedAlbums,
 	selectedPhotosIds,
 	selectedAlbumsIds,
-	photoClick,
-	albumClick,
-} = useSelection(photos, albums);
+	unselect,
+} = useSelection(photosForSelection, albumsForSelection, togglableStore);
+
+const { toggleStar, rotatePhotoCCW, rotatePhotoCW, setAlbumHeader, rotateOverlay } = usePhotoActions(photo, albumId, toast, lycheeStore);
 
 const photoCallbacks = {
 	star: () => {
@@ -271,13 +271,13 @@ const photoCallbacks = {
 		refresh();
 	},
 	setAsCover: () => {
-		PhotoService.setAsCover(selectedPhoto.value!.id, albumid.value);
-		AlbumService.clearCache(albumid.value);
+		PhotoService.setAsCover(selectedPhoto.value!.id, albumId.value);
+		AlbumService.clearCache(albumId.value);
 		refresh();
 	},
 	setAsHeader: () => {
-		PhotoService.setAsHeader(selectedPhoto.value!.id, albumid.value, false);
-		AlbumService.clearCache(albumid.value);
+		PhotoService.setAsHeader(selectedPhoto.value!.id, albumId.value, false);
+		AlbumService.clearCache(albumId.value);
 		refresh();
 	},
 	toggleTag: toggleTag,
@@ -297,20 +297,16 @@ const albumCallbacks = {
 	toggleDownload: () => {},
 };
 
-const { menu, Menu, photoMenuOpen, albumMenuOpen } = useContextMenu(
-	{
-		config: configForMenu,
-		album: albumForMenu,
-		selectedPhoto: selectedPhoto,
-		selectedPhotos: selectedPhotos,
-		selectedPhotosIdx: selectedPhotosIdx,
-		selectedAlbum: selectedAlbum,
-		selectedAlbums: selectedAlbums,
-		selectedAlbumIdx: selectedAlbumsIdx,
-	},
-	photoCallbacks,
-	albumCallbacks,
-);
+const selectors = {
+	config: configForMenu,
+	album: albumId.value !== "" ? album : undefined,
+	selectedPhoto: selectedPhoto,
+	selectedPhotos: selectedPhotos,
+	selectedPhotosIdx: selectedPhotosIdx,
+	selectedAlbum: selectedAlbum,
+	selectedAlbums: selectedAlbums,
+	selectedAlbumIdx: selectedAlbumsIdx,
+};
 
 const albumPanelConfig = computed<AlbumThumbConfig>(() => ({
 	album_thumb_css_aspect_ratio: "aspect-square",
@@ -320,18 +316,138 @@ const albumPanelConfig = computed<AlbumThumbConfig>(() => ({
 	album_decoration_orientation: lycheeStore.album_decoration_orientation,
 }));
 
-if (albumid.value !== "") {
-	loadAlbum();
+const { scrollToTop, setScroll } = useScrollable(togglableStore, albumId);
+
+function goBack() {
+	if (is_slideshow_active.value) {
+		stop();
+	}
+
+	if (is_photo_edit_open.value === true) {
+		is_photo_edit_open.value = false;
+		return;
+	}
+
+	if (photoId.value !== undefined) {
+		photoId.value = undefined;
+		photo.value = undefined;
+		router.push({ name: "search-with-album", params: { albumid: albumId.value } });
+		return;
+	}
+
+	if (albumId.value !== undefined && albumId.value !== ALL) {
+		router.push({ name: "album", params: { albumid: props.albumid } });
+	} else {
+		router.push({ name: "gallery" });
+	}
 }
 
-searchInit();
-loadLayoutConfig();
+// Album operations
+onKeyStroke("h", () => !shouldIgnoreKeystroke() && photo.value === undefined && (are_nsfw_visible.value = !are_nsfw_visible.value));
+onKeyStroke("f", () => !shouldIgnoreKeystroke() && photo.value === undefined && togglableStore.toggleFullScreen());
 
-if (togglableStore.isSearchActive) {
-	search(togglableStore.search_term);
-}
+// Photo operations
+onKeyStroke("ArrowLeft", () => !shouldIgnoreKeystroke() && photo.value !== undefined && hasPrevious() && previous(true));
+onKeyStroke("ArrowRight", () => !shouldIgnoreKeystroke() && photo.value !== undefined && hasNext() && next(true));
+onKeyStroke("o", () => !shouldIgnoreKeystroke() && photo.value !== undefined && rotateOverlay());
+onKeyStroke(" ", () => !shouldIgnoreKeystroke() && photo.value !== undefined && slideshow());
+onKeyStroke("i", () => !shouldIgnoreKeystroke() && photo.value !== undefined && (are_details_open.value = !are_details_open.value));
+onKeyStroke("f", () => !shouldIgnoreKeystroke() && photo.value !== undefined && togglableStore.toggleFullScreen());
+onKeyStroke("Escape", () => !shouldIgnoreKeystroke() && photo.value !== undefined && is_slideshow_active.value && stop());
 
+// Priviledged Photo operations
+onKeyStroke("m", () => !shouldIgnoreKeystroke() && photo.value !== undefined && photo.value.rights.can_edit && toggleMove());
+onKeyStroke(
+	"e",
+	() =>
+		!shouldIgnoreKeystroke() &&
+		photo.value !== undefined &&
+		photo.value.rights.can_edit &&
+		(is_photo_edit_open.value = !is_photo_edit_open.value),
+);
+onKeyStroke("s", () => !shouldIgnoreKeystroke() && photo.value !== undefined && photo.value.rights.can_edit && toggleStar());
+onKeyStroke(["Delete", "Backspace"], () => !shouldIgnoreKeystroke() && photo.value !== undefined && album.value?.rights.can_delete && toggleDelete());
+
+// on key stroke escape:
+// 1. lose focus
+// 2. close modals
+// 3. go back
 onKeyStroke("Escape", () => {
+	// 1. lose focus
+	if (shouldIgnoreKeystroke() && document.activeElement instanceof HTMLElement) {
+		document.activeElement.blur();
+		return;
+	}
+
+	if (are_details_open.value) {
+		are_details_open.value = false;
+		return;
+	}
+
+	if (is_move_visible.value) {
+		is_move_visible.value = false;
+		return;
+	}
+
+	if (is_delete_visible.value) {
+		is_delete_visible.value = false;
+		return;
+	}
+
+	if (is_rename_visible.value) {
+		is_rename_visible.value = false;
+		return;
+	}
+
+	if (is_tag_visible.value) {
+		is_tag_visible.value = false;
+		return;
+	}
+
+	if (is_copy_visible.value) {
+		is_copy_visible.value = false;
+		return;
+	}
+
+	if (is_move_visible.value) {
+		is_move_visible.value = false;
+		return;
+	}
+
 	goBack();
 });
+
+onMounted(() => {
+	if (photoId.value !== undefined) {
+		router.push({ name: "search-with-album", params: { albumid: albumId.value } });
+	}
+
+	if (albumId.value !== "" && albumId.value !== ALL) {
+		loadAlbum();
+	}
+
+	searchInit();
+	loadLayoutConfig();
+
+	if (togglableStore.isSearchActive) {
+		search(togglableStore.search_term);
+	}
+});
+
+watch(
+	() => route.params.photoid,
+	(newPhotoId, _) => {
+		unselect();
+
+		photoId.value = newPhotoId as string;
+		if (photoId.value !== undefined) {
+			togglableStore.rememberScrollThumb(photoId.value);
+			refreshPhoto();
+		}
+
+		if (photoId.value === undefined) {
+			setScroll();
+		}
+	},
+);
 </script>
