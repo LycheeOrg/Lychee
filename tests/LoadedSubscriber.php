@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 use PHPUnit\Event\TestSuite\Loaded;
 use PHPUnit\Event\TestSuite\LoadedSubscriber as LoadedSubscriberInterface;
+use Symfony\Component\Console\Output\ConsoleOutput;
 
 final class LoadedSubscriber implements LoadedSubscriberInterface
 {
@@ -25,7 +26,20 @@ final class LoadedSubscriber implements LoadedSubscriberInterface
 		$this->createApplication();
 		$this->migrateApplication();
 
-		if (config('features.vuejs') === true) {
+		// Detect local run base on the phpunit.xml file
+		if (str_contains($event->testSuite()->name(), 'phpunit.xml') &&
+			str_contains($event->testSuite()->tests()->asArray()[0]->file(), 'Feature_v1') &&
+			config('features.vuejs')) {
+			(new ConsoleOutput())->section()->writeln('<error>Wrong configuration:</error> <options=bold>Tests v1 are not compatible with VUEJS_ENABLED=true.</>');
+			exit(1);
+		}
+
+		if (config('features.vuejs')) {
+			// If there are any users in the DB, this tends to crash some tests (because we check exact count of users).
+			if (User::query()->count() > 0) {
+				User::truncate();
+			}
+
 			return;
 		}
 

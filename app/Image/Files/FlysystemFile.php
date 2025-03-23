@@ -25,10 +25,10 @@ class FlysystemFile extends BaseMediaFile
 	protected FilesystemAdapter $disk;
 	protected string $relativePath;
 
-	public function __construct(FilesystemAdapter $disk, string $relativePath)
+	public function __construct(FilesystemAdapter $disk, string $relative_path)
 	{
 		$this->disk = $disk;
-		$this->relativePath = $relativePath;
+		$this->relativePath = $relative_path;
 	}
 
 	/**
@@ -56,10 +56,10 @@ class FlysystemFile extends BaseMediaFile
 	/**
 	 * {@inheritDoc}
 	 */
-	public function write($stream, bool $collectStatistics = false): ?StreamStat
+	public function write($stream, bool $collect_statistics = false): ?StreamStat
 	{
 		try {
-			$streamStat = $collectStatistics ? static::appendStatFilter($stream) : null;
+			$stream_stat = $collect_statistics ? static::appendStatFilter($stream) : null;
 
 			// The underlying Flysystem currently behaves inconsistent
 			// with respect to whether it honors the umask value or not.
@@ -86,7 +86,7 @@ class FlysystemFile extends BaseMediaFile
 			}
 			\umask($umask);
 
-			return $streamStat;
+			return $stream_stat;
 		} catch (\ErrorException|FilesystemException $e) {
 			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
@@ -109,12 +109,12 @@ class FlysystemFile extends BaseMediaFile
 	/**
 	 * {@inheritDoc}
 	 */
-	public function move(string $newPath): void
+	public function move(string $new_path): void
 	{
-		if (!$this->disk->move($this->relativePath, $newPath)) {
+		if (!$this->disk->move($this->relativePath, $new_path)) {
 			throw new MediaFileOperationException('could not move file');
 		}
-		$this->relativePath = $newPath;
+		$this->relativePath = $new_path;
 	}
 
 	/**

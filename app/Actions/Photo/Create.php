@@ -40,11 +40,11 @@ use LycheeVerify\Verify;
 class Create
 {
 	/** @var ImportParam the strategy parameters prepared and compiled by this class */
-	protected ImportParam $strategyParameters;
+	protected ImportParam $strategy_parameters;
 
-	public function __construct(?ImportMode $importMode, int $intendedOwnerId)
+	public function __construct(?ImportMode $import_mode, int $intended_owner_id)
 	{
-		$this->strategyParameters = new ImportParam($importMode, $intendedOwnerId);
+		$this->strategy_parameters = new ImportParam($import_mode, $intended_owner_id);
 	}
 
 	/**
@@ -56,9 +56,9 @@ class Create
 	 * This method may create a new database entry or update an existing
 	 * database entry.
 	 *
-	 * @param NativeLocalFile    $sourceFile           the source file
-	 * @param int|null           $fileLastModifiedTime the timestamp to use if there's no creation date in Exif
-	 * @param AbstractAlbum|null $album                the targeted parent album
+	 * @param NativeLocalFile    $source_file             the source file
+	 * @param int|null           $file_last_modified_time the timestamp to use if there's no creation date in Exif
+	 * @param AbstractAlbum|null $album                   the targeted parent album
 	 *
 	 * @return Photo the newly created or updated photo
 	 *
@@ -66,26 +66,26 @@ class Create
 	 * @throws QuotaExceededException
 	 * @throws LycheeException
 	 */
-	public function add(NativeLocalFile $sourceFile, ?AbstractAlbum $album, ?int $fileLastModifiedTime = null): Photo
+	public function add(NativeLocalFile $source_file, ?AbstractAlbum $album, ?int $file_last_modified_time = null): Photo
 	{
-		$this->checkQuota($sourceFile);
+		$this->checkQuota($source_file);
 
 		if (Features::inactive('create-photo-via-pipes')) {
-			$oldCodePath = new LegacyPhotoCreate($this->strategyParameters->importMode, $this->strategyParameters->intendedOwnerId);
+			$old_code_path = new LegacyPhotoCreate($this->strategy_parameters->import_mode, $this->strategy_parameters->intended_owner_id);
 
-			return $oldCodePath->add($sourceFile, $album, $fileLastModifiedTime);
+			return $old_code_path->add($source_file, $album, $file_last_modified_time);
 		}
 
-		$initDTO = new InitDTO(
-			parameters: $this->strategyParameters,
-			sourceFile: $sourceFile,
+		$init_dto = new InitDTO(
+			parameters: $this->strategy_parameters,
+			source_file: $source_file,
 			album: $album,
-			fileLastModifiedTime: $fileLastModifiedTime
+			file_last_modified_time: $file_last_modified_time
 		);
 
 		/** @var InitDTO $initDTO */
-		$initDTO = app(Pipeline::class)
-			->send($initDTO)
+		$init_dto = app(Pipeline::class)
+			->send($init_dto)
 			->through([
 				Init\AssertSupportedMedia::class,
 				Init\FetchLastModifiedTime::class,
@@ -96,21 +96,21 @@ class Create
 			])
 			->thenReturn();
 
-		if ($initDTO->duplicate !== null) {
-			return $this->handleDuplicate($initDTO);
+		if ($init_dto->duplicate !== null) {
+			return $this->handleDuplicate($init_dto);
 		}
 
-		if ($initDTO->livePartner === null) {
-			return $this->handleStandalone($initDTO);
+		if ($init_dto->live_partner === null) {
+			return $this->handleStandalone($init_dto);
 		}
 
 		// livePartner !== null
-		if ($sourceFile->isSupportedVideo()) {
-			return $this->handleVideoLivePartner($initDTO);
+		if ($source_file->isSupportedVideo()) {
+			return $this->handleVideoLivePartner($init_dto);
 		}
 
-		if ($sourceFile->isSupportedImage()) {
-			return $this->handlePhotoLivePartner($initDTO);
+		if ($source_file->isSupportedImage()) {
+			return $this->handlePhotoLivePartner($init_dto);
 		}
 
 		throw new LycheeLogicException('Pipe system for importing video failed');
@@ -126,12 +126,12 @@ class Create
 	 * @throws PhotoResyncedException
 	 * @throws PhotoSkippedException
 	 */
-	private function handleDuplicate(InitDTO $initDTO): Photo
+	private function handleDuplicate(InitDTO $init_dto): Photo
 	{
-		$dto = DuplicateDTO::ofInit($initDTO);
+		$dto = DuplicateDTO::ofInit($init_dto);
 
 		$pipes = [];
-		if ($dto->shallResyncMetadata) {
+		if ($dto->shall_resync_metadata) {
 			$pipes[] = Shared\HydrateMetadata::class;
 			$pipes[] = Duplicate\SaveIfDirty::class;
 		}
@@ -154,9 +154,9 @@ class Create
 		}
 	}
 
-	private function handleStandalone(InitDTO $initDTO): Photo
+	private function handleStandalone(InitDTO $init_dto): Photo
 	{
-		$dto = StandaloneDTO::ofInit($initDTO);
+		$dto = StandaloneDTO::ofInit($init_dto);
 
 		$pipes = [
 			Standalone\FixTimeStamps::class,
@@ -181,9 +181,9 @@ class Create
 		return $this->executePipeOnDTO($pipes, $dto)->getPhoto();
 	}
 
-	private function handleVideoLivePartner(InitDTO $initDTO): Photo
+	private function handleVideoLivePartner(InitDTO $init_dto): Photo
 	{
-		$dto = VideoPartnerDTO::ofInit($initDTO);
+		$dto = VideoPartnerDTO::ofInit($init_dto);
 
 		$pipes = [
 			VideoPartner\GetVideoPath::class,
@@ -239,14 +239,14 @@ class Create
 	 * requires the photo file to be a native, local file in order to be able to
 	 * extract EXIF data.
 	 */
-	private function handlePhotoLivePartner(InitDTO $initDTO): Photo
+	private function handlePhotoLivePartner(InitDTO $init_dto): Photo
 	{
 		// Save old video.
-		$oldVideo = $initDTO->livePartner;
+		$old_video = $init_dto->live_partner;
 
 		// Import Photo as stand alone.
-		$standAloneDto = StandaloneDTO::ofInit($initDTO);
-		$standAlonePipes = [
+		$stand_alone_dto = StandaloneDTO::ofInit($init_dto);
+		$stand_alone_pipes = [
 			Standalone\FixTimeStamps::class,
 			Standalone\InitNamingStrategy::class,
 			Shared\HydrateMetadata::class,
@@ -265,26 +265,26 @@ class Create
 			Standalone\ReplaceOriginalWithBackup::class,
 			Shared\UploadSizeVariantsToS3::class,
 		];
-		$standAloneDto = $this->executePipeOnDTO($standAlonePipes, $standAloneDto);
+		$stand_alone_dto = $this->executePipeOnDTO($stand_alone_pipes, $stand_alone_dto);
 
 		// Use file from video as input for Video Partner and import
-		$videoPartnerDTO = new VideoPartnerDTO(
-			videoFile: $oldVideo->size_variants->getOriginal()->getFile(),
-			shallDeleteImported: true,
-			shallImportViaSymlink: false,
-			photo: $standAloneDto->getPhoto()
+		$video_partner_dto = new VideoPartnerDTO(
+			video_file: $old_video->size_variants->getOriginal()->getFile(),
+			shall_delete_imported: true,
+			shall_import_via_symlink: false,
+			photo: $stand_alone_dto->getPhoto()
 		);
-		$videoPartnerPipes = [
+		$video_partner_pipes = [
 			VideoPartner\GetVideoPath::class,
 			VideoPartner\PlaceVideo::class,
 			VideoPartner\UpdateLivePartner::class,
 			Shared\Save::class,
 		];
-		$videoPartnerDTO = $this->executePipeOnDTO($videoPartnerPipes, $videoPartnerDTO);
+		$video_partner_dto = $this->executePipeOnDTO($video_partner_pipes, $video_partner_dto);
 
-		$finalizeDTO = new PhotoPartnerDTO(
-			photo: $videoPartnerDTO->photo,
-			oldVideo: $oldVideo
+		$finalize_dto = new PhotoPartnerDTO(
+			photo: $video_partner_dto->photo,
+			old_video: $old_video
 		);
 
 		// Finalize
@@ -294,7 +294,7 @@ class Create
 			Shared\Save::class,
 		];
 
-		return $this->executePipeOnDTO($finalize, $finalizeDTO)->getPhoto();
+		return $this->executePipeOnDTO($finalize, $finalize_dto)->getPhoto();
 	}
 
 	/**
@@ -308,7 +308,7 @@ class Create
 	 *
 	 * @codeCoverageIgnore
 	 */
-	private function checkQuota(NativeLocalFile $sourceFile): void
+	private function checkQuota(NativeLocalFile $source_file): void
 	{
 		$verify = resolve(Verify::class);
 
@@ -318,7 +318,7 @@ class Create
 			return;
 		}
 
-		$user = User::find($this->strategyParameters->intendedOwnerId) ?? throw new ModelNotFoundException();
+		$user = User::find($this->strategy_parameters->intended_owner_id) ?? throw new ModelNotFoundException();
 
 		// User does not have quota
 		if ($user->quota_kb === null) {
@@ -333,7 +333,7 @@ class Create
 		$spaces = (new Spaces())->getFullSpacePerUser($user->id);
 		$used = $spaces[0]['size'];
 
-		if (($user->quota_kb * 1024) <= $used + $sourceFile->getFilesize()) {
+		if (($user->quota_kb * 1024) <= $used + $source_file->getFilesize()) {
 			throw new QuotaExceededException();
 		}
 	}

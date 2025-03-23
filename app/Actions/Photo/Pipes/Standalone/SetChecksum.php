@@ -18,7 +18,7 @@ class SetChecksum implements StandalonePipe
 		// The original and final checksum may differ, if the photo has
 		// been rotated by `PlacePhoto::putSourceIntoFinalDestination()` while being
 		// moved into final position.
-		$state->photo->checksum = $state->streamStat->checksum;
+		$state->photo->checksum = $state->stream_stat->checksum;
 
 		return $next($state);
 	}

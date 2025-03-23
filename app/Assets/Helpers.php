@@ -23,17 +23,17 @@ class Helpers
 	 *
 	 * @return string
 	 */
-	public function cacheBusting(string $filePath): string
+	public function cacheBusting(string $file_path): string
 	{
-		if (File::exists($filePath)) {
+		if (File::exists($file_path)) {
 			// @codeCoverageIgnoreStart
-			$unixTimeStamp = File::lastModified($filePath);
+			$unix_time_stamp = File::lastModified($file_path);
 
-			return "{$filePath}?{$unixTimeStamp}";
+			return "{$file_path}?{$unix_time_stamp}";
 			// @codeCoverageIgnoreEnd
 		}
 
-		return $filePath;
+		return $file_path;
 	}
 
 	/**
@@ -46,19 +46,19 @@ class Helpers
 	 *
 	 * @return string updated ID
 	 */
-	public function trancateIf32(string $id, int $prevShortId = 0, int $phpMax = PHP_INT_MAX): string
+	public function trancateIf32(string $id, int $prev_short_id = 0, int $php_max = PHP_INT_MAX): string
 	{
-		if ($phpMax > 2147483647) {
+		if ($php_max > 2147483647) {
 			return $id;
 		}
 
 		// Chop off the last four digits.
-		$shortId = intval(substr($id, 0, -4));
-		if ($shortId <= $prevShortId) {
-			$shortId = $prevShortId + 1;
+		$short_id = intval(substr($id, 0, -4));
+		if ($short_id <= $prev_short_id) {
+			$short_id = $prev_short_id + 1;
 		}
 
-		return (string) $shortId;
+		return (string) $short_id;
 	}
 
 	/**
@@ -152,9 +152,9 @@ class Helpers
 	 */
 	public function isExecAvailable(): bool
 	{
-		$disabledFunctions = explode(',', ini_get('disable_functions'));
+		$disabled_functions = explode(',', ini_get('disable_functions'));
 
-		return function_exists('exec') && !in_array('exec', $disabledFunctions, true);
+		return function_exists('exec') && !in_array('exec', $disabled_functions, true);
 	}
 
 	/**
@@ -254,18 +254,18 @@ class Helpers
 	 *
 	 * @return string
 	 */
-	public function censor(string $string, float $percentOfClear = 0.5): string
+	public function censor(string $string, float $percent_of_clear = 0.5): string
 	{
-		$strLength = strlen($string);
-		if ($strLength === 0) {
+		$str_length = strlen($string);
+		if ($str_length === 0) {
 			return '';
 		}
 
 		// Length of replacement
-		$censored_length = $strLength - (int) floor($strLength * $percentOfClear);
+		$censored_length = $str_length - (int) floor($str_length * $percent_of_clear);
 
 		// we leave half the space in front and behind.
-		$start = (int) floor(($strLength - $censored_length) / 2);
+		$start = (int) floor(($str_length - $censored_length) / 2);
 
 		$replacement = str_repeat('*', $censored_length);
 

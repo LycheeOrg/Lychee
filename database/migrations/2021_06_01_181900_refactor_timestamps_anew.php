@@ -168,8 +168,8 @@ return new class() extends Migration {
 			self::UPDATED_AT_COL_NAME . '_tmp',
 		])->lazyById();
 		foreach ($entities as $entity) {
-			$created_at = $entity->{self::CREATED_AT_COL_NAME . '_tmp'};
-			$updated_at = $entity->{self::UPDATED_AT_COL_NAME . '_tmp'};
+			$created_at = $entity->{self::CREATED_AT_COL_NAME . '_tmp'}; // @phpstan-ignore property.dynamicName
+			$updated_at = $entity->{self::UPDATED_AT_COL_NAME . '_tmp'}; // @phpstan-ignore property.dynamicName
 			if ($needsConversion) {
 				$created_at = $this->upgradeDatetime($created_at) ?? $nowString;
 				$updated_at = $this->upgradeDatetime($updated_at) ?? $nowString;
@@ -247,8 +247,8 @@ return new class() extends Migration {
 			self::UPDATED_AT_COL_NAME . '_tmp',
 		])->lazyById();
 		foreach ($entities as $entity) {
-			$created_at = $entity->{self::CREATED_AT_COL_NAME . '_tmp'};
-			$updated_at = $entity->{self::UPDATED_AT_COL_NAME . '_tmp'};
+			$created_at = $entity->{self::CREATED_AT_COL_NAME . '_tmp'}; // @phpstan-ignore property.dynamicName
+			$updated_at = $entity->{self::UPDATED_AT_COL_NAME . '_tmp'}; // @phpstan-ignore property.dynamicName
 			if ($needsConversion) {
 				$created_at = $this->downgradeDatetime($created_at);
 				$updated_at = $this->downgradeDatetime($updated_at);
@@ -296,7 +296,7 @@ return new class() extends Migration {
 			self::PHOTO_TAKESTAMP_COL_NAME,
 		])->lazyById();
 		foreach ($photos as $photo) {
-			$taken_at = $photo->{self::PHOTO_TAKESTAMP_COL_NAME};
+			$taken_at = $photo->{self::PHOTO_TAKESTAMP_COL_NAME}; // @phpstan-ignore property.dynamicName
 			if ($needsConversion) {
 				$taken_at = $this->upgradeDatetime($taken_at);
 			}
@@ -338,12 +338,12 @@ return new class() extends Migration {
 			self::PHOTO_TAKEN_AT_TZ_COL_NAME,
 		])->lazyById();
 		foreach ($photos as $photo) {
-			$takestamp = $photo->{self::PHOTO_TAKEN_AT_COL_NAME};
+			$takestamp = $photo->{self::PHOTO_TAKEN_AT_COL_NAME}; // @phpstan-ignore property.dynamicName
 			if ($needsConversion) {
 				$takestamp = $this->convertDatetime(
 					$takestamp,
 					self::SQL_TIMEZONE_NAME,
-					$photo->{self::PHOTO_TAKEN_AT_TZ_COL_NAME}
+					$photo->{self::PHOTO_TAKEN_AT_TZ_COL_NAME} // @phpstan-ignore property.dynamicName
 				);
 			}
 			DB::table(self::PHOTOS_TABLE_NAME)->where(self::ID_COL_NAME, '=', $photo->id)->update([
@@ -494,7 +494,7 @@ return new class() extends Migration {
 			->where(self::CONFIG_KEY_COL_NAME, '=', $key)
 			->first();
 
-		return $config?->{self::CONFIG_VALUE_COL_NAME} ?? '';
+		return $config?->{self::CONFIG_VALUE_COL_NAME} ?? ''; // @phpstan-ignore property.dynamicName
 	}
 
 	/**

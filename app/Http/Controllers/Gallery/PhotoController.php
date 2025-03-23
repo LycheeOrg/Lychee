@@ -83,25 +83,25 @@ class PhotoController extends Controller
 		?int $file_last_modified_time,
 		UploadMetaResource $meta): UploadMetaResource
 	{
-		$processableFile = new ProcessableJobFile(
+		$processable_file = new ProcessableJobFile(
 			$final->getOriginalExtension(),
 			$meta->file_name
 		);
-		$processableFile->write($final->read());
+		$processable_file->write($final->read());
 
 		$final->close();
 		$final->delete();
-		$processableFile->close();
+		$processable_file->close();
 		// End of work-around
 
 		if (Configs::getValueAsBool('use_job_queues')) {
-			ProcessImageJob::dispatch($processableFile, $album, $file_last_modified_time);
+			ProcessImageJob::dispatch($processable_file, $album, $file_last_modified_time);
 			$meta->stage = FileStatus::READY;
 
 			return $meta;
 		}
 
-		$job = new ProcessImageJob($processableFile, $album, $file_last_modified_time);
+		$job = new ProcessImageJob($processable_file, $album, $file_last_modified_time);
 		$job->handle(resolve(AlbumFactory::class));
 		$meta->stage = FileStatus::DONE;
 
@@ -116,11 +116,11 @@ class PhotoController extends Controller
 	 *
 	 * @return string
 	 */
-	public function fromUrl(FromUrlRequest $request, FromUrl $fromUrl): string
+	public function fromUrl(FromUrlRequest $request, FromUrl $from_url): string
 	{
 		/** @var int $userId */
-		$userId = Auth::id();
-		$fromUrl->do($request->urls(), $request->album(), $userId);
+		$user_id = Auth::id();
+		$from_url->do($request->urls(), $request->album(), $user_id);
 
 		return 'success';
 	}
@@ -187,8 +187,8 @@ class PhotoController extends Controller
 	 */
 	public function delete(DeletePhotosRequest $request, Delete $delete): void
 	{
-		$fileDeleter = $delete->do($request->photoIds());
-		App::terminating(fn () => $fileDeleter->do());
+		$file_deleter = $delete->do($request->photoIds());
+		App::terminating(fn () => $file_deleter->do());
 	}
 
 	/**
@@ -204,8 +204,8 @@ class PhotoController extends Controller
 			throw new ConfigurationException('support for rotation disabled by configuration');
 		}
 
-		$rotateStrategy = new Rotate($request->photo(), $request->direction());
-		$photo = $rotateStrategy->do();
+		$rotate_strategy = new Rotate($request->photo(), $request->direction());
+		$photo = $rotate_strategy->do();
 
 		return PhotoResource::fromModel($photo);
 	}

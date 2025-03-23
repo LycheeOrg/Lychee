@@ -20,11 +20,8 @@ use Illuminate\Routing\Controller;
 
 class FrameController extends Controller
 {
-	private PhotoQueryPolicy $photoQueryPolicy;
-
-	public function __construct()
+	public function __construct(protected PhotoQueryPolicy $photo_query_policy)
 	{
-		$this->photoQueryPolicy = resolve(PhotoQueryPolicy::class);
 	}
 
 	/**
@@ -88,7 +85,7 @@ class FrameController extends Controller
 
 		// default query
 		if ($album === null) {
-			$query = $this->photoQueryPolicy->applySearchabilityFilter(
+			$query = $this->photo_query_policy->applySearchabilityFilter(
 				query: Photo::query()->with(['album', 'size_variants', 'size_variants.sym_links']),
 				origin: null,
 				include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_frame')

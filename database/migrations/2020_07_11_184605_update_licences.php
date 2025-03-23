@@ -35,14 +35,12 @@ return new class() extends Migration {
 	 */
 	public function up(): void
 	{
-		defined('LICENSE') or define('LICENSE', 'license');
-
 		$default_values = [
 			[
 				'key' => 'default_license',
 				'value' => 'none',
 				'cat' => 'Gallery',
-				'type_range' => LICENSE,
+				'type_range' => 'license',
 				'confidentiality' => '2',
 			],
 		];

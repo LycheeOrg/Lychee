@@ -15,17 +15,14 @@ use Illuminate\Routing\Controller;
 
 final class RequirementsController extends Controller
 {
-	private RequirementsChecker $requirements;
-	private DefaultConfig $config;
-
 	/**
 	 * @param RequirementsChecker $checker
 	 * @param DefaultConfig       $config
 	 */
-	public function __construct(RequirementsChecker $checker, DefaultConfig $config)
-	{
-		$this->requirements = $checker;
-		$this->config = $config;
+	public function __construct(
+		private RequirementsChecker $requirements,
+		private DefaultConfig $config,
+	) {
 	}
 
 	/**
@@ -35,7 +32,7 @@ final class RequirementsController extends Controller
 	 */
 	public function view(): View
 	{
-		$phpSupportInfo = $this->requirements->checkPHPVersion(
+		$php_support_info = $this->requirements->checkPHPVersion(
 			$this->config->get_core()['minPhpVersion']
 		);
 		$reqs = $this->requirements->check(
@@ -45,7 +42,7 @@ final class RequirementsController extends Controller
 		return view('install.requirements', [
 			'title' => 'Lychee-installer',
 			'step' => 1,
-			'phpSupportInfo' => $phpSupportInfo,
+			'phpSupportInfo' => $php_support_info,
 			'requirements' => $reqs['requirements'],
 			'errors' => $reqs['errors'] ?? null,
 		]);

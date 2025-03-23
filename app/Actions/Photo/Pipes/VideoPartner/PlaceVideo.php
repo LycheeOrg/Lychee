@@ -59,43 +59,43 @@ class PlaceVideo implements VideoPartnerPipe
 		if (Features::active('use-s3')) {
 			$disk = Storage::disk(StorageDiskType::S3->value);
 		}
-		$videoTargetFile = new FlysystemFile($disk, $state->videoPath);
+		$video_target_file = new FlysystemFile($disk, $state->video_path);
 
 		try {
-			if ($state->videoFile instanceof NativeLocalFile) {
+			if ($state->video_file instanceof NativeLocalFile) {
 				// This is case A (see above)
 				// The code is very similar to
 				// AddStandaloneStrategy::putSourceIntoFinalDestination()
 				// except that we can skip the part about normalization of
 				// orientation, because we don't support that for videos.
-				if ($state->shallImportViaSymlink) {
-					if (!$videoTargetFile->isLocalFile()) {
+				if ($state->shall_import_via_symlink) {
+					if (!$video_target_file->isLocalFile()) {
 						throw new ConfigurationException('Symlinking is only supported on local filesystems');
 					}
-					$targetPath = $videoTargetFile->toLocalFile()->getPath();
-					$sourcePath = $state->videoFile->getRealPath();
+					$target_path = $video_target_file->toLocalFile()->getPath();
+					$source_path = $state->video_file->getRealPath();
 					// For symlinks we must manually create a non-existing
 					// parent directory.
 					// This mimics the behaviour of Flysystem for regular files.
-					$targetDirectory = pathinfo($targetPath, PATHINFO_DIRNAME);
-					if (!is_dir($targetDirectory)) {
+					$target_directory = pathinfo($target_path, PATHINFO_DIRNAME);
+					if (!is_dir($target_directory)) {
 						$umask = \umask(0);
-						\Safe\mkdir($targetDirectory, BasicPermissionCheck::getConfiguredDirectoryPerm(), true);
+						\Safe\mkdir($target_directory, BasicPermissionCheck::getConfiguredDirectoryPerm(), true);
 						\umask($umask);
 					}
-					\Safe\symlink($sourcePath, $targetPath);
-					$streamStat = StreamStat::createFromLocalFile($state->videoFile);
+					\Safe\symlink($source_path, $target_path);
+					$stream_stat = StreamStat::createFromLocalFile($state->video_file);
 				} else {
-					$streamStat = $videoTargetFile->write($state->videoFile->read(), true);
-					$state->videoFile->close();
-					$videoTargetFile->close();
-					if ($state->shallDeleteImported) {
+					$stream_stat = $video_target_file->write($state->video_file->read(), true);
+					$state->video_file->close();
+					$video_target_file->close();
+					if ($state->shall_delete_imported) {
 						// This may throw an exception, if the original has been
 						// readable, but is not writable
 						// In this case, the media file will have been copied, but
 						// cannot be "moved".
 						try {
-							$state->videoFile->delete();
+							$state->video_file->delete();
 						} catch (MediaFileOperationException $e) {
 							// If deletion failed, we do not cancel the whole
 							// import, but fall back to copy-semantics and
@@ -104,17 +104,17 @@ class PlaceVideo implements VideoPartnerPipe
 						}
 					}
 				}
-			} elseif ($state->videoFile instanceof FlysystemFile) {
+			} elseif ($state->video_file instanceof FlysystemFile) {
 				// It seems as if Flysystem calls a primitive \rename under the
 				// hood, if the storage adapter is the `Local` adapter.
 				// This also works for symbolic links, so we are good here.
-				$state->videoFile->move($videoTargetFile->getRelativePath());
-				$streamStat = null;
+				$state->video_file->move($video_target_file->getRelativePath());
+				$stream_stat = null;
 			} else {
-				throw new LycheeAssertionError('Unexpected type of $videoFile: ' . get_class($state->videoFile));
+				throw new LycheeAssertionError('Unexpected type of $video_file: ' . get_class($state->video_file));
 			}
 
-			$state->streamStat = $streamStat;
+			$state->stream_stat = $stream_stat;
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException('Could move/copy/symlink source file to final destination', $e);
 		}

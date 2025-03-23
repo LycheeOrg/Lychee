@@ -96,12 +96,12 @@ class Configs extends Model
 	/**
 	 * Sanity check.
 	 *
-	 * @param string|null $candidateValue
+	 * @param string|null $candidate_value
 	 * @param string|null $message_template
 	 *
 	 * @return string
 	 */
-	public function sanity(?string $candidateValue, ?string $message_template = null): string
+	public function sanity(?string $candidate_value, ?string $message_template = null): string
 	{
 		$message = '';
 		$val_range = [
@@ -109,46 +109,46 @@ class Configs extends Model
 			ConfigType::TERNARY->value => explode('|', ConfigType::TERNARY->value),
 		];
 
-		$message_template ??= 'Error: Wrong property for ' . $this->key . ', expected %s, got ' . ($candidateValue ?? 'NULL') . '.';
+		$message_template ??= 'Error: Wrong property for ' . $this->key . ', expected %s, got ' . ($candidate_value ?? 'NULL') . '.';
 		switch ($this->type_range) {
 			case ConfigType::STRING->value:
 			case ConfigType::DISABLED->value:
 				break;
 			case ConfigType::STRING_REQ->value:
-				if ($candidateValue === '' || $candidateValue === null) {
+				if ($candidate_value === '' || $candidate_value === null) {
 					$message = 'Error: ' . $this->key . ' empty or not set';
 				}
 				break;
 			case ConfigType::INT->value:
 				// we make sure that we only have digits in the chosen value.
-				if (!ctype_digit(strval($candidateValue))) {
+				if (!ctype_digit(strval($candidate_value))) {
 					$message = sprintf($message_template, 'positive integer or 0');
 				}
 				break;
 			case ConfigType::POSTIIVE->value:
-				if (!ctype_digit(strval($candidateValue)) || intval($candidateValue, 10) === 0) {
+				if (!ctype_digit(strval($candidate_value)) || intval($candidate_value, 10) === 0) {
 					$message = sprintf($message_template, 'strictly positive integer');
 				}
 				break;
 			case ConfigType::BOOL->value:
 			case ConfigType::TERNARY->value:
-				if (!in_array($candidateValue, $val_range[$this->type_range], true)) { // BOOL or TERNARY
+				if (!in_array($candidate_value, $val_range[$this->type_range], true)) { // BOOL or TERNARY
 					$message = sprintf($message_template, implode(' or ', $val_range[$this->type_range]));
 				}
 				break;
 			case ConfigType::LICENSE->value:
-				if (LicenseType::tryFrom($candidateValue) === null) {
+				if (LicenseType::tryFrom($candidate_value) === null) {
 					$message = sprintf($message_template, 'a valid license');
 				}
 				break;
 			case ConfigType::MAP_PROVIDER->value:
-				if (MapProviders::tryFrom($candidateValue) === null) {
+				if (MapProviders::tryFrom($candidate_value) === null) {
 					$message = sprintf($message_template, 'a valid map provider');
 				}
 				break;
 			default:
 				$values = explode('|', $this->type_range);
-				if (!in_array($candidateValue, $values, true)) {
+				if (!in_array($candidate_value, $values, true)) {
 					$message = sprintf($message_template, implode(' or ', $values));
 				}
 				break;
@@ -297,7 +297,7 @@ class Configs extends Model
 				$value = $value->value;
 			}
 
-			$strValue = match (gettype($value)) {
+			$str_value = match (gettype($value)) {
 				'boolean' => $value === true ? '1' : '0',
 				'integer', 'string' => strval($value),
 				// @codeCoverageIgnoreStart
@@ -308,11 +308,11 @@ class Configs extends Model
 			/**
 			 * Sanity check. :).
 			 */
-			$message = $config->sanity($strValue);
+			$message = $config->sanity($str_value);
 			if ($message !== '') {
 				throw new InvalidConfigOption($message);
 			}
-			$config->value = $strValue;
+			$config->value = $str_value;
 			$config->save();
 			// @codeCoverageIgnoreStart
 		} catch (ModelNotFoundException $e) {

@@ -127,11 +127,11 @@ class AddStandaloneStrategy extends AbstractAddStrategy
 			// We must extract the video stream from the original (local)
 			// file and stash it away, before the original file is moved into
 			// its (potentially remote) final position
-			if ($this->parameters->exifInfo->microVideoOffset !== 0) {
+			if ($this->parameters->exif_info->micro_video_offset !== 0) {
 				try {
 					$tmpVideoFile = new TemporaryLocalFile(GoogleMotionPictureHandler::FINAL_VIDEO_FILE_EXTENSION, $this->sourceFile->getBasename());
 					$gmpHandler = new GoogleMotionPictureHandler();
-					$gmpHandler->load($this->sourceFile, $this->parameters->exifInfo->microVideoOffset);
+					$gmpHandler->load($this->sourceFile, $this->parameters->exif_info->micro_video_offset);
 					$gmpHandler->saveVideoStream($tmpVideoFile);
 				} catch (\Throwable $e) {
 					Handler::reportSafely($e);
@@ -179,7 +179,7 @@ class AddStandaloneStrategy extends AbstractAddStrategy
 			// As a fallback for media files from which no image could be extracted (e.g. unsupported file formats) we use the EXIF data.
 			$imageDim = $this->sourceImage?->isLoaded() ?
 				$this->sourceImage->getDimensions() :
-				new ImageDimension($this->parameters->exifInfo->width, $this->parameters->exifInfo->height);
+				new ImageDimension($this->parameters->exif_info->width, $this->parameters->exif_info->height);
 			$originalVariant = $this->photo->size_variants->create(
 				SizeVariantType::ORIGINAL,
 				$targetFile->getRelativePath(),
@@ -268,7 +268,7 @@ class AddStandaloneStrategy extends AbstractAddStrategy
 	private function putSourceIntoFinalDestination(FlysystemFile $targetFile): StreamStats
 	{
 		try {
-			if ($this->parameters->importMode->shallImportViaSymlink) {
+			if ($this->parameters->import_mode->shall_import_via_symlink) {
 				if (!$targetFile->isLocalFile()) {
 					throw new ConfigurationException('Symlinking is only supported on local filesystems');
 				}
@@ -288,7 +288,7 @@ class AddStandaloneStrategy extends AbstractAddStrategy
 			} else {
 				$shallNormalize = Configs::getValueAsBool('auto_fix_orientation') &&
 					$this->sourceImage !== null &&
-					$this->parameters->exifInfo->orientation !== 1;
+					$this->parameters->exif_info->orientation !== 1;
 
 				if ($shallNormalize) {
 					// Saving the loaded image to the final target normalizes
@@ -305,7 +305,7 @@ class AddStandaloneStrategy extends AbstractAddStrategy
 					$this->sourceFile->close();
 					$targetFile->close();
 				}
-				if ($this->parameters->importMode->shallDeleteImported) {
+				if ($this->parameters->import_mode->shall_delete_imported) {
 					// This may throw an exception, if the original has been
 					// readable, but is not writable
 					// In this case, the media file will have been copied, but

@@ -31,8 +31,8 @@ class UpdatableCheck implements DiagnosticPipe
 	 * @param InstalledVersion $installedVersion
 	 */
 	public function __construct(
-		private InstalledVersion $installedVersion,
-		private DockerVersionInfo $dockerVersionInfo,
+		private InstalledVersion $installed_version,
+		private DockerVersionInfo $docker_version_info,
 	) {
 	}
 
@@ -41,7 +41,7 @@ class UpdatableCheck implements DiagnosticPipe
 	 */
 	public function handle(array &$data, \Closure $next): array
 	{
-		if (!$this->installedVersion->isRelease() && !$this->dockerVersionInfo->isDocker()) {
+		if (!$this->installed_version->isRelease() && !$this->docker_version_info->isDocker()) {
 			try {
 				self::assertUpdatability();
 				// @codeCoverageIgnoreStart
@@ -65,10 +65,10 @@ class UpdatableCheck implements DiagnosticPipe
 	 */
 	public static function assertUpdatability(): void
 	{
-		$installedVersion = resolve(InstalledVersion::class);
+		$installed_version = resolve(InstalledVersion::class);
 
 		// we bypass this because we don't care about the other conditions as they don't apply to the release
-		if ($installedVersion->isRelease()) {
+		if ($installed_version->isRelease()) {
 			// @codeCoverageIgnoreStart
 			return;
 			// @codeCoverageIgnoreEnd
@@ -90,10 +90,10 @@ class UpdatableCheck implements DiagnosticPipe
 			// @codeCoverageIgnoreEnd
 		}
 
-		$gitHubFunctions = resolve(GitHubVersion::class);
-		$gitHubFunctions->hydrate(false);
+		$git_hub_functions = resolve(GitHubVersion::class);
+		$git_hub_functions->hydrate(false);
 
-		if (!$gitHubFunctions->hasPermissions()) {
+		if (!$git_hub_functions->hasPermissions()) {
 			// @codeCoverageIgnoreStart
 			throw new InsufficientFilesystemPermissions(Helpers::censor(base_path('.git'), 1 / 4) . ' (and subdirectories) are not executable, check the permissions');
 			// @codeCoverageIgnoreEnd

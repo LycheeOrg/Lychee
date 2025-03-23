@@ -31,11 +31,11 @@ class DBIntegrityCheck implements DiagnosticPipe
 			return $next($data);
 		}
 
-		$subJoin = DB::table('size_variants')->where('size_variants.type', '=', 0);
+		$sub_join = DB::table('size_variants')->where('size_variants.type', '=', 0);
 		$photos = Photo::query()
 			->with(['album'])
 			->select(['photos.id', 'title', 'album_id'])
-			->joinSub($subJoin, 'size_variants', 'size_variants.photo_id', '=', 'photos.id', 'left')
+			->joinSub($sub_join, 'size_variants', 'size_variants.photo_id', '=', 'photos.id', 'left')
 			->whereNull('size_variants.id')
 			->get();
 

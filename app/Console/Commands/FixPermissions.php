@@ -36,17 +36,17 @@ class FixPermissions extends Command
 	/**
 	 * @var int ID of (POSIX) user which runs this command
 	 */
-	protected int $effUserId;
+	protected int $eff_user_id;
 
 	/**
 	 * @var bool indicates whether the command shall only report what it would do without actually doing anything
 	 */
-	protected bool $isDryRun;
+	protected bool $is_dry_run;
 
 	/**
 	 * @var int Number of files & folders for which permissions changes are required
 	 */
-	private int $changesExpected = 0;
+	private int $changes_expected = 0;
 
 	/**
 	 * @return int
@@ -66,21 +66,21 @@ class FixPermissions extends Command
 			return -1;
 		}
 
-		$this->isDryRun = filter_var($this->option('dry-run'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) !== false;
+		$this->is_dry_run = filter_var($this->option('dry-run'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) !== false;
 
 		clearstatcache(true);
-		$this->effUserId = posix_geteuid();
+		$this->eff_user_id = posix_geteuid();
 
 		foreach ($directories as $directory) {
 			$this->line(sprintf('Scanning: <info>%s</info>', $directory));
 			$this->fixPermissionsRecursively($directory);
 		}
 
-		if ($this->isDryRun && $this->changesExpected > 0) {
+		if ($this->is_dry_run && $this->changes_expected > 0) {
 			$this->line('');
 			$this->line('To apply those modifications, run <info>php artisan lychee:fix-permissions --dry-run=0</info>');
 		}
-		if ($this->isDryRun && $this->changesExpected === 0) {
+		if ($this->is_dry_run && $this->changes_expected === 0) {
 			$this->line('');
 			$this->line('Nothing to fix.');
 		}
@@ -95,51 +95,51 @@ class FixPermissions extends Command
 	private function fixPermissionsRecursively(string $path): void
 	{
 		try {
-			$actualPerm = fileperms($path);
+			$actual_perm = fileperms($path);
 
 			// `fileperms` also returns the higher bits of the inode mode.
 			// Hence, we must AND it with 07777 to only get what we are
 			// interested in
-			$actualPerm &= 07777;
+			$actual_perm &= BasicPermissionCheck::READ_WRITE_ALL;
 
-			$ownerId = fileowner($path);
-			$fileType = filetype($path);
+			$owner_id = fileowner($path);
+			$file_type = filetype($path);
 
-			$expectedPerm = match ($fileType) {
+			$expected_perm = match ($file_type) {
 				'dir' => BasicPermissionCheck::getConfiguredDirectoryPerm(),
 				'file' => BasicPermissionCheck::getConfiguredFilePerm(),
-				default => $actualPerm, // we do not care for links and other special files
+				default => $actual_perm, // we do not care for links and other special files
 			};
 
-			if ($expectedPerm !== $actualPerm) {
+			if ($expected_perm !== $actual_perm) {
 				$this->warn(
-					sprintf('%s has permissions %04o, but should have %04o', $path, $actualPerm, $expectedPerm)
+					sprintf('%s has permissions %04o, but should have %04o', $path, $actual_perm, $expected_perm)
 				);
 
-				if ($this->isDryRun) {
+				if ($this->is_dry_run) {
 					$this->info(sprintf(
-						'  => Would change permissions of %s from %04o to %04o', $path, $actualPerm, $expectedPerm
+						'  => Would change permissions of %s from %04o to %04o', $path, $actual_perm, $expected_perm
 					));
-					$this->changesExpected++;
+					$this->changes_expected++;
 				} else {
-					if ($ownerId === $this->effUserId) {
+					if ($owner_id === $this->eff_user_id) {
 						$this->info(sprintf(
-							'  => Changing permissions of %s from %04o to %04o', $path, $actualPerm, $expectedPerm
+							'  => Changing permissions of %s from %04o to %04o', $path, $actual_perm, $expected_perm
 						));
-						chmod($path, $expectedPerm);
+						chmod($path, $expected_perm);
 					} else {
 						$this->error(
-							sprintf('Cannot change permissions of %s from %04o to %04o as current user is not the owner', $path, $actualPerm, $expectedPerm)
+							sprintf('Cannot change permissions of %s from %04o to %04o as current user is not the owner', $path, $actual_perm, $expected_perm)
 						);
 					}
 				}
 			}
 
-			if ($fileType === 'dir') {
+			if ($file_type === 'dir') {
 				$dir = new \DirectoryIterator($path);
-				foreach ($dir as $dirEntry) {
-					if ($dirEntry->isDir() && !$dirEntry->isDot() || $dirEntry->isFile()) {
-						$this->fixPermissionsRecursively($dirEntry->getPathname());
+				foreach ($dir as $dir_entry) {
+					if ($dir_entry->isDir() && !$dir_entry->isDot() || $dir_entry->isFile()) {
+						$this->fixPermissionsRecursively($dir_entry->getPathname());
 					}
 				}
 			}

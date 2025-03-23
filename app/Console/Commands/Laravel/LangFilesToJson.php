@@ -61,34 +61,34 @@ class LangFilesToJson extends Command
 	 */
 	public function handle(): void
 	{
-		$sourceDir = base_path('lang/');
-		$targetDir = base_path('lang/');
+		$source_dir = base_path('lang/');
+		$target_dir = base_path('lang/');
 
-		$languages = array_diff(scandir($sourceDir), ['.', '..']);
+		$languages = array_diff(scandir($source_dir), ['.', '..']);
 
 		foreach ($languages as $language) {
-			if (!is_dir($sourceDir . $language)) {
+			if (!is_dir($source_dir . $language)) {
 				continue;
 			}
 
-			$languageDir = $sourceDir . $language . '/';
+			$language_dir = $source_dir . $language . '/';
 			/** @var string[] */
-			$files = array_diff(scandir($languageDir), ['.', '..']);
+			$files = array_diff(scandir($language_dir), ['.', '..']);
 
 			$translations = [];
 
 			foreach ($files as $file) {
-				$filePath = $languageDir . $file;
-				$translation = require $filePath;
+				$file_path = $language_dir . $file;
+				$translation = require $file_path;
 
 				$translation = $this->convert($translation);
 
 				$translations[str_replace('.php', '', $file)] = $translation;
 			}
 
-			$targetPath = $targetDir . $language . '.json';
+			$target_path = $target_dir . $language . '.json';
 
-			file_put_contents($targetPath, json_encode($translations, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+			file_put_contents($target_path, json_encode($translations, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 		}
 
 		$this->info('Language files compiled to JSON successfully!');

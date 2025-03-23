@@ -27,11 +27,11 @@ class DuplicateFinder extends Controller
 	 *
 	 * @return DuplicateCount
 	 */
-	public function check(MaintenanceRequest $request, PhotoDuplicateFinder $duplicateFinder): DuplicateCount
+	public function check(MaintenanceRequest $request, PhotoDuplicateFinder $duplicate_finder): DuplicateCount
 	{
-		$pure_duplicates = $duplicateFinder->checkCount(must_be_within_same_album: false, must_have_same_checksum: true, must_have_same_title: false);
-		$title_duplicates = $duplicateFinder->checkCount(must_be_within_same_album: true, must_have_same_checksum: false, must_have_same_title: true);
-		$duplicates_with_album = $duplicateFinder->checkCount(must_be_within_same_album: true, must_have_same_checksum: true, must_have_same_title: false);
+		$pure_duplicates = $duplicate_finder->checkCount(must_be_within_same_album: false, must_have_same_checksum: true, must_have_same_title: false);
+		$title_duplicates = $duplicate_finder->checkCount(must_be_within_same_album: true, must_have_same_checksum: false, must_have_same_title: true);
+		$duplicates_with_album = $duplicate_finder->checkCount(must_be_within_same_album: true, must_have_same_checksum: true, must_have_same_title: false);
 
 		return new DuplicateCount(
 			pure_duplicates: $pure_duplicates,
@@ -48,9 +48,9 @@ class DuplicateFinder extends Controller
 	 *
 	 * @return Collection<int,Duplicate>
 	 */
-	public function get(SearchDuplicateRequest $request, PhotoDuplicateFinder $duplicateFinder): Collection
+	public function get(SearchDuplicateRequest $request, PhotoDuplicateFinder $duplicate_finder): Collection
 	{
-		return $duplicateFinder->search(
+		return $duplicate_finder->search(
 			must_be_within_same_album: $request->with_album_constraint, // false,
 			must_have_same_checksum: $request->with_checksum_constraint, // true,
 			must_have_same_title: $request->with_title_constraint, // false

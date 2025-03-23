@@ -15,11 +15,11 @@ class GetVideoPath implements VideoPartnerPipe
 {
 	public function handle(VideoPartnerDTO $state, \Closure $next): VideoPartnerDTO
 	{
-		$photoFile = $state->photo->size_variants->getOriginal()->getFile();
-		$photoPath = $photoFile->getRelativePath();
-		$photoExt = $photoFile->getOriginalExtension();
-		$videoExt = $state->videoFile->getOriginalExtension();
-		$state->videoPath = substr($photoPath, 0, -strlen($photoExt)) . $videoExt;
+		$photo_file = $state->photo->size_variants->getOriginal()->getFile();
+		$photo_path = $photo_file->getRelativePath();
+		$photo_ext = $photo_file->getOriginalExtension();
+		$video_ext = $state->video_file->getOriginalExtension();
+		$state->video_path = substr($photo_path, 0, -strlen($photo_ext)) . $video_ext;
 
 		return $next($state);
 	}

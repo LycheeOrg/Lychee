@@ -23,13 +23,13 @@ class ComposerCall extends AbstractUpdateInstallerPipe
 	 */
 	public function handle(array &$output, \Closure $next): array
 	{
-		$installedVersion = resolve(InstalledVersion::class);
-		if ($installedVersion->isRelease()) {
+		$installed_version = resolve(InstalledVersion::class);
+		if ($installed_version->isRelease()) {
 			return $next($output);
 		}
 
 		// update with respect to installed version
-		$noDev = $installedVersion->isDev() ? '' : '--no-dev ';
+		$no_dev = $installed_version->isDev() ? '' : '--no-dev ';
 
 		if (Helpers::isExecAvailable()) {
 			if (Configs::getValueAsBool('apply_composer_update')) {
@@ -40,7 +40,7 @@ class ComposerCall extends AbstractUpdateInstallerPipe
 				// needs COMPOSER_HOME environment variable set
 				putenv('COMPOSER_HOME=' . base_path('/composer-cache'));
 				chdir(base_path());
-				exec(sprintf('composer install %s--no-progress 2>&1', $noDev), $output);
+				exec(sprintf('composer install %s--no-progress 2>&1', $no_dev), $output);
 				chdir(base_path('public'));
 			// @codeCoverageIgnoreEnd
 			} else {

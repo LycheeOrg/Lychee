@@ -19,9 +19,9 @@ class Save
 	/**
 	 * @param User        $user
 	 * @param string      $username
-	 * @param string|null $password           see {@link HasPasswordTrait::password()} for the difference between the values `''` and `null`
-	 * @param bool        $mayUpload
-	 * @param bool        $mayEditOwnSettings
+	 * @param string|null $password              see {@link HasPasswordTrait::password()} for the difference between the values `''` and `null`
+	 * @param bool        $may_upload
+	 * @param bool        $may_edit_own_settings
 	 *
 	 * @return void
 	 *
@@ -31,8 +31,8 @@ class Save
 	public function do(User $user,
 		string $username,
 		?string $password,
-		bool $mayUpload,
-		bool $mayEditOwnSettings,
+		bool $may_upload,
+		bool $may_edit_own_settings,
 		?int $quota_kb = null,
 		?string $note = null,
 	): void {
@@ -50,8 +50,8 @@ class Save
 		}
 
 		$user->username = $username;
-		$user->may_upload = $mayUpload;
-		$user->may_edit_own_settings = $mayEditOwnSettings;
+		$user->may_upload = $may_upload;
+		$user->may_edit_own_settings = $may_edit_own_settings;
 		$user->note = $note;
 		$user->quota_kb = $quota_kb;
 		if ($password !== null && $password !== '') {

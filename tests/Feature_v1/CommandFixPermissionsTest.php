@@ -18,6 +18,7 @@
 
 namespace Tests\Feature_v1;
 
+use App\Actions\Diagnostics\Pipes\Checks\BasicPermissionCheck;
 use function Safe\chmod;
 use function Safe\fileperms;
 use Tests\Constants\TestConstants;
@@ -56,8 +57,8 @@ class CommandFixPermissionsTest extends Base\BasePhotoTest
 		$this->artisan(self::COMMAND, ['--dry-run' => 0])->assertSuccessful();
 
 		clearstatcache(true);
-		self::assertEquals(00664, fileperms($filePath) & 07777);
-		self::assertEquals(02775, fileperms($dirPath) & 07777);
+		self::assertEquals(00664, fileperms($filePath) & BasicPermissionCheck::READ_WRITE_ALL);
+		self::assertEquals(02775, fileperms($dirPath) & BasicPermissionCheck::READ_WRITE_ALL);
 
 		chmod($filePath, 00777);
 		chmod($dirPath, 06777);
@@ -65,7 +66,7 @@ class CommandFixPermissionsTest extends Base\BasePhotoTest
 		$this->artisan(self::COMMAND, ['--dry-run' => 0])->assertSuccessful();
 
 		clearstatcache(true);
-		self::assertEquals(00664, fileperms($filePath) & 07777);
-		self::assertEquals(02775, fileperms($dirPath) & 07777);
+		self::assertEquals(00664, fileperms($filePath) & BasicPermissionCheck::READ_WRITE_ALL);
+		self::assertEquals(02775, fileperms($dirPath) & BasicPermissionCheck::READ_WRITE_ALL);
 	}
 }

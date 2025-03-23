@@ -27,9 +27,9 @@ class FindLivePartner implements InitPipe
 	{
 		try {
 			// find a potential partner which has the same content id
-			if ($state->exifInfo->livePhotoContentID !== null) {
-				$state->livePartner = Photo::query()
-					->where('live_photo_content_id', '=', $state->exifInfo->livePhotoContentID)
+			if ($state->exif_info->live_photo_content_id !== null) {
+				$state->live_partner = Photo::query()
+					->where('live_photo_content_id', '=', $state->exif_info->live_photo_content_id)
 					->where('album_id', '=', $state->album?->id)
 					->whereNull('live_photo_short_path')->first();
 			}
@@ -37,12 +37,12 @@ class FindLivePartner implements InitPipe
 			// if a potential partner has been found, ensure that it is of a
 			// different kind then the uploaded media.
 			if (
-				$state->livePartner !== null && !(
-					BaseMediaFile::isSupportedImageMimeType($state->exifInfo->type) && $state->livePartner->isVideo() ||
-					BaseMediaFile::isSupportedVideoMimeType($state->exifInfo->type) && $state->livePartner->isPhoto()
+				$state->live_partner !== null && !(
+					BaseMediaFile::isSupportedImageMimeType($state->exif_info->type) && $state->live_partner->isVideo() ||
+					BaseMediaFile::isSupportedVideoMimeType($state->exif_info->type) && $state->live_partner->isPhoto()
 				)
 			) {
-				$state->livePartner = null;
+				$state->live_partner = null;
 			}
 
 			return $next($state);

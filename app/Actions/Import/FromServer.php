@@ -23,9 +23,9 @@ class FromServer
 	 *
 	 * @return StreamedResponse
 	 */
-	public function do(array $paths, ?Album $album, ImportMode $importMode, int $intendedOwnerId): StreamedResponse
+	public function do(array $paths, ?Album $album, ImportMode $import_mode, int $intended_owner_id): StreamedResponse
 	{
-		$exec = new Exec($importMode, $intendedOwnerId, false, $this->determineMemLimit());
+		$exec = new Exec($import_mode, $intended_owner_id, false, $this->determineMemLimit());
 
 		$response = new StreamedResponse();
 		$response->headers->set('Content-Type', 'application/json');

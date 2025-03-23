@@ -33,37 +33,33 @@ class InstallationStatus
 	public const COMPLETE = 'complete';
 	public const INCOMPLETE = 'incomplete';
 
-	private IsInstalled $isInstalled;
-
-	public function __construct(IsInstalled $isInstalled)
+	public function __construct(
+		private IsInstalled $is_installed)
 	{
-		$this->isInstalled = $isInstalled;
 	}
 
 	/**
 	 * Handles an incoming request.
 	 *
 	 * @param Request  $request        the incoming request to serve
-	 * @param \Closure $next           the next operation to be applied to the
-	 *                                 request
+	 * @param \Closure $next           the next operation to be applied to the request
 	 * @param string   $requiredStatus the required installation status; either
-	 *                                 {@link self::COMPLETE} or
-	 *                                 {@link self::INCOMPLETE}
+	 *                                 {@link self::COMPLETE} or {@link self::INCOMPLETE}
 	 *
 	 * @return mixed
 	 *
 	 * @throws LycheeException
 	 */
-	public function handle(Request $request, \Closure $next, string $requiredStatus): mixed
+	public function handle(Request $request, \Closure $next, string $required_status): mixed
 	{
-		if ($requiredStatus === self::COMPLETE) {
-			if ($this->isInstalled->assert()) {
+		if ($required_status === self::COMPLETE) {
+			if ($this->is_installed->assert()) {
 				return $next($request);
 			} else {
 				throw new InstallationRequiredException();
 			}
-		} elseif ($requiredStatus === self::INCOMPLETE) {
-			if ($this->isInstalled->assert()) {
+		} elseif ($required_status === self::INCOMPLETE) {
+			if ($this->is_installed->assert()) {
 				throw new InstallationAlreadyCompletedException();
 			} else {
 				return $next($request);

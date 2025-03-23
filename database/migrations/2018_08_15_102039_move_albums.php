@@ -21,8 +21,8 @@ return new class() extends Migration {
 	public function up(): void
 	{
 		if (DB::table('albums')->count('id') === 0) {
-			if (Schema::hasTable(env('DB_OLD_LYCHEE_PREFIX', '') . 'lychee_albums')) {
-				$results = DB::table(env('DB_OLD_LYCHEE_PREFIX', '') . 'lychee_albums')->select('*')->orderBy('id', 'asc')->get();
+			if (Schema::hasTable(config('features.legacy_v3_db_prefix') . 'lychee_albums')) {
+				$results = DB::table(config('features.legacy_v3_db_prefix') . 'lychee_albums')->select('*')->orderBy('id', 'asc')->get();
 				$id = 0;
 				foreach ($results as $result) {
 					$id = Helpers::trancateIf32($result->id, (int) $id);
@@ -44,7 +44,7 @@ return new class() extends Migration {
 					]);
 				}
 			} else {
-				Log::notice(__METHOD__ . ':' . __LINE__ . ' ' . env('DB_OLD_LYCHEE_PREFIX', '') . 'lychee_albums does not exist!');
+				Log::notice(__METHOD__ . ':' . __LINE__ . ' ' . config('features.legacy_v3_db_prefix') . 'lychee_albums does not exist!');
 			}
 		} else {
 			Log::notice(__METHOD__ . ':' . __LINE__ . ' albums is not empty.');

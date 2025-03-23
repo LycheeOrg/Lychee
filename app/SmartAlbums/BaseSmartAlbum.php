@@ -45,29 +45,29 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	use UTCBasedTimes;
 	use ToArrayThrowsNotImplemented;
 
-	protected PhotoQueryPolicy $photoQueryPolicy;
+	protected PhotoQueryPolicy $photo_query_policy;
 	protected string $id;
 	protected string $title;
 	protected ?Thumb $thumb = null;
 	/** @var ?Collection<int,Photo> */
 	protected ?Collection $photos = null;
-	protected \Closure $smartPhotoCondition;
-	protected AccessPermission|null $publicPermissions;
+	protected \Closure $smart_photo_condition;
+	protected AccessPermission|null $public_permissions;
 
 	/**
 	 * @throws ConfigurationKeyMissingException
 	 * @throws FrameworkException
 	 */
-	protected function __construct(SmartAlbumType $id, \Closure $smartCondition)
+	protected function __construct(SmartAlbumType $id, \Closure $smart_condition)
 	{
 		try {
-			$this->photoQueryPolicy = resolve(PhotoQueryPolicy::class);
+			$this->photo_query_policy = resolve(PhotoQueryPolicy::class);
 			$this->id = $id->value;
 			$this->title = __('gallery.smart_album.' . strtolower($id->name)) ?? $id->name;
-			$this->smartPhotoCondition = $smartCondition;
+			$this->smart_photo_condition = $smart_condition;
 			/** @var AccessPermission|null $perm */
 			$perm = AccessPermission::query()->where('base_album_id', '=', $id->value)->first();
-			$this->publicPermissions = $perm;
+			$this->public_permissions = $perm;
 			// @codeCoverageIgnoreStart
 		} catch (BindingResolutionException $e) {
 			throw new FrameworkException('Laravel\'s service container', $e);
@@ -82,12 +82,12 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	 */
 	public function photos(): Builder
 	{
-		$query = $this->photoQueryPolicy
+		$query = $this->photo_query_policy
 			->applySearchabilityFilter(
 				query: Photo::query()->with(['album', 'size_variants', 'size_variants.sym_links']),
 				origin: null,
 				include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_smart_albums')
-			)->where($this->smartPhotoCondition);
+			)->where($this->smart_photo_condition);
 
 		return $query;
 	}
@@ -151,28 +151,28 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 
 	public function public_permissions(): ?AccessPermission
 	{
-		return $this->publicPermissions;
+		return $this->public_permissions;
 	}
 
 	public function setPublic(): void
 	{
-		if ($this->publicPermissions !== null) {
+		if ($this->public_permissions !== null) {
 			return;
 		}
 
-		$this->publicPermissions = AccessPermission::ofPublic();
-		$this->publicPermissions->base_album_id = $this->id;
-		$this->publicPermissions->save();
+		$this->public_permissions = AccessPermission::ofPublic();
+		$this->public_permissions->base_album_id = $this->id;
+		$this->public_permissions->save();
 	}
 
 	public function setPrivate(): void
 	{
-		if ($this->publicPermissions === null) {
+		if ($this->public_permissions === null) {
 			return;
 		}
 
-		$perm = $this->publicPermissions;
-		$this->publicPermissions = null;
+		$perm = $this->public_permissions;
+		$this->public_permissions = null;
 		$perm->delete();
 	}
 }

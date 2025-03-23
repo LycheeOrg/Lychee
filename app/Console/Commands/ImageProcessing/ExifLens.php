@@ -75,11 +75,11 @@ class ExifLens extends Command
 			/** @var Photo $photo */
 			foreach ($photos as $photo) {
 				try {
-					$localFile = $photo->size_variants->getOriginal()->getFile()->toLocalFile();
-					$info = Extractor::createFromFile($localFile, filemtime($localFile->getRealPath()));
+					$local_file = $photo->size_variants->getOriginal()->getFile()->toLocalFile();
+					$info = Extractor::createFromFile($local_file, filemtime($local_file->getRealPath()));
 					$updated = false;
 					if ($photo->size_variants->getOriginal()->filesize === 0) {
-						$photo->size_variants->getOriginal()->filesize = $localFile->getFilesize();
+						$photo->size_variants->getOriginal()->filesize = $local_file->getFilesize();
 						$updated = true;
 					}
 					if (

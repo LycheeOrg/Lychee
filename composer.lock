@@ -870,16 +870,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.339.9",
+            "version": "3.342.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "e443779facb8cd0bba30383753a7a451db83acd6"
+                "reference": "d8279a481cf87482a1fb74784f76e4160efcce90"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/e443779facb8cd0bba30383753a7a451db83acd6",
-                "reference": "e443779facb8cd0bba30383753a7a451db83acd6",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/d8279a481cf87482a1fb74784f76e4160efcce90",
+                "reference": "d8279a481cf87482a1fb74784f76e4160efcce90",
                 "shasum": ""
             },
             "require": {
@@ -961,9 +961,9 @@
             "support": {
                 "forum": "https://github.com/aws/aws-sdk-php/discussions",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.339.9"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.342.8"
             },
-            "time": "2025-02-07T19:14:31+00:00"
+            "time": "2025-03-18T18:15:40+00:00"
         },
         {
             "name": "bepsvpt/secure-headers",
@@ -1366,16 +1366,16 @@
         },
         {
             "name": "dedoc/scramble",
-            "version": "v0.12.12",
+            "version": "v0.12.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/dedoc/scramble.git",
-                "reference": "c209db61ecb517c573e59666f16030bda5adc8db"
+                "reference": "520484a8e7409364f3c66ae7493403a5d1ceac24"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dedoc/scramble/zipball/c209db61ecb517c573e59666f16030bda5adc8db",
-                "reference": "c209db61ecb517c573e59666f16030bda5adc8db",
+                "url": "https://api.github.com/repos/dedoc/scramble/zipball/520484a8e7409364f3c66ae7493403a5d1ceac24",
+                "reference": "520484a8e7409364f3c66ae7493403a5d1ceac24",
                 "shasum": ""
             },
             "require": {
@@ -1430,7 +1430,7 @@
             ],
             "support": {
                 "issues": "https://github.com/dedoc/scramble/issues",
-                "source": "https://github.com/dedoc/scramble/tree/v0.12.12"
+                "source": "https://github.com/dedoc/scramble/tree/v0.12.13"
             },
             "funding": [
                 {
@@ -1438,7 +1438,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-03-15T10:08:07+00:00"
+            "time": "2025-03-18T06:42:24+00:00"
         },
         {
             "name": "dflydev/dot-access-data",
@@ -7916,20 +7916,20 @@
         },
         {
             "name": "socialiteproviders/manager",
-            "version": "v4.8.0",
+            "version": "v4.8.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/SocialiteProviders/Manager.git",
-                "reference": "e93acc38f8464cc775a2b8bf09df311d1fdfefcb"
+                "reference": "8180ec14bef230ec2351cff993d5d2d7ca470ef4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SocialiteProviders/Manager/zipball/e93acc38f8464cc775a2b8bf09df311d1fdfefcb",
-                "reference": "e93acc38f8464cc775a2b8bf09df311d1fdfefcb",
+                "url": "https://api.github.com/repos/SocialiteProviders/Manager/zipball/8180ec14bef230ec2351cff993d5d2d7ca470ef4",
+                "reference": "8180ec14bef230ec2351cff993d5d2d7ca470ef4",
                 "shasum": ""
             },
             "require": {
-                "illuminate/support": "^8.0 || ^9.0 || ^10.0 || ^11.0",
+                "illuminate/support": "^8.0 || ^9.0 || ^10.0 || ^11.0 || ^12.0",
                 "laravel/socialite": "^5.5",
                 "php": "^8.1"
             },
@@ -7986,7 +7986,7 @@
                 "issues": "https://github.com/socialiteproviders/manager/issues",
                 "source": "https://github.com/socialiteproviders/manager"
             },
-            "time": "2025-01-03T09:40:37+00:00"
+            "time": "2025-02-24T19:33:30+00:00"
         },
         {
             "name": "socialiteproviders/microsoft",
@@ -13507,16 +13507,16 @@
         },
         {
             "name": "lychee-org/phpstan-lychee",
-            "version": "v2.0.1",
+            "version": "v2.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/LycheeOrg/phpstan-lychee.git",
-                "reference": "85fdd4342dc134e65ad3193383fee57f099a1fa8"
+                "reference": "0ca8d293d717d008622c24914b56bb9f2ce55e97"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/LycheeOrg/phpstan-lychee/zipball/85fdd4342dc134e65ad3193383fee57f099a1fa8",
-                "reference": "85fdd4342dc134e65ad3193383fee57f099a1fa8",
+                "url": "https://api.github.com/repos/LycheeOrg/phpstan-lychee/zipball/0ca8d293d717d008622c24914b56bb9f2ce55e97",
+                "reference": "0ca8d293d717d008622c24914b56bb9f2ce55e97",
                 "shasum": ""
             },
             "require": {
@@ -13549,10 +13549,10 @@
             ],
             "description": "Set of rules for all Lychee related php repo",
             "support": {
-                "source": "https://github.com/LycheeOrg/phpstan-lychee/tree/v2.0.1",
+                "source": "https://github.com/LycheeOrg/phpstan-lychee/tree/v2.0.2",
                 "issues": "https://github.com/LycheeOrg/phpstan-lychee/issues"
             },
-            "time": "2025-03-16T12:26:09+00:00"
+            "time": "2025-03-19T11:26:45+00:00"
         },
         {
             "name": "masterminds/html5",
@@ -14157,16 +14157,16 @@
         },
         {
             "name": "phpstan/phpstan-strict-rules",
-            "version": "2.0.3",
+            "version": "2.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-strict-rules.git",
-                "reference": "8b88b5f818bfa301e0c99154ab622dace071c3ba"
+                "reference": "3e139cbe67fafa3588e1dbe27ca50f31fdb6236a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-strict-rules/zipball/8b88b5f818bfa301e0c99154ab622dace071c3ba",
-                "reference": "8b88b5f818bfa301e0c99154ab622dace071c3ba",
+                "url": "https://api.github.com/repos/phpstan/phpstan-strict-rules/zipball/3e139cbe67fafa3588e1dbe27ca50f31fdb6236a",
+                "reference": "3e139cbe67fafa3588e1dbe27ca50f31fdb6236a",
                 "shasum": ""
             },
             "require": {
@@ -14199,9 +14199,9 @@
             "description": "Extra strict and opinionated rules for PHPStan",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan-strict-rules/issues",
-                "source": "https://github.com/phpstan/phpstan-strict-rules/tree/2.0.3"
+                "source": "https://github.com/phpstan/phpstan-strict-rules/tree/2.0.4"
             },
-            "time": "2025-01-21T10:52:14+00:00"
+            "time": "2025-03-18T11:42:40+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -16368,16 +16368,16 @@
         },
         {
             "name": "squizlabs/php_codesniffer",
-            "version": "3.11.3",
+            "version": "3.12.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPCSStandards/PHP_CodeSniffer.git",
-                "reference": "ba05f990e79cbe69b9f35c8c1ac8dca7eecc3a10"
+                "reference": "2d1b63db139c3c6ea0c927698e5160f8b3b8d630"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPCSStandards/PHP_CodeSniffer/zipball/ba05f990e79cbe69b9f35c8c1ac8dca7eecc3a10",
-                "reference": "ba05f990e79cbe69b9f35c8c1ac8dca7eecc3a10",
+                "url": "https://api.github.com/repos/PHPCSStandards/PHP_CodeSniffer/zipball/2d1b63db139c3c6ea0c927698e5160f8b3b8d630",
+                "reference": "2d1b63db139c3c6ea0c927698e5160f8b3b8d630",
                 "shasum": ""
             },
             "require": {
@@ -16444,24 +16444,24 @@
                     "type": "open_collective"
                 },
                 {
-                    "url": "https://thanks.dev/phpcsstandards",
+                    "url": "https://thanks.dev/u/gh/phpcsstandards",
                     "type": "thanks_dev"
                 }
             ],
-            "time": "2025-01-23T17:04:15+00:00"
+            "time": "2025-03-18T05:04:51+00:00"
         },
         {
             "name": "symfony/dom-crawler",
-            "version": "v7.2.3",
+            "version": "v7.2.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/dom-crawler.git",
-                "reference": "700a880e5089280c7cf3ca1ccf9d9de6630f5d25"
+                "reference": "19cc7b08efe9ad1ab1b56e0948e8d02e15ed3ef7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/dom-crawler/zipball/700a880e5089280c7cf3ca1ccf9d9de6630f5d25",
-                "reference": "700a880e5089280c7cf3ca1ccf9d9de6630f5d25",
+                "url": "https://api.github.com/repos/symfony/dom-crawler/zipball/19cc7b08efe9ad1ab1b56e0948e8d02e15ed3ef7",
+                "reference": "19cc7b08efe9ad1ab1b56e0948e8d02e15ed3ef7",
                 "shasum": ""
             },
             "require": {
@@ -16499,7 +16499,7 @@
             "description": "Eases DOM navigation for HTML and XML documents",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/dom-crawler/tree/v7.2.3"
+                "source": "https://github.com/symfony/dom-crawler/tree/v7.2.4"
             },
             "funding": [
                 {
@@ -16515,7 +16515,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-01-27T11:08:17+00:00"
+            "time": "2025-02-17T15:53:07+00:00"
         },
         {
             "name": "symfony/filesystem",
@@ -17107,5 +17107,5 @@
     "platform-overrides": {
         "php": "8.3"
     },
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.6.0"
 }

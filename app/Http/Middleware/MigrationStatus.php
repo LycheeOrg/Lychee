@@ -33,11 +33,9 @@ class MigrationStatus
 	public const COMPLETE = 'complete';
 	public const INCOMPLETE = 'incomplete';
 
-	private IsMigrated $isMigrated;
-
-	public function __construct(IsMigrated $isMigrated)
-	{
-		$this->isMigrated = $isMigrated;
+	public function __construct(
+		private IsMigrated $is_migrated,
+	) {
 	}
 
 	/**
@@ -54,16 +52,16 @@ class MigrationStatus
 	 *
 	 * @throws LycheeException
 	 */
-	public function handle(Request $request, \Closure $next, string $requiredStatus): mixed
+	public function handle(Request $request, \Closure $next, string $required_status): mixed
 	{
-		if ($requiredStatus === self::COMPLETE) {
-			if ($this->isMigrated->assert()) {
+		if ($required_status === self::COMPLETE) {
+			if ($this->is_migrated->assert()) {
 				return $next($request);
 			} else {
 				throw new MigrationRequiredException();
 			}
-		} elseif ($requiredStatus === self::INCOMPLETE) {
-			if ($this->isMigrated->assert()) {
+		} elseif ($required_status === self::INCOMPLETE) {
+			if ($this->is_migrated->assert()) {
 				throw new MigrationAlreadyCompletedException();
 			} else {
 				return $next($request);

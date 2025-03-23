@@ -43,14 +43,14 @@ class DownloadedFile extends TemporaryLocalFile
 			$basename = pathinfo($path, PATHINFO_FILENAME);
 			$extension = '.' . pathinfo($path, PATHINFO_EXTENSION);
 
-			$downloadStream = fopen($url, 'rb');
-			$downloadStreamData = stream_get_meta_data($downloadStream);
+			$download_stream = fopen($url, 'rb');
+			$download_stream_data = stream_get_meta_data($download_stream);
 
 			/** @var string|null $originalMimeType */
-			$originalMimeType = null;
+			$original_mime_type = null;
 			// Find the server-side MIME type; the HTTP headers are part of
 			// the protocol-specific meta-data of the stream handler
-			foreach ($downloadStreamData['wrapper_data'] as $http_header) {
+			foreach ($download_stream_data['wrapper_data'] as $http_header) {
 				$matches = [];
 				preg_match(
 					'#^Content-Type: ([-a-z]+/[-a-z]+)#i',
@@ -59,7 +59,7 @@ class DownloadedFile extends TemporaryLocalFile
 					PREG_UNMATCHED_AS_NULL
 				);
 				if (count($matches) === 2 && $matches[1]) {
-					$originalMimeType = $matches[1];
+					$original_mime_type = $matches[1];
 					break;
 				}
 			}
@@ -71,34 +71,34 @@ class DownloadedFile extends TemporaryLocalFile
 
 			if (self::isSupportedOrAcceptedFileExtension($extension)) {
 				parent::__construct($extension, $basename);
-				$this->originalMimeType = $originalMimeType;
-				$this->write($downloadStream);
-				fclose($downloadStream);
+				$this->originalMimeType = $original_mime_type;
+				$this->write($download_stream);
+				fclose($download_stream);
 
 				return;
 			}
 
-			if (self::isSupportedMimeType($originalMimeType)) {
-				$extension = self::getDefaultFileExtensionForMimeType($originalMimeType);
+			if (self::isSupportedMimeType($original_mime_type)) {
+				$extension = self::getDefaultFileExtensionForMimeType($original_mime_type);
 				parent::__construct($extension, $basename);
-				$this->originalMimeType = $originalMimeType;
-				$this->write($downloadStream);
-				fclose($downloadStream);
+				$this->originalMimeType = $original_mime_type;
+				$this->write($download_stream);
+				fclose($download_stream);
 
 				return;
 			}
 
 			$temp = tmpfile();
-			stream_copy_to_stream($downloadStream, $temp);
-			fclose($downloadStream);
+			stream_copy_to_stream($download_stream, $temp);
+			fclose($download_stream);
 
 			rewind($temp);
-			$originalMimeType = mime_content_type($temp);
+			$original_mime_type = mime_content_type($temp);
 
-			if (self::isSupportedMimeType($originalMimeType)) {
-				$extension = self::getDefaultFileExtensionForMimeType($originalMimeType);
+			if (self::isSupportedMimeType($original_mime_type)) {
+				$extension = self::getDefaultFileExtensionForMimeType($original_mime_type);
 				parent::__construct($extension, $basename);
-				$this->originalMimeType = $originalMimeType;
+				$this->originalMimeType = $original_mime_type;
 				rewind($temp);
 				$this->write($temp);
 				fclose($temp);
@@ -107,7 +107,7 @@ class DownloadedFile extends TemporaryLocalFile
 			}
 
 			fclose($temp);
-			throw new MediaFileUnsupportedException(MediaFileUnsupportedException::DEFAULT_MESSAGE . ' (bad file type: ' . $originalMimeType . ')');
+			throw new MediaFileUnsupportedException(MediaFileUnsupportedException::DEFAULT_MESSAGE . ' (bad file type: ' . $original_mime_type . ')');
 		} catch (\ErrorException|PcreException $e) {
 			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
@@ -125,10 +125,10 @@ class DownloadedFile extends TemporaryLocalFile
 	 *
 	 * @throws MediaFileOperationException
 	 */
-	public function getMimeType(bool $fallbackToClientMimeType = true): string
+	public function getMimeType(bool $fallback_to_client_mime_type = true): string
 	{
 		parent::getMimeType();
-		if ($this->cachedMimeType === 'application/octet-stream' && $fallbackToClientMimeType) {
+		if ($this->cachedMimeType === 'application/octet-stream' && $fallback_to_client_mime_type) {
 			return $this->originalMimeType;
 		} else {
 			return $this->cachedMimeType;

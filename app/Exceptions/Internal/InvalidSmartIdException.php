@@ -10,8 +10,8 @@ namespace App\Exceptions\Internal;
 
 class InvalidSmartIdException extends LycheeDomainException
 {
-	public function __construct(string $invalidID)
+	public function __construct(string $invalid_id)
 	{
-		parent::__construct('Invalid smart ID: ' . $invalidID);
+		parent::__construct('Invalid smart ID: ' . $invalid_id);
 	}
 }

@@ -18,9 +18,9 @@ return new class() extends Migration {
 	public function up(): void
 	{
 		// this test is to make sure this is not executed when we passed a certain migration point
-		if (Schema::hasTable(env('DB_OLD_LYCHEE_PREFIX', '') . 'lychee_settings')) {
+		if (Schema::hasTable(config('features.legacy_v3_db_prefix') . 'lychee_settings')) {
 			if (DB::table('configs')->where('key', '=', 'check_for_updates')->count() === 0) {
-				$results = DB::table(env('DB_OLD_LYCHEE_PREFIX', '') . 'lychee_settings')->select('*')->orderBy('key', 'asc')->get();
+				$results = DB::table(config('features.legacy_v3_db_prefix') . 'lychee_settings')->select('*')->orderBy('key', 'asc')->get();
 
 				foreach ($results as $result) {
 					/*
@@ -67,7 +67,7 @@ return new class() extends Migration {
 				Log::notice(__METHOD__ . ':' . __LINE__ . ' We are already passed migration point, ' . __CLASS__ . ' will not be applied.');
 			}
 		} else {
-			Log::notice(__FUNCTION__ . ':' . __LINE__ . ' ' . env('DB_OLD_LYCHEE_PREFIX', '') . 'lychee_settings does not exist!');
+			Log::notice(__FUNCTION__ . ':' . __LINE__ . ' ' . config('features.legacy_v3_db_prefix') . 'lychee_settings does not exist!');
 		}
 	}
 

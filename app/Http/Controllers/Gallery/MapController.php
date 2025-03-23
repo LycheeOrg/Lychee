@@ -18,13 +18,10 @@ use Illuminate\Routing\Controller;
 
 class MapController extends Controller
 {
-	private RootPositionData $rootPositionData;
-	private AlbumPositionData $albumPositionData;
-
-	public function __construct()
-	{
-		$this->rootPositionData = resolve(RootPositionData::class);
-		$this->albumPositionData = resolve(AlbumPositionData::class);
+	public function __construct(
+		protected RootPositionData $root_position_data,
+		protected AlbumPositionData $album_position_data,
+	) {
 	}
 
 	/**
@@ -49,11 +46,11 @@ class MapController extends Controller
 		$album = $request->album();
 
 		if ($album === null) {
-			return $this->rootPositionData->do();
+			return $this->root_position_data->do();
 		}
 
-		$includeSubAlbums = Configs::getValueAsBool('map_include_subalbums');
+		$include_sub_albums = Configs::getValueAsBool('map_include_subalbums');
 
-		return $this->albumPositionData->get($album, $includeSubAlbums);
+		return $this->album_position_data->get($album, $include_sub_albums);
 	}
 }

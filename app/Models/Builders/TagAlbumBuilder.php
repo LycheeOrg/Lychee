@@ -40,14 +40,14 @@ class TagAlbumBuilder extends FixedQueryBuilder
 	 */
 	public function getModels($columns = ['*']): array
 	{
-		$baseQuery = $this->getQuery();
-		if (($baseQuery->columns === null || count($baseQuery->columns) === 0) && is_string($baseQuery->from)) {
-			$this->select([$baseQuery->from . '.*']);
+		$base_query = $this->getQuery();
+		if (($base_query->columns === null || count($base_query->columns) === 0) && is_string($base_query->from)) {
+			$this->select([$base_query->from . '.*']);
 		}
 
 		if (
 			($columns === ['*'] || $columns === ['tag_albums.*']) &&
-			($baseQuery->columns === ['*'] || $baseQuery->columns === ['tag_albums.*'])
+			($base_query->columns === ['*'] || $base_query->columns === ['tag_albums.*'])
 		) {
 			$this->addSelect([
 				DB::raw('null as max_taken_at'),

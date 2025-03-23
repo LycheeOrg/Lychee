@@ -43,20 +43,20 @@ class MissingFileSizes extends Controller
 
 		foreach ($variants as $variant) {
 			// @codeCoverageIgnoreStart
-			$variantFile = $variant->getFile();
-			if ($variantFile->exists()) {
+			$variant_file = $variant->getFile();
+			if ($variant_file->exists()) {
 				try {
-					$variant->filesize = $variantFile->getFilesize();
+					$variant->filesize = $variant_file->getFilesize();
 					if (!$variant->save()) {
-						Log::error('Failed to update filesize for ' . $variantFile->getRelativePath() . '.');
+						Log::error('Failed to update filesize for ' . $variant_file->getRelativePath() . '.');
 					} else {
 						$generated++;
 					}
 				} catch (UnableToRetrieveMetadata) {
-					Log::error($variant->id . ' : Failed to get filesize for ' . $variantFile->getRelativePath() . '.');
+					Log::error($variant->id . ' : Failed to get filesize for ' . $variant_file->getRelativePath() . '.');
 				}
 			} else {
-				Log::error($variant->id . ' : No file found at ' . $variantFile->getRelativePath() . '.');
+				Log::error($variant->id . ' : No file found at ' . $variant_file->getRelativePath() . '.');
 			}
 			// @codeCoverageIgnoreEnd
 		}

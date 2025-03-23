@@ -30,10 +30,10 @@ class TimezoneCheck implements DiagnosticPipe
 			return $next($data);
 			// @codeCoverageIgnoreEnd
 		}
-		$timezoneName = $timezone->getName();
-		$tzArray = explode('/', $timezoneName);
+		$timezone_name = $timezone->getName();
+		$tz_array = explode('/', $timezone_name);
 
-		if (count($tzArray) !== 2 || $tzArray[0] === 'Etc') {
+		if (count($tz_array) !== 2 || $tz_array[0] === 'Etc') {
 			$data[] = DiagnosticData::warn('Default timezone not properly set; you might experience strange results when importing photos without explicit EXIF timezone', self::class);
 		}
 

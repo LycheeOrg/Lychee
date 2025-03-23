@@ -25,8 +25,8 @@ class StarredAlbum extends BaseSmartAlbum
 	protected function __construct()
 	{
 		parent::__construct(
-			SmartAlbumType::STARRED,
-			fn (Builder $q) => $q->where('photos.is_starred', '=', true)
+			id: SmartAlbumType::STARRED,
+			smart_condition: fn (Builder $q) => $q->where('photos.is_starred', '=', true)
 		);
 	}
 

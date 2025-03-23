@@ -89,7 +89,7 @@ test:
 		echo ""; \
 	fi
 
-formatting: rector
+formatting:
 	@rm .php_cs.cache 2> /dev/null || true
 	@if [ -x "vendor/bin/php-cs-fixer" ]; then \
 		PHP_CS_FIXER_IGNORE_ENV=1 ./vendor/bin/php-cs-fixer fix -v --config=.php-cs-fixer.php; \
@@ -158,3 +158,11 @@ gen_typescript_types:
 
 class-leak:
 	vendor/bin/class-leak check app database/migrations config --skip-type Illuminate\\View\\Component
+
+docker-build-base-image:
+	docker build -t lychee-base:latest ./docker/base
+
+docker-build-dev-image:
+	docker build ./docker/dev -t lychee-dev:latest
+
+docker-build-dev: docker-build-base-image docker-build-dev-image
