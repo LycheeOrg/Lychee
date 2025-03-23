@@ -24,11 +24,11 @@ final class Legacy
 {
 	public static function isLegacyModelID(string $id): bool
 	{
-		$modernIDRule = new RandomIDRule(true);
-		$legacyIDRule = new IntegerIDRule(false);
+		$modern_id_rule = new RandomIDRule(true);
+		$legacy_id_rule = new IntegerIDRule(false);
 
-		return !$modernIDRule->passes('id', $id) &&
-			$legacyIDRule->passes('id', $id);
+		return !$modern_id_rule->passes('id', $id) &&
+			$legacy_id_rule->passes('id', $id);
 	}
 
 	/**
@@ -46,18 +46,18 @@ final class Legacy
 	 * @throws ConfigurationException thrown, if the translation between
 	 *                                legacy and modern IDs is disabled
 	 */
-	private static function translateLegacyID(int $id, string $tableName, Request $request): ?string
+	private static function translateLegacyID(int $id, string $table_name, Request $request): ?string
 	{
 		try {
-			$newID = (string) DB::table($tableName)
+			$new_id = (string) DB::table($table_name)
 				->where('legacy_id', '=', intval($id))
 				->value('id');
 
-			if ($newID !== '') {
+			if ($new_id !== '') {
 				$referer = strval($request->header('Referer', '(unknown)'));
-				$msg = ' Request for ' . $tableName .
+				$msg = ' Request for ' . $table_name .
 					' with legacy ID ' . $id .
-					' instead of new ID ' . $newID .
+					' instead of new ID ' . $new_id .
 					' from ' . $referer;
 				if (!Configs::getValueAsBool('legacy_id_redirection')) {
 					// @codeCoverageIgnoreStart
@@ -67,7 +67,7 @@ final class Legacy
 				}
 				Log::warning(__METHOD__ . ':' . __LINE__ . $msg);
 
-				return $newID;
+				return $new_id;
 			}
 
 			// @codeCoverageIgnoreStart
@@ -91,9 +91,9 @@ final class Legacy
 	 * @throws ConfigurationException thrown, if the translation between
 	 *                                legacy and modern IDs is disabled
 	 */
-	public static function translateLegacyAlbumID(int $albumID, Request $request): ?string
+	public static function translateLegacyAlbumID(int $album_id, Request $request): ?string
 	{
-		return self::translateLegacyID($albumID, 'base_albums', $request);
+		return self::translateLegacyID($album_id, 'base_albums', $request);
 	}
 
 	/**
@@ -109,8 +109,8 @@ final class Legacy
 	 * @throws ConfigurationException thrown, if the translation between
 	 *                                legacy and modern IDs is disabled
 	 */
-	public static function translateLegacyPhotoID(int $photoID, Request $request): ?string
+	public static function translateLegacyPhotoID(int $photo_id, Request $request): ?string
 	{
-		return self::translateLegacyID($photoID, 'photos', $request);
+		return self::translateLegacyID($photo_id, 'photos', $request);
 	}
 }

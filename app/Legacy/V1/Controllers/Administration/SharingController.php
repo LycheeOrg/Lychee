@@ -28,15 +28,15 @@ final class SharingController extends Controller
 	 * Returns the list of sharing permissions wrt. the authenticated user.
 	 *
 	 * @param ListSharingRequest $request
-	 * @param ListShare          $listShare
+	 * @param ListShare          $list_share
 	 *
 	 * @return SharesResource
 	 *
 	 * @throws QueryBuilderException
 	 */
-	public function list(ListSharingRequest $request, ListShare $listShare): SharesResource
+	public function list(ListSharingRequest $request, ListShare $list_share): SharesResource
 	{
-		return $listShare->do($request->participant(), $request->owner(), $request->album());
+		return $list_share->do($request->participant(), $request->owner(), $request->album());
 	}
 
 	/**
@@ -83,22 +83,22 @@ final class SharingController extends Controller
 	/**
 	 * Apply the modification.
 	 *
-	 * @param array<int,int>    $userIds
-	 * @param array<int,string> $albumIDs
+	 * @param array<int,int>    $user_ids
+	 * @param array<int,string> $album_ids
 	 *
 	 * @return void
 	 */
-	private function updateLinks(array $userIds, array $albumIDs): void
+	private function updateLinks(array $user_ids, array $album_ids): void
 	{
 		/** @var Collection<int,User> $users */
 		$users = User::query()
-			->whereIn('id', $userIds)
+			->whereIn('id', $user_ids)
 			->get();
 
 		/** @var User $user */
 		foreach ($users as $user) {
 			$user->shared()->syncWithPivotValues(
-				$albumIDs,
+				$album_ids,
 				[
 					APC::IS_LINK_REQUIRED => false, // In sharing no required link is needed
 					APC::GRANTS_DOWNLOAD => Configs::getValueAsBool('grants_download'),

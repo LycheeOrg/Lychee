@@ -55,8 +55,8 @@ final class AlbumsController extends Controller
 	 *
 	 * @throws LycheeException
 	 */
-	public function getPositionData(PositionData $positionData): PositionDataResource
+	public function getPositionData(PositionData $position_data): PositionDataResource
 	{
-		return $positionData->do();
+		return $position_data->do();
 	}
 }

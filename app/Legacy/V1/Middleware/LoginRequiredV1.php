@@ -33,7 +33,7 @@ final class LoginRequiredV1
 	 * @param Request  $request        the incoming request to serve
 	 * @param \Closure $next           the next operation to be applied to the
 	 *                                 request
-	 * @param string   $requiredStatus the required login status; either
+	 * @param string   $required_status the required login status; either
 	 *                                 {@link self::ROOT} or
 	 *                                 {@link self::ALBUM}
 	 *
@@ -42,15 +42,15 @@ final class LoginRequiredV1
 	 *
 	 * @codeCoverageIgnore Legacy stuff we don't care.
 	 */
-	public function handle(Request $request, \Closure $next, string $requiredStatus): mixed
+	public function handle(Request $request, \Closure $next, string $required_status): mixed
 	{
 		// We are logged in. Proceed.
 		if (Auth::user() !== null) {
 			return $next($request);
 		}
 
-		if ($requiredStatus !== self::ALBUM && $requiredStatus !== self::ROOT) {
-			throw new LycheeLogicException($requiredStatus . ' is not a valid login requirement.');
+		if ($required_status !== self::ALBUM && $required_status !== self::ROOT) {
+			throw new LycheeLogicException($required_status . ' is not a valid login requirement.');
 		}
 
 		try {
@@ -59,7 +59,7 @@ final class LoginRequiredV1
 				return $next($request);
 			}
 
-			if ($requiredStatus === self::ALBUM && Configs::getValueAsBool('login_required_root_only')) {
+			if ($required_status === self::ALBUM && Configs::getValueAsBool('login_required_root_only')) {
 				return $next($request);
 			}
 

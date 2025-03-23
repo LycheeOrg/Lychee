@@ -44,9 +44,9 @@ final class SearchResource extends JsonResource
 	 */
 	public function toArray($request)
 	{
-		$albumIDs = $this->albums->reduce(fn (string $carry, Album $item) => $carry . $item->id, '');
-		$tagAlbumsIds = $this->tag_albums->reduce(fn (string $carry, TagAlbum $item) => $carry . $item->id, '');
-		$photosIds = $this->photos->reduce(fn (string $carry, Photo $item) => $carry . $item->id, '');
+		$album_ids = $this->albums->reduce(fn (string $carry, Album $item) => $carry . $item->id, '');
+		$tag_albums_ids = $this->tag_albums->reduce(fn (string $carry, TagAlbum $item) => $carry . $item->id, '');
+		$photos_ids = $this->photos->reduce(fn (string $carry, Photo $item) => $carry . $item->id, '');
 		// The checksum is used by the web front-end as an efficient way to
 		// avoid rebuilding the GUI, if two subsequent searches return the
 		// same result.
@@ -56,7 +56,7 @@ final class SearchResource extends JsonResource
 		// next character of a search term although the search result might
 		// stay the same, the GUI would flicker.
 		// The checksum is just over the id, we do not need a full conversion of the data.
-		$checksum = md5($albumIDs . $tagAlbumsIds . $photosIds);
+		$checksum = md5($album_ids . $tag_albums_ids . $photos_ids);
 
 		return [
 			'albums' => AlbumResource::collection($this->albums)->toArray($request),

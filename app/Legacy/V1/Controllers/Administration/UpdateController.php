@@ -51,11 +51,8 @@ use Illuminate\View\View;
  */
 final class UpdateController extends Controller
 {
-	protected ApplyUpdate $applyUpdate;
-
-	public function __construct(ApplyUpdate $applyUpdate)
+	public function __construct(private ApplyUpdate $apply_update)
 	{
-		$this->applyUpdate = $applyUpdate;
 	}
 
 	/**
@@ -70,10 +67,10 @@ final class UpdateController extends Controller
 	 */
 	public function check(UpdateRequest $request): array
 	{
-		$gitHubFunctions = resolve(GitHubVersion::class);
-		$gitHubFunctions->hydrate(true, false);
+		$git_hub_functions = resolve(GitHubVersion::class);
+		$git_hub_functions->hydrate(true, false);
 
-		return ['updateStatus' => $gitHubFunctions->getBehindTest()];
+		return ['updateStatus' => $git_hub_functions->getBehindTest()];
 	}
 
 	/**
@@ -93,7 +90,7 @@ final class UpdateController extends Controller
 	{
 		UpdatableCheck::assertUpdatability();
 
-		return ['updateMsgs' => $this->applyUpdate->run()];
+		return ['updateMsgs' => $this->apply_update->run()];
 	}
 
 	/**
@@ -113,7 +110,7 @@ final class UpdateController extends Controller
 	{
 		UpdatableCheck::assertUpdatability();
 
-		$output = $this->applyUpdate->run();
+		$output = $this->apply_update->run();
 
 		return view('update.results', ['code' => '200', 'message' => 'Upgrade results', 'output' => $output]);
 	}
@@ -140,7 +137,7 @@ final class UpdateController extends Controller
 	public function migrate(MigrateRequest $request): View|Response
 	{
 		$output = [];
-		$output = $this->applyUpdate->run();
+		$output = $this->apply_update->run();
 
 		return view('update.results', ['code' => '200', 'message' => 'Migration results', 'output' => $output]);
 	}

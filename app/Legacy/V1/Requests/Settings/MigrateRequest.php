@@ -44,12 +44,12 @@ final class MigrateRequest extends BaseApiRequest implements HasUsername, HasPas
 		// 4. Try to login the normal way.
 		//
 		// TODO: Step 2 will become unnecessary once the admin user of any existing installation has at least logged in once and the admin user has therewith migrated to use a non-hashed user name
-		$isLoggedIn = Auth::check();
-		$isLoggedIn = $isLoggedIn || AdminAuthentication::loginAsAdmin($this->username(), $this->password(), $this->ip());
-		$isLoggedIn = $isLoggedIn || Auth::attempt(['username' => $this->username(), 'password' => $this->password()]);
+		$is_logged_in = Auth::check();
+		$is_logged_in = $is_logged_in || AdminAuthentication::loginAsAdmin($this->username(), $this->password(), $this->ip());
+		$is_logged_in = $is_logged_in || Auth::attempt(['username' => $this->username(), 'password' => $this->password()]);
 
 		// Check if logged in AND is admin
-		return $isLoggedIn && Gate::check(SettingsPolicy::CAN_UPDATE, Configs::class);
+		return $is_logged_in && Gate::check(SettingsPolicy::CAN_UPDATE, Configs::class);
 	}
 
 	/**

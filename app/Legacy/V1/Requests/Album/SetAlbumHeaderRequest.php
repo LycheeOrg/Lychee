@@ -50,11 +50,11 @@ final class SetAlbumHeaderRequest extends BaseApiRequest implements HasAlbum, Ha
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		/** @var string|null */
-		$albumID = $values[RequestAttribute::ALBUM_ID_ATTRIBUTE];
+		$album_id = $values[RequestAttribute::ALBUM_ID_ATTRIBUTE];
 
-		$this->album = Album::query()->findOrFail($albumID);
+		$this->album = Album::query()->findOrFail($album_id);
 		/** @var ?string $photoID */
-		$photoID = $values[RequestAttribute::PHOTO_ID_ATTRIBUTE];
-		$this->photo = $photoID === null ? null : Photo::query()->findOrFail($photoID);
+		$photo_id = $values[RequestAttribute::PHOTO_ID_ATTRIBUTE];
+		$this->photo = $photo_id === null ? null : Photo::query()->findOrFail($photo_id);
 	}
 }

@@ -23,9 +23,9 @@ final class TagAlbumResource extends JsonResource
 {
 	use WithStatus;
 
-	public function __construct(TagAlbum $tagAlbum)
+	public function __construct(TagAlbum $tag_album)
 	{
-		parent::__construct($tagAlbum);
+		parent::__construct($tag_album);
 	}
 
 	/**

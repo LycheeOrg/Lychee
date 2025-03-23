@@ -24,16 +24,16 @@ use Kalnoy\Nestedset\Collection as NsCollection;
 
 final class Tree
 {
-	private AlbumQueryPolicy $albumQueryPolicy;
+	private AlbumQueryPolicy $album_query_policy;
 	private AlbumSortingCriterion $sorting;
 
 	/**
 	 * @throws InvalidOrderDirectionException
 	 * @throws ConfigurationKeyMissingException
 	 */
-	public function __construct(AlbumQueryPolicy $albumQueryPolicy)
+	public function __construct(AlbumQueryPolicy $album_query_policy)
 	{
-		$this->albumQueryPolicy = $albumQueryPolicy;
+		$this->album_query_policy = $album_query_policy;
 		$this->sorting = AlbumSortingCriterion::createDefault();
 	}
 
@@ -60,7 +60,7 @@ final class Tree
 		 * only return a tree of browsable albums.
 		 */
 		$query = new SortingDecorator(
-			$this->albumQueryPolicy->applyReachabilityFilter(Album::query())
+			$this->album_query_policy->applyReachabilityFilter(Album::query())
 		);
 		if (Auth::check()) {
 			// For authenticated users we group albums by ownership.
@@ -71,9 +71,9 @@ final class Tree
 		/** @var NsCollection<Album> $albums */
 		$albums = $query->get();
 		/** @var ?NsCollection<Album> $sharedAlbums */
-		$sharedAlbums = null;
-		$userID = Auth::id();
-		if ($userID !== null) {
+		$shared_albums = null;
+		$user_i_d = Auth::id();
+		if ($user_i_d !== null) {
 			// ATTENTION:
 			// For this to work correctly, it is crucial that all child albums
 			// below each top-level album have the same owner!
@@ -83,7 +83,7 @@ final class Tree
 			// resp.
 			/** @var NsCollection<Album> $albums */
 			/** @var ?NsCollection<Album> $sharedAlbums */
-			list($albums, $sharedAlbums) = $albums->partition(fn (Album $album) => $album->owner_id === $userID);
+			list($albums, $shared_albums) = $albums->partition(fn (Album $album) => $album->owner_id === $user_i_d);
 		}
 
 		// We must explicitly pass `null` as the ID of the root album
@@ -91,10 +91,10 @@ final class Tree
 		// Otherwise, `toTree` uses the ID of the album with the lowest
 		// `_lft` value as the (wrong) root album.
 		/** @var BaseCollection<int,\App\Contracts\Models\AbstractAlbum> $albumsTree */
-		$albumsTree = $albums->toTree(null);
+		$albums_tree = $albums->toTree(null);
 		/** @var BaseCollection<int,\App\Contracts\Models\AbstractAlbum> $sharedTree */
-		$sharedTree = $sharedAlbums?->toTree(null);
+		$shared_tree = $shared_albums?->toTree(null);
 
-		return new AlbumForestResource($albumsTree, $sharedTree);
+		return new AlbumForestResource($albums_tree, $shared_tree);
 	}
 }

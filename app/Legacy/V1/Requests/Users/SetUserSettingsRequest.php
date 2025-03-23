@@ -63,9 +63,9 @@ final class SetUserSettingsRequest extends BaseApiRequest implements HasUsername
 		}
 		$this->mayUpload = static::toBoolean($values[RequestAttribute::MAY_UPLOAD_ATTRIBUTE]);
 		$this->mayEditOwnSettings = static::toBoolean($values[RequestAttribute::MAY_EDIT_OWN_SETTINGS_ATTRIBUTE]);
-		/** @var int $userID */
-		$userID = $values[RequestAttribute::ID_ATTRIBUTE];
-		$this->user2 = User::query()->findOrFail($userID);
+		/** @var int $user_id */
+		$user_id = $values[RequestAttribute::ID_ATTRIBUTE];
+		$this->user2 = User::query()->findOrFail($user_id);
 	}
 
 	public function mayUpload(): bool

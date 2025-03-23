@@ -47,8 +47,8 @@ final class ConfigurationResource extends JsonResource
 	 */
 	public function toArray($request): array
 	{
-		$lycheeVersion = resolve(InstalledVersion::class);
-		$isAdmin = Auth::user()?->may_administrate === true;
+		$lychee_version = resolve(InstalledVersion::class);
+		$is_admin = Auth::user()?->may_administrate === true;
 		$rss_feeds = [];
 
 		if (Configs::getValueAsBool('rss_enable')) {
@@ -77,13 +77,13 @@ final class ConfigurationResource extends JsonResource
 		return [
 			// Computed
 			'lang_available' => $this->when(Auth::check(), config('app.supported_locale')),
-			'version' => $this->when(Auth::check() || !Configs::getValueAsBool('hide_version_number'), $lycheeVersion->getVersion()),
+			'version' => $this->when(Auth::check() || !Configs::getValueAsBool('hide_version_number'), $lychee_version->getVersion()),
 			'rss_feeds' => $rss_feeds,
 			'allow_username_change' => $this->when(Auth::check(), Configs::getValueAsBool('allow_username_change')),
 
 			// Config attributes
 			// Admin
-			$this->mergeWhen($isAdmin, [
+			$this->mergeWhen($is_admin, [
 				// computerd
 				'location' => base_path('public/'),
 

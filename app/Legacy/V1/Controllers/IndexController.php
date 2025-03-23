@@ -25,14 +25,12 @@ use function Safe\phpinfo;
 
 final class IndexController extends Controller
 {
-	private SymLinkFunctions $symLinkFunctions;
-
 	/**
-	 * @param SymLinkFunctions $symLinkFunctions
+	 * @param SymLinkFunctions $sym_link_functions
 	 */
-	public function __construct(SymLinkFunctions $symLinkFunctions)
+	public function __construct(
+		private SymLinkFunctions $sym_link_functions)
 	{
-		$this->symLinkFunctions = $symLinkFunctions;
 	}
 
 	/**
@@ -195,25 +193,25 @@ final class IndexController extends Controller
 	 *
 	 * @param string|null $title       the specific title; this method prefixes the title with the site title
 	 * @param string|null $description the description; this method appends `' – via Lychee'` to the description
-	 * @param string|null $imageUrl    an optional URL to an image displayed on the page
+	 * @param string|null $image_url    an optional URL to an image displayed on the page
 	 *
 	 * @throws FrameworkException
 	 * @throws ConfigurationKeyMissingException
 	 * @throws ModelDBException
 	 */
-	protected function frontend(?string $title = null, ?string $description = null, ?string $imageUrl = null): View
+	protected function frontend(?string $title = null, ?string $description = null, ?string $image_url = null): View
 	{
 		try {
-			$this->symLinkFunctions->remove_outdated();
-			$siteTitle = Configs::getValueAsString('site_title');
+			$this->sym_link_functions->remove_outdated();
+			$site_title = Configs::getValueAsString('site_title');
 			$title ??= '';
 			$description ??= '';
 
 			return view('frontend', [
-				'pageTitle' => $siteTitle . ($siteTitle !== '' && $title !== '' ? ' – ' : '') . $title,
+				'pageTitle' => $site_title . ($site_title !== '' && $title !== '' ? ' – ' : '') . $title,
 				'pageDescription' => $description !== '' ? $description . ' – via Lychee' : '',
 				'siteOwner' => Configs::getValueAsString('site_owner'),
-				'imageUrl' => $imageUrl ?? '',
+				'imageUrl' => $image_url ?? '',
 				'pageUrl' => url()->current(),
 				'rssEnable' => Configs::getValueAsBool('rss_enable'),
 				'bodyHtml' => file_get_contents(public_path('dist/frontend.html')),
@@ -234,15 +232,15 @@ final class IndexController extends Controller
 	 *
 	 * @return string
 	 */
-	public static function getUserCustomFiles(string $fileName): string
+	public static function getUserCustomFiles(string $file_name): string
 	{
-		$cssCacheBusting = '';
+		$css_cache_busting = '';
 		/** @disregard P1013 */
-		if (Storage::disk('dist')->fileExists($fileName)) {
-			$cssCacheBusting = '?' . Storage::disk('dist')->lastModified($fileName);
+		if (Storage::disk('dist')->fileExists($file_name)) {
+			$css_cache_busting = '?' . Storage::disk('dist')->lastModified($file_name);
 		}
 
 		/** @disregard P1013 */
-		return Storage::disk('dist')->url($fileName) . $cssCacheBusting;
+		return Storage::disk('dist')->url($file_name) . $css_cache_busting;
 	}
 }

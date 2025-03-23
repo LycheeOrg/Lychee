@@ -34,12 +34,12 @@ use Illuminate\Support\Facades\Storage;
  */
 final class AddVideoPartnerStrategy extends AbstractAddStrategy
 {
-	protected BaseMediaFile $videoSourceFile;
+	protected BaseMediaFile $video_source_file;
 
-	public function __construct(ImportParam $parameters, BaseMediaFile $videoSourceFile, Photo $existingPhoto)
+	public function __construct(ImportParam $parameters, BaseMediaFile $video_source_file, Photo $existing_photo)
 	{
-		parent::__construct($parameters, $existingPhoto);
-		$this->videoSourceFile = $videoSourceFile;
+		parent::__construct($parameters, $existing_photo);
+		$this->video_source_file = $video_source_file;
 	}
 
 	/**
@@ -51,15 +51,15 @@ final class AddVideoPartnerStrategy extends AbstractAddStrategy
 	 */
 	public function do(): Photo
 	{
-		$photoFile = $this->photo->size_variants->getOriginal()->getFile();
-		$photoPath = $photoFile->getRelativePath();
-		$photoExt = $photoFile->getOriginalExtension();
-		$videoExt = $this->videoSourceFile->getOriginalExtension();
-		$videoPath = substr($photoPath, 0, -strlen($photoExt)) . $videoExt;
-		$videoTargetFile = new FlysystemFile(Storage::disk(StorageDiskType::LOCAL->value), $videoPath);
-		$streamStat = $this->putSourceIntoFinalDestination($videoTargetFile);
-		$this->photo->live_photo_short_path = $videoPath;
-		$this->photo->live_photo_checksum = $streamStat?->checksum;
+		$photo_file = $this->photo->size_variants->getOriginal()->getFile();
+		$photo_path = $photo_file->getRelativePath();
+		$photo_ext = $photo_file->getOriginalExtension();
+		$video_ext = $this->video_source_file->getOriginalExtension();
+		$video_path = substr($photo_path, 0, -strlen($photo_ext)) . $video_ext;
+		$video_target_file = new FlysystemFile(Storage::disk(StorageDiskType::LOCAL->value), $video_path);
+		$stream_stat = $this->putSourceIntoFinalDestination($video_target_file);
+		$this->photo->live_photo_short_path = $video_path;
+		$this->photo->live_photo_checksum = $stream_stat?->checksum;
 		$this->photo->save();
 
 		return $this->photo;
@@ -87,50 +87,50 @@ final class AddVideoPartnerStrategy extends AbstractAddStrategy
 	 * We want to rename the symbolic link, not the target of the symbolic
 	 * link.
 	 *
-	 * @param FlysystemFile $videoTargetFile
+	 * @param FlysystemFile $video_target_file the target file for the video
 	 *
 	 * @return StreamStat|null statistics about the uploaded video file; `null` if no file has been uploaded, but renamed in-place
 	 *
 	 * @throws MediaFileOperationException
 	 * @throws ConfigurationException
 	 */
-	protected function putSourceIntoFinalDestination(FlysystemFile $videoTargetFile): ?StreamStat
+	protected function putSourceIntoFinalDestination(FlysystemFile $video_target_file): ?StreamStat
 	{
 		try {
-			if ($this->videoSourceFile instanceof NativeLocalFile) {
+			if ($this->video_source_file instanceof NativeLocalFile) {
 				// This is case A (see above)
 				// The code is very similar to
 				// AddStandaloneStrategy::putSourceIntoFinalDestination()
 				// except that we can skip the part about normalization of
 				// orientation, because we don't support that for videos.
 				if ($this->parameters->import_mode->shall_import_via_symlink) {
-					if (!$videoTargetFile->isLocalFile()) {
+					if (!$video_target_file->isLocalFile()) {
 						throw new ConfigurationException('Symlinking is only supported on local filesystems');
 					}
-					$targetPath = $videoTargetFile->toLocalFile()->getPath();
-					$sourcePath = $this->videoSourceFile->getRealPath();
+					$target_path = $video_target_file->toLocalFile()->getPath();
+					$source_path = $this->video_source_file->getRealPath();
 					// For symlinks we must manually create a non-existing
 					// parent directory.
 					// This mimics the behaviour of Flysystem for regular files.
-					$targetDirectory = pathinfo($targetPath, PATHINFO_DIRNAME);
-					if (!is_dir($targetDirectory)) {
+					$target_directory = pathinfo($target_path, PATHINFO_DIRNAME);
+					if (!is_dir($target_directory)) {
 						$umask = \umask(0);
-						\Safe\mkdir($targetDirectory, BasicPermissionCheck::getConfiguredDirectoryPerm(), true);
+						\Safe\mkdir($target_directory, BasicPermissionCheck::getConfiguredDirectoryPerm(), true);
 						\umask($umask);
 					}
-					\Safe\symlink($sourcePath, $targetPath);
-					$streamStat = StreamStat::createFromLocalFile($this->videoSourceFile);
+					\Safe\symlink($source_path, $target_path);
+					$stream_stat = StreamStat::createFromLocalFile($this->video_source_file);
 				} else {
-					$streamStat = $videoTargetFile->write($this->videoSourceFile->read(), true);
-					$this->videoSourceFile->close();
-					$videoTargetFile->close();
+					$stream_stat = $video_target_file->write($this->video_source_file->read(), true);
+					$this->video_source_file->close();
+					$video_target_file->close();
 					if ($this->parameters->import_mode->shall_delete_imported) {
 						// This may throw an exception, if the original has been
 						// readable, but is not writable
 						// In this case, the media file will have been copied, but
 						// cannot be "moved".
 						try {
-							$this->videoSourceFile->delete();
+							$this->video_source_file->delete();
 						} catch (MediaFileOperationException $e) {
 							// If deletion failed, we do not cancel the whole
 							// import, but fall back to copy-semantics and
@@ -139,17 +139,17 @@ final class AddVideoPartnerStrategy extends AbstractAddStrategy
 						}
 					}
 				}
-			} elseif ($this->videoSourceFile instanceof FlysystemFile) {
+			} elseif ($this->video_source_file instanceof FlysystemFile) {
 				// It seems as if Flysystem calls a primitive \rename under the
 				// hood, if the storage adapter is the `Local` adapter.
 				// This also works for symbolic links, so we are good here.
-				$this->videoSourceFile->move($videoTargetFile->getRelativePath());
-				$streamStat = null;
+				$this->video_source_file->move($video_target_file->getRelativePath());
+				$stream_stat = null;
 			} else {
-				throw new LycheeAssertionError('Unexpected type of $videoSourceFile: ' . get_class($this->videoSourceFile));
+				throw new LycheeAssertionError('Unexpected type of $video_source_file: ' . get_class($this->video_source_file));
 			}
 
-			return $streamStat;
+			return $stream_stat;
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException('Could move/copy/symlink source file to final destination', $e);
 		}

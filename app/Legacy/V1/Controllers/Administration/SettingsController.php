@@ -434,7 +434,7 @@ final class SettingsController extends Controller
 	 */
 	public function saveAll(GetSetAllSettingsRequest $request): void
 	{
-		$lastException = null;
+		$last_exception = null;
 		// Select all the SE settings.
 		$except = DB::table('configs')
 			->select('key')
@@ -450,13 +450,13 @@ final class SettingsController extends Controller
 				Configs::set($key, $value);
 				// @codeCoverageIgnoreStart
 			} catch (InvalidConfigOption $e) {
-				$lastException = $e;
+				$last_exception = $e;
 			}
 			// @codeCoverageIgnoreEnd
 		}
-		if ($lastException !== null) {
+		if ($last_exception !== null) {
 			// @codeCoverageIgnoreStart
-			throw $lastException;
+			throw $last_exception;
 			// @codeCoverageIgnoreEnd
 		}
 	}

@@ -33,13 +33,13 @@ final class InitResource extends JsonResource
 	 */
 	public function toArray($request): array
 	{
-		$fileVersion = resolve(FileVersion::class);
-		$gitHubVersion = resolve(GitHubVersion::class);
+		$file_version = resolve(FileVersion::class);
+		$git_hub_version = resolve(GitHubVersion::class);
 
 		if (Configs::getValueAsBool('check_for_updates')) {
 			// @codeCoverageIgnoreStart
-			$fileVersion->hydrate();
-			$gitHubVersion->hydrate();
+			$file_version->hydrate();
+			$git_hub_version->hydrate();
 			// @codeCoverageIgnoreEnd
 		}
 
@@ -50,8 +50,8 @@ final class InitResource extends JsonResource
 			'user' => $this->when(Auth::check(), UserResource::make(Auth::user()), null),
 			'rights' => GlobalRightsResource::make(),
 			'config' => ConfigurationResource::make(),
-			'update_json' => !$fileVersion->isUpToDate(),
-			'update_available' => !$gitHubVersion->isUpToDate(),
+			'update_json' => !$file_version->isUpToDate(),
+			'update_available' => !$git_hub_version->isUpToDate(),
 			'locale' => $locale,
 		];
 	}

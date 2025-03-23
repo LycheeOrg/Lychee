@@ -51,11 +51,11 @@ final class ImportServerRequest extends BaseApiRequest implements HasAlbum
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		/** @var string|null */
-		$albumID = $values[RequestAttribute::ALBUM_ID_ATTRIBUTE];
-		$this->album = $albumID === null ?
+		$album_id = $values[RequestAttribute::ALBUM_ID_ATTRIBUTE];
+		$this->album = $album_id === null ?
 			null :
 			// @codeCoverageIgnoreStart
-			Album::query()->findOrFail($albumID);
+			Album::query()->findOrFail($album_id);
 		// @codeCoverageIgnoreEnd
 		$this->paths = $values[RequestAttribute::PATH_ATTRIBUTE];
 		$this->importMode = new ImportMode(
