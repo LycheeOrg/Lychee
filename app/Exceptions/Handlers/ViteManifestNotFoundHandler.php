@@ -25,11 +25,12 @@ class ViteManifestNotFoundHandler implements HttpExceptionHandler
 	 */
 	public function check(HttpException $e): bool
 	{
-		do {
+		while ($e !== null) {
 			if ($e instanceof ViteManifestNotFoundException) {
 				return true;
 			}
-		} while ($e = $e->getPrevious());
+			$e = $e->getPrevious();
+		}
 
 		return false;
 	}
