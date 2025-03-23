@@ -30,6 +30,7 @@ use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\ToArrayThrowsNotImplemented;
 use App\Models\Extensions\UTCBasedTimes;
 use App\Relations\HasManySizeVariants;
+use Barryvdh\LaravelIdeHelper\Eloquent;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -124,7 +125,7 @@ use function Safe\preg_match;
  * @method static PhotoBuilder|Photo whereType($value)
  * @method static PhotoBuilder|Photo whereUpdatedAt($value)
  *
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 class Photo extends Model
 {
@@ -179,11 +180,6 @@ class Photo extends Model
 		'live_photo_short_path', // serialize live_photo_url instead
 	];
 
-	/**
-	 * @param $query
-	 *
-	 * @return PhotoBuilder
-	 */
 	public function newEloquentBuilder($query): PhotoBuilder
 	{
 		return new PhotoBuilder($query);
@@ -280,8 +276,6 @@ class Photo extends Model
 	 *
 	 * @param ?string $license the value from the database passed in by
 	 *                         the Eloquent framework
-	 *
-	 * @return LicenseType
 	 */
 	protected function getLicenseAttribute(?string $license): LicenseType
 	{
@@ -313,8 +307,6 @@ class Photo extends Model
 	 *
 	 * @param string|null $focal the value from the database passed in by the
 	 *                           Eloquent framework
-	 *
-	 * @return ?string
 	 *
 	 * @throws IllegalOrderOfOperationException
 	 */
@@ -374,8 +366,6 @@ class Photo extends Model
 	/**
 	 * Checks if the photo represents a (real) photo (as opposed to video or raw).
 	 *
-	 * @return bool
-	 *
 	 * @throws IllegalOrderOfOperationException
 	 */
 	public function isPhoto(): bool
@@ -391,8 +381,6 @@ class Photo extends Model
 
 	/**
 	 * Checks if the photo represents a video.
-	 *
-	 * @return bool
 	 *
 	 * @throws IllegalOrderOfOperationException
 	 */
@@ -412,8 +400,6 @@ class Photo extends Model
 	 *
 	 * The media record is "raw" if it is neither of a supported photo nor
 	 * video type.
-	 *
-	 * @return bool
 	 *
 	 * @throws IllegalOrderOfOperationException
 	 */

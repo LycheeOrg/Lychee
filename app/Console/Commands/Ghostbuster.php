@@ -52,8 +52,6 @@ class Ghostbuster extends Command
 	/**
 	 * Create a new command instance.
 	 *
-	 * @param Colorize $colorize
-	 *
 	 * @throws SymfonyConsoleException
 	 */
 	public function __construct(Colorize $colorize)
@@ -65,8 +63,6 @@ class Ghostbuster extends Command
 
 	/**
 	 * Execute the console command.
-	 *
-	 * @return int
 	 */
 	public function handle(): int
 	{
@@ -131,7 +127,7 @@ class Ghostbuster extends Command
 				$photos = Photo::query()
 					->where('live_photo_short_path', '=', $filename)
 					->get();
-				/** @var Collection<int,SizeVariant> $sizeVariants */
+				/** @var Collection<int,SizeVariant> $size_variants */
 				$size_variants = SizeVariant::query()
 					->with('photo')
 					->where('short_path', '=', $filename)
@@ -146,7 +142,7 @@ class Ghostbuster extends Command
 						unlink($upload_disk->path($filename));
 						$this->line(str_pad($filename, 50) . $this->col->red(' removed') . '.');
 						$total_db_entries += $size_variants->count() + $photos->count();
-						/** @var SizeVariant $sizeVariant */
+						/** @var SizeVariant $size_variant */
 						foreach ($size_variants as $size_variant) {
 							$size_variant->photo->delete();
 						}
@@ -173,7 +169,7 @@ class Ghostbuster extends Command
 				$size_variants = SizeVariant::query()
 					->with('photo')
 					->get();
-				/** @var SizeVariant $sizeVariant */
+				/** @var SizeVariant $size_variant */
 				foreach ($size_variants as $size_variant) {
 					if ($size_variant->getFile()->exists()) {
 						continue;
@@ -214,7 +210,7 @@ class Ghostbuster extends Command
 			// So we must use low-level methods here.
 			$symlink_disk_path = $symlink_disk->path('');
 			$sym_links = array_slice(scandir($symlink_disk_path), 3);
-			/** @var string $symLink */
+			/** @var string $sym_link */
 			foreach ($sym_links as $sym_link) {
 				$full_path = $symlink_disk_path . $sym_link;
 				$is_dead_symlink = !file_exists(readlink($full_path));
