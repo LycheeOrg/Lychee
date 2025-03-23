@@ -76,7 +76,7 @@ function get_version(): array
  * Given the current version and the update array return the new version number.
  *
  * @param array<int,int> $current_version current version number
- * @param string         $kind         'minor' or 'major'
+ * @param string         $kind            'minor' or 'major'
  *
  * @return array<int,int>
  */
@@ -86,8 +86,8 @@ function new_version(array $current_version, string $kind): array
 	if ($kind === 'major') {
 		$new_version[0]++;
 		$new_version[1] = 0;
-		$new_version[2] = 0; 
-	} else if ($kind === 'minor') {
+		$new_version[2] = 0;
+	} elseif ($kind === 'minor') {
 		$new_version[1]++;
 		$new_version[2] = 0;
 	} else {
