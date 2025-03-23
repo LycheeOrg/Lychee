@@ -31,8 +31,6 @@ class DownloadedFile extends TemporaryLocalFile
 	protected ?string $originalMimeType = null;
 
 	/**
-	 * @param string $url
-	 *
 	 * @throws MediaFileOperationException
 	 */
 	public function __construct(string $url)
@@ -46,7 +44,7 @@ class DownloadedFile extends TemporaryLocalFile
 			$download_stream = fopen($url, 'rb');
 			$download_stream_data = stream_get_meta_data($download_stream);
 
-			/** @var string|null $originalMimeType */
+			/** @var string|null $original_mime_type */
 			$original_mime_type = null;
 			// Find the server-side MIME type; the HTTP headers are part of
 			// the protocol-specific meta-data of the stream handler
@@ -58,7 +56,7 @@ class DownloadedFile extends TemporaryLocalFile
 					$matches,
 					PREG_UNMATCHED_AS_NULL
 				);
-				if (count($matches) === 2 && $matches[1]) {
+				if (count($matches) === 2 && !is_null($matches[1])) {
 					$original_mime_type = $matches[1];
 					break;
 				}
@@ -116,10 +114,10 @@ class DownloadedFile extends TemporaryLocalFile
 	/**
 	 * Returns the MIME type of the file.
 	 *
-	 * @param bool $fallbackToClientMimeType flag to use the provided MIME
-	 *                                       type by client-side, if the
-	 *                                       internal PHP mechanism detects
-	 *                                       "application/octet-stream"
+	 * @param bool $fallback_to_client_mime_type flag to use the provided MIME
+	 *                                           type by client-side, if the
+	 *                                           internal PHP mechanism detects
+	 *                                           "application/octet-stream"
 	 *
 	 * @return string the MIME type
 	 *

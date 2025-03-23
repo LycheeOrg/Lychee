@@ -33,7 +33,7 @@ $rules = [
 	'single_blank_line_at_eof' => false,
 	'yoda_style' => false,
 	'concat_space' => ['spacing' => 'one'],
-	'no_superfluous_phpdoc_tags' => false,
+	'no_superfluous_phpdoc_tags' => true,
 	'phpdoc_to_comment' => false, // required until https://github.com/phpstan/phpstan/issues/7486 got fixed
 	'blank_line_between_import_groups' => false, // not PSR-12 compatible, but preserves old behaviour
 	'ordered_imports' => [

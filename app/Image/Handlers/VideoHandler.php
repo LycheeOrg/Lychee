@@ -69,10 +69,6 @@ class VideoHandler
 	/**
 	 * Extracts and returns a frame from the video.
 	 *
-	 * @param float $framePosition
-	 *
-	 * @return ImageHandlerInterface
-	 *
 	 * @throws MediaFileOperationException
 	 * @throws ImageProcessingException
 	 * @throws MediaFileUnsupportedException

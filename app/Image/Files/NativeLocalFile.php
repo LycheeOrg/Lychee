@@ -71,9 +71,7 @@ class NativeLocalFile extends BaseMediaFile
 	 * {@link NativeLocalFile::getMimeType()}.
 	 * This can be avoided by passing the MIME type of the stream.
 	 *
-	 * @param string|null $mimeType the mime type of `$stream`
-	 *
-	 * @returns void
+	 * @param string|null $mime_type the mime type of `$stream`
 	 */
 	public function write($stream, bool $collect_statistics = false, ?string $mime_type = null): ?StreamStat
 	{
@@ -108,10 +106,8 @@ class NativeLocalFile extends BaseMediaFile
 	 * {@link NativeLocalFile::getMimeType()}.
 	 * This can be avoided by passing the MIME type of the stream.
 	 *
-	 * @param resource    $stream   the input stream which provides the input to write
-	 * @param string|null $mimeType the mime type of `$stream`
-	 *
-	 * @returns void
+	 * @param resource    $stream    the input stream which provides the input to write
+	 * @param string|null $mime_type the mime type of `$stream`
 	 */
 	public function append($stream, bool $collect_statistics = false, ?string $mime_type = null): ?StreamStat
 	{
@@ -208,8 +204,6 @@ class NativeLocalFile extends BaseMediaFile
 
 	/**
 	 * Returns the path of the file.
-	 *
-	 * @return string
 	 */
 	public function getPath(): string
 	{
@@ -221,8 +215,6 @@ class NativeLocalFile extends BaseMediaFile
 	 * relative path components such as `'..'` have been resolved.
 	 *
 	 * Throws an exception, if the file does not exist.
-	 *
-	 * @return string
 	 *
 	 * @throws MediaFileOperationException
 	 */
@@ -293,8 +285,6 @@ class NativeLocalFile extends BaseMediaFile
 	/**
 	 * Checks if the file is a supported image.
 	 *
-	 * @return bool
-	 *
 	 * @throws MediaFileOperationException
 	 */
 	public function isSupportedImage(): bool
@@ -310,8 +300,6 @@ class NativeLocalFile extends BaseMediaFile
 
 	/**
 	 * Checks if the file is a supported video.
-	 *
-	 * @return bool
 	 *
 	 * @throws MediaFileOperationException
 	 */
@@ -341,8 +329,6 @@ class NativeLocalFile extends BaseMediaFile
 
 	/**
 	 * Checks if the file is not supported, but an accepted raw media.
-	 *
-	 * @return bool
 	 */
 	public function isAcceptedRaw(): bool
 	{
@@ -367,8 +353,6 @@ class NativeLocalFile extends BaseMediaFile
 
 	/**
 	 * Asserts that the file is supported or accepted (i.e. image, video or raw).
-	 *
-	 * @return void
 	 *
 	 * @throws MediaFileUnsupportedException
 	 * @throws MediaFileOperationException

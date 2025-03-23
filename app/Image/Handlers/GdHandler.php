@@ -175,7 +175,6 @@ class GdHandler extends BaseImageHandler
 
 			// Load image
 			error_clear_last();
-			/** @var \GdImage $img */
 			$img = imagecreatefromstring($img_binary);
 			$this->gd_image = $img;
 
@@ -261,8 +260,6 @@ class GdHandler extends BaseImageHandler
 	 * Rotates and flips a photo based on the designated EXIF orientation.
 	 *
 	 * @param int $orientation the orientation value (1..8) as defined by EXIF specification, default is 1 (means up-right and not mirrored/flipped)
-	 *
-	 * @return void
 	 *
 	 * @throws ImageProcessingException
 	 */
@@ -404,17 +401,6 @@ class GdHandler extends BaseImageHandler
 	 *
 	 * @param \GdImage $dst_image
 	 * @param \GdImage $src_image
-	 * @param int      $dst_x
-	 * @param int      $dst_y
-	 * @param int      $src_x
-	 * @param int      $src_y
-	 * @param int      $dst_w
-	 * @param int      $dst_h
-	 * @param int      $src_w
-	 * @param int      $src_h
-	 * @param int      $quality
-	 *
-	 * @return void
 	 *
 	 * @throws ImageProcessingException
 	 */
