@@ -29,6 +29,7 @@ use App\SmartAlbums\Utils\MimicModel;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class BaseSmartAlbum.
@@ -39,7 +40,7 @@ use Illuminate\Database\Eloquent\Collection;
  * Photos belong to these albums due to certain properties like being
  * starred, being recently added, etc.
  */
-abstract class BaseSmartAlbum implements AbstractAlbum
+abstract class BaseSmartAlbum extends Model implements AbstractAlbum
 {
 	use MimicModel;
 	use UTCBasedTimes;
@@ -73,6 +74,8 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 			throw new FrameworkException('Laravel\'s service container', $e);
 		}
 		// @codeCoverageIgnoreEnd
+
+		parent::__construct();
 	}
 
 	/**

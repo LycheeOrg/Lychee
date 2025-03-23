@@ -25,11 +25,9 @@ trait MimicModel
 	 *
 	 * @param string $key
 	 *
-	 * @return mixed
-	 *
 	 * @throws InternalLycheeException
 	 */
-	public function __get(string $key)
+	public function __get(mixed $key)
 	{
 		if ($key === '') {
 			throw new LycheeInvalidArgumentException('property name must not be empty');
