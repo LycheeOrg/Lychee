@@ -1,17 +1,12 @@
-import { computed, Ref, ref } from "vue";
+import { computed, Ref } from "vue";
+import { useHasNextPreviousPhoto } from "./hasNextPreviousPhoto";
 
-export function usePhotoBaseFunction(photoId: Ref<string>, videoElement: Ref<HTMLVideoElement | null>) {
-	const photo = ref<App.Http.Resources.Models.PhotoResource | undefined>(undefined);
-	const album = ref<App.Http.Resources.Models.AbstractAlbumResource | null>(null);
-	const photos = ref<App.Http.Resources.Models.PhotoResource[]>([]);
-
-	function hasPrevious(): boolean {
-		return photo.value?.previous_photo_id !== null;
-	}
-
-	function hasNext(): boolean {
-		return photo.value?.next_photo_id !== null;
-	}
+export function usePhotoBaseFunction(
+	photo: Ref<App.Http.Resources.Models.PhotoResource | undefined>,
+	photos: Ref<App.Http.Resources.Models.PhotoResource[]>,
+	videoElement: Ref<HTMLVideoElement | null>,
+) {
+	const { hasNext, hasPrevious } = useHasNextPreviousPhoto(photo);
 
 	const previousStyle = computed(() => {
 		if (!hasPrevious()) {
@@ -86,7 +81,7 @@ export function usePhotoBaseFunction(photoId: Ref<string>, videoElement: Ref<HTM
 	});
 
 	function refresh(): void {
-		photo.value = photos.value.find((p: App.Http.Resources.Models.PhotoResource) => p.id === photoId.value);
+		// photo.value = photos.value.find((p: App.Http.Resources.Models.PhotoResource) => p.id === photoId.value);
 
 		// handle videos.
 		const videoElementValue = videoElement.value;
@@ -97,16 +92,11 @@ export function usePhotoBaseFunction(photoId: Ref<string>, videoElement: Ref<HTM
 	}
 
 	return {
-		photo,
-		album,
-		photos,
 		previousStyle,
 		nextStyle,
 		srcSetMedium,
 		style,
 		imageViewMode,
 		refresh,
-		hasPrevious,
-		hasNext,
 	};
 }

@@ -39,7 +39,6 @@ return [
 
 	'search' => [
 		'title' => 'Wyszukiwanie',
-		'searching' => 'Wyszukiwanie...',
 		'no_results' => 'Nic nie pasuje do wyszukiwanego hasła.',
 		'searchbox' => 'Szukaj...',
 		'minimum_chars' => 'Wymagane minimum %s znaków.',
