@@ -17,7 +17,7 @@
 <script setup lang="ts">
 import MiniIcon from "@/components/icons/MiniIcon.vue";
 import { usePhotoRoute } from "@/composables/photo/photoRoute";
-import { useTogglablesStateStore } from "@/stores/ModalsState";
+import { useRouter } from "vue-router";
 
 const props = defineProps<{
 	is_next: boolean;
@@ -26,6 +26,6 @@ const props = defineProps<{
 	style: string;
 }>();
 
-const togglableStore = useTogglablesStateStore();
-const { photoRoute } = usePhotoRoute(togglableStore);
+const router = useRouter();
+const { photoRoute } = usePhotoRoute(router);
 </script>
