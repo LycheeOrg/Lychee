@@ -60,38 +60,42 @@ return new class() extends Migration {
 function get_version(): array
 {
 	try {
-		$str_CurrentVersion = file_get_contents('version.md');
+		$str_current_version = file_get_contents('version.md');
 	} catch (FilesystemException) {
 		throw new Exception("unable to find current version number in version.md\n");
 	}
-	$arr_CurrentVersion = array_map('intval', explode('.', $str_CurrentVersion));
-	if (count($arr_CurrentVersion) !== 3) {
+	$arr_current_version = array_map('intval', explode('.', $str_current_version));
+	if (count($arr_current_version) !== 3) {
 		throw new Exception('invalid version number');
 	}
 
-	return $arr_CurrentVersion;
+	return $arr_current_version;
 }
 
 /**
  * Given the current version and the update array return the new version number.
  *
- * @param array<int,int> $curr_version current version number
+ * @param array<int,int> $current_version current version number
  * @param string         $kind         'minor' or 'major'
  *
  * @return array<int,int>
  */
-function new_version(array $curr_version, string $kind): array
+function new_version(array $current_version, string $kind): array
 {
-	$new_version = $curr_version;
+	$new_version = $current_version;
 	if ($kind === 'major') {
+		$new_version[0]++;
+		$new_version[1] = 0;
+		$new_version[2] = 0; 
+	} else if ($kind === 'minor') {
 		$new_version[1]++;
 		$new_version[2] = 0;
 	} else {
 		$new_version[2]++;
 	}
 
-	if ($curr_version[1] === 100 || $curr_version[2] === 100) {
-		throw new Exception('Maybe it is time for a big change?');
+	if ($current_version[1] === 100 || $current_version[2] === 100) {
+		throw new Exception('Maybe it is time for a big big change?');
 	}
 
 	return $new_version;
@@ -130,7 +134,7 @@ function does_migration_exists(string $version): void
 	}
 }
 
-$kind = $argv[1] ?? 'minor';
+$kind = $argv[1] ?? 'patch';
 
 try {
 	$cv = get_version();
@@ -141,10 +145,10 @@ try {
 
 	does_migration_exists($str_nv);
 
-	$fileName = sprintf('database/migrations/%s_bump_version%s.php', date('Y_m_d_His'), $str_nv);
-	$fileContent = sprintf($template, $str_nv, $str_cv);
+	$file_name = sprintf('database/migrations/%s_bump_version%s.php', date('Y_m_d_His'), $str_nv);
+	$file_content = sprintf($template, $str_nv, $str_cv);
 
-	file_put_contents($fileName, $fileContent);
+	file_put_contents($file_name, $file_content);
 	echo "Migration generated!\n";
 
 	file_put_contents('version.md', implode('.', $nv));
