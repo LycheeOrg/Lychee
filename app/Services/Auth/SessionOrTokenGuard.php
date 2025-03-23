@@ -337,9 +337,9 @@ class SessionOrTokenGuard extends SessionGuard
 
 		// Check if token starts with Bearer
 		$has_bearer = Str::startsWith('Bearer', $token);
-		/** @var bool $configLog */
+		/** @var bool $config_log */
 		$config_log = config('auth.token_guard.log_warn_no_scheme_bearer');
-		/** @var bool $configThrow */
+		/** @var bool $config_throw */
 		$config_throw = config('auth.token_guard.fail_bearer_authenticable_not_found', true);
 
 		// If Token does not start with Bearer
