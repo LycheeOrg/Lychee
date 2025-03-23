@@ -26,7 +26,7 @@ class PropagateSharingRequest extends BaseApiRequest implements HasBaseAlbum
 {
 	use HasBaseAlbumTrait;
 
-	public bool $shallOverride;
+	public bool $shall_override;
 
 	/**
 	 * {@inheritDoc}
@@ -52,7 +52,7 @@ class PropagateSharingRequest extends BaseApiRequest implements HasBaseAlbum
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->album = $this->albumFactory->findBaseAlbumOrFail($values[RequestAttribute::ALBUM_ID_ATTRIBUTE]);
-		$this->shallOverride = static::toBoolean($values[RequestAttribute::SHALL_OVERRIDE_ATTRIBUTE]);
+		$this->album = $this->album_factory->findBaseAlbumOrFail($values[RequestAttribute::ALBUM_ID_ATTRIBUTE]);
+		$this->shall_override = static::toBoolean($values[RequestAttribute::SHALL_OVERRIDE_ATTRIBUTE]);
 	}
 }

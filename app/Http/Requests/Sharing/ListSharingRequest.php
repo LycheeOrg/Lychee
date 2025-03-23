@@ -49,6 +49,6 @@ class ListSharingRequest extends BaseApiRequest implements HasBaseAlbum
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->album = $this->albumFactory->findBaseAlbumOrFail($values[RequestAttribute::ALBUM_ID_ATTRIBUTE]);
+		$this->album = $this->album_factory->findBaseAlbumOrFail($values[RequestAttribute::ALBUM_ID_ATTRIBUTE]);
 	}
 }

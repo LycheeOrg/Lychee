@@ -48,6 +48,6 @@ class DeletePhotosRequest extends BaseApiRequest implements HasPhotoIds
 		// As we are going to delete the photos anyway, we don't load the
 		// models for efficiency reasons.
 		// Instead, we use mass deletion via low-level SQL queries later.
-		$this->photoIds = $values[RequestAttribute::PHOTO_IDS_ATTRIBUTE];
+		$this->photo_ids = $values[RequestAttribute::PHOTO_IDS_ATTRIBUTE];
 	}
 }

@@ -23,9 +23,11 @@ use Illuminate\Support\Facades\Gate;
 class SetConfigsRequest extends BaseApiRequest implements HasConfigs
 {
 	use HasConfigsTrait;
+
 	/**
 	 * Indicates if the validator should stop on the first rule failure.
 	 * This is required because if the key is not valid then the value is irrelevant.
+	 * ! Do not snakeify this one.
 	 *
 	 * @var bool
 	 */
@@ -56,10 +58,10 @@ class SetConfigsRequest extends BaseApiRequest implements HasConfigs
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$editableConfigs = [];
+		$editable_configs = [];
 		foreach ($values[RequestAttribute::CONFIGS_ATTRIBUTE] as $config) {
-			$editableConfigs[] = new EditableConfigResource($config[RequestAttribute::CONFIGS_KEY_ATTRIBUTE], $config[RequestAttribute::CONFIGS_VALUE_ATTRIBUTE]);
+			$editable_configs[] = new EditableConfigResource($config[RequestAttribute::CONFIGS_KEY_ATTRIBUTE], $config[RequestAttribute::CONFIGS_VALUE_ATTRIBUTE]);
 		}
-		$this->configs = collect($editableConfigs);
+		$this->configs = collect($editable_configs);
 	}
 }

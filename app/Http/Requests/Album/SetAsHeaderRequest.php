@@ -53,7 +53,7 @@ class SetAsHeaderRequest extends BaseApiRequest implements HasAlbum, HasPhoto, H
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$album = $this->albumFactory->findBaseAlbumOrFail(
+		$album = $this->album_factory->findBaseAlbumOrFail(
 			$values[RequestAttribute::ALBUM_ID_ATTRIBUTE]
 		);
 
@@ -69,7 +69,7 @@ class SetAsHeaderRequest extends BaseApiRequest implements HasAlbum, HasPhoto, H
 		}
 
 		/** @var string $photoId */
-		$photoId = $values[RequestAttribute::HEADER_ID_ATTRIBUTE];
-		$this->photo = Photo::query()->findOrFail($photoId);
+		$photo_id = $values[RequestAttribute::HEADER_ID_ATTRIBUTE];
+		$this->photo = Photo::query()->findOrFail($photo_id);
 	}
 }

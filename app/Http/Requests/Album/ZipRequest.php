@@ -103,7 +103,7 @@ class ZipRequest extends BaseApiRequest implements HasAlbums, HasPhotos, HasSize
 		}
 
 		// TODO: `App\Actions\Album\Archive::compressAlbum` iterates over the original size variant of each photo in the album; we should eagerly load them for higher efficiency.
-		$this->albums = $this->albumFactory->findAbstractAlbumsOrFail($album_ids);
+		$this->albums = $this->album_factory->findAbstractAlbumsOrFail($album_ids);
 	}
 
 	/**
@@ -121,14 +121,14 @@ class ZipRequest extends BaseApiRequest implements HasAlbums, HasPhotos, HasSize
 			return;
 		}
 
-		$photoQuery = Photo::query()->with(['album']);
+		$photo_query = Photo::query()->with(['album']);
 		// The condition is required, because Lychee also supports to archive
 		// the "live video" as a size variant which is not a proper size variant
 		$variant = $this->sizeVariant->getSizeVariantType();
 		if ($variant !== null) { // NOT LIVE PHOTO
 			// If a proper size variant is requested, eagerly load the size
 			// variants but only the requested type due to efficiency reasons
-			$photoQuery = $photoQuery->with([
+			$photo_query = $photo_query->with([
 				'size_variants' => fn ($r) => $r->where('type', '=', $variant),
 			]);
 		}
@@ -137,6 +137,6 @@ class ZipRequest extends BaseApiRequest implements HasAlbums, HasPhotos, HasSize
 		// which is not assignable to `Collection<int,Photo>`; but as we query
 		// with an array of IDs we never get a single entity (even if the
 		// array only contains a single ID).
-		$this->photos = $photoQuery->findOrFail($photo_ids);
+		$this->photos = $photo_query->findOrFail($photo_ids);
 	}
 }

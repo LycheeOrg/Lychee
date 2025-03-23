@@ -40,7 +40,7 @@ final class AddPhotoRequest extends BaseApiRequest implements HasAbstractAlbum
 		$album_id = $values[RequestAttribute::ALBUM_ID_ATTRIBUTE];
 		$this->album = $album_id === null ?
 			null :
-			$this->albumFactory->findAbstractAlbumOrFail($album_id);
+			$this->album_factory->findAbstractAlbumOrFail($album_id);
 		// Convert the File Last Modified to seconds instead of milliseconds
 		$val = $values[RequestAttribute::FILE_LAST_MODIFIED_TIME] ?? null;
 		$this->fileLastModifiedTime = $val !== null ? intval($val) : null;

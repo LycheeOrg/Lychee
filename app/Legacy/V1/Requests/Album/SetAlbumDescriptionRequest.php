@@ -40,7 +40,7 @@ final class SetAlbumDescriptionRequest extends BaseApiRequest implements HasBase
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->album = $this->albumFactory->findBaseAlbumOrFail(
+		$this->album = $this->album_factory->findBaseAlbumOrFail(
 			$values[RequestAttribute::ALBUM_ID_ATTRIBUTE]
 		);
 		$this->description = $values[RequestAttribute::DESCRIPTION_ATTRIBUTE];

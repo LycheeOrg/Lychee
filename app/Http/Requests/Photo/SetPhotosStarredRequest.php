@@ -26,7 +26,7 @@ class SetPhotosStarredRequest extends BaseApiRequest implements HasPhotos
 
 	public const IS_STARRED_ATTRIBUTE = 'is_starred';
 
-	protected bool $isStarred = false;
+	protected bool $is_starred = false;
 
 	/**
 	 * {@inheritDoc}
@@ -45,14 +45,14 @@ class SetPhotosStarredRequest extends BaseApiRequest implements HasPhotos
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		/** @var array<int,string> $photosIDs */
-		$photosIDs = $values[RequestAttribute::PHOTO_IDS_ATTRIBUTE];
-		$this->photos = Photo::query()->findOrFail($photosIDs);
-		$this->isStarred = static::toBoolean($values[RequestAttribute::IS_STARRED_ATTRIBUTE]);
+		/** @var array<int,string> $photos_ids */
+		$photos_ids = $values[RequestAttribute::PHOTO_IDS_ATTRIBUTE];
+		$this->photos = Photo::query()->findOrFail($photos_ids);
+		$this->is_starred = static::toBoolean($values[RequestAttribute::IS_STARRED_ATTRIBUTE]);
 	}
 
 	public function isStarred(): bool
 	{
-		return $this->isStarred;
+		return $this->is_starred;
 	}
 }

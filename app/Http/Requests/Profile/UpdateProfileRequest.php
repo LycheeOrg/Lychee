@@ -23,7 +23,7 @@ class UpdateProfileRequest extends BaseApiRequest implements HasPassword
 {
 	use HasPasswordTrait;
 
-	protected string $oldPassword;
+	protected string $old_password;
 	protected ?string $username = null;
 	protected ?string $email = null;
 
@@ -54,7 +54,7 @@ class UpdateProfileRequest extends BaseApiRequest implements HasPassword
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		$this->password = $values[RequestAttribute::PASSWORD_ATTRIBUTE] ?? null;
-		$this->oldPassword = $values[RequestAttribute::OLD_PASSWORD_ATTRIBUTE];
+		$this->old_password = $values[RequestAttribute::OLD_PASSWORD_ATTRIBUTE];
 
 		$this->username = trim($values[RequestAttribute::USERNAME_ATTRIBUTE]);
 		$this->username = $this->username === '' ? null : $this->username;
@@ -73,7 +73,7 @@ class UpdateProfileRequest extends BaseApiRequest implements HasPassword
 	 */
 	public function oldPassword(): ?string
 	{
-		return $this->oldPassword;
+		return $this->old_password;
 	}
 
 	/**

@@ -40,7 +40,7 @@ final class SetAlbumCopyrightRequest extends BaseApiRequest implements HasBaseAl
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->album = $this->albumFactory->findBaseAlbumOrFail(
+		$this->album = $this->album_factory->findBaseAlbumOrFail(
 			$values[RequestAttribute::ALBUM_ID_ATTRIBUTE], false
 		);
 		$this->copyright = $values[RequestAttribute::COPYRIGHT_ATTRIBUTE];

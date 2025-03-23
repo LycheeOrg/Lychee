@@ -251,7 +251,7 @@ class PhotoController extends Controller
 
 		/** @var Photo $photo */
 		foreach ($request->photos() as $photo) {
-			if ($request->shallOverride) {
+			if ($request->shall_override) {
 				$photo->tags = $tags;
 			} else {
 				$photo->tags = array_unique(array_merge($photo->tags, $tags));

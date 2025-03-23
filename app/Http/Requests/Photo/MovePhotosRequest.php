@@ -43,11 +43,11 @@ class MovePhotosRequest extends BaseApiRequest implements HasPhotos, HasAlbum
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		/** @var array<int,string> $photosIss */
-		$photosIss = $values[RequestAttribute::PHOTO_IDS_ATTRIBUTE];
+		$photos_ids = $values[RequestAttribute::PHOTO_IDS_ATTRIBUTE];
 		$this->photos = Photo::query()
-			->findOrFail($photosIss);
+			->findOrFail($photos_ids);
 		/** @var string|null */
-		$targetAlbumID = $values[RequestAttribute::ALBUM_ID_ATTRIBUTE];
-		$this->album = $targetAlbumID === null ? null : Album::query()->findOrFail($targetAlbumID);
+		$target_album_id = $values[RequestAttribute::ALBUM_ID_ATTRIBUTE];
+		$this->album = $target_album_id === null ? null : Album::query()->findOrFail($target_album_id);
 	}
 }

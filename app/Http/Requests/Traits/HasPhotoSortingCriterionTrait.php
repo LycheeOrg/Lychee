@@ -12,13 +12,13 @@ use App\DTO\PhotoSortingCriterion;
 
 trait HasPhotoSortingCriterionTrait
 {
-	protected ?PhotoSortingCriterion $photoSortingCriterion = null;
+	protected ?PhotoSortingCriterion $photo_sorting_criterion = null;
 
 	/**
 	 * @return PhotoSortingCriterion|null
 	 */
 	public function photoSortingCriterion(): ?PhotoSortingCriterion
 	{
-		return $this->photoSortingCriterion;
+		return $this->photo_sorting_criterion;
 	}
 }

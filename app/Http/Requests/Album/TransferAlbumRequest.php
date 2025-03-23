@@ -56,6 +56,6 @@ class TransferAlbumRequest extends BaseApiRequest implements HasBaseAlbum, HasUs
 		// We don't need the full albums, just the IDs, so we don't load the
 		// models for efficiency reasons.
 		// Instead, we use mass deletion via low-level SQL queries later.
-		$this->album = $this->albumFactory->findBaseAlbumOrFail($values[RequestAttribute::ALBUM_ID_ATTRIBUTE]);
+		$this->album = $this->album_factory->findBaseAlbumOrFail($values[RequestAttribute::ALBUM_ID_ATTRIBUTE]);
 	}
 }

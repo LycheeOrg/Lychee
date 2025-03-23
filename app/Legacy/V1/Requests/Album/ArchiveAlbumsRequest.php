@@ -58,7 +58,7 @@ final class ArchiveAlbumsRequest extends BaseApiRequest implements HasAlbums
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		// TODO: `App\Actions\Album\Archive::compressAlbum` iterates over the original size variant of each photo in the album; we should eagerly load them for higher efficiency.
-		$this->albums = $this->albumFactory->findAbstractAlbumsOrFail(
+		$this->albums = $this->album_factory->findAbstractAlbumsOrFail(
 			explode(',', $values[RequestAttribute::ALBUM_IDS_ATTRIBUTE])
 		);
 	}

@@ -66,7 +66,7 @@ class EditSharingRequest extends BaseApiRequest implements HasAlbumIds, HasAcces
 		$id = $values[RequestAttribute::PERMISSION_ID];
 		$this->perm = AccessPermission::with(['album', 'user'])->findOrFail($id);
 
-		$this->permResource = new AccessPermissionResource(
+		$this->perm_resource = new AccessPermissionResource(
 			grants_edit: static::toBoolean($values[RequestAttribute::GRANTS_EDIT_ATTRIBUTE]),
 			grants_delete: static::toBoolean($values[RequestAttribute::GRANTS_DELETE_ATTRIBUTE]),
 			grants_download: static::toBoolean($values[RequestAttribute::GRANTS_DOWNLOAD_ATTRIBUTE]),

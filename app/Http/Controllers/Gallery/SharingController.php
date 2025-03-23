@@ -141,7 +141,7 @@ class SharingController extends Controller
 			throw new LycheeLogicException('Only albums can have any descandants.');
 		}
 
-		if ($request->shallOverride) {
+		if ($request->shall_override) {
 			$propagate->overwrite($album);
 		} else {
 			$propagate->update($album);
