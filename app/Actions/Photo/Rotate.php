@@ -22,6 +22,7 @@ use App\Exceptions\Internal\LycheeDomainException;
 use App\Exceptions\MediaFileUnsupportedException;
 use App\Image\Files\FlysystemFile;
 use App\Image\Handlers\ImageHandler;
+use App\Image\StreamStat;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 use Illuminate\Contracts\Container\BindingResolutionException;
@@ -109,6 +110,7 @@ class Rotate
 		// Create new target file for rotated original size variant,
 		// and stream it into the final place
 		$target_file = $this->naming_strategy->createFile(SizeVariantType::ORIGINAL);
+		/** @var StreamStat $stream_stat */
 		$stream_stat = $image->save($target_file, true);
 
 		// The checksum has been changed due to rotation.
@@ -126,7 +128,6 @@ class Rotate
 
 		// Re-create remaining size variants
 		try {
-			/** @var SizeVariantFactory $sizeVariantFactory */
 			$size_variant_factory = resolve(SizeVariantFactory::class);
 			$size_variant_factory->init($this->photo, $image, $this->naming_strategy);
 			$new_size_variants = $size_variant_factory->createSizeVariants();
@@ -167,7 +168,7 @@ class Rotate
 			// Deleting the size variants of the duplicates has also the
 			// advantage that the actual files are erased from storage.
 			$duplicate->size_variants->deleteAll();
-			/** @var SizeVariant $newSizeVariant */
+			/** @var SizeVariant $new_size_variant */
 			foreach ($new_size_variants as $new_size_variant) {
 				$duplicate->size_variants->create(
 					$new_size_variant->type,

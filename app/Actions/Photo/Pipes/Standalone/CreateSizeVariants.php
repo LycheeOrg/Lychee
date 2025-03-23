@@ -21,7 +21,6 @@ class CreateSizeVariants implements StandalonePipe
 		// extract a reference image
 		if ($state->source_image?->isLoaded()) {
 			try {
-				/** @var SizeVariantFactory $sizeVariantFactory */
 				$size_variant_factory = resolve(SizeVariantFactory::class);
 				$size_variant_factory->init($state->photo, $state->source_image, $state->naming_strategy);
 				$size_variant_factory->createSizeVariants();

@@ -44,7 +44,7 @@ class MapDataRequest extends BaseApiRequest implements HasAbstractAlbum
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		/** @var string|null $albumId */
+		/** @var string|null $album_id */
 		$album_id = $values[RequestAttribute::ALBUM_ID_ATTRIBUTE] ?? null;
 		$this->album = $this->album_factory->findNullalbleAbstractAlbumOrFail($album_id);
 	}

@@ -157,7 +157,7 @@ class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, H
 			return;
 		}
 
-		/** @var string|null $photoId */
+		/** @var string|null $photo_id */
 		$photo_id = $values[RequestAttribute::HEADER_ID_ATTRIBUTE];
 		$this->photo = $photo_id !== null ? Photo::query()->findOrFail($photo_id) : null;
 	}

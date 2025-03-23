@@ -151,7 +151,7 @@ interface MediaFile extends BinaryBlob
 	/**
 	 * Checks if the given MIME type designates a supported image type.
 	 *
-	 * @param string $mimeType the MIME type
+	 * @param string $mime_type the MIME type
 	 *
 	 * @return bool
 	 */
@@ -160,7 +160,7 @@ interface MediaFile extends BinaryBlob
 	/**
 	 * Checks if the given MIME type designates a supported video type.
 	 *
-	 * @param string $mimeType the MIME type
+	 * @param string $mime_type the MIME type
 	 *
 	 * @return bool
 	 */

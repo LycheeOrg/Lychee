@@ -12,11 +12,14 @@ use App\Contracts\PhotoCreate\StandalonePipe;
 use App\DTO\ImageDimension;
 use App\DTO\PhotoCreate\StandaloneDTO;
 use App\Enum\SizeVariantType;
+use App\Image\StreamStat;
 
 class CreateOriginalSizeVariant implements StandalonePipe
 {
 	public function handle(StandaloneDTO $state, \Closure $next): StandaloneDTO
 	{
+		/** @var StreamStat $stat */
+		$stat = $state->stream_stat;
 		// Create original size variant of photo
 		// If the image has been loaded (and potentially auto-rotated)
 		// take the dimension from the image.
@@ -29,7 +32,7 @@ class CreateOriginalSizeVariant implements StandalonePipe
 			SizeVariantType::ORIGINAL,
 			$state->target_file->getRelativePath(),
 			$image_dim,
-			$state->stream_stat->bytes
+			$stat->bytes
 		);
 
 		return $next($state);

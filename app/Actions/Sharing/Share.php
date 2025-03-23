@@ -16,7 +16,7 @@ class Share
 	/**
 	 * Create an access permission from a resource.
 	 *
-	 * @param AccessPermissionResource $accessPermissionResource
+	 * @param AccessPermissionResource $access_permission_resource
 	 * @param string                   $base_album_id
 	 *
 	 * @return AccessPermission

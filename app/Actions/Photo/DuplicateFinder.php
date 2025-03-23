@@ -52,7 +52,6 @@ class DuplicateFinder
 		bool $must_have_same_checksum,
 		bool $must_have_same_title,
 	): Collection {
-		/** @var Collection<int,object{album_id:string,album_title:string,photo_id:string,photo_title:string,checksum:string,short_path:string|null,storage_disk:string|null}> */
 		return $this->query($must_be_within_same_album, $must_have_same_checksum, $must_have_same_title)
 			->get();
 	}

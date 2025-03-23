@@ -27,7 +27,7 @@ class ListShare
 	 *                                    whom albums are shared
 	 * @param User|null      $owner       the optional owner of the albums
 	 *                                    which are shared
-	 * @param BaseAlbum|null $baseAlbum   the optional album which is shared
+	 * @param BaseAlbum|null $base_album  the optional album which is shared
 	 *
 	 * @return SharesResource
 	 *
@@ -38,7 +38,7 @@ class ListShare
 		try {
 			// Active shares, optionally filtered by album ID, participant ID
 			// and or owner ID
-			/** @var Collection<int,object{id:int,user_id:int,album_id:string,username:string,title:string}> $shared */
+			/** @var Collection<int, AccessPermission> $shared */
 			$shared = AccessPermission::query()->select([
 				APC::ACCESS_PERMISSIONS . '.id',
 				APC::ACCESS_PERMISSIONS . '.user_id',
@@ -57,7 +57,6 @@ class ListShare
 
 			// Existing albums which can be shared optionally filtered by
 			// album ID and/or owner ID
-			/** @var Collection<int,object{id:string,title:string}> $albums */
 			$albums = DB::table('base_albums')
 				->leftJoin('albums', 'albums.id', '=', 'base_albums.id')
 				->select(['base_albums.id', 'title', 'parent_id'])
@@ -70,14 +69,12 @@ class ListShare
 				$album->title = $this->breadcrumbPath($album);
 			});
 			$albums->each(function ($album): void {
-				/** @var object{parent_id:string,parent:object} $album */
 				unset($album->parent_id);
 				unset($album->parent);
 			});
 
 			// Existing users with whom an album can be shared optionally
 			// filtered by participant ID
-			/** @var Collection<int,object{id:int,username:string}> $users */
 			$users = DB::table('users')->select(['id', 'username'])
 				->when($participant !== null, fn ($q) => $q->where('id', '=', $participant->id))
 				->when($participant === null, fn ($q) => $q->where('may_administrate', '=', false))
@@ -107,7 +104,7 @@ class ListShare
 	{
 		$title = [$album->title];
 		$parent = $album->parent;
-		while ($parent) {
+		while (!is_null($parent)) {
 			array_unshift($title, $parent->title);
 			$parent = $parent->parent;
 		}

@@ -142,7 +142,7 @@ class Oauth
 
 		$user = Socialite::driver($provider->value)->user();
 
-		/** @var User $authedUser */
+		/** @var User $authed_user */
 		$authed_user = Auth::user();
 
 		$count_existing = OauthCredential::query()

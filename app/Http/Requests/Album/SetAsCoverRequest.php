@@ -60,7 +60,7 @@ class SetAsCoverRequest extends BaseApiRequest implements HasAlbum, HasPhoto
 		}
 
 		$this->album = $album;
-		/** @var string $photoId */
+		/** @var string $photo_id */
 		$photo_id = $values[RequestAttribute::PHOTO_ID_ATTRIBUTE];
 		$this->photo = Photo::query()->findOrFail($photo_id);
 	}
