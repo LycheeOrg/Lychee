@@ -19,23 +19,23 @@ class OptimizeDb extends BaseOptimizer
 	public function do(): array
 	{
 		$ret = ['Optimizing Database.'];
-		$driverName = $this->getDriverType($ret);
+		$driver_name = $this->getDriverType($ret);
 		/** @var array{name:string,schema:?string,size:int,comment:?string,collation:?string,engine:?string}[] */
 		$tables = Schema::getTables();
 
 		/** @var string|null $sql */
-		$sql = match ($driverName) {
+		$sql = match ($driver_name) {
 			DbDriverType::MYSQL => 'OPTIMIZE TABLE ',
 			DbDriverType::PGSQL => 'VACUUM(FULL, ANALYZE)',
 			DbDriverType::SQLITE => 'VACUUM',
 			default => null,
 		};
 
-		if ($driverName === DbDriverType::MYSQL) {
+		if ($driver_name === DbDriverType::MYSQL) {
 			foreach ($tables as $table) {
 				$this->execStatement($sql . $table['name'], $table['name'] . ' optimized.', $ret);
 			}
-		} elseif ($driverName !== null) {
+		} elseif ($driver_name !== null) {
 			$this->execStatement($sql, 'DB optimized.', $ret);
 		}
 

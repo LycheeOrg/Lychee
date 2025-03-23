@@ -164,9 +164,9 @@ class Oauth
 	/**
 	 * Save a credential for a user.
 	 *
-	 * @param OauthProvidersType $provider      of credential
+	 * @param OauthProvidersType $provider       of credential
 	 * @param int                $authed_user_id user ID already existing in the database
-	 * @param string             $oauth_id      oauth id on the Oauth server side
+	 * @param string             $oauth_id       oauth id on the Oauth server side
 	 *
 	 * @return void
 	 */
