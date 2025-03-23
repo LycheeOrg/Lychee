@@ -42,5 +42,5 @@ interface JsonRequest
 	 *               HTTP response and may be anything: a primitive type,
 	 *               an array or an object
 	 */
-	public function get_json(bool $useCache = false): mixed;
+	public function get_json(bool $use_cache = false): mixed;
 }

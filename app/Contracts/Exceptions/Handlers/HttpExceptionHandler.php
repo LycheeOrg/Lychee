@@ -28,13 +28,11 @@ interface HttpExceptionHandler
 	 * Note, this method is called by the framework after the framework
 	 * has already determined that the clients expects an HTML response.
 	 *
-	 * @param SymfonyResponse $defaultResponse the default response as it
-	 *                                         would be rendered by
-	 *                                         {@link \Illuminate\Foundation\Exceptions\Handler::renderHttpException()}
-	 * @param HttpException   $e               the exception to render to the
-	 *                                         client
+	 * @param SymfonyResponse $default_response the default response as it would be rendered by
+	 *                                          {@link \Illuminate\Foundation\Exceptions\Handler::renderHttpException()}
+	 * @param HttpException   $e                the exception to render to the client
 	 *
 	 * @return SymfonyResponse
 	 */
-	public function renderHttpException(SymfonyResponse $defaultResponse, HttpException $e): SymfonyResponse;
+	public function renderHttpException(SymfonyResponse $default_response, HttpException $e): SymfonyResponse;
 }

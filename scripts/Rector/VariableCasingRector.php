@@ -48,15 +48,15 @@ final class VariableCasingRector extends AbstractRector
 			return null;
 		}
 
-		$camelCasedName = Str::snake($node->name);
+		$camel_cased_name = Str::snake($node->name);
 
 		// Skip if it's already in the correct format
-		if ($camelCasedName === $node->name) {
+		if ($camel_cased_name === $node->name) {
 			return null;
 		}
 
 		// Rename the variable
-		$node->name = $camelCasedName;
+		$node->name = $camel_cased_name;
 
 		return $node;
 	}

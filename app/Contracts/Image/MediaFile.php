@@ -43,14 +43,14 @@ interface MediaFile extends BinaryBlob
 	 * The freshly written content can immediately be read back via
 	 * {@link MediaFile::read} without closing the file in between.
 	 *
-	 * @param resource $stream            the input stream which provides the input to write
-	 * @param bool     $collectStatistics if true, the method returns statistics about the stream
+	 * @param resource $stream             the input stream which provides the input to write
+	 * @param bool     $collect_statistics if true, the method returns statistics about the stream
 	 *
 	 * @return ?StreamStats optional statistics about the stream, if requested
 	 *
 	 * @throws MediaFileOperationException
 	 */
-	public function write($stream, bool $collectStatistics = false): ?StreamStats;
+	public function write($stream, bool $collect_statistics = false): ?StreamStats;
 
 	/**
 	 * Deletes the file.
@@ -71,13 +71,13 @@ interface MediaFile extends BinaryBlob
 	 * Note, that the path is interpreted relative to the "mount" point of
 	 * the underlying filesystem implementation.
 	 *
-	 * @param string $newPath
+	 * @param string $new_path
 	 *
 	 * @return void
 	 *
 	 * @throws MediaFileOperationException
 	 */
-	public function move(string $newPath): void;
+	public function move(string $new_path): void;
 
 	/** Checks if the file exists.
 	 *
@@ -155,7 +155,7 @@ interface MediaFile extends BinaryBlob
 	 *
 	 * @return bool
 	 */
-	public static function isSupportedImageMimeType(string $mimeType): bool;
+	public static function isSupportedImageMimeType(string $mime_type): bool;
 
 	/**
 	 * Checks if the given MIME type designates a supported video type.
@@ -164,7 +164,7 @@ interface MediaFile extends BinaryBlob
 	 *
 	 * @return bool
 	 */
-	public static function isSupportedVideoMimeType(string $mimeType): bool;
+	public static function isSupportedVideoMimeType(string $mime_type): bool;
 
 	/**
 	 * Checks if the given file extension is a supported image extension.

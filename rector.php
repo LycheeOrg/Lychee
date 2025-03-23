@@ -29,5 +29,8 @@ $rectorConfig->withRules([
         __DIR__ . '/app/Assets/ArrayToTextTable.php',
     ],
     __DIR__ . '/app/Metadata/Laminas/Unicode.php',
+
+    // Ignore all the test directory for now...
+    __DIR__ . '/tests/*'
 ]);
 return $rectorConfig;

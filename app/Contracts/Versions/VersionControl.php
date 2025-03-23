@@ -16,12 +16,12 @@ interface VersionControl
 	/**
 	 * Hydrate the Remote Data.
 	 *
-	 * @param bool $withRemote
-	 * @param bool $useCache
+	 * @param bool $with_remote
+	 * @param bool $use_cache
 	 *
 	 * @return void
 	 */
-	public function hydrate(bool $withRemote = true, bool $useCache = true): void;
+	public function hydrate(bool $with_remote = true, bool $use_cache = true): void;
 
 	/**
 	 * are we up to date.
