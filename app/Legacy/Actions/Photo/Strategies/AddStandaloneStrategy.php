@@ -75,8 +75,6 @@ class AddStandaloneStrategy extends AbstractAddStrategy
 	}
 
 	/**
-	 * @return Photo
-	 *
 	 * @throws LycheeException
 	 */
 	public function do(): Photo

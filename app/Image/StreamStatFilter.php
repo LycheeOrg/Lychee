@@ -30,7 +30,7 @@ class StreamStatFilter extends \php_user_filter
 	 */
 	public function filter($in, $out, &$consumed, bool $closing): int
 	{
-		while ($bucket = stream_bucket_make_writeable($in)) {
+		while (($bucket = stream_bucket_make_writeable($in)) !== null) {
 			$consumed += $bucket->datalen;
 			if ($this->params instanceof StreamStat) {
 				$this->params->bytes += $bucket->datalen;

@@ -63,7 +63,6 @@ class ProcessImageJob implements ShouldQueue
 
 		$this->album_id = null;
 
-		/** @var AbstractAlbum|null */
 		$album = null;
 
 		if (is_string($abstract_album)) {
@@ -72,6 +71,7 @@ class ProcessImageJob implements ShouldQueue
 			$album = $abstract_album;
 		}
 
+		/** @var Album|TagAlbum $album */
 		$this->album_id = $album?->id;
 		$album_name = $album?->title ?? __('gallery.smart_album.unsorted');
 		$user_id = Auth::user()?->id;
@@ -129,10 +129,6 @@ class ProcessImageJob implements ShouldQueue
 
 	/**
 	 * Catch failures.
-	 *
-	 * @param \Throwable $th
-	 *
-	 * @return void
 	 */
 	public function failed(\Throwable $th): void
 	{
