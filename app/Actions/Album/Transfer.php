@@ -16,9 +16,6 @@ class Transfer
 {
 	/**
 	 * Moves the given albums into the target.
-	 *
-	 * @param BaseAlbum $baseAlbum
-	 * @param int       $userId
 	 */
 	public function do(BaseAlbum $base_album, int $user_id): void
 	{

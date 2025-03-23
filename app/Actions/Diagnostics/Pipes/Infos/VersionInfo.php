@@ -37,7 +37,7 @@ class VersionInfo implements DiagnosticStringPipe
 	 */
 	public function handle(array &$data, \Closure $next): array
 	{
-		/** @var VersionChannelType $channelName */
+		/** @var VersionChannelType $channel_name */
 		$channel_name = $this->getChannelName();
 		$lychee_info_string = $this->file_version->getVersion()->toString();
 

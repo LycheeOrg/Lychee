@@ -42,18 +42,18 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class Exec
 {
-	protected ImportMode $importMode;
-	protected PhotoCreate $photoCreate;
-	protected AlbumCreate $albumCreate;
-	protected bool $enableCLIFormatting = false;
-	protected int $memLimit = 0;
-	protected bool $memWarningGiven = false;
-	private bool $firstReportGiven = false;
+	protected ImportMode $import_mode;
+	protected PhotoCreate $photo_create;
+	protected AlbumCreate $album_create;
+	protected bool $enable_cli_formatting = false;
+	protected int $mem_limit = 0;
+	protected bool $mem_warning_given = false;
+	private bool $first_report_given = false;
 
 	/**
-	 * @param ImportMode $importMode          the import mode
-	 * @param bool       $enableCLIFormatting determines whether the output shall be formatted for CLI or as JSON
-	 * @param int        $memLimit            the threshold when a memory warning shall be reported; `0` means unlimited
+	 * @param ImportMode $import_mode           the import mode
+	 * @param bool       $enable_cli_formatting determines whether the output shall be formatted for CLI or as JSON
+	 * @param int        $mem_limit             the threshold when a memory warning shall be reported; `0` means unlimited
 	 */
 	public function __construct(
 		ImportMode $import_mode,
@@ -62,11 +62,11 @@ class Exec
 		int $mem_limit = 0)
 	{
 		Session::forget('cancel');
-		$this->importMode = $import_mode;
-		$this->photoCreate = new PhotoCreate($import_mode, $intended_owner_id);
-		$this->albumCreate = new AlbumCreate($intended_owner_id);
-		$this->enableCLIFormatting = $enable_cli_formatting;
-		$this->memLimit = $mem_limit;
+		$this->import_mode = $import_mode;
+		$this->photo_create = new PhotoCreate($import_mode, $intended_owner_id);
+		$this->album_create = new AlbumCreate($intended_owner_id);
+		$this->enable_cli_formatting = $enable_cli_formatting;
+		$this->mem_limit = $mem_limit;
 	}
 
 	/**
@@ -92,13 +92,13 @@ class Exec
 	 */
 	private function report(BaseImportReport $report): void
 	{
-		if (!$this->enableCLIFormatting) {
+		if (!$this->enable_cli_formatting) {
 			try {
-				if ($this->firstReportGiven) {
+				if ($this->first_report_given) {
 					echo ',';
 				}
 				echo $report->toJson();
-				$this->firstReportGiven = true;
+				$this->first_report_given = true;
 				if (ob_get_level() > 0) {
 					ob_flush();
 				}
@@ -230,9 +230,9 @@ class Exec
 
 	private function memWarningCheck(): void
 	{
-		if ($this->memLimit !== 0 && !$this->memWarningGiven && memory_get_usage() > $this->memLimit) {
+		if ($this->mem_limit !== 0 && !$this->mem_warning_given && memory_get_usage() > $this->mem_limit) {
 			$this->report(ImportEventReport::createWarning('mem_limit', null, 'Approaching memory limit'));
-			$this->memWarningGiven = true;
+			$this->mem_warning_given = true;
 		}
 	}
 
@@ -261,7 +261,7 @@ class Exec
 	 *  and what was not.
 	 *
 	 * @param string     $path
-	 * @param Album|null $parentAlbum
+	 * @param Album|null $parent_album
 	 * @param string[]   $ignore_list
 	 */
 	public function do(
@@ -326,7 +326,7 @@ class Exec
 				$files_count++;
 
 				try {
-					$this->photoCreate->add(new NativeLocalFile($file), $parent_album);
+					$this->photo_create->add(new NativeLocalFile($file), $parent_album);
 				} catch (\Throwable $e) {
 					$this->report(ImportEventReport::createFromException($e, $file));
 				}
@@ -337,7 +337,7 @@ class Exec
 			foreach ($dirs as $dir) {
 				$this->assertImportNotCancelled();
 				/** @var Album|null */
-				$album = $this->importMode->shallSkipDuplicates ?
+				$album = $this->import_mode->shall_skip_duplicates ?
 					Album::query()
 						->select(['albums.*'])
 						->join('base_albums', 'base_albums.id', '=', 'albums.id')
@@ -346,7 +346,7 @@ class Exec
 						->first() :
 					null;
 				if ($album === null) {
-					$album = $this->albumCreate->create(basename($dir), $parent_album);
+					$album = $this->album_create->create(basename($dir), $parent_album);
 				}
 				$this->do($dir . '/', $album, $ignore_list);
 			}

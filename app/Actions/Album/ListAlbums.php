@@ -25,9 +25,6 @@ class ListAlbums
 	private const SHORTEN_BY = 80;
 
 	/**
-	 * @param Collection<int,Album> $albumsFiltering
-	 * @param string|null           $parent_id
-	 *
 	 * @return TAlbumSaved[]
 	 */
 	public function do(Collection $albums_filtering, ?string $parent_id): array
@@ -84,7 +81,7 @@ class ListAlbums
 	 */
 	private function flatten($collection, $prefix = ''): array
 	{
-		/** @var TAlbumSaved[] $flatArray */
+		/** @var TAlbumSaved[] $flat_array */
 		$flat_array = [];
 		foreach ($collection as $node) {
 			$title = $prefix . ($prefix !== '' ? '/' : '') . $node->title;
@@ -131,7 +128,6 @@ class ListAlbums
 		}
 
 		$title_split = $title_split->take($num_chunks);
-		/** @var Collection<int,int> $title_lengths */
 		$title_lengths = $title_split->map(fn ($v) => strlen($v));
 
 		// find best target length.

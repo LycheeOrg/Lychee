@@ -22,11 +22,6 @@ use Illuminate\Support\Facades\Hash;
 class SetProtectionPolicy
 {
 	/**
-	 * @param BaseAlbum             $album
-	 * @param AlbumProtectionPolicy $protectionPolicy
-	 * @param bool                  $shallSetPassword
-	 * @param string|null           $password
-	 *
 	 * @return void
 	 *
 	 * @throws InvalidPropertyException
