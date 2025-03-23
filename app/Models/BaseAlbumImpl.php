@@ -207,11 +207,6 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	 */
 	protected $with = ['owner', 'access_permissions'];
 
-	/**
-	 * @param $query
-	 *
-	 * @return BaseAlbumImplBuilder
-	 */
 	public function newEloquentBuilder($query): BaseAlbumImplBuilder
 	{
 		return new BaseAlbumImplBuilder($query);
@@ -255,8 +250,6 @@ class BaseAlbumImpl extends Model implements HasRandomID
 
 	/**
 	 * Returns the relationship between an album and its associated current user permissions.
-	 *
-	 * @return ?AccessPermission
 	 */
 	public function current_user_permissions(): AccessPermission|null
 	{
@@ -265,8 +258,6 @@ class BaseAlbumImpl extends Model implements HasRandomID
 
 	/**
 	 * Returns the relationship between an album and its associated public permissions.
-	 *
-	 * @return ?AccessPermission
 	 */
 	public function public_permissions(): AccessPermission|null
 	{
@@ -293,8 +284,6 @@ class BaseAlbumImpl extends Model implements HasRandomID
 
 	/**
 	 * Defines accessor for the Aspect Ratio.
-	 *
-	 * @return PhotoLayoutType|null
 	 */
 	protected function getPhotoLayoutAttribute(): ?PhotoLayoutType
 	{
@@ -303,10 +292,6 @@ class BaseAlbumImpl extends Model implements HasRandomID
 
 	/**
 	 * Defines setter for Aspect Ratio.
-	 *
-	 * @param PhotoLayoutType|null $aspectRatio
-	 *
-	 * @return void
 	 */
 	protected function setPhotoLayoutAttribute(?PhotoLayoutType $aspect_ratio): void
 	{
@@ -315,8 +300,6 @@ class BaseAlbumImpl extends Model implements HasRandomID
 
 	/**
 	 * Defines accessor for the Photo Timeline.
-	 *
-	 * @return TimelinePhotoGranularity|null
 	 */
 	protected function getPhotoTimelineAttribute(): ?TimelinePhotoGranularity
 	{
@@ -325,10 +308,6 @@ class BaseAlbumImpl extends Model implements HasRandomID
 
 	/**
 	 * Defines setter for Photo Timeline.
-	 *
-	 * @param TimelinePhotoGranularity|null $photo_timeline
-	 *
-	 * @return void
 	 */
 	protected function setPhotoTimelineAttribute(?TimelinePhotoGranularity $photo_timeline): void
 	{

@@ -26,3 +26,4 @@ parameters:
 		- '#Dynamic call to static method Illuminate\\.*#'
 		- '#Dynamic call to static method App\\Models\\Builders.*#'
 		- '#Dynamic call to static method App\\Eloquent\\FixedQueryBuilder.*#'
+		- '#PHPDoc tag @var with type App\\Contracts\\Models\\AbstractAlbum*#' # TODO:// figure out how the inheritance between the traits work and remove this

@@ -8,7 +8,6 @@
 
 namespace App\Relations;
 
-use App\DTO\SortingCriterion;
 use App\Eloquent\FixedQueryBuilder;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Models\Album;
@@ -33,9 +32,6 @@ abstract class BaseHasManyPhotos extends Relation
 {
 	protected PhotoQueryPolicy $photo_query_policy;
 
-	/**
-	 * @param TagAlbum|Album $owning_album
-	 */
 	public function __construct(TagAlbum|Album $owning_album)
 	{
 		// Sic! We must initialize attributes of this class before we call

@@ -19,8 +19,6 @@ class DiskUsage
 {
 	/**
 	 * Returns true if the current system is windows.
-	 *
-	 * @return bool
 	 */
 	public function is_win(): bool
 	{
@@ -31,10 +29,6 @@ class DiskUsage
 
 	/**
 	 * from https://stackoverflow.com/questions/478121/how-to-get-directory-size-in-php.
-	 *
-	 * @param string $dir
-	 *
-	 * @return int
 	 */
 	public function getTotalSize(string $dir): int
 	{
@@ -53,6 +47,7 @@ class DiskUsage
 			else {
 				if (extension_loaded('com_dotnet')) {
 					$obj = new \COM('scripting.filesystemobject');
+					/** @phpstan-ignore-next-line phpstan does not know about com_extension & its methods*/
 					$ref = $obj->getfolder($dir);
 					$total_size = $ref->size;
 					$obj = null;
@@ -74,8 +69,6 @@ class DiskUsage
 
 	/**
 	 * Return the total space available on / (we assume we run on / ).
-	 *
-	 * @return string
 	 */
 	public function get_total_space(): string
 	{
@@ -87,8 +80,6 @@ class DiskUsage
 
 	/**
 	 * Return the free space available on / (we assume we run on / ).
-	 *
-	 * @return string
 	 */
 	public function get_free_space(): string
 	{
@@ -100,8 +91,6 @@ class DiskUsage
 
 	/**
 	 * Return the percentage of free space available on / (we assume we run on / ).
-	 *
-	 * @return string
 	 */
 	public function get_free_percent(): string
 	{
@@ -114,8 +103,6 @@ class DiskUsage
 
 	/**
 	 * Return the space taken by the Lychee installation.
-	 *
-	 * @return string
 	 */
 	public function get_lychee_space(): string
 	{
@@ -126,8 +113,6 @@ class DiskUsage
 
 	/**
 	 * Return the space taken by the upload folder (Big, Medium, Small, Thumbs).
-	 *
-	 * @return string
 	 */
 	public function get_lychee_upload_space(): string
 	{

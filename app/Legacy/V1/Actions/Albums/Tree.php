@@ -18,7 +18,6 @@ use App\Legacy\V1\Resources\Collections\AlbumForestResource;
 use App\Models\Album;
 use App\Models\Extensions\SortingDecorator;
 use App\Policies\AlbumQueryPolicy;
-use Illuminate\Support\Collection as BaseCollection;
 use Illuminate\Support\Facades\Auth;
 use Kalnoy\Nestedset\Collection as NsCollection;
 
@@ -38,8 +37,6 @@ final class Tree
 	}
 
 	/**
-	 * @return AlbumForestResource
-	 *
 	 * @throws InternalLycheeException
 	 */
 	public function get(): AlbumForestResource

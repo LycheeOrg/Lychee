@@ -105,8 +105,6 @@ class AlbumBuilder extends NSQueryBuilder
 	 * This makes use of nested set, which means that ALL the sub albums are considered.
 	 * Do note that no visibility filters are applied.
 	 *
-	 * @return Builder
-	 *
 	 * @throws \InvalidArgumentException
 	 */
 	private function getTakenAtSQL(): Builder
@@ -208,9 +206,6 @@ class AlbumBuilder extends NSQueryBuilder
 	 * Apply Visibiltiy conditions.
 	 * This a simplified version of PhotoQueryPolicy::applyVisibilityFilter().
 	 *
-	 * @param Builder          $countQuery
-	 * @param AlbumQueryPolicy $album_query_policy
-	 *
 	 * @return Builder Query with the visibility requirements applied
 	 */
 	private function applyVisibilityConditioOnPhotos(Builder $count_query, AlbumQueryPolicy $album_query_policy): Builder
@@ -254,8 +249,6 @@ class AlbumBuilder extends NSQueryBuilder
 
 	/**
 	 * Scope limits query to select just root node.
-	 *
-	 * @return AlbumBuilder
 	 */
 	public function whereIsRoot(): AlbumBuilder
 	{
