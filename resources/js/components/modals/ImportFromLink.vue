@@ -1,7 +1,7 @@
 <template>
 	<Dialog v-model:visible="visible" modal :dismissable-mask="true" pt:root:class="border-none" @hide="closeCallback">
 		<template #container="{ closeCallback }">
-			<div class="flex flex-col gap-4 bg-gradient-to-b from-bg-300 to-bg-400 relative max-w-full rounded-md text-muted-color">
+			<div class="flex flex-col gap-4 bg-gradient-to-b from-bg-300 to-bg-400 relative max-w-md w-full rounded-md text-muted-color">
 				<div class="p-9">
 					<p class="mb-5 text-muted-color-emphasis text-base">{{ $t("dialogs.import_from_link.instructions") }}</p>
 					<form>

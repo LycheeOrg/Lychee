@@ -7,7 +7,7 @@
 		v-if="!isWebAuthnUnavailable"
 	>
 		<template #container="{ closeCallback }">
-			<form v-focustrap class="flex flex-col gap-4 relative max-w-full text-sm rounded-md pt-9">
+			<form v-focustrap class="flex flex-col gap-4 relative max-w-md w-full text-sm rounded-md pt-9">
 				<div class="inline-flex flex-col gap-2 px-9">
 					<FloatLabel variant="on">
 						<InputText id="username" v-model="username" />
