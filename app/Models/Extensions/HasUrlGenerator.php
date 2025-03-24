@@ -44,20 +44,20 @@ trait HasUrlGenerator
 			return 'data:image/webp;base64,' . $short_path;
 		}
 
-		if (
-			!Configs::getValueAsBool('SL_enable') ||
-			(!Configs::getValueAsBool('SL_for_admin') && Auth::user()?->may_administrate === true)
-		) {
-			/** @disregard P1013 */
-			return $image_disk->url($short_path);
-		}
-
 		/** @disregard P1013 */
 		$storage_adapter = $image_disk->getAdapter();
 		if ($storage_adapter instanceof AwsS3V3Adapter) {
 			// @codeCoverageIgnoreStart
 			return self::getAwsUrl($short_path, $storage_disk);
 			// @codeCoverageIgnoreEnd
+		}
+
+		if (
+			!Configs::getValueAsBool('SL_enable') ||
+			(!Configs::getValueAsBool('SL_for_admin') && Auth::user()?->may_administrate === true)
+		) {
+			/** @disregard P1013 */
+			return $image_disk->url($short_path);
 		}
 
 		return null;
