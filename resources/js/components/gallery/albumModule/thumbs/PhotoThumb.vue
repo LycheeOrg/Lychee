@@ -1,7 +1,7 @@
 <template>
 	<a
 		:class="{
-			'photo group shadow-md shadow-black/25 animate-zoomIn transition-all ease-in duration-200 block absolute': true,
+			'photo group shadow-md shadow-black/25 animate-zoomIn transition-all ease-in duration-200 block absolute cursor-pointer': true,
 			'outline outline-1.5 outline-primary-500': props.isSelected,
 		}"
 		:data-width="props.photo.size_variants.original?.width"
