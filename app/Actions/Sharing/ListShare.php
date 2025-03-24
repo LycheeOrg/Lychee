@@ -104,7 +104,7 @@ class ListShare
 	{
 		$title = [$album->title];
 		$parent = $album->parent;
-		while (!is_null($parent)) {
+		while ($parent !== null) {
 			array_unshift($title, $parent->title);
 			$parent = $parent->parent;
 		}
