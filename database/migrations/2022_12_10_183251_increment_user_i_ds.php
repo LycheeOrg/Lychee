@@ -38,6 +38,7 @@ return new class() extends Migration {
 		}
 
 		/** @var App\Models\User $user */
+		/** @phpstan-ignore varTag.type (false positive: https://github.com/phpstan/phpstan/issues/11805) */
 		foreach (DB::table('users')->orderByDesc('id')->get() as $user) {
 			$oldID = $user->id;
 			$newID = $oldID + 1;

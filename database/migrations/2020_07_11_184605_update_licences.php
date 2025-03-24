@@ -49,7 +49,7 @@ return new class() extends Migration {
 
 		// Get all CC licences
 		/** @var Collection<int,object{id:string,license:string}> $photos */
-		$photos = DB::table('photos')->where('license', 'like', 'CC-%')->get();
+		$photos = DB::table('photos')->where('license', 'like', 'CC-%')->get(); /** @phpstan-ignore varTag.type (false positive: https://github.com/phpstan/phpstan/issues/11805) */
 		if ($photos->isEmpty()) {
 			return;
 		}
@@ -65,7 +65,7 @@ return new class() extends Migration {
 	{
 		// Get all CC licences
 		/** @var Collection<int,object{id:string,license:string}> $photos */
-		$photos = DB::table('photos')->where('license', 'like', 'CC-%')->get();
+		$photos = DB::table('photos')->where('license', 'like', 'CC-%')->get(); /** @phpstan-ignore varTag.type (false positive: https://github.com/phpstan/phpstan/issues/11805) */
 		if ($photos->isEmpty()) {
 			return;
 		}

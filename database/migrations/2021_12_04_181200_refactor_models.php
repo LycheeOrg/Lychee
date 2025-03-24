@@ -1392,7 +1392,7 @@ return new class() extends Migration {
 			 * Iterate over all size variants and ensure that they are named
 			 * as expected by the old naming scheme.
 			 *
-			 * @var object $sizeVariant
+			 * @var object&\stdClass $sizeVariant
 			 */
 			foreach ($sizeVariants as $sizeVariant) {
 				$fileExtension = '.' . pathinfo($sizeVariant->short_path, PATHINFO_EXTENSION);
@@ -1989,7 +1989,7 @@ return new class() extends Migration {
 		// `_lft` and `_rgt`
 		RefactorAlbumModel_AlbumModel::query()->fixTree();
 
-		if (!$isConsistent) {
+		if ($isConsistent === 0) {
 			$this->printError('Your database is inconsistent and not fit for migration. Please fix your DB manually first.');
 			throw new \RuntimeException('Inconsistent DB');
 		}

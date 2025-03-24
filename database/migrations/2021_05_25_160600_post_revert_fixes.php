@@ -11,6 +11,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\LazyCollection;
 
 return new class() extends Migration {
 	private const SQL_DATETIME_FORMAT = 'Y-m-d H:i:s';
@@ -62,7 +63,8 @@ return new class() extends Migration {
 		});
 
 		DB::beginTransaction();
-		/** @var array<int,object{id:int,created_at:string|null,taken_at:string|null,taken_at_orig_tz:string|null,updated_at:string|null}> */
+		/** @var LazyCollection<int,object{id:int,created_at:string|null,taken_at:string|null,taken_at_orig_tz:string|null,updated_at:string|null}> */
+		/** @phpstan-ignore varTag.type (false positive: https://github.com/phpstan/phpstan/issues/11805) */
 		$photos = DB::table(self::PHOTOS_TABLE_NAME)->select([
 			self::ID_COL_NAME,
 			self::PHOTO_CREATED_AT_COL_NAME,

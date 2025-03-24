@@ -4,7 +4,9 @@ includes:
 	- phpstan-baseline.neon
 parameters:
 	level: 2
-	treatPhpDocTypesAsCertain: false
+	tips:
+		treatPhpDocTypesAsCertain: false
+	treatPhpDocTypesAsCertain: true
 	paths:
 		- app
 		- config
