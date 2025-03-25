@@ -12,7 +12,6 @@ use App\Exceptions\Internal\LycheeDomainException;
 use App\Exceptions\Internal\LycheeInvalidArgumentException;
 use App\Exceptions\Internal\MissingModelAttributeException;
 use App\Models\Extensions\UTCBasedTimes;
-use App\Models\Photo;
 use Carbon\Exceptions\InvalidFormatException;
 use Carbon\Exceptions\InvalidTimeZoneException;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
@@ -36,10 +35,10 @@ class DateTimeWithTimezoneCast implements CastsAttributes
 	 * $key . '_orig_tz' and which stores the original timezone of the
 	 * (key, value)-pair at hand.
 	 *
-	 * @param Photo               $model      the associated model class // it should be only Model instance, but phpstan does not see the trait UTCBasedTimes applied to it
-	 * @param string              $key        the name of the SQL column holding the datetime
-	 * @param mixed               $value      the SQL datetime string
-	 * @param array<string,mixed> $attributes all SQL attributes of the entity
+	 * @param Model&\App\Contracts\Models\UTCBasedTimes $model      the associated model class // it should be only Model instance, but phpstan does not see the trait UTCBasedTimes applied to it
+	 * @param string                                    $key        the name of the SQL column holding the datetime
+	 * @param mixed                                     $value      the SQL datetime string
+	 * @param array<string,mixed>                       $attributes all SQL attributes of the entity
 	 *
 	 * @return Carbon|null The Carbon object with a properly set timezone
 	 *
