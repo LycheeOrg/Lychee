@@ -38,6 +38,7 @@ final class MovePhotosRequest extends BaseApiRequest implements HasPhotos, HasAl
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
+		/** @var array<int,string> $photos_ids */
 		$photos_ids = $values[RequestAttribute::PHOTO_IDS_ATTRIBUTE];
 		$this->photos = Photo::query()
 			->findOrFail($photos_ids);
