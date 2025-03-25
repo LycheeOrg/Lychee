@@ -16,7 +16,7 @@ class ArtisanKeyGenerate extends AbstractUpdateInstallerPipe
 	/**
 	 * {@inheritDoc}
 	 */
-	public function handle(array &$output, \Closure $next): array
+	public function handle(array $output, \Closure $next): array
 	{
 		Artisan::call('key:generate', ['--force' => true]);
 

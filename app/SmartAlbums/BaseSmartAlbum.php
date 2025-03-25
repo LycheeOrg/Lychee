@@ -40,7 +40,7 @@ use Illuminate\Database\Eloquent\Model;
  * Photos belong to these albums due to certain properties like being
  * starred, being recently added, etc.
  */
-abstract class BaseSmartAlbum extends Model implements AbstractAlbum
+abstract class BaseSmartAlbum implements AbstractAlbum
 {
 	use MimicModel;
 	use UTCBasedTimes;
@@ -74,8 +74,6 @@ abstract class BaseSmartAlbum extends Model implements AbstractAlbum
 			throw new FrameworkException('Laravel\'s service container', $e);
 		}
 		// @codeCoverageIgnoreEnd
-
-		parent::__construct();
 	}
 
 	/**

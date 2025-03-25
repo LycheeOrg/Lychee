@@ -100,16 +100,11 @@ class AlbumFactory
 			$tag_album_query->with(['photos']);
 		}
 
-		try {
-			/** @disregard P1006 */
-			return $album_query->findOrFail($album_id);
-		} catch (ModelNotFoundException) {
-			try {
-				return $tag_album_query->findOrFail($album_id);
-			} catch (ModelNotFoundException) {
-				throw (new ModelNotFoundException())->setModel(BaseAlbumImpl::class, [$album_id]);
-			}
+		$ret = $album_query->find($album_id) ?? $tag_album_query->find($album_id);
+		if ($ret === null) {
+			throw (new ModelNotFoundException())->setModel(BaseAlbumImpl::class, [$album_id]);
 		}
+		return $ret;
 	}
 
 	/**

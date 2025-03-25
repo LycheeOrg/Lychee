@@ -85,17 +85,17 @@ class TagAlbum extends BaseAlbum
 	];
 
 	/**
-	 * @var array<int,string> The list of attributes which exist as columns of the DB
-	 *                        relation but shall not be serialized to JSON
+	 * @var list<string> The list of attributes which exist as columns of the DB
+	 *                   relation but shall not be serialized to JSON
 	 */
 	protected $hidden = [
 		'base_class', // don't serialize base class as a relation, the attributes of the base class are flatly merged into the JSON result
 	];
 
 	/**
-	 * @var array<int,string> The list of "virtual" attributes which do not exist as
-	 *                        columns of the DB relation but which shall be appended to
-	 *                        JSON from accessors
+	 * @var list<string> The list of "virtual" attributes which do not exist as
+	 *                   columns of the DB relation but which shall be appended to
+	 *                   JSON from accessors
 	 */
 	protected $appends = [
 		'thumb',

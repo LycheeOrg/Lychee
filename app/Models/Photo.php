@@ -169,8 +169,8 @@ class Photo extends Model
 	];
 
 	/**
-	 * @var array<int,string> The list of attributes which exist as columns of the DB
-	 *                        relation but shall not be serialized to JSON
+	 * @var list<string> The list of attributes which exist as columns of the DB
+	 *                   relation but shall not be serialized to JSON
 	 */
 	protected $hidden = [
 		RandomID::LEGACY_ID_NAME,

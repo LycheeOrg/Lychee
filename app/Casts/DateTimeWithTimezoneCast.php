@@ -8,11 +8,11 @@
 
 namespace App\Casts;
 
+use App\Contracts\Models\HasUTCBasedTimes;
 use App\Exceptions\Internal\LycheeDomainException;
 use App\Exceptions\Internal\LycheeInvalidArgumentException;
+use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\Internal\MissingModelAttributeException;
-use App\Models\Extensions\UTCBasedTimes;
-use App\Models\Photo;
 use Carbon\Exceptions\InvalidFormatException;
 use Carbon\Exceptions\InvalidTimeZoneException;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
@@ -36,7 +36,7 @@ class DateTimeWithTimezoneCast implements CastsAttributes
 	 * $key . '_orig_tz' and which stores the original timezone of the
 	 * (key, value)-pair at hand.
 	 *
-	 * @param Photo               $model      the associated model class // it should be only Model instance, but phpstan does not see the trait UTCBasedTimes applied to it
+	 * @param Model               $model      the associated model class
 	 * @param string              $key        the name of the SQL column holding the datetime
 	 * @param mixed               $value      the SQL datetime string
 	 * @param array<string,mixed> $attributes all SQL attributes of the entity
@@ -46,11 +46,17 @@ class DateTimeWithTimezoneCast implements CastsAttributes
 	 * @throws LycheeInvalidArgumentException
 	 * @throws MissingModelAttributeException
 	 * @throws LycheeDomainException
+	 * @throws LycheeLogicException
 	 * @throws InvalidFormatException
 	 * @throws InvalidTimeZoneException
 	 */
 	public function get(Model $model, string $key, $value, array $attributes): ?Carbon
 	{
+		// Validate that the model implements the required functions.
+		if (!$model instanceof HasUTCBasedTimes) {
+			throw new LycheeLogicException('Model must implement HasUTCBasedTimes');
+		}
+
 		$tz_key = $key . self::TZ_ATTRIBUTE_SUFFIX;
 		if ($value === null) {
 			return null;

@@ -34,8 +34,6 @@ use Illuminate\Database\Eloquent\Relations\Relation;
  * @property Collection<int,Photo>            $photos
  * @property Thumb|null                       $thumb
  * @property Collection<int,AccessPermission> $access_permissions
- *
- * @phpstan-require-extends Model
  */
 interface AbstractAlbum
 {
