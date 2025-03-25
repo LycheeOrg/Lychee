@@ -45,11 +45,11 @@ class Thumb extends AbstractDTO
 	/**
 	 * Restricts the given relation for size variants such that only the
 	 * necessary variants for a thumbnail are selected.
-	 * /**
-	 * @param HasMany<Photo, Model> $relation
+	 *
+	 * @param HasMany $relation
 	 *
 	 * @return HasMany<Photo, Model>
-	 * */
+	 */
 	public static function sizeVariantsFilter(HasMany $relation): HasMany
 	{
 		$sv_album_thumbs = [SizeVariantType::THUMB, SizeVariantType::THUMB2X, SizeVariantType::PLACEHOLDER];

@@ -30,7 +30,6 @@ use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\ToArrayThrowsNotImplemented;
 use App\Models\Extensions\UTCBasedTimes;
 use App\Relations\HasManySizeVariants;
-use Barryvdh\LaravelIdeHelper\Eloquent;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -124,8 +123,6 @@ use function Safe\preg_match;
  * @method static PhotoBuilder|Photo whereTitle($value)
  * @method static PhotoBuilder|Photo whereType($value)
  * @method static PhotoBuilder|Photo whereUpdatedAt($value)
- *
- * @mixin Eloquent
  */
 class Photo extends Model
 {
