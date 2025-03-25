@@ -28,22 +28,47 @@ use Illuminate\Database\Eloquent\Relations\Relation;
  * smart models exist "forever".
  * See {@link \App\Models\Extensions\BaseAlbum} for the common interface of
  * all models which are persisted to DB.
- *
- * @property string                           $id
- * @property string                           $title
- * @property Collection<int,Photo>            $photos
- * @property Thumb|null                       $thumb
- * @property Collection<int,AccessPermission> $access_permissions
  */
 interface AbstractAlbum
 {
 	/**
+	 * The ID of the album.
+	 */
+	public function get_id(): string;
+
+	/**
+	 * The thumb of the album.
+	 */
+	public function get_thumb(): Thumb|null;
+
+	/**
+	 * The title of the album.
+	 */
+	public function get_title(): string;
+
+	/**
+	 * The full list of access permissions.
+	 * 
+	 * @return Collection<int,AccessPermission>
+	 */
+	public function get_access_permissions(): Collection;
+
+	/**
+	 * The full list of photos.
+	 * 
+	 * @return Collection<int,Photo>
+	 */
+	public function get_photos(): Collection;
+
+	/**
+	 * The relation or query builder for the photos
+	 * 
 	 * @return Relation<Photo,AbstractAlbum&Model,Collection<int,Photo>>|Builder<Photo>
 	 */
 	public function photos(): Relation|Builder;
 
 	/**
-	 * Returns the permissions for the public user.
+	 * The permissions for the public user.
 	 */
 	public function public_permissions(): AccessPermission|null;
 }

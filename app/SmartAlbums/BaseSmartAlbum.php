@@ -17,6 +17,7 @@ use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Exceptions\Internal\InvalidQueryModelException;
 use App\Exceptions\InvalidPropertyException;
+use App\ModelFunctions\HasAbstractAlbumProperties;
 use App\Models\AccessPermission;
 use App\Models\Configs;
 use App\Models\Extensions\SortingDecorator;
@@ -45,6 +46,7 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	use MimicModel;
 	use UTCBasedTimes;
 	use ToArrayThrowsNotImplemented;
+	use HasAbstractAlbumProperties;
 
 	protected PhotoQueryPolicy $photo_query_policy;
 	protected string $id;

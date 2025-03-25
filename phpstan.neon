@@ -19,7 +19,7 @@ parameters:
 		# these can be removed after https://github.com/thecodingmachine/safe/issues/283 has been merged
 		# TODO: remove me completely if no longer necessary.
 		- phpstan/stubs/image.stub
-		# - phpstan/stubs/imageexception.stub
+		- phpstan/stubs/imageexception.stub
 	ignoreErrors:
 		-
 			message: '#Cast to bool is forbidden.#'

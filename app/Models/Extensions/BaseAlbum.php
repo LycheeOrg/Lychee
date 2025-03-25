@@ -32,6 +32,8 @@ use Illuminate\Support\Carbon;
  * deleted by a user at runtime or more accurately which can be persisted
  * to the DB.
  *
+ * @property string                           $id
+ * @property string                           $title
  * @property int                              $legacy_id
  * @property Carbon                           $created_at
  * @property Carbon                           $updated_at

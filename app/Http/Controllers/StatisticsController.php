@@ -45,7 +45,7 @@ class StatisticsController extends Controller
 	 */
 	public function getSpacePerSizeVariantType(SpaceSizeVariantRequest $request, Spaces $spaces): Collection
 	{
-		$album_id = $request->album()?->id;
+		$album_id = $request->album()?->get_id();
 		$owner_id = $album_id === null ? $request->ownerId() : null;
 
 		$space_data = $album_id === null
@@ -62,7 +62,7 @@ class StatisticsController extends Controller
 	 */
 	public function getSpacePerAlbum(SpacePerAlbumRequest $request, Spaces $spaces): Collection
 	{
-		$album_id = $request->album()?->id;
+		$album_id = $request->album()?->get_id();
 		$owner_id = $album_id === null ? $request->ownerId() : null;
 		$space_data = $spaces->getSpacePerAlbum(
 			album_id: $album_id,
@@ -85,7 +85,7 @@ class StatisticsController extends Controller
 	 */
 	public function getTotalSpacePerAlbum(SpacePerAlbumRequest $request, Spaces $spaces): Collection
 	{
-		$album_id = $request->album()?->id;
+		$album_id = $request->album()?->get_id();
 		$owner_id = $album_id === null ? $request->ownerId() : null;
 		$space_data = $spaces->getTotalSpacePerAlbum(
 			album_id: $album_id,

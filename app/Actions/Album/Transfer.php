@@ -23,7 +23,7 @@ class Transfer
 		$base_album->save();
 
 		// No longer necessary because we transfer the ownership
-		AccessPermission::query()->where('base_album_id', '=', $base_album->id)->where('user_id', '=', $user_id)->delete();
+		AccessPermission::query()->where('base_album_id', '=', $base_album->get_id())->where('user_id', '=', $user_id)->delete();
 
 		// If this is an Album, we also need to fix the children and photos ownership
 		if ($base_album instanceof Album) {

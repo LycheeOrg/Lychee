@@ -27,7 +27,7 @@ trait HasHeaderUrl
 			return null;
 		}
 
-		if ($album->photos->isEmpty()) {
+		if ($album->get_photos()->isEmpty()) {
 			return null;
 		}
 
@@ -54,7 +54,7 @@ trait HasHeaderUrl
 
 		$query_ratio = SizeVariant::query()
 					->select('photo_id')
-					->whereBelongsTo($album->photos)
+					->whereBelongsTo($album->get_photos())
 					->where('ratio', '>', 1) // ! we prefer landscape first.
 					->whereIn('type', [SizeVariantType::MEDIUM, SizeVariantType::SMALL2X, SizeVariantType::SMALL]);
 		$num = $query_ratio->count() - 1;
@@ -63,7 +63,7 @@ trait HasHeaderUrl
 		if ($photo === null) {
 			$query = SizeVariant::query()
 				->select('photo_id')
-				->whereBelongsTo($album->photos)
+				->whereBelongsTo($album->get_photos())
 				->whereIn('type', [SizeVariantType::MEDIUM, SizeVariantType::SMALL2X, SizeVariantType::SMALL]);
 			$num = $query->count() - 1;
 			$photo = $query->skip(rand(0, $num))->first();

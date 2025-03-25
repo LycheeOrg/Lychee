@@ -50,7 +50,7 @@ class ListShare
 				->join('base_albums', 'base_album_id', '=', 'base_albums.id')
 				->when($participant !== null, fn ($q) => $q->where('user_base_album.user_id', '=', $participant->id))
 				->when($owner !== null, fn ($q) => $q->where('base_albums.owner_id', '=', $owner->id))
-				->when($base_album !== null, fn ($q) => $q->where('base_albums.id', '=', $base_album->id))
+				->when($base_album !== null, fn ($q) => $q->where('base_albums.id', '=', $base_album->get_id()))
 				->orderBy('title', 'ASC')
 				->orderBy('username', 'ASC')
 				->get();
@@ -61,7 +61,7 @@ class ListShare
 				->leftJoin('albums', 'albums.id', '=', 'base_albums.id')
 				->select(['base_albums.id', 'title', 'parent_id'])
 				->when($owner !== null, fn ($q) => $q->where('owner_id', '=', $owner->id))
-				->when($base_album !== null, fn ($q) => $q->where('base_albums.id', '=', $base_album->id))
+				->when($base_album !== null, fn ($q) => $q->where('base_albums.id', '=', $base_album->get_id()))
 				->orderBy('title', 'ASC')
 				->get();
 			$this->linkAlbums($albums);

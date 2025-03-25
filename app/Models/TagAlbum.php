@@ -10,6 +10,7 @@ namespace App\Models;
 
 use App\Casts\ArrayCast;
 use App\Exceptions\InvalidPropertyException;
+use App\ModelFunctions\HasAbstractAlbumProperties;
 use App\Models\Builders\TagAlbumBuilder;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Extensions\Thumb;
@@ -58,6 +59,7 @@ class TagAlbum extends BaseAlbum
 	use ToArrayThrowsNotImplemented;
 	/** @phpstan-use HasFactory<\Database\Factories\TagAlbumFactory> */
 	use HasFactory;
+	use HasAbstractAlbumProperties;
 
 	/**
 	 * The model's attributes.

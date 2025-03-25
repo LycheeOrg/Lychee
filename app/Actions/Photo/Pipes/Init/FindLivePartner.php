@@ -30,7 +30,7 @@ class FindLivePartner implements InitPipe
 			if ($state->exif_info->live_photo_content_id !== null) {
 				$state->live_partner = Photo::query()
 					->where('live_photo_content_id', '=', $state->exif_info->live_photo_content_id)
-					->where('album_id', '=', $state->album?->id)
+					->where('album_id', '=', $state->album?->get_id())
 					->whereNull('live_photo_short_path')->first();
 			}
 
