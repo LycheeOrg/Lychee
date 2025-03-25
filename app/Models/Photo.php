@@ -13,6 +13,7 @@ use App\Casts\ArrayCast;
 use App\Casts\DateTimeWithTimezoneCast;
 use App\Casts\MustNotSetCast;
 use App\Constants\RandomID;
+use App\Contracts\Models\HasUTCBasedTimes;
 use App\Enum\LicenseType;
 use App\Enum\StorageDiskType;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
@@ -127,7 +128,7 @@ use function Safe\preg_match;
  *
  * @mixin Eloquent
  */
-class Photo extends Model
+class Photo extends Model implements HasUTCBasedTimes
 {
 	/** @phpstan-use HasFactory<\Database\Factories\PhotoFactory> */
 	use HasFactory;
