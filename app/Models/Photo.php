@@ -410,7 +410,7 @@ class Photo extends Model
 
 	/**
 	 * @param string[] $except
-	 * @phpstan-ignore method.childParameterType (contravariance)
+	 *                         //method.childParameterType (contravariance)
 	 */
 	public function replicate(?array $except = null): Photo
 	{

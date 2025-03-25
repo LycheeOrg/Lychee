@@ -104,6 +104,7 @@ class AlbumFactory
 		if ($ret === null) {
 			throw (new ModelNotFoundException())->setModel(BaseAlbumImpl::class, [$album_id]);
 		}
+
 		return $ret;
 	}
 

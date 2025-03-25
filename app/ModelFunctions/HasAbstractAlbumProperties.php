@@ -22,34 +22,34 @@ use Illuminate\Database\Eloquent\Collection;
  */
 trait HasAbstractAlbumProperties
 {
-    public function get_id(): string
-    {
-        return $this->id;
-    }
+	public function get_id(): string
+	{
+		return $this->id;
+	}
 
-    public function get_thumb(): ?Thumb
-    {
-        return $this->thumb;
-    }
+	public function get_thumb(): ?Thumb
+	{
+		return $this->thumb;
+	}
 
-    public function get_title(): string
-    {
-        return $this->title;
-    }
+	public function get_title(): string
+	{
+		return $this->title;
+	}
 
-    /**
-     * @return Collection<int,AccessPermission>
-     */
-    public function get_access_permissions(): Collection
-    {
-        return $this->access_permissions;
-    }
+	/**
+	 * @return Collection<int,AccessPermission>
+	 */
+	public function get_access_permissions(): Collection
+	{
+		return $this->access_permissions;
+	}
 
-    /**
-     * @return Collection<int,Photo>
-     */
-    public function get_photos(): Collection
-    {
-        return $this->photos;
-    }
+	/**
+	 * @return Collection<int,Photo>
+	 */
+	public function get_photos(): Collection
+	{
+		return $this->photos;
+	}
 }

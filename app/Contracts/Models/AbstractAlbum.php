@@ -48,21 +48,21 @@ interface AbstractAlbum
 
 	/**
 	 * The full list of access permissions.
-	 * 
+	 *
 	 * @return Collection<int,AccessPermission>
 	 */
 	public function get_access_permissions(): Collection;
 
 	/**
 	 * The full list of photos.
-	 * 
+	 *
 	 * @return Collection<int,Photo>
 	 */
 	public function get_photos(): Collection;
 
 	/**
-	 * The relation or query builder for the photos
-	 * 
+	 * The relation or query builder for the photos.
+	 *
 	 * @return Relation<Photo,AbstractAlbum&Model,Collection<int,Photo>>|Builder<Photo>
 	 */
 	public function photos(): Relation|Builder;

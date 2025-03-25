@@ -30,7 +30,6 @@ use App\SmartAlbums\Utils\MimicModel;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class BaseSmartAlbum.
