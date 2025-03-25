@@ -187,10 +187,16 @@ class SizeVariants
 	 * Creates a new instance of {@link \App\Models\SizeVariant} for the
 	 * associated photo and persists it to DB.
 	 *
-	 * @param ImageDimension $dim      the width of the size variant
-	 * @param int            $filesize the filesize of the size variant
+	 * @param SizeVariantType $size_variant_type the type of the desired size variant;
+	 * @param string          $short_path        the short path of the media file this
+	 *                                           size variant shall point to
+	 * @param ImageDimension  $dim               the width of the size variant
+	 * @param int             $filesize          the filesize of the size variant
 	 *
 	 * @return SizeVariant The newly created and persisted size variant
+	 *
+	 * @throws IllegalOrderOfOperationException
+	 * @throws ModelDBException
 	 *
 	 * @disregard P1006
 	 */

@@ -8,6 +8,7 @@
 
 namespace App\View\Components;
 
+use App\Contracts\Models\AbstractAlbum;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Http\Resources\Traits\HasHeaderUrl;
 use App\Models\Album;
@@ -38,7 +39,7 @@ class Meta extends Component
 	public string $user_js_url;
 
 	private bool $access = true;
-	private ?Album $album = null;
+	private ?AbstractAlbum $album = null;
 	private ?Photo $photo = null;
 
 	/**

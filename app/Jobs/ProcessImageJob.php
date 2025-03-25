@@ -71,7 +71,6 @@ class ProcessImageJob implements ShouldQueue
 			$album = $abstract_album;
 		}
 
-		/** @var Album|TagAlbum $album */
 		$this->album_id = $album?->id;
 		$album_name = $album?->title ?? __('gallery.smart_album.unsorted');
 		$user_id = Auth::user()?->id;
