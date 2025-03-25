@@ -72,6 +72,7 @@ class StatisticsController extends Controller
 			album_id: $album_id,
 			owner_id: $owner_id);
 
+		/** Collection<int,array{0:array{id:string,left:int,right:int,size:int},1:array{id:string,username:string,title:string,is_nsfw:bool,left:int,right:int,num_photos:int,num_descendants:int}}> $zipped */
 		$zipped = $space_data->zip($count_data);
 
 		return $zipped->map(fn ($z) => new Album($z[0], $z[1]));
@@ -94,7 +95,7 @@ class StatisticsController extends Controller
 		$count_data = $spaces->getTotalPhotoCountPerAlbum(
 			album_id: $album_id,
 			owner_id: $owner_id);
-
+		/** Collection<int,array{0:array{id:string,left:int,right:int,size:int},1:array{id:string,username:string,title:string,is_nsfw:bool,left:int,right:int,num_photos:int,num_descendants:int}}> $zipped */
 		$zipped = $space_data->zip($count_data);
 
 		return $zipped->map(fn ($z) => new Album($z[0], $z[1]));
