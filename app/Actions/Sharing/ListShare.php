@@ -38,7 +38,6 @@ class ListShare
 		try {
 			// Active shares, optionally filtered by album ID, participant ID
 			// and or owner ID
-			/** @var Collection<int, AccessPermission> $shared */
 			$shared = AccessPermission::query()->select([
 				APC::ACCESS_PERMISSIONS . '.id',
 				APC::ACCESS_PERMISSIONS . '.user_id',
