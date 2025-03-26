@@ -9,11 +9,14 @@
 namespace App\Models\Builders;
 
 use App\Eloquent\FixedQueryBuilder;
+use App\Models\ConfigCategory;
 
 /**
  * Specialized query builder for {@link \App\Models\ConfigCategory}.
+ * 
+ * @template TModelClass of ConfigCategory
  *
- * @extends FixedQueryBuilder<\App\Models\ConfigCategory>
+ * @extends FixedQueryBuilder<TModelClass>
  */
 class ConfigCategoryBuilder extends FixedQueryBuilder
 {
