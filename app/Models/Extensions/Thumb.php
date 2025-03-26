@@ -18,6 +18,7 @@ use App\Exceptions\InvalidPropertyException;
 use App\Models\Configs;
 use App\Models\Photo;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
 
@@ -45,9 +46,9 @@ class Thumb extends AbstractDTO
 	 * Restricts the given relation for size variants such that only the
 	 * necessary variants for a thumbnail are selected.
 	 *
-	 * @param HasMany<Photo,$this> $relation
+	 * @param HasMany $relation
 	 *
-	 * @return HasMany<Photo,$this>
+	 * @return HasMany<Photo, Model>
 	 */
 	public static function sizeVariantsFilter(HasMany $relation): HasMany
 	{

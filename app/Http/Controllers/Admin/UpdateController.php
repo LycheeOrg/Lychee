@@ -35,16 +35,9 @@ class UpdateController extends Controller
 
 	/**
 	 * Retrieve Update data from the server.
-	 *
-	 * @param UpdateRequest     $request
-	 * @param VersionInfo       $versionInfo
-	 * @param DockerVersionInfo $dockerVersionInfo
-	 *
-	 * @return UpdateInfo
 	 */
 	public function get(UpdateRequest $request, VersionInfo $version_info, DockerVersionInfo $docker_version_info): UpdateInfo
 	{
-		/** @var VersionChannelType $channelName */
 		$channel_name = $version_info->getChannelName();
 		$info = $version_info->file_version->getVersion()->toString();
 		$extra = '';
@@ -67,8 +60,6 @@ class UpdateController extends Controller
 
 	/**
 	 * Checking if any updates are available.
-	 *
-	 * @return UpdateCheckInfo
 	 */
 	public function check(UpdateRequest $request, GitHubVersion $git_hub_functions, VersionInfo $version_info, DockerVersionInfo $docker_version_info): UpdateCheckInfo
 	{
@@ -81,8 +72,6 @@ class UpdateController extends Controller
 	 * The method requires PHP to have shell access.
 	 * Except for the return type this method is identical to
 	 * {@link UpdateController::view()}.
-	 *
-	 * @param UpdateRequest $request
 	 *
 	 * @return array{updateMsgs: array<string>}
 	 *
@@ -101,10 +90,6 @@ class UpdateController extends Controller
 	 * The method requires PHP to have shell access.
 	 * Except for the return type this method is identical to
 	 * {@link UpdateController::apply()}.
-	 *
-	 * @param UpdateRequest $request
-	 *
-	 * @return View
 	 *
 	 * @throws LycheeException
 	 */
@@ -131,10 +116,6 @@ class UpdateController extends Controller
 	 * However, both methods are very similar, too.
 	 * The whole code around installation/upgrade/migration should be
 	 * thoroughly revised and refactored.
-	 *
-	 * @param MigrateRequest $request
-	 *
-	 * @return View|Response
 	 */
 	public function migrate(MigrateRequest $request): View|Response
 	{

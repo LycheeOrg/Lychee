@@ -51,8 +51,8 @@ class InMemoryBuffer extends AbstractBinaryBlob
 	 * The freshly written content can immediately be read back via
 	 * {@link MediaFile::read}.
 	 *
-	 * @param resource $stream            the input stream to copy from
-	 * @param bool     $collectStatistics if true, the method returns statistics about the stream
+	 * @param resource $stream             the input stream to copy from
+	 * @param bool     $collect_statistics if true, the method returns statistics about the stream
 	 *
 	 * @return ?StreamStat optional statistics about the stream, if requested
 	 *

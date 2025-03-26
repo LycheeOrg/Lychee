@@ -28,15 +28,10 @@ class ProfileController extends Controller
 {
 	/**
 	 * Update the Login information of the current user.
-	 *
-	 * @param UpdateProfileRequest $request
-	 * @param UpdateLogin          $updateLogin
-	 *
-	 * @return UserResource
 	 */
 	public function update(UpdateProfileRequest $request, UpdateLogin $update_login): UserResource
 	{
-		/** @var User $currentUser */
+		/** @var User $current_user */
 		$current_user = Auth::user();
 
 		if ($request->username() !== null &&
@@ -70,8 +65,6 @@ class ProfileController extends Controller
 	/**
 	 * Reset the token of the currently authenticated user.
 	 *
-	 * @return UserToken
-	 *
 	 * @throws UnauthenticatedException
 	 * @throws ModelDBException
 	 * @throws \Exception
@@ -87,8 +80,6 @@ class ProfileController extends Controller
 
 	/**
 	 * Disable the token of the currently authenticated user.
-	 *
-	 * @return void
 	 *
 	 * @throws UnauthenticatedException
 	 * @throws ModelDBException

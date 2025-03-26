@@ -83,7 +83,6 @@ class HasManyChildAlbums extends HasManyBidirectionally
 	public function getResults(): Collection
 	{
 		if (is_null($this->getParentKey())) {
-			/** @var Collection<int,Album> */
 			return $this->related->newCollection();
 		}
 
@@ -117,7 +116,7 @@ class HasManyChildAlbums extends HasManyBidirectionally
 		// matching very convenient and easy work. Then we'll just return them.
 		foreach ($models as $model) {
 			if (isset($dictionary[$key = $this->getDictionaryKey($model->getAttribute($this->localKey))])) {
-				/** @var Collection<int,Album> $childrenOfModel */
+				/** @var Collection<int,Album> $children_of_model */
 				$children_of_model = $this->getRelationValue($dictionary, $key, 'many');
 				$sorting = $model->getEffectiveAlbumSorting();
 				$children_of_model = $children_of_model
@@ -127,7 +126,6 @@ class HasManyChildAlbums extends HasManyBidirectionally
 				// This is the newly added code which sets this method apart
 				// from the original method and additionally sets the
 				// reverse link
-				/** @var Model $childModel */
 				foreach ($children_of_model as $child_model) {
 					$child_model->setRelation($this->foreign_method_name, $model);
 				}

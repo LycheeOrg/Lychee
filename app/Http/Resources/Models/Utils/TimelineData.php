@@ -89,7 +89,7 @@ class TimelineData extends Data
 
 	/**
 	 * @param Collection<int,ThumbAlbumResource> $albums
-	 * @param ColumnSortingType                  $columnSorting
+	 * @param ColumnSortingType                  $column_sorting
 	 * @param TimelineAlbumGranularity           $granularity
 	 *
 	 * @return Collection<int,ThumbAlbumResource>

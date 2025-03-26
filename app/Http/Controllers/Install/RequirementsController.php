@@ -15,10 +15,6 @@ use Illuminate\Routing\Controller;
 
 final class RequirementsController extends Controller
 {
-	/**
-	 * @param RequirementsChecker $checker
-	 * @param DefaultConfig       $config
-	 */
 	public function __construct(
 		private RequirementsChecker $requirements,
 		private DefaultConfig $config,
@@ -27,8 +23,6 @@ final class RequirementsController extends Controller
 
 	/**
 	 * Display the requirements page.
-	 *
-	 * @return View
 	 */
 	public function view(): View
 	{

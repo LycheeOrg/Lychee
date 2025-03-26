@@ -16,6 +16,7 @@ use Dedoc\Scramble\Support\Generator\Types\Type as OpenApiType;
 use Dedoc\Scramble\Support\Type\ArrayType;
 use Dedoc\Scramble\Support\Type\BooleanType;
 use Dedoc\Scramble\Support\Type\FloatType;
+use Dedoc\Scramble\Support\Type\Generic;
 use Dedoc\Scramble\Support\Type\IntegerType;
 use Dedoc\Scramble\Support\Type\NullType;
 use Dedoc\Scramble\Support\Type\ObjectType;
@@ -29,10 +30,6 @@ class DataToResponse extends TypeToSchemaExtension
 	/**
 	 * We establish that we handle here all the Spatie\LaravelData\Data classes.
 	 * This is because it is a pro feature of scramble and we do not have that kind of money.
-	 *
-	 * @param Type $type
-	 *
-	 * @return bool
 	 */
 	public function shouldHandle(Type $type): bool
 	{
@@ -44,6 +41,7 @@ class DataToResponse extends TypeToSchemaExtension
 	 */
 	public function toSchema(Type $type): ?OpenApiType
 	{
+		/** @var Generic $type */
 		$reflect = new \ReflectionClass($type->name);
 		$props = $reflect->getProperties(\ReflectionProperty::IS_PUBLIC);
 
@@ -58,10 +56,6 @@ class DataToResponse extends TypeToSchemaExtension
 
 	/**
 	 * Set a reference to that object in the return.
-	 *
-	 * @param ObjectType $type
-	 *
-	 * @return Reference
 	 */
 	public function reference(ObjectType $type): Reference
 	{
@@ -70,8 +64,6 @@ class DataToResponse extends TypeToSchemaExtension
 
 	/**
 	 * Given a pure reflected PHP type, we return the corresponding Scramble type equivalent before Generator conversion.
-	 *
-	 * @return Type
 	 *
 	 * @throws \InvalidArgumentException
 	 * @throws LycheeLogicException

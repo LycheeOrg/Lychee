@@ -65,8 +65,6 @@ class GitHubVersion implements VersionControl, HasIsRelease
 
 	/**
 	 * We are a release if the localBranch is a tag.
-	 *
-	 * @return bool
 	 */
 	public function isRelease(): bool
 	{
@@ -156,8 +154,6 @@ class GitHubVersion implements VersionControl, HasIsRelease
 	 * This will return false in the case of :
 	 * - .git not accessible
 	 * - release.
-	 *
-	 * @return void
 	 */
 	private function hydrateLocalBranch(): void
 	{
@@ -190,8 +186,6 @@ class GitHubVersion implements VersionControl, HasIsRelease
 	 * This will return false in the case of :
 	 * - .git not accessible
 	 * - release.
-	 *
-	 * @return void
 	 */
 	private function hydrateLocalHead(): void
 	{
@@ -222,10 +216,6 @@ class GitHubVersion implements VersionControl, HasIsRelease
 
 	/**
 	 * Fetch the commits on master branch.
-	 *
-	 * @param bool $useCache
-	 *
-	 * @return void
 	 *
 	 * @codeCoverageIgnore the code path here depends whether you are on a PR or on master...
 	 */

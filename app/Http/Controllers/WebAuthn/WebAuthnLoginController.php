@@ -27,14 +27,11 @@ class WebAuthnLoginController extends Controller
 	/**
 	 * Returns the challenge to assertion.
 	 *
-	 * @param AssertionRequest $request
-	 *
-	 * @return Responsable
-	 *
 	 * @throws BindingResolutionException
 	 */
 	public function options(AssertionRequest $request): Responsable
 	{
+		/** @phpstan-ignore staticMethod.dynamicCall */
 		$fields = $request->validate([
 			'user_id' => 'sometimes|int',
 			'username' => 'sometimes|string',
@@ -54,10 +51,6 @@ class WebAuthnLoginController extends Controller
 	 * 3. Retrieve the User from the credential ID, we will use it to validate later (otherwise keys like yubikey4 are not working).
 	 * 4. Validate the credentials
 	 * 5. Log in on success
-	 *
-	 * @param AssertedRequest $request
-	 *
-	 * @return void
 	 */
 	public function login(AssertedRequest $request, AssertionValidator $validator): void
 	{
@@ -83,7 +76,6 @@ class WebAuthnLoginController extends Controller
 			throw new UnauthenticatedException('Invalid credentials');
 		}
 
-		/** @var \Illuminate\Contracts\Auth\Authenticatable $authenticatable */
 		$authenticatable = $credential->authenticatable;
 		Auth::login($authenticatable);
 	}
@@ -92,8 +84,6 @@ class WebAuthnLoginController extends Controller
 	 * Check if the credentials are for a public key signed challenge.
 	 *
 	 * @param array<string,string> $credentials
-	 *
-	 * @return bool
 	 */
 	private function isSignedChallenge(array $credentials): bool
 	{
@@ -104,8 +94,6 @@ class WebAuthnLoginController extends Controller
 	 * Retrieve a user by the given credentials.
 	 *
 	 * @param array<string,string> $credentials
-	 *
-	 * @return User|null
 	 */
 	public function retrieveByCredentials(array $credentials): User|null
 	{

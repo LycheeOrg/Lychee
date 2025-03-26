@@ -15,19 +15,12 @@ use Illuminate\Routing\Controller;
 
 final class PermissionsController extends Controller
 {
-	/**
-	 * @param PermissionsChecker $checker
-	 * @param DefaultConfig      $config
-	 */
 	public function __construct(
 		private PermissionsChecker $permissions,
 		private DefaultConfig $config,
 	) {
 	}
 
-	/**
-	 * @return View
-	 */
 	public function view(): View
 	{
 		$perms = $this->permissions->check(

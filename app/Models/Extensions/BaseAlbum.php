@@ -32,6 +32,8 @@ use Illuminate\Support\Carbon;
  * deleted by a user at runtime or more accurately which can be persisted
  * to the DB.
  *
+ * @property string                           $id
+ * @property string                           $title
  * @property int                              $legacy_id
  * @property Carbon                           $created_at
  * @property Carbon                           $updated_at
@@ -108,8 +110,6 @@ abstract class BaseAlbum extends Model implements AbstractAlbum, HasRandomID
 
 	/**
 	 * Returns the relationship between an album and its associated current user permissions.
-	 *
-	 * @return AccessPermission|null
 	 */
 	public function current_user_permissions(): AccessPermission|null
 	{
@@ -118,8 +118,6 @@ abstract class BaseAlbum extends Model implements AbstractAlbum, HasRandomID
 
 	/**
 	 * Returns the relationship between an album and its associated public permissions.
-	 *
-	 * @return AccessPermission|null
 	 */
 	public function public_permissions(): AccessPermission|null
 	{

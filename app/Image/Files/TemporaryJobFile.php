@@ -35,8 +35,8 @@ class TemporaryJobFile extends NativeLocalFile
 	/**
 	 * Load a temporary file with a previously generated file name.
 	 *
-	 * @param string $filePath     the path of a Processable Job file
-	 * @param string $fakeBaseName the fake base name of the file; e.g. the original name prior to up-/download
+	 * @param string $file_path      the path of a Processable Job file
+	 * @param string $fake_base_name the fake base name of the file; e.g. the original name prior to up-/download
 	 *
 	 * @throws MediaFileOperationException
 	 */

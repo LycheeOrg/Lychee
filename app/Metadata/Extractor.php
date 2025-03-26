@@ -64,10 +64,8 @@ class Extractor
 	/**
 	 * Extracts metadata from a file.
 	 *
-	 * @param NativeLocalFile $file                 the file
-	 * @param int             $fileLastModifiedTime the timestamp to use if there's no creation date in Exif
-	 *
-	 * @return Extractor
+	 * @param NativeLocalFile $file                    the file
+	 * @param int             $file_last_modified_time the timestamp to use if there's no creation date in Exif
 	 *
 	 * @throws ExternalComponentMissingException
 	 * @throws MediaFileOperationException

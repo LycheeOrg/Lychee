@@ -8,8 +8,10 @@
 
 namespace App\Casts;
 
+use App\Contracts\Models\HasUTCBasedTimes;
 use App\Exceptions\Internal\LycheeDomainException;
 use App\Exceptions\Internal\LycheeInvalidArgumentException;
+use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\Internal\MissingModelAttributeException;
 use Carbon\Exceptions\InvalidFormatException;
 use Carbon\Exceptions\InvalidTimeZoneException;
@@ -44,11 +46,17 @@ class DateTimeWithTimezoneCast implements CastsAttributes
 	 * @throws LycheeInvalidArgumentException
 	 * @throws MissingModelAttributeException
 	 * @throws LycheeDomainException
+	 * @throws LycheeLogicException
 	 * @throws InvalidFormatException
 	 * @throws InvalidTimeZoneException
 	 */
 	public function get(Model $model, string $key, $value, array $attributes): ?Carbon
 	{
+		// Validate that the model implements the required functions.
+		if (!$model instanceof HasUTCBasedTimes) {
+			throw new LycheeLogicException('Model must implement HasUTCBasedTimes');
+		}
+
 		$tz_key = $key . self::TZ_ATTRIBUTE_SUFFIX;
 		if ($value === null) {
 			return null;

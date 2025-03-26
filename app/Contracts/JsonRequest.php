@@ -35,8 +35,8 @@ interface JsonRequest
 	/**
 	 * Returns the decoded JSON response.
 	 *
-	 * @param bool $useCache if true, the JSON response is not fetched but
-	 *                       served from cache if available
+	 * @param bool $use_cache if true, the JSON response is not fetched but
+	 *                        served from cache if available
 	 *
 	 * @return mixed the type of the response depends on the content of the
 	 *               HTTP response and may be anything: a primitive type,

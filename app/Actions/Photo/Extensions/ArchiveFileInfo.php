@@ -64,7 +64,7 @@ final readonly class ArchiveFileInfo
 	 * Returns the filename as it should be advertised to the downloading
 	 * client or put into the archive.
 	 *
-	 * @param string $extraAddon an extra addon which should be added to the filename
+	 * @param string $extra_addon an extra addon which should be added to the filename
 	 *
 	 * @return string the filename
 	 */

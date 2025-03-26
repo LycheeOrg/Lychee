@@ -65,7 +65,7 @@ class Delete
 	 * This object can (and must) be used to eventually delete the files,
 	 * however doing so can be deferred.
 	 *
-	 * @param string[] $albumIDs the album IDs (contains IDs of regular _and_ tag albums)
+	 * @param string[] $album_ids the album IDs (contains IDs of regular _and_ tag albums)
 	 *
 	 * @return FileDeleter contains the collected files which became obsolete
 	 *
@@ -92,7 +92,6 @@ class Delete
 			// find all photos in those and their descendants
 			// Only load necessary attributes for tree; in particular avoid
 			// loading expensive `min_taken_at` and `max_taken_at`.
-			/** @var Collection<int,Album> $albums */
 			$albums = Album::query()
 				->without(['cover', 'thumb'])
 				->select(['id', 'parent_id', '_lft', '_rgt', 'track_short_path'])
@@ -101,10 +100,9 @@ class Delete
 			$recursive_album_ids = $albums->pluck('id')->all(); // only IDs which refer to regular albums are incubators for recursive IDs
 			$recursive_album_tracks = $albums->pluck('track_short_path');
 
-			/** @var Album $album */
 			foreach ($albums as $album) {
 				// Collect all (aka recursive) sub-albums in each album
-				$sub_albums = $album->descendants()->without(['cover', 'thumb'])->select(['id', 'track_short_path'])->get();
+				$sub_albums = $album->descendants()->getQuery()->without(['cover', 'thumb'])->select(['id', 'track_short_path'])->get();
 				$recursive_album_ids = array_merge($recursive_album_ids, $sub_albums->pluck('id')->all());
 				$recursive_album_tracks = $recursive_album_tracks->merge($sub_albums->pluck('track_short_path'));
 			}
@@ -201,7 +199,7 @@ class Delete
 			return;
 		}
 
-		/** @var array<array{lft: int, rgt:int}> $pendingGapsToMake */
+		/** @var array<array{lft: int, rgt:int}> $pending_gaps_to_make */
 		$pending_gaps_to_make = [];
 		$delete_query = Album::query();
 		// First collect all albums to delete in a single query and

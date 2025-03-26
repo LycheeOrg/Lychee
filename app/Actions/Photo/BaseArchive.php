@@ -70,8 +70,8 @@ abstract class BaseArchive
 	 * a single element) or a ZIP file (if the array of photo IDs contains
 	 * more than one element).
 	 *
-	 * @param Collection<int,Photo> $photos          the photos which shall be included in the response
-	 * @param DownloadVariantType   $downloadVariant the desired variant of the photo
+	 * @param Collection<int,Photo> $photos           the photos which shall be included in the response
+	 * @param DownloadVariantType   $download_variant the desired variant of the photo
 	 *
 	 * @return StreamedResponse
 	 *
@@ -103,8 +103,8 @@ abstract class BaseArchive
 	 * However, the client would not get a "nice" file name, but the
 	 * random file name of the size variant.
 	 *
-	 * @param Photo               $photo           the photo
-	 * @param DownloadVariantType $downloadVariant the requested size variant
+	 * @param Photo               $photo            the photo
+	 * @param DownloadVariantType $download_variant the requested size variant
 	 *
 	 * @return StreamedResponse
 	 *
@@ -155,7 +155,7 @@ abstract class BaseArchive
 
 	/**
 	 * @param Collection<int,Photo> $photos
-	 * @param DownloadVariantType   $downloadVariant
+	 * @param DownloadVariantType   $download_variant
 	 *
 	 * @return StreamedResponse
 	 *
@@ -243,7 +243,7 @@ abstract class BaseArchive
 				}
 			}
 
-			/** @var ArchiveFileInfo $archiveFileInfo */
+			/** @var ArchiveFileInfo $archive_file_info */
 			foreach ($archive_file_infos as $archive_file_info) {
 				$true_filename = $archive_file_info->getFilename();
 				if (array_key_exists($true_filename, $unique_filenames)) {
@@ -304,8 +304,8 @@ abstract class BaseArchive
 	/**
 	 * Creates a {@link ArchiveFileInfo} for the indicated photo and variant.
 	 *
-	 * @param Photo               $photo           the photo whose archive information shall be returned
-	 * @param DownloadVariantType $downloadVariant the desired variant of the photo
+	 * @param Photo               $photo            the photo whose archive information shall be returned
+	 * @param DownloadVariantType $download_variant the desired variant of the photo
 	 *
 	 * @return ArchiveFileInfo the created archive info
 	 *

@@ -97,7 +97,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	use ToArrayThrowsNotImplemented;
 
 	/**
-	 * @var array<int,string> the attributes that are mass assignable
+	 * @var list<string> the attributes that are mass assignable
 	 */
 	protected $fillable = [
 		'username',
@@ -213,7 +213,6 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	 */
 	public function delete(): bool
 	{
-		/** @var HasMany<Photo|Album,$this>[] $ownershipRelations */
 		$ownership_relations = [$this->photos(), $this->albums()];
 		$has_any = false;
 

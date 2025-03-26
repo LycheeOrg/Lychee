@@ -64,7 +64,7 @@ final class ImportController extends Controller
 	 */
 	public function url(ImportFromUrlRequest $request, FromUrl $from_url): AnonymousResourceCollection
 	{
-		/** @var int $currentUserId */
+		/** @var int $current_user_id */
 		$current_user_id = Auth::id() ?? throw new UnauthenticatedException();
 
 		$photos = $from_url->do($request->urls(), $request->album(), $current_user_id);
@@ -80,7 +80,7 @@ final class ImportController extends Controller
 	 */
 	public function server(ImportServerRequest $request, FromServer $from_server): StreamedResponse
 	{
-		/** @var int $currentUserId */
+		/** @var int $current_user_id */
 		$current_user_id = Auth::id() ?? throw new UnauthenticatedException();
 
 		return $from_server->do(

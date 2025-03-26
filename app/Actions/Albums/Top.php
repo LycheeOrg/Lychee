@@ -64,7 +64,7 @@ class Top
 	{
 		// Do not eagerly load the relation `photos` for each smart album.
 		// On the albums overview, we only need a thumbnail for each album.
-		/** @var BaseCollection<int,BaseSmartAlbum> $smartAlbums */
+		/** @var BaseCollection<int,BaseSmartAlbum> $smart_albums */
 		$smart_albums = $this->album_factory
 			->getAllBuiltInSmartAlbums(false)
 			->filter(fn ($smart_album) => Gate::check(AlbumPolicy::CAN_SEE, $smart_album));
@@ -72,7 +72,7 @@ class Top
 		$tag_album_query = $this->album_query_policy
 			->applyVisibilityFilter(TagAlbum::query()->with(['access_permissions', 'owner']));
 
-		/** @var BaseCollection<int,TagAlbum> $tagAlbums */
+		/** @var BaseCollection<int,TagAlbum> $tag_albums */
 		$tag_albums = (new SortingDecorator($tag_album_query))
 			->orderBy($this->sorting->column, $this->sorting->order)
 			->get();

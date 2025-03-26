@@ -47,9 +47,7 @@ class PlaceholderEncoder
 	private ?\GdImage $gdImage = null;
 
 	/**
-	 * @param SizeVariant $sizeVariant unencoded placeholder size variant
-	 *
-	 * @return void
+	 * @param SizeVariant $size_variant unencoded placeholder size variant
 	 */
 	public function do(SizeVariant $size_variant): void
 	{
@@ -76,10 +74,6 @@ class PlaceholderEncoder
 	/**
 	 * Returns a GdImage object from the provided file.
 	 *
-	 * @param MediaFile $file
-	 *
-	 * @return void
-	 *
 	 * @throws FilesystemException
 	 * @throws ImageException
 	 * @throws StreamException
@@ -102,7 +96,6 @@ class PlaceholderEncoder
 		$img_binary = stream_get_contents($input_stream);
 
 		rewind($input_stream);
-		/** @var \GdImage $referenceImage */
 		$reference_image = imagecreatefromstring($img_binary);
 		// webp does not support palette images
 		imagepalettetotruecolor($reference_image);
@@ -115,8 +108,6 @@ class PlaceholderEncoder
 	 *
 	 * @param \GdImage       $source source Image
 	 * @param InMemoryBuffer $output the file to write to
-	 *
-	 * @return void
 	 *
 	 * @throws ImageException
 	 * @throws FilesystemException
@@ -145,10 +136,6 @@ class PlaceholderEncoder
 	/**
 	 * Encodes provided image file to base64.
 	 *
-	 * @param InMemoryBuffer $file
-	 *
-	 * @return void
-	 *
 	 * @throws StreamException
 	 */
 	private function encodeBase64Placeholder(InMemoryBuffer $file): void
@@ -164,11 +151,6 @@ class PlaceholderEncoder
 
 	/**
 	 * Saves base64 string and size to DB.
-	 *
-	 * @param InMemoryBuffer $file
-	 * @param SizeVariant    $sizeVariant
-	 *
-	 * @return void
 	 *
 	 * @throws FilesystemException
 	 * @throws StreamException

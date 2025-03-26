@@ -25,8 +25,6 @@ class FullTree extends Controller
 	/**
 	 * Apply the fix suggested.
 	 * ! This may break the installation. Not our problem.
-	 *
-	 * @return void
 	 */
 	public function do(FullTreeUpdateRequest $request): void
 	{
@@ -44,6 +42,8 @@ class FullTree extends Controller
 	 */
 	public function check(MaintenanceRequest $request): Collection
 	{
+		// phpstan does not accept the staticMethod.dynamicCall ignore hint that's why the whole line is ignored
+		// @phpstan-ignore-next-line
 		$albums = Album::query()->join('base_albums', 'base_albums.id', '=', 'albums.id')->select(['albums.id', 'title', 'parent_id', '_lft', '_rgt'])->orderBy('_lft', 'asc')->toBase()->get();
 
 		return AlbumTree::collect($albums);

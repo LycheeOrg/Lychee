@@ -44,7 +44,7 @@ class AlbumProtectionPolicy extends Data
 	/**
 	 * Given a {@link BaseAlbum}, returns the Protection Policy associated to it.
 	 *
-	 * @param BaseAlbum $baseAlbum
+	 * @param BaseAlbum $base_album
 	 *
 	 * @return AlbumProtectionPolicy
 	 */
@@ -64,7 +64,7 @@ class AlbumProtectionPolicy extends Data
 	/**
 	 * Given a smart album, returns the Protection Policy associated to it.
 	 *
-	 * @param BaseSmartAlbum $baseSmartAlbum
+	 * @param BaseSmartAlbum $base_smart_album
 	 *
 	 * @return AlbumProtectionPolicy
 	 */

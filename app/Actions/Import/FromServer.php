@@ -16,10 +16,10 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 class FromServer
 {
 	/**
-	 * @param string[]   $paths           the server path to import from
-	 * @param Album|null $album           the album to import into
-	 * @param ImportMode $importMode      the import mode
-	 * @param int        $intendedOwnerId the intended owner of those pictures
+	 * @param string[]   $paths             the server path to import from
+	 * @param Album|null $album             the album to import into
+	 * @param ImportMode $import_mode       the import mode
+	 * @param int        $intended_owner_id the intended owner of those pictures
 	 *
 	 * @return StreamedResponse
 	 */

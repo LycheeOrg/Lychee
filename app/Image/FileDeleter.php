@@ -45,8 +45,6 @@ class FileDeleter
 
 	/**
 	 * @param Collection<int,SizeVariant> $size_variants
-	 *
-	 * @return void
 	 */
 	public function addSizeVariants(Collection $size_variants): void
 	{
@@ -55,8 +53,6 @@ class FileDeleter
 
 	/**
 	 * @param Collection<int,string> $symbolic_links
-	 *
-	 * @return void
 	 */
 	public function addSymbolicLinks(Collection $symbolic_links): void
 	{
@@ -67,9 +63,6 @@ class FileDeleter
 	 * Give the possility to add files with their associated storage to the deleter.
 	 *
 	 * @param Collection<int,string> $paths
-	 * @param string                 $diskName
-	 *
-	 * @return void
 	 */
 	public function addFiles(Collection $paths, string $disk_name): void
 	{
@@ -93,13 +86,10 @@ class FileDeleter
 	/**
 	 * Deletes the collected files.
 	 *
-	 * @return void
-	 *
 	 * @throws MediaFileOperationException
 	 */
 	public function do(): void
 	{
-		/** @var \Throwable|null $firstException */
 		$first_exception = null;
 
 		$this->convertSizeVariantsList();

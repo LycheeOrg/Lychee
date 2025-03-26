@@ -57,10 +57,8 @@ class GoogleMotionPictureHandler extends VideoHandler
 	/**
 	 * Loads a video stream from a Google Motion picture.
 	 *
-	 * @param NativeLocalFile $file        the Google Motion Picture
-	 * @param int             $videoLength the length of the video stream in bytes from the end of the file; `0` indicates the video stream fills the whole file
-	 *
-	 * @return void
+	 * @param NativeLocalFile $file         the Google Motion Picture
+	 * @param int             $video_length the length of the video stream in bytes from the end of the file; `0` indicates the video stream fills the whole file
 	 *
 	 * @throws ExternalComponentMissingException
 	 * @throws ConfigurationException
@@ -105,8 +103,6 @@ class GoogleMotionPictureHandler extends VideoHandler
 	 * Save the video stream to the provided file.
 	 *
 	 * @param NativeLocalFile $file the file to write into
-	 *
-	 * @return void
 	 *
 	 * @throws MediaFileOperationException
 	 */

@@ -77,10 +77,6 @@ trait UTCBasedTimes
 	 * information, etc.) the original timezone is respected and the result
 	 * is properly converted to {@link UTCBasedTimes::$DB_TIMEZONE_NAME}.
 	 *
-	 * @param mixed $value
-	 *
-	 * @return string|null
-	 *
 	 * @throws InvalidTimeZoneException
 	 */
 	public function fromDateTime($value): ?string
@@ -131,10 +127,6 @@ trait UTCBasedTimes
 	 *    the application's default timezone is CET, then the Carbon object
 	 *    will be
 	 *    `Carbon\Carbon{ time: '1970-01-01 01:00:00', timezone: 'CET' }`.
-	 *
-	 * @param mixed $value
-	 *
-	 * @return Carbon
 	 *
 	 * @throws InvalidTimeZoneException
 	 */

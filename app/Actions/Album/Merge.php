@@ -21,9 +21,6 @@ class Merge
 	 * Merges the content of the given source albums (photos and sub-albums)
 	 * into the target.
 	 *
-	 * @param Album                 $targetAlbum
-	 * @param Collection<int,Album> $albums
-	 *
 	 * @throws ModelNotFoundException
 	 * @throws ModelDBException
 	 * @throws QueryBuilderException

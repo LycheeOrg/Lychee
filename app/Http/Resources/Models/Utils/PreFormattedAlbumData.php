@@ -39,7 +39,7 @@ class PreFormattedAlbumData extends Data
 		$min_max_date_format = Configs::getValueAsString('date_format_hero_min_max');
 		$create_date_format = Configs::getValueAsString('date_format_hero_created_at');
 		$this->url = $url;
-		$this->title = $album->title;
+		$this->title = $album->get_title();
 		if ($album instanceof BaseAlbum) {
 			$this->min_taken_at = $album->min_taken_at?->format($min_max_date_format);
 			$this->max_taken_at = $album->max_taken_at?->format($min_max_date_format);

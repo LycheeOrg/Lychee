@@ -140,7 +140,7 @@ abstract class BaseArchive
 	private static function createZipTitle(Collection $albums): string
 	{
 		return $albums->containsOneItem() ?
-			self::createValidTitle($albums->first()->title) :
+			self::createValidTitle($albums->first()->get_title()) :
 			'Albums';
 	}
 
@@ -213,14 +213,14 @@ abstract class BaseArchive
 			return;
 		}
 
-		$full_name_of_directory = $this->makeUnique(self::createValidTitle($album->title), $used_dir_names);
+		$full_name_of_directory = $this->makeUnique(self::createValidTitle($album->get_title()), $used_dir_names);
 		if ($full_name_of_parent !== '') {
 			$full_name_of_directory = $full_name_of_parent . '/' . $full_name_of_directory;
 		}
 
 		$used_file_names = [];
 		// TODO: Ensure that the size variant `original` for each photo is eagerly loaded as it is needed below. This must be solved in close coordination with `ArchiveAlbumRequest`.
-		$photos = $album->photos;
+		$photos = $album->get_photos();
 
 		/** @var Photo $photo */
 		foreach ($photos as $photo) {

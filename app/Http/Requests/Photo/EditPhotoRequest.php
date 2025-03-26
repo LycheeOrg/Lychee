@@ -74,7 +74,7 @@ class EditPhotoRequest extends BaseApiRequest implements HasPhoto, HasTags, HasU
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		/** @var string $photoID */
+		/** @var string $photo_id */
 		$photo_id = $values[RequestAttribute::PHOTO_ID_ATTRIBUTE];
 
 		$this->photo = Photo::query()

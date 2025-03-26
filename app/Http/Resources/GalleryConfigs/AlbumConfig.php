@@ -58,7 +58,7 @@ class AlbumConfig extends Data
 
 		$this->setIsMapAccessible();
 		$this->setIsSearchAccessible($this->is_base_album);
-		$this->is_mod_frame_enabled = Configs::getValueAsBool('mod_frame_enabled') && $album->photos->count() > 0;
+		$this->is_mod_frame_enabled = Configs::getValueAsBool('mod_frame_enabled') && $album->get_photos()->count() > 0;
 		if ($album instanceof Album && $album->album_thumb_aspect_ratio !== null) {
 			$this->album_thumb_css_aspect_ratio = $album->album_thumb_aspect_ratio->css();
 		} else {

@@ -30,10 +30,10 @@ class LoginRequired
 	/**
 	 * Handle an incoming request.
 	 *
-	 * @param Request  $request        the incoming request to serve
-	 * @param \Closure $next           the next operation to be applied to the request
-	 * @param string   $requiredStatus the required login status; either
-	 *                                 {@link self::ROOT} or {@link self::ALBUM}
+	 * @param Request  $request         the incoming request to serve
+	 * @param \Closure $next            the next operation to be applied to the request
+	 * @param string   $required_status the required login status; either
+	 *                                  {@link self::ROOT} or {@link self::ALBUM}
 	 *
 	 * @throws ConfigurationException
 	 * @throws FrameworkException

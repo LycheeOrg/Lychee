@@ -27,7 +27,7 @@ final class SizeVariantResource extends JsonResource
 	/**
 	 * Set noUrl in flow mode (operations can be chained after).
 	 *
-	 * @param bool $noUrl
+	 * @param bool $no_url
 	 *
 	 * @return SizeVariantResource
 	 */

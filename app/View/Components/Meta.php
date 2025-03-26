@@ -11,6 +11,7 @@ namespace App\View\Components;
 use App\Contracts\Models\AbstractAlbum;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Http\Resources\Traits\HasHeaderUrl;
+use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Photo;
@@ -79,7 +80,7 @@ class Meta extends Component
 		}
 
 		if ($this->album !== null) {
-			$this->page_title = $this->album->title;
+			$this->page_title = $this->album->get_title();
 			if ($this->album instanceof BaseAlbum) {
 				$this->page_description = $this->album->description ?? Configs::getValueAsString('site_title');
 			}
@@ -96,8 +97,6 @@ class Meta extends Component
 	/**
 	 * Render component.
 	 *
-	 * @return View
-	 *
 	 * @throws BindingResolutionException
 	 */
 	public function render(): View
@@ -107,10 +106,6 @@ class Meta extends Component
 
 	/**
 	 * Returns user.css url with cache busting if file has been updated.
-	 *
-	 * @param string $fileName
-	 *
-	 * @return string
 	 */
 	public static function getUserCustomFiles(string $file_name): string
 	{

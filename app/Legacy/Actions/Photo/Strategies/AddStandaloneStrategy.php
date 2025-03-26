@@ -75,8 +75,6 @@ class AddStandaloneStrategy extends AbstractAddStrategy
 	}
 
 	/**
-	 * @return Photo
-	 *
 	 * @throws LycheeException
 	 */
 	public function do(): Photo
@@ -147,6 +145,7 @@ class AddStandaloneStrategy extends AbstractAddStrategy
 			// `$this->source_file` will be deleted after this step.
 			// But `$this->source_image` remains in memory.
 			$target_file = $this->naming_strategy->createFile(SizeVariantType::ORIGINAL);
+			/** @var StreamStat $stream_stat */
 			$stream_stat = $this->putSourceIntoFinalDestination($target_file);
 
 			// If we have a temporary video file from a Google Motion Picture,
@@ -201,7 +200,6 @@ class AddStandaloneStrategy extends AbstractAddStrategy
 		// extract a reference image above
 		if ($this->source_image?->isLoaded()) {
 			try {
-				/** @var SizeVariantFactory $sizeVariantFactory */
 				$size_variant_factory = resolve(SizeVariantFactory::class);
 				$size_variant_factory->init($this->photo, $this->source_image, $this->naming_strategy);
 				$variants = $size_variant_factory->createSizeVariants();

@@ -34,7 +34,8 @@ class LegacyIdExceptionHandler implements HttpExceptionHandler
 			) {
 				return true;
 			}
-		} while ($e = $e->getPrevious());
+			$e = $e->getPrevious();
+		} while ($e !== null);
 
 		return false;
 	}

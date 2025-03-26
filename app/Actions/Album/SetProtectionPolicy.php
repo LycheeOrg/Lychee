@@ -22,11 +22,6 @@ use Illuminate\Support\Facades\Hash;
 class SetProtectionPolicy
 {
 	/**
-	 * @param BaseAlbum             $album
-	 * @param AlbumProtectionPolicy $protectionPolicy
-	 * @param bool                  $shallSetPassword
-	 * @param string|null           $password
-	 *
 	 * @return void
 	 *
 	 * @throws InvalidPropertyException
@@ -52,7 +47,7 @@ class SetProtectionPolicy
 		$active_permissions->grants_full_photo_access = $protection_policy->grants_full_photo_access;
 		$active_permissions->grants_download = $protection_policy->grants_download;
 		$active_permissions->grants_upload = $protection_policy->grants_upload;
-		$active_permissions->base_album_id = $album->id;
+		$active_permissions->base_album_id = $album->get_id();
 
 		// $album->public_permissions = $active_permissions;
 
@@ -67,7 +62,7 @@ class SetProtectionPolicy
 				$active_permissions->password = null;
 			}
 		}
-		$active_permissions->base_album_id = $album->id;
+		$active_permissions->base_album_id = $album->get_id();
 		$active_permissions->save();
 	}
 }

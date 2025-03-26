@@ -54,10 +54,10 @@ class UploadedFile extends NativeLocalFile
 	/**
 	 * Returns the MIME type of the file.
 	 *
-	 * @param bool $fallbackToClientMimeType flag to use the provided MIME
-	 *                                       type by client-side, if the
-	 *                                       internal PHP mechanism detects
-	 *                                       "application/octet-stream"
+	 * @param bool $fallback_to_client_mime_type flag to use the provided MIME
+	 *                                           type by client-side, if the
+	 *                                           internal PHP mechanism detects
+	 *                                           "application/octet-stream"
 	 *
 	 * @return string the MIME type
 	 *

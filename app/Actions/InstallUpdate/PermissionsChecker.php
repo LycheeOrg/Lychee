@@ -68,7 +68,7 @@ class PermissionsChecker
 	 *
 	 * @param string $folder
 	 * @param string $permission
-	 * @param int    $isSet
+	 * @param int    $is_set
 	 */
 	private function addFile(string $folder, string $permission, int $is_set): void
 	{
@@ -90,7 +90,7 @@ class PermissionsChecker
 	 *  map.
 	 *
 	 * @param string $permissions
-	 * @param int    $areSet
+	 * @param int    $are_set
 	 *
 	 * @return (string|int)[][]
 	 */

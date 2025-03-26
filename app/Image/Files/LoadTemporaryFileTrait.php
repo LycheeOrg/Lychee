@@ -15,18 +15,12 @@ trait LoadTemporaryFileTrait
 {
 	/**
 	 * This returns the base path to use to store files.
-	 *
-	 * @return string
 	 */
 	abstract protected function getFileBasePath(): string;
 
 	/**
 	 * Prepare a temporary file to be loaded.
 	 * Name is randomly generated and will be placed in getFileBasePath() directory.
-	 *
-	 * @param string $fileExtension
-	 *
-	 * @return string
 	 *
 	 * @throws MediaFileOperationException
 	 */
