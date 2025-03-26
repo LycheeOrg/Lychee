@@ -19,6 +19,7 @@ use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
+use App\ModelFunctions\HasAbstractAlbumProperties;
 use App\Models\Builders\AlbumBuilder;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Extensions\ToArrayThrowsNotImplemented;
@@ -139,6 +140,7 @@ class Album extends BaseAlbum implements Node
 	use ToArrayThrowsNotImplemented;
 	/** @phpstan-use HasFactory<\Database\Factories\AlbumFactory> */
 	use HasFactory;
+	use HasAbstractAlbumProperties;
 
 	/**
 	 * The model's attributes.

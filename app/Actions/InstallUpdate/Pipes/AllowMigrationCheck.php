@@ -21,7 +21,7 @@ class AllowMigrationCheck extends AbstractUpdateInstallerPipe
 	/**
 	 * {@inheritDoc}
 	 */
-	public function handle(array &$output, \Closure $next): array
+	public function handle(array $output, \Closure $next): array
 	{
 		if (Config::get('app.env') !== 'production') {
 			return $next($output);

@@ -16,7 +16,7 @@ class Spacer extends AbstractUpdateInstallerPipe
 	/**
 	 * {@inheritDoc}
 	 */
-	public function handle(array &$output, \Closure $next): array
+	public function handle(array $output, \Closure $next): array
 	{
 		$output[] = '';
 

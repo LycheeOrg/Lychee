@@ -17,6 +17,7 @@ use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Exceptions\Internal\InvalidQueryModelException;
 use App\Exceptions\InvalidPropertyException;
+use App\ModelFunctions\HasAbstractAlbumProperties;
 use App\Models\AccessPermission;
 use App\Models\Configs;
 use App\Models\Extensions\SortingDecorator;
@@ -29,7 +30,6 @@ use App\SmartAlbums\Utils\MimicModel;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class BaseSmartAlbum.
@@ -40,11 +40,12 @@ use Illuminate\Database\Eloquent\Model;
  * Photos belong to these albums due to certain properties like being
  * starred, being recently added, etc.
  */
-abstract class BaseSmartAlbum extends Model implements AbstractAlbum
+abstract class BaseSmartAlbum implements AbstractAlbum
 {
 	use MimicModel;
 	use UTCBasedTimes;
 	use ToArrayThrowsNotImplemented;
+	use HasAbstractAlbumProperties;
 
 	protected PhotoQueryPolicy $photo_query_policy;
 	protected string $id;
@@ -74,8 +75,6 @@ abstract class BaseSmartAlbum extends Model implements AbstractAlbum
 			throw new FrameworkException('Laravel\'s service container', $e);
 		}
 		// @codeCoverageIgnoreEnd
-
-		parent::__construct();
 	}
 
 	/**

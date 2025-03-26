@@ -10,6 +10,7 @@ namespace App\Models;
 
 use App\Casts\ArrayCast;
 use App\Exceptions\InvalidPropertyException;
+use App\ModelFunctions\HasAbstractAlbumProperties;
 use App\Models\Builders\TagAlbumBuilder;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Extensions\Thumb;
@@ -58,6 +59,7 @@ class TagAlbum extends BaseAlbum
 	use ToArrayThrowsNotImplemented;
 	/** @phpstan-use HasFactory<\Database\Factories\TagAlbumFactory> */
 	use HasFactory;
+	use HasAbstractAlbumProperties;
 
 	/**
 	 * The model's attributes.
@@ -85,17 +87,17 @@ class TagAlbum extends BaseAlbum
 	];
 
 	/**
-	 * @var array<int,string> The list of attributes which exist as columns of the DB
-	 *                        relation but shall not be serialized to JSON
+	 * @var list<string> The list of attributes which exist as columns of the DB
+	 *                   relation but shall not be serialized to JSON
 	 */
 	protected $hidden = [
 		'base_class', // don't serialize base class as a relation, the attributes of the base class are flatly merged into the JSON result
 	];
 
 	/**
-	 * @var array<int,string> The list of "virtual" attributes which do not exist as
-	 *                        columns of the DB relation but which shall be appended to
-	 *                        JSON from accessors
+	 * @var list<string> The list of "virtual" attributes which do not exist as
+	 *                   columns of the DB relation but which shall be appended to
+	 *                   JSON from accessors
 	 */
 	protected $appends = [
 		'thumb',

@@ -16,7 +16,7 @@ class BranchCheck extends AbstractUpdateInstallerPipe
 	/**
 	 * {@inheritDoc}
 	 */
-	public function handle(array &$output, \Closure $next): array
+	public function handle(array $output, \Closure $next): array
 	{
 		$installed_version = resolve(InstalledVersion::class);
 		if ($installed_version->isRelease()) {

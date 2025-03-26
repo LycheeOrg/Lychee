@@ -80,7 +80,7 @@ class Meta extends Component
 		}
 
 		if ($this->album !== null) {
-			$this->page_title = $this->album->title;
+			$this->page_title = $this->album->get_title();
 			if ($this->album instanceof BaseAlbum) {
 				$this->page_description = $this->album->description ?? Configs::getValueAsString('site_title');
 			}

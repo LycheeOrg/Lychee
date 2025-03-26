@@ -71,8 +71,8 @@ class ProcessImageJob implements ShouldQueue
 			$album = $abstract_album;
 		}
 
-		$this->album_id = $album?->id;
-		$album_name = $album?->title ?? __('gallery.smart_album.unsorted');
+		$this->album_id = $album?->get_id();
+		$album_name = $album?->get_title() ?? __('gallery.smart_album.unsorted');
 		$user_id = Auth::user()?->id;
 		if ($user_id === null && ($album === null || $album instanceof BaseSmartAlbum)) {
 			throw new OwnerRequiredException();

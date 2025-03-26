@@ -13,6 +13,7 @@ use App\Casts\ArrayCast;
 use App\Casts\DateTimeWithTimezoneCast;
 use App\Casts\MustNotSetCast;
 use App\Constants\RandomID;
+use App\Contracts\Models\HasUTCBasedTimes;
 use App\Enum\LicenseType;
 use App\Enum\StorageDiskType;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
@@ -124,7 +125,7 @@ use function Safe\preg_match;
  * @method static PhotoBuilder|Photo whereType($value)
  * @method static PhotoBuilder|Photo whereUpdatedAt($value)
  */
-class Photo extends Model
+class Photo extends Model implements HasUTCBasedTimes
 {
 	/** @phpstan-use HasFactory<\Database\Factories\PhotoFactory> */
 	use HasFactory;
@@ -166,8 +167,8 @@ class Photo extends Model
 	];
 
 	/**
-	 * @var array<int,string> The list of attributes which exist as columns of the DB
-	 *                        relation but shall not be serialized to JSON
+	 * @var list<string> The list of attributes which exist as columns of the DB
+	 *                   relation but shall not be serialized to JSON
 	 */
 	protected $hidden = [
 		RandomID::LEGACY_ID_NAME,
@@ -407,6 +408,7 @@ class Photo extends Model
 
 	/**
 	 * @param string[] $except
+	 *                         //method.childParameterType (contravariance)
 	 */
 	public function replicate(?array $except = null): Photo
 	{

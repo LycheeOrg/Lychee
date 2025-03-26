@@ -44,9 +44,11 @@ class AlbumQueryPolicy
 	 *
 	 * Note this makes use of the fact that when an album is NOT shared nor public, the value of is_link_required is NULL.
 	 *
-	 * @param AlbumBuilder|FixedQueryBuilder<TagAlbum>|FixedQueryBuilder<Album> $query
+	 * @template TQuery of AlbumBuilder|FixedQueryBuilder<TagAlbum>|FixedQueryBuilder<Album>
 	 *
-	 * @return AlbumBuilder|FixedQueryBuilder<TagAlbum>|FixedQueryBuilder<Album>|TagAlbumBuilder
+	 * @param TQuery $query
+	 *
+	 * @return TQuery
 	 *
 	 * @throws InternalLycheeException
 	 */
