@@ -81,7 +81,7 @@ class SetUserSettingsRequest extends BaseApiRequest implements HasUsername, HasP
 		}
 		$this->may_upload = static::toBoolean($values[RequestAttribute::MAY_UPLOAD_ATTRIBUTE]);
 		$this->may_edit_own_settings = static::toBoolean($values[RequestAttribute::MAY_EDIT_OWN_SETTINGS_ATTRIBUTE]);
-		/** @var int $userID */
+		/** @var int $user_id */
 		$user_id = $values[RequestAttribute::ID_ATTRIBUTE];
 		$this->user2 = User::query()->findOrFail($user_id);
 		$has_quota = static::toBoolean($values[RequestAttribute::HAS_QUOTA_ATTRIBUTE] ?? false);

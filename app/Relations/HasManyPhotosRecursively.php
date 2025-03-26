@@ -96,7 +96,7 @@ class HasManyPhotosRecursively extends BaseHasManyPhotos
 	 */
 	public function getResults(): Collection
 	{
-		/** @var Album|null $album */
+		/** @var Album $album */
 		$album = $this->parent;
 		if ($album === null || !Gate::check(AlbumPolicy::CAN_ACCESS, $album)) {
 			return $this->related->newCollection();

@@ -58,9 +58,9 @@ class ThumbAlbumResource extends Data
 	{
 		$date_format = Configs::getValueAsString('date_format_album_thumb');
 
-		$this->id = $data->id;
-		$this->thumb = ThumbResource::fromModel($data->thumb);
-		$this->title = $data->title;
+		$this->id = $data->get_id();
+		$this->thumb = ThumbResource::fromModel($data->get_thumb());
+		$this->title = $data->get_title();
 
 		if ($data instanceof BaseSmartAlbum) {
 			$policy = AlbumProtectionPolicy::ofSmartAlbum($data);

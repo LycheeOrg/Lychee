@@ -70,7 +70,7 @@ class Configs extends Model
 	/**
 	 * The attributes that are mass assignable.
 	 *
-	 * @var array<int,string>
+	 * @var list<string>
 	 */
 	protected $fillable = ['key', 'value', 'cat', 'type_range', 'is_secret', 'description', 'level', 'not_on_docker', 'order'];
 

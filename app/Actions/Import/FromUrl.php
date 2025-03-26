@@ -32,7 +32,7 @@ class FromUrl
 	 *
 	 * @param string[]   $urls
 	 * @param Album|null $album
-	 * @param int        $intendedOwnerId
+	 * @param int        $intended_owner_id
 	 *
 	 * @return Collection<int,Photo> the collection of imported photos
 	 *

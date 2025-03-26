@@ -268,7 +268,6 @@ class AlbumPolicy extends BasePolicy
 			return true;
 		}
 
-		/** @var Album $abstractAlbum */
 		if (
 			AccessPermission::query()
 			->where(APC::BASE_ALBUM_ID, '=', $abstract_album->parent_id)
@@ -428,9 +427,6 @@ class AlbumPolicy extends BasePolicy
 
 	/**
 	 * Check if user can share selected album with to public.
-	 *
-	 * @param User           $user
-	 * @param ?AbstractAlbum $abstractAlbum
 	 *
 	 * @return bool
 	 */

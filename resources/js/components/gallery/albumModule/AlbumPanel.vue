@@ -10,6 +10,7 @@
 				@refresh="emits('refresh')"
 				@toggle-slide-show="emits('toggleSlideShow')"
 				@toggle-edit="emits('toggleEdit')"
+				@open-search="emits('openSearch')"
 				@go-back="emits('goBack')"
 			/>
 		</Collapse>
@@ -155,6 +156,7 @@ const emits = defineEmits<{
 	toggleEdit: [];
 	toggleSlideShow: [];
 	scrollToTop: [];
+	openSearch: [];
 	goBack: [];
 }>();
 
@@ -180,7 +182,7 @@ const {
 	albumClick,
 } = useSelection(photos, children, togglableStore);
 
-const { photoRoute } = usePhotoRoute(togglableStore);
+const { photoRoute } = usePhotoRoute(router);
 
 function photoClick(idx: number, e: MouseEvent) {
 	router.push(photoRoute(album.value?.id, photos.value[idx].id));

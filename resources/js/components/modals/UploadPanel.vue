@@ -94,11 +94,6 @@ import { useRoute } from "vue-router";
 import { storeToRefs } from "pinia";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 
-export type Uploadable = {
-	file: File;
-	status: "uploading" | "waiting" | "done" | "error";
-};
-
 const togglableStore = useTogglablesStateStore();
 const { is_upload_visible, list_upload_files } = storeToRefs(togglableStore);
 const route = useRoute();

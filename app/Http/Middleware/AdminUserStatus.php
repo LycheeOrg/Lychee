@@ -41,12 +41,10 @@ class AdminUserStatus
 	/**
 	 * Handles an incoming request.
 	 *
-	 * @param Request  $request        the incoming request to serve
-	 * @param \Closure $next           the next operation to be applied to the request
-	 * @param string   $requiredStatus the required installation status; either
-	 *                                 {@link self::SET} or {@link self::UNSET}
-	 *
-	 * @return mixed
+	 * @param Request  $request         the incoming request to serve
+	 * @param \Closure $next            the next operation to be applied to the request
+	 * @param string   $required_status the required installation status; either
+	 *                                  {@link self::SET} or {@link self::UNSET}
 	 *
 	 * @throws LycheeException
 	 */

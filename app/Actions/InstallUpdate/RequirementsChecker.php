@@ -65,7 +65,7 @@ class RequirementsChecker
 	/**
 	 * Check PHP version requirement.
 	 *
-	 * @param string|null $minPhpVersion
+	 * @param string|null $min_php_version
 	 *
 	 * @return array{full:string,current:string,minimum:string,supported:bool}
 	 */

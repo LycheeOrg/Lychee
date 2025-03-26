@@ -18,10 +18,6 @@ class Helpers
 {
 	/**
 	 * Add UnixTimeStamp to file path suffix.
-	 *
-	 * @param string $filePath
-	 *
-	 * @return string
 	 */
 	public function cacheBusting(string $file_path): string
 	{
@@ -39,10 +35,8 @@ class Helpers
 	/**
 	 * Return the 32bit truncated version of a number seen as string.
 	 *
-	 * @param string $id
-	 * @param int    $prevShortId
-	 * @param int    $phpMax      predefined so set to MAX php during migration
-	 *                            but allow to actually test the code
+	 * @param int $php_max predefined so set to MAX php during migration
+	 *                     but allow to actually test the code
 	 *
 	 * @return string updated ID
 	 */
@@ -63,10 +57,6 @@ class Helpers
 
 	/**
 	 * Check if $path has readable and writable permissions.
-	 *
-	 * @param string $path
-	 *
-	 * @return bool
 	 */
 	public function hasPermissions(string $path): bool
 	{
@@ -80,10 +70,6 @@ class Helpers
 
 	/**
 	 * Check if $path has readable and writable permissions.
-	 *
-	 * @param string $path
-	 *
-	 * @return bool
 	 */
 	public function hasFullPermissions(string $path): bool
 	{
@@ -105,11 +91,6 @@ class Helpers
 	 * Compute the GCD of a and b
 	 * This function is used to simplify the shutter speed when given in the form of e.g. 50/100.
 	 *
-	 * @param int $a
-	 * @param int $b
-	 *
-	 * @return int
-	 *
 	 * @throws ZeroModuloException
 	 */
 	public function gcd(int $a, int $b): int
@@ -123,10 +104,6 @@ class Helpers
 
 	/**
 	 * From https://www.php.net/manual/en/function.disk-total-space.php.
-	 *
-	 * @param float $bytes
-	 *
-	 * @return string
 	 */
 	public function getSymbolByQuantity(float $bytes): string
 	{
@@ -147,8 +124,6 @@ class Helpers
 
 	/**
 	 * Check if the `exec` function is available.
-	 *
-	 * @return bool
 	 */
 	public function isExecAvailable(): bool
 	{
@@ -201,9 +176,8 @@ class Helpers
 	/**
 	 * Converts a decimal degree into integer degree, minutes and seconds.
 	 *
-	 * @param float|null $decimal
-	 * @param bool       $type    - indicates if the passed decimal indicates a
-	 *                            latitude (`true`) or a longitude (`false`)
+	 * @param bool $type - indicates if the passed decimal indicates a
+	 *                   latitude (`true`) or a longitude (`false`)
 	 *
 	 * @returns string
 	 */
@@ -249,10 +223,8 @@ class Helpers
 	/**
 	 * Censor a word by replacing half of its character by stars.
 	 *
-	 * @param string $string         to censor
-	 * @param float  $percentOfClear the amount of the original string that remains untouched. The lower the value, the higher the censoring.
-	 *
-	 * @return string
+	 * @param string $string           to censor
+	 * @param float  $percent_of_clear the amount of the original string that remains untouched. The lower the value, the higher the censoring.
 	 */
 	public function censor(string $string, float $percent_of_clear = 0.5): string
 	{
@@ -275,10 +247,6 @@ class Helpers
 	/**
 	 * Format exception trace as text.
 	 *
-	 * @param \Exception $e
-	 *
-	 * @return string
-	 *
 	 * @codeCoverageIgnore
 	 */
 	public function exceptionTraceToText(\Exception $e): string
@@ -294,10 +262,6 @@ class Helpers
 	/**
 	 * Given a request return the uri WITH the query paramters.
 	 * This makes sure that we handle the case where the query parameters are empty or contains an album id or pagination.
-	 *
-	 * @param Request $request
-	 *
-	 * @return string
 	 */
 	public function getUriWithQueryString(Request $request): string
 	{

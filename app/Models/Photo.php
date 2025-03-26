@@ -13,6 +13,7 @@ use App\Casts\ArrayCast;
 use App\Casts\DateTimeWithTimezoneCast;
 use App\Casts\MustNotSetCast;
 use App\Constants\RandomID;
+use App\Contracts\Models\HasUTCBasedTimes;
 use App\Enum\LicenseType;
 use App\Enum\StorageDiskType;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
@@ -123,10 +124,8 @@ use function Safe\preg_match;
  * @method static PhotoBuilder|Photo whereTitle($value)
  * @method static PhotoBuilder|Photo whereType($value)
  * @method static PhotoBuilder|Photo whereUpdatedAt($value)
- *
- * @mixin \Eloquent
  */
-class Photo extends Model
+class Photo extends Model implements HasUTCBasedTimes
 {
 	/** @phpstan-use HasFactory<\Database\Factories\PhotoFactory> */
 	use HasFactory;
@@ -134,7 +133,7 @@ class Photo extends Model
 	/** @phpstan-use HasRandomIDAndLegacyTimeBasedID<Photo> */
 	use HasRandomIDAndLegacyTimeBasedID;
 	use ThrowsConsistentExceptions;
-	/** @phpstan-use HasBidirectionalRelationships */
+	// @phpstan-use HasBidirectionalRelationships
 	use HasBidirectionalRelationships;
 	use ToArrayThrowsNotImplemented;
 
@@ -168,8 +167,8 @@ class Photo extends Model
 	];
 
 	/**
-	 * @var array<int,string> The list of attributes which exist as columns of the DB
-	 *                        relation but shall not be serialized to JSON
+	 * @var list<string> The list of attributes which exist as columns of the DB
+	 *                   relation but shall not be serialized to JSON
 	 */
 	protected $hidden = [
 		RandomID::LEGACY_ID_NAME,
@@ -179,11 +178,6 @@ class Photo extends Model
 		'live_photo_short_path', // serialize live_photo_url instead
 	];
 
-	/**
-	 * @param $query
-	 *
-	 * @return PhotoBuilder
-	 */
 	public function newEloquentBuilder($query): PhotoBuilder
 	{
 		return new PhotoBuilder($query);
@@ -241,7 +235,7 @@ class Photo extends Model
 			// shutter speed needs to be processed. It is stored as a string `a/b s`
 			if (!str_starts_with($shutter, '1/')) {
 				preg_match('/(\d+)\/(\d+) s/', $shutter, $matches);
-				if ($matches) {
+				if (count($matches) > 0) {
 					$a = intval($matches[1]);
 					$b = intval($matches[2]);
 					if ($b !== 0) {
@@ -280,8 +274,6 @@ class Photo extends Model
 	 *
 	 * @param ?string $license the value from the database passed in by
 	 *                         the Eloquent framework
-	 *
-	 * @return LicenseType
 	 */
 	protected function getLicenseAttribute(?string $license): LicenseType
 	{
@@ -313,8 +305,6 @@ class Photo extends Model
 	 *
 	 * @param string|null $focal the value from the database passed in by the
 	 *                           Eloquent framework
-	 *
-	 * @return ?string
 	 *
 	 * @throws IllegalOrderOfOperationException
 	 */
@@ -374,8 +364,6 @@ class Photo extends Model
 	/**
 	 * Checks if the photo represents a (real) photo (as opposed to video or raw).
 	 *
-	 * @return bool
-	 *
 	 * @throws IllegalOrderOfOperationException
 	 */
 	public function isPhoto(): bool
@@ -391,8 +379,6 @@ class Photo extends Model
 
 	/**
 	 * Checks if the photo represents a video.
-	 *
-	 * @return bool
 	 *
 	 * @throws IllegalOrderOfOperationException
 	 */
@@ -413,8 +399,6 @@ class Photo extends Model
 	 * The media record is "raw" if it is neither of a supported photo nor
 	 * video type.
 	 *
-	 * @return bool
-	 *
 	 * @throws IllegalOrderOfOperationException
 	 */
 	public function isRaw(): bool
@@ -424,6 +408,7 @@ class Photo extends Model
 
 	/**
 	 * @param string[] $except
+	 *                         //method.childParameterType (contravariance)
 	 */
 	public function replicate(?array $except = null): Photo
 	{

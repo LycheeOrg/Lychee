@@ -33,7 +33,6 @@ final class Counts
 		$max_date_object = Carbon::now()->subDays($max_date);
 		$min_date_object = Carbon::now()->subDays($min_date);
 
-		/** @var Collection<int,object{date:string,uploads:int}> */
 		return DB::table('photos')->selectRaw(' DATE(created_at) date, count(*) uploads')
 			->where('created_at', '>', $min_date_object)
 			->where('created_at', '<=', $max_date_object)
@@ -59,7 +58,6 @@ final class Counts
 		$max_date_object = Carbon::now()->subDays($max_date);
 		$min_date_object = Carbon::now()->subDays($min_date);
 
-		/** @var Collection<int,object{date:string,uploads:int}> */
 		return DB::table('photos')->selectRaw(' DATE(taken_at) date, count(*) uploads')
 			->where('taken_at', '>', $min_date_object)
 			->where('taken_at', '<=', $max_date_object)

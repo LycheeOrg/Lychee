@@ -13,6 +13,7 @@ use App\Exceptions\LocationDecodingFailed;
 use App\Models\Configs;
 use Geocoder\Exception\Exception as GeocoderException;
 use Geocoder\Provider\Cache\ProviderCache;
+use Geocoder\Provider\Nominatim\Model\NominatimAddress;
 use Geocoder\Provider\Nominatim\Nominatim;
 use Geocoder\Query\ReverseQuery;
 use Geocoder\StatefulGeocoder;
@@ -57,9 +58,6 @@ class Geodecoder
 	/**
 	 * Decode GPS coordinates into location.
 	 *
-	 * @param ?float $latitude
-	 * @param ?float $longitude
-	 *
 	 * @return ?string location
 	 *
 	 * @throws ExternalComponentFailedException
@@ -82,10 +80,6 @@ class Geodecoder
 	/**
 	 * Wrapper to decode GPS coordinates into location.
 	 *
-	 * @param float         $latitude
-	 * @param float         $longitude
-	 * @param ProviderCache $cachedProvider
-	 *
 	 * @return ?string location
 	 *
 	 * @throws LocationDecodingFailed
@@ -103,7 +97,10 @@ class Geodecoder
 			}
 
 			/** @disregard P1013 */
-			return $result_list->first()->getDisplayName();
+			/** @var NominatimAddress $address */
+			$address = $result_list->first();
+
+			return $address->getDisplayName();
 			// @codeCoverageIgnoreStart
 		} catch (GeocoderException $e) {
 			throw new LocationDecodingFailed('Location (' . $latitude . ', ' . $longitude . ') could not be decoded.', $e);

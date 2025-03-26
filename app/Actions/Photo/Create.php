@@ -83,7 +83,7 @@ class Create
 			file_last_modified_time: $file_last_modified_time
 		);
 
-		/** @var InitDTO $initDTO */
+		/** @var InitDTO $init_dto */
 		$init_dto = app(Pipeline::class)
 			->send($init_dto)
 			->through([
@@ -119,7 +119,7 @@ class Create
 	/**
 	 * Handle duplicate case.
 	 *
-	 * @param InitDTO $initDTO initial fetched
+	 * @param InitDTO $init_dto initial fetched
 	 *
 	 * @return Photo Photo duplicated
 	 *
@@ -300,7 +300,7 @@ class Create
 	/**
 	 * Check whether the user has enough quota to upload the file.
 	 *
-	 * @param NativeLocalFile $sourceFile
+	 * @param NativeLocalFile $source_file
 	 *
 	 * @return void
 	 *

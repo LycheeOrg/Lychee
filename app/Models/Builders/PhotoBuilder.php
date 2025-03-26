@@ -13,7 +13,9 @@ use App\Eloquent\FixedQueryBuilder;
 /**
  * Specialized query builder for {@link \App\Models\Photo}.
  *
- * @extends FixedQueryBuilder<\App\Models\Photo>
+ * @template TModelClass of \App\Models\Photo
+ *
+ * @extends FixedQueryBuilder<TModelClass>
  */
 class PhotoBuilder extends FixedQueryBuilder
 {

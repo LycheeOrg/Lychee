@@ -9,11 +9,14 @@
 namespace App\Models\Builders;
 
 use App\Eloquent\FixedQueryBuilder;
+use App\Models\OauthCredential;
 
 /**
  * Specialized query builder for {@link \App\Models\OauthCredential}.
  *
- * @extends FixedQueryBuilder<\App\Models\OauthCredential>
+ * @template TModelClass of OauthCredential
+ *
+ * @extends FixedQueryBuilder<TModelClass>
  */
 class OauthCredentialBuilder extends FixedQueryBuilder
 {

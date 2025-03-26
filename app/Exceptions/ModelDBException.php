@@ -43,13 +43,11 @@ class ModelDBException extends BaseLycheeException
 	 * The message of the new instance is
 	 * > Could not $operationName $modelName
 	 *
-	 * @param string          $modelName     the name of the model
-	 * @param string          $operationName the failed operation in gerund
-	 *                                       form, typically "creating",
-	 *                                       "updating", "deleting", ...
-	 * @param \Throwable|null $previous      an optional previous exception
-	 *
-	 * @return ModelDBException
+	 * @param string          $model_name     the name of the model
+	 * @param string          $operation_name the failed operation in gerund
+	 *                                        form, typically "creating",
+	 *                                        "updating", "deleting", ...
+	 * @param \Throwable|null $previous       an optional previous exception
 	 */
 	public static function create(string $model_name, string $operation_name, ?\Throwable $previous = null): ModelDBException
 	{

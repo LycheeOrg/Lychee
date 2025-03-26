@@ -34,8 +34,8 @@ class TemporaryLocalFile extends NativeLocalFile
 	/**
 	 * Creates a new temporary file with a random file name.
 	 *
-	 * @param string $fileExtension the file extension of the new temporary file incl. a preceding dot
-	 * @param string $fakeBaseName  the fake base name of the file; e.g. the original name prior to up-/download
+	 * @param string $file_extension the file extension of the new temporary file incl. a preceding dot
+	 * @param string $fake_base_name the fake base name of the file; e.g. the original name prior to up-/download
 	 *
 	 * @throws MediaFileOperationException
 	 */

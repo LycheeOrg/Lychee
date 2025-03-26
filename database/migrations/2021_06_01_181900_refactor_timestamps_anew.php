@@ -12,6 +12,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\LazyCollection;
 
 return new class() extends Migration {
 	private const SQL_TIMEZONE_NAME = 'UTC';
@@ -161,7 +162,8 @@ return new class() extends Migration {
 		});
 		$needsConversion = $this->needsConversion();
 		DB::beginTransaction();
-		/** @var array<int,object{id:int,created_at_tmp:string|null,updated_at_tmp:string|null}> */
+		/** @var LazyCollection<int,object{id:int,created_at_tmp:string|null,updated_at_tmp:string|null}> */
+		/** @phpstan-ignore varTag.type (false positive: https://github.com/phpstan/phpstan/issues/11805) */
 		$entities = DB::table($tableName)->select([
 			self::ID_COL_NAME,
 			self::CREATED_AT_COL_NAME . '_tmp',
@@ -240,7 +242,8 @@ return new class() extends Migration {
 		});
 		$needsConversion = $this->needsConversion();
 		DB::beginTransaction();
-		/** @var array<int,object{id:int,created_at_tmp:string|null,updated_at_tmp:string|null}> */
+		/** @var LazyCollection<int,object{id:int,created_at_tmp:string|null,updated_at_tmp:string|null}> */
+		/** @phpstan-ignore varTag.type (false positive: https://github.com/phpstan/phpstan/issues/11805) */
 		$entities = DB::table($tableName)->select([
 			self::ID_COL_NAME,
 			self::CREATED_AT_COL_NAME . '_tmp',
@@ -290,7 +293,8 @@ return new class() extends Migration {
 		});
 		$needsConversion = $this->needsConversion();
 		DB::beginTransaction();
-		/** @var array<int,object{id:int,takestamp:string|null}> */
+		/** @var LazyCollection<int,object{id:int,takestamp:string|null}> */
+		/** @phpstan-ignore varTag.type (false positive: https://github.com/phpstan/phpstan/issues/11805) */
 		$photos = DB::table(self::PHOTOS_TABLE_NAME)->select([
 			self::ID_COL_NAME,
 			self::PHOTO_TAKESTAMP_COL_NAME,
@@ -331,7 +335,8 @@ return new class() extends Migration {
 		});
 		$needsConversion = $this->needsConversion();
 		DB::beginTransaction();
-		/** @var array<int,object{id:int,taken_at:string|null,taken_at_orig_tz:string|null}> */
+		/** @var LazyCollection<int,object{id:int,taken_at:string|null,taken_at_orig_tz:string|null}> */
+		/** @phpstan-ignore varTag.type (false positive: https://github.com/phpstan/phpstan/issues/11805) */
 		$photos = DB::table(self::PHOTOS_TABLE_NAME)->select([
 			self::ID_COL_NAME,
 			self::PHOTO_TAKEN_AT_COL_NAME,

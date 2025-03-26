@@ -17,7 +17,7 @@ class SetSmartProtectionPolicy
 {
 	/**
 	 * @param BaseSmartAlbum $album
-	 * @param bool           $isPublic
+	 * @param bool           $is_public
 	 *
 	 * @return void
 	 */

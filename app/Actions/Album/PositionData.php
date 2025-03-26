@@ -46,6 +46,6 @@ class PositionData
 			->whereNotNull('latitude')
 			->whereNotNull('longitude');
 
-		return new PositionDataResource($album->id, $album->title, $photo_relation->get(), $album instanceof Album ? $album->track_url : null);
+		return new PositionDataResource($album->get_id(), $album->get_title(), $photo_relation->get(), $album instanceof Album ? $album->track_url : null);
 	}
 }

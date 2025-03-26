@@ -11,7 +11,6 @@ namespace App\Actions\Sharing;
 use App\Constants\AccessPermissionConstants as APC;
 use App\Models\AccessPermission;
 use App\Models\Album;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 
@@ -49,8 +48,7 @@ final class Propagate
 	{
 		// for each descendant, create a new permission if it does not exist.
 		// or update the existing permission.
-		/** @var Collection<int,string> $descendants */
-		$descendants = $album->descendants()->select('id')->pluck('id');
+		$descendants = $album->descendants()->getQuery()->select('id')->pluck('id');
 		$permissions = $album->access_permissions()->whereNotNull('user_id')->get();
 
 		// This is super inefficient.

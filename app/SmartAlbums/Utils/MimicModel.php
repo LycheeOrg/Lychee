@@ -14,7 +14,7 @@ use Illuminate\Support\Str;
 
 trait MimicModel
 {
-	abstract public function toArray(): array;
+	abstract public function toArray();
 
 	/**
 	 * Gets a property dynamically.
@@ -25,12 +25,13 @@ trait MimicModel
 	 *
 	 * @param string $key
 	 *
-	 * @return mixed
-	 *
 	 * @throws InternalLycheeException
 	 */
-	public function __get(string $key)
+	public function __get(mixed $key)
 	{
+		if (!is_string($key)) {
+			throw new LycheeInvalidArgumentException('property name must string');
+		}
 		if ($key === '') {
 			throw new LycheeInvalidArgumentException('property name must not be empty');
 		}

@@ -228,11 +228,7 @@ final class IndexController extends Controller
 
 	/**
 	 * Returns user.css url with cache busting if file has been updated.
-	 *
-	 * @param string $fileName
-	 *
-	 * @return string
-	 */
+	 * */
 	public static function getUserCustomFiles(string $file_name): string
 	{
 		$css_cache_busting = '';

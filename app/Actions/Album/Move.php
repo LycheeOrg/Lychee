@@ -18,9 +18,6 @@ class Move
 	/**
 	 * Moves the given albums into the target.
 	 *
-	 * @param Album|null            $targetAlbum
-	 * @param Collection<int,Album> $albums
-	 *
 	 * @throws ModelNotFoundException
 	 * @throws ModelDBException
 	 */

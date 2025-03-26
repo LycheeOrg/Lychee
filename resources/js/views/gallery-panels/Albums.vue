@@ -169,7 +169,6 @@ const lycheeStore = useLycheeStateStore();
 const togglableStore = useTogglablesStateStore();
 
 lycheeStore.init();
-togglableStore.resetSearch();
 const albumid = ref("gallery");
 
 const { onScroll, setScroll } = useScrollable(togglableStore, albumid);

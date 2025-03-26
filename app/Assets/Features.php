@@ -18,7 +18,7 @@ final class Features
 	/**
 	 * Determine whether a feature is active.
 	 *
-	 * @param string $featureName to check
+	 * @param string $feature_name to check
 	 *
 	 * @return bool is active
 	 */
@@ -32,7 +32,7 @@ final class Features
 	/**
 	 * Determine whether a feature is inactive.
 	 *
-	 * @param string $featureName to check
+	 * @param string $feature_name to check
 	 *
 	 * @return bool is inactive
 	 */
@@ -128,7 +128,7 @@ final class Features
 	 * Assert whether the feature exists or not.
 	 * Throws an exception if not.
 	 *
-	 * @param string $featureName name of the feature to check
+	 * @param string $feature_name name of the feature to check
 	 *
 	 * @return void
 	 *

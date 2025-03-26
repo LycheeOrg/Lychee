@@ -27,9 +27,6 @@ use function Safe\exec;
  */
 class UpdatableCheck implements DiagnosticPipe
 {
-	/**
-	 * @param InstalledVersion $installedVersion
-	 */
 	public function __construct(
 		private InstalledVersion $installed_version,
 		private DockerVersionInfo $docker_version_info,

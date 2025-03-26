@@ -48,7 +48,7 @@ class AdminAuthentication
 		// Note there is a small edge case where a user could be at version 4.6.3 AND having already bumped the ID.
 		// We consider this risk to be too small to actually mitigate it.
 
-		/** @var User|null $adminUser */
+		/** @var User|null $admin_user */
 		$admin_user = User::query()->find($admin_id);
 
 		// Admin User exists, so we check against it.
@@ -85,7 +85,7 @@ class AdminAuthentication
 		if (Hash::check($username, $username_hash) && Hash::check($password, $password_hash)) {
 			// Prior version 4.6.3 we are using ID 0 as admin
 			// We create admin at ID 0 because the 2022_12_10_183251_increment_user_ids will be taking care to push it to 1.
-			/** @var User $adminUser */
+			/** @var User $admin_user */
 			$admin_user = User::query()->findOrNew(0);
 			$admin_user->username = $username;
 			$admin_user->password = Hash::make($password);

@@ -95,11 +95,6 @@ class AccessPermission extends Model
 		APC::PASSWORD,
 	];
 
-	/**
-	 * @param $query
-	 *
-	 * @return AccessPermissionBuilder
-	 */
 	public function newEloquentBuilder($query): AccessPermissionBuilder
 	{
 		return new AccessPermissionBuilder($query);
@@ -129,10 +124,6 @@ class AccessPermission extends Model
 	 * Given an AccessPermission, duplicate its reccord.
 	 * - Password is NOT transfered
 	 * - base_album_id is NOT transfered.
-	 *
-	 * @param AccessPermission $access_permission
-	 *
-	 * @return AccessPermission
 	 */
 	public static function ofAccessPermission(AccessPermission $access_permission): self
 	{
@@ -141,8 +132,6 @@ class AccessPermission extends Model
 
 	/**
 	 * Return a new Public sharing permission with defaults.
-	 *
-	 * @return AccessPermission
 	 *
 	 * @throws ConfigurationKeyMissingException
 	 */
@@ -161,10 +150,6 @@ class AccessPermission extends Model
 
 	/**
 	 * Return a new permission set associated to a specific userId.
-	 *
-	 * @param int $userId
-	 *
-	 * @return AccessPermission
 	 */
 	public static function withGrantFullPermissionsToUser(int $user_id): self
 	{

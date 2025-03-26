@@ -16,8 +16,6 @@ class SymLinkFunctions
 	/**
 	 * Clear the table of existing SymLinks.
 	 *
-	 * @return void
-	 *
 	 * @throws ModelDBException
 	 *
 	 * @codeCoverageIgnore Only tested locally
@@ -25,7 +23,6 @@ class SymLinkFunctions
 	public function clearSymLink(): void
 	{
 		$sym_links = SymLink::all();
-		/** @var SymLink $symLink */
 		foreach ($sym_links as $sym_link) {
 			$sym_link->delete();
 		}
@@ -34,8 +31,6 @@ class SymLinkFunctions
 	/**
 	 * Remove outdated SymLinks.
 	 *
-	 * @return void
-	 *
 	 * @throws ModelDBException
 	 *
 	 * @codeCoverageIgnore Only tested locally
@@ -43,7 +38,6 @@ class SymLinkFunctions
 	public function remove_outdated(): void
 	{
 		$sym_links = SymLink::expired()->get();
-		/** @var SymLink $symLink */
 		foreach ($sym_links as $sym_link) {
 			$sym_link->delete();
 		}

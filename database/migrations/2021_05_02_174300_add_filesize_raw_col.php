@@ -10,6 +10,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\LazyCollection;
 
 return new class() extends Migration {
 	private const TABLE_NAME = 'photos';
@@ -28,7 +29,8 @@ return new class() extends Migration {
 
 		DB::beginTransaction();
 
-		/** @var array<int,object{id:int,size:string}> */
+		/** @var LazyCollection<int,object{id:int,size:string}> */
+		/** @phpstan-ignore varTag.type (false positive: https://github.com/phpstan/phpstan/issues/11805) */
 		$photos = DB::table(self::TABLE_NAME)
 			->select([self::ID_COL_NAME, self::OLD_COL_NAME])
 			->lazyById();
@@ -73,7 +75,8 @@ return new class() extends Migration {
 
 		DB::beginTransaction();
 
-		/** @var array<int,object{id:int,filesize:int}> */
+		/** @var LazyCollection<int,object{id:int,filesize:int}> */
+		/** @phpstan-ignore varTag.type (false positive: https://github.com/phpstan/phpstan/issues/11805) */
 		$photos = DB::table(self::TABLE_NAME)
 			->select([self::ID_COL_NAME, self::NEW_COL_NAME])
 			->lazyById();

@@ -136,7 +136,7 @@ class HasManyChildPhotos extends HasManyBidirectionally
 		/** @var Album $model */
 		foreach ($models as $model) {
 			if (isset($dictionary[$key = $this->getDictionaryKey($model->getAttribute($this->localKey))])) {
-				/** @var Collection<int,Photo> $childrenOfModel */
+				/** @var Collection<int,Photo> $children_of_model */
 				$children_of_model = $this->getRelationValue($dictionary, $key, 'many');
 				$sorting = $model->getEffectivePhotoSorting();
 				$children_of_model = $children_of_model
@@ -150,7 +150,7 @@ class HasManyChildPhotos extends HasManyBidirectionally
 				// This is the newly added code which sets this method apart
 				// from the original method and additionally sets the
 				// reverse link
-				/** @var Model $childModel */
+
 				foreach ($children_of_model as $child_model) {
 					$child_model->setRelation($this->foreign_method_name, $model);
 				}

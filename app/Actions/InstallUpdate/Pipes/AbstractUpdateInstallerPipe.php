@@ -11,14 +11,14 @@ namespace App\Actions\InstallUpdate\Pipes;
 abstract class AbstractUpdateInstallerPipe
 {
 	/**
-	 * @param array<int,string>                                      &$output
-	 * @param \Closure(array<int,string> $output): array<int,string> $next
+	 * @param string[]                             $output
+	 * @param \Closure(string[] $output): string[] $next
 	 *
-	 * @return array<int,string>
+	 * @return string[]
 	 *
 	 * @codeCoverageIgnore
 	 */
-	abstract public function handle(array &$output, \Closure $next): array;
+	abstract public function handle(array $output, \Closure $next): array;
 
 	/**
 	 * Arrayify a string and append it to $output.

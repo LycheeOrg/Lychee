@@ -18,6 +18,7 @@
 				:searchMinimumLengh="searchMinimumLengh"
 				:isSearching="isSearching"
 				:noData="noData"
+				:search="search_term"
 				@clear="clear"
 				@search="search"
 			/>
@@ -200,8 +201,10 @@ const { slideshow_timeout, are_nsfw_visible } = storeToRefs(lycheeStore);
 
 const togglableStore = useTogglablesStateStore();
 
-const { search_page, search_term, is_login_open, is_slideshow_active, is_photo_edit_open, is_full_screen, are_details_open } =
-	storeToRefs(togglableStore);
+const search_page = ref(1);
+const search_term = ref("");
+
+const { is_login_open, is_slideshow_active, is_photo_edit_open, is_full_screen, are_details_open } = storeToRefs(togglableStore);
 
 const { album, photo, config, loadAlbum } = useAlbumRefresher(albumId, photoId, auth, is_login_open);
 
@@ -220,14 +223,14 @@ const {
 	search,
 	clear,
 	refresh,
-} = useSearch(albumId, togglableStore, search_term, search_page);
+} = useSearch(albumId, search_term, search_page);
 const { refreshPhoto } = usePhotoRefresher(photo, photos, photoId);
 const { albumsForSelection, photosForSelection, noData, configForMenu, title } = useSearchComputed(config, album, albums, photos, lycheeStore);
 
 const { layoutConfig, loadLayoutConfig } = useGetLayoutConfig();
 
 const { hasPrevious, hasNext } = useHasNextPreviousPhoto(photo);
-const { getNext, getPrevious } = getNextPreviousPhoto(togglableStore, router, albumId, photo);
+const { getNext, getPrevious } = getNextPreviousPhoto(router, albumId, photo);
 const { slideshow, next, previous, stop } = useSlideshowFunction(1000, is_slideshow_active, slideshow_timeout, videoElement, getNext, getPrevious);
 
 const {
@@ -428,10 +431,6 @@ onMounted(() => {
 
 	searchInit();
 	loadLayoutConfig();
-
-	if (togglableStore.isSearchActive) {
-		search(togglableStore.search_term);
-	}
 });
 
 watch(

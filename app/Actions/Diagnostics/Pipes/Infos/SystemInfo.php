@@ -57,8 +57,7 @@ class SystemInfo implements DiagnosticStringPipe
 		$data[] = Diagnostics::line('System:', PHP_OS);
 		$data[] = Diagnostics::line('PHP Version:', phpversion());
 		$data[] = Diagnostics::line('PHP User agent:', ini_get('user_agent'));
-		/** @var CarbonTimeZone|null $timeZone */
-		$time_zone = CarbonTimeZone::create(config('app.timezone'));
+		$time_zone = CarbonTimeZone::create(config('app.timezone')) ?? null;
 		$data[] = Diagnostics::line('Timezone:', $time_zone?->getName() ?? 'undefined');
 		$data[] = Diagnostics::line('Max uploaded file size:', ini_get('upload_max_filesize'));
 		$data[] = Diagnostics::line('Max post size:', ini_get('post_max_size'));

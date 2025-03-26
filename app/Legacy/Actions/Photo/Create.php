@@ -173,7 +173,7 @@ final class Create
 			$live_partner = null;
 			// find a potential partner which has the same content id
 			if ($content_id !== null) {
-				/** @var Photo|null $livePartner */
+				/** @var Photo|null $live_partner */
 				$live_partner = Photo::query()
 					->where('live_photo_content_id', '=', $content_id)
 					->where('album_id', '=', $album?->id)

@@ -211,10 +211,6 @@ class Handler extends ExceptionHandler
 	 *     can properly interpret and display it.
 	 *     By default, the framework would return a JSON response whose format
 	 *     is unique to the {@link AuthenticationException}.
-	 *
-	 * @param \Throwable $e
-	 *
-	 * @return \Throwable
 	 */
 	protected function mapException(\Throwable $e): \Throwable
 	{
@@ -240,10 +236,7 @@ class Handler extends ExceptionHandler
 	 * bug fix which adds the original exception to the encapsulating
 	 * `HttpException`.
 	 *
-	 * @param Request    $request
-	 * @param \Throwable $e
-	 *
-	 * @return RedirectResponse|Response
+	 * @param Request $request
 	 *
 	 * @throws BindingResolutionException
 	 * @throws \InvalidArgumentException
@@ -282,7 +275,8 @@ class Handler extends ExceptionHandler
 					return true;
 				}
 			}
-		} while ($e = $e->getPrevious());
+			$e = $e->getPrevious();
+		} while ($e !== null);
 
 		return false;
 	}
@@ -303,10 +297,6 @@ class Handler extends ExceptionHandler
 	 * That current name of the method, if meant as an antonym to
 	 * `renderJsonException` is obviously nonsense as JSON is also transported
 	 * over HTTP.
-	 *
-	 * @param HttpExceptionInterface $e
-	 *
-	 * @return SymfonyResponse
 	 *
 	 * @noinspection PhpDocMissingThrowsInspection
 	 * @noinspection PhpUnhandledExceptionInspection
@@ -351,8 +341,6 @@ class Handler extends ExceptionHandler
 	 * {@link \Illuminate\Foundation\Exceptions\Handler::convertExceptionToAray()}
 	 * but recursively adds the previous exceptions, too.
 	 *
-	 * @param \Throwable $e
-	 *
 	 * @return array<string,mixed>
 	 */
 	protected function convertExceptionToArray(\Throwable $e): array
@@ -381,8 +369,6 @@ class Handler extends ExceptionHandler
 	 * Identical to
 	 * {@link \Illuminate\Foundation\Exceptions\Handler::convertExceptionToAray()}
 	 * but recursively adds the previous exceptions, too.
-	 *
-	 * @param \Throwable|null $e
 	 *
 	 * @return ($e is null ? null : array<string,mixed>)
 	 */
@@ -440,7 +426,8 @@ class Handler extends ExceptionHandler
 				$msg_ = $cause[0]->getMethodBeautified() . ':' . $cause[0]->getLine() . ' ' . $e->getMessage();
 			}
 			$msg = $msg_ . PHP_EOL . $msg;
-		} while ($e = $e->getPrevious());
+			$e = $e->getPrevious();
+		} while ($e !== null);
 		try {
 			Log::log($severity->value, $msg);
 		} catch (\UnexpectedValueException $e2) {
@@ -449,11 +436,6 @@ class Handler extends ExceptionHandler
 		}
 	}
 
-	/**
-	 * @param \Throwable $e
-	 *
-	 * @return SeverityType
-	 */
 	public static function getLogSeverity(\Throwable $e): SeverityType
 	{
 		return array_key_exists(get_class($e), self::EXCEPTION2SEVERITY) ?
@@ -493,8 +475,6 @@ class Handler extends ExceptionHandler
 	 * exception has been thrown, then one must not look up
 	 * `backtrace[0]['file']` and `backtrace[0]['line']`, resp., but
 	 * use `getFile` and `getLine()` of the exception.
-	 *
-	 * @param \Throwable $e
 	 *
 	 * @return BacktraceRecord[]
 	 */
@@ -621,10 +601,6 @@ class Handler extends ExceptionHandler
 	 * which does not throw another exception.
 	 * This also makes the IDE happy again, because we don't use an
 	 * exception throwing method inside an exception handler.
-	 *
-	 * @param \Throwable $e
-	 *
-	 * @return void
 	 */
 	public static function reportSafely(\Throwable $e): void
 	{

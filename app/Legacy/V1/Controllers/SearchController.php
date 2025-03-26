@@ -22,10 +22,6 @@ final class SearchController extends Controller
 	 * We search on albums and photos. title, tags, description are considered.
 	 * TODO: add search by date.
 	 *
-	 * @param SearchRequest $request
-	 * @param AlbumSearch   $albumSearch
-	 * @param PhotoSearch   $photoSearch
-	 *
 	 * @return SearchResource
 	 *
 	 * @throws LycheeException

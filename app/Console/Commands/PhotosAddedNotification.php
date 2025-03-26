@@ -13,7 +13,6 @@ use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\User;
 use Illuminate\Console\Command;
-use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
@@ -36,8 +35,6 @@ class PhotosAddedNotification extends Command
 
 	/**
 	 * Execute the console command.
-	 *
-	 * @return int
 	 */
 	public function handle(): int
 	{
@@ -50,7 +47,6 @@ class PhotosAddedNotification extends Command
 		foreach ($users as $user) {
 			$photos = [];
 
-			/** @var DatabaseNotification $notification */
 			foreach ($user->unreadNotifications()->get() as $notification) {
 				/** @var Photo|null $photo */
 				$photo = Photo::query()

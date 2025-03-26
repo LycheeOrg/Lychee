@@ -21,7 +21,7 @@ class SharedAlbumResource extends Data
 	public string $title;
 
 	/**
-	 * @param object{id:int,user_id:int,album_id:string,username:string,title:string} $albumShared
+	 * @param object{id:int,user_id:int,album_id:string,username:string,title:string} $album_shared
 	 *
 	 * @return void
 	 */

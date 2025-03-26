@@ -49,7 +49,7 @@ trait ThrowsConsistentExceptions
 	abstract public function toArray();
 
 	/**
-	 * @param array<string,bool> $options
+	 * @param array<string,mixed> $options
 	 *
 	 * @return bool always return true
 	 *

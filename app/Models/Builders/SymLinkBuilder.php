@@ -9,11 +9,14 @@
 namespace App\Models\Builders;
 
 use App\Eloquent\FixedQueryBuilder;
+use App\Models\SymLink;
 
 /**
  * Specialized query builder for {@link \App\Models\SymLink}.
  *
- * @extends FixedQueryBuilder<\App\Models\SymLink>
+ * @template TModelClass of SymLink
+ *
+ * @extends FixedQueryBuilder<TModelClass>
  */
 class SymLinkBuilder extends FixedQueryBuilder
 {

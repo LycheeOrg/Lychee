@@ -30,8 +30,8 @@ class ProcessableJobFile extends NativeLocalFile
 	 * Do note that we MUST use storage_path() instead of sys_get_temp_dir() as
 	 * tmp is not shared across processes, meaning that the queues will not be able to see the files.
 	 *
-	 * @param string $fileExtension the file extension of the new temporary file incl. a preceding dot
-	 * @param string $fakeBaseName  the fake base name of the file; e.g. the original name prior to up-/download
+	 * @param string $file_extension the file extension of the new temporary file incl. a preceding dot
+	 * @param string $fake_base_name the fake base name of the file; e.g. the original name prior to up-/download
 	 *
 	 * @throws MediaFileOperationException
 	 */

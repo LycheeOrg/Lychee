@@ -268,6 +268,7 @@ class HasAlbumThumb extends Relation
 	public function match(array $models, Collection $results, $relation): array
 	{
 		$dictionary = $results->mapToDictionary(function ($result) {
+			/** @var Photo&object{covered_album_id: int} $result */
 			return [$result->covered_album_id => $result];
 		})->all();
 
@@ -284,7 +285,6 @@ class HasAlbumThumb extends Relation
 				// See {@link Album::with}
 				$album->setRelation($relation, Thumb::createFromPhoto($album->cover));
 			} elseif (isset($dictionary[$album_id])) {
-				/** @var Photo $cover */
 				$cover = reset($dictionary[$album_id]);
 				$album->setRelation($relation, Thumb::createFromPhoto($cover));
 			} else {
@@ -297,7 +297,7 @@ class HasAlbumThumb extends Relation
 
 	public function getResults(): ?Thumb
 	{
-		/** @var Album|null $album */
+		/** @var Album $album */
 		$album = $this->parent;
 		if ($album === null || !Gate::check(AlbumPolicy::CAN_ACCESS, $album)) {
 			return null;

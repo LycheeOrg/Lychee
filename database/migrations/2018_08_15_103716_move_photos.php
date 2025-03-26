@@ -71,7 +71,6 @@ return new class() extends Migration {
 				if (count($thumbUrl2x) < 2) {
 					$photoAttributes['thumb2x'] = 0;
 				} else {
-					/** @var string $thumbUrl2x */
 					$thumbUrl2x = $thumbUrl2x[0] . '@2x.' . $thumbUrl2x[1];
 					if (!Storage::exists('thumb/' . $thumbUrl2x)) {
 						$photoAttributes['thumb2x'] = 0;

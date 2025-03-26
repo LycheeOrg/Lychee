@@ -34,9 +34,6 @@ final class RedirectController extends Controller
 	/**
 	 * Trivial redirection.
 	 *
-	 * @param Request $request
-	 * @param string  $albumID
-	 *
 	 * @return RedirectResponse
 	 *
 	 * @throws LycheeException
@@ -49,10 +46,6 @@ final class RedirectController extends Controller
 
 	/**
 	 * Trivial redirection.
-	 *
-	 * @param Request     $request
-	 * @param string      $albumID
-	 * @param string|null $photoID
 	 *
 	 * @return RedirectResponse
 	 *

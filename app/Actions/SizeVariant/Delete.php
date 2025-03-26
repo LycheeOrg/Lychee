@@ -52,13 +52,13 @@ class Delete
 	 * This object can (and must) be used to eventually delete the files,
 	 * however doing so can be deferred.
 	 *
-	 * @param int[] $svIDs the size variant IDs
+	 * @param int[] $sv_ids the size variant IDs
 	 *
 	 * @return FileDeleter contains the collected files which became obsolete
 	 *
 	 * @throws ModelDBException
 	 */
-	public function do(array $sv_i_ds): FileDeleter
+	public function do(array $sv_ids): FileDeleter
 	{
 		try {
 			$file_deleter = new FileDeleter();
@@ -69,12 +69,12 @@ class Delete
 			$size_variants = SizeVariant::query()
 				->from('size_variants as sv')
 				->select(['sv.short_path', 'sv.storage_disk'])
-				->leftJoin('size_variants as dup', function (JoinClause $join) use ($sv_i_ds): void {
+				->leftJoin('size_variants as dup', function (JoinClause $join) use ($sv_ids): void {
 					$join
 						->on('dup.short_path', '=', 'sv.short_path')
-						->whereNotIn('dup.id', $sv_i_ds);
+						->whereNotIn('dup.id', $sv_ids);
 				})
-				->whereIn('sv.id', $sv_i_ds)
+				->whereIn('sv.id', $sv_ids)
 				->whereNull('dup.id')
 				->get();
 			$file_deleter->addSizeVariants($size_variants);
@@ -83,16 +83,16 @@ class Delete
 			// which are going to be deleted
 			$sym_link_paths = SymLink::query()
 				->select(['sym_links.short_path'])
-				->whereIn('sym_links.size_variant_id', $sv_i_ds)
+				->whereIn('sym_links.size_variant_id', $sv_ids)
 				->pluck('sym_links.short_path');
 			$file_deleter->addSymbolicLinks($sym_link_paths);
 
 			// Delete records from DB in "inverse" order to not break foreign keys
 			SymLink::query()
-				->whereIn('sym_links.size_variant_id', $sv_i_ds)
+				->whereIn('sym_links.size_variant_id', $sv_ids)
 				->delete();
 			SizeVariant::query()
-				->whereIn('id', $sv_i_ds)
+				->whereIn('id', $sv_ids)
 				->delete();
 
 			return $file_deleter;

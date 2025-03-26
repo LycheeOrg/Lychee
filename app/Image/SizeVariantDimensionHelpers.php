@@ -20,8 +20,6 @@ class SizeVariantDimensionHelpers
 	 *
 	 * @param SizeVariantType $size_variant the size variant
 	 *
-	 * @return ImageDimension
-	 *
 	 * @throws InvalidSizeVariantException
 	 */
 	public function getMaxDimensions(SizeVariantType $size_variant): ImageDimension
@@ -48,7 +46,7 @@ class SizeVariantDimensionHelpers
 	 * still returns false, if both the allowed maximum width and height
 	 * equal zero.
 	 *
-	 * @param SizeVariantType $sizeVariant the indicated size variant
+	 * @param SizeVariantType $size_variant the indicated size variant
 	 *
 	 * @return bool true, if the size variant is enabled and the allowed width
 	 *              or height is unequal to zero
@@ -76,9 +74,9 @@ class SizeVariantDimensionHelpers
 	 * Given dimension and SizeVariant type, provide a check whether a SizeVariant should be created
 	 * under the constraints provided.
 	 *
-	 * @param ImageDimension  $realDim     the dimension of original
-	 * @param ImageDimension  $maxDim      the max dimension of target size variant
-	 * @param SizeVariantType $sizeVariant type of size variant to be created
+	 * @param ImageDimension  $real_dim     the dimension of original
+	 * @param ImageDimension  $max_dim      the max dimension of target size variant
+	 * @param SizeVariantType $size_variant type of size variant to be created
 	 *
 	 * @return bool true, if the size is big enough for creation
 	 */
@@ -93,8 +91,6 @@ class SizeVariantDimensionHelpers
 
 	/**
 	 * Return the max width for the SizeVariant.
-	 *
-	 * @return int
 	 */
 	public function getMaxWidth(SizeVariantType $size_variant): int
 	{
@@ -112,8 +108,6 @@ class SizeVariantDimensionHelpers
 
 	/**
 	 * Return the max height for the SizeVariant.
-	 *
-	 * @return int
 	 */
 	public function getMaxHeight(SizeVariantType $size_variant): int
 	{

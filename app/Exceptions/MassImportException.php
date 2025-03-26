@@ -29,7 +29,7 @@ class MassImportException extends BaseLycheeException
 	protected array $previousExceptions;
 
 	/**
-	 * @param \Throwable[] $listOfExceptions
+	 * @param \Throwable[] $list_of_exceptions
 	 *
 	 * @throws LycheeDomainException
 	 */

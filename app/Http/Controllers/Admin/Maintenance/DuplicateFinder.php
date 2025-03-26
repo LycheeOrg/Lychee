@@ -24,8 +24,6 @@ class DuplicateFinder extends Controller
 {
 	/**
 	 * Get the number of duplicates.
-	 *
-	 * @return DuplicateCount
 	 */
 	public function check(MaintenanceRequest $request, PhotoDuplicateFinder $duplicate_finder): DuplicateCount
 	{
@@ -42,9 +40,6 @@ class DuplicateFinder extends Controller
 
 	/**
 	 * Get the actual list of duplicates instead of just the counts.
-	 *
-	 * @param SearchDuplicateRequest $request
-	 * @param PhotoDuplicateFinder   $duplicateFinder
 	 *
 	 * @return Collection<int,Duplicate>
 	 */
