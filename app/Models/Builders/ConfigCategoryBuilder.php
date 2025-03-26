@@ -13,7 +13,7 @@ use App\Models\ConfigCategory;
 
 /**
  * Specialized query builder for {@link \App\Models\ConfigCategory}.
- * 
+ *
  * @template TModelClass of ConfigCategory
  *
  * @extends FixedQueryBuilder<TModelClass>
