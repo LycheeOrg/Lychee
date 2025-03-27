@@ -9,7 +9,7 @@
 namespace App\Http\Controllers\Admin\Maintenance\Model;
 
 use Illuminate\Database\Eloquent\Model;
-use Kalnoy\Nestedset\Node;
+use Kalnoy\Nestedset\Contracts\Node;
 use Kalnoy\Nestedset\NodeTrait;
 
 /**
@@ -20,7 +20,7 @@ use Kalnoy\Nestedset\NodeTrait;
  */
 class Album extends Model implements Node
 {
-	/** @phpstan-use NodeTrait<Album> */
+	/** @phpstan-use NodeTrait<Album,string> */
 	use NodeTrait;
 	public $timestamps = false;
 }
