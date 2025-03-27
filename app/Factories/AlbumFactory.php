@@ -150,7 +150,7 @@ class AlbumFactory
 	 *                                 shall be loaded, too.
 	 * @param bool     $albums_only    if true, only albums are returned, not tag albums
 	 *
-	 * @return ($albums_only is true ? Collection<int,Album> : Collection<int,Album|TagAlbum>)  a possibly empty list of {@link BaseAlbum}
+	 * @return ($albums_only is true ? Collection<int,Album> : Collection<int,Album|TagAlbum>) a possibly empty list of {@link BaseAlbum}
 	 *
 	 * @throws ModelNotFoundException
 	 */
@@ -174,7 +174,6 @@ class AlbumFactory
 
 		/** @var array<int,Album> $albums */
 		$albums = $album_query->findMany($album_ids)->all(); /** @phpstan-ignore varTag.type */
-
 		$result = new Collection(array_merge($tag_albums, $albums));
 
 		if ($result->count() !== count($album_ids)) {
