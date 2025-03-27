@@ -31,7 +31,7 @@ class AddAlbumRequest extends BaseApiRequest implements HasTitle, HasParentAlbum
 	 */
 	public function authorize(): bool
 	{
-		return Gate::check(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $this->parentAlbum]);
+		return Gate::check(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $this->parent_album]);
 	}
 
 	/**
