@@ -1,7 +1,7 @@
 <template>
 	<Dialog v-model:visible="visible" modal pt:root:class="border-none m-3" pt:mask:style="backdrop-filter: blur(2px)" @hide="closeCallback">
 		<template #container="{ closeCallback }">
-			<div class="flex flex-col gap-4 bg-gradient-to-b from-bg-300 to-bg-400 relative max-w-[500px] text-sm rounded-md text-muted-color">
+			<div class="flex flex-col gap-4 bg-gradient-to-b from-bg-300 to-bg-400 relative max-w-md w-full text-sm rounded-md text-muted-color">
 				<div class="p-9 text-muted-color-emphasis">
 					<h2 class="my-6 font-bold text-center" v-if="is_se_enabled">{{ $t("dialogs.about.thank_you") }}</h2>
 					<template v-if="!is_se_enabled">

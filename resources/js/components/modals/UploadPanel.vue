@@ -1,7 +1,7 @@
 <template>
 	<Dialog v-model:visible="is_upload_visible" modal pt:root:class="border-none" :dismissable-mask="true">
 		<template #container="{ closeCallback }">
-			<div v-if="setup">
+			<div v-if="setup" class="max-w-md w-full">
 				<div v-if="counts.files > 0" class="m-4 flex flex-wrap justify-center">
 					<span v-if="counts.completed === counts.files" class="w-full text-center text-muted-color-emphasis font-bold">{{
 						$t("dialogs.upload.completed")

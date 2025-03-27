@@ -1,7 +1,7 @@
 <template>
 	<Dialog v-model:visible="is_login_open" modal pt:root:class="border-none" pt:mask:style="backdrop-filter: blur(2px)">
 		<template #container="{ closeCallback }">
-			<form v-focustrap class="flex flex-col gap-4 relative max-w-full text-sm rounded-md pt-9">
+			<form v-focustrap class="flex flex-col gap-4 relative max-w-md w-full text-sm rounded-md pt-9">
 				<div class="flex justify-center gap-2">
 					<a
 						class="inline-block text-xl text-muted-color transition-all duration-300 hover:text-primary-400 hover:scale-150 cursor-pointer"

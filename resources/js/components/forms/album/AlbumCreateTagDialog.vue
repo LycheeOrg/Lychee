@@ -7,7 +7,7 @@
 		@close="is_create_tag_album_visible = false"
 	>
 		<template #container="{ closeCallback }">
-			<div v-focustrap class="flex flex-col relative max-w-full text-sm rounded-md pt-9">
+			<div v-focustrap class="flex flex-col relative w-full md:w-lg text-sm rounded-md pt-9">
 				<p class="mb-5 px-9">{{ $t("dialogs.new_tag_album.info") }}</p>
 				<div class="inline-flex flex-col gap-3 px-9">
 					<FloatLabel variant="on">
@@ -20,7 +20,7 @@
 							v-model="tags"
 							:typeahead="false"
 							multiple
-							class="pt-3 border-b hover:border-b-0"
+							class="pt-3 border-b hover:border-b-0 w-full"
 							pt:inputmultiple:class="w-full border-t-0 border-l-0 border-r-0 border-b hover:border-b-primary-400 focus:border-b-primary-400"
 						/>
 						<label for="tags">{{ $t("dialogs.new_tag_album.set_tags") }}</label>

@@ -1,7 +1,7 @@
 <template>
 	<Dialog v-model:visible="visible" modal pt:root:class="border-none">
 		<template #container="{ closeCallback }">
-			<div class="flex flex-wrap p-9 gap-5 justify-center align-top text-muted-color" v-show="!qrCodeOpen">
+			<div class="flex flex-wrap p-9 gap-5 justify-center align-top max-w-lg w-full text-muted-color" v-show="!qrCodeOpen">
 				<MiniIcon class="w-10 h-10 ionicons cursor-pointer" icon="twitter" v-on:click="openTwitter" />
 				<MiniIcon class="w-10 h-10 ionicons cursor-pointer" icon="facebook" v-on:click="openFacebook" />
 				<MiniIcon class="w-10 h-10 cursor-pointer" icon="envelope-closed" v-on:click="openMailto" />
