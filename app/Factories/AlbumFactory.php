@@ -133,6 +133,7 @@ class AlbumFactory
 			$smart_albums[] = $this->createSmartAlbum($smart_album_type, $with_relations);
 		}
 
+		/** @var Collection<int,AbstractAlbum> */
 		return new Collection(array_merge(
 			$smart_albums,
 			$this->findBaseAlbumsOrFail($model_album_ids, $with_relations)->all()
@@ -147,12 +148,13 @@ class AlbumFactory
 	 * @param bool     $with_relations indicates if the relations of an album
 	 *                                 (i.e. photos and sub-albums, if applicable)
 	 *                                 shall be loaded, too.
+	 * @param bool     $albums_only    if true, only albums are returned, not tag albums
 	 *
-	 * @return Collection<int,Album|TagAlbum> a possibly empty list of {@link BaseAlbum}
+	 * @return ($albums_only is true ? Collection<int,Album> : Collection<int,Album|TagAlbum>)  a possibly empty list of {@link BaseAlbum}
 	 *
 	 * @throws ModelNotFoundException
 	 */
-	public function findBaseAlbumsOrFail(array $album_ids, bool $with_relations = true): Collection
+	public function findBaseAlbumsOrFail(array $album_ids, bool $with_relations = true, $albums_only = false): Collection
 	{
 		// Remove root.
 		// Since we count the result we need to ensure that there are no
@@ -167,11 +169,13 @@ class AlbumFactory
 			$album_query->with(['photos', 'children', 'photos.size_variants']);
 		}
 
-		/** @var Collection<int,Album|TagAlbum> $result */
-		$result = new Collection(array_merge(
-			$tag_album_query->findMany($album_ids)->all(),
-			$album_query->findMany($album_ids)->all(),
-		));
+		/** @var ($albums_only is true ? array<int,Album> : array<int,TagAlbum>) */
+		$tag_albums = $albums_only ? [] : $tag_album_query->findMany($album_ids)->all(); /** @phpstan-ignore varTag.type */
+
+		/** @var array<int,Album> $albums */
+		$albums = $album_query->findMany($album_ids)->all(); /** @phpstan-ignore varTag.type */
+
+		$result = new Collection(array_merge($tag_albums, $albums));
 
 		if ($result->count() !== count($album_ids)) {
 			throw (new ModelNotFoundException())->setModel(BaseAlbumImpl::class, $album_ids);

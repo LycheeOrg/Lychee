@@ -11,7 +11,13 @@ namespace App\Http\Requests\Traits\Authorize;
 use App\Contracts\Models\AbstractAlbum;
 use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Collection;
 
+/**
+ * @template T
+ * 
+ * @property Collection<int,T> $albums
+ */
 trait AuthorizeCanEditAlbumAlbumsTrait
 {
 	/**
@@ -23,7 +29,6 @@ trait AuthorizeCanEditAlbumAlbumsTrait
 			return false;
 		}
 
-		/** @var AbstractAlbum $album */
 		foreach ($this->albums as $album) {
 			if (!Gate::check(AlbumPolicy::CAN_EDIT, $album)) {
 				return false;
