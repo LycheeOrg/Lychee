@@ -19,7 +19,7 @@ use App\Models\Album;
 use App\Models\Extensions\SortingDecorator;
 use App\Policies\AlbumQueryPolicy;
 use Illuminate\Support\Facades\Auth;
-use Kalnoy\Nestedset\Collection as NsCollection;
+use Kalnoy\Nestedset\Contracts\NestedSetCollection;
 
 final class Tree
 {
@@ -65,9 +65,10 @@ final class Tree
 		}
 		$query->orderBy($this->sorting->column, $this->sorting->order);
 
-		/** @var NsCollection<Album> $albums */
+		/** @var NestedSetCollection<Album> $albums */
+		/** @phpstan-ignore varTag.nativeType (False positive, NestedSetCollection requires Eloquent Collection) */
 		$albums = $query->get();
-		/** @var ?NsCollection<Album> $shared_albums */
+		/** @var ?NestedSetCollection<Album> $shared_albums */
 		$shared_albums = null;
 		$user_id = Auth::id();
 		if ($user_id !== null) {
@@ -78,7 +79,7 @@ final class Tree
 			// (sub)-tree and then `toTree` will return garbage as it does
 			// not find connected paths within `$albums` or `$sharedAlbums`,
 			// resp.
-			list($albums, $shared_albums) = $albums->partition(fn (Album $album) => $album->owner_id === $user_id);
+			list($albums, $shared_albums) = $albums->partition(fn (Album $album) => $album->owner_id === $user_id); /** @phpstan-ignore method.notFound */
 		}
 
 		// We must explicitly pass `null` as the ID of the root album

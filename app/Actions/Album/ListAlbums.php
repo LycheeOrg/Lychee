@@ -15,7 +15,7 @@ use App\Policies\AlbumQueryPolicy;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
-use Kalnoy\Nestedset\Collection as NsCollection;
+use Kalnoy\Nestedset\Contracts\NestedSetCollection;
 
 /**
  * @phpstan-type TAlbumSaved array{id:string|null,title:string,original:string,short_title:string,thumb:string}
@@ -47,9 +47,10 @@ class ListAlbums
 		$query = (new SortingDecorator($unfiltered))
 			->orderBy($sorting->column, $sorting->order);
 
-		/** @var NsCollection<Album> $albums */
+		/** @var NestedSetCollection<Album> $albums */
+		/** @phpstan-ignore varTag.nativeType (False positive, NestedSetCollection requires Eloquent Collection) */
 		$albums = $query->get();
-		/** @var NsCollection<Album> $tree */
+		/** @var NestedSetCollection<Album> $tree */
 		$tree = $albums->toTree(null);
 
 		$flat_tree = $this->flatten($tree);
@@ -74,8 +75,8 @@ class ListAlbums
 	/**
 	 * Flatten the tree and create bread crumb paths.
 	 *
-	 * @param NsCollection<Album>|Collection<int,Album> $collection
-	 * @param string                                    $prefix
+	 * @param NestedSetCollection<Album>|Collection<int,Album> $collection
+	 * @param string                                           $prefix
 	 *
 	 * @return TAlbumSaved[]
 	 */

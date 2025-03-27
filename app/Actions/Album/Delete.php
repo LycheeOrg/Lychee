@@ -92,6 +92,8 @@ class Delete
 			// find all photos in those and their descendants
 			// Only load necessary attributes for tree; in particular avoid
 			// loading expensive `min_taken_at` and `max_taken_at`.
+			/** @var Collection<int,Album> $albums */
+			/** @phpstan-ignore varTag.type (False positive, NestedSetCollection requires Eloquent Collection) */
 			$albums = Album::query()
 				->without(['cover', 'thumb'])
 				->select(['id', 'parent_id', '_lft', '_rgt', 'track_short_path'])
@@ -100,6 +102,7 @@ class Delete
 			$recursive_album_ids = $albums->pluck('id')->all(); // only IDs which refer to regular albums are incubators for recursive IDs
 			$recursive_album_tracks = $albums->pluck('track_short_path');
 
+			/** @var Album $album */
 			foreach ($albums as $album) {
 				// Collect all (aka recursive) sub-albums in each album
 				$sub_albums = $album->descendants()->getQuery()->without(['cover', 'thumb'])->select(['id', 'track_short_path'])->get();
