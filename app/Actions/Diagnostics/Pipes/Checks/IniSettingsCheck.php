@@ -123,21 +123,21 @@ class IniSettingsCheck implements DiagnosticPipe
 				$data[] = DiagnosticData::error('tmpfile() is disabled, this will prevent you from uploading pictures.', self::class);
 				// @codeCoverageIgnoreEnd
 			}
-
-			$path = sys_get_temp_dir();
-			if (!is_writable($path)) {
-				// @codeCoverageIgnoreStart
-				$data[] = DiagnosticData::error('sys_get_temp_dir() is not writable, this will prevent you from uploading pictures.', self::class);
-				// @codeCoverageIgnoreEnd
-			}
-			if (!is_readable($path)) {
-				// @codeCoverageIgnoreStart
-				$data[] = DiagnosticData::error('sys_get_temp_dir() is not readable, this will prevent you from uploading pictures.', self::class);
-				// @codeCoverageIgnoreEnd
-			}
 		} catch (InfoException $e) {
 			// @codeCoverageIgnoreStart
 			$data[] = DiagnosticData::error('An error occurred while checking the PHP settings.', self::class, ['ini_get() is not available.']);
+			// @codeCoverageIgnoreEnd
+		}
+
+		$path = sys_get_temp_dir();
+		if (!is_writable($path)) {
+			// @codeCoverageIgnoreStart
+			$data[] = DiagnosticData::error('sys_get_temp_dir() is not writable, this will prevent you from uploading pictures.', self::class);
+			// @codeCoverageIgnoreEnd
+		}
+		if (!is_readable($path)) {
+			// @codeCoverageIgnoreStart
+			$data[] = DiagnosticData::error('sys_get_temp_dir() is not readable, this will prevent you from uploading pictures.', self::class);
 			// @codeCoverageIgnoreEnd
 		}
 
