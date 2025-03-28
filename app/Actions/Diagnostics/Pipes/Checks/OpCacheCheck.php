@@ -21,6 +21,12 @@ class OpCacheCheck implements DiagnosticPipe
 	 */
 	public function handle(array &$data, \Closure $next): array
 	{
+		if (!$this->isOpcacheGetConfigurationAvailable()) {
+			$data[] = DiagnosticData::warn('opcache_get_configuration() is not available.', self::class, ['We are unable to check for performance optimizations.']);
+
+			return $next($data);
+		}
+
 		$opcache_conf = opcache_get_configuration();
 
 		if (
@@ -32,5 +38,15 @@ class OpCacheCheck implements DiagnosticPipe
 		}
 
 		return $next($data);
+	}
+
+	/**
+	 * Check if the `opcache_get_configuration` function is available.
+	 */
+	private function isOpcacheGetConfigurationAvailable(): bool
+	{
+		$disabled_functions = explode(',', ini_get('disable_functions'));
+
+		return function_exists('opcache_get_configuration') && !in_array('opcache_get_configuration', $disabled_functions, true);
 	}
 }
