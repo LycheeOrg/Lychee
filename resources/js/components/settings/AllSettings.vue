@@ -97,8 +97,4 @@ onUpdated(function () {
 	const adminMenuItem = spy.getCurrentMenuItem(admin);
 	spy.setActive(adminMenuItem, admin);
 });
-
-// watch(() => [props.configs, props.hash], ([newConfigs, newHash], _) => {
-// 	load(newConfigs as App.Http.Resources.Models.ConfigCategoryResource[]);
-// });
 </script>

@@ -14,10 +14,20 @@
 				'w-0': props.areAllSettingsEnabled,
 			}"
 		></div>
-		<div class="flex flex-wrap lg:flex-nowrap w-full gap-4 justify-start pl-6">
+		<div class="flex flex-wrap lg:flex-nowrap w-full gap-4 justify-start">
+			<router-link
+				:to="{ name: 'settings', params: { tab: '' } }"
+				:class="{
+					'flex items-center': true,
+					hidden: !props.areAllSettingsEnabled,
+				}"
+				v-tooltip.right="$t('settings.all.back_to_settings')"
+			>
+				<Button icon="pi pi-angle-double-left" class="border-none py-2" severity="primary" text />
+			</router-link>
 			<div
 				:class="{
-					'flex gap-2 items-center w-full': true,
+					'ml-6 flex gap-2 items-center w-full': true,
 					'opacity-50': !props.hasExperts,
 					'opacity-100': props.hasExperts,
 				}"
@@ -28,7 +38,7 @@
 			<div class="flex items-center w-full justify-end">
 				<i
 					:class="{
-						'pi pi-pen-to-square cursor-pointer': true,
+						'pi pi-pen-to-square cursor-pointer px-4': true,
 						'text-primary-400': is_old_style,
 						'text-muted-color': !is_old_style,
 					}"

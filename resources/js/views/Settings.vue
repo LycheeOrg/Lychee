@@ -27,7 +27,7 @@
 						<Menu :model="menu" :pt:root:class="'border-0 lg:sticky top-11 mt-2'"> </Menu>
 					</div>
 					<div class="w-full">
-						<EasySettings :configs="configs" :hash="hash" v-if="tab === ''" @refresh="load" />
+						<General :configs="configs" :hash="hash" v-if="tab === ''" @refresh="load" />
 						<CssJs v-if="tab === 'CssJs'" />
 						<template v-for="config in configs" :id="config.cat">
 							<Fieldset
@@ -65,11 +65,9 @@ import { onMounted } from "vue";
 import { useSplitter } from "@/composables/album/splitter";
 import ConfigGroup from "@/components/settings/ConfigGroup.vue";
 import ConfirmSave from "@/components/settings/ConfirmSave.vue";
-import EasySettings from "@/components/settings/EasySettings.vue";
+import General from "@/components/settings/General.vue";
 import Fieldset from "primevue/fieldset";
 import AllSettings from "@/components/settings/AllSettings.vue";
-import { useLycheeStateStore } from "@/stores/LycheeState";
-import { storeToRefs } from "pinia";
 import { MenuItem } from "primevue/menuitem";
 import CssJs from "@/components/settings/CssJs.vue";
 import { useRoute, useRouter } from "vue-router";
@@ -87,8 +85,6 @@ const isReady = ref(false);
 const configs = ref<App.Http.Resources.Models.ConfigCategoryResource[] | undefined>(undefined);
 const hash = ref("");
 const modified = ref<App.Http.Resources.Editable.EditableConfigResource[]>([]);
-const lycheeStore = useLycheeStateStore();
-const { is_expert_mode } = storeToRefs(lycheeStore);
 
 const { spliter } = useSplitter();
 
