@@ -8,6 +8,7 @@ return [
 			'tags' => 'https://api.github.com/repos/LycheeOrg/Lychee/tags',
 		],
 		'json' => 'https://lycheeorg.dev/update.json',
+		'changelogs' => 'https://raw.githubusercontent.com/LycheeOrg/LycheeOrg.github.io/refs/heads/master/docs/releases.md',
 	],
 	'git' => [
 		'pull' => 'https://github.com/LycheeOrg/Lychee.git',

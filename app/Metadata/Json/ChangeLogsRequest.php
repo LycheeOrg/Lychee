@@ -11,7 +11,7 @@ namespace App\Metadata\Json;
 use App\Models\Configs;
 use Illuminate\Support\Facades\Config;
 
-class CommitsRequest extends JsonRequestFunctions
+class ChangeLogsRequest extends ExternalRequestFunctions
 {
 	/**
 	 * we just override the constructor,
@@ -20,7 +20,7 @@ class CommitsRequest extends JsonRequestFunctions
 	public function __construct()
 	{
 		parent::__construct(
-			Config::get('urls.update.git.commits'),
+			Config::get('urls.update.changelogs'),
 			Configs::getValueAsInt('update_check_every_days')
 		);
 	}

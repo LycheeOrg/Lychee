@@ -237,3 +237,4 @@ Route::get('/Statistics::getCountsOverTime', [StatisticsController::class, 'getP
 // Route::post('/Update::apply', [AdministrationUpdateController::class, 'apply']);
 // Route::post('/Update::check', [AdministrationUpdateController::class, 'check']);
 Route::get('/Version', [VersionController::class, 'get']);
+Route::get('/ChangeLogs', [VersionController::class, 'changeLogs']);
