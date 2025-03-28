@@ -1,4 +1,4 @@
-FROM debian:bookworm-slim AS base
+FROM debian:bookworm-slim@sha256:1209d8fd77def86ceb6663deef7956481cc6c14a25e1e64daec12c0ceffcc19d AS base
 
 # Set version label
 LABEL maintainer="lycheeorg"
