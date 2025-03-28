@@ -85,6 +85,7 @@ return [
 		'expert_settings' => 'Expert Mode',
 		'change_detected' => 'Some settings changed.',
 		'save' => 'Save',
+		'back_to_settings' => 'Back to grouped settings',
 	],
 
 	'tool_option' => [

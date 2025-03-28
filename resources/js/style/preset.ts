@@ -895,6 +895,11 @@ const LycheePrimeVueConfig: Preset = {
 				},
 			},
 		},
+		tooltip: {
+			root: {
+				maxWidth: "20rem",
+			},
+		},
 	},
 };
 

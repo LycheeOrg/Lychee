@@ -21,7 +21,7 @@
 					'flex items-center': true,
 					hidden: !props.areAllSettingsEnabled,
 				}"
-				v-tooltip.right="$t('settings.all.back_to_settings')"
+				v-tooltip.bottom="{ value: $t('settings.all.back_to_settings'), pt: pt }"
 			>
 				<Button icon="pi pi-angle-double-left" class="border-none py-2" severity="primary" text />
 			</router-link>
@@ -59,6 +59,7 @@
 <script setup lang="ts">
 import SettingsService from "@/services/settings-service";
 import { useLycheeStateStore } from "@/stores/LycheeState";
+import { trans } from "laravel-vue-i18n";
 import { storeToRefs } from "pinia";
 import Button from "primevue/button";
 import Message from "primevue/message";
@@ -79,6 +80,14 @@ const emits = defineEmits<{
 	save: [];
 	ready: [];
 }>();
+
+const pt = {
+	root: {
+		style: {
+			transform: "translateX(40%)",
+		},
+	},
+};
 
 function load() {
 	SettingsService.init().then((response) => {

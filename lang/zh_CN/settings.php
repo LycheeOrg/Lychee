@@ -85,6 +85,7 @@ return [
 		'expert_settings' => 'Expert Mode',
 		'change_detected' => '部分设置已更改。',
 		'save' => '保存',
+		'back_to_settings' => 'Back to grouped settings',
 	],
 
 	'tool_option' => [

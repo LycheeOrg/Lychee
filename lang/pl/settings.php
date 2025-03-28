@@ -85,6 +85,7 @@ return [
 		'expert_settings' => 'Expert Mode',
 		'change_detected' => 'Niektóre ustawienia zostały zmienione.',
 		'save' => 'Zapisz',
+		'back_to_settings' => 'Back to grouped settings',
 	],
 
 	'tool_option' => [
