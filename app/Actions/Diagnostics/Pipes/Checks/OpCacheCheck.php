@@ -10,6 +10,8 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
+use Safe\Exceptions\InfoException;
+use function Safe\ini_get;
 
 /**
  * We want to make sure that our users are using OPcache for faster php code execution.
@@ -45,8 +47,12 @@ class OpCacheCheck implements DiagnosticPipe
 	 */
 	private function isOpcacheGetConfigurationAvailable(): bool
 	{
-		$disabled_functions = explode(',', ini_get('disable_functions'));
+		try {
+			$disabled_functions = explode(',', ini_get('disable_functions'));
 
-		return function_exists('opcache_get_configuration') && !in_array('opcache_get_configuration', $disabled_functions, true);
+			return function_exists('opcache_get_configuration') && !in_array('opcache_get_configuration', $disabled_functions, true);
+		} catch (InfoException $e) {
+			return false;
+		}
 	}
 }
