@@ -12,6 +12,7 @@ use App\Exceptions\Internal\ZeroModuloException;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Safe\Exceptions\InfoException;
 use function Safe\ini_get;
 
 class Helpers
@@ -127,9 +128,13 @@ class Helpers
 	 */
 	public function isExecAvailable(): bool
 	{
-		$disabled_functions = explode(',', ini_get('disable_functions'));
+		try {
+			$disabled_functions = explode(',', ini_get('disable_functions'));
 
-		return function_exists('exec') && !in_array('exec', $disabled_functions, true);
+			return function_exists('exec') && !in_array('exec', $disabled_functions, true);
+		} catch (InfoException $e) {
+			return false;
+		}
 	}
 
 	/**
