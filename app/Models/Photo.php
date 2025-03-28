@@ -39,7 +39,7 @@ use Illuminate\Support\Facades\Storage;
 use function Safe\preg_match;
 
 /**
- * App\Photo.
+ * App\Models\Photo.
  *
  * @property string       $id
  * @property int          $legacy_id

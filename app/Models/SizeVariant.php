@@ -32,7 +32,7 @@ use Illuminate\Support\Facades\Storage;
 use League\Flysystem\Local\LocalFilesystemAdapter;
 
 /**
- * Class SizeVariant.
+ * App\Models\SizeVariant.
  *
  * Describes a size variant of a photo.
  *

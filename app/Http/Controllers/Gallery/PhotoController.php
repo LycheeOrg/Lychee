@@ -13,6 +13,7 @@ use App\Actions\Photo\Delete;
 use App\Actions\Photo\Duplicate;
 use App\Actions\Photo\Move;
 use App\Actions\Photo\Rotate;
+use App\Constants\FileSystem;
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\FileStatus;
 use App\Exceptions\ConfigurationException;
@@ -45,8 +46,6 @@ use Illuminate\Support\Facades\Storage;
  */
 class PhotoController extends Controller
 {
-	public const DISK_NAME = 'image-upload';
-
 	/**
 	 * Upload a picture.
 	 */
@@ -59,7 +58,7 @@ class PhotoController extends Controller
 		$meta->extension ??= '.' . pathinfo($meta->file_name, PATHINFO_EXTENSION);
 		$meta->uuid_name ??= strtr(base64_encode(random_bytes(12)), '+/', '-_') . $meta->extension;
 
-		$final = new NativeLocalFile(Storage::disk(self::DISK_NAME)->path($meta->uuid_name));
+		$final = new NativeLocalFile(Storage::disk(FileSystem::IMAGE_UPLOAD)->path($meta->uuid_name));
 		$final->append($file->read());
 
 		if ($meta->chunk_number < $meta->total_chunks) {

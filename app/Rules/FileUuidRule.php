@@ -8,8 +8,8 @@
 
 namespace App\Rules;
 
+use App\Constants\FileSystem;
 use App\Exceptions\Internal\LycheeLogicException;
-use App\Http\Controllers\Gallery\PhotoController;
 use Illuminate\Contracts\Validation\DataAwareRule;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Support\Facades\Storage;
@@ -85,7 +85,7 @@ final class FileUuidRule implements DataAwareRule, ValidationRule
 			return;
 		}
 
-		if (!Storage::disk(PhotoController::DISK_NAME)->exists($value)) {
+		if (!Storage::disk(FileSystem::IMAGE_UPLOAD)->exists($value)) {
 			$fail(':attribute is not a valid target file.');
 		}
 	}

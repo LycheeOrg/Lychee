@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * Class OauthCredential.
+ * App\Models\OauthCredential.
  *
  * This class contains the Oauth token used to identify a user.
  *

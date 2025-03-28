@@ -55,6 +55,11 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		is_se_enabled: false,
 		is_se_preview_enabled: false,
 		is_se_info_hidden: false,
+
+		// Settings toggles
+		is_old_style: false,
+		is_expert_mode: false,
+		are_all_settings_enabled: false,
 	}),
 	actions: {
 		init() {

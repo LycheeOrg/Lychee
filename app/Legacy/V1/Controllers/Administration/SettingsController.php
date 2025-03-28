@@ -8,6 +8,7 @@
 
 namespace App\Legacy\V1\Controllers\Administration;
 
+use App\Constants\FileSystem;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\InsufficientFilesystemPermissions;
 use App\Exceptions\Internal\InvalidConfigOption;
@@ -369,9 +370,9 @@ final class SettingsController extends Controller
 	{
 		/** @var string $css */
 		$css = $request->getSettingValue();
-		if (Storage::disk('dist')->put('user.css', $css) === false) {
+		if (Storage::disk(FileSystem::DIST)->put('user.css', $css) === false) {
 			// @codeCoverageIgnoreStart
-			if (Storage::disk('dist')->get('user.css') !== $css) {
+			if (Storage::disk(FileSystem::DIST)->get('user.css') !== $css) {
 				throw new InsufficientFilesystemPermissions('Could not save CSS');
 			}
 			// @codeCoverageIgnoreEnd
@@ -395,8 +396,8 @@ final class SettingsController extends Controller
 	{
 		/** @var string $js */
 		$js = $request->getSettingValue();
-		if (Storage::disk('dist')->put('custom.js', $js) === false) {
-			if (Storage::disk('dist')->get('custom.js') !== $js) {
+		if (Storage::disk(FileSystem::DIST)->put('custom.js', $js) === false) {
+			if (Storage::disk(FileSystem::DIST)->get('custom.js') !== $js) {
 				throw new InsufficientFilesystemPermissions('Could not save JS');
 			}
 		}

@@ -101,9 +101,6 @@ declare namespace App.Enum {
 	export type VersionChannelType = "release" | "git" | "tag";
 }
 declare namespace App.Http.Resources.Collections {
-	export type ConfigCollectionResource = {
-		configs: { [key: string]: Array<App.Http.Resources.Models.ConfigResource> };
-	};
 	export type PositionDataResource = {
 		id: string | null;
 		title: string | null;
@@ -287,6 +284,11 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		back_button_url: string;
 		timeline_album_granularity: App.Enum.TimelineAlbumGranularity;
 	};
+	export type SettingsConfig = {
+		default_old_settings: boolean;
+		default_expert_settings: boolean;
+		default_all_settings: boolean;
+	};
 	export type UploadConfig = {
 		upload_processing_limit: number;
 		upload_chunk_size: number;
@@ -333,12 +335,20 @@ declare namespace App.Http.Resources.Models {
 		preFormattedData: App.Http.Resources.Models.Utils.PreFormattedAlbumData;
 		editable: App.Http.Resources.Editable.EditableBaseAlbumResource | null;
 	};
+	export type ConfigCategoryResource = {
+		cat: string;
+		name: string;
+		description: string;
+		configs: App.Http.Resources.Models.ConfigResource[] | Array<any>;
+		priority: number;
+	};
 	export type ConfigResource = {
 		key: string;
 		type: App.Enum.ConfigType | string;
 		value: string;
 		documentation: string;
 		details: string;
+		is_expert: boolean;
 		require_se: boolean;
 	};
 	export type JobHistoryResource = {

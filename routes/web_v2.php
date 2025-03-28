@@ -59,7 +59,8 @@ Route::get('/diagnostics', [VueController::class, 'view'])->middleware(['migrati
 Route::get('/statistics', [VueController::class, 'view'])->middleware(['migration:complete', 'login_required:always']);
 Route::get('/maintenance', [VueController::class, 'view'])->middleware(['migration:complete', 'login_required:always']);
 Route::get('/users', [VueController::class, 'view'])->middleware(['migration:complete', 'login_required:always']);
-Route::get('/settings', [VueController::class, 'view'])->middleware(['migration:complete', 'login_required:always']);
+// TODO: Fix me later to unify when the timeline PR is merged.
+Route::get('/settings/{tab?}', fn () => view('vueapp'))->middleware(['migration:complete', 'login_required:always']);
 Route::get('/permissions', [VueController::class, 'view'])->middleware(['migration:complete', 'login_required:always']);
 Route::get('/fixTree', [VueController::class, 'view'])->middleware(['migration:complete', 'login_required:always']);
 Route::get('/duplicatesFinder', [VueController::class, 'view'])->middleware(['migration:complete', 'login_required:always']);

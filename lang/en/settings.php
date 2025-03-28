@@ -75,20 +75,29 @@ return [
 		'location_show' => 'Show location extracted from GPS coordinates',
 		'location_show_public' => 'Anonymous users can access the extracted location from GPS coordinates',
 	],
-	'advanced' => [
-		'header' => 'Advanced Customization',
+	'cssjs' => [
+		'header' => 'Custom CSS & Js',
 		'change_css' => 'Change CSS',
 		'change_js' => 'Change JS',
 	],
 	'all' => [
-		'old_setting_style' => 'Old setting style',
+		'old_setting_style' => 'Old settings style',
+		'expert_settings' => 'Expert Mode',
 		'change_detected' => 'Some settings changed.',
 		'save' => 'Save',
+		'back_to_settings' => 'Back to grouped settings',
 	],
 
 	'tool_option' => [
 		'disabled' => 'disabled',
 		'enabled' => 'enabled',
 		'discover' => 'discover',
+	],
+
+	'groups' => [
+		'general' => 'General',
+		'system' => 'System',
+		'modules' => 'Modules',
+		'advanced' => 'Advanced',
 	],
 ];

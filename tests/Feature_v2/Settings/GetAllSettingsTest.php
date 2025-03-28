@@ -27,6 +27,9 @@ class GetAllSettingsTest extends BaseApiV2Test
 		$response = $this->getJson('Settings');
 		$this->assertUnauthorized($response);
 
+		$response = $this->getJson('Settings::init');
+		$this->assertUnauthorized($response);
+
 		$response = $this->getJson('Settings::getLanguages');
 		$this->assertUnauthorized($response);
 	}
@@ -34,6 +37,9 @@ class GetAllSettingsTest extends BaseApiV2Test
 	public function testGetAllSettingUser(): void
 	{
 		$response = $this->actingAs($this->userMayUpload1)->getJson('Settings');
+		$this->assertForbidden($response);
+
+		$response = $this->actingAs($this->userMayUpload1)->getJson('Settings::init');
 		$this->assertForbidden($response);
 
 		$response = $this->actingAs($this->userMayUpload1)->getJson('Settings::getLanguages');
@@ -45,13 +51,30 @@ class GetAllSettingsTest extends BaseApiV2Test
 		$response = $this->actingAs($this->admin)->getJson('Settings');
 		$this->assertOk($response);
 		$response->assertJson([
-			'configs' => [
-				'Admin' => [],
-				'config' => [],
-				'Footer' => [],
-				'Gallery' => [],
-				'Image Processing' => [],
+			[
+				'cat' => 'config',
+				'name' => 'Basics',
 			],
+			[
+				'cat' => 'lychee SE',
+				'name' => 'Lychee SE',
+			],
+			[
+				'cat' => 'Gallery',
+				'name' => 'Gallery',
+			],
+			[
+				'cat' => 'Mod Welcome',
+				'name' => 'Landing page',
+			],
+		]);
+
+		$response = $this->actingAs($this->admin)->getJson('Settings::init');
+		$this->assertOk($response);
+		$response->assertJson([
+			'default_old_settings' => '0',
+			'default_expert_settings' => '0',
+			'default_all_settings' => '0',
 		]);
 
 		$response = $this->actingAs($this->admin)->getJson('Settings::getLanguages');

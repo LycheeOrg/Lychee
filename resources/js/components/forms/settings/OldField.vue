@@ -1,8 +1,8 @@
 <template>
-	<div class="flex flex-wrap items-center">
+	<div class="flex flex-wrap items-center w-full">
 		<div class="w-1/2" :class="props.config.require_se ? 'text-primary-emphasis' : 'text-muted-color-emphasis'">{{ props.config.key }}</div>
 		<IconField class="w-1/2">
-			<InputText :id="props.config.key" type="text" class="!py-1" v-model="val" @update:modelValue="update" />
+			<InputText :id="props.config.key" type="text" v-model="val" @update:modelValue="update" />
 			<InputIcon :class="`pi ${classes} cursor-pointer`" v-tooltip="'Click me to reset!'" @click="reset" v-if="changed" />
 		</IconField>
 		<Message class="w-full h-8 mt-0.5" v-if="changed && isVersion" severity="error">We strongly recommend you do not modify this value.</Message>

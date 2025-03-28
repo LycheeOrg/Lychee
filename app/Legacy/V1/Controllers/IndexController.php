@@ -8,6 +8,7 @@
 
 namespace App\Legacy\V1\Controllers;
 
+use App\Constants\FileSystem;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\ModelDBException;
@@ -232,11 +233,11 @@ final class IndexController extends Controller
 	{
 		$css_cache_busting = '';
 		/** @disregard P1013 */
-		if (Storage::disk('dist')->fileExists($file_name)) {
-			$css_cache_busting = '?' . Storage::disk('dist')->lastModified($file_name);
+		if (Storage::disk(FileSystem::DIST)->fileExists($file_name)) {
+			$css_cache_busting = '?' . Storage::disk(FileSystem::DIST)->lastModified($file_name);
 		}
 
 		/** @disregard P1013 */
-		return Storage::disk('dist')->url($file_name) . $css_cache_busting;
+		return Storage::disk(FileSystem::DIST)->url($file_name) . $css_cache_busting;
 	}
 }

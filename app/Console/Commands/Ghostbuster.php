@@ -10,12 +10,12 @@ namespace App\Console\Commands;
 
 use App\Assets\Features;
 use App\Console\Commands\Utilities\Colorize;
+use App\Constants\FileSystem;
 use App\Enum\SizeVariantType;
 use App\Enum\StorageDiskType;
 use App\Exceptions\UnexpectedException;
 use App\Models\Photo;
 use App\Models\SizeVariant;
-use App\Models\SymLink;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Storage;
@@ -79,7 +79,7 @@ class Ghostbuster extends Command
 			$upload_disk = Features::active('use-s3')
 				? Storage::disk(StorageDiskType::S3->value)
 				: Storage::disk(StorageDiskType::LOCAL->value);
-			$symlink_disk = Storage::disk(SymLink::DISK_NAME);
+			$symlink_disk = Storage::disk(FileSystem::SYMLINK);
 			$is_local_disk = $upload_disk->getAdapter() instanceof LocalFilesystemAdapter;
 
 			$this->line('');
