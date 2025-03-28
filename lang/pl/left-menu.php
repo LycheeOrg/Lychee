@@ -23,6 +23,7 @@ return [
 	'sign_out' => 'Wyloguj się',
 
 	'about' => 'O',
+	'changelog' => 'Changelog',
 	'api' => 'Dokumentacja API',
 	'source_code' => 'Kod źródłowy',
 	'support' => 'Wsparcie',

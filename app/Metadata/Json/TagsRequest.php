@@ -19,7 +19,7 @@ class TagsRequest extends JsonRequestFunctions
 	 */
 	public function __construct()
 	{
-		$this->init(
+		parent::__construct(
 			Config::get('urls.update.git.tags'),
 			Configs::getValueAsInt('update_check_every_days')
 		);

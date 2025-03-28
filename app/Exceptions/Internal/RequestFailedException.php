@@ -10,7 +10,7 @@ namespace App\Exceptions\Internal;
 
 use App\Contracts\Exceptions\InternalLycheeException;
 
-class JsonRequestFailedException extends \RuntimeException implements InternalLycheeException
+class RequestFailedException extends \RuntimeException implements InternalLycheeException
 {
 	public function __construct(string $msg, ?\Throwable $previous = null)
 	{

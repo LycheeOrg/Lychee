@@ -257,6 +257,12 @@ const items = computed<MenyType[]>(() => {
 					command: () => (openLycheeAbout.value = true),
 				},
 				{
+					label: "left-menu.changelog",
+					icon: "copywriting",
+					access: true,
+					route: "/changelogs",
+				},
+				{
 					label: "left-menu.api",
 					icon: "book",
 					access: initData.value.settings.can_edit ?? false,
