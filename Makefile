@@ -167,10 +167,12 @@ gen_typescript_types:
 class-leak:
 	vendor/bin/class-leak check app database/migrations config --skip-type Illuminate\\View\\Component
 
-docker-build-base-image:
-	docker build -t lychee-base:latest ./docker/base
+# docker-build-base-image:
+# 	docker build -t lychee-base:latest ./docker/base
 
+# docker-build-dev-image: docker-build-base-image
 docker-build-dev-image:
 	docker build ./docker/dev -t lychee-dev:latest
 
-docker-build-dev: docker-build-base-image docker-build-dev-image
+docker-run-dev: docker-build-dev-image
+	docker compose -f docker-compose.yaml up
