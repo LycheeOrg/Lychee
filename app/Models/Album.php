@@ -34,8 +34,8 @@ use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Kalnoy\Nestedset\Collection as NSCollection;
+use Kalnoy\Nestedset\Contracts\Node;
 use Kalnoy\Nestedset\DescendantsRelation;
-use Kalnoy\Nestedset\Node;
 use Kalnoy\Nestedset\NodeTrait;
 
 /**
@@ -135,7 +135,7 @@ use Kalnoy\Nestedset\NodeTrait;
  */
 class Album extends BaseAlbum implements Node
 {
-	/** @phpstan-use NodeTrait<Album> */
+	/** @phpstan-use NodeTrait<Album,string> */
 	use NodeTrait;
 	use ToArrayThrowsNotImplemented;
 	/** @phpstan-use HasFactory<\Database\Factories\AlbumFactory> */

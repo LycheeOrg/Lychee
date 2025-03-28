@@ -62,15 +62,6 @@ return [
 
 	/*
 	|--------------------------------------------------------------------------
-	| Use new code path when importing photos
-	|--------------------------------------------------------------------------
-	|
-	| Use pipeline design pattern instead of hardcoded Strategies.
-	*/
-	'create-photo-via-pipes' => (bool) env('PHOTO_PIPES', true),
-
-	/*
-	|--------------------------------------------------------------------------
 	| Use S3 buckets instead of local hosting.
 	|--------------------------------------------------------------------------
 	|

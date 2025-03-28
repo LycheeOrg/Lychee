@@ -7,7 +7,7 @@
  */
 
 use Illuminate\Database\Eloquent\Model;
-use Kalnoy\Nestedset\Node;
+use Kalnoy\Nestedset\Contracts\Node;
 use Kalnoy\Nestedset\NodeTrait;
 
 /**
@@ -28,7 +28,7 @@ use Kalnoy\Nestedset\NodeTrait;
  */
 class NestedSetForAlbums_AlbumModel extends Model implements Node
 {
-	/** @phpstan-use NodeTrait<NestedSetForAlbums_AlbumModel> */
+	/** @phpstan-use NodeTrait<NestedSetForAlbums_AlbumModel,string> */
 	use NodeTrait;
 
 	protected $table = 'albums';

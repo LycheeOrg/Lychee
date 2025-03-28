@@ -15,7 +15,6 @@ use App\Actions\Photo\Pipes\Shared;
 use App\Actions\Photo\Pipes\Standalone;
 use App\Actions\Photo\Pipes\VideoPartner;
 use App\Actions\Statistics\Spaces;
-use App\Assets\Features;
 use App\Contracts\Exceptions\LycheeException;
 use App\Contracts\Models\AbstractAlbum;
 use App\DTO\ImportMode;
@@ -30,7 +29,6 @@ use App\Exceptions\PhotoResyncedException;
 use App\Exceptions\PhotoSkippedException;
 use App\Exceptions\QuotaExceededException;
 use App\Image\Files\NativeLocalFile;
-use App\Legacy\Actions\Photo\Create as LegacyPhotoCreate;
 use App\Models\Photo;
 use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -69,12 +67,6 @@ class Create
 	public function add(NativeLocalFile $source_file, ?AbstractAlbum $album, ?int $file_last_modified_time = null): Photo
 	{
 		$this->checkQuota($source_file);
-
-		if (Features::inactive('create-photo-via-pipes')) {
-			$old_code_path = new LegacyPhotoCreate($this->strategy_parameters->import_mode, $this->strategy_parameters->intended_owner_id);
-
-			return $old_code_path->add($source_file, $album, $file_last_modified_time);
-		}
 
 		$init_dto = new InitDTO(
 			parameters: $this->strategy_parameters,

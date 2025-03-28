@@ -1,7 +1,7 @@
 <template>
 	<Dialog v-model:visible="visible" modal pt:root:class="border-none m-3  max-w-md w-full" pt:mask:style="backdrop-filter: blur(2px)">
 		<template #container>
-			<div class="flex flex-col gap-4 bg-gradient-to-b from-bg-300 to-bg-400 relative text-sm rounded-md text-muted-color">
+			<div class="flex flex-col gap-4 bg-gradient-to-b from-bg-300 to-bg-400 max-w-md w-full relative text-sm rounded-md text-muted-color">
 				<div class="p-9 text-muted-color-emphasis">
 					<h1 class="mb-6 text-center text-2xl font-bold text-warning-700">
 						<i class="pi pi-exclamation-triangle mr-2" /> {{ $t("dialogs.session_expired.title") }}

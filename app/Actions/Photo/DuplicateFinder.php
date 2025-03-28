@@ -45,13 +45,14 @@ class DuplicateFinder
 	 * @param bool $must_have_same_checksum   Requires the duplicates to have the same checksum
 	 * @param bool $must_have_same_title      Requires the duplicates to have the same title
 	 *
-	 * @return Collection<int,object{album_id:string,album_title:string,photo_id:string,photo_title:string,checksum:string,short_path:string|null,storage_disk:string|null}>
+	 * @return Collection<int,covariant object{album_id:string,album_title:string,photo_id:string,photo_title:string,checksum:string,short_path:string|null,storage_disk:string|null}>
 	 */
 	public function search(
 		bool $must_be_within_same_album,
 		bool $must_have_same_checksum,
 		bool $must_have_same_title,
 	): Collection {
+		/** Collection<int,object{album_id:string,album_title:string,photo_id:string,photo_title:string,checksum:string,short_path:string|null,storage_disk:string|null}&\stdClass> */
 		return $this->query($must_be_within_same_album, $must_have_same_checksum, $must_have_same_title)
 			->get();
 	}

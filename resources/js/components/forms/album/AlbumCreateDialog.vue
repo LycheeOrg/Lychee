@@ -7,7 +7,7 @@
 		@close="is_create_album_visible = false"
 	>
 		<template #container="{ closeCallback }">
-			<div v-focustrap class="flex flex-col relative max-w-full text-sm rounded-md pt-9">
+			<div v-focustrap class="flex flex-col relative text-sm w-full md:w-lg rounded-md pt-9">
 				<p class="mb-5 px-9">{{ $t("dialogs.new_album.info") }}</p>
 				<div class="inline-flex flex-col gap-2 px-9">
 					<FloatLabel variant="on">

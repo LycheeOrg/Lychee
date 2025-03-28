@@ -1,7 +1,7 @@
 <template>
 	<Dialog v-model:visible="visible" pt:root:class="border-none" modal :dismissable-mask="true" @close="visible = false">
 		<template #container="{ closeCallback }">
-			<div class="flex flex-col relative md:w-[500px] max-w-[500px] text-sm rounded-md pt-9">
+			<div class="flex flex-col relative w-full md:w-lg text-sm rounded-md pt-9">
 				<div class="flex text-muted-color-emphasis w-full px-9 pb-2">
 					<div class="w-1/2">
 						<span class="w-full">{{ $t("sharing.username") }}</span>

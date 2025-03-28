@@ -1,7 +1,7 @@
 <template>
 	<Dialog v-model:visible="visible" modal pt:root:class="border-none" pt:mask:style="backdrop-filter: blur(2px)" @hide="closeCallback">
 		<template #container="{ closeCallback }">
-			<div class="flex flex-col relative w-[calc(min(100%,500px))] text-sm rounded-md">
+			<div class="flex flex-col relative max-w-md w-full text-sm rounded-md">
 				<div class="flex flex-col gap-1 justify-center p-9">
 					<template v-for="sv in props.photo.size_variants">
 						<Button severity="contrast" v-if="sv?.locale" class="w-full dark:border-surface-900" @click="download(sv.type)">

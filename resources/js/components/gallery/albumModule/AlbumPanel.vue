@@ -140,8 +140,8 @@ const props = defineProps<{
 	isPhotoOpen: boolean;
 }>();
 
-const modelAlbum = ref(props.modelAlbum);
-const album = ref(props.album);
+const modelAlbum = computed(() => props.modelAlbum);
+const album = computed(() => props.album);
 const hasHidden = computed(() => modelAlbum.value !== undefined && modelAlbum.value.albums.filter((album) => album.is_nsfw).length > 0);
 const photos = computed<App.Http.Resources.Models.PhotoResource[]>(() => album.value?.photos ?? []);
 
