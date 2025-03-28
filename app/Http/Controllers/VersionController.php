@@ -93,7 +93,7 @@ class VersionController extends Controller
 		$prep_changes = trim($this->replace_links($data[3]));
 
 		return new ChangeLogInfo(
-			version: str_replace("v", "", $data[0]),
+			version: str_replace('v', '', $data[0]),
 			date: $data[2],
 			changes: $this->converter->convert($prep_changes)->getContent());
 	}
