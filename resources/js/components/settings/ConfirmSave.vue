@@ -59,7 +59,6 @@
 <script setup lang="ts">
 import SettingsService from "@/services/settings-service";
 import { useLycheeStateStore } from "@/stores/LycheeState";
-import { trans } from "laravel-vue-i18n";
 import { storeToRefs } from "pinia";
 import Button from "primevue/button";
 import Message from "primevue/message";
