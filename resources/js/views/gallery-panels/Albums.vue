@@ -163,10 +163,12 @@ import { EmptyPhotoCallbacks } from "@/utils/Helpers";
 import WebauthnModal from "@/components/modals/WebauthnModal.vue";
 import LoginModal from "@/components/modals/LoginModal.vue";
 import LoadingProgress from "@/components/loading/LoadingProgress.vue";
+import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
 
 const auth = useAuthStore();
 const lycheeStore = useLycheeStateStore();
 const togglableStore = useTogglablesStateStore();
+const leftMenuStore = useLeftMenuStateStore();
 
 lycheeStore.init();
 const albumid = ref("gallery");
@@ -235,7 +237,7 @@ onMounted(() => {
 	window.addEventListener("paste", onPaste);
 	window.addEventListener("dragover", dragEnd);
 	window.addEventListener("drop", dropUpload);
-	togglableStore.left_menu_open = false;
+	leftMenuStore.left_menu_open = false;
 });
 
 onMounted(async () => {

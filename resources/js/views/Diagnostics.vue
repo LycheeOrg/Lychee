@@ -1,7 +1,7 @@
 <template>
 	<Toolbar class="w-full border-0 h-14">
 		<template #start>
-			<Button @click="togglableStore.toggleLeftMenu" icon="pi pi-bars" class="mr-2 border-none" severity="secondary" text />
+			<OpenLeftMenu />
 		</template>
 
 		<template #center>
@@ -30,6 +30,7 @@ import { storeToRefs } from "pinia";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { useToast } from "primevue/usetoast";
 import { trans } from "laravel-vue-i18n";
+import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
 
 const authStore = useAuthStore();
 const { user } = storeToRefs(authStore);
