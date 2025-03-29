@@ -20,6 +20,9 @@ const InitService = {
 	fetchFooter(): Promise<AxiosResponse<App.Http.Resources.GalleryConfigs.FooterConfig>> {
 		return axios.get(`${Constants.getApiUrl()}Gallery::Footer`, { data: {} });
 	},
+	fetchChangeLog(): Promise<AxiosResponse<App.Http.Resources.Diagnostics.ChangeLogInfo[]>> {
+		return axios.get(`${Constants.getApiUrl()}ChangeLogs`, { data: {} });
+	},
 };
 
 export default InitService;

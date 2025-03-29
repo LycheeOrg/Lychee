@@ -17,6 +17,7 @@ const Statistics = () => import("@/views/Statistics.vue");
 const Jobs = () => import("@/views/Jobs.vue");
 const FixTree = () => import("@/views/FixTree.vue");
 const DuplicatesFinder = () => import("@/views/DuplicatesFinder.vue");
+const Changelogs = () => import("@/views/ChangeLogs.vue");
 
 const routes_ = [
 	{
@@ -140,6 +141,11 @@ const routes_ = [
 		name: "users",
 		path: "/users",
 		component: Users,
+	},
+	{
+		name: "changelogs",
+		path: "/changelogs",
+		component: Changelogs,
 	},
 ];
 

@@ -19,7 +19,7 @@ class UpdateRequest extends JsonRequestFunctions
 	 */
 	public function __construct()
 	{
-		$this->init(
+		parent::__construct(
 			Config::get('urls.update.json'),
 			Configs::getValueAsInt('update_check_every_days')
 		);
