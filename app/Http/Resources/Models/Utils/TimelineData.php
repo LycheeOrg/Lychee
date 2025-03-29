@@ -12,9 +12,11 @@ use App\Enum\ColumnSortingType;
 use App\Enum\TimelineAlbumGranularity;
 use App\Enum\TimelinePhotoGranularity;
 use App\Exceptions\Internal\LycheeLogicException;
+use App\Exceptions\Internal\TimelineGranularityException;
 use App\Http\Resources\Models\PhotoResource;
 use App\Http\Resources\Models\ThumbAlbumResource;
 use App\Models\Configs;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
@@ -33,14 +35,14 @@ class TimelineData extends Data
 		$timeline_date_format_year = Configs::getValueAsString('timeline_photo_date_format_year');
 		$timeline_date_format_month = Configs::getValueAsString('timeline_photo_date_format_month');
 		$timeline_date_format_day = Configs::getValueAsString('timeline_photo_date_format_day');
-		$timeline_photo_date_format_hour = Configs::getValueAsString('timeline_photo_date_format_hour');
+		$timeline_date_format_hour = Configs::getValueAsString('timeline_photo_date_format_hour');
 
 		$format = match ($granularity) {
 			TimelinePhotoGranularity::YEAR => $photo->timeline_date_carbon()->format($timeline_date_format_year),
 			TimelinePhotoGranularity::MONTH => $photo->timeline_date_carbon()->format($timeline_date_format_month),
 			TimelinePhotoGranularity::DAY => $photo->timeline_date_carbon()->format($timeline_date_format_day),
-			TimelinePhotoGranularity::HOUR => $photo->timeline_date_carbon()->format($timeline_photo_date_format_hour),
-			TimelinePhotoGranularity::DEFAULT, TimelinePhotoGranularity::DISABLED => throw new LycheeLogicException('DEFAULT is not a valid granularity for photos'),
+			TimelinePhotoGranularity::HOUR => $photo->timeline_date_carbon()->format($timeline_date_format_hour),
+			TimelinePhotoGranularity::DEFAULT, TimelinePhotoGranularity::DISABLED => throw new TimelineGranularityException(),
 		};
 
 		$time_date = match ($granularity) {
@@ -74,7 +76,7 @@ class TimelineData extends Data
 			TimelineAlbumGranularity::YEAR => $date->format($timeline_date_format_year),
 			TimelineAlbumGranularity::MONTH => $date->format($timeline_date_format_month),
 			TimelineAlbumGranularity::DAY => $date->format($timeline_date_format_day),
-			TimelineAlbumGranularity::DEFAULT, TimelineAlbumGranularity::DISABLED => throw new LycheeLogicException('DEFAULT/DISABLED is not a valid granularity for albums'),
+			TimelineAlbumGranularity::DEFAULT, TimelineAlbumGranularity::DISABLED => throw new TimelineGranularityException(),
 		};
 
 		$time_date = match ($granularity) {
@@ -116,5 +118,28 @@ class TimelineData extends Data
 
 			return $photo;
 		});
+	}
+
+	public static function fromDate(string $date): TimelineData
+	{
+		$granularity = Configs::getValueAsEnum('timeline_photos_granularity', TimelinePhotoGranularity::class);
+		$timeline_date_format_year = Configs::getValueAsString('timeline_quick_access_date_format_year');
+		$timeline_date_format_month = Configs::getValueAsString('timeline_quick_access_date_format_month');
+		$timeline_date_format_day = Configs::getValueAsString('timeline_quick_access_date_format_day');
+		$timeline_date_format_hour = Configs::getValueAsString('timeline_quick_access_date_format_hour');
+
+		$carbon = $granularity === TimelinePhotoGranularity::YEAR ? Carbon::createFromDate(intval($date)) : Carbon::parse($date);
+
+		$format = match ($granularity) {
+			TimelinePhotoGranularity::YEAR => $carbon->format($timeline_date_format_year),
+			TimelinePhotoGranularity::MONTH => $carbon->format($timeline_date_format_month),
+			TimelinePhotoGranularity::DAY => $carbon->format($timeline_date_format_day),
+			TimelinePhotoGranularity::HOUR => $carbon->format($timeline_date_format_hour),
+			TimelinePhotoGranularity::DEFAULT, TimelinePhotoGranularity::DISABLED, null => throw new TimelineGranularityException(),
+		};
+
+		$time_date = $carbon->format($granularity->format());
+
+		return new TimelineData(time_date: $time_date, format: $format);
 	}
 }

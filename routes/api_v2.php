@@ -22,13 +22,17 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/LandingPage', [LandingPageController::class, '__invoke']);
+Route::get('/LandingPage', [LandingPageController::class, '__invoke'])->middleware(['cache_control']);
 Route::get('/Frame', [Gallery\FrameController::class, 'get']);
 
 Route::get('/Gallery::Init', [Gallery\ConfigController::class, 'getInit']);
 Route::get('/Gallery::Footer', [Gallery\ConfigController::class, 'getFooter'])->middleware(['cache_control']);
 Route::get('/Gallery::getLayout', [Gallery\ConfigController::class, 'getGalleryLayout'])->middleware(['cache_control']);
 Route::get('/Gallery::getUploadLimits', [Gallery\ConfigController::class, 'getUploadCOnfig'])->middleware(['cache_control']);
+
+Route::get('/Timeline', [Gallery\TimelineController::class, '__invoke'])->middleware(['cache_control']);
+Route::get('/Timeline::dates', [Gallery\TimelineController::class, 'dates'])->middleware(['cache_control']);
+Route::get('/Timeline::init', [Gallery\TimelineController::class, 'init'])->middleware(['cache_control']);
 
 /**
  * ALBUMS.

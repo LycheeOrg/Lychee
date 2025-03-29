@@ -16,6 +16,7 @@
 				v-on:click="emits('toggleStar')"
 			/>
 			<DockButton
+				v-if="!isTimeline"
 				pi="image"
 				class="lg:hover:text-primary-500 text-white"
 				v-tooltip.bottom="$t('gallery.photo.actions.set_album_header')"
@@ -45,6 +46,8 @@ import DockButton from "./DockButton.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { storeToRefs } from "pinia";
+import { computed } from "vue";
+import { useRoute } from "vue-router";
 
 const lycheeStore = useLycheeStateStore();
 const togglableStore = useTogglablesStateStore();
@@ -62,4 +65,7 @@ const emits = defineEmits<{
 	toggleMove: [];
 	toggleDelete: [];
 }>();
+
+const route = useRoute();
+const isTimeline = computed(() => (route.name as string).includes("timeline"));
 </script>
