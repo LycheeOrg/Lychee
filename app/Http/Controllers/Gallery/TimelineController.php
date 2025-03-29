@@ -16,7 +16,7 @@ use App\Http\Resources\Timeline\InitResource;
 use App\Http\Resources\Timeline\TimelineResource;
 use App\Models\Configs;
 use App\Models\Photo;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Routing\Controller;
 use Spatie\LaravelData\Data;
