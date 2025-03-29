@@ -22,9 +22,13 @@
 							</template>
 						</Column>
 					</DataTable>
-					<div class="w-full flex justify-center my-4">
+					<div class="w-full flex justify-center mt-4">
 						<Checkbox v-model="doNotShowAgain" :binary="true" inputId="doNotShowAgain" />
 						<label for="doNotShowAgain" class="ml-2 text-sm text-muted-color">{{ $t("dialogs.keybindings.don_t_show_again") }}</label>
+					</div>
+					<div class="w-full flex justify-center mb-4">
+						<Checkbox v-model="hideHeaderButton" :binary="true" inputId="hideHeaderButton" />
+						<label for="hideHeaderButton" class="ml-2 text-sm text-muted-color">{{ $t("dialogs.keybindings.hide_header_button") }}</label>
 					</div>
 				</div>
 				<div class="flex justify-center">
@@ -54,10 +58,28 @@ const visible = defineModel("visible", { default: false });
 
 const toast = useToast();
 const doNotShowAgain = ref(false);
+const hideHeaderButton = ref(false);
 const LycheeState = useLycheeStateStore();
 function closeCallback() {
 	LycheeState.show_keybinding_help_popup = false;
 	visible.value = false;
+
+	if (hideHeaderButton.value) {
+		SettingsService.setConfigs({
+			configs: [
+				{
+					key: "show_keybinding_help_button",
+					value: "0",
+				},
+			],
+		}).then(() => {
+			toast.add({
+				severity: "success",
+				summary: trans("dialogs.keybindings.button_hidden"),
+				life: 2000,
+			});
+		});
+	}
 
 	if (doNotShowAgain.value) {
 		SettingsService.setConfigs({

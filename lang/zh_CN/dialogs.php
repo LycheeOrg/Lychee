@@ -37,6 +37,7 @@ return [
 	'keybindings' => [
 		'header' => 'Keyboard shortcuts',
 		'don_t_show_again' => '不再显示',
+		'hide_header_button' => 'Don\'t show help in header',
 		'side_wide' => '全局快捷键',
 		'back_cancel' => '返回/取消',
 		'confirm' => '确认',
@@ -68,6 +69,7 @@ return [
 		'show_hide_meta' => '显示信息',
 
 		'keep_hidden' => '我们会保持隐藏。',
+		'button_hidden' => 'We will hide the button in the header.'
 	],
 	'login' => [
 		'username' => '用户名',

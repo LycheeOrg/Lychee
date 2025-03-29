@@ -37,6 +37,7 @@ return [
 	'keybindings' => [
 		'header' => 'Keyboard shortcuts',
 		'don_t_show_again' => 'Nie pokazuj ponownie',
+		'hide_header_button' => 'Don\'t show help in header',
 		'side_wide' => 'Skróty dla całej witryny',
 		'back_cancel' => 'Wstecz/Anuluj',
 		'confirm' => 'Potwierdź',
@@ -68,6 +69,7 @@ return [
 		'show_hide_meta' => 'Pokaż informacje',
 
 		'keep_hidden' => 'Będziemy to ukrywać.',
+		'button_hidden' => 'We will hide the button in the header.'
 	],
 	'login' => [
 		'username' => 'Nazwa użytkownika',

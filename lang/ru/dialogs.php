@@ -37,6 +37,7 @@ return [
 	'keybindings' => [
 		'header' => 'Горячие клавиши',
 		'don_t_show_again' => 'Больше не показывать',
+		'hide_header_button' => 'Don\'t show help in header',
 		'side_wide' => 'Глобальные горячие клавиши',
 		'back_cancel' => 'Назад/Отмена',
 		'confirm' => 'Подтвердить',
@@ -68,6 +69,7 @@ return [
 		'show_hide_meta' => 'Показать информацию',
 
 		'keep_hidden' => 'Мы оставим это скрытым.',
+		'button_hidden' => 'We will hide the button in the header.'
 	],
 	'login' => [
 		'username' => 'Имя пользователя',
