@@ -69,7 +69,7 @@ return [
 		'show_hide_meta' => 'Pokaż informacje',
 
 		'keep_hidden' => 'Będziemy to ukrywać.',
-		'button_hidden' => 'We will hide the button in the header.'
+		'button_hidden' => 'We will hide the button in the header.',
 	],
 	'login' => [
 		'username' => 'Nazwa użytkownika',

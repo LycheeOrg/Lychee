@@ -69,7 +69,7 @@ return [
 		'show_hide_meta' => 'Показать информацию',
 
 		'keep_hidden' => 'Мы оставим это скрытым.',
-		'button_hidden' => 'We will hide the button in the header.'
+		'button_hidden' => 'We will hide the button in the header.',
 	],
 	'login' => [
 		'username' => 'Имя пользователя',
