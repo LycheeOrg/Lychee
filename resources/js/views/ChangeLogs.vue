@@ -10,7 +10,7 @@
 
 		<template #end> </template>
 	</Toolbar>
-	<Panel class="border-none max-w-7xl mx-auto my-12" :pt:header:class="'hidden'" v-for="(changeLog, index) in changeLogs" :key="'cl' + index">
+	<Panel class="border-none max-w-3xl mx-auto my-12" :pt:header:class="'hidden'" v-for="(changeLog, index) in changeLogs" :key="'cl' + index">
 		<h2 class="text-4xl font-bold text-muted-color-emphasis">{{ changeLog.version }}</h2>
 		<p class="text-sm text-gray-500">
 			{{ changeLog.date }}
