@@ -8,9 +8,10 @@
 
 namespace App\Metadata\Json;
 
+use App\Contracts\JsonRequest;
 use Illuminate\Support\Facades\Log;
 
-class JsonRequestFunctions extends ExternalRequestFunctions
+class JsonRequestFunctions extends ExternalRequestFunctions implements JsonRequest
 {
 	/**
 	 * {@inheritDoc}
