@@ -196,24 +196,24 @@ const items = computed<MenyType[]>(() => {
 
 	return [
 		// For later...
-		// {
-		// 	label: "Favourites",
-		// 	icon: "heart",
-		// 	route: "/favourites",
-		// 	access: is_favourite_enabled.value,
-		// },
-		// {
-		// 	label: "Frame",
-		// 	icon: "screen",
-		// 	route: "/frame",
-		// 	access: !(route.name as string).includes("frame"),
-		// },
-		// {
-		// 	label: "gallery.timeline.title",
-		// 	icon: "clock",
-		// 	route: "/timeline",
-		// 	access: !(route.name as string).includes("timeline") && is_timeline_page_enabled.value,
-		// },
+		{
+			label: "Favourites",
+			icon: "heart",
+			route: "/favourites",
+			access: is_favourite_enabled.value,
+		},
+		{
+			label: "Frame",
+			icon: "screen",
+			route: "/frame",
+			access: !(route.name as string).includes("frame"),
+		},
+		{
+			label: "gallery.timeline.title",
+			icon: "clock",
+			route: "/timeline",
+			access: !(route.name as string).includes("timeline") && is_timeline_page_enabled.value,
+		},
 		{
 			label: "left-menu.admin",
 			access: canSeeAdmin.value,
