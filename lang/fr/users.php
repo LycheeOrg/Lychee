@@ -7,38 +7,36 @@
  */
 
 return [
-	/*
-	|--------------------------------------------------------------------------
+	/* --------------------------------------------------------------------------
 	| Users page
-	|--------------------------------------------------------------------------
-	*/
-	'title' => 'Users',
-	'description' => 'Here you can manage the users of your Lychee installation. You can create, edit and delete users.',
-	'create' => 'Create a new user',
-	'username' => 'Username',
-	'password' => 'Password',
-	'legend' => 'Legend',
-	'upload_rights' => 'When selected, the user can upload content.',
-	'edit_rights' => 'When selected, the user can modify their profile (username, password).',
-	'quota' => 'When set, the user has a space quota for pictures (in kB).',
+	|-------------------------------------------------------------------------- */
+	'title' => 'Utilisateurs',
+	'description' => 'Ici, vous pouvez gérer les utilisateurs de votre installation Lychee. Vous pouvez créer, modifier et supprimer des utilisateurs.',
+	'create' => 'Créer un nouvel utilisateur',
+	'username' => 'Nom d’utilisateur',
+	'password' => 'Mot de passe',
+	'legend' => 'Légende',
+	'upload_rights' => 'Si cette option est cochée, l’utilisateur peut téléverser du contenu.',
+	'edit_rights' => 'Si cette option est cochée, l’utilisateur peut modifier son profil (nom d’utilisateur, mot de passe).',
+	'quota' => 'Si défini, l’utilisateur dispose d’un quota d’espace pour les photos (en Ko).',
 
-	'user_deleted' => 'User deleted',
-	'user_created' => 'User created',
-	'user_updated' => 'User updated',
-	'change_saved' => 'Change saved!',
+	'user_deleted' => 'Utilisateur supprimé',
+	'user_created' => 'Utilisateur créé',
+	'user_updated' => 'Utilisateur mis à jour',
+	'change_saved' => 'Changement enregistré !',
 
 	'create_edit' => [
-		'upload_rights' => 'User can upload content.',
-		'edit_rights' => 'User can modify their profile (username, password).',
-		'quota' => 'User has quota limit.',
-		'quota_kb' => 'quota in kB (0 for default)',
-		'note' => 'Admin note (not publically visible)',
-		'create' => 'Create',
-		'edit' => 'Edit',
+		'upload_rights' => 'L’utilisateur peut téléverser du contenu.',
+		'edit_rights' => 'L’utilisateur peut modifier son nom d’utilisateur et son mot de passe.',
+		'quota' => 'Quota d’espace (en Ko)',
+		'quota_kb' => 'quota en Ko (0 par défaut)',
+		'note' => 'Note admin (non visible publiquement)',
+		'create' => 'Créer',
+		'edit' => 'Éditer',
 	],
 	'line' => [
-		'admin' => 'admin user',
-		'edit' => 'Edit',
-		'delete' => 'Delete',
+		'admin' => 'utilisateur administrateur',
+		'edit' => 'Éditer',
+		'delete' => 'Supprimer',
 	],
 ];

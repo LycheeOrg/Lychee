@@ -13,12 +13,12 @@ return [
 	|--------------------------------------------------------------------------
 	*/
 	'title' => 'Maintenance',
-	'intro' => 'On this page you will find the duplicate pictures found in your database.',
-	'found' => ' duplicates found!',
-	'invalid-search' => ' At least the checksum or title condition must be checked.',
-	'checksum-must-match' => 'Checksum must match.',
-	'title-must-match' => 'Title must match.',
-	'must-be-in-same-album' => 'Must be in the same album.',
+	'intro' => 'Sur cette page, vous trouverez les photos en double détectées dans votre base de données.',
+	'found' => ' doublons trouvés !',
+	'invalid-search' => ' Au moins une des conditions "checksum" ou "titre" doit être cochée.',
+	'checksum-must-match' => 'Le checksum doit correspondre.',
+	'title-must-match' => 'Le titre doit correspondre.',
+	'must-be-in-same-album' => 'Doivent appartenir au même album.',
 
 	'columns' => [
 		'album' => 'Album',
@@ -27,9 +27,9 @@ return [
 	],
 
 	'warning' => [
-		'no-original-left' => 'No original left.',
-		'keep-one' => 'You selected all duplicates in this group. Please chose at least one duplicate to keep.',
+		'no-original-left' => 'Aucun original restant.',
+		'keep-one' => 'Vous avez sélectionné tous les doublons de ce groupe. Veuillez en conserver au moins un.',
 	],
 
-	'delete-selected' => 'Delete selected',
+	'delete-selected' => 'Supprimer la sélection',
 ];
