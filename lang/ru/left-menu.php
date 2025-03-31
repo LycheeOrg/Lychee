@@ -12,18 +12,18 @@ return [
 	| Left Menu
 	|--------------------------------------------------------------------------
 	*/
-	'back_to_gallery' => 'Back to Gallery',
+	'back_to_gallery' => 'Вернуться в галерею',
 
-	'admin' => 'Admin',
-	'clockwork' => 'Clockwork App',
-	'logs' => 'Show Logs',
-	'jobs' => 'Show Job History',
-	'user' => 'User',
+	'admin' => 'Админ',
+	'clockwork' => 'Приложение Clockwork',
+	'logs' => 'Показать логи',
+	'jobs' => 'История задач',
+	'user' => 'Пользователь',
 
-	'sign_out' => 'Sign Out',
+	'sign_out' => 'Выход',
 
-	'about' => 'About',
-	'api' => 'API Documentation',
-	'source_code' => 'Source Code',
-	'support' => 'Support',
+	'about' => 'О программе',
+	'api' => 'Документация API',
+	'source_code' => 'Исходный код',
+	'support' => 'Поддержка',
 ];

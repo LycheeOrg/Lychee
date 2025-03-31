@@ -12,19 +12,19 @@ return [
 	| Diagnostics page
 	|--------------------------------------------------------------------------
 	*/
-	'title' => 'Diagnostics',
+	'title' => 'Диагностика',
 
-	'copy_to_clipboard' => 'Copy diagnostics to clipboard',
-	'self-diagnosis' => 'Self-diagnosis',
-	'info' => 'Info',
-	'space' => 'Space',
-	'load_space' => 'Load space usage.',
-	'configuration' => 'Configuration',
-	'loading' => 'Loading...',
-	'identical_content' => 'Identical content',
+	'copy_to_clipboard' => 'Копировать диагностику в буфер обмена',
+	'self-diagnosis' => 'Самодиагностика',
+	'info' => 'Информация',
+	'space' => 'Пространство',
+	'load_space' => 'Загрузить использование пространства.',
+	'configuration' => 'Конфигурация',
+	'loading' => 'Загрузка...',
+	'identical_content' => 'Идентичное содержимое',
 
 	'toast' => [
-		'info' => 'Info',
-		'copy' => 'Diagnostics copied to clipboard!',
+		'info' => 'Информация',
+		'copy' => 'Диагностика скопирована в буфер обмена!',
 	],
 ];
