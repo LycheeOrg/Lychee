@@ -1,5 +1,5 @@
 import { fileURLToPath, URL } from "node:url";
-import { ConfigEnv, defineConfig, loadEnv, PluginOption, UserConfig } from "vite";
+import { ConfigEnv, defineConfig, HttpProxy, loadEnv, PluginOption, ProxyOptions, UserConfig } from "vite";
 import laravel from "laravel-vite-plugin";
 import vue from "@vitejs/plugin-vue";
 import i18n from "laravel-vue-i18n/vite";
@@ -28,8 +28,10 @@ const localDevelopMiddleware: PluginOption = {
         return;
       }
 
-      console.log(req.url);
-      const startsWithPages = ["/gallery", "/frame", "/map", "/search"];
+    //   console.log(req);
+	// console.log(req.url , req.headers)
+
+	const startsWithPages = ["/gallery", "/frame", "/map", "/search"];
       // Check if req.url starts with pages
       if (startsWithPages.some((page) => requestUrl.startsWith(page))) {
         req.url = viteIndexPath;
@@ -146,7 +148,23 @@ export default defineConfig(({ command, mode, isSsrBuild, isPreview } : ConfigEn
 			}
 			config.server.open = "vite/index.html";
 			config.server.proxy = {
-				"/api/": env.VITE_HTTP_PROXY_TARGET,
+				"/api/":  {
+					target: env.VITE_HTTP_PROXY_TARGET,
+					changeOrigin: true,
+					secure: true,
+					ws: true,
+					configure: (proxy: HttpProxy.Server, _options: ProxyOptions) => {
+					  proxy.on('error', (err, _req, _res) => {
+						console.log('proxy error', err);
+					  });
+					  proxy.on('proxyReq', (proxyReq, req, _res) => {
+						console.log(req.method?.padEnd(4), '=> ', proxyReq.host + req.url);
+					  });
+					  proxy.on('proxyRes', (proxyRes, req, _res) => {
+						console.log(proxyRes.statusCode?.toString().padEnd(4), '<=', req.url);
+					  });
+					},
+				}
 			};
 			config.plugins.push(localDevelopMiddleware);
 			return config;
