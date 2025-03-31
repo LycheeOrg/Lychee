@@ -18,6 +18,10 @@ class ConfigIntegrity
 {
 	public const SE_FIELDS = [
 		'default_user_quota',
+		'disable_small_download',
+		'disable_small2x_download',
+		'disable_medium_download',
+		'disable_medium2x_download',
 		'timeline_photos_granularity',
 		'timeline_albums_granularity',
 		'timeline_left_border_enabled',

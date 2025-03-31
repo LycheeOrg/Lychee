@@ -33,7 +33,7 @@
 							<Fieldset
 								v-if="tab === config.cat"
 								:legend="config.name"
-								class="border-b-0 border-r-0 rounded-r-none rounded-b-none pb-20"
+								class="border-b-0 border-r-0 rounded-r-none rounded-b-none pb-20 h-full"
 							>
 								<div
 									class="configDescription w-full text-muted-color-emphasis pl-6 pb-8"
