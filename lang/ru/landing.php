@@ -12,8 +12,8 @@ return [
 	| Landing page
 	|--------------------------------------------------------------------------
 	*/
-	'gallery' => 'Gallery',
-	'access_gallery' => 'Access the gallery',
-	'hosted_with_lychee' => 'Hosted with Lychee',
-	'copyright' => 'All images on this website are subject to copyright by %1$s © %2$s',
+	'gallery' => 'Галерея',
+	'access_gallery' => 'Доступ к галерее',
+	'hosted_with_lychee' => 'Размещено с Lychee',
+	'copyright' => 'Все изображения на этом сайте защищены авторским правом %1$s © %2$s',
 ];

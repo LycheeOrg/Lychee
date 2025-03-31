@@ -12,24 +12,24 @@ return [
 	| Duplicate Finder Page
 	|--------------------------------------------------------------------------
 	*/
-	'title' => 'Maintenance',
-	'intro' => 'On this page you will find the duplicate pictures found in your database.',
-	'found' => ' duplicates found!',
-	'invalid-search' => ' At least the checksum or title condition must be checked.',
-	'checksum-must-match' => 'Checksum must match.',
-	'title-must-match' => 'Title must match.',
-	'must-be-in-same-album' => 'Must be in the same album.',
+	'title' => 'Обслуживание',
+	'intro' => 'На этой странице вы найдете дублирующиеся фотографии, найденные в вашей базе данных.',
+	'found' => ' дубликатов найдено!',
+	'invalid-search' => 'Необходимо выбрать хотя бы одно условие для проверки контрольной суммы или заголовка.',
+	'checksum-must-match' => 'Контрольная сумма должна совпадать.',
+	'title-must-match' => 'Заголовок должен совпадать.',
+	'must-be-in-same-album' => 'Должны быть в одном альбоме.',
 
 	'columns' => [
-		'album' => 'Album',
-		'photo' => 'Photo',
-		'checksum' => 'Checksum',
+		'album' => 'Альбом',
+		'photo' => 'Фото',
+		'checksum' => 'Контрольная сумма',
 	],
 
 	'warning' => [
-		'no-original-left' => 'No original left.',
-		'keep-one' => 'You selected all duplicates in this group. Please chose at least one duplicate to keep.',
+		'no-original-left' => 'Оригинал не найден.',
+		'keep-one' => 'Вы выбрали все дубликаты в этой группе. Пожалуйста, выберите хотя бы один дубликат, чтобы сохранить его.',
 	],
 
-	'delete-selected' => 'Delete selected',
+	'delete-selected' => 'Удалить выбранное',
 ];
