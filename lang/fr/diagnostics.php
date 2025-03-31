@@ -14,17 +14,17 @@ return [
 	*/
 	'title' => 'Diagnostics',
 
-	'copy_to_clipboard' => 'Copy diagnostics to clipboard',
-	'self-diagnosis' => 'Self-diagnosis',
-	'info' => 'Info',
-	'space' => 'Space',
-	'load_space' => 'Load space usage.',
+	'copy_to_clipboard' => 'Copier les diagnostics dans le presse-papiers',
+	'self-diagnosis' => 'Auto-diagnostic',
+	'info' => 'Informations',
+	'space' => 'Espace',
+	'load_space' => 'Charger l’utilisation de l’espace disque.',
 	'configuration' => 'Configuration',
-	'loading' => 'Loading...',
-	'identical_content' => 'Identical content',
+	'loading' => 'Chargement...',
+	'identical_content' => 'Contenu identique',
 
 	'toast' => [
-		'info' => 'Info',
-		'copy' => 'Diagnostics copied to clipboard!',
+		'info' => 'Informations',
+		'copy' => 'Diagnostics copiés dans le presse-papiers !',
 	],
 ];
