@@ -23,6 +23,7 @@ class ConfigResource extends Data
 	public string $details;
 	public bool $is_expert;
 	public bool $require_se;
+	public int|null $order;
 
 	public function __construct(Configs $c)
 	{
@@ -33,6 +34,7 @@ class ConfigResource extends Data
 		$this->details = $c->details;
 		$this->require_se = $c->level > 0;
 		$this->is_expert = $c->is_expert;
+		$this->order = (config('app.env', 'dev') === 'dev') ? $c->order : null;
 	}
 
 	public static function fromModel(Configs $c): ConfigResource
