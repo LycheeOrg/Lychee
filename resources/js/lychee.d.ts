@@ -238,6 +238,12 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		album_decoration: App.Enum.AlbumDecorationType;
 		album_decoration_orientation: App.Enum.AlbumDecorationOrientation;
 		number_albums_per_row_mobile: 1 | 2 | 3;
+		is_thumb_download_enabled: boolean;
+		is_thum2x_download_enabled: boolean;
+		is_small_download_enabled: boolean;
+		is_small2x_download_enabled: boolean;
+		is_medium_download_enabled: boolean;
+		is_medium2x_download_enabled: boolean;
 		clockwork_url: string | null;
 		slideshow_timeout: number;
 		is_timeline_left_border_visible: boolean;

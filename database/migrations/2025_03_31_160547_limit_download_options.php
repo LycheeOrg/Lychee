@@ -9,15 +9,17 @@
 use App\Models\Extensions\BaseConfigMigration;
 
 return new class() extends BaseConfigMigration {
+	public const CAT = 'access_permissions';
+
 	public function getConfigs(): array
 	{
 		return [
 			[
 				'key' => 'disable_thumb_download',
 				'value' => '1',
-				'cat' => 'access_rights',
+				'cat' => self::CAT,
 				'type_range' => self::BOOL,
-				'description' => 'Disable squared thumbs download.',
+				'description' => 'Disable the download of squared thumbs',
 				'details' => '',
 				'is_expert' => true,
 				'is_secret' => false,
@@ -27,9 +29,9 @@ return new class() extends BaseConfigMigration {
 			[
 				'key' => 'disable_thumb2x_download',
 				'value' => '1',
-				'cat' => 'access_rights',
+				'cat' => self::CAT,
 				'type_range' => self::BOOL,
-				'description' => 'Disable HiDPI squared thumbs download.',
+				'description' => 'Disable the download of HiDPI squared thumbs',
 				'details' => '',
 				'is_expert' => true,
 				'is_secret' => false,
@@ -39,9 +41,9 @@ return new class() extends BaseConfigMigration {
 			[
 				'key' => 'disable_small_download',
 				'value' => '0',
-				'cat' => 'access_rights',
+				'cat' => self::CAT,
 				'type_range' => self::BOOL,
-				'description' => 'Disable thumbs download.',
+				'description' => 'Disable the download of thumbs',
 				'details' => '',
 				'is_expert' => true,
 				'is_secret' => false,
@@ -51,9 +53,9 @@ return new class() extends BaseConfigMigration {
 			[
 				'key' => 'disable_small2x_download',
 				'value' => '0',
-				'cat' => 'access_rights',
+				'cat' => self::CAT,
 				'type_range' => self::BOOL,
-				'description' => 'Disable HiDPI thumbs download.',
+				'description' => 'Disable the download of HiDPI thumbs',
 				'details' => '',
 				'is_expert' => true,
 				'is_secret' => false,
@@ -63,9 +65,9 @@ return new class() extends BaseConfigMigration {
 			[
 				'key' => 'disable_medium_download',
 				'value' => '0',
-				'cat' => 'access_rights',
+				'cat' => self::CAT,
 				'type_range' => self::BOOL,
-				'description' => 'Disable Medium download.',
+				'description' => 'Disable the download of Medium',
 				'details' => '',
 				'is_expert' => true,
 				'is_secret' => false,
@@ -75,9 +77,9 @@ return new class() extends BaseConfigMigration {
 			[
 				'key' => 'disable_medium2x_download',
 				'value' => '0',
-				'cat' => 'access_rights',
+				'cat' => self::CAT,
 				'type_range' => self::BOOL,
-				'description' => 'Disable HiDPI Medium download.',
+				'description' => 'Disable the download of HiDPI Medium',
 				'details' => '',
 				'is_expert' => true,
 				'is_secret' => false,

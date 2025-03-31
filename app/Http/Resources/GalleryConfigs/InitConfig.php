@@ -52,6 +52,14 @@ class InitConfig extends Data
 	#[LiteralTypeScriptType('1|2|3')]
 	public int $number_albums_per_row_mobile;
 
+	// Download configuration
+	public bool $is_thumb_download_enabled;
+	public bool $is_thum2x_download_enabled;
+	public bool $is_small_download_enabled;
+	public bool $is_small2x_download_enabled;
+	public bool $is_medium_download_enabled;
+	public bool $is_medium2x_download_enabled;
+
 	// Clockwork
 	public ?string $clockwork_url;
 
@@ -101,6 +109,14 @@ class InitConfig extends Data
 		$this->album_decoration = Configs::getValueAsEnum('album_decoration', AlbumDecorationType::class);
 		$this->album_decoration_orientation = Configs::getValueAsEnum('album_decoration_orientation', AlbumDecorationOrientation::class);
 		$this->number_albums_per_row_mobile = Configs::getValueAsInt('number_albums_per_row_mobile');
+
+		// Download configuration
+		$this->is_thumb_download_enabled = Configs::getValueAsBool('disable_thumb_download') === false;
+		$this->is_thum2x_download_enabled = Configs::getValueAsBool('disable_thumb2x_download') === false;
+		$this->is_small_download_enabled = Configs::getValueAsBool('disable_small_download') === false;
+		$this->is_small2x_download_enabled = Configs::getValueAsBool('disable_small2x_download') === false;
+		$this->is_medium_download_enabled = Configs::getValueAsBool('disable_medium_download') === false;
+		$this->is_medium2x_download_enabled = Configs::getValueAsBool('disable_medium2x_download') === false;
 
 		// Clockwork
 		$this->has_clockwork_in_menu();

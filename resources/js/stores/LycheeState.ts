@@ -41,6 +41,14 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		album_decoration_orientation: "ROW" as App.Enum.AlbumDecorationOrientation,
 		number_albums_per_row_mobile: 3 as 1 | 2 | 3,
 
+		// Download settings
+		is_thumb_download_enabled: false,
+		is_thum2x_download_enabled: false,
+		is_small_download_enabled: false,
+		is_small2x_download_enabled: false,
+		is_medium_download_enabled: false,
+		is_medium2x_download_enabled: false,
+
 		// menu stuff
 		clockwork_url: "" as null | string,
 
@@ -118,6 +126,13 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.is_se_preview_enabled = data.is_se_preview_enabled;
 					this.is_se_info_hidden = data.is_se_info_hidden;
 					this.number_albums_per_row_mobile = data.number_albums_per_row_mobile;
+
+					this.is_thumb_download_enabled = data.is_thumb_download_enabled;
+					this.is_thum2x_download_enabled = data.is_thum2x_download_enabled;
+					this.is_small_download_enabled = data.is_small_download_enabled;
+					this.is_small2x_download_enabled = data.is_small2x_download_enabled;
+					this.is_medium_download_enabled = data.is_medium_download_enabled;
+					this.is_medium2x_download_enabled = data.is_medium2x_download_enabled;
 				})
 				.catch((error) => {
 					// In this specific case, even though it has been possibly disabled, we really need to see the error.
