@@ -350,6 +350,7 @@ declare namespace App.Http.Resources.Models {
 		details: string;
 		is_expert: boolean;
 		require_se: boolean;
+		order: number | null;
 	};
 	export type JobHistoryResource = {
 		username: string;
