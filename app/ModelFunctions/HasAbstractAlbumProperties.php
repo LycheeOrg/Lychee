@@ -14,11 +14,11 @@ use App\Models\Photo;
 use Illuminate\Database\Eloquent\Collection;
 
 /**
- * @property string                           $id
- * @property string                           $title
- * @property Collection<int,Photo>            $photos
- * @property Thumb|null                       $thumb
- * @property Collection<int,AccessPermission> $access_permissions
+ * @property string                                $id
+ * @property string                                $title
+ * @property Collection<int,Photo>|null            $photos
+ * @property Thumb|null                            $thumb
+ * @property Collection<int,AccessPermission>|null $access_permissions
  */
 trait HasAbstractAlbumProperties
 {
@@ -27,7 +27,7 @@ trait HasAbstractAlbumProperties
 		return $this->id;
 	}
 
-	public function get_thumb(): ?Thumb
+	public function get_thumb(): Thumb|null
 	{
 		return $this->thumb;
 	}
@@ -42,7 +42,7 @@ trait HasAbstractAlbumProperties
 	 */
 	public function get_access_permissions(): Collection
 	{
-		return $this->access_permissions;
+		return $this->access_permissions ?? collect();
 	}
 
 	/**
@@ -50,6 +50,6 @@ trait HasAbstractAlbumProperties
 	 */
 	public function get_photos(): Collection
 	{
-		return $this->photos;
+		return $this->photos ?? collect();
 	}
 }
