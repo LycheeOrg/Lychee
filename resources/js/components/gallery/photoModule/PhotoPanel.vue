@@ -17,7 +17,7 @@
 			>
 				<!--  This is a video file: put html5 player -->
 				<video
-					v-if="imageViewMode == 'video'"
+					v-if="imageViewMode == ImageViewMode.Video"
 					width="auto"
 					height="auto"
 					id="image"
@@ -33,7 +33,7 @@
 				</video>
 				<!-- This is a raw file: put a place holder -->
 				<img
-					v-if="imageViewMode == 'raw'"
+					v-if="imageViewMode == ImageViewMode.Raw"
 					id="image"
 					alt="placeholder"
 					class="absolute m-auto w-auto h-auto animate-zoomIn bg-contain bg-center bg-no-repeat"
@@ -41,7 +41,7 @@
 				/>
 				<!-- This is a normal image: medium or original -->
 				<img
-					v-if="imageViewMode == 'medium'"
+					v-if="imageViewMode == ImageViewMode.Medium"
 					id="image"
 					alt="medium"
 					class="absolute m-auto w-auto h-auto animate-zoomIn bg-contain bg-center bg-no-repeat"
@@ -50,7 +50,7 @@
 					:srcset="srcSetMedium"
 				/>
 				<img
-					v-if="imageViewMode == 'original'"
+					v-if="imageViewMode == ImageViewMode.Original"
 					id="image"
 					alt="big"
 					class="absolute m-auto w-auto h-auto animate-zoomIn bg-contain bg-center bg-no-repeat"
@@ -60,7 +60,7 @@
 				/>
 				<!-- This is a livephoto : medium -->
 				<div
-					v-if="imageViewMode == 'livephoto-medium'"
+					v-if="imageViewMode == ImageViewMode.LivePhotoMedium"
 					id="livephoto"
 					data-live-photo
 					data-proactively-loads-video="true"
@@ -72,7 +72,7 @@
 				></div>
 				<!-- This is a livephoto : full -->
 				<div
-					v-if="imageViewMode == 'lifephoto-original'"
+					v-if="imageViewMode == ImageViewMode.LivePhotoOriginal"
 					id="livephoto"
 					data-live-photo
 					data-proactively-loads-video="true"
@@ -115,7 +115,7 @@
 	</div>
 </template>
 <script setup lang="ts">
-import { usePhotoBaseFunction } from "@/composables/photo/basePhoto";
+import { ImageViewMode, usePhotoBaseFunction } from "@/composables/photo/basePhoto";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { useImageHelpers } from "@/utils/Helpers";

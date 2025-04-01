@@ -1,6 +1,15 @@
 import { computed, Ref } from "vue";
 import { useHasNextPreviousPhoto } from "./hasNextPreviousPhoto";
 
+export enum ImageViewMode {
+	Original = "original",
+	Medium = "medium",
+	Raw = "raw",
+	Video = "video",
+	LivePhotoMedium = "livephoto-medium",
+	LivePhotoOriginal = "livephoto-original",
+}
+
 export function usePhotoBaseFunction(
 	photo: Ref<App.Http.Resources.Models.PhotoResource | undefined>,
 	photos: Ref<App.Http.Resources.Models.PhotoResource[]>,
@@ -57,29 +66,29 @@ export function usePhotoBaseFunction(
 		return "width: " + photo.value?.size_variants.original.width + "px; height: " + photo.value?.size_variants.original.height + "px";
 	});
 
-	const imageViewMode = computed(() => {
+	const imageViewMode = computed<ImageViewMode>(() => {
 		if (photo.value?.precomputed.is_video) {
-			return "video";
+			return ImageViewMode.Video;
 		}
 
 		if (photo.value?.precomputed.is_raw) {
 			if (photo.value?.size_variants.medium !== null) {
-				return "medium";
+				return ImageViewMode.Medium;
 			}
-			return "raw";
+			return ImageViewMode.Raw;
 		}
 
 		if (photo.value?.precomputed.is_livephoto === true) {
 			if (photo.value?.size_variants.medium !== null) {
-				return "livephoto-medium";
+				return ImageViewMode.LivePhotoMedium;
 			}
-			return "lifephoto-original";
+			return ImageViewMode.LivePhotoOriginal;
 		}
 
 		if (photo.value?.size_variants.medium !== null) {
-			return "medium";
+			return ImageViewMode.Medium;
 		}
-		return "original";
+		return ImageViewMode.Original;
 	});
 
 	function refresh(): void {
