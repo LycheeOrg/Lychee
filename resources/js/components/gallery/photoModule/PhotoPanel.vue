@@ -15,7 +15,7 @@
 				@click="emits('rotateOverlay')"
 				ref="swipe"
 				:class="{
-					'pt-14': imageViewMode === 'pdf' && !is_full_screen,
+					'pt-14': imageViewMode === ImageViewMode.Pdf && !is_full_screen,
 				}"
 			>
 				<!--  This is a video file: put html5 player -->
