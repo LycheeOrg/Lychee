@@ -42,7 +42,7 @@ trait HasAbstractAlbumProperties
 	 */
 	public function get_access_permissions(): Collection
 	{
-		return $this->access_permissions ?? collect();
+		return $this->access_permissions ?? resolve(Collection::class);;
 	}
 
 	/**
@@ -50,6 +50,6 @@ trait HasAbstractAlbumProperties
 	 */
 	public function get_photos(): Collection
 	{
-		return $this->photos ?? collect();
+		return $this->photos ?? resolve(Collection::class);;
 	}
 }
