@@ -17,7 +17,7 @@
 			>
 				<!--  This is a video file: put html5 player -->
 				<video
-					v-if="imageViewMode == 0"
+					v-if="imageViewMode == 'video'"
 					width="auto"
 					height="auto"
 					id="image"
@@ -33,7 +33,7 @@
 				</video>
 				<!-- This is a raw file: put a place holder -->
 				<img
-					v-if="imageViewMode == 1"
+					v-if="imageViewMode == 'raw'"
 					id="image"
 					alt="placeholder"
 					class="absolute m-auto w-auto h-auto animate-zoomIn bg-contain bg-center bg-no-repeat"
@@ -41,7 +41,7 @@
 				/>
 				<!-- This is a normal image: medium or original -->
 				<img
-					v-if="imageViewMode == 2"
+					v-if="imageViewMode == 'medium'"
 					id="image"
 					alt="medium"
 					class="absolute m-auto w-auto h-auto animate-zoomIn bg-contain bg-center bg-no-repeat"
@@ -50,7 +50,7 @@
 					:srcset="srcSetMedium"
 				/>
 				<img
-					v-if="imageViewMode == 3"
+					v-if="imageViewMode == 'original'"
 					id="image"
 					alt="big"
 					class="absolute m-auto w-auto h-auto animate-zoomIn bg-contain bg-center bg-no-repeat"
@@ -60,7 +60,7 @@
 				/>
 				<!-- This is a livephoto : medium -->
 				<div
-					v-if="imageViewMode == 4"
+					v-if="imageViewMode == 'livephoto-medium'"
 					id="livephoto"
 					data-live-photo
 					data-proactively-loads-video="true"
@@ -72,7 +72,7 @@
 				></div>
 				<!-- This is a livephoto : full -->
 				<div
-					v-if="imageViewMode == 5"
+					v-if="imageViewMode == 'lifephoto-original'"
 					id="livephoto"
 					data-live-photo
 					data-proactively-loads-video="true"

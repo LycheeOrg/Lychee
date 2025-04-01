@@ -59,25 +59,27 @@ export function usePhotoBaseFunction(
 
 	const imageViewMode = computed(() => {
 		if (photo.value?.precomputed.is_video) {
-			return 0;
-		}
-		if (photo.value?.precomputed.is_raw) {
-			if (photo.value?.size_variants.medium !== null) {
-				return 2;
-			}
-			return 1;
+			return "video";
 		}
 
-		if (!photo.value?.precomputed.is_livephoto) {
+		if (photo.value?.precomputed.is_raw) {
 			if (photo.value?.size_variants.medium !== null) {
-				return 2;
+				return "medium";
 			}
-			return 3;
+			return "raw";
 		}
+
+		if (photo.value?.precomputed.is_livephoto === true) {
+			if (photo.value?.size_variants.medium !== null) {
+				return "livephoto-medium";
+			}
+			return "lifephoto-original";
+		}
+
 		if (photo.value?.size_variants.medium !== null) {
-			return 4;
+			return "medium";
 		}
-		return 5;
+		return "original";
 	});
 
 	function refresh(): void {
