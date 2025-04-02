@@ -1,9 +1,11 @@
 <template>
 	<div
 		:class="{
-			'absolute top-0 sm:h-1/4 w-full sm:w-1/2 left-1/2 -translate-x-1/2': true,
+			'absolute top-0 w-full sm:w-1/2 left-1/2 -translate-x-1/2': true,
 			'opacity-50 lg:opacity-10 group lg:hover:opacity-100 transition-opacity duration-500 ease-in-out': true,
 			'z-20 mt-14 sm:mt-0': true,
+			'sm:h-1/4': !isNarrowMenu,
+			'h-14': isNarrowMenu,
 			hidden: is_slideshow_active,
 			'hidden sm:block': are_details_open,
 		}"
@@ -52,6 +54,7 @@ const { is_slideshow_active, are_details_open } = storeToRefs(togglableStore);
 
 const props = defineProps<{
 	photo: App.Http.Resources.Models.PhotoResource;
+	isNarrowMenu: boolean;
 }>();
 
 const emits = defineEmits<{

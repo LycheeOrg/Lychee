@@ -8,6 +8,7 @@ export enum ImageViewMode {
 	Video = "video",
 	LivePhotoMedium = "livephoto-medium",
 	LivePhotoOriginal = "livephoto-original",
+	Pdf = "pdf",
 }
 
 export function usePhotoBaseFunction(
@@ -74,6 +75,9 @@ export function usePhotoBaseFunction(
 		if (photo.value?.precomputed.is_raw) {
 			if (photo.value?.size_variants.medium !== null) {
 				return ImageViewMode.Medium;
+			}
+			if (photo.value?.size_variants.original?.url?.endsWith(".pdf")) {
+				return ImageViewMode.Pdf;
 			}
 			return ImageViewMode.Raw;
 		}

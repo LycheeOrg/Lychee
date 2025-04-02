@@ -14,6 +14,9 @@
 				class="absolute top-0 left-0 w-full h-full bg-black flex items-center justify-center overflow-hidden"
 				@click="emits('rotateOverlay')"
 				ref="swipe"
+				:class="{
+					'pt-14': imageViewMode === ImageViewMode.Pdf && !is_full_screen,
+				}"
 			>
 				<!--  This is a video file: put html5 player -->
 				<video
@@ -31,6 +34,19 @@
 					<source :src="props.photo.size_variants.original?.url ?? ''" />
 					Your browser does not support the video tag.
 				</video>
+				<!-- This is a raw file: put a place holder -->
+				<embed
+					v-if="imageViewMode == ImageViewMode.Pdf"
+					id="image"
+					alt="pdf"
+					:src="props.photo.size_variants.original?.url ?? ''"
+					type="application/pdf"
+					frameBorder="0"
+					scrolling="auto"
+					class="absolute m-auto animate-zoomIn bg-contain bg-center bg-no-repeat"
+					height="90%"
+					width="100%"
+				/>
 				<!-- This is a raw file: put a place holder -->
 				<img
 					v-if="imageViewMode == ImageViewMode.Raw"
@@ -99,10 +115,11 @@
 				:is_next="true"
 				:style="nextStyle"
 			/>
-			<Overlay :photo="photo" v-if="!is_exif_disabled" />
+			<Overlay :photo="photo" v-if="!is_exif_disabled && imageViewMode !== ImageViewMode.Pdf" />
 			<Dock
 				v-if="photo.rights.can_edit && !is_photo_edit_open"
 				:photo="photo"
+				:is-narrow-menu="imageViewMode === ImageViewMode.Pdf"
 				@toggleStar="emits('toggleStar')"
 				@setAlbumHeader="emits('setAlbumHeader')"
 				@rotatePhotoCCW="emits('rotatePhotoCCW')"
