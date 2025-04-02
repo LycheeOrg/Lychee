@@ -32,7 +32,7 @@
         "@fortawesome/fontawesome-free": "^6.7.1",
         "@primeuix/themes": "^1.0.0",
         "@sidsbrmnn/scrollspy": "^1.1.0",
-        "@tailwindcss/vite": "^4.1.0",
+        "@tailwindcss/vite": "^4.1.1",
         "@types/dropbox-chooser": "^1.0.8",
         "@types/justified-layout": "^4.1.4",
         "@vueuse/core": "^13.0.0",
