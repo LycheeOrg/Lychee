@@ -14,10 +14,13 @@
 				class="absolute top-0 left-0 w-full h-full bg-black flex items-center justify-center overflow-hidden"
 				@click="emits('rotateOverlay')"
 				ref="swipe"
+				:class="{
+					'pt-14': imageViewMode === ImageViewMode.Pdf && !is_full_screen,
+				}"
 			>
 				<!--  This is a video file: put html5 player -->
 				<video
-					v-if="imageViewMode == 0"
+					v-if="imageViewMode == ImageViewMode.Video"
 					width="auto"
 					height="auto"
 					id="image"
@@ -32,8 +35,21 @@
 					Your browser does not support the video tag.
 				</video>
 				<!-- This is a raw file: put a place holder -->
+				<embed
+					v-if="imageViewMode == ImageViewMode.Pdf"
+					id="image"
+					alt="pdf"
+					:src="props.photo.size_variants.original?.url ?? ''"
+					type="application/pdf"
+					frameBorder="0"
+					scrolling="auto"
+					class="absolute m-auto animate-zoomIn bg-contain bg-center bg-no-repeat"
+					height="90%"
+					width="100%"
+				/>
+				<!-- This is a raw file: put a place holder -->
 				<img
-					v-if="imageViewMode == 1"
+					v-if="imageViewMode == ImageViewMode.Raw"
 					id="image"
 					alt="placeholder"
 					class="absolute m-auto w-auto h-auto animate-zoomIn bg-contain bg-center bg-no-repeat"
@@ -41,7 +57,7 @@
 				/>
 				<!-- This is a normal image: medium or original -->
 				<img
-					v-if="imageViewMode == 2"
+					v-if="imageViewMode == ImageViewMode.Medium"
 					id="image"
 					alt="medium"
 					class="absolute m-auto w-auto h-auto animate-zoomIn bg-contain bg-center bg-no-repeat"
@@ -50,7 +66,7 @@
 					:srcset="srcSetMedium"
 				/>
 				<img
-					v-if="imageViewMode == 3"
+					v-if="imageViewMode == ImageViewMode.Original"
 					id="image"
 					alt="big"
 					class="absolute m-auto w-auto h-auto animate-zoomIn bg-contain bg-center bg-no-repeat"
@@ -60,7 +76,7 @@
 				/>
 				<!-- This is a livephoto : medium -->
 				<div
-					v-if="imageViewMode == 4"
+					v-if="imageViewMode == ImageViewMode.LivePhotoMedium"
 					id="livephoto"
 					data-live-photo
 					data-proactively-loads-video="true"
@@ -72,7 +88,7 @@
 				></div>
 				<!-- This is a livephoto : full -->
 				<div
-					v-if="imageViewMode == 5"
+					v-if="imageViewMode == ImageViewMode.LivePhotoOriginal"
 					id="livephoto"
 					data-live-photo
 					data-proactively-loads-video="true"
@@ -99,10 +115,11 @@
 				:is_next="true"
 				:style="nextStyle"
 			/>
-			<Overlay :photo="photo" v-if="!is_exif_disabled" />
+			<Overlay :photo="photo" v-if="!is_exif_disabled && imageViewMode !== ImageViewMode.Pdf" />
 			<Dock
 				v-if="photo.rights.can_edit && !is_photo_edit_open"
 				:photo="photo"
+				:is-narrow-menu="imageViewMode === ImageViewMode.Pdf"
 				@toggleStar="emits('toggleStar')"
 				@setAlbumHeader="emits('setAlbumHeader')"
 				@rotatePhotoCCW="emits('rotatePhotoCCW')"
@@ -115,7 +132,7 @@
 	</div>
 </template>
 <script setup lang="ts">
-import { usePhotoBaseFunction } from "@/composables/photo/basePhoto";
+import { ImageViewMode, usePhotoBaseFunction } from "@/composables/photo/basePhoto";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { useImageHelpers } from "@/utils/Helpers";

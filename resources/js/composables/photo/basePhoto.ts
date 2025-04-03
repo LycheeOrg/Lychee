@@ -1,6 +1,16 @@
 import { computed, Ref } from "vue";
 import { useHasNextPreviousPhoto } from "./hasNextPreviousPhoto";
 
+export enum ImageViewMode {
+	Original = "original",
+	Medium = "medium",
+	Raw = "raw",
+	Video = "video",
+	LivePhotoMedium = "livephoto-medium",
+	LivePhotoOriginal = "livephoto-original",
+	Pdf = "pdf",
+}
+
 export function usePhotoBaseFunction(
 	photo: Ref<App.Http.Resources.Models.PhotoResource | undefined>,
 	photos: Ref<App.Http.Resources.Models.PhotoResource[]>,
@@ -57,27 +67,32 @@ export function usePhotoBaseFunction(
 		return "width: " + photo.value?.size_variants.original.width + "px; height: " + photo.value?.size_variants.original.height + "px";
 	});
 
-	const imageViewMode = computed(() => {
+	const imageViewMode = computed<ImageViewMode>(() => {
 		if (photo.value?.precomputed.is_video) {
-			return 0;
-		}
-		if (photo.value?.precomputed.is_raw) {
-			if (photo.value?.size_variants.medium !== null) {
-				return 2;
-			}
-			return 1;
+			return ImageViewMode.Video;
 		}
 
-		if (!photo.value?.precomputed.is_livephoto) {
+		if (photo.value?.precomputed.is_raw) {
 			if (photo.value?.size_variants.medium !== null) {
-				return 2;
+				return ImageViewMode.Medium;
 			}
-			return 3;
+			if (photo.value?.size_variants.original?.url?.endsWith(".pdf")) {
+				return ImageViewMode.Pdf;
+			}
+			return ImageViewMode.Raw;
 		}
+
+		if (photo.value?.precomputed.is_livephoto === true) {
+			if (photo.value?.size_variants.medium !== null) {
+				return ImageViewMode.LivePhotoMedium;
+			}
+			return ImageViewMode.LivePhotoOriginal;
+		}
+
 		if (photo.value?.size_variants.medium !== null) {
-			return 4;
+			return ImageViewMode.Medium;
 		}
-		return 5;
+		return ImageViewMode.Original;
 	});
 
 	function refresh(): void {
