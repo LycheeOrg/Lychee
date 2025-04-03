@@ -36,7 +36,8 @@ return [
 	],
 	'keybindings' => [
 		'header' => 'Keyboard shortcuts',
-		'don_t_show_again' => 'Don\'t show this again',
+		'don_t_show_again' => 'Don\'t show this dialog again',
+		'hide_header_button' => 'Don\'t show help in header',
 		'side_wide' => 'Site-wide Shortcuts',
 		'back_cancel' => 'Back/Cancel',
 		'confirm' => 'Confirm',
@@ -68,6 +69,7 @@ return [
 		'show_hide_meta' => 'Show information',
 
 		'keep_hidden' => 'We will keep it hidden.',
+		'button_hidden' => 'We will hide the button in the header.',
 	],
 	'login' => [
 		'username' => 'Username',
