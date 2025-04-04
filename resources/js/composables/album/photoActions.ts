@@ -7,7 +7,7 @@ import { Ref } from "vue";
 
 export function usePhotoActions(
 	photo: Ref<App.Http.Resources.Models.PhotoResource | undefined>,
-	albumId: Ref<string>,
+	albumId: Ref<string | null>,
 	toast: ToastServiceMethods,
 	lycheeStore: LycheeStateStore,
 ) {
@@ -48,6 +48,10 @@ export function usePhotoActions(
 
 	function setAlbumHeader() {
 		if (photo.value === undefined) {
+			return;
+		}
+
+		if (albumId.value === null) {
 			return;
 		}
 
