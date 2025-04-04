@@ -28,9 +28,6 @@ const localDevelopMiddleware: PluginOption = {
         return;
       }
 
-    //   console.log(req);
-	// console.log(req.url , req.headers)
-
 	const startsWithPages = ["/gallery", "/frame", "/map", "/search"];
       // Check if req.url starts with pages
       if (startsWithPages.some((page) => requestUrl.startsWith(page))) {
