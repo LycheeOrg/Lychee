@@ -23,6 +23,7 @@ return [
 	'sign_out' => 'Выход',
 
 	'about' => 'О программе',
+	'changelog' => 'Changelog',
 	'api' => 'Документация API',
 	'source_code' => 'Исходный код',
 	'support' => 'Поддержка',

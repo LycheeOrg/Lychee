@@ -23,6 +23,7 @@ return [
 	'sign_out' => 'Sign Out',
 
 	'about' => 'About',
+	'changelog' => 'Changelog',
 	'api' => 'API Documentation',
 	'source_code' => 'Source Code',
 	'support' => 'Support',

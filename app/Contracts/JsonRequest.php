@@ -8,30 +8,8 @@
 
 namespace App\Contracts;
 
-interface JsonRequest
+interface JsonRequest extends ExternalRequest
 {
-	/**
-	 * Initialize a Json Request.
-	 *
-	 * @param string $url
-	 * @param int    $ttl
-	 *
-	 * @return void
-	 */
-	public function init(string $url, int $ttl): void;
-
-	/**
-	 * Clear the cache of the Json Request.
-	 */
-	public function clear_cache(): void;
-
-	/**
-	 * Return the age of the last query in days/hours/minutes.
-	 *
-	 * @return string
-	 */
-	public function get_age_text(): string;
-
 	/**
 	 * Returns the decoded JSON response.
 	 *

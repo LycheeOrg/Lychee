@@ -124,6 +124,11 @@ declare namespace App.Http.Resources.Diagnostics {
 		_lft: number;
 		_rgt: number;
 	};
+	export type ChangeLogInfo = {
+		version: string;
+		date: string;
+		changes: string;
+	};
 	export type CleaningState = {
 		path: string;
 		base: string;

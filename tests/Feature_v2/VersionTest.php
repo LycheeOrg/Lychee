@@ -27,4 +27,18 @@ class VersionTest extends BaseApiV2Test
 		$response = $this->getJson('Version');
 		$this->assertOk($response);
 	}
+
+	public function testGetChangeLogs(): void
+	{
+		$response = $this->getJson('ChangeLogs');
+		$this->assertOk($response);
+		foreach ($response->json() as $changelog) {
+			$this->assertArrayHasKey('version', $changelog);
+			$this->assertArrayHasKey('date', $changelog);
+			$this->assertArrayHasKey('changes', $changelog);
+			$this->assertNotEmpty($changelog['version']);
+			$this->assertNotEmpty($changelog['date']);
+			$this->assertNotEmpty($changelog['changes']);
+		}
+	}
 }

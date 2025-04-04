@@ -23,6 +23,7 @@ return [
 	'sign_out' => '退出登录',
 
 	'about' => '关于',
+	'changelog' => 'Changelog',
 	'api' => 'API 文档',
 	'source_code' => '源代码',
 	'support' => '支持',
