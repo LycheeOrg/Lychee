@@ -60,7 +60,7 @@ class VerifyCsrfToken extends Middleware
 	 */
 	protected function isReading($request)
 	{
-		if (str_starts_with($request->route()->uri, 'api/v2')) {
+		if (str_starts_with($request->route()->uri, 'api/v2') && false === config('features.vite-http-proxy')) {
 			return false;
 		}
 

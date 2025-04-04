@@ -93,4 +93,17 @@ return [
 	 |--------------------------------------------------------------------------
 	 */
 	'require-content-type' => (bool) env('REQUIRE_CONTENT_TYPE_ENABLED', true),
+
+	/*
+	|--------------------------------------------------------------------------
+	| Vite http proxy
+	|--------------------------------------------------------------------------
+	|
+	| This value determines whether we accept connection from the vite http proxy.
+	| This is not recommended as this will have some impact on the way sessions are handled,
+	| notably with gracefully reloading the page.
+	*/
+	'vite-http-proxy' => env('VITE_HTTP_PROXY_TARGET', '') !== '' ||
+		((bool) env('VITE_HTTP_PROXY_ENABLED', false)) !== false ||
+		((bool) env('VITE_LOCAL_DEV', false)) !== false,
 ];
