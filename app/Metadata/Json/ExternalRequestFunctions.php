@@ -21,7 +21,7 @@ class ExternalRequestFunctions implements ExternalRequest
 
 	public function __construct(
 		private string $url,
-		private int $ttl,
+		private int $ttl_in_days,
 	) {
 	}
 
@@ -78,8 +78,8 @@ class ExternalRequestFunctions implements ExternalRequest
 				$raw_response = $use_cache ? (string) Cache::get($this->url) : '';
 				if ($raw_response === '') {
 					$raw_response = $this->fetchFromServer();
-					Cache::put($this->url, $raw_response, now()->addDays($this->ttl));
-					Cache::put($this->url . '_age', now(), now()->addDays($this->ttl));
+					Cache::put($this->url, $raw_response, now()->addDays($this->ttl_in_days));
+					Cache::put($this->url . '_age', now(), now()->addDays($this->ttl_in_days));
 				}
 				$this->data = $raw_response;
 			}
