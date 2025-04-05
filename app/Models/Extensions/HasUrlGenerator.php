@@ -9,13 +9,13 @@
 namespace App\Models\Extensions;
 
 use App\Enum\SizeVariantType;
-use App\Exceptions\ConfigurationException;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Models\Configs;
-use Illuminate\Contracts\Container\BindingResolutionException;
-use Illuminate\Database\Eloquent\MassAssignmentException;
+use Illuminate\Contracts\Encryption\EncryptException;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
 use League\Flysystem\AwsS3V3\AwsS3V3Adapter;
 
 trait HasUrlGenerator
@@ -26,17 +26,15 @@ trait HasUrlGenerator
 	 * @throws \InvalidArgumentException
 	 * @throws ConfigurationKeyMissingException
 	 * @throws \RuntimeException
-	 * @throws BindingResolutionException
-	 * @throws MassAssignmentException
-	 * @throws ConfigurationException
+	 * @throws EncryptException
 	 */
-	public static function pathToUrl(string $short_path, string $storage_disk, SizeVariantType $type): string|null
+	public static function pathToUrl(string $short_path, string $storage_disk, SizeVariantType $type): string
 	{
-		$image_disk = Storage::disk($storage_disk);
-
 		if ($type === SizeVariantType::PLACEHOLDER) {
 			return 'data:image/webp;base64,' . $short_path;
 		}
+
+		$image_disk = Storage::disk($storage_disk);
 
 		/** @disregard P1013 */
 		$storage_adapter = $image_disk->getAdapter();
@@ -46,15 +44,34 @@ trait HasUrlGenerator
 			// @codeCoverageIgnoreEnd
 		}
 
-		if (
-			!Configs::getValueAsBool('SL_enable') ||
-			(!Configs::getValueAsBool('SL_for_admin') && Auth::user()?->may_administrate === true)
-		) {
-			/** @disregard P1013 */
+		if (self::shouldNotUseSignedUrl()) {
 			return $image_disk->url($short_path);
 		}
 
-		return null;
+		if (Configs::getValueAsBool('secure_image_link_enabled')) {
+			$short_path = Crypt::encryptString($short_path);
+		}
+
+		$temporary_image_link_life_in_seconds = Configs::getValueAsInt('temporary_image_link_life_in_seconds');
+
+		/** @disregard P1013 */
+		return URL::temporarySignedRoute('image', now()->addSeconds($temporary_image_link_life_in_seconds), ['path' => $short_path]);
+	}
+
+	/**
+	 * Return true if :
+	 * - image link protection is disabled
+	 * - image link protection is enabled but the user is logged in (and protection is disabled for logged in users)
+	 * - image link protection is enabled but the user is an admin
+	 *
+	 * @return bool
+	 */
+	protected static function shouldNotUseSignedUrl(): bool
+	{
+		return
+			!Configs::getValueAsBool('temporary_image_link_enabled') ||
+			(!Configs::getValueAsBool('temporary_image_link_when_logged_in') && Auth::user() !== null) ||
+			(!Configs::getValueAsBool('temporary_image_link_when_admin') && Auth::user()?->may_administrate === true);
 	}
 
 	/**
@@ -65,7 +82,7 @@ trait HasUrlGenerator
 	private static function getAwsUrl(string $short_path, string $storage_disk): string
 	{
 		// In order to allow a grace period, we create a new symbolic link,
-		$max_lifetime = Configs::getValueAsInt('SL_life_time_days') * 24 * 60 * 60;
+		$temporary_image_link_life_in_seconds = Configs::getValueAsInt('temporary_image_link_life_in_seconds');
 		$image_disk = Storage::disk($storage_disk);
 
 		// Return the public URL in case the S3 bucket is set to public, otherwise generate a temporary URL
@@ -76,6 +93,6 @@ trait HasUrlGenerator
 		}
 
 		/** @disregard P1013 */
-		return $image_disk->temporaryUrl($short_path, now()->addSeconds($max_lifetime));
+		return $image_disk->temporaryUrl($short_path, now()->addSeconds($temporary_image_link_life_in_seconds));
 	}
 }
