@@ -38,6 +38,7 @@ import Button from "primevue/button";
 import { useToast } from "primevue/usetoast";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { storeToRefs } from "pinia";
+import { onKeyPressed } from "@vueuse/core";
 
 const props = defineProps<{
 	parentId: string | null;
@@ -74,6 +75,8 @@ function create() {
 			toast.add({ severity: "error", summary: "Oups", detail: error.message });
 		});
 }
+
+onKeyPressed("Enter", () => is_create_album_visible.value && isValid.value && create());
 
 watch(
 	() => props.parentId,
