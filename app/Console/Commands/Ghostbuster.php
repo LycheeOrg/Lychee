@@ -10,7 +10,6 @@ namespace App\Console\Commands;
 
 use App\Assets\Features;
 use App\Console\Commands\Utilities\Colorize;
-use App\Constants\FileSystem;
 use App\Enum\SizeVariantType;
 use App\Enum\StorageDiskType;
 use App\Exceptions\UnexpectedException;
@@ -21,7 +20,6 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Storage;
 use League\Flysystem\Local\LocalFilesystemAdapter;
 use function Safe\readlink;
-use function Safe\scandir;
 use function Safe\unlink;
 use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleException;
 
@@ -79,7 +77,6 @@ class Ghostbuster extends Command
 			$upload_disk = Features::active('use-s3')
 				? Storage::disk(StorageDiskType::S3->value)
 				: Storage::disk(StorageDiskType::LOCAL->value);
-			$symlink_disk = Storage::disk(FileSystem::SYMLINK);
 			$is_local_disk = $upload_disk->getAdapter() instanceof LocalFilesystemAdapter;
 
 			$this->line('');
@@ -203,22 +200,6 @@ class Ghostbuster extends Command
 				$this->line($total_dead_sym_links . ' dead symbolic links have been deleted.');
 				$this->line($total_files . ' files have been deleted.');
 				$this->line($total_db_entries . ' photos have been deleted or sanitized');
-			}
-
-			// Method $symlinkDisk->allFiles() crashes, if the scanned directory
-			// contains symbolic links.
-			// So we must use low-level methods here.
-			$symlink_disk_path = $symlink_disk->path('');
-			$sym_links = array_slice(scandir($symlink_disk_path), 3);
-			/** @var string $sym_link */
-			foreach ($sym_links as $sym_link) {
-				$full_path = $symlink_disk_path . $sym_link;
-				$is_dead_symlink = !file_exists(readlink($full_path));
-				if ($is_dead_symlink) {
-					// Laravel apparently doesn't think dead symlinks 'exist', so use low-level commands
-					unlink($full_path);
-					$this->line($this->col->red('removed symbolic link: ') . $full_path);
-				}
 			}
 
 			return 0;

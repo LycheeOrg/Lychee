@@ -119,19 +119,6 @@ return [
 			'visibility' => 'public',
 		],
 
-		// Lychee uses this disk to create ephemeral, symbolic links to photos,
-		// if the feature is enabled.
-		// For this feature to work, the "images" disk must use the "local" driver.
-		// ATTENTION: This disk MUST ALWAYS use the "local" driver, because
-		// Flysystem does not support symbolic links.
-		'symbolic' => [
-			'driver' => 'local',
-			'root' => env('LYCHEE_SYM', public_path('sym')),
-			'url' => env('LYCHEE_SYM_URL', '') !== '' ? renv('LYCHEE_SYM_URL') :
-				(renv('APP_URL', 'http://localhost') . renv_cond('APP_DIR') . '/sym'),
-			'visibility' => 'public',
-		],
-
 		// We use this space to temporarily store images when uploading.
 		// Mostly chunks and incomplete images are placed here
 		'image-upload' => [

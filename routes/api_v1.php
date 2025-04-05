@@ -95,7 +95,6 @@ Route::post('/Photo::delete', [PhotoController::class, 'delete']);
 Route::post('/Photo::duplicate', [PhotoController::class, 'duplicate']);
 Route::post('/Photo::setLicense', [PhotoController::class, 'setLicense']);
 Route::post('/Photo::setUploadDate', [PhotoController::class, 'setUploadDate']);
-Route::post('/Photo::clearSymLink', [PhotoController::class, 'clearSymLink']);
 Route::post('/PhotoEditor::rotate', [PhotoEditorController::class, 'rotate']);
 Route::post('/Photo::add', [PhotoController::class, 'add'])
 	->withoutMiddleware(['content_type:json'])
