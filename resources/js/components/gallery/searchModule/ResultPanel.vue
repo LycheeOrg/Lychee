@@ -24,6 +24,7 @@
 		:album="undefined"
 		:gallery-config="props.layoutConfig"
 		:selected-photos="selectedPhotosIds"
+		@clicked="photoClick"
 		@selected="photoSelect"
 		@contexted="photoMenuOpen"
 		:is-timeline="props.isPhotoTimelineEnabled"
@@ -59,11 +60,13 @@ import { AlbumThumbConfig } from "../albumModule/thumbs/AlbumThumb.vue";
 import ContextMenu from "primevue/contextmenu";
 import Divider from "primevue/divider";
 import Paginator from "primevue/paginator";
+import { useRouter } from "vue-router";
+import { usePhotoRoute } from "@/composables/photo/photoRoute";
 
 const lycheeStore = useLycheeStateStore();
 const { are_nsfw_visible } = storeToRefs(lycheeStore);
 const togglableStore = useTogglablesStateStore();
-const { is_full_screen } = storeToRefs(togglableStore);
+const router = useRouter();
 
 const props = defineProps<{
 	// results
@@ -90,6 +93,12 @@ const rows = defineModel<number | undefined>("rows");
 const emits = defineEmits<{
 	refresh: [];
 }>();
+
+const { photoRoute } = usePhotoRoute(router);
+
+function photoClick(idx: number, e: MouseEvent) {
+	router.push(photoRoute(photos.value[idx].id));
+}
 
 const photos = ref(props.photos);
 const children = ref(props.albums);

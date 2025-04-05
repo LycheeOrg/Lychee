@@ -69,6 +69,8 @@ return [
 	],
 
 	'timeline' => [
+		'title' => 'Timelime',
+		'load_previous' => 'Load previous',
 		'default' => 'domyślny',
 		'disabled' => 'wyłączony',
 		'year' => 'Rok',
