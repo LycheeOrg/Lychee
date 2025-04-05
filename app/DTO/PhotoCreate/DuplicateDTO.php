@@ -31,7 +31,7 @@ class DuplicateDTO implements PhotoDTO
 		public readonly bool $is_starred,
 
 		// The extracted EXIF information (populated during init phase).
-		public readonly Extractor $exif_info,
+		public readonly ?Extractor $exif_info,
 
 		// The intended parent album
 		public readonly ?AbstractAlbum $album,
