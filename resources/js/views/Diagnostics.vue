@@ -27,7 +27,6 @@ import ErrorsDiagnotics from "@/components/diagnostics/ErrorsDiagnostics.vue";
 import SpaceDiagnostics from "@/components/diagnostics/SpaceDiagnostics.vue";
 import { useAuthStore } from "@/stores/Auth";
 import { storeToRefs } from "pinia";
-import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { useToast } from "primevue/usetoast";
 import { trans } from "laravel-vue-i18n";
 import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
@@ -35,7 +34,6 @@ import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
 const authStore = useAuthStore();
 const { user } = storeToRefs(authStore);
 authStore.getUser();
-const togglableStore = useTogglablesStateStore();
 
 const toast = useToast();
 

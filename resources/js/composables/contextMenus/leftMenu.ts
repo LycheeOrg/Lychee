@@ -1,6 +1,7 @@
 import Constants from "@/services/constants";
 import InitService from "@/services/init-service";
 import { AuthStore } from "@/stores/Auth";
+import { FavouriteStore } from "@/stores/FavouriteState";
 import { LeftMenuStateStore } from "@/stores/LeftMenuState";
 import { LycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
@@ -22,11 +23,11 @@ export type MenyType =
 			items: MenyType[];
 	  };
 
-export function useLeftMenu(lycheeStore: LycheeStateStore, LeftMenuStateStore: LeftMenuStateStore, authStore: AuthStore) {
+export function useLeftMenu(lycheeStore: LycheeStateStore, LeftMenuStateStore: LeftMenuStateStore, authStore: AuthStore, favourites: FavouriteStore) {
 	const { user } = storeToRefs(authStore);
 
 	const { initData, left_menu_open } = storeToRefs(LeftMenuStateStore);
-	const { clockwork_url, is_se_enabled, is_se_preview_enabled, is_se_info_hidden } = storeToRefs(lycheeStore);
+	const { clockwork_url, is_se_enabled, is_se_preview_enabled, is_se_info_hidden, is_favourite_enabled } = storeToRefs(lycheeStore);
 	const openLycheeAbout = ref(false);
 	const logsEnabled = ref(true);
 
@@ -53,16 +54,22 @@ export function useLeftMenu(lycheeStore: LycheeStateStore, LeftMenuStateStore: L
 
 		const baseMenu = [
 			{
-				label: "Frame",
+				label: "left-menu.frame",
 				icon: "pi pi-desktop",
 				access: initData.value.modules.is_mod_frame_enabled ?? false,
 				route: "/frame",
 			},
 			{
-				label: "Map",
+				label: "left-menu.map",
 				icon: "pi pi-map",
 				access: initData.value.modules.is_map_enabled ?? false,
 				route: "/map",
+			},
+			{
+				label: "gallery.favourites",
+				icon: "pi pi-heart",
+				access: (favourites.photos?.length ?? 0) > 0,
+				route: "/gallery/favourites",
 			},
 			{
 				label: "left-menu.admin",

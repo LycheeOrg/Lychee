@@ -2,7 +2,8 @@
 	<Drawer v-model:visible="left_menu_open" :pt:content:class="'flex flex-col justify-start gap-10'">
 		<template #header>
 			<div v-if="user?.id === null" class="flex items-center gap-2 text-muted-color hover:text-primary-400 w-full">
-				<Button icon="pi pi-sign-in" class="border-none w-full text-left" severity="secondary" text @click="togglableStore.toggleLogin()">
+				<Button class="border-none w-full text-left justify-start" severity="secondary" text @click="togglableStore.toggleLogin()">
+					<i class="pi pi-sign-in text-lg mr-2" />
 					{{ $t("left-menu.login") }}
 				</Button>
 			</div>
@@ -101,7 +102,6 @@
 </template>
 <script setup lang="ts">
 import { computed, watch } from "vue";
-import { storeToRefs } from "pinia";
 import Drawer from "primevue/drawer";
 import Menu from "primevue/menu";
 import MiniIcon from "@/components/icons/MiniIcon.vue";
@@ -119,17 +119,20 @@ import PiMiniIcon from "@/components/icons/PiMiniIcon.vue";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
 import { useLeftMenu } from "@/composables/contextMenus/leftMenu";
 import { onMounted } from "vue";
+import { useFavouriteStore } from "@/stores/FavouriteState";
 
 const leftMenuState = useLeftMenuStateStore();
 const route = useRoute();
 const authStore = useAuthStore();
 const lycheeStore = useLycheeStateStore();
 const togglableStore = useTogglablesStateStore();
+const favouritesStore = useFavouriteStore();
 
 const { user, left_menu_open, initData, openLycheeAbout, canSeeAdmin, load, items, profileItems } = useLeftMenu(
 	lycheeStore,
 	leftMenuState,
 	authStore,
+	favouritesStore,
 );
 
 function logout() {
