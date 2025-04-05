@@ -39,7 +39,7 @@ class CacheTemporaryUrlCheck implements DiagnosticPipe
 		$temporary_image_link_life_in_seconds = Configs::getValueAsInt('temporary_image_link_life_in_seconds');
 
 		if ($cache_ttl_in_seconds > $temporary_image_link_life_in_seconds) {
-			$data[] = DiagnosticData::error('Response cache lifetime is less than Image temporary URL lifetime.', self::class,
+			$data[] = DiagnosticData::error('Response cache lifetime is longer than Image temporary URL lifetime.', self::class,
 				['Due to response caching, the temporary URL will be valid for a shorter time than the cache.',
 					'When close to the response cache expiration time, the temporary URL will be invalidated and the image will not be displayed.',
 					'To solve this issue either: disable response caching, or disable temporary URl, or shorten the response cache lifetime, or set the temporary URL lifetime to a longer time.']);
