@@ -8,7 +8,7 @@
 				</template>
 
 				<template #center>
-					{{ $t("favourites") }}
+					{{ $t("gallery.favourites") }}
 				</template>
 
 				<template #end> </template>

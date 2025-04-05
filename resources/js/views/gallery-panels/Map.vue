@@ -39,6 +39,8 @@ import Toolbar from "primevue/toolbar";
 import { onKeyStroke } from "@vueuse/core";
 import Constants from "@/services/constants";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
+import { onMounted } from "vue";
+import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
 
 type MapPhotoEntry = {
 	lat?: number | null;
@@ -59,6 +61,7 @@ const props = defineProps<{
 
 const toast = useToast();
 const router = useRouter();
+const leftMenuStore = useLeftMenuStateStore();
 const togglableStore = useTogglablesStateStore();
 const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
@@ -273,9 +276,12 @@ function updateZoom() {
 	}
 }
 
-loadMapProvider();
-
 onKeyStroke("Escape", () => {
 	goBack();
+});
+
+onMounted(() => {
+	leftMenuStore.left_menu_open = false;
+	loadMapProvider();
 });
 </script>

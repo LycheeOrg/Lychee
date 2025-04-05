@@ -1,5 +1,5 @@
 <template>
-	<svg :class="'inline-block ' + props.fill + ' ' + props.class">
+	<svg :class="'inline-block ' + (props.fill ?? 'fill-neutral-400') + ' ' + (props.class ?? '')">
 		<use :xlink:href="'#' + props.icon" />
 	</svg>
 </template>
@@ -11,8 +11,5 @@ type IconProps = {
 	icon: string;
 };
 
-const props = withDefaults(defineProps<IconProps>(), {
-	class: "",
-	fill: "fill-neutral-400",
-});
+const props = defineProps<IconProps>();
 </script>

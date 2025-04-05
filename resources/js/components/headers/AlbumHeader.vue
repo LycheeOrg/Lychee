@@ -20,31 +20,6 @@
 				<Button icon="pi pi-heart" class="border-none" severity="secondary" text />
 			</router-link>
 			<Button
-				v-tooltip.bottom="'Start slideshow'"
-				icon="pi pi-play"
-				class="border-none"
-				severity="secondary"
-				text
-				@click="emits('toggleSlideShow')"
-				v-if="props.album.photos.length > 0"
-				label=""
-			/>
-			<router-link
-				:to="{ name: 'frame-with-album', params: { albumid: props.album.id } }"
-				v-if="props.config.is_mod_frame_enabled"
-				class="hidden sm:block"
-				v-tooltip="'Frame'"
-			>
-				<Button icon="pi pi-desktop" class="border-none" severity="secondary" text />
-			</router-link>
-			<router-link
-				:to="{ name: 'map-with-album', params: { albumid: props.album.id } }"
-				v-if="props.config.is_map_accessible && hasCoordinates"
-				class="hidden sm:block"
-			>
-				<Button icon="pi pi-map" class="border-none" severity="secondary" text />
-			</router-link>
-			<Button
 				icon="pi pi-search"
 				class="border-none hidden sm:block"
 				severity="secondary"
@@ -108,14 +83,11 @@ const favourites = useFavouriteStore();
 const { dropbox_api_key } = storeToRefs(lycheeStore);
 const { is_album_edit_open } = storeToRefs(togglableStore);
 
-const hasCoordinates = computed(() => props.album.photos.find((photo) => photo.latitude !== null && photo.longitude !== null) !== undefined);
-
 const { toggleCreateAlbum, is_import_from_link_open, toggleImportFromLink, is_import_from_dropbox_open, toggleImportFromDropbox, toggleUpload } =
 	useGalleryModals(togglableStore);
 
 const emits = defineEmits<{
 	refresh: [];
-	toggleSlideShow: [];
 	toggleEdit: [];
 	goBack: [];
 	openSearch: [];

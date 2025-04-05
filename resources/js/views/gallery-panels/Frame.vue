@@ -19,6 +19,7 @@
 <script setup lang="ts">
 import { useSlideshowFunction } from "@/composables/photo/slideshow";
 import AlbumService from "@/services/album-service";
+import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
 import { onKeyStroke } from "@vueuse/core";
 import Button from "primevue/button";
 import { ref, onMounted, onUnmounted } from "vue";
@@ -32,6 +33,7 @@ const router = useRouter();
 const imgSrc = ref("");
 const imgSrcset = ref("");
 const refreshTimeout = ref(5);
+const leftMenuStore = useLeftMenuStateStore();
 
 const is_slideshow_active = ref(false);
 
@@ -53,6 +55,7 @@ function start() {
 }
 
 onMounted(() => {
+	leftMenuStore.left_menu_open = false;
 	let elem = document.getElementsByTagName("body")[0];
 
 	elem.requestFullscreen()

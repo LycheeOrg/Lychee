@@ -1,7 +1,7 @@
 <template>
 	<Toolbar class="w-full border-0 h-14">
 		<template #start>
-			<Button @click="togglableStore.toggleLeftMenu" icon="pi pi-bars" class="mr-2 border-none" severity="secondary" text />
+			<OpenLeftMenu />
 		</template>
 
 		<template #center>
@@ -23,14 +23,12 @@
 	</Panel>
 </template>
 <script setup lang="ts">
+import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
 import InitService from "@/services/init-service";
-import { useTogglablesStateStore } from "@/stores/ModalsState";
-import Button from "primevue/button";
 import Panel from "primevue/panel";
 import Toolbar from "primevue/toolbar";
 import { ref } from "vue";
 
-const togglableStore = useTogglablesStateStore();
 const changeLogs = ref<App.Http.Resources.Diagnostics.ChangeLogInfo[] | undefined>(undefined);
 
 InitService.fetchChangeLog()

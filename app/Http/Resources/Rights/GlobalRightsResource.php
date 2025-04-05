@@ -18,9 +18,11 @@ class GlobalRightsResource extends Data
 	public SettingsRightsResource $settings;
 	public UserManagementRightsResource $user_management;
 	public UserRightsResource $user;
+	public ModulesRightsResource $modules;
 
 	public function __construct()
 	{
+		$this->modules = new ModulesRightsResource();
 		$this->root_album = new RootAlbumRightsResource();
 		$this->settings = new SettingsRightsResource();
 		$this->user_management = new UserManagementRightsResource();
