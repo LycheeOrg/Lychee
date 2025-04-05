@@ -76,39 +76,37 @@ class Create
 			file_last_modified_time: $file_last_modified_time
 		);
 
-		$pipes = [
+		$pre_pipes = [
 			Init\AssertSupportedMedia::class,
 			Init\FetchLastModifiedTime::class,
 			Init\LoadFileMetadata::class,
 			Init\FindDuplicate::class,
 		];
 
-		if (!$this->strategy_parameters->import_mode->shall_resync_metadata) {
-			unset($pipes[array_search(Init\LoadFileMetadata::class, $pipes, true)]);
-		}
-
-		$init_dto = app(Pipeline::class)
-			->send($init_dto)
-			->through($pipes)
-			->thenReturn();
-
-		if ($init_dto->duplicate !== null) {
-			return $this->handleDuplicate($init_dto);
-		}
-
-		$pipes = [
+		$post_pipes = [
 			Init\InitParentAlbum::class,
 			Init\LoadFileMetadata::class,
 			Init\FindLivePartner::class,
 		];
 
 		if ($this->strategy_parameters->import_mode->shall_resync_metadata) {
-			unset($pipes[array_search(Init\LoadFileMetadata::class, $pipes, true)]);
+			unset($post_pipes[array_search(Init\LoadFileMetadata::class, $post_pipes, true)]);
+		} else {
+			unset($pre_pipes[array_search(Init\LoadFileMetadata::class, $pre_pipes, true)]);
 		}
 
 		$init_dto = app(Pipeline::class)
 			->send($init_dto)
-			->through($pipes)
+			->through($pre_pipes)
+			->thenReturn();
+
+		if ($init_dto->duplicate !== null) {
+			return $this->handleDuplicate($init_dto);
+		}
+
+		$init_dto = app(Pipeline::class)
+			->send($init_dto)
+			->through($post_pipes)
 			->thenReturn();
 
 		if ($init_dto->live_partner === null) {
