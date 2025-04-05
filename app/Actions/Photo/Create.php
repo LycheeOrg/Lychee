@@ -84,7 +84,7 @@ class Create
 		];
 
 		if (!$this->strategy_parameters->import_mode->shall_resync_metadata) {
-			unset($pipes[array_search(Init\LoadFileMetadata::class, $pipes)]);
+			unset($pipes[array_search(Init\LoadFileMetadata::class, $pipes, true)]);
 		}
 
 		$init_dto = app(Pipeline::class)
@@ -103,7 +103,7 @@ class Create
 		];
 
 		if ($this->strategy_parameters->import_mode->shall_resync_metadata) {
-			unset($pipes[array_search(Init\LoadFileMetadata::class, $pipes)]);
+			unset($pipes[array_search(Init\LoadFileMetadata::class, $pipes, true)]);
 		}
 
 		$init_dto = app(Pipeline::class)
