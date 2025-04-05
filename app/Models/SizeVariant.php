@@ -153,9 +153,8 @@ class SizeVariant extends Model
 	 * {@link SizeVariant::$short_path} into
 	 * {@link \Illuminate\Support\Facades\Storage::url()}.
 	 * Based on the current application settings and the authenticated user,
-	 * this method returns a URL to a short-living symbolic link instead of a
-	 * direct URL to the actual size variant, if the underlying storage
-	 * provides symbolic links.
+	 * this method returns a URL to a short-living link instead of a
+	 * direct URL to the actual size variant.
 	 *
 	 * @return string the url of the size variant
 	 */

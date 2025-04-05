@@ -92,8 +92,7 @@ class Rotate
 		}
 
 		// Delete all size variants from current photo, this will also take
-		// care of erasing the actual "physical" files from storage and any
-		// potential symbolic link which points to one of the original files.
+		// care of erasing the actual "physical" files from storage.
 		// This will bring photo entity into the same state as it would be if
 		// we were importing a new photo.
 		// This also deletes the original size variant

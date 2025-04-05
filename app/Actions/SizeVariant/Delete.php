@@ -42,12 +42,9 @@ class Delete
 	/**
 	 * Deletes the designated size variants from the DB.
 	 *
-	 * The method only deletes the records for size variants and potentially
-	 * associated symbolic links from the DB.
-	 * The method does not delete the associated files from the physical
-	 * storage.
-	 * Instead, the method returns an object in which all these files have
-	 * been collected.
+	 * The method only deletes the records for size variants.
+	 * The method does not delete the associated files from the physical storage.
+	 * Instead, the method returns an object in which all these files have been collected.
 	 * This object can (and must) be used to eventually delete the files,
 	 * however doing so can be deferred.
 	 *

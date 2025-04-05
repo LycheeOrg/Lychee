@@ -31,14 +31,12 @@ class FileDeleter
 	/**
 	 * @param array<string,Collection<int,string>> $files
 	 * @param Collection<int,SizeVariant>          $size_variants
-	 * @param Collection<int,string>               $symbolic_links
 	 *
 	 * @return void
 	 */
 	public function __construct(
 		protected array $files = [],
 		protected Collection $size_variants = new Collection(),
-		protected Collection $symbolic_links = new Collection(),
 	) {
 	}
 
@@ -48,14 +46,6 @@ class FileDeleter
 	public function addSizeVariants(Collection $size_variants): void
 	{
 		$this->size_variants = $this->size_variants->merge($size_variants);
-	}
-
-	/**
-	 * @param Collection<int,string> $symbolic_links
-	 */
-	public function addSymbolicLinks(Collection $symbolic_links): void
-	{
-		$this->symbolic_links = $this->symbolic_links->merge($symbolic_links);
 	}
 
 	/**
