@@ -79,13 +79,13 @@ class Create
 		$pipes = [
 			Init\AssertSupportedMedia::class,
 			Init\FetchLastModifiedTime::class,
+			Init\LoadFileMetadata::class,
+			Init\FindDuplicate::class,
 		];
 
-		if ($this->strategy_parameters->import_mode->shall_resync_metadata) {
-			$pipes[] = Init\LoadFileMetadata::class;
+		if (!$this->strategy_parameters->import_mode->shall_resync_metadata) {
+			unset($pipes[array_search(Init\LoadFileMetadata::class, $pipes)]);
 		}
-
-		$pipes[] = Init\FindDuplicate::class;
 
 		$init_dto = app(Pipeline::class)
 			->send($init_dto)
@@ -96,13 +96,19 @@ class Create
 			return $this->handleDuplicate($init_dto);
 		}
 
+		$pipes = [
+			Init\InitParentAlbum::class,
+			Init\LoadFileMetadata::class,
+			Init\FindLivePartner::class,
+		];
+
+		if ($this->strategy_parameters->import_mode->shall_resync_metadata) {
+			unset($pipes[array_search(Init\LoadFileMetadata::class, $pipes)]);
+		}
+
 		$init_dto = app(Pipeline::class)
 			->send($init_dto)
-			->through([
-				Init\InitParentAlbum::class,
-				Init\LoadFileMetadata::class,
-				Init\FindLivePartner::class,
-			])
+			->through($pipes)
 			->thenReturn();
 
 		if ($init_dto->live_partner === null) {
