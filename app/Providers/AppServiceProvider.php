@@ -29,7 +29,6 @@ use App\Metadata\Versions\GitHubVersion;
 use App\Metadata\Versions\InstalledVersion;
 use App\Metadata\Versions\Remote\GitCommits;
 use App\Metadata\Versions\Remote\GitTags;
-use App\ModelFunctions\SymLinkFunctions;
 use App\Models\Configs;
 use App\Policies\AlbumQueryPolicy;
 use App\Policies\PhotoQueryPolicy;
@@ -75,7 +74,6 @@ class AppServiceProvider extends ServiceProvider
 	/** @var array<class-string,class-string> */
 	public array $singletons =
 		[
-			SymLinkFunctions::class => SymLinkFunctions::class,
 			Helpers::class => Helpers::class,
 			CheckUpdate::class => CheckUpdate::class,
 			AlbumFactory::class => AlbumFactory::class,

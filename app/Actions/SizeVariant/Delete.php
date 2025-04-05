@@ -13,7 +13,6 @@ use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\ModelDBException;
 use App\Image\FileDeleter;
 use App\Models\SizeVariant;
-use App\Models\SymLink;
 use Illuminate\Database\Query\JoinClause;
 
 /**
@@ -79,18 +78,6 @@ class Delete
 				->get();
 			$file_deleter->addSizeVariants($size_variants);
 
-			// Get all short paths of symbolic links which point to size variants
-			// which are going to be deleted
-			$sym_link_paths = SymLink::query()
-				->select(['sym_links.short_path'])
-				->whereIn('sym_links.size_variant_id', $sv_ids)
-				->pluck('sym_links.short_path');
-			$file_deleter->addSymbolicLinks($sym_link_paths);
-
-			// Delete records from DB in "inverse" order to not break foreign keys
-			SymLink::query()
-				->whereIn('sym_links.size_variant_id', $sv_ids)
-				->delete();
 			SizeVariant::query()
 				->whereIn('id', $sv_ids)
 				->delete();

@@ -84,6 +84,10 @@ Route::get('/auth/{provider}/register', [OauthController::class, 'register'])->n
 Route::get('/r/{albumID}/{photoID}', [RedirectController::class, 'photo'])->middleware(['migration:complete']);
 Route::get('/r/{albumID}', [RedirectController::class, 'album'])->middleware(['migration:complete']);
 
+Route::get('/images/{path}', SecurePathController::class)
+	->name('image')
+	->where('path', '.*')
+	->middleware(['migration:complete']);
 // We need to register this manually.
 Scramble::registerUiRoute(path: 'docs/api')->name('scramble.docs.ui');
 
