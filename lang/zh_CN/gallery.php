@@ -17,6 +17,7 @@ return [
 	'smart_albums' => '智能相册',
 	'albums' => '相册',
 	'root' => '相册',
+	'favourites' => 'Favourites',
 
 	'original' => '原图',
 	'medium' => '中等',
