@@ -54,8 +54,7 @@ readonly class Delete
 	/**
 	 * Deletes the designated photos from the DB.
 	 *
-	 * The method only deletes the records for photos, their size variants
-	 * and potentially associated symbolic links from the DB.
+	 * The method only deletes the records for photos, their size variants.
 	 * The method does not delete the associated files from physical storage.
 	 * Instead, the method returns an object in which all these files have
 	 * been collected.
