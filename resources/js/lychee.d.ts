@@ -260,7 +260,8 @@ declare namespace App.Http.Resources.GalleryConfigs {
 	};
 	export type LandingPageResource = {
 		landing_page_enable: boolean;
-		landing_background: string;
+		landing_background_landscape: string;
+		landing_background_portrait: string;
 		landing_subtitle: string;
 		landing_title: string;
 		site_owner: string;

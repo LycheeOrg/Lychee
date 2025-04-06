@@ -60,7 +60,7 @@ class Meta extends Component
 
 		$this->page_title = Configs::getValueAsString('site_title');
 		$this->page_description = '';
-		$this->image_url = Configs::getValueAsString('landing_background');
+		$this->image_url = Configs::getValueAsString('landing_background_landscape');
 
 		// processing photo and album data
 		if (session()->has('access')) {

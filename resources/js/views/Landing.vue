@@ -44,7 +44,16 @@
 			<div class="slides-container w-full h-full opacity-0 animate-landingSlidesPopIn">
 				<ul class="list-none">
 					<li class="w-full h-full">
-						<img class="w-full h-full object-cover absolute top-0 left-0" :src="initdata.landing_background" alt="landing image" />
+						<img
+							class="portrait:hidden w-full h-full object-cover absolute top-0 left-0"
+							:src="initdata.landing_background_landscape"
+							alt="landing image"
+						/>
+						<img
+							class="landscape:hidden w-full h-full object-cover absolute top-0 left-0"
+							:src="initdata.landing_background_portrait"
+							alt="landing image"
+						/>
 					</li>
 				</ul>
 			</div>

@@ -57,7 +57,7 @@ final class IndexController extends Controller
 					'twitter' => Configs::getValueAsString('sm_twitter_url'),
 					'instagram' => Configs::getValueAsString('sm_instagram_url'),
 					'youtube' => Configs::getValueAsString('sm_youtube_url'),
-					'background' => Configs::getValueAsString('landing_background'),
+					'background' => Configs::getValueAsString('landing_background_landscape'),
 					'copyright_enable' => Configs::getValueAsString('footer_show_copyright'),
 					'copyright_year' => Configs::getValueAsString('site_copyright_begin'),
 					'additional_footer_text' => Configs::getValueAsString('footer_additional_text'),
