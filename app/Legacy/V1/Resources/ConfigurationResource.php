@@ -110,7 +110,7 @@ final class ConfigurationResource extends JsonResource
 				'hide_version_number' => Configs::getValueAsBool('hide_version_number'),
 				'imagick' => Configs::getValueAsBool('imagick'),
 				'import_via_symlink' => Configs::getValueAsBool('import_via_symlink'),
-				'landing_background' => Configs::getValueAsString('landing_background'),
+				'landing_background' => Configs::getValueAsString('landing_background_landscape'),
 				'landing_subtitle' => Configs::getValueAsString('landing_subtitle'),
 				'landing_title' => Configs::getValueAsString('landing_title'),
 				'local_takestamp_video_formats' => Configs::getValueAsString('local_takestamp_video_formats'),

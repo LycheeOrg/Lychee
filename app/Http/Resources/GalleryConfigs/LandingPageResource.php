@@ -16,7 +16,8 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 class LandingPageResource extends Data
 {
 	public bool $landing_page_enable;
-	public string $landing_background;
+	public string $landing_background_landscape;
+	public string $landing_background_portrait;
 	public string $landing_subtitle;
 	public string $landing_title;
 	public string $site_owner;
@@ -27,7 +28,8 @@ class LandingPageResource extends Data
 	{
 		$this->footer = new FooterConfig();
 		$this->landing_page_enable = Configs::getValueAsBool('landing_page_enable');
-		$this->landing_background = Configs::getValueAsString('landing_background');
+		$this->landing_background_landscape = Configs::getValueAsString('landing_background_landscape');
+		$this->landing_background_portrait = Configs::getValueAsString('landing_background_portrait');
 		$this->landing_subtitle = Configs::getValueAsString('landing_subtitle');
 		$this->landing_title = Configs::getValueAsString('landing_title');
 		$this->site_owner = Configs::getValueAsString('site_owner');
