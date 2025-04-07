@@ -8,10 +8,17 @@
 		</template>
 		<template #end> </template>
 	</Toolbar>
+	<BulkSharingModal v-model:visible="bulkSharingVisible" @created-permission="load" />
 	<Panel class="border-none p-9 mx-auto max-w-3xl" v-if="perms !== undefined" pt:header:class="hidden">
-		<div class="w-full mb-9 text-center text-muted-color-emphasis">
+		<div class="w-full text-center text-muted-color-emphasis">
 			{{ $t("sharing.info") }}
 		</div>
+		<Button
+			class="w-full font-bold border-none mt-4 mb-12"
+			:label="$t('sharing.bluk_share')"
+			:icon="'pi pi-user-plus'"
+			@click="bulkSharingVisible = true"
+		/>
 		<div class="flex flex-col text-muted-color-emphasis">
 			<div class="flex items-center">
 				<div class="w-5/12 flex items-center">
@@ -39,18 +46,19 @@
 import { ref } from "vue";
 import ShareLine from "@/components/forms/sharing/ShareLine.vue";
 import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
+import BulkSharingModal from "@/components/forms/sharing/BulkSharingModal.vue";
 import SharingService from "@/services/sharing-service";
 import Panel from "primevue/panel";
 import Toolbar from "primevue/toolbar";
 import { useToast } from "primevue/usetoast";
 import { trans } from "laravel-vue-i18n";
+import Button from "primevue/button";
+import { onMounted } from "vue";
 
 const perms = ref<App.Http.Resources.Models.AccessPermissionResource[] | undefined>(undefined);
 const toast = useToast();
 
-SharingService.list().then((response) => {
-	perms.value = response.data;
-});
+const bulkSharingVisible = ref(false);
 
 function deletePermission(id: number) {
 	const permissions = perms.value;
@@ -63,4 +71,15 @@ function deletePermission(id: number) {
 		perms.value = permissions.filter((perm) => perm.id !== id);
 	});
 }
+
+function load() {
+	perms.value = undefined;
+	SharingService.list().then((response) => {
+		perms.value = response.data;
+	});
+}
+
+onMounted(() => {
+	load();
+});
 </script>

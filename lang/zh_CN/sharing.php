@@ -31,6 +31,8 @@ return [
 
 	'permission_overwritten' => '传播成功！权限已覆盖！',
 	'permission_updated' => '传播成功！权限已更新！',
+	'bluk_share' => 'Bulk share',
+	'bulk_share_instr' => 'Select multiple albums and users to share with.',
 
 	'grants' => [
 		'read' => '授予读取权限',
