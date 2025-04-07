@@ -79,21 +79,9 @@ class Create
 		$pre_pipes = [
 			Init\AssertSupportedMedia::class,
 			Init\FetchLastModifiedTime::class,
-			Init\LoadFileMetadata::class,
+			Init\MayLoadFileMetadata::class,
 			Init\FindDuplicate::class,
 		];
-
-		$post_pipes = [
-			Init\InitParentAlbum::class,
-			Init\LoadFileMetadata::class,
-			Init\FindLivePartner::class,
-		];
-
-		if ($this->strategy_parameters->import_mode->shall_resync_metadata) {
-			unset($post_pipes[array_search(Init\LoadFileMetadata::class, $post_pipes, true)]);
-		} else {
-			unset($pre_pipes[array_search(Init\LoadFileMetadata::class, $pre_pipes, true)]);
-		}
 
 		$init_dto = app(Pipeline::class)
 			->send($init_dto)
@@ -103,6 +91,12 @@ class Create
 		if ($init_dto->duplicate !== null) {
 			return $this->handleDuplicate($init_dto);
 		}
+
+		$post_pipes = [
+			Init\InitParentAlbum::class,
+			Init\LoadFileMetadata::class,
+			Init\FindLivePartner::class,
+		];
 
 		$init_dto = app(Pipeline::class)
 			->send($init_dto)
