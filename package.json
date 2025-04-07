@@ -30,9 +30,9 @@
     },
     "dependencies": {
         "@fortawesome/fontawesome-free": "^6.7.1",
-        "@primeuix/themes": "^1.0.0",
+        "@primeuix/themes": "^1.0.1",
         "@sidsbrmnn/scrollspy": "^1.1.0",
-        "@tailwindcss/vite": "^4.1.1",
+        "@tailwindcss/vite": "^4.1.3",
         "@types/dropbox-chooser": "^1.0.8",
         "@types/justified-layout": "^4.1.4",
         "@vueuse/core": "^13.0.0",
@@ -61,7 +61,7 @@
         "vite-plugin-commonjs": "^0.10.4",
         "vue": "^3.5.13",
         "vue-collapsed": "^1.3.3",
-        "vue-i18n": "^11.1.2",
+        "vue-i18n": "^11.1.3",
         "vue-router": "^4.5.0"
     },
     "optionalDependencies": {
