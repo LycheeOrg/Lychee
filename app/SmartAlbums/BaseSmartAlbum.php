@@ -17,7 +17,6 @@ use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Exceptions\Internal\InvalidQueryModelException;
 use App\Exceptions\InvalidPropertyException;
-use App\ModelFunctions\HasAbstractAlbumProperties;
 use App\Models\AccessPermission;
 use App\Models\Configs;
 use App\Models\Extensions\SortingDecorator;
@@ -45,7 +44,6 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	use MimicModel;
 	use UTCBasedTimes;
 	use ToArrayThrowsNotImplemented;
-	use HasAbstractAlbumProperties;
 
 	protected PhotoQueryPolicy $photo_query_policy;
 	protected string $id;
@@ -75,6 +73,33 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 			throw new FrameworkException('Laravel\'s service container', $e);
 		}
 		// @codeCoverageIgnoreEnd
+	}
+
+	// From AbstractAlbum
+	public function get_id(): string
+	{
+		return $this->id;
+	}
+
+	public function get_title(): string
+	{
+		return $this->title;
+	}
+
+	/**
+	 * @return Collection<int,AccessPermission>
+	 */
+	public function get_access_permissions(): Collection
+	{
+		return $this->access_permissions ?? resolve(Collection::class);
+	}
+
+	/**
+	 * @return Collection<int,Photo>
+	 */
+	public function get_photos(): Collection
+	{
+		return $this->getPhotosAttribute();
 	}
 
 	/**
@@ -126,6 +151,17 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	public function getPhotos(): ?Collection
 	{
 		return $this->photos;
+	}
+
+	/**
+	 * Override the or
+	 * @return Thumb|null 
+	 * @throws InvalidPropertyException 
+	 * @throws InvalidQueryModelException 
+	 */
+	public function get_thumb(): Thumb|null
+	{
+		return $this->getThumbAttribute();
 	}
 
 	/**
