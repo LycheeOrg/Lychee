@@ -68,6 +68,7 @@ class Create
 	{
 		$this->checkQuota($source_file);
 
+		/** @var InitDTO $init_dto */
 		$init_dto = new InitDTO(
 			parameters: $this->strategy_parameters,
 			source_file: $source_file,
@@ -75,22 +76,32 @@ class Create
 			file_last_modified_time: $file_last_modified_time
 		);
 
-		/** @var InitDTO $init_dto */
+		$pre_pipes = [
+			Init\AssertSupportedMedia::class,
+			Init\FetchLastModifiedTime::class,
+			Init\MayLoadFileMetadata::class,
+			Init\FindDuplicate::class,
+		];
+
 		$init_dto = app(Pipeline::class)
 			->send($init_dto)
-			->through([
-				Init\AssertSupportedMedia::class,
-				Init\FetchLastModifiedTime::class,
-				Init\InitParentAlbum::class,
-				Init\LoadFileMetadata::class,
-				Init\FindDuplicate::class,
-				Init\FindLivePartner::class,
-			])
+			->through($pre_pipes)
 			->thenReturn();
 
 		if ($init_dto->duplicate !== null) {
 			return $this->handleDuplicate($init_dto);
 		}
+
+		$post_pipes = [
+			Init\InitParentAlbum::class,
+			Init\LoadFileMetadata::class,
+			Init\FindLivePartner::class,
+		];
+
+		$init_dto = app(Pipeline::class)
+			->send($init_dto)
+			->through($post_pipes)
+			->thenReturn();
 
 		if ($init_dto->live_partner === null) {
 			return $this->handleStandalone($init_dto);

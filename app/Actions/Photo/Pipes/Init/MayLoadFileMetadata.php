@@ -11,12 +11,11 @@ namespace App\Actions\Photo\Pipes\Init;
 use App\Contracts\PhotoCreate\InitPipe;
 use App\DTO\PhotoCreate\InitDTO;
 use App\Exceptions\InvalidPropertyException;
-use App\Metadata\Extractor;
 
 /**
  * Load metadata from the file.
  */
-class LoadFileMetadata implements InitPipe
+class MayLoadFileMetadata extends LoadFileMetadata implements InitPipe
 {
 	/**
 	 * {@inheritDoc}
@@ -25,19 +24,9 @@ class LoadFileMetadata implements InitPipe
 	 */
 	public function handle(InitDTO $state, \Closure $next): InitDTO
 	{
-		if ($state->exif_info !== null) {
-			// Metadata already loaded
-			return $next($state);
-		}
-
-		$state->exif_info = Extractor::createFromFile($state->source_file, $state->file_last_modified_time);
-
-		// Use basename of file if IPTC title missing
-		if (
-			$state->exif_info->title === null ||
-			$state->exif_info->title === ''
-		) {
-			$state->exif_info->title = substr($state->source_file->getOriginalBasename(), 0, 98);
+		if ($state->import_mode->shall_resync_metadata) {
+			// Load the metadata from the file
+			return parent::handle($state, $next);
 		}
 
 		return $next($state);
