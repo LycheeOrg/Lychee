@@ -109,7 +109,7 @@ class ExternalRequestFunctions implements ExternalRequest
 		}
 		// @codeCoverageIgnoreStart
 		// we cannot code cov this part. APP_ENV is `testing` in testing mode.
-			
+
 		$opts = [
 			'http' => [
 				'method' => 'GET',
