@@ -40,8 +40,9 @@ class SmartAlbumResource extends Data
 
 	public function __construct(BaseSmartAlbum $smart_album)
 	{
-		$this->id = $smart_album->id;
-		$this->title = $smart_album->title;
+		$this->id = $smart_album->get_id();
+		$this->title = $smart_album->get_title();
+		/** @disregard P1006 */
 		$this->photos = $smart_album->relationLoaded('photos') ? PhotoResource::collect($smart_album->getPhotos()) : null;
 		$this->prepPhotosCollection();
 		if ($this->photos !== null) {
@@ -53,7 +54,7 @@ class SmartAlbumResource extends Data
 			$this->photos = TimelineData::setTimeLineDataForPhotos($this->photos, $photo_granularity);
 		}
 
-		$this->thumb = ThumbResource::fromModel($smart_album->thumb);
+		$this->thumb = ThumbResource::fromModel($smart_album->get_thumb());
 		$this->policy = AlbumProtectionPolicy::ofSmartAlbum($smart_album);
 		$this->rights = new AlbumRightsResource($smart_album);
 		$url = $this->getHeaderUrl($smart_album);

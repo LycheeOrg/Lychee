@@ -140,7 +140,7 @@ final class SettingsController extends Controller
 		$album = $request->album();
 		if ($request->is_public() && $album->public_permissions() === null) {
 			$access_permissions = AccessPermission::ofPublic();
-			$access_permissions->base_album_id = $album->id;
+			$access_permissions->base_album_id = $album->get_id();
 			$access_permissions->save();
 		}
 

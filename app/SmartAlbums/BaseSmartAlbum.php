@@ -91,7 +91,11 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	 */
 	public function get_access_permissions(): Collection
 	{
-		return $this->access_permissions ?? resolve(Collection::class);
+		if ($this->public_permissions === null) {
+			return resolve(Collection::class);
+		}
+
+		return collect([$this->public_permissions]);
 	}
 
 	/**
@@ -154,10 +158,12 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	}
 
 	/**
-	 * Override the or
-	 * @return Thumb|null 
-	 * @throws InvalidPropertyException 
-	 * @throws InvalidQueryModelException 
+	 * Override the or.
+	 *
+	 * @return Thumb|null
+	 *
+	 * @throws InvalidPropertyException
+	 * @throws InvalidQueryModelException
 	 */
 	public function get_thumb(): Thumb|null
 	{
