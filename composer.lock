@@ -1366,16 +1366,16 @@
         },
         {
             "name": "dedoc/scramble",
-            "version": "v0.12.16",
+            "version": "v0.12.17",
             "source": {
                 "type": "git",
                 "url": "https://github.com/dedoc/scramble.git",
-                "reference": "2ddc6c4baa2ddc4003b84cd71c8d05028859816d"
+                "reference": "f71afa07e485548f9c3743b69f7859bb4d899600"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dedoc/scramble/zipball/2ddc6c4baa2ddc4003b84cd71c8d05028859816d",
-                "reference": "2ddc6c4baa2ddc4003b84cd71c8d05028859816d",
+                "url": "https://api.github.com/repos/dedoc/scramble/zipball/f71afa07e485548f9c3743b69f7859bb4d899600",
+                "reference": "f71afa07e485548f9c3743b69f7859bb4d899600",
                 "shasum": ""
             },
             "require": {
@@ -1430,7 +1430,7 @@
             ],
             "support": {
                 "issues": "https://github.com/dedoc/scramble/issues",
-                "source": "https://github.com/dedoc/scramble/tree/v0.12.16"
+                "source": "https://github.com/dedoc/scramble/tree/v0.12.17"
             },
             "funding": [
                 {
@@ -1438,7 +1438,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-03-24T09:08:42+00:00"
+            "time": "2025-04-04T06:45:52+00:00"
         },
         {
             "name": "dflydev/dot-access-data",
@@ -1721,26 +1721,29 @@
         },
         {
             "name": "doctrine/deprecations",
-            "version": "1.1.4",
+            "version": "1.1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/deprecations.git",
-                "reference": "31610dbb31faa98e6b5447b62340826f54fbc4e9"
+                "reference": "459c2f5dd3d6a4633d3b5f46ee2b1c40f57d3f38"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/deprecations/zipball/31610dbb31faa98e6b5447b62340826f54fbc4e9",
-                "reference": "31610dbb31faa98e6b5447b62340826f54fbc4e9",
+                "url": "https://api.github.com/repos/doctrine/deprecations/zipball/459c2f5dd3d6a4633d3b5f46ee2b1c40f57d3f38",
+                "reference": "459c2f5dd3d6a4633d3b5f46ee2b1c40f57d3f38",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.1 || ^8.0"
             },
+            "conflict": {
+                "phpunit/phpunit": "<=7.5 || >=13"
+            },
             "require-dev": {
-                "doctrine/coding-standard": "^9 || ^12",
-                "phpstan/phpstan": "1.4.10 || 2.0.3",
+                "doctrine/coding-standard": "^9 || ^12 || ^13",
+                "phpstan/phpstan": "1.4.10 || 2.1.11",
                 "phpstan/phpstan-phpunit": "^1.0 || ^2",
-                "phpunit/phpunit": "^7.5 || ^8.5 || ^9.5",
+                "phpunit/phpunit": "^7.5 || ^8.5 || ^9.6 || ^10.5 || ^11.5 || ^12",
                 "psr/log": "^1 || ^2 || ^3"
             },
             "suggest": {
@@ -1760,9 +1763,9 @@
             "homepage": "https://www.doctrine-project.org/",
             "support": {
                 "issues": "https://github.com/doctrine/deprecations/issues",
-                "source": "https://github.com/doctrine/deprecations/tree/1.1.4"
+                "source": "https://github.com/doctrine/deprecations/tree/1.1.5"
             },
-            "time": "2024-12-07T21:18:45+00:00"
+            "time": "2025-04-07T20:06:18+00:00"
         },
         {
             "name": "doctrine/event-manager",
@@ -3671,16 +3674,16 @@
         },
         {
             "name": "laravel/socialite",
-            "version": "v5.18.0",
+            "version": "v5.19.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/socialite.git",
-                "reference": "7809dc71250e074cd42970f0f803f2cddc04c5de"
+                "reference": "c40f843c5643fb6b089e46ce9794b8408bf08319"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/socialite/zipball/7809dc71250e074cd42970f0f803f2cddc04c5de",
-                "reference": "7809dc71250e074cd42970f0f803f2cddc04c5de",
+                "url": "https://api.github.com/repos/laravel/socialite/zipball/c40f843c5643fb6b089e46ce9794b8408bf08319",
+                "reference": "c40f843c5643fb6b089e46ce9794b8408bf08319",
                 "shasum": ""
             },
             "require": {
@@ -3697,7 +3700,7 @@
             "require-dev": {
                 "mockery/mockery": "^1.0",
                 "orchestra/testbench": "^4.0|^5.0|^6.0|^7.0|^8.0|^9.0|^10.0",
-                "phpstan/phpstan": "^1.10",
+                "phpstan/phpstan": "^1.12.23",
                 "phpunit/phpunit": "^8.0|^9.3|^10.4|^11.5"
             },
             "type": "library",
@@ -3739,7 +3742,7 @@
                 "issues": "https://github.com/laravel/socialite/issues",
                 "source": "https://github.com/laravel/socialite"
             },
-            "time": "2025-02-11T13:38:19+00:00"
+            "time": "2025-03-27T17:26:42+00:00"
         },
         {
             "name": "lcobucci/clock",
@@ -5170,16 +5173,16 @@
         },
         {
             "name": "nesbot/carbon",
-            "version": "3.8.6",
+            "version": "3.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/CarbonPHP/carbon.git",
-                "reference": "ff2f20cf83bd4d503720632ce8a426dc747bf7fd"
+                "reference": "6d16a8a015166fe54e22c042e0805c5363aef50d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/CarbonPHP/carbon/zipball/ff2f20cf83bd4d503720632ce8a426dc747bf7fd",
-                "reference": "ff2f20cf83bd4d503720632ce8a426dc747bf7fd",
+                "url": "https://api.github.com/repos/CarbonPHP/carbon/zipball/6d16a8a015166fe54e22c042e0805c5363aef50d",
+                "reference": "6d16a8a015166fe54e22c042e0805c5363aef50d",
                 "shasum": ""
             },
             "require": {
@@ -5272,7 +5275,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-02-20T17:33:38+00:00"
+            "time": "2025-03-27T12:57:33+00:00"
         },
         {
             "name": "nette/schema",
@@ -5845,16 +5848,16 @@
         },
         {
             "name": "php-ffmpeg/php-ffmpeg",
-            "version": "v1.3.1",
+            "version": "v1.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHP-FFMpeg/PHP-FFMpeg.git",
-                "reference": "0fbbc4c6a6336155679adc800616001ae3328c7a"
+                "reference": "8e74bdc07ad200da7a6cfb21ec2652875e4368e0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHP-FFMpeg/PHP-FFMpeg/zipball/0fbbc4c6a6336155679adc800616001ae3328c7a",
-                "reference": "0fbbc4c6a6336155679adc800616001ae3328c7a",
+                "url": "https://api.github.com/repos/PHP-FFMpeg/PHP-FFMpeg/zipball/8e74bdc07ad200da7a6cfb21ec2652875e4368e0",
+                "reference": "8e74bdc07ad200da7a6cfb21ec2652875e4368e0",
                 "shasum": ""
             },
             "require": {
@@ -5928,9 +5931,9 @@
             ],
             "support": {
                 "issues": "https://github.com/PHP-FFMpeg/PHP-FFMpeg/issues",
-                "source": "https://github.com/PHP-FFMpeg/PHP-FFMpeg/tree/v1.3.1"
+                "source": "https://github.com/PHP-FFMpeg/PHP-FFMpeg/tree/v1.3.2"
             },
-            "time": "2025-01-10T20:23:57+00:00"
+            "time": "2025-04-01T20:36:46+00:00"
         },
         {
             "name": "php-http/discovery",
@@ -8503,16 +8506,16 @@
         },
         {
             "name": "spatie/laravel-package-tools",
-            "version": "1.91.1",
+            "version": "1.92.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/laravel-package-tools.git",
-                "reference": "b0b509b9b01d77caa431ce9af3a706bc678e09c9"
+                "reference": "dd46cd0ed74015db28822d88ad2e667f4496a6f6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/laravel-package-tools/zipball/b0b509b9b01d77caa431ce9af3a706bc678e09c9",
-                "reference": "b0b509b9b01d77caa431ce9af3a706bc678e09c9",
+                "url": "https://api.github.com/repos/spatie/laravel-package-tools/zipball/dd46cd0ed74015db28822d88ad2e667f4496a6f6",
+                "reference": "dd46cd0ed74015db28822d88ad2e667f4496a6f6",
                 "shasum": ""
             },
             "require": {
@@ -8551,7 +8554,7 @@
             ],
             "support": {
                 "issues": "https://github.com/spatie/laravel-package-tools/issues",
-                "source": "https://github.com/spatie/laravel-package-tools/tree/1.91.1"
+                "source": "https://github.com/spatie/laravel-package-tools/tree/1.92.0"
             },
             "funding": [
                 {
@@ -8559,7 +8562,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-03-21T09:50:49+00:00"
+            "time": "2025-03-27T08:34:10+00:00"
         },
         {
             "name": "spatie/laravel-typescript-transformer",
