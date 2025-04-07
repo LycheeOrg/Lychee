@@ -158,10 +158,6 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	}
 
 	/**
-	 * Override the or.
-	 *
-	 * @return Thumb|null
-	 *
 	 * @throws InvalidPropertyException
 	 * @throws InvalidQueryModelException
 	 */
