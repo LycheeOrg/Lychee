@@ -19,13 +19,13 @@
         "@types/leaflet-rotatedmarker": "^0.2.5",
         "@types/leaflet.markercluster": "^1.5.5",
         "@types/mousetrap": "^1.6.15",
-        "@types/node": "^22.13.13",
+        "@types/node": "^22.14.0",
         "@types/photoswipe": "^4.1.6",
         "@types/qrcode": "^1.5.5",
         "@types/sprintf-js": "^1.1.4",
-        "@typescript-eslint/parser": "^8.29.0",
+        "@typescript-eslint/parser": "^8.29.1",
         "@vitejs/plugin-vue": "^5.2.3",
-        "sass": "^1.85.1",
+        "sass": "^1.86.3",
         "vue-tsc": "^2.2.8"
     },
     "dependencies": {
