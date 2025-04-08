@@ -45,7 +45,7 @@ class ResultsResource extends Data
 
 	/**
 	 * @param Collection<int,ThumbAlbumResource>                           $albums
-	 * @param LengthAwarePaginator<PhotoResource>&Paginator<PhotoResource> $photos
+	 * @param LengthAwarePaginator<int,PhotoResource>&Paginator<int,PhotoResource> $photos
 	 *
 	 * @return void
 	 */
@@ -67,7 +67,7 @@ class ResultsResource extends Data
 
 	/**
 	 * @param Collection<int,Album>       $albums
-	 * @param LengthAwarePaginator<Photo> $photos
+	 * @param LengthAwarePaginator<int,Photo> $photos
 	 *
 	 * @return ResultsResource
 	 */
