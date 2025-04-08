@@ -232,6 +232,11 @@ Route::get('/Statistics::totalAlbumSpace', [StatisticsController::class, 'getTot
 Route::get('/Statistics::getCountsOverTime', [StatisticsController::class, 'getPhotoCountOverTime'])->middleware(['support:se']);
 
 /**
+ * Metrics
+ */
+Route::post('/Metrics::photo', [MetricsController::class, 'photo'])->withoutMiddleware(['content_type:json']);
+
+/**
  * UPDATE.
  */
 // Route::post('/Update::apply', [AdministrationUpdateController::class, 'apply']);
