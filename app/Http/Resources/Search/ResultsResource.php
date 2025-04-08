@@ -44,7 +44,7 @@ class ResultsResource extends Data
 	public int $total;
 
 	/**
-	 * @param Collection<int,ThumbAlbumResource>                           $albums
+	 * @param Collection<int,ThumbAlbumResource>                                   $albums
 	 * @param LengthAwarePaginator<int,PhotoResource>&Paginator<int,PhotoResource> $photos
 	 *
 	 * @return void
@@ -66,7 +66,7 @@ class ResultsResource extends Data
 	}
 
 	/**
-	 * @param Collection<int,Album>       $albums
+	 * @param Collection<int,Album>           $albums
 	 * @param LengthAwarePaginator<int,Photo> $photos
 	 *
 	 * @return ResultsResource
