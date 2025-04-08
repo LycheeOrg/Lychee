@@ -11,7 +11,7 @@ namespace App\Contracts\Http\Requests;
 use Illuminate\Support\Collection;
 
 /**
- * @template T
+ * @template T of \App\Contracts\Models\AbstractAlbum
  */
 interface HasAlbums
 {

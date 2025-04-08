@@ -49,7 +49,7 @@ class AlbumBuilder extends NSQueryBuilder
 	 *
 	 * @param string[]|string $columns
 	 *
-	 * @return array<int,Album>
+	 * @return list<Album>
 	 *
 	 * @throws InternalLycheeException
 	 */

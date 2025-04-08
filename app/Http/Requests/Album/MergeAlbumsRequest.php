@@ -28,7 +28,6 @@ class MergeAlbumsRequest extends BaseApiRequest implements HasAlbum, HasAlbums
 	use HasAlbumTrait;
 	/** @phpstan-use HasAlbumsTrait<Album> */
 	use HasAlbumsTrait;
-	/** @phpstan-use AuthorizeCanEditAlbumAlbumsTrait<Album> */
 	use AuthorizeCanEditAlbumAlbumsTrait;
 
 	/**
@@ -60,6 +59,6 @@ class MergeAlbumsRequest extends BaseApiRequest implements HasAlbum, HasAlbums
 
 		/** @var Collection<int,Album> */
 		$albums = Album::query()->with(['children'])->findOrFail($ids)->toBase(); /** @phpstan-ignore varTag.type */
-		$this->albums = $albums; /** @phpstan-ignore assign.propertyType (False positive...) */
+		$this->albums = $albums;
 	}
 }

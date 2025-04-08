@@ -11,7 +11,7 @@ namespace App\Http\Requests\Traits;
 use Illuminate\Support\Collection;
 
 /**
- * @template-covariant T
+ * @template T of \App\Contracts\Models\AbstractAlbum
  */
 trait HasAlbumsTrait
 {

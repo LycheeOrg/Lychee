@@ -8,7 +8,6 @@
 
 namespace App\Legacy\V1\Requests\Album;
 
-use App\Contracts\Models\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
 use App\Legacy\V1\Contracts\Http\Requests\HasAlbums;
 use App\Legacy\V1\Contracts\Http\Requests\HasTitle;
@@ -38,7 +37,6 @@ final class SetAlbumsTitleRequest extends BaseApiRequest implements HasTitle, Ha
 	 */
 	public function authorize(): bool
 	{
-		/** @var AbstractAlbum $album */
 		foreach ($this->albums as $album) {
 			if (!Gate::check(AlbumPolicy::CAN_EDIT, $album)) {
 				return false;
