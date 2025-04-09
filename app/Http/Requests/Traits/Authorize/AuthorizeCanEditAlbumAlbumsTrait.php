@@ -23,7 +23,6 @@ trait AuthorizeCanEditAlbumAlbumsTrait
 			return false;
 		}
 
-		/** @var AbstractAlbum $album */
 		foreach ($this->albums as $album) {
 			if (!Gate::check(AlbumPolicy::CAN_EDIT, $album)) {
 				return false;

@@ -189,6 +189,8 @@ class Album extends BaseAlbum implements Node
 	/**
 	 * Return the relationship between this album and photos which are
 	 * direct children of this album.
+	 *
+	 * @phpstan-ignore method.childReturnType, method.childReturnType
 	 */
 	public function photos(): HasManyChildPhotos
 	{

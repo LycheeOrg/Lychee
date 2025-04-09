@@ -3,7 +3,7 @@ includes:
 	- vendor/lychee-org/phpstan-lychee/phpstan.neon
 	- phpstan-baseline.neon
 parameters:
-	level: 2
+	level: 3
 	tips:
 		treatPhpDocTypesAsCertain: false
 	treatPhpDocTypesAsCertain: true
@@ -16,8 +16,6 @@ parameters:
 	excludePaths:
 		- app/Services/Archives # This is creating errors depending if version 2.1 or 3.1 is installed...
 	stubFiles:
-		# these can be removed after https://github.com/thecodingmachine/safe/issues/283 has been merged
-		# TODO: remove me completely if no longer necessary.
 		- phpstan/stubs/image.stub
 		- phpstan/stubs/imageexception.stub
 	ignoreErrors:
@@ -28,11 +26,5 @@ parameters:
 		- '#Dynamic call to static method Illuminate\\.*#'
 		- '#Dynamic call to static method App\\Models\\Builders.*#'
 		- '#Dynamic call to static method App\\Eloquent\\FixedQueryBuilder.*#'
-		- '#PHPDoc tag @var with type App\\Contracts\\Models\\AbstractAlbum*#' # TODO:// figure out how the inheritance between the traits work and remove this
-		# - '#.* should return Illuminate\\Support\\Collection<int,.*> but returns Illuminate\\Support\\Collection<int, stdClass>.#'
-		
-
-		# -
-		# 	message: '#Parameter \#1 \$data .* of method .*::setData\(\) should be contravariant with parameter \$data \(array\) of method Illuminate\\Contracts\\Validation\\DataAwareRule::setData\(\)#'
-		# 	paths:
-		# 		- app/Rules
+		- '#.*stdClass>#'
+		- '#.*contravariant.*#'

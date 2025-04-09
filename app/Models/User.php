@@ -50,13 +50,13 @@ use function Safe\mb_convert_encoding;
  * @property string|null                                           $note
  * @property string|null                                           $token
  * @property string|null                                           $remember_token
- * @property Collection<BaseAlbumImpl>                             $albums
- * @property Collection<OauthCredential>                           $oauthCredentials
+ * @property Collection<int,BaseAlbumImpl>                         $albums
+ * @property Collection<int,OauthCredential>                       $oauthCredentials
  * @property DatabaseNotificationCollection|DatabaseNotification[] $notifications
- * @property Collection<BaseAlbumImpl>                             $shared
+ * @property Collection<int,BaseAlbumImpl>                         $shared
  * @property Collection<int,Photo>                                 $photos
  * @property int|null                                              $photos_count
- * @property Collection<int, WebAuthnCredential>                   $webAuthnCredentials
+ * @property Collection<int,WebAuthnCredential>                    $webAuthnCredentials
  * @property int|null                                              $web_authn_credentials_count
  *
  * @method static UserBuilder|User addSelect($column)
@@ -135,7 +135,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	/**
 	 * Return the albums owned by the user.
 	 *
-	 * @return HasMany<Album,$this>
+	 * @return HasMany<BaseAlbumImpl,$this>
 	 */
 	public function albums(): HasMany
 	{

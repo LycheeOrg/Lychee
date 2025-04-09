@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\Gate;
  */
 class TargetListAlbumRequest extends BaseApiRequest implements HasAlbums
 {
-	/** @phpstan-use HasAlbumsTrait<Album> */
+	/** @use HasAlbumsTrait<Album> */
 	use HasAlbumsTrait;
 
 	/**
@@ -51,6 +51,6 @@ class TargetListAlbumRequest extends BaseApiRequest implements HasAlbums
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		$album_ids = $values[RequestAttribute::ALBUM_IDS_ATTRIBUTE] ?? [];
-		$this->albums = $this->album_factory->findAbstractAlbumsOrFail($album_ids);
+		$this->albums = $this->album_factory->findBaseAlbumsOrFail($album_ids, albums_only: true);
 	}
 }
