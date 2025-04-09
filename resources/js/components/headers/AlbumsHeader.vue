@@ -25,7 +25,9 @@
 			<span class="sm:hidden font-bold">
 				{{ $t("gallery.albums") }}
 			</span>
-			<span class="hidden sm:block font-bold text-sm lg:text-base text-center w-full" @click="is_metrics_open = !is_metrics_open">{{ props.title }}</span>
+			<span class="hidden sm:block font-bold text-sm lg:text-base text-center w-full" @click="is_metrics_open = !is_metrics_open">{{
+				props.title
+			}}</span>
 		</template>
 
 		<template #end>
