@@ -25,7 +25,7 @@
 			<span class="sm:hidden font-bold">
 				{{ $t("gallery.albums") }}
 			</span>
-			<span class="hidden sm:block font-bold text-sm lg:text-base text-center w-full">{{ props.title }}</span>
+			<span class="hidden sm:block font-bold text-sm lg:text-base text-center w-full" @click="is_metrics_open = !is_metrics_open">{{ props.title }}</span>
 		</template>
 
 		<template #end>
@@ -125,7 +125,7 @@ const togglableStore = useTogglablesStateStore();
 const favourites = useFavouriteStore();
 
 const { dropbox_api_key } = storeToRefs(lycheeStore);
-const { is_login_open, is_upload_visible, is_create_album_visible, is_create_tag_album_visible } = storeToRefs(togglableStore);
+const { is_login_open, is_upload_visible, is_create_album_visible, is_create_tag_album_visible, is_metrics_open } = storeToRefs(togglableStore);
 
 const router = useRouter();
 

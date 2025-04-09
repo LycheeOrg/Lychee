@@ -22,6 +22,9 @@ use App\Actions\Album\Transfer;
 use App\Actions\Album\Unlock;
 use App\Actions\Photo\BaseArchive as PhotoBaseArchive;
 use App\Events\AlbumRouteCacheUpdated;
+use App\Events\Metrics\AlbumDownload;
+use App\Events\Metrics\AlbumVisit;
+use App\Events\Metrics\PhotoDownload;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\UnauthenticatedException;
 use App\Http\Requests\Album\AddAlbumRequest;
@@ -42,6 +45,7 @@ use App\Http\Requests\Album\UnlockAlbumRequest;
 use App\Http\Requests\Album\UpdateAlbumRequest;
 use App\Http\Requests\Album\UpdateTagAlbumRequest;
 use App\Http\Requests\Album\ZipRequest;
+use App\Http\Requests\Traits\HasVisitorIdTrait;
 use App\Http\Resources\Editable\EditableBaseAlbumResource;
 use App\Http\Resources\GalleryConfigs\AlbumConfig;
 use App\Http\Resources\Models\AbstractAlbumResource;
@@ -64,6 +68,8 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
  */
 class AlbumController extends Controller
 {
+	use HasVisitorIdTrait;
+
 	public const COMPACT_HEADER = 'compact';
 
 	/**
@@ -82,6 +88,8 @@ class AlbumController extends Controller
 				default => throw new LycheeLogicException('This should not happen'),
 			};
 		}
+
+		AlbumVisit::dispatchIf((Auth::guest() && $request->album() instanceof BaseAlbum), $this->visitorId(), $request->album()->get_id());
 
 		return new AbstractAlbumResource($config, $album_resource);
 	}
@@ -294,7 +302,17 @@ class AlbumController extends Controller
 	public function getArchive(ZipRequest $request): StreamedResponse
 	{
 		if ($request->albums()->count() > 0) {
+			// We dispatch one event per album.
+			foreach ($request->albums() as $album) {
+				AlbumDownload::dispatchIf(Auth::guest(), $this->visitorId(), $album->get_id());
+			}
+
 			return AlbumBaseArchive::resolve()->do($request->albums());
+		}
+
+		// We dispatch one event per photo.
+		foreach ($request->photos() as $photo) {
+			PhotoDownload::dispatchIf(Auth::guest(), $this->visitorId(), $photo->id);
 		}
 
 		return PhotoBaseArchive::resolve()->do($request->photos(), $request->sizeVariant());

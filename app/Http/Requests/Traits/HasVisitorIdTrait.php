@@ -23,7 +23,7 @@ trait HasVisitorIdTrait
 			// Hash the ip of the the request with the user agent to create a unique visitor id
 			// This is not a secure way to create a unique id, but it is good enough for our purpose.
 			// For privacy reasons we don't want to store the ip or user agent in the database.
-			
+
 			/** @var Request $request */
 			$request = request();
 

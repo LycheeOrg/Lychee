@@ -19,13 +19,13 @@ use App\Rules\RandomIDRule;
 class PhotoMetricsRequest extends BaseApiRequest implements HasPhotoIds, HasVisitorId
 {
 	use HasPhotoIdsTrait;
-    use HasVisitorIdTrait;
+	use HasVisitorIdTrait;
 
-    // No need to authorize this request as it is only used for metrics purposes
-    public function authorize(): bool
-    {
-        return true;
-    }
+	// No need to authorize this request as it is only used for metrics purposes
+	public function authorize(): bool
+	{
+		return true;
+	}
 
 	/**
 	 * {@inheritDoc}
