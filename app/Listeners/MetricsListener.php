@@ -16,7 +16,6 @@ use App\Events\Metrics\PhotoFavourite;
 use App\Events\Metrics\PhotoShared;
 use App\Events\Metrics\PhotoVisit;
 use App\Models\Configs;
-use App\Models\LiveMetrics;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -46,7 +45,7 @@ class MetricsListener
 					'album_id' => $event->table() === 'base_albums' ? $event->id : null,
 					'photo_id' => $event->table() === 'photos' ? $event->id : null,
 					'created_at' => now(),
-				]
+				],
 			]);
 	}
 }

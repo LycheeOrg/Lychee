@@ -25,7 +25,7 @@ class MetricsController extends Controller
 {
 	public function get(MetricsRequest $request, GetMetrics $get_metrics): Collection
 	{
-		return $get_metrics->get();	
+		return $get_metrics->get();
 	}
 
 	/**
