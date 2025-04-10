@@ -63,6 +63,8 @@ class AlbumResource extends Data
 	public PreFormattedAlbumData $preFormattedData;
 	public ?EditableBaseAlbumResource $editable;
 
+	public ?AlbumStatisticsResource $statistics = null;
+
 	public function __construct(Album $album)
 	{
 		$this->id = $album->id;
@@ -110,6 +112,10 @@ class AlbumResource extends Data
 
 		if ($this->rights->can_edit) {
 			$this->editable = EditableBaseAlbumResource::fromModel($album);
+		}
+
+		if (Configs::getValueAsBool('metrics_enabled') && Auth::check()) {
+			$this->statistics = AlbumStatisticsResource::fromModel($album->statistics);
 		}
 	}
 

@@ -6,7 +6,7 @@
  * Copyright (c) 2018-2025 LycheeOrg.
  */
 
- namespace App\Models;
+namespace App\Models;
 
 use App\Enum\MetricsAction;
 use App\Models\Builders\LiveMetricsBuilder;

@@ -207,7 +207,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	/**
 	 * The relationships that should always be eagerly loaded by default.
 	 */
-	protected $with = ['owner', 'access_permissions'];
+	protected $with = ['owner', 'access_permissions', 'statistics'];
 
 	public function newEloquentBuilder($query): BaseAlbumImplBuilder
 	{

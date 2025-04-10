@@ -179,6 +179,10 @@ class Photo extends Model implements HasUTCBasedTimes
 		'live_photo_short_path', // serialize live_photo_url instead
 	];
 
+	// protected $with = [
+	// 	'statistics',
+	// ];
+
 	public function newEloquentBuilder($query): PhotoBuilder
 	{
 		return new PhotoBuilder($query);
