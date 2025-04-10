@@ -8,31 +8,16 @@
 
 namespace App\Events\Metrics;
 
-use App\Contracts\Events\HasMetricAction;
-use App\Contracts\Events\HasTable;
 use App\Enum\MetricsAction;
-use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Foundation\Events\Dispatchable;
 
-class PhotoDownload implements HasTable, HasMetricAction
+/**
+ * This event is fired when one or multiple photos are downloaded.
+ */
+final class PhotoDownload extends BaseMetricsEvent
 {
-	use Dispatchable;
-	use InteractsWithSockets;
-
-	/**
-	 * This event is fired when one or multiple photos are downloaded.
-	 *
-	 * @return void
-	 */
-	public function __construct(
-		public string $visitor_id,
-		public string $id,
-	) {
-	}
-
-	public function table(): string
+	public function key(): string
 	{
-		return 'photos';
+		return 'photo_id';
 	}
 
 	public function metricAction(): MetricsAction

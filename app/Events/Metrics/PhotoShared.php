@@ -8,31 +8,16 @@
 
 namespace App\Events\Metrics;
 
-use App\Contracts\Events\HasMetricAction;
-use App\Contracts\Events\HasTable;
 use App\Enum\MetricsAction;
-use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Foundation\Events\Dispatchable;
 
-class PhotoShared implements HasTable, HasMetricAction
+/**
+ * This event is fired when a direct link to a photo is used.
+ */
+class PhotoShared extends BaseMetricsEvent
 {
-	use Dispatchable;
-	use InteractsWithSockets;
-
-	/**
-	 * This event is fired when a direct link to a photo is used.
-	 *
-	 * @return void
-	 */
-	public function __construct(
-		public string $visitor_id,
-		public string $id,
-	) {
-	}
-
-	public function table(): string
+	public function key(): string
 	{
-		return 'photos';
+		return 'photo_id';
 	}
 
 	public function metricAction(): MetricsAction

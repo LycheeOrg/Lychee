@@ -30,11 +30,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static LiveMetricsBuilder|LiveMetrics whereCreatedAt($value)
  * @method static LiveMetricsBuilder|LiveMetrics whereId($value)
  * @method static LiveMetricsBuilder|LiveMetrics whereIn(string $column, string $values, string $boolean = 'and', string $not = false)
- * @method static LiveMetricsBuilder|LiveMetrics whereJob($value)
  * @method static LiveMetricsBuilder|LiveMetrics whereNotIn(string $column, string $values, string $boolean = 'and')
- * @method static LiveMetricsBuilder|LiveMetrics whereOwnerId($value)
- * @method static LiveMetricsBuilder|LiveMetrics whereStatus($value)
- * @method static LiveMetricsBuilder|LiveMetrics whereUpdatedAt($value)
  *
  * @mixin \Eloquent
  */

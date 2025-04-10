@@ -8,31 +8,16 @@
 
 namespace App\Events\Metrics;
 
-use App\Contracts\Events\HasMetricAction;
-use App\Contracts\Events\HasTable;
 use App\Enum\MetricsAction;
-use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Foundation\Events\Dispatchable;
 
-class AlbumVisit implements HasTable, HasMetricAction
+/**
+ * This event is fired when an album is open.
+ */
+final class AlbumVisit extends BaseMetricsEvent
 {
-	use Dispatchable;
-	use InteractsWithSockets;
-
-	/**
-	 * This event is fired when an album is open.
-	 *
-	 * @return void
-	 */
-	public function __construct(
-		public string $visitor_id,
-		public string $id,
-	) {
-	}
-
-	public function table(): string
+	public function key(): string
 	{
-		return 'base_albums';
+		return 'album_id';
 	}
 
 	public function metricAction(): MetricsAction

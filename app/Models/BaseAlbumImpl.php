@@ -28,6 +28,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -187,6 +188,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		// Special visibility attributes
 		'is_nsfw' => false,
 		'photo_layout' => null,
+		// 'statistics' => null,
 	];
 
 	/**
@@ -262,6 +264,16 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	public function public_permissions(): AccessPermission|null
 	{
 		return $this->access_permissions->first(fn (AccessPermission $p) => $p->user_id === null);
+	}
+
+	/**
+	 * Returns the relationship between an album and its associated statistics.
+	 *
+	 * @return HasOne<Statistics,$this>
+	 */
+	public function statistics(): HasOne
+	{
+		return $this->hasOne(Statistics::class, 'album_id', 'id');
 	}
 
 	protected function getPhotoSortingAttribute(): ?PhotoSortingCriterion
