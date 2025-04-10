@@ -101,6 +101,9 @@ return [
 		],
 
 		'stats' => [
+			'number_of_visits' => 'Number of visits',
+			'number_of_downloads' => 'Number of downloads',
+			'number_of_shares' => 'Number of shares',
 			'lens' => 'Obiektyw',
 			'shutter' => 'Czas otwarcia migawki',
 			'iso' => 'ISO',

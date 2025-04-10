@@ -75,6 +75,7 @@ declare namespace App.Enum {
 		| "CC-BY-NC-SA-4.0";
 	export type MapProviders = "Wikimedia" | "OpenStreetMap.org" | "OpenStreetMap.de" | "OpenStreetMap.fr" | "RRZE";
 	export type MessageType = "info" | "warning" | "error";
+	export type MetricsAction = "visit" | "favourite" | "download" | "shared";
 	export type OauthProvidersType =
 		| "amazon"
 		| "apple"
@@ -346,6 +347,12 @@ declare namespace App.Http.Resources.Models {
 		rights: App.Http.Resources.Rights.AlbumRightsResource;
 		preFormattedData: App.Http.Resources.Models.Utils.PreFormattedAlbumData;
 		editable: App.Http.Resources.Editable.EditableBaseAlbumResource | null;
+		statistics: App.Http.Resources.Models.AlbumStatisticsResource | null;
+	};
+	export type AlbumStatisticsResource = {
+		visit_count: number;
+		download_count: number;
+		shared_count: number;
 	};
 	export type ConfigCategoryResource = {
 		cat: string;
@@ -411,6 +418,13 @@ declare namespace App.Http.Resources.Models {
 		preformatted: App.Http.Resources.Models.Utils.PreformattedPhotoData;
 		precomputed: App.Http.Resources.Models.Utils.PreComputedPhotoData;
 		timeline: App.Http.Resources.Models.Utils.TimelineData | null;
+		statistics: App.Http.Resources.Models.PhotoStatisticsResource | null;
+	};
+	export type PhotoStatisticsResource = {
+		visit_count: number;
+		download_count: number;
+		favourite_count: number;
+		shared_count: number;
 	};
 	export type SizeVariantResource = {
 		type: App.Enum.SizeVariantType;
@@ -438,6 +452,7 @@ declare namespace App.Http.Resources.Models {
 		policy: App.Http.Resources.Models.Utils.AlbumProtectionPolicy;
 		rights: App.Http.Resources.Rights.AlbumRightsResource;
 		preFormattedData: App.Http.Resources.Models.Utils.PreFormattedAlbumData;
+		statistics: null | null;
 	};
 	export type TagAlbumResource = {
 		id: string;
@@ -452,6 +467,7 @@ declare namespace App.Http.Resources.Models {
 		rights: App.Http.Resources.Rights.AlbumRightsResource;
 		preFormattedData: App.Http.Resources.Models.Utils.PreFormattedAlbumData;
 		editable: App.Http.Resources.Editable.EditableBaseAlbumResource | null;
+		statistics: App.Http.Resources.Models.AlbumStatisticsResource | null;
 	};
 	export type TargetAlbumResource = {
 		id: string | null;
