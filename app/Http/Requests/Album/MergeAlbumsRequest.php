@@ -18,6 +18,7 @@ use App\Http\Requests\Traits\HasAlbumTrait;
 use App\Models\Album;
 use App\Rules\AlbumIDRule;
 use App\Rules\RandomIDRule;
+use Illuminate\Support\Collection;
 
 /**
  * @implements HasAlbums<Album>
@@ -28,6 +29,13 @@ class MergeAlbumsRequest extends BaseApiRequest implements HasAlbum, HasAlbums
 	/** @phpstan-use HasAlbumsTrait<Album> */
 	use HasAlbumsTrait;
 	use AuthorizeCanEditAlbumAlbumsTrait;
+
+	public function __construct(array $query = [], array $request = [], array $attributes = [], array $cookies = [], array $files = [], array $server = [], $content = null)
+	{
+		parent::__construct($query, $request, $attributes, $cookies, $files, $server, $content);
+
+		$this->albums = new Collection(); // initialize with empty collection to avoid error MergeAlbumsRequest::$albums must not be accessed before initialization
+	}
 
 	/**
 	 * {@inheritDoc}
@@ -48,11 +56,16 @@ class MergeAlbumsRequest extends BaseApiRequest implements HasAlbum, HasAlbums
 	{
 		/** @var string $id */
 		$id = $values[RequestAttribute::ALBUM_ID_ATTRIBUTE];
+
 		/** @var array<int,string> $ids */
 		$ids = $values[RequestAttribute::ALBUM_IDS_ATTRIBUTE];
-		$this->album = Album::query()->findOrFail($id);
-		$this->albums = Album::query()
-			->with(['children'])
-			->findOrFail($ids);
+
+		/** @var Album $album */
+		$album = Album::query()->findOrFail($id);
+		$this->album = $album;
+
+		/** @var Collection<int,Album> */
+		$albums = Album::query()->with(['children'])->findOrFail($ids)->toBase(); /** @phpstan-ignore varTag.type */
+		$this->albums = $albums;
 	}
 }

@@ -39,14 +39,16 @@ class HasManySizeVariants extends HasMany
 	/**
 	 * Get the results of the relationship.
 	 *
-	 * @internal The parent class allows to return `mixed`, hence it is
-	 *  perfectly fine to return `SizeVariants` acc. to Liskov's substitution
-	 *  principle.
-	 *  However, the buggy `larastan` ruleset lies to PhpStan about the return
-	 *  type.
-	 *  Hence, we must ignore the false positive here.
+	 * Phpstan is complaining about:
+	 * Return type (App\Models\Extensions\SizeVariants) of method App\Relations\HasManySizeVariants::getResults()
+	 * should be compatible with return type (Illuminate\Database\Eloquent\Collection<int,App\Models\SizeVariant>)
+	 * of method Illuminate\Database\Eloquent\Relations\HasMany<App\Models\SizeVariant,App\Models\Photo>::getResults()
+	 *
+	 * In this specific case we are voluntarily breaking the Liskov Substitution Principle.
 	 *
 	 * @return SizeVariants
+	 *
+	 * @phpstan-ignore method.childReturnType
 	 */
 	public function getResults(): SizeVariants
 	{

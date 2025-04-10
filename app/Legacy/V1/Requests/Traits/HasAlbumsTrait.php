@@ -11,7 +11,7 @@ namespace App\Legacy\V1\Requests\Traits;
 use Illuminate\Support\Collection;
 
 /**
- * @template T of \App\Contracts\Models\AbstractAlbum
+ * @template T
  */
 trait HasAlbumsTrait
 {
