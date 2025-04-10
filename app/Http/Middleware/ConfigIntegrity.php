@@ -18,6 +18,7 @@ class ConfigIntegrity
 {
 	public const SE_FIELDS = [
 		'default_user_quota',
+		'metrics_enabled',
 		'disable_small_download',
 		'disable_small2x_download',
 		'disable_medium_download',
