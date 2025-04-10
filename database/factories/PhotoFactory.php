@@ -183,7 +183,6 @@ class PhotoFactory extends Factory
 
 			$photo->load('statistics');
 
-
 			// Reset the value if it was disabled.
 			$this->with_size_variants = true;
 		});

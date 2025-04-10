@@ -61,5 +61,4 @@ class TagAlbumFactory extends Factory
 			$album->load('statistics');
 		});
 	}
-
 }

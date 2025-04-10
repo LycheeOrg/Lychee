@@ -9,7 +9,6 @@
 namespace Database\Factories;
 
 use App\Models\Statistics;
-use App\Models\TagAlbum;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -32,13 +31,13 @@ class StatisticsFactory extends Factory
 	public function definition(): array
 	{
 		return [
-            'album_id' => null,
-            'photo_id' => null,
-            'visit_count' => 0,
-            'download_count' => 0,
-            'favourite_count' => 0,
-            'shared_count' => 0,
-        ];
+			'album_id' => null,
+			'photo_id' => null,
+			'visit_count' => 0,
+			'download_count' => 0,
+			'favourite_count' => 0,
+			'shared_count' => 0,
+		];
 	}
 
 	public function with_album(string $album_id): self
