@@ -37,8 +37,10 @@ use Illuminate\Database\Eloquent\Model;
 class Statistics extends Model
 {
 	use ThrowsConsistentExceptions;
-	/** @phpstan-use HasFactory<\Database\Factories\StatisticFactory> */
+	/** @phpstan-use HasFactory<\Database\Factories\StatisticsFactory> */
 	use HasFactory;
+
+	public $timestamps = false;
 
 	/**
 	 * @param $query

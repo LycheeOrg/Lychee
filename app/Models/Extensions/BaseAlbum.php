@@ -16,6 +16,7 @@ use App\Enum\PhotoLayoutType;
 use App\Enum\TimelinePhotoGranularity;
 use App\Models\AccessPermission;
 use App\Models\BaseAlbumImpl;
+use App\Models\Statistics;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;

@@ -8,16 +8,14 @@
 
 namespace Database\Factories;
 
-use App\Enum\SizeVariantType;
 use App\Models\Statistics;
 use App\Models\TagAlbum;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Database\Eloquent\Factories\Sequence;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Statistics>
  */
-class StatisticFactory extends Factory
+class StatisticsFactory extends Factory
 {
 	/**
 	 * The name of the factory's corresponding model.
@@ -60,18 +58,4 @@ class StatisticFactory extends Factory
 			];
 		});
 	}
-
-	/**
-	 * Configure the model factory.
-	 * We also create the associated statistics model.
-	 */
-	public function configure(): static
-	{
-		return $this->afterCreating(function (TagAlbum $album) {
-			Statistics::factory()->with_album($album->id)->create();
-			$album->fresh();
-			$album->load('statistics');
-		});
-	}
-
 }

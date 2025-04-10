@@ -8,6 +8,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Statistics;
 use App\Models\TagAlbum;
 use Database\Factories\Traits\OwnedBy;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -47,4 +48,18 @@ class TagAlbumFactory extends Factory
 			];
 		});
 	}
+
+	/**
+	 * Configure the model factory.
+	 * We also create the associated statistics model.
+	 */
+	public function configure(): static
+	{
+		return $this->afterCreating(function (TagAlbum $album) {
+			Statistics::factory()->with_album($album->id)->create();
+			$album->fresh();
+			$album->load('statistics');
+		});
+	}
+
 }
