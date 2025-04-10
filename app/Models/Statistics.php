@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Builders\StatisticsBuilder;
 use App\Models\Extensions\ThrowsConsistentExceptions;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -36,6 +37,8 @@ use Illuminate\Database\Eloquent\Model;
 class Statistics extends Model
 {
 	use ThrowsConsistentExceptions;
+	/** @phpstan-use HasFactory<\Database\Factories\StatisticFactory> */
+	use HasFactory;
 
 	/**
 	 * @param $query

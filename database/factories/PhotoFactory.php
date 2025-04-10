@@ -11,6 +11,7 @@ namespace Database\Factories;
 use App\Models\Album;
 use App\Models\Photo;
 use App\Models\SizeVariant;
+use App\Models\Statistics;
 use Database\Factories\Traits\OwnedBy;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -165,17 +166,23 @@ class PhotoFactory extends Factory
 
 	/**
 	 * Configure the model factory.
-	 * We create 7 random Size Variants.
+	 * We create 7 random Size Variants and the associated statistics model.
 	 */
 	public function configure(): static
 	{
 		return $this->afterCreating(function (Photo $photo) {
+			Statistics::factory()->with_photo($photo->id)->create();
+			$photo->fresh();
+
 			// Creates the size variants
 			if ($this->with_size_variants) {
 				SizeVariant::factory()->count(7)->allSizeVariants()->create(['photo_id' => $photo->id]);
 				$photo->fresh();
 				$photo->load('size_variants');
 			}
+
+			$photo->load('statistics');
+
 
 			// Reset the value if it was disabled.
 			$this->with_size_variants = true;
