@@ -15,20 +15,11 @@ use App\Contracts\Models\AbstractAlbum;
 use App\Http\Requests\Album\DeleteTrackRequest;
 use App\Policies\AlbumPolicy;
 use App\Rules\AlbumIDRule;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Gate;
-use LycheeVerify\Contract\VerifyInterface;
-use Tests\AbstractTestCase;
+use Tests\Unit\Http\Requests\Base\BaseRequestTest;
 
-class DeleteTrackRequestTest extends AbstractTestCase
+class DeleteTrackRequestTest extends BaseRequestTest
 {
-	protected function setUp(): void
-	{
-		parent::setUp();
-		$mockVerify = $this->createMock(VerifyInterface::class);
-		App::instance(VerifyInterface::class, $mockVerify); // VerifyInterface is talking to DB & that is not needed for Request classes
-	}
-
 	public function testAuthorization()
 	{
 		Gate::shouldReceive('check')
