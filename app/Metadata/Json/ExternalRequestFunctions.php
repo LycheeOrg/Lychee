@@ -105,7 +105,7 @@ class ExternalRequestFunctions implements ExternalRequest
 	private function fetchFromServer(): string
 	{
 		if (app()->runningUnitTests()) {
-			throw new RequestFailedException('file_get_contents() failed');
+			throw new RequestFailedException('file_get_contents() failed: "testing" environment detected.');
 		}
 		// @codeCoverageIgnoreStart
 		// we cannot code cov this part. APP_ENV is `testing` in testing mode.
