@@ -31,6 +31,8 @@ return [
 
 	'permission_overwritten' => 'Propagacja powiodła się! Uprawnienie nadpisane!',
 	'permission_updated' => 'Propagacja zakończona sukcesem! Pozwolenie zaktualizowane!',
+	'bluk_share' => 'Bulk share',
+	'bulk_share_instr' => 'Select multiple albums and users to share with.',
 
 	'grants' => [
 		'read' => 'Przyznaje dostęp do odczytu',

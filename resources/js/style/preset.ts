@@ -900,6 +900,29 @@ const LycheePrimeVueConfig: Preset = {
 				maxWidth: "20rem",
 			},
 		},
+		listbox: {
+			root: {
+				background: "transparent",
+			},
+			option: {
+				padding: "0 0 0 1rem",
+			},
+			checkmark: {
+				color: "{primary.400}",
+			},
+			colorScheme: {
+				dark: {
+					root: {
+						borderColor: "{surface.700}",
+					},
+					option: {
+						color: "{text.hoverMutedColor}",
+						focusBackground: "{highlight.background}",
+						focusColor: "{content.color}",
+					},
+				},
+			},
+		},
 	},
 };
 

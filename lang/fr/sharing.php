@@ -31,6 +31,8 @@ return [
 
 	'permission_overwritten' => 'Propagation réussie ! Autorisations écrasées !',
 	'permission_updated' => 'Propagation réussie ! Autorisations mises à jour !',
+	'bluk_share' => 'Bulk share',
+	'bulk_share_instr' => 'Select multiple albums and users to share with.',
 
 	'grants' => [
 		'read' => 'Autorise la lecture',
