@@ -12,13 +12,14 @@ namespace Tests\Unit\Http\Requests\Album;
 
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Contracts\Models\AbstractAlbum;
-use App\Http\Requests\Album\DeleteTrackRequest;
+use App\Http\Requests\Album\MoveAlbumsRequest;
 use App\Policies\AlbumPolicy;
 use App\Rules\AlbumIDRule;
+use App\Rules\RandomIDRule;
 use Illuminate\Support\Facades\Gate;
 use Tests\Unit\Http\Requests\Base\BaseRequestTest;
 
-class DeleteTrackRequestTest extends BaseRequestTest
+class MoveAlbumsRequestTest extends BaseRequestTest
 {
 	public function testAuthorization()
 	{
@@ -26,20 +27,21 @@ class DeleteTrackRequestTest extends BaseRequestTest
 			->with(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, null])
 			->andReturn(true);
 
-		$request = new DeleteTrackRequest();
-		$request->merge([RequestAttribute::PARENT_ID_ATTRIBUTE => null]);
+		$request = new MoveAlbumsRequest();
 
 		$this->assertTrue($request->authorize());
 	}
 
 	public function testRules(): void
 	{
-		$request = new DeleteTrackRequest();
+		$request = new MoveAlbumsRequest();
 
 		$rules = $request->rules();
 
 		$expectedRuleMap = [
-			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['required', new AlbumIDRule(false)],
+			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
+			RequestAttribute::ALBUM_IDS_ATTRIBUTE => 'required|array|min:1',
+			RequestAttribute::ALBUM_IDS_ATTRIBUTE . '.*' => ['required', new AlbumIDRule(false)],
 		];
 
 		$this->assertCount(count($expectedRuleMap), $rules);
