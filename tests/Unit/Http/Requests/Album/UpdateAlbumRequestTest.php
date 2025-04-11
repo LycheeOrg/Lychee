@@ -89,7 +89,7 @@ class UpdateAlbumRequestTest extends BaseRequestTest
 		]);
 
 		$request->validateResolved(); // hydrate the request Class with the data before authorizing . Fighting the framework a bit
-		
+
 		$this->assertTrue($request->authorize());
 	}
 
