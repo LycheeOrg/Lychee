@@ -35,20 +35,22 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Enum;
 use LycheeVerify\Contract\VerifyInterface;
 use LycheeVerify\Verify;
-use Tests\AbstractTestCase;
+use Tests\Unit\Http\Requests\Base\BaseRequestTest;
 
-class UpdateAlbumRequestTest extends AbstractTestCase
+class UpdateAlbumRequestTest extends BaseRequestTest
 {
 	protected function setUp(): void
 	{
 		parent::setUp();
-		$mockVerify = $this->createMock(VerifyInterface::class);
-		$mockVerify->expects($this->any())
+
+		// Replace mock
+		$mock_verify = $this->createMock(VerifyInterface::class);
+		$mock_verify->expects($this->any())
 			->method('is_supporter')
 			->willReturn(true);
-		$this->mockVerify = $mockVerify;
+		$this->mock_verify = $mock_verify;
 
-		App::instance(Verify::class, $mockVerify); // VerifyInterface is talking to DB & that is not needed for Request classes
+		App::instance(Verify::class, $mock_verify); // VerifyInterface is talking to DB & that is not needed for Request classes
 	}
 
 	public function testAuthorization()
@@ -87,7 +89,7 @@ class UpdateAlbumRequestTest extends AbstractTestCase
 		]);
 
 		$request->validateResolved(); // hydrate the request Class with the data before authorizing . Fighting the framework a bit
-
+		
 		$this->assertTrue($request->authorize());
 	}
 
@@ -117,8 +119,8 @@ class UpdateAlbumRequestTest extends AbstractTestCase
 			RequestAttribute::COPYRIGHT_ATTRIBUTE => ['present', 'nullable', new CopyrightRule()],
 			RequestAttribute::IS_COMPACT_ATTRIBUTE => ['required', 'boolean'],
 			RequestAttribute::HEADER_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
-			RequestAttribute::ALBUM_TIMELINE_ALBUM => ['present', 'nullable', new Enum(TimelineAlbumGranularity::class), new EnumRequireSupportRule(TimelinePhotoGranularity::class, [TimelinePhotoGranularity::DEFAULT, TimelinePhotoGranularity::DISABLED], $this->mockVerify)],
-			RequestAttribute::ALBUM_TIMELINE_PHOTO => ['present', 'nullable', new Enum(TimelinePhotoGranularity::class), new EnumRequireSupportRule(TimelinePhotoGranularity::class, [TimelinePhotoGranularity::DEFAULT, TimelinePhotoGranularity::DISABLED], $this->mockVerify)],
+			RequestAttribute::ALBUM_TIMELINE_ALBUM => ['present', 'nullable', new Enum(TimelineAlbumGranularity::class), new EnumRequireSupportRule(TimelinePhotoGranularity::class, [TimelinePhotoGranularity::DEFAULT, TimelinePhotoGranularity::DISABLED], $this->mock_verify)],
+			RequestAttribute::ALBUM_TIMELINE_PHOTO => ['present', 'nullable', new Enum(TimelinePhotoGranularity::class), new EnumRequireSupportRule(TimelinePhotoGranularity::class, [TimelinePhotoGranularity::DEFAULT, TimelinePhotoGranularity::DISABLED], $this->mock_verify)],
 		];
 		$this->assertCount(count($expectedRuleMap), $rules); // only validating the first 7 rules & the GRANTS_UPLOAD_ATTRIBUTE is tested afterwards
 
