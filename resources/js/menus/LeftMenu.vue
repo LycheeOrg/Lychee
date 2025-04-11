@@ -141,7 +141,8 @@ const togglableStore = useTogglablesStateStore();
 lycheeStore.init();
 
 const { left_menu_open } = storeToRefs(togglableStore);
-const { clockwork_url, is_se_enabled, is_se_preview_enabled, is_se_info_hidden } = storeToRefs(lycheeStore);
+const { clockwork_url, is_se_enabled, is_se_preview_enabled, is_se_info_hidden, is_favourite_enabled, is_timeline_page_enabled } =
+	storeToRefs(lycheeStore);
 const { user } = storeToRefs(authStore);
 authStore.getUser();
 
@@ -170,7 +171,7 @@ function logout() {
 		initData.value = undefined;
 		authStore.setUser(null);
 		AlbumService.clearCache();
-		window.location.href = Constants.BASE_URL + "/gallery";
+		window.location.href = Constants.BASE_URL + "/home";
 	});
 }
 
@@ -194,6 +195,25 @@ const items = computed<MenyType[]>(() => {
 	}
 
 	return [
+		// For later...
+		{
+			label: "Favourites",
+			icon: "heart",
+			route: "/favourites",
+			access: is_favourite_enabled.value,
+		},
+		{
+			label: "Frame",
+			icon: "screen",
+			route: "/frame",
+			access: !(route.name as string).includes("frame"),
+		},
+		{
+			label: "gallery.timeline.title",
+			icon: "clock",
+			route: "/timeline",
+			access: !(route.name as string).includes("timeline") && is_timeline_page_enabled.value,
+		},
 		{
 			label: "left-menu.admin",
 			access: canSeeAdmin.value,

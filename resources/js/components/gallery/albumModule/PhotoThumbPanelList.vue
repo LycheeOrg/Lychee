@@ -1,5 +1,5 @@
 <template>
-	<div class="relative flex flex-wrap flex-row shrink w-full justify-start align-top" :id="'photoListing' + props.iter">
+	<div class="relative flex flex-wrap flex-row shrink w-full justify-start align-top" :id="'photoListing' + props.idx">
 		<template v-for="(photo, idx) in props.photos">
 			<PhotoThumb
 				@click="maySelect(idx + iter, $event)"
@@ -30,6 +30,7 @@ const props = defineProps<{
 	galleryConfig: App.Http.Resources.GalleryConfigs.PhotoLayoutConfig;
 	selectedPhotos: string[];
 	iter: number;
+	idx: number;
 }>();
 
 const lycheeStore = useLycheeStateStore();
@@ -57,7 +58,7 @@ const maySelect = (idx: number, e: MouseEvent) => {
 const menuOpen = (idx: number, e: MouseEvent) => emits("contexted", idx, e);
 
 // Layouts stuff
-const { activateLayout } = useLayouts(props.galleryConfig, layout, timelineData, "photoListing" + props.iter);
+const { activateLayout } = useLayouts(props.galleryConfig, layout, timelineData, "photoListing" + props.idx);
 onMounted(() => activateLayout());
 onUpdated(() => activateLayout());
 </script>
