@@ -36,6 +36,8 @@ class UpdateTagAlbumRequestTest extends BaseRequestTest
 {
 	protected function setUp(): void
 	{
+		parent::setUp();
+
 		// Replace mock
 		$mock_verify = $this->createMock(VerifyInterface::class);
 		$mock_verify->expects($this->any())
