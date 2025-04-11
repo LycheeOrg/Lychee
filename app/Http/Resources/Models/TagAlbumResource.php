@@ -52,6 +52,8 @@ class TagAlbumResource extends Data
 	public PreFormattedAlbumData $preFormattedData;
 	public ?EditableBaseAlbumResource $editable;
 
+	public ?AlbumStatisticsResource $statistics = null;
+
 	public function __construct(TagAlbum $tag_album)
 	{
 		// basic
@@ -84,6 +86,10 @@ class TagAlbumResource extends Data
 
 		if ($this->rights->can_edit) {
 			$this->editable = EditableBaseAlbumResource::fromModel($tag_album);
+		}
+
+		if (\Configs::getValueAsBool('metrics_enabled') && Auth::check()) {
+			$this->statistics = AlbumStatisticsResource::fromModel($tag_album->statistics);
 		}
 	}
 

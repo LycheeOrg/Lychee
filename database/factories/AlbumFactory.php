@@ -9,6 +9,7 @@
 namespace Database\Factories;
 
 use App\Models\Album;
+use App\Models\Statistics;
 use Database\Factories\Traits\OwnedBy;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -66,6 +67,19 @@ class AlbumFactory extends Factory
 	{
 		return $this->afterMaking(function (Album $album) {
 			$album->makeRoot();
+		});
+	}
+
+	/**
+	 * Configure the model factory.
+	 * We also create the associated statistics model.
+	 */
+	public function configure(): static
+	{
+		return $this->afterCreating(function (Album $album) {
+			Statistics::factory()->with_album($album->id)->create();
+			$album->fresh();
+			$album->load('statistics');
 		});
 	}
 }

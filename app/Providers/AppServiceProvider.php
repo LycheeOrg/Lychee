@@ -15,12 +15,20 @@ use App\Assets\SizeVariantGroupedWithRandomSuffixNamingStrategy;
 use App\Contracts\Models\AbstractSizeVariantNamingStrategy;
 use App\Contracts\Models\SizeVariantFactory;
 use App\Events\AlbumRouteCacheUpdated;
+use App\Events\Metrics\AlbumDownload;
+use App\Events\Metrics\AlbumShared;
+use App\Events\Metrics\AlbumVisit;
+use App\Events\Metrics\PhotoDownload;
+use App\Events\Metrics\PhotoFavourite;
+use App\Events\Metrics\PhotoShared;
+use App\Events\Metrics\PhotoVisit;
 use App\Events\TaggedRouteCacheUpdated;
 use App\Factories\AlbumFactory;
 use App\Image\SizeVariantDefaultFactory;
 use App\Image\StreamStatFilter;
 use App\Listeners\AlbumCacheCleaner;
 use App\Listeners\CacheListener;
+use App\Listeners\MetricsListener;
 use App\Listeners\TaggedRouteCacheCleaner;
 use App\Metadata\Json\CommitsRequest;
 use App\Metadata\Json\UpdateRequest;
@@ -49,6 +57,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
+use LycheeVerify\Verify;
 use Opcodes\LogViewer\Facades\LogViewer;
 use Safe\Exceptions\StreamException;
 use function Safe\stream_filter_register;
@@ -94,6 +103,8 @@ class AppServiceProvider extends ServiceProvider
 			// JsonParsers
 			GitCommits::class => GitCommits::class,
 			GitTags::class => GitTags::class,
+
+			Verify::class => Verify::class,
 		];
 
 	/**
@@ -110,6 +121,14 @@ class AppServiceProvider extends ServiceProvider
 
 		Event::listen(AlbumRouteCacheUpdated::class, AlbumCacheCleaner::class . '@handle');
 		Event::listen(TaggedRouteCacheUpdated::class, TaggedRouteCacheCleaner::class . '@handle');
+
+		Event::listen(AlbumDownload::class, MetricsListener::class . '@handle');
+		Event::listen(AlbumShared::class, MetricsListener::class . '@handle');
+		Event::listen(AlbumVisit::class, MetricsListener::class . '@handle');
+		Event::listen(PhotoDownload::class, MetricsListener::class . '@handle');
+		Event::listen(PhotoFavourite::class, MetricsListener::class . '@handle');
+		Event::listen(PhotoShared::class, MetricsListener::class . '@handle');
+		Event::listen(PhotoVisit::class, MetricsListener::class . '@handle');
 
 		// Prohibits: db:wipe, migrate:fresh, migrate:refresh, and migrate:reset
 		DB::prohibitDestructiveCommands(config('app.env', 'production') !== 'dev');

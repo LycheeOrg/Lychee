@@ -34,6 +34,7 @@ use App\Relations\HasManySizeVariants;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use function Safe\preg_match;
@@ -178,6 +179,10 @@ class Photo extends Model implements HasUTCBasedTimes
 		'live_photo_short_path', // serialize live_photo_url instead
 	];
 
+	// protected $with = [
+	// 	'statistics',
+	// ];
+
 	public function newEloquentBuilder($query): PhotoBuilder
 	{
 		return new PhotoBuilder($query);
@@ -206,6 +211,16 @@ class Photo extends Model implements HasUTCBasedTimes
 	public function size_variants(): HasManySizeVariants
 	{
 		return new HasManySizeVariants($this);
+	}
+
+	/**
+	 * Returns the relationship between a photo and its associated statistics.
+	 *
+	 * @return HasOne<Statistics,$this>
+	 */
+	public function statistics(): HasOne
+	{
+		return $this->hasOne(Statistics::class, 'photo_id', 'id');
 	}
 
 	/**

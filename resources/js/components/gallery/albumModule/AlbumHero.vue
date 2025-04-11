@@ -29,54 +29,69 @@
 						</span>
 					</span>
 				</div>
-				<a
-					v-if="props.album.rights.can_download"
-					class="shrink-0 px-3 cursor-pointer text-muted-color inline-block transform duration-300 hover:scale-150 hover:text-color"
-					:title="$t('gallery.album.hero.download')"
-					@click="download"
-				>
-					<i class="pi pi-cloud-download" />
-				</a>
-				<a
-					v-if="props.album.rights.can_share"
-					class="shrink-0 px-3 cursor-pointer text-muted-color inline-block transform duration-300 hover:scale-150 hover:text-color"
-					:title="$t('gallery.album.hero.share')"
-					v-on:click="openSharingModal"
-				>
-					<i class="pi pi-share-alt" />
-				</a>
-				<a
-					v-if="is_se_enabled && user?.id !== null"
-					class="shrink-0 px-3 cursor-pointer inline-block transform duration-300 hover:scale-150 hover:text-color"
-					v-on:click="openStatistics"
-				>
-					<i class="pi pi-chart-scatter text-primary-emphasis" />
-				</a>
-				<a
-					v-if="is_se_preview_enabled && user?.id !== null"
-					class="shrink-0 px-3 cursor-not-allowed text-primary-emphasis"
-					v-tooltip.left="$t('gallery.album.hero.stats_only_se')"
-				>
-					<i class="pi pi-chart-scatter" />
-				</a>
-				<template v-if="isTouchDevice() && user?.id !== null">
-					<a
-						v-if="props.hasHidden && are_nsfw_visible"
-						class="shrink-0 px-3 cursor-pointer text-muted-color inline-block transform duration-300 hover:scale-150 hover:text-color"
-						:title="'hide hidden'"
-						@click="are_nsfw_visible = false"
-					>
-						<i class="pi pi pi-eye-slash" />
-					</a>
-					<a
-						v-if="props.hasHidden && !are_nsfw_visible"
-						class="shrink-0 px-3 cursor-pointer text-muted-color inline-block transform duration-300 hover:scale-150 hover:text-color"
-						:title="'show hidden'"
-						@click="are_nsfw_visible = true"
-					>
-						<i class="pi pi-eye" />
-					</a>
-				</template>
+				<div class="flex flex-col w-full gap-2">
+					<div class="flex flex-row-reverse items-center">
+						<a
+							v-if="props.album.rights.can_download"
+							class="shrink-0 px-3 cursor-pointer text-muted-color inline-block transform duration-300 hover:scale-150 hover:text-color"
+							:title="$t('gallery.album.hero.download')"
+							@click="download"
+						>
+							<i class="pi pi-cloud-download" />
+						</a>
+						<a
+							v-if="props.album.rights.can_share"
+							class="shrink-0 px-3 cursor-pointer text-muted-color inline-block transform duration-300 hover:scale-150 hover:text-color"
+							:title="$t('gallery.album.hero.share')"
+							v-on:click="openSharingModal"
+						>
+							<i class="pi pi-share-alt" />
+						</a>
+						<a
+							v-if="is_se_enabled && user?.id !== null"
+							class="shrink-0 px-3 cursor-pointer inline-block transform duration-300 hover:scale-150 hover:text-color"
+							v-on:click="openStatistics"
+						>
+							<i class="pi pi-chart-scatter text-primary-emphasis" />
+						</a>
+						<a
+							v-if="is_se_preview_enabled && user?.id !== null"
+							class="shrink-0 px-3 cursor-not-allowed text-primary-emphasis"
+							v-tooltip.left="$t('gallery.album.hero.stats_only_se')"
+						>
+							<i class="pi pi-chart-scatter" />
+						</a>
+						<template v-if="isTouchDevice() && user?.id !== null">
+							<a
+								v-if="props.hasHidden && are_nsfw_visible"
+								class="shrink-0 px-3 cursor-pointer text-muted-color inline-block transform duration-300 hover:scale-150 hover:text-color"
+								:title="'hide hidden'"
+								@click="are_nsfw_visible = false"
+							>
+								<i class="pi pi pi-eye-slash" />
+							</a>
+							<a
+								v-if="props.hasHidden && !are_nsfw_visible"
+								class="shrink-0 px-3 cursor-pointer text-muted-color inline-block transform duration-300 hover:scale-150 hover:text-color"
+								:title="'show hidden'"
+								@click="are_nsfw_visible = true"
+							>
+								<i class="pi pi-eye" />
+							</a>
+						</template>
+					</div>
+					<div v-if="props.album.statistics" class="flex gap-4 text-base justify-end">
+						<span v-tooltip.bottom="{ value: $t('gallery.album.stats.number_of_visits') }"
+							>{{ props.album.statistics.visit_count }} <i class="pi pi-eye text-xs ml-1"></i
+						></span>
+						<span v-tooltip.bottom="{ value: $t('gallery.album.stats.number_of_downloads') }"
+							>{{ props.album.statistics.download_count }} <i class="pi pi-cloud-download text-xs ml-1"></i
+						></span>
+						<span v-tooltip.bottom="{ value: $t('gallery.album.stats.number_of_shares') }"
+							>{{ props.album.statistics.shared_count }} <i class="pi pi-share-alt text-xs ml-1"></i
+						></span>
+					</div>
+				</div>
 			</div>
 			<div
 				v-if="props.album.preFormattedData.description"

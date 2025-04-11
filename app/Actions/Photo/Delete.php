@@ -16,6 +16,7 @@ use App\Image\FileDeleter;
 use App\Models\Album;
 use App\Models\Photo;
 use App\Models\SizeVariant;
+use App\Models\Statistics;
 use App\Models\SymLink;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Database\Query\JoinClause;
@@ -386,6 +387,21 @@ readonly class Delete
 						$query
 							->from('photos', 'p')
 							->whereColumn('p.id', '=', 'size_variants.photo_id')
+							->whereIn('p.album_id', $album_ids);
+					})
+					->delete();
+			}
+			if (count($photo_ids) !== 0) {
+				Statistics::query()
+					->whereIn('photo_id', $photo_ids)
+					->delete();
+			}
+			if (count($album_ids) !== 0) {
+				Statistics::query()
+					->whereExists(function (BaseBuilder $query) use ($album_ids): void {
+						$query
+							->from('photos', 'p')
+							->whereColumn('p.id', '=', 'statistics.photo_id')
 							->whereIn('p.album_id', $album_ids);
 					})
 					->delete();

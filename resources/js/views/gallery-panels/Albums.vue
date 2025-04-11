@@ -6,6 +6,7 @@
 	<AlbumCreateTagDialog v-if="rootRights?.can_upload" key="create_tag_album_modal" />
 	<LoginModal v-if="user?.id === null" @logged-in="refresh" />
 	<WebauthnModal v-if="user?.id === null" @logged-in="refresh" />
+	<Metrics v-if="user?.id" :is-metrics-open="is_metrics_open" />
 
 	<div v-if="rootConfig && rootRights" @click="unselect" class="h-svh overflow-y-auto" id="galleryView" v-on:scroll="onScroll">
 		<Collapse :when="!is_full_screen">
@@ -163,6 +164,7 @@ import { EmptyPhotoCallbacks } from "@/utils/Helpers";
 import WebauthnModal from "@/components/modals/WebauthnModal.vue";
 import LoginModal from "@/components/modals/LoginModal.vue";
 import LoadingProgress from "@/components/loading/LoadingProgress.vue";
+import Metrics from "@/components/drawers/Metrics.vue";
 
 const auth = useAuthStore();
 const lycheeStore = useLycheeStateStore();
@@ -172,7 +174,7 @@ lycheeStore.init();
 const albumid = ref("gallery");
 
 const { onScroll, setScroll } = useScrollable(togglableStore, albumid);
-const { is_full_screen, is_login_open, is_upload_visible, list_upload_files, is_webauthn_open } = storeToRefs(togglableStore);
+const { is_full_screen, is_login_open, is_upload_visible, list_upload_files, is_webauthn_open, is_metrics_open } = storeToRefs(togglableStore);
 const { are_nsfw_visible, title } = storeToRefs(lycheeStore);
 
 const photos = ref([]); // unused.

@@ -62,6 +62,8 @@ class PhotoResource extends Data
 
 	private Carbon $timeline_data_carbon;
 
+	public ?PhotoStatisticsResource $statistics = null;
+
 	public function __construct(Photo $photo)
 	{
 		$this->id = $photo->id;
@@ -100,6 +102,10 @@ class PhotoResource extends Data
 		$this->precomputed = new PreComputedPhotoData($photo);
 
 		$this->timeline_data_carbon = $photo->taken_at ?? $photo->created_at;
+
+		if (Configs::getValueAsBool('metrics_enabled') && Auth::check()) {
+			$this->statistics = PhotoStatisticsResource::fromModel($photo->statistics);
+		}
 	}
 
 	public static function fromModel(Photo $photo): PhotoResource

@@ -16,12 +16,14 @@ use App\Enum\PhotoLayoutType;
 use App\Enum\TimelinePhotoGranularity;
 use App\Models\AccessPermission;
 use App\Models\BaseAlbumImpl;
+use App\Models\Statistics;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Carbon;
 
@@ -122,6 +124,16 @@ abstract class BaseAlbum extends Model implements AbstractAlbum, HasRandomID
 	public function public_permissions(): AccessPermission|null
 	{
 		return $this->base_class->public_permissions();
+	}
+
+	/**
+	 * Returns the relationship between an album and its associated statistics.
+	 *
+	 * @return HasOne<Statistics,BaseAlbumImpl>
+	 */
+	public function statistics(): HasOne
+	{
+		return $this->base_class->statistics();
 	}
 
 	/**

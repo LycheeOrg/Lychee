@@ -21,6 +21,7 @@ use App\Image\FileDeleter;
 use App\Models\AccessPermission;
 use App\Models\Album;
 use App\Models\BaseAlbumImpl;
+use App\Models\Statistics;
 use App\Models\TagAlbum;
 use App\SmartAlbums\UnsortedAlbum;
 use Illuminate\Database\Eloquent\Collection;
@@ -131,6 +132,14 @@ class Delete
 			})->whereNotExists(function (BaseBuilder $base_builder): void {
 				$base_builder->from('tag_albums')->whereColumn('tag_albums.id', '=', 'base_albums.id');
 			})->delete();
+
+			// We remove the statistics for the albums.
+			Statistics::query()
+				->whereNotNull('album_id') // Only target the statistics for albums
+				->whereNotExists(fn (BaseBuilder $base_builder) => $base_builder
+						->from('base_albums')
+						->whereColumn('base_albums.id', '=', 'statistics.album_id')
+				)->delete();
 
 			// We also delete the permissions & sharing.
 			// Note that we explicitly avoid the smart albums.
