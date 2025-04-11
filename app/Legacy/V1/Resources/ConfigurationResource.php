@@ -93,9 +93,9 @@ final class ConfigurationResource extends JsonResource
 					SmartAlbumType::STARRED->is_enabled() &&
 					SmartAlbumType::RECENT->is_enabled() &&
 					SmartAlbumType::ON_THIS_DAY->is_enabled(),
-				'SL_enable' => Configs::getValueAsBool('SL_enable'),
-				'SL_for_admin' => Configs::getValueAsBool('SL_for_admin'),
-				'SL_life_time_days' => Configs::getValueAsInt('SL_life_time_days'),
+				'SL_enable' => false,
+				'SL_for_admin' => false,
+				'SL_life_time_days' => false,
 				'allow_online_git_pull' => Configs::getValueAsBool('allow_online_git_pull'),
 				'apply_composer_update' => Configs::getValueAsBool('apply_composer_update'),
 				'compression_quality' => Configs::getValueAsInt('compression_quality'),
