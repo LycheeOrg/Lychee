@@ -42,6 +42,7 @@ class AlbumPolicy extends BasePolicy
 	public const CAN_SHARE_WITH_USERS = 'canShareWithUsers';
 	public const CAN_IMPORT_FROM_SERVER = 'canImportFromServer';
 	public const CAN_SHARE_ID = 'canShareById';
+	public const CAN_READ_METRICS = 'canReadMetrics';
 
 	/**
 	 * This ensures that current album is owned by current user.
@@ -570,5 +571,37 @@ class AlbumPolicy extends BasePolicy
 			array_keys(SmartAlbumType::values()),
 			[null]
 		);
+	}
+
+	/**
+	 * Check whether the user can read the metrics of the album.
+	 *
+	 * @param User|null     $user
+	 * @param AbstractAlbum $album
+	 *
+	 * @return bool
+	 */
+	public function canReadMetrics(?User $user, AbstractAlbum $album): bool
+	{
+		if (!$album instanceof BaseAlbum) {
+			return false;
+		}
+
+		if ($user === null) {
+			return Configs::getValueAsBool('show_metrics_to_public');
+		}
+
+		if (Configs::getValueAsBool('show_metrics_to_logged_in_user') === true) {
+			return true;
+		}
+
+		if (
+			Configs::getValueAsBool('show_metrics_to_owner') === true &&
+			$user->id === $album->owner_id
+		) {
+			return true;
+		}
+
+		return false;
 	}
 }

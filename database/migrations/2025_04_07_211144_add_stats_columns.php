@@ -34,6 +34,8 @@ return new class() extends Migration {
 
 		DB::statement('INSERT INTO statistics (photo_id) SELECT id FROM photos');
 		DB::statement('INSERT INTO statistics (album_id) SELECT id FROM base_albums');
+
+		DB::table('configs')->where('key', 'client_side_favourite_enabled')->update(['order' => 1]);
 	}
 
 	/**
@@ -42,5 +44,7 @@ return new class() extends Migration {
 	public function down(): void
 	{
 		Schema::dropIfExists('statistics');
+
+		DB::table('configs')->where('key', 'client_side_favourite_enabled')->update(['order' => 32767]);
 	}
 };

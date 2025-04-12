@@ -19,8 +19,10 @@ use App\Http\Resources\Traits\HasPrepPhotoCollection;
 use App\Http\Resources\Traits\HasTimelineData;
 use App\Models\Album;
 use App\Models\Configs;
+use App\Policies\AlbumPolicy;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\LiteralTypeScriptType;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
@@ -114,7 +116,7 @@ class AlbumResource extends Data
 			$this->editable = EditableBaseAlbumResource::fromModel($album);
 		}
 
-		if (Configs::getValueAsBool('metrics_enabled') && Auth::check()) {
+		if (Configs::getValueAsBool('metrics_enabled') && Gate::check(AlbumPolicy::CAN_READ_METRICS, [Album::class, $album])) {
 			$this->statistics = AlbumStatisticsResource::fromModel($album->statistics);
 		}
 	}

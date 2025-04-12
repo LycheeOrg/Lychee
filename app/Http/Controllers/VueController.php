@@ -24,7 +24,6 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -68,9 +67,9 @@ class VueController extends Controller
 		}
 
 		if ($photo !== null) {
-			PhotoShared::dispatchIf(Auth::guest(), $this->visitorId(), $photo->id);
+			PhotoShared::dispatchIf(MetricsController::shouldMeasure(), $this->visitorId(), $photo->id);
 		} elseif ($album !== null) {
-			AlbumShared::dispatchIf(Auth::guest(), $this->visitorId(), $album->get_id());
+			AlbumShared::dispatchIf(MetricsController::shouldMeasure(), $this->visitorId(), $album->get_id());
 		}
 
 		return view('vueapp');

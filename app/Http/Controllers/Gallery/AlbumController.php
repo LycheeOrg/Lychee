@@ -27,6 +27,7 @@ use App\Events\Metrics\AlbumVisit;
 use App\Events\Metrics\PhotoDownload;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\UnauthenticatedException;
+use App\Http\Controllers\MetricsController;
 use App\Http\Requests\Album\AddAlbumRequest;
 use App\Http\Requests\Album\AddTagAlbumRequest;
 use App\Http\Requests\Album\DeleteAlbumsRequest;
@@ -89,7 +90,7 @@ class AlbumController extends Controller
 			};
 		}
 
-		AlbumVisit::dispatchIf((Auth::guest() && $request->album() instanceof BaseAlbum), $this->visitorId(), $request->album()->get_id());
+		AlbumVisit::dispatchIf((MetricsController::shouldMeasure() && $request->album() instanceof BaseAlbum), $this->visitorId(), $request->album()->get_id());
 
 		return new AbstractAlbumResource($config, $album_resource);
 	}
@@ -301,10 +302,11 @@ class AlbumController extends Controller
 	 */
 	public function getArchive(ZipRequest $request): StreamedResponse
 	{
+		$should_measure = MetricsController::shouldMeasure();
 		if ($request->albums()->count() > 0) {
 			// We dispatch one event per album.
 			foreach ($request->albums() as $album) {
-				AlbumDownload::dispatchIf(Auth::guest(), $this->visitorId(), $album->get_id());
+				AlbumDownload::dispatchIf($should_measure, $this->visitorId(), $album->get_id());
 			}
 
 			return AlbumBaseArchive::resolve()->do($request->albums());
@@ -312,7 +314,7 @@ class AlbumController extends Controller
 
 		// We dispatch one event per photo.
 		foreach ($request->photos() as $photo) {
-			PhotoDownload::dispatchIf(Auth::guest(), $this->visitorId(), $photo->id);
+			PhotoDownload::dispatchIf($should_measure, $this->visitorId(), $photo->id);
 		}
 
 		return PhotoBaseArchive::resolve()->do($request->photos(), $request->sizeVariant());

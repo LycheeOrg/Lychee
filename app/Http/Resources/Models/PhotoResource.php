@@ -17,6 +17,7 @@ use App\Models\Configs;
 use App\Models\Photo;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
@@ -103,7 +104,7 @@ class PhotoResource extends Data
 
 		$this->timeline_data_carbon = $photo->taken_at ?? $photo->created_at;
 
-		if (Configs::getValueAsBool('metrics_enabled') && Auth::check()) {
+		if (Configs::getValueAsBool('metrics_enabled') && Gate::check(\PhotoPolicy::CAN_READ_METRICS, [Photo::class, $photo])) {
 			$this->statistics = PhotoStatisticsResource::fromModel($photo->statistics);
 		}
 	}
