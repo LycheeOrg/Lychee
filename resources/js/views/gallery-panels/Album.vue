@@ -414,11 +414,10 @@ onUnmounted(() => {
 
 const debouncedPhotoMetrics = useDebounceFn(() => {
 	if (photoId.value !== undefined) {
-		MetricsService.photo(photoId.value)
+		MetricsService.photo(photoId.value);
 		return;
 	}
 }, 100);
-
 
 watch(
 	() => [route.params.albumid, route.params.photoid],
