@@ -142,6 +142,7 @@ return [
 		],
 
 		'details' => [
+			'exif_data' => 'EXIF data',
 			'about' => 'À propos',
 			'basics' => 'Informations de base',
 			'title' => 'Titre',
@@ -170,6 +171,13 @@ return [
 			'aperture' => 'Ouverture',
 			'focal' => 'Longueur focale',
 			'iso' => 'ISO %s',
+			'stats' => [
+				'header' => 'Statistics',
+				'number_of_visits' => 'Number of visits',
+				'number_of_downloads' => 'Number of downloads',
+				'number_of_shares' => 'Number of shares',
+				'number_of_favourites' => 'Number of favourites',
+			],
 		],
 
 		'edit' => [

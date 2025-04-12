@@ -80,7 +80,7 @@
 							</a>
 						</template>
 					</div>
-					<div v-if="props.album.statistics" class="flex gap-4 text-base justify-end">
+					<div v-if="props.album.statistics" class="flex gap-4 text-base justify-end text-muted-color">
 						<span v-tooltip.bottom="{ value: $t('gallery.album.stats.number_of_visits') }"
 							>{{ props.album.statistics.visit_count }} <i class="pi pi-eye text-xs ml-1"></i
 						></span>
