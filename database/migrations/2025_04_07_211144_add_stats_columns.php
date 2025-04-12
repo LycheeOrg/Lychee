@@ -24,8 +24,8 @@ return new class() extends Migration {
 	{
 		Schema::create('statistics', function (Blueprint $table) {
 			$table->id();
-			$table->char('album_id', self::RANDOM_ID_LENGTH)->index()->nullable(true);
-			$table->char('photo_id', self::RANDOM_ID_LENGTH)->index()->nullable(true);
+			$table->char('album_id', self::RANDOM_ID_LENGTH)->index()->unique()->nullable(true);
+			$table->char('photo_id', self::RANDOM_ID_LENGTH)->index()->unique()->nullable(true);
 			$table->unsignedBigInteger(self::COL_VISIT)->default(0)->comment('Number of times this photo/album has been viewed');
 			$table->unsignedBigInteger(self::COL_DOWNLOAD)->default(0)->comment('Number of times this photo/album has been downloaded (excluding albums)');
 			$table->unsignedBigInteger(self::COL_FAVOURITE)->default(0)->comment('Number of times this photo has been favourite');
