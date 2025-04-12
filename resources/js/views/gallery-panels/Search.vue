@@ -145,7 +145,7 @@ import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
 import { useSelection } from "@/composables/selections/selections";
 import { useAuthStore } from "@/stores/Auth";
 import { useLycheeStateStore } from "@/stores/LycheeState";
-import { onKeyStroke } from "@vueuse/core";
+import { onKeyStroke, useDebounceFn } from "@vueuse/core";
 import { storeToRefs } from "pinia";
 import { computed, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
@@ -178,6 +178,7 @@ import SearchHeader from "@/components/headers/SearchHeader.vue";
 import LoadingProgress from "@/components/loading/LoadingProgress.vue";
 import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
 import { useHasNextPreviousPhoto } from "@/composables/photo/hasNextPreviousPhoto";
+import MetricsService from "@/services/metrics-service";
 
 const route = useRoute();
 const router = useRouter();
@@ -433,12 +434,20 @@ onMounted(() => {
 	loadLayoutConfig();
 });
 
+const debouncedPhotoMetrics = useDebounceFn(() => {
+	if (photoId.value !== undefined) {
+		MetricsService.photo(photoId.value)
+		return;
+	}
+}, 100);
+
 watch(
 	() => route.params.photoid,
 	(newPhotoId, _) => {
 		unselect();
 
 		photoId.value = newPhotoId as string;
+		debouncedPhotoMetrics();
 		if (photoId.value !== undefined) {
 			togglableStore.rememberScrollThumb(photoId.value);
 			refreshPhoto();

@@ -1,3 +1,4 @@
+import MetricsService from "@/services/metrics-service";
 import { defineStore } from "pinia";
 
 export type favouriteStore = ReturnType<typeof useFavouriteStore>;
@@ -43,6 +44,7 @@ export const useFavouriteStore = defineStore("favourite-store", {
 				this.removePhoto(photo.id);
 			} else {
 				this.addPhoto(photo);
+				MetricsService.favourite(photo.id);
 			}
 		},
 	},

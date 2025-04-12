@@ -7,11 +7,11 @@ const MetricsService = {
 	},
 
 	photo(photo_id: string): Promise<AxiosResponse<null>> {
-		return axios.post(`${Constants.getApiUrl()}Metrics::photo`, { photo_id: photo_id });
+		return axios.post(`${Constants.getApiUrl()}Metrics::photo`, { photo_ids: [photo_id] });
 	},
 
 	favourite(photo_id: string): Promise<AxiosResponse<null>> {
-		return axios.post(`${Constants.getApiUrl()}Metrics::favourite`, { photo_id: photo_id });
+		return axios.post(`${Constants.getApiUrl()}Metrics::favourite`, { photo_ids: [photo_id] });
 	},
 };
 
