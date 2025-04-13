@@ -19,10 +19,15 @@ use App\Rules\AlbumIDRule;
 use App\Rules\RandomIDRule;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Tests\Traits\RequiresEmptyAlbums;
+use Tests\Traits\RequiresEmptyUsers;
 use Tests\Unit\Http\Requests\Base\BaseRequestTest;
 
 class MergeAlbumRequestTest extends BaseRequestTest
 {
+	use RequiresEmptyUsers;
+	use RequiresEmptyAlbums;
+
 	public function testAuthorization()
 	{
 		$album = $this->createUserAndAlbum();
@@ -43,9 +48,6 @@ class MergeAlbumRequestTest extends BaseRequestTest
 		$request->validateResolved(); // hydrate the request Class with the data before authorizing . Fighting the framework a bit
 
 		$this->assertTrue($request->authorize());
-
-		$album->delete();
-		$album->owner()->delete();
 	}
 
 	public function testRules(): void
