@@ -86,7 +86,9 @@ class AlbumController extends Controller
 				$request->album() instanceof BaseSmartAlbum => new SmartAlbumResource($request->album()),
 				$request->album() instanceof TagAlbum => new TagAlbumResource($request->album()),
 				$request->album() instanceof Album => new AlbumResource($request->album()),
+				// @codeCoverageIgnoreStart
 				default => throw new LycheeLogicException('This should not happen'),
+				// @codeCoverageIgnoreEnd
 			};
 		}
 
@@ -124,7 +126,9 @@ class AlbumController extends Controller
 	{
 		$album = $request->album();
 		if ($album === null) {
+			// @codeCoverageIgnoreStart
 			throw new LycheeLogicException('album is null');
+			// @codeCoverageIgnoreEnd
 		}
 		$album->title = $request->title();
 		$album->description = $request->description();
@@ -155,7 +159,9 @@ class AlbumController extends Controller
 	{
 		$album = $request->album();
 		if ($album === null) {
+			// @codeCoverageIgnoreStart
 			throw new LycheeLogicException('album is null');
+			// @codeCoverageIgnoreEnd
 		}
 		$album->title = $request->title();
 		$album->description = $request->description();
