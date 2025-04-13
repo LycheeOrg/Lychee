@@ -24,19 +24,19 @@ use Tests\Feature_v2\Base\BaseApiV2Test;
 
 class EventsFiredTest extends BaseApiV2Test
 {
-    public function setUp(): void
+	public function setUp(): void
 	{
 		parent::setUp();
-        Configs::set('metrics_enabled', true);
-        Configs::invalidateCache();
-    }
+		Configs::set('metrics_enabled', true);
+		Configs::invalidateCache();
+	}
 
-    public function tearDown(): void
-    {
-        Configs::set('metrics_enabled', false);
-        Configs::invalidateCache();
-        parent::tearDown();
-    }
+	public function tearDown(): void
+	{
+		Configs::set('metrics_enabled', false);
+		Configs::invalidateCache();
+		parent::tearDown();
+	}
 
 	public function testVisitSharedAlbum(): void
 	{
