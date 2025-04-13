@@ -18,7 +18,6 @@ use App\Http\Requests\Traits\HasAlbumTrait;
 use App\Models\Album;
 use App\Rules\AlbumIDRule;
 use App\Rules\RandomIDRule;
-use Illuminate\Support\Collection;
 
 /**
  * @implements HasAlbums<Album>
@@ -29,12 +28,6 @@ class MoveAlbumsRequest extends BaseApiRequest implements HasAlbum, HasAlbums
 	/** @phpstan-use HasAlbumsTrait<Album> */
 	use HasAlbumsTrait;
 	use AuthorizeCanEditAlbumAlbumsTrait;
-
-	public function __construct(array $query = [], array $request = [], array $attributes = [], array $cookies = [], array $files = [], array $server = [], $content = null)
-	{
-		parent::__construct($query, $request, $attributes, $cookies, $files, $server, $content);
-		$this->albums = new Collection(); // initialize with empty collection to avoid error MergeAlbumsRequest::$albums must not be accessed before initialization
-	}
 
 	/**
 	 * {@inheritDoc}

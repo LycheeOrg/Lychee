@@ -25,11 +25,6 @@ class MergeAlbumRequestTest extends BaseRequestTest
 	public function testAuthorization()
 	{
 		$album = $this->createUserAndAlbum();
-
-		//		$album->getBaseAlbumFactory()->setAlbum($album);
-
-		$abstractAlbum = new AlbumFactory();
-		$abstractAlbum = $abstractAlbum->findAbstractAlbumOrFail($album->id);
 		Gate::shouldReceive('check')
 			->times(4) // TODO:// not only the times, but make sure the right arguments are passed, but this is hard to do find with mockery
 			->andReturn(true);
