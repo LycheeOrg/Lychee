@@ -12,10 +12,12 @@ namespace Tests\Unit\Http\Requests\Album;
 
 use App\Actions\Album\Create as AlbumCreateAction;
 use App\Contracts\Http\Requests\RequestAttribute;
+use App\Http\Controllers\Admin\Maintenance\Model\Album;
 use App\Http\Requests\Album\MoveAlbumsRequest;
 use App\Models\User;
 use App\Rules\AlbumIDRule;
 use App\Rules\RandomIDRule;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Tests\Unit\Http\Requests\Base\BaseRequestTest;
 
@@ -41,6 +43,12 @@ class MoveAlbumsRequestTest extends BaseRequestTest
 		$request->validateResolved(); // hydrate the request Class with the data before authorizing . Fighting the framework a bit
 
 		$this->assertTrue($request->authorize());
+
+		dump('move almbum before ====', Album::get()->count());
+		DB::raw("DELETE FROM albums WHERE owner_id = {$album->owner_id}");
+		DB::raw("DELETE FROM base_albums WHERE owner_id = {$album->owner_id}");
+		DB::raw("DELETE FROM users WHERE id = {$album->owner_id}");
+		dump('move almbum after ====', Album::get()->count());
 	}
 
 	public function testRules(): void
