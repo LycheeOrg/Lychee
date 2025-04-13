@@ -104,6 +104,12 @@ class ExternalRequestFunctions implements ExternalRequest
 	 */
 	private function fetchFromServer(): string
 	{
+		if (app()->runningUnitTests()) {
+			throw new RequestFailedException('file_get_contents() failed: "testing" environment detected.');
+		}
+		// @codeCoverageIgnoreStart
+		// we cannot code cov this part. APP_ENV is `testing` in testing mode.
+
 		$opts = [
 			'http' => [
 				'method' => 'GET',
@@ -117,12 +123,10 @@ class ExternalRequestFunctions implements ExternalRequest
 
 		$raw = file_get_contents($this->url, false, $context);
 		if ($raw === '') {
-			// @codeCoverageIgnoreStart
 			throw new RequestFailedException('file_get_contents() failed');
-			// @codeCoverageIgnoreEnd
 		}
 
 		return $raw;
-		// @codeCoverageIgnoreStart
+		// @codeCoverageIgnoreEnd
 	}
 }
