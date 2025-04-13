@@ -49,6 +49,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
+use LycheeVerify\Verify;
 use Opcodes\LogViewer\Facades\LogViewer;
 use Safe\Exceptions\StreamException;
 use function Safe\stream_filter_register;
@@ -94,6 +95,8 @@ class AppServiceProvider extends ServiceProvider
 			// JsonParsers
 			GitCommits::class => GitCommits::class,
 			GitTags::class => GitTags::class,
+
+			Verify::class => Verify::class,
 		];
 
 	/**
