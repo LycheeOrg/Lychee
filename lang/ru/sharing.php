@@ -31,6 +31,8 @@ return [
 
 	'permission_overwritten' => 'Распространение успешно! Разрешение перезаписано!',
 	'permission_updated' => 'Распространение успешно! Разрешение обновлено!',
+	'bluk_share' => 'Bulk share',
+	'bulk_share_instr' => 'Select multiple albums and users to share with.',
 
 	'grants' => [
 		'read' => 'Предоставляет доступ для чтения',
