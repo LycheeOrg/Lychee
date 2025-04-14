@@ -16,6 +16,7 @@ use App\Http\Requests\Album\MoveAlbumsRequest;
 use App\Models\User;
 use App\Rules\AlbumIDRule;
 use App\Rules\RandomIDRule;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Tests\Traits\RequiresEmptyAlbums;
@@ -26,6 +27,7 @@ class MoveAlbumsRequestTest extends BaseRequestTest
 {
 	use RequiresEmptyUsers;
 	use RequiresEmptyAlbums;
+	use DatabaseTransactions;
 
 	public function setUp(): void
 	{
