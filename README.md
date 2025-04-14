@@ -11,7 +11,7 @@
 [![OpenSSF Scorecard][ossf-shield]](https://securityscorecards.dev/viewer/?uri=github.com/LycheeOrg/Lychee)
 <br>
 [![Website][website-shield]](https://lycheeorg.dev)
-[![Documentation][docs-shield]](https://lycheeorg./docs/)
+[![Documentation][docs-shield]](https://lycheeorg.dev/docs/)
 [![Changelog][changelog-shield]](https://lycheeorg.dev/docs/releases.html)
 [![Docker repository][docker-shield]](https://github.com/LycheeOrg/Lychee-Docker)
 [![Gitter][gitter-shield]](https://gitter.im/LycheeOrg/Lobby)
