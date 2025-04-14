@@ -46,6 +46,7 @@ return [
 		'caption' => 'Each column represents a week.',
 	],
 	'metrics' => [
+		'header' => 'Live metrics',
 		'a_visitor' => 'A visitor',
 		'visitors' => '%d visitors',
 		'visit_singular' => '%1$s viewed %2$s',
@@ -56,5 +57,14 @@ return [
 		'favourite_plural' => '%1$s favourited %2$s',
 		'download_plural' => '%1$s downloaded %2$s',
 		'shared_plural' => '%1$s shared %2$s',
+		'ago' => [
+			'days' => '%d days ago',
+			'day' => 'a day ago',
+			'hours' => '%d hours ago',
+			'hour' => 'an hour ago',
+			'minutes' => '%d minutes ago',
+			'few_minutes' => 'a few minute ago',
+			'seconds' => 'a few seconds ago',
+		],
 	],
 ];

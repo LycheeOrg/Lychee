@@ -1,14 +1,32 @@
 <template>
 	<Drawer :closeOnEsc="false" v-model:visible="isMetricsOpen" position="right" :pt:root:class="' w-sm'">
+		<template #header>
+			<span class="text-xl font-bold">
+				{{ $t("statistics.metrics.header") }}
+			</span>
+		</template>
 		<div class="flex flex-col">
-			<div v-for="item in prettifiedData" :key="item.action + item.ago" class="flex">
+			<div v-for="item in prettifiedData" :key="item.action + item.ago" class="flex pt-2 pb-1">
 				<div class="flex flex-col w-full text-sm text-muted-color">
 					<router-link :to="item.link" v-if="item.count === 1" v-html="printSingular(item)"></router-link>
 					<router-link :to="item.link" v-if="item.count > 1" v-html="printPlural(item)"></router-link>
 					<span class="text-xs -mt-1">{{ item.ago }}</span>
 				</div>
-				<div class="p-0.5 relative">
-					<img :src="item.src" v-if="item.src" class="rounded w-8 h-8 object-cover" />
+				<div class="w-12 h-12 relative shrink-0">
+					<div
+						class="absolute top-0 right-0 translate-x-2.5 -translate-y-2 w-6 h-6 rounded-full bg-primary-emphasis flex justify-center items-center border-3 border-solid border-surface-0 text-surface-0 dark:border-surface-900 dark:text-surface-900"
+					>
+						<span
+							class="pi text-2xs"
+							:class="{
+								'pi-bookmark': item.action === 'favourite',
+								'pi-download': item.action === 'download',
+								'pi-share-alt': item.action === 'shared',
+								'pi-eye': item.action === 'visit',
+							}"
+						></span>
+					</div>
+					<img :src="item.src" v-if="item.src" class="rounded w-full h-full object-cover" />
 				</div>
 			</div>
 		</div>
@@ -28,6 +46,7 @@ const isMetricsOpen = defineModel("isMetricsOpen", { default: false }) as Ref<bo
 
 type LiveMetrics = {
 	ago: string;
+	date: Date;
 	id: string;
 	link: { name: string; params: {} };
 	action: App.Enum.MetricsAction;
@@ -88,22 +107,25 @@ function prettifyData() {
 		return;
 	}
 
-	prettifiedData.value = [];
+	const dateMetrics: Record<string, LiveMetrics> = {};
 
-	let metric = LiveMetricsToPretty(data.value[0], 0);
-	for (let i = 0; i < data.value.length; i++) {
-		const candidate = data.value[i];
-		const ago = dateToAgo(candidate.created_at);
-		if (metric.action === candidate.action && metric.ago === ago && metric.id === (candidate.album_id ?? candidate.photo_id)) {
-			metric.count++;
-			continue;
+	data.value.forEach((item) => {
+		const k = genKey(item);
+
+		if (k in dateMetrics) {
+			dateMetrics[k].count++;
 		} else {
-			prettifiedData.value.push(metric);
-			metric = LiveMetricsToPretty(candidate, 1);
+			dateMetrics[k] = LiveMetricsToPretty(item, 1);
 		}
-	}
-	// Push the last metric
-	prettifiedData.value.push(metric);
+	});
+
+	prettifiedData.value = Object.values(dateMetrics).sort((a, b) => {
+		return b.date.getTime() - a.date.getTime();
+	});
+}
+
+function genKey(item: App.Http.Resources.Models.LiveMetricsResource) {
+	return item.action + dateToAgo(item.created_at) + (item.photo_id ?? item.album_id ?? "undefined");
 }
 
 function dateToAgo(date: string) {
@@ -115,24 +137,24 @@ function dateToAgo(date: string) {
 	const hours = Math.floor(minutes / 60);
 	const days = Math.floor(hours / 24);
 
-	if (days > 0) {
-		return `${days} days ago`;
-	} else if (hours > 12) {
-		return `12 hours ago`;
-	} else if (hours > 6) {
-		return `6 hours ago`;
+	if (days > 1) {
+		return sprintf(trans("statistics.metrics.ago.days"), days);
+	} else if (days > 0) {
+		return trans("statistics.metrics.ago.day");
+	} else if (hours > 1) {
+		return sprintf(trans("statistics.metrics.ago.days"), hours);
 	} else if (hours > 0) {
-		return `${hours} hours ago`;
+		return trans("statistics.metrics.ago.hour");
 	} else if (minutes > 30) {
-		return `30 minutes ago`;
+		return sprintf(trans("statistics.metrics.ago.minutes"), 30);
 	} else if (minutes > 15) {
-		return `15 minutes ago`;
+		return sprintf(trans("statistics.metrics.ago.minutes"), 15);
 	} else if (minutes > 5) {
-		return `${minutes} minutes ago`;
+		return sprintf(trans("statistics.metrics.ago.minutes"), minutes);
 	} else if (minutes > 0) {
-		return `a few minutes ago`;
+		return trans("statistics.metrics.ago.few_minutes");
 	} else {
-		return `a few seconds ago`;
+		return trans("statistics.metrics.ago.seconds");
 	}
 }
 
@@ -140,6 +162,7 @@ function LiveMetricsToPretty(data: App.Http.Resources.Models.LiveMetricsResource
 	const ago = dateToAgo(data.created_at);
 	return {
 		ago: ago,
+		date: new Date(data.created_at),
 		action: data.action,
 		title: data.title ?? "undefined",
 		id: data.photo_id ?? data.album_id ?? "undefined",
