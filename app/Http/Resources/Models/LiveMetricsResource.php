@@ -21,28 +21,28 @@ class LiveMetricsResource extends Data
 		public string $visitor_id,
 		public MetricsAction $action,
 		public ?string $photo_id,
-		public ?string $photo_title,
 		public ?string $album_id,
-		public ?string $album_title,
+		public ?string $title,
+		public ?string $url = null,
 	) {
 	}
 
 	/**
-	 * @param object{created_at:string,visitor_id:string,action:MetricsAction,photo_id:?string,photo_title:?string,album_id:?string,album_title:?string} $a
-	 *
 	 * @return LiveMetricsResource
 	 */
 	public static function fromModel(LiveMetrics $a): LiveMetricsResource
 	{
+		$title = $a->photo_id !== null ? $a->photo->title : $a->album_impl->title;
+		$url = $a->photo_id !== null ? $a->photo->size_variants?->getSmall()?->url ?? $a->photo->size_variants?->getThumb()?->url : $a->album?->thumb?->thumbUrl;
+
 		return new self(
-			$a->created_at,
-			$a->visitor_id,
-			$a->action,
-			$a->photo_id,
-			$a->photo_title,
-			$a->album_id,
-			$a->album_title,
+			created_at: $a->created_at,
+			visitor_id: $a->visitor_id,
+			action: $a->action,
+			photo_id: $a->photo_id,
+			album_id: $a->album_id ?? $a->photo->album_id,
+			title: $title,
+			url: $url,
 		);
 	}
-
 }

@@ -13,16 +13,20 @@ use App\Models\Builders\LiveMetricsBuilder;
 use App\Models\Extensions\ThrowsConsistentExceptions;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * App\Models\LiveMetrics.
  *
- * @property int    $id
- * @property Carbon $created_at
- * @property string $visitor_id
- * @property string $action
- * @property string $album_id
- * @property string $photo_id
+ * @property int           $id
+ * @property Carbon        $created_at
+ * @property string        $visitor_id
+ * @property MetricsAction $action
+ * @property string        $album_id
+ * @property string        $photo_id
+ * @property Photo         $photo
+ * @property Album         $album
+ * @property BaseAlbumImpl $album_impl
  *
  * @method static LiveMetricsBuilder|LiveMetrics addSelect($column)
  * @method static LiveMetricsBuilder|LiveMetrics join(string $table, string $first, string $operator = null, string $second = null, string $type = 'inner', string $where = false)
@@ -69,4 +73,34 @@ class LiveMetrics extends Model
 		'album_id',
 		'photo_id',
 	];
+
+	/**
+	 * Return the albums owned by the user.
+	 *
+	 * @return BelongsTo<Album,$this>
+	 */
+	public function album(): BelongsTo
+	{
+		return $this->belongsTo(Album::class, 'album_id', 'id');
+	}
+
+	/**
+	 * Return the albums owned by the user.
+	 *
+	 * @return BelongsTo<BaseAlbumImpl,$this>
+	 */
+	public function album_impl(): BelongsTo
+	{
+		return $this->belongsTo(BaseAlbumImpl::class, 'album_id', 'id');
+	}
+
+	/**
+	 * Return the photos owned by the user.
+	 *
+	 * @return BelongsTo<Photo,$this>
+	 */
+	public function photo(): BelongsTo
+	{
+		return $this->belongsTo(Photo::class, 'photo_id', 'id');
+	}
 }

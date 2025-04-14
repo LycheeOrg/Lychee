@@ -45,4 +45,16 @@ return [
 		'taken_at' => 'Exif date',
 		'caption' => 'Each column represents a week.',
 	],
+	'metrics' => [
+		'a_visitor' => 'A visitor',
+		'visitors' => '%d visitors',
+		'visit_singular' => '%1$s viewed %2$s',
+		'favourite_singular' => '%1$s favourited %2$s',
+		'download_singular' => '%1$s downloaded %2$s',
+		'shared_singular' => '%1$s shared %2$s',
+		'visit_plural' => '%1$s viewed %2$s',
+		'favourite_plural' => '%1$s favourited %2$s',
+		'download_plural' => '%1$s downloaded %2$s',
+		'shared_plural' => '%1$s shared %2$s',
+	],
 ];

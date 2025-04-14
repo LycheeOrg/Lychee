@@ -28,7 +28,7 @@ abstract class BaseMetricsEvent
 	 *
 	 * @return string
 	 *
-	 * @codeCoverageIgnore (abstract method can't be covered)
+	 * @codeCoverageIgnore, abstract method can't be covered
 	 */
 	abstract public function key(): string;
 
@@ -37,7 +37,7 @@ abstract class BaseMetricsEvent
 	 *
 	 * @return MetricsAction
 	 *
-	 * @codeCoverageIgnore (abstract method can't be covered)
+	 * @codeCoverageIgnore, abstract method can't be covered
 	 */
 	abstract public function metricAction(): MetricsAction;
 }

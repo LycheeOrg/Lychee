@@ -387,9 +387,9 @@ declare namespace App.Http.Resources.Models {
 		visitor_id: string;
 		action: App.Enum.MetricsAction;
 		photo_id: string | null;
-		photo_title: string | null;
 		album_id: string | null;
-		album_title: string | null;
+		title: string | null;
+		url: string | null;
 	};
 	export type PhotoResource = {
 		id: string;
