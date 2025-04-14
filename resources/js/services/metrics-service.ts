@@ -2,7 +2,7 @@ import axios, { type AxiosResponse } from "axios";
 import Constants from "./constants";
 
 const MetricsService = {
-	get(): Promise<AxiosResponse<object>> {
+	get(): Promise<AxiosResponse<App.Http.Resources.Models.LiveMetricsResource[]>> {
 		return axios.get(`${Constants.getApiUrl()}Metrics`, { data: {} });
 	},
 

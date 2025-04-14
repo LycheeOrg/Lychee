@@ -13,6 +13,7 @@ use App\Events\Metrics\PhotoFavourite;
 use App\Events\Metrics\PhotoVisit;
 use App\Http\Requests\Metrics\MetricsRequest;
 use App\Http\Requests\Metrics\PhotoMetricsRequest;
+use App\Http\Resources\Models\LiveMetricsResource;
 use App\Models\Configs;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Collection;
@@ -26,7 +27,7 @@ class MetricsController extends Controller
 {
 	public function get(MetricsRequest $request, GetMetrics $get_metrics): Collection
 	{
-		return $get_metrics->get();
+		return LiveMetricsResource::collect($get_metrics->get());
 	}
 
 	/**

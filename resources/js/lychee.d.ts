@@ -382,6 +382,15 @@ declare namespace App.Http.Resources.Models {
 		id: number;
 		username: string;
 	};
+	export type LiveMetricsResource = {
+		created_at: string;
+		visitor_id: string;
+		action: App.Enum.MetricsAction;
+		photo_id: string | null;
+		photo_title: string | null;
+		album_id: string | null;
+		album_title: string | null;
+	};
 	export type PhotoResource = {
 		id: string;
 		album_id: string | null;
