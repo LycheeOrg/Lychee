@@ -12,13 +12,13 @@ namespace Tests\Unit\Http\Requests\Album;
 
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Contracts\Models\AbstractAlbum;
-use App\Http\Requests\Album\DeleteTrackRequest;
+use App\Http\Requests\Album\SetAlbumTrackRequest;
 use App\Policies\AlbumPolicy;
 use App\Rules\AlbumIDRule;
 use Illuminate\Support\Facades\Gate;
 use Tests\Unit\Http\Requests\Base\BaseRequestTest;
 
-class DeleteTrackRequestTest extends BaseRequestTest
+class SetAlbumTrackRequestTest extends BaseRequestTest
 {
 	public function testAuthorization()
 	{
@@ -26,23 +26,21 @@ class DeleteTrackRequestTest extends BaseRequestTest
 			->with(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, null])
 			->andReturn(true);
 
-		$request = new DeleteTrackRequest();
-		$request->merge([RequestAttribute::PARENT_ID_ATTRIBUTE => null]);
-
+		$request = new SetAlbumTrackRequest();
 		$this->assertTrue($request->authorize());
 	}
 
 	public function testRules(): void
 	{
-		$request = new DeleteTrackRequest();
+		$request = new SetAlbumTrackRequest();
 
 		$rules = $request->rules();
 
 		$expectedRuleMap = [
 			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['required', new AlbumIDRule(false)],
+			SetAlbumTrackRequest::FILE_ATTRIBUTE => 'required|file',
 		];
-
-		$this->assertCount(count($expectedRuleMap), $rules);
+		$this->assertCount(count($expectedRuleMap), $rules); // only validating the first 7 rules & the GRANTS_UPLOAD_ATTRIBUTE is tested afterwards
 
 		foreach ($expectedRuleMap as $key => $value) {
 			$this->assertEquals($value, $rules[$key]);
