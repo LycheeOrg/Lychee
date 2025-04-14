@@ -12,8 +12,7 @@ namespace Tests\Unit\Http\Requests\Album;
 
 use App\Actions\Album\Create as AlbumCreateAction;
 use App\Contracts\Http\Requests\RequestAttribute;
-use App\Factories\AlbumFactory;
-use App\Http\Requests\Album\MergeAlbumsRequest;
+use App\Http\Requests\Album\MoveAlbumsRequest;
 use App\Models\User;
 use App\Rules\AlbumIDRule;
 use App\Rules\RandomIDRule;
@@ -24,11 +23,18 @@ use Tests\Traits\RequiresEmptyAlbums;
 use Tests\Traits\RequiresEmptyUsers;
 use Tests\Unit\Http\Requests\Base\BaseRequestTest;
 
-class MergeAlbumRequestTest extends BaseRequestTest
+class MoveAlbumsRequestTest extends BaseRequestTest
 {
 	use RequiresEmptyUsers;
 	use RequiresEmptyAlbums;
 	use DatabaseTransactions;
+
+	public function setUp(): void
+	{
+		parent::setUp();
+		$this->setUpRequiresEmptyUsers();
+		$this->setUpRequiresEmptyAlbums();
+	}
 
 	public function testAuthorization()
 	{
@@ -37,7 +43,7 @@ class MergeAlbumRequestTest extends BaseRequestTest
 			->times(4) // TODO:// not only the times, but make sure the right arguments are passed, but this is hard to do find with mockery
 			->andReturn(true);
 
-		$request = new MergeAlbumsRequest();
+		$request = new MoveAlbumsRequest();
 		$request->setContainer($this->app);
 		$request->setRedirector($this->app['redirect']);
 		$request->merge([
@@ -54,14 +60,15 @@ class MergeAlbumRequestTest extends BaseRequestTest
 
 	public function testRules(): void
 	{
-		$request = new MergeAlbumsRequest();
+		$request = new MoveAlbumsRequest();
 
 		$rules = $request->rules();
 
 		$expectedRuleMap = [
-			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
+			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
 			RequestAttribute::ALBUM_IDS_ATTRIBUTE => 'required|array|min:1',
-			RequestAttribute::ALBUM_IDS_ATTRIBUTE . '.*' => ['required', new AlbumIDRule(false)],		];
+			RequestAttribute::ALBUM_IDS_ATTRIBUTE . '.*' => ['required', new AlbumIDRule(false)],
+		];
 
 		$this->assertCount(count($expectedRuleMap), $rules);
 
