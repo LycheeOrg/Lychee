@@ -1,5 +1,5 @@
 <template>
-	<Drawer :closeOnEsc="false" v-model:visible="isMetricsOpen" position="right" :pt:root:class="' w-sm'">
+	<Drawer :closeOnEsc="false" v-model:visible="is_metrics_open" position="right" :pt:root:class="' w-sm'">
 		<template #header>
 			<span class="text-xl font-bold">
 				{{ $t("statistics.metrics.header") }}
@@ -34,15 +34,17 @@
 </template>
 <script setup lang="ts">
 import MetricsService from "@/services/metrics-service";
+import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { trans } from "laravel-vue-i18n";
+import { storeToRefs } from "pinia";
 import Drawer from "primevue/drawer";
 import { sprintf } from "sprintf-js";
 import { ref } from "vue";
 import { onMounted } from "vue";
 import { watch } from "vue";
-import { Ref } from "vue";
 
-const isMetricsOpen = defineModel("isMetricsOpen", { default: false }) as Ref<boolean>;
+const togglableStore = useTogglablesStateStore();
+const { is_metrics_open } = storeToRefs(togglableStore);
 
 type LiveMetrics = {
 	ago: string;
@@ -179,13 +181,13 @@ function LiveMetricsToPretty(data: App.Http.Resources.Models.LiveMetricsResource
 }
 
 onMounted(() => {
-	if (isMetricsOpen.value) {
+	if (is_metrics_open.value) {
 		load();
 	}
 });
 
 watch(
-	() => isMetricsOpen.value,
+	() => is_metrics_open.value,
 	(newValue) => {
 		if (newValue) {
 			load();

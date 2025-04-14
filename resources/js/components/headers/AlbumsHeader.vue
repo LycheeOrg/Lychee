@@ -99,6 +99,7 @@ import DropBox from "../modals/DropBox.vue";
 import BackLinkButton from "./BackLinkButton.vue";
 import OpenLeftMenu from "./OpenLeftMenu.vue";
 import { useFavouriteStore } from "@/stores/FavouriteState";
+import { icon } from "leaflet";
 
 const props = defineProps<{
 	user: App.Http.Resources.Models.UserResource;
@@ -243,6 +244,12 @@ const menu = computed(() =>
 			type: "fn",
 			callback: openSearch,
 			if: props.config.is_search_accessible,
+		},
+		{
+			icon: "pi pi-bell",
+			type: "fn",
+			callback: () => (is_metrics_open.value = true),
+			if: true,
 		},
 		{
 			icon: "pi pi-sign-in",
