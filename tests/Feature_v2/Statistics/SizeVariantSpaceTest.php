@@ -19,7 +19,6 @@
 namespace Tests\Feature_v2\Statistics;
 
 use App\Enum\SizeVariantType;
-use LycheeVerify\Http\Middleware\VerifySupporterStatus;
 use Tests\Feature_v2\Base\BaseApiV2Test;
 
 class SizeVariantSpaceTest extends BaseApiV2Test
@@ -29,13 +28,15 @@ class SizeVariantSpaceTest extends BaseApiV2Test
 		$response = $this->getJson('Statistics::sizeVariantSpace');
 		$this->assertSupporterRequired($response);
 
-		$response = $this->withoutMiddleware(VerifySupporterStatus::class)->getJson('Statistics::sizeVariantSpace');
+		$this->requireSe();
+		$response = $this->getJson('Statistics::sizeVariantSpace');
 		$this->assertUnauthorized($response);
 	}
 
 	public function testSizeVariantSpaceAuthorized(): void
 	{
-		$response = $this->withoutMiddleware(VerifySupporterStatus::class)->actingAs($this->userMayUpload1)->getJson('Statistics::sizeVariantSpace');
+		$this->requireSe();
+		$response = $this->actingAs($this->userMayUpload1)->getJson('Statistics::sizeVariantSpace');
 		$this->assertOk($response);
 		self::assertCount(7, $response->json());
 		self::assertEquals(SizeVariantType::ORIGINAL->value, $response->json()[0]['type']);

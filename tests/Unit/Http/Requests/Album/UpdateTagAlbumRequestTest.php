@@ -25,11 +25,8 @@ use App\Rules\DescriptionRule;
 use App\Rules\EnumRequireSupportRule;
 use App\Rules\RandomIDRule;
 use App\Rules\TitleRule;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Enum;
-use LycheeVerify\Contract\VerifyInterface;
-use LycheeVerify\Verify;
 use Tests\Unit\Http\Requests\Base\BaseRequestTest;
 
 class UpdateTagAlbumRequestTest extends BaseRequestTest
@@ -38,14 +35,7 @@ class UpdateTagAlbumRequestTest extends BaseRequestTest
 	{
 		parent::setUp();
 
-		// Replace mock
-		$mock_verify = $this->createMock(VerifyInterface::class);
-		$mock_verify->expects($this->any())
-			->method('is_supporter')
-			->willReturn(true);
-		$this->mock_verify = $mock_verify;
-
-		App::instance(Verify::class, $mock_verify); // VerifyInterface is talking to DB & that is not needed for Request classes
+		$this->mock_verify = $this->requireSe();
 	}
 
 	public function testAuthorization()
