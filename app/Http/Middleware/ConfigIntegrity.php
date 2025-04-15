@@ -41,10 +41,12 @@ class ConfigIntegrity
 		'low_number_of_shoots_per_day',
 		'medium_number_of_shoots_per_day',
 		'high_number_of_shoots_per_day',
+		'metrics_enabled',
 		'metrics_logged_in_users_enabed',
-		'show_metrics_to_logged_in_user',
-		'show_metrics_to_owner',
-		'show_metrics_to_public',
+		'metrics_access',
+		'live_metrics_enabled',
+		'live_metrics_access',
+		'live_metrics_max_time',
 	];
 
 	/**
