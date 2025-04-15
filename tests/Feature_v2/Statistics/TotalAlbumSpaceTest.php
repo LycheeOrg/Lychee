@@ -18,7 +18,6 @@
 
 namespace Tests\Feature_v2\Statistics;
 
-use LycheeVerify\Http\Middleware\VerifySupporterStatus;
 use Tests\Feature_v2\Base\BaseApiV2Test;
 
 class TotalAlbumSpaceTest extends BaseApiV2Test
@@ -28,24 +27,26 @@ class TotalAlbumSpaceTest extends BaseApiV2Test
 		$response = $this->getJson('Statistics::totalAlbumSpace');
 		$this->assertSupporterRequired($response);
 
-		$response = $this->withoutMiddleware(VerifySupporterStatus::class)->getJson('Statistics::totalAlbumSpace');
+		$this->requireSe();
+		$response = $this->getJson('Statistics::totalAlbumSpace');
 		$this->assertUnauthorized($response);
 	}
 
 	public function testTotalAlbumSpaceTestAuthorized(): void
 	{
-		$response = $this->withoutMiddleware(VerifySupporterStatus::class)->actingAs($this->userMayUpload1)->getJson('Statistics::totalAlbumSpace');
+		$this->requireSe();
+		$response = $this->actingAs($this->userMayUpload1)->getJson('Statistics::totalAlbumSpace');
 		$this->assertOk($response);
 		self::assertCount(2, $response->json());
 		self::assertEquals($this->album1->title, $response->json()[0]['title']);
 		self::assertEquals($this->subAlbum1->title, $response->json()[1]['title']);
 
-		$response = $this->withoutMiddleware(VerifySupporterStatus::class)->actingAs($this->userMayUpload1)->getJson('Statistics::totalAlbumSpace?album_id=' . $this->album1->id);
+		$response = $this->actingAs($this->userMayUpload1)->getJson('Statistics::totalAlbumSpace?album_id=' . $this->album1->id);
 		$this->assertOk($response);
 		self::assertCount(1, $response->json());
 		self::assertEquals($this->album1->title, $response->json()[0]['title']);
 
-		$response = $this->withoutMiddleware(VerifySupporterStatus::class)->actingAs($this->admin)->getJson('Statistics::totalAlbumSpace');
+		$response = $this->actingAs($this->admin)->getJson('Statistics::totalAlbumSpace');
 		$this->assertOk($response);
 		self::assertCount(7, $response->json());
 	}

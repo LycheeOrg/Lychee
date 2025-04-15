@@ -116,6 +116,12 @@ class UpdateSettingsTest extends BaseApiV2Test
 			'css' => 'body { background-color: red; }',
 		]);
 		$this->assertNoContent($response);
+
+		// reset
+		$response = $this->actingAs($this->admin)->postJson('Settings::setCSS', [
+			'css' => '',
+		]);
+		$this->assertNoContent($response);
 	}
 
 	public function testupdateJsForbiddne(): void
@@ -144,6 +150,12 @@ class UpdateSettingsTest extends BaseApiV2Test
 
 		$response = $this->actingAs($this->admin)->postJson('Settings::setJS', [
 			'js' => 'console.log("Hello World!");',
+		]);
+		$this->assertNoContent($response);
+
+		// reset
+		$response = $this->actingAs($this->admin)->postJson('Settings::setJS', [
+			'js' => '',
 		]);
 		$this->assertNoContent($response);
 	}

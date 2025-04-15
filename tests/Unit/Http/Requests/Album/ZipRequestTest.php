@@ -18,23 +18,12 @@ use App\Models\TagAlbum;
 use App\Policies\AlbumPolicy;
 use App\Rules\AlbumIDListRule;
 use App\Rules\RandomIDListRule;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Enum;
-use LycheeVerify\Contract\VerifyInterface;
-use LycheeVerify\Verify;
-use Tests\AbstractTestCase;
+use Tests\Unit\Http\Requests\Base\BaseRequestTest;
 
-class ZipRequestTest extends AbstractTestCase
+class ZipRequestTest extends BaseRequestTest
 {
-	protected function setUp(): void
-	{
-		parent::setUp();
-		$mockVerify = $this->createMock(VerifyInterface::class);
-		$this->mockVerify = $mockVerify;
-		App::instance(Verify::class, $mockVerify); // VerifyInterface is talking to DB & that is not needed for Request classes
-	}
-
 	public function testAuthorization()
 	{
 		$albumMock = $this->createMock(TagAlbum::class);

@@ -18,7 +18,6 @@
 
 namespace Tests\Feature_v2\Statistics;
 
-use LycheeVerify\Http\Middleware\VerifySupporterStatus;
 use Tests\Feature_v2\Base\BaseApiV2Test;
 
 class CountsOverTimeTest extends BaseApiV2Test
@@ -28,30 +27,31 @@ class CountsOverTimeTest extends BaseApiV2Test
 		$response = $this->getJson('Statistics::getCountsOverTime');
 		$this->assertSupporterRequired($response);
 
-		$response = $this->withoutMiddleware(VerifySupporterStatus::class)->getJson('Statistics::getCountsOverTime');
+		$this->requireSe();
+		$response = $this->getJson('Statistics::getCountsOverTime');
 		$this->assertUnprocessable($response);
 
-		$response = $this->withoutMiddleware(VerifySupporterStatus::class)->getJsonWithData('Statistics::getCountsOverTime', [
+		$response = $this->getJsonWithData('Statistics::getCountsOverTime', [
 			'type' => 'taken_at',
 		]);
 		$this->assertUnauthorized($response);
+		$this->resetSe();
 	}
 
 	public function testCountsOverTimeAdmin(): void
 	{
-		$response = $this->withoutMiddleware(VerifySupporterStatus::class)->actingAs($this->admin)->getJsonWithData('Statistics::getCountsOverTime', [
+		$this->requireSe();
+		$response = $this->actingAs($this->admin)->getJsonWithData('Statistics::getCountsOverTime', [
 			'type' => 'created_at',
 		]);
 		$this->assertOk($response);
 		self::assertCount(6, $response->json());
 
-		$response = $this->withoutMiddleware(VerifySupporterStatus::class)->actingAs($this->admin)->getJsonWithData('Statistics::getCountsOverTime', [
+		$response = $this->actingAs($this->admin)->getJsonWithData('Statistics::getCountsOverTime', [
 			'type' => 'taken_at',
 		]);
 		$this->assertOk($response);
 		self::assertCount(6, $response->json());
-
-		// dd($response->json());
-		// self::assertEquals($this->userMayUpload1->username(), $response->json()[0]['username']);
+		$this->resetSe();
 	}
 }

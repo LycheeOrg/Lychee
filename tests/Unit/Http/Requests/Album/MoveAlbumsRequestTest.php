@@ -40,7 +40,7 @@ class MoveAlbumsRequestTest extends BaseRequestTest
 	{
 		$album = $this->createUserAndAlbum();
 		Gate::shouldReceive('check')
-			->times(4) // TODO:// not only the times, but make sure the right arguments are passed, but this is hard to do find with mockery
+			->times(4) // TODO: not only the times, but make sure the right arguments are passed, but this is hard to do find with mockery
 			->andReturn(true);
 
 		$request = new MoveAlbumsRequest();
@@ -79,7 +79,7 @@ class MoveAlbumsRequestTest extends BaseRequestTest
 
 	private function createUserAndAlbum(): \App\Models\Album
 	{
-		// TOODO:// refactor the MergeAlbumRequest to use the AlbumFactory or a Repo so that the test can be written without talking to DB
+		// TODO: refactor the MergeAlbumRequest to use the AlbumFactory or a Repo so that the test can be written without talking to DB
 		$user = new User();
 		$user->username = 'testUser' . uniqid();
 		$user->password = 'testPassword';
