@@ -15,8 +15,8 @@ class CleanupMetrics
 {
 	public function do(): void
 	{
-        $num_days = Configs::getValueAsInt('live_metrics_max_time');
+		$num_days = Configs::getValueAsInt('live_metrics_max_time');
 
-        LiveMetrics::query()->where('created_at', '<=', now()->subDays($num_days))->delete();
+		LiveMetrics::query()->where('created_at', '<=', now()->subDays($num_days))->delete();
 	}
 }

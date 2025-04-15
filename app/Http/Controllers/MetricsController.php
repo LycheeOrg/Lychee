@@ -30,6 +30,7 @@ class MetricsController extends Controller
 	{
 		// First clean up.
 		$cleanup_metrics->do();
+
 		// Then fetch.
 		return LiveMetricsResource::collect($get_metrics->get());
 	}
