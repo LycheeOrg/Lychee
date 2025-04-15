@@ -14,6 +14,9 @@ return [
 	*/
 	'back_to_gallery' => 'Retour à la galerie',
 
+	'login' => 'Login',
+	'frame' => 'Frame',
+	'map' => 'Map',
 	'admin' => 'Administration',
 	'clockwork' => 'Application Clockwork',
 	'logs' => 'Afficher les journaux',

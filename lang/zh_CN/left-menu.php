@@ -14,6 +14,9 @@ return [
 	*/
 	'back_to_gallery' => '返回相册',
 
+	'login' => 'Login',
+	'frame' => 'Frame',
+	'map' => 'Map',
 	'admin' => '管理',
 	'clockwork' => 'Clockwork 应用',
 	'logs' => '查看日志',
