@@ -9,17 +9,14 @@
 namespace App\Http\Requests\Metrics;
 
 use App\Http\Requests\AbstractEmptyRequest;
-use App\Models\User;
-use Illuminate\Support\Facades\Auth;
+use App\Models\LiveMetrics;
+use App\Policies\MetricsPolicy;
+use Illuminate\Support\Facades\Gate;
 
 class MetricsRequest extends AbstractEmptyRequest
 {
 	public function authorize(): bool
 	{
-		/** @var User $user */
-		$user = Auth::user();
-
-		// TODO: For now we do not use the policies, refactor later.
-		return $user?->may_administrate === true;
+		return Gate::check(MetricsPolicy::CAN_SEE_LIVE, LiveMetrics::class);
 	}
 }

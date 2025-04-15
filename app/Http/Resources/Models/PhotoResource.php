@@ -15,6 +15,7 @@ use App\Http\Resources\Models\Utils\TimelineData;
 use App\Http\Resources\Rights\PhotoRightsResource;
 use App\Models\Configs;
 use App\Models\Photo;
+use App\Policies\PhotoPolicy;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
@@ -104,7 +105,7 @@ class PhotoResource extends Data
 
 		$this->timeline_data_carbon = $photo->taken_at ?? $photo->created_at;
 
-		if (Configs::getValueAsBool('metrics_enabled') && Gate::check(\PhotoPolicy::CAN_READ_METRICS, [Photo::class, $photo])) {
+		if (Configs::getValueAsBool('metrics_enabled') && Gate::check(PhotoPolicy::CAN_READ_METRICS, [Photo::class, $photo])) {
 			$this->statistics = PhotoStatisticsResource::fromModel($photo->statistics);
 		}
 	}

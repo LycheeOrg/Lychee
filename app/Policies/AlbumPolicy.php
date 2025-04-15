@@ -10,6 +10,7 @@ namespace App\Policies;
 
 use App\Constants\AccessPermissionConstants as APC;
 use App\Contracts\Models\AbstractAlbum;
+use App\Enum\MetricsAccess;
 use App\Enum\SmartAlbumType;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\QueryBuilderException;
@@ -587,21 +588,14 @@ class AlbumPolicy extends BasePolicy
 			return false;
 		}
 
-		if ($user === null) {
-			return Configs::getValueAsBool('show_metrics_to_public');
-		}
+		$access_level = Configs::getValueAsEnum('metrics_accessible', MetricsAccess::class);
 
-		if (Configs::getValueAsBool('show_metrics_to_logged_in_user') === true) {
-			return true;
-		}
-
-		if (
-			Configs::getValueAsBool('show_metrics_to_owner') === true &&
-			$user->id === $album->owner_id
-		) {
-			return true;
-		}
-
-		return false;
+		return match ($access_level) {
+			MetricsAccess::PUBLIC => true,
+			MetricsAccess::LOGGEDIN => $user !== null,
+			MetricsAccess::OWNER => $user !== null && $album->owner_id === $user->id,
+			MetricsAccess::ADMIN => $user?->may_administrate === true,
+			default => false,
+		};
 	}
 }

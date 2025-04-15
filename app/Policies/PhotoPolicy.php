@@ -8,6 +8,7 @@
 
 namespace App\Policies;
 
+use App\Enum\MetricsAccess;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\QueryBuilderException;
@@ -241,21 +242,14 @@ class PhotoPolicy extends BasePolicy
 	 */
 	public function canReadMetrics(?User $user, Photo $photo): bool
 	{
-		if ($user === null) {
-			return Configs::getValueAsBool('show_metrics_to_public');
-		}
+		$access_level = Configs::getValueAsEnum('metrics_accessible', MetricsAccess::class);
 
-		if (Configs::getValueAsBool('show_metrics_to_logged_in_user') === true) {
-			return true;
-		}
-
-		if (
-			Configs::getValueAsBool('show_metrics_to_owner') === true &&
-			$user->id === $photo->owner_id
-		) {
-			return true;
-		}
-
-		return false;
+		return match ($access_level) {
+			MetricsAccess::PUBLIC => true,
+			MetricsAccess::LOGGEDIN => $user !== null,
+			MetricsAccess::OWNER => $user !== null && $photo->owner_id === $user->id,
+			MetricsAccess::ADMIN => $user?->may_administrate === true,
+			default => false,
+		};
 	}
 }

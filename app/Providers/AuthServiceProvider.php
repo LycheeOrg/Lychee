@@ -12,9 +12,11 @@ use App\Contracts\Models\AbstractAlbum;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
+use App\Models\LiveMetrics;
 use App\Models\Photo;
 use App\Models\User;
 use App\Policies\AlbumPolicy;
+use App\Policies\MetricsPolicy;
 use App\Policies\PhotoPolicy;
 use App\Policies\SettingsPolicy;
 use App\Policies\UserPolicy;
@@ -43,6 +45,8 @@ class AuthServiceProvider extends ServiceProvider
 		AbstractAlbum::class => AlbumPolicy::class,
 
 		Configs::class => SettingsPolicy::class,
+
+		LiveMetrics::class => MetricsPolicy::class,
 	];
 
 	/**
