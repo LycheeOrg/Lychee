@@ -20,7 +20,6 @@ namespace Tests\Feature_v2\Album;
 
 use App\Constants\AccessPermissionConstants as APC;
 use App\Models\AccessPermission;
-use App\Models\Album;
 use Tests\Feature_v2\Base\BaseApiV2Test;
 
 class SharingTest extends BaseApiV2Test
