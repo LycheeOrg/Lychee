@@ -13,11 +13,11 @@ namespace Tests\Unit\Http\Requests\Base;
 use LycheeVerify\Contract\Status;
 use LycheeVerify\Verify;
 use Tests\AbstractTestCase;
-use Tests\Traits\RequireSe;
+use Tests\Traits\RequireSE;
 
 class BaseRequestTest extends AbstractTestCase
 {
-	use RequireSe;
+	use RequireSE;
 
 	protected Verify $mock_verify;
 

@@ -25,7 +25,7 @@ use LycheeVerify\Verify;
 /**
  * Some of our tests require that the user is a subscriber.
  */
-trait RequireSe
+trait RequireSE
 {
 	protected function requireSe(Status $status = Status::SUPPORTER_EDITION): Verify
 	{
