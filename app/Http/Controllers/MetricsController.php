@@ -8,6 +8,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Metrics\CleanupMetrics;
 use App\Actions\Metrics\GetMetrics;
 use App\Events\Metrics\PhotoFavourite;
 use App\Events\Metrics\PhotoVisit;
@@ -25,8 +26,11 @@ use Illuminate\Support\Facades\Auth;
  */
 class MetricsController extends Controller
 {
-	public function get(MetricsRequest $request, GetMetrics $get_metrics): Collection
+	public function get(MetricsRequest $request, GetMetrics $get_metrics, CleanupMetrics $cleanup_metrics): Collection
 	{
+		// First clean up.
+		$cleanup_metrics->do();
+		// Then fetch.
 		return LiveMetricsResource::collect($get_metrics->get());
 	}
 

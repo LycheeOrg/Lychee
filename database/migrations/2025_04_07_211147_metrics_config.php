@@ -77,7 +77,7 @@ return new class() extends BaseConfigMigration {
 			],
 			[
 				'key' => 'live_metrics_max_time',
-				'value' => '60',
+				'value' => '30',
 				'cat' => self::CAT,
 				'type_range' => self::POSITIVE,
 				'description' => 'Max age for live metrics in days',
