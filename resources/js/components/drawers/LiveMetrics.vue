@@ -133,11 +133,14 @@ function genKey(item: App.Http.Resources.Models.LiveMetricsResource) {
 function dateToAgo(date: string) {
 	const dateObj = new Date(date);
 	const now = new Date();
+	console.log(dateObj);
+	console.log(now);
 	const diff = Math.abs(now.getTime() - dateObj.getTime());
 	const seconds = Math.floor(diff / 1000);
 	const minutes = Math.floor(seconds / 60);
 	const hours = Math.floor(minutes / 60);
 	const days = Math.floor(hours / 24);
+	console.log(diff, seconds, minutes, hours, days);
 
 	if (days > 1) {
 		return sprintf(trans("statistics.metrics.ago.days"), days);

@@ -249,7 +249,7 @@ const menu = computed(() =>
 			icon: "pi pi-bell",
 			type: "fn",
 			callback: () => (is_metrics_open.value = true),
-			if: true,
+			if: props.rights.can_see_live_metrics,
 		},
 		{
 			icon: "pi pi-sign-in",

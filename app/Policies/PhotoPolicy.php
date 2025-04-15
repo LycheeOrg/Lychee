@@ -242,7 +242,7 @@ class PhotoPolicy extends BasePolicy
 	 */
 	public function canReadMetrics(?User $user, Photo $photo): bool
 	{
-		$access_level = Configs::getValueAsEnum('metrics_accessible', MetricsAccess::class);
+		$access_level = Configs::getValueAsEnum('metrics_access', MetricsAccess::class);
 
 		return match ($access_level) {
 			MetricsAccess::PUBLIC => true,

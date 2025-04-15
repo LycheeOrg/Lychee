@@ -6,7 +6,7 @@
 	<AlbumCreateTagDialog v-if="rootRights?.can_upload" key="create_tag_album_modal" />
 	<LoginModal v-if="user?.id === null" @logged-in="refresh" />
 	<WebauthnModal v-if="user?.id === null" @logged-in="refresh" />
-	<Metrics v-if="user?.id" />
+	<LiveMetrics v-if="user?.id" />
 
 	<div v-if="rootConfig && rootRights" @click="unselect" class="h-svh overflow-y-auto" id="galleryView" v-on:scroll="onScroll">
 		<Collapse :when="!is_full_screen">
@@ -164,7 +164,7 @@ import { EmptyPhotoCallbacks } from "@/utils/Helpers";
 import WebauthnModal from "@/components/modals/WebauthnModal.vue";
 import LoginModal from "@/components/modals/LoginModal.vue";
 import LoadingProgress from "@/components/loading/LoadingProgress.vue";
-import Metrics from "@/components/drawers/Metrics.vue";
+import LiveMetrics from "@/components/drawers/LiveMetrics.vue";
 
 const auth = useAuthStore();
 const lycheeStore = useLycheeStateStore();

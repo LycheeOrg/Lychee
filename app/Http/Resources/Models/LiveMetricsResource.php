@@ -36,7 +36,7 @@ class LiveMetricsResource extends Data
 		$url = $a->photo_id !== null ? $a->photo->size_variants?->getSmall()?->url ?? $a->photo->size_variants?->getThumb()?->url : $a->album?->thumb?->thumbUrl;
 
 		return new self(
-			created_at: $a->created_at,
+			created_at: $a->created_at->toIso8601String(), // toIso8601String() is used to ensure the date has the correct timezone
 			visitor_id: $a->visitor_id,
 			action: $a->action,
 			photo_id: $a->photo_id,
