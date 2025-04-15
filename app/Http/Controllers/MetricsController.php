@@ -30,7 +30,7 @@ class MetricsController extends Controller
 	public function get(MetricsRequest $request, GetMetrics $get_metrics, CleanupMetrics $cleanup_metrics): Collection
 	{
 		if (Configs::getValueAsBool('live_metrics_enabled') === false) {
-			throw new UnauthorizedException("Live metrics are not enabled.");
+			throw new UnauthorizedException('Live metrics are not enabled.');
 		}
 
 		// First clean up.
@@ -69,7 +69,7 @@ class MetricsController extends Controller
 	 */
 	public static function shouldMeasure(): bool
 	{
-		if (Configs::getValueAsBool('metrics_enabled') === false) {
+		if (Configs::getValueAsBool('metrics_enabled') === false && Configs::getValueAsBool('live_metrics_enabled') === false) {
 			return false;
 		}
 

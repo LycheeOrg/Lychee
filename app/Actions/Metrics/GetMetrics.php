@@ -27,7 +27,7 @@ class GetMetrics
 			->join('albums', 'albums.id', '=', 'live_metrics.album_id', 'left')
 
 			// Owner check (if not admin)
-			->when($user->may_administrate, fn ($q_owner) => $q_owner
+			->when(!$user->may_administrate, fn ($q_owner) => $q_owner
 				->where(fn ($q) => $q
 					->where('base_albums.owner_id', $user->id)
 					->orWhere('photos.owner_id', $user->id))

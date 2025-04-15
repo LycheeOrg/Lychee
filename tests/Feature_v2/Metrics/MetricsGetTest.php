@@ -24,21 +24,15 @@ use Tests\Feature_v2\Base\BaseApiV2Test;
 
 class MetricsGetTest extends BaseApiV2Test
 {
-	public function setUp(): void
-	{
-		parent::setUp();
-		Configs::invalidateCache();
-	}
-
 	public function tearDown(): void
 	{
-		Configs::invalidateCache();
+		Configs::set('live_metrics_enabled', false);
 		parent::tearDown();
 	}
 
 	public function testGetMetricsDenied(): void
 	{
-        $response = $this->getJson('Metrics');
+		$response = $this->getJson('Metrics');
 		$this->assertSupporterRequired($response);
 
 		$this->requireSe();
@@ -48,30 +42,54 @@ class MetricsGetTest extends BaseApiV2Test
 
 		$response = $this->actingAs($this->userMayUpload1)->getJson('Metrics');
 		$this->assertForbidden($response);
+
+		$response = $this->actingAs($this->admin)->getJson('Metrics');
+		$this->assertForbidden($response); // Not active
 	}
 
 	public function testGetMetricsOk(): void
 	{
 		$this->requireSe();
 		Configs::set('live_metrics_enabled', true);
-		// Configs::set('live_metrics_access', LiveMetricsAccess::LOGGEDIN);
-        $response = $this->actingAs($this->userMayUpload1)->getJson('Metrics');
-		$this->assertSupporterRequired($response);
+		$response = $this->actingAs($this->userMayUpload1)->getJson('Metrics');
+		$this->assertForbidden($response);
+
+		$response = $this->actingAs($this->admin)->getJson('Metrics');
+		$this->assertOk($response);
+
+		Configs::set('live_metrics_access', LiveMetricsAccess::LOGGEDIN);
+		$response = $this->actingAs($this->userMayUpload1)->getJson('Metrics');
+		$this->assertOk($response);
 	}
 
-	// public function testVisitSharedPhoto(): void
-	// {
-	// 	$response = $this->postJson('Metrics::photo', ['photo_ids' => [$this->photo4->id]]);
-	// 	$this->assertNoContent($response);
-	// 	$this->assertEquals(1, Statistics::where('photo_id', $this->photo4->id)->firstOrFail()->visit_count);
+	public function testWithData(): void
+	{
+		$this->requireSe();
+		Configs::set('live_metrics_enabled', true);
+		Configs::set('live_metrics_access', LiveMetricsAccess::LOGGEDIN);
 
-	// 	$response = $this->postJson('Metrics::favourite', ['photo_ids' => [$this->photo4->id]]);
-	// 	$this->assertNoContent($response);
-	// 	$this->assertEquals(1, Statistics::where('photo_id', $this->photo4->id)->firstOrFail()->favourite_count);
+		$response = $this->getJsonWithData('Album', ['album_id' => $this->album4->id]);
+		$this->assertOk($response);
+		$response = $this->get('gallery/' . $this->album4->id);
+		$this->assertOk($response);
+		$response = $this->postJson('Metrics::photo', ['photo_ids' => [$this->photo4->id]]);
+		$this->assertNoContent($response);
+		$response = $this->postJson('Metrics::favourite', ['photo_ids' => [$this->photo4->id]]);
+		$this->assertNoContent($response);
+		$response = $this->get('gallery/' . $this->album4->id . '/' . $this->photo4->id);
+		$this->assertOk($response);
 
-	// 	$response = $this->get('gallery/' . $this->album4->id . '/' . $this->photo4->id);
-	// 	$this->assertOk($response);
-	// 	$this->assertEquals(1, Statistics::where('photo_id', $this->photo4->id)->firstOrFail()->shared_count);
-	// 	$this->assertEquals(0, Statistics::where('album_id', $this->album4->id)->firstOrFail()->shared_count);
-	// }
+		// userLocked
+		$response = $this->actingAs($this->userMayUpload1)->getJson('Metrics');
+		$this->assertOk($response);
+		$this->assertCount(0, $response->json()); // Album 4 (which we visited above) belongs to userLocked, not userMayUpload1
+
+		$response = $this->actingAs($this->userLocked)->getJson('Metrics');
+		$this->assertOk($response);
+		$this->assertCount(4, $response->json());
+
+		$response = $this->actingAs($this->admin)->getJson('Metrics');
+		$this->assertOk($response);
+		$this->assertCount(4, $response->json());
+	}
 }
