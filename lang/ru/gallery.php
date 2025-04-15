@@ -17,6 +17,7 @@ return [
 	'smart_albums' => 'Умные альбомы',
 	'albums' => 'Альбомы',
 	'root' => 'Альбомы',
+	'favourites' => 'Favourites',
 
 	'original' => 'Оригинал',
 	'medium' => 'Средний',

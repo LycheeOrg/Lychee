@@ -8,7 +8,7 @@
 	>
 		<template #start>
 			<!-- Not logged in. -->
-			<BackLinkButton v-if="props.user.id === null && !isLoginLeft" :config="props.config" />
+			<!-- <BackLinkButton v-if="props.user.id === null && !isLoginLeft" :config="props.config" />
 			<Button
 				v-if="props.user.id === null && isLoginLeft"
 				icon="pi pi-sign-in"
@@ -16,9 +16,9 @@
 				severity="secondary"
 				text
 				@click="togglableStore.toggleLogin()"
-			/>
+			/> -->
 			<!-- Logged in. -->
-			<OpenLeftMenu v-if="user.id" />
+			<OpenLeftMenu />
 		</template>
 
 		<template #center>
@@ -99,15 +99,13 @@ import DropBox from "../modals/DropBox.vue";
 import BackLinkButton from "./BackLinkButton.vue";
 import OpenLeftMenu from "./OpenLeftMenu.vue";
 import { useFavouriteStore } from "@/stores/FavouriteState";
-import { icon } from "leaflet";
+import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
 
 const props = defineProps<{
 	user: App.Http.Resources.Models.UserResource;
 	title: string;
 	rights: App.Http.Resources.Rights.RootAlbumRightsResource;
 	config: {
-		is_map_accessible: boolean;
-		is_mod_frame_enabled: boolean;
 		is_search_accessible: boolean;
 		show_keybinding_help_button: boolean;
 		back_button_enabled: boolean;
@@ -123,6 +121,7 @@ const emits = defineEmits<{
 	help: [];
 }>();
 
+const leftMenuStore = useLeftMenuStateStore();
 const lycheeStore = useLycheeStateStore();
 const togglableStore = useTogglablesStateStore();
 const favourites = useFavouriteStore();
@@ -202,7 +201,7 @@ onKeyStroke("escape", () => {
 		return;
 	}
 
-	togglableStore.left_menu_open = false;
+	leftMenuStore.left_menu_open = false;
 });
 
 type Link = {
@@ -226,18 +225,6 @@ const menu = computed(() =>
 			type: "link",
 			icon: "pi pi-heart",
 			if: (favourites.photos?.length ?? 0) > 0,
-		},
-		{
-			to: { name: "frame" },
-			type: "link",
-			icon: "pi pi-desktop",
-			if: props.config.is_mod_frame_enabled,
-		},
-		{
-			to: { name: "map" },
-			type: "link",
-			icon: "pi pi-map",
-			if: props.config.is_map_accessible,
 		},
 		{
 			icon: "pi pi-search",

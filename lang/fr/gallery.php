@@ -17,6 +17,7 @@ return [
 	'smart_albums' => 'Albums intelligents',
 	'albums' => 'Albums',
 	'root' => 'Albums',
+	'favourites' => 'Favourites',
 
 	'original' => 'Original',
 	'medium' => 'Moyen',

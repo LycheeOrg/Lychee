@@ -286,9 +286,6 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		success: boolean;
 	};
 	export type RootConfig = {
-		is_map_accessible: boolean;
-		is_mod_frame_enabled: boolean;
-		is_photo_timeline_enabled: boolean;
 		is_album_timeline_enabled: boolean;
 		is_search_accessible: boolean;
 		show_keybinding_help_button: boolean;
@@ -633,6 +630,12 @@ declare namespace App.Http.Resources.Rights {
 		settings: App.Http.Resources.Rights.SettingsRightsResource;
 		user_management: App.Http.Resources.Rights.UserManagementRightsResource;
 		user: App.Http.Resources.Rights.UserRightsResource;
+		modules: App.Http.Resources.Rights.ModulesRightsResource;
+	};
+	export type ModulesRightsResource = {
+		is_map_enabled: boolean;
+		is_mod_frame_enabled: boolean;
+		is_photo_timeline_enabled: boolean;
 	};
 	export type PhotoRightsResource = {
 		can_edit: boolean;

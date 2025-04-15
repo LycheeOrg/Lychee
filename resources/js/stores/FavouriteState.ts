@@ -1,7 +1,7 @@
 import MetricsService from "@/services/metrics-service";
 import { defineStore } from "pinia";
 
-export type favouriteStore = ReturnType<typeof useFavouriteStore>;
+export type FavouriteStore = ReturnType<typeof useFavouriteStore>;
 
 export type PhotoFavourite = {
 	albumId?: string;

@@ -6,7 +6,6 @@ export type TogglablesStateStore = ReturnType<typeof useTogglablesStateStore>;
 export const useTogglablesStateStore = defineStore("togglables-store", {
 	state: () => ({
 		// togglables
-		left_menu_open: false,
 		is_full_screen: false,
 		is_login_open: false,
 		is_webauthn_open: false,
@@ -53,10 +52,6 @@ export const useTogglablesStateStore = defineStore("togglables-store", {
 
 		toggleLogin() {
 			this.is_login_open = !this.is_login_open;
-		},
-
-		toggleLeftMenu() {
-			this.left_menu_open = !this.left_menu_open;
 		},
 
 		rememberScrollPage(elem: HTMLElement, path: string) {

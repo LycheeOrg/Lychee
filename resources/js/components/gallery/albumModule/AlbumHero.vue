@@ -61,6 +61,30 @@
 						>
 							<i class="pi pi-chart-scatter" />
 						</a>
+						<router-link
+							:to="{ name: 'frame-with-album', params: { albumid: props.album.id } }"
+							v-if="props.config.is_mod_frame_enabled"
+							class="shrink-0 px-3 cursor-pointer text-muted-color inline-block transform duration-300 hover:scale-150 hover:text-color"
+							v-tooltip.bottom="'Frame'"
+						>
+							<i class="pi pi-desktop" />
+						</router-link>
+						<router-link
+							:to="{ name: 'map-with-album', params: { albumid: props.album.id } }"
+							v-if="props.config.is_map_accessible && hasCoordinates"
+							class="shrink-0 px-3 cursor-pointer text-muted-color inline-block transform duration-300 hover:scale-150 hover:text-color"
+						>
+							<i class="pi pi-map" />
+						</router-link>
+						<a
+							v-tooltip.bottom="'Start slideshow'"
+							@click="emits('toggleSlideShow')"
+							v-if="props.album.photos.length > 0"
+							class="shrink-0 px-3 cursor-pointer text-muted-color inline-block transform duration-300 hover:scale-150 hover:text-color"
+						>
+							<i class="pi pi-play" />
+						</a>
+
 						<template v-if="isTouchDevice() && user?.id !== null">
 							<a
 								v-if="props.hasHidden && are_nsfw_visible"
@@ -108,6 +132,7 @@ import { useLycheeStateStore } from "@/stores/LycheeState";
 import { isTouchDevice } from "@/utils/keybindings-utils";
 import { storeToRefs } from "pinia";
 import Card from "primevue/card";
+import { computed } from "vue";
 
 const auth = useAuthStore();
 const lycheeStore = useLycheeStateStore();
@@ -117,19 +142,26 @@ const { user } = storeToRefs(auth);
 const props = defineProps<{
 	album: App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.TagAlbumResource | App.Http.Resources.Models.SmartAlbumResource;
 	hasHidden: boolean;
+	config: {
+		is_map_accessible: boolean;
+		is_mod_frame_enabled: boolean;
+	};
 }>();
 
+const hasCoordinates = computed(() => props.album.photos.some((photo) => photo.latitude !== null && photo.longitude !== null));
+
 const emits = defineEmits<{
-	"open-sharing-modal": [];
-	"open-statistics": [];
+	openSharingModal: [];
+	openStatistics: [];
+	toggleSlideShow: [];
 }>();
 
 function openSharingModal() {
-	emits("open-sharing-modal");
+	emits("openSharingModal");
 }
 
 function openStatistics() {
-	emits("open-statistics");
+	emits("openStatistics");
 }
 
 function download() {
