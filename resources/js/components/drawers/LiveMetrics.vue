@@ -147,7 +147,7 @@ function dateToAgo(date: string) {
 	} else if (days > 0) {
 		return trans("statistics.metrics.ago.day");
 	} else if (hours > 1) {
-		return sprintf(trans("statistics.metrics.ago.days"), hours);
+		return sprintf(trans("statistics.metrics.ago.hours"), hours);
 	} else if (hours > 0) {
 		return trans("statistics.metrics.ago.hour");
 	} else if (minutes > 30) {
