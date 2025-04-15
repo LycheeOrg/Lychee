@@ -26,7 +26,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\AbstractTestCase;
 use Tests\Traits\InteractWithSmartAlbums;
-use Tests\Traits\RequireSe;
+use Tests\Traits\RequireSE;
 use Tests\Traits\RequiresEmptyAlbums;
 use Tests\Traits\RequiresEmptyPhotos;
 use Tests\Traits\RequiresEmptyUsers;
@@ -40,7 +40,7 @@ abstract class BaseV2Test extends AbstractTestCase
 	use RequiresEmptyWebAuthnCredentials;
 	use DatabaseTransactions;
 	use InteractWithSmartAlbums;
-	use RequireSe;
+	use RequireSE;
 
 	protected User $admin;
 	protected User $userMayUpload1;
