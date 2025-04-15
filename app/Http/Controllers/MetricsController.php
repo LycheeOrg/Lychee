@@ -12,6 +12,7 @@ use App\Actions\Metrics\CleanupMetrics;
 use App\Actions\Metrics\GetMetrics;
 use App\Events\Metrics\PhotoFavourite;
 use App\Events\Metrics\PhotoVisit;
+use App\Exceptions\UnauthorizedException;
 use App\Http\Requests\Metrics\MetricsRequest;
 use App\Http\Requests\Metrics\PhotoMetricsRequest;
 use App\Http\Resources\Models\LiveMetricsResource;
@@ -28,6 +29,10 @@ class MetricsController extends Controller
 {
 	public function get(MetricsRequest $request, GetMetrics $get_metrics, CleanupMetrics $cleanup_metrics): Collection
 	{
+		if (Configs::getValueAsBool('live_metrics_enabled') === false) {
+			throw new UnauthorizedException("Live metrics are not enabled.");
+		}
+
 		// First clean up.
 		$cleanup_metrics->do();
 
