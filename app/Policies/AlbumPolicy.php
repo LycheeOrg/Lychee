@@ -10,6 +10,7 @@ namespace App\Policies;
 
 use App\Constants\AccessPermissionConstants as APC;
 use App\Contracts\Models\AbstractAlbum;
+use App\Enum\MetricsAccess;
 use App\Enum\SmartAlbumType;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\QueryBuilderException;
@@ -42,6 +43,7 @@ class AlbumPolicy extends BasePolicy
 	public const CAN_SHARE_WITH_USERS = 'canShareWithUsers';
 	public const CAN_IMPORT_FROM_SERVER = 'canImportFromServer';
 	public const CAN_SHARE_ID = 'canShareById';
+	public const CAN_READ_METRICS = 'canReadMetrics';
 
 	/**
 	 * This ensures that current album is owned by current user.
@@ -570,5 +572,30 @@ class AlbumPolicy extends BasePolicy
 			array_keys(SmartAlbumType::values()),
 			[null]
 		);
+	}
+
+	/**
+	 * Check whether the user can read the metrics of the album.
+	 *
+	 * @param User|null     $user
+	 * @param AbstractAlbum $album
+	 *
+	 * @return bool
+	 */
+	public function canReadMetrics(?User $user, AbstractAlbum $album): bool
+	{
+		if (!$album instanceof BaseAlbum) {
+			return false;
+		}
+
+		$access_level = Configs::getValueAsEnum('metrics_access', MetricsAccess::class);
+
+		return match ($access_level) {
+			MetricsAccess::PUBLIC => true,
+			MetricsAccess::LOGGEDIN => $user !== null,
+			MetricsAccess::OWNER => $user !== null && $album->owner_id === $user->id,
+			MetricsAccess::ADMIN => $user?->may_administrate === true,
+			default => false,
+		};
 	}
 }
