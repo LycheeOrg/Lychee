@@ -15,4 +15,9 @@ return [
 	'title' => 'Задачи',
 
 	'no_data' => 'Пока не выполнено ни одного задания.',
+
+	'ready' => 'Ready',
+	'success' => 'Success',
+	'failure' => 'Failure',
+	'started' => 'Started',
 ];

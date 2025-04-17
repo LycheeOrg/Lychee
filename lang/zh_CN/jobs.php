@@ -15,4 +15,9 @@ return [
 	'title' => '任务',
 
 	'no_data' => '尚未执行任何任务。',
+
+	'ready' => 'Ready',
+	'success' => 'Success',
+	'failure' => 'Failure',
+	'started' => 'Started',
 ];
