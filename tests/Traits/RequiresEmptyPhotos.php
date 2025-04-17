@@ -27,6 +27,8 @@ trait RequiresEmptyPhotos
 {
 	use InteractsWithFilesystemPermissions;
 
+	abstract protected function assertDatabaseCount($table, int $count, $connection = null);
+
 	protected function setUpRequiresEmptyPhotos(): void
 	{
 		$this->setUpInteractsWithFilesystemPermissions();
@@ -35,6 +37,11 @@ trait RequiresEmptyPhotos
 		$this->assertDatabaseCount('size_variants', 0);
 		$this->assertDatabaseCount('photos', 0);
 		$this->assertDatabaseCount('jobs_history', 0);
+		static::assertEquals(
+			0,
+			DB::table('statistics')->whereNotNull('photo_id')
+				->count()
+		);
 	}
 
 	protected function tearDownRequiresEmptyPhotos(): void
@@ -44,6 +51,7 @@ trait RequiresEmptyPhotos
 		DB::table('size_variants')->delete();
 		DB::table('photos')->delete();
 		DB::table('jobs_history')->delete();
+		DB::table('statistics')->whereNotNull('photo_id')->delete();
 		self::cleanPublicFolders();
 	}
 
@@ -94,6 +102,4 @@ trait RequiresEmptyPhotos
 			}
 		}
 	}
-
-	abstract protected function assertDatabaseCount($table, int $count, $connection = null);
 }

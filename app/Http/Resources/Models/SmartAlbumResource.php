@@ -37,6 +37,7 @@ class SmartAlbumResource extends Data
 	public AlbumProtectionPolicy $policy;
 	public AlbumRightsResource $rights;
 	public PreFormattedAlbumData $preFormattedData;
+	public null $statistics = null; // Needed to unify the API response with the AlbumResource and TagAlbumResource.
 
 	public function __construct(BaseSmartAlbum $smart_album)
 	{

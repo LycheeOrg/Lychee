@@ -40,6 +40,7 @@ class Create
 		$this->set_parent($album, $parent_album);
 		$album->save();
 		$this->set_permissions($album, $parent_album);
+		$this->setStatistics($album);
 
 		return $album;
 	}
@@ -133,5 +134,16 @@ class Create
 		$access_perm = AccessPermission::withGrantFullPermissionsToUser($this->intended_owner_id);
 
 		$album->access_permissions()->save($access_perm);
+	}
+
+	private function setStatistics(Album $album): void
+	{
+		$album->statistics()->create([
+			'album_id' => $album->id,
+			'visit_count' => 0,
+			'download_count' => 0,
+			'favourite_count' => 0,
+			'shared_count' => 0,
+		]);
 	}
 }
