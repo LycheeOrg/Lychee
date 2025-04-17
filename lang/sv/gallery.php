@@ -102,6 +102,9 @@ return [
 		],
 
 		'stats' => [
+			'number_of_visits' => 'Number of visits',
+			'number_of_downloads' => 'Number of downloads',
+			'number_of_shares' => 'Number of shares',
 			'lens' => 'Lens',
 			'shutter' => 'Shutter speed',
 			'iso' => 'ISO',
@@ -140,6 +143,7 @@ return [
 		],
 
 		'details' => [
+			'exif_data' => 'EXIF data',
 			'about' => 'About',
 			'basics' => 'Basics',
 			'title' => 'Title',
@@ -168,6 +172,13 @@ return [
 			'aperture' => 'Aperture',
 			'focal' => 'Focal Length',
 			'iso' => 'ISO %s',
+			'stats' => [
+				'header' => 'Statistics',
+				'number_of_visits' => 'Number of visits',
+				'number_of_downloads' => 'Number of downloads',
+				'number_of_shares' => 'Number of shares',
+				'number_of_favourites' => 'Number of favourites',
+			],
 		],
 
 		'edit' => [

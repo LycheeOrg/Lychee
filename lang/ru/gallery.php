@@ -102,6 +102,9 @@ return [
 		],
 
 		'stats' => [
+			'number_of_visits' => 'Number of visits',
+			'number_of_downloads' => 'Number of downloads',
+			'number_of_shares' => 'Number of shares',
 			'lens' => 'Объектив',
 			'shutter' => 'Выдержка',
 			'iso' => 'ISO',
@@ -140,6 +143,7 @@ return [
 		],
 
 		'details' => [
+			'exif_data' => 'EXIF data',
 			'about' => 'О фотографии',
 			'basics' => 'Основное',
 			'title' => 'Название',
@@ -168,6 +172,13 @@ return [
 			'aperture' => 'Диафрагма',
 			'focal' => 'Фокусное расстояние',
 			'iso' => 'ISO %s',
+			'stats' => [
+				'header' => 'Statistics',
+				'number_of_visits' => 'Number of visits',
+				'number_of_downloads' => 'Number of downloads',
+				'number_of_shares' => 'Number of shares',
+				'number_of_favourites' => 'Number of favourites',
+			],
 		],
 
 		'edit' => [
