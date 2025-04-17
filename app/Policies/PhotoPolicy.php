@@ -8,9 +8,11 @@
 
 namespace App\Policies;
 
+use App\Enum\MetricsAccess;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\QueryBuilderException;
+use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\User;
 use Illuminate\Contracts\Container\BindingResolutionException;
@@ -26,6 +28,7 @@ class PhotoPolicy extends BasePolicy
 	public const CAN_EDIT_ID = 'canEditById';
 	public const CAN_ACCESS_FULL_PHOTO = 'canAccessFullPhoto';
 	public const CAN_DELETE_BY_ID = 'canDeleteById';
+	public const CAN_READ_METRICS = 'canReadMetrics';
 
 	/**
 	 * @throws FrameworkException
@@ -211,7 +214,8 @@ class PhotoPolicy extends BasePolicy
 		}
 
 		// If there are any photos which are not in albums at this point, we fail.
-		if (Photo::query()
+		if (
+			Photo::query()
 			->whereNull('album_id')
 			->whereIn('id', $photo_ids)
 			->count() > 0
@@ -226,5 +230,26 @@ class PhotoPolicy extends BasePolicy
 			->pluck('album_id')->all();
 
 		return $this->album_policy->canDeleteById($user, $parent_i_ds);
+	}
+
+	/**
+	 * Check whether the user can read the metrics of the photo.
+	 *
+	 * @param User|null $user
+	 * @param Photo     $photo
+	 *
+	 * @return bool
+	 */
+	public function canReadMetrics(?User $user, Photo $photo): bool
+	{
+		$access_level = Configs::getValueAsEnum('metrics_access', MetricsAccess::class);
+
+		return match ($access_level) {
+			MetricsAccess::PUBLIC => true,
+			MetricsAccess::LOGGEDIN => $user !== null,
+			MetricsAccess::OWNER => $user !== null && $photo->owner_id === $user->id,
+			MetricsAccess::ADMIN => $user?->may_administrate === true,
+			default => false,
+		};
 	}
 }

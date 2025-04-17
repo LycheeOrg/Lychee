@@ -144,6 +144,30 @@
 						</h2>
 						<span class="py-0.5 pl-0 text-sm text-muted-color">{{ props.photo.preformatted.license }}</span>
 					</template>
+
+					<template v-if="props.photo.statistics">
+						<h2 class="text-muted-color-emphasis text-base font-bold pt-4 pb-1">
+							{{ $t("gallery.photo.details.stats.header") }}
+						</h2>
+						<div class="flex flex-wrap text-muted-color text-sm gap-y-0.5">
+							<div class="w-1/2">
+								<i class="pi pi-eye mr-2" v-tooltip.right="$t('gallery.photo.details.stats.number_of_visits')" />
+								{{ props.photo.statistics.visit_count }}
+							</div>
+							<div class="w-1/2">
+								<i class="pi pi-cloud-download mr-2" v-tooltip.right="$t('gallery.photo.details.stats.number_of_downloads')" />
+								{{ props.photo.statistics.download_count }}
+							</div>
+							<div class="w-1/2">
+								<i class="pi pi-share-alt mr-2" v-tooltip.right="$t('gallery.photo.details.stats.number_of_shares')" />
+								{{ props.photo.statistics.shared_count }}
+							</div>
+							<div class="w-1/2">
+								<i class="pi pi-heart mr-2" v-tooltip.right="$t('gallery.photo.details.stats.number_of_favourites')" />
+								{{ props.photo.statistics.favourite_count }}
+							</div>
+						</div>
+					</template>
 				</div>
 			</template>
 		</Card>
@@ -151,6 +175,7 @@
 </template>
 <script setup lang="ts">
 import { Ref } from "vue";
+import Tag from "primevue/tag";
 import Card from "primevue/card";
 import MapInclude from "../gallery/photoModule/MapInclude.vue";
 import MiniIcon from "../icons/MiniIcon.vue";

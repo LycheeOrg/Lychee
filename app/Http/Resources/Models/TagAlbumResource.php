@@ -16,9 +16,12 @@ use App\Http\Resources\Rights\AlbumRightsResource;
 use App\Http\Resources\Traits\HasHeaderUrl;
 use App\Http\Resources\Traits\HasPrepPhotoCollection;
 use App\Http\Resources\Traits\HasTimelineData;
+use App\Models\Configs;
 use App\Models\TagAlbum;
+use App\Policies\AlbumPolicy;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\LiteralTypeScriptType;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
@@ -52,6 +55,8 @@ class TagAlbumResource extends Data
 	public PreFormattedAlbumData $preFormattedData;
 	public ?EditableBaseAlbumResource $editable;
 
+	public ?AlbumStatisticsResource $statistics = null;
+
 	public function __construct(TagAlbum $tag_album)
 	{
 		// basic
@@ -84,6 +89,10 @@ class TagAlbumResource extends Data
 
 		if ($this->rights->can_edit) {
 			$this->editable = EditableBaseAlbumResource::fromModel($tag_album);
+		}
+
+		if (Configs::getValueAsBool('metrics_enabled') && Gate::check(AlbumPolicy::CAN_READ_METRICS, [TagAlbum::class, $tag_album])) {
+			$this->statistics = AlbumStatisticsResource::fromModel($tag_album->statistics);
 		}
 	}
 
