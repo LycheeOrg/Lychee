@@ -84,6 +84,17 @@ class VersionController extends Controller
 			return [];
 		}
 
+		// @codeCoverageIgnoreStart
+		return $this->convert($response);
+		// @codeCoverageIgnoreEnd
+	}
+
+	/**
+	 * Convert the changelogs from the response to an array of ChangeLogInfo.
+	 * We separate the logic in order to properly test the expected behavior.
+	 */
+	protected function convert(string $response): array
+	{
 		// remove the </style> block at the beginning of the changelogs
 		$pos = strpos($response, '</style>');
 		if ($pos === false) {
