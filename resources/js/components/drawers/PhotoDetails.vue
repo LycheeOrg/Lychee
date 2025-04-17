@@ -175,6 +175,7 @@
 </template>
 <script setup lang="ts">
 import { Ref } from "vue";
+import Tag from "primevue/tag";
 import Card from "primevue/card";
 import MapInclude from "../gallery/photoModule/MapInclude.vue";
 import MiniIcon from "../icons/MiniIcon.vue";
