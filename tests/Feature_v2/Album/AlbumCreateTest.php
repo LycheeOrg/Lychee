@@ -18,7 +18,7 @@
 
 namespace Tests\Feature_v2\Album;
 
-// use App\Models\AccessPermission;
+use App\Models\Statistics;
 use Tests\Feature_v2\Base\BaseApiV2Test;
 
 class AlbumCreateTest extends BaseApiV2Test
@@ -49,6 +49,7 @@ class AlbumCreateTest extends BaseApiV2Test
 		]);
 		self::assertEquals(200, $response->getStatusCode());
 		$new_album_id = $response->getOriginalContent();
+		$this->assertEquals(1, Statistics::where('album_id', $new_album_id)->count());
 
 		$response = $this->getJsonWithData('Album', ['album_id' => $this->album1->id]);
 		$this->assertOk($response);
@@ -67,5 +68,6 @@ class AlbumCreateTest extends BaseApiV2Test
 		$response = $this->getJsonWithData('Album', ['album_id' => $this->album1->id]);
 		$this->assertOk($response);
 		$response->assertSee($new_album_id);
+		$this->assertEquals(1, Statistics::where('album_id', $new_album_id)->count());
 	}
 }

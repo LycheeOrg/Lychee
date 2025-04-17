@@ -17,11 +17,8 @@ onMounted(() => {
 
 const classVal = computed(() => {
 	return {
-		"col-span-2": true,
-		"bg-red-500": true,
 		"h-48": true,
 		"my-0.5": true,
-		"mx-3": true,
 		hidden: !latitude.value && !longitude.value,
 	};
 });

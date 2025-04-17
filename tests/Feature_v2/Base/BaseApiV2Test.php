@@ -26,36 +26,6 @@ abstract class BaseApiV2Test extends BaseV2Test
 	public const API_PREFIX = '/api/v2/';
 
 	/**
-	 * Visit the given URI with a GET request.
-	 *
-	 * @param Uri|string $uri
-	 * @param array      $headers
-	 *
-	 * @return TestResponse<\Illuminate\Http\JsonResponse>
-	 */
-	public function get($uri, array $headers = [])
-	{
-		return parent::get(self::API_PREFIX . ltrim($uri, '/'), $headers);
-	}
-
-	/**
-	 * Visit the given URI with a POST request.
-	 *
-	 * @param Uri|string $uri
-	 * @param array      $data
-	 * @param array      $headers
-	 *
-	 * @return TestResponse<\Illuminate\Http\JsonResponse>
-	 */
-	public function post($uri, array $data = [], array $headers = [])
-	{
-		$server = $this->transformHeadersToServerVars($headers);
-		$cookies = $this->prepareCookiesForRequest();
-
-		return $this->call('POST', self::API_PREFIX . ltrim($uri, '/'), $data, $cookies, [], $server);
-	}
-
-	/**
 	 * Visit the given URI with a GET request, expecting a JSON response.
 	 *
 	 * @param string $uri

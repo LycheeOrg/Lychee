@@ -18,6 +18,7 @@
 
 namespace Tests\Feature_v2\Album;
 
+use App\Models\Statistics;
 use Tests\Feature_v2\Base\BaseApiV2Test;
 
 class AlbumDeleteTest extends BaseApiV2Test
@@ -59,5 +60,6 @@ class AlbumDeleteTest extends BaseApiV2Test
 		$response = $this->getJson('Albums');
 		$this->assertOk($response);
 		$response->assertDontSee($this->album1->id);
+		$this->assertEquals(0, Statistics::where('album_id', $this->album1->id)->count());
 	}
 }
