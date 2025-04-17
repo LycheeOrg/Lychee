@@ -107,18 +107,14 @@ function prettyDate(iso8601: string): string {
 }
 
 function translateStatus(status: string): string {
-	switch (status) {
-		case "ready":
-			return trans("jobs.ready");
-		case "success":
-			return trans("jobs.success");
-		case "failure":
-			return trans("jobs.failure");
-		case "started":
-			return trans("jobs.started");
-		default:
-			return status;
-	}
+	const translationMap = new Map([
+		["ready", trans("jobs.ready")],
+		["success", trans("jobs.success")],
+		["failure", trans("jobs.failure")],
+		["started", trans("jobs.started")],
+	]);
+
+	return translationMap.get(status) || status;
 }
 
 onMounted(() => {
