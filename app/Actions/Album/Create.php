@@ -140,7 +140,6 @@ class Create
 	{
 		$album->statistics()->create([
 			'album_id' => $album->id,
-			'photo_id' => null,
 			'visit_count' => 0,
 			'download_count' => 0,
 			'favourite_count' => 0,

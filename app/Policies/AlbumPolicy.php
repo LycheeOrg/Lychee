@@ -592,7 +592,7 @@ class AlbumPolicy extends BasePolicy
 
 		return match ($access_level) {
 			MetricsAccess::PUBLIC => true,
-			MetricsAccess::LOGGEDIN => $user !== null,
+			MetricsAccess::LOGGED_IN => $user !== null,
 			MetricsAccess::OWNER => $user !== null && $album->owner_id === $user->id,
 			MetricsAccess::ADMIN => $user?->may_administrate === true,
 			default => false,

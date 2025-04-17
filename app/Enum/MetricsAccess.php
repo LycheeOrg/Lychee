@@ -11,7 +11,7 @@ namespace App\Enum;
 enum MetricsAccess: string
 {
 	case PUBLIC = 'public';
-	case LOGGEDIN = 'logged-in users';
+	case LOGGED_IN = 'logged-in users';
 	case OWNER = 'owner';
 	case ADMIN = 'admin';
 }
