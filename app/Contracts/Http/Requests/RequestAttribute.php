@@ -32,6 +32,7 @@ class RequestAttribute
 	public const HEADER_ID_ATTRIBUTE = 'header_id';
 
 	public const TITLE_ATTRIBUTE = 'title';
+	public const DATE_ATTRIBUTE = 'date';
 	public const UPLOAD_DATE_ATTRIBUTE = 'upload_date';
 	public const TAKEN_DATE_ATTRIBUTE = 'taken_at';
 	public const DESCRIPTION_ATTRIBUTE = 'description';
