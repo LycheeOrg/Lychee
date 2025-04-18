@@ -68,7 +68,7 @@
 	<template v-if="photo">
 		<PhotoTagDialog
 			v-model:visible="is_tag_visible"
-			:parent-id="albumid"
+			:parent-id="albumId"
 			:photo="selectedPhoto"
 			:photo-ids="selectedPhotosIds"
 			@tagged="
@@ -80,7 +80,7 @@
 		/>
 		<PhotoCopyDialog
 			v-model:visible="is_copy_visible"
-			:parent-id="albumid"
+			:parent-id="albumId"
 			:photo="selectedPhoto"
 			:photo-ids="selectedPhotosIds"
 			@copied="
@@ -91,28 +91,28 @@
 			"
 		/>
 		<PhotoEdit v-if="photo?.rights.can_edit" :photo="photo" v-model:visible="is_photo_edit_open" />
-		<MoveDialog :photo="photo" v-model:visible="is_move_visible" :parent-id="props.albumid" @moved="refresh" />
-		<DeleteDialog :photo="photo" v-model:visible="is_delete_visible" :parent-id="props.albumid" @deleted="refresh" />
+		<MoveDialog :photo="photo" v-model:visible="is_move_visible" :parent-id="props.albumId" @moved="refresh" />
+		<DeleteDialog :photo="photo" v-model:visible="is_delete_visible" :parent-id="props.albumId" @deleted="refresh" />
 	</template>
 	<template v-else-if="!noData">
 		<!-- Dialogs -->
 		<PhotoTagDialog
 			v-model:visible="is_tag_visible"
-			:parent-id="albumid"
+			:parent-id="albumId"
 			:photo="selectedPhoto"
 			:photo-ids="selectedPhotosIds"
 			@tagged="refresh"
 		/>
 		<PhotoCopyDialog
 			v-model:visible="is_copy_visible"
-			:parent-id="albumid"
+			:parent-id="albumId"
 			:photo="selectedPhoto"
 			:photo-ids="selectedPhotosIds"
 			@copied="refresh"
 		/>
 		<MoveDialog
 			v-model:visible="is_move_visible"
-			:parent-id="albumid"
+			:parent-id="albumId"
 			:photo="selectedPhoto"
 			:photo-ids="selectedPhotosIds"
 			:album="selectedAlbum"
@@ -121,7 +121,7 @@
 		/>
 		<DeleteDialog
 			v-model:visible="is_delete_visible"
-			:parent-id="albumid"
+			:parent-id="albumId"
 			:photo="selectedPhoto"
 			:photo-ids="selectedPhotosIds"
 			:album="selectedAlbum"
@@ -131,7 +131,7 @@
 		<RenameDialog v-model:visible="is_rename_visible" :parent-id="undefined" :album="selectedAlbum" :photo="selectedPhoto" @renamed="refresh" />
 		<AlbumMergeDialog
 			v-model:visible="is_merge_album_visible"
-			:parent-id="albumid"
+			:parent-id="albumId"
 			:album="selectedAlbum"
 			:album-ids="selectedAlbumsIds"
 			@merged="refresh"
@@ -185,12 +185,12 @@ const router = useRouter();
 const toast = useToast();
 
 const props = defineProps<{
-	albumid?: string;
-	photoid?: string;
+	albumId?: string;
+	photoId?: string;
 }>();
 
-const albumId = ref(props.albumid ?? ALL);
-const photoId = ref(props.photoid);
+const albumId = ref(props.albumId ?? ALL);
+const photoId = ref(props.photoId);
 
 // unused? Hard to say...
 const videoElement = ref<HTMLVideoElement | null>(null);
@@ -341,7 +341,7 @@ function goBack() {
 	}
 
 	if (albumId.value !== undefined && albumId.value !== ALL) {
-		router.push({ name: "album", params: { albumId: props.albumid } });
+		router.push({ name: "album", params: { albumId: props.albumId } });
 	} else {
 		router.push({ name: "gallery" });
 	}

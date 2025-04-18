@@ -171,9 +171,9 @@ const togglableStore = useTogglablesStateStore();
 const leftMenuStore = useLeftMenuStateStore();
 
 lycheeStore.init();
-const albumid = ref("gallery");
+const albumId = ref("gallery");
 
-const { onScroll, setScroll } = useScrollable(togglableStore, albumid);
+const { onScroll, setScroll } = useScrollable(togglableStore, albumId);
 const { is_full_screen, is_login_open, is_upload_visible, list_upload_files, is_webauthn_open } = storeToRefs(togglableStore);
 const { are_nsfw_visible, title } = storeToRefs(lycheeStore);
 

@@ -30,7 +30,7 @@
 				</div>
 				<div class="w-1/3 flex-none flex gap-2 group">
 					<router-link
-						:to="{ name: 'photo', params: { albumId: duplicate.album_id, photoId: duplicate.photo_id } }"
+						:to="{ name: 'album', params: { albumId: duplicate.album_id, photoId: duplicate.photo_id } }"
 						target="_blank"
 						class=""
 					>

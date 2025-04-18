@@ -295,7 +295,7 @@ function openSearch() {
 	if (album.value === undefined) {
 		return;
 	}
-	router.push({ name: "search-with-album", params: { albumId: album.value?.id } });
+	router.push({ name: "search", params: { albumId: album.value?.id } });
 }
 
 // Album operations
