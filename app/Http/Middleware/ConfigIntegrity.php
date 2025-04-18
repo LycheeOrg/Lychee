@@ -18,6 +18,7 @@ class ConfigIntegrity
 {
 	public const SE_FIELDS = [
 		'default_user_quota',
+		'metrics_enabled',
 		'disable_small_download',
 		'disable_small2x_download',
 		'disable_medium_download',
@@ -40,6 +41,12 @@ class ConfigIntegrity
 		'low_number_of_shoots_per_day',
 		'medium_number_of_shoots_per_day',
 		'high_number_of_shoots_per_day',
+		'metrics_enabled',
+		'metrics_logged_in_users_enabed',
+		'metrics_access',
+		'live_metrics_enabled',
+		'live_metrics_access',
+		'live_metrics_max_time',
 	];
 
 	/**

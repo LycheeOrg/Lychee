@@ -141,7 +141,7 @@ import { useAuthStore } from "@/stores/Auth";
 import { computed, ref, watch, onMounted, onUnmounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useLycheeStateStore } from "@/stores/LycheeState";
-import { onKeyStroke } from "@vueuse/core";
+import { onKeyStroke, useDebounceFn } from "@vueuse/core";
 import { getModKey, shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
 import { storeToRefs } from "pinia";
 import { useSelection } from "@/composables/selections/selections";
@@ -173,6 +173,7 @@ import { useSlideshowFunction } from "@/composables/photo/slideshow";
 import { useHasNextPreviousPhoto } from "@/composables/photo/hasNextPreviousPhoto";
 import { getNextPreviousPhoto } from "@/composables/photo/getNextPreviousPhoto";
 import { usePhotoRefresher } from "@/composables/photo/hasRefresher";
+import MetricsService from "@/services/metrics-service";
 
 const route = useRoute();
 const router = useRouter();
@@ -411,6 +412,13 @@ onUnmounted(() => {
 	window.removeEventListener("drop", dropUpload);
 });
 
+const debouncedPhotoMetrics = useDebounceFn(() => {
+	if (photoId.value !== undefined) {
+		MetricsService.photo(photoId.value);
+		return;
+	}
+}, 100);
+
 watch(
 	() => [route.params.albumid, route.params.photoid],
 	([newAlbumId, newPhotoId], _) => {
@@ -418,6 +426,8 @@ watch(
 
 		albumId.value = newAlbumId as string;
 		photoId.value = newPhotoId as string;
+		debouncedPhotoMetrics();
+
 		if (photoId.value !== undefined) {
 			togglableStore.rememberScrollThumb(photoId.value);
 		}

@@ -102,6 +102,9 @@ return [
 		],
 
 		'stats' => [
+			'number_of_visits' => 'Number of visits',
+			'number_of_downloads' => 'Number of downloads',
+			'number_of_shares' => 'Number of shares',
 			'lens' => '镜头',
 			'shutter' => '快门速度',
 			'iso' => 'ISO',
@@ -140,6 +143,7 @@ return [
 		],
 
 		'details' => [
+			'exif_data' => 'EXIF data',
 			'about' => '关于',
 			'basics' => '基本信息',
 			'title' => '标题',
@@ -168,6 +172,13 @@ return [
 			'aperture' => '光圈',
 			'focal' => '焦距',
 			'iso' => 'ISO %s',
+			'stats' => [
+				'header' => 'Statistics',
+				'number_of_visits' => 'Number of visits',
+				'number_of_downloads' => 'Number of downloads',
+				'number_of_shares' => 'Number of shares',
+				'number_of_favourites' => 'Number of favourites',
+			],
 		],
 
 		'edit' => [

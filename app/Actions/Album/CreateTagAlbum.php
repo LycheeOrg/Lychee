@@ -36,7 +36,20 @@ class CreateTagAlbum
 		$album->show_tags = $show_tags;
 		$album->owner_id = $user_id;
 		$album->save();
+		$this->setStatistics($album);
 
 		return $album;
+	}
+
+	private function setStatistics(TagAlbum $album): void
+	{
+		$album->statistics()->create([
+			'album_id' => $album->id,
+			'photo_id' => null,
+			'visit_count' => 0,
+			'download_count' => 0,
+			'favourite_count' => 0,
+			'shared_count' => 0,
+		]);
 	}
 }

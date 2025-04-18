@@ -56,6 +56,7 @@ trait RequiresEmptyAlbums
 				->whereNotIn('base_album_id', SmartAlbumType::values())
 				->count()
 		);
+		static::assertEquals(0, DB::table('statistics')->whereNotNull('album_id')->count());
 	}
 
 	protected function tearDownRequiresEmptyAlbums(): void
@@ -68,5 +69,6 @@ trait RequiresEmptyAlbums
 		DB::table('albums')->orderBy('_lft', 'desc')->delete();
 		DB::table('base_albums')->delete();
 		DB::table('access_permissions')->whereNotIn('base_album_id', SmartAlbumType::values())->delete();
+		DB::table('statistics')->whereNotNull('album_id')->delete();
 	}
 }
