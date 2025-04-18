@@ -41,7 +41,7 @@ final class RedirectController extends Controller
 	 *
 	 * @codeCoverageIgnore Legacy stuff
 	 */
-	public function redirect(Request $request, string $album_id, ?string $photo_id): SymfonyResponse
+	public function redirect(Request $request, string $album_id, ?string $photo_id = null): SymfonyResponse
 	{
 		try {
 			if (Legacy::isLegacyModelID($album_id)) {
