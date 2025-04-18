@@ -8,8 +8,8 @@
 	<AlbumCreateDialog v-if="album?.rights.can_upload && config?.is_model_album" v-model:parent-id="album.id" key="create_album_modal" />
 
 	<!-- Warnings & Locks -->
-	<SensitiveWarning v-if="config?.is_nsfw_warning_visible" :album-id="albumid" />
-	<Unlock :albumid="albumid" :visible="isPasswordProtected" @reload="refresh" @fail="is_login_open = true" />
+	<SensitiveWarning v-if="config?.is_nsfw_warning_visible" :album-id="albumId" />
+	<Unlock :album-id="albumId" :visible="isPasswordProtected" @reload="refresh" @fail="is_login_open = true" />
 
 	<!-- Album panel -->
 	<AlbumPanel
@@ -31,7 +31,7 @@
 	<!-- Photo panel -->
 	<PhotoPanel
 		v-if="photo"
-		:album-id="albumid"
+		:album-id="albumId"
 		:photo="photo"
 		:photos="photos"
 		:is-map-visible="config?.is_map_accessible ?? false"
@@ -53,7 +53,7 @@
 	<template v-if="photo">
 		<PhotoTagDialog
 			v-model:visible="is_tag_visible"
-			:parent-id="albumid"
+			:parent-id="albumId"
 			:photo="selectedPhoto"
 			:photo-ids="selectedPhotosIds"
 			@tagged="
@@ -65,7 +65,7 @@
 		/>
 		<PhotoCopyDialog
 			v-model:visible="is_copy_visible"
-			:parent-id="albumid"
+			:parent-id="albumId"
 			:photo="selectedPhoto"
 			:photo-ids="selectedPhotosIds"
 			@copied="
@@ -76,13 +76,13 @@
 			"
 		/>
 		<PhotoEdit v-if="photo?.rights.can_edit" :photo="photo" v-model:visible="is_photo_edit_open" />
-		<MoveDialog :photo="photo" v-model:visible="is_move_visible" :parent-id="props.albumid" @moved="refresh" />
-		<DeleteDialog :photo="photo" v-model:visible="is_delete_visible" :parent-id="props.albumid" @deleted="refresh" />
+		<MoveDialog :photo="photo" v-model:visible="is_move_visible" :parent-id="props.albumId" @moved="refresh" />
+		<DeleteDialog :photo="photo" v-model:visible="is_delete_visible" :parent-id="props.albumId" @deleted="refresh" />
 	</template>
 	<template v-else>
 		<MoveDialog
 			v-model:visible="is_move_visible"
-			:parent-id="albumid"
+			:parent-id="albumId"
 			:photo="selectedPhoto"
 			:photo-ids="selectedPhotosIds"
 			:album="selectedAlbum"
@@ -96,7 +96,7 @@
 		/>
 		<DeleteDialog
 			v-model:visible="is_delete_visible"
-			:parent-id="albumid"
+			:parent-id="albumId"
 			:photo="selectedPhoto"
 			:photo-ids="selectedPhotosIds"
 			:album="selectedAlbum"
@@ -124,7 +124,7 @@
 		/>
 		<AlbumMergeDialog
 			v-model:visible="is_merge_album_visible"
-			:parent-id="albumid"
+			:parent-id="albumId"
 			:album="selectedAlbum"
 			:album-ids="selectedAlbumsIds"
 			@merged="
@@ -180,12 +180,12 @@ const router = useRouter();
 const toast = useToast();
 
 const props = defineProps<{
-	albumid: string;
-	photoid?: string;
+	albumId: string;
+	photoId?: string;
 }>();
 
-const albumId = ref(props.albumid);
-const photoId = ref(props.photoid);
+const albumId = ref(props.albumId);
+const photoId = ref(props.photoId);
 
 // unused? Hard to say...
 const videoElement = ref<HTMLVideoElement | null>(null);
@@ -227,7 +227,7 @@ const children = computed<App.Http.Resources.Models.ThumbAlbumResource[]>(() => 
 
 const { toggleStar, rotatePhotoCCW, rotatePhotoCW, setAlbumHeader, rotateOverlay } = usePhotoActions(photo, albumId, toast, lycheeStore);
 
-const { getNext, getPrevious } = getNextPreviousPhoto(router, albumId, photo);
+const { getNext, getPrevious } = getNextPreviousPhoto(router, photo);
 const { slideshow, next, previous, stop } = useSlideshowFunction(1000, is_slideshow_active, slideshow_timeout, videoElement, getNext, getPrevious);
 const { hasNext, hasPrevious } = useHasNextPreviousPhoto(photo);
 
@@ -237,7 +237,7 @@ function toggleSlideShow() {
 	}
 
 	slideshow();
-	router.push({ name: "photo", params: { albumid: album.value.id, photoid: album.value.photos[0].id } });
+	router.push({ name: "photo", params: { albumId: album.value.id, photoId: album.value.photos[0].id } });
 }
 
 const { layoutConfig, loadLayoutConfig } = useGetLayoutConfig();
@@ -261,13 +261,13 @@ function goBack() {
 	if (photoId.value !== undefined) {
 		photoId.value = undefined;
 		photo.value = undefined;
-		router.push({ name: "album", params: { albumid: albumId.value } });
+		router.push({ name: "album", params: { albumId: albumId.value } });
 		return;
 	}
 
 	is_album_edit_open.value = false;
 	if (modelAlbum.value !== undefined && modelAlbum.value.parent_id !== null) {
-		router.push({ name: "album", params: { albumid: modelAlbum.value.parent_id } });
+		router.push({ name: "album", params: { albumId: modelAlbum.value.parent_id } });
 	} else {
 		router.push({ name: "gallery" });
 	}
@@ -295,7 +295,7 @@ function openSearch() {
 	if (album.value === undefined) {
 		return;
 	}
-	router.push({ name: "search-with-album", params: { albumid: album.value?.id } });
+	router.push({ name: "search-with-album", params: { albumId: album.value?.id } });
 }
 
 // Album operations
@@ -420,7 +420,7 @@ const debouncedPhotoMetrics = useDebounceFn(() => {
 }, 100);
 
 watch(
-	() => [route.params.albumid, route.params.photoid],
+	() => [route.params.albumId, route.params.photoId],
 	([newAlbumId, newPhotoId], _) => {
 		unselect();
 

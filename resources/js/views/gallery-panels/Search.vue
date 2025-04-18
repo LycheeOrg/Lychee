@@ -225,13 +225,14 @@ const {
 	clear,
 	refresh,
 } = useSearch(albumId, search_term, search_page);
+
 const { refreshPhoto } = usePhotoRefresher(photo, photos, photoId);
 const { albumsForSelection, photosForSelection, noData, configForMenu, title } = useSearchComputed(config, album, albums, photos, lycheeStore);
 
 const { layoutConfig, loadLayoutConfig } = useGetLayoutConfig();
 
 const { hasPrevious, hasNext } = useHasNextPreviousPhoto(photo);
-const { getNext, getPrevious } = getNextPreviousPhoto(router, albumId, photo);
+const { getNext, getPrevious } = getNextPreviousPhoto(router, photo);
 const { slideshow, next, previous, stop } = useSlideshowFunction(1000, is_slideshow_active, slideshow_timeout, videoElement, getNext, getPrevious);
 
 const {
@@ -335,12 +336,12 @@ function goBack() {
 	if (photoId.value !== undefined) {
 		photoId.value = undefined;
 		photo.value = undefined;
-		router.push({ name: "search-with-album", params: { albumid: albumId.value } });
+		router.push({ name: "search-with-album", params: { albumId: albumId.value } });
 		return;
 	}
 
 	if (albumId.value !== undefined && albumId.value !== ALL) {
-		router.push({ name: "album", params: { albumid: props.albumid } });
+		router.push({ name: "album", params: { albumId: props.albumid } });
 	} else {
 		router.push({ name: "gallery" });
 	}
@@ -423,7 +424,7 @@ onKeyStroke("Escape", () => {
 
 onMounted(() => {
 	if (photoId.value !== undefined) {
-		router.push({ name: "search-with-album", params: { albumid: albumId.value } });
+		router.push({ name: "search-with-album", params: { albumId: albumId.value } });
 	}
 
 	if (albumId.value !== "" && albumId.value !== ALL) {
@@ -442,7 +443,7 @@ const debouncedPhotoMetrics = useDebounceFn(() => {
 }, 100);
 
 watch(
-	() => route.params.photoid,
+	() => route.params.photoId,
 	(newPhotoId, _) => {
 		unselect();
 

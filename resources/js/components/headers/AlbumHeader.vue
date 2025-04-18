@@ -13,7 +13,7 @@
 		<template #end>
 			<router-link
 				:to="{ name: 'favourites' }"
-				v-if="(favourites.photos?.length ?? 0) > 0"
+				v-if="is_favourite_enabled && (favourites.photos?.length ?? 0) > 0"
 				class="hidden sm:block"
 				v-tooltip.bottom="'Favourites'"
 			>
@@ -80,7 +80,7 @@ const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
 const favourites = useFavouriteStore();
 
-const { dropbox_api_key } = storeToRefs(lycheeStore);
+const { dropbox_api_key, is_favourite_enabled } = storeToRefs(lycheeStore);
 const { is_album_edit_open } = storeToRefs(togglableStore);
 
 const { toggleCreateAlbum, is_import_from_link_open, toggleImportFromLink, is_import_from_dropbox_open, toggleImportFromDropbox, toggleUpload } =
