@@ -32,13 +32,13 @@ const routes_ = [
 	},
 	{
 		name: "photo",
-		path: "/gallery/:albumid/:photoid",
+		path: "/gallery/:albumId/:photoId",
 		component: Album,
 		props: true,
 	},
 	{
 		name: "album",
-		path: "/gallery/:albumid",
+		path: "/gallery/:albumId",
 		component: Album,
 		props: true,
 	},
@@ -49,7 +49,7 @@ const routes_ = [
 	},
 	{
 		name: "frame-with-album",
-		path: "/frame/:albumid",
+		path: "/frame/:albumId",
 		component: Frame,
 		props: true,
 	},
@@ -65,7 +65,7 @@ const routes_ = [
 	},
 	{
 		name: "map-with-album",
-		path: "/map/:albumid",
+		path: "/map/:albumId",
 		component: MapView,
 		props: true,
 	},
@@ -76,13 +76,13 @@ const routes_ = [
 	},
 	{
 		name: "search-with-album",
-		path: "/search/:albumid",
+		path: "/search/:albumId",
 		component: Search,
 		props: true,
 	},
 	{
 		name: "search-photo",
-		path: "/search/:albumid/:photoid",
+		path: "/search/:albumId/:photoId",
 		component: Search,
 		props: true,
 	},
