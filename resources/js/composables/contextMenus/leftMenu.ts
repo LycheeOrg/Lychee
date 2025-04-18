@@ -6,6 +6,7 @@ import { LeftMenuStateStore } from "@/stores/LeftMenuState";
 import { LycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import { computed, ref } from "vue";
+import { RouteLocationNormalizedLoadedGeneric } from "vue-router";
 
 export type MenyType =
 	| {
@@ -23,7 +24,13 @@ export type MenyType =
 			items: MenyType[];
 	  };
 
-export function useLeftMenu(lycheeStore: LycheeStateStore, LeftMenuStateStore: LeftMenuStateStore, authStore: AuthStore, favourites: FavouriteStore) {
+export function useLeftMenu(
+	lycheeStore: LycheeStateStore,
+	LeftMenuStateStore: LeftMenuStateStore,
+	authStore: AuthStore,
+	favourites: FavouriteStore,
+	route: RouteLocationNormalizedLoadedGeneric,
+) {
 	const { user } = storeToRefs(authStore);
 
 	const { initData, left_menu_open } = storeToRefs(LeftMenuStateStore);
@@ -54,10 +61,16 @@ export function useLeftMenu(lycheeStore: LycheeStateStore, LeftMenuStateStore: L
 
 		const baseMenu = [
 			{
+				label: "gallery.favourites",
+				icon: "pi pi-heart",
+				route: "/gallery/favourites",
+				access: lycheeStore.is_favourite_enabled && (favourites.photos?.length ?? 0) > 0,
+			},
+			{
 				label: "left-menu.frame",
 				icon: "pi pi-desktop",
-				access: initData.value.modules.is_mod_frame_enabled ?? false,
 				route: "/frame",
+				access: !(route.name as string).includes("frame") && (initData.value.modules.is_mod_frame_enabled ?? false),
 			},
 			{
 				label: "left-menu.map",
@@ -66,10 +79,10 @@ export function useLeftMenu(lycheeStore: LycheeStateStore, LeftMenuStateStore: L
 				route: "/map",
 			},
 			{
-				label: "gallery.favourites",
-				icon: "pi pi-heart",
-				access: (favourites.photos?.length ?? 0) > 0,
-				route: "/gallery/favourites",
+				label: "gallery.timeline.title",
+				icon: "clock",
+				route: "/timeline",
+				access: !(route.name as string).includes("timeline") && lycheeStore.is_timeline_page_enabled,
 			},
 			{
 				label: "left-menu.admin",

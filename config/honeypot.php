@@ -48,7 +48,6 @@ return [
 		'bc',
 		'bk',
 		'blog',
-		'home',
 		'main',
 		'new',
 		'newsite',

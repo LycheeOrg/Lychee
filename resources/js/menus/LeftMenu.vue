@@ -133,6 +133,7 @@ const { user, left_menu_open, initData, openLycheeAbout, canSeeAdmin, load, item
 	leftMenuState,
 	authStore,
 	favouritesStore,
+	route,
 );
 
 function logout() {
@@ -141,7 +142,7 @@ function logout() {
 		initData.value = undefined;
 		authStore.setUser(null);
 		AlbumService.clearCache();
-		window.location.href = Constants.BASE_URL + "/gallery";
+		window.location.href = Constants.BASE_URL + "/home";
 	});
 }
 

@@ -124,7 +124,7 @@ const lycheeStore = useLycheeStateStore();
 const togglableStore = useTogglablesStateStore();
 const favourites = useFavouriteStore();
 
-const { dropbox_api_key } = storeToRefs(lycheeStore);
+const { dropbox_api_key, is_favourite_enabled } = storeToRefs(lycheeStore);
 const { is_login_open, is_upload_visible, is_create_album_visible, is_create_tag_album_visible } = storeToRefs(togglableStore);
 
 const router = useRouter();
@@ -222,7 +222,13 @@ const menu = computed(() =>
 			to: { name: "favourites" },
 			type: "link",
 			icon: "pi pi-heart",
-			if: (favourites.photos?.length ?? 0) > 0,
+			if: is_favourite_enabled.value && (favourites.photos?.length ?? 0) > 0,
+		},
+		{
+			to: { name: "timeline" },
+			type: "link",
+			icon: "pi pi-clock",
+			if: lycheeStore.is_favourite_enabled,
 		},
 		{
 			icon: "pi pi-search",

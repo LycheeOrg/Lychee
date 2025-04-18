@@ -1,5 +1,5 @@
 <template>
-	<Panel v-if="props.isTimeline === false" :header="$t(props.header)" :toggleable="!isAlone" :pt:header:class="headerClass" class="border-0 w-full">
+	<Panel v-if="isTimeline === false" :header="$t(props.header)" :toggleable="!isAlone" :pt:header:class="headerClass" class="border-0 w-full">
 		<div class="flex flex-wrap flex-row shrink w-full justify-start gap-1 sm:gap-2 md:gap-4 pt-4">
 			<AlbumThumbPanelList
 				:albums="props.albums"
@@ -100,6 +100,8 @@ const albumsTimeLine = computed<SplitData<App.Http.Resources.Models.ThumbAlbumRe
 		(a: App.Http.Resources.Models.ThumbAlbumResource) => a.timeline?.format ?? "Others",
 	),
 );
+
+const isTimeline = computed(() => props.isTimeline && albumsTimeLine.value.length > 0);
 
 const headerClass = computed(() => {
 	return props.isAlone ? "hidden" : "";

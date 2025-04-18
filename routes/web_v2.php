@@ -35,6 +35,7 @@ Route::get('/up', function () {
 });
 
 Route::get('/', [VueController::class, 'view'])->name('home')->middleware(['migration:complete']);
+Route::get('/home', [VueController::class, 'view'])->name('homepage')->middleware(['migration:complete']);
 Route::get('/gallery', [VueController::class, 'view'])->name('gallery')->middleware(['migration:complete']);
 Route::get('/gallery/favourites', [VueController::class, 'view'])->name('gallery-favourites')->middleware(['migration:complete']);
 Route::get('/gallery/{albumId}', [VueController::class, 'view'])->name('gallery-album')->middleware(['migration:complete', 'unlock_with_password']);
@@ -42,6 +43,10 @@ Route::get('/gallery/{albumId}/{photoId}', [VueController::class, 'view'])->name
 
 Route::get('/frame', [VueController::class, 'view'])->name('frame')->middleware(['migration:complete']);
 Route::get('/frame/{albumId}', [VueController::class, 'view'])->name('frame-album')->middleware(['migration:complete']);
+
+Route::get('/timeline', [VueController::class, 'viewNoArgs'])->name('timeline')->middleware(['migration:complete']);
+Route::get('/timeline/{date}', [VueController::class, 'viewNoArgs'])->name('timeline-with-date')->middleware(['migration:complete']);
+Route::get('/timeline/{date}/{photoId}', [VueController::class, 'viewNoArgs'])->name('timeline-with-date-and-photo')->middleware(['migration:complete']);
 
 Route::get('/map', [VueController::class, 'view'])->name('map')->middleware(['migration:complete']);
 Route::get('/map/{albumId}', [VueController::class, 'view'])->name('map-album')->middleware(['migration:complete']);

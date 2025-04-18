@@ -76,6 +76,16 @@ class VueController extends Controller
 	}
 
 	/**
+	 * Same as above but without arguments.
+	 *
+	 * @return View
+	 */
+	public function viewNoArgs(): View
+	{
+		return view('vueapp');
+	}
+
+	/**
 	 * Check if user can access the album.
 	 *
 	 * @return bool true if access, false if password required

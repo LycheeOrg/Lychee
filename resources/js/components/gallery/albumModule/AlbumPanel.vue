@@ -186,7 +186,7 @@ const {
 const { photoRoute } = usePhotoRoute(router);
 
 function photoClick(idx: number, e: MouseEvent) {
-	router.push(photoRoute(album.value?.id, photos.value[idx].id));
+	router.push(photoRoute(photos.value[idx].id));
 }
 
 const areStatisticsOpen = ref(false);
