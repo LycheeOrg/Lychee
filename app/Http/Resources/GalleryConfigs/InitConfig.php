@@ -81,6 +81,10 @@ class InitConfig extends Data
 	// or if they asked to hide it (because we are nice :) ).
 	public bool $is_se_info_hidden;
 
+	// Homepage
+	public string $default_homepage;
+	public bool $is_timeline_page_enabled = false;
+
 	public function __construct()
 	{
 		// Debug mode
@@ -130,6 +134,10 @@ class InitConfig extends Data
 		// Site title & dropbox key if logged in as admin.
 		$this->title = Configs::getValueAsString('site_title');
 		$this->dropbox_api_key = Auth::user()?->may_administrate === true ? Configs::getValueAsString('dropbox_key') : 'disabled';
+
+		// Homepage
+		$this->default_homepage = Configs::getValueAsString('home_page_default');
+		$this->is_timeline_page_enabled = Configs::getValueAsBool('timeline_page_enabled');
 
 		$this->set_supporter_properties();
 	}
