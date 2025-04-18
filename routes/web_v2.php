@@ -34,37 +34,25 @@ Route::get('/up', function () {
 	return view('health-up');
 });
 
-Route::get('/', [VueController::class, 'view'])->name('home')->middleware(['migration:complete']);
-Route::get('/gallery', [VueController::class, 'view'])->name('gallery')->middleware(['migration:complete']);
-Route::get('/gallery/favourites', [VueController::class, 'view'])->name('gallery-favourites')->middleware(['migration:complete']);
-Route::get('/gallery/{albumId}', [VueController::class, 'view'])->name('gallery-album')->middleware(['migration:complete', 'unlock_with_password']);
-Route::get('/gallery/{albumId}/{photoId}', [VueController::class, 'view'])->name('gallery-photo')->middleware(['migration:complete', 'unlock_with_password']);
+Route::get('/', VueController::class)->name('home')->middleware(['migration:complete']);
+Route::get('/gallery/{albumId?}/{photoId?}', [VueController::class, 'gallery'])->name('gallery')->middleware(['migration:complete', 'unlock_with_password']);
+Route::get('/frame/{albumId?}', [VueController::class, 'gallery'])->name('frame')->middleware(['migration:complete']);
+Route::get('/map/{albumId?}', [VueController::class, 'gallery'])->name('map')->middleware(['migration:complete']);
+Route::get('/search/{albumId?}/{photoId?}', [VueController::class, 'gallery'])->name('search')->middleware(['migration:complete']);
 
-Route::get('/frame', [VueController::class, 'view'])->name('frame')->middleware(['migration:complete']);
-Route::get('/frame/{albumId}', [VueController::class, 'view'])->name('frame-album')->middleware(['migration:complete']);
-
-Route::get('/map', [VueController::class, 'view'])->name('map')->middleware(['migration:complete']);
-Route::get('/map/{albumId}', [VueController::class, 'view'])->name('map-album')->middleware(['migration:complete']);
-
-// later
-Route::get('/search', [VueController::class, 'view'])->name('search')->middleware(['migration:complete']);
-Route::get('/search/{albumId}', [VueController::class, 'view'])->name('search-album')->middleware(['migration:complete']);
-Route::get('/search/{albumId}/{photoId}', [VueController::class, 'view'])->name('search-photo')->middleware(['migration:complete']);
-
-Route::get('/profile', [VueController::class, 'view'])->name('profile')->middleware(['migration:complete', 'login_required:always']);
-Route::get('/users', [VueController::class, 'view'])->middleware(['migration:complete', 'login_required:always']);
-Route::get('/sharing', [VueController::class, 'view'])->middleware(['migration:complete', 'login_required:always']);
-Route::get('/jobs', [VueController::class, 'view'])->middleware(['migration:complete', 'login_required:always']);
-Route::get('/diagnostics', [VueController::class, 'view'])->middleware(['migration:complete']);
-Route::get('/statistics', [VueController::class, 'view'])->middleware(['migration:complete', 'login_required:always']);
-Route::get('/maintenance', [VueController::class, 'view'])->middleware(['migration:complete', 'login_required:always']);
-Route::get('/users', [VueController::class, 'view'])->middleware(['migration:complete', 'login_required:always']);
-// TODO: Fix me later to unify when the timeline PR is merged.
-Route::get('/settings/{tab?}', fn () => view('vueapp'))->middleware(['migration:complete', 'login_required:always']);
-Route::get('/permissions', [VueController::class, 'view'])->middleware(['migration:complete', 'login_required:always']);
-Route::get('/fixTree', [VueController::class, 'view'])->middleware(['migration:complete', 'login_required:always']);
-Route::get('/duplicatesFinder', [VueController::class, 'view'])->middleware(['migration:complete', 'login_required:always']);
-Route::get('/changelogs', [VueController::class, 'view'])->middleware(['migration:complete']);
+Route::get('/profile', VueController::class)->name('profile')->middleware(['migration:complete', 'login_required:always']);
+Route::get('/users', VueController::class)->middleware(['migration:complete', 'login_required:always']);
+Route::get('/sharing', VueController::class)->middleware(['migration:complete', 'login_required:always']);
+Route::get('/jobs', VueController::class)->middleware(['migration:complete', 'login_required:always']);
+Route::get('/diagnostics', VueController::class)->middleware(['migration:complete']);
+Route::get('/statistics', VueController::class)->middleware(['migration:complete', 'login_required:always']);
+Route::get('/maintenance', VueController::class)->middleware(['migration:complete', 'login_required:always']);
+Route::get('/users', VueController::class)->middleware(['migration:complete', 'login_required:always']);
+Route::get('/settings/{tab?}', VueController::class)->middleware(['migration:complete', 'login_required:always']);
+Route::get('/permissions', VueController::class)->middleware(['migration:complete', 'login_required:always']);
+Route::get('/fixTree', VueController::class)->middleware(['migration:complete', 'login_required:always']);
+Route::get('/duplicatesFinder', VueController::class)->middleware(['migration:complete', 'login_required:always']);
+Route::get('/changelogs', VueController::class)->middleware(['migration:complete']);
 
 Route::match(['get', 'post'], '/migrate', [Admin\UpdateController::class, 'migrate'])
 	->name('migrate')
@@ -81,8 +69,7 @@ Route::get('/auth/{provider}/register', [OauthController::class, 'register'])->n
  *
  * Other ideas, redirection by album name, photo title...
  */
-Route::get('/r/{albumID}/{photoID}', [RedirectController::class, 'photo'])->middleware(['migration:complete']);
-Route::get('/r/{albumID}', [RedirectController::class, 'album'])->middleware(['migration:complete']);
+Route::get('/r/{albumId}/{photoId?}', [RedirectController::class, 'redirect'])->middleware(['migration:complete']);
 
 // We need to register this manually.
 Scramble::registerUiRoute(path: 'docs/api')->name('scramble.docs.ui');

@@ -38,23 +38,10 @@ final class RedirectController extends Controller
 	 *
 	 * @throws LycheeException
 	 * @throws ModelNotFoundException
-	 */
-	public function album(Request $request, string $album_id): SymfonyResponse
-	{
-		return $this->photo($request, $album_id, null);
-	}
-
-	/**
-	 * Trivial redirection.
-	 *
-	 * @return RedirectResponse
-	 *
-	 * @throws LycheeException
-	 * @throws ModelNotFoundException
 	 *
 	 * @codeCoverageIgnore Legacy stuff
 	 */
-	public function photo(Request $request, string $album_id, ?string $photo_id): SymfonyResponse
+	public function redirect(Request $request, string $album_id, ?string $photo_id): SymfonyResponse
 	{
 		try {
 			if (Legacy::isLegacyModelID($album_id)) {
@@ -76,8 +63,8 @@ final class RedirectController extends Controller
 			// If we are using vuejs by default, we redirect to vuejs url intead.
 			if (Features::active('vuejs')) {
 				return $photo_id === null ?
-					redirect(route('gallery-album', ['albumId' => $album_id])) :
-					redirect(route('gallery-photo', ['albumId' => $album_id, 'photoId' => $photo_id]));
+					redirect(route('gallery', ['albumId' => $album_id])) :
+					redirect(route('gallery', ['albumId' => $album_id, 'photoId' => $photo_id]));
 			}
 
 			return $photo_id === null ?
