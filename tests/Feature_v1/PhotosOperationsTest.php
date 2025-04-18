@@ -251,36 +251,6 @@ class PhotosOperationsTest extends BasePhotoTest
 		$album = static::convertJsonToObject($this->albums_tests->get($albumID));
 		static::assertCount(0, $album->photos);
 		$this->albums_tests->delete([$albumID]);
-
-		$response = $this->postJson('/api/Photo::clearSymLink');
-		$this->assertNoContent($response);
-	}
-
-	/**
-	 * Repeats {@link PhotosOperationsTest::testManyFunctionsAtOnce()} with SL enabled.
-	 *
-	 * @return void
-	 */
-	public function testManyFunctionsAtOnceWithSL(): void
-	{
-		// save initial value
-		$init_config_value1 = Configs::getValue('SL_enable');
-		$init_config_value2 = Configs::getValue('SL_for_admin');
-
-		try {
-			// set to 1
-			Configs::set('SL_enable', '1');
-			Configs::set('SL_for_admin', '1');
-			static::assertEquals('1', Configs::getValue('SL_enable'));
-			static::assertEquals('1', Configs::getValue('SL_for_admin'));
-
-			// just redo the test above :'D
-			$this->testManyFunctionsAtOnce();
-		} finally {
-			// set back to initial value
-			Configs::set('SL_enable', $init_config_value1);
-			Configs::set('SL_for_admin', $init_config_value2);
-		}
 	}
 
 	/**

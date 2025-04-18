@@ -57,14 +57,10 @@ class Delete
 	/**
 	 * Deletes the designated albums (tag albums and regular albums) from the DB.
 	 *
-	 * The method only deletes the records for albums, photos, their size
-	 * variants and potentially associated symbolic links from the DB.
-	 * The method does not delete the associated files from the physical
-	 * storage.
-	 * Instead, the method returns an object in which all these files have
-	 * been collected.
-	 * This object can (and must) be used to eventually delete the files,
-	 * however doing so can be deferred.
+	 * The method only deletes the records for albums, photos, their size variants.
+	 * The method does not delete the associated files from the physical storage.
+	 * Instead, the method returns an object in which all these files have been collected.
+	 * This object can (and must) be used to eventually delete the files, however doing so can be deferred.
 	 *
 	 * @param string[] $album_ids the album IDs (contains IDs of regular _and_ tag albums)
 	 *

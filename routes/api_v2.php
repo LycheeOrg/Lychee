@@ -107,7 +107,6 @@ Route::post('/Photo::star', [Gallery\PhotoController::class, 'star']);
 Route::post('/Photo::rotate', [Gallery\PhotoController::class, 'rotate']);
 Route::delete('/Photo', [Gallery\PhotoController::class, 'delete']);
 
-// Route::post('/Photo::clearSymLink', [PhotoController::class, 'clearSymLink']);
 // Route::get('/Photo::getArchive', [PhotoController::class, 'getArchive'])
 // 	->name('photo_download')
 // 	->withoutMiddleware(['content_type:json', 'accept_content_type:json'])

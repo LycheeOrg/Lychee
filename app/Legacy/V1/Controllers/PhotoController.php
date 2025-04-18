@@ -23,7 +23,6 @@ use App\Image\Files\UploadedFile;
 use App\Jobs\ProcessImageJob;
 use App\Legacy\V1\Requests\Photo\AddPhotoRequest;
 use App\Legacy\V1\Requests\Photo\ArchivePhotosRequest;
-use App\Legacy\V1\Requests\Photo\ClearSymLinkRequest;
 use App\Legacy\V1\Requests\Photo\DeletePhotosRequest;
 use App\Legacy\V1\Requests\Photo\DuplicatePhotosRequest;
 use App\Legacy\V1\Requests\Photo\GetPhotoRequest;
@@ -35,7 +34,6 @@ use App\Legacy\V1\Requests\Photo\SetPhotosTagsRequest;
 use App\Legacy\V1\Requests\Photo\SetPhotosTitleRequest;
 use App\Legacy\V1\Requests\Photo\SetPhotoUploadDateRequest;
 use App\Legacy\V1\Resources\Models\PhotoResource;
-use App\ModelFunctions\SymLinkFunctions;
 use App\Models\Configs;
 use App\Models\Photo;
 use App\Policies\PhotoQueryPolicy;
@@ -48,11 +46,9 @@ use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 final class PhotoController extends Controller
 {
 	/**
-	 * @param SymLinkFunctions $sym_link_functions
-	 * @param AlbumFactory     $album_factory
+	 * @param AlbumFactory $album_factory
 	 */
 	public function __construct(
-		private SymLinkFunctions $sym_link_functions,
 		private AlbumFactory $album_factory,
 	) {
 	}
@@ -91,14 +87,14 @@ final class PhotoController extends Controller
 		if ($random_album_id === '') {
 			// @codeCoverageIgnoreStart
 			$query = $photo_query_policy->applySearchabilityFilter(
-				query: Photo::query()->with(['album', 'size_variants', 'size_variants.sym_links']),
+				query: Photo::query()->with(['album', 'size_variants']),
 				origin: null,
 				include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_frame'));
 		// @codeCoverageIgnoreEnd
 		} else {
 			$query = $this->album_factory->findAbstractAlbumOrFail($random_album_id)
 									 ->photos()
-									 ->with(['album', 'size_variants', 'size_variants.sym_links']);
+									 ->with(['album', 'size_variants']);
 		}
 
 		$num = $query->count() - 1;
@@ -322,20 +318,5 @@ final class PhotoController extends Controller
 	public function getArchive(ArchivePhotosRequest $request): SymfonyResponse
 	{
 		return BaseArchive::resolve()->do($request->photos(), $request->sizeVariant());
-	}
-
-	/**
-	 * GET to manually clear the symlinks.
-	 *
-	 * @param ClearSymLinkRequest $request
-	 *
-	 * @return void
-	 *
-	 * @throws ModelDBException
-	 * @throws LycheeException
-	 */
-	public function clearSymLink(ClearSymLinkRequest $request): void
-	{
-		$this->sym_link_functions->clearSymLink();
 	}
 }
