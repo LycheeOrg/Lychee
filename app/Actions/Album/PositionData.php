@@ -32,6 +32,7 @@ class PositionData
 					// each album
 					$b->without(['cover', 'thumb']);
 				},
+				'statistics',
 				'size_variants' => function (HasMany $r): void {
 					// The web GUI only uses the small and thumb size
 					// variants to show photos on a map; so we can save
