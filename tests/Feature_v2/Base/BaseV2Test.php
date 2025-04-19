@@ -28,6 +28,7 @@ use Tests\AbstractTestCase;
 use Tests\Traits\InteractWithSmartAlbums;
 use Tests\Traits\RequireSE;
 use Tests\Traits\RequiresEmptyAlbums;
+use Tests\Traits\RequiresEmptyLiveMetrics;
 use Tests\Traits\RequiresEmptyPhotos;
 use Tests\Traits\RequiresEmptyUsers;
 use Tests\Traits\RequiresEmptyWebAuthnCredentials;
@@ -37,6 +38,7 @@ abstract class BaseV2Test extends AbstractTestCase
 	use RequiresEmptyUsers;
 	use RequiresEmptyAlbums;
 	use RequiresEmptyPhotos;
+	use RequiresEmptyLiveMetrics;
 	use RequiresEmptyWebAuthnCredentials;
 	use DatabaseTransactions;
 	use InteractWithSmartAlbums;
@@ -84,6 +86,7 @@ abstract class BaseV2Test extends AbstractTestCase
 		$this->setUpRequiresEmptyUsers();
 		$this->setUpRequiresEmptyAlbums();
 		$this->setUpRequiresEmptyPhotos();
+		$this->setUpRequiresEmptyLiveMetrics();
 
 		$this->admin = User::factory()->may_administrate()->create();
 		$this->userMayUpload1 = User::factory()->may_upload()->create();
@@ -133,6 +136,7 @@ abstract class BaseV2Test extends AbstractTestCase
 
 	public function tearDown(): void
 	{
+		$this->tearDownRequiresEmptyLiveMetrics();
 		$this->tearDownRequiresEmptyPhotos();
 		$this->tearDownRequiresEmptyAlbums();
 		$this->tearDownRequiresEmptyUsers();

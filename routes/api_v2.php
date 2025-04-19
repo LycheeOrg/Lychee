@@ -234,6 +234,7 @@ Route::get('/Statistics::getCountsOverTime', [StatisticsController::class, 'getP
 /**
  * Metrics.
  */
+Route::get('/Metrics', [MetricsController::class, 'get'])->middleware(['support:se']);
 Route::post('/Metrics::photo', [MetricsController::class, 'photo'])->withoutMiddleware(['content_type:json']);
 Route::post('/Metrics::favourite', [MetricsController::class, 'favourite'])->withoutMiddleware(['content_type:json']);
 

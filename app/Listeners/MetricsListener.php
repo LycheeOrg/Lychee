@@ -28,5 +28,18 @@ class MetricsListener
 				->where($event->key(), '=', $event->id)
 				->increment($event->metricAction()->column(), 1);
 		}
+
+		if (Configs::getValueAsBool('live_metrics_enabled') === true) {
+			// Add event to the live metrics table
+			DB::table('live_metrics')
+				->insert([
+					[
+						'visitor_id' => $event->visitor_id,
+						'action' => $event->metricAction(),
+						$event->key() => $event->id,
+						'created_at' => now(),
+					],
+				]);
+		}
 	}
 }
