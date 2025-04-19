@@ -70,6 +70,8 @@ return [
 	],
 
 	'timeline' => [
+		'title' => 'Timelime',
+		'load_previous' => 'Load previous',
 		'default' => '默认',
 		'disabled' => '禁用',
 		'year' => '年',
