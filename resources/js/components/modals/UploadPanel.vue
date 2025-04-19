@@ -99,7 +99,7 @@ const { is_upload_visible, list_upload_files } = storeToRefs(togglableStore);
 const route = useRoute();
 
 const setup = ref<App.Http.Resources.GalleryConfigs.UploadConfig | undefined>(undefined);
-const albumId = ref(route.params.albumid ?? (null as string | null)) as Ref<string | null>;
+const albumId = ref(route.params.albumId ?? (null as string | null)) as Ref<string | null>;
 
 const emits = defineEmits<{
 	refresh: [];
@@ -199,7 +199,7 @@ watch(
 );
 
 watch(
-	() => route.params.albumid,
+	() => route.params.albumId,
 	(newAlbumId, _oldAlbumId) => {
 		albumId.value = newAlbumId as string | null;
 		if (!is_upload_visible.value) {
