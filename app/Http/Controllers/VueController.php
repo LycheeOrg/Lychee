@@ -43,14 +43,14 @@ class VueController extends Controller
 	 * @throws AuthorizationException
 	 * @throws BindingResolutionException
 	 */
-	public function view(?string $album_id = null, ?string $photo_id = null): View
+	public function gallery(?string $album_id = null, ?string $photo_id = null): View
 	{
 		$album_factory = resolve(AlbumFactory::class);
 		$album = null;
 		$photo = null;
 
 		try {
-			if ($album_id !== null && $album_id !== 'all') {
+			if ($album_id !== null && !in_array($album_id, ['all', 'favourites'], true)) {
 				$album = $album_factory->findAbstractAlbumOrFail($album_id, false);
 
 				session()->now('access', $this->check($album));
@@ -72,6 +72,14 @@ class VueController extends Controller
 			AlbumShared::dispatchIf(MetricsController::shouldMeasure(), $this->visitorId(), $album->get_id());
 		}
 
+		return view('vueapp');
+	}
+
+	/**
+	 * Simpler version of above function.
+	 */
+	public function __invoke(): View
+	{
 		return view('vueapp');
 	}
 

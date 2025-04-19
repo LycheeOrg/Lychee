@@ -10,7 +10,6 @@ namespace App\Http\Middleware;
 
 use App\Actions\Album\Unlock;
 use App\Enum\SmartAlbumType;
-use App\Exceptions\Internal\LycheeLogicException;
 use App\Factories\AlbumFactory;
 use App\Models\Configs;
 use Illuminate\Http\Request;
@@ -40,8 +39,8 @@ class UnlockWithPassword
 	public function handle(Request $request, \Closure $next): mixed
 	{
 		$album_id = $request->route('albumId');
-		if ($album_id === null || !is_string($album_id)) {
-			throw new LycheeLogicException('No albumId provided as url parameter.');
+		if ($album_id === null || !is_string($album_id) || in_array($album_id, ['all', 'favourites'], true)) {
+			return $next($request);
 		}
 
 		if (in_array($album_id, SmartAlbumType::values(), true)) {
