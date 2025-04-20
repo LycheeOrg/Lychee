@@ -41,8 +41,7 @@ Route::match(['get', 'post'], '/migrate', [UpdateController::class, 'migrate'])
  *
  * Other ideas, redirection by album name, photo title...
  */
-Route::get('/r/{albumID}/{photoID}', [RedirectController::class, 'photo'])->middleware(['migration:complete']);
-Route::get('/r/{albumID}', [RedirectController::class, 'album'])->middleware(['migration:complete']);
+Route::get('/r/{albumId}/{photoId?}', [RedirectController::class, 'redirect'])->middleware(['migration:complete']);
 
 // This route must be defined last because it is a catch all.
 Route::match(['get', 'post'], '{path}', HoneyPotController::class)->where('path', '.*');
