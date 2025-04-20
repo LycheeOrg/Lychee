@@ -103,7 +103,7 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 			});
 		}
 
-		if (selectors.config!.value?.is_model_album) {
+		if (selectors.config?.value?.is_model_album === true) {
 			const parent_album = selectors.album!.value as App.Http.Resources.Models.AlbumResource;
 			menuItems.push({
 				label: "gallery.menus.set_cover",
@@ -162,7 +162,7 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 					label: "gallery.menus.delete",
 					icon: "pi pi-trash",
 					callback: photoCallbacks.toggleDelete,
-					access: selectors.album!.value?.rights.can_delete ?? false,
+					access: selectors.album?.value?.rights.can_delete ?? false,
 				},
 				{
 					label: "gallery.menus.download",
@@ -319,7 +319,9 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 
 	function photoMenuOpen(idx: number, e: MouseEvent): void {
 		// Clear up Album selection (if any)
-		selectors.selectedAlbumIdx!.value = [];
+		if (selectors.selectedAlbumIdx !== undefined) {
+			selectors.selectedAlbumIdx.value = [];
+		}
 
 		// Check if photo was selected already.
 		// If not, we replace entire selection.
@@ -334,7 +336,7 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 	function albumMenuOpen(idx: number, e: MouseEvent): void {
 		// Clear up Photo selection (if any)
 		if (selectors.selectedPhotosIdx !== undefined) {
-			selectors.selectedPhotosIdx!.value = [];
+			selectors.selectedPhotosIdx.value = [];
 		}
 
 		// Check if album was selected already.

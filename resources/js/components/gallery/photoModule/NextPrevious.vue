@@ -1,7 +1,7 @@
 <template>
 	<div class="absolute w-1/6 h-1/2 top-1/2 -translate-y-1/2 group" :class="props.is_next ? 'right-0' : 'left-0'">
 		<router-link
-			:to="photoRoute(props.albumId, props.photoId)"
+			:to="photoRoute(props.photoId)"
 			:id="props.is_next ? 'nextButton' : 'previousButton'"
 			:class="{
 				'absolute top-1/2 border border-solid border-neutral-200 -mt-5 py-2 px-3 transition-all opacity-0 group-hover:opacity-100 bg-cover': true,

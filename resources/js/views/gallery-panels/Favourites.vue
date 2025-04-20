@@ -40,8 +40,8 @@
 <script setup lang="ts">
 import PhotoThumbPanel from "@/components/gallery/albumModule/PhotoThumbPanel.vue";
 import { useScrollable } from "@/composables/album/scrollable";
-import { usePhotoRoute } from "@/composables/photo/photoRoute";
 import { useSelection } from "@/composables/selections/selections";
+import { ALL } from "@/config/constants";
 import { useGetLayoutConfig } from "@/layouts/PhotoLayout";
 import { useFavouriteStore } from "@/stores/FavouriteState";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
@@ -86,10 +86,8 @@ const {
 	hasSelection,
 } = useSelection(photos, children, togglableStore);
 
-const { photoRoute } = usePhotoRoute(router);
-
 function photoClick(idx: number, e: MouseEvent) {
-	router.push(photoRoute(photos.value[idx].album_id ?? undefined, photos.value[idx].id));
+	router.push({ name: "photo", params: { albumId: photos.value[idx].album_id ?? ALL, photoId: photos.value[idx].id } });
 }
 
 onKeyStroke("f", () => !shouldIgnoreKeystroke() && togglableStore.toggleFullScreen());

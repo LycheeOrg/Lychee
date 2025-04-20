@@ -26,7 +26,7 @@ import { ref, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 
 const props = defineProps<{
-	albumid?: string;
+	albumId?: string;
 }>();
 
 const router = useRouter();
@@ -38,7 +38,7 @@ const leftMenuStore = useLeftMenuStateStore();
 const is_slideshow_active = ref(false);
 
 function getNext() {
-	AlbumService.frame(props.albumid ?? null).then((response) => {
+	AlbumService.frame(props.albumId ?? null).then((response) => {
 		imgSrc.value = response.data.src;
 		imgSrcset.value = response.data.srcset;
 	});
@@ -47,7 +47,7 @@ function getNext() {
 const { slideshow, clearTimeouts } = useSlideshowFunction(1000, is_slideshow_active, refreshTimeout, ref(null), getNext, undefined);
 
 function start() {
-	AlbumService.frame(props.albumid ?? null).then((response) => {
+	AlbumService.frame(props.albumId ?? null).then((response) => {
 		refreshTimeout.value = response.data.timeout;
 		getNext();
 		slideshow();
@@ -74,8 +74,8 @@ function goBack() {
 	clearTimeouts();
 	document.exitFullscreen();
 
-	if (props.albumid !== undefined) {
-		router.push({ name: "album", params: { albumid: props.albumid } });
+	if (props.albumId !== undefined) {
+		router.push({ name: "album", params: { albumId: props.albumId } });
 	} else {
 		router.push({ name: "gallery" });
 	}

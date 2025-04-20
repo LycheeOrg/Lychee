@@ -62,7 +62,7 @@
 							<i class="pi pi-chart-scatter" />
 						</a>
 						<router-link
-							:to="{ name: 'frame-with-album', params: { albumid: props.album.id } }"
+							:to="{ name: 'frame', params: { albumId: props.album.id } }"
 							v-if="props.config.is_mod_frame_enabled"
 							class="shrink-0 px-3 cursor-pointer text-muted-color inline-block transform duration-300 hover:scale-150 hover:text-color"
 							v-tooltip.bottom="'Frame'"
@@ -70,7 +70,7 @@
 							<i class="pi pi-desktop" />
 						</router-link>
 						<router-link
-							:to="{ name: 'map-with-album', params: { albumid: props.album.id } }"
+							:to="{ name: 'map', params: { albumId: props.album.id } }"
 							v-if="props.config.is_map_accessible && hasCoordinates"
 							class="shrink-0 px-3 cursor-pointer text-muted-color inline-block transform duration-300 hover:scale-150 hover:text-color"
 						>
