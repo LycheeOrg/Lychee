@@ -27,9 +27,21 @@ $template = "<?php
  */
 
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\Console\Output\ConsoleSectionOutput;
 
 return new class() extends Migration {
+	private ConsoleOutput \$output;
+	private ConsoleSectionOutput \$msg_section;
+
+	public function __construct()
+	{
+		\$this->output = new ConsoleOutput();
+		\$this->msg_section = \$this->output->section();
+	}
+
 	/**
 	 * Run the migrations.
 	 *
@@ -38,6 +50,8 @@ return new class() extends Migration {
 	public function up(): void
 	{
 		DB::table('configs')->where('key', 'version')->update(['value' => '%s']);
+		Artisan::call('cache:clear');
+		\$this->msg_section->writeln('<info>Info:</info> Cleared cache for version %s');
 	}
 
 	/**
@@ -113,6 +127,11 @@ function str_version(array $version): string
 	return sprintf('%02d%02d%02d', $version[0], $version[1], $version[2]);
 }
 
+function pretty_version(array $version): string
+{
+	return sprintf('%d.%d.%d', $version[0], $version[1], $version[2]);
+}
+
 /**
  * Check if migration with same name already exists.
  */
@@ -142,11 +161,12 @@ try {
 
 	$str_cv = str_version($cv);
 	$str_nv = str_version($nv);
+	$prty_nv = pretty_version($nv);
 
 	does_migration_exists($str_nv);
 
 	$file_name = sprintf('database/migrations/%s_bump_version%s.php', date('Y_m_d_His'), $str_nv);
-	$file_content = sprintf($template, $str_nv, $str_cv);
+	$file_content = sprintf($template, $str_nv, $prty_nv, $str_cv);
 
 	file_put_contents($file_name, $file_content);
 	echo "Migration generated!\n";
