@@ -36,9 +36,6 @@ return new class() extends Migration {
 	private ConsoleOutput \$output;
 	private ConsoleSectionOutput \$msg_section;
 
-	/**
-	 * @throws DBALException
-	 */
 	public function __construct()
 	{
 		\$this->output = new ConsoleOutput();
