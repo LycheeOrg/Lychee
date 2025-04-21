@@ -91,6 +91,7 @@ declare namespace App.Enum {
 		| "keycloak";
 	export type OrderSortingType = "ASC" | "DESC";
 	export type PhotoLayoutType = "square" | "justified" | "unjustified" | "masonry" | "grid";
+	export type PhotoThumbInfoType = "title" | "description";
 	export type SeverityType = "emergency" | "alert" | "critical" | "error" | "warning" | "notice" | "info" | "debug";
 	export type SizeVariantType = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 	export type SmartAlbumType = "unsorted" | "starred" | "recent" | "on_this_day";
@@ -245,6 +246,7 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		album_decoration: App.Enum.AlbumDecorationType;
 		album_decoration_orientation: App.Enum.AlbumDecorationOrientation;
 		number_albums_per_row_mobile: 1 | 2 | 3;
+		photo_thumb_info: App.Enum.PhotoThumbInfoType;
 		is_thumb_download_enabled: boolean;
 		is_thum2x_download_enabled: boolean;
 		is_small_download_enabled: boolean;
