@@ -105,6 +105,9 @@ final readonly class RouteCacheManager
 
 			// This is returning a stream, we do not cache it.
 			'api/v2/Zip' => false,
+
+			// No point in caching this.
+			'api/v2/Metrics' => false,
 		];
 	}
 
