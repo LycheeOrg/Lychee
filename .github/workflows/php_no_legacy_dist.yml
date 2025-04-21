@@ -41,7 +41,7 @@ jobs:
 
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@c6295a65d1254861815972266d5933fd6e532bdf # v2.11.1
+        uses: step-security/harden-runner@0634a2670c59f64b4a01f0f96f84700a4088b9f0 # v2.12.0
         with:
           egress-policy: audit
 
@@ -65,7 +65,7 @@ jobs:
           mysql -uroot -proot -e 'create database homestead_test;'
 
       - name: Setup PHP Action
-        uses: shivammathur/setup-php@9e72090525849c5e82e596468b86eb55e9cc5401 # 2.32.0
+        uses: shivammathur/setup-php@cf4cade2721270509d5b1c766ab3549210a39a2a # 2.33.0
         with:
           php-version: ${{ matrix.php-version }}
           extensions: ${{ env.extensions }}
