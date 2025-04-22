@@ -51,6 +51,11 @@
 
 	<!-- Dialogs -->
 	<template v-if="photo">
+		<PhotoEdit v-if="photo?.rights.can_edit" :photo="photo" v-model:visible="is_photo_edit_open" />
+		<MoveDialog :photo="photo" v-model:visible="is_move_visible" :parent-id="props.albumId" @moved="refresh" />
+		<DeleteDialog :photo="photo" v-model:visible="is_delete_visible" :parent-id="props.albumId" @deleted="refresh" />
+	</template>
+	<template v-else>
 		<PhotoTagDialog
 			v-model:visible="is_tag_visible"
 			:parent-id="albumId"
@@ -75,11 +80,6 @@
 				}
 			"
 		/>
-		<PhotoEdit v-if="photo?.rights.can_edit" :photo="photo" v-model:visible="is_photo_edit_open" />
-		<MoveDialog :photo="photo" v-model:visible="is_move_visible" :parent-id="props.albumId" @moved="refresh" />
-		<DeleteDialog :photo="photo" v-model:visible="is_delete_visible" :parent-id="props.albumId" @deleted="refresh" />
-	</template>
-	<template v-else>
 		<MoveDialog
 			v-model:visible="is_move_visible"
 			:parent-id="albumId"
