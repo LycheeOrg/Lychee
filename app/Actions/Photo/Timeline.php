@@ -50,7 +50,7 @@ class Timeline
 		// @codeCoverageIgnoreEnd
 
 		return $this->photo_query_policy->applySearchabilityFilter(
-			query: Photo::query()->with(['album', 'size_variants', 'size_variants.sym_links']),
+			query: Photo::query()->with(['album', 'statistics', 'size_variants', 'size_variants.sym_links']),
 			origin: null,
 			include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_timeline')
 		)->orderBy($order->value, OrderSortingType::DESC->value);
