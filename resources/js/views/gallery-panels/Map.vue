@@ -180,7 +180,7 @@ function addContentsToMap() {
 	if (map.value === undefined) return;
 	if (photoLayer.value === null) return;
 
-	let photos: MapPhotoEntry[] = [];
+	const photos: MapPhotoEntry[] = [];
 	let min_lat: number | null = null;
 	let min_lng: number | null = null;
 	let max_lat: number | null = null;

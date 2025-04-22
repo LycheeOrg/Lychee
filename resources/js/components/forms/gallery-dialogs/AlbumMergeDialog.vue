@@ -97,7 +97,7 @@ function execute() {
 			life: 3000,
 		});
 		AlbumService.clearCache(destination_id.value);
-		for (let id in albumMergedIds) {
+		for (const id in albumMergedIds) {
 			AlbumService.clearCache(id);
 		}
 		if (props.parentId === undefined) {

@@ -56,7 +56,7 @@ function loadConfig(val: string[]) {
 }
 
 function copy() {
-	if (!canCopy) {
+	if (!canCopy.value) {
 		return;
 	}
 

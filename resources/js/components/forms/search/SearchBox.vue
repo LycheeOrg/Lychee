@@ -30,7 +30,7 @@
 </template>
 <script lang="ts" setup>
 import InputText from "@/components/forms/basic/InputText.vue";
-import { computed } from "@vue/reactivity";
+import { computed } from "vue";
 import { useDebounceFn } from "@vueuse/core";
 import { sprintf } from "sprintf-js";
 

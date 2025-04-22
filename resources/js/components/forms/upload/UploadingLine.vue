@@ -56,7 +56,7 @@ const statusMessage = computed(() => {
 	switch (status.value) {
 		case "uploading": return trans("dialogs.upload.uploading");
 		case "done":      return trans("dialogs.upload.finished");
-		case "error":     return errorMessage ?? trans("dialogs.upload.failed_error");
+		case "error":     return errorMessage.value ?? trans("dialogs.upload.failed_error");
 		default:          return "";
 	}
 });

@@ -82,7 +82,7 @@ export function useTreeOperations(
 
 		albums.value = [];
 
-		let pile = [] as AlbumPile[];
+		const pile = [] as AlbumPile[];
 		for (let index = 0; index < originalAlbums.value.length; index++) {
 			const album = originalAlbums.value[index];
 

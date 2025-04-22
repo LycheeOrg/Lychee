@@ -62,7 +62,7 @@ function dropboxIconClicked() {
 		return;
 	}
 
-	let options: Dropbox.ChooserOptions = {
+	const options: Dropbox.ChooserOptions = {
 		success: async (files: Dropbox.ChooserFile[]) => {
 			emits("picked", files);
 		},
