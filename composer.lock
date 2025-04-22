@@ -2396,22 +2396,22 @@
         },
         {
             "name": "geocoder-php/cache-provider",
-            "version": "4.4.0",
+            "version": "4.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/geocoder-php/cache-provider.git",
-                "reference": "0b03ae7c3108c1e48d6615cc52cac3d52bcff797"
+                "reference": "3b091778426722cf96e166d187bbdd28660635b8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/geocoder-php/cache-provider/zipball/0b03ae7c3108c1e48d6615cc52cac3d52bcff797",
-                "reference": "0b03ae7c3108c1e48d6615cc52cac3d52bcff797",
+                "url": "https://api.github.com/repos/geocoder-php/cache-provider/zipball/3b091778426722cf96e166d187bbdd28660635b8",
+                "reference": "3b091778426722cf96e166d187bbdd28660635b8",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.4 || ^8.0",
+                "php": "^8.0",
                 "psr/simple-cache": "^1.0|^2.0|^3.0",
-                "willdurand/geocoder": "^4.0.0"
+                "willdurand/geocoder": "^4.0|^5.0"
             },
             "provide": {
                 "geocoder-php/provider-implementation": "1.0"
@@ -2446,22 +2446,22 @@
             "description": "Cache the result of a provider",
             "homepage": "http://geocoder-php.org/Geocoder/",
             "support": {
-                "source": "https://github.com/geocoder-php/cache-provider/tree/4.4.0"
+                "source": "https://github.com/geocoder-php/cache-provider/tree/4.5.0"
             },
-            "time": "2022-07-30T12:09:30+00:00"
+            "time": "2025-04-15T13:24:32+00:00"
         },
         {
             "name": "geocoder-php/common-http",
-            "version": "4.6.0",
+            "version": "4.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/geocoder-php/php-common-http.git",
-                "reference": "d8c22a66120daed35ba8017467bc1ebfec28a63e"
+                "reference": "4209be6c31946ed5a658f6240ab21faaf5413f61"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/geocoder-php/php-common-http/zipball/d8c22a66120daed35ba8017467bc1ebfec28a63e",
-                "reference": "d8c22a66120daed35ba8017467bc1ebfec28a63e",
+                "url": "https://api.github.com/repos/geocoder-php/php-common-http/zipball/4209be6c31946ed5a658f6240ab21faaf5413f61",
+                "reference": "4209be6c31946ed5a658f6240ab21faaf5413f61",
                 "shasum": ""
             },
             "require": {
@@ -2469,7 +2469,7 @@
                 "php-http/discovery": "^1.17",
                 "psr/http-client-implementation": "^1.0",
                 "psr/http-factory-implementation": "^1.0",
-                "willdurand/geocoder": "^4.0"
+                "willdurand/geocoder": "^4.0|^5.0"
             },
             "require-dev": {
                 "nyholm/psr7": "^1.0",
@@ -2508,35 +2508,34 @@
                 "http geocoder"
             ],
             "support": {
-                "source": "https://github.com/geocoder-php/php-common-http/tree/4.6.0"
+                "source": "https://github.com/geocoder-php/php-common-http/tree/4.7.0"
             },
-            "time": "2023-12-28T10:51:54+00:00"
+            "time": "2025-04-15T12:38:11+00:00"
         },
         {
             "name": "geocoder-php/nominatim-provider",
-            "version": "5.7.0",
+            "version": "5.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/geocoder-php/nominatim-provider.git",
-                "reference": "a50486161f6babad7b1ed7ee7bf86147b0844413"
+                "reference": "1b6852d33e9b558a13d98510fff66e76f4aed9b2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/geocoder-php/nominatim-provider/zipball/a50486161f6babad7b1ed7ee7bf86147b0844413",
-                "reference": "a50486161f6babad7b1ed7ee7bf86147b0844413",
+                "url": "https://api.github.com/repos/geocoder-php/nominatim-provider/zipball/1b6852d33e9b558a13d98510fff66e76f4aed9b2",
+                "reference": "1b6852d33e9b558a13d98510fff66e76f4aed9b2",
                 "shasum": ""
             },
             "require": {
                 "geocoder-php/common-http": "^4.1",
-                "php": "^7.4 || ^8.0",
-                "willdurand/geocoder": "^4.0"
+                "php": "^8.0",
+                "willdurand/geocoder": "^4.0|^5.0"
             },
             "provide": {
                 "geocoder-php/provider-implementation": "1.0"
             },
             "require-dev": {
-                "geocoder-php/provider-integration-tests": "^1.0",
-                "php-http/curl-client": "^2.2",
+                "geocoder-php/provider-integration-tests": "^1.6.3",
                 "php-http/message": "^1.0",
                 "phpunit/phpunit": "^9.5"
             },
@@ -2567,9 +2566,9 @@
             "description": "Geocoder Nominatim adapter",
             "homepage": "http://geocoder-php.org/Geocoder/",
             "support": {
-                "source": "https://github.com/geocoder-php/nominatim-provider/tree/5.7.0"
+                "source": "https://github.com/geocoder-php/nominatim-provider/tree/5.8.0"
             },
-            "time": "2023-03-01T10:18:27+00:00"
+            "time": "2025-04-15T13:24:32+00:00"
         },
         {
             "name": "graham-campbell/markdown",
@@ -8347,16 +8346,16 @@
         },
         {
             "name": "spatie/laravel-feed",
-            "version": "4.4.1",
+            "version": "4.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/laravel-feed.git",
-                "reference": "71d298a8f0ed701eca87600e700fda3f24052a61"
+                "reference": "4b41c89837cb170e04db57f07f6315b33411e31d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/laravel-feed/zipball/71d298a8f0ed701eca87600e700fda3f24052a61",
-                "reference": "71d298a8f0ed701eca87600e700fda3f24052a61",
+                "url": "https://api.github.com/repos/spatie/laravel-feed/zipball/4b41c89837cb170e04db57f07f6315b33411e31d",
+                "reference": "4b41c89837cb170e04db57f07f6315b33411e31d",
                 "shasum": ""
             },
             "require": {
@@ -8423,7 +8422,7 @@
                 "spatie"
             ],
             "support": {
-                "source": "https://github.com/spatie/laravel-feed/tree/4.4.1"
+                "source": "https://github.com/spatie/laravel-feed/tree/4.4.2"
             },
             "funding": [
                 {
@@ -8435,7 +8434,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-02-14T12:40:17+00:00"
+            "time": "2025-04-17T09:49:53+00:00"
         },
         {
             "name": "spatie/laravel-image-optimizer",
@@ -11749,25 +11748,25 @@
         },
         {
             "name": "willdurand/geocoder",
-            "version": "4.6.0",
+            "version": "5.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/geocoder-php/php-common.git",
-                "reference": "be3d9ed0fddf8c698ee079d8a07ae9520b4a49a1"
+                "reference": "a749e00819d2929bd0ec40fb79853956332970ba"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/geocoder-php/php-common/zipball/be3d9ed0fddf8c698ee079d8a07ae9520b4a49a1",
-                "reference": "be3d9ed0fddf8c698ee079d8a07ae9520b4a49a1",
+                "url": "https://api.github.com/repos/geocoder-php/php-common/zipball/a749e00819d2929bd0ec40fb79853956332970ba",
+                "reference": "a749e00819d2929bd0ec40fb79853956332970ba",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.4 || ^8.0"
+                "php": ">=8.2"
             },
             "require-dev": {
                 "nyholm/nsa": "^1.1",
                 "phpunit/phpunit": "^9.5",
-                "symfony/stopwatch": "~2.5"
+                "symfony/stopwatch": "~2.5 || ~5.0"
             },
             "suggest": {
                 "symfony/stopwatch": "If you want to use the TimedGeocoder"
@@ -11775,7 +11774,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "4.1-dev"
+                    "dev-master": "5.1-dev"
                 }
             },
             "autoload": {
@@ -11805,9 +11804,9 @@
                 "geoip"
             ],
             "support": {
-                "source": "https://github.com/geocoder-php/php-common/tree/4.6.0"
+                "source": "https://github.com/geocoder-php/php-common/tree/5.0.0"
             },
-            "time": "2022-07-30T11:09:43+00:00"
+            "time": "2025-01-01T15:52:42+00:00"
         }
     ],
     "packages-dev": [
