@@ -2,13 +2,13 @@
 	<ImportFromLink v-if="canUpload" v-model:visible="is_import_from_link_open" :parent-id="null" />
 	<DropBox v-if="canUpload" v-model:visible="is_import_from_dropbox_open" :album-id="null" />
 	<Toolbar
-		class="w-full border-0 h-14"
+		class="w-full border-0 h-14 z-10"
 		:pt:root:class="'flex-nowrap relative'"
 		:pt:center:class="'absolute top-0 py-3 left-1/2 -translate-x-1/2 h-14'"
 	>
 		<template #start>
 			<!-- Not logged in. -->
-			<!-- <BackLinkButton v-if="props.user.id === null && !isLoginLeft" :config="props.config" />
+			<BackLinkButton v-if="props.user.id === null && !isLoginLeft" :config="props.config" />
 			<Button
 				v-if="props.user.id === null && isLoginLeft"
 				icon="pi pi-sign-in"
@@ -16,14 +16,14 @@
 				severity="secondary"
 				text
 				@click="togglableStore.toggleLogin()"
-			/> -->
+			/>
 			<!-- Logged in. -->
-			<OpenLeftMenu />
+			<OpenLeftMenu v-if="user.id" />
 		</template>
 
 		<template #center>
 			<span class="sm:hidden font-bold">
-				{{ $t("gallery.albums") }}
+				{{ $t("gallery.timeline.title") }}
 			</span>
 			<span class="hidden sm:block font-bold text-sm lg:text-base text-center w-full">{{ props.title }}</span>
 		</template>
@@ -33,7 +33,6 @@
 			<div :class="menu.length > 1 ? 'hidden sm:block' : ''">
 				<template v-for="item in menu">
 					<template v-if="item.type === 'link'">
-						<!-- @vue-ignore -->
 						<Button as="router-link" :to="item.to" :icon="item.icon" class="border-none" severity="secondary" text />
 					</template>
 					<template v-else>
@@ -119,13 +118,21 @@ const emits = defineEmits<{
 	help: [];
 }>();
 
-const leftMenuStore = useLeftMenuStateStore();
+//  'UPLOAD_PHOTO' => 'Upload Photo',
+// 	'IMPORT_LINK' => 'Import from Link',
+// 	'IMPORT_DROPBOX' => 'Import from Dropbox',
+// 	'IMPORT_SERVER' => 'Import from Server',
+// 	'NEW_ALBUM' => 'New Album',
+// 	'NEW_TAG_ALBUM' => 'New Tag Album',
+// 	'UPLOAD_TRACK' => 'Upload track',
+// 	'DELETE_TRACK' => 'Delete track',
 const lycheeStore = useLycheeStateStore();
 const togglableStore = useTogglablesStateStore();
 const favourites = useFavouriteStore();
 
-const { dropbox_api_key, is_favourite_enabled } = storeToRefs(lycheeStore);
+const { dropbox_api_key } = storeToRefs(lycheeStore);
 const { is_login_open, is_upload_visible, is_create_album_visible, is_create_tag_album_visible } = storeToRefs(togglableStore);
+const leftMenuStore = useLeftMenuStateStore();
 
 const router = useRouter();
 
@@ -222,13 +229,13 @@ const menu = computed(() =>
 			to: { name: "favourites" },
 			type: "link",
 			icon: "pi pi-heart",
-			if: is_favourite_enabled.value && (favourites.photos?.length ?? 0) > 0,
+			if: (favourites.photos?.length ?? 0) > 0,
 		},
 		{
-			to: { name: "timeline" },
+			to: { name: "gallery" },
 			type: "link",
-			icon: "pi pi-clock",
-			if: lycheeStore.is_favourite_enabled,
+			icon: "pi pi-book",
+			if: true,
 		},
 		{
 			icon: "pi pi-search",
