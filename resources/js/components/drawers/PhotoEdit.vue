@@ -150,9 +150,14 @@ function load(photo: App.Http.Resources.Models.PhotoResource) {
 	uploadDate.value = new Date(dataDate);
 	is_taken_at_modified.value = photo.precomputed.is_taken_at_modified;
 
-	const takenDate = (photo.taken_at ?? "").slice(0, 19);
-	takenAtTz.value = (photo.taken_at ?? "").slice(19);
-	takenAtDate.value = new Date(takenDate);
+	if (photo.taken_at === null) {
+		takenAtDate.value = undefined;
+		takenAtTz.value = undefined;
+	} else {
+		const takenDate = (photo.taken_at ?? "").slice(0, 19);
+		takenAtTz.value = (photo.taken_at ?? "").slice(19);
+		takenAtDate.value = new Date(takenDate);
+	}
 
 	license.value = SelectBuilders.buildLicense(photo.license);
 }
@@ -162,7 +167,10 @@ function save() {
 		return;
 	}
 
-	const takenDate = takenAtDate.value === undefined ? null : takenAtDate.value.toISOString().slice(0, 19) + takenAtTz.value;
+	let takenDate = null;
+	if (takenAtDate.value !== undefined) {
+		takenDate = takenAtDate.value.toISOString().slice(0, 19) + (takenAtTz.value ?? "");
+	}
 
 	PhotoService.update(photo_id.value, {
 		title: title.value,
