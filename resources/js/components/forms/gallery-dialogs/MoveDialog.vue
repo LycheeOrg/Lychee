@@ -139,7 +139,7 @@ function executeMoveAlbum() {
 			life: 3000,
 		});
 		AlbumService.clearCache(destination_id.value);
-		for (let id in albumMovedIds) {
+		for (const id in albumMovedIds) {
 			AlbumService.clearCache(id);
 		}
 		if (props.parentId === undefined) {

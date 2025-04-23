@@ -21,6 +21,7 @@ public/uploads-*/**
 # IDE & Cache stuff
 /.idea
 /.vscode
+!.vscode/extensions.json
 npm-debug.log
 .phpunit*
 _ide*

@@ -11,8 +11,8 @@ export type OauthProvider = {
 };
 
 function mapToOauths(provider: App.Enum.OauthProvidersType): OauthProvider {
-	let icon = OauthService.providerIcon(provider);
-	let url = `/auth/${provider}/authenticate`;
+	const icon = OauthService.providerIcon(provider);
+	const url = `/auth/${provider}/authenticate`;
 	return { url, icon, provider };
 }
 

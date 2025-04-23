@@ -37,11 +37,11 @@ export function usePreviewData() {
 	}
 
 	function getAlbumSizeData(): Promise<App.Http.Resources.Statistics.Album[]> {
-		let data = [] as App.Http.Resources.Statistics.Album[];
+		const data = [] as App.Http.Resources.Statistics.Album[];
 
 		return AlbumService.getTargetListAlbums(null).then((response) => {
 			for (let i = 0; i < response.data.length; i++) {
-				let album = response.data[i];
+				const album = response.data[i];
 				data.push({
 					username: "demo",
 					title: album.original,

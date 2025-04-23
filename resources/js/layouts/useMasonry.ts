@@ -18,14 +18,14 @@ export function useMasonry(el: HTMLElement, target_width: number, grid_gap: numb
 		return height > 0 ? width / height : 1;
 	});
 
-	let columns = Array.from({ length: perChunk }, (_, idx) => {
+	const columns = Array.from({ length: perChunk }, (_, idx) => {
 		return { height: 0, left: (grid_gap + grid_width) * idx };
 	});
 
 	let idx = 0;
 	gridItems.forEach(function (e, i) {
 		idx = findSmallestIdx(columns);
-		let column = columns[idx];
+		const column = columns[idx];
 		const height = grid_width / ratio[i];
 		e.style.top = column.height + "px";
 		e.style.width = grid_width + "px";

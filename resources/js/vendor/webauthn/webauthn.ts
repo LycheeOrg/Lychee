@@ -239,7 +239,7 @@ export default class WebAuthn {
 		id: string;
 		type: string;
 	} {
-		let parseCredentials = {
+		const parseCredentials = {
 			id: credentials.id,
 			type: credentials.type,
 			// @ts-ignore

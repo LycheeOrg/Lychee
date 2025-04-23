@@ -1,8 +1,8 @@
 const CSRF = {
 	get() {
 		// If the developer didn't issue an XSRF token, we will find it ourselves.
-		let xcsrfToken = CSRF.xsrfToken();
-		let csrfToken = CSRF.firstInputWithCsrfToken();
+		const xcsrfToken = CSRF.xsrfToken();
+		const csrfToken = CSRF.firstInputWithCsrfToken();
 
 		// Check if it is a CSRF or XSRF token
 		if (xcsrfToken !== null) {

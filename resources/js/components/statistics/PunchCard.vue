@@ -75,18 +75,18 @@ function transformData(data: App.Http.Resources.Statistics.DayCount[], year: num
 	const offset = day;
 
 	for (let w = 0; w < 53; w++) {
-		let week: DayData[] = [];
+		const week: DayData[] = [];
 
 		// First loop to fill the week.
 		for (let d = 0; d < day; d++) {
-			let date = new Date(startDate);
+			const date = new Date(startDate);
 			date.setDate(startDate.getDate() + w * 7 + d);
 			week.push({ date, count: -1 });
 		}
 
 		if (w < 52 || year !== undefined) {
 			for (let d = day; d < 7; d++) {
-				let date = new Date(startDate);
+				const date = new Date(startDate);
 				date.setDate(startDate.getDate() + w * 7 + d - offset);
 				const candidate = date.toISOString().slice(0, 10);
 				const count = data.find((c) => c.date === candidate)?.count ?? 0;
@@ -95,7 +95,7 @@ function transformData(data: App.Http.Resources.Statistics.DayCount[], year: num
 		} else {
 			// Last week: w = 52
 			for (let d = day; d < 3; d++) {
-				let date = new Date(startDate);
+				const date = new Date(startDate);
 				date.setDate(startDate.getDate() + w * 7 + d - offset);
 				const candidate = date.toISOString().slice(0, 10);
 				const count = data.find((c) => c.date === candidate)?.count ?? 0;
@@ -103,7 +103,7 @@ function transformData(data: App.Http.Resources.Statistics.DayCount[], year: num
 			}
 			// We are in the future
 			for (let d = 3; d < 7; d++) {
-				let date = new Date(startDate);
+				const date = new Date(startDate);
 				date.setDate(startDate.getDate() + w * 7 + d);
 				week.push({ date, count: -1 });
 			}
@@ -143,7 +143,7 @@ function genDayKey(day: number): string {
 function formatDay(dayIdx: number): string {
 	const formatter = new Intl.DateTimeFormat(navigator.language, { weekday: "short" });
 
-	var baseDate = new Date(Date.UTC(2017, 0, 1 + startDay.value)); // just a Sunday or Monday
+	const baseDate = new Date(Date.UTC(2017, 0, 1 + startDay.value)); // just a Sunday or Monday
 	baseDate.setDate(baseDate.getDate() + dayIdx);
 
 	return formatter.format(baseDate);

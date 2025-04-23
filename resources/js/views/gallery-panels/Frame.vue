@@ -56,7 +56,7 @@ function start() {
 
 onMounted(() => {
 	leftMenuStore.left_menu_open = false;
-	let elem = document.getElementsByTagName("body")[0];
+	const elem = document.getElementsByTagName("body")[0];
 
 	elem.requestFullscreen()
 		.then(() => {})

@@ -32,7 +32,7 @@ export function useSlideshowFunction(
 	// We need to be able to clear all the timeouts so that the next and previous functions can be called without any issues.
 	function clearTimeouts() {
 		// https://stackoverflow.com/a/8860203
-		var id = window.setTimeout(function () {}, 0);
+		let id = window.setTimeout(function () {}, 0);
 		while (id--) {
 			window.clearTimeout(id); // will do nothing if no timeout with id is present
 		}

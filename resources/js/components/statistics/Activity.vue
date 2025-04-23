@@ -65,7 +65,7 @@ const years = computed(() => {
 	const maxYear = new Date().getFullYear();
 	const minYear = isTakenAt.value ? minTakenAt.value : minCreatedAt.value;
 	const listYears = [];
-	for (var i = maxYear; i >= minYear; i--) {
+	for (let i = maxYear; i >= minYear; i--) {
 		listYears.push(i);
 	}
 
@@ -124,7 +124,7 @@ function handleYear(y: number) {
  * @param str
  */
 function hashCode(str: string) {
-	var hash = 0,
+	let hash = 0,
 		i = 0,
 		len = str.length;
 	while (i < len) {

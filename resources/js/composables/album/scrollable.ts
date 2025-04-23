@@ -13,7 +13,7 @@ export function useScrollable(toggleableStore: TogglablesStateStore, path: Ref<s
 			return;
 		}
 
-		let e = document.getElementById("galleryView");
+		const e = document.getElementById("galleryView");
 		if (e === null) {
 			setTimeout(() => setScroll(_v, iter + 1), 100);
 		} else {
