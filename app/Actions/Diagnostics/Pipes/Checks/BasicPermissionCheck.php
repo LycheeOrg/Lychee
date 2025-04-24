@@ -122,7 +122,6 @@ class BasicPermissionCheck implements DiagnosticPipe
 
 		$disks = [
 			Storage::disk(StorageDiskType::LOCAL->value),
-			Storage::disk(FileSystem::SYMLINK),
 			Storage::disk(FileSystem::IMAGE_JOBS),
 			Storage::disk(FileSystem::IMAGE_UPLOAD),
 		];

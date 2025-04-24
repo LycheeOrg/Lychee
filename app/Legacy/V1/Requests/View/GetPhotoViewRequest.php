@@ -50,7 +50,7 @@ final class GetPhotoViewRequest extends BaseApiRequest implements HasPhoto
 		/** @var ?string $photo_id */
 		$photo_id = $values[self::URL_QUERY_PARAM];
 		$this->photo = Photo::query()
-			->with(['album', 'size_variants', 'size_variants.sym_links'])
+			->with(['album', 'size_variants'])
 			->findOrFail($photo_id);
 	}
 }

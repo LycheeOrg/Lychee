@@ -55,7 +55,6 @@ class PositionData
 						// variants per photo
 						$r->whereBetween('type', [SizeVariantType::SMALL2X, SizeVariantType::THUMB]);
 					},
-					'size_variants.sym_links',
 				])
 				->whereNotNull('latitude')
 				->whereNotNull('longitude'),

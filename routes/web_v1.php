@@ -43,5 +43,10 @@ Route::match(['get', 'post'], '/migrate', [UpdateController::class, 'migrate'])
  */
 Route::get('/r/{albumId}/{photoId?}', [RedirectController::class, 'redirect'])->middleware(['migration:complete']);
 
+Route::get('/images/{path}', SecurePathController::class)
+	->name('image')
+	->where('path', '.*')
+	->middleware(['migration:complete']);
+
 // This route must be defined last because it is a catch all.
 Route::match(['get', 'post'], '{path}', HoneyPotController::class)->where('path', '.*');

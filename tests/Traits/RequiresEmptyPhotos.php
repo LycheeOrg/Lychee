@@ -33,7 +33,6 @@ trait RequiresEmptyPhotos
 	{
 		$this->setUpInteractsWithFilesystemPermissions();
 		// Assert that photo table is empty
-		$this->assertDatabaseCount('sym_links', 0);
 		$this->assertDatabaseCount('size_variants', 0);
 		$this->assertDatabaseCount('photos', 0);
 		$this->assertDatabaseCount('jobs_history', 0);
@@ -47,7 +46,6 @@ trait RequiresEmptyPhotos
 	protected function tearDownRequiresEmptyPhotos(): void
 	{
 		// Clean up remaining stuff from tests
-		DB::table('sym_links')->delete();
 		DB::table('size_variants')->delete();
 		DB::table('photos')->delete();
 		DB::table('jobs_history')->delete();
@@ -66,7 +64,6 @@ trait RequiresEmptyPhotos
 	protected static function cleanPublicFolders(): void
 	{
 		self::cleanupHelper(base_path('public/uploads/'));
-		self::cleanupHelper(base_path('public/sym/'));
 	}
 
 	/**

@@ -13,7 +13,6 @@ use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\ModelDBException;
 use App\Legacy\V1\Requests\View\GetPhotoViewRequest;
-use App\ModelFunctions\SymLinkFunctions;
 use App\Models\Configs;
 use App\Policies\SettingsPolicy;
 use Illuminate\Contracts\Container\BindingResolutionException;
@@ -26,14 +25,6 @@ use function Safe\phpinfo;
 
 final class IndexController extends Controller
 {
-	/**
-	 * @param SymLinkFunctions $sym_link_functions
-	 */
-	public function __construct(
-		private SymLinkFunctions $sym_link_functions)
-	{
-	}
-
 	/**
 	 * Display the landing page if enabled
 	 * otherwise display the gallery.
@@ -203,7 +194,6 @@ final class IndexController extends Controller
 	protected function frontend(?string $title = null, ?string $description = null, ?string $image_url = null): View
 	{
 		try {
-			$this->sym_link_functions->remove_outdated();
 			$site_title = Configs::getValueAsString('site_title');
 			$title ??= '';
 			$description ??= '';

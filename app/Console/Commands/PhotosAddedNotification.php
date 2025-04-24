@@ -50,7 +50,7 @@ class PhotosAddedNotification extends Command
 			foreach ($user->unreadNotifications()->get() as $notification) {
 				/** @var Photo|null $photo */
 				$photo = Photo::query()
-					->with(['size_variants', 'size_variants.sym_links'])
+					->with(['size_variants'])
 					->find($notification->data['id']);
 
 				if ($photo !== null) {

@@ -45,7 +45,7 @@ final class GetPhotoRequest extends BaseApiRequest implements HasPhoto
 		/** @var ?string $photo_id */
 		$photo_id = $values[RequestAttribute::PHOTO_ID_ATTRIBUTE];
 		$this->photo = Photo::query()
-			->with(['size_variants', 'size_variants.sym_links'])
+			->with(['size_variants'])
 			->findOrFail($photo_id);
 	}
 }

@@ -12,7 +12,6 @@ use App\Actions\SizeVariant\Delete;
 use App\Casts\MustNotSetCast;
 use App\Enum\SizeVariantType;
 use App\Enum\StorageDiskType;
-use App\Exceptions\ConfigurationException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
 use App\Http\Resources\Models\SizeVariantResource;
@@ -23,13 +22,10 @@ use App\Models\Extensions\HasUrlGenerator;
 use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\ToArrayThrowsNotImplemented;
 use App\Models\Extensions\UTCBasedTimes;
-use App\Relations\HasManyBidirectionally;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Storage;
-use League\Flysystem\Local\LocalFilesystemAdapter;
 
 /**
  * App\Models\SizeVariant.
@@ -47,7 +43,6 @@ use League\Flysystem\Local\LocalFilesystemAdapter;
  * @property float                $ratio
  * @property StorageDiskType|null $storage_disk
  * @property int                  $filesize
- * @property Collection<SymLink>  $sym_links
  *
  * @method static SizeVariantBuilder|SizeVariant addSelect($column)
  * @method static SizeVariantBuilder|SizeVariant join(string $table, string $first, string $operator = null, string $second = null, string $type = 'inner', string $where = false)
@@ -112,7 +107,6 @@ class SizeVariant extends Model
 		'photo', // see above and otherwise infinite loops will occur
 		'photo_id', // see above
 		'short_path',  // serialize url instead
-		'sym_links', // don't serialize relation of symlinks
 	];
 
 	/**
@@ -153,77 +147,24 @@ class SizeVariant extends Model
 	}
 
 	/**
-	 * Returns the association to the symbolics links which point to this
-	 * size variant.
-	 *
-	 * @return HasManyBidirectionally<SymLink,$this>
-	 */
-	public function sym_links(): HasManyBidirectionally
-	{
-		return $this->hasManyBidirectionally(SymLink::class);
-	}
-
-	/**
 	 * Accessor for the "virtual" attribute {@link SizeVariant::$url}.
 	 *
 	 * This is more than a simple convenient method which wraps
 	 * {@link SizeVariant::$short_path} into
 	 * {@link \Illuminate\Support\Facades\Storage::url()}.
 	 * Based on the current application settings and the authenticated user,
-	 * this method returns a URL to a short-living symbolic link instead of a
-	 * direct URL to the actual size variant, if the underlying storage
-	 * provides symbolic links.
+	 * this method returns a URL to a short-living link instead of a
+	 * direct URL to the actual size variant.
 	 *
 	 * @return string the url of the size variant
-	 *
-	 * @throws ConfigurationException
 	 */
 	public function getUrlAttribute(): string
 	{
-		$url = self::pathToUrl(
+		return self::pathToUrl(
 			$this->short_path,
 			$this->storage_disk->value,
 			$this->type,
 		);
-
-		if ($url !== null) {
-			return $url;
-		}
-
-		// We are using the symlink option.
-		$image_disk = Storage::disk($this->storage_disk->value);
-		/** @disregard P1013 */
-		$storage_adapter = $image_disk->getAdapter();
-
-		if ($storage_adapter instanceof LocalFilesystemAdapter) {
-			return $this->getSymLinkUrl();
-		}
-
-		// @codeCoverageIgnoreStart
-		throw new ConfigurationException('the chosen storage adapter "' . get_class($storage_adapter) . '" does not support the symbolic linking feature');
-		// @codeCoverageIgnoreEnd
-	}
-
-	/**
-	 * Get the symlink url if possible.
-	 *
-	 * @return string
-	 */
-	private function getSymLinkUrl(): string
-	{
-		// In order to allow a grace period, we create a new symbolic link,
-		// if the most recent existing link has reached 2/3 of its lifetime
-		$max_lifetime = Configs::getValueAsInt('SL_life_time_days') * 24 * 60 * 60;
-		$grace_period = $max_lifetime / 3;
-
-		/** @var ?SymLink $sym_link */
-		$sym_link = $this->sym_links()->latest()->first();
-		if ($sym_link === null || $sym_link->created_at->isBefore(now()->subSeconds($grace_period))) {
-			/** @var SymLink $sym_link */
-			$sym_link = $this->sym_links()->create();
-		}
-
-		return $sym_link->url;
 	}
 
 	public function getFile(): FlysystemFile
