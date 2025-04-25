@@ -25,6 +25,7 @@ use App\Http\Resources\Models\TargetAlbumResource;
 use App\Models\AccessPermission;
 use App\Models\Album;
 use App\Models\BaseAlbumImpl;
+use App\Models\User;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
