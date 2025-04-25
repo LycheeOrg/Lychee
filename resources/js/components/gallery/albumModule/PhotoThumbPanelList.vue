@@ -1,6 +1,6 @@
 <template>
 	<div class="relative flex flex-wrap flex-row shrink w-full justify-start align-top" :id="'photoListing' + props.idx">
-		<template v-for="(photo, idx) in props.photos">
+		<template v-for="(photo, idx) in props.photos" :key="photo.id">
 			<PhotoThumb
 				@click="maySelect(idx + iter, $event)"
 				@contextmenu.prevent="menuOpen(idx + iter, $event)"

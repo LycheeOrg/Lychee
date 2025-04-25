@@ -19,7 +19,7 @@ export function getWidth(timelineData: TimelineData): number {
 	}
 
 	const route = useRoute();
-	const routeName = route.name as String;
+	const routeName = route.name as string;
 	if (routeName.includes("timeline")) {
 		timeLineBorder = 50;
 	}

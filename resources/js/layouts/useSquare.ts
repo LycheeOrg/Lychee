@@ -13,7 +13,7 @@ export function useSquare(el: HTMLElement, target_width_height: number, grid_gap
 	const spread = Math.ceil(remaining_space / perChunk);
 	const grid_width = target_width_height + spread;
 
-	let columns: Column[] = Array.from({ length: perChunk }, (_, idx) => {
+	const columns: Column[] = Array.from({ length: perChunk }, (_, idx) => {
 		return { height: 0, left: (grid_gap + grid_width) * idx };
 	});
 
@@ -24,7 +24,7 @@ export function useSquare(el: HTMLElement, target_width_height: number, grid_gap
 			columns.forEach((column) => (column.height = newTop));
 		}
 
-		let column = columns[idx];
+		const column = columns[idx];
 		e.style.top = column.height + "px";
 		e.style.width = grid_width + "px";
 		e.style.height = grid_width + "px";
