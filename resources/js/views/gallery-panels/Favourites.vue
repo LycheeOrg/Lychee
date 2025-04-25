@@ -87,7 +87,7 @@ const {
 } = useSelection(photos, children, togglableStore);
 
 function photoClick(idx: number, e: MouseEvent) {
-	router.push({ name: "photo", params: { albumId: photos.value[idx].album_id ?? ALL, photoId: photos.value[idx].id } });
+	router.push({ name: "album", params: { albumId: photos.value[idx].album_id ?? ALL, photoId: photos.value[idx].id } });
 }
 
 onKeyStroke("f", () => !shouldIgnoreKeystroke() && togglableStore.toggleFullScreen());

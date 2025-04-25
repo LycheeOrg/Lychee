@@ -237,7 +237,7 @@ function toggleSlideShow() {
 	}
 
 	slideshow();
-	router.push({ name: "photo", params: { albumId: album.value.id, photoId: album.value.photos[0].id } });
+	router.push({ name: "album", params: { albumId: album.value.id, photoId: album.value.photos[0].id } });
 }
 
 const { layoutConfig, loadLayoutConfig } = useGetLayoutConfig();
