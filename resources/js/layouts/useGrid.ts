@@ -18,7 +18,7 @@ export function useGrid(el: HTMLElement, target_width: number, grid_gap: number 
 		return height > 0 ? width / height : 1;
 	});
 
-	const columns: Column[] = Array.from({ length: perChunk }, (_, idx) => {
+	let columns: Column[] = Array.from({ length: perChunk }, (_, idx) => {
 		return { height: 0, left: (grid_gap + grid_width) * idx };
 	});
 
@@ -29,7 +29,7 @@ export function useGrid(el: HTMLElement, target_width: number, grid_gap: number 
 			columns.forEach((column) => (column.height = newTop));
 		}
 
-		const column = columns[idx];
+		let column = columns[idx];
 		const height = Math.floor(grid_width / ratio[i]);
 		e.style.top = column.height + "px";
 		e.style.width = grid_width + "px";
