@@ -67,7 +67,8 @@ const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
 
 function goBack() {
-	if (props.albumId !== undefined) {
+	console.log(props.albumId);
+	if (props.albumId !== undefined && props.albumId !== "") {
 		router.push({ name: "album", params: { albumId: props.albumId } });
 	} else {
 		router.push({ name: "gallery" });
