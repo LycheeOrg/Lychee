@@ -21,6 +21,12 @@
 						class="w-full"
 						:virtualScrollerOptions="{ itemSize: 28 }"
 					>
+						<template #header
+							><span class="text-muted-color-emphasis font-bold">{{ $t("sharing.albums") }}</span></template
+						>
+						<template #empty
+							><span class="text-muted-color">{{ $t("sharing.no_albums") }}</span></template
+						>
 						<template #option="slotProps">
 							<div class="flex items-center">
 								<div
@@ -45,7 +51,14 @@
 						:highlightOnSelect="false"
 						class="w-full"
 						:virtualScrollerOptions="{ itemSize: 28 }"
-					/>
+					>
+						<template #header
+							><span class="text-muted-color-emphasis font-bold">{{ $t("sharing.users") }}</span></template
+						>
+						<template #empty
+							><span class="text-muted-color">{{ $t("sharing.no_users") }}</span></template
+						>
+					</Listbox>
 				</div>
 
 				<div class="w-1/2 flex justify-around items-center">
@@ -85,7 +98,6 @@
 <script setup lang="ts">
 import Dialog from "primevue/dialog";
 import { ref } from "vue";
-import AlbumService from "@/services/album-service";
 import UsersService from "@/services/users-service";
 import { onMounted } from "vue";
 import Checkbox from "primevue/checkbox";
@@ -146,7 +158,7 @@ function closeCallback() {
 }
 
 function loadAlbums() {
-	AlbumService.getTargetListAlbums(null).then((response) => {
+	SharingService.listAlbums().then((response) => {
 		targetAlbums.value = response.data;
 	});
 }

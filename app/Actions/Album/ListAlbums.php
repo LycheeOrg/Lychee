@@ -27,13 +27,15 @@ class ListAlbums
 	/**
 	 * @return TAlbumSaved[]
 	 */
-	public function do(Collection $albums_filtering, ?string $parent_id): array
+	public function do(Collection $albums_filtering, ?string $parent_id, ?int $owner_id = null): array
 	{
 		$album_query_policy = resolve(AlbumQueryPolicy::class);
 		$unfiltered = $album_query_policy->applyReachabilityFilter(
 			// We remove all sub albums
 			// Otherwise it would create cyclic dependency
 			Album::query()
+				->when($owner_id !== null,
+					fn ($q) => $q->where('owner_id', '=', $owner_id))
 				->when($albums_filtering->count() > 0,
 					function ($q) use ($albums_filtering) {
 						$albums_filtering->each(

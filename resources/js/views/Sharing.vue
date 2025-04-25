@@ -36,7 +36,7 @@
 				<div class="w-1/6"></div>
 			</div>
 			<template v-if="perms?.length > 0">
-				<ShareLine v-for="perm in perms" :perm="perm" @delete="deletePermission" :with-album="true" />
+				<ShareLine v-for="(perm, idx) in perms" :perm="perm" @delete="deletePermission" :with-album="true" :key="'p' + (perm.id ?? idx)" />
 			</template>
 			<p v-else class="text-center">{{ $t("sharing.no_data") }}</p>
 		</div>

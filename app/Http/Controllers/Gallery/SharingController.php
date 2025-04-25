@@ -8,10 +8,12 @@
 
 namespace App\Http\Controllers\Gallery;
 
+use App\Actions\Album\ListAlbums;
 use App\Actions\Sharing\Propagate;
 use App\Actions\Sharing\Share;
 use App\Constants\AccessPermissionConstants as APC;
 use App\Exceptions\Internal\LycheeLogicException;
+use App\Exceptions\UnauthenticatedException;
 use App\Http\Requests\Sharing\AddSharingRequest;
 use App\Http\Requests\Sharing\DeleteSharingRequest;
 use App\Http\Requests\Sharing\EditSharingRequest;
@@ -19,6 +21,7 @@ use App\Http\Requests\Sharing\ListAllSharingRequest;
 use App\Http\Requests\Sharing\ListSharingRequest;
 use App\Http\Requests\Sharing\PropagateSharingRequest;
 use App\Http\Resources\Models\AccessPermissionResource;
+use App\Http\Resources\Models\TargetAlbumResource;
 use App\Models\AccessPermission;
 use App\Models\Album;
 use App\Models\BaseAlbumImpl;
@@ -113,6 +116,28 @@ class SharingController extends Controller
 		$query = $query->orderBy('base_album_id', 'asc');
 
 		return AccessPermissionResource::collect($query->get());
+	}
+
+	/**
+	 * Get the list of albums.
+	 *
+	 * @return array<string|int,TargetAlbumResource>
+	 */
+	public function listAlbums(ListAllSharingRequest $request, ListAlbums $list_albums): array
+	{
+		/** @var User $user */
+		$user = Auth::user() ?? throw new UnauthenticatedException();
+		if ($user->may_administrate) {
+			$owner_id = null;
+		} else {
+			$owner_id = $user->id;
+		}
+
+		return TargetAlbumResource::collect($list_albums->do(
+			albums_filtering: resolve(Collection::class),
+			parent_id: null,
+			owner_id: $owner_id)
+		);
 	}
 
 	/**

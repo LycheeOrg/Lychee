@@ -91,6 +91,7 @@ final readonly class RouteCacheManager
 			'api/v2/Settings::getLanguages' => new RouteCacheConfig(tag: CacheTag::SETTINGS),
 			'api/v2/Sharing' => new RouteCacheConfig(tag: CacheTag::GALLERY, user_dependant: true, extra: [RequestAttribute::ALBUM_ID_ATTRIBUTE]),
 			'api/v2/Sharing::all' => new RouteCacheConfig(tag: CacheTag::GALLERY, user_dependant: true),
+			'api/v2/Sharing::albums' => new RouteCacheConfig(tag: CacheTag::GALLERY, user_dependant: true),
 			'api/v2/Statistics::albumSpace' => new RouteCacheConfig(tag: CacheTag::STATISTICS, user_dependant: true),
 			'api/v2/Statistics::sizeVariantSpace' => new RouteCacheConfig(tag: CacheTag::STATISTICS, user_dependant: true),
 			'api/v2/Statistics::totalAlbumSpace' => new RouteCacheConfig(tag: CacheTag::STATISTICS, user_dependant: true),

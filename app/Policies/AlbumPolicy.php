@@ -466,7 +466,8 @@ class AlbumPolicy extends BasePolicy
 
 		// If this is null, this means that we are looking at the list.
 		if ($abstract_album === null) {
-			return true;
+			// We need to be at least owner of an album to be able to share anything.
+			return BaseAlbumImpl::query()->where('owner_id', '=', $user->id)->toBase()->count() > 0;
 		}
 
 		if (!$abstract_album instanceof BaseAlbum && !$abstract_album instanceof BaseAlbumImpl) {
