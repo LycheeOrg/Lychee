@@ -67,7 +67,6 @@ const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
 
 function goBack() {
-	console.log(props.albumId);
 	if (props.albumId !== undefined && props.albumId !== "") {
 		router.push({ name: "album", params: { albumId: props.albumId } });
 	} else {
@@ -93,7 +92,7 @@ function loadMapProvider() {
 }
 
 function mapInit() {
-	// @ts-ignore
+	// @ts-expect-error We don't care about the default icon.
 	delete L.Icon.Default.prototype._getIconUrl;
 	L.Icon.Default.mergeOptions({
 		iconRetinaUrl: Constants.BASE_URL + "/img/marker-icon-2x.png",
