@@ -57,7 +57,7 @@
 			</template>
 			<template v-else>
 				<h1
-					class="min-h-[19px] mt-3 mb-1 ml-3 text-base overflow-hidden whitespace-nowrap text-ellipsis prose-invert"
+					class="min-h-[19px] mt-3 mb-1 ml-3 text-base text-ellipsis prose-invert line-clamp-3"
 					v-html="props.photo.preformatted.description"
 				></h1>
 			</template>
