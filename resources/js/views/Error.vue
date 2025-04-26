@@ -1,14 +1,14 @@
 <template>
 	<template v-if="is_debug_enabled">
 		<template v-if="lycheeError !== null">
-			<div v-if="lycheeError.exception" class="w-full h-full fixed top-0 left-0 bg-panel z-50">
+			<div v-if="lycheeError.exception" class="w-full h-full fixed top-0 left-0 bg-panel z-50 flex flex-col">
 				<Message severity="error" @click="closeError">
 					<span class="font-bold text-xl w-full" v-if="lycheeError.exception"
 						>{{ lycheeError.exception }} in {{ lycheeError.file }}:{{ lycheeError.line }}</span
 					>
 					<span class="font-bold text-xl w-full" v-else>{{ lycheeError.message }}</span>
 				</Message>
-				<Panel>
+				<Panel class="h-full overflow-y-scroll">
 					<template #header>
 						<span class="font-bold text-xl">{{ lycheeError.message }}</span>
 					</template>
@@ -16,7 +16,9 @@
 						<Button icon="pi pi-times" severity="secondary" class="text-muted-color" rounded text @click="closeError" />
 					</template>
 					<Divider />
-					<p v-for="trace in lycheeError.trace">{{ trace.file + ":" + trace.line }} &mdash; {{ trace.function }}</p>
+					<p v-for="(trace, idx) in lycheeError.trace" :key="'trace' + idx">
+						{{ trace.file + ":" + trace.line }} &mdash; {{ trace.function }}
+					</p>
 				</Panel>
 			</div>
 			<div v-else-if="lycheeError.message">
