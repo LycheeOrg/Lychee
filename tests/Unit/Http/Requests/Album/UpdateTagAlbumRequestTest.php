@@ -62,7 +62,7 @@ class UpdateTagAlbumRequestTest extends BaseRequestTest
 			RequestAttribute::PHOTO_SORTING_ORDER_ATTRIBUTE => OrderSortingType::ASC->value,
 			RequestAttribute::ALBUM_PHOTO_LAYOUT => PhotoLayoutType::JUSTIFIED->value,
 			RequestAttribute::ALBUM_TIMELINE_PHOTO => TimelinePhotoGranularity::DEFAULT->value,
-			RequestAttribute::COPYRIGHT_ATTRIBUTE => 'Copyright (c) 2017-2018 Tobias Reich',
+			RequestAttribute::COPYRIGHT_ATTRIBUTE => 'Copyright (c) 2018-2024 LycheeOrg',
 			RequestAttribute::TAGS_ATTRIBUTE => ['tag1', 'tag2'],
 		]);
 

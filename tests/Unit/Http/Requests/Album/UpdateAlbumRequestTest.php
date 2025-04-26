@@ -71,7 +71,7 @@ class UpdateAlbumRequestTest extends BaseRequestTest
 			RequestAttribute::ALBUM_SORTING_ORDER_ATTRIBUTE => OrderSortingType::ASC->value,
 			RequestAttribute::ALBUM_ASPECT_RATIO_ATTRIBUTE => AspectRatioType::aspect1byx9->value,
 			RequestAttribute::ALBUM_PHOTO_LAYOUT => PhotoLayoutType::JUSTIFIED->value,
-			RequestAttribute::COPYRIGHT_ATTRIBUTE => 'Copyright (c) 2017-2018 Tobias Reich',
+			RequestAttribute::COPYRIGHT_ATTRIBUTE => 'Copyright (c) 2018-2024 LycheeOrg',
 			RequestAttribute::ALBUM_TIMELINE_ALBUM => TimelineAlbumGranularity::DEFAULT->value,
 			RequestAttribute::ALBUM_TIMELINE_PHOTO => TimelineAlbumGranularity::DAY->value,
 			//			RequestAttribute::ALBUM_PHOTO_LAYOUT => PhotoSortingCriterion::ALBUM_PHOTO_LAYOUT_GRID->value,
