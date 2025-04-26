@@ -37,7 +37,6 @@ class InstallTypeInfo implements DiagnosticStringPipe
 		$data[] = Diagnostics::line('APP_URL:', config('app.url') !== 'http://localhost' ? 'set' : 'default'); // Some people leave that value by default... It is now breaking their visual.
 		$data[] = Diagnostics::line('APP_DIR:', config('app.dir_url') !== '' ? 'set' : 'default'); // Some people leave that value by default... It is now breaking their visual.
 		$data[] = Diagnostics::line('LOG_VIEWER_ENABLED:', Features::when('log-viewer', 'true', 'false'));
-		$data[] = Diagnostics::line('VUEJS_ENABLED:', Features::when('vuejs', 'true', 'false'));
 		$data[] = '';
 
 		return $next($data);
