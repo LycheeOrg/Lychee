@@ -6,7 +6,7 @@
  * Copyright (c) 2018-2025 LycheeOrg.
  */
 
- use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Migrations\Migration;
 
 return new class() extends Migration {
 	/**
