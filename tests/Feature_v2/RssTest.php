@@ -18,7 +18,8 @@
 
 namespace Tests\Feature_v2;
 
-use Configs;
+use App\Models\Configs;
+use Exception;
 use Tests\Feature_v2\Base\BaseV2Test;
 
 class RssTest extends BaseV2Test
