@@ -1,10 +1,12 @@
+import { getWidth } from "./getWidth";
+import { TimelineData } from "./PhotoLayout";
 import { Column } from "./types";
 
-export function useSquare(el: HTMLElement, target_width_height: number, grid_gap: number = 12) {
+export function useSquare(el: HTMLElement, target_width_height: number, grid_gap: number = 12, timelineData: TimelineData) {
 	// @ts-expect-error
 	const gridItems: ChildNodeWithDataStyle[] = [...el.childNodes].filter((gridItem) => gridItem.nodeType === 1);
 
-	const max_width = parseInt(getComputedStyle(el).width);
+	const max_width = getWidth(timelineData);
 	const usable_width = max_width;
 	const perChunk = Math.floor((usable_width + grid_gap) / target_width_height);
 	const remaining_space = usable_width - perChunk * target_width_height - (perChunk - 1) * grid_gap;

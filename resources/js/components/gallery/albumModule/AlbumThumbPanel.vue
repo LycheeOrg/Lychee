@@ -1,5 +1,5 @@
 <template>
-	<Panel v-if="props.isTimeline === false" :header="$t(props.header)" :toggleable="!isAlone" :pt:header:class="headerClass" class="border-0 w-full">
+	<Panel v-if="isTimeline === false" :header="$t(props.header)" :toggleable="!isAlone" :pt:header:class="headerClass" class="border-0 w-full">
 		<div class="flex flex-wrap flex-row shrink w-full justify-start gap-1 sm:gap-2 md:gap-4 pt-4">
 			<AlbumThumbPanelList
 				:albums="props.albums"
@@ -32,7 +32,7 @@
 			</template>
 		</Timeline>
 		<div v-else>
-			<template v-for="albumTimeline in albumsTimeLine">
+			<template v-for="(albumTimeline, idx) in albumsTimeLine" :key="'albumTimeline' + idx">
 				<div
 					v-if="albumTimeline.data.filter((a) => !a.is_nsfw || are_nsfw_visible).length > 0"
 					class="flex flex-wrap flex-row shrink w-full justify-start gap-1 sm:gap-2 md:gap-4 pb-8"
@@ -100,6 +100,8 @@ const albumsTimeLine = computed<SplitData<App.Http.Resources.Models.ThumbAlbumRe
 		(a: App.Http.Resources.Models.ThumbAlbumResource) => a.timeline?.format ?? "Others",
 	),
 );
+
+const isTimeline = computed(() => props.isTimeline && albumsTimeLine.value.length > 1);
 
 const headerClass = computed(() => {
 	return props.isAlone ? "hidden" : "";

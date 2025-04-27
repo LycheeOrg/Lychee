@@ -66,15 +66,23 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-	document.exitFullscreen();
+	try {
+		document.exitFullscreen();
+	} catch (_) {
+		// Do nothing.
+	}
 	clearTimeouts();
 });
 
 function goBack() {
 	clearTimeouts();
-	document.exitFullscreen();
+	try {
+		document.exitFullscreen();
+	} catch (_) {
+		// Do nothing.
+	}
 
-	if (props.albumId !== undefined) {
+	if (props.albumId !== undefined && props.albumId !== "") {
 		router.push({ name: "album", params: { albumId: props.albumId } });
 	} else {
 		router.push({ name: "gallery" });

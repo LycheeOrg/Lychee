@@ -1,7 +1,7 @@
 <template>
 	<Drawer v-model:visible="left_menu_open" :pt:content:class="'flex flex-col justify-start gap-10'">
 		<template #header>
-			<div v-if="user?.id === null" class="flex items-center gap-2 text-muted-color hover:text-primary-400 w-full">
+			<div v-if="user?.id === null && isGallery" class="flex items-center gap-2 text-muted-color hover:text-primary-400 w-full">
 				<Button class="border-none w-full text-left justify-start" severity="secondary" text @click="togglableStore.toggleLogin()">
 					<i class="pi pi-sign-in text-lg mr-2" />
 					{{ $t("left-menu.login") }}

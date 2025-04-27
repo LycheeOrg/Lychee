@@ -84,7 +84,7 @@ import Toolbar from "primevue/toolbar";
 import ContextMenu from "primevue/contextmenu";
 import Divider from "primevue/divider";
 import ImportFromLink from "@/components/modals/ImportFromLink.vue";
-import { computed, ComputedRef, ref } from "vue";
+import { computed, ComputedRef } from "vue";
 import { onKeyStroke } from "@vueuse/core";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { isTouchDevice, shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
@@ -124,7 +124,7 @@ const lycheeStore = useLycheeStateStore();
 const togglableStore = useTogglablesStateStore();
 const favourites = useFavouriteStore();
 
-const { dropbox_api_key } = storeToRefs(lycheeStore);
+const { dropbox_api_key, is_favourite_enabled } = storeToRefs(lycheeStore);
 const { is_login_open, is_upload_visible, is_create_album_visible, is_create_tag_album_visible } = storeToRefs(togglableStore);
 
 const router = useRouter();
@@ -222,7 +222,7 @@ const menu = computed(() =>
 			to: { name: "favourites" },
 			type: "link",
 			icon: "pi pi-heart",
-			if: (favourites.photos?.length ?? 0) > 0,
+			if: is_favourite_enabled.value && (favourites.photos?.length ?? 0) > 0,
 		},
 		{
 			icon: "pi pi-search",
