@@ -27,7 +27,7 @@ class SaveStatistics implements PhotoPipe
 				'favourite_count' => 0,
 				'shared_count' => 0,
 			]);
-	
+
 			$state->getPhoto()->setRelation('statistics', $stats);
 		}
 
