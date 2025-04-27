@@ -153,21 +153,6 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	}
 
 	/**
-	 * Return the albums shared to the user.
-	 *
-	 * @return BelongsToMany<BaseAlbumImpl,$this>
-	 */
-	public function shared(): BelongsToMany
-	{
-		return $this->belongsToMany(
-			BaseAlbumImpl::class,
-			APC::ACCESS_PERMISSIONS,
-			APC::USER_ID,
-			APC::BASE_ALBUM_ID
-		);
-	}
-
-	/**
 	 * Return the Oauth credentials owned by the user.
 	 *
 	 * @return HasMany<OauthCredential,$this>
