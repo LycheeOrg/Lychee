@@ -18,14 +18,13 @@
 
 namespace Tests\Feature_v2;
 
-use Tests\AbstractTestCase;
-use Tests\Feature_v2\Base\BaseApiV2Test;
+use Tests\Feature_v2\Base\BaseV2Test;
 
-class UpTest extends BaseApiV2Test
+class UpTest extends BaseV2Test
 {
 	public function testGet(): void
 	{
-		$response = AbstractTestCase::get('up');
+		$response = $this->get('up');
 		$this->assertOk($response);
 	}
 }
