@@ -143,6 +143,7 @@ class Create
 		$pipes[] = Shared\SetStarred::class;
 		$pipes[] = Shared\SetParentAndOwnership::class;
 		$pipes[] = Shared\Save::class;
+		$pipes[] = Shared\SaveStatistics::class;
 		$pipes[] = Shared\NotifyAlbums::class;
 
 		try {
@@ -174,6 +175,7 @@ class Create
 			Standalone\PlaceGoogleMotionVideo::class,
 			Standalone\SetChecksum::class,
 			Shared\Save::class,
+			Shared\SaveStatistics::class,
 			Standalone\CreateOriginalSizeVariant::class,
 			Standalone\CreateSizeVariants::class,
 			Standalone\EncodePlaceholder::class,
@@ -193,6 +195,7 @@ class Create
 			VideoPartner\PlaceVideo::class,
 			VideoPartner\UpdateLivePartner::class,
 			Shared\Save::class,
+			Shared\SaveStatistics::class,
 		];
 
 		return $this->executePipeOnDTO($pipes, $dto)->getPhoto();
@@ -295,6 +298,7 @@ class Create
 			PhotoPartner\SetOldChecksum::class,
 			PhotoPartner\DeleteOldVideoPartner::class,
 			Shared\Save::class,
+			Shared\SaveStatistics::class,
 		];
 
 		return $this->executePipeOnDTO($finalize, $finalize_dto)->getPhoto();
