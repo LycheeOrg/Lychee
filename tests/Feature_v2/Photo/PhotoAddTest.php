@@ -47,5 +47,33 @@ class PhotoAddTest extends BaseApiV2Test
 		$response = $this->actingAs($this->admin)->upload('Photo', filename: TestConstants::SAMPLE_FILE_NIGHT_IMAGE);
 		$this->assertCreated($response);
 		$this->catchFailureSilence = ["App\Exceptions\MediaFileOperationException"];
+
+		$response = $this->getJsonWithData('Album', ['album_id' => 'unsorted']);
+		$this->assertOk($response);
+		$response->assertJson([
+			'config' => [
+				'is_base_album' => false,
+				'is_model_album' => false,
+				'is_accessible' => true,
+				'is_password_protected' => false,
+				'is_search_accessible' => false,
+			],
+			'resource' => [
+				'id' => 'unsorted',
+				'title' => 'Unsorted',
+				'photos' => [
+					[
+						'title' => TestConstants::SAMPLE_FILE_NIGHT_IMAGE,
+					],
+				],
+			],
+		]);
+		$response = $this->deleteJson('Photo', ['photo_ids' => [$response->json('resource.photos.0.id')]]);
+		$this->assertNoContent($response);
+
+		$this->clearCachedSmartAlbums();
+		$response = $this->getJsonWithData('Album', ['album_id' => 'unsorted']);
+		$this->assertOk($response);
+		$response->assertJsonCount(1, 'resource.photos');
 	}
 }

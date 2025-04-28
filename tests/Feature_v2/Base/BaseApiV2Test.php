@@ -18,12 +18,8 @@
 
 namespace Tests\Feature_v2\Base;
 
-use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Uri;
 use Illuminate\Testing\TestResponse;
-use Safe\Exceptions\FilesystemException;
-use InvalidArgumentException;
-use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
 abstract class BaseApiV2Test extends BaseV2Test
 {
@@ -76,12 +72,13 @@ abstract class BaseApiV2Test extends BaseV2Test
 	/**
 	 * Execute a POST request with file upload.
 	 * This is different than the usual JSON request as it uses multipart/form-data.
-	 * 
-	 * @param string $uri 
-	 * @param null|string $filename 
-	 * @param null|array $data 
-	 * @param null|array $headers 
-	 * @return TestResponse 
+	 *
+	 * @param string      $uri
+	 * @param string|null $filename
+	 * @param array|null  $data
+	 * @param array|null  $headers
+	 *
+	 * @return TestResponse
 	 */
 	public function upload(
 		string $uri,
@@ -89,7 +86,7 @@ abstract class BaseApiV2Test extends BaseV2Test
 		?string $album_id = null,
 		int $file_last_modified_time = 1678824303000,
 		?array $data = null,
-		?array $headers = null
+		?array $headers = null,
 	): TestResponse {
 		$data ??= [
 			'album_id' => $album_id,
