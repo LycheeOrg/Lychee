@@ -129,6 +129,7 @@ abstract class BaseV2Test extends AbstractTestCase
 			->create();
 
 		$this->withoutVite();
+		$this->clearCachedSmartAlbums();
 	}
 
 	public function tearDown(): void
