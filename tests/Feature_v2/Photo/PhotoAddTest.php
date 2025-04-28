@@ -20,12 +20,9 @@ namespace Tests\Feature_v2\Photo;
 
 use Tests\Constants\TestConstants;
 use Tests\Feature_v2\Base\BaseApiV2Test;
-use Tests\Traits\PostPhoto;
 
 class PhotoAddTest extends BaseApiV2Test
 {
-	use PostPhoto;
-
 	public function testAddPhotoUnauthorizedForbidden(): void
 	{
 		$response = $this->postJson('Photo', []);
