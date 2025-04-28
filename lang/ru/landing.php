@@ -14,6 +14,6 @@ return [
 	*/
 	'gallery' => 'Галерея',
 	'access_gallery' => 'Доступ к галерее',
-	'Powered_by_lychee' => 'Размещено с Lychee',
+	'Powered_by_Lychee' => 'Размещено с Lychee',
 	'copyright' => 'Все изображения на этом сайте защищены авторским правом %1$s © %2$s',
 ];
