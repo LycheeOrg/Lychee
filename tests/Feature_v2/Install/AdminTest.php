@@ -45,6 +45,25 @@ class AdminTest extends BaseApiV2Test
 		$this->assertForbidden($response);
 
 		$response = $this->withoutMiddleware([InstallationStatus::class, AdminUserStatus::class])->post('install/admin');
+
+		/** @disregard */
+		self::assertEquals(422, $response->baseResponse->exception->status);
 		$this->assertRedirect($response);
+
+		$response = $this->withoutMiddleware([InstallationStatus::class, AdminUserStatus::class])->post('install/admin', [
+			'username' => 'admin',
+			'password' => 'admin',
+			'password_confirmation' => 'admin',
+		]);
+		$this->assertOk($response);
+		$response->assertViewIs('install.setup-success');
+
+		$response = $this->withoutMiddleware([InstallationStatus::class, AdminUserStatus::class])->post('install/admin', [
+			'username' => 'admin',
+			'password' => 'admin',
+			'password_confirmation' => 'admin',
+		]);
+		$this->assertOk($response);
+		$response->assertViewIs('install.setup-admin');
 	}
 }
