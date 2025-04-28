@@ -40,8 +40,8 @@ class TakeDateTest extends BaseApiV2Test
 	public function testSetUploadTimeFromFileTime(): void
 	{
 		// Make sure that the tables are empty before running this tests.
-		DB::table('size_variants')->truncate();
-		DB::table('photos')->truncate();
+		DB::table('size_variants')->delete();
+		DB::table('photos')->delete();
 
 		$photo1 = $this->createPhoto(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE);
 
