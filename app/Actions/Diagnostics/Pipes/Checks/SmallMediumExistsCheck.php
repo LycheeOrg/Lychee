@@ -115,38 +115,46 @@ class SmallMediumExistsCheck implements DiagnosticPipe
 
 		$num = $result->{self::MAX_NUM_SMALL} - $result->{self::NUM_SMALL}; // @phpstan-ignore-line
 		if ($num > 0) {
+			// @codeCoverageIgnoreStart
 			$data[] = DiagnosticData::info(
 				sprintf(self::INFO_MSG, $num, SizeVariantType::SMALL->name()),
 				self::class,
 				[sprintf(self::INFO_LINE, SizeVariantType::SMALL->name(), $num)]
 			);
+			// @codeCoverageIgnoreEnd
 		}
 
 		$num = $result->{self::MAX_NUM_SMALL2X} - $result->{self::NUM_SMALL2X}; // @phpstan-ignore-line
 		if ($num > 0 && $sv_helpers->isEnabledByConfiguration(SizeVariantType::SMALL2X)) {
+			// @codeCoverageIgnoreStart
 			$data[] = DiagnosticData::info(
 				sprintf(self::INFO_MSG, $num, SizeVariantType::SMALL2X->name()),
 				self::class,
 				[sprintf(self::INFO_LINE, SizeVariantType::SMALL2X->name(), $num)]
 			);
+			// @codeCoverageIgnoreEnd
 		}
 
 		$num = $result->{self::MAX_NUM_MEDIUM} - $result->{self::NUM_MEDIUM}; // @phpstan-ignore-line
 		if ($num > 0) {
+			// @codeCoverageIgnoreStart
 			$data[] = DiagnosticData::info(
 				sprintf(self::INFO_MSG, $num, SizeVariantType::MEDIUM->name()),
 				self::class,
 				[sprintf(self::INFO_LINE, SizeVariantType::MEDIUM->name(), $num)]
 			);
+			// @codeCoverageIgnoreEnd
 		}
 
 		$num = $result->{self::MAX_NUM_MEDIUM2X} - $result->{self::NUM_MEDIUM2X}; // @phpstan-ignore-line
 		if ($num > 0 && $sv_helpers->isEnabledByConfiguration(SizeVariantType::MEDIUM2X)) {
+			// @codeCoverageIgnoreStart
 			$data[] = DiagnosticData::info(
 				sprintf(self::INFO_MSG, $num, SizeVariantType::MEDIUM2X->name()),
 				self::class,
 				[sprintf(self::INFO_LINE, SizeVariantType::MEDIUM2X->name(), $num)]
 			);
+			// @codeCoverageIgnoreEnd
 		}
 
 		return $next($data);

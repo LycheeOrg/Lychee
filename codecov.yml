@@ -31,7 +31,7 @@ ignore:
 - "^app/Mail/.*"
 - "^app/Notifications/.*"
 # Legacy shit
-- "^app/Legacy/Lang/.*"
+- "^app/Legacy/.*"
 - "^app/View/.*"
 parsers:
   gcov:

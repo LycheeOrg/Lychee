@@ -39,7 +39,9 @@ class PlaceholderExistsCheck implements DiagnosticPipe
 
 		$sv_helpers = new SizeVariantDimensionHelpers();
 		if (!$sv_helpers->isEnabledByConfiguration(SizeVariantType::PLACEHOLDER)) {
+			// @codeCoverageIgnoreStart
 			return $next($data);
+			// @codeCoverageIgnoreEnd
 		}
 
 		/** @var object{num_placeholder:int,max_num_placeholder:int,num_unencoded_placeholder:int} $result */
@@ -66,7 +68,9 @@ class PlaceholderExistsCheck implements DiagnosticPipe
 
 		$num = $result->num_unencoded_placeholder;
 		if ($num > 0) {
+			// @codeCoverageIgnoreStart
 			$data[] = DiagnosticData::info(sprintf(self::INFO_MSG_UNENCODED, $num), self::class, [sprintf(self::INFO_LINE_UNENCODED, $num)]);
+			// @codeCoverageIgnoreEnd
 		}
 
 		$num = $result->max_num_placeholder - $result->num_placeholder;

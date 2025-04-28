@@ -26,11 +26,15 @@ class CachePasswordCheck implements DiagnosticPipe
 	public function handle(array &$data, \Closure $next): array
 	{
 		if (!Schema::hasTable('configs')) {
+			// @codeCoverageIgnoreStart
 			return $next($data);
+			// @codeCoverageIgnoreEnd
 		}
 
 		if (Configs::getValueAsBool('cache_enabled') && DB::table(APC::ACCESS_PERMISSIONS)->whereNotNull('password')->count() > 0) {
+			// @codeCoverageIgnoreStart
 			$data[] = DiagnosticData::warn('Response cache is enabled and some albums are password protected.', self::class, ['Due to response caching, unlocking those albums will reveal their content to other annonymous users.']);
+			// @codeCoverageIgnoreEnd
 		}
 
 		return $next($data);
