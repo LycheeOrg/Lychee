@@ -9,7 +9,6 @@
 namespace App\Http\Controllers;
 
 use App\Enum\OauthProvidersType;
-use App\Legacy\V1\Controllers\RedirectController;
 use Dedoc\Scramble\Scramble;
 use Illuminate\Foundation\Events\DiagnosingHealth;
 use Illuminate\Support\Facades\Event;
@@ -61,15 +60,6 @@ Route::match(['get', 'post'], '/migrate', [Admin\UpdateController::class, 'migra
 Route::get('/auth/{provider}/redirect', [OauthController::class, 'redirected'])->whereIn('provider', OauthProvidersType::values());
 Route::get('/auth/{provider}/authenticate', [OauthController::class, 'authenticate'])->name('oauth-authenticate')->whereIn('provider', OauthProvidersType::values());
 Route::get('/auth/{provider}/register', [OauthController::class, 'register'])->name('oauth-register')->whereIn('provider', OauthProvidersType::values());
-
-/*
- * TODO see to add better redirection functionality later.
- * This is to prevent instagram from taking control our # in url when sharing an album
- * and not consider it as an hash-tag.
- *
- * Other ideas, redirection by album name, photo title...
- */
-Route::get('/r/{albumId}/{photoId?}', [RedirectController::class, 'redirect'])->middleware(['migration:complete']);
 
 // We need to register this manually.
 Scramble::registerUiRoute(path: 'docs/api')->name('scramble.docs.ui');

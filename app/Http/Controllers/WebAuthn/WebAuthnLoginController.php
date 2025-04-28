@@ -57,12 +57,16 @@ class WebAuthnLoginController extends Controller
 		$credentials = $request->validated();
 
 		if (!$this->isSignedChallenge($credentials)) {
+			// @codeCoverageIgnoreStart
 			throw new HttpException(Response::HTTP_UNPROCESSABLE_ENTITY, 'Response is not signed.');
+			// @codeCoverageIgnoreEnd
 		}
 		$associated_user = $this->retrieveByCredentials($credentials);
 
 		if ($associated_user === null) {
+			// @codeCoverageIgnoreStart
 			throw new HttpException(Response::HTTP_UNPROCESSABLE_ENTITY, 'Associated user does not exists.');
+			// @codeCoverageIgnoreEnd
 		}
 
 		$json_transport = new JsonTransport($request->only(AssertionValidation::REQUEST_KEYS));
@@ -73,7 +77,9 @@ class WebAuthnLoginController extends Controller
 			->credential;
 
 		if ($credential === null) {
+			// @codeCoverageIgnoreStart
 			throw new UnauthenticatedException('Invalid credentials');
+			// @codeCoverageIgnoreEnd
 		}
 
 		$authenticatable = $credential->authenticatable;
