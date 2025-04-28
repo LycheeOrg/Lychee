@@ -18,8 +18,12 @@
 
 namespace Tests\Feature_v2\Base;
 
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Uri;
 use Illuminate\Testing\TestResponse;
+use Safe\Exceptions\FilesystemException;
+use InvalidArgumentException;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
 abstract class BaseApiV2Test extends BaseV2Test
 {
@@ -67,6 +71,46 @@ abstract class BaseApiV2Test extends BaseV2Test
 	public function postJson($uri, array $data = [], array $headers = [], $options = 0)
 	{
 		return $this->json('POST', self::API_PREFIX . ltrim($uri, '/'), $data, $headers, $options);
+	}
+
+	/**
+	 * Execute a POST request with file upload.
+	 * This is different than the usual JSON request as it uses multipart/form-data.
+	 * 
+	 * @param string $uri 
+	 * @param null|string $filename 
+	 * @param null|array $data 
+	 * @param null|array $headers 
+	 * @return TestResponse 
+	 */
+	public function upload(
+		string $uri,
+		?string $filename = null,
+		?string $album_id = null,
+		int $file_last_modified_time = 1678824303000,
+		?array $data = null,
+		?array $headers = null
+	): TestResponse {
+		$data ??= [
+			'album_id' => $album_id,
+			'file' => static::createUploadedFile($filename),
+			'file_last_modified_time' => $file_last_modified_time,
+			'file_name' => $filename,
+			'uuid_name' => '',
+			'extension' => '',
+			'chunk_number' => 1,
+			'total_chunks' => 1,
+		];
+		$headers ??= [
+			'CONTENT_TYPE' => 'multipart/form-data',
+			'Accept' => 'application/json',
+		];
+
+		return $this->post(
+			uri: self::API_PREFIX . ltrim($uri, '/'),
+			data: $data,
+			headers: $headers
+		);
 	}
 
 	/**

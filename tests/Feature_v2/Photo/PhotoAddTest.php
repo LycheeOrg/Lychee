@@ -25,62 +25,26 @@ class PhotoAddTest extends BaseApiV2Test
 {
 	public function testAddPhotoUnauthorizedForbidden(): void
 	{
-		$response = $this->postJson('Photo', []);
+		$response = $this->upload(uri: 'Photo', data: []);
 		$this->assertUnprocessable($response);
 
-		$response = $this->postJson('Photo', [
-			'album_id' => null,
-			'file' => static::createUploadedFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE),
-			'file_last_modified_time' => 1678824303000,
-			'file_name' => TestConstants::PHOTO_NIGHT_TITLE . '.jpg',
-			'uuid_name' => '',
-			'extension' => '',
-			'chunk_number' => 1,
-			'total_chunks' => 1,
-		]);
+		$response = $this->upload('Photo', filename: TestConstants::SAMPLE_FILE_NIGHT_IMAGE);
 		$this->assertUnauthorized($response);
 
-		$response = $this->actingAs($this->userNoUpload)->postJson('Photo', [
-			'album_id' => null,
-			'file' => static::createUploadedFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE),
-			'file_last_modified_time' => 1678824303000,
-			'file_name' => TestConstants::PHOTO_NIGHT_TITLE . '.jpg',
-			'uuid_name' => '',
-			'extension' => '',
-			'chunk_number' => 1,
-			'total_chunks' => 1,
-		]);
+		$response = $this->actingAs($this->userNoUpload)->upload('Photo', TestConstants::SAMPLE_FILE_NIGHT_IMAGE);
 		$this->assertForbidden($response);
 	}
 
 	public function testAddPhotoAuthorizedOwner(): void
 	{
 		$this->catchFailureSilence = [];
-		$response = $this->actingAs($this->admin)->postJson('Photo', []);
+		$response = $this->actingAs($this->admin)->upload('Photo', data: []);
 		$this->assertUnprocessable($response);
 
-		$response = $this->actingAs($this->userMayUpload1)->postJson('Photo', [
-			'album_id' => $this->album3->id,
-			'file' => static::createUploadedFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE),
-			'file_last_modified_time' => 1678824303000,
-			'file_name' => TestConstants::PHOTO_NIGHT_TITLE . '.jpg',
-			'uuid_name' => '',
-			'extension' => '',
-			'chunk_number' => 1,
-			'total_chunks' => 1,
-		]);
+		$response = $this->actingAs($this->userMayUpload1)->upload('Photo', filename: TestConstants::SAMPLE_FILE_NIGHT_IMAGE, album_id: $this->album3->id);
 		$this->assertForbidden($response);
 
-		$response = $this->actingAs($this->admin)->postJson('Photo', [
-			'album_id' => null,
-			'file' => static::createUploadedFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE),
-			'file_last_modified_time' => 1678824303000,
-			'file_name' => TestConstants::PHOTO_NIGHT_TITLE . '.jpg',
-			'uuid_name' => '',
-			'extension' => '',
-			'chunk_number' => 1,
-			'total_chunks' => 1,
-		]);
+		$response = $this->actingAs($this->admin)->upload('Photo', filename: TestConstants::SAMPLE_FILE_NIGHT_IMAGE);
 		$this->assertCreated($response);
 		$this->catchFailureSilence = ["App\Exceptions\MediaFileOperationException"];
 	}
