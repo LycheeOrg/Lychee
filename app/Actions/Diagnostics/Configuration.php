@@ -38,7 +38,7 @@ class Configuration
 			if (is_null($setting->value)) {
 				// @codeCoverageIgnoreStart
 				return 'Error: ' . $setting->key . ' has a NULL value!';
-				// @codeCoverageIgnoreEnd
+			// @codeCoverageIgnoreEnd
 			} else {
 				return Diagnostics::line($setting->key . ':', $setting->value);
 			}
@@ -51,6 +51,7 @@ class Configuration
 	 * @return Collection<int,Configs>
 	 *
 	 * @throws QueryBuilderException
+	 *
 	 * @codeCoverageIgnore
 	 */
 	private function withConfidentiality()

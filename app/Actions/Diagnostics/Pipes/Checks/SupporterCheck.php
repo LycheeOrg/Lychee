@@ -35,7 +35,9 @@ class SupporterCheck implements DiagnosticPipe
 	public function handle(array &$data, \Closure $next): array
 	{
 		if (Configs::getValueAsBool('disable_se_call_for_actions')) {
+			// @codeCoverageIgnoreStart
 			return $next($data);
+			// @codeCoverageIgnoreEnd
 		}
 
 		if (!$this->verify->is_supporter()) {

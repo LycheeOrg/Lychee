@@ -95,7 +95,9 @@ class VersionInfo implements DiagnosticStringPipe
 		};
 
 		if (!$this->verify->validate()) {
+			// @codeCoverageIgnoreStart
 			$lychee_version .= '*';
+			// @codeCoverageIgnoreEnd
 		}
 		$lychee_version .= ' Version';
 
