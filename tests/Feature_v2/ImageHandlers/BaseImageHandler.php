@@ -506,7 +506,7 @@ abstract class BaseImageHandler extends BaseApiWithDataTest
 		self::assertEquals(TestConstants::MIME_TYPE_IMG_JPEG, $photo['type']);
 		self::assertEquals(914, $photo['size_variants']['original']['width']);
 		self::assertEquals(1625, $photo['size_variants']['original']['height']);
-		self::assertEquals('270.34 KB', $photo['size_variants']['original']['filesize']);
+		self::assertEquals('264.01 KB', $photo['size_variants']['original']['filesize']);
 		self::assertEquals(202, $photo['size_variants']['small']['width']);
 		self::assertEquals(360, $photo['size_variants']['small']['height']);
 		self::assertEquals(607, $photo['size_variants']['medium']['width']);

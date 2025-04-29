@@ -16,6 +16,7 @@
       <directory suffix="Test.php">./tests/Feature_v2</directory>
       <exclude>./tests/Feature_v2/Base/BaseApiTest.php</exclude>
       <exclude>./tests/Feature_v2/Base/BaseApiWithDataTest.php</exclude>
+      <exclude>./tests/Feature_v2/ImageHandlers/BaseImageHandler.php</exclude>
     </testsuite>
   </testsuites>
   <extensions>

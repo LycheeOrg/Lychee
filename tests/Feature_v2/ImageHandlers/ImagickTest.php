@@ -55,11 +55,10 @@ class PhotosAddHandlerImagickTest extends BaseImageHandler
 		try {
 			static::setAcceptedRawFormats('.tif');
 
-			$response = $this->upload(TestConstants::SAMPLE_FILE_TIFF);
+			$response = $this->uploadImage(TestConstants::SAMPLE_FILE_TIFF);
 			$photo = $response->json('resource.photos.0');
 
 			self::assertStringEndsWith('.tif', $photo['size_variants']['original']['url']);
-			self::assertNull($photo['size_variants']['thumb']);
 			self::assertEquals(TestConstants::MIME_TYPE_IMG_TIFF, $photo['type']);
 			self::assertNotNull($photo['size_variants']['thumb']);
 		} finally {
