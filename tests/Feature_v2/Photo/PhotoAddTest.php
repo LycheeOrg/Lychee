@@ -151,4 +151,18 @@ class PhotoAddTest extends BaseApiWithDataTest
 		self::assertEquals(pathinfo($photo['live_photo_url'], PATHINFO_DIRNAME), pathinfo($photo['size_variants']['original']['url'], PATHINFO_DIRNAME));
 		self::assertEquals(pathinfo($photo['live_photo_url'], PATHINFO_FILENAME), pathinfo($photo['size_variants']['original']['url'], PATHINFO_FILENAME));
 	}
+
+	public function testGoogleMotionPicture(): void
+	{
+		$this->catchFailureSilence = [];
+		$response = $this->actingAs($this->admin)->upload('Photo', filename: TestConstants::SAMPLE_FILE_GMP_IMAGE);
+		$this->assertCreated($response);
+
+		$this->clearCachedSmartAlbums();
+		$response = $this->getJsonWithData('Album', ['album_id' => 'unsorted']);
+		$this->assertOk($response);
+		$id = $response->json('resource.photos.0.id');
+		$response = $this->deleteJson('Photo', ['photo_ids' => [$id]]);
+		$this->assertNoContent($response);
+	}
 }

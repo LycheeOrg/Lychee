@@ -69,6 +69,9 @@ abstract class BaseApiWithDataTest extends BaseApiTest
 	protected Photo $photo4;
 	protected Photo $subPhoto4;
 
+	// album 5 belongs to admin and is empty
+	protected Album $album5;
+
 	protected AccessPermission $perm1;
 	protected AccessPermission $perm4;
 	protected AccessPermission $perm44;
@@ -122,6 +125,8 @@ abstract class BaseApiWithDataTest extends BaseApiTest
 			->grants_download()
 			->grants_full_photo()
 			->create();
+
+		$this->album5 = Album::factory()->as_root()->owned_by($this->admin)->create();
 
 		$this->withoutVite();
 		$this->clearCachedSmartAlbums();
