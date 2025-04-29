@@ -104,6 +104,14 @@ class PhotoAddTest extends BaseApiWithDataTest
 		$this->catchFailureSilence = ["App\Exceptions\MediaFileOperationException"];
 	}
 
+	public function testNotify(): void
+	{
+		$this->catchFailureSilence = [];
+		$response = $this->actingAs($this->admin)->upload('Photo', filename: TestConstants::SAMPLE_FILE_NIGHT_IMAGE, album_id: $this->album3->id);
+		$this->assertCreated($response);
+		$this->catchFailureSilence = ["App\Exceptions\MediaFileOperationException"];
+	}
+
 	public function testAppleLivePhoto1(): void
 	{
 		$this->catchFailureSilence = [];
