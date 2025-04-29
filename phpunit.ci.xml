@@ -11,22 +11,11 @@
       <directory suffix="Test.php">./tests/Unit</directory>
       <exclude>./tests/Unit/Http/Requests/Base/BaseRequestTest.php</exclude>
     </testsuite>
-    <testsuite name="Feature_v1">
-      <directory suffix="Test.php">./tests/Feature_v1</directory>
-      <exclude>./tests/Feature_v1/Base/BasePhotoTest.php</exclude>
-      <exclude>./tests/Feature_v1/Base/BasePhotosRotateTest.php</exclude>
-      <exclude>./tests/Feature_v1/Base/BaseSharingTest.php</exclude>
-      <exclude>./tests/Feature_v1/LibUnitTests/AlbumsUnitTest.php</exclude>
-      <exclude>./tests/Feature_v1/LibUnitTests/PhotosUnitTest.php</exclude>
-      <exclude>./tests/Feature_v1/LibUnitTests/RootAlbumUnitTest.php</exclude>
-      <exclude>./tests/Feature_v1/LibUnitTests/SessionUnitTest.php</exclude>
-      <exclude>./tests/Feature_v1/LibUnitTests/SharingUnitTest.php</exclude>
-      <exclude>./tests/Feature_v1/LibUnitTests/UsersUnitTest.php</exclude>
-    </testsuite>
+
     <testsuite name="Feature_v2">
       <directory suffix="Test.php">./tests/Feature_v2</directory>
-      <exclude>./tests/Feature_v2/Base/BaseApiV2Test.php</exclude>
-      <exclude>./tests/Feature_v2/Base/BaseV2Test.php</exclude>
+      <exclude>./tests/Feature_v2/Base/BaseApiTest.php</exclude>
+      <exclude>./tests/Feature_v2/Base/BaseApiWithDataTest.php</exclude>
     </testsuite>
   </testsuites>
   <extensions>

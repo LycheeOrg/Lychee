@@ -19,10 +19,13 @@
 namespace Tests\Feature_v2\Install;
 
 use App\Http\Middleware\InstallationStatus;
-use Tests\Feature_v2\Base\BaseApiV2Test;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Tests\AbstractTestCase;
 
-class MigrateTest extends BaseApiV2Test
+class MigrateTest extends AbstractTestCase
 {
+	use DatabaseTransactions;
+
 	public function testGet(): void
 	{
 		$response = $this->get('install/migrate');

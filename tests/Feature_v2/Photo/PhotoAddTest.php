@@ -19,9 +19,9 @@
 namespace Tests\Feature_v2\Photo;
 
 use Tests\Constants\TestConstants;
-use Tests\Feature_v2\Base\BaseApiV2Test;
+use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
-class PhotoAddTest extends BaseApiV2Test
+class PhotoAddTest extends BaseApiWithDataTest
 {
 	public function testAddPhotoUnauthorizedForbidden(): void
 	{

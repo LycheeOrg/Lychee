@@ -21,10 +21,10 @@ namespace Tests\Feature_v2\Commands;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Tests\Constants\TestConstants;
-use Tests\Feature_v2\Base\BaseApiV2Test;
+use Tests\Feature_v2\Base\BaseApiWithDataTest;
 use Tests\Traits\CreatePhoto;
 
-class TakeDateTest extends BaseApiV2Test
+class TakeDateTest extends BaseApiWithDataTest
 {
 	use CreatePhoto;
 

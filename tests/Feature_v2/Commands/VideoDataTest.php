@@ -21,11 +21,11 @@ namespace Tests\Feature_v2\Commands;
 use App\Enum\SizeVariantType;
 use Illuminate\Support\Facades\DB;
 use Tests\Constants\TestConstants;
-use Tests\Feature_v2\Base\BaseApiV2Test;
+use Tests\Feature_v2\Base\BaseApiWithDataTest;
 use Tests\Traits\CreatePhoto;
 use Tests\Traits\RequiresFFMpeg;
 
-class VideoDataTest extends BaseApiV2Test
+class VideoDataTest extends BaseApiWithDataTest
 {
 	use RequiresFFMpeg;
 	use CreatePhoto;

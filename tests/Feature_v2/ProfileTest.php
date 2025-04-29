@@ -18,9 +18,9 @@
 
 namespace Tests\Feature_v2;
 
-use Tests\Feature_v2\Base\BaseApiV2Test;
+use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
-class ProfileTest extends BaseApiV2Test
+class ProfileTest extends BaseApiWithDataTest
 {
 	// Test update as guest.
 	public function testUpdateLoginGuest(): void

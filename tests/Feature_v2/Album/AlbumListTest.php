@@ -18,9 +18,9 @@
 
 namespace Tests\Feature_v2\Album;
 
-use Tests\Feature_v2\Base\BaseApiV2Test;
+use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
-class AlbumListTest extends BaseApiV2Test
+class AlbumListTest extends BaseApiWithDataTest
 {
 	public function testListTargetAlbumUnauthorizedForbidden(): void
 	{

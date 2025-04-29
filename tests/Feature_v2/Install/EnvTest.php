@@ -19,9 +19,9 @@
 namespace Tests\Feature_v2\Install;
 
 use App\Http\Middleware\InstallationStatus;
-use Tests\Feature_v2\Base\BaseApiV2Test;
+use Tests\AbstractTestCase;
 
-class EnvTest extends BaseApiV2Test
+class EnvTest extends AbstractTestCase
 {
 	public function testGet(): void
 	{

@@ -18,9 +18,9 @@
 
 namespace Tests\Feature_v2\Photo;
 
-use Tests\Feature_v2\Base\BaseApiV2Test;
+use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
-class PhotoDeleteTest extends BaseApiV2Test
+class PhotoDeleteTest extends BaseApiWithDataTest
 {
 	public function testDeletePhotoUnauthorizedForbidden(): void
 	{

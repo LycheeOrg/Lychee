@@ -23,10 +23,10 @@ use App\Models\Configs;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Testing\Assert;
 use Tests\Constants\TestConstants;
-use Tests\Feature_v2\Base\BaseApiV2Test;
+use Tests\Feature_v2\Base\BaseApiWithDataTest;
 use Tests\Traits\CreatePhoto;
 
-class EncodePlaceholdersTest extends BaseApiV2Test
+class EncodePlaceholdersTest extends BaseApiWithDataTest
 {
 	use CreatePhoto;
 

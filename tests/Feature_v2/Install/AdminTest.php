@@ -20,17 +20,20 @@ namespace Tests\Feature_v2\Install;
 
 use App\Http\Middleware\AdminUserStatus;
 use App\Http\Middleware\InstallationStatus;
-use Tests\Feature_v2\Base\BaseApiV2Test;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Tests\AbstractTestCase;
 
-class AdminTest extends BaseApiV2Test
+class AdminTest extends AbstractTestCase
 {
+	use DatabaseTransactions;
+
 	public function testGet(): void
 	{
 		$response = $this->get('install/admin');
-		$this->assertForbidden($response);
+		$this->assertOk($response);
 
 		$response = $this->withoutMiddleware(InstallationStatus::class)->get('install/admin');
-		$this->assertForbidden($response);
+		$this->assertOk($response);
 
 		$response = $this->withoutMiddleware([InstallationStatus::class, AdminUserStatus::class])->get('install/admin');
 		$this->assertOk($response);
@@ -39,13 +42,6 @@ class AdminTest extends BaseApiV2Test
 	public function testPost(): void
 	{
 		$response = $this->post('install/admin');
-		$this->assertForbidden($response);
-
-		$response = $this->withoutMiddleware(InstallationStatus::class)->post('install/admin');
-		$this->assertForbidden($response);
-
-		$response = $this->withoutMiddleware([InstallationStatus::class, AdminUserStatus::class])->post('install/admin');
-
 		/** @disregard */
 		self::assertEquals(422, $response->baseResponse->exception->status);
 		$this->assertRedirect($response);

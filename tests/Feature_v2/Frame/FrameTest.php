@@ -18,9 +18,9 @@
 
 namespace Tests\Feature_v2\Frame;
 
-use Tests\Feature_v2\Base\BaseApiV2Test;
+use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
-class FrameTest extends BaseApiV2Test
+class FrameTest extends BaseApiWithDataTest
 {
 	public function testErrors(): void
 	{

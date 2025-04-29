@@ -20,9 +20,9 @@ namespace Tests\Feature_v2\Maintenance;
 
 use function Safe\mkdir;
 use function Safe\touch;
-use Tests\Feature_v2\Base\BaseApiV2Test;
+use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
-class CleaningTest extends BaseApiV2Test
+class CleaningTest extends BaseApiWithDataTest
 {
 	public function testGuest(): void
 	{

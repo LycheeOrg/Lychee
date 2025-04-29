@@ -19,9 +19,9 @@
 namespace Tests\Feature_v2\Statistics;
 
 use App\Enum\SizeVariantType;
-use Tests\Feature_v2\Base\BaseApiV2Test;
+use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
-class SizeVariantSpaceTest extends BaseApiV2Test
+class SizeVariantSpaceTest extends BaseApiWithDataTest
 {
 	public function testSizeVariantSpaceUnauthorized(): void
 	{

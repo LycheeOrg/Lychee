@@ -20,9 +20,9 @@ namespace Tests\Feature_v2\Maintenance;
 
 use App\Enum\JobStatus;
 use App\Models\JobHistory;
-use Tests\Feature_v2\Base\BaseApiV2Test;
+use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
-class JobsTest extends BaseApiV2Test
+class JobsTest extends BaseApiWithDataTest
 {
 	public function testGuest(): void
 	{

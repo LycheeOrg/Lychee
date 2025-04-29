@@ -18,11 +18,17 @@
 
 namespace Tests\Feature_v2\Base;
 
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Uri;
 use Illuminate\Testing\TestResponse;
+use Tests\AbstractTestCase;
+use Tests\Traits\RequireSE;
 
-abstract class BaseApiV2Test extends BaseV2Test
+abstract class BaseApiTest extends AbstractTestCase
 {
+	use DatabaseTransactions;
+	use RequireSE;
+
 	public const API_PREFIX = '/api/v2/';
 
 	/**

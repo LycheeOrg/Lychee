@@ -22,12 +22,12 @@ use App\Actions\Diagnostics\Pipes\Checks\BasicPermissionCheck;
 use function Safe\chmod;
 use function Safe\fileperms;
 use Tests\Constants\TestConstants;
-use Tests\Feature_v2\Base\BaseApiV2Test;
+use Tests\Feature_v2\Base\BaseApiWithDataTest;
 use Tests\Traits\CreatePhoto;
 use Tests\Traits\RequiresExifTool;
 use Tests\Traits\RequiresFFMpeg;
 
-class FixPermissionsTest extends BaseApiV2Test
+class FixPermissionsTest extends BaseApiWithDataTest
 {
 	use CreatePhoto;
 	use RequiresExifTool;

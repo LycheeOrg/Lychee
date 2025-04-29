@@ -20,9 +20,9 @@ namespace Tests\Feature_v2\Album;
 
 use App\Constants\AccessPermissionConstants as APC;
 use App\Models\AccessPermission;
-use Tests\Feature_v2\Base\BaseApiV2Test;
+use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
-class SharingTest extends BaseApiV2Test
+class SharingTest extends BaseApiWithDataTest
 {
 	public function testGet(): void
 	{

@@ -22,10 +22,10 @@ use App\Enum\SizeVariantType;
 use Illuminate\Support\Facades\DB;
 use function Safe\unlink;
 use Tests\Constants\TestConstants;
-use Tests\Feature_v2\Base\BaseApiV2Test;
+use Tests\Feature_v2\Base\BaseApiWithDataTest;
 use Tests\Traits\CreatePhoto;
 
-class CommandGenerateThumbsTest extends BaseApiV2Test
+class CommandGenerateThumbsTest extends BaseApiWithDataTest
 {
 	use CreatePhoto;
 

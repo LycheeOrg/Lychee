@@ -18,13 +18,15 @@
 
 namespace Tests\Feature_v2;
 
-use Tests\Feature_v2\Base\BaseV2Test;
+use App\Http\Middleware\AdminUserStatus;
+use Tests\AbstractTestCase;
 
-class UpTest extends BaseV2Test
+class UpTest extends AbstractTestCase
 {
 	public function testGet(): void
 	{
-		$response = $this->get('up');
+        $this->withoutVite();
+		$response = $this->withoutMiddleware(AdminUserStatus::class)->get('up');
 		$this->assertOk($response);
 	}
 }

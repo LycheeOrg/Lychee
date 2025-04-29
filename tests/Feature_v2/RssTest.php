@@ -20,9 +20,9 @@ namespace Tests\Feature_v2;
 
 use App\Models\Configs;
 use Exception;
-use Tests\Feature_v2\Base\BaseV2Test;
+use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
-class RssTest extends BaseV2Test
+class RssTest extends BaseApiWithDataTest
 {
 	public function testRSS0(): void
 	{

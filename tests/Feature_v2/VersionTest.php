@@ -20,9 +20,9 @@ namespace Tests\Feature_v2;
 
 use App\Http\Controllers\VersionController;
 use App\Http\Resources\Diagnostics\ChangeLogInfo;
-use Tests\Feature_v2\Base\BaseApiV2Test;
+use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
-class VersionTest extends BaseApiV2Test
+class VersionTest extends BaseApiWithDataTest
 {
 	public function testGet(): void
 	{

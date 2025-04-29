@@ -18,9 +18,9 @@
 
 namespace Tests\Feature_v2\Maintenance;
 
-use Tests\Feature_v2\Base\BaseApiV2Test;
+use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
-class RegisterTest extends BaseApiV2Test
+class RegisterTest extends BaseApiWithDataTest
 {
 	public function testGuest(): void
 	{

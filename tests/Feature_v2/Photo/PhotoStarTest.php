@@ -18,9 +18,9 @@
 
 namespace Tests\Feature_v2\Photo;
 
-use Tests\Feature_v2\Base\BaseApiV2Test;
+use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
-class PhotoStarTest extends BaseApiV2Test
+class PhotoStarTest extends BaseApiWithDataTest
 {
 	public function testSetStarPhotoUnauthorizedForbidden(): void
 	{

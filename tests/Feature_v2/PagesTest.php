@@ -18,9 +18,9 @@
 
 namespace Tests\Feature_v2;
 
-use Tests\Feature_v2\Base\BaseV2Test;
+use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
-class PagesTest extends BaseV2Test
+class PagesTest extends BaseApiWithDataTest
 {
 	public function testIndex(): void
 	{

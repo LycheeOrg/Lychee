@@ -23,24 +23,19 @@ use App\Models\Album;
 use App\Models\Photo;
 use App\Models\TagAlbum;
 use App\Models\User;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Tests\AbstractTestCase;
 use Tests\Traits\InteractWithSmartAlbums;
-use Tests\Traits\RequireSE;
 use Tests\Traits\RequiresEmptyAlbums;
 use Tests\Traits\RequiresEmptyPhotos;
 use Tests\Traits\RequiresEmptyUsers;
 use Tests\Traits\RequiresEmptyWebAuthnCredentials;
 
-abstract class BaseV2Test extends AbstractTestCase
+abstract class BaseApiWithDataTest extends BaseApiTest
 {
 	use RequiresEmptyUsers;
 	use RequiresEmptyAlbums;
 	use RequiresEmptyPhotos;
 	use RequiresEmptyWebAuthnCredentials;
-	use DatabaseTransactions;
 	use InteractWithSmartAlbums;
-	use RequireSE;
 
 	protected User $admin;
 	protected User $userMayUpload1;
