@@ -25,7 +25,7 @@ class UpTest extends AbstractTestCase
 {
 	public function testGet(): void
 	{
-        $this->withoutVite();
+		$this->withoutVite();
 		$response = $this->withoutMiddleware(AdminUserStatus::class)->get('up');
 		$this->assertOk($response);
 	}
