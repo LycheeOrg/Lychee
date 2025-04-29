@@ -86,7 +86,6 @@ class PhotoAddTest extends BaseApiWithDataTest
 		$this->clearCachedSmartAlbums();
 		$response = $this->getJsonWithData('Album', ['album_id' => 'unsorted']);
 		$this->assertOk($response);
-		$id1 = $response->json('resource.photos.0.id');
 
 		$response = $this->actingAs($this->admin)->upload('Photo', filename: TestConstants::SAMPLE_FILE_NIGHT_IMAGE);
 		$this->assertCreated($response);
@@ -94,6 +93,7 @@ class PhotoAddTest extends BaseApiWithDataTest
 		$this->clearCachedSmartAlbums();
 		$response = $this->getJsonWithData('Album', ['album_id' => 'unsorted']);
 		$this->assertOk($response);
+		$id1 = $response->json('resource.photos.0.id');
 		$id2 = $response->json('resource.photos.1.id');
 
 		self::assertNotEquals($id1, $id2);
