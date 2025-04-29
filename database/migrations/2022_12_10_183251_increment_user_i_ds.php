@@ -8,6 +8,7 @@
 
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -18,7 +19,9 @@ return new class() extends Migration {
 	public function up(): void
 	{
 		Schema::disableForeignKeyConstraints();
-		DB::beginTransaction();
+		if (!App::runningUnitTests()) {
+			DB::beginTransaction();
+		}
 
 		// In the case of pgsql we mark the following foreign keys to be defered after the commit transaction
 		// rather than after every requests
@@ -28,7 +31,7 @@ return new class() extends Migration {
 			$this->defer('photos', 'photos_owner_id_foreign');
 		}
 
-		/** @var App\Models\User|null $admin */
+		/** @var User|null $admin */
 		$admin = DB::table('users')->find(0);
 		if ($admin !== null && ($admin->username === '' || $admin->password === '')) {
 			// The admin user (id 0) has never set a username and password, so we remove it.
@@ -37,7 +40,7 @@ return new class() extends Migration {
 			DB::table('users')->where('id', '=', 0)->delete();
 		}
 
-		/** @var App\Models\User $user */
+		/** @var User $user */
 		/** @phpstan-ignore varTag.type (false positive: https://github.com/phpstan/phpstan/issues/11805) */
 		foreach (DB::table('users')->orderByDesc('id')->get() as $user) {
 			$oldID = $user->id;
@@ -54,11 +57,13 @@ return new class() extends Migration {
 		if (DB::getDriverName() === 'pgsql' && DB::table('users')->count() > 0) {
 			// when using PostgreSQL, the new IDs are not updated after incrementing. Thus, we need to reset the index to the greatest ID + 1
 			// the sequence is called `users_id_seq1`
-			/** @var App\Models\User $lastUser */
+			/** @var User $lastUser */
 			$lastUser = DB::table('users')->orderByDesc('id')->first();
 			DB::statement('ALTER SEQUENCE users_id_seq1 RESTART WITH ' . strval($lastUser->id + 1));
 		}
-		DB::commit();
+		if (!App::runningUnitTests()) {
+			DB::commit();
+		}
 		Schema::enableForeignKeyConstraints();
 	}
 
@@ -68,7 +73,9 @@ return new class() extends Migration {
 	public function down(): void
 	{
 		Schema::disableForeignKeyConstraints();
-		DB::beginTransaction();
+		if (!App::runningUnitTests()) {
+			DB::beginTransaction();
+		}
 
 		// In the case of pgsql we mark the following foreign keys to be defered after the commit transaction
 		// rather than after every requests
@@ -78,7 +85,7 @@ return new class() extends Migration {
 			$this->defer('photos', 'photos_owner_id_foreign');
 		}
 
-		/** @var App\Models\User $user */
+		/** @var User $user */
 		foreach (User::query()->orderBy('id')->get() as $user) {
 			$oldID = $user->id;
 			$newID = $oldID - 1;
@@ -92,7 +99,9 @@ return new class() extends Migration {
 			DB::table('webauthn_credentials')->where('authenticatable_id', '=', $oldID)->update(['authenticatable_id' => $newID]);
 			DB::table('users')->delete($oldID);
 		}
-		DB::commit();
+		if (!App::runningUnitTests()) {
+			DB::commit();
+		}
 		Schema::enableForeignKeyConstraints();
 	}
 

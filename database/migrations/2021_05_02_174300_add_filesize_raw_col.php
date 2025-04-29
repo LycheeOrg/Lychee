@@ -8,6 +8,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\LazyCollection;
@@ -27,7 +28,9 @@ return new class() extends Migration {
 			$table->unsignedBigInteger(self::NEW_COL_NAME)->default(0)->after(self::OLD_COL_NAME);
 		});
 
-		DB::beginTransaction();
+		if (!App::runningUnitTests()) {
+			DB::beginTransaction();
+		}
 
 		/** @var LazyCollection<int,object{id:int,size:string}> */
 		/** @phpstan-ignore varTag.type (false positive: https://github.com/phpstan/phpstan/issues/11805) */
@@ -57,7 +60,9 @@ return new class() extends Migration {
 				->update([self::NEW_COL_NAME => $filesize]);
 		}
 
-		DB::commit();
+		if (!App::runningUnitTests()) {
+			DB::commit();
+		}
 
 		Schema::table(self::TABLE_NAME, function (Blueprint $table) {
 			$table->dropColumn(self::OLD_COL_NAME);
@@ -73,7 +78,9 @@ return new class() extends Migration {
 			$table->string(self::OLD_COL_NAME, 20)->default('')->after(self::NEW_COL_NAME);
 		});
 
-		DB::beginTransaction();
+		if (!App::runningUnitTests()) {
+			DB::beginTransaction();
+		}
 
 		/** @var LazyCollection<int,object{id:int,filesize:int}> */
 		/** @phpstan-ignore varTag.type (false positive: https://github.com/phpstan/phpstan/issues/11805) */
@@ -94,7 +101,9 @@ return new class() extends Migration {
 				->update([self::OLD_COL_NAME => $size]);
 		}
 
-		DB::commit();
+		if (!App::runningUnitTests()) {
+			DB::commit();
+		}
 
 		Schema::table(self::TABLE_NAME, function (Blueprint $table) {
 			$table->dropColumn(self::NEW_COL_NAME);

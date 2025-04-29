@@ -9,6 +9,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -161,7 +162,9 @@ return new class() extends Migration {
 			)->nullable();
 		});
 		$needsConversion = $this->needsConversion();
-		DB::beginTransaction();
+		if (!App::runningUnitTests()) {
+			DB::beginTransaction();
+		}
 		/** @var LazyCollection<int,object{id:int,created_at_tmp:string|null,updated_at_tmp:string|null}> */
 		/** @phpstan-ignore varTag.type (false positive: https://github.com/phpstan/phpstan/issues/11805) */
 		$entities = DB::table($tableName)->select([
@@ -190,7 +193,9 @@ return new class() extends Migration {
 		DB::table($tableName)
 			->whereNull(self::UPDATED_AT_COL_NAME)
 			->update([self::UPDATED_AT_COL_NAME => $nowString]);
-		DB::commit();
+		if (!App::runningUnitTests()) {
+			DB::commit();
+		}
 		// Make the new columns non-nullable
 		Schema::table($tableName, function (Blueprint $table) {
 			$table->dateTime(
@@ -241,7 +246,9 @@ return new class() extends Migration {
 			$table->timestamps();
 		});
 		$needsConversion = $this->needsConversion();
-		DB::beginTransaction();
+		if (!App::runningUnitTests()) {
+			DB::beginTransaction();
+		}
 		/** @var LazyCollection<int,object{id:int,created_at_tmp:string|null,updated_at_tmp:string|null}> */
 		/** @phpstan-ignore varTag.type (false positive: https://github.com/phpstan/phpstan/issues/11805) */
 		$entities = DB::table($tableName)->select([
@@ -261,7 +268,9 @@ return new class() extends Migration {
 				self::UPDATED_AT_COL_NAME => $updated_at,
 			]);
 		}
-		DB::commit();
+		if (!App::runningUnitTests()) {
+			DB::commit();
+		}
 		// We must use two single calls to work around an SQLite limitation
 		Schema::table($tableName, function (Blueprint $table) {
 			$table->dropColumn(self::CREATED_AT_COL_NAME . '_tmp');
@@ -292,7 +301,9 @@ return new class() extends Migration {
 			)->nullable(true)->default(null)->comment('the timezone at which the photo has originally been taken');
 		});
 		$needsConversion = $this->needsConversion();
-		DB::beginTransaction();
+		if (!App::runningUnitTests()) {
+			DB::beginTransaction();
+		}
 		/** @var LazyCollection<int,object{id:int,takestamp:string|null}> */
 		/** @phpstan-ignore varTag.type (false positive: https://github.com/phpstan/phpstan/issues/11805) */
 		$photos = DB::table(self::PHOTOS_TABLE_NAME)->select([
@@ -311,7 +322,9 @@ return new class() extends Migration {
 				self::PHOTO_TAKEN_AT_TZ_COL_NAME => $taken_at_orig_tz,
 			]);
 		}
-		DB::commit();
+		if (!App::runningUnitTests()) {
+			DB::commit();
+		}
 		Schema::table(self::PHOTOS_TABLE_NAME, function (Blueprint $table) {
 			$table->dropColumn([self::PHOTO_TAKESTAMP_COL_NAME]);
 		});
@@ -334,7 +347,9 @@ return new class() extends Migration {
 			)->nullable(true)->default(null);
 		});
 		$needsConversion = $this->needsConversion();
-		DB::beginTransaction();
+		if (!App::runningUnitTests()) {
+			DB::beginTransaction();
+		}
 		/** @var LazyCollection<int,object{id:int,taken_at:string|null,taken_at_orig_tz:string|null}> */
 		/** @phpstan-ignore varTag.type (false positive: https://github.com/phpstan/phpstan/issues/11805) */
 		$photos = DB::table(self::PHOTOS_TABLE_NAME)->select([
@@ -355,7 +370,9 @@ return new class() extends Migration {
 				self::PHOTO_TAKESTAMP_COL_NAME => $takestamp,
 			]);
 		}
-		DB::commit();
+		if (!App::runningUnitTests()) {
+			DB::commit();
+		}
 		Schema::table(self::PHOTOS_TABLE_NAME, function (Blueprint $table) {
 			$table->dropColumn([
 				self::PHOTO_TAKEN_AT_COL_NAME,
@@ -369,7 +386,9 @@ return new class() extends Migration {
 	 */
 	protected function upgradeConfiguration(): void
 	{
-		DB::beginTransaction();
+		if (!App::runningUnitTests()) {
+			DB::beginTransaction();
+		}
 		$this->convertConfiguration(
 			self::CONFIG_PS_KEY,
 			self::CONFIG_PS_VALUE_OLD2NEW,
@@ -380,7 +399,9 @@ return new class() extends Migration {
 			self::CONFIG_AS_VALUE_OLD2NEW,
 			self::CONFIG_AS_RANGE_NEW
 		);
-		DB::commit();
+		if (!App::runningUnitTests()) {
+			DB::commit();
+		}
 	}
 
 	/**
@@ -388,7 +409,9 @@ return new class() extends Migration {
 	 */
 	protected function downgradeConfiguration(): void
 	{
-		DB::beginTransaction();
+		if (!App::runningUnitTests()) {
+			DB::beginTransaction();
+		}
 		$this->convertConfiguration(
 			self::CONFIG_PS_KEY,
 			self::CONFIG_PS_VALUE_NEW2OLD,
@@ -399,7 +422,9 @@ return new class() extends Migration {
 			self::CONFIG_AS_VALUE_NEW2OLD,
 			self::CONFIG_AS_RANGE_OLD
 		);
-		DB::commit();
+		if (!App::runningUnitTests()) {
+			DB::commit();
+		}
 	}
 
 	/**
