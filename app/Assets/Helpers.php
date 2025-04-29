@@ -270,9 +270,9 @@ class Helpers
 	 */
 	public function getUriWithQueryString(Request $request): string
 	{
-		/** @var array<string,mixed>|null $query */
+		/** @var array<string,mixed> $query */
 		$query = $request->query();
-		if ($query === null || $query === []) {
+		if ($query === []) {
 			return $request->path();
 		}
 

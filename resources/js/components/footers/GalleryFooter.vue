@@ -60,7 +60,7 @@
 		></p>
 		<p class="hosted_by w-full uppercase text-muted-color leading-6 font-normal">
 			<a rel="noopener noreferrer" target="_blank" href="https://lycheeorg.dev" tabindex="-1" class="underline">
-				{{ $t("landing.hosted_with_lychee") }}
+				{{ $t("landing.Powered_by_Lychee") }}
 			</a>
 		</p>
 	</div>
