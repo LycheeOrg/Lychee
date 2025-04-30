@@ -18,9 +18,9 @@
 
 namespace Tests\Feature_v2\UserManagement;
 
-use Tests\Feature_v2\Base\BaseApiV2Test;
+use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
-class CreateUserTest extends BaseApiV2Test
+class CreateUserTest extends BaseApiWithDataTest
 {
 	public function testCreateUserGuest(): void
 	{

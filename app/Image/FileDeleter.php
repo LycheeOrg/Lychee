@@ -107,6 +107,7 @@ class FileDeleter
 					}
 				}
 			} else {
+				// @codeCoverageIgnoreStart
 				// If the disk is not local, we can assume that each file is a regular file
 				foreach ($file_list as $file) {
 					try {
@@ -119,6 +120,7 @@ class FileDeleter
 						$first_exception = $first_exception ?? $e;
 					}
 				}
+				// @codeCoverageIgnoreEnd
 			}
 		}
 

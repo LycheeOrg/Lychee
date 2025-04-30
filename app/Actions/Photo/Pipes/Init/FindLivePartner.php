@@ -46,9 +46,11 @@ class FindLivePartner implements InitPipe
 			}
 
 			return $next($state);
+			// @codeCoverageIgnoreStart
 		} catch (IllegalOrderOfOperationException $e) {
 			throw LycheeAssertionError::createFromUnexpectedException($e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 }
 

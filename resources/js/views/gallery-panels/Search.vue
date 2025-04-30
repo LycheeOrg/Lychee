@@ -340,7 +340,7 @@ function goBack() {
 		return;
 	}
 
-	if (albumId.value !== undefined && albumId.value !== ALL) {
+	if (albumId.value !== undefined && albumId.value !== ALL && albumId.value !== "") {
 		router.push({ name: "album", params: { albumId: props.albumId } });
 	} else {
 		router.push({ name: "gallery" });

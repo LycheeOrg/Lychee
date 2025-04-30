@@ -12,7 +12,6 @@ use App\Contracts\PhotoCreate\SharedPipe;
 use App\DTO\PhotoCreate\DuplicateDTO;
 use App\DTO\PhotoCreate\StandaloneDTO;
 use App\Models\Album;
-use App\Models\Statistics;
 
 class SetParentAndOwnership implements SharedPipe
 {
@@ -31,16 +30,6 @@ class SetParentAndOwnership implements SharedPipe
 			$state->photo->setRelation('album', null);
 			$state->photo->owner_id = $state->intended_owner_id;
 		}
-
-		$stats = Statistics::create([
-			'photo_id' => $state->photo->id,
-			'visit_count' => 0,
-			'download_count' => 0,
-			'favourite_count' => 0,
-			'shared_count' => 0,
-		]);
-
-		$state->photo->setRelation('statistics', $stats);
 
 		return $next($state);
 	}

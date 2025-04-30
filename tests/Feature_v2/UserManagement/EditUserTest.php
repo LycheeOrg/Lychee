@@ -18,9 +18,9 @@
 
 namespace Tests\Feature_v2\UserManagement;
 
-use Tests\Feature_v2\Base\BaseApiV2Test;
+use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
-class EditUserTest extends BaseApiV2Test
+class EditUserTest extends BaseApiWithDataTest
 {
 	public function testEditUserGuest(): void
 	{

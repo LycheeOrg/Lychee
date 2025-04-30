@@ -11,6 +11,7 @@ namespace App\Http\Resources\GalleryConfigs;
 use App\Enum\AlbumDecorationOrientation;
 use App\Enum\AlbumDecorationType;
 use App\Enum\ImageOverlayType;
+use App\Enum\PhotoThumbInfoType;
 use App\Enum\ThumbAlbumSubtitleType;
 use App\Enum\ThumbOverlayVisibilityType;
 use App\Models\Configs;
@@ -51,6 +52,7 @@ class InitConfig extends Data
 	public AlbumDecorationOrientation $album_decoration_orientation;
 	#[LiteralTypeScriptType('1|2|3')]
 	public int $number_albums_per_row_mobile;
+	public PhotoThumbInfoType $photo_thumb_info;
 
 	// Download configuration
 	public bool $is_thumb_download_enabled;
@@ -109,6 +111,7 @@ class InitConfig extends Data
 		$this->album_decoration = Configs::getValueAsEnum('album_decoration', AlbumDecorationType::class);
 		$this->album_decoration_orientation = Configs::getValueAsEnum('album_decoration_orientation', AlbumDecorationOrientation::class);
 		$this->number_albums_per_row_mobile = Configs::getValueAsInt('number_albums_per_row_mobile');
+		$this->photo_thumb_info = Configs::getValueAsEnum('photo_thumb_info', PhotoThumbInfoType::class);
 
 		// Download configuration
 		$this->is_thumb_download_enabled = Configs::getValueAsBool('disable_thumb_download') === false;

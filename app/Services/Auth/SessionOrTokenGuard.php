@@ -352,6 +352,7 @@ class SessionOrTokenGuard extends SessionGuard
 		$authenticable = $this->provider->retrieveByCredentials([
 			self::TOKEN_COLUMN_NAME => hash(self::TOKEN_HASH_METHOD, $token),
 		]);
+		// dd($authenticable);
 
 		return match (true) {
 			$authenticable !== null => $authenticable,

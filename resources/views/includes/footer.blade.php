@@ -33,6 +33,6 @@
 
 
     @if($page_config['show_hosted_by'])
-        <p class="hosted_by"><a rel="noopener noreferrer" target="_blank" href="https://lycheeorg.dev" tabindex="-1">{{ __('landing.hosted_with_lychee') }}</a></p>
+        <p class="hosted_by"><a rel="noopener noreferrer" target="_blank" href="https://lycheeorg.dev" tabindex="-1">{{ __('landing.Powered_by_Lychee') }}</a></p>
     @endif
 </div>

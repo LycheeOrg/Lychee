@@ -14,6 +14,7 @@ jobs:
       matrix:
         php-version:
           - 8.3
+          - 8.4
         sql-versions:
           - mariadb
           - postgresql

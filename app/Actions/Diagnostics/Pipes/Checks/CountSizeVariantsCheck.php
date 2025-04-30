@@ -25,7 +25,9 @@ class CountSizeVariantsCheck implements DiagnosticPipe
 	public function handle(array &$data, \Closure $next): array
 	{
 		if (!Schema::hasTable('size_variants')) {
+			// @codeCoverageIgnoreStart
 			return $next($data);
+			// @codeCoverageIgnoreEnd
 		}
 
 		$num = DB::table('size_variants')->where('size_variants.filesize', '=', 0)->count();

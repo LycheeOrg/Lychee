@@ -22,9 +22,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Laragear\WebAuthn\ByteBuffer;
 use Laragear\WebAuthn\Challenge\Challenge;
-use Tests\Feature_v2\Base\BaseApiV2Test;
+use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
-class WebAuthTest extends BaseApiV2Test
+class WebAuthTest extends BaseApiWithDataTest
 {
 	public function setUp(): void
 	{

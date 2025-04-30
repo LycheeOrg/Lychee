@@ -12,6 +12,7 @@ use Doctrine\DBAL\Exception as DBALException;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
@@ -281,14 +282,18 @@ return new class() extends Migration {
 
 		// Step 2
 		// Happy copying :(
-		DB::beginTransaction();
+		if (!App::runningUnitTests()) {
+			DB::beginTransaction();
+		}
 		$this->printInfo('Start copying ...');
 		$this->upgradeCopy();
 		$this->copyStructurallyUnchangedTables();
 		$this->printInfo('Finished copying');
 		$this->printInfo('Upgrading configuration');
 		$this->upgradeConfig();
-		DB::commit();
+		if (!App::runningUnitTests()) {
+			DB::commit();
+		}
 
 		// Step 3
 		$this->printInfo('Dropping old tables');
@@ -320,14 +325,18 @@ return new class() extends Migration {
 
 		// Step 2
 		// Happy copying :(
-		DB::beginTransaction();
+		if (!App::runningUnitTests()) {
+			DB::beginTransaction();
+		}
 		$this->printInfo('Start copying ...');
 		$this->downgradeCopy();
 		$this->copyStructurallyUnchangedTables();
 		$this->printInfo('Finished copying');
 		$this->printInfo('Downgrading configuration');
 		$this->downgradeConfig();
-		DB::commit();
+		if (!App::runningUnitTests()) {
+			DB::commit();
+		}
 
 		// Step 3
 		$this->printInfo('Dropping old tables');

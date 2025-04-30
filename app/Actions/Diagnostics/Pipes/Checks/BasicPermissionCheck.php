@@ -189,7 +189,9 @@ class BasicPermissionCheck implements DiagnosticPipe
 	{
 		try {
 			if (!is_dir($path)) {
+				// @codeCoverageIgnoreStart
 				return;
+				// @codeCoverageIgnoreEnd
 			}
 
 			try {
@@ -216,7 +218,9 @@ class BasicPermissionCheck implements DiagnosticPipe
 				}
 			// @codeCoverageIgnoreEnd
 			} else {
+				// @codeCoverageIgnoreStart
 				$owning_group_name_or_false = false;
+				// @codeCoverageIgnoreEnd
 			}
 			/** @var string $owning_group_name */
 			$owning_group_name = $owning_group_name_or_false === false ? '<unknown>' : $owning_group_name_or_false['name'];
@@ -259,11 +263,13 @@ class BasicPermissionCheck implements DiagnosticPipe
 			if (Configs::getValueAsBool('disable_recursive_permission_check')) {
 				return;
 			}
+			// @codeCoverageIgnoreStart
 			foreach ($dir as $dir_entry) {
 				if ($dir_entry->isDir() && !$dir_entry->isDot()) {
 					$this->checkDirectoryPermissionsRecursively($dir_entry->getPathname(), $data);
 				}
 			}
+			// @codeCoverageIgnoreEnd
 			// @codeCoverageIgnoreStart
 		} catch (\Exception $e) {
 			$data[] = DiagnosticData::error($e->getMessage(), self::class);

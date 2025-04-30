@@ -18,9 +18,9 @@
 
 namespace Tests\Feature_v2\Jobs;
 
-use Tests\Feature_v2\Base\BaseApiV2Test;
+use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
-class GetJobTest extends BaseApiV2Test
+class GetJobTest extends BaseApiWithDataTest
 {
 	public function testGetJobsGuest(): void
 	{

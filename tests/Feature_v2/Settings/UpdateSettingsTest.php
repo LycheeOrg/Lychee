@@ -18,9 +18,9 @@
 
 namespace Tests\Feature_v2\Settings;
 
-use Tests\Feature_v2\Base\BaseApiV2Test;
+use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
-class UpdateSettingsTest extends BaseApiV2Test
+class UpdateSettingsTest extends BaseApiWithDataTest
 {
 	public function testUpdateSettingsGuest(): void
 	{

@@ -44,9 +44,11 @@ class MigrationController extends Controller
 					Spacer::class,
 				])
 				->thenReturn();
+			// @codeCoverageIgnoreStart
 		} catch (InstallationFailedException) {
 			$has_errors = true;
 		}
+		// @codeCoverageIgnoreEnd
 
 		return view('install.migrate', [
 			'title' => 'Lychee-installer',

@@ -45,14 +45,22 @@
 				hidden: display_thumb_photo_overlay === 'never',
 			}"
 		>
-			<h1 class="min-h-[19px] mt-3 mb-1 ml-3 text-surface-0 text-base font-bold overflow-hidden whitespace-nowrap text-ellipsis">
-				{{ props.photo.title }}
-			</h1>
-			<span v-if="props.photo.preformatted.taken_at" class="block mt-0 mr-0 mb-2 ml-3 text-2xs text-surface-300">
-				<span title="Camera Date"><MiniIcon icon="camera-slr" class="w-2 h-2 m-0 mr-1 fill-neutral-300" /></span
-				>{{ props.photo.preformatted.taken_at }}
-			</span>
-			<span v-else class="block mt-0 mr-0 mb-2 ml-3 text-2xs text-surface-300">{{ props.photo.preformatted.created_at }}</span>
+			<template v-if="photo_thumb_info === 'title'">
+				<h1 class="min-h-[19px] mt-3 mb-1 ml-3 text-surface-0 text-base font-bold overflow-hidden whitespace-nowrap text-ellipsis">
+					{{ props.photo.title }}
+				</h1>
+				<span v-if="props.photo.preformatted.taken_at" class="block mt-0 mr-0 mb-2 ml-3 text-2xs text-surface-300">
+					<span title="Camera Date"><MiniIcon icon="camera-slr" class="w-2 h-2 m-0 mr-1 fill-neutral-300" /></span
+					>{{ props.photo.preformatted.taken_at }}
+				</span>
+				<span v-else class="block mt-0 mr-0 mb-2 ml-3 text-2xs text-surface-300">{{ props.photo.preformatted.created_at }}</span>
+			</template>
+			<template v-else>
+				<h1
+					class="min-h-[19px] mt-3 mb-1 ml-3 text-base text-ellipsis prose-invert line-clamp-3"
+					v-html="props.photo.preformatted.description"
+				></h1>
+			</template>
 		</div>
 		<div
 			v-if="props.photo.precomputed.is_video"
@@ -97,7 +105,7 @@ const auth = useAuthStore();
 const { user } = storeToRefs(auth);
 const favourites = useFavouriteStore();
 const lycheeStore = useLycheeStateStore();
-const { is_favourite_enabled, display_thumb_photo_overlay } = storeToRefs(lycheeStore);
+const { is_favourite_enabled, display_thumb_photo_overlay, photo_thumb_info } = storeToRefs(lycheeStore);
 
 const srcPlay = ref(getPlayIcon());
 const srcNoImage = ref(getNoImageIcon());

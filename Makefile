@@ -132,30 +132,11 @@ gen_major:
 release_major: gen_major
 	git commit -m "bump to version $(shell cat version.md)"
 
-# Building tests 1 by 1
-
-TESTS_PHP := $(shell find tests/Feature_v1 -name "*Test.php" -printf "%f\n")
-TEST_DONE := $(addprefix build/,$(TESTS_PHP:.php=.done))
-
 build:
 	mkdir build
 
-build/Base%.done:
-	touch build/Base$*.done
-
-build/%UnitTest.done:
-	touch build/$*UnitTest.done
-
-build/%.done: tests/Feature_v1/%.php build
-	vendor/bin/phpunit --no-coverage --filter $* && touch build/$*.done
-
-all_tests: $(TEST_DONE)
-
 test_unit:
 	vendor/bin/phpunit --testsuite Unit --stop-on-failure --stop-on-error --no-coverage --log-junit report_unit.xml
-
-test_v1:
-	vendor/bin/phpunit --testsuite Feature_v1 --stop-on-failure --stop-on-error --no-coverage --log-junit report_v1.xml
 
 test_v2:
 	vendor/bin/phpunit --testsuite Feature_v2 --stop-on-failure --stop-on-error --no-coverage --log-junit report_v2.xml

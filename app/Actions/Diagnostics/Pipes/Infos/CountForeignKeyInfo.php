@@ -26,7 +26,9 @@ class CountForeignKeyInfo implements DiagnosticStringPipe
 			'sqlite' => $this->sqlite($data),
 			'mysql' => $this->mysql($data),
 			'pgsql' => $this->pgsql($data),
+			// @codeCoverageIgnoreStart
 			default => '',
+			// @codeCoverageIgnoreEnd
 		};
 
 		return $next($data);

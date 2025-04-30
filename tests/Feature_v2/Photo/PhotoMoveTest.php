@@ -18,9 +18,9 @@
 
 namespace Tests\Feature_v2\Photo;
 
-use Tests\Feature_v2\Base\BaseApiV2Test;
+use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
-class PhotoMoveTest extends BaseApiV2Test
+class PhotoMoveTest extends BaseApiWithDataTest
 {
 	public function testMovePhotoUnauthorizedForbidden(): void
 	{

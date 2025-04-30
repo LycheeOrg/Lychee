@@ -22,9 +22,9 @@ use App\Actions\Photo\DuplicateFinder;
 use App\Models\Album;
 use App\Models\Photo;
 use Illuminate\Support\Collection;
-use Tests\Feature_v2\Base\BaseApiV2Test;
+use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
-class DuplicateFinderTest extends BaseApiV2Test
+class DuplicateFinderTest extends BaseApiWithDataTest
 {
 	public function testGuest(): void
 	{

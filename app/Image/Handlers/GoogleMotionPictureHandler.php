@@ -113,10 +113,12 @@ class GoogleMotionPictureHandler extends VideoHandler
 			// Add additional parameter to extract the first video stream
 			$format->setAdditionalParameters(['-map', '0:0']);
 			$this->video->save($format, $file->getRealPath());
+			// @codeCoverageIgnoreStart
 		} catch (RuntimeException $e) {
 			throw new MediaFileOperationException('Could not save video stream from Google Motion Picture', $e);
 		} catch (InvalidArgumentException $e) {
 			throw LycheeAssertionError::createFromUnexpectedException($e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 }

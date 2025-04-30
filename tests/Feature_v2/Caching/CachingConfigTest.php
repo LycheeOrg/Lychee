@@ -22,9 +22,9 @@ use App\Metadata\Cache\RouteCacheManager;
 use Illuminate\Support\Facades\Route;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\ConsoleSectionOutput;
-use Tests\Feature_v2\Base\BaseApiV2Test;
+use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
-class CachingConfigTest extends BaseApiV2Test
+class CachingConfigTest extends BaseApiWithDataTest
 {
 	private ConsoleSectionOutput $msgSection;
 	private bool $failed = false;
