@@ -18,9 +18,9 @@
 
 namespace Tests\Feature_v2;
 
-use Tests\Feature_v2\Base\BaseApiV2Test;
+use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
-class LandingTest extends BaseApiV2Test
+class LandingTest extends BaseApiWithDataTest
 {
 	public function testGet(): void
 	{

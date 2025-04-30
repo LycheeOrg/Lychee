@@ -18,9 +18,9 @@
 
 namespace Tests\Feature_v2\Album;
 
-use Tests\Feature_v2\Base\BaseApiV2Test;
+use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
-class AlbumRenameTest extends BaseApiV2Test
+class AlbumRenameTest extends BaseApiWithDataTest
 {
 	public function testRenameAlbumUnauthorizedForbidden(): void
 	{

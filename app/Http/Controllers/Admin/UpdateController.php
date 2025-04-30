@@ -67,29 +67,11 @@ class UpdateController extends Controller
 	}
 
 	/**
-	 * Updates Lychee and returns the messages as a JSON object.
-	 *
-	 * The method requires PHP to have shell access.
-	 * Except for the return type this method is identical to
-	 * {@link UpdateController::view()}.
-	 *
-	 * @return array{updateMsgs: array<string>}
-	 *
-	 * @throws LycheeException
-	 */
-	public function apply(UpdateRequest $request): array
-	{
-		UpdatableCheck::assertUpdatability();
-
-		return ['updateMsgs' => $this->apply_update->run()];
-	}
-
-	/**
 	 * Updates Lychee and returns the messages as an HTML view.
 	 *
 	 * The method requires PHP to have shell access.
 	 * Except for the return type this method is identical to
-	 * {@link UpdateController::apply()}.
+	 * {@link UpdateController::migrate()}.
 	 *
 	 * @throws LycheeException
 	 */

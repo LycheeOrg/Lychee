@@ -8,6 +8,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -45,7 +46,9 @@ return new class() extends Migration {
 			});
 		}
 
-		DB::beginTransaction();
+		if (!App::runningUnitTests()) {
+			DB::beginTransaction();
+		}
 
 		// Copy the filesize from photo to the original size variant
 		DB::table(self::VAR_TAB)
@@ -81,7 +84,9 @@ return new class() extends Migration {
 		// DB::statement('ALTER TABLE ' . self::PHOTOS_TAB . ' DROP COLUMN ' . self::SIZE_COL);
 		DB::table(self::PHOTOS_TAB)->update([self::SIZE_COL => 0]);
 
-		DB::commit();
+		if (!App::runningUnitTests()) {
+			DB::commit();
+		}
 	}
 
 	/**
@@ -89,7 +94,9 @@ return new class() extends Migration {
 	 */
 	public function down(): void
 	{
-		DB::beginTransaction();
+		if (!App::runningUnitTests()) {
+			DB::beginTransaction();
+		}
 
 		// Copy the filesize from the original size variant (if it exists) to photos
 		DB::table(self::PHOTOS_TAB)
@@ -110,6 +117,8 @@ return new class() extends Migration {
 		// DB::statement('ALTER TABLE ' . self::VAR_TAB . ' DROP COLUMN ' . self::SIZE_COL);
 		DB::table(self::VAR_TAB)->update([self::SIZE_COL => 0]);
 
-		DB::commit();
+		if (!App::runningUnitTests()) {
+			DB::commit();
+		}
 	}
 };

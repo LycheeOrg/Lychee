@@ -37,7 +37,9 @@ class IniSettingsCheck implements DiagnosticPipe
 		$settings = Configs::get();
 
 		if (!$this->verify->validate()) {
+			// @codeCoverageIgnoreStart
 			$data[] = DiagnosticData::warn('Your installation has been tampered. Please verify the integrity of your files.', self::class);
+			// @codeCoverageIgnoreEnd
 		}
 
 		try {
@@ -123,11 +125,11 @@ class IniSettingsCheck implements DiagnosticPipe
 				$data[] = DiagnosticData::error('tmpfile() is disabled, this will prevent you from uploading pictures.', self::class);
 				// @codeCoverageIgnoreEnd
 			}
-		} catch (InfoException $e) {
 			// @codeCoverageIgnoreStart
+		} catch (InfoException $e) {
 			$data[] = DiagnosticData::error('An error occurred while checking the PHP settings.', self::class, ['ini_get() is not available.']);
-			// @codeCoverageIgnoreEnd
 		}
+		// @codeCoverageIgnoreEnd
 
 		$path = sys_get_temp_dir();
 		if (!is_writable($path)) {

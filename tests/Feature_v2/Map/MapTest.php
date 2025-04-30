@@ -18,9 +18,9 @@
 
 namespace Tests\Feature_v2\Map;
 
-use Tests\Feature_v2\Base\BaseApiV2Test;
+use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
-class MapTest extends BaseApiV2Test
+class MapTest extends BaseApiWithDataTest
 {
 	public function testGet(): void
 	{

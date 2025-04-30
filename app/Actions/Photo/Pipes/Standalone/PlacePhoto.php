@@ -110,19 +110,23 @@ class PlacePhoto implements StandalonePipe
 					// cannot be "moved".
 					try {
 						$state->source_file->delete();
+						// @codeCoverageIgnoreStart
 					} catch (MediaFileOperationException $e) {
 						// If deletion failed, we do not cancel the whole
 						// import, but fall back to copy-semantics and
 						// log the exception
 						Handler::reportSafely($e);
 					}
+					// @codeCoverageIgnoreEnd
 				}
 			}
 
 			return $stream_stat;
+			// @codeCoverageIgnoreStart
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException('Could move/copy/symlink source file to final destination', $e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**

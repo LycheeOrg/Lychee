@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Log;
 
 /**
  * Which version of Lychee are we using?
+ *
+ * @codeCoverageIgnore We no not check this file as it is only directed to docker.
  */
 class DockerVersionInfo implements DiagnosticStringPipe
 {

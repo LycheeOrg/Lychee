@@ -18,9 +18,9 @@
 
 namespace Tests\Feature_v2\Diagnostics;
 
-use Tests\Feature_v2\Base\BaseApiV2Test;
+use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
-class InfoTest extends BaseApiV2Test
+class InfoTest extends BaseApiWithDataTest
 {
 	public function testGetGuest(): void
 	{

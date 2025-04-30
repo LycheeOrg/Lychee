@@ -32,7 +32,7 @@ trait CatchFailures
 	 *
 	 * @var array
 	 */
-	private array $catchFailureSilence = ["App\Exceptions\MediaFileOperationException"];
+	protected array $catchFailureSilence = ["App\Exceptions\MediaFileOperationException"];
 
 	/**
 	 * @param TestResponse<\Illuminate\Http\JsonResponse> $response

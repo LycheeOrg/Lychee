@@ -57,7 +57,9 @@ class PlaceVideo implements VideoPartnerPipe
 	{
 		$disk = Storage::disk(StorageDiskType::LOCAL->value);
 		if (Features::active('use-s3')) {
+			// @codeCoverageIgnoreStart
 			$disk = Storage::disk(StorageDiskType::S3->value);
+			// @codeCoverageIgnoreEnd
 		}
 		$video_target_file = new FlysystemFile($disk, $state->video_path);
 

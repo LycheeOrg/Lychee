@@ -19,9 +19,9 @@
 namespace Tests\Feature_v2\Album;
 
 use App\Models\AccessPermission;
-use Tests\Feature_v2\Base\BaseApiV2Test;
+use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
-class AlbumMoveTest extends BaseApiV2Test
+class AlbumMoveTest extends BaseApiWithDataTest
 {
 	public function testMoveAlbumUnauthorizedForbidden(): void
 	{

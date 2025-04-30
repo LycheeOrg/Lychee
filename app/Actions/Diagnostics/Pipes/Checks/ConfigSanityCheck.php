@@ -25,7 +25,9 @@ class ConfigSanityCheck implements DiagnosticPipe
 	public function handle(array &$data, \Closure $next): array
 	{
 		if (!Schema::hasTable('configs')) {
+			// @codeCoverageIgnoreStart
 			return $next($data);
+			// @codeCoverageIgnoreEnd
 		}
 
 		$this->sanity($data);
@@ -45,8 +47,10 @@ class ConfigSanityCheck implements DiagnosticPipe
 	{
 		$dropbox = Configs::getValueAsString('dropbox_key');
 		if ($dropbox === '') {
+			// @codeCoverageIgnoreStart
 			$data[] = DiagnosticData::warn('Dropbox import not working. dropbox_key is empty.', self::class);
 			$data[] = DiagnosticData::info('To hide this Dropbox warning, set the dropbox_key to "disabled".', self::class);
+			// @codeCoverageIgnoreEnd
 		}
 	}
 
@@ -62,7 +66,9 @@ class ConfigSanityCheck implements DiagnosticPipe
 		foreach ($configs as $config) {
 			$message = $config->sanity($config->value);
 			if ($message !== '') {
+				// @codeCoverageIgnoreStart
 				$return[] = DiagnosticData::error(str_replace('Error: ', '', $message), self::class);
+				// @codeCoverageIgnoreEnd
 			}
 		}
 	}

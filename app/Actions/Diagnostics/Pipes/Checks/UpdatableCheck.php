@@ -77,7 +77,9 @@ class UpdatableCheck implements DiagnosticPipe
 		}
 
 		if (!Configs::getValueAsBool('allow_online_git_pull')) {
+			// @codeCoverageIgnoreStart
 			throw new ConfigurationException('Online updates are disabled by configuration');
+			// @codeCoverageIgnoreEnd
 		}
 
 		// When going with the CI, .git is always executable

@@ -19,9 +19,9 @@
 namespace Tests\Feature_v2\Photo;
 
 use Illuminate\Support\Facades\DB;
-use Tests\Feature_v2\Base\BaseApiV2Test;
+use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
-class PhotoEditTest extends BaseApiV2Test
+class PhotoEditTest extends BaseApiWithDataTest
 {
 	public function testEditPhotoUnauthorizedForbiddenUnprocessable(): void
 	{

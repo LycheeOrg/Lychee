@@ -18,9 +18,9 @@
 
 namespace Tests\Feature_v2\Photo;
 
-use Tests\Feature_v2\Base\BaseApiV2Test;
+use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
-class PhotoCopyTest extends BaseApiV2Test
+class PhotoCopyTest extends BaseApiWithDataTest
 {
 	public function testCopyPhotoUnauthorizedForbidden(): void
 	{

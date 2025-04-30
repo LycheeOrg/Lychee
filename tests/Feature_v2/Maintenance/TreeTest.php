@@ -18,9 +18,9 @@
 
 namespace Tests\Feature_v2\Maintenance;
 
-use Tests\Feature_v2\Base\BaseApiV2Test;
+use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
-class TreeTest extends BaseApiV2Test
+class TreeTest extends BaseApiWithDataTest
 {
 	public function testGuest(): void
 	{

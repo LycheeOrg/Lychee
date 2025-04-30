@@ -9,7 +9,6 @@
 namespace App\Http\Controllers;
 
 use App\Enum\OauthProvidersType;
-use App\Legacy\V1\Controllers\RedirectController;
 use Dedoc\Scramble\Scramble;
 use Illuminate\Foundation\Events\DiagnosingHealth;
 use Illuminate\Support\Facades\Event;
@@ -62,17 +61,12 @@ Route::get('/auth/{provider}/redirect', [OauthController::class, 'redirected'])-
 Route::get('/auth/{provider}/authenticate', [OauthController::class, 'authenticate'])->name('oauth-authenticate')->whereIn('provider', OauthProvidersType::values());
 Route::get('/auth/{provider}/register', [OauthController::class, 'register'])->name('oauth-register')->whereIn('provider', OauthProvidersType::values());
 
-/*
- * TODO see to add better redirection functionality later.
- * This is to prevent instagram from taking control our # in url when sharing an album
- * and not consider it as an hash-tag.
- *
- * Other ideas, redirection by album name, photo title...
- */
-Route::get('/r/{albumId}/{photoId?}', [RedirectController::class, 'redirect'])->middleware(['migration:complete']);
-
 // We need to register this manually.
 Scramble::registerUiRoute(path: 'docs/api')->name('scramble.docs.ui');
+
+Route::match(['get', 'post'], '/api/v1/{path}', fn () => view('error.v1-is-dead'))
+	->where('path', '.*')
+	->middleware(['migration:complete']);
 
 // This route must be defined last because it is a catch all.
 Route::match(['get', 'post'], '{path}', HoneyPotController::class)->where('path', '.*');

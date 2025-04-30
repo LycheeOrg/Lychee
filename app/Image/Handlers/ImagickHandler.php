@@ -100,9 +100,11 @@ class ImagickHandler extends BaseImageHandler
 			$in_memory_buffer->close();
 
 			return parent::applyLosslessOptimizationConditionally($file, $collect_statistics) ?? $stream_stat;
+			// @codeCoverageIgnoreStart
 		} catch (\ImagickException $e) {
 			throw new MediaFileOperationException('Failed to save image', $e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -159,9 +161,11 @@ class ImagickHandler extends BaseImageHandler
 			}
 
 			return $clone;
+			// @codeCoverageIgnoreStart
 		} catch (\ImagickException $e) {
 			throw new ImageProcessingException('Failed to scale image', $e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -176,9 +180,11 @@ class ImagickHandler extends BaseImageHandler
 			}
 
 			return $clone;
+			// @codeCoverageIgnoreStart
 		} catch (\ImagickException $e) {
 			throw new ImageProcessingException('Failed to crop image', $e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -207,9 +213,11 @@ class ImagickHandler extends BaseImageHandler
 				$this->im_image->getImageWidth(),
 				$this->im_image->getImageHeight(),
 			);
+			// @codeCoverageIgnoreStart
 		} catch (\ImagickException $e) {
 			throw new ImageProcessingException('Could not determine dimensions of image', $e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	public function isLoaded(): bool

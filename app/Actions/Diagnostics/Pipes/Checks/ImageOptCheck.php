@@ -32,7 +32,9 @@ class ImageOptCheck implements DiagnosticPipe
 	public function handle(array &$data, \Closure $next): array
 	{
 		if (!Schema::hasTable('configs')) {
+			// @codeCoverageIgnoreStart
 			return $next($data);
+			// @codeCoverageIgnoreEnd
 		}
 
 		$tools = [];

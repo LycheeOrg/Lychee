@@ -25,8 +25,10 @@ class EncodePlaceholder implements StandalonePipe
 			}
 
 			return $next($state);
+			// @codeCoverageIgnoreStart
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException('Failed to encode placeholder to base64', $e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 }

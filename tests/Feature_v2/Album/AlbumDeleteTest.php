@@ -19,9 +19,9 @@
 namespace Tests\Feature_v2\Album;
 
 use App\Models\Statistics;
-use Tests\Feature_v2\Base\BaseApiV2Test;
+use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
-class AlbumDeleteTest extends BaseApiV2Test
+class AlbumDeleteTest extends BaseApiWithDataTest
 {
 	public function testDeleteAlbumUnauthorizedForbidden(): void
 	{

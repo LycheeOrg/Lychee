@@ -19,9 +19,9 @@
 namespace Tests\Feature_v2\Oauth;
 
 use Illuminate\Support\Facades\Config;
-use Tests\Feature_v2\Base\BaseApiV2Test;
+use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
-class OauthTest extends BaseApiV2Test
+class OauthTest extends BaseApiWithDataTest
 {
 	public function testGetAnonymous(): void
 	{

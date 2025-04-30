@@ -19,9 +19,9 @@
 namespace Tests\Feature_v2\UserManagement;
 
 use App\Models\User;
-use Tests\Feature_v2\Base\BaseApiV2Test;
+use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
-class DeleteUserTest extends BaseApiV2Test
+class DeleteUserTest extends BaseApiWithDataTest
 {
 	public function testDeleteUserGuest(): void
 	{
