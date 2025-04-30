@@ -16,7 +16,7 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Tests\Feature_v2;
+namespace Tests\Feature_v2\User;
 
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
