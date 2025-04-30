@@ -21,9 +21,9 @@ namespace Tests\Feature_v2\Photo;
 use App\Models\Configs;
 use App\Models\Extensions\HasUrlGenerator;
 use Illuminate\Support\Facades\Auth;
-use Tests\Feature_v2\Base\BaseApiV2Test;
+use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
-class HasUrlGeneratorTest extends BaseApiV2Test
+class HasUrlGeneratorTest extends BaseApiWithDataTest
 {
 	use HasUrlGenerator;
 
