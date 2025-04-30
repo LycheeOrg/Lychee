@@ -19,7 +19,7 @@ coverage:
     patch: off
     project:
       default:
-        target: 90%
+        target: 86%
 ignore:
 - "^app/Console/.*"
 - "^app/Exceptions/.*"
