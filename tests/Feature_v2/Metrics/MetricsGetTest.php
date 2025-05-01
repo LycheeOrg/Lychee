@@ -21,9 +21,9 @@ namespace Tests\Feature_v2\Metrics;
 use App\Enum\LiveMetricsAccess;
 use App\Models\Configs;
 use App\Models\LiveMetrics;
-use Tests\Feature_v2\Base\BaseApiV2Test;
+use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
-class MetricsGetTest extends BaseApiV2Test
+class MetricsGetTest extends BaseApiWithDataTest
 {
 	public function tearDown(): void
 	{
