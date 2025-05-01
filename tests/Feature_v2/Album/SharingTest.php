@@ -31,6 +31,21 @@ class SharingTest extends BaseApiWithDataTest
 
 		$response = $this->getJsonWithData('Sharing', ['album_id' => $this->album1->id]);
 		$this->assertUnauthorized($response);
+
+		$response = $this->getJsonWithData('Sharing::albums');
+		$this->assertUnauthorized($response);
+	}
+
+	public function testUserForbidden(): void
+	{
+		$response = $this->actingAs($this->userNoUpload)->getJsonWithData('Sharing');
+		$this->assertUnprocessable($response);
+
+		$response = $this->actingAs($this->userNoUpload)->getJsonWithData('Sharing::all');
+		$this->assertForbidden($response);
+
+		$response = $this->actingAs($this->userNoUpload)->getJsonWithData('Sharing::albums');
+		$this->assertForbidden($response);
 	}
 
 	public function testUserGet(): void
@@ -43,6 +58,23 @@ class SharingTest extends BaseApiWithDataTest
 
 		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Sharing::all');
 		$this->assertOk($response);
+
+		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Sharing::albums');
+		$this->assertOk($response);
+		$response->assertJson([
+			[
+				'id' => $this->album1->id,
+				'title' => $this->album1->title,
+				'original' => $this->album1->title,
+				'short_title' => $this->album1->title,
+			],
+			[
+				'id' => $this->subAlbum1->id,
+				'title' => $this->album1->title . '/' . $this->subAlbum1->title,
+				'original' => $this->subAlbum1->title,
+				'short_title' => $this->album1->title . '/' . $this->subAlbum1->title,
+			],
+		]);
 
 		$response = $this->actingAs($this->userMayUpload1)->patchJson('Sharing', [
 			'perm_id' => $this->perm1->id,

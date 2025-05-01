@@ -241,12 +241,12 @@ class AlbumController extends Controller
 	 *
 	 * @return array<string|int,TargetAlbumResource>
 	 */
-	public function getTargetListAlbums(TargetListAlbumRequest $request, ListAlbums $list_albums)
+	public function getTargetListAlbums(TargetListAlbumRequest $request, ListAlbums $list_albums): array
 	{
 		$albums = $request->albums();
 		$parent_id = $albums->count() > 0 ? $albums->first()->parent_id : null;
 
-		return TargetAlbumResource::collect($list_albums->do($albums, $parent_id));
+		return TargetAlbumResource::collect($list_albums->do($albums, $parent_id, null));
 	}
 
 	/**

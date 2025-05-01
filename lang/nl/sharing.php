@@ -33,6 +33,10 @@ return [
 	'permission_updated' => 'Propagation successful! Permission updated!',
 	'bluk_share' => 'Bulk share',
 	'bulk_share_instr' => 'Select multiple albums and users to share with.',
+	'albums' => 'Albums',
+	'users' => 'Users',
+	'no_users' => 'No selectable users.',
+	'no_albums' => 'No selectable albums.',
 
 	'grants' => [
 		'read' => 'Grants read access',

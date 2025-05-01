@@ -49,6 +49,10 @@ const SharingService = {
 	list(): Promise<AxiosResponse<App.Http.Resources.Models.AccessPermissionResource[]>> {
 		return axios.get(`${Constants.getApiUrl()}Sharing::all`, { data: {} });
 	},
+
+	listAlbums(): Promise<AxiosResponse<App.Http.Resources.Models.TargetAlbumResource[]>> {
+		return axios.get(`${Constants.getApiUrl()}Sharing::albums`, { data: {} });
+	},
 };
 
 export default SharingService;

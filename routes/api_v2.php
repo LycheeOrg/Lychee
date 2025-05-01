@@ -78,6 +78,7 @@ Route::put('/Sharing', [Gallery\SharingController::class, 'propagate']);
 Route::patch('/Sharing', [Gallery\SharingController::class, 'edit']);
 Route::delete('/Sharing', [Gallery\SharingController::class, 'delete']);
 Route::get('/Sharing::all', [Gallery\SharingController::class, 'listAll']);
+Route::get('/Sharing::albums', [Gallery\SharingController::class, 'listAlbums']);
 
 /**
  * IMPORT.
