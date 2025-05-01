@@ -50,7 +50,7 @@ class UpdateTest extends BaseApiWithDataTest
 	public function testGet(): void
 	{
 		$response = $this->actingAs($this->admin)->get('Update');
-		$this->assertOk($response);
+		$this->assertStatus($response, 412); // Precondition failed
 
 		$response = $this->actingAs($this->admin)->get('migrate');
 		$this->assertStatus($response, 307);

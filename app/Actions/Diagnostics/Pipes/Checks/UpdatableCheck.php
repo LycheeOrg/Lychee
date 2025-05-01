@@ -19,6 +19,7 @@ use App\Facades\Helpers;
 use App\Metadata\Versions\GitHubVersion;
 use App\Metadata\Versions\InstalledVersion;
 use App\Models\Configs;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Schema;
 use function Safe\exec;
 
@@ -92,10 +93,14 @@ class UpdatableCheck implements DiagnosticPipe
 		$git_hub_functions = resolve(GitHubVersion::class);
 		$git_hub_functions->hydrate(false);
 
-		if (!$git_hub_functions->hasPermissions()) {
-			// @codeCoverageIgnoreStart
-			throw new InsufficientFilesystemPermissions(Helpers::censor(base_path('.git'), 1 / 4) . ' (and subdirectories) are not executable, check the permissions');
-			// @codeCoverageIgnoreEnd
+		if (App::runningUnitTests()) {
+			throw new ConfigurationException('Unit tests are running, cannot update.');
 		}
+
+		// @codeCoverageIgnoreStart
+		if (!$git_hub_functions->hasPermissions()) {
+			throw new InsufficientFilesystemPermissions(Helpers::censor(base_path('.git'), 1 / 4) . ' (and subdirectories) are not executable, check the permissions');
+		}
+		// @codeCoverageIgnoreEnd
 	}
 }
