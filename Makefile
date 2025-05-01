@@ -55,7 +55,6 @@ dist-gen: clean composer npm-build
 	@touch Lychee/public/dist/user.css
 	@touch Lychee/public/dist/custom.js
 	@touch Lychee/public/uploads/import/index.html
-	@touch Lychee/public/sym/index.html
 
 dist-clean: dist-gen
 	find Lychee -wholename '*/[Tt]ests/*' -delete

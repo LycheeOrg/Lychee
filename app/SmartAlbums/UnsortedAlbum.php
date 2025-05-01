@@ -45,7 +45,7 @@ class UnsortedAlbum extends BaseSmartAlbum
 	public function photos(): Builder
 	{
 		if ($this->public_permissions !== null) {
-			return Photo::query()->with(['album', 'size_variants', 'size_variants.sym_links', 'statistics'])
+			return Photo::query()->with(['album', 'size_variants', 'statistics'])
 			->where($this->smart_photo_condition);
 		}
 

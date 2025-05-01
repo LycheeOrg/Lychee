@@ -57,7 +57,6 @@ class FixPermissions extends Command
 	{
 		$directories = [
 			Storage::disk('images')->path(''),
-			Storage::disk('symbolic')->path(''),
 		];
 
 		if (!extension_loaded('posix')) {

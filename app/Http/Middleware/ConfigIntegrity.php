@@ -36,6 +36,7 @@ class ConfigIntegrity
 		'number_albums_per_row_mobile',
 		'client_side_favourite_enabled',
 		'cache_ttl',
+		'secure_image_link_enabled',
 		'exif_disabled_for_all',
 		'file_name_hidden',
 		'low_number_of_shoots_per_day',

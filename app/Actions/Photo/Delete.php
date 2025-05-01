@@ -17,7 +17,6 @@ use App\Models\Album;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 use App\Models\Statistics;
-use App\Models\SymLink;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Database\Query\JoinClause;
 
@@ -55,8 +54,7 @@ readonly class Delete
 	/**
 	 * Deletes the designated photos from the DB.
 	 *
-	 * The method only deletes the records for photos, their size variants
-	 * and potentially associated symbolic links from the DB.
+	 * The method only deletes the records for photos, their size variants.
 	 * The method does not delete the associated files from physical storage.
 	 * Instead, the method returns an object in which all these files have
 	 * been collected.
@@ -85,8 +83,6 @@ readonly class Delete
 			$this->collectSizeVariantPathsByAlbumID($album_ids);
 			$this->collectLivePhotoPathsByPhotoID($photo_ids);
 			$this->collectLivePhotoPathsByAlbumID($album_ids);
-			$this->collectSymLinksByPhotoID($photo_ids);
-			$this->collectSymLinksByAlbumID($album_ids);
 			$this->deleteDBRecords($photo_ids, $album_ids);
 			// @codeCoverageIgnoreStart
 		} catch (QueryBuilderException $e) {
@@ -279,67 +275,6 @@ readonly class Delete
 	}
 
 	/**
-	 * Collects all symbolic links which shall be deleted from disk.
-	 *
-	 * @param array<int,string> $photo_ids the photo IDs
-	 *
-	 * @return void
-	 *
-	 * @throws QueryBuilderException
-	 */
-	private function collectSymLinksByPhotoID(array $photo_ids): void
-	{
-		try {
-			if (count($photo_ids) === 0) {
-				return;
-			}
-
-			$sym_link_paths = SymLink::query()
-				->from('sym_links', 'sl')
-				->select(['sl.short_path'])
-				->join('size_variants as sv', 'sv.id', '=', 'sl.size_variant_id')
-				->whereIn('sv.photo_id', $photo_ids)
-				->pluck('sl.short_path');
-			$this->fileDeleter->addSymbolicLinks($sym_link_paths);
-			// @codeCoverageIgnoreStart
-		} catch (\InvalidArgumentException $e) {
-			throw LycheeAssertionError::createFromUnexpectedException($e);
-		}
-		// @codeCoverageIgnoreEnd
-	}
-
-	/**
-	 * Collects all symbolic links which shall be deleted from disk.
-	 *
-	 * @param array<int,string> $album_ids the album IDs
-	 *
-	 * @return void
-	 *
-	 * @throws QueryBuilderException
-	 */
-	private function collectSymLinksByAlbumID(array $album_ids): void
-	{
-		try {
-			if (count($album_ids) === 0) {
-				return;
-			}
-
-			$sym_link_paths = SymLink::query()
-				->from('sym_links', 'sl')
-				->select(['sl.short_path'])
-				->join('size_variants as sv', 'sv.id', '=', 'sl.size_variant_id')
-				->join('photos as p', 'p.id', '=', 'sv.photo_id')
-				->whereIn('p.album_id', $album_ids)
-				->pluck('sl.short_path');
-			$this->fileDeleter->addSymbolicLinks($sym_link_paths);
-			// @codeCoverageIgnoreStart
-		} catch (\InvalidArgumentException $e) {
-			throw LycheeAssertionError::createFromUnexpectedException($e);
-		}
-		// @codeCoverageIgnoreEnd
-	}
-
-	/**
 	 * Deletes the records from DB.
 	 *
 	 * The records are deleted in such an order that foreign keys are not
@@ -355,27 +290,6 @@ readonly class Delete
 	private function deleteDBRecords(array $photo_ids, array $album_ids): void
 	{
 		try {
-			if (count($photo_ids) !== 0) {
-				SymLink::query()
-					->whereExists(function (BaseBuilder $query) use ($photo_ids): void {
-						$query
-							->from('size_variants', 'sv')
-							->whereColumn('sv.id', '=', 'sym_links.size_variant_id')
-							->whereIn('photo_id', $photo_ids);
-					})
-					->delete();
-			}
-			if (count($album_ids) !== 0) {
-				SymLink::query()
-					->whereExists(function (BaseBuilder $query) use ($album_ids): void {
-						$query
-							->from('size_variants', 'sv')
-							->whereColumn('sv.id', '=', 'sym_links.size_variant_id')
-							->join('photos', 'photos.id', '=', 'sv.photo_id')
-							->whereIn('photos.album_id', $album_ids);
-					})
-					->delete();
-			}
 			if (count($photo_ids) !== 0) {
 				SizeVariant::query()
 					->whereIn('size_variants.photo_id', $photo_ids)
