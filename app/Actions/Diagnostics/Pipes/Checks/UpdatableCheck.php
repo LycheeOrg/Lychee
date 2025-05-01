@@ -21,8 +21,6 @@ use App\Metadata\Versions\InstalledVersion;
 use App\Models\Configs;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Schema;
-use PSpell\Config;
-
 use function Safe\exec;
 
 /**
