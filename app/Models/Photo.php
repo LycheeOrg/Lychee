@@ -12,6 +12,7 @@ use App\Actions\Photo\Delete;
 use App\Casts\ArrayCast;
 use App\Casts\DateTimeWithTimezoneCast;
 use App\Casts\MustNotSetCast;
+use App\Constants\PhotoAlbum as PA;
 use App\Constants\RandomID;
 use App\Contracts\Models\HasUTCBasedTimes;
 use App\Enum\LicenseType;
@@ -34,6 +35,7 @@ use App\Relations\HasManySizeVariants;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
@@ -42,44 +44,43 @@ use function Safe\preg_match;
 /**
  * App\Models\Photo.
  *
- * @property string       $id
- * @property int          $legacy_id
- * @property string       $title
- * @property string|null  $description
- * @property string[]     $tags
- * @property int          $owner_id
- * @property string|null  $type
- * @property string|null  $iso
- * @property string|null  $aperture
- * @property string|null  $make
- * @property string|null  $model
- * @property string|null  $lens
- * @property string|null  $shutter
- * @property string|null  $focal
- * @property float|null   $latitude
- * @property float|null   $longitude
- * @property float|null   $altitude
- * @property float|null   $img_direction
- * @property string|null  $location
- * @property Carbon|null  $taken_at
- * @property string|null  $taken_at_orig_tz
- * @property Carbon|null  $initial_taken_at
- * @property string|null  $initial_taken_at_orig_tz
- * @property bool         $is_starred
- * @property string|null  $live_photo_short_path
- * @property string|null  $live_photo_url
- * @property string|null  $album_id
- * @property string       $checksum
- * @property string       $original_checksum
- * @property LicenseType  $license
- * @property Carbon       $created_at
- * @property Carbon       $updated_at
- * @property string|null  $live_photo_content_id
- * @property string|null  $live_photo_checksum
- * @property Album|null   $album
- * @property User         $owner
- * @property SizeVariants $size_variants
- * @property int          $filesize
+ * @property string                $id
+ * @property int                   $legacy_id
+ * @property string                $title
+ * @property string|null           $description
+ * @property string[]              $tags
+ * @property int                   $owner_id
+ * @property string|null           $type
+ * @property string|null           $iso
+ * @property string|null           $aperture
+ * @property string|null           $make
+ * @property string|null           $model
+ * @property string|null           $lens
+ * @property string|null           $shutter
+ * @property string|null           $focal
+ * @property float|null            $latitude
+ * @property float|null            $longitude
+ * @property float|null            $altitude
+ * @property float|null            $img_direction
+ * @property string|null           $location
+ * @property Carbon|null           $taken_at
+ * @property string|null           $taken_at_orig_tz
+ * @property Carbon|null           $initial_taken_at
+ * @property string|null           $initial_taken_at_orig_tz
+ * @property bool                  $is_starred
+ * @property string|null           $live_photo_short_path
+ * @property string|null           $live_photo_url
+ * @property string                $checksum
+ * @property string                $original_checksum
+ * @property LicenseType           $license
+ * @property Carbon                $created_at
+ * @property Carbon                $updated_at
+ * @property string|null           $live_photo_content_id
+ * @property string|null           $live_photo_checksum
+ * @property Collection<int,Album> $albums
+ * @property User                  $owner
+ * @property SizeVariants          $size_variants
+ * @property int                   $filesize
  *
  * @method static PhotoBuilder|Photo addSelect($column)
  * @method static PhotoBuilder|Photo join(string $table, string $first, string $operator = null, string $second = null, string $type = 'inner', string $where = false)
@@ -191,11 +192,11 @@ class Photo extends Model implements HasUTCBasedTimes
 	/**
 	 * Return the relationship between a Photo and its Album.
 	 *
-	 * @return BelongsTo<Album,$this>
+	 * @return BelongsToMany<Album,$this>
 	 */
-	public function album(): BelongsTo
+	public function albums(): BelongsToMany
 	{
-		return $this->belongsTo(Album::class, 'album_id', 'id');
+		return $this->belongsToMany(Album::class, PA::PHOTO_ALBUM, 'photo_id', 'album_id', 'id', 'id');
 	}
 
 	/**
@@ -300,9 +301,9 @@ class Photo extends Model implements HasUTCBasedTimes
 			return LicenseType::from($license);
 		}
 
-		if ($this->album_id !== null && $this->relationLoaded('album')) {
-			return $this->album->license;
-		}
+		// if ($this->album_id !== null && $this->relationLoaded('album')) {
+		// 	return $this->album->license;
+		// }
 
 		return Configs::getValueAsEnum('default_license', LicenseType::class);
 	}
