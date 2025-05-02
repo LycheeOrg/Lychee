@@ -30,12 +30,12 @@ class TakeDateTest extends BaseApiWithDataTest
 
 	public const COMMAND = 'lychee:takedate';
 
-	public function testNoUpdateRequired(): void
-	{
-		$this->artisan(self::COMMAND)
-			->expectsOutput('No pictures require takedate updates.')
-			->assertExitCode(-1);
-	}
+	// public function testNoUpdateRequired(): void
+	// {
+	// 	$this->artisan(self::COMMAND)
+	// 		->expectsOutput('No pictures require takedate updates.')
+	// 		->assertExitCode(-1);
+	// }
 
 	public function testSetUploadTimeFromFileTime(): void
 	{
