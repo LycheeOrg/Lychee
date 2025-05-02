@@ -101,25 +101,25 @@ class Takedate extends Command
 		// @codeCoverageIgnoreEnd
 	}
 
-    /**
-     * Write a string as standard output.
-     *
-     * @param  string  $string
-     * @param  string|null  $style
-     * @param  int|string|null  $verbosity
-     * @return void
-     */
-	public function line($msg, $style = null, $verbosity = null): void
+	/**
+	 * Write a string as standard output.
+	 *
+	 * @param string          $string
+	 * @param string|null     $style
+	 * @param int|string|null $verbosity
+	 *
+	 * @return void
+	 */
+	public function line($string, $style = null, $verbosity = null): void
 	{
 		if (App::runningUnitTests()) {
 			return;
 		}
 		// @codeCoverageIgnoreStart
 		// We don't want to have this in the test output
-		parent::line($msg);
+		parent::line($string, $style, $verbosity);
 		// @codeCoverageIgnoreEnd
 	}
-
 
 	/**
 	 * Advance the progress bar.
@@ -134,7 +134,6 @@ class Takedate extends Command
 		$this->progress_bar->advance();
 		// @codeCoverageIgnoreEnd
 	}
-
 
 	/**
 	 * Execute the console command.
