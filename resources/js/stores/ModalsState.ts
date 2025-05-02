@@ -9,6 +9,7 @@ export const useTogglablesStateStore = defineStore("togglables-store", {
 		is_full_screen: false,
 		is_login_open: false,
 		is_webauthn_open: false,
+		is_metrics_open: false,
 
 		// upload
 		is_upload_visible: false,

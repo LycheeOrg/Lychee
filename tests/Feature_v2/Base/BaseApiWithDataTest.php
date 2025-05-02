@@ -25,6 +25,7 @@ use App\Models\TagAlbum;
 use App\Models\User;
 use Tests\Traits\InteractWithSmartAlbums;
 use Tests\Traits\RequiresEmptyAlbums;
+use Tests\Traits\RequiresEmptyLiveMetrics;
 use Tests\Traits\RequiresEmptyPhotos;
 use Tests\Traits\RequiresEmptyUsers;
 use Tests\Traits\RequiresEmptyWebAuthnCredentials;
@@ -34,6 +35,7 @@ abstract class BaseApiWithDataTest extends BaseApiTest
 	use RequiresEmptyUsers;
 	use RequiresEmptyAlbums;
 	use RequiresEmptyPhotos;
+	use RequiresEmptyLiveMetrics;
 	use RequiresEmptyWebAuthnCredentials;
 	use InteractWithSmartAlbums;
 
@@ -82,6 +84,7 @@ abstract class BaseApiWithDataTest extends BaseApiTest
 		$this->setUpRequiresEmptyUsers();
 		$this->setUpRequiresEmptyAlbums();
 		$this->setUpRequiresEmptyPhotos();
+		$this->setUpRequiresEmptyLiveMetrics();
 
 		$this->admin = User::factory()->may_administrate()->create();
 		$this->userMayUpload1 = User::factory()->may_upload()->create();
@@ -134,6 +137,7 @@ abstract class BaseApiWithDataTest extends BaseApiTest
 
 	public function tearDown(): void
 	{
+		$this->tearDownRequiresEmptyLiveMetrics();
 		$this->tearDownRequiresEmptyPhotos();
 		$this->tearDownRequiresEmptyAlbums();
 		$this->tearDownRequiresEmptyUsers();
