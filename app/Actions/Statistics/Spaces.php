@@ -302,7 +302,7 @@ final class Spaces
 				'base_albums.is_nsfw',
 				'albums._lft',
 				'albums._rgt',
-				DB::raw('COUNT('.PA::PHOTO_ID.') as num_photos'),
+				DB::raw('COUNT(' . PA::PHOTO_ID . ') as num_photos'),
 			)->groupBy(
 				'albums.id',
 				'username',
@@ -370,7 +370,7 @@ final class Spaces
 				'base_albums.is_nsfw',
 				'albums._lft',
 				'albums._rgt',
-				DB::raw('COUNT('.PA::PHOTO_ID.') as num_photos'),
+				DB::raw('COUNT(' . PA::PHOTO_ID . ') as num_photos'),
 			)->groupBy(
 				'albums.id',
 				'username',
