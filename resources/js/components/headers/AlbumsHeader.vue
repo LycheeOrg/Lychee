@@ -25,7 +25,9 @@
 			<span class="sm:hidden font-bold">
 				{{ $t("gallery.albums") }}
 			</span>
-			<span class="hidden sm:block font-bold text-sm lg:text-base text-center w-full">{{ props.title }}</span>
+			<span class="hidden sm:block font-bold text-sm lg:text-base text-center w-full" @click="is_metrics_open = !is_metrics_open">{{
+				props.title
+			}}</span>
 		</template>
 
 		<template #end>
@@ -125,7 +127,7 @@ const togglableStore = useTogglablesStateStore();
 const favourites = useFavouriteStore();
 
 const { dropbox_api_key, is_favourite_enabled } = storeToRefs(lycheeStore);
-const { is_login_open, is_upload_visible, is_create_album_visible, is_create_tag_album_visible } = storeToRefs(togglableStore);
+const { is_login_open, is_upload_visible, is_create_album_visible, is_create_tag_album_visible, is_metrics_open } = storeToRefs(togglableStore);
 
 const router = useRouter();
 
@@ -229,6 +231,12 @@ const menu = computed(() =>
 			type: "fn",
 			callback: openSearch,
 			if: props.config.is_search_accessible,
+		},
+		{
+			icon: "pi pi-bell",
+			type: "fn",
+			callback: () => (is_metrics_open.value = true),
+			if: props.rights.can_see_live_metrics,
 		},
 		{
 			icon: "pi pi-sign-in",

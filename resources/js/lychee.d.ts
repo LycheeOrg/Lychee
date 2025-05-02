@@ -73,6 +73,7 @@ declare namespace App.Enum {
 		| "CC-BY-NC-SA-2.5"
 		| "CC-BY-NC-SA-3.0"
 		| "CC-BY-NC-SA-4.0";
+	export type LiveMetricsAccess = "logged-in users" | "admin";
 	export type MapProviders = "Wikimedia" | "OpenStreetMap.org" | "OpenStreetMap.de" | "OpenStreetMap.fr" | "RRZE";
 	export type MessageType = "info" | "warning" | "error";
 	export type MetricsAccess = "public" | "logged-in users" | "owner" | "admin";
@@ -382,6 +383,15 @@ declare namespace App.Http.Resources.Models {
 		id: number;
 		username: string;
 	};
+	export type LiveMetricsResource = {
+		created_at: string;
+		visitor_id: string;
+		action: App.Enum.MetricsAction;
+		photo_id: string | null;
+		album_id: string | null;
+		title: string | null;
+		url: string | null;
+	};
 	export type PhotoResource = {
 		id: string;
 		album_id: string | null;
@@ -637,6 +647,7 @@ declare namespace App.Http.Resources.Rights {
 	export type RootAlbumRightsResource = {
 		can_edit: boolean;
 		can_upload: boolean;
+		can_see_live_metrics: boolean;
 	};
 	export type SettingsRightsResource = {
 		can_edit: boolean;
