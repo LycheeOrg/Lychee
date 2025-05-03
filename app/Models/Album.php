@@ -340,14 +340,14 @@ class Album extends BaseAlbum implements Node
 			})
 			->update(['owner_id' => $this->owner_id]);
 		// TODO: FIX ME This is no longer correct.
-		Photo::query()
-			->whereExists(function (BaseBuilder $q) use ($lft, $rgt): void {
-				$q
-					->from('albums')
-					->whereColumn('photos.album_id', '=', 'albums.id') // ! column no longer exists!
-					->whereBetween('albums._lft', [$lft, $rgt]);
-			})
-			->update(['owner_id' => $this->owner_id]);
+		// Photo::query()
+		// 	->whereExists(function (BaseBuilder $q) use ($lft, $rgt): void {
+		// 		$q
+		// 			->from('albums')
+		// 			->whereColumn('photos.album_id', '=', 'albums.id') // ! column no longer exists!
+		// 			->whereBetween('albums._lft', [$lft, $rgt]);
+		// 	})
+		// 	->update(['owner_id' => $this->owner_id]);
 	}
 
 	/**
