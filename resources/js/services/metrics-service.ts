@@ -6,7 +6,7 @@ const MetricsService = {
 		return axios.get(`${Constants.getApiUrl()}Metrics`, { data: {} });
 	},
 
-	photo(photo_id: string): Promise<AxiosResponse<null>|null> {
+	photo(photo_id: string): Promise<AxiosResponse<null> | null> {
 		if (!photo_id) {
 			// TODO: figure out why this sometimes happens...
 			// Do not send a request if no photo_id is provided, otherwise it breaks in front-end.
