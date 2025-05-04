@@ -629,7 +629,18 @@ return [
 
 		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/object-src
 		'object-src' => [
-			'none' => true,
+			'self' => true, // needed to display embeded pdf files
+			'allow' => array_merge(
+				[
+					'blob:', // required for "live" photos
+				],
+				// Add the S3 URL to the list of allowed media sources
+				env('AWS_ACCESS_KEY_ID', '') === '' ? [] :
+				[
+					str_replace(parse_url(env('AWS_URL'), PHP_URL_PATH), '', env('AWS_URL')),
+				],
+				explode(',', (string) env('SECURITY_HEADER_CSP_MEDIA_SRC', ''))
+			),
 		],
 
 		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/plugin-types
