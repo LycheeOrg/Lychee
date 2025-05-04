@@ -629,7 +629,7 @@ return [
 
 		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/object-src
 		'object-src' => [
-			'none' => true,
+			'none' => 'self', // Needed to display embeded pdf files.
 		],
 
 		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/plugin-types
