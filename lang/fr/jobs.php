@@ -13,7 +13,7 @@ return [
     'title' => 'Tâches',
     'no_data' => 'Aucune tâche n’a encore été exécutée.',
     'ready' => 'Pret',
-    'success' => 'Succès',
+    'success' => 'Réussi',
     'failure' => 'Erreur',
     'started' => 'En cours',
 ];
