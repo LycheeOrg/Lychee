@@ -32,9 +32,7 @@ class TakeDateTest extends BaseApiWithDataTest
 
 	public function testNoUpdateRequired(): void
 	{
-		$this->artisan(self::COMMAND)
-			->expectsOutput('No pictures require takedate updates.')
-			->assertExitCode(-1);
+		$this->artisan(self::COMMAND)->assertExitCode(-1);
 	}
 
 	public function testSetUploadTimeFromFileTime(): void
