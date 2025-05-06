@@ -17,7 +17,7 @@ return [
     'space' => 'Espace',
     'load_space' => 'Charger l’utilisation de l’espace disque.',
     'configuration' => 'Configuration',
-    'loading' => 'Chargement...',
+    'loading' => 'Chargement…',
     'identical_content' => 'Contenu identique',
     'toast' => [
         'info' => 'Informations',
