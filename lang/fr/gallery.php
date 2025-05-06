@@ -157,11 +157,11 @@ return [
             'focal' => 'Longueur focale',
             'iso' => 'ISO %s',
             'stats' => [
-                'header' => 'Statistics',
-                'number_of_visits' => 'Number of visits',
-                'number_of_downloads' => 'Number of downloads',
-                'number_of_shares' => 'Number of shares',
-                'number_of_favourites' => 'Number of favourites',
+                'header' => 'Statistiques',
+                'number_of_visits' => 'Nombre de visites',
+                'number_of_downloads' => 'Nombre de téléchargements',
+                'number_of_shares' => 'Nombre de partages',
+                'number_of_favourites' => 'Nombre de favorites',
             ],
         ],
         'edit' => [
