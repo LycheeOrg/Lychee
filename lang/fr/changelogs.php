@@ -11,5 +11,5 @@ return [
 	|--------------------------------------------------------------------------
 	*/
     'title' => 'Historique des changements',
-    'description' => 'Cette page contient l\'historique des changements jusqu\'a la derniere version disponible de Lychee et non pas jusqu\'a votre current version. Ainsi, nous vous donnons une meilleure visibilite sur ce qui vient dans les future mise a jour si vous decidez de les appliquer.',
+    'description' => 'Cette page contient l\'historique des changements jusqu’à la dernière version disponible de Lychee et non pas jusqu’à votre version actuelle. Ainsi, nous vous donnons une meilleure visibilité sur ce qui vient dans les future mise a jour si vous décidez de les appliquer.',
 ];
