@@ -22,7 +22,7 @@ return [
         'email_instruction' => 'Ajoutez votre adresse e-mail ci-dessous pour recevoir des notifications par mail. Pour ne plus en recevoir, supprimez simplement votre adresse.',
         'email' => 'E-mail',
         'change' => 'Modifier l’identifiant',
-        'api_token' => 'Jeton API ...',
+        'api_token' => 'Jeton API …',
         'missing_fields' => 'Champs manquants',
     ],
     'token' => [
