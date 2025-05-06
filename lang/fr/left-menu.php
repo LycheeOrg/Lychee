@@ -11,7 +11,7 @@ return [
 	|--------------------------------------------------------------------------
 	*/
     'back_to_gallery' => 'Retour à la galerie',
-    'login' => 'Login',
+    'login' => 'Connexion',
     'frame' => 'Cadre',
     'map' => 'Carte',
     'admin' => 'Administration',
