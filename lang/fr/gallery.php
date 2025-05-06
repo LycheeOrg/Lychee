@@ -184,7 +184,7 @@ return [
         'star' => 'Favori',
         'unstar' => 'Retirer des favoris',
         'star_all' => 'Mettre en favoris',
-        'unstar_all' => 'Retirer des favoris',
+        'unstar_all' => 'Retirer la sélection des favoris',
         'tag' => 'Étiqueter',
         'tag_all' => 'Étiqueter la sélection',
         'set_cover' => 'Définir la couverture',
