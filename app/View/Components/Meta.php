@@ -91,7 +91,7 @@ class Meta extends Component
 		if ($this->photo !== null) {
 			$this->page_title = $this->photo->title;
 			$this->page_description = $this->photo->description ?? Configs::getValueAsString('site_title');
-			$this->image_url = $this->photo->size_variants->getMedium()?->url ?? $this->image_url;
+			$this->image_url = $this->photo->size_variants->getMedium()?->url ?? $this->photo->size_variants->getSmall()?->url ?? $this->image_url;
 		}
 	}
 
