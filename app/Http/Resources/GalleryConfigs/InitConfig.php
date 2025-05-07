@@ -86,7 +86,6 @@ class InitConfig extends Data
 	// Live Metrics settings
 	public bool $is_live_metrics_enabled;
 
-
 	public function __construct()
 	{
 		// Debug mode
