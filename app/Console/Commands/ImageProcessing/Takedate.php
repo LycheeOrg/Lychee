@@ -16,6 +16,7 @@ use App\Metadata\Extractor;
 use App\Models\Photo;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\App;
 use Safe\Exceptions\InfoException;
 use function Safe\filemtime;
 use function Safe\set_time_limit;
@@ -73,7 +74,13 @@ class Takedate extends Command
 	 */
 	private function printWarning(Photo $photo, string $msg): void
 	{
+		if (App::runningUnitTests()) {
+			return;
+		}
+		// @codeCoverageIgnoreStart
+		// We don't want to have this in the test output
 		$this->msg_section->writeln('<comment>Warning:</comment> Photo "' . $photo->title . '" (ID=' . $photo->id . '): ' . $msg);
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -85,7 +92,47 @@ class Takedate extends Command
 	 */
 	private function printInfo(Photo $photo, string $msg): void
 	{
+		if (App::runningUnitTests()) {
+			return;
+		}
+		// @codeCoverageIgnoreStart
+		// We don't want to have this in the test output
 		$this->msg_section->writeln('<info>Info:</info>    Photo "' . $photo->title . '" (ID=' . $photo->id . '): ' . $msg);
+		// @codeCoverageIgnoreEnd
+	}
+
+	/**
+	 * Write a string as standard output.
+	 *
+	 * @param string          $string
+	 * @param string|null     $style
+	 * @param int|string|null $verbosity
+	 *
+	 * @return void
+	 */
+	public function line($string, $style = null, $verbosity = null): void
+	{
+		if (App::runningUnitTests()) {
+			return;
+		}
+		// @codeCoverageIgnoreStart
+		// We don't want to have this in the test output
+		parent::line($string, $style, $verbosity);
+		// @codeCoverageIgnoreEnd
+	}
+
+	/**
+	 * Advance the progress bar.
+	 */
+	private function advance(): void
+	{
+		if (App::runningUnitTests()) {
+			return;
+		}
+		// @codeCoverageIgnoreStart
+		// We don't want to have this in the test output
+		$this->progress_bar->advance();
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -147,7 +194,7 @@ class Takedate extends Command
 			$photos = $photo_query->get();
 			/** @var Photo $photo */
 			foreach ($photos as $photo) {
-				$this->progress_bar->advance();
+				$this->advance();
 				$local_file = $photo->size_variants->getOriginal()->getFile()->toLocalFile();
 
 				$info = Extractor::createFromFile($local_file, filemtime($local_file->getRealPath()));
