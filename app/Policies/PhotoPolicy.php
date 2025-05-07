@@ -228,9 +228,9 @@ class PhotoPolicy extends BasePolicy
 		// If there are any photos which are not in albums at this point, we fail.
 		if (
 			Photo::query()
-			->leftJoin(PA::PHOTO_ALBUM, 'id', '=', PA::PHOTO_ID)
+			->leftJoin(PA::PHOTO_ALBUM, 'photos.id', '=', PA::PHOTO_ID)
 			->whereNull('album_id')
-			->whereIn('id', $photo_ids)
+			->whereIn('photos.id', $photo_ids)
 			->count() > 0
 		) {
 			return false;

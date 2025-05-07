@@ -8,6 +8,7 @@
 
 namespace App\Actions\Photo;
 
+use App\Constants\PhotoAlbum as PA;
 use App\Enum\SizeVariantType;
 use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\QueryBuilderException;
@@ -19,6 +20,7 @@ use App\Models\SizeVariant;
 use App\Models\Statistics;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Database\Query\JoinClause;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Deletes the photos with the designated IDs **efficiently**.
@@ -159,13 +161,15 @@ readonly class Delete
 			$size_variants = SizeVariant::query()
 				->from('size_variants as sv')
 				->select(['sv.short_path', 'sv.storage_disk'])
+				->leftJoin(PA::PHOTO_ALBUM, PA::PHOTO_ID, '=', 'p.id')
 				->join('photos as p', 'p.id', '=', 'sv.photo_id')
-				->leftJoin('photos as dup', function (JoinClause $join) use ($album_ids): void {
-					$join
-						->on('dup.checksum', '=', 'p.checksum')
-						->whereNotIn('dup.album_id', $album_ids);
-				})
-				->whereIn('p.album_id', $album_ids)
+				->joinSub(DB::table('photos')->leftJoin(PA::PHOTO_ALBUM, 'photos.id', '=', PA::PHOTO_ID)->select('id', 'checksum', 'album_id'), 'dup',
+					function (JoinClause $join) use ($album_ids): void {
+						$join
+							->on('dup.checksum', '=', 'p.checksum')
+							->whereNotIn('dup.album_id', $album_ids);
+					}, 'left')
+				->whereIn(PA::ALBUM_ID, $album_ids)
 				->whereNull('dup.id')
 				->get();
 			$this->fileDeleter->addSizeVariants($size_variants);
@@ -253,12 +257,14 @@ readonly class Delete
 						->on('sv.photo_id', '=', 'p.id')
 						->where('sv.type', '=', SizeVariantType::ORIGINAL);
 				})
-				->leftJoin('photos as dup', function (JoinClause $join) use ($album_ids): void {
-					$join
-						->on('dup.live_photo_checksum', '=', 'p.live_photo_checksum')
-						->whereNotIn('dup.album_id', $album_ids);
-				})
-				->whereIn('p.album_id', $album_ids)
+				->joinSub(DB::table('photos')->leftJoin(PA::PHOTO_ALBUM, 'photos.id', '=', PA::PHOTO_ID)->select('id', 'live_photo_checksum', 'album_id'), 'dup',
+					function (JoinClause $join) use ($album_ids): void {
+						$join
+							->on('dup.live_photo_checksum', '=', 'p.live_photo_checksum')
+							->whereNotIn('dup.album_id', $album_ids);
+					}, 'left')
+				->leftJoin(PA::PHOTO_ALBUM, PA::PHOTO_ID, '=', 'p.id')
+				->whereIn(PA::ALBUM_ID, $album_ids)
 				->whereNull('dup.id')
 				->whereNotNull('p.live_photo_short_path')
 				->get(['p.live_photo_short_path', 'sv.storage_disk']);
@@ -301,7 +307,8 @@ readonly class Delete
 						$query
 							->from('photos', 'p')
 							->whereColumn('p.id', '=', 'size_variants.photo_id')
-							->whereIn('p.album_id', $album_ids);
+							->leftJoin(PA::PHOTO_ALBUM, PA::PHOTO_ID, '=', 'p.id')
+							->whereIn(PA::ALBUM_ID, $album_ids);
 					})
 					->delete();
 			}
@@ -316,9 +323,16 @@ readonly class Delete
 						$query
 							->from('photos', 'p')
 							->whereColumn('p.id', '=', 'statistics.photo_id')
-							->whereIn('p.album_id', $album_ids);
+							->leftJoin(PA::PHOTO_ALBUM, PA::PHOTO_ID, '=', 'p.id')
+							->whereIn(PA::ALBUM_ID, $album_ids);
 					})
 					->delete();
+			}
+			if (count($photo_ids) !== 0) {
+				DB::table(PA::PHOTO_ALBUM)->whereIn(PA::PHOTO_ID, $photo_ids)->delete();
+			}
+			if (count($album_ids) !== 0) {
+				DB::table(PA::PHOTO_ALBUM)->whereIn(PA::ALBUM_ID, $album_ids)->delete();
 			}
 			if (count($photo_ids) !== 0) {
 				Photo::query()->whereIn('id', $photo_ids)->delete();

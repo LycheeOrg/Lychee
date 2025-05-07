@@ -116,7 +116,7 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	{
 		$query = $this->photo_query_policy
 			->applySearchabilityFilter(
-				query: Photo::query()->leftJoin(PA::PHOTO_ALBUM, 'id', '=', PA::PHOTO_ID)->with(['size_variants', 'statistics']),
+				query: Photo::query()->leftJoin(PA::PHOTO_ALBUM, 'photos.id', '=', PA::PHOTO_ID)->with(['size_variants', 'statistics']),
 				origin: null,
 				include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_smart_albums')
 			)->where($this->smart_photo_condition);

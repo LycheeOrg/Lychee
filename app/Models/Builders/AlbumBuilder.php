@@ -70,7 +70,7 @@ class AlbumBuilder extends NSQueryBuilder
 			$count_photos = DB::table('photos', 'p')
 				->join(PA::PHOTO_ALBUM, 'p.id', '=', PA::PHOTO_ID)
 				->selectRaw('COUNT(*)')
-				->whereColumn('photo_album.album_id', '=', 'albums.id');
+				->whereColumn(PA::ALBUM_ID, '=', 'albums.id');
 
 			$this->addSelect([
 				'min_taken_at' => $this->getTakenAtSQL()->selectRaw('MIN(taken_at)'),
