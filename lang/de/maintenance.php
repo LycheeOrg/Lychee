@@ -1,7 +1,6 @@
 <?php
-
 return [
-	/*
+    /*
 	|--------------------------------------------------------------------------
 	| Update Page
 	|--------------------------------------------------------------------------
@@ -12,15 +11,15 @@ return [
         'title' => 'Säubern %s',
         'result' => '%s gelöscht.',
         'description' => 'Lösche den gesamten Inhalt aus <span class="font-mono">%s</span>',
-        'button' => 'Säubern',
+        'button' => 'Bereinigen',
     ],
     'duplicate-finder' => [
-        'title' => 'Duplicates',
-        'description' => 'This module counts potential duplicates betwen pictures.',
-        'duplicates-all' => 'Duplicates over all albums',
-        'duplicates-title' => 'Title duplicates per album',
-        'duplicates-per-album' => 'Duplicates per album',
-        'show' => 'Show duplicates',
+        'title' => 'Duplikate',
+        'description' => 'Dieses Modul zählt potenzielle Duplikate von Bildern.',
+        'duplicates-all' => 'Duplikate über alle Alben',
+        'duplicates-title' => 'Titel-Duplikate pro Album',
+        'duplicates-per-album' => 'Duplikate pro Album',
+        'show' => 'Duplikate anzeigen',
     ],
     'fix-jobs' => [
         'title' => 'Job Historie reparieren',
@@ -30,18 +29,18 @@ return [
     'gen-sizevariants' => [
         'title' => 'Fehlende %s',
         'description' => 'Es wurden %d %s gefunden, welche noch angelegt werden können.',
-        'button' => 'Anlegen',
+        'button' => 'Anlegen!',
         'success' => 'Erfolgreich angelegt. %d %s.',
     ],
     'fill-filesize-sizevariants' => [
-        'title' => 'Fehlende größenvariante',
+        'title' => 'Fehlende Dateigrößen',
         'description' => 'Es wurden %d kleine Varianten ohne Dateigröße gefunden.',
-        'button' => 'Daten sammeln',
+        'button' => 'Daten sammeln!',
         'success' => 'Die Daten für %d kleine Varianten wurden erfolgreich verarbeitet.',
     ],
     'fix-tree' => [
         'title' => 'Baumstruktur Statistik',
-        'Oddness' => 'Eigenartig',
+        'Oddness' => 'Ungewöhnlich',
         'Duplicates' => 'Duplikate',
         'Wrong parents' => 'Falsche Oberkategorie',
         'Missing parents' => 'Fehlende Oberkategorie',
@@ -49,7 +48,7 @@ return [
     ],
     'optimize' => [
         'title' => 'Datenbank optimieren',
-        'description' => 'Wenn Sie eine Verlangsamung Ihrer Installation festgestellt haben, könnte dies an fehlenden Datenbankindizes liegen.',
+        'description' => 'Wenn die Performance Ihrer Installation nachlässt, könnte dies an fehlenden Datenbankindizes liegen.',
         'button' => 'Datenbank optimieren',
     ],
     'update' => [
@@ -59,8 +58,8 @@ return [
         'no-pending-updates' => 'Keine Updates verfügbar.',
     ],
     'flush-cache' => [
-        'title' => 'Flush Cache',
-        'description' => 'Flush the cache of every user to solve invalidation problems.',
-        'button' => 'Flush',
+        'title' => 'Cache leeren',
+        'description' => 'Leeren Sie den Cache jedes Benutzers, um Ungültigkeitsprobleme zu lösen.',
+        'button' => 'Leeren',
     ],
 ];
