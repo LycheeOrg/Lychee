@@ -1,29 +1,25 @@
 <?php
-
 return [
-	/*
+    /*
 	|--------------------------------------------------------------------------
 	| Duplicate Finder Page
 	|--------------------------------------------------------------------------
 	*/
-	'title' => 'Maintenance',
-	'intro' => 'On this page you will find the duplicate pictures found in your database.',
-	'found' => ' duplicates found!',
-	'invalid-search' => ' At least the checksum or title condition must be checked.',
-	'checksum-must-match' => 'Checksum must match.',
-	'title-must-match' => 'Title must match.',
-	'must-be-in-same-album' => 'Must be in the same album.',
-
-	'columns' => [
-		'album' => 'Album',
-		'photo' => 'Photo',
-		'checksum' => 'Checksum',
-	],
-
-	'warning' => [
-		'no-original-left' => 'No original left.',
-		'keep-one' => 'You selected all duplicates in this group. Please chose at least one duplicate to keep.',
-	],
-
-	'delete-selected' => 'Delete selected',
+    'title' => 'Wartung',
+    'intro' => 'Auf dieser Seite finden Sie die doppelten Bilder, die in Ihrer Datenbank gefunden wurden.',
+    'found' => ' Duplikate gefunden!',
+    'invalid-search' => ' Mindestens die Prüfsumme oder die Titelbedingung muss geprüft werden.',
+    'checksum-must-match' => 'Die Prüfsumme muss übereinstimmen.',
+    'title-must-match' => 'Der Titel muss übereinstimmen.',
+    'must-be-in-same-album' => 'Müssen im selben Album sein.',
+    'columns' => [
+        'album' => 'Album',
+        'photo' => 'Foto',
+        'checksum' => 'Prüfsumme',
+    ],
+    'warning' => [
+        'no-original-left' => 'Kein Original übrig.',
+        'keep-one' => 'Sie haben alle Duplikate in dieser Gruppe ausgewählt. Bitte wählen Sie mindestens ein Duplikat, das Sie behalten möchten.',
+    ],
+    'delete-selected' => 'Ausgewählte löschen',
 ];

@@ -1,38 +1,35 @@
 <?php
-
 return [
-	/*
+    /*
 	|--------------------------------------------------------------------------
 	| Users page
 	|--------------------------------------------------------------------------
 	*/
-	'title' => 'Users',
-	'description' => 'Here you can manage the users of your Lychee installation. You can create, edit and delete users.',
-	'create' => 'Create a new user',
-	'username' => 'Username',
-	'password' => 'Password',
-	'legend' => 'Legend',
-	'upload_rights' => 'When selected, the user can upload content.',
-	'edit_rights' => 'When selected, the user can modify their profile (username, password).',
-	'quota' => 'When set, the user has a space quota for pictures (in kB).',
-
-	'user_deleted' => 'User deleted',
-	'user_created' => 'User created',
-	'user_updated' => 'User updated',
-	'change_saved' => 'Change saved!',
-
-	'create_edit' => [
-		'upload_rights' => 'User can upload content.',
-		'edit_rights' => 'User can modify their profile (username, password).',
-		'quota' => 'User has quota limit.',
-		'quota_kb' => 'quota in kB (0 for default)',
-		'note' => 'Admin note (not publically visible)',
-		'create' => 'Create',
-		'edit' => 'Edit',
-	],
-	'line' => [
-		'admin' => 'admin user',
-		'edit' => 'Edit',
-		'delete' => 'Delete',
-	],
+    'title' => 'Benutzer',
+    'description' => 'Hier können die Benutzer der Lychee-Installation verwaltet werden. Es können Benutzer angelegt, bearbeitet und gelöscht werden.',
+    'create' => 'Einen neuen Benutzer anlegen',
+    'username' => 'Benutzername',
+    'password' => 'Passwort',
+    'legend' => 'Legende',
+    'upload_rights' => 'Wenn diese Option ausgewählt ist, kann der Benutzer Inhalte hochladen.',
+    'edit_rights' => 'Wenn diese Option ausgewählt ist, kann der Benutzer sein Profil (Benutzername, Passwort) ändern.',
+    'quota' => 'Wenn diese Option gesetzt ist, verfügt der Benutzer über ein Platzkontingent für Bilder (in kB).',
+    'user_deleted' => 'Benutzer gelöscht',
+    'user_created' => 'Benutzer erstellt',
+    'user_updated' => 'Benutzer aktualisiert',
+    'change_saved' => 'Änderung gespeichert!',
+    'create_edit' => [
+        'upload_rights' => 'Benutzer können Inhalte hochladen.',
+        'edit_rights' => 'Der Benutzer kann sein Profil (Benutzername, Passwort) ändern.',
+        'quota' => 'Benutzer hat Kontingentgrenze.',
+        'quota_kb' => 'Kontingent in kB (0 für Standard)',
+        'note' => 'Verwaltungshinweis (nicht öffentlich sichtbar)',
+        'create' => 'Erstellen',
+        'edit' => 'Bearbeiten',
+    ],
+    'line' => [
+        'admin' => 'Admin-Benutzer',
+        'edit' => 'Bearbeiten',
+        'delete' => 'Löschen',
+    ],
 ];
