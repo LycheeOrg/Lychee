@@ -1,16 +1,12 @@
 <?php
+
 return [
-    'button' => [
-        /**
- * SPDX-License-Identifier: MIT
- * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
- */
-        /*
+	/*
 	|--------------------------------------------------------------------------
 	| Dialogs
 	|--------------------------------------------------------------------------
 	*/
+	'button' => [
         'close' => 'Fermer',
         'cancel' => 'Annuler',
         'save' => 'Enregistrer',
