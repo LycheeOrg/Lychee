@@ -6,6 +6,6 @@ return [
 	| Changelogs page
 	|--------------------------------------------------------------------------
 	*/
-	'title' => 'Change logs',
-	'description' => 'This page contains the changelogs up to the latest available version of Lychee. It is voluntarily not limited to the changes on your installed version. With this, we want to give you a better overview of what to expect when you decide to upgrade.',
+    'title' => 'Historique des changements',
+    'description' => 'Cette page contient l\'historique des changements jusqu’à la dernière version disponible de Lychee et non pas jusqu’à votre version actuelle. Ainsi, nous vous donnons une meilleure visibilité sur ce qui vient dans les future mise a jour si vous décidez de les appliquer.',
 ];

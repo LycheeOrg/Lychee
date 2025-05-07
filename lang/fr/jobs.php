@@ -6,12 +6,10 @@ return [
 	| Jobs page
 	|--------------------------------------------------------------------------
 	*/
-	'title' => 'Tâches',
-
-	'no_data' => 'Aucune tâche n’a encore été exécutée.',
-
-	'ready' => 'Ready',
-	'success' => 'Success',
-	'failure' => 'Failure',
-	'started' => 'Started',
+    'title' => 'Tâches',
+    'no_data' => 'Aucune tâche n’a encore été exécutée.',
+    'ready' => 'Pret',
+    'success' => 'Réussi',
+    'failure' => 'Erreur',
+    'started' => 'En cours',
 ];
