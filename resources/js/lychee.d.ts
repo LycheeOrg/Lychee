@@ -109,7 +109,7 @@ declare namespace App.Http.Resources.Collections {
 		id: string | null;
 		title: string | null;
 		track_url: string | null;
-		photos: App.Http.Resources.Models.PhotoResource[] | Array<any>;
+		photos: App.Http.Resources.Models.PhotoResource[];
 	};
 	export type RootAlbumResource = {
 		smart_albums: { [key: number]: App.Http.Resources.Models.ThumbAlbumResource } | Array<any>;
@@ -262,6 +262,7 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		is_se_enabled: boolean;
 		is_se_preview_enabled: boolean;
 		is_se_info_hidden: boolean;
+		is_live_metrics_enabled: boolean;
 	};
 	export type LandingPageResource = {
 		landing_page_enable: boolean;
@@ -340,8 +341,8 @@ declare namespace App.Http.Resources.Models {
 		header_id: string | null;
 		parent_id: string | null;
 		has_albums: boolean;
-		albums: App.Http.Resources.Models.ThumbAlbumResource[] | Array<any>;
-		photos: App.Http.Resources.Models.PhotoResource[] | Array<any>;
+		albums: App.Http.Resources.Models.ThumbAlbumResource[];
+		photos: App.Http.Resources.Models.PhotoResource[];
 		cover_id: string | null;
 		thumb: App.Http.Resources.Models.ThumbResource | null;
 		policy: App.Http.Resources.Models.Utils.AlbumProtectionPolicy;
@@ -359,7 +360,7 @@ declare namespace App.Http.Resources.Models {
 		cat: string;
 		name: string;
 		description: string;
-		configs: App.Http.Resources.Models.ConfigResource[] | Array<any>;
+		configs: App.Http.Resources.Models.ConfigResource[];
 		priority: number;
 	};
 	export type ConfigResource = {
@@ -457,7 +458,7 @@ declare namespace App.Http.Resources.Models {
 	export type SmartAlbumResource = {
 		id: string;
 		title: string;
-		photos: App.Http.Resources.Models.PhotoResource[] | Array<any>;
+		photos: App.Http.Resources.Models.PhotoResource[];
 		thumb: App.Http.Resources.Models.ThumbResource | null;
 		policy: App.Http.Resources.Models.Utils.AlbumProtectionPolicy;
 		rights: App.Http.Resources.Rights.AlbumRightsResource;
@@ -471,7 +472,7 @@ declare namespace App.Http.Resources.Models {
 		copyright: string | null;
 		is_tag_album: boolean;
 		show_tags: Array<string>;
-		photos: App.Http.Resources.Models.PhotoResource[] | Array<any>;
+		photos: App.Http.Resources.Models.PhotoResource[];
 		thumb: App.Http.Resources.Models.ThumbResource | null;
 		policy: App.Http.Resources.Models.Utils.AlbumProtectionPolicy;
 		rights: App.Http.Resources.Rights.AlbumRightsResource;
@@ -683,27 +684,14 @@ declare namespace App.Http.Resources.Search {
 		photo_layout: App.Enum.PhotoLayoutType;
 	};
 	export type ResultsResource = {
-		albums: App.Http.Resources.Models.ThumbAlbumResource[] | Array<any>;
-		photos: App.Http.Resources.Models.PhotoResource[] | Array<any>;
+		albums: App.Http.Resources.Models.ThumbAlbumResource[];
+		photos: App.Http.Resources.Models.PhotoResource[];
 		current_page: number;
 		from: number;
 		last_page: number;
 		per_page: number;
 		to: number;
 		total: number;
-	};
-}
-declare namespace App.Http.Resources.Sharing {
-	export type ListedAlbumsResource = {
-		id: string;
-		title: string;
-	};
-	export type SharedAlbumResource = {
-		id: number;
-		user_id: number;
-		album_id: string;
-		username: string;
-		title: string;
 	};
 }
 declare namespace App.Http.Resources.Statistics {

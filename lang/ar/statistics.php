@@ -39,6 +39,7 @@ return [
     ],
     'metrics' => [
         'header' => '',
+		'preview_text' => 'This is a preview of the live metrics available in Lychee <span class="text-primary-emphasis font-bold">SE</span>. The data shown here are randomly generated and do not reflect your server.',
         'a_visitor' => '',
         'visitors' => '',
         'visit_singular' => '',
