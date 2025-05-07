@@ -1,10 +1,11 @@
 <?php
 
+// Note: We no longer format lang files as they are from weblate and weblate does not support our formatting.
+// Todo: later create automation that applies formatting on PR (and create a pull request on top if not formatted properly)
 $finder = array_reduce(
 	[
 		__DIR__ . '/app/',
 		__DIR__ . '/database/',
-		// __DIR__ . '/lang/', // We no longer format lang files as they are from weblate and weblate does not support our formatting.
 		__DIR__ . '/config/',
 		__DIR__ . '/resources/',
 		__DIR__ . '/routes/',
