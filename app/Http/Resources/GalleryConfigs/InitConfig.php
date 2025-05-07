@@ -83,6 +83,10 @@ class InitConfig extends Data
 	// or if they asked to hide it (because we are nice :) ).
 	public bool $is_se_info_hidden;
 
+	// Live Metrics settings
+	public bool $is_live_metrics_enabled;
+
+
 	public function __construct()
 	{
 		// Debug mode
@@ -174,5 +178,7 @@ class InitConfig extends Data
 
 		// We hide the info if we are already a supporter (or the user requests it).
 		$this->is_se_info_hidden = $is_supporter || Configs::getValueAsBool('disable_se_call_for_actions');
+
+		$this->is_live_metrics_enabled = $this->is_se_enabled && Configs::getValueAsBool('live_metrics_enabled');
 	}
 }

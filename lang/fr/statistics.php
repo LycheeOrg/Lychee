@@ -39,6 +39,7 @@ return [
     ],
     'metrics' => [
         'header' => 'Données en temps réel',
+		'preview_text' => 'Ceci est un aperçu des données en temps réel disponible dans Lychee <span class="text-primary-emphasis font-bold">SE</span>. Les données affichées ici sont générées aléatoirement et ne reflètent pas votre serveur.',
         'a_visitor' => 'Un visiteur',
         'visitors' => '%d visiteurs',
         'visit_singular' => '%1$s a vu %2$s',
