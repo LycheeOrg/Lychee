@@ -8,10 +8,11 @@
 
 namespace App\Actions\Photo;
 
-use App\Exceptions\ModelDBException;
+use App\Constants\PhotoAlbum as PA;
 use App\Models\Album;
 use App\Models\Photo;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class Duplicate
 {
@@ -19,27 +20,18 @@ class Duplicate
 	 * Duplicates a set of photos.
 	 *
 	 * @param Collection<int,Photo> $photos the source photos
-	 * @param Album|null            $album  the destination album; `null` means root album
+	 * @param Album                 $album  the destination album; `null` means root album
 	 *
-	 * @return Collection<int,Photo> the duplicates
-	 *
-	 * @throws ModelDBException
+	 * @return void
 	 */
-	public function do(Collection $photos, ?Album $album): Collection
+	public function do(Collection $photos, Album $album): void
 	{
-		$duplicates = new Collection();
-		/** @var Photo $photo */
-		foreach ($photos as $photo) {
-			$duplicate = $photo->replicate();
-			$duplicate->album_id = $album?->id;
-			$duplicate->setRelation('album', $album);
-			if ($album !== null) {
-				$duplicate->owner_id = $album->owner_id;
-			}
-			$duplicate->save();
-			$duplicates->add($duplicate);
-		}
+		$photos_ids = $photos->pluck('id')->all();
+		$insert = array_map(fn (string $id) => ['photo_id' => $id, 'album_id' => $album->id], $photos_ids);
 
-		return $duplicates;
+		// Remove existing links.
+		DB::table(PA::PHOTO_ALBUM)->whereIn(PA::PHOTO_ID, $photos_ids)->where(PA::ALBUM_ID, '=', $album->id)->delete();
+		// Resinsert them (that way we avoid uniqueness errors).
+		DB::table(PA::PHOTO_ALBUM)->insert($insert);
 	}
 }

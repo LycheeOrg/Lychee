@@ -8,8 +8,9 @@
 
 namespace App\Http\Resources\Rights;
 
+use App\Contracts\Models\AbstractAlbum;
 use App\Models\Photo;
-use App\Policies\PhotoPolicy;
+use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\Gate;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
@@ -28,10 +29,10 @@ class PhotoRightsResource extends Data
 	 *
 	 * @return void
 	 */
-	public function __construct(Photo $photo)
+	public function __construct(?AbstractAlbum $album)
 	{
-		$this->can_edit = Gate::check(PhotoPolicy::CAN_EDIT, [Photo::class, $photo]);
-		$this->can_download = Gate::check(PhotoPolicy::CAN_DOWNLOAD, [Photo::class, $photo]);
-		$this->can_access_full_photo = Gate::check(PhotoPolicy::CAN_ACCESS_FULL_PHOTO, [Photo::class, $photo]);
+		$this->can_edit = Gate::check(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $album]);
+		$this->can_download = Gate::check(AlbumPolicy::CAN_DOWNLOAD, [AbstractAlbum::class, $album]);
+		$this->can_access_full_photo = Gate::check(AlbumPolicy::CAN_ACCESS_FULL_PHOTO, [AbstractAlbum::class, $album]);
 	}
 }

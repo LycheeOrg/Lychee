@@ -38,6 +38,7 @@ class PositionData
 		$photo_query = $this->photo_query_policy->applySearchabilityFilter(
 			query: Photo::query()
 				->with([
+					// TODO: FIX ME.
 					'album' => function ($b): void {
 						// The album is required for photos to properly
 						// determine access and visibility rights; but we

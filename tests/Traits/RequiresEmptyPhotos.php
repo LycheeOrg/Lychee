@@ -18,6 +18,7 @@
 
 namespace Tests\Traits;
 
+use App\Constants\PhotoAlbum as PA;
 use Illuminate\Support\Facades\DB;
 use function Safe\fileowner;
 use function Safe\scandir;
@@ -33,6 +34,7 @@ trait RequiresEmptyPhotos
 	{
 		$this->setUpInteractsWithFilesystemPermissions();
 		// Assert that photo table is empty
+		$this->assertDatabaseCount(PA::PHOTO_ALBUM, 0);
 		$this->assertDatabaseCount('size_variants', 0);
 		$this->assertDatabaseCount('photos', 0);
 		$this->assertDatabaseCount('jobs_history', 0);
@@ -46,6 +48,7 @@ trait RequiresEmptyPhotos
 	protected function tearDownRequiresEmptyPhotos(): void
 	{
 		// Clean up remaining stuff from tests
+		DB::table(PA::PHOTO_ALBUM)->delete();
 		DB::table('size_variants')->delete();
 		DB::table('photos')->delete();
 		DB::table('jobs_history')->delete();
