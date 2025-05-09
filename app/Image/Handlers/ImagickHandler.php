@@ -63,6 +63,12 @@ class ImagickHandler extends BaseImageHandler
 
 			$this->im_image = new \Imagick();
 			$this->im_image->readImageFile($input_stream);
+
+			// If the file is a PDF and the user has chosen to support PDF files then try to create an image from the first page
+			if ($file->getExtension() === '.pdf' && $file->isSupportedOrAcceptedFileExtension($file->getExtension())) {
+				$this->im_image->setIteratorIndex(0);
+			}
+
 			$this->autoRotate();
 		} catch (\ImagickException $e) {
 			throw new MediaFileOperationException('Failed to load image', $e);
