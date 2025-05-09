@@ -41,7 +41,7 @@ class ImagickPdfCheck implements DiagnosticPipe
 
 		try {
 			$imagic_policy = file_get_contents('/etc/ImageMagick-6/policy.xml');
-			if (preg_match('/<policy domain="coder" rights="none" pattern="PDF"/', $imagic_policy)) {
+			if (1 === preg_match('/<policy domain="coder" rights="none" pattern="PDF"/', $imagic_policy)) {
 				$data[] = DiagnosticData::warn('Imagick is not allowed to create thumbs for pdf files.', self::class,
 					['Verify that the /etc/ImageMagick-6/policy.xml file contains the line <policy domain="coder" rights="read|write" pattern="PDF"/> .']);
 			}

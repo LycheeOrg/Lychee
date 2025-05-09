@@ -14,6 +14,7 @@ use App\Contracts\Image\StreamStats;
 use App\DTO\ImageDimension;
 use App\Exceptions\ImageProcessingException;
 use App\Exceptions\MediaFileOperationException;
+use App\Image\Files\BaseMediaFile;
 use App\Image\Files\InMemoryBuffer;
 use Imagick;
 
@@ -65,7 +66,7 @@ class ImagickHandler extends BaseImageHandler
 			$this->im_image->readImageFile($input_stream);
 
 			// If the file is a PDF and the user has chosen to support PDF files then try to create an image from the first page
-			if ($file->getExtension() === '.pdf' && $file->isSupportedOrAcceptedFileExtension($file->getExtension())) {
+			if ($file->getExtension() === '.pdf' && BaseMediaFile::isSupportedOrAcceptedFileExtension($file->getExtension())) {
 				$this->im_image->setIteratorIndex(0);
 			}
 
