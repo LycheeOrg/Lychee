@@ -20,6 +20,7 @@ use App\Actions\Diagnostics\Pipes\Checks\DBSupportCheck;
 use App\Actions\Diagnostics\Pipes\Checks\ForeignKeyListInfo;
 use App\Actions\Diagnostics\Pipes\Checks\GDSupportCheck;
 use App\Actions\Diagnostics\Pipes\Checks\ImageOptCheck;
+use App\Actions\Diagnostics\Pipes\Checks\ImagickPdfCheck;
 use App\Actions\Diagnostics\Pipes\Checks\IniSettingsCheck;
 use App\Actions\Diagnostics\Pipes\Checks\MigrationCheck;
 use App\Actions\Diagnostics\Pipes\Checks\OpCacheCheck;
@@ -61,6 +62,7 @@ class Errors
 		CachePasswordCheck::class,
 		CacheTemporaryUrlCheck::class,
 		SupporterCheck::class,
+		ImagickPdfCheck::class,
 	];
 
 	/**

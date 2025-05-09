@@ -272,6 +272,12 @@ abstract class BaseMediaFile extends AbstractBinaryBlob implements MediaFile
 	{
 		if (count(self::$cachedAcceptedRawFileExtensions) === 0) {
 			$tmp = explode('|', strtolower(Configs::getValueAsString('raw_formats')));
+
+			// We imagick is enabeld, then we can allow PDF files.
+			if (Configs::hasImagick()) {
+				$tmp[] = '.pdf';
+			}
+
 			// Explode may return `false` on error
 			// Our supported file extensions always take precedence over any
 			// custom configured extension
