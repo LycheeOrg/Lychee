@@ -18,7 +18,7 @@ use function Safe\file_get_contents;
 use function Safe\preg_match;
 
 /**
- * Verify that we have some image optimization available if enabled.
+ * Verify that if Imagick is installed, it is allowed to work with pdf files.
  */
 class ImagickPdfCheck implements DiagnosticPipe
 {
