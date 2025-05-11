@@ -12,6 +12,7 @@ use App\Actions\Import\FromUrl;
 use App\Actions\Photo\Delete;
 use App\Actions\Photo\Duplicate;
 use App\Actions\Photo\Move;
+use App\Actions\Photo\MoveOrDuplicate;
 use App\Actions\Photo\Rotate;
 use App\Constants\FileSystem;
 use App\Contracts\Models\AbstractAlbum;
@@ -148,9 +149,13 @@ class PhotoController extends Controller
 	/**
 	 * Moves the photos to an album.
 	 */
-	public function move(MovePhotosRequest $request, Move $move): void
+	public function move(MovePhotosRequest $request, MoveOrDuplicate $move): void
 	{
-		$move->do($request->photos(), $request->album());
+		$move->do(
+			photos: $request->photos(),
+			from_album: $request->from_album(), 
+			to_album: $request->album()
+		);
 	}
 
 	/**
@@ -181,9 +186,9 @@ class PhotoController extends Controller
 	 * Copy a photos to an album.
 	 * Only the SQL entry is duplicated for space reason.
 	 */
-	public function copy(CopyPhotosRequest $request, Duplicate $duplicate): void
+	public function copy(CopyPhotosRequest $request, MoveOrDuplicate $duplicate): void
 	{
-		$duplicate->do($request->photos(), $request->album());
+		$duplicate->do($request->photos(), $request->album(), $request->album());
 	}
 
 	/**

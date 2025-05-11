@@ -161,7 +161,7 @@ readonly class Delete
 			$size_variants = SizeVariant::query()
 				->from('size_variants as sv')
 				->select(['sv.short_path', 'sv.storage_disk'])
-				->leftJoin(PA::PHOTO_ALBUM, PA::PHOTO_ID, '=', 'p.id')
+				->leftJoin(PA::PHOTO_ALBUM, PA::PHOTO_ID, '=', 'sv.photo_id')
 				->join('photos as p', 'p.id', '=', 'sv.photo_id')
 				->joinSub(DB::table('photos')->leftJoin(PA::PHOTO_ALBUM, 'photos.id', '=', PA::PHOTO_ID)->select('id', 'checksum', 'album_id'), 'dup',
 					function (JoinClause $join) use ($album_ids): void {
