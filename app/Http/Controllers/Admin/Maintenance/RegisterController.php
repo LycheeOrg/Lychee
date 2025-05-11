@@ -28,6 +28,11 @@ class RegisterController extends Controller
 	public function __invoke(RegisterRequest $request): RegisterData
 	{
 		Configs::set('license_key', $request->key()->getValue());
+
+		// Verify is a singleton which has already been initialized in RegisterRequest.
+		// As a result, we need to reset it after setting the license key.
+		app()->instance(Verify::class, null);
+
 		$verify = resolve(Verify::class);
 		$is_supporter = $verify->is_supporter();
 		if ($is_supporter) {
@@ -38,6 +43,7 @@ class RegisterController extends Controller
 
 		// Not valid, reset the key.
 		Configs::set('license_key', '');
+		app()->instance(Verify::class, null);
 
 		TaggedRouteCacheUpdated::dispatch(CacheTag::SETTINGS);
 
