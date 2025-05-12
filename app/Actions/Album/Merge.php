@@ -12,7 +12,6 @@ use App\Constants\PhotoAlbum as PA;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\ModelDBException;
 use App\Models\Album;
-use App\Models\Photo;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -35,7 +34,7 @@ class Merge
 		$photos_ids = DB::table(PA::PHOTO_ALBUM)
 			->whereIn(PA::ALBUM_ID, $origin_ids)
 			->pluck(PA::PHOTO_ID)->all();
-		
+
 		// Delete the existing links at destination (avoid duplicates key contraint)
 		DB::table(PA::PHOTO_ALBUM)
 			->whereIn(PA::PHOTO_ID, $photos_ids)

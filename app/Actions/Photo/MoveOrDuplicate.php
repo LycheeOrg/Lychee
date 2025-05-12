@@ -19,13 +19,13 @@ class MoveOrDuplicate
 {
 	/**
 	 * Move or Duplicates a set of photos.
-	 * 
+	 *
 	 * If $from_album = $to_album, this is a duplication.
 	 * If $from_album != $to_album, this is a move.
 	 *
-	 * @param Collection<int,Photo> $photos the source photos
+	 * @param Collection<int,Photo> $photos     the source photos
 	 * @param Album                 $from_album the origin album; `null` means root album
-	 * @param Album                 $to_album the destination album; `null` means root album
+	 * @param Album                 $to_album   the destination album; `null` means root album
 	 *
 	 * @return void
 	 */
@@ -50,7 +50,7 @@ class MoveOrDuplicate
 			// Add the new links.
 			DB::table(PA::PHOTO_ALBUM)->insert(array_map(fn (string $id) => ['photo_id' => $id, 'album_id' => $to_album->id], $photos_ids));
 		}
- 
+
 		// In case of move, we need to remove the header_id of said photos.
 		if ($from_album !== null && $from_album->id !== $to_album?->id) {
 			Album::query()

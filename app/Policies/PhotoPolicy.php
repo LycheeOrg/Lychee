@@ -19,6 +19,7 @@ use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\User;
 use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class PhotoPolicy extends BasePolicy
@@ -80,7 +81,7 @@ class PhotoPolicy extends BasePolicy
 			return true;
 		}
 
-		return $this->hasAlbums($photo) && $photo->albums->reduce(fn (bool $carry, Album $album) => $carry || $this->album_policy->canAccess($user, $album), false);
+		return $this->hasAlbums($photo) && $this->reduction($photo->albums, fn ($a) => $this->album_policy->canAccess($user, $a));
 	}
 
 	/**
@@ -97,7 +98,7 @@ class PhotoPolicy extends BasePolicy
 			return true;
 		}
 
-		return $this->hasAlbums($photo) && $photo->albums->reduce(fn (bool $carry, Album $album) => $carry || $this->album_policy->canDownload($user, $album));
+		return $this->hasAlbums($photo) && $this->reduction($photo->albums, fn ($a) => $this->album_policy->canDownload($user, $a));
 	}
 
 	/**
@@ -121,7 +122,7 @@ class PhotoPolicy extends BasePolicy
 			return true;
 		}
 
-		return $this->hasAlbums($photo) && $photo->albums->reduce(fn (bool $carry, Album $album) => $carry || $this->album_policy->canEdit($user, $album));
+		return $this->hasAlbums($photo) && $this->reduction($photo->albums, fn ($a) => $this->album_policy->canEdit($user, $a));
 	}
 
 	/**
@@ -178,7 +179,7 @@ class PhotoPolicy extends BasePolicy
 			return false;
 		}
 
-		return $this->hasAlbums($photo) && $photo->albums->reduce(fn (bool $carry, Album $album) => $carry || $this->album_policy->canAccessFullPhoto($user, $album));
+		return $this->hasAlbums($photo) && $this->reduction($photo->albums, fn ($a) => $this->album_policy->canAccessFullPhoto($user, $a));
 	}
 
 	/**
@@ -264,5 +265,19 @@ class PhotoPolicy extends BasePolicy
 			MetricsAccess::ADMIN => $user?->may_administrate === true,
 			default => false,
 		};
+	}
+
+	/**
+	 * @param Collection<int,Album>        $albums
+	 * @param \Closure(Album $album): bool $reducer
+	 *
+	 * @return bool
+	 */
+	private function reduction(Collection $albums, \Closure $reducer): bool
+	{
+		return $albums->reduce(
+			fn (bool $carry, Album $album) => $carry || $reducer($album),
+			false
+		);
 	}
 }

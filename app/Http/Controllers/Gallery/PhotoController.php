@@ -10,8 +10,6 @@ namespace App\Http\Controllers\Gallery;
 
 use App\Actions\Import\FromUrl;
 use App\Actions\Photo\Delete;
-use App\Actions\Photo\Duplicate;
-use App\Actions\Photo\Move;
 use App\Actions\Photo\MoveOrDuplicate;
 use App\Actions\Photo\Rotate;
 use App\Constants\FileSystem;
@@ -153,7 +151,7 @@ class PhotoController extends Controller
 	{
 		$move->do(
 			photos: $request->photos(),
-			from_album: $request->from_album(), 
+			from_album: $request->from_album(),
 			to_album: $request->album()
 		);
 	}

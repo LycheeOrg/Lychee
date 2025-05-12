@@ -26,7 +26,7 @@ class PhotoAlbum
 		}
 		// We now need to check if the join column is correct.
 
-		/** @var array{type:string,first:string,operator:string,second:string} */
+		/** @var array{type:string,first:string,operator:string,second:string}[] */
 		$wheres = $join->wheres ?? [];
 		foreach ($wheres as $where) {
 			if (str_contains($where['first'], 'photo_id') || str_contains($where['second'], 'photo_id')) {

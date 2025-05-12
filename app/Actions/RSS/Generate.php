@@ -77,7 +77,7 @@ class Generate
 		/** @var Collection<int,Photo> $photos */
 		$photos = $this->photo_query_policy
 			->applySearchabilityFilter(
-				query: Photo::query()->with(['album', 'owner', 'size_variants']),
+				query: Photo::query()->with(['albums', 'owner', 'size_variants']),
 				origin: null,
 				include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_rss')
 			)

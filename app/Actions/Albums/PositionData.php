@@ -39,7 +39,7 @@ class PositionData
 			query: Photo::query()
 				->with([
 					// TODO: FIX ME.
-					'album' => function ($b): void {
+					'albums' => function ($b): void {
 						// The album is required for photos to properly
 						// determine access and visibility rights; but we
 						// don't need to determine the cover and thumbnail for
