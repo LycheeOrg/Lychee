@@ -139,9 +139,7 @@ class Create
 			$pipes[] = Duplicate\SaveIfDirty::class;
 		}
 		$pipes[] = Duplicate\ThrowSkipDuplicate::class;
-		$pipes[] = Duplicate\ReplicateAsPhoto::class;
 		$pipes[] = Shared\SetStarred::class;
-		$pipes[] = Shared\SetOwnership::class;
 		$pipes[] = Shared\Save::class;
 		$pipes[] = Shared\SetParent::class;
 		$pipes[] = Shared\SaveStatistics::class;

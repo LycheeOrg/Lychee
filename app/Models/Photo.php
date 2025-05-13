@@ -424,32 +424,6 @@ class Photo extends Model implements HasUTCBasedTimes
 	}
 
 	/**
-	 * @param string[] $except
-	 *                         //method.childParameterType (contravariance)
-	 */
-	public function replicate(?array $except = null): Photo
-	{
-		$duplicate = parent::replicate($except);
-		// A photo has the following relations: (parent) album, owner and
-		// size_variants.
-		// While the duplicate may keep the relation to the same album and
-		// each photo requires an individual set of size variants.
-		// Se we unset the relation and explicitly duplicate the size variants.
-		$duplicate->unsetRelation('size_variants');
-		// save duplicate so that the photo gets an ID
-		$duplicate->save();
-
-		$are_size_variants_originally_loaded = $this->relationLoaded('size_variants');
-		// Duplicate the size variants of this instance for the duplicate
-		$duplicated_size_variants = $this->size_variants->replicate($duplicate);
-		if ($are_size_variants_originally_loaded) {
-			$duplicate->setRelation('size_variants', $duplicated_size_variants);
-		}
-
-		return $duplicate;
-	}
-
-	/**
 	 * {@inheritDoc}
 	 *
 	 * @throws ModelDBException
