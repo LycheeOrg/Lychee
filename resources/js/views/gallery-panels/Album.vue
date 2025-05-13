@@ -403,6 +403,11 @@ onMounted(async () => {
 	if (results.every((result) => result.status === "fulfilled")) {
 		setScroll();
 	}
+
+	// if #upload is in the URL, open the upload modal
+	if (window.location.hash === "#upload") {
+		is_upload_visible.value = true;
+	}
 });
 
 onUnmounted(() => {
