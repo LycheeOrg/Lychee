@@ -19,6 +19,7 @@ use App\Actions\Diagnostics\Pipes\Checks\DBIntegrityCheck;
 use App\Actions\Diagnostics\Pipes\Checks\DBSupportCheck;
 use App\Actions\Diagnostics\Pipes\Checks\ForeignKeyListInfo;
 use App\Actions\Diagnostics\Pipes\Checks\GDSupportCheck;
+use App\Actions\Diagnostics\Pipes\Checks\IframeCheck;
 use App\Actions\Diagnostics\Pipes\Checks\ImageOptCheck;
 use App\Actions\Diagnostics\Pipes\Checks\ImagickPdfCheck;
 use App\Actions\Diagnostics\Pipes\Checks\IniSettingsCheck;
@@ -48,6 +49,7 @@ class Errors
 		GDSupportCheck::class,
 		ImageOptCheck::class,
 		IniSettingsCheck::class,
+		IframeCheck::class,
 		AppUrlMatchCheck::class,
 		MigrationCheck::class,
 		PHPVersionCheck::class,

@@ -16,9 +16,6 @@ use function Safe\preg_match;
 
 class AppUrlMatchCheck implements DiagnosticPipe
 {
-	public const INVISIBLE_ERROR = '      ';
-	public const INVISIBLE_WARNING = '        ';
-
 	/**
 	 * We check:
 	 * 1. if APP_URL is even set.

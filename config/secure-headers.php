@@ -46,7 +46,7 @@ return [
 	 *
 	 * Available Value: 'deny', 'sameorigin'
 	 */
-	'x-frame-options' => 'deny',    // deny because we don't use frame.
+	'x-frame-options' => env('SECURITY_HEADER_CSP_FRAME_ANCESTORS', '') === '' ? 'deny' : ('ALLOW-FROM ' . env('SECURITY_HEADER_CSP_FRAME_ANCESTORS', '')),    // deny because we don't use frame.
 
 	/**
 	 * X-Permitted-Cross-Domain-Policies.
@@ -567,6 +567,8 @@ return [
 
 		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/frame-ancestors
 		'frame-ancestors' => [
+			'none' => env('SECURITY_HEADER_CSP_FRAME_ANCESTORS', '') === '',
+			'allow' => explode(',', (string) env('SECURITY_HEADER_CSP_FRAME_ANCESTORS', '')),
 		],
 
 		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/frame-src
