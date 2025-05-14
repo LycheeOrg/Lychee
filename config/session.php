@@ -168,7 +168,7 @@ return [
 	|
 	*/
 
-	'secure' => env('SESSION_SECURE_COOKIE'),
+	'secure' => (bool) env('SESSION_SECURE_COOKIE'),
 
 	/*
 	|--------------------------------------------------------------------------
@@ -196,5 +196,5 @@ return [
 	|
 	*/
 
-	'same_site' => 'lax',
+	'same_site' => env('SECURITY_HEADER_CSP_FRAME_ANCESTORS', '') === '' ? 'lax' : 'none',
 ];
