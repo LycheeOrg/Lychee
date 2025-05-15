@@ -17,7 +17,7 @@ return [
         'description' => 'Lychee ist ein kostenloses Fotoverwaltungsprogramm, das auf einem Server oder Webspace betrieben werden kann. Die Installation erfolgt in wenigen Sekunden. Fotos lassen sich hochladen, verwalten und teilen – ganz wie in einer nativen Anwendung. Lychee bietet alle notwendigen Funktionen und sorgt für eine sichere Speicherung sämtlicher Bilder.',
         'update_available' => 'Update verfügbar!',
         'thank_you' => 'Vielen Dank für Ihre Unterstützung!',
-        'get_supporter_or_register' => 'Exklusive Funktionen stehen in der <a href="https://lycheeorg.dev/get-supporter-edition/" class="text-primary-500 underline">Supporter Edition</a> zur Verfügung und tragen zur Weiterentwicklung von Lychee bei. <br>Die Freischaltung kann über den Erwerb dieser Edition oder durch die Registrierung eines Lizenzschlüssels erfolgen.',
+        'get_supporter_or_register' => 'Exklusive Funktionen stehen in der <a href="https://lycheeorg.dev/get-supporter-edition/" class="text-primary-500 underline">Supporter Edition</a> zur Verfügung und tragen zur Weiterentwicklung von Lychee bei. <br />Die Freischaltung kann über den Erwerb dieser Edition oder durch die Registrierung eines Lizenzschlüssels erfolgen',
         'here' => 'hier',
     ],
     'dropbox' => [
