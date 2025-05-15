@@ -41,7 +41,6 @@ class SecureImageLinksTest extends BaseApiWithDataTest
 
 	public function testTemporaryImage(): void
 	{
-
 		$response = $this->getJsonWithData('Album', ['album_id' => $this->album4->id]);
 		$this->assertOk($response);
 		$url = $response->json('resource.photos.0.size_variants.medium.url');
@@ -85,5 +84,4 @@ class SecureImageLinksTest extends BaseApiWithDataTest
 		$this->assertForbidden($response);
 		$response->assertSeeText('Invalid payload');
 	}
-
 }
