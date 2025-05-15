@@ -102,12 +102,7 @@
 			:photo-ids="selectedPhotosIds"
 			@tagged="refresh"
 		/>
-		<PhotoCopyDialog
-			v-model:visible="is_copy_visible"
-			:photo="selectedPhoto"
-			:photo-ids="selectedPhotosIds"
-			@copied="refresh"
-		/>
+		<PhotoCopyDialog v-model:visible="is_copy_visible" :photo="selectedPhoto" :photo-ids="selectedPhotosIds" @copied="refresh" />
 		<MoveDialog
 			v-model:visible="is_move_visible"
 			:photo="selectedPhoto"
@@ -125,12 +120,7 @@
 			@deleted="refresh"
 		/>
 		<RenameDialog v-model:visible="is_rename_visible" :album="selectedAlbum" :photo="selectedPhoto" @renamed="refresh" />
-		<AlbumMergeDialog
-			v-model:visible="is_merge_album_visible"
-			:album="selectedAlbum"
-			:album-ids="selectedAlbumsIds"
-			@merged="refresh"
-		/>
+		<AlbumMergeDialog v-model:visible="is_merge_album_visible" :album="selectedAlbum" :album-ids="selectedAlbumsIds" @merged="refresh" />
 	</template>
 </template>
 <script setup lang="ts">

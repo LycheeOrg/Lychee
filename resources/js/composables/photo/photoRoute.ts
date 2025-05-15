@@ -2,7 +2,6 @@ import { ALL } from "@/config/constants";
 import { Router } from "vue-router";
 
 export function usePhotoRoute(router: Router) {
-
 	function getParentId(): string | undefined {
 		return router.currentRoute.value.params.albumId as string | undefined;
 	}

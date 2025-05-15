@@ -27,7 +27,7 @@ const PhotoService = {
 		return axios.patch(`${Constants.getApiUrl()}Photo::rename`, { photo_id: photo_id, title: title });
 	},
 
-	move(from_id: string| undefined, destination_id: string | null, photo_ids: string[]): Promise<AxiosResponse> {
+	move(from_id: string | undefined, destination_id: string | null, photo_ids: string[]): Promise<AxiosResponse> {
 		return axios.post(`${Constants.getApiUrl()}Photo::move`, { from_id: from_id, album_id: destination_id, photo_ids: photo_ids });
 	},
 

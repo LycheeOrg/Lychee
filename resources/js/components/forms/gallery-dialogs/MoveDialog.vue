@@ -180,5 +180,4 @@ function executeMovePhoto() {
 		emits("moved");
 	});
 }
-
 </script>
