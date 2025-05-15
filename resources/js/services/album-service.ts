@@ -4,7 +4,7 @@ import { AxiosCacheInstance } from "axios-cache-interceptor";
 
 export type CreateAlbumData = {
 	title: string;
-	parent_id: string | null;
+	parent_id: string | undefined;
 };
 
 export type CreateTagAlbumData = {

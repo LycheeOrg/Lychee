@@ -5,7 +5,7 @@
 	<UploadPanel v-if="album?.rights.can_upload" @refresh="refresh" key="upload_modal" />
 	<LoginModal v-if="user?.id === null" @logged-in="refresh" />
 	<WebauthnModal v-if="user?.id === null" @logged-in="refresh" />
-	<AlbumCreateDialog v-if="album?.rights.can_upload && config?.is_model_album" v-model:parent-id="album.id" key="create_album_modal" />
+	<AlbumCreateDialog v-if="album?.rights.can_upload && config?.is_model_album" key="create_album_modal" />
 
 	<!-- Warnings & Locks -->
 	<SensitiveWarning v-if="config?.is_nsfw_warning_visible" :album-id="albumId" />
@@ -52,8 +52,8 @@
 	<!-- Dialogs -->
 	<template v-if="photo">
 		<PhotoEdit v-if="photo?.rights.can_edit" :photo="photo" v-model:visible="is_photo_edit_open" />
-		<MoveDialog :photo="photo" v-model:visible="is_move_visible" :parent-id="props.albumId" @moved="refresh" />
-		<DeleteDialog :photo="photo" v-model:visible="is_delete_visible" :parent-id="props.albumId" @deleted="refresh" />
+		<MoveDialog :photo="photo" v-model:visible="is_move_visible" @moved="refresh" />
+		<DeleteDialog :photo="photo" v-model:visible="is_delete_visible" @deleted="refresh" />
 	</template>
 	<template v-else>
 		<PhotoTagDialog
@@ -70,7 +70,6 @@
 		/>
 		<PhotoCopyDialog
 			v-model:visible="is_copy_visible"
-			:parent-id="albumId"
 			:photo="selectedPhoto"
 			:photo-ids="selectedPhotosIds"
 			@copied="
@@ -82,7 +81,6 @@
 		/>
 		<MoveDialog
 			v-model:visible="is_move_visible"
-			:parent-id="albumId"
 			:photo="selectedPhoto"
 			:photo-ids="selectedPhotosIds"
 			:album="selectedAlbum"
@@ -96,7 +94,6 @@
 		/>
 		<DeleteDialog
 			v-model:visible="is_delete_visible"
-			:parent-id="albumId"
 			:photo="selectedPhoto"
 			:photo-ids="selectedPhotosIds"
 			:album="selectedAlbum"
@@ -112,7 +109,6 @@
 		<!-- Dialogs for albums -->
 		<RenameDialog
 			v-model:visible="is_rename_visible"
-			:parent-id="undefined"
 			:album="selectedAlbum"
 			:photo="selectedPhoto"
 			@renamed="
@@ -124,7 +120,6 @@
 		/>
 		<AlbumMergeDialog
 			v-model:visible="is_merge_album_visible"
-			:parent-id="albumId"
 			:album="selectedAlbum"
 			:album-ids="selectedAlbumsIds"
 			@merged="

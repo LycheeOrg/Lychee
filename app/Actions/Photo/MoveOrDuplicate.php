@@ -38,7 +38,7 @@ class MoveOrDuplicate
 			// Delete the existing links.
 			DB::table(PA::PHOTO_ALBUM)
 				->whereIn(PA::PHOTO_ID, $photos_ids)
-				->whereIn(PA::ALBUM_ID, $from_album->id)
+				->where(PA::ALBUM_ID, '=', $from_album->id)
 				->delete();
 		}
 

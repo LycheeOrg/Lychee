@@ -39,15 +39,18 @@ import SearchTargetAlbum from "@/components/forms/album/SearchTargetAlbum.vue";
 import { useToast } from "primevue/usetoast";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
+import { useRouter } from "vue-router";
+import { usePhotoRoute } from "@/composables/photo/photoRoute";
 
 const props = defineProps<{
-	parentId: string | undefined;
 	album?: App.Http.Resources.Models.ThumbAlbumResource;
 	albumIds?: string[];
 	photo?: App.Http.Resources.Models.PhotoResource;
 	photoIds?: string[];
 }>();
 
+const router = useRouter();
+const { getParentId } = usePhotoRoute(router);
 const visible = defineModel<boolean>("visible", { default: false });
 
 const emits = defineEmits<{
@@ -142,10 +145,10 @@ function executeMoveAlbum() {
 		for (const id in albumMovedIds) {
 			AlbumService.clearCache(id);
 		}
-		if (props.parentId === undefined) {
+		if (getParentId() === undefined) {
 			AlbumService.clearAlbums();
 		} else {
-			AlbumService.clearCache(props.parentId);
+			AlbumService.clearCache(getParentId());
 		}
 		emits("moved");
 	});
@@ -161,14 +164,14 @@ function executeMovePhoto() {
 	} else {
 		photoMovedIds = props.photoIds as string[];
 	}
-	PhotoService.move(destination_id.value, photoMovedIds).then(() => {
+	PhotoService.move(getParentId(), destination_id.value, photoMovedIds).then(() => {
 		toast.add({
 			severity: "success",
 			summary: sprintf(trans("dialogs.move_photo.moved"), titleMovedTo.value),
 			life: 3000,
 		});
 		// Clear the cache for the current album and the destination album
-		AlbumService.clearCache(props.parentId);
+		AlbumService.clearCache(getParentId());
 		AlbumService.clearCache(destination_id.value);
 
 		// RESET !
@@ -177,4 +180,5 @@ function executeMovePhoto() {
 		emits("moved");
 	});
 }
+
 </script>
