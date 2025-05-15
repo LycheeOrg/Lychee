@@ -9,9 +9,11 @@
 namespace App\Http\Controllers;
 
 use App\Enum\StorageDiskType;
+use App\Exceptions\SecurePaths\InvalidPayloadException;
 use App\Exceptions\SecurePaths\InvalidSignatureException;
 use App\Exceptions\SecurePaths\WrongPathException;
 use App\Models\Configs;
+use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Crypt;
@@ -33,7 +35,11 @@ class SecurePathController extends Controller
 		}
 
 		if (Configs::getValueAsBool('secure_image_link_enabled')) {
-			$path = Crypt::decryptString($path);
+			try {
+				$path = Crypt::decryptString($path);
+			} catch (DecryptException) {
+				throw new InvalidPayloadException();
+			}
 		}
 
 		$file = Storage::disk(StorageDiskType::LOCAL->value)->path($path);

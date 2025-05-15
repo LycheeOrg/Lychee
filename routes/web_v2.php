@@ -68,5 +68,9 @@ Route::match(['get', 'post'], '/api/v1/{path}', fn () => view('error.v1-is-dead'
 	->where('path', '.*')
 	->middleware(['migration:complete']);
 
+Route::get('image/{path}', SecurePathController::class)
+	->name('image')
+	->where('path', '.*');
+
 // This route must be defined last because it is a catch all.
 Route::match(['get', 'post'], '{path}', HoneyPotController::class)->where('path', '.*');
