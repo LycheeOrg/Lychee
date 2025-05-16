@@ -59,7 +59,7 @@ function create() {
 
 	AlbumService.createAlbum({
 		title: title.value as string,
-		parent_id: getParentId(),
+		parent_id: getParentId() ?? null,
 	})
 		.then((response) => {
 			title.value = undefined;

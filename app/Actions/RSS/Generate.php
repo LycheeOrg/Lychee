@@ -27,8 +27,6 @@ use Spatie\Feed\FeedItem;
 
 /**
  * @template T of object{id:string,title:string,description:?string,type:string,created_at:string,updated_at:string,album_id:string,album_title:string,short_path:string,filesize:int,storage_disk:string,size_variant_type:string,username:string}
- * 
- * @package App\Actions\RSS
  */
 class Generate
 {
@@ -41,10 +39,11 @@ class Generate
 	}
 
 	/**
-	 * 
-	 * @param T $data 
-	 * @return FeedItem 
-	 * @throws BindingResolutionException 
+	 * @param T $data
+	 *
+	 * @return FeedItem
+	 *
+	 * @throws BindingResolutionException
 	 */
 	private function toFeedItem(object $data): FeedItem
 	{
@@ -87,8 +86,8 @@ class Generate
 				origin: null,
 				include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_rss')
 			)
-			->joinSub(DB::table(PA::PHOTO_ALBUM), 'outer_'.PA::PHOTO_ALBUM, 'photos.id', '=', 'outer_'.PA::PHOTO_ID)
-			->join('base_albums', 'base_albums.id', '=', 'outer_'.PA::ALBUM_ID)
+			->joinSub(DB::table(PA::PHOTO_ALBUM), 'outer_' . PA::PHOTO_ALBUM, 'photos.id', '=', 'outer_' . PA::PHOTO_ID)
+			->join('base_albums', 'base_albums.id', '=', 'outer_' . PA::ALBUM_ID)
 			->join('size_variants', 'size_variants.photo_id', '=', 'photos.id')
 			->join('users', 'users.id', '=', 'photos.owner_id')
 			->where('size_variants.type', '=', SizeVariantType::ORIGINAL->value)
@@ -98,7 +97,7 @@ class Generate
 				'photos.description',
 				'photos.type',
 				'photos.updated_at',
-				'outer_'.PA::ALBUM_ID,
+				'outer_' . PA::ALBUM_ID,
 				'base_albums.title as album_title',
 				'size_variants.short_path',
 				'size_variants.filesize',

@@ -150,6 +150,7 @@ function executeMoveAlbum() {
 		} else {
 			AlbumService.clearCache(getParentId());
 		}
+		close();
 		emits("moved");
 	});
 }
@@ -164,7 +165,7 @@ function executeMovePhoto() {
 	} else {
 		photoMovedIds = props.photoIds as string[];
 	}
-	PhotoService.move(getParentId(), destination_id.value, photoMovedIds).then(() => {
+	PhotoService.move({ from_id: getParentId() ?? null, album_id: destination_id.value, photo_ids: photoMovedIds }).then(() => {
 		toast.add({
 			severity: "success",
 			summary: sprintf(trans("dialogs.move_photo.moved"), titleMovedTo.value),
@@ -175,8 +176,7 @@ function executeMovePhoto() {
 		AlbumService.clearCache(destination_id.value);
 
 		// RESET !
-		destination_id.value = undefined;
-
+		close();
 		emits("moved");
 	});
 }

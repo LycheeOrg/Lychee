@@ -10,6 +10,12 @@ export type PhotoUpdateRequest = {
 	taken_at: string | null;
 };
 
+export type PhotoMove = {
+	photo_ids: string[];
+	album_id: string | null;
+	from_id: string | null;
+};
+
 const PhotoService = {
 	get(photo_id: string): Promise<AxiosResponse<App.Http.Resources.Models.PhotoResource>> {
 		return axios.get(`${Constants.getApiUrl()}Photo`, { params: { photo_id: photo_id }, data: {} });
@@ -27,8 +33,8 @@ const PhotoService = {
 		return axios.patch(`${Constants.getApiUrl()}Photo::rename`, { photo_id: photo_id, title: title });
 	},
 
-	move(from_id: string | undefined, destination_id: string | null, photo_ids: string[]): Promise<AxiosResponse> {
-		return axios.post(`${Constants.getApiUrl()}Photo::move`, { from_id: from_id, album_id: destination_id, photo_ids: photo_ids });
+	move(data: PhotoMove): Promise<AxiosResponse> {
+		return axios.post(`${Constants.getApiUrl()}Photo::move`, data);
 	},
 
 	tags(photo_ids: string[], tags: string[], shall_override: boolean): Promise<AxiosResponse> {
