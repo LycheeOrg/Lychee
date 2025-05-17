@@ -1,11 +1,4 @@
 <template>
-	<div
-		id="shutter"
-		:class="{
-			'absolute w-screen h-dvh bg-surface-950 transition-opacity duration-1000 ease-in-out top-0 left-0': true,
-			'z-50 opacity-0 pointer-events-none': is_slideshow_active,
-		}"
-	></div>
 	<div class="absolute z-20 top-0 left-0 w-full flex h-full overflow-hidden bg-black">
 		<PhotoHeader :photo="props.photo" @toggle-slide-show="emits('toggleSlideShow')" @go-back="emits('goBack')" />
 		<div class="w-0 flex-auto relative">
