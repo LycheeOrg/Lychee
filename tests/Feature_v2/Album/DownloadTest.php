@@ -197,10 +197,11 @@ class DownloadTest extends BaseApiWithDataTest
 		$photoArchiveResponse = $this->download([$photoID1, $photoID2a], kind: DownloadVariantType::ORIGINAL);
 
 		$zipArchive = AssertableZipArchive::createFromResponse($photoArchiveResponse);
-		$wipArchive = new AssertableZipArchive();
+		$zipArchive->assertContainsFile('night-1.jpeg', filesize(base_path(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE)));
+		$zipArchive->assertContainsFile('night-2.jpeg', filesize(base_path(TestConstants::SAMPLE_FILE_NIGHT_IMAGE)));
 		$zipArchive->assertContainsFilesExactly([
-			'night-1.jpeg' => ['size' => filesize(base_path(TestConstants::SAMPLE_FILE_NIGHT_IMAGE))],
-			'night-2.jpeg' => ['size' => filesize(base_path(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE))],
+			'night-1.jpeg' => ['size' => filesize(base_path(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE))],
+			'night-2.jpeg' => ['size' => filesize(base_path(TestConstants::SAMPLE_FILE_NIGHT_IMAGE))],
 		]);
 	}
 
