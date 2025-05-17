@@ -35,6 +35,7 @@
 		:photo="photo"
 		:photos="photos"
 		:is-map-visible="config?.is_map_accessible ?? false"
+		:transition="transition"
 		@toggle-slide-show="slideshow"
 		@rotate-overlay="rotateOverlay"
 		@rotate-photo-c-w="rotatePhotoCW"
@@ -48,7 +49,6 @@
 		@next="() => next(true)"
 		@previous="() => previous(true)"
 	/>
-
 	<!-- Dialogs -->
 	<template v-if="photo">
 		<PhotoEdit v-if="photo?.rights.can_edit" :photo="photo" v-model:visible="is_photo_edit_open" />
@@ -215,12 +215,8 @@ const { is_delete_visible, toggleDelete, is_merge_album_visible, is_move_visible
 	useGalleryModals(togglableStore);
 
 // Set up Album ID reference. This one is updated at each page change.
-const { isPasswordProtected, isLoading, user, modelAlbum, album, photo, rights, photos, config, refresh } = useAlbumRefresher(
-	albumId,
-	photoId,
-	auth,
-	is_login_open,
-);
+const { isPasswordProtected, isLoading, user, modelAlbum, album, photo, transition, rights, photos, config, refresh, setTransition } =
+	useAlbumRefresher(albumId, photoId, auth, is_login_open);
 const { refreshPhoto } = usePhotoRefresher(photo, photos, photoId);
 
 const children = computed<App.Http.Resources.Models.ThumbAlbumResource[]>(() => modelAlbum.value?.albums ?? []);
@@ -428,6 +424,8 @@ watch(
 	() => [route.params.albumId, route.params.photoId],
 	([newAlbumId, newPhotoId], _) => {
 		unselect();
+
+		setTransition(newPhotoId as string | undefined);
 
 		albumId.value = newAlbumId as string;
 		photoId.value = newPhotoId as string;
