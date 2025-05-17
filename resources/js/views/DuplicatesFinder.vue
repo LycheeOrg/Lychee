@@ -88,13 +88,13 @@
 				</div>
 			</div>
 			<VirtualScroller :items="groupedDuplicates" :itemSize="50" class="h-screen w-full">
-				<template v-slot:item="{ item, options }">
+				<template v-slot:item="{ item }">
 					<DuplicateLine :duplicates="item" :selected-ids="selectedIds" @hover="onHover" @click="onClick" />
 				</template>
 			</VirtualScroller>
 		</div>
 	</div>
-	<DeleteDialog v-model:visible="isDeleteVisible" :parent-id="undefined" :photo-ids="selectedIds" @deleted="onDeleted" />
+	<DeleteDialog v-model:visible="isDeleteVisible" :photo-ids="selectedIds" @deleted="onDeleted" />
 </template>
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
