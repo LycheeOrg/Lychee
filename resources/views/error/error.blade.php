@@ -58,7 +58,7 @@
         <div class="flex-center position-ref full-height">
             <div class="code">{{ $code }}</div>
 
-            <div class="message" style="padding: 10px;"><h1>{{ $type }}</h1><p>{{ $message }}</p></div>
+            <div class="message" style="padding: 10px;"><h1>{{ $type }}</h1><p>{{ $message }}</p><p><a href="{{ route('home') }}">Go home &#187;</a></p></div>
         </div>
     </body>
 </html>
