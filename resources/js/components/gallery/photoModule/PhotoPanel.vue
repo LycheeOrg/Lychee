@@ -3,7 +3,7 @@
 		<PhotoHeader :photo="props.photo" @toggle-slide-show="emits('toggleSlideShow')" @go-back="emits('goBack')" />
 		<div class="w-0 flex-auto relative">
 			<div class="animate-zoomIn w-full h-full">
-				<Transition :name="props.transition" @enter="() => console.log('enter')" @leave="() => console.log('leave')">
+				<Transition :name="props.transition">
 					<div
 						:key="photo.id"
 						id="imageview"
