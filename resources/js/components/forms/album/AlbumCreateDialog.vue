@@ -31,7 +31,7 @@
 import AlbumService from "@/services/album-service";
 import Dialog from "primevue/dialog";
 import InputText from "@/components/forms/basic/InputText.vue";
-import { computed, ref, watch } from "vue";
+import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
 import FloatLabel from "primevue/floatlabel";
 import Button from "primevue/button";
@@ -39,18 +39,14 @@ import { useToast } from "primevue/usetoast";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { storeToRefs } from "pinia";
 import { onKeyPressed } from "@vueuse/core";
-
-const props = defineProps<{
-	parentId: string | null;
-}>();
+import { usePhotoRoute } from "@/composables/photo/photoRoute";
 
 const togglableStore = useTogglablesStateStore();
 const { is_create_album_visible } = storeToRefs(togglableStore);
-
-const parentId = ref(props.parentId);
+const router = useRouter();
+const { getParentId } = usePhotoRoute(router);
 
 const toast = useToast();
-const router = useRouter();
 
 const title = ref<string | undefined>(undefined);
 
@@ -63,12 +59,12 @@ function create() {
 
 	AlbumService.createAlbum({
 		title: title.value as string,
-		parent_id: parentId.value,
+		parent_id: getParentId() ?? null,
 	})
 		.then((response) => {
 			title.value = undefined;
 			is_create_album_visible.value = false;
-			AlbumService.clearCache(parentId.value);
+			AlbumService.clearCache(getParentId());
 			router.push(`/gallery/${response.data}`);
 		})
 		.catch((error) => {
@@ -77,12 +73,4 @@ function create() {
 }
 
 onKeyPressed("Enter", () => is_create_album_visible.value && isValid.value && create());
-
-watch(
-	() => props.parentId,
-	(newAlbumID, _oldAlbumID) => {
-		title.value = undefined;
-		parentId.value = newAlbumID as string | null;
-	},
-);
 </script>
