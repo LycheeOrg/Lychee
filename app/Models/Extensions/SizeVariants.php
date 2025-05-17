@@ -264,41 +264,6 @@ class SizeVariants
 	}
 
 	/**
-	 * @throws ModelDBException
-	 * @throws IllegalOrderOfOperationException
-	 */
-	public function replicate(Photo $duplicate_photo): SizeVariants
-	{
-		$duplicate = new SizeVariants($duplicate_photo);
-		self::replicateSizeVariant($duplicate, $this->original);
-		self::replicateSizeVariant($duplicate, $this->medium2x);
-		self::replicateSizeVariant($duplicate, $this->medium);
-		self::replicateSizeVariant($duplicate, $this->small2x);
-		self::replicateSizeVariant($duplicate, $this->small);
-		self::replicateSizeVariant($duplicate, $this->thumb2x);
-		self::replicateSizeVariant($duplicate, $this->thumb);
-		self::replicateSizeVariant($duplicate, $this->placeholder);
-
-		return $duplicate;
-	}
-
-	/**
-	 * @throws ModelDBException
-	 * @throws IllegalOrderOfOperationException
-	 */
-	private static function replicateSizeVariant(SizeVariants $duplicate, ?SizeVariant $size_variant): void
-	{
-		if ($size_variant !== null) {
-			$duplicate->create(
-				$size_variant->type,
-				$size_variant->short_path,
-				new ImageDimension($size_variant->width, $size_variant->height),
-				$size_variant->filesize
-			);
-		}
-	}
-
-	/**
 	 * Returns true if at least one version of medium is not null.
 	 */
 	public function hasMedium(): bool

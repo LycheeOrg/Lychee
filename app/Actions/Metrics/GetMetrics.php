@@ -21,7 +21,7 @@ class GetMetrics
 		/** @var User $user */
 		$user = Auth::user() ?? throw new UnauthorizedException();
 
-		return LiveMetrics::query()->with(['photo', 'photo.size_variants', 'album', 'album_impl', 'album.thumb'])
+		return LiveMetrics::query()->with(['photo', 'photo.size_variants', 'albums', 'album_impl', 'album.thumb'])
 			->join('photos', 'photos.id', '=', 'live_metrics.photo_id', 'left')
 			->join('base_albums', 'base_albums.id', '=', 'live_metrics.album_id', 'left')
 			->join('albums', 'albums.id', '=', 'live_metrics.album_id', 'left')

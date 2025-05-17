@@ -165,4 +165,8 @@ class PhotoAddTest extends BaseApiWithDataTest
 		$response = $this->deleteJson('Photo', ['photo_ids' => [$id]]);
 		$this->assertNoContent($response);
 	}
+
+	public function testNoAlbum(): void
+	{
+	}
 }

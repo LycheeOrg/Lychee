@@ -2,7 +2,7 @@
 	<LoadingProgress v-model:loading="isLoading" />
 	<UploadPanel v-if="rootRights?.can_upload" @refresh="refresh" key="upload_modal" />
 	<KeybindingsHelp v-model:visible="isKeybindingsHelpOpen" v-if="user?.id" />
-	<AlbumCreateDialog v-if="rootRights?.can_upload" :parent-id="null" key="create_album_modal" />
+	<AlbumCreateDialog v-if="rootRights?.can_upload" key="create_album_modal" />
 	<AlbumCreateTagDialog v-if="rootRights?.can_upload" key="create_tag_album_modal" />
 	<LoginModal v-if="user?.id === null" @logged-in="refresh" />
 	<WebauthnModal v-if="user?.id === null" @logged-in="refresh" />
@@ -48,7 +48,7 @@
 				@contexted="albumMenuOpen"
 			/>
 		</template>
-		<template v-for="sharedAlbum in sharedAlbums">
+		<template v-for="sharedAlbum in sharedAlbums" :key="sharedAlbum.header">
 			<AlbumThumbPanel
 				v-if="sharedAlbums.length > 0"
 				:header="sharedAlbum.header"
@@ -82,7 +82,6 @@
 	<!-- Dialogs for albums -->
 	<MoveDialog
 		v-model:visible="is_move_visible"
-		:parent-id="undefined"
 		:album="selectedAlbum"
 		:album-ids="selectedAlbumsIds"
 		@moved="
@@ -94,7 +93,6 @@
 	/>
 	<AlbumMergeDialog
 		v-model:visible="is_merge_album_visible"
-		:parent-id="undefined"
 		:album="selectedAlbum"
 		:album-ids="selectedAlbumsIds"
 		@merged="
@@ -106,7 +104,6 @@
 	/>
 	<DeleteDialog
 		v-model:visible="is_delete_visible"
-		:parent-id="undefined"
 		:album="selectedAlbum"
 		:album-ids="selectedAlbumsIds"
 		@deleted="

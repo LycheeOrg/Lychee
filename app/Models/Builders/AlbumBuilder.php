@@ -9,6 +9,7 @@
 namespace App\Models\Builders;
 
 use App\Constants\AccessPermissionConstants as APC;
+use App\Constants\PhotoAlbum as PA;
 use App\Contracts\Exceptions\InternalLycheeException;
 use App\Eloquent\FixedQueryBuilderTrait;
 use App\Exceptions\Internal\QueryBuilderException;
@@ -67,8 +68,9 @@ class AlbumBuilder extends NSQueryBuilder
 				->whereColumn('a.parent_id', '=', 'albums.id');
 
 			$count_photos = DB::table('photos', 'p')
+				->join(PA::PHOTO_ALBUM, 'p.id', '=', PA::PHOTO_ID)
 				->selectRaw('COUNT(*)')
-				->whereColumn('p.album_id', '=', 'albums.id');
+				->whereColumn(PA::ALBUM_ID, '=', 'albums.id');
 
 			$this->addSelect([
 				'min_taken_at' => $this->getTakenAtSQL()->selectRaw('MIN(taken_at)'),
@@ -144,7 +146,8 @@ class AlbumBuilder extends NSQueryBuilder
 		// use a non-Eloquent query here to avoid an infinite loop
 		// with this query builder.
 		return DB::table('albums', 'a')
-			->join('photos', 'album_id', '=', 'a.id')
+			->join(PA::PHOTO_ALBUM, 'a.id', '=', PA::ALBUM_ID)
+			->join('photos', PA::PHOTO_ID, '=', 'photos.id')
 			->whereColumn('a._lft', '>=', 'albums._lft')
 			->whereColumn('a._rgt', '<=', 'albums._rgt')
 			->whereNotNull('taken_at');
@@ -220,14 +223,14 @@ class AlbumBuilder extends NSQueryBuilder
 		$count_query->when($user_id !== null,
 			fn ($q) => $album_query_policy->joinBaseAlbumOwnerId(
 				query: $q,
-				second: 'p.album_id',
+				second: PA::ALBUM_ID,
 				full: false,
 			)
 		);
 
 		$album_query_policy->joinSubComputedAccessPermissions(
 			query: $count_query,
-			second: 'p.album_id',
+			second: PA::ALBUM_ID,
 			type: 'left',
 		);
 

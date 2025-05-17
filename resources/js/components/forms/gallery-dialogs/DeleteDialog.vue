@@ -27,15 +27,19 @@ import { sprintf } from "sprintf-js";
 import Dialog from "primevue/dialog";
 import Button from "primevue/button";
 import { useToast } from "primevue/usetoast";
-const toast = useToast();
+import { useRouter } from "vue-router";
+import { usePhotoRoute } from "@/composables/photo/photoRoute";
 
+const toast = useToast();
 const props = defineProps<{
-	parentId: string | undefined;
 	photo?: App.Http.Resources.Models.PhotoResource;
 	photoIds?: string[];
 	album?: App.Http.Resources.Models.ThumbAlbumResource;
 	albumIds?: string[];
 }>();
+
+const router = useRouter();
+const { getParentId } = usePhotoRoute(router);
 
 const visible = defineModel<boolean>("visible", { default: false });
 const emits = defineEmits<{
@@ -83,10 +87,10 @@ function executeDeleteAlbum() {
 	}
 
 	AlbumService.delete(albumDeletedIds).then(() => {
-		if (props.parentId === undefined) {
+		if (getParentId() === undefined) {
 			AlbumService.clearAlbums();
 		} else {
-			AlbumService.clearCache(props.parentId);
+			AlbumService.clearCache(getParentId());
 		}
 		emits("deleted");
 	});
@@ -105,7 +109,7 @@ function executeDeletePhoto() {
 			summary: trans("dialogs.photo_delete.deleted"),
 			life: 3000,
 		});
-		AlbumService.clearCache(props.parentId);
+		AlbumService.clearCache(getParentId());
 		emits("deleted");
 	});
 }

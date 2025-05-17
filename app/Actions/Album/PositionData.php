@@ -25,7 +25,7 @@ class PositionData
 
 		$photo_relation
 			->with([
-				'album' => function (BelongsTo $b): void {
+				'albums' => function (BelongsTo $b): void {
 					// The album is required for photos to properly
 					// determine access and visibility rights; but we
 					// don't need to determine the cover and thumbnail for
