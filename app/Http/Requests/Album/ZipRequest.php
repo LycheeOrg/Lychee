@@ -9,6 +9,7 @@
 namespace App\Http\Requests\Album;
 
 use App\Contracts\Http\Requests\HasAlbums;
+use App\Contracts\Http\Requests\HasFromId;
 use App\Contracts\Http\Requests\HasPhotos;
 use App\Contracts\Http\Requests\HasSizeVariant;
 use App\Contracts\Http\Requests\RequestAttribute;
@@ -16,6 +17,7 @@ use App\Contracts\Models\AbstractAlbum;
 use App\Enum\DownloadVariantType;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasAlbumsTrait;
+use App\Http\Requests\Traits\HasFromIdTrait;
 use App\Http\Requests\Traits\HasPhotosTrait;
 use App\Http\Requests\Traits\HasSizeVariantTrait;
 use App\Models\Photo;
@@ -23,17 +25,19 @@ use App\Policies\AlbumPolicy;
 use App\Policies\PhotoPolicy;
 use App\Rules\AlbumIDListRule;
 use App\Rules\RandomIDListRule;
+use App\Rules\RandomIDRule;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Enum;
 
 /**
  * @implements HasAlbums<AbstractAlbum>
  */
-class ZipRequest extends BaseApiRequest implements HasAlbums, HasPhotos, HasSizeVariant
+class ZipRequest extends BaseApiRequest implements HasAlbums, HasPhotos, HasSizeVariant, HasFromId
 {
 	/** @use HasAlbumsTrait<AbstractAlbum> */
 	use HasAlbumsTrait;
 	use HasPhotosTrait;
+	use HasFromIdTrait;
 	use HasSizeVariantTrait;
 
 	/**
@@ -67,6 +71,7 @@ class ZipRequest extends BaseApiRequest implements HasAlbums, HasPhotos, HasSize
 			RequestAttribute::ALBUM_IDS_ATTRIBUTE => ['sometimes', new AlbumIDListRule()],
 			RequestAttribute::PHOTO_IDS_ATTRIBUTE => ['sometimes', new RandomIDListRule()],
 			RequestAttribute::SIZE_VARIANT_ATTRIBUTE => ['required_if_accepted:photos_ids', new Enum(DownloadVariantType::class)],
+			RequestAttribute::FROM_ID_ATTRIBUTE => ['required_if_accepted:photos_ids', new RandomIDRule(true)],
 		];
 	}
 
@@ -85,6 +90,8 @@ class ZipRequest extends BaseApiRequest implements HasAlbums, HasPhotos, HasSize
 		$photo_ids = $values[RequestAttribute::PHOTO_IDS_ATTRIBUTE] ?? null;
 		$photo_ids = $photo_ids === null ? [] : explode(',', $photo_ids);
 		$this->processPhotos($photo_ids);
+
+		$this->from_id = $values[RequestAttribute::FROM_ID_ATTRIBUTE] ?? null;
 	}
 
 	/**

@@ -18,6 +18,7 @@ use App\Models\TagAlbum;
 use App\Policies\AlbumPolicy;
 use App\Rules\AlbumIDListRule;
 use App\Rules\RandomIDListRule;
+use App\Rules\RandomIDRule;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Enum;
 use Tests\Unit\Http\Requests\Base\BaseRequestTest;
@@ -62,6 +63,7 @@ class ZipRequestTest extends BaseRequestTest
 			RequestAttribute::ALBUM_IDS_ATTRIBUTE => ['sometimes', new AlbumIDListRule()],
 			RequestAttribute::PHOTO_IDS_ATTRIBUTE => ['sometimes', new RandomIDListRule()],
 			RequestAttribute::SIZE_VARIANT_ATTRIBUTE => ['required_if_accepted:photos_ids', new Enum(DownloadVariantType::class)],
+			RequestAttribute::FROM_ID_ATTRIBUTE => ['required_if_accepted:photos_ids', new RandomIDRule(true)],
 		];
 		$this->assertCount(count($expectedRuleMap), $rules); // only validating the first 7 rules & the GRANTS_UPLOAD_ATTRIBUTE is tested afterwards
 
