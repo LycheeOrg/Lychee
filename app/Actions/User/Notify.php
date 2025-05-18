@@ -8,8 +8,11 @@
 
 namespace App\Actions\User;
 
+use App\Constants\AccessPermissionConstants as APC;
+use App\Constants\PhotoAlbum as PA;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\QueryBuilderException;
+use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\User;
@@ -42,10 +45,16 @@ class Notify
 		// Admin user is always notified
 		$users = User::query()->where('may_administrate', '=', true)->get();
 
-		$album = $photo->album;
-		if ($album !== null) {
-			$users = $users->concat($album->shared_with);
-			$users->push($album->owner);
+		$albums = Album::query()->without(['thumbs', 'statistics', 'cover'])->join(PA::PHOTO_ALBUM, PA::ALBUM_ID, '=', 'album.id')
+			->where(PA::PHOTO_ID, '=', $photo->id)
+			->get();
+
+		if ($albums->count() > 0) {
+			$shared_with = User::query()->join(APC::ACCESS_PERMISSIONS, APC::USER_ID, '=', 'user.id')
+				->whereIn(APC::BASE_ALBUM_ID, $albums->pluck('id'))
+				->get();
+			$users->push(...$shared_with->all());
+			$users->push(...$albums->map(fn ($a) => $a->owner)->all());
 		}
 
 		$users = $users

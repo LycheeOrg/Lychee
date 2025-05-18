@@ -58,7 +58,7 @@ class VueController extends Controller
 			}
 
 			if ($photo_id !== null) {
-				$photo = Photo::findOrFail($photo_id);
+				$photo = Photo::with('albums')->findOrFail($photo_id);
 				Gate::authorize(PhotoPolicy::CAN_SEE, [Photo::class, $photo]);
 				session()->now('photo', $photo);
 			}

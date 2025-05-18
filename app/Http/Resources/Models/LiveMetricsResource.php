@@ -21,8 +21,8 @@ class LiveMetricsResource extends Data
 		public string $visitor_id,
 		public MetricsAction $action,
 		public ?string $photo_id,
-		public ?string $album_id,
-		public ?string $title,
+		public string $album_id,
+		public string $title,
 		public ?string $url = null,
 	) {
 	}

@@ -38,7 +38,8 @@ class PositionData
 		$photo_query = $this->photo_query_policy->applySearchabilityFilter(
 			query: Photo::query()
 				->with([
-					'album' => function ($b): void {
+					// TODO: FIX ME.
+					'albums' => function ($b): void {
 						// The album is required for photos to properly
 						// determine access and visibility rights; but we
 						// don't need to determine the cover and thumbnail for
@@ -62,6 +63,6 @@ class PositionData
 			include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_map')
 		);
 
-		return new PositionDataResource(null, null, $photo_query->get(), null);
+		return new PositionDataResource(null, $photo_query->get(), null);
 	}
 }

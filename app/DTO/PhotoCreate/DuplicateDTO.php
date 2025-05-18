@@ -63,10 +63,4 @@ class DuplicateDTO implements PhotoDTO
 	{
 		$this->has_been_resynced = $val;
 	}
-
-	public function replicatePhoto(): void
-	{
-		$dup = $this->photo;
-		$this->photo = $dup->replicate();
-	}
 }

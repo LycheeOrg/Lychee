@@ -8,6 +8,7 @@
 
 namespace App\Actions\Photo;
 
+use App\Constants\PhotoAlbum as PA;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Photo;
@@ -77,7 +78,8 @@ class DuplicateFinder
 		}
 
 		return Photo::query()
-			->join('base_albums', 'base_albums.id', '=', 'photos.album_id')
+			->join(PA::PHOTO_ALBUM, PA::PHOTO_ID, '=', 'photos.id')
+			->join('base_albums', 'base_albums.id', '=', PA::ALBUM_ID)
 			->join(
 				'size_variants', 'size_variants.photo_id', '=', 'photos.id', 'left'
 			)
@@ -104,12 +106,14 @@ class DuplicateFinder
 		bool $must_have_same_title,
 	): Builder {
 		return DB::table('photos', 'p1')->select('p1.id')
+			->joinSub(DB::table(PA::PHOTO_ALBUM), 'pa1', 'pa1.photo_id', '=', 'p1.id', 'left')
 			->join(
 				'photos as p2',
 				fn ($join) => $join->on('p1.id', '<>', 'p2.id')
+					->joinSub(DB::table(PA::PHOTO_ALBUM), 'pa2', 'pa2.photo_id', '=', 'p2.id', 'left')
 					->when($must_have_same_title, fn ($q) => $q->on('p1.title', '=', 'p2.title'))
 					->when($must_have_same_checksum, fn ($q) => $q->on('p1.checksum', '=', 'p2.checksum'))
-					->when($must_be_within_same_album, fn ($q) => $q->on('p1.album_id', '=', 'p2.album_id'))
+					->when($must_be_within_same_album, fn ($q) => $q->on('pa1.album_id', '=', 'pa2.album_id'))
 			);
 	}
 }
