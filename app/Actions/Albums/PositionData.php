@@ -38,14 +38,6 @@ class PositionData
 		$photo_query = $this->photo_query_policy->applySearchabilityFilter(
 			query: Photo::query()
 				->with([
-					// TODO: FIX ME.
-					'albums' => function ($b): void {
-						// The album is required for photos to properly
-						// determine access and visibility rights; but we
-						// don't need to determine the cover and thumbnail for
-						// each album
-						$b->without(['cover', 'thumb']);
-					},
 					'statistics',
 					'size_variants' => function ($r): void {
 						// The web GUI only uses the small and thumb size
