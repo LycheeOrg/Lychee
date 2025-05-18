@@ -68,7 +68,7 @@ class PhotoAddTest extends BaseApiWithDataTest
 				],
 			],
 		]);
-		$response = $this->deleteJson('Photo', ['photo_ids' => [$response->json('resource.photos.0.id')]]);
+		$response = $this->deleteJson('Photo', ['photo_ids' => [$response->json('resource.photos.0.id')], 'from_id' => 'unsorted']);
 		$this->assertNoContent($response);
 
 		$this->clearCachedSmartAlbums();
@@ -98,7 +98,7 @@ class PhotoAddTest extends BaseApiWithDataTest
 
 		self::assertNotEquals($id1, $id2);
 
-		$response = $this->deleteJson('Photo', ['photo_ids' => [$id1, $id2]]);
+		$response = $this->deleteJson('Photo', ['photo_ids' => [$id1, $id2], 'from_id' => 'unsorted']);
 		$this->assertNoContent($response);
 
 		$this->catchFailureSilence = ["App\Exceptions\MediaFileOperationException"];
@@ -162,7 +162,7 @@ class PhotoAddTest extends BaseApiWithDataTest
 		$response = $this->getJsonWithData('Album', ['album_id' => 'unsorted']);
 		$this->assertOk($response);
 		$id = $response->json('resource.photos.0.id');
-		$response = $this->deleteJson('Photo', ['photo_ids' => [$id]]);
+		$response = $this->deleteJson('Photo', ['photo_ids' => [$id], 'from_id' => 'unsorted']);
 		$this->assertNoContent($response);
 	}
 }

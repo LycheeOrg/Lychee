@@ -8,6 +8,7 @@
 
 namespace App\Relations;
 
+use App\Constants\PhotoAlbum as PA;
 use App\DTO\PhotoSortingCriterion;
 use App\Eloquent\FixedQueryBuilder;
 use App\Enum\ColumnSortingPhotoType;
@@ -23,6 +24,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 
 /**
@@ -48,7 +50,8 @@ class HasAlbumThumb extends Relation
 		$this->photo_query_policy = resolve(PhotoQueryPolicy::class);
 		$this->sorting = PhotoSortingCriterion::createDefault();
 		parent::__construct(
-			Photo::query()->with(['size_variants' => (fn ($r) => Thumb::sizeVariantsFilter($r))]),
+			Photo::query()
+				->with(['size_variants' => (fn ($r) => Thumb::sizeVariantsFilter($r))]),
 			$parent
 		);
 	}
@@ -187,9 +190,10 @@ class HasAlbumThumb extends Relation
 			->map(fn (Album $album) => $album->getKey())
 			->values();
 
-		$best_photo_id_select = Photo::query()
-			->select(['photos.id AS photo_id'])
-			->join('albums', 'albums.id', '=', 'photos.album_id')
+		$best_photo_id_select = DB::table(PA::PHOTO_ALBUM)
+			->select(PA::PHOTO_ID)
+			->join('photos', 'photos.id', '=', PA::PHOTO_ID)
+			->join('albums', 'albums.id', '=', PA::ALBUM_ID)
 			->whereColumn('albums._lft', '>=', 'covered_albums._lft')
 			->whereColumn('albums._rgt', '<=', 'covered_albums._rgt')
 			->orderBy('photos.' . ColumnSortingPhotoType::IS_STARRED->value, OrderSortingType::DESC->value)
@@ -197,9 +201,9 @@ class HasAlbumThumb extends Relation
 			->limit(1);
 
 		if (Auth::user()?->may_administrate !== true) {
-			$best_photo_id_select->where(function (Builder $query2): void {
+			$best_photo_id_select->where(function (BaseBuilder $query2): void {
 				$this->photo_query_policy->appendSearchabilityConditions(
-					$query2->getQuery(),
+					$query2,
 					'covered_albums._lft',
 					'covered_albums._rgt'
 				);

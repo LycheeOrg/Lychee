@@ -23,11 +23,9 @@ use App\Models\Album;
 use App\Models\BaseAlbumImpl;
 use App\Models\Statistics;
 use App\Models\TagAlbum;
-use App\SmartAlbums\UnsortedAlbum;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Query\Builder as BaseBuilder;
-use Illuminate\Support\Facades\Auth;
 use Safe\Exceptions\ArrayException;
 
 /**
@@ -73,18 +71,6 @@ class Delete
 	public function do(array $album_ids): FileDeleter
 	{
 		try {
-			$unsorted_photo_ids = [];
-
-			// Among the smart albums, the unsorted album is special,
-			// because it provides deletion of photos
-			if (in_array(UnsortedAlbum::ID, $album_ids, true)) {
-				$query = UnsortedAlbum::getInstance()->photos();
-				if (Auth::user()?->may_administrate !== true) {
-					$query->where('owner_id', '=', Auth::id() ?? throw new UnauthenticatedException());
-				}
-				$unsorted_photo_ids = $query->pluck('id')->all();
-			}
-
 			// Only regular albums are owners of photos, so we only need to
 			// find all photos in those and their descendants
 			// Only load necessary attributes for tree; in particular avoid
@@ -111,7 +97,7 @@ class Delete
 
 			// Delete the photos from DB and obtain the list of files which need
 			// to be deleted later
-			$file_deleter = (new PhotoDelete())->do($unsorted_photo_ids, $recursive_album_ids);
+			$file_deleter = (new PhotoDelete())->do([], null, $recursive_album_ids);
 			$file_deleter->addFiles($recursive_album_tracks, StorageDiskType::LOCAL->value);
 
 			// Remove the sub-forest spanned by the regular albums

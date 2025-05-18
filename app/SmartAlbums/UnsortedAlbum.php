@@ -8,6 +8,7 @@
 
 namespace App\SmartAlbums;
 
+use App\Constants\PhotoAlbum as PA;
 use App\Enum\SmartAlbumType;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
@@ -27,7 +28,7 @@ class UnsortedAlbum extends BaseSmartAlbum
 	{
 		parent::__construct(
 			id: SmartAlbumType::UNSORTED,
-			smart_condition: fn (Builder $q) => $q->whereNull('photos.album_id')
+			smart_condition: fn (Builder $q) => $q->whereNull(PA::ALBUM_ID)
 		);
 	}
 
@@ -45,8 +46,8 @@ class UnsortedAlbum extends BaseSmartAlbum
 	public function photos(): Builder
 	{
 		if ($this->public_permissions !== null) {
-			return Photo::query()->with(['album', 'size_variants', 'statistics'])
-			->where($this->smart_photo_condition);
+			return Photo::query()->leftJoin(PA::PHOTO_ALBUM, 'photos.id', '=', PA::PHOTO_ID)->with(['size_variants', 'statistics'])
+				->where($this->smart_photo_condition);
 		}
 
 		return parent::photos();

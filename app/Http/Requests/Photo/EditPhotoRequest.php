@@ -9,6 +9,7 @@
 namespace App\Http\Requests\Photo;
 
 use App\Contracts\Http\Requests\HasDescription;
+use App\Contracts\Http\Requests\HasFromAlbum;
 use App\Contracts\Http\Requests\HasLicense;
 use App\Contracts\Http\Requests\HasPhoto;
 use App\Contracts\Http\Requests\HasTags;
@@ -19,6 +20,7 @@ use App\Contracts\Http\Requests\RequestAttribute;
 use App\Enum\LicenseType;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasDescriptionTrait;
+use App\Http\Requests\Traits\HasFromAlbumTrait;
 use App\Http\Requests\Traits\HasLicenseTrait;
 use App\Http\Requests\Traits\HasPhotoTrait;
 use App\Http\Requests\Traits\HasTagsTrait;
@@ -34,7 +36,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Enum;
 
-class EditPhotoRequest extends BaseApiRequest implements HasPhoto, HasTags, HasUploadDate, HasDescription, HasLicense, HasTitle, HasTakenAt
+class EditPhotoRequest extends BaseApiRequest implements HasPhoto, HasTags, HasUploadDate, HasDescription, HasLicense, HasTitle, HasTakenAt, HasFromAlbum
 {
 	use HasPhotoTrait;
 	use HasTitleTrait;
@@ -43,6 +45,7 @@ class EditPhotoRequest extends BaseApiRequest implements HasPhoto, HasTags, HasU
 	use HasUploadDateTrait;
 	use HasLicenseTrait;
 	use HasTakenAtDateTrait;
+	use HasFromAlbumTrait;
 
 	/**
 	 * {@inheritDoc}
@@ -66,6 +69,7 @@ class EditPhotoRequest extends BaseApiRequest implements HasPhoto, HasTags, HasU
 			RequestAttribute::LICENSE_ATTRIBUTE => ['required', new Enum(LicenseType::class)],
 			RequestAttribute::UPLOAD_DATE_ATTRIBUTE => ['required', 'date'],
 			RequestAttribute::TAKEN_DATE_ATTRIBUTE => ['nullable', 'date'],
+			RequestAttribute::FROM_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
 		];
 	}
 
@@ -78,7 +82,7 @@ class EditPhotoRequest extends BaseApiRequest implements HasPhoto, HasTags, HasU
 		$photo_id = $values[RequestAttribute::PHOTO_ID_ATTRIBUTE];
 
 		$this->photo = Photo::query()
-			->with(['size_variants'])
+			->with(['size_variants', 'albums'])
 			->findOrFail($photo_id);
 
 		$this->title = $values[RequestAttribute::TITLE_ATTRIBUTE];
@@ -91,5 +95,7 @@ class EditPhotoRequest extends BaseApiRequest implements HasPhoto, HasTags, HasU
 		if (isset($values[RequestAttribute::TAKEN_DATE_ATTRIBUTE])) {
 			$this->taken_at = Carbon::parse($values[RequestAttribute::TAKEN_DATE_ATTRIBUTE]);
 		}
+
+		$this->from_album = $this->album_factory->findNullalbleAbstractAlbumOrFail($values[RequestAttribute::FROM_ID_ATTRIBUTE]);
 	}
 }

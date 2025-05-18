@@ -139,10 +139,9 @@ class Create
 			$pipes[] = Duplicate\SaveIfDirty::class;
 		}
 		$pipes[] = Duplicate\ThrowSkipDuplicate::class;
-		$pipes[] = Duplicate\ReplicateAsPhoto::class;
 		$pipes[] = Shared\SetStarred::class;
-		$pipes[] = Shared\SetParentAndOwnership::class;
 		$pipes[] = Shared\Save::class;
+		$pipes[] = Shared\SetParent::class;
 		$pipes[] = Shared\SaveStatistics::class;
 		$pipes[] = Shared\NotifyAlbums::class;
 
@@ -167,7 +166,7 @@ class Create
 			Standalone\InitNamingStrategy::class,
 			Shared\HydrateMetadata::class,
 			Shared\SetStarred::class,
-			Shared\SetParentAndOwnership::class,
+			Shared\SetOwnership::class,
 			Standalone\SetOriginalChecksum::class,
 			Standalone\FetchSourceImage::class,
 			Standalone\ExtractGoogleMotionPictures::class,
@@ -175,6 +174,7 @@ class Create
 			Standalone\PlaceGoogleMotionVideo::class,
 			Standalone\SetChecksum::class,
 			Shared\Save::class,
+			Shared\SetParent::class,
 			Shared\SaveStatistics::class,
 			Standalone\CreateOriginalSizeVariant::class,
 			Standalone\CreateSizeVariants::class,
@@ -257,7 +257,7 @@ class Create
 			Standalone\InitNamingStrategy::class,
 			Shared\HydrateMetadata::class,
 			Shared\SetStarred::class,
-			Shared\SetParentAndOwnership::class,
+			Shared\SetOwnership::class,
 			Standalone\SetOriginalChecksum::class,
 			Standalone\FetchSourceImage::class,
 			Standalone\ExtractGoogleMotionPictures::class,
@@ -265,6 +265,7 @@ class Create
 			Standalone\PlaceGoogleMotionVideo::class,
 			Standalone\SetChecksum::class,
 			Shared\Save::class,
+			Shared\SetParent::class,
 			Standalone\CreateOriginalSizeVariant::class,
 			Standalone\CreateSizeVariants::class,
 			Standalone\EncodePlaceholder::class,

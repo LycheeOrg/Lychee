@@ -8,12 +8,13 @@
 
 namespace App\Actions\Album;
 
+use App\Constants\PhotoAlbum as PA;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\ModelDBException;
 use App\Models\Album;
-use App\Models\Photo;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class Merge
 {
@@ -27,10 +28,28 @@ class Merge
 	 */
 	public function do(Album $target_album, Collection $albums): void
 	{
-		// Merge photos of source albums into target
-		Photo::query()
-			->whereIn('album_id', $albums->pluck('id'))
-			->update(['album_id' => $target_album->id]);
+		$origin_ids = $albums->pluck('id')->all();
+
+		// Select all photos ids of the source albums
+		$photos_ids = DB::table(PA::PHOTO_ALBUM)
+			->whereIn(PA::ALBUM_ID, $origin_ids)
+			->pluck(PA::PHOTO_ID)->all();
+
+		// Delete the existing links at destination (avoid duplicates key contraint)
+		DB::table(PA::PHOTO_ALBUM)
+			->whereIn(PA::PHOTO_ID, $photos_ids)
+			->where(PA::ALBUM_ID, '=', $target_album->id)
+			->delete();
+
+		// Insert the new links
+		DB::table(PA::PHOTO_ALBUM)
+			->insert(array_map(fn (string $id) => ['photo_id' => $id, 'album_id' => $target_album->id], $photos_ids));
+
+		// Delete the existing links from the origins
+		DB::table(PA::PHOTO_ALBUM)
+			->whereIn(PA::PHOTO_ID, $photos_ids)
+			->whereIn(PA::ALBUM_ID, $origin_ids)
+			->delete();
 
 		// Merge sub-albums of source albums into target
 		/** @var Album $album */

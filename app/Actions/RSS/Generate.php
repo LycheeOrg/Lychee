@@ -8,52 +8,57 @@
 
 namespace App\Actions\RSS;
 
+use App\Constants\PhotoAlbum as PA;
 use App\Contracts\Exceptions\InternalLycheeException;
+use App\Enum\SizeVariantType;
 use App\Exceptions\Internal\FrameworkException;
 use App\Models\Configs;
+use App\Models\Extensions\HasUrlGenerator;
+use App\Models\Extensions\UTCBasedTimes;
 use App\Models\Photo;
 use App\Policies\PhotoQueryPolicy;
 use Carbon\Exceptions\InvalidFormatException;
 use Carbon\Exceptions\UnitException;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Spatie\Feed\FeedItem;
 
+/**
+ * @template T of object{id:string,title:string,description:?string,type:string,created_at:string,updated_at:string,album_id:string,album_title:string,short_path:string,filesize:int,storage_disk:string,size_variant_type:string,username:string}
+ */
 class Generate
 {
+	use HasUrlGenerator;
+	use UTCBasedTimes;
+
 	public function __construct(
 		protected PhotoQueryPolicy $photo_query_policy)
 	{
 	}
 
-	private function create_link_to_page(Photo $photo_model): string
+	/**
+	 * @param T $data
+	 *
+	 * @return FeedItem
+	 *
+	 * @throws BindingResolutionException
+	 */
+	private function toFeedItem(object $data): FeedItem
 	{
-		if ($photo_model->album_id !== null) {
-			return url('/gallery/' . $photo_model->album_id . '/' . $photo_model->id);
-		}
-
-		return url('/view?p=' . $photo_model->id);
-	}
-
-	private function toFeedItem(Photo $photo_model): FeedItem
-	{
-		$page_link = $this->create_link_to_page($photo_model);
-		$size_variant = $photo_model->size_variants->getOriginal();
-		$cat_arr = [];
-		if ($photo_model->album_id !== null) {
-			$cat_arr[] = $photo_model->album->title;
-		}
+		$page_link = route('gallery', ['albumId' => $data->album_id, 'photoId' => $data->id]);
 		$feed_item = [
 			'id' => $page_link,
-			'title' => $photo_model->title,
-			'summary' => $photo_model->description ?? '',
-			'updated' => $photo_model->updated_at,
+			'title' => $data->title,
+			'summary' => $data->description ?? '',
+			'updated' => $this->asDateTime($data->updated_at),
 			'link' => $page_link,
-			'enclosure' => $size_variant->url,
-			'enclosureType' => $photo_model->type,
-			'enclosureLength' => $size_variant->filesize,
-			'authorName' => $photo_model->owner->username,
-			'category' => $cat_arr,
+			'enclosure' => self::pathToUrl($data->short_path, $data->storage_disk, SizeVariantType::ORIGINAL),
+			'enclosureType' => $data->type,
+			'enclosureLength' => $data->filesize,
+			'authorName' => $data->username,
+			'category' => [$data->album_title],
 		];
 
 		return FeedItem::create($feed_item);
@@ -74,17 +79,36 @@ class Generate
 			throw new FrameworkException('Date/Time component (Carbon)', $e);
 		}
 
-		/** @var Collection<int,Photo> $photos */
+		/** @var Collection<int,T> $photos */
 		$photos = $this->photo_query_policy
 			->applySearchabilityFilter(
-				query: Photo::query()->with(['album', 'owner', 'size_variants']),
+				query: Photo::query(),
 				origin: null,
 				include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_rss')
 			)
+			->joinSub(DB::table(PA::PHOTO_ALBUM), 'outer_' . PA::PHOTO_ALBUM, 'photos.id', '=', 'outer_' . PA::PHOTO_ID)
+			->join('base_albums', 'base_albums.id', '=', 'outer_' . PA::ALBUM_ID)
+			->join('size_variants', 'size_variants.photo_id', '=', 'photos.id')
+			->join('users', 'users.id', '=', 'photos.owner_id')
+			->where('size_variants.type', '=', SizeVariantType::ORIGINAL->value)
+			->select([
+				'photos.id',
+				'photos.title',
+				'photos.description',
+				'photos.type',
+				'photos.updated_at',
+				'outer_' . PA::ALBUM_ID,
+				'base_albums.title as album_title',
+				'size_variants.short_path',
+				'size_variants.filesize',
+				'size_variants.storage_disk',
+				'users.username']
+			)
 			->where('photos.created_at', '>=', $now_minus)
 			->limit($rss_max)
+			->toBase() // We use toBase() to avoid the use of the Eloquent casts etc.
 			->get();
 
-		return $photos->map(fn (Photo $p) => $this->toFeedItem($p));
+		return $photos->map(fn (object $p) => $this->toFeedItem($p));
 	}
 }
