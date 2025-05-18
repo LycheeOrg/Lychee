@@ -31,15 +31,7 @@ class MetricsListener
 
 		if (Configs::getValueAsBool('live_metrics_enabled') === true) {
 			// Add event to the live metrics table
-			DB::table('live_metrics')
-				->insert([
-					[
-						'visitor_id' => $event->visitor_id,
-						'action' => $event->metricAction(),
-						$event->key() => $event->id,
-						'created_at' => now(),
-					],
-				]);
+			DB::table('live_metrics')->insert([$event->toArray()]);
 		}
 	}
 }

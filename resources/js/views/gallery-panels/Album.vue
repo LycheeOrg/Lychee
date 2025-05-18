@@ -169,6 +169,7 @@ import { useHasNextPreviousPhoto } from "@/composables/photo/hasNextPreviousPhot
 import { getNextPreviousPhoto } from "@/composables/photo/getNextPreviousPhoto";
 import { usePhotoRefresher } from "@/composables/photo/hasRefresher";
 import MetricsService from "@/services/metrics-service";
+import { usePhotoRoute } from "@/composables/photo/photoRoute";
 
 const route = useRoute();
 const router = useRouter();
@@ -217,6 +218,7 @@ const { isPasswordProtected, isLoading, user, modelAlbum, album, photo, rights, 
 	is_login_open,
 );
 const { refreshPhoto } = usePhotoRefresher(photo, photos, photoId);
+const { getParentId } = usePhotoRoute(router);
 
 const children = computed<App.Http.Resources.Models.ThumbAlbumResource[]>(() => modelAlbum.value?.albums ?? []);
 
@@ -414,7 +416,7 @@ onUnmounted(() => {
 
 const debouncedPhotoMetrics = useDebounceFn(() => {
 	if (photoId.value !== undefined) {
-		MetricsService.photo(photoId.value);
+		MetricsService.photo(photoId.value, getParentId());
 		return;
 	}
 }, 100);

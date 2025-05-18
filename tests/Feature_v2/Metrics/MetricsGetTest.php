@@ -73,9 +73,9 @@ class MetricsGetTest extends BaseApiWithDataTest
 		$this->assertOk($response); // 1: - viewed album4
 		$response = $this->get('gallery/' . $this->album4->id);
 		$this->assertOk($response); // 2: - shared album4
-		$response = $this->postJson('Metrics::photo', ['photo_ids' => [$this->photo4->id]]);
+		$response = $this->postJson('Metrics::photo', ['photo_ids' => [$this->photo4->id], 'from_id' => $this->album4->id]);
 		$this->assertNoContent($response); // 3: viewed photo4
-		$response = $this->postJson('Metrics::favourite', ['photo_ids' => [$this->photo4->id]]);
+		$response = $this->postJson('Metrics::favourite', ['photo_ids' => [$this->photo4->id], 'from_id' => $this->album4->id]);
 		$this->assertNoContent($response); // 4: favourite photo4
 		$response = $this->get('gallery/' . $this->album4->id . '/' . $this->photo4->id);
 		$this->assertOk($response); // 5: shared photo4
