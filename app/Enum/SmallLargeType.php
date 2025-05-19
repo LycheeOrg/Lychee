@@ -14,5 +14,5 @@ namespace App\Enum;
 enum SmallLargeType: string
 {
 	case SMALL = 'small';
-	case LARGE = 'large'; // 1
+	case LARGE = 'large';
 }
