@@ -1,13 +1,28 @@
 <template>
-	<div class="items-center justify-between gap-4 hidden sm:flex">
+	<div>
+		<div class="items-center justify-between gap-4 hidden sm:flex">
+			<div
+				:class="{
+					'text-primary-emphasis': props.config.require_se,
+					'text-muted-color-emphasis': !props.config.require_se,
+				}"
+				v-html="props.label ?? props.config.documentation"
+			/>
+			<div class="items-center flex gap-2">
+				<InputIcon
+					class="pi pi-exclamation-circle text-warning-600 cursor-pointer"
+					@click="reset"
+					v-if="changed"
+					v-tooltip="'Click me to reset!'"
+				/>
+				<SelectButton class="border-none" v-model="val" :options="options" aria-labelledby="basic" @update:modelValue="update" />
+			</div>
+		</div>
 		<div
-			:class="{
-				'text-primary-emphasis': props.config.require_se,
-				'text-muted-color-emphasis': !props.config.require_se,
-			}"
-			v-html="props.label ?? props.config.documentation"
+			v-if="props.config.details || details !== undefined"
+			class="text-muted-color text-sm hidden sm:block"
+			v-html="props.details ?? props.config.details"
 		/>
-		<SelectButton class="border-none" v-model="val" :options="options" aria-labelledby="basic" @update:modelValue="update" />
 	</div>
 </template>
 
@@ -18,6 +33,7 @@ import SelectButton from "primevue/selectbutton";
 const props = defineProps<{
 	label?: string;
 	config: App.Http.Resources.Models.ConfigResource;
+	details?: string;
 }>();
 
 const val = ref<string>(props.config.value);
