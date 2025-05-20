@@ -16,6 +16,8 @@
 		v-if="layoutConfig"
 		:model-album="modelAlbum"
 		:album="album"
+		:photos="photos"
+		:photos-timeline="photosTimeline"
 		:config="config"
 		:user="user"
 		:layoutConfig="layoutConfig"
@@ -215,7 +217,7 @@ const { is_delete_visible, toggleDelete, is_merge_album_visible, is_move_visible
 	useGalleryModals(togglableStore);
 
 // Set up Album ID reference. This one is updated at each page change.
-const { isPasswordProtected, isLoading, user, modelAlbum, album, photo, rights, photos, config, refresh } = useAlbumRefresher(
+const { isPasswordProtected, isLoading, user, modelAlbum, album, photo, photosTimeline, rights, photos, config, refresh } = useAlbumRefresher(
 	albumId,
 	photoId,
 	auth,

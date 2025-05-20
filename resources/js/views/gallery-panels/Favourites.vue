@@ -26,6 +26,7 @@
 				:photos="photos"
 				:album="undefined"
 				:gallery-config="layoutConfig"
+				:photos-timeline="undefined"
 				:photo-layout="'square'"
 				:selected-photos="selectedPhotosIds"
 				:is-timeline="false"

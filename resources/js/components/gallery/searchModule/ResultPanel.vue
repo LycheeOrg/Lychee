@@ -21,13 +21,14 @@
 		:photo-layout="props.layout"
 		:header="props.photoHeader"
 		:photos="props.photos"
+		:photos-timeline="undefined"
 		:album="undefined"
 		:gallery-config="props.layoutConfig"
 		:selected-photos="selectedPhotosIds"
 		@clicked="photoClick"
 		@selected="photoSelect"
 		@contexted="photoMenuOpen"
-		:is-timeline="props.isPhotoTimelineEnabled"
+		:is-timeline="false"
 		:with-control="true"
 	/>
 	<div class="flex justify-center w-full" v-if="photos.length > 0">

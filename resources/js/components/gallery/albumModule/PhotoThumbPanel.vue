@@ -18,7 +18,7 @@
 			:isTimeline="isTimeline"
 		/>
 		<template v-else>
-			<Timeline v-if="isLeftBorderVisible" :value="photosTimeLine" :pt:eventopposite:class="'hidden'" class="mt-4">
+			<Timeline v-if="isLeftBorderVisible" :value="props.photosTimeline" :pt:eventopposite:class="'hidden'" class="mt-4">
 				<template #content="slotProps">
 					<div
 						data-type="timelineBlock"
@@ -43,7 +43,7 @@
 				</template>
 			</Timeline>
 			<div v-else>
-				<template v-for="(photoTimeline, idx) in photosTimeLine" :key="'photoTimeline' + idx">
+				<template v-for="(photoTimeline, idx) in props.photosTimeline" :key="'photoTimeline' + idx">
 					<div
 						data-type="timelineBlock"
 						:data-date="photoTimeline.data[0].timeline?.time_date"
@@ -74,20 +74,20 @@ import { computed, ref } from "vue";
 import Panel from "primevue/panel";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
-import { SplitData, useSplitter } from "@/composables/album/splitter";
+import { type SplitData, useSplitter } from "@/composables/album/splitter";
 import Timeline from "primevue/timeline";
 import PhotoThumbPanelList from "./PhotoThumbPanelList.vue";
 import PhotoThumbPanelControl from "./PhotoThumbPanelControl.vue";
 import { isTouchDevice } from "@/utils/keybindings-utils";
 import { onMounted } from "vue";
-import { watch } from "vue";
 
 const lycheeStore = useLycheeStateStore();
 const { is_timeline_left_border_visible, is_debug_enabled } = storeToRefs(lycheeStore);
 
 const props = defineProps<{
 	header: string;
-	photos: { [key: number]: App.Http.Resources.Models.PhotoResource };
+	photos: App.Http.Resources.Models.PhotoResource[];
+	photosTimeline: SplitData<App.Http.Resources.Models.PhotoResource>[] | undefined;
 	photoLayout: App.Enum.PhotoLayoutType;
 	album:
 		| App.Http.Resources.Models.AlbumResource
@@ -124,39 +124,13 @@ const propagateMenuOpen = (idx: number, e: MouseEvent) => {
 	emits("contexted", idx, e);
 };
 
-const { spliter, verifyOrder } = useSplitter();
+const { verifyOrder } = useSplitter();
 
-const photosTimeLine = computed<SplitData<App.Http.Resources.Models.PhotoResource>[]>(() =>
-	split(props.photos as App.Http.Resources.Models.PhotoResource[]),
-);
-
-const isTimeline = computed(() => props.isTimeline && photosTimeLine.value.length > 1);
-
-function split(albums: App.Http.Resources.Models.PhotoResource[]) {
-	return spliter(
-		albums,
-		(a: App.Http.Resources.Models.PhotoResource) => a.timeline?.time_date ?? "",
-		(a: App.Http.Resources.Models.PhotoResource) => a.timeline?.format ?? "Others",
-	);
-}
+const isTimeline = computed(() => props.isTimeline && props.photosTimeline !== undefined && props.photosTimeline.length > 1);
 
 onMounted(() => {
-	validate(props.photos as App.Http.Resources.Models.PhotoResource[]);
-});
-
-function validate(albums: App.Http.Resources.Models.PhotoResource[]) {
-	if (props.isTimeline) {
-		const splitted = split(albums);
-		verifyOrder(is_debug_enabled.value, albums, splitted);
+	if (isTimeline.value) {
+		verifyOrder(is_debug_enabled.value, props.photos, props.photosTimeline as SplitData<App.Http.Resources.Models.PhotoResource>[]);
 	}
-}
-
-watch(
-	() => props.album?.id,
-	() => {
-		if (props.isTimeline) {
-			validate(props.photos as App.Http.Resources.Models.PhotoResource[]);
-		}
-	},
-);
+});
 </script>

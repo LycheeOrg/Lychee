@@ -57,7 +57,7 @@
 import Panel from "primevue/panel";
 import { AlbumThumbConfig } from "@/components/gallery/albumModule/thumbs/AlbumThumb.vue";
 import { computed, onMounted, watch } from "vue";
-import { SplitData, useSplitter } from "@/composables/album/splitter";
+import { type SplitData, useSplitter } from "@/composables/album/splitter";
 import Timeline from "primevue/timeline";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";

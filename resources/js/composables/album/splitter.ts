@@ -25,6 +25,12 @@ export function useSplitter() {
 		return ret;
 	}
 
+	function merge<T>(data: SplitData<T>[]): T[] {
+		const ret: T[] = [];
+		data.forEach((d) => ret.push(...d.data));
+		return ret;
+	}
+
 	function verifyOrder(is_debug: boolean, data: { id: string }[], splitData: SplitData<{ id: string }>[]) {
 		if (!is_debug) {
 			return;
@@ -58,6 +64,7 @@ export function useSplitter() {
 
 	return {
 		spliter,
+		merge,
 		verifyOrder,
 	};
 }
