@@ -27,9 +27,9 @@ class StatisticsCheck extends Controller
 	}
 
 	/**
-	 * Generates missing size variants by chunk of 100.
+	 * Create th emissing statistics.
 	 *
-	 * @return void
+	 * @return StatisticsCheckResource
 	 */
 	public function do(MaintenanceRequest $request): StatisticsCheckResource
 	{
@@ -45,7 +45,7 @@ class StatisticsCheck extends Controller
 	}
 
 	/**
-	 * Check how many images need to be created.
+	 * Check how many statistics are missing for photos and albums.
 	 *
 	 * @return StatisticsCheckResource
 	 */

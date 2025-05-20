@@ -59,11 +59,10 @@ return [
         'no-pending-updates' => 'Aucune mise à jour en attente.',
     ],
     'statistics-check' => [
-        'title' => 'Statistics integrity Check',
-        'description' => 'Check the statistics of your albums and photos.',
-        'missing_photos' => '%d photo statistics missing.',
-        'missing_albums' => '%d album statistics missing.',
-        'button' => 'Create missing',
+        'title' => 'Check de l’intégrité des Statistiques',
+        'missing_photos' => '%d statistiques de photos manquantes.',
+        'missing_albums' => '%d statistiques d’albums manquantes.',
+        'button' => 'Créer les statistiques manquantes',
     ],
     'flush-cache' => [
         'title' => 'Vider le cache',

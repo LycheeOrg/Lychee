@@ -61,7 +61,7 @@ class StatisticsIntegrityTest extends BaseApiWithDataTest
 		$this->assertOk($response);
 		$response->assertJsonPath('missing_albums', 9);
 		$response->assertJsonPath('missing_photos', 9);
-	
+
 		$response = $this->actingAs($this->admin)->postJson('Maintenance::statisticsIntegrity', []);
 		$this->assertCreated($response);
 		$response->assertJsonPath('missing_albums', 0);
