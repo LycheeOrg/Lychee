@@ -58,6 +58,12 @@ return [
         'update-button' => 'Mettre à jour',
         'no-pending-updates' => 'Aucune mise à jour en attente.',
     ],
+    'statistics-check' => [
+        'title' => 'Check de l’intégrité des Statistiques',
+        'missing_photos' => '%d statistiques de photos manquantes.',
+        'missing_albums' => '%d statistiques d’albums manquantes.',
+        'button' => 'Créer les statistiques manquantes',
+    ],
     'flush-cache' => [
         'title' => 'Vider le cache',
         'description' => 'Vider le cache de tous les utilisateurs pour résoudre les problèmes d’invalidation.',

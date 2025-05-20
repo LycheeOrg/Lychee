@@ -221,6 +221,8 @@ Route::get('/Maintenance::fullTree', [Admin\Maintenance\FullTree::class, 'check'
 Route::post('/Maintenance::fullTree', [Admin\Maintenance\FullTree::class, 'do']);
 Route::get('/Maintenance::countDuplicates', [Admin\Maintenance\DuplicateFinder::class, 'check']);
 Route::get('/Maintenance::searchDuplicates', [Admin\Maintenance\DuplicateFinder::class, 'get']);
+Route::get('/Maintenance::statisticsIntegrity', [Admin\Maintenance\StatisticsCheck::class, 'check']);
+Route::post('/Maintenance::statisticsIntegrity', [Admin\Maintenance\StatisticsCheck::class, 'do']);
 
 /**
  * STATISTICS.

@@ -88,6 +88,14 @@ const MaintenanceService = {
 			},
 		});
 	},
+
+	statisticsIntegrityCheckGet(): Promise<AxiosResponse<App.Http.Resources.Diagnostics.StatisticsCheckResource>> {
+		return axios.get(`${Constants.getApiUrl()}Maintenance::statisticsIntegrity`, { data: {} });
+	},
+
+	statisticsIntegrityCheckDo(): Promise<AxiosResponse> {
+		return axios.post(`${Constants.getApiUrl()}Maintenance::statisticsIntegrity`, {});
+	},
 };
 
 export default MaintenanceService;
