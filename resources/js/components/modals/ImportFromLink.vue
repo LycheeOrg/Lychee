@@ -40,15 +40,19 @@ import Button from "primevue/button";
 import Dialog from "primevue/dialog";
 import PhotoService from "@/services/photo-service";
 import Textarea from "primevue/textarea";
+import { useRouter } from "vue-router";
+import { usePhotoRoute } from "@/composables/photo/photoRoute";
 
 const visible = defineModel("visible", { default: false }) as Ref<boolean>;
-const props = defineProps<{ parentId: string | null }>();
 const emits = defineEmits<{ refresh: [] }>();
+
+const router = useRouter();
+const { getParentId } = usePhotoRoute(router);
 
 const urls = ref<string>("");
 
 function submit() {
-	PhotoService.importFromUrl(urls.value.split("\n"), props.parentId).then(() => {
+	PhotoService.importFromUrl(urls.value.split("\n"), getParentId() ?? null).then(() => {
 		urls.value = "";
 		visible.value = false;
 		emits("refresh");

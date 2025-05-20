@@ -41,13 +41,16 @@ import SearchTargetAlbum from "@/components/forms/album/SearchTargetAlbum.vue";
 import AlbumService from "@/services/album-service";
 import { useToast } from "primevue/usetoast";
 import Dialog from "primevue/dialog";
+import { useRouter } from "vue-router";
+import { usePhotoRoute } from "@/composables/photo/photoRoute";
 
 const props = defineProps<{
-	parentId: string | undefined;
 	album?: App.Http.Resources.Models.ThumbAlbumResource;
 	albumIds: string[];
 }>();
 
+const router = useRouter();
+const { getParentId } = usePhotoRoute(router);
 const visible = defineModel<boolean>("visible", { default: false });
 
 const emits = defineEmits<{
@@ -100,10 +103,10 @@ function execute() {
 		for (const id in albumMergedIds) {
 			AlbumService.clearCache(id);
 		}
-		if (props.parentId === undefined) {
+		if (getParentId() === undefined) {
 			AlbumService.clearAlbums();
 		} else {
-			AlbumService.clearCache(props.parentId);
+			AlbumService.clearCache(getParentId());
 		}
 
 		// RESET !

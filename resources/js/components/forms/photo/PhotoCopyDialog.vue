@@ -41,7 +41,6 @@ import Dialog from "primevue/dialog";
 import { trans } from "laravel-vue-i18n";
 
 const props = defineProps<{
-	parentId: string | undefined;
 	photo?: App.Http.Resources.Models.PhotoResource;
 	photoIds?: string[];
 }>();

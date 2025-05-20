@@ -1,5 +1,5 @@
 <template>
-	<ImportFromLink v-if="canUpload" v-model:visible="is_import_from_link_open" :parent-id="props.album.id" @refresh="emits('refresh')" />
+	<ImportFromLink v-if="canUpload" v-model:visible="is_import_from_link_open" @refresh="emits('refresh')" />
 	<DropBox v-if="canUpload" v-model:visible="is_import_from_dropbox_open" :album-id="props.album.id" />
 	<Toolbar class="w-full border-0 h-14" v-if="album">
 		<template #start>
