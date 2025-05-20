@@ -51,11 +51,6 @@ class StatisticsCheck extends Controller
 	 */
 	public function check(MaintenanceRequest $request): StatisticsCheckResource
 	{
-		// Just skip the check, we don't care.
-		if (!Configs::getValueAsBool('metrics_enabled')) {
-			return new StatisticsCheckResource(0, 0);
-		}
-
 		return $this->check->get();
 	}
 }

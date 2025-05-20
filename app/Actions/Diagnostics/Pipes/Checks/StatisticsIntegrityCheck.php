@@ -24,11 +24,6 @@ class StatisticsIntegrityCheck implements DiagnosticPipe
 	 */
 	public function handle(array &$data, \Closure $next): array
 	{
-		// Just skip the check, we don't care.
-		if (!Configs::getValueAsBool('metrics_enabled')) {
-			return $next($data);
-		}
-
 		$check = $this->get();
 
 		if ($check->missing_albums > 0) {
@@ -46,6 +41,11 @@ class StatisticsIntegrityCheck implements DiagnosticPipe
 
 	public function get(): StatisticsCheckResource
 	{
+		// Just skip the check, we don't care.
+		if (!Configs::getValueAsBool('metrics_enabled')) {
+			return new StatisticsCheckResource(0, 0);
+		}
+
 		$num_albums = DB::table('base_albums')->leftJoin('statistics', 'base_albums.id', '=', 'statistics.album_id')
 				->whereNull('statistics.id')
 				->count();

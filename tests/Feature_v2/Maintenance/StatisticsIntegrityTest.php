@@ -28,11 +28,13 @@ class StatisticsIntegrityTest extends BaseApiWithDataTest
 	{
 		parent::setUp();
 		Configs::set('metrics_enabled', true);
+		Configs::invalidateCache();
 	}
 
 	public function tearDown(): void
 	{
 		Configs::set('metrics_enabled', false);
+		Configs::invalidateCache();
 		parent::tearDown();
 	}
 
@@ -57,10 +59,27 @@ class StatisticsIntegrityTest extends BaseApiWithDataTest
 	public function testAdmin(): void
 	{
 		DB::table('statistics')->truncate();
+
 		$response = $this->actingAs($this->admin)->getJsonWithData('Maintenance::statisticsIntegrity', []);
 		$this->assertOk($response);
 		$response->assertJsonPath('missing_albums', 9);
 		$response->assertJsonPath('missing_photos', 9);
+
+		$response = $this->actingAs($this->admin)->postJson('Maintenance::statisticsIntegrity', []);
+		$this->assertCreated($response);
+		$response->assertJsonPath('missing_albums', 0);
+		$response->assertJsonPath('missing_photos', 0);
+	}
+
+	public function testAdminWithDisabledMetrics(): void
+	{
+		Configs::set('metrics_enabled', false);
+		Configs::invalidateCache();
+		DB::table('statistics')->truncate();
+		$response = $this->actingAs($this->admin)->getJsonWithData('Maintenance::statisticsIntegrity', []);
+		$this->assertOk($response);
+		$response->assertJsonPath('missing_albums', 0);
+		$response->assertJsonPath('missing_photos', 0);
 
 		$response = $this->actingAs($this->admin)->postJson('Maintenance::statisticsIntegrity', []);
 		$this->assertCreated($response);
