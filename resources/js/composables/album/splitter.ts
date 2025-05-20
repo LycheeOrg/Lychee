@@ -25,7 +25,39 @@ export function useSplitter() {
 		return ret;
 	}
 
+	function verifyOrder(is_debug: boolean, data: { id: string }[], splitData: SplitData<{ id: string }>[]) {
+		if (!is_debug) {
+			return;
+		}
+
+		const dataMap = new Map<string, number>();
+		data.forEach((d, i) => {
+			dataMap.set(d.id, i);
+		});
+
+		let check = false;
+		splitData.forEach((chunk) => {
+			chunk.data.forEach((d, idx) => {
+				const expected = dataMap.get(d.id);
+				if (expected === undefined) {
+					console.error(`Data not found in original data for id ${d.id} (WTF??)`);
+					check = true;
+				}
+				const candidate = chunk.iter + idx;
+				if (expected !== candidate) {
+					console.error(`Data mismatch for id ${d.id} (expected ${expected}, got ${candidate})`);
+					check = true;
+				}
+			});
+		});
+
+		if (check) {
+			alert("Data mismatch found in splitter, please check the console logs and contact the developer.");
+		}
+	}
+
 	return {
 		spliter,
+		verifyOrder,
 	};
 }

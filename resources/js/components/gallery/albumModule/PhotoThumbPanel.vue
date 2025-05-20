@@ -11,7 +11,7 @@
 			:galleryConfig="props.galleryConfig"
 			:selectedPhotos="props.selectedPhotos"
 			:iter="0"
-			:idx="0"
+			:group-idx="0"
 			@clicked="propagateClicked"
 			@selected="propagateSelected"
 			@contexted="propagateMenuOpen"
@@ -33,7 +33,7 @@
 							:galleryConfig="props.galleryConfig"
 							:selectedPhotos="props.selectedPhotos"
 							:iter="slotProps.item.iter"
-							:idx="slotProps.index"
+							:group-idx="slotProps.index"
 							:isTimeline="isTimeline"
 							@contexted="propagateMenuOpen"
 							@selected="propagateSelected"
@@ -57,7 +57,7 @@
 							:galleryConfig="props.galleryConfig"
 							:selectedPhotos="props.selectedPhotos"
 							:iter="photoTimeline.iter"
-							:idx="idx"
+							:group-idx="idx"
 							:isTimeline="isTimeline"
 							@contexted="propagateMenuOpen"
 							@selected="propagateSelected"
@@ -79,9 +79,11 @@ import Timeline from "primevue/timeline";
 import PhotoThumbPanelList from "./PhotoThumbPanelList.vue";
 import PhotoThumbPanelControl from "./PhotoThumbPanelControl.vue";
 import { isTouchDevice } from "@/utils/keybindings-utils";
+import { onMounted } from "vue";
+import { watch } from "vue";
 
 const lycheeStore = useLycheeStateStore();
-const { is_timeline_left_border_visible } = storeToRefs(lycheeStore);
+const { is_timeline_left_border_visible, is_debug_enabled } = storeToRefs(lycheeStore);
 
 const props = defineProps<{
 	header: string;
@@ -122,15 +124,39 @@ const propagateMenuOpen = (idx: number, e: MouseEvent) => {
 	emits("contexted", idx, e);
 };
 
-const { spliter } = useSplitter();
+const { spliter, verifyOrder } = useSplitter();
 
 const photosTimeLine = computed<SplitData<App.Http.Resources.Models.PhotoResource>[]>(() =>
-	spliter(
-		props.photos as App.Http.Resources.Models.PhotoResource[],
-		(p: App.Http.Resources.Models.PhotoResource) => p.timeline?.time_date ?? "",
-		(p: App.Http.Resources.Models.PhotoResource) => p.timeline?.format ?? "Others",
-	),
+	split(props.photos as App.Http.Resources.Models.PhotoResource[]),
 );
 
 const isTimeline = computed(() => props.isTimeline && photosTimeLine.value.length > 1);
+
+function split(albums: App.Http.Resources.Models.PhotoResource[]) {
+	return spliter(
+		albums,
+		(a: App.Http.Resources.Models.PhotoResource) => a.timeline?.time_date ?? "",
+		(a: App.Http.Resources.Models.PhotoResource) => a.timeline?.format ?? "Others",
+	);
+}
+
+onMounted(() => {
+	validate(props.photos as App.Http.Resources.Models.PhotoResource[]);
+});
+
+function validate(albums: App.Http.Resources.Models.PhotoResource[]) {
+	if (props.isTimeline) {
+		const splitted = split(albums);
+		verifyOrder(is_debug_enabled.value, albums, splitted);
+	}
+}
+
+watch(
+	() => props.album?.id,
+	() => {
+		if (props.isTimeline) {
+			validate(props.photos as App.Http.Resources.Models.PhotoResource[]);
+		}
+	},
+);
 </script>
