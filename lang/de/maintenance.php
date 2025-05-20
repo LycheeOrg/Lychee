@@ -57,6 +57,13 @@ return [
         'update-button' => 'Update',
         'no-pending-updates' => 'Keine Updates verfügbar.',
     ],
+    'statistics-check' => [
+        'title' => 'Statistics integrity Check',
+        'description' => 'Check the statistics of your albums and photos.',
+        'missing_photos' => '%d photo statistics missing.',
+        'missing_albums' => '%d album statistics missing.',
+        'button' => 'Create missing',
+    ],
     'flush-cache' => [
         'title' => 'Cache leeren',
         'description' => 'Leeren Sie den Cache jedes Benutzers, um Ungültigkeitsprobleme zu lösen.',

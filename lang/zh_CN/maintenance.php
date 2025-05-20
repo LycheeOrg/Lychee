@@ -58,6 +58,13 @@ return [
         'update-button' => '更新',
         'no-pending-updates' => '没有待处理的更新。',
     ],
+    'statistics-check' => [
+        'title' => 'Statistics integrity Check',
+        'description' => 'Check the statistics of your albums and photos.',
+        'missing_photos' => '%d photo statistics missing.',
+        'missing_albums' => '%d album statistics missing.',
+        'button' => 'Create missing',
+    ],
     'flush-cache' => [
         'title' => '清除缓存',
         'description' => '清除所有用户的缓存以解决失效问题。',
