@@ -49,7 +49,6 @@ const emits = defineEmits<{
 	contexted: [idx: number, event: MouseEvent];
 }>();
 function maySelect(idx: number, e: MouseEvent) {
-	console.log("maySelect", idx);
 	if (ctrlKeyState.value || metaKeyState.value || shiftKeyState.value) {
 		emits("selected", idx, e);
 		return;
@@ -57,7 +56,6 @@ function maySelect(idx: number, e: MouseEvent) {
 	emits("clicked", idx, e);
 }
 function menuOpen(idx: number, e: MouseEvent) {
-	console.log("menuOpen", idx);
 	emits("contexted", idx, e);
 }
 

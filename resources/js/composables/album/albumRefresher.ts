@@ -53,19 +53,19 @@ export function useAlbumRefresher(albumId: Ref<string>, photoId: Ref<string | un
 				}
 
 				// So what is going on here?
-				// The problem is that the ordering of the photos from the API is not necessarily the same 
+				// The problem is that the ordering of the photos from the API is not necessarily the same
 				// as the ordering of the photos in the timeline. The timeline is constructed from the photos
 				// taken_at data and if not provided, created_at data.
 				// This is split into different chunks based on the granularity.
 				// If the ordering is done by created_at, and the order of the photos match, we do not have problems.
-				// But if one of the photos has a different taken_at date, that does not match the order, then all the following 
+				// But if one of the photos has a different taken_at date, that does not match the order, then all the following
 				// photos are "moved" to different place which does not match the original index ordering.
 				//
 				// When we click on a photo, the index returned refers to the original ordering of the photos.
-				// As a result, if the timeline is enabled, we first do the split and then merge the photos so that the 
+				// As a result, if the timeline is enabled, we first do the split and then merge the photos so that the
 				// ordering is updated to reflect the timeline.
 				//
-				// Note that this is not something that can be fixed in the backend as we would need to assume that all the dates are 
+				// Note that this is not something that can be fixed in the backend as we would need to assume that all the dates are
 				// set properly. Furthermore, this would make the functionality unavailable if sorting by title is done.
 				// By doing it in the front-end, we are able to display the photos by blocks of time,
 				// and within the block, the ordering is done as expected.
