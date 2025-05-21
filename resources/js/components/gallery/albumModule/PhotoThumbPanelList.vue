@@ -1,13 +1,13 @@
 <template>
-	<div class="relative flex flex-wrap flex-row shrink w-full justify-start align-top" :id="'photoListing' + props.idx">
+	<div class="relative flex flex-wrap flex-row shrink w-full justify-start align-top" :id="'photoListing' + props.groupIdx">
 		<template v-for="(photo, idx) in props.photos" :key="photo.id">
 			<PhotoThumb
-				@click="maySelect(idx + iter, $event)"
-				@contextmenu.prevent="menuOpen(idx + iter, $event)"
+				@click="maySelect(idx + props.iter, $event)"
+				@contextmenu.prevent="menuOpen(idx + props.iter, $event)"
 				:is-selected="props.selectedPhotos.includes(photo.id)"
 				:photo="photo"
 				:album="props.album"
-				:is-lazy="idx + iter > 10"
+				:is-lazy="idx + props.iter > 10"
 			/>
 		</template>
 	</div>
@@ -30,7 +30,7 @@ const props = defineProps<{
 	galleryConfig: App.Http.Resources.GalleryConfigs.PhotoLayoutConfig;
 	selectedPhotos: string[];
 	iter: number;
-	idx: number;
+	groupIdx: number;
 }>();
 
 const lycheeStore = useLycheeStateStore();
@@ -48,17 +48,19 @@ const emits = defineEmits<{
 	selected: [idx: number, event: MouseEvent];
 	contexted: [idx: number, event: MouseEvent];
 }>();
-const maySelect = (idx: number, e: MouseEvent) => {
+function maySelect(idx: number, e: MouseEvent) {
 	if (ctrlKeyState.value || metaKeyState.value || shiftKeyState.value) {
 		emits("selected", idx, e);
 		return;
 	}
 	emits("clicked", idx, e);
-};
-const menuOpen = (idx: number, e: MouseEvent) => emits("contexted", idx, e);
+}
+function menuOpen(idx: number, e: MouseEvent) {
+	emits("contexted", idx, e);
+}
 
 // Layouts stuff
-const { activateLayout } = useLayouts(props.galleryConfig, layout, timelineData, "photoListing" + props.idx);
+const { activateLayout } = useLayouts(props.galleryConfig, layout, timelineData, "photoListing" + props.groupIdx);
 onMounted(() => activateLayout());
 onUpdated(() => activateLayout());
 </script>

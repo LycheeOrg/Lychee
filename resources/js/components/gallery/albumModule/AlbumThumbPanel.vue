@@ -56,15 +56,15 @@
 <script setup lang="ts">
 import Panel from "primevue/panel";
 import { AlbumThumbConfig } from "@/components/gallery/albumModule/thumbs/AlbumThumb.vue";
-import { computed } from "vue";
-import { SplitData, useSplitter } from "@/composables/album/splitter";
+import { computed, onMounted, watch } from "vue";
+import { type SplitData, useSplitter } from "@/composables/album/splitter";
 import Timeline from "primevue/timeline";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import AlbumThumbPanelList from "./AlbumThumbPanelList.vue";
 
 const lycheeStore = useLycheeStateStore();
-const { are_nsfw_visible, is_timeline_left_border_visible } = storeToRefs(lycheeStore);
+const { are_nsfw_visible, is_timeline_left_border_visible, is_debug_enabled } = storeToRefs(lycheeStore);
 
 const props = defineProps<{
 	header: string;
@@ -83,7 +83,7 @@ const emits = defineEmits<{
 	contexted: [idx: number, event: MouseEvent];
 }>();
 
-const { spliter } = useSplitter();
+const { spliter, verifyOrder } = useSplitter();
 
 const propagateClicked = (idx: number, e: MouseEvent) => {
 	emits("clicked", idx, e);
@@ -94,11 +94,7 @@ const propagateMenuOpen = (idx: number, e: MouseEvent) => {
 };
 
 const albumsTimeLine = computed<SplitData<App.Http.Resources.Models.ThumbAlbumResource>[]>(() =>
-	spliter(
-		props.albums as App.Http.Resources.Models.ThumbAlbumResource[],
-		(a: App.Http.Resources.Models.ThumbAlbumResource) => a.timeline?.time_date ?? "",
-		(a: App.Http.Resources.Models.ThumbAlbumResource) => a.timeline?.format ?? "Others",
-	),
+	split(props.albums as App.Http.Resources.Models.ThumbAlbumResource[]),
 );
 
 const isTimeline = computed(() => props.isTimeline && albumsTimeLine.value.length > 1);
@@ -106,4 +102,32 @@ const isTimeline = computed(() => props.isTimeline && albumsTimeLine.value.lengt
 const headerClass = computed(() => {
 	return props.isAlone ? "hidden" : "";
 });
+
+function split(albums: App.Http.Resources.Models.ThumbAlbumResource[]) {
+	return spliter(
+		albums,
+		(a: App.Http.Resources.Models.ThumbAlbumResource) => a.timeline?.time_date ?? "",
+		(a: App.Http.Resources.Models.ThumbAlbumResource) => a.timeline?.format ?? "Others",
+	);
+}
+
+onMounted(() => {
+	validate(props.albums as App.Http.Resources.Models.ThumbAlbumResource[]);
+});
+
+function validate(albums: App.Http.Resources.Models.ThumbAlbumResource[]) {
+	if (props.isTimeline) {
+		const splitted = split(albums);
+		verifyOrder(is_debug_enabled.value, albums, splitted);
+	}
+}
+
+watch(
+	() => props.album?.id,
+	() => {
+		if (props.isTimeline) {
+			validate(props.albums as App.Http.Resources.Models.ThumbAlbumResource[]);
+		}
+	},
+);
 </script>

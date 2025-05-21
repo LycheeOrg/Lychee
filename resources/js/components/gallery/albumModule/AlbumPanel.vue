@@ -68,6 +68,7 @@
 					v-if="layoutConfig !== null && photos !== null && photos.length > 0"
 					header="gallery.album.header_photos"
 					:photos="photos"
+					:photos-timeline="photosTimeline"
 					:album="album"
 					:gallery-config="layoutConfig"
 					:photo-layout="config.photo_layout"
@@ -125,6 +126,7 @@ import AlbumStatistics from "@/components/drawers/AlbumStatistics.vue";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { usePhotoRoute } from "@/composables/photo/photoRoute";
 import { useRouter } from "vue-router";
+import { type SplitData } from "@/composables/album/splitter";
 
 const router = useRouter();
 
@@ -135,6 +137,8 @@ const props = defineProps<{
 		| App.Http.Resources.Models.TagAlbumResource
 		| App.Http.Resources.Models.SmartAlbumResource
 		| undefined;
+	photos: App.Http.Resources.Models.PhotoResource[];
+	photosTimeline: SplitData<App.Http.Resources.Models.PhotoResource>[] | undefined;
 	config: App.Http.Resources.GalleryConfigs.AlbumConfig | undefined;
 	user: App.Http.Resources.Models.UserResource | undefined;
 	layoutConfig: App.Http.Resources.GalleryConfigs.PhotoLayoutConfig;
@@ -144,7 +148,8 @@ const props = defineProps<{
 const modelAlbum = computed(() => props.modelAlbum);
 const album = computed(() => props.album);
 const hasHidden = computed(() => modelAlbum.value !== undefined && modelAlbum.value.albums.filter((album) => album.is_nsfw).length > 0);
-const photos = computed<App.Http.Resources.Models.PhotoResource[]>(() => album.value?.photos ?? []);
+const photos = computed<App.Http.Resources.Models.PhotoResource[]>(() => props.photos);
+const photosTimeline = computed(() => props.photosTimeline);
 
 const config = ref(props.config);
 
