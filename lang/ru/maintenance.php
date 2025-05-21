@@ -58,6 +58,12 @@ return [
         'update-button' => 'Обновить',
         'no-pending-updates' => 'Нет ожидающих обновлений.',
     ],
+    'statistics-check' => [
+        'title' => 'Statistics integrity Check',
+        'missing_photos' => '%d photo statistics missing.',
+        'missing_albums' => '%d album statistics missing.',
+        'button' => 'Create missing',
+    ],
     'flush-cache' => [
         'title' => 'Очистить кэш',
         'description' => 'Очистить кэш каждого пользователя для решения проблем с устаревшими данными.',

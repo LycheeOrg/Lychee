@@ -59,6 +59,12 @@ return [
         'update-button' => 'Aktualizacja',
         'no-pending-updates' => 'Brak oczekujących aktualizacji.',
     ],
+    'statistics-check' => [
+        'title' => 'Statistics integrity Check',
+        'missing_photos' => '%d photo statistics missing.',
+        'missing_albums' => '%d album statistics missing.',
+        'button' => 'Create missing',
+    ],
     'flush-cache' => [
         'title' => 'Opróżnianie pamięci podręcznej',
         'description' => 'Opróżnianie pamięci podręcznej każdego użytkownika w celu rozwiązania problemów z unieważnianiem.',

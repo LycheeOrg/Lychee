@@ -149,6 +149,10 @@ declare namespace App.Http.Resources.Diagnostics {
 		left: string;
 		right: string;
 	};
+	export type StatisticsCheckResource = {
+		missing_photos: number;
+		missing_albums: number;
+	};
 	export type TreeState = {
 		oddness: number;
 		duplicates: number;

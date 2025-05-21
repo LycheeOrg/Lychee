@@ -23,8 +23,12 @@ class PhotoStatisticsResource extends Data
 	) {
 	}
 
-	public static function fromModel(Statistics $stats): PhotoStatisticsResource
+	public static function fromModel(Statistics|null $stats): PhotoStatisticsResource|null
 	{
+		if ($stats === null) {
+			return null;
+		}
+
 		return new self(
 			$stats->visit_count,
 			$stats->download_count,

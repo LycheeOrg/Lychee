@@ -58,6 +58,12 @@ return [
         'update-button' => '更新',
         'no-pending-updates' => '保留中の更新はありません',
     ],
+    'statistics-check' => [
+        'title' => 'Statistics integrity Check',
+        'missing_photos' => '%d photo statistics missing.',
+        'missing_albums' => '%d album statistics missing.',
+        'button' => 'Create missing',
+    ],
     'flush-cache' => [
         'title' => 'Flush Cache',
         'description' => 'Flush the cache of every user to solve invalidation problems.',
