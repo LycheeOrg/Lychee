@@ -217,12 +217,8 @@ const { is_delete_visible, toggleDelete, is_merge_album_visible, is_move_visible
 	useGalleryModals(togglableStore);
 
 // Set up Album ID reference. This one is updated at each page change.
-const { isPasswordProtected, isLoading, user, modelAlbum, album, photo, transition, photosTimeline, rights, photos, config, refresh, setTransition } = useAlbumRefresher(
-	albumId,
-	photoId,
-	auth,
-	is_login_open,
-);
+const { isPasswordProtected, isLoading, user, modelAlbum, album, photo, transition, photosTimeline, rights, photos, config, refresh, setTransition } =
+	useAlbumRefresher(albumId, photoId, auth, is_login_open);
 
 const { refreshPhoto } = usePhotoRefresher(photo, photos, photoId);
 
