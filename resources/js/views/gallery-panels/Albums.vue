@@ -166,11 +166,13 @@ import LoginModal from "@/components/modals/LoginModal.vue";
 import LoadingProgress from "@/components/loading/LoadingProgress.vue";
 import LiveMetrics from "@/components/drawers/LiveMetrics.vue";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
+import { useRouter } from "vue-router";
 
 const auth = useAuthStore();
 const lycheeStore = useLycheeStateStore();
 const togglableStore = useTogglablesStateStore();
 const leftMenuStore = useLeftMenuStateStore();
+const router = useRouter();
 
 lycheeStore.init();
 const albumId = ref("gallery");
@@ -182,7 +184,7 @@ const { are_nsfw_visible, title } = storeToRefs(lycheeStore);
 const photos = ref([]); // unused.
 
 const { user, isLoading, isKeybindingsHelpOpen, smartAlbums, albums, sharedAlbums, rootConfig, rootRights, selectableAlbums, hasHidden, refresh } =
-	useAlbumsRefresher(auth, lycheeStore, is_login_open);
+	useAlbumsRefresher(auth, lycheeStore, is_login_open, router);
 
 const { selectedAlbum, selectedAlbumsIdx, selectedAlbums, selectedAlbumsIds, albumClick, selectEverything, unselect, hasSelection } = useSelection(
 	photos,

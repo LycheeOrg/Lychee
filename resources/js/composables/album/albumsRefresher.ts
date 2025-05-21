@@ -3,8 +3,9 @@ import { AuthStore } from "@/stores/Auth";
 import { LycheeStateStore } from "@/stores/LycheeState";
 import { computed, ref, Ref } from "vue";
 import { SplitData, useSplitter } from "./splitter";
+import { Router } from "vue-router";
 
-export function useAlbumsRefresher(auth: AuthStore, lycheeStore: LycheeStateStore, isLoginOpen: Ref<boolean>) {
+export function useAlbumsRefresher(auth: AuthStore, lycheeStore: LycheeStateStore, isLoginOpen: Ref<boolean>, router: Router) {
 	const { spliter } = useSplitter();
 	const user = ref<App.Http.Resources.Models.UserResource | undefined>(undefined);
 	const isKeybindingsHelpOpen = ref(false);
@@ -45,12 +46,20 @@ export function useAlbumsRefresher(auth: AuthStore, lycheeStore: LycheeStateStor
 				rootConfig.value = data.data.config;
 				rootRights.value = data.data.rights;
 
-				if (albums.value.length === 0 && smartAlbums.value.length === 0 && sharedAlbums.value.length === 0) {
-					isLoginOpen.value = true;
+				// If we are not logged in and there are no albums, we redirect to the login page.
+				if (
+					(auth.user?.id === undefined || auth.user?.id === null) &&
+					albums.value.length === 0 &&
+					smartAlbums.value.length === 0 &&
+					sharedAlbums.value.length === 0
+				) {
+					router.push({ name: "login" });
 				}
 			})
 			.catch((error) => {
 				// We are required to login :)
+				// We use the modal instead of the login page to avoid the redirect back.
+				// Once logged in, we just refresh the page.
 				if (error.response && error.response.status === 401) {
 					isLoginOpen.value = true;
 					console.error("require login");
