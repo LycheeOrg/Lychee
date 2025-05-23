@@ -13,6 +13,7 @@ use App\Exceptions\SecurePaths\InvalidPayloadException;
 use App\Exceptions\SecurePaths\InvalidSignatureException;
 use App\Exceptions\SecurePaths\WrongPathException;
 use App\Models\Configs;
+use App\Models\Extensions\HasUrlGenerator;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -24,12 +25,10 @@ use Illuminate\Support\Facades\Storage;
  */
 class SecurePathController extends Controller
 {
+	use HasUrlGenerator;
+
 	public function __invoke(Request $request, ?string $path)
 	{
-		if (!$request->hasValidSignature()) {
-			throw new InvalidSignatureException();
-		}
-
 		if (is_null($path)) {
 			throw new WrongPathException();
 		}
@@ -40,6 +39,10 @@ class SecurePathController extends Controller
 			} catch (DecryptException) {
 				throw new InvalidPayloadException();
 			}
+		}
+
+		if (!self::shouldNotUseSignedUrl() && !$request->hasValidSignature(false)) {
+			throw new InvalidSignatureException();
 		}
 
 		$file = Storage::disk(StorageDiskType::LOCAL->value)->path($path);
