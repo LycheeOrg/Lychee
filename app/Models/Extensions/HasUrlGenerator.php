@@ -44,7 +44,7 @@ trait HasUrlGenerator
 			// @codeCoverageIgnoreEnd
 		}
 
-		if (self::shouldNotUseSignedUrl()) {
+		if (self::shouldNotUseSignedUrl() && !Configs::getValueAsBool('secure_image_link_enabled')) {
 			return $image_disk->url($short_path);
 		}
 
@@ -52,10 +52,14 @@ trait HasUrlGenerator
 			$short_path = Crypt::encryptString($short_path);
 		}
 
+		if (self::shouldNotUseSignedUrl()) {
+			return Url::route('image', ['path' => $short_path]);
+		}
+
 		$temporary_image_link_life_in_seconds = Configs::getValueAsInt('temporary_image_link_life_in_seconds');
 
 		/** @disregard P1013 */
-		return URL::temporarySignedRoute('image', now()->addSeconds($temporary_image_link_life_in_seconds), ['path' => $short_path]);
+		return URL::temporarySignedRoute('image', now()->addSeconds($temporary_image_link_life_in_seconds), ['path' => $short_path], false);
 	}
 
 	/**
