@@ -16,6 +16,7 @@ export function useAlbumRefresher(albumId: Ref<string>, photoId: Ref<string | un
 	const smartAlbum = ref<App.Http.Resources.Models.SmartAlbumResource | undefined>(undefined);
 	const album = computed(() => modelAlbum.value || tagAlbum.value || smartAlbum.value);
 
+	const transition = ref<"slide-next" | "slide-previous">("slide-next");
 	const photo = ref<App.Http.Resources.Models.PhotoResource | undefined>(undefined);
 	const photos = ref<App.Http.Resources.Models.PhotoResource[]>([]);
 	const photosTimeline = ref<SplitData<App.Http.Resources.Models.PhotoResource>[] | undefined>(undefined);
@@ -105,6 +106,18 @@ export function useAlbumRefresher(albumId: Ref<string>, photoId: Ref<string | un
 		});
 	}
 
+	function setTransition(photo_id: string | undefined | null) {
+		if (photo_id === undefined || photo_id === null) {
+			return;
+		}
+
+		if (photo.value !== undefined) {
+			transition.value = photo.value.next_photo_id === photo_id ? "slide-next" : "slide-previous";
+		} else {
+			transition.value = "slide-next";
+		}
+	}
+
 	return {
 		isPasswordProtected,
 		isLoading,
@@ -115,6 +128,7 @@ export function useAlbumRefresher(albumId: Ref<string>, photoId: Ref<string | un
 		smartAlbum,
 		album,
 		rights,
+		transition,
 		photo,
 		photos,
 		photosTimeline,
@@ -122,5 +136,6 @@ export function useAlbumRefresher(albumId: Ref<string>, photoId: Ref<string | un
 		loadUser,
 		loadAlbum,
 		refresh,
+		setTransition,
 	};
 }
