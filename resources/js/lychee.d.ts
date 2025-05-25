@@ -95,6 +95,7 @@ declare namespace App.Enum {
 	export type PhotoThumbInfoType = "title" | "description";
 	export type SeverityType = "emergency" | "alert" | "critical" | "error" | "warning" | "notice" | "info" | "debug";
 	export type SizeVariantType = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
+	export type SmallLargeType = "small" | "large";
 	export type SmartAlbumType = "unsorted" | "starred" | "recent" | "on_this_day";
 	export type StorageDiskType = "images" | "s3";
 	export type ThumbAlbumSubtitleType = "description" | "takedate" | "creation" | "oldstyle";
@@ -245,6 +246,7 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		can_autoplay: boolean;
 		is_exif_disabled: boolean;
 		is_favourite_enabled: boolean;
+		photo_previous_next_size: App.Enum.SmallLargeType;
 		display_thumb_album_overlay: App.Enum.ThumbOverlayVisibilityType;
 		display_thumb_photo_overlay: App.Enum.ThumbOverlayVisibilityType;
 		album_subtitle_type: App.Enum.ThumbAlbumSubtitleType;
