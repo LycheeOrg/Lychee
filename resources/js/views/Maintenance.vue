@@ -28,6 +28,7 @@
 		<MaintenanceFixJobs />
 		<MaintenanceFixTree />
 		<MaintenanceFilesize />
+		<StatisticsIntegrity />
 		<MaintenanceCleaning path="filesystems.disks.extract-jobs.root" />
 		<MaintenanceCleaning path="filesystems.disks.image-jobs.root" />
 		<MaintenanceCleaning path="filesystems.disks.image-upload.root" />
@@ -45,4 +46,5 @@ import MaintenanceOptimize from "@/components/maintenance/MaintenanceOptimize.vu
 import MaintenanceUpdate from "@/components/maintenance/MaintenanceUpdate.vue";
 import MaintenanceFlushCache from "@/components/maintenance/MaintenanceFlushCache.vue";
 import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
+import StatisticsIntegrity from "@/components/maintenance/StatisticsIntegrity.vue";
 </script>

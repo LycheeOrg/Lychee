@@ -28,6 +28,7 @@ use App\Actions\Diagnostics\Pipes\Checks\OpCacheCheck;
 use App\Actions\Diagnostics\Pipes\Checks\PHPVersionCheck;
 use App\Actions\Diagnostics\Pipes\Checks\PlaceholderExistsCheck;
 use App\Actions\Diagnostics\Pipes\Checks\SmallMediumExistsCheck;
+use App\Actions\Diagnostics\Pipes\Checks\StatisticsIntegrityCheck;
 use App\Actions\Diagnostics\Pipes\Checks\SupporterCheck;
 use App\Actions\Diagnostics\Pipes\Checks\TimezoneCheck;
 use App\Actions\Diagnostics\Pipes\Checks\UpdatableCheck;
@@ -65,6 +66,7 @@ class Errors
 		CacheTemporaryUrlCheck::class,
 		SupporterCheck::class,
 		ImagickPdfCheck::class,
+		StatisticsIntegrityCheck::class,
 	];
 
 	/**
