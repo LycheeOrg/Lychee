@@ -1,9 +1,9 @@
 import AlbumService from "@/services/album-service";
-import { AuthStore } from "@/stores/Auth";
-import { LycheeStateStore } from "@/stores/LycheeState";
-import { computed, ref, Ref } from "vue";
-import { SplitData, useSplitter } from "./splitter";
-import { Router } from "vue-router";
+import { type AuthStore } from "@/stores/Auth";
+import { type LycheeStateStore } from "@/stores/LycheeState";
+import { computed, ref, type Ref } from "vue";
+import { type SplitData, useSplitter } from "./splitter";
+import { type Router } from "vue-router";
 
 export function useAlbumsRefresher(auth: AuthStore, lycheeStore: LycheeStateStore, isLoginOpen: Ref<boolean>, router: Router) {
 	const { spliter } = useSplitter();

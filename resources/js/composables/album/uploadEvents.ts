@@ -1,5 +1,5 @@
 import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
-import { Ref } from "vue";
+import { type Ref } from "vue";
 
 export type Uploadable = {
 	file: File;

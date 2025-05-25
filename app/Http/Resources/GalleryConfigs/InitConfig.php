@@ -12,6 +12,7 @@ use App\Enum\AlbumDecorationOrientation;
 use App\Enum\AlbumDecorationType;
 use App\Enum\ImageOverlayType;
 use App\Enum\PhotoThumbInfoType;
+use App\Enum\SmallLargeType;
 use App\Enum\ThumbAlbumSubtitleType;
 use App\Enum\ThumbOverlayVisibilityType;
 use App\Models\Configs;
@@ -43,6 +44,7 @@ class InitConfig extends Data
 	public bool $can_autoplay;
 	public bool $is_exif_disabled;
 	public bool $is_favourite_enabled;
+	public SmallLargeType $photo_previous_next_size;
 
 	// Thumbs configuration
 	public ThumbOverlayVisibilityType $display_thumb_album_overlay;
@@ -106,6 +108,7 @@ class InitConfig extends Data
 		$this->can_autoplay = Configs::getValueAsBool('autoplay_enabled');
 		$this->is_exif_disabled = Configs::getValueAsBool('exif_disabled_for_all');
 		$this->is_favourite_enabled = Configs::getValueAsBool('client_side_favourite_enabled');
+		$this->photo_previous_next_size = Configs::getValueAsEnum('photo_previous_next_size', SmallLargeType::class);
 
 		// Thumbs configuration
 		$this->display_thumb_album_overlay = Configs::getValueAsEnum('display_thumb_album_overlay', ThumbOverlayVisibilityType::class);

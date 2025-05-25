@@ -1,9 +1,9 @@
 import AlbumService from "@/services/album-service";
 import PhotoService from "@/services/photo-service";
-import { LycheeStateStore } from "@/stores/LycheeState";
+import { type LycheeStateStore } from "@/stores/LycheeState";
 import { trans } from "laravel-vue-i18n";
-import { ToastServiceMethods } from "primevue/toastservice";
-import { Ref } from "vue";
+import { type ToastServiceMethods } from "primevue/toastservice";
+import { type Ref } from "vue";
 
 export function usePhotoActions(
 	photo: Ref<App.Http.Resources.Models.PhotoResource | undefined>,

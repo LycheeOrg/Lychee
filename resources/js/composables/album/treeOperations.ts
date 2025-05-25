@@ -1,8 +1,7 @@
-import { set } from "@vueuse/core";
 import { trans } from "laravel-vue-i18n";
-import { ToastServiceMethods } from "primevue/toastservice";
+import { type ToastServiceMethods } from "primevue/toastservice";
 import { sprintf } from "sprintf-js";
-import { computed, ref, Ref } from "vue";
+import { ref, type Ref } from "vue";
 
 export type Augmented = {
 	prefix: string;

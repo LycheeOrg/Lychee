@@ -50,6 +50,7 @@
 		:photo="photo"
 		:photos="photosForSelection"
 		:is-map-visible="config?.is_map_accessible ?? false"
+		:transition="transition"
 		@toggle-slide-show="slideshow"
 		@rotate-overlay="rotateOverlay"
 		@rotate-photo-c-w="rotatePhotoCW"
@@ -207,7 +208,7 @@ const search_term = ref("");
 
 const { is_login_open, is_slideshow_active, is_photo_edit_open, is_full_screen, are_details_open } = storeToRefs(togglableStore);
 
-const { album, photo, config, loadAlbum } = useAlbumRefresher(albumId, photoId, auth, is_login_open);
+const { album, photo, transition, config, loadAlbum, setTransition } = useAlbumRefresher(albumId, photoId, auth, is_login_open);
 
 const {
 	albums,
@@ -446,6 +447,8 @@ watch(
 	() => route.params.photoId,
 	(newPhotoId, _) => {
 		unselect();
+
+		setTransition(newPhotoId as string | undefined);
 
 		photoId.value = newPhotoId as string;
 		debouncedPhotoMetrics();
