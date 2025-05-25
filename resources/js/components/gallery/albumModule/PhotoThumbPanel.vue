@@ -11,14 +11,14 @@
 			:galleryConfig="props.galleryConfig"
 			:selectedPhotos="props.selectedPhotos"
 			:iter="0"
-			:idx="0"
+			:group-idx="0"
 			@clicked="propagateClicked"
 			@selected="propagateSelected"
 			@contexted="propagateMenuOpen"
 			:isTimeline="isTimeline"
 		/>
 		<template v-else>
-			<Timeline v-if="isLeftBorderVisible" :value="photosTimeLine" :pt:eventopposite:class="'hidden'" class="mt-4">
+			<Timeline v-if="isLeftBorderVisible" :value="props.photosTimeline" :pt:eventopposite:class="'hidden'" class="mt-4">
 				<template #content="slotProps">
 					<div
 						data-type="timelineBlock"
@@ -33,7 +33,7 @@
 							:galleryConfig="props.galleryConfig"
 							:selectedPhotos="props.selectedPhotos"
 							:iter="slotProps.item.iter"
-							:idx="slotProps.index"
+							:group-idx="slotProps.index"
 							:isTimeline="isTimeline"
 							@contexted="propagateMenuOpen"
 							@selected="propagateSelected"
@@ -43,7 +43,7 @@
 				</template>
 			</Timeline>
 			<div v-else>
-				<template v-for="(photoTimeline, idx) in photosTimeLine" :key="'photoTimeline' + idx">
+				<template v-for="(photoTimeline, idx) in props.photosTimeline" :key="'photoTimeline' + idx">
 					<div
 						data-type="timelineBlock"
 						:data-date="photoTimeline.data[0].timeline?.time_date"
@@ -57,7 +57,7 @@
 							:galleryConfig="props.galleryConfig"
 							:selectedPhotos="props.selectedPhotos"
 							:iter="photoTimeline.iter"
-							:idx="idx"
+							:group-idx="idx"
 							:isTimeline="isTimeline"
 							@contexted="propagateMenuOpen"
 							@selected="propagateSelected"
@@ -74,18 +74,20 @@ import { computed, ref } from "vue";
 import Panel from "primevue/panel";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
-import { SplitData, useSplitter } from "@/composables/album/splitter";
+import { type SplitData, useSplitter } from "@/composables/album/splitter";
 import Timeline from "primevue/timeline";
 import PhotoThumbPanelList from "./PhotoThumbPanelList.vue";
 import PhotoThumbPanelControl from "./PhotoThumbPanelControl.vue";
 import { isTouchDevice } from "@/utils/keybindings-utils";
+import { onMounted } from "vue";
 
 const lycheeStore = useLycheeStateStore();
-const { is_timeline_left_border_visible } = storeToRefs(lycheeStore);
+const { is_timeline_left_border_visible, is_debug_enabled } = storeToRefs(lycheeStore);
 
 const props = defineProps<{
 	header: string;
-	photos: { [key: number]: App.Http.Resources.Models.PhotoResource };
+	photos: App.Http.Resources.Models.PhotoResource[];
+	photosTimeline: SplitData<App.Http.Resources.Models.PhotoResource>[] | undefined;
 	photoLayout: App.Enum.PhotoLayoutType;
 	album:
 		| App.Http.Resources.Models.AlbumResource
@@ -122,15 +124,13 @@ const propagateMenuOpen = (idx: number, e: MouseEvent) => {
 	emits("contexted", idx, e);
 };
 
-const { spliter } = useSplitter();
+const { verifyOrder } = useSplitter();
 
-const photosTimeLine = computed<SplitData<App.Http.Resources.Models.PhotoResource>[]>(() =>
-	spliter(
-		props.photos as App.Http.Resources.Models.PhotoResource[],
-		(p: App.Http.Resources.Models.PhotoResource) => p.timeline?.time_date ?? "",
-		(p: App.Http.Resources.Models.PhotoResource) => p.timeline?.format ?? "Others",
-	),
-);
+const isTimeline = computed(() => props.isTimeline && props.photosTimeline !== undefined && props.photosTimeline.length > 1);
 
-const isTimeline = computed(() => props.isTimeline && photosTimeLine.value.length > 1);
+onMounted(() => {
+	if (isTimeline.value) {
+		verifyOrder(is_debug_enabled.value, props.photos, props.photosTimeline as SplitData<App.Http.Resources.Models.PhotoResource>[]);
+	}
+});
 </script>

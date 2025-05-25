@@ -29,6 +29,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		can_autoplay: false,
 		is_exif_disabled: false,
 		is_favourite_enabled: false,
+		photo_previous_next_size: "small" as App.Enum.SmallLargeType,
 
 		// keybinding help
 		show_keybinding_help_popup: false,
@@ -137,6 +138,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.is_small2x_download_enabled = data.is_small2x_download_enabled;
 					this.is_medium_download_enabled = data.is_medium_download_enabled;
 					this.is_medium2x_download_enabled = data.is_medium2x_download_enabled;
+					this.photo_previous_next_size = data.photo_previous_next_size;
 				})
 				.catch((error) => {
 					// In this specific case, even though it has been possibly disabled, we really need to see the error.

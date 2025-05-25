@@ -4,13 +4,17 @@
 			:to="photoRoute(props.photoId)"
 			:id="props.is_next ? 'nextButton' : 'previousButton'"
 			:class="{
-				'absolute top-1/2 border border-solid border-neutral-200 -mt-5 py-2 px-3 transition-all opacity-0 group-hover:opacity-100 bg-cover': true,
+				'absolute top-1/2 border border-solid border-neutral-200 dark:border-neutral-700': true,
+				'-mt-5 transition-all opacity-0 group-hover:opacity-100 bg-cover': true,
+				'py-10.75 px-11': photo_previous_next_size === 'large',
+				'py-2 px-3': photo_previous_next_size === 'small',
+				'hover:border-primary-400 fill-neutral-400 hover:fill-primary-400': true,
 				'-right-px group-hover:translate-x-0 translate-x-full': props.is_next,
 				'-left-px group-hover:translate-x-0 -translate-x-full': !props.is_next,
 			}"
 			:style="props.style"
 		>
-			<MiniIcon :icon="props.is_next ? 'caret-right' : 'caret-left'" class="my-0 h-6 w-5 mr-0 ml-0" />
+			<MiniIcon :icon="props.is_next ? 'caret-right' : 'caret-left'" :fill="''" class="m-0 h-6 w-5" />
 		</router-link>
 	</div>
 </template>
@@ -18,6 +22,11 @@
 import MiniIcon from "@/components/icons/MiniIcon.vue";
 import { usePhotoRoute } from "@/composables/photo/photoRoute";
 import { useRouter } from "vue-router";
+import { useLycheeStateStore } from "@/stores/LycheeState";
+import { storeToRefs } from "pinia";
+
+const lycheeStateStore = useLycheeStateStore();
+const { photo_previous_next_size } = storeToRefs(lycheeStateStore);
 
 const props = defineProps<{
 	is_next: boolean;
