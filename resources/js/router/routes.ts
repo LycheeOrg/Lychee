@@ -18,6 +18,7 @@ const Jobs = () => import("@/views/Jobs.vue");
 const FixTree = () => import("@/views/FixTree.vue");
 const DuplicatesFinder = () => import("@/views/DuplicatesFinder.vue");
 const Changelogs = () => import("@/views/ChangeLogs.vue");
+const LoginPage = () => import("@/views/LoginPage.vue");
 
 const routes_ = [
 	{
@@ -119,6 +120,11 @@ const routes_ = [
 		name: "changelogs",
 		path: "/changelogs",
 		component: Changelogs,
+	},
+	{
+		name: "login",
+		path: "/login",
+		component: LoginPage,
 	},
 ];
 

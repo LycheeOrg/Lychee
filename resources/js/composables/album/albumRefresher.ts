@@ -1,7 +1,7 @@
 import { ALL } from "@/config/constants";
 import AlbumService from "@/services/album-service";
-import { AuthStore } from "@/stores/Auth";
-import { computed, Ref, ref } from "vue";
+import { type AuthStore } from "@/stores/Auth";
+import { computed, type Ref, ref } from "vue";
 import { type SplitData, useSplitter } from "./splitter";
 
 const { spliter, merge } = useSplitter();

@@ -1,5 +1,5 @@
-import { TogglablesStateStore } from "@/stores/ModalsState";
-import { Ref } from "vue";
+import { type TogglablesStateStore } from "@/stores/ModalsState";
+import { type Ref } from "vue";
 
 export function useScrollable(toggleableStore: TogglablesStateStore, path: Ref<string>) {
 	function onScroll() {
