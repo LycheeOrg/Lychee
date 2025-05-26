@@ -47,7 +47,7 @@ class SecurePathController extends Controller
 
 		// In theory we should use the `$request->hasCorrectSignature()` method here.
 		// However, for some stupid unknown reason, the path value is added to the server Query String.
-		// This completely invalitates the signature check.
+		// This completely invalidates the signature check.
 		// For example the url http://localhost:8000/image/small2x/c3/3d/c661c594a5a781cd44db06828783.png?expires=1748380289
 		// will be verified as :
 		// http://localhost:8000/image/small2x/c3/3d/c661c594a5a781cd44db06828783.png?/image/small2x/c3/3d/c661c594a5a781cd44db06828783.png&expires=1748380289
