@@ -18,6 +18,7 @@ use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -33,6 +34,8 @@ class SecurePathController extends Controller
 			throw new WrongPathException();
 		}
 
+		Log::warning('url:', $request->url());
+
 		if (Configs::getValueAsBool('secure_image_link_enabled')) {
 			try {
 				$path = Crypt::decryptString($path);
@@ -41,7 +44,7 @@ class SecurePathController extends Controller
 			}
 		}
 
-		if (!self::shouldNotUseSignedUrl() && !$request->hasValidSignature(false)) {
+		if (!self::shouldNotUseSignedUrl() && !$request->hasValidSignature(true)) {
 			throw new InvalidSignatureException();
 		}
 

@@ -14,6 +14,7 @@ use App\Models\Configs;
 use Illuminate\Contracts\Encryption\EncryptException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use League\Flysystem\AwsS3V3\AwsS3V3Adapter;
@@ -59,7 +60,9 @@ trait HasUrlGenerator
 		$temporary_image_link_life_in_seconds = Configs::getValueAsInt('temporary_image_link_life_in_seconds');
 
 		/** @disregard P1013 */
-		return URL::temporarySignedRoute('image', now()->addSeconds($temporary_image_link_life_in_seconds), ['path' => $short_path], false);
+		$url = URL::temporarySignedRoute('image', now()->addSeconds($temporary_image_link_life_in_seconds), ['path' => $short_path], true);
+		Log::warning('url generated:', $url);
+		return $url;
 	}
 
 	/**
