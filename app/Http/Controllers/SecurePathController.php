@@ -33,18 +33,6 @@ class SecurePathController extends Controller
 
 	public function __invoke(Request $request, ?string $path)
 	{
-		if (is_null($path)) {
-			throw new WrongPathException();
-		}
-
-		if (Configs::getValueAsBool('secure_image_link_enabled')) {
-			try {
-				$path = Crypt::decryptString($path);
-			} catch (DecryptException) {
-				throw new InvalidPayloadException();
-			}
-		}
-
 		// In theory we should use the `$request->hasCorrectSignature()` method here.
 		// However, for some stupid unknown reason, the path value is added to the server Query String.
 		// This completely invalidates the signature check.
@@ -62,6 +50,18 @@ class SecurePathController extends Controller
 		// On the bright side, we can now differentiate between a missing/failed signature and an expired one.
 		if (!self::shouldNotUseSignedUrl() && !$this->signatureHasNotExpired($request)) {
 			throw new SignatureExpiredException();
+		}
+
+		if (is_null($path)) {
+			throw new WrongPathException();
+		}
+
+		if (Configs::getValueAsBool('secure_image_link_enabled')) {
+			try {
+				$path = Crypt::decryptString($path);
+			} catch (DecryptException) {
+				throw new InvalidPayloadException();
+			}
 		}
 
 		$file = Storage::disk(StorageDiskType::LOCAL->value)->path($path);

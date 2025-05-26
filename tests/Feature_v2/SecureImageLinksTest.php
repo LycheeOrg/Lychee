@@ -36,11 +36,6 @@ class SecureImageLinksTest extends BaseApiWithDataTest
 		Configs::invalidateCache();
 	}
 
-	public function setUp(): void
-	{
-		parent::setUp();
-	}
-
 	public function tearDown(): void
 	{
 		Configs::set('temporary_image_link_enabled', '0');
