@@ -29,7 +29,6 @@ export function useLayouts(
 			case "square":
 				return useSquare(photoListing, configRef.value.photo_layout_square_column_width, configRef.value.photo_layout_gap, timelineData);
 			case "justified":
-			case "unjustified":
 				return useJustify(photoListing, configRef.value.photo_layout_justified_row_height, timelineData);
 			case "masonry":
 				return useMasonry(photoListing, configRef.value.photo_layout_masonry_column_width, configRef.value.photo_layout_gap);
