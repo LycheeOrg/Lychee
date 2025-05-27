@@ -36,7 +36,6 @@ use Illuminate\Support\Carbon;
  *
  * @property string                           $id
  * @property string                           $title
- * @property int                              $legacy_id
  * @property Carbon                           $created_at
  * @property Carbon                           $updated_at
  * @property string|null                      $description

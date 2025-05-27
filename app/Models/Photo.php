@@ -12,7 +12,6 @@ use App\Actions\Photo\Delete;
 use App\Casts\ArrayCast;
 use App\Casts\DateTimeWithTimezoneCast;
 use App\Casts\MustNotSetCast;
-use App\Constants\RandomID;
 use App\Contracts\Models\HasUTCBasedTimes;
 use App\Enum\LicenseType;
 use App\Enum\StorageDiskType;
@@ -43,7 +42,6 @@ use function Safe\preg_match;
  * App\Models\Photo.
  *
  * @property string       $id
- * @property int          $legacy_id
  * @property string       $title
  * @property string|null  $description
  * @property string[]     $tags
@@ -151,7 +149,6 @@ class Photo extends Model implements HasUTCBasedTimes
 	public $incrementing = false;
 
 	protected $casts = [
-		RandomID::LEGACY_ID_NAME => RandomID::LEGACY_ID_TYPE,
 		'created_at' => 'datetime',
 		'updated_at' => 'datetime',
 		'taken_at' => DateTimeWithTimezoneCast::class,
@@ -172,7 +169,6 @@ class Photo extends Model implements HasUTCBasedTimes
 	 *                   relation but shall not be serialized to JSON
 	 */
 	protected $hidden = [
-		RandomID::LEGACY_ID_NAME,
 		'album',  // do not serialize relation in order to avoid infinite loops
 		'owner',  // do not serialize relation
 		'owner_id',

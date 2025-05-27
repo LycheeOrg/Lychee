@@ -12,7 +12,6 @@ use App\Constants\RandomID;
 use App\Exceptions\InsufficientEntropyException;
 use App\Exceptions\Internal\NotImplementedException;
 use App\Exceptions\Internal\TimeBasedIdException;
-use App\Models\Configs;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\InvalidCastException;
 use Illuminate\Database\Eloquent\JsonEncodingException;
@@ -63,9 +62,6 @@ trait HasRandomIDAndLegacyTimeBasedID
 	{
 		if ($key === $this->getKeyName()) {
 			throw new NotImplementedException('must not set primary key explicitly, primary key will be set on first insert');
-		}
-		if ($key === RandomID::LEGACY_ID_NAME) {
-			throw new NotImplementedException('must not set legacy key explicitly, legacy key will be set on first insert');
 		}
 
 		return parent::setAttribute($key, $value);
@@ -170,27 +166,6 @@ trait HasRandomIDAndLegacyTimeBasedID
 		} catch (\Exception $e) {
 			throw new InsufficientEntropyException($e);
 		}
-		// @codeCoverageIgnoreEnd
-		if (
-			PHP_INT_MAX === 2147483647 ||
-			Configs::getValueAsBool('force_32bit_ids')
-		) {
-			// For 32-bit installations, we can only afford to store the
-			// full seconds in id.  The calling code needs to be able to
-			// handle duplicate ids.  Note that this also exposes us to
-			// the year 2038 problem.
-			// @codeCoverageIgnoreStart
-			$legacy_id = sprintf('%010d', microtime(true));
-		// @codeCoverageIgnoreEnd
-		} else {
-			// Ensure 4 digits after the decimal point, 15 characters
-			// total (including the decimal point), 0-padded on the
-			// left if needed (shouldn't be needed unless we move back in
-			// time :-) )
-			$legacy_id = sprintf('%015.4f', microtime(true));
-			$legacy_id = str_replace('.', '', $legacy_id);
-		}
 		$this->attributes[$this->getKeyName()] = $id;
-		$this->attributes[RandomID::LEGACY_ID_NAME] = intval($legacy_id);
 	}
 }
