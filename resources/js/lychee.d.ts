@@ -91,7 +91,7 @@ declare namespace App.Enum {
 		| "nextcloud"
 		| "keycloak";
 	export type OrderSortingType = "ASC" | "DESC";
-	export type PhotoLayoutType = "square" | "justified" | "unjustified" | "masonry" | "grid";
+	export type PhotoLayoutType = "square" | "justified" | "masonry" | "grid";
 	export type PhotoThumbInfoType = "title" | "description";
 	export type SeverityType = "emergency" | "alert" | "critical" | "error" | "warning" | "notice" | "info" | "debug";
 	export type SizeVariantType = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;

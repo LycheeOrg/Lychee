@@ -17,7 +17,6 @@ enum PhotoLayoutType: string
 {
 	case SQUARE = 'square';
 	case JUSTIFIED = 'justified';
-	case UNJUSTIFIED = 'unjustified'; // ! Legcay
 	case MASONRY = 'masonry';
 	case GRID = 'grid';
 }
