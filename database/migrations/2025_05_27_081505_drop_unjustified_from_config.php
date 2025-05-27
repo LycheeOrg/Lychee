@@ -17,7 +17,7 @@ return new class() extends Migration {
 	 */
 	public function up(): void
 	{
-		DB::table('configs')->where('key', '=', 'layout')->where('value', '=')->update(['value' => self::JUSTIFIED]);
+		DB::table('configs')->where('key', '=', 'layout')->where('value', '=', self::UNJUSTIFIED)->update(['value' => self::JUSTIFIED]);
 	}
 
 	/**
