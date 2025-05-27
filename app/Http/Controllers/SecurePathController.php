@@ -33,18 +33,12 @@ class SecurePathController extends Controller
 
 	public function __invoke(Request $request, ?string $path)
 	{
-		// In theory we should use the `$request->hasCorrectSignature()` method here.
-		// However, for some stupid unknown reason, the path value is added to the server Query String.
-		// This completely invalidates the signature check.
-		// For example the url http://localhost:8000/image/small2x/c3/3d/c661c594a5a781cd44db06828783.png?expires=1748380289
-		// will be verified as :
-		// http://localhost:8000/image/small2x/c3/3d/c661c594a5a781cd44db06828783.png?/image/small2x/c3/3d/c661c594a5a781cd44db06828783.png&expires=1748380289
-		// which makes the signature check fail as the hmac does not match.
-		// On the bright side, we can now differentiate between a missing/failed signature and an expired one.
+		// First we verify that the request has not expired.
 		if (!self::shouldNotUseSignedUrl() && !$this->signatureHasNotExpired($request)) {
 			throw new SignatureExpiredException();
 		}
 
+		// Then we verify that the request has a valid signature.
 		if (!self::shouldNotUseSignedUrl() && !$request->hasValidSignature()) {
 			Log::error('Invalid signature for secure path request. Verify that the url generated for the image match.', [
 				'candidate url' => $this->getUrl($request),
@@ -86,28 +80,6 @@ class SecurePathController extends Controller
 
 		return rtrim($url . '?' . $query_string, '?');
 	}
-
-	// /**
-	//  * Determine if the signature from the given request matches the URL.
-	//  *
-	//  * @param \Illuminate\Http\Request $request
-	//  * @param bool                     $absolute
-	//  *
-	//  * @return bool
-	//  */
-	// private function hasCorrectSignature(Request $request, bool $absolute = true): bool
-	// {
-	// 	$original = $this->getUrl($request, $absolute);
-	// 	$key = new \SensitiveParameterValue(config('app.key'));
-	// 	if (hash_equals(
-	// 		hash_hmac('sha256', $original, $key->getValue()),
-	// 		$request->query('signature', '')
-	// 	)) {
-	// 		return true;
-	// 	}
-
-	// 	return false;
-	// }
 
 	/**
 	 * Determine if the expires timestamp from the given request is not from the past.
