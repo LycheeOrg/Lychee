@@ -44,18 +44,25 @@ trait HasUrlGenerator
 			// @codeCoverageIgnoreEnd
 		}
 
-		if (self::shouldNotUseSignedUrl()) {
+		// If we do not sign the URL or we do not use secure image links, we return the URL directly.
+		if (self::shouldNotUseSignedUrl() && !Configs::getValueAsBool('secure_image_link_enabled')) {
 			return $image_disk->url($short_path);
 		}
 
+		// We we use the secure image link, we encrypt the path.
 		if (Configs::getValueAsBool('secure_image_link_enabled')) {
 			$short_path = Crypt::encryptString($short_path);
+		}
+
+		// Return the url directly if we do not use signed URLs.
+		if (self::shouldNotUseSignedUrl()) {
+			return Url::route('image', ['path' => $short_path]);
 		}
 
 		$temporary_image_link_life_in_seconds = Configs::getValueAsInt('temporary_image_link_life_in_seconds');
 
 		/** @disregard P1013 */
-		return URL::temporarySignedRoute('image', now()->addSeconds($temporary_image_link_life_in_seconds), ['path' => $short_path]);
+		return URL::temporarySignedRoute('image', now()->addSeconds($temporary_image_link_life_in_seconds), ['path' => $short_path], true);
 	}
 
 	/**
