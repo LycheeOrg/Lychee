@@ -97,7 +97,6 @@ use Illuminate\Support\Facades\Auth;
  * implementation of it) and we need this class to be instantiable.
  *
  * @property string                           $id
- * @property int                              $legacy_id
  * @property Carbon                           $created_at
  * @property Carbon                           $updated_at
  * @property string                           $title
@@ -176,7 +175,6 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	 */
 	protected $attributes = [
 		'id' => null,
-		RandomID::LEGACY_ID_NAME => null,
 		'created_at' => null,
 		'updated_at' => null,
 		'title' => null, // Sic! `title` is actually non-nullable, but using `null` here forces the caller to actually set a title before saving.
@@ -196,7 +194,6 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	 */
 	protected $casts = [
 		'id' => RandomID::ID_TYPE,
-		RandomID::LEGACY_ID_NAME => RandomID::LEGACY_ID_TYPE,
 		'created_at' => 'datetime',
 		'updated_at' => 'datetime',
 		'is_nsfw' => 'boolean',
