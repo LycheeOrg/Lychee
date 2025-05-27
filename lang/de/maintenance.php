@@ -58,10 +58,10 @@ return [
         'no-pending-updates' => 'Keine Updates verfügbar.',
     ],
     'statistics-check' => [
-        'title' => 'Statistics integrity Check',
-        'missing_photos' => '%d photo statistics missing.',
-        'missing_albums' => '%d album statistics missing.',
-        'button' => 'Create missing',
+        'title' => 'Integritätsprüfung der Statistik',
+        'missing_photos' => '%d Fotostatistiken fehlen.',
+        'missing_albums' => '%d Albumstatistiken fehlen.',
+        'button' => 'Fehlendes erstellen',
     ],
     'flush-cache' => [
         'title' => 'Cache leeren',
