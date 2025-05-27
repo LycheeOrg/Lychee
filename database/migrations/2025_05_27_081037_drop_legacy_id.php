@@ -11,12 +11,21 @@ return new class() extends Migration {
 	 */
 	public function up(): void
 	{
+		try {
+			Schema::table('photos', function (Blueprint $table) {
+				$table->dropUnique('photos_legacy_id_unique');
+			});
+			Schema::table('base_albums', function (Blueprint $table) {
+				$table->dropUnique('base_albums_legacy_id_unique');
+			});
+		} catch (\Throwable $e) {
+			// Do nothing
+		}
+
 		Schema::table('photos', function (Blueprint $table) {
-			$table->dropUnique('photos_legacy_id_unique');
 			$table->dropColumn(self::LEGACY_ID_NAME);
 		});
 		Schema::table('base_albums', function (Blueprint $table) {
-			$table->dropUnique('base_albums_legacy_id_unique');
 			$table->dropColumn(self::LEGACY_ID_NAME);
 		});
 
