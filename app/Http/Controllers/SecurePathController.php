@@ -66,19 +66,16 @@ class SecurePathController extends Controller
 		return response()->file($file);
 	}
 
-	private function getUrl(Request $request, bool $absolute = true): string
+	private function getUrl(Request $request): string
 	{
 		$ignore_query = ['signature'];
-
-		$url = $absolute ? $request->url() : ('/' . $request->path());
 
 		$query_string = '';
 		$query_string = (new Collection(explode('&', (string) $request->server->get('QUERY_STRING'))))
 			->reject(fn ($parameter) => in_array(\Str::before($parameter, '='), $ignore_query, true))
-			->reject(fn ($parameter) => count(explode('=', $parameter)) === 1) // Ignore parameters without value => avoid problem above mentionned.
 			->join('&');
 
-		return rtrim($url . '?' . $query_string, '?');
+		return rtrim($request->url() . '?' . $query_string, '?');
 	}
 
 	/**
