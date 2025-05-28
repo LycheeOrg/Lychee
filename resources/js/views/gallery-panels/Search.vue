@@ -81,7 +81,6 @@
 		/>
 		<PhotoCopyDialog
 			v-model:visible="is_copy_visible"
-			:parent-id="albumId"
 			:photo="selectedPhoto"
 			:photo-ids="selectedPhotosIds"
 			@copied="
@@ -92,8 +91,8 @@
 			"
 		/>
 		<PhotoEdit v-if="photo?.rights.can_edit" :photo="photo" v-model:visible="is_photo_edit_open" />
-		<MoveDialog :photo="photo" v-model:visible="is_move_visible" :parent-id="props.albumId" @moved="refresh" />
-		<DeleteDialog :photo="photo" v-model:visible="is_delete_visible" :parent-id="props.albumId" @deleted="refresh" />
+		<MoveDialog :photo="photo" v-model:visible="is_move_visible" @moved="refresh" />
+		<DeleteDialog :photo="photo" v-model:visible="is_delete_visible" @deleted="refresh" />
 	</template>
 	<template v-else-if="!noData">
 		<!-- Dialogs -->
@@ -104,16 +103,9 @@
 			:photo-ids="selectedPhotosIds"
 			@tagged="refresh"
 		/>
-		<PhotoCopyDialog
-			v-model:visible="is_copy_visible"
-			:parent-id="albumId"
-			:photo="selectedPhoto"
-			:photo-ids="selectedPhotosIds"
-			@copied="refresh"
-		/>
+		<PhotoCopyDialog v-model:visible="is_copy_visible" :photo="selectedPhoto" :photo-ids="selectedPhotosIds" @copied="refresh" />
 		<MoveDialog
 			v-model:visible="is_move_visible"
-			:parent-id="albumId"
 			:photo="selectedPhoto"
 			:photo-ids="selectedPhotosIds"
 			:album="selectedAlbum"
@@ -122,21 +114,14 @@
 		/>
 		<DeleteDialog
 			v-model:visible="is_delete_visible"
-			:parent-id="albumId"
 			:photo="selectedPhoto"
 			:photo-ids="selectedPhotosIds"
 			:album="selectedAlbum"
 			:album-ids="selectedAlbumsIds"
 			@deleted="refresh"
 		/>
-		<RenameDialog v-model:visible="is_rename_visible" :parent-id="undefined" :album="selectedAlbum" :photo="selectedPhoto" @renamed="refresh" />
-		<AlbumMergeDialog
-			v-model:visible="is_merge_album_visible"
-			:parent-id="albumId"
-			:album="selectedAlbum"
-			:album-ids="selectedAlbumsIds"
-			@merged="refresh"
-		/>
+		<RenameDialog v-model:visible="is_rename_visible" :album="selectedAlbum" :photo="selectedPhoto" @renamed="refresh" />
+		<AlbumMergeDialog v-model:visible="is_merge_album_visible" :album="selectedAlbum" :album-ids="selectedAlbumsIds" @merged="refresh" />
 	</template>
 </template>
 <script setup lang="ts">
@@ -322,7 +307,7 @@ const albumPanelConfig = computed<AlbumThumbConfig>(() => ({
 	album_decoration_orientation: lycheeStore.album_decoration_orientation,
 }));
 
-const { scrollToTop, setScroll } = useScrollable(togglableStore, albumId);
+const { setScroll } = useScrollable(togglableStore, albumId);
 
 function goBack() {
 	if (is_slideshow_active.value) {
