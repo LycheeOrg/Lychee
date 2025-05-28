@@ -8,18 +8,22 @@
 
 namespace App\Http\Requests\Photo;
 
+use App\Contracts\Http\Requests\HasFromId;
 use App\Contracts\Http\Requests\HasPhotoIds;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Http\Requests\BaseApiRequest;
+use App\Http\Requests\Traits\HasFromIdTrait;
 use App\Http\Requests\Traits\HasPhotoIdsTrait;
 use App\Models\Photo;
 use App\Policies\PhotoPolicy;
+use App\Rules\AlbumIDRule;
 use App\Rules\RandomIDRule;
 use Illuminate\Support\Facades\Gate;
 
-class DeletePhotosRequest extends BaseApiRequest implements HasPhotoIds
+class DeletePhotosRequest extends BaseApiRequest implements HasPhotoIds, HasFromId
 {
 	use HasPhotoIdsTrait;
+	use HasFromIdTrait;
 
 	/**
 	 * {@inheritDoc}
@@ -37,6 +41,7 @@ class DeletePhotosRequest extends BaseApiRequest implements HasPhotoIds
 		return [
 			RequestAttribute::PHOTO_IDS_ATTRIBUTE => 'required|array|min:1',
 			RequestAttribute::PHOTO_IDS_ATTRIBUTE . '.*' => ['required', new RandomIDRule(false)],
+			RequestAttribute::FROM_ID_ATTRIBUTE => ['required', new AlbumIDRule(false)],
 		];
 	}
 
@@ -49,5 +54,6 @@ class DeletePhotosRequest extends BaseApiRequest implements HasPhotoIds
 		// models for efficiency reasons.
 		// Instead, we use mass deletion via low-level SQL queries later.
 		$this->photo_ids = $values[RequestAttribute::PHOTO_IDS_ATTRIBUTE];
+		$this->from_id = $values[RequestAttribute::FROM_ID_ATTRIBUTE];
 	}
 }

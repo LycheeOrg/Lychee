@@ -28,12 +28,14 @@ class PhotoMoveTest extends BaseApiWithDataTest
 		$this->assertUnprocessable($response);
 
 		$response = $this->postJson('Photo::move', [
+			'from_id' => $this->album1->id,
 			'photo_ids' => [$this->photo1->id],
 			'album_id' => $this->album2->id,
 		]);
 		$this->assertUnauthorized($response);
 
 		$response = $this->actingAs($this->userNoUpload)->postJson('Photo::move', [
+			'from_id' => $this->album1->id,
 			'photo_ids' => [$this->photo1->id],
 			'album_id' => $this->album2->id,
 		]);
@@ -46,6 +48,7 @@ class PhotoMoveTest extends BaseApiWithDataTest
 		$this->assertUnprocessable($response);
 
 		$response = $this->actingAs($this->userMayUpload1)->postJson('Photo::move', [
+			'from_id' => $this->album1->id,
 			'photo_ids' => [$this->photo1->id],
 			'album_id' => $this->album2->id,
 		]);
@@ -56,6 +59,7 @@ class PhotoMoveTest extends BaseApiWithDataTest
 		$response->assertJsonCount(2, 'resource.photos');
 
 		$response = $this->actingAs($this->userMayUpload1)->postJson('Photo::move', [
+			'from_id' => $this->album1->id,
 			'photo_ids' => [$this->photo1->id],
 			'album_id' => $this->subAlbum1->id,
 		]);
@@ -77,5 +81,44 @@ class PhotoMoveTest extends BaseApiWithDataTest
 				],
 			],
 		]);
+	}
+
+	public function testMovePhotoAuthorizedOwnerUnosorted(): void
+	{
+		$this->clearCachedSmartAlbums();
+		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album', ['album_id' => 'unsorted']);
+		$this->assertOk($response);
+		$response->assertJsonCount(1, 'resource.photos');
+		$response->assertDontSee($this->photo1->id);
+
+		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album', ['album_id' => $this->album1->id]);
+		$this->assertOk($response);
+		$response->assertJsonCount(2, 'resource.photos');
+		$response->assertSee($this->photo1->id);
+
+		$response = $this->actingAs($this->userMayUpload1)->postJson('Photo::move', [
+			'from_id' => $this->album1->id,
+			'photo_ids' => [$this->photo1->id],
+			'album_id' => null,
+		]);
+		$this->assertNoContent($response);
+
+		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album', ['album_id' => $this->album1->id]);
+		$this->assertOk($response);
+		$response->assertJsonCount(1, 'resource.photos');
+		$response->assertDontSee($this->photo1->id);
+
+		$this->clearCachedSmartAlbums();
+		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album', ['album_id' => 'unsorted']);
+		$this->assertOk($response);
+		$response->assertJsonCount(2, 'resource.photos');
+		$response->assertSee($this->photo1->id);
+
+		$response = $this->actingAs($this->userMayUpload1)->postJson('Photo::move', [
+			'from_id' => 'unsorted',
+			'photo_ids' => [$this->photo1->id],
+			'album_id' => $this->album1->id,
+		]);
+		$this->assertNoContent($response);
 	}
 }

@@ -16,7 +16,7 @@ use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasAlbumIdsTrait;
 use App\Http\Requests\Traits\HasBaseAlbumTrait;
 use App\Policies\AlbumPolicy;
-use App\Rules\AlbumIDRule;
+use App\Rules\RandomIDRule;
 use Illuminate\Support\Facades\Gate;
 
 class DeleteAlbumsRequest extends BaseApiRequest implements HasBaseAlbum, HasAlbumIds
@@ -39,7 +39,7 @@ class DeleteAlbumsRequest extends BaseApiRequest implements HasBaseAlbum, HasAlb
 	{
 		return [
 			RequestAttribute::ALBUM_IDS_ATTRIBUTE => 'required|array|min:1',
-			RequestAttribute::ALBUM_IDS_ATTRIBUTE . '.*' => ['required', new AlbumIDRule(false)],
+			RequestAttribute::ALBUM_IDS_ATTRIBUTE . '.*' => ['required', new RandomIDRule(false)],
 		];
 	}
 

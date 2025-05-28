@@ -62,7 +62,7 @@ class AssertableZipArchive extends \ZipArchive
 	 *
 	 * @return void
 	 */
-	public function assertContainsFile(string $fileName, ?int $expectedFileSize): void
+	public function assertContainsFile(string $fileName, ?int $expectedFileSize = null): void
 	{
 		$stat = $this->statName($fileName);
 		PHPUnit::assertNotFalse($stat, 'Could not assert that ZIP archive contains ' . $fileName);

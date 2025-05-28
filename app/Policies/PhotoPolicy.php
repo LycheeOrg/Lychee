@@ -8,14 +8,19 @@
 
 namespace App\Policies;
 
+use App\Constants\PhotoAlbum as PA;
 use App\Enum\MetricsAccess;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\QueryBuilderException;
+use App\Exceptions\UnauthorizedException;
+use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\User;
 use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class PhotoPolicy extends BasePolicy
 {
@@ -23,7 +28,7 @@ class PhotoPolicy extends BasePolicy
 
 	public const CAN_SEE = 'canSee';
 	public const CAN_DOWNLOAD = 'canDownload';
-	public const CAN_DELETE = 'canDelete';
+	// public const CAN_DELETE = 'canDelete';
 	public const CAN_EDIT = 'canEdit';
 	public const CAN_EDIT_ID = 'canEditById';
 	public const CAN_ACCESS_FULL_PHOTO = 'canAccessFullPhoto';
@@ -57,6 +62,11 @@ class PhotoPolicy extends BasePolicy
 		return $user !== null && $photo->owner_id === $user->id;
 	}
 
+	private function hasAlbums(Photo $photo): bool
+	{
+		return $photo->albums !== null && !$photo->albums->isEmpty();
+	}
+
 	/**
 	 * Defines whether the photo is visible to the current user.
 	 *
@@ -71,7 +81,7 @@ class PhotoPolicy extends BasePolicy
 			return true;
 		}
 
-		return $photo->album !== null && $this->album_policy->canAccess($user, $photo->album);
+		return $this->hasAlbums($photo) && $this->reduction($photo->albums, fn ($a) => $this->album_policy->canAccess($user, $a));
 	}
 
 	/**
@@ -88,7 +98,7 @@ class PhotoPolicy extends BasePolicy
 			return true;
 		}
 
-		return $this->canSee($user, $photo) && $this->album_policy->canDownload($user, $photo->album);
+		return $this->hasAlbums($photo) && $this->reduction($photo->albums, fn ($a) => $this->album_policy->canDownload($user, $a));
 	}
 
 	/**
@@ -112,7 +122,7 @@ class PhotoPolicy extends BasePolicy
 			return true;
 		}
 
-		return $this->canSee($user, $photo) && $this->album_policy->canEdit($user, $photo->album);
+		return $this->hasAlbums($photo) && $this->reduction($photo->albums, fn ($a) => $this->album_policy->canEdit($user, $a));
 	}
 
 	/**
@@ -140,9 +150,9 @@ class PhotoPolicy extends BasePolicy
 			return true;
 		}
 
-		$parents_id = Photo::query()
-			->select('album_id')
-			->whereIn('id', $photo_ids)
+		$parents_id = DB::table(PA::PHOTO_ALBUM)
+			->select(PA::ALBUM_ID)
+			->whereIn(PA::PHOTO_ID, $photo_ids)
 			->groupBy('album_id')
 			->pluck('album_id')->all();
 
@@ -169,7 +179,7 @@ class PhotoPolicy extends BasePolicy
 			return false;
 		}
 
-		return $this->album_policy->canAccessFullPhoto($user, $photo->album);
+		return $this->hasAlbums($photo) && $this->reduction($photo->albums, fn ($a) => $this->album_policy->canAccessFullPhoto($user, $a));
 	}
 
 	/**
@@ -179,14 +189,17 @@ class PhotoPolicy extends BasePolicy
 	 *
 	 * @return bool
 	 */
-	public function canDelete(User $user, Photo $photo)
-	{
-		if ($this->isOwner($user, $photo)) {
-			return true;
-		}
+	// public function canDelete(User $user, Photo $photo)
+	// {
+	// 	if ($this->isOwner($user, $photo)) {
+	// 		return true;
+	// 	}
 
-		return $this->canSee($user, $photo) && $this->album_policy->canDelete($user, $photo->album);
-	}
+	// 	// TODO: refactor me.
+	// 	throw new UnauthorizedException('You are not allowed to delete this photo (yet).');
+
+	// 	return $this->canSee($user, $photo) && $this->album_policy->canDelete($user, $photo->album);
+	// }
 
 	/**
 	 * Checks whether the designated photos are deletable by the current user.
@@ -216,20 +229,21 @@ class PhotoPolicy extends BasePolicy
 		// If there are any photos which are not in albums at this point, we fail.
 		if (
 			Photo::query()
+			->leftJoin(PA::PHOTO_ALBUM, 'photos.id', '=', PA::PHOTO_ID)
 			->whereNull('album_id')
-			->whereIn('id', $photo_ids)
+			->whereIn('photos.id', $photo_ids)
 			->count() > 0
 		) {
 			return false;
 		}
 
-		$parent_i_ds = Photo::query()
-			->select('album_id')
-			->whereIn('id', $photo_ids)
-			->groupBy('album_id')
+		$parent_ids = DB::table(PA::PHOTO_ALBUM)
+			->select(PA::ALBUM_ID)
+			->whereIn(PA::PHOTO_ID, $photo_ids)
+			->groupBy(PA::ALBUM_ID)
 			->pluck('album_id')->all();
 
-		return $this->album_policy->canDeleteById($user, $parent_i_ds);
+		return $this->album_policy->canDeleteById($user, $parent_ids);
 	}
 
 	/**
@@ -251,5 +265,19 @@ class PhotoPolicy extends BasePolicy
 			MetricsAccess::ADMIN => $user?->may_administrate === true,
 			default => false,
 		};
+	}
+
+	/**
+	 * @param Collection<int,Album>        $albums
+	 * @param \Closure(Album $album): bool $reducer
+	 *
+	 * @return bool
+	 */
+	private function reduction(Collection $albums, \Closure $reducer): bool
+	{
+		return $albums->reduce(
+			fn (bool $carry, Album $album) => $carry || $reducer($album),
+			false
+		);
 	}
 }

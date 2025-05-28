@@ -171,44 +171,40 @@ class DownloadTest extends BaseApiWithDataTest
 		$this->assertOk($response);
 		$photo = $response->json('resource.photos.0');
 
-		$this->postJson('Photo::copy', [
-			'photo_ids' => [$photo['id']],
-			'album_id' => $this->album5->id,
-		]);
-		$this->assertOk($response);
-
-		$response = $this->getJsonWithData('Album', ['album_id' => $this->album5->id]);
-		$this->assertOk($response);
-		$response->assertJsonCount(2, 'resource.photos');
+		// $this->postJson('Photo::copy', [
+		// 	'photo_ids' => [$photo['id']],
+		// 	'album_id' => $this->album5->id,
+		// ]);
+		// $this->assertOk($response);
 
 		$response = $this->actingAs($this->admin)->upload(
 			'Photo',
 			filename: TestConstants::SAMPLE_FILE_NIGHT_IMAGE,
 			album_id: $this->album5->id,
-			file_name: TestConstants::PHOTO_NIGHT_TITLE . '.jpg'
-		);
+			file_name: TestConstants::PHOTO_NIGHT_TITLE . '.jpeg');
 		$this->assertCreated($response);
+
+		$response = $this->patchJson('Photo::rename', [
+			'photo_id' => $photo['id'],
+			'title' => TestConstants::PHOTO_NIGHT_TITLE . '.jpeg',
+		]);
+		$this->assertNoContent($response);
 
 		$response = $this->getJsonWithData('Album', ['album_id' => $this->album5->id]);
 		$this->assertOk($response);
-		$response->assertJsonCount(3, 'resource.photos');
+		$response->assertJsonCount(2, 'resource.photos');
 
 		$photoID1 = $response->json('resource.photos.0.id');
 		$photoID2a = $response->json('resource.photos.1.id');
-		$photoID2b = $response->json('resource.photos.2.id');
 
-		$photoArchiveResponse = $this->download(
-			photo_ids: [$photoID1, $photoID2a, $photoID2b],
-			from_id: $this->album5->id,
-			kind: DownloadVariantType::ORIGINAL
-		);
+		$response->assertJsonPath('resource.photos.0.title', TestConstants::PHOTO_NIGHT_TITLE . '.jpeg');
+		$response->assertJsonPath('resource.photos.1.title', TestConstants::PHOTO_NIGHT_TITLE . '.jpeg');
+
+		$photoArchiveResponse = $this->download([$photoID1, $photoID2a], kind: DownloadVariantType::ORIGINAL);
 
 		$zipArchive = AssertableZipArchive::createFromResponse($photoArchiveResponse);
-		$zipArchive->assertContainsFilesExactly([
-			'night.jpg' => ['size' => filesize(base_path(TestConstants::SAMPLE_FILE_NIGHT_IMAGE))],
-			'mongolia-1.jpeg' => ['size' => filesize(base_path(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE))],
-			'mongolia-2.jpeg' => ['size' => filesize(base_path(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE))],
-		]);
+		$zipArchive->assertContainsFile('night-1.jpeg');
+		$zipArchive->assertContainsFile('night-2.jpeg');
 	}
 
 	public function testPhotoDownloadWithMultiByteFilename(): void

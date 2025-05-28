@@ -65,7 +65,7 @@ abstract class BaseHasManyPhotos extends Relation
 			// indirect condition.
 			// Hence, the actually owning albums of the photos are not
 			// necessarily loaded.
-			Photo::query()->with(['album', 'size_variants', 'palette']),
+			Photo::query()->with(['albums', 'size_variants', 'palette']),
 			$owning_album
 		);
 	}
