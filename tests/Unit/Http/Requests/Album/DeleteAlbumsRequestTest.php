@@ -14,7 +14,7 @@ use App\Contracts\Http\Requests\RequestAttribute;
 use App\Contracts\Models\AbstractAlbum;
 use App\Http\Requests\Album\DeleteAlbumsRequest;
 use App\Policies\AlbumPolicy;
-use App\Rules\AlbumIDRule;
+use App\Rules\RandomIDRule;
 use Illuminate\Support\Facades\Gate;
 use Tests\Unit\Http\Requests\Base\BaseRequestTest;
 
@@ -40,7 +40,7 @@ class DeleteAlbumsRequestTest extends BaseRequestTest
 
 		$expectedRuleMap = [
 			RequestAttribute::ALBUM_IDS_ATTRIBUTE => 'required|array|min:1',
-			RequestAttribute::ALBUM_IDS_ATTRIBUTE . '.*' => ['required', new AlbumIDRule(false)],
+			RequestAttribute::ALBUM_IDS_ATTRIBUTE . '.*' => ['required', new RandomIDRule(false)],
 		];
 
 		$this->assertCount(count($expectedRuleMap), $rules);

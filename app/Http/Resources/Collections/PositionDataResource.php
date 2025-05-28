@@ -8,7 +8,9 @@
 
 namespace App\Http\Resources\Collections;
 
+use App\Contracts\Models\AbstractAlbum;
 use App\Http\Resources\Models\PhotoResource;
+use App\Http\Resources\Traits\HasPrepPhotoCollection;
 use Illuminate\Support\Collection;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\LiteralTypeScriptType;
@@ -20,6 +22,8 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 #[TypeScript()]
 class PositionDataResource extends Data
 {
+	use HasPrepPhotoCollection;
+
 	public ?string $id;
 	public ?string $title;
 	public ?string $track_url;
@@ -28,20 +32,18 @@ class PositionDataResource extends Data
 	public ?Collection $photos;
 
 	/**
-	 * @param string|null                       $id        the ID of the album; `null` for root album
-	 * @param string|null                       $title     the title of the album; `null` if untitled
+	 * @param AbstractAlbum|null                $album     the album; `null` for root album
 	 * @param Collection<int,\App\Models\Photo> $photos    the collection of photos with position data to be shown on map
 	 * @param string|null                       $track_url the URL of the album's track
 	 */
 	public function __construct(
-		?string $id,
-		?string $title,
+		?AbstractAlbum $album,
 		Collection $photos,
 		?string $track_url,
 	) {
-		$this->id = $id;
-		$this->title = $title;
+		$this->id = $album?->get_id();
+		$this->title = $album?->get_title();
 		$this->track_url = $track_url;
-		$this->photos = PhotoResource::collect($photos);
+		$this->photos = $this->toPhotoResources($photos, $album);
 	}
 }

@@ -8,6 +8,7 @@
 
 namespace App\Http\Requests\Album;
 
+use App\Constants\PhotoAlbum as PA;
 use App\Contracts\Http\Requests\HasAlbum;
 use App\Contracts\Http\Requests\HasAlbumSortingCriterion;
 use App\Contracts\Http\Requests\HasCompactBoolean;
@@ -54,6 +55,7 @@ use App\Rules\DescriptionRule;
 use App\Rules\EnumRequireSupportRule;
 use App\Rules\RandomIDRule;
 use App\Rules\TitleRule;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Validation\ValidationException;
@@ -77,9 +79,13 @@ class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, H
 	public function authorize(): bool
 	{
 		return Gate::check(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $this->album]) &&
-		($this->is_compact ||
-		$this->photo === null ||
-		$this->photo->album_id === $this->album->id);
+			(
+				$this->is_compact ||
+				$this->photo === null ||
+				(DB::table(PA::PHOTO_ALBUM)->where('album_id', $this->album->id)
+					->where('photo_id', $this->photo->id)
+					->count() > 1)
+			);
 	}
 
 	/**
@@ -95,12 +101,14 @@ class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, H
 			RequestAttribute::PHOTO_SORTING_COLUMN_ATTRIBUTE => ['present', 'nullable', new Enum(ColumnSortingPhotoType::class)],
 			RequestAttribute::PHOTO_SORTING_ORDER_ATTRIBUTE => [
 				'required_with:' . RequestAttribute::PHOTO_SORTING_COLUMN_ATTRIBUTE,
-				'nullable', new Enum(OrderSortingType::class),
+				'nullable',
+				new Enum(OrderSortingType::class),
 			],
 			RequestAttribute::ALBUM_SORTING_COLUMN_ATTRIBUTE => ['present', 'nullable', new Enum(ColumnSortingAlbumType::class)],
 			RequestAttribute::ALBUM_SORTING_ORDER_ATTRIBUTE => [
 				'required_with:' . RequestAttribute::ALBUM_SORTING_COLUMN_ATTRIBUTE,
-				'nullable', new Enum(OrderSortingType::class),
+				'nullable',
+				new Enum(OrderSortingType::class),
 			],
 			RequestAttribute::ALBUM_ASPECT_RATIO_ATTRIBUTE => ['present', 'nullable', new Enum(AspectRatioType::class)],
 			RequestAttribute::ALBUM_PHOTO_LAYOUT => ['present', 'nullable', new Enum(PhotoLayoutType::class)],

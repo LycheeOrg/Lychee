@@ -58,7 +58,6 @@ class PhotoFactory extends Factory
 			'taken_at' => $now,
 			'initial_taken_at_orig_tz' => null,
 			'is_starred' => false,
-			'album_id' => null,
 			'checksum' => sha1(rand()),
 			'original_checksum' => sha1(rand()),
 			'license' => 'none',
@@ -126,12 +125,8 @@ class PhotoFactory extends Factory
 	 */
 	public function in(Album $album): self
 	{
-		return $this->state(function (array $attributes) use ($album) {
-			return [
-				'album_id' => $album->id,
-			];
-		})->afterCreating(function (Photo $photo) {
-			$photo->load('album', 'owner');
+		return $this->hasAttached([$album])->afterCreating(function (Photo $photo) {
+			$photo->load('albums', 'owner');
 		});
 	}
 

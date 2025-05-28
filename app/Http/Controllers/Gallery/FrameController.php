@@ -63,7 +63,7 @@ class FrameController extends Controller
 	{
 		$photo = $this->loadPhoto($request->album(), 5);
 
-		return PhotoResource::fromModel($photo);
+		return new PhotoResource($photo, $request->album());
 	}
 
 	/**
@@ -86,12 +86,12 @@ class FrameController extends Controller
 		// default query
 		if ($album === null) {
 			$query = $this->photo_query_policy->applySearchabilityFilter(
-				query: Photo::query()->with(['album', 'size_variants']),
+				query: Photo::query()->with(['albums', 'size_variants']),
 				origin: null,
 				include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_frame')
 			);
 		} else {
-			$query = $album->photos()->with(['album', 'size_variants']);
+			$query = $album->photos()->with(['albums', 'size_variants']);
 		}
 
 		/** @var ?Photo $photo */
