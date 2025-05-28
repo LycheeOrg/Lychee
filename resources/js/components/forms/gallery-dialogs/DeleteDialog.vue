@@ -103,7 +103,7 @@ function executeDeletePhoto() {
 	} else {
 		photoDeletedIds = props.photoIds as string[];
 	}
-	PhotoService.delete(photoDeletedIds).then(() => {
+	PhotoService.delete(photoDeletedIds, getParentId() ?? "unsorted").then(() => {
 		toast.add({
 			severity: "success",
 			summary: trans("dialogs.photo_delete.deleted"),

@@ -29,13 +29,13 @@ class PhotoDeleteTest extends BaseApiWithDataTest
 
 		$response = $this->deleteJson('Photo', [
 			'photo_ids' => [$this->photo1->id],
-			'album_id' => $this->album2->id,
+			'from_id' => $this->album2->id,
 		]);
 		$this->assertUnauthorized($response);
 
 		$response = $this->actingAs($this->userNoUpload)->deleteJson('Photo', [
 			'photo_ids' => [$this->photo1->id],
-			'album_id' => $this->album2->id,
+			'from_id' => $this->album2->id,
 		]);
 		$this->assertForbidden($response);
 	}
@@ -47,6 +47,7 @@ class PhotoDeleteTest extends BaseApiWithDataTest
 
 		$response = $this->actingAs($this->userLocked)->deleteJson('Photo', [
 			'photo_ids' => [$this->photo1->id],
+			'from_id' => $this->album1->id,
 		]);
 		$this->assertForbidden($response);
 
@@ -56,6 +57,7 @@ class PhotoDeleteTest extends BaseApiWithDataTest
 
 		$response = $this->actingAs($this->userMayUpload1)->deleteJson('Photo', [
 			'photo_ids' => [$this->photo1->id],
+			'from_id' => $this->album1->id,
 		]);
 		$this->assertNoContent($response);
 

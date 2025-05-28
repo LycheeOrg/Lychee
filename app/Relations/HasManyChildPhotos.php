@@ -8,6 +8,7 @@
 
 namespace App\Relations;
 
+use App\Constants\PhotoAlbum as PA;
 use App\Contracts\Exceptions\InternalLycheeException;
 use App\Eloquent\FixedQueryBuilder;
 use App\Enum\OrderSortingType;
@@ -18,12 +19,12 @@ use App\Models\Photo;
 use App\Policies\PhotoQueryPolicy;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\InvalidCastException;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
- * @extends HasManyBidirectionally<Photo,Album>
+ * @extends BelongsToMany<Photo,Album>
  */
-class HasManyChildPhotos extends HasManyBidirectionally
+class HasManyChildPhotos extends BelongsToMany
 {
 	protected PhotoQueryPolicy $photo_query_policy;
 
@@ -35,11 +36,14 @@ class HasManyChildPhotos extends HasManyBidirectionally
 		// attributes must be initialized by then
 		$this->photo_query_policy = resolve(PhotoQueryPolicy::class);
 		parent::__construct(
-			Photo::query(),
-			$owning_album,
-			'album_id',
-			'id',
-			'album'
+			query: Photo::query(),
+			parent: $owning_album,
+			table: PA::PHOTO_ALBUM,
+			foreignPivotKey: PA::ALBUM_ID,
+			relatedPivotKey: PA::PHOTO_ID,
+			parentKey: 'id',
+			relatedKey: 'id',
+			relationName: 'albums'
 		);
 	}
 
@@ -73,8 +77,10 @@ class HasManyChildPhotos extends HasManyBidirectionally
 	 */
 	public function addConstraints()
 	{
+		$this->performJoin();
+
 		if (static::$constraints) {
-			parent::addConstraints();
+			$this->addWhereConstraints();
 			$this->photo_query_policy->applyVisibilityFilter($this->getRelationQuery());
 		}
 	}
@@ -94,10 +100,12 @@ class HasManyChildPhotos extends HasManyBidirectionally
 	 * @return Collection<int,Photo>
 	 *
 	 * @throws InvalidOrderDirectionException
+	 *
+	 * @phpstan-ignore method.childReturnType
 	 */
 	public function getResults(): Collection
 	{
-		if (is_null($this->getParentKey())) {
+		if (is_null($this->parent->{$this->parentKey})) { // @phpstan-ignore property.dynamicName
 			return $this->related->newCollection();
 		}
 
@@ -135,9 +143,10 @@ class HasManyChildPhotos extends HasManyBidirectionally
 		// matching very convenient and easy work. Then we'll just return them.
 		/** @var Album $model */
 		foreach ($models as $model) {
-			if (isset($dictionary[$key = $this->getDictionaryKey($model->getAttribute($this->localKey))])) {
-				/** @var Collection<int,Photo> $children_of_model */
-				$children_of_model = $this->getRelationValue($dictionary, $key, 'many');
+			$key = $this->getDictionaryKey($model->{$this->parentKey}); // @phpstan-ignore property.dynamicName
+
+			if (isset($dictionary[$key])) {
+				$children_of_model = $this->related->newCollection($dictionary[$key]);
 				$sorting = $model->getEffectivePhotoSorting();
 				$children_of_model = $children_of_model
 					->sortBy(
@@ -146,15 +155,34 @@ class HasManyChildPhotos extends HasManyBidirectionally
 						$sorting->order === OrderSortingType::DESC
 					)
 					->values();
-				$model->setRelation($relation, $children_of_model);
-				// This is the newly added code which sets this method apart
-				// from the original method and additionally sets the
-				// reverse link
 
-				foreach ($children_of_model as $child_model) {
-					$child_model->setRelation($this->foreign_method_name, $model);
-				}
+				$model->setRelation(
+					$relation, $children_of_model
+				);
 			}
+
+			// if (isset($dictionary[$key])) {
+
+			// // if (isset($dictionary[$key = $this->getDictionaryKey($model->getAttribute($this->localKey))])) {
+			// 	/** @var Collection<int,Photo> $children_of_model */
+			// 	$children_of_model = $this->getRelationValue($dictionary, $key, 'many');
+			// 	$sorting = $model->getEffectivePhotoSorting();
+			// 	$children_of_model = $children_of_model
+			// 		->sortBy(
+			// 			$sorting->column->value,
+			// 			in_array($sorting->column, SortingDecorator::POSTPONE_COLUMNS, true) ? SORT_NATURAL | SORT_FLAG_CASE : SORT_REGULAR,
+			// 			$sorting->order === OrderSortingType::DESC
+			// 		)
+			// 		->values();
+			// 	$model->setRelation($relation, $children_of_model);
+			// 	// This is the newly added code which sets this method apart
+			// 	// from the original method and additionally sets the
+			// 	// reverse link
+
+			// 	// foreach ($children_of_model as $child_model) {
+			// 	// 	$child_model->setRelation($this->foreign_method_name, $model);
+			// 	// }
+			// }
 		}
 
 		return $models;

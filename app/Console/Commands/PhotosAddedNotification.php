@@ -8,7 +8,9 @@
 
 namespace App\Console\Commands;
 
+use App\Constants\PhotoAlbum as PA;
 use App\Mail\PhotosAdded;
+use App\Models\BaseAlbumImpl;
 use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\User;
@@ -54,13 +56,6 @@ class PhotosAddedNotification extends Command
 					->find($notification->data['id']);
 
 				if ($photo !== null) {
-					if (!isset($photos[$photo->album_id])) {
-						$photos[$photo->album_id] = [
-							'name' => $photo->album->title,
-							'photos' => [],
-						];
-					}
-
 					$thumb_url = $photo->size_variants->getThumb()?->url;
 
 					// Mail clients do not like relative paths.
@@ -69,19 +64,26 @@ class PhotosAddedNotification extends Command
 						$thumb_url = URL::asset($thumb_url);
 					}
 
-					// If the url config doesn't contain a trailing slash then add it
-					if (str_ends_with(config('app.url'), '/')) {
-						$trailing_slash = '';
-					} else {
-						$trailing_slash = '/';
-					}
+					BaseAlbumImpl::query()->join(PA::PHOTO_ALBUM, PA::ALBUM_ID, '=', 'base_albums.id')
+						->where(PA::PHOTO_ID, '=', $photo->id)
+						->get()
+						->each(function (BaseAlbumImpl $album) use (&$photos, $photo, $thumb_url): void {
+							$album_id = $album->id;
+							$title = $album->title;
 
-					$photos[$photo->album_id]['photos'][$photo->id] = [
-						'title' => $photo->title,
-						'thumb' => $thumb_url,
-						// TODO: Clean this up. There should be a better way to get the URL of a photo than constructing it manually
-						'link' => config('app.url') . $trailing_slash . 'r/' . $photo->album_id . '/' . $photo->id,
-					];
+							if (!isset($photos[$album_id])) {
+								$photos[$album_id] = [
+									'name' => $title,
+									'photos' => [],
+								];
+							}
+
+							$photos[$album_id]['photos'][$photo->id] = [
+								'title' => $photo->title,
+								'thumb' => $thumb_url,
+								'link' => route('gallery', ['albumId' => $album_id, 'photoId' => $photo->id]),
+							];
+						});
 				}
 			}
 
