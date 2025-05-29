@@ -79,7 +79,7 @@
 						<a
 							v-tooltip.bottom="'Start slideshow'"
 							@click="emits('toggleSlideShow')"
-							v-if="props.album.photos.length > 0"
+							v-if="props.album.photos.length > 0 && is_slideshow_enabled"
 							class="shrink-0 px-3 cursor-pointer text-muted-color inline-block transform duration-300 hover:scale-150 hover:text-color"
 						>
 							<i class="pi pi-play" />
@@ -136,7 +136,7 @@ import { computed } from "vue";
 
 const auth = useAuthStore();
 const lycheeStore = useLycheeStateStore();
-const { is_se_enabled, is_se_preview_enabled, are_nsfw_visible } = storeToRefs(lycheeStore);
+const { is_se_enabled, is_se_preview_enabled, are_nsfw_visible, is_slideshow_enabled } = storeToRefs(lycheeStore);
 const { user } = storeToRefs(auth);
 
 const props = defineProps<{
