@@ -21,6 +21,13 @@ return [
         'api_token' => 'Token API ...',
         'missing_fields' => 'Brakujące pola',
     ],
+    'register' => [
+        'username_exists' => 'Nazwa użytkownika już istnieje.',
+        'password_mismatch' => 'Hasła nie pasują do siebie.',
+        'signup' => 'Zarejestruj się',
+        'error' => 'Wystąpił błąd podczas rejestrowania konta.',
+        'success' => 'Twoje konto zostało pomyślnie utworzone.',
+    ],
     'token' => [
         'unavailable' => 'Ten token został już wyświetlony.',
         'no_data' => 'Nie wygenerowano tokenu API.',

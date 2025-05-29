@@ -9,6 +9,7 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Profile\UpdateLogin;
+use App\Actions\User\Create;
 use App\Actions\User\TokenDisable;
 use App\Actions\User\TokenReset;
 use App\Enum\CacheTag;
@@ -16,6 +17,7 @@ use App\Events\TaggedRouteCacheUpdated;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;
 use App\Http\Requests\Profile\ChangeTokenRequest;
+use App\Http\Requests\Profile\RegistrationRequest;
 use App\Http\Requests\Profile\UpdateProfileRequest;
 use App\Http\Resources\Models\UserResource;
 use App\Http\Resources\Models\Utils\UserToken;
@@ -26,6 +28,27 @@ use Illuminate\Support\Facades\Auth;
 
 class ProfileController extends Controller
 {
+	/**
+	 * Allow the registration of a new user.
+	 * @return void 
+	 */
+	public function register(RegistrationRequest $request, Create $create)
+	{
+		$user = $create->do(
+			username: $request->username(),
+			password: $request->password(),
+			email: $request->email(),
+			may_upload: Configs::getValueAsBool('oauth_grant_new_user_upload_rights'),
+			may_edit_own_settings: Configs::getValueAsBool('oauth_grant_new_user_modification_rights'),
+			quota_kb: 0,
+		);
+
+		// Log in the user directly after registration
+		Auth::login($user);
+
+		return response()->json(['message' => 'User registered successfully'], 201);
+	}
+
 	/**
 	 * Update the Login information of the current user.
 	 */
