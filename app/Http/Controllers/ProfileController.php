@@ -23,6 +23,7 @@ use App\Http\Resources\Models\UserResource;
 use App\Http\Resources\Models\Utils\UserToken;
 use App\Models\Configs;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 
@@ -31,9 +32,9 @@ class ProfileController extends Controller
 	/**
 	 * Allow the registration of a new user.
 	 *
-	 * @return void
+	 * @return JsonResponse
 	 */
-	public function register(RegistrationRequest $request, Create $create)
+	public function register(RegistrationRequest $request, Create $create): JsonResponse
 	{
 		$user = $create->do(
 			username: $request->username(),
