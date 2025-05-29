@@ -30,7 +30,8 @@ class ProfileController extends Controller
 {
 	/**
 	 * Allow the registration of a new user.
-	 * @return void 
+	 *
+	 * @return void
 	 */
 	public function register(RegistrationRequest $request, Create $create)
 	{
