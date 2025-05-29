@@ -4,7 +4,7 @@
 	</div>
 	<Panel class="border-none p-9 mx-auto max-w-3x" pt:content:class="flex flex-col items-center" pt:header:class="hidden" v-if="is_loaded">
 		<div class="my-12" v-if="initdata">
-			<h1 class="text-center text-2xl text-surface-0 uppercase font-extralight">
+			<h1 class="text-center text-2xl text-muted-color-emphasis uppercase font-extralight">
 				{{ initdata.landing_title }}
 			</h1>
 			<h2 class="text-center text-base text-muted-color uppercase font-extralight">
@@ -12,7 +12,7 @@
 			</h2>
 		</div>
 		<div class="my-12" v-else>
-			<h1 class="text-center text-2xl text-surface-0 uppercase font-extralight">
+			<h1 class="text-center text-2xl text-muted-color-emphasis uppercase font-extralight">
 				{{ title }}
 			</h1>
 		</div>
@@ -29,13 +29,15 @@
 				</FloatLabel>
 				<FloatLabel variant="on">
 					<InputPassword id="password" v-model="password" autocomplete="new-password" />
-					<label for="password">{{ $t("profile.login.password") }}</label>
+					<label for="password">{{ $t("profile.login.new_password") }}</label>
 				</FloatLabel>
 				<FloatLabel variant="on">
 					<InputPassword id="password_confirmation" v-model="passwordConfirmation" autocomplete="new-password" />
 					<label for="password_confirmation">{{ $t("profile.login.confirm_new_password") }}</label>
 				</FloatLabel>
-				<Message v-if="confirmationError" severity="error" class="text-sm mt-2" :content="confirmationError" />
+				<Message v-if="confirmationError" severity="error" class="text-sm mt-2">
+					{{ confirmationError }}
+				</Message>
 			</div>
 			<div class="flex items-center mt-9">
 				<Button @click="register" :disabled="!isFormValid" severity="contrast" class="w-full font-bold border-none rounded-xl">
@@ -61,6 +63,7 @@ import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { trans } from "laravel-vue-i18n";
 import { useToast } from "primevue/usetoast";
+import Message from "primevue/message";
 
 const router = useRouter();
 const lycheeStore = useLycheeStateStore();

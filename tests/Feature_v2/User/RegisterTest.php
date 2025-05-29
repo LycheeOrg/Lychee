@@ -71,4 +71,17 @@ class RegisterTest extends BaseApiWithDataTest
 			'email' => 'newuser@example.com',
 		]);
 	}
+
+	public function testRegistrationFailsWithInvalidEmail()
+	{
+		$response = $this->putJson('/Profile', [
+			'username' => 'testuser',
+			'email' => 'invalid-email',
+			'password' => 'password123',
+			'password_confirmation' => 'password123',
+		]);
+
+		$this->assertUnprocessable($response);
+		$response->assertJsonValidationErrors(['email']);
+	}
 }
