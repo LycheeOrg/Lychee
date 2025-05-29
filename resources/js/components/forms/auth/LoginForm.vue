@@ -1,25 +1,39 @@
 <template>
-	<form v-focustrap class="flex flex-col gap-4 relative max-w-md w-full text-sm rounded-md pt-9">
-		<div class="flex justify-center gap-2">
+	<form v-focustrap class="flex flex-col gap-4 relative max-w-md w-full text-sm rounded-md pt-9" v-if="oauths !== undefined">
+		<div
+			:class="{
+				'flex justify-center gap-2 w-full': true,
+				'flex-col px-9': !is_basic_auth_enabled,
+				'flex-row': is_basic_auth_enabled,
+			}"
+		>
 			<a
 				v-if="is_webauthn_enabled"
-				class="inline-block text-xl text-muted-color transition-all duration-300 hover:text-primary-400 hover:scale-150 cursor-pointer"
+				:class="{
+					'inline-block text-xl text-muted-color transition-all duration-300 hover:text-primary-400 cursor-pointer': true,
+					'hover:scale-150': is_basic_auth_enabled,
+					'hover:scale-105': !is_basic_auth_enabled,
+				}"
 				@click="openWebAuthn"
 				title="WebAuthn"
 			>
 				<i class="fa-solid fa-fingerprint" />
+				<span v-if="!is_basic_auth_enabled" class="ml-2 text-base">{{ sprintf(trans("dialogs.login.auth_with"), "WebAuthn") }}</span>
 			</a>
-			<template v-if="oauths !== undefined">
-				<a
-					v-for="oauth in oauths"
-					:href="oauth.url"
-					class="inline-block text-xl text-muted-color hover:scale-125 transition-all cursor-pointer hover:text-primary-400 mb-6"
-					:title="oauth.provider"
-					:key="oauth.provider"
-				>
-					<i class="items-center" :class="oauth.icon"></i>
-				</a>
-			</template>
+			<a
+				v-for="oauth in oauths"
+				:href="oauth.url"
+				:class="{
+					'inline-block text-xl text-muted-color transition-all duration-300 hover:text-primary-400 cursor-pointer': true,
+					'hover:scale-150': is_basic_auth_enabled,
+					'hover:scale-105': !is_basic_auth_enabled,
+				}"
+				:title="oauth.provider"
+				:key="oauth.provider"
+			>
+				<i class="items-center" :class="oauth.icon"></i>
+				<span v-if="!is_basic_auth_enabled" class="ml-2 text-base">{{ sprintf(trans("dialogs.login.auth_with"), oauth.provider) }}</span>
+			</a>
 		</div>
 		<template v-if="is_basic_auth_enabled">
 			<div class="inline-flex flex-col gap-2" :class="props.padding ?? 'px-9'">
@@ -86,6 +100,8 @@ import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { onMounted } from "vue";
+import { trans } from "laravel-vue-i18n";
+import { sprintf } from "sprintf-js";
 
 const emits = defineEmits<{
 	"logged-in": [];
@@ -137,9 +153,18 @@ function openWebAuthn() {
 	invalidPassword.value = false;
 }
 
+function redirectToOauth() {
+	if (is_basic_auth_enabled.value || is_webauthn_enabled.value || oauths.value?.length !== 1) {
+		return;
+	}
+
+	window.location.href = oauths.value[0].url;
+}
+
 onMounted(() => {
 	authStore.getOauthData().then((data) => {
 		oauths.value = data;
+		redirectToOauth();
 	});
 });
 </script>

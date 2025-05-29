@@ -6,11 +6,15 @@
 		:pt:legendlabel:class="'capitalize'"
 		v-if="oauths !== undefined"
 	>
-		<div class="pt-5" v-if="oauths.length === 0">
-			<p>{{ $t("profile.oauth.setup_env") }}</p>
+		<div v-if="oauths.length === 0">
+			<p class="text-muted-color">{{ $t("profile.oauth.setup_env") }}</p>
 		</div>
 		<template v-else>
-			<div v-for="oauth in oauths" class=" text-muted-color-emphasis {{ $oauthData->isEnabled ? '' : 'hover:text-primary-400'}}">
+			<div
+				v-for="oauth in oauths"
+				class=" text-muted-color-emphasis {{ $oauthData->isEnabled ? '' : 'hover:text-primary-400'}}"
+				:key="oauth.providerType"
+			>
 				<i class="align-middle w-4" :class="oauth.icon + (oauth.isEnabled ? 'text-create-600' : '')"></i>
 				<span class="ml-2" v-if="oauth.isEnabled">
 					{{ sprintf($t("profile.oauth.token_registered"), capitalize(oauth.providerType)) }}

@@ -13,13 +13,10 @@ use App\DTO\DiagnosticData;
 use App\Models\User;
 use App\Providers\AuthServiceProvider;
 use Illuminate\Support\Facades\Schema;
-use LycheeVerify\Verify;
 
 class AuthDisabledCheck implements DiagnosticPipe
 {
-	public function __construct(private Verify $verify)
-	{
-	}
+	public const INFO = 'You need to enable at least one authentication method to be able to use Lychee...';
 
 	/**
 	 * {@inheritDoc}
@@ -40,19 +37,17 @@ class AuthDisabledCheck implements DiagnosticPipe
 		// From now on, we assume that basic auth is disabled.
 
 		if (!AuthServiceProvider::isWebAuthnEnabled() && !AuthServiceProvider::isOauthEnabled()) {
-			$data[] = DiagnosticData::error('All authentication methods are disabled. Really?', self::class, [
-				'You need to enable at least one authentication method to be able to use Lychee...',
-			]);
+			$data[] = DiagnosticData::error('All authentication methods are disabled. Really?', self::class, [self::INFO]);
 
 			return $next($data);
 		}
 
 		$number_admin_with_oauth = AuthServiceProvider::isOauthEnabled() ? $this->oauthChecks($data) : 0;
 		$number_admin_with_webauthn = AuthServiceProvider::isWebAuthnEnabled() ? $this->webauthnCheck($data) : 0;
-		if ($number_admin_with_oauth === 0 && $number_admin_with_webauthn === 0) {
-			$data[] = DiagnosticData::error('Basic auth is disabled and there are no admin user with Oauth or WebAuthn enabled.', self::class, [
-				'You need to enable at least one authentication method to be able to use Lychee...',
-			]);
+		if (($number_admin_with_oauth === 0 && AuthServiceProvider::isOauthEnabled()) &&
+			($number_admin_with_webauthn === 0 && AuthServiceProvider::isWebAuthnEnabled())
+		) {
+			$data[] = DiagnosticData::error('Basic auth is disabled and there are no admin user with Oauth or WebAuthn enabled.', self::class, [self::INFO]);
 		}
 
 		return $next($data);
@@ -67,7 +62,7 @@ class AuthDisabledCheck implements DiagnosticPipe
 	{
 		$number_admin_with_oauth = User::query()->has('oauthCredentials')->where('may_administrate', '=', true)->count();
 		if (!AuthServiceProvider::isWebAuthnEnabled() && $number_admin_with_oauth === 0) {
-			$data[] = DiagnosticData::error('Basic auth and Webauthn are disabled and there are no admin user with Oauth enabled.', self::class);
+			$data[] = DiagnosticData::error('Basic auth and Webauthn are disabled and there are no admin user with Oauth enabled.', self::class, [self::INFO]);
 		}
 
 		return $number_admin_with_oauth;
@@ -82,7 +77,7 @@ class AuthDisabledCheck implements DiagnosticPipe
 	{
 		$number_admin_with_webauthn = User::query()->has('webAuthnCredentials')->where('may_administrate', '=', true)->count();
 		if (!AuthServiceProvider::isOauthEnabled() && $number_admin_with_webauthn === 0) {
-			$data[] = DiagnosticData::error('Basic auth is disabled and there are no admin user with WebAuthn enabled.', self::class);
+			$data[] = DiagnosticData::error('Basic auth is disabled and there are no admin user with WebAuthn enabled.', self::class, [self::INFO]);
 		}
 
 		return $number_admin_with_webauthn;

@@ -67,6 +67,7 @@ return [
         'button_hidden' => '',
     ],
     'login' => [
+        'auth_with' => 'Authenticate with %s',
         'username' => '',
         'password' => '',
         'unknown_invalid' => '',
