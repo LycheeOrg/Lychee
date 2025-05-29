@@ -61,6 +61,10 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		title: "gallery.title",
 		dropbox_api_key: "disabled",
 
+		// Login options
+		is_basic_auth_enabled: true,
+		is_webauthn_enabled: true,
+
 		// Lychee Supporter Edition
 		is_se_enabled: false,
 		is_se_preview_enabled: false,
@@ -124,6 +128,9 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 
 					this.title = data.title;
 					this.dropbox_api_key = data.dropbox_api_key;
+
+					this.is_basic_auth_enabled = data.is_basic_auth_enabled;
+					this.is_webauthn_enabled = data.is_webauthn_enabled;
 
 					this.is_se_enabled = data.is_se_enabled;
 					this.is_se_preview_enabled = data.is_se_preview_enabled;

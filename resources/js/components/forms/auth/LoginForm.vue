@@ -2,6 +2,7 @@
 	<form v-focustrap class="flex flex-col gap-4 relative max-w-md w-full text-sm rounded-md pt-9">
 		<div class="flex justify-center gap-2">
 			<a
+				v-if="is_webauthn_enabled"
 				class="inline-block text-xl text-muted-color transition-all duration-300 hover:text-primary-400 hover:scale-150 cursor-pointer"
 				@click="openWebAuthn"
 				title="WebAuthn"
@@ -14,28 +15,52 @@
 					:href="oauth.url"
 					class="inline-block text-xl text-muted-color hover:scale-125 transition-all cursor-pointer hover:text-primary-400 mb-6"
 					:title="oauth.provider"
+					:key="oauth.provider"
 				>
 					<i class="items-center" :class="oauth.icon"></i>
 				</a>
 			</template>
 		</div>
-		<div class="inline-flex flex-col gap-2" :class="props.padding ?? 'px-9'">
-			<FloatLabel variant="on">
-				<InputText id="username" v-model="username" autocomplete="username" :autofocus="true" />
-				<label for="username">{{ $t("dialogs.login.username") }}</label>
-			</FloatLabel>
-		</div>
-		<div class="inline-flex flex-col gap-2" :class="props.padding ?? 'px-9'">
-			<FloatLabel variant="on">
-				<InputPassword id="password" v-model="password" @keydown.enter="login" autocomplete="current-password" />
-				<label for="password">{{ $t("dialogs.login.password") }}</label>
-			</FloatLabel>
-			<Message v-if="invalidPassword" severity="error">{{ $t("dialogs.login.unknown_invalid") }}</Message>
-		</div>
-		<div class="text-muted-color text-right font-semibold" :class="props.padding ?? 'px-9'">
-			Lychee <span class="text-primary-500" v-if="is_se_enabled">SE</span>
-		</div>
-		<div class="flex items-center mt-9">
+		<template v-if="is_basic_auth_enabled">
+			<div class="inline-flex flex-col gap-2" :class="props.padding ?? 'px-9'">
+				<FloatLabel variant="on">
+					<InputText id="username" v-model="username" autocomplete="username" :autofocus="true" />
+					<label for="username">{{ $t("dialogs.login.username") }}</label>
+				</FloatLabel>
+			</div>
+			<div class="inline-flex flex-col gap-2" :class="props.padding ?? 'px-9'">
+				<FloatLabel variant="on">
+					<InputPassword id="password" v-model="password" @keydown.enter="login" autocomplete="current-password" />
+					<label for="password">{{ $t("dialogs.login.password") }}</label>
+				</FloatLabel>
+				<Message v-if="invalidPassword" severity="error">{{ $t("dialogs.login.unknown_invalid") }}</Message>
+			</div>
+			<div class="text-muted-color text-right font-semibold" :class="props.padding ?? 'px-9'">
+				Lychee <span class="text-primary-500" v-if="is_se_enabled">SE</span>
+			</div>
+			<div class="flex items-center mt-9">
+				<Button
+					v-if="closeCallback !== undefined"
+					@click="props.closeCallback"
+					severity="secondary"
+					class="w-full font-bold border-none rounded-none rounded-bl-xl shrink"
+				>
+					{{ $t("dialogs.button.cancel") }}
+				</Button>
+				<Button
+					@click="login"
+					severity="contrast"
+					:class="{
+						'w-full font-bold border-none shrink': true,
+						'rounded-none rounded-br-xl': closeCallback !== undefined,
+						'rounded-xl': closeCallback === undefined,
+					}"
+				>
+					{{ $t("dialogs.login.signin") }}
+				</Button>
+			</div>
+		</template>
+		<div class="flex items-center mt-9" v-else>
 			<Button
 				v-if="closeCallback !== undefined"
 				@click="props.closeCallback"
@@ -43,17 +68,6 @@
 				class="w-full font-bold border-none rounded-none rounded-bl-xl shrink"
 			>
 				{{ $t("dialogs.button.cancel") }}
-			</Button>
-			<Button
-				@click="login"
-				severity="contrast"
-				:class="{
-					'w-full font-bold border-none shrink': true,
-					'rounded-none rounded-br-xl': closeCallback !== undefined,
-					'rounded-xl': closeCallback === undefined,
-				}"
-			>
-				{{ $t("dialogs.login.signin") }}
 			</Button>
 		</div>
 	</form>
@@ -93,7 +107,7 @@ const password = ref("");
 const authStore = useAuthStore();
 const togglableStore = useTogglablesStateStore();
 const lycheeStore = useLycheeStateStore();
-const { is_se_enabled } = storeToRefs(lycheeStore);
+const { is_se_enabled, is_basic_auth_enabled, is_webauthn_enabled } = storeToRefs(lycheeStore);
 const { is_login_open, is_webauthn_open } = storeToRefs(togglableStore);
 const invalidPassword = ref(false);
 
