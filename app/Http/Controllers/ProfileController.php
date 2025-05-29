@@ -40,8 +40,8 @@ class ProfileController extends Controller
 			username: $request->username(),
 			password: $request->password(),
 			email: $request->email(),
-			may_upload: Configs::getValueAsBool('oauth_grant_new_user_upload_rights'),
-			may_edit_own_settings: Configs::getValueAsBool('oauth_grant_new_user_modification_rights'),
+			may_upload: Configs::getValueAsBool('grant_new_user_upload_rights'),
+			may_edit_own_settings: Configs::getValueAsBool('grant_new_user_modification_rights'),
 			quota_kb: 0,
 		);
 

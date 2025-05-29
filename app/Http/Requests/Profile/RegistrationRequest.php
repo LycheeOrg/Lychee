@@ -10,6 +10,7 @@ use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasEmailTrait;
 use App\Http\Requests\Traits\HasPasswordTrait;
 use App\Http\Requests\Traits\HasUsernameTrait;
+use App\Models\Configs;
 use App\Rules\PasswordRule;
 use App\Rules\UsernameRule;
 
@@ -24,7 +25,7 @@ class RegistrationRequest extends BaseApiRequest implements HasUsername, HasPass
 	 */
 	public function authorize(): bool
 	{
-		return true;
+		return Configs::getValueAsBool('user_registration_enabled');
 	}
 
 	/**

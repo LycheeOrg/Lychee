@@ -85,8 +85,8 @@ class Oauth
 			username: $user->getName() ?? $user->getEmail() ?? $user->getId(),
 			email: $user->getEmail(),
 			password: strtr(base64_encode(random_bytes(8)), '+/', '-_'),
-			may_upload: Configs::getValueAsBool('oauth_grant_new_user_upload_rights'),
-			may_edit_own_settings: Configs::getValueAsBool('oauth_grant_new_user_modification_rights'));
+			may_upload: Configs::getValueAsBool('grant_new_user_upload_rights'),
+			may_edit_own_settings: Configs::getValueAsBool('grant_new_user_modification_rights'));
 
 		Auth::login($new_user);
 
