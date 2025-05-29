@@ -22,7 +22,7 @@
 				<template #content="slotProps">
 					<div
 						data-type="timelineBlock"
-						:data-date="slotProps.item.data[0].timeline.timeDate"
+						:data-date="(slotProps.item.data[0] as App.Http.Resources.Models.PhotoResource).timeline?.time_date"
 						class="flex flex-wrap flex-row shrink w-full justify-start gap-1 sm:gap-2 md:gap-4 pb-8"
 					>
 						<div class="w-full text-left font-semibold text-muted-color-emphasis text-lg">{{ slotProps.item.header }}</div>
