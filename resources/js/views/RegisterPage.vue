@@ -89,7 +89,12 @@ function goBack() {
 const toast = useToast();
 
 function register() {
-	ProfileService.register({ username: username.value, email: email.value, password: password.value, password_confirmation: passwordConfirmation.value })
+	ProfileService.register({
+		username: username.value,
+		email: email.value,
+		password: password.value,
+		password_confirmation: passwordConfirmation.value,
+	})
 		.then(() => {
 			errorMessage.value = ""; // Clear error message on success
 			toast.add({ severity: "success", summary: trans("profile.register.success"), life: 3000 });

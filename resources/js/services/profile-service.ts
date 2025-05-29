@@ -19,7 +19,12 @@ const ProfileService = {
 	unsetToken(): Promise<AxiosResponse<void>> {
 		return axios.post(`${Constants.getApiUrl()}Profile::unsetToken`, {});
 	},
-	register(data: { username: string; email: string; password: string; password_confirmation: string }): Promise<AxiosResponse<{ success: boolean; message: string }>> {
+	register(data: {
+		username: string;
+		email: string;
+		password: string;
+		password_confirmation: string;
+	}): Promise<AxiosResponse<{ success: boolean; message: string }>> {
 		return axios.put(`${Constants.getApiUrl()}Profile`, data);
 	},
 };
