@@ -29,7 +29,7 @@
 					<div class="w-full">
 						<General :configs="configs" :hash="hash" v-if="tab === ''" @refresh="load" />
 						<CssJs v-if="tab === 'CssJs'" />
-						<template v-for="config in configs" :id="config.cat">
+						<template v-for="config in configs" :key="config.cat">
 							<Fieldset
 								v-if="tab === config.cat"
 								:legend="config.name"

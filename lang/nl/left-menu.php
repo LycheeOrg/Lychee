@@ -6,22 +6,22 @@ return [
 	| Left Menu
 	|--------------------------------------------------------------------------
 	*/
-	'back_to_gallery' => 'Back to Gallery',
+	'back_to_gallery' => 'Terug naar galerij',
 
-	'login' => 'Login',
+	'login' => 'Inloggen',
 	'frame' => 'Frame',
-	'map' => 'Map',
-	'admin' => 'Admin',
-	'clockwork' => 'Clockwork App',
-	'logs' => 'Show Logs',
-	'jobs' => 'Show Job History',
-	'user' => 'User',
+	'map' => 'Kaart',
+	'admin' => 'Beheer',
+	'clockwork' => 'Clockwork-app',
+	'logs' => 'Toon logs',
+	'jobs' => 'Toon taakgeschiedenis',
+	'user' => 'Gebruiker',
 
-	'sign_out' => 'Sign Out',
+	'sign_out' => 'Uitloggen',
 
-	'about' => 'About',
-	'changelog' => 'Changelog',
-	'api' => 'API Documentation',
-	'source_code' => 'Source Code',
-	'support' => 'Support',
+	'about' => 'Over',
+	'changelog' => 'Wijzigingslogboek',
+	'api' => 'API-documentatie',
+	'source_code' => 'Broncode',
+	'support' => 'Ondersteuning',
 ];
