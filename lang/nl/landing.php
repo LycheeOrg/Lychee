@@ -6,8 +6,8 @@ return [
 	| Landing page
 	|--------------------------------------------------------------------------
 	*/
-	'gallery' => 'Gallery',
-	'access_gallery' => 'Access the gallery',
+	'gallery' => 'Galerij',
+	'access_gallery' => 'Naar de galerij',
 	'Powered_by_Lychee' => 'Powered by Lychee',
-	'copyright' => 'All images on this website are subject to copyright by %1$s © %2$s',
+	'copyright' => 'Alle afbeeldingen op deze website zijn auteursrechtelijk beschermd door %1$s © %2$s',
 ];
