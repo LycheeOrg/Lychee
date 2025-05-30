@@ -22,7 +22,7 @@ use function Safe\preg_match;
  */
 class ImagickPdfCheck implements DiagnosticPipe
 {
-	const DETAILS = [
+	public const DETAILS = [
 		'Make sure to have the policy.xml file in `/etc/ImageMagick-6/policy.xml`.',
 		'Verify that the file contains the line <policy domain="coder" rights="read|write" pattern="PDF"/> .',
 	];
@@ -44,10 +44,10 @@ class ImagickPdfCheck implements DiagnosticPipe
 			return $next($data);
 		}
 
-
 		try {
 			if (!file_exists('/etc/ImageMagick-6/policy.xml')) {
 				$data[] = DiagnosticData::warn('The policy.xml file does not exist at the expected location: /etc/ImageMagick-6/policy.xml.', self::class, self::DETAILS);
+
 				return $next($data);
 			}
 
