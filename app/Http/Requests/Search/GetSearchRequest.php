@@ -21,6 +21,7 @@ use App\Rules\RandomIDRule;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use function Safe\base64_decode;
+use function Safe\preg_match_all;
 
 class GetSearchRequest extends BaseApiRequest implements HasAbstractAlbum, HasTerms
 {
