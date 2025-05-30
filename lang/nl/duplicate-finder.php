@@ -6,24 +6,24 @@ return [
 	| Duplicate Finder Page
 	|--------------------------------------------------------------------------
 	*/
-	'title' => 'Maintenance',
-	'intro' => 'On this page you will find the duplicate pictures found in your database.',
-	'found' => ' duplicates found!',
-	'invalid-search' => ' At least the checksum or title condition must be checked.',
-	'checksum-must-match' => 'Checksum must match.',
-	'title-must-match' => 'Title must match.',
-	'must-be-in-same-album' => 'Must be in the same album.',
+	'title' => 'Onderhoud',
+	'intro' => 'Op deze pagina vindt u de dubbele foto’s die in uw database zijn gevonden.',
+	'found' => ' duplicaten gevonden!',
+	'invalid-search' => ' Minstens de checksum- of titelvoorwaarde moet zijn aangevinkt.',
+	'checksum-must-match' => 'Checksum moet overeenkomen.',
+	'title-must-match' => 'Titel moet overeenkomen.',
+	'must-be-in-same-album' => 'Moet in hetzelfde album zijn.',
 
 	'columns' => [
 		'album' => 'Album',
-		'photo' => 'Photo',
+		'photo' => 'Foto',
 		'checksum' => 'Checksum',
 	],
 
 	'warning' => [
-		'no-original-left' => 'No original left.',
-		'keep-one' => 'You selected all duplicates in this group. Please chose at least one duplicate to keep.',
+		'no-original-left' => 'Geen origineel meer over.',
+		'keep-one' => 'U heeft alle duplicaten in deze groep geselecteerd. Kies alstublieft minstens één duplicaat om te behouden.',
 	],
 
-	'delete-selected' => 'Delete selected',
+	'delete-selected' => 'Geselecteerde verwijderen',
 ];

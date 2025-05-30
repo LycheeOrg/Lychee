@@ -33,7 +33,9 @@
 				}"
 			>
 				<ToggleSwitch v-model="is_expert_mode" input-id="expertModeToggle" :disabled="!props.hasExperts"></ToggleSwitch>
-				<label for="expertModeToggle" class="text-muted-color">{{ $t("Expert Mode") }}<i class="pi pi-graduation-cap ml-2"></i></label>
+				<label for="expertModeToggle" class="text-muted-color"
+					>{{ $t("settings.all.expert_settings") }}<i class="pi pi-graduation-cap ml-2"></i
+				></label>
 			</div>
 			<div class="flex items-center w-full justify-end">
 				<i

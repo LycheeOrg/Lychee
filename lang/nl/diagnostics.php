@@ -5,17 +5,17 @@ return [
 	| Diagnostics page
 	|--------------------------------------------------------------------------
 	*/
-    'title' => 'Diagnostics',
-    'copy_to_clipboard' => 'Kopieer diagnostieken naar plakbord',
+    'title' => 'Diagnostiek',
+    'copy_to_clipboard' => 'Kopieer diagnostieken naar klembord',
     'self-diagnosis' => 'Zelfdiagnose',
-    'info' => 'Info',
+    'info' => 'Informatie',
     'space' => 'Ruimte',
-    'load_space' => 'Load space usage.',
-    'configuration' => 'Configuration',
-    'loading' => 'Loading...',
-    'identical_content' => 'Identical content',
+    'load_space' => 'Laad ruimtegebruik.',
+    'configuration' => 'Configuratie',
+    'loading' => 'Laden...',
+    'identical_content' => 'Identieke inhoud',
     'toast' => [
-        'info' => 'Info',
-        'copy' => 'Diagnostics copied to clipboard!',
+        'info' => 'Informatie',
+        'copy' => 'Diagnostieken gekopieerd naar klembord!',
     ],
 ];
