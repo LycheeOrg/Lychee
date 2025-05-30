@@ -53,17 +53,20 @@ class AlbumSearch
 	}
 
 	/**
-	 * @param string[] $terms
+	 * @param string[]   $terms
+	 * @param Album|null $album the optional top album which is used as a search base
 	 *
 	 * @return Collection<int,Album>
 	 *
 	 * @throws InternalLycheeException
 	 */
-	public function queryAlbums(array $terms): Collection
+	public function queryAlbums(array $terms, ?Album $album = null): Collection
 	{
 		$album_query = Album::query()
 			->select(['albums.*'])
-			->join('base_albums', 'base_albums.id', '=', 'albums.id');
+			->join('base_albums', 'base_albums.id', '=', 'albums.id')
+			->when($album !== null, fn ($q) => $q->where('albums._lft', '>=', $album->_lft)
+				->where('albums._rgt', '<=', $album->_rgt));
 		$this->addSearchCondition($terms, $album_query);
 		$this->albumQueryPolicy->applyBrowsabilityFilter($album_query);
 

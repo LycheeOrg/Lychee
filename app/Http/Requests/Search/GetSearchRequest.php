@@ -59,10 +59,18 @@ class GetSearchRequest extends BaseApiRequest implements HasAbstractAlbum, HasTe
 		$this->album = $this->album_factory->findNullalbleAbstractAlbumOrFail($album_id);
 
 		// Escape special characters for a LIKE query
-		$this->terms = explode(' ', str_replace(
+		$terms = str_replace(
 			['\\', '%', '_'],
 			['\\\\', '\\%', '\\_'],
 			base64_decode($values[RequestAttribute::TERM_ATTRIBUTE], true)
-		));
+		);
+
+		// Explode the string by spaces but keep encapsulated strings as single terms
+		// This regex matches quoted strings and unquoted words
+		// Note: This regex is not perfect and may not handle all edge cases, but it works for most common cases.
+		// It captures quoted strings as a single match and unquoted words separately.
+		// Example: "hello world" foo bar -> ["hello world", "foo", "bar"]
+		preg_match_all('/"[^"]*"|\S+/', $terms, $matches);
+		$this->terms = array_map(fn ($term) => trim($term, '"'), $matches[0]);
 	}
 }
