@@ -22,6 +22,11 @@ use function Safe\preg_match;
  */
 class ImagickPdfCheck implements DiagnosticPipe
 {
+	const DETAILS = [
+		'Make sure to have the policy.xml file in `/etc/ImageMagick-6/policy.xml`.',
+		'Verify that the file contains the line <policy domain="coder" rights="read|write" pattern="PDF"/> .',
+	];
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -39,19 +44,25 @@ class ImagickPdfCheck implements DiagnosticPipe
 			return $next($data);
 		}
 
+
 		try {
+			if (!file_exists('/etc/ImageMagick-6/policy.xml')) {
+				$data[] = DiagnosticData::warn('The policy.xml file does not exist at the expected location: /etc/ImageMagick-6/policy.xml.', self::class, self::DETAILS);
+				return $next($data);
+			}
+
 			$imagic_policy = file_get_contents('/etc/ImageMagick-6/policy.xml');
 			if (1 === preg_match('/<policy domain="coder" rights="none" pattern="PDF"/', $imagic_policy)) {
 				$data[] = DiagnosticData::warn('Imagick is not allowed to create thumbs for pdf files.', self::class,
 					['Verify that the /etc/ImageMagick-6/policy.xml file contains the line <policy domain="coder" rights="read|write" pattern="PDF"/> .']);
 			}
 		} catch (FilesystemException) {
-			$data[] = DiagnosticData::warn('Could not determine whether Imagick is allowed to work with pdf files.', self::class, [
-				'Make sure to have the policy.xml file in `/etc/ImageMagick-6/policy.xml`.',
-				'Verify that the file contains the line <policy domain="coder" rights="read|write" pattern="PDF"/> .',
-			]);
+			$data[] = DiagnosticData::warn('Could not determine whether Imagick is allowed to work with pdf files.', self::class, self::DETAILS);
 		} catch (PcreException) {
 			// Just ignore.
+		} catch (\Exception $e) {
+			$data[] = DiagnosticData::error('An unexpected error occurred while checking Imagick PDF support.', self::class, self::DETAILS);
+			// Just ignore all other exceptions.
 		}
 
 		return $next($data);
