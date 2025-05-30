@@ -48,8 +48,7 @@ return [
     ],
     'optimize' => [
         'title' => 'Optimaliser databasen',
-        'description' => 'If you notice slowdown in your installation, it may be because your database does not
-		have all its needed index.',
+        'description' => 'Hvis du merker at installasjonen er treg, kan det skyldes at databasen din ikke har all den nødvendige indeksen.',
         'button' => 'Optimize Database',
     ],
     'update' => [
@@ -59,10 +58,10 @@ return [
         'no-pending-updates' => 'Ingen ventende oppdateringer.',
     ],
     'statistics-check' => [
-        'title' => 'Statistics integrity Check',
-        'missing_photos' => '%d photo statistics missing.',
-        'missing_albums' => '%d album statistics missing.',
-        'button' => 'Create missing',
+        'title' => 'Statistikk integritetskontroll',
+        'missing_photos' => '%d fotostatistikk mangler.',
+        'missing_albums' => '%d albumstatistikk mangler.',
+        'button' => 'Opprett manglende',
     ],
     'flush-cache' => [
         'title' => 'Flush Cache',
