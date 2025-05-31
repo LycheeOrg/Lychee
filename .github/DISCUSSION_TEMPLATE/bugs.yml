@@ -20,7 +20,6 @@ body:
     attributes:
       label: Did you check the latest Lychee version?
       description: If you are not using the latest version, please update and check if the bug still exists.
-      multiple: false
       options:
         - 'Yes, I did'
         - 'No, I am not using the latest version'
@@ -31,7 +30,6 @@ body:
     id: php-version
     attributes:
       label: Which PHP version are you using?
-      multiple: false
       options:
         - PHP 8.4
         - PHP 8.3
