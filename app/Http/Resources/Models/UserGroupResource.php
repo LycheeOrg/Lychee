@@ -23,7 +23,7 @@ class UserGroupResource extends Data
 			return new UserMemberGroupResource(
 				id: $user->id,
 				username: $user->username,
-                // @phpstan-ignore-next-line
+				// @phpstan-ignore-next-line
 				role: $user->pivot->role
 			);
 		});
