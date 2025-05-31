@@ -12,7 +12,7 @@ return [
     'space' => 'Ruimte',
     'load_space' => 'Laad ruimtegebruik.',
     'configuration' => 'Configuratie',
-    'loading' => 'Laden...',
+    'loading' => 'Laden…',
     'identical_content' => 'Identieke inhoud',
     'toast' => [
         'info' => 'Informatie',
