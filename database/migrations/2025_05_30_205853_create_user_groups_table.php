@@ -19,6 +19,7 @@ return new class() extends Migration {
 		Schema::create('user_groups', function (Blueprint $table) {
 			$table->increments('id');
 			$table->string('name', 100)->nullable(false)->unique();
+			$table->string('description', 255)->nullable(true);
 			$table->dateTime('created_at', 6)->nullable(false);
 			$table->dateTime('updated_at', 6)->nullable(false);
 			$table->index('id');

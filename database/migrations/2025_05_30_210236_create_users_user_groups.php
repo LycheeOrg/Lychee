@@ -23,6 +23,7 @@ return new class() extends Migration {
 			$table->increments('id');
 			$table->unsignedInteger(self::USER_ID)->nullable(false);
 			$table->unsignedInteger(self::USER_GROUP_ID)->nullable(false);
+			$table->string('role', 50)->nullable(false)->default('member');
 			$table->dateTime('created_at', 6)->nullable(false);
 
 			$table->index([self::USER_ID]);

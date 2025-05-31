@@ -22,6 +22,7 @@ use Illuminate\Database\Query\Builder as BaseBuilder;
  *
  * @property int    $id
  * @property string $name
+ * @property string $description
  * @property Carbon $created_at
  * @property Carbon $updated_at
  */
@@ -38,6 +39,7 @@ class UserGroup extends Model
 	 */
 	protected $fillable = [
 		'name',
+		'description',
 	];
 
 	/**
