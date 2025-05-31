@@ -15,7 +15,7 @@
 				</router-link>
 			</div>
 		</template>
-		<Menu :model="items" v-if="initData" class="!border-none">
+		<Menu :model="items" v-if="initData" class="!border-none" :dt="{ item: { padding: '0.25rem 0.75rem' } }">
 			<template #submenuheader="{ item }">
 				<span class="text-primary-emphasis font-bold" :class="item.access !== false ? '' : 'hidden'">
 					<!-- @vue-ignore -->
@@ -55,7 +55,7 @@
 		</Menu>
 		<AboutLychee v-model:visible="openLycheeAbout" />
 		<div class="mt-auto" v-if="user?.id !== null">
-			<Menu :model="profileItems" v-if="initData" class="!border-none">
+			<Menu :model="profileItems" v-if="initData" class="!border-none" :dt="{ item: { padding: '0.25rem 0.75rem' } }">
 				<template #item="{ item, props }">
 					<router-link v-if="item.route" v-slot="{ href, navigate }" :to="item.route" custom>
 						<a v-ripple :href="href" v-bind="props.action" @click="navigate">
