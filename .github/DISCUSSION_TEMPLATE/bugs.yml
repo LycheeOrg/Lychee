@@ -21,8 +21,8 @@ body:
       label: Did you check the latest Lychee version?
       description: If you are not using the latest version, please update and check if the bug still exists.
       options:
-        - 'Yes, I did'
         - 'No, I am not using the latest version'
+        - 'Yes, I did'
     validations:
       required: true
 
