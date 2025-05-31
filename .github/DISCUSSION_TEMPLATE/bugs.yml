@@ -10,7 +10,7 @@ body:
     id: lychee-version
     attributes:
       label: Lychee version
-      description: Which version of Lychee are you using? Please provide the full version, e.g. v3.2.6.
+      description: Which version of Lychee are you using? Please provide the full version, e.g. v6.6.5.
       placeholder: v6.6.5
     validations:
       required: true
