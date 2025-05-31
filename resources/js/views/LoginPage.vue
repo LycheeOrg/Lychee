@@ -18,6 +18,9 @@
 			</h1>
 		</div>
 		<LoginForm @logged-in="goBack" padding="" />
+		<Button @click="goBack" severity="secondary" class="w-full max-w-md font-bold border-none rounded-xl shrink">
+			{{ $t("dialogs.button.cancel") }}
+		</Button>
 	</Panel>
 </template>
 <script setup lang="ts">
