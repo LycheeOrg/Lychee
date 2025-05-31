@@ -157,10 +157,10 @@ Route::post('/UserGroups', [Admin\UserGroupsController::class, 'create']);
 Route::put('/UserGroups', [Admin\UserGroupsController::class, 'update']);
 Route::delete('/UserGroups', [Admin\UserGroupsController::class, 'delete']);
 
-Route::get('/UserGroups/Users', [Admin\ManageUserGroupsController::class, 'get']);
-Route::post('/UserGroups/Users', [Admin\ManageUserGroupsController::class, 'addUser']);
-Route::delete('/UserGroups/Users', [Admin\ManageUserGroupsController::class, 'removeUser']);
-Route::put('/UserGroups/Users', [Admin\ManageUserGroupsController::class, 'updateUserRole']);
+Route::get('/UserGroups/Users', [Admin\UserGroupsManagementController::class, 'get']);
+Route::post('/UserGroups/Users', [Admin\UserGroupsManagementController::class, 'addUser']);
+Route::delete('/UserGroups/Users', [Admin\UserGroupsManagementController::class, 'removeUser']);
+Route::put('/UserGroups/Users', [Admin\UserGroupsManagementController::class, 'updateUserRole']);
 
 /**
  * WEBAUTHN.

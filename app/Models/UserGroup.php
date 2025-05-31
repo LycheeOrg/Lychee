@@ -14,8 +14,10 @@ use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\ToArrayThrowsNotImplemented;
 use App\Models\Extensions\UTCBasedTimes;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Query\Builder as BaseBuilder;
+use Illuminate\Support\Carbon;
 
 /**
  * App\Models\UserGroup.
@@ -35,7 +37,7 @@ class UserGroup extends Model
 	use ToArrayThrowsNotImplemented;
 
 	/**
-	 * @var array<int,string> the attributes that are mass assignable
+	 * @var list<string> the attributes that are mass assignable
 	 */
 	protected $fillable = [
 		'name',
@@ -43,7 +45,7 @@ class UserGroup extends Model
 	];
 
 	/**
-	 * @return array<string, string>
+	 * @return array<string,string>
 	 */
 	protected function casts(): array
 	{
@@ -76,5 +78,21 @@ class UserGroup extends Model
 	public function access_permissions(): HasMany
 	{
 		return $this->hasMany(AccessPermission::class, APC::USER_GROUP_ID, 'id');
+	}
+
+	/**
+	 * Returns the relationship between an album and all users with whom
+	 * this album is shared.
+	 *
+	 * @return BelongsToMany<User,$this>
+	 */
+	public function users(): BelongsToMany
+	{
+		return $this->belongsToMany(
+			User::class,
+			'users_user_groups',
+			'user_group_id',
+			'user_id',
+		);
 	}
 }
