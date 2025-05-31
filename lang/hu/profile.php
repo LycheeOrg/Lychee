@@ -55,4 +55,12 @@ return [
 		'credential_registred' => 'Registration successful!',
 		'5_chars' => 'At least 5 chars.',
 	],
+
+	'register' => [
+		'username_exists' => 'Username already exists.',
+		'password_mismatch' => 'The passwords do not match.',
+		'signup' => 'Sign Up',
+		'error' => 'An error occurred while registering your account.',
+		'success' => 'Your account has been successfully created.',
+	],
 ];

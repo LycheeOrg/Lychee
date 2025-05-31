@@ -21,6 +21,13 @@ return [
         'api_token' => 'Jeton API …',
         'missing_fields' => 'Champs manquants',
     ],
+    'register' => [
+        'username_exists' => 'Le nom d’utilisateur existe déjà.',
+        'password_mismatch' => 'Les mots de passe ne correspondent pas.',
+        'signup' => 'S’inscrire',
+        'error' => 'Une erreur est survenue lors de l’enregistrement de votre compte.',
+        'success' => 'Votre compte a été créé avec succès.',
+    ],
     'token' => [
         'unavailable' => 'Vous avez déjà visualisé ce jeton.',
         'no_data' => 'Aucun jeton API n’a été généré.',

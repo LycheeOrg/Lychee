@@ -24,6 +24,14 @@ return [
 		'missing_fields' => 'Ontbrekende velden',
 	],
 
+	'register' => [
+		'username_exists' => 'Username already exists.',
+		'password_mismatch' => 'The passwords do not match.',
+		'signup' => 'Sign Up',
+		'error' => 'An error occurred while registering your account.',
+		'success' => 'Your account has been successfully created.',
+	],
+
 	'token' => [
 		'unavailable' => 'U heeft dit token al bekeken.',
 		'no_data' => 'Er zijn geen API-tokens gegenereerd.',
