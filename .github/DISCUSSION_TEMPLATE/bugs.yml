@@ -24,7 +24,6 @@ body:
       options:
         - 'Yes, I did'
         - 'No, I am not using the latest version'
-      default: 'No, I am not using the latest version'
     validations:
       required: true
 
