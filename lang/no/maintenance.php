@@ -9,17 +9,17 @@ return [
     'description' => 'På denne siden finner du alle nødvendige handlinger for å holde Lychee-installasjonen din i gang knirkefritt.',
     'cleaning' => [
         'title' => 'Cleaning %s',
-        'result' => '%s deleted.',
+        'result' => '%s ble slettet.',
         'description' => 'Remove all contents from <span class="font-mono">%s</span>',
         'button' => 'Clean',
     ],
     'duplicate-finder' => [
-        'title' => 'Duplicates',
+        'title' => 'Duplikater',
         'description' => 'This module counts potential duplicates betwen pictures.',
         'duplicates-all' => 'Duplicates over all albums',
         'duplicates-title' => 'Title duplicates per album',
         'duplicates-per-album' => 'Duplicates per album',
-        'show' => 'Show duplicates',
+        'show' => 'Vis duplikater',
     ],
     'fix-jobs' => [
         'title' => 'Fixing Jobs History',
@@ -35,7 +35,7 @@ return [
     'fill-filesize-sizevariants' => [
         'title' => 'File sizes missing',
         'description' => 'Found %d small variants without file size.',
-        'button' => 'Fetch data!',
+        'button' => 'Hent data!',
         'success' => 'Successfully computed sizes of %d small variants.',
     ],
     'fix-tree' => [
@@ -48,8 +48,7 @@ return [
     ],
     'optimize' => [
         'title' => 'Optimaliser databasen',
-        'description' => 'If you notice slowdown in your installation, it may be because your database does not
-		have all its needed index.',
+        'description' => 'Hvis du merker at installasjonen er treg, kan det skyldes at databasen din ikke har all den nødvendige indeksen.',
         'button' => 'Optimize Database',
     ],
     'update' => [
@@ -59,10 +58,10 @@ return [
         'no-pending-updates' => 'Ingen ventende oppdateringer.',
     ],
     'statistics-check' => [
-        'title' => 'Statistics integrity Check',
-        'missing_photos' => '%d photo statistics missing.',
-        'missing_albums' => '%d album statistics missing.',
-        'button' => 'Create missing',
+        'title' => 'Statistikk integritetskontroll',
+        'missing_photos' => '%d fotostatistikk mangler.',
+        'missing_albums' => '%d albumstatistikk mangler.',
+        'button' => 'Opprett manglende',
     ],
     'flush-cache' => [
         'title' => 'Flush Cache',
