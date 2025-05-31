@@ -30,7 +30,6 @@ body:
     id: php-version
     attributes:
       label: Which PHP version are you using?
-      multiple: false
       options:
         - PHP 8.4
         - PHP 8.3
