@@ -11,7 +11,18 @@ body:
     attributes:
       label: Lychee version
       description: Which version of Lychee are you using? Please provide the full version, e.g. v3.2.6.
-      placeholder: v5.1.2
+      placeholder: v6.6.5
+    validations:
+      required: true
+
+  - type: input
+    id: check-latest-lychee-version
+    attributes:
+      label: Did you check the latest Lychee version?
+      description: If you are not using the latest version, please update and check if the bug still exists.
+      options:
+        - Yes
+        - No
     validations:
       required: true
 
@@ -65,4 +76,6 @@ body:
         - label: I have provided easy and step-by-step instructions to reproduce the bug.
           required: true
         - label: I understand my bug report will be removed if I haven't met the criteria above.
+          required: true
+        - label: I understand that if I am requested to provide more information, I must do so within 14 days or the bug report will be closed.
           required: true
