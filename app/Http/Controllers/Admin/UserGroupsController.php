@@ -12,8 +12,10 @@ use App\Http\Requests\UserGroup\CreateUserGroupRequest;
 use App\Http\Requests\UserGroup\DeleteUserGroupRequest;
 use App\Http\Requests\UserGroup\ListUserGroupRequest;
 use App\Http\Requests\UserGroup\UpdateUserGroupRequest;
+use App\Http\Resources\Model\UserGroupResource;
 use App\Models\UserGroup;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Collection;
 use Illuminate\Validation\ValidationException;
 
 /**
@@ -21,22 +23,28 @@ use Illuminate\Validation\ValidationException;
  */
 class UserGroupsController extends Controller
 {
-	public function list(ListUserGroupRequest $request): array
+	/**
+	 * @return Collection<int,UserGroupResource>
+	 */
+	public function list(ListUserGroupRequest $request): Collection
 	{
-		return UserGroup::all()->toArray();
+		/** @disregard P1006 */
+		return UserGroupResource::collect(UserGroup::with('users')->get());
 	}
 
-	public function create(CreateUserGroupRequest $request): UserGroup
+	public function create(CreateUserGroupRequest $request): UserGroupResource
 	{
 		$this->validateUniqueGroupName($request->name());
 
-		return UserGroup::create([
+		$user_group = UserGroup::create([
 			'name' => $request->name(),
 			'description' => $request->description(),
 		]);
+
+		return new UserGroupResource($user_group);
 	}
 
-	public function update(UpdateUserGroupRequest $request): UserGroup
+	public function update(UpdateUserGroupRequest $request): UserGroupResource
 	{
 		$this->validateUniqueGroupName($request->name(), $request->user_group()->id);
 
@@ -45,7 +53,7 @@ class UserGroupsController extends Controller
 			'description' => $request->description(),
 		]);
 
-		return $request->user_group();
+		return new UserGroupResource($request->user_group());
 	}
 
 	public function delete(DeleteUserGroupRequest $request): void

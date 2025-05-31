@@ -45,7 +45,7 @@ class ManageUserGroupRequest extends BaseApiRequest implements HasUserGroup, Has
 
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->user_group = UserGroup::findOrFail($values[RequestAttribute::GROUP_ID]);
+		$this->user_group = UserGroup::with('users')->findOrFail($values[RequestAttribute::GROUP_ID]);
 		$this->user2 = User::findOrFail($values[RequestAttribute::USER_ID_ATTRIBUTE]);
 		$this->role = UserGroupRole::from($values[RequestAttribute::ROLE_ATTRIBUTE]);
 	}

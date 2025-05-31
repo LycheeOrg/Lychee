@@ -34,6 +34,6 @@ class DeleteUserGroupRequest extends BaseApiRequest implements HasUserGroup
 
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->user_group = UserGroup::findOrFail($values[RequestAttribute::GROUP_ID]);
+		$this->user_group = UserGroup::with('users')->findOrFail($values[RequestAttribute::GROUP_ID]);
 	}
 }

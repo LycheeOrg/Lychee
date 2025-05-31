@@ -10,6 +10,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Requests\UserGroup\GetUserGroupRequest;
 use App\Http\Requests\UserGroup\ManageUserGroupRequest;
+use App\Http\Resources\Model\UserGroupResource;
 use Illuminate\Routing\Controller;
 
 /**
@@ -17,23 +18,29 @@ use Illuminate\Routing\Controller;
  */
 class UserGroupsManagementController extends Controller
 {
-	public function get(GetUserGroupRequest $request): array
+	public function get(GetUserGroupRequest $request): UserGroupResource
 	{
-		return $request->user_group()->users->toArray();
+		return new UserGroupResource($request->user_group());
 	}
 
-	public function addUser(ManageUserGroupRequest $request): void
+	public function addUser(ManageUserGroupRequest $request): UserGroupResource
 	{
 		$request->user_group()->users()->attach($request->user2()->id, ['role' => $request->role()->value]);
+
+		return new UserGroupResource($request->user_group());
 	}
 
-	public function removeUser(ManageUserGroupRequest $request): void
+	public function removeUser(ManageUserGroupRequest $request): UserGroupResource
 	{
 		$request->user_group()->users()->detach($request->user2()->id);
+
+		return new UserGroupResource($request->user_group());
 	}
 
-	public function updateUserRole(ManageUserGroupRequest $request): void
+	public function updateUserRole(ManageUserGroupRequest $request): UserGroupResource
 	{
 		$request->user_group()->users()->updateExistingPivot($request->user2()->id, ['role' => $request->role()->value]);
+
+		return new UserGroupResource($request->user_group());
 	}
 }

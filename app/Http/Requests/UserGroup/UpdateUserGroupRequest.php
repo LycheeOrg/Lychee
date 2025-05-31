@@ -51,6 +51,6 @@ class UpdateUserGroupRequest extends BaseApiRequest implements HasUserGroup, Has
 	{
 		$this->name = $values[RequestAttribute::NAME_ATTRIBUTE];
 		$this->description = $values[RequestAttribute::DESCRIPTION_ATTRIBUTE] ?? null;
-		$this->user_group = UserGroup::findOrFail($values[RequestAttribute::GROUP_ID]);
+		$this->user_group = UserGroup::with('users')->findOrFail($values[RequestAttribute::GROUP_ID]);
 	}
 }
