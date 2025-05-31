@@ -22,9 +22,9 @@ body:
       description: If you are not using the latest version, please update and check if the bug still exists.
       multiple: false
       options:
-        - 'Yes'
-        - 'No'
-      default: 2
+        - 'Yes, I did'
+        - 'No, I am not using the latest version'
+      default: 'No, I am not using the latest version'
     validations:
       required: true
 
