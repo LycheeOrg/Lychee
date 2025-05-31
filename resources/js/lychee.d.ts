@@ -262,6 +262,7 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		is_medium2x_download_enabled: boolean;
 		clockwork_url: string | null;
 		slideshow_timeout: number;
+		is_slideshow_enabled: boolean;
 		is_timeline_left_border_visible: boolean;
 		title: string;
 		dropbox_api_key: string;

@@ -13,7 +13,7 @@
 			</template>
 			<template #end>
 				<div :class="is_slideshow_active ? 'hidden' : 'flex'">
-					<Button text icon="pi pi-play" class="mr-2" severity="secondary" @click="emits('toggleSlideShow')" />
+					<Button v-if="is_slideshow_enabled" text icon="pi pi-play" class="mr-2" severity="secondary" @click="emits('toggleSlideShow')" />
 					<Button
 						v-if="props.photo.rights.can_access_full_photo && props.photo.size_variants.original?.url"
 						text
@@ -76,7 +76,7 @@ const togglableStore = useTogglablesStateStore();
 const { is_full_screen, is_photo_edit_open, are_details_open, is_slideshow_active } = storeToRefs(togglableStore);
 const isDownloadOpen = ref(false);
 const lycheeStore = useLycheeStateStore();
-const { is_exif_disabled } = storeToRefs(lycheeStore);
+const { is_exif_disabled, is_slideshow_enabled } = storeToRefs(lycheeStore);
 
 function openInNewTab(url: string) {
 	window?.open(url, "_blank")?.focus();

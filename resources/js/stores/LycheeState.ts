@@ -14,6 +14,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 
 		// Photo config
 		slideshow_timeout: 5,
+		is_slideshow_enabled: true,
 
 		// configs for nsfw
 		are_nsfw_visible: false,
@@ -119,6 +120,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.clockwork_url = data.clockwork_url;
 
 					this.slideshow_timeout = data.slideshow_timeout;
+					this.is_slideshow_enabled = data.is_slideshow_enabled;
 
 					this.is_timeline_left_border_visible = data.is_timeline_left_border_visible;
 

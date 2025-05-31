@@ -194,7 +194,7 @@ const lycheeStore = useLycheeStateStore();
 
 lycheeStore.init();
 
-const { are_nsfw_visible, slideshow_timeout } = storeToRefs(lycheeStore);
+const { are_nsfw_visible, slideshow_timeout, is_slideshow_enabled } = storeToRefs(lycheeStore);
 const {
 	is_photo_edit_open,
 	are_details_open,
@@ -307,7 +307,7 @@ onKeyStroke([getModKey(), "a"], () => !shouldIgnoreKeystroke() && photo.value ==
 onKeyStroke("ArrowLeft", () => !shouldIgnoreKeystroke() && photo.value !== undefined && hasPrevious() && previous(true));
 onKeyStroke("ArrowRight", () => !shouldIgnoreKeystroke() && photo.value !== undefined && hasNext() && next(true));
 onKeyStroke("o", () => !shouldIgnoreKeystroke() && photo.value !== undefined && rotateOverlay());
-onKeyStroke(" ", () => !shouldIgnoreKeystroke() && photo.value !== undefined && slideshow());
+onKeyStroke(" ", () => !shouldIgnoreKeystroke() && photo.value !== undefined && is_slideshow_enabled.value && slideshow());
 onKeyStroke("i", () => !shouldIgnoreKeystroke() && photo.value !== undefined && toggleDetails());
 onKeyStroke("f", () => !shouldIgnoreKeystroke() && photo.value !== undefined && togglableStore.toggleFullScreen());
 onKeyStroke("Escape", () => !shouldIgnoreKeystroke() && photo.value !== undefined && is_slideshow_active.value && stop());
