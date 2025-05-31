@@ -188,7 +188,7 @@ const {
 	albumClick,
 } = useSelection(photos, children, togglableStore);
 
-const { photoRoute } = usePhotoRoute(router);
+const { photoRoute, getParentId } = usePhotoRoute(router);
 
 function photoClick(idx: number, e: MouseEvent) {
 	router.push(photoRoute(photos.value[idx].id));
@@ -238,7 +238,7 @@ const photoCallbacks = {
 	toggleMove: toggleMove,
 	toggleDelete: toggleDelete,
 	toggleDownload: () => {
-		PhotoService.download(selectedPhotosIds.value);
+		PhotoService.download(selectedPhotosIds.value, getParentId());
 	},
 };
 

@@ -13,13 +13,8 @@ use App\Enum\MetricsAction;
 /**
  * This event is fired when a photo is visited.
  */
-final class PhotoVisit extends BaseMetricsEvent
+final class PhotoVisit extends BasePhotoMetricsEvent
 {
-	public function key(): string
-	{
-		return 'photo_id';
-	}
-
 	public function metricAction(): MetricsAction
 	{
 		return MetricsAction::VISIT;
