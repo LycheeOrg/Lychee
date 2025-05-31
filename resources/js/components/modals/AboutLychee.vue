@@ -39,7 +39,7 @@
 					<p class="text-muted-color text-center font-bold mt-8" v-if="is_se_enabled">{{ $t("dialogs.about.thank_you") }}</p>
 					<p class="text-muted-color text-center font-bold mt-8" v-if="!is_se_enabled && !is_se_info_hidden">
 						<span v-html="supporter" />
-						<a class="text-primary-500 underline cursor-pointer ml-1" @click="toggleRegistration">{{ $t("dialogs.about.here") }}</a
+						<a class="text-primary-500 underline cursor-pointer ml-1 mr-1" @click="toggleRegistration">{{ $t("dialogs.about.here") }}</a
 						>.<br />
 					</p>
 				</div>
