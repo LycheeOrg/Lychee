@@ -131,6 +131,34 @@ class PhotoQueryPolicy
 	}
 
 	/**
+	 * Restricts the photo query to only non sensitive photos.
+	 *
+	 * @param FixedQueryBuilder $query
+	 * @param Album|null        $origin
+	 *
+	 * @return FixedQueryBuilder
+	 */
+	public function applySensitivityFilter(FixedQueryBuilder $query, ?Album $origin = null, bool $include_nsfw = true): FixedQueryBuilder
+	{
+		if ($include_nsfw) {
+			return $query;
+		}
+
+		$this->prepareModelQueryOrFail($query, true, false);
+
+		// If origin is set, also restrict the search result for admin
+		// to photos which are in albums below origin.
+		// This is not a security filter, but simply functional.
+		if ($origin !== null) {
+			$query
+				->where('albums._lft', '>=', $origin->_lft)
+				->where('albums._rgt', '<=', $origin->_rgt);
+		}
+
+		return $query->where(fn (Builder $query) => $this->appendSensitivityConditions($query->getQuery(), $origin?->_lft, $origin?->_rgt));
+	}
+
+	/**
 	 * Adds the conditions of _searchable_ photos to the query.
 	 *
 	 * **Attention:** This method is only meant for internal use.
