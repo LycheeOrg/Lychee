@@ -15,14 +15,16 @@ body:
     validations:
       required: true
 
-  - type: input
+  - type: dropdown
     id: check-latest-lychee-version
     attributes:
       label: Did you check the latest Lychee version?
       description: If you are not using the latest version, please update and check if the bug still exists.
+      multiple: false
       options:
         - Yes
         - No
+      default: No
     validations:
       required: true
 
@@ -30,6 +32,7 @@ body:
     id: php-version
     attributes:
       label: Which PHP version are you using?
+      multiple: false
       options:
         - PHP 8.4
         - PHP 8.3
