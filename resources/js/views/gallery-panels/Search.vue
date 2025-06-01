@@ -322,7 +322,7 @@ function goBack() {
 	if (photoId.value !== undefined) {
 		photoId.value = undefined;
 		photo.value = undefined;
-		router.push({ name: "search-with-album", params: { albumId: albumId.value } });
+		router.push({ name: "search", params: { albumId: albumId.value } });
 		return;
 	}
 
@@ -410,7 +410,7 @@ onKeyStroke("Escape", () => {
 
 onMounted(() => {
 	if (photoId.value !== undefined) {
-		router.push({ name: "search-with-album", params: { albumId: albumId.value } });
+		router.push({ name: "search", params: { albumId: albumId.value } });
 	}
 
 	if (albumId.value !== "" && albumId.value !== ALL) {
