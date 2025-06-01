@@ -23,6 +23,13 @@ return [
 
 		'missing_fields' => 'Missing fields',
 	],
+	'register' => [
+		'username_exists' => 'Username already exists.',
+		'password_mismatch' => 'The passwords do not match.',
+		'signup' => 'Sign Up',
+		'error' => 'An error occurred while registering your account.',
+		'success' => 'Your account has been successfully created.',
+	],
 
 	'token' => [
 		'unavailable' => 'You have already viewed this token.',
