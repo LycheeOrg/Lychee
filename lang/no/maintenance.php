@@ -10,7 +10,7 @@ return [
     'cleaning' => [
         'title' => 'Cleaning %s',
         'result' => '%s ble slettet.',
-        'description' => 'Remove all contents from <span class="font-mono">%s</span>',
+        'description' => 'Fjern alt innhold fra <span class="font-mono">%s</span>',
         'button' => 'Clean',
     ],
     'duplicate-finder' => [
