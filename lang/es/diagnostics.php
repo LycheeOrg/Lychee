@@ -6,19 +6,19 @@ return [
 	| Diagnostics page
 	|--------------------------------------------------------------------------
 	*/
-	'title' => 'Diagnostics',
+	'title' => 'Diagnósticos',
 
-	'copy_to_clipboard' => 'Copy diagnostics to clipboard',
-	'self-diagnosis' => 'Self-diagnosis',
-	'info' => 'Info',
-	'space' => 'Space',
-	'load_space' => 'Load space usage.',
-	'configuration' => 'Configuration',
-	'loading' => 'Loading...',
-	'identical_content' => 'Identical content',
+	'copy_to_clipboard' => 'Copiar diagnósticos al portapapeles',
+	'self-diagnosis' => 'Autodiagnóstico',
+	'info' => 'Información',
+	'space' => 'Espacio',
+	'load_space' => 'Cargar uso del espacio.',
+	'configuration' => 'Configuración',
+	'loading' => 'Cargando…',
+	'identical_content' => 'Contenido idéntico',
 
 	'toast' => [
-		'info' => 'Info',
-		'copy' => 'Diagnostics copied to clipboard!',
+		'info' => 'Información',
+		'copy' => '¡Diagnósticos copiados al portapapeles!',
 	],
 ];

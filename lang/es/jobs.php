@@ -6,12 +6,12 @@ return [
 	| Jobs page
 	|--------------------------------------------------------------------------
 	*/
-	'title' => 'Jobs',
+	'title' => 'Trabajos',
 
-	'no_data' => 'No Jobs have been executed yet.',
+	'no_data' => 'Aún no se han ejecutado trabajos.',
 
-	'ready' => 'Ready',
-	'success' => 'Success',
-	'failure' => 'Failure',
-	'started' => 'Started',
+	'ready' => 'Listo',
+	'success' => 'Éxito',
+	'failure' => 'Fallo',
+	'started' => 'Iniciado',
 ];
