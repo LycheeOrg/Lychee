@@ -33,6 +33,6 @@ class SettingsRightsResource extends Data
 		$this->can_see_diagnostics = Gate::check(SettingsPolicy::CAN_SEE_DIAGNOSTICS, [Configs::class]);
 		$this->can_update = Gate::check(SettingsPolicy::CAN_UPDATE, [Configs::class]);
 		$this->can_access_dev_tools = Gate::check(SettingsPolicy::CAN_ACCESS_DEV_TOOLS, [Configs::class]);
-		$this->can_acess_user_groups = Gate::check(UserGroupPolicy::CAN_LIST, [UserGroup::class]) && config('features.user-groups');
+		$this->can_acess_user_groups = Gate::check(UserGroupPolicy::CAN_LIST, [UserGroup::class]) && config('features.user-groups') === true;
 	}
 }
