@@ -6,11 +6,11 @@
 					<Message severity="danger" v-if="error">{{ error }}</Message>
 					<FloatLabel variant="on">
 						<InputText id="name" v-model="name" required />
-						<label for="name">{{ $t("user-groups.name") }}</label>
+						<label for="name">{{ $t("user-groups.create.name") }}</label>
 					</FloatLabel>
 					<FloatLabel variant="on">
 						<Textarea id="description" v-model="description" rows="3" />
-						<label for="description">{{ $t("user-groups.description") }}</label>
+						<label for="description">{{ $t("user-groups.create.description") }}</label>
 					</FloatLabel>
 					<FloatLabel variant="on" v-if="groupId === undefined">
 						<AutoComplete
@@ -25,18 +25,23 @@
 							dropdown
 							@complete="filterUser"
 						/>
-						<label for="users">{{ $t("user-groups.users") }}</label>
+						<label for="users">{{ $t("user-groups.create.users") }}</label>
 					</FloatLabel>
 				</div>
 				<div class="flex w-full justify-content-end mt-3">
 					<Button
-						label="Cancel"
+						:label="$t('user-groups.create.cancel')"
 						icon="pi pi-times"
 						class="w-full border-none rounded-none rounded-bl-xl"
 						severity="secondary"
 						@click="closeCallback"
 					/>
-					<Button label="Save" icon="pi pi-check" type="submit" class="w-full rounded-none rounded-br-xl border-none" />
+					<Button
+						:label="$t('user-groups.create.create')"
+						icon="pi pi-check"
+						type="submit"
+						class="w-full rounded-none rounded-br-xl border-none"
+					/>
 				</div>
 			</form>
 		</template>
@@ -54,6 +59,7 @@ import Textarea from "../basic/Textarea.vue";
 import Button from "primevue/button";
 import Message from "primevue/message";
 import AutoComplete from "primevue/autocomplete";
+import { trans } from "laravel-vue-i18n";
 
 const props = defineProps<{
 	userList: App.Http.Resources.Models.LightUserResource[];
@@ -87,7 +93,7 @@ function submitForm() {
 
 function createGroup() {
 	if (name.value === undefined || name.value.trim() === "") {
-		error.value = "Group name is required.";
+		error.value = trans("user-groups.create.name_required");
 		return;
 	}
 
@@ -117,7 +123,7 @@ function updateGroup() {
 	}
 
 	if (name.value === undefined || name.value.trim() === "") {
-		error.value = "Group name is required.";
+		error.value = trans("user-groups.create.name_required");
 		return;
 	}
 

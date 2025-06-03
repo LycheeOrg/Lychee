@@ -14,7 +14,7 @@
 		</template>
 
 		<template #center>
-			{{ "User Groups" }}
+			{{ $t("user-groups.title") }}
 		</template>
 
 		<template #end> </template>
@@ -23,16 +23,16 @@
 		<div class="w-full" v-if="can_create_user_groups">
 			<p class="text-muted-color-emphasis">{{ $t("user-groups.explanation") }}</p>
 			<div class="flex justify-end mt-8 mb-8">
-				<Button severity="primary" class="border-none p-3" @click="create">{{ $t("user-groups.create") }}</Button>
+				<Button severity="primary" class="border-none p-3" @click="create">{{ $t("user-groups.create_group") }}</Button>
 			</div>
 		</div>
 		<div v-if="userGroups === undefined">
 			<div class="text-center text-muted-color-emphasis mt-4">
-				{{ "Loading user groups..." }}
+				{{ $t("user-groups.loading") }}
 			</div>
 		</div>
 		<div v-else-if="userGroups.length === 0" class="text-center text-muted-color-emphasis mt-4">
-			{{ "No user groups found." }}
+			{{ $t("user-groups.empty") }}
 		</div>
 		<template v-else>
 			<div
@@ -48,12 +48,12 @@
 						<h2 class="text-xl font-bold capitalize">{{ group.name }}</h2>
 						<p class="text-muted-color">{{ group.description }}</p>
 					</div>
-					<div class="flex items-center">
+					<div class="flex items-center relative">
 						<Button
 							v-if="group.rights.can_edit"
 							text
 							severity="primary"
-							label="Edit"
+							:label="$t('user-groups.edit')"
 							icon="pi pi-pencil"
 							class="border-none rounded-none rounded-l-xl py-1"
 							@click="edit(group)"
@@ -61,18 +61,19 @@
 						<Button
 							v-if="can_create_user_groups"
 							text
+							:id="`delete-group-${group.id}`"
 							severity="danger"
-							label="Delete"
+							:label="$t('user-groups.delete')"
 							icon="pi pi-trash"
 							class="border-none rounded-none rounded-r-xl py-1"
-							@click="UserGroupService.deleteUserGroup(group.id).then(fetchUserGroups)"
+							@click="confirmDelete(group)"
 						/>
 						<Select
 							v-if="group.rights.can_manage"
 							v-model="selectedUserToAdd"
 							:options="availableUsers(group)"
 							optionLabel="username"
-							placeholder="Add member..."
+							:placeholder="$t('user-groups.add_member')"
 							class="w-56 mr-2"
 							@update:model-value="addMemberToGroup(group)"
 						/>
@@ -96,11 +97,11 @@
 					</span>
 				</div>
 				<div v-else-if="group.rights.can_manage" class="text-muted-color italic mt-2">
-					{{ "This group is empty." }}
+					{{ $t("user-groups.empty_group") }}
 				</div>
 				<div v-else>
 					<i class="pi pi-exclamation-triangle text-orange-500 mr-2" />
-					{{ "You do not have the permission to see the members of this group." }}
+					{{ $t("user-groups.no_permission_members") }}
 				</div>
 			</div>
 		</template>
@@ -118,6 +119,9 @@ import Button from "primevue/button";
 import UsersService from "@/services/users-service";
 import Select from "primevue/select";
 import { useToast } from "primevue/usetoast";
+import { useConfirm } from "primevue/useconfirm";
+import { trans } from "laravel-vue-i18n";
+import { sprintf } from "sprintf-js";
 
 const toast = useToast();
 
@@ -131,6 +135,39 @@ const selectedGroupDescription = ref<string | undefined>(undefined);
 
 const selectedUserToAdd = ref<App.Http.Resources.Models.LightUserResource | undefined>(undefined);
 const allUsers = ref<App.Http.Resources.Models.LightUserResource[] | undefined>(undefined);
+
+const confirm = useConfirm();
+function confirmDelete(group: App.Http.Resources.Models.UserGroupResource) {
+	if (can_create_user_groups.value === false) {
+		toast.add({
+			severity: "error",
+			summary: trans("toasts.error"),
+			detail: trans("user-groups.no_permission_delete"),
+			life: 3000,
+		});
+		return;
+	}
+
+	confirm.require({
+		header: trans("user-groups.delete_group_header"),
+		message: trans("user-groups.delete_group_confirm"),
+		icon: "pi pi-exclamation-triangle before:text-orange-500",
+		rejectProps: {
+			label: trans("user-groups.cancel"),
+			severity: "secondary",
+			class: "border-none",
+			outlined: true,
+		},
+		acceptProps: {
+			label: trans("user-groups.delete"),
+			severity: "danger",
+			class: "border-none",
+		},
+		accept: () => {
+			UserGroupService.deleteUserGroup(group.id).then(fetchUserGroups);
+		},
+	});
+}
 
 function fetchUserGroups() {
 	UserGroupService.listUserGroups().then((response) => {
@@ -149,8 +186,8 @@ function deleteMember(group: App.Http.Resources.Models.UserGroupResource, member
 	UserGroupService.removeUserFromGroup(group.id, member.id).then(() => {
 		toast.add({
 			severity: "success",
-			summary: "Success",
-			detail: `User ${member.username} removed from group ${group.name}`,
+			summary: trans("toasts.success"),
+			detail: sprintf(trans("user-groups.user_removed"), member.username, group.name),
 			life: 3000,
 		});
 		fetchUserGroups();

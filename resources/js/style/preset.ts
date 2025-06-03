@@ -407,6 +407,9 @@ const LycheePrimeVueConfig: Preset = {
 			},
 		},
 		dialog: {
+			root: {
+				borderColor: "transparent",
+			},
 			colorScheme: {
 				light: {
 					root: {},
