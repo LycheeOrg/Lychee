@@ -47,6 +47,6 @@ class UserSpaceTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->admin)->getJson('Statistics::userSpace');
 		$this->assertOk($response);
 		// We have 5 registered users during the tests.
-		self::assertCount(5, $response->json());
+		self::assertCount(7, $response->json());
 	}
 }

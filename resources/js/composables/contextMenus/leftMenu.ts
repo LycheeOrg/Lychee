@@ -37,6 +37,7 @@ export function useLeftMenu(lycheeStore: LycheeStateStore, LeftMenuStateStore: L
 			initData.value?.user_management.can_edit ||
 			initData.value?.settings.can_see_diagnostics ||
 			initData.value?.settings.can_see_logs ||
+			initData.value?.settings.can_acess_user_groups ||
 			false
 		);
 	});
@@ -83,9 +84,15 @@ export function useLeftMenu(lycheeStore: LycheeStateStore, LeftMenuStateStore: L
 					},
 					{
 						label: "users.title",
-						icon: "people",
+						icon: "pi pi-user",
 						route: "/users",
 						access: initData.value.user_management.can_edit ?? false,
+					},
+					{
+						label: "User Groups",
+						icon: "pi pi-users",
+						route: "/user-groups",
+						access: initData.value.settings.can_acess_user_groups ?? false,
 					},
 					{
 						label: "diagnostics.title",
@@ -177,7 +184,7 @@ export function useLeftMenu(lycheeStore: LycheeStateStore, LeftMenuStateStore: L
 		const userMenu = [
 			{
 				label: "left-menu.user",
-				icon: "person",
+				icon: "pi pi-user-edit",
 				route: "/profile",
 				access: initData.value.user.can_edit ?? false,
 			},

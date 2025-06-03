@@ -150,6 +150,19 @@ Route::post('/UserManagement::delete', [Admin\UserManagementController::class, '
 Route::post('/UserManagement::create', [Admin\UserManagementController::class, 'create']);
 
 /**
+ * GROUPS.
+ */
+Route::get('/UserGroups', [Admin\UserGroupsController::class, 'list']);
+Route::post('/UserGroups', [Admin\UserGroupsController::class, 'create']);
+Route::patch('/UserGroups', [Admin\UserGroupsController::class, 'update']);
+Route::delete('/UserGroups', [Admin\UserGroupsController::class, 'delete']);
+
+Route::get('/UserGroups/Users', [Admin\UserGroupsManagementController::class, 'get']);
+Route::post('/UserGroups/Users', [Admin\UserGroupsManagementController::class, 'addUser']);
+Route::delete('/UserGroups/Users', [Admin\UserGroupsManagementController::class, 'removeUser']);
+Route::patch('/UserGroups/Users', [Admin\UserGroupsManagementController::class, 'updateUserRole']);
+
+/**
  * WEBAUTHN.
  */
 Route::get('/WebAuthn', [WebAuthn\WebAuthnManageController::class, 'list']);
