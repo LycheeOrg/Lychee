@@ -17,7 +17,7 @@ return [
     'empty' => 'لا توجد مجموعات.',
 
     'add_member' => 'إضافة عضو...',
-    'edit_role' => 'تعديل الدور',
+    'empty_group' => 'هذه المجموعة فارغة.',
     'no_permission_members' => 'ليس لديك إذن لرؤية أعضاء هذه المجموعة.',
     'remove_success' => 'تمت إزالة %s من %s.',
 
