@@ -12,6 +12,18 @@ use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 class UserGroupMembershipTest extends BaseApiWithDataTest
 {
+	public function setUp(): void
+	{
+		parent::setUp();
+		$this->requireSe();
+	}
+
+	public function tearDown(): void
+	{
+		$this->resetSe();
+		parent::tearDown();
+	}
+
 	public function testReadGroupUnauthorized(): void
 	{
 		$response = $this->getJsonWithData('/UserGroups/Users', []);

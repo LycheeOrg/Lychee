@@ -89,7 +89,7 @@ export function useLeftMenu(lycheeStore: LycheeStateStore, LeftMenuStateStore: L
 						access: initData.value.user_management.can_edit ?? false,
 					},
 					{
-						label: "User Groups",
+						label: "user-groups.title",
 						icon: "pi pi-users",
 						route: "/user-groups",
 						access: initData.value.settings.can_acess_user_groups ?? false,
