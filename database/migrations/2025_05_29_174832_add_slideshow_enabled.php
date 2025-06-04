@@ -13,7 +13,6 @@ return new class() extends BaseConfigMigration {
 
 	public function getConfigs(): array
 	{
-		// landing_background
 		return [
 			[
 				'key' => 'slideshow_enabled',
