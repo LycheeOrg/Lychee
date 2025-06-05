@@ -78,6 +78,7 @@ use function Safe\preg_match;
  * @property User         $owner
  * @property SizeVariants $size_variants
  * @property int          $filesize
+ * @property Palette|null $palette
  *
  * @method static PhotoBuilder|Photo addSelect($column)
  * @method static PhotoBuilder|Photo join(string $table, string $first, string $operator = null, string $second = null, string $type = 'inner', string $where = false)
@@ -175,10 +176,6 @@ class Photo extends Model implements HasUTCBasedTimes
 		'live_photo_short_path', // serialize live_photo_url instead
 	];
 
-	// protected $with = [
-	// 	'statistics',
-	// ];
-
 	public function newEloquentBuilder($query): PhotoBuilder
 	{
 		return new PhotoBuilder($query);
@@ -217,6 +214,20 @@ class Photo extends Model implements HasUTCBasedTimes
 	public function statistics(): HasOne
 	{
 		return $this->hasOne(Statistics::class, 'photo_id', 'id');
+	}
+
+	/**
+	 * Returns the relationship between a photo and its associated color palette.
+	 *
+	 * This is a one-to-one relationship where each photo can have one palette
+	 * associated with it, which contains color information derived from the
+	 * photo.
+	 *
+	 * @return HasOne<Palette,$this>
+	 */
+	public function palette(): HasOne
+	{
+		return $this->hasOne(Palette::class, 'photo_id', 'id');
 	}
 
 	/**
