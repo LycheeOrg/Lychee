@@ -3,36 +3,36 @@
 return [
 	/*
 	|--------------------------------------------------------------------------
-	| Users page
+	| صفحه کاربران
 	|--------------------------------------------------------------------------
 	*/
-	'title' => 'Users',
-	'description' => 'Here you can manage the users of your Lychee installation. You can create, edit and delete users.',
-	'create' => 'Create a new user',
-	'username' => 'Username',
-	'password' => 'Password',
-	'legend' => 'Legend',
-	'upload_rights' => 'When selected, the user can upload content.',
-	'edit_rights' => 'When selected, the user can modify their profile (username, password).',
-	'quota' => 'When set, the user has a space quota for pictures (in kB).',
+	'title' => 'کاربران',
+	'description' => 'در اینجا می‌توانید کاربران نصب Lychee خود را مدیریت کنید. می‌توانید کاربران را ایجاد، ویرایش و حذف کنید.',
+	'create' => 'ایجاد کاربر جدید',
+	'username' => 'نام کاربری',
+	'password' => 'رمز عبور',
+	'legend' => 'راهنما',
+	'upload_rights' => 'در صورت انتخاب، کاربر می‌تواند محتوا بارگذاری کند.',
+	'edit_rights' => 'در صورت انتخاب، کاربر می‌تواند پروفایل خود (نام کاربری، رمز عبور) را ویرایش کند.',
+	'quota' => 'در صورت تنظیم، کاربر دارای سهمیه فضا برای تصاویر (بر حسب کیلوبایت) است.',
 
-	'user_deleted' => 'User deleted',
-	'user_created' => 'User created',
-	'user_updated' => 'User updated',
-	'change_saved' => 'Change saved!',
+	'user_deleted' => 'کاربر حذف شد',
+	'user_created' => 'کاربر ایجاد شد',
+	'user_updated' => 'کاربر به‌روزرسانی شد',
+	'change_saved' => 'تغییر ذخیره شد!',
 
 	'create_edit' => [
-		'upload_rights' => 'User can upload content.',
-		'edit_rights' => 'User can modify their profile (username, password).',
-		'quota' => 'User has quota limit.',
-		'quota_kb' => 'quota in kB (0 for default)',
-		'note' => 'Admin note (not publically visible)',
-		'create' => 'Create',
-		'edit' => 'Edit',
+		'upload_rights' => 'کاربر می‌تواند محتوا بارگذاری کند.',
+		'edit_rights' => 'کاربر می‌تواند پروفایل خود (نام کاربری، رمز عبور) را ویرایش کند.',
+		'quota' => 'کاربر دارای محدودیت سهمیه است.',
+		'quota_kb' => 'سهمیه بر حسب کیلوبایت (۰ برای پیش‌فرض)',
+		'note' => 'یادداشت مدیر (قابل مشاهده برای عموم نیست)',
+		'create' => 'ایجاد',
+		'edit' => 'ویرایش',
 	],
 	'line' => [
-		'admin' => 'admin user',
-		'edit' => 'Edit',
-		'delete' => 'Delete',
+		'admin' => 'کاربر مدیر',
+		'edit' => 'ویرایش',
+		'delete' => 'حذف',
 	],
 ];
