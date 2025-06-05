@@ -3,27 +3,27 @@
 return [
 	/*
 	|--------------------------------------------------------------------------
-	| Duplicate Finder Page
+	| صفحه جستجوی موارد تکراری
 	|--------------------------------------------------------------------------
 	*/
-	'title' => 'Maintenance',
-	'intro' => 'On this page you will find the duplicate pictures found in your database.',
-	'found' => ' duplicates found!',
-	'invalid-search' => ' At least the checksum or title condition must be checked.',
-	'checksum-must-match' => 'Checksum must match.',
-	'title-must-match' => 'Title must match.',
-	'must-be-in-same-album' => 'Must be in the same album.',
+	'title' => 'نگهداری',
+	'intro' => 'در این صفحه تصاویر تکراری موجود در پایگاه داده خود را مشاهده خواهید کرد.',
+	'found' => ' مورد تکراری پیدا شد!',
+	'invalid-search' => ' حداقل باید شرط چک‌سام یا عنوان انتخاب شود.',
+	'checksum-must-match' => 'چک‌سام باید مطابقت داشته باشد.',
+	'title-must-match' => 'عنوان باید مطابقت داشته باشد.',
+	'must-be-in-same-album' => 'باید در یک آلبوم باشند.',
 
 	'columns' => [
-		'album' => 'Album',
-		'photo' => 'Photo',
-		'checksum' => 'Checksum',
+		'album' => 'آلبوم',
+		'photo' => 'عکس',
+		'checksum' => 'چک‌سام',
 	],
 
 	'warning' => [
-		'no-original-left' => 'No original left.',
-		'keep-one' => 'You selected all duplicates in this group. Please chose at least one duplicate to keep.',
+		'no-original-left' => 'هیچ نسخه اصلی باقی نمانده است.',
+		'keep-one' => 'شما همه موارد تکراری این گروه را انتخاب کرده‌اید. لطفاً حداقل یک مورد تکراری را برای نگهداری انتخاب کنید.',
 	],
 
-	'delete-selected' => 'Delete selected',
+	'delete-selected' => 'حذف موارد انتخاب‌شده',
 ];
