@@ -110,7 +110,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { UserGroupService } from "../services/user-group-service";
+import { UserGroupService } from "@/services/user-group-service";
 import Toolbar from "primevue/toolbar";
 import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
 import Panel from "primevue/panel";

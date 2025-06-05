@@ -167,7 +167,6 @@ const LycheePrimeVueConfig: Preset = {
 		autocomplete: {
 			option: {
 				padding: "0 1rem",
-				// borderRadius: "0",
 			},
 			colorScheme: {
 				dark: {
