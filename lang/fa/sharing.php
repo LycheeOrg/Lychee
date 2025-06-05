@@ -3,42 +3,42 @@
 return [
 	/*
 	|--------------------------------------------------------------------------
-	| Sharing page
+	| صفحه اشتراک‌گذاری
 	|--------------------------------------------------------------------------
 	*/
-	'title' => 'Sharing',
+	'title' => 'اشتراک‌گذاری',
 
-	'info' => 'This page gives an overview of and the ability to edit the sharing rights associated with albums.',
-	'album_title' => 'Album title',
-	'username' => 'Username',
-	'no_data' => 'Sharing list is empty.',
-	'share' => 'Share',
-	'add_new_access_permission' => 'Add a new access permission',
-	'permission_deleted' => 'Permission deleted!',
-	'permission_created' => 'Permission created!',
-	'propagate' => 'Propagate',
+	'info' => 'این صفحه نمای کلی و امکان ویرایش حقوق اشتراک‌گذاری مرتبط با آلبوم‌ها را فراهم می‌کند.',
+	'album_title' => 'عنوان آلبوم',
+	'username' => 'نام کاربری',
+	'no_data' => 'لیست اشتراک‌گذاری خالی است.',
+	'share' => 'اشتراک‌گذاری',
+	'add_new_access_permission' => 'افزودن مجوز دسترسی جدید',
+	'permission_deleted' => 'مجوز حذف شد!',
+	'permission_created' => 'مجوز ایجاد شد!',
+	'propagate' => 'انتشار',
 
-	'propagate_help' => 'Propagate the current access permissions to all descendants<br>(sub-albums and their respective sub-albums etc)',
-	'propagate_default' => 'By default, existing permissions (album-user)<br>are updated and the missing ones added.<br>Additional permissions not present in this list are left untouched.',
-	'propagate_overwrite' => 'Overwrite the existing permissions instead of updating.<br>This will also remove all permissions not present in this list.',
-	'propagate_warning' => 'This action cannot be undone.',
+	'propagate_help' => 'مجوزهای دسترسی فعلی را به همه زیرمجموعه‌ها<br>(زیرآلبوم‌ها و زیرآلبوم‌های آن‌ها و غیره) منتشر کنید',
+	'propagate_default' => 'به طور پیش‌فرض، مجوزهای موجود (آلبوم-کاربر)<br>به‌روزرسانی شده و موارد گمشده اضافه می‌شوند.<br>مجوزهای اضافی که در این لیست نیستند، بدون تغییر باقی می‌مانند.',
+	'propagate_overwrite' => 'مجوزهای موجود را به جای به‌روزرسانی، بازنویسی کنید.<br>این کار همچنین همه مجوزهایی که در این لیست نیستند را حذف می‌کند.',
+	'propagate_warning' => 'این عمل قابل بازگشت نیست.',
 
-	'permission_overwritten' => 'Propagation successful! Permission overwritten!',
-	'permission_updated' => 'Propagation successful! Permission updated!',
+	'permission_overwritten' => 'انتشار موفقیت‌آمیز! مجوز بازنویسی شد!',
+	'permission_updated' => 'انتشار موفقیت‌آمیز! مجوز به‌روزرسانی شد!',
 
-	'bluk_share' => 'Bulk share',
-	'bulk_share_instr' => 'Select multiple albums and users to share with.',
-	'albums' => 'Albums',
-	'users' => 'Users',
-	'no_users' => 'No selectable users.',
-	'no_albums' => 'No selectable albums.',
+	'bluk_share' => 'اشتراک‌گذاری گروهی',
+	'bulk_share_instr' => 'چندین آلبوم و کاربر را برای اشتراک‌گذاری انتخاب کنید.',
+	'albums' => 'آلبوم‌ها',
+	'users' => 'کاربران',
+	'no_users' => 'کاربر قابل انتخاب وجود ندارد.',
+	'no_albums' => 'آلبوم قابل انتخاب وجود ندارد.',
 
 	'grants' => [
-		'read' => 'Grants read access',
-		'original' => 'Grants access to original photo',
-		'download' => 'Grants download',
-		'upload' => 'Grants upload',
-		'edit' => 'Grants edit',
-		'delete' => 'Grants delete',
+		'read' => 'دسترسی خواندن را می‌دهد',
+		'original' => 'دسترسی به عکس اصلی را می‌دهد',
+		'download' => 'دسترسی دانلود را می‌دهد',
+		'upload' => 'دسترسی بارگذاری را می‌دهد',
+		'edit' => 'دسترسی ویرایش را می‌دهد',
+		'delete' => 'دسترسی حذف را می‌دهد',
 	],
 ];
