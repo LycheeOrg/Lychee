@@ -9,7 +9,7 @@
 namespace App\Exceptions\Handlers;
 
 use App\Contracts\Exceptions\Handlers\HttpExceptionHandler;
-use Illuminate\Foundation\ViteManifestNotFoundException;
+use Illuminate\Foundation\ViteException;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface as HttpException;
 
@@ -26,7 +26,7 @@ class ViteManifestNotFoundHandler implements HttpExceptionHandler
 	public function check(HttpException $e): bool
 	{
 		while ($e !== null) {
-			if ($e instanceof ViteManifestNotFoundException) {
+			if ($e instanceof ViteException) {
 				return true;
 			}
 			$e = $e->getPrevious();
