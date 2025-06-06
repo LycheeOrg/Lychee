@@ -30,6 +30,13 @@
 								}}</span>
 								<span>{{ props.photo.preformatted.filesize }}</span>
 							</div>
+							<div v-if="props.photo.palette" class="flex gap-2">
+								<ColourSquare :colour="props.photo.palette.colour_1" />
+								<ColourSquare :colour="props.photo.palette.colour_2" />
+								<ColourSquare :colour="props.photo.palette.colour_3" />
+								<ColourSquare :colour="props.photo.palette.colour_4" />
+								<ColourSquare :colour="props.photo.palette.colour_5" />
+							</div>
 						</div>
 					</div>
 					<!-- Dates stuff -->
@@ -175,10 +182,10 @@
 </template>
 <script setup lang="ts">
 import { Ref } from "vue";
-import Tag from "primevue/tag";
 import Card from "primevue/card";
 import MapInclude from "../gallery/photoModule/MapInclude.vue";
 import MiniIcon from "../icons/MiniIcon.vue";
+import ColourSquare from "../gallery/photoModule/ColourSquare.vue";
 
 const props = defineProps<{
 	photo: App.Http.Resources.Models.PhotoResource | undefined;
