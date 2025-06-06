@@ -48,6 +48,8 @@ class ConfigIntegrity
 		'live_metrics_enabled',
 		'live_metrics_access',
 		'live_metrics_max_time',
+		'enable_colour_extractions',
+		'colour_extraction_driver',
 	];
 
 	/**
