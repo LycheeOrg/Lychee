@@ -19,8 +19,8 @@
 		</div>
 		<LoginForm @logged-in="goBack" padding="" />
 		<div v-if="is_registration_enabled" class="text-center mt-4">
-			<router-link to="/register" class="text-primary hover:underline">
-				{{ $t("auth.register") }}
+			<router-link to="/register" class="text-muted-color-emphasis text-sm font-bold hover:underline">
+				{{ $t("profile.register.signup") }}
 			</router-link>
 		</div>
 	</Panel>

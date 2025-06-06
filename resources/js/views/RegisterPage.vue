@@ -18,7 +18,7 @@
 		</div>
 		<Message v-if="errorMessage" severity="error" class="mb-4 text-center" :content="errorMessage" />
 		<form v-focustrap class="flex flex-col gap-4 relative max-w-md w-full text-sm rounded-md pt-9">
-			<div class="inline-flex flex-col gap-2 px-9">
+			<div class="inline-flex flex-col gap-4 px-9">
 				<FloatLabel variant="on">
 					<InputText id="username" v-model="username" autocomplete="username" :autofocus="true" />
 					<label for="username">{{ $t("profile.login.username") }}</label>
