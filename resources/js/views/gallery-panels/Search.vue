@@ -165,6 +165,9 @@ import LoadingProgress from "@/components/loading/LoadingProgress.vue";
 import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
 import { useHasNextPreviousPhoto } from "@/composables/photo/hasNextPreviousPhoto";
 import MetricsService from "@/services/metrics-service";
+import { useLtRorRtL } from "@/utils/Helpers";
+
+const { isLTR } = useLtRorRtL();
 
 const route = useRoute();
 const router = useRouter();
@@ -337,9 +340,11 @@ function goBack() {
 onKeyStroke("h", () => !shouldIgnoreKeystroke() && photo.value === undefined && (are_nsfw_visible.value = !are_nsfw_visible.value));
 onKeyStroke("f", () => !shouldIgnoreKeystroke() && photo.value === undefined && togglableStore.toggleFullScreen());
 
-// Photo operations
-onKeyStroke("ArrowLeft", () => !shouldIgnoreKeystroke() && photo.value !== undefined && hasPrevious() && previous(true));
-onKeyStroke("ArrowRight", () => !shouldIgnoreKeystroke() && photo.value !== undefined && hasNext() && next(true));
+// Photo operations (note that the arrow keys are flipped for RTL languages)
+onKeyStroke("ArrowLeft", () => !shouldIgnoreKeystroke() && photo.value !== undefined && isLTR() && hasPrevious() && previous(true));
+onKeyStroke("ArrowRight", () => !shouldIgnoreKeystroke() && photo.value !== undefined && isLTR() && hasNext() && next(true));
+onKeyStroke("ArrowLeft", () => !shouldIgnoreKeystroke() && photo.value !== undefined && !isLTR() && hasNext() && next(true));
+onKeyStroke("ArrowRight", () => !shouldIgnoreKeystroke() && photo.value !== undefined && !isLTR() && hasPrevious() && previous(true));
 onKeyStroke("o", () => !shouldIgnoreKeystroke() && photo.value !== undefined && rotateOverlay());
 onKeyStroke(" ", () => !shouldIgnoreKeystroke() && photo.value !== undefined && slideshow());
 onKeyStroke("i", () => !shouldIgnoreKeystroke() && photo.value !== undefined && (are_details_open.value = !are_details_open.value));

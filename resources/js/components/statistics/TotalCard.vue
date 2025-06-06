@@ -10,7 +10,7 @@
 					<span class="w-[calc(100%-5rem)] font-bold">{{ props.total.num_albums }}</span>
 				</template>
 				<span class="w-20 text-muted-color-emphasis">{{ $t("statistics.total.size") }}:</span>
-				<span class="w-[calc(100%-5rem)] font-bold">{{ sizeToUnit(props.total.size) }}</span>
+				<span class="w-[calc(100%-5rem)] font-bold rtl:text-right" dir="ltr">{{ sizeToUnit(props.total.size) }}</span>
 			</div>
 		</template>
 	</Card>

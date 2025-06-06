@@ -33,7 +33,7 @@
 							<Fieldset
 								v-if="tab === config.cat"
 								:legend="config.name"
-								class="border-b-0 border-r-0 rounded-r-none rounded-b-none pb-20 h-full"
+								class="border-b-0 ltr:border-r-0 rtl:border-l-0 ltr:rounded-r-none rtl:rounded-l-none rounded-b-none pb-20 h-full"
 							>
 								<div
 									class="configDescription w-full text-muted-color-emphasis pl-6 pb-8"
@@ -66,12 +66,12 @@ import { useSplitter } from "@/composables/album/splitter";
 import ConfigGroup from "@/components/settings/ConfigGroup.vue";
 import ConfirmSave from "@/components/settings/ConfirmSave.vue";
 import General from "@/components/settings/General.vue";
-import Fieldset from "primevue/fieldset";
 import AllSettings from "@/components/settings/AllSettings.vue";
 import { MenuItem } from "primevue/menuitem";
 import CssJs from "@/components/settings/CssJs.vue";
 import { useRoute, useRouter } from "vue-router";
 import { watch } from "vue";
+import Fieldset from "@/components/forms/basic/Fieldset.vue";
 
 const props = defineProps<{
 	tab: string | undefined;

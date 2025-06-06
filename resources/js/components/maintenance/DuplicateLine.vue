@@ -10,7 +10,7 @@
 			>
 				<div class="flex-shrink">
 					<i
-						class="pi pi-trash mr-2"
+						class="pi pi-trash ltr:mr-2 rtl:ml-2"
 						:class="{
 							'text-red-700': selectedIds.includes(duplicate.photo_id),
 							'text-transparent': !selectedIds.includes(duplicate.photo_id),

@@ -4,7 +4,9 @@
 			<div>
 				<p class="p-9 text-center text-muted-color max-w-xl text-wrap">
 					{{ confirmation }}<br />
-					<span class="text-warning-700"><i class="pi pi-exclamation-triangle mr-2" />{{ $t("dialogs.delete_album.warning") }}</span>
+					<span class="text-warning-700"
+						><i class="pi pi-exclamation-triangle ltr:mr-2 rtl:ml-2" />{{ $t("dialogs.delete_album.warning") }}</span
+					>
 				</p>
 				<div class="flex">
 					<Button severity="secondary" class="w-full border-none rounded-none rounded-bl-xl font-bold" @click="closeCallback">

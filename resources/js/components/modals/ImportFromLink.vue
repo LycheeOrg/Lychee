@@ -5,13 +5,12 @@
 				<div class="p-9">
 					<p class="mb-5 text-muted-color-emphasis text-base">{{ $t("dialogs.import_from_link.instructions") }}</p>
 					<form>
-						<div class="my-3 first:mt-0 last:mb-0">
+						<div class="my-3 first:mt-0 last:mb-0" dir="ltr">
 							<Textarea
 								id="links"
-								class="w-full h-48 p-3 border-t-transparent border-r-transparent border-b border-l hover:border-b-primary-400 hover:border-l-primary-400 focus:border-b-primary-400 focus:border-l-primary-400"
 								v-model="urls"
-								rows="5"
-								cols="30"
+								:rows="5"
+								:cols="30"
 								placeholder="https://&#10;https://&#10;..."
 								:invalid="!isValidInput && urls.length > 0"
 							/>
@@ -19,12 +18,15 @@
 					</form>
 				</div>
 				<div class="flex justify-center">
-					<Button severity="secondary" class="w-full font-bold border-none rounded-none rounded-bl-xl" @click="closeCallback">{{
-						$t("dialogs.button.cancel")
-					}}</Button>
+					<Button
+						severity="secondary"
+						class="w-full font-bold border-none rounded-none ltr:rounded-bl-xl rtl:rounded-br-xl"
+						@click="closeCallback"
+						>{{ $t("dialogs.button.cancel") }}</Button
+					>
 					<Button
 						severity="contrast"
-						class="w-full font-bold border-none rounded-none rounded-br-xl"
+						class="w-full font-bold border-none rounded-none ltr:rounded-br-xl rtl:rounded-bl-xl"
 						@click="submit"
 						:disabled="!isValidInput || urls.length === 0"
 						>{{ $t("dialogs.import_from_link.import") }}</Button
@@ -39,9 +41,9 @@ import { computed, ref, Ref } from "vue";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
 import PhotoService from "@/services/photo-service";
-import Textarea from "primevue/textarea";
 import { useRouter } from "vue-router";
 import { usePhotoRoute } from "@/composables/photo/photoRoute";
+import Textarea from "../forms/basic/Textarea.vue";
 
 const visible = defineModel("visible", { default: false }) as Ref<boolean>;
 const emits = defineEmits<{ refresh: [] }>();

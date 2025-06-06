@@ -15,11 +15,13 @@
 		<div class="text-center mt-2 p-2">
 			<span v-html="$t('fix-tree.intro')" /><br />
 			<span class="text-danger-700 text-lg font-bold"
-				><i class="pi text-danger-700 pi-exclamation-triangle mr-2" />{{ $t("fix-tree.warning") }}</span
+				><i class="pi text-danger-700 pi-exclamation-triangle ltr:mr-2 rtl:ml-2" />{{ $t("fix-tree.warning") }}</span
 			>
 		</div>
 		<div class="md:max-w-3xl lg:max-w-5xl xl:max-w-7xl mt-9 mx-auto">
-			<h2 class="text-muted-color-emphasis text-lg font-bold"><i class="pi pi-question-circle mr-2" />{{ $t("fix-tree.help.header") }}</h2>
+			<h2 class="text-muted-color-emphasis text-lg font-bold">
+				<i class="pi pi-question-circle ltr:mr-2 rtl:ml-2" />{{ $t("fix-tree.help.header") }}
+			</h2>
 			<ul class="list-disc list-inside">
 				<li v-html="$t('fix-tree.help.hover')" />
 				<li v-html="sprintf($t('fix-tree.help.convenience'), $t('fix-tree.help.left'), $t('fix-tree.help.right'))" />
@@ -35,7 +37,7 @@
 						)
 					"
 				/>
-				<li><i class="pi pi-exclamation-triangle mr-2 text-orange-500" />{{ $t("fix-tree.help.slowness") }}</li>
+				<li><i class="pi pi-exclamation-triangle ltr:mr-2 rtl:ml-2 text-orange-500" />{{ $t("fix-tree.help.slowness") }}</li>
 			</ul>
 		</div>
 
@@ -57,12 +59,12 @@
 					>
 						<div class="w-1/2">{{ $t("fix-tree.table.title") }}</div>
 						<div class="flex w-1/4 gap-4">
-							<div class="w-full pl-4">{{ $t("fix-tree.table.left") }}</div>
-							<div class="w-full pl-4">{{ $t("fix-tree.table.right") }}</div>
+							<div class="w-full ltr:pl-4 rtl:pr-4">{{ $t("fix-tree.table.left") }}</div>
+							<div class="w-full ltr:pl-4 rtl:pr-4">{{ $t("fix-tree.table.right") }}</div>
 						</div>
 						<div class="flex w-1/4 justify-between">
 							<div class="w-full">{{ $t("fix-tree.table.id") }}</div>
-							<div class="w-full text-right">{{ $t("fix-tree.table.parent") }}</div>
+							<div class="w-full ltr:text-right rtl:text-left">{{ $t("fix-tree.table.parent") }}</div>
 						</div>
 					</div>
 				</template>
