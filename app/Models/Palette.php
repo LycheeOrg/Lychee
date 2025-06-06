@@ -48,6 +48,13 @@ class Palette extends Model
 		];
 	}
 
+	/**
+	 * Convert a colour integer to a hex string.
+	 *
+	 * @param int $colour The colour in integer format (0xRRGGBB)
+	 *
+	 * @return string The hex representation of the colour
+	 */
 	public static function toHex(int $colour)
 	{
 		$b = $colour & 0xFF; // Extract the blue component
@@ -55,5 +62,27 @@ class Palette extends Model
 		$r = ($colour >> 16) & 0xFF; // Extract the red component
 
 		return sprintf('#%02x%02x%02x', $r, $g, $b);
+	}
+
+	/**
+	 * Convert a hex color string to an integer.
+	 *
+	 * @param string $hex The hex color string (e.g., '#ff0000' or 'ff0000')
+	 *
+	 * @return int The integer representation of the color (0xRRGGBB)
+	 *
+	 * @throws \InvalidArgumentException If the hex format is invalid
+	 */
+	public static function fromHex(string $hex): int
+	{
+		// Remove the '#' character if it exists
+		$hex = ltrim($hex, '#');
+
+		// Ensure the hex string is 6 characters long
+		if (strlen($hex) !== 6) {
+			throw new \InvalidArgumentException('Invalid hex color format.');
+		}
+
+		return hexdec($hex);
 	}
 }

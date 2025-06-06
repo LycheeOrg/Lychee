@@ -38,4 +38,35 @@ class Colour extends Model
 	{
 		return sprintf('#%02x%02x%02x', $this->R, $this->G, $this->B);
 	}
+
+	/**
+	 * Create or update a Colour instance from a hexadecimal string.
+	 *
+	 * @param string $hex
+	 *
+	 * @return Colour
+	 *
+	 * @throws \InvalidArgumentException
+	 */
+	public static function fromHex(string $hex): self
+	{
+		// Remove the '#' character if it exists
+		$hex = ltrim($hex, '#');
+
+		if (strlen($hex) !== 6) {
+			throw new \InvalidArgumentException('Hex string must be 6 characters long.');
+		}
+
+		$id = hexdec($hex); // Use the hex value as the ID
+
+		return Colour::updateOrCreate([
+			'id' => $id,
+		],
+			[
+				'id' => $id,
+				'R' => hexdec(substr($hex, 0, 2)),
+				'G' => hexdec(substr($hex, 2, 2)),
+				'B' => hexdec(substr($hex, 4, 2)),
+			]);
+	}
 }
