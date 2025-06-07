@@ -57,6 +57,11 @@ return [
         'update-button' => 'تحديث',
         'no-pending-updates' => 'لا توجد تحديثات معلقة.',
     ],
+    'missing-palettes' => [
+        'title' => 'لوحات الألوان المفقودة',
+        'description' => 'تم العثور على %d لوحة ألوان مفقودة.',
+        'button' => 'إنشاء المفقود',
+    ],
     'statistics-check' => [
         'title' => 'فحص سلامة الإحصائيات',
         'missing_photos' => 'إحصائيات %d صورة مفقودة.',
