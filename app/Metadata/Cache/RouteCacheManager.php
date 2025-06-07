@@ -105,6 +105,9 @@ final readonly class RouteCacheManager
 			'api/v2/Version' => false,
 			'api/v2/ChangeLogs' => false,
 
+			'api/v2/UserGroups' => false,
+			'api/v2/UserGroups/Users' => false,
+
 			// This is returning a stream, we do not cache it.
 			'api/v2/Zip' => false,
 

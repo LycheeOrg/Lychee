@@ -103,6 +103,7 @@ declare namespace App.Enum {
 	export type TimelineAlbumGranularity = "default" | "disabled" | "year" | "month" | "day";
 	export type TimelinePhotoGranularity = "default" | "disabled" | "year" | "month" | "day" | "hour";
 	export type UpdateStatus = 0 | 1 | 2 | 3;
+	export type UserGroupRole = "member" | "admin";
 	export type VersionChannelType = "release" | "git" | "tag";
 }
 declare namespace App.Http.Resources.Collections {
@@ -119,6 +120,10 @@ declare namespace App.Http.Resources.Collections {
 		shared_albums: { [key: number]: App.Http.Resources.Models.ThumbAlbumResource } | Array<any>;
 		config: App.Http.Resources.GalleryConfigs.RootConfig;
 		rights: App.Http.Resources.Rights.RootAlbumRightsResource;
+	};
+	export type UserGroupDataResource = {
+		user_groups: App.Http.Resources.Models.UserGroupResource[];
+		can_create_delete_user_groups: boolean;
 	};
 }
 declare namespace App.Http.Resources.Diagnostics {
@@ -270,6 +275,7 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		is_se_preview_enabled: boolean;
 		is_se_info_hidden: boolean;
 		is_live_metrics_enabled: boolean;
+		is_registration_enabled: boolean;
 	};
 	export type LandingPageResource = {
 		landing_page_enable: boolean;
@@ -528,6 +534,13 @@ declare namespace App.Http.Resources.Models {
 		thumb2x: string | null;
 		placeholder: string | null;
 	};
+	export type UserGroupResource = {
+		id: number;
+		name: string;
+		description: string;
+		members: App.Http.Resources.Models.UserMemberGroupResource[];
+		rights: App.Http.Resources.Rights.UserGroupRightResource;
+	};
 	export type UserManagementResource = {
 		id: number;
 		username: string;
@@ -538,6 +551,11 @@ declare namespace App.Http.Resources.Models {
 		description: string | null;
 		note: string | null;
 		space: number | null;
+	};
+	export type UserMemberGroupResource = {
+		id: number;
+		username: string;
+		role: App.Enum.UserGroupRole;
 	};
 	export type UserResource = {
 		id: number | null;
@@ -671,6 +689,11 @@ declare namespace App.Http.Resources.Rights {
 		can_see_diagnostics: boolean;
 		can_update: boolean;
 		can_access_dev_tools: boolean;
+		can_acess_user_groups: boolean;
+	};
+	export type UserGroupRightResource = {
+		can_edit: boolean;
+		can_manage: boolean;
 	};
 	export type UserManagementRightsResource = {
 		can_create: boolean;
