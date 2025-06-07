@@ -9,7 +9,9 @@
 namespace App\Http\Controllers\WebAuthn;
 
 use App\Exceptions\UnauthenticatedException;
+use App\Exceptions\WebAuthnDisabledExecption;
 use App\Models\User;
+use App\Providers\AuthServiceProvider;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Routing\Controller;
@@ -31,6 +33,8 @@ class WebAuthnLoginController extends Controller
 	 */
 	public function options(AssertionRequest $request): Responsable
 	{
+		$this->checkEnabled();
+
 		/** @phpstan-ignore staticMethod.dynamicCall */
 		$fields = $request->validate([
 			'user_id' => 'sometimes|int',
@@ -54,6 +58,8 @@ class WebAuthnLoginController extends Controller
 	 */
 	public function login(AssertedRequest $request, AssertionValidator $validator): void
 	{
+		$this->checkEnabled();
+
 		$credentials = $request->validated();
 
 		if (!$this->isSignedChallenge($credentials)) {
@@ -109,5 +115,20 @@ class WebAuthnLoginController extends Controller
 		)->first();
 
 		return $user;
+	}
+
+	/**
+	 * Validate whether the WebAuthn is enabled in the configuration.
+	 * If not throw an exception with status code 403 (Forbidden).
+	 *
+	 * @return void
+	 *
+	 * @throws WebAuthnDisabledExecption
+	 */
+	private function checkEnabled(): void
+	{
+		if (AuthServiceProvider::isWebAuthnEnabled() === false) {
+			throw new WebAuthnDisabledExecption();
+		}
 	}
 }
