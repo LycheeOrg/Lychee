@@ -16,7 +16,7 @@
 				{{ title }}
 			</h1>
 		</div>
-		<Message v-if="errorMessage" severity="error" class="mb-4 text-center" :content="errorMessage" />
+		<Message v-if="errorMessage" severity="error" class="mb-4 text-center" >{{ errorMessage }}</Message>
 		<form v-focustrap class="flex flex-col gap-4 relative max-w-md w-full text-sm rounded-md pt-9">
 			<div class="inline-flex flex-col gap-4 px-9">
 				<FloatLabel variant="on">
@@ -64,8 +64,11 @@ import { useRouter } from "vue-router";
 import { trans } from "laravel-vue-i18n";
 import { useToast } from "primevue/usetoast";
 import Message from "primevue/message";
+import { useAuthStore } from "@/stores/Auth";
+import AlbumService from "@/services/album-service";
 
 const router = useRouter();
+const authStore = useAuthStore();
 const lycheeStore = useLycheeStateStore();
 const leftMenuStore = useLeftMenuStateStore();
 const { title } = storeToRefs(lycheeStore);
@@ -101,6 +104,9 @@ function register() {
 		.then(() => {
 			errorMessage.value = ""; // Clear error message on success
 			toast.add({ severity: "success", summary: trans("profile.register.success"), life: 3000 });
+			// Clear the cache to trigger reload of user data
+			authStore.setUser(null);
+			AlbumService.clearCache();
 			router.push({ name: "gallery" }); // Redirect to gallery
 		})
 		.catch((error) => {
