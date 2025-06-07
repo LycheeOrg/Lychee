@@ -20,6 +20,13 @@ return [
         'api_token' => 'API-token …',
         'missing_fields' => 'Ontbrekende velden',
     ],
+    'register' => [
+        'username_exists' => 'Gebruikersnaam bestaat al.',
+        'password_mismatch' => 'De wachtwoorden komen niet overeen.',
+        'signup' => 'Aanmelden',
+        'error' => 'Er is een fout opgetreden bij het registreren van uw account.',
+        'success' => 'Uw account is succesvol aangemaakt.',
+    ],
     'token' => [
         'unavailable' => 'U heeft dit token al bekeken.',
         'no_data' => 'Er zijn geen API-tokens gegenereerd.',
