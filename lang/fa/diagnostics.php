@@ -3,20 +3,20 @@
 return [
 	/*
 	|--------------------------------------------------------------------------
-	| Diagnostics page
+	| صفحه تشخیص
 	|--------------------------------------------------------------------------
 	*/
-    'title' => 'Diagnostics',
-    'copy_to_clipboard' => 'Copy diagnostics to clipboard',
-    'self-diagnosis' => 'Self-diagnosis',
-    'info' => 'Info',
-    'space' => 'Space',
-    'load_space' => 'Load space usage.',
-    'configuration' => 'Configuration',
-    'loading' => 'Loading…',
-    'identical_content' => 'Identical content',
+    'title' => 'تشخیص',
+    'copy_to_clipboard' => 'کپی تشخیص به کلیپ‌بورد',
+    'self-diagnosis' => 'خودتشخیصی',
+    'info' => 'اطلاعات',
+    'space' => 'فضا',
+    'load_space' => 'بارگذاری استفاده از فضا.',
+    'configuration' => 'پیکربندی',
+    'loading' => 'در حال بارگذاری…',
+    'identical_content' => 'محتوای یکسان',
     'toast' => [
-        'info' => 'Info',
-        'copy' => 'Diagnostics copied to clipboard!',
+        'info' => 'اطلاعات',
+        'copy' => 'تشخیص به کلیپ‌بورد کپی شد!',
     ],
 ];

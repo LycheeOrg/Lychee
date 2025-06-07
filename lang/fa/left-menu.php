@@ -3,25 +3,25 @@
 return [
 	/*
 	|--------------------------------------------------------------------------
-	| Left Menu
+	| منوی سمت چپ
 	|--------------------------------------------------------------------------
 	*/
-	'back_to_gallery' => 'Back to Gallery',
+	'back_to_gallery' => 'بازگشت به گالری',
 
-	'login' => 'Login',
-	'frame' => 'Frame',
-	'map' => 'Map',
-	'admin' => 'Admin',
-	'clockwork' => 'Clockwork App',
-	'logs' => 'Show Logs',
-	'jobs' => 'Show Job History',
-	'user' => 'User',
+	'login' => 'ورود',
+	'frame' => 'قاب',
+	'map' => 'نقشه',
+	'admin' => 'مدیر',
+	'clockwork' => 'برنامه Clockwork',
+	'logs' => 'نمایش گزارش‌ها',
+	'jobs' => 'نمایش تاریخچه وظایف',
+	'user' => 'کاربر',
 
-	'sign_out' => 'Sign Out',
+	'sign_out' => 'خروج',
 
-	'about' => 'About',
-	'changelog' => 'Changelog',
-	'api' => 'API Documentation',
-	'source_code' => 'Source Code',
-	'support' => 'Support',
+	'about' => 'درباره',
+	'changelog' => 'گزارش تغییرات',
+	'api' => 'مستندات API',
+	'source_code' => 'کد منبع',
+	'support' => 'پشتیبانی',
 ];
