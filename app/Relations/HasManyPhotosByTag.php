@@ -69,18 +69,33 @@ class HasManyPhotosByTag extends BaseHasManyPhotos
 		$album = $albums[0];
 		$tags = $album->show_tags;
 
-		$this->photo_query_policy
-			->applySearchabilityFilter(
-				$this->getRelationQuery(),
-				origin: null,
-				include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_smart_albums')
-			)
-			->where(function (Builder $q) use ($tags): void {
-				// Filter for requested tags
-				foreach ($tags as $tag) {
-					$q->where('tags', 'like', '%' . trim($tag) . '%');
-				}
-			});
+		if (Configs::getValueAsBool('TA_override_visibility')) {
+			$this->photo_query_policy
+				->applySensitivityFilter(
+					$this->getRelationQuery(),
+					origin: null,
+					include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_smart_albums')
+				)
+				->where(function (Builder $q) use ($tags): void {
+					// Filter for requested tags
+					foreach ($tags as $tag) {
+						$q->where('tags', 'like', '%' . trim($tag) . '%');
+					}
+				});
+		} else {
+			$this->photo_query_policy
+				->applySearchabilityFilter(
+					$this->getRelationQuery(),
+					origin: null,
+					include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_smart_albums')
+				)
+				->where(function (Builder $q) use ($tags): void {
+					// Filter for requested tags
+					foreach ($tags as $tag) {
+						$q->where('tags', 'like', '%' . trim($tag) . '%');
+					}
+				});
+		}
 	}
 
 	/**
