@@ -67,7 +67,7 @@ class VueController extends Controller
 		}
 
 		if ($photo !== null) {
-			PhotoShared::dispatchIf(MetricsController::shouldMeasure(), $this->visitorId(), $photo->id);
+			PhotoShared::dispatchIf(MetricsController::shouldMeasure() && $album_id !== null, $this->visitorId(), $photo->id, $album_id);
 		} elseif ($album !== null) {
 			AlbumShared::dispatchIf(MetricsController::shouldMeasure(), $this->visitorId(), $album->get_id());
 		}

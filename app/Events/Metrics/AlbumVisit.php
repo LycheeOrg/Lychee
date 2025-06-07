@@ -13,13 +13,8 @@ use App\Enum\MetricsAction;
 /**
  * This event is fired when an album is open.
  */
-final class AlbumVisit extends BaseMetricsEvent
+final class AlbumVisit extends BaseAlbumMetricsEvent
 {
-	public function key(): string
-	{
-		return 'album_id';
-	}
-
 	public function metricAction(): MetricsAction
 	{
 		return MetricsAction::VISIT;

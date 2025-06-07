@@ -21,22 +21,26 @@ class GetMetrics
 		/** @var User $user */
 		$user = Auth::user() ?? throw new UnauthorizedException();
 
+		// If this query becomes too slow, then we probably will need to refactor it for something that does not use
+		// relationship magic but instead extracts the values directly from the database.
 		return LiveMetrics::query()->with(['photo', 'photo.size_variants', 'album', 'album_impl', 'album.thumb'])
 			->join('photos', 'photos.id', '=', 'live_metrics.photo_id', 'left')
 			->join('base_albums', 'base_albums.id', '=', 'live_metrics.album_id', 'left')
 			->join('albums', 'albums.id', '=', 'live_metrics.album_id', 'left')
 
+			// Unnecessary but safer as that avoids some issues in the front-end if the migration failed for some reasons...
+			->whereNotNull('live_metrics.album_id')
+
 			// Owner check (if not admin)
 			->when(!$user->may_administrate, fn ($q_owner) => $q_owner
 				->where(fn ($q) => $q
-					->where('base_albums.owner_id', $user->id)
-					->orWhere('photos.owner_id', $user->id))
+					->where('base_albums.owner_id', '=', $user->id)
+					->orWhere('photos.owner_id', '=', $user->id))
 			)
 
 			// Do not fetch the visit for photos (too noisy)
 			->where(fn ($q) => $q->where('live_metrics.action', '!=', 'visit')
-				->orWhere(fn ($q1) => $q1->where('live_metrics.action', 'visit')
-					->whereNotNull('live_metrics.album_id')))
+				->orWhere(fn ($q1) => $q1->whereNull('live_metrics.photo_id')))
 
 			// Do not fetch the tag albums too.
 			// Maybe refactor if we decide to unify tag albums and normal albums...
@@ -45,8 +49,6 @@ class GetMetrics
 
 			->select([
 				'live_metrics.*',
-				// // 	// 'photos.title as photo_title',
-				// // 	// 'base_albums.title as album_title',
 			])
 			->orderBy('live_metrics.created_at', 'desc')
 			->get();
