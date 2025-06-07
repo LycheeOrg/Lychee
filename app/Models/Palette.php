@@ -35,20 +35,6 @@ class Palette extends Model
 	];
 
 	/**
-	 * @return array{colour_1:string,colour_2:string,colour_3:string,colour_4:string,colour_5:string}
-	 */
-	public function toHexColours(): array
-	{
-		return [
-			'colour_1' => self::toHex($this->colour_1),
-			'colour_2' => self::toHex($this->colour_2),
-			'colour_3' => self::toHex($this->colour_3),
-			'colour_4' => self::toHex($this->colour_4),
-			'colour_5' => self::toHex($this->colour_5),
-		];
-	}
-
-	/**
 	 * Convert a colour integer to a hex string.
 	 *
 	 * @param int $colour The colour in integer format (0xRRGGBB)

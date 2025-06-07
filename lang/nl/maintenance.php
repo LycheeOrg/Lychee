@@ -57,6 +57,11 @@ return [
         'update-button' => 'Bijwerken',
         'no-pending-updates' => 'Geen updates in behandeling.',
     ],
+    'missing-palettes' => [
+        'title' => 'Ontbrekende paletten',
+        'description' => '%d ontbrekende paletten gevonden.',
+        'button' => 'Ontbrekende aanmaken',
+    ],
     'statistics-check' => [
         'title' => 'Controle op statistische integriteit',
         'missing_photos' => '%d fotostatistieken ontbreken.',
