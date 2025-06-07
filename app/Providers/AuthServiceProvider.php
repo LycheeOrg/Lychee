@@ -15,10 +15,12 @@ use App\Models\Extensions\BaseAlbum;
 use App\Models\LiveMetrics;
 use App\Models\Photo;
 use App\Models\User;
+use App\Models\UserGroup;
 use App\Policies\AlbumPolicy;
 use App\Policies\MetricsPolicy;
 use App\Policies\PhotoPolicy;
 use App\Policies\SettingsPolicy;
+use App\Policies\UserGroupPolicy;
 use App\Policies\UserPolicy;
 use App\Services\Auth\SessionOrTokenGuard;
 use App\SmartAlbums\BaseSmartAlbum;
@@ -47,6 +49,8 @@ class AuthServiceProvider extends ServiceProvider
 		Configs::class => SettingsPolicy::class,
 
 		LiveMetrics::class => MetricsPolicy::class,
+
+		UserGroup::class => UserGroupPolicy::class,
 	];
 
 	/**

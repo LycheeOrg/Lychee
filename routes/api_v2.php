@@ -150,6 +150,19 @@ Route::post('/UserManagement::delete', [Admin\UserManagementController::class, '
 Route::post('/UserManagement::create', [Admin\UserManagementController::class, 'create']);
 
 /**
+ * GROUPS.
+ */
+Route::get('/UserGroups', [Admin\UserGroupsController::class, 'list'])->middleware(['support:se']);
+Route::post('/UserGroups', [Admin\UserGroupsController::class, 'create'])->middleware(['support:se']);
+Route::patch('/UserGroups', [Admin\UserGroupsController::class, 'update'])->middleware(['support:se']);
+Route::delete('/UserGroups', [Admin\UserGroupsController::class, 'delete'])->middleware(['support:se']);
+
+Route::get('/UserGroups/Users', [Admin\UserGroupsManagementController::class, 'get'])->middleware(['support:se']);
+Route::post('/UserGroups/Users', [Admin\UserGroupsManagementController::class, 'addUser'])->middleware(['support:se']);
+Route::delete('/UserGroups/Users', [Admin\UserGroupsManagementController::class, 'removeUser'])->middleware(['support:se']);
+Route::patch('/UserGroups/Users', [Admin\UserGroupsManagementController::class, 'updateUserRole'])->middleware(['support:se']);
+
+/**
  * WEBAUTHN.
  */
 Route::get('/WebAuthn', [WebAuthn\WebAuthnManageController::class, 'list']);

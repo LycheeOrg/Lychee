@@ -9,7 +9,9 @@
 namespace App\Http\Resources\Rights;
 
 use App\Models\Configs;
+use App\Models\UserGroup;
 use App\Policies\SettingsPolicy;
+use App\Policies\UserGroupPolicy;
 use Illuminate\Support\Facades\Gate;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
@@ -22,6 +24,7 @@ class SettingsRightsResource extends Data
 	public bool $can_see_diagnostics;
 	public bool $can_update;
 	public bool $can_access_dev_tools;
+	public bool $can_acess_user_groups;
 
 	public function __construct()
 	{
@@ -30,5 +33,6 @@ class SettingsRightsResource extends Data
 		$this->can_see_diagnostics = Gate::check(SettingsPolicy::CAN_SEE_DIAGNOSTICS, [Configs::class]);
 		$this->can_update = Gate::check(SettingsPolicy::CAN_UPDATE, [Configs::class]);
 		$this->can_access_dev_tools = Gate::check(SettingsPolicy::CAN_ACCESS_DEV_TOOLS, [Configs::class]);
+		$this->can_acess_user_groups = Gate::check(UserGroupPolicy::CAN_LIST, [UserGroup::class]) && config('features.user-groups') === true;
 	}
 }

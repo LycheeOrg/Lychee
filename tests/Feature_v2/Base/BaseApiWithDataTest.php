@@ -18,13 +18,16 @@
 
 namespace Tests\Feature_v2\Base;
 
+use App\Enum\UserGroupRole;
 use App\Models\AccessPermission;
 use App\Models\Album;
 use App\Models\Photo;
 use App\Models\TagAlbum;
 use App\Models\User;
+use App\Models\UserGroup;
 use Tests\Traits\InteractWithSmartAlbums;
 use Tests\Traits\RequiresEmptyAlbums;
+use Tests\Traits\RequiresEmptyGroups;
 use Tests\Traits\RequiresEmptyLiveMetrics;
 use Tests\Traits\RequiresEmptyPhotos;
 use Tests\Traits\RequiresEmptyUsers;
@@ -38,6 +41,7 @@ abstract class BaseApiWithDataTest extends BaseApiTest
 	use RequiresEmptyLiveMetrics;
 	use RequiresEmptyWebAuthnCredentials;
 	use InteractWithSmartAlbums;
+	use RequiresEmptyGroups;
 
 	protected User $admin;
 	protected User $userMayUpload1;
@@ -78,6 +82,11 @@ abstract class BaseApiWithDataTest extends BaseApiTest
 	protected AccessPermission $perm4;
 	protected AccessPermission $perm44;
 
+	protected UserGroup $group1;
+	protected UserGroup $group2;
+	protected User $userWithGroupAdmin;
+	protected User $userWithGroup1;
+
 	public function setUp(): void
 	{
 		parent::setUp();
@@ -85,12 +94,18 @@ abstract class BaseApiWithDataTest extends BaseApiTest
 		$this->setUpRequiresEmptyAlbums();
 		$this->setUpRequiresEmptyPhotos();
 		$this->setUpRequiresEmptyLiveMetrics();
+		$this->setUpRequiresEmptyGroups();
 
 		$this->admin = User::factory()->may_administrate()->create();
 		$this->userMayUpload1 = User::factory()->may_upload()->create();
 		$this->userMayUpload2 = User::factory()->may_upload()->create();
 		$this->userNoUpload = User::factory()->create();
 		$this->userLocked = User::factory()->locked()->create();
+
+		$this->group1 = UserGroup::factory()->create();
+		$this->group2 = UserGroup::factory()->create();
+		$this->userWithGroup1 = User::factory()->with_group($this->group1)->create();
+		$this->userWithGroupAdmin = User::factory()->with_group($this->group1, UserGroupRole::ADMIN)->create();
 
 		$this->album1 = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
 		$this->photo1 = Photo::factory()->owned_by($this->userMayUpload1)->with_GPS_coordinates()->with_tags('test')->in($this->album1)->create();
@@ -141,6 +156,7 @@ abstract class BaseApiWithDataTest extends BaseApiTest
 		$this->tearDownRequiresEmptyPhotos();
 		$this->tearDownRequiresEmptyAlbums();
 		$this->tearDownRequiresEmptyUsers();
+		$this->tearDownRequiresEmptyGroups();
 
 		parent::tearDown();
 	}
