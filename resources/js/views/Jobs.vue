@@ -16,7 +16,7 @@
 			<div class="mb-8">
 				<MeterGroup :value="meter" />
 			</div>
-			<div class="flex text-xs sm:text-base flex-wrap sm:flex-nowrap" v-for="job in jobs">
+			<div class="flex text-xs sm:text-base flex-wrap sm:flex-nowrap" v-for="job in jobs" dir="ltr">
 				<span class="hidden sm:inline-block sm:w-2/5 text-muted-color">{{ prettyDate(job.created_at) }}</span>
 				<span class="w-1/6 sm:w-1/4" :class="textCss(job.status)">{{ translateStatus(job.status) }}</span>
 				<span class="w-5/6 sm:w-1/4">{{ job.username }}</span>

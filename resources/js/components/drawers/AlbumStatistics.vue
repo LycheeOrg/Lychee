@@ -5,77 +5,29 @@
 			<SizeVariantMeter v-if="props.config.is_model_album" :album-id="props.album.id" />
 		</Panel>
 		<Panel
-			class="border-0 w-full max-w-6xl"
+			class="border-0 w-full max-w-7xl"
 			:pt:header:class="'hidden'"
-			:pt:content:class="'flex justify-evenly shadow-inner shad shadow-black/10 rounded-xl p-4 bg-surface-50 dark:bg-surface-950/20'"
+			:pt:content:class="'flex justify-evenly flex-wrap lg:flex-nowrap shadow-inner shad shadow-black/10 rounded-xl p-4 bg-surface-50 dark:bg-surface-950/20'"
 			v-if="photos.length > 0"
 		>
-			<DataTable
-				:value="photosData.lens"
-				scrollable
-				size="small"
-				scrollHeight="13rem"
-				class="max-w-xs w-full border-r-surface-300 dark:border-r-surface-700 border-r"
-				:dt="dtScheme"
-			>
-				<Column field="key" :header="$t('gallery.album.stats.lens')"></Column>
-				<Column field="value" header=""></Column>
-				<template #empty>{{ $t("gallery.album.stats.no_data") }}</template>
-			</DataTable>
-			<DataTable
-				:value="photosData.shutter"
-				scrollable
-				size="small"
-				scrollHeight="13rem"
-				class="max-w-xs w-full border-r-surface-300 dark:border-r-surface-700 border-r"
-				:dt="dtScheme"
-			>
-				<Column field="key" :header="$t('gallery.album.stats.shutter')"></Column>
-				<Column field="value" header=""></Column>
-				<template #empty>{{ $t("gallery.album.stats.no_data") }}</template>
-			</DataTable>
-			<DataTable
-				:value="photosData.aperture"
-				scrollable
-				size="small"
-				scrollHeight="13rem"
-				class="max-w-xs w-full border-r-surface-300 dark:border-r-surface-700 border-r"
-				:dt="dtScheme"
-			>
-				<Column field="key" :header="$t('gallery.album.stats.aperture')"></Column>
-				<Column field="value" header=""></Column>
-				<template #empty>{{ $t("gallery.album.stats.no_data") }}</template>
-			</DataTable>
-			<DataTable
-				:value="photosData.iso"
-				scrollable
-				size="small"
-				scrollHeight="13rem"
-				class="max-w-xs w-full border-r-surface-300 dark:border-r-surface-700 border-r"
-				:dt="dtScheme"
-			>
-				<Column field="key" :header="$t('gallery.album.stats.iso')"></Column>
-				<Column field="value" header=""></Column>
-				<template #empty>{{ $t("gallery.album.stats.no_data") }}</template>
-			</DataTable>
-			<DataTable :value="photosData.model" scrollable size="small" scrollHeight="13rem" class="max-w-xs w-full" :dt="dtScheme">
-				<Column field="key" :header="$t('gallery.album.stats.model')"></Column>
-				<Column field="value" header=""></Column>
-				<template #empty>{{ $t("gallery.album.stats.no_data") }}</template>
-			</DataTable>
+			<StatTable :value="photosData.lens" :header="$t('gallery.album.stats.lens')" />
+			<StatTable :value="photosData.shutter" :header="$t('gallery.album.stats.shutter')" />
+			<StatTable :value="photosData.aperture" :header="$t('gallery.album.stats.aperture')" />
+			<StatTable :value="photosData.aperture" :header="$t('gallery.album.stats.aperture')" />
+			<StatTable :value="photosData.iso" :header="$t('gallery.album.stats.iso')" />
+			<StatTable :value="photosData.model" :header="$t('gallery.album.stats.model')" :is-last="true" />
 		</Panel>
 	</Collapse>
 </template>
 <script setup lang="ts">
 import StatisticsService from "@/services/statistics-service";
-import Column from "primevue/column";
-import DataTable from "primevue/datatable";
 import Panel from "primevue/panel";
 import { Ref, ref } from "vue";
 import { Collapse } from "vue-collapsed";
 import TotalCard from "../statistics/TotalCard.vue";
 import { TotalAlbum, useAlbumsStatistics } from "@/composables/album/albumStatistics";
 import SizeVariantMeter from "../statistics/SizeVariantMeter.vue";
+import StatTable from "./StatTable.vue";
 
 const areStatisticsOpen = defineModel("visible", { default: false }) as Ref<boolean>;
 

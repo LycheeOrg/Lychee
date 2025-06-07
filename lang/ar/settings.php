@@ -30,7 +30,7 @@ return [
 		'nsfw_album_visibility' => 'جعل الألبومات الحساسة مرئية افتراضيًا.',
 		'nsfw_album_explanation' => 'إذا كان الألبوم عامًا، فإنه لا يزال متاحًا، ولكنه مخفي عن العرض ويمكن <b>إظهاره بالضغط على <kbd>H</kbd></b>.',
 		'cache_enabled' => 'تمكين التخزين المؤقت للاستجابات.',
-		'cache_enabled_details' => 'سيؤدي ذلك إلى تسريع وقت استجابة Lychee بشكل كبير.<br> <i class="pi pi-exclamation-triangle text-warning-600 mr-2"></i>إذا كنت تستخدم ألبومات محمية بكلمة مرور، فلا يجب تمكين هذا.',
+		'cache_enabled_details' => 'سيؤدي ذلك إلى تسريع وقت استجابة Lychee بشكل كبير.<br> <i class="pi pi-exclamation-triangle text-warning-600 ml-2"></i>إذا كنت تستخدم ألبومات محمية بكلمة مرور، فلا يجب تمكين هذا.',
 	],
 	'lychee_se' => [
 		'header' => 'Lychee <span class="text-primary-emphasis">SE</span>',

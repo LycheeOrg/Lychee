@@ -32,7 +32,7 @@
 					</div>
 				</div>
 				<div class="flex justify-center">
-					<Button @click="closeCallback" severity="secondary" class="w-full font-bold border-none rounded-none rounded-bl-xl rounded-br-xl">
+					<Button @click="closeCallback" severity="secondary" class="w-full font-bold border-none rounded-none rounded-b-xl">
 						{{ $t("dialogs.button.close") }}
 					</Button>
 				</div>

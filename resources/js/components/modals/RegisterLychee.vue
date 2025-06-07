@@ -18,7 +18,11 @@
 					</template>
 				</div>
 				<div class="flex justify-center">
-					<Button @click="closeCallback" severity="info" class="w-full font-bold border-none rounded-none rounded-bl-xl">
+					<Button
+						@click="closeCallback"
+						severity="info"
+						class="w-full font-bold border-none rounded-none ltr:rounded-bl-xl rtl:rounded-br-xl"
+					>
 						{{ $t("dialogs.button.close") }}
 					</Button>
 					<Button
@@ -26,7 +30,7 @@
 						@click="register"
 						severity="contrast"
 						:disabled="!isValidForm"
-						class="w-full font-bold border-none rounded-none rounded-br-xl"
+						class="w-full font-bold border-none rounded-none ltr:rounded-br-xl rtl:rounded-bl-xl"
 					>
 						{{ $t("dialogs.register.register") }}
 					</Button>
