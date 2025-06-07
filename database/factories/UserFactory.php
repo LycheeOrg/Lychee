@@ -8,7 +8,9 @@
 
 namespace Database\Factories;
 
+use App\Enum\UserGroupRole;
 use App\Models\User;
+use App\Models\UserGroup;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -120,5 +122,20 @@ class UserFactory extends Factory
 		$this->email_generated[] = $candidate;
 
 		return $candidate;
+	}
+
+	/**
+	 * Assign the user to a given group with a specific role when creating.
+	 *
+	 * @param UserGroup     $group
+	 * @param UserGroupRole $role
+	 *
+	 * @return Factory
+	 */
+	public function with_group(UserGroup $group, UserGroupRole $role = UserGroupRole::MEMBER): Factory
+	{
+		return $this->afterCreating(function (User $user) use ($group, $role) {
+			$user->user_groups()->attach($group, ['role' => $role]);
+		});
 	}
 }

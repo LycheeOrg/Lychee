@@ -13,6 +13,7 @@ import { routes } from "@/router/routes";
 import Aura from "@primeuix/themes/aura";
 import { i18nVue } from "laravel-vue-i18n";
 import ToastService from "primevue/toastservice";
+import ConfirmationService from "primevue/confirmationservice";
 import AxiosConfig from "@/config/axios-config";
 import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 import AppComponent from "@/views/App.vue";
@@ -70,6 +71,7 @@ app.directive("tooltip", Tooltip);
 app.component("app", AppComponent);
 app.use(router);
 app.use(ToastService);
+app.use(ConfirmationService);
 
 /**
  * The following block of code may be used to automatically register your
