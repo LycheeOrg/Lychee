@@ -58,6 +58,11 @@ return [
         'update-button' => 'Mettre à jour',
         'no-pending-updates' => 'Aucune mise à jour en attente.',
     ],
+    'missing-palettes' => [
+        'title' => 'Palettes manquantes',
+        'description' => '%d palettes manquantes trouvées.',
+        'button' => 'Créer les palettes manquantes',
+    ],
     'statistics-check' => [
         'title' => 'Check de l’intégrité des Statistiques',
         'missing_photos' => '%d statistiques de photos manquantes.',
