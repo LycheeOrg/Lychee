@@ -1,6 +1,6 @@
 <template>
 	<div
-		class="aspect h-4 w-4 border-surface-700 border"
+		class="aspect h-6 w-6 border-surface-700 border"
 		:style="`background-color: ${props.colour}`"
 		v-tooltip.bottom="props.colour"
 		@click="copyToClipboard"
