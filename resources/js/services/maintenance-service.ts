@@ -50,6 +50,13 @@ const MaintenanceService = {
 		return axios.post(`${Constants.getApiUrl()}Maintenance::missingFileSize`, {});
 	},
 
+	missingPalettesCheck(): Promise<AxiosResponse<number>> {
+		return axios.get(`${Constants.getApiUrl()}Maintenance::missingPalettes`, { data: {} });
+	},
+	missingPalettesDo(): Promise<AxiosResponse> {
+		return axios.post(`${Constants.getApiUrl()}Maintenance::missingPalettes`, {});
+	},
+
 	optimizeDo(): Promise<AxiosResponse<string[]>> {
 		return axios.post(`${Constants.getApiUrl()}Maintenance::optimize`, {});
 	},

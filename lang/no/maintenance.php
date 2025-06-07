@@ -57,6 +57,11 @@ return [
         'update-button' => 'Oppdater',
         'no-pending-updates' => 'Ingen ventende oppdateringer.',
     ],
+    'missing-palettes' => [
+        'title' => 'Missing Palettes',
+        'description' => 'Found %d missing palettes.',
+        'button' => 'Create missing',
+    ],
     'statistics-check' => [
         'title' => 'Statistikk integritetskontroll',
         'missing_photos' => '%d fotostatistikk mangler.',
