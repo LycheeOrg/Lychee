@@ -58,6 +58,11 @@ return [
         'update-button' => '更新',
         'no-pending-updates' => '保留中の更新はありません',
     ],
+    'missing-palettes' => [
+        'title' => 'Missing Palettes',
+        'description' => 'Found %d missing palettes.',
+        'button' => 'Create missing',
+    ],
     'statistics-check' => [
         'title' => 'Statistics integrity Check',
         'missing_photos' => '%d photo statistics missing.',

@@ -61,6 +61,7 @@ class PhotoResource extends Data
 	public PreformattedPhotoData $preformatted;
 	public PreComputedPhotoData $precomputed;
 	public ?TimelineData $timeline = null;
+	public ?ColourPaletteResource $palette = null;
 
 	private Carbon $timeline_data_carbon;
 
@@ -102,6 +103,7 @@ class PhotoResource extends Data
 		$this->previous_photo_id = null;
 		$this->preformatted = new PreformattedPhotoData($photo, $this->size_variants->original);
 		$this->precomputed = new PreComputedPhotoData($photo);
+		$this->palette = ColourPaletteResource::fromModel($photo->palette);
 
 		$this->timeline_data_carbon = $photo->taken_at ?? $photo->created_at;
 

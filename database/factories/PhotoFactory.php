@@ -181,6 +181,7 @@ class PhotoFactory extends Factory
 				$photo->load('size_variants');
 			}
 
+			$photo->load('palette');
 			$photo->load('statistics');
 
 			// Reset the value if it was disabled.
