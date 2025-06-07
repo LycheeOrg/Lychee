@@ -69,6 +69,7 @@ class InitConfig extends Data
 
 	// Slideshow setting
 	public int $slideshow_timeout;
+	public bool $is_slideshow_enabled;
 
 	// Timeline settings
 	public bool $is_timeline_left_border_visible;
@@ -87,6 +88,9 @@ class InitConfig extends Data
 
 	// Live Metrics settings
 	public bool $is_live_metrics_enabled;
+
+	// User registration enabled
+	public bool $is_registration_enabled;
 
 	public function __construct()
 	{
@@ -132,6 +136,7 @@ class InitConfig extends Data
 
 		// Slideshow settings
 		$this->slideshow_timeout = Configs::getValueAsInt('slideshow_timeout');
+		$this->is_slideshow_enabled = Configs::getValueAsBool('slideshow_enabled');
 
 		// Timeline settings
 		$this->is_timeline_left_border_visible = Configs::getValueAsBool('timeline_left_border_enabled');
@@ -139,6 +144,9 @@ class InitConfig extends Data
 		// Site title & dropbox key if logged in as admin.
 		$this->title = Configs::getValueAsString('site_title');
 		$this->dropbox_api_key = Auth::user()?->may_administrate === true ? Configs::getValueAsString('dropbox_key') : 'disabled';
+
+		// User registration enabled
+		$this->is_registration_enabled = Configs::getValueAsBool('user_registration_enabled');
 
 		$this->set_supporter_properties();
 	}

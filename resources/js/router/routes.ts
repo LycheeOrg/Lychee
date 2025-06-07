@@ -20,6 +20,7 @@ const DuplicatesFinder = () => import("@/views/DuplicatesFinder.vue");
 const Changelogs = () => import("@/views/ChangeLogs.vue");
 const LoginPage = () => import("@/views/LoginPage.vue");
 const UserGroups = () => import("@/views/UserGroups.vue");
+const RegisterPage = () => import("@/views/RegisterPage.vue");
 
 const routes_ = [
 	{
@@ -131,6 +132,11 @@ const routes_ = [
 		name: "user-groups",
 		path: "/user-groups",
 		component: UserGroups,
+	},
+	{
+		name: "register",
+		path: "/register",
+		component: RegisterPage,
 	},
 ];
 

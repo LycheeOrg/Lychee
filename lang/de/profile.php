@@ -20,6 +20,13 @@ return [
         'api_token' => 'API Token …',
         'missing_fields' => 'Fehlende Felder',
     ],
+    'register' => [
+        'username_exists' => 'Benutzername existiert bereits.',
+        'password_mismatch' => 'Die Passwörter stimmen nicht überein.',
+        'signup' => 'Registrieren',
+        'error' => 'Bei der Registrierung Ihres Kontos ist ein Fehler aufgetreten.',
+        'success' => 'Ihr Konto wurde erfolgreich erstellt.',
+    ],
     'token' => [
         'unavailable' => 'Sie haben diesen Token bereits gesehen.',
         'no_data' => 'Es wurde kein API-Token erzeugt.',

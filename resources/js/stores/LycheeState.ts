@@ -14,6 +14,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 
 		// Photo config
 		slideshow_timeout: 5,
+		is_slideshow_enabled: true,
 
 		// configs for nsfw
 		are_nsfw_visible: false,
@@ -71,6 +72,9 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		is_old_style: false,
 		is_expert_mode: false,
 		are_all_settings_enabled: false,
+
+		// Registration settings
+		is_registration_enabled: false,
 	}),
 	actions: {
 		init() {
@@ -119,6 +123,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.clockwork_url = data.clockwork_url;
 
 					this.slideshow_timeout = data.slideshow_timeout;
+					this.is_slideshow_enabled = data.is_slideshow_enabled;
 
 					this.is_timeline_left_border_visible = data.is_timeline_left_border_visible;
 
@@ -139,6 +144,8 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.is_medium_download_enabled = data.is_medium_download_enabled;
 					this.is_medium2x_download_enabled = data.is_medium2x_download_enabled;
 					this.photo_previous_next_size = data.photo_previous_next_size;
+
+					this.is_registration_enabled = data.is_registration_enabled;
 				})
 				.catch((error) => {
 					// In this specific case, even though it has been possibly disabled, we really need to see the error.

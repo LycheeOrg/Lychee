@@ -267,6 +267,7 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		is_medium2x_download_enabled: boolean;
 		clockwork_url: string | null;
 		slideshow_timeout: number;
+		is_slideshow_enabled: boolean;
 		is_timeline_left_border_visible: boolean;
 		title: string;
 		dropbox_api_key: string;
@@ -274,6 +275,7 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		is_se_preview_enabled: boolean;
 		is_se_info_hidden: boolean;
 		is_live_metrics_enabled: boolean;
+		is_registration_enabled: boolean;
 	};
 	export type LandingPageResource = {
 		landing_page_enable: boolean;
