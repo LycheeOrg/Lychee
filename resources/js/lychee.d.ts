@@ -369,6 +369,13 @@ declare namespace App.Http.Resources.Models {
 		download_count: number;
 		shared_count: number;
 	};
+	export type ColourPaletteResource = {
+		colour_1: string;
+		colour_2: string;
+		colour_3: string;
+		colour_4: string;
+		colour_5: string;
+	};
 	export type ConfigCategoryResource = {
 		cat: string;
 		name: string;
@@ -442,6 +449,7 @@ declare namespace App.Http.Resources.Models {
 		preformatted: App.Http.Resources.Models.Utils.PreformattedPhotoData;
 		precomputed: App.Http.Resources.Models.Utils.PreComputedPhotoData;
 		timeline: App.Http.Resources.Models.Utils.TimelineData | null;
+		palette: App.Http.Resources.Models.ColourPaletteResource | null;
 		statistics: App.Http.Resources.Models.PhotoStatisticsResource | null;
 	};
 	export type PhotoStatisticsResource = {
