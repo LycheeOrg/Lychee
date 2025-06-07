@@ -53,7 +53,7 @@ class ExtractColourPalette extends Command
 				->lazyById($limit);
 
 			if (count($photos) === 0) {
-				$this->line('No palette require extraction.');
+				$this->line('No photos require palette extraction.');
 
 				return 0;
 			}
