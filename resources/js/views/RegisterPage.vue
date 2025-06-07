@@ -16,7 +16,7 @@
 				{{ title }}
 			</h1>
 		</div>
-		<Message v-if="errorMessage" severity="error" class="mb-4 text-center" >{{ errorMessage }}</Message>
+		<Message v-if="errorMessage" severity="error" class="mb-4 text-center">{{ errorMessage }}</Message>
 		<form v-focustrap class="flex flex-col gap-4 relative max-w-md w-full text-sm rounded-md pt-9">
 			<div class="inline-flex flex-col gap-4 px-9">
 				<FloatLabel variant="on">
