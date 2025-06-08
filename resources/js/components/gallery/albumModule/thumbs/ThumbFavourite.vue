@@ -1,7 +1,7 @@
 <template>
 	<div
 		:class="{
-			'absolute top-0 right-0 flex justify-center items-center h-8 w-8 text-surface-0 text-2xl filter-shadow': true,
+			'absolute top-0 ltr:right-0 rtl:left-0 flex justify-center items-center h-8 w-8 text-surface-0 text-2xl filter-shadow': true,
 			'md:opacity-0 md:group-hover:opacity-50 md:transition-all md:ease-out': !props.isFavourite,
 		}"
 	>
@@ -15,7 +15,7 @@
 	</div>
 	<div
 		:class="{
-			'absolute top-0 right-0 flex justify-center items-center h-8 w-8 text-surface-0 text-2xl cursor-pointer': true,
+			'absolute top-0 ltr:right-0 rtl:left-0 flex justify-center items-center h-8 w-8 text-surface-0 text-2xl cursor-pointer': true,
 			'opacity-0 md:opacity-0 md:hover:opacity-100 md:transition-all md:ease-out': !props.isFavourite,
 		}"
 		@click="propagateClick"
