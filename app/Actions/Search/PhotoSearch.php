@@ -67,7 +67,7 @@ class PhotoSearch
 				fn (FixedQueryBuilder $query) => $query
 					->where('title', 'like', '%' . $term . '%')
 					->orWhere('description', 'like', '%' . $term . '%')
-					->orWhere('tags', 'like', '%' . $term . '%')
+					// ->orWhere('tags', 'like', '%' . $term . '%')
 					->orWhere('location', 'like', '%' . $term . '%')
 					->orWhere('model', 'like', '%' . $term . '%')
 					->orWhere('taken_at', 'like', '%' . $term . '%')
