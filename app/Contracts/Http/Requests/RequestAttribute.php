@@ -26,6 +26,7 @@ class RequestAttribute
 
 	public const PARENT_ID_ATTRIBUTE = 'parent_id';
 
+	public const FROM_ID_ATTRIBUTE = 'from_id';
 	public const ALBUM_ID_ATTRIBUTE = 'album_id';
 	public const ALBUM_IDS_ATTRIBUTE = 'album_ids';
 	public const ALBUM_DECORATION_ATTRIBUTE = 'album_decoration';

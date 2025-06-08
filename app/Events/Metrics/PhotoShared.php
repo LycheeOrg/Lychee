@@ -13,13 +13,8 @@ use App\Enum\MetricsAction;
 /**
  * This event is fired when a direct link to a photo is used.
  */
-class PhotoShared extends BaseMetricsEvent
+class PhotoShared extends BasePhotoMetricsEvent
 {
-	public function key(): string
-	{
-		return 'photo_id';
-	}
-
 	public function metricAction(): MetricsAction
 	{
 		return MetricsAction::SHARED;

@@ -45,7 +45,7 @@ class MetricsController extends Controller
 	 */
 	public function photo(PhotoMetricsRequest $request): void
 	{
-		PhotoVisit::dispatchIf(self::shouldMeasure(), $request->visitorId(), $request->photoIds()[0]);
+		PhotoVisit::dispatchIf(self::shouldMeasure() && $request->from_id() !== null, $request->visitorId(), $request->photoIds()[0], $request->from_id());
 
 		return;
 	}
@@ -59,7 +59,7 @@ class MetricsController extends Controller
 	 */
 	public function favourite(PhotoMetricsRequest $request): void
 	{
-		PhotoFavourite::dispatchIf(self::shouldMeasure(), $request->visitorId(), $request->photoIds()[0]);
+		PhotoFavourite::dispatchIf(self::shouldMeasure() && $request->from_id() !== null, $request->visitorId(), $request->photoIds()[0], $request->from_id());
 
 		return;
 	}

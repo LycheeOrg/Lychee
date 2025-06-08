@@ -165,6 +165,7 @@ import LoadingProgress from "@/components/loading/LoadingProgress.vue";
 import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
 import { useHasNextPreviousPhoto } from "@/composables/photo/hasNextPreviousPhoto";
 import MetricsService from "@/services/metrics-service";
+import { usePhotoRoute } from "@/composables/photo/photoRoute";
 
 const route = useRoute();
 const router = useRouter();
@@ -212,6 +213,7 @@ const {
 	refresh,
 } = useSearch(albumId, search_term, search_page);
 
+const { getParentId } = usePhotoRoute(router);
 const { refreshPhoto } = usePhotoRefresher(photo, photos, photoId);
 const { albumsForSelection, photosForSelection, noData, configForMenu, title } = useSearchComputed(config, album, albums, photos, lycheeStore);
 
@@ -423,7 +425,7 @@ onMounted(() => {
 
 const debouncedPhotoMetrics = useDebounceFn(() => {
 	if (photoId.value !== undefined) {
-		MetricsService.photo(photoId.value);
+		MetricsService.photo(photoId.value, getParentId());
 		return;
 	}
 }, 100);

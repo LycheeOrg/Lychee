@@ -320,7 +320,7 @@ class AlbumController extends Controller
 
 		// We dispatch one event per photo.
 		foreach ($request->photos() as $photo) {
-			PhotoDownload::dispatchIf($should_measure, $this->visitorId(), $photo->id);
+			PhotoDownload::dispatchIf($should_measure && $request->from_id() !== null, $this->visitorId(), $photo->id, $request->from_id());
 		}
 
 		return PhotoBaseArchive::resolve()->do($request->photos(), $request->sizeVariant());
