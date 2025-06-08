@@ -134,6 +134,7 @@ Route::get('/Auth::config', [AuthController::class, 'getConfig']);
 Route::post('/Profile::update', [ProfileController::class, 'update']);
 Route::post('/Profile::resetToken', [ProfileController::class, 'resetToken']);
 Route::post('/Profile::unsetToken', [ProfileController::class, 'unsetToken']);
+Route::put('/Profile', [ProfileController::class, 'register']);
 
 /**
  * USERS.
@@ -148,6 +149,19 @@ Route::get('/UserManagement', [Admin\UserManagementController::class, 'list']);
 Route::post('/UserManagement::save', [Admin\UserManagementController::class, 'save']);
 Route::post('/UserManagement::delete', [Admin\UserManagementController::class, 'delete']);
 Route::post('/UserManagement::create', [Admin\UserManagementController::class, 'create']);
+
+/**
+ * GROUPS.
+ */
+Route::get('/UserGroups', [Admin\UserGroupsController::class, 'list'])->middleware(['support:se']);
+Route::post('/UserGroups', [Admin\UserGroupsController::class, 'create'])->middleware(['support:se']);
+Route::patch('/UserGroups', [Admin\UserGroupsController::class, 'update'])->middleware(['support:se']);
+Route::delete('/UserGroups', [Admin\UserGroupsController::class, 'delete'])->middleware(['support:se']);
+
+Route::get('/UserGroups/Users', [Admin\UserGroupsManagementController::class, 'get'])->middleware(['support:se']);
+Route::post('/UserGroups/Users', [Admin\UserGroupsManagementController::class, 'addUser'])->middleware(['support:se']);
+Route::delete('/UserGroups/Users', [Admin\UserGroupsManagementController::class, 'removeUser'])->middleware(['support:se']);
+Route::patch('/UserGroups/Users', [Admin\UserGroupsManagementController::class, 'updateUserRole'])->middleware(['support:se']);
 
 /**
  * WEBAUTHN.
@@ -223,6 +237,8 @@ Route::get('/Maintenance::countDuplicates', [Admin\Maintenance\DuplicateFinder::
 Route::get('/Maintenance::searchDuplicates', [Admin\Maintenance\DuplicateFinder::class, 'get']);
 Route::get('/Maintenance::statisticsIntegrity', [Admin\Maintenance\StatisticsCheck::class, 'check']);
 Route::post('/Maintenance::statisticsIntegrity', [Admin\Maintenance\StatisticsCheck::class, 'do']);
+Route::get('/Maintenance::missingPalettes', [Admin\Maintenance\MissingPalettes::class, 'check']);
+Route::post('/Maintenance::missingPalettes', [Admin\Maintenance\MissingPalettes::class, 'do']);
 
 /**
  * STATISTICS.

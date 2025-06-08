@@ -31,6 +31,35 @@
 		</template>
 
 		<template #end>
+			<template v-if="props.user.id === null">
+				<Button
+					as="router-link"
+					:to="{ name: 'login' }"
+					severity="secondary"
+					text
+					:class="{
+						'py-2 px-4 rounded-xl hidden md:block': true,
+						'dark:hover:text-surface-100': true,
+						'hover:text-surface-800': true,
+					}"
+				>
+					{{ $t("dialogs.login.signin") }}
+				</Button>
+				<Button
+					v-if="is_registration_enabled"
+					as="router-link"
+					:to="{ name: 'register' }"
+					severity="secondary"
+					text
+					:class="{
+						'py-2 px-4 rounded-xl hidden md:block': true,
+						'dark:hover:text-surface-100 dark:border-surface-400 dark:hover:border-surface-100': true,
+						'hover:text-surface-800 border-surface-500 hover:border-surface-800': true,
+					}"
+				>
+					{{ $t("profile.register.signup") }}
+				</Button>
+			</template>
 			<!-- Maybe logged in. -->
 			<div :class="menu.length > 1 ? 'hidden sm:block' : ''">
 				<template v-for="item in menu">
@@ -126,7 +155,7 @@ const lycheeStore = useLycheeStateStore();
 const togglableStore = useTogglablesStateStore();
 const favourites = useFavouriteStore();
 
-const { dropbox_api_key, is_favourite_enabled, is_se_preview_enabled, is_live_metrics_enabled } = storeToRefs(lycheeStore);
+const { dropbox_api_key, is_favourite_enabled, is_se_preview_enabled, is_live_metrics_enabled, is_registration_enabled } = storeToRefs(lycheeStore);
 const { is_login_open, is_upload_visible, is_create_album_visible, is_create_tag_album_visible, is_metrics_open } = storeToRefs(togglableStore);
 
 const router = useRouter();
@@ -216,7 +245,7 @@ type Item = {
 	icon: string;
 	if: boolean;
 };
-type MenuRight = (Item & Link) | (Item & Callback);
+type MenuRight = (Item & Link & { key: string }) | (Item & Callback & { key: string });
 
 const menu = computed(() =>
 	[
@@ -225,60 +254,64 @@ const menu = computed(() =>
 			type: "link",
 			icon: "pi pi-heart",
 			if: is_favourite_enabled.value && (favourites.photos?.length ?? 0) > 0,
+			key: "favourites",
 		},
 		{
 			icon: "pi pi-search",
 			type: "fn",
 			callback: openSearch,
 			if: props.config.is_search_accessible,
+			key: "search",
 		},
 		{
 			icon: "pi pi-bell",
 			type: "fn",
 			callback: () => (is_metrics_open.value = true),
 			if: is_live_metrics_enabled.value && props.rights.can_see_live_metrics,
+			key: "metrics",
 		},
 		{
 			icon: "pi pi-bell text-primary-emphasis",
 			type: "fn",
 			callback: () => (is_metrics_open.value = true),
 			if: is_se_preview_enabled.value && props.rights.can_see_live_metrics,
+			key: "se_preview",
 		},
 		{
 			icon: "pi pi-sign-in",
 			type: "fn",
 			callback: togglableStore.toggleLogin,
 			if: props.user.id === null && !isLoginLeft.value,
+			key: "login",
 		},
 		{
 			icon: "pi pi-question-circle",
 			type: "fn",
 			callback: openHelp,
 			if: !isTouchDevice() && props.user.id !== null && props.config.show_keybinding_help_button && document.body.scrollWidth > 800,
+			key: "help",
 		},
 		{
 			icon: "pi pi-plus",
 			type: "fn",
 			callback: openAddMenu,
 			if: props.rights.can_upload,
+			key: "add_menu",
 		},
 		{
 			icon: "pi pi-eye-slash",
 			type: "fn",
 			callback: () => (lycheeStore.are_nsfw_visible = false),
 			if: isTouchDevice() && props.hasHidden && lycheeStore.are_nsfw_visible,
+			key: "hide_nsfw",
 		},
 		{
 			icon: "pi pi-eye",
 			type: "fn",
 			callback: () => (lycheeStore.are_nsfw_visible = true),
 			if: isTouchDevice() && props.hasHidden && !lycheeStore.are_nsfw_visible,
+			key: "show_nsfw",
 		},
 	].filter((item) => item.if),
 ) as ComputedRef<MenuRight[]>;
-
-// bubble up.
-function refresh() {
-	emits("refresh");
-}
 </script>

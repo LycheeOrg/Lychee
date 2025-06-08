@@ -72,6 +72,7 @@ final readonly class RouteCacheManager
 			'api/v2/Maintenance::countDuplicates' => false,
 			'api/v2/Maintenance::searchDuplicates' => false,
 			'api/v2/Maintenance::statisticsIntegrity' => false,
+			'api/v2/Maintenance::missingPalettes' => false,
 
 			'api/v2/Map' => new RouteCacheConfig(tag: CacheTag::GALLERY, user_dependant: true, extra: [RequestAttribute::ALBUM_ID_ATTRIBUTE]),
 			'api/v2/Map::provider' => new RouteCacheConfig(tag: CacheTag::SETTINGS),
@@ -103,6 +104,9 @@ final readonly class RouteCacheManager
 			'api/v2/Users::count' => new RouteCacheConfig(tag: CacheTag::USERS, user_dependant: true),
 			'api/v2/Version' => false,
 			'api/v2/ChangeLogs' => false,
+
+			'api/v2/UserGroups' => false,
+			'api/v2/UserGroups/Users' => false,
 
 			// This is returning a stream, we do not cache it.
 			'api/v2/Zip' => false,

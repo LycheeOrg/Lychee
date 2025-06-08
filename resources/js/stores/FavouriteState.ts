@@ -35,7 +35,7 @@ export const useFavouriteStore = defineStore("favourite-store", {
 			}
 			this.photos = this.photos.filter((p: App.Http.Resources.Models.PhotoResource) => p.id !== photoId);
 		},
-		toggle(photo: App.Http.Resources.Models.PhotoResource) {
+		toggle(photo: App.Http.Resources.Models.PhotoResource, albumId: string | undefined) {
 			if (!this.photos) {
 				this.photos = [];
 			}
@@ -44,7 +44,7 @@ export const useFavouriteStore = defineStore("favourite-store", {
 				this.removePhoto(photo.id);
 			} else {
 				this.addPhoto(photo);
-				MetricsService.favourite(photo.id);
+				MetricsService.favourite(photo.id, albumId);
 			}
 		},
 	},

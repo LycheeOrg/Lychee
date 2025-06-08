@@ -165,6 +165,9 @@ const LycheePrimeVueConfig: Preset = {
 	},
 	components: {
 		autocomplete: {
+			option: {
+				padding: "0 1rem",
+			},
 			colorScheme: {
 				dark: {
 					root: {
@@ -173,6 +176,22 @@ const LycheePrimeVueConfig: Preset = {
 						borderRadius: "0",
 						borderColor: "transparent",
 						hoverBorderColor: "transparent",
+					},
+					dropdown: {
+						background: "{surface.800}",
+						borderColor: "{surface.700}",
+						color: "{surface.300}",
+						hoverBackground: "{surface.700}",
+						hoverColor: "{surface.200}",
+					},
+					option: {
+						color: "{surface.400}",
+						focusBackground: "linear-gradient({primary.500}, {primary.600})",
+						focusColor: "{surface.0}",
+					},
+					overlay: {
+						background: "{surface.900}",
+						borderColor: "{surface.800}",
 					},
 				},
 			},
@@ -387,6 +406,9 @@ const LycheePrimeVueConfig: Preset = {
 			},
 		},
 		dialog: {
+			root: {
+				borderColor: "transparent",
+			},
 			colorScheme: {
 				light: {
 					root: {},

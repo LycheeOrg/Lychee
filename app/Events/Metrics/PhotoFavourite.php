@@ -13,13 +13,8 @@ use App\Enum\MetricsAction;
 /**
  * This event is fired when a photo is visited.
  */
-class PhotoFavourite extends BaseMetricsEvent
+class PhotoFavourite extends BasePhotoMetricsEvent
 {
-	public function key(): string
-	{
-		return 'photo_id';
-	}
-
 	public function metricAction(): MetricsAction
 	{
 		return MetricsAction::FAVOURITE;

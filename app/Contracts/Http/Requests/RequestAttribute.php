@@ -15,6 +15,10 @@ class RequestAttribute
 	public const USER_ID_ATTRIBUTE = 'user_id';
 	public const USER_IDS_ATTRIBUTE = 'user_ids';
 
+	public const GROUP_ID = 'group_id';
+	public const NAME_ATTRIBUTE = 'name';
+	public const ROLE_ATTRIBUTE = 'role';
+
 	public const EMAIL_ATTRIBUTE = 'email';
 	public const ALIAS_ATTRIBUTE = 'alias';
 	public const PROVIDER_ATTRIBUTE = 'provider';
@@ -22,6 +26,7 @@ class RequestAttribute
 
 	public const PARENT_ID_ATTRIBUTE = 'parent_id';
 
+	public const FROM_ID_ATTRIBUTE = 'from_id';
 	public const ALBUM_ID_ATTRIBUTE = 'album_id';
 	public const ALBUM_IDS_ATTRIBUTE = 'album_ids';
 	public const ALBUM_DECORATION_ATTRIBUTE = 'album_decoration';
