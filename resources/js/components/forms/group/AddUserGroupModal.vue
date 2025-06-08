@@ -9,7 +9,7 @@
 						<label for="name">{{ $t("user-groups.create.name") }}</label>
 					</FloatLabel>
 					<FloatLabel variant="on">
-						<Textarea id="description" v-model="description" rows="3" />
+						<Textarea id="description" v-model="description" :rows="3" />
 						<label for="description">{{ $t("user-groups.create.description") }}</label>
 					</FloatLabel>
 					<FloatLabel variant="on" v-if="groupId === undefined">
