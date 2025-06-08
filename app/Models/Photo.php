@@ -9,7 +9,6 @@
 namespace App\Models;
 
 use App\Actions\Photo\Delete;
-use App\Casts\ArrayCast;
 use App\Casts\DateTimeWithTimezoneCast;
 use App\Casts\MustNotSetCast;
 use App\Contracts\Models\HasUTCBasedTimes;
@@ -30,9 +29,11 @@ use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\ToArrayThrowsNotImplemented;
 use App\Models\Extensions\UTCBasedTimes;
 use App\Relations\HasManySizeVariants;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
@@ -41,44 +42,44 @@ use function Safe\preg_match;
 /**
  * App\Models\Photo.
  *
- * @property string       $id
- * @property string       $title
- * @property string|null  $description
- * @property string[]     $tags
- * @property int          $owner_id
- * @property string|null  $type
- * @property string|null  $iso
- * @property string|null  $aperture
- * @property string|null  $make
- * @property string|null  $model
- * @property string|null  $lens
- * @property string|null  $shutter
- * @property string|null  $focal
- * @property float|null   $latitude
- * @property float|null   $longitude
- * @property float|null   $altitude
- * @property float|null   $img_direction
- * @property string|null  $location
- * @property Carbon|null  $taken_at
- * @property string|null  $taken_at_orig_tz
- * @property Carbon|null  $initial_taken_at
- * @property string|null  $initial_taken_at_orig_tz
- * @property bool         $is_starred
- * @property string|null  $live_photo_short_path
- * @property string|null  $live_photo_url
- * @property string|null  $album_id
- * @property string       $checksum
- * @property string       $original_checksum
- * @property LicenseType  $license
- * @property Carbon       $created_at
- * @property Carbon       $updated_at
- * @property string|null  $live_photo_content_id
- * @property string|null  $live_photo_checksum
- * @property Album|null   $album
- * @property User         $owner
- * @property SizeVariants $size_variants
- * @property int          $filesize
- * @property Palette|null $palette
+ * @property string              $id
+ * @property string              $title
+ * @property string|null         $description
+ * @property Collection<int,Tag> $tags
+ * @property int                 $owner_id
+ * @property string|null         $type
+ * @property string|null         $iso
+ * @property string|null         $aperture
+ * @property string|null         $make
+ * @property string|null         $model
+ * @property string|null         $lens
+ * @property string|null         $shutter
+ * @property string|null         $focal
+ * @property float|null          $latitude
+ * @property float|null          $longitude
+ * @property float|null          $altitude
+ * @property float|null          $img_direction
+ * @property string|null         $location
+ * @property Carbon|null         $taken_at
+ * @property string|null         $taken_at_orig_tz
+ * @property Carbon|null         $initial_taken_at
+ * @property string|null         $initial_taken_at_orig_tz
+ * @property bool                $is_starred
+ * @property string|null         $live_photo_short_path
+ * @property string|null         $live_photo_url
+ * @property string|null         $album_id
+ * @property string              $checksum
+ * @property string              $original_checksum
+ * @property LicenseType         $license
+ * @property Carbon              $created_at
+ * @property Carbon              $updated_at
+ * @property string|null         $live_photo_content_id
+ * @property string|null         $live_photo_checksum
+ * @property Album|null          $album
+ * @property User                $owner
+ * @property SizeVariants        $size_variants
+ * @property int                 $filesize
+ * @property Palette|null        $palette
  *
  * @method static PhotoBuilder|Photo addSelect($column)
  * @method static PhotoBuilder|Photo join(string $table, string $first, string $operator = null, string $second = null, string $type = 'inner', string $where = false)
@@ -158,7 +159,6 @@ class Photo extends Model implements HasUTCBasedTimes
 		'taken_at_mod' => 'datetime',
 		'owner_id' => 'integer',
 		'is_starred' => 'boolean',
-		'tags' => ArrayCast::class,
 		'latitude' => 'float',
 		'longitude' => 'float',
 		'altitude' => 'float',
@@ -228,6 +228,22 @@ class Photo extends Model implements HasUTCBasedTimes
 	public function palette(): HasOne
 	{
 		return $this->hasOne(Palette::class, 'photo_id', 'id');
+	}
+
+	/**
+	 * Returns the relationship between a tag and all photos with whom
+	 * this tag is attached.
+	 *
+	 * @return BelongsToMany<Tag,$this>
+	 */
+	public function tags(): BelongsToMany
+	{
+		return $this->belongsToMany(
+			Tag::class,
+			'photos_tags',
+			'photo_id',
+			'tag_id',
+		);
 	}
 
 	/**

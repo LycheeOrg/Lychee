@@ -92,7 +92,7 @@ class PhotoResource extends Data
 		$this->original_checksum = $photo->original_checksum;
 		$this->shutter = $photo->shutter;
 		$this->size_variants = new SizeVariantsResouce($photo);
-		$this->tags = $photo->tags;
+		$this->tags = $photo->tags->pluck('name')->all();
 		$this->taken_at = $photo->taken_at?->toIso8601String();
 		$this->taken_at_orig_tz = $photo->taken_at_orig_tz;
 		$this->title = (Configs::getValueAsBool('file_name_hidden') && Auth::guest()) ? '' : $photo->title;

@@ -22,6 +22,7 @@ use App\Enum\UserGroupRole;
 use App\Models\AccessPermission;
 use App\Models\Album;
 use App\Models\Photo;
+use App\Models\Tag;
 use App\Models\TagAlbum;
 use App\Models\User;
 use App\Models\UserGroup;
@@ -70,6 +71,9 @@ abstract class BaseApiWithDataTest extends BaseApiTest
 	protected Album $album3;
 	protected Photo $photo3;
 
+	// Tags
+	protected Tag $tag_test;
+
 	// album 4 belongs to userLocked
 	// album 4 is visible without being logged in
 	protected Album $album4;
@@ -110,12 +114,14 @@ abstract class BaseApiWithDataTest extends BaseApiTest
 		$this->userWithGroup1 = User::factory()->with_group($this->group1)->create();
 		$this->userWithGroupAdmin = User::factory()->with_group($this->group1, UserGroupRole::ADMIN)->create();
 
+		$this->tag_test = Tag::factory()->with_name('test')->create();
+
 		$this->album1 = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
-		$this->photo1 = Photo::factory()->owned_by($this->userMayUpload1)->with_GPS_coordinates()->with_tags('test')->in($this->album1)->create();
+		$this->photo1 = Photo::factory()->owned_by($this->userMayUpload1)->with_GPS_coordinates()->with_tags([$this->tag_test])->in($this->album1)->create();
 		$this->photo1b = Photo::factory()->owned_by($this->userMayUpload1)->with_subGPS_coordinates()->in($this->album1)->create();
 		$this->subAlbum1 = Album::factory()->children_of($this->album1)->owned_by($this->userMayUpload1)->create();
 		$this->subPhoto1 = Photo::factory()->owned_by($this->userMayUpload1)->with_GPS_coordinates()->in($this->subAlbum1)->create();
-		$this->tagAlbum1 = TagAlbum::factory()->owned_by($this->userMayUpload1)->of_tags('test')->create();
+		$this->tagAlbum1 = TagAlbum::factory()->owned_by($this->userMayUpload1)->of_tags([$this->tag_test])->create();
 
 		$this->album2 = Album::factory()->as_root()->owned_by($this->userMayUpload2)->create();
 		$this->photo2 = Photo::factory()->owned_by($this->userMayUpload2)->with_GPS_coordinates()->in($this->album2)->create();

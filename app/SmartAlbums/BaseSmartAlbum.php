@@ -113,7 +113,7 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	 */
 	public function photos(): Builder
 	{
-		$base_query = Photo::query()->with(['album', 'size_variants', 'statistics', 'palette']);
+		$base_query = Photo::query()->with(['album', 'size_variants', 'statistics', 'palette', 'tags']);
 
 		if (!Configs::getValueAsBool('SA_override_visibility')) {
 			return $this->photo_query_policy
