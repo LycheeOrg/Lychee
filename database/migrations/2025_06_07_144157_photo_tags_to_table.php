@@ -140,7 +140,7 @@ return new class() extends Migration {
 			}
 		});
 
-		DB::table('photos_tags')->truncate();
-		DB::table('tags')->truncate();
+		DB::table('photos_tags')->delete();
+		DB::table('tags')->delete();
 	}
 };
