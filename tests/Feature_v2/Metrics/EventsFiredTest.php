@@ -53,11 +53,11 @@ class EventsFiredTest extends BaseApiWithDataTest
 
 	public function testVisitSharedPhoto(): void
 	{
-		$response = $this->postJson('Metrics::photo', ['photo_ids' => [$this->photo4->id]]);
+		$response = $this->postJson('Metrics::photo', ['photo_ids' => [$this->photo4->id], 'from_id' => $this->album4->id]);
 		$this->assertNoContent($response);
 		$this->assertEquals(1, Statistics::where('photo_id', $this->photo4->id)->firstOrFail()->visit_count);
 
-		$response = $this->postJson('Metrics::favourite', ['photo_ids' => [$this->photo4->id]]);
+		$response = $this->postJson('Metrics::favourite', ['photo_ids' => [$this->photo4->id], 'from_id' => $this->album4->id]);
 		$this->assertNoContent($response);
 		$this->assertEquals(1, Statistics::where('photo_id', $this->photo4->id)->firstOrFail()->favourite_count);
 

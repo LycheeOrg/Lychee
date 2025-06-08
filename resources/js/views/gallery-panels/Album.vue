@@ -171,6 +171,10 @@ import { useHasNextPreviousPhoto } from "@/composables/photo/hasNextPreviousPhot
 import { getNextPreviousPhoto } from "@/composables/photo/getNextPreviousPhoto";
 import { usePhotoRefresher } from "@/composables/photo/hasRefresher";
 import MetricsService from "@/services/metrics-service";
+import { usePhotoRoute } from "@/composables/photo/photoRoute";
+import { useLtRorRtL } from "@/utils/Helpers";
+
+const { isLTR } = useLtRorRtL();
 
 const route = useRoute();
 const router = useRouter();
@@ -216,6 +220,7 @@ const { isPasswordProtected, isLoading, user, modelAlbum, album, photo, transiti
 	useAlbumRefresher(albumId, photoId, auth, is_login_open);
 
 const { refreshPhoto } = usePhotoRefresher(photo, photos, photoId);
+const { getParentId } = usePhotoRoute(router);
 
 const children = computed<App.Http.Resources.Models.ThumbAlbumResource[]>(() => modelAlbum.value?.albums ?? []);
 
@@ -303,9 +308,11 @@ onKeyStroke("l", () => !shouldIgnoreKeystroke() && photo.value === undefined && 
 onKeyStroke("/", () => !shouldIgnoreKeystroke() && photo.value === undefined && config.value?.is_search_accessible && openSearch());
 onKeyStroke([getModKey(), "a"], () => !shouldIgnoreKeystroke() && photo.value === undefined && selectEverything());
 
-// Photo operations
-onKeyStroke("ArrowLeft", () => !shouldIgnoreKeystroke() && photo.value !== undefined && hasPrevious() && previous(true));
-onKeyStroke("ArrowRight", () => !shouldIgnoreKeystroke() && photo.value !== undefined && hasNext() && next(true));
+// Photo operations (note that the arrow keys are flipped for RTL languages)
+onKeyStroke("ArrowLeft", () => !shouldIgnoreKeystroke() && photo.value !== undefined && isLTR() && hasPrevious() && previous(true));
+onKeyStroke("ArrowRight", () => !shouldIgnoreKeystroke() && photo.value !== undefined && isLTR() && hasNext() && next(true));
+onKeyStroke("ArrowLeft", () => !shouldIgnoreKeystroke() && photo.value !== undefined && !isLTR() && hasNext() && next(true));
+onKeyStroke("ArrowRight", () => !shouldIgnoreKeystroke() && photo.value !== undefined && !isLTR() && hasPrevious() && previous(true));
 onKeyStroke("o", () => !shouldIgnoreKeystroke() && photo.value !== undefined && rotateOverlay());
 onKeyStroke(" ", () => !shouldIgnoreKeystroke() && photo.value !== undefined && is_slideshow_enabled.value && slideshow());
 onKeyStroke("i", () => !shouldIgnoreKeystroke() && photo.value !== undefined && toggleDetails());
@@ -413,7 +420,7 @@ onUnmounted(() => {
 
 const debouncedPhotoMetrics = useDebounceFn(() => {
 	if (photoId.value !== undefined) {
-		MetricsService.photo(photoId.value);
+		MetricsService.photo(photoId.value, getParentId());
 		return;
 	}
 }, 100);

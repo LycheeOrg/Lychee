@@ -4,17 +4,17 @@
 		:class="{
 			'h-full relative transition-all overflow-x-clip overflow-y-scroll bg-bg-800': true,
 			'w-[380px]': areDetailsOpen,
-			'w-0 translate-x-full': !areDetailsOpen,
+			'w-0 ltr:translate-x-full rtl:-translate-x-full': !areDetailsOpen,
 		}"
 	>
-		<Card id="lychee_sidebar" v-if="props.photo" class="w-[380px] h-full pr-4 break-words">
+		<Card id="lychee_sidebar" v-if="props.photo" class="w-[380px] h-full ltr:pr-4 rtl:pl-4 break-words">
 			<template #content>
 				<div class="flex flex-col mt-8">
 					<h1 class="text-center text-2xl font-bold my-4">
 						{{ $t("gallery.photo.details.about") }}
 					</h1>
 					<!-- Title etc info -->
-					<div class="flex gap-3 mb-4">
+					<div class="flex gap-3 mb-2">
 						<div>
 							<MiniIcon icon="image" class="h-12 w-12" />
 						</div>
@@ -32,18 +32,25 @@
 							</div>
 						</div>
 					</div>
+					<div v-if="props.photo.palette" class="flex gap-2 mb-4 ml-15">
+						<ColourSquare :colour="props.photo.palette.colour_1" />
+						<ColourSquare :colour="props.photo.palette.colour_2" />
+						<ColourSquare :colour="props.photo.palette.colour_3" />
+						<ColourSquare :colour="props.photo.palette.colour_4" />
+						<ColourSquare :colour="props.photo.palette.colour_5" />
+					</div>
 					<!-- Dates stuff -->
 					<div class="flex-col text-muted-color">
 						<div class="flex gap-1 items-center">
-							<span class="w-6 inline-block text-left"
-								><i class="pi pi-file-arrow-up" v-tooltip="$t('gallery.photo.details.uploaded')"
-							/></span>
+							<span class="w-6 inline-block">
+								<i class="pi pi-file-arrow-up" v-tooltip="$t('gallery.photo.details.uploaded')" />
+							</span>
 							<span class="text-sm">{{ props.photo.preformatted.created_at }}</span>
 						</div>
 						<div class="flex gap-1 items-start">
-							<span class="w-6 inline-block text-left"
-								><i class="pi pi-camera w-6 pt-1 inline-block" v-tooltip="$t('gallery.photo.details.captured')"
-							/></span>
+							<span class="w-6 inline-block">
+								<i class="pi pi-camera w-6 pt-1 inline-block" v-tooltip="$t('gallery.photo.details.captured')" />
+							</span>
 							<span v-if="props.photo.preformatted.taken_at" class="text-sm"
 								>{{ props.photo.preformatted.taken_at }}
 								<span v-if="props.photo.precomputed.is_taken_at_modified" class="text-warning-600">*</span>
@@ -53,7 +60,7 @@
 
 					<!-- Description stuff -->
 					<template v-if="props.photo.preformatted.description">
-						<h2 class="text-muted-color-emphasis text-base font-bold pt-4 pb-1">
+						<h2 class="text-muted-color-emphasis text-base font-bold mt-4 mb-1">
 							{{ $t("gallery.photo.details.description") }}
 						</h2>
 						<div class="prose dark:prose-invert prose-sm mb-4" v-html="props.photo.preformatted.description"></div>
@@ -61,7 +68,7 @@
 
 					<!-- Tags stuff -->
 					<template v-if="props.photo.tags.length > 0">
-						<h2 v-if="props.photo.tags.length > 0" class="text-muted-color-emphasis text-base font-bold pt-4 pb-1">
+						<h2 v-if="props.photo.tags.length > 0" class="text-muted-color-emphasis text-base font-bold mt-4 mb-1">
 							{{ $t("gallery.photo.details.tags") }}
 						</h2>
 						<span class="pb-2">
@@ -73,7 +80,7 @@
 
 					<!-- Exif stuff -->
 					<template v-if="props.photo.precomputed.has_exif">
-						<h2 class="text-muted-color-emphasis text-base font-bold pt-4 pb-1">
+						<h2 class="text-muted-color-emphasis text-base font-bold mt-4 mb-1">
 							{{ $t("gallery.photo.details.exif_data") }}
 						</h2>
 						<div class="flex flex-wrap text-muted-color gap-y-0.5">
@@ -123,7 +130,7 @@
 					<!-- <span class="py-0.5 px-3 text-sm" v-if="props.photo.type">{{ $t("gallery.photo.details.format") }}</span>
 					<span class="py-0.5 pl-0 text-sm" v-if="props.photo.type">{{ props.photo.type }}</span> -->
 
-					<h2 v-if="props.photo.precomputed.has_location" class="col-span-2 text-muted-color-emphasis text-base font-bold pt-4 pb-1">
+					<h2 v-if="props.photo.precomputed.has_location" class="col-span-2 text-muted-color-emphasis text-base font-bold mt-4 mb-1">
 						{{ $t("gallery.photo.details.location") }}
 					</h2>
 					<MapInclude :latitude="props.photo.latitude" :longitude="props.photo.longitude" v-if="props.isMapVisible" />
@@ -139,14 +146,14 @@
 					</template>
 
 					<template v-if="props.photo.preformatted.license">
-						<h2 class="text-muted-color-emphasis text-base font-bold pt-4 pb-1">
+						<h2 class="text-muted-color-emphasis text-base font-bold mt-4 mb-1">
 							{{ $t("gallery.photo.details.license") }}
 						</h2>
 						<span class="py-0.5 pl-0 text-sm text-muted-color">{{ props.photo.preformatted.license }}</span>
 					</template>
 
 					<template v-if="props.photo.statistics">
-						<h2 class="text-muted-color-emphasis text-base font-bold pt-4 pb-1">
+						<h2 class="text-muted-color-emphasis text-base font-bold mt-4 mb-1">
 							{{ $t("gallery.photo.details.stats.header") }}
 						</h2>
 						<div class="flex flex-wrap text-muted-color text-sm gap-y-0.5">
@@ -175,10 +182,10 @@
 </template>
 <script setup lang="ts">
 import { Ref } from "vue";
-import Tag from "primevue/tag";
 import Card from "primevue/card";
 import MapInclude from "../gallery/photoModule/MapInclude.vue";
 import MiniIcon from "../icons/MiniIcon.vue";
+import ColourSquare from "../gallery/photoModule/ColourSquare.vue";
 
 const props = defineProps<{
 	photo: App.Http.Resources.Models.PhotoResource | undefined;

@@ -85,6 +85,16 @@ return [
 	'require-content-type' => (bool) env('REQUIRE_CONTENT_TYPE_ENABLED', true),
 
 	/*
+	 |--------------------------------------------------------------------------
+	 | Require the API requests to have the header "content-type: application/json"
+	 | or "content-type: multipart/form-data" depending on the type.
+	 |
+	 | Note that this prevents the use of the API from the API documentation page.
+	 |--------------------------------------------------------------------------
+	 */
+	'user-groups' => (bool) env('USER_GROUPS_ENABLED', false),
+
+	/*
 	|--------------------------------------------------------------------------
 	| Vite http proxy
 	|--------------------------------------------------------------------------

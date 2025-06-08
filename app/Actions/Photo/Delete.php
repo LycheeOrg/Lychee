@@ -14,6 +14,7 @@ use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\ModelDBException;
 use App\Image\FileDeleter;
 use App\Models\Album;
+use App\Models\Palette;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 use App\Models\Statistics;
@@ -316,6 +317,21 @@ readonly class Delete
 						$query
 							->from('photos', 'p')
 							->whereColumn('p.id', '=', 'statistics.photo_id')
+							->whereIn('p.album_id', $album_ids);
+					})
+					->delete();
+			}
+			if (count($photo_ids) !== 0) {
+				Palette::query()
+					->whereIn('photo_id', $photo_ids)
+					->delete();
+			}
+			if (count($album_ids) !== 0) {
+				Palette::query()
+					->whereExists(function (BaseBuilder $query) use ($album_ids): void {
+						$query
+							->from('photos', 'p')
+							->whereColumn('p.id', '=', 'palettes.photo_id')
 							->whereIn('p.album_id', $album_ids);
 					})
 					->delete();

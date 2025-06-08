@@ -113,14 +113,18 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	 */
 	public function photos(): Builder
 	{
-		$query = $this->photo_query_policy
-			->applySearchabilityFilter(
-				query: Photo::query()->with(['album', 'size_variants', 'statistics']),
-				origin: null,
-				include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_smart_albums')
-			)->where($this->smart_photo_condition);
+		$base_query = Photo::query()->with(['album', 'size_variants', 'statistics', 'palette']);
 
-		return $query;
+		if (!Configs::getValueAsBool('SA_override_visibility')) {
+			return $this->photo_query_policy
+				->applySearchabilityFilter(query: $base_query, origin: null, include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_smart_albums'))
+				->where($this->smart_photo_condition);
+		}
+
+		// If the smart album visibility override is enabled, we do not need to apply any security filter, as all photos are visible
+		// in this smart album. We still need to apply the smart album condition, though.
+		return $this->photo_query_policy->applySensitivityFilter(query: $base_query, origin: null, include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_smart_albums'))
+			->where($this->smart_photo_condition);
 	}
 
 	/**

@@ -10,7 +10,7 @@
 				</div>
 				<div class="my-4 h-48">
 					<FloatLabel variant="on">
-						<Textarea id="description" class="w-full h-48" v-model="description" rows="6" cols="30" />
+						<Textarea id="description" class="w-full h-48" v-model="description" :rows="6" :cols="30" />
 						<label for="description">{{ $t("gallery.album.properties.description") }}</label>
 					</FloatLabel>
 				</div>
@@ -18,7 +18,7 @@
 					<FloatLabel variant="on">
 						<Select
 							id="photoSortingColumn"
-							class="w-48 border-none"
+							class="w-56 border-none"
 							v-model="photoSortingColumn"
 							:options="photoSortingColumnsOptions"
 							optionLabel="label"
@@ -40,7 +40,7 @@
 					<FloatLabel variant="on">
 						<Select
 							id="photoSortingOrder"
-							class="w-48 border-none"
+							class="w-56 border-none"
 							v-model="photoSortingOrder"
 							:options="sortingOrdersOptions"
 							optionLabel="label"
@@ -65,7 +65,7 @@
 						<FloatLabel variant="on">
 							<Select
 								id="albumSortingColumn"
-								class="w-48 border-none"
+								class="w-56 border-none"
 								v-model="albumSortingColumn"
 								:options="albumSortingColumnsOptions"
 								optionLabel="label"
@@ -87,7 +87,7 @@
 						<FloatLabel variant="on">
 							<Select
 								id="albumSortingOrder"
-								class="w-48 border-none"
+								class="w-56 border-none"
 								v-model="albumSortingOrder"
 								:options="sortingOrdersOptions"
 								optionLabel="label"
@@ -113,21 +113,21 @@
 								<template #value="slotProps">
 									<div v-if="slotProps.value && slotProps.value.id === 'compact'">
 										<i class="pi pi-arrow-down-left-and-arrow-up-right-to-center" />
-										<span class="ml-4 text-left">{{ $t("gallery.album.properties.compact_header") }}</span>
+										<span class="ltr:ml-4 rtl:mr-4">{{ $t("gallery.album.properties.compact_header") }}</span>
 									</div>
 									<div v-else-if="slotProps.value" class="flex items-center">
 										<img :src="slotProps.value.thumb" alt="poster" class="w-4 rounded-sm" />
-										<span class="ml-4 text-left">{{ slotProps.value.title }}</span>
+										<span class="ltr:ml-4 rtl:mr-4">{{ slotProps.value.title }}</span>
 									</div>
 								</template>
 								<template #option="slotProps">
 									<div v-if="slotProps.option.id === 'compact'" class="flex items-center">
 										<i class="pi pi-arrow-down-left-and-arrow-up-right-to-center" />
-										<span class="ml-4 text-left">{{ $t("gallery.album.properties.compact_header") }}</span>
+										<span class="ltr:ml-4 rtl:mr-4">{{ $t("gallery.album.properties.compact_header") }}</span>
 									</div>
 									<div v-else class="flex items-center">
 										<img :src="slotProps.option.thumb" alt="poster" class="w-4 rounded-sm" />
-										<span class="ml-4 text-left">{{ slotProps.option.title }}</span>
+										<span class="ltr:ml-4 rtl:mr-4">{{ slotProps.option.title }}</span>
 									</div>
 								</template>
 							</Select>

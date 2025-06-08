@@ -1,5 +1,5 @@
 <template>
-	<Drawer v-model:visible="left_menu_open" :pt:content:class="'flex flex-col justify-start gap-10'">
+	<Drawer v-model:visible="left_menu_open" :pt:content:class="'flex flex-col justify-start gap-10'" :position="isLTR() ? 'left' : 'right'">
 		<template #header>
 			<div v-if="user?.id === null && isGallery" class="flex items-center gap-2 text-muted-color hover:text-primary-400 w-full">
 				<RouterLink :to="{ name: 'login' }">
@@ -59,7 +59,7 @@
 				<template #item="{ item, props }">
 					<router-link v-if="item.route" v-slot="{ href, navigate }" :to="item.route" custom>
 						<a v-ripple :href="href" v-bind="props.action" @click="navigate">
-							<MiniIcon :icon="item.icon ?? ''" :class="'w-3 h-3'" />
+							<PiMiniIcon :icon="item.icon ?? ''" :class="'w-3 h-3'" />
 							<span class="ml-2">
 								<!-- @vue-ignore -->
 								{{ $t(item.label) }}
@@ -68,7 +68,7 @@
 						</a>
 					</router-link>
 					<a v-if="item.url" v-ripple :href="item.url" :target="item.target" v-bind="props.action">
-						<MiniIcon :icon="item.icon ?? ''" :class="'w-3 h-3'" />
+						<PiMiniIcon :icon="item.icon ?? ''" :class="'w-3 h-3'" />
 						<span class="ml-2">
 							<!-- @vue-ignore -->
 							{{ $t(item.label) }}
@@ -76,7 +76,7 @@
 						<SETag v-if="item.seTag" />
 					</a>
 					<a v-if="!item.route && !item.url" v-ripple v-bind="props.action">
-						<MiniIcon :icon="item.icon ?? ''" :class="'w-3 h-3'" />
+						<PiMiniIcon :icon="item.icon ?? ''" :class="'w-3 h-3'" />
 						<span class="ml-2">
 							<!-- @vue-ignore -->
 							{{ $t(item.label) }}
@@ -87,14 +87,14 @@
 			</Menu>
 			<div class="border-t border-surface-700 pt-2 p-(--p-navigation-item-padding) flex justify-between pr-0">
 				<div class="flex items-center gap-2">
-					<MiniIcon icon="person" :class="'w-3 h-3'" />
+					<PiMiniIcon icon="person" :class="'w-3 h-3'" />
 					<div class="capitalize ml-2 text-muted-color">
 						{{ authStore.user?.username }}
 						<i class="pi pi-crown text-orange-400 text-xs" v-if="canSeeAdmin"></i>
 					</div>
 				</div>
 				<Button text severity="secondary" class="cursor-pointer" @click="logout">
-					<MiniIcon icon="account-logout" :class="'w-4 h-4'" />
+					<PiMiniIcon icon="account-logout" :class="'w-4 h-4'" />
 				</Button>
 			</div>
 		</div>
@@ -104,7 +104,6 @@
 import { computed, watch } from "vue";
 import Drawer from "primevue/drawer";
 import Menu from "primevue/menu";
-import MiniIcon from "@/components/icons/MiniIcon.vue";
 import AboutLychee from "@/components/modals/AboutLychee.vue";
 import AuthService from "@/services/auth-service";
 import { useAuthStore } from "@/stores/Auth";
@@ -120,6 +119,7 @@ import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
 import { useLeftMenu } from "@/composables/contextMenus/leftMenu";
 import { onMounted } from "vue";
 import { useFavouriteStore } from "@/stores/FavouriteState";
+import { useLtRorRtL } from "@/utils/Helpers";
 
 const leftMenuState = useLeftMenuStateStore();
 const route = useRoute();
@@ -127,6 +127,7 @@ const authStore = useAuthStore();
 const lycheeStore = useLycheeStateStore();
 const togglableStore = useTogglablesStateStore();
 const favouritesStore = useFavouriteStore();
+const { isLTR } = useLtRorRtL();
 
 const { user, left_menu_open, initData, openLycheeAbout, canSeeAdmin, load, items, profileItems } = useLeftMenu(
 	lycheeStore,

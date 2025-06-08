@@ -18,6 +18,11 @@
 			</h1>
 		</div>
 		<LoginForm @logged-in="goBack" padding="" />
+		<div v-if="is_registration_enabled" class="text-center mt-4">
+			<router-link to="/register" class="text-muted-color-emphasis text-sm font-bold hover:underline">
+				{{ $t("profile.register.signup") }}
+			</router-link>
+		</div>
 	</Panel>
 </template>
 <script setup lang="ts">
@@ -36,7 +41,7 @@ import { useRouter } from "vue-router";
 const router = useRouter();
 const lycheeStore = useLycheeStateStore();
 const leftMenuStore = useLeftMenuStateStore();
-const { title } = storeToRefs(lycheeStore);
+const { title, is_registration_enabled } = storeToRefs(lycheeStore);
 const is_loaded = ref(false);
 
 function goBack() {

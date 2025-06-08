@@ -1,10 +1,5 @@
 <template>
-	<Fieldset
-		:legend="$t('profile.u2f.header')"
-		:toggleable="true"
-		class="border-b-0 border-r-0 rounded-r-none rounded-b-none mb-4 hover:border-primary-500 pt-2 max-w-xl mx-auto"
-		v-if="u2f"
-	>
+	<Fieldset :legend="$t('profile.u2f.header')" :toggleable="true" class="mb-4 hover:border-primary-500 pt-2 max-w-xl mx-auto" v-if="u2f">
 		<div class="text-muted-color text-center">{{ $t("profile.u2f.info") }}</div>
 		<SetSecondFactorLine v-for="credential in u2f" :key="credential.id" :u2f="credential" @delete="deleteU2F" />
 		<div v-if="u2f.length === 0">
@@ -28,7 +23,7 @@ import SetSecondFactorLine from "@/components/forms/profile/SetSecondFactorLine.
 import { useToast } from "primevue/usetoast";
 import { trans } from "laravel-vue-i18n";
 import Button from "primevue/button";
-import Fieldset from "primevue/fieldset";
+import Fieldset from "@/components/forms/basic/Fieldset.vue";
 
 const u2f = ref<App.Http.Resources.Models.WebAuthnResource[] | undefined>(undefined);
 const toast = useToast();

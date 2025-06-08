@@ -57,6 +57,11 @@ return [
         'update-button' => 'به‌روزرسانی',
         'no-pending-updates' => 'به‌روزرسانی معوقه‌ای وجود ندارد.',
     ],
+    'missing-palettes' => [
+        'title' => 'Missing Palettes',
+        'description' => 'Found %d missing palettes.',
+        'button' => 'Create missing',
+    ],
     'statistics-check' => [
         'title' => 'بررسی صحت آمار',
         'missing_photos' => '%d آمار عکس گمشده است.',

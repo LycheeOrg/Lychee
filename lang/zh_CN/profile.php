@@ -21,6 +21,13 @@ return [
         'api_token' => 'API 令牌...',
         'missing_fields' => '缺少必填项',
     ],
+    'register' => [
+		'username_exists' => '用户名已存在。',
+		'password_mismatch' => '密码不匹配。',
+		'signup' => '注册',
+		'error' => '注册账户时发生错误。',
+		'success' => '您的账户已成功创建。',
+	],
     'token' => [
         'unavailable' => '您已查看过此令牌。',
         'no_data' => '尚未生成 API 令牌。',

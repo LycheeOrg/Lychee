@@ -21,6 +21,13 @@ return [
         'api_token' => 'توکن API …',
         'missing_fields' => 'فیلدهای ناقص',
     ],
+    'register' => [
+        'username_exists' => 'Username already exists.',
+        'password_mismatch' => 'The passwords do not match.',
+        'signup' => 'Sign Up',
+        'error' => 'An error occurred while registering your account.',
+        'success' => 'Your account has been successfully created.',
+    ],
     'token' => [
         'unavailable' => 'شما قبلاً این توکن را مشاهده کرده‌اید.',
         'no_data' => 'هیچ توکن API ایجاد نشده است.',

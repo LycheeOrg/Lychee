@@ -11,17 +11,17 @@
 			/>
 		</div>
 		<div id="shutter" class="absolute w-screen h-dvh bg-surface-950 transition-opacity duration-1000 ease-in-out top-0 left-0"></div>
-		<div class="absolute top-0 left-0 p-3">
-			<Button icon="pi pi-angle-left" class="mr-2" severity="secondary" text @click="goBack" />
+		<div class="absolute top-0 ltr:left-0 rtl:right-0 p-3">
+			<GoBack @go-back="goBack" />
 		</div>
 	</div>
 </template>
 <script setup lang="ts">
+import GoBack from "@/components/headers/GoBack.vue";
 import { useSlideshowFunction } from "@/composables/photo/slideshow";
 import AlbumService from "@/services/album-service";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
 import { onKeyStroke } from "@vueuse/core";
-import Button from "primevue/button";
 import { ref, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 

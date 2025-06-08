@@ -46,18 +46,20 @@
 			}"
 		>
 			<template v-if="photo_thumb_info === 'title'">
-				<h1 class="min-h-[19px] mt-3 mb-1 ml-3 text-surface-0 text-base font-bold overflow-hidden whitespace-nowrap text-ellipsis">
+				<h1
+					class="min-h-[19px] mt-3 mb-1 ltr:ml-3 rtl:mr-3 text-surface-0 text-base font-bold overflow-hidden whitespace-nowrap text-ellipsis"
+				>
 					{{ props.photo.title }}
 				</h1>
-				<span v-if="props.photo.preformatted.taken_at" class="block mt-0 mr-0 mb-2 ml-3 text-2xs text-surface-300">
-					<span title="Camera Date"><MiniIcon icon="camera-slr" class="w-2 h-2 m-0 mr-1 fill-neutral-300" /></span
+				<span v-if="props.photo.preformatted.taken_at" class="block mt-0 ltr:mr-0 mb-2 ltr:ml-3 rtl:mr-3 text-2xs text-surface-300">
+					<span title="Camera Date"><MiniIcon icon="camera-slr" class="w-2 h-2 m-0 ltr:mr-1 rtl:ml-1 fill-neutral-300" /></span
 					>{{ props.photo.preformatted.taken_at }}
 				</span>
-				<span v-else class="block mt-0 mr-0 mb-2 ml-3 text-2xs text-surface-300">{{ props.photo.preformatted.created_at }}</span>
+				<span v-else class="block mt-0 mr-0 mb-2 ltr:ml-3 rtl:mr-3 text-2xs text-surface-300">{{ props.photo.preformatted.created_at }}</span>
 			</template>
 			<template v-else>
 				<h1
-					class="min-h-[19px] mt-3 mb-1 ml-3 text-base text-ellipsis prose-invert line-clamp-3"
+					class="min-h-[19px] mt-3 mb-1 ltr:ml-3 rtl:mr-3 text-base text-ellipsis prose-invert line-clamp-3"
 					v-html="props.photo.preformatted.description"
 				></h1>
 			</template>
@@ -70,7 +72,7 @@
 		</div>
 		<ThumbFavourite v-if="is_favourite_enabled" :is-favourite="isFavourite" @click="toggleFavourite" />
 		<!-- TODO: make me an option. -->
-		<div v-if="user?.id" class="badges absolute mt-[-1px] ml-1 top-0 left-0 flex">
+		<div v-if="user?.id" class="badges absolute mt-[-1px] ltr:ml-1 rtl:mr-1 top-0 lfr:left-0 rtl:right-0 flex">
 			<ThumbBadge v-if="props.photo.is_starred" class="bg-yellow-500" icon="star" />
 			<ThumbBadge v-if="is_cover_id" class="bg-yellow-500" icon="folder-cover" />
 			<ThumbBadge v-if="is_header_id" class="bg-slate-400 hidden sm:block" pi="image" />
@@ -87,6 +89,8 @@ import { storeToRefs } from "pinia";
 import { useImageHelpers } from "@/utils/Helpers";
 import { useFavouriteStore } from "@/stores/FavouriteState";
 import ThumbFavourite from "./ThumbFavourite.vue";
+import { useRouter } from "vue-router";
+import { usePhotoRoute } from "@/composables/photo/photoRoute";
 
 const { getNoImageIcon, getPlayIcon } = useImageHelpers();
 
@@ -101,6 +105,8 @@ const props = defineProps<{
 	photo: App.Http.Resources.Models.PhotoResource;
 }>();
 
+const router = useRouter();
+const { getParentId } = usePhotoRoute(router);
 const auth = useAuthStore();
 const { user } = storeToRefs(auth);
 const favourites = useFavouriteStore();
@@ -112,7 +118,7 @@ const srcNoImage = ref(getNoImageIcon());
 const isImageLoaded = ref(false);
 
 function toggleFavourite() {
-	favourites.toggle(props.photo);
+	favourites.toggle(props.photo, getParentId());
 }
 
 function onImageLoad() {

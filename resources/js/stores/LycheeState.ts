@@ -72,6 +72,9 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		is_old_style: false,
 		is_expert_mode: false,
 		are_all_settings_enabled: false,
+
+		// Registration settings
+		is_registration_enabled: false,
 	}),
 	actions: {
 		init() {
@@ -141,6 +144,8 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.is_medium_download_enabled = data.is_medium_download_enabled;
 					this.is_medium2x_download_enabled = data.is_medium2x_download_enabled;
 					this.photo_previous_next_size = data.photo_previous_next_size;
+
+					this.is_registration_enabled = data.is_registration_enabled;
 				})
 				.catch((error) => {
 					// In this specific case, even though it has been possibly disabled, we really need to see the error.

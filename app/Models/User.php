@@ -18,6 +18,7 @@ use App\Models\Extensions\UTCBasedTimes;
 use Carbon\Exceptions\InvalidFormatException;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -232,5 +233,21 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	public function webAuthnData(): WebAuthnData
 	{
 		return WebAuthnData::make($this->email ?? ($this->name . '#' . request()->httpHost()), $this->name);
+	}
+
+	/**
+	 * Returns the relationship between an album and all users with whom
+	 * this album is shared.
+	 *
+	 * @return BelongsToMany<UserGroup,$this>
+	 */
+	public function user_groups(): BelongsToMany
+	{
+		return $this->belongsToMany(
+			UserGroup::class,
+			'users_user_groups',
+			'user_id',
+			'user_group_id',
+		)->withPivot('role', 'created_at')->orderBy('role', 'asc')->orderBy('name', 'asc');
 	}
 }

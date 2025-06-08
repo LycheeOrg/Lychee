@@ -19,6 +19,8 @@ const FixTree = () => import("@/views/FixTree.vue");
 const DuplicatesFinder = () => import("@/views/DuplicatesFinder.vue");
 const Changelogs = () => import("@/views/ChangeLogs.vue");
 const LoginPage = () => import("@/views/LoginPage.vue");
+const UserGroups = () => import("@/views/UserGroups.vue");
+const RegisterPage = () => import("@/views/RegisterPage.vue");
 
 const routes_ = [
 	{
@@ -125,6 +127,16 @@ const routes_ = [
 		name: "login",
 		path: "/login",
 		component: LoginPage,
+	},
+	{
+		name: "user-groups",
+		path: "/user-groups",
+		component: UserGroups,
+	},
+	{
+		name: "register",
+		path: "/register",
+		component: RegisterPage,
 	},
 ];
 

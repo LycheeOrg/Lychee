@@ -21,6 +21,13 @@ return [
         'api_token' => 'رمز API …',
         'missing_fields' => 'حقول مفقودة',
     ],
+    'register' => [
+        'username_exists' => 'اسم المستخدم موجود بالفعل.',
+        'password_mismatch' => 'كلمات المرور غير متطابقة.',
+        'signup' => 'إنشاء حساب',
+        'error' => 'حدث خطأ أثناء تسجيل حسابك.',
+        'success' => 'تم إنشاء حسابك بنجاح.',
+    ],
     'token' => [
         'unavailable' => 'لقد قمت بعرض هذا الرمز مسبقًا.',
         'no_data' => 'لم يتم إنشاء أي رموز API.',

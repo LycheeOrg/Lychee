@@ -3,47 +3,52 @@
 		<template #content>
 			<form>
 				<div class="h-12">
-					<ToggleSwitch v-model="is_public" class="mr-2 translate-y-1" @change="save" />
+					<ToggleSwitch v-model="is_public" class="ltr:mr-2 rtl:ml-2 translate-y-1" @change="save" />
 					<label for="pp_dialog_public_check" class="font-bold">{{ $t("dialogs.visibility.public") }}</label>
 					<p class="my-1.5">{{ $t("dialogs.visibility.public_expl") }}</p>
 				</div>
 				<Collapse v-if="props.config.is_base_album" :when="is_public">
 					<div
-						class="relative h-12 my-4 pl-9 transition-color duration-300"
+						class="relative h-12 my-4 ltr:pl-9 rtl:pr-9 transition-color duration-300"
 						:class="is_public ? 'text-muted-color-emphasis' : 'text-muted-color'"
 					>
 						<ToggleSwitch
 							input-id="pp_dialog_full_check"
 							v-model="grants_full_photo_access"
-							class="-ml-10 mr-2 translate-y-1"
+							class="ltr:-ml-10 ltr:mr-2 rtl:-mr-10 rtl:ml-2 translate-y-1"
 							@change="save"
 						/>
 						<label class="font-bold" for="pp_dialog_full_check">{{ $t("dialogs.visibility.full") }}</label>
 						<p class="my-1.5">{{ $t("dialogs.visibility.full_expl") }}</p>
 					</div>
 					<div
-						class="relative h-12 my-4 pl-9 transition-color duration-300"
+						class="relative h-12 my-4 ltr:pl-9 rtl:pr-9 transition-color duration-300"
 						:class="is_public ? 'text-muted-color-emphasis' : 'text-muted-color'"
 					>
-						<ToggleSwitch input-id="pp_dialog_link_check" v-model="is_link_required" class="-ml-10 mr-2 translate-y-1" @change="save" />
+						<ToggleSwitch
+							input-id="pp_dialog_link_check"
+							v-model="is_link_required"
+							class="ltr:-ml-10 ltr:mr-2 rtl:-mr-10 rtl:ml-2 translate-y-1"
+							@change="save"
+						/>
 						<label class="font-bold" for="pp_dialog_link_check">{{ $t("dialogs.visibility.hidden") }}</label>
 						<p class="my-1.5">{{ $t("dialogs.visibility.hidden_expl") }}</p>
 					</div>
 					<div
-						class="relative h-12 my-4 pl-9 transition-color duration-300"
+						class="relative h-12 my-4 ltr:pl-9 rtl:pr-9 transition-color duration-300"
 						:class="is_public ? 'text-muted-color-emphasis' : 'text-muted-color'"
 					>
 						<ToggleSwitch
 							input-id="pp_dialog_downloadable_check"
 							v-model="grants_download"
-							class="-ml-10 mr-2 translate-y-1"
+							class="ltr:-ml-10 ltr:mr-2 rtl:-mr-10 rtl:ml-2 translate-y-1"
 							@change="save"
 						/>
 						<label class="font-bold" for="pp_dialog_downloadable_check">{{ $t("dialogs.visibility.downloadable") }}</label>
 						<p class="my-1.5">{{ $t("dialogs.visibility.downloadable_expl") }}</p>
 					</div>
 					<div
-						class="relative h-12 my-4 pl-9 transition-color duration-300"
+						class="relative h-12 my-4 ltr:pl-9 rtl:pr-9 transition-color duration-300"
 						:class="is_public ? 'text-muted-color-emphasis' : 'text-muted-color'"
 						v-if="is_se_enabled || is_se_preview_enabled"
 					>
@@ -51,7 +56,7 @@
 							input-id="pp_dialog_upload_check"
 							v-model="grants_upload"
 							:disabled="!is_se_enabled"
-							class="-ml-10 mr-2 translate-y-1"
+							class="ltr:-ml-10 ltr:mr-2 rtl:-mr-10 rtl:ml-2 translate-y-1"
 							style="
 								--p-toggleswitch-checked-background: var(--p-red-800);
 								--p-toggleswitch-checked-hover-background: var(--p-red-900);
@@ -66,13 +71,13 @@
 					</div>
 					<div
 						v-if="!can_pasword_protect && is_password_required"
-						class="relative my-4 pl-9 transition-color duration-300"
+						class="relative my-4 ltr:pl-9 rtl:pr-9 transition-color duration-300"
 						:class="is_public ? 'text-muted-color-emphasis' : 'text-muted-color'"
 					>
 						<ToggleSwitch
 							input-id="pp_dialog_password_check_2"
 							v-model="is_password_required"
-							class="-ml-10 mr-2 translate-y-1 group"
+							class="ltr:-ml-10 ltr:mr-2 rtl:-mr-10 rtl:ml-2 translate-y-1 group"
 							:pt:slider:class="'group-has-checked:bg-danger-700'"
 							@change="save"
 						/>
@@ -84,13 +89,13 @@
 					</div>
 					<div
 						v-else-if="can_pasword_protect"
-						class="relative my-4 pl-9 transition-color duration-300"
+						class="relative my-4 ltr:pl-9 rtl:pr-9 transition-color duration-300"
 						:class="is_public ? 'text-muted-color-emphasis' : 'text-muted-color'"
 					>
 						<ToggleSwitch
 							input-id="pp_dialog_password_check"
 							v-model="is_password_required"
-							class="-ml-10 mr-2 translate-y-1"
+							class="ltr:-ml-10 ltr:mr-2 rtl:-mr-10 rtl:ml-2 translate-y-1"
 							@change="save"
 						/>
 						<label class="font-bold" for="pp_dialog_password_check">{{ $t("dialogs.visibility.password_prot") }}</label>
@@ -109,7 +114,7 @@
 						<ToggleSwitch
 							input-id="pp_dialog_nsfw_check"
 							v-model="is_nsfw"
-							class="mr-2 translate-y-1"
+							class="ltr:mr-2 rtl:ml-2 translate-y-1"
 							style="
 								--p-toggleswitch-checked-background: var(--p-red-800);
 								--p-toggleswitch-checked-hover-background: var(--p-red-900);
