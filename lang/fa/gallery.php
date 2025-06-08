@@ -16,12 +16,12 @@ return [
 	'original' => 'اصلی',
 	'medium' => 'متوسط',
 	'medium_hidpi' => 'متوسط HiDPI',
-	'small' => 'بندانگشتی',
-	'small_hidpi' => 'بندانگشتی HiDPI',
-	'thumb' => 'بندانگشتی مربعی',
-	'thumb_hidpi' => 'بندانگشتی مربعی HiDPI',
+	'small' => 'تصویر کوچک',
+	'small_hidpi' => 'تصویر کوچک HiDPI',
+	'thumb' => 'تصویر کوچک مربعی',
+	'thumb_hidpi' => 'تصویر کوچک مربعی HiDPI',
 	'placeholder' => 'تصویر با کیفیت پایین',
-	'thumbnail' => 'بندانگشتی عکس',
+	'thumbnail' => 'تصویر کوچک',
 	'live_video' => 'بخش ویدئویی لایو-فوتو',
 
 	'camera_data' => 'تاریخ دوربین',
@@ -29,7 +29,7 @@ return [
 
 	'map' => [
 		'error_gpx' => 'خطا در بارگذاری فایل GPX',
-		'osm_contributors' => 'مشارکت‌کنندگان OpenStreetMap',
+		'osm_contributors' => 'مشارکت کنندگان OpenStreetMap',
 	],
 
 	'search' => [
@@ -42,7 +42,7 @@ return [
 	],
 
 	'smart_album' => [
-		'unsorted' => 'مرتب‌نشده',
+		'unsorted' => 'مرتب نشده',
 		'starred' => 'ستاره‌دار',
 		'recent' => 'اخیر',
 		'public' => 'عمومی',
@@ -50,7 +50,7 @@ return [
 	],
 
 	'layout' => [
-		'squares' => 'بندانگشتی مربعی',
+		'squares' => 'تصویر کوچک مربعی',
 		'justified' => 'با نسبت، تراز شده',
 		'masonry' => 'با نسبت، آجری',
 		'grid' => 'با نسبت، شبکه‌ای',
@@ -64,9 +64,9 @@ return [
 	],
 
 	'timeline' => [
-		'title' => 'جدول زمانی',
+		'title' => 'خط زمانی',
 		'load_previous' => 'بارگذاری قبلی',
-		'default' => 'پیش‌فرض',
+		'default' => 'پیش فرض',
 		'disabled' => 'غیرفعال',
 		'year' => 'سال',
 		'month' => 'ماه',
@@ -94,7 +94,7 @@ return [
 			'images' => 'عکس‌ها',
 			'download' => 'دانلود آلبوم',
 			'share' => 'اشتراک‌گذاری آلبوم',
-			'stats_only_se' => 'آمار فقط در نسخه Supporter در دسترس است',
+			'stats_only_se' => 'آمار فقط در نسخه حامیان در دسترس است',
 		],
 
 		'stats' => [
@@ -112,14 +112,14 @@ return [
 		'properties' => [
 			'title' => 'عنوان',
 			'description' => 'توضیحات',
-			'photo_ordering' => 'مرتب‌سازی عکس‌ها بر اساس',
-			'children_ordering' => 'مرتب‌سازی آلبوم‌ها بر اساس',
+			'photo_ordering' => 'مرتب سازی عکس‌ها بر اساس',
+			'children_ordering' => 'مرتب سازی آلبوم‌ها بر اساس',
 			'asc/desc' => 'صعودی/نزولی',
 			'header' => 'تنظیم هدر آلبوم',
 			'compact_header' => 'استفاده از هدر فشرده',
 			'license' => 'تنظیم مجوز',
 			'copyright' => 'تنظیم کپی‌رایت',
-			'aspect_ratio' => 'تنظیم نسبت تصویر بندانگشتی آلبوم',
+			'aspect_ratio' => 'تنظیم نسبت تصویر تصویر کوچک آلبوم',
 			'album_timeline' => 'تنظیم حالت جدول زمانی آلبوم',
 			'photo_timeline' => 'تنظیم حالت جدول زمانی عکس',
 			'layout' => 'تنظیم چیدمان عکس',
@@ -198,24 +198,24 @@ return [
 	'menus' => [
 		'star' => 'ستاره‌دار',
 		'unstar' => 'بدون ستاره',
-		'star_all' => 'ستاره‌دار کردن انتخاب‌شده‌ها',
-		'unstar_all' => 'حذف ستاره از انتخاب‌شده‌ها',
+		'star_all' => 'ستاره‌دار کردن انتخاب شده‌ها',
+		'unstar_all' => 'حذف ستاره از انتخاب شده‌ها',
 		'tag' => 'برچسب',
-		'tag_all' => 'برچسب‌گذاری انتخاب‌شده‌ها',
+		'tag_all' => 'برچسب‌گذاری انتخاب شده‌ها',
 		'set_cover' => 'تنظیم جلد آلبوم',
 		'remove_header' => 'حذف هدر آلبوم',
 		'set_header' => 'تنظیم هدر آلبوم',
 		'copy_to' => 'کپی به …',
-		'copy_all_to' => 'کپی انتخاب‌شده‌ها به …',
+		'copy_all_to' => 'کپی انتخاب شده‌ها به …',
 		'rename' => 'تغییر نام',
 		'move' => 'انتقال',
-		'move_all' => 'انتقال انتخاب‌شده‌ها',
+		'move_all' => 'انتقال انتخاب شده‌ها',
 		'delete' => 'حذف',
-		'delete_all' => 'حذف انتخاب‌شده‌ها',
+		'delete_all' => 'حذف انتخاب شده‌ها',
 		'download' => 'دانلود',
-		'download_all' => 'دانلود انتخاب‌شده‌ها',
+		'download_all' => 'دانلود انتخاب شده‌ها',
 		'merge' => 'ادغام',
-		'merge_all' => 'ادغام انتخاب‌شده‌ها',
+		'merge_all' => 'ادغام انتخاب شده‌ها',
 
 		'upload_photo' => 'بارگذاری عکس',
 		'import_link' => 'وارد کردن از لینک',
@@ -239,12 +239,12 @@ return [
 		'album_select_2' => 'عنوان',
 		'album_select_3' => 'توضیحات',
 		'album_select_5' => 'جدیدترین تاریخ ثبت',
-		'album_select_6' => 'قدیمی‌ترین تاریخ ثبت',
+		'album_select_6' => 'قدیمی‌ ترین تاریخ ثبت',
 	],
 
 	'albums_protection' => [
 		'private' => 'خصوصی',
 		'public' => 'عمومی',
-		'inherit_from_parent' => 'ارث از والد',
+		'inherit_from_parent' => 'ارث بری از والد',
 	],
 ];
