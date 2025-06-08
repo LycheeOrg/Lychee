@@ -3,9 +3,9 @@
 return [
 	/*
 	|--------------------------------------------------------------------------
-	| Changelogs page
+	| صفحه تغییرات
 	|--------------------------------------------------------------------------
 	*/
-	'title' => 'Change logs',
-	'description' => 'This page contains the changelogs up to the latest available version of Lychee. It is voluntarily not limited to the changes on your installed version. With this, we want to give you a better overview of what to expect when you decide to upgrade.',
+	'title' => 'صفحه گزارش تغییرات',
+	'description' => 'این صفحه شامل گزارش تغییرات تا آخرین نسخه موجود از Lychee است. این محدود به تغییرات نسخه نصب‌ شده شما نیست. با این کار، می‌خواهیم دید بهتری از آنچه پس از ارتقا انتظار دارید به شما بدهیم.',
 ];

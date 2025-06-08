@@ -3,47 +3,47 @@
 return [
 	/*
 	|--------------------------------------------------------------------------
-	| Fix-tree Page
+	| صفحه اصلاح درخت
 	|--------------------------------------------------------------------------
 	*/
-	'title' => 'Maintenance',
-	'intro' => 'This page allows you to re-order and fix your albums manually.<br />Before any modifications, we strongly recommend you to read about Nested Set tree structures.',
-	'warning' => 'You can really break your Lychee installation here, modify values at your own risks.',
+	'title' => 'نگهداری',
+	'intro' => 'این صفحه به شما اجازه می‌دهد آلبوم‌های خود را به صورت دستی مرتب و اصلاح کنید.<br />قبل از هرگونه تغییر، اکیداً توصیه می‌کنیم درباره ساختار زیر گروه درختی مطالعه کنید.',
+	'warning' => 'در اینجا واقعاً می‌توانید نصب لیچی خود را خراب کنید، مقادیر را با مسئولیت خود تغییر دهید.',
 
 	'help' => [
-		'header' => 'Help',
-		'hover' => 'Hover ids or titles to highlight related albums.',
-		'left' => '<span class="text-muted-color-emphasis font-bold">Left</span>',
-		'right' => '<span class="text-muted-color-emphasis font-bold">Right</span>',
-		'convenience' => 'For your convenience, the <i class="pi pi-angle-up" ></i> and <i class="pi pi-angle-down" ></i> buttons allow you to change the values of %s and %s by respectively +1 and -1 with propagation.',
-		'left-right-warn' => 'The <i class="text-warning-600 pi pi-chevron-circle-left" ></i> and <i class="text-warning-600 pi pi-chevron-circle-right" ></i> indicates that the value of %s (and respectively %s) is duplicated somewhere.',
-		'parent-marked' => 'Marked <span class="font-bold text-danger-600">Parent Id</span> indicates that the %s and %s do not satisfy the Nest Set tree structures. Edit either the <span class="font-bold text-danger-600">Parent Id</span> or the %s/%s values.',
-		'slowness' => 'This page will be slow with a large number of albums.',
+		'header' => 'راهنما',
+		'hover' => 'برای نمایش آلبوم‌های مرتبط، روی شناسه‌ها یا عناوین نگه دارید.',
+		'left' => '<span class="text-muted-color-emphasis font-bold">چپ</span>',
+		'right' => '<span class="text-muted-color-emphasis font-bold">راست</span>',
+		'convenience' => 'برای راحتی شما، دکمه‌های <i class="pi pi-angle-up" ></i> و <i class="pi pi-angle-down" ></i> به ترتیب مقدار %s و %s را با +1 و -1 تغییر می‌دهند و این تغییرات را اعمال می‌کنند.',
+		'left-right-warn' => 'آیکون‌های <i class="text-warning-600 pi pi-chevron-circle-left" ></i> و <i class="text-warning-600 pi pi-chevron-circle-right" ></i> نشان می‌دهند که مقدار %s (و به ترتیب %s) در جایی تکراری است.',
+		'parent-marked' => 'علامت <span class="font-bold text-danger-600">شناسه والد</span> نشان می‌دهد که %s و %s با ساختار درختی Nest Set مطابقت ندارند. یا <span class="font-bold text-danger-600">شناسه والد</span> یا مقادیر %s/%s را ویرایش کنید.',
+		'slowness' => 'این صفحه با تعداد زیادی آلبوم کند خواهد بود.',
 	],
 
 	'buttons' => [
-		'reset' => 'Reset',
-		'check' => 'Check',
-		'apply' => 'Apply',
+		'reset' => 'بازگردانی به حالت اولیه',
+		'check' => 'بررسی',
+		'apply' => 'اعمال',
 	],
 
 	'table' => [
-		'title' => 'Title',
-		'left' => 'Left',
-		'right' => 'Right',
-		'id' => 'Id',
-		'parent' => 'Parent Id',
+		'title' => 'عنوان',
+		'left' => 'چپ',
+		'right' => 'راست',
+		'id' => 'شناسه',
+		'parent' => 'شناسه والد',
 	],
 
 	'errors' => [
-		'invalid' => 'Invalid tree!',
-		'invalid_details' => 'We are not applying this as it is guaranteed to be a broken state.',
-		'invalid_left' => 'Album %s has an invalid left value.',
-		'invalid_right' => 'Album %s has an invalid right value.',
-		'invalid_left_right' => 'Album %s has an invalid left/right values. Left should be strictly smaller than right: %s < %s.',
-		'duplicate_left' => 'Album %s has a duplicate left value %s.',
-		'duplicate_right' => 'Album %s has a duplicate right value %s.',
-		'parent' => 'Album %s has an unexpected parent id %s.',
-		'unknown' => 'Album %s has an unknown error.',
+		'invalid' => 'درخت نامعتبر!',
+		'invalid_details' => 'این تغییرات اعمال نمی‌شوند زیرا مطمئن هستیم این تغییرات به خطا منجر خواهند شد.',
+		'invalid_left' => 'آلبوم %s مقدار چپ نامعتبر دارد.',
+		'invalid_right' => 'آلبوم %s مقدار راست نامعتبر دارد.',
+		'invalid_left_right' => 'آلبوم %s مقادیر چپ یا راست نامعتبر دارد. مقدار چپ باید حتماً کمتر از راست باشد: %s < %s.',
+		'duplicate_left' => 'آلبوم %s مقدار چپ تکراری %s دارد.',
+		'duplicate_right' => 'آلبوم %s مقدار راست تکراری %s دارد.',
+		'parent' => 'آلبوم %s شناسه والد غیرمنتظره %s دارد.',
+		'unknown' => 'آلبوم %s خطای ناشناخته دارد.',
 	],
 ];

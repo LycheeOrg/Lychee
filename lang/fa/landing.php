@@ -3,11 +3,11 @@
 return [
 	/*
 	|--------------------------------------------------------------------------
-	| Landing page
+	| صفحه اصلی
 	|--------------------------------------------------------------------------
 	*/
-	'gallery' => 'Gallery',
-	'access_gallery' => 'Access the gallery',
-	'Powered_by_Lychee' => 'Powered by Lychee',
-	'copyright' => 'All images on this website are subject to copyright by %1$s © %2$s',
+	'gallery' => 'گالری',
+	'access_gallery' => 'دسترسی به گالری',
+	'Powered_by_Lychee' => 'توسعه داده شده توسط Lychee',
+	'copyright' => 'تمام تصاویر این وب سایت ذیل قانون حقوق مولفین %1$s © %2$s هستند',
 ];
