@@ -342,7 +342,8 @@ readonly class Delete
 						$query
 							->from('photos', 'p')
 							->whereColumn('p.id', '=', 'palettes.photo_id')
-							->whereIn('p.album_id', $album_ids);
+							->leftJoin(PA::PHOTO_ALBUM, PA::PHOTO_ID, '=', 'p.id')
+							->whereIn(PA::ALBUM_ID, $album_ids);
 					})
 					->delete();
 			}
