@@ -9,6 +9,7 @@
 namespace App\Policies;
 
 use App\Constants\AccessPermissionConstants as APC;
+use App\Constants\UsersUserGroupsConstants as UUGC;
 use App\Contracts\Exceptions\InternalLycheeException;
 use App\Eloquent\FixedQueryBuilder;
 use App\Exceptions\Internal\InvalidQueryModelException;
@@ -520,25 +521,46 @@ class AlbumQueryPolicy
 			$select[] = APC::USER_ID;
 		}
 		$user_id = Auth::id();
+		if ($user_id === null) {
+			DB::table('access_permissions', APC::COMPUTED_ACCESS_PERMISSIONS)->select($select)->whereNull(APC::USER_ID);
+		}
 
-		return DB::table('access_permissions', APC::COMPUTED_ACCESS_PERMISSIONS)->select($select)
-			->when(
-				Auth::check(),
-				fn ($q1) => $q1
-					->where(APC::USER_ID, '=', $user_id)
-					->orWhere(
-						fn ($q2) => $q2->whereNull(APC::USER_ID)
-							->whereNotIn(
-								APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::BASE_ALBUM_ID,
-								fn ($q3) => $q3->select('acc_per.' . APC::BASE_ALBUM_ID)
-									->from('access_permissions', 'acc_per')
-									->where(APC::USER_ID, '=', $user_id)
-							)
+		// Collect the user groups of the current user.
+		$user_groups = DB::table('users_user_groups', UUGC::USERS_USER_GROUPS)->select(UUGC::USER_GROUP_ID)->where(UUGC::USER_ID, '=', $user_id)->pluck(UUGC::USER_GROUP_ID);
+
+		return DB::table('access_permissions', APC::COMPUTED_ACCESS_PERMISSIONS)
+			->select($select)
+			// First select the permissions based on the user.
+			->where(APC::USER_ID, '=', $user_id)
+			// Then select the permissions based on the user groups.
+			->orWhere(
+				fn ($q2) => $q2->whereIn(
+					APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::USER_GROUP_ID,
+					$user_groups
+				)
+					// and ensure that we already have not selected the user permissions.
+					// This is important to avoid selecting the user permissions twice.
+					->whereNotIn(
+						APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::BASE_ALBUM_ID,
+						fn ($q3) => $q3->select('acc_per.' . APC::BASE_ALBUM_ID)
+							->from('access_permissions', 'acc_per')
+							->where(APC::USER_ID, '=', $user_id)
 					)
 			)
-			->when(
-				!Auth::check(),
-				fn ($q1) => $q1->whereNull(APC::USER_ID)
+			// Then select the public permissions.
+			->orWhere(
+				fn ($q2) => $q2->whereNull(APC::USER_ID)->whereNull(APC::USER_GROUP_ID)
+					->whereNotIn(
+						APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::BASE_ALBUM_ID,
+						// Ensure that we already have not selected the user or group permissions.
+						fn ($q3) => $q3->select('acc_per.' . APC::BASE_ALBUM_ID)
+							->from('access_permissions', 'acc_per')
+							->where(APC::USER_ID, '=', $user_id)
+							->orWhereIn(
+								APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::USER_GROUP_ID,
+								$user_groups
+							)
+					)
 			);
 	}
 
