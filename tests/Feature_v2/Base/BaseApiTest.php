@@ -178,6 +178,7 @@ abstract class BaseApiTest extends AbstractTestCase
 	public function download(
 		array $photo_ids = [],
 		array $album_ids = [],
+		string $from_id = '',
 		DownloadVariantType $kind = DownloadVariantType::ORIGINAL,
 		$expectedStatusCode = 200,
 	): TestResponse {
@@ -188,6 +189,9 @@ abstract class BaseApiTest extends AbstractTestCase
 		}
 		if ($album_ids !== []) {
 			$params['album_ids'] = implode(',', $album_ids);
+		}
+		if ($from_id !== '') {
+			$params['from_id'] = $from_id;
 		}
 
 		$response = $this->getWithParameters(self::API_PREFIX . 'Zip', $params, [

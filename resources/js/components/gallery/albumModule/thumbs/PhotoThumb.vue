@@ -87,6 +87,8 @@ import { storeToRefs } from "pinia";
 import { useImageHelpers } from "@/utils/Helpers";
 import { useFavouriteStore } from "@/stores/FavouriteState";
 import ThumbFavourite from "./ThumbFavourite.vue";
+import { useRouter } from "vue-router";
+import { usePhotoRoute } from "@/composables/photo/photoRoute";
 
 const { getNoImageIcon, getPlayIcon } = useImageHelpers();
 
@@ -101,6 +103,8 @@ const props = defineProps<{
 	photo: App.Http.Resources.Models.PhotoResource;
 }>();
 
+const router = useRouter();
+const { getParentId } = usePhotoRoute(router);
 const auth = useAuthStore();
 const { user } = storeToRefs(auth);
 const favourites = useFavouriteStore();
@@ -112,7 +116,7 @@ const srcNoImage = ref(getNoImageIcon());
 const isImageLoaded = ref(false);
 
 function toggleFavourite() {
-	favourites.toggle(props.photo);
+	favourites.toggle(props.photo, getParentId());
 }
 
 function onImageLoad() {
