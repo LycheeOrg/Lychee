@@ -522,7 +522,7 @@ class AlbumQueryPolicy
 		}
 		$user_id = Auth::id();
 		if ($user_id === null) {
-			DB::table('access_permissions', APC::COMPUTED_ACCESS_PERMISSIONS)->select($select)->whereNull(APC::USER_ID);
+			return DB::table('access_permissions', APC::COMPUTED_ACCESS_PERMISSIONS)->select($select)->whereNull(APC::USER_ID)->whereNull(APC::USER_GROUP_ID);
 		}
 
 		// Collect the user groups of the current user.
