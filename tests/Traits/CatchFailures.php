@@ -58,7 +58,6 @@ trait CatchFailures
 			dump($response->getContent());
 			$exception = $response->json();
 			$this->trimException($exception);
-			dump($exception);
 		}
 		PHPUnit::assertContains($response->getStatusCode(), $expectedStatusCodeArray);
 	}
