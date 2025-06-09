@@ -9,7 +9,6 @@
 namespace App\Policies;
 
 use App\Constants\AccessPermissionConstants as APC;
-use App\Constants\UsersUserGroupsConstants as UUGC;
 use App\Contracts\Exceptions\InternalLycheeException;
 use App\Eloquent\FixedQueryBuilder;
 use App\Exceptions\Internal\InvalidQueryModelException;
@@ -520,18 +519,20 @@ class AlbumQueryPolicy
 			$select[] = APC::GRANTS_UPLOAD;
 			$select[] = APC::USER_ID;
 		}
-		$user_id = Auth::id();
-		if ($user_id === null) {
+		if (Auth::guest()) {
 			return DB::table('access_permissions', APC::COMPUTED_ACCESS_PERMISSIONS)->select($select)->whereNull(APC::USER_ID)->whereNull(APC::USER_GROUP_ID);
 		}
 
+		/** @var User $user */
+		$user = Auth::user();
 		// Collect the user groups of the current user.
-		$user_groups = DB::table('users_user_groups', UUGC::USERS_USER_GROUPS)->select(UUGC::USER_GROUP_ID)->where(UUGC::USER_ID, '=', $user_id)->pluck(UUGC::USER_GROUP_ID);
+		/** @var int[] $user_groups */
+		$user_groups = $user->user_groups->map(fn ($g) => $g->id)->all();
 
 		return DB::table('access_permissions', APC::COMPUTED_ACCESS_PERMISSIONS)
 			->select($select)
 			// First select the permissions based on the user.
-			->where(APC::USER_ID, '=', $user_id)
+			->where(APC::USER_ID, '=', $user->id)
 			// Then select the permissions based on the user groups.
 			->orWhere(
 				fn ($q2) => $q2->whereIn(
@@ -544,7 +545,7 @@ class AlbumQueryPolicy
 						APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::BASE_ALBUM_ID,
 						fn ($q3) => $q3->select('acc_per.' . APC::BASE_ALBUM_ID)
 							->from('access_permissions', 'acc_per')
-							->where(APC::USER_ID, '=', $user_id)
+							->where(APC::USER_ID, '=', $user->id)
 					)
 			)
 			// Then select the public permissions.
@@ -555,7 +556,7 @@ class AlbumQueryPolicy
 						// Ensure that we already have not selected the user or group permissions.
 						fn ($q3) => $q3->select('acc_per.' . APC::BASE_ALBUM_ID)
 							->from('access_permissions', 'acc_per')
-							->where(APC::USER_ID, '=', $user_id)
+							->where(APC::USER_ID, '=', $user->id)
 							->orWhereIn(
 								APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::USER_GROUP_ID,
 								$user_groups

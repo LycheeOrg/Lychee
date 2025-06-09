@@ -121,6 +121,16 @@ class AccessPermission extends Model
 	}
 
 	/**
+	 * Return the relationship between an AccessPermission and its associated UserGroup.
+	 *
+	 * @return BelongsTo<UserGroup,$this>
+	 */
+	public function user_group(): BelongsTo
+	{
+		return $this->belongsTo(UserGroup::class, 'user_group_id', 'id');
+	}
+
+	/**
 	 * Given an AccessPermission, duplicate its reccord.
 	 * - Password is NOT transfered
 	 * - base_album_id is NOT transfered.

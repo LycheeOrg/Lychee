@@ -120,6 +120,10 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 
 	protected $hidden = [];
 
+	protected $with = [
+		'user_groups',
+	];
+
 	/**
 	 * Create a new Eloquent query builder for the model.
 	 *

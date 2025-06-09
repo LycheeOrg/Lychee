@@ -55,6 +55,7 @@ trait CatchFailures
 		// We remove 204 as it does not have content
 		// We remove 302 because it does not have json data.
 		if (!in_array($response->getStatusCode(), [204, 302, ...$expectedStatusCodeArray], true)) {
+			dump($response->getContent());
 			$exception = $response->json();
 			$this->trimException($exception);
 			dump($exception);
