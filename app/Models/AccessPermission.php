@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  *
  * @property int                             $id
  * @property int|null                        $user_id
+ * @property int|null                        $user_group_id
  * @property string|null                     $base_album_id
  * @property bool                            $is_link_required
  * @property string|null                     $password

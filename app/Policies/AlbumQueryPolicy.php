@@ -19,6 +19,7 @@ use App\Models\BaseAlbumImpl;
 use App\Models\Builders\AlbumBuilder;
 use App\Models\Builders\TagAlbumBuilder;
 use App\Models\TagAlbum;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Support\Facades\Auth;
