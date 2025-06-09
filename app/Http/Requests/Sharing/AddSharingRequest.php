@@ -16,6 +16,7 @@ use App\Contracts\Models\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasAccessPermissionResourceTrait;
 use App\Http\Requests\Traits\HasAlbumIdsTrait;
+use App\Http\Requests\Traits\HasUserGroupIdsTrait;
 use App\Http\Requests\Traits\HasUserIdsTrait;
 use App\Http\Resources\Models\AccessPermissionResource;
 use App\Policies\AlbumPolicy;
@@ -32,6 +33,7 @@ class AddSharingRequest extends BaseApiRequest implements HasAlbumIds, HasUserId
 {
 	use HasAlbumIdsTrait;
 	use HasUserIdsTrait;
+	use HasUserGroupIdsTrait;
 	use HasAccessPermissionResourceTrait;
 
 	/**
@@ -67,6 +69,7 @@ class AddSharingRequest extends BaseApiRequest implements HasAlbumIds, HasUserId
 	{
 		$this->album_ids = $values[RequestAttribute::ALBUM_IDS_ATTRIBUTE];
 		$this->user_ids = $values[RequestAttribute::USER_IDS_ATTRIBUTE];
+		$this->user_group_ids = []; // Not used in this request, but required by the interface.
 		$this->perm_resource = new AccessPermissionResource(
 			grants_edit: static::toBoolean($values[RequestAttribute::GRANTS_EDIT_ATTRIBUTE]),
 			grants_delete: static::toBoolean($values[RequestAttribute::GRANTS_DELETE_ATTRIBUTE]),

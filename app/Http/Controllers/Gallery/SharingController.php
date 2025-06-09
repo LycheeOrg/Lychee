@@ -46,16 +46,35 @@ class SharingController extends Controller
 	public function create(AddSharingRequest $request, Share $share): array
 	{
 		// delete any already created.
-		AccessPermission::whereIn('user_id', $request->userIds())
-			->whereIn('base_album_id', $request->albumIds())
+		AccessPermission::whereIn('base_album_id', $request->albumIds())
+			->where(fn ($q) => $q->whereIn('user_id', $request->userIds())
+				->orWhereIn(APC::USER_GROUP_ID, $request->userGroupIds()))
 			->delete();
 
 		$access_permissions = [];
+
 		// Not optimal, but this is barely used, so who cares.
 		// A better approach would be to do a massive insert in a single SQL query from the cross product.
-		foreach ($request->userIds() as $user_id) {
-			foreach ($request->albumIds() as $album_id) {
-				$access_permissions[] = $share->do($request->permResource(), $user_id, $album_id);
+		foreach ($request->albumIds() as $album_id) {
+			foreach ($request->userIds() as $user_id) {
+				// Create a new sharing permission for each user and album combination.
+				// This is not optimal, but it is simple and works.
+				// A better approach would be to do a massive insert in a single SQL query from the cross product.
+				$access_permissions[] = $share->do(
+					access_permission_resource: $request->permResource(),
+					user_id: $user_id,
+					base_album_id: $album_id
+				);
+			}
+			foreach ($request->userGroupIds() as $user_group_id) {
+				// Create a new sharing permission for each user group and album combination.
+				// This is not optimal, but it is simple and works.
+				// A better approach would be to do a massive insert in a single SQL query from the cross product.
+				$access_permissions[] = $share->do(
+					access_permission_resource: $request->permResource(),
+					user_group_id: $user_group_id,
+					base_album_id: $album_id
+				);
 			}
 		}
 
@@ -92,9 +111,10 @@ class SharingController extends Controller
 	 */
 	public function list(ListSharingRequest $request): Collection
 	{
-		$query = AccessPermission::with(['album', 'user']);
-		$query = $query->whereNotNull(APC::USER_ID);
+		$query = AccessPermission::with(['album', 'user', 'user_group']);
 		$query = $query->where(APC::BASE_ALBUM_ID, '=', $request->album()->id);
+		$query = $query->where(fn ($q) => $q->whereNotNull(APC::USER_ID)
+			->orWhereNotNull(APC::USER_GROUP_ID));
 
 		return AccessPermissionResource::collect($query->get());
 	}
@@ -108,11 +128,12 @@ class SharingController extends Controller
 	 */
 	public function listAll(ListAllSharingRequest $request): Collection
 	{
-		$query = AccessPermission::with(['album', 'user']);
+		$query = AccessPermission::with(['album', 'user', 'user_group']);
 		$query = $query->when(
 			!Auth::user()->may_administrate,
 			fn ($q) => $q->whereIn('base_album_id', BaseAlbumImpl::select('id')
-						->where('owner_id', '=', Auth::id())));
+				->where('owner_id', '=', Auth::id()))
+		);
 		$query = $query->whereNotNull('user_id');
 		$query = $query->orderBy('base_album_id', 'asc');
 
@@ -134,10 +155,12 @@ class SharingController extends Controller
 			$owner_id = $user->id;
 		}
 
-		return TargetAlbumResource::collect($list_albums->do(
-			albums_filtering: resolve(Collection::class),
-			parent_id: null,
-			owner_id: $owner_id)
+		return TargetAlbumResource::collect(
+			$list_albums->do(
+				albums_filtering: resolve(Collection::class),
+				parent_id: null,
+				owner_id: $owner_id
+			)
 		);
 	}
 
