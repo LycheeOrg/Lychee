@@ -21,15 +21,19 @@ const UserManagementService = {
 	},
 
 	create(data: UserManagementCreateRequest): Promise<AxiosResponse<App.Http.Resources.Models.UserManagementResource>> {
-		return axios.post(`${Constants.getApiUrl()}UserManagement::create`, data);
+		return axios.post(`${Constants.getApiUrl()}UserManagement`, data);
 	},
 
 	edit(data: UserManagementCreateRequest & HasId): Promise<AxiosResponse<App.Http.Resources.Models.UserManagementResource>> {
-		return axios.post(`${Constants.getApiUrl()}UserManagement::save`, data);
+		return axios.patch(`${Constants.getApiUrl()}UserManagement`, data);
 	},
 
 	delete(data: HasId): Promise<AxiosResponse<App.Http.Resources.Models.UserManagementResource>> {
-		return axios.post(`${Constants.getApiUrl()}UserManagement::delete`, data);
+		return axios.delete(`${Constants.getApiUrl()}UserManagement`, { data: data });
+	},
+
+	invite(): Promise<AxiosResponse<{ invitation_link: string; valid_for: number }>> {
+		return axios.get(`${Constants.getApiUrl()}UserManagement::invite`, { data: {} });
 	},
 };
 

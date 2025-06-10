@@ -134,7 +134,7 @@ Route::get('/Auth::config', [AuthController::class, 'getConfig']);
 Route::post('/Profile::update', [ProfileController::class, 'update']);
 Route::post('/Profile::resetToken', [ProfileController::class, 'resetToken']);
 Route::post('/Profile::unsetToken', [ProfileController::class, 'unsetToken']);
-Route::put('/Profile', [ProfileController::class, 'register']);
+Route::put('/Profile', [ProfileController::class, 'register'])->name('register-api');
 
 /**
  * USERS.
@@ -146,9 +146,10 @@ Route::get('/Users::count', [UsersController::class, 'count'])->middleware(['cac
  * USERS MANAGEMENT.
  */
 Route::get('/UserManagement', [Admin\UserManagementController::class, 'list']);
-Route::post('/UserManagement::save', [Admin\UserManagementController::class, 'save']);
-Route::post('/UserManagement::delete', [Admin\UserManagementController::class, 'delete']);
-Route::post('/UserManagement::create', [Admin\UserManagementController::class, 'create']);
+Route::patch('/UserManagement', [Admin\UserManagementController::class, 'save']);
+Route::delete('/UserManagement', [Admin\UserManagementController::class, 'delete']);
+Route::post('/UserManagement', [Admin\UserManagementController::class, 'create']);
+Route::get('/UserManagement::invite', [Admin\UserManagementController::class, 'invitationLink']);
 
 /**
  * GROUPS.
