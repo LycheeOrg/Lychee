@@ -6,7 +6,7 @@
 					props.perm.album_title
 				}}</router-link>
 			</span>
-			<span class="w-full">{{ props.perm.username }}</span>
+			<span class="w-full">{{ props.perm.username ?? props.perm.user_group_name }}</span>
 		</div>
 		<div class="w-1/2 flex items-center justify-around">
 			<Checkbox v-model="grantsReadAccess" :binary="true" disabled />
