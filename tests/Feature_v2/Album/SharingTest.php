@@ -141,8 +141,8 @@ class SharingTest extends BaseApiWithDataTest
 			'shall_override' => false,
 		]);
 		$this->assertNoContent($response);
-		self::assertEquals(1, AccessPermission::where(APC::BASE_ALBUM_ID, '=', $this->subAlbum1->id)->count());
-		$perm = AccessPermission::where(APC::BASE_ALBUM_ID, '=', $this->subAlbum1->id)->first();
+		self::assertEquals(2, AccessPermission::where(APC::BASE_ALBUM_ID, '=', $this->subAlbum1->id)->count());
+		$perm = AccessPermission::where(APC::BASE_ALBUM_ID, '=', $this->subAlbum1->id)->whereNull(APC::USER_GROUP_ID)->first();
 
 		// Update the permission with false
 		$response = $this->actingAs($this->userMayUpload1)->patchJson('Sharing', [
@@ -156,7 +156,7 @@ class SharingTest extends BaseApiWithDataTest
 		$this->assertOk($response);
 
 		// Verify the permission
-		$perm = AccessPermission::where(APC::BASE_ALBUM_ID, '=', $this->subAlbum1->id)->first();
+		$perm = AccessPermission::where(APC::BASE_ALBUM_ID, '=', $this->subAlbum1->id)->whereNull(APC::USER_GROUP_ID)->first();
 		self::assertFalse($perm->grants_edit);
 		self::assertFalse($perm->grants_delete);
 		self::assertFalse($perm->grants_download);
@@ -170,10 +170,10 @@ class SharingTest extends BaseApiWithDataTest
 		]);
 		$this->assertNoContent($response);
 		// Verify the count is still 1.
-		self::assertEquals(1, AccessPermission::where(APC::BASE_ALBUM_ID, '=', $this->subAlbum1->id)->count());
+		self::assertEquals(2, AccessPermission::where(APC::BASE_ALBUM_ID, '=', $this->subAlbum1->id)->count());
 
 		// Verify the permission
-		$perm = AccessPermission::where(APC::BASE_ALBUM_ID, '=', $this->subAlbum1->id)->first();
+		$perm = AccessPermission::where(APC::BASE_ALBUM_ID, '=', $this->subAlbum1->id)->whereNull(APC::USER_GROUP_ID)->first();
 		self::assertTrue($perm->grants_edit);
 		self::assertTrue($perm->grants_delete);
 		self::assertTrue($perm->grants_download);
