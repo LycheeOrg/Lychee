@@ -7668,16 +7668,16 @@
         },
         {
             "name": "revolution/socialite-mastodon",
-            "version": "1.5.2",
+            "version": "1.5.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/invokable/socialite-mastodon.git",
-                "reference": "2013943f9258b247215dc342504c016c33535e8e"
+                "reference": "f27b6dff55d03bc62170c6287b8a1a721e22277e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/invokable/socialite-mastodon/zipball/2013943f9258b247215dc342504c016c33535e8e",
-                "reference": "2013943f9258b247215dc342504c016c33535e8e",
+                "url": "https://api.github.com/repos/invokable/socialite-mastodon/zipball/f27b6dff55d03bc62170c6287b8a1a721e22277e",
+                "reference": "f27b6dff55d03bc62170c6287b8a1a721e22277e",
                 "shasum": ""
             },
             "require": {
@@ -7686,7 +7686,8 @@
                 "php": "^8.0"
             },
             "require-dev": {
-                "orchestra/testbench": "^9.0",
+                "laravel/pint": "^1.22",
+                "orchestra/testbench": "^9.0||^10.0",
                 "revolution/laravel-mastodon-api": "^3.1"
             },
             "type": "library",
@@ -7719,7 +7720,7 @@
                 "socialite"
             ],
             "support": {
-                "source": "https://github.com/invokable/socialite-mastodon/tree/1.5.2"
+                "source": "https://github.com/invokable/socialite-mastodon/tree/1.5.3"
             },
             "funding": [
                 {
@@ -7727,7 +7728,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-10-02T08:20:07+00:00"
+            "time": "2025-06-07T01:38:55+00:00"
         },
         {
             "name": "socialiteproviders/amazon",
@@ -17576,5 +17577,5 @@
     "platform-overrides": {
         "php": "8.3"
     },
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.3.0"
 }
