@@ -66,7 +66,7 @@
 					severity="contrast"
 					:class="{
 						'w-full font-bold border-none shrink': true,
-						'rounded-none rounded-br-xl': closeCallback !== undefined,
+						'rounded-none ltr:rounded-br-xl rtl:rounded-bl-xl': closeCallback !== undefined,
 						'rounded-xl': closeCallback === undefined,
 					}"
 				>
@@ -80,8 +80,8 @@
 				@click="props.closeCallback"
 				severity="secondary"
 				:class="{
-					'w-full font-bold border-none rounded-none rounded-bl-xl shrink': true,
-					'rounded-br-xl': !is_basic_auth_enabled,
+					'w-full font-bold border-none rounded-none ltr:rounded-bl-xl rtl:rounded-br-xl shrink': true,
+					'rounded-xl': !is_basic_auth_enabled,
 				}"
 			>
 				{{ $t("dialogs.button.cancel") }}

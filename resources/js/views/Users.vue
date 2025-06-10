@@ -12,7 +12,7 @@
 		<template #end></template>
 	</Toolbar>
 	<Panel class="border-0 max-w-6xl mx-auto">
-		<div class="flex flex-wrap justify-center">
+		<div class="flex flex-wrap justify-center gap-4">
 			<div class="w-full lg:w-2/3 xl:w-3/6">
 				<p class="text-muted-color-emphasis">{{ $t("users.description") }}</p>
 				<div class="flex justify-end mt-8 mb-8">
@@ -51,15 +51,15 @@
 				<template #title>{{ $t("users.legend") }}</template>
 				<template #content>
 					<ul class="text-sm">
-						<li class="ml-2 pt-2 flex items-start gap-x-4">
+						<li class="ltr:ml-2 rtl:mr-2 pt-2 flex items-start gap-x-4">
 							<i class="pi pi-upload"></i>
 							<span>{{ $t("users.upload_rights") }}</span>
 						</li>
-						<li class="ml-2 pt-2 flex items-start gap-x-4">
+						<li class="ltr:ml-2 rtl:mr-2 pt-2 flex items-start gap-x-4">
 							<i class="pi pi-lock-open"></i>
 							<span>{{ $t("users.edit_rights") }}</span>
 						</li>
-						<li class="ml-2 pt-2 flex items-start gap-x-4" v-if="is_se_enabled">
+						<li class="ltr:ml-2 rtl:mr-2 pt-2 flex items-start gap-x-4" v-if="is_se_enabled">
 							<i class="pi pi-chart-pie"></i>
 							<span>{{ $t("users.quota") }}</span>
 						</li>

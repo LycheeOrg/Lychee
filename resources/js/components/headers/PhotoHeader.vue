@@ -9,16 +9,23 @@
 	>
 		<Toolbar class="w-full bg-transparent border-0">
 			<template #start>
-				<Button icon="pi pi-angle-left" class="mr-2" severity="secondary" text @click="emits('goBack')" />
+				<GoBack @go-back="emits('goBack')" />
 			</template>
 			<template #end>
 				<div :class="is_slideshow_active ? 'hidden' : 'flex'">
-					<Button v-if="is_slideshow_enabled" text icon="pi pi-play" class="mr-2" severity="secondary" @click="emits('toggleSlideShow')" />
+					<Button
+						v-if="is_slideshow_enabled"
+						text
+						icon="pi pi-play"
+						class="ltr:mr-2 rtl:ml-2"
+						severity="secondary"
+						@click="emits('toggleSlideShow')"
+					/>
 					<Button
 						v-if="props.photo.rights.can_access_full_photo && props.photo.size_variants.original?.url"
 						text
 						icon="pi pi-window-maximize"
-						class="mr-2 font-bold"
+						class="ltr:mr-2 rtl:ml-2 font-bold"
 						severity="secondary"
 						@click="openInNewTab(props.photo.size_variants.original.url)"
 					/>
@@ -26,7 +33,7 @@
 						v-if="props.photo.rights.can_download"
 						text
 						icon="pi pi-cloud-download"
-						class="mr-2"
+						class="ltr:mr-2 rtl:ml-2"
 						severity="secondary"
 						@click="isDownloadOpen = !isDownloadOpen"
 					/>
@@ -34,13 +41,13 @@
 						v-if="props.photo.rights.can_edit"
 						text
 						icon="pi pi-pencil"
-						class="mr-2"
+						class="ltr:mr-2 rtl:ml-2"
 						severity="secondary"
 						@click="is_photo_edit_open = !is_photo_edit_open"
 					/>
 					<Button
 						icon="pi pi-info"
-						class="mr-2"
+						class="ltr:mr-2 rtl:ml-2"
 						severity="secondary"
 						text
 						@click="are_details_open = !are_details_open"
@@ -60,6 +67,7 @@ import DownloadPhoto from "../modals/DownloadPhoto.vue";
 import { storeToRefs } from "pinia";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
+import GoBack from "./GoBack.vue";
 
 const emits = defineEmits<{
 	toggleDetails: [];
