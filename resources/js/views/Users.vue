@@ -1,4 +1,5 @@
 <template>
+	<InviteUser v-model:visible="isInviteUserVisible" />
 	<CreateEditUser class="mt-10" @refresh="load" v-model:visible="isCreateUserVisible" :user="selectedUser" :is-edit="isEdit" />
 	<Toolbar class="w-full border-0 h-14">
 		<template #start>
@@ -15,7 +16,8 @@
 		<div class="flex flex-wrap justify-center gap-4">
 			<div class="w-full lg:w-2/3 xl:w-3/6">
 				<p class="text-muted-color-emphasis">{{ $t("users.description") }}</p>
-				<div class="flex justify-end mt-8 mb-8">
+				<div class="flex justify-between mt-8 mb-8">
+					<Button @click="inviteUser" severity="primary" class="border-none p-3">{{ $t("users.invite.button") }}</Button>
 					<Button @click="createUser" severity="primary" class="border-none p-3">{{ $t("users.create") }}</Button>
 				</div>
 				<div class="flex flex-col">
@@ -84,6 +86,7 @@ import UserManagementService from "@/services/user-management-service";
 import UsersService from "@/services/users-service";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { trans } from "laravel-vue-i18n";
+import InviteUser from "@/components/modals/InviteUser.vue";
 
 const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
@@ -91,6 +94,7 @@ const { is_se_preview_enabled, is_se_enabled } = storeToRefs(lycheeStore);
 
 const users = ref<App.Http.Resources.Models.UserManagementResource[]>([]);
 const isCreateUserVisible = ref(false);
+const isInviteUserVisible = ref(false);
 const totalUsedSpace = ref(0);
 
 const toast = useToast();
@@ -104,6 +108,10 @@ function load() {
 		users.value = response.data;
 		totalUsedSpace.value = response.data.reduce((acc, user) => acc + (user.space ?? 0), 0);
 	});
+}
+
+function inviteUser() {
+	isInviteUserVisible.value = true;
 }
 
 function deleteUser(id: number) {

@@ -19,10 +19,14 @@ use App\Http\Requests\UserManagement\DeleteUserRequest;
 use App\Http\Requests\UserManagement\ManagmentListUsersRequest;
 use App\Http\Requests\UserManagement\SetUserSettingsRequest;
 use App\Http\Resources\Models\UserManagementResource;
+use App\Models\Configs;
 use App\Models\User;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\URL;
+use function Safe\parse_url;
 
 /**
  * Controller responsible for user management.
@@ -96,5 +100,32 @@ class UserManagementController extends Controller
 		TaggedRouteCacheUpdated::dispatch(CacheTag::USERS);
 
 		return new UserManagementResource($user, ['id' => $user->id, 'size' => 0], $request->is_se());
+	}
+
+	/**
+	 * Generate a temporary invitation link to the registration page.
+	 *
+	 * Maybe later expand on the functionalities of this endpoint to allow preselection of groups for example.
+	 *
+	 * @return array{invitation_link:string,valid_for:int}
+	 */
+	public function invitationLink(ManagmentListUsersRequest $request): array
+	{
+		// First we must sign the api link to allow the user to register via the API.
+		$invitation_api_link = URL::temporarySignedRoute(
+			'register-api', // This should match the route name for /register
+			now()->addDays(Configs::getValueAsInt('user_invitation_ttl')),
+		);
+		Log::warning(
+			'User Management: Generating invitation link for registration API',
+			['invitation_api_link' => $invitation_api_link, 'valid_for_days' => Configs::getValueAsInt('user_invitation_ttl')]
+		);
+
+		// Then we extract the query string from the API link and append it to the registration route.
+		// This allows the registration page to set the signature and expiration for the api call later.
+		$query = parse_url($invitation_api_link, PHP_URL_QUERY);
+		$invitation_link = route('register') . ($query !== '' && is_string($query) ? ('?' . $query) : '');
+
+		return ['invitation_link' => $invitation_link, 'valid_for' => Configs::getValueAsInt('user_invitation_ttl')];
 	}
 }

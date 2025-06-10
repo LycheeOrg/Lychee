@@ -84,4 +84,30 @@ class RegisterTest extends BaseApiWithDataTest
 		$this->assertUnprocessable($response);
 		$response->assertJsonValidationErrors(['email']);
 	}
+
+	public function testRegistrationForbiddenWhenLoggedIn()
+	{
+		$this->actingAs($this->userMayUpload1);
+		$response = $this->putJson('/Profile', [
+			'username' => 'anotheruser',
+			'email' => 'newuser@example.com',
+			'password' => 'password123',
+			'password_confirmation' => 'password123',
+		]);
+		$this->assertForbidden($response);
+	}
+
+	public function testRegistrationForbiddenWhenDisabled()
+	{
+		Configs::set('user_registration_enabled', '0');
+		Configs::invalidateCache();
+
+		$response = $this->putJson('/Profile', [
+			'username' => 'anotheruser',
+			'email' => 'newuser@example.com',
+			'password' => 'password123',
+			'password_confirmation' => 'password123',
+		]);
+		$this->assertUnauthorized($response);
+	}
 }

@@ -25,15 +25,15 @@ class DeleteUserTest extends BaseApiWithDataTest
 {
 	public function testDeleteUserGuest(): void
 	{
-		$response = $this->postJson('UserManagement::delete');
+		$response = $this->deleteJson('UserManagement');
 		$this->assertUnprocessable($response);
 
-		$response = $this->postJson('UserManagement::delete', [
+		$response = $this->deleteJson('UserManagement', [
 			'id' => $this->userMayUpload1->id,
 		]);
 		$this->assertUnauthorized($response);
 
-		$response = $this->actingAs($this->userMayUpload2)->postJson('UserManagement::delete', [
+		$response = $this->actingAs($this->userMayUpload2)->deleteJson('UserManagement', [
 			'id' => $this->userMayUpload1->id,
 		]);
 		$this->assertForbidden($response);
@@ -42,7 +42,7 @@ class DeleteUserTest extends BaseApiWithDataTest
 	public function testDeleteUserAdmin(): void
 	{
 		$num_users = User::count();
-		$response = $this->actingAs($this->admin)->postJson('UserManagement::delete', [
+		$response = $this->actingAs($this->admin)->deleteJson('UserManagement', [
 			'id' => $this->userNoUpload->id,
 		]);
 		$this->assertNoContent($response);

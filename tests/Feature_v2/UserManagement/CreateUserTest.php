@@ -24,10 +24,10 @@ class CreateUserTest extends BaseApiWithDataTest
 {
 	public function testCreateUserGuest(): void
 	{
-		$response = $this->postJson('UserManagement::create');
+		$response = $this->postJson('UserManagement');
 		$this->assertUnprocessable($response);
 
-		$response = $this->postJson('UserManagement::create', [
+		$response = $this->postJson('UserManagement', [
 			'username' => 'username',
 			'password' => 'password',
 			'may_upload' => false,
@@ -35,7 +35,7 @@ class CreateUserTest extends BaseApiWithDataTest
 		]);
 		$this->assertUnauthorized($response);
 
-		$response = $this->actingAs($this->userMayUpload2)->postJson('UserManagement::create', [
+		$response = $this->actingAs($this->userMayUpload2)->postJson('UserManagement', [
 			'username' => 'username',
 			'password' => 'password',
 			'may_upload' => false,
@@ -46,7 +46,7 @@ class CreateUserTest extends BaseApiWithDataTest
 
 	public function testCreateUserAdmin(): void
 	{
-		$response = $this->actingAs($this->admin)->postJson('UserManagement::create', [
+		$response = $this->actingAs($this->admin)->postJson('UserManagement', [
 			'username' => $this->userMayUpload1->username,
 			'password' => 'password',
 			'may_upload' => false,
@@ -54,7 +54,7 @@ class CreateUserTest extends BaseApiWithDataTest
 		]);
 		$this->assertConflict($response);
 
-		$response = $this->actingAs($this->admin)->postJson('UserManagement::create', [
+		$response = $this->actingAs($this->admin)->postJson('UserManagement', [
 			'username' => 'newUsername',
 			'password' => 'password',
 			'may_upload' => false,
