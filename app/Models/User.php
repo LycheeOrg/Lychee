@@ -123,10 +123,10 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	/**
 	 * We always want to load the user groups when loading a user.
 	 * So that we can use the groups to determine the permissions without having to do intersection in the db.
-	 * 
+	 *
 	 * Furthermore, that way it is also provided when using Auth::user()
-	 * 
-	 * @var array<int,string>
+	 *
+	 * @var list<string>
 	 */
 	protected $with = [
 		'user_groups',
