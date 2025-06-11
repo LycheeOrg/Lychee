@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  *
  * @property int                             $id
  * @property int|null                        $user_id
+ * @property int|null                        $user_group_id
  * @property string|null                     $base_album_id
  * @property bool                            $is_link_required
  * @property string|null                     $password
@@ -118,6 +119,16 @@ class AccessPermission extends Model
 	public function user(): BelongsTo
 	{
 		return $this->belongsTo(User::class, 'user_id', 'id');
+	}
+
+	/**
+	 * Return the relationship between an AccessPermission and its associated UserGroup.
+	 *
+	 * @return BelongsTo<UserGroup,$this>
+	 */
+	public function user_group(): BelongsTo
+	{
+		return $this->belongsTo(UserGroup::class, 'user_group_id', 'id');
 	}
 
 	/**

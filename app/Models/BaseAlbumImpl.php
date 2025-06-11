@@ -254,7 +254,14 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	 */
 	public function current_user_permissions(): AccessPermission|null
 	{
-		return $this->access_permissions->first(fn (AccessPermission $p) => $p->user_id !== null && $p->user_id === Auth::id());
+		if (Auth::guest()) {
+			return null; // No permissions for guests
+		}
+
+		$user = Auth::user();
+
+		return $this->access_permissions->first(fn (AccessPermission $p) => $p->user_id === $user->id)
+			?? $this->access_permissions->first(fn (AccessPermission $p) => in_array($p->user_group_id, $user->user_groups->map(fn ($g) => $g->id)->all(), true));
 	}
 
 	/**
@@ -262,7 +269,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	 */
 	public function public_permissions(): AccessPermission|null
 	{
-		return $this->access_permissions->first(fn (AccessPermission $p) => $p->user_id === null);
+		return $this->access_permissions->first(fn (AccessPermission $p) => $p->user_id === null && $p->user_group_id === null);
 	}
 
 	/**

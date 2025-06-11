@@ -87,6 +87,7 @@ abstract class BaseApiWithDataTest extends BaseApiTest
 	protected AccessPermission $perm1;
 	protected AccessPermission $perm4;
 	protected AccessPermission $perm44;
+	protected AccessPermission $perm11;
 
 	protected UserGroup $group1;
 	protected UserGroup $group2;
@@ -143,6 +144,17 @@ abstract class BaseApiWithDataTest extends BaseApiTest
 
 		$this->perm1 = AccessPermission::factory()
 			->for_user($this->userMayUpload2)
+			->for_album($this->album1)
+			->visible()
+			->grants_edit()
+			->grants_delete()
+			->grants_upload()
+			->grants_download()
+			->grants_full_photo()
+			->create();
+
+		$this->perm11 = AccessPermission::factory()
+			->for_user_group($this->group1)
 			->for_album($this->album1)
 			->visible()
 			->grants_edit()
