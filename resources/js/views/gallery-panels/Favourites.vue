@@ -4,7 +4,7 @@
 		<Collapse :when="!is_full_screen">
 			<Toolbar class="w-full border-0 h-14">
 				<template #start>
-					<Button icon="pi pi-angle-left" class="mr-2 border-none" severity="secondary" text @click="goBack" />
+					<GoBack @go-back="goBack" />
 				</template>
 
 				<template #center>
@@ -40,6 +40,7 @@
 </template>
 <script setup lang="ts">
 import PhotoThumbPanel from "@/components/gallery/albumModule/PhotoThumbPanel.vue";
+import GoBack from "@/components/headers/GoBack.vue";
 import { useScrollable } from "@/composables/album/scrollable";
 import { useSelection } from "@/composables/selections/selections";
 import { ALL } from "@/config/constants";

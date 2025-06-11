@@ -1,7 +1,7 @@
 <template>
 	<Toolbar class="w-full border-0 h-14">
 		<template #start>
-			<Button icon="pi pi-angle-left" class="mr-2" severity="secondary" text @click="emits('goBack')" />
+			<GoBack @go-back="emits('goBack')" />
 		</template>
 		<template #center>
 			<span class="sm:hidden font-bold">
@@ -13,8 +13,8 @@
 	</Toolbar>
 </template>
 <script setup lang="ts">
-import Button from "primevue/button";
 import Toolbar from "primevue/toolbar";
+import GoBack from "./GoBack.vue";
 
 const props = defineProps<{
 	title: string;

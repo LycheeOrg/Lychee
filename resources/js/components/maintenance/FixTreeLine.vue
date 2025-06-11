@@ -4,11 +4,12 @@
 			<span v-if="props.album.prefix.length > 4" class="font-mono" v-html="props.album.prefix.slice(0, -2)" />
 			<span
 				:class="{
+					'ltr:mr-2 rtl:ml-2': true,
 					'font-bold text-primary-emphasis': isHoverParent || isHoverId,
 				}"
 				v-if="props.album.prefix.length > 0"
 			>
-				└
+				{{ isLTR() ? "└ " : "┘" }}
 			</span>
 			<span
 				:class="{
@@ -53,8 +54,8 @@
 				}"
 			>
 				{{ props.album.trimmedId }}
-				<LeftWarn v-if="props.album.isDuplicate_lft" class="ml-2" />
-				<RightWarn v-if="props.album.isDuplicate_rgt" class="ml-2" />
+				<LeftWarn v-if="props.album.isDuplicate_lft" class="ltr:ml-2 rtl:mr-2" />
+				<RightWarn v-if="props.album.isDuplicate_rgt" class="ltr:ml-2 rtl:mr-2" />
 			</div>
 			<Inplace ref="inplace">
 				<template #display>
@@ -107,6 +108,9 @@ import LeftWarn from "./mini/LeftWarn.vue";
 import RightWarn from "./mini/RightWarn.vue";
 import Inplace from "primevue/inplace";
 import Select from "primevue/select";
+import { useLtRorRtL } from "@/utils/Helpers";
+
+const { isLTR } = useLtRorRtL();
 
 const props = defineProps<{
 	album: AugmentedAlbum;

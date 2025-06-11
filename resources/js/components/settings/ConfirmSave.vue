@@ -34,7 +34,7 @@
 			>
 				<ToggleSwitch v-model="is_expert_mode" input-id="expertModeToggle" :disabled="!props.hasExperts"></ToggleSwitch>
 				<label for="expertModeToggle" class="text-muted-color"
-					>{{ $t("settings.all.expert_settings") }}<i class="pi pi-graduation-cap ml-2"></i
+					>{{ $t("settings.all.expert_settings") }}<i class="pi pi-graduation-cap ltr:ml-2 rtl:mr-2"></i
 				></label>
 			</div>
 			<div class="flex items-center w-full justify-end">
@@ -49,6 +49,13 @@
 				>
 				</i>
 			</div>
+			<div
+				:class="{
+					'shrink-0 transition-all duration-200 ease-out': true,
+					'w-0 ltr:lg:w-3xs': !props.areAllSettingsEnabled,
+					'w-0 rtl:lg:w-3xs': props.areAllSettingsEnabled,
+				}"
+			></div>
 		</div>
 	</div>
 	<div v-else class="sticky z-30 w-full top-0 flex bg-white dark:bg-surface-800 h-auto lg:h-11">

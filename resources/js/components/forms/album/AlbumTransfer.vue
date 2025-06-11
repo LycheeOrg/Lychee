@@ -4,9 +4,12 @@
 			<div v-if="newOwner !== undefined">
 				<p class="w-full mb-4 text-center text-muted-color-emphasis">
 					{{ sprintf($t("dialogs.transfer.confirmation"), newOwner.username, props.album.title) }}<br />
-					<span class="text-warning-700"><i class="pi pi-exclamation-triangle mr-2" />{{ $t("dialogs.transfer.lost_access_warning") }}</span
+					<span class="text-warning-700"
+						><i class="pi pi-exclamation-triangle ltr:mr-2 rtl:ml-2" />{{ $t("dialogs.transfer.lost_access_warning") }}</span
 					><br />
-					<span class="text-warning-700"><i class="pi pi-exclamation-triangle mr-2" />{{ $t("dialogs.transfer.warning") }}</span>
+					<span class="text-warning-700"
+						><i class="pi pi-exclamation-triangle ltr:mr-2 rtl:ml-2" />{{ $t("dialogs.transfer.warning") }}</span
+					>
 				</p>
 			</div>
 			<div v-else class="text-center w-full">

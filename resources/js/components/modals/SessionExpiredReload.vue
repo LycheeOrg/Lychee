@@ -9,10 +9,18 @@
 					<p class="text-muted-color text-center" v-html="$t('dialogs.session_expired.message')" />
 				</div>
 				<div class="flex justify-center">
-					<Button @click="closeAndReload" severity="info" class="w-full font-bold border-none rounded-none rounded-bl-xl">
+					<Button
+						@click="closeAndReload"
+						severity="info"
+						class="w-full font-bold border-none rounded-none ltr:rounded-bl-xl rtl:rounded-br-xl"
+					>
 						{{ $t("dialogs.session_expired.reload") }}
 					</Button>
-					<Button @click="gotoGallery" severity="contrast" class="w-full font-bold border-none rounded-none rounded-br-xl">
+					<Button
+						@click="gotoGallery"
+						severity="contrast"
+						class="w-full font-bold border-none rounded-none ltr:rounded-br-xl rtl:rounded-bl-xl"
+					>
 						{{ $t("dialogs.session_expired.go_to_gallery") }}
 					</Button>
 				</div>

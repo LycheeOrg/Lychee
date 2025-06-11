@@ -4,11 +4,13 @@
 			<div class="flex flex-col relative md:w-[500px] max-w-[500px] text-sm rounded-md pt-9 text-muted-color">
 				<p class="px-9 mb-4 text-center text-muted-color-emphasis text-wrap" v-html="$t('sharing.propagate_help')"></p>
 				<p class="px-9 mb-8 text-center text-wrap" v-html="$t('sharing.propagate_default')"></p>
-				<div class="flex items-start w-full pr-9 pl-16">
+				<div class="flex items-start w-full ltr:pr-9 ltr:pl-16 rtl:pl-9 rtl:pr-16">
 					<Checkbox v-model="shallOverride" input-id="shallOverride" :binary="true" />
-					<label for="shallOverride" class="ml-2">
+					<label for="shallOverride" class="ltr:ml-2 rtl:mr-2">
 						<span v-html="$t('sharing.propagate_overwrite')"></span><br />
-						<span class="text-warning-700"><i class="pi pi-exclamation-triangle mr-2" />{{ $t("sharing.propagate_warning") }}</span>
+						<span class="text-warning-700"
+							><i class="pi pi-exclamation-triangle ltr:mr-2 rtl:ml-2" />{{ $t("sharing.propagate_warning") }}</span
+						>
 					</label>
 				</div>
 				<div class="flex items-center mt-9 w-full">

@@ -19,7 +19,7 @@
 		<template #option="slotProps">
 			<div class="flex items-center">
 				<img :src="slotProps.option.thumb" alt="poster" class="w-4 rounded-sm" />
-				<span class="ml-4 text-left">{{ slotProps.option.short_title }}</span>
+				<span class="ltr:ml-4 rtl:mr-4">{{ slotProps.option.short_title }}</span>
 			</div>
 		</template>
 	</Select>

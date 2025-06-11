@@ -147,6 +147,9 @@ import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
 import { onUnmounted } from "vue";
 import { useDebounceFn } from "@vueuse/core";
 import { Transition } from "vue";
+import { useLtRorRtL } from "@/utils/Helpers";
+
+const { isLTR } = useLtRorRtL();
 
 const swipe = ref<HTMLElement | null>(null);
 const videoElement = ref<HTMLVideoElement | null>(null);
@@ -218,10 +221,14 @@ onUnmounted(() => {
 useSwipe(swipe, {
 	onSwipe(_e: TouchEvent) {},
 	onSwipeEnd(_e: TouchEvent, direction: UseSwipeDirection) {
-		if (direction === "left") {
+		if (direction === "left" && isLTR()) {
 			emits("next");
-		} else if (direction === "right") {
+		} else if (direction === "right" && isLTR()) {
 			emits("previous");
+		} else if (direction === "left" && !isLTR()) {
+			emits("previous");
+		} else if (direction === "right" && !isLTR()) {
+			emits("next");
 		} else {
 			emits("goBack");
 		}
@@ -237,6 +244,21 @@ watch(
 </script>
 
 <style lang="css">
+[dir="ltr"] {
+	--next-enter-from: 5%;
+	--next-leave-to: -5%;
+
+	--previous-enter-from: -5%;
+	--previous-leave-to: 5%;
+}
+
+[dir="rtl"] {
+	--next-enter-from: -5%;
+	--next-leave-to: 5%;
+
+	--previous-enter-from: 5%;
+	--previous-leave-to: -5%;
+}
 .slide-next-leave-active,
 .slide-next-enter-active {
 	transition:
@@ -244,7 +266,7 @@ watch(
 		opacity 0.2s cubic-bezier(0.445, 0.05, 0.55, 0.95);
 }
 .slide-next-enter-from {
-	transform: translate(5%, 0);
+	transform: translate(var(--next-enter-from), 0);
 	opacity: 0;
 }
 .slide-next-enter-to,
@@ -253,7 +275,7 @@ watch(
 	opacity: 1;
 }
 .slide-next-leave-to {
-	transform: translate(-5%, 0);
+	transform: translate(var(--next-leave-to), 0);
 	opacity: 0;
 }
 
@@ -264,7 +286,7 @@ watch(
 		opacity 0.2s cubic-bezier(0.445, 0.05, 0.55, 0.95);
 }
 .slide-previous-enter-from {
-	transform: translate(-5%, 0);
+	transform: translate(var(--previous-enter-from), 0);
 	opacity: 0;
 }
 .slide-previous-enter-to,
@@ -273,7 +295,7 @@ watch(
 	opacity: 1;
 }
 .slide-previous-leave-to {
-	transform: translate(5%, 0);
+	transform: translate(var(--previous-leave-to), 0);
 	opacity: 0;
 }
 </style>
