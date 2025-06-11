@@ -206,7 +206,7 @@ class SharingTest extends BaseApiWithDataTest
 			'grants_upload' => true,
 		]);
 		$this->assertOk($response);
-		self::assertEquals(2, AccessPermission::where(APC::BASE_ALBUM_ID, '=', $this->album1->id)->count());
+		self::assertEquals(3, AccessPermission::where(APC::BASE_ALBUM_ID, '=', $this->album1->id)->count());
 
 		// Update sub album permission.
 		$response = $this->actingAs($this->userMayUpload1)->putJson('Sharing', [
