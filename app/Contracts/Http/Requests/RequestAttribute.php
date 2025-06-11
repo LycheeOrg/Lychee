@@ -14,6 +14,7 @@ class RequestAttribute
 
 	public const USER_ID_ATTRIBUTE = 'user_id';
 	public const USER_IDS_ATTRIBUTE = 'user_ids';
+	public const USER_GROUP_IDS_ATTRIBUTE = 'group_ids';
 
 	public const GROUP_ID = 'group_id';
 	public const NAME_ATTRIBUTE = 'name';
