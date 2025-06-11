@@ -231,7 +231,7 @@ class AppServiceProvider extends ServiceProvider
 
 		$explain = DB::select('EXPLAIN ' . $query->sql, $query->bindings);
 		$renderer = new ArrayToTextTable();
-		$renderer->setIgnoredKeys(['possible_keys', 'key_len']);
+		$renderer->setIgnoredKeys(['possible_keys', 'key_len', 'ref']);
 
 		$msg .= PHP_EOL;
 		$msg .= Str::repeat('-', 20) . PHP_EOL;
