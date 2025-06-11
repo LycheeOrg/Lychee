@@ -13,7 +13,6 @@
 						>{{ link }}</span
 					>
 					<p class="text-muted">{{ sprintf($t("users.invite.link_is_valit_x_days"), days) }}</p>
-					<!--   -->
 				</div>
 				<Button @click="closeCallback" severity="secondary" class="w-full font-bold border-none rounded-none rounded-bl-xl rounded-br-xl">
 					{{ $t("dialogs.button.close") }}
