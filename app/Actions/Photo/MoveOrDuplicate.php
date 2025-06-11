@@ -47,9 +47,9 @@ class MoveOrDuplicate
 			// Delete the existing links at destination (avoid duplicates key contraint)
 			// If $from === to this operation is not needed.
 			DB::table(PA::PHOTO_ALBUM)
-			->whereIn(PA::PHOTO_ID, $photos_ids)
-			->where(PA::ALBUM_ID, '=', $to_album->id)
-			->delete();
+				->whereIn(PA::PHOTO_ID, $photos_ids)
+				->where(PA::ALBUM_ID, '=', $to_album->id)
+				->delete();
 
 			// Add the new links.
 			DB::table(PA::PHOTO_ALBUM)->insert(array_map(fn (string $id) => ['photo_id' => $id, 'album_id' => $to_album->id], $photos_ids));
