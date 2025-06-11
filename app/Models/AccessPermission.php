@@ -73,6 +73,7 @@ class AccessPermission extends Model
 		'created_at' => 'datetime',
 		'updated_at' => 'datetime',
 		APC::USER_ID => 'integer',
+		APC::USER_GROUP_ID => 'integer',
 		APC::IS_LINK_REQUIRED => 'boolean',
 		APC::GRANTS_FULL_PHOTO_ACCESS => 'boolean',
 		APC::GRANTS_DOWNLOAD => 'boolean',
@@ -86,6 +87,7 @@ class AccessPermission extends Model
 	 */
 	protected $fillable = [
 		APC::USER_ID,
+		APC::USER_GROUP_ID,
 		APC::BASE_ALBUM_ID,
 		APC::IS_LINK_REQUIRED,
 		APC::GRANTS_FULL_PHOTO_ACCESS,
