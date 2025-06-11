@@ -65,6 +65,37 @@ class AlbumTest extends BaseApiWithDataTest
 		]);
 	}
 
+	public function testGetAsGroup(): void
+	{
+		$response = $this->actingAs($this->userWithGroup1)->getJsonWithData('Album', ['album_id' => $this->album1->id]);
+		$this->assertOk($response);
+		$response->assertJson([
+			'config' => [
+				'is_base_album' => true,
+				'is_model_album' => true,
+				'is_accessible' => true,
+				'is_password_protected' => false,
+				'is_search_accessible' => true,
+			],
+			'resource' => [
+				'id' => $this->album1->id,
+				'title' => $this->album1->title,
+				'albums' => [],
+				'photos' => [
+					[
+						'id' => $this->photo1->id,
+					],
+					[
+						'id' => $this->photo1b->id,
+					],
+				],
+			],
+		]);
+
+		$response->assertJsonCount(0, 'resource.albums');
+		$response->assertJsonCount(2, 'resource.photos');
+	}
+
 	public function testGetAsOwner(): void
 	{
 		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album', ['album_id' => $this->tagAlbum1->id]);
