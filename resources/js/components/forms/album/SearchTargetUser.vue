@@ -8,70 +8,48 @@
 		:placeholder="$t('dialogs.target_user.placeholder')"
 		:loading="options === undefined"
 		:options="options"
-		optionLabel="username"
+		optionLabel="name"
 		showClear
 	>
 		<template #value="slotProps">
 			<div v-if="slotProps.value" class="flex items-center">
-				<div>{{ $t(slotProps.value.username) }}</div>
+				<div :class="{ 'text-primary-emphasis': slotProps.value.type === 'group' }">{{ $t(slotProps.value.name) }}</div>
 			</div>
 		</template>
 		<template #option="slotProps">
 			<div class="flex items-center">
-				<span class="text-left">{{ slotProps.option.username }}</span>
+				<span :class="{ 'text-primary-emphasis': slotProps.option.type === 'group' }">{{ slotProps.option.name }}</span>
 			</div>
 		</template>
 	</Select>
 </template>
 <script setup lang="ts">
-import { onMounted, ref, watch } from "vue";
+import { onMounted, watch } from "vue";
 import Select from "primevue/select";
-import UsersService from "@/services/users-service";
+import { type UserOrGroup, type UserOrGroupId, useSearchUserGroupComputed } from "@/composables/search/searchUserGroupComputed";
+import { useLycheeStateStore } from "@/stores/LycheeState";
+import { storeToRefs } from "pinia";
 
-const props = withDefaults(
-	defineProps<{
-		filteredUsersIds?: number[];
-	}>(),
-	{
-		filteredUsersIds: () => [],
-	},
-);
+const lycheeStore = useLycheeStateStore();
+lycheeStore.init();
+const { is_se_enabled } = storeToRefs(lycheeStore);
+
+const props = defineProps<{
+	filteredUsersIds?: UserOrGroupId[];
+	withGroups?: boolean;
+}>();
+
 const emits = defineEmits<{
-	selected: [user: App.Http.Resources.Models.LightUserResource];
+	selected: [user: UserOrGroup];
 	"no-target": [];
 }>();
 
-const options = ref<App.Http.Resources.Models.LightUserResource[] | undefined>(undefined);
-const selectedTarget = ref<App.Http.Resources.Models.LightUserResource | undefined>(undefined);
-const userList = ref<App.Http.Resources.Models.LightUserResource[] | undefined>(undefined);
-
-function load() {
-	UsersService.get().then((response) => {
-		userList.value = response.data;
-		filterUsers();
-	});
-}
-
-function selected() {
-	if (selectedTarget.value === undefined) {
-		return;
-	}
-
-	emits("selected", selectedTarget.value);
-}
-
-function filterUsers() {
-	if (userList.value === undefined) {
-		return;
-	}
-
-	options.value = userList.value.filter((user) => !props.filteredUsersIds.includes(user.id));
-	if (options.value.length === 0) {
-		emits("no-target");
-	}
-}
+const { options, selectedTarget, load, selected, filterUserGroups } = useSearchUserGroupComputed(is_se_enabled, emits);
 
 onMounted(load);
 
-watch(() => props.filteredUsersIds, filterUsers);
+watch(
+	() => props.filteredUsersIds,
+	(v) => filterUserGroups(v),
+);
 </script>
