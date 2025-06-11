@@ -29,7 +29,32 @@ return [
 	*/
 
 	'db_log_sql' => (bool) env('DB_LOG_SQL', false),
+
+	/*
+	|--------------------------------------------------------------------------
+	| Log SQL statements with EXPLAIN
+	|--------------------------------------------------------------------------
+	|
+	| Execute EXPLAIN on each SQL statement and log the result.
+	| This is useful to find out why a query is slow.
+	| Only use it for debugging and development purposes as it slows down
+	| the performance of the application.
+	|
+	*/
 	'explain' => (bool) env('DB_LOG_SQL_EXPLAIN', false),
+
+	/*
+	|--------------------------------------------------------------------------
+	| Only log SQL statements with a minimum execution time
+	|--------------------------------------------------------------------------
+	|
+	| If set to a value greater than 0, only SQL statements with an execution
+	| time greater than this value will be logged.
+	| This is useful to avoid logging too many SQL statements which are
+	| executed very fast and are not relevant for debugging.
+	|
+	*/
+	'log_sql_min_time' => (int) env('DB_LOG_SQL_MIN_TIME', 100),
 
 	/*
 	|--------------------------------------------------------------------------

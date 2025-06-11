@@ -199,6 +199,11 @@ class AppServiceProvider extends ServiceProvider
 			return;
 		}
 
+		// if the query is not slow enough, we do not log it.
+		if ($query->time < config('database.log_sql_min_time', 100)) {
+			return;
+		}
+
 		// Get message with binding outside.
 		$msg = '(' . $query->time . 'ms) ' . $query->sql . ' [' . implode(', ', $query->bindings) . ']';
 
@@ -226,7 +231,7 @@ class AppServiceProvider extends ServiceProvider
 
 		$explain = DB::select('EXPLAIN ' . $query->sql, $query->bindings);
 		$renderer = new ArrayToTextTable();
-		$renderer->setIgnoredKeys(['possible_keys', 'key_len', 'ref']);
+		$renderer->setIgnoredKeys(['possible_keys', 'key_len']);
 
 		$msg .= PHP_EOL;
 		$msg .= Str::repeat('-', 20) . PHP_EOL;
