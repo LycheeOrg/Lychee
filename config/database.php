@@ -53,6 +53,8 @@ return [
 	| This is useful to avoid logging too many SQL statements which are
 	| executed very fast and are not relevant for debugging.
 	|
+	| Default value is 100 milliseconds.
+	|
 	*/
 	'log_sql_min_time' => (int) env('DB_LOG_SQL_MIN_TIME', 100),
 
