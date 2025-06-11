@@ -165,7 +165,7 @@ function executeMovePhoto() {
 	} else {
 		photoMovedIds = props.photoIds as string[];
 	}
-	PhotoService.move({ album_id: destination_id.value, photo_ids: photoMovedIds }).then(() => {
+	PhotoService.move({ from_id: getParentId() ?? null, album_id: destination_id.value, photo_ids: photoMovedIds }).then(() => {
 		toast.add({
 			severity: "success",
 			summary: sprintf(trans("dialogs.move_photo.moved"), titleMovedTo.value),

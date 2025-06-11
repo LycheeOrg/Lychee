@@ -12,7 +12,6 @@ use App\Contracts\Models\AbstractAlbum;
 use App\Enum\SizeVariantType;
 use App\Http\Resources\Collections\PositionDataResource;
 use App\Models\Album;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class PositionData
@@ -25,13 +24,6 @@ class PositionData
 
 		$photo_relation
 			->with([
-				'album' => function (BelongsTo $b): void {
-					// The album is required for photos to properly
-					// determine access and visibility rights; but we
-					// don't need to determine the cover and thumbnail for
-					// each album
-					$b->without(['cover', 'thumb']);
-				},
 				'statistics',
 				'size_variants' => function (HasMany $r): void {
 					// The web GUI only uses the small and thumb size
@@ -47,6 +39,6 @@ class PositionData
 			->whereNotNull('latitude')
 			->whereNotNull('longitude');
 
-		return new PositionDataResource($album->get_id(), $album->get_title(), $photo_relation->get(), $album instanceof Album ? $album->track_url : null);
+		return new PositionDataResource($album, $photo_relation->get(), $album instanceof Album ? $album->track_url : null);
 	}
 }

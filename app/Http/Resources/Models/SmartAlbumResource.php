@@ -44,7 +44,7 @@ class SmartAlbumResource extends Data
 		$this->id = $smart_album->get_id();
 		$this->title = $smart_album->get_title();
 		/** @disregard P1006 */
-		$this->photos = $smart_album->relationLoaded('photos') ? PhotoResource::collect($smart_album->getPhotos()) : null;
+		$this->photos = $smart_album->relationLoaded('photos') ? $this->toPhotoResources($smart_album->getPhotos(), $smart_album) : null;
 		$this->prepPhotosCollection();
 		if ($this->photos !== null) {
 			// Prep collection with first and last link + which id is next.

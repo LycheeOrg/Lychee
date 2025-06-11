@@ -8,6 +8,7 @@
 
 namespace App\SmartAlbums;
 
+use App\Constants\PhotoAlbum as PA;
 use App\Contracts\Exceptions\InternalLycheeException;
 use App\Contracts\Models\AbstractAlbum;
 use App\DTO\PhotoSortingCriterion;
@@ -113,7 +114,7 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	 */
 	public function photos(): Builder
 	{
-		$base_query = Photo::query()->with(['album', 'size_variants', 'statistics', 'palette']);
+		$base_query = Photo::query()->leftJoin(PA::PHOTO_ALBUM, 'photos.id', '=', PA::PHOTO_ID)->with(['size_variants', 'statistics', 'palette']);
 
 		if (!Configs::getValueAsBool('SA_override_visibility')) {
 			return $this->photo_query_policy

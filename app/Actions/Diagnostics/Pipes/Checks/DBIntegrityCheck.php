@@ -33,14 +33,14 @@ class DBIntegrityCheck implements DiagnosticPipe
 
 		$sub_join = DB::table('size_variants')->where('size_variants.type', '=', 0);
 		$photos = Photo::query()
-			->with(['album'])
-			->select(['photos.id', 'title', 'album_id'])
+			->with(['albums'])
+			->select(['photos.id', 'title'])
 			->joinSub($sub_join, 'size_variants', 'size_variants.photo_id', '=', 'photos.id', 'left')
 			->whereNull('size_variants.id')
 			->get();
 
 		foreach ($photos as $photo) {
-			$data[] = DiagnosticData::error('Photo without Original found -- ' . $photo->title . ' in ' . ($photo->album?->title ?? __('gallery.smart_album.unsorted')), self::class);
+			$data[] = DiagnosticData::error('Photo without Original found -- ' . $photo->title . ' in ' . ($photo->albums?->first()?->title ?? __('gallery.smart_album.unsorted')), self::class);
 		}
 
 		return $next($data);

@@ -8,6 +8,7 @@
 
 namespace App\Http\Requests\Album;
 
+use App\Constants\PhotoAlbum as PA;
 use App\Contracts\Http\Requests\HasAlbum;
 use App\Contracts\Http\Requests\HasCompactBoolean;
 use App\Contracts\Http\Requests\HasPhoto;
@@ -21,6 +22,7 @@ use App\Models\Album;
 use App\Models\Photo;
 use App\Policies\AlbumPolicy;
 use App\Rules\RandomIDRule;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\ValidationException;
 
@@ -30,10 +32,17 @@ class SetAsHeaderRequest extends BaseApiRequest implements HasAlbum, HasPhoto, H
 	use HasPhotoTrait;
 	use HasCompactBooleanTrait;
 
+	private array $album_ids = [];
+
 	public function authorize(): bool
 	{
+		$is_photo_in_album = $this->photo !== null && DB::table(PA::PHOTO_ALBUM)
+			->where(PA::ALBUM_ID, '=', $this->album->id)
+			->where(PA::PHOTO_ID, '=', $this->photo->id)
+			->count() > 0;
+
 		return Gate::check(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $this->album]) &&
-		($this->is_compact || ($this->photo->album_id === $this->album->id));
+		($this->is_compact || $is_photo_in_album);
 	}
 
 	/**
