@@ -16,11 +16,13 @@ trait RequiresEmptyGroups
 
 	protected function setUpRequiresEmptyGroups(): void
 	{
+		$this->assertDatabaseCount('users_user_groups', 0);
 		$this->assertDatabaseCount('user_groups', 0);
 	}
 
 	protected function tearDownRequiresEmptyGroups(): void
 	{
+		DB::table('users_user_groups')->delete();
 		DB::table('user_groups')->delete();
 	}
 }

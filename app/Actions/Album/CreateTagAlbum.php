@@ -10,6 +10,7 @@ namespace App\Actions\Album;
 
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;
+use App\Models\Tag;
 use App\Models\TagAlbum;
 use Illuminate\Support\Facades\Auth;
 
@@ -33,7 +34,7 @@ class CreateTagAlbum
 
 		$album = new TagAlbum();
 		$album->title = $title;
-		$album->show_tags = $show_tags;
+		$album->show_tags = Tag::from($show_tags)->all();
 		$album->owner_id = $user_id;
 		$album->save();
 		$this->setStatistics($album);
