@@ -277,6 +277,7 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		is_live_metrics_enabled: boolean;
 		is_registration_enabled: boolean;
 		default_homepage: string;
+		is_timeline_page_enabled: boolean;
 	};
 	export type LandingPageResource = {
 		landing_page_enable: boolean;
@@ -764,5 +765,22 @@ declare namespace App.Http.Resources.Statistics {
 		id: number;
 		username: string;
 		size: number;
+	};
+}
+declare namespace App.Http.Resources.Timeline {
+	export type InitResource = {
+		photo_layout: App.Enum.PhotoLayoutType;
+		is_timeline_page_enabled: boolean;
+		config: App.Http.Resources.GalleryConfigs.RootConfig;
+		rights: App.Http.Resources.Rights.RootAlbumRightsResource;
+	};
+	export type TimelineResource = {
+		photos: App.Http.Resources.Models.PhotoResource[] | Array<any>;
+		current_page: number;
+		from: number;
+		last_page: number;
+		per_page: number;
+		to: number;
+		total: number;
 	};
 }

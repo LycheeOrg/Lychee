@@ -75,15 +75,19 @@ export function useSelection(
 	}
 
 	function handlePhotoCtrl(idx: number, e: Event): void {
+		console.log("CTRL", idx);
 		if (isPhotoSelected(idx)) {
+			console.log("REMOVE");
 			removeFromPhotoSelection(idx);
 		} else {
+			console.log("ADD");
 			addToPhotoSelection(idx);
 		}
 		lastPhotoClicked.value = idx;
 	}
 
 	function handlePhotoShift(idx: number, e: Event): void {
+		console.log("SHIFT", idx);
 		if (selectedPhotos.value.length === 0) {
 			addToPhotoSelection(idx);
 			lastPhotoClicked.value = idx;
