@@ -7,17 +7,6 @@
 		:pt:center:class="'absolute top-0 py-3 left-1/2 -translate-x-1/2 h-14'"
 	>
 		<template #start>
-			<!-- Not logged in. -->
-			<!-- <BackLinkButton v-if="props.user.id === null && !isLoginLeft" :config="props.config" />
-			<Button
-				v-if="props.user.id === null && isLoginLeft"
-				icon="pi pi-sign-in"
-				class="border-none"
-				severity="secondary"
-				text
-				@click="togglableStore.toggleLogin()"
-			/> -->
-			<!-- Logged in. -->
 			<OpenLeftMenu />
 		</template>
 
