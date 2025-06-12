@@ -66,9 +66,16 @@
 					class="cursor-pointer block text-2xl uppercase text-surface-0 hover:scale-125 transition-all duration-300 p-10 filter-shadow text-center"
 				>
 					{{ $t("landing.access_gallery") }}<br class="md:hidden" />
-					<i class="pi pi-angle-right animate-pulseTo0 text-2xl animate-infinite"></i>
-					<i class="pi pi-angle-right animate-pulseTo0 text-2xl animate-delay-500 animate-infinite -ml-1"></i>
-					<i class="pi pi-angle-right animate-pulseTo0 text-2xl animate-delay-1000 animate-infinite -ml-1"></i>
+					<template v-if="isLTR()">
+						<i class="pi pi-angle-right animate-pulseTo0 text-2xl animate-infinite"></i>
+						<i class="pi pi-angle-right animate-pulseTo0 text-2xl animate-delay-500 animate-infinite -ml-1"></i>
+						<i class="pi pi-angle-right animate-pulseTo0 text-2xl animate-delay-1000 animate-infinite -ml-1"></i>
+					</template>
+					<template v-else>
+						<i class="pi pi-angle-left animate-pulseTo0 text-2xl animate-infinite"></i>
+						<i class="pi pi-angle-left animate-pulseTo0 text-2xl animate-delay-500 animate-infinite -mr-1"></i>
+						<i class="pi pi-angle-left animate-pulseTo0 text-2xl animate-delay-1000 animate-infinite -mr-1"></i>
+					</template>
 				</RouterLink>
 			</div>
 		</div>
@@ -80,6 +87,9 @@ import { ref } from "vue";
 import { RouterLink, useRouter } from "vue-router";
 import InitService from "@/services/init-service";
 import LandingFooter from "@/components/footers/LandingFooter.vue";
+import { useLtRorRtL } from "@/utils/Helpers";
+
+const { isLTR } = useLtRorRtL();
 
 const introVisible = ref(true);
 

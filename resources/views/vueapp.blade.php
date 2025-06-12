@@ -3,6 +3,13 @@
     xmlns:h="http://java.sun.com/jsf/html"
     xmlns:f="http://java.sun.com/jsf/core"
     xmlns:p="http://primefaces.org/ui"
+    @if(app()->getLocale() == 'ar' || app()->getLocale() == 'fa')
+    {{-- Arabic or Persian --}}
+    dir="rtl"
+    @else
+    dir="ltr"
+    @endif
+    {{-- Default to LTR --}}
     lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="UTF-8">

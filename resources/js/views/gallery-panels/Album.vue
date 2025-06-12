@@ -172,6 +172,9 @@ import { getNextPreviousPhoto } from "@/composables/photo/getNextPreviousPhoto";
 import { usePhotoRefresher } from "@/composables/photo/hasRefresher";
 import MetricsService from "@/services/metrics-service";
 import { usePhotoRoute } from "@/composables/photo/photoRoute";
+import { useLtRorRtL } from "@/utils/Helpers";
+
+const { isLTR } = useLtRorRtL();
 
 const route = useRoute();
 const router = useRouter();
@@ -305,9 +308,11 @@ onKeyStroke("l", () => !shouldIgnoreKeystroke() && photo.value === undefined && 
 onKeyStroke("/", () => !shouldIgnoreKeystroke() && photo.value === undefined && config.value?.is_search_accessible && openSearch());
 onKeyStroke([getModKey(), "a"], () => !shouldIgnoreKeystroke() && photo.value === undefined && selectEverything());
 
-// Photo operations
-onKeyStroke("ArrowLeft", () => !shouldIgnoreKeystroke() && photo.value !== undefined && hasPrevious() && previous(true));
-onKeyStroke("ArrowRight", () => !shouldIgnoreKeystroke() && photo.value !== undefined && hasNext() && next(true));
+// Photo operations (note that the arrow keys are flipped for RTL languages)
+onKeyStroke("ArrowLeft", () => !shouldIgnoreKeystroke() && photo.value !== undefined && isLTR() && hasPrevious() && previous(true));
+onKeyStroke("ArrowRight", () => !shouldIgnoreKeystroke() && photo.value !== undefined && isLTR() && hasNext() && next(true));
+onKeyStroke("ArrowLeft", () => !shouldIgnoreKeystroke() && photo.value !== undefined && !isLTR() && hasNext() && next(true));
+onKeyStroke("ArrowRight", () => !shouldIgnoreKeystroke() && photo.value !== undefined && !isLTR() && hasPrevious() && previous(true));
 onKeyStroke("o", () => !shouldIgnoreKeystroke() && photo.value !== undefined && rotateOverlay());
 onKeyStroke(" ", () => !shouldIgnoreKeystroke() && photo.value !== undefined && is_slideshow_enabled.value && slideshow());
 onKeyStroke("i", () => !shouldIgnoreKeystroke() && photo.value !== undefined && toggleDetails());
