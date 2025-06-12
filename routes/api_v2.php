@@ -70,6 +70,11 @@ Route::get('/Map', [Gallery\MapController::class, 'getData'])->middleware(['cach
 Route::get('/Map::provider', [Gallery\MapController::class, 'getProvider'])->middleware(['cache_control']);
 
 /**
+ * FEED.
+ */
+Route::get('/Feed', Gallery\FeedController::class);
+
+/**
  * Sharing.
  */
 Route::get('/Sharing', [Gallery\SharingController::class, 'list']);
