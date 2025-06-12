@@ -82,5 +82,3 @@ Route::get('image/{path}', SecurePathController::class)
 
 // This route must be defined last because it is a catch all.
 Route::match(['get', 'post'], '{path}', HoneyPotController::class)->where('path', '.*');
-
-Route::get('/feed', Gallery\FeedAlbumController::class);
