@@ -21,8 +21,8 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 #[TypeScript()]
 class FeedAlbumResource extends Data
 {
-	/** @var array<int,FeeditemResource> */
-	#[LiteralTypeScriptType('App.Http.Resources.Feed.FeeditemResource[]')]
+	/** @var array<int,FeedItemResource> */
+	#[LiteralTypeScriptType('App.Http.Resources.Feed.FeedItemResource[]')]
 	public array $albums;
 
 	public int $current_page;
@@ -33,7 +33,7 @@ class FeedAlbumResource extends Data
 	public int $total;
 
 	/**
-	 * @param LengthAwarePaginator<int,FeeditemResource>&Paginator<int,FeeditemResource> $albums
+	 * @param LengthAwarePaginator<int,FeedItemResource>&Paginator<int,FeedItemResource> $albums
 	 *
 	 * @return void
 	 */
@@ -52,14 +52,14 @@ class FeedAlbumResource extends Data
 	/**
 	 * @param LengthAwarePaginator<int,Album> $albums
 	 *
-	 * @return FeedResource
+	 * @return FeedAlbumResource
 	 */
 	public static function fromData(LengthAwarePaginator $albums): self
 	{
 		/** @disregard Undefined method withQueryString() (stupid intelephense) */
 		return new self(
 			/** @phpstan-ignore method.notFound (this methods exists, it's in the doc...) */
-			albums: $albums->through(fn ($p) => new FeeditemResource($p)),
+			albums: $albums->through(fn ($p) => new FeedItemResource($p)),
 		);
 	}
 }

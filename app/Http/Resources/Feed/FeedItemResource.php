@@ -27,7 +27,7 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
  * Result of a Search query.
  */
 #[TypeScript()]
-class FeeditemResource extends Data
+class FeedItemResource extends Data
 {
 	use HasPrepPhotoCollection;
 	use HasHeaderUrl;
@@ -65,7 +65,7 @@ class FeeditemResource extends Data
 		$this->pre_formatted_data = new PreFormattedAlbumData($album, $url);
 	}
 
-	public static function fromModel(Album $album): FeeditemResource
+	public static function fromModel(Album $album): FeedItemResource
 	{
 		return new self($album);
 	}
