@@ -72,7 +72,7 @@ Route::get('/Map::provider', [Gallery\MapController::class, 'getProvider'])->mid
 /**
  * FEED.
  */
-Route::get('/Feed', Gallery\FeedController::class);
+Route::get('/Feed', Gallery\FeedAlbumController::class);
 
 /**
  * Sharing.

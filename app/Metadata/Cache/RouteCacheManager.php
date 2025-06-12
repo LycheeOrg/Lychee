@@ -41,6 +41,7 @@ final readonly class RouteCacheManager
 			'api/v2/Auth::config' => new RouteCacheConfig(tag: CacheTag::SETTINGS, user_dependant: true),
 			'api/v2/Auth::rights' => new RouteCacheConfig(tag: CacheTag::SETTINGS, user_dependant: true),
 			'api/v2/Auth::user' => new RouteCacheConfig(tag: CacheTag::USER, user_dependant: true),
+			'api/v2/Feed' => false,
 
 			// We do not want to cache diagnostics errors and config as they are a debugging tool. The MUST represent the state of Lychee at any time.
 			'api/v2/Diagnostics' => false,

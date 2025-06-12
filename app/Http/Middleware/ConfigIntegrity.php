@@ -49,7 +49,10 @@ class ConfigIntegrity
 		'live_metrics_access',
 		'live_metrics_max_time',
 		'enable_colour_extractions',
+		'feed_strategy',
 		'colour_extraction_driver',
+		'feed_include_sub_albums',
+		'feed_max_items',
 	];
 
 	/**

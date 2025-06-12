@@ -14,7 +14,7 @@ use App\Http\Resources\Feed\FeedResource;
 use App\Models\Configs;
 use Illuminate\Routing\Controller;
 
-class FeedController extends Controller
+class FeedAlbumController extends Controller
 {
 	/**
 	 * Handle the incoming request.
