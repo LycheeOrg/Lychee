@@ -13,7 +13,7 @@ const MetricsService = {
 			return Promise.resolve(null);
 		}
 		// This is the case if we are in global search mode.
-		if (album_id === undefined) {
+		if (album_id === undefined || album_id === "all") {
 			return Promise.resolve(null);
 		}
 
@@ -22,7 +22,7 @@ const MetricsService = {
 
 	favourite(photo_id: string, album_id: string | undefined): Promise<AxiosResponse<null> | null> {
 		// This is the case if we are in global search mode.
-		if (album_id === undefined) {
+		if (album_id === undefined || album_id === "all") {
 			return Promise.resolve(null);
 		}
 
