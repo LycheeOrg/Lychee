@@ -19,7 +19,7 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
  * Result of a Search query.
  */
 #[TypeScript()]
-class FeedResource extends Data
+class FeedAlbumResource extends Data
 {
 	/** @var array<int,FeeditemResource> */
 	#[LiteralTypeScriptType('App.Http.Resources.Feed.FeeditemResource[]')]

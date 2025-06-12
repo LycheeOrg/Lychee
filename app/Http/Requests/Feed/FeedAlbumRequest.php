@@ -12,7 +12,7 @@ use App\Http\Requests\AbstractEmptyRequest;
 use App\Models\Configs;
 use Illuminate\Support\Facades\Auth;
 
-class FeedRequest extends AbstractEmptyRequest
+class FeedAlbumRequest extends AbstractEmptyRequest
 {
 	/**
 	 * Determine if the user is authorized to make this request.

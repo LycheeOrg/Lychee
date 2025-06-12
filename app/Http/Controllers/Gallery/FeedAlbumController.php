@@ -9,8 +9,8 @@
 namespace App\Http\Controllers\Gallery;
 
 use App\Actions\Albums\Feed;
-use App\Http\Requests\Feed\FeedRequest;
-use App\Http\Resources\Feed\FeedResource;
+use App\Http\Requests\Feed\FeedAlbumRequest;
+use App\Http\Resources\Feed\FeedAlbumResource;
 use App\Models\Configs;
 use Illuminate\Routing\Controller;
 
@@ -19,14 +19,14 @@ class FeedAlbumController extends Controller
 	/**
 	 * Handle the incoming request.
 	 *
-	 * @param FeedRequest $request
+	 * @param FeedAlbumRequest $request
 	 */
-	public function __invoke(FeedRequest $request, Feed $feed)
+	public function __invoke(FeedAlbumRequest $request, Feed $feed)
 	{
 		$pagination_limit = 20;
 		Configs::getValueAsInt('feed_max_items');
 		$album_results = $feed->do()->paginate($pagination_limit);
 
-		return FeedResource::fromData($album_results);
+		return FeedAlbumResource::fromData($album_results);
 	}
 }
