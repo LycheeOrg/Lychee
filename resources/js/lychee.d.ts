@@ -37,6 +37,7 @@ declare namespace App.Enum {
 	export type DefaultAlbumProtectionType = 1 | 2 | 3;
 	export type DownloadVariantType = "LIVEPHOTOVIDEO" | "ORIGINAL" | "MEDIUM2X" | "MEDIUM" | "SMALL2X" | "SMALL" | "THUMB2X" | "THUMB";
 	export type FileStatus = "uploading" | "processing" | "ready" | "skipped" | "done" | "error";
+	export type FlowStrategy = "auto" | "opt-in";
 	export type ImageOverlayType = "none" | "desc" | "date" | "exif";
 	export type JobStatus = 0 | 1 | 2 | 3;
 	export type LicenseType =
@@ -204,6 +205,28 @@ declare namespace App.Http.Resources.Editable {
 		stage: App.Enum.FileStatus;
 		chunk_number: number;
 		total_chunks: number;
+	};
+}
+declare namespace App.Http.Resources.Flow {
+	export type FlowAlbumResource = {
+		albums: App.Http.Resources.Flow.FlowItemResource[];
+		current_page: number;
+		from: number;
+		last_page: number;
+		per_page: number;
+		to: number;
+		total: number;
+	};
+	export type FlowItemResource = {
+		id: string;
+		owner_name: string | null;
+		is_nsfw: boolean;
+		photos: App.Http.Resources.Models.PhotoResource[];
+		pre_formatted_data: App.Http.Resources.Models.Utils.PreFormattedAlbumData;
+		statistics: App.Http.Resources.Models.AlbumStatisticsResource | null;
+	};
+	export type InitResource = {
+		is_mod_flow_enabled: boolean;
 	};
 }
 declare namespace App.Http.Resources.Frame {
@@ -671,6 +694,7 @@ declare namespace App.Http.Resources.Rights {
 	export type ModulesRightsResource = {
 		is_map_enabled: boolean;
 		is_mod_frame_enabled: boolean;
+		is_mod_flow_enabled: boolean;
 		is_photo_timeline_enabled: boolean;
 	};
 	export type PhotoRightsResource = {
