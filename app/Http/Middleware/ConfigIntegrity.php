@@ -50,6 +50,9 @@ class ConfigIntegrity
 		'live_metrics_max_time',
 		'enable_colour_extractions',
 		'colour_extraction_driver',
+		'flow_strategy',
+		'flow_include_sub_albums',
+		'flow_max_items',
 	];
 
 	/**
