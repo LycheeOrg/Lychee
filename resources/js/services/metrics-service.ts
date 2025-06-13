@@ -1,5 +1,6 @@
 import axios, { type AxiosResponse } from "axios";
 import Constants from "./constants";
+import { ALL } from "@/config/constants";
 
 const MetricsService = {
 	get(): Promise<AxiosResponse<App.Http.Resources.Models.LiveMetricsResource[]>> {
@@ -13,7 +14,7 @@ const MetricsService = {
 			return Promise.resolve(null);
 		}
 		// This is the case if we are in global search mode.
-		if (album_id === undefined || album_id === "all") {
+		if (album_id === undefined || album_id === ALL) {
 			return Promise.resolve(null);
 		}
 
@@ -22,7 +23,7 @@ const MetricsService = {
 
 	favourite(photo_id: string, album_id: string | undefined): Promise<AxiosResponse<null> | null> {
 		// This is the case if we are in global search mode.
-		if (album_id === undefined || album_id === "all") {
+		if (album_id === undefined || album_id === ALL) {
 			return Promise.resolve(null);
 		}
 
