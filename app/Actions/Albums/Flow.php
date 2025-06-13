@@ -51,7 +51,7 @@ class Flow
 			FlowStrategy::OPT_IN => 'base_albums.published_at',
 		};
 
-		$hide_nsfw = Configs::getValueAsBool('hide_nsfw_in_feed');
+		$hide_nsfw = Configs::getValueAsBool('hide_nsfw_in_flow');
 
 		$base_query = Album::query()
 			->with(['statistics', 'photos', 'photos.statistics', 'photos.size_variants', 'photos.palette'])
