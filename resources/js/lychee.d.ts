@@ -306,7 +306,6 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		is_search_accessible: boolean;
 		show_keybinding_help_button: boolean;
 		album_thumb_css_aspect_ratio: App.Enum.AspectRatioType;
-		login_button_position: string;
 		back_button_enabled: boolean;
 		back_button_text: string;
 		back_button_url: string;

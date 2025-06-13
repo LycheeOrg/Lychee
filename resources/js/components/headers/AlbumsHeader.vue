@@ -11,10 +11,10 @@
 		</template>
 
 		<template #center>
-			<span class="sm:hidden font-bold">
+			<span class="lg:hidden font-bold">
 				{{ $t("gallery.albums") }}
 			</span>
-			<span class="hidden sm:block font-bold text-sm lg:text-base text-center w-full" @click="is_metrics_open = !is_metrics_open">{{
+			<span class="hidden lg:block font-bold text-sm lg:text-base text-center w-full" @click="is_metrics_open = !is_metrics_open">{{
 				props.title
 			}}</span>
 		</template>
@@ -27,7 +27,7 @@
 					severity="secondary"
 					text
 					:class="{
-						'py-2 px-4 rounded-xl hidden md:block': true,
+						'py-2 px-4 rounded-xl hidden xl:block': true,
 						'dark:hover:text-surface-100': true,
 						'hover:text-surface-800': true,
 					}"
@@ -41,7 +41,7 @@
 					severity="secondary"
 					text
 					:class="{
-						'py-2 px-4 rounded-xl hidden md:block': true,
+						'py-2 px-4 rounded-xl mr-12 block lg:mr-0': true,
 						'dark:hover:text-surface-100 dark:border-surface-400 dark:hover:border-surface-100': true,
 						'hover:text-surface-800 border-surface-500 hover:border-surface-800': true,
 					}"
@@ -50,7 +50,7 @@
 				</Button>
 			</template>
 			<!-- Maybe logged in. -->
-			<div :class="menu.length > 1 ? 'hidden sm:block' : ''">
+			<div class="hidden lg:block">
 				<template v-for="item in menu">
 					<template v-if="item.type === 'link'">
 						<!-- @vue-ignore -->
@@ -61,13 +61,12 @@
 					</template>
 				</template>
 				<!-- Not logged in. -->
-				<BackLinkButton v-if="props.user.id === null && isLoginLeft" :config="props.config" />
+				<BackLinkButton v-if="props.user.id === null" :config="props.config" />
 			</div>
 			<SpeedDial
 				:model="menu"
-				v-if="menu.length > 1"
 				direction="down"
-				class="top-0 mr-4 absolute right-0 sm:hidden"
+				class="top-0 mr-4 absolute right-0 lg:hidden"
 				:buttonProps="{ severity: 'help', rounded: true }"
 			>
 				<template #button="{ toggleCallback }">
@@ -129,7 +128,6 @@ const props = defineProps<{
 		back_button_enabled: boolean;
 		back_button_text: string;
 		back_button_url: string;
-		login_button_position: string;
 	};
 	hasHidden: boolean;
 }>();
@@ -171,7 +169,6 @@ const { addmenu, addMenu } = useContextMenuAlbumsAdd(
 );
 
 const canUpload = computed(() => props.user.id !== null);
-const isLoginLeft = computed(() => props.config.login_button_position === "left");
 
 function openAddMenu(event: Event) {
 	addmenu.value.show(event);
@@ -242,7 +239,7 @@ const menu = computed(() =>
 			to: { name: "favourites" },
 			type: "link",
 			icon: "pi pi-heart",
-			if: is_favourite_enabled.value && (favourites.photos?.length ?? 0) > 0,
+			if: props.user.id !== null && is_favourite_enabled.value && (favourites.photos?.length ?? 0) > 0,
 			key: "favourites",
 		},
 		{
@@ -265,13 +262,6 @@ const menu = computed(() =>
 			callback: () => (is_metrics_open.value = true),
 			if: is_se_preview_enabled.value && props.rights.can_see_live_metrics,
 			key: "se_preview",
-		},
-		{
-			icon: "pi pi-sign-in",
-			type: "fn",
-			callback: togglableStore.toggleLogin,
-			if: props.user.id === null && !isLoginLeft.value,
-			key: "login",
 		},
 		{
 			icon: "pi pi-question-circle",
