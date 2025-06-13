@@ -27,7 +27,6 @@ class RootConfig extends Data
 	public AspectRatioCSSType $album_thumb_css_aspect_ratio;
 
 	// for now we keep it here. Maybe we should move it to a separate class
-	public string $login_button_position; // left/right
 	public bool $back_button_enabled;
 	public string $back_button_text;
 	public string $back_button_url;
@@ -46,7 +45,6 @@ class RootConfig extends Data
 
 		$this->album_thumb_css_aspect_ratio = Configs::getValueAsEnum('default_album_thumb_aspect_ratio', AspectRatioType::class)->css();
 		$this->show_keybinding_help_button = Configs::getValueAsBool('show_keybinding_help_button');
-		$this->login_button_position = Configs::getValueAsString('login_button_position');
 		$this->back_button_enabled = Configs::getValueAsBool('back_button_enabled');
 		$this->back_button_text = Configs::getValueAsString('back_button_text');
 		$this->back_button_url = Configs::getValueAsString('back_button_url');

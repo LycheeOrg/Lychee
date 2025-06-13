@@ -8,6 +8,7 @@
 
 namespace App\Http\Resources\Search;
 
+use App\Contracts\Models\AbstractAlbum;
 use App\Http\Resources\Models\PhotoResource;
 use App\Http\Resources\Models\ThumbAlbumResource;
 use App\Http\Resources\Traits\HasPrepPhotoCollection;
@@ -68,14 +69,16 @@ class ResultsResource extends Data
 	/**
 	 * @param Collection<int,Album>           $albums
 	 * @param LengthAwarePaginator<int,Photo> $photos
+	 * @param AbstractAlbum|null              $album
 	 *
 	 * @return ResultsResource
 	 */
-	public static function fromData(Collection $albums, LengthAwarePaginator $photos): self
+	public static function fromData(Collection $albums, LengthAwarePaginator $photos, AbstractAlbum|null $album): self
 	{
-		return new self(
+		/** @disregard Undefined method through() (stupid intelephense) */ return new self(
 			albums: ThumbAlbumResource::collect($albums),
-			photos: PhotoResource::collect($photos),
+			/** @phpstan-ignore method.notFound (this methods exists, it's in the doc...) */
+			photos: $photos->through(fn ($p) => new PhotoResource($p, $album)),
 		);
 	}
 }
