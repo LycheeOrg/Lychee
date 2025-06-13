@@ -276,6 +276,7 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		is_se_info_hidden: boolean;
 		is_live_metrics_enabled: boolean;
 		is_registration_enabled: boolean;
+		default_homepage: string;
 	};
 	export type LandingPageResource = {
 		landing_page_enable: boolean;
@@ -408,8 +409,8 @@ declare namespace App.Http.Resources.Models {
 		visitor_id: string;
 		action: App.Enum.MetricsAction;
 		photo_id: string | null;
-		album_id: string | null;
-		title: string | null;
+		album_id: string;
+		title: string;
 		url: string | null;
 	};
 	export type PhotoResource = {
