@@ -15,7 +15,10 @@
 			<div id="menu" class="w-full animate-landingAnimateDown">
 				<ul class="menu list-none">
 					<li class="menu-item relative block float-right pt-6 pb-5 px-3">
-						<RouterLink to="/gallery" class="cursor-pointer block text-xs uppercase font-normal text-surface-0 hover:text-muted-color">
+						<RouterLink
+							:to="{ name: 'home' }"
+							class="cursor-pointer block text-xs uppercase font-normal text-surface-0 hover:text-muted-color"
+						>
 							{{ $t("landing.gallery") }}
 						</RouterLink>
 					</li>
@@ -62,7 +65,7 @@
 			</div>
 			<div class="flex w-full h-1/2 absolute top-1/3 md:top-1/2 left-0 items-center justify-center animate-landingEnterPopIn opacity-0">
 				<RouterLink
-					to="/gallery"
+					:to="{ name: 'home' }"
 					class="cursor-pointer block text-2xl uppercase text-surface-0 hover:scale-125 transition-all duration-300 p-10 filter-shadow text-center"
 				>
 					{{ $t("landing.access_gallery") }}<br class="md:hidden" />
@@ -88,7 +91,7 @@ const router = useRouter();
 
 InitService.fetchLandingData().then((data) => {
 	if (data.data.landing_page_enable === false) {
-		router.push("/gallery");
+		router.push({ name: "home" });
 	} else {
 		initdata.value = data.data;
 		setTimeout(() => (introVisible.value = false), 4000);
