@@ -32,7 +32,7 @@ class ConfigIntegrityTest extends AbstractTestCase
 	protected function setUp(): void
 	{
 		parent::setUp();
-		$this->msgSection = new ConsoleOutput()->section();
+		$this->msgSection = (new ConsoleOutput())->section();
 	}
 
 	public function testConfiguration(): void
