@@ -2,7 +2,7 @@ import axios, { type AxiosResponse } from "axios";
 import Constants from "./constants";
 import { ALL } from "@/config/constants";
 
-function validateAlbumId(album_id: string | undefined): boolean {
+function isValidAlbumId(album_id: string | undefined): boolean {
 	if (album_id === undefined || album_id === ALL) {
 		return false;
 	}
@@ -21,7 +21,7 @@ const MetricsService = {
 			// Do not send a request if no photo_id is provided, otherwise it breaks in front-end.
 			return Promise.resolve(null);
 		}
-		if (validateAlbumId(album_id)) {
+		if (!isValidAlbumId(album_id)) {
 			return Promise.resolve(null);
 		}
 
@@ -29,7 +29,7 @@ const MetricsService = {
 	},
 
 	favourite(photo_id: string, album_id: string | undefined): Promise<AxiosResponse<null> | null> {
-		if (validateAlbumId(album_id)) {
+		if (!isValidAlbumId(album_id)) {
 			return Promise.resolve(null);
 		}
 
