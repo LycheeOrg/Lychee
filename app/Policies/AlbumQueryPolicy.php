@@ -265,7 +265,7 @@ class AlbumQueryPolicy
 		// Ensures that only those albums of the original query are
 		// returned for which a path from the origin to the album exist
 		// such that there are no blocked albums on the path to the album.
-		return $query->whereNotExists(fn (BaseBuilder $q) => $this->appendUnreachableAlbumsCondition( $q, $origin_left, $origin_right));
+		return $query->whereNotExists(fn (BaseBuilder $q) => $this->appendUnreachableAlbumsCondition($q, $origin_left, $origin_right));
 	}
 
 	/**
