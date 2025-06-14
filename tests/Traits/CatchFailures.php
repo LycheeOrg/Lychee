@@ -65,10 +65,11 @@ trait CatchFailures
 			}
 			$this->trimException($exception);
 			dump($exception);
+		// We remove 204 as it does not have content
+		// We remove 302 because it does not have json data.
 		} elseif (!in_array($response->getStatusCode(), [204, 302, ...$expectedStatusCodeArray], true)) {
 			$exception = $response->json();
 			$this->trimException($exception);
-			dump($exception);
 		}
 		PHPUnit::assertContains($response->getStatusCode(), $expectedStatusCodeArray);
 	}
