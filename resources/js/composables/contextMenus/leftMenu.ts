@@ -55,6 +55,12 @@ export function useLeftMenu(lycheeStore: LycheeStateStore, LeftMenuStateStore: L
 
 		const baseMenu = [
 			{
+				label: "Flow",
+				icon: "pi pi-arrows-v",
+				access: initData.value.modules.is_mod_flow_enabled ?? false,
+				route: "/flow",
+			},
+			{
 				label: "left-menu.frame",
 				icon: "pi pi-desktop",
 				access: initData.value.modules.is_mod_frame_enabled ?? false,
