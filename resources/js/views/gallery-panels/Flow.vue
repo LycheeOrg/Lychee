@@ -17,35 +17,35 @@
 		</div>
 		<div class="flex flex-col items-center gap-16 mb-16 px-8">
 			<TransitionGroup name="slide-fade">
-			<div
-				v-for="album in albums"
-				:key="`album-${album.id}`"
-				class="w-full md:w-2xl shadow-2xl rounded-2xl bg-gradient-to-b from-surface-800 to-surface-800"
-			>
-				<RouterLink :to="{ name: 'album', params: { albumId: album.id } }" class="">
-					<div class="flex flex-col items-center">
-						<img
-							:src="album.photos[0].size_variants.medium?.url ?? album.photos[0].size_variants.small?.url ?? ''"
-							:alt="album.pre_formatted_data.title"
-							class="w-full h-96 object-cover rounded-t-2xl"
-						/>
+				<div
+					v-for="album in albums"
+					:key="`album-${album.id}`"
+					class="w-full md:w-2xl shadow-2xl rounded-2xl bg-gradient-to-b from-surface-800 to-surface-800"
+				>
+					<RouterLink :to="{ name: 'album', params: { albumId: album.id } }" class="">
+						<div class="flex flex-col items-center">
+							<img
+								:src="album.photos[0].size_variants.medium?.url ?? album.photos[0].size_variants.small?.url ?? ''"
+								:alt="album.pre_formatted_data.title"
+								class="w-full h-96 object-cover rounded-t-2xl"
+							/>
+						</div>
+					</RouterLink>
+					<div class="w-full overflow-x-scroll flex mt-1 gap-1">
+						<div v-for="photo in album.photos" :key="`album-${album.id}-photo-${photo.id}`" class="block shrink-0 grow-1">
+							<img :src="photo.size_variants.thumb?.url ?? ''" :alt="photo.title" class="h-24 w-full object-cover" />
+						</div>
 					</div>
-				</RouterLink>
-				<div class="w-full overflow-x-scroll flex mt-1 gap-1">
-					<div v-for="photo in album.photos" :key="`album-${album.id}-photo-${photo.id}`" class="block shrink-0 grow-1">
-						<img :src="photo.size_variants.thumb?.url ?? ''" :alt="photo.title" class="h-24 w-full object-cover" />
+					<div class="p-6">
+						<h3 class="text-xl font-semibold text-surface-0">{{ album.pre_formatted_data.title }}</h3>
+						<p class="text-sm text-muted-color">{{ album.pre_formatted_data.created_at }}</p>
+						<p
+							class="text-sm text-muted-color prose dark:prose-invert my-4"
+							v-if="album.pre_formatted_data.description"
+							v-html="album.pre_formatted_data.description"
+						></p>
 					</div>
 				</div>
-				<div class="p-6">
-					<h3 class="text-xl font-semibold text-surface-0">{{ album.pre_formatted_data.title }}</h3>
-					<p class="text-sm text-muted-color">{{ album.pre_formatted_data.created_at }}</p>
-					<p
-						class="text-sm text-muted-color prose dark:prose-invert my-4"
-						v-if="album.pre_formatted_data.description"
-						v-html="album.pre_formatted_data.description"
-					></p>
-				</div>
-			</div>
 			</TransitionGroup>
 			<div class="sentinel" ref="sentinel" v-if="currentPage < lastPage"></div>
 		</div>
@@ -129,16 +129,16 @@ onUnmounted(() => stopObserver());
   durations and timing functions.
 */
 .slide-fade-enter-active {
-  transition: all 0.3s ease-out;
+	transition: all 0.3s ease-out;
 }
 
 .slide-fade-leave-active {
-  transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
+	transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
 }
 
 .slide-fade-enter-from,
 .slide-fade-leave-to {
-  transform: translateY(50px);
-  opacity: 0;
+	transform: translateY(50px);
+	opacity: 0;
 }
 </style>
