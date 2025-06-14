@@ -42,6 +42,9 @@ return new class() extends AbstractBaseConfigMigration {
 	public function down(): void
 	{
 		Schema::table('base_albums', function (Blueprint $table) {
+			$table->dropIndex('base_albums_published_at_index');
+		});
+		Schema::table('base_albums', function (Blueprint $table) {
 			$table->dropColumn('published_at');
 		});
 
