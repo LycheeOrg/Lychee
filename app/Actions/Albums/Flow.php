@@ -45,6 +45,7 @@ class Flow
 		}
 
 		$include_sub_albums = Configs::getValueAsBool('flow_include_sub_albums');
+		$includes_photos_children = Configs::getValueAsBool('flow_include_photos_from_children');
 		$flow_strategy = Configs::getValueAsEnum('flow_strategy', FlowStrategy::class);
 		$order_by = match ($flow_strategy) {
 			FlowStrategy::AUTO => 'base_albums.created_at',
@@ -56,7 +57,8 @@ class Flow
 		$base_query = Album::query()
 			->with(['statistics', 'photos', 'photos.statistics', 'photos.size_variants', 'photos.palette'])
 			->join('base_albums', 'base_albums.id', '=', 'albums.id')
-			->whereExists(fn ($q) => $q->select(DB::raw(1))->from(PA::PHOTO_ALBUM)->whereColumn(PA::ALBUM_ID, '=', 'albums.id'))
+			// Only exclude the albums without photos if we do not want photos from children.
+			->when(!$includes_photos_children, fn ($q) => $q->whereExists(fn ($q) => $q->select(DB::raw(1))->from(PA::PHOTO_ALBUM)->whereColumn(PA::ALBUM_ID, '=', 'albums.id')))
 			->when($base === null && $include_sub_albums === false, fn ($q) => $q->whereIsRoot())
 			->when($base !== null && $include_sub_albums === false, fn ($q) => $q->where('parent_id', $base->id))
 			->when($base !== null && $include_sub_albums === true, fn ($q) => $q->where('_lft', '>', $base->_lft)->where('_rgt', '<', $base->_rgt))
@@ -68,8 +70,16 @@ class Flow
 		if ($hide_nsfw) {
 			$base_query->whereNotExists(fn ($q) => $this->album_query_policy->appendRecursiveSensitiveAlbumsCondition($q, $base?->_lft, $base?->_rgt));
 		}
-		$base_query = $base_query->orderByDesc($order_by);
 
-		return $base_query;
+		// Apply the security policy to the query.
+		if ($include_sub_albums) {
+			// Now we restrict the query to only the browsable albums.
+			$query = $this->album_query_policy->applyBrowsabilityFilter($base_query, $base?->_lft, $base?->_rgt);
+		} else {
+			$query = $this->album_query_policy->applyReachabilityFilter($base_query);
+		}
+		$query = $query->orderByDesc($order_by);
+
+		return $query;
 	}
 }

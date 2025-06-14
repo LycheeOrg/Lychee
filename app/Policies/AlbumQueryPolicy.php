@@ -247,8 +247,12 @@ class AlbumQueryPolicy
 	 *
 	 * @throws InternalLycheeException
 	 */
-	public function applyBrowsabilityFilter(AlbumBuilder $query): AlbumBuilder
+	public function applyBrowsabilityFilter(AlbumBuilder $query, int|string|null $origin_left = null, int|string|null $origin_right = null): AlbumBuilder
 	{
+		if (gettype($origin_left) !== gettype($origin_right)) {
+			throw new LycheeInvalidArgumentException('$origin_left and $origin_right must simultaneously either be integers, strings or null');
+		}
+
 		$table = $query->getQuery()->from;
 		if (!($query->getModel() instanceof Album) || $table !== 'albums') {
 			throw new LycheeInvalidArgumentException('the given query does not query for albums');
@@ -261,13 +265,7 @@ class AlbumQueryPolicy
 		// Ensures that only those albums of the original query are
 		// returned for which a path from the origin to the album exist
 		// such that there are no blocked albums on the path to the album.
-		return $query->whereNotExists(function (BaseBuilder $q): void {
-			$this->appendUnreachableAlbumsCondition(
-				$q,
-				null,
-				null,
-			);
-		});
+		return $query->whereNotExists(fn (BaseBuilder $q) => $this->appendUnreachableAlbumsCondition( $q, $origin_left, $origin_right));
 	}
 
 	/**

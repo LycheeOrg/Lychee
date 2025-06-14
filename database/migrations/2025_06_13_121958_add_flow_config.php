@@ -24,7 +24,7 @@ return new class() extends AbstractBaseConfigMigration {
 		DB::table('config_categories')->insert([
 			'cat' => 'Mod Flow',
 			'name' => 'Flow',
-			'description' => 'This module enables the displays of albums in a feed-like manner. Only albums with photos will be displayed, albums with only children are not included in the Flow.',
+			'description' => 'This module enables the displays of albums in a feed-like manner. Only albums with photos will be displayed, albums with only children are not included in the Flow. Being a pure display, the Flow page does not allow users to upload, move, <i>etc.</i>',
 			'order' => 21,
 		]);
 
@@ -41,7 +41,6 @@ return new class() extends AbstractBaseConfigMigration {
 	public function down(): void
 	{
 		Schema::table('base_albums', function (Blueprint $table) {
-			$table->dropIndex(['published_at']);
 			$table->dropColumn('published_at');
 		});
 
@@ -62,7 +61,7 @@ return new class() extends AbstractBaseConfigMigration {
 		return [
 			[
 				'key' => 'flow_enabled',
-				'value' => '0',
+				'value' => '1',
 				'cat' => self::CAT,
 				'type_range' => self::BOOL, // We will change the type_range later when adding for functionalities.
 				'description' => 'Enable Flow display',
@@ -121,6 +120,18 @@ return new class() extends AbstractBaseConfigMigration {
 				'order' => 5,
 			],
 			[
+				'key' => 'flow_include_photos_from_children',
+				'value' => '0',
+				'cat' => self::CAT,
+				'type_range' => self::BOOL,
+				'description' => 'Include photos from children albums',
+				'details' => 'If an album has no photos, but has children, the photos from the children will be included in the flow instead.',
+				'is_secret' => false,
+				'is_expert' => true,
+				'level' => 1,
+				'order' => 6,
+			],
+			[
 				'key' => 'flow_open_album_on_click',
 				'value' => '0',
 				'cat' => self::CAT,
@@ -128,9 +139,21 @@ return new class() extends AbstractBaseConfigMigration {
 				'description' => 'Open album on click',
 				'details' => 'Go to the album when clicked. If disabled, the photos will be displayed directly.',
 				'is_secret' => false,
+				'is_expert' => false,
+				'level' => 1,
+				'order' => 7,
+			],
+			[
+				'key' => 'flow_display_open_album_button',
+				'value' => '0',
+				'cat' => self::CAT,
+				'type_range' => self::BOOL,
+				'description' => 'Display open album button',
+				'details' => 'A button to open the album will be displayed in the card.',
+				'is_secret' => false,
 				'is_expert' => true,
 				'level' => 1,
-				'order' => 6,
+				'order' => 8,
 			],
 			[
 				'key' => 'flow_highlight_first_picture',
@@ -142,7 +165,19 @@ return new class() extends AbstractBaseConfigMigration {
 				'is_secret' => false,
 				'is_expert' => true,
 				'level' => 1,
-				'order' => 6,
+				'order' => 9,
+			],
+			[
+				'key' => 'flow_display_statistics',
+				'value' => '1',
+				'cat' => self::CAT,
+				'type_range' => self::BOOL,
+				'description' => 'Display album statistics in the flow',
+				'details' => 'The number of photos and videos in the album will be displayed.',
+				'is_secret' => false,
+				'is_expert' => false,
+				'level' => 1,
+				'order' => 10,
 			],
 			[
 				'key' => 'flow_max_items',
@@ -154,7 +189,7 @@ return new class() extends AbstractBaseConfigMigration {
 				'is_secret' => false,
 				'is_expert' => true,
 				'level' => 0,
-				'order' => 7,
+				'order' => 11,
 			],
 			[
 				'key' => 'hide_nsfw_in_flow',
