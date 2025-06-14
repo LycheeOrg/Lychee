@@ -22,8 +22,13 @@ use function Safe\preg_match;
  */
 class ImagickPdfCheck implements DiagnosticPipe
 {
+	public const IMAGICK_POLICY_LOCATIONS = [
+		'/etc/ImageMagick-6/policy.xml',
+		'/etc/ImageMagick-7/policy.xml',
+	];
+
 	public const DETAILS = [
-		'Make sure to have the policy.xml file in `/etc/ImageMagick-6/policy.xml`.',
+		'Make sure to have the policy.xml file in `/etc/ImageMagick-6/` or `/etc/ImageMagick-7/`.',
 		'Verify that the file contains the line <policy domain="coder" rights="read|write" pattern="PDF"/> .',
 	];
 
@@ -44,17 +49,28 @@ class ImagickPdfCheck implements DiagnosticPipe
 			return $next($data);
 		}
 
+		$found_location = '';
 		try {
-			if (!file_exists('/etc/ImageMagick-6/policy.xml')) {
-				$data[] = DiagnosticData::warn('The policy.xml file does not exist at the expected location: /etc/ImageMagick-6/policy.xml.', self::class, self::DETAILS);
+			foreach (self::IMAGICK_POLICY_LOCATIONS as $location) {
+				if (file_exists($location)) {
+					$found_location = $location;
+					break;
+				}
+			}
+
+			if ($found_location === '') {
+				$data[] = DiagnosticData::warn(
+					message: 'The policy.xml file does not exist at the expected location: ' . implode(' or ', self::IMAGICK_POLICY_LOCATIONS) . '.',
+					from: self::class,
+					details: self::DETAILS);
 
 				return $next($data);
 			}
 
-			$imagic_policy = file_get_contents('/etc/ImageMagick-6/policy.xml');
+			$imagic_policy = file_get_contents($found_location);
 			if (1 === preg_match('/<policy domain="coder" rights="none" pattern="PDF"/', $imagic_policy)) {
 				$data[] = DiagnosticData::warn('Imagick is not allowed to create thumbs for pdf files.', self::class,
-					['Verify that the /etc/ImageMagick-6/policy.xml file contains the line <policy domain="coder" rights="read|write" pattern="PDF"/> .']);
+					['Verify that the ' . $found_location . ' file contains the line <policy domain="coder" rights="read|write" pattern="PDF"/> .']);
 			}
 		} catch (FilesystemException) {
 			$data[] = DiagnosticData::warn('Could not determine whether Imagick is allowed to work with pdf files.', self::class, self::DETAILS);
