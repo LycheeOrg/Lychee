@@ -2,6 +2,14 @@ import axios, { type AxiosResponse } from "axios";
 import Constants from "./constants";
 import { ALL } from "@/config/constants";
 
+function validateAlbumId(album_id: string | undefined): boolean {
+	if (album_id === undefined || album_id === ALL) {
+		return false;
+	}
+	// We check if the length of album_id is 24 characters, that excldes all the smarts albums
+	return album_id.length === 24;
+}
+
 const MetricsService = {
 	get(): Promise<AxiosResponse<App.Http.Resources.Models.LiveMetricsResource[]>> {
 		return axios.get(`${Constants.getApiUrl()}Metrics`, { data: {} });
@@ -13,8 +21,7 @@ const MetricsService = {
 			// Do not send a request if no photo_id is provided, otherwise it breaks in front-end.
 			return Promise.resolve(null);
 		}
-		// This is the case if we are in global search mode.
-		if (album_id === undefined || album_id === ALL) {
+		if (validateAlbumId(album_id)) {
 			return Promise.resolve(null);
 		}
 
@@ -22,8 +29,7 @@ const MetricsService = {
 	},
 
 	favourite(photo_id: string, album_id: string | undefined): Promise<AxiosResponse<null> | null> {
-		// This is the case if we are in global search mode.
-		if (album_id === undefined || album_id === ALL) {
+		if (validateAlbumId(album_id)) {
 			return Promise.resolve(null);
 		}
 
