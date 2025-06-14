@@ -99,6 +99,7 @@ use Illuminate\Support\Facades\Auth;
  * @property string                           $id
  * @property Carbon                           $created_at
  * @property Carbon                           $updated_at
+ * @property Carbon|null                      $published_at
  * @property string                           $title
  * @property string|null                      $description
  * @property PhotoLayoutType|null             $photo_layout
@@ -196,6 +197,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		'id' => RandomID::ID_TYPE,
 		'created_at' => 'datetime',
 		'updated_at' => 'datetime',
+		'published_at' => 'datetime',
 		'is_nsfw' => 'boolean',
 		'owner_id' => 'integer',
 		'photo_layout' => PhotoLayoutType::class,
