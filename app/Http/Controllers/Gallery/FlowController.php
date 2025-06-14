@@ -9,26 +9,26 @@
 namespace App\Http\Controllers\Gallery;
 
 use App\Actions\Albums\Flow;
-use App\Http\Requests\Flow\FlowAlbumRequest;
-use App\Http\Resources\Flow\FlowAlbumResource;
+use App\Http\Requests\Flow\FlowRequest;
+use App\Http\Resources\Flow\FlowResource;
 use App\Http\Resources\Flow\InitResource;
 use App\Models\Configs;
 use Illuminate\Routing\Controller;
 use Spatie\LaravelData\Data;
 
-class FlowAlbumController extends Controller
+class FlowController extends Controller
 {
 	/**
 	 * Handle the incoming request.
 	 *
-	 * @param FlowAlbumRequest $request
+	 * @param FlowRequest $request
 	 */
-	public function __invoke(FlowAlbumRequest $request, Flow $flow)
+	public function __invoke(FlowRequest $request, Flow $flow)
 	{
 		$pagination_limit = Configs::getValueAsInt('flow_max_items');
 		$album_results = $flow->do()->paginate($pagination_limit);
 
-		return FlowAlbumResource::fromData($album_results);
+		return FlowResource::fromData($album_results);
 	}
 
 	/**

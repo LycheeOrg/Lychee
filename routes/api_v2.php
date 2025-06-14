@@ -72,7 +72,8 @@ Route::get('/Map::provider', [Gallery\MapController::class, 'getProvider'])->mid
 /**
  * FEED.
  */
-Route::get('/Flow', Gallery\FlowAlbumController::class);
+Route::get('/Flow', Gallery\FlowController::class);
+Route::get('/Flow::init', [Gallery\FlowController::class, 'init'])->middleware(['cache_control']);
 
 /**
  * Sharing.

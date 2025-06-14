@@ -12,7 +12,7 @@ use App\Http\Requests\AbstractEmptyRequest;
 use App\Models\Configs;
 use Illuminate\Support\Facades\Auth;
 
-class FlowAlbumRequest extends AbstractEmptyRequest
+class FlowRequest extends AbstractEmptyRequest
 {
 	/**
 	 * Determine if the user is authorized to make this request.

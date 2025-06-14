@@ -19,7 +19,7 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
  * Result of a Search query.
  */
 #[TypeScript()]
-class FlowAlbumResource extends Data
+class FlowResource extends Data
 {
 	/** @var array<int,FlowItemResource> */
 	#[LiteralTypeScriptType('App.Http.Resources.Flow.FlowItemResource[]')]
@@ -52,7 +52,7 @@ class FlowAlbumResource extends Data
 	/**
 	 * @param LengthAwarePaginator<int,Album> $albums
 	 *
-	 * @return FlowAlbumResource
+	 * @return FlowResource
 	 */
 	public static function fromData(LengthAwarePaginator $albums): self
 	{

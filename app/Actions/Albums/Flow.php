@@ -55,8 +55,7 @@ class Flow
 		$hide_nsfw = Configs::getValueAsBool('hide_nsfw_in_flow');
 
 		$base_query = Album::query()
-			->with(['statistics', 'photos', 'photos.statistics', 'photos.size_variants', 'photos.palette'])
-			->join('base_albums', 'base_albums.id', '=', 'albums.id')
+			->with(['cover', 'cover.size_variants', 'statistics', 'photos', 'photos.statistics', 'photos.size_variants', 'photos.palette'])
 			// Only exclude the albums without photos if we do not want photos from children.
 			->when(!$includes_photos_children, fn ($q) => $q->whereExists(fn ($q) => $q->select(DB::raw(1))->from(PA::PHOTO_ALBUM)->whereColumn(PA::ALBUM_ID, '=', 'albums.id')))
 			->when($base === null && $include_sub_albums === false, fn ($q) => $q->whereIsRoot())
@@ -64,7 +63,10 @@ class Flow
 			->when($base !== null && $include_sub_albums === true, fn ($q) => $q->where('_lft', '>', $base->_lft)->where('_rgt', '<', $base->_rgt))
 			// The condition base === null + sub albums means that there are no restrictions AT ALL.
 			// This is why it is not included in the query.
-			->when($flow_strategy === FlowStrategy::OPT_IN, fn ($q) => $q->whereNotNull('base_albums.published_at')); // Do we need an index album_id_published_at?
+			->when($flow_strategy === FlowStrategy::OPT_IN, fn ($q) =>
+				// Do we need an index album_id_published_at?
+				$q->joinSub(DB::table('base_albums')->whereNotNull('published_at'), 'published_base_album', 'published_base_album.id', '=', 'albums.id')
+			);
 
 		// there must be no unreachable album between the origin and the photo
 		if ($hide_nsfw) {
