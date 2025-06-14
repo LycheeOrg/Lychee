@@ -23,8 +23,8 @@ use function Safe\preg_match;
 class ImagickPdfCheck implements DiagnosticPipe
 {
 	public const IMAGICK_POLICY_LOCATIONS = [
-		'/etc/ImageMagick-6/policy.xml',
 		'/etc/ImageMagick-7/policy.xml',
+		'/etc/ImageMagick-6/policy.xml',
 	];
 
 	public const DETAILS = [
