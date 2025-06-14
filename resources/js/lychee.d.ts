@@ -32,6 +32,7 @@ declare namespace App.Enum {
 		| "type";
 	export type ConfigType = "int" | "positive" | "string" | "string_required" | "0|1" | "0|1|2" | "" | "license" | "map_provider";
 	export type CountType = "taken_at" | "created_at";
+	export type CoverFitType = "cover" | "fit";
 	export type DateOrderingType = "older_younger" | "younger_older";
 	export type DbDriverType = "mysql" | "pgsql" | "sqlite";
 	export type DefaultAlbumProtectionType = 1 | 2 | 3;
@@ -208,7 +209,21 @@ declare namespace App.Http.Resources.Editable {
 	};
 }
 declare namespace App.Http.Resources.Flow {
-	export type FlowAlbumResource = {
+	export type FlowItemResource = {
+		id: string;
+		title: string;
+		description: string | null;
+		min_max_text: string | null;
+		published_created_at: string;
+		owner_name: string | null;
+		is_nsfw: boolean;
+		num_photos: number;
+		num_children: number;
+		cover: App.Http.Resources.Models.SizeVariantsResouce | null;
+		photos: App.Http.Resources.Models.PhotoResource[];
+		statistics: App.Http.Resources.Models.AlbumStatisticsResource | null;
+	};
+	export type FlowResource = {
 		albums: App.Http.Resources.Flow.FlowItemResource[];
 		current_page: number;
 		from: number;
@@ -217,16 +232,17 @@ declare namespace App.Http.Resources.Flow {
 		to: number;
 		total: number;
 	};
-	export type FlowItemResource = {
-		id: string;
-		owner_name: string | null;
-		is_nsfw: boolean;
-		photos: App.Http.Resources.Models.PhotoResource[];
-		pre_formatted_data: App.Http.Resources.Models.Utils.PreFormattedAlbumData;
-		statistics: App.Http.Resources.Models.AlbumStatisticsResource | null;
-	};
 	export type InitResource = {
 		is_mod_flow_enabled: boolean;
+		is_open_album_on_click: boolean;
+		is_display_open_album_button: boolean;
+		is_highlight_first_picture: boolean;
+		is_image_header_enabled: boolean;
+		image_header_cover: App.Enum.CoverFitType;
+		image_header_height: number;
+		is_carousel_enabled: boolean;
+		carousel_height: number;
+		is_blur_nsfw_enabled: boolean;
 	};
 }
 declare namespace App.Http.Resources.Frame {
