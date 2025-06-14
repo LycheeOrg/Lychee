@@ -95,6 +95,9 @@ class InitConfig extends Data
 	// User registration enabled
 	public bool $is_registration_enabled;
 
+	// Homepage
+	public string $default_homepage;
+
 	public function __construct()
 	{
 		// Debug mode
@@ -152,6 +155,9 @@ class InitConfig extends Data
 		$this->is_webauthn_enabled = AuthServiceProvider::isWebAuthnEnabled();
 		// User registration enabled
 		$this->is_registration_enabled = Configs::getValueAsBool('user_registration_enabled');
+
+		// Homepage
+		$this->default_homepage = Configs::getValueAsString('home_page_default');
 
 		$this->set_supporter_properties();
 	}

@@ -61,6 +61,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		// Site title & Dropbox API key
 		title: "gallery.title",
 		dropbox_api_key: "disabled",
+		default_homepage: "gallery",
 
 		// Login options
 		is_basic_auth_enabled: true,
@@ -81,22 +82,22 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		is_registration_enabled: false,
 	}),
 	actions: {
-		init() {
+		init(): Promise<void> {
 			// Check if already initialized
 			if (this.is_init) {
-				return;
+				return Promise.resolve();
 			}
-			this.load();
+			return this.load();
 		},
 
-		load() {
+		load(): Promise<void> {
 			// semaphore to avoid multiple calls
 			if (this.is_loading) {
-				return;
+				return Promise.resolve();
 			}
 			this.is_loading = true;
 
-			InitService.fetchInitData()
+			return InitService.fetchInitData()
 				.then((response) => {
 					this.is_init = true;
 					this.is_loading = false;
@@ -153,6 +154,8 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.photo_previous_next_size = data.photo_previous_next_size;
 
 					this.is_registration_enabled = data.is_registration_enabled;
+
+					this.default_homepage = data.default_homepage;
 				})
 				.catch((error) => {
 					// In this specific case, even though it has been possibly disabled, we really need to see the error.

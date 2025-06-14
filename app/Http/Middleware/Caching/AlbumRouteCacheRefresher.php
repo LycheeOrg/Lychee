@@ -8,6 +8,7 @@
 
 namespace App\Http\Middleware\Caching;
 
+use App\Constants\PhotoAlbum as PA;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Events\AlbumRouteCacheUpdated;
 use App\Models\Configs;
@@ -98,10 +99,10 @@ class AlbumRouteCacheRefresher
 		$photo_ids = $request->input(RequestAttribute::PHOTO_IDS_ATTRIBUTE);
 
 		if ($photo_ids !== null || $photo_id !== null) {
-			$photos_album_ids = DB::table('photos')
-				->select('album_id')
-				->whereIn('id', $photo_ids ?? [])
-				->orWhere('id', '=', $photo_id)
+			$photos_album_ids = DB::table(PA::PHOTO_ALBUM)
+				->select(PA::ALBUM_ID)
+				->whereIn(PA::PHOTO_ID, $photo_ids ?? [])
+				->orWhere(PA::PHOTO_ID, '=', $photo_id)
 				->distinct()
 				->pluck('album_id')
 				->all();

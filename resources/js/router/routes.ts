@@ -3,6 +3,7 @@ import Albums from "@/views/gallery-panels/Albums.vue";
 
 const Landing = () => import("@/views/Landing.vue");
 const Favourites = () => import("@/views/gallery-panels/Favourites.vue");
+const Home = () => import("@/views/Home.vue");
 const Frame = () => import("@/views/gallery-panels/Frame.vue");
 const Search = () => import("@/views/gallery-panels/Search.vue");
 const MapView = () => import("@/views/gallery-panels/Map.vue");
@@ -38,6 +39,11 @@ const routes_ = [
 		path: "/gallery/:albumId/:photoId?",
 		component: Album,
 		props: true,
+	},
+	{
+		name: "home",
+		path: "/home",
+		component: Home,
 	},
 	{
 		name: "gallery",

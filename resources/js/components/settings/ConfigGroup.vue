@@ -118,7 +118,9 @@
 					<NumberField v-else-if="config.type === 'int'" :config="config" :min="0" @filled="filled" @reset="reset" />
 					<NumberField v-else-if="config.type === 'positive'" :config="config" :min="1" @filled="filled" @reset="reset" />
 					<SliderField v-else-if="config.type.includes('|')" :config="config" @filled="filled" @reset="reset" />
-					<p v-else class="bg-red-500">{{ config.key }} -- {{ config.value }} -- {{ config.documentation }} -- {{ config.type }}</p>
+					<p v-else-if="is_debug_enabled" class="bg-red-500">
+						{{ config.key }} -- {{ config.value }} -- {{ config.documentation }} -- {{ config.type }}
+					</p>
 				</div>
 			</div>
 		</template>
@@ -151,7 +153,7 @@ import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 
 const lycheeStore = useLycheeStateStore();
-const { is_old_style, is_expert_mode } = storeToRefs(lycheeStore);
+const { is_old_style, is_expert_mode, is_debug_enabled } = storeToRefs(lycheeStore);
 
 const props = defineProps<{
 	configs: App.Http.Resources.Models.ConfigResource[];

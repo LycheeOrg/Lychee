@@ -34,11 +34,11 @@ Route::get('/up', function () {
 });
 
 Route::get('/', VueController::class)->name('home')->middleware(['migration:complete']);
+Route::get('/home', VueController::class)->name('homepage')->middleware(['migration:complete']);
 Route::get('/gallery/{albumId?}/{photoId?}', [VueController::class, 'gallery'])->name('gallery')->middleware(['migration:complete', 'unlock_with_password']);
 Route::get('/frame/{albumId?}', [VueController::class, 'gallery'])->name('frame')->middleware(['migration:complete']);
 Route::get('/map/{albumId?}', [VueController::class, 'gallery'])->name('map')->middleware(['migration:complete']);
 Route::get('/search/{albumId?}/{photoId?}', [VueController::class, 'gallery'])->name('search')->middleware(['migration:complete']);
-
 Route::get('/profile', VueController::class)->name('profile')->middleware(['migration:complete', 'login_required:always']);
 Route::get('/users', VueController::class)->middleware(['migration:complete', 'login_required:always']);
 Route::get('/sharing', VueController::class)->middleware(['migration:complete', 'login_required:always']);
@@ -56,10 +56,10 @@ Route::get('/changelogs', VueController::class)->middleware(['migration:complete
 Route::get('/login', VueController::class)->middleware(['migration:complete']);
 Route::get('/register', VueController::class)->name('register')->middleware(['migration:complete']);
 
-Route::get('/settings', [VueController::class, 'view'])->middleware(['migration:complete', 'login_required:always']);
-Route::get('/permissions', [VueController::class, 'view'])->middleware(['migration:complete', 'login_required:always']);
-Route::get('/fixTree', [VueController::class, 'view'])->middleware(['migration:complete', 'login_required:always']);
-Route::get('/duplicatesFinder', [VueController::class, 'view'])->middleware(['migration:complete', 'login_required:always']);
+Route::get('/settings', VueController::class)->middleware(['migration:complete', 'login_required:always']);
+Route::get('/permissions', VueController::class)->middleware(['migration:complete', 'login_required:always']);
+Route::get('/fixTree', VueController::class)->middleware(['migration:complete', 'login_required:always']);
+Route::get('/duplicatesFinder', VueController::class)->middleware(['migration:complete', 'login_required:always']);
 
 Route::match(['get', 'post'], '/migrate', [Admin\UpdateController::class, 'migrate'])
 	->name('migrate')

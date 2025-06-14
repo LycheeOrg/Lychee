@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/LandingPage', [LandingPageController::class, '__invoke']);
+Route::get('/LandingPage', LandingPageController::class);
 Route::get('/Frame', [Gallery\FrameController::class, 'get']);
 
 Route::get('/Gallery::Init', [Gallery\ConfigController::class, 'getInit']);
