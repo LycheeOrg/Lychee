@@ -6,22 +6,22 @@ return [
 	| Left Menu
 	|--------------------------------------------------------------------------
 	*/
-	'back_to_gallery' => 'Back to Gallery',
+	'back_to_gallery' => 'Volver a la galería',
 
-	'login' => 'Login',
-	'frame' => 'Frame',
-	'map' => 'Map',
-	'admin' => 'Admin',
-	'clockwork' => 'Clockwork App',
-	'logs' => 'Show Logs',
-	'jobs' => 'Show Job History',
-	'user' => 'User',
+	'login' => 'Iniciar sesión',
+	'frame' => 'Marco',
+	'map' => 'Mapa',
+	'admin' => 'Administración',
+	'clockwork' => 'Aplicación Clockwork',
+	'logs' => 'Mostrar registros',
+	'jobs' => 'Mostrar historial de trabajos',
+	'user' => 'Usuario',
 
-	'sign_out' => 'Sign Out',
+	'sign_out' => 'Cerrar sesión',
 
-	'about' => 'About',
-	'changelog' => 'Changelog',
-	'api' => 'API Documentation',
-	'source_code' => 'Source Code',
-	'support' => 'Support',
+	'about' => 'Acerca de',
+	'changelog' => 'Registro de cambios',
+	'api' => 'Documentación de la API',
+	'source_code' => 'Código fuente',
+	'support' => 'Soporte',
 ];
