@@ -24,6 +24,8 @@ class FooterConfig extends Data
 	public string $sm_instagram_url;
 	public string $sm_twitter_url;
 	public string $sm_youtube_url;
+	public string $sm_pixelfed_url;
+	public string $sm_mastodon_url;
 
 	public function __construct()
 	{
@@ -38,6 +40,8 @@ class FooterConfig extends Data
 		$this->sm_instagram_url = Configs::getValueAsString('sm_instagram_url');
 		$this->sm_twitter_url = Configs::getValueAsString('sm_twitter_url');
 		$this->sm_youtube_url = Configs::getValueAsString('sm_youtube_url');
+		$this->sm_pixelfed_url = Configs::getValueAsString('sm_pixelfed_url');
+		$this->sm_mastodon_url = Configs::getValueAsString('sm_mastodon_url');
 
 		$copy_right_year = $site_copyright_begin;
 		if ($site_copyright_begin !== $site_copyright_end) {
