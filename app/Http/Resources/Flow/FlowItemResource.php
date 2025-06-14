@@ -62,8 +62,8 @@ class FlowItemResource extends Data
 		$this->photos = $album->relationLoaded('photos') ? $this->toPhotoResources($album->photos, $album) : null;
 		$this->cover = $album->cover !== null ? new SizeVariantsResouce($album->cover, $album) : null;
 
-		// TODO: Recompute this to take account that the album might be already in another sensitive one...
-		$this->is_nsfw = $album->is_nsfw;
+		// We use the short circuiting operator here to avoid checking is_recursive_nsfw if we hide them already.
+		$this->is_nsfw = Configs::getValueAsBool('hide_nsfw_in_flow') === false && $album->is_recursive_nsfw;
 
 		if ($this->photos !== null) {
 			// Prep collection with first and last link + which id is next.

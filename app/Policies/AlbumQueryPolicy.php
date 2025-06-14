@@ -433,10 +433,10 @@ class AlbumQueryPolicy
 			// ... to the target ...
 			$builder
 				// (We must include the target into the list of outer nodes,
-				// because we must also check whether the target is unreachable.)
+				// because we must also check whether the target is nsfw.)
 				->whereColumn('outers._lft', '<=', 'albums._lft')
 				->whereColumn('outers._rgt', '>=', 'albums._rgt');
-			// ... which are unreachable.
+			// ... which are sensitive.
 
 			$builder->where('outers_base_albums.is_nsfw', '=', true);
 
@@ -623,7 +623,7 @@ class AlbumQueryPolicy
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	private function joinBaseAlbumSensitive(
+	public function joinBaseAlbumSensitive(
 		AlbumBuilder|FixedQueryBuilder|BaseBuilder $query,
 		string $second = 'inner.id',
 		string $prefix = '',
