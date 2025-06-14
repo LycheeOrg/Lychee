@@ -99,13 +99,33 @@ function goBack() {
 
 const toast = useToast();
 
+let signature = "";
+let expires = "";
+
+let search = window.location.search;
+if (search.startsWith("?")) {
+	search = search.substring(1);
+	search.split("&").forEach((param) => {
+		const [key, value] = param.split("=");
+		if (key === "signature") {
+			signature = value;
+		} else if (key === "expires") {
+			expires = value;
+		}
+	});
+}
+
 function register() {
-	ProfileService.register({
-		username: username.value,
-		email: email.value,
-		password: password.value,
-		password_confirmation: passwordConfirmation.value,
-	})
+	ProfileService.register(
+		{
+			username: username.value,
+			email: email.value,
+			password: password.value,
+			password_confirmation: passwordConfirmation.value,
+		},
+		signature,
+		expires,
+	)
 		.then(() => {
 			errorMessage.value = ""; // Clear error message on success
 			toast.add({ severity: "success", summary: trans("profile.register.success"), life: 3000 });
