@@ -40,7 +40,7 @@ return new class() extends Migration {
 			$table->string('details', 200)->after('details_old')->default('')->comment('Details for the config, can be used to store extra informations for the users.');
 		});
 		// Migrate old details to new details column
-		DB::table('configs')->where(DB::raw("LENGTH(`details_old`)"), '<', '200')->update(['details' => DB::raw('details_old')]);
+		DB::table('configs')->where(DB::raw('LENGTH(`details_old`)'), '<', '200')->update(['details' => DB::raw('details_old')]);
 		Schema::table('configs', function (Blueprint $table) {
 			$table->dropColumn('details_old');
 		});
