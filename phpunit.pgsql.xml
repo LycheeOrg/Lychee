@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" bootstrap="vendor/autoload.php" colors="true" processIsolation="false" stopOnFailure="false" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.1/phpunit.xsd">
+  <coverage>
+    <report>
+      <clover outputFile="clover.xml"/>
+      <text outputFile="php://stdout" showUncoveredFiles="false"/>
+    </report>
+  </coverage>
+  <testsuites>
+    <testsuite name="Unit">
+      <directory suffix="Test.php">./tests/Unit</directory>
+      <exclude>./tests/Unit/Http/Requests/Base/BaseRequestTest.php</exclude>
+    </testsuite>
+    <testsuite name="Feature_v2">
+      <directory suffix="Test.php">./tests/Feature_v2</directory>
+      <exclude>./tests/Feature_v2/Base/BaseApiTest.php</exclude>
+      <exclude>./tests/Feature_v2/Base/BaseApiWithDataTest.php</exclude>
+      <exclude>./tests/Feature_v2/ImageHandlers/BaseImageHandler.php</exclude>
+    </testsuite>
+  </testsuites>
+  <extensions>
+    <bootstrap class="Tests\BootExtension"/>
+  </extensions>
+  <logging/>
+  <php>
+    <env name="APP_ENV" value="testing"/>
+    <env name="LYCHEE_UPLOADS_DIR" value="uploads/"/>
+    <env name="DB_CONNECTION" value="pgsql"/>
+    <env name="DB_HOST" value="localhost" />
+    <env name="DB_PORT" value="5432" />
+    <env name="DB_DATABASE" value="lychee"/>
+    <env name="DB_USERNAME" value="user"/>
+    <env name="DB_PASSWORD" value="postgres"/>
+    <env name="DB_LOG_SQL" value="false"/>
+    <env name="DB_LOG_SQL_EXPLAIN" value="false"/>
+    <env name="BCRYPT_ROUNDS" value="4"/>
+    <env name="CACHE_DRIVER" value="array"/>
+    <env name="SESSION_DRIVER" value="array"/>
+    <env name="QUEUE_CONNECTION" value="sync"/>
+    <env name="MAIL_DRIVER" value="array"/>
+  </php>
+  <source>
+    <include>
+      <directory suffix=".php">
+        ./app
+      </directory>
+    </include>
+  </source>
+</phpunit>

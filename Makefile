@@ -154,3 +154,8 @@ docker-build-dev-image:
 	docker build ./docker/dev -t lychee-dev:latest
 
 docker-build-dev: docker-build-base-image docker-build-dev-image
+
+test_pgsql_v2:
+	docker compose -f docker-compose-pgsql.yaml up -d
+	vendor/bin/phpunit --testsuite Feature_v2 --stop-on-failure --stop-on-error --no-coverage --log-junit report_v2.xml --configuration phpunit.pgsql.xml 
+	docker compose down
