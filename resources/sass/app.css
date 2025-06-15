@@ -37,6 +37,10 @@
 	}
 }
 
+@utility no-scrollbar {
+	@apply [scrollbar-width:none] [&::-webkit-scrollbar]:hidden;
+}
+
 @theme {
 	--color-ready-400: var(--ready);
 	--color-danger-600: var(--danger);
