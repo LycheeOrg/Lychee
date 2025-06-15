@@ -29,10 +29,14 @@ class ConfigIntegrityTest extends AbstractTestCase
 	private ConsoleSectionOutput $msgSection;
 	private bool $failed = false;
 
+	protected function setUp(): void
+	{
+		parent::setUp();
+		$this->msgSection = (new ConsoleOutput())->section();
+	}
+
 	public function testConfiguration(): void
 	{
-		$this->msgSection = (new ConsoleOutput())->section();
-
 		$keys = DB::table('configs')->select('key')->where('level', '=', '1')->pluck('key')->all();
 		foreach ($keys as $key) {
 			if (!in_array($key, ConfigIntegrity::SE_FIELDS, true)) {

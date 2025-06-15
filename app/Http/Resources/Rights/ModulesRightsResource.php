@@ -24,6 +24,7 @@ class ModulesRightsResource extends Data
 {
 	public bool $is_map_enabled = false;
 	public bool $is_mod_frame_enabled = false;
+	public bool $is_mod_flow_enabled = false;
 	public bool $is_photo_timeline_enabled = false;
 
 	public function __construct()
@@ -35,6 +36,7 @@ class ModulesRightsResource extends Data
 
 		$this->is_map_enabled = $count_locations && $map_display && $public_display;
 		$this->is_mod_frame_enabled = $this->checkModFrameEnabled();
+		$this->is_mod_flow_enabled = Configs::getValueAsBool('flow_enabled') && (Auth::check() || Configs::getValueAsBool('flow_public'));
 
 		$timeline_photos_enabled = Configs::getValueAsBool('timeline_photos_enabled');
 		$timeline_photos_public = Configs::getValueAsBool('timeline_photos_public');

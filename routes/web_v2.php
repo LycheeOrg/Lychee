@@ -35,6 +35,7 @@ Route::get('/up', function () {
 
 Route::get('/', VueController::class)->name('home')->middleware(['migration:complete']);
 Route::get('/home', VueController::class)->name('homepage')->middleware(['migration:complete']);
+Route::get('/flow/{albumId?}/{photoId?}', [VueController::class, 'gallery'])->name('flow')->middleware(['migration:complete', 'unlock_with_password']);
 Route::get('/gallery/{albumId?}/{photoId?}', [VueController::class, 'gallery'])->name('gallery')->middleware(['migration:complete', 'unlock_with_password']);
 Route::get('/frame/{albumId?}', [VueController::class, 'gallery'])->name('frame')->middleware(['migration:complete']);
 Route::get('/map/{albumId?}', [VueController::class, 'gallery'])->name('map')->middleware(['migration:complete']);
