@@ -62,6 +62,10 @@ class FlowInitTest extends BaseApiWithDataTest
 			'is_blur_nsfw_enabled' => true,
 			'is_compact_mode_enabled' => false,
 		]);
+
+		Configs::set('flow_public', false);
+		Configs::invalidateCache();
+
 	}
 
 	public function testGetUser(): void
