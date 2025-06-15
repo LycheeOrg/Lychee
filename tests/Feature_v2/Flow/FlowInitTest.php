@@ -65,7 +65,6 @@ class FlowInitTest extends BaseApiWithDataTest
 
 		Configs::set('flow_public', false);
 		Configs::invalidateCache();
-
 	}
 
 	public function testGetUser(): void
