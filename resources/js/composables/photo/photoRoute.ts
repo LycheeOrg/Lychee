@@ -14,6 +14,10 @@ export function usePhotoRoute(router: Router) {
 			return { name: "search", params: { albumId: albumId ?? ALL, photoId: photoId } };
 		}
 
+		if (currentRoute.startsWith("flow")) {
+			return { name: "flow-album", params: { albumId: albumId ?? ALL, photoId: photoId } };
+		}
+
 		return { name: "album", params: { albumId: albumId ?? ALL, photoId: photoId } };
 	}
 

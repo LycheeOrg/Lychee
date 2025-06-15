@@ -1,5 +1,6 @@
 import Album from "@/views/gallery-panels/Album.vue";
 import Albums from "@/views/gallery-panels/Albums.vue";
+import path from "path";
 
 const Landing = () => import("@/views/Landing.vue");
 const Favourites = () => import("@/views/gallery-panels/Favourites.vue");
@@ -50,6 +51,12 @@ const routes_ = [
 		name: "flow",
 		path: "/flow",
 		component: Flow,
+	},
+	{
+		name: "flow-album",
+		path: "/flow/:albumId/:photoId?",
+		component: Album,
+		props: true,
 	},
 	{
 		name: "gallery",

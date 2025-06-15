@@ -17,29 +17,32 @@
 		</div>
 		<div class="flex flex-col items-center gap-16 mb-16 px-8" v-if="config !== undefined">
 			<TransitionGroup name="slide-fade">
-				<AlbumCard v-for="album in albums" :key="`album-${album.id}`" :album="album" :config="config" />
+				<AlbumCard v-for="album in albums" :key="`album-${album.id}`" :album="album" :config="config" @set-selection="setSelection" />
 			</TransitionGroup>
 			<div v-if="albums && albums.length === 0" class="h-[70vh] text-muted-color flex items-center">No content.</div>
 			<div class="sentinel" ref="sentinel" v-if="currentPage < lastPage"></div>
 		</div>
+		<LigtBox v-if="selectedPhoto" :photo="selectedPhoto" @go-back="goBack" @next="next" @previous="previous" />
 		<ProgressSpinner class="flex justify-center" v-if="isLoading && !isTouchDevice()" />
 		<GalleryFooter v-once />
-		<ScrollTop target="parent" />
+		<ScrollTop target="parent" v-if="selectedPhoto" />
 	</div>
 </template>
 <script setup lang="ts">
 import GalleryFooter from "@/components/footers/GalleryFooter.vue";
 import AlbumCard from "@/components/gallery/flowModule/AlbumCard.vue";
+import LigtBox from "@/components/gallery/flowModule/LigtBox.vue";
 import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
 import LoadingProgress from "@/components/loading/LoadingProgress.vue";
+import { useHasNextPreviousPhoto } from "@/composables/photo/hasNextPreviousPhoto";
 import FlowService from "@/services/flow-service";
 import { useAuthStore } from "@/stores/Auth";
 import { useFlowStateStore } from "@/stores/FlowState";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
-import { isTouchDevice } from "@/utils/keybindings-utils";
-import { useIntersectionObserver } from "@vueuse/core";
+import { isTouchDevice, shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
+import { onKeyStroke, useIntersectionObserver } from "@vueuse/core";
 import { storeToRefs } from "pinia";
 import ProgressSpinner from "primevue/progressspinner";
 import ScrollTop from "primevue/scrolltop";
@@ -58,8 +61,7 @@ const router = useRouter();
 lycheeStore.init();
 
 const leftMenuStore = useLeftMenuStateStore();
-const { is_full_screen } = storeToRefs(togglableStore);
-const { title } = storeToRefs(lycheeStore);
+const { title, image_overlay_type } = storeToRefs(lycheeStore);
 const { are_nsfw_blurred, are_nsfw_consented } = storeToRefs(flowState);
 
 const isLoading = ref(true);
@@ -69,6 +71,24 @@ const currentPage = ref(1);
 const lastPage = ref(0);
 const sentinel = ref(null);
 let stopObserver = null;
+
+const selectedPhoto = ref<App.Http.Resources.Models.PhotoResource | undefined>(undefined);
+const selectedAlbum = ref<App.Http.Resources.Flow.FlowItemResource | undefined>(undefined);
+
+function setSelection(album: App.Http.Resources.Flow.FlowItemResource, idxPhoto: number) {
+	if (config.value === undefined) {
+		console.error("Config is not defined, cannot set selection.");
+		return;
+	}
+
+	if (config.value.is_open_album_on_click) {
+		router.push({ name: "flow-album", params: { albumId: album.id, photoId: album.photos[idxPhoto].id } });
+		return;
+	}
+
+	selectedAlbum.value = album;
+	selectedPhoto.value = album.photos[idxPhoto];
+}
 
 function load() {
 	isLoading.value = true;
@@ -119,6 +139,52 @@ onMounted(async () => {
 stopObserver = registerSentinel();
 
 onUnmounted(() => stopObserver());
+
+function goBack() {
+	selectedAlbum.value = undefined;
+	selectedPhoto.value = undefined;
+}
+
+const { hasNext, hasPrevious } = useHasNextPreviousPhoto(selectedPhoto);
+
+function rotateOverlay() {
+	const overlays = ["none", "desc", "date", "exif"] as App.Enum.ImageOverlayType[];
+	for (let i = 0; i < overlays.length; i++) {
+		if (image_overlay_type.value === overlays[i]) {
+			image_overlay_type.value = overlays[(i + 1) % overlays.length];
+			return;
+		}
+	}
+}
+
+function next() {
+	if (!hasNext()) {
+		return;
+	}
+
+	selectedPhoto.value = selectedAlbum.value?.photos.find((photo) => photo.id === selectedPhoto.value?.next_photo_id);
+}
+
+function previous() {
+	if (!hasPrevious()) {
+		return;
+	}
+
+	selectedPhoto.value = selectedAlbum.value?.photos.find((photo) => photo.id === selectedPhoto.value?.previous_photo_id);
+}
+
+onKeyStroke("ArrowLeft", () => !shouldIgnoreKeystroke() && selectedPhoto.value !== undefined && hasPrevious() && previous());
+onKeyStroke("ArrowRight", () => !shouldIgnoreKeystroke() && selectedPhoto.value !== undefined && hasNext() && next());
+onKeyStroke("o", () => !shouldIgnoreKeystroke() && selectedPhoto.value !== undefined && rotateOverlay());
+onKeyStroke("Escape", () => {
+	// 1. lose focus
+	if (shouldIgnoreKeystroke() && document.activeElement instanceof HTMLElement) {
+		document.activeElement.blur();
+		return;
+	}
+
+	goBack();
+});
 </script>
 <style>
 /*

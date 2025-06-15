@@ -215,6 +215,7 @@ declare namespace App.Http.Resources.Flow {
 		description: string | null;
 		min_max_text: string | null;
 		published_created_at: string;
+		diff_published_created_at: string;
 		owner_name: string | null;
 		is_nsfw: boolean;
 		num_photos: number;
@@ -243,6 +244,7 @@ declare namespace App.Http.Resources.Flow {
 		is_carousel_enabled: boolean;
 		carousel_height: number;
 		is_blur_nsfw_enabled: boolean;
+		is_compact_mode_enabled: boolean;
 	};
 }
 declare namespace App.Http.Resources.Frame {

@@ -6,14 +6,19 @@
 		}"
 	>
 		<div
-			v-for="photo in props.photos.slice(0, 5)"
+			v-for="(photo, idx) in props.photos.slice(0, 5)"
 			:key="`album-${props.albumId}-photo-${photo.id}`"
 			:class="{
 				'relative shrink-1 grow-1 flex-1/4 h-(--top-images-height)': !isShort,
 				'h-(--header-height)': isShort,
 			}"
 		>
-			<img :src="photo.size_variants.small?.url ?? '/img/no_images.svg'" :alt="photo.title" class="object-cover h-full w-full" />
+			<img
+				:src="photo.size_variants.small?.url ?? '/img/no_images.svg'"
+				:alt="photo.title"
+				class="object-cover h-full w-full"
+				@click="emits('clicked', idx)"
+			/>
 			<Blur v-if="props.isNsfw" />
 		</div>
 		<div v-if="props.photos.length > 5" class="aspect-square flex items-center justify-center px-16 text-muted-color text-2xl">
@@ -35,4 +40,8 @@ const props = defineProps<{
 const isShort = computed(() => {
 	return props.photos.length < 4;
 });
+
+const emits = defineEmits<{
+	clicked: [idx: number];
+}>();
 </script>
