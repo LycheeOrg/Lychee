@@ -153,7 +153,8 @@ return new class() extends AbstractBaseConfigMigration {
 				'cat' => self::CAT,
 				'type_range' => self::BOOL,
 				'description' => 'Include photos from children albums',
-				'details' => 'If an album has no photos, but has children, the photos from the children will be included in the flow instead. This may slowdown your flow page.',
+				'details' => 'If an album has no photos, but has children, the photos from the children will be displayed.<br>
+				<span class="pi pi-exclamation-triangle text-orange-500"></span> This is NOT recommended. Consequences includes memory exhaution, slower loading time, crashes...',
 				'is_secret' => false,
 				'is_expert' => true,
 				'level' => 1,
@@ -220,6 +221,18 @@ return new class() extends AbstractBaseConfigMigration {
 				'order' => 13,
 			],
 			[
+				'key' => 'flow_compact_mode_enabled',
+				'value' => '1',
+				'cat' => self::CAT,
+				'type_range' => self::BOOL,
+				'description' => 'Enable flow compact mode',
+				'details' => 'Clamp the description to 3 lines and hides exttra information like the number of photos and children.<br>Also adds a "Show more" button to expand.',
+				'is_secret' => false,
+				'is_expert' => false,
+				'level' => 1,
+				'order' => 14,
+			],
+			[
 				'key' => 'flow_image_header_enabled',
 				'value' => '1',
 				'cat' => self::CAT,
@@ -229,7 +242,7 @@ return new class() extends AbstractBaseConfigMigration {
 				'is_secret' => false,
 				'is_expert' => false,
 				'level' => 1,
-				'order' => 14,
+				'order' => 15,
 			],
 			[
 				'key' => 'flow_image_header_cover',
@@ -241,7 +254,7 @@ return new class() extends AbstractBaseConfigMigration {
 				'is_secret' => false,
 				'is_expert' => false,
 				'level' => 1,
-				'order' => 15,
+				'order' => 16,
 			],
 			[
 				'key' => 'flow_image_header_height',
@@ -253,7 +266,7 @@ return new class() extends AbstractBaseConfigMigration {
 				'is_secret' => false,
 				'is_expert' => true,
 				'level' => 1,
-				'order' => 16,
+				'order' => 17,
 			],
 			[
 				'key' => 'flow_carousel_enabled',
@@ -265,7 +278,7 @@ return new class() extends AbstractBaseConfigMigration {
 				'is_secret' => false,
 				'is_expert' => false,
 				'level' => 1,
-				'order' => 17,
+				'order' => 18,
 			],
 			[
 				'key' => 'flow_carousel_height',
@@ -277,7 +290,7 @@ return new class() extends AbstractBaseConfigMigration {
 				'is_secret' => false,
 				'is_expert' => true,
 				'level' => 1,
-				'order' => 18,
+				'order' => 19,
 			],
 			[
 				'key' => 'date_format_flow_published',
@@ -289,7 +302,7 @@ return new class() extends AbstractBaseConfigMigration {
 				'is_secret' => false,
 				'is_expert' => true,
 				'level' => 1,
-				'order' => 19,
+				'order' => 20,
 			],
 			[
 				'key' => 'date_format_flow_min_max',
@@ -301,7 +314,7 @@ return new class() extends AbstractBaseConfigMigration {
 				'is_secret' => false,
 				'is_expert' => true,
 				'level' => 1,
-				'order' => 20,
+				'order' => 21,
 			],
 			[
 				'key' => 'flow_blur_nsfw_enabled',
