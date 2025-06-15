@@ -19,7 +19,7 @@ return new class() extends Migration {
 			$table->renameColumn('details', 'details_old');
 		});
 		Schema::table('configs', function (Blueprint $table) {
-			$table->text('details')->after('details_old')->comment('Details for the config, can be used to store extra informations for the users.');
+			$table->text('details')->nullable(true)->after('details_old')->comment('Details for the config, can be used to store extra informations for the users.');
 		});
 		// Migrate old details to new details column
 		DB::table('configs')->update(['details' => DB::raw('details_old')]);
