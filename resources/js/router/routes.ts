@@ -59,7 +59,7 @@ const routes_ = [
 	},
 	{
 		name: "timeline",
-		path: "/timeline/:date/:photoId",
+		path: "/timeline/:date?/:photoId?",
 		component: Timeline,
 		props: true,
 	},
