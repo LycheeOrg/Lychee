@@ -20,6 +20,4 @@ All Pull Requests run with extensive tests for stable and latest versions of PHP
 Ensure your tests pass or your PR may be taken down.
 
 Additionally you can run `make phpstan` and `make formatting` on your own machine as they will be required to pass for your PR to be accepted.
-
-Don't worry if your code styling isn't perfect! php-cs-fixer will automatically create a pull request with any style fixes. This allows us to focus on the content of the contribution and not the code style.
 -->

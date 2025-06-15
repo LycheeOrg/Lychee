@@ -15,7 +15,7 @@ Those are the versions where we accept vulnerability reports.
 ## Reporting a Vulnerability
 
 As described in our [contribution guide][1], if you discover a security vulnerability within Lychee,
-please contact us directly on [gitter][2]. All security vulnerabilities will be promptly addressed.
+please contact us directly on [discord][3]. All security vulnerabilities will be promptly addressed.
 
 [1]: https://lycheeorg.dev/docs/contributions.html#security-vulnerabilities
-[2]: https://gitter.im/LycheeOrg/Lobby
+[3]: https://discord.gg/JMPvuRQcTf

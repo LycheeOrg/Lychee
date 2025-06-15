@@ -30,9 +30,23 @@ trait CatchFailures
 	/**
 	 * Some of the exceptions we get are expected. We silence then.
 	 *
-	 * @var array
+	 * @var string[]
 	 */
 	protected array $catchFailureSilence = ["App\Exceptions\MediaFileOperationException"];
+
+	/**
+	 * We trim the trace of exceptions to get better data.
+	 *
+	 * @var string[]
+	 */
+	protected array $exception_noise = [
+		'Illuminate\Database\Query\Builder',
+		'Illuminate\Database\Connection',
+		'Illuminate\Pipeline\Pipeline',
+		'Illuminate\Container\BoundMethod',
+		'Illuminate\Container\Util',
+		'Illuminate\Container\Container',
+	];
 
 	/**
 	 * @param TestResponse<\Illuminate\Http\JsonResponse> $response
@@ -42,6 +56,8 @@ trait CatchFailures
 	 */
 	protected function assertStatus(TestResponse $response, int|array $expectedStatusCode): void
 	{
+		$expectedStatusCodeArray = is_int($expectedStatusCode) ? [$expectedStatusCode] : $expectedStatusCode;
+
 		if ($response->getStatusCode() === 500 && $expectedStatusCode !== 500) {
 			$exception = $response->json();
 			if (in_array($exception['exception'], $this->catchFailureSilence, true)) {
@@ -49,12 +65,7 @@ trait CatchFailures
 			}
 			$this->trimException($exception);
 			dump($exception);
-		}
-		$expectedStatusCodeArray = is_int($expectedStatusCode) ? [$expectedStatusCode] : $expectedStatusCode;
-
-		// We remove 204 as it does not have content
-		// We remove 302 because it does not have json data.
-		if (!in_array($response->getStatusCode(), [204, 302, ...$expectedStatusCodeArray], true)) {
+		} elseif (!in_array($response->getStatusCode(), [204, 302, ...$expectedStatusCodeArray], true)) {
 			$exception = $response->json();
 			$this->trimException($exception);
 			dump($exception);
@@ -80,6 +91,7 @@ trait CatchFailures
 	private function trimException(array &$exception): void
 	{
 		if (isset($exception['trace'])) {
+			$exception['trace'] = array_values(array_filter($exception['trace'], fn ($t) => !in_array($t['class'] ?? '', $this->exception_noise, true)));
 			$exception['trace'] = array_slice($exception['trace'], 0, 3);
 		}
 

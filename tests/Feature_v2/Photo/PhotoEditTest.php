@@ -36,6 +36,7 @@ class PhotoEditTest extends BaseApiWithDataTest
 			'license' => 'none',
 			'taken_at' => null,
 			'upload_date' => '2021-01-01',
+			'from_id' => $this->album1->id,
 		]);
 		$this->assertUnauthorized($response);
 
@@ -47,6 +48,7 @@ class PhotoEditTest extends BaseApiWithDataTest
 			'license' => 'none',
 			'taken_at' => null,
 			'upload_date' => '2021-01-01',
+			'from_id' => $this->album1->id,
 		]);
 		$this->assertForbidden($response);
 
@@ -64,6 +66,7 @@ class PhotoEditTest extends BaseApiWithDataTest
 			'license' => 'none',
 			'taken_at' => null,
 			'upload_date' => '2021-01-01',
+			'from_id' => $this->album1->id,
 		]);
 		$this->assertOk($response);
 
@@ -89,6 +92,7 @@ class PhotoEditTest extends BaseApiWithDataTest
 			'license' => 'none',
 			'taken_at' => '2021-01-01T00:00:00+00:00',
 			'upload_date' => '2021-01-01',
+			'from_id' => $this->album1->id,
 		]);
 		$this->assertOk($response);
 
@@ -115,6 +119,7 @@ class PhotoEditTest extends BaseApiWithDataTest
 			'license' => 'none',
 			'taken_at' => null,
 			'upload_date' => '2021-01-01',
+			'from_id' => $this->album1->id,
 		]);
 		$this->assertOk($response);
 
@@ -145,6 +150,7 @@ class PhotoEditTest extends BaseApiWithDataTest
 			'license' => 'none',
 			'taken_at' => null,
 			'upload_date' => '2021-01-01',
+			'from_id' => $this->album1->id,
 		]);
 		$this->assertOk($response);
 
@@ -171,6 +177,7 @@ class PhotoEditTest extends BaseApiWithDataTest
 			'license' => 'none',
 			'taken_at' => '2021-01-01T00:00:00+00:00',
 			'upload_date' => '2021-01-01',
+			'from_id' => $this->album1->id,
 		]);
 		$this->assertOk($response);
 
@@ -197,6 +204,7 @@ class PhotoEditTest extends BaseApiWithDataTest
 			'license' => 'none',
 			'taken_at' => null,
 			'upload_date' => '2021-01-01',
+			'from_id' => $this->album1->id,
 		]);
 		$this->assertOk($response);
 

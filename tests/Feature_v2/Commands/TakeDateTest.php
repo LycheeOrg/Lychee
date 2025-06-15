@@ -38,6 +38,8 @@ class TakeDateTest extends BaseApiWithDataTest
 	public function testSetUploadTimeFromFileTime(): void
 	{
 		// Make sure that the tables are empty before running this tests.
+		DB::table('photo_album')->delete();
+		DB::table('statistics')->whereNotNull('photo_id')->delete();
 		DB::table('size_variants')->delete();
 		DB::table('photos')->delete();
 

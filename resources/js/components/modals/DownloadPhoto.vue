@@ -29,11 +29,16 @@
 	</Dialog>
 </template>
 <script setup lang="ts">
+import { usePhotoRoute } from "@/composables/photo/photoRoute";
 import PhotoService from "@/services/photo-service";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+const { getParentId } = usePhotoRoute(router);
 
 const lycheeState = useLycheeStateStore();
 const {
@@ -84,6 +89,6 @@ function isDownloadable(sv: number): boolean {
 }
 
 function download(sv: number) {
-	PhotoService.download([props.photo.id], svtoVariant(sv));
+	PhotoService.download([props.photo.id], getParentId(), svtoVariant(sv));
 }
 </script>

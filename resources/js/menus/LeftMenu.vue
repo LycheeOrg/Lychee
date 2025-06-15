@@ -112,7 +112,6 @@ import AlbumService from "@/services/album-service";
 import SETag from "@/components/icons/SETag.vue";
 import Constants from "@/services/constants";
 import { useRoute } from "vue-router";
-import { useTogglablesStateStore } from "@/stores/ModalsState";
 import Button from "primevue/button";
 import PiMiniIcon from "@/components/icons/PiMiniIcon.vue";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
@@ -125,7 +124,6 @@ const leftMenuState = useLeftMenuStateStore();
 const route = useRoute();
 const authStore = useAuthStore();
 const lycheeStore = useLycheeStateStore();
-const togglableStore = useTogglablesStateStore();
 const favouritesStore = useFavouriteStore();
 const { isLTR } = useLtRorRtL();
 
@@ -142,7 +140,7 @@ function logout() {
 		initData.value = undefined;
 		authStore.setUser(null);
 		AlbumService.clearCache();
-		window.location.href = Constants.BASE_URL + "/gallery";
+		window.location.href = Constants.BASE_URL + "/home";
 	});
 }
 

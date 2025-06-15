@@ -8,6 +8,7 @@
 
 namespace App\Policies;
 
+use App\Constants\PhotoAlbum as PA;
 use App\Contracts\Exceptions\InternalLycheeException;
 use App\Eloquent\FixedQueryBuilder;
 use App\Exceptions\Internal\InvalidQueryModelException;
@@ -16,6 +17,7 @@ use App\Models\Album;
 use App\Models\Photo;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as BaseBuilder;
+use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\Auth;
 
 class PhotoQueryPolicy
@@ -206,7 +208,7 @@ class PhotoQueryPolicy
 			//      root album, they must only see their own photos or public
 			//      photos (this is different to any other album: if users are
 			//      allowed to access an album, they may also see its content)
-			$query->whereNotNull('photos.album_id');
+			// $query->whereNotNull(PA::ALBUM_ID);
 
 			if ($user_id !== null) {
 				$query->orWhere('photos.owner_id', '=', $user_id);
@@ -261,7 +263,7 @@ class PhotoQueryPolicy
 			//      allowed to access an album, they may also see its content)
 			$query->orWhere(
 				fn ($q) => $q
-					->whereNull('photos.album_id')
+					->whereNull(PA::ALBUM_ID)
 					->where('photos.owner_id', '=', $user_id)
 			);
 		} catch (\Throwable $e) {
@@ -283,7 +285,8 @@ class PhotoQueryPolicy
 	private function prepareModelQueryOrFail(FixedQueryBuilder $query, bool $add_albums, bool $add_base_albums): void
 	{
 		$model = $query->getModel();
-		$table = $query->getQuery()->from;
+		$base_query = $query->getQuery();
+		$table = $base_query->from;
 		if (!($model instanceof Photo && $table === 'photos')) {
 			throw new InvalidQueryModelException('photo');
 		}
@@ -292,29 +295,44 @@ class PhotoQueryPolicy
 		// if no specific columns are yet set.
 		// Otherwise, we cannot add a JOIN clause below
 		// without accidentally adding all columns of the join, too.
-		$base_query = $query->getQuery();
+
 		if ($base_query->columns === null || count($base_query->columns) === 0) {
 			$query->select(['photos.*']);
 		}
+
+		/** @var array<int,JoinClause> $joins */
+		$joins = $base_query->joins ?? [];
+
+		// Check if the photo album is already joined
+		$is_photo_album_joined = array_reduce($joins, fn (bool $is_photo_album_joined, JoinClause $join) => $is_photo_album_joined || PA::isJoinedToPhoto($join), false);
+
+		if (!$is_photo_album_joined) {
+			$query->leftJoin(
+				table: PA::PHOTO_ALBUM,
+				first: 'photos.id',
+				operator: '=',
+				second: PA::PHOTO_ID);
+		}
+
 		if ($add_albums) {
 			$query->leftJoin(
 				table: 'albums',
 				first: 'albums.id',
 				operator: '=',
-				second: 'photos.album_id');
+				second: PA::ALBUM_ID);
 		}
 		if ($add_base_albums) {
 			$query->leftJoin(
 				table: 'base_albums',
 				first: 'base_albums.id',
 				operator: '=',
-				second: 'photos.album_id');
+				second: PA::ALBUM_ID);
 		}
 
 		// Necessary to apply the visibiliy/search conditions
 		$this->album_query_policy->joinSubComputedAccessPermissions(
 			query: $query,
-			second: 'photos.album_id'
+			second: PA::ALBUM_ID
 		);
 	}
 }
