@@ -130,6 +130,7 @@ const { user, left_menu_open, initData, openLycheeAbout, canSeeAdmin, load, item
 	leftMenuState,
 	authStore,
 	favouritesStore,
+	route,
 );
 
 function logout() {
