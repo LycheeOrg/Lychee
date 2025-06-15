@@ -51,6 +51,7 @@ class ConfigIntegrity
 		'enable_colour_extractions',
 		'colour_extraction_driver',
 		'flow_strategy',
+		'flow_compact_mode_enabled',
 		'flow_include_sub_albums',
 		'flow_include_photos_from_children',
 		'flow_open_album_on_click',

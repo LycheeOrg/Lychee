@@ -25,6 +25,9 @@ class FlowInitTest extends BaseApiWithDataTest
 {
 	public function testGetAnonymous(): void
 	{
+		Configs::set('flow_public', false);
+		Configs::invalidateCache();
+
 		$response = $this->getJson('Flow::init');
 		$this->assertOk($response);
 		$response->assertJson([
