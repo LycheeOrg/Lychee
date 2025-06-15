@@ -1,17 +1,12 @@
 <template>
-	<Fieldset
-		:legend="$t('settings.cssjs.header')"
-		class="border-b-0 border-r-0 rounded-r-none rounded-b-none"
-		:toggleable="false"
-		:collapsed="false"
-	>
+	<Fieldset :legend="$t('settings.cssjs.header')" :toggleable="false" :collapsed="false">
 		<div class="flex flex-col gap-4">
 			<div>
-				<Textarea v-model="css" class="w-full h-48" rows="10" cols="30" />
+				<Textarea v-model="css" class="w-full h-48" :rows="10" :cols="30" />
 				<Button severity="primary" class="w-full border-none font-bold" @click="saveCss">{{ $t("settings.cssjs.change_css") }}</Button>
 			</div>
 			<div>
-				<Textarea v-model="js" class="w-full h-48" rows="10" cols="30" />
+				<Textarea v-model="js" class="w-full h-48" :rows="10" :cols="30" />
 				<Button severity="primary" class="w-full border-none font-bold" @click="saveJs">{{ $t("settings.cssjs.change_js") }}</Button>
 			</div>
 		</div>
@@ -25,7 +20,7 @@ import { onMounted } from "vue";
 import { ref } from "vue";
 import Textarea from "../forms/basic/Textarea.vue";
 import Button from "primevue/button";
-import Fieldset from "primevue/fieldset";
+import Fieldset from "../forms/basic/Fieldset.vue";
 
 const toast = useToast();
 

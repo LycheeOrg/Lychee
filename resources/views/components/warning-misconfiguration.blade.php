@@ -1,4 +1,4 @@
-<div class="hidden" style="font-size: 24px; height: 100vh;">
+<div class="hidden" style="font-size: 24px; height: 100vh;" dir="ltr">
 	<h1>If you can read me, it means that you misconfigured Lychee.</h1>
 	<p style="font-size: 20px;">Please check that:
 	<ul>

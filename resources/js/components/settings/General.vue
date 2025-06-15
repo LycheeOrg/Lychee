@@ -1,5 +1,5 @@
 <template>
-	<Fieldset :legend="$t('settings.system.header')" class="border-b-0 border-r-0 rounded-r-none rounded-b-none">
+	<Fieldset :legend="$t('settings.system.header')">
 		<div class="flex flex-col gap-4 mb-8">
 			<BoolField
 				v-if="dark_mode_enabled !== undefined"
@@ -22,7 +22,7 @@
 			/>
 		</div>
 	</Fieldset>
-	<Fieldset class="border-b-0 border-r-0 rounded-r-none rounded-b-none" v-if="!is_se_enabled && !is_se_info_hidden">
+	<Fieldset v-if="!is_se_enabled && !is_se_info_hidden">
 		<template #legend>
 			<div class="font-bold" v-html="$t('settings.lychee_se.header')" />
 		</template>
@@ -54,13 +54,13 @@
 			<label for="disable_se_call_for_actions">{{ $t("settings.lychee_se.hide_call4action") }}</label>
 			<ToggleSwitch id="disable_se_call_for_actions" v-model="disable_se_call_for_actions" class="text-sm" @update:model-value="saveHideC4A" />
 			<span class="mt-1 w-full text-muted-color"
-				><i class="pi pi-exclamation-triangle text-orange-500 mr-2" />{{ $t("settings.lychee_se.hide_warning") }}</span
+				><i class="pi pi-exclamation-triangle text-orange-500 ltr:mr-2 rtl:ml-2" />{{ $t("settings.lychee_se.hide_warning") }}</span
 			>
 		</p>
 	</Fieldset>
 	<Fieldset
 		:legend="$t('settings.dropbox.header')"
-		class="border-b-0 border-r-0 rounded-r-none rounded-b-none"
+		class="border-b-0 ltr:border-r-0 ltr:rounded-r-none rtl:border-l-0 rtl:rounded-l-none rounded-b-none"
 		:toggleable="true"
 		:collapsed="true"
 	>
@@ -80,7 +80,7 @@
 			}}</Button>
 		</div>
 	</Fieldset>
-	<Fieldset :legend="$t('settings.gallery.header')" class="border-b-0 border-r-0 rounded-r-none rounded-b-none">
+	<Fieldset :legend="$t('settings.gallery.header')">
 		<div class="flex flex-col mb-6">
 			<!-- ALBUM ORDER -->
 			<SelectOptionsField
@@ -178,7 +178,7 @@
 			</div>
 		</div>
 	</Fieldset>
-	<Fieldset :legend="$t('settings.geolocation.header')" class="border-b-0 border-r-0 rounded-r-none rounded-b-none">
+	<Fieldset :legend="$t('settings.geolocation.header')">
 		<div class="flex flex-col gap-4">
 			<BoolField :label="$t('settings.geolocation.map_display')" v-if="map_display !== undefined" :config="map_display" @filled="save" />
 			<BoolField
@@ -219,7 +219,6 @@
 </template>
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import Fieldset from "primevue/fieldset";
 import FloatLabel from "primevue/floatlabel";
 import Button from "primevue/button";
 import ToggleSwitch from "primevue/toggleswitch";
@@ -247,6 +246,7 @@ import { storeToRefs } from "pinia";
 import InputText from "../forms/basic/InputText.vue";
 import MaintenanceService from "@/services/maintenance-service";
 import { onMounted, watch } from "vue";
+import Fieldset from "@/components/forms/basic/Fieldset.vue";
 
 const toast = useToast();
 

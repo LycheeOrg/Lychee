@@ -1,5 +1,5 @@
 <template>
-	<Drawer v-model:visible="left_menu_open" :pt:content:class="'flex flex-col justify-start gap-10'">
+	<Drawer v-model:visible="left_menu_open" :pt:content:class="'flex flex-col justify-start gap-10'" :position="isLTR() ? 'left' : 'right'">
 		<template #header>
 			<div v-if="user?.id === null && isGallery" class="flex items-center gap-2 text-muted-color hover:text-primary-400 w-full">
 				<RouterLink :to="{ name: 'login' }">
@@ -118,12 +118,14 @@ import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
 import { useLeftMenu } from "@/composables/contextMenus/leftMenu";
 import { onMounted } from "vue";
 import { useFavouriteStore } from "@/stores/FavouriteState";
+import { useLtRorRtL } from "@/utils/Helpers";
 
 const leftMenuState = useLeftMenuStateStore();
 const route = useRoute();
 const authStore = useAuthStore();
 const lycheeStore = useLycheeStateStore();
 const favouritesStore = useFavouriteStore();
+const { isLTR } = useLtRorRtL();
 
 const { user, left_menu_open, initData, openLycheeAbout, canSeeAdmin, load, items, profileItems } = useLeftMenu(
 	lycheeStore,
