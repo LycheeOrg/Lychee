@@ -38,7 +38,7 @@ class FlowTest extends BaseApiWithDataTest
 				[
 					'id' => $this->album4->id,
 					'title' => $this->album4->title,
-				]
+				],
 			],
 			'current_page' => 1,
 			'from' => 1,
@@ -69,7 +69,7 @@ class FlowTest extends BaseApiWithDataTest
 				[
 					'id' => $this->subAlbum4->id,
 					'title' => $this->subAlbum4->title,
-				]
+				],
 			],
 			'current_page' => 1,
 			'from' => 1,
@@ -121,7 +121,7 @@ class FlowTest extends BaseApiWithDataTest
 		$response->assertDontSee($this->tagAlbum1->id);
 		$response->assertDontSee($this->subAlbum2->id);
 	}
-	
+
 	public function testGetUserRoot(): void
 	{
 		Configs::set('flow_include_sub_albums', false);
@@ -187,72 +187,4 @@ class FlowTest extends BaseApiWithDataTest
 		Configs::set('hide_nsfw_in_flow', true);
 		Configs::invalidateCache();
 	}
-
-	// public function testGetUserBase(): void
-	// {
-	// 	Configs::set('flow_base', $this->album1->id);
-	// 	Configs::invalidateCache();
-
-	// 	$response = $this->actingAs($this->userMayUpload1)->getJson('Flow');
-	// 	$this->assertOk($response);
-	// 	$response->assertJson([
-	// 		'albums' => [
-	// 			[
-	// 				'id' => $this->subAlbum1->id,
-	// 				'title' => $this->subAlbum1->title,
-	// 			],
-	// 			[
-	// 				'id' => $this->tagAlbum1->id,
-	// 				'title' => $this->tagAlbum1->title,
-	// 			],
-	// 		],
-	// 		'current_page' => 1,
-	// 		'from' => 1,
-	// 		'last_page' => 1,
-	// 		'per_page' => 10,
-	// 		'to' => 2,
-	// 		'total' => 2,
-	// 	]);
-	// }
-
-
-	// public function testErrors(): void
-	// {
-	// 	$response = $this->getJson('Flow::init');
-	// 	$this->assertUnauthorized($response);
-
-	// 	$response = $this->getJsonWithData('Frame', ['album_id' => null]);
-	// 	$this->assertUnauthorized($response);
-
-	// 	$response = $this->actingAs($this->admin)->getJsonWithData('Frame', ['album_id' => null]);
-	// 	$this->assertInternalServerError($response);
-	// }
-
-	// public function testGet(): void
-	// {
-	// 	$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Frame', ['album_id' => $this->album1->id]);
-	// 	$this->assertOk($response);
-	// 	$response->assertJson([
-	// 		'timeout' => 30,
-	// 	]);
-	// }
-
-	// public function testException(): void
-	// {
-	// 	$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Frame', ['album_id' => null]);
-	// 	$this->assertStatus($response, 500);
-	// 	$response->assertSee('PhotoCollectionEmptyException');
-	// }
-
-	// public function testRandom(): void
-	// {
-	// 	$response = $this->actingAs($this->userMayUpload1)->postJson('Photo::star', [
-	// 		'photo_ids' => [$this->photo1->id],
-	// 		'is_starred' => true,
-	// 	]);
-	// 	$this->assertNoContent($response);
-
-	// 	$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Photo::random', ['album_id' => null]);
-	// 	$this->assertOk($response);
-	// }
 }
