@@ -87,7 +87,8 @@ class SecurePathController extends Controller
 	 */
 	private function signatureHasNotExpired(Request $request)
 	{
-		$expires = $request->query('expires');
+		/** @var int $expires */
+		$expires = intval($request->query('expires'), 10);
 
 		return !($expires !== null && $expires !== '' && Carbon::now()->getTimestamp() > $expires);
 	}
