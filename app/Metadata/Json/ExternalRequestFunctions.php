@@ -78,6 +78,7 @@ class ExternalRequestFunctions implements ExternalRequest
 				$raw_response = $use_cache ? (string) Cache::get($this->url) : '';
 				if ($raw_response === '') {
 					$raw_response = $this->fetchFromServer();
+					// @codeCoverageIgnoreStart
 					Cache::put($this->url, $raw_response, now()->addDays($this->ttl_in_days));
 					Cache::put($this->url . '_age', now(), now()->addDays($this->ttl_in_days));
 				}
@@ -85,7 +86,6 @@ class ExternalRequestFunctions implements ExternalRequest
 			}
 
 			return $this->data;
-			// @codeCoverageIgnoreStart
 		} catch (RequestFailedException $e) {
 			Log::error(__METHOD__ . ':' . __LINE__ . ' ' . $e->getMessage());
 		}
