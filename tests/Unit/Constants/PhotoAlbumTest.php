@@ -27,11 +27,9 @@ class PhotoAlbumTest extends AbstractTestCase
 {
 	public function testPhotoAlbumFalse(): void
 	{
-		/** @disregard */
 		$join_clause = new JoinClause(resolve(Builder::class), 'left', 'photos');
 		self::assertFalse(PhotoAlbum::isJoinedToPhoto($join_clause));
 
-		/** @disregard */
 		$join_clause = new JoinClause(resolve(Builder::class), 'left', PhotoAlbum::PHOTO_ALBUM);
 		self::assertFalse(PhotoAlbum::isJoinedToPhoto($join_clause));
 	}
