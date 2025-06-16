@@ -19,7 +19,7 @@
 namespace Tests\Unit\Constants;
 
 use App\Constants\PhotoAlbum;
-use App\Models\Photo;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Query\JoinClause;
 use Tests\AbstractTestCase;
 
@@ -28,11 +28,11 @@ class PhotoAlbumTest extends AbstractTestCase
 	public function testPhotoAlbumFalse(): void
 	{
 		/** @disregard */
-		$join_clause = new JoinClause(Photo::query(), 'left', 'photos');
+		$join_clause = new JoinClause(resolve(Builder::class), 'left', 'photos');
 		self::assertFalse(PhotoAlbum::isJoinedToPhoto($join_clause));
 
 		/** @disregard */
-		$join_clause = new JoinClause(Photo::query(), 'left', PhotoAlbum::PHOTO_ALBUM);
+		$join_clause = new JoinClause(resolve(Builder::class), 'left', PhotoAlbum::PHOTO_ALBUM);
 		self::assertFalse(PhotoAlbum::isJoinedToPhoto($join_clause));
 	}
 }
