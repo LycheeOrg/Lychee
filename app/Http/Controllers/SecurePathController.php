@@ -62,10 +62,6 @@ class SecurePathController extends Controller
 		}
 
 		$file = Storage::disk(StorageDiskType::LOCAL->value)->path($path);
-		if (!file_exists($file)) {
-			throw new WrongPathException();
-		}
-
 		$valid_path_start = Storage::disk(StorageDiskType::LOCAL->value)->path('');
 		if (!str_starts_with($file, $valid_path_start)) {
 			Log::error('Invalid path for secure path request.', [
@@ -73,6 +69,11 @@ class SecurePathController extends Controller
 				'valid_path_start' => $valid_path_start,
 			]);
 			throw new PathTraversalException('Invalid path for secure path request.');
+		}
+
+		// Do not leak whether the file exists or not before checking for traversal.
+		if (!file_exists($file)) {
+			throw new WrongPathException();
 		}
 
 		return response()->file($file);
