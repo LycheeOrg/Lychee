@@ -82,9 +82,10 @@ class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, H
 			(
 				$this->is_compact ||
 				$this->photo === null ||
-				(DB::table(PA::PHOTO_ALBUM)->where('album_id', $this->album->id)
-					->where('photo_id', $this->photo->id)
-					->count() > 1)
+				(DB::table(PA::PHOTO_ALBUM)
+					->where(PA::ALBUM_ID, $this->album->id)
+					->where(PA::PHOTO_ID, $this->photo->id)
+					->count() > 0)
 			);
 	}
 
