@@ -10,10 +10,11 @@ namespace App\DTO;
 
 use App\Enum\ColumnSortingType;
 use App\Enum\OrderSortingType;
+use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
 #[TypeScript()]
-class SortingCriterion extends ArrayableDTO
+class SortingCriterion extends Data
 {
 	/**
 	 * Sorting criterion.
