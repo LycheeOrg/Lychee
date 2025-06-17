@@ -101,4 +101,15 @@ class SecureImageLinksTest extends BaseApiWithDataTest
 		$this->assertForbidden($response);
 		$response->assertSeeText('Invalid payload');
 	}
+
+	public function testDisabledSecureImageLinkIsForbidden(): void
+	{
+		Configs::set('temporary_image_link_enabled', '0');
+		Configs::set('secure_image_link_enabled', '0');
+		Configs::invalidateCache();
+
+		$broken_url = URL::route('image', ['path' => 'broken_path']);
+		$response = $this->get($broken_url);
+		$this->assertUnauthorized($response);
+	}
 }
