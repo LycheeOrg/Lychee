@@ -40,6 +40,13 @@ class AlbumFactory extends Factory
 		];
 	}
 
+	public function with_title(string $title): Factory
+	{
+		return $this->state([
+			'title' => $title,
+		]);
+	}
+
 	/**
 	 * Defines the parent of the create album.
 	 *
