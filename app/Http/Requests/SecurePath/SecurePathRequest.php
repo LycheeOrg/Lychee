@@ -20,7 +20,7 @@ class SecurePathRequest extends AbstractEmptyRequest
 	{
 		// We make sure that at least secure_image_link is enabled or temporary_image_link is enabled.
 		// This ensures that the path provided by the potential attacker is encrypted with the key of the server or
-		// That it the url is signed.
+		// that the url is signed.
 
 		// This should guarantee that only paths that should be shared are accessible.
 
