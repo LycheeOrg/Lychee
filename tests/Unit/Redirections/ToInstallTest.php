@@ -21,7 +21,7 @@ namespace Tests\Unit\Redirections;
 use App\Http\Redirections\ToInstall;
 use Tests\AbstractTestCase;
 
-class ToInstallTesttractTestCase extends AbstractTestCase
+class ToInstallTest extends AbstractTestCase
 {
 	public function testRedirection(): void
 	{
