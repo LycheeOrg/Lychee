@@ -47,6 +47,5 @@ class AlbumListTest extends BaseApiWithDataTest
 		$album4 = Album::factory()->children_of($album3)->owned_by($this->admin)->with_title('123456789012345678901234567890')->create();
 		$response = $this->actingAs($this->admin)->getJson('Album::getTargetListAlbums?album_ids[]=' . $album4->id);
 		$this->assertOk($response);
-		$response->dd();
 	}
 }
