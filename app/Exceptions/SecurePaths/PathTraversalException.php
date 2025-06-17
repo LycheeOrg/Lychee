@@ -6,8 +6,9 @@
  * Copyright (c) 2018-2025 LycheeOrg.
  */
 
-namespace App\Exceptions;
+namespace App\Exceptions\SecurePaths;
 
+use App\Exceptions\BaseLycheeException;
 use Symfony\Component\HttpFoundation\Response;
 
 /**

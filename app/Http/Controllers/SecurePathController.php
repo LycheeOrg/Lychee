@@ -9,9 +9,9 @@
 namespace App\Http\Controllers;
 
 use App\Enum\StorageDiskType;
-use App\Exceptions\PathTraversalException;
 use App\Exceptions\SecurePaths\InvalidPayloadException;
 use App\Exceptions\SecurePaths\InvalidSignatureException;
+use App\Exceptions\SecurePaths\PathTraversalException;
 use App\Exceptions\SecurePaths\SignatureExpiredException;
 use App\Exceptions\SecurePaths\WrongPathException;
 use App\Http\Requests\SecurePath\SecurePathRequest;
@@ -41,6 +41,7 @@ class SecurePathController extends Controller
 		}
 
 		// Then we verify that the request has a valid signature.
+		// @phpstan-ignore staticMethod.dynamicCall (laravel magic strikes again)
 		if (!self::shouldNotUseSignedUrl() && !$request->hasValidSignature()) {
 			Log::error('Invalid signature for secure path request. Verify that the url generated for the image match.', [
 				'candidate url' => $this->getUrl($request),
