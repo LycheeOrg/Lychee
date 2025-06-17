@@ -10,6 +10,7 @@ namespace App\Actions\Diagnostics;
 
 use App\Actions\Diagnostics\Pipes\Checks\AdminUserExistsCheck;
 use App\Actions\Diagnostics\Pipes\Checks\AppUrlMatchCheck;
+use App\Actions\Diagnostics\Pipes\Checks\AuthDisabledCheck;
 use App\Actions\Diagnostics\Pipes\Checks\BasicPermissionCheck;
 use App\Actions\Diagnostics\Pipes\Checks\CachePasswordCheck;
 use App\Actions\Diagnostics\Pipes\Checks\CacheTemporaryUrlCheck;
@@ -44,6 +45,7 @@ class Errors
 	 */
 	private array $pipes = [
 		AdminUserExistsCheck::class,
+		AuthDisabledCheck::class,
 		BasicPermissionCheck::class,
 		ConfigSanityCheck::class,
 		DBSupportCheck::class,
