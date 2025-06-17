@@ -22,7 +22,7 @@ class SecurePathRequest extends AbstractEmptyRequest
 		// This ensures that the path provided by the potential attacker is encrypted with the key of the server or
 		// That it the url is signed.
 
-		// These two options options should guarantee that the path only under control of the owner of the server (hopefully).
+		// This should guarantee that only paths that should be shared are accessible.
 
 		return Configs::getValueAsBool('secure_image_link_enabled') ||
 			Configs::getValueAsBool('temporary_image_link_enabled');
