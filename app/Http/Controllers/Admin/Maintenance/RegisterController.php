@@ -36,7 +36,8 @@ class RegisterController extends Controller
 		$verify = resolve(Verify::class);
 		$is_supporter = $verify->is_supporter();
 		if ($is_supporter) {
-			// @codeCoverageIgnoreStart Tested locally, not testable in CICD.
+			// @codeCoverageIgnoreStart
+			// Tested locally, not testable in CICD.
 			return new RegisterData(true);
 			// @codeCoverageIgnoreEnd
 		}

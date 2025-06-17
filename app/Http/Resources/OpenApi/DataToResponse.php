@@ -71,7 +71,9 @@ class DataToResponse extends TypeToSchemaExtension
 	private function convertReflected(\ReflectionNamedType|\ReflectionUnionType|\ReflectionType|null $type): Type
 	{
 		if ($type === null) {
+			// @codeCoverageIgnoreStart
 			return new NullType();
+			// @codeCoverageIgnoreEnd
 		}
 
 		if ($type instanceof \ReflectionUnionType) {
@@ -79,11 +81,15 @@ class DataToResponse extends TypeToSchemaExtension
 		}
 
 		if ($type instanceof \ReflectionIntersectionType) {
+			// @codeCoverageIgnoreStart
 			throw new LycheeLogicException('Intersection types are not supported.');
+			// @codeCoverageIgnoreEnd
 		}
 
 		if (!$type instanceof \ReflectionNamedType) {
+			// @codeCoverageIgnoreStart
 			throw new LycheeLogicException('Unexpected reflection type.');
+			// @codeCoverageIgnoreEnd
 		}
 
 		$name = $type->getName();
@@ -92,7 +98,9 @@ class DataToResponse extends TypeToSchemaExtension
 		}
 
 		return match ($name) {
+			// @codeCoverageIgnoreStart
 			'Spatie\LaravelData\Data' => throw new LycheeLogicException('Spatie\LaravelData\Data should not be used as return type.'),
+			// @codeCoverageIgnoreEnd
 			'Illuminate\Support\Collection' => new ArrayType(), // refactor me later.
 			default => new ObjectType($name),
 		};
