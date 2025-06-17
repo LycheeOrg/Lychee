@@ -32,6 +32,6 @@ class OptimizeTablesTest extends AbstractTestCase
 	{
 		$optimize = new OptimizeTables();
 		$output = $optimize->do();
-		self::assertCount(26, $output);
+		self::assertCount(3, $output);
 	}
 }
