@@ -77,6 +77,9 @@ class ExtractColoursJobTest extends BaseApiWithDataTest
 			$this->fail('Palette not found for the photo.');
 		}
 		$palette->delete();
+
+		$response = $this->actingAs($this->admin)->getJson('Jobs');
+		$this->assertOk($response);
 	}
 
 	public function testExtractColoursLeague(): void

@@ -21,6 +21,7 @@ namespace Tests\Feature_v2\Base;
 use App\Enum\UserGroupRole;
 use App\Models\AccessPermission;
 use App\Models\Album;
+use App\Models\Palette;
 use App\Models\Photo;
 use App\Models\TagAlbum;
 use App\Models\User;
@@ -59,6 +60,8 @@ abstract class BaseApiWithDataTest extends BaseApiTest
 	protected Photo $photo1b;
 	protected Photo $subPhoto1;
 	protected Photo $photoUnsorted;
+
+	protected Palette $palette1;
 
 	// album 2 belongs to userMayUpload2
 	protected Album $album2;
