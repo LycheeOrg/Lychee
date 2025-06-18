@@ -214,16 +214,6 @@ trait ForwardsToParentImplementation
 	}
 
 	/**
-	 * Convert the model instance to an array.
-	 *
-	 * @return array<string,mixed>
-	 */
-	public function toArray(): array
-	{
-		return array_merge(parent::toArray(), $this->base_class->toArray());
-	}
-
-	/**
 	 * Get an attribute from the model.
 	 *
 	 * This method is heavily inspired by
