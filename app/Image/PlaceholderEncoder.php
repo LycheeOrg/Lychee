@@ -62,6 +62,7 @@ class PlaceholderEncoder
 
 			// delete original file since we now have no reference to it
 			$original_file->delete();
+			// @codeCoverageIgnoreStart
 		} catch (MediaFileOperationException $e) {
 			// Log the error, delete the size variant and continue with the next placeholder
 			Log::error($e->getMessage(), [$e]);
@@ -69,6 +70,7 @@ class PlaceholderEncoder
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException('Failed to encode placeholder to base64', $e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -163,7 +165,9 @@ class PlaceholderEncoder
 			$size_variant->short_path = stream_get_contents($file->read());
 			$size_variant->save();
 		} else {
+			// @codeCoverageIgnoreStart
 			throw new MediaFileOperationException('Encoded image is too large.');
+			// @codeCoverageIgnoreEnd
 		}
 	}
 }

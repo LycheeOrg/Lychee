@@ -105,9 +105,11 @@ class DownloadedFile extends TemporaryLocalFile
 
 			fclose($temp);
 			throw new MediaFileUnsupportedException(MediaFileUnsupportedException::DEFAULT_MESSAGE . ' (bad file type: ' . $original_mime_type . ')');
+			// @codeCoverageIgnoreStart
 		} catch (\ErrorException|PcreException $e) {
 			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**

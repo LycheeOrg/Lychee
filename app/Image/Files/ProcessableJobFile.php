@@ -50,7 +50,9 @@ class ProcessableJobFile extends NativeLocalFile
 		$temp_dir_path = Storage::disk(FileSystem::IMAGE_JOBS)->path('');
 
 		if (!file_exists($temp_dir_path)) {
+			// @codeCoverageIgnoreStart
 			mkdir($temp_dir_path);
+			// @codeCoverageIgnoreEnd
 		}
 
 		return $temp_dir_path;
