@@ -50,13 +50,17 @@ class TemporaryJobFile extends NativeLocalFile
 				$retry_counter--;
 				// We open wih c+b because the file already exists (from ProcessableJobFile)
 				$this->stream = fopen($temp_file_path, 'c+b');
+				// @codeCoverageIgnoreStart
 			} catch (\ErrorException|\Exception $e) {
 				$temp_file_path = null;
 				$last_exception = $e;
 			}
+			// @codeCoverageIgnoreEnd
 		} while ($temp_file_path === null && $retry_counter > 0);
 		if ($temp_file_path === null) {
+			// @codeCoverageIgnoreStart
 			throw new MediaFileOperationException('unable to create temporary file', $last_exception);
+			// @codeCoverageIgnoreEnd
 		}
 		parent::__construct($temp_file_path);
 		$this->fakeBaseName = $fake_base_name;

@@ -67,7 +67,7 @@ class DownloadedFile extends TemporaryLocalFile
 			// In all other cases we try to guess the file type.
 			// File extension > Content-Type > Inferred MIME type
 
-			if (self::isSupportedOrAcceptedFileExtension($extension)) {
+			if ($extension !== '.' && self::isSupportedOrAcceptedFileExtension($extension)) {
 				parent::__construct($extension, $basename);
 				$this->originalMimeType = $original_mime_type;
 				$this->write($download_stream);
@@ -75,8 +75,7 @@ class DownloadedFile extends TemporaryLocalFile
 
 				return;
 			}
-
-			if (self::isSupportedMimeType($original_mime_type)) {
+			if ($original_mime_type !== null && self::isSupportedMimeType($original_mime_type)) {
 				$extension = self::getDefaultFileExtensionForMimeType($original_mime_type);
 				parent::__construct($extension, $basename);
 				$this->originalMimeType = $original_mime_type;

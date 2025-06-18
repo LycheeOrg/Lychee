@@ -51,7 +51,9 @@ class ImageFactoryForColourExtraction
 	public static function createGdResourceFromFile(FlysystemFile $file): \GdImage
 	{
 		if (!extension_loaded('gd')) {
+			// @codeCoverageIgnoreStart
 			throw new \RuntimeException('GD extension is not available');
+			// @codeCoverageIgnoreEnd
 		}
 
 		try {
@@ -69,8 +71,8 @@ class ImageFactoryForColourExtraction
 			}
 
 			return $img;
-		} catch (\ErrorException $e) {
 			// @codeCoverageIgnoreStart
+		} catch (\ErrorException $e) {
 			throw new \InvalidArgumentException('Failed to create GD image resource');
 			// @codeCoverageIgnoreEnd
 		} finally {
@@ -106,12 +108,14 @@ class ImageFactoryForColourExtraction
 
 			// If the file is a PDF and the user has chosen to support PDF files then try to create an image from the first page
 			if ($file->getExtension() === '.pdf' && BaseMediaFile::isSupportedOrAcceptedFileExtension($file->getExtension())) {
+				// @codeCoverageIgnoreStart
 				$image->setIteratorIndex(0);
+				// @codeCoverageIgnoreEnd
 			}
 
 			return new ImagickImage($image);
-		} catch (\ImagickException $e) {
 			// @codeCoverageIgnoreStart
+		} catch (\ImagickException $e) {
 			throw new MediaFileOperationException('Failed to load image', $e);
 			// @codeCoverageIgnoreEnd
 		} finally {

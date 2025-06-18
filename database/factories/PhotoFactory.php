@@ -24,7 +24,6 @@ class PhotoFactory extends Factory
 	use OwnedBy;
 
 	private bool $with_size_variants = true;
-	private bool $with_palette = false;
 
 	/**
 	 * The name of the factory's corresponding model.
@@ -80,7 +79,16 @@ class PhotoFactory extends Factory
 
 	public function with_palette(): Factory
 	{
-		$this->with_palette = true;
+		return $this->afterCreating(function (Photo $photo) {
+			Palette::factory()->with_colour_1(0xFF0000)
+				->with_colour_2(0x00FF00)
+				->with_colour_3(0x0000FF)
+				->with_colour_4(0xFFFF00)
+				->with_colour_5(0xFF00FF)
+				->create(['photo_id' => $photo->id]);
+			$photo->fresh();
+			$photo->load('palette');
+		});
 
 		return $this;
 	}
@@ -177,16 +185,6 @@ class PhotoFactory extends Factory
 		return $this->afterCreating(function (Photo $photo) {
 			Statistics::factory()->with_photo($photo->id)->create();
 			$photo->fresh();
-
-			if ($this->with_palette) {
-				Palette::factory()->with_color_1(0xFF0000)
-					->with_colour_2(0x00FF00)
-					->with_colour_3(0x0000FF)
-					->with_colour_4(0xFFFF00)
-					->with_colour_5(0xFF00FF)
-					->create(['photo_id' => $photo->id]);
-				$photo->load('palette');
-			}
 
 			// Creates the size variants
 			if ($this->with_size_variants) {

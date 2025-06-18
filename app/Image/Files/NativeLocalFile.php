@@ -57,9 +57,11 @@ class NativeLocalFile extends BaseMediaFile
 			}
 
 			return $this->stream;
+			// @codeCoverageIgnoreStart
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -94,9 +96,11 @@ class NativeLocalFile extends BaseMediaFile
 			clearstatcache(true, $this->getPath());
 
 			return $stream_stat;
+			// @codeCoverageIgnoreStart
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -127,9 +131,11 @@ class NativeLocalFile extends BaseMediaFile
 			clearstatcache(true, $this->getPath());
 
 			return $stream_stat;
+			// @codeCoverageIgnoreStart
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -157,9 +163,11 @@ class NativeLocalFile extends BaseMediaFile
 		try {
 			rename($this->path, $new_path);
 			$this->path = $new_path;
+			// @codeCoverageIgnoreStart
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -173,9 +181,11 @@ class NativeLocalFile extends BaseMediaFile
 	{
 		try {
 			return is_file(realpath($this->path));
+			// @codeCoverageIgnoreStart
 		} catch (\ErrorException) {
 			return false;
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -222,9 +232,11 @@ class NativeLocalFile extends BaseMediaFile
 	{
 		try {
 			return realpath($this->path);
+			// @codeCoverageIgnoreStart
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -260,9 +272,11 @@ class NativeLocalFile extends BaseMediaFile
 			}
 
 			return $this->cachedMimeType;
+			// @codeCoverageIgnoreStart
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
