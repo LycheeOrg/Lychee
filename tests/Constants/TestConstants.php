@@ -24,8 +24,8 @@ class TestConstants
 
 	public const SAMPLE_DOWNLOAD_JPG = 'https://lycheeorg.dev/test_data/mongolia.jpeg';
 	public const SAMPLE_DOWNLOAD_JPG_WITHOUT_EXTENSION = 'https://lycheeorg.dev/test_data/mongolia';
-	public const SAMPLE_DOWNLOAD_TIFF = 'https://lycheeorg.dev/test_data/tiff.tif';
-	public const SAMPLE_DOWNLOAD_TIFF_WITHOUT_EXTENSION = 'https://lycheeorg.dev/test_data/tiff';
+	// public const SAMPLE_DOWNLOAD_TIFF = 'https://lycheeorg.dev/test_data/tiff.tif';
+	// public const SAMPLE_DOWNLOAD_TIFF_WITHOUT_EXTENSION = 'https://lycheeorg.dev/test_data/tiff';
 
 	public const SAMPLE_FILE_AARHUS = 'tests/Samples/aarhus.jpg';
 	public const SAMPLE_FILE_ETTLINGEN = 'tests/Samples/ettlinger-alb.jpg';
