@@ -60,15 +60,17 @@ class Colour extends Model
 
 		$id = hexdec($hex); // Use the hex value as the ID
 
-		$colour = Colour::updateOrCreate([
-			'id' => $id,
-		],
+		$colour = Colour::updateOrCreate(
+			[
+				'id' => $id,
+			],
 			[
 				'id' => $id,
 				'R' => hexdec(substr($hex, 0, 2)),
 				'G' => hexdec(substr($hex, 2, 2)),
 				'B' => hexdec(substr($hex, 4, 2)),
-			]);
+			]
+		);
 		// Work around for MySQL id set up...
 		DB::table('colours')->where('id', $colour->id)->update(['id' => $id]);
 
