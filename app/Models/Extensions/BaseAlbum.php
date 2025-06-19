@@ -38,6 +38,7 @@ use Illuminate\Support\Carbon;
  * @property string                           $title
  * @property Carbon                           $created_at
  * @property Carbon                           $updated_at
+ * @property Carbon|null                      $published_at
  * @property string|null                      $description
  * @property bool                             $is_nsfw
  * @property string|null                      $copyright

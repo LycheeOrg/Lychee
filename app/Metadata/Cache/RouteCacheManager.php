@@ -14,6 +14,7 @@ use App\Facades\Helpers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Route;
 
 final readonly class RouteCacheManager
 {
@@ -41,6 +42,8 @@ final readonly class RouteCacheManager
 			'api/v2/Auth::config' => new RouteCacheConfig(tag: CacheTag::SETTINGS, user_dependant: true),
 			'api/v2/Auth::rights' => new RouteCacheConfig(tag: CacheTag::SETTINGS, user_dependant: true),
 			'api/v2/Auth::user' => new RouteCacheConfig(tag: CacheTag::USER, user_dependant: true),
+			'api/v2/Flow' => false,
+			'api/v2/Flow::init' => new RouteCacheConfig(tag: CacheTag::SETTINGS),
 
 			// We do not want to cache diagnostics errors and config as they are a debugging tool. The MUST represent the state of Lychee at any time.
 			'api/v2/Diagnostics' => false,

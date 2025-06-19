@@ -61,6 +61,7 @@ use Kalnoy\Nestedset\NodeTrait;
  * @property int                      $_rgt
  * @property BaseAlbumImpl            $base_class
  * @property User|null                $owner
+ * @property bool                     $is_recursive_nsfw        /!\ This attribute is not loaded by default.
  *
  * @method static AlbumBuilder|Album query()                       Begin querying the model.
  * @method static AlbumBuilder|Album with(array|string $relations) Begin querying the model with eager loading.
@@ -175,6 +176,7 @@ class Album extends BaseAlbum implements Node
 		'max_taken_at' => 'datetime',
 		'num_children' => 'integer',
 		'num_photos' => 'integer',
+		'is_recursive_nsfw' => 'boolean',
 		'album_thumb_aspect_ratio' => AspectRatioType::class,
 		'album_timeline' => TimelineAlbumGranularity::class,
 		'_lft' => 'integer',
