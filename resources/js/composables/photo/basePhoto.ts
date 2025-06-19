@@ -13,13 +13,13 @@ export enum ImageViewMode {
 
 export function usePhotoBaseFunction(
 	photo: Ref<App.Http.Resources.Models.PhotoResource | undefined>,
-	photos: Ref<App.Http.Resources.Models.PhotoResource[]>,
-	videoElement: Ref<HTMLVideoElement | null>,
+	photos: Ref<App.Http.Resources.Models.PhotoResource[]> | undefined = undefined,
+	videoElement: Ref<HTMLVideoElement | null> | undefined = undefined,
 ) {
 	const { hasNext, hasPrevious } = useHasNextPreviousPhoto(photo);
 
 	const previousStyle = computed(() => {
-		if (!hasPrevious()) {
+		if (!hasPrevious() || photos === undefined) {
 			return "";
 		}
 
@@ -32,7 +32,7 @@ export function usePhotoBaseFunction(
 	});
 
 	const nextStyle = computed(() => {
-		if (!hasNext()) {
+		if (!hasNext() || photos === undefined) {
 			return "";
 		}
 
@@ -96,7 +96,9 @@ export function usePhotoBaseFunction(
 	});
 
 	function refresh(): void {
-		// photo.value = photos.value.find((p: App.Http.Resources.Models.PhotoResource) => p.id === photoId.value);
+		if (videoElement === undefined) {
+			return;
+		}
 
 		// handle videos.
 		const videoElementValue = videoElement.value;

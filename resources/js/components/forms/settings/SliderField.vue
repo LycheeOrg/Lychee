@@ -29,6 +29,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import SelectButton from "primevue/selectbutton";
+import InputIcon from "primevue/inputicon";
 
 const props = defineProps<{
 	label?: string;
