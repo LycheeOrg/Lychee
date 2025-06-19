@@ -6,6 +6,7 @@ import { LeftMenuStateStore } from "@/stores/LeftMenuState";
 import { LycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import { computed, ref } from "vue";
+import { RouteLocationNormalizedLoadedGeneric } from "vue-router";
 
 export type MenyType =
 	| {
@@ -23,7 +24,13 @@ export type MenyType =
 			items: MenyType[];
 	  };
 
-export function useLeftMenu(lycheeStore: LycheeStateStore, LeftMenuStateStore: LeftMenuStateStore, authStore: AuthStore, favourites: FavouriteStore) {
+export function useLeftMenu(
+	lycheeStore: LycheeStateStore,
+	LeftMenuStateStore: LeftMenuStateStore,
+	authStore: AuthStore,
+	favourites: FavouriteStore,
+	route: RouteLocationNormalizedLoadedGeneric,
+) {
 	const { user } = storeToRefs(authStore);
 
 	const { initData, left_menu_open } = storeToRefs(LeftMenuStateStore);
@@ -54,6 +61,18 @@ export function useLeftMenu(lycheeStore: LycheeStateStore, LeftMenuStateStore: L
 		}
 
 		const baseMenu = [
+			{
+				label: "gallery.title",
+				icon: "pi pi-images",
+				access: !(route.name as string).startsWith("gallery") && user.value?.id === null,
+				route: "/gallery",
+			},
+			{
+				label: "flow.title",
+				icon: "pi pi-arrows-v",
+				access: !(route.name as string).startsWith("flow") && (initData.value.modules.is_mod_flow_enabled ?? false),
+				route: "/flow",
+			},
 			{
 				label: "left-menu.frame",
 				icon: "pi pi-desktop",
