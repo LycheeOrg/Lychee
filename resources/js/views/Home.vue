@@ -12,6 +12,8 @@ lycheeStore.init().then(() => {
 	if (lycheeStore.default_homepage === "gallery") {
 		router.push({ name: "gallery" });
 		// Insert other pages here later (feed or others...)
+	} else if (lycheeStore.default_homepage === "flow") {
+		router.push({ name: "flow" });
 	} else {
 		// Default
 		router.push({ name: "gallery" });
