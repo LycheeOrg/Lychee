@@ -13,7 +13,7 @@
 
 - In Requests, if a user is provided by the query it is placed in the $this->user2.
 - In Requests, $this->user is reserved for the user making the request.
-- The Resource classes should extends from Spatie Data instead of JsonResource.
+- The Resource classes should extend from Spatie Data instead of JsonResource.
 - We do not use blade view, we use Vue3 instead.
 
 # Conventions for Vue3
