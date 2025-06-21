@@ -1,0 +1,23 @@
+
+services:
+  # Label used to access the service container
+  postgres:
+    # Docker Hub image
+    image: postgres
+    # Provide the password for postgres
+    environment:
+      # PGUSER: user
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: user
+      POSTGRES_DB: lychee
+
+    ports:
+      # Maps tcp port 5432 on service container to the host
+      - 5432:5432
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data 
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-U", "user"]
+      interval: 1s
+      timeout: 5s
+      retries: 10
