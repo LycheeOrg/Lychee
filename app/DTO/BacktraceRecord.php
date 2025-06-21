@@ -10,10 +10,7 @@ namespace App\DTO;
 
 use Illuminate\Support\Str;
 
-/**
- * @extends AbstractDTO<string>
- */
-class BacktraceRecord extends AbstractDTO
+class BacktraceRecord
 {
 	public const UNKNOWN_PLACEHOLDER = '<unknown>';
 	public const NAMESPACE_SEPARATOR = '::';
@@ -151,17 +148,5 @@ class BacktraceRecord extends AbstractDTO
 	public function getMethodBeautified(): string
 	{
 		return $this->class . self::NAMESPACE_SEPARATOR . $this->getFunctionBeautified();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function toArray(): array
-	{
-		return [
-			'file' => $this->getFileBeautified(),
-			'line' => $this->line,
-			'method' => $this->getMethodBeautified(),
-		];
 	}
 }

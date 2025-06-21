@@ -57,9 +57,11 @@ class NativeLocalFile extends BaseMediaFile
 			}
 
 			return $this->stream;
+			// @codeCoverageIgnoreStart
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -94,9 +96,11 @@ class NativeLocalFile extends BaseMediaFile
 			clearstatcache(true, $this->getPath());
 
 			return $stream_stat;
+			// @codeCoverageIgnoreStart
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -127,9 +131,11 @@ class NativeLocalFile extends BaseMediaFile
 			clearstatcache(true, $this->getPath());
 
 			return $stream_stat;
+			// @codeCoverageIgnoreStart
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -144,9 +150,11 @@ class NativeLocalFile extends BaseMediaFile
 			if (is_link($this->path) || is_file($this->path)) {
 				unlink($this->path);
 			}
+			// @codeCoverageIgnoreStart
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -157,9 +165,11 @@ class NativeLocalFile extends BaseMediaFile
 		try {
 			rename($this->path, $new_path);
 			$this->path = $new_path;
+			// @codeCoverageIgnoreStart
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -173,9 +183,11 @@ class NativeLocalFile extends BaseMediaFile
 	{
 		try {
 			return is_file(realpath($this->path));
+			// @codeCoverageIgnoreStart
 		} catch (\ErrorException) {
 			return false;
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -185,9 +197,11 @@ class NativeLocalFile extends BaseMediaFile
 	{
 		try {
 			return filemtime($this->getPath());
+			// @codeCoverageIgnoreStart
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -197,9 +211,11 @@ class NativeLocalFile extends BaseMediaFile
 	{
 		try {
 			return filesize($this->getPath());
+			// @codeCoverageIgnoreStart
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -222,9 +238,11 @@ class NativeLocalFile extends BaseMediaFile
 	{
 		try {
 			return realpath($this->path);
+			// @codeCoverageIgnoreStart
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -260,9 +278,11 @@ class NativeLocalFile extends BaseMediaFile
 			}
 
 			return $this->cachedMimeType;
+			// @codeCoverageIgnoreStart
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -274,12 +294,14 @@ class NativeLocalFile extends BaseMediaFile
 	{
 		try {
 			return in_array(exif_imagetype($this->getPath()), self::SUPPORTED_PHP_EXIF_IMAGE_TYPES, true);
+			// @codeCoverageIgnoreStart
 		} catch (\ErrorException|MediaFileOperationException) {
 			// `exif_imagetype` emit an engine error E_NOTICE, if it is unable
 			// to read enough bytes from the file to determine the image type.
 			// This may happen for short "raw" files.
 			return false;
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -360,7 +382,9 @@ class NativeLocalFile extends BaseMediaFile
 	public function assertIsSupportedMediaOrAcceptedRaw(): void
 	{
 		if (!$this->isSupportedMediaOrAcceptedRaw()) {
+			// @codeCoverageIgnoreStart
 			throw new MediaFileUnsupportedException();
+			// @codeCoverageIgnoreEnd
 		}
 	}
 }

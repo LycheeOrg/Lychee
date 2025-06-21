@@ -21,6 +21,7 @@ namespace Tests\Feature_v2\Base;
 use App\Enum\UserGroupRole;
 use App\Models\AccessPermission;
 use App\Models\Album;
+use App\Models\Palette;
 use App\Models\Photo;
 use App\Models\TagAlbum;
 use App\Models\User;
@@ -59,6 +60,8 @@ abstract class BaseApiWithDataTest extends BaseApiTest
 	protected Photo $photo1b;
 	protected Photo $subPhoto1;
 	protected Photo $photoUnsorted;
+
+	protected Palette $palette1;
 
 	// album 2 belongs to userMayUpload2
 	protected Album $album2;
@@ -111,7 +114,8 @@ abstract class BaseApiWithDataTest extends BaseApiTest
 		$this->userWithGroupAdmin = User::factory()->with_group($this->group1, UserGroupRole::ADMIN)->create();
 
 		$this->album1 = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
-		$this->photo1 = Photo::factory()->owned_by($this->userMayUpload1)->with_GPS_coordinates()->with_tags('test')->in($this->album1)->create();
+		$this->photo1 = Photo::factory()->owned_by($this->userMayUpload1)->with_GPS_coordinates()->with_tags('test')->with_palette()->in($this->album1)->create();
+		$this->palette1 = $this->photo1->palette;
 		$this->photo1b = Photo::factory()->owned_by($this->userMayUpload1)->with_subGPS_coordinates()->in($this->album1)->create();
 		$this->subAlbum1 = Album::factory()->children_of($this->album1)->owned_by($this->userMayUpload1)->create();
 		$this->subPhoto1 = Photo::factory()->owned_by($this->userMayUpload1)->with_GPS_coordinates()->in($this->subAlbum1)->create();

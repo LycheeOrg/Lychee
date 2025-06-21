@@ -38,14 +38,6 @@ trait HasAbstractAlbumProperties
 	}
 
 	/**
-	 * @return Collection<int,AccessPermission>
-	 */
-	public function get_access_permissions(): Collection
-	{
-		return $this->access_permissions ?? resolve(Collection::class);
-	}
-
-	/**
 	 * @return Collection<int,Photo>
 	 */
 	public function get_photos(): Collection

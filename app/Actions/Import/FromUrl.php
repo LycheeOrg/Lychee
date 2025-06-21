@@ -60,7 +60,6 @@ class FromUrl
 				/** @var string $path */
 				$path = parse_url($url, PHP_URL_PATH);
 				$extension = '.' . pathinfo($path, PATHINFO_EXTENSION);
-
 				if ($extension !== '.') {
 					// Validate photo extension even when `$create->add()` will do later.
 					// This prevents us from downloading unsupported files.

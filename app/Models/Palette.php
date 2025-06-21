@@ -8,6 +8,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -23,6 +24,9 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Palette extends Model
 {
+	/** @phpstan-use HasFactory<\Database\Factories\PaletteFactory> */
+	use HasFactory;
+
 	public $timestamps = false;
 
 	protected $fillable = [
@@ -48,27 +52,5 @@ class Palette extends Model
 		$r = ($colour >> 16) & 0xFF; // Extract the red component
 
 		return sprintf('#%02x%02x%02x', $r, $g, $b);
-	}
-
-	/**
-	 * Convert a hex color string to an integer.
-	 *
-	 * @param string $hex The hex color string (e.g., '#ff0000' or 'ff0000')
-	 *
-	 * @return int The integer representation of the color (0xRRGGBB)
-	 *
-	 * @throws \InvalidArgumentException If the hex format is invalid
-	 */
-	public static function fromHex(string $hex): int
-	{
-		// Remove the '#' character if it exists
-		$hex = ltrim($hex, '#');
-
-		// Ensure the hex string is 6 characters long
-		if (strlen($hex) !== 6) {
-			throw new \InvalidArgumentException('Invalid hex color format.');
-		}
-
-		return hexdec($hex);
 	}
 }

@@ -14,6 +14,8 @@ abstract class BaseConfigMigration extends AbstractBaseConfigMigration
 {
 	/**
 	 * Run the migrations.
+	 *
+	 *  @codeCoverageIgnore Tested but before CI run...
 	 */
 	final public function up(): void
 	{

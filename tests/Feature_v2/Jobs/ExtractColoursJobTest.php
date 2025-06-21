@@ -18,6 +18,7 @@
 
 namespace Tests\Feature_v2\Jobs;
 
+use App\Exceptions\Internal\InvalidConfigOption;
 use App\Jobs\ExtractColoursJob;
 use App\Models\Configs;
 use App\Models\Palette;
@@ -31,6 +32,13 @@ class ExtractColoursJobTest extends BaseApiWithDataTest
 	{
 		parent::setUp();
 		$this->catchFailureSilence = [];
+	}
+
+	public function tearDown(): void
+	{
+		Configs::set('colour_extraction_driver', 'farzai');
+		Configs::invalidateCache();
+		parent::tearDown();
 	}
 
 	public function testExtractColoursFarzaiImagick(): void
@@ -77,6 +85,9 @@ class ExtractColoursJobTest extends BaseApiWithDataTest
 			$this->fail('Palette not found for the photo.');
 		}
 		$palette->delete();
+
+		$response = $this->actingAs($this->admin)->getJson('Jobs');
+		$this->assertOk($response);
 	}
 
 	public function testExtractColoursLeague(): void
@@ -86,5 +97,33 @@ class ExtractColoursJobTest extends BaseApiWithDataTest
 		$this->runExtraction();
 		Configs::set('colour_extraction_driver', 'farzai');
 		Configs::invalidateCache();
+	}
+
+	public function testExtractColourWrongDriver(): void
+	{
+		$this->expectException(InvalidConfigOption::class);
+
+		Configs::set('colour_extraction_driver', 'wrong_driver');
+		Configs::invalidateCache();
+		$job = new ExtractColoursJob($this->photo2);
+		$job->handle();
+	}
+
+	public function testAlreadyExtracted(): void
+	{
+		$job = new ExtractColoursJob($this->photo1);
+		self::assertEquals($this->photo1->id, $job->handle()->id);
+	}
+
+	public function testFailedExtracted(): void
+	{
+		$job = new ExtractColoursJob($this->photo1);
+		$job->failed(new \Exception('oups'));
+	}
+
+	public function testFailedExtracted2(): void
+	{
+		$job = new ExtractColoursJob($this->photo1);
+		$job->failed(new \Exception('oups', 999));
 	}
 }

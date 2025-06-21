@@ -47,13 +47,6 @@ interface AbstractAlbum
 	public function get_title(): string;
 
 	/**
-	 * The full list of access permissions.
-	 *
-	 * @return Collection<int,AccessPermission>
-	 */
-	public function get_access_permissions(): Collection;
-
-	/**
 	 * The full list of photos.
 	 *
 	 * @return Collection<int,Photo>

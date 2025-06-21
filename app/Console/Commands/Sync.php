@@ -110,7 +110,6 @@ class Sync extends Command
 					$resync_metadata
 				),
 				$owner_id,
-				true,
 				0
 			);
 

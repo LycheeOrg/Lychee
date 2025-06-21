@@ -21,33 +21,18 @@ namespace App\DTO;
  * Hence, errors cannot be reported using the normal exception handling
  * mechanism, but must be reported "inline" within the streamed response
  * as an event report.
- *
- * @extends AbstractDTO<string>
  */
-abstract class BaseImportReport extends AbstractDTO
+abstract class BaseImportReport
 {
 	/**
 	 * Indicates the type (i.e. the subclass) of this class.
 	 * This information is required by the front-end to correctly cast
 	 * the response into the correct type.
 	 *
-	 * @var string
+	 * @param string $type
 	 */
-	protected string $type;
-
-	protected function __construct(string $type)
+	protected function __construct(protected string $type)
 	{
-		$this->type = $type;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function toArray(): array
-	{
-		return [
-			'type' => $this->type,
-		];
 	}
 
 	/**
