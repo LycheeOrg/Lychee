@@ -120,12 +120,16 @@ import InputGroupAddon from "primevue/inputgroupaddon";
 import { useToast } from "primevue/usetoast";
 import Checkbox from "primevue/checkbox";
 import { sprintf } from "sprintf-js";
+import { useRouter } from "vue-router";
+import { usePhotoRoute } from "@/composables/photo/photoRoute";
 
 const props = defineProps<{
 	photo: App.Http.Resources.Models.PhotoResource;
 }>();
 
 const toast = useToast();
+const router = useRouter();
+const { getParentId } = usePhotoRoute(router);
 const isEditOpen = defineModel("isEditOpen", { default: false }) as Ref<boolean>;
 
 const photo_id = ref<string | undefined>(undefined);
@@ -172,7 +176,7 @@ function save() {
 		takenDate = takenAtDate.value.toISOString().slice(0, 19) + (takenAtTz.value ?? "");
 	}
 
-	PhotoService.update(photo_id.value, {
+	PhotoService.update(photo_id.value, getParentId() ?? null, {
 		title: title.value,
 		description: description.value ?? "",
 		tags: tags.value ?? [],

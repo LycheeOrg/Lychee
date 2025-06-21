@@ -29,6 +29,7 @@ use App\Http\Requests\Traits\HasTitleTrait;
 use App\Http\Requests\Traits\HasUploadDateTrait;
 use App\Models\Photo;
 use App\Policies\PhotoPolicy;
+use App\Rules\AlbumIDRule;
 use App\Rules\DescriptionRule;
 use App\Rules\RandomIDRule;
 use App\Rules\TitleRule;
@@ -69,7 +70,7 @@ class EditPhotoRequest extends BaseApiRequest implements HasPhoto, HasTags, HasU
 			RequestAttribute::LICENSE_ATTRIBUTE => ['required', new Enum(LicenseType::class)],
 			RequestAttribute::UPLOAD_DATE_ATTRIBUTE => ['required', 'date'],
 			RequestAttribute::TAKEN_DATE_ATTRIBUTE => ['nullable', 'date'],
-			RequestAttribute::FROM_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
+			RequestAttribute::FROM_ID_ATTRIBUTE => ['present', new AlbumIDRule(true)],
 		];
 	}
 

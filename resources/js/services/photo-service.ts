@@ -25,8 +25,8 @@ const PhotoService = {
 		return axios.post(`${Constants.getApiUrl()}Photo::fromUrl`, { urls: urls.filter(Boolean), album_id: album_id });
 	},
 
-	update(photo_id: string, data: PhotoUpdateRequest): Promise<AxiosResponse<App.Http.Resources.Models.PhotoResource>> {
-		return axios.patch(`${Constants.getApiUrl()}Photo?photo_id=${photo_id}`, data);
+	update(photo_id: string, album_id: string | null, data: PhotoUpdateRequest): Promise<AxiosResponse<App.Http.Resources.Models.PhotoResource>> {
+		return axios.patch(`${Constants.getApiUrl()}Photo?photo_id=${photo_id}&from_id=${album_id}`, data);
 	},
 
 	rename(photo_id: string, title: string): Promise<AxiosResponse> {
