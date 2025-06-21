@@ -24,10 +24,10 @@ class EditUserTest extends BaseApiWithDataTest
 {
 	public function testEditUserGuest(): void
 	{
-		$response = $this->postJson('UserManagement::save');
+		$response = $this->patchJson('UserManagement');
 		$this->assertUnprocessable($response);
 
-		$response = $this->postJson('UserManagement::save', [
+		$response = $this->patchJson('UserManagement', [
 			'id' => $this->userMayUpload1->id,
 			'username' => $this->userMayUpload1->username,
 			'may_upload' => $this->userMayUpload1->may_upload,
@@ -35,7 +35,7 @@ class EditUserTest extends BaseApiWithDataTest
 		]);
 		$this->assertUnauthorized($response);
 
-		$response = $this->actingAs($this->userMayUpload2)->postJson('UserManagement::save', [
+		$response = $this->actingAs($this->userMayUpload2)->patchJson('UserManagement', [
 			'id' => $this->userMayUpload1->id,
 			'username' => $this->userMayUpload1->username,
 			'may_upload' => $this->userMayUpload1->may_upload,
@@ -46,7 +46,7 @@ class EditUserTest extends BaseApiWithDataTest
 
 	public function testEditUserAdmin(): void
 	{
-		$response = $this->actingAs($this->admin)->postJson('UserManagement::save', [
+		$response = $this->actingAs($this->admin)->patchJson('UserManagement', [
 			'id' => $this->userMayUpload1->id,
 			'username' => 'anotherUsername',
 			'may_upload' => false,
