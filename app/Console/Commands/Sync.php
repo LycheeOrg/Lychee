@@ -180,8 +180,6 @@ class Sync extends Command
 		$exec = new $executor(
 			import_mode: $import_mode,
 			intended_owner_id: $owner_id,
-			enable_cli_formatting: true,
-			mem_limit: 0
 		);
 
 		$this->info('Start tree-based syncing (maintains folder structure).');

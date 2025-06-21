@@ -51,22 +51,21 @@ class Exec
 	private bool $first_report_given = false;
 
 	/**
-	 * @param ImportMode $import_mode           the import mode
-	 * @param bool       $enable_cli_formatting determines whether the output shall be formatted for CLI or as JSON
-	 * @param int        $mem_limit             the threshold when a memory warning shall be reported; `0` means unlimited
+	 * @param ImportMode $import_mode       the import mode
+	 * @param int        $intended_owner_id the intended owner ID for the imported photos and albums
+	 *
+	 * @return void
 	 */
 	public function __construct(
 		ImportMode $import_mode,
-		int $intended_owner_id,
-		bool $enable_cli_formatting,
-		int $mem_limit = 0)
+		int $intended_owner_id)
 	{
 		Session::forget('cancel');
 		$this->import_mode = $import_mode;
 		$this->photo_create = new PhotoCreate($import_mode, $intended_owner_id);
 		$this->album_create = new AlbumCreate($intended_owner_id);
-		$this->enable_cli_formatting = $enable_cli_formatting;
-		$this->mem_limit = $mem_limit;
+		$this->enable_cli_formatting = true;
+		$this->mem_limit = 0;
 	}
 
 	/**
