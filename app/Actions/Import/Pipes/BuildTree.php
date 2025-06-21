@@ -15,6 +15,7 @@ use App\DTO\ImportEventReport;
 use App\Exceptions\FileOperationException;
 use App\Exceptions\InvalidDirectoryException;
 use App\Exceptions\ReservedDirectoryException;
+use App\Image\Files\BaseMediaFile;
 use Illuminate\Support\Facades\Storage;
 use Safe\Exceptions\FilesystemException;
 use Safe\Exceptions\StringsException;
@@ -76,7 +77,8 @@ class BuildTree implements ImportPipe
 	public function handle(ImportDTO $state, \Closure $next): ImportDTO
 	{
 		$this->report(ImportEventReport::createWarning('build_tree', null, 'Building folder tree...'));
-		$state->root_folder = $this->buildTree($state->root_folder->path, $state->parent_album, []);
+
+		$state->root_folder = $this->buildTree($state->path);
 
 		return $next($state);
 	}
@@ -167,7 +169,8 @@ class BuildTree implements ImportPipe
 				$node->children[] = $child_node;
 			} elseif (is_file($file)) {
 				// Check if this is an image file
-				if ($this->isImageFile($file)) {
+				$extension = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+				if (BaseMediaFile::isSupportedOrAcceptedFileExtension('.' . $extension)) {
 					$node->images[] = $file;
 				}
 			}
@@ -193,23 +196,6 @@ class BuildTree implements ImportPipe
 		}
 
 		return $ignore_file;
-	}
-
-	/**
-	 * Check if the file is a supported image file.
-	 *
-	 * @param string $file File path
-	 *
-	 * @return bool True if the file is a supported image
-	 */
-	private function isImageFile(string $file): bool
-	{
-		// TODO: Use the Methods that we already have instead.
-		// List of supported extensions (should match PhotoCreate class)
-		$extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'tif', 'tiff', 'heic', 'heif', 'jxl', 'avif'];
-		$extension = strtolower(pathinfo($file, PATHINFO_EXTENSION));
-
-		return in_array($extension, $extensions, true);
 	}
 
 	/**

@@ -9,7 +9,6 @@
 namespace App\Actions\Import;
 
 use App\Actions\Import\Pipes\HasReporterTrait;
-use App\DTO\FolderNode;
 use App\DTO\ImportDTO;
 use App\DTO\ImportEventReport;
 use App\DTO\ImportMode;
@@ -50,16 +49,11 @@ final class ExecNew
 		?Album $parent_album,
 	): void {
 		try {
-			$root = new FolderNode(
-				name: 'root', // Does not matter, as the initial node is going to be replaced.
-				path: $path
-			);
-
 			$import_photo = new ImportDTO(
 				intended_owner_id: $this->intended_owner_id,
 				import_mode: $this->import_mode,
 				parent_album: $parent_album,
-				root_folder: $root,
+				path: $path,
 			);
 
 			set_time_limit(ini_get('max_execution_time'));

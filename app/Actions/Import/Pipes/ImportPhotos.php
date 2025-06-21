@@ -8,6 +8,7 @@
 
 namespace App\Actions\Import\Pipes;
 
+use App\Constants\PhotoAlbum as PA;
 use App\Contracts\Import\ImportPipe;
 use App\DTO\FolderNode;
 use App\DTO\ImportDTO;
@@ -15,6 +16,7 @@ use App\DTO\ImportEventReport;
 use App\DTO\ImportProgressReport;
 use App\Image\Files\NativeLocalFile;
 use App\Models\Album;
+use App\Models\Configs;
 use App\Models\Photo;
 
 class ImportPhotos implements ImportPipe
@@ -63,6 +65,7 @@ class ImportPhotos implements ImportPipe
 	private function importImagesForNode(FolderNode $node): void
 	{
 		foreach ($node->images as $image_path) {
+			// TODO: Avoid the n+1 queries, use a single query to check for existing photos by title.
 			try {
 				$this->importSingleImage($image_path, $node->album);
 			} catch (\Throwable $e) {
@@ -84,7 +87,7 @@ class ImportPhotos implements ImportPipe
 		// First check if photo already exists in this album by filename
 		$filename = basename($image_path);
 		if ($this->photoExistsInAlbum($filename, $album)) {
-			$this->report(ImportEventReport::createWarning('skip_duplicate', $image_path, 'Skipped existing photo'));
+			$this->report(ImportEventReport::createWarning('skip_duplicate', $image_path, 'Skipped existing photo with same filename'));
 
 			return;
 		}
@@ -109,7 +112,7 @@ class ImportPhotos implements ImportPipe
 			return false;
 		}
 
-		return $this->findPhotoByFilenameInAlbum($filename, $album->id);
+		return Configs::getValueAsBool('skip_duplicates_early') && $this->findPhotoByFilenameInAlbum($filename, $album->id);
 	}
 
 	/**
@@ -123,8 +126,12 @@ class ImportPhotos implements ImportPipe
 	private function findPhotoByFilenameInAlbum(string $filename, string $album_id): bool
 	{
 		return Photo::query()
-			->where('album_id', $album_id)
-			->where('original_name', $filename)
+			->join(PA::PHOTO_ALBUM, PA::PHOTO_ID, '=', 'photos.id')
+			->where(PA::ALBUM_ID, $album_id)
+			->where(fn ($q) => $q
+				->where('photos.title', '=', pathinfo($filename, PATHINFO_FILENAME))
+				->orWhere('photos.title', '=', basename($filename))
+			)
 			->exists();
 	}
 }

@@ -51,14 +51,14 @@ class CreateNonExistingAlbums implements ImportPipe
 	{
 		$this->report(ImportProgressReport::create('Processing folder: ' . $node->name, 0));
 
+		// Check if an album with this title exists under the parent
+		$album = $this->findOrCreateAlbum($node->name, $parent_album);
+		$node->album = $album;
+
 		// Process children first (bottom-up approach)
 		foreach ($node->children as $child) {
 			$this->processNode($child, $node->album);
 		}
-
-		// Check if an album with this title exists under the parent
-		$album = $this->findOrCreateAlbum($node->name, $parent_album);
-		$node->album = $album;
 
 		// Import all images for this node
 		// $this->importImagesForNode($node);
@@ -78,14 +78,16 @@ class CreateNonExistingAlbums implements ImportPipe
 		if ($parent_album !== null) {
 			// Find albums with the given title under this parent
 			$existing_album = Album::query()
-				->where('title', $title)
-				->where('parent_id', $parent_album->id)
+				->join('base_albums', 'base_albums.id', '=', 'albums.id')
+				->where('base_albums.title', $title)
+				->where('albums.parent_id', $parent_album->id)
 				->first();
 		} else {
 			// Check for root-level albums with this title
 			$existing_album = Album::query()
-				->where('title', $title)
-				->whereNull('parent_id')
+				->join('base_albums', 'base_albums.id', '=', 'albums.id')
+				->where('base_albums.title', $title)
+				->whereNull('albums.parent_id')
 				->first();
 
 			if ($existing_album !== null) {

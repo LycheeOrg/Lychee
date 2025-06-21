@@ -16,12 +16,13 @@ class ImportDTO
 {
 	protected AlbumCreate $album_create;
 	protected PhotoCreate $photo_create;
+	public FolderNode $root_folder;
 
 	public function __construct(
 		public readonly int $intended_owner_id,
 		public readonly ImportMode $import_mode,
 		public readonly ?Album $parent_album,
-		public FolderNode $root_folder,
+		public readonly string $path,
 	) {
 		$this->album_create = new AlbumCreate($intended_owner_id);
 		$this->photo_create = new PhotoCreate($import_mode, $intended_owner_id);
