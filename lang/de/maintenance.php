@@ -58,9 +58,9 @@ return [
         'no-pending-updates' => 'Keine Updates verfügbar.',
     ],
     'missing-palettes' => [
-        'title' => 'Missing Palettes',
-        'description' => 'Found %d missing palettes.',
-        'button' => 'Create missing',
+        'title' => 'Fehlende Paletten',
+        'description' => '%d fehlende Paletten gefunden.',
+        'button' => 'Fehlendes erstellen',
     ],
     'statistics-check' => [
         'title' => 'Integritätsprüfung der Statistik',
