@@ -42,6 +42,138 @@ class AlbumBuilder extends NSQueryBuilder
 	use FixedQueryBuilderTrait;
 
 	/**
+	 * Add a virtual column `is_recursive_nsfw` to the query.
+	 * This column is true if the album is recursive NSFW, i.e. if there are
+	 * any NSFW albums in the hierarchy of the album.
+	 *
+	 * This is quite an expensive operation, so we do not compute it by default.
+	 *
+	 * @return AlbumBuilder
+	 */
+	public function addVirtualIsRecursiveNSFW(): AlbumBuilder
+	{
+		$album_query_policy = resolve(AlbumQueryPolicy::class);
+
+		$this->addSelect(['is_recursive_nsfw' => function ($q) use ($album_query_policy): void {
+			// This is a subquery that checks if the album is recursive NSFW.
+			// It will return true if there are any NSFW albums in the hierarchy.
+			$query = $album_query_policy->appendRecursiveSensitiveAlbumsCondition($q, null, null)->toRawSql();
+			// We fix the boolean value for PostgreSQL.
+			// See explanation in the method `fixPgSqlBool`.
+			$query = $this->fixPgSqlBool($query);
+
+			// add select exists to the query.
+			$q->selectRaw('exists (' . $query . ')');
+		}]);
+
+		return $this;
+	}
+
+	/**
+	 * Laravel in their brilliancy decided that when using normal binding for eloquent queries,
+	 * boolean values should be bound properly.
+	 *
+	 * They also refuses to fix it: https://github.com/laravel/framework/discussions/48035
+	 * > "Changing this in Laravel may break some applications. So it is not a good approach to change it."
+	 *
+	 * However when using ->toRawSql() boolean values are transformed as integer. This works totally fine on MySQL, Sqlite.
+	 * But on PostgreSQL, it does not work. This method fixes the query to use the proper boolean value for PostgreSQL.
+	 *
+	 * Just no comments.
+	 *
+	 * (also the fact that we do not have a "select exists" in Laravel is really not convenient, by I digress...)
+	 *
+	 * @param string $query
+	 *
+	 * @return string
+	 */
+	private function fixPgSqlBool(string $query): string
+	{
+		if (config('database.default') !== 'pgsql') {
+			return $query;
+		}
+
+		return str_replace('"is_nsfw" = 1', '"is_nsfw" = TRUE', $query);
+	}
+
+	/**
+	 * Add a virtual column `min_taken_at` to the query.
+	 * This column is the minimum `taken_at` date of all photos in the album and all sub-albums.
+	 *
+	 * For performances reasons, it could later be decided to add this column directly to the album table.
+	 * This would allow to avoid the sub-query and the JOIN with the photos table.
+	 * But this would require to update the column whenever a photo is added or removed from the album.
+	 *
+	 * @return AlbumBuilder
+	 */
+	public function addVirtualMinTakenAt(): AlbumBuilder
+	{
+		$this->addSelect(['min_taken_at' => $this->getTakenAtSQL()->selectRaw('MIN(taken_at)')]);
+
+		return $this;
+	}
+
+	/**
+	 * Add a virtual column `max_taken_at` to the query.
+	 *
+	 * Same as above.
+	 *
+	 * @return AlbumBuilder
+	 */
+	public function addVirtualMaxTakenAt(): AlbumBuilder
+	{
+		$this->addSelect(['max_taken_at' => $this->getTakenAtSQL()->selectRaw('MAX(taken_at)')]);
+
+		return $this;
+	}
+
+	/**
+	 * Add a virtual column `num_children` to the query.
+	 *
+	 * Similarly we could consider adding this column directly to the album table.
+	 * However we would need to change the infra to be event drivent to update the column when
+	 * moving operations are done.
+	 *
+	 * @return AlbumBuilder
+	 */
+	public function addVirtualNumChildren(): AlbumBuilder
+	{
+		$album_query_policy = resolve(AlbumQueryPolicy::class);
+		$count_children = DB::table('albums', 'a')
+			->selectRaw('COUNT(*)')
+			->whereColumn('a.parent_id', '=', 'albums.id');
+
+		$this->addSelect([
+			'num_children' => $this->applyVisibilityConditioOnSubalbums($count_children, $album_query_policy),
+		]);
+
+		return $this;
+	}
+
+	/**
+	 * Add a virtual column `num_photos` to the query.
+	 *
+	 * Simiarly we could consider adding this column directly to the album table.
+	 * And likewise this would require an event driven infra to update the column.
+	 *
+	 * @return AlbumBuilder
+	 */
+	public function addVirtualNumPhotos(): AlbumBuilder
+	{
+		$album_query_policy = resolve(AlbumQueryPolicy::class);
+		$count_photos = DB::table('photos', 'p')
+			->join(PA::PHOTO_ALBUM, 'p.id', '=', PA::PHOTO_ID)
+			->selectRaw('COUNT(*)')
+			->whereColumn(PA::ALBUM_ID, '=', 'albums.id');
+
+		$this->addSelect([
+			'num_photos' => $this->applyVisibilityConditioOnPhotos($count_photos, $album_query_policy),
+		]);
+
+		return $this;
+	}
+
+	/**
 	 * Get the hydrated models without eager loading.
 	 *
 	 * Adds the "virtual" columns min_taken_at, max_taken_at as well as
@@ -56,28 +188,17 @@ class AlbumBuilder extends NSQueryBuilder
 	 */
 	public function getModels($columns = ['*']): array
 	{
-		$album_query_policy = resolve(AlbumQueryPolicy::class);
 		$base_query = $this->getQuery();
 
 		if (
 			($columns === ['*'] || $columns === ['albums.*']) &&
 			($base_query->columns === ['*'] || $base_query->columns === ['albums.*'] || $base_query->columns === null)
 		) {
-			$count_children = DB::table('albums', 'a')
-				->selectRaw('COUNT(*)')
-				->whereColumn('a.parent_id', '=', 'albums.id');
-
-			$count_photos = DB::table('photos', 'p')
-				->join(PA::PHOTO_ALBUM, 'p.id', '=', PA::PHOTO_ID)
-				->selectRaw('COUNT(*)')
-				->whereColumn(PA::ALBUM_ID, '=', 'albums.id');
-
-			$this->addSelect([
-				'min_taken_at' => $this->getTakenAtSQL()->selectRaw('MIN(taken_at)'),
-				'max_taken_at' => $this->getTakenAtSQL()->selectRaw('MAX(taken_at)'),
-				'num_children' => $this->applyVisibilityConditioOnSubalbums($count_children, $album_query_policy),
-				'num_photos' => $this->applyVisibilityConditioOnPhotos($count_photos, $album_query_policy),
-			]);
+			// Load the 4 most interesting virtual columns.
+			$this->addVirtualMaxTakenAt();
+			$this->addVirtualMinTakenAt();
+			$this->addVirtualNumChildren();
+			$this->addVirtualNumPhotos();
 		}
 
 		// The parent method returns a `Model[]`, but we must return
@@ -168,7 +289,8 @@ class AlbumBuilder extends NSQueryBuilder
 		$user_id = Auth::id();
 
 		// Only join with base_album (used to get owner_id) when user is logged in
-		$count_query->when(Auth::check(),
+		$count_query->when(
+			Auth::check(),
 			fn ($q) => $album_query_policy->joinBaseAlbumOwnerId(
 				query: $q,
 				second: 'a.id',
@@ -196,10 +318,12 @@ class AlbumBuilder extends NSQueryBuilder
 			$query2
 				// We laverage that IS_LINK_REQUIRED is NULL if the album is NOT shared publically (left join).
 				->where(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_LINK_REQUIRED, '=', false)
-				->when($user_id !== null,
+				->when(
+					$user_id !== null,
 					// Current user is the owner of the album
 					fn ($q) => $q
-						->orWhere('base_albums.owner_id', '=', $user_id));
+						->orWhere('base_albums.owner_id', '=', $user_id)
+				);
 		};
 
 		return $count_query->where($visibility_sub_query);
@@ -220,7 +344,8 @@ class AlbumBuilder extends NSQueryBuilder
 		$user_id = Auth::id();
 
 		// Only join with base_album (used to get owner_id) when user is logged in
-		$count_query->when($user_id !== null,
+		$count_query->when(
+			$user_id !== null,
 			fn ($q) => $album_query_policy->joinBaseAlbumOwnerId(
 				query: $q,
 				second: PA::ALBUM_ID,
@@ -240,7 +365,8 @@ class AlbumBuilder extends NSQueryBuilder
 		$visibility_sub_query = function ($query2) use ($user_id): void {
 			$query2
 				->where(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_LINK_REQUIRED, '=', false)
-				->when($user_id !== null,
+				->when(
+					$user_id !== null,
 					fn ($query) => $query
 						->orWhere('base_albums.owner_id', '=', $user_id)
 						->orWhere('p.owner_id', '=', $user_id)
