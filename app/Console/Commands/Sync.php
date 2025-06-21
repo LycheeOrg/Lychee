@@ -9,6 +9,7 @@
 namespace App\Console\Commands;
 
 use App\Actions\Import\Exec;
+// use App\Actions\Import\ExecNew;
 use App\Contracts\Exceptions\ExternalLycheeException;
 use App\DTO\ImportMode;
 use App\Exceptions\ConfigurationKeyMissingException;
@@ -16,7 +17,7 @@ use App\Exceptions\UnexpectedException;
 use App\Models\Album;
 use App\Models\Configs;
 use Illuminate\Console\Command;
-use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleException;
+use Symfony\Component\Console\Exception\ExceptionInterface;
 
 class Sync extends Command
 {
@@ -33,9 +34,9 @@ class Sync extends Command
 		'{dir* : directory to sync} ' . // string[]
 		'{--album_id= : Album ID to import to} ' . // string or null
 		'{--owner_id=1 : Owner ID of imported photos} ' . // string
-		'{--resync_metadata : Re-sync metadata of existing files}  ' . // bool
+		'{--resync_metadata=1 : Re-sync metadata of existing files} ' . // bool
 		'{--delete_imported=%s : Delete the original files} ' . // string
-		'{--import_via_symlink=%s : Imports photos from via a symlink instead of copying the files} ' . // string
+		'{--import_via_symlink=%s : Import photos via symlink instead of copying the files} ' . // string
 		'{--skip_duplicates=%s : Skip photos and albums if they already exist in the gallery}'; // string
 
 	/**
@@ -43,7 +44,7 @@ class Sync extends Command
 	 *
 	 * @var string
 	 */
-	protected $description = 'Sync a directory to lychee';
+	protected $description = 'Sync a directory structure to Lychee, creating albums matching the folder hierarchy';
 
 	public function __construct()
 	{
@@ -74,61 +75,127 @@ class Sync extends Command
 	public function handle(): int
 	{
 		try {
-			$directories = $this->argument('dir');
-			if (!is_array($directories)) {
-				$this->error('List of directories not recognized.');
-
-				return 1;
-			}
-			$owner_id = (int) $this->option('owner_id'); // in case no ID provided -> import as root user
-			$album_id = $this->option('album_id'); // in case no ID provided -> import to root folder
-			if (is_array($album_id)) {
-				$this->error('Only one value for album_id is allowed.');
-
-				return 1;
-			}
-			/** @var Album $album */
-			$album = $album_id !== null ? Album::query()->findOrFail($album_id) : null; // in case no ID provided -> import to root folder
-
-			$delete_imported = $this->option('delete_imported') === '1';
-			$import_via_symlink = $this->option('import_via_symlink') === '1';
-			$skip_duplicates = $this->option('skip_duplicates') === '1';
-			$resync_metadata = $this->option('resync_metadata') === true; // ! Because the option is --resync_metadata the return type of $this->option() is already bool.
-
-			if ($import_via_symlink && $delete_imported) {
-				$this->error('The settings for import via symbolic links and deletion of imported files are conflicting');
-				$this->info('  Use --import_via_symlink={0|1} and --delete-imported={0|1} explicitly to apply a conflict-free setting');
-
+			$directories = $this->validateDirectories();
+			if ($directories === null) {
 				return 1;
 			}
 
-			$exec = new Exec(
-				new ImportMode(
-					$delete_imported,
-					$skip_duplicates,
-					$import_via_symlink,
-					$resync_metadata
-				),
-				$owner_id,
-				true,
-				0
-			);
-
-			$this->info('Start syncing.');
-
-			foreach ($directories as $directory) {
-				try {
-					$exec->do($directory, $album);
-				} catch (\Exception $e) {
-					$this->error($e);
-				}
+			$owner_id = (int) $this->option('owner_id');
+			$album = $this->validateAlbumId();
+			if ($album === false) {
+				return 1;
 			}
 
-			$this->info('Done syncing.');
+			$import_settings = $this->validateImportSettings();
+			if ($import_settings === null) {
+				return 1;
+			}
 
-			return 0;
-		} catch (SymfonyConsoleException $e) {
+			return $this->executeImport($directories, $album, $owner_id, $import_settings);
+		} catch (ExceptionInterface $e) {
 			throw new UnexpectedException($e);
 		}
+	}
+
+	/**
+	 * Validate the directories provided as arguments.
+	 *
+	 * @return array|null Array of directory paths or null on validation failure
+	 */
+	private function validateDirectories(): ?array
+	{
+		$directories = $this->argument('dir');
+		if (!is_array($directories)) {
+			$this->error('List of directories not recognized.');
+
+			return null;
+		}
+
+		return $directories;
+	}
+
+	/**
+	 * Validate the album ID option.
+	 *
+	 * @return Album|false|null Album object, null if no album ID was provided, or false on validation failure
+	 */
+	private function validateAlbumId()
+	{
+		$album_id = $this->option('album_id');
+		if (is_array($album_id)) {
+			$this->error('Only one value for album_id is allowed.');
+
+			return false;
+		}
+
+		return $album_id !== null ? Album::query()->findOrFail($album_id) : null;
+	}
+
+	/**
+	 * Validate the import settings.
+	 *
+	 * @return ImportMode|null Array of import settings or false on validation failure
+	 */
+	private function validateImportSettings(): ?ImportMode
+	{
+		$delete_imported = $this->option('delete_imported') === '1';
+		$import_via_symlink = $this->option('import_via_symlink') === '1';
+		$skip_duplicates = $this->option('skip_duplicates') === '1';
+		$resync_metadata = $this->option('resync_metadata') === '1';
+
+		if ($import_via_symlink && $delete_imported) {
+			$this->error('The settings for import via symbolic links and deletion of imported files are conflicting');
+			$this->info('  Use --import_via_symlink={0|1} and --delete-imported={0|1} explicitly to apply a conflict-free setting');
+
+			return null;
+		}
+
+		return new ImportMode(
+			$delete_imported,
+			$skip_duplicates,
+			$import_via_symlink,
+			$resync_metadata
+		);
+	}
+
+	/**
+	 * Execute the import process.
+	 *
+	 * @param array      $directories Directories to import
+	 * @param Album|null $album       Parent album or null for root
+	 * @param int        $owner_id    Owner ID for the imported files
+	 * @param ImportMode $import_mode Import settings
+	 *
+	 * @return int Status code (0 for success)
+	 */
+	private function executeImport(array $directories, ?Album $album, int $owner_id, ImportMode $import_mode): int
+	{
+		// $use_tree_sync = config('features.sync_tree', false);
+
+		// $executor = match ($use_tree_sync) {
+		// 	true => ExecNew::class,
+		// 	false => Exec::class,
+		// };
+
+		$exec = new Exec(
+			import_mode: $import_mode,
+			intended_owner_id: $owner_id,
+			enable_cli_formatting: true,
+			mem_limit: 0
+		);
+
+		$this->info('Start tree-based syncing (maintains folder structure).');
+
+		foreach ($directories as $directory) {
+			try {
+				$exec->do($directory, $album);
+			} catch (\Exception $e) {
+				$this->error($e);
+			}
+		}
+
+		$this->info('Done tree-based syncing.');
+
+		return 0;
 	}
 }
