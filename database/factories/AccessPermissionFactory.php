@@ -11,6 +11,7 @@ namespace Database\Factories;
 use App\Models\AccessPermission;
 use App\Models\Album;
 use App\Models\User;
+use App\Models\UserGroup;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 
@@ -49,6 +50,7 @@ class AccessPermissionFactory extends Factory
 		return $this->state(function (array $attributes) {
 			return [
 				'user_id' => null,
+				'user_group_id' => null,
 			];
 		});
 	}
@@ -67,9 +69,22 @@ class AccessPermissionFactory extends Factory
 		return $this->state(function (array $attributes) use ($user) {
 			return [
 				'user_id' => $user->id,
+				'user_group_id' => null,
 			];
 		})->afterCreating(function (AccessPermission $perm) {
-			$perm->load('album', 'user');
+			$perm->load('album', 'user', 'user_group');
+		});
+	}
+
+	public function for_user_group(UserGroup $userGroup)
+	{
+		return $this->state(function (array $attributes) use ($userGroup) {
+			return [
+				'user_id' => null,
+				'user_group_id' => $userGroup->id,
+			];
+		})->afterCreating(function (AccessPermission $perm) {
+			$perm->load('album', 'user', 'user_group');
 		});
 	}
 
@@ -134,7 +149,7 @@ class AccessPermissionFactory extends Factory
 				'base_album_id' => $album->id,
 			];
 		})->afterCreating(function (AccessPermission $perm) {
-			$perm->load('album', 'user');
+			$perm->load('album', 'user', 'user_group');
 		});
 	}
 }
