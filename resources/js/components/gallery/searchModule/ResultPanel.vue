@@ -40,7 +40,7 @@
 			<Divider v-if="item.is_divider" />
 			<a v-else v-ripple v-bind="props.action" @click="item.callback">
 				<span :class="item.icon" />
-				<span class="ml-2">
+				<span class="ltr:ml-2 rtl:mr-2">
 					<!-- @vue-ignore -->
 					{{ $t(item.label) }}
 				</span>
