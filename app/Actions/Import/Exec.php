@@ -27,10 +27,14 @@ final class Exec
 	/**
 	 * @param ImportMode $import_mode       the import mode
 	 * @param int        $intended_owner_id the intended owner ID for the imported photos and albums
+	 * @param bool       $delete_missing_photos whether to delete photos in the database that are not in the file system
+	 * @param bool       $is_dry_run       whether to run in dry-run mode without making changes
 	 */
 	public function __construct(
 		private ImportMode $import_mode,
-		private int $intended_owner_id)
+		private int $intended_owner_id,
+		private bool $delete_missing_photos = false,
+		private bool $is_dry_run = false)
 	{
 	}
 
@@ -54,6 +58,8 @@ final class Exec
 				import_mode: $this->import_mode,
 				parent_album: $parent_album,
 				path: $path,
+				delete_missing_photos: $this->delete_missing_photos,
+				is_dry_run: $this->is_dry_run,
 			);
 
 			set_time_limit(ini_get('max_execution_time'));
@@ -62,6 +68,7 @@ final class Exec
 				Pipes\BuildTree::class,
 				Pipes\PruneEmptyNodes::class,
 				Pipes\CreateNonExistingAlbums::class,
+				Pipes\DeleteMissingPhotos::class,
 				Pipes\ImportPhotos::class,
 			];
 

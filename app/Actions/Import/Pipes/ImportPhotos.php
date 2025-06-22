@@ -145,10 +145,7 @@ class ImportPhotos implements ImportPipe
 		return Photo::query()
 			->join(PA::PHOTO_ALBUM, PA::PHOTO_ID, '=', 'photos.id')
 			->where(PA::ALBUM_ID, $album_id)
-			->where(fn ($q) => $q
-				->whereIn('photos.title', $candidates)
-				->orWhereIn('photos.title', $candidates)
-			)
+			->whereIn('photos.title', $candidates)
 			->pluck('photos.title')->all();
 	}
 }

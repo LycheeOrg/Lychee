@@ -23,6 +23,8 @@ class ImportDTO
 		public readonly ImportMode $import_mode,
 		public readonly ?Album $parent_album,
 		public readonly string $path,
+		public readonly bool $delete_missing_photos = false,
+		public readonly bool $is_dry_run = true,
 	) {
 		$this->album_create = new AlbumCreate($intended_owner_id);
 		$this->photo_create = new PhotoCreate($import_mode, $intended_owner_id);
