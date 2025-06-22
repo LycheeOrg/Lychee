@@ -20,18 +20,6 @@ return [
 
 	/*
 	|--------------------------------------------------------------------------
-	| Use Tree-Based Syncing for Folder Imports
-	|--------------------------------------------------------------------------
-	|
-	| This value determines whether tree-based syncing is enabled for folder imports.
-	| When enabled, the folder structure is maintained as album hierarchy.
-	| When disabled, the standard flat import method is used.
-	|
-	*/
-	'sync_tree' => (bool) env('SYNC_TREE', false),
-
-	/*
-	|--------------------------------------------------------------------------
 	| Force HTTPS
 	|--------------------------------------------------------------------------
 	|

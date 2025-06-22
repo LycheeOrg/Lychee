@@ -9,7 +9,6 @@
 namespace App\Console\Commands;
 
 use App\Actions\Import\Exec;
-use App\Actions\Import\ExecNew;
 use App\Contracts\Exceptions\ExternalLycheeException;
 use App\DTO\ImportMode;
 use App\Exceptions\ConfigurationKeyMissingException;
@@ -170,14 +169,7 @@ class Sync extends Command
 	 */
 	private function executeImport(array $directories, ?Album $album, int $owner_id, ImportMode $import_mode): int
 	{
-		$use_tree_sync = config('features.sync_tree', false);
-
-		$executor = match ($use_tree_sync) {
-			true => ExecNew::class,
-			false => Exec::class,
-		};
-
-		$exec = new $executor(
+		$exec = new Exec(
 			import_mode: $import_mode,
 			intended_owner_id: $owner_id,
 		);
