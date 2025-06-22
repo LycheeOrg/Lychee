@@ -36,6 +36,26 @@ class ImportEventReport extends BaseImportReport
 		return new self($subtype, SeverityType::WARNING, $path, $message);
 	}
 
+	public static function createError(string $subtype, ?string $path, string $message): self
+	{
+		return new self($subtype, SeverityType::ERROR, $path, $message);
+	}
+
+	public static function createInfo(string $subtype, ?string $path, string $message): self
+	{
+		return new self($subtype, SeverityType::INFO, $path, $message);
+	}
+
+	public static function createNotice(string $subtype, ?string $path, string $message): self
+	{
+		return new self($subtype, SeverityType::NOTICE, $path, $message);
+	}
+
+	public static function createDebug(string $subtype, ?string $path, string $message): self
+	{
+		return new self($subtype, SeverityType::DEBUG, $path, $message);
+	}
+
 	public static function createFromException(\Throwable $e, ?string $path): self
 	{
 		return new self(class_basename($e), ExceptionHandler::getLogSeverity($e), $path, $e->getMessage(), $e);
@@ -61,6 +81,14 @@ class ImportEventReport extends BaseImportReport
 
 	public function toCLIString(): string
 	{
-		return $this->path . ($this->path !== null ? ': ' : '') . $this->message;
+		$wrapper = match ($this->severity) {
+			SeverityType::EMERGENCY, SeverityType::ALERT, SeverityType::CRITICAL, SeverityType::ERROR => $wrapper = '<error>%s</error>',
+			SeverityType::WARNING => $wrapper = '<comment>%s</comment>',
+			SeverityType::INFO  => $wrapper = '<info>%s</info>',
+			SeverityType::NOTICE => $wrapper = '<fg=blue>%s</>',
+			SeverityType::DEBUG => $wrapper = '<fg=gray>%s</>',
+			default => $wrapper = '<info>%s</info>', // Default to info for other severities
+		};
+		return sprintf($wrapper, $this->path . ($this->path !== null ? ': ' : '') . $this->message);
 	}
 }

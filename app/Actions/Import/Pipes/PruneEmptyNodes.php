@@ -11,6 +11,7 @@ namespace App\Actions\Import\Pipes;
 use App\Contracts\Import\ImportPipe;
 use App\DTO\ImportDTO;
 use App\DTO\ImportEventReport;
+use App\Exceptions\EmptyFolderException;
 
 class PruneEmptyNodes implements ImportPipe
 {
@@ -26,8 +27,11 @@ class PruneEmptyNodes implements ImportPipe
 	 */
 	public function handle(ImportDTO $state, \Closure $next): ImportDTO
 	{
-		$this->report(ImportEventReport::createWarning('prune', null, 'Pruning empty folders...'));
-		$state->root_folder->pruneEmptyNodes();
+		$this->report(ImportEventReport::createNotice('prune', null, 'Pruning empty folders...'));
+		$is_not_empty = $state->root_folder->pruneEmptyNodes();
+		if (!$is_not_empty) {
+			throw new EmptyFolderException($state->path);
+		}
 
 		return $next($state);
 	}

@@ -11,6 +11,7 @@ namespace App\Actions\Import\Pipes;
 use App\DTO\BaseImportReport;
 use App\DTO\ImportEventReport;
 use App\Exceptions\Handler;
+use Symfony\Component\Console\Output\ConsoleOutput;
 
 trait HasReporterTrait
 {
@@ -26,7 +27,8 @@ trait HasReporterTrait
 	 */
 	final protected function report(BaseImportReport $report): void
 	{
-		echo $report->toCLIString() . PHP_EOL;
+		$msgSection = (new ConsoleOutput())->section();
+		$msgSection->writeln($report->toCLIString());
 
 		if ($report instanceof ImportEventReport && $report->getException() !== null) {
 			Handler::reportSafely($report->getException());

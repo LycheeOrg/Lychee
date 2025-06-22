@@ -31,7 +31,7 @@ class CreateNonExistingAlbums implements ImportPipe
 	 */
 	public function handle(ImportDTO $state, \Closure $next): ImportDTO
 	{
-		$this->report(ImportEventReport::createWarning('Create Albums', null, 'Creating non-existing albums...'));
+		$this->report(ImportEventReport::createNotice('Create Albums', null, 'Creating non-existing albums...'));
 		$this->state = $state;
 
 		$this->processNode($state->root_folder, $state->parent_album);
@@ -49,7 +49,7 @@ class CreateNonExistingAlbums implements ImportPipe
 	 */
 	private function processNode(FolderNode $node, ?Album $parent_album = null): void
 	{
-		$this->report(ImportProgressReport::create('Processing folder: ' . $node->name, 0));
+		$this->report(ImportEventReport::createDebug('Processing folder', $node->name, 'Processing folder'));
 
 		// Check if an album with this title exists under the parent
 		$album = $this->findOrCreateAlbum($node->name, $parent_album);
@@ -74,6 +74,8 @@ class CreateNonExistingAlbums implements ImportPipe
 	 */
 	private function findOrCreateAlbum(string $title, ?Album $parent_album): Album
 	{
+		$existing_album = null;
+
 		// If we have a parent album, check if the child album already exists
 		if ($parent_album !== null) {
 			// Find albums with the given title under this parent
@@ -89,18 +91,10 @@ class CreateNonExistingAlbums implements ImportPipe
 				->where('base_albums.title', $title)
 				->whereNull('albums.parent_id')
 				->first();
-
-			if ($existing_album !== null) {
-				$this->report(ImportEventReport::createWarning('album_exists', $title, 'Using existing album'));
-				/** @var Album $album */
-				$album = $existing_album;
-
-				return $album;
-			}
 		}
 
 		if ($existing_album !== null) {
-			$this->report(ImportEventReport::createWarning('album_exists', $title, 'Using existing album'));
+			$this->report(ImportEventReport::createDebug('album_exists', $title, 'Using existing album'));
 			/** @var Album $album */
 			$album = $existing_album;
 
@@ -110,7 +104,7 @@ class CreateNonExistingAlbums implements ImportPipe
 		// Album doesn't exist, create it
 		$album = $this->state->getAlbumCreate()->create($title, $parent_album);
 
-		$this->report(ImportEventReport::createWarning('album_created', $title, 'Created new album'));
+		$this->report(ImportEventReport::createInfo('album_created', $title, 'Created new album'));
 
 		return $album;
 	}

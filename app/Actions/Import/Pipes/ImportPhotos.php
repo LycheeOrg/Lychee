@@ -35,7 +35,7 @@ class ImportPhotos implements ImportPipe
 	 */
 	public function handle(ImportDTO $state, \Closure $next): ImportDTO
 	{
-		$this->report(ImportEventReport::createWarning('Import Photos', null, 'Starting photo import...'));
+		$this->report(ImportEventReport::createNotice('Import Photos', null, 'Starting photo import...'));
 		$this->state = $state;
 
 		$this->processNode($state->root_folder);
@@ -46,7 +46,6 @@ class ImportPhotos implements ImportPipe
 	private function processNode(FolderNode $node): void
 	{
 		// Logic to import photos for the given node
-		$this->report(ImportProgressReport::create('Importing photos for: ' . $node->name, 100));
 		$this->importImagesForNode($node);
 
 		// Process each folder node to import photos
@@ -64,10 +63,19 @@ class ImportPhotos implements ImportPipe
 	 */
 	private function importImagesForNode(FolderNode $node): void
 	{
-		$image_paths = $this->filterExistingPhotos($node->images, $node->album);
-		foreach ($image_paths as $image_path) {
-			$this->importSingleImage($image_path, $node->album);
+		$image_paths = $this->filterExistingPhotos($node->images, $node);
+
+		$total = count($image_paths);
+		if ($total === 0) {
+			$this->report(ImportEventReport::createInfo('no_photos', $node->name, 'No new photos to import for this folder'));
+			return;
 		}
+
+		foreach ($image_paths as $idx => $image_path) {
+			// $this->report(ImportProgressReport::create('Importing photos for: ' . $node->name, ));
+			$this->importSingleImage($image_path, $node->album, $idx / $total * 100);
+		}
+		$this->report(ImportProgressReport::create('Importing photos for: ' . $node->name, 100));
 	}
 
 	/**
@@ -78,20 +86,21 @@ class ImportPhotos implements ImportPipe
 	 *
 	 * @return array<int,string> list of photos that need to be imported
 	 */
-	private function filterExistingPhotos(array $image_paths, ?Album $album): array
+	private function filterExistingPhotos(array $image_paths, FolderNode $node): array
 	{
-		if ($album === null || !Configs::getValueAsBool('skip_duplicates_early')) {
+		if ($node->album === null || !Configs::getValueAsBool('skip_duplicates_early')) {
 			return $image_paths;
 		}
 
-		$already_existing = $this->findPhotoByFilenameInAlbum($image_paths, $album->id);
+		$this->report(ImportEventReport::createNotice('filtering', $node->name, 'Filtering photos.'));
+		$already_existing = $this->findPhotoByFilenameInAlbum($image_paths, $node->album->id);
 
 		foreach ($image_paths as $key => $image_path) {
 			$basename = basename($image_path);
 			$filename = pathinfo($image_path, PATHINFO_FILENAME);
 
 			if (in_array($basename, $already_existing, true) || in_array($filename, $already_existing, true)) {
-				$this->report(ImportEventReport::createWarning('skip_duplicate', $image_path, 'Skipped existing photo with same filename'));
+				$this->report(ImportEventReport::createWarning('skip_duplicate', basename($image_path), 'Skipped existing photo with same filename'));
 				unset($image_paths[$key]);
 			}
 		}
@@ -107,7 +116,7 @@ class ImportPhotos implements ImportPipe
 	 *
 	 * @return void
 	 */
-	private function importSingleImage(string $image_path, ?Album $album): void
+	private function importSingleImage(string $image_path, ?Album $album, int $progress): void
 	{
 		$file = new NativeLocalFile($image_path);
 		try {
@@ -116,7 +125,7 @@ class ImportPhotos implements ImportPipe
 			$this->report(ImportEventReport::createFromException($e, $image_path));
 		}
 
-		$this->report(ImportEventReport::createWarning('imported', $image_path, 'Imported photo'));
+		$this->report(ImportEventReport::createDebug('imported', $image_path, 'Imported photo: ' . $progress . '%'));
 	}
 
 	/**

@@ -70,7 +70,7 @@ final class Exec
 				->through($pipes)
 				->thenReturn();
 
-			$this->report(ImportEventReport::createWarning('complete', null, 'Import complete'));
+			$this->report(ImportEventReport::createInfo('complete', null, 'Import complete'));
 		} catch (\Throwable $e) {
 			$this->report(ImportEventReport::createFromException($e, null));
 			throw $e;

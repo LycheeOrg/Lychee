@@ -12,6 +12,7 @@ use App\Actions\Import\Exec;
 use App\Contracts\Exceptions\ExternalLycheeException;
 use App\DTO\ImportMode;
 use App\Exceptions\ConfigurationKeyMissingException;
+use App\Exceptions\EmptyFolderException;
 use App\Exceptions\UnexpectedException;
 use App\Models\Album;
 use App\Models\Configs;
@@ -179,6 +180,8 @@ class Sync extends Command
 		foreach ($directories as $directory) {
 			try {
 				$exec->do($directory, $album);
+			} catch (EmptyFolderException $e) {
+				return 1;
 			} catch (\Exception $e) {
 				$this->error($e);
 			}

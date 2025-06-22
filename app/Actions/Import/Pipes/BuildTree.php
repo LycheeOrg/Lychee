@@ -76,7 +76,7 @@ class BuildTree implements ImportPipe
 
 	public function handle(ImportDTO $state, \Closure $next): ImportDTO
 	{
-		$this->report(ImportEventReport::createWarning('build_tree', null, 'Building folder tree...'));
+		$this->report(ImportEventReport::createNotice('build_tree', $state->path, 'Building folder tree...'));
 
 		$state->root_folder = $this->buildTree($state->path);
 
