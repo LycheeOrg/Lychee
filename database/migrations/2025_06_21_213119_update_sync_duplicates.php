@@ -13,7 +13,6 @@ return new class() extends BaseConfigMigration {
 
 	public function getConfigs(): array
 	{
-
 		// Fix the order of existing configs
 		DB::table('configs')->where('key', 'delete_imported')->update(['order' => 20]);
 		DB::table('configs')->where('key', 'import_via_symlink')->update(['order' => 21]);
