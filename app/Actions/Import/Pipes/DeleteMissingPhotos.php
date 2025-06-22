@@ -74,14 +74,14 @@ class DeleteMissingPhotos implements ImportPipe
 			return;
 		}
 
-		$this->report(ImportEventReport::createInfo('checking_missing', $node->name, 'Checking for missing photos'));
+		$this->report(ImportEventReport::createDebug('checking_missing', $node->name, 'Checking for missing photos'));
 
 		// Find missing photos
 		$photos_to_delete = $this->findMissingPhotos($node);
 
 		$count = $photos_to_delete->count();
 		if ($count === 0) {
-			$this->report(ImportEventReport::createInfo('no_missing_photos', $node->name, 'No missing photos found'));
+			$this->report(ImportEventReport::createDebug('no_missing_photos', $node->name, 'No missing photos found'));
 
 			return;
 		}
@@ -104,7 +104,7 @@ class DeleteMissingPhotos implements ImportPipe
 	 *
 	 * @param FolderNode $node Node containing album and images
 	 *
-	 * @return Collection Photos to delete
+	 * @return Collection<int,Photo> Photos to delete
 	 */
 	private function findMissingPhotos(FolderNode $node): Collection
 	{
@@ -125,8 +125,8 @@ class DeleteMissingPhotos implements ImportPipe
 	/**
 	 * Handle dry run mode - report what would be deleted without making changes.
 	 *
-	 * @param Collection $photos_to_delete Photos that would be deleted
-	 * @param FolderNode $node             Current folder node
+	 * @param Collection<int,Photo> $photos_to_delete Photos that would be deleted
+	 * @param FolderNode            $node             Current folder node
 	 *
 	 * @return void
 	 */
@@ -144,8 +144,8 @@ class DeleteMissingPhotos implements ImportPipe
 	/**
 	 * Actually delete the photos from the system.
 	 *
-	 * @param Collection $photos_to_delete Photos to delete
-	 * @param FolderNode $node             Current folder node
+	 * @param Collection<int,Photo> $photos_to_delete Photos to delete
+	 * @param FolderNode            $node             Current folder node
 	 *
 	 * @return void
 	 */
@@ -154,7 +154,7 @@ class DeleteMissingPhotos implements ImportPipe
 		$count = $photos_to_delete->count();
 
 		foreach ($photos_to_delete as $photo) {
-			$this->report(ImportEventReport::createDebug('delete_photo', $node->name,
+			$this->report(ImportEventReport::createWarning('delete_photo', $node->name,
 				sprintf('Deleting %s (ID: %s)', $photo->title, $photo->id)));
 		}
 
@@ -163,6 +163,6 @@ class DeleteMissingPhotos implements ImportPipe
 		$file_deleter = $delete->do($photos_to_delete->pluck('id')->all(), $node->album->id);
 		$file_deleter->do();
 
-		$this->report(ImportEventReport::createInfo('deleted_missing', $node->name, "Deleted $count missing photos"));
+		$this->report(ImportEventReport::createError('deleted_missing', $node->name, "Deleted $count missing photos"));
 	}
 }

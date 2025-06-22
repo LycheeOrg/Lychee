@@ -14,7 +14,7 @@ use App\DTO\FolderNode;
 use App\DTO\ImportDTO;
 use App\DTO\ImportEventReport;
 use App\Models\Album;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection;
 
 class DeleteMissingAlbums implements ImportPipe
 {
@@ -67,14 +67,14 @@ class DeleteMissingAlbums implements ImportPipe
 			return;
 		}
 
-		$this->report(ImportEventReport::createInfo('checking_missing_albums', $node->name, 'Checking for missing albums'));
+		$this->report(ImportEventReport::createDebug('checking_missing_albums', $node->name, 'Checking for missing albums'));
 
 		// Find missing albums
 		$albums_to_delete = $this->findMissingAlbums($node);
 
 		$count = $albums_to_delete->count();
 		if ($count === 0) {
-			$this->report(ImportEventReport::createInfo('no_missing_albums', $node->name, 'No missing albums found'));
+			$this->report(ImportEventReport::createDebug('no_missing_albums', $node->name, 'No missing albums found'));
 
 			return;
 		}
@@ -106,9 +106,11 @@ class DeleteMissingAlbums implements ImportPipe
 
 		// Find albums in the parent album that don't exist in the folder structure
 		return Album::query()
-			->select(['id', 'title'])
+			->join('base_albums', 'base_albums.id', '=', 'albums.id')
+			->select(['albums.id', 'base_albums.title'])
 			->where('parent_id', $node->album->id)
 			->whereNotIn('title', $existing_folders)
+			->toBase()
 			->get();
 	}
 
@@ -143,7 +145,7 @@ class DeleteMissingAlbums implements ImportPipe
 	{
 		$count = $albums_to_delete->count();
 		foreach ($albums_to_delete as $album) {
-			$this->report(ImportEventReport::createDebug('delete_album', $node->name,
+			$this->report(ImportEventReport::createWarning('delete_album', $node->name,
 				sprintf('Deleting album %s (ID: %s)', $album->title, $album->id)));
 		}
 
@@ -152,6 +154,6 @@ class DeleteMissingAlbums implements ImportPipe
 		$file_deleter = $delete->do($albums_to_delete->pluck('id')->all());
 		$file_deleter->do();
 
-		$this->report(ImportEventReport::createInfo('deleted_missing_albums', $node->name, "Deleted $count albums"));
+		$this->report(ImportEventReport::createError('deleted_missing_albums', $node->name, "Deleted $count albums"));
 	}
 }

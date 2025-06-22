@@ -83,7 +83,7 @@ class ImportPhotos implements ImportPipe
 	 * Filter the list of image_path with the non-already existing the database.
 	 *
 	 * @param array      $image_paths Filename to check
-	 * @param Album|null $album       Album to check in
+	 * @param FolderNode $node        Node to check
 	 *
 	 * @return array<int,string> list of photos that need to be imported
 	 */
