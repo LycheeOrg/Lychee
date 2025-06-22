@@ -16,7 +16,7 @@ return new class() extends BaseConfigMigration {
 		return [
 			[
 				'key' => 'skip_duplicates_early',
-				'value' => 'gallery',
+				'value' => '1',
 				'cat' => self::CONFIG,
 				'type_range' => self::BOOL,
 				'description' => 'Skip duplicate early if found on import',
