@@ -38,20 +38,20 @@ class ImportPhotos implements ImportPipe
 		$this->report(ImportEventReport::createWarning('Import Photos', null, 'Starting photo import...'));
 		$this->state = $state;
 
-		$this->importPhotosForNode($state->root_folder);
+		$this->processNode($state->root_folder);
 
 		return $next($state);
 	}
 
-	private function importPhotosForNode(FolderNode $node): void
+	private function processNode(FolderNode $node): void
 	{
 		// Logic to import photos for the given node
-		// This is a placeholder for actual photo import logic
 		$this->report(ImportProgressReport::create('Importing photos for: ' . $node->name, 100));
+		$this->importImagesForNode($node);
+
 		// Process each folder node to import photos
 		foreach ($node->children as $child_node) {
-			$this->importImagesForNode($child_node);
-			$this->importPhotosForNode($child_node);
+			$this->processNode($child_node);
 		}
 	}
 
@@ -64,14 +64,39 @@ class ImportPhotos implements ImportPipe
 	 */
 	private function importImagesForNode(FolderNode $node): void
 	{
-		foreach ($node->images as $image_path) {
-			// TODO: Avoid the n+1 queries, use a single query to check for existing photos by title.
-			try {
-				$this->importSingleImage($image_path, $node->album);
-			} catch (\Throwable $e) {
-				$this->report(ImportEventReport::createFromException($e, $image_path));
+		$image_paths = $this->filterExistingPhotos($node->images, $node->album);
+		foreach ($image_paths as $image_path) {
+			$this->importSingleImage($image_path, $node->album);
+		}
+	}
+
+	/**
+	 * Filter the list of image_path with the non-already existing the database.
+	 *
+	 * @param array      $image_paths Filename to check
+	 * @param Album|null $album       Album to check in
+	 *
+	 * @return array<int,string> list of photos that need to be imported
+	 */
+	private function filterExistingPhotos(array $image_paths, ?Album $album): array
+	{
+		if ($album === null || !Configs::getValueAsBool('skip_duplicates_early')) {
+			return $image_paths;
+		}
+
+		$already_existing = $this->findPhotoByFilenameInAlbum($image_paths, $album->id);
+
+		foreach ($image_paths as $key => $image_path) {
+			$basename = basename($image_path);
+			$filename = pathinfo($image_path, PATHINFO_FILENAME);
+
+			if (in_array($basename, $already_existing, true) || in_array($filename, $already_existing, true)) {
+				$this->report(ImportEventReport::createWarning('skip_duplicate', $image_path, 'Skipped existing photo with same filename'));
+				unset($image_paths[$key]);
 			}
 		}
+
+		return array_values($image_paths);
 	}
 
 	/**
@@ -84,54 +109,37 @@ class ImportPhotos implements ImportPipe
 	 */
 	private function importSingleImage(string $image_path, ?Album $album): void
 	{
-		// First check if photo already exists in this album by filename
-		$filename = basename($image_path);
-		if ($this->photoExistsInAlbum($filename, $album)) {
-			$this->report(ImportEventReport::createWarning('skip_duplicate', $image_path, 'Skipped existing photo with same filename'));
-
-			return;
-		}
-
 		$file = new NativeLocalFile($image_path);
-		$this->state->getPhotoCreate()->add($file, $album);
+		try {
+			$this->state->getPhotoCreate()->add($file, $album);
+		} catch (\Throwable $e) {
+			$this->report(ImportEventReport::createFromException($e, $image_path));
+		}
 
 		$this->report(ImportEventReport::createWarning('imported', $image_path, 'Imported photo'));
 	}
 
 	/**
-	 * Check if a photo with the given filename already exists in the album.
-	 *
-	 * @param string     $filename Filename to check
-	 * @param Album|null $album    Album to check in
-	 *
-	 * @return bool True if the photo exists
-	 */
-	private function photoExistsInAlbum(string $filename, ?Album $album): bool
-	{
-		if ($album === null) {
-			return false;
-		}
-
-		return Configs::getValueAsBool('skip_duplicates_early') && $this->findPhotoByFilenameInAlbum($filename, $album->id);
-	}
-
-	/**
 	 * Find a photo by filename within a specific album.
 	 *
-	 * @param string $filename Filename to search for
-	 * @param string $album_id Album ID to search in
+	 * @param array  $image_paths Filename to search for
+	 * @param string $album_id    Album ID to search in
 	 *
-	 * @return bool True if the photo exists
+	 * @return array True if the photo exists
 	 */
-	private function findPhotoByFilenameInAlbum(string $filename, string $album_id): bool
+	private function findPhotoByFilenameInAlbum(array $image_paths, string $album_id): array
 	{
+		$base_names = array_map(fn ($i) => basename($i), $image_paths);
+		$file_names = array_map(fn ($i) => pathinfo($i, PATHINFO_FILENAME), $image_paths);
+		$candidates = array_merge($base_names, $file_names);
+
 		return Photo::query()
 			->join(PA::PHOTO_ALBUM, PA::PHOTO_ID, '=', 'photos.id')
 			->where(PA::ALBUM_ID, $album_id)
 			->where(fn ($q) => $q
-				->where('photos.title', '=', pathinfo($filename, PATHINFO_FILENAME))
-				->orWhere('photos.title', '=', basename($filename))
+				->whereIn('photos.title', $candidates)
+				->orWhereIn('photos.title', $candidates)
 			)
-			->exists();
+			->pluck('photos.title')->all();
 	}
 }
