@@ -15,6 +15,7 @@ use App\DTO\FolderNode;
 use App\DTO\ImportDTO;
 use App\DTO\ImportEventReport;
 use App\Models\Photo;
+use Illuminate\Database\Eloquent\Collection;
 
 class DeleteMissingPhotos implements ImportPipe
 {
@@ -77,18 +78,20 @@ class DeleteMissingPhotos implements ImportPipe
 
 		// Find missing photos
 		$photos_to_delete = $this->findMissingPhotos($node);
-		
+
 		$count = $photos_to_delete->count();
 		if ($count === 0) {
 			$this->report(ImportEventReport::createInfo('no_missing_photos', $node->name, 'No missing photos found'));
+
 			return;
 		}
 
 		$this->report(ImportEventReport::createWarning('found_missing', $node->name, "Found $count missing photos"));
-		
+
 		// Handle dry run mode
 		if ($this->state->is_dry_run) {
 			$this->handleDryRun($photos_to_delete, $node);
+
 			return;
 		}
 
@@ -100,14 +103,14 @@ class DeleteMissingPhotos implements ImportPipe
 	 * Find photos in the database that don't exist in the file system.
 	 *
 	 * @param FolderNode $node Node containing album and images
-	 * 
-	 * @return \Illuminate\Database\Eloquent\Collection Photos to delete
+	 *
+	 * @return Collection Photos to delete
 	 */
-	private function findMissingPhotos(FolderNode $node): \Illuminate\Database\Eloquent\Collection
+	private function findMissingPhotos(FolderNode $node): Collection
 	{
 		// Get all photo filenames in the directory
-		$existing_filenames = array_map(fn($path) => basename($path), $node->images);
-		$existing_filenames_no_ext = array_map(fn($path) => pathinfo($path, PATHINFO_FILENAME), $node->images);
+		$existing_filenames = array_map(fn ($path) => basename($path), $node->images);
+		$existing_filenames_no_ext = array_map(fn ($path) => pathinfo($path, PATHINFO_FILENAME), $node->images);
 		$existing_files = array_merge($existing_filenames, $existing_filenames_no_ext);
 
 		// Find photos in the album that don't exist in the folder
@@ -122,45 +125,44 @@ class DeleteMissingPhotos implements ImportPipe
 	/**
 	 * Handle dry run mode - report what would be deleted without making changes.
 	 *
-	 * @param \Illuminate\Database\Eloquent\Collection $photos_to_delete Photos that would be deleted
-	 * @param FolderNode                               $node             Current folder node
-	 * 
+	 * @param Collection $photos_to_delete Photos that would be deleted
+	 * @param FolderNode $node             Current folder node
+	 *
 	 * @return void
 	 */
-	private function handleDryRun(\Illuminate\Database\Eloquent\Collection $photos_to_delete, FolderNode $node): void
+	private function handleDryRun(Collection $photos_to_delete, FolderNode $node): void
 	{
 		$count = $photos_to_delete->count();
 		$this->report(ImportEventReport::createInfo('dry_run', $node->name, "Dry run - would delete $count photos"));
-		
+
 		foreach ($photos_to_delete as $photo) {
-			$this->report(ImportEventReport::createDebug('dry_run_photo', $node->name, 
-				sprintf("Would delete %s (ID: %s)", $photo->title, $photo->id)));
+			$this->report(ImportEventReport::createDebug('dry_run_photo', $node->name,
+				sprintf('Would delete %s (ID: %s)', $photo->title, $photo->id)));
 		}
 	}
 
 	/**
 	 * Actually delete the photos from the system.
-	 * 
-	 * @param \Illuminate\Database\Eloquent\Collection $photos_to_delete Photos to delete
-	 * @param FolderNode                               $node             Current folder node
-	 * 
+	 *
+	 * @param Collection $photos_to_delete Photos to delete
+	 * @param FolderNode $node             Current folder node
+	 *
 	 * @return void
 	 */
-	private function performDeletion(\Illuminate\Database\Eloquent\Collection $photos_to_delete, FolderNode $node): void
+	private function performDeletion(Collection $photos_to_delete, FolderNode $node): void
 	{
 		$count = $photos_to_delete->count();
-		$delete = new Delete();
-		
+
 		foreach ($photos_to_delete as $photo) {
-			$this->report(ImportEventReport::createDebug('delete_photo', $node->name, 
-				sprintf("Deleting %s (ID: %s)", $photo->title, $photo->id)));
+			$this->report(ImportEventReport::createDebug('delete_photo', $node->name,
+				sprintf('Deleting %s (ID: %s)', $photo->title, $photo->id)));
 		}
-		
-		$file_deleter = $delete->do($photos_to_delete->pluck('id')->all(), $node->album->id);
-		
+
 		// Execute the deletion
+		$delete = new Delete();
+		$file_deleter = $delete->do($photos_to_delete->pluck('id')->all(), $node->album->id);
 		$file_deleter->do();
-		
+
 		$this->report(ImportEventReport::createInfo('deleted_missing', $node->name, "Deleted $count missing photos"));
 	}
 }

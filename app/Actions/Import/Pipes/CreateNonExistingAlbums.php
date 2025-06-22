@@ -12,7 +12,6 @@ use App\Contracts\Import\ImportPipe;
 use App\DTO\FolderNode;
 use App\DTO\ImportDTO;
 use App\DTO\ImportEventReport;
-use App\DTO\ImportProgressReport;
 use App\Models\Album;
 
 class CreateNonExistingAlbums implements ImportPipe

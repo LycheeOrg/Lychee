@@ -15,11 +15,11 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class EmptyFolderException extends BaseLycheeException
 {
-    /**
-     * @param string $path
-     */
-    public function __construct(string $path)
-    {
-        parent::__construct(Response::HTTP_PRECONDITION_FAILED, sprintf('%s is empty', $path), null);
-    }
+	/**
+	 * @param string $path
+	 */
+	public function __construct(string $path)
+	{
+		parent::__construct(Response::HTTP_PRECONDITION_FAILED, sprintf('%s is empty', $path), null);
+	}
 }

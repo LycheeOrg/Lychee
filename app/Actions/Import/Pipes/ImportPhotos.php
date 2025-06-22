@@ -68,6 +68,7 @@ class ImportPhotos implements ImportPipe
 		$total = count($image_paths);
 		if ($total === 0) {
 			$this->report(ImportEventReport::createInfo('no_photos', $node->name, 'No new photos to import for this folder'));
+
 			return;
 		}
 

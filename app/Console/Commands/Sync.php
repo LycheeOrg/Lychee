@@ -39,6 +39,7 @@ class Sync extends Command
 		'{--import_via_symlink=%s : Import photos via symlink instead of copying the files} ' . // string
 		'{--skip_duplicates=%s : Skip photos and albums if they already exist in the gallery} ' . // string
 		'{--delete_missing_photos=0 : Delete photos in the album that are not present in the synced directory} ' . // bool
+		'{--delete_missing_albums=0 : Delete albums in the parent album that are not present in the synced directory} ' . // bool
 		'{--dry_run=1 : Run the delete photos process but do not make any changes}'; // bool
 
 	/**
@@ -173,12 +174,14 @@ class Sync extends Command
 	private function executeImport(array $directories, ?Album $album, int $owner_id, ImportMode $import_mode): int
 	{
 		$delete_missing_photos = $this->option('delete_missing_photos') === '1';
+		$delete_missing_albums = $this->option('delete_missing_albums') === '1';
 		$dry_run = $this->option('dry_run') === '1';
 
 		$exec = new Exec(
 			import_mode: $import_mode,
 			intended_owner_id: $owner_id,
 			delete_missing_photos: $delete_missing_photos,
+			delete_missing_albums: $delete_missing_albums,
 			is_dry_run: $dry_run,
 		);
 

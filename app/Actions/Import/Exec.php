@@ -25,15 +25,17 @@ final class Exec
 	use HasReporterTrait;
 
 	/**
-	 * @param ImportMode $import_mode       the import mode
-	 * @param int        $intended_owner_id the intended owner ID for the imported photos and albums
+	 * @param ImportMode $import_mode           the import mode
+	 * @param int        $intended_owner_id     the intended owner ID for the imported photos and albums
 	 * @param bool       $delete_missing_photos whether to delete photos in the database that are not in the file system
-	 * @param bool       $is_dry_run       whether to run in dry-run mode without making changes
+	 * @param bool       $delete_missing_albums whether to delete albums in the database that are not in the file system
+	 * @param bool       $is_dry_run            whether to run in dry-run mode without making changes
 	 */
 	public function __construct(
 		private ImportMode $import_mode,
 		private int $intended_owner_id,
 		private bool $delete_missing_photos = false,
+		private bool $delete_missing_albums = false,
 		private bool $is_dry_run = false)
 	{
 	}
@@ -59,6 +61,7 @@ final class Exec
 				parent_album: $parent_album,
 				path: $path,
 				delete_missing_photos: $this->delete_missing_photos,
+				delete_missing_albums: $this->delete_missing_albums,
 				is_dry_run: $this->is_dry_run,
 			);
 
@@ -68,6 +71,7 @@ final class Exec
 				Pipes\BuildTree::class,
 				Pipes\PruneEmptyNodes::class,
 				Pipes\CreateNonExistingAlbums::class,
+				Pipes\DeleteMissingAlbums::class,
 				Pipes\DeleteMissingPhotos::class,
 				Pipes\ImportPhotos::class,
 			];

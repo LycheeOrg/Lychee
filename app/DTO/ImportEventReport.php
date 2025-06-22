@@ -84,11 +84,12 @@ class ImportEventReport extends BaseImportReport
 		$wrapper = match ($this->severity) {
 			SeverityType::EMERGENCY, SeverityType::ALERT, SeverityType::CRITICAL, SeverityType::ERROR => $wrapper = '<error>%s</error>',
 			SeverityType::WARNING => $wrapper = '<comment>%s</comment>',
-			SeverityType::INFO  => $wrapper = '<info>%s</info>',
+			SeverityType::INFO => $wrapper = '<info>%s</info>',
 			SeverityType::NOTICE => $wrapper = '<fg=blue>%s</>',
 			SeverityType::DEBUG => $wrapper = '<fg=gray>%s</>',
 			default => $wrapper = '<info>%s</info>', // Default to info for other severities
 		};
+
 		return sprintf($wrapper, $this->path . ($this->path !== null ? ': ' : '') . $this->message);
 	}
 }

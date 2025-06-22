@@ -27,8 +27,8 @@ trait HasReporterTrait
 	 */
 	final protected function report(BaseImportReport $report): void
 	{
-		$msgSection = (new ConsoleOutput())->section();
-		$msgSection->writeln($report->toCLIString());
+		$msg_section = (new ConsoleOutput())->section();
+		$msg_section->writeln($report->toCLIString());
 
 		if ($report instanceof ImportEventReport && $report->getException() !== null) {
 			Handler::reportSafely($report->getException());
