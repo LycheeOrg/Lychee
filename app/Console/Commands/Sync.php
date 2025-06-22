@@ -38,9 +38,9 @@ class Sync extends Command
 		'{--delete_imported=%s : Delete the original files} ' . // string
 		'{--import_via_symlink=%s : Import photos via symlink instead of copying the files} ' . // string
 		'{--skip_duplicates=%s : Skip photos and albums if they already exist in the gallery} ' . // string
-		'{--delete_missing_photos=0 : Delete photos in the album that are not present in the synced directory} ' . // bool
-		'{--delete_missing_albums=0 : Delete albums in the parent album that are not present in the synced directory} ' . // bool
-		'{--dry_run=1 : Run the delete photos process but do not make any changes}'; // bool
+		'{--delete_missing_photos=%s : Delete photos in the album that are not present in the synced directory} ' . // bool
+		'{--delete_missing_albums=%s : Delete albums in the parent album that are not present in the synced directory} ' . // bool
+		'{--dry_run=%s : Run the delete photos process but do not make any changes}'; // bool
 
 	/**
 	 * The console command description.
@@ -57,13 +57,16 @@ class Sync extends Command
 				$this->signature,
 				Configs::getValueAsString('delete_imported'),
 				Configs::getValueAsString('import_via_symlink'),
-				Configs::getValueAsString('skip_duplicates')
+				Configs::getValueAsString('skip_duplicates'),
+				Configs::getValueAsString('sync_delete_missing_photos'),
+				Configs::getValueAsString('sync_delete_missing_albums'),
+				Configs::getValueAsString('sync_dry_run'),
 			);
 		} catch (ConfigurationKeyMissingException) {
 			// Catching this exception is necessary as artisan package:discover
 			// is called after each composer installation/update and artisan
 			// tries to instantiate every command.
-			$this->signature = sprintf($this->signature, '0', '0', '0');
+			$this->signature = sprintf($this->signature, '0', '0', '0', '0', '0', '1');
 		}
 		parent::__construct();
 	}
