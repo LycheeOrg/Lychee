@@ -11,6 +11,7 @@ namespace App\Actions\Import\Pipes;
 use App\DTO\BaseImportReport;
 use App\DTO\ImportEventReport;
 use App\Exceptions\Handler;
+use Illuminate\Support\Facades\App;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
 trait HasReporterTrait
@@ -24,9 +25,17 @@ trait HasReporterTrait
 	 * @param BaseImportReport $report the report
 	 *
 	 * @return void
+	 *
+	 * @codeCoverageIgnore
 	 */
 	final protected function report(BaseImportReport $report): void
 	{
+		// Silence reporting during unit tests
+		// to avoid cluttering the test output with reports.
+		if (App::runningUnitTests()) {
+			return;
+		}
+
 		$msg_section = (new ConsoleOutput())->section();
 		$msg_section->writeln($report->toCLIString());
 
