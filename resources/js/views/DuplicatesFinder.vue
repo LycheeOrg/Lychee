@@ -19,13 +19,13 @@
 			<span class="text-muted-color-emphasis">{{ duplicates?.length }}</span> {{ $t("duplicate-finder.found") }}
 		</p>
 		<p class="text-muted-color-emphasis" v-if="!isValid">
-			<i class="text-warning-700 pi pi-exclamation-triangle mr-2" /> {{ $t("duplicate-finder.invalid-search") }}
+			<i class="text-warning-700 pi pi-exclamation-triangle ltr:mr-2 rtl:ml-2" /> {{ $t("duplicate-finder.invalid-search") }}
 		</p>
 	</div>
 	<div class="text-muted-color">
 		<div class="md:max-w-md mt-2 mb-16 mx-auto">
 			<ul class="mb-4" v-if="is_se_enabled || is_se_preview_enabled">
-				<li class="ml-2 pt-1 flex items-center gap-x-4">
+				<li class="ltr:ml-2 rtl:mr-2 pt-1 flex items-center gap-x-4">
 					<Checkbox
 						v-model="withChecksumConstraint"
 						binary
@@ -37,7 +37,7 @@
 						{{ $t("duplicate-finder.checksum-must-match") }}
 					</label>
 				</li>
-				<li class="ml-2 pt-1 flex items-center gap-x-4">
+				<li class="ltr:ml-2 rtl:mr-2 pt-1 flex items-center gap-x-4">
 					<Checkbox
 						v-model="withTitleConstraint"
 						binary
@@ -50,7 +50,7 @@
 					</label>
 					<SETag />
 				</li>
-				<li class="ml-2 pt-1 flex items-center gap-x-4">
+				<li class="ltr:ml-2 rtl:mr-2 pt-1 flex items-center gap-x-4">
 					<Checkbox
 						v-model="withAlbumConstraint"
 						binary
@@ -79,9 +79,9 @@
 					class="w-full font-bold border-none mb-4"
 					@click="isDeleteVisible = true"
 					:disabled="selectedIds.length === 0"
-					>{{ $t("duplicate-finder.delete-selected") }}</Button
 				>
-
+					{{ $t("duplicate-finder.delete-selected") }}
+				</Button>
 				<img :src="hoverImgSrc" class="w-full" />
 				<div class="text-center mt-2 font-bold text-muted-color-emphasis">
 					<span class="inline-block w-full text-ellipsis text-nowrap whitespace-nowrap overflow-hidden">{{ hoverTitle }}</span>

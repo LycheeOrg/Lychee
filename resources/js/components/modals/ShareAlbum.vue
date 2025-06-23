@@ -20,9 +20,10 @@
 				"
 				severity="secondary"
 				:label="trans('dialogs.button.close')"
-				class="font-bold border-none w-full select-none border-t border-t-black/20 rounded-none rounded-bl-xl rounded-br-xl"
-				>{{ trans("dialogs.button.close") }}</Button
+				class="font-bold border-none w-full select-none border-t border-t-black/20 rounded-none rounded-b-xl"
 			>
+				{{ trans("dialogs.button.close") }}
+			</Button>
 		</template>
 	</Dialog>
 </template>

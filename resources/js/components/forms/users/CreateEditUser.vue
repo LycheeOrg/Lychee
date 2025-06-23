@@ -12,15 +12,15 @@
 				</FloatLabel>
 				<div class="w-full items-center text-muted-color">
 					<Checkbox inputId="mayUpload" v-model="may_upload" :binary="true" />
-					<label for="mayUpload" class="ml-2 cursor-pointer3">{{ $t("users.create_edit.upload_rights") }}</label>
+					<label for="mayUpload" class="ltr:ml-2 rtl:mr-2 cursor-pointer3">{{ $t("users.create_edit.upload_rights") }}</label>
 				</div>
 				<div class="w-full items-center text-muted-color">
 					<Checkbox inputId="mayEdit" v-model="may_edit_own_settings" :binary="true" />
-					<label for="mayEdit" class="ml-2 cursor-pointer">{{ $t("users.create_edit.edit_rights") }}</label>
+					<label for="mayEdit" class="ltr:ml-2 rtl:mr-2 cursor-pointer">{{ $t("users.create_edit.edit_rights") }}</label>
 				</div>
 				<div class="w-full items-center text-muted-color" v-if="is_se_enabled || is_se_preview_enabled">
 					<Checkbox inputId="hasQuota" v-model="has_quota" :binary="true" />
-					<label for="hasQuota" class="ml-2 cursor-pointer">{{ $t("users.create_edit.quota") }} <SETag /></label>
+					<label for="hasQuota" class="ltr:ml-2 rtl:mr-2 cursor-pointer">{{ $t("users.create_edit.quota") }} <SETag /></label>
 				</div>
 				<div class="w-full flex items-center text-muted-color" v-if="has_quota === true">
 					<InputText id="quotaKb" v-model="quota_kb" aria-label="quotaKb" class="!w-1/2" />
@@ -28,19 +28,23 @@
 				</div>
 				<div class="w-full flex items-center text-muted-color pt-2" v-if="is_se_enabled">
 					<FloatLabel variant="on">
-						<Textarea id="note" class="w-full h-18" v-model="note" rows="2" cols="40" />
+						<Textarea id="note" class="w-full h-18" v-model="note" :rows="2" :cols="40" />
 						<label for="note">{{ $t("users.create_edit.note") }}</label>
 					</FloatLabel>
 				</div>
 			</div>
 			<div class="flex">
-				<Button @click="closeCallback" severity="secondary" class="w-full border-0 rounded-none rounded-bl-lg font-bold">
+				<Button
+					@click="closeCallback"
+					severity="secondary"
+					class="w-full border-0 rounded-none ltr:rounded-bl-lg rtl:rounded-br-lg font-bold"
+				>
 					{{ $t("dialogs.button.cancel") }}
 				</Button>
 				<Button
 					v-if="!props.isEdit"
 					@click="createUser"
-					class="w-full border-0 bg-transparent text-create-600 hover:bg-create-600 hover:text-white rounded-none rounded-br-lg font-bold"
+					class="w-full border-0 bg-transparent text-create-600 hover:bg-create-600 hover:text-white rounded-none ltr:rounded-br-lg rtl:rounded-bl-lg font-bold"
 					:disabled="username === undefined || password === undefined || username === '' || password === ''"
 				>
 					<i class="pi pi-user-plus" /><span class="hidden md:inline">{{ $t("users.create_edit.create") }}</span>
@@ -49,7 +53,7 @@
 					v-else
 					@click="editUser"
 					severity="contrast"
-					class="w-full border-0 rounded-none rounded-br-lg font-bold"
+					class="w-full border-0 rounded-none ltr:rounded-br-lg rtl:rounded-bl-lg font-bold"
 					:disabled="username === undefined || username === ''"
 				>
 					<i class="pi pi-user-edit" /><span class="hidden md:inline">{{ $t("users.create_edit.edit") }}</span>

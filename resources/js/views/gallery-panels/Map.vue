@@ -2,7 +2,7 @@
 	<Collapse :when="!is_full_screen">
 		<Toolbar class="w-full border-0 h-14">
 			<template #start>
-				<Button icon="pi pi-angle-left" class="mr-2" severity="secondary" text @click="goBack" />
+				<GoBack @go-back="goBack" />
 			</template>
 			<template #center>
 				{{ $t(lycheeStore.title) }}
@@ -41,6 +41,7 @@ import Constants from "@/services/constants";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { onMounted } from "vue";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
+import GoBack from "@/components/headers/GoBack.vue";
 
 type MapPhotoEntry = {
 	lat?: number | null;

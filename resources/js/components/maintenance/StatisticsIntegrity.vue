@@ -19,9 +19,9 @@
 				<ProgressSpinner v-if="loading" class="w-full"></ProgressSpinner>
 			</ScrollPanel>
 			<div class="flex gap-4 mt-1">
-				<Button severity="primary" v-if="!loading" class="w-full font-bold border-none" @click="exec">{{
-					$t("maintenance.statistics-check.button")
-				}}</Button>
+				<Button severity="primary" v-if="!loading" class="w-full font-bold border-none" @click="exec">
+					{{ $t("maintenance.statistics-check.button") }}
+				</Button>
 			</div>
 		</template>
 	</Card>

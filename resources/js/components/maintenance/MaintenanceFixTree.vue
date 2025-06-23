@@ -22,9 +22,9 @@
 			</ScrollPanel>
 			<div class="flex gap-4 mt-1">
 				<!-- @vue-ignore -->
-				<Button as="router-link" :to="{ name: 'tree' }" v-if="fixable && !loading" severity="primary" class="w-full border-none">{{
-					$t("maintenance.fix-tree.button")
-				}}</Button>
+				<Button as="router-link" :to="{ name: 'tree' }" v-if="fixable && !loading" severity="primary" class="w-full border-none">
+					{{ $t("maintenance.fix-tree.button") }}
+				</Button>
 			</div>
 		</template>
 	</Card>

@@ -1,5 +1,5 @@
 <template>
-	<Panel :header="$t('diagnostics.self-diagnosis')" class="border-none max-w-7xl mx-auto">
+	<Panel :header="$t('diagnostics.self-diagnosis')" class="border-none max-w-7xl mx-auto" dir="ltr">
 		<div v-if="!errors" class="text-sky-400 font-bold">{{ $t("diagnostics.loading") }}</div>
 		<div v-else v-for="error in errors" class="flex flex-col">
 			<div class="w-full flex">

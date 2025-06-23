@@ -30,6 +30,21 @@ export function useImageHelpers() {
 	};
 }
 
+export function useLtRorRtL() {
+	function isLTR(): boolean {
+		return document.documentElement.dir !== "rtl";
+	}
+
+	function isRTL(): boolean {
+		return document.documentElement.dir === "rtl";
+	}
+
+	return {
+		isLTR,
+		isRTL,
+	};
+}
+
 export const EmptyAlbumCallbacks = {
 	setAsCover: () => {},
 	toggleRename: () => {},

@@ -2,7 +2,7 @@
 	<Fieldset
 		:legend="$t('profile.login.header')"
 		:toggleable="true"
-		class="border-b-0 border-r-0 rounded-r-none rounded-b-none mb-4 hover:border-primary-500 pt-2 max-w-xl mx-auto"
+		class="mb-4 hover:border-primary-500 pt-2 max-w-xl mx-auto"
 		v-if="user && user.id !== null"
 	>
 		<form>
@@ -42,12 +42,12 @@
 				</FloatLabel>
 			</div>
 			<div class="flex w-full mt-4">
-				<Button severity="contrast" class="w-full font-bold border-none shrink rounded-none rounded-bl-xl rounded-tl-xl" @click="save">
+				<Button severity="contrast" class="w-full font-bold border-none shrink rounded-none ltr:rounded-l-xl rtl:rounded-r-xl" @click="save">
 					{{ $t("profile.login.change") }}
 				</Button>
 				<Button
 					severity="secondary"
-					class="w-full font-bold border-none shrink rounded-none rounded-br-xl rounded-tr-xl"
+					class="w-full font-bold border-none shrink rounded-none ltr:rounded-r-xl rtl:rounded-l-xl"
 					@click="isApiTokenOpen = !isApiTokenOpen"
 				>
 					{{ $t("profile.login.api_token") }}
@@ -67,8 +67,8 @@ import InputText from "@/components/forms/basic/InputText.vue";
 import ApiToken from "@/components/forms/profile/ApiToken.vue";
 import ProfileService from "@/services/profile-service";
 import AuthService from "@/services/auth-service";
-import Fieldset from "primevue/fieldset";
 import { trans } from "laravel-vue-i18n";
+import Fieldset from "@/components/forms/basic/Fieldset.vue";
 
 const isApiTokenOpen = ref(false);
 

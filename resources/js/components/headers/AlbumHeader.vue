@@ -3,7 +3,7 @@
 	<DropBox v-if="canUpload" v-model:visible="is_import_from_dropbox_open" :album-id="props.album.id" />
 	<Toolbar class="w-full border-0 h-14" v-if="album">
 		<template #start>
-			<Button icon="pi pi-angle-left" class="mr-2 border-none" severity="secondary" text @click="emits('goBack')" />
+			<GoBack @go-back="emits('goBack')" />
 		</template>
 
 		<template #center>
@@ -32,7 +32,7 @@
 				<Button
 					:icon="is_album_edit_open ? 'pi pi-angle-up' : 'pi pi-angle-down'"
 					severity="secondary"
-					:class="{ 'mr-2 border-none': true, 'text-primary-400': is_album_edit_open }"
+					:class="{ 'ltr:mr-2 rtl:ml-2 border-none': true, 'text-primary-400': is_album_edit_open }"
 					text
 					@click="emits('toggleEdit')"
 				/>
@@ -44,7 +44,7 @@
 			<Divider v-if="item.is_divider" />
 			<a v-else v-ripple v-bind="props.action" @click="item.callback">
 				<span :class="item.icon" />
-				<span class="ml-2">
+				<span class="ltr:ml-2 rtl:mr-2">
 					<!-- @vue-ignore -->
 					{{ $t(item.label) }}
 				</span>
@@ -68,6 +68,8 @@ import AlbumService from "@/services/album-service";
 import DropBox from "../modals/DropBox.vue";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { useFavouriteStore } from "@/stores/FavouriteState";
+import { useLtRorRtL } from "@/utils/Helpers";
+import GoBack from "./GoBack.vue";
 
 const props = defineProps<{
 	config: App.Http.Resources.GalleryConfigs.AlbumConfig;
@@ -79,6 +81,7 @@ const togglableStore = useTogglablesStateStore();
 const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
 const favourites = useFavouriteStore();
+const { isLTR } = useLtRorRtL();
 
 const { dropbox_api_key, is_favourite_enabled } = storeToRefs(lycheeStore);
 const { is_album_edit_open } = storeToRefs(togglableStore);

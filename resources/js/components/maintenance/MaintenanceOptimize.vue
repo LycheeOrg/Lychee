@@ -17,9 +17,9 @@
 				<pre class="text-2xs m-4" v-if="data.length > 0">{{ data.join("\n") }}</pre>
 			</ScrollPanel>
 			<div class="flex gap-4 mt-1">
-				<Button v-if="data.length === 0 && !loading" severity="primary" class="w-full border-none" @click="exec">{{
-					$t("maintenance.optimize.button")
-				}}</Button>
+				<Button v-if="data.length === 0 && !loading" severity="primary" class="w-full border-none" @click="exec">
+					{{ $t("maintenance.optimize.button") }}
+				</Button>
 			</div>
 		</template>
 	</Card>

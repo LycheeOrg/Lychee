@@ -12,9 +12,9 @@
 			<div class="flex flex-col gap-2 w-32">
 				<div class="flex items-center">
 					<ToggleSwitch id="pp_taken_at_created_at" v-model="isTakenAt" class="mr-2" @change="load" />
-					<label class="text-sm" for="pp_taken_at_created_at">{{
-						isTakenAt ? $t("statistics.punch_card.taken_at") : $t("statistics.punch_card.created_at")
-					}}</label>
+					<label class="text-sm" for="pp_taken_at_created_at">
+						{{ isTakenAt ? $t("statistics.punch_card.taken_at") : $t("statistics.punch_card.created_at") }}
+					</label>
 				</div>
 				<div class="text-right">
 					<ScrollPanel class="w-32 h-24" pt:content:class="flex flex-col">
@@ -23,8 +23,9 @@
 							class="hover:text-primary cursor-pointer mr-4"
 							:class="{ 'text-primary': y === year }"
 							@click="handleYear(y)"
-							>{{ y }}</span
 						>
+							{{ y }}
+						</span>
 					</ScrollPanel>
 				</div>
 			</div>

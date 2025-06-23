@@ -21,12 +21,12 @@
 						class="w-full"
 						:virtualScrollerOptions="{ itemSize: 28 }"
 					>
-						<template #header
-							><span class="text-muted-color-emphasis font-bold">{{ $t("sharing.albums") }}</span></template
-						>
-						<template #empty
-							><span class="text-muted-color">{{ $t("sharing.no_albums") }}</span></template
-						>
+						<template #header>
+							<span class="text-muted-color-emphasis font-bold">{{ $t("sharing.albums") }}</span>
+						</template>
+						<template #empty>
+							<span class="text-muted-color">{{ $t("sharing.no_albums") }}</span>
+						</template>
 						<template #option="slotProps">
 							<div class="flex items-center">
 								<div
@@ -52,12 +52,12 @@
 						class="w-full"
 						:virtualScrollerOptions="{ itemSize: 28 }"
 					>
-						<template #header
-							><span class="text-muted-color-emphasis font-bold">{{ $t("sharing.users") }}</span></template
-						>
-						<template #empty
-							><span class="text-muted-color">{{ $t("sharing.no_users") }}</span></template
-						>
+						<template #header>
+							<span class="text-muted-color-emphasis font-bold">{{ $t("sharing.users") }}</span>
+						</template>
+						<template #empty>
+							<span class="text-muted-color">{{ $t("sharing.no_users") }}</span>
+						</template>
 					</Listbox>
 				</div>
 

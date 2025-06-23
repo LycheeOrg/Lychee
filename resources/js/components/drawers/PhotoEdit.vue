@@ -7,7 +7,7 @@
 					<InputText id="title" type="text" v-model="title" :invalid="!title" />
 
 					<label for="description" class="font-bold mt-4 md:mt-0">{{ $t("gallery.photo.edit.set_description") }}</label>
-					<Textarea id="description" class="w-full h-48" v-model="description" rows="5" cols="30" />
+					<Textarea id="description" class="w-full h-48" v-model="description" :rows="5" :cols="30" />
 
 					<label for="tags" class="font-bold h-11 mt-4 md:mt-0 self-center">{{ $t("gallery.photo.edit.set_tags") }}</label>
 					<AutoComplete
@@ -35,7 +35,7 @@
 					<label for="takenAtDate" class="font-bold mt-4 md:mt-0 self-center">{{ $t("gallery.photo.edit.set_taken_at") }}</label>
 
 					<InputGroup>
-						<InputGroupAddon class="border-t-0 rounded-tl-none">
+						<InputGroupAddon class="border-t-0 rounded-t-none">
 							<Checkbox v-model="is_taken_at_modified" :binary="true" v-tooltip="'Modify taken date'" />
 						</InputGroupAddon>
 						<DatePicker
@@ -47,13 +47,13 @@
 							:showSeconds="true"
 							:disabled="!is_taken_at_modified"
 							:class="{
-								'border-0 p-0 w-full border-b hover:border-b-primary-400 focus:border-b-primary-400 rounded-br-none': true,
+								'border-0 p-0 w-full border-b hover:border-b-primary-400 focus:border-b-primary-400 ltr:rounded-br-none rtl:rounded-bl-none': true,
 								'border-dashed': !is_taken_at_modified,
 							}"
 						/>
 						<InputGroupAddon
 							:class="{
-								'border-t-0 border-r-0 rounded-br-none hover:border-b-primary-400': true,
+								'border-t-0 ltr:border-r-0 rtl:border-l-0 ltr:rounded-br-none rtl:rounded-bl-none rounded-t-none hover:border-b-primary-400': true,
 								'border-dashed': !is_taken_at_modified,
 							}"
 						>

@@ -5,7 +5,7 @@
 				<template #item="{ item, props }">
 					<a
 						:href="item.link"
-						class="nav-link block hover:text-primary-400 border-l border-solid border-surface-700 hover:border-primary-400 px-4 capitalize"
+						class="nav-link block hover:text-primary-400 ltr:border-l rtl:border-r border-solid border-surface-700 hover:border-primary-400 px-4 capitalize"
 						@click.prevent="goto(item.link)"
 					>
 						<span>{{ item.label }}</span>
@@ -17,8 +17,7 @@
 					v-for="(configGroup, key) in props.configs"
 					:legend="configGroup.name"
 					:toggleable="true"
-					class="border-b-0 border-r-0 rounded-r-none rounded-b-none mb-4 hover:border-primary-500 pt-2"
-					:pt:legendlabel:class="'capitalize'"
+					class="mb-4 hover:border-primary-500 pt-2"
 					:id="key"
 				>
 					<ConfigGroup :configs="configGroup.configs" @filled="filled" @reset="reset" />
@@ -30,11 +29,11 @@
 <script setup lang="ts">
 import { computed, onUpdated, ref } from "vue";
 import Menu from "primevue/menu";
-import Fieldset from "primevue/fieldset";
 // @ts-expect-error
 import scrollSpy from "@sidsbrmnn/scrollspy";
 import ConfigGroup from "./ConfigGroup.vue";
 import { onMounted } from "vue";
+import Fieldset from "@/components/forms/basic/Fieldset.vue";
 
 const props = defineProps<{
 	configs: App.Http.Resources.Models.ConfigCategoryResource[];

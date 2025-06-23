@@ -4,10 +4,10 @@
 		:class="{
 			'h-full relative transition-all overflow-x-clip overflow-y-scroll bg-bg-800': true,
 			'w-[380px]': areDetailsOpen,
-			'w-0 translate-x-full': !areDetailsOpen,
+			'w-0 ltr:translate-x-full rtl:-translate-x-full': !areDetailsOpen,
 		}"
 	>
-		<Card id="lychee_sidebar" v-if="props.photo" class="w-[380px] h-full pr-4 break-words">
+		<Card id="lychee_sidebar" v-if="props.photo" class="w-[380px] h-full ltr:pr-4 rtl:pl-4 break-words">
 			<template #content>
 				<div class="flex flex-col mt-8">
 					<h1 class="text-center text-2xl font-bold my-4">
@@ -22,12 +22,12 @@
 							<span class="font-bold text-lg">{{ props.photo.title }}</span>
 							<div class="flex gap-3 text-muted-color text-sm">
 								<span v-if="props.photo.preformatted.resolution">{{ props.photo.preformatted.resolution }}</span>
-								<span v-if="props.photo.precomputed.is_video && props.photo.preformatted.duration">{{
-									props.photo.preformatted.duration
-								}}</span>
-								<span v-if="props.photo.precomputed.is_video && props.photo.preformatted.fps">{{
-									props.photo.preformatted.fps
-								}}</span>
+								<span v-if="props.photo.precomputed.is_video && props.photo.preformatted.duration">
+									{{ props.photo.preformatted.duration }}
+								</span>
+								<span v-if="props.photo.precomputed.is_video && props.photo.preformatted.fps">
+									{{ props.photo.preformatted.fps }}
+								</span>
 								<span>{{ props.photo.preformatted.filesize }}</span>
 							</div>
 						</div>
@@ -42,17 +42,17 @@
 					<!-- Dates stuff -->
 					<div class="flex-col text-muted-color">
 						<div class="flex gap-1 items-center">
-							<span class="w-6 inline-block text-left"
-								><i class="pi pi-file-arrow-up" v-tooltip="$t('gallery.photo.details.uploaded')"
-							/></span>
+							<span class="w-6 inline-block">
+								<i class="pi pi-file-arrow-up" v-tooltip="$t('gallery.photo.details.uploaded')" />
+							</span>
 							<span class="text-sm">{{ props.photo.preformatted.created_at }}</span>
 						</div>
 						<div class="flex gap-1 items-start">
-							<span class="w-6 inline-block text-left"
-								><i class="pi pi-camera w-6 pt-1 inline-block" v-tooltip="$t('gallery.photo.details.captured')"
-							/></span>
-							<span v-if="props.photo.preformatted.taken_at" class="text-sm"
-								>{{ props.photo.preformatted.taken_at }}
+							<span class="w-6 inline-block">
+								<i class="pi pi-camera w-6 pt-1 inline-block" v-tooltip="$t('gallery.photo.details.captured')" />
+							</span>
+							<span v-if="props.photo.preformatted.taken_at" class="text-sm">
+								{{ props.photo.preformatted.taken_at }}
 								<span v-if="props.photo.precomputed.is_taken_at_modified" class="text-warning-600">*</span>
 							</span>
 						</div>

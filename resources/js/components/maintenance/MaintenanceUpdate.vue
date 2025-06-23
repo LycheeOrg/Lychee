@@ -19,9 +19,9 @@
 		</template>
 		<template #footer>
 			<Button v-if="canCheck" severity="primary" class="w-full border-none" @click="check">{{ $t("maintenance.update.check-button") }}</Button>
-			<Button v-if="canUpdate" severity="primary" class="w-full border-none" href="/Update" target="_blank" rel="noopener">{{
-				$t("maintenance.update.update-button")
-			}}</Button>
+			<Button v-if="canUpdate" severity="primary" class="w-full border-none" href="/Update" target="_blank" rel="noopener">
+				{{ $t("maintenance.update.update-button") }}
+			</Button>
 			<div v-if="!canCheck && !canUpdate && !loading" class="w-full text-center">
 				{{ $t("maintenance.update.no-pending-updates") }}
 			</div>
