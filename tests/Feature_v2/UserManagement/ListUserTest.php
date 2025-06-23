@@ -18,6 +18,7 @@
 
 namespace Tests\Feature_v2\UserManagement;
 
+use LycheeVerify\Contract\Status;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 class ListUserTest extends BaseApiWithDataTest
@@ -73,5 +74,51 @@ class ListUserTest extends BaseApiWithDataTest
 					'may_edit_own_settings' => $this->userLocked->may_edit_own_settings,
 				],
 			]);
+	}
+
+	public function testListUsersAdminWithSE(): void
+	{
+		$this->requireSe();
+		$response = $this->actingAs($this->admin)->getJson('UserManagement');
+		$this->assertOk($response);
+		$response->assertJson(
+			[
+				[
+					'id' => $this->admin->id,
+					'username' => $this->admin->username,
+					'may_administrate' => true,
+					'may_upload' => true,
+					'may_edit_own_settings' => true,
+				],
+				[
+					'id' => $this->userMayUpload1->id,
+					'username' => $this->userMayUpload1->username,
+					'may_administrate' => $this->userMayUpload1->may_administrate,
+					'may_upload' => $this->userMayUpload1->may_upload,
+					'may_edit_own_settings' => $this->userMayUpload1->may_edit_own_settings,
+				],
+				[
+					'id' => $this->userMayUpload2->id,
+					'username' => $this->userMayUpload2->username,
+					'may_administrate' => $this->userMayUpload2->may_administrate,
+					'may_upload' => $this->userMayUpload2->may_upload,
+					'may_edit_own_settings' => $this->userMayUpload2->may_edit_own_settings,
+				],
+				[
+					'id' => $this->userNoUpload->id,
+					'username' => $this->userNoUpload->username,
+					'may_administrate' => $this->userNoUpload->may_administrate,
+					'may_upload' => $this->userNoUpload->may_upload,
+					'may_edit_own_settings' => $this->userNoUpload->may_edit_own_settings,
+				],
+				[
+					'id' => $this->userLocked->id,
+					'username' => $this->userLocked->username,
+					'may_administrate' => $this->userLocked->may_administrate,
+					'may_upload' => $this->userLocked->may_upload,
+					'may_edit_own_settings' => $this->userLocked->may_edit_own_settings,
+				],
+			]);
+		$this->requireSe(Status::FREE_EDITION);
 	}
 }

@@ -323,7 +323,9 @@ abstract class BaseMediaFile extends AbstractBinaryBlob implements MediaFile
 	public static function assertIsSupportedOrAcceptedFileExtension(string $extension): void
 	{
 		if (!self::isSupportedOrAcceptedFileExtension($extension)) {
+			// @codeCoverageIgnoreStart
 			throw new MediaFileUnsupportedException(MediaFileUnsupportedException::DEFAULT_MESSAGE . ' (bad extension: ' . $extension . ')');
+			// @codeCoverageIgnoreEnd
 		}
 	}
 

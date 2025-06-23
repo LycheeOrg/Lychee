@@ -27,17 +27,6 @@ class ImportProgressReport extends BaseImportReport
 		return new self($path, $progress);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function toArray(): array
-	{
-		return array_merge(parent::toArray(), [
-			'path' => $this->path,
-			'progress' => $this->progress,
-		]);
-	}
-
 	public function toCLIString(): string
 	{
 		return $this->path . ': ' . $this->progress . '%';

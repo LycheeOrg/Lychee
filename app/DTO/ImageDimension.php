@@ -8,7 +8,7 @@
 
 namespace App\DTO;
 
-class ImageDimension extends ArrayableDTO
+class ImageDimension
 {
 	public function __construct(
 		public int $width,

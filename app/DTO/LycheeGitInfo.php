@@ -10,7 +10,7 @@ namespace App\DTO;
 
 use App\Metadata\Versions\GitHubVersion;
 
-class LycheeGitInfo extends ArrayableDTO
+class LycheeGitInfo
 {
 	public string $branch;
 	public string $commit;

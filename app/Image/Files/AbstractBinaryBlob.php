@@ -98,9 +98,11 @@ abstract class AbstractBinaryBlob implements BinaryBlob
 				\Safe\fclose($this->stream);
 				$this->stream = null;
 			}
+			// @codeCoverageIgnoreStart
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**

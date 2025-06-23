@@ -87,9 +87,11 @@ class FlysystemFile extends BaseMediaFile
 			\umask($umask);
 
 			return $stream_stat;
+			// @codeCoverageIgnoreStart
 		} catch (\ErrorException|FilesystemException $e) {
 			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -101,9 +103,11 @@ class FlysystemFile extends BaseMediaFile
 			if (!$this->disk->delete($this->relativePath)) {
 				throw new FlySystemLycheeException('Filesystem::delete failed');
 			}
+			// @codeCoverageIgnoreStart
 		} catch (\ErrorException|FilesystemException $e) {
 			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -112,7 +116,9 @@ class FlysystemFile extends BaseMediaFile
 	public function move(string $new_path): void
 	{
 		if (!$this->disk->move($this->relativePath, $new_path)) {
+			// @codeCoverageIgnoreStart
 			throw new MediaFileOperationException('could not move file');
+			// @codeCoverageIgnoreEnd
 		}
 		$this->relativePath = $new_path;
 	}
@@ -193,7 +199,9 @@ class FlysystemFile extends BaseMediaFile
 	public function toLocalFile(): NativeLocalFile
 	{
 		if (!$this->isLocalFile()) {
+			// @codeCoverageIgnoreStart
 			throw new MediaFileOperationException('file is not hosted locally');
+			// @codeCoverageIgnoreEnd
 		}
 
 		return new NativeLocalFile($this->disk->path($this->relativePath));

@@ -79,6 +79,19 @@ class SecureImageLinksTest extends BaseApiWithDataTest
 		$this->assertForbidden($response);
 	}
 
+	public function testBrokenSignature2(): void
+	{
+		$this->setTemporaryLink();
+		$response = $this->getJsonWithData('Album', ['album_id' => $this->album4->id]);
+		$this->assertOk($response);
+		$url = $response->json('resource.photos.0.size_variants.medium.url');
+		$this->assertStringContainsString('/image/medium/', $url);
+
+		$unsigned_url = explode('?', $url)[0];
+		$response = $this->get($unsigned_url . '?signature=broken_signature');
+		$this->assertForbidden($response);
+	}
+
 	public function testEncryptedImages(): void
 	{
 		$this->setSecureLink();

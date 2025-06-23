@@ -18,6 +18,7 @@
 
 namespace Tests\Feature_v2\Album;
 
+use App\Models\Album;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 class AlbumListTest extends BaseApiWithDataTest
@@ -36,5 +37,15 @@ class AlbumListTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->admin)->getJson('Album::getTargetListAlbums?album_ids[]=' . $this->album1->id);
 		$this->assertOk($response);
 		$response->assertDontSee($this->subAlbum1->id);
+	}
+
+	public function testListTargetAlbumAuthorizedWithCrop(): void
+	{
+		$album1 = Album::factory()->as_root()->owned_by($this->admin)->with_title('123456789012345678901234567890')->create();
+		$album2 = Album::factory()->children_of($album1)->owned_by($this->admin)->with_title('123456789012345678901234567890')->create();
+		$album3 = Album::factory()->children_of($album2)->owned_by($this->admin)->with_title('123456789012345678901234567890')->create();
+		$album4 = Album::factory()->children_of($album3)->owned_by($this->admin)->with_title('123456789012345678901234567890')->create();
+		$response = $this->actingAs($this->admin)->getJson('Album::getTargetListAlbums?album_ids[]=' . $album4->id);
+		$this->assertOk($response);
 	}
 }

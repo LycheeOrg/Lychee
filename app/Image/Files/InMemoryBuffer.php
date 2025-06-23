@@ -39,9 +39,11 @@ class InMemoryBuffer extends AbstractBinaryBlob
 			\Safe\rewind($this->stream);
 
 			return $this->stream;
+			// @codeCoverageIgnoreStart
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -69,9 +71,11 @@ class InMemoryBuffer extends AbstractBinaryBlob
 			\Safe\stream_copy_to_stream($stream, $this->stream);
 
 			return $stream_stat;
+			// @codeCoverageIgnoreStart
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -94,8 +98,10 @@ class InMemoryBuffer extends AbstractBinaryBlob
 			}
 
 			return $this->stream;
+			// @codeCoverageIgnoreStart
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 }

@@ -23,7 +23,6 @@ use App\Exceptions\ReservedDirectoryException;
 use App\Image\Files\NativeLocalFile;
 use App\Models\Album;
 use Illuminate\Contracts\Container\BindingResolutionException;
-use Illuminate\Database\Eloquent\JsonEncodingException;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use Psr\Container\ContainerExceptionInterface;
@@ -34,38 +33,31 @@ use Safe\Exceptions\StringsException;
 use function Safe\file;
 use function Safe\glob;
 use function Safe\ini_get;
-use function Safe\ob_flush;
 use function Safe\preg_match;
 use function Safe\realpath;
 use function Safe\set_time_limit;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class Exec
 {
 	protected ImportMode $import_mode;
 	protected PhotoCreate $photo_create;
 	protected AlbumCreate $album_create;
-	protected bool $enable_cli_formatting = false;
 	protected int $mem_limit = 0;
 	protected bool $mem_warning_given = false;
-	private bool $first_report_given = false;
 
 	/**
-	 * @param ImportMode $import_mode           the import mode
-	 * @param bool       $enable_cli_formatting determines whether the output shall be formatted for CLI or as JSON
-	 * @param int        $mem_limit             the threshold when a memory warning shall be reported; `0` means unlimited
+	 * @param ImportMode $import_mode the import mode
+	 * @param int        $mem_limit   the threshold when a memory warning shall be reported; `0` means unlimited
 	 */
 	public function __construct(
 		ImportMode $import_mode,
 		int $intended_owner_id,
-		bool $enable_cli_formatting,
 		int $mem_limit = 0)
 	{
 		Session::forget('cancel');
 		$this->import_mode = $import_mode;
 		$this->photo_create = new PhotoCreate($import_mode, $intended_owner_id);
 		$this->album_create = new AlbumCreate($intended_owner_id);
-		$this->enable_cli_formatting = $enable_cli_formatting;
 		$this->mem_limit = $mem_limit;
 	}
 
@@ -92,23 +84,7 @@ class Exec
 	 */
 	private function report(BaseImportReport $report): void
 	{
-		if (!$this->enable_cli_formatting) {
-			try {
-				if ($this->first_report_given) {
-					echo ',';
-				}
-				echo $report->toJson();
-				$this->first_report_given = true;
-				if (ob_get_level() > 0) {
-					ob_flush();
-				}
-				flush();
-			} catch (JsonEncodingException) {
-				// do nothing
-			}
-		} else {
-			echo $report->toCLIString() . PHP_EOL;
-		}
+		echo $report->toCLIString() . PHP_EOL;
 
 		if ($report instanceof ImportEventReport && $report->getException() !== null) {
 			Handler::reportSafely($report->getException());
