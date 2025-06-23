@@ -7,9 +7,9 @@
 					<p v-else>{{ $t("dialogs.dropbox.not_configured") }}.</p>
 				</div>
 				<div class="flex justify-center">
-					<Button severity="secondary" class="w-full font-bold border-none rounded-none rounded-b-xl" @click="closeCallback">{{
-						$t("dialogs.button.cancel")
-					}}</Button>
+					<Button severity="secondary" class="w-full font-bold border-none rounded-none rounded-b-xl" @click="closeCallback">
+						{{ $t("dialogs.button.cancel") }}
+					</Button>
 				</div>
 			</div>
 		</template>

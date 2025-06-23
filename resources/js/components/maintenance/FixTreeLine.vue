@@ -15,8 +15,9 @@
 				:class="{
 					'font-bold text-primary-emphasis': isHoverParent || isHoverId,
 				}"
-				>{{ props.album.title }}</span
 			>
+				{{ props.album.title }}
+			</span>
 		</div>
 		<div class="flex w-1/4 gap-4">
 			<div class="flex">

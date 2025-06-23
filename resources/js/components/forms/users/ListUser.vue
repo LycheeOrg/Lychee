@@ -37,8 +37,8 @@
 			class="border-none bg-transparent text-danger-600 hover:bg-danger-700 hover:text-white w-1/12 lg:w-2/12"
 			:disabled="props.user.may_administrate"
 		>
-			<i class="pi pi-user-minus" /><span class="hidden md:inline">{{ $t("users.line.delete") }}</span></Button
-		>
+			<i class="pi pi-user-minus" /><span class="hidden md:inline">{{ $t("users.line.delete") }}</span>
+		</Button>
 	</div>
 </template>
 <script setup lang="ts">

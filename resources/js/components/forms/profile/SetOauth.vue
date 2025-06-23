@@ -8,9 +8,9 @@
 				<i class="align-middle w-4" :class="oauth.icon + (oauth.isEnabled ? 'text-create-600' : '')"></i>
 				<span class="ltr:ml-2 rtl:mr-2" v-if="oauth.isEnabled">
 					{{ sprintf($t("profile.oauth.token_registered"), capitalize(oauth.providerType)) }}
-					<a @click="clear(oauth.providerType)" class="ltr:ml-2 rtl:mr-2 cursor-pointer italic text-muted-color hover:text-danger-800"
-						>({{ $t("profile.oauth.reset") }})</a
-					>
+					<a @click="clear(oauth.providerType)" class="ltr:ml-2 rtl:mr-2 cursor-pointer italic text-muted-color hover:text-danger-800">
+						({{ $t("profile.oauth.reset") }})
+					</a>
 				</span>
 				<a v-else :href="oauth.registrationRoute" class="ltr:ml-2 rtl:mr-2 cursor-pointer">
 					{{ sprintf($t("profile.oauth.setup"), capitalize(oauth.providerType)) }}

@@ -13,7 +13,7 @@
 						:show-value="false"
 						:pt:value:class="'duration-300'"
 						:class="counts.completed === counts.files ? 'successProgressBarSeverity' : ''"
-					></ProgressBar>
+					/>
 				</div>
 				<ScrollPanel v-if="counts.files > 0" class="w-96 h-48 m-4 p-1 mr-5" :pt:scrollbar:class="'opacity-100'">
 					<UploadingLine
@@ -25,7 +25,7 @@
 						:index="index"
 						:chunk-size="setup.upload_chunk_size"
 						@upload:completed="uploadCompleted"
-					></UploadingLine>
+					/>
 				</ScrollPanel>
 				<div v-if="counts.files === 0" class="p-9 max-w-3xl w-full">
 					<div

@@ -15,8 +15,9 @@
 								rel="noopener"
 								href="https://github.com/LycheeOrg/Lychee/releases"
 								data-tabindex="-1"
-								>{{ $t("dialogs.about.update_available") }}</a
 							>
+								{{ $t("dialogs.about.update_available") }}
+							</a>
 						</span>
 						<span class="text-sm font-normal up-to-date-git" v-if="!version.is_new_release_available && version.is_git_update_available">
 							–
@@ -26,8 +27,9 @@
 								rel="noopener"
 								href="https://github.com/LycheeOrg/Lychee"
 								data-tabindex="-1"
-								>{{ $t("dialogs.about.update_available") }}</a
 							>
+								{{ $t("dialogs.about.update_available") }}
+							</a>
 						</span>
 					</h1>
 					<h2 class="my-6 font-bold text-center">
@@ -39,9 +41,8 @@
 					<p class="text-muted-color text-center font-bold mt-8" v-if="is_se_enabled">{{ $t("dialogs.about.thank_you") }}</p>
 					<p class="text-muted-color text-center font-bold mt-8" v-if="!is_se_enabled && !is_se_info_hidden">
 						<span v-html="supporter" />
-						<a class="text-primary-500 underline cursor-pointer ltr:ml-1 rtl:mr-1" @click="toggleRegistration">{{
-							$t("dialogs.about.here")
-						}}</a
+						<a class="text-primary-500 underline cursor-pointer ltr:ml-1 rtl:mr-1" @click="toggleRegistration">
+							{{ $t("dialogs.about.here") }} </a
 						>.<br />
 					</p>
 				</div>

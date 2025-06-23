@@ -5,9 +5,9 @@
 			<span :class="statusClass" v-if="progress < 100 && progress > 0">{{ progress }}%</span>
 			<span :class="statusClass">{{ statusMessage }}</span>
 		</div>
-		<span class="text-center w-full hidden group-hover:block text-danger-700 cursor-pointer" @click="controller.abort()">{{
-			$t("dialogs.button.cancel")
-		}}</span>
+		<span class="text-center w-full hidden group-hover:block text-danger-700 cursor-pointer" @click="controller.abort()">
+			{{ $t("dialogs.button.cancel") }}
+		</span>
 		<ProgressBar :class="progressClass" :value="progressBar" :show-value="false" :pt:value:class="'duration-300'"></ProgressBar>
 	</div>
 </template>

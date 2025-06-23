@@ -22,12 +22,12 @@
 							<span class="font-bold text-lg">{{ props.photo.title }}</span>
 							<div class="flex gap-3 text-muted-color text-sm">
 								<span v-if="props.photo.preformatted.resolution">{{ props.photo.preformatted.resolution }}</span>
-								<span v-if="props.photo.precomputed.is_video && props.photo.preformatted.duration">{{
-									props.photo.preformatted.duration
-								}}</span>
-								<span v-if="props.photo.precomputed.is_video && props.photo.preformatted.fps">{{
-									props.photo.preformatted.fps
-								}}</span>
+								<span v-if="props.photo.precomputed.is_video && props.photo.preformatted.duration">
+									{{ props.photo.preformatted.duration }}
+								</span>
+								<span v-if="props.photo.precomputed.is_video && props.photo.preformatted.fps">
+									{{ props.photo.preformatted.fps }}
+								</span>
 								<span>{{ props.photo.preformatted.filesize }}</span>
 							</div>
 						</div>
@@ -51,8 +51,8 @@
 							<span class="w-6 inline-block">
 								<i class="pi pi-camera w-6 pt-1 inline-block" v-tooltip="$t('gallery.photo.details.captured')" />
 							</span>
-							<span v-if="props.photo.preformatted.taken_at" class="text-sm"
-								>{{ props.photo.preformatted.taken_at }}
+							<span v-if="props.photo.preformatted.taken_at" class="text-sm">
+								{{ props.photo.preformatted.taken_at }}
 								<span v-if="props.photo.precomputed.is_taken_at_modified" class="text-warning-600">*</span>
 							</span>
 						</div>

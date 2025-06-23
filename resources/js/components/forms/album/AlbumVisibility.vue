@@ -64,9 +64,9 @@
 							"
 							@change="save"
 						/>
-						<label class="font-bold inline-flex items-center" for="pp_dialog_upload_check"
-							>{{ $t("dialogs.visibility.upload") }} <SETag class="ml-2" v-if="is_se_preview_enabled"
-						/></label>
+						<label class="font-bold inline-flex items-center" for="pp_dialog_upload_check">
+							{{ $t("dialogs.visibility.upload") }} <SETag class="ml-2" v-if="is_se_preview_enabled" />
+						</label>
 						<p class="my-1.5" v-html="$t('dialogs.visibility.upload_expl')"></p>
 					</div>
 					<div
@@ -122,9 +122,9 @@
 							"
 							@change="save"
 						/>
-						<label for="pp_dialog_nsfw_check" class="font-bold" :class="is_nsfw ? ' text-red-700' : ''">{{
-							$t("dialogs.visibility.nsfw")
-						}}</label>
+						<label for="pp_dialog_nsfw_check" class="font-bold" :class="is_nsfw ? ' text-red-700' : ''">
+							{{ $t("dialogs.visibility.nsfw") }}
+						</label>
 						<p class="my-1.5">{{ $t("dialogs.visibility.nsfw_expl") }}</p>
 					</div>
 				</form>

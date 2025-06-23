@@ -28,8 +28,9 @@
 					v-if="data !== undefined && data.pure_duplicates"
 					severity="primary"
 					class="w-full border-none self-end"
-					>{{ $t("maintenance.duplicate-finder.show") }}</Button
 				>
+					{{ $t("maintenance.duplicate-finder.show") }}
+				</Button>
 			</div>
 		</template>
 	</Card>

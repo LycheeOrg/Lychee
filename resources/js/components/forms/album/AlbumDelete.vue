@@ -3,9 +3,9 @@
 		<template #content>
 			<p class="mb-4 text-center">
 				{{ sprintf($t("dialogs.delete_album.confirmation"), props.album.title) }}<br />
-				<span class="text-warning-700"
-					><i class="pi pi-exclamation-triangle ltr:mr-2 rtl:ml-2" />{{ $t("dialogs.delete_album.warning") }}</span
-				>
+				<span class="text-warning-700">
+					<i class="pi pi-exclamation-triangle ltr:mr-2 rtl:ml-2" />{{ $t("dialogs.delete_album.warning") }}
+				</span>
 			</p>
 			<Button class="text-danger-800 font-bold hover:text-white hover:bg-danger-800 w-full bg-transparent border-none" @click="execute">
 				{{ $t("dialogs.delete_album.delete") }}

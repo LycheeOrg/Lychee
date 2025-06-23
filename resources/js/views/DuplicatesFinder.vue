@@ -79,9 +79,9 @@
 					class="w-full font-bold border-none mb-4"
 					@click="isDeleteVisible = true"
 					:disabled="selectedIds.length === 0"
-					>{{ $t("duplicate-finder.delete-selected") }}</Button
 				>
-
+					{{ $t("duplicate-finder.delete-selected") }}
+				</Button>
 				<img :src="hoverImgSrc" class="w-full" />
 				<div class="text-center mt-2 font-bold text-muted-color-emphasis">
 					<span class="inline-block w-full text-ellipsis text-nowrap whitespace-nowrap overflow-hidden">{{ hoverTitle }}</span>

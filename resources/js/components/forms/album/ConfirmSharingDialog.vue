@@ -8,9 +8,9 @@
 					<Checkbox v-model="shallOverride" input-id="shallOverride" :binary="true" />
 					<label for="shallOverride" class="ltr:ml-2 rtl:mr-2">
 						<span v-html="$t('sharing.propagate_overwrite')"></span><br />
-						<span class="text-warning-700"
-							><i class="pi pi-exclamation-triangle ltr:mr-2 rtl:ml-2" />{{ $t("sharing.propagate_warning") }}</span
-						>
+						<span class="text-warning-700">
+							<i class="pi pi-exclamation-triangle ltr:mr-2 rtl:ml-2" />{{ $t("sharing.propagate_warning") }}
+						</span>
 					</label>
 				</div>
 				<div class="flex items-center mt-9 w-full">

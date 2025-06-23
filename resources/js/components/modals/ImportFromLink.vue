@@ -22,15 +22,17 @@
 						severity="secondary"
 						class="w-full font-bold border-none rounded-none ltr:rounded-bl-xl rtl:rounded-br-xl"
 						@click="closeCallback"
-						>{{ $t("dialogs.button.cancel") }}</Button
 					>
+						{{ $t("dialogs.button.cancel") }}
+					</Button>
 					<Button
 						severity="contrast"
 						class="w-full font-bold border-none rounded-none ltr:rounded-br-xl rtl:rounded-bl-xl"
 						@click="submit"
 						:disabled="!isValidInput || urls.length === 0"
-						>{{ $t("dialogs.import_from_link.import") }}</Button
 					>
+						{{ $t("dialogs.import_from_link.import") }}
+					</Button>
 				</div>
 			</div>
 		</template>
