@@ -49,7 +49,7 @@ final class Propagate
 		// for each descendant, create a new permission if it does not exist.
 		// or update the existing permission.
 		$descendants = $album->descendants()->getQuery()->select('id')->pluck('id');
-		$permissions = $album->access_permissions()->whereNotNull('user_id')->get();
+		$permissions = $album->access_permissions()->whereNotNull('user_id')->orWhereNotNull('user_group_id')->get();
 
 		// This is super inefficient.
 		// It would be better to do it in a single query...
@@ -59,6 +59,7 @@ final class Propagate
 				$perm = AccessPermission::updateOrCreate([
 					APC::BASE_ALBUM_ID => $descendant,
 					APC::USER_ID => $permission->user_id,
+					APC::USER_GROUP_ID => $permission->user_group_id,
 				], [
 					APC::GRANTS_FULL_PHOTO_ACCESS => $permission->grants_full_photo_access,
 					APC::GRANTS_DOWNLOAD => $permission->grants_download,
@@ -122,7 +123,7 @@ final class Propagate
 			->where('_rgt', '<', $album->_rgt)
 			->pluck('id');
 
-		$access_permissions = $album->access_permissions()->whereNotNull('user_id')->get();
+		$access_permissions = $album->access_permissions()->whereNotNull('user_id')->orWhereNotNull('user_group_id')->get();
 
 		$new_perm = $access_permissions->reduce(
 			fn (?array $acc, AccessPermission $permission) => array_merge(
@@ -131,6 +132,7 @@ final class Propagate
 					fn ($descendant_id) => [
 						APC::BASE_ALBUM_ID => $descendant_id,
 						APC::USER_ID => $permission->user_id,
+						APC::USER_GROUP_ID => $permission->user_group_id,
 						APC::GRANTS_FULL_PHOTO_ACCESS => $permission->grants_full_photo_access,
 						APC::GRANTS_DOWNLOAD => $permission->grants_download,
 						APC::GRANTS_UPLOAD => $permission->grants_upload,

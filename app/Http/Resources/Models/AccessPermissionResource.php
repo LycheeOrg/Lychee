@@ -18,7 +18,9 @@ class AccessPermissionResource extends Data
 	public function __construct(
 		public ?int $id = null,
 		public ?int $user_id = null,
+		public ?int $user_group_id = null,
 		public ?string $username = null,
+		public ?string $user_group_name = null,
 		public ?string $album_title = null,
 		public ?string $album_id = null,
 		public bool $grants_full_photo_access = false,
@@ -33,8 +35,10 @@ class AccessPermissionResource extends Data
 	{
 		return new AccessPermissionResource(
 			id: $access_permission->id,
-			user_id: $access_permission->user_id,
-			username: $access_permission->user->name,
+			user_id: $access_permission->user?->id,
+			username: $access_permission->user?->name,
+			user_group_id: $access_permission->user_group?->id,
+			user_group_name: $access_permission->user_group?->name,
 			album_title: $access_permission->album->title,
 			album_id: $access_permission->base_album_id,
 			grants_full_photo_access: $access_permission->grants_full_photo_access,

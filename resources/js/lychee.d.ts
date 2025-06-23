@@ -334,7 +334,9 @@ declare namespace App.Http.Resources.Models {
 	export type AccessPermissionResource = {
 		id: number | null;
 		user_id: number | null;
+		user_group_id: number | null;
 		username: string | null;
+		user_group_name: string | null;
 		album_title: string | null;
 		album_id: string | null;
 		grants_full_photo_access: boolean;
