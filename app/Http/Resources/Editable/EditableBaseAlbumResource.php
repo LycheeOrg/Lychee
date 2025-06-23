@@ -67,7 +67,7 @@ class EditableBaseAlbumResource extends Data
 		}
 
 		if ($album instanceof TagAlbum) {
-			$this->tags = $album->show_tags;
+			$this->tags = array_map(fn ($t) => $t->name, $album->show_tags);
 		}
 	}
 

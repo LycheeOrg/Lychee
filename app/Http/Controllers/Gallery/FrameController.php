@@ -86,12 +86,12 @@ class FrameController extends Controller
 		// default query
 		if ($album === null) {
 			$query = $this->photo_query_policy->applySearchabilityFilter(
-				query: Photo::query()->with(['albums', 'size_variants', 'palette']),
+				query: Photo::query()->with(['albums', 'size_variants', 'palette', 'tags']),
 				origin: null,
 				include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_frame')
 			);
 		} else {
-			$query = $album->photos()->with(['albums', 'size_variants', 'palette']);
+			$query = $album->photos()->with(['albums', 'size_variants', 'palette', 'tags']);
 		}
 
 		/** @var ?Photo $photo */

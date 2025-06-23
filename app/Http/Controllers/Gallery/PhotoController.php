@@ -35,9 +35,11 @@ use App\Image\Files\UploadedFile;
 use App\Jobs\ProcessImageJob;
 use App\Models\Configs;
 use App\Models\Photo;
+use App\Models\Tag;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -122,7 +124,10 @@ class PhotoController extends Controller
 		$photo->title = $request->title();
 		$photo->description = $request->description();
 		$photo->created_at = $request->uploadDate();
-		$photo->tags = $request->tags();
+
+		$existing_tags = Tag::from($request->tags());
+		$photo->tags()->sync($existing_tags->pluck('id'));
+		$photo->load('tags');
 		$photo->license = $request->license()->value;
 
 		// if the request takenAt is null, then we set the initial value back.
@@ -205,15 +210,21 @@ class PhotoController extends Controller
 	public function tags(SetPhotosTagsRequest $request): void
 	{
 		$tags = $request->tags();
+		$photos = $request->photos();
 
-		/** @var Photo $photo */
-		foreach ($request->photos() as $photo) {
-			if ($request->shall_override) {
-				$photo->tags = $tags;
-			} else {
-				$photo->tags = array_unique(array_merge($photo->tags, $tags));
-			}
-			$photo->save();
+		// Fetch existing tags
+		$existing_tags = Tag::from($tags);
+
+		if ($request->shall_override) {
+			// Delete existing associations for those photos ids if we override the tags
+			DB::table('photos_tags')
+				->whereIn('photo_id', $photos->pluck('id'))
+				->delete();
 		}
+
+		// Associate the existing tags with the photos
+		$existing_tags->each(function (Tag $tag) use ($photos): void {
+			$tag->photos()->syncWithoutDetaching($photos->pluck('id'));
+		});
 	}
 }
