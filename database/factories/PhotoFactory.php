@@ -13,6 +13,7 @@ use App\Models\Palette;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 use App\Models\Statistics;
+use App\Models\Tag;
 use Database\Factories\Traits\OwnedBy;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -44,7 +45,6 @@ class PhotoFactory extends Factory
 		return [
 			'title' => 'CR_' . fake()->numerify('####'),
 			'description' => null,
-			'tags' => '',
 			'owner_id' => 1,
 			'type' => 'image/jpeg',
 			'iso' => '100',
@@ -125,13 +125,22 @@ class PhotoFactory extends Factory
 		});
 	}
 
-	/** define tags for that picture */
-	public function with_tags(string $tags): self
+	/**
+	 * Define tags for that picture.
+	 *
+	 * @param array<int,Tag> $tags
+	 *
+	 * @return PhotoFactory
+	 */
+	public function with_tags(array $tags): self
 	{
-		return $this->state(function (array $attributes) use ($tags) {
-			return [
-				'tags' => $tags,
-			];
+		return $this->afterCreating(function (Photo $photo) use ($tags) {
+			foreach ($tags as $tag) {
+				if (!$tag instanceof Tag) {
+					throw new \TypeError('Expected Tag instance, got ' . gettype($tag));
+				}
+				$photo->tags()->attach($tag);
+			}
 		});
 	}
 
@@ -194,6 +203,7 @@ class PhotoFactory extends Factory
 			}
 
 			$photo->load('palette');
+			$photo->load('tags');
 			$photo->load('statistics');
 
 			// Reset the value if it was disabled.

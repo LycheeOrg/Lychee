@@ -111,6 +111,7 @@ class AlbumTest extends BaseApiWithDataTest
 			'resource' => [
 				'id' => $this->tagAlbum1->id,
 				'title' => $this->tagAlbum1->title,
+				'show_tags' => [$this->tag_test->name],
 				'photos' => [
 					[
 						'id' => $this->photo1->id,

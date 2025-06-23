@@ -16,6 +16,7 @@ use App\Models\Extensions\SortingDecorator;
 use App\Models\TagAlbum;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Query\Builder as BaseBuilder;
 
 /**
  * @disregard
@@ -76,12 +77,7 @@ class HasManyPhotosByTag extends BaseHasManyPhotos
 					origin: null,
 					include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_smart_albums')
 				)
-				->where(function (Builder $q) use ($tags): void {
-					// Filter for requested tags
-					foreach ($tags as $tag) {
-						$q->where('tags', 'like', '%' . trim($tag) . '%');
-					}
-				});
+				->where(fn (Builder $q) => $this->getPhotoIdsWithTags($q, $tags));
 		} else {
 			$this->photo_query_policy
 				->applySearchabilityFilter(
@@ -89,13 +85,17 @@ class HasManyPhotosByTag extends BaseHasManyPhotos
 					origin: null,
 					include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_smart_albums')
 				)
-				->where(function (Builder $q) use ($tags): void {
-					// Filter for requested tags
-					foreach ($tags as $tag) {
-						$q->where('tags', 'like', '%' . trim($tag) . '%');
-					}
-				});
+				->where(fn (Builder $q) => $this->getPhotoIdsWithTags($q, $tags));
 		}
+	}
+
+	private function getPhotoIdsWithTags(Builder &$query, array $tags): void
+	{
+		$query->whereExists(fn (BaseBuilder $q) => $q->select('photos_tags.photo_id')
+				->from('photos_tags')
+				->whereIn('photos_tags.tag_id', array_map(fn ($t) => $t->id, $tags))
+				->whereColumn('photos_tags.photo_id', 'photos.id')
+		);
 	}
 
 	/**
