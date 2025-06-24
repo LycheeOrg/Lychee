@@ -15,14 +15,16 @@
 		</template>
 
 		<template #center>
-			<span class="lg:hidden font-bold text-shadow-sm text-shadow-black">
-				{{ $t("gallery.albums") }}
-			</span>
-			<span
-				class="hidden lg:block font-bold text-shadow-sm text-shadow-black text-sm lg:text-base text-center w-full"
-				@click="is_metrics_open = !is_metrics_open"
-				>{{ props.title }}</span
-			>
+			<template v-if="props.config.header_image_url === ''">
+				<span class="lg:hidden font-bold text-shadow-sm text-shadow-black">
+					{{ $t("gallery.albums") }}
+				</span>
+				<span
+					class="hidden lg:block font-bold text-shadow-sm text-shadow-black text-sm lg:text-base text-center w-full"
+					@click="is_metrics_open = !is_metrics_open"
+					>{{ props.title }}</span
+				>
+			</template>
 		</template>
 
 		<template #end>
@@ -101,11 +103,16 @@
 			</a>
 		</template>
 	</ContextMenu>
-	<img
-		:src="props.config.header_image_url"
-		v-if="props.config.header_image_url !== ''"
-		class="relative w-full h-[calc(100vh/3)] object-cover -mt-14 z-0"
-	/>
+	<div class="relative w-full h-[calc(100vh/2)] -mt-14 z-0">
+		<img :src="props.config.header_image_url" v-if="props.config.header_image_url !== ''" class="object-cover h-full w-full" />
+		<div class="absolute top-0 left-0 w-full h-full flex items-center justify-center px-20">
+			<h1
+				class="text-sm font-bold sm:text-lg md:text-3xl md:font-normal text-surface-0 uppercase text-center text-shadow-md text-shadow-black/25"
+			>
+				{{ props.title }}
+			</h1>
+		</div>
+	</div>
 </template>
 <script setup lang="ts">
 import Button from "primevue/button";
