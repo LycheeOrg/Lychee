@@ -75,7 +75,7 @@ return new class() extends BaseConfigMigration {
 				'is_secret' => false,
 				'is_expert' => true,
 				'level' => 0,
-				'order' => 8,
+				'order' => 9,
 			],
 		];
 	}
