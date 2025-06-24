@@ -2,8 +2,12 @@
 	<ImportFromLink v-if="canUpload" v-model:visible="is_import_from_link_open" />
 	<DropBox v-if="canUpload" v-model:visible="is_import_from_dropbox_open" :album-id="null" />
 	<Toolbar
-		class="w-full border-0 h-14"
-		:pt:root:class="'flex-nowrap relative'"
+		:class="{
+			'bg-transparent': props.config.is_header_bar_transparent,
+			'bg-linear-to-b dark:from-surface-800 from-surface-50 via-75% light:via-surface-50/80 light:to-surface-50/20':
+				props.config.is_header_bar_gradient,
+		}"
+		:pt:root:class="'w-full z-10 border-0 h-14 flex-nowrap relative rounded-none'"
 		:pt:center:class="'absolute top-0 py-3 left-1/2 -translate-x-1/2 h-14'"
 	>
 		<template #start>
@@ -11,12 +15,14 @@
 		</template>
 
 		<template #center>
-			<span class="lg:hidden font-bold">
+			<span class="lg:hidden font-bold text-shadow-sm text-shadow-black">
 				{{ $t("gallery.albums") }}
 			</span>
-			<span class="hidden lg:block font-bold text-sm lg:text-base text-center w-full" @click="is_metrics_open = !is_metrics_open">{{
-				props.title
-			}}</span>
+			<span
+				class="hidden lg:block font-bold text-shadow-sm text-shadow-black text-sm lg:text-base text-center w-full"
+				@click="is_metrics_open = !is_metrics_open"
+				>{{ props.title }}</span
+			>
 		</template>
 
 		<template #end>
@@ -95,6 +101,11 @@
 			</a>
 		</template>
 	</ContextMenu>
+	<img
+		:src="props.config.header_image_url"
+		v-if="props.config.header_image_url !== ''"
+		class="relative w-full h-[calc(100vh/3)] object-cover -mt-14 z-0"
+	/>
 </template>
 <script setup lang="ts">
 import Button from "primevue/button";
@@ -128,6 +139,9 @@ const props = defineProps<{
 		back_button_enabled: boolean;
 		back_button_text: string;
 		back_button_url: string;
+		header_image_url: string;
+		is_header_bar_transparent: boolean;
+		is_header_bar_gradient: boolean;
 	};
 	hasHidden: boolean;
 }>();
