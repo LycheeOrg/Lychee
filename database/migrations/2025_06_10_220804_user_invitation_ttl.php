@@ -18,7 +18,7 @@ return new class() extends BaseConfigMigration {
 				'key' => 'user_invitation_ttl',
 				'value' => '7',
 				'cat' => self::CAT,
-				'type_range' => self::BOOL,
+				'type_range' => self::POSITIVE,
 				'description' => 'Maximum life time for invitation links in days.',
 				'details' => '<span class="pi pi-exclamation-triangle text-orange-500"></span> Invitation links cannot be revoked.',
 				'is_expert' => true,
