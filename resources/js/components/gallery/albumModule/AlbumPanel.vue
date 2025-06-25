@@ -1,24 +1,18 @@
 <template>
-	<div class="h-svh overflow-y-hidden">
+	<div class="h-svh overflow-y-hidden flex flex-col">
 		<!-- Trick to avoid the scroll bar to appear on the right when switching to full screen -->
-		<Collapse :when="!is_full_screen">
-			<AlbumHeader
-				v-if="album && config && user"
-				:album="album"
-				:config="config"
-				:user="user"
-				@refresh="emits('refresh')"
-				@toggle-edit="emits('toggleEdit')"
-				@open-search="emits('openSearch')"
-				@go-back="emits('goBack')"
-			/>
-		</Collapse>
+		<AlbumHeader
+			v-if="album && config && user"
+			:album="album"
+			:config="config"
+			:user="user"
+			@refresh="emits('refresh')"
+			@toggle-edit="emits('toggleEdit')"
+			@open-search="emits('openSearch')"
+			@go-back="emits('goBack')"
+		/>
 		<template v-if="config && album">
-			<div
-				id="galleryView"
-				class="relative flex flex-wrap content-start w-full justify-start overflow-y-auto"
-				:class="is_full_screen ? 'h-svh' : 'h-[calc(100vh-3.5rem)]'"
-			>
+			<div id="galleryView" class="relative flex flex-wrap content-start w-full justify-start overflow-y-auto h-full">
 				<AlbumEdit v-if="album.rights.can_edit" :album="album" :config="config" />
 				<div v-if="noData" class="flex w-full flex-col h-full items-center justify-center text-xl text-muted-color gap-8">
 					<span class="block">
@@ -119,7 +113,6 @@ import PhotoService from "@/services/photo-service";
 import AlbumService from "@/services/album-service";
 import { AlbumThumbConfig } from "@/components/gallery/albumModule/thumbs/AlbumThumb.vue";
 import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
-import { Collapse } from "vue-collapsed";
 import Button from "primevue/button";
 import GalleryFooter from "@/components/footers/GalleryFooter.vue";
 import AlbumStatistics from "@/components/drawers/AlbumStatistics.vue";
@@ -166,7 +159,6 @@ const emits = defineEmits<{
 	goBack: [];
 }>();
 
-const { is_full_screen } = storeToRefs(togglableStore);
 const { is_se_enabled } = storeToRefs(lycheeStore);
 
 const children = computed<App.Http.Resources.Models.ThumbAlbumResource[]>(() => modelAlbum.value?.albums ?? []);
