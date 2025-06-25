@@ -1,13 +1,21 @@
+import { type RouteLocationNormalizedLoaded } from "vue-router";
 import { Column } from "./types";
+import { type TimelineData } from "./PhotoLayout";
+import { getWidth } from "./getWidth";
 
-export function useGrid(el: HTMLElement, target_width: number, grid_gap: number = 12) {
+export function useGrid(
+	el: HTMLElement,
+	target_width: number,
+	grid_gap: number = 12,
+	timelineData: TimelineData,
+	route: RouteLocationNormalizedLoaded,
+) {
 	// @ts-expect-error
 	const gridItems: ChildNodeWithDataStyle[] = [...el.childNodes].filter((gridItem) => gridItem.nodeType === 1);
 
-	const max_width = parseInt(getComputedStyle(el).width);
-	const usable_width = max_width;
-	const perChunk = Math.floor((usable_width + grid_gap) / target_width);
-	const remaining_space = usable_width - perChunk * target_width - (perChunk - 1) * grid_gap;
+	const max_width = getWidth(timelineData, route);
+	const perChunk = Math.floor((max_width + grid_gap) / target_width);
+	const remaining_space = max_width - perChunk * target_width - (perChunk - 1) * grid_gap;
 	const spread = Math.ceil(remaining_space / perChunk);
 	const grid_width = target_width + spread;
 

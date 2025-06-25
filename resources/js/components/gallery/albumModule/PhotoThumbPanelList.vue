@@ -14,11 +14,13 @@
 </template>
 <script setup lang="ts">
 import { useLayouts, type TimelineData } from "@/layouts/PhotoLayout";
-import { onMounted, onUpdated, Ref } from "vue";
+import { onMounted, onUnmounted, onUpdated, Ref } from "vue";
 import PhotoThumb from "./thumbs/PhotoThumb.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import { ctrlKeyState, metaKeyState, shiftKeyState } from "@/utils/keybindings-utils";
+import { useDebounceFn } from "@vueuse/core";
+import { useRoute } from "vue-router";
 
 const props = defineProps<{
 	photos: { [key: number]: App.Http.Resources.Models.PhotoResource };
@@ -37,6 +39,8 @@ const lycheeStore = useLycheeStateStore();
 const layout = defineModel("layout") as Ref<App.Enum.PhotoLayoutType>;
 const isTimeline = defineModel("isTimeline") as Ref<boolean>;
 const { is_timeline_left_border_visible } = storeToRefs(lycheeStore);
+
+const route = useRoute();
 
 const timelineData: TimelineData = {
 	isTimeline: isTimeline,
@@ -60,7 +64,18 @@ function menuOpen(idx: number, e: MouseEvent) {
 }
 
 // Layouts stuff
-const { activateLayout } = useLayouts(props.galleryConfig, layout, timelineData, "photoListing" + props.groupIdx);
-onMounted(() => activateLayout());
+const { activateLayout } = useLayouts(props.galleryConfig, layout, timelineData, "photoListing" + props.groupIdx, route);
+
+const debouncedActivateLayout = useDebounceFn(activateLayout, 100);
+
+onMounted(() => {
+	activateLayout();
+	window.addEventListener("resize", debouncedActivateLayout);
+});
+
 onUpdated(() => activateLayout());
+
+onUnmounted(() => {
+	window.removeEventListener("resize", debouncedActivateLayout);
+});
 </script>
