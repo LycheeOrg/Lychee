@@ -13,7 +13,7 @@
 						@click="copy"
 						>{{ link }}</span
 					>
-					<p class="text-muted">{{ sprintf($t("users.invite.link_is_valit_x_days"), days) }}</p>
+					<p class="text-muted">{{ sprintf($t("users.invite.link_is_valid_x_days"), days) }}</p>
 					<!--  This link is valid for {{ days }} days. -->
 				</div>
 				<Button @click="closeCallback" severity="secondary" class="w-full font-bold border-none rounded-none rounded-bl-xl rounded-br-xl">
