@@ -1,7 +1,14 @@
 <template>
 	<ImportFromLink v-if="canUpload" v-model:visible="is_import_from_link_open" @refresh="emits('refresh')" />
 	<DropBox v-if="canUpload" v-model:visible="is_import_from_dropbox_open" :album-id="props.album.id" />
-	<Toolbar class="w-full border-0 h-14" v-if="album">
+	<Toolbar
+		class="w-full border-0 transition-all duration-100 ease-in-out"
+		:class="{
+			'max-h-14': !is_full_screen,
+			'max-h-0': is_full_screen,
+		}"
+		v-if="album"
+	>
 		<template #start>
 			<GoBack @go-back="emits('goBack')" />
 		</template>
@@ -84,7 +91,7 @@ const favourites = useFavouriteStore();
 const { isLTR } = useLtRorRtL();
 
 const { dropbox_api_key, is_favourite_enabled } = storeToRefs(lycheeStore);
-const { is_album_edit_open } = storeToRefs(togglableStore);
+const { is_album_edit_open, is_full_screen } = storeToRefs(togglableStore);
 
 const { toggleCreateAlbum, is_import_from_link_open, toggleImportFromLink, is_import_from_dropbox_open, toggleImportFromDropbox, toggleUpload } =
 	useGalleryModals(togglableStore);

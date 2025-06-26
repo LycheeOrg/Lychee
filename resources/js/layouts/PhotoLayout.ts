@@ -4,6 +4,7 @@ import { useJustify } from "./useJustify";
 import { useMasonry } from "./useMasonry";
 import { useGrid } from "./useGrid";
 import AlbumService from "@/services/album-service";
+import { type RouteLocationNormalizedLoaded } from "vue-router";
 
 export type TimelineData = {
 	isTimeline: Ref<boolean>;
@@ -15,6 +16,7 @@ export function useLayouts(
 	layout: Ref<App.Enum.PhotoLayoutType>,
 	timelineData: TimelineData,
 	elemId: string = "photoListing",
+	route: RouteLocationNormalizedLoaded,
 ) {
 	const configRef = ref(config);
 	const elementId = elemId;
@@ -27,13 +29,25 @@ export function useLayouts(
 
 		switch (layout.value) {
 			case "square":
-				return useSquare(photoListing, configRef.value.photo_layout_square_column_width, configRef.value.photo_layout_gap, timelineData);
+				return useSquare(
+					photoListing,
+					configRef.value.photo_layout_square_column_width,
+					configRef.value.photo_layout_gap,
+					timelineData,
+					route,
+				);
 			case "justified":
-				return useJustify(photoListing, configRef.value.photo_layout_justified_row_height, timelineData);
+				return useJustify(photoListing, configRef.value.photo_layout_justified_row_height, timelineData, route);
 			case "masonry":
-				return useMasonry(photoListing, configRef.value.photo_layout_masonry_column_width, configRef.value.photo_layout_gap);
+				return useMasonry(
+					photoListing,
+					configRef.value.photo_layout_masonry_column_width,
+					configRef.value.photo_layout_gap,
+					timelineData,
+					route,
+				);
 			case "grid":
-				return useGrid(photoListing, configRef.value.photo_layout_grid_column_width, config.photo_layout_gap);
+				return useGrid(photoListing, configRef.value.photo_layout_grid_column_width, configRef.value.photo_layout_gap, timelineData, route);
 		}
 	}
 

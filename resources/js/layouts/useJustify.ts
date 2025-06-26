@@ -1,10 +1,11 @@
-import { TimelineData } from "./PhotoLayout";
+import { type TimelineData } from "./PhotoLayout";
 import { ChildNodeWithDataStyle } from "./types";
 import createJustifiedLayout from "justified-layout";
 import { getWidth } from "./getWidth";
+import { type RouteLocationNormalizedLoaded } from "vue-router";
 
-export function useJustify(el: HTMLElement, photoDefaultHeight: number = 320, timelineData: TimelineData) {
-	const width = getWidth(timelineData);
+export function useJustify(el: HTMLElement, photoDefaultHeight: number = 320, timelineData: TimelineData, route: RouteLocationNormalizedLoaded) {
+	const width = getWidth(timelineData, route);
 
 	// @ts-expect-error
 	const justifiedItems: ChildNodeWithDataStyle[] = [...el.childNodes].filter((gridItem) => gridItem.nodeType === 1);
