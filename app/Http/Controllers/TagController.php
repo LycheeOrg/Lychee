@@ -8,6 +8,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Tags\DeleteTagRequest;
 use App\Http\Requests\Tags\ListTagRequest;
 use App\Http\Resources\Tags\TagResource;
 use Illuminate\Routing\Controller;
@@ -35,5 +36,27 @@ class TagController extends Controller
 			name: $tag->name,
 			num: $tag->num
 		));
+	}
+
+	public function delete(DeleteTagRequest $request): void
+	{
+		$tags = $request->tags();
+
+		if (count($tags) === 0) {
+			return;
+		}
+
+		// First delete all the relations between the selected tags and the photos
+		DB::table('photos_tags')
+			->whereIn('tag_id', fn ($q) => $q->select('id')
+					->from('tags')
+					->whereIn('name', $tags)
+			)
+			->delete();
+
+		// Then delete the tags themselves
+		DB::table('tags')
+			->whereIn('name', $tags)
+			->delete();
 	}
 }
