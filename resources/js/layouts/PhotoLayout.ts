@@ -5,6 +5,7 @@ import { useMasonry } from "./useMasonry";
 import { useGrid } from "./useGrid";
 import AlbumService from "@/services/album-service";
 import { type RouteLocationNormalizedLoaded } from "vue-router";
+import { useLtRorRtL } from "@/utils/Helpers";
 
 export type TimelineData = {
 	isTimeline: Ref<boolean>;
@@ -21,11 +22,15 @@ export function useLayouts(
 	const configRef = ref(config);
 	const elementId = elemId;
 
+	const { isLTR } = useLtRorRtL();
+
 	function activateLayout() {
 		const photoListing = document.getElementById(elementId);
 		if (photoListing === null) {
 			return; // Nothing to do
 		}
+
+		const align = isLTR() ? "left" : "right";
 
 		switch (layout.value) {
 			case "square":
@@ -35,9 +40,10 @@ export function useLayouts(
 					configRef.value.photo_layout_gap,
 					timelineData,
 					route,
+					align,
 				);
 			case "justified":
-				return useJustify(photoListing, configRef.value.photo_layout_justified_row_height, timelineData, route);
+				return useJustify(photoListing, configRef.value.photo_layout_justified_row_height, timelineData, route, align);
 			case "masonry":
 				return useMasonry(
 					photoListing,
@@ -45,9 +51,17 @@ export function useLayouts(
 					configRef.value.photo_layout_gap,
 					timelineData,
 					route,
+					align,
 				);
 			case "grid":
-				return useGrid(photoListing, configRef.value.photo_layout_grid_column_width, configRef.value.photo_layout_gap, timelineData, route);
+				return useGrid(
+					photoListing,
+					configRef.value.photo_layout_grid_column_width,
+					configRef.value.photo_layout_gap,
+					timelineData,
+					route,
+					align,
+				);
 		}
 	}
 

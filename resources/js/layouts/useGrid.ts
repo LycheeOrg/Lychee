@@ -9,6 +9,7 @@ export function useGrid(
 	grid_gap: number = 12,
 	timelineData: TimelineData,
 	route: RouteLocationNormalizedLoaded,
+	align: "left" | "right",
 ) {
 	// @ts-expect-error
 	const gridItems: ChildNodeWithDataStyle[] = [...el.childNodes].filter((gridItem) => gridItem.nodeType === 1);
@@ -42,7 +43,7 @@ export function useGrid(
 		e.style.top = column.height + "px";
 		e.style.width = grid_width + "px";
 		e.style.height = height + "px";
-		e.style.left = column.left + "px";
+		e.style[align] = column.left + "px";
 		column.height = column.height + height + grid_gap;
 
 		// update
