@@ -18,14 +18,22 @@
 			:isTimeline="isTimeline"
 		/>
 		<template v-else>
-			<Timeline v-if="isLeftBorderVisible" :value="props.photosTimeline" :pt:eventopposite:class="'hidden'" class="mt-4">
+			<Timeline
+				v-if="isLeftBorderVisible"
+				:value="props.photosTimeline"
+				:pt:eventopposite:class="'hidden'"
+				class="mt-4"
+				:align="isLTR() ? 'left' : 'right'"
+			>
 				<template #content="slotProps">
 					<div
 						data-type="timelineBlock"
-						:data-date="slotProps.item.data[0].timeline.timeDate"
+						:data-date="(slotProps.item.data[0] as App.Http.Resources.Models.PhotoResource).timeline?.time_date"
 						class="flex flex-wrap flex-row shrink w-full justify-start gap-1 sm:gap-2 md:gap-4 pb-8"
 					>
-						<div class="w-full text-left font-semibold text-muted-color-emphasis text-lg">{{ slotProps.item.header }}</div>
+						<div class="w-full ltr:text-left rtl:text-right font-semibold text-muted-color-emphasis text-lg">
+							{{ slotProps.item.header }}
+						</div>
 						<PhotoThumbPanelList
 							:photos="slotProps.item.data"
 							:layout="layout"
@@ -49,7 +57,9 @@
 						:data-date="photoTimeline.data[0].timeline?.time_date"
 						class="flex flex-wrap flex-row shrink w-full justify-start gap-1 sm:gap-2 md:gap-4 pb-8"
 					>
-						<div class="w-full text-left font-semibold text-muted-color-emphasis text-lg">{{ photoTimeline.header }}</div>
+						<div class="w-full ltr:text-left rtl:text-right font-semibold text-muted-color-emphasis text-lg">
+							{{ photoTimeline.header }}
+						</div>
 						<PhotoThumbPanelList
 							:photos="photoTimeline.data"
 							:layout="layout"
@@ -80,6 +90,9 @@ import PhotoThumbPanelList from "./PhotoThumbPanelList.vue";
 import PhotoThumbPanelControl from "./PhotoThumbPanelControl.vue";
 import { isTouchDevice } from "@/utils/keybindings-utils";
 import { onMounted } from "vue";
+import { useLtRorRtL } from "@/utils/Helpers";
+
+const { isLTR } = useLtRorRtL();
 
 const lycheeStore = useLycheeStateStore();
 const { is_timeline_left_border_visible, is_debug_enabled } = storeToRefs(lycheeStore);
@@ -103,7 +116,7 @@ const props = defineProps<{
 const layout = ref(props.photoLayout);
 
 // We do not show the left border on touch devices (mostly phones) due to limited real estate.
-const isLeftBorderVisible = computed(() => is_timeline_left_border_visible && !isTouchDevice());
+const isLeftBorderVisible = computed(() => is_timeline_left_border_visible.value && !isTouchDevice());
 
 // bubble up.
 const emits = defineEmits<{

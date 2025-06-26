@@ -1,6 +1,6 @@
 import { type RouteLocationNormalizedLoaded } from "vue-router";
 import { getWidth } from "./getWidth";
-import { type TimelineData } from "./PhotoLayout";
+import { TimelineData } from "./PhotoLayout";
 import { Column } from "./types";
 
 export function useSquare(
@@ -9,6 +9,7 @@ export function useSquare(
 	grid_gap: number = 12,
 	timelineData: TimelineData,
 	route: RouteLocationNormalizedLoaded,
+	align: "left" | "right",
 ) {
 	// @ts-expect-error
 	const gridItems: ChildNodeWithDataStyle[] = [...el.childNodes].filter((gridItem) => gridItem.nodeType === 1);
@@ -34,7 +35,7 @@ export function useSquare(
 		e.style.top = column.height + "px";
 		e.style.width = grid_width + "px";
 		e.style.height = grid_width + "px";
-		e.style.left = column.left + "px";
+		e.style[align] = column.left + "px";
 		column.height = column.height + grid_width + grid_gap;
 
 		// update

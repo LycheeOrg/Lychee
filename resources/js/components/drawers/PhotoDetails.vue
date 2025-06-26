@@ -21,14 +21,14 @@
 						<div class="flex flex-col">
 							<span class="font-bold text-lg">{{ props.photo.title }}</span>
 							<div class="flex gap-3 text-muted-color text-sm">
-								<span v-if="props.photo.preformatted.resolution">{{ props.photo.preformatted.resolution }}</span>
+								<span v-if="props.photo.preformatted.resolution" dir="ltr">{{ props.photo.preformatted.resolution }}</span>
 								<span v-if="props.photo.precomputed.is_video && props.photo.preformatted.duration">
 									{{ props.photo.preformatted.duration }}
 								</span>
 								<span v-if="props.photo.precomputed.is_video && props.photo.preformatted.fps">
 									{{ props.photo.preformatted.fps }}
 								</span>
-								<span>{{ props.photo.preformatted.filesize }}</span>
+								<span dir="ltr">{{ props.photo.preformatted.filesize }}</span>
 							</div>
 						</div>
 					</div>
@@ -110,14 +110,14 @@
 									class="dark:invert opacity-50 w-6 h-5"
 									v-tooltip.right="$t('gallery.photo.details.focal')"
 								/>
-								<span class="text-sm">{{ props.photo.focal }}</span>
+								<span class="text-sm" dir="ltr">{{ props.photo.focal }}</span>
 							</div>
 							<div class="flex w-1/2 gap-2 items-center">
 								<i
 									class="pi pi-stopwatch h-6 w-6 text-base text-center pt-0.5 text-muted-color"
 									v-tooltip.right="$t('gallery.photo.details.shutter')"
 								/>
-								<span class="text-sm">{{ props.photo.preformatted.shutter }}</span>
+								<span class="text-sm" dir="ltr">{{ props.photo.preformatted.shutter }}</span>
 							</div>
 							<div class="flex w-1/2 gap-2 items-center">
 								<img src="../../../img/icons/iso.png" class="dark:invert opacity-50 w-6 h-6" />
