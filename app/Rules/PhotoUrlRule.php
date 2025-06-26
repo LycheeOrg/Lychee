@@ -53,7 +53,7 @@ final class PhotoUrlRule implements ValidationRule
 			Configs::getValueAsBool('import_via_url_require_https') &&
 			$scheme !== 'https'
 		) {
-			$fail($attribute . ' must be a valid HTTP or HTTPS URL.');
+			$fail($attribute . ' must be a valid HTTPS URL.');
 
 			return;
 		}

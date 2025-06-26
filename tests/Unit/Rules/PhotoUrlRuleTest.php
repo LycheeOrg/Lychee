@@ -96,7 +96,7 @@ class PhotoUrlRuleTest extends AbstractTestCase
 	{
 		$this->rule->validate('photo_url', 'http://example.com', fn ($m) => $this->m($m));
 		self::assertTrue($this->failCalled);
-		self::assertEquals('photo_url must be a valid HTTP or HTTPS URL.', $this->failMessage);
+		self::assertEquals('photo_url must be a valid HTTPS URL.', $this->failMessage);
 	}
 
 	/**
@@ -114,6 +114,8 @@ class PhotoUrlRuleTest extends AbstractTestCase
 	 */
 	public function testUnsupportedScheme(): void
 	{
+		Configs::set('import_via_url_require_https', '0');
+		Configs::invalidateCache();
 		$this->rule->validate('photo_url', 'ftp://example.com', fn ($m) => $this->m($m));
 		self::assertTrue($this->failCalled);
 		self::assertEquals('photo_url must be a valid HTTP or HTTPS URL.', $this->failMessage);
