@@ -39,11 +39,15 @@ final class PhotoUrlRule implements ValidationRule
 			// Get the URL components.
 			/** @var array{scheme:string|null,host:string,port:string|int|null} $url */
 			$url = parse_url($value);
+		// @codeCoverageIgnoreStart
+		// This is already filtered by the previous filter_var check, but we catch it here
+		// to ensure we handle any unexpected exceptions gracefully.
 		} catch (UrlException) {
 			$fail($attribute . ' is not a valid URL');
 
 			return;
 		}
+		// @codeCoverageIgnoreEnd
 
 		$scheme = $url['scheme'] ?? '';
 		$host = $url['host'] ?? '';
