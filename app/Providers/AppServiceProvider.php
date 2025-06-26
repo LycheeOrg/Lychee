@@ -199,6 +199,11 @@ class AppServiceProvider extends ServiceProvider
 			return;
 		}
 
+		// if the query is not slow enough, we do not log it. Default is 100ms.
+		if ($query->time < config('database.log_sql_min_time', 100)) {
+			return;
+		}
+
 		// Get message with binding outside.
 		$msg = '(' . $query->time . 'ms) ' . $query->sql . ' [' . implode(', ', $query->bindings) . ']';
 
