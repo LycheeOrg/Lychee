@@ -269,3 +269,8 @@ Route::post('/Metrics::favourite', [MetricsController::class, 'favourite'])->wit
 // Route::post('/Update::check', [AdministrationUpdateController::class, 'check']);
 Route::get('/Version', [VersionController::class, 'get']);
 Route::get('/ChangeLogs', [VersionController::class, 'changeLogs']);
+
+/**
+ * TAGS.
+ */
+Route::get('/Tag', [TagController::class, 'list'])->middleware(['cache_control']);
