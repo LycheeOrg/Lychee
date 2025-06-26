@@ -100,6 +100,7 @@ final readonly class RouteCacheManager
 			'api/v2/Statistics::getCountsOverTime' => new RouteCacheConfig(tag: CacheTag::STATISTICS, user_dependant: true),
 			'api/v2/Statistics::userSpace' => new RouteCacheConfig(tag: CacheTag::STATISTICS, user_dependant: true),
 			'api/v2/UserManagement' => new RouteCacheConfig(tag: CacheTag::USERS, user_dependant: true),
+			'api/v2/UserManagement::invite' => false, // We do not cache the invite, as the timeing of the invite is important and it is not user dependant.
 			'api/v2/Users' => new RouteCacheConfig(tag: CacheTag::USERS, user_dependant: true),
 			'api/v2/Users::count' => new RouteCacheConfig(tag: CacheTag::USERS, user_dependant: true),
 			'api/v2/Version' => false,
