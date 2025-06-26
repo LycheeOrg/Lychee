@@ -30,6 +30,11 @@ return [
 		'create' => 'ایجاد',
 		'edit' => 'ویرایش',
 	],
+	'invite' => [
+		'button' => 'Invite user',
+		'links_are_not_revokable' => 'Invitation links are not revokable.',
+		'link_is_valid_x_days' => 'This link is valid for %d days.',
+	],
 	'line' => [
 		'admin' => 'کاربر مدیر',
 		'edit' => 'ویرایش',

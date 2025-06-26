@@ -30,6 +30,11 @@ return [
 		'create' => '创建',
 		'edit' => '编辑',
 	],
+	'invite' => [
+		'button' => 'Invite user',
+		'links_are_not_revokable' => 'Invitation links are not revokable.',
+		'link_is_valid_x_days' => 'This link is valid for %d days.',
+	],
 	'line' => [
 		'admin' => '管理员用户',
 		'edit' => '编辑',
