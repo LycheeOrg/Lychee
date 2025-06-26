@@ -311,6 +311,9 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		back_button_text: string;
 		back_button_url: string;
 		timeline_album_granularity: App.Enum.TimelineAlbumGranularity;
+		header_image_url: string;
+		is_header_bar_transparent: boolean;
+		is_header_bar_gradient: boolean;
 	};
 	export type SettingsConfig = {
 		default_old_settings: boolean;

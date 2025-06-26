@@ -32,6 +32,10 @@ class RootConfig extends Data
 	public string $back_button_url;
 	public TimelineAlbumGranularity $timeline_album_granularity;
 
+	public string $header_image_url = '';
+	public bool $is_header_bar_transparent = false;
+	public bool $is_header_bar_gradient = false;
+
 	public function __construct()
 	{
 		$is_logged_in = Auth::check();
@@ -48,6 +52,21 @@ class RootConfig extends Data
 		$this->back_button_enabled = Configs::getValueAsBool('back_button_enabled');
 		$this->back_button_text = Configs::getValueAsString('back_button_text');
 		$this->back_button_url = Configs::getValueAsString('back_button_url');
+
+		$this->setHeaderImageUrl();
+	}
+
+	private function setHeaderImageUrl(): void
+	{
+		if (!Configs::getValueAsBool('gallery_header_enabled')) {
+			return;
+		}
+		if (Auth::check() && !Configs::getValueAsBool('gallery_header_logged_in_enabled')) {
+			return;
+		}
+		$this->header_image_url = Configs::getValueAsString('gallery_header');
+		$this->is_header_bar_transparent = Configs::getValueAsBool('gallery_header_bar_transparent');
+		$this->is_header_bar_gradient = Configs::getValueAsBool('gallery_header_bar_gradient');
 	}
 }
 
