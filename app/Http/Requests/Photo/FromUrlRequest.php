@@ -16,6 +16,7 @@ use App\Http\Requests\Traits\Authorize\AuthorizeCanEditAlbumTrait;
 use App\Http\Requests\Traits\HasAlbumTrait;
 use App\Models\Album;
 use App\Policies\AlbumPolicy;
+use App\Rules\PhotoUrlRule;
 use App\Rules\RandomIDRule;
 use Illuminate\Support\Facades\Gate;
 
@@ -43,7 +44,7 @@ class FromUrlRequest extends BaseApiRequest implements HasAlbum
 		return [
 			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
 			RequestAttribute::URLS_ATTRIBUTE => 'required|array|min:1',
-			RequestAttribute::URLS_ATTRIBUTE . '.*' => 'required|string',
+			RequestAttribute::URLS_ATTRIBUTE . '.*' => ['required','string', new PhotoUrlRule()],
 		];
 	}
 
