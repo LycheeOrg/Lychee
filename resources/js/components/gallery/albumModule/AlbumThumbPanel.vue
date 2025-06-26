@@ -14,7 +14,13 @@
 		</div>
 	</Panel>
 	<Panel v-else :header="'Timeline'" :toggleable="!isAlone" :pt:header:class="headerClass" class="border-0 w-full">
-		<Timeline v-if="is_timeline_left_border_visible" :value="albumsTimeLine" :pt:eventopposite:class="'hidden'" class="mt-4">
+		<Timeline
+			v-if="is_timeline_left_border_visible"
+			:value="albumsTimeLine"
+			:pt:eventopposite:class="'hidden'"
+			class="mt-4"
+			:align="isLTR() ? 'left' : 'right'"
+		>
 			<template #content="slotProps">
 				<div class="flex flex-wrap flex-row shrink w-full justify-start gap-1 sm:gap-2 md:gap-4 pb-8">
 					<div class="w-full text-left font-semibold text-muted-color-emphasis text-lg">{{ slotProps.item.header }}</div>
@@ -37,7 +43,7 @@
 					v-if="albumTimeline.data.filter((a) => !a.is_nsfw || are_nsfw_visible).length > 0"
 					class="flex flex-wrap flex-row shrink w-full justify-start gap-1 sm:gap-2 md:gap-4 pb-8"
 				>
-					<div class="w-full text-left font-semibold text-muted-color-emphasis text-lg">{{ albumTimeline.header }}</div>
+					<div class="w-full ltr:text-left rtl:text-right font-semibold text-muted-color-emphasis text-lg">{{ albumTimeline.header }}</div>
 					<AlbumThumbPanelList
 						:albums="albumTimeline.data"
 						:album="props.album"
@@ -62,6 +68,9 @@ import Timeline from "primevue/timeline";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import AlbumThumbPanelList from "./AlbumThumbPanelList.vue";
+import { useLtRorRtL } from "@/utils/Helpers";
+
+const { isLTR } = useLtRorRtL();
 
 const lycheeStore = useLycheeStateStore();
 const { are_nsfw_visible, is_timeline_left_border_visible, is_debug_enabled } = storeToRefs(lycheeStore);
