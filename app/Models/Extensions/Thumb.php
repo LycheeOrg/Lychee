@@ -9,7 +9,6 @@
 namespace App\Models\Extensions;
 
 use App\Assets\Features;
-use App\DTO\AbstractDTO;
 use App\DTO\SortingCriterion;
 use App\Enum\ColumnSortingPhotoType;
 use App\Enum\OrderSortingType;
@@ -22,10 +21,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
 
-/**
- * @extends AbstractDTO<string|null>
- */
-class Thumb extends AbstractDTO
+class Thumb
 {
 	public string $id;
 	public string $type;
@@ -171,21 +167,5 @@ class Thumb extends AbstractDTO
 			$thumb2x?->url,
 			$placeholder?->url,
 		);
-	}
-
-	/**
-	 * Serializes this object into an array.
-	 *
-	 * @return array<string,string|null> The serialized properties of this object
-	 */
-	public function toArray(): array
-	{
-		return [
-			'id' => $this->id,
-			'type' => $this->type,
-			'thumb' => $this->thumbUrl,
-			'thumb2x' => $this->thumb2xUrl,
-			'placeholder' => $this->placeholderUrl,
-		];
 	}
 }

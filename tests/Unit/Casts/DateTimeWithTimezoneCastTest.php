@@ -21,8 +21,10 @@ namespace Tests\Unit\Casts;
 use App\Casts\DateTimeWithTimezoneCast;
 use App\Exceptions\Internal\LycheeDomainException;
 use App\Exceptions\Internal\LycheeInvalidArgumentException;
+use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\Internal\MissingModelAttributeException;
 use App\Models\Photo;
+use Illuminate\Database\Eloquent\Model;
 use Tests\AbstractTestCase;
 
 class DateTimeWithTimezoneCastTest extends AbstractTestCase
@@ -58,5 +60,14 @@ class DateTimeWithTimezoneCastTest extends AbstractTestCase
 		$photo = new Photo();
 		// @phpstan-ignore-next-line this is voluntary to trigger the exception
 		$cast->set($photo, 'created_at', $this, []);
+	}
+
+	public function testMustNotSetCastThrows(): void
+	{
+		self::expectException(LycheeLogicException::class);
+		$cast = new DateTimeWithTimezoneCast();
+		$model = new class() extends Model {};
+
+		$cast->get($model, 'created_at', '2023-10-01 12:00:00', []);
 	}
 }

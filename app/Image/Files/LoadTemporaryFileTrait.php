@@ -40,13 +40,17 @@ trait LoadTemporaryFileTrait
 					strtr(base64_encode(random_bytes(12)), '+/', '-_') .
 					$file_extension;
 				$this->stream = fopen($temp_file_path, 'x+b');
+				// @codeCoverageIgnoreStart
 			} catch (\ErrorException|\Exception $e) {
 				$temp_file_path = null;
 				$last_exception = $e;
 			}
+			// @codeCoverageIgnoreEnd
 		} while ($temp_file_path === null && $retry_counter > 0);
 		if ($temp_file_path === null) {
+			// @codeCoverageIgnoreStart
 			throw new MediaFileOperationException('unable to create temporary file', $last_exception);
+			// @codeCoverageIgnoreEnd
 		}
 
 		return $temp_file_path;

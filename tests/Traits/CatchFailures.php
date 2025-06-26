@@ -66,7 +66,6 @@ trait CatchFailures
 			$this->trimException($exception);
 			dump($exception);
 		} elseif (!in_array($response->getStatusCode(), [204, 302, ...$expectedStatusCodeArray], true)) {
-			$exception = $response->json();
 			$this->trimException($exception);
 			dump($exception);
 		}

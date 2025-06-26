@@ -9,6 +9,7 @@
 namespace Database\Factories;
 
 use App\Models\Album;
+use App\Models\Palette;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 use App\Models\Statistics;
@@ -72,6 +73,22 @@ class PhotoFactory extends Factory
 	public function without_size_variants(): Factory
 	{
 		$this->with_size_variants = false;
+
+		return $this;
+	}
+
+	public function with_palette(): Factory
+	{
+		return $this->afterCreating(function (Photo $photo) {
+			Palette::factory()->with_colour_1(0xFF0000)
+				->with_colour_2(0x00FF00)
+				->with_colour_3(0x0000FF)
+				->with_colour_4(0xFFFF00)
+				->with_colour_5(0xFF00FF)
+				->create(['photo_id' => $photo->id]);
+			$photo->fresh();
+			$photo->load('palette');
+		});
 
 		return $this;
 	}

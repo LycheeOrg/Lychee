@@ -11,28 +11,11 @@ namespace App\Assets;
 use App\Exceptions\Internal\ZeroModuloException;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\File;
 use Safe\Exceptions\InfoException;
 use function Safe\ini_get;
 
 class Helpers
 {
-	/**
-	 * Add UnixTimeStamp to file path suffix.
-	 */
-	public function cacheBusting(string $file_path): string
-	{
-		if (File::exists($file_path)) {
-			// @codeCoverageIgnoreStart
-			$unix_time_stamp = File::lastModified($file_path);
-
-			return "{$file_path}?{$unix_time_stamp}";
-			// @codeCoverageIgnoreEnd
-		}
-
-		return $file_path;
-	}
-
 	/**
 	 * Return the 32bit truncated version of a number seen as string.
 	 *

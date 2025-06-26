@@ -28,7 +28,8 @@ class EnvController extends Controller
 	{
 		try {
 			if ($request->has('envConfig')) {
-				// @codeCoverageIgnoreStart We are not testing this as this would break the tests.
+				// @codeCoverageIgnoreStart
+				// We are not testing this as this would break the tests.
 				$env = str_replace("\r", '', $request->get('envConfig'));
 				file_put_contents(base_path('.env'), $env, LOCK_EX);
 				$exists = true;
@@ -37,7 +38,8 @@ class EnvController extends Controller
 				$env = file_get_contents(base_path('.env'));
 				$exists = true;
 			} else {
-				// @codeCoverageIgnoreStart We cannot test this as we need the .env to be present to run the tests.
+				// @codeCoverageIgnoreStart
+				// We cannot test this as we need the .env to be present to run the tests.
 				$env = file_get_contents(base_path('.env.example'));
 				$exists = false;
 				// @codeCoverageIgnoreEnd

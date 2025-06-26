@@ -88,18 +88,6 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	}
 
 	/**
-	 * @return Collection<int,AccessPermission>
-	 */
-	public function get_access_permissions(): Collection
-	{
-		if ($this->public_permissions === null) {
-			return resolve(Collection::class);
-		}
-
-		return collect([$this->public_permissions]);
-	}
-
-	/**
 	 * @return Collection<int,Photo>
 	 */
 	public function get_photos(): Collection

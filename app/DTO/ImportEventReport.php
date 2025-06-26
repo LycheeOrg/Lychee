@@ -46,19 +46,6 @@ class ImportEventReport extends BaseImportReport
 		return $this->throwable;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function toArray(): array
-	{
-		return array_merge(parent::toArray(), [
-			'subtype' => $this->subtype,
-			'severity' => $this->severity->value,
-			'path' => $this->path,
-			'message' => $this->message,
-		]);
-	}
-
 	public function toCLIString(): string
 	{
 		return $this->path . ($this->path !== null ? ': ' : '') . $this->message;

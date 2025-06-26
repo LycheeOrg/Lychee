@@ -10,7 +10,7 @@ namespace App\DTO;
 
 use App\Exceptions\Internal\LycheeInvalidArgumentException;
 
-class Version extends ArrayableDTO
+class Version
 {
 	public function __construct(
 		public int $major,

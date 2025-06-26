@@ -17,7 +17,6 @@ use Illuminate\Support\Facades\Facade;
  *
  * Keep the list of documented method in sync with {@link \App\Assets\Helpers}.
  *
- * @method static string cacheBusting(string $filePath)
  * @method static string trancateIf32(string $id, int $prevShortId = 0, int $php_max)
  * @method static string getExtension(string $filename, bool $isURI = false)
  * @method static bool   hasPermissions(string $path)

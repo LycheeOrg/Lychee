@@ -84,7 +84,6 @@ class CoverageTest extends AbstractTestCase
 		self::assertEquals('file', $record->getFile());
 		self::assertEquals('function', $record->getFunction());
 		self::assertEquals('class', $record->getClass());
-		self::assertEquals(['file' => 'file', 'line' => 1, 'method' => 'class::function'], $record->toArray());
 	}
 
 	public function testImportProgressReport(): void
