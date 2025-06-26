@@ -115,9 +115,11 @@ class Helpers
 			$disabled_functions = explode(',', ini_get('disable_functions'));
 
 			return function_exists('exec') && !in_array('exec', $disabled_functions, true);
+			// @codeCoverageIgnoreStart
 		} catch (InfoException $e) {
 			return false;
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**

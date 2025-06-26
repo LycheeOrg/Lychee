@@ -71,14 +71,19 @@ class FromUrl
 
 				// Import photo/video/raw
 				$result->add($create->add($downloaded_file, $album));
+				// @codeCoverageIgnoreStart
 			} catch (\Throwable $e) {
 				$exceptions[] = $e;
 				Handler::reportSafely($e);
 			}
+			// @codeCoverageIgnoreEnd
 		}
 
 		if (count($exceptions) !== 0) {
+			// @codeCoverageIgnoreStart
+			// Those are already caught.
 			throw new MassImportException($exceptions);
+			// @codeCoverageIgnoreEnd
 		}
 
 		return $result;
