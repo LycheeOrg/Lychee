@@ -8,7 +8,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\Oauth\Oauth as OauthAction;
+use App\Actions\Oauth\Oauth;
 use App\Enum\CacheTag;
 use App\Enum\OauthProvidersType;
 use App\Events\TaggedRouteCacheUpdated;
@@ -19,6 +19,7 @@ use App\Http\Requests\Profile\OauthListRequest;
 use App\Http\Resources\Oauth\OauthRegistrationData;
 use App\Models\OauthCredential;
 use App\Models\User;
+use App\Providers\AuthServiceProvider;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Controller;
 use Illuminate\Routing\Redirector;
@@ -32,7 +33,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse as HttpFoundationRedirectR
 class OauthController extends Controller
 {
 	public function __construct(
-		private OauthAction $oauth,
+		private Oauth $oauth,
 	) {
 	}
 
@@ -99,7 +100,7 @@ class OauthController extends Controller
 		}
 
 		$provider_enum = $this->oauth->validateProviderOrDie($provider);
-		Session::put($provider_enum->value, OauthAction::OAUTH_REGISTER);
+		Session::put($provider_enum->value, Oauth::OAUTH_REGISTER);
 
 		TaggedRouteCacheUpdated::dispatch(CacheTag::USER);
 
@@ -136,12 +137,7 @@ class OauthController extends Controller
 
 		$credentials = $user->oauthCredentials()->get();
 
-		foreach (OauthProvidersType::cases() as $provider) {
-			$client_id = config('services.' . $provider->value . '.client_id');
-			if ($client_id === null || $client_id === '') {
-				continue;
-			}
-
+		foreach (AuthServiceProvider::getAvailableOauthProviders() as $provider) {
 			// We create a signed route for 5 minutes
 			$route = URL::signedRoute(
 				name: 'oauth-register',
@@ -166,17 +162,6 @@ class OauthController extends Controller
 	 */
 	public function listProviders(): array
 	{
-		$oauth_available = [];
-
-		foreach (OauthProvidersType::cases() as $oauth_provider) {
-			$client_id = config('services.' . $oauth_provider->value . '.client_id');
-			if ($client_id === null || $client_id === '') {
-				continue;
-			}
-
-			$oauth_available[] = $oauth_provider;
-		}
-
-		return $oauth_available;
+		return AuthServiceProvider::getAvailableOauthProviders();
 	}
 }
