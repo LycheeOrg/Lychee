@@ -92,7 +92,7 @@ class CoverageTest extends AbstractTestCase
 			path: 'path',
 			progress: 1,
 		);
-		self::assertEquals('path: 1%', $report->toCLIString());
+		self::assertEquals('<fg=#999>path: 1%</>', $report->toCLIString());
 	}
 
 	public function testImportEventReport(): void
@@ -102,14 +102,14 @@ class CoverageTest extends AbstractTestCase
 			path: 'path',
 			message: 'message',
 		);
-		self::assertEquals('path: message', $report->toCLIString());
+		self::assertEquals('<comment>path: message</comment>', $report->toCLIString());
 
 		$report = ImportEventReport::createWarning(
 			subtype: 'subtype',
 			path: null,
 			message: 'message',
 		);
-		self::assertEquals('message', $report->toCLIString());
+		self::assertEquals('<comment>message</comment>', $report->toCLIString());
 	}
 
 	public function testBaseSmartAlbumException(): void
