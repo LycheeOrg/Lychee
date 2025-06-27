@@ -36,13 +36,13 @@ class PhotoFromUrlTest extends BaseApiWithDataTest
 
 		$response = $this->postJson(uri: 'Photo::fromUrl', data: [
 			'album_id' => $this->album1->id,
-			'urls' => ['example.com'],
+			'urls' => ['https://example.com'],
 		]);
 		$this->assertUnauthorized($response);
 
 		$response = $this->actingAs($this->userNoUpload)->postJson('Photo::fromUrl', data: [
 			'album_id' => $this->album1->id,
-			'urls' => ['example.com'],
+			'urls' => ['https://example.com'],
 		]);
 		$this->assertForbidden($response);
 	}

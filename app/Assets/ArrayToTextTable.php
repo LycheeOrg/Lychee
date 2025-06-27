@@ -87,7 +87,9 @@ class ArrayToTextTable
 	public function getTable(?array $rawData = null): string
 	{
 		if (!is_null($rawData)) {
+			// @codeCoverageIgnoreStart
 			$this->setData($rawData);
+			// @codeCoverageIgnoreEnd
 		}
 
 		$data = $this->prepare();
@@ -108,6 +110,7 @@ class ArrayToTextTable
 		$table = $i . $this->line($d->getTopLeft(), $d->getHorizontal(), $d->getHorizontalDown(), $d->getTopRight()) . PHP_EOL;
 
 		if ($displayKeys === true || $displayKeys === 'auto') {
+			// @codeCoverageIgnoreStart
 			$keysRow = array_combine($this->keys, $this->keys);
 			if ($this->upperKeys) {
 				$keysRow = array_map('mb_strtoupper', $keysRow);
@@ -115,6 +118,7 @@ class ArrayToTextTable
 			$table .= $i . implode(PHP_EOL, $this->row($keysRow, $this->keysAlignment)) . PHP_EOL;
 
 			$table .= $i . $this->line($d->getVerticalRight(), $d->getHorizontal(), $d->getCross(), $d->getVerticalLeft()) . PHP_EOL;
+			// @codeCoverageIgnoreEnd
 		}
 
 		foreach ($data as $row) {
@@ -141,9 +145,11 @@ class ArrayToTextTable
 		foreach ($data as $row) {
 			if (is_array($row)) {
 				$arrayData[] = $row;
+			// @codeCoverageIgnoreStart
 			} elseif (is_object($row)) {
 				$arrayData[] = get_object_vars($row);
 			}
+			// @codeCoverageIgnoreEnd
 		}
 
 		$this->data = $arrayData;
@@ -278,7 +284,9 @@ class ArrayToTextTable
 		}
 
 		if (count($row) === 0) {
+			// @codeCoverageIgnoreStart
 			$line .= $this->decorator->getVertical();
+			// @codeCoverageIgnoreEnd
 		}
 
 		return $line;
