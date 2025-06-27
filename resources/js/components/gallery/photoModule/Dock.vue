@@ -20,6 +20,7 @@
 			/>
 			<DockButton
 				v-tooltip.bottom="$t('gallery.photo.actions.set_album_header')"
+				v-if="!isTimeline"
 				pi="image"
 				class="lg:hover:text-primary-500 text-white"
 				@click="emits('setAlbumHeader')"
@@ -61,6 +62,7 @@ import { computed } from "vue";
 import { useToast } from "primevue/usetoast";
 import { trans } from "laravel-vue-i18n";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
+import { useRoute } from "vue-router";
 
 const toast = useToast();
 const lycheeStore = useLycheeStateStore();
@@ -107,4 +109,7 @@ const emits = defineEmits<{
 	toggleMove: [];
 	toggleDelete: [];
 }>();
+
+const route = useRoute();
+const isTimeline = computed(() => (route.name as string).includes("timeline"));
 </script>

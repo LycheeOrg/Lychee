@@ -4,6 +4,7 @@ import Albums from "@/views/gallery-panels/Albums.vue";
 const Landing = () => import("@/views/Landing.vue");
 const Favourites = () => import("@/views/gallery-panels/Favourites.vue");
 const Home = () => import("@/views/Home.vue");
+const Timeline = () => import("@/views/gallery-panels/Timeline.vue");
 const Frame = () => import("@/views/gallery-panels/Frame.vue");
 const Search = () => import("@/views/gallery-panels/Search.vue");
 const MapView = () => import("@/views/gallery-panels/Map.vue");
@@ -85,6 +86,12 @@ const routes_ = [
 		name: "frame",
 		path: "/frame/:albumId?",
 		component: Frame,
+		props: true,
+	},
+	{
+		name: "timeline",
+		path: "/timeline/:date?/:photoId?",
+		component: Timeline,
 		props: true,
 	},
 	{
