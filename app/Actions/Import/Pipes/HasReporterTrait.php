@@ -8,7 +8,6 @@
 
 namespace App\Actions\Import\Pipes;
 
-use App\DTO\BaseImportReport;
 use App\DTO\ImportEventReport;
 use App\Exceptions\Handler;
 use Illuminate\Support\Facades\App;
@@ -28,7 +27,7 @@ trait HasReporterTrait
 	 *
 	 * @codeCoverageIgnore
 	 */
-	final protected function report(BaseImportReport $report): void
+	final protected function report(ImportEventReport $report): void
 	{
 		// Silence reporting during unit tests
 		// to avoid cluttering the test output with reports.
@@ -38,6 +37,7 @@ trait HasReporterTrait
 
 		$msg_section = (new ConsoleOutput())->section();
 		$msg_section->writeln($report->toCLIString());
+		$report->log();
 
 		if ($report instanceof ImportEventReport && $report->getException() !== null) {
 			Handler::reportSafely($report->getException());
