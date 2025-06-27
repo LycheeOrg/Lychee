@@ -21,7 +21,6 @@ use Illuminate\Console\Command;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\Console\Exception\ExceptionInterface;
-use Symfony\Component\Console\Exception\InvalidArgumentException;
 
 class Sync extends Command
 {
@@ -213,8 +212,8 @@ class Sync extends Command
 
 	/**
 	 * Validate the delete missing photos option.
-	 * 
-	 * @return bool 
+	 *
+	 * @return bool
 	 */
 	private function validateDeleteMissingPhotos(bool $dry_run): bool
 	{
@@ -231,7 +230,6 @@ class Sync extends Command
 
 		return $delete_missing_albums;
 	}
-
 
 	/**
 	 * Execute the import process.
