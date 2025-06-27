@@ -103,8 +103,8 @@
 			</a>
 		</template>
 	</ContextMenu>
-	<div class="relative w-full h-[calc(100vh/2)] -mt-14 z-0">
-		<img :src="props.config.header_image_url" v-if="props.config.header_image_url !== ''" class="object-cover h-full w-full" />
+	<div class="relative w-full h-[calc(100vh/2)] -mt-14 z-0" v-if="props.config.header_image_url !== ''">
+		<img :src="props.config.header_image_url" class="object-cover h-full w-full" />
 		<div class="absolute top-0 left-0 w-full h-full flex items-center justify-center px-20">
 			<h1
 				class="text-sm font-bold sm:text-lg md:text-3xl md:font-normal text-surface-0 uppercase text-center text-shadow-md text-shadow-black/25"
