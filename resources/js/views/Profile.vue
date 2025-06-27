@@ -13,7 +13,7 @@
 		</Toolbar>
 		<SetLogin />
 		<SetOauth />
-		<SetSecondFactor />
+		<SetSecondFactor v-if="is_webauthn_enabled" />
 	</div>
 </template>
 <script setup lang="ts">
@@ -22,4 +22,9 @@ import SetLogin from "@/components/forms/profile/SetLogin.vue";
 import SetSecondFactor from "@/components/forms/profile/SetSecondFactor.vue";
 import SetOauth from "@/components/forms/profile/SetOauth.vue";
 import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
+import { useLycheeStateStore } from "@/stores/LycheeState";
+import { storeToRefs } from "pinia";
+
+const lycheeStore = useLycheeStateStore();
+const { is_webauthn_enabled } = storeToRefs(lycheeStore);
 </script>
