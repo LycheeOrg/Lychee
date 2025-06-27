@@ -66,6 +66,7 @@ return [
 		'button_hidden' => 'We will hide the button in the header.',
 	],
 	'login' => [
+		'auth_with' => 'Authenticate with %s',
 		'username' => 'Username',
 		'password' => 'Password',
 		'unknown_invalid' => 'Unknown user or invalid password.',

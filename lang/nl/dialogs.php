@@ -61,6 +61,7 @@ return [
         'button_hidden' => 'We verbergen de knop in de koptekst.',
     ],
     'login' => [
+        'auth_with' => 'Authenticeren met %s',
         'username' => 'Gebruikersnaam',
         'password' => 'Wachtwoord',
         'unknown_invalid' => 'Onbekende gebruiker of ongeldig wachtwoord.',
