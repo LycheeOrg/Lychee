@@ -29,6 +29,6 @@ class ImportProgressReport extends BaseImportReport
 
 	public function toCLIString(): string
 	{
-		return $this->path . ': ' . $this->progress . '%';
+		return '<fg=#999>' . $this->path . ': ' . $this->progress . '%</>';
 	}
 }
