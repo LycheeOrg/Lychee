@@ -38,10 +38,6 @@ class ImportImageJob implements ShouldQueue
 	protected JobHistory $history;
 	public string $file_path;
 	public string $album_id;
-	// public string $original_base_name;
-	// public ?string $album_id;
-	// public int $user_id;
-	// public ?int $file_last_modified_time;
 
 	/**
 	 * Create a new job instance.
@@ -53,6 +49,7 @@ class ImportImageJob implements ShouldQueue
 		public Album $album,
 	) {
 		$this->file_path = $file->getPath();
+		$this->album_id = $album->id;
 
 		// Set up our new history record.
 		$this->history = new JobHistory();
