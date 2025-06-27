@@ -12,7 +12,7 @@ use App\Enum\SeverityType;
 use App\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Support\Facades\Log;
 
-class ImportEventReport extends BaseImportReport
+class ImportEventReport
 {
 	protected string $subtype;
 	protected ?string $path;

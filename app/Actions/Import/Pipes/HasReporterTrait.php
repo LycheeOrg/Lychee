@@ -21,7 +21,7 @@ trait HasReporterTrait
 	 * The output is either sent to a web-client via {@link StreamedResponse}
 	 * or to the CLI.
 	 *
-	 * @param BaseImportReport $report the report
+	 * @param ImportEventReport $report the report
 	 *
 	 * @return void
 	 *
