@@ -1,7 +1,7 @@
 <template>
 	<Drawer v-model:visible="left_menu_open" :pt:content:class="'flex flex-col justify-start gap-10'" :position="isLTR() ? 'left' : 'right'">
 		<template #header>
-			<div v-if="user?.id === null && isGallery" class="flex items-center gap-2 text-muted-color hover:text-primary-400 w-full">
+			<div v-if="user?.id === null" class="flex items-center gap-2 text-muted-color hover:text-primary-400 w-full">
 				<RouterLink :to="{ name: 'login' }">
 					<i class="pi pi-sign-in text-lg mr-2" />
 					{{ $t("left-menu.login") }}
@@ -132,6 +132,7 @@ const { user, left_menu_open, initData, openLycheeAbout, canSeeAdmin, load, item
 	leftMenuState,
 	authStore,
 	favouritesStore,
+	route,
 );
 
 function logout() {

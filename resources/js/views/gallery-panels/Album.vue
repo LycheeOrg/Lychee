@@ -172,6 +172,7 @@ import { getNextPreviousPhoto } from "@/composables/photo/getNextPreviousPhoto";
 import { usePhotoRefresher } from "@/composables/photo/hasRefresher";
 import MetricsService from "@/services/metrics-service";
 import { usePhotoRoute } from "@/composables/photo/photoRoute";
+import { useAlbumRoute } from "@/composables/photo/albumRoute";
 import { useLtRorRtL } from "@/utils/Helpers";
 
 const { isLTR } = useLtRorRtL();
@@ -179,6 +180,8 @@ const { isLTR } = useLtRorRtL();
 const route = useRoute();
 const router = useRouter();
 const toast = useToast();
+
+const { albumRoutes } = useAlbumRoute(router);
 
 const props = defineProps<{
 	albumId: string;
@@ -236,7 +239,7 @@ function toggleSlideShow() {
 	}
 
 	slideshow();
-	router.push({ name: "album", params: { albumId: album.value.id, photoId: album.value.photos[0].id } });
+	router.push({ name: albumRoutes().album, params: { albumId: album.value.id, photoId: album.value.photos[0].id } });
 }
 
 const { layoutConfig, loadLayoutConfig } = useGetLayoutConfig();
@@ -260,15 +263,16 @@ function goBack() {
 	if (photoId.value !== undefined) {
 		photoId.value = undefined;
 		photo.value = undefined;
-		router.push({ name: "album", params: { albumId: albumId.value } });
+
+		router.push({ name: albumRoutes().album, params: { albumId: albumId.value } });
 		return;
 	}
 
 	is_album_edit_open.value = false;
 	if (modelAlbum.value !== undefined && modelAlbum.value.parent_id !== null) {
-		router.push({ name: "album", params: { albumId: modelAlbum.value.parent_id } });
+		router.push({ name: albumRoutes().album, params: { albumId: modelAlbum.value.parent_id } });
 	} else {
-		router.push({ name: "gallery" });
+		router.push({ name: albumRoutes().home });
 	}
 }
 
