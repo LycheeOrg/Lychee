@@ -14,7 +14,7 @@
 			'aspect-square': 'aspect-square' === props.config.album_thumb_css_aspect_ratio,
 			'aspect-video': 'aspect-video' === props.config.album_thumb_css_aspect_ratio,
 		}"
-		:data-id="props.album.id"
+		:data-album-id="props.album.id"
 	>
 		<AlbumThumbImage
 			class="group-hover:border-primary-500 group-hover:-rotate-2 group-hover:-translate-x-3 group-hover:translate-y-2"
