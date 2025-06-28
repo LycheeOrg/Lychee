@@ -13,7 +13,7 @@
 		/>
 		<template v-if="config && album">
 			<div id="galleryView" class="relative flex flex-wrap content-start w-full justify-start overflow-y-auto h-full select-none">
-				<SelectDrag :photos="photos" :albums="children" />
+				<SelectDrag :photos="photos" :albums="children" :with-scroll="true" />
 				<AlbumEdit v-if="album.rights.can_edit" :album="album" :config="config" />
 				<div v-if="noData" class="flex w-full flex-col h-full items-center justify-center text-xl text-muted-color gap-8">
 					<span class="block">

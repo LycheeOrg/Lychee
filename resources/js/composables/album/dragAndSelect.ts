@@ -1,6 +1,7 @@
 import { TogglablesStateStore } from "@/stores/ModalsState";
 import { ref } from "vue";
 import { useThrottleFn } from "@vueuse/core";
+import { modKey, shiftKeyState } from "@/utils/keybindings-utils";
 
 type InitialPosition = {
 	top: number;
@@ -20,7 +21,12 @@ type Position = {
 	height?: number | string | undefined;
 };
 
-export function useDragAndSelect(togglableStore: TogglablesStateStore, photos: { id: string }[], albums: { id: string }[]) {
+export function useDragAndSelect(
+	togglableStore: TogglablesStateStore,
+	photos: { id: string }[],
+	albums: { id: string }[],
+	withScroll: boolean = true,
+) {
 	// const position = ref<Position | undefined>(undefined);
 	const position = ref<Position | undefined>({
 		top: "50px",
@@ -53,6 +59,7 @@ export function useDragAndSelect(togglableStore: TogglablesStateStore, photos: {
 
 	// Similarly we use this to get the scroll position.
 	function scrollFromTop() {
+		if (withScroll === false) return 0; // If we don't want to use scroll, we return 0.
 		return document.getElementById("galleryView")?.scrollTop ?? 0;
 	}
 
@@ -99,7 +106,45 @@ export function useDragAndSelect(togglableStore: TogglablesStateStore, photos: {
 		throttledApplySelection();
 	}
 
+	function canStart(e: MouseEvent): boolean {
+		// We use short circuit evaluation.
+		if (
+			e.button !== 0 || // button is pressed not left
+			togglableStore.is_login_open ||
+			togglableStore.is_webauthn_open ||
+			togglableStore.is_metrics_open ||
+			togglableStore.is_upload_visible ||
+			togglableStore.is_create_album_visible ||
+			togglableStore.is_create_tag_album_visible ||
+			togglableStore.is_album_edit_open ||
+			togglableStore.is_slideshow_active ||
+			togglableStore.is_import_from_link_open ||
+			togglableStore.is_rename_visible ||
+			togglableStore.is_move_visible ||
+			togglableStore.is_delete_visible ||
+			togglableStore.is_merge_album_visible ||
+			togglableStore.is_share_album_visible ||
+			togglableStore.is_import_from_link_open ||
+			togglableStore.is_tag_visible ||
+			togglableStore.is_copy_visible
+		) {
+			return false;
+		}
+
+		return true;
+	}
+
 	function show(e: MouseEvent) {
+		if (!canStart(e)) {
+			return;
+		}
+
+		// If we do not have the shift or control key pressed, erase the selection immediately.
+		if (!modKey().value && !shiftKeyState.value) {
+			togglableStore.selectedPhotosIdx = [];
+			togglableStore.selectedAlbumsIdx = [];
+		}
+
 		cache.max_height = get_max_height();
 		cache.max_width = get_max_width();
 		cache.photo_boxes = getBoxes("data-photo-id");
@@ -166,7 +211,6 @@ export function useDragAndSelect(togglableStore: TogglablesStateStore, photos: {
 
 		const photos_slected = cache.photo_boxes.filter((b) => isIntersecting(b, selector)).map((b) => b.id);
 		if (photos_slected.length > 0) {
-			console.log("Found photos:", photos_slected.length);
 			togglableStore.selectedPhotosIdx = photos_slected.map((id) => photos?.findIndex((p) => p.id === id) ?? -1);
 			togglableStore.selectedAlbumsIdx = [];
 			return;
@@ -174,7 +218,6 @@ export function useDragAndSelect(togglableStore: TogglablesStateStore, photos: {
 
 		const albums_selected = cache.album_boxes.filter((b) => isIntersecting(b, selector)).map((b) => b.id);
 		if (albums_selected.length > 0) {
-			console.log("Found albums:", albums_selected.length);
 			togglableStore.selectedAlbumsIdx = albums_selected.map((id) => albums?.findIndex((p) => p.id === id) ?? -1);
 			togglableStore.selectedPhotosIdx = [];
 			return;
@@ -188,7 +231,7 @@ export function useDragAndSelect(togglableStore: TogglablesStateStore, photos: {
 	// when the user is dragging the selection box.
 	// This will ensure that the function is not called too frequently.
 	// The delay is set to 100ms, which should still make it fluid "enough".
-	const throttledApplySelection = useThrottleFn(applySelection, 200);
+	const throttledApplySelection = useThrottleFn(applySelection, 100);
 
 	return {
 		initialPosition,

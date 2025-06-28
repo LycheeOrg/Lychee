@@ -16,14 +16,17 @@ const togglableStore = useTogglablesStateStore();
 const props = defineProps<{
 	photos: App.Http.Resources.Models.PhotoResource[];
 	albums: App.Http.Resources.Models.ThumbAlbumResource[];
+	withScroll: boolean;
 }>();
 
-const { initialPosition, position, show } = useDragAndSelect(togglableStore, props.photos, props.albums);
+const { initialPosition, position, show } = useDragAndSelect(togglableStore, props.photos, props.albums, props.withScroll ?? true);
 
 onMounted(() => {
-	document.addEventListener("mousedown", show);
+	document.getElementById("galleryView")?.addEventListener("mousedown", show);
+	// document.addEventListener("mousedown", show);
 });
 onUnmounted(() => {
-	document.removeEventListener("mousedown", show);
+	document.getElementById("galleryView")?.removeEventListener("mousedown", show);
+	// document.removeEventListener("mousedown", show);
 });
 </script>
