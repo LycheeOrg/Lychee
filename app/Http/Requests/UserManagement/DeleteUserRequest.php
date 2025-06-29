@@ -15,6 +15,7 @@ use App\Http\Requests\Traits\HasUserTrait;
 use App\Models\User;
 use App\Policies\UserPolicy;
 use App\Rules\IntegerIDRule;
+use App\Rules\OwnerIdRule;
 use Illuminate\Support\Facades\Gate;
 
 class DeleteUserRequest extends BaseApiRequest implements HasUser
@@ -35,7 +36,7 @@ class DeleteUserRequest extends BaseApiRequest implements HasUser
 	public function rules(): array
 	{
 		return [
-			RequestAttribute::ID_ATTRIBUTE => ['required', new IntegerIDRule(false)],
+			RequestAttribute::ID_ATTRIBUTE => ['required', new IntegerIDRule(false), new OwnerIdRule()],
 		];
 	}
 
