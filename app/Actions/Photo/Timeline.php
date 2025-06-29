@@ -139,8 +139,7 @@ class Timeline
 
 		$formatter = match (DB::getDriverName()) {
 			'sqlite' => 'strftime("%2$s", %1$s)',
-			'mysql' => 'DATE_FORMAT(%s, "%s")',
-			'mariadb' => 'DATE_FORMAT(%s, "%s")',
+			'mysql', 'mariadb' => 'DATE_FORMAT(%s, "%s")',
 			'pgsql' => "to_char(%s, '%s')",
 			default => throw new LycheeInvalidArgumentException('Unsupported database driver'),
 		};
