@@ -25,6 +25,7 @@ use App\Policies\UserPolicy;
 use App\Rules\BooleanRequireSupportRule;
 use App\Rules\IntegerIDRule;
 use App\Rules\IntegerRequireSupportRule;
+use App\Rules\OwnerIdRule;
 use App\Rules\PasswordRule;
 use App\Rules\StringRequireSupportRule;
 use App\Rules\UsernameRule;
@@ -40,6 +41,7 @@ class SetUserSettingsRequest extends BaseApiRequest implements HasUsername, HasP
 
 	protected bool $may_upload = false;
 	protected bool $may_edit_own_settings = false;
+	protected bool $may_administrate = false;
 
 	/**
 	 * {@inheritDoc}
@@ -55,11 +57,12 @@ class SetUserSettingsRequest extends BaseApiRequest implements HasUsername, HasP
 	public function rules(): array
 	{
 		return [
-			RequestAttribute::ID_ATTRIBUTE => ['required', new IntegerIDRule(false)],
+			RequestAttribute::ID_ATTRIBUTE => ['required', new IntegerIDRule(false), new OwnerIdRule()],
 			RequestAttribute::USERNAME_ATTRIBUTE => ['required', new UsernameRule(), 'min:1'],
 			RequestAttribute::PASSWORD_ATTRIBUTE => ['sometimes', new PasswordRule(false)],
 			RequestAttribute::MAY_UPLOAD_ATTRIBUTE => 'present|boolean',
 			RequestAttribute::MAY_EDIT_OWN_SETTINGS_ATTRIBUTE => 'present|boolean',
+			RequestAttribute::MAY_ADMINISTRATE => ['sometimes', 'boolean', new BooleanRequireSupportRule(false, $this->verify)],
 			RequestAttribute::HAS_QUOTA_ATTRIBUTE => ['sometimes', 'boolean', new BooleanRequireSupportRule(false, $this->verify)],
 			RequestAttribute::QUOTA_ATTRIBUTE => ['sometimes', 'int', new IntegerRequireSupportRule(0, $this->verify)],
 			RequestAttribute::NOTE_ATTRIBUTE => ['sometimes', 'nullable', 'string', new StringRequireSupportRule('', $this->verify)],
@@ -81,6 +84,7 @@ class SetUserSettingsRequest extends BaseApiRequest implements HasUsername, HasP
 		}
 		$this->may_upload = static::toBoolean($values[RequestAttribute::MAY_UPLOAD_ATTRIBUTE]);
 		$this->may_edit_own_settings = static::toBoolean($values[RequestAttribute::MAY_EDIT_OWN_SETTINGS_ATTRIBUTE]);
+		$this->may_administrate = static::toBoolean($values[RequestAttribute::MAY_ADMINISTRATE] ?? false);
 		/** @var int $user_id */
 		$user_id = $values[RequestAttribute::ID_ATTRIBUTE];
 		$this->user2 = User::query()->findOrFail($user_id);
@@ -97,5 +101,10 @@ class SetUserSettingsRequest extends BaseApiRequest implements HasUsername, HasP
 	public function mayEditOwnSettings(): bool
 	{
 		return $this->may_edit_own_settings;
+	}
+
+	public function mayAdministrate(): bool
+	{
+		return $this->may_administrate;
 	}
 }

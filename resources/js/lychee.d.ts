@@ -30,7 +30,7 @@ declare namespace App.Enum {
 		| "taken_at"
 		| "is_starred"
 		| "type";
-	export type ConfigType = "int" | "positive" | "string" | "string_required" | "0|1" | "0|1|2" | "" | "license" | "map_provider";
+	export type ConfigType = "int" | "positive" | "string" | "string_required" | "0|1" | "0|1|2" | "" | "admin_user" | "license" | "map_provider";
 	export type CountType = "taken_at" | "created_at";
 	export type DateOrderingType = "older_younger" | "younger_older";
 	export type DbDriverType = "mysql" | "pgsql" | "sqlite";
@@ -550,6 +550,7 @@ declare namespace App.Http.Resources.Models {
 		may_administrate: boolean;
 		may_upload: boolean;
 		may_edit_own_settings: boolean;
+		is_owner: boolean;
 		quota_kb: number | null;
 		description: string | null;
 		note: string | null;

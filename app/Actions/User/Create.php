@@ -27,6 +27,7 @@ class Create
 		?string $email = null,
 		bool $may_upload = false,
 		bool $may_edit_own_settings = false,
+		bool $may_administrate = false,
 		?int $quota_kb = null,
 		?string $note = null,
 	): User {
@@ -40,7 +41,7 @@ class Create
 		$user = new User();
 		$user->may_upload = $may_upload;
 		$user->may_edit_own_settings = $may_edit_own_settings;
-		$user->may_administrate = false;
+		$user->may_administrate = $may_administrate;
 		$user->username = $username;
 		$user->email = $email;
 		$user->password = Hash::make($password);

@@ -21,6 +21,7 @@ namespace Tests\Feature_v2\Base;
 use App\Enum\UserGroupRole;
 use App\Models\AccessPermission;
 use App\Models\Album;
+use App\Models\Configs;
 use App\Models\Palette;
 use App\Models\Photo;
 use App\Models\TagAlbum;
@@ -152,6 +153,8 @@ abstract class BaseApiWithDataTest extends BaseApiTest
 			->create();
 
 		$this->album5 = Album::factory()->as_root()->owned_by($this->admin)->create();
+
+		Configs::set('owner_id', $this->admin->id);
 
 		$this->withoutVite();
 		$this->clearCachedSmartAlbums();

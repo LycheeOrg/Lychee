@@ -15,6 +15,7 @@ use App\Http\Resources\Editable\EditableConfigResource;
 use App\Rules\ConfigKeyRequireSupportRule;
 use App\Rules\ConfigKeyRule;
 use App\Rules\ConfigValueRule;
+use App\Rules\OwnerConfigRule;
 
 class SetConfigsRequest extends GetAllConfigsRequest implements HasConfigs
 {
@@ -36,7 +37,7 @@ class SetConfigsRequest extends GetAllConfigsRequest implements HasConfigs
 	{
 		return [
 			RequestAttribute::CONFIGS_ATTRIBUTE => ['required'],
-			RequestAttribute::CONFIGS_ARRAY_KEY_ATTRIBUTE => ['required', new ConfigKeyRule(), new ConfigKeyRequireSupportRule($this->verify)],
+			RequestAttribute::CONFIGS_ARRAY_KEY_ATTRIBUTE => ['required', new ConfigKeyRule(), new ConfigKeyRequireSupportRule($this->verify), new OwnerConfigRule()],
 			RequestAttribute::CONFIGS_ARRAY_VALUE_ATTRIBUTE => ['present', new ConfigValueRule()],
 		];
 	}

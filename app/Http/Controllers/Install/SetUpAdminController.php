@@ -9,6 +9,7 @@
 namespace App\Http\Controllers\Install;
 
 use App\Http\Requests\Install\SetUpAdminRequest;
+use App\Models\Configs;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Routing\Controller;
@@ -50,6 +51,8 @@ class SetUpAdminController extends Controller
 			$user->username = $request->username();
 			$user->password = Hash::make($request->password());
 			$user->save();
+
+			Configs::set('owner_id', $user->id);
 		} catch (\Throwable $e) {
 			$error = $e->getMessage();
 			$error .= '<br>' . $e->getPrevious()->getMessage();

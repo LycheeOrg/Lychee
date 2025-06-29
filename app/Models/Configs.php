@@ -139,6 +139,14 @@ class Configs extends Model
 					$message = sprintf($message_template, implode(' or ', $val_range[$this->type_range]));
 				}
 				break;
+			case ConfigType::ADMIN_USER->value:
+				$admin_candidate = User::where('may_administrate', true)
+					->where('id', '=', $candidate_value)
+					->first();
+				if ($admin_candidate === null) {
+					$message = sprintf($message_template, 'a valid admin user ID');
+				}
+				break;
 			case ConfigType::LICENSE->value:
 				if (LicenseType::tryFrom($candidate_value) === null) {
 					$message = sprintf($message_template, 'a valid license');

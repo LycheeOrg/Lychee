@@ -5,6 +5,7 @@ type UserManagementCreateRequest = {
 	username: string;
 	password: string | null | undefined;
 	may_upload: boolean;
+	may_administrate: boolean;
 	may_edit_own_settings: boolean;
 	has_quota?: boolean;
 	quota_kb?: number;

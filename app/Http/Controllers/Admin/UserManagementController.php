@@ -60,6 +60,7 @@ class UserManagementController extends Controller
 			password: $request->password(),
 			may_upload: $request->mayUpload(),
 			may_edit_own_settings: $request->mayEditOwnSettings(),
+			may_administrate: $request->mayAdministrate(),
 			quota_kb: $request->quota_kb(),
 			note: $request->note()
 		);
@@ -93,6 +94,7 @@ class UserManagementController extends Controller
 			password: $request->password(),
 			may_upload: $request->mayUpload(),
 			may_edit_own_settings: $request->mayEditOwnSettings(),
+			may_administrate: $request->mayAdministrate(),
 			quota_kb: $request->quota_kb(),
 			note: $request->note()
 		);

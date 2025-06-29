@@ -84,6 +84,7 @@ class RequestAttribute
 	public const TAGS_ATTRIBUTE = 'tags';
 	public const MAY_UPLOAD_ATTRIBUTE = 'may_upload';
 	public const MAY_EDIT_OWN_SETTINGS_ATTRIBUTE = 'may_edit_own_settings';
+	public const MAY_ADMINISTRATE = 'may_administrate';
 
 	/**
 	 * Import from server attributes.
