@@ -111,6 +111,7 @@ function execute() {
 
 		// RESET !
 		destination_id.value = undefined;
+		titleMovedTo.value = undefined;
 
 		emits("merged");
 	});

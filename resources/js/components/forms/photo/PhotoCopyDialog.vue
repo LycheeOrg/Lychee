@@ -2,7 +2,16 @@
 	<Dialog v-model:visible="visible" pt:root:class="border-none" modal :dismissable-mask="true">
 		<template #container="{ closeCallback }">
 			<div v-if="titleCopyTo !== undefined">
-				<p class="p-9 text-center text-muted-color">{{ confirmation }}</p>
+				<p class="p-9 text-center text-muted-color">
+					{{ confirmation }}
+					<span
+						class="text-danger-700 hover:text-danger-600 pi pi-times text-sm cursor-pointer"
+						@click="
+							titleCopyTo = undefined;
+							destination_id = undefined;
+						"
+					/>
+				</p>
 				<div class="flex">
 					<Button severity="secondary" class="font-bold w-full border-none rounded-none rounded-bl-xl" @click="close">
 						{{ $t("dialogs.button.cancel") }}
@@ -101,9 +110,6 @@ function execute() {
 		});
 		// Clear the cache for the destination album
 		AlbumService.clearCache(destination_id.value);
-
-		// RESET !
-		destination_id.value = undefined;
 
 		emits("copy");
 	});
