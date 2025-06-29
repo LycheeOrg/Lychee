@@ -20,6 +20,7 @@ return [
     'create_edit' => [
         'upload_rights' => 'L’utilisateur peut téléverser du contenu.',
         'edit_rights' => 'L’utilisateur peut modifier son nom d’utilisateur et son mot de passe.',
+        'admin_rights' => 'L’utilisateur peut administrer Lychee.',
         'quota' => 'Quota d’espace (en Ko).',
         'quota_kb' => 'quota en Ko (0 par défaut)',
         'note' => 'Note admin (non visible publiquement)',
@@ -32,7 +33,8 @@ return [
 		'link_is_valid_x_days' => 'Ce lien est valable pendant %d jours.',
 	],
     'line' => [
-        'admin' => 'utilisateur administrateur',
+        'owner' => 'Propriétaire',
+        'admin' => 'Utilisateur administrateur',
         'edit' => 'Éditer',
         'delete' => 'Supprimer',
     ],

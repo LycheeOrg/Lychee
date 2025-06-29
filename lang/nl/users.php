@@ -24,6 +24,7 @@ return [
 	'create_edit' => [
 		'upload_rights' => 'Gebruiker kan inhoud uploaden.',
 		'edit_rights' => 'Gebruiker kan zijn profiel wijzigen (gebruikersnaam, wachtwoord).',
+		'admin_rights' => 'User has admin rights.',
 		'quota' => 'Gebruiker heeft een quotumlimiet.',
 		'quota_kb' => 'quotum in kB (0 voor standaard)',
 		'note' => 'Beheerdersnotitie (niet openbaar zichtbaar)',
@@ -36,7 +37,8 @@ return [
 		'link_is_valid_x_days' => 'This link is valid for %d days.',
 	],
 	'line' => [
-		'admin' => 'beheerder',
+		'owner' => 'Owner',
+		'admin' => 'Beheerder',
 		'edit' => 'Bewerken',
 		'delete' => 'Verwijderen',
 	],
