@@ -24,6 +24,7 @@ return [
 	'create_edit' => [
 		'upload_rights' => 'Пользователь может загружать контент.',
 		'edit_rights' => 'Пользователь может изменить свой профиль (имя пользователя, пароль).',
+		'admin_rights' => 'User has admin rights.',
 		'quota' => 'Пользователь имеет ограничение по квоте.',
 		'quota_kb' => 'квота в кБ (0 по умолчанию)',
 		'note' => 'Примечание администратора (не видно публично)',
@@ -36,6 +37,7 @@ return [
 		'link_is_valid_x_days' => 'This link is valid for %d days.',
 	],
 	'line' => [
+		'owner' => 'Owner',
 		'admin' => 'администратор',
 		'edit' => 'Изменить',
 		'delete' => 'Удалить',

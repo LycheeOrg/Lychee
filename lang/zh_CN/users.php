@@ -24,6 +24,7 @@ return [
 	'create_edit' => [
 		'upload_rights' => '用户可以上传内容。',
 		'edit_rights' => '用户可以修改其个人资料（用户名、密码）。',
+		'admin_rights' => 'User has admin rights.',
 		'quota' => '用户有配额限制。',
 		'quota_kb' => '配额（kB，0 表示使用默认值）',
 		'note' => '管理员备注（不公开显示）',
@@ -36,6 +37,7 @@ return [
 		'link_is_valid_x_days' => 'This link is valid for %d days.',
 	],
 	'line' => [
+		'owner' => 'Owner',
 		'admin' => '管理员用户',
 		'edit' => '编辑',
 		'delete' => '删除',
