@@ -8,7 +8,7 @@
 
 namespace App\Models;
 
-use App\Casts\ArrayCast;
+use App\Casts\TagArrayCast;
 use App\Exceptions\InvalidPropertyException;
 use App\ModelFunctions\HasAbstractAlbumProperties;
 use App\Models\Builders\TagAlbumBuilder;
@@ -23,7 +23,7 @@ use Illuminate\Database\Query\Builder as BaseBuilder;
 /**
  * App\Models\TagAlbum.
  *
- * @property string[] $show_tags
+ * @property Tag[] $show_tags
  *
  * @method static TagAlbumBuilder|TagAlbum query()                       Begin querying the model.
  * @method static TagAlbumBuilder|TagAlbum with(array|string $relations) Begin querying the model with eager loading.
@@ -78,13 +78,16 @@ class TagAlbum extends BaseAlbum
 	];
 
 	/**
-	 * @var array<string, string>
+	 * @return array<string,string>
 	 */
-	protected $casts = [
-		'min_taken_at' => 'datetime',
-		'max_taken_at' => 'datetime',
-		'show_tags' => ArrayCast::class,
-	];
+	protected function casts(): array
+	{
+		return [
+			'min_taken_at' => 'datetime',
+			'max_taken_at' => 'datetime',
+			'show_tags' => TagArrayCast::class,
+		];
+	}
 
 	/**
 	 * @var list<string> The list of attributes which exist as columns of the DB
