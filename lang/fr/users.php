@@ -1,7 +1,6 @@
 <?php
-
 return [
-	/* --------------------------------------------------------------------------
+    /* --------------------------------------------------------------------------
 	| Users page
 	|-------------------------------------------------------------------------- */
     'title' => 'Utilisateurs',
@@ -27,11 +26,11 @@ return [
         'create' => 'Créer',
         'edit' => 'Éditer',
     ],
-	'invite' => [
-		'button' => 'Inviter un utilisateur',
-		'links_are_not_revokable' => 'Les liens d’invitation ne sont pas révocables.',
-		'link_is_valid_x_days' => 'Ce lien est valable pendant %d jours.',
-	],
+    'invite' => [
+        'button' => 'Inviter un utilisateur',
+        'links_are_not_revokable' => 'Les liens d’invitation ne sont pas révocables.',
+        'link_is_valid_x_days' => 'Ce lien est valable pendant %d jours.',
+    ],
     'line' => [
         'owner' => 'Propriétaire',
         'admin' => 'Utilisateur administrateur',

@@ -29,9 +29,9 @@ return [
         'edit' => 'Bearbeiten',
     ],
     'invite' => [
-        'button' => 'Invite user',
-        'links_are_not_revokable' => 'Invitation links are not revokable.',
-        'link_is_valid_x_days' => 'This link is valid for %d days.',
+        'button' => 'Benutzer einladen',
+        'links_are_not_revokable' => 'Einladungslinks sind nicht widerrufbar.',
+        'link_is_valid_x_days' => 'Dieser Link ist für %d Tage gültig.',
     ],
     'line' => [
         'owner' => 'Besitzer',
