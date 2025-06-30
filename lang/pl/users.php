@@ -24,6 +24,7 @@ return [
 	'create_edit' => [
 		'upload_rights' => 'Użytkownik może przesyłać treści.',
 		'edit_rights' => 'Użytkownik może modyfikować swój profil (nazwa użytkownika, hasło).',
+		'admin_rights' => 'User has admin rights.',
 		'quota' => 'Użytkownik ma limit miejsca',
 		'quota_kb' => 'miejsce na zdjęcia w kB (domyślnie 0)',
 		'note' => 'Uwaga administratora (niewidoczna publicznie)',
@@ -36,7 +37,8 @@ return [
 		'link_is_valid_x_days' => 'This link is valid for %d days.',
 	],
 	'line' => [
-		'admin' => 'użytkownik admin',
+		'owner' => 'Owner',
+		'admin' => 'Użytkownik admin',
 		'edit' => 'Edytuj',
 		'delete' => 'Usuń',
 	],
