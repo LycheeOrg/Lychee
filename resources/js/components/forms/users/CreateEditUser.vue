@@ -19,6 +19,21 @@
 					<label for="mayEdit" class="ltr:ml-2 rtl:mr-2 cursor-pointer">{{ $t("users.create_edit.edit_rights") }}</label>
 				</div>
 				<div class="w-full items-center text-muted-color" v-if="is_se_enabled || is_se_preview_enabled">
+					<Checkbox
+						inputId="mayAdministrate"
+						v-model="may_administrate"
+						:binary="true"
+						:pt:box:class="'data-[p=checked]:bg-warning-700 data-[p=checked]:border-warning-700'"
+					>
+						<template #icon="{ checked }">
+							<i v-if="checked" class="pi pi-exclamation-triangle text-xs text-white" />
+						</template>
+					</Checkbox>
+					<label for="mayAdministrate" class="ltr:ml-2 rtl:mr-2 cursor-pointer">
+						{{ $t("users.create_edit.admin_rights") }} <SETag />
+					</label>
+				</div>
+				<div class="w-full items-center text-muted-color" v-if="is_se_enabled || is_se_preview_enabled">
 					<Checkbox inputId="hasQuota" v-model="has_quota" :binary="true" />
 					<label for="hasQuota" class="ltr:ml-2 rtl:mr-2 cursor-pointer">{{ $t("users.create_edit.quota") }} <SETag /></label>
 				</div>
@@ -93,6 +108,7 @@ const username = ref<string | undefined>(props.user?.username);
 const note = ref<string | undefined>(props.user?.note ?? undefined);
 const password = ref<string | undefined>(undefined);
 const may_edit_own_settings = ref(props.user?.may_edit_own_settings ?? false);
+const may_administrate = ref(props.user?.may_administrate ?? false);
 const may_upload = ref(props.user?.may_upload ?? false);
 const has_quota = ref(props.user?.quota_kb !== undefined && props.user?.quota_kb !== null);
 const quota_kb = ref(props.user?.quota_kb?.toString() ?? "0");
@@ -111,6 +127,7 @@ function createUser() {
 		username: username.value,
 		password: password.value,
 		may_edit_own_settings: may_edit_own_settings.value,
+		may_administrate: may_administrate.value,
 		may_upload: may_upload.value,
 		has_quota: is_se_enabled ? has_quota.value : undefined,
 		quota_kb: is_se_enabled ? parseInt(quota_kb.value) : undefined,
@@ -120,6 +137,7 @@ function createUser() {
 			visible.value = false;
 			password.value = undefined;
 			may_upload.value = false;
+			may_administrate.value = false;
 			may_edit_own_settings.value = false;
 			username.value = undefined;
 			has_quota.value = false;
@@ -145,6 +163,7 @@ function editUser() {
 		username: username.value,
 		password: password.value,
 		may_edit_own_settings: may_edit_own_settings.value,
+		may_administrate: may_administrate.value,
 		may_upload: may_upload.value,
 		has_quota: is_se_enabled ? has_quota.value : undefined,
 		quota_kb: is_se_enabled ? parseInt(quota_kb.value) : undefined,
@@ -154,6 +173,7 @@ function editUser() {
 			visible.value = false;
 			password.value = undefined;
 			may_upload.value = false;
+			may_administrate.value = false;
 			may_edit_own_settings.value = false;
 			username.value = undefined;
 			has_quota.value = false;
@@ -172,6 +192,7 @@ watch(
 		id.value = newUser?.id;
 		username.value = newUser?.username;
 		may_edit_own_settings.value = newUser?.may_edit_own_settings ?? false;
+		may_administrate.value = newUser?.may_administrate ?? false;
 		may_upload.value = newUser?.may_upload ?? false;
 		has_quota.value = newUser?.quota_kb !== undefined && newUser?.quota_kb !== null;
 		quota_kb.value = newUser?.quota_kb?.toString() ?? "0";

@@ -24,6 +24,7 @@ return [
 	'create_edit' => [
 		'upload_rights' => 'User can upload content.',
 		'edit_rights' => 'User can modify their profile (username, password).',
+		'admin_rights' => 'User has admin rights.',
 		'quota' => 'User has quota limit.',
 		'quota_kb' => 'quota in kB (0 for default)',
 		'note' => 'Admin note (not publically visible)',
@@ -36,7 +37,8 @@ return [
 		'link_is_valid_x_days' => 'This link is valid for %d days.',
 	],
 	'line' => [
-		'admin' => 'admin user',
+		'owner' => 'Owner',
+		'admin' => 'Admin user',
 		'edit' => 'Edit',
 		'delete' => 'Delete',
 	],

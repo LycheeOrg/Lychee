@@ -176,6 +176,7 @@ class CoverageTest extends AbstractTestCase
 			'email',
 			true,
 			true,
+			false,
 			0,
 			'note'
 		);

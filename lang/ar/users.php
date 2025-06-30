@@ -24,6 +24,7 @@ return [
 	'create_edit' => [
 		'upload_rights' => 'يمكن للمستخدم تحميل المحتوى.',
 		'edit_rights' => 'يمكن للمستخدم تعديل ملفه الشخصي (اسم المستخدم، كلمة المرور).',
+		'admin_rights' => 'User has admin rights.',
 		'quota' => 'لدى المستخدم حد الحصة.',
 		'quota_kb' => 'الحصة بالكيلوبايت (0 للإعداد الافتراضي)',
 		'note' => 'ملاحظة المسؤول (غير مرئية للعامة)',
@@ -36,6 +37,7 @@ return [
 		'link_is_valid_x_days' => 'This link is valid for %d days.',
 	],
 	'line' => [
+		'owner' => 'Owner',
 		'admin' => 'مستخدم مسؤول',
 		'edit' => 'تعديل',
 		'delete' => 'حذف',
