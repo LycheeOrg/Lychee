@@ -58,9 +58,6 @@ class CreateNonExistingAlbums implements ImportPipe
 		foreach ($node->children as $child) {
 			$this->processNode($child, $node->album);
 		}
-
-		// Import all images for this node
-		// $this->importImagesForNode($node);
 	}
 
 	/**
