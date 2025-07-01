@@ -170,7 +170,7 @@ class SharingTest extends BaseApiWithDataTest
 			'shall_override' => false,
 		]);
 		$this->assertNoContent($response);
-		// Verify the count is still 1.
+		// Verify the count is still 2.
 		self::assertEquals(2, AccessPermission::where(APC::BASE_ALBUM_ID, '=', $this->subAlbum1->id)->count());
 
 		// Verify the permission

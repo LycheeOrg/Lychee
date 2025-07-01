@@ -10,6 +10,7 @@ namespace App\Http\Requests\Sharing;
 
 use App\Contracts\Http\Requests\HasAccessPermissionResource;
 use App\Contracts\Http\Requests\HasAlbumIds;
+use App\Contracts\Http\Requests\HasUserGroupIds;
 use App\Contracts\Http\Requests\HasUserIds;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Contracts\Models\AbstractAlbum;
@@ -30,7 +31,7 @@ use Illuminate\Validation\ValidationException;
  *
  * Only the owner of the album (or the admin) can set the shares.
  */
-class AddSharingRequest extends BaseApiRequest implements HasAlbumIds, HasUserIds, HasAccessPermissionResource
+class AddSharingRequest extends BaseApiRequest implements HasAlbumIds, HasUserIds, HasAccessPermissionResource, HasUserGroupIds
 {
 	use HasAlbumIdsTrait;
 	use HasUserIdsTrait;
@@ -67,6 +68,8 @@ class AddSharingRequest extends BaseApiRequest implements HasAlbumIds, HasUserId
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @throws ValidationException if no users or groups are specified
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{

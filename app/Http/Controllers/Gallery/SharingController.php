@@ -46,8 +46,8 @@ class SharingController extends Controller
 	public function create(AddSharingRequest $request, Share $share): array
 	{
 		// delete any already created.
-		AccessPermission::whereIn('base_album_id', $request->albumIds())
-			->where(fn ($q) => $q->whereIn('user_id', $request->userIds())
+		AccessPermission::whereIn(APC::BASE_ALBUM_ID, $request->albumIds())
+			->where(fn ($q) => $q->whereIn(APC::USER_ID, $request->userIds())
 				->orWhereIn(APC::USER_GROUP_ID, $request->userGroupIds()))
 			->delete();
 
