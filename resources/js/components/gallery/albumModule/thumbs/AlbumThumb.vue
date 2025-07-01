@@ -1,6 +1,6 @@
 <template>
 	<router-link
-		:to="{ name: 'album', params: { albumId: album.id } }"
+		:to="{ name: albumRoutes().album, params: { albumId: album.id } }"
 		class="album-thumb block relative sm:w-[calc(25vw-1rem)] md:w-[calc(19vw-1rem)] lg:w-[calc(16vw-1rem)] xl:w-[calc(14vw-1rem)] 2xl:w-[calc(12vw-0.75rem)] 3xl:w-[calc(12vw-0.75rem)] 4xl:w-52 animate-zoomIn group"
 		:class="{
 			'w-[calc(100%)]': lycheeStore.number_albums_per_row_mobile === 1,
@@ -64,6 +64,8 @@ import AlbumThumbOverlay from "./AlbumThumbOverlay.vue";
 import AlbumThumbDecorations from "./AlbumThumbDecorations.vue";
 import { storeToRefs } from "pinia";
 import { useImageHelpers } from "@/utils/Helpers";
+import { useAlbumRoute } from "@/composables/photo/albumRoute";
+import { useRouter } from "vue-router";
 
 export type AlbumThumbConfig = {
 	album_thumb_css_aspect_ratio: string;
@@ -80,10 +82,13 @@ const props = defineProps<{
 	config: AlbumThumbConfig;
 }>();
 
+const router = useRouter();
 const auth = useAuthStore();
 const lycheeStore = useLycheeStateStore();
 const { getPlayIcon } = useImageHelpers();
 const { user } = storeToRefs(auth);
+
+const { albumRoutes } = useAlbumRoute(router);
 
 const cssClass = computed(() => {
 	let css = "";
