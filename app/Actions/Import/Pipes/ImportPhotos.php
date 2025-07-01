@@ -13,8 +13,8 @@ use App\Contracts\Import\ImportPipe;
 use App\DTO\FolderNode;
 use App\DTO\ImportDTO;
 use App\DTO\ImportEventReport;
-use App\DTO\ImportProgressReport;
 use App\Image\Files\NativeLocalFile;
+use App\Jobs\ImportImageJob;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Photo;
@@ -75,7 +75,7 @@ class ImportPhotos implements ImportPipe
 		foreach ($image_paths as $idx => $image_path) {
 			$this->importSingleImage($image_path, $node->album, $idx / $total * 100);
 		}
-		$this->report(ImportProgressReport::create('Importing photos for: ' . $node->name, 100));
+		$this->report(ImportEventReport::createDebug('importing', null, 'Importing photos for: ' . $node->name . '%s'));
 	}
 
 	/**
@@ -120,12 +120,13 @@ class ImportPhotos implements ImportPipe
 	{
 		$file = new NativeLocalFile($image_path);
 		try {
-			$this->state->getPhotoCreate()->add($file, $album);
+			ImportImageJob::dispatch($file, $this->state->intended_owner_id, $this->state->import_mode, $album);
 		} catch (\Throwable $e) {
 			$this->report(ImportEventReport::createFromException($e, $image_path));
 		}
 
-		$this->report(ImportEventReport::createDebug('imported', $image_path, 'Imported photo: ' . $progress . '%'));
+		$action = config('queue.default') === 'sync' ? 'Imported photo: ' : 'Created Import job for photo: ';
+		$this->report(ImportEventReport::createDebug('imported', $image_path, $action . $progress . '%'));
 	}
 
 	/**
