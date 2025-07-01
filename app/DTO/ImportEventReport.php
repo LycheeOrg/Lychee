@@ -10,11 +10,10 @@ namespace App\DTO;
 
 use App\Enum\SeverityType;
 use App\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Support\Facades\Log;
 
-class ImportEventReport extends BaseImportReport
+class ImportEventReport
 {
-	public const REPORT_TYPE = 'event';
-
 	protected string $subtype;
 	protected ?string $path;
 	protected SeverityType $severity;
@@ -23,7 +22,6 @@ class ImportEventReport extends BaseImportReport
 
 	protected function __construct(string $subtype, SeverityType $severity, ?string $path, string $message, ?\Throwable $throwable = null)
 	{
-		parent::__construct(self::REPORT_TYPE);
 		$this->subtype = $subtype;
 		$this->severity = $severity;
 		$this->path = $path;
@@ -66,17 +64,34 @@ class ImportEventReport extends BaseImportReport
 		return $this->throwable;
 	}
 
+	public function log(): void
+	{
+		match ($this->severity) {
+			SeverityType::EMERGENCY, SeverityType::ALERT, SeverityType::CRITICAL, SeverityType::ERROR => Log::error($this->str()),
+			SeverityType::WARNING => Log::warning($this->str()),
+			SeverityType::INFO => Log::info($this->str()),
+			SeverityType::NOTICE => Log::notice($this->str()),
+			SeverityType::DEBUG => Log::debug($this->str()),
+			default => Log::info($this->str()), // Default to info for other severities
+		};
+	}
+
 	public function toCLIString(): string
 	{
 		$wrapper = match ($this->severity) {
-			SeverityType::EMERGENCY, SeverityType::ALERT, SeverityType::CRITICAL, SeverityType::ERROR => $wrapper = '<error>%s</error>',
-			SeverityType::WARNING => $wrapper = '<comment>%s</comment>',
-			SeverityType::INFO => $wrapper = '<info>%s</info>',
-			SeverityType::NOTICE => $wrapper = '<fg=blue>%s</>',
-			SeverityType::DEBUG => $wrapper = '<fg=gray>%s</>',
-			default => $wrapper = '<info>%s</info>', // Default to info for other severities
+			SeverityType::EMERGENCY, SeverityType::ALERT, SeverityType::CRITICAL, SeverityType::ERROR => '<error>%s</error>',
+			SeverityType::WARNING => '<comment>%s</comment>',
+			SeverityType::INFO => '<info>%s</info>',
+			SeverityType::NOTICE => '<fg=blue>%s</>',
+			SeverityType::DEBUG => '<fg=gray>%s</>',
+			default => '<info>%s</info>', // Default to info for other severities
 		};
 
-		return sprintf($wrapper, $this->path . ($this->path !== null ? ': ' : '') . $this->message);
+		return sprintf($wrapper, $this->str());
+	}
+
+	private function str(): string
+	{
+		return $this->path . ($this->path !== null ? ': ' : '') . $this->message;
 	}
 }
