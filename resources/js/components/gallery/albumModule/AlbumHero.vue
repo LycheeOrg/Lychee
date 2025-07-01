@@ -104,17 +104,7 @@
 							</a>
 						</template>
 					</div>
-					<div v-if="props.album.statistics" class="flex gap-4 text-base justify-end text-muted-color">
-						<span v-tooltip.bottom="{ value: $t('gallery.album.stats.number_of_visits') }"
-							>{{ props.album.statistics.visit_count }} <i class="pi pi-eye text-xs ml-1"></i
-						></span>
-						<span v-tooltip.bottom="{ value: $t('gallery.album.stats.number_of_downloads') }"
-							>{{ props.album.statistics.download_count }} <i class="pi pi-cloud-download text-xs ml-1"></i
-						></span>
-						<span v-tooltip.bottom="{ value: $t('gallery.album.stats.number_of_shares') }"
-							>{{ props.album.statistics.shared_count }} <i class="pi pi-share-alt text-xs ml-1"></i
-						></span>
-					</div>
+					<AlbumStatistics v-if="props.album.statistics" :stats="props.album.statistics" />
 				</div>
 			</div>
 			<div
@@ -133,6 +123,7 @@ import { isTouchDevice } from "@/utils/keybindings-utils";
 import { storeToRefs } from "pinia";
 import Card from "primevue/card";
 import { computed } from "vue";
+import AlbumStatistics from "./AlbumStatistics.vue";
 
 const auth = useAuthStore();
 const lycheeStore = useLycheeStateStore();

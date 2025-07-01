@@ -50,6 +50,22 @@ class ConfigIntegrity
 		'live_metrics_max_time',
 		'enable_colour_extractions',
 		'colour_extraction_driver',
+		'flow_strategy',
+		'flow_compact_mode_enabled',
+		'flow_include_sub_albums',
+		'flow_include_photos_from_children',
+		'flow_open_album_on_click',
+		'flow_display_open_album_button',
+		'flow_highlight_first_picture',
+		'flow_min_max_enabled',
+		'flow_display_statistics',
+		'flow_image_header_enabled',
+		'flow_image_header_cover',
+		'flow_image_header_height',
+		'flow_carousel_enabled',
+		'flow_carousel_height',
+		'date_format_flow_published',
+		'date_format_flow_min_max',
 	];
 
 	/**
