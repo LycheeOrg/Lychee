@@ -103,6 +103,7 @@ class PhotoRotateTest extends BaseApiWithDataTest
 
 		$response = $this->actingAs($this->userMayUpload1)->postJson('Sharing', [
 			'user_ids' => [$this->userMayUpload2->id],
+			'group_ids' => [],
 			'album_ids' => [$new_album_id],
 			'grants_edit' => true,
 			'grants_delete' => true,
