@@ -12,6 +12,7 @@ use App\Constants\FileSystem;
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
 use App\Enum\StorageDiskType;
+use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Handler;
 use App\Exceptions\Internal\InvalidConfigOption;
 use App\Facades\Helpers;
@@ -169,9 +170,15 @@ class BasicPermissionCheck implements DiagnosticPipe
 			}
 			// @codeCoverageIgnoreEnd
 		}
-		if (Configs::getValueAsBool('disable_recursive_permission_check')) {
-			$data[] = DiagnosticData::info('Full directory permission check is disabled', self::class);
+		try {
+			if (Configs::getValueAsBool('disable_recursive_permission_check')) {
+				$data[] = DiagnosticData::info('Full directory permission check is disabled', self::class);
+			}
+			// @codeCoverageIgnoreStart
+		} catch (ConfigurationKeyMissingException) {
+			// we do nothing. Silently catch and ignore.
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -260,9 +267,15 @@ class BasicPermissionCheck implements DiagnosticPipe
 			}
 
 			$dir = new \DirectoryIterator($path);
-			if (Configs::getValueAsBool('disable_recursive_permission_check')) {
+			try {
+				if (Configs::getValueAsBool('disable_recursive_permission_check')) {
+					return;
+				}
+			} catch (ConfigurationKeyMissingException) {
+				// We skip the check, we can come back later when the config value is available.
 				return;
 			}
+
 			// @codeCoverageIgnoreStart
 			foreach ($dir as $dir_entry) {
 				if ($dir_entry->isDir() && !$dir_entry->isDot()) {
