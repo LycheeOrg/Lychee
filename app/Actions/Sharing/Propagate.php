@@ -49,7 +49,7 @@ final class Propagate
 		// for each descendant, create a new permission if it does not exist.
 		// or update the existing permission.
 		$descendants = $album->descendants()->getQuery()->select('id')->pluck('id');
-		$permissions = $album->access_permissions()->whereNotNull('user_id')->orWhereNotNull('user_group_id')->get();
+		$permissions = $album->access_permissions()->whereNotNull(APC::USER_ID)->orWhereNotNull(APC::USER_GROUP_ID)->get();
 
 		// This is super inefficient.
 		// It would be better to do it in a single query...
@@ -107,7 +107,10 @@ final class Propagate
 		// 2. applying the new permissions.
 
 		DB::table(APC::ACCESS_PERMISSIONS)
-			->whereNotNull('user_id')
+			->where(fn ($q) => $q
+				->whereNotNull(APC::USER_ID)
+				->orWhereNotNull(APC::USER_GROUP_ID)
+			)
 			->whereIn(
 				'base_album_id',
 				DB::table('albums')

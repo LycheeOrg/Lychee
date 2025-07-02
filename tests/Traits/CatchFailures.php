@@ -85,11 +85,11 @@ trait CatchFailures
 	 * Additionally, this transformation is applied recursively on the previous_exception in the case of
 	 * exception encapsulation.
 	 *
-	 * @param null|array $exception
+	 * @param array|null $exception
 	 *
 	 * @return void
 	 */
-	private function trimException(null|array &$exception): void
+	private function trimException(array|null &$exception): void
 	{
 		if (!is_array($exception)) {
 			return;
