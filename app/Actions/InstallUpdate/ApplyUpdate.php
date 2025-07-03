@@ -8,7 +8,6 @@
 
 namespace App\Actions\InstallUpdate;
 
-use App\Actions\InstallUpdate\Pipes\AllowMigrationCheck;
 use App\Actions\InstallUpdate\Pipes\ArtisanMigrate;
 use App\Actions\InstallUpdate\Pipes\BranchCheck;
 use App\Actions\InstallUpdate\Pipes\ComposerCall;
@@ -23,7 +22,6 @@ class ApplyUpdate
 	 */
 	private array $pipes = [
 		BranchCheck::class,
-		AllowMigrationCheck::class,
 		GitPull::class,
 		ArtisanMigrate::class,
 		ComposerCall::class,
