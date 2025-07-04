@@ -40,11 +40,10 @@
 						</template>
 					</Listbox>
 					<Listbox
-						v-model="selectedUsers"
+						v-model="selectedUsersOrGroups"
 						filter
-						:options="userList"
-						optionLabel="username"
-						optionValue="id"
+						:options="usersGroupsList"
+						optionLabel="name"
 						dataKey="id"
 						:multiple="true"
 						:checkmark="true"
@@ -54,6 +53,12 @@
 					>
 						<template #header>
 							<span class="text-muted-color-emphasis font-bold">{{ $t("sharing.users") }}</span>
+						</template>
+						<template #option="slotProps">
+							<span class="w-full">
+								<i class="pi pi-users ltr:mr-1 rtl:ml-1" v-if="slotProps.option.type === 'group'" />
+								{{ slotProps.option.name }}
+							</span>
 						</template>
 						<template #empty>
 							<span class="text-muted-color">{{ $t("sharing.no_users") }}</span>
@@ -83,7 +88,7 @@
 						$t("dialogs.button.cancel")
 					}}</Button>
 					<Button
-						:disabled="!selectedAlbums.length || !selectedUsers.length"
+						:disabled="!selectedAlbums.length || !selectedUsersOrGroups.length"
 						@click="create"
 						severity="success"
 						class="border-0 bg-transparent text-create-600 hover:bg-create-600 hover:text-white w-full rounded-none rounded-br-xl"
@@ -98,7 +103,6 @@
 <script setup lang="ts">
 import Dialog from "primevue/dialog";
 import { ref } from "vue";
-import UsersService from "@/services/users-service";
 import { onMounted } from "vue";
 import Checkbox from "primevue/checkbox";
 import Button from "primevue/button";
@@ -106,8 +110,14 @@ import Listbox from "primevue/listbox";
 import SharingService from "@/services/sharing-service";
 import { useToast } from "primevue/usetoast";
 import { trans } from "laravel-vue-i18n";
+import { type UserOrGroup, useSearchUserGroupComputed } from "@/composables/search/searchUserGroupComputed";
+import { useLycheeStateStore } from "@/stores/LycheeState";
+import { storeToRefs } from "pinia";
 
 const visible = defineModel("visible", { default: false });
+const lycheeStore = useLycheeStateStore();
+lycheeStore.init();
+const { is_se_enabled } = storeToRefs(lycheeStore);
 
 const toast = useToast();
 const emits = defineEmits<{
@@ -115,10 +125,8 @@ const emits = defineEmits<{
 }>();
 
 const targetAlbums = ref<App.Http.Resources.Models.TargetAlbumResource[] | undefined>(undefined);
-const userList = ref<App.Http.Resources.Models.LightUserResource[] | undefined>(undefined);
-
 const selectedAlbums = ref<string[]>([]);
-const selectedUsers = ref<number[]>([]);
+const selectedUsersOrGroups = ref<UserOrGroup[]>([]);
 
 const grantsFullPhotoAccess = ref(false);
 const grantsDownload = ref(false);
@@ -143,7 +151,7 @@ function trim(str: string) {
 }
 
 function reset() {
-	selectedUsers.value = [];
+	selectedUsersOrGroups.value = [];
 	selectedAlbums.value = [];
 	grantsFullPhotoAccess.value = false;
 	grantsDownload.value = false;
@@ -163,23 +171,23 @@ function loadAlbums() {
 	});
 }
 
-function loadUsers() {
-	UsersService.get().then((response) => {
-		userList.value = response.data;
-	});
-}
+const { usersGroupsList, load } = useSearchUserGroupComputed(is_se_enabled, undefined);
 
 function create() {
-	if (selectedUsers.value === undefined || selectedUsers.value.length === 0) {
+	if (selectedUsersOrGroups.value === undefined || selectedUsersOrGroups.value.length === 0) {
 		return;
 	}
 	if (selectedAlbums.value === undefined || selectedAlbums.value.length === 0) {
 		return;
 	}
 
+	const userIds = selectedUsersOrGroups.value.filter((user) => user.type === "user").map((user) => user.id);
+	const groupIds = selectedUsersOrGroups.value.filter((group) => group.type === "group").map((group) => group.id);
+
 	const data = {
 		album_ids: selectedAlbums.value,
-		user_ids: selectedUsers.value,
+		user_ids: userIds,
+		group_ids: groupIds,
 		grants_download: grantsDownload.value,
 		grants_full_photo_access: grantsFullPhotoAccess.value,
 		grants_upload: grantsUpload.value,
@@ -196,6 +204,6 @@ function create() {
 
 onMounted(() => {
 	loadAlbums();
-	loadUsers();
+	load();
 });
 </script>
