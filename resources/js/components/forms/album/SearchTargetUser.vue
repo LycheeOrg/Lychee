@@ -14,7 +14,7 @@
 		<template #value="slotProps">
 			<div v-if="slotProps.value" class="flex items-center">
 				<div>
-					<i class="pi pi-users ltr:mr-1 rtl:ml-1" v-if="slotProps.option.type === 'group'" />
+					<i class="pi pi-users ltr:mr-1 rtl:ml-1" v-if="slotProps.value.type === 'group'" />
 					{{ $t(slotProps.value.name) }}
 				</div>
 			</div>
