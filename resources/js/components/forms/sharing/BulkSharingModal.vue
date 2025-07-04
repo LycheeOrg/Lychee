@@ -55,7 +55,8 @@
 							<span class="text-muted-color-emphasis font-bold">{{ $t("sharing.users") }}</span>
 						</template>
 						<template #option="slotProps">
-							<span class="w-full" :class="{ 'text-primary-emphasis': slotProps.option.type === 'group' }">
+							<span class="w-full">
+								<i class="pi pi-users ltr:mr-1 rtl:ml-1" v-if="slotProps.option.type === 'group'" />
 								{{ slotProps.option.name }}
 							</span>
 						</template>

@@ -13,12 +13,18 @@
 	>
 		<template #value="slotProps">
 			<div v-if="slotProps.value" class="flex items-center">
-				<div :class="{ 'text-primary-emphasis': slotProps.value.type === 'group' }">{{ $t(slotProps.value.name) }}</div>
+				<div>
+					<i class="pi pi-users ltr:mr-1 rtl:ml-1" v-if="slotProps.option.type === 'group'" />
+					{{ $t(slotProps.value.name) }}
+				</div>
 			</div>
 		</template>
 		<template #option="slotProps">
 			<div class="flex items-center">
-				<span :class="{ 'text-primary-emphasis': slotProps.option.type === 'group' }">{{ slotProps.option.name }}</span>
+				<span>
+					<i class="pi pi-users ltr:mr-1 rtl:ml-1" v-if="slotProps.option.type === 'group'" />
+					{{ slotProps.option.name }}
+				</span>
 			</div>
 		</template>
 	</Select>

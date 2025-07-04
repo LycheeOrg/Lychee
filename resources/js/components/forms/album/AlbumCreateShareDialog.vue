@@ -17,7 +17,10 @@
 				</div>
 				<div class="flex text-muted-color-emphasis w-full px-9">
 					<div class="w-1/2 flex items-center" v-if="newShareUser">
-						<span :class="{ 'w-full': true, 'text-primary-emphasis': newShareUser.type === 'group' }">{{ newShareUser.name }}</span>
+						<span class="w-full">
+							<i class="pi pi-users ltr:mr-1 rtl:ml-1" v-if="newShareUser.type === 'group'" />
+							{{ newShareUser.name }}
+						</span>
 						<span @click="newShareUser = undefined"><i class="pi pi-times" /></span>
 					</div>
 					<div class="w-1/2" v-if="!newShareUser">
