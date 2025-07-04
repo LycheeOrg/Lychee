@@ -49,6 +49,7 @@ class PositionData
 						$r->whereBetween('type', [SizeVariantType::SMALL2X, SizeVariantType::THUMB]);
 					},
 					'palette',
+					'tags',
 				])
 				->whereNotNull('latitude')
 				->whereNotNull('longitude'),
