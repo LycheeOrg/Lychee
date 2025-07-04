@@ -159,6 +159,11 @@ return [
                 'number_of_shares' => 'Nombre de partages',
                 'number_of_favourites' => 'Nombre de favorites',
             ],
+            'links' => [
+                'header' => 'Liens',
+                'copy' => 'Copier',
+                'copy_success' => 'Liens copié dans le presse-papier.',
+            ],
         ],
         'edit' => [
             'set_title' => 'Définir le titre',

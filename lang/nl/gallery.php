@@ -158,6 +158,11 @@ return [
                 'number_of_shares' => 'Aantal gedeeld',
                 'number_of_favourites' => 'Aantal favorieten',
             ],
+            'links' => [
+                'header' => 'Links',
+                'copy' => 'Copy',
+                'copy_success' => 'Link copied to clipboard.',
+            ],
         ],
         'edit' => [
             'set_title' => 'Titel instellen',
