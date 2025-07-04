@@ -45,7 +45,7 @@ export const useAuthStore = defineStore("auth", {
 					})
 					.catch((error) => {
 						console.error(error);
-						this.oauthData = undefined;
+						this.oauthData = [];
 						throw error;
 					});
 			}
