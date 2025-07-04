@@ -121,6 +121,18 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	protected $hidden = [];
 
 	/**
+	 * We always want to load the user groups when loading a user.
+	 * So that we can use the groups to determine the permissions without having to do intersection in the db.
+	 *
+	 * Furthermore, that way it is also provided when using Auth::user()
+	 *
+	 * @var list<string>
+	 */
+	protected $with = [
+		'user_groups',
+	];
+
+	/**
 	 * Create a new Eloquent query builder for the model.
 	 *
 	 * @param BaseBuilder $query

@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  *
  * @property int                             $id
  * @property int|null                        $user_id
+ * @property int|null                        $user_group_id
  * @property string|null                     $base_album_id
  * @property bool                            $is_link_required
  * @property string|null                     $password
@@ -72,6 +73,7 @@ class AccessPermission extends Model
 		'created_at' => 'datetime',
 		'updated_at' => 'datetime',
 		APC::USER_ID => 'integer',
+		APC::USER_GROUP_ID => 'integer',
 		APC::IS_LINK_REQUIRED => 'boolean',
 		APC::GRANTS_FULL_PHOTO_ACCESS => 'boolean',
 		APC::GRANTS_DOWNLOAD => 'boolean',
@@ -85,6 +87,7 @@ class AccessPermission extends Model
 	 */
 	protected $fillable = [
 		APC::USER_ID,
+		APC::USER_GROUP_ID,
 		APC::BASE_ALBUM_ID,
 		APC::IS_LINK_REQUIRED,
 		APC::GRANTS_FULL_PHOTO_ACCESS,
@@ -118,6 +121,16 @@ class AccessPermission extends Model
 	public function user(): BelongsTo
 	{
 		return $this->belongsTo(User::class, 'user_id', 'id');
+	}
+
+	/**
+	 * Return the relationship between an AccessPermission and its associated UserGroup.
+	 *
+	 * @return BelongsTo<UserGroup,$this>
+	 */
+	public function user_group(): BelongsTo
+	{
+		return $this->belongsTo(UserGroup::class, 'user_group_id', 'id');
 	}
 
 	/**

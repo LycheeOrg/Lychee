@@ -56,6 +56,7 @@ import AlbumCreateShareDialog from "./AlbumCreateShareDialog.vue";
 import Button from "primevue/button";
 import ProgressSpinner from "primevue/progressspinner";
 import ConfirmSharingDialog from "./ConfirmSharingDialog.vue";
+import { UserOrGroupId } from "@/composables/search/searchUserGroupComputed";
 
 const props = defineProps<{
 	album: App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.TagAlbumResource;
@@ -74,11 +75,22 @@ function load() {
 	});
 }
 
-const sharedUserIds = computed((): number[] => {
+const sharedUserIds = computed((): UserOrGroupId[] => {
 	if (perms.value === undefined) {
 		return [];
 	}
-	return perms.value.map((perm) => perm.user_id) as number[];
+	return perms.value.map((perm) => {
+		if (perm.user_group_id !== null) {
+			return {
+				id: perm.user_group_id,
+				type: "group",
+			};
+		}
+		return {
+			id: perm.user_id,
+			type: "user",
+		};
+	}) as UserOrGroupId[];
 });
 
 function deletePermission(id: number) {
