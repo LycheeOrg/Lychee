@@ -293,6 +293,7 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		is_exif_disabled: boolean;
 		is_favourite_enabled: boolean;
 		photo_previous_next_size: App.Enum.SmallLargeType;
+		is_details_links_enabled: boolean;
 		display_thumb_album_overlay: App.Enum.ThumbOverlayVisibilityType;
 		display_thumb_photo_overlay: App.Enum.ThumbOverlayVisibilityType;
 		album_subtitle_type: App.Enum.ThumbAlbumSubtitleType;

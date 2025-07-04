@@ -158,6 +158,11 @@ return [
                 'number_of_shares' => 'Number of shares',
                 'number_of_favourites' => 'Number of favourites',
             ],
+            'links' => [
+                'header' => 'Links',
+                'copy' => 'Copy',
+                'copy_success' => 'Link copied to clipboard.',
+            ],
         ],
         'edit' => [
             'set_title' => 'Установить название',

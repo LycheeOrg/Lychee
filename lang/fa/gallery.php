@@ -175,6 +175,11 @@ return [
 				'number_of_shares' => 'تعداد اشتراک‌گذاری‌ها',
 				'number_of_favourites' => 'تعداد علاقه‌مندی‌ها',
 			],
+			'links' => [
+				'header' => 'Links',
+				'copy' => 'Copy',
+				'copy_success' => 'Link copied to clipboard.',
+			],
 		],
 
 		'edit' => [
