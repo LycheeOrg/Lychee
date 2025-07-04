@@ -72,7 +72,7 @@
 							{{ $t("gallery.photo.details.tags") }}
 						</h2>
 						<span class="pb-2">
-							<a v-for="tag in props.photo.tags" class="text-xs rounded-full py-1 px-2.5 mr-1.5 mb-2.5 bg-black/50">
+							<a v-for="tag in props.photo.tags" class="text-xs rounded-full py-1 px-2.5 mr-1.5 mb-2.5 bg-black/50" :key="`tag-${tag}`">
 								{{ tag }}
 							</a>
 						</span>
@@ -175,6 +175,7 @@
 							</div>
 						</div>
 					</template>
+					<LinksInclude v-if="is_details_links_enabled" :photo="photo" />
 				</div>
 			</template>
 		</Card>
@@ -186,6 +187,9 @@ import Card from "primevue/card";
 import MapInclude from "../gallery/photoModule/MapInclude.vue";
 import MiniIcon from "../icons/MiniIcon.vue";
 import ColourSquare from "../gallery/photoModule/ColourSquare.vue";
+import { useLycheeStateStore } from "@/stores/LycheeState";
+import LinksInclude from "../gallery/photoModule/LinksInclude.vue";
+import { storeToRefs } from "pinia";
 
 const props = defineProps<{
 	photo: App.Http.Resources.Models.PhotoResource | undefined;
@@ -193,4 +197,7 @@ const props = defineProps<{
 }>();
 
 const areDetailsOpen = defineModel("areDetailsOpen", { default: true }) as Ref<boolean>;
+
+const lycheeState = useLycheeStateStore();
+const { is_details_links_enabled } = storeToRefs(lycheeState);
 </script>
