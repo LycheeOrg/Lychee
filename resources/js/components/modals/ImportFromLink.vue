@@ -46,6 +46,7 @@ import PhotoService from "@/services/photo-service";
 import { useRouter } from "vue-router";
 import { usePhotoRoute } from "@/composables/photo/photoRoute";
 import Textarea from "../forms/basic/Textarea.vue";
+import AlbumService from "@/services/album-service";
 
 const visible = defineModel("visible", { default: false }) as Ref<boolean>;
 const emits = defineEmits<{ refresh: [] }>();
@@ -59,6 +60,8 @@ function submit() {
 	PhotoService.importFromUrl(urls.value.split("\n"), getParentId() ?? null).then(() => {
 		urls.value = "";
 		visible.value = false;
+		// Clear cache for the parent album to ensure the new photos are displayed
+		AlbumService.clearCache(getParentId() ?? "unsorted");
 		emits("refresh");
 	});
 }
