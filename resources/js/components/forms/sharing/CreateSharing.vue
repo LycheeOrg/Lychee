@@ -1,11 +1,14 @@
 <template>
 	<div class="flex">
 		<div class="w-5/12 flex items-center" v-if="newShareUser">
-			<span class="w-full">{{ newShareUser.username }}</span>
+			<span class="w-full">
+				<i class="pi pi-users ltr:mr-1 rtl:ml-1" v-if="newShareUser.type === 'group'" />
+				{{ newShareUser.name }}
+			</span>
 			<span @click="newShareUser = undefined"><i class="pi pi-times" /></span>
 		</div>
 		<div class="w-5/12 flex" v-if="!newShareUser">
-			<SearchTargetUser @selected="selectUser" :filtered-users-ids="props.filteredUsersIds" />
+			<SearchTargetUser @selected="selectUser" :filtered-users-ids="props.filteredUsersIds" :with-groups="true" />
 		</div>
 		<div class="w-1/2 flex items-center justify-around">
 			<Checkbox v-model="grantsReadAccess" :binary="true" disabled />
@@ -28,25 +31,20 @@ import { useToast } from "primevue/usetoast";
 import SearchTargetUser from "../album/SearchTargetUser.vue";
 import SharingService from "@/services/sharing-service";
 import { trans } from "laravel-vue-i18n";
+import { type UserOrGroup, type UserOrGroupId } from "@/composables/search/searchUserGroupComputed";
 
-const props = withDefaults(
-	defineProps<{
-		withAlbum?: boolean;
-		album: App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.TagAlbumResource;
-		filteredUsersIds?: number[];
-	}>(),
-	{
-		withAlbum: false,
-		filteredUsersIds: () => [],
-	},
-);
+const props = defineProps<{
+	withAlbum?: boolean;
+	album: App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.TagAlbumResource;
+	filteredUsersIds?: UserOrGroupId[];
+}>();
 
 const toast = useToast();
 const emits = defineEmits<{
 	createdPermission: [];
 }>();
 
-const newShareUser = ref<App.Http.Resources.Models.LightUserResource | undefined>(undefined);
+const newShareUser = ref<UserOrGroup | undefined>(undefined);
 const grantsFullPhotoAccess = ref(false);
 const grantsDownload = ref(false);
 const grantsUpload = ref(false);
@@ -54,7 +52,7 @@ const grantsEdit = ref(false);
 const grantsDelete = ref(false);
 const grantsReadAccess = ref(true);
 
-function selectUser(target: App.Http.Resources.Models.LightUserResource) {
+function selectUser(target: UserOrGroup) {
 	newShareUser.value = target;
 }
 
@@ -73,13 +71,20 @@ function create() {
 	}
 	const data = {
 		album_ids: [props.album.id],
-		user_ids: [newShareUser.value.id],
+		user_ids: [] as number[],
+		group_ids: [] as number[],
 		grants_download: grantsDownload.value,
 		grants_full_photo_access: grantsFullPhotoAccess.value,
 		grants_upload: grantsUpload.value,
 		grants_edit: grantsEdit.value,
 		grants_delete: grantsDelete.value,
 	};
+
+	if (newShareUser.value.type === "group") {
+		data.group_ids = [newShareUser.value.id];
+	} else {
+		data.user_ids = [newShareUser.value.id];
+	}
 
 	SharingService.add(data).then(() => {
 		toast.add({ severity: "success", summary: trans("toasts.success"), detail: trans("sharing.permission_created"), life: 3000 });

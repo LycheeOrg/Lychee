@@ -68,6 +68,7 @@ trait CatchFailures
 		// We remove 204 as it does not have content
 		// We remove 302 because it does not have json data.
 		} elseif (!in_array($response->getStatusCode(), [204, 302, ...$expectedStatusCodeArray], true)) {
+			$exception = $response->json();
 			$this->trimException($exception);
 		}
 		PHPUnit::assertContains($response->getStatusCode(), $expectedStatusCodeArray);
@@ -84,12 +85,16 @@ trait CatchFailures
 	 * Additionally, this transformation is applied recursively on the previous_exception in the case of
 	 * exception encapsulation.
 	 *
-	 * @param array $exception
+	 * @param array|null $exception
 	 *
 	 * @return void
 	 */
-	private function trimException(array &$exception): void
+	private function trimException(array|null &$exception): void
 	{
+		if (!is_array($exception)) {
+			return;
+		}
+
 		if (isset($exception['trace'])) {
 			$exception['trace'] = array_values(array_filter($exception['trace'], fn ($t) => !in_array($t['class'] ?? '', $this->exception_noise, true)));
 			$exception['trace'] = array_slice($exception['trace'], 0, 3);
