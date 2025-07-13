@@ -13,6 +13,7 @@ use App\Jobs\ExtractColoursJob;
 use App\Models\Configs;
 use App\Models\Photo;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Log;
 use LycheeVerify\Verify;
 
 /**
@@ -56,7 +57,13 @@ class MissingPalettes extends Controller
 			->lazyById($limit);
 
 		foreach ($photos as $photo) {
-			ExtractColoursJob::dispatchSync($photo);
+			try {
+				ExtractColoursJob::dispatch($photo);
+				// @codeCoverageIgnoreStart
+			} catch (\Exception $e) {
+				Log::error('Error extracting colour palette for photo ID ' . $photo->id . ': ' . $e->getMessage());
+			}
+			// @codeCoverageIgnoreEnd
 		}
 	}
 }
