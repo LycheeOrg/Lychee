@@ -50,7 +50,8 @@ class ExtractColourPalette extends Command
 				->whereDoesntHave('palette')
 				->where('type', 'like', 'image/%')
 				->orderBy('id')
-				->lazyById($limit);
+				->limit($limit)
+				->lazyById();
 
 			if (count($photos) === 0) {
 				$this->line('No photos require palette extraction.');
