@@ -60,10 +60,12 @@ class Colour extends Model
 
 		$id = hexdec($hex); // Use the hex value as the ID
 
-		$colour = Colour::updateOrCreate(
-			[
-				'id' => $id,
-			],
+		$c = Colour::find($id);
+		if ($c !== null) {
+			return $c; // Return existing colour if found
+		}
+
+		$colour = Colour::create(
 			[
 				'id' => $id,
 				'R' => hexdec(substr($hex, 0, 2)),
