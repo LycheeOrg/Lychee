@@ -37,7 +37,7 @@ class MissingFileSizes extends Controller
 			->where('filesize', '=', 0)
 			->orderBy('id');
 		// Internally, only holds $limit entries at once
-		$variants = $variants_query->lazyById(Configs::getValueAsInt('maintenance_processing_limit'));
+		$variants = $variants_query->limit(Configs::getValueAsInt('maintenance_processing_limit'))->lazyById(100);
 
 		$generated = 0;
 

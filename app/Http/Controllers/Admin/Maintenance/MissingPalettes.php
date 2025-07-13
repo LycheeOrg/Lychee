@@ -54,7 +54,8 @@ class MissingPalettes extends Controller
 			->whereDoesntHave('palette')
 			->where('type', 'like', 'image/%')
 			->orderBy('id')
-			->lazyById($limit);
+			->limit($limit)
+			->lazyById(100);
 
 		foreach ($photos as $photo) {
 			try {

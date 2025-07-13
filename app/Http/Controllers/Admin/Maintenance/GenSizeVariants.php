@@ -42,7 +42,7 @@ class GenSizeVariants extends Controller
 			->whereDoesntHave('size_variants', function (Builder $query) use ($request): void {
 				$query->where('type', '=', $request->kind());
 			});
-		$photos = $photos_query->lazyById(Configs::getValueAsInt('maintenance_processing_limit'));
+		$photos = $photos_query->limit(Configs::getValueAsInt('maintenance_processing_limit'))->lazyById(100);
 
 		$generated = 0;
 		/** @var Photo $photo */
