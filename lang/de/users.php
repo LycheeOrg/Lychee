@@ -21,7 +21,7 @@ return [
     'create_edit' => [
         'upload_rights' => 'Benutzer können Inhalte hochladen.',
         'edit_rights' => 'Der Benutzer kann sein Profil (Benutzername, Passwort) ändern.',
-        'admin_rights' => 'User has admin rights.',
+        'admin_rights' => 'Der Benutzer hat Administratorrechte.',
         'quota' => 'Benutzer hat Kontingentgrenze.',
         'quota_kb' => 'Kontingent in kB (0 für Standard)',
         'note' => 'Verwaltungshinweis (nicht öffentlich sichtbar)',
