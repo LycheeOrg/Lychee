@@ -705,13 +705,13 @@ const LycheePrimeVueConfig: Preset = {
 		inplace: {
 			colorScheme: {
 				light: {
-					root: {
-						displayHoverBackground: "transparent",
+					display: {
+						hoverBackground: "transparent",
 					},
 				},
 				dark: {
-					root: {
-						displayHoverBackground: "transparent",
+					display: {
+						hoverBackground: "transparent",
 					},
 				},
 			},
