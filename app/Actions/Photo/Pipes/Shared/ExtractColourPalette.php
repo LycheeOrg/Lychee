@@ -12,6 +12,7 @@ use App\Contracts\PhotoCreate\PhotoDTO;
 use App\Contracts\PhotoCreate\PhotoPipe;
 use App\Jobs\ExtractColoursJob;
 use App\Models\Configs;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Extract the colour palette from the image.
@@ -26,14 +27,16 @@ class ExtractColourPalette implements PhotoPipe
 
 		// @codeCoverageIgnoreStart
 		// This is already tested directly in the ExtractColoursJobTest.
-		if (Configs::getValueAsBool('use_job_queues')) {
-			ExtractColoursJob::dispatch($state->getPhoto());
-
-			return $next($state);
+		try {
+			if (Configs::getValueAsBool('use_job_queues')) {
+				ExtractColoursJob::dispatch($state->getPhoto());
+			} else {
+				ExtractColoursJob::dispatchSync($state->getPhoto());
+			}
+		} catch (\Exception $e) {
+			// Fail silently and continue.
+			Log::error('Failed to ExtractColoursJob: ' . $e->getMessage());
 		}
-
-		$job = new ExtractColoursJob($state->getPhoto());
-		$job->handle();
 
 		return $next($state);
 		// @codeCoverageIgnoreEnd
