@@ -21,6 +21,13 @@ use Illuminate\Support\Facades\DB;
  */
 class Colour extends Model
 {
+	/**
+	 * Indicates if the model's ID is auto-incrementing.
+	 *
+	 * @var bool
+	 */
+	public $incrementing = false;
+
 	public $timestamps = false;
 
 	protected $fillable = [
@@ -60,7 +67,7 @@ class Colour extends Model
 
 		$id = hexdec($hex); // Use the hex value as the ID
 
-		$c = Colour::find($id);
+		$c = Colour::where('id', '=', $id)->first();
 		if ($c !== null) {
 			return $c; // Return existing colour if found
 		}

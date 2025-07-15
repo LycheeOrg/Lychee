@@ -9,6 +9,7 @@
 namespace App\Jobs;
 
 use App\Enum\JobStatus;
+use App\Exceptions\ColourPaletteExtractionException;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Image\ColourExtractor\FarzaiExtractor;
 use App\Image\ColourExtractor\LeagueExtractor;
@@ -81,6 +82,11 @@ class ExtractColoursJob implements ShouldQueue
 			default => throw new LycheeLogicException('Unsupported colour extraction driver.'),
 		};
 		$colours = $extractor->extract($file);
+
+		if (count($colours) < 5) {
+			// If we don't have enough colours, we can't create a palette.
+			throw new ColourPaletteExtractionException('Not enough colours extracted to create a palette.');
+		}
 
 		// Creates the colours if they don't exists yet.
 		$colour_1 = Colour::fromHex($colours[0]);
