@@ -57,7 +57,7 @@ class PhotoSearch
 	public function sqlQuery(array $terms, ?Album $album = null): Builder
 	{
 		$query = $this->photoQueryPolicy->applySearchabilityFilter(
-			query: Photo::query()->with(['albums', 'statistics', 'size_variants', 'palette']),
+			query: Photo::query()->with(['albums', 'statistics', 'size_variants', 'palette', 'tags']),
 			origin: $album,
 			include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_search')
 		);
@@ -67,7 +67,7 @@ class PhotoSearch
 				fn (FixedQueryBuilder $query) => $query
 					->where('title', 'like', '%' . $term . '%')
 					->orWhere('description', 'like', '%' . $term . '%')
-					->orWhere('tags', 'like', '%' . $term . '%')
+					// ->orWhere('tags', 'like', '%' . $term . '%')
 					->orWhere('location', 'like', '%' . $term . '%')
 					->orWhere('model', 'like', '%' . $term . '%')
 					->orWhere('taken_at', 'like', '%' . $term . '%')
