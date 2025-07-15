@@ -25,20 +25,20 @@ class LoginTest extends BaseApiWithDataTest
 {
 	public function testLoginRateMiddleware(): void
 	{
-        Cache::flush();
-        for ($i = 0; $i < 10; $i++) {
-            $response = $this->postJson('Auth::login', [
-                'username' => 'username',
-                'password' => 'wrong_password',
-            ]);
-            $response->assertStatus(401);
-        }
+		Cache::flush();
+		for ($i = 0; $i < 10; $i++) {
+			$response = $this->postJson('Auth::login', [
+				'username' => 'username',
+				'password' => 'wrong_password',
+			]);
+			$response->assertStatus(401);
+		}
 
 		$response = $this->postJson('Auth::login', [
 			'username' => 'username',
 			'password' => 'wrong_password',
 		]);
-        $response->assertStatus(429);
-        Cache::flush();
+		$response->assertStatus(429);
+		Cache::flush();
 	}
 }
