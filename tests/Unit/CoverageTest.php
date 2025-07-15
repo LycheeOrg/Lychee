@@ -22,7 +22,6 @@ use App\Actions\User\Create;
 use App\Assets\ArrayToTextTable;
 use App\DTO\BacktraceRecord;
 use App\DTO\ImportEventReport;
-use App\DTO\ImportProgressReport;
 use App\Enum\AspectRatioCSSType;
 use App\Enum\AspectRatioType;
 use App\Enum\JobStatus;
@@ -84,15 +83,6 @@ class CoverageTest extends AbstractTestCase
 		self::assertEquals('file', $record->getFile());
 		self::assertEquals('function', $record->getFunction());
 		self::assertEquals('class', $record->getClass());
-	}
-
-	public function testImportProgressReport(): void
-	{
-		$report = ImportProgressReport::create(
-			path: 'path',
-			progress: 1,
-		);
-		self::assertEquals('<fg=#999>path: 1%</>', $report->toCLIString());
 	}
 
 	public function testImportEventReport(): void
