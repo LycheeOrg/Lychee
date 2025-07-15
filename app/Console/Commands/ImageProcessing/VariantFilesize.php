@@ -49,7 +49,7 @@ class VariantFilesize extends Command
 			}
 
 			// Internally, only holds $limit entries at once
-			$variants = $variants_query->lazyById($limit);
+			$variants = $variants_query->limit($limit)->lazyById(100);
 
 			$this->withProgressBar($variants, function (SizeVariant $variant) use (&$exit_code): void {
 				$variant_file = $variant->getFile();
