@@ -38,7 +38,7 @@
 				:is-timeline="false"
 				header="gallery.pinned_albums"
 				:album="null"
-				:albums="albums.filter(a => a.is_pinned)"
+				:albums="albums.filter((a) => a.is_pinned)"
 				:user="user"
 				:config="albumPanelConfig"
 				:is-alone="!sharedAlbums.length && !smartAlbums.length && !unpinnedAlbumCount"
@@ -53,7 +53,7 @@
 				:is-timeline="rootConfig.is_album_timeline_enabled"
 				header="gallery.albums"
 				:album="null"
-				:albums="albums.filter(a => !a.is_pinned)"
+				:albums="albums.filter((a) => !a.is_pinned)"
 				:user="user"
 				:config="albumPanelConfig"
 				:is-alone="!sharedAlbums.length && !smartAlbums.length && !pinnedAlbumCount"
@@ -195,8 +195,21 @@ const { are_nsfw_visible, title } = storeToRefs(lycheeStore);
 
 const photos = ref([]); // unused.
 
-const { user, isLoading, isKeybindingsHelpOpen, smartAlbums, albums, sharedAlbums, rootConfig, rootRights, selectableAlbums, hasHidden, refresh, pinnedAlbumCount, unpinnedAlbumCount } =
-	useAlbumsRefresher(auth, lycheeStore, is_login_open, router);
+const {
+	user,
+	isLoading,
+	isKeybindingsHelpOpen,
+	smartAlbums,
+	albums,
+	sharedAlbums,
+	rootConfig,
+	rootRights,
+	selectableAlbums,
+	hasHidden,
+	refresh,
+	pinnedAlbumCount,
+	unpinnedAlbumCount,
+} = useAlbumsRefresher(auth, lycheeStore, is_login_open, router);
 
 const { selectedAlbum, selectedAlbumsIdx, selectedAlbums, selectedAlbumsIds, albumClick, selectEverything, unselect, hasSelection } = useSelection(
 	photos,
@@ -215,14 +228,14 @@ const albumCallbacks = {
 	toggleMove: toggleMove,
 	togglePin: async () => {
 		if (!selectedAlbum.value) return;
-		
+
 		try {
 			await AlbumService.setPinned(selectedAlbum.value.id, !selectedAlbum.value.is_pinned);
 			AlbumService.clearAlbums();
 			await refresh();
 			unselect();
 		} catch (error) {
-			console.error('Failed to toggle pin status:', error);
+			console.error("Failed to toggle pin status:", error);
 		}
 	},
 	toggleDelete: toggleDelete,

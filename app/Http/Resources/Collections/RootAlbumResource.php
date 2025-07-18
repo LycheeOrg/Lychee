@@ -57,12 +57,12 @@ class RootAlbumResource extends Data
 	 * @return void
 	 */
 	public function __construct(
-		Collection              $smart_albums,
-		Collection              $tag_albums,
-		Collection              $pinned_albums,
-		Collection              $unpinned_albums,
-		Collection              $shared_albums,
-		RootConfig              $config,
+		Collection $smart_albums,
+		Collection $tag_albums,
+		Collection $pinned_albums,
+		Collection $unpinned_albums,
+		Collection $shared_albums,
+		RootConfig $config,
 		RootAlbumRightsResource $rights,
 	) {
 		$this->smart_albums = $smart_albums;
