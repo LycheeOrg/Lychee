@@ -273,6 +273,21 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 		]);
 		$this->assertUnauthorized($response);
 
+		// Test unauthorized user attempting to pin a tag album
+		$response = $this->patchJson('TagAlbum', [
+			'album_id' => $this->tagAlbum1->id,
+			'title' => 'Unauthorized Pinned Tag Album',
+			'tags' => ['tag1', 'tag2'],
+			'description' => '',
+			'photo_sorting_column' => 'title',
+			'photo_sorting_order' => 'ASC',
+			'copyright' => '',
+			'is_pinned' => true,
+			'photo_layout' => null,
+			'photo_timeline' => null,
+		]);
+		$this->assertUnauthorized($response);
+
 		// Test locked user attempting to pin an album
 		$response = $this->actingAs($this->userLocked)->patchJson('Album', [
 			'album_id' => $this->album1->id,
@@ -293,21 +308,6 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 			'photo_timeline' => null,
 		]);
 		$this->assertForbidden($response);
-
-		// Test unauthorized user attempting to pin a tag album
-		$response = $this->patchJson('TagAlbum', [
-			'album_id' => $this->tagAlbum1->id,
-			'title' => 'Unauthorized Pinned Tag Album',
-			'tags' => ['tag1', 'tag2'],
-			'description' => '',
-			'photo_sorting_column' => 'title',
-			'photo_sorting_order' => 'ASC',
-			'copyright' => '',
-			'is_pinned' => true,
-			'photo_layout' => null,
-			'photo_timeline' => null,
-		]);
-		$this->assertUnauthorized($response);
 
 		// Test locked user attempting to pin a tag album
 		$response = $this->actingAs($this->userLocked)->patchJson('TagAlbum', [
