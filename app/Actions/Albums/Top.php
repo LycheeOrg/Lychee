@@ -90,14 +90,14 @@ class Top
 				->get();
 
 			/**
-			 * @var BaseCollection<int,Album> $pinnedAlbums
-			 * @var BaseCollection<int,Album> $unpinnedAlbums
+			 * @var BaseCollection<int,Album> $pinned_albums
+			 * @var BaseCollection<int,Album> $unpinned_albums
 			 */
 			list($pinned_albums, $unpinned_albums) = $albums->partition(fn ($album) => $album->is_pinned);
 
 			/**
-			 * @var BaseCollection<int,Album> $ownedAlbums
-			 * @var BaseCollection<int,Album> $sharedAlbums
+			 * @var BaseCollection<int,Album> $owned_albums
+			 * @var BaseCollection<int,Album> $shared_albums
 			 */
 			list($owned_albums, $shared_albums) = $unpinned_albums->partition(fn ($album) => $album->owner_id === $user_id);
 
@@ -111,8 +111,8 @@ class Top
 				->get();
 
 			/**
-			 * @var BaseCollection<int,Album> $pinnedAlbums
-			 * @var BaseCollection<int,Album> $unpinnedAlbums
+			 * @var BaseCollection<int,Album> $pinned_albums
+			 * @var BaseCollection<int,Album> $unpinned_albums
 			 */
 			list($pinned_albums, $unpinned_albums) = $albums->partition(fn ($album) => $album->is_pinned);
 
