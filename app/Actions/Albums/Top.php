@@ -90,21 +90,33 @@ class Top
 				->get();
 
 			/**
-			 * @var BaseCollection<int,Album> $a
-			 * @var BaseCollection<int,Album> $b
+			 * @var BaseCollection<int,Album> $pinnedAlbums
+			 * @var BaseCollection<int,Album> $unpinnedAlbums
 			 */
-			list($a, $b) = $albums->partition(fn ($album) => $album->owner_id === $user_id);
+			list($pinnedAlbums, $unpinnedAlbums) = $albums->partition(fn ($album) => $album->is_pinned);
 
-			return new TopAlbumDTO($smart_albums, $tag_albums, $a->values(), $b->values());
+			/**
+			 * @var BaseCollection<int,Album> $ownedAlbums
+			 * @var BaseCollection<int,Album> $sharedAlbums
+			 */
+			list($ownedAlbums, $sharedAlbums) = $unpinnedAlbums->partition(fn ($album) => $album->owner_id === $user_id);
+
+			return new TopAlbumDTO($smart_albums, $tag_albums, $pinnedAlbums->values(), $ownedAlbums->values(), $sharedAlbums->values());
 		} else {
 			// For anonymous users we don't want to implicitly expose
 			// ownership via sorting.
-			/** @var BaseCollection<int,Album> */
+			/** @var BaseCollection<int,Album> $albums */
 			$albums = (new SortingDecorator($query))
 				->orderBy($this->sorting->column, $this->sorting->order)
 				->get();
 
-			return new TopAlbumDTO($smart_albums, $tag_albums, $albums);
+			/**
+			 * @var BaseCollection<int,Album> $pinnedAlbums
+			 * @var BaseCollection<int,Album> $unpinnedAlbums
+			 */
+			list($pinnedAlbums, $unpinnedAlbums) = $albums->partition(fn ($album) => $album->is_pinned);
+
+			return new TopAlbumDTO($smart_albums, $tag_albums, $pinnedAlbums->values(), $unpinnedAlbums->values());
 		}
 	}
 }

@@ -65,7 +65,8 @@ photos: App.Http.Resources.Models.PhotoResource[];
 export type RootAlbumResource = {
 smart_albums: { [key: number]: App.Http.Resources.Models.ThumbAlbumResource } | Array<any>;
 tag_albums: { [key: number]: App.Http.Resources.Models.ThumbAlbumResource } | Array<any>;
-albums: { [key: number]: App.Http.Resources.Models.ThumbAlbumResource } | Array<any>;
+pinned_albums: { [key: number]: App.Http.Resources.Models.ThumbAlbumResource } | Array<any>;
+unpinned_albums: { [key: number]: App.Http.Resources.Models.ThumbAlbumResource } | Array<any>;
 shared_albums: { [key: number]: App.Http.Resources.Models.ThumbAlbumResource } | Array<any>;
 config: App.Http.Resources.GalleryConfigs.RootConfig;
 rights: App.Http.Resources.Rights.RootAlbumRightsResource;
@@ -352,6 +353,7 @@ policy: App.Http.Resources.Models.Utils.AlbumProtectionPolicy;
 rights: App.Http.Resources.Rights.AlbumRightsResource;
 preFormattedData: App.Http.Resources.Models.Utils.PreFormattedAlbumData;
 editable: App.Http.Resources.Editable.EditableBaseAlbumResource | null;
+is_pinned: boolean;
 statistics: App.Http.Resources.Models.AlbumStatisticsResource | null;
 };
 export type AlbumStatisticsResource = {

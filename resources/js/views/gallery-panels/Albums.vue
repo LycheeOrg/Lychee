@@ -33,16 +33,31 @@
 			:selected-albums="[]"
 			:is-timeline="false"
 		/>
-		<template v-if="albums.length > 0">
+		<template v-if="pinnedAlbumCount > 0">
+			<AlbumThumbPanel
+				:is-timeline="false"
+				header="gallery.pinned_albums"
+				:album="null"
+				:albums="albums.filter(a => a.is_pinned)"
+				:user="user"
+				:config="albumPanelConfig"
+				:is-alone="!sharedAlbums.length && !smartAlbums.length && !unpinnedAlbumCount"
+				:idx-shift="0"
+				:selected-albums="selectedAlbumsIds"
+				@clicked="albumClick"
+				@contexted="albumMenuOpen"
+			/>
+		</template>
+		<template v-if="unpinnedAlbumCount > 0">
 			<AlbumThumbPanel
 				:is-timeline="rootConfig.is_album_timeline_enabled"
 				header="gallery.albums"
 				:album="null"
-				:albums="albums"
+				:albums="albums.filter(a => !a.is_pinned)"
 				:user="user"
 				:config="albumPanelConfig"
-				:is-alone="!sharedAlbums.length && !smartAlbums.length"
-				:idx-shift="0"
+				:is-alone="!sharedAlbums.length && !smartAlbums.length && !pinnedAlbumCount"
+				:idx-shift="pinnedAlbumCount"
 				:selected-albums="selectedAlbumsIds"
 				@clicked="albumClick"
 				@contexted="albumMenuOpen"
@@ -57,7 +72,7 @@
 				:user="user"
 				:config="albumPanelConfig"
 				:is-alone="!albums.length"
-				:idx-shift="sharedAlbum.iter"
+				:idx-shift="pinnedAlbumCount + sharedAlbum.iter"
 				:selected-albums="selectedAlbumsIds"
 				@clicked="albumClick"
 				@contexted="albumMenuOpen"

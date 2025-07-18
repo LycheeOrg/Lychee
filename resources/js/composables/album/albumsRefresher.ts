@@ -12,6 +12,8 @@ export function useAlbumsRefresher(auth: AuthStore, lycheeStore: LycheeStateStor
 	const isLoading = ref(false);
 	const smartAlbums = ref<App.Http.Resources.Models.ThumbAlbumResource[]>([]);
 	const albums = ref<App.Http.Resources.Models.ThumbAlbumResource[]>([]);
+	const pinnedAlbumCount = ref(0);
+	const unpinnedAlbumCount = ref(0);
 	const sharedAlbums = ref<SplitData<App.Http.Resources.Models.ThumbAlbumResource>[]>([]);
 	const rootConfig = ref<App.Http.Resources.GalleryConfigs.RootConfig | undefined>(undefined);
 	const rootRights = ref<App.Http.Resources.Rights.RootAlbumRightsResource | undefined>(undefined);
@@ -34,7 +36,6 @@ export function useAlbumsRefresher(auth: AuthStore, lycheeStore: LycheeStateStor
 		const getAlbums = AlbumService.getAll()
 			.then((data) => {
 				smartAlbums.value = (data.data.smart_albums as App.Http.Resources.Models.ThumbAlbumResource[]) ?? [];
-				albums.value = data.data.albums as App.Http.Resources.Models.ThumbAlbumResource[];
 				smartAlbums.value = smartAlbums.value.concat(data.data.tag_albums as App.Http.Resources.Models.ThumbAlbumResource[]);
 				sharedAlbums.value = spliter(
 					(data.data.shared_albums as App.Http.Resources.Models.ThumbAlbumResource[]) ?? [],
@@ -42,6 +43,14 @@ export function useAlbumsRefresher(auth: AuthStore, lycheeStore: LycheeStateStor
 					(d) => d.owner as string, // formatter
 					albums.value.length,
 				);
+				// The TopAlbumDTO is somewhat coupled to the arrangement of albums on the gallery page,
+				// so it distinguishes between pinned and unpinned albums.
+				// Here we store everything in albums and just store the counts of pinned and unpinned albums
+				// so most code doesn't need to be aware of this distinction.
+				albums.value = data.data.pinned_albums as App.Http.Resources.Models.ThumbAlbumResource[];
+				albums.value = albums.value.concat(data.data.unpinned_albums as App.Http.Resources.Models.ThumbAlbumResource[]);
+				pinnedAlbumCount.value = (data.data.pinned_albums as App.Http.Resources.Models.ThumbAlbumResource[]).length;
+				unpinnedAlbumCount.value = (data.data.unpinned_albums as App.Http.Resources.Models.ThumbAlbumResource[]).length;
 
 				rootConfig.value = data.data.config;
 				rootRights.value = data.data.rights;
@@ -85,5 +94,7 @@ export function useAlbumsRefresher(auth: AuthStore, lycheeStore: LycheeStateStor
 		selectableAlbums,
 		hasHidden,
 		refresh,
+		pinnedAlbumCount,
+		unpinnedAlbumCount,
 	};
 }
