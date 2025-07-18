@@ -38,6 +38,7 @@ use App\Http\Requests\Album\MoveAlbumsRequest;
 use App\Http\Requests\Album\RenameAlbumRequest;
 use App\Http\Requests\Album\SetAlbumProtectionPolicyRequest;
 use App\Http\Requests\Album\SetAlbumTrackRequest;
+use App\Http\Requests\Album\SetPinnedRequest;
 use App\Http\Requests\Album\SetAsCoverRequest;
 use App\Http\Requests\Album\SetAsHeaderRequest;
 use App\Http\Requests\Album\TargetListAlbumRequest;
@@ -302,6 +303,16 @@ class AlbumController extends Controller
 	{
 		$album = $request->album();
 		$album->title = $request->title();
+		$album->save();
+	}
+
+	/**
+	 * Set the pinned status of an album.
+	 */
+	public function setPinned(SetPinnedRequest $request): void
+	{
+		$album = $request->album();
+		$album->is_pinned = $request->is_pinned();
 		$album->save();
 	}
 
