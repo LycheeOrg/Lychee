@@ -169,6 +169,10 @@ const AlbumService = {
 	deleteTrack(album_id: string): Promise<AxiosResponse> {
 		return axios.delete(`${Constants.getApiUrl()}Album::track`, { params: { album_id: album_id }, data: {} });
 	},
+
+	setPinned(album_id: string, is_pinned: boolean): Promise<AxiosResponse> {
+		return axios.patch(`${Constants.getApiUrl()}Album::setPinned`, { album_id: album_id, is_pinned: is_pinned });
+	},
 };
 
 export default AlbumService;

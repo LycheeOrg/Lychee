@@ -195,7 +195,7 @@ const { are_nsfw_visible, title } = storeToRefs(lycheeStore);
 
 const photos = ref([]); // unused.
 
-const { user, isLoading, isKeybindingsHelpOpen, smartAlbums, albums, sharedAlbums, rootConfig, rootRights, selectableAlbums, hasHidden, refresh } =
+const { user, isLoading, isKeybindingsHelpOpen, smartAlbums, albums, sharedAlbums, rootConfig, rootRights, selectableAlbums, hasHidden, refresh, pinnedAlbumCount, unpinnedAlbumCount } =
 	useAlbumsRefresher(auth, lycheeStore, is_login_open, router);
 
 const { selectedAlbum, selectedAlbumsIdx, selectedAlbums, selectedAlbumsIds, albumClick, selectEverything, unselect, hasSelection } = useSelection(
@@ -213,6 +213,18 @@ const albumCallbacks = {
 	toggleRename: toggleRename,
 	toggleMerge: toggleMergeAlbum,
 	toggleMove: toggleMove,
+	togglePin: async () => {
+		if (!selectedAlbum.value) return;
+		
+		try {
+			await AlbumService.setPinned(selectedAlbum.value.id, !selectedAlbum.value.is_pinned);
+			AlbumService.clearAlbums();
+			await refresh();
+			unselect();
+		} catch (error) {
+			console.error('Failed to toggle pin status:', error);
+		}
+	},
 	toggleDelete: toggleDelete,
 	toggleDownload: () => {
 		AlbumService.download(selectedAlbumsIds.value);
