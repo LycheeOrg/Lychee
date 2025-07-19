@@ -275,7 +275,7 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 					label: selectedAlbum.is_pinned ? "gallery.menus.unpin" : "gallery.menus.pin",
 					icon: "pi pi-thumbtack",
 					callback: albumCallbacks.togglePin,
-					access: selectedAlbum.rights.can_edit ?? false,
+					access: (selectedAlbum.rights.can_edit ?? false) && !selectedAlbum.parent_id,
 				},
 				{
 					label: "gallery.menus.delete",

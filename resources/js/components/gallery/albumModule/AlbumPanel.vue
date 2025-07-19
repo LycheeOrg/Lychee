@@ -250,7 +250,6 @@ const albumCallbacks = {
 		AlbumService.download(selectedAlbumsIds.value);
 	},
 	togglePin: async () => {
-		// TODO(cdzombak): hide this menu item
 		console.log("pinning within a parent album is unimplemented");
 	},
 };
