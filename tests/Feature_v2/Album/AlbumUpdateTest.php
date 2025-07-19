@@ -444,7 +444,7 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 		$this->assertOk($response);
 		self::assertCount(0, $response->json('smart_albums'));
 		$response->assertJson([
-			'unpinned_albums' => [
+			'albums' => [
 				[
 					'id' => $this->album1->id,
 					'title' => $this->album1->title,
@@ -524,7 +524,7 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 		$this->assertOk($response);
 		self::assertCount(0, $response->json('smart_albums'));
 		$response->assertJson([
-			'unpinned_albums' => [
+			'albums' => [
 				[
 					'id' => $this->album1->id,
 					'title' => $this->album1->title,

@@ -31,7 +31,7 @@ class AlbumsTest extends BaseApiWithDataTest
 		$response->assertJson([
 			'smart_albums' => [],
 			'tag_albums' => [],
-			'unpinned_albums' => [
+			'albums' => [
 				[
 					'id' => $this->album4->id,
 					'title' => $this->album4->title,
@@ -71,7 +71,7 @@ class AlbumsTest extends BaseApiWithDataTest
 					],
 				],
 			],
-			'unpinned_albums' => [
+			'albums' => [
 				[
 					'id' => $this->album1->id,
 					'title' => $this->album1->title,
@@ -116,7 +116,7 @@ class AlbumsTest extends BaseApiWithDataTest
 		$response->assertJson([
 			'smart_albums' => [],
 			'tag_albums' => [],
-			'unpinned_albums' => [
+			'albums' => [
 				[
 					'id' => $this->album2->id,
 					'title' => $this->album2->title,
