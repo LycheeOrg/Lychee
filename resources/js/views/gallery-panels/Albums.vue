@@ -33,31 +33,31 @@
 			:selected-albums="[]"
 			:is-timeline="false"
 		/>
-		<template v-if="pinnedAlbumCount > 0">
+		<template v-if="pinnedAlbums.length > 0">
 			<AlbumThumbPanel
 				:is-timeline="false"
 				header="gallery.pinned_albums"
 				:album="null"
-				:albums="albums.filter((a) => a.is_pinned)"
+				:albums="pinnedAlbums"
 				:user="user"
 				:config="albumPanelConfig"
-				:is-alone="!sharedAlbums.length && !smartAlbums.length && !unpinnedAlbumCount"
+				:is-alone="!sharedAlbums.length && !smartAlbums.length && !unpinnedAlbums.length"
 				:idx-shift="0"
 				:selected-albums="selectedAlbumsIds"
 				@clicked="albumClick"
 				@contexted="albumMenuOpen"
 			/>
 		</template>
-		<template v-if="unpinnedAlbumCount > 0">
+		<template v-if="unpinnedAlbums.length > 0">
 			<AlbumThumbPanel
 				:is-timeline="rootConfig.is_album_timeline_enabled"
 				header="gallery.albums"
 				:album="null"
-				:albums="albums.filter((a) => !a.is_pinned)"
+				:albums="unpinnedAlbums"
 				:user="user"
 				:config="albumPanelConfig"
-				:is-alone="!sharedAlbums.length && !smartAlbums.length && !pinnedAlbumCount"
-				:idx-shift="pinnedAlbumCount"
+				:is-alone="!sharedAlbums.length && !smartAlbums.length && !pinnedAlbums.length"
+				:idx-shift="pinnedAlbums.length"
 				:selected-albums="selectedAlbumsIds"
 				@clicked="albumClick"
 				@contexted="albumMenuOpen"
@@ -72,7 +72,7 @@
 				:user="user"
 				:config="albumPanelConfig"
 				:is-alone="!albums.length"
-				:idx-shift="pinnedAlbumCount + sharedAlbum.iter"
+				:idx-shift="sharedAlbum.iter"
 				:selected-albums="selectedAlbumsIds"
 				@clicked="albumClick"
 				@contexted="albumMenuOpen"
@@ -201,14 +201,14 @@ const {
 	isKeybindingsHelpOpen,
 	smartAlbums,
 	albums,
+	pinnedAlbums,
+	unpinnedAlbums,
 	sharedAlbums,
 	rootConfig,
 	rootRights,
 	selectableAlbums,
 	hasHidden,
 	refresh,
-	pinnedAlbumCount,
-	unpinnedAlbumCount,
 } = useAlbumsRefresher(auth, lycheeStore, is_login_open, router);
 
 const { selectedAlbum, selectedAlbumsIdx, selectedAlbums, selectedAlbumsIds, albumClick, selectEverything, unselect, hasSelection } = useSelection(
@@ -235,7 +235,7 @@ const albumCallbacks = {
 			await refresh();
 			unselect();
 		} catch (error) {
-			console.error("Failed to toggle pin status:", error);
+			console.error("toggle pin:", error);
 		}
 	},
 	toggleDelete: toggleDelete,

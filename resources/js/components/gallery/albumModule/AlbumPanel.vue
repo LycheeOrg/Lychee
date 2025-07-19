@@ -250,15 +250,8 @@ const albumCallbacks = {
 		AlbumService.download(selectedAlbumsIds.value);
 	},
 	togglePin: async () => {
-		if (!selectedAlbum.value) return;
-		
-		try {
-			await AlbumService.setPinned(selectedAlbum.value.id, !selectedAlbum.value.is_pinned);
-			AlbumService.clearAlbums();
-			emits("refresh");
-		} catch (error) {
-			console.error('Failed to toggle pin status:', error);
-		}
+		// TODO(cdzombak): hide this menu item
+		console.log("pinning within a parent album is unimplemented")
 	},
 };
 
