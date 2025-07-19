@@ -157,7 +157,6 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 	public function testUpdateAlbumIsPinned(): void
 	{
 		// Test setting album as pinned
-		// TODO(cdzombak): check whether this is the right permission to set props on an album
 		$response = $this->actingAs($this->userMayUpload1)->patchJson('Album', [
 			'album_id' => $this->album1->id,
 			'title' => 'Pinned Album',
