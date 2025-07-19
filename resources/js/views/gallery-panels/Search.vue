@@ -291,6 +291,7 @@ const albumCallbacks = {
 	toggleMove: toggleMove,
 	toggleDelete: toggleDelete,
 	toggleDownload: () => {},
+	togglePin: () => {},
 };
 
 const selectors = {
