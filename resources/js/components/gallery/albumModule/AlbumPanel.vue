@@ -251,7 +251,7 @@ const albumCallbacks = {
 	},
 	togglePin: async () => {
 		// TODO(cdzombak): hide this menu item
-		console.log("pinning within a parent album is unimplemented")
+		console.log("pinning within a parent album is unimplemented");
 	},
 };
 
