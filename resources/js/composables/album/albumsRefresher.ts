@@ -43,14 +43,9 @@ export function useAlbumsRefresher(auth: AuthStore, lycheeStore: LycheeStateStor
 					(d) => d.owner as string, // formatter
 					albums.value.length,
 				);
-				// The TopAlbumDTO is somewhat coupled to the arrangement of albums on the gallery page,
-				// so it distinguishes between pinned and unpinned albums.
-				// Here we store everything in albums and just store the counts of pinned and unpinned albums
-				// so most code doesn't need to be aware of this distinction.
-				albums.value = data.data.pinned_albums as App.Http.Resources.Models.ThumbAlbumResource[];
-				albums.value = albums.value.concat(data.data.unpinned_albums as App.Http.Resources.Models.ThumbAlbumResource[]);
-				pinnedAlbumCount.value = (data.data.pinned_albums as App.Http.Resources.Models.ThumbAlbumResource[]).length;
-				unpinnedAlbumCount.value = (data.data.unpinned_albums as App.Http.Resources.Models.ThumbAlbumResource[]).length;
+				albums.value = data.data.albums as App.Http.Resources.Models.ThumbAlbumResource[];
+				pinnedAlbumCount.value = data.data.pinned_count;
+				unpinnedAlbumCount.value = data.data.unpinned_count;
 
 				rootConfig.value = data.data.config;
 				rootRights.value = data.data.rights;

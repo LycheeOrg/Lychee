@@ -249,6 +249,17 @@ const albumCallbacks = {
 	toggleDownload: () => {
 		AlbumService.download(selectedAlbumsIds.value);
 	},
+	togglePin: async () => {
+		if (!selectedAlbum.value) return;
+		
+		try {
+			await AlbumService.setPinned(selectedAlbum.value.id, !selectedAlbum.value.is_pinned);
+			AlbumService.clearAlbums();
+			emits("refresh");
+		} catch (error) {
+			console.error('Failed to toggle pin status:', error);
+		}
+	},
 };
 
 const { menu, Menu, photoMenuOpen, albumMenuOpen } = useContextMenu(
