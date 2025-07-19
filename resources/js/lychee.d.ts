@@ -67,8 +67,6 @@ smart_albums: { [key: number]: App.Http.Resources.Models.ThumbAlbumResource } | 
 tag_albums: { [key: number]: App.Http.Resources.Models.ThumbAlbumResource } | Array<any>;
 albums: { [key: number]: App.Http.Resources.Models.ThumbAlbumResource } | Array<any>;
 shared_albums: { [key: number]: App.Http.Resources.Models.ThumbAlbumResource } | Array<any>;
-pinned_count: number;
-unpinned_count: number;
 config: App.Http.Resources.GalleryConfigs.RootConfig;
 rights: App.Http.Resources.Rights.RootAlbumRightsResource;
 };

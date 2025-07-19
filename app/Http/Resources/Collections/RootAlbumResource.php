@@ -41,8 +41,6 @@ class RootAlbumResource extends Data
 	public Collection $albums;
 	/** @var Collection<int,ThumbAlbumResource> */
 	public Collection $shared_albums;
-	public int $pinned_count;
-	public int $unpinned_count;
 	public RootConfig $config;
 	public RootAlbumRightsResource $rights;
 
@@ -51,8 +49,6 @@ class RootAlbumResource extends Data
 	 * @param Collection<int,ThumbAlbumResource> $tag_albums
 	 * @param Collection<int,ThumbAlbumResource> $albums
 	 * @param Collection<int,ThumbAlbumResource> $shared_albums
-	 * @param int                                $pinned_count
-	 * @param int                                $unpinned_count
 	 * @param RootConfig                         $config
 	 *
 	 * @return void
@@ -62,8 +58,6 @@ class RootAlbumResource extends Data
 		Collection $tag_albums,
 		Collection $albums,
 		Collection $shared_albums,
-		int $pinned_count,
-		int $unpinned_count,
 		RootConfig $config,
 		RootAlbumRightsResource $rights,
 	) {
@@ -74,8 +68,6 @@ class RootAlbumResource extends Data
 		$album_granularity = Configs::getValueAsEnum('timeline_albums_granularity', TimelineAlbumGranularity::class);
 		$this->albums = TimelineData::setTimeLineDataForAlbums($this->albums, $sorting, $album_granularity);
 		$this->shared_albums = $shared_albums;
-		$this->pinned_count = $pinned_count;
-		$this->unpinned_count = $unpinned_count;
 		$this->config = $config;
 		$this->rights = $rights;
 	}
@@ -87,8 +79,6 @@ class RootAlbumResource extends Data
 			tag_albums: ThumbAlbumResource::collect($dto->tag_albums),
 			albums: ThumbAlbumResource::collect($dto->albums),
 			shared_albums: $dto->shared_albums !== null ? ThumbAlbumResource::collect($dto->shared_albums) : collect([]),
-			pinned_count: $dto->pinned_count,
-			unpinned_count: $dto->unpinned_count,
 			config: $config,
 			rights: new RootAlbumRightsResource()
 		);
