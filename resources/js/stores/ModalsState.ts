@@ -81,12 +81,11 @@ export const useTogglablesStateStore = defineStore("togglables-store", {
 			if (thumbElem) {
 				// check if thumbElem is actually out of view:
 				const rect = thumbElem.getBoundingClientRect();
-				const isVisible = (
+				const isVisible =
 					rect.top >= 40 &&
 					rect.left >= 0 &&
 					rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-					rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-				);
+					rect.right <= (window.innerWidth || document.documentElement.clientWidth);
 
 				// only scroll it into view if it's currently invisible:
 				if (!isVisible) {
