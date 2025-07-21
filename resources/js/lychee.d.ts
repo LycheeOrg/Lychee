@@ -317,6 +317,8 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		is_se_info_hidden: boolean;
 		is_live_metrics_enabled: boolean;
 		is_registration_enabled: boolean;
+		scroll_to_navigate_photos: boolean;
+		swipe_vertically_to_go_back: boolean;
 		default_homepage: string;
 	};
 	export type LandingPageResource = {
