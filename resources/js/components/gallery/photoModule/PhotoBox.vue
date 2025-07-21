@@ -108,6 +108,7 @@ const videoElement = ref<HTMLVideoElement | null>(null);
 const togglableStore = useTogglablesStateStore();
 
 const lycheeStore = useLycheeStateStore();
+const { swipe_vertically_to_go_back } = storeToRefs(lycheeStore);
 const { is_slideshow_active, is_full_screen } = storeToRefs(togglableStore);
 
 const props = defineProps<{
@@ -133,7 +134,7 @@ useSwipe(swipe, {
 			emits("next");
 		} else if (direction === "right") {
 			emits("previous");
-		} else {
+		} else if (swipe_vertically_to_go_back.value) {
 			emits("goBack");
 		}
 	},
@@ -150,7 +151,7 @@ useSwipe(swipe, {
 			emits("previous");
 		} else if (direction === "right" && !isLTR()) {
 			emits("next");
-		} else {
+		} else if (swipe_vertically_to_go_back.value) {
 			emits("goBack");
 		}
 	},

@@ -58,7 +58,7 @@ import PhotoBox from "./PhotoBox.vue";
 const lycheeStore = useLycheeStateStore();
 const togglableStore = useTogglablesStateStore();
 
-const { is_exif_disabled } = storeToRefs(lycheeStore);
+const { is_exif_disabled, scroll_to_navigate_photos } = storeToRefs(lycheeStore);
 const { is_photo_edit_open, is_slideshow_active, are_details_open } = storeToRefs(togglableStore);
 
 const props = defineProps<{
@@ -98,6 +98,10 @@ function scrollTo(event: WheelEvent) {
 	if (is_photo_edit_open.value) {
 		// We do nothing! Otherwise we are switching photos without noticing.
 		// especially with trackpads.
+		return;
+	}
+
+	if (!scroll_to_navigate_photos.value) {
 		return;
 	}
 
