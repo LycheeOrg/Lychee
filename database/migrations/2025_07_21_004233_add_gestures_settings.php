@@ -66,7 +66,7 @@ return new class() extends Migration {
 		// Remove the settings
 		DB::table('configs')->whereIn('key', [
 			'scroll_to_navigate_photos',
-			'swipe_vertically_to_go_back'
+			'swipe_vertically_to_go_back',
 		])->delete();
 
 		// Remove the category
