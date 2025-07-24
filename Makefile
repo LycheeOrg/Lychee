@@ -105,7 +105,7 @@ rector:
 	 vendor/bin/rector process
 
 phpstan:
-	vendor/bin/phpstan analyze --memory-limit 512M
+	vendor/bin/phpstan analyze
 
 # Generating new versions
 gen_patch:
