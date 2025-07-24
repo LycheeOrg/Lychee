@@ -30,7 +30,7 @@ return new class() extends Migration {
 		// Add the two gesture settings
 		DB::table('configs')->insert([
 			[
-				'key' => 'scroll_to_navigate_photos',
+				'key' => 'is_scroll_to_navigate_photos_enabled',
 				'value' => '1',
 				'cat' => self::CAT,
 				'type_range' => '0|1',
@@ -43,7 +43,7 @@ return new class() extends Migration {
 				'is_expert' => false,
 			],
 			[
-				'key' => 'swipe_vertically_to_go_back',
+				'key' => 'is_swipe_vertically_to_go_back_enabled',
 				'value' => '1',
 				'cat' => self::CAT,
 				'type_range' => '0|1',

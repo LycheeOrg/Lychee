@@ -93,8 +93,8 @@ class InitConfig extends Data
 	public bool $is_registration_enabled;
 
 	// Gesture settings
-	public bool $scroll_to_navigate_photos;
-	public bool $swipe_vertically_to_go_back;
+	public bool $is_scroll_to_navigate_photos_enabled;
+	public bool $is_swipe_vertically_to_go_back_enabled;
 
 	// Homepage
 	public string $default_homepage;
@@ -156,8 +156,8 @@ class InitConfig extends Data
 		$this->is_registration_enabled = Configs::getValueAsBool('user_registration_enabled');
 
 		// Gesture settings
-		$this->scroll_to_navigate_photos = Configs::getValueAsBool('scroll_to_navigate_photos');
-		$this->swipe_vertically_to_go_back = Configs::getValueAsBool('swipe_vertically_to_go_back');
+		$this->is_scroll_to_navigate_photos_enabled = Configs::getValueAsBool('is_scroll_to_navigate_photos_enabled');
+		$this->is_swipe_vertically_to_go_back_enabled = Configs::getValueAsBool('is_swipe_vertically_to_go_back_enabled');
 
 		// Homepage
 		$this->default_homepage = Configs::getValueAsString('home_page_default');
