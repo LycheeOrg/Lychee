@@ -76,6 +76,10 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 
 		// Registration settings
 		is_registration_enabled: false,
+
+		// Gesture settings
+		is_scroll_to_navigate_photos_enabled: true,
+		is_swipe_vertically_to_go_back_enabled: true,
 	}),
 	actions: {
 		init(): Promise<void> {
@@ -147,6 +151,9 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.photo_previous_next_size = data.photo_previous_next_size;
 
 					this.is_registration_enabled = data.is_registration_enabled;
+
+					this.is_scroll_to_navigate_photos_enabled = data.is_scroll_to_navigate_photos_enabled;
+					this.is_swipe_vertically_to_go_back_enabled = data.is_swipe_vertically_to_go_back_enabled;
 
 					this.default_homepage = data.default_homepage;
 				})
