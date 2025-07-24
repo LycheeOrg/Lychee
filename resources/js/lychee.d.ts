@@ -573,7 +573,6 @@ declare namespace App.Http.Resources.Models {
 		created_at: string;
 		formatted_min_max: string | null;
 		owner: string | null;
-		parent_id: string | null;
 		rights: App.Http.Resources.Rights.AlbumRightsResource;
 		timeline: App.Http.Resources.Models.Utils.TimelineData | null;
 	};

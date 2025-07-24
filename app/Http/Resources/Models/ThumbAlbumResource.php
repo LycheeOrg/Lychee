@@ -47,7 +47,6 @@ class ThumbAlbumResource extends Data
 	private ?string $max_taken_at = null;
 	public ?string $formatted_min_max = null;
 	public ?string $owner = null;
-	public ?string $parent_id = null;
 
 	private Carbon $created_at_carbon;
 	private ?Carbon $min_taken_at_carbon = null;
@@ -85,7 +84,6 @@ class ThumbAlbumResource extends Data
 		if ($data instanceof Album) {
 			$this->num_photos = $data->num_photos;
 			$this->num_subalbums = $data->num_children;
-			$this->parent_id = $data->parent_id;
 		}
 
 		$this->is_nsfw = $policy->is_nsfw;
