@@ -89,10 +89,6 @@ class Top
 				->orderBy($this->sorting->column, $this->sorting->order)
 				->get();
 
-			/**
-			 * @var BaseCollection<int,Album> $a
-			 * @var BaseCollection<int,Album> $b
-			 */
 			list($a, $b) = $albums->partition(fn ($album) => $album->owner_id === $user_id);
 
 			return new TopAlbumDTO($smart_albums, $tag_albums, $a->values(), $b->values());

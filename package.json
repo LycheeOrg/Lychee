@@ -49,7 +49,7 @@
         "@types/justified-layout": "^4.1.4",
         "@vueuse/core": "^13.5.0",
         "axios-cache-interceptor": "^1.8.0",
-        "axios": "^1.10.0",
+        "axios": "^1.11.0",
         "justified-layout": "^4.1.0",
         "laravel-vite-plugin": "^2.0.0",
         "laravel-vue-i18n": "^2.7.8",
@@ -71,7 +71,7 @@
         "vite-plugin-commonjs": "^0.10.4",
         "vite": "^7.0.4",
         "vue-collapsed": "^1.3.3",
-        "vue-i18n": "^11.1.9",
+        "vue-i18n": "^11.1.10",
         "vue": "^3.5.17",
         "vue-router": "^4.5.1"
     },

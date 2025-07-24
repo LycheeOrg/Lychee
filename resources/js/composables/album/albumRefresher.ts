@@ -102,6 +102,8 @@ export function useAlbumRefresher(albumId: Ref<string>, photoId: Ref<string | un
 		return Promise.all([loadUser(), loadAlbum()]).then(() => {
 			if (photoId.value) {
 				photo.value = photos.value.find((photo: App.Http.Resources.Models.PhotoResource) => photo.id === photoId.value);
+			} else {
+				photo.value = undefined;
 			}
 		});
 	}

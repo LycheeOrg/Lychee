@@ -310,9 +310,9 @@ class BasicPermissionCheck implements DiagnosticPipe
 	/**
 	 * @param string $type either 'dir' or 'file'
 	 *
-	 * @return int
-	 *
 	 * @phpstan-param 'dir'|'file' $type
+	 *
+	 * @return int
 	 *
 	 * @throws InvalidConfigOption
 	 */
