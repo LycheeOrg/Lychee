@@ -9,7 +9,7 @@ return [
 	'title' => 'Gallery',
 
 	'smart_albums' => 'Smart Albums',
-	'pinned_albums' => 'Pinned Albums',
+	'pinned_albums' => 'Featured Albums',
 	'albums' => 'Albums',
 	'root' => 'Albums',
 	'favourites' => 'Favourites',
