@@ -61,6 +61,7 @@ return [
         'button_hidden' => 'ما دکمه را در هدر مخفی می‌کنیم.',
     ],
     'login' => [
+        'auth_with' => 'Authenticate with %s',
         'username' => 'نام کاربری',
         'password' => 'رمز عبور',
         'unknown_invalid' => 'نام کاربری یا رمز عبور نامعتبر.',
