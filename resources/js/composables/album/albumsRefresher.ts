@@ -39,12 +39,6 @@ export function useAlbumsRefresher(auth: AuthStore, lycheeStore: LycheeStateStor
 			.then((data) => {
 				smartAlbums.value = (data.data.smart_albums as App.Http.Resources.Models.ThumbAlbumResource[]) ?? [];
 				smartAlbums.value = smartAlbums.value.concat(data.data.tag_albums as App.Http.Resources.Models.ThumbAlbumResource[]);
-				sharedAlbums.value = spliter(
-					(data.data.shared_albums as App.Http.Resources.Models.ThumbAlbumResource[]) ?? [],
-					(d) => d.owner as string, // mapper
-					(d) => d.owner as string, // formatter
-					albums.value.length,
-				);
 				albums.value = data.data.albums as App.Http.Resources.Models.ThumbAlbumResource[];
 				pinnedAlbums.value = [];
 				unpinnedAlbums.value = [];
@@ -55,6 +49,12 @@ export function useAlbumsRefresher(auth: AuthStore, lycheeStore: LycheeStateStor
 						unpinnedAlbums.value.push(album);
 					}
 				}
+				sharedAlbums.value = spliter(
+					(data.data.shared_albums as App.Http.Resources.Models.ThumbAlbumResource[]) ?? [],
+					(d) => d.owner as string, // mapper
+					(d) => d.owner as string, // formatter
+					albums.value.length,
+				);
 
 				rootConfig.value = data.data.config;
 				rootRights.value = data.data.rights;
