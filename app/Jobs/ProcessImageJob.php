@@ -28,7 +28,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 /**
@@ -37,6 +36,7 @@ use Illuminate\Support\Str;
  */
 class ProcessImageJob implements ShouldQueue
 {
+	use HasFailedTrait;
 	use Dispatchable;
 	use InteractsWithQueue;
 	use Queueable;
@@ -124,20 +124,5 @@ class ProcessImageJob implements ShouldQueue
 		$this->history->save();
 
 		return $photo;
-	}
-
-	/**
-	 * Catch failures.
-	 */
-	public function failed(\Throwable $th): void
-	{
-		$this->history->status = JobStatus::FAILURE;
-		$this->history->save();
-
-		if ($th->getCode() === 999) {
-			$this->release();
-		} else {
-			Log::error(__LINE__ . ':' . __FILE__ . ' ' . $th->getMessage(), $th->getTrace());
-		}
 	}
 }
