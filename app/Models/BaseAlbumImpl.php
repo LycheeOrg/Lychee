@@ -107,6 +107,7 @@ use Illuminate\Support\Facades\Auth;
  * @property int                              $owner_id
  * @property User                             $owner
  * @property bool                             $is_nsfw
+ * @property bool                             $is_pinned
  * @property Collection                       $shared_with
  * @property int|null                         $shared_with_count
  * @property PhotoSortingCriterion|null       $photo_sorting
@@ -186,6 +187,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		'copyright' => null,
 		// Special visibility attributes
 		'is_nsfw' => false,
+		'is_pinned' => false,
 		'photo_layout' => null,
 		// 'statistics' => null,
 	];
@@ -199,6 +201,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		'updated_at' => 'datetime',
 		'published_at' => 'datetime',
 		'is_nsfw' => 'boolean',
+		'is_pinned' => 'boolean',
 		'owner_id' => 'integer',
 		'photo_layout' => PhotoLayoutType::class,
 	];

@@ -33,16 +33,31 @@
 			:selected-albums="[]"
 			:is-timeline="false"
 		/>
-		<template v-if="albums.length > 0">
+		<template v-if="pinnedAlbums.length > 0">
+			<AlbumThumbPanel
+				:is-timeline="false"
+				header="gallery.pinned_albums"
+				:album="null"
+				:albums="pinnedAlbums"
+				:user="user"
+				:config="albumPanelConfig"
+				:is-alone="!sharedAlbums.length && !smartAlbums.length && !unpinnedAlbums.length"
+				:idx-shift="0"
+				:selected-albums="selectedAlbumsIds"
+				@clicked="albumClick"
+				@contexted="albumMenuOpen"
+			/>
+		</template>
+		<template v-if="unpinnedAlbums.length > 0">
 			<AlbumThumbPanel
 				:is-timeline="rootConfig.is_album_timeline_enabled"
 				header="gallery.albums"
 				:album="null"
-				:albums="albums"
+				:albums="unpinnedAlbums"
 				:user="user"
 				:config="albumPanelConfig"
-				:is-alone="!sharedAlbums.length && !smartAlbums.length"
-				:idx-shift="0"
+				:is-alone="!sharedAlbums.length && !smartAlbums.length && !pinnedAlbums.length"
+				:idx-shift="pinnedAlbums.length"
 				:selected-albums="selectedAlbumsIds"
 				@clicked="albumClick"
 				@contexted="albumMenuOpen"
@@ -180,8 +195,21 @@ const { are_nsfw_visible, title } = storeToRefs(lycheeStore);
 
 const photos = ref([]); // unused.
 
-const { user, isLoading, isKeybindingsHelpOpen, smartAlbums, albums, sharedAlbums, rootConfig, rootRights, selectableAlbums, hasHidden, refresh } =
-	useAlbumsRefresher(auth, lycheeStore, is_login_open, router);
+const {
+	user,
+	isLoading,
+	isKeybindingsHelpOpen,
+	smartAlbums,
+	albums,
+	pinnedAlbums,
+	unpinnedAlbums,
+	sharedAlbums,
+	rootConfig,
+	rootRights,
+	selectableAlbums,
+	hasHidden,
+	refresh,
+} = useAlbumsRefresher(auth, lycheeStore, is_login_open, router);
 
 const { selectedAlbum, selectedAlbumsIdx, selectedAlbums, selectedAlbumsIds, albumClick, selectEverything, unselect, hasSelection } = useSelection(
 	photos,
@@ -198,6 +226,18 @@ const albumCallbacks = {
 	toggleRename: toggleRename,
 	toggleMerge: toggleMergeAlbum,
 	toggleMove: toggleMove,
+	togglePin: async () => {
+		if (!selectedAlbum.value) return;
+
+		try {
+			await AlbumService.setPinned(selectedAlbum.value.id, !selectedAlbum.value.is_pinned);
+			AlbumService.clearAlbums();
+			await refresh();
+			unselect();
+		} catch (error) {
+			console.error("toggle pin:", error);
+		}
+	},
 	toggleDelete: toggleDelete,
 	toggleDownload: () => {
 		AlbumService.download(selectedAlbumsIds.value);
