@@ -106,6 +106,7 @@ class Generate
 			)
 			->where('photos.created_at', '>=', $now_minus)
 			->limit($rss_max)
+			->orderBy('photos.created_at', 'desc')
 			->toBase() // We use toBase() to avoid the use of the Eloquent casts etc.
 			->get();
 
