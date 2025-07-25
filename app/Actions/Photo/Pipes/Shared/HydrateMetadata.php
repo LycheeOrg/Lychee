@@ -38,7 +38,8 @@ class HydrateMetadata implements SharedPipe
 			$state->photo->description = $state->exif_info->description;
 		}
 		if (count($state->photo->tags) === 0) {
-			$state->photo->tags = $state->exif_info->tags;
+			// TODO FIX ME.
+			// $state->photo->tags = $state->exif_info->tags;
 		}
 		if ($state->photo->type === null) {
 			$state->photo->type = $state->exif_info->type;

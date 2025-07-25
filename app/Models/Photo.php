@@ -9,7 +9,6 @@
 namespace App\Models;
 
 use App\Actions\Photo\Delete;
-use App\Casts\ArrayCast;
 use App\Casts\DateTimeWithTimezoneCast;
 use App\Casts\MustNotSetCast;
 use App\Constants\PhotoAlbum as PA;
@@ -49,7 +48,7 @@ use function Safe\preg_match;
  * @property string                $id
  * @property string                $title
  * @property string|null           $description
- * @property string[]              $tags
+ * @property Collection<int,Tag>   $tags
  * @property int                   $owner_id
  * @property string|null           $type
  * @property string|null           $iso
@@ -162,7 +161,6 @@ class Photo extends Model implements HasUTCBasedTimes
 		'taken_at_mod' => 'datetime',
 		'owner_id' => 'integer',
 		'is_starred' => 'boolean',
-		'tags' => ArrayCast::class,
 		'latitude' => 'float',
 		'longitude' => 'float',
 		'altitude' => 'float',
@@ -232,6 +230,22 @@ class Photo extends Model implements HasUTCBasedTimes
 	public function palette(): HasOne
 	{
 		return $this->hasOne(Palette::class, 'photo_id', 'id');
+	}
+
+	/**
+	 * Returns the relationship between a tag and all photos with whom
+	 * this tag is attached.
+	 *
+	 * @return BelongsToMany<Tag,$this>
+	 */
+	public function tags(): BelongsToMany
+	{
+		return $this->belongsToMany(
+			Tag::class,
+			'photos_tags',
+			'photo_id',
+			'tag_id',
+		);
 	}
 
 	/**
