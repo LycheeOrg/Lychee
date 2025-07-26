@@ -310,7 +310,12 @@ onKeyStroke("u", () => !shouldIgnoreKeystroke() && photo.value === undefined && 
 onKeyStroke("i", () => !shouldIgnoreKeystroke() && photo.value === undefined && toggleEdit());
 onKeyStroke("l", () => !shouldIgnoreKeystroke() && photo.value === undefined && user.value?.id === null && (is_login_open.value = true));
 onKeyStroke("/", () => !shouldIgnoreKeystroke() && photo.value === undefined && config.value?.is_search_accessible && openSearch());
-onKeyStroke([getModKey(), "a"], () => !shouldIgnoreKeystroke() && photo.value === undefined && selectEverything());
+onKeyStroke("a", (e) => {
+	if (!shouldIgnoreKeystroke() && photo.value === undefined && e.getModifierState(getModKey()) && !e.shiftKey && !e.altKey) {
+		e.preventDefault();
+		selectEverything();
+	}
+});
 
 // Photo operations (note that the arrow keys are flipped for RTL languages)
 onKeyStroke("ArrowLeft", () => !shouldIgnoreKeystroke() && photo.value !== undefined && isLTR() && hasPrevious() && previous(true));
