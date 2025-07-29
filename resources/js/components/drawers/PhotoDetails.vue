@@ -47,11 +47,11 @@
 							</span>
 							<span class="text-sm">{{ props.photo.preformatted.created_at }}</span>
 						</div>
-						<div class="flex gap-1 items-start">
+						<div class="flex gap-1 items-start" v-if="props.photo.preformatted.taken_at">
 							<span class="w-6 inline-block">
 								<i class="pi pi-camera w-6 pt-1 inline-block" v-tooltip="$t('gallery.photo.details.captured')" />
 							</span>
-							<span v-if="props.photo.preformatted.taken_at" class="text-sm">
+							<span class="text-sm">
 								{{ props.photo.preformatted.taken_at }}
 								<span v-if="props.photo.precomputed.is_taken_at_modified" class="text-warning-600">*</span>
 							</span>
