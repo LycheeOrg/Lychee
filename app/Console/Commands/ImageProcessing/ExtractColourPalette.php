@@ -50,7 +50,8 @@ class ExtractColourPalette extends Command
 				->whereDoesntHave('palette')
 				->where('type', 'like', 'image/%')
 				->orderBy('id')
-				->lazyById($limit);
+				->limit($limit)
+				->lazyById();
 
 			if (count($photos) === 0) {
 				$this->line('No photos require palette extraction.');
@@ -59,8 +60,14 @@ class ExtractColourPalette extends Command
 			}
 
 			foreach ($photos as $photo) {
-				$this->line(sprintf('Extracting Color Palette for %s [%s].', $photo->title, $photo->id));
-				ExtractColoursJob::dispatchSync($photo);
+				try {
+					$this->line(sprintf('Extracting Color Palette for %s [%s].', $photo->title, $photo->id));
+					ExtractColoursJob::dispatchSync($photo);
+					// @codeCoverageIgnoreStart
+				} catch (\Throwable $e) {
+					$this->error(sprintf('Error extracting color palette for %s [%s]: %s', $photo->title, $photo->id, $e->getMessage()));
+				}
+				// @codeCoverageIgnoreEnd
 			}
 
 			return 0;
