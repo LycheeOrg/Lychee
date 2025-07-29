@@ -31,6 +31,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		is_exif_disabled: false,
 		is_favourite_enabled: false,
 		photo_previous_next_size: "small" as App.Enum.SmallLargeType,
+		is_details_links_enabled: false,
 
 		// keybinding help
 		show_keybinding_help_popup: false,
@@ -149,6 +150,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.is_medium_download_enabled = data.is_medium_download_enabled;
 					this.is_medium2x_download_enabled = data.is_medium2x_download_enabled;
 					this.photo_previous_next_size = data.photo_previous_next_size;
+					this.is_details_links_enabled = data.is_details_links_enabled;
 
 					this.is_registration_enabled = data.is_registration_enabled;
 
