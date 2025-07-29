@@ -45,6 +45,7 @@ class InitConfig extends Data
 	public bool $is_exif_disabled;
 	public bool $is_favourite_enabled;
 	public SmallLargeType $photo_previous_next_size;
+	public bool $is_details_links_enabled;
 
 	// Thumbs configuration
 	public ThumbOverlayVisibilityType $display_thumb_album_overlay;
@@ -120,6 +121,10 @@ class InitConfig extends Data
 		$this->is_exif_disabled = Configs::getValueAsBool('exif_disabled_for_all');
 		$this->is_favourite_enabled = Configs::getValueAsBool('client_side_favourite_enabled');
 		$this->photo_previous_next_size = Configs::getValueAsEnum('photo_previous_next_size', SmallLargeType::class);
+		$this->is_details_links_enabled = false;
+		if (Configs::getValueAsBool('details_links_enabled')) {
+			$this->is_details_links_enabled = !Auth::guest() || Configs::getValueAsBool('details_links_public');
+		}
 
 		// Thumbs configuration
 		$this->display_thumb_album_overlay = Configs::getValueAsEnum('display_thumb_album_overlay', ThumbOverlayVisibilityType::class);
