@@ -98,6 +98,7 @@ class InitConfig extends Data
 
 	// Homepage
 	public string $default_homepage;
+	public bool $is_timeline_page_enabled = false;
 
 	public function __construct()
 	{
@@ -161,6 +162,7 @@ class InitConfig extends Data
 
 		// Homepage
 		$this->default_homepage = Configs::getValueAsString('home_page_default');
+		$this->is_timeline_page_enabled = Configs::getValueAsBool('timeline_page_enabled');
 
 		$this->set_supporter_properties();
 	}
