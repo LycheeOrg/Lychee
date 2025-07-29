@@ -67,7 +67,7 @@ import ConfigGroup from "@/components/settings/ConfigGroup.vue";
 import ConfirmSave from "@/components/settings/ConfirmSave.vue";
 import General from "@/components/settings/General.vue";
 import AllSettings from "@/components/settings/AllSettings.vue";
-import { MenuItem } from "primevue/menuitem";
+import { type MenuItem } from "primevue/menuitem";
 import CssJs from "@/components/settings/CssJs.vue";
 import { useRoute, useRouter } from "vue-router";
 import { watch } from "vue";
