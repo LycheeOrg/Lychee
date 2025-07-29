@@ -316,6 +316,8 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		is_se_preview_enabled: boolean;
 		is_se_info_hidden: boolean;
 		is_live_metrics_enabled: boolean;
+		is_basic_auth_enabled: boolean;
+		is_webauthn_enabled: boolean;
 		is_registration_enabled: boolean;
 		is_scroll_to_navigate_photos_enabled: boolean;
 		is_swipe_vertically_to_go_back_enabled: boolean;
