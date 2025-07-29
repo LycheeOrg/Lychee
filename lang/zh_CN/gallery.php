@@ -9,6 +9,7 @@ return [
 	'title' => '相册',
 
 	'smart_albums' => '智能相册',
+	'pinned_albums' => '置顶相册',
 	'albums' => '相册',
 	'root' => '相册',
 	'favourites' => 'Favourites',
@@ -210,6 +211,8 @@ return [
 		'rename' => '重命名',
 		'move' => '移动',
 		'move_all' => '移动所选',
+		'pin' => '置顶',
+		'unpin' => '取消置顶',
 		'delete' => '删除',
 		'delete_all' => '删除所选',
 		'download' => '下载',

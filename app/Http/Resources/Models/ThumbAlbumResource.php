@@ -32,6 +32,7 @@ class ThumbAlbumResource extends Data
 	public ?ThumbResource $thumb;
 
 	public bool $is_nsfw;
+	public bool $is_pinned;
 	public bool $is_public;
 	public bool $is_link_required;
 	public bool $is_password_required;
@@ -89,6 +90,8 @@ class ThumbAlbumResource extends Data
 		$this->is_public = $policy->is_public;
 		$this->is_link_required = $policy->is_link_required;
 		$this->is_password_required = $policy->is_password_required;
+
+		$this->is_pinned = $data instanceof BaseAlbum ? $data->is_pinned : false;
 
 		$this->is_tag_album = $data instanceof TagAlbum;
 		// This aims to indicate whether the current thumb is used to determine the parent.

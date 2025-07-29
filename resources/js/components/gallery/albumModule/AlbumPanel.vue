@@ -249,6 +249,9 @@ const albumCallbacks = {
 	toggleDownload: () => {
 		AlbumService.download(selectedAlbumsIds.value);
 	},
+	togglePin: async () => {
+		console.log("pinning within a parent album is unimplemented");
+	},
 };
 
 const { menu, Menu, photoMenuOpen, albumMenuOpen } = useContextMenu(

@@ -194,6 +194,7 @@ declare namespace App.Http.Resources.Editable {
 		photo_timeline: App.Enum.TimelinePhotoGranularity | null;
 		tags: Array<string>;
 		is_model_album: boolean;
+		is_pinned: boolean;
 	};
 	export type EditableConfigResource = {
 		key: string;
@@ -410,6 +411,7 @@ declare namespace App.Http.Resources.Models {
 		rights: App.Http.Resources.Rights.AlbumRightsResource;
 		preFormattedData: App.Http.Resources.Models.Utils.PreFormattedAlbumData;
 		editable: App.Http.Resources.Editable.EditableBaseAlbumResource | null;
+		is_pinned: boolean;
 		statistics: App.Http.Resources.Models.AlbumStatisticsResource | null;
 	};
 	export type AlbumStatisticsResource = {
@@ -562,6 +564,7 @@ declare namespace App.Http.Resources.Models {
 		description: string | null;
 		thumb: App.Http.Resources.Models.ThumbResource | null;
 		is_nsfw: boolean;
+		is_pinned: boolean;
 		is_public: boolean;
 		is_link_required: boolean;
 		is_password_required: boolean;

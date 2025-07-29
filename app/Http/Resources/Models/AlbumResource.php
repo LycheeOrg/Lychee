@@ -64,6 +64,7 @@ class AlbumResource extends Data
 	public AlbumRightsResource $rights;
 	public PreFormattedAlbumData $preFormattedData;
 	public ?EditableBaseAlbumResource $editable;
+	public bool $is_pinned;
 
 	public ?AlbumStatisticsResource $statistics = null;
 
@@ -111,6 +112,7 @@ class AlbumResource extends Data
 		$this->rights = new AlbumRightsResource($album);
 		$url = $this->getHeaderUrl($album);
 		$this->preFormattedData = new PreFormattedAlbumData($album, $url);
+		$this->is_pinned = $album->is_pinned;
 
 		if ($this->rights->can_edit) {
 			$this->editable = EditableBaseAlbumResource::fromModel($album);

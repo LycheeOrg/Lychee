@@ -9,6 +9,7 @@ return [
 	'title' => 'Gallery',
 
 	'smart_albums' => 'Smart albums',
+	'pinned_albums' => 'Připnutá alba',
 	'albums' => 'Albums',
 	'root' => 'Albums',
 	'favourites' => 'Favourites',
@@ -210,6 +211,8 @@ return [
 		'rename' => 'Rename',
 		'move' => 'Move',
 		'move_all' => 'Move Selected',
+		'pin' => 'Připnout',
+		'unpin' => 'Odepnout',
 		'delete' => 'Delete',
 		'delete_all' => 'Delete Selected',
 		'download' => 'Download',
