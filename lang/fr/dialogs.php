@@ -62,6 +62,7 @@ return [
         'button_hidden' => 'Nous allons cacher ce bouton dans la barre de menu.',
     ],
     'login' => [
+        'auth_with' => 'S’authentifier avec %s',
         'username' => 'Nom d’utilisateur',
         'password' => 'Mot de passe',
         'unknown_invalid' => 'Utilisateur inconnu ou mot de passe invalide.',
