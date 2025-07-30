@@ -12,6 +12,7 @@ use App\Contracts\Models\AbstractAlbum;
 use App\Contracts\PhotoCreate\PhotoDTO;
 use App\Metadata\Extractor;
 use App\Models\Photo;
+use Illuminate\Support\Collection;
 
 /**
  * DTO used when dealing with duplicates.
@@ -20,6 +21,8 @@ use App\Models\Photo;
 class DuplicateDTO implements PhotoDTO
 {
 	public bool $has_been_resynced;
+
+	public Collection $tags;
 
 	public function __construct(
 		public readonly bool $shall_resync_metadata,
@@ -39,6 +42,7 @@ class DuplicateDTO implements PhotoDTO
 		// During initial steps if duplicate is found, it will be placed here.
 		public Photo $photo,
 	) {
+		$this->tags = $this->photo->tags;
 	}
 
 	public static function ofInit(InitDTO $init_dto): DuplicateDTO
@@ -57,6 +61,11 @@ class DuplicateDTO implements PhotoDTO
 	public function getPhoto(): Photo
 	{
 		return $this->photo;
+	}
+
+	public function getTags(): Collection
+	{
+		return $this->tags;
 	}
 
 	public function setHasBeenResync(bool $val): void

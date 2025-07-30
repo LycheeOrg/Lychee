@@ -19,6 +19,7 @@ class Save implements PhotoPipe
 	public function handle(PhotoDTO $state, \Closure $next): PhotoDTO
 	{
 		$state->getPhoto()->save();
+		$state->getPhoto()->tags()->sync($state->getTags()->pluck('id')->all());
 
 		return $next($state);
 	}
