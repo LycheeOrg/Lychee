@@ -9,6 +9,7 @@
 namespace Database\Factories;
 
 use App\Models\Statistics;
+use App\Models\Tag;
 use App\Models\TagAlbum;
 use Database\Factories\Traits\OwnedBy;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -40,7 +41,12 @@ class TagAlbumFactory extends Factory
 		];
 	}
 
-	public function of_tags(string $tags): self
+	/**
+	 * @param array<int,Tag> $tags
+	 *
+	 * @return TagAlbumFactory
+	 */
+	public function of_tags(array $tags): self
 	{
 		return $this->state(function (array $attributes) use ($tags) {
 			return [
