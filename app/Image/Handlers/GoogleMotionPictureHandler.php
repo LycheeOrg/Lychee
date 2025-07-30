@@ -51,7 +51,9 @@ class GoogleMotionPictureHandler extends VideoHandler
 	 */
 	public function __destruct()
 	{
-		$this->working_copy->delete();
+		if (isset($this->working_copy)) {
+			$this->working_copy->delete();
+		}
 	}
 
 	/**
