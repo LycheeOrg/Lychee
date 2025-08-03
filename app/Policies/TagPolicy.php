@@ -13,6 +13,7 @@ use App\Models\User;
 class TagPolicy extends BasePolicy
 {
 	public const CAN_LIST = 'canList';
+	public const CAN_EDIT = 'canEdit';
 
 	/**
 	 * Determine whether the user can list tags.
@@ -20,5 +21,17 @@ class TagPolicy extends BasePolicy
 	public function canList(User $user): bool
 	{
 		return $user->may_upload;
+	}
+
+	/**
+	 * Only the admin is allowed to edit tags.
+	 *
+	 * @param User $user
+	 *
+	 * @return bool
+	 */
+	public function canEdit(User $user): bool
+	{
+		return false;
 	}
 }

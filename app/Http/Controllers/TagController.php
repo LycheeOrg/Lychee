@@ -8,9 +8,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\TagAlreadyExistException;
 use App\Http\Requests\Tags\DeleteTagRequest;
+use App\Http\Requests\Tags\EditTagRequest;
 use App\Http\Requests\Tags\ListTagRequest;
 use App\Http\Resources\Tags\TagResource;
+use App\Models\Tag;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -36,6 +39,20 @@ class TagController extends Controller
 			name: $tag->name,
 			num: $tag->num
 		));
+	}
+
+	public function edit(EditTagRequest $request): void
+	{
+		$tag = $request->tag();
+
+		if (Tag::where('name', $request->name())->exists()) {
+			throw new TagAlreadyExistException();
+		}
+
+		// Update the tag name
+		DB::table('tags')
+			->where('id', $tag->id)
+			->update(['name' => $request->name()]);
 	}
 
 	public function delete(DeleteTagRequest $request): void
