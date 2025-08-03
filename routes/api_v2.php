@@ -274,4 +274,5 @@ Route::get('/ChangeLogs', [VersionController::class, 'changeLogs']);
  * TAGS.
  */
 Route::get('/Tag', [TagController::class, 'list'])->middleware(['cache_control']);
+Route::patch('/Tag', [TagController::class, 'edit']);
 Route::delete('/Tag', [TagController::class, 'delete']);
