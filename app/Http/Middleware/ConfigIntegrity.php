@@ -35,6 +35,7 @@ class ConfigIntegrity
 		'timeline_album_date_format_day',
 		'number_albums_per_row_mobile',
 		'client_side_favourite_enabled',
+		'photo_thumb_tags_enabled',
 		'cache_ttl',
 		'secure_image_link_enabled',
 		'exif_disabled_for_all',
