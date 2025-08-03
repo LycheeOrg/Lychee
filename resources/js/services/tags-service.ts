@@ -10,7 +10,7 @@ const TagsService = {
 
 	get(): Promise<AxiosResponse<App.Http.Resources.Tags.TagResource[]>> {
 		const requester = axios as unknown as AxiosCacheInstance;
-		return requester.get(`${Constants.getApiUrl()}Tag`, { data: {}, id: "tags" });
+		return requester.get(`${Constants.getApiUrl()}Tags`, { data: {}, id: "tags" });
 	},
 };
 

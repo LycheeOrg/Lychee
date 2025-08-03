@@ -24,19 +24,19 @@ class ListTagsTest extends BaseApiWithDataTest
 {
 	public function testGetTagsGuest(): void
 	{
-		$response = $this->getJson('Tag');
+		$response = $this->getJson('Tags');
 		$this->assertUnauthorized($response);
 	}
 
 	public function testGetTagsUserWithoutUploadRight(): void
 	{
-		$response = $this->actingAs($this->userNoUpload)->getJson('Tag');
+		$response = $this->actingAs($this->userNoUpload)->getJson('Tags');
 		$this->assertForbidden($response);
 	}
 
 	public function testGetTagsUserWithUploadRight(): void
 	{
-		$response = $this->actingAs($this->userMayUpload1)->getJson('Tag');
+		$response = $this->actingAs($this->userMayUpload1)->getJson('Tags');
 		$this->assertOk($response);
 	}
 }
