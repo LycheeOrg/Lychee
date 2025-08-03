@@ -28,7 +28,7 @@
 			</router-link>
 			<Button
 				icon="pi pi-search"
-				class="border-none hidden sm:block"
+				class="border-none hidden sm:inline-flex"
 				severity="secondary"
 				text
 				@click="emits('openSearch')"
