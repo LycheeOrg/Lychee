@@ -2,21 +2,6 @@ import axios, { type AxiosResponse } from "axios";
 import Constants from "./constants";
 import { AxiosCacheInstance } from "axios-cache-interceptor";
 
-export type PhotoUpdateRequest = {
-	title: string;
-	description: string;
-	tags: string[];
-	license: App.Enum.LicenseType;
-	upload_date: string;
-	taken_at: string | null;
-};
-
-export type PhotoMove = {
-	photo_ids: string[];
-	album_id: string | null;
-	from_id: string | null;
-};
-
 const TagsService = {
 	clearCache(): void {
 		const axiosWithCache = axios as unknown as AxiosCacheInstance;
