@@ -50,11 +50,22 @@
 				>
 					{{ props.photo.title }}
 				</h1>
-				<span v-if="props.photo.preformatted.taken_at" class="block mt-0 ltr:mr-0 mb-2 ltr:ml-3 rtl:mr-3 text-2xs text-surface-300">
-					<span title="Camera Date"><MiniIcon icon="camera-slr" class="w-2 h-2 m-0 ltr:mr-1 rtl:ml-1 fill-neutral-300" /></span
-					>{{ props.photo.preformatted.taken_at }}
-				</span>
-				<span v-else class="block mt-0 mr-0 mb-2 ltr:ml-3 rtl:mr-3 text-2xs text-surface-300">{{ props.photo.preformatted.created_at }}</span>
+				<div class="last:mb-2">
+					<span v-if="props.photo.preformatted.taken_at" class="block mt-0 ltr:mr-0 ltr:ml-3 rtl:mr-3 text-2xs text-surface-300">
+						<span title="Camera Date"><MiniIcon icon="camera-slr" class="w-2 h-2 m-0 ltr:mr-1 rtl:ml-1 fill-neutral-300" /></span
+						>{{ props.photo.preformatted.taken_at }}
+					</span>
+					<span v-else class="block mt-0 mr-0 ltr:ml-3 rtl:mr-3 text-2xs text-surface-300">{{ props.photo.preformatted.created_at }}</span>
+				</div>
+				<div v-if="is_photo_thumb_tags_enabled" class="last:mb-2">
+					<span
+						v-for="(tag, idx) in props.photo.tags"
+						:key="`photo-thumb${props.photo.id}-tag-${idx}`"
+						class="inline-block ltr:ml-3 rtl:mr-3 text-xs text-surface-300 bg-surface-800/50 rounded px-1.5 py-0.5"
+					>
+						{{ tag }}
+					</span>
+				</div>
 			</template>
 			<template v-else>
 				<h1
@@ -107,7 +118,7 @@ const auth = useAuthStore();
 const { user } = storeToRefs(auth);
 const favourites = useFavouriteStore();
 const lycheeStore = useLycheeStateStore();
-const { is_favourite_enabled, display_thumb_photo_overlay, photo_thumb_info } = storeToRefs(lycheeStore);
+const { is_favourite_enabled, display_thumb_photo_overlay, photo_thumb_info, is_photo_thumb_tags_enabled } = storeToRefs(lycheeStore);
 
 const srcPlay = ref(getPlayIcon());
 const srcNoImage = ref(getNoImageIcon());

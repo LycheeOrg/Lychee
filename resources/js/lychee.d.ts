@@ -303,6 +303,7 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		album_decoration_orientation: App.Enum.AlbumDecorationOrientation;
 		number_albums_per_row_mobile: 1 | 2 | 3;
 		photo_thumb_info: App.Enum.PhotoThumbInfoType;
+		is_photo_thumb_tags_enabled: boolean;
 		is_thumb_download_enabled: boolean;
 		is_thum2x_download_enabled: boolean;
 		is_small_download_enabled: boolean;
