@@ -823,3 +823,9 @@ declare namespace App.Http.Resources.Statistics {
 		size: number;
 	};
 }
+declare namespace App.Http.Resources.Tags {
+	export type TagResource = {
+		name: string;
+		num: number;
+	};
+}
