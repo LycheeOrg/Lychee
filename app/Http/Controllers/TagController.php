@@ -13,6 +13,7 @@ use App\Http\Requests\Tags\DeleteTagRequest;
 use App\Http\Requests\Tags\EditTagRequest;
 use App\Http\Requests\Tags\GetTagRequest;
 use App\Http\Requests\Tags\ListTagRequest;
+use App\Http\Requests\Tags\MergeTagRequest;
 use App\Http\Resources\Models\PhotoResource;
 use App\Http\Resources\Tags\TagResource;
 use App\Http\Resources\Tags\TagWithPhotosResource;
@@ -117,5 +118,76 @@ class TagController extends Controller
 		DB::table('tags')
 			->whereIn('name', $tags)
 			->delete();
+	}
+
+	/**
+	 * Merge one tag into another.
+	 *
+	 * This transfers all photo associations from the source tag to the destination tag
+	 * and then deletes the source tag.
+	 */
+	public function merge(MergeTagRequest $request): void
+	{
+		$source_tag = $request->tag();
+		$destination_tag = $request->destinationTag();
+
+		// Get all photos related to the source tag
+		$source_photo_ids = DB::table('photos_tags')
+			->where('tag_id', $source_tag->id)
+			->select('photo_id')
+			->pluck('photo_id')
+			->toArray();
+
+		if (count($source_photo_ids) === 0) {
+			// If source tag has no photos, just delete it
+			DB::table('tags')
+				->where('id', $source_tag->id)
+				->delete();
+
+			return;
+		}
+
+		// Get existing photo associations for the destination tag to avoid duplicates
+		$existing_photo_ids = DB::table('photos_tags')
+			->where('tag_id', $destination_tag->id)
+			->whereIn('photo_id', $source_photo_ids)
+			->select('photo_id')
+			->pluck('photo_id')
+			->toArray();
+
+		// Filter out photos that are already associated with the destination tag
+		$photo_ids_to_add = array_diff($source_photo_ids, $existing_photo_ids);
+
+		// Begin a transaction to ensure data integrity
+		DB::beginTransaction();
+
+		try {
+			// Add new photo associations to the destination tag
+			if (count($photo_ids_to_add) > 0) {
+				$insert_data = array_map(function ($photo_id) use ($destination_tag) {
+					return [
+						'photo_id' => $photo_id,
+						'tag_id' => $destination_tag->id,
+					];
+				}, $photo_ids_to_add);
+
+				DB::table('photos_tags')->insert($insert_data);
+			}
+
+			// Delete the source tag's photo associations
+			DB::table('photos_tags')
+				->where('tag_id', $source_tag->id)
+				->delete();
+
+			// Delete the source tag
+			DB::table('tags')
+				->where('id', $source_tag->id)
+				->delete();
+
+			DB::commit();
+		} catch (\Exception $e) {
+			DB::rollBack();
+			throw $e;
+		}
 	}
 }
