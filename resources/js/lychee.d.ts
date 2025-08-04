@@ -826,7 +826,14 @@ declare namespace App.Http.Resources.Statistics {
 }
 declare namespace App.Http.Resources.Tags {
 	export type TagResource = {
+		id: number;
 		name: string;
 		num: number;
+	};
+
+	export type TagWithPhotosResource = {
+		id: number;
+		name: string;
+		photos: App.Http.Resources.Models.PhotoResource[];
 	};
 }

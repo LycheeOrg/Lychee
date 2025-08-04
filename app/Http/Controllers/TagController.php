@@ -42,6 +42,7 @@ class TagController extends Controller
 			->get();
 
 		return $tags->map(fn ($tag) => new TagResource(
+			id: $tag->id,
 			name: $tag->name,
 			num: $tag->num
 		));
@@ -76,6 +77,7 @@ class TagController extends Controller
 		$photo_resources = $photos->map(fn (Photo $photo) => new PhotoResource($photo, null));
 
 		return new TagWithPhotosResource(
+			id: $tag->id,
 			name: $tag->name,
 			photos: $photo_resources,
 		);

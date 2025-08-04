@@ -20,6 +20,7 @@ class TagWithPhotosResource extends Data
 	 * @param Collection<int,PhotoResource> $photos
 	 */
 	public function __construct(
+		public int $id,
 		public string $name,
 		public Collection $photos,
 	) {
