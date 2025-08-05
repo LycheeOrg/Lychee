@@ -113,7 +113,7 @@ class TagController extends Controller
 
 		// Then delete the tags themselves
 		DB::table('tags')
-			->whereIn('tag_id', $tags)
+			->whereIn('id', $tags)
 			->delete();
 	}
 
