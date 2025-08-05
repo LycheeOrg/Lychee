@@ -8,23 +8,22 @@
 
 namespace App\Http\Requests\Tags;
 
-use App\Contracts\Http\Requests\HasTags;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Http\Requests\BaseApiRequest;
-use App\Http\Requests\Traits\HasTagsTrait;
 use App\Models\Tag;
 use App\Policies\TagPolicy;
 use Illuminate\Support\Facades\Gate;
 
-class DeleteTagRequest extends BaseApiRequest implements HasTags
+class DeleteTagRequest extends BaseApiRequest
 {
-	use HasTagsTrait;
+	/** @var int[] $tags */
+	public array $tags;
 
 	public function rules(): array
 	{
 		return [
 			RequestAttribute::TAGS_ATTRIBUTE => 'required|array',
-			RequestAttribute::TAGS_ATTRIBUTE . '.*' => 'string',
+			RequestAttribute::TAGS_ATTRIBUTE . '.*' => 'int',
 		];
 	}
 
@@ -33,7 +32,7 @@ class DeleteTagRequest extends BaseApiRequest implements HasTags
 	 */
 	public function authorize(): bool
 	{
-		return Gate::check(TagPolicy::CAN_LIST, [Tag::class]);
+		return Gate::check(TagPolicy::CAN_EDIT, [Tag::class]);
 	}
 
 	protected function processValidatedValues(array $values, array $files): void

@@ -100,7 +100,7 @@ class TagController extends Controller
 
 	public function delete(DeleteTagRequest $request): void
 	{
-		$tags = $request->tags();
+		$tags = $request->tags;
 
 		if (count($tags) === 0) {
 			return;
@@ -108,15 +108,12 @@ class TagController extends Controller
 
 		// First delete all the relations between the selected tags and the photos
 		DB::table('photos_tags')
-			->whereIn('tag_id', fn ($q) => $q->select('id')
-					->from('tags')
-					->whereIn('name', $tags)
-			)
+			->whereIn('tag_id', $tags)
 			->delete();
 
 		// Then delete the tags themselves
 		DB::table('tags')
-			->whereIn('name', $tags)
+			->whereIn('tag_id', $tags)
 			->delete();
 	}
 
