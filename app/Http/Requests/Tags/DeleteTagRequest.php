@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Gate;
 
 class DeleteTagRequest extends BaseApiRequest
 {
-	/** @var int[] $tags */
+	/** @var int[] */
 	public array $tags;
 
 	public function rules(): array
