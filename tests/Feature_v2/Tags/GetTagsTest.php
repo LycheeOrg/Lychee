@@ -48,7 +48,6 @@ class GetTagsTest extends BaseApiWithDataTest
 		$this->assertCount(0, $data['photos']);
 	}
 
-
 	public function testGetTagUserWithUploadRight(): void
 	{
 		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Tag');
