@@ -16,6 +16,7 @@ use App\Http\Requests\Tags\ListTagRequest;
 use App\Http\Requests\Tags\MergeTagRequest;
 use App\Http\Resources\Models\PhotoResource;
 use App\Http\Resources\Tags\TagResource;
+use App\Http\Resources\Tags\TagsResource;
 use App\Http\Resources\Tags\TagWithPhotosResource;
 use App\Models\Configs;
 use App\Models\Photo;
@@ -30,9 +31,9 @@ class TagController extends Controller
 	/**
 	 * Returns the list of all tags with their photo counts.
 	 *
-	 * @return Collection<int,TagResource>
+	 * @return TagsResource
 	 */
-	public function list(ListTagRequest $request): Collection
+	public function list(ListTagRequest $request): TagsResource
 	{
 		/** @var Collection<int,object{name:string,num:int}> $tags */
 		$tags = DB::table('tags')
@@ -42,11 +43,11 @@ class TagController extends Controller
 			->orderBy('tags.name')
 			->get();
 
-		return $tags->map(fn ($tag) => new TagResource(
+		return new TagsResource($tags->map(fn ($tag) => new TagResource(
 			id: $tag->id,
 			name: $tag->name,
 			num: $tag->num
-		));
+		)));
 	}
 
 	/**

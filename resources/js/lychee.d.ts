@@ -830,10 +830,13 @@ declare namespace App.Http.Resources.Tags {
 		name: string;
 		num: number;
 	};
-
 	export type TagWithPhotosResource = {
 		id: number;
 		name: string;
-		photos: App.Http.Resources.Models.PhotoResource[];
+		photos: Array<any>;
+	};
+	export type TagsResource = {
+		can_edit: boolean;
+		tags: App.Http.Resources.Tags.TagResource[];
 	};
 }

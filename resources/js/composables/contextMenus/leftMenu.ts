@@ -74,6 +74,12 @@ export function useLeftMenu(
 				route: "/flow",
 			},
 			{
+				label: "tags.title",
+				icon: "pi pi-tags",
+				access: user.value?.id !== null,
+				route: "/tags",
+			},
+			{
 				label: "left-menu.frame",
 				icon: "pi pi-desktop",
 				access: initData.value.modules.is_mod_frame_enabled ?? false,
