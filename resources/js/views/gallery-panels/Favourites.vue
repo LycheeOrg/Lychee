@@ -24,13 +24,14 @@
 				v-if="layoutConfig !== undefined && photos.length > 0"
 				header="gallery.album.header_photos"
 				:photos="photos"
-				:album="undefined"
 				:gallery-config="layoutConfig"
 				:photos-timeline="undefined"
 				:photo-layout="'square'"
 				:selected-photos="selectedPhotosIds"
 				:is-timeline="false"
 				:with-control="false"
+				:cover-id="undefined"
+				:header-id="undefined"
 				@clicked="photoClick"
 			/>
 		</div>
