@@ -33,7 +33,6 @@
 	<!-- Photo panel -->
 	<PhotoPanel
 		v-if="photo"
-		:album-id="albumId"
 		:photo="photo"
 		:photos="photos"
 		:is-map-visible="config?.is_map_accessible ?? false"

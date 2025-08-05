@@ -46,7 +46,6 @@
 	<!-- Photo panel -->
 	<PhotoPanel
 		v-if="photo"
-		:album-id="albumId"
 		:photo="photo"
 		:photos="photosForSelection"
 		:is-map-visible="config?.is_map_accessible ?? false"

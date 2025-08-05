@@ -9,14 +9,12 @@
 			</div>
 			<NextPrevious
 				v-if="photo.previous_photo_id !== null && !is_slideshow_active"
-				:albumId="props.albumId"
 				:photoId="photo.previous_photo_id"
 				:is_next="false"
 				:style="previousStyle"
 			/>
 			<NextPrevious
 				v-if="photo.next_photo_id !== null && !is_slideshow_active"
-				:albumId="props.albumId"
 				:photoId="photo.next_photo_id"
 				:is_next="true"
 				:style="nextStyle"
@@ -62,7 +60,6 @@ const { is_exif_disabled, is_scroll_to_navigate_photos_enabled } = storeToRefs(l
 const { is_photo_edit_open, is_slideshow_active, are_details_open } = storeToRefs(togglableStore);
 
 const props = defineProps<{
-	albumId: string;
 	photo: App.Http.Resources.Models.PhotoResource;
 	photos: App.Http.Resources.Models.PhotoResource[];
 	isMapVisible: boolean;
