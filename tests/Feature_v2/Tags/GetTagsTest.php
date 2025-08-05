@@ -20,7 +20,7 @@ namespace Tests\Feature_v2\Tags;
 
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
-class GetTagTest extends BaseApiWithDataTest
+class GetTagsTest extends BaseApiWithDataTest
 {
 	public function testGetTagGuest(): void
 	{
@@ -28,6 +28,15 @@ class GetTagTest extends BaseApiWithDataTest
 		$this->assertUnprocessable($response);
 
 		$response = $this->getJsonWithData('Tag', ['tag_id' => $this->tag_test->id]);
+		$this->assertUnauthorized($response);
+	}
+
+	public function testGetTagLoggedIn(): void
+	{
+		$response = $this->actingAs($this->userLocked)->getJsonWithData('Tag');
+		$this->assertUnprocessable($response);
+
+		$response = $this->actingAs($this->userLocked)->getJsonWithData('Tag', ['tag_id' => $this->tag_test->id]);
 		$this->assertOk($response);
 
 		// Verify the response structure contains tag name and photos
@@ -38,6 +47,7 @@ class GetTagTest extends BaseApiWithDataTest
 		$this->assertIsArray($data['photos']);
 		$this->assertCount(0, $data['photos']);
 	}
+
 
 	public function testGetTagUserWithUploadRight(): void
 	{

@@ -27,7 +27,7 @@ class DeleteTagsTest extends BaseApiWithDataTest
 		$response = $this->deleteJson('Tag');
 		$this->assertUnprocessable($response);
 
-		$response = $this->deleteJson('Tag', ['tags' => ['tag1', 'tag2']]);
+		$response = $this->deleteJson('Tag', ['tags' => [1, 2]]);
 		$this->assertUnauthorized($response);
 	}
 
@@ -36,7 +36,7 @@ class DeleteTagsTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->userNoUpload)->deleteJson('Tag');
 		$this->assertUnprocessable($response);
 
-		$response = $this->actingAs($this->userNoUpload)->deleteJson('Tag', ['tags' => ['tag1', 'tag2']]);
+		$response = $this->actingAs($this->userNoUpload)->deleteJson('Tag', ['tags' => [1, 2]]);
 		$this->assertForbidden($response);
 	}
 
@@ -45,7 +45,7 @@ class DeleteTagsTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->userMayUpload1)->deleteJson('Tag');
 		$this->assertUnprocessable($response);
 
-		$response = $this->actingAs($this->userMayUpload1)->deleteJson('Tag', ['tags' => [$this->tag_test->name]]);
+		$response = $this->actingAs($this->userMayUpload1)->deleteJson('Tag', ['tags' => [$this->tag_test->id]]);
 		$this->assertNoContent($response);
 	}
 
@@ -63,7 +63,7 @@ class DeleteTagsTest extends BaseApiWithDataTest
 
 	public function testDeleteNonExistentTag(): void
 	{
-		$response = $this->actingAs($this->userMayUpload1)->deleteJson('Tag', ['tags' => ['non_existent_tag']]);
+		$response = $this->actingAs($this->userMayUpload1)->deleteJson('Tag', ['tags' => [99999999]]);
 		$this->assertNoContent($response);
 	}
 }
