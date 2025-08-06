@@ -24,6 +24,7 @@ const UserGroups = () => import("@/views/UserGroups.vue");
 const RegisterPage = () => import("@/views/RegisterPage.vue");
 const Flow = () => import("@/views/gallery-panels/Flow.vue");
 const TagsManagement = () => import("@/views/TagsManagement.vue");
+const Tag = () => import("@/views/gallery-panels/Tag.vue");
 
 const routes_ = [
 	{
@@ -54,8 +55,14 @@ const routes_ = [
 	},
 	{
 		name: "tags",
-		path: "/Tags",
+		path: "/tags",
 		component: TagsManagement,
+	},
+	{
+		name: "tag",
+		path: "/tag/:tagId/:photoId?",
+		component: Tag,
+		props: true,
 	},
 	{
 		name: "flow-album",

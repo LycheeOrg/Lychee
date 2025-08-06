@@ -8,7 +8,12 @@ const TagsService = {
 		axiosWithCache.storage.remove("tags");
 	},
 
-	get(): Promise<AxiosResponse<App.Http.Resources.Tags.TagsResource>> {
+	get(tagId: string): Promise<AxiosResponse<App.Http.Resources.Tags.TagWithPhotosResource>> {
+		const requester = axios as unknown as AxiosCacheInstance;
+		return requester.get(`${Constants.getApiUrl()}Tag`, { params: { tag_id: tagId }, data: {}, id: `tag-${tagId}` });
+	},
+
+	list(): Promise<AxiosResponse<App.Http.Resources.Tags.TagsResource>> {
 		const requester = axios as unknown as AxiosCacheInstance;
 		return requester.get(`${Constants.getApiUrl()}Tags`, { data: {}, id: "tags" });
 	},
