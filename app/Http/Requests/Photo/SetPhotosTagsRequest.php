@@ -47,7 +47,9 @@ class SetPhotosTagsRequest extends BaseApiRequest implements HasPhotos, HasTags
 	{
 		/** @var array<int,string> $photos_ids */
 		$photos_ids = $values[RequestAttribute::PHOTO_IDS_ATTRIBUTE];
-		$this->photos = Photo::query()->findOrFail($photos_ids);
+		$this->photos = Photo::query()
+			->with(['size_variants', 'albums'])
+			->findOrFail($photos_ids);
 		$this->tags = $values[RequestAttribute::TAGS_ATTRIBUTE];
 		$this->shall_override = static::toBoolean($values[RequestAttribute::SHALL_OVERRIDE_ATTRIBUTE]);
 	}
