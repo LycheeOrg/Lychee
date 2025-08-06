@@ -14,7 +14,7 @@ export function getWidth(timelineData: TimelineData, route: RouteLocationNormali
 	const width = Math.min(baseWidth - paddingLeftRight - scrollBarWidth);
 
 	let timeLineBorder = 0;
-	if (timelineData.isTimeline.value === true && (timelineData.isLeftBorderVisible.value && !isTouchDevice()) === true) {
+	if (timelineData.isTimeline === true && (timelineData.isLeftBorderVisible.value && !isTouchDevice()) === true) {
 		timeLineBorder = 50;
 	}
 

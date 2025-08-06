@@ -31,17 +31,17 @@ const props = defineProps<{
 	groupIdx: number;
 	coverId: string | undefined;
 	headerId: string | undefined;
+	isTimeline?: boolean;
 }>();
 
 const lycheeStore = useLycheeStateStore();
 const layout = defineModel("layout") as Ref<App.Enum.PhotoLayoutType>;
-const isTimeline = defineModel("isTimeline") as Ref<boolean>;
 const { is_timeline_left_border_visible } = storeToRefs(lycheeStore);
 
 const route = useRoute();
 
 const timelineData: TimelineData = {
-	isTimeline: isTimeline,
+	isTimeline: props.isTimeline === true,
 	isLeftBorderVisible: is_timeline_left_border_visible,
 };
 

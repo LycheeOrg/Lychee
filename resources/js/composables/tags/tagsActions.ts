@@ -1,6 +1,7 @@
 import { Ref, ref } from "vue";
+import { Router } from "vue-router";
 
-export function useTagsActions(tags: Ref<App.Http.Resources.Tags.TagResource[] | undefined>) {
+export function useTagsActions(tags: Ref<App.Http.Resources.Tags.TagResource[] | undefined>, router: Router) {
 	// Mode toggles
 	const isEditing = ref(false);
 	const isMerging = ref(false);
@@ -58,8 +59,7 @@ export function useTagsActions(tags: Ref<App.Http.Resources.Tags.TagResource[] |
 			return;
 		}
 
-		// Default action could be to show photos with this tag
-		console.log(`View photos with tag ID: ${tagId}`);
+		router.push({ name: "tag", params: { tagId } });
 	}
 
 	function toggleEditing() {
