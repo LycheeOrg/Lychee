@@ -57,6 +57,7 @@ class InitConfig extends Data
 	#[LiteralTypeScriptType('1|2|3')]
 	public int $number_albums_per_row_mobile;
 	public PhotoThumbInfoType $photo_thumb_info;
+	public bool $is_photo_thumb_tags_enabled;
 
 	// Download configuration
 	public bool $is_thumb_download_enabled;
@@ -137,6 +138,7 @@ class InitConfig extends Data
 		$this->album_decoration_orientation = Configs::getValueAsEnum('album_decoration_orientation', AlbumDecorationOrientation::class);
 		$this->number_albums_per_row_mobile = Configs::getValueAsInt('number_albums_per_row_mobile');
 		$this->photo_thumb_info = Configs::getValueAsEnum('photo_thumb_info', PhotoThumbInfoType::class);
+		$this->is_photo_thumb_tags_enabled = Configs::getValueAsBool('photo_thumb_tags_enabled');
 
 		// Download configuration
 		$this->is_thumb_download_enabled = Configs::getValueAsBool('disable_thumb_download') === false;
