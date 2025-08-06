@@ -7,6 +7,7 @@
  */
 
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\DB;
 
 return new class() extends Migration {
 	/**
@@ -103,13 +104,13 @@ return new class() extends Migration {
 		DB::table('photos_tags')->distinct()->select('photo_id')
 			->orderBy('photo_id')
 			->chunk(100, function ($photo_ids) {
-				foreach ($photo_ids as $photo_id) {
+				foreach ($photo_ids as $photo_id_line) {
 					$tags = DB::table('tags')
 						->select(['tags.name'])
 						->join('photos_tags', 'tags.id', '=', 'photos_tags.tag_id')
-						->where('photos_tags.photo_id', '=', $photo_id)->pluck('name');
+						->where('photos_tags.photo_id', '=', $photo_id_line->photo_id)->pluck('name');
 					$tags = implode(',', $tags->toArray());
-					DB::table('photos')->where('id', $photo_id)->update(['tags' => $tags]);
+					DB::table('photos')->where('id', $photo_id_line->photo_id)->update(['tags' => $tags]);
 				}
 			});
 
