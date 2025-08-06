@@ -7,11 +7,12 @@
 			v-if="isTimeline === false"
 			:photos="props.photos"
 			:layout="layout"
-			:album="props.album"
 			:galleryConfig="props.galleryConfig"
 			:selectedPhotos="props.selectedPhotos"
 			:iter="0"
 			:group-idx="0"
+			:cover-id="props.coverId"
+			:header-id="props.headerId"
 			@clicked="propagateClicked"
 			@selected="propagateSelected"
 			@contexted="propagateMenuOpen"
@@ -37,12 +38,13 @@
 						<PhotoThumbPanelList
 							:photos="slotProps.item.data"
 							:layout="layout"
-							:album="props.album"
 							:galleryConfig="props.galleryConfig"
 							:selectedPhotos="props.selectedPhotos"
 							:iter="slotProps.item.iter"
 							:group-idx="slotProps.index"
 							:isTimeline="isTimeline"
+							:cover-id="props.coverId"
+							:header-id="props.headerId"
 							@contexted="propagateMenuOpen"
 							@selected="propagateSelected"
 							@clicked="propagateClicked"
@@ -63,12 +65,13 @@
 						<PhotoThumbPanelList
 							:photos="photoTimeline.data"
 							:layout="layout"
-							:album="props.album"
 							:galleryConfig="props.galleryConfig"
 							:selectedPhotos="props.selectedPhotos"
 							:iter="photoTimeline.iter"
 							:group-idx="idx"
 							:isTimeline="isTimeline"
+							:cover-id="props.coverId"
+							:header-id="props.headerId"
 							@contexted="propagateMenuOpen"
 							@selected="propagateSelected"
 							@clicked="propagateClicked"
@@ -102,15 +105,12 @@ const props = defineProps<{
 	photos: App.Http.Resources.Models.PhotoResource[];
 	photosTimeline: SplitData<App.Http.Resources.Models.PhotoResource>[] | undefined;
 	photoLayout: App.Enum.PhotoLayoutType;
-	album:
-		| App.Http.Resources.Models.AlbumResource
-		| App.Http.Resources.Models.TagAlbumResource
-		| App.Http.Resources.Models.SmartAlbumResource
-		| undefined;
 	galleryConfig: App.Http.Resources.GalleryConfigs.PhotoLayoutConfig;
 	selectedPhotos: string[];
 	isTimeline: boolean;
 	withControl: boolean;
+	coverId: string | undefined;
+	headerId: string | undefined;
 }>();
 
 const layout = ref(props.photoLayout);

@@ -7,7 +7,6 @@
 		:data-width="props.photo.size_variants.original?.width"
 		:data-height="props.photo.size_variants.original?.height"
 		:data-id="props.photo.id"
-		:data-album-id="props.album?.id"
 	>
 		<span
 			class="thumbimg relative w-full h-full border-none overflow-hidden"
@@ -74,8 +73,8 @@
 		<!-- TODO: make me an option. -->
 		<div v-if="user?.id" class="badges absolute mt-[-1px] ltr:ml-1 rtl:mr-1 top-0 lfr:left-0 rtl:right-0 flex">
 			<ThumbBadge v-if="props.photo.is_starred" class="bg-yellow-500" icon="star" />
-			<ThumbBadge v-if="is_cover_id" class="bg-yellow-500" icon="folder-cover" />
-			<ThumbBadge v-if="is_header_id" class="bg-slate-400 hidden sm:block" pi="image" />
+			<ThumbBadge v-if="props.isCoverId" class="bg-yellow-500" icon="folder-cover" />
+			<ThumbBadge v-if="props.isHeaderId" class="bg-slate-400 hidden sm:block" pi="image" />
 		</div>
 	</a>
 </template>
@@ -97,11 +96,8 @@ const { getNoImageIcon, getPlayIcon } = useImageHelpers();
 const props = defineProps<{
 	isSelected: boolean;
 	isLazy: boolean;
-	album:
-		| App.Http.Resources.Models.AlbumResource
-		| App.Http.Resources.Models.TagAlbumResource
-		| App.Http.Resources.Models.SmartAlbumResource
-		| undefined;
+	isCoverId: boolean;
+	isHeaderId: boolean;
 	photo: App.Http.Resources.Models.PhotoResource;
 }>();
 
@@ -125,10 +121,6 @@ function onImageLoad() {
 	isImageLoaded.value = true;
 }
 
-// @ts-expect-error
-const is_cover_id = computed(() => props.album?.cover_id === props.photo.id);
-// @ts-expect-error
-const is_header_id = computed(() => props.album?.header_id === props.photo.id);
 const isFavourite = computed(() => favourites.getPhotoIds.includes(props.photo.id));
 
 watch(

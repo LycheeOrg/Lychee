@@ -33,7 +33,6 @@ const { photo_previous_next_size } = storeToRefs(lycheeStateStore);
 
 const props = defineProps<{
 	is_next: boolean;
-	albumId: string;
 	photoId: string;
 	style: string;
 }>();
