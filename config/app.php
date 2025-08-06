@@ -261,6 +261,7 @@ return [
 		'AlbumPolicy' => App\Policies\AlbumPolicy::class,
 		'PhotoPolicy' => App\Policies\PhotoPolicy::class,
 		'SettingsPolicy' => App\Policies\SettingsPolicy::class,
+		'TagPolicy' => App\Policies\TagPolicy::class,
 		'UserPolicy' => App\Policies\UserPolicy::class,
 		'User' => App\Models\User::class,
 		'SizeVariantType' => App\Enum\SizeVariantType::class,

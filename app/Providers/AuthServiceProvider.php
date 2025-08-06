@@ -15,12 +15,14 @@ use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\LiveMetrics;
 use App\Models\Photo;
+use App\Models\Tag;
 use App\Models\User;
 use App\Models\UserGroup;
 use App\Policies\AlbumPolicy;
 use App\Policies\MetricsPolicy;
 use App\Policies\PhotoPolicy;
 use App\Policies\SettingsPolicy;
+use App\Policies\TagPolicy;
 use App\Policies\UserGroupPolicy;
 use App\Policies\UserPolicy;
 use App\Services\Auth\SessionOrTokenGuard;
@@ -53,6 +55,8 @@ class AuthServiceProvider extends ServiceProvider
 		LiveMetrics::class => MetricsPolicy::class,
 
 		UserGroup::class => UserGroupPolicy::class,
+
+		Tag::class => TagPolicy::class,
 	];
 
 	/**
