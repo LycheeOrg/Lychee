@@ -11,9 +11,15 @@ namespace App\Http\Controllers;
 use App\Exceptions\TagAlreadyExistException;
 use App\Http\Requests\Tags\DeleteTagRequest;
 use App\Http\Requests\Tags\EditTagRequest;
+use App\Http\Requests\Tags\GetTagRequest;
 use App\Http\Requests\Tags\ListTagRequest;
+use App\Http\Resources\Models\PhotoResource;
 use App\Http\Resources\Tags\TagResource;
+use App\Http\Resources\Tags\TagWithPhotosResource;
+use App\Models\Configs;
+use App\Models\Photo;
 use App\Models\Tag;
+use App\Policies\PhotoQueryPolicy;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -39,6 +45,40 @@ class TagController extends Controller
 			name: $tag->name,
 			num: $tag->num
 		));
+	}
+
+	/**
+	 * Returns a tag with its associated photos.
+	 *
+	 * @return TagWithPhotosResource
+	 */
+	public function get(GetTagRequest $request, PhotoQueryPolicy $photo_query_policy): TagWithPhotosResource
+	{
+		$tag = $request->tag();
+
+		// Start with a base Photo query and include the tag join
+		$base_query = Photo::query()
+			->with(['size_variants', 'statistics', 'palette', 'tags'])
+			->whereHas('tags', function ($query) use ($tag): void {
+				$query->where('tags.id', $tag->id);
+			});
+
+		// Apply searchability filter
+		$photos_query = $photo_query_policy->applySearchabilityFilter(
+			query: $base_query,
+			origin: null,
+			include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_smart_albums')
+		);
+
+		/** @var \Illuminate\Support\Collection<int,Photo> $photos */
+		$photos = $photos_query->get();
+
+		$photo_resources = $photos->map(fn (Photo $photo) => new PhotoResource($photo, null));
+
+		return new TagWithPhotosResource(
+			name: $tag->name,
+			photos: $photo_resources,
+		);
 	}
 
 	public function edit(EditTagRequest $request): void
