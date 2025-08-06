@@ -13,6 +13,8 @@ use App\Contracts\Http\Requests\RequestAttribute;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasTagTrait;
 use App\Models\Tag;
+use App\Policies\TagPolicy;
+use Illuminate\Support\Facades\Gate;
 
 class GetTagRequest extends BaseApiRequest implements HasTag
 {
@@ -27,7 +29,7 @@ class GetTagRequest extends BaseApiRequest implements HasTag
 
 	public function authorize(): bool
 	{
-		return true;
+		return Gate::check(TagPolicy::CAN_LIST, [Tag::class]);
 	}
 
 	protected function processValidatedValues(array $values, array $files): void

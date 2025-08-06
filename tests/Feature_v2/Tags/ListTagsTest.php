@@ -31,7 +31,7 @@ class ListTagsTest extends BaseApiWithDataTest
 	public function testGetTagsUserWithoutUploadRight(): void
 	{
 		$response = $this->actingAs($this->userNoUpload)->getJson('Tags');
-		$this->assertForbidden($response);
+		$this->assertOk($response);
 	}
 
 	public function testGetTagsUserWithUploadRight(): void

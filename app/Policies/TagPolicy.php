@@ -20,7 +20,7 @@ class TagPolicy extends BasePolicy
 	 */
 	public function canList(User $user): bool
 	{
-		return $user->may_upload;
+		return true;
 	}
 
 	/**
@@ -32,6 +32,6 @@ class TagPolicy extends BasePolicy
 	 */
 	public function canEdit(User $user): bool
 	{
-		return false;
+		return $user->may_upload;
 	}
 }
