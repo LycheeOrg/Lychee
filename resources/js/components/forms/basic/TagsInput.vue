@@ -53,7 +53,7 @@ function getNum(tag: string) {
 function fetchTags(): void {
 	TagsService.get()
 		.then((response) => {
-			tags.value = response.data;
+			tags.value = response.data.tags;
 		})
 		.catch(() => {
 			toast.add({
