@@ -16,6 +16,7 @@ use App\Enum\SmallLargeType;
 use App\Enum\ThumbAlbumSubtitleType;
 use App\Enum\ThumbOverlayVisibilityType;
 use App\Models\Configs;
+use App\Providers\AuthServiceProvider;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\URL;
 use LycheeVerify\Verify;
@@ -89,6 +90,8 @@ class InitConfig extends Data
 	// Live Metrics settings
 	public bool $is_live_metrics_enabled;
 
+	public bool $is_basic_auth_enabled = true;
+	public bool $is_webauthn_enabled = true;
 	// User registration enabled
 	public bool $is_registration_enabled;
 
@@ -152,6 +155,8 @@ class InitConfig extends Data
 		$this->title = Configs::getValueAsString('site_title');
 		$this->dropbox_api_key = Auth::user()?->may_administrate === true ? Configs::getValueAsString('dropbox_key') : 'disabled';
 
+		$this->is_basic_auth_enabled = AuthServiceProvider::isBasicAuthEnabled();
+		$this->is_webauthn_enabled = AuthServiceProvider::isWebAuthnEnabled();
 		// User registration enabled
 		$this->is_registration_enabled = Configs::getValueAsBool('user_registration_enabled');
 

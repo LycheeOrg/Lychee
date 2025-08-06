@@ -1,46 +1,88 @@
 <template>
-	<form v-focustrap class="flex flex-col gap-4 relative max-w-md w-full text-sm rounded-md pt-9">
-		<div class="flex justify-center gap-2">
+	<form v-focustrap class="flex flex-col gap-4 relative max-w-md w-full text-sm rounded-md pt-9" v-if="oauths !== undefined">
+		<div
+			:class="{
+				'flex justify-center gap-2 w-full': true,
+				'flex-col px-9': !is_basic_auth_enabled,
+				'flex-row': is_basic_auth_enabled,
+			}"
+		>
 			<a
-				class="inline-block text-xl text-muted-color transition-all duration-300 hover:text-primary-400 hover:scale-150 cursor-pointer"
+				v-if="is_webauthn_enabled"
+				:class="{
+					'inline-block text-xl text-muted-color transition-all duration-300 hover:text-primary-400 cursor-pointer': true,
+					'hover:scale-150': is_basic_auth_enabled,
+					'hover:scale-105': !is_basic_auth_enabled,
+				}"
 				@click="openWebAuthn"
 				title="WebAuthn"
 			>
 				<i class="fa-solid fa-fingerprint" />
+				<span v-if="!is_basic_auth_enabled" class="ml-2 text-base">{{ sprintf(trans("dialogs.login.auth_with"), "WebAuthn") }}</span>
 			</a>
-			<template v-if="oauths !== undefined">
-				<a
-					v-for="oauth in oauths"
-					:href="oauth.url"
-					class="inline-block text-xl text-muted-color hover:scale-125 transition-all cursor-pointer hover:text-primary-400 mb-6"
-					:title="oauth.provider"
+			<a
+				v-for="oauth in oauths"
+				:href="oauth.url"
+				:class="{
+					'inline-block text-xl text-muted-color transition-all duration-300 hover:text-primary-400 cursor-pointer': true,
+					'hover:scale-150': is_basic_auth_enabled,
+					'hover:scale-105': !is_basic_auth_enabled,
+				}"
+				:title="oauth.provider"
+				:key="oauth.provider"
+			>
+				<i class="items-center" :class="oauth.icon"></i>
+				<span v-if="!is_basic_auth_enabled" class="ml-2 text-base">{{ sprintf(trans("dialogs.login.auth_with"), oauth.provider) }}</span>
+			</a>
+		</div>
+		<template v-if="is_basic_auth_enabled">
+			<div class="inline-flex flex-col gap-2" :class="props.padding ?? 'px-9'">
+				<FloatLabel variant="on">
+					<InputText id="username" v-model="username" autocomplete="username" :autofocus="true" />
+					<label for="username">{{ $t("dialogs.login.username") }}</label>
+				</FloatLabel>
+			</div>
+			<div class="inline-flex flex-col gap-2" :class="props.padding ?? 'px-9'">
+				<FloatLabel variant="on">
+					<InputPassword id="password" v-model="password" @keydown.enter="login" autocomplete="current-password" />
+					<label for="password">{{ $t("dialogs.login.password") }}</label>
+				</FloatLabel>
+				<Message v-if="invalidPassword" severity="error">{{ $t("dialogs.login.unknown_invalid") }}</Message>
+			</div>
+			<div class="text-muted-color text-right font-semibold" :class="props.padding ?? 'px-9'">
+				Lychee <span class="text-primary-500" v-if="is_se_enabled">SE</span>
+			</div>
+			<div class="flex items-center mt-9">
+				<Button
+					v-if="closeCallback !== undefined"
+					@click="props.closeCallback"
+					severity="secondary"
+					class="w-full font-bold border-none rounded-none ltr:rounded-bl-xl rtl:rounded-br-xl shrink"
 				>
-					<i class="items-center" :class="oauth.icon"></i>
-				</a>
-			</template>
-		</div>
-		<div class="inline-flex flex-col gap-2" :class="props.padding ?? 'px-9'">
-			<FloatLabel variant="on">
-				<InputText id="username" v-model="username" autocomplete="username" :autofocus="true" />
-				<label for="username">{{ $t("dialogs.login.username") }}</label>
-			</FloatLabel>
-		</div>
-		<div class="inline-flex flex-col gap-2" :class="props.padding ?? 'px-9'">
-			<FloatLabel variant="on">
-				<InputPassword id="password" v-model="password" @keydown.enter="login" autocomplete="current-password" />
-				<label for="password">{{ $t("dialogs.login.password") }}</label>
-			</FloatLabel>
-			<Message v-if="invalidPassword" severity="error">{{ $t("dialogs.login.unknown_invalid") }}</Message>
-		</div>
-		<div class="text-muted-color text-right font-semibold" :class="props.padding ?? 'px-9'">
-			Lychee <span class="text-primary-500" v-if="is_se_enabled">SE</span>
-		</div>
-		<div class="flex items-center mt-9">
+					{{ $t("dialogs.button.cancel") }}
+				</Button>
+				<Button
+					@click="login"
+					severity="contrast"
+					:class="{
+						'w-full font-bold border-none shrink': true,
+						'rounded-none ltr:rounded-br-xl  rtl:rounded-bl-xl': closeCallback !== undefined,
+						'rounded-xl': closeCallback === undefined,
+					}"
+				>
+					{{ $t("dialogs.login.signin") }}
+				</Button>
+			</div>
+		</template>
+		<div class="flex items-center mt-9" v-else>
 			<Button
 				v-if="closeCallback !== undefined"
 				@click="props.closeCallback"
 				severity="secondary"
-				class="w-full font-bold border-none rounded-none ltr:rounded-bl-xl rtl:rounded-br-xl shrink"
+				:class="{
+					'w-full font-bold border-none rounded-none ltr:rounded-bl-xl rtl:rounded-br-xl shrink': true,
+					'ltr:rounded-br-xl rtl:rounded-bl-xl': !is_basic_auth_enabled,
+				}"
 			>
 				{{ $t("dialogs.button.cancel") }}
 			</Button>
@@ -72,6 +114,8 @@ import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { onMounted } from "vue";
+import { trans } from "laravel-vue-i18n";
+import { sprintf } from "sprintf-js";
 
 const emits = defineEmits<{
 	"logged-in": [];
@@ -93,7 +137,7 @@ const password = ref("");
 const authStore = useAuthStore();
 const togglableStore = useTogglablesStateStore();
 const lycheeStore = useLycheeStateStore();
-const { is_se_enabled } = storeToRefs(lycheeStore);
+const { is_se_enabled, is_basic_auth_enabled, is_webauthn_enabled } = storeToRefs(lycheeStore);
 const { is_login_open, is_webauthn_open } = storeToRefs(togglableStore);
 const invalidPassword = ref(false);
 
@@ -123,9 +167,18 @@ function openWebAuthn() {
 	invalidPassword.value = false;
 }
 
+function redirectToOauth() {
+	if (is_basic_auth_enabled.value || is_webauthn_enabled.value || oauths.value?.length !== 1) {
+		return;
+	}
+
+	window.location.href = oauths.value[0].url;
+}
+
 onMounted(() => {
 	authStore.getOauthData().then((data) => {
 		oauths.value = data;
+		redirectToOauth();
 	});
 });
 </script>

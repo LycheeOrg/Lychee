@@ -61,6 +61,7 @@ return [
         'button_hidden' => 'Schaltfläche im Header wird ausgeblendet.',
     ],
     'login' => [
+        'auth_with' => 'Authenticate with %s',
         'username' => 'Benutzername',
         'password' => 'Passwort',
         'unknown_invalid' => 'Unbekannter Benutzer oder ungültiges Passwort.',

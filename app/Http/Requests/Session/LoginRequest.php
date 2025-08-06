@@ -11,9 +11,11 @@ namespace App\Http\Requests\Session;
 use App\Contracts\Http\Requests\HasPassword;
 use App\Contracts\Http\Requests\HasUsername;
 use App\Contracts\Http\Requests\RequestAttribute;
+use App\Exceptions\BasicAuthDisabledExecption;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasPasswordTrait;
 use App\Http\Requests\Traits\HasUsernameTrait;
+use App\Providers\AuthServiceProvider;
 use App\Rules\PasswordRule;
 use App\Rules\UsernameRule;
 
@@ -27,7 +29,7 @@ class LoginRequest extends BaseApiRequest implements HasUsername, HasPassword
 	 */
 	public function authorize(): bool
 	{
-		return true;
+		return AuthServiceProvider::isBasicAuthEnabled() || throw new BasicAuthDisabledExecption();
 	}
 
 	/**
