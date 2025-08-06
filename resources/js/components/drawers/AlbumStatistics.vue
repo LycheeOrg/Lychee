@@ -1,6 +1,11 @@
 <template>
 	<Collapse class="w-full flex flex-wrap justify-center" :when="areStatisticsOpen">
-		<Panel class="border-0 w-full" :pt:header:class="'hidden'" :pt:content:class="'flex sm:justify-center flex-wrap justify-start'">
+		<Panel
+			class="border-0 w-full"
+			:pt:header:class="'hidden'"
+			:pt:content:class="'flex sm:justify-center flex-wrap justify-start'"
+			v-if="props.album"
+		>
 			<TotalCard v-if="total !== undefined" :total="total" />
 			<SizeVariantMeter v-if="props.config.is_model_album" :album-id="props.album.id" />
 		</Panel>
@@ -33,7 +38,7 @@ const areStatisticsOpen = defineModel("visible", { default: false }) as Ref<bool
 
 const props = defineProps<{
 	photos: App.Http.Resources.Models.PhotoResource[];
-	album: App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.SmartAlbumResource | App.Http.Resources.Models.TagAlbumResource;
+	album?: App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.SmartAlbumResource | App.Http.Resources.Models.TagAlbumResource;
 	config: App.Http.Resources.GalleryConfigs.AlbumConfig;
 }>();
 
@@ -44,7 +49,7 @@ const totalAlbumSpace = ref<App.Http.Resources.Statistics.Album | undefined>(und
 
 const total = ref<TotalAlbum | undefined>(undefined);
 
-if (props.config.is_model_album) {
+if (props.config.is_model_album && props.album) {
 	StatisticsService.getTotalAlbumSpace(props.album.id).then((response) => {
 		totalAlbumSpace.value = response.data[0];
 		total.value = {

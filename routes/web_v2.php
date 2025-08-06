@@ -44,6 +44,7 @@ Route::get('/profile', VueController::class)->name('profile')->middleware(['migr
 Route::get('/users', VueController::class)->middleware(['migration:complete', 'login_required:always']);
 Route::get('/sharing', VueController::class)->middleware(['migration:complete', 'login_required:always']);
 Route::get('/tags', VueController::class)->middleware(['migration:complete']);
+Route::get('/tag/{tagId}/{photoId?}', VueController::class)->middleware(['migration:complete']);
 Route::get('/jobs', VueController::class)->middleware(['migration:complete', 'login_required:always']);
 Route::get('/diagnostics', VueController::class)->middleware(['migration:complete']);
 Route::get('/statistics', VueController::class)->middleware(['migration:complete', 'login_required:always']);

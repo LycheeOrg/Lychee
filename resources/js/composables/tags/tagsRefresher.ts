@@ -7,7 +7,7 @@ export function useTagsRefresher() {
 
 	function load() {
 		tags.value = undefined; // Reset tags before loading
-		return TagsService.get()
+		return TagsService.list()
 			.then((response) => {
 				tags.value = response.data.tags;
 				canEdit.value = response.data.can_edit;

@@ -112,7 +112,9 @@ import TagRenameDialog from "@/components/forms/tags/TagRenameDialog.vue";
 import TagMergeDialog from "@/components/forms/tags/TagMergeDialog.vue";
 import TagDeleteDialog from "@/components/forms/tags/TagDeleteDialog.vue";
 import { onKeyDown } from "@vueuse/core";
+import { useRouter } from "vue-router";
 
+const router = useRouter();
 const { tags, canEdit, load } = useTagsRefresher();
 const {
 	isEditing,
@@ -127,7 +129,7 @@ const {
 	toggleEditing,
 	toggleMerging,
 	toggleDeleting,
-} = useTagsActions(tags);
+} = useTagsActions(tags, router);
 
 onMounted(load);
 
