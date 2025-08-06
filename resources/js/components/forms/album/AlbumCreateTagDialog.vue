@@ -15,14 +15,7 @@
 						<label for="title">{{ $t("dialogs.new_tag_album.title") }}</label>
 					</FloatLabel>
 					<FloatLabel variant="on">
-						<AutoComplete
-							id="tags"
-							v-model="tags"
-							:typeahead="false"
-							multiple
-							class="pt-3 border-b hover:border-b-0 w-full"
-							pt:inputmultiple:class="w-full border-t-0 border-l-0 border-r-0 border-b hover:border-b-primary-400 focus:border-b-primary-400"
-						/>
+						<TagsInput v-model="tags" :add="false" />
 						<label for="tags">{{ $t("dialogs.new_tag_album.set_tags") }}</label>
 					</FloatLabel>
 					<div class="text-muted-color-emphasis" v-html="$t('dialogs.new_tag_album.warn')" />
@@ -43,15 +36,15 @@
 import AlbumService from "@/services/album-service";
 import Dialog from "primevue/dialog";
 import FloatLabel from "primevue/floatlabel";
-import { computed, ref, watch } from "vue";
+import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
 import InputText from "@/components/forms/basic/InputText.vue";
 import Button from "primevue/button";
-import AutoComplete from "primevue/autocomplete";
 import { useToast } from "primevue/usetoast";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { storeToRefs } from "pinia";
 import { trans } from "laravel-vue-i18n";
+import TagsInput from "../basic/TagsInput.vue";
 
 const toast = useToast();
 const router = useRouter();
