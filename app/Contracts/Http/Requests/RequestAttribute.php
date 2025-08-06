@@ -82,6 +82,7 @@ class RequestAttribute
 	public const SINGLE_PATH_ATTRIBUTE = 'path';
 	public const SIZE_VARIANT_ATTRIBUTE = 'variant';
 
+	public const TAG_ID = 'tag_id';
 	public const TAGS_ATTRIBUTE = 'tags';
 	public const MAY_UPLOAD_ATTRIBUTE = 'may_upload';
 	public const MAY_EDIT_OWN_SETTINGS_ATTRIBUTE = 'may_edit_own_settings';
