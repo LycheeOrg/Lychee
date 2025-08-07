@@ -47,6 +47,10 @@ class DeleteTagsTest extends BaseApiWithDataTest
 
 		$response = $this->actingAs($this->userMayUpload1)->deleteJson('Tag', ['tags' => [$this->tag_test->id]]);
 		$this->assertNoContent($response);
+
+		// Validate that the tag is fully deleted
+		$this->assertDatabaseCount('photos_tags', 0);
+		$this->assertDatabaseCount('tags', 0);
 	}
 
 	public function testDeleteInvalidTagFormat(): void
@@ -65,5 +69,34 @@ class DeleteTagsTest extends BaseApiWithDataTest
 	{
 		$response = $this->actingAs($this->userMayUpload1)->deleteJson('Tag', ['tags' => [99999999]]);
 		$this->assertNoContent($response);
+	}
+
+	public function testDeleteTagAdvanced(): void
+	{
+		// Tag photo2 by User2 for `test`
+		$response = $this->actingAs($this->userMayUpload2)->patchJson('Photo::tags', [
+			'photo_ids' => [$this->photo2->id],
+			'tags' => [$this->tag_test->name],
+			'shall_override' => false,
+		]);
+		$this->assertNoContent($response);
+
+		// Validate that `test` has 2 photos associated.
+		$this->assertDatabaseCount('photos_tags', 2);
+
+		$response = $this->actingAs($this->userMayUpload1)->deleteJson('Tag', ['tags' => [$this->tag_test->id]]);
+		$this->assertNoContent($response);
+
+		// With this we validate the photo2 remains under tag `test` but that for user1, the tag is deleted.
+		$this->assertDatabaseCount('photos_tags', 1);
+		$this->assertDatabaseMissing('photos_tags', [
+			'tag_id' => $this->tag_test->id,
+			'photo_id' => $this->photo1->id,
+		]);
+		$this->assertDatabaseHas('photos_tags', [
+			'tag_id' => $this->tag_test->id,
+			'photo_id' => $this->photo2->id,
+		]);
+		$this->assertDatabaseCount('tags', 1);
 	}
 }

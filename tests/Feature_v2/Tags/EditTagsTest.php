@@ -51,9 +51,7 @@ class EditTagsTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->admin)->patchJson('Tag', ['tag_id' => $tag_id, 'name' => $new_name]);
 		$this->assertNoContent($response);
 
-		// Verify the tag name was changed
-		$this->tag_test->refresh();
-		$this->assertEquals($new_name, $this->tag_test->name);
+		$this->assertDatabaseMissing('tags', ['id' => $tag_id]);
 	}
 
 	public function testEditTagWithMissingTagId(): void
@@ -83,6 +81,34 @@ class EditTagsTest extends BaseApiWithDataTest
 	public function testEditTagWithSameName(): void
 	{
 		$response = $this->actingAs($this->admin)->patchJson('Tag', ['tag_id' => $this->tag_test->id, 'name' => $this->tag_test->name]);
-		$this->assertUnprocessable($response);
+		$this->assertNoContent($response);
+	}
+
+	public function testEditTagAdvanced(): void
+	{
+		// Tag photo2 by User2 for `test`
+		$response = $this->actingAs($this->userMayUpload2)->patchJson('Photo::tags', [
+			'photo_ids' => [$this->photo2->id],
+			'tags' => [$this->tag_test->name],
+			'shall_override' => false,
+		]);
+		$this->assertNoContent($response);
+
+		// Validate that `test` has 2 photos associated.
+		$this->assertDatabaseCount('photos_tags', 2);
+
+		$response = $this->actingAs($this->userMayUpload1)->patchJson('Tag', ['tag_id' => $this->tag_test->id, 'name' => 'test_edited']);
+		$this->assertNoContent($response);
+
+		// With this we validate the photo2 remains under tag `test`.
+		$this->assertDatabaseCount('photos_tags', 2);
+		$this->assertDatabaseMissing('photos_tags', [
+			'tag_id' => $this->tag_test->id,
+			'photo_id' => $this->photo1->id,
+		]);
+		$this->assertDatabaseHas('photos_tags', [
+			'tag_id' => $this->tag_test->id,
+			'photo_id' => $this->photo2->id,
+		]);
 	}
 }

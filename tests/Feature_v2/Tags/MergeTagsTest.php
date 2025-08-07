@@ -78,12 +78,10 @@ class MergeTagsTest extends BaseApiWithDataTest
 		$this->assertNull(Tag::find($this->source_tag->id));
 
 		// Check that destination tag now has the photo
-		$this->assertTrue(
-			DB::table('photos_tags')
-				->where('photo_id', $this->photo1->id)
-				->where('tag_id', $this->destination_tag->id)
-				->exists()
-		);
+		$this->assertDatabaseHas('photos_tags', [
+			'photo_id' => $this->photo1->id,
+			'tag_id' => $this->destination_tag->id,
+		]);
 	}
 
 	public function testMergeTagsWithMissingSourceTagId(): void
@@ -127,5 +125,70 @@ class MergeTagsTest extends BaseApiWithDataTest
 			'destination_id' => 999999,
 		]);
 		$this->assertNotFound($response);
+	}
+
+	public function testEditTagAdvanced(): void
+	{
+		// Tag photo2 by User2 for `test`
+		$response = $this->actingAs($this->userMayUpload2)->patchJson('Photo::tags', [
+			'photo_ids' => [$this->photo2->id],
+			'tags' => [$this->source_tag->name],
+			'shall_override' => false,
+		]);
+		$this->assertNoContent($response);
+
+		// Validate that `test` has 2 photos associated.
+		$this->assertDatabaseCount('photos_tags', 3);
+		// test -> photo1
+		// source_tag_to_merge -> photo1
+		// source_tag_to_merge -> photo2
+
+		$response = $this->actingAs($this->userMayUpload1)->putJson('Tag', [
+			'tag_id' => $this->source_tag->id,
+			'destination_id' => $this->destination_tag->id,
+		]);
+		$this->assertNoContent($response);
+
+		// With this we validate the photo2 remains under tag `source_tag_to_merge`.
+		$this->assertDatabaseCount('photos_tags', 3);
+		$this->assertDatabaseMissing('photos_tags', [
+			'tag_id' => $this->source_tag->id,
+			'photo_id' => $this->photo1->id,
+		]);
+		$this->assertDatabaseHas('photos_tags', [
+			'tag_id' => $this->tag_test->id,
+			'photo_id' => $this->photo1->id,
+		]);
+		$this->assertDatabaseHas('photos_tags', [
+			'tag_id' => $this->destination_tag->id,
+			'photo_id' => $this->photo1->id,
+		]);
+		$this->assertDatabaseHas('photos_tags', [
+			'tag_id' => $this->source_tag->id,
+			'photo_id' => $this->photo2->id,
+		]);
+
+		$response = $this->actingAs($this->userMayUpload1)->putJson('Tag', [
+			'tag_id' => $this->tag_test->id,
+			'destination_id' => $this->destination_tag->id,
+		]);
+		$this->assertNoContent($response);
+
+		// With this we validate the photo2 remains under tag `source_tag_to_merge`.
+		$this->assertDatabaseCount('photos_tags', 2);
+		$this->assertDatabaseMissing('photos_tags', [
+			'tag_id' => $this->tag_test->id,
+			'photo_id' => $this->photo1->id,
+		]);
+		$this->assertDatabaseHas('photos_tags', [
+			'tag_id' => $this->destination_tag->id,
+			'photo_id' => $this->photo1->id,
+		]);
+		$this->assertDatabaseHas('photos_tags', [
+			'tag_id' => $this->source_tag->id,
+			'photo_id' => $this->photo2->id,
+		]);
+		$this->assertDatabaseCount('photos_tags', 2);
+		$this->assertDatabaseCount('tags', 2);
 	}
 }

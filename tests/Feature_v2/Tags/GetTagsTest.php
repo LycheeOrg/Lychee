@@ -79,7 +79,7 @@ class GetTagsTest extends BaseApiWithDataTest
 		$this->assertArrayHasKey('photos', $data);
 		$this->assertEquals($this->tag_test->name, $data['name']);
 		$this->assertIsArray($data['photos']);
-		$this->assertEquals($data['photos'][0]['id'], $this->photo1->id);
+		$this->assertCount(0, $data['photos']);
 	}
 
 	public function testGetTagWithMissingTagId(): void
