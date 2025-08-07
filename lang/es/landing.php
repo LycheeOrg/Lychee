@@ -1,13 +1,12 @@
 <?php
-
 return [
-	/*
+    /*
 	|--------------------------------------------------------------------------
 	| Landing page
 	|--------------------------------------------------------------------------
 	*/
-	'gallery' => 'Gallery',
-	'access_gallery' => 'Access the gallery',
-	'Powered_by_Lychee' => 'Powered by Lychee',
-	'copyright' => 'All images on this website are subject to copyright by %1$s © %2$s',
+    'gallery' => 'Galería',
+    'access_gallery' => 'Acceder a la galería',
+    'Powered_by_Lychee' => 'Desarrollado por Lychee',
+    'copyright' => 'Todas las imágenes de este sitio web están sujetas a derechos de autor por %1$s © %2$s.',
 ];
