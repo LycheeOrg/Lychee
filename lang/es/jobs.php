@@ -1,17 +1,14 @@
 <?php
-
 return [
-	/*
+    /*
 	|--------------------------------------------------------------------------
 	| Jobs page
 	|--------------------------------------------------------------------------
 	*/
-	'title' => 'Jobs',
-
-	'no_data' => 'No Jobs have been executed yet.',
-
-	'ready' => 'Ready',
-	'success' => 'Success',
-	'failure' => 'Failure',
-	'started' => 'Started',
+    'title' => 'Trabajos',
+    'no_data' => 'Aún no se ha ejecutado ningún trabajo.',
+    'ready' => 'Listo',
+    'success' => 'Éxito',
+    'failure' => 'Fallo',
+    'started' => 'Comenzó',
 ];
