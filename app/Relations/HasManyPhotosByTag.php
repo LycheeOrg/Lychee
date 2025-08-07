@@ -13,10 +13,12 @@ use App\Enum\OrderSortingType;
 use App\Exceptions\Internal\NotImplementedException;
 use App\Models\Configs;
 use App\Models\Extensions\SortingDecorator;
+use App\Models\Tag;
 use App\Models\TagAlbum;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Query\Builder as BaseBuilder;
+use Illuminate\Support\Facades\DB;
 
 /**
  * @disregard
@@ -68,6 +70,7 @@ class HasManyPhotosByTag extends BaseHasManyPhotos
 		}
 		/** @var TagAlbum $album */
 		$album = $albums[0];
+		/** @var Tag[] $tags */
 		$tags = $album->show_tags;
 
 		if (Configs::getValueAsBool('TA_override_visibility')) {
@@ -75,7 +78,7 @@ class HasManyPhotosByTag extends BaseHasManyPhotos
 				->applySensitivityFilter(
 					$this->getRelationQuery(),
 					origin: null,
-					include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_smart_albums')
+					include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_tag_albums')
 				)
 				->where(fn (Builder $q) => $this->getPhotoIdsWithTags($q, $tags));
 		} else {
@@ -83,18 +86,35 @@ class HasManyPhotosByTag extends BaseHasManyPhotos
 				->applySearchabilityFilter(
 					$this->getRelationQuery(),
 					origin: null,
-					include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_smart_albums')
+					include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_tag_albums')
 				)
 				->where(fn (Builder $q) => $this->getPhotoIdsWithTags($q, $tags));
 		}
 	}
 
+	/**
+	 * 
+	 * @param Builder &$query 
+	 * @param Tag[] $tags 
+	 * @return void 
+	 */
 	private function getPhotoIdsWithTags(Builder &$query, array $tags): void
 	{
-		$query->whereExists(fn (BaseBuilder $q) => $q->select('photos_tags.photo_id')
+		// If no tags provided, no photos should match
+		if (count($tags) === 0) {
+			$query->whereRaw('1 = 0');
+			return;
+		}
+		
+		$tag_ids = array_map(fn ($t) => $t->id, $tags);
+		$tag_count = count($tag_ids);
+
+		$query->whereExists(fn (BaseBuilder $q) => $q->select(['photo_id', DB::raw('COUNT(tag_id) AS num')])
 				->from('photos_tags')
-				->whereIn('photos_tags.tag_id', array_map(fn ($t) => $t->id, $tags))
+				->whereIn('photos_tags.tag_id', $tag_ids)
 				->whereColumn('photos_tags.photo_id', 'photos.id')
+				->groupBy('photos_tags.photo_id')
+				->havingRaw('COUNT(DISTINCT photos_tags.tag_id) = ?', [$tag_count])
 		);
 	}
 
