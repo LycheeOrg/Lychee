@@ -93,19 +93,20 @@ class HasManyPhotosByTag extends BaseHasManyPhotos
 	}
 
 	/**
-	 * 
-	 * @param Builder &$query 
-	 * @param Tag[] $tags 
-	 * @return void 
+	 * @param Builder &$query
+	 * @param Tag[]   $tags
+	 *
+	 * @return void
 	 */
 	private function getPhotoIdsWithTags(Builder &$query, array $tags): void
 	{
 		// If no tags provided, no photos should match
 		if (count($tags) === 0) {
 			$query->whereRaw('1 = 0');
+
 			return;
 		}
-		
+
 		$tag_ids = array_map(fn ($t) => $t->id, $tags);
 		$tag_count = count($tag_ids);
 
