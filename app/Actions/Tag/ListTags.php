@@ -50,7 +50,7 @@ class ListTags
 			->groupBy(['tags.id', 'tags.name'])
 			->orderBy('tags.name')
 			->havingRaw('COUNT(photos_tags.photo_id) > 0') // Exclude tags with no photos => this makes sure we do not leak tags from other users.
-			// Here we can not use `->having('num', '>', 0)` because the aliasing in Postgresql is done AFTER the `HAVING` clause... 
+			// Here we can not use `->having('num', '>', 0)` because the aliasing in Postgresql is done AFTER the `HAVING` clause...
 			->get();
 
 		return new TagsResource($tags->map(fn ($tag) => new TagResource(
