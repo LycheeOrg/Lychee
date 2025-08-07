@@ -51,10 +51,10 @@ class GetTagWithPhotos
 			)
 			->whereHas('tags', fn ($q) => $q->where('tags.id', $tag->id));
 
-		$photos_query = $this->photo_query_policy->applySearchabilityFilter(
+		$photos_query = $this->photo_query_policy->applySensitivityFilter(
 			query: $base_query,
 			origin: null,
-			include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_smart_albums')
+			include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_tag_listing')
 		);
 
 		/** @var Collection<int,Photo> $photos */
