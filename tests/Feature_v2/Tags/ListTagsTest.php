@@ -18,6 +18,8 @@
 
 namespace Tests\Feature_v2\Tags;
 
+use App\Models\Tag;
+use Illuminate\Support\Facades\DB;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 class ListTagsTest extends BaseApiWithDataTest
@@ -38,5 +40,28 @@ class ListTagsTest extends BaseApiWithDataTest
 	{
 		$response = $this->actingAs($this->userMayUpload1)->getJson('Tags');
 		$this->assertOk($response);
+	}
+
+	public function testGetTagAdvanced(): void
+	{
+		// Create test tags for listing
+		$test_2 = Tag::create(['name' => 'test_2']);
+
+		// Associate the source tag with a test photo
+		DB::table('photos_tags')->insert([
+			'photo_id' => $this->photo2->id,
+			'tag_id' => $test_2->id,
+		]);
+
+		// We make sure that test_2 is not leaked to user 1: it is attached to a photo of user 2
+		$response = $this->actingAs($this->userMayUpload1)->getJson('Tags');
+		$this->assertOk($response);
+		$this->assertCount(1, $response->json()['tags']);
+		$this->assertEquals($this->tag_test->name, $response->json()['tags'][0]['name']);
+
+		// Admin sees everything.
+		$response = $this->actingAs($this->admin)->getJson('Tags');
+		$this->assertOk($response);
+		$this->assertCount(2, $response->json()['tags']);
 	}
 }
