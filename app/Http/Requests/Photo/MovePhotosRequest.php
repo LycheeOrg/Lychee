@@ -78,6 +78,7 @@ class MovePhotosRequest extends BaseApiRequest implements HasPhotos, HasAlbum, H
 		/** @var array<int,string> $photos_ids */
 		$photos_ids = $values[RequestAttribute::PHOTO_IDS_ATTRIBUTE];
 		$this->photos = Photo::query()
+			->with(['size_variants', 'albums'])
 			->findOrFail($photos_ids);
 
 		/** @var string|null */

@@ -268,7 +268,12 @@ onKeyStroke(" ", () => !shouldIgnoreKeystroke() && unselect());
 onKeyStroke("m", () => !shouldIgnoreKeystroke() && rootRights.value?.can_edit && hasSelection() && toggleMove());
 onKeyStroke(["Delete", "Backspace"], () => !shouldIgnoreKeystroke() && rootRights.value?.can_edit && hasSelection() && toggleDelete());
 
-onKeyStroke([getModKey(), "a"], () => !shouldIgnoreKeystroke() && selectEverything());
+onKeyStroke("a", (e) => {
+	if (!shouldIgnoreKeystroke() && e.getModifierState(getModKey()) && !e.shiftKey && !e.altKey) {
+		e.preventDefault();
+		selectEverything();
+	}
+});
 onKeyStroke("l", () => !shouldIgnoreKeystroke() && user.value?.id === null && (is_login_open.value = true));
 onKeyStroke("k", () => !shouldIgnoreKeystroke() && user.value?.id === null && (is_webauthn_open.value = true));
 

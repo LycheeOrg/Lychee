@@ -207,11 +207,6 @@ html {
 	text-shadow: 0 1px 3px #00000066;
 }
 
-.max-wh-full-56 {
-	max-width: calc(100% - 56px);
-	max-height: calc(100% - 56px);
-}
-
 input:checked + .slider:before {
 	transform: translateX(20px);
 	background-color: #fff;

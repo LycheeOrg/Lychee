@@ -61,6 +61,7 @@ return [
         'button_hidden' => '我们将隐藏顶栏中的按钮。',
     ],
     'login' => [
+        'auth_with' => 'Authenticate with %s',
         'username' => '用户名',
         'password' => '密码',
         'unknown_invalid' => '用户名不存在或密码错误',

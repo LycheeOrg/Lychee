@@ -84,6 +84,7 @@ function isDownloadable(sv: number): boolean {
 		case 4: return is_small_download_enabled.value;
 		case 5: return is_thum2x_download_enabled.value;
 		case 6: return is_thumb_download_enabled.value;
+		case 7: return false; // Placeholder = string => not downloadable.
 		default: return true;
 	}
 }

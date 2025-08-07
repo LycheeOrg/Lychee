@@ -14,6 +14,7 @@ use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasPasswordTrait;
 use App\Models\User;
 use App\Policies\UserPolicy;
+use App\Providers\AuthServiceProvider;
 use App\Rules\CurrentPasswordRule;
 use App\Rules\PasswordRule;
 use App\Rules\UsernameRule;
@@ -23,7 +24,6 @@ class UpdateProfileRequest extends BaseApiRequest implements HasPassword
 {
 	use HasPasswordTrait;
 
-	protected string $old_password;
 	protected ?string $username = null;
 	protected ?string $email = null;
 
@@ -40,6 +40,12 @@ class UpdateProfileRequest extends BaseApiRequest implements HasPassword
 	 */
 	public function rules(): array
 	{
+		if (!AuthServiceProvider::isBasicAuthEnabled()) {
+			return [
+				RequestAttribute::EMAIL_ATTRIBUTE => ['present', 'nullable', 'email:rfc', 'max:100'],
+			];
+		}
+
 		return [
 			RequestAttribute::USERNAME_ATTRIBUTE => ['required', new UsernameRule(true)],
 			RequestAttribute::PASSWORD_ATTRIBUTE => ['sometimes', 'confirmed', new PasswordRule(false)],
@@ -53,27 +59,15 @@ class UpdateProfileRequest extends BaseApiRequest implements HasPassword
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->password = $values[RequestAttribute::PASSWORD_ATTRIBUTE] ?? null;
-		$this->old_password = $values[RequestAttribute::OLD_PASSWORD_ATTRIBUTE];
-
-		$this->username = trim($values[RequestAttribute::USERNAME_ATTRIBUTE]);
-		$this->username = $this->username === '' ? null : $this->username;
-
 		$this->email = trim($values[RequestAttribute::EMAIL_ATTRIBUTE] ?? '');
 		$this->email = $this->email === '' ? null : $this->email;
-	}
 
-	/**
-	 * Returns the previous password.
-	 *
-	 * See {@link HasPasswordTrait::password()} for an explanation of the
-	 * semantic difference between the return values `null` and `''`.
-	 *
-	 * @return string|null
-	 */
-	public function oldPassword(): ?string
-	{
-		return $this->old_password;
+		if (AuthServiceProvider::isBasicAuthEnabled()) {
+			// If basic auth is enabled, we require the username.
+			$this->password = $values[RequestAttribute::PASSWORD_ATTRIBUTE] ?? null;
+			$this->username = trim($values[RequestAttribute::USERNAME_ATTRIBUTE] ?? '');
+			$this->username = $this->username === '' ? null : $this->username;
+		}
 	}
 
 	/**

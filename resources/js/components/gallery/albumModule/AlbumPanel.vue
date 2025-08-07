@@ -63,15 +63,16 @@
 					header="gallery.album.header_photos"
 					:photos="photos"
 					:photos-timeline="photosTimeline"
-					:album="album"
 					:gallery-config="layoutConfig"
 					:photo-layout="config.photo_layout"
 					:selected-photos="selectedPhotosIds"
+					:is-timeline="config.is_photo_timeline_enabled"
+					:with-control="true"
+					:cover-id="modelAlbum?.cover_id ?? undefined"
+					:header-id="modelAlbum?.header_id ?? undefined"
 					@clicked="photoClick"
 					@selected="photoSelect"
 					@contexted="photoMenuOpen"
-					:is-timeline="config.is_photo_timeline_enabled"
-					:with-control="true"
 				/>
 				<GalleryFooter v-once />
 				<ScrollTop v-if="!props.isPhotoOpen" target="parent" />

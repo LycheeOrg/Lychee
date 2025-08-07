@@ -61,6 +61,24 @@ return [
 
 	/*
 	|--------------------------------------------------------------------------
+	| Disable Basic Auth. This means that the only way to authenticate is via
+	| the API token, Webauthn or Oauth.
+	| This should only be toggled AFTER having set up the admin account and
+	| bound the Oauth client.
+	|--------------------------------------------------------------------------
+	*/
+	'disable-basic-auth' => (bool) env('DISABLE_BASIC_AUTH', false),
+
+	/*
+	|--------------------------------------------------------------------------
+	| Disable WebAuthn. This means that the only way to authenticate is via
+	| the API token, Basic Auth or Oauth.
+	|--------------------------------------------------------------------------
+	*/
+	'disable-webauthn' => (bool) env('DISABLE_WEBAUTHN', false),
+
+	/*
+	|--------------------------------------------------------------------------
 	| Hide Lychee SE from config to allow for easier video
 	|--------------------------------------------------------------------------
 	*/

@@ -6,8 +6,8 @@
 		v-if="user && user.id !== null"
 	>
 		<form>
-			<div class="w-full">
-				<div class="pb-5">
+			<div class="w-full mb-6" v-if="is_basic_auth_enabled">
+				<div class="pb-4">
 					{{ $t("profile.login.enter_current_password") }}
 				</div>
 				<FloatLabel variant="on">
@@ -15,8 +15,8 @@
 					<label for="oldPassword">{{ $t("profile.login.current_password") }}</label>
 				</FloatLabel>
 			</div>
-			<div class="w-full mt-2">
-				<div class="py-5">
+			<div class="w-full mb-6" v-if="is_basic_auth_enabled">
+				<div class="pb-4">
 					{{ $t("profile.login.credentials_update") }}
 				</div>
 				<FloatLabel variant="on">
@@ -32,8 +32,8 @@
 					<label for="password_confirmation">{{ $t("profile.login.confirm_new_password") }}</label>
 				</FloatLabel>
 			</div>
-			<div class="w-full mt-2">
-				<div class="py-5">
+			<div class="w-full">
+				<div class="pb-4">
 					{{ $t("profile.login.email_instruction") }}
 				</div>
 				<FloatLabel variant="on">
@@ -69,8 +69,13 @@ import ProfileService from "@/services/profile-service";
 import AuthService from "@/services/auth-service";
 import { trans } from "laravel-vue-i18n";
 import Fieldset from "@/components/forms/basic/Fieldset.vue";
+import { useLycheeStateStore } from "@/stores/LycheeState";
+import { storeToRefs } from "pinia";
 
 const isApiTokenOpen = ref(false);
+
+const lycheeStore = useLycheeStateStore();
+const { is_basic_auth_enabled } = storeToRefs(lycheeStore);
 
 const user = ref<App.Http.Resources.Models.UserResource | undefined>(undefined);
 const oldPassword = ref<string | undefined>(undefined);
@@ -99,7 +104,7 @@ function load() {
 }
 
 function save() {
-	if (hasChanged.value === true && !oldPassword.value) {
+	if (hasChanged.value === true && !oldPassword.value && is_basic_auth_enabled.value) {
 		toast.add({
 			severity: "error",
 			summary: trans("profile.login.missing_fields"),

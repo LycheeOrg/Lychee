@@ -51,7 +51,9 @@ class RenamePhotoRequest extends BaseApiRequest implements HasTitle, HasPhoto
 	{
 		/** @var string $photo_id */
 		$photo_id = $values[RequestAttribute::PHOTO_ID_ATTRIBUTE];
-		$this->photo = Photo::query()->findOrFail($photo_id);
+		$this->photo = Photo::query()
+			->with(['size_variants', 'albums'])
+			->findOrFail($photo_id);
 		$this->title = $values[RequestAttribute::TITLE_ATTRIBUTE];
 	}
 }

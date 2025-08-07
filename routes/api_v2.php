@@ -129,7 +129,7 @@ Route::get('/Search', [SearchController::class, 'search'])->middleware(['cache_c
 /**
  * SESSION.
  */
-Route::post('/Auth::login', [AuthController::class, 'login']);
+Route::post('/Auth::login', [AuthController::class, 'login'])->middleware('throttle:10,60,login');
 Route::post('/Auth::logout', [AuthController::class, 'logout']);
 Route::get('/Auth::user', [AuthController::class, 'getCurrentUser']);
 Route::get('/Auth::rights', [AuthController::class, 'getGlobalRights']);

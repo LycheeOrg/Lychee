@@ -4,10 +4,11 @@
 			<PhotoThumb
 				@click="maySelect(idx + props.iter, $event)"
 				@contextmenu.prevent="menuOpen(idx + props.iter, $event)"
-				:is-selected="props.selectedPhotos.includes(photo.id)"
 				:photo="photo"
-				:album="props.album"
+				:is-selected="props.selectedPhotos.includes(photo.id)"
 				:is-lazy="idx + props.iter > 10"
+				:is-cover-id="props.coverId === photo.id"
+				:is-header-id="props.headerId === photo.id"
 			/>
 		</template>
 	</div>
@@ -24,15 +25,12 @@ import { useRoute } from "vue-router";
 
 const props = defineProps<{
 	photos: { [key: number]: App.Http.Resources.Models.PhotoResource };
-	album:
-		| App.Http.Resources.Models.AlbumResource
-		| App.Http.Resources.Models.TagAlbumResource
-		| App.Http.Resources.Models.SmartAlbumResource
-		| undefined;
 	galleryConfig: App.Http.Resources.GalleryConfigs.PhotoLayoutConfig;
 	selectedPhotos: string[];
 	iter: number;
 	groupIdx: number;
+	coverId: string | undefined;
+	headerId: string | undefined;
 }>();
 
 const lycheeStore = useLycheeStateStore();

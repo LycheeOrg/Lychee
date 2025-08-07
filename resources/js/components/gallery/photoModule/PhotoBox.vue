@@ -17,7 +17,7 @@
 			ref="videoElement"
 			controls
 			class="absolute m-auto w-auto h-auto"
-			:class="is_full_screen || is_slideshow_active ? 'max-w-full max-h-full' : 'max-wh-full-56'"
+			:class="is_full_screen || is_slideshow_active ? 'max-w-full max-h-full' : 'max-w-full md:max-w-[calc(100%-56px)] max-h-[calc(100%-56px)]'"
 			autobuffer
 			:autoplay="lycheeStore.can_autoplay"
 		>
@@ -52,7 +52,7 @@
 			alt="medium"
 			class="absolute m-auto w-auto h-auto bg-contain bg-center bg-no-repeat"
 			:src="props.photo.size_variants.medium?.url ?? ''"
-			:class="is_full_screen || is_slideshow_active ? 'max-w-full max-h-full' : 'max-wh-full-56'"
+			:class="is_full_screen || is_slideshow_active ? 'max-w-full max-h-full' : 'max-w-full md:max-w-[calc(100%-56px)] max-h-[calc(100%-56px)]'"
 			:srcset="srcSetMedium"
 		/>
 		<img
@@ -60,7 +60,7 @@
 			id="image"
 			alt="big"
 			class="absolute m-auto w-auto h-auto bg-contain bg-center bg-no-repeat"
-			:class="is_full_screen || is_slideshow_active ? 'max-w-full max-h-full' : 'max-wh-full-56'"
+			:class="is_full_screen || is_slideshow_active ? 'max-w-full max-h-full' : 'max-w-full md:max-w-[calc(100%-56px)] max-h-[calc(100%-56px)]'"
 			:style="style"
 			:src="props.photo.size_variants.original?.url ?? ''"
 		/>
@@ -73,7 +73,7 @@
 			:data-photo-src="photo?.size_variants.medium?.url"
 			:data-video-src="photo?.live_photo_url"
 			class="absolute m-auto w-auto h-auto"
-			:class="is_full_screen || is_slideshow_active ? 'max-w-full max-h-full' : 'max-wh-full-56'"
+			:class="is_full_screen || is_slideshow_active ? 'max-w-full max-h-full' : 'max-w-full md:max-w-[calc(100%-56px)] max-h-[calc(100%-56px)]'"
 			:style="style"
 		></div>
 		<!-- This is a livephoto : full -->
@@ -85,7 +85,7 @@
 			:data-photo-src="photo?.size_variants.original?.url"
 			:data-video-src="photo?.live_photo_url"
 			class="absolute m-auto w-auto h-auto"
-			:class="is_full_screen || is_slideshow_active ? 'max-w-full max-h-full' : 'max-wh-full-56'"
+			:class="is_full_screen || is_slideshow_active ? 'max-w-full max-h-full' : 'max-w-full md:max-w-[calc(100%-56px)] max-h-[calc(100%-56px)]'"
 			:style="style"
 		></div>
 	</div>

@@ -47,7 +47,9 @@ class SetPhotosStarredRequest extends BaseApiRequest implements HasPhotos
 	{
 		/** @var array<int,string> $photos_ids */
 		$photos_ids = $values[RequestAttribute::PHOTO_IDS_ATTRIBUTE];
-		$this->photos = Photo::query()->findOrFail($photos_ids);
+		$this->photos = Photo::query()
+			->with(['size_variants', 'albums'])
+			->findOrFail($photos_ids);
 		$this->is_starred = static::toBoolean($values[RequestAttribute::IS_STARRED_ATTRIBUTE]);
 	}
 

@@ -16,6 +16,7 @@ use App\Enum\SmallLargeType;
 use App\Enum\ThumbAlbumSubtitleType;
 use App\Enum\ThumbOverlayVisibilityType;
 use App\Models\Configs;
+use App\Providers\AuthServiceProvider;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\URL;
 use LycheeVerify\Verify;
@@ -45,6 +46,7 @@ class InitConfig extends Data
 	public bool $is_exif_disabled;
 	public bool $is_favourite_enabled;
 	public SmallLargeType $photo_previous_next_size;
+	public bool $is_details_links_enabled;
 
 	// Thumbs configuration
 	public ThumbOverlayVisibilityType $display_thumb_album_overlay;
@@ -89,6 +91,8 @@ class InitConfig extends Data
 	// Live Metrics settings
 	public bool $is_live_metrics_enabled;
 
+	public bool $is_basic_auth_enabled = true;
+	public bool $is_webauthn_enabled = true;
 	// User registration enabled
 	public bool $is_registration_enabled;
 
@@ -120,6 +124,10 @@ class InitConfig extends Data
 		$this->is_exif_disabled = Configs::getValueAsBool('exif_disabled_for_all');
 		$this->is_favourite_enabled = Configs::getValueAsBool('client_side_favourite_enabled');
 		$this->photo_previous_next_size = Configs::getValueAsEnum('photo_previous_next_size', SmallLargeType::class);
+		$this->is_details_links_enabled = false;
+		if (Configs::getValueAsBool('details_links_enabled')) {
+			$this->is_details_links_enabled = !Auth::guest() || Configs::getValueAsBool('details_links_public');
+		}
 
 		// Thumbs configuration
 		$this->display_thumb_album_overlay = Configs::getValueAsEnum('display_thumb_album_overlay', ThumbOverlayVisibilityType::class);
@@ -152,6 +160,8 @@ class InitConfig extends Data
 		$this->title = Configs::getValueAsString('site_title');
 		$this->dropbox_api_key = Auth::user()?->may_administrate === true ? Configs::getValueAsString('dropbox_key') : 'disabled';
 
+		$this->is_basic_auth_enabled = AuthServiceProvider::isBasicAuthEnabled();
+		$this->is_webauthn_enabled = AuthServiceProvider::isWebAuthnEnabled();
 		// User registration enabled
 		$this->is_registration_enabled = Configs::getValueAsBool('user_registration_enabled');
 

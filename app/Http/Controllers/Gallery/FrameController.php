@@ -96,8 +96,11 @@ class FrameController extends Controller
 
 		/** @var ?Photo $photo */
 		$photo = $query->inRandomOrder()->first();
-		if ($photo === null) {
-			$album === null ? throw new PhotoCollectionEmptyException() : throw new PhotoCollectionEmptyException('Photo collection of ' . $album->get_title() . ' is empty');
+		if ($photo === null && $album === null) {
+			throw new PhotoCollectionEmptyException();
+		}
+		if ($photo === null && $album !== null) {
+			throw new PhotoCollectionEmptyException('Photo collection of ' . $album->get_title() . ' is empty');
 		}
 
 		// retry

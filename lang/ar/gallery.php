@@ -176,6 +176,11 @@ return [
 				'number_of_shares' => 'عدد المشاركات',
 				'number_of_favourites' => 'عدد المفضلات',
 			],
+			'links' => [
+				'header' => 'Links',
+				'copy' => 'Copy',
+				'copy_success' => 'Link copied to clipboard.',
+			],
 		],
 
 		'edit' => [

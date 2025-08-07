@@ -159,6 +159,11 @@ return [
                 'number_of_shares' => 'Wie oft geteilt',
                 'number_of_favourites' => 'Anzahl der Favoriten',
             ],
+            'links' => [
+                'header' => 'Links',
+                'copy' => 'Copy',
+                'copy_success' => 'Link copied to clipboard.',
+            ],
         ],
         'edit' => [
             'set_title' => 'Titel festlegen',
