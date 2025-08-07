@@ -9,6 +9,7 @@
 namespace App\Http\Resources\Tags;
 
 use App\Http\Resources\Models\PhotoResource;
+use App\Http\Resources\Traits\HasPrepPhotoCollection;
 use Illuminate\Support\Collection;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
@@ -16,6 +17,8 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 #[TypeScript()]
 class TagWithPhotosResource extends Data
 {
+	use HasPrepPhotoCollection;
+
 	/**
 	 * @param Collection<int,PhotoResource> $photos
 	 */
@@ -24,5 +27,6 @@ class TagWithPhotosResource extends Data
 		public string $name,
 		public Collection $photos,
 	) {
+		$this->prepPhotosCollection();
 	}
 }
