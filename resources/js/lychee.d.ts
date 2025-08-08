@@ -116,10 +116,11 @@ declare namespace App.Http.Resources.Collections {
 		photos: App.Http.Resources.Models.PhotoResource[];
 	};
 	export type RootAlbumResource = {
-		smart_albums: { [key: number]: App.Http.Resources.Models.ThumbAlbumResource } | Array<any>;
-		tag_albums: { [key: number]: App.Http.Resources.Models.ThumbAlbumResource } | Array<any>;
-		albums: { [key: number]: App.Http.Resources.Models.ThumbAlbumResource } | Array<any>;
-		shared_albums: { [key: number]: App.Http.Resources.Models.ThumbAlbumResource } | Array<any>;
+		smart_albums: App.Http.Resources.Models.ThumbAlbumResource[];
+		tag_albums: App.Http.Resources.Models.ThumbAlbumResource[];
+		pinned_albums: App.Http.Resources.Models.ThumbAlbumResource[];
+		albums: App.Http.Resources.Models.ThumbAlbumResource[];
+		shared_albums: App.Http.Resources.Models.ThumbAlbumResource[];
 		config: App.Http.Resources.GalleryConfigs.RootConfig;
 		rights: App.Http.Resources.Rights.RootAlbumRightsResource;
 	};

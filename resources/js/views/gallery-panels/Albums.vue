@@ -41,19 +41,19 @@
 				:albums="pinnedAlbums"
 				:user="user"
 				:config="albumPanelConfig"
-				:is-alone="!sharedAlbums.length && !smartAlbums.length && !unpinnedAlbums.length"
+				:is-alone="!sharedAlbums.length && !smartAlbums.length && !albums.length"
 				:idx-shift="0"
 				:selected-albums="selectedAlbumsIds"
 				@clicked="albumClick"
 				@contexted="albumMenuOpen"
 			/>
 		</template>
-		<template v-if="unpinnedAlbums.length > 0">
+		<template v-if="albums.length > 0">
 			<AlbumThumbPanel
 				:is-timeline="rootConfig.is_album_timeline_enabled"
 				header="gallery.albums"
 				:album="null"
-				:albums="unpinnedAlbums"
+				:albums="albums"
 				:user="user"
 				:config="albumPanelConfig"
 				:is-alone="!sharedAlbums.length && !smartAlbums.length && !pinnedAlbums.length"
@@ -202,7 +202,6 @@ const {
 	smartAlbums,
 	albums,
 	pinnedAlbums,
-	unpinnedAlbums,
 	sharedAlbums,
 	rootConfig,
 	rootRights,
@@ -221,23 +220,22 @@ const { selectedAlbum, selectedAlbumsIdx, selectedAlbums, selectedAlbumsIds, alb
 const { is_delete_visible, toggleDelete, is_merge_album_visible, toggleMergeAlbum, is_move_visible, toggleMove, is_rename_visible, toggleRename } =
 	useGalleryModals(togglableStore);
 
+function togglePin() {
+	if (!selectedAlbum.value) return;
+
+	AlbumService.setPinned(selectedAlbum.value.id, !selectedAlbum.value.is_pinned).then(() => {
+		AlbumService.clearAlbums();
+		refresh();
+		unselect();
+	});
+}
+
 const albumCallbacks = {
 	setAsCover: () => {},
 	toggleRename: toggleRename,
 	toggleMerge: toggleMergeAlbum,
 	toggleMove: toggleMove,
-	togglePin: async () => {
-		if (!selectedAlbum.value) return;
-
-		try {
-			await AlbumService.setPinned(selectedAlbum.value.id, !selectedAlbum.value.is_pinned);
-			AlbumService.clearAlbums();
-			await refresh();
-			unselect();
-		} catch (error) {
-			console.error("toggle pin:", error);
-		}
-	},
+	togglePin: togglePin,
 	toggleDelete: toggleDelete,
 	toggleDownload: () => {
 		AlbumService.download(selectedAlbumsIds.value);

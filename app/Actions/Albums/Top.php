@@ -17,6 +17,7 @@ use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Factories\AlbumFactory;
 use App\Models\Album;
+use App\Models\Configs;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\TagAlbum;
 use App\Policies\AlbumPolicy;
@@ -24,6 +25,7 @@ use App\Policies\AlbumQueryPolicy;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Support\Collection as BaseCollection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 
 class Top
@@ -77,6 +79,18 @@ class Top
 			->orderBy($this->sorting->column, $this->sorting->order)
 			->get();
 
+		$pinned_album_query = $this->album_query_policy
+			->applyVisibilityFilter(Album::query()->with(['access_permissions', 'owner'])
+			->joinSub(DB::table('base_albums')->select(['id', 'is_pinned'])->where('is_pinned', '=', true), 'pinned', 'pinned.id', '=', 'albums.id'));
+
+		/** @var BaseCollection<int,Album> $pinned_albums */
+		$pinned_albums = (new SortingDecorator($pinned_album_query))
+			->orderBy(
+				Configs::getValueAsEnum('sorting_pinned_albums_col', ColumnSortingType::class),
+				Configs::getValueAsEnum('sorting_pinned_albums_order', OrderSortingType::class)
+			)
+			->get();
+
 		/** @return AlbumBuilder $query */
 		$query = $this->album_query_policy
 			->applyVisibilityFilter(Album::query()->with(['access_permissions', 'owner'])->whereIsRoot());
@@ -91,7 +105,12 @@ class Top
 
 			list($a, $b) = $albums->partition(fn ($album) => $album->owner_id === $user_id);
 
-			return new TopAlbumDTO($smart_albums, $tag_albums, $a->values(), $b->values());
+			return new TopAlbumDTO(
+				smart_albums: $smart_albums,
+				tag_albums: $tag_albums,
+				pinned_albums: $pinned_albums,
+				albums: $a->values(),
+				shared_albums: $b->values());
 		} else {
 			// For anonymous users we don't want to implicitly expose
 			// ownership via sorting.
@@ -100,7 +119,11 @@ class Top
 				->orderBy($this->sorting->column, $this->sorting->order)
 				->get();
 
-			return new TopAlbumDTO($smart_albums, $tag_albums, $albums);
+			return new TopAlbumDTO(
+				smart_albums: $smart_albums,
+				tag_albums: $tag_albums,
+				pinned_albums: $pinned_albums,
+				albums: $albums);
 		}
 	}
 }

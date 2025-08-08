@@ -13,13 +13,10 @@ export function useAlbumsRefresher(auth: AuthStore, lycheeStore: LycheeStateStor
 	const smartAlbums = ref<App.Http.Resources.Models.ThumbAlbumResource[]>([]);
 	const albums = ref<App.Http.Resources.Models.ThumbAlbumResource[]>([]);
 	const pinnedAlbums = ref<App.Http.Resources.Models.ThumbAlbumResource[]>([]);
-	const unpinnedAlbums = ref<App.Http.Resources.Models.ThumbAlbumResource[]>([]);
 	const sharedAlbums = ref<SplitData<App.Http.Resources.Models.ThumbAlbumResource>[]>([]);
 	const rootConfig = ref<App.Http.Resources.GalleryConfigs.RootConfig | undefined>(undefined);
 	const rootRights = ref<App.Http.Resources.Rights.RootAlbumRightsResource | undefined>(undefined);
-	const selectableAlbums = computed(() =>
-		pinnedAlbums.value.concat(unpinnedAlbums.value.concat(sharedAlbums.value.map((album) => album.data).flat())),
-	); // selectableAlbums has to reflect the same order as pinned/unpinned albums
+	const selectableAlbums = computed(() => pinnedAlbums.value.concat(albums.value.concat(sharedAlbums.value.map((album) => album.data).flat()))); // selectableAlbums has to reflect the same order as pinned/unpinned albums
 	const hasHidden = computed(() => selectableAlbums.value.filter((album) => album.is_nsfw).length > 0);
 
 	function refresh(): Promise<[void, void]> {
@@ -37,20 +34,12 @@ export function useAlbumsRefresher(auth: AuthStore, lycheeStore: LycheeStateStor
 
 		const getAlbums = AlbumService.getAll()
 			.then((data) => {
-				smartAlbums.value = (data.data.smart_albums as App.Http.Resources.Models.ThumbAlbumResource[]) ?? [];
-				smartAlbums.value = smartAlbums.value.concat(data.data.tag_albums as App.Http.Resources.Models.ThumbAlbumResource[]);
-				albums.value = data.data.albums as App.Http.Resources.Models.ThumbAlbumResource[];
-				pinnedAlbums.value = [];
-				unpinnedAlbums.value = [];
-				for (const album of albums.value) {
-					if (album.is_pinned) {
-						pinnedAlbums.value.push(album);
-					} else {
-						unpinnedAlbums.value.push(album);
-					}
-				}
+				smartAlbums.value = data.data.smart_albums ?? [];
+				smartAlbums.value = smartAlbums.value.concat(data.data.tag_albums);
+				albums.value = data.data.albums;
+				pinnedAlbums.value = data.data.pinned_albums;
 				sharedAlbums.value = spliter(
-					(data.data.shared_albums as App.Http.Resources.Models.ThumbAlbumResource[]) ?? [],
+					data.data.shared_albums ?? [],
 					(d) => d.owner as string, // mapper
 					(d) => d.owner as string, // formatter
 					albums.value.length,
@@ -93,7 +82,6 @@ export function useAlbumsRefresher(auth: AuthStore, lycheeStore: LycheeStateStor
 		smartAlbums,
 		albums,
 		pinnedAlbums,
-		unpinnedAlbums,
 		sharedAlbums,
 		rootConfig,
 		rootRights,

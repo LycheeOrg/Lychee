@@ -2,7 +2,7 @@
 	<div v-if="configs">
 		<div class="flex relative items-start flex-row-reverse justify-between gap-8">
 			<Menu :model="sections" class="top-11 border-none hidden sticky sm:block" id="navMain">
-				<template #item="{ item, props }">
+				<template #item="{ item }">
 					<a
 						:href="item.link"
 						class="nav-link block hover:text-primary-400 ltr:border-l rtl:border-r border-solid border-surface-700 hover:border-primary-400 px-4 capitalize"
@@ -19,6 +19,7 @@
 					:toggleable="true"
 					class="mb-4 hover:border-primary-500 pt-2"
 					:id="key"
+					:key="key"
 				>
 					<ConfigGroup :configs="configGroup.configs" @filled="filled" @reset="reset" />
 				</Fieldset>
@@ -29,7 +30,7 @@
 <script setup lang="ts">
 import { computed, onUpdated, ref } from "vue";
 import Menu from "primevue/menu";
-// @ts-expect-error
+// @ts-expect-error There is no type definition for this package
 import scrollSpy from "@sidsbrmnn/scrollspy";
 import ConfigGroup from "./ConfigGroup.vue";
 import { onMounted } from "vue";
@@ -68,7 +69,7 @@ const sections = computed(function () {
 });
 
 function load(configs: App.Http.Resources.Models.ConfigCategoryResource[]) {
-	active.value = configs.map((c, i: number) => i.toString());
+	active.value = configs.map((_c, i: number) => i.toString());
 }
 
 function goto(section: string) {
