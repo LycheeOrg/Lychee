@@ -14,12 +14,12 @@ return [
     'must-be-in-same-album' => 'Debe estar en el mismo álbum.',
     'columns' => [
         'album' => 'Álbum',
-        'photo' => 'Photo',
-        'checksum' => 'Checksum',
+        'photo' => 'Foto',
+        'checksum' => 'Suma de comprobación',
     ],
     'warning' => [
-        'no-original-left' => 'No original left.',
-        'keep-one' => 'You selected all duplicates in this group. Please chose at least one duplicate to keep.',
+        'no-original-left' => 'No queda ningún original.',
+        'keep-one' => 'Has seleccionado todos los duplicados de este grupo. Por favor, elige al menos un duplicado para conservar.',
     ],
-    'delete-selected' => 'Delete selected',
+    'delete-selected' => 'Eliminar seleccionados',
 ];
