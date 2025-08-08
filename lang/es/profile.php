@@ -1,66 +1,59 @@
 <?php
-
 return [
-	/*
+    /*
 	|--------------------------------------------------------------------------
 	| Profile page
 	|--------------------------------------------------------------------------
 	*/
-	'title' => 'Profile',
-
-	'login' => [
-		'header' => 'Profile',
-		'enter_current_password' => 'Enter your current password:',
-		'current_password' => 'Current password',
-		'credentials_update' => 'Your credentials will be changed to the following:',
-		'username' => 'Username',
-		'new_password' => 'New password',
-		'confirm_new_password' => 'Confirm new password',
-		'email_instruction' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
-		'email' => 'Email',
-		'change' => 'Change Login',
-		'api_token' => 'API Token ...',
-
-		'missing_fields' => 'Missing fields',
-	],
-
-	'register' => [
-		'username_exists' => 'Username already exists.',
-		'password_mismatch' => 'The passwords do not match.',
-		'signup' => 'Sign Up',
-		'error' => 'An error occurred while registering your account.',
-		'success' => 'Your account has been successfully created.',
-	],
-
-	'token' => [
-		'unavailable' => 'You have already viewed this token.',
-		'no_data' => 'No token API have been generated.',
-		'disable' => 'Disable',
-		'disabled' => 'Token disabled',
-		'warning' => 'This token will not be displayed again. Copy it and keep it in a safe place.',
-		'reset' => 'Reset the token',
-		'create' => 'Create a new token',
-	],
-
-	'oauth' => [
-		'header' => 'OAuth',
-		'header_not_available' => 'OAuth is not available',
-		'setup_env' => 'Set up the credentials in your .env',
-		'token_registered' => '%s token registered.',
-		'setup' => 'Set up %s',
-		'reset' => 'reset',
-		'credential_deleted' => 'Credential deleted!',
-	],
-
-	'u2f' => [
-		'header' => 'Passkey/MFA/2FA',
-		'info' => 'This only provides the ability to use WebAuthn to authenticate instead of username & password.',
-		'empty' => 'Credentials list is empty!',
-		'not_secure' => 'Environment not secured. U2F not available.',
-		'new' => 'Register new device.',
-		'credential_deleted' => 'Credential deleted!',
-		'credential_updated' => 'Credential updated!',
-		'credential_registred' => 'Registration successful!',
-		'5_chars' => 'At least 5 chars.',
-	],
+    'title' => 'Perfil',
+    'login' => [
+        'header' => 'Perfil',
+        'enter_current_password' => 'Introduzca su contraseña actual:',
+        'current_password' => 'Contraseña actual',
+        'credentials_update' => 'Sus credenciales se cambiarán a lo siguiente:',
+        'username' => 'Nombre de usuario',
+        'new_password' => 'Nueva contraseña',
+        'confirm_new_password' => 'Confirmar nueva contraseña',
+        'email_instruction' => 'Añade tu correo electrónico a continuación para recibir notificaciones por correo electrónico. Para dejar de recibir correos electrónicos, simplemente elimina tu correo electrónico a continuación.',
+        'email' => 'Email',
+        'change' => 'Cambiar inicio de sesión',
+        'api_token' => 'Token API …',
+        'missing_fields' => 'Campos faltantes',
+    ],
+    'register' => [
+        'username_exists' => 'El nombre de usuario ya existe.',
+        'password_mismatch' => 'Las contraseñas no coinciden.',
+        'signup' => 'Registrarse',
+        'error' => 'Se ha producido un error al registrar su cuenta.',
+        'success' => 'Su cuenta ha sido creada exitosamente.',
+    ],
+    'token' => [
+        'unavailable' => 'Ya has visto este token.',
+        'no_data' => 'No se ha generado ninguna API de token.',
+        'disable' => 'Desactivar',
+        'disabled' => 'Token deshabilitado',
+        'warning' => 'Este token no se volverá a mostrar. Cópielo y guárdelo en un lugar seguro.',
+        'reset' => 'Restablecer el token',
+        'create' => 'Crear un nuevo token',
+    ],
+    'oauth' => [
+        'header' => 'OAuth',
+        'header_not_available' => 'OAuth no está disponible',
+        'setup_env' => 'Configura las credenciales en tu .env',
+        'token_registered' => 'Token% s registrado.',
+        'setup' => 'Configurar %s',
+        'reset' => 'reiniciar',
+        'credential_deleted' => '¡Credencial eliminada!',
+    ],
+    'u2f' => [
+        'header' => 'Clave de acceso/MFA/2FA',
+        'info' => 'Esto solo proporciona la posibilidad de utilizar WebAuthn para autenticarse en lugar de nombre de usuario y contraseña.',
+        'empty' => '¡La lista de credenciales está vacía!',
+        'not_secure' => 'Entorno no asegurado. U2F no disponible.',
+        'new' => 'Registrar nuevo dispositivo.',
+        'credential_deleted' => '¡Credencial eliminada!',
+        'credential_updated' => '¡Credencial actualizada!',
+        'credential_registred' => '¡Registro exitoso!',
+        '5_chars' => 'Al menos 5 caracteres.',
+    ],
 ];
