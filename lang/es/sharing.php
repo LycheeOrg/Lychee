@@ -15,7 +15,7 @@ return [
     'permission_deleted' => '¡Permiso eliminado!',
     'permission_created' => '¡Permiso creado!',
     'propagate' => 'Propagar',
-    'propagate_help' => 'Propagar los permisos de acceso actuales a todos los descendientes (subálbumes y sus respectivos subálbumes, etc.).',
+    'propagate_help' => 'Propagar los permisos de acceso actuales a todos los descendientes (subálbumes y sus respectivos subálbumes, etc.)',
     'propagate_default' => 'Por defecto, los permisos existentes (álbum-usuario)<br>se actualizan y se añaden los que faltan.<br>Los permisos adicionales que no aparecen en esta lista no se modifican.',
     'propagate_overwrite' => 'Sobrescribir los permisos existentes en lugar de actualizarlos.<br>Esto también eliminará todos los permisos que no estén presentes en esta lista.',
     'propagate_warning' => 'Esta acción no se puede deshacer.',
@@ -29,7 +29,7 @@ return [
     'no_albums' => 'No hay álbumes seleccionables.',
     'grants' => [
         'read' => 'Otorga acceso de lectura',
-        'original' => 'Otorga acceso a la fotografía original.',
+        'original' => 'Otorga acceso a la fotografía original',
         'download' => 'Descarga de subvenciones',
         'upload' => 'Subir permisos',
         'edit' => 'Editar permisos',
