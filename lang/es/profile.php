@@ -22,7 +22,7 @@ return [
     ],
     'register' => [
         'username_exists' => 'El nombre de usuario ya existe.',
-        'password_mismatch' => 'Las contraseñas no coinciden',
+        'password_mismatch' => 'Las contraseñas no coinciden.',
         'signup' => 'Registrarse',
         'error' => 'Se ha producido un error al registrar su cuenta.',
         'success' => 'Su cuenta ha sido creada exitosamente.',
