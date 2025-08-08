@@ -13,9 +13,9 @@ return [
     'load_space' => 'Uso del espacio de carga.',
     'configuration' => 'Configuración',
     'loading' => 'Cargando…',
-    'identical_content' => 'Identical content',
+    'identical_content' => 'Contenido idéntico',
     'toast' => [
         'info' => 'Info',
-        'copy' => 'Diagnostics copied to clipboard!',
+        'copy' => '¡Diagnóstico copiado al portapapeles!',
     ],
 ];
