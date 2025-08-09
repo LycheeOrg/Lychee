@@ -134,6 +134,7 @@ const albumCallbacks = {
 	toggleMove: () => {},
 	toggleDelete: () => {},
 	toggleDownload: () => {},
+	togglePin: () => {},
 };
 
 const { menu, Menu, photoMenuOpen } = useContextMenu(
