@@ -9,8 +9,15 @@
 namespace App\Contracts\PhotoCreate;
 
 use App\Models\Photo;
+use App\Models\Tag;
+use Illuminate\Support\Collection;
 
 interface PhotoDTO
 {
 	public function getPhoto(): Photo;
+
+	/**
+	 * @return Collection<int,Tag>
+	 */
+	public function getTags(): Collection;
 }

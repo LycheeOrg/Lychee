@@ -58,6 +58,7 @@ use App\Http\Resources\Models\TargetAlbumResource;
 use App\Http\Resources\Models\Utils\AlbumProtectionPolicy;
 use App\Models\Album;
 use App\Models\Extensions\BaseAlbum;
+use App\Models\Tag;
 use App\Models\TagAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Routing\Controller;
@@ -167,7 +168,7 @@ class AlbumController extends Controller
 		}
 		$album->title = $request->title();
 		$album->description = $request->description();
-		$album->show_tags = $request->tags();
+		$album->show_tags = Tag::from($request->tags())->all();
 		$album->copyright = $request->copyright();
 		$album->photo_sorting = $request->photoSortingCriterion();
 		$album->photo_layout = $request->photoLayout();

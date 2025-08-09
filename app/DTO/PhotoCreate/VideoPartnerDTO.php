@@ -12,6 +12,7 @@ use App\Contracts\Image\StreamStats;
 use App\Contracts\PhotoCreate\PhotoDTO;
 use App\Image\Files\BaseMediaFile;
 use App\Models\Photo;
+use Illuminate\Support\Collection;
 
 class VideoPartnerDTO implements PhotoDTO
 {
@@ -30,6 +31,11 @@ class VideoPartnerDTO implements PhotoDTO
 	public function getPhoto(): Photo
 	{
 		return $this->photo;
+	}
+
+	public function getTags(): Collection
+	{
+		return $this->photo->tags;
 	}
 
 	public static function ofInit(InitDTO $init_dto): VideoPartnerDTO
