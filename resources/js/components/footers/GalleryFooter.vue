@@ -1,48 +1,48 @@
 <template>
-	<div id="footer" class="w-full flex flex-col justify-end flex-wrap align-bottom self-end text-center py-5 px-0 text-3xs" v-if="footerData">
+	<div v-if="footerData" id="footer" class="w-full flex flex-col justify-end flex-wrap align-bottom self-end text-center py-5 px-0 text-3xs">
 		<!--
 			Footer Vertically shares space with the content.
 			The height of the footer is always the natural height
 			of its child elements
 			-->
-		<div id="home_socials" class="w-full text-muted-color text-base space-x-2" v-if="footerData.footer_show_social_media">
+		<div v-if="footerData.footer_show_social_media" id="home_socials" class="w-full text-muted-color text-base space-x-2">
 			<a
 				v-if="footerData.sm_facebook_url !== ''"
+				id="facebook"
 				:href="footerData.sm_facebook_url"
 				class="socials socialicons"
-				id="facebook"
 				target="_blank"
 				rel="noopener"
 			></a>
 			<a
 				v-if="footerData.sm_flickr_url !== ''"
+				id="flickr"
 				:href="footerData.sm_flickr_url"
 				class="socials socialicons"
-				id="flickr"
 				target="_blank"
 				rel="noopener"
 			></a>
 			<a
 				v-if="footerData.sm_twitter_url !== ''"
+				id="twitter"
 				:href="footerData.sm_twitter_url"
 				class="socials socialicons"
-				id="twitter"
 				target="_blank"
 				rel="noopener"
 			></a>
 			<a
 				v-if="footerData.sm_instagram_url !== ''"
+				id="instagram"
 				:href="footerData.sm_instagram_url"
 				class="socials socialicons"
-				id="instagram"
 				target="_blank"
 				rel="noopener"
 			></a>
 			<a
 				v-if="footerData.sm_youtube_url !== ''"
+				id="youtube"
 				:href="footerData.sm_youtube_url"
 				class="socials socialicons"
-				id="youtube"
 				target="_blank"
 				rel="noopener"
 			></a>

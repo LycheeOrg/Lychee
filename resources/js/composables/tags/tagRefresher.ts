@@ -1,6 +1,6 @@
 import { type AuthStore } from "@/stores/Auth";
 import { type Ref, ref } from "vue";
-import { type SplitData } from "../album/splitter";
+import { type SplitData } from "@/composables/album/splitter";
 import TagsService from "@/services/tags-service";
 
 export function useTagRefresher(tagId: Ref<string>, photoId: Ref<string | undefined>, auth: AuthStore, isLoginOpen: Ref<boolean>) {

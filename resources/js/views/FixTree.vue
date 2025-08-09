@@ -42,17 +42,17 @@
 		</div>
 
 		<div
-			class="md:max-w-3xl lg:max-w-5xl xl:max-w-7xl mt-9 mx-auto sticky z-30 w-full top-0 flex h-11 justify-center"
 			v-if="albums !== undefined"
+			class="md:max-w-3xl lg:max-w-5xl xl:max-w-7xl mt-9 mx-auto sticky z-30 w-full top-0 flex h-11 justify-center"
 		>
 			<Button text severity="secondary" class="border-none px-8 font-bold" @click="fetch">{{ $t("fix-tree.buttons.reset") }}</Button>
 			<Button severity="warn" class="border-none px-8 font-bold" @click="check">{{ $t("fix-tree.buttons.check") }}</Button>
 			<Button severity="danger" class="border-none px-8 font-bold" @click="apply">
-				<i class="pi pi-exclamation-triangle" v-if="!isValidated" />{{ $t("fix-tree.buttons.apply") }}
+				<i v-if="!isValidated" class="pi pi-exclamation-triangle" />{{ $t("fix-tree.buttons.apply") }}
 			</Button>
 		</div>
-		<VirtualScroller :items="albums" :itemSize="50" class="h-screen">
-			<template v-slot:item="{ item, options }">
+		<VirtualScroller :items="albums" :item-size="50" class="h-screen">
+			<template #item="{ item, options }">
 				<template v-if="options.first">
 					<div
 						class="mt-16 pb-2 flex justify-between md:max-w-3xl lg:max-w-5xl xl:max-w-7xl mx-auto hover:bg-primary-emphasis/5 gap-8 items-center font-bold text-lg text-color-emphasis border-b border-b-white/50"

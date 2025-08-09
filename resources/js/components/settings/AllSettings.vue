@@ -1,7 +1,7 @@
 <template>
 	<div v-if="configs">
 		<div class="flex relative items-start flex-row-reverse justify-between gap-8">
-			<Menu :model="sections" class="top-11 border-none hidden sticky sm:block" id="navMain">
+			<Menu id="navMain" :model="sections" class="top-11 border-none hidden sticky sm:block">
 				<template #item="{ item }">
 					<a
 						:href="item.link"
@@ -12,14 +12,14 @@
 					</a>
 				</template>
 			</Menu>
-			<div class="w-full" id="allSettings">
+			<div id="allSettings" class="w-full">
 				<Fieldset
 					v-for="(configGroup, key) in props.configs"
+					:id="key"
+					:key="key"
 					:legend="configGroup.name"
 					:toggleable="true"
 					class="mb-4 hover:border-primary-500 pt-2"
-					:id="key"
-					:key="key"
 				>
 					<ConfigGroup :configs="configGroup.configs" @filled="filled" @reset="reset" />
 				</Fieldset>

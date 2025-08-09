@@ -9,8 +9,8 @@
 			<div class="items-center relative text-right">
 				<InputText
 					id="searchQuery"
-					type="text"
 					v-model="search"
+					type="text"
 					:invalid="!isValid"
 					:placeholder="$t('gallery.search.searchbox')"
 					@updated="debouncedFn"

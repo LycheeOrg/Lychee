@@ -4,7 +4,7 @@
 	<div class="h-svh overflow-y-hidden">
 		<!-- Trick to avoid the scroll bar to appear on the right when switching to full screen -->
 		<Collapse :when="!is_full_screen">
-			<SearchHeader :title="title" @goBack="goBack" />
+			<SearchHeader :title="title" @go-back="goBack" />
 		</Collapse>
 		<div
 			:class="{
@@ -15,9 +15,9 @@
 		>
 			<SearchPanel
 				:title="title"
-				:searchMinimumLengh="searchMinimumLengh"
-				:isSearching="isSearching"
-				:noData="noData"
+				:search-minimum-lengh="searchMinimumLengh"
+				:is-searching="isSearching"
+				:no-data="noData"
 				:search="search_term"
 				@clear="clear"
 				@search="search"
@@ -26,18 +26,18 @@
 				v-if="albums !== undefined && photos !== undefined && layoutConfig"
 				:albums="albums"
 				:photos="photos"
+				v-model:first="from"
 				:total="total"
-				:albumHeader="albumHeader"
-				:photoHeader="photoHeader"
+				v-model:rows="per_page"
+				:album-header="albumHeader"
+				:photo-header="photoHeader"
 				:layout="layout"
-				:layoutConfig="layoutConfig"
+				:layout-config="layoutConfig"
 				:album-panel-config="albumPanelConfig"
 				:is-photo-timeline-enabled="configForMenu.is_photo_timeline_enabled"
 				:photo-callbacks="photoCallbacks"
 				:album-callbacks="albumCallbacks"
 				:selectors="selectors"
-				v-model:first="from"
-				v-model:rows="per_page"
 				@refresh="refresh"
 			/>
 		</div>
@@ -89,9 +89,9 @@
 				}
 			"
 		/>
-		<PhotoEdit v-if="photo?.rights.can_edit" :photo="photo" v-model:visible="is_photo_edit_open" />
-		<MoveDialog :photo="photo" v-model:visible="is_move_visible" @moved="refresh" />
-		<DeleteDialog :photo="photo" v-model:visible="is_delete_visible" @deleted="refresh" />
+		<PhotoEdit v-if="photo?.rights.can_edit" v-model:visible="is_photo_edit_open" :photo="photo" />
+		<MoveDialog v-model:visible="is_move_visible" :photo="photo" @moved="refresh" />
+		<DeleteDialog v-model:visible="is_delete_visible" :photo="photo" @deleted="refresh" />
 	</template>
 	<template v-else-if="!noData">
 		<!-- Dialogs -->

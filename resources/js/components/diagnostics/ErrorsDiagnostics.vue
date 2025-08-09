@@ -1,12 +1,12 @@
 <template>
 	<Panel :header="$t('diagnostics.self-diagnosis')" class="border-none max-w-7xl mx-auto" dir="ltr">
 		<div v-if="!errors" class="text-sky-400 font-bold">{{ $t("diagnostics.loading") }}</div>
-		<div v-else v-for="error in errors" class="flex flex-col">
+		<div v-for="(error, idx) in errors" v-else class="flex flex-col" :key="`error-${idx}`">
 			<div class="w-full flex">
 				<div class="w-24 flex-none capitalize" :class="getCss(error.type)">{{ error.type }}</div>
 				<div class="text-muted-color">{{ error.message }}</div>
 			</div>
-			<div v-for="details in error.details" class="flex">
+			<div v-for="(details, idxx) in error.details" class="flex" :key="`error-${idx}-${idxx}`">
 				<div class="w-24 flex-none"></div>
 				<div class="text-muted-color italic text-xs">{{ details }}</div>
 			</div>

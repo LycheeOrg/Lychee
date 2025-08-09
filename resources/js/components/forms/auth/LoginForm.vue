@@ -1,5 +1,5 @@
 <template>
-	<form v-focustrap class="flex flex-col gap-4 relative max-w-md w-full text-sm rounded-md pt-9" v-if="oauths !== undefined">
+	<form v-if="oauths !== undefined" v-focustrap class="flex flex-col gap-4 relative max-w-md w-full text-sm rounded-md pt-9">
 		<div
 			:class="{
 				'flex justify-center gap-2 w-full': true,
@@ -14,14 +14,15 @@
 					'hover:scale-150': is_basic_auth_enabled,
 					'hover:scale-105': !is_basic_auth_enabled,
 				}"
-				@click="openWebAuthn"
 				title="WebAuthn"
+				@click="openWebAuthn"
 			>
 				<i class="fa-solid fa-fingerprint" />
 				<span v-if="!is_basic_auth_enabled" class="ml-2 text-base">{{ sprintf(trans("dialogs.login.auth_with"), "WebAuthn") }}</span>
 			</a>
 			<a
 				v-for="oauth in oauths"
+				:key="oauth.provider"
 				:href="oauth.url"
 				:class="{
 					'inline-block text-xl text-muted-color transition-all duration-300 hover:text-primary-400 cursor-pointer': true,
@@ -29,7 +30,6 @@
 					'hover:scale-105': !is_basic_auth_enabled,
 				}"
 				:title="oauth.provider"
-				:key="oauth.provider"
 			>
 				<i class="items-center" :class="oauth.icon"></i>
 				<span v-if="!is_basic_auth_enabled" class="ml-2 text-base">{{ sprintf(trans("dialogs.login.auth_with"), oauth.provider) }}</span>
@@ -44,56 +44,56 @@
 			</div>
 			<div class="inline-flex flex-col gap-2" :class="props.padding ?? 'px-9'">
 				<FloatLabel variant="on">
-					<InputPassword id="password" v-model="password" @keydown.enter="login" autocomplete="current-password" />
+					<InputPassword id="password" v-model="password" autocomplete="current-password" @keydown.enter="login" />
 					<label for="password">{{ $t("dialogs.login.password") }}</label>
 				</FloatLabel>
 				<Message v-if="invalidPassword" severity="error">{{ $t("dialogs.login.unknown_invalid") }}</Message>
 			</div>
 			<div class="text-muted-color text-right font-semibold" :class="props.padding ?? 'px-9'">
-				Lychee <span class="text-primary-500" v-if="is_se_enabled">SE</span>
+				Lychee <span v-if="is_se_enabled" class="text-primary-500">SE</span>
 			</div>
 			<div class="flex items-center mt-9">
 				<Button
 					v-if="closeCallback !== undefined"
-					@click="props.closeCallback"
 					severity="secondary"
 					class="w-full font-bold border-none rounded-none ltr:rounded-bl-xl rtl:rounded-br-xl shrink"
+					@click="props.closeCallback"
 				>
 					{{ $t("dialogs.button.cancel") }}
 				</Button>
 				<Button
-					@click="login"
 					severity="contrast"
 					:class="{
 						'w-full font-bold border-none shrink': true,
 						'rounded-none ltr:rounded-br-xl  rtl:rounded-bl-xl': closeCallback !== undefined,
 						'rounded-xl': closeCallback === undefined,
 					}"
+					@click="login"
 				>
 					{{ $t("dialogs.login.signin") }}
 				</Button>
 			</div>
 		</template>
-		<div class="flex items-center mt-9" v-else>
+		<div v-else class="flex items-center mt-9">
 			<Button
 				v-if="closeCallback !== undefined"
-				@click="props.closeCallback"
 				severity="secondary"
 				:class="{
 					'w-full font-bold border-none rounded-none ltr:rounded-bl-xl rtl:rounded-br-xl shrink': true,
 					'ltr:rounded-br-xl rtl:rounded-bl-xl': !is_basic_auth_enabled,
 				}"
+				@click="props.closeCallback"
 			>
 				{{ $t("dialogs.button.cancel") }}
 			</Button>
 			<Button
-				@click="login"
 				severity="contrast"
 				:class="{
 					'w-full font-bold border-none shrink': true,
 					'rounded-none ltr:rounded-br-xl rtl:rounded-bl-xl': closeCallback !== undefined,
 					'rounded-xl': closeCallback === undefined,
 				}"
+				@click="login"
 			>
 				{{ $t("dialogs.login.signin") }}
 			</Button>
@@ -152,7 +152,7 @@ function login() {
 			AlbumService.clearCache();
 			emits("logged-in");
 		})
-		.catch((e: any) => {
+		.catch((e) => {
 			if (e.response && e.response.status === 401) {
 				invalidPassword.value = true;
 			}

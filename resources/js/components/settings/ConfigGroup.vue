@@ -1,9 +1,9 @@
 <template>
 	<div class="flex flex-col gap-4 w-full">
-		<template v-for="config in props.configs">
+		<template v-for="config in props.configs" :key="`config-${config.key}`">
 			<div v-if="show(config)" class="flex gap-2">
 				<div class="shrink h-8 w-4 flex items-center">
-					<i class="pi pi-graduation-cap text-primary-500" v-if="config.is_expert"></i>
+					<i v-if="config.is_expert" class="pi pi-graduation-cap text-primary-500"></i>
 				</div>
 				<template v-if="is_old_style">
 					<OldField :config="config" @filled="filled" @reset="reset" />
@@ -157,15 +157,15 @@ import {
 	mapProvidersOptions,
 	toolsOptions,
 } from "@/config/constants";
-import StringField from "../forms/settings/StringField.vue";
-import BoolField from "../forms/settings/BoolField.vue";
-import NumberField from "../forms/settings/NumberField.vue";
-import SliderField from "../forms/settings/SliderField.vue";
-import SelectField from "../forms/settings/SelectField.vue";
-import SelectLang from "../forms/settings/SelectLang.vue";
-import SelectOptionsField from "../forms/settings/SelectOptionsField.vue";
-import ZipSliderField from "../forms/settings/ZipSliderField.vue";
-import OldField from "../forms/settings/OldField.vue";
+import StringField from "@/components/forms/settings/StringField.vue";
+import BoolField from "@/components/forms/settings/BoolField.vue";
+import NumberField from "@/components/forms/settings/NumberField.vue";
+import SliderField from "@/components/forms/settings/SliderField.vue";
+import SelectField from "@/components/forms/settings/SelectField.vue";
+import SelectLang from "@/components/forms/settings/SelectLang.vue";
+import SelectOptionsField from "@/components/forms/settings/SelectOptionsField.vue";
+import ZipSliderField from "@/components/forms/settings/ZipSliderField.vue";
+import OldField from "@/components/forms/settings/OldField.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 

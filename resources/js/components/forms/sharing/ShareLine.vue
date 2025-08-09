@@ -7,7 +7,7 @@
 				}}</router-link>
 			</span>
 			<span class="w-full">
-				<i class="pi pi-users ltr:mr-1 rtl:ml-1" v-if="props.perm.user_group_id !== null" />
+				<i v-if="props.perm.user_group_id !== null" class="pi pi-users ltr:mr-1 rtl:ml-1" />
 				{{ props.perm.username ?? props.perm.user_group_name }}
 			</span>
 		</div>
@@ -19,7 +19,7 @@
 			<Checkbox v-model="grantsEdit" :binary="true" @update:model-value="edit" />
 			<Checkbox v-model="grantsDelete" :binary="true" @update:model-value="edit" />
 		</div>
-		<Button @click="deletePermission" class="border-0 bg-transparent text-danger-600 hover:bg-danger-700 hover:text-white w-1/6">
+		<Button class="border-0 bg-transparent text-danger-600 hover:bg-danger-700 hover:text-white w-1/6" @click="deletePermission">
 			<i class="pi pi-user-minus" /><span class="hidden md:inline">{{ $t("dialogs.button.delete") }}</span>
 		</Button>
 	</div>

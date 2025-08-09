@@ -28,7 +28,7 @@ import AlbumService from "@/services/album-service";
 import Dialog from "primevue/dialog";
 import PhotoService from "@/services/photo-service";
 import { trans } from "laravel-vue-i18n";
-import InputText from "../basic/InputText.vue";
+import InputText from "@/components/forms/basic/InputText.vue";
 import FloatLabel from "primevue/floatlabel";
 
 const props = defineProps<{
@@ -64,7 +64,10 @@ function execute() {
 }
 
 function executePhoto() {
-	// @ts-ignore
+	if (!props.photo || !title.value) {
+		return;
+	}
+
 	PhotoService.rename(props.photo.id, title.value).then(() => {
 		emits("updated");
 		AlbumService.clearCache(props.photo?.album_id);
@@ -72,7 +75,10 @@ function executePhoto() {
 }
 
 function executeAlbum() {
-	// @ts-ignore
+	if (!props.album || !title.value) {
+		return;
+	}
+
 	AlbumService.rename(props.album.id, title.value).then(() => {
 		emits("updated");
 		AlbumService.clearCache(props.album?.id);

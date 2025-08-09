@@ -1,8 +1,8 @@
 <template>
 	<div class="absolute w-1/6 h-1/2 top-1/2 -translate-y-1/2 group" :class="props.is_next ? 'ltr:right-0 rtl:left-0' : 'ltr:left-0 rtl:right-0'">
 		<router-link
-			:to="photoRoute(props.photoId)"
 			:id="props.is_next ? 'nextButton' : 'previousButton'"
+			:to="photoRoute(props.photoId)"
 			:class="{
 				'absolute top-1/2 border border-solid border-neutral-200 dark:border-neutral-700': true,
 				'-mt-5 transition-all opacity-0 group-hover:opacity-100 bg-cover': true,
@@ -14,8 +14,8 @@
 			}"
 			:style="props.style"
 		>
-			<MiniIcon :icon="props.is_next ? 'caret-right' : 'caret-left'" :fill="''" class="m-0 h-6 w-5" v-if="isLTR()" />
-			<MiniIcon :icon="props.is_next ? 'caret-left' : 'caret-right'" :fill="''" class="m-0 h-6 w-5" v-else />
+			<MiniIcon v-if="isLTR()" :icon="props.is_next ? 'caret-right' : 'caret-left'" :fill="''" class="m-0 h-6 w-5" />
+			<MiniIcon v-else :icon="props.is_next ? 'caret-left' : 'caret-right'" :fill="''" class="m-0 h-6 w-5" />
 		</router-link>
 	</div>
 </template>

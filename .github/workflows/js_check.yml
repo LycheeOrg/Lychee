@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: 
+        node-version:
           - 20
           - 22
     steps:
@@ -34,6 +34,9 @@ jobs:
 
       - name: Check Style
         run: npm run check-formatting
+
+      - name: Check Lint
+        run: npm run lint
 
       - name: Check TypeScript
         run: npm run check

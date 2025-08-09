@@ -14,7 +14,7 @@
 			<ScrollPanel class="w-full h-40 text-muted-color text-sm">
 				<div v-if="data.length === 0 && !loading">{{ $t("maintenance.optimize.description") }}</div>
 				<ProgressSpinner v-if="loading && data.length === 0" class="w-full"></ProgressSpinner>
-				<pre class="text-2xs m-4" v-if="data.length > 0">{{ data.join("\n") }}</pre>
+				<pre v-if="data.length > 0" class="text-2xs m-4">{{ data.join("\n") }}</pre>
 			</ScrollPanel>
 			<div class="flex gap-4 mt-1">
 				<Button v-if="data.length === 0 && !loading" severity="primary" class="w-full border-none" @click="exec">

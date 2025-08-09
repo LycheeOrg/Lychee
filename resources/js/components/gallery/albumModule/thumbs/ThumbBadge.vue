@@ -3,7 +3,7 @@
 		class="badge inline-block ltr:ml-1 rtl:mr-1 px-2 pt-2 pb-1 border-solid border-white border border-t-0 rounded-md rounded-t-none text-surface-0 text-center"
 		:class="props.class"
 	>
-		<i :class="piClass" v-if="props.pi" />
+		<i v-if="props.pi" :class="piClass" />
 		<svg v-if="props.icon" class="iconic inline w-4 h-4 fill-white">
 			<use :xlink:href="iconHref" />
 		</svg>

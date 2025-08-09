@@ -1,6 +1,6 @@
 <template>
 	<template v-if="props.icon">
-		<MiniIcon :icon="props.icon" :class="props.class ?? 'w-3 h-3'" v-if="!props.icon.startsWith('pi')" />
+		<MiniIcon v-if="!props.icon.startsWith('pi')" :icon="props.icon" :class="props.class ?? 'w-3 h-3'" />
 		<i v-else :class="props.icon + ' ' + props.class" />
 	</template>
 </template>

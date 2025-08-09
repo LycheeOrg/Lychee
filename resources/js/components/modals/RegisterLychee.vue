@@ -3,15 +3,15 @@
 		<template #container="{ closeCallback }">
 			<div class="flex flex-col gap-4 bg-gradient-to-b from-bg-300 to-bg-400 relative max-w-md w-full text-sm rounded-md text-muted-color">
 				<div class="p-9 text-muted-color-emphasis">
-					<h2 class="my-6 font-bold text-center" v-if="is_se_enabled">{{ $t("dialogs.about.thank_you") }}</h2>
+					<h2 v-if="is_se_enabled" class="my-6 font-bold text-center">{{ $t("dialogs.about.thank_you") }}</h2>
 					<template v-if="!is_se_enabled">
 						<h2 class="my-6 font-bold text-center">{{ $t("dialogs.register.enter_license") }}</h2>
 						<p class="text-muted-color text-center">
 							<FloatLabel variant="on">
-								<InputText v-model="licenseKey" id="licenseKey" class="w-full" @update:model-value="licenseKeyIsInvValid = false" />
+								<InputText id="licenseKey" v-model="licenseKey" class="w-full" @update:model-value="licenseKeyIsInvValid = false" />
 								<label for="licenseKey">{{ $t("dialogs.register.license_key") }}</label>
 							</FloatLabel>
-							<span class="inline-block mt-4 font-bold text-danger-600" v-if="licenseKey && licenseKeyIsInvValid">
+							<span v-if="licenseKey && licenseKeyIsInvValid" class="inline-block mt-4 font-bold text-danger-600">
 								{{ $t("dialogs.register.invalid_license") }}
 							</span>
 						</p>
@@ -19,18 +19,18 @@
 				</div>
 				<div class="flex justify-center">
 					<Button
-						@click="closeCallback"
 						severity="info"
 						class="w-full font-bold border-none rounded-none ltr:rounded-bl-xl rtl:rounded-br-xl"
+						@click="closeCallback"
 					>
 						{{ $t("dialogs.button.close") }}
 					</Button>
 					<Button
 						v-if="!is_se_enabled"
-						@click="register"
 						severity="contrast"
 						:disabled="!isValidForm"
 						class="w-full font-bold border-none rounded-none ltr:rounded-br-xl rtl:rounded-bl-xl"
+						@click="register"
 					>
 						{{ $t("dialogs.register.register") }}
 					</Button>
@@ -45,7 +45,7 @@ import Button from "primevue/button";
 import Dialog from "primevue/dialog";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
-import InputText from "../forms/basic/InputText.vue";
+import InputText from "@/components/forms/basic/InputText.vue";
 import FloatLabel from "primevue/floatlabel";
 import MaintenanceService from "@/services/maintenance-service";
 import { useToast } from "primevue/usetoast";

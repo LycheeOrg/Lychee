@@ -5,12 +5,12 @@
 		<span v-if="isInvalid" class="w-1/4 text-xs text-muted-color text-center">{{ $t("profile.u2f.5_chars") }}</span>
 		<Button
 			v-if="isModified && !isInvalid"
-			@click="saveU2F"
 			class="border-0 text-primary-500 bg-transparent hover:bg-primary-400 hover:text-white w-1/4"
+			@click="saveU2F"
 		>
 			<i class="pi pi-save" /><span class="hidden md:inline">{{ $t("dialogs.button.save") }}</span>
 		</Button>
-		<Button v-if="!isModified" @click="deleteU2F" class="border-0 bg-transparent text-danger-600 hover:bg-danger-700 hover:text-white w-1/4">
+		<Button v-if="!isModified" class="border-0 bg-transparent text-danger-600 hover:bg-danger-700 hover:text-white w-1/4" @click="deleteU2F">
 			<i class="pi pi-trash" /><span class="hidden md:inline">{{ $t("dialogs.button.delete") }}</span>
 		</Button>
 	</div>
@@ -21,7 +21,7 @@ import Button from "primevue/button";
 import { useToast } from "primevue/usetoast";
 import { watch } from "vue";
 import { computed, ref } from "vue";
-import InputText from "../basic/InputText.vue";
+import InputText from "@/components/forms/basic/InputText.vue";
 import { trans } from "laravel-vue-i18n";
 
 const props = defineProps<{

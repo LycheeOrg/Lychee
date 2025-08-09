@@ -35,7 +35,7 @@ const toast = useToast();
 function exec() {
 	loading.value = true;
 	MaintenanceService.flushDo()
-		.then((response) => {
+		.then(() => {
 			toast.add({ severity: "success", summary: trans("toasts.success"), life: 3000 });
 			loading.value = false;
 		})

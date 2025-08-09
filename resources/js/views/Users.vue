@@ -1,6 +1,6 @@
 <template>
 	<InviteUser v-model:visible="isInviteUserVisible" />
-	<CreateEditUser class="mt-10" @refresh="load" v-model:visible="isCreateUserVisible" :user="selectedUser" :is-edit="isEdit" />
+	<CreateEditUser v-model:visible="isCreateUserVisible" class="mt-10" :user="selectedUser" :is-edit="isEdit" @refresh="load" />
 	<Toolbar class="w-full border-0 h-14">
 		<template #start>
 			<OpenLeftMenu />
@@ -17,19 +17,19 @@
 			<div class="w-full lg:w-2/3 xl:w-3/6">
 				<p class="text-muted-color-emphasis">{{ $t("users.description") }}</p>
 				<div class="flex justify-between mt-8 mb-8">
-					<Button @click="inviteUser" severity="primary" class="border-none p-3">{{ $t("users.invite.button") }}</Button>
-					<Button @click="createUser" severity="primary" class="border-none p-3">{{ $t("users.create") }}</Button>
+					<Button severity="primary" class="border-none p-3" @click="inviteUser">{{ $t("users.invite.button") }}</Button>
+					<Button severity="primary" class="border-none p-3" @click="createUser">{{ $t("users.create") }}</Button>
 				</div>
 				<div class="flex flex-col">
 					<div class="flex flex-wrap md:flex-nowrap border-b border-solid border-b-surface-700 mb-4 pb-4">
 						<div class="w-9/12 lg:w-8/12 flex">
 							<span class="w-2/3 font-bold">{{ $t("users.username") }}</span>
 							<div class="w-1/3 flex justify-evenly">
-								<span class="w-full text-center" v-tooltip.top="$t('users.upload_rights')"><i class="pi pi-upload" /></span>
-								<span class="w-full text-center" v-tooltip.top="$t('users.edit_rights')">
+								<span v-tooltip.top="$t('users.upload_rights')" class="w-full text-center"><i class="pi pi-upload" /></span>
+								<span v-tooltip.top="$t('users.edit_rights')" class="w-full text-center">
 									<i class="pi pi-lock-open" />
 								</span>
-								<span v-if="isQuotaEnabled" class="w-full text-center" v-tooltip.top="$t('users.quota')">
+								<span v-if="isQuotaEnabled" v-tooltip.top="$t('users.quota')" class="w-full text-center">
 									<i class="pi pi-chart-pie" />
 								</span>
 							</div>
@@ -42,10 +42,10 @@
 						v-for="user in users"
 						:key="user.id"
 						:user="user"
-						@delete-user="deleteUser"
-						@edit-user="editUser"
 						:total-used-space="totalUsedSpace"
 						:is-quota-enabled="isQuotaEnabled"
+						@delete-user="deleteUser"
+						@edit-user="editUser"
 					/>
 				</div>
 			</div>
@@ -61,7 +61,7 @@
 							<i class="pi pi-lock-open"></i>
 							<span>{{ $t("users.edit_rights") }}</span>
 						</li>
-						<li class="ltr:ml-2 rtl:mr-2 pt-2 flex items-start gap-x-4" v-if="is_se_enabled">
+						<li v-if="is_se_enabled" class="ltr:ml-2 rtl:mr-2 pt-2 flex items-start gap-x-4">
 							<i class="pi pi-chart-pie"></i>
 							<span>{{ $t("users.quota") }}</span>
 						</li>
@@ -90,7 +90,7 @@ import InviteUser from "@/components/modals/InviteUser.vue";
 
 const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
-const { is_se_preview_enabled, is_se_enabled } = storeToRefs(lycheeStore);
+const { is_se_enabled } = storeToRefs(lycheeStore);
 
 const users = ref<App.Http.Resources.Models.UserManagementResource[]>([]);
 const isCreateUserVisible = ref(false);

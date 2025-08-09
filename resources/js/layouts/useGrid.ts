@@ -1,7 +1,8 @@
 import { type RouteLocationNormalizedLoaded } from "vue-router";
-import { Column } from "./types";
+import { ChildNodeWithDataStyle, Column } from "./types";
 import { type TimelineData } from "./PhotoLayout";
 import { getWidth } from "./getWidth";
+import { getRatio } from "./ratio";
 
 export function useGrid(
 	el: HTMLElement,
@@ -11,7 +12,6 @@ export function useGrid(
 	route: RouteLocationNormalizedLoaded,
 	align: "left" | "right",
 ) {
-	// @ts-expect-error
 	const gridItems: ChildNodeWithDataStyle[] = [...el.childNodes].filter((gridItem) => gridItem.nodeType === 1);
 
 	const max_width = getWidth(timelineData, route);
@@ -21,12 +21,7 @@ export function useGrid(
 	const grid_width = target_width + spread;
 
 	// Compute ratio of each item.
-	const ratio = gridItems.map(function (_photo) {
-		const height = _photo.dataset.height;
-		const width = _photo.dataset.width;
-		return height > 0 ? width / height : 1;
-	});
-
+	const ratio = getRatio(gridItems);
 	const columns: Column[] = Array.from({ length: perChunk }, (_, idx) => {
 		return { height: 0, left: (grid_gap + grid_width) * idx };
 	});
@@ -40,6 +35,7 @@ export function useGrid(
 
 		const column = columns[idx];
 		const height = Math.floor(grid_width / ratio[i]);
+		e.style = e.style ?? {};
 		e.style.top = column.height + "px";
 		e.style.width = grid_width + "px";
 		e.style.height = height + "px";

@@ -1,14 +1,14 @@
 <template>
-	<a class="px-1 cursor-pointer group hidden sm:inline-block h-8" @click="layout = 'square'" :title="$t('gallery.layout.squares')">
+	<a class="px-1 cursor-pointer group hidden sm:inline-block h-8" :title="$t('gallery.layout.squares')" @click="layout = 'square'">
 		<MiniIcon icon="squares" fill="fill-transparent" :class="squareClass" />
 	</a>
-	<a class="px-1 cursor-pointer group hidden sm:inline-block h-8" @click="layout = 'justified'" :title="$t('gallery.layout.justified')">
+	<a class="px-1 cursor-pointer group hidden sm:inline-block h-8" :title="$t('gallery.layout.justified')" @click="layout = 'justified'">
 		<MiniIcon icon="justified" fill="" :class="justifiedClass" />
 	</a>
-	<a class="px-1 cursor-pointer group hidden sm:inline-block h-8" @click="layout = 'masonry'" :title="$t('gallery.layout.masonry')">
+	<a class="px-1 cursor-pointer group hidden sm:inline-block h-8" :title="$t('gallery.layout.masonry')" @click="layout = 'masonry'">
 		<MiniIcon icon="masonry" fill="fill-transparent" :class="masonryClass" />
 	</a>
-	<a class="px-1 cursor-pointer group hidden sm:inline-block h-8" @click="layout = 'grid'" :title="$t('gallery.layout.grid')">
+	<a class="px-1 cursor-pointer group hidden sm:inline-block h-8" :title="$t('gallery.layout.grid')" @click="layout = 'grid'">
 		<MiniIcon icon="grid" fill="fill-transparent" :class="gridClass" />
 	</a>
 </template>

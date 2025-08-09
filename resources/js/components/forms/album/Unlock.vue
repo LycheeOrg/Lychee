@@ -1,6 +1,6 @@
 <template>
 	<Dialog v-model:visible="visible" modal pt:root:class="border-none" pt:mask:style="backdrop-filter: blur(2px)">
-		<template #container="{ closeCallback }">
+		<template #container>
 			<div v-focustrap class="flex flex-col relative max-w-xl text-sm rounded-md pt-9">
 				<p class="mb-5 px-9">{{ $t("dialogs.unlock.password_required") }}</p>
 				<div class="inline-flex flex-col gap-2 px-9">
@@ -10,7 +10,7 @@
 					</FloatLabel>
 				</div>
 				<div class="flex items-center mt-9">
-					<Button @click="hide" severity="secondary" class="w-full font-bold border-none rounded-bl-xl">
+					<Button severity="secondary" class="w-full font-bold border-none rounded-bl-xl" @click="hide">
 						{{ $t("dialogs.button.cancel") }}
 					</Button>
 					<Button
@@ -32,7 +32,7 @@ import Button from "primevue/button";
 import Dialog from "primevue/dialog";
 import FloatLabel from "primevue/floatlabel";
 import { computed, ref } from "vue";
-import InputPassword from "../basic/InputPassword.vue";
+import InputPassword from "@/components/forms/basic/InputPassword.vue";
 
 const props = defineProps<{
 	albumId: string;

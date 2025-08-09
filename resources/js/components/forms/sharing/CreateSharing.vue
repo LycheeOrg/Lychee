@@ -1,14 +1,14 @@
 <template>
 	<div class="flex">
-		<div class="w-5/12 flex items-center" v-if="newShareUser">
+		<div v-if="newShareUser" class="w-5/12 flex items-center">
 			<span class="w-full">
-				<i class="pi pi-users ltr:mr-1 rtl:ml-1" v-if="newShareUser.type === 'group'" />
+				<i v-if="newShareUser.type === 'group'" class="pi pi-users ltr:mr-1 rtl:ml-1" />
 				{{ newShareUser.name }}
 			</span>
 			<span @click="newShareUser = undefined"><i class="pi pi-times" /></span>
 		</div>
-		<div class="w-5/12 flex" v-if="!newShareUser">
-			<SearchTargetUser @selected="selectUser" :filtered-users-ids="props.filteredUsersIds" :with-groups="true" />
+		<div v-if="!newShareUser" class="w-5/12 flex">
+			<SearchTargetUser :filtered-users-ids="props.filteredUsersIds" :with-groups="true" @selected="selectUser" />
 		</div>
 		<div class="w-1/2 flex items-center justify-around">
 			<Checkbox v-model="grantsReadAccess" :binary="true" disabled />
@@ -18,7 +18,7 @@
 			<Checkbox v-model="grantsEdit" :binary="true" />
 			<Checkbox v-model="grantsDelete" :binary="true" />
 		</div>
-		<Button @click="create" :disabled="!newShareUser" class="border-0 bg-transparent text-create-600 hover:bg-create-600 hover:text-white w-1/6">
+		<Button :disabled="!newShareUser" class="border-0 bg-transparent text-create-600 hover:bg-create-600 hover:text-white w-1/6" @click="create">
 			<i class="pi pi-user-plus" /><span class="hidden md:inline">{{ $t("sharing.share") }}</span>
 		</Button>
 	</div>
@@ -28,7 +28,7 @@ import { ref } from "vue";
 import Button from "primevue/button";
 import Checkbox from "primevue/checkbox";
 import { useToast } from "primevue/usetoast";
-import SearchTargetUser from "../album/SearchTargetUser.vue";
+import SearchTargetUser from "@/components/forms/album/SearchTargetUser.vue";
 import SharingService from "@/services/sharing-service";
 import { trans } from "laravel-vue-i18n";
 import { type UserOrGroup, type UserOrGroupId } from "@/composables/search/searchUserGroupComputed";

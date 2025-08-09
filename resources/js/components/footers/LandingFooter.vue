@@ -3,41 +3,41 @@
 		<div id="home_socials" class="fixed bottom-8 left-0 right-0 text-center z-10 animate-landingAnimateUp">
 			<a
 				v-if="props.footerData.sm_facebook_url !== ''"
+				id="facebook"
 				:href="props.footerData.sm_facebook_url"
 				class="inline-block hover:scale-150 hover:text-muted-color transition-all ease-in-out duration-300 text-surface-0 socials text-2xl my-4 mx-5 socialicons"
-				id="facebook"
 				target="_blank"
 				rel="noopener"
 			></a>
 			<a
 				v-if="props.footerData.sm_flickr_url !== ''"
+				id="flickr"
 				:href="props.footerData.sm_flickr_url"
 				class="inline-block hover:scale-150 hover:text-muted-color transition-all ease-in-out duration-300 text-surface-0 socials text-2xl my-4 mx-5 socialicons"
-				id="flickr"
 				target="_blank"
 				rel="noopener"
 			></a>
 			<a
 				v-if="props.footerData.sm_twitter_url !== ''"
+				id="twitter"
 				:href="props.footerData.sm_twitter_url"
 				class="inline-block hover:scale-150 hover:text-muted-color transition-all ease-in-out duration-300 text-surface-0 socials text-2xl my-4 mx-5 socialicons"
-				id="twitter"
 				target="_blank"
 				rel="noopener"
 			></a>
 			<a
 				v-if="props.footerData.sm_instagram_url !== ''"
+				id="instagram"
 				:href="props.footerData.sm_instagram_url"
 				class="inline-block hover:scale-150 hover:text-muted-color transition-all ease-in-out duration-300 text-surface-0 socials text-2xl my-4 mx-5 socialicons"
-				id="instagram"
 				target="_blank"
 				rel="noopener"
 			></a>
 			<a
 				v-if="props.footerData.sm_youtube_url !== ''"
+				id="youtube"
 				:href="props.footerData.sm_youtube_url"
 				class="inline-block hover:scale-150 hover:text-muted-color transition-all ease-in-out duration-300 text-surface-0 socials text-2xl my-4 mx-5 socialicons"
-				id="youtube"
 				target="_blank"
 				rel="noopener"
 			></a>

@@ -1,6 +1,6 @@
 <template>
 	<div v-if="scriptLoaded && dropboxChooserIsSupported">
-		<Button icon="pi pi-box" severity="primary" class="border-none w-64" @click="dropboxIconClicked" label="Open dropbox picker" />
+		<Button icon="pi pi-box" severity="primary" class="border-none w-64" label="Open dropbox picker" @click="dropboxIconClicked" />
 	</div>
 </template>
 
@@ -43,7 +43,7 @@ if (window.Dropbox !== undefined) {
 			console.warn("VueDropboxPicker: Dropbox script loaded but window.Dropbox is undefined");
 			return;
 		}
-		// @ts-expect-error
+		// @ts-expect-error It should exists... but the type definition is for the v1... We are now using v2.
 		dropboxChooserIsSupported.value = window.Dropbox.isBrowserSupported();
 
 		if (!dropboxChooserIsSupported.value) {

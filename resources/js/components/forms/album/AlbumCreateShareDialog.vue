@@ -7,24 +7,24 @@
 						<span class="w-full">{{ $t("sharing.username") }}</span>
 					</div>
 					<div class="w-1/2 flex justify-around items-center">
-						<i class="pi pi-eye" v-tooltip.top="$t('sharing.grants.read')" />
-						<i class="pi pi-window-maximize" v-tooltip.top="$t('sharing.grants.original')" />
-						<i class="pi pi-cloud-download" v-tooltip.top="$t('sharing.grants.download')" />
-						<i class="pi pi-upload" v-tooltip.top="$t('sharing.grants.upload')" />
-						<i class="pi pi-file-edit" v-tooltip.top="$t('sharing.grants.edit')" />
-						<i class="pi pi-trash" v-tooltip.top="$t('sharing.grants.delete')" />
+						<i v-tooltip.top="$t('sharing.grants.read')" class="pi pi-eye" />
+						<i v-tooltip.top="$t('sharing.grants.original')" class="pi pi-window-maximize" />
+						<i v-tooltip.top="$t('sharing.grants.download')" class="pi pi-cloud-download" />
+						<i v-tooltip.top="$t('sharing.grants.upload')" class="pi pi-upload" />
+						<i v-tooltip.top="$t('sharing.grants.edit')" class="pi pi-file-edit" />
+						<i v-tooltip.top="$t('sharing.grants.delete')" class="pi pi-trash" />
 					</div>
 				</div>
 				<div class="flex text-muted-color-emphasis w-full px-9">
-					<div class="w-1/2 flex items-center" v-if="newShareUser">
+					<div v-if="newShareUser" class="w-1/2 flex items-center">
 						<span class="w-full">
-							<i class="pi pi-users ltr:mr-1 rtl:ml-1" v-if="newShareUser.type === 'group'" />
+							<i v-if="newShareUser.type === 'group'" class="pi pi-users ltr:mr-1 rtl:ml-1" />
 							{{ newShareUser.name }}
 						</span>
 						<span @click="newShareUser = undefined"><i class="pi pi-times" /></span>
 					</div>
-					<div class="w-1/2" v-if="!newShareUser">
-						<SearchTargetUser @selected="selectUser" :filtered-users-ids="props.filteredUsersIds" :with-groups="true" />
+					<div v-if="!newShareUser" class="w-1/2">
+						<SearchTargetUser :filtered-users-ids="props.filteredUsersIds" :with-groups="true" @selected="selectUser" />
 					</div>
 					<div class="w-1/2 flex items-center justify-around">
 						<Checkbox v-model="grantsReadAccess" :binary="true" disabled />
@@ -36,13 +36,13 @@
 					</div>
 				</div>
 				<div class="flex items-center mt-9 w-full">
-					<Button @click="closeCallback" severity="secondary" class="w-full font-bold border-none rounded-bl-xl">
+					<Button severity="secondary" class="w-full font-bold border-none rounded-bl-xl" @click="closeCallback">
 						{{ $t("dialogs.button.cancel") }}
 					</Button>
 					<Button
-						@click="create"
 						:disabled="!newShareUser"
 						class="font-bold w-full border-none rounded-none bg-transparent text-create-600 hover:bg-create-600 hover:text-white rounded-br-xl"
+						@click="create"
 					>
 						<i class="pi pi-user-plus" /><span class="hidden md:inline">{{ $t("sharing.share") }}</span>
 					</Button>

@@ -1,15 +1,15 @@
 <template>
-	<Fieldset :legend="$t('profile.u2f.header')" :toggleable="true" class="mb-4 hover:border-primary-500 pt-2 max-w-xl mx-auto" v-if="u2f">
+	<Fieldset v-if="u2f" :legend="$t('profile.u2f.header')" :toggleable="true" class="mb-4 hover:border-primary-500 pt-2 max-w-xl mx-auto">
 		<div class="text-muted-color text-center">{{ $t("profile.u2f.info") }}</div>
 		<SetSecondFactorLine v-for="credential in u2f" :key="credential.id" :u2f="credential" @delete="deleteU2F" />
 		<div v-if="u2f.length === 0">
 			<p class="text-muted-color text-center">{{ $t("profile.u2f.empty") }}</p>
 		</div>
 
-		<div class="w-full text-lg font-bold" v-if="isWebAuthnUnavailable">
+		<div v-if="isWebAuthnUnavailable" class="w-full text-lg font-bold">
 			<h1 class="p-3 text-center w-full">{{ $t("profile.u2f.not_secure") }}</h1>
 		</div>
-		<div class="w-full mt-4" v-if="!isWebAuthnUnavailable">
+		<div v-if="!isWebAuthnUnavailable" class="w-full mt-4">
 			<Button class="border-0 bg-transparent text-create-600 font-bold hover:bg-create-600 hover:text-white w-full" @click="register">
 				{{ $t("profile.u2f.new") }}
 			</Button>

@@ -6,16 +6,23 @@
 			>
 				<h1 class="text-center text-xl font-bold w-full border-b border-b-black/20 p-3">{{ $t("dialogs.keybindings.header") }}</h1>
 				<div class="flex flex-wrap gap-2 justify-center align-top max-h-[80vh] overflow-y-auto px-3">
-					<DataTable v-for="list in shortcutsList" :value="list.shortcuts" :showGridlines="false" :size="'small'">
+					<DataTable
+						v-for="(list, idx) in shortcutsList"
+						:value="list.shortcuts"
+						:show-gridlines="false"
+						:size="'small'"
+						:key="`list-${idx}`"
+					>
 						<template #header>
 							<span class="font-bold">{{ list.header }}</span>
 						</template>
-						<Column field="action" headerClass="hidden" class="text-sm"></Column>
-						<Column field="key" headerClass="hidden" class="text-right text-sm">
+						<Column field="action" header-class="hidden" class="text-sm"></Column>
+						<Column field="key" header-class="hidden" class="text-right text-sm">
 							<template #body="slotProps">
 								<kbd
 									v-for="k in slotProps.data.key.split(' ')"
 									class="py-0.5 px-2 ml-2 rounded border border-black/30 text-xs shadow-black/5 bg-bg-300 shadow-sm font-mono"
+									:key="`key-${idx}-${k}`"
 								>
 									{{ k }}
 								</kbd>
@@ -23,16 +30,16 @@
 						</Column>
 					</DataTable>
 					<div class="w-full flex justify-center mt-4">
-						<Checkbox v-model="doNotShowAgain" :binary="true" inputId="doNotShowAgain" />
+						<Checkbox v-model="doNotShowAgain" :binary="true" input-id="doNotShowAgain" />
 						<label for="doNotShowAgain" class="ml-2 text-sm text-muted-color">{{ $t("dialogs.keybindings.don_t_show_again") }}</label>
 					</div>
 					<div class="w-full flex justify-center mb-4">
-						<Checkbox v-model="hideHeaderButton" :binary="true" inputId="hideHeaderButton" />
+						<Checkbox v-model="hideHeaderButton" :binary="true" input-id="hideHeaderButton" />
 						<label for="hideHeaderButton" class="ml-2 text-sm text-muted-color">{{ $t("dialogs.keybindings.hide_header_button") }}</label>
 					</div>
 				</div>
 				<div class="flex justify-center">
-					<Button @click="closeCallback" severity="secondary" class="w-full font-bold border-none rounded-none rounded-b-xl">
+					<Button severity="secondary" class="w-full font-bold border-none rounded-none rounded-b-xl" @click="closeCallback">
 						{{ $t("dialogs.button.close") }}
 					</Button>
 				</div>

@@ -1,20 +1,20 @@
 <template>
 	<Select
 		id="targetUser"
-		class="w-full border-none"
 		v-model="selectedTarget"
-		@update:modelValue="selected"
+		class="w-full border-none"
 		filter
 		:placeholder="$t('dialogs.target_user.placeholder')"
 		:loading="options === undefined"
 		:options="options"
-		optionLabel="name"
-		showClear
+		option-label="name"
+		show-clear
+		@update:model-value="selected"
 	>
 		<template #value="slotProps">
 			<div v-if="slotProps.value" class="flex items-center">
 				<div>
-					<i class="pi pi-users ltr:mr-1 rtl:ml-1" v-if="slotProps.value.type === 'group'" />
+					<i v-if="slotProps.value.type === 'group'" class="pi pi-users ltr:mr-1 rtl:ml-1" />
 					{{ $t(slotProps.value.name) }}
 				</div>
 			</div>
@@ -22,7 +22,7 @@
 		<template #option="slotProps">
 			<div class="flex items-center">
 				<span>
-					<i class="pi pi-users ltr:mr-1 rtl:ml-1" v-if="slotProps.option.type === 'group'" />
+					<i v-if="slotProps.option.type === 'group'" class="pi pi-users ltr:mr-1 rtl:ml-1" />
 					{{ slotProps.option.name }}
 				</span>
 			</div>

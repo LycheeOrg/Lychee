@@ -2,12 +2,12 @@
 	<Dialog v-model:visible="visible" modal pt:root:class="border-none m-3" pt:mask:style="backdrop-filter: blur(2px)" @hide="closeCallback">
 		<template #container="{ closeCallback }">
 			<div class="flex flex-col gap-4 bg-gradient-to-b from-bg-300 to-bg-400 relative max-w-md w-full text-sm rounded-md text-muted-color">
-				<div class="p-9 text-muted-color-emphasis" v-if="version">
+				<div v-if="version" class="p-9 text-muted-color-emphasis">
 					<h1 class="mb-6 text-center text-xl font-bold">
 						Lychee
 						<span class="version-number">{{ version.version ?? "" }}</span>
-						<span class="text-primary-500" v-if="is_se_enabled"> SE</span>
-						<span class="text-sm font-normal up-to-date-release text-center" v-if="version.is_new_release_available">
+						<span v-if="is_se_enabled" class="text-primary-500"> SE</span>
+						<span v-if="version.is_new_release_available" class="text-sm font-normal up-to-date-release text-center">
 							–
 							<a
 								target="_blank"
@@ -19,7 +19,7 @@
 								{{ $t("dialogs.about.update_available") }}
 							</a>
 						</span>
-						<span class="text-sm font-normal up-to-date-git" v-if="!version.is_new_release_available && version.is_git_update_available">
+						<span v-if="!version.is_new_release_available && version.is_git_update_available" class="text-sm font-normal up-to-date-git">
 							–
 							<a
 								target="_blank"
@@ -38,8 +38,8 @@
 					</h2>
 
 					<p class="text-muted-color text-center">{{ $t("dialogs.about.description") }}</p>
-					<p class="text-muted-color text-center font-bold mt-8" v-if="is_se_enabled">{{ $t("dialogs.about.thank_you") }}</p>
-					<p class="text-muted-color text-center font-bold mt-8" v-if="!is_se_enabled && !is_se_info_hidden">
+					<p v-if="is_se_enabled" class="text-muted-color text-center font-bold mt-8">{{ $t("dialogs.about.thank_you") }}</p>
+					<p v-if="!is_se_enabled && !is_se_info_hidden" class="text-muted-color text-center font-bold mt-8">
 						<span v-html="supporter" />
 						<a class="text-primary-500 underline cursor-pointer ltr:ml-1 rtl:mr-1" @click="toggleRegistration">
 							{{ $t("dialogs.about.here") }} </a
@@ -47,7 +47,7 @@
 					</p>
 				</div>
 				<div class="flex justify-center">
-					<Button @click="closeCallback" severity="info" class="w-full font-bold border-none rounded-none rounded-b-xl">
+					<Button severity="info" class="w-full font-bold border-none rounded-none rounded-b-xl" @click="closeCallback">
 						{{ $t("dialogs.button.close") }}
 					</Button>
 				</div>

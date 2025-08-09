@@ -3,7 +3,7 @@
 		<label class="w-full text-muted-color-emphasis" :for="props.config.key" v-html="props.label ?? props.config.documentation" />
 		<div class="flex gap-4 items-center">
 			<ResetField v-if="changed" @click="reset" />
-			<Select :id="props.config.key" class="border-none" v-model="val" :options="options" @update:modelValue="update" />
+			<Select :id="props.config.key" v-model="val" class="border-none" :options="options" @update:model-value="update" />
 		</div>
 	</div>
 </template>

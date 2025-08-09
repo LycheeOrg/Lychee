@@ -13,7 +13,7 @@
 				</div>
 			</div>
 			<div v-else>
-				<div class="p-9" v-if="error_no_target === false">
+				<div v-if="error_no_target === false" class="p-9">
 					<span v-if="props.album" class="font-bold">
 						{{ sprintf($t("dialogs.merge.merge_to"), props.album.title) }}
 					</span>

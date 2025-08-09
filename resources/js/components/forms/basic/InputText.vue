@@ -8,10 +8,10 @@
 		:fluid="props.fluid"
 		:dt="props.dt"
 		:pt="props.pt"
-		:ptOptions="props.ptOptions"
+		:pt-options="props.ptOptions"
 		:unstyled="props.unstyled"
 		:autofocus="props.autofocus"
-		@update:modelValue="($event) => emits('updated', $event)"
+		@update:model-value="($event) => emits('updated', $event)"
 	/>
 </template>
 <script setup lang="ts">
@@ -19,6 +19,7 @@ import { ref } from "vue";
 import InputText, { InputTextPassThroughOptions } from "primevue/inputtext";
 import type { PassThroughOptions } from "primevue/passthrough";
 import type { DesignToken, Nullable, PassThrough } from "@primevue/core";
+import { InputTextDesignTokens } from "@primeuix/themes/types/inputtext";
 
 const props = withDefaults(
 	defineProps<{
@@ -26,7 +27,7 @@ const props = withDefaults(
 		invalid?: boolean | undefined;
 		variant?: "outlined" | "filled" | undefined;
 		fluid?: boolean;
-		dt?: DesignToken<any>;
+		dt?: DesignToken<InputTextDesignTokens>;
 		pt?: PassThrough<InputTextPassThroughOptions>;
 		ptOptions?: PassThroughOptions;
 		unstyled?: boolean;

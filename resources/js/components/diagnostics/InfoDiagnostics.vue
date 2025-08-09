@@ -1,6 +1,6 @@
 <template>
-	<Panel :header="$t('diagnostics.info')" v-if="infos" class="border-none max-w-7xl mx-auto" dir="ltr">
-		<pre><div v-for="info in infos" class=" text-muted-color font-mono text-sm">{{ info }}</div>
+	<Panel v-if="infos" :header="$t('diagnostics.info')" class="border-none max-w-7xl mx-auto" dir="ltr">
+		<pre><div v-for="(info, idx) in infos" class=" text-muted-color font-mono text-sm" :key="`info-${idx}`">{{ info }}</div>
 		</pre>
 	</Panel>
 </template>

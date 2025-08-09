@@ -4,19 +4,15 @@ import { storeToRefs } from "pinia";
 import { computed, Ref, ref } from "vue";
 
 export function useSelection(
-	photos: Ref<{ [key: number]: App.Http.Resources.Models.PhotoResource }>,
-	albums: Ref<{ [key: number]: App.Http.Resources.Models.ThumbAlbumResource }>,
+	photos: Ref<App.Http.Resources.Models.PhotoResource[]>,
+	albums: Ref<App.Http.Resources.Models.ThumbAlbumResource[]>,
 	togglableStore: TogglablesStateStore,
 ) {
 	const { selectedPhotosIdx, selectedAlbumsIdx } = storeToRefs(togglableStore);
 	const selectedPhoto = computed(() => (selectedPhotosIdx.value.length === 1 ? photos.value[selectedPhotosIdx.value[0]] : undefined));
 	const selectedAlbum = computed(() => (selectedAlbumsIdx.value.length === 1 ? albums.value[selectedAlbumsIdx.value[0]] : undefined));
-	const selectedPhotos = computed(() =>
-		(photos.value as App.Http.Resources.Models.PhotoResource[]).filter((_, idx) => selectedPhotosIdx.value.includes(idx)),
-	);
-	const selectedAlbums = computed(() =>
-		(albums.value as App.Http.Resources.Models.ThumbAlbumResource[]).filter((_, idx) => selectedAlbumsIdx.value.includes(idx)),
-	);
+	const selectedPhotos = computed(() => photos.value.filter((_, idx) => selectedPhotosIdx.value.includes(idx)));
+	const selectedAlbums = computed(() => albums.value.filter((_, idx) => selectedAlbumsIdx.value.includes(idx)));
 	const selectedPhotosIds = computed(() => selectedPhotos.value.map((p) => p.id));
 	const selectedAlbumsIds = computed(() => selectedAlbums.value.map((a) => a.id));
 
@@ -74,7 +70,7 @@ export function useSelection(
 		}
 	}
 
-	function handlePhotoCtrl(idx: number, e: Event): void {
+	function handlePhotoCtrl(idx: number, _e: Event): void {
 		if (isPhotoSelected(idx)) {
 			removeFromPhotoSelection(idx);
 		} else {
@@ -83,7 +79,7 @@ export function useSelection(
 		lastPhotoClicked.value = idx;
 	}
 
-	function handlePhotoShift(idx: number, e: Event): void {
+	function handlePhotoShift(idx: number, _e: Event): void {
 		if (selectedPhotos.value.length === 0) {
 			addToPhotoSelection(idx);
 			lastPhotoClicked.value = idx;
@@ -136,7 +132,7 @@ export function useSelection(
 		}
 	}
 
-	function handleAlbumCtrl(idx: number, e: Event): void {
+	function handleAlbumCtrl(idx: number, _e: Event): void {
 		if (isAlbumSelected(idx)) {
 			removeFromAlbumSelection(idx);
 		} else {
@@ -145,7 +141,7 @@ export function useSelection(
 		lastAlbumClicked.value = idx;
 	}
 
-	function handleAlbumShift(idx: number, e: Event): void {
+	function handleAlbumShift(idx: number, _e: Event): void {
 		if (selectedAlbums.value.length === 0) {
 			addToAlbumSelection(idx);
 			lastAlbumClicked.value = idx;
@@ -175,34 +171,26 @@ export function useSelection(
 	}
 
 	function selectEverything(): void {
-		// @ts-expect-error
 		if (selectedPhotosIdx.value.length === photos.value.length) {
 			// Flip and select albums
 			selectedPhotosIdx.value = [];
-			// @ts-expect-error
 			selectedAlbumsIdx.value = Array.from(Array(albums.value.length).keys());
 			return;
 		}
-		// @ts-expect-error
 		if (selectedAlbumsIdx.value.length === albums.value.length) {
 			selectedAlbumsIdx.value = [];
-			// @ts-expect-error
 			selectedPhotosIdx.value = Array.from(Array(photos.value.length).keys());
 			// Flip and select photos
 			return;
 		}
 		if (selectedAlbumsIdx.value.length > 0) {
-			// @ts-expect-error
 			selectedAlbumsIdx.value = Array.from(Array(albums.value.length).keys());
 			return;
 		}
-		// @ts-expect-error
 		if (photos.value.length > 0) {
-			// @ts-expect-error
 			selectedPhotosIdx.value = Array.from(Array(photos.value.length).keys());
 			return;
 		}
-		// @ts-expect-error
 		selectedAlbumsIdx.value = Array.from(Array(albums.value.length).keys());
 	}
 

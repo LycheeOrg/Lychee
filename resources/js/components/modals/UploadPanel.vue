@@ -1,6 +1,6 @@
 <template>
 	<Dialog v-model:visible="is_upload_visible" modal pt:root:class="border-none" :dismissable-mask="true">
-		<template #container="{ closeCallback }">
+		<template #container>
 			<div v-if="setup" class="max-w-md w-full">
 				<div v-if="counts.files > 0" class="m-4 flex flex-wrap justify-center">
 					<span v-if="counts.completed === counts.files" class="w-full text-center text-muted-color-emphasis font-bold">{{
@@ -29,11 +29,11 @@
 				</ScrollPanel>
 				<div v-if="counts.files === 0" class="p-9 max-w-3xl w-full">
 					<div
-						class="absolute flex items-center justify-center bg-primary-500 opacity-90"
-						v-on:dragover.prevent="isDropping = true"
-						v-on:dragleave.prevent="isDropping = false"
-						v-on:drop="upload"
 						v-show="isDropping"
+						class="absolute flex items-center justify-center bg-primary-500 opacity-90"
+						@dragover.prevent="isDropping = true"
+						@dragleave.prevent="isDropping = false"
+						@drop="upload"
 					>
 						<span class="text-3xl">{{ $t("dialogs.upload.release") }}</span>
 					</div>
@@ -44,7 +44,7 @@
 						<h3 class="text-xl text-center">{{ $t("dialogs.upload.select") }}</h3>
 						<em class="italic text-muted-color-emphasis hover:text-muted-color">{{ $t("dialogs.upload.drag") }}</em>
 					</label>
-					<input v-on:change="upload" type="file" id="myFiles" multiple class="hidden" />
+					<input id="myFiles" type="file" multiple class="hidden" @change="upload" />
 				</div>
 			</div>
 			<div v-else>
@@ -53,27 +53,27 @@
 			<div class="flex justify-center">
 				<Button
 					v-if="showCancel"
-					@click="cancel"
 					severity="secondary"
 					class="w-full font-bold border-none border-1 rounded-none ltr:rounded-bl-xl rtl:rounded-br-xl"
+					@click="cancel"
 				>
 					{{ $t("dialogs.button.cancel") }}
 				</Button>
 				<Button
 					v-if="!showResume"
-					@click="close"
 					severity="secondary"
 					class="w-full font-bold border-none border-1 rounded-none ltr:rounded-br-xl rtl:rounded-bl-xl"
 					:class="showCancel ? '' : 'ltr:rounded-bl-xl rtl:rounded-br-xl'"
 					:disabled="showCancel"
+					@click="close"
 				>
 					{{ $t("dialogs.button.close") }}
 				</Button>
 				<Button
 					v-else
-					@click="() => uploadNext()"
 					severity="contrast"
 					class="w-full font-bold border-none border-1 rounded-none ltr:rounded-br-xl rtl:rounded-bl-xl"
+					@click="() => uploadNext()"
 				>
 					{{ $t("dialogs.upload.resume") }}
 				</Button>
@@ -85,7 +85,7 @@
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
 import { computed, Ref, ref, watch } from "vue";
-import UploadingLine from "../forms/upload/UploadingLine.vue";
+import UploadingLine from "@/components/forms/upload/UploadingLine.vue";
 import ScrollPanel from "primevue/scrollpanel";
 import UploadService from "@/services/upload-service";
 import ProgressBar from "primevue/progressbar";

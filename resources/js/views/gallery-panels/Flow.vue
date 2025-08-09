@@ -15,17 +15,17 @@
 		<div class="absolute top-0 left-1/2 text-center text-lg font-semibold text-surface-0 w-xs -translate-x-1/2 md:hidden">
 			{{ title }}
 		</div>
-		<div class="flex flex-col items-center gap-16 mb-16 px-8" v-if="config !== undefined">
+		<div v-if="config !== undefined" class="flex flex-col items-center gap-16 mb-16 px-8">
 			<TransitionGroup name="slide-fade">
 				<AlbumCard v-for="album in albums" :key="`album-${album.id}`" :album="album" :config="config" @set-selection="setSelection" />
 			</TransitionGroup>
 			<div v-if="albums && albums.length === 0" class="h-[70vh] text-muted-color flex items-center">{{ $t("flow.no_content") }}</div>
-			<div class="sentinel" ref="sentinel" v-if="currentPage < lastPage"></div>
+			<div v-if="currentPage < lastPage" ref="sentinel" class="sentinel"></div>
 		</div>
 		<LigtBox v-if="selectedPhoto" :photo="selectedPhoto" @go-back="goBack" @next="next" @previous="previous" />
-		<ProgressSpinner class="flex justify-center" v-if="isLoading && !isTouchDevice()" />
+		<ProgressSpinner v-if="isLoading && !isTouchDevice()" class="flex justify-center" />
 		<GalleryFooter v-once />
-		<ScrollTop target="parent" v-if="selectedPhoto" />
+		<ScrollTop v-if="selectedPhoto" target="parent" />
 	</div>
 </template>
 <script setup lang="ts">
@@ -40,7 +40,6 @@ import { useAuthStore } from "@/stores/Auth";
 import { useFlowStateStore } from "@/stores/FlowState";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
-import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { isTouchDevice, shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
 import { onKeyStroke, useIntersectionObserver } from "@vueuse/core";
 import { storeToRefs } from "pinia";
@@ -57,7 +56,6 @@ const { isLTR } = useLtRorRtL();
 
 const auth = useAuthStore();
 const lycheeStore = useLycheeStateStore();
-const togglableStore = useTogglablesStateStore();
 const flowState = useFlowStateStore();
 const router = useRouter();
 
