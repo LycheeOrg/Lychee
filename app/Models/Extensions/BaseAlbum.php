@@ -41,6 +41,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null                      $published_at
  * @property string|null                      $description
  * @property bool                             $is_nsfw
+ * @property bool                             $is_pinned
  * @property string|null                      $copyright
  * @property PhotoLayoutType|null             $photo_layout
  * @property TimelinePhotoGranularity         $photo_timeline

@@ -40,6 +40,7 @@ use App\Http\Requests\Album\SetAlbumProtectionPolicyRequest;
 use App\Http\Requests\Album\SetAlbumTrackRequest;
 use App\Http\Requests\Album\SetAsCoverRequest;
 use App\Http\Requests\Album\SetAsHeaderRequest;
+use App\Http\Requests\Album\SetPinnedRequest;
 use App\Http\Requests\Album\TargetListAlbumRequest;
 use App\Http\Requests\Album\TransferAlbumRequest;
 use App\Http\Requests\Album\UnlockAlbumRequest;
@@ -139,6 +140,7 @@ class AlbumController extends Controller
 		$album->photo_sorting = $request->photoSortingCriterion();
 		$album->album_sorting = $request->albumSortingCriterion();
 		$album->photo_layout = $request->photoLayout();
+		$album->is_pinned = $request->is_pinned();
 
 		$album->album_timeline = $request->album_timeline();
 		$album->photo_timeline = $request->photo_timeline();
@@ -171,6 +173,7 @@ class AlbumController extends Controller
 		$album->photo_sorting = $request->photoSortingCriterion();
 		$album->photo_layout = $request->photoLayout();
 		$album->photo_timeline = $request->photo_timeline();
+		$album->is_pinned = $request->is_pinned();
 		$album->save();
 
 		// Root
@@ -301,6 +304,16 @@ class AlbumController extends Controller
 	{
 		$album = $request->album();
 		$album->title = $request->title();
+		$album->save();
+	}
+
+	/**
+	 * Set the pinned status of an album.
+	 */
+	public function setPinned(SetPinnedRequest $request): void
+	{
+		$album = $request->album();
+		$album->is_pinned = $request->is_pinned();
 		$album->save();
 	}
 

@@ -7,6 +7,7 @@ return [
 	*/
     'title' => 'Galerij',
     'smart_albums' => 'Slimme albums',
+    'pinned_albums' => 'Vastgepinde albums',
     'albums' => 'Albums',
     'root' => 'Albums',
     'favourites' => 'Favorieten',
@@ -195,6 +196,8 @@ return [
         'rename' => 'Hernoemen',
         'move' => 'Verplaatsen',
         'move_all' => 'Alles verplaatsen',
+        'pin' => 'Vastpinnen',
+        'unpin' => 'Losmaken',
         'delete' => 'Verwijderen',
         'delete_all' => 'Alles verwijderen',
         'download' => 'Downloaden',

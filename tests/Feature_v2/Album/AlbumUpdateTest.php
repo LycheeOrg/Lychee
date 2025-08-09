@@ -37,6 +37,7 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 			'photo_layout' => null,
 			'copyright' => '',
 			'is_compact' => false,
+			'is_pinned' => false,
 			'header_id' => null,
 			'album_timeline' => null,
 			'photo_timeline' => null,
@@ -56,6 +57,7 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 			'photo_layout' => null,
 			'copyright' => '',
 			'is_compact' => false,
+			'is_pinned' => false,
 			'header_id' => null,
 			'album_timeline' => null,
 			'photo_timeline' => null,
@@ -78,6 +80,7 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 			'photo_layout' => null,
 			'copyright' => '',
 			'is_compact' => false,
+			'is_pinned' => false,
 			'header_id' => null,
 			'album_timeline' => null,
 			'photo_timeline' => null,
@@ -95,6 +98,7 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 			'photo_sorting_column' => 'title',
 			'photo_sorting_order' => 'ASC',
 			'copyright' => '',
+			'is_pinned' => false,
 			'photo_layout' => null,
 			'photo_timeline' => null,
 		]);
@@ -108,6 +112,7 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 			'photo_sorting_column' => 'title',
 			'photo_sorting_order' => 'ASC',
 			'copyright' => '',
+			'is_pinned' => false,
 			'photo_layout' => null,
 			'photo_timeline' => null,
 		]);
@@ -124,6 +129,7 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 			'photo_sorting_column' => 'title',
 			'photo_sorting_order' => 'ASC',
 			'copyright' => '',
+			'is_pinned' => false,
 			'photo_layout' => null,
 			'photo_timeline' => null,
 		]);
@@ -147,6 +153,176 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 			],
 		]);
 		self::assertCount(0, $response->json('resource.photos'));
+	}
+
+	public function testUpdateAlbumIsPinned(): void
+	{
+		// Test setting album as pinned
+		$response = $this->actingAs($this->userMayUpload1)->patchJson('Album', [
+			'album_id' => $this->album1->id,
+			'title' => 'Pinned Album',
+			'license' => 'none',
+			'description' => '',
+			'photo_sorting_column' => 'title',
+			'photo_sorting_order' => 'ASC',
+			'album_sorting_column' => 'title',
+			'album_sorting_order' => 'DESC',
+			'album_aspect_ratio' => '1/1',
+			'photo_layout' => null,
+			'copyright' => '',
+			'is_compact' => false,
+			'is_pinned' => true,
+			'header_id' => null,
+			'album_timeline' => null,
+			'photo_timeline' => null,
+		]);
+		$this->assertOk($response);
+
+		// Verify the album is pinned in the response
+		$response->assertJson([
+			'is_pinned' => true,
+		]);
+
+		// Test setting tag album as pinned
+		$response = $this->actingAs($this->userMayUpload1)->patchJson('TagAlbum', [
+			'album_id' => $this->tagAlbum1->id,
+			'title' => 'Pinned Tag Album',
+			'tags' => ['tag1', 'tag2'],
+			'description' => '',
+			'photo_sorting_column' => 'title',
+			'photo_sorting_order' => 'ASC',
+			'copyright' => '',
+			'is_pinned' => true,
+			'photo_layout' => null,
+			'photo_timeline' => null,
+		]);
+		$this->assertOk($response);
+
+		// Verify the tag album is pinned in the response
+		$response->assertJson([
+			'is_pinned' => true,
+		]);
+
+		// Test unpinning album
+		$response = $this->actingAs($this->userMayUpload1)->patchJson('Album', [
+			'album_id' => $this->album1->id,
+			'title' => 'Unpinned Album',
+			'license' => 'none',
+			'description' => '',
+			'photo_sorting_column' => 'title',
+			'photo_sorting_order' => 'ASC',
+			'album_sorting_column' => 'title',
+			'album_sorting_order' => 'DESC',
+			'album_aspect_ratio' => '1/1',
+			'photo_layout' => null,
+			'copyright' => '',
+			'is_compact' => false,
+			'is_pinned' => false,
+			'header_id' => null,
+			'album_timeline' => null,
+			'photo_timeline' => null,
+		]);
+		$this->assertOk($response);
+
+		// Verify the album is unpinned in the response
+		$response->assertJson([
+			'is_pinned' => false,
+		]);
+
+		// Test unpinning tag album
+		$response = $this->actingAs($this->userMayUpload1)->patchJson('TagAlbum', [
+			'album_id' => $this->tagAlbum1->id,
+			'title' => 'Unpinned Tag Album',
+			'tags' => ['tag1', 'tag2'],
+			'description' => '',
+			'photo_sorting_column' => 'title',
+			'photo_sorting_order' => 'ASC',
+			'copyright' => '',
+			'is_pinned' => false,
+			'photo_layout' => null,
+			'photo_timeline' => null,
+		]);
+		$this->assertOk($response);
+
+		// Verify the tag album is unpinned in the response
+		$response->assertJson([
+			'is_pinned' => false,
+		]);
+	}
+
+	public function testUpdateAlbumIsPinnedUnauthorized(): void
+	{
+		// Test unauthorized user attempting to pin an album
+		$response = $this->patchJson('Album', [
+			'album_id' => $this->album1->id,
+			'title' => 'Unauthorized Pinned Album',
+			'license' => 'none',
+			'description' => '',
+			'photo_sorting_column' => 'title',
+			'photo_sorting_order' => 'ASC',
+			'album_sorting_column' => 'title',
+			'album_sorting_order' => 'DESC',
+			'album_aspect_ratio' => '1/1',
+			'photo_layout' => null,
+			'copyright' => '',
+			'is_compact' => false,
+			'is_pinned' => true,
+			'header_id' => null,
+			'album_timeline' => null,
+			'photo_timeline' => null,
+		]);
+		$this->assertUnauthorized($response);
+
+		// Test unauthorized user attempting to pin a tag album
+		$response = $this->patchJson('TagAlbum', [
+			'album_id' => $this->tagAlbum1->id,
+			'title' => 'Unauthorized Pinned Tag Album',
+			'tags' => ['tag1', 'tag2'],
+			'description' => '',
+			'photo_sorting_column' => 'title',
+			'photo_sorting_order' => 'ASC',
+			'copyright' => '',
+			'is_pinned' => true,
+			'photo_layout' => null,
+			'photo_timeline' => null,
+		]);
+		$this->assertUnauthorized($response);
+
+		// Test locked user attempting to pin an album
+		$response = $this->actingAs($this->userLocked)->patchJson('Album', [
+			'album_id' => $this->album1->id,
+			'title' => 'Locked User Pinned Album',
+			'license' => 'none',
+			'description' => '',
+			'photo_sorting_column' => 'title',
+			'photo_sorting_order' => 'ASC',
+			'album_sorting_column' => 'title',
+			'album_sorting_order' => 'DESC',
+			'album_aspect_ratio' => '1/1',
+			'photo_layout' => null,
+			'copyright' => '',
+			'is_compact' => false,
+			'is_pinned' => true,
+			'header_id' => null,
+			'album_timeline' => null,
+			'photo_timeline' => null,
+		]);
+		$this->assertForbidden($response);
+
+		// Test locked user attempting to pin a tag album
+		$response = $this->actingAs($this->userLocked)->patchJson('TagAlbum', [
+			'album_id' => $this->tagAlbum1->id,
+			'title' => 'Locked User Pinned Tag Album',
+			'tags' => ['tag1', 'tag2'],
+			'description' => '',
+			'photo_sorting_column' => 'title',
+			'photo_sorting_order' => 'ASC',
+			'copyright' => '',
+			'is_pinned' => true,
+			'photo_layout' => null,
+			'photo_timeline' => null,
+		]);
+		$this->assertForbidden($response);
 	}
 
 	public function testUpdateProtectionPolicyUnauthorizedForbidden(): void
@@ -278,6 +454,7 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 						'id' => $this->photo1->id,
 					],
 					'is_nsfw' => true,
+					'is_pinned' => false,
 					'is_public' => true,
 					'is_link_required' => false,
 					'is_password_required' => false,
@@ -355,6 +532,7 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 					'description' => null,
 					'thumb' => null,
 					'is_nsfw' => false,
+					'is_pinned' => false,
 					'is_public' => true,
 					'is_link_required' => false,
 					'is_password_required' => true,

@@ -52,6 +52,22 @@
 						@reset="reset"
 					/>
 					<SelectOptionsField
+						v-else-if="config.key === 'sorting_pinned_albums_col'"
+						:config="config"
+						:options="albumSortingColumnsOptions"
+						:mapper="SelectBuilders.buildAlbumSorting"
+						@filled="filled"
+						@reset="reset"
+					/>
+					<SelectOptionsField
+						v-else-if="config.key === 'sorting_pinned_albums_order'"
+						:config="config"
+						:options="sortingOrdersOptions"
+						:mapper="SelectBuilders.buildSortingOrder"
+						@filled="filled"
+						@reset="reset"
+					/>
+					<SelectOptionsField
 						v-else-if="config.key === 'default_album_thumb_aspect_ratio'"
 						:config="config"
 						:options="aspectRationOptions"

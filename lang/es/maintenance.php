@@ -1,78 +1,76 @@
 <?php
-
 return [
-	/*
+    /*
 	|--------------------------------------------------------------------------
 	| Update Page
 	|--------------------------------------------------------------------------
 	*/
-	'title' => 'Maintenance',
-	'description' => 'You will find on this page, all the required actions to keep your Lychee installation running smooth and nicely.',
-	'cleaning' => [
-		'title' => 'Cleaning %s',
-		'result' => '%s deleted.',
-		'description' => 'Remove all contents from <span class="font-mono">%s</span>',
-		'button' => 'Clean',
-	],
-	'duplicate-finder' => [
-		'title' => 'Duplicates',
-		'description' => 'This module counts potential duplicates betwen pictures.',
-		'duplicates-all' => 'Duplicates over all albums',
-		'duplicates-title' => 'Title duplicates per album',
-		'duplicates-per-album' => 'Duplicates per album',
-		'show' => 'Show duplicates',
-	],
-	'fix-jobs' => [
-		'title' => 'Fixing Jobs History',
-		'description' => 'Mark jobs with status <span class="text-ready-400">%s</span> or <span class="text-primary-500">%s</span> as <span class="text-danger-700">%s</span>.',
-		'button' => 'Fix job history',
-	],
-	'gen-sizevariants' => [
-		'title' => 'Missing %s',
-		'description' => 'Found %d %s that could be generated.',
-		'button' => 'Generate!',
-		'success' => 'Successfully generated %d %s.',
-	],
-	'fill-filesize-sizevariants' => [
-		'title' => 'File sizes missing',
-		'description' => 'Found %d small variants without file size.',
-		'button' => 'Fetch data!',
-		'success' => 'Successfully computed sizes of %d small variants.',
-	],
-	'fix-tree' => [
-		'title' => 'Tree statistics',
-		'Oddness' => 'Oddness',
-		'Duplicates' => 'Duplicates',
-		'Wrong parents' => 'Wrong parents',
-		'Missing parents' => 'Missing parents',
-		'button' => 'Fix tree',
-	],
-	'optimize' => [
-		'title' => 'Optimize Database',
-		'description' => 'If you notice slowdown in your installation, it may be because your database does not
-		have all its needed index.',
-		'button' => 'Optimize Database',
-	],
-	'update' => [
-		'title' => 'Updates',
-		'check-button' => 'Check for updates',
-		'update-button' => 'Update',
-		'no-pending-updates' => 'No pending update.',
-	],
+    'title' => 'Mantenimiento',
+    'description' => 'You will find on this page, all the required actions to keep your Lychee installation running smooth and nicely.',
+    'cleaning' => [
+        'title' => 'Limpieza %s',
+        'result' => '%s eliminado.',
+        'description' => 'Eliminar todo el contenido de <span class="font-mono">%s</span>',
+        'button' => 'Limpio',
+    ],
+    'duplicate-finder' => [
+        'title' => 'Duplicados',
+        'description' => 'Este módulo cuenta los posibles duplicados entre imágenes.',
+        'duplicates-all' => 'Duplicados en todos los álbumes',
+        'duplicates-title' => 'Títulos duplicados por álbum',
+        'duplicates-per-album' => 'Duplicados por álbum',
+        'show' => 'Mostrar duplicados',
+    ],
+    'fix-jobs' => [
+        'title' => 'Reparación del historial de trabajos',
+        'description' => 'Marcar trabajos con estado <span class="text-ready-400">%s</span> o <span class="text-primary-500">%s</span> como <span class="text-danger-700">%s</span>.',
+        'button' => 'Corregir historial laboral',
+    ],
+    'gen-sizevariants' => [
+        'title' => 'Falta %s',
+        'description' => 'Se han encontrado %d %s que podrían generarse.',
+        'button' => '¡Generar!',
+        'success' => 'Se generó exitosamente %d %s.',
+    ],
+    'fill-filesize-sizevariants' => [
+        'title' => 'Tamaños de archivos faltantes',
+        'description' => 'Se encontraron %d variantes pequeñas sin tamaño de archivo.',
+        'button' => '¡Obtener datos!',
+        'success' => 'Se calcularon correctamente los tamaños de %d variantes pequeñas.',
+    ],
+    'fix-tree' => [
+        'title' => 'Estadísticas de árboles',
+        'Oddness' => 'Rareza',
+        'Duplicates' => 'Duplicados',
+        'Wrong parents' => 'Padres equivocados',
+        'Missing parents' => 'Padres desaparecidos',
+        'button' => 'Arreglar árbol',
+    ],
+    'optimize' => [
+        'title' => 'Optimizar la base de datos',
+        'description' => 'Si nota una lentitud en la instalación, puede deberse a que su base de datos no tiene todo el índice necesario.',
+        'button' => 'Optimizar la base de datos',
+    ],
+    'update' => [
+        'title' => 'Actualizaciones',
+        'check-button' => 'Buscar actualizaciones',
+        'update-button' => 'Actualizar',
+        'no-pending-updates' => 'No hay actualizaciones pendientes.',
+    ],
     'missing-palettes' => [
-        'title' => 'Missing Palettes',
-        'description' => 'Found %d missing palettes.',
-        'button' => 'Create missing',
+        'title' => 'Paletas faltantes',
+        'description' => 'Se encontraron %d paletas faltantes.',
+        'button' => 'Crear faltantes',
     ],
     'statistics-check' => [
-        'title' => 'Statistics integrity Check',
-        'missing_photos' => '%d photo statistics missing.',
-        'missing_albums' => '%d album statistics missing.',
-        'button' => 'Create missing',
+        'title' => 'Comprobación de integridad de las estadísticas',
+        'missing_photos' => 'Faltan %d estadísticas de fotos.',
+        'missing_albums' => 'Faltan %d estadísticas del álbum.',
+        'button' => 'Crear faltantes',
     ],
-	'flush-cache' => [
-		'title' => 'Flush Cache',
-		'description' => 'Flush the cache of every user to solve invalidation problems.',
-		'button' => 'Flush',
-	],
+    'flush-cache' => [
+        'title' => 'Vaciar caché',
+        'description' => 'Limpiar la caché de cada usuario para solucionar problemas de invalidación.',
+        'button' => 'Vaciar',
+    ],
 ];

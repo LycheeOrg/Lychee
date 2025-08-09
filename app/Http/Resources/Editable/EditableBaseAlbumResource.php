@@ -39,6 +39,7 @@ class EditableBaseAlbumResource extends Data
 	/** @var string[] */
 	public array $tags;
 	public bool $is_model_album;
+	public bool $is_pinned;
 
 	public function __construct(Album|TagAlbum $album)
 	{
@@ -55,6 +56,7 @@ class EditableBaseAlbumResource extends Data
 		$this->photo_layout = $album->photo_layout;
 		$this->album_timeline = null;
 		$this->photo_timeline = $album->photo_timeline;
+		$this->is_pinned = $album->is_pinned;
 
 		if ($album instanceof Album) {
 			$this->is_model_album = true;

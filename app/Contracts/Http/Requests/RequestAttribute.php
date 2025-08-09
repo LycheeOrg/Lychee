@@ -66,6 +66,7 @@ class RequestAttribute
 	public const PERMISSION_ID = 'perm_id';
 	public const IS_COMPACT_ATTRIBUTE = 'is_compact';
 	public const IS_NSFW_ATTRIBUTE = 'is_nsfw';
+	public const IS_PINNED_ATTRIBUTE = 'is_pinned';
 	public const IS_PUBLIC_ATTRIBUTE = 'is_public';
 	public const IS_LINK_REQUIRED_ATTRIBUTE = 'is_link_required';
 	public const GRANTS_DOWNLOAD_ATTRIBUTE = 'grants_download';

@@ -34,6 +34,7 @@ export type AlbumCallbacks = {
 	toggleRename: () => void;
 	toggleMerge: () => void;
 	toggleMove: () => void;
+	togglePin: () => void;
 	toggleDelete: () => void;
 	toggleDownload: () => void;
 };
@@ -269,6 +270,12 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 					icon: "pi pi-arrow-right-arrow-left",
 					callback: albumCallbacks.toggleMove,
 					access: selectedAlbum.rights.can_move ?? false,
+				},
+				{
+					label: selectedAlbum.is_pinned ? "gallery.menus.unpin" : "gallery.menus.pin",
+					icon: "pi pi-thumbtack",
+					callback: albumCallbacks.togglePin,
+					access: selectedAlbum.rights.can_edit ?? false,
 				},
 				{
 					label: "gallery.menus.delete",

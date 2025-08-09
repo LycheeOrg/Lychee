@@ -421,6 +421,7 @@ function saveAlbum() {
 		photo_layout: photoLayout.value?.value ?? null,
 		album_timeline: albumTimeline.value?.value ?? null,
 		photo_timeline: photoTimeline.value?.value ?? null,
+		is_pinned: props.editable.is_pinned,
 	};
 	AlbumService.updateAlbum(data).then(() => {
 		toast.add({ severity: "success", summary: trans("toasts.success"), life: 3000 });
@@ -444,6 +445,7 @@ function saveTagAlbum() {
 		copyright: copyright.value ?? null,
 		photo_layout: photoLayout.value?.value ?? null,
 		photo_timeline: photoTimeline.value?.value ?? null,
+		is_pinned: props.editable.is_pinned,
 	};
 	AlbumService.updateTag(data).then(() => {
 		toast.add({ severity: "success", summary: trans("toasts.success"), life: 3000 });

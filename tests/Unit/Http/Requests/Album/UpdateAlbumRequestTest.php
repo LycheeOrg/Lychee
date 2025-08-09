@@ -61,6 +61,7 @@ class UpdateAlbumRequestTest extends BaseRequestTest
 
 		$request->merge([
 			RequestAttribute::IS_COMPACT_ATTRIBUTE => true,
+			RequestAttribute::IS_PINNED_ATTRIBUTE => false,
 			RequestAttribute::ALBUM_ID_ATTRIBUTE => 'ePN3Y_kA16KtZGXmxv-kdBrg',
 			RequestAttribute::HEADER_ID_ATTRIBUTE => 'ePN3Y_kA16KtZGXmxv-kdBrg',
 			RequestAttribute::TITLE_ATTRIBUTE => 'Test Title',
@@ -108,6 +109,7 @@ class UpdateAlbumRequestTest extends BaseRequestTest
 			RequestAttribute::ALBUM_PHOTO_LAYOUT => ['present', 'nullable', new Enum(PhotoLayoutType::class)],
 			RequestAttribute::COPYRIGHT_ATTRIBUTE => ['present', 'nullable', new CopyrightRule()],
 			RequestAttribute::IS_COMPACT_ATTRIBUTE => ['required', 'boolean'],
+			RequestAttribute::IS_PINNED_ATTRIBUTE => ['present', 'boolean'],
 			RequestAttribute::HEADER_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
 			RequestAttribute::ALBUM_TIMELINE_ALBUM => ['present', 'nullable', new Enum(TimelineAlbumGranularity::class), new EnumRequireSupportRule(TimelinePhotoGranularity::class, [TimelinePhotoGranularity::DEFAULT, TimelinePhotoGranularity::DISABLED], $this->mock_verify)],
 			RequestAttribute::ALBUM_TIMELINE_PHOTO => ['present', 'nullable', new Enum(TimelinePhotoGranularity::class), new EnumRequireSupportRule(TimelinePhotoGranularity::class, [TimelinePhotoGranularity::DEFAULT, TimelinePhotoGranularity::DISABLED], $this->mock_verify)],

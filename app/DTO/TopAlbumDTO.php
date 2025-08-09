@@ -17,12 +17,14 @@ class TopAlbumDTO
 	 *
 	 * @param Collection<int,\App\SmartAlbums\BaseSmartAlbum> $smart_albums
 	 * @param Collection<int,\App\Models\TagAlbum>            $tag_albums
+	 * @param Collection<int,\App\Models\Album>               $pinned_albums
 	 * @param Collection<int,\App\Models\Album>               $albums
 	 * @param Collection<int,\App\Models\Album>|null          $shared_albums
 	 */
 	public function __construct(
 		public Collection $smart_albums,
 		public Collection $tag_albums,
+		public Collection $pinned_albums,
 		public Collection $albums,
 		public ?Collection $shared_albums = null,
 	) {

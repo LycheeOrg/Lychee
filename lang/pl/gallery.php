@@ -9,6 +9,7 @@ return [
 	'title' => 'Galeria',
 
 	'smart_albums' => 'Inteligentne albumy',
+	'pinned_albums' => 'Przypięte albumy',
 	'albums' => 'Albumy',
 	'root' => 'Albumy',
 	'favourites' => 'Favourites',
@@ -215,6 +216,8 @@ return [
 		'rename' => 'Zmiana nazwy',
 		'move' => 'Przenieś',
 		'move_all' => 'Przenieś wybrane',
+		'pin' => 'Przypnij',
+		'unpin' => 'Odepnij',
 		'delete' => 'Usuń',
 		'delete_all' => 'Usuń zaznaczone',
 		'download' => 'Pobierz',

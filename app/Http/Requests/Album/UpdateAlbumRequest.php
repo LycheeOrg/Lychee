@@ -14,6 +14,7 @@ use App\Contracts\Http\Requests\HasAlbumSortingCriterion;
 use App\Contracts\Http\Requests\HasCompactBoolean;
 use App\Contracts\Http\Requests\HasCopyright;
 use App\Contracts\Http\Requests\HasDescription;
+use App\Contracts\Http\Requests\HasIsPinned;
 use App\Contracts\Http\Requests\HasLicense;
 use App\Contracts\Http\Requests\HasPhoto;
 use App\Contracts\Http\Requests\HasPhotoLayout;
@@ -40,6 +41,7 @@ use App\Http\Requests\Traits\HasAspectRatioTrait;
 use App\Http\Requests\Traits\HasCompactBooleanTrait;
 use App\Http\Requests\Traits\HasCopyrightTrait;
 use App\Http\Requests\Traits\HasDescriptionTrait;
+use App\Http\Requests\Traits\HasIsPinnedTrait;
 use App\Http\Requests\Traits\HasLicenseTrait;
 use App\Http\Requests\Traits\HasPhotoLayoutTrait;
 use App\Http\Requests\Traits\HasPhotoSortingCriterionTrait;
@@ -60,7 +62,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Validation\ValidationException;
 
-class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, HasDescription, HasLicense, HasPhotoSortingCriterion, HasAlbumSortingCriterion, HasCopyright, HasPhoto, HasCompactBoolean, HasPhotoLayout, HasTimelineAlbum, HasTimelinePhoto
+class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, HasDescription, HasLicense, HasPhotoSortingCriterion, HasAlbumSortingCriterion, HasCopyright, HasPhoto, HasCompactBoolean, HasPhotoLayout, HasTimelineAlbum, HasTimelinePhoto, HasIsPinned
 {
 	use HasAlbumTrait;
 	use HasLicenseTrait;
@@ -75,6 +77,7 @@ class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, H
 	use HasPhotoLayoutTrait;
 	use HasTimelineAlbumTrait;
 	use HasTimelinePhotoTrait;
+	use HasIsPinnedTrait;
 
 	public function authorize(): bool
 	{
@@ -115,6 +118,7 @@ class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, H
 			RequestAttribute::ALBUM_PHOTO_LAYOUT => ['present', 'nullable', new Enum(PhotoLayoutType::class)],
 			RequestAttribute::COPYRIGHT_ATTRIBUTE => ['present', 'nullable', new CopyrightRule()],
 			RequestAttribute::IS_COMPACT_ATTRIBUTE => ['required', 'boolean'],
+			RequestAttribute::IS_PINNED_ATTRIBUTE => ['present', 'boolean'],
 			RequestAttribute::HEADER_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
 			RequestAttribute::ALBUM_TIMELINE_ALBUM => ['present', 'nullable', new Enum(TimelineAlbumGranularity::class), new EnumRequireSupportRule(TimelinePhotoGranularity::class, [TimelinePhotoGranularity::DEFAULT, TimelinePhotoGranularity::DISABLED], $this->verify)],
 			RequestAttribute::ALBUM_TIMELINE_PHOTO => ['present', 'nullable', new Enum(TimelinePhotoGranularity::class), new EnumRequireSupportRule(TimelinePhotoGranularity::class, [TimelinePhotoGranularity::DEFAULT, TimelinePhotoGranularity::DISABLED], $this->verify)],
@@ -161,6 +165,7 @@ class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, H
 		$this->copyright = $values[RequestAttribute::COPYRIGHT_ATTRIBUTE];
 
 		$this->is_compact = static::toBoolean($values[RequestAttribute::IS_COMPACT_ATTRIBUTE]);
+		$this->is_pinned = static::toBoolean($values[RequestAttribute::IS_PINNED_ATTRIBUTE]);
 
 		if ($this->is_compact) {
 			return;
