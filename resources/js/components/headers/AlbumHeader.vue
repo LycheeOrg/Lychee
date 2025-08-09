@@ -2,12 +2,12 @@
 	<ImportFromLink v-if="canUpload" v-model:visible="is_import_from_link_open" @refresh="emits('refresh')" />
 	<DropBox v-if="canUpload" v-model:visible="is_import_from_dropbox_open" :album-id="props.album.id" />
 	<Toolbar
+		v-if="album"
 		class="w-full border-0 transition-all duration-100 ease-in-out"
 		:class="{
 			'max-h-14': !is_full_screen,
 			'max-h-0': is_full_screen,
 		}"
-		v-if="album"
 	>
 		<template #start>
 			<GoBack @go-back="emits('goBack')" />
@@ -19,22 +19,22 @@
 
 		<template #end>
 			<router-link
-				:to="{ name: 'favourites' }"
 				v-if="is_favourite_enabled && (favourites.photos?.length ?? 0) > 0"
-				class="hidden sm:block"
 				v-tooltip.bottom="'Favourites'"
+				:to="{ name: 'favourites' }"
+				class="hidden sm:block"
 			>
 				<Button icon="pi pi-heart" class="border-none" severity="secondary" text />
 			</router-link>
 			<Button
+				v-if="props.config.is_search_accessible"
 				icon="pi pi-search"
 				class="border-none hidden sm:inline-flex"
 				severity="secondary"
 				text
 				@click="emits('openSearch')"
-				v-if="props.config.is_search_accessible"
 			/>
-			<Button icon="pi pi-plus" class="border-none" severity="secondary" text @click="openAddMenu" v-if="props.album.rights.can_upload" />
+			<Button v-if="props.album.rights.can_upload" icon="pi pi-plus" class="border-none" severity="secondary" text @click="openAddMenu" />
 			<template v-if="props.album.rights.can_edit">
 				<Button
 					:icon="is_album_edit_open ? 'pi pi-angle-up' : 'pi pi-angle-down'"
@@ -46,7 +46,7 @@
 			</template>
 		</template>
 	</Toolbar>
-	<ContextMenu ref="addmenu" :model="addMenu" v-if="props.album.rights.can_upload">
+	<ContextMenu v-if="props.album.rights.can_upload" ref="addmenu" :model="addMenu">
 		<template #item="{ item, props }">
 			<Divider v-if="item.is_divider" />
 			<a v-else v-ripple v-bind="props.action" @click="item.callback">
@@ -72,10 +72,9 @@ import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import AlbumService from "@/services/album-service";
-import DropBox from "../modals/DropBox.vue";
+import DropBox from "@/components/modals/DropBox.vue";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { useFavouriteStore } from "@/stores/FavouriteState";
-import { useLtRorRtL } from "@/utils/Helpers";
 import GoBack from "./GoBack.vue";
 
 const props = defineProps<{
@@ -88,7 +87,6 @@ const togglableStore = useTogglablesStateStore();
 const lycheeStore = useLycheeStateStore();
 lycheeStore.init();
 const favourites = useFavouriteStore();
-const { isLTR } = useLtRorRtL();
 
 const { dropbox_api_key, is_favourite_enabled } = storeToRefs(lycheeStore);
 const { is_album_edit_open, is_full_screen } = storeToRefs(togglableStore);

@@ -7,14 +7,14 @@
 		:config="albumPanelConfig"
 		:is-alone="false"
 		:are-nsfw-visible="are_nsfw_visible"
-		@clicked="albumClick"
-		@contexted="albumMenuOpen"
 		:idx-shift="0"
 		:selected-albums="selectedAlbumsIds"
 		:is-timeline="false"
+		@clicked="albumClick"
+		@contexted="albumMenuOpen"
 	/>
-	<div class="flex justify-center w-full" v-if="photos.length > 0">
-		<Paginator :total-records="total" :rows="rows" v-model:first="first" @update:first="emits('refresh')" :always-show="false" />
+	<div v-if="photos.length > 0" class="flex justify-center w-full">
+		<Paginator v-model:first="first" :total-records="total" :rows="rows" :always-show="false" @update:first="emits('refresh')" />
 	</div>
 	<PhotoThumbPanel
 		v-if="photos.length > 0"
@@ -26,14 +26,14 @@
 		:header-id="undefined"
 		:gallery-config="props.layoutConfig"
 		:selected-photos="selectedPhotosIds"
+		:is-timeline="false"
+		:with-control="true"
 		@clicked="photoClick"
 		@selected="photoSelect"
 		@contexted="photoMenuOpen"
-		:is-timeline="false"
-		:with-control="true"
 	/>
-	<div class="flex justify-center w-full" v-if="photos.length > 0">
-		<Paginator :total-records="total" :rows="rows" v-model:first="first" @update:first="emits('refresh')" :always-show="false" />
+	<div v-if="photos.length > 0" class="flex justify-center w-full">
+		<Paginator v-model:first="first" :total-records="total" :rows="rows" :always-show="false" @update:first="emits('refresh')" />
 	</div>
 
 	<ContextMenu ref="menu" :model="Menu" :class="Menu.length === 0 ? 'hidden' : ''">
@@ -56,9 +56,9 @@ import { useLycheeStateStore } from "@/stores/LycheeState";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { storeToRefs } from "pinia";
 import { ref } from "vue";
-import PhotoThumbPanel from "../albumModule/PhotoThumbPanel.vue";
-import AlbumThumbPanel from "../albumModule/AlbumThumbPanel.vue";
-import { AlbumThumbConfig } from "../albumModule/thumbs/AlbumThumb.vue";
+import PhotoThumbPanel from "@/components/gallery/albumModule/PhotoThumbPanel.vue";
+import AlbumThumbPanel from "@/components/gallery/albumModule/AlbumThumbPanel.vue";
+import { AlbumThumbConfig } from "@/components/gallery/albumModule/thumbs/AlbumThumb.vue";
 import ContextMenu from "primevue/contextmenu";
 import Divider from "primevue/divider";
 import Paginator from "primevue/paginator";
@@ -98,7 +98,7 @@ const emits = defineEmits<{
 
 const { photoRoute } = usePhotoRoute(router);
 
-function photoClick(idx: number, e: MouseEvent) {
+function photoClick(idx: number, _e: MouseEvent) {
 	router.push(photoRoute(photos.value[idx].id));
 }
 

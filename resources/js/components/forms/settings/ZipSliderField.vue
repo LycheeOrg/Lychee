@@ -1,14 +1,17 @@
 <template>
 	<div class="items-center flex-wrap gap-4 justify-between hidden sm:flex">
 		<div class="text-muted-color-emphasis">{{ props.config.documentation }}</div>
-		<SelectButton
-			id="albumSortingColumn"
-			class="border-none"
-			v-model="val"
-			:options="options"
-			aria-labelledby="basic"
-			@update:modelValue="update"
-		/>
+		<div class="flex gap-4 items-center">
+			<ResetField v-if="changed" @click="reset" />
+			<SelectButton
+				id="albumSortingColumn"
+				v-model="val"
+				class="border-none"
+				:options="options"
+				aria-labelledby="basic"
+				@update:model-value="update"
+			/>
+		</div>
 	</div>
 </template>
 
@@ -32,6 +35,11 @@ const emits = defineEmits<{
 
 function update() {
 	emits("filled", props.config.key, val.value);
+}
+
+function reset() {
+	emits("reset", props.config.key);
+	val.value = props.config.value;
 }
 
 // We watch props in case of updates.

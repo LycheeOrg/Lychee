@@ -1,11 +1,11 @@
 <template>
 	<div
+		v-if="!props.isSaveVisible"
 		:class="{
 			'flex overflow-hidden transition-all duration-200 ease-out': true,
 			'h-auto lg:h-11': !isCollapsed,
 			'h-0': isCollapsed,
 		}"
-		v-if="!props.isSaveVisible"
 	>
 		<div
 			:class="{
@@ -16,12 +16,12 @@
 		></div>
 		<div class="flex flex-wrap lg:flex-nowrap w-full gap-4 justify-start">
 			<router-link
+				v-tooltip.bottom="{ value: $t('settings.all.back_to_settings'), pt: pt }"
 				:to="{ name: 'settings', params: { tab: '' } }"
 				:class="{
 					'flex items-center': true,
 					hidden: !props.areAllSettingsEnabled,
 				}"
-				v-tooltip.bottom="{ value: $t('settings.all.back_to_settings'), pt: pt }"
 			>
 				<Button icon="pi pi-angle-double-left" class="border-none py-2" severity="primary" text />
 			</router-link>
@@ -39,13 +39,13 @@
 			</div>
 			<div class="flex items-center w-full justify-end">
 				<i
+					v-tooltip.left="$t('settings.all.old_setting_style')"
 					:class="{
 						'pi pi-pen-to-square cursor-pointer px-4': true,
 						'text-primary-400': is_old_style,
 						'text-muted-color': !is_old_style,
 					}"
 					@click="is_old_style = !is_old_style"
-					v-tooltip.left="$t('settings.all.old_setting_style')"
 				>
 				</i>
 			</div>
@@ -60,7 +60,7 @@
 	</div>
 	<div v-else class="sticky z-30 w-full top-0 flex bg-white dark:bg-surface-800 h-auto lg:h-11">
 		<Message severity="warn" class="w-full">{{ $t("settings.all.change_detected") }}</Message>
-		<Button @click="emits('save')" class="bg-danger-800 border-none text-white font-bold px-8 hover:bg-danger-700">{{
+		<Button class="bg-danger-800 border-none text-white font-bold px-8 hover:bg-danger-700" @click="emits('save')">{{
 			$t("settings.all.save")
 		}}</Button>
 	</div>

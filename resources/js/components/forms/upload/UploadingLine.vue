@@ -1,8 +1,8 @@
 <template>
-	<div class="w-full flex flex-col" :id="'upload' + index">
+	<div :id="'upload' + index" class="w-full flex flex-col">
 		<div class="flex gap-x-4 justify-between relative" :class="errorFlexClass">
 			<span class="text-ellipsis min-w-0 w-full overflow-hidden text-nowrap text-muted-color">{{ file.name }}</span>
-			<span :class="statusClass" v-if="progress < 100 && progress > 0">{{ progress }}%</span>
+			<span v-if="progress < 100 && progress > 0" :class="statusClass">{{ progress }}%</span>
 			<span :class="statusClass">{{ statusMessage }}</span>
 		</div>
 		<span class="text-center w-full hidden group-hover:block text-danger-700 cursor-pointer" @click="controller.abort()">

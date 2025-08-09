@@ -1,24 +1,24 @@
 <template>
 	<LoadingProgress v-model:loading="isLoading" />
-	<UploadPanel v-if="rootRights?.can_upload" @refresh="refresh" key="upload_modal" />
-	<KeybindingsHelp v-model:visible="isKeybindingsHelpOpen" v-if="user?.id" />
+	<UploadPanel v-if="rootRights?.can_upload" key="upload_modal" @refresh="refresh" />
+	<KeybindingsHelp v-if="user?.id" v-model:visible="isKeybindingsHelpOpen" />
 	<AlbumCreateDialog v-if="rootRights?.can_upload" key="create_album_modal" />
 	<AlbumCreateTagDialog v-if="rootRights?.can_upload" key="create_tag_album_modal" />
 	<LoginModal v-if="user?.id === null" @logged-in="refresh" />
 	<WebauthnModal v-if="user?.id === null" @logged-in="refresh" />
 	<LiveMetrics v-if="user?.id" />
 
-	<div v-if="rootConfig && rootRights" @click="unselect" class="h-svh overflow-y-auto" id="galleryView" v-on:scroll="onScroll">
+	<div v-if="rootConfig && rootRights" id="galleryView" class="h-svh overflow-y-auto" @click="unselect" @scroll="onScroll">
 		<Collapse :when="!is_full_screen">
 			<AlbumsHeader
 				v-if="user"
 				:user="user"
 				:title="title"
 				:rights="rootRights"
-				@refresh="refresh"
-				@help="isKeybindingsHelpOpen = true"
 				:config="rootConfig"
 				:has-hidden="hasHidden"
+				@refresh="refresh"
+				@help="isKeybindingsHelpOpen = true"
 			/>
 		</Collapse>
 		<AlbumThumbPanel
@@ -74,9 +74,9 @@
 				:is-alone="!albums.length"
 				:idx-shift="sharedAlbum.iter"
 				:selected-albums="selectedAlbumsIds"
+				:is-timeline="false"
 				@clicked="albumClick"
 				@contexted="albumMenuOpen"
-				:is-timeline="false"
 			/>
 		</template>
 		<GalleryFooter v-once />

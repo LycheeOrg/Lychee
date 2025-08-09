@@ -3,6 +3,7 @@ import { ChildNodeWithDataStyle } from "./types";
 import createJustifiedLayout from "justified-layout";
 import { getWidth } from "./getWidth";
 import { type RouteLocationNormalizedLoaded } from "vue-router";
+import { getRatio } from "./ratio";
 
 export function useJustify(
 	el: HTMLElement,
@@ -13,14 +14,10 @@ export function useJustify(
 ) {
 	const width = getWidth(timelineData, route);
 
-	// @ts-expect-error
 	const justifiedItems: ChildNodeWithDataStyle[] = [...el.childNodes].filter((gridItem) => gridItem.nodeType === 1);
 
-	const ratio: number[] = justifiedItems.map(function (_photo) {
-		const height = _photo.dataset.height;
-		const width = _photo.dataset.width;
-		return height > 0 ? width / height : 1;
-	});
+	const ratio = getRatio(justifiedItems);
+
 	const layoutGeometry = createJustifiedLayout(ratio, {
 		containerWidth: width,
 		containerPadding: 0,
@@ -36,6 +33,7 @@ export function useJustify(
 			return false;
 		}
 
+		e.style = e.style ?? {};
 		e.style.top = layoutGeometry.boxes[i].top + "px";
 		e.style.width = layoutGeometry.boxes[i].width + "px";
 		e.style.height = layoutGeometry.boxes[i].height + "px";

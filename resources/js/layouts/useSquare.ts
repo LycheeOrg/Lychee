@@ -1,7 +1,7 @@
 import { type RouteLocationNormalizedLoaded } from "vue-router";
 import { getWidth } from "./getWidth";
 import { TimelineData } from "./PhotoLayout";
-import { Column } from "./types";
+import { ChildNodeWithDataStyle, Column } from "./types";
 
 export function useSquare(
 	el: HTMLElement,
@@ -11,7 +11,6 @@ export function useSquare(
 	route: RouteLocationNormalizedLoaded,
 	align: "left" | "right",
 ) {
-	// @ts-expect-error
 	const gridItems: ChildNodeWithDataStyle[] = [...el.childNodes].filter((gridItem) => gridItem.nodeType === 1);
 
 	const max_width = getWidth(timelineData, route);
@@ -25,13 +24,14 @@ export function useSquare(
 	});
 
 	let idx = 0;
-	gridItems.forEach(function (e, i) {
+	gridItems.forEach(function (e) {
 		if (idx % perChunk === 0) {
 			const newTop = Math.max(...columns.map((column) => column.height));
 			columns.forEach((column) => (column.height = newTop));
 		}
 
 		const column = columns[idx];
+		e.style = e.style ?? {};
 		e.style.top = column.height + "px";
 		e.style.width = grid_width + "px";
 		e.style.height = grid_width + "px";

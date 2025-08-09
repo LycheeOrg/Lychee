@@ -23,7 +23,7 @@
 				'ml-0 mr-2 sm:mr-3 md:mr-4': !isLTR(),
 			}"
 		>
-			<i class="pi pi-pi-camera" v-if="props.config.album_subtitle_type === 'takedate' || props.config.album_subtitle_type === 'creation'"></i>
+			<i v-if="props.config.album_subtitle_type === 'takedate' || props.config.album_subtitle_type === 'creation'" class="pi pi-pi-camera"></i>
 			{{ subtitle }}
 		</span>
 	</div>

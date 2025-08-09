@@ -18,20 +18,20 @@
 		<p v-if="isValid && groupedDuplicates !== undefined">
 			<span class="text-muted-color-emphasis">{{ duplicates?.length }}</span> {{ $t("duplicate-finder.found") }}
 		</p>
-		<p class="text-muted-color-emphasis" v-if="!isValid">
+		<p v-if="!isValid" class="text-muted-color-emphasis">
 			<i class="text-warning-700 pi pi-exclamation-triangle ltr:mr-2 rtl:ml-2" /> {{ $t("duplicate-finder.invalid-search") }}
 		</p>
 	</div>
 	<div class="text-muted-color">
 		<div class="md:max-w-md mt-2 mb-16 mx-auto">
-			<ul class="mb-4" v-if="is_se_enabled || is_se_preview_enabled">
+			<ul v-if="is_se_enabled || is_se_preview_enabled" class="mb-4">
 				<li class="ltr:ml-2 rtl:mr-2 pt-1 flex items-center gap-x-4">
 					<Checkbox
 						v-model="withChecksumConstraint"
 						binary
-						inputId="withChecksumConstraint"
+						input-id="withChecksumConstraint"
 						:disabled="is_se_preview_enabled"
-						@update:modelValue="fetch"
+						@update:model-value="fetch"
 					/>
 					<label for="withChecksumConstraint" :class="{ 'text-muted-color-emphasis': isValid, 'text-warning-600': !isValid }">
 						{{ $t("duplicate-finder.checksum-must-match") }}
@@ -41,9 +41,9 @@
 					<Checkbox
 						v-model="withTitleConstraint"
 						binary
-						inputId="withTitleConstraint"
+						input-id="withTitleConstraint"
 						:disabled="is_se_preview_enabled"
-						@update:modelValue="fetch"
+						@update:model-value="fetch"
 					/>
 					<label for="withTitleConstraint" :class="{ 'text-muted-color-emphasis': isValid, 'text-warning-600': !isValid }">
 						{{ $t("duplicate-finder.title-must-match") }}
@@ -54,9 +54,9 @@
 					<Checkbox
 						v-model="withAlbumConstraint"
 						binary
-						inputId="withAlbumConstraint"
+						input-id="withAlbumConstraint"
 						:disabled="is_se_preview_enabled"
-						@update:modelValue="fetch"
+						@update:model-value="fetch"
 					/>
 					<label for="withAlbumConstraint" class="text-muted-color"> {{ $t("duplicate-finder.must-be-in-same-album") }} </label>
 					<SETag />
@@ -77,8 +77,8 @@
 				<Button
 					severity="danger"
 					class="w-full font-bold border-none mb-4"
-					@click="isDeleteVisible = true"
 					:disabled="selectedIds.length === 0"
+					@click="isDeleteVisible = true"
 				>
 					{{ $t("duplicate-finder.delete-selected") }}
 				</Button>
@@ -87,8 +87,8 @@
 					<span class="inline-block w-full text-ellipsis text-nowrap whitespace-nowrap overflow-hidden">{{ hoverTitle }}</span>
 				</div>
 			</div>
-			<VirtualScroller :items="groupedDuplicates" :itemSize="50" class="h-screen w-full">
-				<template v-slot:item="{ item }">
+			<VirtualScroller :items="groupedDuplicates" :item-size="50" class="h-screen w-full">
+				<template #item="{ item }">
 					<DuplicateLine :duplicates="item" :selected-ids="selectedIds" @hover="onHover" @click="onClick" />
 				</template>
 			</VirtualScroller>

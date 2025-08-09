@@ -1,6 +1,3 @@
-<template>
-	<!-- Nothing to see here is is more of a redirection component -->
-</template>
 <script setup lang="ts">
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { useRouter } from "vue-router";

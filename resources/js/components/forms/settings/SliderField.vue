@@ -10,12 +10,12 @@
 			/>
 			<div class="items-center flex gap-2">
 				<InputIcon
-					class="pi pi-exclamation-circle text-warning-600 cursor-pointer"
-					@click="reset"
 					v-if="changed"
 					v-tooltip="'Click me to reset!'"
+					class="pi pi-exclamation-circle text-warning-600 cursor-pointer"
+					@click="reset"
 				/>
-				<SelectButton class="border-none" v-model="val" :options="options" aria-labelledby="basic" @update:modelValue="update" />
+				<SelectButton v-model="val" class="border-none" :options="options" aria-labelledby="basic" @update:model-value="update" />
 			</div>
 		</div>
 		<div

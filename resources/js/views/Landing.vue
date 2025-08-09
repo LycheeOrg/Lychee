@@ -82,7 +82,7 @@
 				</RouterLink>
 			</div>
 		</div>
-		<LandingFooter :footerData="initdata.footer" />
+		<LandingFooter :footer-data="initdata.footer" />
 	</main>
 </template>
 <script setup lang="ts">

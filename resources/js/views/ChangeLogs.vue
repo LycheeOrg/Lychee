@@ -10,8 +10,10 @@
 
 		<template #end> </template>
 	</Toolbar>
-	<Panel class="border-none max-w-3xl mx-auto my-12 text-muted-color" :pt:header:class="'hidden'" v-html="$t('changelogs.description')"> </Panel>
-	<Panel class="border-none max-w-3xl mx-auto my-12" :pt:header:class="'hidden'" v-for="(changeLog, index) in changeLogs" :key="'cl' + index">
+	<Panel class="border-none max-w-3xl mx-auto my-12 text-muted-color" :pt:header:class="'hidden'"
+		><div v-html="$t('changelogs.description')"></div
+	></Panel>
+	<Panel v-for="(changeLog, index) in changeLogs" :key="'cl' + index" class="border-none max-w-3xl mx-auto my-12" :pt:header:class="'hidden'">
 		<h2 class="text-4xl font-bold text-muted-color-emphasis">{{ changeLog.version }}</h2>
 		<p class="text-sm text-gray-500">
 			{{ changeLog.date }}

@@ -1,5 +1,5 @@
 <template>
-	<MeterGroup :value="sizeVariantSpaceMeter" v-if="sizeVariantSpaceMeter && sizeVariantSpaceMeter.length > 0">
+	<MeterGroup v-if="sizeVariantSpaceMeter && sizeVariantSpaceMeter.length > 0" :value="sizeVariantSpaceMeter">
 		<template #label="{ value }">
 			<div class="flex flex-wrap gap-2 xl:gap-6 w-full sm:justify-between justify-center">
 				<template v-for="val of value" :key="val.label">

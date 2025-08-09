@@ -12,14 +12,14 @@
 						v-model="selectedAlbums"
 						filter
 						:options="targetAlbums"
-						optionLabel="original"
-						optionValue="id"
-						dataKey="id"
+						option-label="original"
+						option-value="id"
+						data-key="id"
 						:multiple="true"
 						:checkmark="true"
-						:highlightOnSelect="false"
+						:highlight-on-select="false"
 						class="w-full"
-						:virtualScrollerOptions="{ itemSize: 28 }"
+						:virtual-scroller-options="{ itemSize: 28 }"
 					>
 						<template #header>
 							<span class="text-muted-color-emphasis font-bold">{{ $t("sharing.albums") }}</span>
@@ -43,20 +43,20 @@
 						v-model="selectedUsersOrGroups"
 						filter
 						:options="usersGroupsList"
-						optionLabel="name"
-						dataKey="id"
+						option-label="name"
+						data-key="id"
 						:multiple="true"
 						:checkmark="true"
-						:highlightOnSelect="false"
+						:highlight-on-select="false"
 						class="w-full"
-						:virtualScrollerOptions="{ itemSize: 28 }"
+						:virtual-scroller-options="{ itemSize: 28 }"
 					>
 						<template #header>
 							<span class="text-muted-color-emphasis font-bold">{{ $t("sharing.users") }}</span>
 						</template>
 						<template #option="slotProps">
 							<span class="w-full">
-								<i class="pi pi-users ltr:mr-1 rtl:ml-1" v-if="slotProps.option.type === 'group'" />
+								<i v-if="slotProps.option.type === 'group'" class="pi pi-users ltr:mr-1 rtl:ml-1" />
 								{{ slotProps.option.name }}
 							</span>
 						</template>
@@ -67,12 +67,12 @@
 				</div>
 
 				<div class="w-1/2 flex justify-around items-center">
-					<i class="pi pi-eye" v-tooltip.top="$t('sharing.grants.read')" />
-					<i class="pi pi-window-maximize" v-tooltip.top="$t('sharing.grants.original')" />
-					<i class="pi pi-cloud-download" v-tooltip.top="$t('sharing.grants.download')" />
-					<i class="pi pi-upload" v-tooltip.top="$t('sharing.grants.upload')" />
-					<i class="pi pi-file-edit" v-tooltip.top="$t('sharing.grants.edit')" />
-					<i class="pi pi-trash" v-tooltip.top="$t('sharing.grants.delete')" />
+					<i v-tooltip.top="$t('sharing.grants.read')" class="pi pi-eye" />
+					<i v-tooltip.top="$t('sharing.grants.original')" class="pi pi-window-maximize" />
+					<i v-tooltip.top="$t('sharing.grants.download')" class="pi pi-cloud-download" />
+					<i v-tooltip.top="$t('sharing.grants.upload')" class="pi pi-upload" />
+					<i v-tooltip.top="$t('sharing.grants.edit')" class="pi pi-file-edit" />
+					<i v-tooltip.top="$t('sharing.grants.delete')" class="pi pi-trash" />
 				</div>
 				<div class="w-1/2 flex items-center justify-around">
 					<Checkbox v-model="grantsReadAccess" :binary="true" disabled />
@@ -89,9 +89,9 @@
 					}}</Button>
 					<Button
 						:disabled="!selectedAlbums.length || !selectedUsersOrGroups.length"
-						@click="create"
 						severity="success"
 						class="border-0 bg-transparent text-create-600 hover:bg-create-600 hover:text-white w-full rounded-none rounded-br-xl"
+						@click="create"
 					>
 						<i class="pi pi-user-plus" /><span class="hidden md:inline">{{ $t("sharing.share") }}</span>
 					</Button>

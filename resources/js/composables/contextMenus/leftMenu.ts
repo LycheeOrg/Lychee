@@ -34,7 +34,7 @@ export function useLeftMenu(
 	const { user } = storeToRefs(authStore);
 
 	const { initData, left_menu_open } = storeToRefs(LeftMenuStateStore);
-	const { clockwork_url, is_se_enabled, is_se_preview_enabled, is_se_info_hidden, is_favourite_enabled } = storeToRefs(lycheeStore);
+	const { clockwork_url, is_se_enabled, is_se_preview_enabled, is_se_info_hidden } = storeToRefs(lycheeStore);
 	const openLycheeAbout = ref(false);
 	const logsEnabled = ref(true);
 

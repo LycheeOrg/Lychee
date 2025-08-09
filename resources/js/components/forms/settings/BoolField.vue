@@ -9,7 +9,7 @@
 			/>
 			<span class="flex gap-4">
 				<ResetField v-if="changed" @click="reset" />
-				<ToggleSwitch v-model="val" @update:modelValue="update" :input-id="props.config.key" class="text-sm translate-y-1"></ToggleSwitch>
+				<ToggleSwitch v-model="val" :input-id="props.config.key" class="text-sm translate-y-1" @update:model-value="update"></ToggleSwitch>
 			</span>
 		</div>
 		<div

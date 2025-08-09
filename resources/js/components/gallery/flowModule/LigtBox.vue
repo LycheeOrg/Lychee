@@ -12,14 +12,14 @@
 					@click="emits('next')"
 				/>
 			</Transition>
-			<Overlay :photo="photo" v-if="!is_exif_disabled && imageViewMode !== ImageViewMode.Pdf" />
+			<Overlay v-if="!is_exif_disabled && imageViewMode !== ImageViewMode.Pdf" :photo="photo" />
 		</div>
 	</div>
 </template>
 <script setup lang="ts">
 import { computed } from "vue";
-import Overlay from "../photoModule/Overlay.vue";
-import PhotoBox from "../photoModule/PhotoBox.vue";
+import Overlay from "@/components/gallery/photoModule/Overlay.vue";
+import PhotoBox from "@/components/gallery/photoModule/PhotoBox.vue";
 import { usePhotoBaseFunction, ImageViewMode } from "@/composables/photo/basePhoto";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";

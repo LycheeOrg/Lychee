@@ -1,12 +1,12 @@
 <template>
 	<Fieldset
+		v-if="user && user.id !== null"
 		:legend="$t('profile.login.header')"
 		:toggleable="true"
 		class="mb-4 hover:border-primary-500 pt-2 max-w-xl mx-auto"
-		v-if="user && user.id !== null"
 	>
 		<form>
-			<div class="w-full mb-6" v-if="is_basic_auth_enabled">
+			<div v-if="is_basic_auth_enabled" class="w-full mb-6">
 				<div class="pb-4">
 					{{ $t("profile.login.enter_current_password") }}
 				</div>
@@ -15,7 +15,7 @@
 					<label for="oldPassword">{{ $t("profile.login.current_password") }}</label>
 				</FloatLabel>
 			</div>
-			<div class="w-full mb-6" v-if="is_basic_auth_enabled">
+			<div v-if="is_basic_auth_enabled" class="w-full mb-6">
 				<div class="pb-4">
 					{{ $t("profile.login.credentials_update") }}
 				</div>

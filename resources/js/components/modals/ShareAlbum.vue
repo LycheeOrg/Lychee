@@ -1,26 +1,26 @@
 <template>
 	<Dialog v-model:visible="visible" modal pt:root:class="border-none">
 		<template #container="{ closeCallback }">
-			<div class="flex flex-wrap p-9 gap-5 justify-center align-top max-w-lg w-full text-muted-color" v-show="!qrCodeOpen">
-				<MiniIcon class="w-10 h-10 ionicons cursor-pointer" icon="twitter" v-on:click="openTwitter" />
-				<MiniIcon class="w-10 h-10 ionicons cursor-pointer" icon="facebook" v-on:click="openFacebook" />
-				<MiniIcon class="w-10 h-10 cursor-pointer" icon="envelope-closed" v-on:click="openMailto" />
-				<a class="cursor-pointer" v-on:click="copyToClipboard()">
+			<div v-show="!qrCodeOpen" class="flex flex-wrap p-9 gap-5 justify-center align-top max-w-lg w-full text-muted-color">
+				<MiniIcon class="w-10 h-10 ionicons cursor-pointer" icon="twitter" @click="openTwitter" />
+				<MiniIcon class="w-10 h-10 ionicons cursor-pointer" icon="facebook" @click="openFacebook" />
+				<MiniIcon class="w-10 h-10 cursor-pointer" icon="envelope-closed" @click="openMailto" />
+				<a class="cursor-pointer" @click="copyToClipboard()">
 					<MiniIcon class="w-10 h-10" icon="link-intact" />
 				</a>
-				<MiniIcon class="w-10 h-10" icon="grid-two-up" v-on:click="openQrCode" />
+				<MiniIcon class="w-10 h-10" icon="grid-two-up" @click="openQrCode" />
 			</div>
-			<div class="flex flex-wrap p-9 gap-5 justify-center align-top text-muted-color" v-show="qrCodeOpen">
+			<div v-show="qrCodeOpen" class="flex flex-wrap p-9 gap-5 justify-center align-top text-muted-color">
 				<canvas id="canvas"></canvas>
 			</div>
 			<Button
+				severity="secondary"
+				:label="trans('dialogs.button.close')"
+				class="font-bold border-none w-full select-none border-t border-t-black/20 rounded-none rounded-b-xl"
 				@click="
 					qrCodeOpen = false;
 					closeCallback();
 				"
-				severity="secondary"
-				:label="trans('dialogs.button.close')"
-				class="font-bold border-none w-full select-none border-t border-t-black/20 rounded-none rounded-b-xl"
 			>
 				{{ trans("dialogs.button.close") }}
 			</Button>

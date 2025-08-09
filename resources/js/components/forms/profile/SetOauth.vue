@@ -1,18 +1,18 @@
 <template>
-	<Fieldset :legend="title" :toggleable="true" class="mb-4 hover:border-primary-500 pt-2 max-w-xl mx-auto" v-if="oauths !== undefined">
-		<div class="pt-5" v-if="oauths.length === 0">
+	<Fieldset v-if="oauths !== undefined" :legend="title" :toggleable="true" class="mb-4 hover:border-primary-500 pt-2 max-w-xl mx-auto">
+		<div v-if="oauths.length === 0" class="pt-5">
 			<p class="text-muted-color">{{ $t("profile.oauth.setup_env") }}</p>
 		</div>
 		<template v-else>
 			<div
 				v-for="oauth in oauths"
-				class=" text-muted-color-emphasis {{ $oauthData->isEnabled ? '' : 'hover:text-primary-400'}}"
 				:key="oauth.providerType"
+				class=" text-muted-color-emphasis {{ $oauthData->isEnabled ? '' : 'hover:text-primary-400'}}"
 			>
 				<i class="align-middle w-4" :class="oauth.icon + (oauth.isEnabled ? 'text-create-600' : '')"></i>
-				<span class="ltr:ml-2 rtl:mr-2" v-if="oauth.isEnabled">
+				<span v-if="oauth.isEnabled" class="ltr:ml-2 rtl:mr-2">
 					{{ sprintf($t("profile.oauth.token_registered"), capitalize(oauth.providerType)) }}
-					<a @click="clear(oauth.providerType)" class="ltr:ml-2 rtl:mr-2 cursor-pointer italic text-muted-color hover:text-danger-800">
+					<a class="ltr:ml-2 rtl:mr-2 cursor-pointer italic text-muted-color hover:text-danger-800" @click="clear(oauth.providerType)">
 						({{ $t("profile.oauth.reset") }})
 					</a>
 				</span>

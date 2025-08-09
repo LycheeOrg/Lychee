@@ -46,24 +46,24 @@
 						@click="is_photo_edit_open = !is_photo_edit_open"
 					/>
 					<Button
+						v-if="!is_exif_disabled"
 						icon="pi pi-info"
 						class="ltr:mr-2 rtl:ml-2"
 						severity="secondary"
 						text
 						@click="are_details_open = !are_details_open"
-						v-if="!is_exif_disabled"
 					/>
 				</div>
 			</template>
 		</Toolbar>
 	</header>
-	<DownloadPhoto :photo="props.photo" v-model:visible="isDownloadOpen" />
+	<DownloadPhoto v-model:visible="isDownloadOpen" :photo="props.photo" />
 </template>
 <script setup lang="ts">
 import Button from "primevue/button";
 import Toolbar from "primevue/toolbar";
 import { ref } from "vue";
-import DownloadPhoto from "../modals/DownloadPhoto.vue";
+import DownloadPhoto from "@/components/modals/DownloadPhoto.vue";
 import { storeToRefs } from "pinia";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
