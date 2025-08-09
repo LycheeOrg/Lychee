@@ -23,9 +23,9 @@
 			</div>
 			<div class="flex gap-4 mt-1">
 				<Button
+					v-if="data !== undefined && data.pure_duplicates"
 					as="router-link"
 					to="/duplicatesFinder"
-					v-if="data !== undefined && data.pure_duplicates"
 					severity="primary"
 					class="w-full border-none self-end"
 				>

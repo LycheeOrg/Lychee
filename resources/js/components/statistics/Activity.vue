@@ -1,12 +1,12 @@
 <template>
-	<Panel class="max-w-5xl mx-auto border-0" :header="$t('statistics.punch_card.title')" v-if="counts !== undefined">
+	<Panel v-if="counts !== undefined" class="max-w-5xl mx-auto border-0" :header="$t('statistics.punch_card.title')">
 		<div class="flex justify-center">
 			{{ caption }}
-			<span class="ml-1" v-if="isTakenAt" v-tooltip="$t('statistics.punch_card.with-exif')">*</span>
+			<span v-if="isTakenAt" v-tooltip="$t('statistics.punch_card.with-exif')" class="ml-1">*</span>
 		</div>
 		<div class="flex items-start justify-center gap-4 w-[calc(1024px-2rem)]">
 			<div class="flex justify-center flex-col items-center">
-				<PunchCard :low="low" :medium="medium" :high="high" :data="counts" :year="year" :key="getKey(counts)" />
+				<PunchCard :key="getKey(counts)" :low="low" :medium="medium" :high="high" :data="counts" :year="year" />
 				<PunchCardCaption :low="low" :medium="medium" :high="high" />
 			</div>
 			<div class="flex flex-col gap-2 w-32">
@@ -23,6 +23,7 @@
 							class="hover:text-primary cursor-pointer mr-4"
 							:class="{ 'text-primary': y === year }"
 							@click="handleYear(y)"
+							:key="`year-${y}`"
 						>
 							{{ y }}
 						</span>
@@ -88,7 +89,6 @@ function setCaption() {
 			caption.value = sprintf(trans("statistics.punch_card.photo-uploaded-in"), total.value, year.value);
 			break;
 		default:
-			"";
 	}
 }
 
@@ -126,8 +126,8 @@ function handleYear(y: number) {
  */
 function hashCode(str: string) {
 	let hash = 0,
-		i = 0,
-		len = str.length;
+		i = 0;
+	const len = str.length;
 	while (i < len) {
 		hash = ((hash << 5) - hash + str.charCodeAt(i++)) << 0;
 	}

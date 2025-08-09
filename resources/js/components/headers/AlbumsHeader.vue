@@ -59,13 +59,13 @@
 			</template>
 			<!-- Maybe logged in. -->
 			<div class="hidden lg:block">
-				<template v-for="item in menu">
+				<template v-for="(item, idx) in menu" :key="`menu-item-${idx}`">
 					<template v-if="item.type === 'link'">
 						<!-- @vue-ignore -->
 						<Button as="router-link" :to="item.to" :icon="item.icon" class="border-none" severity="secondary" text />
 					</template>
 					<template v-else>
-						<Button @click="item.callback" :icon="item.icon" class="border-none" severity="secondary" text />
+						<Button :icon="item.icon" class="border-none" severity="secondary" text @click="item.callback" />
 					</template>
 				</template>
 				<!-- Not logged in. -->
@@ -75,17 +75,17 @@
 				:model="menu"
 				direction="down"
 				class="top-0 ltr:mr-4 rtl:ml-4 absolute ltr:right-0 rtl:left-0 lg:hidden"
-				:buttonProps="{ severity: 'help', rounded: true }"
+				:button-props="{ severity: 'help', rounded: true }"
 			>
 				<template #button="{ toggleCallback }">
-					<Button text severity="secondary" class="border-none h-14" @click="toggleCallback" icon="pi pi-angle-double-down" />
+					<Button text severity="secondary" class="border-none h-14" icon="pi pi-angle-double-down" @click="toggleCallback" />
 				</template>
-				<template #item="{ item, toggleCallback }">
+				<template #item="{ item }">
 					<template v-if="item.type === 'link'">
 						<Button as="router-link" :to="item.to" :icon="item.icon" class="shadow-md shadow-black/25" severity="warn" rounded />
 					</template>
 					<template v-else>
-						<Button @click="item.callback" :icon="item.icon" class="shadow-md shadow-black/25" severity="warn" rounded />
+						<Button :icon="item.icon" class="shadow-md shadow-black/25" severity="warn" rounded @click="item.callback" />
 					</template>
 				</template>
 			</SpeedDial>
@@ -103,7 +103,7 @@
 			</a>
 		</template>
 	</ContextMenu>
-	<div class="relative w-full h-[calc(100vh/2)] -mt-14 z-0" v-if="props.config.header_image_url !== ''">
+	<div v-if="props.config.header_image_url !== ''" class="relative w-full h-[calc(100vh/2)] -mt-14 z-0">
 		<img :src="props.config.header_image_url" class="object-cover h-full w-full" />
 		<div class="absolute top-0 left-0 w-full h-full flex items-center justify-center px-20">
 			<h1
@@ -130,7 +130,7 @@ import { useRouter } from "vue-router";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { useContextMenuAlbumsAdd } from "@/composables/contextMenus/contextMenuAlbumsAdd";
 import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
-import DropBox from "../modals/DropBox.vue";
+import DropBox from "@/components/modals/DropBox.vue";
 import BackLinkButton from "./BackLinkButton.vue";
 import OpenLeftMenu from "./OpenLeftMenu.vue";
 import { useFavouriteStore } from "@/stores/FavouriteState";

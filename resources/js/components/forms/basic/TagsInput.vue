@@ -3,12 +3,12 @@
 		id="tags"
 		v-model="modelValue"
 		:suggestions="filteredTags"
-		:forceSelection="true"
+		:force-selection="true"
 		multiple
 		class="pt-3 border-b hover:border-b-0 w-full"
 		pt:inputmultiple:class="w-full border-t-0 border-l-0 border-r-0 border-b hover:border-b-primary-400 focus:border-b-primary-400"
 		:placeholder="modelValue?.length === 0 ? (props.placeholder ?? '') : ''"
-		@update:modelValue="($event) => emits('updated', $event)"
+		@update:model-value="($event) => emits('updated', $event)"
 		@complete="search"
 	>
 		<template #option="slotProps">

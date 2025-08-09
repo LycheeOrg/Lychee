@@ -1,13 +1,13 @@
 <template>
-	<template v-for="(album, idx) in props.albums">
+	<template v-for="(album, idx) in props.albums" :key="`album-thumb-${idx + props.iter + props.idxShift}`">
 		<AlbumThumb
-			@click="maySelect(idx + props.iter + props.idxShift, $event)"
-			@contextmenu.prevent="menuOpen(idx + props.iter + props.idxShift, $event)"
+			v-if="!album.is_nsfw || are_nsfw_visible"
 			:album="album"
 			:cover_id="null"
 			:config="props.config"
-			v-if="!album.is_nsfw || are_nsfw_visible"
 			:is-selected="props.selectedAlbums.includes(album.id)"
+			@click="maySelect(idx + props.iter + props.idxShift, $event)"
+			@contextmenu.prevent="menuOpen(idx + props.iter + props.idxShift, $event)"
 		/>
 	</template>
 </template>

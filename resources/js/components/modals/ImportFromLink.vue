@@ -28,8 +28,8 @@
 					<Button
 						severity="contrast"
 						class="w-full font-bold border-none rounded-none ltr:rounded-br-xl rtl:rounded-bl-xl"
-						@click="submit"
 						:disabled="!isValidInput || urls.length === 0"
+						@click="submit"
 					>
 						{{ $t("dialogs.import_from_link.import") }}
 					</Button>
@@ -45,7 +45,7 @@ import Dialog from "primevue/dialog";
 import PhotoService from "@/services/photo-service";
 import { useRouter } from "vue-router";
 import { usePhotoRoute } from "@/composables/photo/photoRoute";
-import Textarea from "../forms/basic/Textarea.vue";
+import Textarea from "@/components/forms/basic/Textarea.vue";
 import AlbumService from "@/services/album-service";
 
 const visible = defineModel("visible", { default: false }) as Ref<boolean>;

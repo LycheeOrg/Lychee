@@ -9,16 +9,16 @@
 				<ResetField v-if="changed" @click="reset" />
 				<InputNumber
 					v-model="val"
-					:inputId="props.config.key"
+					:input-id="props.config.key"
 					:min="props.min"
 					:max="props?.max ?? undefined"
-					showButtons
+					show-buttons
 					mode="decimal"
-					:useGrouping="false"
-					inputClass="text-right pr-10"
+					:use-grouping="false"
+					input-class="text-right pr-10"
 					fluid
 					class="w-28"
-					@update:modelValue="update"
+					@update:model-value="update"
 				/>
 			</div>
 		</div>

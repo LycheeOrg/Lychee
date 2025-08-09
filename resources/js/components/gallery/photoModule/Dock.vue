@@ -12,32 +12,32 @@
 	>
 		<span class="absolute left-1/2 -translate-x-1/2 p-1 min-w-[25%] w-full filter-shadow text-center">
 			<DockButton
+				v-tooltip.bottom="props.photo.is_starred ? $t('gallery.photo.actions.unstar') : $t('gallery.photo.actions.star')"
 				icon="star"
 				:class="props.photo.is_starred ? 'fill-yellow-500 lg:hover:fill-yellow-100' : 'fill-white lg:hover:fill-yellow-500'"
-				v-tooltip.bottom="props.photo.is_starred ? $t('gallery.photo.actions.unstar') : $t('gallery.photo.actions.star')"
-				v-on:click="emits('toggleStar')"
+				@click="emits('toggleStar')"
 			/>
 			<DockButton
+				v-tooltip.bottom="$t('gallery.photo.actions.set_album_header')"
 				pi="image"
 				class="lg:hover:text-primary-500 text-white"
-				v-tooltip.bottom="$t('gallery.photo.actions.set_album_header')"
-				v-on:click="emits('setAlbumHeader')"
+				@click="emits('setAlbumHeader')"
 			/>
 			<template v-if="lycheeStore.can_rotate">
-				<DockButton icon="counterclockwise" class="fill-white lg:hover:fill-primary-500" v-on:click="emits('rotatePhotoCCW')" />
-				<DockButton icon="clockwise" class="fill-white lg:hover:fill-primary-500" v-on:click="emits('rotatePhotoCW')" />
+				<DockButton icon="counterclockwise" class="fill-white lg:hover:fill-primary-500" @click="emits('rotatePhotoCCW')" />
+				<DockButton icon="clockwise" class="fill-white lg:hover:fill-primary-500" @click="emits('rotatePhotoCW')" />
 			</template>
 			<DockButton
+				v-tooltip.bottom="$t('gallery.photo.actions.move')"
 				icon="transfer"
 				class="fill-white lg:hover:fill-primary-500"
-				v-tooltip.bottom="$t('gallery.photo.actions.move')"
-				v-on:click="emits('toggleMove')"
+				@click="emits('toggleMove')"
 			/>
 			<DockButton
+				v-tooltip.bottom="$t('gallery.photo.actions.delete')"
 				icon="trash"
 				class="fill-red-600 lg:fill-white lg:hover:fill-red-600"
-				v-tooltip.bottom="$t('gallery.photo.actions.delete')"
-				v-on:click="emits('toggleDelete')"
+				@click="emits('toggleDelete')"
 			/>
 		</span>
 	</div>

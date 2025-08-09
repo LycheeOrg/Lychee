@@ -12,14 +12,14 @@
 		</template>
 		<template #content>
 			<ScrollPanel class="w-full h-40 text-sm text-muted-color">
-				<div class="w-full text-left" v-if="!loading">
+				<div v-if="!loading" class="w-full text-left">
 					{{ sprintf($t("maintenance.statistics-check.missing_albums"), data.missing_albums) }}<br />
 					{{ sprintf($t("maintenance.statistics-check.missing_photos"), data.missing_photos) }}<br />
 				</div>
 				<ProgressSpinner v-if="loading" class="w-full"></ProgressSpinner>
 			</ScrollPanel>
 			<div class="flex gap-4 mt-1">
-				<Button severity="primary" v-if="!loading" class="w-full font-bold border-none" @click="exec">
+				<Button v-if="!loading" severity="primary" class="w-full font-bold border-none" @click="exec">
 					{{ $t("maintenance.statistics-check.button") }}
 				</Button>
 			</div>

@@ -3,10 +3,10 @@
 		<template v-if="lycheeError !== null">
 			<div v-if="lycheeError.exception" class="w-full h-full fixed top-0 left-0 bg-panel z-50 flex flex-col">
 				<Message severity="error" @click="closeError">
-					<span class="font-bold text-xl w-full" v-if="lycheeError.exception"
+					<span v-if="lycheeError.exception" class="font-bold text-xl w-full"
 						>{{ lycheeError.exception }} in {{ lycheeError.file }}:{{ lycheeError.line }}</span
 					>
-					<span class="font-bold text-xl w-full" v-else>{{ lycheeError.message }}</span>
+					<span v-else class="font-bold text-xl w-full">{{ lycheeError.message }}</span>
 				</Message>
 				<Panel class="h-full overflow-y-scroll">
 					<template #header>
@@ -79,23 +79,18 @@ const jsError = ref<ErrorEvent | null>(null);
 
 const sessionExpired = ref(false);
 
-window.addEventListener("error", function (e: Event) {
+window.addEventListener("error", function (e: ErrorEvent & { detail?: LycheeException; details?: LycheeException }) {
 	console.log("error", e);
-	// @ts-expect-error
 	if (e.details !== undefined) {
-		// @ts-expect-error
-		lycheeError.value = e.detail;
-		// @ts-expect-error
+		lycheeError.value = e.details;
 	} else if (e.detail !== undefined) {
-		// @ts-expect-error
 		lycheeError.value = e.detail;
 	} else {
-		// @ts-expect-error
-		jsError.value = e as ErrorEvent;
+		jsError.value = e;
 	}
 });
 
-window.addEventListener("session_expired", function (e: Event) {
+window.addEventListener("session_expired", function (_e: Event) {
 	sessionExpired.value = true;
 });
 

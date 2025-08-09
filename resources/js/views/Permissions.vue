@@ -16,7 +16,7 @@
 		<div class="grid" style="grid-template-columns: 1fr 1fr 1fr">
 			<div></div>
 			<div>
-				<template v-for="i in Math.min(left.length, right.length)">
+				<template v-for="i in Math.min(left.length, right.length)" :key="`line-${i}`">
 					<pre v-if="left[i] !== right[i]" class="text-create-600">{{ i }} - {{ left[i] }}</pre>
 					<pre v-if="left[i] !== right[i]" class="text-danger-600">{{ i }} + {{ right[i] }}</pre>
 				</template>

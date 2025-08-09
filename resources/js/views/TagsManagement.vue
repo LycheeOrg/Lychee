@@ -40,20 +40,20 @@
 
 		<template #end> </template>
 	</Toolbar>
-	<Panel class="border-none p-9 mx-auto max-w-3xl" v-if="tags !== undefined" pt:header:class="hidden">
+	<Panel v-if="tags !== undefined" class="border-none p-9 mx-auto max-w-3xl" pt:header:class="hidden">
 		<div class="text-muted-color text-center mb-8" v-html="$t('tags.description')"></div>
 		<div v-if="tags.length === 0" class="p-4 text-center">{{ $t("tags.no_tags") }}</div>
 		<template v-else>
-			<div class="flex justify-end gap-4 mb-8" v-if="canEdit">
-				<Button :text="!isEditing" severity="primary" @click="toggleEditing" size="small" class="border-none">
+			<div v-if="canEdit" class="flex justify-end gap-4 mb-8">
+				<Button :text="!isEditing" severity="primary" size="small" class="border-none" @click="toggleEditing">
 					<i class="pi pi-pencil"></i>
 					{{ $t("tags.rename") }}
 				</Button>
-				<Button :text="!isMerging" severity="primary" @click="toggleMerging" size="small" class="border-none">
+				<Button :text="!isMerging" severity="primary" size="small" class="border-none" @click="toggleMerging">
 					<i class="pi pi-paperclip"></i>
 					{{ $t("tags.merge") }}
 				</Button>
-				<Button :text="!isDeleting" severity="danger" @click="toggleDeleting" size="small" class="border-none">
+				<Button :text="!isDeleting" severity="danger" size="small" class="border-none" @click="toggleDeleting">
 					<i class="pi pi-trash"></i>
 					{{ $t("tags.delete") }}
 				</Button>

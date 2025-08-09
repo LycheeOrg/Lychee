@@ -18,9 +18,9 @@ import { trans } from "laravel-vue-i18n";
 import { useToast } from "primevue/usetoast";
 import { onMounted } from "vue";
 import { ref } from "vue";
-import Textarea from "../forms/basic/Textarea.vue";
+import Textarea from "@/components/forms/basic/Textarea.vue";
 import Button from "primevue/button";
-import Fieldset from "../forms/basic/Fieldset.vue";
+import Fieldset from "@/components/forms/basic/Fieldset.vue";
 
 const toast = useToast();
 

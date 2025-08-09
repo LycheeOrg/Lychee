@@ -1,15 +1,15 @@
 <template>
 	<Select
 		id="targetAlbum"
-		class="w-full border-none"
 		v-model="selectedTarget"
-		@update:modelValue="selected"
+		class="w-full border-none"
 		filter
 		:placeholder="$t('dialogs.target_album.placeholder')"
 		:loading="options === undefined"
 		:options="options"
-		optionLabel="original"
-		showClear
+		option-label="original"
+		show-clear
+		@update:model-value="selected"
 	>
 		<template #value="slotProps">
 			<div v-if="slotProps.value" class="flex items-center">

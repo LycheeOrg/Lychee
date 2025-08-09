@@ -1,20 +1,20 @@
 <template>
 	<div
 		id="imageview"
-		class="absolute top-0 left-0 w-full h-full flex items-center justify-center overflow-hidden"
-		@click="emits('rotateOverlay')"
 		ref="swipe"
+		class="absolute top-0 left-0 w-full h-full flex items-center justify-center overflow-hidden"
 		:class="{
 			'pt-14': imageViewMode === ImageViewMode.Pdf && !is_full_screen,
 		}"
+		@click="emits('rotateOverlay')"
 	>
 		<!--  This is a video file: put html5 player -->
 		<video
 			v-if="imageViewMode == ImageViewMode.Video"
-			width="auto"
-			height="auto"
 			id="image"
 			ref="videoElement"
+			width="auto"
+			height="auto"
 			controls
 			class="absolute m-auto w-auto h-auto"
 			:class="is_full_screen || is_slideshow_active ? 'max-w-full max-h-full' : 'max-w-full md:max-w-[calc(100%-56px)] max-h-[calc(100%-56px)]'"

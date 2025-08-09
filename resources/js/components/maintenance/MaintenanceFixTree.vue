@@ -12,7 +12,7 @@
 		</template>
 		<template #content>
 			<ScrollPanel class="w-full h-40 text-sm text-muted-color">
-				<div class="w-full text-left" v-if="!loading">
+				<div v-if="!loading" class="w-full text-left">
 					{{ $t("maintenance.fix-tree.Oddness") }}: {{ data.oddness }}<br />
 					{{ $t("maintenance.fix-tree.Duplicates") }}: {{ data.duplicates }}<br />
 					{{ $t("maintenance.fix-tree.Wrong parents") }}: {{ data.wrong_parent }}<br />
@@ -22,7 +22,7 @@
 			</ScrollPanel>
 			<div class="flex gap-4 mt-1">
 				<!-- @vue-ignore -->
-				<Button as="router-link" :to="{ name: 'tree' }" v-if="fixable && !loading" severity="primary" class="w-full border-none">
+				<Button v-if="fixable && !loading" as="router-link" :to="{ name: 'tree' }" severity="primary" class="w-full border-none">
 					{{ $t("maintenance.fix-tree.button") }}
 				</Button>
 			</div>

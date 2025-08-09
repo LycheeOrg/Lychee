@@ -2,7 +2,7 @@ import axios, { AxiosRequestConfig, type AxiosResponse } from "axios";
 import Constants from "./constants";
 
 const AuthService = {
-	login(username: string, password: string): Promise<AxiosResponse<any>> {
+	login(username: string, password: string): Promise<AxiosResponse<void>> {
 		return axios.post(
 			`${Constants.getApiUrl()}Auth::login`,
 			{
@@ -19,7 +19,7 @@ const AuthService = {
 		);
 	},
 
-	logout(): Promise<AxiosResponse<any>> {
+	logout(): Promise<AxiosResponse<void>> {
 		return axios.post(`${Constants.getApiUrl()}Auth::logout`, {});
 	},
 

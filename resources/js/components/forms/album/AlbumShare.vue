@@ -8,41 +8,41 @@
 						<span class="w-full">{{ $t("sharing.username") }}</span>
 					</div>
 					<div class="w-1/2 flex justify-around items-center">
-						<i class="pi pi-eye" v-tooltip.top="$t('sharing.grants.read')" />
-						<i class="pi pi-window-maximize" v-tooltip.top="$t('sharing.grants.original')" />
-						<i class="pi pi-cloud-download" v-tooltip.top="$t('sharing.grants.download')" />
-						<i class="pi pi-upload" v-tooltip.top="$t('sharing.grants.upload')" />
-						<i class="pi pi-file-edit" v-tooltip.top="$t('sharing.grants.edit')" />
-						<i class="pi pi-trash" v-tooltip.top="$t('sharing.grants.delete')" />
+						<i v-tooltip.top="$t('sharing.grants.read')" class="pi pi-eye" />
+						<i v-tooltip.top="$t('sharing.grants.original')" class="pi pi-window-maximize" />
+						<i v-tooltip.top="$t('sharing.grants.download')" class="pi pi-cloud-download" />
+						<i v-tooltip.top="$t('sharing.grants.upload')" class="pi pi-upload" />
+						<i v-tooltip.top="$t('sharing.grants.edit')" class="pi pi-file-edit" />
+						<i v-tooltip.top="$t('sharing.grants.delete')" class="pi pi-trash" />
 					</div>
 					<div class="w-1/6"></div>
 				</div>
-				<ShareLine v-for="perm in perms" :perm="perm" @delete="deletePermission" :with-album="false" />
+				<ShareLine v-for="perm in perms" :perm="perm" :with-album="false" @delete="deletePermission" :key="`perm-${perm.id}`" />
 				<div v-if="perms.length === 0">
 					<p class="text-muted-color text-center py-3">{{ $t("sharing.no_data") }}</p>
 				</div>
 				<div class="flex gap-4">
 					<Button
-						@click="dialogVisible = true"
 						icon="pi pi-plus"
 						severity="primary"
 						class="p-3 w-full mt-4 font-bold border-none rounded-xl"
 						:label="$t('sharing.add_new_access_permission')"
+						@click="dialogVisible = true"
 					></Button>
 					<Button
-						@click="dialogPropagateVisible = true"
 						icon="pi pi-forward"
 						severity="danger"
 						:disabled="perms.length === 0"
 						class="p-3 w-full mt-4 font-bold border-none rounded-xl disabled:opacity-50"
 						:label="$t('sharing.propagate')"
+						@click="dialogPropagateVisible = true"
 					></Button>
 				</div>
 			</template>
 		</template>
 	</Card>
 	<ConfirmSharingDialog v-model:visible="dialogPropagateVisible" :album="props.album" />
-	<AlbumCreateShareDialog v-model:visible="dialogVisible" :album="props.album" @createdPermission="load" :filtered-users-ids="sharedUserIds" />
+	<AlbumCreateShareDialog v-model:visible="dialogVisible" :album="props.album" :filtered-users-ids="sharedUserIds" @created-permission="load" />
 </template>
 
 <script setup lang="ts">

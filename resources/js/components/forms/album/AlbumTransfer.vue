@@ -16,7 +16,7 @@
 			</div>
 			<div v-else class="text-center w-full">
 				<span class="font-bold">{{ $t("dialogs.transfer.query") }}</span>
-				<SearchTargetUser :album="album" @selected="selected" :with-groups="false" />
+				<SearchTargetUser :album="album" :with-groups="false" @selected="selected" />
 			</div>
 			<Button
 				class="text-danger-800 font-bold hover:text-white hover:bg-danger-800 w-full bg-transparent border-none"
@@ -52,7 +52,7 @@ function execute() {
 	}
 	AlbumService.transfer(props.album.id, newOwner.value.id).then(() => {
 		router.push("/gallery");
-		// @ts-expect-error
+		// @ts-expect-error --- IGNORE ---
 		AlbumService.clearCache(props.album?.parent_id);
 	});
 }

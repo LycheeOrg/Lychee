@@ -13,7 +13,7 @@
 				</div>
 			</div>
 			<div v-else>
-				<div class="p-9" v-if="error_no_target === false">
+				<div v-if="error_no_target === false" class="p-9">
 					<span class="font-bold">
 						{{ question }}
 					</span>

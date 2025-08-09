@@ -15,7 +15,7 @@
 				</router-link>
 			</div>
 		</template>
-		<Menu :model="items" v-if="initData" class="!border-none" :dt="{ item: { padding: '0.25rem 0.75rem' } }">
+		<Menu v-if="initData" :model="items" class="!border-none" :dt="{ item: { padding: '0.25rem 0.75rem' } }">
 			<template #submenuheader="{ item }">
 				<span class="text-primary-emphasis font-bold" :class="item.access !== false ? '' : 'hidden'">
 					<!-- @vue-ignore -->
@@ -26,7 +26,7 @@
 				<template v-if="item.access">
 					<router-link v-if="item.route" v-slot="{ href, navigate }" :to="item.route" custom>
 						<a v-ripple :href="href" v-bind="props.action" @click="navigate">
-							<PiMiniIcon :icon="item.icon" :key="item.icon" />
+							<PiMiniIcon :key="item.icon" :icon="item.icon" />
 							<span class="ml-2">
 								<!-- @vue-ignore -->
 								{{ $t(item.label) }}
@@ -35,7 +35,7 @@
 						</a>
 					</router-link>
 					<a v-if="item.url" v-ripple :href="item.url" :target="item.target" v-bind="props.action">
-						<PiMiniIcon :icon="item.icon" :key="item.icon" />
+						<PiMiniIcon :key="item.icon" :icon="item.icon" />
 						<span class="ml-2">
 							<!-- @vue-ignore -->
 							{{ $t(item.label) }}
@@ -43,7 +43,7 @@
 						<SETag v-if="item.seTag" />
 					</a>
 					<a v-if="!item.route && !item.url" v-ripple v-bind="props.action">
-						<PiMiniIcon :icon="item.icon" :key="item.icon" />
+						<PiMiniIcon :key="item.icon" :icon="item.icon" />
 						<span class="ml-2">
 							<!-- @vue-ignore -->
 							{{ $t(item.label) }}
@@ -54,8 +54,8 @@
 			</template>
 		</Menu>
 		<AboutLychee v-model:visible="openLycheeAbout" />
-		<div class="mt-auto" v-if="user?.id !== null">
-			<Menu :model="profileItems" v-if="initData" class="!border-none" :dt="{ item: { padding: '0.25rem 0.75rem' } }">
+		<div v-if="user?.id !== null" class="mt-auto">
+			<Menu v-if="initData" :model="profileItems" class="!border-none" :dt="{ item: { padding: '0.25rem 0.75rem' } }">
 				<template #item="{ item, props }">
 					<router-link v-if="item.route" v-slot="{ href, navigate }" :to="item.route" custom>
 						<a v-ripple :href="href" v-bind="props.action" @click="navigate">
@@ -90,7 +90,7 @@
 					<PiMiniIcon icon="person" :class="'w-3 h-3'" />
 					<div class="capitalize ml-2 text-muted-color">
 						{{ authStore.user?.username }}
-						<i class="pi pi-crown text-orange-400 text-xs" v-if="canSeeAdmin"></i>
+						<i v-if="canSeeAdmin" class="pi pi-crown text-orange-400 text-xs"></i>
 					</div>
 				</div>
 				<Button text severity="secondary" class="cursor-pointer" @click="logout">

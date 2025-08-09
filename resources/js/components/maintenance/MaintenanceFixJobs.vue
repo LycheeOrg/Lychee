@@ -12,7 +12,7 @@
 		</template>
 		<template #content>
 			<ScrollPanel class="w-full h-40 text-sm text-muted-color">
-				<div v-html="description" class="w-full text-center"></div>
+				<div class="w-full text-center" v-html="description"></div>
 				<ProgressSpinner v-if="loading" class="w-full"></ProgressSpinner>
 			</ScrollPanel>
 			<div class="flex gap-4 mt-1">
@@ -52,7 +52,7 @@ function load() {
 function exec() {
 	loading.value = true;
 	MaintenanceService.jobsDo()
-		.then((response) => {
+		.then(() => {
 			toast.add({ severity: "success", summary: trans("toasts.success"), life: 3000 });
 			loading.value = false;
 		})

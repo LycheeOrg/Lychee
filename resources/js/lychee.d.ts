@@ -151,7 +151,7 @@ declare namespace App.Http.Resources.Diagnostics {
 		type: App.Enum.MessageType;
 		message: string;
 		from: string;
-		details: Array<any>;
+		details: string[];
 	};
 	export type Permissions = {
 		left: string;
@@ -833,7 +833,7 @@ declare namespace App.Http.Resources.Tags {
 	export type TagWithPhotosResource = {
 		id: number;
 		name: string;
-		photos: Array<any>;
+		photos: App.Http.Resources.Models.PhotoResource[];
 	};
 	export type TagsResource = {
 		can_edit: boolean;

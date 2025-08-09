@@ -1,5 +1,5 @@
 <template>
-	<div :data-layer="map_provider?.layer" :data-provider="map_provider?.attribution" id="leaflet_map_single_photo" :class="classVal"></div>
+	<div id="leaflet_map_single_photo" :data-layer="map_provider?.layer" :data-provider="map_provider?.attribution" :class="classVal"></div>
 </template>
 <script setup lang="ts">
 import { useSidebarMap } from "@/services/sidebar-map";

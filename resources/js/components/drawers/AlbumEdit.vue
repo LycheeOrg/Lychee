@@ -12,7 +12,7 @@
 					'max-xl:border-b-2 border-solid border-primary-500 text-primary-500 hover:border-primary-300 hover:text-primary-300': true,
 					'bg-primary-500/5': activeTab === 0,
 				}"
-				v-on:click="activeTab = 0"
+				@click="activeTab = 0"
 			>
 				{{ $t("gallery.album.tabs.about") }}
 			</li>
@@ -25,7 +25,7 @@
 					'max-xl:border-b-2 border-solid border-primary-500 text-primary-500 hover:border-primary-300 hover:text-primary-300': true,
 					'bg-primary-500/5': activeTab === 1,
 				}"
-				v-on:click="activeTab = 1"
+				@click="activeTab = 1"
 			>
 				{{ $t("gallery.album.tabs.share") }}
 			</li>
@@ -38,7 +38,7 @@
 					'max-xl:border-b-2 border-solid border-primary-500 text-primary-500 hover:border-primary-300 hover:text-primary-300': true,
 					'bg-primary-500/5': activeTab === 2,
 				}"
-				v-on:click="activeTab = 2"
+				@click="activeTab = 2"
 			>
 				{{ $t("gallery.album.tabs.move") }}
 			</li>
@@ -51,41 +51,41 @@
 					'max-xl:border-b-2 border-solid text-red-700 border-red-700 hover:border-red-600 hover:text-red-600': true,
 					'bg-red-700/10': activeTab === 3,
 				}"
-				v-on:click="activeTab = 3"
+				@click="activeTab = 3"
 			>
 				{{ $t("gallery.album.tabs.danger") }}
 			</li>
 		</ul>
-		<div class="w-full xl:w-5/6 flex justify-center flex-wrap mb-4 sm:mt-7 ltr:pl-7 rtl:pr-7" v-if="activeTab === 0">
+		<div v-if="activeTab === 0" class="w-full xl:w-5/6 flex justify-center flex-wrap mb-4 sm:mt-7 ltr:pl-7 rtl:pr-7">
 			<!-- @vue-expect-error editable exist in that case. -->
 			<AlbumProperties
 				v-if="props.config.is_base_album"
+				:key="'properties_' + props.album.id"
 				:editable="props.album.editable"
 				:photos="props.album.photos"
-				:key="'properties_' + props.album.id"
 			/>
-			<AlbumVisibility :album="props.album" :config="props.config" :key="'visibility_' + props.album.id" />
+			<AlbumVisibility :key="'visibility_' + props.album.id" :album="props.album" :config="props.config" />
 		</div>
 		<!-- @if($this->flags->is_base_album)  -->
-		<div class="w-full xl:w-5/6 flex justify-center flex-wrap mb-4 sm:mt-7 ltr:pl-7 rtl:pr-7" v-if="activeTab === 1 && canShare">
+		<div v-if="activeTab === 1 && canShare" class="w-full xl:w-5/6 flex justify-center flex-wrap mb-4 sm:mt-7 ltr:pl-7 rtl:pr-7">
 			<!-- @vue-expect-error -->
-			<AlbumShare :album="props.album" :key="'share_' + props.album.id" />
+			<AlbumShare :key="'share_' + props.album.id" :album="props.album" />
 		</div>
-		<div class="w-full xl:w-5/6 flex justify-center flex-wrap mb-4 sm:mt-7 ltr:pl-7 rtl:pr-7" v-if="activeTab === 2 && canMove">
+		<div v-if="activeTab === 2 && canMove" class="w-full xl:w-5/6 flex justify-center flex-wrap mb-4 sm:mt-7 ltr:pl-7 rtl:pr-7">
 			<!-- @vue-expect-error -->
-			<AlbumMove :album="props.album" :key="'move_' + props.album.id" />
+			<AlbumMove :key="'move_' + props.album.id" :album="props.album" />
 		</div>
 		<div
-			class="w-full xl:w-5/6 flex justify-center flex-wrap mb-4 sm:mt-7 ltr:pl-7 rtl:pr-7"
 			v-if="activeTab === 3 && (canDelete || canTransfer)"
+			class="w-full xl:w-5/6 flex justify-center flex-wrap mb-4 sm:mt-7 ltr:pl-7 rtl:pr-7"
 		>
 			<!-- @vue-expect-error -->
-			<AlbumTransfer v-if="canTransfer" :album="props.album" :key="'transfer_' + props.album.id" />
+			<AlbumTransfer v-if="canTransfer" :key="'transfer_' + props.album.id" :album="props.album" />
 			<AlbumDelete
 				v-if="canDelete"
+				:key="'delete_' + props.album.id"
 				:album="props.album"
 				:is_model_album="props.config.is_model_album"
-				:key="'delete_' + props.album.id"
 				@deleted="close"
 			/>
 		</div>
@@ -98,9 +98,9 @@ import UsersService from "@/services/users-service";
 import AlbumProperties from "@/components/forms/album/AlbumProperties.vue";
 import AlbumVisibility from "@/components/forms/album/AlbumVisibility.vue";
 import AlbumDelete from "@/components/forms/album/AlbumDelete.vue";
-import AlbumMove from "../forms/album/AlbumMove.vue";
-import AlbumTransfer from "../forms/album/AlbumTransfer.vue";
-import AlbumShare from "../forms/album/AlbumShare.vue";
+import AlbumMove from "@/components/forms/album/AlbumMove.vue";
+import AlbumTransfer from "@/components/forms/album/AlbumTransfer.vue";
+import AlbumShare from "@/components/forms/album/AlbumShare.vue";
 import { storeToRefs } from "pinia";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { useLtRorRtL } from "@/utils/Helpers";

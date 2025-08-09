@@ -1,5 +1,4 @@
 import SearchService from "@/services/search-service";
-import { TogglablesStateStore } from "@/stores/ModalsState";
 import { trans } from "laravel-vue-i18n";
 import { sprintf } from "sprintf-js";
 import { computed, ref, Ref } from "vue";

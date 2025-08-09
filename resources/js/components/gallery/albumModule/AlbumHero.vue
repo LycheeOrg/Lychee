@@ -43,44 +43,44 @@
 							v-if="props.album.rights.can_share"
 							class="shrink-0 px-3 cursor-pointer text-muted-color inline-block transform duration-300 hover:scale-150 hover:text-color"
 							:title="$t('gallery.album.hero.share')"
-							v-on:click="openSharingModal"
+							@click="openSharingModal"
 						>
 							<i class="pi pi-share-alt" />
 						</a>
 						<a
 							v-if="is_se_enabled && user?.id !== null"
 							class="shrink-0 px-3 cursor-pointer inline-block transform duration-300 hover:scale-150 hover:text-color"
-							v-on:click="openStatistics"
+							@click="openStatistics"
 						>
 							<i class="pi pi-chart-scatter text-primary-emphasis" />
 						</a>
 						<a
 							v-if="is_se_preview_enabled && user?.id !== null"
-							class="shrink-0 px-3 cursor-not-allowed text-primary-emphasis"
 							v-tooltip.left="$t('gallery.album.hero.stats_only_se')"
+							class="shrink-0 px-3 cursor-not-allowed text-primary-emphasis"
 						>
 							<i class="pi pi-chart-scatter" />
 						</a>
 						<router-link
-							:to="{ name: 'frame', params: { albumId: props.album.id } }"
 							v-if="props.config.is_mod_frame_enabled"
-							class="shrink-0 px-3 cursor-pointer text-muted-color inline-block transform duration-300 hover:scale-150 hover:text-color"
 							v-tooltip.bottom="'Frame'"
+							:to="{ name: 'frame', params: { albumId: props.album.id } }"
+							class="shrink-0 px-3 cursor-pointer text-muted-color inline-block transform duration-300 hover:scale-150 hover:text-color"
 						>
 							<i class="pi pi-desktop" />
 						</router-link>
 						<router-link
-							:to="{ name: 'map', params: { albumId: props.album.id } }"
 							v-if="props.config.is_map_accessible && hasCoordinates"
+							:to="{ name: 'map', params: { albumId: props.album.id } }"
 							class="shrink-0 px-3 cursor-pointer text-muted-color inline-block transform duration-300 hover:scale-150 hover:text-color"
 						>
 							<i class="pi pi-map" />
 						</router-link>
 						<a
-							v-tooltip.bottom="'Start slideshow'"
-							@click="emits('toggleSlideShow')"
 							v-if="props.album.photos.length > 0 && is_slideshow_enabled"
+							v-tooltip.bottom="'Start slideshow'"
 							class="shrink-0 px-3 cursor-pointer text-muted-color inline-block transform duration-300 hover:scale-150 hover:text-color"
+							@click="emits('toggleSlideShow')"
 						>
 							<i class="pi pi-play" />
 						</a>

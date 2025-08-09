@@ -1,5 +1,5 @@
 <template>
-	<Button @click="openLeftMenu" icon="pi pi-bars" class="ltr:mr-2 rtl:ml-2 border-none" severity="secondary" text />
+	<Button icon="pi pi-bars" class="ltr:mr-2 rtl:ml-2 border-none" severity="secondary" text @click="openLeftMenu" />
 </template>
 <script setup lang="ts">
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";

@@ -27,22 +27,22 @@
 			<div class="font-bold" v-html="$t('settings.lychee_se.header')" />
 		</template>
 		<p class="mb-2" v-html="$t('settings.lychee_se.call4action')" />
-		<div class="mb-8 flex items-start" v-if="!is_se_enabled">
+		<div v-if="!is_se_enabled" class="mb-8 flex items-start">
 			<div class="w-3/4">
 				<FloatLabel variant="on">
-					<InputText v-model="licenseKey" id="licenseKey" class="w-full" @update:model-value="licenseKeyIsInvValid = false" />
+					<InputText id="licenseKey" v-model="licenseKey" class="w-full" @update:model-value="licenseKeyIsInvValid = false" />
 					<label for="licenseKey">{{ $t("dialogs.register.license_key") }}</label>
 				</FloatLabel>
-				<span class="inline-block mt-4 font-bold text-danger-600" v-if="licenseKey && licenseKeyIsInvValid">{{
+				<span v-if="licenseKey && licenseKeyIsInvValid" class="inline-block mt-4 font-bold text-danger-600">{{
 					$t("dialogs.register.invalid_license")
 				}}</span>
 			</div>
 			<Button
-				class="w-1/4 border-none font-bold bg-primary-500/20 hover:bg-primary-500 hover:text-surface-0"
 				v-if="!is_se_enabled"
-				@click="register"
+				class="w-1/4 border-none font-bold bg-primary-500/20 hover:bg-primary-500 hover:text-surface-0"
 				severity="contrast"
 				:disabled="!isValidRegistrationForm"
+				@click="register"
 				>{{ $t("dialogs.register.register") }}
 			</Button>
 		</div>
@@ -72,7 +72,7 @@
 		</p>
 		<div class="flex gap-4">
 			<FloatLabel class="w-full grow" variant="on">
-				<InputPassword id="api_key" type="text" v-model="dropbox_key" />
+				<InputPassword id="api_key" v-model="dropbox_key" type="text" />
 				<label for="api_key" class="text-muted-color">{{ $t("settings.dropbox.api_key") }}</label>
 			</FloatLabel>
 			<Button severity="contrast" class="w-full border-none bg-primary-500/20 hover:bg-primary-500" @click="saveDropboxKey">{{
@@ -180,37 +180,37 @@
 	</Fieldset>
 	<Fieldset :legend="$t('settings.geolocation.header')">
 		<div class="flex flex-col gap-4">
-			<BoolField :label="$t('settings.geolocation.map_display')" v-if="map_display !== undefined" :config="map_display" @filled="save" />
+			<BoolField v-if="map_display !== undefined" :label="$t('settings.geolocation.map_display')" :config="map_display" @filled="save" />
 			<BoolField
-				:label="$t('settings.geolocation.map_display_public')"
 				v-if="map_display_public !== undefined"
+				:label="$t('settings.geolocation.map_display_public')"
 				:config="map_display_public"
 				@filled="save"
 			/>
 			<SelectOptionsField
-				:label="$t('settings.geolocation.map_provider')"
 				v-if="map_provider !== undefined"
+				:label="$t('settings.geolocation.map_provider')"
 				:config="map_provider"
 				:options="mapProvidersOptions"
 				:mapper="SelectBuilders.buildMapProvider"
 				@filled="save"
 			/>
 			<BoolField
-				:label="$t('settings.geolocation.map_include_subalbums')"
 				v-if="map_include_subalbums !== undefined"
+				:label="$t('settings.geolocation.map_include_subalbums')"
 				:config="map_include_subalbums"
 				@filled="save"
 			/>
 			<BoolField
-				:label="$t('settings.geolocation.location_decoding')"
 				v-if="location_decoding !== undefined"
+				:label="$t('settings.geolocation.location_decoding')"
 				:config="location_decoding"
 				@filled="save"
 			/>
-			<BoolField :label="$t('settings.geolocation.location_show')" v-if="location_show !== undefined" :config="location_show" @filled="save" />
+			<BoolField v-if="location_show !== undefined" :label="$t('settings.geolocation.location_show')" :config="location_show" @filled="save" />
 			<BoolField
-				:label="$t('settings.geolocation.location_show_public')"
 				v-if="location_show_public !== undefined"
+				:label="$t('settings.geolocation.location_show_public')"
 				:config="location_show_public"
 				@filled="save"
 			/>
@@ -236,14 +236,14 @@ import {
 	mapProvidersOptions,
 } from "@/config/constants";
 import { trans } from "laravel-vue-i18n";
-import SelectLang from "../forms/settings/SelectLang.vue";
-import SelectOptionsField from "../forms/settings/SelectOptionsField.vue";
-import SelectField from "../forms/settings/SelectField.vue";
-import BoolField from "../forms/settings/BoolField.vue";
+import SelectLang from "@/components/forms/settings/SelectLang.vue";
+import SelectOptionsField from "@/components/forms/settings/SelectOptionsField.vue";
+import SelectField from "@/components/forms/settings/SelectField.vue";
+import BoolField from "@/components/forms/settings/BoolField.vue";
 import { useToast } from "primevue/usetoast";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
-import InputText from "../forms/basic/InputText.vue";
+import InputText from "@/components/forms/basic/InputText.vue";
 import MaintenanceService from "@/services/maintenance-service";
 import { onMounted, watch } from "vue";
 import Fieldset from "@/components/forms/basic/Fieldset.vue";

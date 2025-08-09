@@ -1,40 +1,40 @@
 <template>
 	<Password
 		v-model="modelValue"
-		:promptLabel="props.promptLabel"
-		:mediumRegex="props.mediumRegex"
-		:strongRegex="props.strongRegex"
-		:weakLabel="props.weakLabel"
-		:mediumLabel="props.mediumLabel"
-		:strongLabel="props.strongLabel"
+		:prompt-label="props.promptLabel"
+		:medium-regex="props.mediumRegex"
+		:strong-regex="props.strongRegex"
+		:weak-label="props.weakLabel"
+		:medium-label="props.mediumLabel"
+		:strong-label="props.strongLabel"
 		:feedback="props.feedback"
-		:appendTo="props.appendTo"
-		:toggleMask="props.toggleMask"
-		:maskIcon="props.maskIcon"
-		:unmaskIcon="props.unmaskIcon"
+		:append-to="props.appendTo"
+		:toggle-mask="props.toggleMask"
+		:mask-icon="props.maskIcon"
+		:unmask-icon="props.unmaskIcon"
 		:invalid="props.invalid"
 		:disabled="props.disabled"
 		:variant="props.variant"
 		:placeholder="props.placeholder"
 		:required="props.required"
 		:fluid="props.fluid"
-		:inputId="props.inputId"
-		:inputStyle="props.inputStyle"
-		:inputClass="inputClass"
-		:inputProps="props.inputProps"
-		:panelId="props.panelId"
-		:panelClass="props.panelClass"
-		:panelStyle="props.panelStyle"
-		:panelProps="props.panelProps"
-		:overlayId="props.overlayId"
-		:overlayClass="props.overlayClass"
-		:overlayStyle="props.overlayStyle"
-		:overlayProps="props.overlayProps"
-		:ariaLabelledby="props.ariaLabelledby"
-		:ariaLabel="props.ariaLabel"
+		:input-id="props.inputId"
+		:input-style="props.inputStyle"
+		:input-class="inputClass"
+		:input-props="props.inputProps"
+		:panel-id="props.panelId"
+		:panel-class="props.panelClass"
+		:panel-style="props.panelStyle"
+		:panel-props="props.panelProps"
+		:overlay-id="props.overlayId"
+		:overlay-class="props.overlayClass"
+		:overlay-style="props.overlayStyle"
+		:overlay-props="props.overlayProps"
+		:aria-labelledby="props.ariaLabelledby"
+		:aria-label="props.ariaLabel"
 		:dt="props.dt"
 		:pt="props.pt"
-		:ptOptions="props.ptOptions"
+		:pt-options="props.ptOptions"
 		:unstyled="props.unstyled"
 	/>
 </template>
@@ -43,12 +43,9 @@ import { HTMLAttributes, InputHTMLAttributes, ref } from "vue";
 import type { DesignToken, HintedString, Nullable, PassThrough } from "@primevue/core";
 import Password, { PasswordPassThroughOptions } from "primevue/password";
 import type { PassThroughOptions } from "primevue/passthrough";
+import { PasswordDesignTokens } from "@primeuix/themes/types/password";
 
 const props = defineProps<{
-	/**
-	 * Value of the component.
-	 */
-	modelValue?: Nullable<string>;
 	/**
 	 * Text to prompt password entry. Defaults to PrimeVue Locale configuration.
 	 */
@@ -186,7 +183,7 @@ const props = defineProps<{
 	/**
 	 * It generates scoped CSS variables using design tokens for the component.
 	 */
-	dt?: DesignToken<any>;
+	dt?: DesignToken<PasswordDesignTokens>;
 	/**
 	 * Used to pass attributes to DOM elements inside the component.
 	 * @type {PasswordPassThroughOptions}
@@ -203,18 +200,6 @@ const props = defineProps<{
 	 */
 	unstyled?: boolean;
 }>();
-
-// const props = defineProps<{
-// 	size?: "small" | "large" | undefined;
-// 	invalid?: boolean | undefined;
-// 	variant?: "outlined" | "filled" | undefined;
-// 	fluid?: boolean;
-// 	dt?: DesignToken<any>;
-// 	pt?: PassThrough<InputTextPassThroughOptions>;
-// 	ptOptions?: PassThroughOptions;
-// 	unstyled?: boolean;
-// 	class?: string;
-// }>();
 
 const modelValue = defineModel<Nullable<string>>();
 const inputClass = ref((props.inputClass ?? "") + " border-0 p-3 w-full border-b hover:border-b-danger-600 focus:border-b-danger-600");

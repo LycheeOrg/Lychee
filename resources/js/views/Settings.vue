@@ -22,12 +22,12 @@
 				@ready="isReady = true"
 			/>
 			<template v-if="isReady && configs !== undefined">
-				<div class="flex gap-4 flex-wrap lg:flex-nowrap" v-if="tab !== 'all'">
+				<div v-if="tab !== 'all'" class="flex gap-4 flex-wrap lg:flex-nowrap">
 					<div class="w-full lg:w-3xs shrink-0">
 						<Menu :model="menu" :pt:root:class="'border-0 lg:sticky top-11 mt-2'"> </Menu>
 					</div>
 					<div class="w-full">
-						<General :configs="configs" :hash="hash" v-if="tab === ''" @refresh="load" />
+						<General v-if="tab === ''" :configs="configs" :hash="hash" @refresh="load" />
 						<CssJs v-if="tab === 'CssJs'" />
 						<template v-for="config in configs" :key="config.cat">
 							<Fieldset
@@ -36,8 +36,8 @@
 								class="border-b-0 ltr:border-r-0 rtl:border-l-0 ltr:rounded-r-none rtl:rounded-l-none rounded-b-none pb-20 h-full"
 							>
 								<div
-									class="configDescription w-full text-muted-color-emphasis pl-6 pb-8"
 									v-if="config.description"
+									class="configDescription w-full text-muted-color-emphasis pl-6 pb-8"
 									v-html="config.description"
 								></div>
 								<ConfigGroup :configs="config.configs" @filled="update" @reset="reset" />

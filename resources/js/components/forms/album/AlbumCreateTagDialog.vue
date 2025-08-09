@@ -21,10 +21,10 @@
 					<div class="text-muted-color-emphasis" v-html="$t('dialogs.new_tag_album.warn')" />
 				</div>
 				<div class="flex items-center mt-9">
-					<Button @click="closeCallback" severity="secondary" class="w-full font-bold border-none rounded-none rounded-bl-xl">
+					<Button severity="secondary" class="w-full font-bold border-none rounded-none rounded-bl-xl" @click="closeCallback">
 						{{ $t("dialogs.button.cancel") }}
 					</Button>
-					<Button @click="create" severity="contrast" class="font-bold w-full border-none rounded-none rounded-br-xl" :disabled="!isValid">
+					<Button severity="contrast" class="font-bold w-full border-none rounded-none rounded-br-xl" :disabled="!isValid" @click="create">
 						{{ $t("dialogs.new_tag_album.create") }}
 					</Button>
 				</div>
@@ -44,7 +44,7 @@ import { useToast } from "primevue/usetoast";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { storeToRefs } from "pinia";
 import { trans } from "laravel-vue-i18n";
-import TagsInput from "../basic/TagsInput.vue";
+import TagsInput from "@/components/forms/basic/TagsInput.vue";
 
 const toast = useToast();
 const router = useRouter();

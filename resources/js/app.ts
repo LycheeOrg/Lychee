@@ -3,7 +3,6 @@
  * includes Vue and other libraries. It is a great starting point when
  * building robust, powerful web applications using Vue and Laravel.
  */
-import axios from "axios";
 import { createApp } from "vue";
 import { createPinia } from "pinia";
 import PrimeVue from "primevue/config";
@@ -26,11 +25,6 @@ import "../sass/app.css";
 declare global {
 	var assets_url: string;
 }
-
-// @ts-expect-error
-window.axios = axios;
-// @ts-expect-error
-window.axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
 
 const router = createRouter({
 	history: createWebHistory(),
@@ -68,25 +62,15 @@ app.directive("ripple", Ripple);
 app.directive("focustrap", FocusTrap);
 app.directive("tooltip", Tooltip);
 
-app.component("app", AppComponent);
+app.component("App", AppComponent);
 app.use(router);
 app.use(ToastService);
 app.use(ConfirmationService);
-
-/**
- * The following block of code may be used to automatically register your
- * Vue components. It will recursively scan this directory for the Vue
- * components and automatically register them with their "basename".
- *
- * Eg. ./components/ExampleComponent.vue -> <example-component></example-component>
- */
-
 app.use(i18nVue, {
 	resolve: async (lang: string) => {
 		if (!lang.startsWith("php")) {
 			lang = "php_" + lang;
 		}
-		// @ts-expect-error
 		const langs = import.meta.glob("../../lang/*.json");
 		return await langs[`../../lang/${lang}.json`]();
 	},

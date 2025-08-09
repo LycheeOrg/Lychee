@@ -19,10 +19,10 @@
 			:class="classObject"
 			:src="src"
 			:srcset="srcSet"
-			@load="onImageLoad"
 			data-overlay="false"
 			draggable="false"
 			loading="lazy"
+			@load="onImageLoad"
 		/>
 	</span>
 </template>
@@ -73,7 +73,7 @@ load(props.thumb, props.isPasswordProtected);
 
 watch(
 	() => props.thumb,
-	(newThumb: App.Http.Resources.Models.ThumbResource | undefined | null, _oldThumb: any) => {
+	(newThumb: App.Http.Resources.Models.ThumbResource | undefined | null, _oldThumb) => {
 		load(newThumb, props.isPasswordProtected);
 	},
 );

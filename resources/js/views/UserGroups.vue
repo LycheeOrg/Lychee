@@ -1,11 +1,11 @@
 <template>
 	<AddUserGroupModal
 		v-if="allUsers !== undefined"
-		:user-list="allUsers"
 		v-model:visible="visible"
 		v-model:description="selectedGroupDescription"
 		v-model:name="selectedGroupName"
 		v-model:group-id="selectedGroupId"
+		:user-list="allUsers"
 		@refresh="fetchUserGroups"
 	/>
 	<Toolbar class="w-full border-0 h-14">
@@ -20,7 +20,7 @@
 		<template #end> </template>
 	</Toolbar>
 	<Panel class="max-w-3xl mx-auto border-0">
-		<div class="w-full" v-if="can_create_user_groups">
+		<div v-if="can_create_user_groups" class="w-full">
 			<p class="text-muted-color-emphasis">{{ $t("user-groups.explanation") }}</p>
 			<div class="flex justify-end mt-8 mb-8">
 				<Button severity="primary" class="border-none p-3" @click="create">{{ $t("user-groups.create_group") }}</Button>
@@ -37,11 +37,11 @@
 		<template v-else>
 			<div
 				v-for="(group, idx) in userGroups"
+				:key="`G${group.id}`"
 				:class="{
 					'text-left text-muted-color-emphasis my-8 relative border-surface-400  pt-4': true,
 					'border-t': idx > 0,
 				}"
-				:key="`G${group.id}`"
 			>
 				<div class="flex justify-between items-start">
 					<div>
@@ -60,8 +60,8 @@
 						/>
 						<Button
 							v-if="can_create_user_groups"
-							text
 							:id="`delete-group-${group.id}`"
+							text
 							severity="danger"
 							:label="$t('user-groups.delete')"
 							icon="pi pi-trash"
@@ -72,17 +72,17 @@
 							v-if="group.rights.can_manage"
 							v-model="selectedUserToAdd"
 							:options="availableUsers(group)"
-							optionLabel="username"
+							option-label="username"
 							:placeholder="$t('user-groups.add_member')"
 							class="w-56 mr-2"
 							@update:model-value="addMemberToGroup(group)"
 						/>
 					</div>
 				</div>
-				<div class="flex flex-wrap gap-y-1 gap-x-4 mt-3" v-if="group.members.length > 0">
+				<div v-if="group.members.length > 0" class="flex flex-wrap gap-y-1 gap-x-4 mt-3">
 					<span v-for="member in group.members" :key="`G${group.id}:${member.id}`" class="flex items-center hover:text-color-emphasis">
 						<button class="mr-1 cursor-pointer" @click="editRole(group, member.id, member.role)">
-							<i class="pi pi-crown text-orange-400 mr-1" v-if="member.role === 'admin'" />
+							<i v-if="member.role === 'admin'" class="pi pi-crown text-orange-400 mr-1" />
 							{{ member.username }}
 						</button>
 						<button

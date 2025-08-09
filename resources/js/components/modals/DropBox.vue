@@ -20,7 +20,7 @@ import { Ref } from "vue";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
 import PhotoService from "@/services/photo-service";
-import DropBoxChooser from "../forms/upload/DropBoxChooser.vue";
+import DropBoxChooser from "@/components/forms/upload/DropBoxChooser.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 

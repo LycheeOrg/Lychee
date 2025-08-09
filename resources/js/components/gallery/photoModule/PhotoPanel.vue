@@ -9,30 +9,30 @@
 			</div>
 			<NextPrevious
 				v-if="photo.previous_photo_id !== null && !is_slideshow_active"
-				:photoId="photo.previous_photo_id"
+				:photo-id="photo.previous_photo_id"
 				:is_next="false"
 				:style="previousStyle"
 			/>
 			<NextPrevious
 				v-if="photo.next_photo_id !== null && !is_slideshow_active"
-				:photoId="photo.next_photo_id"
+				:photo-id="photo.next_photo_id"
 				:is_next="true"
 				:style="nextStyle"
 			/>
-			<Overlay :photo="photo" v-if="!is_exif_disabled && imageViewMode !== ImageViewMode.Pdf" />
+			<Overlay v-if="!is_exif_disabled && imageViewMode !== ImageViewMode.Pdf" :photo="photo" />
 			<Dock
 				v-if="photo.rights.can_edit && !is_photo_edit_open"
 				:photo="photo"
 				:is-narrow-menu="imageViewMode === ImageViewMode.Pdf"
-				@toggleStar="emits('toggleStar')"
-				@setAlbumHeader="emits('setAlbumHeader')"
-				@rotatePhotoCCW="emits('rotatePhotoCCW')"
-				@rotatePhotoCW="emits('rotatePhotoCW')"
-				@toggleMove="emits('toggleMove')"
-				@toggleDelete="emits('toggleDelete')"
+				@toggle-star="emits('toggleStar')"
+				@set-album-header="emits('setAlbumHeader')"
+				@rotate-photo-c-c-w="emits('rotatePhotoCCW')"
+				@rotate-photo-c-w="emits('rotatePhotoCW')"
+				@toggle-move="emits('toggleMove')"
+				@toggle-delete="emits('toggleDelete')"
 			/>
 		</div>
-		<PhotoDetails v-model:are-details-open="are_details_open" :photo="photo" :is-map-visible="props.isMapVisible" v-if="!is_exif_disabled" />
+		<PhotoDetails v-if="!is_exif_disabled" v-model:are-details-open="are_details_open" :photo="photo" :is-map-visible="props.isMapVisible" />
 	</div>
 </template>
 <script setup lang="ts">
@@ -50,7 +50,6 @@ import { watch } from "vue";
 import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
 import { onUnmounted } from "vue";
 import { useDebounceFn } from "@vueuse/core";
-import { Transition } from "vue";
 import PhotoBox from "./PhotoBox.vue";
 
 const lycheeStore = useLycheeStateStore();

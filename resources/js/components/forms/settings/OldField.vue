@@ -5,11 +5,11 @@
 			<sub v-if="props.config.order !== null" class="text-muted-color text-2xs"> ({{ props.config.order }}) </sub>
 		</div>
 		<IconField class="w-1/2">
-			<InputText :id="props.config.key" type="text" v-model="val" @update:modelValue="update" />
-			<InputIcon :class="`pi ${classes} cursor-pointer`" v-tooltip="'Click me to reset!'" @click="reset" v-if="changed" />
+			<InputText :id="props.config.key" v-model="val" type="text" @update:model-value="update" />
+			<InputIcon v-if="changed" v-tooltip="'Click me to reset!'" :class="`pi ${classes} cursor-pointer`" @click="reset" />
 		</IconField>
-		<Message class="w-full h-8 mt-0.5" v-if="changed && isVersion" severity="error">We strongly recommend you do not modify this value.</Message>
-		<div class="w-full text-muted-color" v-if="!changed || !isVersion">
+		<Message v-if="changed && isVersion" class="w-full h-8 mt-0.5" severity="error">We strongly recommend you do not modify this value.</Message>
+		<div v-if="!changed || !isVersion" class="w-full text-muted-color">
 			{{ props.config.documentation }}
 			<br v-if="props.config.details" />
 			<span v-html="props.config.details"></span>

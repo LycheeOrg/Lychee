@@ -42,7 +42,7 @@ export function useSlideshowFunction(
 		videoElement.value?.removeEventListener("ended", videoEndedEventListener);
 	}
 
-	function videoEndedEventListener(event: Event) {
+	function videoEndedEventListener(_event: Event) {
 		curtainDown();
 		window.setTimeout(() => {
 			removeVideoElementListeners();

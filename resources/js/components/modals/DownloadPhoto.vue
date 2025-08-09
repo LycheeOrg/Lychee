@@ -3,10 +3,10 @@
 		<template #container="{ closeCallback }">
 			<div class="flex flex-col relative max-w-md w-full text-sm rounded-md">
 				<div class="flex flex-col gap-1 justify-center p-9">
-					<template v-for="sv in props.photo.size_variants">
+					<template v-for="(sv, svid) in props.photo.size_variants" :key="`sv-${svid}`">
 						<Button
-							severity="contrast"
 							v-if="sv?.locale && isDownloadable(sv.type)"
+							severity="contrast"
 							class="w-full dark:border-surface-900"
 							@click="download(sv.type)"
 						>
@@ -20,7 +20,7 @@
 					</template>
 				</div>
 				<div class="flex justify-center">
-					<Button @click="closeCallback" severity="secondary" class="w-full font-bold border-none rounded-none rounded-b-xl">
+					<Button severity="secondary" class="w-full font-bold border-none rounded-none rounded-b-xl" @click="closeCallback">
 						{{ $t("dialogs.button.close") }}
 					</Button>
 				</div>

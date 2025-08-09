@@ -1,6 +1,6 @@
 <template>
 	<div class="hover:bg-primary-emphasis/5">
-		<template v-for="duplicate in props.duplicates.data">
+		<template v-for="duplicate in props.duplicates.data" :key="duplicate.photo_id">
 			<div
 				:class="{
 					'flex justify-between items-center hover:text-color-emphasis': true,
