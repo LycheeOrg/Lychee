@@ -6,7 +6,7 @@
 		}"
 		:data-width="props.photo.size_variants.original?.width"
 		:data-height="props.photo.size_variants.original?.height"
-		:data-id="props.photo.id"
+		:data-photo-id="props.photo.id"
 	>
 		<span
 			class="thumbimg relative w-full h-full border-none overflow-hidden"
