@@ -10,35 +10,35 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
 return new class() extends Migration {
-	public const CAT = 'gestures';
+	public const CAT = 'Smart Albums';
 
 	private function getConfigs(): array
 	{
 		return [
 			[
-				'key' => 'is_scroll_to_navigate_photos_enabled',
-				'value' => '1',
+				'key' => 'sorting_pinned_albums_col',
+				'value' => 'created_at',
 				'cat' => self::CAT,
-				'type_range' => '0|1',
+				'type_range' => 'created_at|title|description|max_taken_at|min_taken_at',
 				'is_secret' => false,
-				'description' => 'Enable scrolling with mouse wheel to navigate between photos',
+				'description' => 'Default column used for sorting featured albums',
 				'details' => '',
 				'level' => 0,
 				'not_on_docker' => false,
-				'order' => 1,
+				'order' => 20,
 				'is_expert' => false,
 			],
 			[
-				'key' => 'is_swipe_vertically_to_go_back_enabled',
-				'value' => '1',
+				'key' => 'sorting_pinned_albums_order',
+				'value' => 'DESC',
 				'cat' => self::CAT,
-				'type_range' => '0|1',
+				'type_range' => 'ASC|DESC',
 				'is_secret' => false,
-				'description' => 'Enable vertical swipe gesture on photos to return to album',
+				'description' => 'Default order used for sorting featured albums',
 				'details' => '',
 				'level' => 0,
 				'not_on_docker' => false,
-				'order' => 2,
+				'order' => 21,
 				'is_expert' => false,
 			],
 		];
@@ -49,15 +49,8 @@ return new class() extends Migration {
 	 */
 	public function up(): void
 	{
-		// Create the new Gestures category
-		DB::table('config_categories')->insert([
-			[
-				'cat' => self::CAT,
-				'name' => 'Gestures',
-				'description' => 'Configure gesture controls for photo navigation.',
-				'order' => 50,
-			],
-		]);
+		// Rename the category
+		DB::table('config_categories')->where('cat', '=', 'Smart Albums')->update(['name' => 'Smart & Featured Albums']);
 
 		// Add the two gesture settings
 		DB::table('configs')->insert($this->getConfigs());
@@ -72,7 +65,7 @@ return new class() extends Migration {
 		$keys = collect($this->getConfigs())->map(fn ($v) => $v['key'])->all();
 		DB::table('configs')->whereIn('key', $keys)->delete();
 
-		// Remove the category
-		DB::table('config_categories')->where('cat', self::CAT)->delete();
+		// Rename the category
+		DB::table('config_categories')->where('cat', '=', 'Smart Albums')->update(['name' => 'Smart Albums']);
 	}
 };

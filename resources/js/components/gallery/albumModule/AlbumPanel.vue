@@ -179,11 +179,12 @@ const {
 	selectedAlbumsIds,
 	photoSelect,
 	albumClick,
+	unselect,
 } = useSelection(photos, children, togglableStore);
 
 const { photoRoute, getParentId } = usePhotoRoute(router);
 
-function photoClick(idx: number, e: MouseEvent) {
+function photoClick(idx: number, _e: MouseEvent) {
 	router.push(photoRoute(photos.value[idx].id));
 }
 
@@ -235,6 +236,20 @@ const photoCallbacks = {
 	},
 };
 
+function togglePin() {
+	if (!selectedAlbum.value) return;
+	if (!album.value) return;
+
+	AlbumService.setPinned(selectedAlbum.value.id, !selectedAlbum.value.is_pinned).then(() => {
+		if (album.value === undefined) return; // should not happen, but hey...
+
+		AlbumService.clearAlbums();
+		AlbumService.clearCache(album.value.id);
+		emits("refresh");
+		unselect();
+	});
+}
+
 const albumCallbacks = {
 	setAsCover: () => {
 		if (album.value === undefined) return;
@@ -250,6 +265,7 @@ const albumCallbacks = {
 	toggleDownload: () => {
 		AlbumService.download(selectedAlbumsIds.value);
 	},
+	togglePin: togglePin,
 };
 
 const { menu, Menu, photoMenuOpen, albumMenuOpen } = useContextMenu(

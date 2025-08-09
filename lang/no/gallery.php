@@ -8,6 +8,7 @@ return [
 	*/
     'title' => 'Galleri',
     'smart_albums' => 'Smarte album',
+    'pinned_albums' => 'Festede album',
     'albums' => 'Album',
     'root' => 'Albums',
     'favourites' => 'Favoritter',
@@ -196,6 +197,8 @@ return [
         'rename' => 'Rename',
         'move' => 'Move',
         'move_all' => 'Move Selected',
+        'pin' => 'Fest',
+        'unpin' => 'Løsne',
         'delete' => 'Delete',
         'delete_all' => 'Delete Selected',
         'download' => 'Download',

@@ -26,6 +26,7 @@ export type UpdateAbumData = {
 	copyright: string | null;
 	header_id: string | null;
 	is_compact: boolean;
+	is_pinned: boolean;
 	album_timeline: App.Enum.TimelineAlbumGranularity | null;
 	photo_timeline: App.Enum.TimelinePhotoGranularity | null;
 };
@@ -40,6 +41,7 @@ export type UpdateTagAlbumData = {
 	copyright: string | null;
 	photo_layout: App.Enum.PhotoLayoutType | null;
 	photo_timeline: App.Enum.TimelinePhotoGranularity | null;
+	is_pinned: boolean;
 };
 
 export type UpdateProtectionPolicyData = {
@@ -166,6 +168,10 @@ const AlbumService = {
 
 	deleteTrack(album_id: string): Promise<AxiosResponse> {
 		return axios.delete(`${Constants.getApiUrl()}Album::track`, { params: { album_id: album_id }, data: {} });
+	},
+
+	setPinned(album_id: string, is_pinned: boolean): Promise<AxiosResponse> {
+		return axios.patch(`${Constants.getApiUrl()}Album::setPinned`, { album_id: album_id, is_pinned: is_pinned });
 	},
 };
 
