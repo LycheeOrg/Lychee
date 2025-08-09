@@ -11,6 +11,7 @@ namespace App\DTO\PhotoCreate;
 use App\Contracts\Image\StreamStats;
 use App\Contracts\PhotoCreate\PhotoDTO;
 use App\Models\Photo;
+use Illuminate\Support\Collection;
 
 class PhotoPartnerDTO implements PhotoDTO
 {
@@ -26,5 +27,10 @@ class PhotoPartnerDTO implements PhotoDTO
 	public function getPhoto(): Photo
 	{
 		return $this->photo;
+	}
+
+	public function getTags(): Collection
+	{
+		return $this->photo->tags;
 	}
 }

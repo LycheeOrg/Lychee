@@ -1,6 +1,6 @@
 <template>
 	<Dialog v-model:visible="visible" pt:root:class="border-none" modal :dismissable-mask="true">
-		<template #container="{ closeCallback }">
+		<template #container>
 			<div class="p-9 text-center text-muted-color">
 				<p class="text-sm/8">
 					{{ question }}
@@ -10,15 +10,7 @@
 					</span>
 				</p>
 				<div class="my-3 first:mt-0 last:mb-0">
-					<AutoComplete
-						id="tags"
-						v-model="tags"
-						:typeahead="false"
-						multiple
-						class="pt-3 border-b hover:border-b-0"
-						:placeholder="$t('dialogs.photo_tags.no_tags')"
-						pt:inputmultiple:class="w-full border-t-0 border-l-0 border-r-0 border-b hover:border-b-primary-400 focus:border-b-primary-400"
-					/>
+					<TagsInput v-model="tags" :placeholder="$t('dialogs.photo_tags.no_tags')" :add="true" />
 				</div>
 				<div>
 					<Checkbox v-model="shallOverride" :binary="true" inputId="shallOverride" />
@@ -45,8 +37,9 @@ import { useToast } from "primevue/usetoast";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
 import Checkbox from "primevue/checkbox";
-import AutoComplete from "primevue/autocomplete";
 import { trans } from "laravel-vue-i18n";
+import TagsService from "@/services/tags-service";
+import TagsInput from "../basic/TagsInput.vue";
 
 const props = defineProps<{
 	parentId: string | undefined;
@@ -97,6 +90,7 @@ function execute() {
 			life: 3000,
 		});
 		AlbumService.clearCache(props.parentId);
+		TagsService.clearCache();
 		close();
 		emits("tagged");
 	});

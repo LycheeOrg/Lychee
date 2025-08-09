@@ -1,6 +1,5 @@
 import Album from "@/views/gallery-panels/Album.vue";
 import Albums from "@/views/gallery-panels/Albums.vue";
-import path from "path";
 
 const Landing = () => import("@/views/Landing.vue");
 const Favourites = () => import("@/views/gallery-panels/Favourites.vue");
@@ -24,6 +23,8 @@ const LoginPage = () => import("@/views/LoginPage.vue");
 const UserGroups = () => import("@/views/UserGroups.vue");
 const RegisterPage = () => import("@/views/RegisterPage.vue");
 const Flow = () => import("@/views/gallery-panels/Flow.vue");
+const TagsManagement = () => import("@/views/TagsManagement.vue");
+const Tag = () => import("@/views/gallery-panels/Tag.vue");
 
 const routes_ = [
 	{
@@ -51,6 +52,17 @@ const routes_ = [
 		name: "flow",
 		path: "/flow",
 		component: Flow,
+	},
+	{
+		name: "tags",
+		path: "/tags",
+		component: TagsManagement,
+	},
+	{
+		name: "tag",
+		path: "/tag/:tagId/:photoId?",
+		component: Tag,
+		props: true,
 	},
 	{
 		name: "flow-album",

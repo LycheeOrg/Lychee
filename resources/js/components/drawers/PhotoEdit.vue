@@ -10,16 +10,7 @@
 					<Textarea id="description" class="w-full h-48" v-model="description" :rows="5" :cols="30" />
 
 					<label for="tags" class="font-bold h-11 mt-4 md:mt-0 self-center">{{ $t("gallery.photo.edit.set_tags") }}</label>
-					<AutoComplete
-						id="tags"
-						v-model="tags"
-						:typeahead="false"
-						multiple
-						class="border-b hover:border-b-0"
-						:placeholder="$t('gallery.photo.edit.no_tags')"
-						pt:inputmultiple:class="w-full border-t-0 border-l-0 border-r-0 border-b hover:border-b-primary-400 focus:border-b-primary-400"
-					/>
-
+					<TagsInput id="tags" v-model="tags" :add="true" :placeholder="$t('gallery.photo.edit.no_tags')" />
 					<label for="uploadDate" class="font-bold mt-4 md:mt-0 self-center">{{ $t("gallery.photo.edit.set_created_at") }}</label>
 					<DatePicker
 						id="uploadDate"
@@ -112,7 +103,6 @@ import { licenseOptions, SelectOption, SelectBuilders, timeZoneOptions } from "@
 import Select from "primevue/select";
 import Textarea from "@/components/forms/basic/Textarea.vue";
 import DatePicker from "primevue/datepicker";
-import AutoComplete from "primevue/autocomplete";
 import PhotoService from "@/services/photo-service";
 import Button from "primevue/button";
 import InputGroup from "primevue/inputgroup";
@@ -122,6 +112,9 @@ import Checkbox from "primevue/checkbox";
 import { sprintf } from "sprintf-js";
 import { useRouter } from "vue-router";
 import { usePhotoRoute } from "@/composables/photo/photoRoute";
+import TagsInput from "../forms/basic/TagsInput.vue";
+import TagsService from "@/services/tags-service";
+import AlbumService from "@/services/album-service";
 
 const props = defineProps<{
 	photo: App.Http.Resources.Models.PhotoResource;
@@ -185,6 +178,12 @@ function save() {
 		taken_at: is_taken_at_modified.value ? takenDate : null,
 	}).then((response) => {
 		toast.add({ severity: "success", summary: "Success", life: 3000 });
+		// Clear cache of tags just in case we added any.
+		TagsService.clearCache();
+		// Update the parent album cache.
+		// This is needed to ensure that the album view is updated with the new photo data
+		// and that the tags input is updated with the new tags.
+		AlbumService.clearCache(getParentId());
 		load(response.data);
 	});
 }

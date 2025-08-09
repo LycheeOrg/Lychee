@@ -148,6 +148,7 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 			'resource' => [
 				'id' => $this->tagAlbum1->id,
 				'title' => 'title', // from modified above.
+				'show_tags' => ['tag1', 'tag2'],
 				'photos' => [],
 			],
 		]);

@@ -1,4 +1,3 @@
-import { ALL } from "@/config/constants";
 import { Router } from "vue-router";
 
 export function useAlbumRoute(router: Router) {
@@ -10,6 +9,10 @@ export function useAlbumRoute(router: Router) {
 				home: "flow",
 				album: "flow-album",
 			};
+		}
+
+		if (currentRoute.startsWith("tag")) {
+			return { home: "tags", album: "tag" };
 		}
 
 		return { home: "gallery", album: "album" };
