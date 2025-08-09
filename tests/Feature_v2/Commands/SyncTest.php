@@ -32,6 +32,7 @@ class SyncTest extends BaseApiWithDataTest
 		$this->artisan(self::COMMAND, [
 			'--import_via_symlink' => '1',
 			'--delete_imported' => '1',
+			'-v' => '1',
 			'dir' => ['.'],
 		])
 		->assertFailed()
