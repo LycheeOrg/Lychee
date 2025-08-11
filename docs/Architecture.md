@@ -177,13 +177,12 @@ resources/
 
 ```php
 // Core Models
+// Core Models
 User         # Users of the system
 Album        # Photo albums (hierarchical structure)
 Photo        # Individual photos with metadata
 Tag          # Photo tags
-User         # User management
 UserGroup    # User groups (SE edition)
-```
 
 #### Key Relationships
 - **Albums**: Hierarchical structure (parent-child relationships)
