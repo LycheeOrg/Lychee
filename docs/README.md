@@ -2,17 +2,13 @@
 
 Welcome to the Lychee documentation! This folder contains comprehensive documentation about the Lychee photo management system.
 
-## What's Inside
-
-This documentation folder includes:
-
-- **[Architecture.md](Architecture.md)** - The global architecture of Lychee, including system design, component relationships, and technical overview
-- **[Contribute.md](Contribute.md)** - contribution guide for developers who want to contribute to the Lychee project, including setup instructions, coding standards, and submission guidelines
-
 ## Getting Started
 
 - If you're looking to understand how Lychee works internally, start with the [Architecture documentation](Architecture.md)
 - If you want to contribute to the project, check out our [Contribution guide](Contribute.md)
+- For detailed request flow examples, see:
+  - [Album Creation Lifecycle](Lifecycle-of-a-request-album-creation.md) - Step-by-step album creation process
+  - [Photo Upload Lifecycle](Lifecycle-of-a-request-photo-upload.md) - Complete photo upload and processing flow
 
 ## Additional Resources
 

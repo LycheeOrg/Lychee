@@ -150,12 +150,17 @@ resources/
 ├── js/
 │   ├── components/     # Reusable Vue components
 │   ├── composables/    # Vue composables for shared logic
-│   ├── layouts/        # Layout components
-│   ├── pages/          # Page components
+│   ├── config/         # Configuration of Axios and other global settings
+│   ├── layouts/        # This encapsulate the logic for displaying the photos on the page (grid, list, etc.)
+│   ├── menus/          # Mainly the left menu component.
 │   ├── router/         # Vue Router configuration
+│   ├── services/       # Classes to interface with the backend API, one service per domain (e.g., AlbumService, PhotoService)
 │   ├── stores/         # State management (Pinia)
-│   └── types/          # TypeScript type definitions
-└── sass/               # SCSS stylesheets
+│   ├── style/          # This contains the customization of the look for the PrimeVue compoents.
+│   ├── utils/          # Few helpers
+│   ├── vendor/         # External libraries where we directly imported the code instead of using npm packages.
+│   └── views/          # The pages of the application.
+└── sass/               # SCSS stylesheets & tailwindcss configuration.
 ```
 
 #### Key Frontend Conventions
@@ -340,3 +345,10 @@ tests/
 - Image lazy loading and optimization
 
 This architecture provides a solid foundation for photo management while maintaining flexibility for future enhancements and modifications.
+
+## Request Flow Examples
+
+For detailed examples of how requests flow through this architecture, see:
+
+- **[Album Creation Lifecycle](Lifecycle-of-a-request-album-creation.md)** - Complete walkthrough of creating an album, from frontend form submission to database storage and response
+- **[Photo Upload Lifecycle](Lifecycle-of-a-request-photo-upload.md)** - Comprehensive guide covering photo upload, chunking, processing, size variant generation, and metadata extraction
