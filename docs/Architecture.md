@@ -291,7 +291,7 @@ Dynamic settings stored in database via `Configs` model:
 
 ```php
 // app/Models/Configs.php
-Configs::getValueAsBool('gallery_title', 'Lychee');
+Configs::getValueAsBool('gallery_title');
 ```
 
 `Configs` class also provides methods for type-safe access to configuration values:
