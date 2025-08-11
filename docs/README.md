@@ -9,6 +9,8 @@ Welcome to the Lychee documentation! This folder contains comprehensive document
 - For detailed request flow examples, see:
   - [Album Creation Lifecycle](Lifecycle-of-a-request-album-creation.md) - Step-by-step album creation process
   - [Photo Upload Lifecycle](Lifecycle-of-a-request-photo-upload.md) - Complete photo upload and processing flow
+- For understanding the internal data structures:
+  - [Album Tree Structure](Album-tree-structure.md) - How Lychee implements hierarchical album organization
 
 ## Additional Resources
 
