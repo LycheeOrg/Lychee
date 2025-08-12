@@ -150,7 +150,9 @@ const CAN_SHARE = 'canShare';
 2. **Ownership**: Album owners have full control
 3. **Shared Permissions**: Based on `AccessPermission` records
 4. **Password Protection**: Albums can require passwords
-5. **Public Access**: Based `AccessPermission` records with a null `user_id`
+5. **Public Access**: Based on `AccessPermission` records with a null `user_id`
+   - **Direct Link Only**: When `is_link_required` is true, the album is public but not visible in listings - only accessible via direct link
+   - **Full Public**: When `is_link_required` is false, the album is fully public, visible in listings, and browsable
 
 **Session Management:**
 - Unlocked albums are tracked in user sessions
@@ -233,20 +235,59 @@ public function applyVisibilityFilter(AlbumBuilder $query): AlbumBuilder
 
 #### Key Concepts Explained
 
-**Visibility vs Accessibility vs Reachability:**
-```
-┌─ Album A (Private) ──────────┐
-│  ┌─ Album B (Public) ───────┐│
-│  │  ┌─ Album C (Public) ───┐││
-│  │  └──────────────────────┘││
-│  └──────────────────────────┘│
-└──────────────────────────────┘
+**The Three Levels of Album Access:**
 
-For non-owner user:
-- Album A: Not visible, not accessible, not reachable
-- Album B: Visible, but not accessible (parent is private)
-- Album C: Visible, but not reachable (path blocked by A)
+1. **Visible**: Album appears in listings and trees (basic visibility), but might be protected by a password.
+2. **Reachable**: Album can be accessed via direct link, but requires parent albums to be accessible (not private or blocked by is_link_required=true).
+3. **Browsable**: Album can be navigated to through click-through from parent albums (requires entire path to be accessible and visible).
+
+**Important Distinction:**
+- **Reachability** depends on the album's own permissions AND its parent chain accessibility
+- **Browsability** depends on the entire path from origin being both accessible AND visible (not blocked by private albums or is_link_required=true)
+
 ```
+┌─ Album A (Private) ────────────────────────────────────┐
+│ ┌─ Album B (Public, is_link_required = false) ────────┐│
+│ │ ┌─ Album C (Public, is_link_required = false ) ────┐││
+│ │ │ ┌─ Album D (Public, is_link_required = true ) ──┐│││
+│ │ │ └───────────────────────────────────────────────┘│││
+│ │ └──────────────────────────────────────────────────┘││
+│ └─────────────────────────────────────────────────────┘│
+└────────────────────────────────────────────────────────┘
+```
+
+**Access Analysis:**
+
+**Via Direct Link (Anonymous User with specific URLs):**
+- **Album A**: ❌ Not accessible (private album, user is not owner)
+- **Album B**: ✅ Accessible (public album, direct link bypasses private parent A)
+- **Album C**: ✅ Accessible (public album, direct link bypasses private parent A)
+- **Album D**: ✅ Accessible (public album with is_link_required=true, accessible only via direct link)
+
+**From Origin (Anonymous User Perspective):**
+- **Album A**: ❌ Not visible, ❌ not reachable, ❌ not browsable (private)
+- **Album B**: ❌ Not visible, ❌ not reachable, ❌ not browsable (parent A is private, blocks all access)
+- **Album C**: ❌ Not visible, ❌ not reachable, ❌ not browsable (path blocked by private A)
+- **Album D**: ❌ Not visible, ❌ not reachable, ❌ not browsable (path blocked by private A)
+
+**From Album B Perspective (if user has been given direct link to B):**
+- **Album A**: ❌ Not visible, ❌ not reachable, ❌ not browsable (private, user is not owner)
+- **Album B**: ✅ Visible, ✅ reachable, ❌ not browsable (current location, accessible via direct link)
+- **Album C**: ✅ Visible, ✅ reachable, ❌ not browsable (public child, parent B is accessible)
+- **Album D**: ❌ Not visible, ❌ not reachable, ❌ not browsable (is_link_required=true makes parent C not accessible, breaking the chain)
+
+**Key Insight: Parent Chain Dependency**
+Reachability requires the entire parent chain to be accessible. If any parent has `is_link_required=true` or is private (and user lacks access), it breaks reachability for all descendants, even if those descendants are public.
+
+**Access Level Hierarchy:**
+```
+Browsable ⊆ Reachable ⊆ Visible
+```
+
+- If an album is **browsable**, it must also be **reachable** and **visible**
+- If an album is **reachable**, it must also be **visible**
+- An album can be **visible** but not **reachable** (e.g., link-required albums)
+- An album can be **reachable** but not **browsable** (e.g., child of private parent)
 
 **Computed Access Permissions:**
 - Dynamic JOIN with `access_permissions` table
