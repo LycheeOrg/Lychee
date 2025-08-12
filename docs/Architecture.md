@@ -189,37 +189,6 @@ Lychee's data layer is built around several core Eloquent models that represent 
 
 This dual approach allows Lychee to provide both traditional album organization and automatic categorization of photos.
 
-
-### Frontend Architecture (Vue.js)
-
-The frontend is a **Single Page Application (SPA)** built with Vue.js 3:
-
-```
-resources/
-├── js/
-│   ├── components/     # Reusable Vue components
-│   ├── composables/    # Vue composables for shared logic
-│   ├── config/         # Configuration of Axios and other global settings
-│   ├── layouts/        # This encapsulate the logic for displaying the photos on the page (grid, list, etc.)
-│   ├── menus/          # Mainly the left menu component.
-│   ├── router/         # Vue Router configuration
-│   ├── services/       # Classes to interface with the backend API, one service per domain (e.g., AlbumService, PhotoService)
-│   ├── stores/         # State management (Pinia)
-│   ├── style/          # This contains the customization of the look for the PrimeVue compoents.
-│   ├── utils/          # Few helpers
-│   ├── vendor/         # External libraries where we directly imported the code instead of using npm packages.
-│   └── views/          # The pages of the application.
-└── sass/               # SCSS stylesheets & tailwindcss configuration.
-```
-
-#### Key Frontend Conventions
-
-1. **Composition API**: All components use Vue 3's Composition API
-2. **TypeScript**: Full TypeScript support with generated types from backend
-3. **PrimeVue**: UI component library for consistent design
-4. **No `await`**: Use `.then()` instead of `await` for async operations
-5. **Function declarations**: Use `function name() {}` instead of arrow functions
-
 ### Database Architecture
 
 #### Models and Relationships
@@ -266,6 +235,37 @@ class SizeVariantDefaultFactory implements SizeVariantFactory
     }
 }
 ```
+
+### Frontend Architecture (Vue.js)
+
+The frontend is a **Single Page Application (SPA)** built with Vue.js 3:
+
+```
+resources/
+├── js/
+│   ├── components/     # Reusable Vue components
+│   ├── composables/    # Vue composables for shared logic
+│   ├── config/         # Configuration of Axios and other global settings
+│   ├── layouts/        # This encapsulate the logic for displaying the photos on the page (grid, list, etc.)
+│   ├── menus/          # Mainly the left menu component.
+│   ├── router/         # Vue Router configuration
+│   ├── services/       # Classes to interface with the backend API, one service per domain (e.g., AlbumService, PhotoService)
+│   ├── stores/         # State management (Pinia)
+│   ├── style/          # This contains the customization of the look for the PrimeVue compoents.
+│   ├── utils/          # Few helpers
+│   ├── vendor/         # External libraries where we directly imported the code instead of using npm packages.
+│   └── views/          # The pages of the application.
+└── sass/               # SCSS stylesheets & tailwindcss configuration.
+```
+
+#### Key Frontend Conventions
+
+1. **Composition API**: All components use Vue 3's Composition API
+2. **TypeScript**: Full TypeScript support with generated types from backend
+3. **PrimeVue**: UI component library for consistent design
+4. **No `await`**: Use `.then()` instead of `await` for async operations
+5. **Function declarations**: Use `function name() {}` instead of arrow functions
+
 
 ## API Architecture
 
