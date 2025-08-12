@@ -25,21 +25,19 @@ Here's a visual representation of how the nested set model works with album hier
 
 ```
 Album Tree Structure:
-
-                     Root Album
-                  (_lft: 1, _rgt: 16)
-                          |
-          ┌───────────────┼───────────────┐
-          │               │               │
-      Family          Vacation        Work
-   (_lft: 2,        (_lft: 7,      (_lft: 13,
-    _rgt: 6)         _rgt: 12)      _rgt: 15)
-          │               │               │
-    ┌─────┴─────┐    ┌────┴────┐         │
-    │           │    │         │         │
- Kids       Pets   Beach    Mountain  Projects
-(_lft: 3,  (_lft: 5, (_lft: 8, (_lft: 10, (_lft: 14,
- _rgt: 4)   _rgt: 6)  _rgt: 9)  _rgt: 11)  _rgt: 15)
+                              Root Album
+                         (_lft: 1, _rgt: 16)
+                                 │
+          ┌──────────────────────┼─────────────────────┐
+          │                      │                     │
+      Family                 Vacation                Work
+  (_lft: 2, _rgt: 6)     (_lft: 7, _rgt: 12)   (_lft: 13, _rgt: 15)
+          │                      │                     │
+    ┌─────┴─────┐           ┌────┴──────┐              │
+    │           │           │           │              │
+ Kids         Pets        Beach      Mountain       Projects
+(_lft: 3,   (_lft: 5,   (_lft: 8,   (_lft: 10,     (_lft: 14,
+ _rgt: 4)    _rgt: 6)    _rgt: 9)    _rgt: 11)      _rgt: 15)
 
 Nested Set Visualization:
 ┌─ Root (1────────────────────────────────────────────────────────────────16) ─┐
