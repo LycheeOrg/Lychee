@@ -247,14 +247,16 @@ public function applyVisibilityFilter(AlbumBuilder $query): AlbumBuilder
 - **Browsability** depends on the entire path from origin being both accessible AND visible (not blocked by private albums or is_link_required=true)
 
 ```
-┌─ Album A (Private) ────────────────────────────────────┐
-│ ┌─ Album B (Public, is_link_required = false) ────────┐│
-│ │ ┌─ Album C (Public, is_link_required = false ) ────┐││
-│ │ │ ┌─ Album D (Public, is_link_required = true ) ──┐│││
-│ │ │ └───────────────────────────────────────────────┘│││
-│ │ └──────────────────────────────────────────────────┘││
-│ └─────────────────────────────────────────────────────┘│
-└────────────────────────────────────────────────────────┘
+┌─ Album A (Private) ───────────────────────────────────────┐
+│ ┌─ Album B (Public, is_link_required = false) ───────────┐│
+│ │ ┌─ Album C (Public, is_link_required = false ) ───────┐││
+│ │ │ ┌─ Album D (Public, is_link_required = false ) ────┐│││
+│ │ │ │ ┌─ Album E (Public, is_link_required = true ) ──┐││││
+│ │ │ │ └───────────────────────────────────────────────┘││││
+│ │ │ └──────────────────────────────────────────────────┘│││
+│ │ └─────────────────────────────────────────────────────┘││
+│ └────────────────────────────────────────────────────────┘│
+└───────────────────────────────────────────────────────────┘
 ```
 
 **Access Analysis:**
@@ -263,19 +265,22 @@ public function applyVisibilityFilter(AlbumBuilder $query): AlbumBuilder
 - **Album A**: ❌ Not accessible (private album, user is not owner)
 - **Album B**: ✅ Accessible (public album, direct link bypasses private parent A)
 - **Album C**: ✅ Accessible (public album, direct link bypasses private parent A)
-- **Album D**: ✅ Accessible (public album with is_link_required=true, accessible only via direct link)
+- **Album D**: ✅ Accessible (public album, direct link bypasses private parent A)
+- **Album E**: ✅ Accessible (public album with is_link_required=true, accessible only via direct link)
 
 **From Origin (Anonymous User Perspective):**
 - **Album A**: ❌ Not visible, ❌ not reachable, ❌ not browsable (private)
 - **Album B**: ❌ Not visible, ❌ not reachable, ❌ not browsable (parent A is private, blocks all access)
 - **Album C**: ❌ Not visible, ❌ not reachable, ❌ not browsable (path blocked by private A)
 - **Album D**: ❌ Not visible, ❌ not reachable, ❌ not browsable (path blocked by private A)
+- **Album E**: ❌ Not visible, ❌ not reachable, ❌ not browsable (path blocked by private A)
 
 **From Album B Perspective (if user has been given direct link to B):**
 - **Album A**: ❌ Not visible, ❌ not reachable, ❌ not browsable (private, user is not owner)
-- **Album B**: ✅ Visible, ✅ reachable, ❌ not browsable (current location, accessible via direct link)
-- **Album C**: ✅ Visible, ✅ reachable, ❌ not browsable (public child, parent B is accessible)
-- **Album D**: ❌ Not visible, ❌ not reachable, ❌ not browsable (is_link_required=true makes parent C not accessible, breaking the chain)
+- **Album B**: ✅ Visible (from A), ✅ reachable, ❌ not browsable (current location, accessible via direct link)
+- **Album C**: ✅ Visible (from B), ✅ reachable (from B), ❌ not browsable (public child, parent B is accessible)
+- **Album D**: ✅ Visible (from C), ✅ reachable (from B), ❌ not browsable (public child, parent B is accessible)
+- **Album E**: ❌ Not visible (from D), ❌ not reachable, ❌ not browsable (is_link_required=true makes parent C not accessible, breaking the chain)
 
 **Key Insight: Parent Chain Dependency**
 Reachability requires the entire parent chain to be accessible. If any parent has `is_link_required=true` or is private (and user lacks access), it breaks reachability for all descendants, even if those descendants are public.
