@@ -301,7 +301,7 @@ public function applySearchabilityFilter(
 ```
 
 **3. Sensitivity Filtering (`applySensitivityFilter`)**
-- Filters out photos in NSFW/sensitive albums
+- Filters out photos in sensitive albums
 - Respects user preferences and album settings
 - Handles recursive sensitivity (sensitive parent albums)
 
@@ -401,33 +401,3 @@ public function addConstraints()
 - Nested subqueries for hierarchy validation
 - Can impact query performance with large datasets
 
-### Common Patterns
-
-**Admin Override:**
-```php
-if (Auth::user()?->may_administrate === true) {
-    return $query; // No filtering for admins
-}
-```
-
-**Permission Aggregation:**
-```php
-// Combine multiple permission sources
-$query->where(function ($q) {
-    $q->where('user_permissions')
-      ->orWhere('group_permissions')  
-      ->orWhere('public_permissions');
-});
-```
-
-**Hierarchy Constraints:**
-```php
-// Ensure path accessibility in nested structures
-$query->whereNotExists(function ($q) {
-    $q->select(DB::raw(1))
-      ->from('blocking_albums')
-      ->whereBetween('_lft', ['parent_left', 'parent_right']);
-});
-```
-
-This comprehensive authorization system ensures that Lychee maintains strict access control while providing efficient data filtering and a smooth user experience.
