@@ -144,6 +144,51 @@ class AlbumFactory
 }
 ```
 
+##### 5. Models and Data Architecture
+
+Lychee's data layer is built around several core Eloquent models that represent the main entities in the photo management system:
+
+###### Core Models
+
+**User Models:**
+- **`User`** - System users with authentication and ownership relationships
+- **`UserGroup`** - User groups for permission management (SE edition)
+- **`OauthCredential`** - OAuth authentication credentials
+
+**Album Models:**
+- **`Album`** - Regular photo albums with hierarchical tree structure using nested set model. For detailed information about the tree structure implementation, see the **[Album Tree Structure Documentation](Album-tree-structure.md)** which explains the nested set model with `_lft` and `_rgt` boundaries.
+- **`TagAlbum`** - Special albums that automatically contain photos with specific tags
+
+**Photo and Media Models:**
+- **`Photo`** - Individual photos with metadata, EXIF data, and file information
+- **`SizeVariant`** - Different size versions of photos (original, medium, small, thumb)
+- **`Palette`** - Color palette information extracted from photos
+
+**Configuration and System Models:**
+- **`Configs`** - Runtime configuration settings stored in database
+- **`ConfigCategory`** - Categories for organizing configuration options
+- **`AccessPermission`** - Granular access control for albums and photos
+- **`Statistics`** - Photo and album statistics (count, sizes, etc.)
+- **`JobHistory`** - Background job execution history
+- **`LiveMetrics`** - System performance and usage metrics
+
+###### Smart Albums vs Regular Albums
+
+**Regular Albums** (`Album` model):
+- Stored in database with hierarchical tree structure
+- Photos are explicitly assigned through relationships
+- Can be created, deleted, and modified by users
+- Support nested organization with parent-child relationships
+- Use the nested set model for efficient tree operations
+
+**Smart Albums** (extending `BaseSmartAlbum`):
+- Virtual albums that exist only in memory
+- Photos are included based on dynamic criteria (starred, recent, etc.)
+- Cannot be created or deleted by users - they always exist when enabled
+- For detailed information about Smart Albums (virtual albums that dynamically contain photos based on criteria), see the **[Smart Albums Documentation](../app/SmartAlbums/README.md)** which covers Recent, Starred, On This Day, and Unsorted albums.
+
+This dual approach allows Lychee to provide both traditional album organization and automatic categorization of photos.
+
 
 ### Frontend Architecture (Vue.js)
 
@@ -327,6 +372,8 @@ tests/
 - All inputs validated through Request classes
 - CSRF protection enabled via middleware by default.
 - SQL injection prevention via Eloquent ORM.
+
+For comprehensive documentation about Lychee's custom validation rules, including patterns, and implementation examples, see the **[Rules Documentation](../app/Rules/README.md)**.
 
 ### File Upload Security
 - File type validation
