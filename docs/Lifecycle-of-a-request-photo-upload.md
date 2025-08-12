@@ -352,6 +352,8 @@ public function add(NativeLocalFile $source_file, ?AbstractAlbum $album, ?int $f
 }
 ```
 
+For a comprehensive understanding of the photo creation pipeline, including all pipe interfaces, DTOs, and processing stages, see the **[Photo Actions Documentation](../app/Actions/Photo/README.md)** which provides detailed technical documentation about the Action Pattern implementation and pipeline architecture used in photo processing.
+
 ### 11. Metadata Extraction
 
 During processing, comprehensive metadata is extracted:

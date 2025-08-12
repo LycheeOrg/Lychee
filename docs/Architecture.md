@@ -83,6 +83,8 @@ class Create
 - Easier testing and maintenance
 - Clear separation from controllers
 
+For a detailed example of the Action Pattern with Pipeline implementation, see the **[Photo Actions Documentation](../app/Actions/Photo/README.md)** which covers the complex photo creation pipeline with multiple processing stages.
+
 ##### 2. Request Classes
 All API endpoints use dedicated Request classes for validation and authorization:
 
