@@ -38,11 +38,10 @@ public function canEdit(User $user, AbstractAlbum|null $album): bool
 
 public function canUpload(?User $user, AbstractAlbum|null $album): bool
 {
-	return $this->isOwner($user, $abstract_album) ||
-		$abstract_album->current_user_permissions()?->grants_upload === true ||
-		$abstract_album->public_permissions()?->grants_upload === true;
+    return $this->isOwner($user, $album) ||
+        $album->current_user_permissions()?->grants_upload === true ||
+        $album->public_permissions()?->grants_upload === true;
 }
-```
 
 ⚠️ **Important: User Type Implications**
 
