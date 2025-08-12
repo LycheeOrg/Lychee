@@ -19,6 +19,7 @@ class FooterConfig extends Data
 	public bool $footer_show_copyright;
 	public bool $footer_show_social_media;
 	public string $copyright;
+	public string $copyright_text;
 	public string $sm_facebook_url;
 	public string $sm_flickr_url;
 	public string $sm_instagram_url;
@@ -30,6 +31,7 @@ class FooterConfig extends Data
 		$this->footer_additional_text = Configs::getValueAsString('footer_additional_text');
 		$this->footer_show_copyright = Configs::getValueAsBool('footer_show_copyright');
 		$this->footer_show_social_media = Configs::getValueAsBool('footer_show_social_media');
+		$this->copyright_text = Configs::getValueAsString('copyright_text');
 		$site_copyright_begin = Configs::getValueAsString('site_copyright_begin');
 		$site_copyright_end = Configs::getValueAsString('site_copyright_end');
 		$site_owner = Configs::getValueAsString('site_owner');
@@ -44,6 +46,11 @@ class FooterConfig extends Data
 			$copy_right_year = $copy_right_year . '-' . $site_copyright_end;
 		}
 
-		$this->copyright = $copy_right_year !== '' ? sprintf(__('landing.copyright'), $site_owner, $copy_right_year) : '';
+		// Use custom copyright text if provided, otherwise use default format
+		if ($this->copyright_text !== '') {
+			$this->copyright = $this->copyright_text;
+		} else {
+			$this->copyright = $copy_right_year !== '' ? sprintf(__('landing.copyright'), $site_owner, $copy_right_year) : '';
+		}
 	}
 }
