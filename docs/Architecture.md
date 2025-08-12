@@ -103,8 +103,10 @@ class CreateAlbumRequest extends BaseApiRequest
 ```
 
 **Conventions:**
-- `$this->user` contains the authenticated user making the request (But we prefer to access the user via the `Auth::user()` helper)
+- `$this->user` contains the authenticated user making the request. Do note modify this value. This value is directly populated by Laravel's authentication system.
 - `$this->user2` contains a user provided by query parameters (for admin operations)
+
+In order to access the authenticated user, we recommend using the `Auth::user()` instead of `$this->user`.
 
 ##### 3. Resource Classes (Spatie Data)
 Instead of Laravel's JsonResource, Lychee uses **Spatie Data** for response serialization:
