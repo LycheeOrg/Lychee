@@ -42,6 +42,7 @@ public function canUpload(?User $user, AbstractAlbum|null $album): bool
         $album->current_user_permissions()?->grants_upload === true ||
         $album->public_permissions()?->grants_upload === true;
 }
+```
 
 ⚠️ **Important: User Type Implications**
 
