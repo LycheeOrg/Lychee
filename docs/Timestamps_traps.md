@@ -34,7 +34,7 @@ explicit timezone information.
 For communication between the PHP application and the DB back-end all
 date/time values are converted to SQL strings relative to UTC without
 explicit timezone indication in the string.
-For DBMS which support to set an explicit timezone for the connection
+For DBMS which support setting an explicit timezone for the connection
 between the DBMS server and the DBMS client of the application
 (e.g. MySQL and PostgreSQL), the timezone of the connection is set to "UTC".
 This setting resides in `./config/database.php` and should not be changed.
@@ -43,7 +43,7 @@ The default timezone of the application as set in `./config/app.php` or
 At the level of the PHP application all date/time values are `Carbon` objects.
 Conversion of the timezone of a `Carbon` instance and UTC happens at the
 application layer during hydration/dehydration from/to the DBMS
-(that's where `\App\Models\Extension\UTCBasedTimes` comes into play).
+(that's where `\App\Models\Extensions\UTCBasedTimes` comes into play).
 If a date/time value is hydrated from the DBMS (in UTC) and no better
 target timezone for the value is known, then the instantiated `Carbon`
 object uses the application's default timezone, and the represented time
