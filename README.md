@@ -30,6 +30,16 @@ Being in control of our own data, our own pictures is something that we value ab
 
 Through [contributions, donations, and sponsorship](https://github.com/sponsors/LycheeOrg), you allow Lychee to thrive. Your donations directly support demo server costs, continuous enhancements, and most importantly bug fixes!
 
+## Contributing
+
+Want to help improve Lychee? We welcome contributions from the community! Whether you're fixing bugs, adding features, or improving documentation, your help is appreciated.
+
+Check out our [Contribution Guide](docs/Contribute.md) to get started with:
+- Setting up your development environment
+- Understanding our coding standards
+- Running tests and quality checks
+- Submitting pull requests
+
 ## Installation
 
 There are three deployment options available. The simplest is **Docker deployment**, as all dependencies are already predefined and configured.

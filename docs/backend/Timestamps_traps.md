@@ -1,9 +1,9 @@
-# Developer Notes
+# Timestamps and models
 
 This guide contains some tricks and "do"s and "don't"s for new developer.
 In particular, it highlights some pitfalls one can easily trap into.
 
-# TL;DR for the Impatient
+## TL;DR for the Impatient
 
  1. If you create a new Eloquent model, use the trait
     `\App\Models\Extensions\UTCBasedTimes`.
@@ -25,16 +25,16 @@ In particular, it highlights some pitfalls one can easily trap into.
     Basically, `timestamp` and `datetime_tz` should be considered to be
     buggy.
     
-# Information on Date/Time Attributes and How Date/Time Values are Handled by the Lychee Application
+## Information on Date/Time Attributes and How Date/Time Values are Handled by the Lychee Application
 
-## Summary
+### Summary
 
 All date/time values are stored at the DB back-end relative to UTC without
 explicit timezone information.
 For communication between the PHP application and the DB back-end all
 date/time values are converted to SQL strings relative to UTC without
 explicit timezone indication in the string.
-For DBMS which support to set an explicit timezone for the connection
+For DBMS which support setting an explicit timezone for the connection
 between the DBMS server and the DBMS client of the application
 (e.g. MySQL and PostgreSQL), the timezone of the connection is set to "UTC".
 This setting resides in `./config/database.php` and should not be changed.
@@ -43,16 +43,16 @@ The default timezone of the application as set in `./config/app.php` or
 At the level of the PHP application all date/time values are `Carbon` objects.
 Conversion of the timezone of a `Carbon` instance and UTC happens at the
 application layer during hydration/dehydration from/to the DBMS
-(that's where `\App\Models\Extension\UTCBasedTimes` comes into play).
+(that's where `\App\Models\Extensions\UTCBasedTimes` comes into play).
 If a date/time value is hydrated from the DBMS (in UTC) and no better
 target timezone for the value is known, then the instantiated `Carbon`
 object uses the application's default timezone, and the represented time
 is correctly converted from UTC to the application's default timezone such
 that the represented instant in time is kept the same.
 
-## Background Information on SQL Types for Date/Time Storage
+### Background Information on SQL Types for Date/Time Storage
 
-### Definitions
+#### Definitions
 
 In the following _"auto-conversion"_ means:
 
@@ -74,29 +74,29 @@ If we want to preserve the original timezone, then this information needs to be 
 Moreover, without auto-conversion, the timezone (i.e. UTC) of the storage layer does actual not matter.
 A time is simply output by the DB as it has been input to the DB.
 
-### SQL Types
+#### SQL Types
 
-#### PostgreSQL
+##### PostgreSQL
 
      Name                                | Size    | Low     | High      | Res. | Auto-Conversion?
     -------------------------------------+---------+---------+-----------+------+------------------
      TIMESTAMP [(p)] [WITHOUT TIME ZONE] | 8 bytes | 4713 BC | 294276 AD | 1 µs | No
      TIMESTAMP [(p)] WITH TIME ZONE      | 8 bytes | 4713 BC | 294276 AD | 1 µs | Yes
 
-#### MySQL/MariaDB
+##### MySQL/MariaDB
 
      Name      | Size    | Low        | High       | Res. | Auto-Conversion?
     -----------+---------+------------+------------+------+------------------
      DATETIME  | ?       | 1000-01-01 | 9999-12-31 | 1s   | No
      TIMESTAMP | 4 bytes | 1970-01-01 | 2038-01-19 | 1s   | Yes
 
-#### SQLite
+##### SQLite
 
      Name      | Size    | Low        | High       | Res. | Auto-Conversion?
     -----------+---------+------------+------------+------+------------------
      DATETIME  | ?       | 0000-01-01 | 9999-12-31 | 1s   | No
 
-### Comparison of SQL Types
+#### Comparison of SQL Types
 
 Let us ignore the fact that PostgreSQL surpasses any other DB with respect to range and precision for each type, we have the following mapping between the types with respect to functional behaviour (i.e. auto-conversion vs. no auto-conversion):
 
@@ -105,14 +105,14 @@ Let us ignore the fact that PostgreSQL surpasses any other DB with respect to ra
      1 | DATETIME  | TIMESTAMP WITHOUT TIME ZONE | DATETIME
      2 | TIMESTAMP | TIMESTAMP WITH TIME ZONE    | n/a
 
-### Conclusion
+#### Conclusion
 
 The Lychee application uses option 1, i.e. `DATETIME` for MySQL and `TIMESTAMP WITHOUT TIME ZONE` for PostgreSQL for the simple reason that MySQL provides the larger range for that type.
 Otherwise, the application had to ensure that there are no date/time values before 1970 and after 2038 or MySQL will throw SQL exceptions during INSERT/UPDATE.
 The lack of auto-conversion by the DB for the chosen option 1 is not a problem.
 Correct conversion from/to UTC happens on the application layer.
 
-### Eloquent Mappings
+#### Eloquent Mappings
 
 The class `\Illuminate\Database\Schema\Blueprint` provides several methods to create columns.
 They map to the respective SQL types as follows
@@ -133,19 +133,3 @@ With respect to functional behaviour, we have two "broken" mappings that should 
 This means only the methods `timestamp_tz` and `datetime` are usable in a DB-independent manner.
 Also, the convenient method `timestamps` must not be used.
 Taking into account the conclusion from above, the Lychee Application only uses `Blueprint::datetime`, because it shows identical behaviour for each DBMS and has no year-2038-problem on MySQL.
-
-
-### Responses types
-
-To generate proper responses types, we use Spatie Data + Spatie Typescript.
-
-Create a new resource and add the attribute `#[TypeScript()]` from `use Spatie\TypeScriptTransformer\Attributes\TypeScript;`
-
-Generate the types with:
-```sh
-php artisan typescript:transform
-```
-
-### Language translations
-
-We use https://github.com/xiCO2k/laravel-vue-i18n
