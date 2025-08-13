@@ -1,3 +1,5 @@
+<center><img src='./dragon-lychee.png'></center>
+
 # Lychee Documentation
 
 Welcome to the Lychee documentation! This folder contains comprehensive documentation about the Lychee photo management system andis primarily focused on the internal workings of Lychee.
