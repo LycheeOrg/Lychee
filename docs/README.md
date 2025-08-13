@@ -20,15 +20,14 @@ The missing folders (`bootstrap`, `composer-cache`, `config`, `docker`, `phpstan
 
 ## Getting Started
 
-- If you're looking to understand how Lychee works internally, start with the [Architecture documentation](Architecture.md)
+- If you're looking to understand how Lychee works internally, start with the [Architecture documentation](backend/README.md)
 - If you want to contribute to the project, check out our [Contribution guide](Contribute.md)
-- For frontend development and Vue.js architecture, see the [Frontend Documentation](Frontend.md)
+- For frontend development and Vue.js architecture, see the [Frontend Documentation](frontend/README.md) and our [Vue3 guide](frontend/Vue3.md).
 
 ### Albums and data structures
 
-- [Album Tree Structure](Album-tree-structure.md) - How Lychee implements hierarchical album organization
+- [Album Tree Structure](backend/Album-tree-structure.md) - How Lychee implements hierarchical album organization
 - [Smart Albums Documentation](../app/SmartAlbums/README.md) - Virtual albums that dynamically contain photos based on criteria like starred, recent, or unsorted
-- [Timestamps Traps](Timestamps_traps.md) - Important guidelines for handling timestamps in Eloquent models and database migrations
 
 ### Authorization and Validation
 - [Policies Documentation](../app/Policies/README.md) - Authorization and access control system with regular and query policies

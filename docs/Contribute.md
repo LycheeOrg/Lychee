@@ -4,7 +4,7 @@ Thank you for your interest in contributing to Lychee! This guide will help you 
 
 ## Getting Started
 
-Before you start contributing, we recommend reading our [Architecture guide](Architecture.md) to understand how Lychee is structured internally. This will help you navigate the codebase more effectively.
+Before you start contributing, we recommend reading our [Architecture guide](backend/README.md) to understand how Lychee is structured internally. This will help you navigate the codebase more effectively.
 
 1. Fork the repository on GitHub
 2. Clone your fork locally
@@ -108,6 +108,8 @@ We follow strict coding standards for PHP development:
 - **Do not use `await` async calls** in Vue3, use `.then()` instead
 - **Do not use arrow functions** for function declarations: use `function functionName() {}` instead of `const function = () => {}`
 
+Read more here: [Our Vue3 Guide](frontend/Vue3.md)
+
 ## Testing and Quality Assurance
 
 Before submitting your pull request, ensure all quality checks pass:
@@ -191,7 +193,7 @@ If you are asked with further question to clarify, please make sure to reply wit
 If you need help or have questions:
 
 - Check the [existing documentation](https://lycheeorg.dev/docs/)
-- Read the [Architecture guide](Architecture.md) to understand how Lychee is structured internally
+- Read the [Architecture guide](backend/README.md) to understand how Lychee is structured internally
 - Check the already existing [discussions](https://github.com/LycheeOrg/Lychee/discussions) (closed and open).
 - Check the already existing [issues](https://github.com/LycheeOrg/Lychee/issues?q=sort%3Aupdated-desc+is%3Aissue+is%3Aopen) and [pull requests](https://github.com/LycheeOrg/Lychee/pulls?q=sort%3Aupdated-desc+is%3Apr+is%3Aopen).
 - Create a new discussion if necessary or join our [discord](https://discord.gg/JMPvuRQcTf) and post into the #help channel.

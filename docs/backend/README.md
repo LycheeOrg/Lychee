@@ -266,7 +266,7 @@ resources/
 4. **No `await`**: Use `.then()` instead of `await` for async operations
 5. **Function declarations**: Use `function name() {}` instead of arrow functions
 
-For frontend development and Vue.js architecture, see the [Frontend Documentation](Frontend.md).
+For frontend development and Vue.js architecture, see the [Frontend Documentation](../frontend/README.md).
 
 ## API Architecture
 
