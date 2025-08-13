@@ -7,7 +7,7 @@ return [
 	*/
     'title' => 'Gallery',
     'smart_albums' => 'Smart albums',
-    'pinned_albums' => '釘選相册',
+    'pinned_albums' => '釘選相冊',
     'albums' => 'Albums',
     'root' => 'Albums',
     'favourites' => 'Favourites',
