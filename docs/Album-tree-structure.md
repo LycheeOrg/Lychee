@@ -23,40 +23,74 @@ Each node in the tree has these boundaries, and the relationship between nodes i
 
 Here's a visual representation of how the nested set model works with album hierarchies:
 
+
+```mermaid
+graph TD
+    Root["Root (1,18)"]
+    Family["Family (2,7)"]
+    Vacation["Vacation (8,13)"]
+    Work["Work (14,17)"]
+    Kids["Kids (3,4)"]
+    Pets["Pets (5,6)"]
+    Beach["Beach (9,10)"]
+    Mountain["Mountain (11,12)"]
+    Project["Project (15,16)"]
+    
+    Root --> Family
+    Root --> Vacation
+    Root --> Work
+    Family --> Kids
+    Family --> Pets
+    Vacation --> Beach
+    Vacation --> Mountain
+    Work --> Project
+
+    classDef level1 fill:#e1f5fe
+    classDef level2 fill:#b3e5fc
+    classDef level3 fill:#81d4fa
+    
+    class Root level1
+    class Family,Vacation,Work level2
+    class Kids,Pets,Beach,Mountain,Project level3
 ```
-Album Tree Structure:
-                              Root Album
-                         (_lft: 1, _rgt: 16)
-                                 │
-          ┌──────────────────────┼─────────────────────┐
-          │                      │                     │
-      Family                 Vacation                Work
-  (_lft: 2, _rgt: 6)     (_lft: 7, _rgt: 12)   (_lft: 13, _rgt: 15)
-          │                      │                     │
-    ┌─────┴─────┐           ┌────┴──────┐              │
-    │           │           │           │              │
- Kids         Pets        Beach      Mountain       Projects
-(_lft: 3,   (_lft: 5,   (_lft: 8,   (_lft: 10,     (_lft: 14,
- _rgt: 4)    _rgt: 6)    _rgt: 9)    _rgt: 11)      _rgt: 15)
 
 Nested Set Visualization:
-┌─ Root (1────────────────────────────────────────────────────────────────16) ─┐
-│  ┌─ Family (2───6) ─┐  ┌─ Vacation (7──────12) ─┐  ┌─ Work (13────────15) ─┐ │
-│  │ ┌─ Kids (3─4) ─┐ │  │ ┌─ Beach (8─9) ─┐      │  │ ┌─ Projects (14─15) ─┐│ │
-│  │ └──────────────┘ │  │ └───────────────┘      │  │ └────────────────────┘│ │
-│  │ ┌─ Pets (5─6) ─┐ │  │ ┌─ Mountain (10─11) ─┐ │  └───────────────────────┘ │
-│  │ └──────────────┘ │  │ └────────────────────┘ │                            │
-│  └──────────────────┘  └────────────────────────┘                            │
-└──────────────────────────────────────────────────────────────────────────────┘
+```mermaid
+graph TD
+    subgraph "Root (1, 18)"
+        subgraph "work (14,17)" 
+        Project["Project (15,16)"]
+        end
+        subgraph "Vacation (8,13)"
+        direction LR
+        Beach["Beach (9,10)"]
+        Mountain["Mountain (11,12)"]
+        end
+        subgraph "Family (2, 7)"
+        direction LR
+        Kids["Kids (3,4)"]
+        Pets["Pets (5,6)"]
+        end
+    end
+
+    classDef level1 fill:#e1f5fe
+    classDef level2 fill:#b3e5fc
+    classDef level3 fill:#81d4fa
+    
+    class Root level1
+    class Family,Vacation,Work level2
+    class Kids,Pets,Beach,Mountain,Project level3
+```
 
 Query Examples:
-- Find all descendants of "Family": WHERE _lft > 2 AND _rgt < 6
+- Find all descendants of "Family": WHERE _lft > 2 AND _rgt < 7  
   Result: Kids, Pets
-- Find all descendants of "Vacation": WHERE _lft > 7 AND _rgt < 12  
+- Find all descendants of "Vacation": WHERE _lft > 7 AND _rgt < 13  
   Result: Beach, Mountain
-- Check if "Beach" is descendant of "Root": 8 > 1 AND 9 < 16 ✓
-- Check if "Kids" is descendant of "Vacation": 3 > 7 AND 4 < 12 ✗
-```
+- Check if "Beach" is descendant of "Root": 8 > 1 AND 9 < 16 :white_check_mark:
+- Check if "Kids" is descendant of "Vacation": 3 > 7 AND 4 < 12 :cross_mark:
+- Get all the leafs: WHERE _lft = _rgt - 1  
+  Result: Kids, Pets, Beach, Mountain, Project
 
 ### Album Model Integration
 
