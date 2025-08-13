@@ -389,7 +389,7 @@ For comprehensive documentation about Lychee's custom validation rules, includin
 
 ### Database Optimization
 - Proper indexing on frequently queried columns
-- Eager loading to prevent N+1 queries, it will be unforced with `Model::shouldBeStrict()` which will throw an exception if the relationship is accessed before being loaded.
+- Eager loading to prevent N+1 queries; it will be enforced with `Model::shouldBeStrict()`, which throws an exception if a relationship is accessed before being loaded.
 
 ### Frontend Optimization
 - Vite for fast builds and hot reloading
