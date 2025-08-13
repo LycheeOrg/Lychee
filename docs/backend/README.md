@@ -373,7 +373,7 @@ tests/
 - CSRF protection enabled via middleware by default.
 - SQL injection prevention via Eloquent ORM.
 
-For comprehensive documentation about Lychee's custom validation rules, including patterns, and implementation examples, see the **[Rules Documentation](../app/Rules/README.md)**.
+For comprehensive documentation about Lychee's custom validation rules, including patterns, and implementation examples, see the **[Rules Documentation](../../app/Rules/README.md)**.
 
 ### File Upload Security
 - File type validation
