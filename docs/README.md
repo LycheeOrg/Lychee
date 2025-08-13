@@ -1,6 +1,9 @@
-<center><img sizes="50%" src='./dragon-lychee-50.png'></center>
-
-_image generated via Gemini_
+<div align="center">
+<img sizes="50%" src='./dragon-lychee-50.png'>
+</div>
+<div align="right">
+<i>image generated via Gemini.</i>
+</div>
 
 # Lychee Documentation
 
