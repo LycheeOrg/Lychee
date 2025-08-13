@@ -160,9 +160,9 @@ return [
                 'number_of_favourites' => 'تعداد علاقه‌مندی‌ها',
             ],
             'links' => [
-                'header' => 'Links',
-                'copy' => 'Copy',
-                'copy_success' => 'Link copied to clipboard.',
+                'header' => 'لینک‌ها',
+                'copy' => 'کپی',
+                'copy_success' => 'لینک در کلیپ‌بورد کپی شد.',
             ],
         ],
         'edit' => [
