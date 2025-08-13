@@ -1,7 +1,5 @@
 <div align="center">
-<img sizes="50%" src='./dragon-lychee-50.png'>
-</div>
-<div align="right">
+<img sizes="50%" src='./dragon-lychee-50.png'><br>
 <i>image generated via Gemini.</i>
 </div>
 
