@@ -276,7 +276,6 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		footer_show_copyright: boolean;
 		footer_show_social_media: boolean;
 		copyright: string;
-		copyright_text: string;
 		sm_facebook_url: string;
 		sm_flickr_url: string;
 		sm_instagram_url: string;
