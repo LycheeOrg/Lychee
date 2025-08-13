@@ -303,7 +303,7 @@ class AlbumPolicy
 }
 ```
 
-For comprehensive documentation about Lychee's authorization system, including the distinction between regular Policies and Query Policies, see the **[Policies Documentation](../app/Policies/README.md)** which covers authorization patterns, query filtering, and security considerations.
+For comprehensive documentation about Lychee's authorization system, including the distinction between regular Policies and Query Policies, see the **[Policies Documentation](../../app/Policies/README.md)** which covers authorization patterns, query filtering, and security considerations.
 
 ### Response Patterns
 
