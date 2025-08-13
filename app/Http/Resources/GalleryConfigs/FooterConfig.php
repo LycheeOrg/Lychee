@@ -53,6 +53,7 @@ class FooterConfig extends Data
 		}
 
 		$site_owner = Configs::getValueAsString('site_owner');
+
 		return $copyright_year !== '' ? sprintf(__('landing.copyright'), $site_owner, $copyright_year) : '';
 	}
 }
