@@ -195,7 +195,6 @@ This dual approach allows Lychee to provide both traditional album organization 
 
 ```php
 // Core Models
-// Core Models
 User         # Users of the system
 Album        # Photo albums (hierarchical structure)
 Photo        # Individual photos with metadata
