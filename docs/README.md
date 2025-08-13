@@ -22,6 +22,7 @@ The missing folders (`bootstrap`, `composer-cache`, `config`, `docker`, `phpstan
 
 - If you're looking to understand how Lychee works internally, start with the [Architecture documentation](Architecture.md)
 - If you want to contribute to the project, check out our [Contribution guide](Contribute.md)
+- For frontend development and Vue.js architecture, see the [Frontend Documentation](Frontend.md)
 
 ### Albums and data structures
 
