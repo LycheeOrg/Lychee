@@ -186,8 +186,7 @@ Lychee's data layer is built around several core Eloquent models that represent 
 - Virtual albums that exist only in memory
 - Photos are included based on dynamic criteria (starred, recent, etc.)
 - Cannot be created or deleted by users - they always exist when enabled
-- For detailed information about Smart Albums (virtual albums that dynamically contain photos based on criteria), see the **[Smart Albums Documentation](../app/SmartAlbums/README.md)** which covers Recent, Starred, On This Day, and Unsorted albums.
-
+- For detailed information about Smart Albums (virtual albums that dynamically contain photos based on criteria), see the **[Smart Albums Documentation](../../app/SmartAlbums/README.md)** which covers Recent, Starred, On This Day, and Unsorted albums.
 This dual approach allows Lychee to provide both traditional album organization and automatic categorization of photos.
 
 ### Database Architecture
