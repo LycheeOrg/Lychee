@@ -1,4 +1,4 @@
-<center><img src='./dragon-lychee.png'></center>
+<center><img sizes="50%" src='./dragon-lychee.png'></center>
 
 # Lychee Documentation
 
