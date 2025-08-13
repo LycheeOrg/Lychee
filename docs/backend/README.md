@@ -34,7 +34,7 @@ app/
 ├── ModelFunctions/    # Logic related to Eloquent models
 ├── Policies/          # Authorization policies
 ├── Providers/         # Service providers
-├── Relations/         # Relations used in Lychee (e.g., album-photo relationships)
+├── Relations/         # Custom relationship classes (e.g., album-photo relationships)
 ├── Rules/             # Custom validation rules
 ├── Services/          # Service classes
 └── SmartAlbums/       # Smart album logic
