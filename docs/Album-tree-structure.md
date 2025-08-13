@@ -83,13 +83,13 @@ graph TD
 ```
 
 Query Examples:
-- Find all descendants of "Family": WHERE _lft > 2 AND _rgt < 7  
+- Find all descendants of "Family": `WHERE _lft > 2 AND _rgt < 7`  
   Result: Kids, Pets
-- Find all descendants of "Vacation": WHERE _lft > 7 AND _rgt < 13  
+- Find all descendants of "Vacation": `WHERE _lft > 7 AND _rgt < 13`  
   Result: Beach, Mountain
-- Check if "Beach" is descendant of "Root": 8 > 1 AND 9 < 16 :white_check_mark:
-- Check if "Kids" is descendant of "Vacation": 3 > 7 AND 4 < 12 :cross_mark:
-- Get all the leafs: WHERE _lft = _rgt - 1  
+- Check if "Beach" is descendant of "Root": `8 > 1 AND 9 < 16` ✅
+- Check if "Kids" is descendant of "Vacation": `3 > 7 AND 4 < 12` ❌
+- Get all the leafs: `WHERE _lft = _rgt - 1`  
   Result: Kids, Pets, Beach, Mountain, Project
 
 ### Album Model Integration
