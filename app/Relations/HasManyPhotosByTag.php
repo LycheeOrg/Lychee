@@ -74,6 +74,14 @@ class HasManyPhotosByTag extends BaseHasManyPhotos
 			->select('tag_id')
 			->pluck('tag_id')->all();
 
+		$tag_ids = $album->relationLoaded('tags')
+			? $album->tags->pluck('id')->all()
+			: DB::table('tag_albums_tags')
+				->where('album_id', '=', $album->id)
+				->pluck('tag_id')
+				->all();
+		$tag_ids = array_values(array_unique($tag_ids));
+
 		if (Configs::getValueAsBool('TA_override_visibility')) {
 			$this->photo_query_policy
 				->applySensitivityFilter(

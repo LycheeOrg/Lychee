@@ -175,8 +175,8 @@ class AlbumController extends Controller
 		$album->is_pinned = $request->is_pinned();
 		$album->save();
 
-		$tags = Tag::from($request->tags());
-		$album->tags()->sync($tags->pluck('id')->all());
+		$tag_models = Tag::from($request->tags());
+		$album->tags()->sync($tag_models->pluck('id')->all());
 
 		// Root
 		return EditableBaseAlbumResource::fromModel($album);

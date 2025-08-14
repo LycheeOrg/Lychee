@@ -37,8 +37,8 @@ class CreateTagAlbum
 		$album->owner_id = $user_id;
 		$album->save();
 
-		$tags = Tag::from($tags);
-		$album->tags()->sync($tags->pluck('id')->all());
+		$tag_models = Tag::from($tags);
+		$album->tags()->sync($tag_models->pluck('id')->all());
 
 		$this->setStatistics($album);
 

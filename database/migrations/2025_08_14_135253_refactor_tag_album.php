@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2017-2018 Tobias Reich
+ * Copyright (c) 2018-2025 LycheeOrg.
+ */
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
@@ -30,8 +36,11 @@ return new class() extends Migration {
 		});
 
 		$all_tags = DB::table('tags')->select(['id'])->pluck('id')->all();
-		DB::table('tag_albums')->orderBy('id')->chunk(100, function ($tag_albums) use (&$all_tags) {
+		DB::table('tag_albums')->orderBy('id')->chunk(100, function ($tag_albums) use ($all_tags) {
 			$to_insert = [];
+			if ($tag_albums->show_Tags === null) {
+				return;
+			}
 			foreach ($tag_albums as $tag_album) {
 				$tags = explode(' OR ', $tag_album->show_tags);
 				foreach ($tags as $tag) {
@@ -48,6 +57,11 @@ return new class() extends Migration {
 					];
 				}
 			}
+
+			if (count($to_insert) === 0) {
+				return;
+			}
+
 			DB::table('tag_albums_tags')->insert($to_insert);
 		});
 

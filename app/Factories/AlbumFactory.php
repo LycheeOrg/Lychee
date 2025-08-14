@@ -165,8 +165,8 @@ class AlbumFactory
 		$album_query = Album::query();
 
 		if ($with_relations) {
-			$tag_album_query->with(['tags', 'photos', 'photos.size_variants', 'photos.statistics', 'photos.palette']);
-			$album_query->with(['photos', 'children', 'photos.size_variants', 'photos.statistics', 'photos.palette']);
+			$tag_album_query->with(['tags', 'photos', 'photos.size_variants', 'photos.statistics', 'photos.palette', 'photos.tags']);
+			$album_query->with(['photos', 'children', 'photos.size_variants', 'photos.statistics', 'photos.palette', 'photos.tags']);
 		}
 
 		/** @var ($albums_only is true ? array<int,Album> : array<int,TagAlbum>) */
