@@ -15,7 +15,6 @@ use App\Contracts\Models\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasTagsTrait;
 use App\Http\Requests\Traits\HasTitleTrait;
-use App\Models\Tag;
 use App\Policies\AlbumPolicy;
 use App\Rules\TitleRule;
 use Illuminate\Support\Facades\Gate;

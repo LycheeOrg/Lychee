@@ -97,7 +97,7 @@ class AlbumFactory
 
 		if ($with_relations) {
 			$album_query->with(['access_permissions', 'photos', 'children', 'children.owner', 'photos.size_variants', 'photos.statistics', 'photos.palette', 'photos.tags']);
-			$tag_album_query->with(['photos', 'photos.size_variants', 'photos.statistics', 'photos.palette', 'photos.tags']);
+			$tag_album_query->with(['tags', 'photos', 'photos.size_variants', 'photos.statistics', 'photos.palette', 'photos.tags']);
 		}
 
 		$ret = $album_query->find($album_id) ?? $tag_album_query->find($album_id);
@@ -165,7 +165,7 @@ class AlbumFactory
 		$album_query = Album::query();
 
 		if ($with_relations) {
-			$tag_album_query->with(['photos', 'photos.size_variants', 'photos.statistics', 'photos.palette']);
+			$tag_album_query->with(['tags', 'photos', 'photos.size_variants', 'photos.statistics', 'photos.palette']);
 			$album_query->with(['photos', 'children', 'photos.size_variants', 'photos.statistics', 'photos.palette']);
 		}
 

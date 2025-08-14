@@ -42,18 +42,24 @@ class TagAlbumFactory extends Factory
 	}
 
 	/**
+	 * Define tags for that picture.
+	 *
 	 * @param array<int,Tag> $tags
 	 *
-	 * @return TagAlbumFactory
+	 * @return PhotoFactory
 	 */
 	public function of_tags(array $tags): self
 	{
-		return $this->state(function (array $attributes) use ($tags) {
-			return [
-				'show_tags' => $tags,
-			];
+		return $this->afterCreating(function (TagAlbum $tag_album) use ($tags) {
+			foreach ($tags as $tag) {
+				if (!$tag instanceof Tag) {
+					throw new \TypeError('Expected Tag instance, got ' . gettype($tag));
+				}
+				$tag_album->tags()->attach($tag);
+			}
 		});
 	}
+
 
 	/**
 	 * Configure the model factory.

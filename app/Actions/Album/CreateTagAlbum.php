@@ -20,23 +20,26 @@ class CreateTagAlbum
 	 * Create a new smart album based on tags.
 	 *
 	 * @param string   $title
-	 * @param string[] $show_tags
+	 * @param string[] $tags
 	 *
 	 * @return TagAlbum
 	 *
 	 * @throws ModelDBException
 	 * @throws UnauthenticatedException
 	 */
-	public function create(string $title, array $show_tags): TagAlbum
+	public function create(string $title, array $tags): TagAlbum
 	{
 		/** @var int */
 		$user_id = Auth::id() ?? throw new UnauthenticatedException();
 
 		$album = new TagAlbum();
 		$album->title = $title;
-		$album->show_tags = Tag::from($show_tags)->all();
 		$album->owner_id = $user_id;
 		$album->save();
+
+		$tags = Tag::from($tags);
+		$album->tags()->sync($tags->pluck('id')->all());
+
 		$this->setStatistics($album);
 
 		return $album;

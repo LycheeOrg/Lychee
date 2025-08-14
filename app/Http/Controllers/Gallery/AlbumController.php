@@ -168,13 +168,15 @@ class AlbumController extends Controller
 		}
 		$album->title = $request->title();
 		$album->description = $request->description();
-		$album->show_tags = Tag::from($request->tags())->all();
 		$album->copyright = $request->copyright();
 		$album->photo_sorting = $request->photoSortingCriterion();
 		$album->photo_layout = $request->photoLayout();
 		$album->photo_timeline = $request->photo_timeline();
 		$album->is_pinned = $request->is_pinned();
 		$album->save();
+
+		$tags = Tag::from($request->tags());
+		$album->tags()->sync($tags->pluck('id')->all());
 
 		// Root
 		return EditableBaseAlbumResource::fromModel($album);
