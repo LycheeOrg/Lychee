@@ -8,6 +8,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -38,10 +39,10 @@ return new class() extends Migration {
 		$all_tags = DB::table('tags')->select(['id'])->pluck('id')->all();
 		DB::table('tag_albums')->orderBy('id')->chunk(100, function ($tag_albums) use ($all_tags) {
 			$to_insert = [];
-			if ($tag_albums->show_Tags === null) {
-				return;
-			}
 			foreach ($tag_albums as $tag_album) {
+				if ($tag_album->show_Tags === null) {
+					continue;
+				}
 				$tags = explode(' OR ', $tag_album->show_tags);
 				foreach ($tags as $tag) {
 					$tag = intval(trim($tag));
