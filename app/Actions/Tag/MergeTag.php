@@ -38,6 +38,13 @@ class MergeTag
 		/** @var User $user */
 		$user = Auth::user();
 
+		// No-op safeguard: merging a tag into itself would otherwise remove all pivot links
+		// This is not necessary in theory because we validate this at the request level.
+		// But better safe than sorry.
+		if ($source->id === $into->id) {
+			return;
+		}
+
 		$this->handlePhotos($source, $into, $user);
 		$this->handleTagAlbums($source, $into, $user);
 
