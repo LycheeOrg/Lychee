@@ -16,7 +16,7 @@
 			:is-more-open="seeMore"
 			@clicked="headerClicked"
 		/>
-		<TopImages v-else :photos="props.album.photos" :albumId="props.album.id" :is-nsfw="props.album.is_nsfw" @clicked="carouselClicked" />
+		<TopImages v-else :photos="props.album.photos" :album-id="props.album.id" :is-nsfw="props.album.is_nsfw" @clicked="carouselClicked" />
 		<CarouselImages
 			v-if="props.config.is_image_header_enabled && props.config.is_carousel_enabled && props.album.photos.length > 1"
 			:album-id="props.album.id"
@@ -50,11 +50,11 @@
 				</p>
 			</template>
 			<p
+				v-if="props.album.description"
 				:class="{
 					'text-sm text-muted-color prose prose-sm dark:prose-invert max-w-full my-8': true,
 					'line-clamp-3': !seeMore && hasMore,
 				}"
-				v-if="props.album.description"
 				v-html="props.album.description"
 			></p>
 			<div class="flex justify-between items-end flex-row-reverse">
@@ -66,15 +66,15 @@
 					class="border-none font-bold -mb-2 -mx-2"
 				>
 					{{ $t("flow.open_album") }}
-					<i class="pi pi-angle-double-right" v-if="isLTR()" />
-					<i class="pi pi-angle-double-left" v-if="!isLTR()" />
+					<i v-if="isLTR()" class="pi pi-angle-double-right" />
+					<i v-if="!isLTR()" class="pi pi-angle-double-left" />
 				</Button>
 				<Button
-					text
 					v-if="hasMore && !seeMore"
+					text
 					class="font-bold text-muted-color hover:text-muted-color-emphasis cursor-pointer border-none p-0"
-					@click="seeMore = true"
 					severity="secondary"
+					@click="seeMore = true"
 				>
 					{{ $t("flow.show_more") }}
 				</Button>
@@ -90,7 +90,7 @@ import { useRouter } from "vue-router";
 import HeaderImage from "./HeaderImage.vue";
 import TopImages from "./TopImages.vue";
 import CarouselImages from "./CarouselImages.vue";
-import AlbumStatistics from "../albumModule/AlbumStatistics.vue";
+import AlbumStatistics from "@/components/gallery/albumModule/AlbumStatistics.vue";
 import { ref } from "vue";
 import MiniIcon from "@/components/icons/MiniIcon.vue";
 import { sprintf } from "sprintf-js";

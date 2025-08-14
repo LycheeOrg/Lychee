@@ -13,8 +13,8 @@
 						:class="is_public ? 'text-muted-color-emphasis' : 'text-muted-color'"
 					>
 						<ToggleSwitch
-							input-id="pp_dialog_full_check"
 							v-model="grants_full_photo_access"
+							input-id="pp_dialog_full_check"
 							class="ltr:-ml-10 ltr:mr-2 rtl:-mr-10 rtl:ml-2 translate-y-1"
 							@change="save"
 						/>
@@ -26,8 +26,8 @@
 						:class="is_public ? 'text-muted-color-emphasis' : 'text-muted-color'"
 					>
 						<ToggleSwitch
-							input-id="pp_dialog_link_check"
 							v-model="is_link_required"
+							input-id="pp_dialog_link_check"
 							class="ltr:-ml-10 ltr:mr-2 rtl:-mr-10 rtl:ml-2 translate-y-1"
 							@change="save"
 						/>
@@ -39,8 +39,8 @@
 						:class="is_public ? 'text-muted-color-emphasis' : 'text-muted-color'"
 					>
 						<ToggleSwitch
-							input-id="pp_dialog_downloadable_check"
 							v-model="grants_download"
+							input-id="pp_dialog_downloadable_check"
 							class="ltr:-ml-10 ltr:mr-2 rtl:-mr-10 rtl:ml-2 translate-y-1"
 							@change="save"
 						/>
@@ -48,13 +48,13 @@
 						<p class="my-1.5">{{ $t("dialogs.visibility.downloadable_expl") }}</p>
 					</div>
 					<div
+						v-if="is_se_enabled || is_se_preview_enabled"
 						class="relative h-12 my-4 ltr:pl-9 rtl:pr-9 transition-color duration-300"
 						:class="is_public ? 'text-muted-color-emphasis' : 'text-muted-color'"
-						v-if="is_se_enabled || is_se_preview_enabled"
 					>
 						<ToggleSwitch
-							input-id="pp_dialog_upload_check"
 							v-model="grants_upload"
+							input-id="pp_dialog_upload_check"
 							:disabled="!is_se_enabled"
 							class="ltr:-ml-10 ltr:mr-2 rtl:-mr-10 rtl:ml-2 translate-y-1"
 							style="
@@ -65,7 +65,7 @@
 							@change="save"
 						/>
 						<label class="font-bold inline-flex items-center" for="pp_dialog_upload_check">
-							{{ $t("dialogs.visibility.upload") }} <SETag class="ml-2" v-if="is_se_preview_enabled" />
+							{{ $t("dialogs.visibility.upload") }} <SETag v-if="is_se_preview_enabled" class="ml-2" />
 						</label>
 						<p class="my-1.5" v-html="$t('dialogs.visibility.upload_expl')"></p>
 					</div>
@@ -75,8 +75,8 @@
 						:class="is_public ? 'text-muted-color-emphasis' : 'text-muted-color'"
 					>
 						<ToggleSwitch
-							input-id="pp_dialog_password_check_2"
 							v-model="is_password_required"
+							input-id="pp_dialog_password_check_2"
 							class="ltr:-ml-10 ltr:mr-2 rtl:-mr-10 rtl:ml-2 translate-y-1 group"
 							:pt:slider:class="'group-has-checked:bg-danger-700'"
 							@change="save"
@@ -93,8 +93,8 @@
 						:class="is_public ? 'text-muted-color-emphasis' : 'text-muted-color'"
 					>
 						<ToggleSwitch
-							input-id="pp_dialog_password_check"
 							v-model="is_password_required"
+							input-id="pp_dialog_password_check"
 							class="ltr:-ml-10 ltr:mr-2 rtl:-mr-10 rtl:ml-2 translate-y-1"
 							@change="save"
 						/>
@@ -112,8 +112,8 @@
 				<form>
 					<div class="relative h-12 my-4 transition-color duration-300">
 						<ToggleSwitch
-							input-id="pp_dialog_nsfw_check"
 							v-model="is_nsfw"
+							input-id="pp_dialog_nsfw_check"
 							class="ltr:mr-2 rtl:ml-2 translate-y-1"
 							style="
 								--p-toggleswitch-checked-background: var(--p-red-800);
@@ -181,8 +181,7 @@ function save() {
 		toast.add({ severity: "success", summary: trans("toasts.success"), detail: trans("dialogs.visibility.visibility_updated"), life: 3000 });
 		AlbumService.clearCache(albumId.value);
 		if (props.config.is_model_album) {
-			// @ts-expect-error
-			AlbumService.clearCache(props.album.parent_id);
+			AlbumService.clearCache((props.album as App.Http.Resources.Models.AlbumResource).parent_id);
 		} else {
 			AlbumService.clearAlbums();
 		}

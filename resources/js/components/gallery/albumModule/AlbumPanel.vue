@@ -21,9 +21,9 @@
 					<Button
 						v-if="album.rights.can_upload && modelAlbum !== undefined"
 						severity="warn"
-						@click="toggleUpload"
 						class="rounded max-w-xs w-full border-none font-bold"
 						icon="pi pi-upload"
+						@click="toggleUpload"
 						>{{ $t("gallery.album.upload") }}</Button
 					>
 				</div>
@@ -38,11 +38,11 @@
 				/>
 				<template v-if="is_se_enabled && user?.id !== null">
 					<AlbumStatistics
+						:key="'statistics_' + album.id"
+						v-model:visible="areStatisticsOpen"
 						:photos="photos"
 						:config="config"
 						:album="album"
-						v-model:visible="areStatisticsOpen"
-						:key="'statistics_' + album.id"
 					/>
 				</template>
 				<AlbumThumbPanel
@@ -52,11 +52,11 @@
 					:albums="children"
 					:config="albumPanelConfig"
 					:is-alone="!photos?.length"
-					@clicked="albumClick"
-					@contexted="albumMenuOpen"
 					:idx-shift="0"
 					:selected-albums="selectedAlbumsIds"
 					:is-timeline="config.is_album_timeline_enabled"
+					@clicked="albumClick"
+					@contexted="albumMenuOpen"
 				/>
 				<PhotoThumbPanel
 					v-if="layoutConfig !== null && photos !== null && photos.length > 0"
@@ -77,7 +77,7 @@
 				<GalleryFooter v-once />
 				<ScrollTop v-if="!props.isPhotoOpen" target="parent" />
 			</div>
-			<ShareAlbum v-model:visible="is_share_album_visible" :title="album.title" :key="'share_modal_' + album.id" />
+			<ShareAlbum :key="'share_modal_' + album.id" v-model:visible="is_share_album_visible" :title="album.title" />
 
 			<!-- Dialogs -->
 			<ContextMenu ref="menu" :model="Menu" :class="Menu.length === 0 ? 'hidden' : ''">

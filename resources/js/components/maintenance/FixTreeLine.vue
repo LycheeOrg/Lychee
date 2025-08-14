@@ -3,11 +3,11 @@
 		<div class="w-1/2" @mouseenter="setHoverId">
 			<span v-if="props.album.prefix.length > 4" class="font-mono" v-html="props.album.prefix.slice(0, -2)" />
 			<span
+				v-if="props.album.prefix.length > 0"
 				:class="{
 					'ltr:mr-2 rtl:ml-2': true,
 					'font-bold text-primary-emphasis': isHoverParent || isHoverId,
 				}"
-				v-if="props.album.prefix.length > 0"
 			>
 				{{ isLTR() ? "└ " : "┘" }}
 			</span>
@@ -49,10 +49,10 @@
 		</div>
 		<div class="flex w-1/4 justify-between items-center">
 			<div
-				@mouseenter="setHoverId"
 				:class="{
 					'font-bold text-primary-emphasis': isHoverId,
 				}"
+				@mouseenter="setHoverId"
 			>
 				{{ props.album.trimmedId }}
 				<LeftWarn v-if="props.album.isDuplicate_lft" class="ltr:ml-2 rtl:mr-2" />
@@ -61,24 +61,24 @@
 			<Inplace ref="inplace">
 				<template #display>
 					<span
-						@mouseenter="setHoverParent"
 						:class="{
 							' text-muted-color-emphasis': props.album.trimmedParentId === 'root',
 							'!text-danger-600 font-bold': !props.album.isExpectedParentId,
 							'font-bold text-primary-emphasis': isHoverParent,
 						}"
+						@mouseenter="setHoverParent"
 						>{{ (parentId ?? "root").slice(0, 6) }}</span
 					>
 				</template>
 				<template #content>
 					<Select
-						class="border-none"
 						v-model="parentId"
+						class="border-none"
 						filter
-						resetFilterOnHide
-						showClear
+						reset-filter-on-hide
+						show-clear
 						:options="props.parentIdOptions"
-						@update:modelValue="updateParentId"
+						@update:model-value="updateParentId"
 						@hide="close"
 					>
 						<template #value="slotProps">

@@ -23,7 +23,6 @@ import AlbumService from "@/services/album-service";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { trans } from "laravel-vue-i18n";
 import { storeToRefs } from "pinia";
-import Button from "primevue/button";
 import { ref, Ref } from "vue";
 import { Collapse } from "vue-collapsed";
 import { useRouter } from "vue-router";
@@ -56,6 +55,14 @@ type MapPhotoEntry = {
 	photoID: string;
 };
 
+type MapClickEvent = {
+	layer: {
+		photo: MapPhotoEntry;
+		bindPopup: (template: string, options: { minWidth: number }) => MapClickEvent;
+	};
+	openPopup: () => void;
+};
+
 const props = defineProps<{
 	albumId?: string;
 }>();
@@ -81,8 +88,8 @@ const camera_date = trans("gallery.camera_date");
 const map_provider = ref<App.Http.Resources.GalleryConfigs.MapProviderData | undefined>(undefined);
 const map = ref(undefined) as Ref<L.Map | undefined>;
 const bounds = ref<LatLngBoundsLiteral | undefined>(undefined);
-const photoLayer = ref<any>(undefined);
-const trackLayer = ref<any>(undefined);
+const photoLayer = ref<unknown>(undefined);
+const trackLayer = ref<unknown>(undefined);
 const data = ref<App.Http.Resources.Collections.PositionDataResource | undefined>(undefined);
 
 function loadMapProvider() {
@@ -122,8 +129,8 @@ function fetchData() {
 
 function open() {
 	// Define how the photos on the map should look
-	// @ts-expect-error
-	photoLayer.value = L.photo.cluster().on("click", function (e: any) {
+	// @ts-expect-error Leaflet.Photo is not typed
+	photoLayer.value = L.photo.cluster().on("click", function (e: MapClickEvent) {
 		const photo: MapPhotoEntry = {
 			photoID: e.layer.photo.photoID,
 			albumID: e.layer.photo.albumID,
@@ -179,7 +186,7 @@ function addContentsToMap() {
 
 	// Check initializations
 	if (map.value === undefined) return;
-	if (photoLayer.value === null) return;
+	if (photoLayer.value === null || photoLayer.value === undefined) return;
 
 	const photos: MapPhotoEntry[] = [];
 	let min_lat: number | null = null;
@@ -219,6 +226,7 @@ function addContentsToMap() {
 	});
 
 	// Add Photos to map
+	// @ts-expect-error photoLater is created by leaflet.photo and is not typed
 	photoLayer.value.add(photos).addTo(map.value);
 
 	if (max_lat === null || min_lat === null || max_lng === null || min_lng === null) {
@@ -237,7 +245,7 @@ function addContentsToMap() {
 
 	// add track
 	if (data.value.track_url) {
-		// @ts-expect-error
+		// @ts-expect-error L.GPX is not typed
 		trackLayer.value = new L.GPX(data.value.track_url, {
 			async: true,
 			marker_options: {
@@ -246,10 +254,10 @@ function addContentsToMap() {
 				shadowUrl: null,
 			},
 		})
-			.on("error", function (e: any) {
+			.on("error", function (e: { err: string }) {
 				toast.add({ severity: "error", summary: trans("gallery.map.error_gpx"), detail: e.err, life: 3000 });
 			})
-			.on("loaded", function (e: any) {
+			.on("loaded", function (e: { target: { getBounds: () => LatLngBoundsLiteral } }) {
 				if (photos.length === 0) {
 					// no photos, update map bound to center track
 					bounds.value = e.target.getBounds();
@@ -257,6 +265,7 @@ function addContentsToMap() {
 				}
 			});
 		if (trackLayer.value !== undefined) {
+			// @ts-expect-error trackLayer is created by leaflet.gpx and is not typed
 			trackLayer.value.addTo(map.value);
 		}
 	}

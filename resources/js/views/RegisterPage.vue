@@ -2,8 +2,8 @@
 	<div class="absolute top-0 left-0">
 		<Button icon="pi pi-angle-left" class="mr-2 border-none" severity="secondary" text @click="goBack" />
 	</div>
-	<Panel class="border-none p-9 mx-auto max-w-3x" pt:content:class="flex flex-col items-center" pt:header:class="hidden" v-if="is_loaded">
-		<div class="my-12" v-if="initdata">
+	<Panel v-if="is_loaded" class="border-none p-9 mx-auto max-w-3x" pt:content:class="flex flex-col items-center" pt:header:class="hidden">
+		<div v-if="initdata" class="my-12">
 			<h1 class="text-center text-2xl text-muted-color-emphasis uppercase font-extralight">
 				{{ initdata.landing_title }}
 			</h1>
@@ -11,7 +11,7 @@
 				{{ initdata.landing_subtitle }}
 			</h2>
 		</div>
-		<div class="my-12" v-else>
+		<div v-else class="my-12">
 			<h1 class="text-center text-2xl text-muted-color-emphasis uppercase font-extralight">
 				{{ title }}
 			</h1>
@@ -45,7 +45,7 @@
 				</Message>
 			</div>
 			<div class="flex items-center mt-9">
-				<Button @click="register" :disabled="!isFormValid" severity="contrast" class="w-full font-bold border-none rounded-xl">
+				<Button :disabled="!isFormValid" severity="contrast" class="w-full font-bold border-none rounded-xl" @click="register">
 					{{ $t("profile.register.signup") }}
 				</Button>
 			</div>

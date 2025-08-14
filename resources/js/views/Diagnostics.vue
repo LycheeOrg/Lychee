@@ -9,7 +9,7 @@
 		</template>
 
 		<template #end>
-			<Button :disabled="!canCopy" text aria-label="Copy" icon="pi pi-copy" v-tooltip="$t('diagnostics.copy_to_clipboard')" @click="copy" />
+			<Button v-tooltip="$t('diagnostics.copy_to_clipboard')" :disabled="!canCopy" text aria-label="Copy" icon="pi pi-copy" @click="copy" />
 		</template>
 	</Toolbar>
 	<ErrorsDiagnotics @loaded="loadError" />

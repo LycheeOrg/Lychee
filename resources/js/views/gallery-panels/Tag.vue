@@ -38,9 +38,9 @@
 
 	<!-- Dialogs -->
 	<template v-if="photo">
-		<PhotoEdit v-if="photo?.rights.can_edit" :photo="photo" v-model:visible="is_photo_edit_open" />
-		<MoveDialog :photo="photo" v-model:visible="is_move_visible" @moved="refresh" />
-		<DeleteDialog :photo="photo" v-model:visible="is_delete_visible" @deleted="refresh" />
+		<PhotoEdit v-if="photo?.rights.can_edit" v-model:visible="is_photo_edit_open" :photo="photo" />
+		<MoveDialog v-model:visible="is_move_visible" :photo="photo" @moved="refresh" />
+		<DeleteDialog v-model:visible="is_delete_visible" :photo="photo" @deleted="refresh" />
 	</template>
 	<template v-else>
 		<PhotoTagDialog

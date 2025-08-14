@@ -4,7 +4,7 @@ import "leaflet.markercluster/dist/leaflet.markercluster.js";
 import "@lychee-org/leaflet.photo/Leaflet.Photo.js";
 import "leaflet/dist/leaflet.css";
 import "@lychee-org/leaflet.photo/Leaflet.Photo.css";
-import { Ref, ref } from "vue";
+import { ref } from "vue";
 import AlbumService from "./album-service";
 import Constants from "./constants";
 
@@ -24,7 +24,7 @@ export default class SidebarMap {
 
 		// Leaflet searches for icon in same directory as js file -> paths needs
 		// to be overwritten
-		// @ts-expect-error
+		// @ts-expect-error Leaflet types are not aware of this method
 		delete L.Icon.Default.prototype._getIconUrl;
 		L.Icon.Default.mergeOptions({
 			iconRetinaUrl: Constants.BASE_URL + "/img/marker-icon-2x.png",
@@ -35,7 +35,7 @@ export default class SidebarMap {
 		// kill the map if it exists
 		const container = L.DomUtil.get("leaflet_map_single_photo");
 		if (container !== null) {
-			// @ts-expect-error
+			// @ts-expect-error Leaflet types are not aware of this method
 			container._leaflet_id = null;
 		}
 

@@ -1,11 +1,11 @@
 <template>
 	<DataTable
+		v-if="albumData === undefined || albumData.length > 0"
 		:value="albumData"
 		size="small"
 		scrollable
-		scrollHeight="600px"
+		scroll-height="600px"
 		:loading="albumData === undefined"
-		v-if="albumData === undefined || albumData.length > 0"
 	>
 		<Column v-if="props.showUsername" field="username" :header="$t('statistics.table.username')" class="w-32"></Column>
 		<Column field="title" sortable :header="$t('statistics.table.title')"></Column>

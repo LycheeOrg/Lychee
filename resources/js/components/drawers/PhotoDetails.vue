@@ -7,7 +7,7 @@
 			'w-0 ltr:translate-x-full rtl:-translate-x-full': !areDetailsOpen,
 		}"
 	>
-		<Card id="lychee_sidebar" v-if="props.photo" class="w-[380px] h-full ltr:pr-4 rtl:pl-4 break-words">
+		<Card v-if="props.photo" id="lychee_sidebar" class="w-[380px] h-full ltr:pr-4 rtl:pl-4 break-words">
 			<template #content>
 				<div class="flex flex-col mt-8">
 					<h1 class="text-center text-2xl font-bold my-4">
@@ -43,13 +43,13 @@
 					<div class="flex-col text-muted-color">
 						<div class="flex gap-1 items-center">
 							<span class="w-6 inline-block">
-								<i class="pi pi-file-arrow-up" v-tooltip="$t('gallery.photo.details.uploaded')" />
+								<i v-tooltip="$t('gallery.photo.details.uploaded')" class="pi pi-file-arrow-up" />
 							</span>
 							<span class="text-sm">{{ props.photo.preformatted.created_at }}</span>
 						</div>
-						<div class="flex gap-1 items-start" v-if="props.photo.preformatted.taken_at">
+						<div v-if="props.photo.preformatted.taken_at" class="flex gap-1 items-start">
 							<span class="w-6 inline-block">
-								<i class="pi pi-camera w-6 pt-1 inline-block" v-tooltip="$t('gallery.photo.details.captured')" />
+								<i v-tooltip="$t('gallery.photo.details.captured')" class="pi pi-camera w-6 pt-1 inline-block" />
 							</span>
 							<span class="text-sm">
 								{{ props.photo.preformatted.taken_at }}
@@ -72,7 +72,7 @@
 							{{ $t("gallery.photo.details.tags") }}
 						</h2>
 						<span class="pb-2">
-							<a v-for="tag in props.photo.tags" class="text-xs rounded-full py-1 px-2.5 mr-1.5 mb-2.5 bg-black/50" :key="`tag-${tag}`">
+							<a v-for="tag in props.photo.tags" :key="`tag-${tag}`" class="text-xs rounded-full py-1 px-2.5 mr-1.5 mb-2.5 bg-black/50">
 								{{ tag }}
 							</a>
 						</span>
@@ -84,38 +84,38 @@
 							{{ $t("gallery.photo.details.exif_data") }}
 						</h2>
 						<div class="flex flex-wrap text-muted-color gap-y-0.5">
-							<div class="flex w-full gap-2 items-center" v-if="props.photo.model">
+							<div v-if="props.photo.model" class="flex w-full gap-2 items-center">
 								<img
+									v-tooltip.right="$t('gallery.photo.details.type')"
 									src="../../../img/icons/camera.png"
 									class="dark:invert opacity-50 w-6 h-6"
-									v-tooltip.right="$t('gallery.photo.details.type')"
 								/>
 								<span class="text-sm">{{ props.photo.model }}</span>
 							</div>
-							<div class="flex w-full gap-2 mb-2" v-if="props.photo.lens">
+							<div v-if="props.photo.lens" class="flex w-full gap-2 mb-2">
 								<img
+									v-tooltip.right="$t('gallery.photo.details.lens')"
 									src="../../../img/icons/lens.png"
 									class="dark:invert opacity-50 w-6 h-6"
-									v-tooltip.right="$t('gallery.photo.details.lens')"
 								/>
 								<span class="text-sm">{{ props.photo.lens }}</span>
 							</div>
 							<div class="flex w-1/2 gap-2 items-center">
-								<MiniIcon icon="aperture" class="h-4 w-6" v-tooltip.right="$t('gallery.photo.details.aperture')" />
+								<MiniIcon v-tooltip.right="$t('gallery.photo.details.aperture')" icon="aperture" class="h-4 w-6" />
 								<span>ƒ / {{ props.photo.preformatted.aperture }}</span>
 							</div>
 							<div class="flex w-1/2 gap-2 items-center">
 								<img
+									v-tooltip.right="$t('gallery.photo.details.focal')"
 									src="../../../img/icons/focal.png"
 									class="dark:invert opacity-50 w-6 h-5"
-									v-tooltip.right="$t('gallery.photo.details.focal')"
 								/>
 								<span class="text-sm" dir="ltr">{{ props.photo.focal }}</span>
 							</div>
 							<div class="flex w-1/2 gap-2 items-center">
 								<i
-									class="pi pi-stopwatch h-6 w-6 text-base text-center pt-0.5 text-muted-color"
 									v-tooltip.right="$t('gallery.photo.details.shutter')"
+									class="pi pi-stopwatch h-6 w-6 text-base text-center pt-0.5 text-muted-color"
 								/>
 								<span class="text-sm" dir="ltr">{{ props.photo.preformatted.shutter }}</span>
 							</div>
@@ -133,14 +133,14 @@
 					<h2 v-if="props.photo.precomputed.has_location" class="col-span-2 text-muted-color-emphasis text-base font-bold mt-4 mb-1">
 						{{ $t("gallery.photo.details.location") }}
 					</h2>
-					<MapInclude :latitude="props.photo.latitude" :longitude="props.photo.longitude" v-if="props.isMapVisible" />
+					<MapInclude v-if="props.isMapVisible" :latitude="props.photo.latitude" :longitude="props.photo.longitude" />
 					<template v-if="props.photo.precomputed.has_location">
 						<div class="flex gap-x-2 text-muted-color">
-							<span class="w-full text-sm" v-if="props.photo.preformatted.latitude">{{ props.photo.preformatted.latitude }}</span>
-							<span class="w-full text-sm" v-if="props.photo.preformatted.longitude">{{ props.photo.preformatted.longitude }}</span>
-							<span class="w-full text-sm" v-if="props.photo.preformatted.altitude">{{ props.photo.preformatted.altitude }}</span>
+							<span v-if="props.photo.preformatted.latitude" class="w-full text-sm">{{ props.photo.preformatted.latitude }}</span>
+							<span v-if="props.photo.preformatted.longitude" class="w-full text-sm">{{ props.photo.preformatted.longitude }}</span>
+							<span v-if="props.photo.preformatted.altitude" class="w-full text-sm">{{ props.photo.preformatted.altitude }}</span>
 						</div>
-						<div class="text-sm" v-if="props.photo.location">
+						<div v-if="props.photo.location" class="text-sm">
 							{{ props.photo.location }}
 						</div>
 					</template>
@@ -158,19 +158,19 @@
 						</h2>
 						<div class="flex flex-wrap text-muted-color text-sm gap-y-0.5">
 							<div class="w-1/2">
-								<i class="pi pi-eye mr-2" v-tooltip.right="$t('gallery.photo.details.stats.number_of_visits')" />
+								<i v-tooltip.right="$t('gallery.photo.details.stats.number_of_visits')" class="pi pi-eye mr-2" />
 								{{ props.photo.statistics.visit_count }}
 							</div>
 							<div class="w-1/2">
-								<i class="pi pi-cloud-download mr-2" v-tooltip.right="$t('gallery.photo.details.stats.number_of_downloads')" />
+								<i v-tooltip.right="$t('gallery.photo.details.stats.number_of_downloads')" class="pi pi-cloud-download mr-2" />
 								{{ props.photo.statistics.download_count }}
 							</div>
 							<div class="w-1/2">
-								<i class="pi pi-share-alt mr-2" v-tooltip.right="$t('gallery.photo.details.stats.number_of_shares')" />
+								<i v-tooltip.right="$t('gallery.photo.details.stats.number_of_shares')" class="pi pi-share-alt mr-2" />
 								{{ props.photo.statistics.shared_count }}
 							</div>
 							<div class="w-1/2">
-								<i class="pi pi-heart mr-2" v-tooltip.right="$t('gallery.photo.details.stats.number_of_favourites')" />
+								<i v-tooltip.right="$t('gallery.photo.details.stats.number_of_favourites')" class="pi pi-heart mr-2" />
 								{{ props.photo.statistics.favourite_count }}
 							</div>
 						</div>
@@ -184,11 +184,11 @@
 <script setup lang="ts">
 import { Ref } from "vue";
 import Card from "primevue/card";
-import MapInclude from "../gallery/photoModule/MapInclude.vue";
-import MiniIcon from "../icons/MiniIcon.vue";
-import ColourSquare from "../gallery/photoModule/ColourSquare.vue";
+import MapInclude from "@/components/gallery/photoModule/MapInclude.vue";
+import MiniIcon from "@/components/icons/MiniIcon.vue";
+import ColourSquare from "@/components/gallery/photoModule/ColourSquare.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
-import LinksInclude from "../gallery/photoModule/LinksInclude.vue";
+import LinksInclude from "@/components/gallery/photoModule/LinksInclude.vue";
 import { storeToRefs } from "pinia";
 
 const props = defineProps<{

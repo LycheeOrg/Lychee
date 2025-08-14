@@ -12,7 +12,7 @@
 		</template>
 		<template #content>
 			<ScrollPanel class="w-full h-40 text-sm text-muted-color">
-				<div class="w-full text-center" v-if="!loading" v-html="description"></div>
+				<div v-if="!loading" class="w-full text-center" v-html="description"></div>
 				<ProgressSpinner v-if="loading" class="w-full"></ProgressSpinner>
 			</ScrollPanel>
 			<div class="flex gap-4 mt-1">
@@ -59,7 +59,7 @@ function load() {
 function exec() {
 	loading.value = true;
 	MaintenanceService.missingFileSizesDo()
-		.then((response) => {
+		.then(() => {
 			toast.add({ severity: "success", summary: trans("toasts.success"), life: 3000 });
 			loading.value = false;
 		})

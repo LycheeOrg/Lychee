@@ -18,7 +18,7 @@
 			id="galleryView"
 			class="relative flex flex-wrap content-start w-full justify-start overflow-y-auto"
 			:class="is_full_screen ? 'h-svh' : 'h-[calc(100vh-3.5rem)]'"
-			v-on:scroll="onScroll"
+			@scroll="onScroll"
 		>
 			<PhotoThumbPanel
 				v-if="layoutConfig !== undefined && photos.length > 0"
@@ -51,7 +51,6 @@ import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
 import { onKeyStroke } from "@vueuse/core";
 import { storeToRefs } from "pinia";
-import Button from "primevue/button";
 import Toolbar from "primevue/toolbar";
 import { ref, computed, onMounted } from "vue";
 import { Collapse } from "vue-collapsed";
@@ -60,8 +59,8 @@ import { useRouter } from "vue-router";
 const albumId = ref("favourites");
 const togglableStore = useTogglablesStateStore();
 const { layoutConfig, loadLayoutConfig } = useGetLayoutConfig();
-const { is_full_screen, is_login_open, is_slideshow_active, is_upload_visible, list_upload_files } = storeToRefs(togglableStore);
-const { onScroll, setScroll, scrollToTop } = useScrollable(togglableStore, albumId);
+const { is_full_screen } = storeToRefs(togglableStore);
+const { onScroll, setScroll } = useScrollable(togglableStore, albumId);
 const router = useRouter();
 
 function goBack() {
@@ -73,23 +72,9 @@ const favourites = useFavouriteStore();
 const photos = computed(() => favourites.photos ?? []);
 const children = ref([]);
 
-const {
-	selectedPhotosIdx,
-	selectedAlbumsIdx,
-	selectedPhoto,
-	selectedAlbum,
-	selectedPhotos,
-	selectedAlbums,
-	selectedPhotosIds,
-	selectedAlbumsIds,
-	photoSelect,
-	albumClick,
-	selectEverything,
-	unselect,
-	hasSelection,
-} = useSelection(photos, children, togglableStore);
+const { selectedPhotosIds } = useSelection(photos, children, togglableStore);
 
-function photoClick(idx: number, e: MouseEvent) {
+function photoClick(idx: number, _e: MouseEvent) {
 	router.push({ name: "album", params: { albumId: photos.value[idx].album_id ?? ALL, photoId: photos.value[idx].id } });
 }
 

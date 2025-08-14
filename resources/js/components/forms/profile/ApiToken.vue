@@ -9,7 +9,7 @@
 			},
 		}"
 	>
-		<template #container="{ closeCallback }">
+		<template #container>
 			<form>
 				<div v-focustrap class="flex flex-col gap-4 relative w-[500px] text-sm rounded-md pt-9">
 					<div class="flex flex-col justify-center gap-2 px-9 w-full items-center">
@@ -25,22 +25,22 @@
 						<template v-else>
 							<span><i class="text-danger-600 pi pi-exclamation-triangle ltr:mr-2 rtl:ml-2" />{{ $t("profile.token.warning") }}</span>
 							<InputText
-								class="grow-4 bg-transparent w-full pt-1 pb-0 px-0.5 h-7 border-b border-b-solid focus:border-b-primary-500 disabled:italic disabled:text-center inline-block"
 								v-model="token"
+								class="grow-4 bg-transparent w-full pt-1 pb-0 px-0.5 h-7 border-b border-b-solid focus:border-b-primary-500 disabled:italic disabled:text-center inline-block"
 								:readonly="true"
 							/>
 						</template>
 					</div>
 				</div>
 				<div class="flex justify-center mt-9">
-					<Button @click="close" severity="secondary" class="w-full border-none font-bold rounded-none ltr:rounded-bl-lg rtl:rounded-br-lg">
+					<Button severity="secondary" class="w-full border-none font-bold rounded-none ltr:rounded-bl-lg rtl:rounded-br-lg" @click="close">
 						{{ $t("dialogs.button.close") }}
 					</Button>
 					<Button
-						@click="disable"
 						v-if="!isDisabled && token === undefined"
 						severity="danger"
 						class="w-full border-none font-bold rounded-none ltr:rounded-br-lg rtl:rounded-bl-lg"
+						@click="disable"
 					>
 						{{ $t("profile.token.disable") }}
 					</Button>
@@ -90,7 +90,7 @@ function disable() {
 	});
 }
 
-watch(visible, (_value) => {
+watch(visible, () => {
 	AuthService.user().then((response) => {
 		tokenText.value = response.data.has_token ? trans("profile.token.unavailable") : trans("profile.token.no_data");
 		isDisabled.value = !response.data.has_token;

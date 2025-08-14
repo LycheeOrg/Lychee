@@ -3,7 +3,7 @@
 		:value="props.value"
 		scrollable
 		size="small"
-		scrollHeight="13rem"
+		scroll-height="13rem"
 		:class="{
 			'max-w-xs w-full': true,
 			'border-r-surface-300 dark:border-r-surface-700 border-r': isLTR() && !props.isLast,
@@ -11,10 +11,10 @@
 		}"
 		:dt="dtScheme"
 	>
-		<Column field="key" :header="props.header" v-if="isLTR()"></Column>
-		<Column field="value" :header="props.header" v-else></Column>
-		<Column field="value" header="" v-if="isLTR()"></Column>
-		<Column field="key" header="" v-else></Column>
+		<Column v-if="isLTR()" field="key" :header="props.header"></Column>
+		<Column v-else field="value" :header="props.header"></Column>
+		<Column v-if="isLTR()" field="value" header=""></Column>
+		<Column v-else field="key" header=""></Column>
 		<template #empty>{{ $t("gallery.album.stats.no_data") }}</template>
 	</DataTable>
 </template>

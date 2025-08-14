@@ -10,7 +10,7 @@
 import Dialog from "primevue/dialog";
 import { storeToRefs } from "pinia";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
-import LoginForm from "../forms/auth/LoginForm.vue";
+import LoginForm from "@/components/forms/auth/LoginForm.vue";
 
 const emits = defineEmits<{
 	"logged-in": [];

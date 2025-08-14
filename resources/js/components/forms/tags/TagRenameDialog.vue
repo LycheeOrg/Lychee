@@ -26,7 +26,7 @@ import { ref, watch } from "vue";
 import Button from "primevue/button";
 import AlbumService from "@/services/album-service";
 import Dialog from "primevue/dialog";
-import InputText from "../basic/InputText.vue";
+import InputText from "@/components/forms/basic/InputText.vue";
 import FloatLabel from "primevue/floatlabel";
 import { useToast } from "primevue/usetoast";
 import TagsService from "@/services/tags-service";

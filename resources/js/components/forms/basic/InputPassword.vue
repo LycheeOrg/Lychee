@@ -7,7 +7,7 @@
 		:fluid="props.fluid"
 		:dt="props.dt"
 		:pt="props.pt"
-		:ptOptions="props.ptOptions"
+		:pt-options="props.ptOptions"
 		:unstyled="props.unstyled"
 		type="password"
 	/>
@@ -17,13 +17,14 @@ import { ref } from "vue";
 import InputText, { InputTextPassThroughOptions } from "primevue/inputtext";
 import type { PassThroughOptions } from "primevue/passthrough";
 import type { DesignToken, Nullable, PassThrough } from "@primevue/core";
+import { InputTextDesignTokens } from "@primeuix/themes/types/inputtext";
 
 const props = defineProps<{
 	size?: "small" | "large" | undefined;
 	invalid?: boolean | undefined;
 	variant?: "outlined" | "filled" | undefined;
 	fluid?: boolean;
-	dt?: DesignToken<any>;
+	dt?: DesignToken<InputTextDesignTokens>;
 	pt?: PassThrough<InputTextPassThroughOptions>;
 	ptOptions?: PassThroughOptions;
 	unstyled?: boolean;

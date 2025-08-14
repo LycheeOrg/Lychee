@@ -12,12 +12,12 @@
 			/>
 			<FloatLabel class="w-full grow">
 				<IconField>
-					<InputText :id="props.config.key" type="text" class="!py-1" v-model="val" @update:modelValue="update" />
+					<InputText :id="props.config.key" v-model="val" type="text" class="!py-1" @update:model-value="update" />
 					<InputIcon
-						class="pi pi-exclamation-circle text-warning-600 cursor-pointer"
-						@click="reset"
 						v-if="changed"
 						v-tooltip="'Click me to reset!'"
+						class="pi pi-exclamation-circle text-warning-600 cursor-pointer"
+						@click="reset"
 					/>
 				</IconField>
 			</FloatLabel>

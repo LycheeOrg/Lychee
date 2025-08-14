@@ -1,18 +1,18 @@
 <template>
-	<Drawer :closeOnEsc="false" v-model:visible="is_metrics_open" position="right" :pt:root:class="' w-sm'">
+	<Drawer v-model:visible="is_metrics_open" :close-on-esc="false" position="right" :pt:root:class="' w-sm'">
 		<template #header>
 			<span class="text-xl font-bold">
 				{{ $t("statistics.metrics.header") }}
 			</span>
 		</template>
 		<div class="flex flex-col">
-			<div class="text-sm text-muted-color-emphasis mb-8" v-if="is_se_preview_enabled" v-html="$t('statistics.metrics.preview_text')"></div>
+			<div v-if="is_se_preview_enabled" class="text-sm text-muted-color-emphasis mb-8" v-html="$t('statistics.metrics.preview_text')"></div>
 			<div v-for="item in prettifiedData" :key="item.action + item.ago" class="flex pt-2 pb-1">
 				<div class="flex flex-col w-full text-sm text-muted-color">
-					<router-link :to="item.link" v-if="item.count === 1" v-slot="{ href }">
+					<router-link v-if="item.count === 1" v-slot="{ href }" :to="item.link">
 						<a :href="href" v-html="printSingular(item)"></a>
 					</router-link>
-					<router-link :to="item.link" v-if="item.count > 1" v-slot="{ href }">
+					<router-link v-if="item.count > 1" v-slot="{ href }" :to="item.link">
 						<a :href="href" v-html="printPlural(item)"></a>
 					</router-link>
 					<span class="text-xs -mt-1">{{ item.ago }}</span>
@@ -31,7 +31,7 @@
 							}"
 						></span>
 					</div>
-					<img :src="item.src" v-if="item.src" class="rounded w-full h-full object-cover" />
+					<img v-if="item.src" :src="item.src" class="rounded w-full h-full object-cover" />
 				</div>
 			</div>
 		</div>

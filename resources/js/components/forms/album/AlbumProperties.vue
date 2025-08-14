@@ -4,13 +4,13 @@
 			<form>
 				<div class="h-12">
 					<FloatLabel variant="on">
-						<InputText id="title" type="text" v-model="title" />
+						<InputText id="title" v-model="title" type="text" />
 						<label for="title">{{ $t("gallery.album.properties.title") }}</label>
 					</FloatLabel>
 				</div>
 				<div class="my-4 h-48">
 					<FloatLabel variant="on">
-						<Textarea id="description" class="w-full h-48" v-model="description" :rows="6" :cols="30" />
+						<Textarea id="description" v-model="description" class="w-full h-48" :rows="6" :cols="30" />
 						<label for="description">{{ $t("gallery.album.properties.description") }}</label>
 					</FloatLabel>
 				</div>
@@ -18,11 +18,11 @@
 					<FloatLabel variant="on">
 						<Select
 							id="photoSortingColumn"
-							class="w-56 border-none"
 							v-model="photoSortingColumn"
+							class="w-56 border-none"
 							:options="photoSortingColumnsOptions"
-							optionLabel="label"
-							showClear
+							option-label="label"
+							show-clear
 						>
 							<template #value="slotProps">
 								<div v-if="slotProps.value" class="flex items-center">
@@ -40,11 +40,11 @@
 					<FloatLabel variant="on">
 						<Select
 							id="photoSortingOrder"
-							class="w-56 border-none"
 							v-model="photoSortingOrder"
+							class="w-56 border-none"
 							:options="sortingOrdersOptions"
-							optionLabel="label"
-							showClear
+							option-label="label"
+							show-clear
 						>
 							<template #value="slotProps">
 								<div v-if="slotProps.value" class="flex items-center">
@@ -65,11 +65,11 @@
 						<FloatLabel variant="on">
 							<Select
 								id="albumSortingColumn"
-								class="w-56 border-none"
 								v-model="albumSortingColumn"
+								class="w-56 border-none"
 								:options="albumSortingColumnsOptions"
-								optionLabel="label"
-								showClear
+								option-label="label"
+								show-clear
 							>
 								<template #value="slotProps">
 									<div v-if="slotProps.value" class="flex items-center">
@@ -87,11 +87,11 @@
 						<FloatLabel variant="on">
 							<Select
 								id="albumSortingOrder"
-								class="w-56 border-none"
 								v-model="albumSortingOrder"
+								class="w-56 border-none"
 								:options="sortingOrdersOptions"
-								optionLabel="label"
-								showClear
+								option-label="label"
+								show-clear
 							>
 								<template #value="slotProps">
 									<div v-if="slotProps.value" class="flex items-center">
@@ -109,7 +109,14 @@
 					</div>
 					<div class="h-10 my-2">
 						<FloatLabel variant="on">
-							<Select id="header" class="w-72 border-none" v-model="header_id" :options="headersOptions" optionLabel="title" showClear>
+							<Select
+								id="header"
+								v-model="header_id"
+								class="w-72 border-none"
+								:options="headersOptions"
+								option-label="title"
+								show-clear
+							>
 								<template #value="slotProps">
 									<div v-if="slotProps.value && slotProps.value.id === 'compact'">
 										<i class="pi pi-arrow-down-left-and-arrow-up-right-to-center" />
@@ -136,7 +143,7 @@
 					</div>
 					<div class="h-10 my-2">
 						<FloatLabel variant="on">
-							<Select id="license" class="w-72 border-none" v-model="license" :options="licenseOptions" optionLabel="label" showClear>
+							<Select id="license" v-model="license" class="w-72 border-none" :options="licenseOptions" option-label="label" show-clear>
 								<template #value="slotProps">
 									<div v-if="slotProps.value" class="flex items-center">
 										<div>{{ $t(slotProps.value.label) }}</div>
@@ -161,11 +168,11 @@
 						<FloatLabel variant="on">
 							<Select
 								id="aspectRatio"
-								class="w-72 border-none"
 								v-model="aspectRatio"
+								class="w-72 border-none"
 								:options="aspectRationOptions"
-								optionLabel="label"
-								showClear
+								option-label="label"
+								show-clear
 							>
 								<template #value="slotProps">
 									<div v-if="slotProps.value" class="flex items-center">
@@ -183,11 +190,11 @@
 						<FloatLabel variant="on">
 							<Select
 								id="albumTimeline"
-								class="w-72 border-none"
 								v-model="albumTimeline"
+								class="w-72 border-none"
 								:options="albumTimelineOptions"
-								optionLabel="label"
-								showClear
+								option-label="label"
+								show-clear
 							>
 								<template #value="slotProps">
 									<div v-if="slotProps.value" class="flex items-center">
@@ -208,11 +215,11 @@
 					<FloatLabel variant="on">
 						<Select
 							id="photoLayout"
-							class="w-72 border-none"
 							v-model="photoLayout"
+							class="w-72 border-none"
 							:options="photoLayoutOptions"
-							optionLabel="label"
-							showClear
+							option-label="label"
+							show-clear
 						>
 							<template #value="slotProps">
 								<div v-if="slotProps.value" class="flex items-center">
@@ -230,11 +237,11 @@
 					<FloatLabel variant="on">
 						<Select
 							id="photoTimeline"
-							class="w-72 border-none"
 							v-model="photoTimeline"
+							class="w-72 border-none"
 							:options="photoTimelineOptions"
-							optionLabel="label"
-							showClear
+							option-label="label"
+							show-clear
 						>
 							<template #value="slotProps">
 								<div v-if="slotProps.value" class="flex items-center">
@@ -291,7 +298,7 @@ import { useToast } from "primevue/usetoast";
 import { trans } from "laravel-vue-i18n";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
-import TagsInput from "../basic/TagsInput.vue";
+import TagsInput from "@/components/forms/basic/TagsInput.vue";
 
 type HeaderOption = {
 	id: string;
@@ -456,8 +463,7 @@ function saveTagAlbum() {
 watch(
 	() => [props.editable, props.photos],
 	([editable, photos]) => {
-		// @ts-expect-error
-		load(editable, photos);
+		load(editable as App.Http.Resources.Editable.EditableBaseAlbumResource, photos as App.Http.Resources.Models.PhotoResource[]);
 	},
 );
 </script>

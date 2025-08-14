@@ -13,7 +13,7 @@
 					<TagsInput v-model="tags" :placeholder="$t('dialogs.photo_tags.no_tags')" :add="true" />
 				</div>
 				<div>
-					<Checkbox v-model="shallOverride" :binary="true" inputId="shallOverride" />
+					<Checkbox v-model="shallOverride" :binary="true" input-id="shallOverride" />
 					<label for="shallOverride" class="ml-2 text-sm text-muted-color">{{ $t("dialogs.photo_tags.tags_override_info") }}</label>
 				</div>
 			</div>
@@ -39,7 +39,7 @@ import Dialog from "primevue/dialog";
 import Checkbox from "primevue/checkbox";
 import { trans } from "laravel-vue-i18n";
 import TagsService from "@/services/tags-service";
-import TagsInput from "../basic/TagsInput.vue";
+import TagsInput from "@/components/forms/basic/TagsInput.vue";
 
 const props = defineProps<{
 	parentId: string | undefined;

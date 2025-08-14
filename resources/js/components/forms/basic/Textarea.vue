@@ -2,7 +2,7 @@
 	<Textarea
 		v-model="modelValue"
 		:class="classValueComputed"
-		:autoResize="props.autoResize"
+		:auto-resize="props.autoResize"
 		:invalid="props.invalid"
 		:variant="props.variant"
 		:fluid="props.fluid"
@@ -10,7 +10,7 @@
 		:pt="props.pt"
 		:rows="props.rows"
 		:cols="props.cols"
-		:ptOptions="props.ptOptions"
+		:pt-options="props.ptOptions"
 		:unstyled="props.unstyled"
 		:placeholder="props.placeholder"
 	/>
@@ -21,6 +21,7 @@ import type { PassThroughOptions } from "primevue/passthrough";
 import type { DesignToken, Nullable, PassThrough } from "@primevue/core";
 import { useLtRorRtL } from "@/utils/Helpers";
 import { computed } from "vue";
+import { TextareaDesignTokens } from "@primeuix/themes/types/textarea";
 
 const { isLTR } = useLtRorRtL();
 
@@ -29,7 +30,7 @@ const props = defineProps<{
 	invalid?: boolean | undefined;
 	variant?: "outlined" | "filled" | undefined;
 	fluid?: boolean;
-	dt?: DesignToken<any>;
+	dt?: DesignToken<TextareaDesignTokens>;
 	pt?: PassThrough<TextareaPassThroughOptions>;
 	ptOptions?: PassThroughOptions;
 	unstyled?: boolean;

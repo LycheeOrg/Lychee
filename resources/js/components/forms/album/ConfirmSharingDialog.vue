@@ -14,15 +14,15 @@
 					</label>
 				</div>
 				<div class="flex items-center mt-9 w-full">
-					<Button @click="closeCallback" severity="secondary" class="w-full font-bold border-none rounded-bl-xl">
+					<Button severity="secondary" class="w-full font-bold border-none rounded-bl-xl" @click="closeCallback">
 						{{ $t("dialogs.button.cancel") }}
 					</Button>
 					<Button
-						@click="propagate"
 						icon="pi pi-forward"
 						severity="danger"
 						class="w-full border-none rounded-none rounded-br-xl font-bold"
 						:label="$t('sharing.propagate')"
+						@click="propagate"
 					>
 					</Button>
 				</div>

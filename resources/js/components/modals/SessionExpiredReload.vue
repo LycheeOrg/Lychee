@@ -10,16 +10,16 @@
 				</div>
 				<div class="flex justify-center">
 					<Button
-						@click="closeAndReload"
 						severity="info"
 						class="w-full font-bold border-none rounded-none ltr:rounded-bl-xl rtl:rounded-br-xl"
+						@click="closeAndReload"
 					>
 						{{ $t("dialogs.session_expired.reload") }}
 					</Button>
 					<Button
-						@click="gotoGallery"
 						severity="contrast"
 						class="w-full font-bold border-none rounded-none ltr:rounded-br-xl rtl:rounded-bl-xl"
+						@click="gotoGallery"
 					>
 						{{ $t("dialogs.session_expired.go_to_gallery") }}
 					</Button>

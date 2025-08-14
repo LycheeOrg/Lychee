@@ -11,7 +11,14 @@
 		/>
 		<div class="flex gap-4 items-center">
 			<ResetField v-if="changed" @click="reset" />
-			<Select :id="props.config.key" class="border-none" v-model="val" optionLabel="label" :options="props.options" @update:modelValue="update">
+			<Select
+				:id="props.config.key"
+				v-model="val"
+				class="border-none"
+				option-label="label"
+				:options="props.options"
+				@update:model-value="update"
+			>
 				<template #value="slotProps">
 					<div v-if="slotProps.value" class="flex items-center">
 						<div>{{ $t(slotProps.value.label) }}</div>

@@ -1,9 +1,9 @@
 <template>
-	<Dialog header="Add New User Group" v-model:visible="visible" pt:root:class="border-none" modal :dismissable-mask="true" :closable="true">
+	<Dialog v-model:visible="visible" header="Add New User Group" pt:root:class="border-none" modal :dismissable-mask="true" :closable="true">
 		<template #container="{ closeCallback }">
 			<form @submit.prevent="submitForm">
 				<div class="flex flex-col gap-4 bg-gradient-to-b from-bg-300 to-bg-400 relative w-full md:w-lg rounded-md text-muted-color p-9">
-					<Message severity="danger" v-if="error">{{ error }}</Message>
+					<Message v-if="error" severity="danger">{{ error }}</Message>
 					<FloatLabel variant="on">
 						<InputText id="name" v-model="name" required />
 						<label for="name">{{ $t("user-groups.create.name") }}</label>
@@ -12,12 +12,12 @@
 						<Textarea id="description" v-model="description" :rows="3" />
 						<label for="description">{{ $t("user-groups.create.description") }}</label>
 					</FloatLabel>
-					<FloatLabel variant="on" v-if="groupId === undefined">
+					<FloatLabel v-if="groupId === undefined" variant="on">
 						<AutoComplete
 							id="users"
 							v-model="users"
-							forceSelection
-							optionLabel="username"
+							force-selection
+							option-label="username"
 							multiple
 							class="border-b hover:border-b-0 w-full"
 							pt:inputmultiple:class="w-full border-t-0 border-l-0 border-r-0 border-b hover:border-b-primary-400 focus:border-b-primary-400"
@@ -54,8 +54,8 @@ import { UserGroupService } from "@/services/user-group-service";
 import { Ref } from "vue";
 import Dialog from "primevue/dialog";
 import FloatLabel from "primevue/floatlabel";
-import InputText from "../basic/InputText.vue";
-import Textarea from "../basic/Textarea.vue";
+import InputText from "@/components/forms/basic/InputText.vue";
+import Textarea from "@/components/forms/basic/Textarea.vue";
 import Button from "primevue/button";
 import Message from "primevue/message";
 import AutoComplete from "primevue/autocomplete";
