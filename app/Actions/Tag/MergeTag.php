@@ -39,6 +39,7 @@ class MergeTag
 		$user = Auth::user();
 
 		$this->handlePhotos($source, $into, $user);
+		$this->handleTagAlbums($source, $into, $user);
 
 		// Cleanup unused tags after merging
 		// This will remove the source tag if it has no more relationships.
@@ -101,7 +102,7 @@ class MergeTag
 		});
 	}
 
-	private function hangleTagAlbums(Tag $source, Tag $into, User $user): void
+	private function handleTagAlbums(Tag $source, Tag $into, User $user): void
 	{
 		// Select all the albums impacted by this tag.
 		$source_tag_ids = DB::table('tag_albums_tags')

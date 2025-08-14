@@ -55,7 +55,7 @@ trait TagCleanupTrait
 				function (Builder $query): void {
 					$query->select(DB::raw(1))
 						->from('tag_albums_tags')
-						->whereColumn('tag_albums_tags.tag_id', 'tag_albums.id');
+						->whereColumn('tag_albums_tags.album_id', 'tag_albums.id');
 				}
 			)->delete();
 	}
