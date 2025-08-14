@@ -211,27 +211,24 @@ class PhotoController extends Controller
 	{
 		$tags = $request->tags();
 		$photos = $request->photos();
+		$photo_ids = $photos->pluck('id');
 
 		// Fetch existing tags
 		$existing_tags = Tag::from($tags);
 
-		DB::beginTransaction();
-		try {
+		DB::transaction(function () use ($request, $existing_tags, $photo_ids): void {
 			if ($request->shall_override) {
 				// Delete existing associations for those photos ids if we override the tags
 				DB::table('photos_tags')
-					->whereIn('photo_id', $photos->pluck('id'))
+					->whereIn('photo_id', $photo_ids)
 					->delete();
 			}
 
 			// Associate the existing tags with the photos
-			$existing_tags->each(function (Tag $tag) use ($photos): void {
-				$tag->photos()->syncWithoutDetaching($photos->pluck('id'));
+			$existing_tags->each(function (Tag $tag) use ($photo_ids): void {
+				$tag->photos()->syncWithoutDetaching($photo_ids);
 			});
 			DB::commit();
-		} catch (\Throwable $e) {
-			DB::rollBack();
-			throw $e;
-		}
+		});
 	}
 }

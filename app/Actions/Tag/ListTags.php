@@ -39,7 +39,7 @@ class ListTags
 				$user->may_administrate === false,
 				fn ($q) => $q
 					->leftJoin('photos', 'photos.id', '=', 'photos_tags.photo_id')
-					->where('photos.owner_id', Auth::id())
+					->where('photos.owner_id', $user->id)
 			)
 			->select(['tags.id', 'tags.name', DB::raw('COUNT(photos_tags.photo_id) AS num')])
 			->groupBy(['tags.id', 'tags.name'])

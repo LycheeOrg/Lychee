@@ -23,7 +23,7 @@ class DeleteTagRequest extends BaseApiRequest
 	{
 		return [
 			RequestAttribute::TAGS_ATTRIBUTE => 'required|array|min:1',
-			RequestAttribute::TAGS_ATTRIBUTE . '.*' => 'required|int',
+			RequestAttribute::TAGS_ATTRIBUTE . '.*' => 'required|int|distinct',
 		];
 	}
 
