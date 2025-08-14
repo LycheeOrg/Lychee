@@ -31,9 +31,9 @@ return new class() extends Migration {
 	public function down(): void
 	{
 		if (!Schema::hasColumn('photos', self::TAGS)) {
-		Schema::table('photos', function (Blueprint $table) {
-			$table->text('tags')->nullable()->after('description');
-		});
-	}
+			Schema::table('photos', function (Blueprint $table) {
+				$table->text('tags')->nullable()->after('description');
+			});
+		}
 	}
 };

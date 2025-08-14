@@ -11,7 +11,6 @@ namespace App\Actions\Tag;
 use App\Http\Resources\Tags\TagResource;
 use App\Http\Resources\Tags\TagsResource;
 use App\Models\User;
-use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -41,7 +40,7 @@ class ListTags
 				fn ($q) => $q
 					->leftJoin('photos', 'photos.id', '=', 'photos_tags.photo_id')
 					->where('photos.owner_id', Auth::id())
-				)
+			)
 			->select(['tags.id', 'tags.name', DB::raw('COUNT(photos_tags.photo_id) AS num')])
 			->groupBy(['tags.id', 'tags.name'])
 			->orderBy('tags.name')
