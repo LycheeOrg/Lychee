@@ -448,3 +448,7 @@ public function addConstraints()
 - Nested subqueries for hierarchy validation
 - Can impact query performance with large datasets
 
+---
+
+*Last updated: August 14, 2025*
+

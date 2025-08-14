@@ -48,3 +48,7 @@ For more information about Lychee:
 - [Main Repository](https://github.com/LycheeOrg/Lychee)
 - [Official Website](https://lycheeorg.dev/)
 - [Admin Documentation](https://lycheeorg.dev/docs/)
+
+---
+
+*Last updated: August 14, 2025*

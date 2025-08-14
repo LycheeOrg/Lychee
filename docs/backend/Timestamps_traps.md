@@ -133,3 +133,7 @@ With respect to functional behaviour, we have two "broken" mappings that should 
 This means only the methods `timestamp_tz` and `datetime` are usable in a DB-independent manner.
 Also, the convenient method `timestamps` must not be used.
 Taking into account the conclusion from above, the Lychee Application only uses `Blueprint::datetime`, because it shows identical behaviour for each DBMS and has no year-2038-problem on MySQL.
+
+---
+
+*Last updated: August 14, 2025*

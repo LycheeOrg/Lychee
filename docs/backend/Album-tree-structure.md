@@ -265,3 +265,7 @@ The sorting is applied consistently across:
 - Direct children listing
 - Tree traversal operations
 - API responses
+
+---
+
+*Last updated: August 14, 2025*

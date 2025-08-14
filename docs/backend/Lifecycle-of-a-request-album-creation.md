@@ -428,3 +428,7 @@ This architecture provides:
 - **Performance**: Optimized database operations and caching strategies
 
 Understanding this flow helps developers know where to make changes for different types of features and ensures consistency with Lychee's architectural patterns.
+
+---
+
+*Last updated: August 14, 2025*

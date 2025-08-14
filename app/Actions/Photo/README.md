@@ -206,3 +206,7 @@ return $this->pipe($photoFile, [
     // ... other pipes
 ]);
 ```
+
+---
+
+*Last updated: August 14, 2025*

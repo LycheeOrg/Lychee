@@ -503,3 +503,7 @@ All gallery modes support comprehensive keyboard shortcuts:
 - Responsive image sizing
 - Mobile-first component design
 - Performance-conscious animations
+
+---
+
+*Last updated: August 14, 2025*

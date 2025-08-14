@@ -250,3 +250,7 @@ php artisan test --filter TranslationTest
 7. **Keep documentation updated** as the system evolves
 
 This localization system ensures Lychee remains accessible to users worldwide while maintaining code quality and translation consistency across all supported languages.
+
+---
+
+*Last updated: August 14, 2025*

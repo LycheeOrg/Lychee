@@ -527,3 +527,7 @@ The photo upload lifecycle in Lychee demonstrates a sophisticated, chunked uploa
 7. **User Experience**: Real-time progress updates and clear error messaging
 
 This architecture ensures reliable photo uploads while maintaining performance and security.
+
+---
+
+*Last updated: August 14, 2025*

@@ -384,3 +384,7 @@ Timeline layouts coordinate with:
 - Support keyboard navigation patterns
 
 This layout system provides Lychee with flexible, performant photo arrangement capabilities while maintaining clean separation of concerns and supporting modern web standards for responsive design and accessibility.
+
+---
+
+*Last updated: August 14, 2025*
