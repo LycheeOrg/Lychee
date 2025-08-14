@@ -27,15 +27,7 @@ export function useDragAndSelect(
 	albums: { id: string }[],
 	withScroll: boolean = true,
 ) {
-	// const position = ref<Position | undefined>(undefined);
-	const position = ref<Position | undefined>({
-		top: "50px",
-		left: "50px",
-		right: "inherit",
-		bottom: "inherit",
-		width: "200px",
-		height: "300px",
-	});
+	const position = ref<Position | undefined>(undefined);
 	const initialPosition = ref<InitialPosition | undefined>(undefined);
 
 	const cache = {
@@ -124,7 +116,6 @@ export function useDragAndSelect(
 			togglableStore.is_delete_visible ||
 			togglableStore.is_merge_album_visible ||
 			togglableStore.is_share_album_visible ||
-			togglableStore.is_import_from_link_open ||
 			togglableStore.is_tag_visible ||
 			togglableStore.is_copy_visible
 		) {
@@ -209,9 +200,9 @@ export function useDragAndSelect(
 		if (position.value === undefined) return;
 		const selector = getBounding(document.getElementById("selector") as HTMLElement, "selector");
 
-		const photos_slected = cache.photo_boxes.filter((b) => isIntersecting(b, selector)).map((b) => b.id);
-		if (photos_slected.length > 0) {
-			togglableStore.selectedPhotosIdx = photos_slected.map((id) => photos?.findIndex((p) => p.id === id) ?? -1);
+		const photos_selected = cache.photo_boxes.filter((b) => isIntersecting(b, selector)).map((b) => b.id);
+		if (photos_selected.length > 0) {
+			togglableStore.selectedPhotosIdx = photos_selected.map((id) => photos?.findIndex((p) => p.id === id) ?? -1);
 			togglableStore.selectedAlbumsIdx = [];
 			return;
 		}
