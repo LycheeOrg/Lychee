@@ -8,7 +8,6 @@
 
 namespace App\Models;
 
-use App\Casts\TagArrayCast;
 use App\Exceptions\InvalidPropertyException;
 use App\ModelFunctions\HasAbstractAlbumProperties;
 use App\Models\Builders\TagAlbumBuilder;
@@ -18,12 +17,13 @@ use App\Models\Extensions\ToArrayThrowsNotImplemented;
 use App\Relations\HasManyPhotosByTag;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 
 /**
  * App\Models\TagAlbum.
  *
- * @property Tag[] $show_tags
+ * @property Collection<int,Tag> $tags
  *
  * @method static TagAlbumBuilder|TagAlbum query()                       Begin querying the model.
  * @method static TagAlbumBuilder|TagAlbum with(array|string $relations) Begin querying the model with eager loading.
@@ -74,7 +74,6 @@ class TagAlbum extends BaseAlbum
 	 */
 	protected $attributes = [
 		'id' => null,
-		'show_tags' => null,
 	];
 
 	/**
@@ -85,7 +84,6 @@ class TagAlbum extends BaseAlbum
 		return [
 			'min_taken_at' => 'datetime',
 			'max_taken_at' => 'datetime',
-			'show_tags' => TagArrayCast::class,
 		];
 	}
 
@@ -159,5 +157,21 @@ class TagAlbum extends BaseAlbum
 	public function newEloquentBuilder($query): TagAlbumBuilder
 	{
 		return new TagAlbumBuilder($query);
+	}
+
+	/**
+	 * Returns the relationship between a tag and all photos with whom
+	 * this tag is attached.
+	 *
+	 * @return BelongsToMany<Tag,$this>
+	 */
+	public function tags(): BelongsToMany
+	{
+		return $this->belongsToMany(
+			Tag::class,
+			'tag_albums_tags',
+			'album_id',
+			'tag_id',
+		);
 	}
 }

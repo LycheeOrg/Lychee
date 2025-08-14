@@ -137,7 +137,6 @@ class MergeTagsTest extends BaseApiWithDataTest
 		]);
 		$this->assertNoContent($response);
 
-		// Validate that `test` has 2 photos associated.
 		$this->assertDatabaseCount('photos_tags', 3);
 		// test -> photo1
 		// source_tag_to_merge -> photo1

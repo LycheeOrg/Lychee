@@ -32,6 +32,6 @@ class OptimizeDbTest extends AbstractTestCase
 	{
 		$optimize = new OptimizeDb();
 		$output = count($optimize->do());
-		self::assertTrue(in_array($output, [3, 28], true), 'OptimizeDb should return either 3 or 28: ' . $output);
+		self::assertTrue(in_array($output, [3, 29], true), 'OptimizeDb should return either 3 or 28: ' . $output);
 	}
 }
