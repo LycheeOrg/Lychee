@@ -255,14 +255,7 @@
 
 				<div v-if="!is_model_album" class="mb-8 h-10">
 					<FloatLabel variant="on">
-						<AutoComplete
-							id="tags"
-							v-model="tags"
-							:typeahead="false"
-							multiple
-							class="pt-3 border-b hover:border-b-0 w-full"
-							pt:inputmultiple:class="w-full border-t-0 border-l-0 border-r-0 border-b hover:border-b-primary-400 focus:border-b-primary-400"
-						/>
+						<TagsInput v-model="tags" :add="false" />
 						<label for="tags">{{ $t("gallery.album.properties.show_tags") }}</label>
 					</FloatLabel>
 				</div>
@@ -296,9 +289,9 @@ import {
 } from "@/config/constants";
 import { useToast } from "primevue/usetoast";
 import { trans } from "laravel-vue-i18n";
-import AutoComplete from "primevue/autocomplete";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
+import TagsInput from "../basic/TagsInput.vue";
 
 type HeaderOption = {
 	id: string;

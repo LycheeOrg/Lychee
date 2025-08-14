@@ -35,9 +35,11 @@ use App\Image\Files\UploadedFile;
 use App\Jobs\ProcessImageJob;
 use App\Models\Configs;
 use App\Models\Photo;
+use App\Models\Tag;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -75,8 +77,8 @@ class PhotoController extends Controller
 		NativeLocalFile $final,
 		?AbstractAlbum $album,
 		?int $file_last_modified_time,
-		UploadMetaResource $meta): UploadMetaResource
-	{
+		UploadMetaResource $meta,
+	): UploadMetaResource {
 		$processable_file = new ProcessableJobFile(
 			$final->getOriginalExtension(),
 			$meta->file_name
@@ -122,7 +124,10 @@ class PhotoController extends Controller
 		$photo->title = $request->title();
 		$photo->description = $request->description();
 		$photo->created_at = $request->uploadDate();
-		$photo->tags = $request->tags();
+
+		$existing_tags = Tag::from($request->tags());
+		$photo->tags()->sync($existing_tags->pluck('id'));
+		$photo->load('tags');
 		$photo->license = $request->license()->value;
 
 		// if the request takenAt is null, then we set the initial value back.
@@ -195,7 +200,7 @@ class PhotoController extends Controller
 	public function rename(RenamePhotoRequest $request): void
 	{
 		$photo = $request->photo();
-		$photo->title = $request->title;
+		$photo->title = $request->title();
 		$photo->save();
 	}
 
@@ -205,15 +210,25 @@ class PhotoController extends Controller
 	public function tags(SetPhotosTagsRequest $request): void
 	{
 		$tags = $request->tags();
+		$photos = $request->photos();
+		$photo_ids = $photos->pluck('id');
 
-		/** @var Photo $photo */
-		foreach ($request->photos() as $photo) {
+		// Fetch existing tags
+		$existing_tags = Tag::from($tags);
+
+		DB::transaction(function () use ($request, $existing_tags, $photo_ids): void {
 			if ($request->shall_override) {
-				$photo->tags = $tags;
-			} else {
-				$photo->tags = array_unique(array_merge($photo->tags, $tags));
+				// Delete existing associations for those photos ids if we override the tags
+				DB::table('photos_tags')
+					->whereIn('photo_id', $photo_ids)
+					->delete();
 			}
-			$photo->save();
-		}
+
+			// Associate the existing tags with the photos
+			$existing_tags->each(function (Tag $tag) use ($photo_ids): void {
+				$tag->photos()->syncWithoutDetaching($photo_ids);
+			});
+			DB::commit();
+		});
 	}
 }

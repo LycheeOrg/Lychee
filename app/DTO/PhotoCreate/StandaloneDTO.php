@@ -18,6 +18,7 @@ use App\Image\Files\NativeLocalFile;
 use App\Image\Files\TemporaryLocalFile;
 use App\Metadata\Extractor;
 use App\Models\Photo;
+use Illuminate\Support\Collection;
 
 class StandaloneDTO implements PhotoDTO
 {
@@ -27,6 +28,7 @@ class StandaloneDTO implements PhotoDTO
 	public FlysystemFile $target_file;
 	public StreamStats|null $stream_stat;
 	public FlysystemFile|null $backup_file = null;
+	public Collection $tags;
 
 	public function __construct(
 		// The resulting photo
@@ -44,6 +46,7 @@ class StandaloneDTO implements PhotoDTO
 		public readonly bool $shall_import_via_symlink,
 		public readonly bool $shall_delete_imported,
 	) {
+		$this->tags = new Collection();
 	}
 
 	public static function ofInit(InitDTO $init_dto): StandaloneDTO
@@ -63,5 +66,10 @@ class StandaloneDTO implements PhotoDTO
 	public function getPhoto(): Photo
 	{
 		return $this->photo;
+	}
+
+	public function getTags(): Collection
+	{
+		return $this->tags;
 	}
 }

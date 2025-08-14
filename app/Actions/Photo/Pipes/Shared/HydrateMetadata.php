@@ -11,6 +11,7 @@ namespace App\Actions\Photo\Pipes\Shared;
 use App\Contracts\PhotoCreate\SharedPipe;
 use App\DTO\PhotoCreate\DuplicateDTO;
 use App\DTO\PhotoCreate\StandaloneDTO;
+use App\Models\Tag;
 
 /**
  * Hydrates meta-info of the media file from the
@@ -38,7 +39,7 @@ class HydrateMetadata implements SharedPipe
 			$state->photo->description = $state->exif_info->description;
 		}
 		if (count($state->photo->tags) === 0) {
-			$state->photo->tags = $state->exif_info->tags;
+			$state->tags = Tag::from($state->exif_info->tags);
 		}
 		if ($state->photo->type === null) {
 			$state->photo->type = $state->exif_info->type;

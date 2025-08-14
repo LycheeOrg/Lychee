@@ -64,7 +64,7 @@ class TagAlbumResource extends Data
 		$this->title = $tag_album->title;
 		$this->owner_name = Auth::check() ? $tag_album->owner->name : null;
 		$this->is_tag_album = true;
-		$this->show_tags = $tag_album->show_tags;
+		$this->show_tags = array_map(fn ($t) => $t->name, $tag_album->show_tags);
 		$this->copyright = $tag_album->copyright;
 
 		// children

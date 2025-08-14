@@ -8,7 +8,7 @@ import { type RouteLocationNormalizedLoaded } from "vue-router";
 import { useLtRorRtL } from "@/utils/Helpers";
 
 export type TimelineData = {
-	isTimeline: Ref<boolean>;
+	isTimeline: boolean;
 	isLeftBorderVisible: Ref<boolean>;
 };
 

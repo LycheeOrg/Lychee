@@ -303,6 +303,7 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		album_decoration_orientation: App.Enum.AlbumDecorationOrientation;
 		number_albums_per_row_mobile: 1 | 2 | 3;
 		photo_thumb_info: App.Enum.PhotoThumbInfoType;
+		is_photo_thumb_tags_enabled: boolean;
 		is_thumb_download_enabled: boolean;
 		is_thum2x_download_enabled: boolean;
 		is_small_download_enabled: boolean;
@@ -821,5 +822,21 @@ declare namespace App.Http.Resources.Statistics {
 		id: number;
 		username: string;
 		size: number;
+	};
+}
+declare namespace App.Http.Resources.Tags {
+	export type TagResource = {
+		id: number;
+		name: string;
+		num: number;
+	};
+	export type TagWithPhotosResource = {
+		id: number;
+		name: string;
+		photos: Array<any>;
+	};
+	export type TagsResource = {
+		can_edit: boolean;
+		tags: App.Http.Resources.Tags.TagResource[];
 	};
 }

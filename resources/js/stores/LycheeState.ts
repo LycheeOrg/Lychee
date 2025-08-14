@@ -44,6 +44,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		album_decoration_orientation: "ROW" as App.Enum.AlbumDecorationOrientation,
 		number_albums_per_row_mobile: 3 as 1 | 2 | 3,
 		photo_thumb_info: "title" as App.Enum.PhotoThumbInfoType,
+		is_photo_thumb_tags_enabled: false,
 
 		// Download settings
 		is_thumb_download_enabled: false,
@@ -149,6 +150,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.is_live_metrics_enabled = data.is_live_metrics_enabled;
 					this.number_albums_per_row_mobile = data.number_albums_per_row_mobile;
 					this.photo_thumb_info = data.photo_thumb_info;
+					this.is_photo_thumb_tags_enabled = data.is_photo_thumb_tags_enabled;
 
 					this.is_thumb_download_enabled = data.is_thumb_download_enabled;
 					this.is_thum2x_download_enabled = data.is_thum2x_download_enabled;
