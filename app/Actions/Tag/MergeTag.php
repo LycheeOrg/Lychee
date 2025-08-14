@@ -150,7 +150,7 @@ class MergeTag
 
 			DB::table('tag_albums_tags')
 				->where('tag_id', $source->id)
-				->whereIn('album_id', $source_tag_ids) // Only the photos associated with the source tag and owned by the user
+				->whereIn('album_id', $source_tag_ids) // Only the albums associated with the source tag and owned by the user
 				->delete();
 		});
 	}
