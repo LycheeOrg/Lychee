@@ -70,7 +70,7 @@ class TagAlbumsImpactTest extends BaseApiWithDataTest
 		]);
 	}
 
-	public function tesMergeTagAdvanced(): void
+	public function testMergeTagAdvanced(): void
 	{
 		// Tag photo2 by User2 for `test`
 		$response = $this->actingAs($this->userMayUpload2)->patchJson('Photo::tags', [
