@@ -35,11 +35,12 @@ return new class() extends Migration {
 			$table->foreign(self::ALBUM_ID)->references('id')->on('tag_albums')->cascadeOnUpdate()->cascadeOnDelete();
 		});
 
+		/** @var int[] $all_tags */
 		$all_tags = DB::table('tags')->select(['id'])->pluck('id')->all();
 		DB::table('tag_albums')->orderBy('id')->chunk(100, function ($tag_albums) use ($all_tags) {
 			$to_insert = [];
 			foreach ($tag_albums as $tag_album) {
-				if ($tag_album->show_Tags === null) {
+				if ($tag_album->show_tags === null) {
 					continue;
 				}
 				$tags = explode(' OR ', $tag_album->show_tags);
