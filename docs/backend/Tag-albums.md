@@ -112,8 +112,7 @@ Renaming a tag might seem as simple as updating the `name` column on the existin
 This approach ensures:
 - **Multi-user safety**: Each user's tag context is preserved
 - **Collision avoidance**: avoids merging meanings when different users use the same tag name for different contexts.
-- **Database efficiency**: Unused tags are automatically pruneda models, relationships, custom queries, and operations like renaming and merging.
-
+- **Database efficiency**: Unused tags are automatically pruned.
 
 ## 4. Tag Cleanup
 
