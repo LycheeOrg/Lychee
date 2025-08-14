@@ -21,3 +21,8 @@
 - Use Typescript in composition API for Vue3. Use PrimeVue for UI components.
 - Do not use await async calls in Vue3, use .then() instead.
 - Do not use const function = () => {}, use function functionName() {} instead.
+
+# Documentation Conventions
+
+- Use Markdown format for documentation.
+- At the bottom of the file, add an hr line followed by "*Last updated: [date of the update]*" 

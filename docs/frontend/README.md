@@ -315,3 +315,7 @@ For more detailed information about specific aspects of the frontend:
 - **[Vue 3 Guide](Vue3.md)** - Vue 3 Composition API patterns, TypeScript integration, and Lychee-specific conventions
 - **[Gallery Frontend Documentation](Gallery.md)** - Detailed gallery interface and viewing modes, including Albums, Flow, Map, Search, and Frame views
 - **[Layout System Documentation](Layouts.md)** - Photo layout algorithms and responsive design patterns for Square, Justified, Masonry, and Grid layouts
+
+---
+
+*Last updated: August 14, 2025*

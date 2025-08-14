@@ -219,3 +219,7 @@ Smart Albums appear alongside regular albums in the main gallery view when enabl
 5. Can have their own access permissions via the `AccessPermission` model
 
 The smart album system provides users with convenient ways to access their photos based on common organizational patterns without manual curation.
+
+---
+
+*Last updated: August 14, 2025*

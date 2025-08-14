@@ -225,3 +225,7 @@ class UpdateAlbumRequest extends BaseApiRequest
 ```
 
 This validation rule system ensures that Lychee maintains high data quality and security standards while providing clear, maintainable validation logic throughout the application.
+
+---
+
+*Last updated: August 14, 2025*

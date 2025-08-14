@@ -199,3 +199,7 @@ If you need help or have questions:
 - Create a new discussion if necessary or join our [discord](https://discord.gg/JMPvuRQcTf) and post into the #help channel.
 
 Thank you for contributing to Lychee! 🌸
+
+---
+
+*Last updated: August 14, 2025*
