@@ -60,7 +60,6 @@ class TagAlbumFactory extends Factory
 		});
 	}
 
-
 	/**
 	 * Configure the model factory.
 	 * We also create the associated statistics model.
