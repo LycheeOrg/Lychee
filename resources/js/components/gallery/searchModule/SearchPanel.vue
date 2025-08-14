@@ -1,8 +1,8 @@
 <template>
 	<SearchBox
-		v-if="props.searchMinimumLengh !== undefined"
+		v-if="props.searchMinimumLength !== undefined"
 		v-model:search="search"
-		:search-minimum-lengh="props.searchMinimumLengh"
+		:search-minimum-length="props.searchMinimumLength"
 		@search="emits('search', search)"
 		@clear="emits('clear')"
 	/>
@@ -21,7 +21,7 @@ const emits = defineEmits<{
 }>();
 
 const props = defineProps<{
-	searchMinimumLengh: number | undefined;
+	searchMinimumLength: number | undefined;
 	isSearching: boolean;
 	noData: boolean;
 }>();

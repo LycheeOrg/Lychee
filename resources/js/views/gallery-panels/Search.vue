@@ -15,7 +15,7 @@
 		>
 			<SearchPanel
 				:title="title"
-				:search-minimum-lengh="searchMinimumLengh"
+				:search-minimum-length="searchMinimumLength"
 				:is-searching="isSearching"
 				:no-data="noData"
 				:search="search_term"
@@ -202,7 +202,7 @@ const {
 	albums,
 	photos,
 	layout,
-	searchMinimumLengh,
+	searchMinimumLength,
 	isSearching,
 	from,
 	per_page,

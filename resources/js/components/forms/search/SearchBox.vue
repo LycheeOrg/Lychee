@@ -2,7 +2,7 @@
 	<div
 		:class="{
 			'flex items-center justify-center w-full flex-wrap mt-5 mb-5 bg-none transition-all': true,
-			'h-4/5': search.length < props.searchMinimumLengh,
+			'h-4/5': search.length < props.searchMinimumLength,
 		}"
 	>
 		<div class="w-full flex items-center flex-wrap justify-center">
@@ -23,7 +23,7 @@
 					'opacity-0': isValid,
 				}"
 			>
-				{{ sprintf($t("gallery.search.minimum_chars"), props.searchMinimumLengh) }}
+				{{ sprintf($t("gallery.search.minimum_chars"), props.searchMinimumLength) }}
 			</div>
 		</div>
 	</div>
@@ -35,7 +35,7 @@ import { useDebounceFn } from "@vueuse/core";
 import { sprintf } from "sprintf-js";
 
 const props = defineProps<{
-	searchMinimumLengh: number;
+	searchMinimumLength: number;
 }>();
 
 const search = defineModel<string>("search", { required: true });
@@ -46,7 +46,7 @@ const emits = defineEmits<{
 }>();
 
 const isValid = computed<boolean>(() => {
-	return search.value === "" || search.value.length >= props.searchMinimumLengh;
+	return search.value === "" || search.value.length >= props.searchMinimumLength;
 });
 
 const debouncedFn = useDebounceFn(() => {
@@ -55,7 +55,7 @@ const debouncedFn = useDebounceFn(() => {
 		return;
 	}
 
-	if (search.value !== undefined && search.value.length >= props.searchMinimumLengh) {
+	if (search.value !== undefined && search.value.length >= props.searchMinimumLength) {
 		emits("search", search.value);
 	}
 }, 1000);

@@ -11,7 +11,7 @@ export function useSearch(albumId: Ref<string>, search_term: Ref<string>, search
 	const photos = ref<App.Http.Resources.Models.PhotoResource[] | undefined>(undefined);
 
 	// Search configuration
-	const searchMinimumLengh = ref<number | undefined>(undefined);
+	const searchMinimumLength = ref<number | undefined>(undefined);
 	const layout = ref<App.Enum.PhotoLayoutType>("square");
 
 	const from = ref(0);
@@ -31,13 +31,13 @@ export function useSearch(albumId: Ref<string>, search_term: Ref<string>, search
 
 	function searchInit() {
 		SearchService.init(albumId.value).then((response) => {
-			searchMinimumLengh.value = response.data.search_minimum_length;
+			searchMinimumLength.value = response.data.search_minimum_length;
 			layout.value = response.data.photo_layout;
 		});
 	}
 
 	function search(terms: string): Promise<void> {
-		if (terms.length < (searchMinimumLengh.value ?? 3)) {
+		if (terms.length < (searchMinimumLength.value ?? 3)) {
 			albums.value = undefined;
 			photos.value = undefined;
 			return Promise.resolve();
@@ -80,7 +80,7 @@ export function useSearch(albumId: Ref<string>, search_term: Ref<string>, search
 		layout,
 		albums,
 		photos,
-		searchMinimumLengh,
+		searchMinimumLength,
 		isSearching,
 		from,
 		per_page,
