@@ -41,6 +41,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Throwable;
 
 /**
  * Controller responsible for fetching Photo Data.
@@ -77,8 +78,8 @@ class PhotoController extends Controller
 		NativeLocalFile $final,
 		?AbstractAlbum $album,
 		?int $file_last_modified_time,
-		UploadMetaResource $meta): UploadMetaResource
-	{
+		UploadMetaResource $meta
+	): UploadMetaResource {
 		$processable_file = new ProcessableJobFile(
 			$final->getOriginalExtension(),
 			$meta->file_name
@@ -167,7 +168,7 @@ class PhotoController extends Controller
 	public function delete(DeletePhotosRequest $request, Delete $delete): void
 	{
 		$file_deleter = $delete->do($request->photoIds(), $request->from_id());
-		App::terminating(fn () => $file_deleter->do());
+		App::terminating(fn() => $file_deleter->do());
 	}
 
 	/**
@@ -200,7 +201,7 @@ class PhotoController extends Controller
 	public function rename(RenamePhotoRequest $request): void
 	{
 		$photo = $request->photo();
-		$photo->title = $request->title;
+		$photo->title = $request->title();
 		$photo->save();
 	}
 
@@ -215,16 +216,23 @@ class PhotoController extends Controller
 		// Fetch existing tags
 		$existing_tags = Tag::from($tags);
 
-		if ($request->shall_override) {
-			// Delete existing associations for those photos ids if we override the tags
-			DB::table('photos_tags')
-				->whereIn('photo_id', $photos->pluck('id'))
-				->delete();
-		}
+		DB::beginTransaction();
+		try {
+			if ($request->shall_override) {
+				// Delete existing associations for those photos ids if we override the tags
+				DB::table('photos_tags')
+					->whereIn('photo_id', $photos->pluck('id'))
+					->delete();
+			}
 
-		// Associate the existing tags with the photos
-		$existing_tags->each(function (Tag $tag) use ($photos): void {
-			$tag->photos()->syncWithoutDetaching($photos->pluck('id'));
-		});
+			// Associate the existing tags with the photos
+			$existing_tags->each(function (Tag $tag) use ($photos): void {
+				$tag->photos()->syncWithoutDetaching($photos->pluck('id'));
+			});
+			DB::commit();
+		} catch (Throwable $e) {
+			DB::rollBack();
+			throw $e;
+		}
 	}
 }

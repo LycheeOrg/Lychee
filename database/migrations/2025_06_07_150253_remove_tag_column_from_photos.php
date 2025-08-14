@@ -18,9 +18,11 @@ return new class() extends Migration {
 	 */
 	public function up(): void
 	{
-		Schema::table('photos', function (Blueprint $table) {
-			$table->dropColumn(self::TAGS);
-		});
+		if (Schema::hasColumn('photos', self::TAGS)) {
+			Schema::table('photos', function (Blueprint $table) {
+				$table->dropColumn(self::TAGS);
+			});
+		}
 	}
 
 	/**
@@ -28,8 +30,10 @@ return new class() extends Migration {
 	 */
 	public function down(): void
 	{
+		if (!Schema::hasColumn('photos', self::TAGS)) {
 		Schema::table('photos', function (Blueprint $table) {
 			$table->text('tags')->nullable()->after('description');
 		});
+	}
 	}
 };

@@ -26,7 +26,7 @@ export function useTagRefresher(tagId: Ref<string>, photoId: Ref<string | undefi
 		return TagsService.get(tagId.value)
 			.then((data) => {
 				photos.value = data.data.photos ?? [];
-				tag.value = { name: data.data.name, id: data.data.id, num: data.data.photos.length };
+				tag.value = { name: data.data.name, id: data.data.id, num: photos.value.length };
 			})
 			.catch((error) => {
 				if (error.response && error.response.status === 401) {

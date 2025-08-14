@@ -46,7 +46,7 @@ class DeleteTag
 				fn ($q) => $q
 					->whereExists(fn (Builder $query) => $query->select(DB::raw(1))
 							->from('photos')
-							->whereColumn('photos.id', 'photo_id')
+							->whereColumn('photos.id', 'photos_tags.photo_id')
 							->where('photos.owner_id', $user->id))
 			)
 			->delete();

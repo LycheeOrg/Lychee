@@ -85,6 +85,8 @@ class Tag extends Model
 	{
 		// Trim whitespace from each tag
 		$tags = array_map(fn ($tag) => $tag = trim($tag), $tags);
+		// Filter out empty tags
+		$tags = array_filter($tags, fn ($tag) => $tag !== '');
 
 		// Fetch existing tags
 		$existing_tags = self::whereIn('name', $tags)->get();

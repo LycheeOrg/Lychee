@@ -22,8 +22,8 @@ class DeleteTagRequest extends BaseApiRequest
 	public function rules(): array
 	{
 		return [
-			RequestAttribute::TAGS_ATTRIBUTE => 'required|array',
-			RequestAttribute::TAGS_ATTRIBUTE . '.*' => 'int',
+			RequestAttribute::TAGS_ATTRIBUTE => 'required|array|min:1',
+			RequestAttribute::TAGS_ATTRIBUTE . '.*' => 'required|int',
 		];
 	}
 

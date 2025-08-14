@@ -16,7 +16,7 @@ return [
 	'delete_confirm' => 'Are you sure you want to delete the tag “%s”?',
 	'delete_warning' => 'This action cannot be undone! All photos associated with this tag will no longer have this tag.',
 
-	'merge_confirm' => 'Are you sure you want to merge the tag “%s” into the tag “%s”?',
+	'merge_confirm' => 'Are you sure you want to merge the tag “%1$s” into the tag “%2$s”?',
 	'merge_warning' => 'This action cannot be undone! All photos associated with the source tag will be moved to the destination tag.',
 
 	'rename_tag' => 'Rename Tag',

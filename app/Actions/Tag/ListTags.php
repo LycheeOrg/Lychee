@@ -35,18 +35,14 @@ class ListTags
 
 		/** @var Collection<int,object{id:int,name:string,num:int}> $tags */
 		$tags = DB::table('tags')
-			->select(['tags.id', 'tags.name', DB::raw('COUNT(photos_tags.photo_id) AS num')])
 			->leftJoin('photos_tags', 'tags.id', '=', 'photos_tags.tag_id')
 			->when(
 				$user->may_administrate === false,
 				fn ($q) => $q
-					->whereExists(function (Builder $query): void {
-						$query->select(DB::raw(1))
-							->from('photos')
-							->whereColumn('photos.id', 'photos_tags.photo_id')
-							->where('photos.owner_id', Auth::id());
-					})
-			)
+					->leftJoin('photos', 'photos.id', '=', 'photos_tags.photo_id')
+					->where('photos.owner_id', Auth::id())
+				)
+			->select(['tags.id', 'tags.name', DB::raw('COUNT(photos_tags.photo_id) AS num')])
 			->groupBy(['tags.id', 'tags.name'])
 			->orderBy('tags.name')
 			->havingRaw('COUNT(photos_tags.photo_id) > 0') // Exclude tags with no photos => this makes sure we do not leak tags from other users.

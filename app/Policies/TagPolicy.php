@@ -24,7 +24,7 @@ class TagPolicy extends BasePolicy
 	}
 
 	/**
-	 * Only the admin is allowed to edit tags.
+	 * Users with upload rights are allowed to delete, edit, merge their own tags.
 	 *
 	 * @param User $user
 	 *
