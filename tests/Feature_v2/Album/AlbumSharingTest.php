@@ -33,7 +33,7 @@ use Tests\Feature_v2\Base\BaseApiWithDataTest;
  * Group 1 has access to album A - with download right.
  * Group 2 has access to album A - without download rights.
  * User 1 should only see album A once and has download rights.
- * 
+ *
  * This tests ensure that:
  * - If a user is member of two groups that share the same album, it only appears once in the list of shared albums.
  * - If an album is public and shared with a user, it only appears once in the list of shared albums.
@@ -45,8 +45,8 @@ class AlbumSharingTest extends BaseApiWithDataTest
 	/**
 	 * Ensure that if a user is member of two groups that share the same album,
 	 * the album is only listed once.
-	 * 
-	 * @return void 
+	 *
+	 * @return void
 	 */
 	public function testUserInTwoGroupsWithSameSharedAlbum(): void
 	{
@@ -74,7 +74,7 @@ class AlbumSharingTest extends BaseApiWithDataTest
 			'smart_albums' => [],
 			'tag_albums' => [],
 			'albums' => [],
-			'shared_albums' => []
+			'shared_albums' => [],
 		]);
 
 		$response->assertJsonCount(1, 'shared_albums');
@@ -84,8 +84,8 @@ class AlbumSharingTest extends BaseApiWithDataTest
 	/**
 	 * Ensure that if an album is public and shared with a user,
 	 * it only appears once in the list of albums.
-	 * 
-	 * @return void 
+	 *
+	 * @return void
 	 */
 	public function testUserSharedWithPublic(): void
 	{
@@ -96,7 +96,7 @@ class AlbumSharingTest extends BaseApiWithDataTest
 			'smart_albums' => [],
 			'tag_albums' => [],
 			'albums' => [],
-			'shared_albums' => []
+			'shared_albums' => [],
 		]);
 
 		$response->assertJsonCount(1, 'shared_albums');
@@ -132,7 +132,7 @@ class AlbumSharingTest extends BaseApiWithDataTest
 			'smart_albums' => [],
 			'tag_albums' => [],
 			'albums' => [],
-			'shared_albums' => []
+			'shared_albums' => [],
 		]);
 
 		$response->assertJsonCount(1, 'shared_albums');
@@ -152,7 +152,7 @@ class AlbumSharingTest extends BaseApiWithDataTest
 			'smart_albums' => [],
 			'tag_albums' => [],
 			'albums' => [],
-			'shared_albums' => []
+			'shared_albums' => [],
 		]);
 
 		$response->assertJsonCount(1, 'shared_albums');
@@ -194,13 +194,12 @@ class AlbumSharingTest extends BaseApiWithDataTest
 			'smart_albums' => [],
 			'tag_albums' => [],
 			'albums' => [],
-			'shared_albums' => []
+			'shared_albums' => [],
 		]);
 
 		$response->assertJsonCount(1, 'shared_albums');
 		$response->assertJsonPath('shared_albums.0.id', $this->album4->id);
 	}
-
 
 	/**
 	 * Ensure that if an album is shared directly and shared with a user via group,
@@ -219,7 +218,7 @@ class AlbumSharingTest extends BaseApiWithDataTest
 			'smart_albums' => [],
 			'tag_albums' => [],
 			'albums' => [],
-			'shared_albums' => []
+			'shared_albums' => [],
 		]);
 
 		$response->assertJsonCount(1, 'shared_albums');
@@ -249,7 +248,7 @@ class AlbumSharingTest extends BaseApiWithDataTest
 			'tag_albums' => [],
 			'albums' => [],
 			'shared_albums' => [
-			]
+			],
 		]);
 
 		// Behaviour we do not want.
