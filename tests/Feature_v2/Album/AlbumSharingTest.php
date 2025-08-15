@@ -77,10 +77,8 @@ class AlbumSharingTest extends BaseApiWithDataTest
 			'shared_albums' => []
 		]);
 
-		// ! Behaviour we do not want.
-		$response->assertJsonCount(2, 'shared_albums');
+		$response->assertJsonCount(1, 'shared_albums');
 		$response->assertJsonPath('shared_albums.0.id', $this->album1->id);
-		$response->assertJsonPath('shared_albums.1.id', $this->album1->id);
 	}
 
 	/**
@@ -258,6 +256,4 @@ class AlbumSharingTest extends BaseApiWithDataTest
 		$response->assertJsonCount(1, 'shared_albums');
 		$response->assertJsonPath('shared_albums.0.id', $this->album1->id);
 	}
-
-
 }
