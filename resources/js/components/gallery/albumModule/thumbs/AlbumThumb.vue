@@ -18,20 +18,18 @@
 	>
 		<AlbumThumbImage
 			class="group-hover:border-primary-500 group-hover:-rotate-2 group-hover:-translate-x-3 group-hover:translate-y-2"
-			:class="cssClass"
 			:thumb="props.album.thumb"
 			:is-password-protected="props.album.is_password_required"
 		/>
 		<AlbumThumbImage
 			class="group-hover:border-primary-500 group-hover:rotate-6 group-hover:translate-x-3 group-hover:-translate-y-2"
-			:class="cssClass"
 			:thumb="props.album.thumb"
 			:is-password-protected="props.album.is_password_required"
 		/>
 		<AlbumThumbImage
 			class="group-hover:border-primary-500"
-			:class="cssClass"
 			:thumb="props.album.thumb"
+			:class="cssClass"
 			:is-password-protected="props.album.is_password_required"
 		/>
 		<AlbumThumbOverlay v-if="props.config.display_thumb_album_overlay !== 'never'" :album="props.album" :config="props.config" />
@@ -91,11 +89,10 @@ const { user } = storeToRefs(auth);
 const { albumRoutes } = useAlbumRoute(router);
 
 const cssClass = computed(() => {
-	let css = "";
 	if (props.isSelected) {
-		css += "outline outline-1.5 outline-primary-500";
+		return "outline !outline-offset-2 outline-primary-500";
 	}
-	return css;
+	return "";
 });
 
 auth.getUser();
