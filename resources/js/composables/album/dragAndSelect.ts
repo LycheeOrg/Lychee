@@ -6,17 +6,19 @@ import { modKey, shiftKeyState } from "@/utils/keybindings-utils";
 type InitialPosition = {
 	top: number;
 	left: number;
+};
+
+type Bounding = {
+	id: string;
+	top: number;
+	left: number;
 	right: number;
 	bottom: number;
 };
 
-type Bounding = { id: string } & InitialPosition;
-
 type Position = {
 	top: number | string | undefined;
 	left: number | string | undefined;
-	right: number | string | undefined;
-	bottom: number | string | undefined;
 	width?: number | string | undefined;
 	height?: number | string | undefined;
 };
@@ -27,8 +29,8 @@ export function useDragAndSelect(
 	albums: { id: string }[],
 	withScroll: boolean = true,
 ) {
-	const position = ref<Position | undefined>(undefined);
 	const initialPosition = ref<InitialPosition | undefined>(undefined);
+	const position = ref<Position | undefined>(undefined);
 
 	const cache = {
 		max_height: 0,
@@ -46,6 +48,7 @@ export function useDragAndSelect(
 
 	// We use a function here to get the padding top depending of whether we toggled fullscreen or not.
 	function paddingTop() {
+		if (withScroll === false) return 0; // If we don't want to use scroll, we return 0.
 		return document.getElementById("galleryView")?.getClientRects()[0].y ?? 0;
 	}
 
@@ -66,35 +69,16 @@ export function useDragAndSelect(
 	function resize(e: MouseEvent) {
 		if (initialPosition.value === undefined) return false;
 
-		const pageY = y(e.pageY);
+		const diffX = e.pageX - initialPosition.value.left;
+		const diffY = y(e.pageY) - initialPosition.value.top;
+
 		position.value = {
-			top: undefined,
-			left: undefined,
-			right: undefined,
-			bottom: undefined,
-			width: undefined,
-			height: undefined,
+			left: diffX < 0 ? initialPosition.value.left + diffX + "px" : initialPosition.value.left + "px",
+			top: diffY < 0 ? initialPosition.value.top + diffY + "px" : initialPosition.value.top + "px",
+			width: Math.abs(diffX) + "px",
+			height: Math.abs(diffY) + "px",
 		};
 
-		if (pageY >= initialPosition.value.top) {
-			position.value.top = initialPosition.value.top + "px";
-			position.value.bottom = "inherit";
-			position.value.height = pageY - initialPosition.value.top + "px";
-		} else {
-			position.value.top = "inherit";
-			position.value.bottom = initialPosition.value.bottom + "px";
-			position.value.height = initialPosition.value.top - Math.max(pageY, 2) + "px";
-		}
-
-		if (e.pageX >= initialPosition.value.left) {
-			position.value.right = "inherit";
-			position.value.left = initialPosition.value.left + "px";
-			position.value.width = Math.min(e.pageX, cache.max_width - 3) - initialPosition.value.left + "px";
-		} else {
-			position.value.right = initialPosition.value.right + "px";
-			position.value.left = "inherit";
-			position.value.width = initialPosition.value.left - Math.max(e.pageX, 2) + "px";
-		}
 		throttledApplySelection();
 	}
 
@@ -141,17 +125,12 @@ export function useDragAndSelect(
 		cache.photo_boxes = getBoxes("data-photo-id");
 		cache.album_boxes = getBoxes("data-album-id");
 
-		const pageY = y(e.pageY);
 		initialPosition.value = {
-			top: pageY,
-			right: cache.max_width - e.pageX,
-			bottom: cache.max_height - pageY,
+			top: y(e.pageY),
 			left: e.pageX,
 		};
 		position.value = {
-			top: pageY,
-			right: cache.max_width - e.pageX,
-			bottom: cache.max_height - pageY,
+			top: y(e.pageY),
 			left: e.pageX,
 		};
 		document.addEventListener("mousemove", resize);

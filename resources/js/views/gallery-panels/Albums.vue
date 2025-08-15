@@ -8,7 +8,13 @@
 	<WebauthnModal v-if="user?.id === null" @logged-in="refresh" />
 	<LiveMetrics v-if="user?.id" />
 
-	<div v-if="rootConfig && rootRights" id="galleryView" class="h-svh overflow-y-auto select-none" @click="unselect" @scroll="onScroll">
+	<div
+		v-if="rootConfig && rootRights"
+		id="galleryView"
+		class="relative w-full overflow-y-auto h-full select-none"
+		@click="unselect"
+		@scroll="onScroll"
+	>
 		<SelectDrag :photos="photos" :albums="selectableAlbums" :with-scroll="false" />
 		<Collapse :when="!is_full_screen">
 			<AlbumsHeader
