@@ -38,6 +38,55 @@ use Tests\Traits\RequiresEmptyTags;
 use Tests\Traits\RequiresEmptyUsers;
 use Tests\Traits\RequiresEmptyWebAuthnCredentials;
 
+/**
+ * BaseApiWithDataTest serves as a foundational testing class for Lychee's API features.
+ *
+ * Goal: This class provides a comprehensive test environment with pre-configured data
+ * structures to simulate various user scenarios and permissions within the Lychee photo
+ * management system.
+ *
+ * Architecture:
+ * - Extends BaseApiTest for core API testing functionality
+ * - Incorporates multiple traits for test environment setup and teardown
+ * - Creates a complete hierarchical data structure with users, albums, photos, permissions, and groups
+ *
+ * Data Structure Graph:
+ * - 👥 Users:
+ *   ├─ 👑 admin (god allmighty)
+ *   │  └─ 📁 album5 (root)
+ *   │
+ *   ├─ 👤 userMayUpload1
+ *   │  ├─ 📁 album1 (root)
+ *   │  │  ├─ 🔑 perm1 (👤 userMayUpload2)
+ *   │  │  ├─ 🔑 perm11 (👥 group1 → album1)
+ *   │  │  ├─ 🖼️ photo1 (🏷️ `test`, 🎨 palette)
+ *   │  │  ├─ 🖼️ photo1b
+ *   │  │  └─ 📁 subAlbum1
+ *   │  │     └─ 🖼️ subPhoto1
+ *   │  ├─ 🏷️ tagAlbum1 (linked to `test`)
+ *   │  └─ 🖼️ photoUnsorted
+ *   │
+ *   ├─ 👤 userMayUpload2
+ *   │  └─ 📁 album2 (root)
+ *   │     ├─ 🖼️ photo2
+ *   │     └─ 📁 subAlbum2
+ *   │        └─ 🖼️ subPhoto2
+ *   │
+ *   ├─ 👤 userNoUpload
+ *   │  └─ 📁 album3 (root)
+ *   │     └─ 🖼️ photo3
+ *   │
+ *   └─ 👤 userLocked
+ *      └─ 📁 album4 (root)
+ *         ├─ 🔑 perm4 (🌐 public visibility)
+ *         ├─ 🖼️ photo4
+ *         └─ 📁 subAlbum4 (🌐 public visibility)
+ *            ├─ 🔑 perm44 (🌐 public visibility)
+ *            └─ 🖼️ subPhoto4
+ * - 👥 Groups:
+ *   ├─ 👥 group1 (contains 👤 userWithGroup1, 👤 userWithGroupAdmin )
+ *   └─ 👥 group2
+ */
 abstract class BaseApiWithDataTest extends BaseApiTest
 {
 	use RequiresEmptyUsers;
