@@ -2,11 +2,14 @@ import { TogglablesStateStore } from "@/stores/ModalsState";
 import { modKey, shiftKeyState } from "@/utils/keybindings-utils";
 import { storeToRefs } from "pinia";
 import { computed, Ref, ref } from "vue";
+import { useAlbumActions } from "@/composables/album/albumActions";
 
 export type Selectables = {
 	photos?: Ref<App.Http.Resources.Models.PhotoResource[]>;
 	albums?: Ref<App.Http.Resources.Models.ThumbAlbumResource[]>;
 };
+
+const { canInteractAlbum, canInteractPhoto } = useAlbumActions();
 
 export function useSelection(selectables: Selectables, togglableStore: TogglablesStateStore) {
 	const { selectedPhotosIdx, selectedAlbumsIdx } = storeToRefs(togglableStore);
@@ -55,6 +58,7 @@ export function useSelection(selectables: Selectables, togglableStore: Togglable
 	function addToAlbumSelection(idx: number): void {
 		selectedAlbumsIdx.value.push(idx);
 	}
+
 	function removeFromAlbumSelection(idx: number): void {
 		selectedAlbumsIdx.value = selectedAlbumsIdx.value.filter((i) => i !== idx);
 	}
@@ -71,6 +75,10 @@ export function useSelection(selectables: Selectables, togglableStore: Togglable
 		// We are able to edit.
 		e.preventDefault();
 		e.stopPropagation();
+
+		if (selectables.photos === undefined || canInteractPhoto(selectables.photos.value[idx]) === false) {
+			return;
+		}
 
 		if (modKey().value) {
 			handlePhotoCtrl(idx, e);
@@ -134,6 +142,10 @@ export function useSelection(selectables: Selectables, togglableStore: Togglable
 		e.preventDefault();
 		e.stopPropagation();
 
+		if (selectables.albums === undefined || canInteractAlbum(selectables.albums.value[idx]) === false) {
+			return;
+		}
+
 		if (modKey().value) {
 			handleAlbumCtrl(idx, e);
 			return;
@@ -183,28 +195,34 @@ export function useSelection(selectables: Selectables, togglableStore: Togglable
 		lastAlbumClicked.value = idx;
 	}
 
+	function getKeysFromPredicate<A>(items: A[], predicate: (i: A) => boolean): number[] {
+		return Array.from(items.keys()).filter((k: number) => predicate(items[k]));
+	}
+
 	function selectEverything(): void {
-		if (selectedPhotosIdx.value.length === (selectables.photos?.value.length ?? 0)) {
+		if (selectedPhotosIdx.value.length === (selectables.photos?.value.length ?? 0) && selectables.albums) {
 			// Flip and select albums
 			selectedPhotosIdx.value = [];
-			selectedAlbumsIdx.value = Array.from(Array(selectables.albums?.value.length).keys());
+			selectedAlbumsIdx.value = getKeysFromPredicate(selectables.albums.value, canInteractAlbum);
 			return;
 		}
-		if (selectedAlbumsIdx.value.length === (selectables.albums?.value.length ?? 0)) {
+		if (selectedAlbumsIdx.value.length === (selectables.albums?.value.length ?? 0) && selectables.photos) {
 			selectedAlbumsIdx.value = [];
-			selectedPhotosIdx.value = Array.from(Array(selectables.photos?.value.length).keys());
+			selectedPhotosIdx.value = getKeysFromPredicate(selectables.photos.value, canInteractPhoto);
 			// Flip and select photos
 			return;
 		}
-		if (selectedAlbumsIdx.value.length > 0) {
-			selectedAlbumsIdx.value = Array.from(Array(selectables.albums?.value.length).keys());
+		if (selectedAlbumsIdx.value.length > 0 && selectables.albums) {
+			selectedAlbumsIdx.value = getKeysFromPredicate(selectables.albums.value, canInteractAlbum);
 			return;
 		}
-		if ((selectables.photos?.value.length ?? 0) > 0) {
-			selectedPhotosIdx.value = Array.from(Array(selectables.photos?.value.length).keys());
+		if ((selectables.photos?.value.length ?? 0) > 0 && selectables.photos) {
+			selectedPhotosIdx.value = getKeysFromPredicate(selectables.photos.value, canInteractPhoto);
 			return;
 		}
-		selectedAlbumsIdx.value = Array.from(Array(selectables.albums?.value.length).keys());
+		if (selectables.albums) {
+			selectedAlbumsIdx.value = getKeysFromPredicate(selectables.albums.value, canInteractAlbum);
+		}
 	}
 
 	return {

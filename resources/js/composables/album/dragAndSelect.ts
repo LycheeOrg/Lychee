@@ -75,6 +75,7 @@ export function useDragAndSelect(
 	// Resize the selection box based on mouse position.
 	function resize(e: MouseEvent) {
 		if (initialPosition.value === undefined) return false;
+		togglableStore.isDragging = true;
 
 		const diffX = e.pageX - initialPosition.value.left;
 		const diffY = y(e.pageY) - initialPosition.value.top;
@@ -146,7 +147,6 @@ export function useDragAndSelect(
 		};
 		document.addEventListener("mousemove", resize);
 		document.addEventListener("mouseup", stopResize);
-		togglableStore.isDragging = true;
 	}
 
 	function stopResize() {

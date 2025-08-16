@@ -13,7 +13,7 @@
 			'aspect-3x2': 'aspect-3x2' === props.config.album_thumb_css_aspect_ratio,
 			'aspect-square': 'aspect-square' === props.config.album_thumb_css_aspect_ratio,
 			'aspect-video': 'aspect-video' === props.config.album_thumb_css_aspect_ratio,
-			'!opacity-25': cannotInteractWhileDragging,
+			'!opacity-25 ': cannotInteractWhileDragging,
 		}"
 		:data-album-id="props.album.id"
 	>

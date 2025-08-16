@@ -85,8 +85,12 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 
 	// Define the photo Menu when only one photo is selected
 	function photoMenu() {
+		if (selectors.selectedPhoto === undefined) {
+			return [];
+		}
+
 		const menuItems = [];
-		const selectedPhoto = selectors.selectedPhoto!.value as App.Http.Resources.Models.PhotoResource;
+		const selectedPhoto = selectors.selectedPhoto.value as App.Http.Resources.Models.PhotoResource;
 
 		if (selectedPhoto.is_starred) {
 			menuItems.push({
@@ -104,8 +108,8 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 			});
 		}
 
-		if (selectors.config?.value?.is_model_album === true) {
-			const parent_album = selectors.album!.value as App.Http.Resources.Models.AlbumResource;
+		if (selectors.config?.value?.is_model_album === true && selectors.album !== undefined) {
+			const parent_album = selectors.album.value as App.Http.Resources.Models.AlbumResource;
 			menuItems.push({
 				label: "gallery.menus.set_cover",
 				icon: "pi pi-id-card",
@@ -179,20 +183,24 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 
 	// Define the photo Menu when multiple photos are selected
 	function photosMenu() {
+		if (selectors.selectedPhotos === undefined) {
+			return [];
+		}
+
 		const menuItems = [];
-		if (selectors.selectedPhotos!.value.reduce((acc, photo) => acc && photo.is_starred, true)) {
+		if (selectors.selectedPhotos.value.reduce((acc, photo) => acc && photo.is_starred, true)) {
 			menuItems.push({
 				label: "gallery.menus.unstar_all",
 				icon: "pi pi-star",
 				callback: photoCallbacks.unstar,
-				access: selectors.selectedPhotos!.value.reduce(canEdit, true),
+				access: selectors.selectedPhotos.value.reduce(canEdit, true),
 			});
 		} else {
 			menuItems.push({
 				label: "gallery.menus.star_all",
 				icon: "pi pi-star",
 				callback: photoCallbacks.star,
-				access: selectors.selectedPhotos!.value.reduce(canEdit, true),
+				access: selectors.selectedPhotos.value.reduce(canEdit, true),
 			});
 		}
 
@@ -202,35 +210,35 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 					label: "gallery.menus.tag_all",
 					icon: "pi pi-tag",
 					callback: photoCallbacks.toggleTag,
-					access: selectors.selectedPhotos!.value.reduce(canEdit, true),
+					access: selectors.selectedPhotos.value.reduce(canEdit, true),
 				},
 				{
 					is_divider: true,
-					access: selectors.selectedPhotos!.value.reduce(canEdit, true),
+					access: selectors.selectedPhotos.value.reduce(canEdit, true),
 				},
 				{
 					label: "gallery.menus.copy_all_to",
 					icon: "pi pi-copy",
 					callback: photoCallbacks.toggleCopyTo,
-					access: selectors.selectedPhotos!.value.reduce(canEdit, true),
+					access: selectors.selectedPhotos.value.reduce(canEdit, true),
 				},
 				{
 					label: "gallery.menus.move_all",
 					icon: "pi pi-arrow-right-arrow-left",
 					callback: photoCallbacks.toggleMove,
-					access: selectors.selectedPhotos!.value.reduce(canEdit, true),
+					access: selectors.selectedPhotos.value.reduce(canEdit, true),
 				},
 				{
 					label: "gallery.menus.delete_all",
 					icon: "pi pi-trash",
 					callback: photoCallbacks.toggleDelete,
-					access: selectors.selectedPhotos!.value.reduce(canEdit, true),
+					access: selectors.selectedPhotos.value.reduce(canEdit, true),
 				},
 				{
 					label: "gallery.menus.download_all",
 					icon: "pi pi-cloud-download",
 					callback: photoCallbacks.toggleDownload,
-					access: selectors.selectedPhotos!.value.reduce(canDownload, true),
+					access: selectors.selectedPhotos.value.reduce(canDownload, true),
 				},
 			],
 		);
@@ -239,8 +247,12 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 	}
 
 	function albumMenu() {
+		if (selectors.selectedAlbum === undefined) {
+			return [];
+		}
+
 		const menuItems = [];
-		const selectedAlbum = selectors.selectedAlbum!.value as App.Http.Resources.Models.ThumbAlbumResource;
+		const selectedAlbum = selectors.selectedAlbum.value as App.Http.Resources.Models.ThumbAlbumResource;
 
 		if (selectors.config?.value?.is_model_album) {
 			menuItems.push({
@@ -330,10 +342,15 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 			selectors.selectedAlbumIdx.value = [];
 		}
 
+		if (selectors.selectedPhotosIdx === undefined) {
+			return;
+		}
+
 		// Check if photo was selected already.
 		// If not, we replace entire selection.
-		if (!selectors.selectedPhotosIdx!.value.includes(idx)) {
-			selectors.selectedPhotosIdx!.value = [idx];
+		if (!selectors.selectedPhotosIdx.value.includes(idx)) {
+			selectors.selectedPhotosIdx.value = [idx]; // This allows to add to selection photos which should not be selected.
+			// Fix me later.
 		}
 
 		// Show menu
@@ -346,10 +363,15 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 			selectors.selectedPhotosIdx.value = [];
 		}
 
+		if (selectors.selectedAlbumIdx === undefined) {
+			return;
+		}
+
 		// Check if album was selected already.
 		// If not, we replace entire selection.
-		if (!selectors.selectedAlbumIdx!.value.includes(idx)) {
-			selectors.selectedAlbumIdx!.value = [idx];
+		if (!selectors.selectedAlbumIdx.value.includes(idx)) {
+			selectors.selectedAlbumIdx.value = [idx]; // This allows to add to the selection albums which should not be selected.
+			// Fix me later.
 		}
 
 		// Show menu
