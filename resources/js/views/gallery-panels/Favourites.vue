@@ -70,9 +70,8 @@ function goBack() {
 const favourites = useFavouriteStore();
 
 const photos = computed(() => favourites.photos ?? []);
-const children = ref([]);
 
-const { selectedPhotosIds } = useSelection(photos, children, togglableStore);
+const { selectedPhotosIds } = useSelection({ photos }, togglableStore);
 
 function photoClick(idx: number, _e: MouseEvent) {
 	router.push({ name: "album", params: { albumId: photos.value[idx].album_id ?? ALL, photoId: photos.value[idx].id } });

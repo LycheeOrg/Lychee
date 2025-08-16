@@ -58,7 +58,7 @@ export function getModKey() {
 	if (isApple) {
 		return "Meta";
 	}
-	return "Ctrl";
+	return "Control";
 }
 
 export function disableCtrlA(): void {
