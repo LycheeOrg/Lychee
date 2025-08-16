@@ -8,7 +8,8 @@
 	<WebauthnModal v-if="user?.id === null" @logged-in="refresh" />
 	<LiveMetrics v-if="user?.id" />
 
-	<div v-if="rootConfig && rootRights" id="galleryView" class="h-svh overflow-y-auto" @click="unselect" @scroll="onScroll">
+	<div v-if="rootConfig && rootRights" id="galleryView" class="relative w-full overflow-y-auto h-full select-none" @scroll="onScroll">
+		<SelectDrag :photos="photos" :albums="selectableAlbums" :with-scroll="false" />
 		<Collapse :when="!is_full_screen">
 			<AlbumsHeader
 				v-if="user"
@@ -21,12 +22,12 @@
 				@help="isKeybindingsHelpOpen = true"
 			/>
 		</Collapse>
+
 		<AlbumThumbPanel
 			v-if="smartAlbums.length > 0"
 			header="gallery.smart_albums"
 			:album="undefined"
 			:albums="smartAlbums"
-			:user="user"
 			:config="albumPanelConfig"
 			:is-alone="!albums.length"
 			:idx-shift="-1"
@@ -54,7 +55,6 @@
 				header="gallery.albums"
 				:album="null"
 				:albums="albums"
-				:user="user"
 				:config="albumPanelConfig"
 				:is-alone="!sharedAlbums.length && !smartAlbums.length && !pinnedAlbums.length"
 				:idx-shift="pinnedAlbums.length"
@@ -69,7 +69,6 @@
 				:header="sharedAlbum.header"
 				:album="undefined"
 				:albums="sharedAlbum.data"
-				:user="user"
 				:config="albumPanelConfig"
 				:is-alone="!albums.length"
 				:idx-shift="sharedAlbum.iter"
@@ -179,6 +178,7 @@ import LoadingProgress from "@/components/loading/LoadingProgress.vue";
 import LiveMetrics from "@/components/drawers/LiveMetrics.vue";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
 import { useRouter } from "vue-router";
+import SelectDrag from "@/components/forms/album/SelectDrag.vue";
 
 const auth = useAuthStore();
 const lycheeStore = useLycheeStateStore();
