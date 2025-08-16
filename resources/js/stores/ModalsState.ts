@@ -44,6 +44,11 @@ export const useTogglablesStateStore = defineStore("togglables-store", {
 		// Selections Ids
 		selectedPhotosIdx: [] as number[],
 		selectedAlbumsIdx: [] as number[],
+
+		// Selections via Click and Drag
+		isDragging: false,
+		nonHoverSelectablePhotosIdx: [] as string[], // contains photos ids that are currently hoved but not selected
+		nonHoverSelectableAlbumsIdx: [] as string[], // contains albums ids that are currently hoved but not selected
 	}),
 	actions: {
 		toggleFullScreen() {

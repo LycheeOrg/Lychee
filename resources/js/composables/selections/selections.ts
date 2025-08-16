@@ -3,16 +3,25 @@ import { modKey, shiftKeyState } from "@/utils/keybindings-utils";
 import { storeToRefs } from "pinia";
 import { computed, Ref, ref } from "vue";
 
-export function useSelection(
-	photos: Ref<App.Http.Resources.Models.PhotoResource[]>,
-	albums: Ref<App.Http.Resources.Models.ThumbAlbumResource[]>,
-	togglableStore: TogglablesStateStore,
-) {
+export type Selectables = {
+	photos?: Ref<App.Http.Resources.Models.PhotoResource[]>;
+	albums?: Ref<App.Http.Resources.Models.ThumbAlbumResource[]>;
+};
+
+export function useSelection(selectables: Selectables, togglableStore: TogglablesStateStore) {
 	const { selectedPhotosIdx, selectedAlbumsIdx } = storeToRefs(togglableStore);
-	const selectedPhoto = computed(() => (selectedPhotosIdx.value.length === 1 ? photos.value[selectedPhotosIdx.value[0]] : undefined));
-	const selectedAlbum = computed(() => (selectedAlbumsIdx.value.length === 1 ? albums.value[selectedAlbumsIdx.value[0]] : undefined));
-	const selectedPhotos = computed(() => photos.value.filter((_, idx) => selectedPhotosIdx.value.includes(idx)));
-	const selectedAlbums = computed(() => albums.value.filter((_, idx) => selectedAlbumsIdx.value.includes(idx)));
+	const selectedPhoto = computed<App.Http.Resources.Models.PhotoResource | undefined>(() =>
+		selectedPhotosIdx.value.length === 1 ? (selectables.photos?.value[selectedPhotosIdx.value[0]] ?? undefined) : undefined,
+	);
+	const selectedAlbum = computed<App.Http.Resources.Models.ThumbAlbumResource | undefined>(() =>
+		selectedAlbumsIdx.value.length === 1 ? (selectables.albums?.value[selectedAlbumsIdx.value[0]] ?? undefined) : undefined,
+	);
+	const selectedPhotos = computed<App.Http.Resources.Models.PhotoResource[]>(
+		() => selectables.photos?.value.filter((_, idx) => selectedPhotosIdx.value.includes(idx)) ?? [],
+	);
+	const selectedAlbums = computed<App.Http.Resources.Models.ThumbAlbumResource[]>(
+		() => selectables.albums?.value.filter((_, idx) => selectedAlbumsIdx.value.includes(idx)) ?? [],
+	);
 	const selectedPhotosIds = computed(() => selectedPhotos.value.map((p) => p.id));
 	const selectedAlbumsIds = computed(() => selectedAlbums.value.map((a) => a.id));
 
@@ -20,8 +29,12 @@ export function useSelection(
 	const lastPhotoClicked = ref<number | undefined>(undefined);
 	const lastAlbumClicked = ref<number | undefined>(undefined);
 
-	const isPhotoSelected = (idx: number) => selectedPhotosIdx.value.includes(idx);
-	const isAlbumSelected = (idx: number) => selectedAlbumsIdx.value.includes(idx);
+	function isPhotoSelected(idx: number) {
+		return selectedPhotosIdx.value.includes(idx);
+	}
+	function isAlbumSelected(idx: number) {
+		return selectedAlbumsIdx.value.includes(idx);
+	}
 
 	function hasSelection(): boolean {
 		return selectedPhotosIdx.value.length > 0 || selectedAlbumsIdx.value.length > 0;
@@ -171,27 +184,27 @@ export function useSelection(
 	}
 
 	function selectEverything(): void {
-		if (selectedPhotosIdx.value.length === photos.value.length) {
+		if (selectedPhotosIdx.value.length === (selectables.photos?.value.length ?? 0)) {
 			// Flip and select albums
 			selectedPhotosIdx.value = [];
-			selectedAlbumsIdx.value = Array.from(Array(albums.value.length).keys());
+			selectedAlbumsIdx.value = Array.from(Array(selectables.albums?.value.length).keys());
 			return;
 		}
-		if (selectedAlbumsIdx.value.length === albums.value.length) {
+		if (selectedAlbumsIdx.value.length === (selectables.albums?.value.length ?? 0)) {
 			selectedAlbumsIdx.value = [];
-			selectedPhotosIdx.value = Array.from(Array(photos.value.length).keys());
+			selectedPhotosIdx.value = Array.from(Array(selectables.photos?.value.length).keys());
 			// Flip and select photos
 			return;
 		}
 		if (selectedAlbumsIdx.value.length > 0) {
-			selectedAlbumsIdx.value = Array.from(Array(albums.value.length).keys());
+			selectedAlbumsIdx.value = Array.from(Array(selectables.albums?.value.length).keys());
 			return;
 		}
-		if (photos.value.length > 0) {
-			selectedPhotosIdx.value = Array.from(Array(photos.value.length).keys());
+		if ((selectables.photos?.value.length ?? 0) > 0) {
+			selectedPhotosIdx.value = Array.from(Array(selectables.photos?.value.length).keys());
 			return;
 		}
-		selectedAlbumsIdx.value = Array.from(Array(albums.value.length).keys());
+		selectedAlbumsIdx.value = Array.from(Array(selectables.albums?.value.length).keys());
 	}
 
 	return {

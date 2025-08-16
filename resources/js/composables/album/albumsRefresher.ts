@@ -4,9 +4,9 @@ import { type LycheeStateStore } from "@/stores/LycheeState";
 import { computed, ref, type Ref } from "vue";
 import { type SplitData, useSplitter } from "./splitter";
 import { type Router } from "vue-router";
+const { spliter } = useSplitter();
 
 export function useAlbumsRefresher(auth: AuthStore, lycheeStore: LycheeStateStore, isLoginOpen: Ref<boolean>, router: Router) {
-	const { spliter } = useSplitter();
 	const user = ref<App.Http.Resources.Models.UserResource | undefined>(undefined);
 	const isKeybindingsHelpOpen = ref(false);
 	const isLoading = ref(false);
@@ -16,7 +16,8 @@ export function useAlbumsRefresher(auth: AuthStore, lycheeStore: LycheeStateStor
 	const sharedAlbums = ref<SplitData<App.Http.Resources.Models.ThumbAlbumResource>[]>([]);
 	const rootConfig = ref<App.Http.Resources.GalleryConfigs.RootConfig | undefined>(undefined);
 	const rootRights = ref<App.Http.Resources.Rights.RootAlbumRightsResource | undefined>(undefined);
-	const selectableAlbums = computed(() => pinnedAlbums.value.concat(albums.value.concat(sharedAlbums.value.map((album) => album.data).flat()))); // selectableAlbums has to reflect the same order as pinned/unpinned albums
+	// selectableAlbums has to reflect the same order as pinned/unpinned albums
+	const selectableAlbums = computed(() => pinnedAlbums.value.concat(albums.value.concat(sharedAlbums.value.map((album) => album.data).flat())));
 	const hasHidden = computed(() => selectableAlbums.value.filter((album) => album.is_nsfw).length > 0);
 
 	function refresh(): Promise<[void, void]> {
