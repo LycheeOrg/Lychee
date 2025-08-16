@@ -8,8 +8,8 @@
 	<WebauthnModal v-if="user?.id === null" @logged-in="refresh" />
 	<LiveMetrics v-if="user?.id" />
 
-	<div v-if="rootConfig && rootRights" id="galleryView" class="relative w-full overflow-y-auto h-full select-none" @scroll="onScroll">
-		<SelectDrag :photos="photos" :albums="selectableAlbums" :with-scroll="false" />
+	<div v-if="rootConfig && rootRights" id="galleryView" class="relative w-full h-full select-none" @scroll="onScroll">
+		<SelectDrag :albums="selectableAlbums" :with-scroll="false" />
 		<Collapse :when="!is_full_screen">
 			<AlbumsHeader
 				v-if="user"
@@ -193,8 +193,6 @@ const { onScroll, setScroll } = useScrollable(togglableStore, albumId);
 const { is_full_screen, is_login_open, is_upload_visible, list_upload_files, is_webauthn_open } = storeToRefs(togglableStore);
 const { are_nsfw_visible, title } = storeToRefs(lycheeStore);
 
-const photos = ref([]); // unused.
-
 const {
 	user,
 	isLoading,
@@ -211,8 +209,9 @@ const {
 } = useAlbumsRefresher(auth, lycheeStore, is_login_open, router);
 
 const { selectedAlbum, selectedAlbumsIdx, selectedAlbums, selectedAlbumsIds, albumClick, selectEverything, unselect, hasSelection } = useSelection(
-	photos,
-	selectableAlbums,
+	{
+		albums: selectableAlbums,
+	},
 	togglableStore,
 );
 

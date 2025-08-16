@@ -2,6 +2,9 @@ import { TogglablesStateStore } from "@/stores/ModalsState";
 import { ref } from "vue";
 import { useThrottleFn } from "@vueuse/core";
 import { modKey, shiftKeyState } from "@/utils/keybindings-utils";
+import { useAlbumActions } from "./albumActions";
+
+const { canInteractAlbum, canInteractPhoto } = useAlbumActions();
 
 type InitialPosition = {
 	top: number;
@@ -25,8 +28,8 @@ type Position = {
 
 export function useDragAndSelect(
 	togglableStore: TogglablesStateStore,
-	photos: { id: string }[],
-	albums: { id: string }[],
+	selectablePhotos: App.Http.Resources.Models.PhotoResource[] | undefined,
+	selectableAlbums: App.Http.Resources.Models.ThumbAlbumResource[] | undefined,
 	withScroll: boolean = true,
 ) {
 	const initialPosition = ref<InitialPosition | undefined>(undefined);
@@ -37,6 +40,10 @@ export function useDragAndSelect(
 		max_width: 0,
 		photo_boxes: [] as Bounding[],
 		album_boxes: [] as Bounding[],
+
+		// We store the current selection indices to restore them after the selection is done.
+		currentPhotoSelectionIdx: [] as number[],
+		currentAlbumSelectionIdx: [] as number[],
 	};
 
 	function get_max_width() {
@@ -68,6 +75,7 @@ export function useDragAndSelect(
 	// Resize the selection box based on mouse position.
 	function resize(e: MouseEvent) {
 		if (initialPosition.value === undefined) return false;
+		togglableStore.isDragging = true;
 
 		const diffX = e.pageX - initialPosition.value.left;
 		const diffY = y(e.pageY) - initialPosition.value.top;
@@ -124,6 +132,10 @@ export function useDragAndSelect(
 		cache.max_width = get_max_width();
 		cache.photo_boxes = getBoxes("data-photo-id");
 		cache.album_boxes = getBoxes("data-album-id");
+		// We use slide to Copy the array: https://stackoverflow.com/questions/7486085/copy-array-by-value
+		// Otherwise that would be a reference to the original array and we would modify it.
+		cache.currentPhotoSelectionIdx = togglableStore.selectedPhotosIdx.slice();
+		cache.currentAlbumSelectionIdx = togglableStore.selectedAlbumsIdx.slice();
 
 		initialPosition.value = {
 			top: y(e.pageY),
@@ -142,6 +154,7 @@ export function useDragAndSelect(
 		document.removeEventListener("mouseup", stopResize);
 		initialPosition.value = undefined;
 		position.value = undefined;
+		togglableStore.isDragging = false;
 	}
 
 	function getBounding(e: HTMLElement, id: string): Bounding {
@@ -161,9 +174,12 @@ export function useDragAndSelect(
 	}
 
 	function getBoxes(type: string): Bounding[] {
-		const photos = document.querySelectorAll(`[${type}]`) as NodeListOf<HTMLElement>;
+		const root = document.getElementById("galleryView");
+		const nodes = root
+			? (root.querySelectorAll(`[${type}]`) as NodeListOf<HTMLElement>)
+			: (document.querySelectorAll(`[${type}]`) as NodeListOf<HTMLElement>);
 		const ret = [] as Bounding[];
-		photos.forEach((el: HTMLElement) => {
+		nodes.forEach((el: HTMLElement) => {
 			const id = el.getAttribute(type);
 			if (id === null) return;
 
@@ -177,24 +193,38 @@ export function useDragAndSelect(
 	function applySelection() {
 		// We do nothing if the position is not set
 		if (position.value === undefined) return;
+
 		const selector = getBounding(document.getElementById("selector") as HTMLElement, "selector");
 
-		const photos_selected = cache.photo_boxes.filter((b) => isIntersecting(b, selector)).map((b) => b.id);
-		if (photos_selected.length > 0) {
-			togglableStore.selectedPhotosIdx = photos_selected.map((id) => photos?.findIndex((p) => p.id === id) ?? -1);
+		const photos_intersected = cache.photo_boxes.filter((b) => isIntersecting(b, selector)).map((b) => b.id);
+		if (photos_intersected.length > 0) {
+			const selectedPhotos = reduceIntersection(photos_intersected, selectablePhotos ?? [], canInteractPhoto);
+
+			togglableStore.selectedPhotosIdx = cache.currentPhotoSelectionIdx.concat(selectedPhotos);
 			togglableStore.selectedAlbumsIdx = [];
 			return;
 		}
 
-		const albums_selected = cache.album_boxes.filter((b) => isIntersecting(b, selector)).map((b) => b.id);
-		if (albums_selected.length > 0) {
-			togglableStore.selectedAlbumsIdx = albums_selected.map((id) => albums?.findIndex((p) => p.id === id) ?? -1);
+		const albums_intersected = cache.album_boxes.filter((b) => isIntersecting(b, selector)).map((b) => b.id);
+		if (albums_intersected.length > 0) {
+			const selectedAlbums = reduceIntersection(albums_intersected, selectableAlbums ?? [], canInteractAlbum);
+			togglableStore.selectedAlbumsIdx = cache.currentAlbumSelectionIdx.concat(selectedAlbums);
 			togglableStore.selectedPhotosIdx = [];
 			return;
 		}
 
-		togglableStore.selectedPhotosIdx = [];
-		togglableStore.selectedAlbumsIdx = [];
+		togglableStore.selectedPhotosIdx = cache.currentPhotoSelectionIdx;
+		togglableStore.selectedAlbumsIdx = cache.currentAlbumSelectionIdx;
+	}
+
+	function reduceIntersection<Model>(intersection: string[], selectables: ({ id: string } & Model)[], validator: (i: Model) => boolean): number[] {
+		return intersection.reduce((result: number[], id) => {
+			const idx = selectables.findIndex((p) => p.id === id && validator(p));
+			if (idx !== -1 && idx !== undefined) {
+				result.push(idx);
+			}
+			return result;
+		}, []);
 	}
 
 	// We throttle the applySelection function to avoid performance issues

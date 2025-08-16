@@ -165,6 +165,7 @@ const emits = defineEmits<{
 const { is_se_enabled } = storeToRefs(lycheeStore);
 
 const children = computed<App.Http.Resources.Models.ThumbAlbumResource[]>(() => modelAlbum.value?.albums ?? []);
+const selectableAlbums = computed<App.Http.Resources.Models.ThumbAlbumResource[]>(() => modelAlbum.value?.albums ?? []);
 const noData = computed(() => children.value.length === 0 && (photos.value === null || photos.value.length === 0));
 
 const { is_share_album_visible, toggleDelete, toggleMergeAlbum, toggleMove, toggleRename, toggleShareAlbum, toggleTag, toggleCopy, toggleUpload } =
@@ -182,7 +183,13 @@ const {
 	photoSelect,
 	albumClick,
 	unselect,
-} = useSelection(photos, children, togglableStore);
+} = useSelection(
+	{
+		photos,
+		albums: selectableAlbums,
+	},
+	togglableStore,
+);
 
 const { photoRoute, getParentId } = usePhotoRoute(router);
 

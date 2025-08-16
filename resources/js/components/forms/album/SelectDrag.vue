@@ -14,8 +14,8 @@ import { onMounted, onUnmounted } from "vue";
 const togglableStore = useTogglablesStateStore();
 
 const props = defineProps<{
-	photos: App.Http.Resources.Models.PhotoResource[];
-	albums: App.Http.Resources.Models.ThumbAlbumResource[];
+	photos?: App.Http.Resources.Models.PhotoResource[];
+	albums?: App.Http.Resources.Models.ThumbAlbumResource[];
 	withScroll: boolean;
 }>();
 
@@ -23,10 +23,8 @@ const { initialPosition, position, show } = useDragAndSelect(togglableStore, pro
 
 onMounted(() => {
 	document.getElementById("galleryView")?.addEventListener("mousedown", show);
-	// document.addEventListener("mousedown", show);
 });
 onUnmounted(() => {
 	document.getElementById("galleryView")?.removeEventListener("mousedown", show);
-	// document.removeEventListener("mousedown", show);
 });
 </script>
