@@ -174,9 +174,12 @@ export function useDragAndSelect(
 	}
 
 	function getBoxes(type: string): Bounding[] {
-		const photos = document.querySelectorAll(`[${type}]`) as NodeListOf<HTMLElement>;
+		const root = document.getElementById("galleryView");
+		const nodes = (root
+			? (root.querySelectorAll(`[${type}]`) as NodeListOf<HTMLElement>)
+			: (document.querySelectorAll(`[${type}]`) as NodeListOf<HTMLElement>));
 		const ret = [] as Bounding[];
-		photos.forEach((el: HTMLElement) => {
+		nodes.forEach((el: HTMLElement) => {
 			const id = el.getAttribute(type);
 			if (id === null) return;
 
@@ -190,6 +193,7 @@ export function useDragAndSelect(
 	function applySelection() {
 		// We do nothing if the position is not set
 		if (position.value === undefined) return;
+
 		const selector = getBounding(document.getElementById("selector") as HTMLElement, "selector");
 
 		const photos_intersected = cache.photo_boxes.filter((b) => isIntersecting(b, selector)).map((b) => b.id);
