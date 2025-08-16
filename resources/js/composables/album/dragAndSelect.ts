@@ -175,9 +175,9 @@ export function useDragAndSelect(
 
 	function getBoxes(type: string): Bounding[] {
 		const root = document.getElementById("galleryView");
-		const nodes = (root
+		const nodes = root
 			? (root.querySelectorAll(`[${type}]`) as NodeListOf<HTMLElement>)
-			: (document.querySelectorAll(`[${type}]`) as NodeListOf<HTMLElement>));
+			: (document.querySelectorAll(`[${type}]`) as NodeListOf<HTMLElement>);
 		const ret = [] as Bounding[];
 		nodes.forEach((el: HTMLElement) => {
 			const id = el.getAttribute(type);
