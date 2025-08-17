@@ -561,7 +561,7 @@ class AlbumQueryPolicy
 								$user_groups
 							)
 					)
-			);
+			)->when(!$full, fn (BaseBuilder $q) => $q->groupBy(APC::BASE_ALBUM_ID, APC::IS_LINK_REQUIRED, APC::PASSWORD));
 	}
 
 	/**
