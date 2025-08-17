@@ -77,10 +77,11 @@ class HasManyPhotosByTag extends BaseHasManyPhotos
 		$tag_ids = $album->relationLoaded('tags')
 			? $album->tags->pluck('id')->all()
 			: DB::table('tag_albums_tags')
-				->where('album_id', '=', $album->id)
-				->pluck('tag_id')
-				->all();
+			->where('album_id', '=', $album->id)
+			->pluck('tag_id')
+			->all();
 		$tag_ids = array_values(array_unique($tag_ids));
+
 
 		if (Configs::getValueAsBool('TA_override_visibility')) {
 			$this->photo_query_policy
@@ -89,7 +90,7 @@ class HasManyPhotosByTag extends BaseHasManyPhotos
 					origin: null,
 					include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_tag_albums')
 				)
-				->where(fn (Builder $q) => $this->getPhotoIdsWithTags($q, $tag_ids));
+				->where(fn(Builder $q) => $this->getPhotoIdsWithTags($q, $tag_ids, $album->is_and));
 		} else {
 			$this->photo_query_policy
 				->applySearchabilityFilter(
@@ -97,17 +98,18 @@ class HasManyPhotosByTag extends BaseHasManyPhotos
 					origin: null,
 					include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_tag_albums')
 				)
-				->where(fn (Builder $q) => $this->getPhotoIdsWithTags($q, $tag_ids));
+				->where(fn(Builder $q) => $this->getPhotoIdsWithTags($q, $tag_ids, $album->is_and));
 		}
 	}
 
 	/**
 	 * @param Builder &$query
 	 * @param int[]   $tags_ids
+	 * @param bool    $is_and
 	 *
 	 * @return void
 	 */
-	private function getPhotoIdsWithTags(Builder &$query, array $tags_ids): void
+	private function getPhotoIdsWithTags(Builder &$query, array $tags_ids, bool $is_and): void
 	{
 		// If no tags provided, no photos should match
 		if (count($tags_ids) === 0) {
@@ -117,13 +119,23 @@ class HasManyPhotosByTag extends BaseHasManyPhotos
 		}
 
 		$tag_count = count($tags_ids);
-		$query->whereExists(fn (BaseBuilder $q) => $q->select(['photo_id', DB::raw('COUNT(tag_id) AS num')])
-				->from('photos_tags')
-				->whereIn('photos_tags.tag_id', $tags_ids)
-				->whereColumn('photos_tags.photo_id', 'photos.id')
-				->groupBy('photos_tags.photo_id')
-				->havingRaw('COUNT(DISTINCT photos_tags.tag_id) = ?', [$tag_count])
-		);
+		if ($is_and) {
+			$query->whereExists(
+				fn(BaseBuilder $q) => $q->select(['photo_id', DB::raw('COUNT(tag_id) AS num')])
+					->from('photos_tags')
+					->whereIn('photos_tags.tag_id', $tags_ids)
+					->whereColumn('photos_tags.photo_id', 'photos.id')
+					->groupBy('photos_tags.photo_id')
+					->havingRaw('COUNT(DISTINCT photos_tags.tag_id) = ?', [$tag_count])
+			);
+		} else {
+			$query->whereExists(
+				fn(BaseBuilder $q) => $q->select('photo_id')
+					->from('photos_tags')
+					->whereIn('photos_tags.tag_id', $tags_ids)
+					->whereColumn('photos_tags.photo_id', 'photos.id')
+			);
+		}
 	}
 
 	/**

@@ -24,6 +24,7 @@ use Illuminate\Database\Query\Builder as BaseBuilder;
  * App\Models\TagAlbum.
  *
  * @property Collection<int,Tag> $tags
+ * @property bool                $is_and
  *
  * @method static TagAlbumBuilder|TagAlbum query()                       Begin querying the model.
  * @method static TagAlbumBuilder|TagAlbum with(array|string $relations) Begin querying the model with eager loading.
@@ -74,6 +75,7 @@ class TagAlbum extends BaseAlbum
 	 */
 	protected $attributes = [
 		'id' => null,
+		'is_and' => null,
 	];
 
 	/**
@@ -82,6 +84,7 @@ class TagAlbum extends BaseAlbum
 	protected function casts(): array
 	{
 		return [
+			'is_and' => 'boolean',
 			'min_taken_at' => 'datetime',
 			'max_taken_at' => 'datetime',
 		];
