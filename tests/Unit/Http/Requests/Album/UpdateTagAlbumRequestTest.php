@@ -95,6 +95,7 @@ class UpdateTagAlbumRequestTest extends BaseRequestTest
 			RequestAttribute::ALBUM_PHOTO_LAYOUT => ['present', 'nullable', new Enum(PhotoLayoutType::class)],
 			RequestAttribute::ALBUM_TIMELINE_PHOTO => ['present', 'nullable', new Enum(TimelinePhotoGranularity::class), new EnumRequireSupportRule(TimelinePhotoGranularity::class, [TimelinePhotoGranularity::DEFAULT, TimelinePhotoGranularity::DISABLED], $this->mock_verify)],
 			RequestAttribute::IS_PINNED_ATTRIBUTE => ['present', 'boolean'],
+			RequestAttribute::IS_AND_ATTRIBUTE => ['required', 'boolean'],
 		];
 		$this->assertCount(count($expectedRuleMap), $rules); // only validating the first 7 rules & the GRANTS_UPLOAD_ATTRIBUTE is tested afterwards
 
