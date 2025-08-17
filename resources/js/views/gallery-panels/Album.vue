@@ -134,7 +134,7 @@
 </template>
 <script setup lang="ts">
 import { useAuthStore } from "@/stores/Auth";
-import { computed, ref, watch, onMounted, onUnmounted } from "vue";
+import { ref, watch, onMounted, onUnmounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { onKeyStroke, useDebounceFn } from "@vueuse/core";
@@ -224,8 +224,6 @@ const { isPasswordProtected, isLoading, user, modelAlbum, album, photo, transiti
 const { refreshPhoto } = usePhotoRefresher(photo, photos, photoId);
 const { getParentId } = usePhotoRoute(router);
 
-const children = computed<App.Http.Resources.Models.ThumbAlbumResource[]>(() => modelAlbum.value?.albums ?? []);
-
 const { toggleStar, rotatePhotoCCW, rotatePhotoCW, setAlbumHeader, rotateOverlay } = usePhotoActions(photo, albumId, toast, lycheeStore);
 
 const { getNext, getPrevious } = getNextPreviousPhoto(router, photo);
@@ -243,9 +241,12 @@ function toggleSlideShow() {
 
 const { layoutConfig, loadLayoutConfig } = useGetLayoutConfig();
 
+const selectableAlbum = computed<App.Http.Resources.Models.ThumbAlbumResource[]>(() => modelAlbum.value?.albums ?? []);
 const { selectedPhoto, selectedAlbum, selectedPhotosIds, selectedAlbumsIds, selectEverything, unselect, hasSelection } = useSelection(
-	photos,
-	children,
+	{
+		photos: photos,
+		albums: selectableAlbum,
+	},
 	togglableStore,
 );
 

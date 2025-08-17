@@ -105,7 +105,7 @@ function photoClick(idx: number, _e: MouseEvent) {
 const photos = ref(props.photos);
 const children = ref(props.albums);
 
-const { selectedPhotosIds, selectedAlbumsIds, photoSelect, albumClick } = useSelection(photos, children, togglableStore);
+const { selectedPhotosIds, selectedAlbumsIds, photoSelect, albumClick } = useSelection({ photos, albums: children }, togglableStore);
 
 const { menu, Menu, photoMenuOpen, albumMenuOpen } = useContextMenu(props.selectors, props.photoCallbacks, props.albumCallbacks);
 </script>

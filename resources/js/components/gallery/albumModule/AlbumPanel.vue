@@ -12,7 +12,8 @@
 			@go-back="emits('goBack')"
 		/>
 		<template v-if="config && album">
-			<div id="galleryView" class="relative flex flex-wrap content-start w-full justify-start overflow-y-auto h-full">
+			<div id="galleryView" class="relative flex flex-wrap content-start w-full justify-start overflow-y-auto h-full select-none">
+				<SelectDrag :photos="photos" :albums="children" :with-scroll="true" />
 				<AlbumEdit v-if="album.rights.can_edit" :album="album" :config="config" />
 				<div v-if="noData" class="flex w-full flex-col h-full items-center justify-center text-xl text-muted-color gap-8">
 					<span class="block">
@@ -121,6 +122,7 @@ import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { usePhotoRoute } from "@/composables/photo/photoRoute";
 import { useRouter } from "vue-router";
 import { type SplitData } from "@/composables/album/splitter";
+import SelectDrag from "@/components/forms/album/SelectDrag.vue";
 
 const router = useRouter();
 
@@ -163,6 +165,7 @@ const emits = defineEmits<{
 const { is_se_enabled } = storeToRefs(lycheeStore);
 
 const children = computed<App.Http.Resources.Models.ThumbAlbumResource[]>(() => modelAlbum.value?.albums ?? []);
+const selectableAlbums = computed<App.Http.Resources.Models.ThumbAlbumResource[]>(() => modelAlbum.value?.albums ?? []);
 const noData = computed(() => children.value.length === 0 && (photos.value === null || photos.value.length === 0));
 
 const { is_share_album_visible, toggleDelete, toggleMergeAlbum, toggleMove, toggleRename, toggleShareAlbum, toggleTag, toggleCopy, toggleUpload } =
@@ -180,7 +183,13 @@ const {
 	photoSelect,
 	albumClick,
 	unselect,
-} = useSelection(photos, children, togglableStore);
+} = useSelection(
+	{
+		photos,
+		albums: selectableAlbums,
+	},
+	togglableStore,
+);
 
 const { photoRoute, getParentId } = usePhotoRoute(router);
 
