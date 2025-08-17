@@ -99,6 +99,7 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 			'photo_sorting_order' => 'ASC',
 			'copyright' => '',
 			'is_pinned' => false,
+			'is_and' => true,
 			'photo_layout' => null,
 			'photo_timeline' => null,
 		]);
@@ -287,6 +288,7 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 			'photo_sorting_order' => 'ASC',
 			'copyright' => '',
 			'is_pinned' => true,
+			'is_and' => true,
 			'photo_layout' => null,
 			'photo_timeline' => null,
 		]);

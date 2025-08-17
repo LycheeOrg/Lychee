@@ -66,6 +66,7 @@ class UpdateTagAlbumRequestTest extends BaseRequestTest
 			RequestAttribute::COPYRIGHT_ATTRIBUTE => 'Copyright (c) 2017-2018 Tobias Reich',
 			RequestAttribute::TAGS_ATTRIBUTE => ['tag1', 'tag2'],
 			RequestAttribute::IS_PINNED_ATTRIBUTE => false,
+			RequestAttribute::IS_AND_ATTRIBUTE => true,
 		]);
 
 		$request->validateResolved(); // hydrate the request Class with the data before authorizing . Fighting the framework a bit

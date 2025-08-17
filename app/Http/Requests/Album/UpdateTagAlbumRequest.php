@@ -10,6 +10,7 @@ namespace App\Http\Requests\Album;
 
 use App\Contracts\Http\Requests\HasCopyright;
 use App\Contracts\Http\Requests\HasDescription;
+use App\Contracts\Http\Requests\HasIsAnd;
 use App\Contracts\Http\Requests\HasIsPinned;
 use App\Contracts\Http\Requests\HasPhotoLayout;
 use App\Contracts\Http\Requests\HasPhotoSortingCriterion;
@@ -44,7 +45,7 @@ use App\Rules\TitleRule;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Validation\ValidationException;
 
-class UpdateTagAlbumRequest extends BaseApiRequest implements HasTagAlbum, HasTitle, HasDescription, HasPhotoSortingCriterion, HasCopyright, HasTags, HasPhotoLayout, HasTimelinePhoto, HasIsPinned
+class UpdateTagAlbumRequest extends BaseApiRequest implements HasTagAlbum, HasTitle, HasDescription, HasPhotoSortingCriterion, HasCopyright, HasTags, HasPhotoLayout, HasTimelinePhoto, HasIsPinned, HasIsAnd
 {
 	use HasTagAlbumTrait;
 	use HasTitleTrait;

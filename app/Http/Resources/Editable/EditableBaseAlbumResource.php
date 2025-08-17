@@ -37,8 +37,8 @@ class EditableBaseAlbumResource extends Data
 	public ?TimelineAlbumGranularity $album_timeline;
 	public ?TimelinePhotoGranularity $photo_timeline;
 	/** @var string[] */
-	public array $tags;
-	public bool $is_and;
+	public array $tags = [];
+	public bool $is_and = true;
 	public bool $is_model_album;
 	public bool $is_pinned;
 

@@ -111,7 +111,7 @@ return [
             'layout' => 'Disposition des photos',
             'show_tags' => 'Définir les étiquettes à afficher',
             'tags_required' => 'Les étiquettes sont obligatoires.',
-            'all_tags_must_match' => 'Toutes les étiquettes être présentes.',
+            'all_tags_must_match' => 'Toutes les étiquettes doivent être présentes.',
         ],
     ],
     'photo' => [
