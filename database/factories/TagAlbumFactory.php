@@ -38,6 +38,7 @@ class TagAlbumFactory extends Factory
 		return [
 			'title' => 'Tag Album ' . fake()->year(),
 			'owner_id' => 1,
+			'is_and' => true,
 		];
 	}
 

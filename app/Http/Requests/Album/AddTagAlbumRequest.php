@@ -8,21 +8,24 @@
 
 namespace App\Http\Requests\Album;
 
+use App\Contracts\Http\Requests\HasIsAnd;
 use App\Contracts\Http\Requests\HasTags;
 use App\Contracts\Http\Requests\HasTitle;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Contracts\Models\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
+use App\Http\Requests\Traits\HasIsAndTrait;
 use App\Http\Requests\Traits\HasTagsTrait;
 use App\Http\Requests\Traits\HasTitleTrait;
 use App\Policies\AlbumPolicy;
 use App\Rules\TitleRule;
 use Illuminate\Support\Facades\Gate;
 
-class AddTagAlbumRequest extends BaseApiRequest implements HasTitle, HasTags
+class AddTagAlbumRequest extends BaseApiRequest implements HasTitle, HasTags, HasIsAnd
 {
 	use HasTitleTrait;
 	use HasTagsTrait;
+	use HasIsAndTrait;
 
 	/**
 	 * {@inheritDoc}
@@ -44,6 +47,7 @@ class AddTagAlbumRequest extends BaseApiRequest implements HasTitle, HasTags
 			RequestAttribute::TITLE_ATTRIBUTE => ['required', new TitleRule()],
 			RequestAttribute::TAGS_ATTRIBUTE => 'required|array|min:1',
 			RequestAttribute::TAGS_ATTRIBUTE . '.*' => 'required|string|min:1',
+			RequestAttribute::IS_AND_ATTRIBUTE => ['required', 'boolean'],
 		];
 	}
 
@@ -54,5 +58,6 @@ class AddTagAlbumRequest extends BaseApiRequest implements HasTitle, HasTags
 	{
 		$this->title = $values[RequestAttribute::TITLE_ATTRIBUTE];
 		$this->tags = $values[RequestAttribute::TAGS_ATTRIBUTE];
+		$this->is_and = static::toBoolean($values[RequestAttribute::IS_AND_ATTRIBUTE]);
 	}
 }

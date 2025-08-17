@@ -131,7 +131,6 @@ return [
         'info' => 'Entrez un titre pour le nouvel album par étiquette :',
         'title' => 'titre',
         'set_tags' => 'Définir les étiquettes à afficher',
-        'warn' => 'Appuyez sur entrée après chaque étiquette',
         'create' => 'Créer l’album par étiquette',
     ],
     'delete_album' => [

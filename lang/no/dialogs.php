@@ -130,7 +130,6 @@ return [
         'info' => 'Enter a title for the new tag album:',
         'title' => 'title',
         'set_tags' => 'Set tags to show',
-        'warn' => 'Make sure to press enter after each tag',
         'create' => 'Create Tag Album',
     ],
     'delete_album' => [

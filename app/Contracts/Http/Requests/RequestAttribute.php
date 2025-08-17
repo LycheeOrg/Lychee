@@ -75,6 +75,8 @@ class RequestAttribute
 	public const GRANTS_EDIT_ATTRIBUTE = 'grants_edit';
 	public const GRANTS_DELETE_ATTRIBUTE = 'grants_delete';
 
+	public const IS_AND_ATTRIBUTE = 'is_and';
+
 	public const FILE_ATTRIBUTE = 'file';
 	public const SHALL_OVERRIDE_ATTRIBUTE = 'shall_override';
 	public const IS_STARRED_ATTRIBUTE = 'is_starred';

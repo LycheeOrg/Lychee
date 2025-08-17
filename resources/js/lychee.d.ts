@@ -194,6 +194,7 @@ declare namespace App.Http.Resources.Editable {
 		album_timeline: App.Enum.TimelineAlbumGranularity | null;
 		photo_timeline: App.Enum.TimelinePhotoGranularity | null;
 		tags: Array<string>;
+		is_and: boolean;
 		is_model_album: boolean;
 		is_pinned: boolean;
 	};

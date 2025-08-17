@@ -21,13 +21,14 @@ class CreateTagAlbum
 	 *
 	 * @param string   $title
 	 * @param string[] $tags
+	 * @param bool     $is_and
 	 *
 	 * @return TagAlbum
 	 *
 	 * @throws ModelDBException
 	 * @throws UnauthenticatedException
 	 */
-	public function create(string $title, array $tags): TagAlbum
+	public function create(string $title, array $tags, bool $is_and): TagAlbum
 	{
 		/** @var int */
 		$user_id = Auth::id() ?? throw new UnauthenticatedException();
@@ -35,6 +36,7 @@ class CreateTagAlbum
 		$album = new TagAlbum();
 		$album->title = $title;
 		$album->owner_id = $user_id;
+		$album->is_and = $is_and;
 		$album->save();
 
 		$tag_models = Tag::from($tags);

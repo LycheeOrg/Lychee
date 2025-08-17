@@ -130,7 +130,6 @@ return [
         'info' => 'Wprowadź tytuł nowego tagu albumu:',
         'title' => 'tytuł',
         'set_tags' => 'Ustawianie wyświetlania tagów',
-        'warn' => 'Pamiętaj, aby nacisnąć enter po każdym tagu',
         'create' => 'Utwórz album ze znacznikami',
     ],
     'delete_album' => [

@@ -82,7 +82,6 @@ class HasManyPhotosByTag extends BaseHasManyPhotos
 			->all();
 		$tag_ids = array_values(array_unique($tag_ids));
 
-
 		if (Configs::getValueAsBool('TA_override_visibility')) {
 			$this->photo_query_policy
 				->applySensitivityFilter(
@@ -90,7 +89,7 @@ class HasManyPhotosByTag extends BaseHasManyPhotos
 					origin: null,
 					include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_tag_albums')
 				)
-				->where(fn(Builder $q) => $this->getPhotoIdsWithTags($q, $tag_ids, $album->is_and));
+				->where(fn (Builder $q) => $this->getPhotoIdsWithTags($q, $tag_ids, $album->is_and));
 		} else {
 			$this->photo_query_policy
 				->applySearchabilityFilter(
@@ -98,7 +97,7 @@ class HasManyPhotosByTag extends BaseHasManyPhotos
 					origin: null,
 					include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_tag_albums')
 				)
-				->where(fn(Builder $q) => $this->getPhotoIdsWithTags($q, $tag_ids, $album->is_and));
+				->where(fn (Builder $q) => $this->getPhotoIdsWithTags($q, $tag_ids, $album->is_and));
 		}
 	}
 
@@ -121,7 +120,7 @@ class HasManyPhotosByTag extends BaseHasManyPhotos
 		$tag_count = count($tags_ids);
 		if ($is_and) {
 			$query->whereExists(
-				fn(BaseBuilder $q) => $q->select(['photo_id', DB::raw('COUNT(tag_id) AS num')])
+				fn (BaseBuilder $q) => $q->select(['photo_id', DB::raw('COUNT(tag_id) AS num')])
 					->from('photos_tags')
 					->whereIn('photos_tags.tag_id', $tags_ids)
 					->whereColumn('photos_tags.photo_id', 'photos.id')
@@ -130,7 +129,7 @@ class HasManyPhotosByTag extends BaseHasManyPhotos
 			);
 		} else {
 			$query->whereExists(
-				fn(BaseBuilder $q) => $q->select('photo_id')
+				fn (BaseBuilder $q) => $q->select('photo_id')
 					->from('photos_tags')
 					->whereIn('photos_tags.tag_id', $tags_ids)
 					->whereColumn('photos_tags.photo_id', 'photos.id')

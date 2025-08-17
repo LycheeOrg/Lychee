@@ -130,7 +130,6 @@ return [
         'info' => 'Introduzca un título para el nuevo álbum de etiquetas:',
         'title' => 'título',
         'set_tags' => 'Establecer etiquetas para mostrar',
-        'warn' => 'Asegúrese de presionar Enter después de cada etiqueta',
         'create' => 'Crear álbum de etiquetas',
     ],
     'delete_album' => [

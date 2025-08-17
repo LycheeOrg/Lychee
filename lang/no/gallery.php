@@ -111,6 +111,7 @@ return [
             'layout' => 'Set photo layout',
             'show_tags' => 'Set tags to show',
             'tags_required' => 'Tags are required.',
+            'all_tags_must_match' => 'All tags must match.',
         ],
     ],
     'photo' => [

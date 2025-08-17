@@ -31,12 +31,14 @@ class AlbumCreateTagTest extends BaseApiWithDataTest
 		$response = $this->postJson('TagAlbum', [
 			'title' => 'test_tag',
 			'tags' => ['tag1', 'tag2'],
+			'is_and' => '1',
 		]);
 		$this->assertUnauthorized($response);
 
 		$response = $this->actingAs($this->userLocked)->postJson('TagAlbum', [
 			'title' => 'test_tag',
 			'tags' => ['tag1', 'tag2'],
+			'is_and' => '1',
 		]);
 		$this->assertForbidden($response);
 	}
@@ -46,6 +48,7 @@ class AlbumCreateTagTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->userMayUpload1)->postJson('TagAlbum', [
 			'title' => 'test_tag',
 			'tags' => ['tag1', 'tag2'],
+			'is_and' => '1',
 		]);
 		self::assertEquals(200, $response->getStatusCode());
 		$new_album_id = $response->getOriginalContent();

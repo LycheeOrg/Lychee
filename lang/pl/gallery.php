@@ -111,6 +111,7 @@ return [
             'layout' => 'Ustawianie układu zdjęć',
             'show_tags' => 'Ustawianie wyświetlania tagów',
             'tags_required' => 'Wymagane są znaczniki.',
+            'all_tags_must_match' => 'Wszystkie znaczniki muszą pasować.',
         ],
     ],
     'photo' => [
