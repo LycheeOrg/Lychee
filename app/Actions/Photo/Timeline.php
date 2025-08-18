@@ -144,13 +144,14 @@ class Timeline
 			default => throw new LycheeInvalidArgumentException('Unsupported database driver'),
 		};
 
-		$date_format = match ($this->photo_granularity) {
-			TimelinePhotoGranularity::YEAR => $is_driver_pgsql ? 'YYYY' : '%Y',
-			TimelinePhotoGranularity::MONTH => $is_driver_pgsql ? 'YYYY-mm' : '%Y-%m',
-			TimelinePhotoGranularity::DAY => $is_driver_pgsql ? 'YYYY-MM-DD' : '%Y-%m-%d',
-			TimelinePhotoGranularity::HOUR => $is_driver_pgsql ? 'YYYY-MM-DD"T"HH24' : '%Y-%m-%dT%H', // hoepfully this is correct
-			TimelinePhotoGranularity::DEFAULT, TimelinePhotoGranularity::DISABLED => throw new TimelineGranularityException(),
-		};
+        $date_format = match ($this->photo_granularity) {
+            TimelinePhotoGranularity::YEAR    => $is_driver_pgsql ? 'YYYY'               : '%Y',
+            TimelinePhotoGranularity::MONTH   => $is_driver_pgsql ? 'YYYY-MM'            : '%Y-%m',
+            TimelinePhotoGranularity::DAY     => $is_driver_pgsql ? 'YYYY-MM-DD'         : '%Y-%m-%d',
+            TimelinePhotoGranularity::HOUR    => $is_driver_pgsql ? 'YYYY-MM-DD"T"HH24' : '%Y-%m-%dT%H', // hopefully this is correct
+            TimelinePhotoGranularity::DEFAULT,
+            TimelinePhotoGranularity::DISABLED => throw new TimelineGranularityException(),
+        };
 
 		return $this->photo_query_policy->applySearchabilityFilter(
 			query: Photo::query()
