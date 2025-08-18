@@ -1,6 +1,6 @@
 import TimelineService from "@/services/timeline-service";
 import { AuthStore } from "@/stores/Auth";
-import { AxiosResponse } from "axios";
+import { AxiosError, AxiosResponse } from "axios";
 import { Ref, ref } from "vue";
 import { Router } from "vue-router";
 import { useSplitter, type SplitData } from "@/composables/album/splitter";
@@ -59,9 +59,9 @@ export function useTimelineRefresher(photoId: Ref<string | undefined>, router: R
 		loadPhoto();
 	}
 
-	function _parseError(error: any) {
+	function _parseError(error: AxiosError<void>) {
 		isLoading.value = false;
-		if (error.response.status === 401) {
+		if (error?.response?.status === 401) {
 			router.push({ name: "gallery" });
 		}
 	}

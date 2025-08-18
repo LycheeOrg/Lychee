@@ -214,8 +214,6 @@ const { title, slideshow_timeout } = storeToRefs(lycheeStore);
 const { is_full_screen, is_login_open, is_upload_visible, list_upload_files, is_slideshow_active, is_photo_edit_open, are_details_open } =
 	storeToRefs(togglableStore);
 
-const albums = ref([]); // unused.
-
 const { layoutConfig, loadLayoutConfig } = useGetLayoutConfig();
 const {
 	user,
@@ -243,11 +241,7 @@ const {
 	setTransition,
 } = useTimelineRefresher(photoId, router, auth);
 
-const { selectedPhotosIdx, selectedPhoto, selectedPhotos, selectedPhotosIds, photoSelect, hasSelection, unselect, selectEverything } = useSelection(
-	photos,
-	albums,
-	togglableStore,
-);
+const { selectedPhotosIdx, selectedPhoto, selectedPhotos, selectedPhotosIds, photoSelect, unselect } = useSelection({ photos }, togglableStore);
 
 const { photoRoute } = usePhotoRoute(router);
 
@@ -255,7 +249,7 @@ const sentinel = ref(null);
 
 const { registerSentinel, registerScrollSpy } = useRouteDateUpdater(sentinel, loadMore, loadDate);
 
-function photoClick(idx: number, e: MouseEvent) {
+function photoClick(idx: number, _e: MouseEvent) {
 	router.push(photoRoute(photos.value[idx].id));
 }
 

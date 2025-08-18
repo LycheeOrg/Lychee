@@ -28,7 +28,7 @@ export function useRouteDateUpdater(sentinel: Ref, loadMore: () => void, loadDat
 	}
 
 	function registerSentinel() {
-		const { stop } = useIntersectionObserver(sentinel, ([{ isIntersecting }]) => {
+		useIntersectionObserver(sentinel, ([{ isIntersecting }]) => {
 			if (isIntersecting) {
 				loadMore();
 			}

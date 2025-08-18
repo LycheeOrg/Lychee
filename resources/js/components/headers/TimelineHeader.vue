@@ -14,9 +14,9 @@
 			<span class="sm:hidden font-bold">
 				{{ $t("gallery.timeline.title") }}
 			</span>
-			<span class="hidden lg:block font-bold text-sm lg:text-base text-center w-full" @click="is_metrics_open = !is_metrics_open">{{
-				props.title
-			}}</span>
+			<span class="hidden lg:block font-bold text-sm lg:text-base text-center w-full" @click="is_metrics_open = !is_metrics_open">
+				{{ props.title }}
+			</span>
 		</template>
 
 		<template #end>
@@ -51,13 +51,13 @@
 			</template>
 			<!-- Maybe logged in. -->
 			<div class="hidden lg:block">
-				<template v-for="item in menu">
+				<template v-for="(item, idx) in menu" :key="`menu-item-${idx}`">
 					<template v-if="item.type === 'link'">
 						<!-- @vue-ignore -->
 						<Button as="router-link" :to="item.to" :icon="item.icon" class="border-none" severity="secondary" text />
 					</template>
 					<template v-else>
-						<Button @click="item.callback" :icon="item.icon" class="border-none" severity="secondary" text />
+						<Button :icon="item.icon" class="border-none" severity="secondary" text @click="item.callback" />
 					</template>
 				</template>
 				<!-- Not logged in. -->
@@ -66,18 +66,18 @@
 			<SpeedDial
 				:model="menu"
 				direction="down"
-				class="top-0 mr-4 absolute right-0 lg:hidden"
-				:buttonProps="{ severity: 'help', rounded: true }"
+				class="top-0 ltr:mr-4 rtl:ml-4 absolute ltr:right-0 rtl:left-0 lg:hidden"
+				:button-props="{ severity: 'help', rounded: true }"
 			>
 				<template #button="{ toggleCallback }">
-					<Button text severity="secondary" class="border-none h-14" @click="toggleCallback" icon="pi pi-angle-double-down" />
+					<Button text severity="secondary" class="border-none h-14" icon="pi pi-angle-double-down" @click="toggleCallback" />
 				</template>
-				<template #item="{ item, toggleCallback }">
+				<template #item="{ item }">
 					<template v-if="item.type === 'link'">
 						<Button as="router-link" :to="item.to" :icon="item.icon" class="shadow-md shadow-black/25" severity="warn" rounded />
 					</template>
 					<template v-else>
-						<Button @click="item.callback" :icon="item.icon" class="shadow-md shadow-black/25" severity="warn" rounded />
+						<Button :icon="item.icon" class="shadow-md shadow-black/25" severity="warn" rounded @click="item.callback" />
 					</template>
 				</template>
 			</SpeedDial>
@@ -88,7 +88,7 @@
 			<Divider v-if="item.is_divider" />
 			<a v-else v-ripple v-bind="props.action" @click="item.callback">
 				<span :class="item.icon" />
-				<span class="ml-2">
+				<span class="ltr:ml-2 rtl:mr-2">
 					<!-- @vue-ignore -->
 					{{ $t(item.label) }}
 				</span>
@@ -103,7 +103,7 @@ import Toolbar from "primevue/toolbar";
 import ContextMenu from "primevue/contextmenu";
 import Divider from "primevue/divider";
 import ImportFromLink from "@/components/modals/ImportFromLink.vue";
-import { computed, ComputedRef, ref } from "vue";
+import { computed, ComputedRef } from "vue";
 import { onKeyStroke } from "@vueuse/core";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { isTouchDevice, shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
@@ -293,9 +293,4 @@ const menu = computed(() =>
 		},
 	].filter((item) => item.if),
 ) as ComputedRef<MenuRight[]>;
-
-// bubble up.
-function refresh() {
-	emits("refresh");
-}
 </script>
