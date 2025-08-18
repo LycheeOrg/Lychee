@@ -84,6 +84,7 @@ class Sync extends Command
 	 */
 	public function handle(): int
 	{
+		$this->line('');
 		try {
 			$directories = $this->validateDirectories();
 			if ($directories === null) {
@@ -124,6 +125,10 @@ class Sync extends Command
 
 			return null;
 		}
+		$this->line('Directories to sync:');
+		foreach ($directories as $directory) {
+			$this->line('  - ' . $directory);
+		}
 
 		return $directories;
 	}
@@ -142,6 +147,8 @@ class Sync extends Command
 			return false;
 		}
 
+		$this->line('Owner ID: ' . $owner_id);
+
 		return $owner_id;
 	}
 
@@ -159,7 +166,21 @@ class Sync extends Command
 			return false;
 		}
 
-		return $album_id !== null ? Album::query()->findOrFail($album_id) : null;
+		if ($album_id === null) {
+			$this->line('No album ID provided, importing to root album.');
+
+			return null;
+		}
+		/** @var Album|null $album */
+		$album = Album::query()->find($album_id);
+		if ($album === null) {
+			$this->error('Album ID ' . $album_id . ' not found.');
+
+			return false;
+		}
+		$this->line('Album: ' . $album->title . ' (ID: ' . $album->id . ')');
+
+		return $album;
 	}
 
 	/**
@@ -181,12 +202,39 @@ class Sync extends Command
 			return null;
 		}
 
+		$this->line('Import settings:');
+		$this->line('  - Delete imported files: ' . $this->yes_no($delete_imported));
+		$this->line('  - Import via symlink: ' . $this->yes_no($import_via_symlink));
+		$this->line('  - Skip duplicates: ' . $this->yes_no($skip_duplicates));
+		$this->line('  - Resync metadata: ' . $this->yes_no($resync_metadata));
+
 		return new ImportMode(
 			$delete_imported,
 			$skip_duplicates,
 			$import_via_symlink,
 			$resync_metadata,
 		);
+	}
+
+	/**
+	 * Validate the delete missing photos option.
+	 *
+	 * @return bool
+	 */
+	private function validateDeleteMissingPhotos(bool $dry_run): bool
+	{
+		$delete_missing_photos = $this->option('delete_missing_photos') === '1';
+		$this->line('Delete missing photos: ' . $this->yes_no($delete_missing_photos) . ($delete_missing_photos && $dry_run ? ' <fg=#ff0>(dry run)</>' : ''));
+
+		return $delete_missing_photos;
+	}
+
+	private function validateDeleteMissingAlbum(bool $dry_run): bool
+	{
+		$delete_missing_albums = $this->option('delete_missing_albums') === '1';
+		$this->line('Delete missing albums: ' . $this->yes_no($delete_missing_albums) . ($delete_missing_albums && $dry_run ? ' <fg=#ff0>(dry run)</>' : ''));
+
+		return $delete_missing_albums;
 	}
 
 	/**
@@ -201,9 +249,28 @@ class Sync extends Command
 	 */
 	private function executeImport(array $directories, ?Album $album, int $owner_id, ImportMode $import_mode): int
 	{
-		$delete_missing_photos = $this->option('delete_missing_photos') === '1';
-		$delete_missing_albums = $this->option('delete_missing_albums') === '1';
 		$dry_run = $this->option('dry_run') === '1';
+		$delete_missing_photos = $this->validateDeleteMissingPhotos($dry_run);
+		$delete_missing_albums = $this->validateDeleteMissingAlbum($dry_run);
+
+		if (($delete_missing_photos || $delete_missing_albums) && $dry_run) {
+			$this->line('<fg=gray>Running in dry run mode, no changes will be made. Rerun with --dry_run=0 to apply changes.</>');
+		} elseif ($delete_missing_photos || $delete_missing_albums) {
+			$this->error('Running in normal mode, destructive changes will be applied.');
+		}
+
+		$this->line('');
+		$this->line('');
+		if (config('queue.default') === 'sync') {
+			$this->warn('Running in sync mode, this may take a while depending on the number of files.');
+			$this->warn('Consider setting `QUEUE_CONNECTION=database` in your `.env` and using multiple queue workers (php artisan queue:work) for better performance.');
+		} else {
+			$this->info('Running in async mode, this will create jobs for each file.');
+			$this->info('Make sure you have queue workers running on the side (php artisan queue:work).');
+		}
+		// Add some spacing for better readability
+		$this->line('');
+		$this->line('');
 
 		$exec = new Exec(
 			import_mode: $import_mode,
@@ -229,5 +296,10 @@ class Sync extends Command
 		$this->info('Done tree-based syncing.');
 
 		return 0;
+	}
+
+	private function yes_no(bool $value): string
+	{
+		return $value ? '<fg=#0f0>Yes</>' : '<fg=#f00>No</>';
 	}
 }
