@@ -78,7 +78,6 @@ return new class() extends Migration {
 				DB::table('tags')->insert($chunk->all());
 			}
 
-
 			$tag_photo_links_collection = collect($tag_photo_links);
 			$tag_photo_links_collection_chuncked = $tag_photo_links_collection->chunk(100);
 			foreach ($tag_photo_links_collection_chuncked as $chunk) {
@@ -117,7 +116,7 @@ return new class() extends Migration {
 	 */
 	private function applyDown(): void
 	{
-		DB::transaction(function() {
+		DB::transaction(function () {
 			DB::table('photos_tags')->distinct()->select('photo_id')
 				->orderBy('photo_id')
 				->chunk(100, function ($photo_ids) {
