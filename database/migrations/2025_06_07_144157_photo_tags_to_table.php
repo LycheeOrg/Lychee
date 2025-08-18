@@ -36,6 +36,10 @@ return new class() extends Migration {
 	 */
 	private function applyUp(): void
 	{
+		// Empty the `tags` table to make sure this migration can be re-run
+		DB::table('tags')->delete();
+		DB::table('photos_tags')->delete();
+
 		$tags_to_create = [];
 		$tag_photo_links = [];
 
