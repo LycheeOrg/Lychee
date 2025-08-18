@@ -92,11 +92,10 @@ const emits = defineEmits<{
 }>();
 
 const noData = computed(() => photos.value === null || photos.value.length === 0);
-const children = ref([]);
 
 const { toggleDelete, toggleMove, toggleRename, toggleTag, toggleCopy } = useGalleryModals(togglableStore);
 
-const { selectedPhotosIdx, selectedPhoto, selectedPhotos, selectedPhotosIds, photoSelect } = useSelection(photos, children, togglableStore);
+const { selectedPhotosIdx, selectedPhoto, selectedPhotos, selectedPhotosIds, photoSelect } = useSelection({ photos }, togglableStore);
 
 const { photoRoute, getParentId } = usePhotoRoute(router);
 

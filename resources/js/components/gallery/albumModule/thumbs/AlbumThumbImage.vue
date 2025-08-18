@@ -1,7 +1,7 @@
 <template>
 	<span
 		class="thumbimg absolute w-full h-full bg-neutral-800 shadow-md shadow-black/25 border-solid border border-neutral-400 ease-out transition-transform overflow-hidden"
-		:class="props.class"
+		:class="isDragging && !isSelectable ? '' : props.class"
 	>
 		<img
 			v-show="placeholderSrc"
@@ -28,7 +28,9 @@
 </template>
 <script setup lang="ts">
 import { useImageHelpers } from "@/utils/Helpers";
+import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { watch, ref, computed } from "vue";
+import { storeToRefs } from "pinia";
 
 const { isNotEmpty, getPlayIcon, getPlaceholderIcon, getNoImageIcon, getPaswwordIcon } = useImageHelpers();
 
@@ -36,7 +38,11 @@ const props = defineProps<{
 	thumb: App.Http.Resources.Models.ThumbResource | undefined | null;
 	class: string;
 	isPasswordProtected: boolean;
+	isSelectable?: boolean;
 }>();
+
+const togglableStore = useTogglablesStateStore();
+const { isDragging } = storeToRefs(togglableStore);
 
 const isImageLoaded = ref(false);
 const src = ref("");

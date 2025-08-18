@@ -250,7 +250,13 @@ const {
 	selectedPhotosIds,
 	selectedAlbumsIds,
 	unselect,
-} = useSelection(photosForSelection, albumsForSelection, togglableStore);
+} = useSelection(
+	{
+		photos: photosForSelection,
+		albums: albumsForSelection,
+	},
+	togglableStore,
+);
 
 const { toggleStar, rotatePhotoCCW, rotatePhotoCW, setAlbumHeader, rotateOverlay } = usePhotoActions(photo, albumId, toast, lycheeStore);
 

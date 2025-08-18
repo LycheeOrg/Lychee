@@ -161,8 +161,6 @@ const auth = useAuthStore();
 const togglableStore = useTogglablesStateStore();
 const lycheeStore = useLycheeStateStore();
 
-const empty = ref([]);
-
 lycheeStore.init();
 const { are_nsfw_visible, slideshow_timeout, is_slideshow_enabled } = storeToRefs(lycheeStore);
 const { is_photo_edit_open, are_details_open, is_login_open, is_slideshow_active } = storeToRefs(togglableStore);
@@ -186,7 +184,7 @@ const { hasNext, hasPrevious } = useHasNextPreviousPhoto(photo);
 
 const { layoutConfig, loadLayoutConfig } = useGetLayoutConfig();
 
-const { selectedPhoto, selectedPhotosIds, selectEverything, unselect, hasSelection } = useSelection(photos, empty, togglableStore);
+const { selectedPhoto, selectedPhotosIds, selectEverything, unselect, hasSelection } = useSelection({ photos }, togglableStore);
 
 function goBack() {
 	if (is_slideshow_active.value) {

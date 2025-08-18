@@ -13,25 +13,25 @@
 			'aspect-3x2': 'aspect-3x2' === props.config.album_thumb_css_aspect_ratio,
 			'aspect-square': 'aspect-square' === props.config.album_thumb_css_aspect_ratio,
 			'aspect-video': 'aspect-video' === props.config.album_thumb_css_aspect_ratio,
+			'!opacity-25 ': cannotInteractWhileDragging,
 		}"
-		:data-id="props.album.id"
+		:data-album-id="props.album.id"
 	>
 		<AlbumThumbImage
 			class="group-hover:border-primary-500 group-hover:-rotate-2 group-hover:-translate-x-3 group-hover:translate-y-2"
-			:class="cssClass"
 			:thumb="props.album.thumb"
 			:is-password-protected="props.album.is_password_required"
 		/>
 		<AlbumThumbImage
 			class="group-hover:border-primary-500 group-hover:rotate-6 group-hover:translate-x-3 group-hover:-translate-y-2"
-			:class="cssClass"
 			:thumb="props.album.thumb"
 			:is-password-protected="props.album.is_password_required"
 		/>
 		<AlbumThumbImage
 			class="group-hover:border-primary-500"
-			:class="cssClass"
 			:thumb="props.album.thumb"
+			:class="cssClass"
+			:is-selectable="isSelectable"
 			:is-password-protected="props.album.is_password_required"
 		/>
 		<AlbumThumbOverlay v-if="props.config.display_thumb_album_overlay !== 'never'" :album="props.album" :config="props.config" />
@@ -66,6 +66,8 @@ import { storeToRefs } from "pinia";
 import { useImageHelpers } from "@/utils/Helpers";
 import { useAlbumRoute } from "@/composables/photo/albumRoute";
 import { useRouter } from "vue-router";
+import { useAlbumActions } from "@/composables/album/albumActions";
+import { useTogglablesStateStore } from "@/stores/ModalsState";
 
 export type AlbumThumbConfig = {
 	album_thumb_css_aspect_ratio: string;
@@ -82,20 +84,23 @@ const props = defineProps<{
 	config: AlbumThumbConfig;
 }>();
 
+const { canInteractAlbum } = useAlbumActions();
 const router = useRouter();
 const auth = useAuthStore();
 const lycheeStore = useLycheeStateStore();
+const togglableStore = useTogglablesStateStore();
 const { getPlayIcon } = useImageHelpers();
 const { user } = storeToRefs(auth);
 
 const { albumRoutes } = useAlbumRoute(router);
+const cannotInteractWhileDragging = computed(() => togglableStore.isDragging === true && canInteractAlbum(props.album) === false);
+const isSelectable = computed(() => canInteractAlbum(props.album));
 
 const cssClass = computed(() => {
-	let css = "";
 	if (props.isSelected) {
-		css += "outline outline-1.5 outline-primary-500";
+		return "outline !outline-offset-2 outline-primary-500";
 	}
-	return css;
+	return "";
 });
 
 auth.getUser();
