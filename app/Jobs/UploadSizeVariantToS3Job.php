@@ -26,7 +26,6 @@ use Illuminate\Support\Str;
 
 class UploadSizeVariantToS3Job implements ShouldQueue
 {
-	use HasFailedTrait;
 	use Dispatchable;
 	use InteractsWithQueue;
 	use Queueable;

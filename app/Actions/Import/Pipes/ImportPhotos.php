@@ -75,7 +75,7 @@ class ImportPhotos implements ImportPipe
 		foreach ($image_paths as $idx => $image_path) {
 			$this->importSingleImage($image_path, $node->album, $idx / $total * 100);
 		}
-		$this->report(ImportEventReport::createDebug('importing', null, 'Importing photos for: ' . $node->name . '%s'));
+		$this->report(ImportEventReport::createDebug('importing', null, 'Importing photos for: ' . $node->name));
 	}
 
 	/**

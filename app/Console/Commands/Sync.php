@@ -249,7 +249,7 @@ class Sync extends Command
 
 		if (($delete_missing_photos || $delete_missing_albums) && $dry_run) {
 			$this->line('<fg=gray>Running in dry run mode, no changes will be made. Rerun with --dry_run=0 to apply changes.</>');
-		} else {
+		} elseif ($delete_missing_photos || $delete_missing_albums) {
 			$this->error('Running in normal mode, destructive changes will be applied.');
 		}
 
