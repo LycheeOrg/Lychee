@@ -53,7 +53,7 @@ return new class() extends Migration {
 					foreach ($photos as $photo) {
 						$tags = explode(',', $photo->tags);
 						foreach ($tags as $tag) {
-							$tag = trim($tag);
+							$tag = ucwords(strtolower(trim($tag)));
 							// Add the tag to the tags_to_create array if it doesn't exist
 							if (!array_key_exists($tag, $tags_to_create)) {
 								$tags_to_create[$tag] = [
