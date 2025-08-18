@@ -166,13 +166,19 @@ class Sync extends Command
 			return false;
 		}
 
-		/** @var Album|null $album */
-		$album = $album_id !== null ? Album::query()->findOrFail($album_id) : null;
-		if ($album === null) {
+		if ($album_id === null) {
 			$this->line('No album ID provided, importing to root album.');
-		} else {
-			$this->line('Album: ' . $album->title . ' (ID: ' . $album->id . ')');
+
+			return null;
 		}
+		/** @var Album|null $album */
+		$album = Album::query()->find($album_id);
+		if ($album === null) {
+			$this->error('Album ID ' . $album_id . ' not found.');
+
+			return false;
+		}
+		$this->line('Album: ' . $album->title . ' (ID: ' . $album->id . ')');
 
 		return $album;
 	}
