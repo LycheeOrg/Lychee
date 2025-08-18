@@ -131,7 +131,7 @@ return new class() extends Migration {
 				});
 
 			// In theory this should create the mapping name => id for the tags.
-			$id_to_tag = DB::table('tags')->select(['id', 'name'])->pluck('id', 'name')->toArray();
+			$id_to_tag = DB::table('tags')->select(['id', 'name'])->pluck('name', 'id')->toArray();
 			DB::table('tag_albums')->orderBy('id')->chunk(100, function ($tag_albums) use (&$id_to_tag) {
 				foreach ($tag_albums as $tag_album) {
 					if (str_contains($tag_album->show_tags, ' AND ')) {
