@@ -84,7 +84,7 @@ class Tag extends Model
 	public static function from(array $tags): Collection
 	{
 		// Trim whitespace from each tag
-		$tags = array_map(fn ($tag) => $tag = trim($tag), $tags);
+		$tags = array_map(fn ($tag) => ucwords(strtolower(trim($tag))), $tags);
 		// Filter out empty tags
 		$tags = array_filter($tags, fn ($tag) => $tag !== '');
 
