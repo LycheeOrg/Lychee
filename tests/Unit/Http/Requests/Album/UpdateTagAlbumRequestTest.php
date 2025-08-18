@@ -66,6 +66,7 @@ class UpdateTagAlbumRequestTest extends BaseRequestTest
 			RequestAttribute::COPYRIGHT_ATTRIBUTE => 'Copyright (c) 2017-2018 Tobias Reich',
 			RequestAttribute::TAGS_ATTRIBUTE => ['tag1', 'tag2'],
 			RequestAttribute::IS_PINNED_ATTRIBUTE => false,
+			RequestAttribute::IS_AND_ATTRIBUTE => true,
 		]);
 
 		$request->validateResolved(); // hydrate the request Class with the data before authorizing . Fighting the framework a bit
@@ -94,6 +95,7 @@ class UpdateTagAlbumRequestTest extends BaseRequestTest
 			RequestAttribute::ALBUM_PHOTO_LAYOUT => ['present', 'nullable', new Enum(PhotoLayoutType::class)],
 			RequestAttribute::ALBUM_TIMELINE_PHOTO => ['present', 'nullable', new Enum(TimelinePhotoGranularity::class), new EnumRequireSupportRule(TimelinePhotoGranularity::class, [TimelinePhotoGranularity::DEFAULT, TimelinePhotoGranularity::DISABLED], $this->mock_verify)],
 			RequestAttribute::IS_PINNED_ATTRIBUTE => ['present', 'boolean'],
+			RequestAttribute::IS_AND_ATTRIBUTE => ['required', 'boolean'],
 		];
 		$this->assertCount(count($expectedRuleMap), $rules); // only validating the first 7 rules & the GRANTS_UPLOAD_ATTRIBUTE is tested afterwards
 

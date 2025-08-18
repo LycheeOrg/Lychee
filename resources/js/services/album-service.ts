@@ -10,6 +10,7 @@ export type CreateAlbumData = {
 export type CreateTagAlbumData = {
 	title: string;
 	tags: string[];
+	is_and: boolean;
 };
 
 export type UpdateAbumData = {
@@ -42,6 +43,7 @@ export type UpdateTagAlbumData = {
 	photo_layout: App.Enum.PhotoLayoutType | null;
 	photo_timeline: App.Enum.TimelinePhotoGranularity | null;
 	is_pinned: boolean;
+	is_and: boolean;
 };
 
 export type UpdateProtectionPolicyData = {

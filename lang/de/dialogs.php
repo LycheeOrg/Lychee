@@ -130,7 +130,6 @@ return [
         'info' => 'Einen Titel für das neue Tag Album angeben:',
         'title' => 'Titel',
         'set_tags' => 'Anzuzeigende Tags festlegen',
-        'warn' => 'Darauf achten, nach jedem Tag die Eingabetaste zu drücken',
         'create' => 'Tag Album erstellen',
     ],
     'delete_album' => [

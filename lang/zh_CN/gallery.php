@@ -111,6 +111,7 @@ return [
             'layout' => '设置照片布局',
             'show_tags' => '设置要显示的标签',
             'tags_required' => '标签为必填项。',
+            'all_tags_must_match' => '所有标签必须匹配。',
         ],
     ],
     'photo' => [

@@ -260,11 +260,15 @@
 
 				<div v-if="is_model_album" class="h-10 my-2 pt-4"></div>
 
-				<div v-if="!is_model_album" class="mb-8 h-10">
+				<div v-if="!is_model_album" class="my-4 flex flex-col gap-2">
 					<FloatLabel variant="on">
 						<TagsInput v-model="tags" :add="false" />
 						<label for="tags">{{ $t("gallery.album.properties.show_tags") }}</label>
 					</FloatLabel>
+					<div class="flex gap-2 items-center my-2">
+						<ToggleSwitch v-model="is_and" input-id="pp_is_and" />
+						<label for="pp_is_and" class="text-muted-color-emphasis">{{ $t("gallery.album.properties.all_tags_must_match") }}</label>
+					</div>
 				</div>
 				<Button class="p-3 mt-4 w-full font-bold border-none shrink" @click="save">
 					{{ $t("dialogs.button.save") }}
@@ -299,6 +303,7 @@ import { trans } from "laravel-vue-i18n";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import TagsInput from "@/components/forms/basic/TagsInput.vue";
+import ToggleSwitch from "primevue/toggleswitch";
 
 type HeaderOption = {
 	id: string;
@@ -331,6 +336,7 @@ const copyright = ref<string | undefined>(undefined);
 const tags = ref<string[]>([]);
 const aspectRatio = ref<SelectOption<App.Enum.AspectRatioType> | undefined>(undefined);
 const header_id = ref<HeaderOption | undefined>(undefined);
+const is_and = ref<boolean>(false);
 
 const photoTimelineOptions = computed(() => {
 	if (is_se_enabled.value) {
@@ -399,6 +405,7 @@ function load(editable: App.Http.Resources.Editable.EditableBaseAlbumResource, p
 	photoTimeline.value = SelectBuilders.buildTimelinePhotoGranularity(editable.photo_timeline ?? undefined);
 	header_id.value = buildHeaderId(editable.header_id, photos);
 	tags.value = editable.tags;
+	is_and.value = editable.is_and ?? false;
 }
 
 load(props.editable, props.photos);
@@ -428,7 +435,7 @@ function saveAlbum() {
 		photo_layout: photoLayout.value?.value ?? null,
 		album_timeline: albumTimeline.value?.value ?? null,
 		photo_timeline: photoTimeline.value?.value ?? null,
-		is_pinned: props.editable.is_pinned,
+		is_pinned: props.editable.is_pinned ?? false,
 	};
 	AlbumService.updateAlbum(data).then(() => {
 		toast.add({ severity: "success", summary: trans("toasts.success"), life: 3000 });
@@ -452,7 +459,8 @@ function saveTagAlbum() {
 		copyright: copyright.value ?? null,
 		photo_layout: photoLayout.value?.value ?? null,
 		photo_timeline: photoTimeline.value?.value ?? null,
-		is_pinned: props.editable.is_pinned,
+		is_pinned: props.editable.is_pinned ?? false,
+		is_and: is_and.value,
 	};
 	AlbumService.updateTag(data).then(() => {
 		toast.add({ severity: "success", summary: trans("toasts.success"), life: 3000 });

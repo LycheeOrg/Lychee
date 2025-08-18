@@ -18,7 +18,10 @@
 						<TagsInput v-model="tags" :add="false" />
 						<label for="tags">{{ $t("dialogs.new_tag_album.set_tags") }}</label>
 					</FloatLabel>
-					<div class="text-muted-color-emphasis" v-html="$t('dialogs.new_tag_album.warn')" />
+					<div class="flex gap-2 items-center my-2">
+						<ToggleSwitch v-model="is_and" input-id="pp_is_and" />
+						<label for="pp_is_and" class="text-muted-color-emphasis">{{ $t("gallery.album.properties.all_tags_must_match") }}</label>
+					</div>
 				</div>
 				<div class="flex items-center mt-9">
 					<Button severity="secondary" class="w-full font-bold border-none rounded-none rounded-bl-xl" @click="closeCallback">
@@ -45,6 +48,7 @@ import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { storeToRefs } from "pinia";
 import { trans } from "laravel-vue-i18n";
 import TagsInput from "@/components/forms/basic/TagsInput.vue";
+import ToggleSwitch from "primevue/toggleswitch";
 
 const toast = useToast();
 const router = useRouter();
@@ -54,6 +58,7 @@ const { is_create_tag_album_visible } = storeToRefs(togglableStore);
 
 const title = ref<string | undefined>(undefined);
 const tags = ref<string[]>([]);
+const is_and = ref<boolean>(true);
 
 const isValid = computed(() => title.value !== undefined && title.value.length > 0 && title.value.length <= 100);
 
@@ -65,6 +70,7 @@ function create() {
 	AlbumService.createTag({
 		title: title.value as string,
 		tags: tags.value,
+		is_and: is_and.value,
 	})
 		.then((response) => {
 			is_create_tag_album_visible.value = false;

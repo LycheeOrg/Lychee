@@ -10,6 +10,7 @@ namespace App\Http\Requests\Album;
 
 use App\Contracts\Http\Requests\HasCopyright;
 use App\Contracts\Http\Requests\HasDescription;
+use App\Contracts\Http\Requests\HasIsAnd;
 use App\Contracts\Http\Requests\HasIsPinned;
 use App\Contracts\Http\Requests\HasPhotoLayout;
 use App\Contracts\Http\Requests\HasPhotoSortingCriterion;
@@ -27,6 +28,7 @@ use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\Authorize\AuthorizeCanEditAlbumTrait;
 use App\Http\Requests\Traits\HasCopyrightTrait;
 use App\Http\Requests\Traits\HasDescriptionTrait;
+use App\Http\Requests\Traits\HasIsAndTrait;
 use App\Http\Requests\Traits\HasIsPinnedTrait;
 use App\Http\Requests\Traits\HasPhotoLayoutTrait;
 use App\Http\Requests\Traits\HasPhotoSortingCriterionTrait;
@@ -43,11 +45,12 @@ use App\Rules\TitleRule;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Validation\ValidationException;
 
-class UpdateTagAlbumRequest extends BaseApiRequest implements HasTagAlbum, HasTitle, HasDescription, HasPhotoSortingCriterion, HasCopyright, HasTags, HasPhotoLayout, HasTimelinePhoto, HasIsPinned
+class UpdateTagAlbumRequest extends BaseApiRequest implements HasTagAlbum, HasTitle, HasDescription, HasPhotoSortingCriterion, HasCopyright, HasTags, HasPhotoLayout, HasTimelinePhoto, HasIsPinned, HasIsAnd
 {
 	use HasTagAlbumTrait;
 	use HasTitleTrait;
 	use HasDescriptionTrait;
+	use HasIsAndTrait;
 	use HasPhotoSortingCriterionTrait;
 	use HasCopyrightTrait;
 	use HasTagsTrait;
@@ -76,6 +79,7 @@ class UpdateTagAlbumRequest extends BaseApiRequest implements HasTagAlbum, HasTi
 			RequestAttribute::IS_PINNED_ATTRIBUTE => ['present', 'boolean'],
 			RequestAttribute::ALBUM_PHOTO_LAYOUT => ['present', 'nullable', new Enum(PhotoLayoutType::class)],
 			RequestAttribute::ALBUM_TIMELINE_PHOTO => ['present', 'nullable', new Enum(TimelinePhotoGranularity::class), new EnumRequireSupportRule(TimelinePhotoGranularity::class, [TimelinePhotoGranularity::DEFAULT, TimelinePhotoGranularity::DISABLED], $this->verify)],
+			RequestAttribute::IS_AND_ATTRIBUTE => ['required', 'boolean'],
 		];
 	}
 
@@ -99,14 +103,15 @@ class UpdateTagAlbumRequest extends BaseApiRequest implements HasTagAlbum, HasTi
 		$photo_column = ColumnSortingPhotoType::tryFrom($values[RequestAttribute::PHOTO_SORTING_COLUMN_ATTRIBUTE]);
 		$photo_order = OrderSortingType::tryFrom($values[RequestAttribute::PHOTO_SORTING_ORDER_ATTRIBUTE]);
 
-		$this->photoSortingCriterion = $photo_column === null ?
+		$this->photo_sorting_criterion = $photo_column === null ?
 			null :
 			new PhotoSortingCriterion($photo_column->toColumnSortingType(), $photo_order);
 
-		$this->photoLayout = PhotoLayoutType::tryFrom($values[RequestAttribute::ALBUM_PHOTO_LAYOUT]);
+		$this->photo_layout = PhotoLayoutType::tryFrom($values[RequestAttribute::ALBUM_PHOTO_LAYOUT]);
 		$this->photo_timeline = TimelinePhotoGranularity::tryFrom($values[RequestAttribute::ALBUM_TIMELINE_PHOTO]);
 		$this->copyright = $values[RequestAttribute::COPYRIGHT_ATTRIBUTE];
 		$this->is_pinned = static::toBoolean($values[RequestAttribute::IS_PINNED_ATTRIBUTE]);
 		$this->tags = $values[RequestAttribute::TAGS_ATTRIBUTE];
+		$this->is_and = static::toBoolean($values[RequestAttribute::IS_AND_ATTRIBUTE]);
 	}
 }

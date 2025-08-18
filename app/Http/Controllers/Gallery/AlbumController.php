@@ -118,7 +118,7 @@ class AlbumController extends Controller
 		// Root
 		AlbumRouteCacheUpdated::dispatch('');
 
-		return $create->create($request->title(), $request->tags())->id;
+		return $create->create($request->title(), $request->tags(), $request->is_and())->id;
 	}
 
 	/**
@@ -173,6 +173,7 @@ class AlbumController extends Controller
 		$album->photo_layout = $request->photoLayout();
 		$album->photo_timeline = $request->photo_timeline();
 		$album->is_pinned = $request->is_pinned();
+		$album->is_and = $request->is_and();
 		$album->save();
 
 		$tag_models = Tag::from($request->tags());

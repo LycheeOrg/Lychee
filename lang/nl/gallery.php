@@ -111,6 +111,7 @@ return [
             'layout' => 'Stel foto-indeling in',
             'show_tags' => 'Stel tags in om te tonen',
             'tags_required' => 'Tags zijn vereist.',
+            'all_tags_must_match' => 'Alle tags moeten overeenkomen.',
         ],
     ],
     'photo' => [

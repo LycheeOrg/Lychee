@@ -111,6 +111,7 @@ return [
             'layout' => 'Establecer el diseño de la foto',
             'show_tags' => 'Establecer etiquetas para mostrar',
             'tags_required' => 'Se requieren etiquetas.',
+            'all_tags_must_match' => 'Todas las etiquetas deben coincidir.',
         ],
     ],
     'photo' => [

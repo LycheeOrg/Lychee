@@ -130,7 +130,6 @@ return [
         'info' => 'Voer een titel in voor het nieuwe tag album:',
         'title' => 'titel',
         'set_tags' => 'Stel tags in om weer te geven',
-        'warn' => 'Zorg ervoor dat u op enter drukt na elke tag',
         'create' => 'Tag Album Aanmaken',
     ],
     'delete_album' => [

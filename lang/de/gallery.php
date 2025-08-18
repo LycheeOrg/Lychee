@@ -111,6 +111,7 @@ return [
             'layout' => 'Fotolayout festlegen',
             'show_tags' => 'Anzuzeigende Tags festlegen',
             'tags_required' => 'Tags sind erforderlich.',
+            'all_tags_must_match' => 'Alle Tags müssen übereinstimmen.',
         ],
     ],
     'photo' => [
