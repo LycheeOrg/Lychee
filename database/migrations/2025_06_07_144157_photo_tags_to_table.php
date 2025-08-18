@@ -52,8 +52,13 @@ return new class() extends Migration {
 				->chunk(100, function ($photos) use (&$tags_to_create, &$tag_photo_links, &$tag_idx) {
 					foreach ($photos as $photo) {
 						$tags = explode(',', $photo->tags);
-						foreach ($tags as $tag) {
-							$tag = ucwords(strtolower(trim($tag)));
+						$seen = [];
+						foreach ($tags as $rawTag) {
+							$tag = ucwords(strtolower(trim($rawTag)));
+							if ($tag === '' || isset($seen[$tag])) {
+								continue; // skip empty tokens or duplicates within the same photo
+							}
+							$seen[$tag] = true;
 							// Add the tag to the tags_to_create array if it doesn't exist
 							if (!array_key_exists($tag, $tags_to_create)) {
 								$tags_to_create[$tag] = [
@@ -130,7 +135,7 @@ return new class() extends Migration {
 					}
 				});
 
-			// In theory this should create the mapping name => id for the tags.
+			// Build mapping id => name for the tags.
 			$id_to_tag = DB::table('tags')->select(['id', 'name'])->pluck('name', 'id')->toArray();
 			DB::table('tag_albums')->orderBy('id')->chunk(100, function ($tag_albums) use (&$id_to_tag) {
 				foreach ($tag_albums as $tag_album) {
