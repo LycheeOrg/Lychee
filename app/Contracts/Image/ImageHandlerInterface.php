@@ -77,6 +77,18 @@ interface ImageHandlerInterface
 	public function cloneAndScale(ImageDimension $dst_dim): ImageHandlerInterface;
 
 	/**
+	 * Clones and changes the opacity multiplicatively.
+	 *
+	 * @param float $opacity multiplicative factor on opacity, float between 0 and 1 (1=no change, 0=fully transparent)
+	 *
+	 * @return ImageHandlerInterface the changed clone
+	 *
+	 * @throws LycheeDomainException    if $opacity is out of bounds
+	 * @throws ImageProcessingException on processing failure
+	 */
+	public function cloneAndChangeOpacity(float $opacity): ImageHandlerInterface;
+
+	/**
 	 * Clones and crops the image to the designated dimensions.
 	 *
 	 * @param ImageDimension $dst_dim the designated dimensions

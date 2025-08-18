@@ -216,7 +216,7 @@ readonly class Delete
 			// Maybe consider doing multiple queries for the different storage types.
 			$size_variants = SizeVariant::query()
 				->from('size_variants as sv')
-				->select(['sv.short_path', 'sv.storage_disk'])
+				->select(['sv.short_path', 'sv.short_path_watermarked', 'sv.storage_disk'])
 				->join('photos as p', 'p.id', '=', 'sv.photo_id')
 				->leftJoin('photos as dup', function (JoinClause $join) use ($photo_ids): void {
 					$join

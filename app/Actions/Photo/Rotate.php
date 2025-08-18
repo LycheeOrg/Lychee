@@ -11,8 +11,10 @@ namespace App\Actions\Photo;
 use App\Contracts\Exceptions\LycheeException;
 use App\Contracts\Models\AbstractSizeVariantNamingStrategy;
 use App\Contracts\Models\SizeVariantFactory;
+use App\DTO\CreateSizeVariantFlags;
 use App\DTO\ImageDimension;
 use App\Enum\SizeVariantType;
+use App\Enum\StorageDiskType;
 use App\Exceptions\Handler;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
@@ -34,6 +36,7 @@ class Rotate
 	/** @var int either `1` for counterclockwise or `-1` for clockwise rotation */
 	protected int $direction;
 	protected FlysystemFile $source_file;
+	protected StorageDiskType $disk_file;
 	protected AbstractSizeVariantNamingStrategy $naming_strategy;
 
 	/**
@@ -66,6 +69,8 @@ class Rotate
 			$this->photo = $photo;
 			$this->direction = $direction;
 			$this->source_file = $this->photo->size_variants->getOriginal()->getFile();
+			$this->disk_file = $this->photo->size_variants->getOriginal()->storage_disk;
+
 			$this->naming_strategy = resolve(AbstractSizeVariantNamingStrategy::class);
 			$this->naming_strategy->setPhoto($this->photo);
 		} catch (BindingResolutionException $e) {
@@ -108,7 +113,7 @@ class Rotate
 
 		// Create new target file for rotated original size variant,
 		// and stream it into the final place
-		$target_file = $this->naming_strategy->createFile(SizeVariantType::ORIGINAL);
+		$target_file = $this->naming_strategy->createFile(SizeVariantType::ORIGINAL, new CreateSizeVariantFlags(disk: $this->disk_file));
 		/** @var StreamStat $stream_stat */
 		$stream_stat = $image->save($target_file, true);
 

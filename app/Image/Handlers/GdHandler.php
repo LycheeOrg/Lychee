@@ -19,15 +19,19 @@ use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
 use App\Image\Files\InMemoryBuffer;
 use Safe\Exceptions\ImageException;
+use function Safe\imagealphablending;
 use function Safe\imagecopyresampled;
 use function Safe\imagecopyresized;
 use function Safe\imagecreatefromstring;
 use function Safe\imagecreatetruecolor;
 use function Safe\imagecrop;
+use function Safe\imagefilledrectangle;
+use function Safe\imagefilter;
 use function Safe\imageflip;
 use function Safe\imagegif;
 use function Safe\imagejpeg;
 use function Safe\imagepng;
+use function Safe\imagesavealpha;
 use function Safe\imagesx;
 use function Safe\imagesy;
 use function Safe\imagewebp;
@@ -476,5 +480,47 @@ class GdHandler extends BaseImageHandler
 		}
 
 		return $safe_result;
+	}
+
+	/**
+	 * Changes the opacity of the image by creating a clone with adjusted alpha channel.
+	 *
+	 * @param float $opacity the desired opacity level (0.0 to 1.0)
+	 *
+	 * @return ImageHandlerInterface a new handler with the opacity-adjusted image
+	 *
+	 * @throws ImageProcessingException
+	 */
+	public function cloneAndChangeOpacity(float $opacity): ImageHandlerInterface
+	{
+		try {
+			$src_dim = $this->getDimensions();
+
+			$width = (int) round($src_dim->width);
+			$height = (int) round($src_dim->height);
+
+			$cloned_gd_image = imagecreatetruecolor($width, $height);
+			// Prepare destination to preserve per-pixel alpha
+			imagealphablending($cloned_gd_image, false); // imagesavealpha can only be used by doing this for some reason
+			imagesavealpha($cloned_gd_image, true); // this one helps you keep the alpha.
+			$transparent = imagecolorallocatealpha($cloned_gd_image, 0, 0, 0, 127);
+			imagefilledrectangle($cloned_gd_image, 0, 0, $width, $height, $transparent);
+			// Now copy pixels
+			$this->fastImageCopyResampled($cloned_gd_image, $this->gd_image, 0, 0, 0, 0, $width, $height, $src_dim->width, $src_dim->height);
+			// Compute and apply alpha adjustment
+			$opacity = max(0.0, min(1.0, $opacity));
+			$transparency = 1.0 - $opacity;
+			$alpha = max(0, min(127, (int) round(127 * $transparency)));
+			imagefilter($cloned_gd_image, IMG_FILTER_COLORIZE, 0, 0, 0, $alpha); // 5th arg is alpha (0 opaque .. 127 fully transparent)
+
+			$clone = new self();
+			$clone->compression_quality = $this->compression_quality;
+			$clone->gd_image = $cloned_gd_image;
+			$clone->gd_image_type = $this->gd_image_type;
+
+			return $clone;
+		} catch (\ErrorException $e) {
+			throw new ImageProcessingException('Failed to change opacity of image', $e);
+		}
 	}
 }

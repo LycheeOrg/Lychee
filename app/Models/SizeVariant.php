@@ -16,6 +16,7 @@ use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
 use App\Http\Resources\Models\SizeVariantResource;
 use App\Image\Files\FlysystemFile;
+use App\Image\Watermarker;
 use App\Models\Builders\SizeVariantBuilder;
 use App\Models\Extensions\HasBidirectionalRelationships;
 use App\Models\Extensions\HasUrlGenerator;
@@ -37,6 +38,7 @@ use Illuminate\Support\Facades\Storage;
  * @property Photo                $photo
  * @property SizeVariantType      $type
  * @property string               $short_path
+ * @property string|null          $short_path_watermarked
  * @property string               $url
  * @property int                  $width
  * @property int                  $height
@@ -107,6 +109,8 @@ class SizeVariant extends Model
 		'photo', // see above and otherwise infinite loops will occur
 		'photo_id', // see above
 		'short_path',  // serialize url instead
+		'short_path_watermarked', // serialize url instead
+		'storage_disk', // serialize url instead
 	];
 
 	/**
@@ -160,8 +164,14 @@ class SizeVariant extends Model
 	 */
 	public function getUrlAttribute(): string
 	{
+		if ($this->type === SizeVariantType::PLACEHOLDER) {
+			return 'data:image/webp;base64,' . $this->short_path;
+		}
+
+		$path = Watermarker::get_path($this);
+
 		return self::pathToUrl(
-			$this->short_path,
+			$path,
 			$this->storage_disk->value,
 			$this->type,
 		);

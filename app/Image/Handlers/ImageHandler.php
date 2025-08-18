@@ -112,6 +112,14 @@ class ImageHandler extends BaseImageHandler implements ImageHandlerInterface
 	/**
 	 * {@inheritDoc}
 	 */
+	public function cloneAndChangeOpacity(float $opacity): ImageHandlerInterface
+	{
+		return $this->engine->cloneAndChangeOpacity($opacity);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public function cloneAndCrop(ImageDimension $dst_dim): ImageHandlerInterface
 	{
 		return $this->engine->cloneAndCrop($dst_dim);

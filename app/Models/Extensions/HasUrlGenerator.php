@@ -10,6 +10,7 @@ namespace App\Models\Extensions;
 
 use App\Enum\SizeVariantType;
 use App\Exceptions\ConfigurationKeyMissingException;
+use App\Exceptions\Internal\LycheeLogicException;
 use App\Models\Configs;
 use Illuminate\Contracts\Encryption\EncryptException;
 use Illuminate\Support\Facades\Auth;
@@ -31,7 +32,7 @@ trait HasUrlGenerator
 	public static function pathToUrl(string $short_path, string $storage_disk, SizeVariantType $type): string
 	{
 		if ($type === SizeVariantType::PLACEHOLDER) {
-			return 'data:image/webp;base64,' . $short_path;
+			throw new LycheeLogicException('Cannot generate URL for placeholder size variant.');
 		}
 
 		$image_disk = Storage::disk($storage_disk);

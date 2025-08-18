@@ -33,6 +33,7 @@ use App\Actions\Diagnostics\Pipes\Checks\StatisticsIntegrityCheck;
 use App\Actions\Diagnostics\Pipes\Checks\SupporterCheck;
 use App\Actions\Diagnostics\Pipes\Checks\TimezoneCheck;
 use App\Actions\Diagnostics\Pipes\Checks\UpdatableCheck;
+use App\Actions\Diagnostics\Pipes\Checks\WatermarkerEnabledCheck;
 use App\DTO\DiagnosticData;
 use Illuminate\Pipeline\Pipeline;
 
@@ -68,6 +69,7 @@ class Errors
 		CacheTemporaryUrlCheck::class,
 		SupporterCheck::class,
 		ImagickPdfCheck::class,
+		WatermarkerEnabledCheck::class,
 		StatisticsIntegrityCheck::class,
 	];
 
