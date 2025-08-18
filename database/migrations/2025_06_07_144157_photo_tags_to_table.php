@@ -36,9 +36,9 @@ return new class() extends Migration {
 	 */
 	private function applyUp(): void
 	{
-		// Empty the `tags` table to make sure this migration can be re-run
-		DB::table('tags')->delete();
+		// Empty pivot first to satisfy FK constraints, then tags
 		DB::table('photos_tags')->delete();
+		DB::table('tags')->delete();
 
 		DB::transaction(function () {
 			$tags_to_create = [];
