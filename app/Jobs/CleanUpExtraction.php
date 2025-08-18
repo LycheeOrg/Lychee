@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2017-2018 Tobias Reich
+ * Copyright (c) 2018-2025 LycheeOrg.
+ */
+
 namespace App\Jobs;
 
 use App\Enum\JobStatus;
@@ -23,22 +29,22 @@ class CleanUpExtraction implements ShouldQueue
 
 	protected JobHistory $history;
 
-	public string $folderPath;
+	public string $folder_path;
 	public int $userId;
 
 	/**
 	 * Create a new job instance.
 	 */
 	public function __construct(
-		string $folderPath,
+		string $folder_path,
 	) {
-		$this->folderPath = $folderPath;
+		$this->folder_path = $folder_path;
 		$this->userId = Auth::user()->id;
 
 		// Set up our new history record.
 		$this->history = new JobHistory();
 		$this->history->owner_id = $this->userId;
-		$this->history->job = Str::limit('Removing ' . basename($this->folderPath), 200);
+		$this->history->job = Str::limit('Removing ' . basename($this->folder_path), 200);
 		$this->history->status = JobStatus::READY;
 
 		$this->history->save();
@@ -52,7 +58,7 @@ class CleanUpExtraction implements ShouldQueue
 		// $this->history->status = JobStatus::STARTED;
 		// $this->history->save();
 
-		rmdir($this->folderPath);
+		rmdir($this->folder_path);
 
 		$this->history->status = JobStatus::SUCCESS;
 		$this->history->save();

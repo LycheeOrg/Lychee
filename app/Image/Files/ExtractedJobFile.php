@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2017-2018 Tobias Reich
+ * Copyright (c) 2018-2025 LycheeOrg.
+ */
+
 namespace App\Image\Files;
 
 /**
@@ -12,7 +18,7 @@ readonly class ExtractedJobFile
 {
 	public function __construct(
 		public string $path,
-		public string $baseName,
+		public string $base_name,
 	) {
 	}
 
@@ -23,6 +29,6 @@ readonly class ExtractedJobFile
 
 	public function getOriginalBasename(): string
 	{
-		return $this->baseName;
+		return $this->base_name;
 	}
 }

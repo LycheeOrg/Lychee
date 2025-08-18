@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2017-2018 Tobias Reich
+ * Copyright (c) 2018-2025 LycheeOrg.
+ */
+
 namespace App\Jobs;
 
 use App\Actions\Album\Create;
@@ -32,30 +38,30 @@ class ExtractZip implements ShouldQueue
 
 	protected JobHistory $history;
 
-	public string $filePath;
-	public string $originalBaseName;
-	public ?string $albumID;
-	public int $userId;
-	public ?int $fileLastModifiedTime;
+	public string $file_path;
+	public string $original_base_name;
+	public ?string $album_id;
+	public int $user_id;
+	public ?int $file_last_modified_time;
 
 	/**
 	 * Create a new job instance.
 	 */
 	public function __construct(
 		ProcessableJobFile $file,
-		string|AbstractAlbum|null $albumID,
-		?int $fileLastModifiedTime,
+		string|AbstractAlbum|null $album_id,
+		?int $file_last_modified_time,
 	) {
-		$this->filePath = $file->getPath();
-		$this->originalBaseName = $file->getOriginalBasename();
-		$this->albumID = is_string($albumID) ? $albumID : $albumID?->id;
-		$this->userId = Auth::user()->id;
-		$this->fileLastModifiedTime = $fileLastModifiedTime;
+		$this->file_path = $file->getPath();
+		$this->original_base_name = $file->getOriginalBasename();
+		$this->album_id = is_string($album_id) ? $album_id : $album_id?->get_id();
+		$this->user_id = Auth::user()->id;
+		$this->file_last_modified_time = $file_last_modified_time;
 
 		// Set up our new history record.
 		$this->history = new JobHistory();
-		$this->history->owner_id = $this->userId;
-		$this->history->job = Str::limit('Extracting: ' . $this->originalBaseName, 200);
+		$this->history->owner_id = $this->user_id;
+		$this->history->job = Str::limit('Extracting: ' . $this->original_base_name, 200);
 		$this->history->status = JobStatus::READY;
 
 		$this->history->save();
@@ -69,35 +75,35 @@ class ExtractZip implements ShouldQueue
 		$this->history->status = JobStatus::STARTED;
 		$this->history->save();
 
-		$extractedFolderName = $this->getExtractFolderName();
+		$extracted_folder_name = $this->getExtractFolderName();
 
-		$pathExtracted = Storage::disk('extract-jobs')->path(date('Ymd') . $extractedFolderName);
+		$path_extracted = Storage::disk('extract-jobs')->path(date('Ymd') . $extracted_folder_name);
 		$zip = new \ZipArchive();
-		if ($zip->open($this->filePath) === true) {
-			$zip->extractTo($pathExtracted);
+		if ($zip->open($this->file_path) === true) {
+			$zip->extractTo($path_extracted);
 			$zip->close();
 
 			// clean up the zip file
-			unlink($this->filePath);
+			unlink($this->file_path);
 
 			$this->history->status = JobStatus::SUCCESS;
 			$this->history->save();
 		} else {
-			throw new ZipExtractionException($this->filePath, $pathExtracted);
+			throw new ZipExtractionException($this->file_path, $path_extracted);
 		}
 
-		$newAlbum = $this->createAlbum($extractedFolderName, $this->albumID);
+		$new_album = $this->createAlbum($extracted_folder_name, $this->album_id);
 		$jobs = [];
-		foreach (new \DirectoryIterator($pathExtracted) as $fileInfo) {
-			if ($fileInfo->isDot() || $fileInfo->isDir()) {
+		foreach (new \DirectoryIterator($path_extracted) as $file_info) {
+			if ($file_info->isDot() || $file_info->isDir()) {
 				continue;
 			}
 
-			$extractedFile = new ExtractedJobFile($fileInfo->getRealPath(), $fileInfo->getFilename());
-			$jobs[] = new ProcessImageJob($extractedFile, $newAlbum, $fileInfo->getMTime());
+			$extracted_file = new ExtractedJobFile($file_info->getRealPath(), $file_info->getFilename());
+			$jobs[] = new ProcessImageJob($extracted_file, $new_album, $file_info->getMTime());
 		}
 
-		$jobs[] = new CleanUpExtraction($pathExtracted);
+		$jobs[] = new CleanUpExtraction($path_extracted);
 		foreach ($jobs as $job) {
 			dispatch($job);
 		}
@@ -125,34 +131,34 @@ class ExtractZip implements ShouldQueue
 	/**
 	 * Given a name and parent we create it.
 	 *
-	 * @param string      $newAlbumName
-	 * @param string|null $parentID
+	 * @param string      $new_album_name
+	 * @param string|null $parent_id
 	 *
 	 * @return Album new album
 	 */
-	private function createAlbum(string $newAlbumName, ?string $parentID): Album
+	private function createAlbum(string $new_album_name, ?string $parent_id): Album
 	{
-		if (SmartAlbumType::tryFrom($parentID) !== null) {
-			$parentID = null;
+		if (SmartAlbumType::tryFrom($parent_id) !== null) {
+			$parent_id = null;
 		}
 
-		/** @var Album $parentAlbum */
-		$parentAlbum = $parentID !== null ? Album::query()->findOrFail($parentID) : null; // in case no ID provided -> import to root folder
-		$createAlbum = new Create($this->userId);
+		/** @var Album $parent_album */
+		$parent_album = $parent_id !== null ? Album::query()->findOrFail($parent_id) : null; // in case no ID provided -> import to root folder
+		$create_album = new Create($this->user_id);
 
-		return $createAlbum->create($this->prepareAlbumName($newAlbumName), $parentAlbum);
+		return $create_album->create($this->prepareAlbumName($new_album_name), $parent_album);
 	}
 
 	/**
 	 * Todo Later: add renamer module.
 	 *
-	 * @param string $albumNameCandidate
+	 * @param string $album_name_candidate
 	 *
 	 * @return string
 	 */
-	private function prepareAlbumName(string $albumNameCandidate): string
+	private function prepareAlbumName(string $album_name_candidate): string
 	{
-		return trim(str_replace('_', ' ', $albumNameCandidate));
+		return trim(str_replace('_', ' ', $album_name_candidate));
 	}
 
 	/**
@@ -164,21 +170,21 @@ class ExtractZip implements ShouldQueue
 	 */
 	private function getExtractFolderName(): string
 	{
-		$baseNameWithoutExtension = substr($this->originalBaseName, 0, -4);
+		$base_name_without_extension = substr($this->original_base_name, 0, -4);
 
 		// Save that one (is default if no existing folder found).
-		$orignalName = str_replace(' ', '_', $baseNameWithoutExtension);
+		$orignal_name = str_replace(' ', '_', $base_name_without_extension);
 
 		// Iterate on that one.
-		$candidateName = $orignalName;
+		$candidate_name = $orignal_name;
 
 		// count
 		$i = 0;
-		while (Storage::disk('extract-jobs')->exists(date('Ymd') . $candidateName)) {
-			$candidateName = $orignalName . '_(' . $i . ')';
+		while (Storage::disk('extract-jobs')->exists(date('Ymd') . $candidate_name)) {
+			$candidate_name = $orignal_name . '_(' . $i . ')';
 			$i++;
 		}
 
-		return $candidateName;
+		return $candidate_name;
 	}
 }
