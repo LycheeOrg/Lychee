@@ -51,10 +51,10 @@ class TimelineTest extends BaseApiWithDataTest
 		$response = $this->getJson('Timeline::dates');
 		$this->assertOk($response);
 
-		$response = $this->getJson('Timeline::dates', ['date' => '2021-01-01']);
+		$response = $this->getJson('Timeline::dates?date=2021-01-01');
 		$this->assertOk($response);
 
-		$response = $this->getJson('Timeline::dates', ['photoId' => $this->photo1->id]);
+		$response = $this->getJson('Timeline::dates?photoId=' . $this->photo1->id);
 		$this->assertOk($response);
 
 		$response = $this->getJson('Timeline::init');
