@@ -94,8 +94,8 @@ return new class() extends Migration {
 					$new_show_tag = '';
 					$tags = explode(',', $tag_album->show_tags);
 					foreach ($tags as $tag) {
-						$tag = trim($tag);
-						if (!array_key_exists($tag, $tags_to_create)) {
+						$tag = ucwords(strtolower(trim($tag)));
+						if ($tag === '' || !array_key_exists($tag, $tags_to_create)) {
 							// skip tags that do not exist in the new tags
 							// this can happen if the tag was removed from the photo
 							// but still exists in the tag_album's show_tags field
