@@ -67,8 +67,18 @@ return new class() extends Migration {
 				}
 			});
 
-		DB::table('tags')->insert(array_values($tags_to_create));
-		DB::table('photos_tags')->insert($tag_photo_links);
+		$tags = collect(array_values($tags_to_create));
+		$tags_chuncked = $tags->chunk(100);
+		foreach ($tags_chuncked as $chunk) {
+			DB::table('tags')->insert($chunk->all());
+		}
+
+
+		$tag_photo_links_collection = collect($tag_photo_links);
+		$tag_photo_links_collection_chuncked = $tag_photo_links_collection->chunk(100);
+		foreach ($tag_photo_links_collection_chuncked as $chunk) {
+			DB::table('photos_tags')->insert($chunk->all());
+		}
 
 		DB::table('tag_albums')->orderBy('id')->chunk(100, function ($tag_albums) use (&$tags_to_create) {
 			foreach ($tag_albums as $tag_album) {
