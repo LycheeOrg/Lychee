@@ -92,7 +92,14 @@ class Tag extends Model
 		$existing_tags = self::whereIn('name', $tags)->get();
 
 		// figure out the missing ones and create them.
-		$missing_tags = array_diff($tags, $existing_tags->pluck('name')->all());
+		// We map all the tags to strtolower to avoid casing conflict.
+		/** @var string[] $normalized_tags */
+		$normalized_tags = $existing_tags->pluck('name')->all();
+		$normalized_tags = array_map(fn ($t) => strtolower($t), $normalized_tags);
+
+		// we cannot use array_diff here because of the insensitivity case.
+		$missing_tags = array_filter($tags, fn ($t) => !in_array(strtolower($t), $normalized_tags, true));
+
 		if (count($missing_tags) > 0) {
 			// Create missing tags
 			self::insert(array_map(fn ($name) => ['name' => $name], $missing_tags));
