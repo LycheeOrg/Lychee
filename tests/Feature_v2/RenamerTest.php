@@ -31,24 +31,6 @@ class RenamerTest extends BaseApiWithDataTest
 	use RequireSE;
 	use DatabaseTransactions;
 
-	// protected function setUp(): void
-	// {
-	// 	parent::setUp();
-	// 	$this->watermarkerCheck = new WatermarkerEnabledCheck();
-	// 	$this->data = [];
-	// 	$this->next = function (array $data) {
-	// 		return $data;
-	// 	};
-
-	// 	$this->requireSe();
-	// }
-
-	// protected function tearDown(): void
-	// {
-	// 	$this->resetSe();
-	// 	parent::tearDown();
-	// }
-
 	public function testRenamerDisabledByDefault(): void
 	{
 		$renamer = new Renamer(2);
@@ -149,7 +131,8 @@ class RenamerTest extends BaseApiWithDataTest
 		$this->resetSe();
 	}
 
-	public function testRenamerRules() {
+	public function testRenamerRules(): void
+	{
 		$this->requireSe();
 		Configs::set('renamer_enabled', '1');
 		Configs::set('owner_id', $this->admin->id);

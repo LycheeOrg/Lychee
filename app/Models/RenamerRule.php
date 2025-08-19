@@ -12,6 +12,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 /**
  * App\Models\RenamerRule.
  *
+ * This model represents a rule for renaming strings based on pattern matching.
+ * Each rule defines a pattern to find (needle) and what to replace it with (replacement),
+ * along with the mode that determines how the replacement should be performed.
+ * Rules are ordered by the 'order' field and can be enabled/disabled.
+ *
  * @property int             $id
  * @property int             $order
  * @property int             $owner_id
@@ -84,5 +89,4 @@ class RenamerRule extends Model
 	{
 		return new RenamerRuleBuilder($query);
 	}
-
 }

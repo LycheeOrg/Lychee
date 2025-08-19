@@ -61,7 +61,6 @@ class RenamerRuleFactory extends Factory
 		});
 	}
 
-
 	public function rule(string $rule): self
 	{
 		return $this->state(function (array $attributes) use ($rule) {

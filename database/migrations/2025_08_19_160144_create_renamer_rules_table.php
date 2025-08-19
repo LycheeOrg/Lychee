@@ -11,7 +11,6 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class() extends Migration {
-
 	public const CAT = 'Mod Pro';
 	public const BOOL = '0|1';
 
@@ -42,6 +41,58 @@ return new class() extends Migration {
 				'level' => 1,
 				'not_on_docker' => false,
 				'order' => 11,
+				'is_expert' => false,
+			],
+			[
+				'key' => 'renamer_enforced_before',
+				'value' => '0',
+				'cat' => self::CAT,
+				'type_range' => self::BOOL,
+				'is_secret' => false,
+				'description' => 'Enforce renamer rules before user rules',
+				'details' => 'Rules defined by the owner of the Lychee instance will be applied before the rules of the user.',
+				'level' => 1,
+				'not_on_docker' => false,
+				'order' => 12,
+				'is_expert' => false,
+			],
+			[
+				'key' => 'renamer_enforced_after',
+				'value' => '0',
+				'cat' => self::CAT,
+				'type_range' => self::BOOL,
+				'is_secret' => false,
+				'description' => 'Enforce renamer rules after user rules',
+				'details' => 'Rules defined by the owner of the Lychee instance will be applied after the rules of the user.',
+				'level' => 1,
+				'not_on_docker' => false,
+				'order' => 13,
+				'is_expert' => false,
+			],
+			[
+				'key' => 'renamer_photo_title_enabled',
+				'value' => '1',
+				'cat' => self::CAT,
+				'type_range' => self::BOOL,
+				'is_secret' => false,
+				'description' => 'Enabled renamer rules on photo titles at import/upload',
+				'details' => '<span class="pi pi-exclamation-triangle text-orange-500"></span> This may prevent you from using fast duplicate detection on photos that have been renamed (via artisan lychee:sync).',
+				'level' => 1,
+				'not_on_docker' => false,
+				'order' => 14,
+				'is_expert' => false,
+			],
+			[
+				'key' => 'renamer_album_title_enabled',
+				'value' => '1',
+				'cat' => self::CAT,
+				'type_range' => self::BOOL,
+				'is_secret' => false,
+				'description' => 'Enabled renamer rules on album titles at creation',
+				'details' => '<span class="pi pi-exclamation-triangle text-orange-500"></span> This may prevent you from using album tree when doing import (via artisan lychee:sync).',
+				'level' => 1,
+				'not_on_docker' => false,
+				'order' => 15,
 				'is_expert' => false,
 			],
 		];
@@ -78,7 +129,7 @@ return new class() extends Migration {
 	 */
 	public function down(): void
 	{
-		$keys = collect($this->getConfigs())->map(fn($v) => $v['key'])->all();
+		$keys = collect($this->getConfigs())->map(fn ($v) => $v['key'])->all();
 		DB::table('configs')->whereIn('key', $keys)->delete();
 
 		Schema::dropIfExists('renamer_rules');
