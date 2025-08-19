@@ -56,7 +56,7 @@ class Meta extends Component
 		$this->rss_enable = Configs::getValueAsBool('rss_enable');
 		$this->user_css_url = self::getUserCustomFiles('user.css');
 		$this->user_js_url = self::getUserCustomFiles('custom.js');
-		$this->base_url = url( config('app.dir_url') . '/' );
+		$this->base_url = url(config('app.dir_url') . '/');
 
 		$this->page_title = Configs::getValueAsString('site_title');
 		$this->page_description = '';
