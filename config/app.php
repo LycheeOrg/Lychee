@@ -78,7 +78,7 @@ return [
 
 	'dir_url' => env('APP_DIR', '') === '' ? '' : ('/' . trim((string) (env('APP_DIR') ?? ''), '/')),
 
-	'asset_url' => null,
+    'asset_url' => env('ASSET_URL'),
 
 	/*
 	|--------------------------------------------------------------------------
