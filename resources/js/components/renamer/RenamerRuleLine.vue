@@ -21,7 +21,7 @@
 			<div class="text-xs text-muted-color mt-1 text-center flex-grow">
 				<span class="font-medium mx-2">{{ $t("renamer.pattern_label") }}:</span>
 				<pre class="inline font-mono before:content-['`'] after:content-['`']">{{ rule.needle }}</pre>
-				<span class="mx-2 rlt:hidden">&xrarr;</span><span class="mx-2 ltr:hidden">&xlarr;</span
+				<span class="mx-2 rtl:hidden">&xrarr;</span><span class="mx-2 ltr:hidden">&xlarr;</span
 				><span class="font-medium mx-2">{{ $t("renamer.replace_with_label") }}:</span>
 				<pre class="inline font-mono before:content-['`'] after:content-['`']">{{ rule.replacement }}</pre>
 			</div>

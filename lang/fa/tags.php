@@ -1,23 +1,24 @@
 <?php
+
 return [
     /*
 	|--------------------------------------------------------------------------
 	| Tags page
 	|--------------------------------------------------------------------------
 	*/
-    'title' => 'Tags',
-	'description' => 'Manage your tags here. You can rename, merge, and delete tags.<br>The number indicates how many photos are associated with that tag.',
-	'no_tags' => 'No tags found.',
-	'loading' => 'Loading tags...',
-	'rename' => 'Rename',
-	'merge' => 'Merge',
-	'delete' => 'Delete',
+    'title' => 'برچسب‌ها',
+	'description' => 'برچسب‌های خود را در اینجا مدیریت کنید. شما می‌توانید برچسب‌ها را تغییر نام دهید، ادغام کنید و حذف کنید.<br>عدد نشان‌دهنده تعداد عکس‌هایی است که با آن برچسب مرتبط هستند.',
+	'no_tags' => 'هیچ برچسبی یافت نشد.',
+	'loading' => 'در حال بارگیری برچسب‌ها...',
+	'rename' => 'تغییر نام',
+	'merge' => 'ادغام',
+	'delete' => 'حذف',
 
-	'delete_confirm' => 'Are you sure you want to delete the tag “%s”?',
-	'delete_warning' => 'This action cannot be undone! All photos associated with this tag will no longer have this tag.',
+	'delete_confirm' => 'آیا مطمئن هستید که می‌خواهید برچسب "%s" را حذف کنید؟',
+	'delete_warning' => 'این عمل قابل بازگشت نیست! تمام عکس‌های مرتبط با این برچسب دیگر این برچسب را نخواهند داشت.',
 
-	'merge_confirm' => 'Are you sure you want to merge the tag “%1$s” into the tag “%2$s”?',
-	'merge_warning' => 'This action cannot be undone! All photos associated with the source tag will be moved to the destination tag.',
+	'merge_confirm' => 'آیا مطمئن هستید که می‌خواهید برچسب "%1\$s" را در برچسب "%2\$s" ادغام کنید؟',
+	'merge_warning' => 'این عمل قابل بازگشت نیست! تمام عکس‌های مرتبط با برچسب مبدأ به برچسب مقصد منتقل خواهند شد.',
 
-	'rename_tag' => 'Rename Tag',
+	'rename_tag' => 'تغییر نام برچسب',
 ];
