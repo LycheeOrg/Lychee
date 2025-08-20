@@ -34,6 +34,7 @@ use Tests\Traits\RequiresEmptyColourPalettes;
 use Tests\Traits\RequiresEmptyGroups;
 use Tests\Traits\RequiresEmptyLiveMetrics;
 use Tests\Traits\RequiresEmptyPhotos;
+use Tests\Traits\RequiresEmptyRenamerRules;
 use Tests\Traits\RequiresEmptyTags;
 use Tests\Traits\RequiresEmptyUsers;
 use Tests\Traits\RequiresEmptyWebAuthnCredentials;
@@ -98,6 +99,7 @@ abstract class BaseApiWithDataTest extends BaseApiTest
 	use InteractWithSmartAlbums;
 	use RequiresEmptyGroups;
 	use RequiresEmptyTags;
+	use RequiresEmptyRenamerRules;
 
 	protected User $admin;
 	protected User $userMayUpload1;
@@ -159,6 +161,7 @@ abstract class BaseApiWithDataTest extends BaseApiTest
 		$this->setUpRequiresEmptyLiveMetrics();
 		$this->setUpRequiresEmptyGroups();
 		$this->setUpRequiresEmptyTags();
+		$this->setUpRequiresEmptyRenamerRules();
 
 		$this->admin = User::factory()->may_administrate()->create();
 		$this->userMayUpload1 = User::factory()->may_upload()->create();
@@ -232,6 +235,7 @@ abstract class BaseApiWithDataTest extends BaseApiTest
 
 	public function tearDown(): void
 	{
+		$this->tearDownRequiresEmptyRenamerRules();
 		$this->tearDownRequiresEmptyTags();
 		$this->tearDownRequiresEmptyLiveMetrics();
 		$this->tearDownRequiresEmptyColourPalettes();

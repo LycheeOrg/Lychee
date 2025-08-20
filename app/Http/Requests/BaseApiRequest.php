@@ -105,6 +105,7 @@ abstract class BaseApiRequest extends FormRequest
 	 */
 	protected function passedValidation()
 	{
+		/** @disregard P1013 */
 		$this->processValidatedValues($this->validated(), $this->allFiles());
 	}
 

@@ -127,7 +127,6 @@ return new class() extends Migration {
 			$table->string('mode')->nullable(false);
 			$table->boolean('is_enabled')->nullable(false)->default(true);
 
-			$table->unique(['owner_id', 'order']);
 			$table->foreign('owner_id')->references('id')->on('users')->onDelete('cascade');
 		});
 

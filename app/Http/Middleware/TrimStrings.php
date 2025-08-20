@@ -20,5 +20,14 @@ class TrimStrings extends Middleware
 	protected $except = [
 		'password',
 		'password_confirmation',
+		'needle', // Specific to renamer rules
+		'replacement', // Specific to renamer rules
+	];
+
+	protected static $neverTrim = [
+		'password',
+		'password_confirmation',
+		'needle', // Specific to renamer rules
+		'replacement', // Specific to renamer rules
 	];
 }

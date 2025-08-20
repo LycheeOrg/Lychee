@@ -279,3 +279,11 @@ Route::get('/Tag', [TagController::class, 'get'])->middleware(['cache_control'])
 Route::patch('/Tag', [TagController::class, 'edit']);
 Route::put('/Tag', [TagController::class, 'merge']);
 Route::delete('/Tag', [TagController::class, 'delete']);
+
+/**
+ * RENAMER RULES.
+ */
+Route::get('/Renamer', [RenamerController::class, 'index']);
+Route::post('/Renamer', [RenamerController::class, 'store']);
+Route::put('/Renamer', [RenamerController::class, 'update']);
+Route::delete('/Renamer', [RenamerController::class, 'destroy']);
