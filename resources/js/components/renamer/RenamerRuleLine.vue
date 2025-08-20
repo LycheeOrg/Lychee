@@ -1,42 +1,36 @@
 <template>
-	<div
-		class="renamer-rule-line flex items-center justify-between p-3 border-b border-surface-200 hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors"
-	>
-		<div class="flex items-center space-x-3 flex-grow">
+	<div class="flex items-center justify-between p-3 hover:bg-surface-50 dark:hover:bg-surface-950 transition-colors">
+		<div class="flex items-center gap-8 flex-grow">
 			<!-- Order and enabled status -->
-			<div class="flex items-center space-x-2">
-				<span class="text-sm font-semibold text-muted-color min-w-[2rem]">{{ rule.order }}</span>
+			<div class="flex items-center gap-4 justify-end">
+				<span class="text-sm font-semibold text-muted-color min-w-[2rem] ltr:text-right rtl:text-left">{{ rule.order }}</span>
 				<div class="flex items-center">
-					<div
-						:class="{
-							'w-2 h-2 rounded-full': true,
-							'bg-green-500': rule.is_enabled,
-							'bg-red-500': !rule.is_enabled,
-						}"
-					></div>
+					<div :class="{ 'w-2 h-2 rounded-full': true, 'bg-green-500': rule.is_enabled, 'bg-red-500': !rule.is_enabled }"></div>
 				</div>
 			</div>
 
 			<!-- Rule info -->
-			<div class="flex-grow">
-				<div class="flex items-center space-x-3">
-					<h4 class="text-sm font-medium text-surface-900">{{ rule.rule }}</h4>
-					<Tag :value="rule.mode" severity="secondary" size="small" />
+			<div class="flex-grow flex-col justify-start">
+				<div class="flex items-center gap-4">
+					<h4 class="text-sm font-bold">{{ rule.rule }}</h4>
+					<Tag :value="rule.mode" severity="primary" size="small" rounded class="px-4 py-0.5" />
 				</div>
 				<p v-if="rule.description" class="text-xs text-muted-color mt-1">{{ rule.description }}</p>
-				<div class="text-xs text-muted-color mt-1">
-					<span class="font-medium">Pattern:</span>
-					<pre class="inline font-mono before:content-['`'] after:content-['`']">{{ rule.needle }}</pre>
-					→ <span class="font-medium">Replace with:</span>
-					<pre class="inline font-mono before:content-['`'] after:content-['`']">{{ rule.replacement }}</pre>
-				</div>
+			</div>
+			<!-- This part might change later with more complex rules... -->
+			<div class="text-xs text-muted-color mt-1 text-center flex-grow">
+				<span class="font-medium mx-2">{{ $t("renamer.pattern_label") }}:</span>
+				<pre class="inline font-mono before:content-['`'] after:content-['`']">{{ rule.needle }}</pre>
+				<span class="mx-2 rlt:hidden">&xrarr;</span><span class="mx-2 ltr:hidden">&xlarr;</span
+				><span class="font-medium mx-2">{{ $t("renamer.replace_with_label") }}:</span>
+				<pre class="inline font-mono before:content-['`'] after:content-['`']">{{ rule.replacement }}</pre>
 			</div>
 		</div>
 
 		<!-- Actions -->
 		<div class="flex items-center space-x-2">
-			<Button v-if="canEdit" text severity="secondary" size="small" icon="pi pi-pencil" class="p-1 border-none" @click="$emit('edit')" />
-			<Button v-if="canDelete" text severity="danger" size="small" icon="pi pi-trash" class="p-1 border-none" @click="$emit('delete')" />
+			<Button v-if="canEdit" severity="contrast" size="small" icon="pi pi-pencil" class="p-1 border-none" @click="$emit('edit')" />
+			<Button v-if="canDelete" severity="danger" size="small" icon="pi pi-trash" class="p-1 border-none" @click="$emit('delete')" />
 		</div>
 	</div>
 </template>

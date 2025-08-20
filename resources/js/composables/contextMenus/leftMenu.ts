@@ -233,7 +233,7 @@ export function useLeftMenu(
 				seTag: true,
 			},
 			{
-				label: "renamer-rules.title",
+				label: "renamer.title",
 				icon: "pi pi-file-edit",
 				access: initData.value.modules.is_mod_renamer_enabled ?? false,
 				route: "/renamerRules",

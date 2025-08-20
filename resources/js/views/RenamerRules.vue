@@ -1,25 +1,29 @@
 <template>
 	<div class="h-svh overflow-y-auto">
 		<!-- Header -->
-		<Toolbar class="w-full border-0 h-14">
+		<Toolbar class="w-full border-0 h-14 rounded-none">
 			<template #start>
 				<OpenLeftMenu />
 			</template>
-			<template #center> Renamer Rules </template>
+			<template #center> {{ $t("renamer.title") }} </template>
 
-			<template #end>
-				<div class="flex items-center space-x-2">
-					<Button icon="pi pi-plus" label="Create Rule" @click="showCreateModal = true" />
-				</div>
-			</template>
+			<template #end> </template>
 		</Toolbar>
 
 		<!-- Content -->
-		<Panel v-if="rules !== undefined" class="text-center border-0 text-muted-color-emphasis max-w-5xl mx-auto">
+		<Panel v-if="rules !== undefined" class="border-0 text-muted-color-emphasis max-w-5xl mx-auto">
 			<template #header>
 				<div class="flex items-center justify-end w-full">
-					<div class="flex items-center space-x-2">
-						<span class="text-sm text-muted-color">{{ rules.length }} rules</span>
+					<div class="flex items-center gap-4">
+						<span class="text-sm text-muted-color">{{ $t("renamer.rules_count", { count: rules.length.toString() }) }}</span>
+						<Button
+							v-if="rules.length > 0"
+							icon="pi pi-plus"
+							class="border-none"
+							size="small"
+							:label="$t('renamer.create_rule')"
+							@click="showCreateModal = true"
+						/>
 					</div>
 				</div>
 			</template>
@@ -28,8 +32,8 @@
 				<div class="text-muted-color mb-4">
 					<i class="pi pi-file-edit text-4xl"></i>
 				</div>
-				<p class="text-muted-color mb-4">No renamer rules found</p>
-				<Button icon="pi pi-plus" class="border-none" label="Create your first rule" @click="showCreateModal = true" />
+				<p class="text-muted-color mb-4">{{ $t("renamer.no_rules") }}</p>
+				<Button icon="pi pi-plus" class="border-none" :label="$t('renamer.create_first_rule')" @click="showCreateModal = true" />
 			</div>
 
 			<div v-else>
@@ -46,7 +50,7 @@
 		</Panel>
 		<div v-else class="flex justify-center items-center p-4">
 			<ProgressSpinner />
-			<span class="ml-2">Loading renamer rules...</span>
+			<span class="ml-2">{{ $t("renamer.loading") }}</span>
 		</div>
 
 		<!-- Create/Edit Modal -->
@@ -61,6 +65,7 @@
 import { onMounted, ref } from "vue";
 import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
+import { trans } from "laravel-vue-i18n";
 import Button from "primevue/button";
 import Panel from "primevue/panel";
 import Toolbar from "primevue/toolbar";
@@ -87,8 +92,8 @@ function loadRules() {
 			console.error("Failed to load renamer rules:", error);
 			toast.add({
 				severity: "error",
-				summary: "Error",
-				detail: "Failed to load renamer rules",
+				summary: trans("renamer.error"),
+				detail: trans("renamer.failed_to_load"),
 				life: 3000,
 			});
 		});
@@ -101,19 +106,19 @@ function editRule(rule: App.Http.Resources.Models.RenamerRuleResource) {
 
 function deleteRule(rule: App.Http.Resources.Models.RenamerRuleResource) {
 	confirm.require({
-		message: `Are you sure you want to delete the rule "${rule.rule}"?`,
-		header: "Confirm Deletion",
+		message: trans("renamer.confirm_delete_message", { rule: rule.rule }),
+		header: trans("renamer.confirm_delete_header"),
 		icon: "pi pi-exclamation-triangle",
 		rejectClass: "p-button-secondary p-button-outlined",
-		rejectLabel: "Cancel",
-		acceptLabel: "Delete",
+		rejectLabel: trans("renamer.cancel"),
+		acceptLabel: trans("renamer.delete"),
 		accept: () => {
 			RenamerService.delete(rule.id)
 				.then(() => {
 					toast.add({
 						severity: "success",
-						summary: "Success",
-						detail: "Renamer rule deleted successfully",
+						summary: trans("renamer.success"),
+						detail: trans("renamer.rule_deleted"),
 						life: 3000,
 					});
 					loadRules();
@@ -122,8 +127,8 @@ function deleteRule(rule: App.Http.Resources.Models.RenamerRuleResource) {
 					console.error("Failed to delete renamer rule:", error);
 					toast.add({
 						severity: "error",
-						summary: "Error",
-						detail: "Failed to delete renamer rule",
+						summary: trans("renamer.error"),
+						detail: trans("renamer.failed_to_delete"),
 						life: 3000,
 					});
 				});
