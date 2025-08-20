@@ -1,12 +1,5 @@
 <template>
-	<Dialog
-		v-model:visible="dialogVisible"
-		:modal="true"
-		:closable="true"
-		:style="{ width: '600px' }"
-		class="p-dialog-maximized-md"
-		@hide="onHide"
-	>
+	<Dialog v-model:visible="dialogVisible" :modal="true" :closable="true" :style="{ width: '600px' }" class="p-dialog-maximized-md" @hide="onHide">
 		<template #header>
 			<span class="font-bold text-xl">{{ isEdit ? "Edit Renamer Rule" : "Create Renamer Rule" }}</span>
 		</template>
@@ -51,9 +44,7 @@
 						required
 					/>
 					<small v-if="errors.needle" class="p-error">{{ errors.needle }}</small>
-					<small class="text-muted-color">
-						The text pattern to search for in filenames
-					</small>
+					<small class="text-muted-color"> The text pattern to search for in filenames </small>
 				</div>
 
 				<!-- Replacement -->
@@ -68,9 +59,7 @@
 						required
 					/>
 					<small v-if="errors.replacement" class="p-error">{{ errors.replacement }}</small>
-					<small class="text-muted-color">
-						The text to replace the pattern with
-					</small>
+					<small class="text-muted-color"> The text to replace the pattern with </small>
 				</div>
 
 				<!-- Mode -->
@@ -111,41 +100,24 @@
 						required
 					/>
 					<small v-if="errors.order" class="p-error">{{ errors.order }}</small>
-					<small class="text-muted-color">
-						Lower numbers are processed first (1 = highest priority)
-					</small>
+					<small class="text-muted-color"> Lower numbers are processed first (1 = highest priority) </small>
 				</div>
 
 				<!-- Enabled -->
 				<div class="field">
 					<div class="flex items-center">
-						<Checkbox
-							id="is_enabled"
-							v-model="form.is_enabled"
-							:binary="true"
-						/>
+						<Checkbox id="is_enabled" v-model="form.is_enabled" :binary="true" />
 						<label for="is_enabled" class="ml-2 font-semibold">Enabled</label>
 					</div>
-					<small class="text-muted-color">
-						Only enabled rules will be applied during renaming
-					</small>
+					<small class="text-muted-color"> Only enabled rules will be applied during renaming </small>
 				</div>
 			</div>
 		</form>
 
 		<template #footer>
 			<div class="flex justify-end space-x-2">
-				<Button
-					label="Cancel"
-					severity="secondary"
-					outlined
-					@click="onHide"
-				/>
-				<Button
-					:label="isEdit ? 'Update' : 'Create'"
-					:loading="isLoading"
-					@click="save"
-				/>
+				<Button label="Cancel" severity="secondary" outlined @click="onHide" />
+				<Button :label="isEdit ? 'Update' : 'Create'" :loading="isLoading" @click="save" />
 			</div>
 		</template>
 	</Dialog>
@@ -265,7 +237,7 @@ function save() {
 		? RenamerService.update({
 				...form.value,
 				renamer_rule_id: props.rule!.id,
-		  } as UpdateRenamerRuleRequest)
+			} as UpdateRenamerRuleRequest)
 		: RenamerService.create(form.value);
 
 	savePromise
@@ -280,14 +252,12 @@ function save() {
 		})
 		.catch((error) => {
 			console.error("Failed to save renamer rule:", error);
-			
+
 			// Handle validation errors from backend
 			if (error.response?.status === 422 && error.response?.data?.errors) {
 				const backendErrors = error.response.data.errors;
 				Object.keys(backendErrors).forEach((field) => {
-					errors.value[field] = Array.isArray(backendErrors[field]) 
-						? backendErrors[field][0] 
-						: backendErrors[field];
+					errors.value[field] = Array.isArray(backendErrors[field]) ? backendErrors[field][0] : backendErrors[field];
 				});
 			} else {
 				toast.add({

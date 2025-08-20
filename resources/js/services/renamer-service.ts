@@ -23,7 +23,7 @@ export type UpdateRenamerRuleRequest = CreateRenamerRuleRequest & {
 
 const RenamerService = {
 	list(all: boolean = false): Promise<AxiosResponse<App.Http.Resources.Models.RenamerRuleResource[]>> {
-		return axios.get(`${Constants.getApiUrl()}Renamer`, { params: { }, data: { all: all } });
+		return axios.get(`${Constants.getApiUrl()}Renamer`, { params: {}, data: { all: all } });
 	},
 
 	create(data: CreateRenamerRuleRequest): Promise<AxiosResponse<App.Http.Resources.Models.RenamerRuleResource>> {

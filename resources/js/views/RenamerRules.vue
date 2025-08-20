@@ -10,11 +10,7 @@
 			</template>
 			<template #end>
 				<div class="flex items-center space-x-2">
-					<Button
-						icon="pi pi-plus"
-						label="Create Rule"
-						@click="showCreateModal = true"
-					/>
+					<Button icon="pi pi-plus" label="Create Rule" @click="showCreateModal = true" />
 				</div>
 			</template>
 		</Toolbar>
@@ -37,11 +33,7 @@
 							<i class="pi pi-file-edit text-4xl"></i>
 						</div>
 						<p class="text-muted-color mb-4">No renamer rules found</p>
-						<Button
-							icon="pi pi-plus"
-							label="Create your first rule"
-							@click="showCreateModal = true"
-						/>
+						<Button icon="pi pi-plus" label="Create your first rule" @click="showCreateModal = true" />
 					</div>
 
 					<div v-else>
@@ -64,11 +56,7 @@
 		</div>
 
 		<!-- Create/Edit Modal -->
-		<RenamerRuleModal
-			v-model:visible="showCreateModal"
-			:rule="selectedRule"
-			@saved="onRuleSaved"
-		/>
+		<RenamerRuleModal v-model:visible="showCreateModal" :rule="selectedRule" @saved="onRuleSaved" />
 
 		<!-- Delete Confirmation -->
 		<ConfirmDialog />

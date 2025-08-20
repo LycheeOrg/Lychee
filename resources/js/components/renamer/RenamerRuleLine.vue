@@ -23,32 +23,15 @@
 				</div>
 				<p v-if="rule.description" class="text-xs text-muted-color mt-1">{{ rule.description }}</p>
 				<div class="text-xs text-muted-color mt-1">
-					<span class="font-medium">Pattern:</span> {{ rule.needle }} →
-					<span class="font-medium">Replace:</span> {{ rule.replacement }}
+					<span class="font-medium">Pattern:</span> {{ rule.needle }} → <span class="font-medium">Replace:</span> {{ rule.replacement }}
 				</div>
 			</div>
 		</div>
 
 		<!-- Actions -->
 		<div class="flex items-center space-x-2">
-			<Button
-				v-if="canEdit"
-				text
-				severity="secondary"
-				size="small"
-				icon="pi pi-pencil"
-				class="p-1"
-				@click="$emit('edit')"
-			/>
-			<Button
-				v-if="canDelete"
-				text
-				severity="danger"
-				size="small"
-				icon="pi pi-trash"
-				class="p-1"
-				@click="$emit('delete')"
-			/>
+			<Button v-if="canEdit" text severity="secondary" size="small" icon="pi pi-pencil" class="p-1" @click="$emit('edit')" />
+			<Button v-if="canDelete" text severity="danger" size="small" icon="pi pi-trash" class="p-1" @click="$emit('delete')" />
 		</div>
 	</div>
 </template>
