@@ -11,7 +11,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class() extends Migration {
-	public const CAT = 'Mod Pro';
+	public const CAT = 'Mod Renamer';
 	public const BOOL = '0|1';
 
 	private function getConfigs(): array
@@ -106,6 +106,16 @@ return new class() extends Migration {
 		// No mercy
 		$this->down();
 
+		DB::table('config_categories')->insert([
+			[
+				'cat' => self::CAT,
+				'name' => 'Renamer',
+				'description' => 'This module allows you to automatically apply user-defined renaming rules during upload or import via sync.<br>
+				<span class="pi pi-exclamation-triangle text-orange-500"></span> Renaming is likely going to prevent you from using fast duplicate detection on photos that have been renamed via sync.',
+				'order' => 23,
+			],
+		]);
+
 		Schema::create('renamer_rules', function (Blueprint $table) {
 			$table->id();
 			$table->unsignedInteger('order')->nullable(false);
@@ -131,6 +141,7 @@ return new class() extends Migration {
 	{
 		$keys = collect($this->getConfigs())->map(fn ($v) => $v['key'])->all();
 		DB::table('configs')->whereIn('key', $keys)->delete();
+		DB::table('config_categories')->where('cat', self::CAT)->delete();
 
 		Schema::dropIfExists('renamer_rules');
 	}
