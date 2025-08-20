@@ -43,8 +43,8 @@ const RenamerService = {
 		return axios.put(`${Constants.getApiUrl()}Renamer`, data);
 	},
 
-	delete(renamer_rule_id: number): Promise<AxiosResponse<void>> {
-		return axios.delete(`${Constants.getApiUrl()}Renamer`, { data: { renamer_rule_id: renamer_rule_id } });
+	delete(rule_id: number): Promise<AxiosResponse<void>> {
+		return axios.delete(`${Constants.getApiUrl()}Renamer`, { data: { rule_id } });
 	},
 
 	test(data: TestRenamerRequest): Promise<AxiosResponse<TestRenamerResponse>> {
