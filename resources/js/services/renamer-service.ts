@@ -18,7 +18,7 @@ export type CreateRenamerRuleRequest = {
 };
 
 export type UpdateRenamerRuleRequest = CreateRenamerRuleRequest & {
-	renamer_rule_id: number;
+	rule_id: number;
 };
 
 const RenamerService = {

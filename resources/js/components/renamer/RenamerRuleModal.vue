@@ -241,7 +241,7 @@ function save() {
 	const savePromise = isEdit.value
 		? RenamerService.update({
 				...form.value,
-				renamer_rule_id: props.rule!.id,
+				rule_id: props.rule!.id,
 			} as UpdateRenamerRuleRequest)
 		: RenamerService.create(form.value);
 
