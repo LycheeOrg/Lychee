@@ -11,8 +11,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Renamer\CreateRenamerRuleRequest;
 use App\Http\Requests\Renamer\DeleteRenamerRuleRequest;
 use App\Http\Requests\Renamer\ListRenamerRulesRequest;
+use App\Http\Requests\Renamer\TestRenamerRequest;
 use App\Http\Requests\Renamer\UpdateRenamerRuleRequest;
 use App\Http\Resources\Models\RenamerRuleResource;
+use App\Metadata\Renamer;
 use App\Models\RenamerRule;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
@@ -145,5 +147,29 @@ class RenamerController extends Controller
 	public function destroy(DeleteRenamerRuleRequest $request): void
 	{
 		$request->renamer_rule->delete();
+	}
+
+	/**
+	 * Test renamer rules against a candidate string.
+	 *
+	 * @param TestRenamerRequest $request
+	 *
+	 * @return JsonResponse
+	 */
+	public function test(TestRenamerRequest $request): JsonResponse
+	{
+		$user_id = Auth::id();
+		$candidate = $request->candidate;
+
+		// Create a Renamer instance for the current user
+		$renamer = new Renamer($user_id);
+
+		// Apply the renamer rules to the candidate string
+		$result = $renamer->handle($candidate);
+
+		return response()->json([
+			'original' => $candidate,
+			'result' => $result,
+		]);
 	}
 }
