@@ -31,7 +31,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class RenamerRule extends Model
 {
 	use ThrowsConsistentExceptions;
-	/** @phpstan-use HasFactory<\Database\Factories\RenamerRule> */
+	/** @phpstan-use HasFactory<\Database\Factories\RenamerRuleFactory> */
 	use HasFactory;
 
 	// Disable the default timestamps handling
