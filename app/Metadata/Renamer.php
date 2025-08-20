@@ -90,6 +90,7 @@ final class Renamer
 		// regardless of the user's settings. MOUHAHAHAHA!
 		if ($enforced) {
 			$this->rules = $owner_rules;
+
 			return;
 		}
 
