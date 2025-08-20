@@ -24,6 +24,18 @@ use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 class RenamerRulesOrderTest extends BaseApiWithDataTest
 {
+	public function setUp(): void
+	{
+		parent::setUp();
+		$this->requireSe();
+	}
+
+	public function tearDown(): void
+	{
+		$this->resetSe();
+		parent::tearDown();
+	}
+
 	public function testUpdateRuleOrderMovingDown(): void
 	{
 		// Create 5 rules with orders 1, 2, 3, 4, 5

@@ -16,6 +16,7 @@ use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
+use LycheeVerify\Verify;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
@@ -26,6 +27,7 @@ class ModulesRightsResource extends Data
 	public bool $is_mod_frame_enabled = false;
 	public bool $is_mod_flow_enabled = false;
 	public bool $is_photo_timeline_enabled = false;
+	public bool $is_mod_renamer_enabled = false;
 
 	public function __construct()
 	{
@@ -41,6 +43,8 @@ class ModulesRightsResource extends Data
 		$timeline_photos_enabled = Configs::getValueAsBool('timeline_photos_enabled');
 		$timeline_photos_public = Configs::getValueAsBool('timeline_photos_public');
 		$this->is_photo_timeline_enabled = $timeline_photos_enabled && ($is_logged_in || $timeline_photos_public);
+
+		$this->is_mod_renamer_enabled = $this->isRenamerEnabled();
 	}
 
 	private function checkModFrameEnabled(): bool
@@ -61,5 +65,30 @@ class ModulesRightsResource extends Data
 
 			return false;
 		}
+	}
+
+	/**
+	 * Check if the renamer module is enabled and accessible to the current user.
+	 *
+	 * The renamer module allows users to create and manage rules for automatically
+	 * renaming photos based on patterns and replacements.
+	 *
+	 * @return bool true if the renamer is enabled and accessible, false otherwise
+	 */
+	private function isRenamerEnabled(): bool
+	{
+		if (!resolve(Verify::class)->check()) {
+			return false;
+		}
+
+		if (!Configs::getValueAsBool('renamer_enabled')) {
+			return false;
+		}
+
+		if (Configs::getValueAsBool('renamer_enforced') && Auth::user()?->may_administrate !== true) {
+			return false;
+		}
+
+		return true;
 	}
 }

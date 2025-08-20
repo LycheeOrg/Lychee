@@ -23,6 +23,18 @@ use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 class RenamerRulesIntegrationTest extends BaseApiWithDataTest
 {
+	public function setUp(): void
+	{
+		parent::setUp();
+		$this->requireSe();
+	}
+
+	public function tearDown(): void
+	{
+		$this->resetSe();
+		parent::tearDown();
+	}
+
 	public function testCompleteRenamerRuleCrudWorkflow(): void
 	{
 		// 1. Start with empty list

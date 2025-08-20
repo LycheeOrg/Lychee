@@ -54,6 +54,14 @@ class RenamerRulesUpdateTest extends BaseApiWithDataTest
 			'order' => 1,
 			'is_enabled' => false,
 		]);
+
+		$this->requireSe();
+	}
+
+	public function tearDown(): void
+	{
+		$this->resetSe();
+		parent::tearDown();
 	}
 
 	public function testUpdateRenamerRuleUnauthorized(): void

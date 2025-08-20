@@ -24,6 +24,18 @@ use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 class RenamerRulesListTest extends BaseApiWithDataTest
 {
+	public function setUp(): void
+	{
+		parent::setUp();
+		$this->requireSe();
+	}
+
+	public function tearDown(): void
+	{
+		$this->resetSe();
+		parent::tearDown();
+	}
+
 	public function testListRenamerRulesUnauthorized(): void
 	{
 		$response = $this->getJson('Renamer');

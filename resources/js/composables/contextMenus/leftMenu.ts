@@ -235,8 +235,8 @@ export function useLeftMenu(
 			{
 				label: "renamer-rules.title",
 				icon: "pi pi-file-edit",
-				access: is_se_enabled.value === true,
-				route: "/renamer-rules",
+				access: initData.value.modules.is_mod_renamer_enabled ?? false,
+				route: "/renamerRules",
 			},
 		];
 

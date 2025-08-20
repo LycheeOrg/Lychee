@@ -743,6 +743,7 @@ declare namespace App.Http.Resources.Rights {
 		is_mod_frame_enabled: boolean;
 		is_mod_flow_enabled: boolean;
 		is_photo_timeline_enabled: boolean;
+		is_mod_renamer_enabled: boolean;
 	};
 	export type PhotoRightsResource = {
 		can_edit: boolean;

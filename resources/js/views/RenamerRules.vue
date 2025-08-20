@@ -1,13 +1,12 @@
 <template>
-	<div class="flex flex-col h-full">
+	<div class="h-svh overflow-y-auto">
 		<!-- Header -->
-		<Toolbar class="!border-none !bg-transparent">
+		<Toolbar class="w-full border-0 h-14">
 			<template #start>
-				<div class="flex items-center space-x-4">
-					<OpenLeftMenu />
-					<h1 class="text-2xl font-bold">Renamer Rules</h1>
-				</div>
+				<OpenLeftMenu />
 			</template>
+			<template #center> Renamer Rules </template>
+
 			<template #end>
 				<div class="flex items-center space-x-2">
 					<Button icon="pi pi-plus" label="Create Rule" @click="showCreateModal = true" />
@@ -16,43 +15,38 @@
 		</Toolbar>
 
 		<!-- Content -->
-		<div class="flex-grow overflow-auto">
-			<div v-if="rules" class="max-w-4xl mx-auto p-4">
-				<Panel header="Renamer Rules" class="mb-4">
-					<template #header>
-						<div class="flex items-center justify-between w-full">
-							<span class="text-lg font-semibold">Renamer Rules</span>
-							<div class="flex items-center space-x-2">
-								<span class="text-sm text-muted-color">{{ rules.length }} rules</span>
-							</div>
-						</div>
-					</template>
-
-					<div v-if="rules.length === 0" class="text-center py-8">
-						<div class="text-muted-color mb-4">
-							<i class="pi pi-file-edit text-4xl"></i>
-						</div>
-						<p class="text-muted-color mb-4">No renamer rules found</p>
-						<Button icon="pi pi-plus" label="Create your first rule" @click="showCreateModal = true" />
+		<Panel v-if="rules !== undefined" class="text-center border-0 text-muted-color-emphasis max-w-5xl mx-auto">
+			<template #header>
+				<div class="flex items-center justify-end w-full">
+					<div class="flex items-center space-x-2">
+						<span class="text-sm text-muted-color">{{ rules.length }} rules</span>
 					</div>
+				</div>
+			</template>
 
-					<div v-else>
-						<RenamerRuleLine
-							v-for="rule in rules"
-							:key="rule.id"
-							:rule="rule"
-							:can-edit="true"
-							:can-delete="true"
-							@edit="editRule(rule)"
-							@delete="deleteRule(rule)"
-						/>
-					</div>
-				</Panel>
+			<div v-if="rules.length === 0" class="text-center py-8">
+				<div class="text-muted-color mb-4">
+					<i class="pi pi-file-edit text-4xl"></i>
+				</div>
+				<p class="text-muted-color mb-4">No renamer rules found</p>
+				<Button icon="pi pi-plus" class="border-none" label="Create your first rule" @click="showCreateModal = true" />
 			</div>
-			<div v-else class="flex justify-center items-center p-4">
-				<ProgressSpinner />
-				<span class="ml-2">Loading renamer rules...</span>
+
+			<div v-else>
+				<RenamerRuleLine
+					v-for="rule in rules"
+					:key="rule.id"
+					:rule="rule"
+					:can-edit="true"
+					:can-delete="true"
+					@edit="editRule(rule)"
+					@delete="deleteRule(rule)"
+				/>
 			</div>
+		</Panel>
+		<div v-else class="flex justify-center items-center p-4">
+			<ProgressSpinner />
+			<span class="ml-2">Loading renamer rules...</span>
 		</div>
 
 		<!-- Create/Edit Modal -->
