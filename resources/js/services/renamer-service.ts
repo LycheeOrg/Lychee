@@ -21,6 +21,15 @@ export type UpdateRenamerRuleRequest = CreateRenamerRuleRequest & {
 	rule_id: number;
 };
 
+export type TestRenamerRequest = {
+	candidate: string;
+};
+
+export type TestRenamerResponse = {
+	original: string;
+	result: string;
+};
+
 const RenamerService = {
 	list(all: boolean = false): Promise<AxiosResponse<App.Http.Resources.Models.RenamerRuleResource[]>> {
 		return axios.get(`${Constants.getApiUrl()}Renamer`, { params: {}, data: { all: all } });
@@ -36,6 +45,10 @@ const RenamerService = {
 
 	delete(renamer_rule_id: number): Promise<AxiosResponse<void>> {
 		return axios.delete(`${Constants.getApiUrl()}Renamer`, { data: { renamer_rule_id: renamer_rule_id } });
+	},
+
+	test(data: TestRenamerRequest): Promise<AxiosResponse<TestRenamerResponse>> {
+		return axios.post(`${Constants.getApiUrl()}Renamer::test`, data);
 	},
 };
 

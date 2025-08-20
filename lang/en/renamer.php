@@ -46,7 +46,6 @@ return [
 	'cancel' => 'Cancel',
 	'create' => 'Create',
 	'update' => 'Update',
-	'create_rule_button' => 'Create Rule',
 	'create_first_rule' => 'Create your first rule',
 
 	// Validation messages
@@ -86,4 +85,10 @@ return [
 	// Placeholders
 	'select_mode' => 'Select renaming mode',
 	'execution_order' => 'Execution order',
+
+	// Test functionality
+	'test_input_placeholder' => 'Enter a filename to test your renamer rules (e.g., IMG_1234.jpg)',
+	'test_original' => 'Original',
+	'test_result' => 'Result',
+	'test_failed' => 'Failed to test renamer rules',
 ];

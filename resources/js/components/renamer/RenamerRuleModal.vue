@@ -106,7 +106,7 @@
 						<!-- Enabled -->
 						<div class="flex flex-col">
 							<div class="flex items-center">
-								<Checkbox id="is_enabled" v-model="form.is_enabled" :binary="true" />
+								<ToggleSwitch id="is_enabled" v-model="form.is_enabled" :binary="true" input-id="is_enabled" />
 								<label for="is_enabled" class="ltr:ml-2 rtl:mr-2"
 									><span class="font-semibold">{{ $t("renamer.enabled") }}</span>
 								</label>
@@ -142,11 +142,11 @@ import Dialog from "primevue/dialog";
 import Button from "primevue/button";
 import Textarea from "@/components/forms/basic/Textarea.vue";
 import InputNumber from "primevue/inputnumber";
-import Checkbox from "primevue/checkbox";
 import RenamerService, { type CreateRenamerRuleRequest, type UpdateRenamerRuleRequest } from "@/services/renamer-service";
 import InputText from "@/components/forms/basic/InputText.vue";
 import FloatLabel from "primevue/floatlabel";
 import Select from "primevue/select";
+import ToggleSwitch from "primevue/toggleswitch";
 
 const props = defineProps<{
 	visible: boolean;
@@ -258,7 +258,7 @@ function save() {
 			toast.add({
 				severity: "success",
 				summary: trans("renamer.success"),
-				detail: trans(isEdit.value ? "Renamer.rule_updated" : "Renamer.rule_created"),
+				detail: trans(isEdit.value ? "renamer.rule_updated" : "renamer.rule_created"),
 				life: 3000,
 			});
 			emit("saved");
@@ -276,7 +276,7 @@ function save() {
 				toast.add({
 					severity: "error",
 					summary: trans("renamer.error"),
-					detail: trans(isEdit.value ? "Renamer.failed_to_update" : "Renamer.failed_to_create"),
+					detail: trans(isEdit.value ? "renamer.failed_to_update" : "renamer.failed_to_create"),
 					life: 3000,
 				});
 			}

@@ -12,21 +12,63 @@
 
 		<!-- Content -->
 		<Panel v-if="rules !== undefined" class="border-0 text-muted-color-emphasis max-w-5xl mx-auto">
-			<template #header>
-				<div class="flex items-center justify-end w-full">
-					<div class="flex items-center gap-4">
-						<span class="text-sm text-muted-color">{{ $t("renamer.rules_count", { count: rules.length.toString() }) }}</span>
-						<Button
-							v-if="rules.length > 0"
-							icon="pi pi-plus"
-							class="border-none"
-							size="small"
-							:label="$t('renamer.create_rule')"
-							@click="showCreateModal = true"
-						/>
+			<!-- Test Section - Always visible -->
+			<Card class="bg-surface-100 dark:bg-surface-100/5 rounded-2xl mb-16" :pt:header:class="'hidden'">
+				<template #content>
+					<div class="p-4 rounded-lg">
+						<div class="grid grid-cols-1 gap-4">
+							<FloatLabel variant="on">
+								<InputText id="testInput" v-model="testInput" class="w-full" @input="debouncedTest" />
+								<label for="testInput" class="">
+									{{ $t("renamer.test_input_placeholder") }}
+								</label>
+							</FloatLabel>
+							<ProgressBar v-if="isTestLoading" mode="indeterminate" class="w-full" />
+							<div v-if="testResult !== null" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+								<div>
+									<label class="block text-sm font-medium text-muted-color mb-2">
+										{{ $t("renamer.test_original") }}
+									</label>
+									<div class="p-3 bg-surface-200 dark:bg-surface-100/5 rounded text-muted-color font-mono text-sm break-all">
+										{{ testResult.original }}
+									</div>
+								</div>
+								<div>
+									<label class="block text-sm font-medium text-muted-color mb-2">
+										{{ $t("renamer.test_result") }}
+									</label>
+									<div
+										class="p-3 bg-surface-200 dark:bg-surface-100/5 rounded text-muted-color font-mono text-sm break-all"
+										:class="{
+											' border bg-green-100 dark:bg-green-50/75 border-green-300 dark:border-green-300/75':
+												testResult.result !== testResult.original,
+										}"
+									>
+										{{ testResult.result }}
+									</div>
+								</div>
+							</div>
+							<div v-if="testError" class="text-red-600 text-sm">
+								{{ testError }}
+							</div>
+						</div>
 					</div>
+				</template>
+			</Card>
+
+			<div class="flex items-center justify-end w-full">
+				<div class="flex items-center gap-4">
+					<span class="text-sm text-muted-color">{{ $t("renamer.rules_count", { count: rules.length.toString() }) }}</span>
+					<Button
+						v-if="rules.length > 0"
+						icon="pi pi-plus"
+						class="border-none"
+						size="small"
+						:label="$t('renamer.create_rule')"
+						@click="showCreateModal = true"
+					/>
 				</div>
-			</template>
+			</div>
 
 			<div v-if="rules.length === 0" class="text-center py-8">
 				<div class="text-muted-color mb-4">
@@ -36,7 +78,7 @@
 				<Button icon="pi pi-plus" class="border-none" :label="$t('renamer.create_first_rule')" @click="showCreateModal = true" />
 			</div>
 
-			<div v-else>
+			<div v-if="rules.length > 0">
 				<RenamerRuleLine
 					v-for="rule in rules"
 					:key="rule.id"
@@ -74,14 +116,63 @@ import ConfirmDialog from "primevue/confirmdialog";
 import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
 import RenamerRuleLine from "@/components/renamer/RenamerRuleLine.vue";
 import RenamerRuleModal from "@/components/renamer/RenamerRuleModal.vue";
-import RenamerService from "@/services/renamer-service";
+import RenamerService, { type TestRenamerResponse } from "@/services/renamer-service";
+import InputText from "@/components/forms/basic/InputText.vue";
+import Card from "primevue/card";
+import FloatLabel from "primevue/floatlabel";
+import ProgressBar from "primevue/progressbar";
 
 const rules = ref<App.Http.Resources.Models.RenamerRuleResource[] | undefined>(undefined);
 const showCreateModal = ref(false);
 const selectedRule = ref<App.Http.Resources.Models.RenamerRuleResource | undefined>(undefined);
 
+// Test functionality
+const testInput = ref("");
+const testResult = ref<TestRenamerResponse | null>(null);
+const isTestLoading = ref(false);
+const testError = ref<string | null>(null);
+let testTimeout: NodeJS.Timeout | null = null;
+
 const confirm = useConfirm();
 const toast = useToast();
+
+// Debounced test function
+function debouncedTest() {
+	if (testTimeout !== null) {
+		clearTimeout(testTimeout);
+	}
+
+	testTimeout = setTimeout(() => {
+		if (testInput.value.trim() !== "") {
+			performTest();
+		} else {
+			testResult.value = null;
+			testError.value = null;
+		}
+	}, 500);
+}
+
+function performTest() {
+	if (testInput.value.trim() === "") {
+		return;
+	}
+
+	isTestLoading.value = true;
+	testError.value = null;
+
+	RenamerService.test({ candidate: testInput.value })
+		.then((response) => {
+			testResult.value = response.data;
+		})
+		.catch((error) => {
+			console.error("Failed to test renamer rules:", error);
+			testError.value = trans("renamer.test_failed");
+			testResult.value = null;
+		})
+		.finally(() => {
+			isTestLoading.value = false;
+		});
+}
 
 function loadRules() {
 	RenamerService.list()
