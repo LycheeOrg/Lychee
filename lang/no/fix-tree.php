@@ -6,7 +6,7 @@ return [
 	|--------------------------------------------------------------------------
 	*/
     'title' => 'Vedlikehold',
-    'intro' => 'This page allows you to re-order and fix your albums manually.<br />Before any modifications, we strongly recommend you to read about Nested Set tree structures.',
+    'intro' => 'Denne siden lar deg endre rekkefølgen og fikse albumene dine manuelt.<br />Før du foretar endringer, anbefaler vi på det sterkeste at du leser om trestrukturer for nestede sett.',
     'warning' => 'You can really break your Lychee installation here, modify values at your own risks.',
     'help' => [
         'header' => 'Help',
@@ -24,9 +24,9 @@ return [
         'apply' => 'Apply',
     ],
     'table' => [
-        'title' => 'Title',
-        'left' => 'Left',
-        'right' => 'Right',
+        'title' => 'Tittel',
+        'left' => 'Venstre',
+        'right' => 'Høyre',
         'id' => 'Id',
         'parent' => 'Parent Id',
     ],
