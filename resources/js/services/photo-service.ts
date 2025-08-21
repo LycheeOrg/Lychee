@@ -57,8 +57,8 @@ const PhotoService = {
 		return axios.post(`${Constants.getApiUrl()}Photo::duplicate`, { album_id: destination_id, photo_ids: photo_ids });
 	},
 
-	rotate(photo_id: string, direction: "1" | "-1"): Promise<AxiosResponse> {
-		return axios.post(`${Constants.getApiUrl()}Photo::rotate`, { photo_id: photo_id, direction: direction });
+	rotate(photo_id: string, direction: "1" | "-1", album_id: string | null): Promise<AxiosResponse> {
+		return axios.post(`${Constants.getApiUrl()}Photo::rotate`, { photo_id: photo_id, direction: direction, from_id: album_id });
 	},
 
 	setAsCover(photo_id: string, album_id: string): Promise<AxiosResponse> {
