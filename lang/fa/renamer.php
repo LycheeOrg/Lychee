@@ -41,6 +41,7 @@ return [
 	'mode_help_all' => 'تمام رخدادها را جایگزین کن',
 	'mode_help_regex' => 'از تطبیق عبارت منظم استفاده کن',
 	'mode_help_default' => 'نحوه عملکرد تطبیق الگو را انتخاب کنید',
+	'regex_help' => 'Use regular expressions to match patterns. For example, to replace <code>IMG_1234.jpeg</code> with <code>1234_JPG.jpeg</code>, you can use <code>/IMG_(\d+)/</code> as needle and <code>$1_JPG</code> as replacement. You can find more explanations and examples in the following links.',
 
 	// Buttons
 	'cancel' => 'لغو',
