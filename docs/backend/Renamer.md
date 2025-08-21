@@ -96,7 +96,7 @@ $rule->save();
 ## Future Enhancements
 
 1. **Rule Groups**: Allow grouping rules for different import types or albums.
-2. **Import Photo Integration**: Allow associating specific data to the rule: e.g. Exif info.
+2. **Import Photo Integration**: Allow associating specific data to the rule: e.g., EXIF info.
 3. **User Interface**: Allow executing renamer rules directly from the UI, on an album or selected set of photos.
 
 ---
