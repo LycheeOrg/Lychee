@@ -41,6 +41,7 @@ return [
 	'mode_help_all' => 'Replace all occurrences',
 	'mode_help_regex' => 'Use regular expression matching',
 	'mode_help_default' => 'Choose how the pattern matching should work',
+	'regex_help' => 'Use regular expressions to match patterns. For example, to replace <code>IMG_1234.jpeg</code> with <code>1234_JPG.jpeg</code>, you can use <code>/IMG_(\d+)/</code> as needle and <code>$1_JPG</code> as replacement. You can find more explanations and examples in the following links.',
 
 	// Buttons
 	'cancel' => 'Cancel',

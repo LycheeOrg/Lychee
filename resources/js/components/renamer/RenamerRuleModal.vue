@@ -4,7 +4,7 @@
 			<div class="pt-9 px-9 w-full text-center font-bold text-xl">
 				{{ isEdit ? $t("renamer.edit_rule") : $t("renamer.create_rule") }}
 			</div>
-			<div class="p-9 text-center text-muted-color w-xl max-w-2xl text-wrap">
+			<div class="p-9 text-center text-muted-color w-2xl max-w-2xl text-wrap">
 				<form @submit.prevent="save">
 					<div class="flex flex-col gap-8">
 						<!-- Rule Name -->
@@ -76,9 +76,15 @@
 							<small class="text-muted-color ltr:text-left rtl:text-right">
 								<template v-if="form.mode === 'first'">{{ $t("renamer.mode_help_first") }}</template>
 								<template v-else-if="form.mode === 'all'">{{ $t("renamer.mode_help_all") }}</template>
-								<template v-else-if="form.mode === 'regex'">{{ $t("renamer.mode_help_regex") }}</template>
+								<template v-else-if="form.mode === 'regex'">{{ $t("renamer.mode_help_regex") }} <span class="text-xs pi pi-question-circle cursor-pointer" @click="showHelpRegex = !showHelpRegex"></span></template>
 								<template v-else>{{ $t("renamer.mode_help_default") }}</template>
 							</small>
+						</div>
+						<div v-if="showHelpRegex && form.mode === 'regex'" class="text-muted text-justify text-xs -mt-4 bg-surface-100 dark:bg-surface-900 rounded p-2" @click="showHelpRegex = false">
+							<span class="pi pi-question-circle ltr:mr-2 rtl:ml-2"></span>
+							<span class="renamer-help-regex" v-html="$t('renamer.regex_help')"></span><br>
+							<a href="https://regex101.com" target="_blank" rel="noopener noreferrer" class="text-primary-500 hover:underline">https://regex101.com</a><br>
+							<a href="https://www.php.net/manual/en/function.preg-replace.php" target="_blank" rel="noopener noreferrer" class="text-primary-500 hover:underline">PHP preg_replace</a>
 						</div>
 						<!-- Order -->
 						<div class="flex flex-col">
@@ -167,6 +173,7 @@ const isEdit = computed(() => props.rule !== undefined);
 
 const toast = useToast();
 const isLoading = ref(false);
+const showHelpRegex = ref(true);
 
 const modeOptions = computed(() => [
 	{ label: trans("renamer.mode_first"), value: "first", description: trans("renamer.mode_first_description") },
@@ -303,5 +310,17 @@ watch(
 <style>
 .p-inputnumber-input {
 	border: none;
+}
+
+.renamer-help-regex code {
+	background-color: var(--p-surface-200);
+	font-family: var(--font-mono);
+	font-size: var(--text-2xs);
+	padding: 2px 4px;
+	border-radius: 4px;
+}
+
+.dark .renamer-help-regex code {
+	background-color: var(--p-surface-800);
 }
 </style>
