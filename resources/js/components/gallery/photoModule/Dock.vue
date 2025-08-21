@@ -2,7 +2,8 @@
 	<div
 		:class="{
 			'absolute top-0 w-full sm:w-1/2 left-1/2 -translate-x-1/2': true,
-			'opacity-50 lg:opacity-10 group lg:hover:opacity-100 transition-opacity duration-500 ease-in-out': true,
+			'opacity-50 lg:opacity-20 lg:hover:opacity-100 transition-opacity duration-500 ease-in-out': !isTouchDevice(),
+			'opacity-75': isTouchDevice(),
 			'z-20 mt-14 sm:mt-0': true,
 			'sm:h-1/4': !isNarrowMenu,
 			'h-14': isNarrowMenu,
@@ -46,6 +47,7 @@
 import DockButton from "./DockButton.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
+import { isTouchDevice } from "@/utils/keybindings-utils";
 import { storeToRefs } from "pinia";
 
 const lycheeStore = useLycheeStateStore();
