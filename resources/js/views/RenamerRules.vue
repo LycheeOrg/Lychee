@@ -213,6 +213,7 @@ function deleteRule(rule: App.Http.Resources.Models.RenamerRuleResource) {
 						life: 3000,
 					});
 					loadRules();
+					confirm.close();
 				})
 				.catch((error) => {
 					console.error("Failed to delete renamer rule:", error);
@@ -222,6 +223,7 @@ function deleteRule(rule: App.Http.Resources.Models.RenamerRuleResource) {
 						detail: trans("renamer.failed_to_delete"),
 						life: 3000,
 					});
+					confirm.close();
 				});
 		},
 	});
