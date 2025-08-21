@@ -1,15 +1,14 @@
 <?php
-
 return [
-	/*
+    /*
 	|--------------------------------------------------------------------------
 	| Sharing page
 	|--------------------------------------------------------------------------
 	*/
-    'title' => 'Sharing',
+    'title' => 'Deling',
     'info' => 'This page gives an overview of and the ability to edit the sharing rights associated with albums.',
     'album_title' => 'Album title',
-    'username' => 'Username',
+    'username' => 'Brukernavn',
     'no_data' => 'Sharing list is empty.',
     'share' => 'Share',
     'add_new_access_permission' => 'Add a new access permission',
