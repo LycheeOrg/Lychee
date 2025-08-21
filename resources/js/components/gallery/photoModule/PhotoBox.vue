@@ -130,19 +130,6 @@ const emits = defineEmits<{
 useSwipe(swipe, {
 	onSwipe(_e: TouchEvent) {},
 	onSwipeEnd(_e: TouchEvent, direction: UseSwipeDirection) {
-		if (direction === "left") {
-			emits("next");
-		} else if (direction === "right") {
-			emits("previous");
-		} else if (is_swipe_vertically_to_go_back_enabled.value) {
-			emits("goBack");
-		}
-	},
-});
-
-useSwipe(swipe, {
-	onSwipe(_e: TouchEvent) {},
-	onSwipeEnd(_e: TouchEvent, direction: UseSwipeDirection) {
 		if (direction === "left" && isLTR()) {
 			emits("next");
 		} else if (direction === "right" && isLTR()) {

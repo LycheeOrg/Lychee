@@ -4,7 +4,14 @@
 		<div class="w-0 flex-auto relative">
 			<div class="animate-zoomIn w-full h-full">
 				<Transition :name="props.transition">
-					<PhotoBox :key="photo.id" :photo="photo" @go-back="emits('goBack')" @next="emits('next')" @previous="emits('previous')" />
+					<PhotoBox
+						:key="photo.id"
+						:photo="photo"
+						@go-back="emits('goBack')"
+						@next="emits('next')"
+						@previous="emits('previous')"
+						@rotate-overlay="emits('rotateOverlay')"
+					/>
 				</Transition>
 			</div>
 			<NextPrevious
