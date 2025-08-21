@@ -52,12 +52,8 @@ class UploadSizeVariantToS3Job implements ShouldQueue
 		$this->history->status = JobStatus::STARTED;
 		$this->history->save();
 
-		Storage::disk(StorageDiskType::S3->value)->writeStream(
-			$this->variant->short_path,
-			Storage::disk(StorageDiskType::LOCAL->value)->readStream($this->variant->short_path)
-		);
-
-		Storage::disk(StorageDiskType::LOCAL->value)->delete($this->variant->short_path);
+		$this->handlePath($this->variant->short_path);
+		$this->handlePath($this->variant->short_path_watermarked);
 
 		$this->variant->storage_disk = StorageDiskType::S3;
 		$this->variant->save();
@@ -80,6 +76,20 @@ class UploadSizeVariantToS3Job implements ShouldQueue
 			Log::error(__LINE__ . ':' . __FILE__ . ' Upload failed for ' . $this->variant->short_path);
 			Log::error(__LINE__ . ':' . __FILE__ . ' ' . $th->getMessage(), $th->getTrace());
 		}
+	}
+
+	/**
+	 * Move the file from local storage to S3.
+	 */
+	private function handlePath(?string $path): void
+	{
+		if ($path === null || $path === '') {
+			return;
+		}
+
+		$read_stream = Storage::disk(StorageDiskType::LOCAL->value)->readStream($path);
+		Storage::disk(StorageDiskType::S3->value)->writeStream($path, $read_stream);
+		Storage::disk(StorageDiskType::LOCAL->value)->delete($path);
 	}
 
 	/**

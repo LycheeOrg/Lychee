@@ -68,7 +68,9 @@ class FileDeleter
 		/** @var Collection<string,Collection<int,SizeVariant>> $grouped */
 		$grouped = $this->size_variants->groupBy('storage_disk');
 		$grouped->each(
-			fn (Collection $svs, string $k) => $this->files[$k] = ($this->files[$k] ?? new Collection())->merge($svs->pluck('short_path'))
+			fn (Collection $svs, string $k) => $this->files[$k] = ($this->files[$k] ?? new Collection())
+				->merge($svs->pluck('short_path'))
+				->merge($svs->pluck('short_path_watermarked')->filter((fn ($v) => $v !== null && $v !== '')))
 		);
 	}
 

@@ -11,6 +11,7 @@ namespace App\Actions\Photo\Pipes\Standalone;
 use App\Actions\Diagnostics\Pipes\Checks\BasicPermissionCheck;
 use App\Contracts\Image\StreamStats;
 use App\Contracts\PhotoCreate\StandalonePipe;
+use App\DTO\CreateSizeVariantFlags;
 use App\DTO\PhotoCreate\StandaloneDTO;
 use App\Enum\SizeVariantType;
 use App\Exceptions\ConfigurationException;
@@ -27,7 +28,7 @@ class PlacePhoto implements StandalonePipe
 		// If the import strategy requests to delete the source file
 		// `$this->source_file` will be deleted after this step.
 		// But `$this->source_image` remains in memory.
-		$state->target_file = $state->naming_strategy->createFile(SizeVariantType::ORIGINAL);
+		$state->target_file = $state->naming_strategy->createFile(SizeVariantType::ORIGINAL, new CreateSizeVariantFlags());
 		$state->stream_stat = $this->putSourceIntoFinalDestination($state);
 
 		return $next($state);
@@ -138,7 +139,7 @@ class PlacePhoto implements StandalonePipe
 	 */
 	private function backupOriginal(StandaloneDTO $state)
 	{
-		$state->backup_file = $state->naming_strategy->createFile(SizeVariantType::ORIGINAL, true);
+		$state->backup_file = $state->naming_strategy->createFile(SizeVariantType::ORIGINAL, new CreateSizeVariantFlags(is_backup: true));
 		$state->backup_file->write($state->source_file->read(), true);
 	}
 }

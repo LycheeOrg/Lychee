@@ -231,4 +231,40 @@ class ImagickHandler extends BaseImageHandler
 	{
 		return $this->im_image !== null;
 	}
+
+	public function cloneAndCompose(ImageHandlerInterface $watermark_handler, int $x, int $y): ImageHandlerInterface
+	{
+		if (!$watermark_handler instanceof ImagickHandler) {
+			throw new \InvalidArgumentException('Watermark handler must be an instance of ImagickHandler');
+		}
+
+		try {
+			$clone = clone $this;
+			$clone->im_image->compositeImage(
+				$watermark_handler->im_image,
+				\Imagick::COMPOSITE_OVER,
+				$x, $y
+			);
+
+			return $clone;
+			// @codeCoverageIgnoreStart
+		} catch (\ImagickException $e) {
+			throw new ImageProcessingException('Failed to compose image', $e);
+		}
+		// @codeCoverageIgnoreEnd
+	}
+
+	public function cloneAndChangeOpacity(float $opacity): ImageHandlerInterface
+	{
+		try {
+			$clone = clone $this;
+			$clone->im_image->evaluateImage(\Imagick::EVALUATE_MULTIPLY, $opacity, \Imagick::CHANNEL_ALPHA);
+
+			return $clone;
+			// @codeCoverageIgnoreStart
+		} catch (\ImagickException $e) {
+			throw new ImageProcessingException('Failed to change transparency of image', $e);
+		}
+		// @codeCoverageIgnoreEnd
+	}
 }

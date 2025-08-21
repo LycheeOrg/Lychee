@@ -129,6 +129,7 @@
 					<StringField v-else-if="config.key === 'raw_formats'" :config="config" @filled="filled" @reset="reset" />
 					<StringField v-else-if="config.key === 'owner_id'" :config="config" @filled="filled" @reset="reset" />
 					<StringField v-else-if="config.key === 'local_takestamp_video_formats'" :config="config" @filled="filled" @reset="reset" />
+					<SelectField v-else-if="config.key === 'watermark_position'" :config="config" @filled="filled" @reset="reset" />
 					<!-- Generic -->
 					<StringField v-else-if="config.type.startsWith('string')" :config="config" @filled="filled" @reset="reset" />
 					<BoolField v-else-if="config.type === '0|1'" :config="config" @filled="filled" @reset="reset" />

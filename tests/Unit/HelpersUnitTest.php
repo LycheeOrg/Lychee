@@ -18,12 +18,17 @@
 
 namespace Tests\Unit;
 
+use App\Enum\SizeVariantType;
+use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\Internal\ZeroModuloException;
 use App\Facades\Helpers;
+use App\Models\Extensions\HasUrlGenerator;
 use Tests\AbstractTestCase;
 
 class HelpersUnitTest extends AbstractTestCase
 {
+	use HasUrlGenerator;
+
 	/**
 	 * Testing truncate.
 	 *
@@ -72,5 +77,11 @@ class HelpersUnitTest extends AbstractTestCase
 		self::assertEquals("90° 0' 0\" S", Helpers::decimalToDegreeMinutesSeconds(-90, true));
 		self::assertEquals("90° 0' 0\" E", Helpers::decimalToDegreeMinutesSeconds(90, false));
 		self::assertEquals("90° 0' 0\" W", Helpers::decimalToDegreeMinutesSeconds(-90, false));
+	}
+
+	public function testUrlGeneratorThrows(): void
+	{
+		self::expectException(LycheeLogicException::class);
+		$this->pathToUrl('path', 'local', SizeVariantType::PLACEHOLDER);
 	}
 }

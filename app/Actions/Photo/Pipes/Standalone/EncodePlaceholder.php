@@ -10,7 +10,7 @@ namespace App\Actions\Photo\Pipes\Standalone;
 
 use App\Contracts\PhotoCreate\StandalonePipe;
 use App\DTO\PhotoCreate\StandaloneDTO;
-use App\Exceptions\MediaFileOperationException;
+use App\Exceptions\Handler;
 use App\Image\PlaceholderEncoder;
 
 class EncodePlaceholder implements StandalonePipe
@@ -23,12 +23,16 @@ class EncodePlaceholder implements StandalonePipe
 			if ($placeholder !== null) {
 				$placeholder_encoder->do($placeholder);
 			}
-
-			return $next($state);
 			// @codeCoverageIgnoreStart
-		} catch (\ErrorException $e) {
-			throw new MediaFileOperationException('Failed to encode placeholder to base64', $e);
+		} catch (\Throwable $t) {
+			// Don't re-throw the exception, because we do not want the
+			// import to fail completely only due to missing size variants.
+			// There are just too many options why the creation of size
+			// variants may fail.
+			Handler::reportSafely($t);
 		}
 		// @codeCoverageIgnoreEnd
+
+		return $next($state);
 	}
 }

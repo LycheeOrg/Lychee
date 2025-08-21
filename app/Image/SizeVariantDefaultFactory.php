@@ -12,6 +12,7 @@ use App\Contracts\Exceptions\LycheeException;
 use App\Contracts\Image\ImageHandlerInterface;
 use App\Contracts\Models\AbstractSizeVariantNamingStrategy;
 use App\Contracts\Models\SizeVariantFactory;
+use App\DTO\CreateSizeVariantFlags;
 use App\DTO\ImageDimension;
 use App\Enum\SizeVariantType;
 use App\Exceptions\ConfigurationException;
@@ -187,7 +188,9 @@ class SizeVariantDefaultFactory implements SizeVariantFactory
 			default => $this->reference_image->cloneAndScale($max_dim),
 		};
 
-		$sv_file = $this->naming_strategy->createFile($size_variant);
+		$sv_file = $this->naming_strategy->createFile(
+			$size_variant,
+			new CreateSizeVariantFlags(disk: $this->photo->size_variants->getOriginal()->storage_disk));
 		$sv_image->save($sv_file);
 
 		return $this->photo->size_variants->create(
