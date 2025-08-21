@@ -11,7 +11,7 @@ The Renamer module in Lychee provides functionality to create, manage, and apply
 1. **Renamer Class**: Located in `App\Metadata\Renamer`, this is the main class that handles the application of renamer rules to strings.
 2. **RenamerRule Model**: Represents a single renaming rule in the database.
 3. **RenamerModeType Enum**: Defines the available replacement modes (FIRST, ALL, REGEX).
-4. **RenamerRulesController**: Handles API requests for managing renaming rules.
+4. **RenamerController**: Handles API requests for managing renaming rules.
 
 ### Database Schema
 
