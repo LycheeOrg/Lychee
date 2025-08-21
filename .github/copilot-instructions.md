@@ -26,3 +26,9 @@
 
 - Use Markdown format for documentation.
 - At the bottom of the file, add an hr line followed by "*Last updated: [date of the update]*" 
+
+# Testing Conventions
+
+- Tests in the tests/Unit directory should extend from AbstractTestCase.
+- Tests in the tests/Feature_v2 directory should extend from BaseApiWithDataTest.
+- No need to mock the database in tests, we use the in-memory SQLite database instead.
