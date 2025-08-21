@@ -62,6 +62,20 @@ class RenamerController extends Controller
 	{
 		$user_id = Auth::id();
 
+		$rule_at_order_exists = RenamerRule::query()
+			->where('owner_id', Auth::id())
+			->where('order', $request->order)
+			->exists();
+
+		if ($rule_at_order_exists) {
+			// If a rule already exists at the specified order, we need to shift it
+			// and all subsequent rules down by 1 to make space for the new rule.
+			RenamerRule::query()
+				->where('owner_id', $user_id)
+				->where('order', '>=', $request->order)
+				->increment('order');
+		}
+
 		$rule = RenamerRule::create([
 			'owner_id' => $user_id,
 			'rule' => $request->rule,
