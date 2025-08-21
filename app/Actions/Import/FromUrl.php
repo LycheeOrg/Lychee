@@ -46,7 +46,7 @@ class FromUrl
 			new ImportMode(
 				delete_imported: true,
 				skip_duplicates: Configs::getValueAsBool('skip_duplicates'),
-				shall_rename_photo_title: Configs::getValueAsBool('rename_photos'),
+				shall_rename_photo_title: Configs::getValueAsBool('renamer_photo_title_enabled'),
 			),
 			$intended_owner_id
 		);
