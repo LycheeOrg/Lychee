@@ -29,8 +29,8 @@
 			</template>
 			<DockButton
 				v-tooltip.bottom="$t('gallery.photo.actions.move')"
-				icon="transfer"
-				class="fill-white lg:hover:fill-primary-500"
+				pi="folder"
+				class="lg:hover:text-primary-500 text-white"
 				@click="emits('toggleMove')"
 			/>
 			<DockButton

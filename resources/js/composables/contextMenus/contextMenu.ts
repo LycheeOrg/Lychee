@@ -159,7 +159,7 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 				},
 				{
 					label: "gallery.menus.move",
-					icon: "pi pi-arrows-alt",
+					icon: "pi pi-folder",
 					callback: photoCallbacks.toggleMove,
 					access: selectedPhoto.rights.can_edit,
 				},
@@ -224,7 +224,7 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 				},
 				{
 					label: "gallery.menus.move_all",
-					icon: "pi pi-arrows-alt",
+					icon: "pi pi-folder",
 					callback: photoCallbacks.toggleMove,
 					access: selectors.selectedPhotos.value.reduce(canEdit, true),
 				},
@@ -279,7 +279,7 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 				},
 				{
 					label: "gallery.menus.move",
-					icon: "pi pi-arrows-alt",
+					icon: "pi pi-folder",
 					callback: albumCallbacks.toggleMove,
 					access: selectedAlbum.rights.can_move ?? false,
 				},
@@ -317,7 +317,7 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 			},
 			{
 				label: "gallery.menus.move_all",
-				icon: "pi pi-arrows-alt",
+				icon: "pi pi-folder",
 				callback: albumCallbacks.toggleMove,
 				access: selectors.selectedAlbums?.value.reduce(canMove, true),
 			},
