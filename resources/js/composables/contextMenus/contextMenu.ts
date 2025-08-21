@@ -147,7 +147,7 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 				},
 				{
 					label: "gallery.menus.rename",
-					icon: "pi pi-pencil",
+					icon: "pi pi-pen-to-square",
 					callback: photoCallbacks.toggleRename,
 					access: selectedPhoto.rights.can_edit,
 				},
@@ -159,7 +159,7 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 				},
 				{
 					label: "gallery.menus.move",
-					icon: "pi pi-arrow-right-arrow-left",
+					icon: "pi pi-folder",
 					callback: photoCallbacks.toggleMove,
 					access: selectedPhoto.rights.can_edit,
 				},
@@ -224,7 +224,7 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 				},
 				{
 					label: "gallery.menus.move_all",
-					icon: "pi pi-arrow-right-arrow-left",
+					icon: "pi pi-folder",
 					callback: photoCallbacks.toggleMove,
 					access: selectors.selectedPhotos.value.reduce(canEdit, true),
 				},
@@ -267,19 +267,19 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 			...[
 				{
 					label: "gallery.menus.rename",
-					icon: "pi pi-pencil",
+					icon: "pi pi-pen-to-square",
 					callback: albumCallbacks.toggleRename,
 					access: selectedAlbum.rights.can_edit ?? false,
 				},
 				{
 					label: "gallery.menus.merge",
-					icon: "pi pi-paperclip",
+					icon: "pi pi-arrow-down-left-and-arrow-up-right-to-center",
 					callback: albumCallbacks.toggleMerge,
 					access: selectedAlbum.rights.can_move ?? false,
 				},
 				{
 					label: "gallery.menus.move",
-					icon: "pi pi-arrow-right-arrow-left",
+					icon: "pi pi-folder",
 					callback: albumCallbacks.toggleMove,
 					access: selectedAlbum.rights.can_move ?? false,
 				},
@@ -311,13 +311,13 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 		return [
 			{
 				label: "gallery.menus.merge_all",
-				icon: "pi pi-paperclip",
+				icon: "pi pi-arrow-down-left-and-arrow-up-right-to-center",
 				callback: albumCallbacks.toggleMerge,
 				access: selectors.selectedAlbums?.value.reduce(canMove, true),
 			},
 			{
 				label: "gallery.menus.move_all",
-				icon: "pi pi-arrow-right-arrow-left",
+				icon: "pi pi-folder",
 				callback: albumCallbacks.toggleMove,
 				access: selectors.selectedAlbums?.value.reduce(canMove, true),
 			},

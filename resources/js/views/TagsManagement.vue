@@ -50,7 +50,7 @@
 					{{ $t("tags.rename") }}
 				</Button>
 				<Button :text="!isMerging" severity="primary" size="small" class="border-none" @click="toggleMerging">
-					<i class="pi pi-paperclip"></i>
+					<i class="pi pi-arrow-down-left-and-arrow-up-right-to-center"></i>
 					{{ $t("tags.merge") }}
 				</Button>
 				<Button :text="!isDeleting" severity="danger" size="small" class="border-none" @click="toggleDeleting">
