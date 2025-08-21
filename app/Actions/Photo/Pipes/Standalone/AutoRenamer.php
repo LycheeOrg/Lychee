@@ -24,6 +24,11 @@ class AutoRenamer implements StandalonePipe
 {
 	public function handle(StandaloneDTO $state, \Closure $next): StandaloneDTO
 	{
+		// Skip if not enabled.
+		if (!$state->shall_rename_photo_title) {
+			return $next($state);
+		}
+
 		$renamer = new Renamer($state->intended_owner_id);
 		$state->photo->title = $renamer->handle($state->photo->title);
 

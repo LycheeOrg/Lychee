@@ -209,10 +209,12 @@ class Sync extends Command
 		$this->line('  - Resync metadata: ' . $this->yes_no($resync_metadata));
 
 		return new ImportMode(
-			$delete_imported,
-			$skip_duplicates,
-			$import_via_symlink,
-			$resync_metadata,
+			delete_imported: $delete_imported,
+			skip_duplicates: $skip_duplicates,
+			import_via_symlink: $import_via_symlink,
+			resync_metadata: $resync_metadata,
+			shall_rename_photo_title: Configs::getValueAsBool('renamer_photo_title_enabled'),
+			shall_rename_album_title: Configs::getValueAsBool('renamer_album_title_enabled'),
 		);
 	}
 

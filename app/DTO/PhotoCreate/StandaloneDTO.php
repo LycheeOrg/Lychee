@@ -45,6 +45,7 @@ class StandaloneDTO implements PhotoDTO
 		public readonly int $intended_owner_id,
 		public readonly bool $shall_import_via_symlink,
 		public readonly bool $shall_delete_imported,
+		public readonly bool $shall_rename_photo_title,
 	) {
 		$this->tags = new Collection();
 	}
@@ -60,6 +61,7 @@ class StandaloneDTO implements PhotoDTO
 			intended_owner_id: $init_dto->intended_owner_id,
 			shall_import_via_symlink: $init_dto->import_mode->shall_import_via_symlink,
 			shall_delete_imported: $init_dto->import_mode->shall_delete_imported,
+			shall_rename_photo_title: $init_dto->import_mode->shall_rename_photo_title,
 		);
 	}
 

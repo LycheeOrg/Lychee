@@ -154,6 +154,26 @@ final class Renamer
 	}
 
 	/**
+	 * Apply renamer rules to an array of inputs.
+	 *
+	 * This method processes each input string through the renamer rules,
+	 * returning an array of transformed strings.
+	 *
+	 * @param string[] $inputs
+	 *
+	 * @return string[]
+	 */
+	public function handleMany(array $inputs): array
+	{
+		if (!$this->is_enabled) {
+			// If renamer is not enabled, return the inputs unchanged
+			return $inputs;
+		}
+
+		return array_map(fn ($input) => $this->handle($input), $inputs);
+	}
+
+	/**
 	 * Apply a single renamer rule to the input string.
 	 *
 	 * This method selects the appropriate replacement strategy based on the rule's mode:

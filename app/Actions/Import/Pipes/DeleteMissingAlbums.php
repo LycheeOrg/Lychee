@@ -104,6 +104,12 @@ class DeleteMissingAlbums implements ImportPipe
 		// Get all directory names in the node
 		$existing_folders = array_map(fn ($child) => $child->name, $node->children);
 
+		// get renamed albums
+		if ($this->state->shall_rename_album_title) {
+			$renamed_existing_folders = $this->state->getRenamer()->handleMany($existing_folders);
+			$existing_folders = array_merge($existing_folders, $renamed_existing_folders);
+		}
+
 		// Find albums in the parent album that don't exist in the folder structure
 		return Album::query()
 			->join('base_albums', 'base_albums.id', '=', 'albums.id')

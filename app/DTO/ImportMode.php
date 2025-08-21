@@ -17,12 +17,16 @@ final readonly class ImportMode
 	public readonly bool $shall_skip_duplicates;
 	public readonly bool $shall_import_via_symlink;
 	public readonly bool $shall_resync_metadata;
+	public readonly bool $shall_rename_photo_title;
+	public readonly bool $shall_rename_album_title;
 
 	public function __construct(
 		bool $delete_imported = false,
 		bool $skip_duplicates = false,
 		bool $import_via_symlink = false,
 		bool $resync_metadata = false,
+		bool $shall_rename_photo_title = true,
+		bool $shall_rename_album_title = true,
 	) {
 		$this->shall_delete_imported = $delete_imported;
 		$this->shall_skip_duplicates = $skip_duplicates;
@@ -30,5 +34,8 @@ final readonly class ImportMode
 		$this->shall_import_via_symlink = $delete_imported ? false : $import_via_symlink;
 		// (re-syncing metadata makes no sense when importing duplicates)
 		$this->shall_resync_metadata = !$skip_duplicates ? false : $resync_metadata;
+
+		$this->shall_rename_photo_title = $shall_rename_photo_title;
+		$this->shall_rename_album_title = $shall_rename_album_title;
 	}
 }

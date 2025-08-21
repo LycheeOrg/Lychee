@@ -113,6 +113,12 @@ class DeleteMissingPhotos implements ImportPipe
 		$existing_filenames_no_ext = array_map(fn ($path) => pathinfo($path, PATHINFO_FILENAME), $node->images);
 		$existing_files = array_merge($existing_filenames, $existing_filenames_no_ext);
 
+		if ($this->state->import_mode->shall_rename_photo_title) {
+			// Apply renamer rules to the existing filenames
+			$renamed_existing_files = $this->state->getRenamer()->handleMany($existing_files);
+			$existing_files = array_merge($existing_files, $renamed_existing_files);
+		}
+
 		// Find photos in the album that don't exist in the folder
 		return Photo::query()
 			->select(['photos.id', 'photos.title'])
