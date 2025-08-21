@@ -405,6 +405,10 @@ For detailed examples of how requests flow through this architecture, see:
 - **[Album Creation Lifecycle](Lifecycle-of-a-request-album-creation.md)** - Complete walkthrough of creating an album, from frontend form submission to database storage and response
 - **[Photo Upload Lifecycle](Lifecycle-of-a-request-photo-upload.md)** - Comprehensive guide covering photo upload, chunking, processing, size variant generation, and metadata extraction
 
+## Module Documentation
+
+- **[Renamer Module](Renamer.md)** - Documentation for the Renamer module, which provides functionality to transform filenames during import using customizable rules
+
 ---
 
 *Last updated: August 14, 2025*
