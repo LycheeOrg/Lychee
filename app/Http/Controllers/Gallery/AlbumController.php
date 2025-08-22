@@ -58,7 +58,7 @@ use App\Http\Resources\Models\SmartAlbumResource;
 use App\Http\Resources\Models\TagAlbumResource;
 use App\Http\Resources\Models\TargetAlbumResource;
 use App\Http\Resources\Models\Utils\AlbumProtectionPolicy;
-use App\Jobs\WatermkarkerJob;
+use App\Jobs\WatermarkerJob;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
@@ -376,7 +376,7 @@ class AlbumController extends Controller
 	/**
 	 * Watermark all SizeVariants of photos in an album.
 	 *
-	 * Dispatches a WatermkarkerJob for each SizeVariant where short_path_watermarked is not set.
+	 * Dispatches a WatermarkerJob for each SizeVariant where short_path_watermarked is not set.
 	 */
 	public function watermarkAlbumPhotos(WatermarkAlbumRequest $request): void
 	{
@@ -387,7 +387,7 @@ class AlbumController extends Controller
 		/** @phpstan-ignore return.type (stupid covariance...) */
 		$album->photos->each(fn (Photo $photo) => $photo->size_variants->toCollection()
 			->filter(fn (?SizeVariant $v) => $this->shouldWatermark($v))
-			->each(fn (?SizeVariant $v) => WatermkarkerJob::dispatch($v)));
+			->each(fn (?SizeVariant $v) => WatermarkerJob::dispatch($v, $photo->owner_id)));
 	}
 
 	private function shouldWatermark(?SizeVariant $size_variant): bool

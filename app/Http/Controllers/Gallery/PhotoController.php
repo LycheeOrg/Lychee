@@ -35,7 +35,7 @@ use App\Image\Files\NativeLocalFile;
 use App\Image\Files\ProcessableJobFile;
 use App\Image\Files\UploadedFile;
 use App\Jobs\ProcessImageJob;
-use App\Jobs\WatermkarkerJob;
+use App\Jobs\WatermarkerJob;
 use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\SizeVariant;
@@ -239,10 +239,13 @@ class PhotoController extends Controller
 	/**
 	 * Watermark all SizeVariants of a single photo.
 	 *
-	 * Dispatches a WatermkarkerJob for each SizeVariant where short_path_watermarked is not set.
+	 * Dispatches a WatermarkerJob for each SizeVariant where short_path_watermarked is not set.
 	 */
 	public function watermark(WatermarkPhotoRequest $request): void
 	{
+		/** @var int $user_id */
+		$user_id = Auth::id();
+
 		// Get all photos from the request and process their size variants
 		// Filter variants that need watermarking and dispatch jobs
 		SizeVariant::query()
@@ -250,7 +253,7 @@ class PhotoController extends Controller
 			->whereNot('type', SizeVariantType::PLACEHOLDER)
 			->get()
 			->filter(fn (SizeVariant $v) => $this->shouldWatermark($v))
-			->each(fn (SizeVariant $v) => WatermkarkerJob::dispatch($v));
+			->each(fn (SizeVariant $v) => WatermarkerJob::dispatch($v, $user_id));
 	}
 
 	private function shouldWatermark(?SizeVariant $size_variant): bool

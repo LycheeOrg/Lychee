@@ -17,11 +17,10 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
-class WatermkarkerJob implements ShouldQueue
+class WatermarkerJob implements ShouldQueue
 {
 	use Dispatchable;
 	use InteractsWithQueue;
@@ -32,13 +31,13 @@ class WatermkarkerJob implements ShouldQueue
 
 	protected SizeVariant $variant;
 
-	public function __construct(SizeVariant $variant)
+	public function __construct(SizeVariant $variant, int $owner_id)
 	{
 		$this->variant = $variant;
 
 		// Set up our new history record.
 		$this->history = new JobHistory();
-		$this->history->owner_id = Auth::user()->id;
+		$this->history->owner_id = $owner_id;
 		$this->history->job = Str::limit(sprintf('Watermark sizeVariant: %s.', $this->variant->short_path), 200);
 		$this->history->status = JobStatus::READY;
 		$this->history->save();
