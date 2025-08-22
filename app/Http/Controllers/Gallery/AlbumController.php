@@ -46,6 +46,7 @@ use App\Http\Requests\Album\TransferAlbumRequest;
 use App\Http\Requests\Album\UnlockAlbumRequest;
 use App\Http\Requests\Album\UpdateAlbumRequest;
 use App\Http\Requests\Album\UpdateTagAlbumRequest;
+use App\Http\Requests\Album\WatermarkAlbumRequest;
 use App\Http\Requests\Album\ZipRequest;
 use App\Http\Requests\Traits\HasVisitorIdTrait;
 use App\Http\Resources\Editable\EditableBaseAlbumResource;
@@ -56,6 +57,7 @@ use App\Http\Resources\Models\SmartAlbumResource;
 use App\Http\Resources\Models\TagAlbumResource;
 use App\Http\Resources\Models\TargetAlbumResource;
 use App\Http\Resources\Models\Utils\AlbumProtectionPolicy;
+use App\Jobs\WatermkarkerJob;
 use App\Models\Album;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Tag;
@@ -365,5 +367,21 @@ class AlbumController extends Controller
 	public function deleteTrack(DeleteTrackRequest $request): void
 	{
 		$request->album()->deleteTrack();
+	}
+
+	/**
+	 * Watermark all SizeVariants of photos in an album.
+	 *
+	 * Dispatches a WatermkarkerJob for each SizeVariant where short_path_watermarked is not set.
+	 */
+	public function watermarkAlbumPhotos(WatermarkAlbumRequest $request): void
+	{
+		$album = $request->album();
+
+		// Get all photos in the album and process their size variants
+		// Filter variants that need watermarking and dispatch jobs
+		$album->photos->each(fn ($photo) => $photo->size_variants
+			->filter(fn ($v) => $v->short_path_watermarked === null || $v->short_path_watermarked === '')
+			->each(fn ($v) => WatermkarkerJob::dispatch($v)));
 	}
 }
