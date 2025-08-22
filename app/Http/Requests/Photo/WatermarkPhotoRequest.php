@@ -45,6 +45,6 @@ class WatermarkPhotoRequest extends BaseApiRequest implements HasPhotoIds
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->photo_ids = $values[RequestAttribute::PHOTO_ID_ATTRIBUTE] ?? [];
+		$this->photo_ids = $values[RequestAttribute::PHOTO_IDS_ATTRIBUTE] ?? [];
 	}
 }
