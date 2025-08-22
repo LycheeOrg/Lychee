@@ -175,6 +175,10 @@ const AlbumService = {
 	setPinned(album_id: string, is_pinned: boolean): Promise<AxiosResponse> {
 		return axios.patch(`${Constants.getApiUrl()}Album::setPinned`, { album_id: album_id, is_pinned: is_pinned });
 	},
+
+	watermark(album_id: string): Promise<AxiosResponse> {
+		return axios.post(`${Constants.getApiUrl()}Album::watermark`, { album_id: album_id });
+	},
 };
 
 export default AlbumService;

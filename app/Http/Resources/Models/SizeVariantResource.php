@@ -23,6 +23,7 @@ class SizeVariantResource extends Data
 	public int $height;
 	public int $width;
 	public ?string $url;
+	public bool $is_watermarked;
 
 	public function __construct(SizeVariant $size_variant, bool $no_url = false)
 	{
@@ -32,5 +33,6 @@ class SizeVariantResource extends Data
 		$this->height = $size_variant->height;
 		$this->width = $size_variant->width;
 		$this->url = !$no_url ? $size_variant->url : null;
+		$this->is_watermarked = $size_variant->is_watermarked;
 	}
 }

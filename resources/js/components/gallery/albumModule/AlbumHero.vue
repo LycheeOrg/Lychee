@@ -84,6 +84,14 @@
 						>
 							<i class="pi pi-play" />
 						</a>
+						<a
+							v-if="isWatermarkerEnabled"
+							v-tooltip.bottom="'Watermark'"
+							class="shrink-0 px-3 cursor-pointer text-muted-color inline-block transform duration-300 hover:scale-150 hover:text-color"
+							@click="watermark"
+						>
+							<i class="pi pi-barcode" />
+						</a>
 
 						<template v-if="isTouchDevice() && user?.id !== null">
 							<a
@@ -124,8 +132,13 @@ import { storeToRefs } from "pinia";
 import Card from "primevue/card";
 import { computed } from "vue";
 import AlbumStatistics from "./AlbumStatistics.vue";
+import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
+import { useToast } from "primevue/usetoast";
+import { trans } from "laravel-vue-i18n";
 
+const toast = useToast();
 const auth = useAuthStore();
+const leftMenu = useLeftMenuStateStore();
 const lycheeStore = useLycheeStateStore();
 const { is_se_enabled, is_se_preview_enabled, are_nsfw_visible, is_slideshow_enabled } = storeToRefs(lycheeStore);
 const { user } = storeToRefs(auth);
@@ -140,6 +153,31 @@ const props = defineProps<{
 }>();
 
 const hasCoordinates = computed(() => props.album.photos.some((photo) => photo.latitude !== null && photo.longitude !== null));
+
+const isWatermarkerEnabled = computed(
+	() => leftMenu.initData?.modules.is_watermarker_enabled && props.album.photos.some((p) => needSizeVariantsWatermark(p.size_variants)),
+);
+function watermark() {
+	AlbumService.watermark(props.album.id).then(() => {
+		toast.add({
+			severity: "success",
+			detail: trans("toasts.success"),
+			life: 3000,
+		});
+	});
+}
+
+function needSizeVariantsWatermark(sizeVariants: App.Http.Resources.Models.SizeVariantsResouce): boolean {
+	return (
+		(sizeVariants.thumb && !sizeVariants.thumb.is_watermarked) ||
+		(sizeVariants.thumb2x && !sizeVariants.thumb2x.is_watermarked) ||
+		(sizeVariants.small && !sizeVariants.small.is_watermarked) ||
+		(sizeVariants.small2x && !sizeVariants.small2x.is_watermarked) ||
+		(sizeVariants.medium && !sizeVariants.medium.is_watermarked) ||
+		(sizeVariants.medium2x && !sizeVariants.medium2x.is_watermarked) ||
+		false
+	);
+}
 
 const emits = defineEmits<{
 	openSharingModal: [];

@@ -45,6 +45,7 @@ use Illuminate\Support\Facades\Storage;
  * @property float                $ratio
  * @property StorageDiskType|null $storage_disk
  * @property int                  $filesize
+ * @property bool                 $is_watermarked
  *
  * @method static SizeVariantBuilder|SizeVariant addSelect($column)
  * @method static SizeVariantBuilder|SizeVariant join(string $table, string $first, string $operator = null, string $second = null, string $type = 'inner', string $where = false)
@@ -201,5 +202,10 @@ class SizeVariant extends Model
 	public function toResource(bool $no_url = false): SizeVariantResource
 	{
 		return new SizeVariantResource($this, no_url: $no_url);
+	}
+
+	public function getIsWatermarkedAttribute(): bool
+	{
+		return $this->short_path_watermarked !== null && $this->short_path_watermarked !== '';
 	}
 }

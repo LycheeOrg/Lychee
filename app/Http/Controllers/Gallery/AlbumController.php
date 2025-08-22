@@ -21,6 +21,7 @@ use App\Actions\Album\SetSmartProtectionPolicy;
 use App\Actions\Album\Transfer;
 use App\Actions\Album\Unlock;
 use App\Actions\Photo\BaseArchive as PhotoBaseArchive;
+use App\Enum\SizeVariantType;
 use App\Events\AlbumRouteCacheUpdated;
 use App\Events\Metrics\AlbumDownload;
 use App\Events\Metrics\AlbumVisit;
@@ -59,7 +60,10 @@ use App\Http\Resources\Models\TargetAlbumResource;
 use App\Http\Resources\Models\Utils\AlbumProtectionPolicy;
 use App\Jobs\WatermkarkerJob;
 use App\Models\Album;
+use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
+use App\Models\Photo;
+use App\Models\SizeVariant;
 use App\Models\Tag;
 use App\Models\TagAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
@@ -380,8 +384,21 @@ class AlbumController extends Controller
 
 		// Get all photos in the album and process their size variants
 		// Filter variants that need watermarking and dispatch jobs
-		$album->photos->each(fn ($photo) => $photo->size_variants
-			->filter(fn ($v) => $v->short_path_watermarked === null || $v->short_path_watermarked === '')
-			->each(fn ($v) => WatermkarkerJob::dispatch($v)));
+		/** @phpstan-ignore return.type (stupid covariance...) */
+		$album->photos->each(fn (Photo $photo) => $photo->size_variants->toCollection()
+			->filter(fn (?SizeVariant $v) => $this->shouldWatermark($v))
+			->each(fn (?SizeVariant $v) => WatermkarkerJob::dispatch($v)));
+	}
+
+	private function shouldWatermark(?SizeVariant $size_variant): bool
+	{
+		if ($size_variant === null || $size_variant->type === SizeVariantType::PLACEHOLDER) {
+			return false;
+		}
+		if ($size_variant->type === SizeVariantType::ORIGINAL && !Configs::getValueAsBool('watermark_original')) {
+			return false;
+		}
+
+		return !$size_variant->is_watermarked;
 	}
 }

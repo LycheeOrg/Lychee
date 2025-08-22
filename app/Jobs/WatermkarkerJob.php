@@ -50,6 +50,7 @@ class WatermkarkerJob implements ShouldQueue
 			// Already watermarked, nothing to do.
 			$this->history->status = JobStatus::SUCCESS;
 			$this->history->save();
+
 			return;
 		}
 
