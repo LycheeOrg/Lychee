@@ -6,7 +6,7 @@ return [
 	|--------------------------------------------------------------------------
 	*/
     'title' => 'Vedlikehold',
-    'intro' => 'On this page you will find the duplicate pictures found in your database.',
+    'intro' => 'På denne siden finner du duplikatbildene som er funnet i databasen din.',
     'found' => ' duplicates found!',
     'invalid-search' => ' At least the checksum or title condition must be checked.',
     'checksum-must-match' => 'Checksum must match.',
