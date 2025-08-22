@@ -155,7 +155,10 @@ const props = defineProps<{
 const hasCoordinates = computed(() => props.album.photos.some((photo) => photo.latitude !== null && photo.longitude !== null));
 
 const isWatermarkerEnabled = computed(
-	() => leftMenu.initData?.modules.is_watermarker_enabled && props.album.photos.some((p) => needSizeVariantsWatermark(p.size_variants)),
+	() =>
+		leftMenu.initData?.modules.is_watermarker_enabled &&
+		props.album.rights.can_edit &&
+		props.album.photos.some((p) => needSizeVariantsWatermark(p.size_variants)),
 );
 function watermark() {
 	AlbumService.watermark(props.album.id).then(() => {
