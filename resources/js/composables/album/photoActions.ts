@@ -28,9 +28,9 @@ export function usePhotoActions(
 			return;
 		}
 
-		PhotoService.rotate(photo.value.id, "-1").then(() => {
+		PhotoService.rotate(photo.value.id, "-1", albumId.value).then(() => {
 			AlbumService.clearCache(albumId.value);
-			// load();
+			location.reload();
 		});
 	}
 
@@ -40,9 +40,9 @@ export function usePhotoActions(
 			return;
 		}
 
-		PhotoService.rotate(photo.value.id, "1").then(() => {
+		PhotoService.rotate(photo.value.id, "1", albumId.value).then(() => {
 			AlbumService.clearCache(albumId.value);
-			// load();
+			location.reload();
 		});
 	}
 
