@@ -263,7 +263,7 @@ class AlbumSharingTest extends BaseApiWithDataTest
 
 		$response = $this->actingAs($this->userWithGroup1)->getJson('Albums');
 
-		$ids = array_map(fn($a) => $a['id'], $response->json()['shared_albums']);
+		$ids = array_map(fn ($a) => $a['id'], $response->json()['shared_albums']);
 		$this->assertCount(5, $ids);
 		$this->assertContains($this->album1->id, $ids);
 		$this->assertContains($this->album2->id, $ids);
