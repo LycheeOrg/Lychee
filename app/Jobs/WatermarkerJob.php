@@ -13,6 +13,7 @@ use App\Image\Watermarker;
 use App\Models\JobHistory;
 use App\Models\SizeVariant;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -20,7 +21,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
-class WatermarkerJob implements ShouldQueue
+class WatermarkerJob implements ShouldQueue, ShouldBeUnique
 {
 	use Dispatchable;
 	use InteractsWithQueue;
@@ -30,6 +31,26 @@ class WatermarkerJob implements ShouldQueue
 	protected JobHistory $history;
 
 	protected SizeVariant $variant;
+
+	// Deduplicate jobs for the same size variant for 1 hour
+	public $uniqueFor = 3600;
+	// Ensure the job is only processed after surrounding DB transactions commit
+	public bool $afterCommit = true;
+
+	/**
+	 * Define a unique ID for the job to prevent duplicates in the queue.
+	 *
+	 * This is required by the ShouldBeUnique interface
+	 * We use the size variant ID as the unique identifier
+	 * This ensures that only one job per size variant is processed at a time
+	 * The unique ID is prefixed with 'watermark:' to avoid collisions with other jobs
+	 *
+	 * @return string
+	 */
+	public function uniqueId(): string
+	{
+		return 'watermark:' . (string) $this->variant->id;
+	}
 
 	public function __construct(SizeVariant $variant, int $owner_id)
 	{
@@ -59,6 +80,15 @@ class WatermarkerJob implements ShouldQueue
 
 		$watermarker->do($this->variant);
 
+		// Assert watermark exists before marking success
+		$this->variant->refresh();
+		if (!$this->variant->is_watermarked) {
+			$this->history->status = JobStatus::FAILURE;
+			$this->history->save();
+
+			return;
+		}
+
 		// Once the job has finished, set history status to 1.
 		$this->history->status = JobStatus::SUCCESS;
 		$this->history->save();
@@ -72,8 +102,13 @@ class WatermarkerJob implements ShouldQueue
 		if ($th->getCode() === 999) {
 			$this->release();
 		} else {
-			Log::error(__LINE__ . ':' . __FILE__ . ' Watermark failed for ' . $this->variant->short_path);
-			Log::error(__LINE__ . ':' . __FILE__ . ' ' . $th->getMessage(), $th->getTrace());
+			Log::error(__LINE__ . ':' . __FILE__ . ' Watermark failed for ' . $this->variant->short_path,
+				[
+					'variant_id' => $this->variant->id,
+					'path' => $this->variant->short_path,
+					'code' => $th->getCode(),
+					'exception' => $th,
+				]);
 		}
 	}
 }
