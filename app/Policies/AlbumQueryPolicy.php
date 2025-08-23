@@ -544,7 +544,7 @@ class AlbumQueryPolicy
 						APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::BASE_ALBUM_ID,
 						fn ($q3) => $q3->select('acc_per.' . APC::BASE_ALBUM_ID)
 							->from('access_permissions', 'acc_per')
-							->where(APC::USER_ID, '=', $user->id)
+							->where('acc_per.' . APC::USER_ID, '=', $user->id)
 					)
 			)
 			// Then select the public permissions.
@@ -553,11 +553,11 @@ class AlbumQueryPolicy
 					->whereNotIn(
 						APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::BASE_ALBUM_ID,
 						// Ensure that we already have not selected the user or group permissions.
-						fn ($q3) => $q3->select('acc_per.' . APC::BASE_ALBUM_ID)
-							->from('access_permissions', 'acc_per')
-							->where(APC::USER_ID, '=', $user->id)
+						fn ($q3) => $q3->select('acc_per_group.' . APC::BASE_ALBUM_ID)
+							->from('access_permissions', 'acc_per_group')
+							->where('acc_per_group.' . APC::USER_ID, '=', $user->id)
 							->orWhereIn(
-								APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::USER_GROUP_ID,
+								'acc_per_group.' . APC::USER_GROUP_ID,
 								$user_groups
 							)
 					)

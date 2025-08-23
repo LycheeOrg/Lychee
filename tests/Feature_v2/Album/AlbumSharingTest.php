@@ -255,4 +255,20 @@ class AlbumSharingTest extends BaseApiWithDataTest
 		$response->assertJsonCount(1, 'shared_albums');
 		$response->assertJsonPath('shared_albums.0.id', $this->album1->id);
 	}
+
+	public function testSharedViewAsAdmin(): void
+	{
+		$this->userWithGroup1->may_administrate = true;
+		$this->userWithGroup1->save();
+
+		$response = $this->actingAs($this->userWithGroup1)->getJson('Albums');
+
+		$ids = array_map(fn($a) => $a['id'], $response->json()['shared_albums']);
+		$this->assertCount(5, $ids);
+		$this->assertContains($this->album1->id, $ids);
+		$this->assertContains($this->album2->id, $ids);
+		$this->assertContains($this->album3->id, $ids);
+		$this->assertContains($this->album4->id, $ids);
+		$this->assertContains($this->album5->id, $ids);
+	}
 }
