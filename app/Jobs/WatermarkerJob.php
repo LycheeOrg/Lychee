@@ -66,7 +66,8 @@ class WatermarkerJob implements ShouldQueue, ShouldBeUnique
 
 	public function handle(): void
 	{
-		if ($this->variant->short_path_watermarked !== null && $this->variant->short_path_watermarked !== '') {
+		$this->variant->refresh();
+		if ($this->variant->is_watermarked) {
 			// Already watermarked, nothing to do.
 			$this->history->status = JobStatus::SUCCESS;
 			$this->history->save();
