@@ -13,9 +13,7 @@ use App\Actions\Import\Exec;
 use App\Contracts\Models\AbstractAlbum;
 use App\DTO\ImportMode;
 use App\Enum\JobStatus;
-use App\Enum\SmartAlbumType;
 use App\Exceptions\Internal\ZipExtractionException;
-use App\Image\Files\ExtractedJobFile;
 use App\Image\Files\ProcessableJobFile;
 use App\Models\Album;
 use App\Models\Configs;
@@ -114,7 +112,6 @@ class ExtractZip implements ShouldQueue
 
 		/** @var Album $parent_album */
 		$parent_album = $this->album_id !== null ? Album::query()->findOrFail($this->album_id) : null; // in case no ID provided -> import to root folder
-
 
 		$exec->do($path_extracted, $parent_album);
 
