@@ -95,6 +95,7 @@ declare namespace App.Enum {
 	export type OrderSortingType = "ASC" | "DESC";
 	export type PhotoLayoutType = "square" | "justified" | "masonry" | "grid";
 	export type PhotoThumbInfoType = "title" | "description";
+	export type RenamerModeType = "first" | "all" | "regex";
 	export type SeverityType = "emergency" | "alert" | "critical" | "error" | "warning" | "notice" | "info" | "debug";
 	export type SizeVariantType = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 	export type SmallLargeType = "small" | "large";
@@ -514,6 +515,17 @@ declare namespace App.Http.Resources.Models {
 		favourite_count: number;
 		shared_count: number;
 	};
+	export type RenamerRuleResource = {
+		id: number;
+		order: number;
+		owner_id: number;
+		rule: string;
+		description: string;
+		needle: string;
+		replacement: string;
+		mode: App.Enum.RenamerModeType;
+		is_enabled: boolean;
+	};
 	export type SizeVariantResource = {
 		type: App.Enum.SizeVariantType;
 		locale: string;
@@ -731,6 +743,7 @@ declare namespace App.Http.Resources.Rights {
 		is_mod_frame_enabled: boolean;
 		is_mod_flow_enabled: boolean;
 		is_photo_timeline_enabled: boolean;
+		is_mod_renamer_enabled: boolean;
 	};
 	export type PhotoRightsResource = {
 		can_edit: boolean;

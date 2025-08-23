@@ -6,9 +6,9 @@ return [
 	| Flow Page
 	|--------------------------------------------------------------------------
 	*/
-    'title' => 'Flow',
-    'by_author' => 'by %s',
-    'open_album' => 'Open album',
-    'show_more' => 'Show more',
-    'no_content' => 'No content.',
+    'title' => 'جریان',
+    'by_author' => 'توسط %s',
+    'open_album' => 'باز کردن آلبوم',
+    'show_more' => 'نمایش بیشتر',
+    'no_content' => 'محتوایی وجود ندارد.',
 ];

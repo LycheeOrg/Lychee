@@ -25,6 +25,7 @@ const RegisterPage = () => import("@/views/RegisterPage.vue");
 const Flow = () => import("@/views/gallery-panels/Flow.vue");
 const TagsManagement = () => import("@/views/TagsManagement.vue");
 const Tag = () => import("@/views/gallery-panels/Tag.vue");
+const RenamerRules = () => import("@/views/RenamerRules.vue");
 
 const routes_ = [
 	{
@@ -57,6 +58,11 @@ const routes_ = [
 		name: "tags",
 		path: "/tags",
 		component: TagsManagement,
+	},
+	{
+		name: "renamer-rules",
+		path: "/renamerRules",
+		component: RenamerRules,
 	},
 	{
 		name: "tag",

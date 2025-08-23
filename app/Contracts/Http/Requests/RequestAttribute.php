@@ -77,6 +77,8 @@ class RequestAttribute
 
 	public const IS_AND_ATTRIBUTE = 'is_and';
 
+	public const ALL_ATTRIBUTE = 'all';
+
 	public const FILE_ATTRIBUTE = 'file';
 	public const SHALL_OVERRIDE_ATTRIBUTE = 'shall_override';
 	public const IS_STARRED_ATTRIBUTE = 'is_starred';
@@ -110,4 +112,12 @@ class RequestAttribute
 	public const CONFIGS_ARRAY_VALUE_ATTRIBUTE = 'configs.*.value';
 	public const CONFIGS_KEY_ATTRIBUTE = 'key';
 	public const CONFIGS_VALUE_ATTRIBUTE = 'value';
+
+	public const RENAMER_RULE_ID_ATTRIBUTE = 'rule_id';
+	public const RULE_ATTRIBUTE = 'rule';
+	public const NEEDLE_ATTRIBUTE = 'needle';
+	public const REPLACEMENT_ATTRIBUTE = 'replacement';
+	public const MODE_ATTRIBUTE = 'mode';
+	public const ORDER_ATTRIBUTE = 'order';
+	public const IS_ENABLED_ATTRIBUTE = 'is_enabled';
 }

@@ -108,7 +108,11 @@ class ProcessImageJob implements ShouldQueue
 		// As the file has been uploaded, the (temporary) source file shall be
 		// deleted
 		$create = new Create(
-			new ImportMode(delete_imported: true, skip_duplicates: Configs::getValueAsBool('skip_duplicates')),
+			new ImportMode(
+				delete_imported: true,
+				skip_duplicates: Configs::getValueAsBool('skip_duplicates'),
+				shall_rename_photo_title: Configs::getValueAsBool('renamer_photo_title_enabled'),
+			),
 			$this->user_id
 		);
 

@@ -232,6 +232,12 @@ export function useLeftMenu(
 				access: is_se_enabled.value === false && is_se_preview_enabled.value === true,
 				seTag: true,
 			},
+			{
+				label: "renamer.title",
+				icon: "pi pi-file-edit",
+				access: initData.value.modules.is_mod_renamer_enabled ?? false,
+				route: "/renamerRules",
+			},
 		];
 
 		return userMenu.filter((item) => item.access !== false);
