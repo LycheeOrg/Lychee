@@ -56,6 +56,7 @@ Route::post('/Album::track', [Gallery\AlbumController::class, 'setTrack'])
 	->withoutMiddleware(['content_type:json'])
 	->middleware(['content_type:multipart']);
 Route::delete('/Album::track', [Gallery\AlbumController::class, 'deleteTrack']);
+Route::post('/Album::watermark', [Gallery\AlbumController::class, 'watermarkAlbumPhotos'])->middleware('support:se');
 
 Route::post('/TagAlbum', [Gallery\AlbumController::class, 'createTagAlbum']);
 Route::patch('/TagAlbum', [Gallery\AlbumController::class, 'updateTagAlbum']);
@@ -113,6 +114,7 @@ Route::post('/Photo::move', [Gallery\PhotoController::class, 'move']);
 Route::post('/Photo::copy', [Gallery\PhotoController::class, 'copy']);
 Route::post('/Photo::star', [Gallery\PhotoController::class, 'star']);
 Route::post('/Photo::rotate', [Gallery\PhotoController::class, 'rotate']);
+Route::post('/Photo::watermark', [Gallery\PhotoController::class, 'watermark'])->middleware('support:se');
 Route::delete('/Photo', [Gallery\PhotoController::class, 'delete']);
 
 // Route::get('/Photo::getArchive', [PhotoController::class, 'getArchive'])

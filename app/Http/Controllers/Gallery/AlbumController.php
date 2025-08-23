@@ -21,6 +21,7 @@ use App\Actions\Album\SetSmartProtectionPolicy;
 use App\Actions\Album\Transfer;
 use App\Actions\Album\Unlock;
 use App\Actions\Photo\BaseArchive as PhotoBaseArchive;
+use App\Enum\SizeVariantType;
 use App\Events\AlbumRouteCacheUpdated;
 use App\Events\Metrics\AlbumDownload;
 use App\Events\Metrics\AlbumVisit;
@@ -46,6 +47,7 @@ use App\Http\Requests\Album\TransferAlbumRequest;
 use App\Http\Requests\Album\UnlockAlbumRequest;
 use App\Http\Requests\Album\UpdateAlbumRequest;
 use App\Http\Requests\Album\UpdateTagAlbumRequest;
+use App\Http\Requests\Album\WatermarkAlbumRequest;
 use App\Http\Requests\Album\ZipRequest;
 use App\Http\Requests\Traits\HasVisitorIdTrait;
 use App\Http\Resources\Editable\EditableBaseAlbumResource;
@@ -56,8 +58,12 @@ use App\Http\Resources\Models\SmartAlbumResource;
 use App\Http\Resources\Models\TagAlbumResource;
 use App\Http\Resources\Models\TargetAlbumResource;
 use App\Http\Resources\Models\Utils\AlbumProtectionPolicy;
+use App\Jobs\WatermarkerJob;
 use App\Models\Album;
+use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
+use App\Models\Photo;
+use App\Models\SizeVariant;
 use App\Models\Tag;
 use App\Models\TagAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
@@ -365,5 +371,34 @@ class AlbumController extends Controller
 	public function deleteTrack(DeleteTrackRequest $request): void
 	{
 		$request->album()->deleteTrack();
+	}
+
+	/**
+	 * Watermark all SizeVariants of photos in an album.
+	 *
+	 * Dispatches a WatermarkerJob for each SizeVariant where short_path_watermarked is not set.
+	 */
+	public function watermarkAlbumPhotos(WatermarkAlbumRequest $request): void
+	{
+		$album = $request->album();
+
+		// Get all photos in the album and process their size variants
+		// Filter variants that need watermarking and dispatch jobs
+		/** @phpstan-ignore return.type (stupid covariance...) */
+		$album->photos->each(fn (Photo $photo) => $photo->size_variants->toCollection()
+			->filter(fn (?SizeVariant $v) => $this->shouldWatermark($v))
+			->each(fn (?SizeVariant $v) => WatermarkerJob::dispatch($v, $photo->owner_id)));
+	}
+
+	private function shouldWatermark(?SizeVariant $size_variant): bool
+	{
+		if ($size_variant === null || $size_variant->type === SizeVariantType::PLACEHOLDER) {
+			return false;
+		}
+		if ($size_variant->type === SizeVariantType::ORIGINAL && !Configs::getValueAsBool('watermark_original')) {
+			return false;
+		}
+
+		return !$size_variant->is_watermarked;
 	}
 }

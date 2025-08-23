@@ -97,6 +97,9 @@ declare namespace App.Enum {
 	export type PhotoThumbInfoType = "title" | "description";
 	export type RenamerModeType = "first" | "all" | "regex";
 	export type SeverityType = "emergency" | "alert" | "critical" | "error" | "warning" | "notice" | "info" | "debug";
+	export type ShiftType = "relative" | "absolute";
+	export type ShiftX = "left" | "right";
+	export type ShiftY = "up" | "down";
 	export type SizeVariantType = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 	export type SmallLargeType = "small" | "large";
 	export type SmartAlbumType = "unsorted" | "starred" | "recent" | "on_this_day";
@@ -108,6 +111,7 @@ declare namespace App.Enum {
 	export type UpdateStatus = 0 | 1 | 2 | 3;
 	export type UserGroupRole = "member" | "admin";
 	export type VersionChannelType = "release" | "git" | "tag";
+	export type WatermarkPosition = "top-left" | "top" | "top-right" | "left" | "center" | "right" | "bottom-left" | "bottom" | "bottom-right";
 }
 declare namespace App.Http.Resources.Collections {
 	export type PositionDataResource = {
@@ -533,6 +537,7 @@ declare namespace App.Http.Resources.Models {
 		height: number;
 		width: number;
 		url: string | null;
+		is_watermarked: boolean;
 	};
 	export type SizeVariantsResouce = {
 		original: App.Http.Resources.Models.SizeVariantResource | null;
@@ -742,6 +747,7 @@ declare namespace App.Http.Resources.Rights {
 		is_map_enabled: boolean;
 		is_mod_frame_enabled: boolean;
 		is_mod_flow_enabled: boolean;
+		is_watermarker_enabled: boolean;
 		is_photo_timeline_enabled: boolean;
 		is_mod_renamer_enabled: boolean;
 	};

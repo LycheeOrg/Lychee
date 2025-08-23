@@ -15,6 +15,7 @@ use App\Actions\Photo\Rotate;
 use App\Constants\FileSystem;
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\FileStatus;
+use App\Enum\SizeVariantType;
 use App\Exceptions\ConfigurationException;
 use App\Factories\AlbumFactory;
 use App\Http\Requests\Photo\CopyPhotosRequest;
@@ -27,14 +28,17 @@ use App\Http\Requests\Photo\RotatePhotoRequest;
 use App\Http\Requests\Photo\SetPhotosStarredRequest;
 use App\Http\Requests\Photo\SetPhotosTagsRequest;
 use App\Http\Requests\Photo\UploadPhotoRequest;
+use App\Http\Requests\Photo\WatermarkPhotoRequest;
 use App\Http\Resources\Editable\UploadMetaResource;
 use App\Http\Resources\Models\PhotoResource;
 use App\Image\Files\NativeLocalFile;
 use App\Image\Files\ProcessableJobFile;
 use App\Image\Files\UploadedFile;
 use App\Jobs\ProcessImageJob;
+use App\Jobs\WatermarkerJob;
 use App\Models\Configs;
 use App\Models\Photo;
+use App\Models\SizeVariant;
 use App\Models\Tag;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\App;
@@ -230,5 +234,34 @@ class PhotoController extends Controller
 			});
 			DB::commit();
 		});
+	}
+
+	/**
+	 * Watermark all SizeVariants of a single photo.
+	 *
+	 * Dispatches a WatermarkerJob for each SizeVariant where short_path_watermarked is not set.
+	 */
+	public function watermark(WatermarkPhotoRequest $request): void
+	{
+		/** @var int $user_id */
+		$user_id = Auth::id();
+
+		// Get all photos from the request and process their size variants
+		// Filter variants that need watermarking and dispatch jobs
+		SizeVariant::query()
+			->whereIn('photo_id', $request->photoIds())
+			->whereNot('type', SizeVariantType::PLACEHOLDER)
+			->get()
+			->filter(fn (SizeVariant $v) => $this->shouldWatermark($v))
+			->each(fn (SizeVariant $v) => WatermarkerJob::dispatch($v, $user_id));
+	}
+
+	private function shouldWatermark(?SizeVariant $size_variant): bool
+	{
+		if ($size_variant->type === SizeVariantType::ORIGINAL && !Configs::getValueAsBool('watermark_original')) {
+			return false;
+		}
+
+		return !$size_variant->is_watermarked;
 	}
 }
