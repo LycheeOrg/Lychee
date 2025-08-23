@@ -35,7 +35,7 @@ class WatermarkerJob implements ShouldQueue, ShouldBeUnique
 	// Deduplicate jobs for the same size variant for 1 hour
 	public $uniqueFor = 3600;
 	// Ensure the job is only processed after surrounding DB transactions commit
-	public bool $afterCommit = true;
+	public $afterCommit = true;
 
 	/**
 	 * Define a unique ID for the job to prevent duplicates in the queue.
