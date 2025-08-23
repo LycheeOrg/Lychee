@@ -9,13 +9,16 @@
 namespace App\Jobs;
 
 use App\Actions\Album\Create;
+use App\Actions\Import\Exec;
 use App\Contracts\Models\AbstractAlbum;
+use App\DTO\ImportMode;
 use App\Enum\JobStatus;
 use App\Enum\SmartAlbumType;
 use App\Exceptions\Internal\ZipExtractionException;
 use App\Image\Files\ExtractedJobFile;
 use App\Image\Files\ProcessableJobFile;
 use App\Models\Album;
+use App\Models\Configs;
 use App\Models\JobHistory;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -92,21 +95,30 @@ class ExtractZip implements ShouldQueue
 			throw new ZipExtractionException($this->file_path, $path_extracted);
 		}
 
-		$new_album = $this->createAlbum($extracted_folder_name, $this->album_id);
-		$jobs = [];
-		foreach (new \DirectoryIterator($path_extracted) as $file_info) {
-			if ($file_info->isDot() || $file_info->isDir()) {
-				continue;
-			}
+		$import_mode = new ImportMode(
+			delete_imported: true,
+			skip_duplicates: false,
+			import_via_symlink: false,
+			resync_metadata: false,
+			shall_rename_photo_title: Configs::getValueAsBool('renamer_photo_title_enabled'),
+			shall_rename_album_title: Configs::getValueAsBool('renamer_album_title_enabled'),
+		);
 
-			$extracted_file = new ExtractedJobFile($file_info->getRealPath(), $file_info->getFilename());
-			$jobs[] = new ProcessImageJob($extracted_file, $new_album, $file_info->getMTime());
-		}
+		$exec = new Exec(
+			import_mode: $import_mode,
+			intended_owner_id: $this->user_id,
+			delete_missing_photos: false,
+			delete_missing_albums: false,
+			is_dry_run: false,
+		);
 
-		$jobs[] = new CleanUpExtraction($path_extracted);
-		foreach ($jobs as $job) {
-			dispatch($job);
-		}
+		/** @var Album $parent_album */
+		$parent_album = $this->album_id !== null ? Album::query()->findOrFail($this->album_id) : null; // in case no ID provided -> import to root folder
+
+
+		$exec->do($path_extracted, $parent_album);
+
+		CleanUpExtraction::dispatch($path_extracted);
 	}
 
 	/**
@@ -129,39 +141,6 @@ class ExtractZip implements ShouldQueue
 	}
 
 	/**
-	 * Given a name and parent we create it.
-	 *
-	 * @param string      $new_album_name
-	 * @param string|null $parent_id
-	 *
-	 * @return Album new album
-	 */
-	private function createAlbum(string $new_album_name, ?string $parent_id): Album
-	{
-		if (SmartAlbumType::tryFrom($parent_id) !== null) {
-			$parent_id = null;
-		}
-
-		/** @var Album $parent_album */
-		$parent_album = $parent_id !== null ? Album::query()->findOrFail($parent_id) : null; // in case no ID provided -> import to root folder
-		$create_album = new Create($this->user_id);
-
-		return $create_album->create($this->prepareAlbumName($new_album_name), $parent_album);
-	}
-
-	/**
-	 * Todo Later: add renamer module.
-	 *
-	 * @param string $album_name_candidate
-	 *
-	 * @return string
-	 */
-	private function prepareAlbumName(string $album_name_candidate): string
-	{
-		return trim(str_replace('_', ' ', $album_name_candidate));
-	}
-
-	/**
 	 * Returns a folder name where:
 	 * - spaces are replaced by `_`
 	 * - if folder already exists (with date prefix) then we pad with _(xx) where xx is the next available number.
@@ -170,10 +149,7 @@ class ExtractZip implements ShouldQueue
 	 */
 	private function getExtractFolderName(): string
 	{
-		$base_name_without_extension = substr($this->original_base_name, 0, -4);
-
-		// Save that one (is default if no existing folder found).
-		$orignal_name = str_replace(' ', '_', $base_name_without_extension);
+		$orignal_name = substr($this->original_base_name, 0, -4);
 
 		// Iterate on that one.
 		$candidate_name = $orignal_name;
@@ -181,7 +157,7 @@ class ExtractZip implements ShouldQueue
 		// count
 		$i = 0;
 		while (Storage::disk('extract-jobs')->exists(date('Ymd') . $candidate_name)) {
-			$candidate_name = $orignal_name . '_(' . $i . ')';
+			$candidate_name = $orignal_name . ' (' . $i . ')';
 			$i++;
 		}
 
