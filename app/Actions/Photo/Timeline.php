@@ -68,6 +68,16 @@ class Timeline
 	{
 		$order = Configs::getValueAsEnum('timeline_photos_order', ColumnSortingPhotoType::class);
 
+		$granularity = Configs::getValueAsEnum('timeline_photos_granularity', TimelinePhotoGranularity::class);
+
+		$date_offset = match ($granularity) {
+			TimelinePhotoGranularity::YEAR => $date->addYear(),
+			TimelinePhotoGranularity::MONTH => $date->addMonth(),
+			TimelinePhotoGranularity::DAY => $date->addDay(),
+			TimelinePhotoGranularity::HOUR => $date->addHour(),
+			TimelinePhotoGranularity::DEFAULT, TimelinePhotoGranularity::DISABLED => throw new TimelineGranularityException(),
+		};
+
 		// Safe default (should not be needed).
 		// @codeCoverageIgnoreStart
 		if (!in_array($order, [ColumnSortingPhotoType::CREATED_AT, ColumnSortingPhotoType::TAKEN_AT], true)) {
@@ -77,7 +87,7 @@ class Timeline
 
 		return $this->photo_query_policy->applySearchabilityFilter(
 			query: Photo::query()
-				->where($order->value, '>', $date)
+				->where($order->value, '>=', $date_offset)
 				->whereNotNull($order->value),
 			origin: null,
 			include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_timeline')
