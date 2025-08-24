@@ -17,7 +17,6 @@ return new class() extends Migration {
 		$this->down(); // Make sure that |timeline is not duplicated
 		$type_range = DB::table('configs')->select('type_range')->where('key', 'home_page_default')->first()->type_range;
 		DB::table('configs')->where('key', 'home_page_default')->update(['type_range' => $type_range . '|timeline']);
-
 	}
 
 	/**
