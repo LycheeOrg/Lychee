@@ -80,7 +80,7 @@ export function useTimelineRefresher(photoId: Ref<string | undefined>, router: R
 			})
 			.catch((error) => {
 				isLoading.value = false;
-				if (error.response.status === 401) {
+				if (error?.response?.status === 401) {
 					router.push({ name: "gallery" });
 				}
 			});
@@ -101,7 +101,7 @@ export function useTimelineRefresher(photoId: Ref<string | undefined>, router: R
 			})
 			.catch((error) => {
 				isLoading.value = false;
-				if (error.response.status === 401) {
+				if (error?.response?.status === 401) {
 					router.push({ name: "gallery" });
 				}
 			});
@@ -128,8 +128,13 @@ export function useTimelineRefresher(photoId: Ref<string | undefined>, router: R
 		}
 	}
 
-	function loadDate(date: string | null = null) {
+	function loadDate(date: string | null = null): void {
 		if (date === null && router.currentRoute.value.params.date === undefined) {
+			if (photos.value.length === 0 || !photos.value[0].timeline?.time_date) {
+				console.warn("No timeline data available to set initial date");
+				return;
+			}
+
 			// We push the first date of the timeline, this ensures that the timeline is always loaded with a date
 			router.push({ name: "timeline", params: { date: photos.value[0].timeline?.time_date } });
 		}

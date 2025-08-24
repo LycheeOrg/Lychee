@@ -111,5 +111,5 @@ const emits = defineEmits<{
 }>();
 
 const route = useRoute();
-const isTimeline = computed(() => (route.name as string).includes("timeline"));
+const isTimeline = computed(() => route.name === "timeline");
 </script>

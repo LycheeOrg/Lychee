@@ -3,7 +3,7 @@
 	<LoginModal v-if="user?.id === null" @logged-in="refresh" />
 	<WebauthnModal v-if="user?.id === null" @logged-in="refresh" />
 
-	<div v-if="rootConfig && rootRights" class="h-svh overflow-y-auto">
+	<div v-if="rootConfig && rootRights" class="h-svh overflow-y-auto" id="scrollArea">
 		<Collapse :when="!is_full_screen">
 			<TimelineHeader v-if="user" :user="user" :title="title" :rights="rootRights" :config="rootConfig" :has-hidden="false" />
 		</Collapse>
@@ -33,6 +33,9 @@
 			@contexted="photoMenuOpen"
 			:is-timeline="true"
 			:with-control="false"
+			:pt:header:class="'hidden'"
+			class="pt-4"
+			:intersection-action="loadDate"
 		/>
 		<!-- Photo panel -->
 		<PhotoPanel
@@ -55,7 +58,7 @@
 		/>
 		<!-- @updated="refreshPhoto" -->
 
-		<div class="sentinel" ref="sentinel" v-if="maxPage < lastPage"></div>
+		<div class="sentinel" v-intersection-observer="onIntersectionObserver" v-if="maxPage < lastPage"></div>
 		<ProgressSpinner class="flex justify-center" v-if="isLoading && !isTouchDevice()" />
 		<TimelineDates :dates="dates" v-if="photo === undefined" @load="goToDate" />
 		<ScrollTop target="parent" :threshold="50" v-if="photo === undefined" />
@@ -168,7 +171,6 @@ import WebauthnModal from "@/components/modals/WebauthnModal.vue";
 import { watch } from "vue";
 import Button from "primevue/button";
 import { usePhotoRoute } from "@/composables/photo/photoRoute";
-import { useRouteDateUpdater } from "@/composables/timeline/routeDateUpdater";
 import { usePhotoActions } from "@/composables/album/photoActions";
 import { getNextPreviousPhoto } from "@/composables/photo/getNextPreviousPhoto";
 import { useSlideshowFunction } from "@/composables/photo/slideshow";
@@ -189,6 +191,8 @@ import ContextMenu from "primevue/contextmenu";
 import { useMouseEvents } from "@/composables/album/uploadEvents";
 import RenameDialog from "@/components/forms/gallery-dialogs/RenameDialog.vue";
 import { useLtRorRtL } from "@/utils/Helpers";
+import { onUnmounted } from "vue";
+import { vIntersectionObserver } from "@vueuse/components";
 
 const { isLTR } = useLtRorRtL();
 
@@ -245,9 +249,11 @@ const { selectedPhotosIdx, selectedPhoto, selectedPhotos, selectedPhotosIds, pho
 
 const { photoRoute } = usePhotoRoute(router);
 
-const sentinel = ref(null);
-
-const { registerSentinel, registerScrollSpy } = useRouteDateUpdater(sentinel, loadMore, loadDate);
+function onIntersectionObserver([entry]: IntersectionObserverEntry[]) {
+	if (entry.isIntersecting) {
+		loadMore();
+	}
+}
 
 function photoClick(idx: number, _e: MouseEvent) {
 	router.push(photoRoute(photos.value[idx].id));
@@ -307,8 +313,6 @@ async function refresh() {
 
 onMounted(async () => {
 	await refresh();
-	registerSentinel();
-	registerScrollSpy();
 });
 
 // Modals for Albums
@@ -361,11 +365,14 @@ const { onPaste, dragEnd, dropUpload } = useMouseEvents(rootRights, is_upload_vi
 window.addEventListener("paste", onPaste);
 window.addEventListener("dragover", dragEnd);
 window.addEventListener("drop", dropUpload);
-router.afterEach(() => {
+
+function cleanupEventListeners() {
 	window.removeEventListener("paste", onPaste);
 	window.removeEventListener("dragover", dragEnd);
 	window.removeEventListener("drop", dropUpload);
-});
+}
+router.afterEach(cleanupEventListeners);
+onUnmounted(cleanupEventListeners);
 
 function openSearch() {
 	router.push({ name: "search" });

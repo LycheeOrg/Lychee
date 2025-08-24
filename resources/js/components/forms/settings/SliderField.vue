@@ -9,12 +9,7 @@
 				v-html="props.label ?? props.config.documentation"
 			/>
 			<div class="items-center flex gap-2">
-				<InputIcon
-					v-if="changed"
-					v-tooltip="'Click me to reset!'"
-					class="pi pi-exclamation-circle text-warning-600 cursor-pointer"
-					@click="reset"
-				/>
+				<ResetField v-if="changed" @click="reset" />
 				<SelectButton v-model="val" class="border-none" :options="options" aria-labelledby="basic" @update:model-value="update" />
 			</div>
 		</div>
@@ -29,7 +24,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import SelectButton from "primevue/selectbutton";
-import InputIcon from "primevue/inputicon";
+import ResetField from "./ResetField.vue";
 
 const props = defineProps<{
 	label?: string;

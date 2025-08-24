@@ -190,7 +190,7 @@ onKeyStroke("/", () => !shouldIgnoreKeystroke() && props.config.is_search_access
 // 1. lose focus
 // 2. close modals
 // 3. go back
-onKeyStroke("escape", () => {
+onKeyStroke("Escape", () => {
 	// 1. lose focus
 	if (document.activeElement instanceof HTMLElement) {
 		document.activeElement.blur();

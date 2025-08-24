@@ -76,7 +76,7 @@ export function useLeftMenu(
 			},
 			{
 				label: "gallery.timeline.title",
-				icon: "clock",
+				icon: "pi pi-clock",
 				route: "/timeline",
 				access: !(route.name as string).includes("timeline") && is_timeline_page_enabled.value,
 			},
