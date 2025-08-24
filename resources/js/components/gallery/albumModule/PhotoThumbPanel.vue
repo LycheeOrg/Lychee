@@ -19,7 +19,7 @@
 		/>
 		<template v-else>
 			<Timeline
-				v-if="isLeftBorderVisible && false"
+				v-if="isLeftBorderVisible"
 				:value="props.photosTimeline"
 				:pt:eventopposite:class="'hidden'"
 				class="mt-4"
