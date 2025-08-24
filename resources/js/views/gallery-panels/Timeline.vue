@@ -145,6 +145,7 @@
 	</div>
 </template>
 <script setup lang="ts">
+import { nextTick } from "vue";
 import { useAuthStore } from "@/stores/Auth";
 import { ref } from "vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
@@ -311,7 +312,9 @@ async function refresh() {
 		router.push({ name: "gallery" });
 	}
 	await Promise.all([loadLayoutConfig(), loadUser(), loadDates()]);
-	await initialLoad(props.date ?? "", props.photoId)?.then(() => scrollToDate(props.date ?? ""));
+	await initialLoad(props.date ?? "", props.photoId);
+	await nextTick();
+	scrollToDate(props.date ?? "");
 }
 
 onMounted(async () => {
