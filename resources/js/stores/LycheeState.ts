@@ -64,6 +64,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		title: "gallery.title",
 		dropbox_api_key: "disabled",
 		default_homepage: "gallery",
+		is_timeline_page_enabled: false,
 
 		// Login options
 		is_basic_auth_enabled: true,
@@ -167,6 +168,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.is_swipe_vertically_to_go_back_enabled = data.is_swipe_vertically_to_go_back_enabled;
 
 					this.default_homepage = data.default_homepage;
+					this.is_timeline_page_enabled = data.is_timeline_page_enabled;
 				})
 				.catch((error) => {
 					// In this specific case, even though it has been possibly disabled, we really need to see the error.

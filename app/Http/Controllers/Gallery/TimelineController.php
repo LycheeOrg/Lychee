@@ -37,7 +37,6 @@ class TimelineController extends Controller
 	public function __invoke(IdOrDatedTimelineRequest $request, Timeline $timeline): Data
 	{
 		$pagination_limit = Configs::getValueAsInt('timeline_photos_pagination_limit');
-		$pagination_limit = Configs::getValueAsInt('timeline_photos_pagination_limit');
 		$limit = max(1, $pagination_limit);
 
 		if ($request->photo() !== null) {

@@ -34,7 +34,8 @@ export function useLeftMenu(
 	const { user } = storeToRefs(authStore);
 
 	const { initData, left_menu_open } = storeToRefs(LeftMenuStateStore);
-	const { clockwork_url, is_se_enabled, is_se_preview_enabled, is_se_info_hidden } = storeToRefs(lycheeStore);
+	const { clockwork_url, is_se_enabled, is_se_preview_enabled, is_se_info_hidden, is_favourite_enabled, is_timeline_page_enabled } =
+		storeToRefs(lycheeStore);
 	const openLycheeAbout = ref(false);
 	const logsEnabled = ref(true);
 
@@ -74,28 +75,34 @@ export function useLeftMenu(
 				route: "/flow",
 			},
 			{
+				label: "gallery.timeline.title",
+				icon: "pi pi-clock",
+				route: "/timeline",
+				access: !(route.name as string).includes("timeline") && is_timeline_page_enabled.value,
+			},
+			{
 				label: "tags.title",
 				icon: "pi pi-tags",
 				access: user.value?.id !== null,
 				route: "/tags",
 			},
 			{
+				label: "gallery.favourites",
+				icon: "pi pi-heart",
+				route: "/gallery/favourites",
+				access: is_favourite_enabled.value && (favourites.photos?.length ?? 0) > 0,
+			},
+			{
 				label: "left-menu.frame",
 				icon: "pi pi-desktop",
-				access: initData.value.modules.is_mod_frame_enabled ?? false,
 				route: "/frame",
+				access: initData.value.modules.is_mod_frame_enabled ?? false,
 			},
 			{
 				label: "left-menu.map",
 				icon: "pi pi-map",
 				access: initData.value.modules.is_map_enabled ?? false,
 				route: "/map",
-			},
-			{
-				label: "gallery.favourites",
-				icon: "pi pi-heart",
-				access: (favourites.photos?.length ?? 0) > 0,
-				route: "/gallery/favourites",
 			},
 			{
 				label: "left-menu.admin",

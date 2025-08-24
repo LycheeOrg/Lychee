@@ -23,6 +23,10 @@ export function usePhotoRoute(router: Router) {
 			return { name: "flow-album", params: { albumId: albumId ?? ALL, photoId: photoId } };
 		}
 
+		if (currentRoute.startsWith("timeline")) {
+			return { name: "timeline", params: { date: router.currentRoute.value.params.date as string, photoId: photoId } };
+		}
+
 		return { name: "album", params: { albumId: albumId ?? ALL, photoId: photoId } };
 	}
 

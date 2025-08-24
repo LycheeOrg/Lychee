@@ -19,7 +19,7 @@
 		/>
 		<template v-else>
 			<Timeline
-				v-if="isLeftBorderVisible"
+				v-if="isLeftBorderVisible && false"
 				:value="props.photosTimeline"
 				:pt:eventopposite:class="'hidden'"
 				class="mt-4"
@@ -30,6 +30,7 @@
 						data-type="timelineBlock"
 						:data-date="(slotProps.item.data[0] as App.Http.Resources.Models.PhotoResource).timeline?.time_date"
 						class="flex flex-wrap flex-row shrink w-full justify-start gap-1 sm:gap-2 md:gap-4 pb-8"
+						v-intersection-observer="onIntersectionObserver"
 					>
 						<div class="w-full ltr:text-left rtl:text-right font-semibold text-muted-color-emphasis text-lg">
 							{{ slotProps.item.header }}
@@ -57,6 +58,7 @@
 						data-type="timelineBlock"
 						:data-date="photoTimeline.data[0].timeline?.time_date"
 						class="flex flex-wrap flex-row shrink w-full justify-start gap-1 sm:gap-2 md:gap-4 pb-8"
+						v-intersection-observer="onIntersectionObserver"
 					>
 						<div class="w-full ltr:text-left rtl:text-right font-semibold text-muted-color-emphasis text-lg">
 							{{ photoTimeline.header }}
@@ -93,6 +95,7 @@ import PhotoThumbPanelControl from "./PhotoThumbPanelControl.vue";
 import { isTouchDevice } from "@/utils/keybindings-utils";
 import { onMounted } from "vue";
 import { useLtRorRtL } from "@/utils/Helpers";
+import { vIntersectionObserver } from "@vueuse/components";
 
 const { isLTR } = useLtRorRtL();
 
@@ -110,6 +113,7 @@ const props = defineProps<{
 	withControl: boolean;
 	coverId: string | undefined;
 	headerId: string | undefined;
+	intersectionAction?: (arg: string | null) => void;
 }>();
 
 const layout = ref(props.photoLayout);
@@ -136,6 +140,12 @@ const propagateMenuOpen = (idx: number, e: MouseEvent) => {
 	emits("contexted", idx, e);
 };
 
+function onIntersectionObserver([entry]: IntersectionObserverEntry[]) {
+	if (entry.isIntersecting) {
+		const section = entry?.target as HTMLElement;
+		props.intersectionAction?.(section.dataset?.date ?? null);
+	}
+}
 const { verifyOrder } = useSplitter();
 
 const isTimeline = computed(() => props.isTimeline && props.photosTimeline !== undefined && props.photosTimeline.length > 1);
