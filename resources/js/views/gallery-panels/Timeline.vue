@@ -145,6 +145,7 @@
 	</div>
 </template>
 <script setup lang="ts">
+import { nextTick } from "vue";
 import { useAuthStore } from "@/stores/Auth";
 import { ref } from "vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
@@ -265,9 +266,12 @@ const { getNext, getPrevious } = getNextPreviousPhoto(router, photo);
 const { slideshow, next, previous, stop } = useSlideshowFunction(1000, is_slideshow_active, slideshow_timeout, videoElement, getNext, getPrevious);
 const { hasNext, hasPrevious } = useHasNextPreviousPhoto(photo);
 
+function scrollToDate(date: string) {
+	document.querySelector(`[data-date="${date}"]`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
 function goToDate(date: string) {
 	loadDate(date);
-	initialLoad(date, undefined);
+	initialLoad(date, undefined)?.then(() => scrollToDate(date));
 }
 
 function toggleDetails() {
@@ -309,6 +313,8 @@ async function refresh() {
 	}
 	await Promise.all([loadLayoutConfig(), loadUser(), loadDates()]);
 	await initialLoad(props.date ?? "", props.photoId);
+	await nextTick();
+	scrollToDate(props.date ?? "");
 }
 
 onMounted(async () => {

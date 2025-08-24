@@ -2,7 +2,7 @@
 	<ImportFromLink v-if="canUpload" v-model:visible="is_import_from_link_open" :parent-id="null" />
 	<DropBox v-if="canUpload" v-model:visible="is_import_from_dropbox_open" :album-id="null" />
 	<Toolbar
-		class="w-full border-0 h-14 z-10"
+		class="w-full border-0 h-14 z-10 rounded-none"
 		:pt:root:class="'flex-nowrap relative'"
 		:pt:center:class="'absolute top-0 py-3 left-1/2 -translate-x-1/2 h-14'"
 	>

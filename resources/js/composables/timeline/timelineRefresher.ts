@@ -40,7 +40,7 @@ export function useTimelineRefresher(photoId: Ref<string | undefined>, router: R
 		});
 	}
 
-	function initialLoad(date: string, photoId: string | undefined) {
+	function initialLoad(date: string, photoId: string | undefined): Promise<void> | undefined {
 		isLoading.value = true;
 		if (photoId) {
 			return TimelineService.photoIdedTimeline(photoId).then(_parseResponse).catch(_parseError);
