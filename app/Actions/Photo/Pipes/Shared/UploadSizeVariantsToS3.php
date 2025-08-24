@@ -13,7 +13,6 @@ use App\Contracts\PhotoCreate\PhotoDTO;
 use App\Contracts\PhotoCreate\PhotoPipe;
 use App\Enum\SizeVariantType;
 use App\Jobs\UploadSizeVariantToS3Job;
-use App\Models\Configs;
 use App\Models\SizeVariant;
 
 /**

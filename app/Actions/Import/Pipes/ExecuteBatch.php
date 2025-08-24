@@ -36,7 +36,7 @@ class ExecuteBatch implements ImportPipe
 		$this->report(ImportEventReport::createNotice('imported', null, 'Processing ' . $total . ' photos...'));
 		foreach ($state->job_bus as $idx => $job) {
 			try {
-				$progress = (int)(($idx + 1) * 100 / $total);
+				$progress = (int) (($idx + 1) * 100 / $total);
 				$this->report(ImportEventReport::createDebug('imported', $job->file_path, 'Processing... ' . $progress . '%'));
 				dispatch($job);
 			} catch (\Throwable $e) {

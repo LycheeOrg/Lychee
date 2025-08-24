@@ -21,7 +21,7 @@ class ImportDTO
 	public FolderNode $root_folder;
 	protected Renamer $renamer;
 
-	/** @var ImportImageJob[] $job_bus */
+	/** @var ImportImageJob[] */
 	public array $job_bus = [];
 
 	public function __construct(

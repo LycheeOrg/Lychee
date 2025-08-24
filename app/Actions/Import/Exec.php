@@ -12,6 +12,7 @@ use App\Actions\Import\Pipes\HasReporterTrait;
 use App\DTO\ImportDTO;
 use App\DTO\ImportEventReport;
 use App\DTO\ImportMode;
+use App\Jobs\ImportImageJob;
 use App\Models\Album;
 use Illuminate\Pipeline\Pipeline;
 use Safe\Exceptions\InfoException;
@@ -39,8 +40,7 @@ final class Exec
 		private bool $delete_missing_albums = false,
 		private bool $is_dry_run = false,
 		private bool $should_execute_bath = false,
-		)
-	{
+	) {
 	}
 
 	/**

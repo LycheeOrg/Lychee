@@ -118,10 +118,10 @@ class ExtractZip implements ShouldQueue
 		/** @var ImportImageJob[] $jobs */
 		$jobs = [];
 		if ($this->should_import_from_extracted($path_extracted)) {
-			foreach (new \DirectoryIterator($path_extracted) as $fileInfo) {
+			foreach (new \DirectoryIterator($path_extracted) as $file_info) {
 				// We only import directories here. Files are imported by the Importer when parsing the directories.
-				if ($fileInfo->isDir() && !$fileInfo->isDot()) {
-					$jobs = array_merge($jobs, $exec->do($fileInfo->getRealPath(), $parent_album));
+				if ($file_info->isDir() && !$file_info->isDot()) {
+					$jobs = array_merge($jobs, $exec->do($file_info->getRealPath(), $parent_album));
 				}
 			}
 		} else {
@@ -142,18 +142,20 @@ class ExtractZip implements ShouldQueue
 
 	// Option 1: there are folders in the zip file extracted folder -> we import each folder with exec into parent album (we skip the extracted folder)
 	// Option 2: there are pictures in the zip file extracted folder -> we import extracted folder with exec (will create a new album)
-	private function should_import_from_extracted(string $path_extracted): bool {
-		foreach (new \DirectoryIterator($path_extracted) as $fileInfo) {
-			if ($fileInfo->isDot() || $fileInfo->isDir()) {
+	private function should_import_from_extracted(string $path_extracted): bool
+	{
+		foreach (new \DirectoryIterator($path_extracted) as $file_info) {
+			if ($file_info->isDot() || $file_info->isDir()) {
 				continue;
 			}
 
 			// Check if this is an image file
-			$extension = strtolower($fileInfo->getExtension());
+			$extension = strtolower($file_info->getExtension());
 			if (BaseMediaFile::isSupportedOrAcceptedFileExtension('.' . $extension)) {
-				return false;;
+				return false;
 			}
 		}
+
 		return true;
 	}
 

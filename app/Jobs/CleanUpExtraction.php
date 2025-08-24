@@ -18,11 +18,9 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
 use Safe\Exceptions\FilesystemException;
-
 use function Safe\rmdir;
+use function Safe\unlink;
 
 class CleanUpExtraction implements ShouldQueue
 {
@@ -68,6 +66,7 @@ class CleanUpExtraction implements ShouldQueue
 			$this->remove_dir($this->folder_path);
 			$this->history->status = JobStatus::SUCCESS;
 			$this->history->save();
+
 			return;
 		}
 
@@ -77,8 +76,8 @@ class CleanUpExtraction implements ShouldQueue
 
 	private function is_empty(string $dir): bool
 	{
-		$it = new RecursiveDirectoryIterator($dir, RecursiveDirectoryIterator::SKIP_DOTS);
-		$files = new RecursiveIteratorIterator($it, RecursiveIteratorIterator::CHILD_FIRST);
+		$it = new \RecursiveDirectoryIterator($dir, \RecursiveDirectoryIterator::SKIP_DOTS);
+		$files = new \RecursiveIteratorIterator($it, \RecursiveIteratorIterator::CHILD_FIRST);
 		foreach ($files as $file) {
 			if (!$file->isDir()) {
 				return false;
@@ -90,14 +89,17 @@ class CleanUpExtraction implements ShouldQueue
 
 	/**
 	 * Actually remove the directory recursively.
+	 *
 	 * @param string $dir
+	 *
 	 * @return void
+	 *
 	 * @throws FilesystemException
 	 */
 	private function remove_dir(string $dir): void
 	{
-		$it = new RecursiveDirectoryIterator($dir, RecursiveDirectoryIterator::SKIP_DOTS);
-		$files = new RecursiveIteratorIterator($it, RecursiveIteratorIterator::CHILD_FIRST);
+		$it = new \RecursiveDirectoryIterator($dir, \RecursiveDirectoryIterator::SKIP_DOTS);
+		$files = new \RecursiveIteratorIterator($it, \RecursiveIteratorIterator::CHILD_FIRST);
 		foreach ($files as $file) {
 			if ($file->isDir()) {
 				rmdir($file->getPathname());
@@ -107,6 +109,7 @@ class CleanUpExtraction implements ShouldQueue
 		}
 		rmdir($dir);
 	}
+
 	/**
 	 * Catch failures.
 	 *

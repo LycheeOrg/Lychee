@@ -17,7 +17,6 @@ use App\Contracts\Models\AbstractAlbum;
 use App\Enum\FileStatus;
 use App\Enum\SizeVariantType;
 use App\Exceptions\ConfigurationException;
-use App\Factories\AlbumFactory;
 use App\Http\Requests\Photo\CopyPhotosRequest;
 use App\Http\Requests\Photo\DeletePhotosRequest;
 use App\Http\Requests\Photo\EditPhotoRequest;
@@ -97,14 +96,15 @@ class PhotoController extends Controller
 
 		if (Configs::getValueAsBool('extract_zip_on_upload') &&
 			str_ends_with($processable_file->getPath(), '.zip')) {
-			ExtractZip::dispatch($processable_file, $album?->get_id(), $file_last_modified_time);
+			$job = new ExtractZip($processable_file, $album?->get_id(), $file_last_modified_time);
+			dispatch($job)->afterResponse(); // Dispatch after response to avoid timeouts
 			$meta->stage = FileStatus::DONE;
 
 			return $meta;
 		}
 
 		ProcessImageJob::dispatch($processable_file, $album, $file_last_modified_time);
-		$meta->stage = config('queue.default') === 'sync' ? FileStatus::DONE :  FileStatus::READY;
+		$meta->stage = config('queue.default') === 'sync' ? FileStatus::DONE : FileStatus::READY;
 
 		return $meta;
 	}
