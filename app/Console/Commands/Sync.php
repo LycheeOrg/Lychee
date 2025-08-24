@@ -280,6 +280,7 @@ class Sync extends Command
 			delete_missing_photos: $delete_missing_photos,
 			delete_missing_albums: $delete_missing_albums,
 			is_dry_run: $dry_run,
+			should_execute_bath: true,
 		);
 
 		$this->info('Start tree-based syncing (maintains folder structure).');

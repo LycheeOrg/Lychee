@@ -14,6 +14,7 @@ use App\Contracts\Models\AbstractAlbum;
 use App\DTO\ImportMode;
 use App\Enum\JobStatus;
 use App\Exceptions\Internal\ZipExtractionException;
+use App\Image\Files\BaseMediaFile;
 use App\Image\Files\ProcessableJobFile;
 use App\Models\Album;
 use App\Models\Configs;
@@ -108,14 +109,52 @@ class ExtractZip implements ShouldQueue
 			delete_missing_photos: false,
 			delete_missing_albums: false,
 			is_dry_run: false,
+			should_execute_bath: false,
 		);
 
 		/** @var Album $parent_album */
 		$parent_album = $this->album_id !== null ? Album::query()->findOrFail($this->album_id) : null; // in case no ID provided -> import to root folder
 
-		$exec->do($path_extracted, $parent_album);
+		/** @var ImportImageJob[] $jobs */
+		$jobs = [];
+		if ($this->should_import_from_extracted($path_extracted)) {
+			foreach (new \DirectoryIterator($path_extracted) as $fileInfo) {
+				// We only import directories here. Files are imported by the Importer when parsing the directories.
+				if ($fileInfo->isDir() && !$fileInfo->isDot()) {
+					$jobs = array_merge($jobs, $exec->do($fileInfo->getRealPath(), $parent_album));
+				}
+			}
+		} else {
+			$jobs = $exec->do($path_extracted, $parent_album);
+		}
+		// We have collected all the jobs, now we dispatch them.
+		foreach ($jobs as $job) {
+			try {
+				dispatch($job);
+			} catch (\Throwable $e) {
+				// Fail silently if dispatched sync.
+				Log::error(__LINE__ . ':' . __FILE__ . ' ' . $e->getMessage(), $e->getTrace());
+			}
+		}
 
 		CleanUpExtraction::dispatch($path_extracted);
+	}
+
+	// Option 1: there are folders in the zip file extracted folder -> we import each folder with exec into parent album (we skip the extracted folder)
+	// Option 2: there are pictures in the zip file extracted folder -> we import extracted folder with exec (will create a new album)
+	private function should_import_from_extracted(string $path_extracted): bool {
+		foreach (new \DirectoryIterator($path_extracted) as $fileInfo) {
+			if ($fileInfo->isDot() || $fileInfo->isDir()) {
+				continue;
+			}
+
+			// Check if this is an image file
+			$extension = strtolower($fileInfo->getExtension());
+			if (BaseMediaFile::isSupportedOrAcceptedFileExtension('.' . $extension)) {
+				return false;;
+			}
+		}
+		return true;
 	}
 
 	/**

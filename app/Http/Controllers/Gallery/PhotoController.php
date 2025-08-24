@@ -97,22 +97,14 @@ class PhotoController extends Controller
 
 		if (Configs::getValueAsBool('extract_zip_on_upload') &&
 			str_ends_with($processable_file->getPath(), '.zip')) {
-			ExtractZip::dispatch($processable_file, $album->get_id(), $file_last_modified_time);
+			ExtractZip::dispatch($processable_file, $album?->get_id(), $file_last_modified_time);
 			$meta->stage = FileStatus::DONE;
 
 			return $meta;
 		}
 
-		if (Configs::getValueAsBool('use_job_queues')) {
-			ProcessImageJob::dispatch($processable_file, $album, $file_last_modified_time);
-			$meta->stage = FileStatus::READY;
-
-			return $meta;
-		}
-
-		$job = new ProcessImageJob($processable_file, $album, $file_last_modified_time);
-		$job->handle(resolve(AlbumFactory::class));
-		$meta->stage = FileStatus::DONE;
+		ProcessImageJob::dispatch($processable_file, $album, $file_last_modified_time);
+		$meta->stage = config('queue.default') === 'sync' ? FileStatus::DONE :  FileStatus::READY;
 
 		return $meta;
 	}

@@ -37,7 +37,9 @@ final class Exec
 		private int $intended_owner_id,
 		private bool $delete_missing_photos = false,
 		private bool $delete_missing_albums = false,
-		private bool $is_dry_run = false)
+		private bool $is_dry_run = false,
+		private bool $should_execute_bath = false,
+		)
 	{
 	}
 
@@ -47,14 +49,14 @@ final class Exec
 	 * @param string     $path         Base path to import from
 	 * @param Album|null $parent_album Optional parent album to import into
 	 *
-	 * @return void
+	 * @return ImportImageJob[]
 	 *
 	 * @throws \Throwable Any exception that occurs during the import process
 	 */
 	public function do(
 		string $path,
 		?Album $parent_album,
-	): void {
+	): array {
 		try {
 			$import_photo = new ImportDTO(
 				intended_owner_id: $this->intended_owner_id,
@@ -64,6 +66,7 @@ final class Exec
 				delete_missing_photos: $this->delete_missing_photos,
 				delete_missing_albums: $this->delete_missing_albums,
 				is_dry_run: $this->is_dry_run,
+				should_execute_bath: $this->should_execute_bath,
 			);
 
 			try {
@@ -79,9 +82,11 @@ final class Exec
 				Pipes\DeleteMissingAlbums::class,
 				Pipes\DeleteMissingPhotos::class,
 				Pipes\ImportPhotos::class,
+				Pipes\ExecuteBatch::class,
 			];
 
-			app(Pipeline::class)
+			/** @var ImportDTO $ret */
+			$ret = app(Pipeline::class)
 				->send($import_photo)
 				->through($pipes)
 				->thenReturn();
@@ -93,5 +98,7 @@ final class Exec
 			throw $e;
 		}
 		// @codeCoverageIgnoreEnd
+
+		return $ret->job_bus;
 	}
 }

@@ -28,11 +28,7 @@ class ExtractColourPalette implements PhotoPipe
 		// @codeCoverageIgnoreStart
 		// This is already tested directly in the ExtractColoursJobTest.
 		try {
-			if (Configs::getValueAsBool('use_job_queues')) {
-				ExtractColoursJob::dispatch($state->getPhoto());
-			} else {
-				ExtractColoursJob::dispatchSync($state->getPhoto());
-			}
+			ExtractColoursJob::dispatch($state->getPhoto());
 		} catch (\Exception $e) {
 			// Fail silently and continue.
 			Log::error('Failed to ExtractColoursJob: ' . $e->getMessage());
