@@ -13,7 +13,6 @@ use App\Contracts\PhotoCreate\PhotoDTO;
 use App\Contracts\PhotoCreate\PhotoPipe;
 use App\Enum\SizeVariantType;
 use App\Jobs\UploadSizeVariantToS3Job;
-use App\Models\Configs;
 use App\Models\SizeVariant;
 
 /**
@@ -27,13 +26,10 @@ class UploadSizeVariantsToS3 implements PhotoPipe
 	{
 		if (Features::active('use-s3')) {
 			// @codeCoverageIgnoreStart
-			$use_job_queues = Configs::getValueAsBool('use_job_queues');
-
-			$jobs = $state->getPhoto()->size_variants->toCollection()
+			$state->getPhoto()->size_variants->toCollection()
 				->filter(fn ($v) => $v !== null && $v->type !== SizeVariantType::PLACEHOLDER)
-				->map(fn (SizeVariant $variant) => new UploadSizeVariantToS3Job($variant));
-
-			$jobs->each(fn ($job) => $use_job_queues ? dispatch($job) : dispatch_sync($job));
+				->map(fn (SizeVariant $variant) => new UploadSizeVariantToS3Job($variant))
+				->each(fn ($job) => dispatch($job));
 			// @codeCoverageIgnoreEnd
 		}
 

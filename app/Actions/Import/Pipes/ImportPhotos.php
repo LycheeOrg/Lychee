@@ -75,7 +75,6 @@ class ImportPhotos implements ImportPipe
 		foreach ($image_paths as $idx => $image_path) {
 			$this->importSingleImage($image_path, $node->album, $idx / $total * 100);
 		}
-		$this->report(ImportEventReport::createDebug('importing', null, 'Importing photos for: ' . $node->name));
 	}
 
 	/**
@@ -126,14 +125,8 @@ class ImportPhotos implements ImportPipe
 	private function importSingleImage(string $image_path, ?Album $album, int $progress): void
 	{
 		$file = new NativeLocalFile($image_path);
-		try {
-			ImportImageJob::dispatch($file, $this->state->intended_owner_id, $this->state->import_mode, $album);
-		} catch (\Throwable $e) {
-			$this->report(ImportEventReport::createFromException($e, $image_path));
-		}
-
-		$action = config('queue.default') === 'sync' ? 'Imported photo: ' : 'Created Import job for photo: ';
-		$this->report(ImportEventReport::createDebug('imported', $image_path, $action . $progress . '%'));
+		$this->state->job_bus[] = new ImportImageJob($file, $this->state->intended_owner_id, $this->state->import_mode, $album);
+		$this->report(ImportEventReport::createDebug('imported', $image_path, 'Created Import job for photo: ' . $progress . '%'));
 	}
 
 	/**

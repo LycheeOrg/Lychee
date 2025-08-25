@@ -8,8 +8,6 @@
 
 namespace App\Actions\HoneyPot;
 
-use Illuminate\Support\Str;
-
 /**
  * Anyone trying to access a .env file is not with good intentions.
  */
@@ -20,7 +18,7 @@ class EnvAccessTentative extends BasePipe
 	 */
 	public function handle(string $path, \Closure $next): never
 	{
-		if (Str::endsWith($path, '.env')) {
+		if (str_ends_with($path, '.env')) {
 			$this->throwTeaPot($path);
 		}
 

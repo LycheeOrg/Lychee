@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Storage;
 use function Safe\mkdir;
 
 /**
- * Class TemporaryJobFile.
+ * Class ProcessableJobFile.
  *
  * Represents a local file with an automatically chosen, unique name intended
  * to be used temporarily before being processed in a Job.
@@ -23,7 +23,7 @@ class ProcessableJobFile extends NativeLocalFile
 {
 	use LoadTemporaryFileTrait;
 
-	protected string $fakeBaseName;
+	protected string $fake_base_name;
 
 	/**
 	 * Creates a new temporary file with a random file name.
@@ -39,7 +39,7 @@ class ProcessableJobFile extends NativeLocalFile
 	{
 		$temp_file_path = $this->load($file_extension);
 		parent::__construct($temp_file_path);
-		$this->fakeBaseName = $fake_base_name;
+		$this->fake_base_name = $fake_base_name;
 	}
 
 	/**
@@ -63,6 +63,6 @@ class ProcessableJobFile extends NativeLocalFile
 	 */
 	public function getOriginalBasename(): string
 	{
-		return $this->fakeBaseName;
+		return $this->fake_base_name;
 	}
 }

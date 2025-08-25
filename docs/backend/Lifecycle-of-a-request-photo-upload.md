@@ -247,17 +247,8 @@ private function process(
     );
     $processable_file->write($final->read());
 
-    if (Configs::getValueAsBool('use_job_queues')) {
-        // Asynchronous processing
-        ProcessImageJob::dispatch($processable_file, $album, $file_last_modified_time);
-        $meta->stage = FileStatus::READY;
-        return $meta;
-    }
-
-    // Synchronous processing
-    $job = new ProcessImageJob($processable_file, $album, $file_last_modified_time);
-    $job->handle(resolve(AlbumFactory::class));
-    $meta->stage = FileStatus::DONE;
+    ProcessImageJob::dispatch($processable_file, $album, $file_last_modified_time);
+    $meta->stage = config('queue.default') === 'sync' ? FileStatus::DONE : FileStatus::READY;
     return $meta;
 }
 ```
