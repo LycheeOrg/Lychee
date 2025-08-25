@@ -19,6 +19,8 @@
 namespace Tests\Feature_v2\Photo;
 
 use App\Exceptions\ZipInvalidException;
+use Symfony\Component\HttpFoundation\Response;
+
 use function Safe\unlink;
 use Tests\Constants\TestConstants;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
@@ -80,7 +82,7 @@ class PhotoZipUploadTest extends BaseApiWithDataTest
 
 	public function testBadZipExtract(): void
 	{
-		$this->expectException(ZipInvalidException::class);
+		// $this->expectException(ZipInvalidException::class);
 
 		// Create a bad zip file
 		$zip = new \ZipArchive();
@@ -91,6 +93,7 @@ class PhotoZipUploadTest extends BaseApiWithDataTest
 		$zip->addFile(TestConstants::SAMPLE_FILE_SUNSET_IMAGE, '/sunset.jpg');
 		$zip->close();
 
-		$this->actingAs($this->admin)->upload('Photo', filename: TestConstants::SAMPLE_TEST_ZIP, album_id: $this->album5->id);
+		$response = $this->actingAs($this->admin)->upload('Photo', filename: TestConstants::SAMPLE_TEST_ZIP, album_id: $this->album5->id);
+		$this->assertStatus($response, Response::HTTP_I_AM_A_TEAPOT);
 	}
 }
