@@ -38,7 +38,7 @@ return [
     ],
     'metrics' => [
         'header' => 'Live metrics',
-        'preview_text' => 'Dette er en forhåndsvisning av live-målingene som er tilgjengelige i Lychee <span class="text-primary-emphasis font-bold">SE</span>. Dataene som vises her er tilfeldig generert og gjenspeiler ikke serveren din.<span class="text-primary-emphasis font-bold">',
+        'preview_text' => 'Dette er en forhåndsvisning av live-målingene som er tilgjengelige i Lychee <span class="text-primary-emphasis font-bold">SE</span>. Dataene som vises her er tilfeldig generert og gjenspeiler ikke serveren din.',
         'a_visitor' => 'A visitor',
         'visitors' => '%d visitors',
         'visit_singular' => '%1$s viewed %2$s',
