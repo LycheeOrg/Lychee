@@ -44,6 +44,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use LycheeVerify\Verify;
 
 /**
  * Controller responsible for fetching Photo Data.
@@ -94,8 +95,8 @@ class PhotoController extends Controller
 		// End of work-around
 
 		$is_zip = strtolower(pathinfo($meta->file_name, PATHINFO_EXTENSION)) === 'zip';
-
-		if (Configs::getValueAsBool('extract_zip_on_upload') && $is_zip) {
+		$is__se = resolve(Verify::class)->is_supporter();
+		if ($is__se && Configs::getValueAsBool('extract_zip_on_upload') && $is_zip) {
 			$job = new ExtractZip($processable_file, $album?->get_id(), $file_last_modified_time);
 			dispatch($job)->afterResponse();
 			// We return DONE no matter what:

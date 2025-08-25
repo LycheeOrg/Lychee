@@ -19,7 +19,7 @@ return new class() extends BaseConfigMigration {
 		return [
 			[
 				'key' => 'extract_zip_on_upload',
-				'value' => '0',
+				'value' => '1',
 				'cat' => self::PROCESSING,
 				'type_range' => self::BOOL,
 				'description' => 'Extract uploaded zip file and import content.',
