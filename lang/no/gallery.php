@@ -9,7 +9,7 @@ return [
     'smart_albums' => 'Smarte album',
     'pinned_albums' => 'Festede album',
     'albums' => 'Album',
-    'root' => 'Albums',
+    'root' => 'Album',
     'favourites' => 'Favoritter',
     'original' => 'Original',
     'medium' => 'Medium',
