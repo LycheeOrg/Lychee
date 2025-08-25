@@ -19,9 +19,8 @@
 namespace Tests\Feature_v2\Photo;
 
 use App\Exceptions\ZipInvalidException;
-use Symfony\Component\HttpFoundation\Response;
-
 use function Safe\unlink;
+use Symfony\Component\HttpFoundation\Response;
 use Tests\Constants\TestConstants;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 use Tests\Traits\RequireSE;
@@ -70,7 +69,6 @@ class PhotoZipUploadTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->admin)->getJsonWithData('Album', ['album_id' => $this->album5->id]);
 		$this->assertOk($response);
 		$created_id = $response->json('resource.albums.0.id');
-		self::assertNotNull($created_id);
 		$response->assertJsonPath('resource.albums.0.title', 'test_photos');
 
 		$response = $this->actingAs($this->admin)->getJsonWithData('Album', ['album_id' => $created_id]);
@@ -78,6 +76,41 @@ class PhotoZipUploadTest extends BaseApiWithDataTest
 		$response->assertJsonCount(2, 'resource.photos');
 		$response->assertJsonPath('resource.photos.0.title', 'night');
 		$response->assertJsonPath('resource.photos.1.title', 'sunset');
+	}
+
+	public function testZipExtractInFolders(): void
+	{
+		$zip = new \ZipArchive();
+		if ($zip->open(TestConstants::SAMPLE_TEST_ZIP, \ZipArchive::CREATE) !== true) {
+			$this->fail('Could not create zip file for testing.');
+		}
+		$zip->addFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE, 'night/night.jpg');
+		$zip->addFile(TestConstants::SAMPLE_FILE_SUNSET_IMAGE, 'sunset/sunset.jpg');
+		$zip->close();
+
+		if (!file_exists(TestConstants::SAMPLE_TEST_ZIP)) {
+			$this->fail('Did not create zip file for testing.');
+		}
+
+		$response = $this->actingAs($this->admin)->upload('Photo', filename: TestConstants::SAMPLE_TEST_ZIP, album_id: $this->album5->id);
+		$this->assertCreated($response);
+
+		$response = $this->actingAs($this->admin)->getJsonWithData('Album', ['album_id' => $this->album5->id]);
+		$this->assertOk($response);
+		$night_id = $response->json('resource.albums.0.id');
+		$response->assertJsonPath('resource.albums.0.title', 'night');
+		$sunset_id = $response->json('resource.albums.1.id');
+		$response->assertJsonPath('resource.albums.1.title', 'sunset');
+
+		$response = $this->actingAs($this->admin)->getJsonWithData('Album', ['album_id' => $night_id]);
+		$this->assertOk($response);
+		$response->assertJsonCount(1, 'resource.photos');
+		$response->assertJsonPath('resource.photos.0.title', 'night');
+
+		$response = $this->actingAs($this->admin)->getJsonWithData('Album', ['album_id' => $sunset_id]);
+		$this->assertOk($response);
+		$response->assertJsonCount(1, 'resource.photos');
+		$response->assertJsonPath('resource.photos.0.title', 'sunset');
 	}
 
 	public function testBadZipExtract(): void

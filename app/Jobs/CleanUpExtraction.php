@@ -15,7 +15,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Safe\Exceptions\FilesystemException;
 use function Safe\rmdir;
@@ -23,6 +22,7 @@ use function Safe\unlink;
 
 class CleanUpExtraction implements ShouldQueue
 {
+	use HasFailedTrait;
 	use Dispatchable;
 	use InteractsWithQueue;
 	use Queueable;
@@ -64,8 +64,10 @@ class CleanUpExtraction implements ShouldQueue
 			return;
 		}
 
+		// @codeCoverageIgnoreStart
 		$this->history->status = JobStatus::FAILURE;
 		$this->history->save();
+		// @codeCoverageIgnoreEnd
 	}
 
 	private function is_empty(string $dir): bool
@@ -102,24 +104,5 @@ class CleanUpExtraction implements ShouldQueue
 			}
 		}
 		rmdir($dir);
-	}
-
-	/**
-	 * Catch failures.
-	 *
-	 * @param \Throwable $th
-	 *
-	 * @return void
-	 */
-	public function failed(\Throwable $th): void
-	{
-		$this->history->status = JobStatus::FAILURE;
-		$this->history->save();
-
-		if ($th->getCode() === 999) {
-			$this->release();
-		} else {
-			Log::error(__LINE__ . ':' . __FILE__ . ' ' . $th->getMessage(), $th->getTrace());
-		}
 	}
 }

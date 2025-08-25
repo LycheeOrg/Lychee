@@ -95,10 +95,9 @@ class PhotoController extends Controller
 		// End of work-around
 
 		$is_zip = strtolower(pathinfo($meta->file_name, PATHINFO_EXTENSION)) === 'zip';
-		$is__se = resolve(Verify::class)->is_supporter();
-		if ($is__se && Configs::getValueAsBool('extract_zip_on_upload') && $is_zip) {
-			$job = new ExtractZip($processable_file, $album?->get_id(), $file_last_modified_time);
-			dispatch($job);
+		$is_se = resolve(Verify::class)->is_supporter();
+		if ($is_se && Configs::getValueAsBool('extract_zip_on_upload') && $is_zip) {
+			ExtractZip::dispatch($processable_file, $album?->get_id(), $file_last_modified_time);
 			// We return DONE no matter what:
 			// - if we are in sync mode, this will be executed after the job
 			// - if we are in async mode, the job will be executed later, but we need to notify the front-end we are clear.

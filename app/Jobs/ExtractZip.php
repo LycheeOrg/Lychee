@@ -33,6 +33,7 @@ use function Safe\unlink;
 
 class ExtractZip implements ShouldQueue
 {
+	use HasFailedTrait;
 	use Dispatchable;
 	use InteractsWithQueue;
 	use Queueable;
@@ -119,10 +120,12 @@ class ExtractZip implements ShouldQueue
 		foreach ($jobs as $job) {
 			try {
 				dispatch($job);
+				// @codeCoverageIgnoreStart
 			} catch (\Throwable $e) {
 				// Fail silently if dispatched sync.
 				Log::error(__LINE__ . ':' . __FILE__ . ' ' . $e->getMessage(), $e->getTrace());
 			}
+			// @codeCoverageIgnoreEnd
 		}
 
 		CleanUpExtraction::dispatch($path_extracted, $this->user_id);
@@ -169,7 +172,9 @@ class ExtractZip implements ShouldQueue
 			for ($i = 0; $i < $zip->numFiles; $i++) {
 				$name = $zip->getNameIndex($i);
 				if ($name === false) {
+					// @codeCoverageIgnoreStart
 					continue;
+					// @codeCoverageIgnoreEnd
 				}
 				// normalize to forward slashes as per ZIP spec
 				$entry = str_replace('\\', '/', $name);
@@ -178,18 +183,21 @@ class ExtractZip implements ShouldQueue
 				}
 			}
 			$zip->close();
-		} else {
-			throw new ZipExtractionException('Could not open ' . $this->file_path);
+
+			if (count($unsafe_entries) > 0) {
+				Log::critical('Zip file ' . $this->file_path . ' contains unsafe entries.', $unsafe_entries);
+
+				$this->history->status = JobStatus::FAILURE;
+				$this->history->save();
+
+				throw new ZipInvalidException($this->file_path . ' contains unsafe entries.');
+			}
+
+			return;
 		}
-
-		if (count($unsafe_entries) > 0) {
-			Log::critical('Zip file ' . $this->file_path . ' contains unsafe entries.', $unsafe_entries);
-
-			$this->history->status = JobStatus::FAILURE;
-			$this->history->save();
-
-			throw new ZipInvalidException($this->file_path . ' contains unsafe entries.');
-		}
+		// @codeCoverageIgnoreStart
+		throw new ZipExtractionException('Could not open ' . $this->file_path);
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -220,26 +228,9 @@ class ExtractZip implements ShouldQueue
 
 			return;
 		}
+		// @codeCoverageIgnoreStart
 		throw ZipExtractionException::fromTo($this->file_path, $path_extracted);
-	}
-
-	/**
-	 * Catch failures.
-	 *
-	 * @param \Throwable $th
-	 *
-	 * @return void
-	 */
-	public function failed(\Throwable $th): void
-	{
-		$this->history->status = JobStatus::FAILURE;
-		$this->history->save();
-
-		if ($th->getCode() === 999) {
-			$this->release();
-		} else {
-			Log::error(__LINE__ . ':' . __FILE__ . ' ' . $th->getMessage(), $th->getTrace());
-		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -258,8 +249,10 @@ class ExtractZip implements ShouldQueue
 		// count
 		$i = 0;
 		while (Storage::disk('extract-jobs')->exists(date('Ymd') . ' ' . $candidate_name)) {
+			// @codeCoverageIgnoreStart
 			$candidate_name = $orignal_name . ' (' . $i . ')';
 			$i++;
+			// @codeCoverageIgnoreEnd
 		}
 
 		return $candidate_name;

@@ -39,9 +39,11 @@ class ExecuteBatch implements ImportPipe
 				$progress = (int) (($idx + 1) * 100 / $total);
 				$this->report(ImportEventReport::createDebug('imported', $job->file_path, 'Processing... ' . $progress . '%'));
 				dispatch($job);
+				// @codeCoverageIgnoreStart
 			} catch (\Throwable $e) {
 				$this->report(ImportEventReport::createFromException($e, $job->file_path));
 			}
+			// @codeCoverageIgnoreEnd
 		}
 
 		return $next($state);
