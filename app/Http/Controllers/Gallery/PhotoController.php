@@ -37,7 +37,6 @@ use App\Jobs\ExtractZip;
 use App\Jobs\ProcessImageJob;
 use App\Jobs\WatermarkerJob;
 use App\Models\Configs;
-use App\Models\Photo;
 use App\Models\SizeVariant;
 use App\Models\Tag;
 use Illuminate\Routing\Controller;
@@ -94,10 +93,14 @@ class PhotoController extends Controller
 		$processable_file->close();
 		// End of work-around
 
-		if (Configs::getValueAsBool('extract_zip_on_upload') &&
-			str_ends_with($processable_file->getPath(), '.zip')) {
+		$is_zip = strtolower(pathinfo($meta->file_name, PATHINFO_EXTENSION)) === 'zip';
+
+		if (Configs::getValueAsBool('extract_zip_on_upload') && $is_zip) {
 			$job = new ExtractZip($processable_file, $album?->get_id(), $file_last_modified_time);
-			dispatch($job)->afterResponse(); // Dispatch after response to avoid timeouts
+			dispatch($job)->afterResponse();
+			// We return DONE no matter what:
+			// - if we are in sync mode, this will be executed after the job
+			// - if we are in async mode, the job will be executed later, but we need to notify the front-end we are clear.
 			$meta->stage = FileStatus::DONE;
 
 			return $meta;

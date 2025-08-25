@@ -15,7 +15,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Safe\Exceptions\FilesystemException;
@@ -31,21 +30,16 @@ class CleanUpExtraction implements ShouldQueue
 
 	protected JobHistory $history;
 
-	public string $folder_path;
-	public int $userId;
-
 	/**
 	 * Create a new job instance.
 	 */
 	public function __construct(
-		string $folder_path,
+		public string $folder_path,
+		public int $user_id,
 	) {
-		$this->folder_path = $folder_path;
-		$this->userId = Auth::user()->id;
-
 		// Set up our new history record.
 		$this->history = new JobHistory();
-		$this->history->owner_id = $this->userId;
+		$this->history->owner_id = $this->user_id;
 		$this->history->job = Str::limit('Removing ' . basename($this->folder_path), 200);
 		$this->history->status = JobStatus::READY;
 

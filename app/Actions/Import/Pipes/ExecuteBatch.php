@@ -28,7 +28,7 @@ class ExecuteBatch implements ImportPipe
 	 */
 	public function handle(ImportDTO $state, \Closure $next): ImportDTO
 	{
-		if (!$state->should_execute_bath) {
+		if (!$state->should_execute_jobs) {
 			return $next($state);
 		}
 

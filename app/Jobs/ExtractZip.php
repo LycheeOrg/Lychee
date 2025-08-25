@@ -8,7 +8,6 @@
 
 namespace App\Jobs;
 
-use App\Actions\Album\Create;
 use App\Actions\Import\Exec;
 use App\Contracts\Models\AbstractAlbum;
 use App\DTO\ImportMode;
@@ -77,22 +76,10 @@ class ExtractZip implements ShouldQueue
 		$this->history->status = JobStatus::STARTED;
 		$this->history->save();
 
-		$extracted_folder_name = $this->getExtractFolderName();
+		$this->validate_zip();
 
-		$path_extracted = Storage::disk('extract-jobs')->path(date('Ymd') . $extracted_folder_name);
-		$zip = new \ZipArchive();
-		if ($zip->open($this->file_path) === true) {
-			$zip->extractTo($path_extracted);
-			$zip->close();
-
-			// clean up the zip file
-			unlink($this->file_path);
-
-			$this->history->status = JobStatus::SUCCESS;
-			$this->history->save();
-		} else {
-			throw new ZipExtractionException($this->file_path, $path_extracted);
-		}
+		$path_extracted = Storage::disk('extract-jobs')->path(date('Ymd') . ' ' . $this->getExtractFolderName());
+		$this->extract_zip($path_extracted);
 
 		$import_mode = new ImportMode(
 			delete_imported: true,
@@ -109,7 +96,7 @@ class ExtractZip implements ShouldQueue
 			delete_missing_photos: false,
 			delete_missing_albums: false,
 			is_dry_run: false,
-			should_execute_bath: false,
+			should_execute_jobs: false,
 		);
 
 		/** @var Album $parent_album */
@@ -137,7 +124,7 @@ class ExtractZip implements ShouldQueue
 			}
 		}
 
-		CleanUpExtraction::dispatch($path_extracted);
+		CleanUpExtraction::dispatch($path_extracted, $this->user_id);
 	}
 
 	// Option 1: there are folders in the zip file extracted folder -> we import each folder with exec into parent album (we skip the extracted folder)
@@ -160,6 +147,81 @@ class ExtractZip implements ShouldQueue
 	}
 
 	/**
+	 * Validates a ZIP file for potential security issues like zip slip attacks.
+	 *
+	 * This method scans the ZIP archive for entries that could be potentially dangerous,
+	 * such as paths starting with '/' (absolute paths) or containing '../' (directory traversal).
+	 * If any unsafe entries are found, the job is marked as failed, the issue is logged as critical,
+	 * and a ZipExtractionException is thrown.
+	 *
+	 * @return void
+	 *
+	 * @throws ZipExtractionException If the ZIP file cannot be opened or contains unsafe entries
+	 */
+	private function validate_zip(): void
+	{
+		$unsafe_entries = [];
+
+		$zip = new \ZipArchive();
+		if ($zip->open($this->file_path) === true) {
+			// Filter out suspicious entries to prevent Zip Slip.
+			for ($i = 0; $i < $zip->numFiles; $i) {
+				$name = $zip->getNameIndex($i);
+				if ($name === false) {
+					continue;
+				}
+				// normalize to forward slashes as per ZIP spec
+				$entry = str_replace('\\', '/', $name);
+				if (str_starts_with($entry, '/') || str_contains($entry, '../')) {
+					$unsafe_entries[] = $name;
+				}
+			}
+			$zip->close();
+		} else {
+			throw new ZipExtractionException('Could not open ' . $this->file_path);
+		}
+
+		if (count($unsafe_entries) > 0) {
+			Log::critical('Zip file ' . $this->file_path . ' contains unsafe entries.', $unsafe_entries);
+
+			$this->history->status = JobStatus::FAILURE;
+			$this->history->save();
+
+			throw new ZipExtractionException($this->file_path . ' contains unsafe entries.');
+		}
+	}
+
+	/**
+	 * Extracts the contents of a ZIP file to the specified path.
+	 *
+	 * This method opens the ZIP archive and extracts all its contents to the target directory.
+	 * After successful extraction, it deletes the original ZIP file and updates the job status.
+	 * If extraction fails, a ZipExtractionException is thrown.
+	 *
+	 * @param string $path_extracted The absolute path where the ZIP contents should be extracted
+	 *
+	 * @return void
+	 *
+	 * @throws ZipExtractionException If the ZIP file cannot be opened or extraction fails
+	 */
+	private function extract_zip(string $path_extracted): void
+	{
+		$zip = new \ZipArchive();
+		if ($zip->open($this->file_path) === true) {
+			$zip->extractTo($path_extracted);
+			$zip->close();
+
+			// clean up the zip file
+			unlink($this->file_path);
+
+			$this->history->status = JobStatus::SUCCESS;
+			$this->history->save();
+		} else {
+			throw ZipExtractionException::fromTo($this->file_path, $path_extracted);
+		}
+	}
+
+	/**
 	 * Catch failures.
 	 *
 	 * @param \Throwable $th
@@ -179,9 +241,8 @@ class ExtractZip implements ShouldQueue
 	}
 
 	/**
-	 * Returns a folder name where:
-	 * - spaces are replaced by `_`
-	 * - if folder already exists (with date prefix) then we pad with _(xx) where xx is the next available number.
+	 * Returns a folder name where if folder already exists (with date prefix)
+	 * then we pad with ` (xx)` where xx is the next available number.
 	 *
 	 * @return string
 	 */
@@ -194,7 +255,7 @@ class ExtractZip implements ShouldQueue
 
 		// count
 		$i = 0;
-		while (Storage::disk('extract-jobs')->exists(date('Ymd') . $candidate_name)) {
+		while (Storage::disk('extract-jobs')->exists(date('Ymd') . ' ' . $candidate_name)) {
 			$candidate_name = $orignal_name . ' (' . $i . ')';
 			$i++;
 		}

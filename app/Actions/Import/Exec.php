@@ -39,7 +39,7 @@ final class Exec
 		private bool $delete_missing_photos = false,
 		private bool $delete_missing_albums = false,
 		private bool $is_dry_run = false,
-		private bool $should_execute_bath = false,
+		private bool $should_execute_jobs = false,
 	) {
 	}
 
@@ -66,7 +66,7 @@ final class Exec
 				delete_missing_photos: $this->delete_missing_photos,
 				delete_missing_albums: $this->delete_missing_albums,
 				is_dry_run: $this->is_dry_run,
-				should_execute_bath: $this->should_execute_bath,
+				should_execute_jobs: $this->should_execute_jobs,
 			);
 
 			try {
