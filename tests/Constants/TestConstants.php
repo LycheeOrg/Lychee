@@ -21,12 +21,14 @@ class TestConstants
 	public const MIME_TYPE_IMG_XCF = 'image/x-xcf';
 	public const MIME_TYPE_VID_MP4 = 'video/mp4';
 	public const MIME_TYPE_VID_QUICKTIME = 'video/quicktime';
+	public const MIME_TYPE_APP_ZIP = 'application/zip';
 
 	public const SAMPLE_DOWNLOAD_JPG = 'https://lycheeorg.dev/test_data/mongolia.jpeg';
 	public const SAMPLE_DOWNLOAD_JPG_WITHOUT_EXTENSION = 'https://lycheeorg.dev/test_data/mongolia';
 	// public const SAMPLE_DOWNLOAD_TIFF = 'https://lycheeorg.dev/test_data/tiff.tif';
 	// public const SAMPLE_DOWNLOAD_TIFF_WITHOUT_EXTENSION = 'https://lycheeorg.dev/test_data/tiff';
 
+	public const SAMPLE_TEST_ZIP = 'tests/Samples/test_photos.zip';
 	public const SAMPLE_FILE_AARHUS = 'tests/Samples/aarhus.jpg';
 	public const SAMPLE_FILE_ETTLINGEN = 'tests/Samples/ettlinger-alb.jpg';
 	public const SAMPLE_FILE_GAMING_VIDEO = 'tests/Samples/gaming.mp4';
@@ -77,6 +79,7 @@ class TestConstants
 		self::SAMPLE_FILE_WEBP => self::MIME_TYPE_IMG_WEBP,
 		self::SAMPLE_FILE_WITHOUT_EXIF => self::MIME_TYPE_IMG_JPEG,
 		self::SAMPLE_FILE_XCF => self::MIME_TYPE_IMG_XCF,
+		self::SAMPLE_TEST_ZIP => self::MIME_TYPE_APP_ZIP,
 	];
 
 	public const CONFIG_ALBUMS_SORTING_COL = 'sorting_albums_col';
