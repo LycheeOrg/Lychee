@@ -162,8 +162,8 @@ return [
             ],
             'links' => [
                 'header' => 'Links',
-                'copy' => 'Copy',
-                'copy_success' => 'Link copied to clipboard.',
+                'copy' => 'Kopieren',
+                'copy_success' => 'Link in die Zwischenablage kopiert.',
             ],
         ],
         'edit' => [

@@ -49,7 +49,7 @@ return [
     'optimize' => [
         'title' => 'Optimaliser databasen',
         'description' => 'Hvis du merker at installasjonen er treg, kan det skyldes at databasen din ikke har all den nødvendige indeksen.',
-        'button' => 'Optimize Database',
+        'button' => 'Optimaliser databasen',
     ],
     'update' => [
         'title' => 'Oppdateringer',
@@ -70,7 +70,7 @@ return [
     ],
     'flush-cache' => [
         'title' => 'Flush Cache',
-        'description' => 'Flush the cache of every user to solve invalidation problems.',
-        'button' => 'Flush',
+        'description' => 'Tøm hurtigbufferen til alle brukere for å løse ugyldighetsproblemer.',
+        'button' => 'Tøm',
     ],
 ];
