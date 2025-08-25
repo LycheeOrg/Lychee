@@ -38,6 +38,7 @@ class ConfigIntegrity
 		'timeline_quick_access_date_format_hour',
 		'number_albums_per_row_mobile',
 		'client_side_favourite_enabled',
+		'extract_zip_on_upload',
 		'photo_thumb_tags_enabled',
 		'cache_ttl',
 		'secure_image_link_enabled',

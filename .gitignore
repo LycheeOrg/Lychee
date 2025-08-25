@@ -17,6 +17,10 @@ public/uploads-*/**
 
 # Those are generated
 /vendor
+# We do not commit the sample zip file
+# We are generating it in the CI
+# We do not want to have the same story as CVE-2024-3094 ...
+tests/Samples/test_photos.zip
 
 # IDE & Cache stuff
 /.idea
