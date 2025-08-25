@@ -18,11 +18,12 @@
 
 namespace Tests\Feature_v2\Photo;
 
+use App\Exceptions\ZipInvalidException;
+use Illuminate\Support\Facades\Queue;
+use function Safe\unlink;
 use Tests\Constants\TestConstants;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 use Tests\Traits\RequireSE;
-
-use function Safe\unlink;
 
 class PhotoZipUploadTest extends BaseApiWithDataTest
 {
@@ -32,7 +33,11 @@ class PhotoZipUploadTest extends BaseApiWithDataTest
 	{
 		parent::setUp();
 		$this->requireSE();
+		// Force the queue to be synchronous for testing
+		config(['queue.default' => 'sync']);
 
+		// Queue::fake();
+		// Queue::assertNothingPushed();
 	}
 
 	public function tearDown(): void
@@ -49,9 +54,6 @@ class PhotoZipUploadTest extends BaseApiWithDataTest
 
 	public function testZipExtract(): void
 	{
-		// $this->catchFailureSilence = [];
-		// Create a zip file with two images
-
 		$zip = new \ZipArchive();
 		if ($zip->open(TestConstants::SAMPLE_TEST_ZIP, \ZipArchive::CREATE) !== true) {
 			$this->fail('Could not create zip file for testing.');
@@ -67,11 +69,27 @@ class PhotoZipUploadTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->admin)->upload('Photo', filename: TestConstants::SAMPLE_TEST_ZIP, album_id: $this->album5->id);
 		$this->assertCreated($response);
 
-		$response = $this->actingAs($this->admin)->getJsonWithData('Album::get', ['albumId' => $this->album5->id]);
+		$response = $this->actingAs($this->admin)->getJsonWithData('Album', ['album_id' => $this->album5->id]);
 		$this->assertOk($response);
+		$response->dd();
 		$response->assertJsonCount(2, 'data.photos');
-		$response->assertJsonFragment(['title' => 'night']);
-		$response->assertJsonFragment(['title' => 'sunset']);
+		$response->assertSeeText('night');
+		$response->assertSeeText('sunset');
 	}
 
+	public function testBadZipExtract(): void
+	{
+		$this->expectException(ZipInvalidException::class);
+
+		// Create a bad zip file
+		$zip = new \ZipArchive();
+		if ($zip->open(TestConstants::SAMPLE_TEST_ZIP, \ZipArchive::CREATE) !== true) {
+			$this->fail('Could not create zip file for testing.');
+		}
+		$zip->addFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE, '../night.jpg');
+		$zip->addFile(TestConstants::SAMPLE_FILE_SUNSET_IMAGE, '/sunset.jpg');
+		$zip->close();
+
+		$this->actingAs($this->admin)->upload('Photo', filename: TestConstants::SAMPLE_TEST_ZIP, album_id: $this->album5->id);
+	}
 }

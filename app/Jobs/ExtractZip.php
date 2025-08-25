@@ -13,6 +13,7 @@ use App\Contracts\Models\AbstractAlbum;
 use App\DTO\ImportMode;
 use App\Enum\JobStatus;
 use App\Exceptions\Internal\ZipExtractionException;
+use App\Exceptions\ZipInvalidException;
 use App\Image\Files\BaseMediaFile;
 use App\Image\Files\ProcessableJobFile;
 use App\Models\Album;
@@ -187,7 +188,7 @@ class ExtractZip implements ShouldQueue
 			$this->history->status = JobStatus::FAILURE;
 			$this->history->save();
 
-			throw new ZipExtractionException($this->file_path . ' contains unsafe entries.');
+			throw new ZipInvalidException($this->file_path . ' contains unsafe entries.');
 		}
 	}
 
