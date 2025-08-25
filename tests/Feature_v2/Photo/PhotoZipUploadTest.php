@@ -19,7 +19,6 @@
 namespace Tests\Feature_v2\Photo;
 
 use App\Exceptions\ZipInvalidException;
-use Illuminate\Support\Facades\Queue;
 use function Safe\unlink;
 use Tests\Constants\TestConstants;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
@@ -35,9 +34,6 @@ class PhotoZipUploadTest extends BaseApiWithDataTest
 		$this->requireSE();
 		// Force the queue to be synchronous for testing
 		config(['queue.default' => 'sync']);
-
-		// Queue::fake();
-		// Queue::assertNothingPushed();
 	}
 
 	public function tearDown(): void
@@ -71,10 +67,15 @@ class PhotoZipUploadTest extends BaseApiWithDataTest
 
 		$response = $this->actingAs($this->admin)->getJsonWithData('Album', ['album_id' => $this->album5->id]);
 		$this->assertOk($response);
-		$response->dd();
-		$response->assertJsonCount(2, 'data.photos');
-		$response->assertSeeText('night');
-		$response->assertSeeText('sunset');
+		$created_id = $response->json('resource.albums.0.id');
+		self::assertNotNull($created_id);
+		$response->assertJsonPath('resource.albums.0.title', 'test_photos');
+
+		$response = $this->actingAs($this->admin)->getJsonWithData('Album', ['album_id' => $created_id]);
+		$this->assertOk($response);
+		$response->assertJsonCount(2, 'resource.photos');
+		$response->assertJsonPath('resource.photos.0.title', 'night');
+		$response->assertJsonPath('resource.photos.1.title', 'sunset');
 	}
 
 	public function testBadZipExtract(): void

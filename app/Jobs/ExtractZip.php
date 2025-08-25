@@ -217,9 +217,10 @@ class ExtractZip implements ShouldQueue
 
 			$this->history->status = JobStatus::SUCCESS;
 			$this->history->save();
-		} else {
-			throw ZipExtractionException::fromTo($this->file_path, $path_extracted);
+
+			return;
 		}
+		throw ZipExtractionException::fromTo($this->file_path, $path_extracted);
 	}
 
 	/**
