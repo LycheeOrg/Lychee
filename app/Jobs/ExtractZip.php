@@ -165,7 +165,7 @@ class ExtractZip implements ShouldQueue
 		$zip = new \ZipArchive();
 		if ($zip->open($this->file_path) === true) {
 			// Filter out suspicious entries to prevent Zip Slip.
-			for ($i = 0; $i < $zip->numFiles; $i) {
+			for ($i = 0; $i < $zip->numFiles; $i++) {
 				$name = $zip->getNameIndex($i);
 				if ($name === false) {
 					continue;
