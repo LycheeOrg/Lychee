@@ -22,6 +22,8 @@ use Tests\Constants\TestConstants;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 use Tests\Traits\RequireSE;
 
+use function Safe\unlink;
+
 class PhotoZipUploadTest extends BaseApiWithDataTest
 {
 	use RequireSE;
@@ -35,6 +37,12 @@ class PhotoZipUploadTest extends BaseApiWithDataTest
 
 	public function tearDown(): void
 	{
+		try {
+			unlink(TestConstants::SAMPLE_TEST_ZIP);
+		} catch (\Throwable) {
+			// Nothing to do
+		}
+
 		$this->resetSE();
 		parent::tearDown();
 	}
@@ -53,11 +61,17 @@ class PhotoZipUploadTest extends BaseApiWithDataTest
 		$zip->close();
 
 		if (!file_exists(TestConstants::SAMPLE_TEST_ZIP)) {
-			$this->fail('Could not create zip file for testing.');
+			$this->fail('Did not create zip file for testing.');
 		}
 
 		$response = $this->actingAs($this->admin)->upload('Photo', filename: TestConstants::SAMPLE_TEST_ZIP, album_id: $this->album5->id);
 		$this->assertCreated($response);
+
+		$response = $this->actingAs($this->admin)->getJsonWithData('Album::get', ['albumId' => $this->album5->id]);
+		$this->assertOk($response);
+		$response->assertJsonCount(2, 'data.photos');
+		$response->assertJsonFragment(['title' => 'night']);
+		$response->assertJsonFragment(['title' => 'sunset']);
 	}
 
 }
