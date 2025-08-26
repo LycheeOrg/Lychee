@@ -14,19 +14,19 @@ class ImportFromServerOptionsTest extends BaseApiWithDataTest
 {
 	public function testOptionsEndpointAsGuest(): void
 	{
-		$response = $this->postJson('/Import::options');
+		$response = $this->getJson('/Import');
 		$this->assertUnauthorized($response);
 	}
 
 	public function testOptionsEndpointLoggedIn(): void
 	{
-		$response = $this->actingAs($this->userLocked)->postJson('/Import::options');
+		$response = $this->actingAs($this->userLocked)->getJson('/Import');
 		$this->assertForbidden($response);
 	}
 
 	public function testOptionsEndpointAsOwner(): void
 	{
-		$response = $this->actingAs($this->admin)->postJson('/Import::options');
-		$response->assertCreated();
+		$response = $this->actingAs($this->admin)->getJson('/Import');
+		$response->assertOk();
 	}
 }

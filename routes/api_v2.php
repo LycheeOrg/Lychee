@@ -96,7 +96,7 @@ Route::get('/Sharing::albums', [Gallery\SharingController::class, 'listAlbums'])
  * IMPORT.
  */
 Route::post('/Import', Admin\ImportFromServerController::class);
-Route::post('/Import::options', [Admin\ImportFromServerController::class, 'options']);
+Route::get('/Import', [Admin\ImportFromServerController::class, 'options']);
 
 /**
  * PHOTO.

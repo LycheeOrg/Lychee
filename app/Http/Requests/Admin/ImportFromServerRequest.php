@@ -10,6 +10,7 @@ namespace App\Http\Requests\Admin;
 
 use App\Contracts\Http\Requests\HasAbstractAlbum;
 use App\Contracts\Http\Requests\RequestAttribute;
+use App\Exceptions\InvalidOptionsException;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasAbstractAlbumTrait;
 use App\Models\Album;
@@ -58,26 +59,6 @@ class ImportFromServerRequest extends BaseApiRequest implements HasAbstractAlbum
 	}
 
 	/**
-	 * Configure the validator instance.
-	 *
-	 * @param \Illuminate\Validation\Validator $validator
-	 *
-	 * @return void
-	 */
-	public function withValidator($validator): void
-	{
-		$validator->after(function ($validator): void {
-			// Check for conflicting settings
-			if ($this->import_via_symlink && $this->delete_imported) {
-				$validator->errors()->add(
-					'import_via_symlink',
-					'The settings for import via symbolic links and deletion of imported files are conflicting'
-				);
-			}
-		});
-	}
-
-	/**
 	 * {@inheritDoc}
 	 */
 	protected function processValidatedValues(array $values, array $files): void
@@ -96,5 +77,15 @@ class ImportFromServerRequest extends BaseApiRequest implements HasAbstractAlbum
 		$this->resync_metadata = static::toBoolean($values['resync_metadata']);
 		$this->delete_missing_photos = static::toBoolean($values['delete_missing_photos']);
 		$this->delete_missing_albums = static::toBoolean($values['delete_missing_albums']);
+
+		if ($this->import_via_symlink && $this->delete_imported) {
+			throw new InvalidOptionsException('The settings for import via symbolic links and deletion of imported files are conflicting');
+		}
+
+		foreach ($this->directories as $directory) {
+			if (!is_dir($directory)) {
+				throw new InvalidOptionsException('directory does not exists: ' . $directory);
+			}
+		}
 	}
 }
