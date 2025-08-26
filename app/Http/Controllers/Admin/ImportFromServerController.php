@@ -14,6 +14,7 @@ use App\DTO\ImportMode;
 use App\Exceptions\EmptyFolderException;
 use App\Exceptions\InvalidDirectoryException;
 use App\Exceptions\UnexpectedException;
+use App\Http\Requests\Admin\ImportFromServerOptionsRequest;
 use App\Http\Requests\Admin\ImportFromServerRequest;
 use App\Http\Resources\Admin\ImportDirectoryResource;
 use App\Http\Resources\Admin\ImportFromServerOptionsResource;
@@ -24,7 +25,7 @@ use Illuminate\Support\Facades\Log;
 
 class ImportFromServerController extends Controller
 {
-	public function options(): ImportFromServerOptionsResource
+	public function options(ImportFromServerOptionsRequest $request): ImportFromServerOptionsResource
 	{
 		return new ImportFromServerOptionsResource();
 	}

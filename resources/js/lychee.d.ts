@@ -120,10 +120,18 @@ declare namespace App.Http.Resources.Admin {
 		message: string | null;
 		jobs_count: number | null;
 	};
+	export type ImportFromServerOptionsResource = {
+		delete_imported: boolean;
+		import_via_symlink: boolean;
+		skip_duplicates: boolean;
+		resync_metadata: boolean;
+		delete_missing_photos: boolean;
+		delete_missing_albums: boolean;
+	};
 	export type ImportFromServerResource = {
 		status: boolean;
 		message: string;
-		results: any;
+		results: App.Http.Resources.Admin.ImportDirectoryResource[];
 		job_count: number;
 	};
 }
@@ -750,6 +758,7 @@ declare namespace App.Http.Resources.Rights {
 		can_transfer: boolean;
 		can_access_original: boolean;
 		can_pasword_protect: boolean;
+		can_import_from_server: boolean;
 	};
 	export type GlobalRightsResource = {
 		root_album: App.Http.Resources.Rights.RootAlbumRightsResource;
@@ -775,6 +784,7 @@ declare namespace App.Http.Resources.Rights {
 		can_edit: boolean;
 		can_upload: boolean;
 		can_see_live_metrics: boolean;
+		can_import_from_server: boolean;
 	};
 	export type SettingsRightsResource = {
 		can_edit: boolean;
