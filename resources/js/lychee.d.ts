@@ -113,6 +113,20 @@ declare namespace App.Enum {
 	export type VersionChannelType = "release" | "git" | "tag";
 	export type WatermarkPosition = "top-left" | "top" | "top-right" | "left" | "center" | "right" | "bottom-left" | "bottom" | "bottom-right";
 }
+declare namespace App.Http.Resources.Admin {
+	export type ImportDirectoryResource = {
+		directory: string;
+		status: boolean;
+		message: string | null;
+		jobs_count: number | null;
+	};
+	export type ImportFromServerResource = {
+		status: boolean;
+		message: string;
+		results: any;
+		job_count: number;
+	};
+}
 declare namespace App.Http.Resources.Collections {
 	export type PositionDataResource = {
 		id: string | null;
