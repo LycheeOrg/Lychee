@@ -78,7 +78,7 @@ jobs:
           mysql -uroot -proot -e 'create database homestead_test;'
 
       - name: Setup PHP Action
-        uses: shivammathur/setup-php@20529878ed81ef8e78ddf08b480401e6101a850f # 2.35.3
+        uses: shivammathur/setup-php@ec406be512d7077f68eed36e63f4d91bc006edc4 # 2.35.4
         with:
           php-version: ${{ matrix.php-version }}
           extensions: ${{ env.extensions }}
@@ -105,6 +105,6 @@ jobs:
         run: php artisan migrate:rollback
 
       - name: Codecov
-        uses: codecov/codecov-action@18283e04ce6e62d37312384ff67231eb8fd56d24 # v5.4.3
+        uses: codecov/codecov-action@fdcc8476540edceab3de004e990f80d881c6cc00 # v5.5.0
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
