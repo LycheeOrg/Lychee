@@ -112,6 +112,8 @@ final readonly class RouteCacheManager
 			'api/v2/Version' => false,
 			'api/v2/ChangeLogs' => false,
 
+			'api/v2/Import' => new RouteCacheConfig(tag: CacheTag::SETTINGS, user_dependant: true),
+
 			'api/v2/UserGroups' => false,
 			'api/v2/UserGroups/Users' => false,
 
