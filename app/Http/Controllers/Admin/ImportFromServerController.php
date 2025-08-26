@@ -86,7 +86,7 @@ class ImportFromServerController extends Controller
 					status: false,
 					message: 'Invalid directory: ' . $e->getMessage()
 				);
-			} catch (\Exception $e) {
+			} catch (\Throwable $e) {
 				$directory_results[] = new ImportDirectoryResource(
 					directory: $directory,
 					status: false,
