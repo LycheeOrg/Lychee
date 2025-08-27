@@ -2,7 +2,16 @@
 	<Dialog v-model:visible="visible" modal :dismissable-mask="true" pt:root:class="border-none" @hide="closeCallback">
 		<template #container="{ closeCallback }">
 			<div class="flex flex-col gap-4 bg-gradient-to-b from-bg-300 to-bg-400 relative max-w-2xl w-full rounded-md text-muted-color">
-				<div class="p-9 flex flex-col" v-if="options">
+				<div v-if="importing">
+					<div class="p-9 flex flex-col items-center justify-center gap-4">
+						<i class="pi pi-spin pi-spinner text-4xl text-primary-500" />
+						<p class="text-base text-muted-color-emphasis">{{ $t("import_from_server.importing_please_be_patient") }}</p>
+					</div>
+					<Button severity="secondary" class="w-full font-bold border-none rounded-none rounded-b-xl" @click="closeCallback">
+						{{ $t("dialogs.button.close") }}
+					</Button>
+				</div>
+				<div class="p-9 flex flex-col" v-else-if="options">
 					<h2 class="text-muted-color-emphasis font-bold text-lg mb-2">{{ $t("import_from_server.title") }}</h2>
 					<p class="mb-5 text-base">
 						{{ $t("import_from_server.description") }}
@@ -77,7 +86,7 @@
 				<div v-else class="p-9">
 					{{ $t("import_from_server.loading") }}
 				</div>
-				<div class="flex justify-center">
+				<div class="flex justify-center" v-if="!importing && options">
 					<Button
 						severity="secondary"
 						class="w-full font-bold border-none rounded-none ltr:rounded-bl-xl rtl:rounded-br-xl"
@@ -113,6 +122,7 @@ const { getParentId } = usePhotoRoute(router);
 
 const options = ref<App.Http.Resources.Admin.ImportFromServerOptionsResource | undefined>(undefined);
 const directory = ref<string>("");
+const importing = ref<boolean>(false);
 
 const directories = ref<string[]>([]);
 
@@ -181,12 +191,14 @@ function submit() {
 		delete_missing_albums: options.value.delete_missing_albums,
 	};
 
+	importing.value = true;
 	ImportService.importFromServer(payload).then(() => {
 		directory.value = "";
 		visible.value = false;
 		toast.add({ severity: "success", summary: "Success", detail: "Import started successfully", life: 3000 });
 		// Clear cache for the parent album to ensure the new photos are displayed
 		AlbumService.clearCache();
+		importing.value = false;
 		emits("refresh");
 	});
 }

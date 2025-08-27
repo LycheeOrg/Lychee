@@ -7,8 +7,8 @@
 	<WebauthnModal v-if="user?.id === null" @logged-in="refresh" />
 	<AlbumCreateDialog v-if="album?.rights.can_upload && config?.is_model_album" key="create_album_modal" />
 	<ImportFromLink v-if="album?.rights.can_upload" v-model:visible="is_import_from_link_open" @refresh="refresh" />
-	<ImportFromServer v-if="album?.rights.can_import_from_server" v-model:visible="is_import_from_server_open" />
-	<DropBox v-if="album?.rights.can_upload" v-model:visible="is_import_from_dropbox_open" />
+	<ImportFromServer v-if="album?.rights.can_import_from_server" v-model:visible="is_import_from_server_open" @refresh="refresh" />
+	<DropBox v-if="album?.rights.can_upload" v-model:visible="is_import_from_dropbox_open" @refresh="refresh" />
 
 	<!-- Warnings & Locks -->
 	<SensitiveWarning v-if="config?.is_nsfw_warning_visible" :album-id="albumId" />

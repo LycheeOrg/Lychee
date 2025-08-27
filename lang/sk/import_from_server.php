@@ -17,5 +17,6 @@ return [
 	'skip_duplicates' => "Skip photos and albums if they already exist in the gallery.",
 	'delete_missing_photos' => "Delete photos in the album that are not present in the synced directory.",
 	'delete_missing_albums' => "Delete albums in the parent album that are not present in the synced directory.",
+	'importing_please_be_patient' => 'Importing, please be patient...',
 ];
 

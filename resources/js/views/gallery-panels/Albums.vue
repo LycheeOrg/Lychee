@@ -7,9 +7,9 @@
 	<LoginModal v-if="user?.id === null" @logged-in="refresh" />
 	<WebauthnModal v-if="user?.id === null" @logged-in="refresh" />
 	<LiveMetrics v-if="user?.id" />
-	<ImportFromLink v-if="rootRights?.can_upload" v-model:visible="is_import_from_link_open" />
-	<ImportFromServer v-if="rootRights?.can_import_from_server" v-model:visible="is_import_from_server_open" />
-	<DropBox v-if="rootRights?.can_upload" v-model:visible="is_import_from_dropbox_open" />
+	<ImportFromLink v-if="rootRights?.can_upload" v-model:visible="is_import_from_link_open" @refresh="refresh" />
+	<ImportFromServer v-if="rootRights?.can_import_from_server" v-model:visible="is_import_from_server_open" @refresh="refresh" />
+	<DropBox v-if="rootRights?.can_upload" v-model:visible="is_import_from_dropbox_open" @refresh="refresh" />
 
 	<div v-if="rootConfig && rootRights" id="galleryView" class="relative w-full h-full select-none" @scroll="onScroll">
 		<SelectDrag :albums="selectableAlbums" :with-scroll="false" />
