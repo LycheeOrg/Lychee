@@ -114,9 +114,6 @@ declare namespace App.Enum {
 	export type WatermarkPosition = "top-left" | "top" | "top-right" | "left" | "center" | "right" | "bottom-left" | "bottom" | "bottom-right";
 }
 declare namespace App.Http.Resources.Admin {
-	export type DirectoryResource = {
-		directory: string;
-	};
 	export type ImportDirectoryResource = {
 		directory: string;
 		status: boolean;
