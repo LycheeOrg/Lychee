@@ -1,6 +1,4 @@
 <template>
-	<ImportFromLink v-if="canUpload" v-model:visible="is_import_from_link_open" @refresh="emits('refresh')" />
-	<DropBox v-if="canUpload" v-model:visible="is_import_from_dropbox_open" :album-id="props.album.id" />
 	<Toolbar
 		v-if="album"
 		class="w-full border-0 transition-all duration-100 ease-in-out"
@@ -63,19 +61,17 @@
 <script setup lang="ts">
 import Button from "primevue/button";
 import Toolbar from "primevue/toolbar";
-import { computed } from "vue";
 import ContextMenu from "primevue/contextmenu";
-import ImportFromLink from "@/components/modals/ImportFromLink.vue";
 import { useContextMenuAlbumAdd } from "@/composables/contextMenus/contextMenuAlbumAdd";
 import Divider from "primevue/divider";
 import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import AlbumService from "@/services/album-service";
-import DropBox from "@/components/modals/DropBox.vue";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { useFavouriteStore } from "@/stores/FavouriteState";
 import GoBack from "./GoBack.vue";
+import { computed } from "vue";
 
 const props = defineProps<{
 	config: App.Http.Resources.GalleryConfigs.AlbumConfig;
@@ -91,8 +87,7 @@ const favourites = useFavouriteStore();
 const { dropbox_api_key, is_favourite_enabled } = storeToRefs(lycheeStore);
 const { is_album_edit_open, is_full_screen } = storeToRefs(togglableStore);
 
-const { toggleCreateAlbum, is_import_from_link_open, toggleImportFromLink, is_import_from_dropbox_open, toggleImportFromDropbox, toggleUpload } =
-	useGalleryModals(togglableStore);
+const { toggleCreateAlbum, toggleImportFromLink, toggleImportFromDropbox, toggleUpload, toggleImportFromServer } = useGalleryModals(togglableStore);
 
 const emits = defineEmits<{
 	refresh: [];
@@ -117,6 +112,8 @@ function deleteTrack() {
 	AlbumService.deleteTrack(props.album.id);
 }
 
+const is_owner = computed(() => props.album.rights.can_import_from_server);
+
 const { addmenu, addMenu, openAddMenu } = useContextMenuAlbumAdd(
 	props.album,
 	props.config,
@@ -127,9 +124,9 @@ const { addmenu, addMenu, openAddMenu } = useContextMenuAlbumAdd(
 		toggleUploadTrack,
 		deleteTrack,
 		toggleImportFromDropbox,
+		toggleImportFromServer,
 	},
 	dropbox_api_key,
+	is_owner,
 );
-
-const canUpload = computed(() => props.user.id !== null && props.album.rights.can_upload === true);
 </script>

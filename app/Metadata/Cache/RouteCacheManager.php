@@ -113,6 +113,7 @@ final readonly class RouteCacheManager
 			'api/v2/ChangeLogs' => false,
 
 			'api/v2/Import' => new RouteCacheConfig(tag: CacheTag::SETTINGS, user_dependant: true),
+			'api/v2/Import::browse' => false, // This will return a different result each time depending on the directory requested.
 
 			'api/v2/UserGroups' => false,
 			'api/v2/UserGroups/Users' => false,

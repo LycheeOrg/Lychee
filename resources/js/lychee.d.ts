@@ -127,6 +127,7 @@ declare namespace App.Http.Resources.Admin {
 		resync_metadata: boolean;
 		delete_missing_photos: boolean;
 		delete_missing_albums: boolean;
+		directory: string;
 	};
 	export type ImportFromServerResource = {
 		status: boolean;

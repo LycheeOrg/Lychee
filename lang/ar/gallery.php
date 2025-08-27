@@ -207,6 +207,7 @@ return [
         'merge_all' => 'دمج المحدد',
         'upload_photo' => 'رفع صورة',
         'import_link' => 'استيراد من الرابط',
+		'import_server' => 'Import from Server',
         'import_dropbox' => 'استيراد من Dropbox',
         'new_album' => 'ألبوم جديد',
         'new_tag_album' => 'ألبوم علامة جديدة',

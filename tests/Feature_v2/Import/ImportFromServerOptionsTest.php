@@ -27,6 +27,6 @@ class ImportFromServerOptionsTest extends BaseApiWithDataTest
 	public function testOptionsEndpointAsOwner(): void
 	{
 		$response = $this->actingAs($this->admin)->getJson('/Import');
-		$response->assertOk();
+		$this->assertOk($response);
 	}
 }

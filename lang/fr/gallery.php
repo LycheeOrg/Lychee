@@ -207,6 +207,7 @@ return [
         'merge_all' => 'Fusionner la sélection',
         'upload_photo' => 'Téléverser une photo',
         'import_link' => 'Importer via un lien',
+		'import_server' => 'Import from Server',
         'import_dropbox' => 'Importer depuis Dropbox',
         'new_album' => 'Nouvel album',
         'new_tag_album' => 'Nouvel album par étiquette',

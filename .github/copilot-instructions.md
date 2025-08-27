@@ -21,6 +21,8 @@
 - Use Typescript in composition API for Vue3. Use PrimeVue for UI components.
 - Do not use await async calls in Vue3, use .then() instead.
 - Do not use const function = () => {}, use function functionName() {} instead.
+- the <template> comes first, then <script lang="ts">, then <style>.
+- axios requests should be in the services/ directory and make use of `${Constants.getApiUrl()}` to specify the base URL.
 
 # Documentation Conventions
 

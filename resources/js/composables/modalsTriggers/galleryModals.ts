@@ -1,9 +1,10 @@
 import { TogglablesStateStore } from "@/stores/ModalsState";
 import { storeToRefs } from "pinia";
-import { ref } from "vue";
 
 export function useGalleryModals(togglableStore: TogglablesStateStore) {
 	const {
+		is_create_album_visible,
+		is_create_tag_album_visible,
 		is_upload_visible,
 		is_rename_visible,
 		is_move_visible,
@@ -13,14 +14,16 @@ export function useGalleryModals(togglableStore: TogglablesStateStore) {
 		is_import_from_link_open,
 		is_tag_visible,
 		is_copy_visible,
+		is_import_from_dropbox_open,
+		is_import_from_server_open,
 	} = storeToRefs(togglableStore);
 
 	function toggleCreateAlbum() {
-		togglableStore.is_create_album_visible = !togglableStore.is_create_album_visible;
+		is_create_album_visible.value = !is_create_album_visible.value;
 	}
 
 	function toggleCreateTagAlbum() {
-		togglableStore.is_create_tag_album_visible = !togglableStore.is_create_tag_album_visible;
+		is_create_tag_album_visible.value = !is_create_tag_album_visible.value;
 	}
 
 	function toggleRename() {
@@ -47,10 +50,12 @@ export function useGalleryModals(togglableStore: TogglablesStateStore) {
 		is_import_from_link_open.value = !is_import_from_link_open.value;
 	}
 
-	const is_import_from_dropbox_open = ref(false);
-
 	function toggleImportFromDropbox() {
 		is_import_from_dropbox_open.value = !is_import_from_dropbox_open.value;
+	}
+
+	function toggleImportFromServer() {
+		is_import_from_server_open.value = !is_import_from_server_open.value;
 	}
 
 	function toggleUpload() {
@@ -66,7 +71,9 @@ export function useGalleryModals(togglableStore: TogglablesStateStore) {
 	}
 
 	return {
+		is_create_album_visible,
 		toggleCreateAlbum,
+		is_create_tag_album_visible,
 		toggleCreateTagAlbum,
 		is_delete_visible,
 		toggleDelete,
@@ -82,6 +89,9 @@ export function useGalleryModals(togglableStore: TogglablesStateStore) {
 		toggleImportFromLink,
 		is_import_from_dropbox_open,
 		toggleImportFromDropbox,
+		is_import_from_server_open,
+		toggleImportFromServer,
+		is_upload_visible,
 		toggleUpload,
 		is_tag_visible,
 		toggleTag,
