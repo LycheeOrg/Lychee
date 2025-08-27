@@ -1,6 +1,4 @@
 <template>
-	<ImportFromLink v-if="canUpload" v-model:visible="is_import_from_link_open" />
-	<DropBox v-if="canUpload" v-model:visible="is_import_from_dropbox_open" :album-id="null" />
 	<Toolbar
 		:class="{
 			'bg-transparent': props.config.is_header_bar_transparent,
@@ -120,7 +118,6 @@ import SpeedDial from "primevue/speeddial";
 import Toolbar from "primevue/toolbar";
 import ContextMenu from "primevue/contextmenu";
 import Divider from "primevue/divider";
-import ImportFromLink from "@/components/modals/ImportFromLink.vue";
 import { computed, ComputedRef } from "vue";
 import { onKeyStroke } from "@vueuse/core";
 import { useLycheeStateStore } from "@/stores/LycheeState";
@@ -130,7 +127,6 @@ import { useRouter } from "vue-router";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { useContextMenuAlbumsAdd } from "@/composables/contextMenus/contextMenuAlbumsAdd";
 import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
-import DropBox from "@/components/modals/DropBox.vue";
 import BackLinkButton from "./BackLinkButton.vue";
 import OpenLeftMenu from "./OpenLeftMenu.vue";
 import { useFavouriteStore } from "@/stores/FavouriteState";
@@ -168,15 +164,10 @@ const { is_login_open, is_upload_visible, is_create_album_visible, is_create_tag
 
 const router = useRouter();
 
-const {
-	toggleCreateAlbum,
-	toggleCreateTagAlbum,
-	is_import_from_link_open,
-	toggleImportFromLink,
-	is_import_from_dropbox_open,
-	toggleImportFromDropbox,
-	toggleUpload,
-} = useGalleryModals(togglableStore);
+const { toggleCreateAlbum, toggleCreateTagAlbum, toggleImportFromLink, toggleImportFromDropbox, toggleUpload, toggleImportFromServer } =
+	useGalleryModals(togglableStore);
+
+const is_owner = computed(() => props.rights.can_import_from_server);
 
 const { addmenu, addMenu } = useContextMenuAlbumsAdd(
 	{
@@ -185,11 +176,11 @@ const { addmenu, addMenu } = useContextMenuAlbumsAdd(
 		toggleImportFromLink: toggleImportFromLink,
 		toggleImportFromDropbox: toggleImportFromDropbox,
 		toggleCreateTagAlbum: toggleCreateTagAlbum,
+		toggleImportFromServer: toggleImportFromServer,
 	},
 	dropbox_api_key,
+	is_owner,
 );
-
-const canUpload = computed(() => props.user.id !== null);
 
 function openAddMenu(event: Event) {
 	addmenu.value.show(event);
@@ -211,7 +202,7 @@ onKeyStroke("/", () => !shouldIgnoreKeystroke() && props.config.is_search_access
 // 1. lose focus
 // 2. close modals
 // 3. go back
-onKeyStroke("escape", () => {
+onKeyStroke("Escape", () => {
 	// 1. lose focus
 	if (document.activeElement instanceof HTMLElement) {
 		document.activeElement.blur();

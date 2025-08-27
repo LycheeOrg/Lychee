@@ -81,11 +81,5 @@ class ImportFromServerRequest extends BaseApiRequest implements HasAbstractAlbum
 		if ($this->import_via_symlink && $this->delete_imported) {
 			throw new InvalidOptionsException('The settings for import via symbolic links and deletion of imported files are conflicting');
 		}
-
-		foreach ($this->directories as $directory) {
-			if (!is_dir($directory)) {
-				throw new InvalidOptionsException('directory does not exists: ' . $directory);
-			}
-		}
 	}
 }

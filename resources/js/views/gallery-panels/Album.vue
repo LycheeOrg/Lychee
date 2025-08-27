@@ -6,6 +6,9 @@
 	<LoginModal v-if="user?.id === null" @logged-in="refresh" />
 	<WebauthnModal v-if="user?.id === null" @logged-in="refresh" />
 	<AlbumCreateDialog v-if="album?.rights.can_upload && config?.is_model_album" key="create_album_modal" />
+	<ImportFromLink v-if="album?.rights.can_upload" v-model:visible="is_import_from_link_open" @refresh="refresh" />
+	<ImportFromServer v-if="album?.rights.can_import_from_server" v-model:visible="is_import_from_server_open" />
+	<DropBox v-if="album?.rights.can_upload" v-model:visible="is_import_from_dropbox_open" />
 
 	<!-- Warnings & Locks -->
 	<SensitiveWarning v-if="config?.is_nsfw_warning_visible" :album-id="albumId" />
@@ -173,6 +176,9 @@ import MetricsService from "@/services/metrics-service";
 import { usePhotoRoute } from "@/composables/photo/photoRoute";
 import { useAlbumRoute } from "@/composables/photo/albumRoute";
 import { useLtRorRtL } from "@/utils/Helpers";
+import ImportFromLink from "@/components/modals/ImportFromLink.vue";
+import DropBox from "@/components/modals/DropBox.vue";
+import ImportFromServer from "@/components/modals/ImportFromServer.vue";
 
 const { isLTR } = useLtRorRtL();
 
@@ -210,12 +216,23 @@ const {
 	list_upload_files,
 	is_create_album_visible,
 	is_album_edit_open,
+	is_import_from_link_open,
 } = storeToRefs(togglableStore);
 
 const { scrollToTop, setScroll } = useScrollable(togglableStore, albumId);
 
-const { is_delete_visible, toggleDelete, is_merge_album_visible, is_move_visible, toggleMove, is_rename_visible, is_tag_visible, is_copy_visible } =
-	useGalleryModals(togglableStore);
+const {
+	is_delete_visible,
+	toggleDelete,
+	is_merge_album_visible,
+	is_move_visible,
+	toggleMove,
+	is_rename_visible,
+	is_tag_visible,
+	is_copy_visible,
+	is_import_from_dropbox_open,
+	is_import_from_server_open,
+} = useGalleryModals(togglableStore);
 
 // Set up Album ID reference. This one is updated at each page change.
 const { isPasswordProtected, isLoading, user, modelAlbum, album, photo, transition, photosTimeline, rights, photos, config, refresh, setTransition } =

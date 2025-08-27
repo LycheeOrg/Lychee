@@ -13,7 +13,9 @@ use App\Contracts\Exceptions\ExternalLycheeException;
 use App\DTO\ImportMode;
 use App\Exceptions\EmptyFolderException;
 use App\Exceptions\InvalidDirectoryException;
+use App\Exceptions\InvalidOptionsException;
 use App\Exceptions\UnexpectedException;
+use App\Http\Requests\Admin\ImportFromServerBrowseRequest;
 use App\Http\Requests\Admin\ImportFromServerOptionsRequest;
 use App\Http\Requests\Admin\ImportFromServerRequest;
 use App\Http\Resources\Admin\ImportDirectoryResource;
@@ -31,6 +33,41 @@ class ImportFromServerController extends Controller
 	}
 
 	/**
+	 * Given a path, return the list of directories inside that path.
+	 *
+	 * @param ImportFromServerBrowseRequest $request
+	 *
+	 * @return string[]
+	 *
+	 * @throws InvalidDirectoryException
+	 */
+	public function browse(ImportFromServerBrowseRequest $request): array
+	{
+		// This is CHECKED after the validation of the request to avoid revealing part of the file system to unauthorized users.
+		if (!is_dir($request->directory)) {
+			throw new InvalidDirectoryException('The specified directory is not valid: ' . $request->directory);
+		}
+
+		$dirs = [];
+		if ($request->directory !== '/') {
+			$dirs[] = '..';
+		}
+		try {
+			foreach (new \DirectoryIterator($request->directory) as $file_info) {
+				// We only import directories here. Files are imported by the Importer when parsing the directories.
+				if ($file_info->isDir() && !$file_info->isDot()) {
+					$dirs[] = $file_info->getFilename();
+				}
+			}
+		} catch (\Throwable $e) {
+			// We ignore unreadable directories.
+			Log::warning(__LINE__ . ':' . __FILE__ . ' ' . $e->getMessage(), $e->getTrace());
+		}
+
+		return $dirs;
+	}
+
+	/**
 	 * Import photos from server directory into Lychee.
 	 *
 	 * @param ImportFromServerRequest $request Request containing import parameters
@@ -41,6 +78,13 @@ class ImportFromServerController extends Controller
 	 */
 	public function __invoke(ImportFromServerRequest $request): ImportFromServerResource
 	{
+		// This is CHECKED after the validation of the request to avoid revealing part of the file system to unauthorized users.
+		foreach ($request->directories as $directory) {
+			if (!is_dir($directory)) {
+				throw new InvalidOptionsException('directory does not exists: ' . $directory);
+			}
+		}
+
 		// Configure import settings
 		$import_mode = new ImportMode(
 			delete_imported: $request->delete_imported,

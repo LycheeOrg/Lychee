@@ -39,11 +39,11 @@ class ImportFromServerTest extends BaseApiWithDataTest
 		$this->assertForbidden($response);
 	}
 
-	public function testImportFromServertWrongDir(): void
+	public function testImportFromServertWrongDirNotAuthorized(): void
 	{
 		$payload = $this->getDefaultPayload('wrong-dir');
 		$response = $this->actingAs($this->userLocked)->postJson('/Import', $payload);
-		$this->assertUnprocessable($response);
+		$this->assertForbidden($response);
 	}
 
 	public function testImportFromServertConflictingOptions(): void
@@ -55,6 +55,13 @@ class ImportFromServerTest extends BaseApiWithDataTest
 		$this->assertUnprocessable($response);
 	}
 
+	public function testImportFromServertWrongDir(): void
+	{
+		$payload = $this->getDefaultPayload('wrong-dir');
+		$response = $this->actingAs($this->admin)->postJson('/Import', $payload);
+		$this->assertUnprocessable($response);
+	}
+
 	public function testImportFromServerSuccess(): void
 	{
 		// No need to dispatch. :)
@@ -63,7 +70,7 @@ class ImportFromServerTest extends BaseApiWithDataTest
 		$directory = 'tests/Samples/sync';
 
 		$response = $this->actingAs($this->admin)->postJson('/Import', $this->getDefaultPayload($directory, $this->album5->id));
-		$response->assertCreated();
+		$this->assertCreated($response);
 		$response->assertJsonStructure([
 			'status',
 			'message',

@@ -21,6 +21,7 @@ class ImportFromServerOptionsResource extends Data
 	public bool $resync_metadata;
 	public bool $delete_missing_photos;
 	public bool $delete_missing_albums;
+	public string $directory;
 
 	/**
 	 * Creates a new resource instance.
@@ -34,5 +35,6 @@ class ImportFromServerOptionsResource extends Data
 		$this->resync_metadata = false; // Default value as this is not in config
 		$this->delete_missing_photos = Configs::getValueAsBool('sync_delete_missing_photos');
 		$this->delete_missing_albums = Configs::getValueAsBool('sync_delete_missing_albums');
+		$this->directory = base_path('');
 	}
 }

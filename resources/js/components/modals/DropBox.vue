@@ -23,12 +23,16 @@ import PhotoService from "@/services/photo-service";
 import DropBoxChooser from "@/components/forms/upload/DropBoxChooser.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
+import { useRouter } from "vue-router";
+import { usePhotoRoute } from "@/composables/photo/photoRoute";
 
 const visible = defineModel("visible", { default: false }) as Ref<boolean>;
-const props = defineProps<{ albumId: string | null }>();
 const emits = defineEmits<{
 	refresh: [];
 }>();
+
+const router = useRouter();
+const { getParentId } = usePhotoRoute(router);
 
 const lycheeStore = useLycheeStateStore();
 const { dropbox_api_key } = storeToRefs(lycheeStore);
@@ -36,7 +40,7 @@ const { dropbox_api_key } = storeToRefs(lycheeStore);
 function action(files: Dropbox.ChooserFile[]) {
 	PhotoService.importFromUrl(
 		files.map((file) => file.link),
-		props.albumId,
+		getParentId() ?? null,
 	).then(() => {
 		visible.value = false;
 		emits("refresh");

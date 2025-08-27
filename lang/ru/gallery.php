@@ -207,6 +207,7 @@ return [
         'merge_all' => 'Объединить выбранные',
         'upload_photo' => 'Загрузить фото',
         'import_link' => 'Импортировать по ссылке',
+		'import_server' => 'Import from Server',
         'import_dropbox' => 'Импортировать из Dropbox',
         'new_album' => 'Новый альбом',
         'new_tag_album' => 'Новый альбом с тегами',
