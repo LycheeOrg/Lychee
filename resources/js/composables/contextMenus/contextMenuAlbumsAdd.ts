@@ -6,9 +6,10 @@ type Callbacks = {
 	toggleCreateAlbum: () => void;
 	toggleCreateTagAlbum: () => void;
 	toggleImportFromDropbox: () => void;
+	toggleImportFromServer: () => void;
 };
 
-export function useContextMenuAlbumsAdd(callbacks: Callbacks, dropbox_api_key: Ref<string>) {
+export function useContextMenuAlbumsAdd(callbacks: Callbacks, dropbox_api_key: Ref<string>, is_owner: Ref<boolean>) {
 	const addmenu = ref(); // ! Reference to the context menu
 	const addMenu = ref(
 		[
@@ -30,6 +31,12 @@ export function useContextMenuAlbumsAdd(callbacks: Callbacks, dropbox_api_key: R
 				icon: "pi pi-box",
 				callback: callbacks.toggleImportFromDropbox,
 				if: dropbox_api_key.value !== "disabled",
+			},
+			{
+				label: "gallery.menus.import_server",
+				icon: "pi pi-server",
+				callback: callbacks.toggleImportFromServer,
+				if: is_owner.value === true,
 			},
 			{
 				is_divider: true,

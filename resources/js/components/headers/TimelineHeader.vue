@@ -1,6 +1,7 @@
 <template>
-	<ImportFromLink v-if="canUpload" v-model:visible="is_import_from_link_open" :parent-id="null" />
-	<DropBox v-if="canUpload" v-model:visible="is_import_from_dropbox_open" :album-id="null" />
+	<ImportFromLink v-if="props.rights.can_upload" v-model:visible="is_import_from_link_open" />
+	<ImportFromServer v-if="props.rights.can_import_from_server" v-model:visible="is_import_from_server_open" />
+	<DropBox v-if="props.rights.can_upload" v-model:visible="is_import_from_dropbox_open" />
 	<Toolbar
 		class="w-full border-0 h-14 z-10 rounded-none"
 		:pt:root:class="'flex-nowrap relative'"
@@ -117,6 +118,7 @@ import BackLinkButton from "./BackLinkButton.vue";
 import OpenLeftMenu from "./OpenLeftMenu.vue";
 import { useFavouriteStore } from "@/stores/FavouriteState";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
+import ImportFromServer from "@/components/modals/ImportFromServer.vue";
 
 const props = defineProps<{
 	user: App.Http.Resources.Models.UserResource;
@@ -153,10 +155,13 @@ const {
 	is_import_from_link_open,
 	toggleImportFromLink,
 	is_import_from_dropbox_open,
+	toggleImportFromServer,
+	is_import_from_server_open,
 	toggleImportFromDropbox,
 	toggleUpload,
 } = useGalleryModals(togglableStore);
 
+const is_owner = computed(() => props.rights.can_import_from_server);
 const { addmenu, addMenu } = useContextMenuAlbumsAdd(
 	{
 		toggleUpload: toggleUpload,
@@ -164,11 +169,11 @@ const { addmenu, addMenu } = useContextMenuAlbumsAdd(
 		toggleImportFromLink: toggleImportFromLink,
 		toggleImportFromDropbox: toggleImportFromDropbox,
 		toggleCreateTagAlbum: toggleCreateTagAlbum,
+		toggleImportFromServer: toggleImportFromServer,
 	},
 	dropbox_api_key,
+	is_owner,
 );
-
-const canUpload = computed(() => props.user.id !== null);
 
 function openAddMenu(event: Event) {
 	addmenu.value.show(event);

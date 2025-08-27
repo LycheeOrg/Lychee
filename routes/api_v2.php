@@ -95,13 +95,9 @@ Route::get('/Sharing::albums', [Gallery\SharingController::class, 'listAlbums'])
 /**
  * IMPORT.
  */
-// Route::post('/Import::server', [ImportController::class, 'server']);
-// Route::post('/Import::serverCancel', [ImportController::class, 'serverCancel']);
-
-/**
- * LEGACY.
- */
-// Route::post('/Legacy::translateLegacyModelIDs', [LegacyController::class, 'translateLegacyModelIDs']);
+Route::post('/Import', Admin\ImportFromServerController::class);
+Route::get('/Import', [Admin\ImportFromServerController::class, 'options']);
+Route::get('/Import::browse', [Admin\ImportFromServerController::class, 'browse']);
 
 /**
  * PHOTO.

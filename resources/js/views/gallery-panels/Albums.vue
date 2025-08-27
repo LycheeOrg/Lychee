@@ -7,6 +7,9 @@
 	<LoginModal v-if="user?.id === null" @logged-in="refresh" />
 	<WebauthnModal v-if="user?.id === null" @logged-in="refresh" />
 	<LiveMetrics v-if="user?.id" />
+	<ImportFromLink v-if="rootRights?.can_upload" v-model:visible="is_import_from_link_open" @refresh="refresh" />
+	<ImportFromServer v-if="rootRights?.can_import_from_server" v-model:visible="is_import_from_server_open" @refresh="refresh" />
+	<DropBox v-if="rootRights?.can_upload" v-model:visible="is_import_from_dropbox_open" @refresh="refresh" />
 
 	<div v-if="rootConfig && rootRights" id="galleryView" class="relative w-full h-full select-none" @scroll="onScroll">
 		<SelectDrag :albums="selectableAlbums" :with-scroll="false" />
@@ -179,6 +182,9 @@ import LiveMetrics from "@/components/drawers/LiveMetrics.vue";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
 import { useRouter } from "vue-router";
 import SelectDrag from "@/components/forms/album/SelectDrag.vue";
+import ImportFromLink from "@/components/modals/ImportFromLink.vue";
+import DropBox from "@/components/modals/DropBox.vue";
+import ImportFromServer from "@/components/modals/ImportFromServer.vue";
 
 const auth = useAuthStore();
 const lycheeStore = useLycheeStateStore();
@@ -190,7 +196,8 @@ lycheeStore.init();
 const albumId = ref("gallery");
 
 const { onScroll, setScroll } = useScrollable(togglableStore, albumId);
-const { is_full_screen, is_login_open, is_upload_visible, list_upload_files, is_webauthn_open } = storeToRefs(togglableStore);
+const { is_full_screen, is_login_open, is_upload_visible, list_upload_files, is_webauthn_open, is_import_from_server_open } =
+	storeToRefs(togglableStore);
 const { are_nsfw_visible, title } = storeToRefs(lycheeStore);
 
 const {
@@ -216,8 +223,18 @@ const { selectedAlbum, selectedAlbumsIdx, selectedAlbums, selectedAlbumsIds, alb
 );
 
 // Modals for Albums
-const { is_delete_visible, toggleDelete, is_merge_album_visible, toggleMergeAlbum, is_move_visible, toggleMove, is_rename_visible, toggleRename } =
-	useGalleryModals(togglableStore);
+const {
+	is_delete_visible,
+	toggleDelete,
+	is_merge_album_visible,
+	toggleMergeAlbum,
+	is_move_visible,
+	toggleMove,
+	is_rename_visible,
+	toggleRename,
+	is_import_from_link_open,
+	is_import_from_dropbox_open,
+} = useGalleryModals(togglableStore);
 
 function togglePin() {
 	if (!selectedAlbum.value) return;

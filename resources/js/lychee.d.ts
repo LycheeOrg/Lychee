@@ -113,6 +113,29 @@ declare namespace App.Enum {
 	export type VersionChannelType = "release" | "git" | "tag";
 	export type WatermarkPosition = "top-left" | "top" | "top-right" | "left" | "center" | "right" | "bottom-left" | "bottom" | "bottom-right";
 }
+declare namespace App.Http.Resources.Admin {
+	export type ImportDirectoryResource = {
+		directory: string;
+		status: boolean;
+		message: string | null;
+		jobs_count: number | null;
+	};
+	export type ImportFromServerOptionsResource = {
+		delete_imported: boolean;
+		import_via_symlink: boolean;
+		skip_duplicates: boolean;
+		resync_metadata: boolean;
+		delete_missing_photos: boolean;
+		delete_missing_albums: boolean;
+		directory: string;
+	};
+	export type ImportFromServerResource = {
+		status: boolean;
+		message: string;
+		results: App.Http.Resources.Admin.ImportDirectoryResource[];
+		job_count: number;
+	};
+}
 declare namespace App.Http.Resources.Collections {
 	export type PositionDataResource = {
 		id: string | null;
@@ -736,6 +759,7 @@ declare namespace App.Http.Resources.Rights {
 		can_transfer: boolean;
 		can_access_original: boolean;
 		can_pasword_protect: boolean;
+		can_import_from_server: boolean;
 	};
 	export type GlobalRightsResource = {
 		root_album: App.Http.Resources.Rights.RootAlbumRightsResource;
@@ -761,6 +785,7 @@ declare namespace App.Http.Resources.Rights {
 		can_edit: boolean;
 		can_upload: boolean;
 		can_see_live_metrics: boolean;
+		can_import_from_server: boolean;
 	};
 	export type SettingsRightsResource = {
 		can_edit: boolean;

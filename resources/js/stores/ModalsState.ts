@@ -40,6 +40,8 @@ export const useTogglablesStateStore = defineStore("togglables-store", {
 		is_import_from_link_open: false,
 		is_tag_visible: false,
 		is_copy_visible: false,
+		is_import_from_dropbox_open: false,
+		is_import_from_server_open: false,
 
 		// Selections Ids
 		selectedPhotosIdx: [] as number[],

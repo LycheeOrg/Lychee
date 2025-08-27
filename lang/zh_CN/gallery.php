@@ -207,6 +207,7 @@ return [
         'merge_all' => '合并所选',
         'upload_photo' => '上传照片',
         'import_link' => '从链接导入',
+		'import_server' => 'Import from Server',
         'import_dropbox' => '从 Dropbox 导入',
         'new_album' => '新建相册',
         'new_tag_album' => '新建标签相册',
