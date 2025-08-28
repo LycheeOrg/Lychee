@@ -213,7 +213,7 @@ class BuildTree implements ImportPipe
 		// star as wildcard (as in *.jpg)
 		// Example: '*.jpg' matches all jpgs
 
-		$pattern = preg_replace_callback('/([^*])/', [self::class, 'preg_quote_callback_fct'], $pattern);
+		$pattern = preg_replace_callback('/([^*])/', fn($a) => self::preg_quote_callback_fct($a), $pattern);
 		$pattern = str_replace('*', '.*', $pattern);
 
 		return preg_match('/^' . $pattern . '$/i', $filename) === 1;
