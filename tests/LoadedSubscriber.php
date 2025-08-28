@@ -29,6 +29,7 @@ final class LoadedSubscriber implements LoadedSubscriberInterface
 		}
 
 		HandleExceptions::flushState();
+
 		return;
 	}
 }
