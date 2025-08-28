@@ -9,6 +9,7 @@
 namespace Tests;
 
 use App\Models\User;
+use Illuminate\Foundation\Bootstrap\HandleExceptions;
 use PHPUnit\Event\TestSuite\Loaded;
 use PHPUnit\Event\TestSuite\LoadedSubscriber as LoadedSubscriberInterface;
 
@@ -27,6 +28,7 @@ final class LoadedSubscriber implements LoadedSubscriberInterface
 			User::truncate();
 		}
 
+		HandleExceptions::flushState();
 		return;
 	}
 }
