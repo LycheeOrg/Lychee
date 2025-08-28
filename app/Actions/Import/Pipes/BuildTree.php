@@ -22,6 +22,7 @@ use Safe\Exceptions\StringsException;
 use function Safe\file;
 use function Safe\glob;
 use function Safe\preg_match;
+use function Safe\preg_replace_callback;
 use function Safe\realpath;
 
 class BuildTree implements ImportPipe
