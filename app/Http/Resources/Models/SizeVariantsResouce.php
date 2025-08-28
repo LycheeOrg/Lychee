@@ -44,13 +44,13 @@ class SizeVariantsResouce extends Data
 		$thumb2x = $size_variants?->getSizeVariant(SizeVariantType::THUMB2X);
 		$placeholder = $size_variants?->getSizeVariant(SizeVariantType::PLACEHOLDER);
 
-		$this->medium = $medium?->toResource();
-		$this->medium2x = $medium2x?->toResource();
-		$this->original = $original?->toResource($downgrade);
-		$this->small = $small?->toResource();
-		$this->small2x = $small2x?->toResource();
-		$this->thumb = $thumb?->toResource();
-		$this->thumb2x = $thumb2x?->toResource();
-		$this->placeholder = $placeholder?->toResource();
+		$this->medium = $medium?->toDataResource();
+		$this->medium2x = $medium2x?->toDataResource();
+		$this->original = $original?->toDataResource($downgrade);
+		$this->small = $small?->toDataResource();
+		$this->small2x = $small2x?->toDataResource();
+		$this->thumb = $thumb?->toDataResource();
+		$this->thumb2x = $thumb2x?->toDataResource();
+		$this->placeholder = $placeholder?->toDataResource();
 	}
 }
