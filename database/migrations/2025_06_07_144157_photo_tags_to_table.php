@@ -60,7 +60,7 @@ return new class() extends Migration {
 							}
 							$seen[$tag] = true;
 							// Add the tag to the tags_to_create array if it doesn't exist
-							if (!array_key_exists($tag, $tags_to_create)) {
+							if (!isset($tags_to_create[$tag])) {
 								$tags_to_create[$tag] = [
 									'id' => ++$tag_idx,
 									'name' => $tag,
