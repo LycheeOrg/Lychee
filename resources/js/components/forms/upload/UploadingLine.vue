@@ -23,7 +23,7 @@ const props = withDefaults(
 		albumId: string | null;
 		file: File;
 		chunkSize: number;
-		status: "uploading" | "waiting" | "done" | "error";
+		status: "uploading" | "waiting" | "done" | "error" | "warning";
 		index: number;
 	}>(),
 	{
@@ -32,7 +32,7 @@ const props = withDefaults(
 );
 
 const emits = defineEmits<{
-	"upload:completed": [index: number, status: "done" | "error"];
+	"upload:completed": [index: number, status: "done" | "warning" | "error"];
 }>();
 
 const status = ref(props.status);
@@ -56,6 +56,7 @@ const statusMessage = computed(() => {
 	switch (status.value) {
 		case "uploading": return trans("dialogs.upload.uploading");
 		case "done":      return trans("dialogs.upload.finished");
+		case "warning":   return errorMessage.value ?? trans("dialogs.upload.failed_error");
 		case "error":     return errorMessage.value ?? trans("dialogs.upload.failed_error");
 		default:          return "";
 	}
@@ -65,6 +66,7 @@ const statusMessage = computed(() => {
 const errorFlexClass = computed(() => {
 	switch (status.value) {
 		case "error": return "flex-wrap";
+		case "warning": return "flex-wrap";
 		default:      return "";
 	}
 });
@@ -74,6 +76,7 @@ const statusClass = computed(() => {
 	switch (status.value) {
 		case "uploading": return "text-sky-500 text-right pr-1";
 		case "done":      return "text-create-600 text-right pr-1";
+		case "warning":   return "text-warning-600 text-right pr-1";
 		case "error":     return "text-danger-700 text-right pr-1";
 		default:          return "text-warning-600 text-right pr-1";
 	}
@@ -84,6 +87,7 @@ const progressBar = computed(() => (status.value === "done" ? 100 : progress.val
 const progressClass = computed(() => {
 	switch (status.value) {
 		case "done":  return "successProgressBarSeverity";
+		case "warning": return "warningProgressBarSeverity";
 		case "error": return "errorProgressBarSeverity";
 		default:      return "";
 	}
@@ -126,6 +130,11 @@ function process() {
 						errorMessage.value = "Failed to open stream: Permission denied";
 					}
 					break;
+				case 504: errorMessage.value = "The server took too long to respond.";
+					progress.value = 100;
+					status.value = "warning";
+					emits("upload:completed", props.index, "warning");
+					return;
 				default: break;
 			}
 			progress.value = 100;
@@ -154,5 +163,8 @@ watch(
 }
 .successProgressBarSeverity {
 	--p-progressbar-value-background: var(--create);
+}
+.warningProgressBarSeverity {
+	--p-progressbar-value-background: var(--warning);
 }
 </style>
