@@ -104,7 +104,7 @@ declare namespace App.Enum {
 	export type SmallLargeType = "small" | "large";
 	export type SmartAlbumType = "unsorted" | "starred" | "recent" | "on_this_day";
 	export type StorageDiskType = "images" | "s3";
-	export type ThumbAlbumSubtitleType = "description" | "takedate" | "creation" | "oldstyle";
+	export type ThumbAlbumSubtitleType = "description" | "takedate" | "creation" | "oldstyle" | "num_photos" | "num_albums" | "num_photos_albums";
 	export type ThumbOverlayVisibilityType = "never" | "always" | "hover";
 	export type TimelineAlbumGranularity = "default" | "disabled" | "year" | "month" | "day";
 	export type TimelinePhotoGranularity = "default" | "disabled" | "year" | "month" | "day" | "hour";
