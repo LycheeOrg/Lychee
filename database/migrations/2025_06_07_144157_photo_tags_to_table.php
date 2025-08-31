@@ -55,6 +55,10 @@ return new class() extends Migration {
 						$seen = [];
 						foreach ($tags as $rawTag) {
 							$tag = ucwords(strtolower(trim($rawTag)));
+
+							// Germansspecific normalization
+							$tag = str_replace('ß', 'ss', $tag);
+
 							if ($tag === '' || isset($seen[$tag])) {
 								continue; // skip empty tokens or duplicates within the same photo
 							}
