@@ -55,12 +55,16 @@ return new class() extends Migration {
 						$seen = [];
 						foreach ($tags as $rawTag) {
 							$tag = ucwords(strtolower(trim($rawTag)));
+
+							// Germansspecific normalization
+							$tag = str_replace('ß', 'ss', $tag);
+
 							if ($tag === '' || isset($seen[$tag])) {
 								continue; // skip empty tokens or duplicates within the same photo
 							}
 							$seen[$tag] = true;
 							// Add the tag to the tags_to_create array if it doesn't exist
-							if (!isset($tags_to_create[$tag])) {
+							if (!array_key_exists($tag, $tags_to_create)) {
 								$tags_to_create[$tag] = [
 									'id' => ++$tag_idx,
 									'name' => $tag,
