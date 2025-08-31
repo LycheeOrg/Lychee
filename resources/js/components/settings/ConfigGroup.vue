@@ -124,9 +124,9 @@
 						@reset="reset"
 					/>
 					<SelectLang v-else-if="config.key === 'lang'" :config="config" @filled="filled" @reset="reset" />
-					<SelectField v-else-if="config.key === 'album_decoration'" :config @filled="filled" @reset="reset" />
-					<SelectField v-else-if="config.key === 'album_decoration_orientation'" :config @filled="filled" @reset="reset" />
-					<SelectField v-else-if="config.key === 'album_subtitle_type'" :config @filled="filled" @reset="reset" />
+					<SelectField v-else-if="config.key === 'album_decoration'" :config="config" @filled="filled" @reset="reset" />
+					<SelectField v-else-if="config.key === 'album_decoration_orientation'" :config="config" @filled="filled" @reset="reset" />
+					<SelectField v-else-if="config.key === 'album_subtitle_type'" :config="config" @filled="filled" @reset="reset" />
 					<StringField v-else-if="config.key === 'raw_formats'" :config="config" @filled="filled" @reset="reset" />
 					<StringField v-else-if="config.key === 'owner_id'" :config="config" @filled="filled" @reset="reset" />
 					<StringField v-else-if="config.key === 'local_takestamp_video_formats'" :config="config" @filled="filled" @reset="reset" />
