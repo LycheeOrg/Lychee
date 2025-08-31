@@ -16,13 +16,14 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Tests\Feature_v2\Image\Handlers;
+namespace Tests\Feature_v2\Image;
 
 use App\Image\Watermarker;
 use App\Models\AccessPermission;
 use App\Models\Configs;
 use Illuminate\Support\Facades\Auth;
 use Tests\Constants\TestConstants;
+use Tests\Feature_v2\Image\Handlers\BaseImageHandler;
 use Tests\Traits\InteractsWithRaw;
 use Tests\Traits\RequireSE;
 use Tests\Traits\RequiresImageHandler;

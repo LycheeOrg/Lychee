@@ -199,7 +199,7 @@ class SizeVariant extends Model
 		$file_deleter->do();
 	}
 
-	public function toResource(bool $no_url = false): SizeVariantResource
+	public function toDataResource(bool $no_url = false): SizeVariantResource
 	{
 		return new SizeVariantResource($this, no_url: $no_url);
 	}

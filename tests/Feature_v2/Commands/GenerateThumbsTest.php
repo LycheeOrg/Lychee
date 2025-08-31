@@ -25,7 +25,7 @@ use Tests\Constants\TestConstants;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 use Tests\Traits\CreatePhoto;
 
-class CommandGenerateThumbsTest extends BaseApiWithDataTest
+class GenerateThumbsTest extends BaseApiWithDataTest
 {
 	use CreatePhoto;
 

@@ -15,6 +15,7 @@ use function Safe\chmod;
 use Safe\Exceptions\FilesystemException;
 use function Safe\fileowner;
 use function Safe\fileperms;
+use function Safe\filetype;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
 
 class FixPermissions extends Command
