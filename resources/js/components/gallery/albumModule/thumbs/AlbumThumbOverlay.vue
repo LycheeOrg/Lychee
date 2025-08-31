@@ -37,7 +37,7 @@ import { trans } from "laravel-vue-i18n";
 const { isLTR } = useLtRorRtL();
 
 const subtitle = computed(() => {
-	switch(props.config.album_subtitle_type) {
+	switch (props.config.album_subtitle_type) {
 		case "description":
 			return props.album.description;
 		case "takedate":
