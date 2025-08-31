@@ -11,8 +11,11 @@ namespace App\Assets;
 use App\Exceptions\Internal\ZeroModuloException;
 use Exception;
 use Illuminate\Http\Request;
+use Safe\Exceptions\FilesystemException;
 use Safe\Exceptions\InfoException;
 use function Safe\ini_get;
+use function Safe\rmdir;
+use function Safe\unlink;
 
 class Helpers
 {
@@ -262,5 +265,32 @@ class Helpers
 		}
 
 		return $request->path() . '?' . http_build_query($query);
+	}
+
+	/**
+	 * Actually remove the directory recursively.
+	 *
+	 * @param string $dir
+	 *
+	 * @return void
+	 *
+	 * @throws FilesystemException
+	 */
+	public function remove_dir(string $dir): void
+	{
+		$it = new \RecursiveDirectoryIterator($dir, \RecursiveDirectoryIterator::SKIP_DOTS);
+		$files = new \RecursiveIteratorIterator($it, \RecursiveIteratorIterator::CHILD_FIRST);
+		foreach ($files as $file) {
+			/** @var \SplFileInfo $file */
+			if ($file->isLink() || $file->isFile()) {
+				// Remove files and symlinks without following them
+				unlink($file->getPathname());
+				continue;
+			}
+			if ($file->isDir()) {
+				rmdir($file->getPathname());
+			}
+		}
+		rmdir($dir);
 	}
 }

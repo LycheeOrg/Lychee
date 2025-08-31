@@ -8,11 +8,11 @@
 
 namespace App\Http\Controllers\Admin\Maintenance;
 
+use App\Facades\Helpers;
 use App\Http\Requests\Maintenance\CleaningRequest;
 use App\Http\Resources\Diagnostics\CleaningState;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Log;
-use function Safe\rmdir;
 use function Safe\unlink;
 
 /**
@@ -46,7 +46,7 @@ class Cleaning extends Controller
 			$results[] = sprintf(__('maintenance.cleaning.result'), $file_info->getFilename());
 
 			if ($file_info->isDir()) {
-				rmdir($file_info->getRealPath());
+				Helpers::remove_dir($file_info->getRealPath());
 				continue;
 			}
 			unlink($file_info->getRealPath());

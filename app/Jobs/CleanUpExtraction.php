@@ -9,6 +9,7 @@
 namespace App\Jobs;
 
 use App\Enum\JobStatus;
+use App\Facades\Helpers;
 use App\Models\JobHistory;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -16,9 +17,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Str;
-use Safe\Exceptions\FilesystemException;
-use function Safe\rmdir;
-use function Safe\unlink;
 
 class CleanUpExtraction implements ShouldQueue
 {
@@ -57,7 +55,7 @@ class CleanUpExtraction implements ShouldQueue
 		// Check if all the sub directories are empty.
 		if ($this->is_empty($this->folder_path)) {
 			// Only clear the directory if it is empty.
-			$this->remove_dir($this->folder_path);
+			Helpers::remove_dir($this->folder_path);
 			$this->history->status = JobStatus::SUCCESS;
 			$this->history->save();
 
@@ -81,28 +79,5 @@ class CleanUpExtraction implements ShouldQueue
 		}
 
 		return true;
-	}
-
-	/**
-	 * Actually remove the directory recursively.
-	 *
-	 * @param string $dir
-	 *
-	 * @return void
-	 *
-	 * @throws FilesystemException
-	 */
-	private function remove_dir(string $dir): void
-	{
-		$it = new \RecursiveDirectoryIterator($dir, \RecursiveDirectoryIterator::SKIP_DOTS);
-		$files = new \RecursiveIteratorIterator($it, \RecursiveIteratorIterator::CHILD_FIRST);
-		foreach ($files as $file) {
-			if ($file->isDir()) {
-				rmdir($file->getPathname());
-			} else {
-				unlink($file->getPathname());
-			}
-		}
-		rmdir($dir);
 	}
 }
