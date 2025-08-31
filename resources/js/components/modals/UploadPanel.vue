@@ -118,7 +118,7 @@ const counts = computed(() => {
 	return {
 		files: list_upload_files.value.length,
 		waiting: list_upload_files.value.filter((f) => f.status === "waiting").length,
-		completed: list_upload_files.value.filter((f) => f.status === "done").length,
+		completed: list_upload_files.value.filter((f) => f.status === "done" || f.status === "error" || f.status === "warning").length,
 		uploading: list_upload_files.value.filter((f) => f.status === "uploading").length,
 	};
 });
@@ -164,7 +164,7 @@ function uploadNext(searchIndex = 0, max_processing_limit: number | undefined = 
 	return isUploading;
 }
 
-function uploadCompleted(index: number, status: "done" | "error") {
+function uploadCompleted(index: number, status: "done" | "error" | "warning") {
 	list_upload_files.value[index].status = status;
 
 	const isUploading = uploadNext(index, 1);

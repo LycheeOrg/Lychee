@@ -3,7 +3,7 @@ import { type Ref } from "vue";
 
 export type Uploadable = {
 	file: File;
-	status: "uploading" | "waiting" | "done" | "error";
+	status: "uploading" | "waiting" | "done" | "error" | "warning";
 };
 
 export function useMouseEvents(
