@@ -59,7 +59,7 @@ class UpdateRenamerRuleRequest extends BaseApiRequest implements HasDescription
 			RequestAttribute::RULE_ATTRIBUTE => ['required', new StringRule(false, 100)],
 			RequestAttribute::DESCRIPTION_ATTRIBUTE => ['present', 'nullable', new DescriptionRule()],
 			RequestAttribute::NEEDLE_ATTRIBUTE => ['present', new StringRule(false, 255)],
-			RequestAttribute::REPLACEMENT_ATTRIBUTE => ['present', new StringRule(false, 255)],
+			RequestAttribute::REPLACEMENT_ATTRIBUTE => ['present', new StringRule(true, 255)],
 			RequestAttribute::MODE_ATTRIBUTE => ['required', new Enum(RenamerModeType::class)],
 			RequestAttribute::ORDER_ATTRIBUTE => ['required', 'integer', 'min:1'],
 			RequestAttribute::IS_ENABLED_ATTRIBUTE => ['required', 'boolean'],
