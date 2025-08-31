@@ -32,20 +32,39 @@
 import { computed } from "vue";
 import { AlbumThumbConfig } from "./AlbumThumb.vue";
 import { useLtRorRtL } from "@/utils/Helpers";
+import { trans } from "laravel-vue-i18n";
 
 const { isLTR } = useLtRorRtL();
 
 const subtitle = computed(() => {
-	if (props.config.album_subtitle_type === "description") {
-		return props.album.description;
-	} else if (props.config.album_subtitle_type === "takedate") {
-		return props.album.formatted_min_max ?? props.album.created_at;
-	} else if (props.config.album_subtitle_type === "creation") {
-		return props.album.created_at;
-	} else if (props.config.album_subtitle_type === "oldstyle") {
-		return props.album.formatted_min_max ?? props.album.created_at;
+	switch(props.config.album_subtitle_type) {
+		case "description":
+			return props.album.description;
+		case "takedate":
+			return props.album.formatted_min_max ?? props.album.created_at;
+		case "creation":
+			return props.album.created_at;
+		case "oldstyle":
+			return props.album.formatted_min_max ?? props.album.created_at;
+		case "num_photos":
+			return `${props.album.num_photos} ${trans("gallery.album.hero.images")}`;
+		case "num_albums":
+			return `${props.album.num_subalbums} ${trans("gallery.album.hero.subalbums")}`;
+		case "num_photos_albums":
+			const photos = `${props.album.num_photos} ${trans("gallery.album.hero.images")}`;
+			const albums = `${props.album.num_subalbums} ${trans("gallery.album.hero.subalbums")}`;
+			if (props.album.num_photos > 0 && props.album.num_subalbums > 0) {
+				return `${photos}, ${albums}`;
+			} else if (props.album.num_photos > 0) {
+				return photos;
+			} else if (props.album.num_subalbums > 0) {
+				return albums;
+			} else {
+				return "";
+			}
+		default:
+			return "";
 	}
-	return "";
 });
 
 const props = defineProps<{

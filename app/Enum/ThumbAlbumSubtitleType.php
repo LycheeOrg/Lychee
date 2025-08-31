@@ -19,4 +19,7 @@ enum ThumbAlbumSubtitleType: string
 	case TAKEDATE = 'takedate';
 	case CREATION = 'creation';
 	case OLDSTYLE = 'oldstyle';
+	case NUM_PHOTOS = 'num_photos';
+	case NUM_ALBUMS = 'num_albums';
+	case NUM_PHOTOS_ALBUMS = 'num_photos_albums';
 }
