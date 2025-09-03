@@ -5,7 +5,7 @@ return [
 	| Jobs page
 	|--------------------------------------------------------------------------
 	*/
-    'title' => 'Gallery',
+    'title' => 'Galerie',
     'smart_albums' => 'Smart albums',
     'pinned_albums' => 'Připnutá alba',
     'albums' => 'Albums',
@@ -207,7 +207,7 @@ return [
         'merge_all' => 'Merge Selected',
         'upload_photo' => 'Upload Photo',
         'import_link' => 'Import from Link',
-		'import_server' => 'Import from Server',
+        'import_server' => 'Import from Server',
         'import_dropbox' => 'Import from Dropbox',
         'new_album' => 'New Album',
         'new_tag_album' => 'New Tag Album',
