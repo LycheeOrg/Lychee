@@ -9,6 +9,7 @@
 namespace App\Console\Commands\ImageProcessing;
 
 use App\Assets\Features;
+use App\Enum\SizeVariantType;
 use App\Enum\StorageDiskType;
 use App\Exceptions\UnexpectedException;
 use App\Jobs\UploadSizeVariantToS3Job;
@@ -56,7 +57,7 @@ class MoveToS3 extends Command
 			}
 
 			$sive_variants = SizeVariant::query()
-				->whereNot('short_path', 'LIKE', '%placeholder/%')
+				->whereNot('type', '=', SizeVariantType::PLACEHOLDER->value)
 				->where('storage_disk', '=', StorageDiskType::LOCAL->value)
 				->limit($limit)
 				->get();
