@@ -121,4 +121,17 @@ class RequestAttribute
 	public const MODE_ATTRIBUTE = 'mode';
 	public const ORDER_ATTRIBUTE = 'order';
 	public const IS_ENABLED_ATTRIBUTE = 'is_enabled';
+
+	/**
+	 * Shop management attributes.
+	 */
+	public const BASKET_ID = 'basket_id';
+	public const PRICES_ATTRIBUTE = 'prices';
+	public const SIZE_VARIANT_TYPE_ATTRIBUTE = 'size_variant_type';
+	public const LICENSE_TYPE_ATTRIBUTE = 'license_type';
+	public const IS_ACTIVE_ATTRIBUTE = 'is_active';
+	public const APPLIES_TO_SUBALBUMS_ATTRIBUTE = 'applies_to_subalbums';
+	public const PURCHASABLE_ID_ATTRIBUTE = 'purchasable_id';
+	public const PURCHASABLE_IDS_ATTRIBUTE = 'purchasable_ids';
+	public const OMNIPAY_PROVIDER_ATTRIBUTE = 'provider';
 }

@@ -219,6 +219,16 @@ class Photo extends Model implements HasUTCBasedTimes
 	}
 
 	/**
+	 * Get the purchasable settings for this photo.
+	 *
+	 * @return \Illuminate\Database\Eloquent\Relations\HasOne
+	 */
+	public function purchasable()
+	{
+		return $this->hasOne(Purchasable::class);
+	}
+
+	/**
 	 * Returns the relationship between a photo and its associated color palette.
 	 *
 	 * This is a one-to-one relationship where each photo can have one palette

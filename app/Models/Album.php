@@ -29,6 +29,7 @@ use App\Relations\HasManyChildPhotos;
 use App\Relations\HasManyPhotosRecursively;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Http\UploadedFile;
@@ -478,5 +479,35 @@ class Album extends BaseAlbum implements Node
 	public function getEffectiveAlbumSorting(): AlbumSortingCriterion
 	{
 		return $this->getAlbumSortingAttribute() ?? AlbumSortingCriterion::createDefault();
+	}
+
+	/**
+	 * Get the purchasable settings for this album.
+	 *
+	 * @return \Illuminate\Database\Eloquent\Relations\HasOne<Purchasable,$this>
+	 */
+	public function purchasable()
+	{
+		return $this->hasOne(Purchasable::class)->whereNull('photo_id');
+	}
+
+	/**
+	 * Check if an album is purchasable (as a collection).
+	 *
+	 * @return bool Whether the album is actively purchasable
+	 */
+	public function isPurchasable(): bool
+	{
+		return $this->purchasable?->is_active === true;
+	}
+
+	/**
+	 * Get all active purchasable prices for this album (as a collection).
+	 *
+	 * @return HasManyThrough<PurchasablePrice,Purchasable,$this>
+	 */
+	public function prices()
+	{
+		return $this->hasManyThrough(PurchasablePrice::class, Purchasable::class)->where('is_active', true)->whereNull('photo_id');
 	}
 }

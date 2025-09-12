@@ -33,7 +33,6 @@ class PreComputedPhotoData extends Data
 		$this->has_location = $this->has_location($photo);
 		// if taken_at is null, it is for sure not modified.
 		// if taken_at is not null, then it is modified if initial_taken_at is null or if taken_at is different from initial_taken_at.
-		// dd($photo->taken_at, $photo->initial_taken_at, $photo->taken_at->notEqualTo($photo->initial_taken_at));
 		$this->is_taken_at_modified = $photo->taken_at !== null && ($photo->initial_taken_at === null || $photo->taken_at->notEqualTo($photo->initial_taken_at));
 	}
 
