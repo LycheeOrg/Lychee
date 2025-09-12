@@ -28,7 +28,7 @@ class UploadSizeVariantsToS3 implements PhotoPipe
 			// @codeCoverageIgnoreStart
 			$state->getPhoto()->size_variants->toCollection()
 				->filter(fn ($v) => $v !== null && $v->type !== SizeVariantType::PLACEHOLDER)
-				->map(fn (SizeVariant $variant) => new UploadSizeVariantToS3Job($variant))
+				->map(fn (SizeVariant $variant) => new UploadSizeVariantToS3Job($variant, $state->getPhoto()->owner_id))
 				->each(fn ($job) => dispatch($job));
 			// @codeCoverageIgnoreEnd
 		}
