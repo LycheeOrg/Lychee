@@ -133,5 +133,4 @@ class RequestAttribute
 	public const APPLIES_TO_SUBALBUMS_ATTRIBUTE = 'applies_to_subalbums';
 	public const PURCHASABLE_ID_ATTRIBUTE = 'purchasable_id';
 	public const PURCHASABLE_IDS_ATTRIBUTE = 'purchasable_ids';
-	public const OMNIPAY_PROVIDER_ATTRIBUTE = 'provider';
 }

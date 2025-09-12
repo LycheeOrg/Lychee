@@ -170,7 +170,7 @@ class CheckoutService
 			if ($response->isSuccessful()) {
 				return $this->completePayment($order, $response);
 			} else {
-				Log::warn('Payment was not successful for order ' . $order->transaction_id);
+				Log::warning('Payment was not successful for order ' . $order->transaction_id);
 			}
 		} catch (\Exception $e) {
 			Log::error('Error handling payment return: ' . $e->getMessage(), [

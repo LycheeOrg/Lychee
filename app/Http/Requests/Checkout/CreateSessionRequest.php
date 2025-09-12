@@ -35,7 +35,7 @@ class CreateSessionRequest extends BaseApiRequest implements HasBasket
 	public function rules(): array
 	{
 		return [
-			RequestAttribute::OMNIPAY_PROVIDER_ATTRIBUTE => ['sometimes', new Enum(OmnipayProviderType::class)],
+			RequestAttribute::PROVIDER_ATTRIBUTE => ['sometimes', new Enum(OmnipayProviderType::class)],
 			RequestAttribute::EMAIL_ATTRIBUTE => ['sometimes', 'email'],
 		];
 	}
@@ -44,6 +44,6 @@ class CreateSessionRequest extends BaseApiRequest implements HasBasket
 	{
 		$this->prepareBasket();
 		$this->email = $values[RequestAttribute::EMAIL_ATTRIBUTE] ?? null;
-		$this->provider = isset($values[RequestAttribute::OMNIPAY_PROVIDER_ATTRIBUTE]) ? OmnipayProviderType::from($values[RequestAttribute::OMNIPAY_PROVIDER_ATTRIBUTE]) : null;
+		$this->provider = isset($values[RequestAttribute::PROVIDER_ATTRIBUTE]) ? OmnipayProviderType::from($values[RequestAttribute::PROVIDER_ATTRIBUTE]) : null;
 	}
 }
