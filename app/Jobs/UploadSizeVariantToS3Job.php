@@ -19,7 +19,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -36,8 +35,7 @@ class UploadSizeVariantToS3Job implements ShouldQueue
 	public function __construct(
 		protected SizeVariant $variant,
 		int $owner_id,
-	)
-	{
+	) {
 		$this->variant = $variant;
 
 		// Set up our new history record.
