@@ -33,7 +33,7 @@ The `orders` table represents a complete purchase transaction:
 - `email`: Customer email
 - `status`: Order status (PaymentStatusType enum: PENDING, COMPLETED, etc.)
 - `amount_cents`: Total order amount in smallest currency unit
-- `payed_at`: Payment timestamp (nullable)
+- `paid_at`: Payment timestamp (nullable)
 - `comment`: Order notes (nullable)
 
 ### Order Item
@@ -94,7 +94,7 @@ Key attributes:
 - `status`: PaymentStatusType enum (PENDING, COMPLETED, etc.)
 - `provider`: OmnipayProviderType enum
 - `amount_cents`: Money object (using MoneyCast)
-- `payed_at`: DateTime (nullable)
+- `paid_at`: DateTime (nullable)
 
 ### OrderItem
 The `OrderItem` model represents an individual item within an order.

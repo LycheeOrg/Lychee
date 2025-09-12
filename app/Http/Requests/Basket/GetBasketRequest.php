@@ -36,14 +36,14 @@ class GetBasketRequest extends BaseApiRequest implements HasBasket
 	public function rules(): array
 	{
 		return [
-			RequestAttribute::BASKET_ID => ['nullable', 'integer'],
+			RequestAttribute::BASKET_ID_ATTRIBUTE => ['nullable', 'integer'],
 		];
 	}
 
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		// If there is a basket_id in the session, use it.
-		$basket_id = $values[RequestAttribute::BASKET_ID] ?? Session::get(RequestAttribute::BASKET_ID);
+		$basket_id = Session::get(RequestAttribute::BASKET_ID_ATTRIBUTE, $values[RequestAttribute::BASKET_ID_ATTRIBUTE] ?? null);
 		if ($basket_id !== null) {
 			$this->order = Order::find($basket_id);
 		}

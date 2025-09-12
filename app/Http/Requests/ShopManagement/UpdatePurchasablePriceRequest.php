@@ -25,7 +25,7 @@ class UpdatePurchasablePriceRequest extends BaseApiRequest implements HasDescrip
 {
 	use HasDescriptionTrait;
 
-	public string $notes;
+	public ?string $notes;
 	/** @var PurchasableOptionCreate[] */
 	public array $prices;
 	public Purchasable $purchasable;

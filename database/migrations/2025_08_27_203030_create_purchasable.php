@@ -30,7 +30,6 @@ return new class() extends Migration {
 			$table->text('description')->nullable(true)->comment('Public description shown to customers');
 			$table->text('owner_notes')->nullable(true)->comment('Private notes for the owner');
 			$table->boolean('is_active')->nullable(false)->default(true);
-			$table->timestamps();
 
 			// Create a unique constraint to prevent duplicates
 			$table->unique([self::ALBUM_ID, self::PHOTO_ID], 'unique_purchasable');
@@ -47,7 +46,6 @@ return new class() extends Migration {
 			$table->string('size_variant', 50)->comment('MEDIUM, FULL, ORIGINAL');
 			$table->string('license_type', 50)->comment('PERSONAL, COMMERCIAL, EXTENDED');
 			$table->integer('price_cents')->nullable(false)->comment('Price in cents');
-			$table->timestamps();
 
 			// Ensure we can't have duplicate price entries
 			$table->unique(['purchasable_id', 'size_variant', 'license_type'], 'unique_pricing');

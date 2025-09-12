@@ -17,7 +17,7 @@ use App\Http\Resources\Shop\PurchasableResource;
 use Illuminate\Routing\Controller;
 
 /**
- * Controller responsible for setting albums/photos are pruchasable or not.
+ * Controller responsible for setting albums/photos as pruchasable or not.
  */
 class ShopManagementController extends Controller
 {
@@ -25,13 +25,6 @@ class ShopManagementController extends Controller
 	{
 	}
 
-	/**
-	 * Set photos as purchasable.
-	 *
-	 * @param PurchasablePhotoRequest $request
-	 *
-	 * @return PurchasableResource[]
-	 */
 	/**
 	 * Set photos as purchasable.
 	 *
@@ -92,9 +85,16 @@ class ShopManagementController extends Controller
 		);
 
 		// If there's a description or notes update, we need to update those too
-		if ($request->description() !== null || $request->notes !== null) {
-			$purchasable->description = $request->description() ?? $purchasable->description;
-			$purchasable->owner_notes = $request->notes ?? $purchasable->owner_notes;
+		$updated = false;
+		if ($request->description() !== null) {
+			$purchasable->description = $request->description();
+			$updated = true;
+		}
+		if ($request->notes !== null) {
+			$purchasable->owner_notes = $request->notes;
+			$updated = true;
+		}
+		if ($updated) {
 			$purchasable->save();
 		}
 

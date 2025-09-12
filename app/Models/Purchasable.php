@@ -21,8 +21,8 @@ use Money\Money;
  * Class Purchasable.
  *
  * @property int                              $id
- * @property string                           $photo_id
- * @property string                           $album_id
+ * @property string|null                      $photo_id
+ * @property string|null                      $album_id
  * @property string                           $description
  * @property string                           $owner_notes
  * @property bool                             $is_active

@@ -29,7 +29,7 @@ class PurchasableAlbumRequest extends BaseApiRequest implements HasAlbums, HasDe
 	use HasAlbumsTrait;
 	use HasDescriptionTrait;
 
-	public string $notes;
+	public ?string $notes;
 	/** @var PurchasableOptionCreate[] */
 	public array $prices;
 	public bool $applies_to_subalbums;

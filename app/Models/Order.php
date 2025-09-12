@@ -32,7 +32,7 @@ use Money\Money;
  * @property Money                     $amount_cents
  * @property Carbon|null               $created_at
  * @property Carbon|null               $updated_at
- * @property Carbon|null               $payed_at
+ * @property Carbon|null               $paid_at
  * @property string|null               $comment
  * @property User|null                 $user
  * @property Collection<int,OrderItem> $items
@@ -51,7 +51,7 @@ class Order extends Model
 		'email',
 		'status',
 		'amount_cents',
-		'payed_at',
+		'paid_at',
 		'comment',
 	];
 
@@ -60,7 +60,7 @@ class Order extends Model
 	 */
 	protected $casts = [
 		'amount_cents' => MoneyCast::class,
-		'payed_at' => 'datetime',
+		'paid_at' => 'datetime',
 		'updated_at' => 'datetime',
 		'created_at' => 'datetime',
 		'status' => PaymentStatusType::class,
@@ -126,7 +126,7 @@ class Order extends Model
 	{
 		$this->transaction_id = $transaction_id;
 		$this->status = PaymentStatusType::COMPLETED;
-		$this->payed_at = now();
+		$this->paid_at = now();
 		$this->save();
 
 		return $this;
@@ -149,9 +149,9 @@ class Order extends Model
 	 *
 	 * @param User $user The user to get orders for
 	 *
-	 * @return \Illuminate\Support\Collection Collection of orders
+	 * @return Collection Collection of orders
 	 */
-	public static function getOrdersForUser(User $user)
+	public static function getOrdersForUser(User $user): Collection
 	{
 		return self::where('user_id', $user->id)
 			->orderBy('created_at', 'desc')
@@ -163,9 +163,9 @@ class Order extends Model
 	 *
 	 * @param string $email The email to search for
 	 *
-	 * @return \Illuminate\Support\Collection Collection of orders
+	 * @return Collection Collection of orders
 	 */
-	public static function getOrdersByEmail(string $email)
+	public static function getOrdersByEmail(string $email): Collection
 	{
 		return self::where('email', $email)
 			->orderBy('created_at', 'desc')

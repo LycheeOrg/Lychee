@@ -17,6 +17,7 @@ use App\Models\Album;
 use App\Models\Order;
 use App\Models\Photo;
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
 
 /**
  * The difference between a basket and an order is that a basket is still pending
@@ -144,6 +145,11 @@ class BasketService
 				// @codeCoverageIgnoreStart
 			} catch (\Exception $e) {
 				// Continue with other photos even if one fails
+				Log::warning('Failed to add photo to basket', [
+					'photo_id' => $photo->id,
+					'album_id' => $album->id,
+					'error' => $e->getMessage(),
+				]);
 				continue;
 			}
 			// @codeCoverageIgnoreEnd
@@ -192,29 +198,30 @@ class BasketService
 
 		try {
 			// Delete all items first
-			$deleted_items = $basket->items()->delete();
-			if ($deleted_items === false) {
-				// @codeCoverageIgnoreStart
-				throw new BasketDeletionFailedException($basket->id, 'Failed to delete basket items');
-				// @codeCoverageIgnoreEnd
-			}
-
-			// Then delete the basket
-			$deleted_basket = $basket->delete();
-			if ($deleted_basket === false) {
-				// @codeCoverageIgnoreStart
-				throw new BasketDeletionFailedException($basket->id, 'Failed to delete basket record');
-				// @codeCoverageIgnoreEnd
-			}
-
-			return true;
+			$basket->items()->delete();
 			// @codeCoverageIgnoreStart
 		} catch (\Exception $e) {
-			if ($e instanceof BasketDeletionFailedException) {
-				throw $e;
-			}
-			throw new BasketDeletionFailedException($basket->id, $e->getMessage());
+			Log::error('Failed to delete basket items', [
+				'basket_id' => $basket->id,
+				'exception' => $e,
+			]);
+			throw new BasketDeletionFailedException($basket->id, 'Failed to delete basket items');
 		}
 		// @codeCoverageIgnoreEnd
+
+		try {
+			// Then delete the basket
+			$basket->delete();
+			// @codeCoverageIgnoreStart
+		} catch (\Exception $e) {
+			Log::error('Failed to delete basket items', [
+				'basket_id' => $basket->id,
+				'exception' => $e,
+			]);
+			throw new BasketDeletionFailedException($basket->id, 'Failed to delete basket record');
+		}
+		// @codeCoverageIgnoreEnd
+
+		return true;
 	}
 }

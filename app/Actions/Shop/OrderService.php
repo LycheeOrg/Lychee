@@ -11,6 +11,8 @@ namespace App\Actions\Shop;
 use App\Enum\PaymentStatusType;
 use App\Enum\PurchasableLicenseType;
 use App\Enum\PurchasableSizeVariantType;
+use App\Exceptions\Shop\InvalidPurchaseOptionException;
+use App\Exceptions\Shop\PhotoNotPurchasableException;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Photo;
@@ -71,13 +73,13 @@ class OrderService
 		$purchasable = $this->purchasable_service->getEffectivePurchasableForPhoto($photo, $album_id);
 
 		if ($purchasable === null) {
-			throw new \Exception('Photo is not available for purchase');
+			throw new PhotoNotPurchasableException();
 		}
 
 		$price = $purchasable->getPriceFor($size_variant, $license_type);
 
 		if ($price === null) {
-			throw new \Exception('Selected size and license combination is not available for purchase');
+			throw new InvalidPurchaseOptionException();
 		}
 
 		// Create the order item

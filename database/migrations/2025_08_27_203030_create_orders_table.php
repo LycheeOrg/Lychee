@@ -28,7 +28,7 @@ return new class() extends Migration {
 			$table->integer('amount_cents')->nullable(false)->default(0)->comment('Total amount in cents');
 			$table->dateTime('created_at', 6)->nullable(false);
 			$table->dateTime('updated_at', 6)->nullable(true);
-			$table->dateTime('payed_at', 6)->nullable(true);
+			$table->dateTime('paid_at', 6)->nullable(true);
 			$table->text('comment')->nullable(true);
 
 			// Foreign key constraint

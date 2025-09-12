@@ -33,7 +33,7 @@ class PurchasablePhotoRequest extends BaseApiRequest implements HasPhotos, HasAl
 	use HasAlbumTrait;
 	use HasDescriptionTrait;
 
-	public string $notes;
+	public ?string $notes;
 	/** @var PurchasableOptionCreate[] */
 	public array $prices;
 

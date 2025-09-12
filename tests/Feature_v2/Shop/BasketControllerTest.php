@@ -88,7 +88,7 @@ class BasketControllerTest extends BaseApiWithDataTest
 			'email',
 			'status',
 			'amount',
-			'payed_at',
+			'paid_at',
 			'created_at',
 			'comment',
 			'items',

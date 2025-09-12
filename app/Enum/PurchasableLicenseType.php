@@ -11,9 +11,9 @@ namespace App\Enum;
 use App\Enum\Traits\DecorateBackedEnum;
 
 /**
- * Enum SizeVariantType.
+ * Enum PurchasableLicenseType.
  *
- * Types of size variants available for purchase.
+ * License types available for purchase.
  */
 enum PurchasableLicenseType: string
 {

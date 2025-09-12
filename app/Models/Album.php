@@ -506,8 +506,10 @@ class Album extends BaseAlbum implements Node
 	 *
 	 * @return HasManyThrough<PurchasablePrice,Purchasable,$this>
 	 */
-	public function prices()
+	public function prices(): HasManyThrough
 	{
-		return $this->hasManyThrough(PurchasablePrice::class, Purchasable::class)->where('is_active', true)->whereNull('photo_id');
+		return $this->hasManyThrough(PurchasablePrice::class, Purchasable::class)
+			->where('purchasables.is_active', true)
+			->whereNull('purchasables.photo_id');
 	}
 }

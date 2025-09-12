@@ -14,7 +14,7 @@ final readonly class CheckoutDTO
 		public bool $is_success,
 		public bool $is_redirect = false, // Whether a redirect is needed
 		public ?string $redirect_url = null, // URL to redirect to if successful
-		public ?string $message = null, // Error message if not successful
+		public string $message = '', // Error message if not successful
 	) {
 	}
 }

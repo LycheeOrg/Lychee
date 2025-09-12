@@ -15,7 +15,7 @@ use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasAlbumTrait;
 use App\Models\Album;
 use App\Policies\AlbumPolicy;
-use App\Rules\AlbumIDRule;
+use App\Rules\RandomIDRule;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Gate;
 
@@ -39,7 +39,7 @@ class GetCatalogRequest extends BaseApiRequest implements HasAlbum
 	public function rules(): array
 	{
 		return [
-			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['required', new AlbumIDRule(false)],
+			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
 		];
 	}
 

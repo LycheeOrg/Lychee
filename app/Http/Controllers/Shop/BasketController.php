@@ -115,7 +115,7 @@ class BasketController extends Controller
 		$this->basket_service->deleteBasket($basket);
 
 		// Remove basket ID from session
-		Session::forget(RequestAttribute::BASKET_ID);
+		Session::forget(RequestAttribute::BASKET_ID_ATTRIBUTE);
 	}
 
 	/**
@@ -127,10 +127,10 @@ class BasketController extends Controller
 	 */
 	public function get(GetBasketRequest $request): OrderResource
 	{
-		/** @var User $user */
+		/** @var User|null $user */
 		$user = Auth::user();
 		$basket = $this->basket_service->getOrCreateBasket($request->basket(), $user);
-		Session::put(RequestAttribute::BASKET_ID, $basket->id);
+		Session::put(RequestAttribute::BASKET_ID_ATTRIBUTE, $basket->id);
 
 		return OrderResource::fromModel($basket);
 	}

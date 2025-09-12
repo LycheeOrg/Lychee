@@ -34,7 +34,7 @@ trait HasBasketTrait
 	protected function prepareBasket(): void
 	{
 		// If there is a basket_id in the session, use it.
-		$basket_id = Session::get(RequestAttribute::BASKET_ID);
+		$basket_id = Session::get(RequestAttribute::BASKET_ID_ATTRIBUTE);
 		if ($basket_id !== null) {
 			$this->order = Order::find($basket_id);
 		}

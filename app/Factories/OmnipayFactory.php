@@ -45,7 +45,7 @@ class OmnipayFactory
 	private function initialize_gateway(GatewayInterface $gateway, OmnipayProviderType $provider): GatewayInterface
 	{
 		$param = config('omnipay.' . $provider->value);
-		if ($param === null) {
+		if (!is_array($param) || count($param) === 0) {
 			throw new LycheeLogicException('No configuration found for provider ' . $provider->value);
 		}
 

@@ -39,8 +39,8 @@ class PurchasableService
 		}
 
 		return Purchasable::query()
-			->whereNull('purchasables.photo_id')
 			->where('album_id', $album_id)
+			->where('is_active', true)
 			->whereNull('photo_id')
 			->first();
 	}
@@ -123,23 +123,25 @@ class PurchasableService
 		?string $description = null,
 		?string $owner_notes = null,
 	): Purchasable {
-		// Remove any existing purchasable for this photo to avoid duplicates
-		DB::table('purchasable_prices')->where('purchasable_id', function ($query) use ($photo): void {
-			$query->select('id')->from('purchasables')->where('photo_id', $photo->id);
-		})->delete();
-		DB::table('purchasables')->where('photo_id', $photo->id)->delete();
+		return DB::transaction(function () use ($photo, $album_id, $prices, $description, $owner_notes): Purchasable {
+			// Remove any existing purchasable for this photo to avoid duplicates
+			DB::table('purchasable_prices')->where('purchasable_id', function ($query) use ($photo): void {
+				$query->select('id')->from('purchasables')->where('photo_id', $photo->id);
+			})->delete();
+			DB::table('purchasables')->where('photo_id', $photo->id)->delete();
 
-		$purchasable = Purchasable::create([
-			'photo_id' => $photo->id,
-			'album_id' => $album_id,
-			'description' => $description,
-			'owner_notes' => $owner_notes,
-			'is_active' => true,
-		]);
+			$purchasable = Purchasable::create([
+				'photo_id' => $photo->id,
+				'album_id' => $album_id,
+				'description' => $description,
+				'owner_notes' => $owner_notes,
+				'is_active' => true,
+			]);
 
-		$this->updatePrices($purchasable, $prices);
+			$this->updatePrices($purchasable, $prices);
 
-		return $purchasable;
+			return $purchasable;
+		});
 	}
 
 	/**

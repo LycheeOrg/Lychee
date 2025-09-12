@@ -36,7 +36,7 @@ class MoneyCast implements CastsAttributes
 	 */
 	public function __construct(?string $currency_code = null)
 	{
-		$this->money_service = new MoneyService();
+		$this->money_service = resolve(MoneyService::class);
 		$this->currency_code = $currency_code ?? $this->money_service->getDefaultCurrencyCode();
 	}
 

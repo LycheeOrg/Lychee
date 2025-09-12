@@ -31,7 +31,7 @@ class OrderResource extends Data
 		public PaymentStatusType $status,
 		public string $amount,
 		// public string $currency,
-		public ?string $payed_at,
+		public ?string $paid_at,
 		public ?string $created_at,
 		public ?string $comment,
 		#[LiteralTypeScriptType('App.Http.Resources.Shop.OrderItemResource[]|null')]
@@ -53,7 +53,7 @@ class OrderResource extends Data
 			email: $order->email,
 			status: $order->status,
 			amount: $money_service->format($order->amount_cents),
-			payed_at: $order->payed_at?->toIso8601String(),
+			paid_at: $order->paid_at?->toIso8601String(),
 			created_at: $order->created_at?->toIso8601String(),
 			comment: $order->comment,
 			items: $order->items === null ? null : OrderItemResource::collect($order->items),

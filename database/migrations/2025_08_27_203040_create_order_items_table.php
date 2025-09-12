@@ -32,7 +32,6 @@ return new class() extends Migration {
 			$table->integer('price_cents')->nullable(false)->comment('Price in cents');
 			$table->string('size_variant_type', 50)->nullable(true)->comment('Only applicable for photos, not albums');
 			$table->text('item_notes')->nullable(true);
-			$table->timestamps();
 
 			// Foreign keys (with set null to maintain order history if photos/albums are deleted)
 			$table->foreign(self::ALBUM_ID)->references('id')->on('albums')->onDelete('set null');

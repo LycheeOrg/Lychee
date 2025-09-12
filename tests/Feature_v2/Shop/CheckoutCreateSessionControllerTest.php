@@ -54,7 +54,7 @@ class CheckoutCreateSessionControllerTest extends BaseCheckoutControllerTest
 			'email',
 			'status',
 			'amount',
-			'payed_at',
+			'paid_at',
 			'created_at',
 			'comment',
 			'items',

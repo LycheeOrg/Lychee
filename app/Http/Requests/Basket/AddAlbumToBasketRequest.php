@@ -91,6 +91,6 @@ class AddAlbumToBasketRequest extends BaseBasketRequest
 		$this->license_type = PurchasableLicenseType::from($values['license_type']);
 		$this->email = $values['email'] ?? null;
 		$this->notes = $values['notes'] ?? null;
-		$this->include_subalbums = self::toBoolean($values['include_subalbums']);
+		$this->include_subalbums = self::toBoolean($values['include_subalbums'] ?? false);
 	}
 }

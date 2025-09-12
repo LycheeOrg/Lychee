@@ -40,7 +40,7 @@ class CheckoutService
 	/**
 	 * Process an order payment.
 	 *
-	 * @param Order  $order           The order to process
+	 * @param Order  $order           The order to processed
 	 * @param string $return_url      The URL to return to after successful payment
 	 * @param string $cancel_url      The URL to return to after canceled payment
 	 * @param array  $additional_data Additional data for the payment gateway
@@ -151,6 +151,7 @@ class CheckoutService
 	/**
 	 * Handle the return from the payment gateway.
 	 *
+	 * @param Order               $order        The order being processed
 	 * @param array               $request_data The request data from the payment gateway
 	 * @param OmnipayProviderType $provider     The payment provider used
 	 *
@@ -169,18 +170,16 @@ class CheckoutService
 			if ($response->isSuccessful()) {
 				return $this->completePayment($order, $response);
 			} else {
-				$order->status = PaymentStatusType::FAILED;
-				$order->save();
-
-				return $order;
+				Log::warn('Payment was not successful for order ' . $order->transaction_id);
 			}
 		} catch (\Exception $e) {
 			Log::error('Error handling payment return: ' . $e->getMessage(), [
-				'request_data' => $request_data,
 				'provider' => $provider,
 				'exception' => $e,
 			]);
 		}
+		$order->status = PaymentStatusType::FAILED;
+		$order->save();
 
 		return $order;
 	}

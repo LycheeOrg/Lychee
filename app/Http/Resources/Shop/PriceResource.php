@@ -21,7 +21,7 @@ class PriceResource extends Data
 	public function __construct(
 		public PurchasableSizeVariantType $size_variant,
 		public PurchasableLicenseType $license_type,
-		public string $price_cents,
+		public string $price,
 	) {
 	}
 
@@ -35,7 +35,7 @@ class PriceResource extends Data
 		return new self(
 			size_variant: $price->size_variant,
 			license_type: $price->license_type,
-			price_cents: $money_service->format($price->price_cents),
+			price: $money_service->format($price->price_cents),
 		);
 	}
 }
