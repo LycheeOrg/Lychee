@@ -48,12 +48,12 @@ class MoneyService
 	/**
 	 * Create a Money object from dollars.
 	 *
-	 * @param float       $amount        Amount in dollars/euros
-	 * @param string|null $currency_code Optional currency code
+	 * @param string       $amount        Amount in decimal format
+	 * @param string|null  $currency_code Optional currency code
 	 *
 	 * @return Money
 	 */
-	public function createFromDecimal(float $amount, ?string $currency_code = null): Money
+	public function createFromDecimal(string $amount, ?string $currency_code = null): Money
 	{
 		$currency_code = $currency_code ?? $this->getDefaultCurrencyCode();
 		$currency = new Currency($currency_code);
@@ -61,7 +61,7 @@ class MoneyService
 
 		$money_parser = new DecimalMoneyParser($currencies);
 
-		return $money_parser->parse((string) $amount, $currency);
+		return $money_parser->parse($amount, $currency);
 	}
 
 	/**

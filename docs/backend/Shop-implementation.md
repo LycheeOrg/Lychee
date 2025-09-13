@@ -238,7 +238,6 @@ The shop offers multiple size variants:
 - `MEDIUM2x`: Medium resolution option
 - `ORIGINAL`: Original photo as uploaded to Lychee
 - `FULL`: The largest size that can be exported by the photographer (requires extra export)
-- `ORIGINAL`: Premium option
 
 ## Album Hierarchy Integration
 
@@ -248,7 +247,172 @@ The shop integration works with Lychee's Nested Set model for albums:
 - The system checks the album hierarchy when determining if a photo is purchasable
 - Pricing is resolved based on the closest ancestor in the hierarchy
 
+
+## Life Cycle of a Shopping Experience
+
+The following outlines the typical flow for a user shopping in the Lychee webshop, including the main API requests and endpoints:
+
+1. **View Shop Items**
+   - `GET /Shop` — Get album catalog with purchasable items
+   - `GET /Shop/Basket` — Retrieve current basket contents
+
+2. **Add Items to Basket**
+   - `POST /Shop/Basket/Photo` — Add a photo to the basket
+   - `POST /Shop/Basket/Album` — Add an album to the basket
+
+3. **Remove Items from Basket**
+   - `DELETE /Shop/Basket/item` — Remove an item from the basket
+   - `DELETE /Shop/Basket` — Delete the entire basket
+
+4. **Checkout**
+   - `POST /Shop/Checkout/Create-session` — Create a checkout session (select provider, enter email)
+   - `POST /Shop/Checkout/Process` — Process payment (send payment data)
+   - `POST /Shop/Checkout/Finalize/{provider}/{transaction_id}` — Finalize payment after provider callback
+   - `GET /Shop/Checkout/Cancel/{provider}/{transaction_id}` — Cancel the payment session
+
+5. **Management (Admin only)**
+   - `POST /Shop/Management/Purchasable/Photo` — Set photo as purchasable
+   - `POST /Shop/Management/Purchasable/Album` — Set album as purchasable
+   - `PUT /Shop/Management/Purchasable/Price` — Update purchasable prices
+   - `DELETE /Shop/Management/Purchasables` — Delete purchasables
+
+### Diagram: Shopping Experience Flow
+
+```mermaid
+graph TD
+    A[GET /Shop - View Album Catalog] --> B[GET /Shop/Basket - Check Current Basket]
+    B --> C[POST /Shop/Basket/Photo - Add Photo to Basket]
+    B --> D[POST /Shop/Basket/Album - Add Album to Basket]
+    C --> E[DELETE /Shop/Basket/item - Remove Item]
+    D --> E
+    E --> F[DELETE /Shop/Basket - Clear Basket]
+    C --> G[POST /Shop/Checkout/Create-session]
+    D --> G
+    G --> H[POST /Shop/Checkout/Process - Process Payment]
+    H --> I[POST /Shop/Checkout/Finalize/{provider}/{transaction_id}]
+    H --> J[GET /Shop/Checkout/Cancel/{provider}/{transaction_id}]
+    
+    subgraph "Admin Management"
+        K[POST /Shop/Management/Purchasable/Photo]
+        L[POST /Shop/Management/Purchasable/Album]
+        M[PUT /Shop/Management/Purchasable/Price]
+        N[DELETE /Shop/Management/Purchasables]
+    end
+```
+
+## Checkout Validation and Authorization
+
+The checkout process implements multiple layers of validation to ensure security and data integrity at each critical step:
+
+### 1. Create Session Validation (`CreateSessionRequest`)
+
+**Authorization Requirements:**
+- Order must exist (`$this->order !== null`)
+- Order must be in a state that allows checkout (`$this->order->canCheckout()`)
+
+**Field Validation:**
+- `provider`: Must be a valid `OmnipayProviderType` enum value (DUMMY, STRIPE, PAYPAL_EXPRESS)
+- `email`: Must be a valid email format when provided
+
+**Order Checkout Eligibility (`Order::canCheckout()`):**
+- Order status must allow checkout (`PaymentStatusType::canCheckout()`)
+- Must have either:
+  - A valid email address, OR
+  - A user_id AND no FULL size variant items (FULL variants require email for delivery)
+
+**Detailed Conditions:**
+```php
+public function canCheckout(): bool
+{
+    // 1. Status must allow checkout (typically PENDING)
+    if (!$this->status->canCheckout()) {
+        return false;
+    }
+
+    // 2. If email is provided, checkout is allowed
+    if ($this->email !== null) {
+        return true;
+    }
+
+    // 3. If no email, check for FULL size variants
+    // FULL variants require email for delivery, so they block checkout
+    if ($this->items()->where('size_variant_type', PurchasableSizeVariantType::FULL)->exists()) {
+        return false;
+    }
+
+    // 4. Finally, must have a user_id if no email
+    return $this->user_id !== null;
+}
+```
+
+**Summary of canCheckout() conditions:**
+- ✅ **Allowed when:** Status allows checkout AND (has email OR (has user_id AND no FULL variants))
+- ❌ **Blocked when:** Status doesn't allow checkout OR (no email AND no user_id) OR (no email AND has FULL variants)
+
+### 2. Process Payment Validation (`ProcessRequest`)
+
+**Authorization Requirements:**
+- Order must exist and be able to process payment (`$this->order->canProcessPayment()`)
+
+**Field Validation:**
+- `additional_data`: Optional array containing payment-specific data (card details, etc.)
+
+**Payment Processing Eligibility (`Order::canProcessPayment()`):**
+- Must pass all checkout eligibility checks
+- Payment provider must be set (`$this->provider !== null`)
+
+**Detailed Conditions:**
+```php
+public function canProcessPayment(): bool
+{
+    return $this->canCheckout() && $this->provider !== null;
+}
+```
+
+**Summary of canProcessPayment() conditions:**
+- ✅ **Allowed when:** All `canCheckout()` conditions are met AND provider is set
+- ❌ **Blocked when:** Any `canCheckout()` condition fails OR provider is null
+
+**Why These Conditions Exist:**
+
+1. **Status Check**: Prevents processing completed/cancelled orders
+2. **Email Requirement for FULL Variants**: FULL size variants need special export processing and must be delivered via email
+3. **User/Email Requirement**: Ensures there's a way to contact the customer for order fulfillment
+4. **Provider Requirement**: Cannot process payment without knowing which payment gateway to use
+
+### 3. Finalize Payment Validation (`FinalizeRequest`)
+
+**Authorization Requirements:**
+- Order status must be `PROCESSING`
+- Order provider must match the URL provider parameter
+- Provider type must be valid
+
+**URL Parameter Validation:**
+- `transaction_id`: Must correspond to an existing order
+- `provider`: Must be a valid `OmnipayProviderType` enum value
+
+**Security Checks:**
+- Transaction ID must exist in the database
+- Provider in URL must match the order's configured provider
+- Order must be in PROCESSING state (prevents replay attacks)
+
+### Validation Flow Summary
+
+```
+Create Session → Check canCheckout()
+     ↓
+Process Payment → Check canProcessPayment() 
+     ↓
+Finalize → Verify PROCESSING status + provider match
+```
+
+**Key Security Features:**
+- State-based authorization (orders progress through specific states)
+- Provider consistency validation (prevents provider switching attacks)
+- Email requirements for FULL size variants (ensures delivery capability)
+- Transaction ID validation (prevents unauthorized access to orders)
+
 ---
 
-*Last updated: September 7, 2023*
+*Last updated: September 13, 2025*
 

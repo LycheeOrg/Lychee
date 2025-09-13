@@ -32,7 +32,7 @@ return [
 	'PayPal_Rest' => [
 		'clientId' => env('PAYPAL_CLIENT_ID', ''),
 		'secret' => env('PAYPAL_SECRET', ''),
-		'testMode' => env('PAYPAL_TEST_MODE', false),
+		'testMode' => (bool) env('PAYPAL_TEST_MODE', false),
 	],
 
 	// https://github.com/thephpleague/omnipay-paypal/blob/master/src/ProGateway.php
@@ -40,7 +40,7 @@ return [
 		'username' => env('PAYPAL_API_USERNAME', ''),
 		'password' => env('PAYPAL_API_PASSWORD', ''),
 		'signature' => env('PAYPAL_API_SIGNATURE', ''),
-		'testMode' => env('PAYPAL_TEST_MODE', false),
+		'testMode' => (bool) env('PAYPAL_TEST_MODE', false),
 	],
 
 	// https://github.com/thephpleague/omnipay-paypal/blob/master/src/ExpressGateway.php
@@ -48,7 +48,7 @@ return [
 		'username' => env('PAYPAL_API_USERNAME', ''),
 		'password' => env('PAYPAL_API_PASSWORD', ''),
 		'signature' => env('PAYPAL_API_SIGNATURE', ''),
-		'testMode' => env('PAYPAL_TEST_MODE', false),
+		'testMode' => (bool) env('PAYPAL_TEST_MODE', false),
 
 		'solutionType' => 'Sole', // array('Sole', 'Mark'),
 		'landingPage' => 'Billing', // array('Billing', 'Login'),
@@ -63,7 +63,7 @@ return [
 		'username' => env('PAYPAL_API_USERNAME', ''),
 		'password' => env('PAYPAL_API_PASSWORD', ''),
 		'signature' => env('PAYPAL_API_SIGNATURE', ''),
-		'testMode' => env('PAYPAL_TEST_MODE', false),
+		'testMode' => (bool) env('PAYPAL_TEST_MODE', false),
 
 		'solutionType' => 'Sole', // array('Sole', 'Mark'),
 		'landingPage' => 'Billing', // array('Billing', 'Login'),

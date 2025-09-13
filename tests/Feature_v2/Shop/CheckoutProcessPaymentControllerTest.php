@@ -335,6 +335,6 @@ class CheckoutProcessPaymentControllerTest extends BaseCheckoutControllerTest
 			PaymentStatusType::PENDING,
 			PaymentStatusType::PROCESSING,
 			PaymentStatusType::COMPLETED,
-		]));
+		], true));
 	}
 }

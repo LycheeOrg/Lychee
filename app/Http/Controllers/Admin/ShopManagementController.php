@@ -17,7 +17,7 @@ use App\Http\Resources\Shop\PurchasableResource;
 use Illuminate\Routing\Controller;
 
 /**
- * Controller responsible for setting albums/photos as pruchasable or not.
+ * Controller responsible for setting albums/photos as purchasable or not.
  */
 class ShopManagementController extends Controller
 {

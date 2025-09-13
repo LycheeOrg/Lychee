@@ -31,7 +31,7 @@ class DeleteItemRequest extends BaseBasketRequest
 	public function rules(): array
 	{
 		return [
-			'item_id' => ['required', 'integer', 'exists:order_items,id'],
+			'item_id' => ['required', 'integer'],
 		];
 	}
 
@@ -45,6 +45,6 @@ class DeleteItemRequest extends BaseBasketRequest
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->item_id = (int) $values['item_id'];
+		$this->item_id = (int) $values['item_id'] ?? 0;
 	}
 }

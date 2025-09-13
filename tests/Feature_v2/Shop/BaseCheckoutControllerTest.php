@@ -18,6 +18,7 @@
 
 namespace Tests\Feature_v2\Shop;
 
+use App\Contracts\Http\Requests\RequestAttribute;
 use App\Enum\PaymentStatusType;
 use App\Models\Order;
 use App\Models\Purchasable;
@@ -71,7 +72,7 @@ class BaseCheckoutControllerTest extends BaseApiWithDataTest
 		$this->test_order->save();
 
 		// Put the order in session to simulate a basket
-		Session::put('basket_id', $this->test_order->id);
+		Session::put(RequestAttribute::BASKET_ID_ATTRIBUTE, $this->test_order->id);
 
 		$this->requireSe();
 	}
