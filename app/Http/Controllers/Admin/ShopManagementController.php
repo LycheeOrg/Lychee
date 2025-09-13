@@ -62,6 +62,7 @@ class ShopManagementController extends Controller
 			$purchasables[] = $this->purchasable_service->createPurchasableForAlbum(
 				album: $album,
 				description: $request->description(),
+				applies_to_subalbums: $request->applies_to_subalbums,
 				prices: $request->prices,
 				owner_notes: $request->notes
 			);

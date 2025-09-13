@@ -52,7 +52,8 @@ class AddPhotoToBasketRequest extends BaseBasketRequest
 	 */
 	public function authorize(): bool
 	{
-		return true; // Anyone can add photos to the basket
+		// Validate that the photo is in the specified album
+		return $this->photo->albums()->where('id', $this->album_id)->exists();
 	}
 
 	/**

@@ -35,6 +35,7 @@ class UpdatePurchasablePriceRequest extends BaseApiRequest implements HasDescrip
 	 */
 	public function authorize(): bool
 	{
+		/** @var int|null $user_id */
 		$user_id = Auth::id();
 		if ($user_id === null) {
 			return false;

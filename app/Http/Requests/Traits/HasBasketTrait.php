@@ -39,8 +39,19 @@ trait HasBasketTrait
 			$this->order = Order::find($basket_id);
 		}
 
-		// If user is logged in, retrieve the current pending basket.
+		// Validate basket is not of another user.
 		$user_id = Auth::id();
+		if (
+			$user_id !== null &&
+			$this->order !== null &&
+			$this->order->user_id !== null &&
+			$this->order->user_id !== $user_id
+		) {
+			$this->order = null;
+			Session::forget(RequestAttribute::BASKET_ID_ATTRIBUTE);
+		}
+
+		// If user is logged in, retrieve the current pending basket.
 		if ($user_id !== null && $this->order === null) {
 			$this->order = Order::where('user_id', $user_id)->where('status', PaymentStatusType::PENDING)->first();
 		}

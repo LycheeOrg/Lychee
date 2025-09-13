@@ -162,45 +162,46 @@ class PurchasableService
 		?string $description = null,
 		?string $owner_notes = null,
 	): Purchasable {
-		// Remove any existing purchasable for this album to avoid duplicates
-		if ($applies_to_subalbums) {
-			$album_ids = DB::table('albums')->select('id')->where('_lft', '>=', $album->_lft)
-				->where('_rgt', '<=', $album->_rgt)
-				->pluck('id')
-				->toArray();
-		} else {
-			$album_ids = [$album->id];
-		}
+		return DB::transaction(function () use ($album, $prices, $applies_to_subalbums, $description, $owner_notes): Purchasable {
+			// Remove any existing purchasable for this album to avoid duplicates
+			if ($applies_to_subalbums) {
+				$album_ids = DB::table('albums')->select('id')->where('_lft', '>=', $album->_lft)
+					->where('_rgt', '<=', $album->_rgt)
+					->pluck('id')
+					->toArray();
+			} else {
+				$album_ids = [$album->id];
+			}
 
-		// Clean the existing purchasables and their prices
-		DB::table('purchasable_prices')->whereIn('purchasable_id', function ($query) use ($album_ids): void {
-			$query->select('id')->from('purchasables')->whereNull('photo_id')->whereIn('album_id', $album_ids);
-		})->delete();
-		DB::table('purchasables')->whereNull('photo_id')->whereIn('album_id', $album_ids)->delete();
+			// Clean the existing purchasables and their prices
+			DB::table('purchasable_prices')->whereIn('purchasable_id', function ($query) use ($album_ids): void {
+				$query->select('id')->from('purchasables')->whereNull('photo_id')->whereIn('album_id', $album_ids);
+			})->delete();
+			DB::table('purchasables')->whereNull('photo_id')->whereIn('album_id', $album_ids)->delete();
 
-		$purchasable = [];
-		foreach ($album_ids as $aid) {
-			$purchasable[] = [
-				'album_id' => $aid,
-				'photo_id' => null,
-				'description' => $description,
-				'owner_notes' => $owner_notes,
-				'is_active' => true,
-			];
-		}
+			$purchasable = [];
+			foreach ($album_ids as $aid) {
+				$purchasable[] = [
+					'album_id' => $aid,
+					'photo_id' => null,
+					'description' => $description,
+					'owner_notes' => $owner_notes,
+					'is_active' => true,
+				];
+			}
+			DB::table('purchasables')->insert($purchasable);
 
-		DB::table('purchasables')->insert($purchasable);
+			// clear memory.
+			unset($purchasable);
 
-		// clear memory.
-		unset($purchasable);
+			$purchasables = Purchasable::query()->whereNull('photo_id')->whereIn('album_id', $album_ids)->get();
 
-		$purchasables = Purchasable::query()->whereNull('photo_id')->whereIn('album_id', $album_ids)->get();
+			foreach ($purchasables as $purchasable) {
+				$this->updatePrices($purchasable, $prices);
+			}
 
-		foreach ($purchasables as $purchasable) {
-			$this->updatePrices($purchasable, $prices);
-		}
-
-		return Purchasable::whereNull('photo_id')->where('album_id', $album->id)->first();
+			return Purchasable::whereNull('photo_id')->where('album_id', $album->id)->first();
+		});
 	}
 
 	/**

@@ -51,28 +51,28 @@ class PurchasableFactory extends Factory
 	public function withPrices(): static
 	{
 		return $this->afterCreating(function (Purchasable $purchasable): void {
-			$moneyService = resolve(MoneyService::class);
+			$money_service = resolve(MoneyService::class);
 
 			// Create some default pricing options
 			PurchasablePrice::create([
 				'purchasable_id' => $purchasable->id,
 				'size_variant' => PurchasableSizeVariantType::MEDIUM,
 				'license_type' => PurchasableLicenseType::PERSONAL,
-				'price_cents' => $moneyService->createFromCents(1999), // $19.99
+				'price_cents' => $money_service->createFromCents(1999), // $19.99
 			]);
 
 			PurchasablePrice::create([
 				'purchasable_id' => $purchasable->id,
 				'size_variant' => PurchasableSizeVariantType::ORIGINAL,
 				'license_type' => PurchasableLicenseType::PERSONAL,
-				'price_cents' => $moneyService->createFromCents(2999), // $29.99
+				'price_cents' => $money_service->createFromCents(2999), // $29.99
 			]);
 
 			PurchasablePrice::create([
 				'purchasable_id' => $purchasable->id,
 				'size_variant' => PurchasableSizeVariantType::ORIGINAL,
 				'license_type' => PurchasableLicenseType::COMMERCIAL,
-				'price_cents' => $moneyService->createFromCents(4999), // $49.99
+				'price_cents' => $money_service->createFromCents(4999), // $49.99
 			]);
 		});
 	}

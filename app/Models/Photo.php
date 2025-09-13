@@ -221,11 +221,11 @@ class Photo extends Model implements HasUTCBasedTimes
 	/**
 	 * Get the purchasable settings for this photo.
 	 *
-	 * @return \Illuminate\Database\Eloquent\Relations\HasOne
+	 * @return HasOne<Purchasable,$this>
 	 */
-	public function purchasable()
+	public function purchasable(): HasOne
 	{
-		return $this->hasOne(Purchasable::class);
+		return $this->hasOne(Purchasable::class, 'photo_id', 'id');
 	}
 
 	/**

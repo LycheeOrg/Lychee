@@ -9,11 +9,13 @@
 namespace App\Http\Requests\Checkout;
 
 use App\Contracts\Http\Requests\HasBasket;
+use App\Contracts\Http\Requests\RequestAttribute;
 use App\Enum\OmnipayProviderType;
 use App\Enum\PaymentStatusType;
-use App\Exceptions\Internal\LycheeLogicException;
 use App\Http\Requests\BaseApiRequest;
 use App\Models\Order;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Validation\Rules\Enum;
 
 /**
  * Fetched from the url.
@@ -23,8 +25,8 @@ use App\Models\Order;
  */
 class FinalizeRequest extends BaseApiRequest implements HasBasket
 {
-	protected ?OmnipayProviderType $provider_type = null;
-	protected ?Order $order = null;
+	protected OmnipayProviderType $provider_type;
+	protected Order $order;
 
 	/**
 	 * Determine if the user is authorized to make this request.
@@ -41,21 +43,27 @@ class FinalizeRequest extends BaseApiRequest implements HasBasket
 	 */
 	public function rules(): array
 	{
-		return [];
+		return [
+			RequestAttribute::PROVIDER_ATTRIBUTE => ['required', new Enum(OmnipayProviderType::class)],
+			RequestAttribute::TRANSACTION_ID_ATTRIBUTE => ['required', 'string'],
+		];
+	}
+
+	protected function prepareForValidation(): void
+	{
+		$this->merge([
+			RequestAttribute::PROVIDER_ATTRIBUTE => $this->route(RequestAttribute::PROVIDER_ATTRIBUTE),
+			RequestAttribute::TRANSACTION_ID_ATTRIBUTE => $this->route(RequestAttribute::TRANSACTION_ID_ATTRIBUTE),
+		]);
 	}
 
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		if (!isset($this->transaction_id)) {
-			throw new LycheeLogicException('transaction_id is not set.');
+		$this->order = Order::findByTransactionId($values[RequestAttribute::TRANSACTION_ID_ATTRIBUTE]);
+		if ($this->order === null) {
+			throw new ModelNotFoundException('Order not found.');
 		}
-
-		if (!isset($this->provider)) {
-			throw new LycheeLogicException('provider is not set.');
-		}
-
-		$this->order = Order::findByTransactionId($this->transaction_id);
-		$this->provider_type = OmnipayProviderType::tryFrom($this->provider);
+		$this->provider_type = OmnipayProviderType::from($values[RequestAttribute::PROVIDER_ATTRIBUTE]);
 	}
 
 	public function basket(): ?Order

@@ -33,13 +33,13 @@ class PurchasablePriceFactory extends Factory
 	 */
 	public function definition(): array
 	{
-		$moneyService = resolve(MoneyService::class);
+		$money_service = resolve(MoneyService::class);
 
 		return [
 			'purchasable_id' => null,
 			'size_variant' => fake()->randomElement(PurchasableSizeVariantType::cases()),
 			'license_type' => fake()->randomElement(PurchasableLicenseType::cases()),
-			'price_cents' => $moneyService->createFromCents(fake()->numberBetween(999, 9999)), // $9.99 to $99.99
+			'price_cents' => $money_service->createFromCents(fake()->numberBetween(999, 9999)), // $9.99 to $99.99
 		];
 	}
 
@@ -53,10 +53,10 @@ class PurchasablePriceFactory extends Factory
 	public function withPrice(int $cents): static
 	{
 		return $this->state(function (array $attributes) use ($cents) {
-			$moneyService = resolve(MoneyService::class);
+			$money_service = resolve(MoneyService::class);
 
 			return [
-				'price_cents' => $moneyService->createFromCents($cents),
+				'price_cents' => $money_service->createFromCents($cents),
 			];
 		});
 	}
@@ -64,16 +64,16 @@ class PurchasablePriceFactory extends Factory
 	/**
 	 * Set specific size variant and license type.
 	 *
-	 * @param PurchasableSizeVariantType $sizeVariant
-	 * @param PurchasableLicenseType     $licenseType
+	 * @param PurchasableSizeVariantType $size_variant
+	 * @param PurchasableLicenseType     $license_type
 	 *
 	 * @return static
 	 */
-	public function withVariant(PurchasableSizeVariantType $sizeVariant, PurchasableLicenseType $licenseType): static
+	public function withVariant(PurchasableSizeVariantType $size_variant, PurchasableLicenseType $license_type): static
 	{
 		return $this->state(fn (array $attributes) => [
-			'size_variant' => $sizeVariant,
-			'license_type' => $licenseType,
+			'size_variant' => $size_variant,
+			'license_type' => $license_type,
 		]);
 	}
 }

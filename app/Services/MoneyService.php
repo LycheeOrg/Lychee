@@ -48,8 +48,8 @@ class MoneyService
 	/**
 	 * Create a Money object from dollars.
 	 *
-	 * @param string       $amount        Amount in decimal format
-	 * @param string|null  $currency_code Optional currency code
+	 * @param string      $amount        Amount in decimal format
+	 * @param string|null $currency_code Optional currency code
 	 *
 	 * @return Money
 	 */
