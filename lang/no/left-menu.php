@@ -7,9 +7,9 @@ return [
 	*/
     'back_to_gallery' => 'Tilbake til galleriet',
     'login' => 'Login',
-    'frame' => 'Frame',
-    'map' => 'Map',
-    'admin' => 'Admin',
+    'frame' => 'Ramme',
+    'map' => 'Kart',
+    'admin' => 'Administrator',
     'clockwork' => 'Clockwork App',
     'logs' => 'Show Logs',
     'jobs' => 'Show Job History',
