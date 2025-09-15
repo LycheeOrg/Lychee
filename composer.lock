@@ -1362,16 +1362,16 @@
         },
         {
             "name": "dedoc/scramble",
-            "version": "v0.12.32",
+            "version": "v0.12.34",
             "source": {
                 "type": "git",
                 "url": "https://github.com/dedoc/scramble.git",
-                "reference": "7af06fe46b4242d97d8815f570e1e29627e774b7"
+                "reference": "fdedbaac3271b466182d4029651aa90eac53cee5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dedoc/scramble/zipball/7af06fe46b4242d97d8815f570e1e29627e774b7",
-                "reference": "7af06fe46b4242d97d8815f570e1e29627e774b7",
+                "url": "https://api.github.com/repos/dedoc/scramble/zipball/fdedbaac3271b466182d4029651aa90eac53cee5",
+                "reference": "fdedbaac3271b466182d4029651aa90eac53cee5",
                 "shasum": ""
             },
             "require": {
@@ -1430,7 +1430,7 @@
             ],
             "support": {
                 "issues": "https://github.com/dedoc/scramble/issues",
-                "source": "https://github.com/dedoc/scramble/tree/v0.12.32"
+                "source": "https://github.com/dedoc/scramble/tree/v0.12.34"
             },
             "funding": [
                 {
@@ -1438,7 +1438,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-09-08T09:48:36+00:00"
+            "time": "2025-09-09T14:36:44+00:00"
         },
         {
             "name": "dflydev/dot-access-data",
