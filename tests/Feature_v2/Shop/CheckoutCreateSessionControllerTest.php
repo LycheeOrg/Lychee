@@ -18,10 +18,10 @@
 
 namespace Tests\Feature_v2\Shop;
 
+use App\Contracts\Http\Requests\RequestAttribute;
 use App\Enum\OmnipayProviderType;
 use App\Enum\PaymentStatusType;
 use Illuminate\Support\Facades\Session;
-use App\Contracts\Http\Requests\RequestAttribute;
 
 /**
  * Test class for CheckoutController CreateSession functionality.
