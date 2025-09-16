@@ -47,6 +47,6 @@ class AlbumRightsResource extends Data
 		$this->can_transfer = Gate::check(AlbumPolicy::CAN_TRANSFER, [AbstractAlbum::class, $abstract_album]);
 		$this->can_access_original = Gate::check(AlbumPolicy::CAN_ACCESS_FULL_PHOTO, [AbstractAlbum::class, $abstract_album]);
 		$this->can_pasword_protect = !Configs::getValueAsBool('cache_enabled');
-		$this->can_import_from_server = Auth::check() && Auth::id() === Configs::getValueAsInt('owner_id');
+		$this->can_import_from_server = Auth::check() && Auth::id() === Configs::getValueAsInt('owner_id') && config('features.disable-import-from-server', true) === false;
 	}
 }
