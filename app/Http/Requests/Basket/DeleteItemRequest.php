@@ -46,6 +46,6 @@ class DeleteItemRequest extends BaseBasketRequest
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->item_id = (int) $values['item_id'] ?? 0;
+		$this->item_id = (int) ($values['item_id'] ?? 0);
 	}
 }

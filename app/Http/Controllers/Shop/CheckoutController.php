@@ -81,8 +81,8 @@ class CheckoutController extends Controller
 		);
 
 		return new CheckoutResource(
-			success: $result->is_success,
-			redirect: $result->is_redirect,
+			is_success: $result->is_success,
+			is_redirect: $result->is_redirect,
 			redirect_url: $result->redirect_url,
 			message: $result->message ?? '',
 		);
@@ -101,13 +101,13 @@ class CheckoutController extends Controller
 
 		if ($order->status !== PaymentStatusType::COMPLETED) {
 			return new CheckoutResource(
-				success: false,
+				is_success: false,
 				message: 'Order failed.',
 			);
 		}
 
 		return new CheckoutResource(
-			success: true,
+			is_success: true,
 			message: 'Payment completed successfully',
 			order: OrderResource::fromModel($order),
 		);
@@ -127,7 +127,7 @@ class CheckoutController extends Controller
 		$order->save();
 
 		return new CheckoutResource(
-			success: true,
+			is_success: true,
 			message: 'Payment was canceled by the user',
 			order: OrderResource::fromModel($order),
 		);

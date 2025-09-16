@@ -15,6 +15,7 @@ use App\Models\Album;
 use App\Models\Photo;
 use App\Models\Purchasable;
 use App\Models\PurchasablePrice;
+use App\Policies\AlbumQueryPolicy;
 use Illuminate\Support\Facades\DB;
 
 class PurchasableService
@@ -39,6 +40,9 @@ class PurchasableService
 		}
 
 		return Purchasable::query()
+			// This joins ensure that the album is also linked to the photo
+			->join(PA::PHOTO_ALBUM, PA::ALBUM_ID, '=', 'purchasables.album_id')
+			->where(PA::PHOTO_ID, $photo->id)
 			->where('album_id', $album_id)
 			->where('is_active', true)
 			->whereNull('photo_id')
@@ -82,28 +86,35 @@ class PurchasableService
 	 * @param Album $album             The album to check
 	 * @param bool  $include_subalbums Whether to include photos in sub-albums
 	 *
-	 * @return \Illuminate\Support\Collection Collection of purchasable photos
+	 * @return \Illuminate\Support\Collection<int,Photo> Collection of purchasable photos
 	 */
 	public function getPurchasablePhotosInAlbum(Album $album, bool $include_subalbums = false)
 	{
-		$query = Photo::query()->join(PA::PHOTO_ALBUM, PA::PHOTO_ID, '=', 'photos.id');
-
+		// Select the list of accessible albums from current.
+		$album_query_policy = resolve(AlbumQueryPolicy::class);
 		if ($include_subalbums) {
-			// Get photos from this album and all sub-albums
-			$query->whereIn(PA::ALBUM_ID, DB::table('albums')->select('id')->where('_lft', '>=', $album->_lft)
-				   ->where('_rgt', '<=', $album->_rgt));
+			$albums_ids = $album_query_policy->applyBrowsabilityFilter(Album::query()->select('id'), $album->_lft, $album->_rgt)->pluck('id')->toArray();
 		} else {
-			// Just this album
-			$query->where(PA::ALBUM_ID, $album->id);
+			$albums_ids = [$album->id];
 		}
 
-		// Get all photos that might be purchasable
-		$photos = $query->get();
+		$album_ids_purchasables = Purchasable::query()
+			->whereIn('album_id', $albums_ids)
+			->where('is_active', true)
+			->whereNull('photo_id')
+			->pluck('album_id');
 
-		// Filter to only include photos that have pricing available
-		return $photos->filter(function (Photo $photo) use ($album): bool {
-			return $this->getEffectivePurchasableForPhoto($photo, $album->id) !== null;
-		});
+		$photo_ids_purchasables = Purchasable::query()
+			->whereIn('album_id', $albums_ids)
+			->where('is_active', true)
+			->whereNotNull('photo_id')
+			->pluck('photo_id');
+
+		return Photo::query()
+			->join(PA::PHOTO_ALBUM, PA::PHOTO_ID, '=', 'photos.id')
+			->whereIn(PA::ALBUM_ID, $album_ids_purchasables)
+			->orWhereIn('photos.id', $photo_ids_purchasables)
+			->get();
 	}
 
 	/**

@@ -66,7 +66,7 @@ class CheckoutFinalizeOrCancelControllerTest extends BaseCheckoutControllerTest
 
 		$this->assertOk($response);
 		$response->assertJsonStructure([
-			'success',
+			'is_success',
 			'message',
 			'order' => [
 				'id',
@@ -76,7 +76,7 @@ class CheckoutFinalizeOrCancelControllerTest extends BaseCheckoutControllerTest
 		]);
 
 		$response->assertJson([
-			'success' => true,
+			'is_success' => true,
 			'message' => 'Payment completed successfully',
 		]);
 	}
@@ -131,7 +131,7 @@ class CheckoutFinalizeOrCancelControllerTest extends BaseCheckoutControllerTest
 
 		$this->assertOk($response);
 		$response->assertJsonStructure([
-			'success',
+			'is_success',
 			'message',
 			'order' => [
 				'id',
@@ -140,7 +140,7 @@ class CheckoutFinalizeOrCancelControllerTest extends BaseCheckoutControllerTest
 		]);
 
 		$response->assertJson([
-			'success' => true,
+			'is_success' => true,
 			'message' => 'Payment was canceled by the user',
 		]);
 
@@ -194,11 +194,11 @@ class CheckoutFinalizeOrCancelControllerTest extends BaseCheckoutControllerTest
 
 		$this->assertOk($process_response);
 		$process_response->assertJson([
-			'success' => true,
+			'is_success' => true,
 		]);
 
 		// For DUMMY provider, payment should complete immediately without redirect
-		if (!$process_response->json('redirect')) {
+		if (!$process_response->json('is_redirect')) {
 			// Verify order status was updated
 			$this->test_order->refresh();
 			$this->assertEquals(PaymentStatusType::COMPLETED, $this->test_order->status);
@@ -238,7 +238,7 @@ class CheckoutFinalizeOrCancelControllerTest extends BaseCheckoutControllerTest
 
 		$this->assertOk($response);
 		$response->assertJson([
-			'success' => true,
+			'is_success' => true,
 		]);
 	}
 }

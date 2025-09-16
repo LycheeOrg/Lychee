@@ -402,7 +402,7 @@ class CatalogControllerTest extends BaseApiWithDataTest
 						'*' => [
 							'size_variant',
 							'license_type',
-							'price_cents',
+							'price',
 						],
 					],
 					'owner_notes',

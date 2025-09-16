@@ -59,7 +59,7 @@ class OrderFactory extends Factory
 			'user_id' => null,
 			'email' => null,
 			'status' => PaymentStatusType::PENDING,
-			'amount_cents' => 0,
+			'amount_cents' => resolve(MoneyService::class)->createFromCents(0),
 			'paid_at' => null,
 			'comment' => fake()->optional()->sentence(),
 		];

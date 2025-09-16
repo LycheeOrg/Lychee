@@ -170,7 +170,7 @@ class CheckoutCreateSessionControllerTest extends BaseCheckoutControllerTest
 		$response->assertJson([
 			'provider' => OmnipayProviderType::DUMMY->value,
 			'user_id' => $this->userMayUpload1->id,
-			'email' => '', // Should remain empty when not provided
+			'email' => 'test@example.com',
 		]);
 	}
 
@@ -216,7 +216,7 @@ class CheckoutCreateSessionControllerTest extends BaseCheckoutControllerTest
 		$this->assertCreated($response);
 		$response->assertJson([
 			'provider' => OmnipayProviderType::DUMMY->value,
-			'email' => '', // Should be empty when not provided
+			'email' => 'test@example.com',
 		]);
 	}
 

@@ -57,16 +57,16 @@ class CheckoutProcessPaymentControllerTest extends BaseCheckoutControllerTest
 
 		$this->assertOk($response);
 		$response->assertJsonStructure([
-			'success',
-			'redirect',
+			'is_success',
+			'is_redirect',
 			'redirect_url',
 			'message',
 		]);
 
 		// For DUMMY provider, it should be successful without redirect
 		$response->assertJson([
-			'success' => true,
-			'redirect' => false,
+			'is_success' => true,
+			'is_redirect' => false,
 		]);
 	}
 
@@ -121,7 +121,7 @@ class CheckoutProcessPaymentControllerTest extends BaseCheckoutControllerTest
 
 		$this->assertOk($response);
 		$response->assertJson([
-			'success' => true,
+			'is_success' => true,
 		]);
 	}
 
@@ -212,7 +212,7 @@ class CheckoutProcessPaymentControllerTest extends BaseCheckoutControllerTest
 		// DUMMY provider should handle this gracefully
 		$response->assertStatus(400);
 		$response->assertJson([
-			'success' => false,
+			'is_success' => false,
 		]);
 	}
 

@@ -17,8 +17,8 @@ use Symfony\Component\HttpFoundation\Response;
 class CheckoutResource extends Data
 {
 	public function __construct(
-		public readonly bool $success,
-		public readonly bool $redirect = false,
+		public readonly bool $is_success,
+		public readonly bool $is_redirect = false,
 		public readonly ?string $redirect_url = null,
 		public readonly string $message = '',
 		public readonly ?OrderResource $order = null,
@@ -27,6 +27,6 @@ class CheckoutResource extends Data
 
 	protected function calculateResponseStatus(Request $request): int
 	{
-		return $this->success ? Response::HTTP_OK : Response::HTTP_BAD_REQUEST;
+		return $this->is_success ? Response::HTTP_OK : Response::HTTP_BAD_REQUEST;
 	}
 }
