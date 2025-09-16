@@ -12,7 +12,6 @@ use App\Contracts\Models\AbstractAlbum;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Policies\AlbumPolicy;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
@@ -47,6 +46,6 @@ class AlbumRightsResource extends Data
 		$this->can_transfer = Gate::check(AlbumPolicy::CAN_TRANSFER, [AbstractAlbum::class, $abstract_album]);
 		$this->can_access_original = Gate::check(AlbumPolicy::CAN_ACCESS_FULL_PHOTO, [AbstractAlbum::class, $abstract_album]);
 		$this->can_pasword_protect = !Configs::getValueAsBool('cache_enabled');
-		$this->can_import_from_server = Auth::check() && Auth::id() === Configs::getValueAsInt('owner_id') && config('features.disable-import-from-server', true) === false;
+		$this->can_import_from_server = Gate::check(AlbumPolicy::CAN_IMPORT_FROM_SERVER, [AbstractAlbum::class]);
 	}
 }
