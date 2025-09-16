@@ -20,7 +20,6 @@ namespace Tests\Feature_v2\Shop;
 
 use App\Enum\OmnipayProviderType;
 use App\Enum\PaymentStatusType;
-use App\Models\Order;
 use Illuminate\Support\Facades\Session;
 
 /**

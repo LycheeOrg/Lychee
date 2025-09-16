@@ -11,6 +11,7 @@ namespace App\Models;
 use App\Casts\MoneyCast;
 use App\Enum\PurchasableLicenseType;
 use App\Enum\PurchasableSizeVariantType;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -36,6 +37,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class OrderItem extends Model
 {
+	/** @phpstan-use HasFactory<\Database\Factories\OrderItemFactory> */
+	use HasFactory;
+
 	public $timestamps = false;
 
 	/**

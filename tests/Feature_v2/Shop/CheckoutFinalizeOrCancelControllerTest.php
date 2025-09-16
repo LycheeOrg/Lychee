@@ -93,7 +93,7 @@ class CheckoutFinalizeOrCancelControllerTest extends BaseCheckoutControllerTest
 
 		$response = $this->postJson('Shop/Checkout/Finalize/' . $provider . '/' . $invalidTransactionId);
 
-		$this->assertUnauthorized($response); // Controller returns 200 with error message
+		$this->assertNotFound($response);
 	}
 
 	/**
@@ -111,7 +111,7 @@ class CheckoutFinalizeOrCancelControllerTest extends BaseCheckoutControllerTest
 
 		$response = $this->postJson('Shop/Checkout/Finalize/' . $invalidProvider . '/' . $transaction_id);
 
-		$this->assertUnauthorized($response); // Should fail validation for invalid enum
+		$this->assertUnprocessable($response);
 	}
 
 	/**
@@ -162,7 +162,7 @@ class CheckoutFinalizeOrCancelControllerTest extends BaseCheckoutControllerTest
 
 		$response = $this->getJson('Shop/Checkout/Cancel/Dummy/' . $invalid_transaction_id);
 
-		$this->assertUnauthorized($response); // Should be unauthorized as order not found
+		$this->assertNotFound($response); // Should be unauthorized as order not found
 	}
 
 	/**

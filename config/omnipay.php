@@ -18,7 +18,9 @@ return [
 	// case PAYPAL_PRO = 'PayPal_Pro';
 	// case PAYPAL_REST = 'PayPal_Rest';
 	// case STRIPE = 'Stripe';
-	'Dummy' => [],
+	'Dummy' => [
+		'dummy' => true,
+	],
 
 	'Mollie' => [
 		'apiKey' => env('MOLLIE_API_KEY', ''),

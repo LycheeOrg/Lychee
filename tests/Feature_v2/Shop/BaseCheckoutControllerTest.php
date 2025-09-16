@@ -19,10 +19,9 @@
 namespace Tests\Feature_v2\Shop;
 
 use App\Contracts\Http\Requests\RequestAttribute;
-use App\Enum\PaymentStatusType;
 use App\Models\Order;
+use App\Models\OrderItem;
 use App\Models\Purchasable;
-use App\Services\MoneyService;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
@@ -60,16 +59,14 @@ class BaseCheckoutControllerTest extends BaseApiWithDataTest
 			->create();
 
 		// Create a test order with items
-		$this->test_order = new Order([
-			'transaction_id' => Str::uuid()->toString(),
-			'provider' => null, // Will be set during checkout
-			'user_id' => null,
-			'email' => '',
-			'status' => PaymentStatusType::PENDING,
-			'amount_cents' => resolve(MoneyService::class)->createFromCents(1999),
-			'comment' => null,
-		]);
-		$this->test_order->save();
+		$this->test_order = Order::factory()
+			->withTransactionId(Str::uuid()->toString())
+			->withEmail('test@example.com')
+			->pending()
+			->withAmountCents(1999)
+			->create();
+
+		OrderItem::factory()->forOrder($this->test_order)->forPurchasable($this->purchasable1)->forPhoto($this->photo1)->fullSize()->create();
 
 		// Put the order in session to simulate a basket
 		Session::put(RequestAttribute::BASKET_ID_ATTRIBUTE, $this->test_order->id);

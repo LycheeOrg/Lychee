@@ -14,6 +14,7 @@ use App\Enum\PaymentStatusType;
 use App\Enum\PurchasableSizeVariantType;
 use App\Services\MoneyService;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -41,6 +42,9 @@ use Money\Money;
  */
 class Order extends Model
 {
+	/** @phpstan-use HasFactory<\Database\Factories\OrderFactory> */
+	use HasFactory;
+
 	/**
 	 * {@inheritdoc}
 	 */
@@ -174,19 +178,35 @@ class Order extends Model
 
 	/**
 	 * We can only checkout if the order is still pending AND
-	 * processer has been chosem AND
-	 * we have either an email or a user associated with the order.
-	 * This is necessary so we can send the files later / provide link.
+	 * there is at least one item in the order.
 	 *
 	 * @return bool
 	 */
 	public function canCheckout(): bool
 	{
-		if (!$this->status->canCheckout()) {
+		return $this->status->canCheckout() && $this->items->count() > 0;
+	}
+
+	/**
+	 * We can only process a payment if we can checkout AND if provider is set...
+	 * And email is set OR we do not have FULL size variants in the order AND user_id is set.
+	 *
+	 * @return bool
+	 */
+	public function canProcessPayment(): bool
+	{
+		// Not in a state that allows checkout
+		if ($this->canCheckout() === false) {
 			return false;
 		}
 
-		if ($this->email !== null) {
+		// No provider, how are we supposed to know what to do?
+		if ($this->provider === null) {
+			return false;
+		}
+
+		// Email is set, we are fine.
+		if ($this->email !== null && $this->email !== '') {
 			return true;
 		}
 
@@ -196,15 +216,5 @@ class Order extends Model
 		}
 
 		return $this->user_id !== null;
-	}
-
-	/**
-	 * We can only process a payment if we can checkout AND if provider is set...
-	 *
-	 * @return bool
-	 */
-	public function canProcessPayment(): bool
-	{
-		return $this->canCheckout() && $this->provider !== null;
 	}
 }

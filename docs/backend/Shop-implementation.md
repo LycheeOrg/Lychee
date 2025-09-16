@@ -279,19 +279,47 @@ The following outlines the typical flow for a user shopping in the Lychee websho
 ### Diagram: Shopping Experience Flow
 
 ```mermaid
-graph TD
-    A[GET /Shop - View Album Catalog] --> B[GET /Shop/Basket - Check Current Basket]
-    B --> C[POST /Shop/Basket/Photo - Add Photo to Basket]
-    B --> D[POST /Shop/Basket/Album - Add Album to Basket]
-    C --> E[DELETE /Shop/Basket/item - Remove Item]
-    D --> E
-    E --> F[DELETE /Shop/Basket - Clear Basket]
-    C --> G[POST /Shop/Checkout/Create-session]
-    D --> G
-    G --> H[POST /Shop/Checkout/Process - Process Payment]
-    H --> I[POST /Shop/Checkout/Finalize/{provider}/{transaction_id}]
-    H --> J[GET /Shop/Checkout/Cancel/{provider}/{transaction_id}]
-    
+stateDiagram
+	a : GET /Shop <br> View Album Catalog
+	b : GET /Shop/Basket <br> Check Current Basket
+	c: POST /Shop/Basket/Photo <br> Add Photo to Basket
+	d: POST /Shop/Basket/Album <br> Add Album to Basket
+	e: DELETE /Shop/Basket/item <br> Remove Item
+	f: DELETE /Shop/Basket <br> Clear Basket
+	g: POST /Shop/Checkout/Create-session <br> Create Checkout Session
+	note right of g
+        Order must be in PENDING state.
+	end note
+	h: POST /Shop/Checkout/Process <br> Process Payment
+	note right of h
+        Order must be in PENDING state with valid provider & email.
+	end note
+	i: POST /Shop/Checkout/Finalize/provider/transaction_id <br> Finalize Payment
+	note right of i
+        Order must be in PROCESSING state.
+	end note
+	j: GET /Shop/Checkout/Cancel/provider/transaction_id <br> Cancel Payment
+	note right of j
+        Order must be in PROCESSING state.
+	end note
+
+	a --> b
+	b --> g
+	g --> h
+	h --> i
+	h --> j
+
+	b --> e
+	b --> f
+
+	a --> c
+	a --> d
+	c --> b
+	d --> b
+
+```
+```mermaid
+flowchart LR
     subgraph "Admin Management"
         K[POST /Shop/Management/Purchasable/Photo]
         L[POST /Shop/Management/Purchasable/Album]

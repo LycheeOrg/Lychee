@@ -22,6 +22,9 @@ use Illuminate\Validation\Rules\Enum;
  *
  * @property string $transaction_id
  * @property string $provider
+ *
+ * @method merge(array $values)
+ * @method route(string $key)
  */
 class FinalizeRequest extends BaseApiRequest implements HasBasket
 {
@@ -59,10 +62,11 @@ class FinalizeRequest extends BaseApiRequest implements HasBasket
 
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->order = Order::findByTransactionId($values[RequestAttribute::TRANSACTION_ID_ATTRIBUTE]);
-		if ($this->order === null) {
+		$order = Order::findByTransactionId($values[RequestAttribute::TRANSACTION_ID_ATTRIBUTE]);
+		if ($order === null) {
 			throw new ModelNotFoundException('Order not found.');
 		}
+		$this->order = $order;
 		$this->provider_type = OmnipayProviderType::from($values[RequestAttribute::PROVIDER_ATTRIBUTE]);
 	}
 

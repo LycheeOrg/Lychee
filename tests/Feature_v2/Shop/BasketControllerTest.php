@@ -342,8 +342,7 @@ class BasketControllerTest extends BaseApiWithDataTest
 			'item_id' => 99999,
 		]);
 
-		$this->assertUnprocessable($response);
-		$response->assertJsonValidationErrors(['item_id']);
+		$this->assertUnauthorized($response);
 	}
 
 	/**

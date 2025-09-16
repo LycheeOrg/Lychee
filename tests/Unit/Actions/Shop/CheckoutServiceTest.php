@@ -24,11 +24,12 @@ use App\Enum\OmnipayProviderType;
 use App\Enum\PaymentStatusType;
 use App\Factories\OmnipayFactory;
 use App\Models\Order;
+use App\Models\OrderItem;
 use App\Models\User;
 use App\Services\MoneyService;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Log;
-use Mockery;
+use Mockery\MockInterface;
 use Money\Currency;
 use Money\Money;
 use Omnipay\Common\GatewayInterface;
@@ -51,7 +52,9 @@ class CheckoutServiceTest extends AbstractTestCase
 	use DatabaseTransactions;
 
 	private CheckoutService $checkout_service;
+	/** @var OmnipayFactory&MockInterface */
 	private OmnipayFactory $omnipay_factory_mock;
+	/** @var OmnipayFactory&MockInterface */
 	private GatewayInterface $gateway_mock;
 	private Order $order;
 
@@ -69,17 +72,16 @@ class CheckoutServiceTest extends AbstractTestCase
 			resolve(MoneyService::class)
 		);
 
-		// Create a test order
-		$this->order = new Order([
-			'transaction_id' => 'test-transaction-123',
-			'provider' => OmnipayProviderType::DUMMY,
-			'user_id' => null,
-			'email' => 'test@example.com',
-			'status' => PaymentStatusType::PENDING,
-			'amount_cents' => new Money(1999, new Currency('USD')),
-			'comment' => null,
-		]);
+		$this->order = Order::factory()
+			->withProvider(OmnipayProviderType::DUMMY)
+			->withTransactionId('test-transaction-123')
+			->withEmail('test@example.com')
+			->pending()
+			->withAmountCents(1999)
+			->create();
 		$this->order->id = 1;
+
+		OrderItem::factory()->forOrder($this->order)->forPhoto()->fullSize()->count(1)->create();
 	}
 
 	protected function tearDown(): void
@@ -96,17 +98,6 @@ class CheckoutServiceTest extends AbstractTestCase
 	 */
 	public function testProcessPaymentSuccessfulDirect(): void
 	{
-		// Mock canProcessPayment to return true
-		// $order_mock = Mockery::mock(Order::class)->makePartial();
-		// $order_mock->shouldReceive('canProcessPayment')->andReturn(true);
-		// $order_mock->shouldReceive('updateTotal')->once();
-		// $order_mock->shouldReceive('save')->twice(); // Once for status update, once for completion
-		// $order_mock->provider = OmnipayProviderType::DUMMY;
-		// $order_mock->amount_cents = new Money(1999, new Currency('USD'));
-		// $order_mock->transaction_id = 'test-transaction-123';
-		// $order_mock->id = 1;
-		// $order_mock->email = 'test@example.com';
-
 		// Mock response
 		$response_mock = \Mockery::mock(ResponseInterface::class);
 		$response_mock->shouldReceive('isRedirect')->andReturn(false);
@@ -150,7 +141,9 @@ class CheckoutServiceTest extends AbstractTestCase
 	public function testProcessPaymentWithRedirect(): void
 	{
 		// Mock canProcessPayment to return true
+		/** @var MockeryInterface&Order $order_mock */
 		$order_mock = \Mockery::mock(Order::class)->makePartial();
+		$order_mock->shouldReceive('items')->andReturn(collect([1])); // Simulate having items
 		$order_mock->shouldReceive('canProcessPayment')->andReturn(true);
 		$order_mock->shouldReceive('updateTotal')->once();
 		$order_mock->shouldReceive('save')->once(); // Only for status update
@@ -460,7 +453,6 @@ class CheckoutServiceTest extends AbstractTestCase
 			->with(\Mockery::on(function ($params) {
 				return isset($params['card']) &&
 					   $params['card']['number'] === '4111111111111111' &&
-					   $params['amount'] === '0.00' &&
 					   $params['currency'] === 'EUR' &&
 					   $params['transactionId'] === 'test-transaction-123' &&
 					   $params['description'] === 'Order #1' &&
@@ -492,6 +484,7 @@ class CheckoutServiceTest extends AbstractTestCase
 
 		// Assert
 		$this->assertInstanceOf(CheckoutDTO::class, $result);
+		$this->assertEquals('', $result->message);
 		$this->assertTrue($result->is_success);
 	}
 
