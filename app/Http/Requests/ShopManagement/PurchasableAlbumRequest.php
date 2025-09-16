@@ -80,7 +80,14 @@ class PurchasableAlbumRequest extends BaseApiRequest implements HasAlbums, HasDe
 		$money_service = resolve(MoneyService::class);
 
 		$this->prices = [];
+		$price_combinations = [];
 		foreach ($values[RequestAttribute::PRICES_ATTRIBUTE] as $price) {
+			$combination_key = $price['size_variant_type'] . '_' . $price['license_type'];
+			if (isset($price_combinations[$combination_key])) {
+				continue;
+			}
+			$price_combinations[$combination_key] = true;
+
 			$this->prices[] = new PurchasableOptionCreate(
 				PurchasableSizeVariantType::from($price['size_variant_type']),
 				PurchasableLicenseType::from($price['license_type']),

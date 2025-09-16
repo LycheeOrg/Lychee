@@ -17,7 +17,7 @@ use Omnipay\Omnipay;
 class OmnipayFactory
 {
 	/**
-	 * Create a payment gateway instannce.
+	 * Create a payment gateway instance.
 	 *
 	 * @param OmnipayProviderType $provider
 	 *
