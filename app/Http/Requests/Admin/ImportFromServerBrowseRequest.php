@@ -8,9 +8,10 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Contracts\Models\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
-use App\Models\Configs;
-use Illuminate\Support\Facades\Auth;
+use App\Policies\AlbumPolicy;
+use Illuminate\Support\Facades\Gate;
 
 class ImportFromServerBrowseRequest extends BaseApiRequest
 {
@@ -18,8 +19,7 @@ class ImportFromServerBrowseRequest extends BaseApiRequest
 
 	public function authorize(): bool
 	{
-		// Only the owner of Lychee can use this functionality
-		return Auth::user() !== null && Auth::user()->id === Configs::getValueAsInt('owner_id');
+		return Gate::check(AlbumPolicy::CAN_IMPORT_FROM_SERVER, [AbstractAlbum::class]);
 	}
 
 	/**

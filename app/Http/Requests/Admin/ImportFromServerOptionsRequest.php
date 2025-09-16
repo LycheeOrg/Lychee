@@ -8,15 +8,15 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Contracts\Models\AbstractAlbum;
 use App\Http\Requests\AbstractEmptyRequest;
-use App\Models\Configs;
-use Illuminate\Support\Facades\Auth;
+use App\Policies\AlbumPolicy;
+use Illuminate\Support\Facades\Gate;
 
 class ImportFromServerOptionsRequest extends AbstractEmptyRequest
 {
 	public function authorize(): bool
 	{
-		// Only the owner of Lychee can use this functionality
-		return Auth::user() !== null && Auth::user()->id === Configs::getValueAsInt('owner_id');
+		return Gate::check(AlbumPolicy::CAN_IMPORT_FROM_SERVER, [AbstractAlbum::class]);
 	}
 }

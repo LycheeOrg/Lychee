@@ -10,13 +10,14 @@ namespace App\Http\Requests\Admin;
 
 use App\Contracts\Http\Requests\HasAbstractAlbum;
 use App\Contracts\Http\Requests\RequestAttribute;
+use App\Contracts\Models\AbstractAlbum;
 use App\Exceptions\InvalidOptionsException;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasAbstractAlbumTrait;
 use App\Models\Album;
-use App\Models\Configs;
+use App\Policies\AlbumPolicy;
 use App\Rules\RandomIDRule;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class ImportFromServerRequest extends BaseApiRequest implements HasAbstractAlbum
 {
@@ -36,8 +37,7 @@ class ImportFromServerRequest extends BaseApiRequest implements HasAbstractAlbum
 
 	public function authorize(): bool
 	{
-		// Only the owner of Lychee can use this functionality
-		return Auth::user() !== null && Auth::user()->id === Configs::getValueAsInt('owner_id');
+		return Gate::check(AlbumPolicy::CAN_IMPORT_FROM_SERVER, [AbstractAlbum::class]);
 	}
 
 	/**

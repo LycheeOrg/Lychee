@@ -114,4 +114,19 @@ return [
 	'vite-http-proxy' => env('VITE_HTTP_PROXY_TARGET', '') !== '' ||
 		((bool) env('VITE_HTTP_PROXY_ENABLED', false)) !== false ||
 		((bool) env('VITE_LOCAL_DEV', false)) !== false,
+
+	/*
+	 |--------------------------------------------------------------------------
+	 | Disable import from server
+	 |--------------------------------------------------------------------------
+	 |
+	 | This value determines whether the import from server feature is disabled.
+	 | This is useful if you want to prevent users from importing files from the
+	 | server and want to make sure the admin has no rights either.
+	 |
+	 | Effectively, this increases the security by limiting the attack surface.
+	 | If the admin account is compromised, the attacker cannot use this feature to
+	 | read files from the server such as .env, /etc/passwd et al.
+	 */
+	'disable-import-from-server' => (bool) env('DISABLE_IMPORT_FROM_SERVER', false),
 ];
