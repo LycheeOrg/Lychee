@@ -40,12 +40,13 @@ class PurchasableService
 		}
 
 		return Purchasable::query()
+			->select('purchasables.*')
 			// This joins ensure that the album is also linked to the photo
 			->join(PA::PHOTO_ALBUM, PA::ALBUM_ID, '=', 'purchasables.album_id')
 			->where(PA::PHOTO_ID, $photo->id)
 			->where('album_id', $album_id)
 			->where('is_active', true)
-			->whereNull('photo_id')
+			->whereNull('purchasables.photo_id')
 			->first();
 	}
 

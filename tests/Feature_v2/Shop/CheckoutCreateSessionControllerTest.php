@@ -21,6 +21,7 @@ namespace Tests\Feature_v2\Shop;
 use App\Enum\OmnipayProviderType;
 use App\Enum\PaymentStatusType;
 use Illuminate\Support\Facades\Session;
+use App\Contracts\Http\Requests\RequestAttribute;
 
 /**
  * Test class for CheckoutController CreateSession functionality.
@@ -136,7 +137,7 @@ class CheckoutCreateSessionControllerTest extends BaseCheckoutControllerTest
 	public function testCreateSessionWithoutBasket(): void
 	{
 		// Remove basket from session
-		Session::forget('basket_id');
+		Session::forget(RequestAttribute::BASKET_ID_ATTRIBUTE);
 
 		$response = $this->postJson('Shop/Checkout/Create-session', [
 			'provider' => OmnipayProviderType::DUMMY->value,
