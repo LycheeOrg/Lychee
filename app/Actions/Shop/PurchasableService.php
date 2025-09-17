@@ -11,6 +11,7 @@ namespace App\Actions\Shop;
 use App\Constants\PhotoAlbum as PA;
 use App\DTO\PurchasableOption;
 use App\DTO\PurchasableOptionCreate;
+use App\Exceptions\Internal\LycheeLogicException;
 use App\Models\Album;
 use App\Models\Photo;
 use App\Models\Purchasable;
@@ -32,6 +33,7 @@ class PurchasableService
 	{
 		// First check for photo-specific pricing
 		$photo_specific_price = Purchasable::where('photo_id', $photo->id)
+			->where('album_id', $album_id)
 			->where('is_active', true)
 			->first();
 
@@ -135,6 +137,16 @@ class PurchasableService
 		?string $description = null,
 		?string $owner_notes = null,
 	): Purchasable {
+		// Ensure the photo actually belongs to the target album
+		if (
+			DB::table(PA::PHOTO_ALBUM)
+			->where(PA::PHOTO_ID, $photo->id)
+			->where(PA::ALBUM_ID, $album_id)
+			->exists() === false
+		) {
+			throw new LycheeLogicException('Photo does not belong to the given album_id');
+		}
+
 		return DB::transaction(function () use ($photo, $album_id, $prices, $description, $owner_notes): Purchasable {
 			// Remove any existing purchasable for this photo to avoid duplicates
 			DB::table('purchasable_prices')->where('purchasable_id', function ($query) use ($photo): void {
@@ -250,5 +262,46 @@ class PurchasableService
 
 		// Then delete the purchasable itself
 		return $purchasable->delete();
+	}
+
+	/**
+	 * Delete multiple purchasable photos.
+	 *
+	 * @param string[] $photo_ids
+	 * @param string[] $album_ids
+	 *
+	 * @return void
+	 */
+	public function deleteMulitplePhotoPurchasables(array $photo_ids, array $album_ids): void
+	{
+		PurchasablePrice::query()->whereIn('purchasable_id', function ($query) use ($photo_ids, $album_ids): void {
+			$query->select('id')->from('purchasables')
+				->whereIn('photo_id', $photo_ids)
+				->whereIn('album_id', $album_ids);
+		})->delete();
+
+		Purchasable::query()
+			->whereIn('photo_id', $photo_ids)
+			->whereIn('album_id', $album_ids)
+			->delete();
+	}
+
+	/**
+	 * Delete multiple purchasable albums.
+	 *
+	 * @param string[] $album_ids
+	 *
+	 * @return void
+	 */
+	public function deleteMultipleAlbumPurchasables(array $album_ids): void
+	{
+		PurchasablePrice::query()->whereIn('purchasable_id', function ($query) use ($album_ids): void {
+			$query->select('id')->from('purchasables')
+				->whereIn('album_id', $album_ids);
+		})->delete();
+
+		Purchasable::query()
+			->whereIn('album_id', $album_ids)
+			->delete();
 	}
 }
