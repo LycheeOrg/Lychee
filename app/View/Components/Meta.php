@@ -56,7 +56,15 @@ class Meta extends Component
 		$this->rss_enable = Configs::getValueAsBool('rss_enable');
 		$this->user_css_url = self::getUserCustomFiles('user.css');
 		$this->user_js_url = self::getUserCustomFiles('custom.js');
-		$this->base_url = url(config('app.dir_url') . '/');
+
+		$base_url = url('/');
+		// Work around to try to satisfy everyone...
+		// If APP_DIR is set and the url() already contains it, we do not append it a second time.
+		if (str_ends_with($base_url, config('app.dir_url'))) {
+			$this->base_url = $base_url;
+		} else {
+			$this->base_url = url(config('app.dir_url') . '/');
+		}
 
 		$this->page_title = Configs::getValueAsString('site_title');
 		$this->page_description = '';
