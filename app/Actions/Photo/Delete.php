@@ -111,6 +111,9 @@ readonly class Delete
 		$photo_ids = array_merge($photo_ids, $unsorted_photo_ids);
 
 		try {
+			$album_ids_containing = array_merge($album_ids, $from_id === null ? [] : [$from_id]);
+			$this->purchasable_service->deleteMulitplePhotoPurchasables($photo_ids, $album_ids_containing);
+
 			$this->collectSizeVariantPathsByPhotoID($photo_ids);
 			$this->collectLivePhotoPathsByPhotoID($photo_ids);
 			$this->deleteDBRecords($photo_ids, $album_ids);
@@ -303,8 +306,6 @@ readonly class Delete
 	private function deleteDBRecords(array $photo_ids, array $album_ids): void
 	{
 		try {
-			$this->purchasable_service->deleteMulitplePhotoPurchasables($photo_ids, $album_ids);
-
 			if (count($photo_ids) !== 0) {
 				SizeVariant::query()
 					->whereIn('size_variants.photo_id', $photo_ids)
