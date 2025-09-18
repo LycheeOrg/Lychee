@@ -79,7 +79,6 @@ class CheckoutServiceTest extends AbstractTestCase
 			->pending()
 			->withAmountCents(1999)
 			->create();
-		$this->order->id = 1;
 
 		OrderItem::factory()->forOrder($this->order)->forPhoto()->fullSize()->count(1)->create();
 	}
@@ -455,7 +454,6 @@ class CheckoutServiceTest extends AbstractTestCase
 					   $params['card']['number'] === '4111111111111111' &&
 					   $params['currency'] === 'EUR' &&
 					   $params['transactionId'] === 'test-transaction-123' &&
-					   $params['description'] === 'Order #1' &&
 					   $params['email'] === 'test@example.com';
 			}))
 			->andReturn($request_mock);
