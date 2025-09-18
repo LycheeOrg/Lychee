@@ -8,6 +8,7 @@
 
 namespace App\Http\Requests\ShopManagement;
 
+use App\Constants\PhotoAlbum as PA;
 use App\Contracts\Http\Requests\HasAlbum;
 use App\Contracts\Http\Requests\HasDescription;
 use App\Contracts\Http\Requests\HasPhotos;
@@ -15,6 +16,7 @@ use App\Contracts\Http\Requests\RequestAttribute;
 use App\DTO\PurchasableOptionCreate;
 use App\Enum\PurchasableLicenseType;
 use App\Enum\PurchasableSizeVariantType;
+use App\Exceptions\Internal\LycheeLogicException;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasAlbumTrait;
 use App\Http\Requests\Traits\HasDescriptionTrait;
@@ -25,6 +27,7 @@ use App\Models\Photo;
 use App\Rules\RandomIDRule;
 use App\Services\MoneyService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rules\Enum;
 
 class PurchasablePhotoRequest extends BaseApiRequest implements HasPhotos, HasAlbum, HasDescription
@@ -80,6 +83,14 @@ class PurchasablePhotoRequest extends BaseApiRequest implements HasPhotos, HasAl
 		/** @var string */
 		$target_album_id = $values[RequestAttribute::ALBUM_ID_ATTRIBUTE];
 		$this->album = Album::query()->findOrFail($target_album_id);
+
+		if (DB::table(PA::PHOTO_ALBUM)
+			->whereIn(PA::PHOTO_ID, $photos_ids)
+			->where(PA::ALBUM_ID, $target_album_id)
+			->count() !== $this->photos->count()) {
+		{
+			throw new LycheeLogicException('One or more photos do not belong to the target album');
+		}
 
 		$this->description = $values[RequestAttribute::DESCRIPTION_ATTRIBUTE] ?? null;
 		$this->notes = $values[RequestAttribute::NOTE_ATTRIBUTE] ?? null;
