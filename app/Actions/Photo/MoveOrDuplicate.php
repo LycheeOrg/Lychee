@@ -81,6 +81,16 @@ class MoveOrDuplicate
 		}
 	}
 
+	/**
+	 * This function is called only when moving a photo from one album to another.
+	 * If we do a duplication, then we do not flag the dupplicate as purchasable.
+	 *
+	 * Now considering the following cases while moving from
+	 * album A to album B, where A has a purchasable P1 for photo X:
+	 * - If B is null (root album), we delete P1.
+	 * - If B already has a purchasable P2 for photo X, we do nothing (delete P1, keep P2).
+	 * - If B has no purchasable for photo X, we "move" P1 to B.
+	 */
 	private function applyToPurchasable(string $photo_id, string $from_album_id, ?string $new_album_id): void
 	{
 		$purchasable = Purchasable::query()
@@ -88,10 +98,12 @@ class MoveOrDuplicate
 			->where('album_id', $from_album_id)
 			->first();
 
+		// There is no purchasable in the source album, so nothing to do.
 		if ($purchasable === null) {
 			return;
 		}
 
+		// We are moving to root album
 		if ($new_album_id === null) {
 			// Moving to root album: delete the purchasable
 			$this->purchasable_service->deletePurchasable($purchasable);
@@ -101,6 +113,8 @@ class MoveOrDuplicate
 
 		// There is already a purchasable there so we do nothing.
 		if (Purchasable::query()->where('photo_id', $photo_id)->where('album_id', $new_album_id)->exists()) {
+			// We delete the purchasable in the source album
+			$this->purchasable_service->deletePurchasable($purchasable);
 			return;
 		}
 
