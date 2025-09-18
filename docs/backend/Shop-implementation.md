@@ -119,7 +119,7 @@ Handles the logic for determining which items are purchasable and their pricing.
 Key methods:
 - `getEffectivePurchasableForPhoto(Photo $photo, string $album_id)`: Find the applicable purchasable for a photo
 - `getPhotoOptions(Photo $photo, string $album_id)`: Get all pricing options for a photo as PurchasableOption[] array
-- `getPurchasablePhotosInAlbum(Album $album, bool $include_subalbums = false)`: Get all purchasable photos in an album
+- `getPurchasablePhotosInAlbum(string $album_id)`: Get all purchasable photos in an album
 - `createPurchasableForPhoto(Photo $photo, string $album_id, array $prices, ?string $description, ?string $owner_notes)`: Make a photo purchasable
 - `createPurchasableForAlbum(Album $album, array $prices, bool $applies_to_subalbums, ?string $description, ?string $owner_notes)`: Make an album purchasable
 - `updatePrices(Purchasable $purchasable, array $prices)`: Update the prices for a purchasable item

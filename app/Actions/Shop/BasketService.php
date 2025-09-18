@@ -17,6 +17,7 @@ use App\Models\Album;
 use App\Models\Order;
 use App\Models\Photo;
 use App\Models\User;
+use App\Policies\AlbumQueryPolicy;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -30,6 +31,7 @@ class BasketService
 	public function __construct(
 		private OrderService $order_service,
 		private PurchasableService $purchasable_service,
+		private AlbumQueryPolicy $album_query_policy,
 	) {
 	}
 
@@ -128,31 +130,48 @@ class BasketService
 		bool $include_subalbums = false,
 	): Order {
 		$this->ensurePendingStatus($basket);
-		// Get all purchasable photos in the album
-		$photos = $this->purchasable_service->getPurchasablePhotosInAlbum($album, $include_subalbums);
+
+		// Select the list of accessible albums from current.
+		// The reason why we do this selection before fetching purchasables
+		// and then directly select the photos from the purchasable
+		// is because when creating the OrderItem, we need to make sure that the
+		// album_id is one that the user can actually see.
+		// If we would just fetch the photos from the purchasables, we could end
+		// up with photos that are purchasable but in albums that the user cannot see.
+		// This would lead to inconsistencies in the OrderItems.
+		if ($include_subalbums) {
+			$albums_ids = $this->album_query_policy->applyBrowsabilityFilter(Album::query()->select('id'), $album->_lft, $album->_rgt)->pluck('id')->toArray();
+		} else {
+			$albums_ids = [$album->id];
+		}
 
 		// TODO: it is worth wondering if it is the full album that is bought or if it is just a collection of photos
-		foreach ($photos as $photo) {
-			try {
-				$basket = $this->order_service->addPhotoToOrder(
-					$basket,
-					$photo,
-					$album->id,
-					$size_variant,
-					$license_type,
-					$notes
-				);
-				// @codeCoverageIgnoreStart
-			} catch (\Exception $e) {
-				// Continue with other photos even if one fails
-				Log::warning('Failed to add photo to basket', [
-					'photo_id' => $photo->id,
-					'album_id' => $album->id,
-					'error' => $e->getMessage(),
-				]);
-				continue;
+		foreach ($albums_ids as $album_id) {
+			// Get all purchasable photos in the album
+			$photos = $this->purchasable_service->getPurchasablePhotosInAlbum($album_id);
+
+			foreach ($photos as $photo) {
+				try {
+					$basket = $this->order_service->addPhotoToOrder(
+						$basket,
+						$photo,
+						$album_id,
+						$size_variant,
+						$license_type,
+						$notes
+					);
+					// @codeCoverageIgnoreStart
+				} catch (\Exception $e) {
+					// Continue with other photos even if one fails
+					Log::warning('Failed to add photo to basket', [
+						'photo_id' => $photo->id,
+						'album_id' => $album_id,
+						'error' => $e->getMessage(),
+					]);
+					continue;
+				}
+				// @codeCoverageIgnoreEnd
 			}
-			// @codeCoverageIgnoreEnd
 		}
 
 		return $this->order_service->refreshBasket($basket);

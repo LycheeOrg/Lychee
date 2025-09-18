@@ -16,7 +16,6 @@ use App\Models\Album;
 use App\Models\Photo;
 use App\Models\Purchasable;
 use App\Models\PurchasablePrice;
-use App\Policies\AlbumQueryPolicy;
 use Illuminate\Support\Facades\DB;
 
 class PurchasableService
@@ -84,39 +83,30 @@ class PurchasableService
 	}
 
 	/**
-	 * Get all purchasable photos in an album (including sub-albums if applicable).
+	 * Get all purchasable photos in an album.
 	 *
-	 * @param Album $album             The album to check
-	 * @param bool  $include_subalbums Whether to include photos in sub-albums
+	 * @param string $album_id The album ID to fetch purchasable photos from
 	 *
 	 * @return \Illuminate\Support\Collection<int,Photo> Collection of purchasable photos
 	 */
-	public function getPurchasablePhotosInAlbum(Album $album, bool $include_subalbums = false)
+	public function getPurchasablePhotosInAlbum(string $album_id)
 	{
-		// Select the list of accessible albums from current.
-		$album_query_policy = resolve(AlbumQueryPolicy::class);
-		if ($include_subalbums) {
-			$albums_ids = $album_query_policy->applyBrowsabilityFilter(Album::query()->select('id'), $album->_lft, $album->_rgt)->pluck('id')->toArray();
-		} else {
-			$albums_ids = [$album->id];
-		}
-
-		$album_ids_purchasables = Purchasable::query()
-			->whereIn('album_id', $albums_ids)
-			->where('is_active', true)
-			->whereNull('photo_id')
-			->pluck('album_id');
-
-		$photo_ids_purchasables = Purchasable::query()
-			->whereIn('album_id', $albums_ids)
-			->where('is_active', true)
-			->whereNotNull('photo_id')
-			->pluck('photo_id');
-
 		return Photo::query()
 			->join(PA::PHOTO_ALBUM, PA::PHOTO_ID, '=', 'photos.id')
-			->whereIn(PA::ALBUM_ID, $album_ids_purchasables)
-			->orWhereIn('photos.id', $photo_ids_purchasables)
+			->whereIn(PA::ALBUM_ID,
+				fn ($q) => $q
+				->select('album_id')
+				->from('purchasables')
+				->whereNull('photo_id')
+				->where('is_active', true)
+				->where('album_id', $album_id))
+			->orWhereIn(PA::PHOTO_ID,
+				fn ($q) => $q
+				->select('photo_id')
+				->from('purchasables')
+				->whereNotNull('photo_id')
+				->where('is_active', true)
+				->where('album_id', $album_id))
 			->get();
 	}
 
