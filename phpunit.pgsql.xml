@@ -16,6 +16,7 @@
       <exclude>./tests/Feature_v2/Base/BaseApiTest.php</exclude>
       <exclude>./tests/Feature_v2/Base/BaseApiWithDataTest.php</exclude>
       <exclude>./tests/Feature_v2/ImageHandlers/BaseImageHandler.php</exclude>
+      <exclude>./tests/Feature_v2/Shop/BaseCheckoutControllerTest.php</exclude>
     </testsuite>
   </testsuites>
   <extensions>
