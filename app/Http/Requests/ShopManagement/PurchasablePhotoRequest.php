@@ -88,7 +88,6 @@ class PurchasablePhotoRequest extends BaseApiRequest implements HasPhotos, HasAl
 			->whereIn(PA::PHOTO_ID, $photos_ids)
 			->where(PA::ALBUM_ID, $target_album_id)
 			->count() !== $this->photos->count()) {
-		{
 			throw new LycheeLogicException('One or more photos do not belong to the target album');
 		}
 

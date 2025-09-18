@@ -115,6 +115,7 @@ class MoveOrDuplicate
 		if (Purchasable::query()->where('photo_id', $photo_id)->where('album_id', $new_album_id)->exists()) {
 			// We delete the purchasable in the source album
 			$this->purchasable_service->deletePurchasable($purchasable);
+
 			return;
 		}
 
