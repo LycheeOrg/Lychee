@@ -25,7 +25,7 @@ export const UserGroupService = {
 	 * @param description - The new description of the user group.
 	 */
 	updateUserGroup(groupId: number, name: string, description: string): Promise<AxiosResponse<App.Http.Resources.Models.UserGroupResource>> {
-		return axios.put(`${Constants.getApiUrl()}UserGroups/`, { group_id: groupId, name: name, description: description });
+		return axios.patch(`${Constants.getApiUrl()}UserGroups/`, { group_id: groupId, name: name, description: description });
 	},
 
 	/**

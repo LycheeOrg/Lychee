@@ -32,6 +32,7 @@ return [
         'users' => 'Usuarios',
         'cancel' => 'Cancelar',
         'create' => 'Crear',
+		'edit' => 'Edit',
 
         'error_name_required' => 'El nombre del grupo es obligatorio.',
     ]

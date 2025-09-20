@@ -32,6 +32,7 @@ return [
         'users' => 'Users',
         'cancel' => 'Cancel',
         'create' => 'Create',
+		'edit' => 'Edit',
 
         'error_name_required' => 'Group name is required.',
     ]

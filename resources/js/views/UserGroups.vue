@@ -149,8 +149,8 @@ function confirmDelete(group: App.Http.Resources.Models.UserGroupResource) {
 	}
 
 	confirm.require({
-		header: trans("user-groups.delete_group_header"),
-		message: trans("user-groups.delete_group_confirm"),
+		header: trans("user-groups.confirm_delete_header"),
+		message: trans("user-groups.confirm_delete_message"),
 		icon: "pi pi-exclamation-triangle before:text-orange-500",
 		rejectProps: {
 			label: trans("user-groups.cancel"),
@@ -187,7 +187,7 @@ function deleteMember(group: App.Http.Resources.Models.UserGroupResource, member
 		toast.add({
 			severity: "success",
 			summary: trans("toasts.success"),
-			detail: sprintf(trans("user-groups.user_removed"), member.username, group.name),
+			detail: sprintf(trans("user-groups.remove_success"), member.username, group.name),
 			life: 3000,
 		});
 		fetchUserGroups();
