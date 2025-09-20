@@ -100,7 +100,7 @@ class ModulesRightsResource extends Data
 			return false;
 		}
 
-		return $is_logged_in || !Configs::getValueAsBool('flow_public');
+		return $is_logged_in || Configs::getValueAsBool('flow_public');
 	}
 
 	/**
