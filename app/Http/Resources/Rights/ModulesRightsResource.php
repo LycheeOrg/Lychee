@@ -24,7 +24,7 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 #[TypeScript()]
 class ModulesRightsResource extends Data
 {
-	private Verify $verify;
+	private readonly Verify $verify;
 	public bool $is_map_enabled = false;
 	public bool $is_mod_frame_enabled = false;
 	public bool $is_mod_flow_enabled = false;
@@ -38,7 +38,7 @@ class ModulesRightsResource extends Data
 		$is_logged_in = Auth::check();
 
 		$this->is_map_enabled = $this->isMapEnabled($is_logged_in);
-		$this->is_mod_frame_enabled = $this->checkModFrameEnabled();
+		$this->is_mod_frame_enabled = $this->isModFrameEnabled();
 		$this->is_mod_flow_enabled = $this->isModFlowEnabled($is_logged_in);
 		$this->is_watermarker_enabled = $this->isWatermarkerEnabled($is_logged_in);
 		$this->is_photo_timeline_enabled = $this->isTimelinePhotosEnabled($is_logged_in);
@@ -54,11 +54,11 @@ class ModulesRightsResource extends Data
 	 */
 	private function isMapEnabled(bool $is_logged_in): bool
 	{
-		$count_locations = Photo::whereNotNull('latitude')->whereNotNull('longitude')->count() > 0;
+		$has_locations = Photo::whereNotNull('latitude')->whereNotNull('longitude')->exists();
 		$map_display = Configs::getValueAsBool('map_display');
 		$public_display = $is_logged_in || Configs::getValueAsBool('map_display_public');
 
-		return $count_locations && $map_display && $public_display;
+		return $has_locations && $map_display && $public_display;
 	}
 
 	/**
@@ -66,7 +66,7 @@ class ModulesRightsResource extends Data
 	 *
 	 * @return bool true if the frame module is enabled and accessible, false otherwise
 	 */
-	private function checkModFrameEnabled(): bool
+	private function isModFrameEnabled(): bool
 	{
 		if (!Configs::getValueAsBool('mod_frame_enabled')) {
 			return false;
