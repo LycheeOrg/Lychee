@@ -155,7 +155,14 @@ class Configs extends Model
 			case ConfigType::CURRENCY->value:
 				$bundle = \ResourceBundle::create('en', 'ICUDATA-curr');
 				$currencies = $bundle->get('Currencies');
-				if (!array_key_exists($candidate_value, $currencies)) {
+				$found = false;
+				foreach ($currencies as $code => $data) {
+					$found = ($code === $candidate_value);
+					if ($found) {
+						break; // we found it, stop searching
+					}
+				}
+				if (!$found) {
 					$message = sprintf($message_template, 'a valid ISO 4217 currency code');
 					break;
 				}

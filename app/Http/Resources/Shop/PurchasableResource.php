@@ -45,7 +45,7 @@ class PurchasableResource extends Data
 			photo_id: $item->photo_id,
 			prices: $item->prices->map(PriceResource::fromModel(...))->toArray(),
 			owner_notes: $user?->may_administrate === true ? $item->owner_notes : null,
-			description: $item->description ?? Configs::getValueAsString('webshopt_default_description'),
+			description: $item->description ?? Configs::getValueAsString('webshop_default_description'),
 			is_active: $item->is_active,
 		);
 	}

@@ -42,7 +42,7 @@ return new class() extends BaseConfigMigration {
 				'level' => 1, // Only for SE.
 			],
 			[
-				'key' => 'webshopt_default_description',
+				'key' => 'webshop_default_description',
 				'value' => 'No description provided.',
 				'cat' => self::MOD_PRO,
 				'type_range' => self::STRING,
