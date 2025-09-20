@@ -8,6 +8,7 @@
 
 namespace App\Services;
 
+use App\Models\Configs;
 use Money\Currencies\ISOCurrencies;
 use Money\Currency;
 use Money\Formatter\DecimalMoneyFormatter;
@@ -27,7 +28,7 @@ class MoneyService
 	 */
 	public function getDefaultCurrencyCode(): string
 	{
-		return config('omnipay.currency', 'EUR');
+		return Configs::getValueAsString('webshop_currency');
 	}
 
 	/**
