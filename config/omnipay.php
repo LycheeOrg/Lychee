@@ -6,9 +6,6 @@ return [
 	| Default Omnipay configuration options
 	|--------------------------------------------------------------------------
 	*/
-
-	'currency' => env('OMNIPAY_CURRENCY', 'EUR'),
-
 	'gateway' => env('OMNIPAY_GATEWAY', 'Dummy'),
 
 	// case DUMMY = 'Dummy';

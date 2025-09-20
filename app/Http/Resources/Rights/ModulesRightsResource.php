@@ -24,15 +24,20 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 #[TypeScript()]
 class ModulesRightsResource extends Data
 {
+	private Verify $verify;
+
 	public bool $is_map_enabled = false;
 	public bool $is_mod_frame_enabled = false;
 	public bool $is_mod_flow_enabled = false;
 	public bool $is_watermarker_enabled = false;
 	public bool $is_photo_timeline_enabled = false;
 	public bool $is_mod_renamer_enabled = false;
+	public bool $is_mod_webshop_enabled = false;
 
 	public function __construct()
 	{
+		$this->verify = resolve(Verify::class);
+
 		$is_logged_in = Auth::check();
 		$count_locations = Photo::whereNotNull('latitude')->whereNotNull('longitude')->count() > 0;
 		$map_display = Configs::getValueAsBool('map_display');
@@ -42,13 +47,14 @@ class ModulesRightsResource extends Data
 		$this->is_mod_frame_enabled = $this->checkModFrameEnabled();
 		$this->is_mod_flow_enabled = Configs::getValueAsBool('flow_enabled') && (Auth::check() || Configs::getValueAsBool('flow_public'));
 
-		$this->is_watermarker_enabled = resolve(Watermarker::class)->can_watermark && Auth::check() && resolve(Verify::class)->check();
+		$this->is_watermarker_enabled = resolve(Watermarker::class)->can_watermark && Auth::check() && $this->verify->check();
 
 		$timeline_photos_enabled = Configs::getValueAsBool('timeline_photos_enabled');
 		$timeline_photos_public = Configs::getValueAsBool('timeline_photos_public');
 		$this->is_photo_timeline_enabled = $timeline_photos_enabled && ($is_logged_in || $timeline_photos_public);
 
 		$this->is_mod_renamer_enabled = $this->isRenamerEnabled();
+		$this->is_mod_webshop_enabled = $this->isWebshopEnabled();
 	}
 
 	private function checkModFrameEnabled(): bool
@@ -81,7 +87,7 @@ class ModulesRightsResource extends Data
 	 */
 	private function isRenamerEnabled(): bool
 	{
-		if (!resolve(Verify::class)->check()) {
+		if (!$this->verify->check()) {
 			return false;
 		}
 
@@ -94,5 +100,19 @@ class ModulesRightsResource extends Data
 		}
 
 		return true;
+	}
+
+	/**
+	 * Check if the webshop module is enabled.
+	 *
+	 * @return bool true if the webshop is enabled, false otherwise
+	 */
+	private function isWebshopEnabled(): bool
+	{
+		if (!$this->verify->check()) {
+			return false;
+		}
+
+		return Configs::getValueAsBool('webshop_enabled');
 	}
 }

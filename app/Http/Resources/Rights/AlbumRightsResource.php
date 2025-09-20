@@ -53,9 +53,17 @@ class AlbumRightsResource extends Data
 		$this->can_make_purchasable = $this->canMakePurchasable($abstract_album);
 	}
 
+	/**
+	 * Check if the user can make the album purchasable.
+	 * This requires the user to be a supporter and have the relevant permission.
+	 *
+	 * @param AbstractAlbum|null $abstract_album
+	 *
+	 * @return bool
+	 */
 	public function canMakePurchasable(?AbstractAlbum $abstract_album): bool
 	{
-		if (!$abstract_album instanceof Album){
+		if (!$abstract_album instanceof Album) {
 			return false;
 		}
 

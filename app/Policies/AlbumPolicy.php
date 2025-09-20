@@ -607,6 +607,7 @@ class AlbumPolicy extends BasePolicy
 	 * Admin case is handled by the before() method in BasePolicy.
 	 *
 	 * @param User $user
+	 *
 	 * @return bool
 	 */
 	public function canMakePurchasable(User $user): bool
