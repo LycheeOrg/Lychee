@@ -14,6 +14,7 @@ use App\Models\Configs;
 use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use LycheeVerify\Verify;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
@@ -31,6 +32,7 @@ class AlbumRightsResource extends Data
 	public bool $can_access_original = false;
 	public bool $can_pasword_protect = false;
 	public bool $can_import_from_server = false;
+	public bool $can_make_purchasable = false;
 
 	/**
 	 * Given an album, returns the access rights associated to it.
@@ -48,5 +50,20 @@ class AlbumRightsResource extends Data
 		$this->can_access_original = Gate::check(AlbumPolicy::CAN_ACCESS_FULL_PHOTO, [AbstractAlbum::class, $abstract_album]);
 		$this->can_pasword_protect = !Configs::getValueAsBool('cache_enabled');
 		$this->can_import_from_server = Auth::check() && Auth::id() === Configs::getValueAsInt('owner_id');
+		$this->can_make_purchasable = $this->canMakePurchasable($abstract_album);
+	}
+
+	public function canMakePurchasable(?AbstractAlbum $abstract_album): bool
+	{
+		if (!$abstract_album instanceof Album){
+			return false;
+		}
+
+		$verify = resolve(Verify::class);
+		if (!$verify->is_supporter()) {
+			return false;
+		}
+
+		return Gate::check(AlbumPolicy::CAN_MAKE_PURCHASABLE, [AbstractAlbum::class]);
 	}
 }
