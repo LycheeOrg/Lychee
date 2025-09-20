@@ -29,6 +29,9 @@ jobs:
         test-suite:
           - Unit
           - Feature_v2
+        exclude:
+          - php-version: 8.4 # We skip Feature_v2 on PHP 8.4 as it is quite slow. We rely on 8.3 to catch any issues.
+            test-suite: Feature_v2
     # Service containers to run with `container-job`
     services:
       # Label used to access the service container
@@ -92,7 +95,7 @@ jobs:
           php artisan optimize
           php artisan migrate
 
-      - name: Apply tests ${{ inputs.test-suite }}
+      - name: Apply tests ${{ matrix.test-suite }}
         run: XDEBUG_MODE=coverage vendor/bin/phpunit --configuration phpunit.ci.xml --testsuite ${{ matrix.test-suite }}
 
       - name: Make sure we can go backward

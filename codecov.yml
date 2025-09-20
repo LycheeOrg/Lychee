@@ -2,7 +2,7 @@
 codecov:
   require_ci_to_pass: true
   notify:
-    after_n_builds: 6
+    after_n_builds: 9
     wait_for_ci: true
 comment:
   behavior: default
