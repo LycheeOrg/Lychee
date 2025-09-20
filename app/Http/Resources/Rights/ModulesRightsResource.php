@@ -24,6 +24,7 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 #[TypeScript()]
 class ModulesRightsResource extends Data
 {
+	private readonly Verify $verify;
 	public bool $is_map_enabled = false;
 	public bool $is_mod_frame_enabled = false;
 	public bool $is_mod_flow_enabled = false;
@@ -33,25 +34,39 @@ class ModulesRightsResource extends Data
 
 	public function __construct()
 	{
+		$this->verify = resolve(Verify::class);
 		$is_logged_in = Auth::check();
-		$count_locations = Photo::whereNotNull('latitude')->whereNotNull('longitude')->count() > 0;
-		$map_display = Configs::getValueAsBool('map_display');
-		$public_display = $is_logged_in || Configs::getValueAsBool('map_display_public');
 
-		$this->is_map_enabled = $count_locations && $map_display && $public_display;
-		$this->is_mod_frame_enabled = $this->checkModFrameEnabled();
-		$this->is_mod_flow_enabled = Configs::getValueAsBool('flow_enabled') && (Auth::check() || Configs::getValueAsBool('flow_public'));
-
-		$this->is_watermarker_enabled = resolve(Watermarker::class)->can_watermark && Auth::check() && resolve(Verify::class)->check();
-
-		$timeline_photos_enabled = Configs::getValueAsBool('timeline_photos_enabled');
-		$timeline_photos_public = Configs::getValueAsBool('timeline_photos_public');
-		$this->is_photo_timeline_enabled = $timeline_photos_enabled && ($is_logged_in || $timeline_photos_public);
-
+		$this->is_map_enabled = $this->isMapEnabled($is_logged_in);
+		$this->is_mod_frame_enabled = $this->isModFrameEnabled();
+		$this->is_mod_flow_enabled = $this->isModFlowEnabled($is_logged_in);
+		$this->is_watermarker_enabled = $this->isWatermarkerEnabled($is_logged_in);
+		$this->is_photo_timeline_enabled = $this->isTimelinePhotosEnabled($is_logged_in);
 		$this->is_mod_renamer_enabled = $this->isRenamerEnabled();
 	}
 
-	private function checkModFrameEnabled(): bool
+	/**
+	 * Check if the map module is enabled and accessible to the current user.
+	 *
+	 * @param bool $is_logged_in
+	 *
+	 * @return bool true if the map module is enabled and accessible, false otherwise
+	 */
+	private function isMapEnabled(bool $is_logged_in): bool
+	{
+		$has_locations = Photo::whereNotNull('latitude')->whereNotNull('longitude')->exists();
+		$map_display = Configs::getValueAsBool('map_display');
+		$public_display = $is_logged_in || Configs::getValueAsBool('map_display_public');
+
+		return $has_locations && $map_display && $public_display;
+	}
+
+	/**
+	 * Check if the frame module is enabled and accessible to the current user.
+	 *
+	 * @return bool true if the frame module is enabled and accessible, false otherwise
+	 */
+	private function isModFrameEnabled(): bool
 	{
 		if (!Configs::getValueAsBool('mod_frame_enabled')) {
 			return false;
@@ -72,6 +87,59 @@ class ModulesRightsResource extends Data
 	}
 
 	/**
+	 * Check if the flow module is enabled and accessible to the current user.
+	 * The flow module provides a dynamic and visually appealing way to browse through photos.
+	 *
+	 * @param bool $is_logged_in
+	 *
+	 * @return bool
+	 */
+	private function isModFlowEnabled(bool $is_logged_in): bool
+	{
+		if (!Configs::getValueAsBool('flow_enabled')) {
+			return false;
+		}
+
+		return $is_logged_in || Configs::getValueAsBool('flow_public');
+	}
+
+	/**
+	 * Check if the timeline photos module is enabled and accessible to the current user.
+	 *
+	 * @param bool $is_logged_in
+	 *
+	 * @return bool
+	 */
+	private function isTimelinePhotosEnabled(bool $is_logged_in): bool
+	{
+		$timeline_photos_enabled = Configs::getValueAsBool('timeline_photos_enabled');
+		$timeline_photos_public = Configs::getValueAsBool('timeline_photos_public');
+
+		return $timeline_photos_enabled && ($is_logged_in || $timeline_photos_public);
+	}
+
+	/**
+	 * Check if the watermarker module is enabled and accessible to the current user.
+	 * The watermarker module allows users to apply watermarks to photos for protection and branding purposes.
+	 *
+	 * With this function we inform the front-end that the watermarker can be triggered to be applied to photos.
+	 *
+	 * @return bool true if the watermarker is enabled and accessible, false otherwise
+	 */
+	private function isWatermarkerEnabled(bool $is_logged_in): bool
+	{
+		if (!$is_logged_in) {
+			return false;
+		}
+
+		if (!$this->verify->check()) {
+			return false;
+		}
+
+		return resolve(Watermarker::class)->can_watermark;
+	}
+
+	/**
 	 * Check if the renamer module is enabled and accessible to the current user.
 	 *
 	 * The renamer module allows users to create and manage rules for automatically
@@ -81,7 +149,7 @@ class ModulesRightsResource extends Data
 	 */
 	private function isRenamerEnabled(): bool
 	{
-		if (!resolve(Verify::class)->check()) {
+		if (!$this->verify->check()) {
 			return false;
 		}
 

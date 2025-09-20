@@ -49,8 +49,6 @@ class SetProtectionPolicy
 		$active_permissions->grants_upload = $protection_policy->grants_upload;
 		$active_permissions->base_album_id = $album->get_id();
 
-		// $album->public_permissions = $active_permissions;
-
 		// Set password if provided
 		if ($shall_set_password) {
 			// password is provided => there is a change
