@@ -37,7 +37,15 @@
 						@click="closeCallback"
 					/>
 					<Button
+						v-if="groupId === undefined"
 						:label="$t('user-groups.create.create')"
+						icon="pi pi-check"
+						type="submit"
+						class="w-full rounded-none rounded-br-xl border-none"
+					/>
+					<Button
+						v-else
+						:label="$t('user-groups.create.edit')"
 						icon="pi pi-check"
 						type="submit"
 						class="w-full rounded-none rounded-br-xl border-none"
