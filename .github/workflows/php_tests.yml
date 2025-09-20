@@ -2,11 +2,6 @@ name: PHP Tests
 
 on:
   workflow_call:
-    inputs:
-      env-file:
-        required: true
-        type: string
-        description: 'The env files to use'
     secrets:
       CODECOV_TOKEN:
         required: true
@@ -89,7 +84,7 @@ jobs:
 
       - name: copy Env
         run: |
-          cp .github/workflows/${{ inputs.env-file }}.${{ matrix.sql-versions }} .env
+          cp .github/workflows/.env.${{ matrix.sql-versions }} .env
 
       - name: Generate secure key & Optimize application & Migrate
         run: |
