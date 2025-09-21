@@ -8,7 +8,6 @@
 
 namespace App\Http\Controllers\Shop;
 
-use App\Actions\Shop\PurchasableService;
 use App\Http\Requests\Catalog\GetCatalogRequest;
 use App\Http\Resources\Shop\CatalogResource;
 use App\Models\Album;
@@ -19,7 +18,6 @@ use Illuminate\Routing\Controller;
 class CatalogController extends Controller
 {
 	public function __construct(
-		private PurchasableService $purchasable_service,
 		private AlbumQueryPolicy $album_query_policy,
 	) {
 	}

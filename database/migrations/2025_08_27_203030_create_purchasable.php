@@ -25,7 +25,7 @@ return new class() extends Migration {
 
 		Schema::create('purchasables', function (Blueprint $table) {
 			$table->id();
-			$table->char(self::ALBUM_ID, self::RANDOM_ID_LENGTH)->nullable(true);
+			$table->char(self::ALBUM_ID, self::RANDOM_ID_LENGTH)->nullable(false);
 			$table->char(self::PHOTO_ID, self::RANDOM_ID_LENGTH)->nullable(true);
 			$table->text('description')->nullable(true)->comment('Public description shown to customers');
 			$table->text('owner_notes')->nullable(true)->comment('Private notes for the owner');

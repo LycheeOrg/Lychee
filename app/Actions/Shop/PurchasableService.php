@@ -45,8 +45,8 @@ class PurchasableService
 			// This joins ensure that the album is also linked to the photo
 			->join(PA::PHOTO_ALBUM, PA::ALBUM_ID, '=', 'purchasables.album_id')
 			->where(PA::PHOTO_ID, $photo->id)
-			->where('album_id', $album_id)
-			->where('is_active', true)
+			->where('purchasables.album_id', $album_id)
+			->where('purchasables.is_active', true)
 			->whereNull('purchasables.photo_id')
 			->first();
 	}
@@ -93,20 +93,22 @@ class PurchasableService
 	{
 		return Photo::query()
 			->join(PA::PHOTO_ALBUM, PA::PHOTO_ID, '=', 'photos.id')
-			->whereIn(PA::ALBUM_ID,
-				fn ($q) => $q
-				->select('album_id')
-				->from('purchasables')
-				->whereNull('photo_id')
-				->where('is_active', true)
-				->where('album_id', $album_id))
-			->orWhereIn(PA::PHOTO_ID,
-				fn ($q) => $q
-				->select('photo_id')
-				->from('purchasables')
-				->whereNotNull('photo_id')
-				->where('is_active', true)
-				->where('album_id', $album_id))
+			->where(PA::ALBUM_ID, $album_id)
+			->where(function ($q) use ($album_id) {
+				$q->whereExists(function ($q2) use ($album_id) {
+					$q2->select(DB::raw(1))
+						->from('purchasables')
+						->whereNull('photo_id')
+						->where('is_active', true)
+						->where('album_id', $album_id);
+				})->orWhereExists(function ($q3) use ($album_id) {
+					$q3->select(DB::raw(1))
+						->from('purchasables')
+						->whereColumn('purchasables.photo_id', 'photos.id')
+						->where('is_active', true)
+						->where('album_id', $album_id);
+				});
+			})
 			->get();
 	}
 
@@ -139,10 +141,10 @@ class PurchasableService
 
 		return DB::transaction(function () use ($photo, $album_id, $prices, $description, $owner_notes): Purchasable {
 			// Remove any existing purchasable for this photo to avoid duplicates
-			DB::table('purchasable_prices')->where('purchasable_id', function ($query) use ($photo): void {
-				$query->select('id')->from('purchasables')->where('photo_id', $photo->id);
+			DB::table('purchasable_prices')->where('purchasable_id', function ($query) use ($photo, $album_id): void {
+				$query->select('id')->from('purchasables')->where('photo_id', $photo->id)->where('album_id', $album_id);
 			})->delete();
-			DB::table('purchasables')->where('photo_id', $photo->id)->delete();
+			DB::table('purchasables')->where('photo_id', $photo->id)->where('album_id', $album_id)->delete();
 
 			$purchasable = Purchasable::create([
 				'photo_id' => $photo->id,

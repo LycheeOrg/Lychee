@@ -23,7 +23,7 @@ class DeleteItemRequest extends BaseBasketRequest
 	public function authorize(): bool
 	{
 		// Anyone can delete items from their own basket (session-verified)
-		return $this->order->items->contains(fn ($item) => $item->id === $this->item_id);
+		return $this->order?->items?->contains(fn ($item) => $item->id === $this->item_id) ?? false;
 	}
 
 	/**
