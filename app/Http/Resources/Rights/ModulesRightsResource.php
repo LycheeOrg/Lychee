@@ -31,6 +31,7 @@ class ModulesRightsResource extends Data
 	public bool $is_watermarker_enabled = false;
 	public bool $is_photo_timeline_enabled = false;
 	public bool $is_mod_renamer_enabled = false;
+	public bool $is_mod_webshop_enabled = false;
 
 	public function __construct()
 	{
@@ -43,6 +44,7 @@ class ModulesRightsResource extends Data
 		$this->is_watermarker_enabled = $this->isWatermarkerEnabled($is_logged_in);
 		$this->is_photo_timeline_enabled = $this->isTimelinePhotosEnabled($is_logged_in);
 		$this->is_mod_renamer_enabled = $this->isRenamerEnabled();
+		$this->is_mod_webshop_enabled = $this->isWebshopEnabled();
 	}
 
 	/**
@@ -162,5 +164,19 @@ class ModulesRightsResource extends Data
 		}
 
 		return true;
+	}
+
+	/**
+	 * Check if the webshop module is enabled.
+	 *
+	 * @return bool true if the webshop is enabled, false otherwise
+	 */
+	private function isWebshopEnabled(): bool
+	{
+		if (!$this->verify->check()) {
+			return false;
+		}
+
+		return Configs::getValueAsBool('webshop_enabled');
 	}
 }
