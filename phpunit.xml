@@ -17,6 +17,9 @@
       <exclude>./tests/Feature_v2/Base/BaseApiWithDataTest.php</exclude>
       <exclude>./tests/Feature_v2/ImageHandlers/BaseImageHandler.php</exclude>
     </testsuite>
+    <testsuite name="Install">
+      <directory suffix="Test.php">./tests/Install</directory>
+    </testsuite>
   </testsuites>
   <extensions>
     <bootstrap class="Tests\BootExtension"/>

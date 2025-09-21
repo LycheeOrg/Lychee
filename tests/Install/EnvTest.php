@@ -16,7 +16,7 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Tests\Feature_v2\Install;
+namespace Tests\Install;
 
 use App\Http\Middleware\InstallationStatus;
 use Tests\AbstractTestCase;

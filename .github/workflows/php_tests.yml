@@ -29,6 +29,7 @@ jobs:
         test-suite:
           - Unit
           - Feature_v2
+          - Install
         exclude:
           - php-version: 8.4 # We skip Feature_v2 on PHP 8.4 as it is quite slow. We rely on 8.3 to catch any issues.
             test-suite: Feature_v2

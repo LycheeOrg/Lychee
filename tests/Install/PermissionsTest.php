@@ -16,19 +16,19 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Tests\Feature_v2\Install;
+namespace Tests\Install;
 
 use App\Http\Middleware\InstallationStatus;
 use Tests\AbstractTestCase;
 
-class RequirementsTest extends AbstractTestCase
+class PermissionsTest extends AbstractTestCase
 {
 	public function testGet(): void
 	{
-		$response = $this->get('install/req');
+		$response = $this->get('install/perm');
 		$this->assertForbidden($response);
 
-		$response = $this->withoutMiddleware(InstallationStatus::class)->get('install/req');
+		$response = $this->withoutMiddleware(InstallationStatus::class)->get('install/perm');
 		$this->assertOk($response);
 	}
 }
