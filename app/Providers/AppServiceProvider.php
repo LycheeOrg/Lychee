@@ -30,7 +30,6 @@ use App\Policies\PhotoQueryPolicy;
 use App\Policies\SettingsPolicy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Events\QueryExecuted;
-use Illuminate\Database\QueryException;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -39,14 +38,9 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
-use InvalidArgumentException;
 use LycheeVerify\Verify;
 use Opcodes\LogViewer\Facades\LogViewer;
-use Safe\Exceptions\PcreException;
-use Safe\Exceptions\MbstringException;
 use Safe\Exceptions\StreamException;
-use Symfony\Component\HttpFoundation\Exception\UnexpectedValueException;
-
 use function Safe\stream_filter_register;
 
 class AppServiceProvider extends ServiceProvider
