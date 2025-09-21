@@ -16,22 +16,19 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Tests\Feature_v2\Install;
+namespace Tests\Install;
 
 use App\Http\Middleware\InstallationStatus;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\AbstractTestCase;
 
-class MigrateTest extends AbstractTestCase
+class WelcomeTest extends AbstractTestCase
 {
-	use DatabaseTransactions;
-
 	public function testGet(): void
 	{
-		$response = $this->get('install/migrate');
+		$response = $this->get('install');
 		$this->assertForbidden($response);
 
-		$response = $this->withoutMiddleware(InstallationStatus::class)->get('install/migrate');
+		$response = $this->withoutMiddleware(InstallationStatus::class)->get('install');
 		$this->assertOk($response);
 	}
 }

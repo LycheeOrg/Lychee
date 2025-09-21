@@ -2,17 +2,8 @@ name: PHP Tests
 
 on:
   workflow_call:
-    inputs:
-      test-suite:
-        required: true
-        type: string
-        description: 'The test suite to run'
-      env-file:
-        required: true
-        type: string
-        description: 'The env files to use'
     secrets:
-      CODECOV_TOKEN: 
+      CODECOV_TOKEN:
         required: true
         description: 'codecov token secret'
 
@@ -23,8 +14,8 @@ jobs:
   tests:
     permissions:
       contents: read  # for actions/checkout to fetch code
-      pull-requests: read 
-    name: ${{ matrix.php-version }} - ${{ matrix.sql-versions }} -- ${{ inputs.test-suite }}
+      pull-requests: read
+    name: ${{ matrix.php-version }} - ${{ matrix.sql-versions }} -- ${{ matrix.test-suite }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -35,6 +26,13 @@ jobs:
           - mariadb
           - postgresql
           - sqlite
+        test-suite:
+          - Unit
+          - Feature_v2
+          - Install
+        exclude:
+          - php-version: 8.4 # We skip Feature_v2 on PHP 8.4 as it is quite slow. We rely on 8.3 to catch any issues.
+            test-suite: Feature_v2
     # Service containers to run with `container-job`
     services:
       # Label used to access the service container
@@ -90,7 +88,7 @@ jobs:
 
       - name: copy Env
         run: |
-          cp .github/workflows/${{ inputs.env-file }}.${{ matrix.sql-versions }} .env
+          cp .github/workflows/.env.${{ matrix.sql-versions }} .env
 
       - name: Generate secure key & Optimize application & Migrate
         run: |
@@ -98,8 +96,8 @@ jobs:
           php artisan optimize
           php artisan migrate
 
-      - name: Apply tests ${{ inputs.test-suite }}
-        run: XDEBUG_MODE=coverage vendor/bin/phpunit --configuration phpunit.ci.xml --testsuite ${{ inputs.test-suite }}
+      - name: Apply tests ${{ matrix.test-suite }}
+        run: XDEBUG_MODE=coverage vendor/bin/phpunit --configuration phpunit.ci.xml --testsuite ${{ matrix.test-suite }}
 
       - name: Make sure we can go backward
         run: php artisan migrate:rollback

@@ -27,17 +27,12 @@ trait RequiresEmptyUsers
 	protected function setUpRequiresEmptyUsers(): void
 	{
 		// Assert that user table only contains the admin user
-		static::assertEquals(
-			0,
-			DB::table('users')
-				->where('id', '>', 1)
-				->count()
-		);
+		static::assertEquals(0, DB::table('users')->count());
 	}
 
 	protected function tearDownRequiresEmptyUsers(): void
 	{
 		// Clean up remaining stuff from tests
-		DB::table('users')->where('id', '>', 1)->delete();
+		DB::table('users')->where('id', '>', 0)->delete();
 	}
 }
