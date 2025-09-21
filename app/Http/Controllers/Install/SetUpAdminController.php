@@ -55,7 +55,7 @@ class SetUpAdminController extends Controller
 			Configs::set('owner_id', $user->id);
 		} catch (\Throwable $e) {
 			$error = $e->getMessage();
-			$error .= '<br>' . $e->getPrevious()->getMessage();
+			$error .= '<br>' . $e->getPrevious()?->getMessage() ?? '';
 		}
 
 		if ($error === '') {
