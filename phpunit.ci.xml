@@ -11,12 +11,14 @@
       <directory suffix="Test.php">./tests/Unit</directory>
       <exclude>./tests/Unit/Http/Requests/Base/BaseRequestTest.php</exclude>
     </testsuite>
-
     <testsuite name="Feature_v2">
       <directory suffix="Test.php">./tests/Feature_v2</directory>
       <exclude>./tests/Feature_v2/Base/BaseApiTest.php</exclude>
       <exclude>./tests/Feature_v2/Base/BaseApiWithDataTest.php</exclude>
       <exclude>./tests/Feature_v2/ImageHandlers/BaseImageHandler.php</exclude>
+    </testsuite>
+    <testsuite name="Install">
+      <directory suffix="Test.php">./tests/Install</directory>
     </testsuite>
   </testsuites>
   <extensions>
@@ -25,9 +27,9 @@
   <logging/>
   <php>
     <env name="APP_ENV" value="testing"/>
-    <env name="DB_LOG_SQL" value="true"/>
-    <env name="DB_LOG_SQL_EXPLAIN" value="true"/>
-    <env name="BCRYPT_ROUNDS" value="4"/>
+    <env name="DB_LOG_SQL" value="false"/>
+    <env name="DB_LOG_SQL_EXPLAIN" value="false"/>
+    <env name="BCRYPT_ROUNDS" value="2"/>
     <env name="CACHE_DRIVER" value="array"/>
     <env name="SESSION_DRIVER" value="array"/>
     <env name="QUEUE_CONNECTION" value="sync"/>
