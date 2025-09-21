@@ -30,6 +30,7 @@ use App\Policies\PhotoQueryPolicy;
 use App\Policies\SettingsPolicy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Events\QueryExecuted;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -38,9 +39,14 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
+use InvalidArgumentException;
 use LycheeVerify\Verify;
 use Opcodes\LogViewer\Facades\LogViewer;
+use Safe\Exceptions\PcreException;
+use Safe\Exceptions\MbstringException;
 use Safe\Exceptions\StreamException;
+use Symfony\Component\HttpFoundation\Exception\UnexpectedValueException;
+
 use function Safe\stream_filter_register;
 
 class AppServiceProvider extends ServiceProvider
@@ -113,7 +119,9 @@ class AppServiceProvider extends ServiceProvider
 		}
 
 		if (config('database.db_log_sql', false) === true) {
+			// @codeCoverageIgnoreStart
 			DB::listen(fn ($q) => $this->logSQL($q));
+			// @codeCoverageIgnoreEnd
 		}
 
 		try {
@@ -189,6 +197,9 @@ class AppServiceProvider extends ServiceProvider
 		);
 	}
 
+	/**
+	 * @codeCoverageIgnore
+	 */
 	private function logSQL(QueryExecuted $query): void
 	{
 		// Quick exit
@@ -216,7 +227,6 @@ class AppServiceProvider extends ServiceProvider
 
 			return;
 		}
-		// @codeCoverageIgnoreStart
 		// For mysql we perform an explain as this is usually the one being slower...
 		$bindings = collect($query->bindings)->map(function ($q) {
 			return match (gettype($q)) {
@@ -238,6 +248,5 @@ class AppServiceProvider extends ServiceProvider
 		$msg .= $sql_with_bindings . PHP_EOL;
 		$msg .= $renderer->getTable($explain);
 		Log::debug($msg);
-		// @codeCoverageIgnoreEnd
 	}
 }
