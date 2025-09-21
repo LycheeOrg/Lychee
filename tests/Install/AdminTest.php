@@ -22,22 +22,18 @@ use App\Http\Middleware\AdminUserStatus;
 use App\Http\Middleware\InstallationStatus;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\AbstractTestCase;
-use Tests\Traits\RequiresEmptyUsers;
 
 class AdminTest extends AbstractTestCase
 {
-	use RequiresEmptyUsers;
 	use DatabaseTransactions;
 
 	public function setUp(): void
 	{
 		parent::setUp();
-		$this->setUpRequiresEmptyUsers();
 	}
 
 	public function tearDown(): void
 	{
-		$this->tearDownRequiresEmptyUsers();
 		parent::tearDown();
 	}
 
