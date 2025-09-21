@@ -31,7 +31,7 @@ class CatalogResource extends Data
 		Collection $photo_purchasables,
 	) {
 		$this->album_purchasable = $album_purchasable !== null ? PurchasableResource::fromModel($album_purchasable) : null;
-		$this->children_purchasables = PurchasableResource::collect($children_purchasables);
-		$this->photo_purchasables = PurchasableResource::collect($photo_purchasables);
+		$this->children_purchasables = PurchasableResource::collect($children_purchasables, Collection::class);
+		$this->photo_purchasables = PurchasableResource::collect($photo_purchasables, Collection::class);
 	}
 }
