@@ -158,7 +158,6 @@ class CoverageTest extends AbstractTestCase
 
 	public function testJobFailing(): void
 	{
-		// self::expectException(LycheeInvalidArgumentException::class);
 		$userCreate = new Create();
 		$user = $userCreate->do(
 			'username',
