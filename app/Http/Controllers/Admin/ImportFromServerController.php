@@ -144,7 +144,8 @@ class ImportFromServerController extends Controller
 		return $result;
 	}
 
-	protected function get_exec(ImportFromServerRequest $request): Exec {
+	protected function get_exec(ImportFromServerRequest $request): Exec
+	{
 		// Configure import settings
 		$import_mode = new ImportMode(
 			delete_imported: $request->delete_imported,

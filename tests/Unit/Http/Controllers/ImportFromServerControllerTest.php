@@ -66,7 +66,8 @@ class ImportFromServerControllerTest extends AbstractTestCase
 		Configs::set('owner_id', $this->admin->id);
 	}
 
-	public function tearDown(): void {
+	public function tearDown(): void
+	{
 		// Cleanup
 		rmdir($this->valid_dir);
 
@@ -116,11 +117,12 @@ class ImportFromServerControllerTest extends AbstractTestCase
 	}
 
 	/**
-	 * Create a mocked version to validate get_exec
+	 * Create a mocked version to validate get_exec.
 	 *
 	 * @return ImportFromServerController
 	 */
-	private function getMockedController(?Exec $exec = null) : ImportFromServerController {
+	private function getMockedController(?Exec $exec = null): ImportFromServerController
+	{
 		if ($exec === null) {
 			$exec = $this->createMock(Exec::class);
 			$exec->method('do')->willReturn([]);
@@ -227,7 +229,6 @@ class ImportFromServerControllerTest extends AbstractTestCase
 		$this->assertFalse($result->results[0]->status);
 		$this->assertStringContainsString('Empty folder: /test/empty/folder is empty', $result->results[0]->message);
 		$this->assertEquals($this->valid_dir, $result->results[0]->directory);
-
 	}
 
 	/**
@@ -282,7 +283,6 @@ class ImportFromServerControllerTest extends AbstractTestCase
 			'delete_missing_photos' => true,
 			'delete_missing_albums' => true,
 		]);
-
 
 		// Act - Call the controller method
 		$this->expectException(UnexpectedException::class);
