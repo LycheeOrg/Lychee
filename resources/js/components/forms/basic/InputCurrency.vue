@@ -6,8 +6,7 @@
 		mode="currency"
 		currency="USD"
 		locale="en-US"
-		class="border-0 w-full border-b hover:border-b-primary-400 focus:border-b-primary-400"
-		:pt:inputText:class="'border-0'"
+		class="border-0 w-full border-b hover:border-b-primary-400 focus:border-b-primary-400 p-inputcurrency"
 		@update:model-value="updateValue"
 		@blur="updateValue"
 	/>
@@ -42,3 +41,8 @@ watch(
 	},
 );
 </script>
+<style lang="css">
+.p-inputcurrency input {
+	border: none;
+}
+</style>

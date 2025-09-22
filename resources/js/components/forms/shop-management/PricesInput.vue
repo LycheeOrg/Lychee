@@ -5,10 +5,13 @@
 				<InputCurrency :value="price.price" @update:model-value="(value: number) => (pricesValues[index].price = value)" />
 			</div>
 			<div class="w-full">
-				<Select v-model="price.license_type" :options="licenseTypeOptions" placeholder="License Type" class="w-full" />
+				<Select v-model="price.license_type" :options="licenseTypeOptions" placeholder="License Type" class="w-full border-b border-0" />
 			</div>
 			<div class="w-full">
-				<Select v-model="price.size_variant_type" :options="sizeVariantOptions" placeholder="Variant" class="w-full" />
+				<Select v-model="price.size_variant_type" :options="sizeVariantOptions" placeholder="Variant" class="w-full border-b border-0" />
+			</div>
+			<div>
+				<Button icon="pi pi-trash" severity="danger" class="py-1.5 border-0" @click="pricesValues.splice(index, 1)" />
 			</div>
 		</div>
 		<Message v-if="!isValid" severity="error">There are duplicate prices (same license type and size variant).</Message>

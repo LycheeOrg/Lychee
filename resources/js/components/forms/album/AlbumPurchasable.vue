@@ -1,18 +1,46 @@
 <template>
-	<Card class="sm:p-4 xl:px-9 max-w-3xl w-full py-0">
+	<Card class="sm:p-4 xl:px-9 max-w-3xl w-full py-0" :pt:body:class="'p-0'">
 		<template #content>
 			<div
 				v-if="albumPurchasable !== undefined && photosPurchasable !== undefined && childrenPurchasables !== undefined"
 				class="flex flex-col gap-4"
 			>
 				<template v-if="albumPurchasable === null">
-					<p class="font-bold text-muted-color-emphasis text-lg text-center">Album is not purchasable.</p>
+					<p class="font-bold text-muted-color text-lg text-center">This album is not purchasable (yet).</p>
 					<Textarea v-model="description" placeholder="Description for clients" />
 					<Textarea v-model="note" placeholder="Owner's Note" />
 					<PricesInput :prices="prices" />
-					<Button label="Make Purchasable" @click="makePurchasable" />
+					<div class="flex gap-4">
+						<Button
+							icon="pi pi-plus"
+							label="Set Purchasable"
+							class="border-none w-full"
+							@click="makePurchasable"
+							:disabled="prices.length === 0"
+						>
+						</Button>
+						<Button
+							icon="pi pi-forward"
+							severity="danger"
+							label="Set Purchasable and propagate"
+							class="font-bold w-full border-none"
+							@click="makePurchasable"
+							:disabled="prices.length === 0"
+						>
+						</Button>
+					</div>
+					<Message severity="error" v-if="prices.length === 0">Set at least one price.</Message>
 				</template>
-				<template v-else> </template>
+				<template v-else>
+					<Textarea v-model="description" placeholder="Description for clients" />
+					<Textarea v-model="note" placeholder="Owner's Note" />
+					<PricesInput :prices="prices" />
+					<Button class="border-none font-bold" @click="makePurchasable" :disabled="prices.length === 0"> Update </Button>
+					<Button class="text-danger-800 font-bold hover:text-white hover:bg-danger-800 w-full bg-transparent border-none" @click="disable"
+						>Disable</Button
+					>
+					<Message severity="error" v-if="prices.length === 0">Set at least one price.</Message>
+				</template>
 			</div>
 		</template>
 	</Card>
@@ -25,6 +53,7 @@ import { onMounted, ref } from "vue";
 import Textarea from "@/components/forms/basic/Textarea.vue";
 import Button from "primevue/button";
 import PricesInput from "@/components/forms/shop-management/PricesInput.vue";
+import Message from "primevue/message";
 
 const props = defineProps<{
 	album: App.Http.Resources.Models.AlbumResource;
@@ -41,18 +70,19 @@ const note = ref<string | undefined>(undefined);
 const appliesToSubalbums = ref<boolean>(false);
 const prices = ref<Price[]>([]);
 
-// album_ids: string[];
-// description: string | null;
-// note: string | null;
-// prices: Price[];
-// applies_to_subalbums: boolean;
-
 function load() {
 	CatalogService.getCatalog(props.album.id)
 		.then((response) => {
 			albumPurchasable.value = response.data.album_purchasable;
 			photosPurchasable.value = response.data.photo_purchasables;
 			childrenPurchasables.value = response.data.children_purchasables;
+
+			description.value = albumPurchasable.value?.description ?? undefined;
+			note.value = albumPurchasable.value?.owner_notes ?? undefined;
+			prices.value =
+				albumPurchasable.value?.prices?.map((p: App.Http.Resources.Shop.PriceResource) => {
+					return { price: p.price_cents, license_type: p.license_type, size_variant_type: p.size_variant };
+				}) ?? [];
 		})
 		.catch((error) => {
 			toast.add({ severity: "error", summary: "Error", detail: error.message, life: 3000 });
@@ -69,6 +99,20 @@ function makePurchasable() {
 	})
 		.then(() => {
 			toast.add({ severity: "success", summary: "Success", detail: "Album is now purchasable", life: 3000 });
+			load();
+		})
+		.catch((error) => {
+			toast.add({ severity: "error", summary: "Error", detail: error.message, life: 3000 });
+		});
+}
+
+function disable() {
+	if (albumPurchasable.value === null || albumPurchasable.value === undefined) {
+		return;
+	}
+	ShopManagementService.deletePurchasable(albumPurchasable.value.purchasable_id)
+		.then(() => {
+			toast.add({ severity: "success", summary: "Success", detail: "Album is no longer purchasable", life: 3000 });
 			load();
 		})
 		.catch((error) => {

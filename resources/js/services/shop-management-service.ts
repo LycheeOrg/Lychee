@@ -25,8 +25,8 @@ const ShopManagementService = {
 	updatePurchasable(request: PurchasableRequest): Promise<AxiosResponse<App.Http.Resources.Shop.PurchasableResource>> {
 		return axios.put(`${Constants.getApiUrl()}Shop/Management/Purchasable`, request);
 	},
-	deletePurchasable(id: string): Promise<AxiosResponse<void>> {
-		return axios.delete(`${Constants.getApiUrl()}Shop/Management/Purchasable`, { data: {}, params: { purchasable_id: id } });
+	deletePurchasable(id: number): Promise<AxiosResponse<void>> {
+		return axios.delete(`${Constants.getApiUrl()}Shop/Management/Purchasables`, { data: {}, params: { purchasable_ids: [id] } });
 	},
 };
 

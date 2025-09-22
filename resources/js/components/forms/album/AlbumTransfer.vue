@@ -1,5 +1,5 @@
 <template>
-	<Card class="sm:p-4 xl:px-9 max-w-3xl w-full">
+	<Card class="sm:p-4 xl:px-9 max-w-3xl w-full" :pt:body:class="'p-0'">
 		<template #content>
 			<div v-if="newOwner !== undefined">
 				<p class="w-full mb-4 text-center text-muted-color-emphasis">

@@ -53,7 +53,7 @@
 				}"
 				@click="activeTab = 4"
 			>
-				{{ $t("gallery.album.tabs.webshop") }}
+				{{ $t("Shop management") }}
 			</li>
 			<li
 				v-if="canDelete || canTransfer"
@@ -144,7 +144,7 @@ const canShare = computed(() => props.album.rights.can_share_with_users && numUs
 const canMove = computed(() => props.config.is_model_album && props.album.rights.can_move);
 const canTransfer = computed(() => props.config.is_base_album && numUsers.value > 1 && props.album.rights.can_transfer);
 const canDelete = computed(() => props.config.is_base_album && props.album.rights.can_delete);
-const canManagePurchase = computed(() => props.config.is_model_album);
+const canManagePurchase = computed(() => props.config.is_model_album && props.album.rights.can_make_purchasable);
 
 function close() {
 	activeTab.value = 0;
