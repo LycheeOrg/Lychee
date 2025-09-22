@@ -38,6 +38,6 @@ class ImportFromServerBrowseTest extends BaseApiWithDataTest
 		// We have to sort in order to have a predictable order for the test.
 		// The order returned by the filesystem is not predictable.
 		sort($content);
-		self::assertEquals($content, ['..', 'Constants', 'Feature_v2', 'Install', 'Samples', 'Traits', 'Unit']);
+		self::assertEquals($content, ['..', 'Constants', 'Feature_v2', 'Install', 'Samples', 'Traits', 'Unit', 'Webshop']);
 	}
 }

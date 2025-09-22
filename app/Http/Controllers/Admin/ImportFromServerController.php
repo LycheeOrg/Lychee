@@ -85,25 +85,8 @@ class ImportFromServerController extends Controller
 			}
 		}
 
-		// Configure import settings
-		$import_mode = new ImportMode(
-			delete_imported: $request->delete_imported,
-			skip_duplicates: $request->skip_duplicates,
-			import_via_symlink: $request->import_via_symlink,
-			resync_metadata: $request->resync_metadata,
-			shall_rename_photo_title: Configs::getValueAsBool('renamer_photo_title_enabled'),
-			shall_rename_album_title: Configs::getValueAsBool('renamer_album_title_enabled'),
-		);
-
 		// Create the executor with should_execute_jobs set to false to collect jobs instead of executing them directly
-		$exec = new Exec(
-			import_mode: $import_mode,
-			intended_owner_id: Configs::getValueAsInt('owner_id'),
-			delete_missing_photos: $request->delete_missing_photos,
-			delete_missing_albums: $request->delete_missing_albums,
-			is_dry_run: false,
-			should_execute_jobs: false,
-		);
+		$exec = $this->get_exec($request);
 
 		$directory_results = [];
 		$all_jobs = [];
@@ -159,5 +142,27 @@ class ImportFromServerController extends Controller
 		);
 
 		return $result;
+	}
+
+	protected function get_exec(ImportFromServerRequest $request): Exec
+	{
+		// Configure import settings
+		$import_mode = new ImportMode(
+			delete_imported: $request->delete_imported,
+			skip_duplicates: $request->skip_duplicates,
+			import_via_symlink: $request->import_via_symlink,
+			resync_metadata: $request->resync_metadata,
+			shall_rename_photo_title: Configs::getValueAsBool('renamer_photo_title_enabled'),
+			shall_rename_album_title: Configs::getValueAsBool('renamer_album_title_enabled'),
+		);
+
+		return new Exec(
+			import_mode: $import_mode,
+			intended_owner_id: Configs::getValueAsInt('owner_id'),
+			delete_missing_photos: $request->delete_missing_photos,
+			delete_missing_albums: $request->delete_missing_albums,
+			is_dry_run: false,
+			should_execute_jobs: false,
+		);
 	}
 }

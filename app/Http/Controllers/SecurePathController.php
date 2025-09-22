@@ -23,6 +23,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
@@ -100,8 +101,8 @@ class SecurePathController extends Controller
 	 */
 	private function signatureHasNotExpired(Request $request)
 	{
-		/** @var int $expires */
-		$expires = intval($request->query('expires'), 10);
+		/** @var int|null $expires */
+		$expires = $request->query('expires') !== null ? intval($request->query('expires'), 10) : null;
 
 		return !($expires !== null && $expires !== '' && Carbon::now()->getTimestamp() > $expires);
 	}
