@@ -73,7 +73,7 @@ class WatermarkerJob implements ShouldQueue, ShouldBeUnique
 			return;
 		}
 
-		$watermarker = new Watermarker();
+		$watermarker = $this->getWatermarker();
 		$this->history->status = JobStatus::STARTED;
 		$this->history->save();
 
@@ -109,5 +109,10 @@ class WatermarkerJob implements ShouldQueue, ShouldBeUnique
 					'exception' => $th,
 				]);
 		}
+	}
+
+	protected function getWatermarker(): Watermarker
+	{
+		return new Watermarker();
 	}
 }

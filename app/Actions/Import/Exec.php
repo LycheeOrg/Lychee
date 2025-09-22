@@ -22,7 +22,7 @@ use function Safe\set_time_limit;
 /**
  * Class for handling improved directory import with tree-based album creation.
  */
-final class Exec
+class Exec
 {
 	use HasReporterTrait;
 
