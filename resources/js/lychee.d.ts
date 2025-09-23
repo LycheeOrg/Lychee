@@ -874,9 +874,9 @@ declare namespace App.Http.Resources.Shop {
 	};
 	export type ConfigOptionResource = {
 		currency: string;
-		default_price_cents: string;
-		default_license: string;
-		default_size: string;
+		default_price_cents: number;
+		default_license: App.Enum.PurchasableLicenseType;
+		default_size: App.Enum.PurchasableSizeVariantType;
 	};
 	export type EditablePurchasableResource = {
 		purchasable_id: number;

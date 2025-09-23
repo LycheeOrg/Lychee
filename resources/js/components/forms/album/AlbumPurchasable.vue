@@ -2,7 +2,7 @@
 	<Card class="sm:p-4 xl:px-9 max-w-3xl w-full py-0" :pt:body:class="'p-0'">
 		<template #content>
 			<div
-				v-if="albumPurchasable !== undefined && photosPurchasable !== undefined && childrenPurchasables !== undefined"
+				v-if="albumPurchasable !== undefined"
 				class="flex flex-col gap-4"
 			>
 				<template v-if="albumPurchasable === null">
@@ -53,7 +53,7 @@
 	</Card>
 </template>
 <script setup lang="ts">
-import ShopManagementService, { CatalogService, Price } from "@/services/shop-management-service";
+import ShopManagementService, { Price } from "@/services/shop-management-service";
 import Card from "primevue/card";
 import { useToast } from "primevue/usetoast";
 import { onMounted, ref } from "vue";
@@ -68,9 +68,7 @@ const props = defineProps<{
 
 const toast = useToast();
 
-const albumPurchasable = ref<undefined | App.Http.Resources.Shop.PurchasableResource | null>(undefined);
-const photosPurchasable = ref<undefined | App.Http.Resources.Shop.PurchasableResource[]>(undefined);
-const childrenPurchasables = ref<undefined | App.Http.Resources.Shop.PurchasableResource[]>(undefined);
+const albumPurchasable = ref<undefined | App.Http.Resources.Shop.EditablePurchasableResource | null>(undefined);
 
 const description = ref<string | undefined>(undefined);
 const note = ref<string | undefined>(undefined);
@@ -81,11 +79,9 @@ function load() {
 	// Reset state
 	appliesToSubalbums.value = false;
 
-	CatalogService.getCatalog(props.album.id)
+	ShopManagementService.list([props.album.id])
 		.then((response) => {
-			albumPurchasable.value = response.data.album_purchasable;
-			photosPurchasable.value = response.data.photo_purchasables;
-			childrenPurchasables.value = response.data.children_purchasables;
+			albumPurchasable.value = response.data.find((p) => p.album_id === props.album.id && p.photo_id === null) ?? null;
 
 			description.value = albumPurchasable.value?.description ?? undefined;
 			note.value = albumPurchasable.value?.owner_notes ?? undefined;

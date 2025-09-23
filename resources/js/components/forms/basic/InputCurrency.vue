@@ -4,7 +4,7 @@
 		placeholder="Price"
 		inputId="currency-us"
 		mode="currency"
-		currency="USD"
+		:currency="props.currency"
 		locale="en-US"
 		class="border-0 w-full border-b hover:border-b-primary-400 focus:border-b-primary-400 p-inputcurrency"
 		@update:model-value="updateValue"
@@ -19,6 +19,7 @@ const emits = defineEmits(["update:modelValue"]);
 
 const props = defineProps<{
 	value: number | null;
+	currency: string;
 }>();
 
 // We devide by 100 to convert cents to currency units.

@@ -1,4 +1,3 @@
-import InitService from "@/services/init-service";
 import ShopManagementService from "@/services/shop-management-service";
 import { defineStore } from "pinia";
 
@@ -10,10 +9,10 @@ export const useShopManagementStore = defineStore("webshop-management-store", {
 		is_init: false,
 		is_loading: false,
 
-		currency: '',
+		currency: "EUR",
 		default_price_cents: 0,
-		default_license: '',
-		default_size: '',
+		default_license: "personal" as App.Enum.PurchasableLicenseType,
+		default_size: "medium" as App.Enum.PurchasableSizeVariantType,
 	}),
 	actions: {
 		init(): Promise<void> {
@@ -31,18 +30,17 @@ export const useShopManagementStore = defineStore("webshop-management-store", {
 			}
 			this.is_loading = true;
 
-			return ShopManagementService.options()
-				.then((response) => {
-					this.is_init = true;
-					this.is_loading = false;
+			return ShopManagementService.options().then((response) => {
+				this.is_init = true;
+				this.is_loading = false;
 
-					const data = response.data;
+				const data = response.data;
 
-					this.currency = data.currency;
-					this.default_price_cents = data.default_price_cents;
-					this.default_license = data.default_license;
-					this.default_size = data.default_size;
-				});
+				this.currency = data.currency;
+				this.default_price_cents = data.default_price_cents;
+				this.default_license = data.default_license;
+				this.default_size = data.default_size;
+			});
 		},
 	},
 });

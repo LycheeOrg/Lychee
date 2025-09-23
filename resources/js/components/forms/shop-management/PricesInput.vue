@@ -2,7 +2,7 @@
 	<div class="flex flex-col gap-2 w-full">
 		<div v-for="(price, index) in pricesValues" :key="`price-${index}`" class="flex flex-row gap-2">
 			<div class="w-full">
-				<InputCurrency :value="price.price" @update:model-value="(value: number) => (pricesValues[index].price = value)" />
+				<InputCurrency :value="price.price" :currency="currency" @update:model-value="(value: number) => (pricesValues[index].price = value)" />
 			</div>
 			<div class="w-full">
 				<Select v-model="price.license_type" :options="licenseTypeOptions" placeholder="License Type" class="w-full border-b border-0" />
@@ -30,19 +30,26 @@ import Select from "primevue/select";
 import { computed, ref } from "vue";
 import InputCurrency from "@/components/forms/basic/InputCurrency.vue";
 import Message from "primevue/message";
+import { useShopManagementStore } from "@/stores/ShopManagement";
+import { storeToRefs } from "pinia";
 
 const props = defineProps<{
 	prices: Price[];
 }>();
+
+const ShowManagementStore = useShopManagementStore();
+ShowManagementStore.init();
+
+const { currency, default_price_cents, default_license, default_size } = storeToRefs(ShowManagementStore);
 
 const pricesValues = ref<Price[]>(props.prices);
 const licenseTypeOptions = ["personal", "commercial", "extended"];
 const sizeVariantOptions = ["medium", "medium2x", "original", "full"];
 
 const _priceDefault: Price = {
-	price: 0,
-	license_type: "personal",
-	size_variant_type: "medium",
+	price: default_price_cents.value,
+	license_type: default_license.value,
+	size_variant_type: default_size.value,
 };
 
 // A price list is not valid if there is a duplicate (same license type and size variant).
@@ -62,27 +69,4 @@ const isValid = computed(() => {
 
 	return true;
 });
-
-// function parseCurrencyAmount(str: string) : number | null {
-//   const cleanedStr = str.replace(/[^\d.-]/g, '');
-//   const amount = parseFloat(cleanedStr);
-//   return isNaN(amount) ? null : amount;
-// }
-
-// function loadPrices(pricesList: App.Http.Resources.Shop.PriceResource[]) {
-// 	for (let index = 0; index < pricesList.length; index++) {
-// 		const element: PriceCandidate = {
-// 			price: parseCurrencyAmount(pricesList[index].price),
-// 			license_type: pricesList[index].license_type,
-// 			size_variant: pricesList[index].size_variant,
-// 		}
-// 		pricesValues.value.push(element);
-// 	}
-// }
-
-// onMounted(() => {
-// 	if (props.prices && props.prices.length > 0) {
-// 		loadPrices(props.prices);
-// 	}
-// });
 </script>
