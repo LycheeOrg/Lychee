@@ -10,10 +10,13 @@ namespace App\Http\Controllers\Admin;
 
 use App\Actions\Shop\PurchasableService;
 use App\Http\Requests\ShopManagement\DeletePurchasablesRequest;
+use App\Http\Requests\ShopManagement\ListPurchasablesRequest;
 use App\Http\Requests\ShopManagement\PurchasableAlbumRequest;
 use App\Http\Requests\ShopManagement\PurchasablePhotoRequest;
 use App\Http\Requests\ShopManagement\UpdatePurchasablePriceRequest;
-use App\Http\Resources\Shop\PurchasableResource;
+use App\Http\Resources\Shop\ConfigOptionResource;
+use App\Http\Resources\Shop\EditablePurchasableResource;
+use App\Models\Purchasable;
 use Illuminate\Routing\Controller;
 
 /**
@@ -26,11 +29,39 @@ class ShopManagementController extends Controller
 	}
 
 	/**
+	 * Get shop management configuration options.
+	 * This returns the configuration settings needed for shop management operations.
+	 *
+	 * @return ConfigOptionResource The shop management configuration options
+	 */
+	public function options(ListPurchasablesRequest $request): ConfigOptionResource
+	{
+		return new ConfigOptionResource();
+	}
+
+	/**
+	 * List all purchasable items.
+	 * This returns all purchasables in the system for management purposes.
+	 *
+	 * @return EditablePurchasableResource[] The list of all purchasable items
+	 */
+	public function list(ListPurchasablesRequest $request): array
+	{
+		$purchasables = Purchasable::with(['album', 'photo', 'prices', 'photo.size_variants'])
+			->when(count($request->albumIds()) > 0, function ($query) use ($request): void {
+				$query->whereIn('album_id', $request->albumIds());
+			})
+			->get();
+
+		return EditablePurchasableResource::collect($purchasables->all());
+	}
+
+	/**
 	 * Set photos as purchasable.
 	 *
 	 * @param PurchasablePhotoRequest $request
 	 *
-	 * @return PurchasableResource[]
+	 * @return EditablePurchasableResource[]
 	 */
 	public function setPhotoPurchasable(PurchasablePhotoRequest $request): array
 	{
@@ -45,7 +76,7 @@ class ShopManagementController extends Controller
 			);
 		}
 
-		return PurchasableResource::collect($purchasables);
+		return EditablePurchasableResource::collect($purchasables);
 	}
 
 	/**
@@ -53,7 +84,7 @@ class ShopManagementController extends Controller
 	 *
 	 * @param PurchasableAlbumRequest $request
 	 *
-	 * @return PurchasableResource[]
+	 * @return EditablePurchasableResource[]
 	 */
 	public function setAlbumPurchasable(PurchasableAlbumRequest $request): array
 	{
@@ -68,7 +99,7 @@ class ShopManagementController extends Controller
 			);
 		}
 
-		return PurchasableResource::collect($purchasables);
+		return EditablePurchasableResource::collect($purchasables);
 	}
 
 	/**
@@ -76,9 +107,9 @@ class ShopManagementController extends Controller
 	 *
 	 * @param UpdatePurchasablePriceRequest $request
 	 *
-	 * @return PurchasableResource
+	 * @return EditablePurchasableResource
 	 */
-	public function updatePurchasablePrices(UpdatePurchasablePriceRequest $request): PurchasableResource
+	public function updatePurchasablePrices(UpdatePurchasablePriceRequest $request): EditablePurchasableResource
 	{
 		$purchasable = $this->purchasable_service->updatePrices(
 			purchasable: $request->purchasable,
@@ -99,7 +130,7 @@ class ShopManagementController extends Controller
 			$purchasable->save();
 		}
 
-		return PurchasableResource::fromModel($purchasable);
+		return EditablePurchasableResource::fromModel($purchasable);
 	}
 
 	/**

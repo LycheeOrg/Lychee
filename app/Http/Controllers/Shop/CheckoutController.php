@@ -13,6 +13,7 @@ use App\Enum\PaymentStatusType;
 use App\Http\Requests\Checkout\CreateSessionRequest;
 use App\Http\Requests\Checkout\FinalizeRequest;
 use App\Http\Requests\Checkout\ProcessRequest;
+use App\Http\Resources\Shop\CheckoutOptionResource;
 use App\Http\Resources\Shop\CheckoutResource;
 use App\Http\Resources\Shop\OrderResource;
 use Illuminate\Routing\Controller;
@@ -28,6 +29,17 @@ class CheckoutController extends Controller
 	public function __construct(
 		private CheckoutService $checkout_service,
 	) {
+	}
+
+	/**
+	 * Get checkout configuration options.
+	 * This returns the configuration settings needed for the checkout process.
+	 *
+	 * @return CheckoutOptionResource The checkout configuration options
+	 */
+	public function options(): CheckoutOptionResource
+	{
+		return new CheckoutOptionResource();
 	}
 
 	/**
