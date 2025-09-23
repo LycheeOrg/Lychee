@@ -11,7 +11,10 @@
 				<Select v-model="price.size_variant_type" :options="sizeVariantOptions" placeholder="Variant" class="w-full border-b border-0" />
 			</div>
 			<div>
-				<Button class="py-2.5 border-0 text-danger-700 font-bold hover:text-white hover:bg-danger-800 bg-transparent" @click="pricesValues.splice(index, 1)" >
+				<Button
+					class="py-2.5 border-0 text-danger-700 font-bold hover:text-white hover:bg-danger-800 bg-transparent"
+					@click="pricesValues.splice(index, 1)"
+				>
 					<span class="pi pi-trash"></span>
 				</Button>
 			</div>

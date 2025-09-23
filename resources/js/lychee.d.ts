@@ -859,12 +859,36 @@ declare namespace App.Http.Resources.Shop {
 		children_purchasables: App.Http.Resources.Shop.PurchasableResource[];
 		photo_purchasables: App.Http.Resources.Shop.PurchasableResource[];
 	};
+	export type CheckoutOptionResource = {
+		currency: string;
+		allow_guest_checkout: boolean;
+		terms_url: string;
+		privacy_url: string;
+	};
 	export type CheckoutResource = {
 		is_success: boolean;
 		is_redirect: boolean;
 		redirect_url: string | null;
 		message: string;
 		order: App.Http.Resources.Shop.OrderResource | null;
+	};
+	export type ConfigOptionResource = {
+		currency: string;
+		default_price_cents: string;
+		default_license: string;
+		default_size: string;
+	};
+	export type EditablePurchasableResource = {
+		purchasable_id: number;
+		album_id: string | null;
+		album_title: string | null;
+		photo_id: string | null;
+		photo_title: string | null;
+		photo_url: string | null;
+		prices: App.Http.Resources.Shop.PriceResource[] | null;
+		owner_notes: string | null;
+		description: string | null;
+		is_active: boolean;
 	};
 	export type OrderItemResource = {
 		id: number;
@@ -901,8 +925,7 @@ declare namespace App.Http.Resources.Shop {
 		album_id: string | null;
 		photo_id: string | null;
 		prices: App.Http.Resources.Shop.PriceResource[] | null;
-		owner_notes: string | null;
-		description: string | null;
+		description: string;
 		is_active: boolean;
 	};
 }
