@@ -16,6 +16,14 @@ export type PurchasableRequest = {
 };
 
 const ShopManagementService = {
+	options(): Promise<AxiosResponse<App.Http.Resources.Shop.ConfigOptionResource>> {
+		return axios.get(`${Constants.getApiUrl()}Shop/Management/Options`);
+	},
+
+	list(albumIds: string[] = []): Promise<AxiosResponse<App.Http.Resources.Shop.EditablePurchasableResource[]>> {
+		return axios.get(`${Constants.getApiUrl()}Shop/Management/List`, { data: {}, params: { album_ids: albumIds } });
+	},
+
 	createPurchasableAlbum(request: PurchasableRequest): Promise<AxiosResponse<App.Http.Resources.Shop.PurchasableResource>> {
 		return axios.post(`${Constants.getApiUrl()}Shop/Management/Purchasable/Album`, request);
 	},
@@ -27,12 +35,6 @@ const ShopManagementService = {
 	},
 	deletePurchasable(id: number): Promise<AxiosResponse<void>> {
 		return axios.delete(`${Constants.getApiUrl()}Shop/Management/Purchasables`, { data: {}, params: { purchasable_ids: [id] } });
-	},
-};
-
-export const CatalogService = {
-	getCatalog(albumId: string): Promise<AxiosResponse<App.Http.Resources.Shop.CatalogResource>> {
-		return axios.get(`${Constants.getApiUrl()}Shop`, { data: {}, params: { album_id: albumId } });
 	},
 };
 
