@@ -17,7 +17,7 @@ export type PurchasableRequest = {
 
 const ShopManagementService = {
 	options(): Promise<AxiosResponse<App.Http.Resources.Shop.ConfigOptionResource>> {
-		return axios.get(`${Constants.getApiUrl()}Shop/Management/Options`);
+		return axios.get(`${Constants.getApiUrl()}Shop/Management/Options`, { data: {} });
 	},
 
 	list(albumIds: string[] = []): Promise<AxiosResponse<App.Http.Resources.Shop.EditablePurchasableResource[]>> {
