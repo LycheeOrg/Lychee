@@ -11,7 +11,9 @@
 				<Select v-model="price.size_variant_type" :options="sizeVariantOptions" placeholder="Variant" class="w-full border-b border-0" />
 			</div>
 			<div>
-				<Button icon="pi pi-trash" severity="danger" class="py-1.5 border-0" @click="pricesValues.splice(index, 1)" />
+				<Button class="py-2.5 border-0 text-danger-700 font-bold hover:text-white hover:bg-danger-800 bg-transparent" @click="pricesValues.splice(index, 1)" >
+					<span class="pi pi-trash"></span>
+				</Button>
 			</div>
 		</div>
 		<Message v-if="!isValid" severity="error">There are duplicate prices (same license type and size variant).</Message>
