@@ -66,6 +66,10 @@ class AlbumRightsResource extends Data
 			return false;
 		}
 
+		if (Configs::getValueAsBool('webshop_enabled') === false) {
+			return false;
+		}
+
 		$verify = resolve(Verify::class);
 		if (!$verify->is_supporter()) {
 			return false;

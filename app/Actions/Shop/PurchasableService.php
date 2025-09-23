@@ -94,14 +94,14 @@ class PurchasableService
 		return Photo::query()
 			->join(PA::PHOTO_ALBUM, PA::PHOTO_ID, '=', 'photos.id')
 			->where(PA::ALBUM_ID, $album_id)
-			->where(function ($q) use ($album_id) {
-				$q->whereExists(function ($q2) use ($album_id) {
+			->where(function ($q) use ($album_id): void {
+				$q->whereExists(function ($q2) use ($album_id): void {
 					$q2->select(DB::raw(1))
 						->from('purchasables')
 						->whereNull('photo_id')
 						->where('is_active', true)
 						->where('album_id', $album_id);
-				})->orWhereExists(function ($q3) use ($album_id) {
+				})->orWhereExists(function ($q3) use ($album_id): void {
 					$q3->select(DB::raw(1))
 						->from('purchasables')
 						->whereColumn('purchasables.photo_id', 'photos.id')
