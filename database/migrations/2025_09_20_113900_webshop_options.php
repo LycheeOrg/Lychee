@@ -103,7 +103,7 @@ return new class() extends BaseConfigMigration {
 			],
 			[
 				'key' => 'webshop_default_license',
-				'value' => '',
+				'value' => 'personal',
 				'cat' => self::MOD_PRO,
 				'type_range' => 'personal|commercial|extended', // Must match the PurchasableLicenseType enum.
 				'description' => 'Default license type',
