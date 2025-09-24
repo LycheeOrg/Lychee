@@ -1,5 +1,6 @@
 import Album from "@/views/gallery-panels/Album.vue";
 import Albums from "@/views/gallery-panels/Albums.vue";
+import path from "path";
 
 const Landing = () => import("@/views/Landing.vue");
 const Favourites = () => import("@/views/gallery-panels/Favourites.vue");
@@ -27,6 +28,7 @@ const Flow = () => import("@/views/gallery-panels/Flow.vue");
 const TagsManagement = () => import("@/views/TagsManagement.vue");
 const Tag = () => import("@/views/gallery-panels/Tag.vue");
 const RenamerRules = () => import("@/views/RenamerRules.vue");
+const PurchasablesList = () => import("@/views/PurchasablesList.vue");
 
 const routes_ = [
 	{
@@ -181,6 +183,11 @@ const routes_ = [
 		name: "register",
 		path: "/register",
 		component: RegisterPage,
+	},
+	{
+		name: "purchasables",
+		path: "/purchasables",
+		component: PurchasablesList,
 	},
 ];
 

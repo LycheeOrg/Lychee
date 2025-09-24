@@ -127,6 +127,12 @@ export function useLeftMenu(
 						access: initData.value.settings.can_acess_user_groups ?? false,
 					},
 					{
+						label: "Purchasables",
+						icon: "pi pi-shopping-bag",
+						route: "/purchasables",
+						access: initData.value.modules.is_mod_webshop_enabled ?? false,
+					},
+					{
 						label: "diagnostics.title",
 						icon: "wrench",
 						route: "/diagnostics",

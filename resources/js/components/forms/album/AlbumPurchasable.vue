@@ -1,10 +1,7 @@
 <template>
 	<Card class="sm:p-4 xl:px-9 max-w-3xl w-full py-0" :pt:body:class="'p-0'">
 		<template #content>
-			<div
-				v-if="albumPurchasable !== undefined"
-				class="flex flex-col gap-4"
-			>
+			<div v-if="albumPurchasable !== undefined" class="flex flex-col gap-4">
 				<template v-if="albumPurchasable === null">
 					<p class="font-bold text-muted-color text-lg text-center">This album is not purchasable (yet).</p>
 					<Textarea v-model="description" placeholder="Description for clients" />

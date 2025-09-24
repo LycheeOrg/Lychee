@@ -2,7 +2,11 @@
 	<div class="flex flex-col gap-2 w-full">
 		<div v-for="(price, index) in pricesValues" :key="`price-${index}`" class="flex flex-row gap-2">
 			<div class="w-full">
-				<InputCurrency :value="price.price" :currency="currency" @update:model-value="(value: number) => (pricesValues[index].price = value)" />
+				<InputCurrency
+					:value="price.price"
+					:currency="currency"
+					@update:model-value="(value: number) => (pricesValues[index].price = value)"
+				/>
 			</div>
 			<div class="w-full">
 				<Select v-model="price.license_type" :options="licenseTypeOptions" placeholder="License Type" class="w-full border-b border-0" />
