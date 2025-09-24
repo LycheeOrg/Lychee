@@ -17,6 +17,7 @@ use App\Enum\TimelineAlbumGranularity;
 use App\Enum\TimelinePhotoGranularity;
 use App\Models\Album;
 use App\Models\TagAlbum;
+use App\Models\UnTaggedAlbum;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
@@ -42,7 +43,7 @@ class EditableBaseAlbumResource extends Data
 	public bool $is_model_album;
 	public bool $is_pinned;
 
-	public function __construct(Album|TagAlbum $album)
+	public function __construct(Album|TagAlbum|UnTaggedAlbum $album)
 	{
 		$this->id = $album->id;
 		$this->title = $album->title;
@@ -75,7 +76,7 @@ class EditableBaseAlbumResource extends Data
 		}
 	}
 
-	public static function fromModel(Album|TagAlbum $album): EditableBaseAlbumResource
+	public static function fromModel(Album|TagAlbum|UnTaggedAlbum $album): EditableBaseAlbumResource
 	{
 		return new self($album);
 	}

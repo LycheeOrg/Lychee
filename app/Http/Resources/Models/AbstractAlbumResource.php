@@ -17,7 +17,7 @@ class AbstractAlbumResource extends Data
 {
 	public function __construct(
 		public AlbumConfig $config,
-		public AlbumResource|SmartAlbumResource|TagAlbumResource|null $resource)
+		public AlbumResource|SmartAlbumResource|TagAlbumResource|UnTaggedAlbumResource|null $resource)
 	{
 	}
 }
