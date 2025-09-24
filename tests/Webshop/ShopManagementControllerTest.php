@@ -561,7 +561,7 @@ class ShopManagementControllerTest extends BaseApiWithDataTest
 		// Assert the response contains expected config values
 		$responseData = $response->json();
 		$this->assertIsString($responseData['currency']);
-		$this->assertIsString($responseData['default_price_cents']);
+		$this->assertIsInt($responseData['default_price_cents']);
 		$this->assertIsString($responseData['default_license']);
 		$this->assertIsString($responseData['default_size']);
 	}
