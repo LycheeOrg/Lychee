@@ -75,6 +75,7 @@
 					@clicked="photoClick"
 					@selected="photoSelect"
 					@contexted="photoMenuOpen"
+					@toggle-buy-me="toggleBuyMe"
 				/>
 				<GalleryFooter v-once />
 				<ScrollTop v-if="!props.isPhotoOpen" target="parent" />
@@ -124,6 +125,7 @@ import { usePhotoRoute } from "@/composables/photo/photoRoute";
 import { useRouter } from "vue-router";
 import { type SplitData } from "@/composables/album/splitter";
 import SelectDrag from "@/components/forms/album/SelectDrag.vue";
+import { useOrderManagementStore } from "@/stores/OrderManagement";
 
 const router = useRouter();
 
@@ -154,6 +156,7 @@ const config = ref(props.config);
 const togglableStore = useTogglablesStateStore();
 const lycheeStore = useLycheeStateStore();
 const layoutConfig = ref(props.layoutConfig);
+const orderManagement = useOrderManagementStore();
 
 const emits = defineEmits<{
 	refresh: [];
@@ -172,6 +175,17 @@ const noData = computed(() => children.value.length === 0 && (photos.value === n
 
 const { is_share_album_visible, toggleDelete, toggleMergeAlbum, toggleMove, toggleRename, toggleShareAlbum, toggleTag, toggleCopy, toggleUpload } =
 	useGalleryModals(togglableStore);
+
+async function toggleBuyMe(idx: string) {
+	if (modelAlbum.value === undefined) return;
+	await orderManagement.load();
+	orderManagement.addPhoto({
+		photo_id: idx,
+		album_id: modelAlbum.value.id,
+		size_variant: "medium",
+		license_type: "personal",
+	});
+}
 
 const {
 	selectedPhotosIdx,

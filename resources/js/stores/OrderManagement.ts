@@ -9,7 +9,7 @@ export const useOrderManagementStore = defineStore("webshop-management-store", {
 		order: {} as App.Http.Resources.Shop.OrderResource,
 	}),
 	actions: {
-		load(): Promise<void> {
+		async load(): Promise<void> {
 			return WebshopService.Order.getCurrentBasket().then((response) => {
 				this.order = response.data;
 			});

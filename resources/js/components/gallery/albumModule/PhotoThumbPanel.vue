@@ -17,6 +17,7 @@
 			@clicked="propagateClicked"
 			@selected="propagateSelected"
 			@contexted="propagateMenuOpen"
+			@toggle-buy-me="propagateToggleBuyMe"
 		/>
 		<template v-else>
 			<Timeline
@@ -50,6 +51,7 @@
 							@contexted="propagateMenuOpen"
 							@selected="propagateSelected"
 							@clicked="propagateClicked"
+							@toggle-buy-me="propagateToggleBuyMe"
 						/>
 					</div>
 				</template>
@@ -79,6 +81,7 @@
 							@contexted="propagateMenuOpen"
 							@selected="propagateSelected"
 							@clicked="propagateClicked"
+							@toggle-buy-me="propagateToggleBuyMe"
 						/>
 					</div>
 				</template>
@@ -130,6 +133,7 @@ const emits = defineEmits<{
 	clicked: [idx: number, event: MouseEvent];
 	selected: [idx: number, event: MouseEvent];
 	contexted: [idx: number, event: MouseEvent];
+	toggleBuyMe: [idx: string];
 }>();
 
 const propagateSelected = (idx: number, e: MouseEvent) => {
@@ -142,6 +146,10 @@ const propagateClicked = (idx: number, e: MouseEvent) => {
 
 const propagateMenuOpen = (idx: number, e: MouseEvent) => {
 	emits("contexted", idx, e);
+};
+
+const propagateToggleBuyMe = (idx: string) => {
+	emits("toggleBuyMe", idx);
 };
 
 function onIntersectionObserver([entry]: IntersectionObserverEntry[]) {

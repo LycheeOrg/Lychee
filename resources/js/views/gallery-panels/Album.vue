@@ -180,6 +180,7 @@ import { useLtRorRtL } from "@/utils/Helpers";
 import ImportFromLink from "@/components/modals/ImportFromLink.vue";
 import DropBox from "@/components/modals/DropBox.vue";
 import ImportFromServer from "@/components/modals/ImportFromServer.vue";
+import { useOrderManagementStore } from "@/stores/OrderManagement";
 
 const { isLTR } = useLtRorRtL();
 
@@ -204,6 +205,7 @@ const videoElement = ref<HTMLVideoElement | null>(null);
 const auth = useAuthStore();
 const togglableStore = useTogglablesStateStore();
 const lycheeStore = useLycheeStateStore();
+const orderManagement = useOrderManagementStore();
 
 lycheeStore.init();
 
@@ -435,6 +437,8 @@ onMounted(() => {
 
 onMounted(async () => {
 	const results = await Promise.allSettled([loadLayoutConfig(), refresh()]);
+
+	orderManagement.load();
 
 	results.forEach((result, index) => {
 		if (result.status === "rejected") {

@@ -27,7 +27,7 @@ export type AddAlbum = {
 
 const OrderService = {
 	getCurrentBasket(orderId?: number): Promise<AxiosResponse<App.Http.Resources.Shop.OrderResource>> {
-		return axios.get(`${Constants.getApiUrl()}Shop/Order`, { data: {}, params: { order_id: orderId } });
+		return axios.get(`${Constants.getApiUrl()}Shop/Basket`, { data: {}, params: { order_id: orderId } });
 	},
 	addPhotoToBasket(data: AddPhoto): Promise<AxiosResponse<App.Http.Resources.Shop.OrderResource>> {
 		return axios.post(`${Constants.getApiUrl()}Shop/Basket/Photo`, data);

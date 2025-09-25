@@ -12,16 +12,34 @@
 	</Toolbar>
 	<Panel :pt:header:class="'hidden'" class="border-0 md:max-w-3xl lg:max-w-5xl xl:max-w-7xl mt-9 mx-auto w-full">
 		<div v-if="order && order.items && order.items.length > 0">
-			<div v-for="item in order.items" :key="item.id" class="border-b last:border-0 p-4 flex flex-row justify-between items-center">
-				<div class="flex flex-col">
+			<div v-for="item in order.items" :key="item.id" class="border-b last:border-0 p-4 flex flex-row justify-between items-center gap-4">
+				<!-- <img :src="item." class="h-12 w-12 mr-4 inline-block" v-if="item.photo_url" /> -->
+				<div class="flex flex-col grow">
 					<span class="font-bold">{{ item.title }}</span>
 					<span class="text-sm text-muted-color">Size: {{ item.size_variant_type }}, License: {{ item.license_type }}</span>
 					<span class="text-sm text-muted-color" v-if="item.item_notes">Notes: {{ item.item_notes }}</span>
 				</div>
-				<div class="font-bold">{{ item.price }}</div>
-				<Button icon="pi pi-trash" class="p-button-text p-button-danger" aria-label="Remove item" @click="removeItem(item.id)" />
+				<div class="font-bold shrink">{{ item.price }}</div>
+				<Button
+					icon="pi pi-trash"
+					severity="secondary"
+					class="border-0 h-12"
+					aria-label="Remove item"
+					@click="removeItem(item.id)"
+					v-tooltip.bottom="'Remove item'"
+				/>
 			</div>
-			<div class="flex flex-row justify-end items-center p-4 border-t font-bold">Total: {{ order.amount }}</div>
+			<div class="flex flex-row-reverse p-4 items-center">
+				<Button
+					icon="pi pi-trash"
+					severity="secondary"
+					class="border-0 h-12"
+					aria-label="Remove item"
+					@click="removeBasket"
+					v-tooltip.bottom="'Clear basket'"
+				/>
+				<div class="flex flex-row justify-end items-center p-4 font-bold text-2xl">Total: {{ order.amount }}</div>
+			</div>
 		</div>
 		<div v-else class="text-center py-10 text-muted-color">Your basket is empty.</div>
 		<div>
@@ -34,8 +52,10 @@
 import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
 import { useOrderManagementStore } from "@/stores/OrderManagement";
 import { storeToRefs } from "pinia";
+import Button from "primevue/button";
 import Panel from "primevue/panel";
 import Toolbar from "primevue/toolbar";
+import { onMounted } from "vue";
 
 const orderStore = useOrderManagementStore();
 const { order } = storeToRefs(orderStore);
@@ -43,4 +63,12 @@ const { order } = storeToRefs(orderStore);
 function removeItem(itemId: number) {
 	orderStore.removeItem(itemId);
 }
+
+function removeBasket() {
+	orderStore.clear();
+}
+
+onMounted(() => {
+	orderStore.load();
+});
 </script>

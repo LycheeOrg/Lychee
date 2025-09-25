@@ -80,8 +80,8 @@
 		>
 			<img class="absolute aspect-square w-fit h-fit" alt="play" :src="srcPlay" />
 		</div>
-		<div class="absolute top-0 lfr:right-0 rtl:left-0 w-1/4 flex gap-4">
-			<ThumbBuyMe @click="toggleBuyMe" />
+		<div class="absolute top-0 ltr:right-0 rtl:left-0 w-1/4 flex flex-row-reverse px-1">
+			<ThumbBuyMe :is-in-basket="isInBasket" @click="toggleBuyMe" v-if="props.isBuyable" />
 			<ThumbFavourite v-if="is_favourite_enabled" :is-favourite="isFavourite" @click="toggleFavourite" />
 		</div>
 		<!-- TODO: make me an option. -->
@@ -105,6 +105,7 @@ import ThumbFavourite from "./ThumbFavourite.vue";
 import { useRouter } from "vue-router";
 import { usePhotoRoute } from "@/composables/photo/photoRoute";
 import ThumbBuyMe from "./ThumbBuyMe.vue";
+import { useOrderManagementStore } from "@/stores/OrderManagement";
 
 const { getNoImageIcon, getPlayIcon } = useImageHelpers();
 
@@ -114,6 +115,11 @@ const props = defineProps<{
 	isCoverId: boolean;
 	isHeaderId: boolean;
 	photo: App.Http.Resources.Models.PhotoResource;
+	isBuyable: boolean;
+}>();
+
+const emits = defineEmits<{
+	toggleBuyMe: [];
 }>();
 
 const router = useRouter();
@@ -122,18 +128,20 @@ const auth = useAuthStore();
 const { user } = storeToRefs(auth);
 const favourites = useFavouriteStore();
 const lycheeStore = useLycheeStateStore();
+const orderStore = useOrderManagementStore();
 const { is_favourite_enabled, display_thumb_photo_overlay, photo_thumb_info, is_photo_thumb_tags_enabled } = storeToRefs(lycheeStore);
 
 const srcPlay = ref(getPlayIcon());
 const srcNoImage = ref(getNoImageIcon());
 const isImageLoaded = ref(false);
+const photoId = ref(props.photo.id);
 
 function toggleFavourite() {
 	favourites.toggle(props.photo, getParentId());
 }
 
 function toggleBuyMe() {
-	console.log("Buy me clicked");
+	emits("toggleBuyMe");
 }
 
 function onImageLoad() {
@@ -141,6 +149,9 @@ function onImageLoad() {
 }
 
 const isFavourite = computed(() => favourites.getPhotoIds.includes(props.photo.id));
+const isInBasket = computed(
+	() => orderStore?.order?.items?.some((item: App.Http.Resources.Shop.OrderItemResource) => item.photo_id === photoId.value) ?? false,
+);
 
 watch(
 	() => props.photo.id,
@@ -150,6 +161,7 @@ watch(
 			return;
 		}
 
+		photoId.value = newId;
 		isImageLoaded.value = false;
 	},
 );
