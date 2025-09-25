@@ -71,6 +71,7 @@
 					:with-control="true"
 					:cover-id="modelAlbum?.cover_id ?? undefined"
 					:header-id="modelAlbum?.header_id ?? undefined"
+					:catalog="props.catalog"
 					@clicked="photoClick"
 					@selected="photoSelect"
 					@contexted="photoMenuOpen"
@@ -139,6 +140,7 @@ const props = defineProps<{
 	user: App.Http.Resources.Models.UserResource | undefined;
 	layoutConfig: App.Http.Resources.GalleryConfigs.PhotoLayoutConfig;
 	isPhotoOpen: boolean;
+	catalog: App.Http.Resources.Shop.CatalogResource | undefined;
 }>();
 
 const modelAlbum = computed(() => props.modelAlbum);

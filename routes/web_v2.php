@@ -66,6 +66,7 @@ Route::get('/fixTree', VueController::class)->middleware(['migration:complete', 
 Route::get('/duplicatesFinder', VueController::class)->middleware(['migration:complete', 'login_required:always']);
 Route::get('/renamerRules', VueController::class)->middleware(['migration:complete', 'login_required:always']);
 Route::get('/purchasables', VueController::class)->middleware(['migration:complete', 'login_required:always']);
+Route::get('/basket', VueController::class)->middleware(['migration:complete', 'login_required:always']);
 
 Route::match(['get', 'post'], '/migrate', [Admin\UpdateController::class, 'migrate'])
 	->name('migrate')

@@ -13,6 +13,7 @@
 			:group-idx="0"
 			:cover-id="props.coverId"
 			:header-id="props.headerId"
+			:catalog="props.catalog"
 			@clicked="propagateClicked"
 			@selected="propagateSelected"
 			@contexted="propagateMenuOpen"
@@ -45,6 +46,7 @@
 							:is-timeline="true"
 							:cover-id="props.coverId"
 							:header-id="props.headerId"
+							:catalog="props.catalog"
 							@contexted="propagateMenuOpen"
 							@selected="propagateSelected"
 							@clicked="propagateClicked"
@@ -73,6 +75,7 @@
 							:is-timeline="true"
 							:cover-id="props.coverId"
 							:header-id="props.headerId"
+							:catalog="props.catalog"
 							@contexted="propagateMenuOpen"
 							@selected="propagateSelected"
 							@clicked="propagateClicked"
@@ -113,6 +116,7 @@ const props = defineProps<{
 	withControl: boolean;
 	coverId: string | undefined;
 	headerId: string | undefined;
+	catalog: App.Http.Resources.Shop.CatalogResource | undefined;
 	intersectionAction?: (arg: string | null) => void;
 }>();
 

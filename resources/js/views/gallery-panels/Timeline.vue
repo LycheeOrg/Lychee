@@ -36,6 +36,7 @@
 			:pt:header:class="'hidden'"
 			class="pt-4"
 			:intersection-action="loadDate"
+			:catalog="undefined"
 		/>
 		<!-- Photo panel -->
 		<PhotoPanel

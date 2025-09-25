@@ -32,6 +32,7 @@ const props = defineProps<{
 	coverId: string | undefined;
 	headerId: string | undefined;
 	isTimeline?: boolean;
+	catalog: App.Http.Resources.Shop.CatalogResource | undefined;
 }>();
 
 const lycheeStore = useLycheeStateStore();

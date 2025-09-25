@@ -80,7 +80,10 @@
 		>
 			<img class="absolute aspect-square w-fit h-fit" alt="play" :src="srcPlay" />
 		</div>
-		<ThumbFavourite v-if="is_favourite_enabled" :is-favourite="isFavourite" @click="toggleFavourite" />
+		<div class="absolute top-0 lfr:right-0 rtl:left-0 w-1/4 flex gap-4">
+			<ThumbBuyMe @click="toggleBuyMe" />
+			<ThumbFavourite v-if="is_favourite_enabled" :is-favourite="isFavourite" @click="toggleFavourite" />
+		</div>
 		<!-- TODO: make me an option. -->
 		<div v-if="user?.id" class="badges absolute mt-[-1px] ltr:ml-1 rtl:mr-1 top-0 lfr:left-0 rtl:right-0 flex">
 			<ThumbBadge v-if="props.photo.is_starred" class="bg-yellow-500" icon="star" />
@@ -101,6 +104,7 @@ import { useFavouriteStore } from "@/stores/FavouriteState";
 import ThumbFavourite from "./ThumbFavourite.vue";
 import { useRouter } from "vue-router";
 import { usePhotoRoute } from "@/composables/photo/photoRoute";
+import ThumbBuyMe from "./ThumbBuyMe.vue";
 
 const { getNoImageIcon, getPlayIcon } = useImageHelpers();
 
@@ -126,6 +130,10 @@ const isImageLoaded = ref(false);
 
 function toggleFavourite() {
 	favourites.toggle(props.photo, getParentId());
+}
+
+function toggleBuyMe() {
+	console.log("Buy me clicked");
 }
 
 function onImageLoad() {

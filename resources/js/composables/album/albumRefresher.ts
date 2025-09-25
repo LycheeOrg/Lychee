@@ -3,6 +3,7 @@ import AlbumService from "@/services/album-service";
 import { type AuthStore } from "@/stores/Auth";
 import { computed, type Ref, ref } from "vue";
 import { type SplitData, useSplitter } from "./splitter";
+import WebshopService from "@/services/webshop-service";
 
 const { spliter, merge } = useSplitter();
 
@@ -24,6 +25,8 @@ export function useAlbumRefresher(albumId: Ref<string>, photoId: Ref<string | un
 	const config = ref<App.Http.Resources.GalleryConfigs.AlbumConfig | undefined>(undefined);
 	const rights = computed(() => album.value?.rights ?? undefined);
 
+	const catalog = ref<App.Http.Resources.Shop.CatalogResource | undefined>(undefined);
+
 	function loadUser(): Promise<void> {
 		return auth.getUser().then((data: App.Http.Resources.Models.UserResource) => {
 			user.value = data;
@@ -36,6 +39,7 @@ export function useAlbumRefresher(albumId: Ref<string>, photoId: Ref<string | un
 		}
 
 		isLoading.value = true;
+		catalog.value = undefined;
 
 		return AlbumService.get(albumId.value)
 			.then((data) => {
@@ -52,6 +56,10 @@ export function useAlbumRefresher(albumId: Ref<string>, photoId: Ref<string | un
 				} else {
 					smartAlbum.value = data.data.resource as App.Http.Resources.Models.SmartAlbumResource;
 				}
+
+				WebshopService.Catalog.getCatalog(albumId.value).then((catalogData) => {
+					catalog.value = catalogData.data;
+				});
 
 				// So what is going on here?
 				// The problem is that the ordering of the photos from the API is not necessarily the same
@@ -128,6 +136,7 @@ export function useAlbumRefresher(albumId: Ref<string>, photoId: Ref<string | un
 		modelAlbum,
 		tagAlbum,
 		smartAlbum,
+		catalog,
 		album,
 		rights,
 		transition,

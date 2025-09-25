@@ -26,6 +26,7 @@
 		:user="user"
 		:layout-config="layoutConfig"
 		:is-photo-open="photo !== undefined"
+		:catalog="catalog"
 		@refresh="refresh"
 		@toggle-slide-show="toggleSlideShow"
 		@toggle-edit="toggleEdit"
@@ -235,8 +236,22 @@ const {
 } = useGalleryModals(togglableStore);
 
 // Set up Album ID reference. This one is updated at each page change.
-const { isPasswordProtected, isLoading, user, modelAlbum, album, photo, transition, photosTimeline, rights, photos, config, refresh, setTransition } =
-	useAlbumRefresher(albumId, photoId, auth, is_login_open);
+const {
+	isPasswordProtected,
+	isLoading,
+	user,
+	modelAlbum,
+	album,
+	photo,
+	transition,
+	photosTimeline,
+	rights,
+	photos,
+	config,
+	refresh,
+	setTransition,
+	catalog,
+} = useAlbumRefresher(albumId, photoId, auth, is_login_open);
 
 const { refreshPhoto } = usePhotoRefresher(photo, photos, photoId);
 const { getParentId } = usePhotoRoute(router);
