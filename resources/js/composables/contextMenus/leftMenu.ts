@@ -130,7 +130,7 @@ export function useLeftMenu(
 						label: "Purchasables",
 						icon: "pi pi-shopping-bag",
 						route: "/purchasables",
-						access: initData.value.modules.is_mod_webshop_enabled ?? false,
+						access: (initData.value.modules.is_mod_webshop_enabled ?? false) && (initData.value.settings.can_edit ?? false),
 					},
 					{
 						label: "diagnostics.title",
