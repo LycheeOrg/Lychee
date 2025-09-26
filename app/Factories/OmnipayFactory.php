@@ -49,8 +49,8 @@ class OmnipayFactory
 			throw new LycheeLogicException('No configuration found for provider ' . $provider->value);
 		}
 
-		if (!$this->isValidateProvider($param)) {
-			throw new ProviderConfigurationNotFoundException('apiKey, username or clientId', $provider);
+		if (!$this->isValidateProvider($provider, $param)) {
+			throw new ProviderConfigurationNotFoundException($provider);
 		}
 
 		$gateway->initialize($param);
@@ -76,7 +76,7 @@ class OmnipayFactory
 			$param = config('omnipay.' . $provider->value);
 			if (is_array($param) &&
 				count($param) > 0 &&
-				$this->isValidateProvider($param)
+				$this->isValidateProvider($provider, $param)
 			) {
 				$supported_providers[] = $provider;
 			}
@@ -88,20 +88,17 @@ class OmnipayFactory
 	/**
 	 * At least one of the required parameters is set.
 	 *
-	 * @param array $params
+	 * @param OmnipayProviderType $provider
+	 * @param string[]            $params
 	 *
 	 * @return bool
 	 */
-	private function isValidateProvider(array $params): bool
+	private function isValidateProvider(OmnipayProviderType $provider, array $params): bool
 	{
-		if (array_key_exists('apiKey', $params) && $params['apiKey'] !== '') {
-			return true;
-		}
-		if (array_key_exists('username', $params) && $params['username'] !== '') {
-			return true;
-		}
-		if (array_key_exists('clientId', $params) && $params['clientId'] !== '') {
-			return true;
+		foreach ($provider->requiredKeys() as $key) {
+			if (array_key_exists($key, $params) && $params[$key] !== '') {
+				return true;
+			}
 		}
 
 		return false;

@@ -40,4 +40,24 @@ enum OmnipayProviderType: string
 
 		return true;
 	}
+
+	/**
+	 * Get the required configuration keys for the given provider.
+	 *
+	 * @param OmnipayProviderType $provider
+	 *
+	 * @return string[]
+	 */
+	public function requiredKeys(): array
+	{
+		return match ($this) {
+			OmnipayProviderType::DUMMY => ['apiKey'],
+			OmnipayProviderType::MOLLIE => ['apiKey'],
+			OmnipayProviderType::STRIPE => ['apiKey'],
+			OmnipayProviderType::PAYPAL_REST => ['clientId', 'secret'],
+			OmnipayProviderType::PAYPAL_EXPRESS,
+			OmnipayProviderType::PAYPAL_PRO,
+			OmnipayProviderType::PAYPAL_EXPRESSINCONTEXT => ['username', 'password', 'signature'],
+		};
+	}
 }

@@ -14,7 +14,7 @@ use App\Models\Configs;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * Check if the watermarker is properly configured and enabled.
+ * Check webshop configuration and environment conditions.
  */
 class WebshopCheck implements DiagnosticPipe
 {
