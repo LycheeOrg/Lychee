@@ -12,7 +12,7 @@
 	</Toolbar>
 	<Panel :pt:header:class="'hidden'" class="border-0 md:max-w-3xl lg:max-w-5xl xl:max-w-7xl mt-9 mx-auto w-full">
 		<div v-if="order && order.items && order.items.length > 0">
-			<div v-for="item in order.items" :key="item.id" class="border-b last:border-0 p-4 flex flex-row justify-between items-center gap-4">
+			<div v-for="item in order.items" :key="item.id" class="border-b last:border-0 border-b-surface-300 dark:border-b-surface-700 p-4 flex flex-row justify-between items-center gap-4">
 				<!-- <img :src="item." class="h-12 w-12 mr-4 inline-block" v-if="item.photo_url" /> -->
 				<div class="flex flex-col grow">
 					<span class="font-bold">{{ item.title }}</span>
