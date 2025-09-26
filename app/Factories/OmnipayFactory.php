@@ -74,10 +74,10 @@ class OmnipayFactory
 			}
 
 			$param = config('omnipay.' . $provider->value);
-			if (is_array($param)
-				&& count($param) > 0
-				&& $this->isValidateProvider($param)
-				) {
+			if (is_array($param) &&
+				count($param) > 0 &&
+				$this->isValidateProvider($param)
+			) {
 				$supported_providers[] = $provider;
 			}
 		}
@@ -89,9 +89,11 @@ class OmnipayFactory
 	 * At least one of the required parameters is set.
 	 *
 	 * @param array $params
+	 *
 	 * @return bool
 	 */
-	private function isValidateProvider(array $params): bool {
+	private function isValidateProvider(array $params): bool
+	{
 		if (array_key_exists('apiKey', $params) && $params['apiKey'] !== '') {
 			return true;
 		}
@@ -101,6 +103,7 @@ class OmnipayFactory
 		if (array_key_exists('clientId', $params) && $params['clientId'] !== '') {
 			return true;
 		}
+
 		return false;
 	}
 }

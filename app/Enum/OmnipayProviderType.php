@@ -32,10 +32,12 @@ enum OmnipayProviderType: string
 	 *
 	 * @return bool
 	 */
-	public function isAllowed(): bool {
+	public function isAllowed(): bool
+	{
 		if ($this === self::DUMMY) {
 			return config('app.env', 'production') !== 'production';
 		}
+
 		return true;
 	}
 }

@@ -35,7 +35,7 @@ class WebshopCheck implements DiagnosticPipe
 			$data[] = DiagnosticData::warn(
 				'Webshop is enabled but the application is not running in production mode.',
 				self::class,
-				['This means that the dummy payment gateway is available.','Users may use it to get free content.']
+				['This means that the dummy payment gateway is available.', 'Users may use it to get free content.']
 			);
 		}
 
