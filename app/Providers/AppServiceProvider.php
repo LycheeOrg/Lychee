@@ -15,6 +15,7 @@ use App\Assets\SizeVariantGroupedWithRandomSuffixNamingStrategy;
 use App\Contracts\Models\AbstractSizeVariantNamingStrategy;
 use App\Contracts\Models\SizeVariantFactory;
 use App\Factories\AlbumFactory;
+use App\Factories\OmnipayFactory;
 use App\Image\SizeVariantDefaultFactory;
 use App\Image\StreamStatFilter;
 use App\Metadata\Json\CommitsRequest;
@@ -28,6 +29,7 @@ use App\Models\Configs;
 use App\Policies\AlbumQueryPolicy;
 use App\Policies\PhotoQueryPolicy;
 use App\Policies\SettingsPolicy;
+use App\Services\MoneyService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -68,6 +70,7 @@ class AppServiceProvider extends ServiceProvider
 			Helpers::class => Helpers::class,
 			CheckUpdate::class => CheckUpdate::class,
 			AlbumFactory::class => AlbumFactory::class,
+			OmnipayFactory::class => OmnipayFactory::class,
 			AlbumQueryPolicy::class => AlbumQueryPolicy::class,
 			PhotoQueryPolicy::class => PhotoQueryPolicy::class,
 
@@ -85,6 +88,8 @@ class AppServiceProvider extends ServiceProvider
 			GitTags::class => GitTags::class,
 
 			Verify::class => Verify::class,
+
+			MoneyService::class => MoneyService::class,
 		];
 
 	/**

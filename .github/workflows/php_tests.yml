@@ -30,9 +30,15 @@ jobs:
           - Unit
           - Feature_v2
           - Install
+          - Webshop
         exclude:
-          - php-version: 8.4 # We skip Feature_v2 on PHP 8.4 as it is quite slow. We rely on 8.3 to catch any issues.
+        # Some skips to reduce the number of runs
+          - php-version: 8.4
+            test-suite: Unit
+          - php-version: 8.4
             test-suite: Feature_v2
+          - php-version: 8.4
+            test-suite: Webshop
     # Service containers to run with `container-job`
     services:
       # Label used to access the service container
