@@ -20,7 +20,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  *
  * @property int                        $id
  * @property int                        $order_id
- * @property int                        $purchasable_id
+ * @property int|null                   $purchasable_id
  * @property string|null                $album_id
  * @property string|null                $photo_id
  * @property string                     $title

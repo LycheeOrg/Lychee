@@ -34,6 +34,7 @@ use App\Actions\Diagnostics\Pipes\Checks\SupporterCheck;
 use App\Actions\Diagnostics\Pipes\Checks\TimezoneCheck;
 use App\Actions\Diagnostics\Pipes\Checks\UpdatableCheck;
 use App\Actions\Diagnostics\Pipes\Checks\WatermarkerEnabledCheck;
+use App\Actions\Diagnostics\Pipes\Checks\WebshopCheck;
 use App\DTO\DiagnosticData;
 use Illuminate\Pipeline\Pipeline;
 
@@ -71,6 +72,7 @@ class Errors
 		ImagickPdfCheck::class,
 		WatermarkerEnabledCheck::class,
 		StatisticsIntegrityCheck::class,
+		WebshopCheck::class,
 	];
 
 	/**

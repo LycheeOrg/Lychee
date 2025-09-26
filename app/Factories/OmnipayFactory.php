@@ -49,14 +49,58 @@ class OmnipayFactory
 			throw new LycheeLogicException('No configuration found for provider ' . $provider->value);
 		}
 
-		foreach ($param as $key => $value) {
-			if ($value === null || $value === '') {
-				throw new ProviderConfigurationNotFoundException($key, $provider);
-			}
+		if (!$this->isValidateProvider($provider, $param)) {
+			throw new ProviderConfigurationNotFoundException($provider);
 		}
 
 		$gateway->initialize($param);
 
 		return $gateway;
+	}
+
+	/**
+	 * Get the list of supported payment providers based on configuration.
+	 *
+	 * @return OmnipayProviderType[]
+	 */
+	public function get_supported_providers(): array
+	{
+		$all_providers = OmnipayProviderType::cases();
+		$supported_providers = [];
+
+		foreach ($all_providers as $provider) {
+			if (!$provider->isAllowed()) {
+				continue;
+			}
+
+			$param = config('omnipay.' . $provider->value);
+			if (is_array($param) &&
+				count($param) > 0 &&
+				$this->isValidateProvider($provider, $param)
+			) {
+				$supported_providers[] = $provider;
+			}
+		}
+
+		return $supported_providers;
+	}
+
+	/**
+	 * At least one of the required parameters is set.
+	 *
+	 * @param OmnipayProviderType $provider
+	 * @param string[]            $params
+	 *
+	 * @return bool
+	 */
+	private function isValidateProvider(OmnipayProviderType $provider, array $params): bool
+	{
+		foreach ($provider->requiredKeys() as $key) {
+			if (!array_key_exists($key, $params) || $params[$key] === '') {
+				return false;
+			}
+		}
+
+		return true;
 	}
 }

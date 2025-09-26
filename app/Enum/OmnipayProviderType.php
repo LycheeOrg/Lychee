@@ -26,4 +26,36 @@ enum OmnipayProviderType: string
 	case PAYPAL_PRO = 'PayPal_Pro';
 	case PAYPAL_REST = 'PayPal_Rest';
 	case STRIPE = 'Stripe';
+
+	/**
+	 * Determine if the provider is allowed in the current environment.
+	 *
+	 * @return bool
+	 */
+	public function isAllowed(): bool
+	{
+		if ($this === self::DUMMY) {
+			return config('app.env', 'production') !== 'production';
+		}
+
+		return true;
+	}
+
+	/**
+	 * Get the required configuration keys for the given provider.
+	 *
+	 * @return string[]
+	 */
+	public function requiredKeys(): array
+	{
+		return match ($this) {
+			OmnipayProviderType::DUMMY => ['apiKey'],
+			OmnipayProviderType::MOLLIE => ['apiKey'],
+			OmnipayProviderType::STRIPE => ['apiKey'],
+			OmnipayProviderType::PAYPAL_REST => ['clientId', 'secret'],
+			OmnipayProviderType::PAYPAL_EXPRESS,
+			OmnipayProviderType::PAYPAL_PRO,
+			OmnipayProviderType::PAYPAL_EXPRESSINCONTEXT => ['username', 'password', 'signature'],
+		};
+	}
 }

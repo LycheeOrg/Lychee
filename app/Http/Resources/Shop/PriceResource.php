@@ -15,6 +15,11 @@ use App\Services\MoneyService;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
+/**
+ * This containes the Price information for the purchasable item.
+ * Both price and price_cents are provided for convenience.
+ * price is used for display purposes, while price_cents is used for calculations.
+ */
 #[TypeScript()]
 class PriceResource extends Data
 {
@@ -22,6 +27,7 @@ class PriceResource extends Data
 		public PurchasableSizeVariantType $size_variant,
 		public PurchasableLicenseType $license_type,
 		public string $price,
+		public int $price_cents,
 	) {
 	}
 
@@ -36,6 +42,7 @@ class PriceResource extends Data
 			size_variant: $price->size_variant,
 			license_type: $price->license_type,
 			price: $money_service->format($price->price_cents),
+			price_cents: intval($price->price_cents->getAmount()),
 		);
 	}
 }

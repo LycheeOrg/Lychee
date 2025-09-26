@@ -25,12 +25,15 @@ Route::middleware('support:se')->group(function (): void {
 		Route::delete('/', [Shop\BasketController::class, 'delete']);
 	});
 	Route::group(['prefix' => '/Shop/Checkout'], function (): void {
+		Route::get('/Options', [Shop\CheckoutController::class, 'options']);
 		Route::post('/Create-session', [Shop\CheckoutController::class, 'createSession']);
 		Route::post('/Process', [Shop\CheckoutController::class, 'process']);
 		Route::post('/Finalize/{provider}/{transaction_id}', [Shop\CheckoutController::class, 'finalize'])->name('shop.checkout.return');
 		Route::get('/Cancel/{provider}/{transaction_id}', [Shop\CheckoutController::class, 'cancel'])->name('shop.checkout.cancel');
 	});
 	Route::group(['prefix' => '/Shop/Management'], function (): void {
+		Route::get('/Options', [Admin\ShopManagementController::class, 'options']);
+		Route::get('/List', [Admin\ShopManagementController::class, 'list']);
 		Route::post('/Purchasable/Photo', [Admin\ShopManagementController::class, 'setPhotoPurchasable']);
 		Route::post('/Purchasable/Album', [Admin\ShopManagementController::class, 'setAlbumPurchasable']);
 		Route::put('/Purchasable/Price', [Admin\ShopManagementController::class, 'updatePurchasablePrices']);

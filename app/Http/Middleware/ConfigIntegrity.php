@@ -64,6 +64,9 @@ class ConfigIntegrity
 		'watermark_shift_x_direction',
 		'watermark_shift_y',
 		'watermark_shift_y_direction',
+		'webshop_enabled',
+		'webshop_currency',
+		'webshop_default_description',
 		'live_metrics_enabled',
 		'live_metrics_access',
 		'live_metrics_max_time',
@@ -91,6 +94,15 @@ class ConfigIntegrity
 		'flow_carousel_height',
 		'date_format_flow_published',
 		'date_format_flow_min_max',
+		'webshop_enabled',
+		'webshop_currency',
+		'webshop_default_description',
+		'webshop_allow_guest_checkout',
+		'webshop_terms_url',
+		'webshop_privacy_url',
+		'webshop_default_price_cents',
+		'webshop_default_license',
+		'webshop_default_size',
 	];
 
 	/**
