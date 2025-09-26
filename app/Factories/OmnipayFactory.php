@@ -49,10 +49,8 @@ class OmnipayFactory
 			throw new LycheeLogicException('No configuration found for provider ' . $provider->value);
 		}
 
-		foreach ($param as $key => $value) {
-			if ($value === null || $value === '') {
-				throw new ProviderConfigurationNotFoundException($key, $provider);
-			}
+		if (!$this->isValidateProvider($param)) {
+			throw new ProviderConfigurationNotFoundException('apiKey, username or clientId', $provider);
 		}
 
 		$gateway->initialize($param);
@@ -63,25 +61,46 @@ class OmnipayFactory
 	/**
 	 * Get the list of supported payment providers based on configuration.
 	 *
-	 * @return array
+	 * @return OmnipayProviderType[]
 	 */
 	public function get_supported_providers(): array
 	{
 		$all_providers = OmnipayProviderType::cases();
 		$supported_providers = [];
 
-		$env = config('app.env', 'production');
 		foreach ($all_providers as $provider) {
-			if ($env !== 'production' && $provider === OmnipayProviderType::DUMMY) {
+			if (!$provider->isAllowed()) {
 				continue;
 			}
 
 			$param = config('omnipay.' . $provider->value);
-			if (is_array($param) && count($param) > 0) {
+			if (is_array($param)
+				&& count($param) > 0
+				&& $this->isValidateProvider($param)
+				) {
 				$supported_providers[] = $provider;
 			}
 		}
 
 		return $supported_providers;
+	}
+
+	/**
+	 * At least one of the required parameters is set.
+	 *
+	 * @param array $params
+	 * @return bool
+	 */
+	private function isValidateProvider(array $params): bool {
+		if (array_key_exists('apiKey', $params) && $params['apiKey'] !== '') {
+			return true;
+		}
+		if (array_key_exists('username', $params) && $params['username'] !== '') {
+			return true;
+		}
+		if (array_key_exists('clientId', $params) && $params['clientId'] !== '') {
+			return true;
+		}
+		return false;
 	}
 }

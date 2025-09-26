@@ -26,4 +26,16 @@ enum OmnipayProviderType: string
 	case PAYPAL_PRO = 'PayPal_Pro';
 	case PAYPAL_REST = 'PayPal_Rest';
 	case STRIPE = 'Stripe';
+
+	/**
+	 * Determine if the provider is allowed in the current environment.
+	 *
+	 * @return bool
+	 */
+	public function isAllowed(): bool {
+		if ($this === self::DUMMY) {
+			return config('app.env', 'production') !== 'production';
+		}
+		return true;
+	}
 }
