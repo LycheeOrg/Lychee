@@ -22,6 +22,7 @@ enum SmartAlbumType: string
 	case STARRED = 'starred';
 	case RECENT = 'recent';
 	case ON_THIS_DAY = 'on_this_day';
+	case UNTAGGED = 'untagged';
 
 	/**
 	 * Return whether the smart album is enabled.
@@ -35,6 +36,7 @@ enum SmartAlbumType: string
 			self::STARRED => Configs::getValueAsBool('enable_starred'),
 			self::RECENT => Configs::getValueAsBool('enable_recent'),
 			self::ON_THIS_DAY => Configs::getValueAsBool('enable_on_this_day'),
+			self::UNTAGGED => Configs::getValueAsBool('enable_untagged'),
 		};
 	}
 }

@@ -57,6 +57,7 @@ use App\Http\Resources\Models\AlbumResource;
 use App\Http\Resources\Models\SmartAlbumResource;
 use App\Http\Resources\Models\TagAlbumResource;
 use App\Http\Resources\Models\TargetAlbumResource;
+use App\Http\Resources\Models\UnTaggedAlbumResource;
 use App\Http\Resources\Models\Utils\AlbumProtectionPolicy;
 use App\Jobs\WatermarkerJob;
 use App\Models\Album;
@@ -66,6 +67,7 @@ use App\Models\Photo;
 use App\Models\SizeVariant;
 use App\Models\Tag;
 use App\Models\TagAlbum;
+use App\Models\UnTaggedAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\App;
@@ -94,6 +96,10 @@ class AlbumController extends Controller
 				$request->album() instanceof BaseSmartAlbum => new SmartAlbumResource($request->album()),
 				$request->album() instanceof TagAlbum => new TagAlbumResource($request->album()),
 				$request->album() instanceof Album => new AlbumResource($request->album()),
+				$request->album() instanceof UnTaggedAlbum => new UnTaggedAlbumResource(
+					$request->album(),
+					$request->album()->photos()->getQuery()->paginate(50)
+				),
 				// @codeCoverageIgnoreStart
 				default => throw new LycheeLogicException('This should not happen'),
 				// @codeCoverageIgnoreEnd
