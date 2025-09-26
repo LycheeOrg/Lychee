@@ -59,4 +59,29 @@ class OmnipayFactory
 
 		return $gateway;
 	}
+
+	/**
+	 * Get the list of supported payment providers based on configuration.
+	 *
+	 * @return array
+	 */
+	public function get_supported_providers(): array
+	{
+		$all_providers = OmnipayProviderType::cases();
+		$supported_providers = [];
+
+		$env = config('app.env', 'production');
+		foreach ($all_providers as $provider) {
+			if ($env !== 'production' && $provider === OmnipayProviderType::DUMMY) {
+				continue;
+			}
+
+			$param = config('omnipay.' . $provider->value);
+			if (is_array($param) && count($param) > 0) {
+				$supported_providers[] = $provider;
+			}
+		}
+
+		return $supported_providers;
+	}
 }
