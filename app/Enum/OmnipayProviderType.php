@@ -44,8 +44,6 @@ enum OmnipayProviderType: string
 	/**
 	 * Get the required configuration keys for the given provider.
 	 *
-	 * @param OmnipayProviderType $provider
-	 *
 	 * @return string[]
 	 */
 	public function requiredKeys(): array
