@@ -96,11 +96,11 @@ class OmnipayFactory
 	private function isValidateProvider(OmnipayProviderType $provider, array $params): bool
 	{
 		foreach ($provider->requiredKeys() as $key) {
-			if (array_key_exists($key, $params) && $params[$key] !== '') {
-				return true;
+			if (!array_key_exists($key, $params) || $params[$key] === '') {
+				return false;
 			}
 		}
 
-		return false;
+		return true;
 	}
 }
