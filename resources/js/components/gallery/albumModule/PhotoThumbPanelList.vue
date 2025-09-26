@@ -9,6 +9,8 @@
 				:is-header-id="props.headerId === photo.id"
 				@click="maySelect(idx + props.iter, $event)"
 				@contextmenu.prevent="menuOpen(idx + props.iter, $event)"
+				:is-buyable="catalog !== undefined"
+				@toggleBuyMe="emits('toggleBuyMe', photo.id)"
 			/>
 		</template>
 	</div>
@@ -32,6 +34,7 @@ const props = defineProps<{
 	coverId: string | undefined;
 	headerId: string | undefined;
 	isTimeline?: boolean;
+	catalog: App.Http.Resources.Shop.CatalogResource | undefined;
 }>();
 
 const lycheeStore = useLycheeStateStore();
@@ -49,7 +52,9 @@ const emits = defineEmits<{
 	clicked: [idx: number, event: MouseEvent];
 	selected: [idx: number, event: MouseEvent];
 	contexted: [idx: number, event: MouseEvent];
+	toggleBuyMe: [idx: string];
 }>();
+
 function maySelect(idx: number, e: MouseEvent) {
 	if (ctrlKeyState.value || metaKeyState.value || shiftKeyState.value) {
 		emits("selected", idx, e);

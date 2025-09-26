@@ -1,5 +1,5 @@
 <template>
-	<Card class="text-sm p-4 xl:px-9 sm:min-w-[32rem]">
+	<Card class="text-sm p-4 xl:px-9 sm:min-w-[32rem]" :pt:body:class="'p-0'">
 		<template #content>
 			<form>
 				<div class="h-12">

@@ -26,6 +26,7 @@
 		:user="user"
 		:layout-config="layoutConfig"
 		:is-photo-open="photo !== undefined"
+		:catalog="catalog"
 		@refresh="refresh"
 		@toggle-slide-show="toggleSlideShow"
 		@toggle-edit="toggleEdit"
@@ -179,6 +180,7 @@ import { useLtRorRtL } from "@/utils/Helpers";
 import ImportFromLink from "@/components/modals/ImportFromLink.vue";
 import DropBox from "@/components/modals/DropBox.vue";
 import ImportFromServer from "@/components/modals/ImportFromServer.vue";
+import { useOrderManagementStore } from "@/stores/OrderManagement";
 
 const { isLTR } = useLtRorRtL();
 
@@ -203,6 +205,7 @@ const videoElement = ref<HTMLVideoElement | null>(null);
 const auth = useAuthStore();
 const togglableStore = useTogglablesStateStore();
 const lycheeStore = useLycheeStateStore();
+const orderManagement = useOrderManagementStore();
 
 lycheeStore.init();
 
@@ -235,8 +238,22 @@ const {
 } = useGalleryModals(togglableStore);
 
 // Set up Album ID reference. This one is updated at each page change.
-const { isPasswordProtected, isLoading, user, modelAlbum, album, photo, transition, photosTimeline, rights, photos, config, refresh, setTransition } =
-	useAlbumRefresher(albumId, photoId, auth, is_login_open);
+const {
+	isPasswordProtected,
+	isLoading,
+	user,
+	modelAlbum,
+	album,
+	photo,
+	transition,
+	photosTimeline,
+	rights,
+	photos,
+	config,
+	refresh,
+	setTransition,
+	catalog,
+} = useAlbumRefresher(albumId, photoId, auth, is_login_open);
 
 const { refreshPhoto } = usePhotoRefresher(photo, photos, photoId);
 const { getParentId } = usePhotoRoute(router);
@@ -420,6 +437,8 @@ onMounted(() => {
 
 onMounted(async () => {
 	const results = await Promise.allSettled([loadLayoutConfig(), refresh()]);
+
+	orderManagement.load();
 
 	results.forEach((result, index) => {
 		if (result.status === "rejected") {

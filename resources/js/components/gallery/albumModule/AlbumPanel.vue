@@ -1,4 +1,46 @@
 <template>
+	<Dialog
+		v-model:visible="showBuyMeDialog"
+		:modal="true"
+		:closable="true"
+		class="w-md"
+		pt:root:class="border-none"
+		pt:mask:style="backdrop-filter: blur(2px)"
+		close-on-escape
+		@hide="resetBuyMeDialog"
+	>
+		<template #container>
+			<div class="px-8 pt-6 pb-4">
+				<div v-if="catalog?.album_purchasable?.description" class="text-center text-muted-color mb-4">
+					{{ catalog?.album_purchasable?.description }}
+				</div>
+				<div>
+					<div
+						v-for="price in prices"
+						:key="`${price.size_variant}-${price.license_type}`"
+						class="border-b last:border-b-0 border-surface-300 dark:border-surface-700 flex flex-row justify-between items-center gap-4 py-1"
+					>
+						<div class="flex flex-col w-1/3">
+							<div class="font-bold">{{ price.size_variant }}</div>
+							<div class="text-sm text-muted-color">{{ price.license_type }}</div>
+						</div>
+						<div class="font-bold text-center text-lg">{{ price.price }}</div>
+						<Button
+							severity="primary"
+							text
+							class="rounded border-none font-bold"
+							icon="pi pi-cart-arrow-down"
+							@click="addPhotoToOrder(price.size_variant, price.license_type)"
+						/>
+					</div>
+				</div>
+			</div>
+			<Button severity="secondary" class="rounded-b-xl font-bold"> Cancel </Button>
+			<!-- ADD text later that explains which license to chose -->
+			<!-- <div class="text-center text-muted-color mt-4" v-if="[...prices.reduce((acc, e) => acc.set(e.license_type, (acc.get(e.license_type) || 0) + 1), new Map()).keys()].length > 1"> -->
+			<!-- </div> -->
+		</template>
+	</Dialog>
 	<div class="h-svh overflow-y-hidden flex flex-col">
 		<!-- Trick to avoid the scroll bar to appear on the right when switching to full screen -->
 		<AlbumHeader
@@ -71,9 +113,11 @@
 					:with-control="true"
 					:cover-id="modelAlbum?.cover_id ?? undefined"
 					:header-id="modelAlbum?.header_id ?? undefined"
+					:catalog="props.catalog"
 					@clicked="photoClick"
 					@selected="photoSelect"
 					@contexted="photoMenuOpen"
+					@toggle-buy-me="toggleBuyMe"
 				/>
 				<GalleryFooter v-once />
 				<ScrollTop v-if="!props.isPhotoOpen" target="parent" />
@@ -123,6 +167,9 @@ import { usePhotoRoute } from "@/composables/photo/photoRoute";
 import { useRouter } from "vue-router";
 import { type SplitData } from "@/composables/album/splitter";
 import SelectDrag from "@/components/forms/album/SelectDrag.vue";
+import { useOrderManagementStore } from "@/stores/OrderManagement";
+import { useBuyMeActions } from "@/composables/album/buyMeActions";
+import Dialog from "primevue/dialog";
 
 const router = useRouter();
 
@@ -139,10 +186,12 @@ const props = defineProps<{
 	user: App.Http.Resources.Models.UserResource | undefined;
 	layoutConfig: App.Http.Resources.GalleryConfigs.PhotoLayoutConfig;
 	isPhotoOpen: boolean;
+	catalog: App.Http.Resources.Shop.CatalogResource | undefined;
 }>();
 
 const modelAlbum = computed(() => props.modelAlbum);
 const album = computed(() => props.album);
+const catalog = computed(() => props.catalog);
 const hasHidden = computed(() => modelAlbum.value !== undefined && modelAlbum.value.albums.filter((album) => album.is_nsfw).length > 0);
 const photos = computed<App.Http.Resources.Models.PhotoResource[]>(() => props.photos);
 const photosTimeline = computed(() => props.photosTimeline);
@@ -152,6 +201,7 @@ const config = ref(props.config);
 const togglableStore = useTogglablesStateStore();
 const lycheeStore = useLycheeStateStore();
 const layoutConfig = ref(props.layoutConfig);
+const orderManagement = useOrderManagementStore();
 
 const emits = defineEmits<{
 	refresh: [];
@@ -170,6 +220,8 @@ const noData = computed(() => children.value.length === 0 && (photos.value === n
 
 const { is_share_album_visible, toggleDelete, toggleMergeAlbum, toggleMove, toggleRename, toggleShareAlbum, toggleTag, toggleCopy, toggleUpload } =
 	useGalleryModals(togglableStore);
+
+const { prices, toggleBuyMe, addPhotoToOrder, showBuyMeDialog, resetBuyMeDialog } = useBuyMeActions(modelAlbum, orderManagement, catalog);
 
 const {
 	selectedPhotosIdx,

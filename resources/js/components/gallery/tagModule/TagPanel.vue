@@ -28,6 +28,7 @@
 					:cover-id="undefined"
 					:header-id="undefined"
 					:with-control="true"
+					:catalog="undefined"
 					@clicked="photoClick"
 					@selected="photoSelect"
 					@contexted="photoMenuOpen"

@@ -27,6 +27,8 @@ const Flow = () => import("@/views/gallery-panels/Flow.vue");
 const TagsManagement = () => import("@/views/TagsManagement.vue");
 const Tag = () => import("@/views/gallery-panels/Tag.vue");
 const RenamerRules = () => import("@/views/RenamerRules.vue");
+const PurchasablesList = () => import("@/views/webshop/PurchasablesList.vue");
+const BasketList = () => import("@/views/webshop/BasketList.vue");
 
 const routes_ = [
 	{
@@ -181,6 +183,16 @@ const routes_ = [
 		name: "register",
 		path: "/register",
 		component: RegisterPage,
+	},
+	{
+		name: "purchasables",
+		path: "/purchasables",
+		component: PurchasablesList,
+	},
+	{
+		name: "basket",
+		path: "/basket",
+		component: BasketList,
 	},
 ];
 

@@ -28,6 +28,7 @@
 		:selected-photos="selectedPhotosIds"
 		:is-timeline="false"
 		:with-control="true"
+		:catalog="undefined"
 		@clicked="photoClick"
 		@selected="photoSelect"
 		@contexted="photoMenuOpen"

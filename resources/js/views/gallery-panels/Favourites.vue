@@ -32,6 +32,7 @@
 				:with-control="false"
 				:cover-id="undefined"
 				:header-id="undefined"
+				:catalog="undefined"
 				@clicked="photoClick"
 			/>
 		</div>

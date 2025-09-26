@@ -13,9 +13,11 @@
 			:group-idx="0"
 			:cover-id="props.coverId"
 			:header-id="props.headerId"
+			:catalog="props.catalog"
 			@clicked="propagateClicked"
 			@selected="propagateSelected"
 			@contexted="propagateMenuOpen"
+			@toggle-buy-me="propagateToggleBuyMe"
 		/>
 		<template v-else>
 			<Timeline
@@ -45,9 +47,11 @@
 							:is-timeline="true"
 							:cover-id="props.coverId"
 							:header-id="props.headerId"
+							:catalog="props.catalog"
 							@contexted="propagateMenuOpen"
 							@selected="propagateSelected"
 							@clicked="propagateClicked"
+							@toggle-buy-me="propagateToggleBuyMe"
 						/>
 					</div>
 				</template>
@@ -73,9 +77,11 @@
 							:is-timeline="true"
 							:cover-id="props.coverId"
 							:header-id="props.headerId"
+							:catalog="props.catalog"
 							@contexted="propagateMenuOpen"
 							@selected="propagateSelected"
 							@clicked="propagateClicked"
+							@toggle-buy-me="propagateToggleBuyMe"
 						/>
 					</div>
 				</template>
@@ -113,6 +119,7 @@ const props = defineProps<{
 	withControl: boolean;
 	coverId: string | undefined;
 	headerId: string | undefined;
+	catalog: App.Http.Resources.Shop.CatalogResource | undefined;
 	intersectionAction?: (arg: string | null) => void;
 }>();
 
@@ -126,6 +133,7 @@ const emits = defineEmits<{
 	clicked: [idx: number, event: MouseEvent];
 	selected: [idx: number, event: MouseEvent];
 	contexted: [idx: number, event: MouseEvent];
+	toggleBuyMe: [idx: string];
 }>();
 
 const propagateSelected = (idx: number, e: MouseEvent) => {
@@ -138,6 +146,10 @@ const propagateClicked = (idx: number, e: MouseEvent) => {
 
 const propagateMenuOpen = (idx: number, e: MouseEvent) => {
 	emits("contexted", idx, e);
+};
+
+const propagateToggleBuyMe = (idx: string) => {
+	emits("toggleBuyMe", idx);
 };
 
 function onIntersectionObserver([entry]: IntersectionObserverEntry[]) {
