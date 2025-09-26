@@ -8,8 +8,10 @@
 
 namespace App\Http\Resources\Shop;
 
+use App\Factories\OmnipayFactory;
 use App\Models\Configs;
 use Spatie\LaravelData\Data;
+use Spatie\TypeScriptTransformer\Attributes\LiteralTypeScriptType;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
 #[TypeScript()]
@@ -19,6 +21,8 @@ class CheckoutOptionResource extends Data
 	public bool $allow_guest_checkout;
 	public string $terms_url;
 	public string $privacy_url;
+	#[LiteralTypeScriptType('App.Enum.OmnipayProviderType[]')]
+	public array $payment_providers = [];
 
 	public function __construct()
 	{
@@ -26,5 +30,6 @@ class CheckoutOptionResource extends Data
 		$this->allow_guest_checkout = Configs::getValueAsBool('webshop_allow_guest_checkout');
 		$this->terms_url = Configs::getValueAsString('webshop_terms_url');
 		$this->privacy_url = Configs::getValueAsString('webshop_privacy_url');
+		$this->payment_providers = (new OmnipayFactory())->get_supported_providers();
 	}
 }

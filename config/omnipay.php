@@ -16,7 +16,7 @@ return [
 	// case PAYPAL_REST = 'PayPal_Rest';
 	// case STRIPE = 'Stripe';
 	'Dummy' => [
-		'dummy' => true,
+		'apiKey' => 'dummy',
 	],
 
 	'Mollie' => [
