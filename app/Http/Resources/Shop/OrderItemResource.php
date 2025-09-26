@@ -21,7 +21,7 @@ class OrderItemResource extends Data
 	public function __construct(
 		public int $id,
 		public int $order_id,
-		public int $purchasable_id,
+		public ?int $purchasable_id,
 		public ?string $album_id,
 		public ?string $photo_id,
 		public string $title,
