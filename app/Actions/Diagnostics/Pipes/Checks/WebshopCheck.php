@@ -10,6 +10,7 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
+use App\Enum\OmnipayProviderType;
 use App\Factories\OmnipayFactory;
 use App\Models\Configs;
 use Illuminate\Support\Facades\Schema;
@@ -53,8 +54,9 @@ class WebshopCheck implements DiagnosticPipe
 				['No payment can be processed.']
 			);
 		} else {
+			$provider_names = array_map(static fn (OmnipayProviderType $provider): string => $provider->value, $supported_providers);
 			$data[] = DiagnosticData::info(
-				'Webshop is enabled with the following payment providers: ' . implode(', ', $supported_providers),
+				'Webshop is enabled with the following payment providers: ' . implode(', ', $provider_names),
 				self::class
 			);
 		}
