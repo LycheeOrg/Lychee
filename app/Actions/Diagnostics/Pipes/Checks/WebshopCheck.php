@@ -10,6 +10,7 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
+use App\Factories\OmnipayFactory;
 use App\Models\Configs;
 use Illuminate\Support\Facades\Schema;
 
@@ -18,6 +19,11 @@ use Illuminate\Support\Facades\Schema;
  */
 class WebshopCheck implements DiagnosticPipe
 {
+	public function __construct(
+		private OmnipayFactory $factory,
+	) {
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -36,6 +42,20 @@ class WebshopCheck implements DiagnosticPipe
 				'Webshop is enabled but the application is not running in production mode.',
 				self::class,
 				['This means that the dummy payment gateway is available.', 'Users may use it to get free content.']
+			);
+		}
+
+		$supported_providers = $this->factory->get_supported_providers();
+		if (count($supported_providers) === 0) {
+			$data[] = DiagnosticData::error(
+				'Webshop is enabled but no payment provider is configured.',
+				self::class,
+				['No payment can be processed.']
+			);
+		} else {
+			$data[] = DiagnosticData::info(
+				'Webshop is enabled with the following payment providers: ' . implode(', ', $supported_providers),
+				self::class
 			);
 		}
 
