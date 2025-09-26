@@ -1,5 +1,6 @@
 <template>
 	<div class="relative w-6">
+		<!-- React when mouse over the thumb -->
 		<div
 			:class="{
 				'absolute top-0 left-1/2 -translate-x-1/2 flex justify-center items-center h-8 w-6 text-surface-0 text-2xl filter-shadow': true,
@@ -14,6 +15,7 @@
 				}"
 			></span>
 		</div>
+		<!-- React when mouse over the icon -->
 		<div
 			:class="{
 				'absolute top-0 left-1/2 -translate-x-1/2 flex justify-center items-center h-8 w-6 text-surface-0 text-2xl cursor-pointer': true,

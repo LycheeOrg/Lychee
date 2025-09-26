@@ -8,9 +8,8 @@
 		>
 			<span
 				:class="{
-					pi: true,
-					'pi-check-circle': props.isInBasket,
-					'pi-cart-arrow-down': !props.isInBasket,
+					'pi pi-check-circle': props.isInBasket,
+					'pi pi-cart-arrow-down': !props.isInBasket,
 				}"
 			></span>
 		</div>
@@ -23,9 +22,8 @@
 		>
 			<span
 				:class="{
-					pi: true,
-					'pi-check-circle': props.isInBasket,
-					'pi-cart-arrow-down': !props.isInBasket,
+					'pi pi-check-circle': props.isInBasket,
+					'pi pi-cart-arrow-down': !props.isInBasket,
 				}"
 			></span>
 		</div>

@@ -178,13 +178,23 @@ const { is_share_album_visible, toggleDelete, toggleMergeAlbum, toggleMove, togg
 
 async function toggleBuyMe(idx: string) {
 	if (modelAlbum.value === undefined) return;
+
 	await orderManagement.load();
-	orderManagement.addPhoto({
-		photo_id: idx,
-		album_id: modelAlbum.value.id,
-		size_variant: "medium",
-		license_type: "personal",
-	});
+	if (orderManagement.order === undefined) return;
+
+	const item = orderManagement.order.items?.find(
+		(i: App.Http.Resources.Shop.OrderItemResource) => i.photo_id === idx && i.album_id === modelAlbum.value?.id,
+	);
+	if (item !== undefined) {
+		orderManagement.removeItem(item.id);
+	} else {
+		orderManagement.addPhoto({
+			photo_id: idx,
+			album_id: modelAlbum.value.id,
+			size_variant: "medium",
+			license_type: "personal",
+		});
+	}
 }
 
 const {

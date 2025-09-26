@@ -19,7 +19,11 @@
 			>
 				<!-- <img :src="item." class="h-12 w-12 mr-4 inline-block" v-if="item.photo_url" /> -->
 				<div class="flex flex-col grow">
-					<span class="font-bold">{{ item.title }}</span>
+					<span class="font-bold"
+						><router-link :to="{ name: 'album', params: { albumId: item.album_id, photoId: item.photo_id } }" target="_blank" class="">{{
+							item.title
+						}}</router-link></span
+					>
 					<span class="text-sm text-muted-color">Size: {{ item.size_variant_type }}, License: {{ item.license_type }}</span>
 					<span class="text-sm text-muted-color" v-if="item.item_notes">Notes: {{ item.item_notes }}</span>
 				</div>

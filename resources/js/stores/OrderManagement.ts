@@ -6,10 +6,15 @@ export type OrderManagementStateStore = ReturnType<typeof useOrderManagementStor
 export const useOrderManagementStore = defineStore("webshop-management-store", {
 	state: () => ({
 		options: {} as App.Http.Resources.Shop.CheckoutOptionResource,
-		order: {} as App.Http.Resources.Shop.OrderResource,
+		order: undefined as App.Http.Resources.Shop.OrderResource | undefined,
 	}),
 	actions: {
 		async load(): Promise<void> {
+			if (this.order !== undefined) {
+				// already loaded.
+				return;
+			}
+
 			return WebshopService.Order.getCurrentBasket().then((response) => {
 				this.order = response.data;
 			});
