@@ -864,6 +864,7 @@ declare namespace App.Http.Resources.Shop {
 		allow_guest_checkout: boolean;
 		terms_url: string;
 		privacy_url: string;
+		payment_providers: App.Enum.OmnipayProviderType[];
 	};
 	export type CheckoutResource = {
 		is_success: boolean;

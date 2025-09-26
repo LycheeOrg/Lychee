@@ -16,11 +16,7 @@
 		</template>
 
 		<template #end>
-			<router-link
-				v-tooltip.bottom="'Basket'"
-				:to="{ name: 'basket' }"
-				class="hidden sm:block"
-			>
+			<router-link v-tooltip.bottom="'Basket'" :to="{ name: 'basket' }" class="hidden sm:block">
 				<Button icon="pi pi-shopping-cart" class="border-none" severity="secondary" text />
 			</router-link>
 			<router-link
