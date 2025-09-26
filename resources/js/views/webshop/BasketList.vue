@@ -17,6 +17,7 @@
 				:key="item.id"
 				class="border-b last:border-0 border-b-surface-300 dark:border-b-surface-700 p-4 flex flex-row justify-between items-center gap-4"
 			>
+				<!-- Later add the image -->
 				<!-- <img :src="item." class="h-12 w-12 mr-4 inline-block" v-if="item.photo_url" /> -->
 				<div class="flex flex-col grow">
 					<span class="font-bold"

@@ -20,7 +20,7 @@
 					<img src="/img/placeholder.png" class="h-8 w-8" v-else />
 				</template>
 			</Column>
-			<Column header="title" header-class="w-2/12" body-class="w-2/12 align-top">
+			<Column header="Title" header-class="w-2/12" body-class="w-2/12 align-top">
 				<template #body="slotProps">
 					<router-link
 						:to="{ name: 'album', params: { albumId: slotProps.data.album_id, photoId: slotProps.data.photo_id } }"

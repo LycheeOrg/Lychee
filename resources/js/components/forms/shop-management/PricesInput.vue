@@ -31,7 +31,7 @@
 import { Price } from "@/services/shop-management-service";
 import Button from "primevue/button";
 import Select from "primevue/select";
-import { computed, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import InputCurrency from "@/components/forms/basic/InputCurrency.vue";
 import Message from "primevue/message";
 import { useShopManagementStore } from "@/stores/ShopManagement";
@@ -41,10 +41,9 @@ const props = defineProps<{
 	prices: Price[];
 }>();
 
-const ShowManagementStore = useShopManagementStore();
-ShowManagementStore.init();
+const ShopManagementStore = useShopManagementStore();
 
-const { currency, default_price_cents, default_license, default_size } = storeToRefs(ShowManagementStore);
+const { currency, default_price_cents, default_license, default_size } = storeToRefs(ShopManagementStore);
 
 const pricesValues = ref<Price[]>(props.prices);
 const licenseTypeOptions = ["personal", "commercial", "extended"];
@@ -72,5 +71,13 @@ const isValid = computed(() => {
 	}
 
 	return true;
+});
+
+function load() {
+	ShopManagementStore.init();
+}
+
+onMounted(() => {
+	load();
 });
 </script>

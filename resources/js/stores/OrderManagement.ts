@@ -3,7 +3,7 @@ import { defineStore } from "pinia";
 
 export type OrderManagementStateStore = ReturnType<typeof useOrderManagementStore>;
 
-export const useOrderManagementStore = defineStore("webshop-management-store", {
+export const useOrderManagementStore = defineStore("basket-management-store", {
 	state: () => ({
 		options: {} as App.Http.Resources.Shop.CheckoutOptionResource,
 		order: undefined as App.Http.Resources.Shop.OrderResource | undefined,
