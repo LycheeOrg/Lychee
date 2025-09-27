@@ -102,7 +102,7 @@ const { isLTR } = useLtRorRtL();
 const lycheeStore = useLycheeStateStore();
 const { is_timeline_left_border_visible, is_debug_enabled } = storeToRefs(lycheeStore);
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
 	header: string;
 	photos: App.Http.Resources.Models.PhotoResource[];
 	photosTimeline?: SplitData<App.Http.Resources.Models.PhotoResource>[] | undefined;
@@ -114,7 +114,9 @@ const props = defineProps<{
 	coverId: string | undefined;
 	headerId: string | undefined;
 	intersectionAction?: (arg: string | null) => void;
-}>();
+}>(), {
+	isTimeline: false,
+});
 
 const layout = ref(props.photoLayout);
 

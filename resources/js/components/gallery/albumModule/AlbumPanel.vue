@@ -75,6 +75,15 @@
 					@selected="photoSelect"
 					@contexted="photoMenuOpen"
 				/>
+				<div v-if="photos.length > 0" class="flex justify-center w-full">
+					<Paginator
+						v-model:first="firstValue"
+						v-model:rows="rowsValue"
+						:total-records="total"
+						:always-show="false"
+						@update:first="emits('refresh')"
+					/>
+				</div>
 				<GalleryFooter v-once />
 				<ScrollTop v-if="!props.isPhotoOpen" target="parent" />
 			</div>
@@ -123,6 +132,7 @@ import { usePhotoRoute } from "@/composables/photo/photoRoute";
 import { useRouter } from "vue-router";
 import { type SplitData } from "@/composables/album/splitter";
 import SelectDrag from "@/components/forms/album/SelectDrag.vue";
+import Paginator from "primevue/paginator";
 
 const router = useRouter();
 
@@ -139,6 +149,9 @@ const props = defineProps<{
 	user: App.Http.Resources.Models.UserResource | undefined;
 	layoutConfig: App.Http.Resources.GalleryConfigs.PhotoLayoutConfig;
 	isPhotoOpen: boolean;
+	total: number;
+	rows: number;
+	first: number;
 }>();
 
 const modelAlbum = computed(() => props.modelAlbum);
@@ -146,6 +159,16 @@ const album = computed(() => props.album);
 const hasHidden = computed(() => modelAlbum.value !== undefined && modelAlbum.value.albums.filter((album) => album.is_nsfw).length > 0);
 const photos = computed<App.Http.Resources.Models.PhotoResource[]>(() => props.photos);
 const photosTimeline = computed(() => props.photosTimeline);
+
+const firstValue = computed({
+  get: () => props.first,
+  set: (val: number) => emits("update:first", val),
+});
+
+const rowsValue = computed({
+  get: () => props.rows,
+  set: (val: number) => emits("update:rows", val),
+});
 
 const config = ref(props.config);
 
@@ -160,6 +183,8 @@ const emits = defineEmits<{
 	scrollToTop: [];
 	openSearch: [];
 	goBack: [];
+	"update:rows": [value: number];
+	"update:first": [value: number];
 }>();
 
 const { is_se_enabled } = storeToRefs(lycheeStore);

@@ -31,8 +31,10 @@
 		@toggle-edit="toggleEdit"
 		@open-search="openSearch"
 		@go-back="goBack"
+		:total="total"
+		v-model:rows="per_page"
+		v-model:first="from"
 	/>
-
 	<!-- Photo panel -->
 	<PhotoPanel
 		v-if="photo"
@@ -235,7 +237,7 @@ const {
 } = useGalleryModals(togglableStore);
 
 // Set up Album ID reference. This one is updated at each page change.
-const { isPasswordProtected, isLoading, user, modelAlbum, album, photo, transition, photosTimeline, rights, photos, config, refresh, setTransition } =
+const { isPasswordProtected, isLoading, user, modelAlbum, album, photo, transition, photosTimeline, rights, photos, config, refresh, setTransition, from, per_page, total } =
 	useAlbumRefresher(albumId, photoId, auth, is_login_open);
 
 const { refreshPhoto } = usePhotoRefresher(photo, photos, photoId);

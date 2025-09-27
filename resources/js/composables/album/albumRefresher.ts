@@ -24,34 +24,38 @@ export function useAlbumRefresher(albumId: Ref<string>, photoId: Ref<string | un
 	const config = ref<App.Http.Resources.GalleryConfigs.AlbumConfig | undefined>(undefined);
 	const rights = computed(() => album.value?.rights ?? undefined);
 
+	const currentPage = ref(1);
+	const from = ref(0);
+	const per_page = ref(0);
+	const total = ref(0);
+
 	function loadUser(): Promise<void> {
 		return auth.getUser().then((data: App.Http.Resources.Models.UserResource) => {
 			user.value = data;
 		});
 	}
 
-	function loadAlbum(): Promise<void> {
+	function loadAlbum(page: number = 1): Promise<void> {
 		if (albumId.value === ALL) {
 			return Promise.resolve();
 		}
 
+        if (page !== undefined) {
+            currentPage.value = page;
+        }
+
 		isLoading.value = true;
 
-		return AlbumService.get(albumId.value)
+		return AlbumService.get(albumId.value, currentPage.value, per_page.value)
 			.then((data) => {
 				isPasswordProtected.value = false;
 				config.value = data.data.config;
-				modelAlbum.value = undefined;
-				tagAlbum.value = undefined;
-				smartAlbum.value = undefined;
-				photosTimeline.value = undefined;
-				if (data.data.config.is_model_album) {
-					modelAlbum.value = data.data.resource as App.Http.Resources.Models.AlbumResource;
-				} else if (data.data.config.is_base_album) {
-					tagAlbum.value = data.data.resource as App.Http.Resources.Models.TagAlbumResource;
-				} else {
-					smartAlbum.value = data.data.resource as App.Http.Resources.Models.SmartAlbumResource;
-				}
+
+                const albumPhotos = data.data?.photos || data.data.resource?.photos || [];
+
+				from.value = Number(data.data?.from ?? 0);
+				per_page.value = Number(data.data?.per_page ?? 0);
+                total.value = Number(data.data?.total ?? 0);
 
 				// So what is going on here?
 				// The problem is that the ordering of the photos from the API is not necessarily the same
@@ -72,14 +76,30 @@ export function useAlbumRefresher(albumId: Ref<string>, photoId: Ref<string | un
 				// and within the block, the ordering is done as expected.
 				if (data.data.config.is_photo_timeline_enabled) {
 					photosTimeline.value = spliter(
-						data.data.resource?.photos ?? [],
+						albumPhotos,
 						(p: App.Http.Resources.Models.PhotoResource) => p.timeline?.time_date ?? "",
 						(p: App.Http.Resources.Models.PhotoResource) => p.timeline?.format ?? "Others",
 					);
 					photos.value = merge(photosTimeline.value);
 				} else {
 					// We are not using the timeline, so we can just use the photos as is.
-					photos.value = album.value?.photos ?? [];
+					photos.value = album.value?.photos ?? albumPhotos ?? [];
+				}
+
+				modelAlbum.value = undefined;
+				tagAlbum.value = undefined;
+				smartAlbum.value = undefined;
+				photosTimeline.value = undefined;
+				if (data.data.config.is_model_album) {
+					modelAlbum.value = data.data.resource as App.Http.Resources.Models.AlbumResource;
+				} else if (data.data.config.is_base_album) {
+					tagAlbum.value = data.data.resource as App.Http.Resources.Models.TagAlbumResource;
+				} else {
+					smartAlbum.value = data.data.resource as App.Http.Resources.Models.SmartAlbumResource;
+
+					if (smartAlbum.value) {
+						smartAlbum.value.photos = photos.value;
+					}
 				}
 			})
 			.catch((error) => {
@@ -99,7 +119,11 @@ export function useAlbumRefresher(albumId: Ref<string>, photoId: Ref<string | un
 	}
 
 	function refresh(): Promise<void> {
-		return Promise.all([loadUser(), loadAlbum()]).then(() => {
+		let page = 1;
+		if (from.value !== undefined && per_page.value !== undefined && from.value !== 0 && per_page.value !== 0) {
+			page = Math.ceil(from.value / per_page.value) + 1;
+		}
+		return Promise.all([loadUser(), loadAlbum(page)]).then(() => {
 			if (photoId.value) {
 				photo.value = photos.value.find((photo: App.Http.Resources.Models.PhotoResource) => photo.id === photoId.value);
 			} else {
@@ -135,6 +159,9 @@ export function useAlbumRefresher(albumId: Ref<string>, photoId: Ref<string | un
 		photos,
 		photosTimeline,
 		config,
+		from,
+		per_page,
+		total,
 		loadUser,
 		loadAlbum,
 		refresh,

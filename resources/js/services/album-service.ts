@@ -80,9 +80,30 @@ const AlbumService = {
 
 	get(
 		album_id: string,
+		first?: number,
+		rows?: number
 	): Promise<AxiosResponse<App.Http.Resources.Models.AbstractAlbumResource>> | Promise<{ data: App.Http.Resources.Models.AbstractAlbumResource }> {
+		const params = {};
+
+		if (first !== undefined && rows !== undefined && first !== 0 && rows !== 0) {
+			// Calculate page based on first and rows
+			const page = Math.floor(first / rows) + 1;
+			params.page = page ?? 1;
+			params.per_page = rows;
+		}
+		if (album_id !== undefined) {
+            params.album_id = album_id;
+        }
+
 		const requester = axios as unknown as AxiosCacheInstance;
-		return requester.get(`${Constants.getApiUrl()}Album`, { params: { album_id: album_id }, data: {}, id: "album_" + album_id });
+		if (album_id === 'untagged') {
+			return requester.get(`${Constants.getApiUrl()}Albums`, {
+				data: {},
+				id: "album_" + album_id,
+				params,
+			});
+		}
+		return requester.get(`${Constants.getApiUrl()}Album`, { params , data: {}, id: "album_" + album_id });
 	},
 
 	unlock(album_id: string, password: string): Promise<AxiosResponse> {
