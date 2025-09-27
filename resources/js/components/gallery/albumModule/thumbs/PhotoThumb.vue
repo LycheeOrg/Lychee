@@ -82,7 +82,7 @@
 		</div>
 		<ThumbFavourite v-if="is_favourite_enabled" :is-favourite="isFavourite" @click="toggleFavourite" />
 		<!-- TODO: make me an option. -->
-		<div v-if="user?.id" class="badges absolute mt-[-1px] ltr:ml-1 rtl:mr-1 top-0 lfr:left-0 rtl:right-0 flex">
+		<div v-if="userStore.isLoggedIn" class="badges absolute mt-[-1px] ltr:ml-1 rtl:mr-1 top-0 lfr:left-0 rtl:right-0 flex">
 			<ThumbBadge v-if="props.photo.is_starred" class="bg-yellow-500" icon="star" />
 			<ThumbBadge v-if="props.isCoverId" class="bg-yellow-500" icon="folder-cover" />
 			<ThumbBadge v-if="props.isHeaderId" class="bg-slate-400 hidden sm:block" pi="image" />
@@ -91,7 +91,6 @@
 </template>
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
-import { useAuthStore } from "@/stores/Auth";
 import MiniIcon from "@/components/icons/MiniIcon.vue";
 import ThumbBadge from "@/components/gallery/albumModule/thumbs/ThumbBadge.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
@@ -101,6 +100,7 @@ import { useFavouriteStore } from "@/stores/FavouriteState";
 import ThumbFavourite from "./ThumbFavourite.vue";
 import { useRouter } from "vue-router";
 import { usePhotoRoute } from "@/composables/photo/photoRoute";
+import { useUserStore } from "@/stores/UserState";
 
 const { getNoImageIcon, getPlayIcon } = useImageHelpers();
 
@@ -114,8 +114,7 @@ const props = defineProps<{
 
 const router = useRouter();
 const { getParentId } = usePhotoRoute(router);
-const auth = useAuthStore();
-const { user } = storeToRefs(auth);
+const userStore = useUserStore();
 const favourites = useFavouriteStore();
 const lycheeStore = useLycheeStateStore();
 const { is_favourite_enabled, display_thumb_photo_overlay, photo_thumb_info, is_photo_thumb_tags_enabled } = storeToRefs(lycheeStore);

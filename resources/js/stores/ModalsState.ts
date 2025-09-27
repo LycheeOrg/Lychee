@@ -43,6 +43,9 @@ export const useTogglablesStateStore = defineStore("togglables-store", {
 		is_import_from_dropbox_open: false,
 		is_import_from_server_open: false,
 
+		// Help
+		is_keybindings_help_open: false,
+
 		// Selections Ids
 		selectedPhotosIdx: [] as number[],
 		selectedAlbumsIdx: [] as number[],

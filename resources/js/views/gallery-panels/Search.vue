@@ -1,5 +1,5 @@
 <template>
-	<LoadingProgress v-model:loading="isSearching" />
+	<LoadingProgress v-model:loading="searchStore.isSearching" />
 
 	<div class="h-svh overflow-y-hidden">
 		<!-- Trick to avoid the scroll bar to appear on the right when switching to full screen -->
@@ -13,26 +13,11 @@
 				'h-[calc(100vh-3.5rem)]': !is_full_screen,
 			}"
 		>
-			<SearchPanel
-				:title="title"
-				:search-minimum-length="searchMinimumLength"
-				:is-searching="isSearching"
-				:no-data="noData"
-				:search="search_term"
-				@clear="clear"
-				@search="search"
-			/>
+			<SearchPanel :title="title" :no-data="noData" :search="searchStore.searchTerm" @clear="searchStore.clear" @search="searchStore.search" />
 			<ResultPanel
-				v-if="albums !== undefined && photos !== undefined && layoutConfig"
-				:albums="albums"
-				:photos="photos"
-				v-model:first="from"
-				:total="total"
-				v-model:rows="per_page"
-				:album-header="albumHeader"
-				:photo-header="photoHeader"
-				:layout="layout"
-				:layout-config="layoutConfig"
+				v-model:first="searchStore.from"
+				:total="searchStore.total"
+				v-model:rows="searchStore.perPage"
 				:album-panel-config="albumPanelConfig"
 				:is-photo-timeline-enabled="configForMenu.is_photo_timeline_enabled"
 				:photo-callbacks="photoCallbacks"
@@ -45,11 +30,8 @@
 
 	<!-- Photo panel -->
 	<PhotoPanel
-		v-if="photo"
-		:photo="photo"
-		:photos="photosForSelection"
-		:is-map-visible="config?.is_map_accessible ?? false"
-		:transition="transition"
+		v-if="photoStore.isLoaded"
+		:is-map-visible="albumStore.config?.is_map_accessible ?? false"
 		@toggle-slide-show="slideshow"
 		@rotate-overlay="rotateOverlay"
 		@rotate-photo-c-w="rotatePhotoCW"
@@ -58,14 +40,14 @@
 		@toggle-star="toggleStar"
 		@toggle-move="toggleMove"
 		@toggle-delete="toggleDelete"
-		@updated="refresh"
+		@updated="refresh()"
 		@go-back="goBack"
 		@next="() => next(true)"
 		@previous="() => previous(true)"
 	/>
 
 	<!-- Dialogs -->
-	<template v-if="photo">
+	<template v-if="photoStore.photo !== undefined">
 		<PhotoTagDialog
 			v-model:visible="is_tag_visible"
 			:parent-id="albumId"
@@ -89,9 +71,9 @@
 				}
 			"
 		/>
-		<PhotoEdit v-if="photo?.rights.can_edit" v-model:visible="is_photo_edit_open" :photo="photo" />
-		<MoveDialog v-model:visible="is_move_visible" :photo="photo" @moved="refresh" />
-		<DeleteDialog v-model:visible="is_delete_visible" :photo="photo" @deleted="refresh" />
+		<PhotoEdit v-if="photoStore.photo.rights.can_edit" v-model:visible="is_photo_edit_open" />
+		<MoveDialog v-model:visible="is_move_visible" @moved="refresh" />
+		<DeleteDialog v-model:visible="is_delete_visible" @deleted="refresh" />
 	</template>
 	<template v-else-if="!noData">
 		<!-- Dialogs -->
@@ -125,16 +107,13 @@
 </template>
 <script setup lang="ts">
 import { AlbumThumbConfig } from "@/components/gallery/albumModule/thumbs/AlbumThumb.vue";
-import { useAlbumRefresher } from "@/composables/album/albumRefresher";
 import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
 import { useSelection } from "@/composables/selections/selections";
-import { useAuthStore } from "@/stores/Auth";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { onKeyStroke, useDebounceFn } from "@vueuse/core";
 import { storeToRefs } from "pinia";
 import { computed, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { useSearch } from "@/composables/search/searchRefresher";
 import AlbumMergeDialog from "@/components/forms/gallery-dialogs/AlbumMergeDialog.vue";
 import RenameDialog from "@/components/forms/gallery-dialogs/RenameDialog.vue";
 import PhotoTagDialog from "@/components/forms/photo/PhotoTagDialog.vue";
@@ -144,12 +123,10 @@ import DeleteDialog from "@/components/forms/gallery-dialogs/DeleteDialog.vue";
 import PhotoService from "@/services/photo-service";
 import AlbumService from "@/services/album-service";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
-import { useGetLayoutConfig } from "@/layouts/PhotoLayout";
 import SearchPanel from "@/components/gallery/searchModule/SearchPanel.vue";
 import ResultPanel from "@/components/gallery/searchModule/ResultPanel.vue";
 import { onMounted } from "vue";
 import { useScrollable } from "@/composables/album/scrollable";
-import { useSearchComputed } from "@/composables/search/searchComputed";
 import { ALL } from "@/config/constants";
 import PhotoPanel from "@/components/gallery/photoModule/PhotoPanel.vue";
 import PhotoEdit from "@/components/drawers/PhotoEdit.vue";
@@ -157,15 +134,21 @@ import { usePhotoActions } from "@/composables/album/photoActions";
 import { useToast } from "primevue/usetoast";
 import { useSlideshowFunction } from "@/composables/photo/slideshow";
 import { getNextPreviousPhoto } from "@/composables/photo/getNextPreviousPhoto";
-import { usePhotoRefresher } from "@/composables/photo/hasRefresher";
 import { Collapse } from "vue-collapsed";
 import SearchHeader from "@/components/headers/SearchHeader.vue";
 import LoadingProgress from "@/components/loading/LoadingProgress.vue";
 import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
-import { useHasNextPreviousPhoto } from "@/composables/photo/hasNextPreviousPhoto";
 import MetricsService from "@/services/metrics-service";
 import { usePhotoRoute } from "@/composables/photo/photoRoute";
 import { useLtRorRtL } from "@/utils/Helpers";
+import { useAlbumsStore } from "@/stores/AlbumsState";
+import { usePhotoStore } from "@/stores/PhotoState";
+import { usePhotosStore } from "@/stores/PhotosState";
+import { useUserStore } from "@/stores/UserState";
+import { useSearchStore } from "@/stores/SearchState";
+import { useAlbumStore } from "@/stores/AlbumState";
+import { useLayoutStore } from "@/stores/LayoutState";
+import { trans } from "laravel-vue-i18n";
 
 const { isLTR } = useLtRorRtL();
 
@@ -178,52 +161,79 @@ const props = defineProps<{
 	photoId?: string;
 }>();
 
-const albumId = ref(props.albumId ?? ALL);
-const photoId = ref(props.photoId);
+// const albumId = ref(props.albumId ?? ALL);
+
+const albumStore = useAlbumStore();
+const albumsStore = useAlbumsStore();
+const photoStore = usePhotoStore();
+const photosStore = usePhotosStore();
+const userStore = useUserStore();
+const searchStore = useSearchStore();
+const layoutStore = useLayoutStore();
+
+// eslint-disable-next-line vue/no-dupe-keys
+const { albumId } = storeToRefs(albumStore);
+// eslint-disable-next-line vue/no-dupe-keys
+const { photoId } = storeToRefs(photoStore);
 
 // unused? Hard to say...
 const videoElement = ref<HTMLVideoElement | null>(null);
 
-const auth = useAuthStore();
 const lycheeStore = useLycheeStateStore();
-lycheeStore.init();
-const { slideshow_timeout, are_nsfw_visible } = storeToRefs(lycheeStore);
-
+const { slideshow_timeout, are_nsfw_visible, is_slideshow_enabled } = storeToRefs(lycheeStore);
 const togglableStore = useTogglablesStateStore();
 
-const search_page = ref(1);
-const search_term = ref("");
+async function load() {
+	await Promise.allSettled([layoutStore.load(), lycheeStore.load(), userStore.load(), albumStore.load(), searchStore.load()]);
+	photoStore.photoId = photoId.value;
+	photoStore.load();
+}
 
-const { is_login_open, is_slideshow_active, is_photo_edit_open, is_full_screen, are_details_open } = storeToRefs(togglableStore);
-
-const { album, photo, transition, config, loadAlbum, setTransition } = useAlbumRefresher(albumId, photoId, auth, is_login_open);
-
-const {
-	albums,
-	photos,
-	layout,
-	searchMinimumLength,
-	isSearching,
-	from,
-	per_page,
-	total,
-	photoHeader,
-	albumHeader,
-	searchInit,
-	search,
-	clear,
-	refresh,
-} = useSearch(albumId, search_term, search_page);
+const { is_slideshow_active, is_photo_edit_open, is_full_screen, are_details_open } = storeToRefs(togglableStore);
 
 const { getParentId } = usePhotoRoute(router);
-const { refreshPhoto } = usePhotoRefresher(photo, photos, photoId);
-const { albumsForSelection, photosForSelection, noData, configForMenu, title } = useSearchComputed(config, album, albums, photos, lycheeStore);
+const title = computed<string>(() => {
+	if (albumStore.album === undefined) {
+		return trans(lycheeStore.title);
+	}
+	return albumStore.album.title;
+});
 
-const { layoutConfig, loadLayoutConfig } = useGetLayoutConfig();
+const noData = computed<boolean>(() => albumsStore.albums.length === 0 && photosStore.photos.length === 0);
 
-const { hasPrevious, hasNext } = useHasNextPreviousPhoto(photo);
-const { getNext, getPrevious } = getNextPreviousPhoto(router, photo);
+const configForMenu = computed<App.Http.Resources.GalleryConfigs.AlbumConfig>(() => {
+	if (albumStore.config !== undefined) {
+		return albumStore.config;
+	}
+	return {
+		is_base_album: false,
+		is_model_album: false,
+		is_accessible: true,
+		is_password_protected: false,
+		is_map_accessible: false,
+		is_mod_frame_enabled: false,
+		is_search_accessible: false,
+		is_nsfw_warning_visible: false,
+		album_thumb_css_aspect_ratio: "aspect-square",
+		photo_layout: "justified",
+		is_album_timeline_enabled: false,
+		is_photo_timeline_enabled: false,
+	};
+});
+
+async function refresh() {
+	await Promise.allSettled([layoutStore.load(), lycheeStore.load(), userStore.refresh(), albumStore.refresh(), searchStore.refresh()]);
+	photoStore.photoId = photoId.value;
+	photoStore.load();
+}
+
+const { getNext, getPrevious } = getNextPreviousPhoto(router, photoStore);
 const { slideshow, next, previous, stop } = useSlideshowFunction(1000, is_slideshow_active, slideshow_timeout, videoElement, getNext, getPrevious);
+
+function toggleDetails() {
+	is_photo_edit_open.value = false;
+	are_details_open.value = !are_details_open.value;
+}
 
 const {
 	is_delete_visible,
@@ -250,36 +260,36 @@ const {
 	selectedPhotosIds,
 	selectedAlbumsIds,
 	unselect,
-} = useSelection(
-	{
-		photos: photosForSelection,
-		albums: albumsForSelection,
-	},
-	togglableStore,
-);
+} = useSelection(photosStore, albumsStore, togglableStore);
 
-const { toggleStar, rotatePhotoCCW, rotatePhotoCW, setAlbumHeader, rotateOverlay } = usePhotoActions(photo, albumId, toast, lycheeStore);
+const { toggleStar, rotatePhotoCCW, rotatePhotoCW, setAlbumHeader, rotateOverlay } = usePhotoActions(photoStore, albumId, toast, lycheeStore);
 
 const photoCallbacks = {
 	star: () => {
 		PhotoService.star(selectedPhotosIds.value, true);
 		AlbumService.clearCache();
-		refresh();
+		// refresh();
 	},
 	unstar: () => {
 		PhotoService.star(selectedPhotosIds.value, false);
 		AlbumService.clearCache();
-		refresh();
+		// refresh();
 	},
 	setAsCover: () => {
+		if (albumId.value === undefined) {
+			return;
+		}
 		PhotoService.setAsCover(selectedPhoto.value!.id, albumId.value);
 		AlbumService.clearCache(albumId.value);
-		refresh();
+		// refresh();
 	},
 	setAsHeader: () => {
+		if (albumId.value === undefined) {
+			return;
+		}
 		PhotoService.setAsHeader(selectedPhoto.value!.id, albumId.value, false);
 		AlbumService.clearCache(albumId.value);
-		refresh();
+		// refresh();
 	},
 	toggleTag: toggleTag,
 	toggleRename: toggleRename,
@@ -299,9 +309,10 @@ const albumCallbacks = {
 	togglePin: () => {},
 };
 
+const album = computed(() => albumStore.album);
 const selectors = {
 	config: configForMenu,
-	album: albumId.value !== "" ? album : undefined,
+	album: album,
 	selectedPhoto: selectedPhoto,
 	selectedPhotos: selectedPhotos,
 	selectedPhotosIdx: selectedPhotosIdx,
@@ -331,8 +342,8 @@ function goBack() {
 	}
 
 	if (photoId.value !== undefined) {
-		photoId.value = undefined;
-		photo.value = undefined;
+		photoStore.reset();
+
 		router.push({ name: "search", params: { albumId: albumId.value } });
 		return;
 	}
@@ -345,32 +356,32 @@ function goBack() {
 }
 
 // Album operations
-onKeyStroke("h", () => !shouldIgnoreKeystroke() && photo.value === undefined && (are_nsfw_visible.value = !are_nsfw_visible.value));
-onKeyStroke("f", () => !shouldIgnoreKeystroke() && photo.value === undefined && togglableStore.toggleFullScreen());
+onKeyStroke("h", () => !shouldIgnoreKeystroke() && !photoStore.isLoaded && (are_nsfw_visible.value = !are_nsfw_visible.value));
+onKeyStroke("f", () => !shouldIgnoreKeystroke() && !photoStore.isLoaded && togglableStore.toggleFullScreen());
 
 // Photo operations (note that the arrow keys are flipped for RTL languages)
-onKeyStroke("ArrowLeft", () => !shouldIgnoreKeystroke() && photo.value !== undefined && isLTR() && hasPrevious() && previous(true));
-onKeyStroke("ArrowRight", () => !shouldIgnoreKeystroke() && photo.value !== undefined && isLTR() && hasNext() && next(true));
-onKeyStroke("ArrowLeft", () => !shouldIgnoreKeystroke() && photo.value !== undefined && !isLTR() && hasNext() && next(true));
-onKeyStroke("ArrowRight", () => !shouldIgnoreKeystroke() && photo.value !== undefined && !isLTR() && hasPrevious() && previous(true));
-onKeyStroke("o", () => !shouldIgnoreKeystroke() && photo.value !== undefined && rotateOverlay());
-onKeyStroke(" ", () => !shouldIgnoreKeystroke() && photo.value !== undefined && slideshow());
-onKeyStroke("i", () => !shouldIgnoreKeystroke() && photo.value !== undefined && (are_details_open.value = !are_details_open.value));
-onKeyStroke("f", () => !shouldIgnoreKeystroke() && photo.value !== undefined && togglableStore.toggleFullScreen());
-onKeyStroke("Escape", () => !shouldIgnoreKeystroke() && photo.value !== undefined && is_slideshow_active.value && stop());
+onKeyStroke("ArrowLeft", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && isLTR() && photoStore.hasPrevious && previous(true));
+onKeyStroke("ArrowRight", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && isLTR() && photoStore.hasNext && next(true));
+onKeyStroke("ArrowLeft", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && !isLTR() && photoStore.hasNext && next(true));
+onKeyStroke("ArrowRight", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && !isLTR() && photoStore.hasPrevious && previous(true));
+onKeyStroke("o", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && rotateOverlay());
+onKeyStroke(" ", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && is_slideshow_enabled.value && slideshow());
+onKeyStroke("i", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && toggleDetails());
+onKeyStroke("f", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && togglableStore.toggleFullScreen());
+onKeyStroke("Escape", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && is_slideshow_active.value && stop());
 
 // Priviledged Photo operations
-onKeyStroke("m", () => !shouldIgnoreKeystroke() && photo.value !== undefined && photo.value.rights.can_edit && toggleMove());
+onKeyStroke("m", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && photoStore.photo?.rights.can_edit && toggleMove());
 onKeyStroke(
 	"e",
 	() =>
 		!shouldIgnoreKeystroke() &&
-		photo.value !== undefined &&
-		photo.value.rights.can_edit &&
+		photoStore.isLoaded &&
+		photoStore.photo?.rights.can_edit &&
 		(is_photo_edit_open.value = !is_photo_edit_open.value),
 );
-onKeyStroke("s", () => !shouldIgnoreKeystroke() && photo.value !== undefined && photo.value.rights.can_edit && toggleStar());
-onKeyStroke(["Delete", "Backspace"], () => !shouldIgnoreKeystroke() && photo.value !== undefined && album.value?.rights.can_delete && toggleDelete());
+onKeyStroke("s", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && photoStore.photo?.rights.can_edit && toggleStar());
+onKeyStroke(["Delete", "Backspace"], () => !shouldIgnoreKeystroke() && photoStore.isLoaded && albumStore.album?.rights.can_delete && toggleDelete());
 
 // on key stroke escape:
 // 1. lose focus
@@ -421,17 +432,23 @@ onKeyStroke("Escape", () => {
 	goBack();
 });
 
-onMounted(() => {
-	if (photoId.value !== undefined) {
-		router.push({ name: "search", params: { albumId: albumId.value } });
-	}
+onMounted(async () => {
+	albumId.value = props.albumId ?? ALL;
+	photoId.value = props.photoId;
 
-	if (albumId.value !== "" && albumId.value !== ALL) {
-		loadAlbum();
-	}
+	await load();
+	setScroll();
 
-	searchInit();
-	loadLayoutConfig();
+	// if (photoId.value !== undefined) {
+	// 	router.push({ name: "search", params: { albumId: albumId.value } });
+	// }
+
+	// if (albumId.value !== "" && albumId.value !== ALL) {
+	// 	loadAlbum();
+	// }
+
+	// searchInit();
+	// loadLayoutConfig();
 });
 
 const debouncedPhotoMetrics = useDebounceFn(() => {
@@ -446,13 +463,13 @@ watch(
 	(newPhotoId, _) => {
 		unselect();
 
-		setTransition(newPhotoId as string | undefined);
+		photoStore.setTransition(newPhotoId as string | undefined);
 
 		photoId.value = newPhotoId as string;
 		debouncedPhotoMetrics();
 		if (photoId.value !== undefined) {
 			togglableStore.rememberScrollThumb(photoId.value);
-			refreshPhoto();
+			photoStore.load();
 		}
 
 		if (photoId.value === undefined) {

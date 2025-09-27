@@ -3,8 +3,6 @@
 		<div class="flex flex-wrap flex-row shrink w-full justify-start gap-1 sm:gap-2 md:gap-4 pt-4">
 			<AlbumThumbPanelList
 				:albums="props.albums"
-				:album="props.album"
-				:config="props.config"
 				:idx-shift="props.idxShift"
 				:iter="0"
 				:selected-albums="props.selectedAlbums"
@@ -26,8 +24,6 @@
 					<div class="w-full text-left font-semibold text-muted-color-emphasis text-lg">{{ slotProps.item.header }}</div>
 					<AlbumThumbPanelList
 						:albums="slotProps.item.data"
-						:album="props.album"
-						:config="props.config"
 						:idx-shift="props.idxShift"
 						:iter="slotProps.item.iter"
 						:selected-albums="props.selectedAlbums"
@@ -46,8 +42,6 @@
 					<div class="w-full ltr:text-left rtl:text-right font-semibold text-muted-color-emphasis text-lg">{{ albumTimeline.header }}</div>
 					<AlbumThumbPanelList
 						:albums="albumTimeline.data"
-						:album="props.album"
-						:config="props.config"
 						:idx-shift="props.idxShift"
 						:iter="albumTimeline.iter"
 						:selected-albums="props.selectedAlbums"
@@ -61,7 +55,6 @@
 </template>
 <script setup lang="ts">
 import Panel from "primevue/panel";
-import { AlbumThumbConfig } from "@/components/gallery/albumModule/thumbs/AlbumThumb.vue";
 import { computed, onMounted, watch } from "vue";
 import { type SplitData, useSplitter } from "@/composables/album/splitter";
 import Timeline from "primevue/timeline";
@@ -77,9 +70,7 @@ const { are_nsfw_visible, is_timeline_left_border_visible, is_debug_enabled } = 
 
 const props = defineProps<{
 	header: string;
-	album: App.Http.Resources.Models.AlbumResource | undefined | null;
 	albums: { [key: number]: App.Http.Resources.Models.ThumbAlbumResource };
-	config: AlbumThumbConfig;
 	isAlone: boolean;
 	idxShift: number;
 	selectedAlbums: string[];
@@ -120,10 +111,6 @@ function split(albums: App.Http.Resources.Models.ThumbAlbumResource[]) {
 	);
 }
 
-onMounted(() => {
-	validate(props.albums as App.Http.Resources.Models.ThumbAlbumResource[]);
-});
-
 function validate(albums: App.Http.Resources.Models.ThumbAlbumResource[]) {
 	if (props.isTimeline) {
 		const splitted = split(albums);
@@ -131,8 +118,12 @@ function validate(albums: App.Http.Resources.Models.ThumbAlbumResource[]) {
 	}
 }
 
+onMounted(() => {
+	validate(props.albums as App.Http.Resources.Models.ThumbAlbumResource[]);
+});
+
 watch(
-	() => props.album?.id,
+	() => props.isTimeline,
 	() => {
 		if (props.isTimeline) {
 			validate(props.albums as App.Http.Resources.Models.ThumbAlbumResource[]);

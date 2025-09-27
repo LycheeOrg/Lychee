@@ -5,8 +5,8 @@
 				:photo="photo"
 				:is-selected="props.selectedPhotos.includes(photo.id)"
 				:is-lazy="idx + props.iter > 10"
-				:is-cover-id="props.coverId === photo.id"
-				:is-header-id="props.headerId === photo.id"
+				:is-cover-id="albumStore.modelAlbum?.cover_id === photo.id"
+				:is-header-id="albumStore.modelAlbum?.header_id === photo.id"
 				@click="maySelect(idx + props.iter, $event)"
 				@contextmenu.prevent="menuOpen(idx + props.iter, $event)"
 			/>
@@ -15,27 +15,28 @@
 </template>
 <script setup lang="ts">
 import { useLayouts, type TimelineData } from "@/layouts/PhotoLayout";
-import { onMounted, onUnmounted, onUpdated, Ref } from "vue";
+import { onMounted, onUnmounted, onUpdated, watch } from "vue";
 import PhotoThumb from "./thumbs/PhotoThumb.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import { ctrlKeyState, metaKeyState, shiftKeyState } from "@/utils/keybindings-utils";
 import { useDebounceFn } from "@vueuse/core";
 import { useRoute } from "vue-router";
+import { useLayoutStore } from "@/stores/LayoutState";
+import { useAlbumStore } from "@/stores/AlbumState";
 
 const props = defineProps<{
 	photos: { [key: number]: App.Http.Resources.Models.PhotoResource };
-	galleryConfig: App.Http.Resources.GalleryConfigs.PhotoLayoutConfig;
 	selectedPhotos: string[];
 	iter: number;
 	groupIdx: number;
-	coverId: string | undefined;
-	headerId: string | undefined;
 	isTimeline?: boolean;
 }>();
 
 const lycheeStore = useLycheeStateStore();
-const layout = defineModel("layout") as Ref<App.Enum.PhotoLayoutType>;
+const layoutStore = useLayoutStore();
+const albumStore = useAlbumStore();
+
 const { is_timeline_left_border_visible } = storeToRefs(lycheeStore);
 
 const route = useRoute();
@@ -62,7 +63,7 @@ function menuOpen(idx: number, e: MouseEvent) {
 }
 
 // Layouts stuff
-const { activateLayout } = useLayouts(props.galleryConfig, layout, timelineData, "photoListing" + props.groupIdx, route);
+const { activateLayout } = useLayouts(layoutStore, timelineData, "photoListing" + props.groupIdx, route);
 
 const debouncedActivateLayout = useDebounceFn(activateLayout, 100);
 
@@ -70,6 +71,13 @@ onMounted(() => {
 	activateLayout();
 	window.addEventListener("resize", debouncedActivateLayout);
 });
+
+watch(
+	() => layoutStore.layout,
+	() => {
+		activateLayout();
+	},
+);
 
 onUpdated(() => activateLayout());
 

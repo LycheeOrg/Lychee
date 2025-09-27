@@ -57,7 +57,7 @@ onMounted(() => {
 	// Close the left menu if it is open
 	leftMenuStore.left_menu_open = false;
 
-	Promise.all([lycheeStore.init(), InitService.fetchLandingData()]).then(([_lycheeData, initData]) => {
+	Promise.all([lycheeStore.load(), InitService.fetchLandingData()]).then(([_lycheeData, initData]) => {
 		is_loaded.value = true;
 		if (initData.data.landing_page_enable === true) {
 			initdata.value = initData.data;

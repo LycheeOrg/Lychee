@@ -304,6 +304,7 @@ import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import TagsInput from "@/components/forms/basic/TagsInput.vue";
 import ToggleSwitch from "primevue/toggleswitch";
+import { usePhotosStore } from "@/stores/PhotosState";
 
 type HeaderOption = {
 	id: string;
@@ -316,8 +317,9 @@ const { is_se_enabled } = storeToRefs(LycheeState);
 
 const props = defineProps<{
 	editable: App.Http.Resources.Editable.EditableBaseAlbumResource;
-	photos: App.Http.Resources.Models.PhotoResource[];
 }>();
+
+const photosStore = usePhotosStore();
 
 const toast = useToast();
 const is_model_album = ref(true);
@@ -362,7 +364,7 @@ const headersOptions = computed(() => {
 		},
 	];
 	list.push(
-		...props.photos.map((photo) => ({
+		...photosStore.photos.map((photo) => ({
 			id: photo.id,
 			title: photo.title,
 			thumb: photo.size_variants.thumb?.url,
@@ -408,7 +410,7 @@ function load(editable: App.Http.Resources.Editable.EditableBaseAlbumResource, p
 	is_and.value = editable.is_and ?? false;
 }
 
-load(props.editable, props.photos);
+load(props.editable, photosStore.photos);
 
 function save() {
 	if (is_model_album.value) {
@@ -469,7 +471,7 @@ function saveTagAlbum() {
 }
 
 watch(
-	() => [props.editable, props.photos],
+	() => [props.editable, photosStore.photos],
 	([editable, photos]) => {
 		load(editable as App.Http.Resources.Editable.EditableBaseAlbumResource, photos as App.Http.Resources.Models.PhotoResource[]);
 	},

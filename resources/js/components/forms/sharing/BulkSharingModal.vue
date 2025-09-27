@@ -116,7 +116,7 @@ import { storeToRefs } from "pinia";
 
 const visible = defineModel("visible", { default: false });
 const lycheeStore = useLycheeStateStore();
-lycheeStore.init();
+lycheeStore.load();
 const { is_se_enabled } = storeToRefs(lycheeStore);
 
 const toast = useToast();

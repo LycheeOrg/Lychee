@@ -1,59 +1,55 @@
 <template>
 	<div class="h-svh overflow-y-hidden flex flex-col">
 		<!-- Trick to avoid the scroll bar to appear on the right when switching to full screen -->
-		<Toolbar class="w-full border-0 h-14 rounded-none">
+		<Toolbar class="w-full border-0 h-14 rounded-none" v-if="tagStore.tag">
 			<template #start>
 				<GoBack @go-back="emits('goBack')" />
 			</template>
 			<template #center>
-				{{ props.tag }}
+				{{ tagStore.tag.name }}
 			</template>
 			<template #end> </template>
 		</Toolbar>
 
-		<template v-if="props.photoLayout">
-			<div id="galleryView" class="relative flex flex-wrap content-start w-full justify-start overflow-y-auto h-full">
-				<div v-if="noData" class="flex w-full flex-col h-full items-center justify-center text-xl text-muted-color gap-8">
-					<span class="block">
-						{{ $t("gallery.album.no_results") }}
-					</span>
-				</div>
-				<PhotoThumbPanel
-					v-if="layoutConfig !== null && photos !== null && photos.length > 0"
-					header="gallery.album.header_photos"
-					:photos="photos"
-					:gallery-config="layoutConfig"
-					:photo-layout="props.photoLayout"
-					:selected-photos="selectedPhotosIds"
-					:cover-id="undefined"
-					:header-id="undefined"
-					:with-control="true"
-					@clicked="photoClick"
-					@selected="photoSelect"
-					@contexted="photoMenuOpen"
-				/>
-				<GalleryFooter v-once />
-				<ScrollTop v-if="!props.isPhotoOpen" target="parent" />
+		<div id="galleryView" class="relative flex flex-wrap content-start w-full justify-start overflow-y-auto h-full">
+			<div
+				v-if="photosStore.photos.length === 0"
+				class="flex w-full flex-col h-full items-center justify-center text-xl text-muted-color gap-8"
+			>
+				<span class="block">
+					{{ $t("gallery.album.no_results") }}
+				</span>
 			</div>
+			<PhotoThumbPanel
+				v-else
+				header="gallery.album.header_photos"
+				:photos="photosStore.photos"
+				:selected-photos="selectedPhotosIds"
+				:with-control="true"
+				@clicked="photoClick"
+				@selected="photoSelect"
+				@contexted="photoMenuOpen"
+			/>
+			<GalleryFooter v-once />
+			<ScrollTop v-if="!photoStore.isLoaded" target="parent" />
+		</div>
 
-			<!-- Dialogs -->
-			<ContextMenu ref="menu" :model="Menu" :class="Menu.length === 0 ? 'hidden' : ''">
-				<template #item="{ item, props }">
-					<Divider v-if="item.is_divider" />
-					<a v-else v-ripple v-bind="props.action" @click="item.callback">
-						<span :class="item.icon" />
-						<span class="ml-2">
-							<!-- @vue-ignore -->
-							{{ $t(item.label) }}
-						</span>
-					</a>
-				</template>
-			</ContextMenu>
-		</template>
+		<!-- Dialogs -->
+		<ContextMenu ref="menu" :model="Menu" :class="Menu.length === 0 ? 'hidden' : ''">
+			<template #item="{ item, props }">
+				<Divider v-if="item.is_divider" />
+				<a v-else v-ripple v-bind="props.action" @click="item.callback">
+					<span :class="item.icon" />
+					<span class="ml-2">
+						<!-- @vue-ignore -->
+						{{ $t(item.label) }}
+					</span>
+				</a>
+			</template>
+		</ContextMenu>
 	</div>
 </template>
 <script setup lang="ts">
-import { computed, ref } from "vue";
 import PhotoThumbPanel from "@/components/gallery/albumModule/PhotoThumbPanel.vue";
 import { useSelection } from "@/composables/selections/selections";
 import Divider from "primevue/divider";
@@ -69,38 +65,31 @@ import { usePhotoRoute } from "@/composables/photo/photoRoute";
 import { useRouter } from "vue-router";
 import GoBack from "@/components/headers/GoBack.vue";
 import Toolbar from "primevue/toolbar";
+import { usePhotosStore } from "@/stores/PhotosState";
+import { useTagStore } from "@/stores/TagState";
+import { useAlbumsStore } from "@/stores/AlbumsState";
+import { usePhotoStore } from "@/stores/PhotoState";
 
 const router = useRouter();
-
-const props = defineProps<{
-	tag: string;
-	photos: App.Http.Resources.Models.PhotoResource[];
-	photoLayout: App.Enum.PhotoLayoutType;
-	user: App.Http.Resources.Models.UserResource | undefined;
-	layoutConfig: App.Http.Resources.GalleryConfigs.PhotoLayoutConfig;
-	isPhotoOpen: boolean;
-}>();
-
-const photos = computed<App.Http.Resources.Models.PhotoResource[]>(() => props.photos);
-
 const togglableStore = useTogglablesStateStore();
-const layoutConfig = ref(props.layoutConfig);
+const photosStore = usePhotosStore();
+const tagStore = useTagStore();
+const albumsStore = useAlbumsStore();
+const photoStore = usePhotoStore();
 
 const emits = defineEmits<{
 	refresh: [];
 	goBack: [];
 }>();
 
-const noData = computed(() => photos.value === null || photos.value.length === 0);
-
 const { toggleDelete, toggleMove, toggleRename, toggleTag, toggleCopy } = useGalleryModals(togglableStore);
 
-const { selectedPhotosIdx, selectedPhoto, selectedPhotos, selectedPhotosIds, photoSelect } = useSelection({ photos }, togglableStore);
+const { selectedPhotosIdx, selectedPhoto, selectedPhotos, selectedPhotosIds, photoSelect } = useSelection(photosStore, albumsStore, togglableStore);
 
 const { photoRoute, getParentId } = usePhotoRoute(router);
 
 function photoClick(idx: number, _e: MouseEvent) {
-	router.push(photoRoute(photos.value[idx].id));
+	router.push(photoRoute(photosStore.photos[idx].id));
 }
 
 const photoCallbacks = {

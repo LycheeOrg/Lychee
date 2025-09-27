@@ -21,17 +21,13 @@
 			@scroll="onScroll"
 		>
 			<PhotoThumbPanel
-				v-if="layoutConfig !== undefined && photos.length > 0"
+				v-if="layoutStore.config && photos.length > 0"
 				header="gallery.album.header_photos"
 				:photos="photos"
-				:gallery-config="layoutConfig"
 				:photos-timeline="undefined"
-				:photo-layout="'square'"
 				:selected-photos="selectedPhotosIds"
 				:is-timeline="false"
 				:with-control="false"
-				:cover-id="undefined"
-				:header-id="undefined"
 				@clicked="photoClick"
 			/>
 		</div>
@@ -45,9 +41,11 @@ import GoBack from "@/components/headers/GoBack.vue";
 import { useScrollable } from "@/composables/album/scrollable";
 import { useSelection } from "@/composables/selections/selections";
 import { ALL } from "@/config/constants";
-import { useGetLayoutConfig } from "@/layouts/PhotoLayout";
+import { useAlbumsStore } from "@/stores/AlbumsState";
 import { useFavouriteStore } from "@/stores/FavouriteState";
+import { useLayoutStore } from "@/stores/LayoutState";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
+import { usePhotosStore } from "@/stores/PhotosState";
 import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
 import { onKeyStroke } from "@vueuse/core";
 import { storeToRefs } from "pinia";
@@ -58,7 +56,9 @@ import { useRouter } from "vue-router";
 
 const albumId = ref("favourites");
 const togglableStore = useTogglablesStateStore();
-const { layoutConfig, loadLayoutConfig } = useGetLayoutConfig();
+const layoutStore = useLayoutStore();
+const photosStore = usePhotosStore();
+const albumsStore = useAlbumsStore();
 const { is_full_screen } = storeToRefs(togglableStore);
 const { onScroll, setScroll } = useScrollable(togglableStore, albumId);
 const router = useRouter();
@@ -68,10 +68,11 @@ function goBack() {
 }
 
 const favourites = useFavouriteStore();
+layoutStore.layout = "square";
 
 const photos = computed(() => favourites.photos ?? []);
 
-const { selectedPhotosIds } = useSelection({ photos }, togglableStore);
+const { selectedPhotosIds } = useSelection(photosStore, albumsStore, togglableStore);
 
 function photoClick(idx: number, _e: MouseEvent) {
 	router.push({ name: "album", params: { albumId: photos.value[idx].album_id ?? ALL, photoId: photos.value[idx].id } });
@@ -89,7 +90,7 @@ onKeyStroke("Escape", () => {
 });
 
 onMounted(async () => {
-	const results = await Promise.allSettled([loadLayoutConfig()]);
+	const results = await Promise.allSettled([layoutStore.load()]);
 
 	results.forEach((result, index) => {
 		if (result.status === "rejected") {

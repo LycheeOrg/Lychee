@@ -72,7 +72,7 @@ const router = useRouter();
 const leftMenuStore = useLeftMenuStateStore();
 const togglableStore = useTogglablesStateStore();
 const lycheeStore = useLycheeStateStore();
-lycheeStore.init();
+lycheeStore.load();
 
 function goBack() {
 	if (props.albumId !== undefined && props.albumId !== "") {

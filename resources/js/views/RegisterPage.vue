@@ -69,11 +69,11 @@ import { useRouter } from "vue-router";
 import { trans } from "laravel-vue-i18n";
 import { useToast } from "primevue/usetoast";
 import Message from "primevue/message";
-import { useAuthStore } from "@/stores/Auth";
+import { useUserStore } from "@/stores/UserState";
 import AlbumService from "@/services/album-service";
 
 const router = useRouter();
-const authStore = useAuthStore();
+const userStore = useUserStore();
 const lycheeStore = useLycheeStateStore();
 const leftMenuStore = useLeftMenuStateStore();
 const { title } = storeToRefs(lycheeStore);
@@ -130,7 +130,7 @@ function register() {
 			errorMessage.value = ""; // Clear error message on success
 			toast.add({ severity: "success", summary: trans("profile.register.success"), life: 3000 });
 			// Clear the cache to trigger reload of user data
-			authStore.setUser(null);
+			userStore.setUser(undefined);
 			AlbumService.clearCache();
 			router.push({ name: "gallery" }); // Redirect to gallery
 		})
@@ -149,7 +149,7 @@ onMounted(() => {
 	// Close the left menu if it is open
 	leftMenuStore.left_menu_open = false;
 
-	Promise.all([lycheeStore.init(), InitService.fetchLandingData()]).then(([_lycheeData, initData]) => {
+	Promise.all([lycheeStore.load(), InitService.fetchLandingData()]).then(([_lycheeData, initData]) => {
 		is_loaded.value = true;
 		if (initData.data.landing_page_enable === true) {
 			initdata.value = initData.data;

@@ -1,7 +1,7 @@
 <template>
-	<ImportFromLink v-if="props.rights.can_upload" v-model:visible="is_import_from_link_open" />
-	<ImportFromServer v-if="props.rights.can_import_from_server" v-model:visible="is_import_from_server_open" />
-	<DropBox v-if="props.rights.can_upload" v-model:visible="is_import_from_dropbox_open" />
+	<ImportFromLink v-if="timelineStore.rootRights?.can_upload" v-model:visible="is_import_from_link_open" />
+	<ImportFromServer v-if="timelineStore.rootRights?.can_import_from_server" v-model:visible="is_import_from_server_open" />
+	<DropBox v-if="timelineStore.rootRights?.can_upload" v-model:visible="is_import_from_dropbox_open" />
 	<Toolbar
 		class="w-full border-0 h-14 z-10 rounded-none"
 		:pt:root:class="'flex-nowrap relative'"
@@ -16,12 +16,12 @@
 				{{ $t("gallery.timeline.title") }}
 			</span>
 			<span class="hidden lg:block font-bold text-sm lg:text-base text-center w-full" @click="is_metrics_open = !is_metrics_open">
-				{{ props.title }}
+				{{ lycheeStore.title }}
 			</span>
 		</template>
 
 		<template #end>
-			<template v-if="props.user.id === null">
+			<template v-if="userStore.isGuest">
 				<Button
 					as="router-link"
 					:to="{ name: 'login' }"
@@ -62,7 +62,7 @@
 					</template>
 				</template>
 				<!-- Not logged in. -->
-				<BackLinkButton v-if="props.user.id === null" :config="props.config" />
+				<BackLinkButton v-if="userStore.isGuest && timelineStore.rootConfig" :config="timelineStore.rootConfig" />
 			</div>
 			<SpeedDial
 				:model="menu"
@@ -84,7 +84,7 @@
 			</SpeedDial>
 		</template>
 	</Toolbar>
-	<ContextMenu v-if="props.rights.can_upload" ref="addmenu" :model="addMenu">
+	<ContextMenu v-if="timelineStore.rootRights?.can_upload" ref="addmenu" :model="addMenu">
 		<template #item="{ item, props }">
 			<Divider v-if="item.is_divider" />
 			<a v-else v-ripple v-bind="props.action" @click="item.callback">
@@ -119,20 +119,8 @@ import OpenLeftMenu from "./OpenLeftMenu.vue";
 import { useFavouriteStore } from "@/stores/FavouriteState";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
 import ImportFromServer from "@/components/modals/ImportFromServer.vue";
-
-const props = defineProps<{
-	user: App.Http.Resources.Models.UserResource;
-	title: string;
-	rights: App.Http.Resources.Rights.RootAlbumRightsResource;
-	config: {
-		is_search_accessible: boolean;
-		show_keybinding_help_button: boolean;
-		back_button_enabled: boolean;
-		back_button_text: string;
-		back_button_url: string;
-	};
-	hasHidden: boolean;
-}>();
+import { useTimelineStore } from "@/stores/timelineState";
+import { useUserStore } from "@/stores/UserState";
 
 const emits = defineEmits<{
 	refresh: [];
@@ -142,6 +130,8 @@ const emits = defineEmits<{
 const lycheeStore = useLycheeStateStore();
 const togglableStore = useTogglablesStateStore();
 const favourites = useFavouriteStore();
+const timelineStore = useTimelineStore();
+const userStore = useUserStore();
 
 const { dropbox_api_key, is_favourite_enabled, is_registration_enabled, is_live_metrics_enabled, is_se_preview_enabled } = storeToRefs(lycheeStore);
 const { is_login_open, is_upload_visible, is_create_album_visible, is_create_tag_album_visible, is_metrics_open } = storeToRefs(togglableStore);
@@ -161,7 +151,7 @@ const {
 	toggleUpload,
 } = useGalleryModals(togglableStore);
 
-const is_owner = computed(() => props.rights.can_import_from_server);
+const is_owner = computed(() => timelineStore.rootRights?.can_import_from_server === true);
 const { addmenu, addMenu } = useContextMenuAlbumsAdd(
 	{
 		toggleUpload: toggleUpload,
@@ -187,9 +177,9 @@ function openSearch() {
 	router.push({ name: "search" });
 }
 
-onKeyStroke("n", () => !shouldIgnoreKeystroke() && props.rights.can_upload && (is_create_album_visible.value = true));
-onKeyStroke("u", () => !shouldIgnoreKeystroke() && props.rights.can_upload && (is_upload_visible.value = true));
-onKeyStroke("/", () => !shouldIgnoreKeystroke() && props.config.is_search_accessible && openSearch());
+onKeyStroke("n", () => !shouldIgnoreKeystroke() && timelineStore.rootRights?.can_upload && (is_create_album_visible.value = true));
+onKeyStroke("u", () => !shouldIgnoreKeystroke() && timelineStore.rootRights?.can_upload && (is_upload_visible.value = true));
+onKeyStroke("/", () => !shouldIgnoreKeystroke() && timelineStore.rootConfig?.is_search_accessible && openSearch());
 
 // on key stroke escape:
 // 1. lose focus
@@ -251,50 +241,36 @@ const menu = computed(() =>
 			icon: "pi pi-search",
 			type: "fn",
 			callback: openSearch,
-			if: props.config.is_search_accessible,
+			if: timelineStore.rootConfig?.is_search_accessible,
 			key: "search",
 		},
 		{
 			icon: "pi pi-bell",
 			type: "fn",
 			callback: () => (is_metrics_open.value = true),
-			if: is_live_metrics_enabled.value && props.rights.can_see_live_metrics,
+			if: is_live_metrics_enabled.value && timelineStore.rootRights?.can_see_live_metrics,
 			key: "metrics",
 		},
 		{
 			icon: "pi pi-bell text-primary-emphasis",
 			type: "fn",
 			callback: () => (is_metrics_open.value = true),
-			if: is_se_preview_enabled.value && props.rights.can_see_live_metrics,
+			if: is_se_preview_enabled.value && timelineStore.rootRights?.can_see_live_metrics,
 			key: "se_preview",
 		},
 		{
 			icon: "pi pi-question-circle",
 			type: "fn",
 			callback: openHelp,
-			if: !isTouchDevice() && props.user.id !== null && props.config.show_keybinding_help_button && document.body.scrollWidth > 800,
+			if: !isTouchDevice() && userStore.isLoggedIn && timelineStore.rootConfig?.show_keybinding_help_button && document.body.scrollWidth > 800,
 			key: "help",
 		},
 		{
 			icon: "pi pi-plus",
 			type: "fn",
 			callback: openAddMenu,
-			if: props.rights.can_upload,
+			if: timelineStore.rootRights?.can_upload,
 			key: "add_menu",
-		},
-		{
-			icon: "pi pi-eye-slash",
-			type: "fn",
-			callback: () => (lycheeStore.are_nsfw_visible = false),
-			if: isTouchDevice() && props.hasHidden && lycheeStore.are_nsfw_visible,
-			key: "hide_nsfw",
-		},
-		{
-			icon: "pi pi-eye",
-			type: "fn",
-			callback: () => (lycheeStore.are_nsfw_visible = true),
-			if: isTouchDevice() && props.hasHidden && !lycheeStore.are_nsfw_visible,
-			key: "show_nsfw",
 		},
 	].filter((item) => item.if),
 ) as ComputedRef<MenuRight[]>;

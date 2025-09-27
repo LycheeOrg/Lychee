@@ -43,10 +43,10 @@ import { computed, ref } from "vue";
 import InputText from "@/components/forms/basic/InputText.vue";
 import { trans } from "laravel-vue-i18n";
 import WebAuthnService from "@/services/webauthn-service";
-import { useAuthStore } from "@/stores/Auth";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import AlbumService from "@/services/album-service";
 import { storeToRefs } from "pinia";
+import { useUserStore } from "@/stores/UserState";
 
 const toast = useToast();
 const emits = defineEmits<{
@@ -54,11 +54,11 @@ const emits = defineEmits<{
 }>();
 
 const togglableStore = useTogglablesStateStore();
+const userStore = useUserStore();
 
 const isWebAuthnUnavailable = computed<boolean>(() => WebAuthnService.isWebAuthnUnavailable());
 const { is_webauthn_open } = storeToRefs(togglableStore);
 
-const authStore = useAuthStore();
 const username = ref("");
 const userId = ref<number | null>(null);
 
@@ -71,7 +71,7 @@ function login() {
 				life: 3000,
 			});
 			is_webauthn_open.value = false;
-			authStore.setUser(null);
+			userStore.setUser(undefined);
 			AlbumService.clearCache();
 			emits("logged-in");
 		})

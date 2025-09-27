@@ -1,21 +1,22 @@
 <template>
 	<div
+		v-if="photoStore.photo"
 		:class="{
 			'absolute top-0 w-full sm:w-1/2 left-1/2 -translate-x-1/2': true,
 			'opacity-50 lg:opacity-20 lg:hover:opacity-100 transition-opacity duration-500 ease-in-out': !isTouchDevice(),
 			'opacity-75': isTouchDevice(),
 			'z-20 mt-14 sm:mt-0': true,
-			'sm:h-1/4': !isNarrowMenu,
-			'h-14': isNarrowMenu,
+			'sm:h-1/4': !props.isNarrowMenu,
+			'h-14': props.isNarrowMenu,
 			hidden: is_slideshow_active,
 			'hidden sm:block': are_details_open,
 		}"
 	>
 		<span class="absolute left-1/2 -translate-x-1/2 p-1 min-w-[25%] w-full filter-shadow text-center">
 			<DockButton
-				v-tooltip.bottom="props.photo.is_starred ? $t('gallery.photo.actions.unstar') : $t('gallery.photo.actions.star')"
+				v-tooltip.bottom="photoStore.photo.is_starred ? $t('gallery.photo.actions.unstar') : $t('gallery.photo.actions.star')"
 				icon="star"
-				:class="props.photo.is_starred ? 'fill-yellow-500 lg:hover:fill-yellow-100' : 'fill-white lg:hover:fill-yellow-500'"
+				:class="photoStore.photo.is_starred ? 'fill-yellow-500 lg:hover:fill-yellow-100' : 'fill-white lg:hover:fill-yellow-500'"
 				@click="emits('toggleStar')"
 			/>
 			<DockButton
@@ -63,24 +64,33 @@ import { useToast } from "primevue/usetoast";
 import { trans } from "laravel-vue-i18n";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
 import { useRoute } from "vue-router";
+import { usePhotoStore } from "@/stores/PhotoState";
 
 const toast = useToast();
 const lycheeStore = useLycheeStateStore();
+const photoStore = usePhotoStore();
 const leftMenu = useLeftMenuStateStore();
 const togglableStore = useTogglablesStateStore();
 const { is_slideshow_active, are_details_open } = storeToRefs(togglableStore);
 
 const props = defineProps<{
-	photo: App.Http.Resources.Models.PhotoResource;
 	isNarrowMenu: boolean;
 }>();
 
 const isWatermarkerEnabled = computed(
-	() => leftMenu.initData?.modules.is_watermarker_enabled && props.photo.rights.can_edit && needSizeVariantsWatermark(props.photo.size_variants),
+	() =>
+		leftMenu.initData?.modules.is_watermarker_enabled &&
+		photoStore.photo &&
+		photoStore.photo.rights.can_edit &&
+		needSizeVariantsWatermark(photoStore.photo.size_variants),
 );
 
 function watermark() {
-	PhotoService.watermark([props.photo.id]).then(() => {
+	if (!photoStore.photo) {
+		return;
+	}
+
+	PhotoService.watermark([photoStore.photo.id]).then(() => {
 		toast.add({
 			severity: "success",
 			detail: trans("toasts.success"),

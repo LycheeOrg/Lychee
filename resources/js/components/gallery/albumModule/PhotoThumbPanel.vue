@@ -1,18 +1,15 @@
 <template>
 	<Panel id="lychee_view_content" :header="$t(props.header)" class="w-full border-0">
 		<template #icons>
-			<PhotoThumbPanelControl v-if="withControl" v-model:layout="layout" />
+			<PhotoThumbPanelControl v-if="withControl" />
 		</template>
 		<PhotoThumbPanelList
 			v-if="isTimeline === false"
 			:photos="props.photos"
-			:layout="layout"
-			:gallery-config="props.galleryConfig"
 			:selected-photos="props.selectedPhotos"
 			:iter="0"
 			:group-idx="0"
-			:cover-id="props.coverId"
-			:header-id="props.headerId"
+			:is-timeline="false"
 			@clicked="propagateClicked"
 			@selected="propagateSelected"
 			@contexted="propagateMenuOpen"
@@ -37,14 +34,10 @@
 						</div>
 						<PhotoThumbPanelList
 							:photos="slotProps.item.data"
-							:layout="layout"
-							:gallery-config="props.galleryConfig"
 							:selected-photos="props.selectedPhotos"
 							:iter="slotProps.item.iter"
 							:group-idx="slotProps.index"
 							:is-timeline="true"
-							:cover-id="props.coverId"
-							:header-id="props.headerId"
 							@contexted="propagateMenuOpen"
 							@selected="propagateSelected"
 							@clicked="propagateClicked"
@@ -65,14 +58,10 @@
 						</div>
 						<PhotoThumbPanelList
 							:photos="photoTimeline.data"
-							:layout="layout"
-							:gallery-config="props.galleryConfig"
 							:selected-photos="props.selectedPhotos"
 							:iter="photoTimeline.iter"
 							:group-idx="idx"
 							:is-timeline="true"
-							:cover-id="props.coverId"
-							:header-id="props.headerId"
 							@contexted="propagateMenuOpen"
 							@selected="propagateSelected"
 							@clicked="propagateClicked"
@@ -84,7 +73,7 @@
 	</Panel>
 </template>
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed } from "vue";
 import Panel from "primevue/panel";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
@@ -100,23 +89,18 @@ import { vIntersectionObserver } from "@vueuse/components";
 const { isLTR } = useLtRorRtL();
 
 const lycheeStore = useLycheeStateStore();
+
 const { is_timeline_left_border_visible, is_debug_enabled } = storeToRefs(lycheeStore);
 
 const props = defineProps<{
 	header: string;
 	photos: App.Http.Resources.Models.PhotoResource[];
 	photosTimeline?: SplitData<App.Http.Resources.Models.PhotoResource>[] | undefined;
-	photoLayout: App.Enum.PhotoLayoutType;
-	galleryConfig: App.Http.Resources.GalleryConfigs.PhotoLayoutConfig;
 	selectedPhotos: string[];
 	isTimeline?: boolean;
 	withControl: boolean;
-	coverId: string | undefined;
-	headerId: string | undefined;
 	intersectionAction?: (arg: string | null) => void;
 }>();
-
-const layout = ref(props.photoLayout);
 
 // We do not show the left border on touch devices (mostly phones) due to limited real estate.
 const isLeftBorderVisible = computed(() => is_timeline_left_border_visible.value && !isTouchDevice());
