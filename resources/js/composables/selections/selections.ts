@@ -1,29 +1,26 @@
 import { TogglablesStateStore } from "@/stores/ModalsState";
 import { modKey, shiftKeyState } from "@/utils/keybindings-utils";
 import { storeToRefs } from "pinia";
-import { computed, Ref, ref } from "vue";
+import { computed, ref } from "vue";
 import { useAlbumActions } from "@/composables/album/albumActions";
-
-export type Selectables = {
-	photos?: Ref<App.Http.Resources.Models.PhotoResource[]>;
-	albums?: Ref<App.Http.Resources.Models.ThumbAlbumResource[]>;
-};
+import { PhotosStore } from "@/stores/PhotosState";
+import { AlbumsStore } from "@/stores/AlbumsState";
 
 const { canInteractAlbum, canInteractPhoto } = useAlbumActions();
 
-export function useSelection(selectables: Selectables, togglableStore: TogglablesStateStore) {
+export function useSelection(photosStore: PhotosStore, albumsStore: AlbumsStore, togglableStore: TogglablesStateStore) {
 	const { selectedPhotosIdx, selectedAlbumsIdx } = storeToRefs(togglableStore);
 	const selectedPhoto = computed<App.Http.Resources.Models.PhotoResource | undefined>(() =>
-		selectedPhotosIdx.value.length === 1 ? (selectables.photos?.value[selectedPhotosIdx.value[0]] ?? undefined) : undefined,
+		selectedPhotosIdx.value.length === 1 ? (photosStore.photos[selectedPhotosIdx.value[0]] ?? undefined) : undefined,
 	);
 	const selectedAlbum = computed<App.Http.Resources.Models.ThumbAlbumResource | undefined>(() =>
-		selectedAlbumsIdx.value.length === 1 ? (selectables.albums?.value[selectedAlbumsIdx.value[0]] ?? undefined) : undefined,
+		selectedAlbumsIdx.value.length === 1 ? (albumsStore.selectableAlbums[selectedAlbumsIdx.value[0]] ?? undefined) : undefined,
 	);
 	const selectedPhotos = computed<App.Http.Resources.Models.PhotoResource[]>(
-		() => selectables.photos?.value.filter((_, idx) => selectedPhotosIdx.value.includes(idx)) ?? [],
+		() => photosStore.photos.filter((_, idx) => selectedPhotosIdx.value.includes(idx)) ?? [],
 	);
 	const selectedAlbums = computed<App.Http.Resources.Models.ThumbAlbumResource[]>(
-		() => selectables.albums?.value.filter((_, idx) => selectedAlbumsIdx.value.includes(idx)) ?? [],
+		() => albumsStore.selectableAlbums?.filter((_, idx) => selectedAlbumsIdx.value.includes(idx)) ?? [],
 	);
 	const selectedPhotosIds = computed(() => selectedPhotos.value.map((p) => p.id));
 	const selectedAlbumsIds = computed(() => selectedAlbums.value.map((a) => a.id));
@@ -76,7 +73,7 @@ export function useSelection(selectables: Selectables, togglableStore: Togglable
 		e.preventDefault();
 		e.stopPropagation();
 
-		if (selectables.photos === undefined || canInteractPhoto(selectables.photos.value[idx]) === false) {
+		if (photosStore.photos.length === 0 || canInteractPhoto(photosStore.photos[idx]) === false) {
 			return;
 		}
 
@@ -142,7 +139,7 @@ export function useSelection(selectables: Selectables, togglableStore: Togglable
 		e.preventDefault();
 		e.stopPropagation();
 
-		if (selectables.albums === undefined || canInteractAlbum(selectables.albums.value[idx]) === false) {
+		if (canInteractAlbum(albumsStore.selectableAlbums[idx]) === false) {
 			return;
 		}
 
@@ -200,28 +197,28 @@ export function useSelection(selectables: Selectables, togglableStore: Togglable
 	}
 
 	function selectEverything(): void {
-		if (selectedPhotosIdx.value.length === (selectables.photos?.value.length ?? 0) && selectables.albums) {
+		if (selectedPhotosIdx.value.length === photosStore.photos.length && albumsStore.selectableAlbums.length > 0) {
 			// Flip and select albums
 			selectedPhotosIdx.value = [];
-			selectedAlbumsIdx.value = getKeysFromPredicate(selectables.albums.value, canInteractAlbum);
+			selectedAlbumsIdx.value = getKeysFromPredicate(albumsStore.selectableAlbums, canInteractAlbum);
 			return;
 		}
-		if (selectedAlbumsIdx.value.length === (selectables.albums?.value.length ?? 0) && selectables.photos) {
+		if (selectedAlbumsIdx.value.length === albumsStore.selectableAlbums.length && photosStore.photos.length > 0) {
 			selectedAlbumsIdx.value = [];
-			selectedPhotosIdx.value = getKeysFromPredicate(selectables.photos.value, canInteractPhoto);
+			selectedPhotosIdx.value = getKeysFromPredicate(photosStore.photos, canInteractPhoto);
 			// Flip and select photos
 			return;
 		}
-		if (selectedAlbumsIdx.value.length > 0 && selectables.albums) {
-			selectedAlbumsIdx.value = getKeysFromPredicate(selectables.albums.value, canInteractAlbum);
+		if (selectedAlbumsIdx.value.length > 0 && albumsStore.selectableAlbums.length > 0) {
+			selectedAlbumsIdx.value = getKeysFromPredicate(albumsStore.selectableAlbums, canInteractAlbum);
 			return;
 		}
-		if ((selectables.photos?.value.length ?? 0) > 0 && selectables.photos) {
-			selectedPhotosIdx.value = getKeysFromPredicate(selectables.photos.value, canInteractPhoto);
+		if (photosStore.photos.length > 0) {
+			selectedPhotosIdx.value = getKeysFromPredicate(photosStore.photos, canInteractPhoto);
 			return;
 		}
-		if (selectables.albums) {
-			selectedAlbumsIdx.value = getKeysFromPredicate(selectables.albums.value, canInteractAlbum);
+		if (albumsStore.selectableAlbums.length > 0) {
+			selectedAlbumsIdx.value = getKeysFromPredicate(albumsStore.selectableAlbums, canInteractAlbum);
 		}
 	}
 

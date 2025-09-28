@@ -30,19 +30,17 @@
 	</Select>
 </template>
 <script setup lang="ts">
-import { onMounted, watch } from "vue";
+import { onMounted, ref, watch } from "vue";
 import Select from "primevue/select";
-import { type UserOrGroup, type UserOrGroupId, useSearchUserGroupComputed } from "@/composables/search/searchUserGroupComputed";
 import { useLycheeStateStore } from "@/stores/LycheeState";
-import { storeToRefs } from "pinia";
+import { type UserOrGroup, type UserOrGroupId, useUsersAndGroupStore } from "@/stores/UsersAndGroupsState";
 
 const lycheeStore = useLycheeStateStore();
-lycheeStore.init();
-const { is_se_enabled } = storeToRefs(lycheeStore);
+const usersAndGroupsStore = useUsersAndGroupStore();
 
 const props = defineProps<{
 	filteredUsersIds?: UserOrGroupId[];
-	withGroups?: boolean;
+	withGroups?: boolean; // TODO: check me
 }>();
 
 const emits = defineEmits<{
@@ -50,9 +48,44 @@ const emits = defineEmits<{
 	"no-target": [];
 }>();
 
-const { options, selectedTarget, load, selected, filterUserGroups } = useSearchUserGroupComputed(is_se_enabled, emits);
+const options = ref<UserOrGroup[] | undefined>(undefined);
+const selectedTarget = ref<UserOrGroup | undefined>(undefined);
 
-onMounted(load);
+function selected() {
+	if (selectedTarget.value === undefined) {
+		return;
+	}
+
+	if (emits !== undefined) {
+		emits("selected", selectedTarget.value);
+	}
+}
+
+function filterUserGroups(filteredUsersIds: UserOrGroupId[] = []) {
+	if (usersAndGroupsStore.usersGroupsList === undefined || usersAndGroupsStore.usersGroupsList.length === 0) {
+		return;
+	}
+	const userIds = filteredUsersIds.filter((user) => user.type === "user").map((user) => user.id);
+	const groupIds = filteredUsersIds.filter((group) => group.type === "group").map((group) => group.id);
+
+	options.value = usersAndGroupsStore.usersGroupsList.filter(
+		(userGroup) =>
+			(userGroup.type === "user" && !userIds.includes(userGroup.id)) || (userGroup.type === "group" && !groupIds.includes(userGroup.id)),
+	);
+
+	if (options.value.length === 0 && emits !== undefined) {
+		emits("no-target");
+	}
+}
+
+onMounted(() => {
+	lycheeStore.load().then(() => {
+		usersAndGroupsStore.isSupporter = lycheeStore.is_se_enabled;
+		usersAndGroupsStore.load().then(() => {
+			filterUserGroups(props.filteredUsersIds);
+		});
+	});
+});
 
 watch(
 	() => props.filteredUsersIds,

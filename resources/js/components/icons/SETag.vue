@@ -7,7 +7,7 @@ import { storeToRefs } from "pinia";
 import Tag from "primevue/tag";
 
 const lycheeStore = useLycheeStateStore();
-lycheeStore.init();
+lycheeStore.load();
 
 const { is_se_info_hidden } = storeToRefs(lycheeStore);
 </script>

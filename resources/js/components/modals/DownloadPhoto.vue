@@ -1,9 +1,16 @@
 <template>
-	<Dialog v-model:visible="visible" modal pt:root:class="border-none" pt:mask:style="backdrop-filter: blur(2px)" @hide="closeCallback">
+	<Dialog
+		v-if="photoStore.photo"
+		v-model:visible="visible"
+		modal
+		pt:root:class="border-none"
+		pt:mask:style="backdrop-filter: blur(2px)"
+		@hide="closeCallback"
+	>
 		<template #container="{ closeCallback }">
 			<div class="flex flex-col relative max-w-md w-full text-sm rounded-md">
 				<div class="flex flex-col gap-1 justify-center p-9">
-					<template v-for="(sv, svid) in props.photo.size_variants" :key="`sv-${svid}`">
+					<template v-for="(sv, svid) in photoStore.photo.size_variants" :key="`sv-${svid}`">
 						<Button
 							v-if="sv?.locale && isDownloadable(sv.type)"
 							severity="contrast"
@@ -13,9 +20,9 @@
 							<i class="pi pi-cloud-download"></i> {{ sv?.locale }} - {{ sv?.width }}x{{ sv?.height }} ({{ sv?.filesize }})
 						</Button>
 					</template>
-					<template v-if="props.photo.precomputed.is_livephoto">
+					<template v-if="photoStore.photo.precomputed.is_livephoto">
 						<Button severity="contrast" class="w-full dark:border-surface-900" @click="download(7)">
-							<i class="pi pi-cloud-download"></i> {{ $t("gallery.live_video") }} - {{ props.photo.preformatted.resolution }}
+							<i class="pi pi-cloud-download"></i> {{ $t("gallery.live_video") }} - {{ photoStore.photo.preformatted.resolution }}
 						</Button>
 					</template>
 				</div>
@@ -32,6 +39,7 @@
 import { usePhotoRoute } from "@/composables/photo/photoRoute";
 import PhotoService from "@/services/photo-service";
 import { useLycheeStateStore } from "@/stores/LycheeState";
+import { usePhotoStore } from "@/stores/PhotoState";
 import { storeToRefs } from "pinia";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
@@ -50,9 +58,7 @@ const {
 	is_medium2x_download_enabled,
 } = storeToRefs(lycheeState);
 
-const props = defineProps<{
-	photo: App.Http.Resources.Models.PhotoResource;
-}>();
+const photoStore = usePhotoStore();
 
 const visible = defineModel("visible", { default: false });
 
@@ -90,6 +96,9 @@ function isDownloadable(sv: number): boolean {
 }
 
 function download(sv: number) {
-	PhotoService.download([props.photo.id], getParentId(), svtoVariant(sv));
+	if (photoStore.photo === undefined) {
+		return;
+	}
+	PhotoService.download([photoStore.photo.id], getParentId(), svtoVariant(sv));
 }
 </script>

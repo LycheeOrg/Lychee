@@ -22,8 +22,6 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		is_nsfw_banner_backdrop_blurred: false,
 		nsfw_banner_override: "",
 
-		nsfw_consented: [] as string[],
-
 		// Image overlay settings
 		image_overlay_type: "exif" as App.Enum.ImageOverlayType,
 		can_rotate: false,
@@ -89,15 +87,12 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		is_swipe_vertically_to_go_back_enabled: true,
 	}),
 	actions: {
-		init(): Promise<void> {
+		load(): Promise<void> {
 			// Check if already initialized
 			if (this.is_init) {
 				return Promise.resolve();
 			}
-			return this.load();
-		},
 
-		load(): Promise<void> {
 			// semaphore to avoid multiple calls
 			if (this.is_loading) {
 				return Promise.resolve();

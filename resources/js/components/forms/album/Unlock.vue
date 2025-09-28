@@ -33,10 +33,8 @@ import Dialog from "primevue/dialog";
 import FloatLabel from "primevue/floatlabel";
 import { computed, ref } from "vue";
 import InputPassword from "@/components/forms/basic/InputPassword.vue";
+import { useAlbumStore } from "@/stores/AlbumState";
 
-const props = defineProps<{
-	albumId: string;
-}>();
 const visible = defineModel("visible", { default: false });
 
 const emits = defineEmits<{
@@ -44,18 +42,22 @@ const emits = defineEmits<{
 	fail: [];
 }>();
 
+const albumStore = useAlbumStore();
+// Fetch the id of the current album
+const albumId = computed(() => albumStore.albumId);
+
 const password = ref<string | undefined>(undefined);
 const deactivate = computed(() => password.value !== undefined && password.value.length > 0);
 
 function unlock() {
-	if (password.value === undefined) {
+	if (albumId.value === undefined || password.value === undefined) {
 		return;
 	}
 
-	AlbumService.unlock(props.albumId, password.value)
+	AlbumService.unlock(albumId.value, password.value)
 		.then((_response) => {
 			AlbumService.clearAlbums();
-			AlbumService.clearCache(props.albumId);
+			AlbumService.clearCache(albumId.value);
 			emits("reload");
 		})
 		.catch((_error) => {

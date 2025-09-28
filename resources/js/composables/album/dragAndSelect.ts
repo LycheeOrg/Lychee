@@ -3,6 +3,8 @@ import { ref } from "vue";
 import { useThrottleFn } from "@vueuse/core";
 import { modKey, shiftKeyState } from "@/utils/keybindings-utils";
 import { useAlbumActions } from "./albumActions";
+import { AlbumsStore } from "@/stores/AlbumsState";
+import { PhotosStore } from "@/stores/PhotosState";
 
 const { canInteractAlbum, canInteractPhoto } = useAlbumActions();
 
@@ -28,8 +30,8 @@ type Position = {
 
 export function useDragAndSelect(
 	togglableStore: TogglablesStateStore,
-	selectablePhotos: App.Http.Resources.Models.PhotoResource[] | undefined,
-	selectableAlbums: App.Http.Resources.Models.ThumbAlbumResource[] | undefined,
+	albumsStore: AlbumsStore,
+	photosStore: PhotosStore,
 	withScroll: boolean = true,
 ) {
 	const initialPosition = ref<InitialPosition | undefined>(undefined);
@@ -198,7 +200,7 @@ export function useDragAndSelect(
 
 		const photos_intersected = cache.photo_boxes.filter((b) => isIntersecting(b, selector)).map((b) => b.id);
 		if (photos_intersected.length > 0) {
-			const selectedPhotos = reduceIntersection(photos_intersected, selectablePhotos ?? [], canInteractPhoto);
+			const selectedPhotos = reduceIntersection(photos_intersected, photosStore.photos, canInteractPhoto);
 
 			togglableStore.selectedPhotosIdx = cache.currentPhotoSelectionIdx.concat(selectedPhotos);
 			togglableStore.selectedAlbumsIdx = [];
@@ -207,7 +209,7 @@ export function useDragAndSelect(
 
 		const albums_intersected = cache.album_boxes.filter((b) => isIntersecting(b, selector)).map((b) => b.id);
 		if (albums_intersected.length > 0) {
-			const selectedAlbums = reduceIntersection(albums_intersected, selectableAlbums ?? [], canInteractAlbum);
+			const selectedAlbums = reduceIntersection(albums_intersected, albumsStore.selectableAlbums, canInteractAlbum);
 			togglableStore.selectedAlbumsIdx = cache.currentAlbumSelectionIdx.concat(selectedAlbums);
 			togglableStore.selectedPhotosIdx = [];
 			return;

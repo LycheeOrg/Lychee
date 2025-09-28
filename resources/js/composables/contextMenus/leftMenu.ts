@@ -1,6 +1,6 @@
 import Constants from "@/services/constants";
 import InitService from "@/services/init-service";
-import { AuthStore } from "@/stores/Auth";
+import { UserStore } from "@/stores/UserState";
 import { FavouriteStore } from "@/stores/FavouriteState";
 import { LeftMenuStateStore } from "@/stores/LeftMenuState";
 import { LycheeStateStore } from "@/stores/LycheeState";
@@ -27,7 +27,7 @@ export type MenyType =
 export function useLeftMenu(
 	lycheeStore: LycheeStateStore,
 	LeftMenuStateStore: LeftMenuStateStore,
-	authStore: AuthStore,
+	authStore: UserStore,
 	favourites: FavouriteStore,
 	route: RouteLocationNormalizedLoadedGeneric,
 ) {
@@ -50,8 +50,8 @@ export function useLeftMenu(
 		);
 	});
 
-	function load() {
-		InitService.fetchGlobalRights().then((data) => {
+	async function load(): Promise<void> {
+		return InitService.fetchGlobalRights().then((data) => {
 			initData.value = data.data;
 		});
 	}

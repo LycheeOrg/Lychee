@@ -4,7 +4,7 @@ import { useRouter } from "vue-router";
 
 const router = useRouter();
 const lycheeStore = useLycheeStateStore();
-lycheeStore.init().then(() => {
+lycheeStore.load().then(() => {
 	// Now that we loaded the stuff, we can redirect to the correct page
 	if (lycheeStore.default_homepage === "gallery") {
 		router.push({ name: "gallery" });

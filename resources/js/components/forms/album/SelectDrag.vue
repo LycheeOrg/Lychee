@@ -8,18 +8,20 @@
 </template>
 <script setup lang="ts">
 import { useDragAndSelect } from "@/composables/album/dragAndSelect";
+import { useAlbumsStore } from "@/stores/AlbumsState";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
+import { usePhotosStore } from "@/stores/PhotosState";
 import { onMounted, onUnmounted } from "vue";
 
 const togglableStore = useTogglablesStateStore();
+const albumsStore = useAlbumsStore();
+const photosStore = usePhotosStore();
 
 const props = defineProps<{
-	photos?: App.Http.Resources.Models.PhotoResource[];
-	albums?: App.Http.Resources.Models.ThumbAlbumResource[];
 	withScroll: boolean;
 }>();
 
-const { initialPosition, position, show } = useDragAndSelect(togglableStore, props.photos, props.albums, props.withScroll ?? true);
+const { initialPosition, position, show } = useDragAndSelect(togglableStore, albumsStore, photosStore, props.withScroll ?? true);
 
 onMounted(() => {
 	document.getElementById("galleryView")?.addEventListener("mousedown", show);

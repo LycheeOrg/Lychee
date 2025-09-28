@@ -20,19 +20,17 @@
 	</template>
 </template>
 <script setup lang="ts">
+import { usePhotoStore } from "@/stores/PhotoState";
 import { trans } from "laravel-vue-i18n";
 import Button from "primevue/button";
 import { useToast } from "primevue/usetoast";
 import { computed } from "vue";
 
 const toast = useToast();
-
-const props = defineProps<{
-	photo: App.Http.Resources.Models.PhotoResource | undefined;
-}>();
+const photoStore = usePhotoStore();
 
 const url = computed(() => {
-	const link = props.photo?.size_variants.medium?.url ?? props.photo?.size_variants.original?.url ?? "";
+	const link = photoStore.photo?.size_variants.medium?.url ?? photoStore.photo?.size_variants.original?.url ?? "";
 	if (link === "") {
 		return "";
 	}

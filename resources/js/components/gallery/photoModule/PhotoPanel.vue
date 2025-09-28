@@ -1,12 +1,11 @@
 <template>
-	<div class="absolute z-20 top-0 left-0 w-full flex h-full overflow-hidden bg-black">
-		<PhotoHeader :photo="props.photo" @toggle-slide-show="emits('toggleSlideShow')" @go-back="emits('goBack')" />
+	<div v-if="photoStore.photo" class="absolute z-20 top-0 left-0 w-full flex h-full overflow-hidden bg-black">
+		<PhotoHeader @toggle-slide-show="emits('toggleSlideShow')" @go-back="emits('goBack')" />
 		<div class="w-0 flex-auto relative">
 			<div class="animate-zoomIn w-full h-full">
-				<Transition :name="props.transition">
+				<Transition :name="photoStore.transition">
 					<PhotoBox
-						:key="photo.id"
-						:photo="photo"
+						:key="photoStore.photo.id"
 						@go-back="emits('goBack')"
 						@next="emits('next')"
 						@previous="emits('previous')"
@@ -15,22 +14,21 @@
 				</Transition>
 			</div>
 			<NextPrevious
-				v-if="photo.previous_photo_id !== null && !is_slideshow_active"
-				:photo-id="photo.previous_photo_id"
+				v-if="photoStore.photo.previous_photo_id !== null && !is_slideshow_active"
+				:photo-id="photoStore.photo.previous_photo_id"
 				:is_next="false"
-				:style="previousStyle"
+				:style="photoStore.previousStyle"
 			/>
 			<NextPrevious
-				v-if="photo.next_photo_id !== null && !is_slideshow_active"
-				:photo-id="photo.next_photo_id"
+				v-if="photoStore.photo.next_photo_id !== null && !is_slideshow_active"
+				:photo-id="photoStore.photo.next_photo_id"
 				:is_next="true"
-				:style="nextStyle"
+				:style="photoStore.nextStyle"
 			/>
-			<Overlay v-if="!is_exif_disabled && imageViewMode !== ImageViewMode.Pdf" :photo="photo" />
+			<Overlay v-if="!is_exif_disabled && photoStore.imageViewMode !== ImageViewMode.Pdf" />
 			<Dock
-				v-if="photo.rights.can_edit && !is_photo_edit_open"
-				:photo="photo"
-				:is-narrow-menu="imageViewMode === ImageViewMode.Pdf"
+				v-if="photoStore.rights?.can_edit && !is_photo_edit_open"
+				:is-narrow-menu="photoStore.imageViewMode === ImageViewMode.Pdf"
 				@toggle-star="emits('toggleStar')"
 				@set-album-header="emits('setAlbumHeader')"
 				@rotate-photo-c-c-w="emits('rotatePhotoCCW')"
@@ -39,41 +37,35 @@
 				@toggle-delete="emits('toggleDelete')"
 			/>
 		</div>
-		<PhotoDetails v-if="!is_exif_disabled" v-model:are-details-open="are_details_open" :photo="photo" :is-map-visible="props.isMapVisible" />
+		<PhotoDetails v-if="!is_exif_disabled" v-model:are-details-open="are_details_open" :is-map-visible="props.isMapVisible" />
 	</div>
 </template>
 <script setup lang="ts">
-import { ImageViewMode, usePhotoBaseFunction } from "@/composables/photo/basePhoto";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { storeToRefs } from "pinia";
-import { onMounted, ref } from "vue";
+import { onMounted } from "vue";
 import NextPrevious from "./NextPrevious.vue";
 import Overlay from "./Overlay.vue";
 import PhotoDetails from "@/components/drawers/PhotoDetails.vue";
 import PhotoHeader from "@/components/headers/PhotoHeader.vue";
 import Dock from "./Dock.vue";
-import { watch } from "vue";
 import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
 import { onUnmounted } from "vue";
 import { useDebounceFn } from "@vueuse/core";
 import PhotoBox from "./PhotoBox.vue";
+import { ImageViewMode, usePhotoStore } from "@/stores/PhotoState";
 
 const lycheeStore = useLycheeStateStore();
 const togglableStore = useTogglablesStateStore();
+const photoStore = usePhotoStore();
 
 const { is_exif_disabled, is_scroll_to_navigate_photos_enabled } = storeToRefs(lycheeStore);
 const { is_photo_edit_open, is_slideshow_active, are_details_open } = storeToRefs(togglableStore);
 
 const props = defineProps<{
-	photo: App.Http.Resources.Models.PhotoResource;
-	photos: App.Http.Resources.Models.PhotoResource[];
 	isMapVisible: boolean;
-	transition: "slide-next" | "slide-previous";
 }>();
-
-const photo = ref(props.photo);
-const photos = ref(props.photos);
 
 const emits = defineEmits<{
 	toggleStar: [];
@@ -89,8 +81,6 @@ const emits = defineEmits<{
 	next: [];
 	previous: [];
 }>();
-
-const { previousStyle, nextStyle, imageViewMode } = usePhotoBaseFunction(photo, photos);
 
 // We use debounce to avoid multiple skipping too many pictures in one go via the trackpad
 function scrollTo(event: WheelEvent) {
@@ -124,13 +114,6 @@ onMounted(() => {
 onUnmounted(() => {
 	window.removeEventListener("wheel", debouncedScrollTo);
 });
-
-watch(
-	() => props.photo.id,
-	() => {
-		photo.value = props.photo;
-	},
-);
 </script>
 
 <style lang="css">

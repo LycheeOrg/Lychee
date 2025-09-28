@@ -1,5 +1,6 @@
 <template>
 	<header
+		v-if="photoStore.photo"
 		id="lychee_toolbar_container"
 		:class="{
 			'absolute top-0 left-0 w-full flex-none z-10 bg-gradient-to-b from-black h-14': true,
@@ -22,15 +23,15 @@
 						@click="emits('toggleSlideShow')"
 					/>
 					<Button
-						v-if="props.photo.rights.can_access_full_photo && props.photo.size_variants.original?.url"
+						v-if="photoStore.photo.rights.can_access_full_photo && photoStore.photo.size_variants.original?.url"
 						text
 						icon="pi pi-window-maximize"
 						class="ltr:mr-2 rtl:ml-2 font-bold"
 						severity="secondary"
-						@click="openInNewTab(props.photo.size_variants.original.url)"
+						@click="openInNewTab(photoStore.photo.size_variants.original.url)"
 					/>
 					<Button
-						v-if="props.photo.rights.can_download"
+						v-if="photoStore.photo.rights.can_download"
 						text
 						icon="pi pi-cloud-download"
 						class="ltr:mr-2 rtl:ml-2"
@@ -38,7 +39,7 @@
 						@click="isDownloadOpen = !isDownloadOpen"
 					/>
 					<Button
-						v-if="props.photo.rights.can_edit"
+						v-if="photoStore.photo.rights.can_edit"
 						text
 						icon="pi pi-pencil"
 						class="ltr:mr-2 rtl:ml-2"
@@ -57,7 +58,7 @@
 			</template>
 		</Toolbar>
 	</header>
-	<DownloadPhoto v-model:visible="isDownloadOpen" :photo="props.photo" />
+	<DownloadPhoto v-model:visible="isDownloadOpen" />
 </template>
 <script setup lang="ts">
 import Button from "primevue/button";
@@ -68,6 +69,7 @@ import { storeToRefs } from "pinia";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import GoBack from "./GoBack.vue";
+import { usePhotoStore } from "@/stores/PhotoState";
 
 const emits = defineEmits<{
 	toggleDetails: [];
@@ -76,10 +78,7 @@ const emits = defineEmits<{
 	goBack: [];
 }>();
 
-const props = defineProps<{
-	photo: App.Http.Resources.Models.PhotoResource;
-}>();
-
+const photoStore = usePhotoStore();
 const togglableStore = useTogglablesStateStore();
 const { is_full_screen, is_photo_edit_open, are_details_open, is_slideshow_active } = storeToRefs(togglableStore);
 const isDownloadOpen = ref(false);

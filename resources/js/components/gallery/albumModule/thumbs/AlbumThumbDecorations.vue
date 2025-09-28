@@ -15,36 +15,38 @@
 </template>
 <script setup lang="ts">
 import { computed } from "vue";
-import { AlbumThumbConfig } from "./AlbumThumb.vue";
 import MiniIcon from "@/components/icons/MiniIcon.vue";
+import { storeToRefs } from "pinia";
+import { useLycheeStateStore } from "@/stores/LycheeState";
 
 const props = defineProps<{
 	album: App.Http.Resources.Models.ThumbAlbumResource;
-	config: AlbumThumbConfig;
 }>();
 
+const lycheeStore = useLycheeStateStore();
+const { album_decoration_orientation, album_decoration } = storeToRefs(lycheeStore);
 const cssDirection = computed(() => {
-	if (props.config.album_decoration_orientation === "column") {
+	if (album_decoration_orientation.value === "column") {
 		return "flex-col";
 	}
-	if (props.config.album_decoration_orientation === "column-reverse") {
+	if (album_decoration_orientation.value === "column-reverse") {
 		return "flex-col-reverse";
 	}
-	if (props.config.album_decoration_orientation === "row-reverse") {
+	if (album_decoration_orientation.value === "row-reverse") {
 		return "flex-row-reverse";
 	}
 	return "flex-row";
 });
 
 const showLayers = computed(() => {
-	return props.album.has_subalbum && props.config.album_decoration === "layers";
+	return props.album.has_subalbum && album_decoration.value === "layers";
 });
 
 const showPhotosCount = computed(() => {
-	return props.album.num_photos > 0 && (props.config.album_decoration === "photo" || props.config.album_decoration === "all");
+	return props.album.num_photos > 0 && (album_decoration.value === "photo" || album_decoration.value === "all");
 });
 
 const showAlbumsCount = computed(() => {
-	return props.album.num_subalbums > 0 && (props.config.album_decoration === "album" || props.config.album_decoration === "all");
+	return props.album.num_subalbums > 0 && (album_decoration.value === "album" || album_decoration.value === "all");
 });
 </script>

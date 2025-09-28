@@ -1,8 +1,9 @@
 <template>
 	<div
+		v-if="searchStore.config !== undefined"
 		:class="{
 			'flex items-center justify-center w-full flex-wrap mt-5 mb-5 bg-none transition-all': true,
-			'h-4/5': search.length < props.searchMinimumLength,
+			'h-4/5': search.length < searchStore.config.search_minimum_length,
 		}"
 	>
 		<div class="w-full flex items-center flex-wrap justify-center">
@@ -23,7 +24,7 @@
 					'opacity-0': isValid,
 				}"
 			>
-				{{ sprintf($t("gallery.search.minimum_chars"), props.searchMinimumLength) }}
+				{{ sprintf($t("gallery.search.minimum_chars"), searchStore.config.search_minimum_length) }}
 			</div>
 		</div>
 	</div>
@@ -33,10 +34,9 @@ import InputText from "@/components/forms/basic/InputText.vue";
 import { computed } from "vue";
 import { useDebounceFn } from "@vueuse/core";
 import { sprintf } from "sprintf-js";
+import { useSearchStore } from "@/stores/SearchState";
 
-const props = defineProps<{
-	searchMinimumLength: number;
-}>();
+const searchStore = useSearchStore();
 
 const search = defineModel<string>("search", { required: true });
 
@@ -46,16 +46,23 @@ const emits = defineEmits<{
 }>();
 
 const isValid = computed<boolean>(() => {
-	return search.value === "" || search.value.length >= props.searchMinimumLength;
+	if (searchStore.config === undefined) {
+		return true;
+	}
+	return search.value === "" || search.value.length >= searchStore.config.search_minimum_length;
 });
 
 const debouncedFn = useDebounceFn(() => {
+	if (searchStore.config === undefined) {
+		return;
+	}
+
 	if (search.value === "" || !isValid.value) {
 		emits("clear");
 		return;
 	}
 
-	if (search.value !== undefined && search.value.length >= props.searchMinimumLength) {
+	if (search.value !== undefined && search.value.length >= searchStore.config.search_minimum_length) {
 		emits("search", search.value);
 	}
 }, 1000);

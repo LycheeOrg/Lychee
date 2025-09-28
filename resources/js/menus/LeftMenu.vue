@@ -89,7 +89,7 @@
 				<div class="flex items-center gap-2">
 					<PiMiniIcon icon="person" :class="'w-3 h-3'" />
 					<div class="capitalize ml-2 text-muted-color">
-						{{ authStore.user?.username }}
+						{{ userStore.user?.username }}
 						<i v-if="canSeeAdmin" class="pi pi-crown text-orange-400 text-xs"></i>
 					</div>
 				</div>
@@ -106,7 +106,6 @@ import Drawer from "primevue/drawer";
 import Menu from "primevue/menu";
 import AboutLychee from "@/components/modals/AboutLychee.vue";
 import AuthService from "@/services/auth-service";
-import { useAuthStore } from "@/stores/Auth";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import AlbumService from "@/services/album-service";
 import SETag from "@/components/icons/SETag.vue";
@@ -119,10 +118,20 @@ import { useLeftMenu } from "@/composables/contextMenus/leftMenu";
 import { onMounted } from "vue";
 import { useFavouriteStore } from "@/stores/FavouriteState";
 import { useLtRorRtL } from "@/utils/Helpers";
+import { useUserStore } from "@/stores/UserState";
+import { usePhotosStore } from "@/stores/PhotosState";
+import { useAlbumsStore } from "@/stores/AlbumsState";
+import { useAlbumStore } from "@/stores/AlbumState";
+import { usePhotoStore } from "@/stores/PhotoState";
 
 const leftMenuState = useLeftMenuStateStore();
 const route = useRoute();
-const authStore = useAuthStore();
+const userStore = useUserStore();
+const photosStore = usePhotosStore();
+const albumsStore = useAlbumsStore();
+const albumStore = useAlbumStore();
+const photoStore = usePhotoStore();
+
 const lycheeStore = useLycheeStateStore();
 const favouritesStore = useFavouriteStore();
 const { isLTR } = useLtRorRtL();
@@ -130,7 +139,7 @@ const { isLTR } = useLtRorRtL();
 const { user, left_menu_open, initData, openLycheeAbout, canSeeAdmin, load, items, profileItems } = useLeftMenu(
 	lycheeStore,
 	leftMenuState,
-	authStore,
+	userStore,
 	favouritesStore,
 	route,
 );
@@ -139,7 +148,11 @@ function logout() {
 	AuthService.logout().then(() => {
 		left_menu_open.value = false;
 		initData.value = undefined;
-		authStore.setUser(null);
+		photoStore.reset();
+		photosStore.reset();
+		albumsStore.reset();
+		albumStore.reset();
+		userStore.setUser(undefined);
 		AlbumService.clearCache();
 		window.location.href = Constants.BASE_URL + "/home";
 	});
@@ -150,15 +163,13 @@ const isGallery = computed(() => {
 });
 
 onMounted(() => {
-	lycheeStore.init();
-	authStore.getUser();
-	load();
+	Promise.allSettled([lycheeStore.load(), userStore.load(), load()]);
 });
 
 watch(
 	() => user.value,
 	(newValue, oldValue) => {
-		if (newValue === null) {
+		if (newValue === undefined) {
 			initData.value = undefined;
 		} else if (newValue.id !== oldValue?.id) {
 			load();

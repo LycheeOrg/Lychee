@@ -56,6 +56,8 @@ function create() {
 	if (!isValid.value) {
 		return;
 	}
+	// TODO later: Add tick boxes for inheriting properties from parent album
+	// (public, visible, download, password, license. sorting etc...)
 
 	AlbumService.createAlbum({
 		title: title.value as string,

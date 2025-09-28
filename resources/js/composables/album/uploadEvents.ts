@@ -6,13 +6,9 @@ export type Uploadable = {
 	status: "uploading" | "waiting" | "done" | "error" | "warning";
 };
 
-export function useMouseEvents(
-	rights: Ref<undefined | { can_upload: boolean }>,
-	is_upload_visible: Ref<boolean>,
-	list_upload_files: Ref<Uploadable[]>,
-) {
+export function useMouseEvents(can_upload: Ref<boolean>, is_upload_visible: Ref<boolean>, list_upload_files: Ref<Uploadable[]>) {
 	function dragEnd(e: DragEvent) {
-		if (rights.value?.can_upload !== true) {
+		if (can_upload.value !== true) {
 			return;
 		}
 		// prevent default action (open as a link for some elements)
@@ -20,7 +16,7 @@ export function useMouseEvents(
 	}
 
 	function dropUpload(e: DragEvent) {
-		if (rights.value?.can_upload !== true) {
+		if (can_upload.value !== true) {
 			return;
 		}
 		// prevent default action (open as a link for some elements)
@@ -47,7 +43,7 @@ export function useMouseEvents(
 			return;
 		}
 
-		if (rights.value?.can_upload !== true) {
+		if (can_upload.value !== true) {
 			return;
 		}
 

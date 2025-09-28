@@ -1,79 +1,65 @@
 <template>
-	<LoadingProgress v-model:loading="isLoading" />
-	<UploadPanel v-if="rootRights?.can_upload" key="upload_modal" @refresh="refresh" />
-	<KeybindingsHelp v-if="user?.id" v-model:visible="isKeybindingsHelpOpen" />
-	<AlbumCreateDialog v-if="rootRights?.can_upload" key="create_album_modal" />
-	<AlbumCreateTagDialog v-if="rootRights?.can_upload" key="create_tag_album_modal" />
-	<LoginModal v-if="user?.id === null" @logged-in="refresh" />
-	<WebauthnModal v-if="user?.id === null" @logged-in="refresh" />
-	<LiveMetrics v-if="user?.id" />
-	<ImportFromLink v-if="rootRights?.can_upload" v-model:visible="is_import_from_link_open" @refresh="refresh" />
-	<ImportFromServer v-if="rootRights?.can_import_from_server" v-model:visible="is_import_from_server_open" @refresh="refresh" />
-	<DropBox v-if="rootRights?.can_upload" v-model:visible="is_import_from_dropbox_open" @refresh="refresh" />
+	<LoadingProgress v-model:loading="albumsStore.isLoading" />
+	<UploadPanel v-if="albumsStore.rootRights?.can_upload" key="upload_modal" @refresh="refresh" />
+	<KeybindingsHelp v-if="userStore.isLoggedIn" v-model:visible="is_keybindings_help_open" />
+	<AlbumCreateDialog v-if="albumsStore.rootRights?.can_upload" key="create_album_modal" />
+	<AlbumCreateTagDialog v-if="albumsStore.rootRights?.can_upload" key="create_tag_album_modal" />
+	<LoginModal v-if="!userStore.isLoggedIn" @logged-in="refresh" />
+	<WebauthnModal v-if="!userStore.isLoggedIn" @logged-in="refresh" />
+	<LiveMetrics v-if="userStore.isLoggedIn" />
+	<ImportFromLink v-if="albumsStore.rootRights?.can_upload" v-model:visible="is_import_from_link_open" @refresh="refresh" />
+	<ImportFromServer v-if="albumsStore.rootRights?.can_import_from_server" v-model:visible="is_import_from_server_open" @refresh="refresh" />
+	<DropBox v-if="albumsStore.rootRights?.can_upload" v-model:visible="is_import_from_dropbox_open" @refresh="refresh" />
 
-	<div v-if="rootConfig && rootRights" id="galleryView" class="relative w-full h-full select-none" @scroll="onScroll">
-		<SelectDrag :albums="selectableAlbums" :with-scroll="false" />
+	<div v-if="albumsStore.rootConfig && albumsStore.rootRights" id="galleryView" class="relative w-full h-full select-none" @scroll="onScroll">
+		<SelectDrag :with-scroll="false" />
 		<Collapse :when="!is_full_screen">
-			<AlbumsHeader
-				v-if="user"
-				:user="user"
-				:title="title"
-				:rights="rootRights"
-				:config="rootConfig"
-				:has-hidden="hasHidden"
-				@refresh="refresh"
-				@help="isKeybindingsHelpOpen = true"
-			/>
+			<AlbumsHeader v-if="userStore.isLoaded" :title="title" @refresh="refresh" @help="is_keybindings_help_open = true" />
 		</Collapse>
 
 		<AlbumThumbPanel
-			v-if="smartAlbums.length > 0"
+			v-if="albumsStore.smartAlbums.length > 0"
 			header="gallery.smart_albums"
 			:album="undefined"
-			:albums="smartAlbums"
-			:config="albumPanelConfig"
-			:is-alone="!albums.length"
+			:albums="albumsStore.smartAlbums"
+			:is-alone="!albumsStore.albums.length"
 			:idx-shift="-1"
 			:selected-albums="[]"
 			:is-timeline="false"
 		/>
-		<template v-if="pinnedAlbums.length > 0">
+		<template v-if="albumsStore.pinnedAlbums.length > 0">
 			<AlbumThumbPanel
 				:is-timeline="false"
 				header="gallery.pinned_albums"
 				:album="null"
-				:albums="pinnedAlbums"
-				:user="user"
-				:config="albumPanelConfig"
-				:is-alone="!sharedAlbums.length && !smartAlbums.length && !albums.length"
+				:albums="albumsStore.pinnedAlbums"
+				:is-alone="!albumsStore.sharedAlbums.length && !albumsStore.smartAlbums.length && !albumsStore.albums.length"
 				:idx-shift="0"
 				:selected-albums="selectedAlbumsIds"
 				@clicked="albumClick"
 				@contexted="albumMenuOpen"
 			/>
 		</template>
-		<template v-if="albums.length > 0">
+		<template v-if="albumsStore.albums.length > 0">
 			<AlbumThumbPanel
-				:is-timeline="rootConfig.is_album_timeline_enabled"
+				:is-timeline="albumsStore.rootConfig.is_album_timeline_enabled"
 				header="gallery.albums"
 				:album="null"
-				:albums="albums"
-				:config="albumPanelConfig"
-				:is-alone="!sharedAlbums.length && !smartAlbums.length && !pinnedAlbums.length"
-				:idx-shift="pinnedAlbums.length"
+				:albums="albumsStore.albums"
+				:is-alone="!albumsStore.sharedAlbums.length && !albumsStore.smartAlbums.length && !albumsStore.pinnedAlbums.length"
+				:idx-shift="albumsStore.pinnedAlbums.length"
 				:selected-albums="selectedAlbumsIds"
 				@clicked="albumClick"
 				@contexted="albumMenuOpen"
 			/>
 		</template>
-		<template v-for="sharedAlbum in sharedAlbums" :key="sharedAlbum.header">
+		<template v-for="sharedAlbum in albumsStore.sharedAlbums" :key="sharedAlbum.header">
 			<AlbumThumbPanel
-				v-if="sharedAlbums.length > 0"
+				v-if="albumsStore.sharedAlbums.length > 0"
 				:header="sharedAlbum.header"
 				:album="undefined"
 				:albums="sharedAlbum.data"
-				:config="albumPanelConfig"
-				:is-alone="!albums.length"
+				:is-alone="!albumsStore.albums.length"
 				:idx-shift="sharedAlbum.iter"
 				:selected-albums="selectedAlbumsIds"
 				:is-timeline="false"
@@ -145,7 +131,7 @@
 </template>
 <script setup lang="ts">
 import AlbumThumbPanel from "@/components/gallery/albumModule/AlbumThumbPanel.vue";
-import { useAuthStore } from "@/stores/Auth";
+import { useUserStore } from "@/stores/UserState";
 import { computed, ref, onMounted, onUnmounted } from "vue";
 import AlbumsHeader from "@/components/headers/AlbumsHeader.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
@@ -156,8 +142,6 @@ import KeybindingsHelp from "@/components/modals/KeybindingsHelp.vue";
 import { useSelection } from "@/composables/selections/selections";
 import { useContextMenu } from "@/composables/contextMenus/contextMenu";
 import ContextMenu from "primevue/contextmenu";
-import { useAlbumsRefresher } from "@/composables/album/albumsRefresher";
-import { AlbumThumbConfig } from "@/components/gallery/albumModule/thumbs/AlbumThumb.vue";
 import MoveDialog from "@/components/forms/gallery-dialogs/MoveDialog.vue";
 import AlbumMergeDialog from "@/components/forms/gallery-dialogs/AlbumMergeDialog.vue";
 import DeleteDialog from "@/components/forms/gallery-dialogs/DeleteDialog.vue";
@@ -185,40 +169,50 @@ import SelectDrag from "@/components/forms/album/SelectDrag.vue";
 import ImportFromLink from "@/components/modals/ImportFromLink.vue";
 import DropBox from "@/components/modals/DropBox.vue";
 import ImportFromServer from "@/components/modals/ImportFromServer.vue";
+import { useAlbumsStore } from "@/stores/AlbumsState";
+import { useAlbumStore } from "@/stores/AlbumState";
+import { usePhotoStore } from "@/stores/PhotoState";
+import { usePhotosStore } from "@/stores/PhotosState";
 
-const auth = useAuthStore();
+const userStore = useUserStore();
 const lycheeStore = useLycheeStateStore();
 const togglableStore = useTogglablesStateStore();
 const leftMenuStore = useLeftMenuStateStore();
+const albumsStore = useAlbumsStore();
+const albumStore = useAlbumStore();
+const photosStore = usePhotosStore();
+const photoStore = usePhotoStore();
 const router = useRouter();
 
-lycheeStore.init();
+// Reset!
+albumStore.reset();
+albumsStore.reset();
+photosStore.reset();
+photoStore.reset();
+
+async function refresh() {
+	await lycheeStore.load();
+	await userStore.refresh();
+	albumsStore.load(router);
+}
+
 const albumId = ref("gallery");
 
 const { onScroll, setScroll } = useScrollable(togglableStore, albumId);
-const { is_full_screen, is_login_open, is_upload_visible, list_upload_files, is_webauthn_open, is_import_from_server_open } =
-	storeToRefs(togglableStore);
+const {
+	is_full_screen,
+	is_login_open,
+	is_upload_visible,
+	list_upload_files,
+	is_webauthn_open,
+	is_import_from_server_open,
+	is_keybindings_help_open,
+} = storeToRefs(togglableStore);
 const { are_nsfw_visible, title } = storeToRefs(lycheeStore);
 
-const {
-	user,
-	isLoading,
-	isKeybindingsHelpOpen,
-	smartAlbums,
-	albums,
-	pinnedAlbums,
-	sharedAlbums,
-	rootConfig,
-	rootRights,
-	selectableAlbums,
-	hasHidden,
-	refresh,
-} = useAlbumsRefresher(auth, lycheeStore, is_login_open, router);
-
 const { selectedAlbum, selectedAlbumsIdx, selectedAlbums, selectedAlbumsIds, albumClick, selectEverything, unselect, hasSelection } = useSelection(
-	{
-		albums: selectableAlbums,
-	},
+	photosStore,
+	albumsStore,
 	togglableStore,
 );
 
@@ -268,19 +262,11 @@ const { menu, Menu, albumMenuOpen } = useContextMenu(
 	albumCallbacks,
 );
 
-const albumPanelConfig = computed<AlbumThumbConfig>(() => ({
-	album_thumb_css_aspect_ratio: rootConfig.value?.album_thumb_css_aspect_ratio ?? "aspect-square",
-	album_subtitle_type: lycheeStore.album_subtitle_type,
-	display_thumb_album_overlay: lycheeStore.display_thumb_album_overlay,
-	album_decoration: lycheeStore.album_decoration,
-	album_decoration_orientation: lycheeStore.album_decoration_orientation,
-}));
-
 onKeyStroke("h", () => !shouldIgnoreKeystroke() && (are_nsfw_visible.value = !are_nsfw_visible.value));
 onKeyStroke("f", () => !shouldIgnoreKeystroke() && togglableStore.toggleFullScreen());
 onKeyStroke(" ", () => !shouldIgnoreKeystroke() && unselect());
-onKeyStroke("m", () => !shouldIgnoreKeystroke() && rootRights.value?.can_edit && hasSelection() && toggleMove());
-onKeyStroke(["Delete", "Backspace"], () => !shouldIgnoreKeystroke() && rootRights.value?.can_edit && hasSelection() && toggleDelete());
+onKeyStroke("m", () => !shouldIgnoreKeystroke() && albumsStore.rootRights?.can_edit && hasSelection() && toggleMove());
+onKeyStroke(["Delete", "Backspace"], () => !shouldIgnoreKeystroke() && albumsStore.rootRights?.can_edit && hasSelection() && toggleDelete());
 
 onKeyStroke("a", (e) => {
 	if (!shouldIgnoreKeystroke() && e.getModifierState(getModKey()) && !e.shiftKey && !e.altKey) {
@@ -288,10 +274,12 @@ onKeyStroke("a", (e) => {
 		selectEverything();
 	}
 });
-onKeyStroke("l", () => !shouldIgnoreKeystroke() && user.value?.id === null && (is_login_open.value = true));
-onKeyStroke("k", () => !shouldIgnoreKeystroke() && user.value?.id === null && (is_webauthn_open.value = true));
+onKeyStroke("l", () => !shouldIgnoreKeystroke() && !userStore.isLoggedIn && (is_login_open.value = true));
+onKeyStroke("k", () => !shouldIgnoreKeystroke() && !userStore.isLoggedIn && (is_webauthn_open.value = true));
 
-const { onPaste, dragEnd, dropUpload } = useMouseEvents(rootRights, is_upload_visible, list_upload_files);
+const can_upload = computed(() => albumsStore.rootRights?.can_upload === true);
+
+const { onPaste, dragEnd, dropUpload } = useMouseEvents(can_upload, is_upload_visible, list_upload_files);
 
 onMounted(() => {
 	window.addEventListener("paste", onPaste);

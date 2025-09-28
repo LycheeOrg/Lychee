@@ -1,13 +1,13 @@
 <template>
 	<div
-		v-if="!nsfw_consented.includes(props.albumId)"
+		v-if="albumId !== undefined && nsfwConsentedStore.hasConsented(albumId) === false"
 		id="sensitive_warning"
 		:class="{
 			'fixed flex flex-col items-center justify-center text-center text-surface-0 text-shadow top-14 left-0 h-full w-full': true,
 			'bg-red-950': !is_nsfw_banner_backdrop_blurred,
 			'backdrop-blur-lg': is_nsfw_banner_backdrop_blurred,
 		}"
-		@click="consent"
+		@click="nsfwConsentedStore.consent(albumId)"
 	>
 		<div v-if="nsfw_banner_override !== ''" v-html="nsfw_banner_override"></div>
 		<template v-else>
@@ -20,18 +20,21 @@
 	</div>
 </template>
 <script setup lang="ts">
+import { useAlbumStore } from "@/stores/AlbumState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
+import { useNsfwConsentedStore } from "@/stores/NsfwConsentedState";
 import { storeToRefs } from "pinia";
-
-const props = defineProps<{
-	albumId: string;
-}>();
+import { computed, onMounted } from "vue";
 
 const lycheeStore = useLycheeStateStore();
-lycheeStore.init();
-const { nsfw_banner_override, is_nsfw_banner_backdrop_blurred, nsfw_consented } = storeToRefs(lycheeStore);
+const nsfwConsentedStore = useNsfwConsentedStore();
+const albumStore = useAlbumStore();
+// Fetch the id of the current album
+const albumId = computed(() => albumStore.albumId);
 
-function consent() {
-	nsfw_consented.value.push(props.albumId);
-}
+const { nsfw_banner_override, is_nsfw_banner_backdrop_blurred } = storeToRefs(lycheeStore);
+
+onMounted(() => {
+	lycheeStore.load();
+});
 </script>

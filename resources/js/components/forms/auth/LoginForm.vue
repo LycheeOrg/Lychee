@@ -108,7 +108,6 @@ import Message from "primevue/message";
 import AuthService from "@/services/auth-service";
 import InputText from "@/components/forms/basic/InputText.vue";
 import InputPassword from "@/components/forms/basic/InputPassword.vue";
-import { useAuthStore } from "@/stores/Auth";
 import AlbumService from "@/services/album-service";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
@@ -116,6 +115,7 @@ import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { onMounted } from "vue";
 import { trans } from "laravel-vue-i18n";
 import { sprintf } from "sprintf-js";
+import { useUserStore } from "@/stores/UserState";
 
 const emits = defineEmits<{
 	"logged-in": [];
@@ -134,7 +134,7 @@ const props = defineProps<{
 
 const username = ref("");
 const password = ref("");
-const authStore = useAuthStore();
+const userStore = useUserStore();
 const togglableStore = useTogglablesStateStore();
 const lycheeStore = useLycheeStateStore();
 const { is_se_enabled, is_basic_auth_enabled, is_webauthn_enabled } = storeToRefs(lycheeStore);
@@ -147,7 +147,7 @@ function login() {
 	AuthService.login(username.value, password.value)
 		.then(() => {
 			is_login_open.value = false;
-			authStore.setUser(null);
+			userStore.setUser(undefined);
 			invalidPassword.value = false;
 			AlbumService.clearCache();
 			emits("logged-in");
@@ -176,7 +176,7 @@ function redirectToOauth() {
 }
 
 onMounted(() => {
-	authStore.getOauthData().then((data) => {
+	userStore.getOauthData().then((data) => {
 		oauths.value = data;
 		redirectToOauth();
 	});

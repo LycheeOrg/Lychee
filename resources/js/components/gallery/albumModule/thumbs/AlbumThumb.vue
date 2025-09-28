@@ -7,12 +7,12 @@
 			'w-[calc(50%-0.25rem)]': lycheeStore.number_albums_per_row_mobile === 2,
 			'w-[calc(33%-0.25rem)]': lycheeStore.number_albums_per_row_mobile === 3,
 			blurred: lycheeStore.is_nsfw_background_blurred && props.album.is_nsfw,
-			'aspect-4x5': 'aspect-4x5' === props.config.album_thumb_css_aspect_ratio,
-			'aspect-5x4': 'aspect-5x4' === props.config.album_thumb_css_aspect_ratio,
-			'aspect-2x3': 'aspect-2x3' === props.config.album_thumb_css_aspect_ratio,
-			'aspect-3x2': 'aspect-3x2' === props.config.album_thumb_css_aspect_ratio,
-			'aspect-square': 'aspect-square' === props.config.album_thumb_css_aspect_ratio,
-			'aspect-video': 'aspect-video' === props.config.album_thumb_css_aspect_ratio,
+			'aspect-4x5': 'aspect-4x5' === aspectRatio,
+			'aspect-5x4': 'aspect-5x4' === aspectRatio,
+			'aspect-2x3': 'aspect-2x3' === aspectRatio,
+			'aspect-3x2': 'aspect-3x2' === aspectRatio,
+			'aspect-square': 'aspect-square' === aspectRatio,
+			'aspect-video': 'aspect-video' === aspectRatio,
 			'!opacity-25 ': cannotInteractWhileDragging,
 		}"
 		:data-album-id="props.album.id"
@@ -34,11 +34,11 @@
 			:is-selectable="isSelectable"
 			:is-password-protected="props.album.is_password_required"
 		/>
-		<AlbumThumbOverlay v-if="props.config.display_thumb_album_overlay !== 'never'" :album="props.album" :config="props.config" />
-		<span v-if="album.thumb?.type.includes('video')" class="w-full h-full absolute hover:opacity-70 transition-opacity duration-300">
+		<AlbumThumbOverlay v-if="display_thumb_album_overlay !== 'never'" :album="props.album" />
+		<span v-if="props.album.thumb?.type.includes('video')" class="w-full h-full absolute hover:opacity-70 transition-opacity duration-300">
 			<img class="h-full w-full" alt="play" :src="getPlayIcon()" />
 		</span>
-		<div v-if="user?.id !== null" class="badges absolute mt-[-1px] ml-1 top-0 left-0 flex">
+		<div v-if="userStore.isLoggedIn" class="badges absolute mt-[-1px] ml-1 top-0 left-0 flex">
 			<ThumbBadge v-if="props.album.is_nsfw" class="bg-[#ff82ee]" icon="warning" />
 			<ThumbBadge v-if="props.album.id === 'starred'" class="bg-yellow-500" icon="star" />
 			<ThumbBadge v-if="props.album.id === 'unsorted'" class="bg-red-700" icon="list" />
@@ -51,14 +51,14 @@
 			<ThumbBadge v-if="props.cover_id === props.album.thumb?.id" class="bg-yellow-500" icon="folder-cover" />
 		</div>
 		<!-- v-if="props.config.album_decoration !== 'none'" -->
-		<AlbumThumbDecorations :album="props.album" :config="props.config" />
+		<AlbumThumbDecorations :album="props.album" />
 	</router-link>
 </template>
 <script setup lang="ts">
 import { computed } from "vue";
 import ThumbBadge from "@/components/gallery/albumModule/thumbs/ThumbBadge.vue";
 import AlbumThumbImage from "@/components/gallery/albumModule/thumbs/AlbumThumbImage.vue";
-import { useAuthStore } from "@/stores/Auth";
+import { useUserStore } from "@/stores/UserState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import AlbumThumbOverlay from "./AlbumThumbOverlay.vue";
 import AlbumThumbDecorations from "./AlbumThumbDecorations.vue";
@@ -68,6 +68,8 @@ import { useAlbumRoute } from "@/composables/photo/albumRoute";
 import { useRouter } from "vue-router";
 import { useAlbumActions } from "@/composables/album/albumActions";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
+import { useAlbumStore } from "@/stores/AlbumState";
+import { useAlbumsStore } from "@/stores/AlbumsState";
 
 export type AlbumThumbConfig = {
 	album_thumb_css_aspect_ratio: string;
@@ -81,16 +83,23 @@ const props = defineProps<{
 	isSelected: boolean;
 	cover_id: string | null;
 	album: App.Http.Resources.Models.ThumbAlbumResource;
-	config: AlbumThumbConfig;
 }>();
 
 const { canInteractAlbum } = useAlbumActions();
 const router = useRouter();
-const auth = useAuthStore();
+const userStore = useUserStore();
+const albumStore = useAlbumStore();
+const albumsStore = useAlbumsStore();
+
 const lycheeStore = useLycheeStateStore();
+
 const togglableStore = useTogglablesStateStore();
 const { getPlayIcon } = useImageHelpers();
-const { user } = storeToRefs(auth);
+const { display_thumb_album_overlay } = storeToRefs(lycheeStore);
+
+const aspectRatio = computed(
+	() => albumStore.config?.album_thumb_css_aspect_ratio ?? albumsStore.rootConfig?.album_thumb_css_aspect_ratio ?? "aspect-square",
+);
 
 const { albumRoutes } = useAlbumRoute(router);
 const cannotInteractWhileDragging = computed(() => togglableStore.isDragging === true && canInteractAlbum(props.album) === false);
@@ -102,6 +111,4 @@ const cssClass = computed(() => {
 	}
 	return "";
 });
-
-auth.getUser();
 </script>
