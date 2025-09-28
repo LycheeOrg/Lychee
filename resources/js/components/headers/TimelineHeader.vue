@@ -119,7 +119,7 @@ import OpenLeftMenu from "./OpenLeftMenu.vue";
 import { useFavouriteStore } from "@/stores/FavouriteState";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
 import ImportFromServer from "@/components/modals/ImportFromServer.vue";
-import { useTimelineStore } from "@/stores/timelineState";
+import { useTimelineStore } from "@/stores/TimelineState";
 import { useUserStore } from "@/stores/UserState";
 
 const emits = defineEmits<{

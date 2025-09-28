@@ -278,7 +278,7 @@
 	</Card>
 </template>
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import Button from "primevue/button";
 import Card from "primevue/card";
 import Select from "primevue/select";
@@ -305,6 +305,7 @@ import { storeToRefs } from "pinia";
 import TagsInput from "@/components/forms/basic/TagsInput.vue";
 import ToggleSwitch from "primevue/toggleswitch";
 import { usePhotosStore } from "@/stores/PhotosState";
+import { useAlbumStore } from "@/stores/AlbumState";
 
 type HeaderOption = {
 	id: string;
@@ -313,11 +314,8 @@ type HeaderOption = {
 };
 
 const LycheeState = useLycheeStateStore();
+const albumStore = useAlbumStore();
 const { is_se_enabled } = storeToRefs(LycheeState);
-
-const props = defineProps<{
-	editable: App.Http.Resources.Editable.EditableBaseAlbumResource;
-}>();
 
 const photosStore = usePhotosStore();
 
@@ -410,7 +408,12 @@ function load(editable: App.Http.Resources.Editable.EditableBaseAlbumResource, p
 	is_and.value = editable.is_and ?? false;
 }
 
-load(props.editable, photosStore.photos);
+onMounted(() => {
+	LycheeState.load();
+	if (albumStore.tagOrModelAlbum?.editable !== undefined && albumStore.tagOrModelAlbum?.editable !== null) {
+		load(albumStore.tagOrModelAlbum.editable, photosStore.photos);
+	}
+});
 
 function save() {
 	if (is_model_album.value) {
@@ -437,7 +440,7 @@ function saveAlbum() {
 		photo_layout: photoLayout.value?.value ?? null,
 		album_timeline: albumTimeline.value?.value ?? null,
 		photo_timeline: photoTimeline.value?.value ?? null,
-		is_pinned: props.editable.is_pinned ?? false,
+		is_pinned: albumStore.tagOrModelAlbum?.editable?.is_pinned ?? false,
 	};
 	AlbumService.updateAlbum(data).then(() => {
 		toast.add({ severity: "success", summary: trans("toasts.success"), life: 3000 });
@@ -461,7 +464,7 @@ function saveTagAlbum() {
 		copyright: copyright.value ?? null,
 		photo_layout: photoLayout.value?.value ?? null,
 		photo_timeline: photoTimeline.value?.value ?? null,
-		is_pinned: props.editable.is_pinned ?? false,
+		is_pinned: albumStore.tagOrModelAlbum?.editable?.is_pinned ?? false,
 		is_and: is_and.value,
 	};
 	AlbumService.updateTag(data).then(() => {
@@ -471,9 +474,11 @@ function saveTagAlbum() {
 }
 
 watch(
-	() => [props.editable, photosStore.photos],
+	() => [albumStore.tagOrModelAlbum?.editable, photosStore.photos],
 	([editable, photos]) => {
-		load(editable as App.Http.Resources.Editable.EditableBaseAlbumResource, photos as App.Http.Resources.Models.PhotoResource[]);
+		if (editable !== null) {
+			load(editable as App.Http.Resources.Editable.EditableBaseAlbumResource, photos as App.Http.Resources.Models.PhotoResource[]);
+		}
 	},
 );
 </script>

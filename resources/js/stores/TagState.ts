@@ -23,15 +23,21 @@ export const useTagStore = defineStore("tag-store", {
 			}
 
 			const photosStore = usePhotosStore();
+			const requestedTagId = this.tagId;
 			this.isLoading = true;
 
-			return TagsService.get(this.tagId)
+			return TagsService.get(requestedTagId)
 				.then((data) => {
+					if (this.tagId !== requestedTagId) {
+						return;
+					}
 					photosStore.setPhotos(data.data.photos, false);
 					this.tag = { name: data.data.name, id: data.data.id, num: data.data.photos.length };
 				})
 				.finally(() => {
-					this.isLoading = false;
+					if (this.tagId === requestedTagId) {
+						this.isLoading = false;
+					}
 				});
 		},
 	},

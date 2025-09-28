@@ -352,7 +352,7 @@ onKeyStroke(
 onKeyStroke("m", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && photoStore.rights?.can_edit && toggleMove());
 onKeyStroke("e", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && photoStore.rights?.can_edit && toggleEdit());
 onKeyStroke("s", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && photoStore.rights?.can_edit && toggleStar());
-onKeyStroke(["Delete", "Backspace"], () => !shouldIgnoreKeystroke() && photoStore.isLoaded && albumStore.album?.rights.can_delete && toggleDelete());
+onKeyStroke(["Delete", "Backspace"], () => !shouldIgnoreKeystroke() && photoStore.isLoaded && albumStore.rights?.can_delete && toggleDelete());
 
 // on key stroke escape:
 // 1. lose focus
@@ -403,7 +403,8 @@ onKeyStroke("Escape", () => {
 	goBack();
 });
 
-const can_upload = computed(() => albumStore.rights?.can_upload ?? false);
+// We prevent the drag mechanism when a photo is loaded.
+const can_upload = computed(() => (albumStore.rights?.can_upload ?? false) && photoStore.isLoaded === false);
 const { onPaste, dragEnd, dropUpload } = useMouseEvents(can_upload, is_upload_visible, list_upload_files);
 
 onMounted(() => {

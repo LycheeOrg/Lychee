@@ -118,6 +118,9 @@ export const useAlbumStore = defineStore("album-store", {
 			| undefined {
 			return state.modelAlbum || state.tagAlbum || state.smartAlbum;
 		},
+		tagOrModelAlbum(state): App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.TagAlbumResource | undefined {
+			return state.modelAlbum || state.tagAlbum;
+		},
 		rights(state): App.Http.Resources.Rights.AlbumRightsResource | undefined {
 			return (state.modelAlbum || state.tagAlbum || state.smartAlbum)?.rights ?? undefined;
 		},

@@ -41,8 +41,14 @@
 			</template>
 		</template>
 	</Card>
-	<ConfirmSharingDialog v-model:visible="dialogPropagateVisible" :album="props.album" />
-	<AlbumCreateShareDialog v-model:visible="dialogVisible" :album="props.album" :filtered-users-ids="sharedUserIds" @created-permission="load" />
+	<ConfirmSharingDialog v-if="albumStore.tagOrModelAlbum" v-model:visible="dialogPropagateVisible" :album="albumStore.tagOrModelAlbum" />
+	<AlbumCreateShareDialog
+		v-if="albumStore.tagOrModelAlbum"
+		v-model:visible="dialogVisible"
+		:album="albumStore.tagOrModelAlbum"
+		:filtered-users-ids="sharedUserIds"
+		@created-permission="load"
+	/>
 </template>
 
 <script setup lang="ts">
@@ -56,11 +62,8 @@ import AlbumCreateShareDialog from "./AlbumCreateShareDialog.vue";
 import Button from "primevue/button";
 import ProgressSpinner from "primevue/progressspinner";
 import ConfirmSharingDialog from "./ConfirmSharingDialog.vue";
-import { UserOrGroupId } from "@/composables/search/searchUserGroupComputed";
-
-const props = defineProps<{
-	album: App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.TagAlbumResource;
-}>();
+import { type UserOrGroupId } from "@/stores/UsersAndGroupsState";
+import { useAlbumStore } from "@/stores/AlbumState";
 
 const toast = useToast();
 
@@ -68,9 +71,14 @@ const perms = ref<App.Http.Resources.Models.AccessPermissionResource[] | undefin
 
 const dialogVisible = ref(false);
 const dialogPropagateVisible = ref(false);
+const albumStore = useAlbumStore();
 
 function load() {
-	SharingService.get(props.album.id).then((response) => {
+	if (albumStore.album === undefined) {
+		return;
+	}
+
+	SharingService.get(albumStore.album.id).then((response) => {
 		perms.value = response.data;
 	});
 }

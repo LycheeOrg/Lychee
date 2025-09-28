@@ -57,31 +57,22 @@
 			</li>
 		</ul>
 		<div v-if="activeTab === 0" class="w-full xl:w-5/6 flex justify-center flex-wrap mb-4 sm:mt-7 ltr:pl-7 rtl:pr-7">
-			<!-- @vue-expect-error editable exist in that case. -->
-			<AlbumProperties
-				v-if="albumStore.config?.is_base_album"
-				:key="`properties_${albumStore.album.id}`"
-				:editable="albumStore.album.editable"
-				:photos="albumStore.album.photos"
-			/>
-			<AlbumVisibility :key="`visibility_${albumStore.albumId}`" />
+			<AlbumProperties v-if="albumStore.config?.is_base_album" :key="`properties_${albumStore.album?.id}`" />
+			<AlbumVisibility :key="`visibility_${albumStore.album?.id}`" />
 		</div>
 		<!-- @if($this->flags->is_base_album)  -->
 		<div v-if="activeTab === 1 && canShare" class="w-full xl:w-5/6 flex justify-center flex-wrap mb-4 sm:mt-7 ltr:pl-7 rtl:pr-7">
-			<!-- @vue-expect-error -->
-			<AlbumShare :key="`share_${albumStore.albumId}`" />
+			<AlbumShare :key="`share_${albumStore.album?.id}`" />
 		</div>
 		<div v-if="activeTab === 2 && canMove" class="w-full xl:w-5/6 flex justify-center flex-wrap mb-4 sm:mt-7 ltr:pl-7 rtl:pr-7">
-			<!-- @vue-expect-error -->
-			<AlbumMove :key="'move_' + albumStore.albumId" />
+			<AlbumMove :key="`move_${albumStore.album?.id}`" />
 		</div>
 		<div
 			v-if="activeTab === 3 && (canDelete || canTransfer)"
 			class="w-full xl:w-5/6 flex justify-center flex-wrap mb-4 sm:mt-7 ltr:pl-7 rtl:pr-7"
 		>
-			<!-- @vue-expect-error -->
-			<AlbumTransfer v-if="canTransfer" :key="`transfer_${albumStore.albumId}`" />
-			<AlbumDelete v-if="canDelete" :key="`delete_${albumStore.albumId}`" @deleted="close" />
+			<AlbumTransfer v-if="canTransfer" :key="`transfer_${albumStore.album?.id}`" />
+			<AlbumDelete v-if="canDelete" :key="`delete_${albumStore.album?.id}`" @deleted="close" />
 		</div>
 	</Collapse>
 </template>

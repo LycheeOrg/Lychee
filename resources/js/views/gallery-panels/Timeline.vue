@@ -188,7 +188,7 @@ import { usePhotoStore } from "@/stores/PhotoState";
 import { usePhotosStore } from "@/stores/PhotosState";
 import { useLayoutStore } from "@/stores/LayoutState";
 import { useAlbumsStore } from "@/stores/AlbumsState";
-import { useTimelineStore } from "@/stores/timelineState";
+import { useTimelineStore } from "@/stores/TimelineState";
 
 const { isLTR } = useLtRorRtL();
 
@@ -360,7 +360,7 @@ const { menu, Menu, photoMenuOpen } = useContextMenu(
 	EmptyAlbumCallbacks,
 );
 
-const can_upload = computed(() => timelineStore.rootRights?.can_upload === true);
+const can_upload = computed(() => timelineStore.rootRights?.can_upload === true && photoStore.isLoaded === false);
 const { onPaste, dragEnd, dropUpload } = useMouseEvents(can_upload, is_upload_visible, list_upload_files);
 
 window.addEventListener("paste", onPaste);
