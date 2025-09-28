@@ -34,13 +34,21 @@ return [
 	'mode_first' => 'اولین رخداد',
 	'mode_all' => 'تمام رخدادها',
 	'mode_regex' => 'عبارت منظم',
+	'mode_trim' => 'Trim whitespace',
+	'mode_strtolower' => 'lowercase',
+	'mode_strtoupper' => 'UPPERCASE',
+	'mode_ucwords' => 'Uppercase Each Word',
+	'mode_ucfirst' => 'Uppercase first letter',
+
 	'mode_first_description' => 'فقط اولین تطبیق را جایگزین کن',
 	'mode_all_description' => 'همه تطبیق‌ها را جایگزین کن',
 	'mode_regex_description' => 'از الگوی عبارت منظم استفاده کن',
-	'mode_help_first' => 'فقط اولین رخداد را جایگزین کن',
-	'mode_help_all' => 'تمام رخدادها را جایگزین کن',
-	'mode_help_regex' => 'از تطبیق عبارت منظم استفاده کن',
-	'mode_help_default' => 'نحوه عملکرد تطبیق الگو را انتخاب کنید',
+	'mode_trim_description' => 'Trim whitespace',
+	'mode_strtolower_description' => 'Convert string to lowercases',
+	'mode_strtoupper_description' => 'Convert string to UPPERCASE',
+	'mode_ucwords_description' => 'Capitalize each words',
+	'mode_ucfirst_description' => 'Capitalize only the first letter',
+
 	'regex_help' => 'Use regular expressions to match patterns. For example, to replace <code>IMG_1234.jpeg</code> with <code>1234_JPG.jpeg</code>, you can use <code>/IMG_(\d+)/</code> as needle and <code>$1_JPG</code> as replacement. You can find more explanations and examples in the following links.',
 
 	// Buttons

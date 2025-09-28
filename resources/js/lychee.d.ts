@@ -95,7 +95,7 @@ declare namespace App.Enum {
 	export type OrderSortingType = "ASC" | "DESC";
 	export type PhotoLayoutType = "square" | "justified" | "masonry" | "grid";
 	export type PhotoThumbInfoType = "title" | "description";
-	export type RenamerModeType = "first" | "all" | "regex";
+	export type RenamerModeType = "first" | "all" | "regex" | "trim" | "strtolower" | "strtoupper" | "ucwords" | "ucfirst";
 	export type SeverityType = "emergency" | "alert" | "critical" | "error" | "warning" | "notice" | "info" | "debug";
 	export type ShiftType = "relative" | "absolute";
 	export type ShiftX = "left" | "right";
