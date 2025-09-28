@@ -408,6 +408,7 @@ declare namespace App.Http.Resources.Models {
 	export type AbstractAlbumResource = {
 		config: App.Http.Resources.GalleryConfigs.AlbumConfig;
 		resource:
+			| App.Http.Resources.Models.UnTaggedSmartAlbumResource
 			| App.Http.Resources.Models.AlbumResource
 			| App.Http.Resources.Models.SmartAlbumResource
 			| App.Http.Resources.Models.TagAlbumResource
@@ -582,6 +583,20 @@ declare namespace App.Http.Resources.Models {
 		rights: App.Http.Resources.Rights.AlbumRightsResource;
 		preFormattedData: App.Http.Resources.Models.Utils.PreFormattedAlbumData;
 		statistics: null | null;
+	};
+	export type UnTaggedSmartAlbumResource = {
+		id: string;
+		title: string;
+		photos: App.Http.Resources.Models.PhotoResource[];
+		thumb: App.Http.Resources.Models.ThumbResource | null;
+		policy: App.Http.Resources.Models.Utils.AlbumProtectionPolicy;
+		rights: App.Http.Resources.Rights.AlbumRightsResource;
+		preFormattedData: App.Http.Resources.Models.Utils.PreFormattedAlbumData;
+		statistics: null | null;
+		from: number | null,
+		per_page: number | null,
+		total: number | null,
+		current_page: number | null,
 	};
 	export type TagAlbumResource = {
 		id: string;

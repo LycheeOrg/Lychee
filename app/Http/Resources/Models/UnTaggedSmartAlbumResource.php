@@ -8,7 +8,6 @@
 
 namespace App\Http\Resources\Models;
 
-use App\Contracts\Models\AbstractAlbum;
 use App\DTO\TopAlbumDTO;
 use App\Enum\ColumnSortingType;
 use App\Enum\TimelineAlbumGranularity;
@@ -17,12 +16,10 @@ use App\Http\Resources\GalleryConfigs\RootConfig;
 use App\Http\Resources\Models\Utils\AlbumProtectionPolicy;
 use App\Http\Resources\Models\Utils\PreFormattedAlbumData;
 use App\Http\Resources\Models\Utils\TimelineData;
-use App\Http\Resources\Rights\AlbumRightsResource;
 use App\Http\Resources\Rights\RootAlbumRightsResource;
 use App\Http\Resources\Traits\HasHeaderUrl;
 use App\Http\Resources\Traits\HasPrepPhotoCollection;
 use App\Models\Configs;
-use App\SmartAlbums\BaseSmartAlbum;
 use App\SmartAlbums\UntaggedAlbum;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\Support\Arrayable;
@@ -133,7 +130,6 @@ class UnTaggedSmartAlbumResource extends Data implements Arrayable
 		$smart_album = UntaggedAlbum::getInstance();
 
         /** @disregard Undefined method through() (stupid intelephense) */ return new self(
-            /** @phpstan-ignore method.notFound (this methods exists, it's in the doc...) */
 			smart_albums: ThumbAlbumResource::collect($dto->smart_albums->values()),
             tag_albums: ThumbAlbumResource::collect($dto->tag_albums),
             pinned_albums: ThumbAlbumResource::collect($dto->pinned_albums),
@@ -141,7 +137,7 @@ class UnTaggedSmartAlbumResource extends Data implements Arrayable
             shared_albums: $dto->shared_albums !== null ? ThumbAlbumResource::collect($dto->shared_albums) : collect([]),
             config: $config,
             rights: new RootAlbumRightsResource(),
-            /** @phpstan-ignore method.notFound */
+            /** @phpstan-ignore method.notFound (this methods exists, it's in the doc...) */
 			photos: $photos->through(fn ($p) => new PhotoResource($p, $smart_album)),
         );
 	}

@@ -57,6 +57,12 @@ export type UpdateProtectionPolicyData = {
 	grants_upload: boolean;
 };
 
+interface GetAlbumParams {
+    album_id: string;
+    page?: number;
+    per_page?: number;
+};
+
 const AlbumService = {
 	clearCache(album_id: string | null = null): void {
 		const axiosWithCache = axios as unknown as AxiosCacheInstance;
@@ -82,28 +88,33 @@ const AlbumService = {
 		album_id: string,
 		first?: number,
 		rows?: number
-	): Promise<AxiosResponse<App.Http.Resources.Models.AbstractAlbumResource>> | Promise<{ data: App.Http.Resources.Models.AbstractAlbumResource }> {
-		const params = {};
+	): Promise<AxiosResponse<App.Http.Resources.Models.AbstractAlbumResource>> {
+		const params: GetAlbumParams = { album_id: album_id };
 
-		if (first !== undefined && rows !== undefined && first !== 0 && rows !== 0) {
-			// Calculate page based on first and rows
+		if (first !== undefined && rows !== undefined && rows > 0) {
 			const page = Math.floor(first / rows) + 1;
-			params.page = page ?? 1;
+			params.page = page;
 			params.per_page = rows;
-		}
-		if (album_id !== undefined) {
-            params.album_id = album_id;
-        }
 
-		const requester = axios as unknown as AxiosCacheInstance;
-		if (album_id === 'untagged') {
-			return requester.get(`${Constants.getApiUrl()}Albums`, {
-				data: {},
-				id: "album_" + album_id,
-				params,
-			});
+			if (album_id === 'untagged') {
+
+				return axios.get(`${Constants.getApiUrl()}Album`, {
+					params: {
+						album_id: params.album_id,
+						page: params.page,
+						per_page: params.per_page,
+					},
+					data: {},
+				});
+			}
 		}
-		return requester.get(`${Constants.getApiUrl()}Album`, { params , data: {}, id: "album_" + album_id });
+		const requester = axios as unknown as AxiosCacheInstance;
+
+		return requester.get(`${Constants.getApiUrl()}Album`, {
+			params: params,
+			data: {},
+			id: "album_" + album_id
+		});
 	},
 
 	unlock(album_id: string, password: string): Promise<AxiosResponse> {

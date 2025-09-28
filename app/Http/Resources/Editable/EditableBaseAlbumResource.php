@@ -17,7 +17,6 @@ use App\Enum\TimelineAlbumGranularity;
 use App\Enum\TimelinePhotoGranularity;
 use App\Models\Album;
 use App\Models\TagAlbum;
-use App\SmartAlbums\UntaggedAlbum;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
@@ -43,7 +42,7 @@ class EditableBaseAlbumResource extends Data
 	public bool $is_model_album;
 	public bool $is_pinned;
 
-	public function __construct(Album|TagAlbum|UntaggedAlbum $album)
+	public function __construct(Album|TagAlbum $album)
 	{
 		$this->id = $album->id;
 		$this->title = $album->title;
@@ -74,19 +73,9 @@ class EditableBaseAlbumResource extends Data
 			$this->tags = $album->tags->map(fn ($t) => $t->name)->all();
 			$this->is_and = $album->is_and;
 		}
-
-		if ($album instanceof UntaggedAlbum) {
-			$this->is_model_album = true;
-			$this->license = $album->license;
-			$this->album_sorting = $album->album_sorting;
-			$this->header_id = $album->header_id;
-			$this->cover_id = $album->cover_id;
-			$this->aspect_ratio = $album->album_thumb_aspect_ratio;
-			$this->album_timeline = $album->album_timeline;
-		}
 	}
 
-	public static function fromModel(Album|TagAlbum|UnTaggedAlbum $album): EditableBaseAlbumResource
+	public static function fromModel(Album|TagAlbum $album): EditableBaseAlbumResource
 	{
 		return new self($album);
 	}

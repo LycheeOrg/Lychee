@@ -24,7 +24,7 @@ export function useAlbumRefresher(albumId: Ref<string>, photoId: Ref<string | un
 	const config = ref<App.Http.Resources.GalleryConfigs.AlbumConfig | undefined>(undefined);
 	const rights = computed(() => album.value?.rights ?? undefined);
 
-	const currentPage = ref(1);
+	const current_page = ref(1);
 	const from = ref(0);
 	const per_page = ref(0);
 	const total = ref(0);
@@ -35,27 +35,41 @@ export function useAlbumRefresher(albumId: Ref<string>, photoId: Ref<string | un
 		});
 	}
 
+	function hasPagination (
+			resource: App.Http.Resources.Models.AbstractAlbumResource['resource']
+		): resource is App.Http.Resources.Models.UnTaggedSmartAlbumResource {
+			return resource !== null && 'from' in resource;
+		}
+
 	function loadAlbum(page: number = 1): Promise<void> {
 		if (albumId.value === ALL) {
 			return Promise.resolve();
 		}
 
-        if (page !== undefined) {
-            currentPage.value = page;
-        }
+		if (page !== undefined) {
+			current_page.value = page;
+		}
 
 		isLoading.value = true;
 
-		return AlbumService.get(albumId.value, currentPage.value, per_page.value)
+    	const first = (current_page.value - 1) * per_page.value;
+
+		return AlbumService.get(albumId.value, first, per_page.value)
 			.then((data) => {
 				isPasswordProtected.value = false;
 				config.value = data.data.config;
+				modelAlbum.value = undefined;
+				tagAlbum.value = undefined;
+				smartAlbum.value = undefined;
+				photosTimeline.value = undefined;
 
-                const albumPhotos = data.data?.photos || data.data.resource?.photos || [];
-
-				from.value = Number(data.data?.from ?? 0);
-				per_page.value = Number(data.data?.per_page ?? 0);
-                total.value = Number(data.data?.total ?? 0);
+                const albumPhotos = data.data.resource?.photos || [];
+				if (hasPagination(data.data.resource)) {
+					from.value = Number(data.data.resource.from ?? 0);
+					per_page.value = Number(data.data.resource.per_page ?? 0);
+					total.value = Number(data.data.resource.total ?? 0);
+					current_page.value = Number(data.data.resource.current_page ?? 1);
+				}
 
 				// So what is going on here?
 				// The problem is that the ordering of the photos from the API is not necessarily the same
@@ -86,10 +100,6 @@ export function useAlbumRefresher(albumId: Ref<string>, photoId: Ref<string | un
 					photos.value = album.value?.photos ?? albumPhotos ?? [];
 				}
 
-				modelAlbum.value = undefined;
-				tagAlbum.value = undefined;
-				smartAlbum.value = undefined;
-				photosTimeline.value = undefined;
 				if (data.data.config.is_model_album) {
 					modelAlbum.value = data.data.resource as App.Http.Resources.Models.AlbumResource;
 				} else if (data.data.config.is_base_album) {
@@ -120,9 +130,10 @@ export function useAlbumRefresher(albumId: Ref<string>, photoId: Ref<string | un
 
 	function refresh(): Promise<void> {
 		let page = 1;
-		if (from.value !== undefined && per_page.value !== undefined && from.value !== 0 && per_page.value !== 0) {
-			page = Math.ceil(from.value / per_page.value) + 1;
+		if (from.value > 0 && per_page.value > 0) {
+			page = Math.floor(from.value / per_page.value) + 1;
 		}
+
 		return Promise.all([loadUser(), loadAlbum(page)]).then(() => {
 			if (photoId.value) {
 				photo.value = photos.value.find((photo: App.Http.Resources.Models.PhotoResource) => photo.id === photoId.value);

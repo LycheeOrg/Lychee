@@ -92,13 +92,15 @@ class AlbumController extends Controller
 
 		if ($config->is_accessible) {
 			$album_resource = match (true) {
+    			$request->album() instanceof UntaggedAlbum => $this->createPaginatedSmartAlbumResource(
+					$request->album(),
+					$request->getPage(),
+					$request->getPerPage()
+				),
 				$request->album() instanceof BaseSmartAlbum => new SmartAlbumResource($request->album()),
 				$request->album() instanceof TagAlbum => new TagAlbumResource($request->album()),
 				$request->album() instanceof Album => new AlbumResource($request->album()),
-				$request->album() instanceof UntaggedAlbum => new SmartAlbumResource($request->album()),
-				// @codeCoverageIgnoreStart
-				default => throw new LycheeLogicException('This should not happen'),
-				// @codeCoverageIgnoreEnd
+				default => throw new LycheeLogicException('Unsupported album type'),
 			};
 		}
 
@@ -127,6 +129,22 @@ class AlbumController extends Controller
 		AlbumRouteCacheUpdated::dispatch('');
 
 		return $create->create($request->title(), $request->tags(), $request->is_and())->id;
+	}
+
+	/**
+	 * Create a paginated smart album resource.
+	 */
+	private function createPaginatedSmartAlbumResource($smartAlbum, int $page, int $per_page): SmartAlbumResource
+	{
+		// If the smart album has a method to get paginated photos, use it
+		if (method_exists($smartAlbum, 'getPaginatedPhotos')) {
+			$photos = $smartAlbum->getPaginatedPhotos($per_page, $page);
+			return new SmartAlbumResource($smartAlbum, $photos);
+		}
+
+		// Fallback: manually paginate the photos
+		$photos = $smartAlbum->photos()->paginate($per_page, ['*'], 'page', $page);
+		return new SmartAlbumResource($smartAlbum, $photos);
 	}
 
 	/**

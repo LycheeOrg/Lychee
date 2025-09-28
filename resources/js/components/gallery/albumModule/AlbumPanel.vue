@@ -75,18 +75,18 @@
 					@selected="photoSelect"
 					@contexted="photoMenuOpen"
 				/>
-				<div v-if="photos.length > 0" class="flex justify-center w-full">
-					<Paginator
-						v-model:first="firstValue"
-						v-model:rows="rowsValue"
-						:total-records="total"
-						:always-show="false"
-						@update:first="emits('refresh')"
-					/>
-				</div>
-				<GalleryFooter v-once />
 				<ScrollTop v-if="!props.isPhotoOpen" target="parent" />
 			</div>
+			<div v-if="photos.length > 0" class="flex justify-center w-full">
+				<Paginator
+					v-model:first="firstValue"
+					v-model:rows="rowsValue"
+					:total-records="total"
+					:always-show="false"
+					@update:first="emits('refresh')"
+				/>
+			</div>
+			<GalleryFooter v-once />
 			<ShareAlbum :key="'share_modal_' + album.id" v-model:visible="is_share_album_visible" :title="album.title" />
 
 			<!-- Dialogs -->
@@ -161,13 +161,13 @@ const photos = computed<App.Http.Resources.Models.PhotoResource[]>(() => props.p
 const photosTimeline = computed(() => props.photosTimeline);
 
 const firstValue = computed({
-  get: () => props.first,
-  set: (val: number) => emits("update:first", val),
+	get: () => props.first,
+	set: (val: number) => emits("update:first", val),
 });
 
 const rowsValue = computed({
-  get: () => props.rows,
-  set: (val: number) => emits("update:rows", val),
+	get: () => props.rows,
+	set: (val: number) => emits("update:rows", val),
 });
 
 const config = ref(props.config);

@@ -15,6 +15,7 @@ use App\Enum\SmartAlbumType;
 use App\Enum\TimelineAlbumGranularity;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
+use App\Models\Configs;
 use App\Models\Photo;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
@@ -72,5 +73,15 @@ class UntaggedAlbum extends BaseSmartAlbum
             ->where($this->smart_photo_condition);
 
         return $query;
+    }
+
+    public function getPaginatedPhotos($per_page = null, $page = null)
+    {
+        $photo_per_page = $per_page ?? Configs::getValueAsInt('untagged_photos_pagination_limit');
+        $current_page = $page ?? 1;
+
+        return $this->photos()
+            ->orderBy('created_at', 'desc')
+            ->paginate($photo_per_page, ['*'], 'page', $current_page);
     }
 }
