@@ -206,7 +206,7 @@ class RenamerTest extends BaseApiWithDataTest
 		$renamer = new Renamer($this->admin->id);
 		$inputs = ['test one', 'test two', 'test three'];
 		$outputs = $renamer->handleMany($inputs);
-		
+
 		self::assertEquals(['TEST one', 'TEST two', 'TEST three'], $outputs);
 		$this->resetSe();
 	}
@@ -216,7 +216,7 @@ class RenamerTest extends BaseApiWithDataTest
 		$renamer = new Renamer($this->admin->id);
 		$inputs = ['test one', 'test two', 'test three'];
 		$outputs = $renamer->handleMany($inputs);
-		
+
 		self::assertEquals($inputs, $outputs);
 	}
 
@@ -494,7 +494,7 @@ class RenamerTest extends BaseApiWithDataTest
 		$renamer = new Renamer($this->admin->id);
 		$input = 'test string';
 		$output = $renamer->handle($input);
-		
+
 		// Should return input unchanged due to exception handling
 		self::assertEquals('test string', $output);
 		$this->resetSe();
