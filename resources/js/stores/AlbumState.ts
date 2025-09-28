@@ -100,7 +100,6 @@ export const useAlbumStore = defineStore("album-store", {
 					}
 				})
 				.finally(() => {
-					this.isLoading = false;
 					if (this._loadingAlbumId === requestedAlbumId) {
 						this._loadingAlbumId = undefined;
 						this.isLoading = false;

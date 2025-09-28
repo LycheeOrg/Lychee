@@ -44,7 +44,7 @@
 		@previous="() => previous(true)"
 	/>
 	<!-- Dialogs -->
-	<template v-if="photoStore.photo !== undefined">
+	<template v-if="photoStore.isLoaded">
 		<PhotoEdit v-if="photoStore.rights?.can_edit" v-model:visible="is_photo_edit_open" />
 		<MoveDialog v-model:visible="is_move_visible" @moved="refresh" />
 		<DeleteDialog v-model:visible="is_delete_visible" @deleted="refresh" />

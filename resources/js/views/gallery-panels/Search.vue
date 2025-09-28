@@ -51,8 +51,7 @@
 		<PhotoTagDialog
 			v-model:visible="is_tag_visible"
 			:parent-id="albumId"
-			:photo="selectedPhoto"
-			:photo-ids="selectedPhotosIds"
+			:photo="photoStore.photo"
 			@tagged="
 				() => {
 					unselect();
@@ -62,8 +61,7 @@
 		/>
 		<PhotoCopyDialog
 			v-model:visible="is_copy_visible"
-			:photo="selectedPhoto"
-			:photo-ids="selectedPhotosIds"
+			:photo="photoStore.photo"
 			@copied="
 				() => {
 					unselect();

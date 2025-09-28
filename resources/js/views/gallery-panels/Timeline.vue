@@ -58,33 +58,30 @@
 
 		<!-- Dialogs -->
 		<template v-if="photoStore.isLoaded">
-			<!-- <PhotoTagDialog
+			<PhotoTagDialog
 				v-model:visible="is_tag_visible"
-				:parent-id="photo.album_id ?? 'unsorted'"
-				:photo="selectedPhoto"
-				:photo-ids="selectedPhotosIds"
+				:photo="photoStore.photo"
+				:parent-id="undefined"
 				@tagged="
 					() => {
 						unselect();
 						refresh();
 					}
 				"
-			/> -->
-			<!-- <PhotoCopyDialog
+			/>
+			<PhotoCopyDialog
 				v-model:visible="is_copy_visible"
-				:parent-id="photo.album_id ?? 'unsorted'"
-				:photo="selectedPhoto"
-				:photo-ids="selectedPhotosIds"
+				:photo="photoStore.photo"
 				@copied="
 					() => {
 						unselect();
 						refresh();
 					}
 				"
-			/> -->
+			/>
 			<PhotoEdit v-if="photoStore.rights?.can_edit" v-model:is-edit-open="is_photo_edit_open" />
-			<!-- <MoveDialog :photo="photoStore.photo" v-model:visible="is_move_visible" :parent-id="'unsorted'" @moved="refresh" /> -->
-			<!-- <DeleteDialog :photo="photoStore.photo" v-model:visible="is_delete_visible" :parent-id="'unsorted'" @deleted="refresh" /> -->
+			<MoveDialog :photo="photoStore.photo" v-model:visible="is_move_visible" :parent-id="'unsorted'" @moved="refresh" />
+			<DeleteDialog :photo="photoStore.photo" v-model:visible="is_delete_visible" :parent-id="'unsorted'" @deleted="refresh" />
 		</template>
 		<template v-else>
 			<!-- Dialogs -->
@@ -95,13 +92,7 @@
 				:photo-ids="selectedPhotosIds"
 				@tagged="refresh"
 			/>
-			<PhotoCopyDialog
-				v-model:visible="is_copy_visible"
-				:parent-id="undefined"
-				:photo="selectedPhoto"
-				:photo-ids="selectedPhotosIds"
-				@copied="refresh"
-			/>
+			<PhotoCopyDialog v-model:visible="is_copy_visible" :photo="selectedPhoto" :photo-ids="selectedPhotosIds" @copied="refresh" />
 			<MoveDialog
 				v-model:visible="is_move_visible"
 				:parent-id="undefined"

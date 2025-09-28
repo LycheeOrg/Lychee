@@ -476,7 +476,7 @@ function saveTagAlbum() {
 watch(
 	() => [albumStore.tagOrModelAlbum?.editable, photosStore.photos],
 	([editable, photos]) => {
-		if (editable !== null) {
+		if (editable !== null && editable !== undefined) {
 			load(editable as App.Http.Resources.Editable.EditableBaseAlbumResource, photos as App.Http.Resources.Models.PhotoResource[]);
 		}
 	},

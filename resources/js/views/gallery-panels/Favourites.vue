@@ -32,8 +32,6 @@
 			/>
 		</div>
 	</div>
-	<!-- @clicked="photoClick"
-    @contexted="photoMenuOpen" -->
 </template>
 <script setup lang="ts">
 import PhotoThumbPanel from "@/components/gallery/albumModule/PhotoThumbPanel.vue";

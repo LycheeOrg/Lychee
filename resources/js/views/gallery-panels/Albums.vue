@@ -210,21 +210,6 @@ const {
 } = storeToRefs(togglableStore);
 const { are_nsfw_visible, title } = storeToRefs(lycheeStore);
 
-// const {
-// 	user,
-// 	isLoading,
-// 	isKeybindingsHelpOpen,
-// 	smartAlbums,
-// 	albums,
-// 	pinnedAlbums,
-// 	sharedAlbums,
-// 	rootConfig,
-// 	rootRights,
-// 	selectableAlbums,
-// 	hasHidden,
-// 	refresh,
-// } = useAlbumsRefresher(auth, lycheeStore, is_login_open, router);
-
 const { selectedAlbum, selectedAlbumsIdx, selectedAlbums, selectedAlbumsIds, albumClick, selectEverything, unselect, hasSelection } = useSelection(
 	photosStore,
 	albumsStore,
