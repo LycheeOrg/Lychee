@@ -1,12 +1,12 @@
 import AlbumService from "@/services/album-service";
 import PhotoService from "@/services/photo-service";
 import { type LycheeStateStore } from "@/stores/LycheeState";
-import { photoStore } from "@/stores/PhotoState";
+import { PhotoStore } from "@/stores/PhotoState";
 import { trans } from "laravel-vue-i18n";
 import { type ToastServiceMethods } from "primevue/toastservice";
 import { type Ref } from "vue";
 
-export function usePhotoActions(photoStore: photoStore, albumId: Ref<string | undefined>, toast: ToastServiceMethods, lycheeStore: LycheeStateStore) {
+export function usePhotoActions(photoStore: PhotoStore, albumId: Ref<string | undefined>, toast: ToastServiceMethods, lycheeStore: LycheeStateStore) {
 	function toggleStar() {
 		if (photoStore.photo === undefined) {
 			return;

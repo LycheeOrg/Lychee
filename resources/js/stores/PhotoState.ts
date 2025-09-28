@@ -11,7 +11,7 @@ export enum ImageViewMode {
 	Pdf = "pdf",
 }
 
-export type photoStore = ReturnType<typeof usePhotoStore>;
+export type PhotoStore = ReturnType<typeof usePhotoStore>;
 
 export const usePhotoStore = defineStore("photo-store", {
 	state: () => ({

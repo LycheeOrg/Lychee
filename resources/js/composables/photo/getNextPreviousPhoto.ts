@@ -1,8 +1,8 @@
 import { Router } from "vue-router";
 import { usePhotoRoute } from "./photoRoute";
-import { photoStore } from "@/stores/PhotoState";
+import { PhotoStore } from "@/stores/PhotoState";
 
-export function getNextPreviousPhoto(router: Router, photoStore: photoStore) {
+export function getNextPreviousPhoto(router: Router, photoStore: PhotoStore) {
 	const { photoRoute } = usePhotoRoute(router);
 
 	function getNext() {

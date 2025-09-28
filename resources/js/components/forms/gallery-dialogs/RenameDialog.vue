@@ -99,7 +99,7 @@ watch(
 	() => props.album,
 	(newAlbum: App.Http.Resources.Models.ThumbAlbumResource | undefined) => {
 		if (newAlbum) {
-			title.value = props.album.title;
+			title.value = newAlbum.title;
 		}
 	},
 );
