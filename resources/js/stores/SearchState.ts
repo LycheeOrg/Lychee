@@ -56,11 +56,12 @@ export const useSearchStore = defineStore("search-store", {
 			}
 
 			this.searchTerm = terms;
+			this.searchPage = 1;
 			this.isSearching = true;
 			return SearchService.search(albumStore.albumId, this.searchTerm, this.searchPage)
 				.then((response) => {
 					albumsStore.albums = response.data.albums;
-					photosStore.photos = response.data.photos;
+					photosStore.setPhotos(response.data.photos, false);
 
 					this.from = response.data.from;
 					this.perPage = response.data.per_page;
@@ -84,7 +85,7 @@ export const useSearchStore = defineStore("search-store", {
 			return SearchService.search(albumStore.albumId, this.searchTerm, this.searchPage)
 				.then((response) => {
 					albumsStore.albums = response.data.albums;
-					photosStore.photos = response.data.photos;
+					photosStore.setPhotos(response.data.photos, false);
 					this.from = response.data.from;
 					this.perPage = response.data.per_page;
 					this.total = response.data.total;
@@ -98,7 +99,7 @@ export const useSearchStore = defineStore("search-store", {
 			const albumsStore = useAlbumsStore();
 			const photosStore = usePhotosStore();
 			albumsStore.albums = [];
-			photosStore.photos = [];
+			photosStore.reset();
 
 			this.from = 0;
 			this.perPage = 0;

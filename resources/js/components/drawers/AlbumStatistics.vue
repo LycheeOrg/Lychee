@@ -35,6 +35,7 @@ import SizeVariantMeter from "@/components/statistics/SizeVariantMeter.vue";
 import StatTable from "./StatTable.vue";
 import { usePhotosStore } from "@/stores/PhotosState";
 import { useAlbumStore } from "@/stores/AlbumState";
+import { watch } from "vue";
 
 const areStatisticsOpen = defineModel("visible", { default: false }) as Ref<boolean>;
 
@@ -43,21 +44,41 @@ const { getStatistics } = useAlbumsStatistics();
 const photosStore = usePhotosStore();
 const albumStore = useAlbumStore();
 
-const photosData = ref(undefined as PhotoStats | undefined);
+const photosData = ref<PhotoStats | undefined>(undefined);
 const totalAlbumSpace = ref<App.Http.Resources.Statistics.Album | undefined>(undefined);
 const total = ref<TotalAlbum | undefined>(undefined);
 
-onMounted(() => {
-	if (albumStore.config?.is_model_album && albumStore.album) {
-		StatisticsService.getTotalAlbumSpace(albumStore.album.id).then((response) => {
-			totalAlbumSpace.value = response.data[0];
+function handleAlbumChange(isModelAlbum: boolean, albumId: string | undefined) {
+	if (isModelAlbum && albumId !== undefined) {
+		StatisticsService.getTotalAlbumSpace(albumId).then((response) => {
+			const stats = response.data[0];
+			totalAlbumSpace.value = stats;
 			total.value = {
-				num_photos: totalAlbumSpace.value.num_photos,
-				num_albums: totalAlbumSpace.value.num_descendants,
-				size: totalAlbumSpace.value.size,
+				num_photos: stats.num_photos,
+				num_albums: stats.num_descendants,
+				size: stats.size,
 			};
 		});
+		photosData.value = getStatistics(photosStore.photos);
+		return;
 	}
-	photosData.value = getStatistics(photosStore.photos);
+
+	photosData.value = undefined;
+	totalAlbumSpace.value = undefined;
+	total.value = undefined;
+}
+
+onMounted(() => {
+	handleAlbumChange(albumStore.config?.is_model_album ?? false, albumStore.album?.id);
 });
+
+watch(
+	() => [albumStore.config?.is_model_album, albumStore.album?.id],
+	([isModelAlbum, albumId], [_isModelAlbumOld, oldAlbumId]) => {
+		if (albumId === oldAlbumId) {
+			return;
+		}
+		handleAlbumChange(<boolean | null>isModelAlbum ?? false, <string | undefined>albumId);
+	},
+);
 </script>

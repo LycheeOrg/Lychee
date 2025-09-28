@@ -60,10 +60,10 @@ export const usePhotoStore = defineStore("photo-store", {
 			return this.photo !== undefined;
 		},
 		hasPrevious(): boolean {
-			return this.photo?.previous_photo_id !== null;
+			return this.photo?.previous_photo_id !== null && this.photo?.previous_photo_id !== undefined;
 		},
 		hasNext(): boolean {
-			return this.photo?.next_photo_id !== null;
+			return this.photo?.next_photo_id !== null && this.photo?.next_photo_id !== undefined;
 		},
 		rights(): App.Http.Resources.Rights.PhotoRightsResource | undefined {
 			return this.photo?.rights;

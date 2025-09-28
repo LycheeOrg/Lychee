@@ -63,13 +63,14 @@ export const useTimelineStore = defineStore("timeline-store", {
 		loadLess(): Promise<void> {
 			const photosState = usePhotosStore();
 
-			if (this.minPage === 1) {
+			const prevPage = this.minPage - 1;
+			if (prevPage < 1) {
 				return Promise.resolve();
 			}
 			this.isLoading = true;
-			this.minPage -= 1;
-			return TimelineService.timeline(this.minPage)
+			return TimelineService.timeline(prevPage)
 				.then((response) => {
+					this.minPage -= 1;
 					photosState.photos.unshift(...response.data.photos);
 					_processPhotos(photosState.photos, photosState);
 				})
@@ -80,13 +81,14 @@ export const useTimelineStore = defineStore("timeline-store", {
 		loadMore(): Promise<void> {
 			const photosState = usePhotosStore();
 
-			if (this.maxPage > this.lastPage) {
+			const nextPage = this.maxPage + 1;
+			if (this.lastPage !== 0 && nextPage > this.lastPage) {
 				return Promise.resolve();
 			}
 			this.isLoading = true;
-			this.maxPage += 1;
-			return TimelineService.timeline(this.maxPage)
+			return TimelineService.timeline(nextPage)
 				.then((response) => {
+					this.maxPage = nextPage;
 					photosState.photos.push(...response.data.photos);
 					_processPhotos(photosState.photos, photosState);
 					this.lastPage = response.data.last_page;

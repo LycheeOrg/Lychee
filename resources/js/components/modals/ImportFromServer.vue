@@ -215,9 +215,11 @@ watch(
 	() => visible.value,
 	(newVal) => {
 		if (newVal) {
-			// reset state
-			directory.value = importState.directory;
-			browse(directory.value);
+			importState.load().then(() => {
+				// reset state
+				directory.value = importState.directory;
+				browse(directory.value);
+			});
 		}
 	},
 );

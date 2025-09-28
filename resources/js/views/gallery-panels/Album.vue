@@ -342,16 +342,16 @@ onKeyStroke("f", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && toggla
 onKeyStroke("Escape", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && is_slideshow_active.value && stop());
 
 // Privileged Album actions
-onKeyStroke("m", () => !shouldIgnoreKeystroke() && !photoStore.isLoaded && albumStore.album?.rights.can_move && hasSelection() && toggleMove());
+onKeyStroke("m", () => !shouldIgnoreKeystroke() && !photoStore.isLoaded && albumStore.rights?.can_move && hasSelection() && toggleMove());
 onKeyStroke(
 	["Delete", "Backspace"],
-	() => !shouldIgnoreKeystroke() && !photoStore.isLoaded && albumStore.album?.rights.can_delete && hasSelection() && toggleDelete(),
+	() => !shouldIgnoreKeystroke() && !photoStore.isLoaded && albumStore.rights?.can_delete && hasSelection() && toggleDelete(),
 );
 
 // Priviledged Photo operations
-onKeyStroke("m", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && photoStore.photo?.rights.can_edit && toggleMove());
-onKeyStroke("e", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && photoStore.photo?.rights.can_edit && toggleEdit());
-onKeyStroke("s", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && photoStore.photo?.rights.can_edit && toggleStar());
+onKeyStroke("m", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && photoStore.rights?.can_edit && toggleMove());
+onKeyStroke("e", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && photoStore.rights?.can_edit && toggleEdit());
+onKeyStroke("s", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && photoStore.rights?.can_edit && toggleStar());
 onKeyStroke(["Delete", "Backspace"], () => !shouldIgnoreKeystroke() && photoStore.isLoaded && albumStore.album?.rights.can_delete && toggleDelete());
 
 // on key stroke escape:
@@ -403,7 +403,7 @@ onKeyStroke("Escape", () => {
 	goBack();
 });
 
-const can_upload = computed(() => albumStore.album?.rights.can_upload ?? false);
+const can_upload = computed(() => albumStore.rights?.can_upload ?? false);
 const { onPaste, dragEnd, dropUpload } = useMouseEvents(can_upload, is_upload_visible, list_upload_files);
 
 onMounted(() => {

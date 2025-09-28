@@ -27,7 +27,7 @@ export const useTagStore = defineStore("tag-store", {
 
 			return TagsService.get(this.tagId)
 				.then((data) => {
-					photosStore.photos = data.data.photos;
+					photosStore.setPhotos(data.data.photos, false);
 					this.tag = { name: data.data.name, id: data.data.id, num: data.data.photos.length };
 				})
 				.finally(() => {

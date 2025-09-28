@@ -30,6 +30,8 @@
 			v-if="photoStore.imageViewMode == ImageViewMode.Pdf"
 			id="image"
 			alt="pdf"
+			:title="photoStore.photo.title"
+			aria-label="PDF preview"
 			:src="photoStore.photo.size_variants.original?.url ?? ''"
 			type="application/pdf"
 			frameBorder="0"

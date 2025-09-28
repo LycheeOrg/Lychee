@@ -64,7 +64,7 @@ export function useContextMenuAlbumAdd(albumStore: AlbumStore, callbacks: Callba
 			},
 		];
 
-		if (albumStore.modelAlbum?.track_url !== null) {
+		if (albumStore.modelAlbum?.track_url !== null && albumStore.modelAlbum?.track_url !== undefined) {
 			menu.push({
 				label: "gallery.menus.delete_track",
 				icon: "pi pi-compass",

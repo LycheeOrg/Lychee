@@ -66,7 +66,7 @@ const showTotal = computed(() => total.value !== undefined && (total.value.num_a
 
 onMounted(async () => {
 	await userStore.load();
-	if (userStore.user?.id === null) {
+	if (!userStore.isLoggedIn) {
 		router.push({ name: "home" });
 	}
 });

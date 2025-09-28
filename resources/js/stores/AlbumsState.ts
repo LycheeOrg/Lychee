@@ -64,8 +64,8 @@ export const useAlbumsStore = defineStore("albums-store", {
 					this.pinnedAlbums = data.data.pinned_albums;
 					this.sharedAlbums = spliter(
 						data.data.shared_albums ?? [],
-						(d) => d.owner as string, // mapper
-						(d) => d.owner as string, // formatter
+						(d) => d.owner ?? "(unknown)", // mapper
+						(d) => d.owner ?? "(unknown)", // formatter
 						this.albums.length,
 					);
 
