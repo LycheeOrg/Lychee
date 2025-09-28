@@ -34,13 +34,21 @@ return [
 	'mode_first' => 'First occurrence',
 	'mode_all' => 'All occurrences',
 	'mode_regex' => 'Regular expression',
-	'mode_first_description' => 'Replace only the first match',
-	'mode_all_description' => 'Replace all matches',
+	'mode_trim' => 'Trim whitespace',
+	'mode_strtolower' => 'lowercase',
+	'mode_strtoupper' => 'UPPERCASE',
+	'mode_ucwords' => 'Uppercase Each Word',
+	'mode_ucfirst' => 'Uppercase first letter',
+
+	'mode_first_description' => 'Replace only the first occurrence',
+	'mode_all_description' => 'Replace all occurrences',
 	'mode_regex_description' => 'Use regex pattern matching',
-	'mode_help_first' => 'Replace only the first occurrence',
-	'mode_help_all' => 'Replace all occurrences',
-	'mode_help_regex' => 'Use regular expression matching',
-	'mode_help_default' => 'Choose how the pattern matching should work',
+	'mode_trim_description' => 'Trim whitespace',
+	'mode_strtolower_description' => 'Convert string to lowercases',
+	'mode_strtoupper_description' => 'Convert string to UPPERCASE',
+	'mode_ucwords_description' => 'Capitalize each words',
+	'mode_ucfirst_description' => 'Capitalize only the first letter',
+
 	'regex_help' => 'Use regular expressions to match patterns. For example, to replace <code>IMG_1234.jpeg</code> with <code>1234_JPG.jpeg</code>, you can use <code>/IMG_(\d+)/</code> as needle and <code>$1_JPG</code> as replacement. You can find more explanations and examples in the following links.',
 
 	// Buttons

@@ -26,34 +26,6 @@
 							/>
 						</FloatLabel>
 
-						<!-- Needle (Pattern) -->
-						<div class="flex flex-col">
-							<FloatLabel variant="on">
-								<InputText id="needle" v-model="form.needle" :class="{ 'p-invalid': errors.needle }" class="w-full" required />
-								<label for="needle" class="font-semibold">{{ $t("renamer.pattern") }} <span class="text-red-500">*</span></label>
-							</FloatLabel>
-							<small v-if="errors.needle" class="p-error">{{ errors.needle }}</small>
-							<small class="text-muted-color ltr:text-left rtl:text-right">{{ $t("renamer.pattern_help") }}</small>
-						</div>
-
-						<!-- Replacement -->
-						<div class="flex flex-col">
-							<FloatLabel variant="on">
-								<InputText
-									id="replacement"
-									v-model="form.replacement"
-									:class="{ 'p-invalid': errors.replacement }"
-									class="w-full"
-									required
-								/>
-								<label for="replacement" class="font-semibold"
-									>{{ $t("renamer.replacement") }} <span class="text-red-500">*</span></label
-								>
-							</FloatLabel>
-							<small v-if="errors.replacement" class="p-error">{{ errors.replacement }}</small>
-							<small class="text-muted-color ltr:text-left rtl:text-right">{{ $t("renamer.replacement_help") }}</small>
-						</div>
-
 						<!-- Mode -->
 						<div class="flex flex-col">
 							<div class="flex items-center">
@@ -74,15 +46,42 @@
 							</div>
 							<small v-if="errors.mode" class="p-error">{{ errors.mode }}</small>
 							<small class="text-muted-color ltr:text-left rtl:text-right">
-								<template v-if="form.mode === 'first'">{{ $t("renamer.mode_help_first") }}</template>
-								<template v-else-if="form.mode === 'all'">{{ $t("renamer.mode_help_all") }}</template>
-								<template v-else-if="form.mode === 'regex'"
-									>{{ $t("renamer.mode_help_regex") }}
+								<template v-if="form.mode === 'regex'"
+									>{{ $t("renamer.mode_regex_description") }}
 									<span class="text-xs pi pi-question-circle cursor-pointer" @click="showHelpRegex = !showHelpRegex"></span
 								></template>
-								<template v-else>{{ $t("renamer.mode_help_default") }}</template>
+								<template v-else>{{ modeOptions.find((o) => o.value === form.mode)?.description }}</template>
 							</small>
 						</div>
+
+						<!-- Needle (Pattern) -->
+						<div class="flex flex-col" v-if="hasExtraParams(form.mode)">
+							<FloatLabel variant="on">
+								<InputText id="needle" v-model="form.needle" :class="{ 'p-invalid': errors.needle }" class="w-full" required />
+								<label for="needle" class="font-semibold">{{ $t("renamer.pattern") }} <span class="text-red-500">*</span></label>
+							</FloatLabel>
+							<small v-if="errors.needle" class="p-error">{{ errors.needle }}</small>
+							<small class="text-muted-color ltr:text-left rtl:text-right">{{ $t("renamer.pattern_help") }}</small>
+						</div>
+
+						<!-- Replacement -->
+						<div class="flex flex-col" v-if="hasExtraParams(form.mode)">
+							<FloatLabel variant="on">
+								<InputText
+									id="replacement"
+									v-model="form.replacement"
+									:class="{ 'p-invalid': errors.replacement }"
+									class="w-full"
+									required
+								/>
+								<label for="replacement" class="font-semibold"
+									>{{ $t("renamer.replacement") }} <span class="text-red-500">*</span></label
+								>
+							</FloatLabel>
+							<small v-if="errors.replacement" class="p-error">{{ errors.replacement }}</small>
+							<small class="text-muted-color ltr:text-left rtl:text-right">{{ $t("renamer.replacement_help") }}</small>
+						</div>
+
 						<div
 							v-if="showHelpRegex && form.mode === 'regex'"
 							class="text-muted text-justify text-xs -mt-4 bg-surface-100 dark:bg-surface-900 rounded p-2"
@@ -190,11 +189,20 @@ const toast = useToast();
 const isLoading = ref(false);
 const showHelpRegex = ref(false);
 
-const modeOptions = computed(() => [
+const modeOptions = computed<{ label: string; value: App.Enum.RenamerModeType; description: string }[]>(() => [
 	{ label: trans("renamer.mode_first"), value: "first", description: trans("renamer.mode_first_description") },
 	{ label: trans("renamer.mode_all"), value: "all", description: trans("renamer.mode_all_description") },
 	{ label: trans("renamer.mode_regex"), value: "regex", description: trans("renamer.mode_regex_description") },
+	{ label: trans("renamer.mode_trim"), value: "trim", description: trans("renamer.mode_trim_description") },
+	{ label: trans("renamer.mode_strtolower"), value: "strtolower", description: trans("renamer.mode_strtolower_description") },
+	{ label: trans("renamer.mode_strtoupper"), value: "strtoupper", description: trans("renamer.mode_strtoupper_description") },
+	{ label: trans("renamer.mode_ucwords"), value: "ucwords", description: trans("renamer.mode_ucwords_description") },
+	{ label: trans("renamer.mode_ucfirst"), value: "ucfirst", description: trans("renamer.mode_ucfirst_description") },
 ]);
+
+function hasExtraParams(mode: App.Enum.RenamerModeType): boolean {
+	return ["first", "all", "regex"].includes(mode);
+}
 
 const form = ref<CreateRenamerRuleRequest>({
 	rule: "",
@@ -242,12 +250,8 @@ function validateForm(): boolean {
 		errors.value.rule = trans("renamer.rule_name_required");
 	}
 
-	if (!form.value.needle) {
+	if (hasExtraParams(form.value.mode) && !form.value.needle) {
 		errors.value.needle = trans("renamer.pattern_required");
-	}
-
-	if (!form.value.replacement) {
-		errors.value.replacement = trans("renamer.replacement_required");
 	}
 
 	if (!form.value.mode) {
