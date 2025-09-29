@@ -1,5 +1,5 @@
 <template>
-	<Card class="sm:p-4 xl:px-9 max-w-3xl">
+	<Card class="sm:p-4 xl:px-9 max-w-3xl" :pt:body:class="'p-0'">
 		<template #content>
 			<p class="mb-4 text-center">
 				{{ sprintf($t("dialogs.delete_album.confirmation"), albumStore.album?.title) }}<br />

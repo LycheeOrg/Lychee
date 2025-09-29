@@ -3,7 +3,7 @@
 		v-if="photoStore.photo"
 		id="lychee_toolbar_container"
 		:class="{
-			'absolute top-0 left-0 w-full flex-none z-10 bg-gradient-to-b from-black h-14': true,
+			'absolute top-0 left-0 w-full flex-none z-10 bg-gradient-to-b from-black h-14 rounded-none': true,
 			'opacity-100 md:opacity-0 md:hover:opacity-100': is_full_screen || is_slideshow_active,
 			'opacity-100 h-14': !is_full_screen && !is_slideshow_active,
 		}"

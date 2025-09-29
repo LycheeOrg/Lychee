@@ -1,7 +1,7 @@
 <template>
 	<InviteUser v-model:visible="isInviteUserVisible" />
 	<CreateEditUser v-model:visible="isCreateUserVisible" class="mt-10" :user="selectedUser" :is-edit="isEdit" @refresh="load" />
-	<Toolbar class="w-full border-0 h-14">
+	<Toolbar class="w-full border-0 h-14 rounded-none">
 		<template #start>
 			<OpenLeftMenu />
 		</template>
