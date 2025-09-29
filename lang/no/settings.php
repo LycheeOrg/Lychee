@@ -6,18 +6,18 @@ return [
 	|--------------------------------------------------------------------------
 	*/
     'title' => 'Innstillinger',
-    'small_screen' => 'For better a experience on the Settings page,<br />we recommend you use a larger screen.',
+    'small_screen' => 'For en bedre opplevelse på Innstillinger-siden,<br />anbefaler vi at du bruker en større skjerm.',
     'tabs' => [
-        'basic' => 'Basic',
-        'all_settings' => 'All settings',
+        'basic' => 'Grunnleggende',
+        'all_settings' => 'Alle innstillinger',
     ],
     'toasts' => [
-        'change_saved' => 'Change saved!',
-        'details' => 'Settings have been modified as per request',
-        'error' => 'Error!',
-        'error_load_css' => 'Could not load dist/user.css',
-        'error_load_js' => 'Could not load dist/custom.js',
-        'error_save_css' => 'Could not save CSS',
+        'change_saved' => 'Endringen er lagret!',
+        'details' => 'Innstillingene er endret i henhold til forespørsel',
+        'error' => 'Feil!',
+        'error_load_css' => 'Kunne ikke laste dist/user.css',
+        'error_load_js' => 'Kunne ikke laste dist/custom.js',
+        'error_save_css' => 'Kunne ikke lagre CSS',
         'error_save_js' => 'Could not save JS',
         'thank_you' => 'Thank you for your support.',
         'reload' => 'Reload your page for full functionalities.',
