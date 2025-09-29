@@ -538,4 +538,162 @@ class ShopManagementControllerTest extends BaseApiWithDataTest
 			'description' => 'New album description',
 		]);
 	}
+
+	/**
+	 * Test the options endpoint returns configuration settings.
+	 */
+	public function testOptions(): void
+	{
+		// Call the options endpoint with authentication
+		$response = $this->actingAs($this->admin)->getJson('Shop/Management/Options');
+
+		// Assert successful response
+		$this->assertOk($response);
+
+		// Assert response structure
+		$response->assertJsonStructure([
+			'currency',
+			'default_price_cents',
+			'default_license',
+			'default_size',
+		]);
+
+		// Assert the response contains expected config values
+		$responseData = $response->json();
+		$this->assertIsString($responseData['currency']);
+		$this->assertIsInt($responseData['default_price_cents']);
+		$this->assertIsString($responseData['default_license']);
+		$this->assertIsString($responseData['default_size']);
+	}
+
+	/**
+	 * Test the list endpoint returns all purchasables.
+	 */
+	public function testList(): void
+	{
+		// Create some test purchasables first
+		$this->actingAs($this->admin)->postJson('Shop/Management/Purchasable/Photo', [
+			'photo_ids' => [$this->photo1->id],
+			'album_id' => $this->album1->id,
+			'description' => 'Test photo purchasable',
+			'note' => 'Test notes',
+			'prices' => [
+				[
+					'size_variant_type' => 'medium',
+					'license_type' => 'personal',
+					'price' => 1999,
+				],
+			],
+		]);
+
+		$this->actingAs($this->admin)->postJson('Shop/Management/Purchasable/Album', [
+			'album_ids' => [$this->album2->id],
+			'description' => 'Test album purchasable',
+			'note' => 'Test album notes',
+			'applies_to_subalbums' => false,
+			'prices' => [
+				[
+					'size_variant_type' => 'original',
+					'license_type' => 'commercial',
+					'price' => 2999,
+				],
+			],
+		]);
+
+		// Call the list endpoint
+		$response = $this->actingAs($this->admin)->getJson('Shop/Management/List');
+
+		// Assert successful response
+		$this->assertOk($response);
+
+		// Assert response is an array
+		$responseData = $response->json();
+		$this->assertIsArray($responseData);
+
+		// Assert we have the expected number of purchasables
+		$this->assertGreaterThanOrEqual(2, count($responseData));
+
+		// Assert response structure for first item
+		if (count($responseData) > 0) {
+			$this->assertArrayHasKey('purchasable_id', $responseData[0]);
+			$this->assertArrayHasKey('album_id', $responseData[0]);
+			$this->assertArrayHasKey('description', $responseData[0]);
+			$this->assertArrayHasKey('is_active', $responseData[0]);
+		}
+	}
+
+	/**
+	 * Test the list endpoint with album filtering.
+	 */
+	public function testListWithAlbumFilter(): void
+	{
+		// Create purchasables in different albums
+		$this->actingAs($this->admin)->postJson('Shop/Management/Purchasable/Photo', [
+			'photo_ids' => [$this->photo1->id],
+			'album_id' => $this->album1->id,
+			'description' => 'Album1 photo',
+			'note' => 'Test notes',
+			'prices' => [
+				[
+					'size_variant_type' => 'medium',
+					'license_type' => 'personal',
+					'price' => 1999,
+				],
+			],
+		]);
+
+		$this->actingAs($this->admin)->postJson('Shop/Management/Purchasable/Album', [
+			'album_ids' => [$this->album2->id],
+			'description' => 'Album2 purchasable',
+			'note' => 'Test notes',
+			'applies_to_subalbums' => false,
+			'prices' => [
+				[
+					'size_variant_type' => 'original',
+					'license_type' => 'commercial',
+					'price' => 2999,
+				],
+			],
+		]);
+
+		// Call the list endpoint with album filter
+		$response = $this->actingAs($this->admin)->getJsonWithData('Shop/Management/List', [
+			'album_ids' => [$this->album1->id],
+		]);
+
+		// Assert successful response
+		$this->assertOk($response);
+
+		$responseData = $response->json();
+		$this->assertIsArray($responseData);
+
+		// Assert all returned items belong to the filtered album
+		foreach ($responseData as $item) {
+			$this->assertEquals($this->album1->id, $item['album_id']);
+		}
+	}
+
+	/**
+	 * Test the options endpoint requires authentication.
+	 */
+	public function testOptionsRequiresAuth(): void
+	{
+		// Call the options endpoint without authentication
+		$response = $this->getJson('Shop/Management/Options');
+
+		// Assert unauthorized response
+		$this->assertUnauthorized($response);
+	}
+
+	/**
+	 * Test the list endpoint requires authentication.
+	 */
+	public function testListRequiresAuth(): void
+	{
+		// Call the list endpoint without authentication
+		$response = $this->getJson('Shop/Management/List');
+
+		// Assert unauthorized response
+		$this->assertUnauthorized($response);
+	}
 }

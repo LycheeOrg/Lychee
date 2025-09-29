@@ -14,11 +14,11 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ProviderConfigurationNotFoundException extends BaseLycheeException
 {
-	public function __construct(string $key, OmnipayProviderType $provider)
+	public function __construct(OmnipayProviderType $provider)
 	{
 		parent::__construct(
 			Response::HTTP_NOT_IMPLEMENTED,
-			sprintf('%s does not have the configuration key %s required', $provider->value, $key),
+			sprintf('%s does not have the configuration key [%s] required', $provider->value, implode(', ', $provider->requiredKeys())),
 		);
 	}
 }

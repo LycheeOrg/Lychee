@@ -25,4 +25,5 @@ enum ConfigType: string
 	case ADMIN_USER = 'admin_user';
 	case LICENSE = 'license';
 	case MAP_PROVIDER = 'map_provider';
+	case CURRENCY = 'currency';
 }

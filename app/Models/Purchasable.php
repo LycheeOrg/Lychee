@@ -23,8 +23,8 @@ use Money\Money;
  * @property int                              $id
  * @property string|null                      $photo_id
  * @property string|null                      $album_id
- * @property string                           $description
- * @property string                           $owner_notes
+ * @property string|null                      $description
+ * @property string|null                      $owner_notes
  * @property bool                             $is_active
  * @property Album|null                       $album
  * @property Photo|null                       $photo

@@ -6,9 +6,6 @@ return [
 	| Default Omnipay configuration options
 	|--------------------------------------------------------------------------
 	*/
-
-	'currency' => env('OMNIPAY_CURRENCY', 'EUR'),
-
 	'gateway' => env('OMNIPAY_GATEWAY', 'Dummy'),
 
 	// case DUMMY = 'Dummy';
@@ -19,7 +16,7 @@ return [
 	// case PAYPAL_REST = 'PayPal_Rest';
 	// case STRIPE = 'Stripe';
 	'Dummy' => [
-		'dummy' => true,
+		'apiKey' => 'dummy',
 	],
 
 	'Mollie' => [
