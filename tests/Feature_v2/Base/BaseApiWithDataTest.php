@@ -33,7 +33,9 @@ use Tests\Traits\RequiresEmptyAlbums;
 use Tests\Traits\RequiresEmptyColourPalettes;
 use Tests\Traits\RequiresEmptyGroups;
 use Tests\Traits\RequiresEmptyLiveMetrics;
+use Tests\Traits\RequiresEmptyOrders;
 use Tests\Traits\RequiresEmptyPhotos;
+use Tests\Traits\RequiresEmptyPurchasables;
 use Tests\Traits\RequiresEmptyRenamerRules;
 use Tests\Traits\RequiresEmptyTags;
 use Tests\Traits\RequiresEmptyUsers;
@@ -90,6 +92,8 @@ use Tests\Traits\RequiresEmptyWebAuthnCredentials;
  */
 abstract class BaseApiWithDataTest extends BaseApiTest
 {
+	use RequiresEmptyPurchasables;
+	use RequiresEmptyOrders;
 	use RequiresEmptyUsers;
 	use RequiresEmptyAlbums;
 	use RequiresEmptyPhotos;
@@ -162,6 +166,8 @@ abstract class BaseApiWithDataTest extends BaseApiTest
 		$this->setUpRequiresEmptyGroups();
 		$this->setUpRequiresEmptyTags();
 		$this->setUpRequiresEmptyRenamerRules();
+		$this->setUpRequiresEmptyOrders();
+		$this->setUpRequiresEmptyPurchasables();
 
 		$this->admin = User::factory()->may_administrate()->create();
 		$this->userMayUpload1 = User::factory()->may_upload()->create();
@@ -235,6 +241,8 @@ abstract class BaseApiWithDataTest extends BaseApiTest
 
 	public function tearDown(): void
 	{
+		$this->tearDownRequiresEmptyOrders();
+		$this->tearDownRequiresEmptyPurchasables();
 		$this->tearDownRequiresEmptyRenamerRules();
 		$this->tearDownRequiresEmptyTags();
 		$this->tearDownRequiresEmptyLiveMetrics();

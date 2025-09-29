@@ -9,6 +9,7 @@
 namespace App\Actions\Album;
 
 use App\Actions\Photo\Delete as PhotoDelete;
+use App\Actions\Shop\PurchasableService;
 use App\Constants\AccessPermissionConstants as APC;
 use App\Contracts\Exceptions\InternalLycheeException;
 use App\Enum\SmartAlbumType;
@@ -52,6 +53,13 @@ use Safe\Exceptions\ArrayException;
  */
 class Delete
 {
+	private PurchasableService $purchasable_service;
+
+	public function __construct(
+	) {
+		$this->purchasable_service = resolve(PurchasableService::class);
+	}
+
 	/**
 	 * Deletes the designated albums (tag albums and regular albums) from the DB.
 	 *
@@ -122,6 +130,9 @@ class Delete
 						->from('base_albums')
 						->whereColumn('base_albums.id', '=', 'statistics.album_id')
 				)->delete();
+
+			// We remove the purchasable items.
+			$this->purchasable_service->deleteMultipleAlbumPurchasables($album_ids);
 
 			// We also delete the permissions & sharing.
 			// Note that we explicitly avoid the smart albums.

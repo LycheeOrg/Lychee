@@ -36,6 +36,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -216,6 +217,16 @@ class Photo extends Model implements HasUTCBasedTimes
 	public function statistics(): HasOne
 	{
 		return $this->hasOne(Statistics::class, 'photo_id', 'id');
+	}
+
+	/**
+	 * Get the purchasable settings for this photo.
+	 *
+	 * @return HasMany<Purchasable,$this>
+	 */
+	public function purchasable(): HasMany
+	{
+		return $this->hasMany(Purchasable::class, 'photo_id', 'id');
 	}
 
 	/**

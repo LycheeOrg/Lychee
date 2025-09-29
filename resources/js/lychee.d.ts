@@ -30,7 +30,18 @@ declare namespace App.Enum {
 		| "taken_at"
 		| "is_starred"
 		| "type";
-	export type ConfigType = "int" | "positive" | "string" | "string_required" | "0|1" | "0|1|2" | "" | "admin_user" | "license" | "map_provider";
+	export type ConfigType =
+		| "int"
+		| "positive"
+		| "string"
+		| "string_required"
+		| "0|1"
+		| "0|1|2"
+		| ""
+		| "admin_user"
+		| "license"
+		| "map_provider"
+		| "currency";
 	export type CountType = "taken_at" | "created_at";
 	export type CoverFitType = "cover" | "fit";
 	export type DateOrderingType = "older_younger" | "younger_older";
