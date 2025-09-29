@@ -1,5 +1,5 @@
 <template>
-	<Toolbar class="w-full border-0 h-14">
+	<Toolbar class="w-full border-0 h-14 rounded-none">
 		<template #start>
 			<OpenLeftMenu />
 		</template>

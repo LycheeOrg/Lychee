@@ -78,13 +78,10 @@ function filterUserGroups(filteredUsersIds: UserOrGroupId[] = []) {
 	}
 }
 
-onMounted(() => {
-	lycheeStore.load().then(() => {
-		usersAndGroupsStore.isSupporter = lycheeStore.is_se_enabled;
-		usersAndGroupsStore.load().then(() => {
-			filterUserGroups(props.filteredUsersIds);
-		});
-	});
+onMounted(async () => {
+	await lycheeStore.load();
+	await usersAndGroupsStore.load();
+	filterUserGroups(props.filteredUsersIds);
 });
 
 watch(

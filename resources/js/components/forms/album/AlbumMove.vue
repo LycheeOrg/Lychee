@@ -1,5 +1,5 @@
 <template>
-	<Card class="sm:p-4 xl:px-9 max-w-3xl" v-if="albumStore.album">
+	<Card class="sm:p-4 xl:px-9 max-w-3xl" :pt:body:class="'p-0'" v-if="albumStore.album">
 		<template #content>
 			<div v-if="titleMovedTo !== undefined">
 				<p class="mb-4 text-center text-muted-color">

@@ -200,11 +200,9 @@ function create() {
 	});
 }
 
-onMounted(() => {
-	lycheeStore.load().then(() => {
-		usersAndGroupsStore.isSupporter = lycheeStore.is_se_enabled;
-		usersAndGroupsStore.load();
-	});
+onMounted(async () => {
+	await lycheeStore.load();
+	await usersAndGroupsStore.load();
 	loadAlbums();
 });
 </script>
