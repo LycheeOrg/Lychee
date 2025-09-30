@@ -14,6 +14,7 @@ use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Album;
 use App\Models\Configs;
+use App\Models\Extensions\BaseAlbum;
 use App\Models\Photo;
 use App\Models\User;
 use App\Notifications\PhotoAdded;
@@ -54,7 +55,7 @@ class Notify
 				->whereIn(APC::BASE_ALBUM_ID, $albums->pluck('id'))
 				->get();
 			$users->push(...$shared_with->all());
-			$users->push(...$albums->map(fn ($a) => $a->owner)->all());
+			$users->push(...$albums->map(fn (Album $a) => $a->owner)->all());
 		}
 
 		$users = $users
