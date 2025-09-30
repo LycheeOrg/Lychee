@@ -14,7 +14,6 @@ use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Album;
 use App\Models\Configs;
-use App\Models\Extensions\BaseAlbum;
 use App\Models\Photo;
 use App\Models\User;
 use App\Notifications\PhotoAdded;
