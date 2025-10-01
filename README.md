@@ -26,7 +26,7 @@ For even more advanced features, consider the Supporter Edition (SE). The SE ver
 ## Support the Team
 
 We aim to maintain a free open-source photography library with high quality of code.<br>
-Being in control of our own data, our own pictures is something that we value above all.
+Being in control of our own data and our own pictures is something that we value above all.
 
 Through [contributions, donations, and sponsorship](https://github.com/sponsors/LycheeOrg), you allow Lychee to thrive. Your donations directly support demo server costs, continuous enhancements, and most importantly bug fixes!
 
@@ -108,7 +108,7 @@ Take a look at the [Documentation](https://lycheeorg.dev/docs/), particularly th
 
 ## Notice: `master` & `alpha` branches
 
-As LycheeOrg is a very small team, we do not have many maintainers. Most of us have an active work/family life, and as a result, it is no longer possible for us to apply proper 4-eyes principle in the coding reviews.
+As LycheeOrg is a very small team, we do not have many maintainers. Most of us have an active work/family life, and as a result, it is no longer possible for us to apply the proper four-eyes principle during code reviews.
 
 In order to keep our high code quality, the following changes have been applied.
 
