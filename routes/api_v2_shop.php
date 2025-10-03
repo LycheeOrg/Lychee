@@ -17,6 +17,10 @@ use Illuminate\Support\Facades\Route;
 // Only for SE sorry.
 Route::middleware('support:se')->group(function (): void {
 	Route::get('/Shop', [Shop\CatalogController::class, 'getAlbumCatalog']);
+	Route::group(['prefix' => '/Shop/Order'], function (): void {
+		Route::get('/List', [Shop\OrderController::class, 'list']);
+		Route::get('/{order_id}', [Shop\OrderController::class, 'get']);
+	});
 	Route::group(['prefix' => '/Shop/Basket'], function (): void {
 		Route::get('/', [Shop\BasketController::class, 'get']);
 		Route::post('/Photo', [Shop\BasketController::class, 'addPhoto']);

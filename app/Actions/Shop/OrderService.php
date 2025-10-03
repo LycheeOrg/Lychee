@@ -18,6 +18,7 @@ use App\Models\OrderItem;
 use App\Models\Photo;
 use App\Models\User;
 use App\Services\MoneyService;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 class OrderService
@@ -104,5 +105,22 @@ class OrderService
 		$basket->updateTotal();
 
 		return $basket;
+	}
+
+	/**
+	 * List all the orders in the DB.
+	 * Add pagination later.
+	 *
+	 * @return array<int,Order>
+	 */
+	public function getAll(): array
+	{
+		$user = Auth::user();
+
+		return Order::without(['items'])->with(['user'])
+			->when($user?->may_administrate !== true, function ($query) use ($user): void {
+				$query->where('user_id', $user?->id);
+			})
+			->orderBy('id', 'desc')->get()->all();
 	}
 }
