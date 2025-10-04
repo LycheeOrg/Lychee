@@ -70,7 +70,6 @@ Route::get('/orders', VueController::class)->middleware(['migration:complete', '
 Route::get('/basket', VueController::class)->middleware(['migration:complete']);
 Route::get('/checkout/{step?}', VueController::class)->middleware(['migration:complete']);
 
-
 Route::match(['get', 'post'], '/migrate', [Admin\UpdateController::class, 'migrate'])
 	->name('migrate')
 	->middleware(['migration:incomplete']);
