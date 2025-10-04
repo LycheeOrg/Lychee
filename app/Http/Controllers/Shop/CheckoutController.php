@@ -107,7 +107,7 @@ class CheckoutController extends Controller
 	 *
 	 * @return CheckoutResource The finalization response
 	 */
-	public function finalize(FinalizeRequest $request): CheckoutResource
+	public function finalize(FinalizeRequest $request, string $provider, string $transaction_id): CheckoutResource
 	{
 		/** @disregard P1013 */
 		$order = $this->checkout_service->handlePaymentReturn($request->basket(), $request->all(), $request->provider_type());

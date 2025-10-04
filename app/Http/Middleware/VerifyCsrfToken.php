@@ -25,6 +25,7 @@ class VerifyCsrfToken extends Middleware
 		'/php/index.php',
 		'/api/Session::init',
 		'/api/v2/Zip',
+		'/api/v2/Shop/Checkout/Finalize/*',
 	];
 
 	/**

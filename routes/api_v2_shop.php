@@ -32,7 +32,7 @@ Route::middleware('support:se')->group(function (): void {
 		Route::get('/Options', [Shop\CheckoutController::class, 'options']);
 		Route::post('/Create-session', [Shop\CheckoutController::class, 'createSession']);
 		Route::post('/Process', [Shop\CheckoutController::class, 'process']);
-		Route::post('/Finalize/{provider}/{transaction_id}', [Shop\CheckoutController::class, 'finalize'])->name('shop.checkout.return');
+		Route::get('/Finalize/{provider}/{transaction_id}', [Shop\CheckoutController::class, 'finalize'])->withoutMiddleware(['content_type:json', 'accept_content_type:json'])->name('shop.checkout.return');
 		Route::get('/Cancel/{provider}/{transaction_id}', [Shop\CheckoutController::class, 'cancel'])->name('shop.checkout.cancel');
 	});
 	Route::group(['prefix' => '/Shop/Management'], function (): void {
