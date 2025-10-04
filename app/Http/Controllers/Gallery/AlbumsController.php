@@ -29,4 +29,3 @@ class AlbumsController extends Controller
 		return RootAlbumResource::fromDTO($top->get(), new RootConfig());
 	}
 }
-

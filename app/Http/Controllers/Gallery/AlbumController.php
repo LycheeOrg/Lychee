@@ -100,7 +100,9 @@ class AlbumController extends Controller
 				$request->album() instanceof BaseSmartAlbum => new SmartAlbumResource($request->album()),
 				$request->album() instanceof TagAlbum => new TagAlbumResource($request->album()),
 				$request->album() instanceof Album => new AlbumResource($request->album()),
+				// @codeCoverageIgnoreStart
 				default => throw new LycheeLogicException('This should not happen'),
+				// @codeCoverageIgnoreEnd
 			};
 		}
 
@@ -422,4 +424,3 @@ class AlbumController extends Controller
 		return !$size_variant->is_watermarked;
 	}
 }
-
