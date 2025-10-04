@@ -24,8 +24,12 @@
 		@toggle-edit="toggleEdit"
 		@open-search="openSearch"
 		@go-back="goBack"
+		:total="albumStore.total"
+		v-model:rows="albumStore.per_page"
+		v-model:first="albumStore.from"
+		@update:rows="(val) => { albumStore.per_page = val; refresh(); }"
+		@update:first="(val) => { albumStore.from = val; refresh(); }"
 	/>
-
 	<!-- Photo panel -->
 	<PhotoPanel
 		v-if="photoStore.isLoaded"
@@ -419,7 +423,6 @@ onMounted(() => {
 onMounted(async () => {
 	albumId.value = props.albumId;
 	photoId.value = props.photoId;
-
 	await load();
 	setScroll();
 

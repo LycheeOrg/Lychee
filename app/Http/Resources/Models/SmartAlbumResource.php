@@ -17,6 +17,7 @@ use App\Http\Resources\Traits\HasHeaderUrl;
 use App\Http\Resources\Traits\HasPrepPhotoCollection;
 use App\Models\Configs;
 use App\SmartAlbums\BaseSmartAlbum;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\LiteralTypeScriptType;
@@ -39,12 +40,32 @@ class SmartAlbumResource extends Data
 	public PreFormattedAlbumData $preFormattedData;
 	public null $statistics = null; // Needed to unify the API response with the AlbumResource and TagAlbumResource.
 
-	public function __construct(BaseSmartAlbum $smart_album)
+	public int $current_page;
+	public int $from;
+	public int $last_page;
+	public int $per_page;
+	public int $to;
+	public int $total;
+
+	public function __construct(BaseSmartAlbum $smart_album, $paginated_photos = null)
 	{
 		$this->id = $smart_album->get_id();
 		$this->title = $smart_album->get_title();
-		/** @disregard P1006 */
-		$this->photos = $smart_album->relationLoaded('photos') ? $this->toPhotoResources($smart_album->getPhotos(), $smart_album) : null;
+
+		if ($paginated_photos instanceof LengthAwarePaginator) {
+			// Use provided paginated photos
+            $this->photos = collect($paginated_photos->items())->map(fn ($photo) => new PhotoResource($photo, $smart_album));
+			$this->current_page = $paginated_photos->currentPage();
+			$this->from = $paginated_photos->firstItem() ?? 0;
+			$this->last_page = $paginated_photos->lastPage();
+			$this->per_page = $paginated_photos->perPage();
+			$this->to = $paginated_photos->lastItem() ?? 0;
+			$this->total = $paginated_photos->total();
+		} else {
+			// Fallback to non-paginated behavior
+			$this->photos = $smart_album->relationLoaded('photos') ? $this->toPhotoResources($smart_album->getPhotos(), $smart_album) : null;
+		}
+
 		$this->prepPhotosCollection();
 		if ($this->photos !== null) {
 			// Prep collection with first and last link + which id is next.

@@ -62,9 +62,19 @@
 					@selected="photoSelect"
 					@contexted="photoMenuOpen"
 				/>
-				<GalleryFooter v-once />
 				<ScrollTop v-if="!props.isPhotoOpen" target="parent" />
 			</div>
+			<div v-if="photosStore.photos.length > 0 && albumStore.has_pagination" class="flex justify-center w-full">
+				<Paginator
+					v-model:first="firstValue"
+					v-model:rows="rowsValue"
+					:total-records="total"
+					:always-show="false"
+					@update:first="(val) => emits('update:first', val)"
+					@update:rows="(val) => emits('update:rows', val)"
+				/>
+			</div>
+			<GalleryFooter v-once />
 			<ShareAlbum :key="`share_modal_${albumStore.album.id}`" v-model:visible="is_share_album_visible" :title="albumStore.album.title" />
 
 			<!-- Dialogs -->
@@ -109,6 +119,7 @@ import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { usePhotoRoute } from "@/composables/photo/photoRoute";
 import { useRouter } from "vue-router";
 import SelectDrag from "@/components/forms/album/SelectDrag.vue";
+import Paginator from "primevue/paginator";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { usePhotosStore } from "@/stores/PhotosState";
 import { useAlbumsStore } from "@/stores/AlbumsState";
@@ -119,6 +130,9 @@ const router = useRouter();
 
 const props = defineProps<{
 	isPhotoOpen: boolean;
+	total: number | undefined;
+	rows: number | undefined;
+	first: number | undefined;
 }>();
 
 const userStore = useUserStore();
@@ -136,6 +150,8 @@ const emits = defineEmits<{
 	scrollToTop: [];
 	openSearch: [];
 	goBack: [];
+	"update:rows": [value: number];
+	"update:first": [value: number];
 }>();
 
 const { is_se_enabled } = storeToRefs(lycheeStore);
@@ -170,6 +186,20 @@ function toggleStatistics() {
 		areStatisticsOpen.value = !areStatisticsOpen.value;
 	}
 }
+
+const firstValue = computed({
+	get: () => props.first,
+	set: (val: number) => {
+		albumStore.updateCurrentPage(val);
+		emits("update:first", val);
+	},
+});
+
+const rowsValue = computed({
+	get: () => props.rows,
+	set: (val: number) => emits("update:rows", val),
+});
+
 
 const albumPanelConfig = computed<AlbumThumbConfig>(() => ({
 	album_thumb_css_aspect_ratio: albumStore.config?.album_thumb_css_aspect_ratio ?? "aspect-square",

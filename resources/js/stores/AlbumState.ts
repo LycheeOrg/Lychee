@@ -18,6 +18,12 @@ export const useAlbumStore = defineStore("album-store", {
 		config: undefined as App.Http.Resources.GalleryConfigs.AlbumConfig | undefined,
 		isLoading: false as boolean,
 		_loadingAlbumId: undefined as undefined | string,
+
+		current_page: 1 as number,
+		from: 0 as number,
+		per_page: 0 as number,
+		total: 0 as number,
+		has_pagination: false as boolean,
 	}),
 	actions: {
 		refresh(): Promise<void> {
@@ -31,6 +37,17 @@ export const useAlbumStore = defineStore("album-store", {
 			this.isPasswordProtected = false;
 			this.config = undefined;
 			this.isLoading = false;
+		},
+		hasPagination (
+			resource: App.Http.Resources.Models.AbstractAlbumResource['resource']
+		): resource is App.Http.Resources.Models.UnTaggedSmartAlbumResource {
+			return resource !== null && 'from' in resource;
+		},
+		updateCurrentPage (first: number) {
+			if (this.per_page > 0) {
+				this.current_page = Math.floor(first / this.per_page) + 1;
+			}
+			this.from = first;
 		},
 		load(): Promise<void> {
 			const togglableState = useTogglablesStateStore();
@@ -59,8 +76,11 @@ export const useAlbumStore = defineStore("album-store", {
 			this.modelAlbum = undefined;
 			this.tagAlbum = undefined;
 			this.smartAlbum = undefined;
+			this.has_pagination = false;
 
-			return AlbumService.get(requestedAlbumId)
+			const first = (this.current_page - 1) * this.per_page;
+
+			return AlbumService.get(requestedAlbumId, first, this.per_page)
 				.then((data) => {
 					// Exit early if the albumId changed while we were loading
 					// (e.g. user clicked on another album, or went back/forward in history)
@@ -80,6 +100,13 @@ export const useAlbumStore = defineStore("album-store", {
 						this.tagAlbum = data.data.resource as App.Http.Resources.Models.TagAlbumResource;
 						albumsStore.albums = []; // Reset to avoid bad surprises.
 					} else {
+						if (this.hasPagination(data.data.resource)) {
+							this.from = Number(data.data.resource.from ?? 0);
+							this.per_page = Number(data.data.resource.per_page ?? 0);
+							this.total = Number(data.data.resource.total ?? 0);
+							this.current_page = Number(data.data.resource.current_page ?? 1);
+							this.has_pagination = true;
+						}
 						this.smartAlbum = data.data.resource as App.Http.Resources.Models.SmartAlbumResource;
 						albumsStore.albums = []; // Reset to avoid bad surprises.
 					}

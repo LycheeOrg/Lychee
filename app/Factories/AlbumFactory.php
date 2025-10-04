@@ -20,6 +20,7 @@ use App\SmartAlbums\OnThisDayAlbum;
 use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\StarredAlbum;
 use App\SmartAlbums\UnsortedAlbum;
+use App\SmartAlbums\UntaggedAlbum;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection;
 
@@ -30,6 +31,7 @@ class AlbumFactory
 		SmartAlbumType::STARRED->value => StarredAlbum::class,
 		SmartAlbumType::RECENT->value => RecentAlbum::class,
 		SmartAlbumType::ON_THIS_DAY->value => OnThisDayAlbum::class,
+		SmartAlbumType::UNTAGGED->value => UntaggedAlbum::class,
 	];
 
 	/**
