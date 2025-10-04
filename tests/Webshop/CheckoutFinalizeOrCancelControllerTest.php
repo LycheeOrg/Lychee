@@ -52,7 +52,7 @@ class CheckoutFinalizeOrCancelControllerTest extends BaseCheckoutControllerTest
 
 		$this->assertDatabaseHas('orders', ['transaction_id' => $transaction_id, 'status' => PaymentStatusType::PROCESSING->value]);
 
-		$response = $this->postJson('Shop/Checkout/Finalize/' . $provider . '/' . $transaction_id, [
+		$response = $this->getJsonWithData('Shop/Checkout/Finalize/' . $provider . '/' . $transaction_id, [
 			'payment_id' => 'dummy-payment-123',
 			'status' => 'completed',
 			'transactionReference' => $this->test_order->transaction_id,
@@ -91,7 +91,7 @@ class CheckoutFinalizeOrCancelControllerTest extends BaseCheckoutControllerTest
 		$provider = OmnipayProviderType::DUMMY->value;
 		$invalidTransactionId = 'invalid-transaction-id';
 
-		$response = $this->postJson('Shop/Checkout/Finalize/' . $provider . '/' . $invalidTransactionId);
+		$response = $this->getJson('Shop/Checkout/Finalize/' . $provider . '/' . $invalidTransactionId);
 
 		$this->assertNotFound($response);
 	}
@@ -109,7 +109,7 @@ class CheckoutFinalizeOrCancelControllerTest extends BaseCheckoutControllerTest
 		$invalidProvider = 'invalid-provider';
 		$transaction_id = $this->test_order->transaction_id;
 
-		$response = $this->postJson('Shop/Checkout/Finalize/' . $invalidProvider . '/' . $transaction_id);
+		$response = $this->getJson('Shop/Checkout/Finalize/' . $invalidProvider . '/' . $transaction_id);
 
 		$this->assertUnprocessable($response);
 	}
@@ -224,7 +224,7 @@ class CheckoutFinalizeOrCancelControllerTest extends BaseCheckoutControllerTest
 		$provider = OmnipayProviderType::DUMMY->value;
 		$transaction_id = $this->test_order->transaction_id;
 
-		$response = $this->postJson('Shop/Checkout/Finalize/' . $provider . '/' . $transaction_id, [
+		$response = $this->getJsonWithData('Shop/Checkout/Finalize/' . $provider . '/' . $transaction_id, [
 			'payment_id' => 'dummy-payment-123',
 			'status' => 'completed',
 			'transactionReference' => $this->test_order->transaction_id,
