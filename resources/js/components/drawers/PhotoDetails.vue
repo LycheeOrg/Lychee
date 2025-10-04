@@ -7,7 +7,7 @@
 			'w-0 ltr:translate-x-full rtl:-translate-x-full': !areDetailsOpen,
 		}"
 	>
-		<Card v-if="props.photo" id="lychee_sidebar" class="w-[380px] h-full ltr:pr-4 rtl:pl-4 break-words">
+		<Card v-if="photoStore.photo" id="lychee_sidebar" class="w-[380px] h-full ltr:pr-4 rtl:pl-4 break-words">
 			<template #content>
 				<div class="flex flex-col mt-8">
 					<h1 class="text-center text-2xl font-bold my-4">
@@ -19,25 +19,25 @@
 							<MiniIcon icon="image" class="h-12 w-12" />
 						</div>
 						<div class="flex flex-col">
-							<span class="font-bold text-lg">{{ props.photo.title }}</span>
+							<span class="font-bold text-lg">{{ photoStore.photo.title }}</span>
 							<div class="flex gap-3 text-muted-color text-sm">
-								<span v-if="props.photo.preformatted.resolution" dir="ltr">{{ props.photo.preformatted.resolution }}</span>
-								<span v-if="props.photo.precomputed.is_video && props.photo.preformatted.duration">
-									{{ props.photo.preformatted.duration }}
+								<span v-if="photoStore.photo.preformatted.resolution" dir="ltr">{{ photoStore.photo.preformatted.resolution }}</span>
+								<span v-if="photoStore.photo.precomputed.is_video && photoStore.photo.preformatted.duration">
+									{{ photoStore.photo.preformatted.duration }}
 								</span>
-								<span v-if="props.photo.precomputed.is_video && props.photo.preformatted.fps">
-									{{ props.photo.preformatted.fps }}
+								<span v-if="photoStore.photo.precomputed.is_video && photoStore.photo.preformatted.fps">
+									{{ photoStore.photo.preformatted.fps }}
 								</span>
-								<span dir="ltr">{{ props.photo.preformatted.filesize }}</span>
+								<span dir="ltr">{{ photoStore.photo.preformatted.filesize }}</span>
 							</div>
 						</div>
 					</div>
-					<div v-if="props.photo.palette" class="flex gap-2 mb-4 ml-15">
-						<ColourSquare :colour="props.photo.palette.colour_1" />
-						<ColourSquare :colour="props.photo.palette.colour_2" />
-						<ColourSquare :colour="props.photo.palette.colour_3" />
-						<ColourSquare :colour="props.photo.palette.colour_4" />
-						<ColourSquare :colour="props.photo.palette.colour_5" />
+					<div v-if="photoStore.photo.palette" class="flex gap-2 mb-4 ml-15">
+						<ColourSquare :colour="photoStore.photo.palette.colour_1" />
+						<ColourSquare :colour="photoStore.photo.palette.colour_2" />
+						<ColourSquare :colour="photoStore.photo.palette.colour_3" />
+						<ColourSquare :colour="photoStore.photo.palette.colour_4" />
+						<ColourSquare :colour="photoStore.photo.palette.colour_5" />
 					</div>
 					<!-- Dates stuff -->
 					<div class="flex-col text-muted-color">
@@ -45,64 +45,68 @@
 							<span class="w-6 inline-block">
 								<i v-tooltip="$t('gallery.photo.details.uploaded')" class="pi pi-file-arrow-up" />
 							</span>
-							<span class="text-sm">{{ props.photo.preformatted.created_at }}</span>
+							<span class="text-sm">{{ photoStore.photo.preformatted.created_at }}</span>
 						</div>
-						<div v-if="props.photo.preformatted.taken_at" class="flex gap-1 items-start">
+						<div v-if="photoStore.photo.preformatted.taken_at" class="flex gap-1 items-start">
 							<span class="w-6 inline-block">
 								<i v-tooltip="$t('gallery.photo.details.captured')" class="pi pi-camera w-6 pt-1 inline-block" />
 							</span>
 							<span class="text-sm">
-								{{ props.photo.preformatted.taken_at }}
-								<span v-if="props.photo.precomputed.is_taken_at_modified" class="text-warning-600">*</span>
+								{{ photoStore.photo.preformatted.taken_at }}
+								<span v-if="photoStore.photo.precomputed.is_taken_at_modified" class="text-warning-600">*</span>
 							</span>
 						</div>
 					</div>
 
 					<!-- Description stuff -->
-					<template v-if="props.photo.preformatted.description">
+					<template v-if="photoStore.photo.preformatted.description">
 						<h2 class="text-muted-color-emphasis text-base font-bold mt-4 mb-1">
 							{{ $t("gallery.photo.details.description") }}
 						</h2>
-						<div class="prose dark:prose-invert prose-sm mb-4" v-html="props.photo.preformatted.description"></div>
+						<div class="prose dark:prose-invert prose-sm mb-4" v-html="photoStore.photo.preformatted.description"></div>
 					</template>
 
 					<!-- Tags stuff -->
-					<template v-if="props.photo.tags.length > 0">
-						<h2 v-if="props.photo.tags.length > 0" class="text-muted-color-emphasis text-base font-bold mt-4 mb-1">
+					<template v-if="photoStore.photo.tags.length > 0">
+						<h2 v-if="photoStore.photo.tags.length > 0" class="text-muted-color-emphasis text-base font-bold mt-4 mb-1">
 							{{ $t("gallery.photo.details.tags") }}
 						</h2>
 						<span class="pb-2">
-							<a v-for="tag in props.photo.tags" :key="`tag-${tag}`" class="text-xs rounded-full py-1 px-2.5 mr-1.5 mb-2.5 bg-black/50">
+							<a
+								v-for="tag in photoStore.photo.tags"
+								:key="`tag-${tag}`"
+								class="text-xs rounded-full py-1 px-2.5 mr-1.5 mb-2.5 bg-black/50"
+							>
 								{{ tag }}
 							</a>
 						</span>
 					</template>
 
 					<!-- Exif stuff -->
-					<template v-if="props.photo.precomputed.has_exif">
+					<template v-if="photoStore.photo.precomputed.has_exif">
 						<h2 class="text-muted-color-emphasis text-base font-bold mt-4 mb-1">
 							{{ $t("gallery.photo.details.exif_data") }}
 						</h2>
 						<div class="flex flex-wrap text-muted-color gap-y-0.5">
-							<div v-if="props.photo.model" class="flex w-full gap-2 items-center">
+							<div v-if="photoStore.photo.model" class="flex w-full gap-2 items-center">
 								<img
 									v-tooltip.right="$t('gallery.photo.details.type')"
 									src="../../../img/icons/camera.png"
 									class="dark:invert opacity-50 w-6 h-6"
 								/>
-								<span class="text-sm">{{ props.photo.model }}</span>
+								<span class="text-sm">{{ photoStore.photo.model }}</span>
 							</div>
-							<div v-if="props.photo.lens" class="flex w-full gap-2 mb-2">
+							<div v-if="photoStore.photo.lens" class="flex w-full gap-2 mb-2">
 								<img
 									v-tooltip.right="$t('gallery.photo.details.lens')"
 									src="../../../img/icons/lens.png"
 									class="dark:invert opacity-50 w-6 h-6"
 								/>
-								<span class="text-sm">{{ props.photo.lens }}</span>
+								<span class="text-sm">{{ photoStore.photo.lens }}</span>
 							</div>
 							<div class="flex w-1/2 gap-2 items-center">
 								<MiniIcon v-tooltip.right="$t('gallery.photo.details.aperture')" icon="aperture" class="h-4 w-6" />
-								<span>ƒ / {{ props.photo.preformatted.aperture }}</span>
+								<span>ƒ / {{ photoStore.photo.preformatted.aperture }}</span>
 							</div>
 							<div class="flex w-1/2 gap-2 items-center">
 								<img
@@ -110,72 +114,78 @@
 									src="../../../img/icons/focal.png"
 									class="dark:invert opacity-50 w-6 h-5"
 								/>
-								<span class="text-sm" dir="ltr">{{ props.photo.focal }}</span>
+								<span class="text-sm" dir="ltr">{{ photoStore.photo.focal }}</span>
 							</div>
 							<div class="flex w-1/2 gap-2 items-center">
 								<i
 									v-tooltip.right="$t('gallery.photo.details.shutter')"
 									class="pi pi-stopwatch h-6 w-6 text-base text-center pt-0.5 text-muted-color"
 								/>
-								<span class="text-sm" dir="ltr">{{ props.photo.preformatted.shutter }}</span>
+								<span class="text-sm" dir="ltr">{{ photoStore.photo.preformatted.shutter }}</span>
 							</div>
 							<div class="flex w-1/2 gap-2 items-center">
 								<img src="../../../img/icons/iso.png" class="dark:invert opacity-50 w-6 h-6" />
-								<span class="text-sm">{{ props.photo.iso }}</span>
+								<span class="text-sm">{{ photoStore.photo.iso }}</span>
 							</div>
 						</div>
 					</template>
 
 					<!-- See later what to do with this, do we want to keep it? -->
-					<!-- <span class="py-0.5 px-3 text-sm" v-if="props.photo.type">{{ $t("gallery.photo.details.format") }}</span>
-					<span class="py-0.5 pl-0 text-sm" v-if="props.photo.type">{{ props.photo.type }}</span> -->
+					<!-- <span class="py-0.5 px-3 text-sm" v-if="photoStore.photo.type">{{ $t("gallery.photo.details.format") }}</span>
+					<span class="py-0.5 pl-0 text-sm" v-if="photoStore.photo.type">{{ photoStore.photo.type }}</span> -->
 
-					<h2 v-if="props.photo.precomputed.has_location" class="col-span-2 text-muted-color-emphasis text-base font-bold mt-4 mb-1">
+					<h2 v-if="photoStore.photo.precomputed.has_location" class="col-span-2 text-muted-color-emphasis text-base font-bold mt-4 mb-1">
 						{{ $t("gallery.photo.details.location") }}
 					</h2>
-					<MapInclude v-if="props.isMapVisible" :latitude="props.photo.latitude" :longitude="props.photo.longitude" />
-					<template v-if="props.photo.precomputed.has_location">
+					<MapInclude v-if="props.isMapVisible" :latitude="photoStore.photo.latitude" :longitude="photoStore.photo.longitude" />
+					<template v-if="photoStore.photo.precomputed.has_location">
 						<div class="flex gap-x-2 text-muted-color">
-							<span v-if="props.photo.preformatted.latitude" class="w-full text-sm">{{ props.photo.preformatted.latitude }}</span>
-							<span v-if="props.photo.preformatted.longitude" class="w-full text-sm">{{ props.photo.preformatted.longitude }}</span>
-							<span v-if="props.photo.preformatted.altitude" class="w-full text-sm">{{ props.photo.preformatted.altitude }}</span>
+							<span v-if="photoStore.photo.preformatted.latitude" class="w-full text-sm">{{
+								photoStore.photo.preformatted.latitude
+							}}</span>
+							<span v-if="photoStore.photo.preformatted.longitude" class="w-full text-sm">{{
+								photoStore.photo.preformatted.longitude
+							}}</span>
+							<span v-if="photoStore.photo.preformatted.altitude" class="w-full text-sm">{{
+								photoStore.photo.preformatted.altitude
+							}}</span>
 						</div>
-						<div v-if="props.photo.location" class="text-sm">
-							{{ props.photo.location }}
+						<div v-if="photoStore.photo.location" class="text-sm">
+							{{ photoStore.photo.location }}
 						</div>
 					</template>
 
-					<template v-if="props.photo.preformatted.license">
+					<template v-if="photoStore.photo.preformatted.license">
 						<h2 class="text-muted-color-emphasis text-base font-bold mt-4 mb-1">
 							{{ $t("gallery.photo.details.license") }}
 						</h2>
-						<span class="py-0.5 pl-0 text-sm text-muted-color">{{ props.photo.preformatted.license }}</span>
+						<span class="py-0.5 pl-0 text-sm text-muted-color">{{ photoStore.photo.preformatted.license }}</span>
 					</template>
 
-					<template v-if="props.photo.statistics">
+					<template v-if="photoStore.photo.statistics">
 						<h2 class="text-muted-color-emphasis text-base font-bold mt-4 mb-1">
 							{{ $t("gallery.photo.details.stats.header") }}
 						</h2>
 						<div class="flex flex-wrap text-muted-color text-sm gap-y-0.5">
 							<div class="w-1/2">
 								<i v-tooltip.right="$t('gallery.photo.details.stats.number_of_visits')" class="pi pi-eye mr-2" />
-								{{ props.photo.statistics.visit_count }}
+								{{ photoStore.photo.statistics.visit_count }}
 							</div>
 							<div class="w-1/2">
 								<i v-tooltip.right="$t('gallery.photo.details.stats.number_of_downloads')" class="pi pi-cloud-download mr-2" />
-								{{ props.photo.statistics.download_count }}
+								{{ photoStore.photo.statistics.download_count }}
 							</div>
 							<div class="w-1/2">
 								<i v-tooltip.right="$t('gallery.photo.details.stats.number_of_shares')" class="pi pi-share-alt mr-2" />
-								{{ props.photo.statistics.shared_count }}
+								{{ photoStore.photo.statistics.shared_count }}
 							</div>
 							<div class="w-1/2">
 								<i v-tooltip.right="$t('gallery.photo.details.stats.number_of_favourites')" class="pi pi-heart mr-2" />
-								{{ props.photo.statistics.favourite_count }}
+								{{ photoStore.photo.statistics.favourite_count }}
 							</div>
 						</div>
 					</template>
-					<LinksInclude v-if="is_details_links_enabled" :photo="photo" />
+					<LinksInclude v-if="is_details_links_enabled" />
 				</div>
 			</template>
 		</Card>
@@ -190,9 +200,11 @@ import ColourSquare from "@/components/gallery/photoModule/ColourSquare.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import LinksInclude from "@/components/gallery/photoModule/LinksInclude.vue";
 import { storeToRefs } from "pinia";
+import { usePhotoStore } from "@/stores/PhotoState";
+
+const photoStore = usePhotoStore();
 
 const props = defineProps<{
-	photo: App.Http.Resources.Models.PhotoResource | undefined;
 	isMapVisible: boolean;
 }>();
 

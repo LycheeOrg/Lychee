@@ -1,37 +1,37 @@
-import { Ref } from "vue";
 import { Router } from "vue-router";
 import { usePhotoRoute } from "./photoRoute";
+import { PhotoStore } from "@/stores/PhotoState";
 
-export function getNextPreviousPhoto(router: Router, photo: Ref<App.Http.Resources.Models.PhotoResource | undefined>) {
+export function getNextPreviousPhoto(router: Router, photoStore: PhotoStore) {
 	const { photoRoute } = usePhotoRoute(router);
 
 	function getNext() {
-		if (photo.value === undefined) {
+		if (photoStore.photo === undefined) {
 			// nothing to do.
 			return;
 		}
 
-		if (photo.value.next_photo_id !== null) {
-			router.push(photoRoute(photo.value.next_photo_id));
+		if (photoStore.photo.next_photo_id !== null) {
+			router.push(photoRoute(photoStore.photo.next_photo_id));
 			return;
 		}
 
 		// returns the current photo's id if there is no Next
-		router.push(photoRoute(photo.value.id));
+		router.push(photoRoute(photoStore.photo.id));
 	}
 
 	function getPrevious() {
-		if (photo.value === undefined) {
+		if (photoStore.photo === undefined) {
 			// nothing to do.
 			return;
 		}
 
-		if (photo.value.previous_photo_id !== null) {
-			router.push(photoRoute(photo.value.previous_photo_id));
+		if (photoStore.photo.previous_photo_id !== null) {
+			router.push(photoRoute(photoStore.photo.previous_photo_id));
 			return;
 		}
 
-		router.push(photoRoute(photo.value.id));
+		router.push(photoRoute(photoStore.photo.id));
 	}
 
 	return {

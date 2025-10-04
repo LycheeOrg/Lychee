@@ -1,7 +1,7 @@
 <template>
 	<InviteUser v-model:visible="isInviteUserVisible" />
 	<CreateEditUser v-model:visible="isCreateUserVisible" class="mt-10" :user="selectedUser" :is-edit="isEdit" @refresh="load" />
-	<Toolbar class="w-full border-0 h-14">
+	<Toolbar class="w-full border-0 h-14 rounded-none">
 		<template #start>
 			<OpenLeftMenu />
 		</template>
@@ -89,7 +89,7 @@ import { trans } from "laravel-vue-i18n";
 import InviteUser from "@/components/modals/InviteUser.vue";
 
 const lycheeStore = useLycheeStateStore();
-lycheeStore.init();
+lycheeStore.load();
 const { is_se_enabled } = storeToRefs(lycheeStore);
 
 const users = ref<App.Http.Resources.Models.UserManagementResource[]>([]);

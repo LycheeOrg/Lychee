@@ -1,5 +1,5 @@
 <template>
-	<Toolbar class="w-full border-0 h-14">
+	<Toolbar class="w-full border-0 h-14 rounded-none">
 		<template #start>
 			<OpenLeftMenu />
 		</template>
@@ -25,15 +25,15 @@ import ConfigurationsDiagnostics from "@/components/diagnostics/ConfigurationsDi
 import InfoDiagnostics from "@/components/diagnostics/InfoDiagnostics.vue";
 import ErrorsDiagnotics from "@/components/diagnostics/ErrorsDiagnostics.vue";
 import SpaceDiagnostics from "@/components/diagnostics/SpaceDiagnostics.vue";
-import { useAuthStore } from "@/stores/Auth";
+import { useUserStore } from "@/stores/UserState";
 import { storeToRefs } from "pinia";
 import { useToast } from "primevue/usetoast";
 import { trans } from "laravel-vue-i18n";
 import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
 
-const authStore = useAuthStore();
-const { user } = storeToRefs(authStore);
-authStore.getUser();
+const userStore = useUserStore();
+const { user } = storeToRefs(userStore);
+userStore.load();
 
 const toast = useToast();
 

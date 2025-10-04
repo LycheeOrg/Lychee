@@ -1,5 +1,5 @@
 <template>
-	<Card class="text-sm p-4 xl:px-9 sm:min-w-[32rem]">
+	<Card class="text-sm p-4 xl:px-9 sm:min-w-[32rem]" :pt:body:class="'p-0'">
 		<template #content>
 			<form>
 				<div class="h-12">
@@ -7,7 +7,7 @@
 					<label for="pp_dialog_public_check" class="font-bold">{{ $t("dialogs.visibility.public") }}</label>
 					<p class="my-1.5">{{ $t("dialogs.visibility.public_expl") }}</p>
 				</div>
-				<Collapse v-if="props.config.is_base_album" :when="is_public">
+				<Collapse v-if="albumStore.config?.is_base_album" :when="is_public">
 					<div
 						class="relative h-12 my-4 ltr:pl-9 rtl:pr-9 transition-color duration-300"
 						:class="is_public ? 'text-muted-color-emphasis' : 'text-muted-color'"
@@ -107,7 +107,7 @@
 					</div>
 				</Collapse>
 			</form>
-			<template v-if="props.config.is_base_album">
+			<template v-if="albumStore.config?.is_base_album">
 				<hr class="block mt-8 mb-8 w-full border-t border-solid border-surface-600" />
 				<form>
 					<div class="relative h-12 my-4 transition-color duration-300">
@@ -145,29 +145,28 @@ import { trans } from "laravel-vue-i18n";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import SETag from "@/components/icons/SETag.vue";
+import { useAlbumStore } from "@/stores/AlbumState";
 
-const props = defineProps<{
-	album: App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.SmartAlbumResource | App.Http.Resources.Models.TagAlbumResource;
-	config: App.Http.Resources.GalleryConfigs.AlbumConfig;
-}>();
+const albumStore = useAlbumStore();
+
 const toast = useToast();
-const albumId = ref<string>(props.album.id);
-const is_public = ref<boolean>(props.album.policy.is_public);
-const is_link_required = ref<boolean>(props.album.policy.is_link_required);
-const is_nsfw = ref<boolean>(props.album.policy.is_nsfw);
-const grants_full_photo_access = ref<boolean>(props.album.policy.grants_full_photo_access);
-const grants_download = ref<boolean>(props.album.policy.grants_download);
-const is_password_required = ref<boolean>(props.album.policy.is_password_required);
+
+const is_public = ref<boolean>(albumStore.album?.policy.is_public ?? false);
+const is_link_required = ref<boolean>(albumStore.album?.policy.is_link_required ?? false);
+const is_nsfw = ref<boolean>(albumStore.album?.policy.is_nsfw ?? false);
+const grants_full_photo_access = ref<boolean>(albumStore.album?.policy.grants_full_photo_access ?? false);
+const grants_download = ref<boolean>(albumStore.album?.policy.grants_download ?? false);
+const is_password_required = ref<boolean>(albumStore.album?.policy.is_password_required ?? false);
 const password = ref<string>("");
-const can_pasword_protect = ref<boolean>(props.album.rights.can_pasword_protect);
-const grants_upload = ref<boolean>(props.album.policy.grants_upload);
+const can_pasword_protect = ref<boolean>(albumStore.album?.rights.can_pasword_protect ?? false);
+const grants_upload = ref<boolean>(albumStore.album?.policy.grants_upload ?? false);
 
 const lycheeStore = useLycheeStateStore();
 const { is_se_enabled, is_se_preview_enabled } = storeToRefs(lycheeStore);
 
 function save() {
 	const data: UpdateProtectionPolicyData = {
-		album_id: albumId.value,
+		album_id: <string>albumStore.albumId,
 		is_public: is_public.value,
 		is_link_required: is_link_required.value,
 		is_nsfw: is_nsfw.value,
@@ -179,9 +178,9 @@ function save() {
 
 	AlbumService.updateProtectionPolicy(data).then(() => {
 		toast.add({ severity: "success", summary: trans("toasts.success"), detail: trans("dialogs.visibility.visibility_updated"), life: 3000 });
-		AlbumService.clearCache(albumId.value);
-		if (props.config.is_model_album) {
-			AlbumService.clearCache((props.album as App.Http.Resources.Models.AlbumResource).parent_id);
+		AlbumService.clearCache(albumStore.albumId);
+		if (albumStore.config?.is_model_album) {
+			AlbumService.clearCache(albumStore.modelAlbum?.parent_id);
 		} else {
 			AlbumService.clearAlbums();
 		}

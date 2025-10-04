@@ -30,7 +30,18 @@ declare namespace App.Enum {
 		| "taken_at"
 		| "is_starred"
 		| "type";
-	export type ConfigType = "int" | "positive" | "string" | "string_required" | "0|1" | "0|1|2" | "" | "admin_user" | "license" | "map_provider";
+	export type ConfigType =
+		| "int"
+		| "positive"
+		| "string"
+		| "string_required"
+		| "0|1"
+		| "0|1|2"
+		| ""
+		| "admin_user"
+		| "license"
+		| "map_provider"
+		| "currency";
 	export type CountType = "taken_at" | "created_at";
 	export type CoverFitType = "cover" | "fit";
 	export type DateOrderingType = "older_younger" | "younger_older";
@@ -95,7 +106,7 @@ declare namespace App.Enum {
 	export type OrderSortingType = "ASC" | "DESC";
 	export type PhotoLayoutType = "square" | "justified" | "masonry" | "grid";
 	export type PhotoThumbInfoType = "title" | "description";
-	export type RenamerModeType = "first" | "all" | "regex";
+	export type RenamerModeType = "first" | "all" | "regex" | "trim" | "strtolower" | "strtoupper" | "ucwords" | "ucfirst";
 	export type SeverityType = "emergency" | "alert" | "critical" | "error" | "warning" | "notice" | "info" | "debug";
 	export type ShiftType = "relative" | "absolute";
 	export type ShiftX = "left" | "right";

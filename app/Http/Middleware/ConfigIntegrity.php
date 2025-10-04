@@ -91,6 +91,15 @@ class ConfigIntegrity
 		'flow_carousel_height',
 		'date_format_flow_published',
 		'date_format_flow_min_max',
+		'webshop_enabled',
+		'webshop_currency',
+		'webshop_default_description',
+		'webshop_allow_guest_checkout',
+		'webshop_terms_url',
+		'webshop_privacy_url',
+		'webshop_default_price_cents',
+		'webshop_default_license',
+		'webshop_default_size',
 	];
 
 	/**

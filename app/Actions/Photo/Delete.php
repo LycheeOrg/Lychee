@@ -8,6 +8,7 @@
 
 namespace App\Actions\Photo;
 
+use App\Actions\Shop\PurchasableService;
 use App\Constants\PhotoAlbum as PA;
 use App\Enum\SizeVariantType;
 use App\Exceptions\Internal\LycheeAssertionError;
@@ -22,6 +23,7 @@ use App\Models\SizeVariant;
 use App\Models\Statistics;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Database\Query\JoinClause;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -48,11 +50,13 @@ use Illuminate\Support\Facades\DB;
  */
 readonly class Delete
 {
-	protected FileDeleter $fileDeleter;
+	protected FileDeleter $file_deleter;
+	private PurchasableService $purchasable_service;
 
 	public function __construct()
 	{
-		$this->fileDeleter = new FileDeleter();
+		$this->file_deleter = new FileDeleter();
+		$this->purchasable_service = resolve(PurchasableService::class);
 	}
 
 	/**
@@ -107,6 +111,9 @@ readonly class Delete
 		$photo_ids = array_merge($photo_ids, $unsorted_photo_ids);
 
 		try {
+			$album_ids_containing = array_merge($album_ids, $from_id === null ? [] : [$from_id]);
+			$this->purchasable_service->deleteMulitplePhotoPurchasables($photo_ids, $album_ids_containing);
+
 			$this->collectSizeVariantPathsByPhotoID($photo_ids);
 			$this->collectLivePhotoPathsByPhotoID($photo_ids);
 			$this->deleteDBRecords($photo_ids, $album_ids);
@@ -117,7 +124,7 @@ readonly class Delete
 		// @codeCoverageIgnoreEnd
 		Album::query()->whereIn('header_id', $photo_ids)->update(['header_id' => null]);
 
-		return $this->fileDeleter;
+		return $this->file_deleter;
 	}
 
 	/**
@@ -226,7 +233,7 @@ readonly class Delete
 				->whereIn('p.id', $photo_ids)
 				->whereNull('dup.id')
 				->get();
-			$this->fileDeleter->addSizeVariants($size_variants);
+			$this->file_deleter->addSizeVariants($size_variants);
 			// @codeCoverageIgnoreStart
 		} catch (\InvalidArgumentException $e) {
 			throw LycheeAssertionError::createFromUnexpectedException($e);
@@ -254,8 +261,8 @@ readonly class Delete
 				return;
 			}
 
-			$live_photo_short_paths = Photo::query()
-				->from('photos as p')
+			/** @var Collection<int,object{live_photo_short_path:string,storage_disk:string}> $live_photo_short_paths */
+			$live_photo_short_paths = DB::table('photos', 'p')
 				->select(['p.live_photo_short_path', 'sv.storage_disk'])
 				->join('size_variants as sv', function (JoinClause $join): void {
 					$join
@@ -274,7 +281,7 @@ readonly class Delete
 
 			$live_variants_short_paths_grouped = $live_photo_short_paths->groupBy('storage_disk');
 			$live_variants_short_paths_grouped->each(
-				fn ($live_variants_short_paths, $disk) => $this->fileDeleter->addFiles($live_variants_short_paths->map(fn ($lv) => $lv->live_photo_short_path), $disk)
+				fn ($live_variants_short_paths, $disk) => $this->file_deleter->addFiles($live_variants_short_paths->map(fn ($lv) => $lv->live_photo_short_path), $disk)
 			);
 			// @codeCoverageIgnoreStart
 		} catch (\InvalidArgumentException $e) {

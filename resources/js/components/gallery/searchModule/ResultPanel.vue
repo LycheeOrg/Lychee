@@ -1,30 +1,23 @@
 <template>
 	<AlbumThumbPanel
-		v-if="props.albums.length > 0"
-		:header="props.albumHeader"
-		:album="null"
-		:albums="props.albums"
-		:config="albumPanelConfig"
+		v-if="albumsStore.albums.length > 0"
+		:header="albumHeader"
+		:albums="albumsStore.albums"
 		:is-alone="false"
-		:are-nsfw-visible="are_nsfw_visible"
 		:idx-shift="0"
 		:selected-albums="selectedAlbumsIds"
 		:is-timeline="false"
 		@clicked="albumClick"
 		@contexted="albumMenuOpen"
 	/>
-	<div v-if="photos.length > 0" class="flex justify-center w-full">
-		<Paginator v-model:first="first" :total-records="total" :rows="rows" :always-show="false" @update:first="emits('refresh')" />
+	<div v-if="photosStore.photos.length > 0" class="flex justify-center w-full">
+		<Paginator v-model:first="first" :total-records="searchStore.total" :rows="rows" :always-show="false" @update:first="emits('refresh')" />
 	</div>
 	<PhotoThumbPanel
-		v-if="photos.length > 0"
-		:photo-layout="props.layout"
-		:header="props.photoHeader"
-		:photos="props.photos"
+		v-if="photosStore.photos.length > 0"
+		:header="photoHeader"
+		:photos="photosStore.photos"
 		:photos-timeline="undefined"
-		:cover-id="undefined"
-		:header-id="undefined"
-		:gallery-config="props.layoutConfig"
 		:selected-photos="selectedPhotosIds"
 		:is-timeline="false"
 		:with-control="true"
@@ -32,8 +25,8 @@
 		@selected="photoSelect"
 		@contexted="photoMenuOpen"
 	/>
-	<div v-if="photos.length > 0" class="flex justify-center w-full">
-		<Paginator v-model:first="first" :total-records="total" :rows="rows" :always-show="false" @update:first="emits('refresh')" />
+	<div v-if="photosStore.photos.length > 0" class="flex justify-center w-full">
+		<Paginator v-model:first="first" :total-records="searchStore.total" :rows="rows" :always-show="false" @update:first="emits('refresh')" />
 	</div>
 
 	<ContextMenu ref="menu" :model="Menu" :class="Menu.length === 0 ? 'hidden' : ''">
@@ -52,10 +45,7 @@
 <script setup lang="ts">
 import { useContextMenu, type PhotoCallbacks, type AlbumCallbacks, type Selectors } from "@/composables/contextMenus/contextMenu";
 import { useSelection } from "@/composables/selections/selections";
-import { useLycheeStateStore } from "@/stores/LycheeState";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
-import { storeToRefs } from "pinia";
-import { ref } from "vue";
 import PhotoThumbPanel from "@/components/gallery/albumModule/PhotoThumbPanel.vue";
 import AlbumThumbPanel from "@/components/gallery/albumModule/AlbumThumbPanel.vue";
 import { AlbumThumbConfig } from "@/components/gallery/albumModule/thumbs/AlbumThumb.vue";
@@ -64,23 +54,21 @@ import Divider from "primevue/divider";
 import Paginator from "primevue/paginator";
 import { useRouter } from "vue-router";
 import { usePhotoRoute } from "@/composables/photo/photoRoute";
+import { usePhotosStore } from "@/stores/PhotosState";
+import { useAlbumsStore } from "@/stores/AlbumsState";
+import { sprintf } from "sprintf-js";
+import { trans } from "laravel-vue-i18n";
+import { computed } from "vue";
+import { useSearchStore } from "@/stores/SearchState";
 
-const lycheeStore = useLycheeStateStore();
-const { are_nsfw_visible } = storeToRefs(lycheeStore);
 const togglableStore = useTogglablesStateStore();
+const photosStore = usePhotosStore();
+const albumsStore = useAlbumsStore();
+const searchStore = useSearchStore();
 const router = useRouter();
 
 const props = defineProps<{
-	// results
-	albums: App.Http.Resources.Models.ThumbAlbumResource[];
-	photos: App.Http.Resources.Models.PhotoResource[];
-	total: number;
-	// headers
-	albumHeader: string;
-	photoHeader: string;
 	// config
-	layout: App.Enum.PhotoLayoutType;
-	layoutConfig: App.Http.Resources.GalleryConfigs.PhotoLayoutConfig;
 	albumPanelConfig: AlbumThumbConfig;
 	isPhotoTimelineEnabled: boolean;
 	// for menu
@@ -88,6 +76,17 @@ const props = defineProps<{
 	albumCallbacks: AlbumCallbacks;
 	selectors: Selectors;
 }>();
+
+const photoHeader = computed(() => {
+	return sprintf(trans("gallery.search.photos"), searchStore.total);
+});
+
+const albumHeader = computed(() => {
+	if (albumsStore.albums.length === 0) {
+		return "";
+	}
+	return sprintf(trans("gallery.search.albums"), albumsStore.albums.length);
+});
 
 const first = defineModel<number | undefined>("first");
 const rows = defineModel<number | undefined>("rows");
@@ -99,13 +98,10 @@ const emits = defineEmits<{
 const { photoRoute } = usePhotoRoute(router);
 
 function photoClick(idx: number, _e: MouseEvent) {
-	router.push(photoRoute(photos.value[idx].id));
+	router.push(photoRoute(photosStore.photos[idx].id));
 }
 
-const photos = ref(props.photos);
-const children = ref(props.albums);
-
-const { selectedPhotosIds, selectedAlbumsIds, photoSelect, albumClick } = useSelection({ photos, albums: children }, togglableStore);
+const { selectedPhotosIds, selectedAlbumsIds, photoSelect, albumClick } = useSelection(photosStore, albumsStore, togglableStore);
 
 const { menu, Menu, photoMenuOpen, albumMenuOpen } = useContextMenu(props.selectors, props.photoCallbacks, props.albumCallbacks);
 </script>

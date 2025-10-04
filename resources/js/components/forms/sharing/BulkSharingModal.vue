@@ -50,6 +50,7 @@
 						:highlight-on-select="false"
 						class="w-full"
 						:virtual-scroller-options="{ itemSize: 28 }"
+						:loading="usersGroupsList === undefined"
 					>
 						<template #header>
 							<span class="text-muted-color-emphasis font-bold">{{ $t("sharing.users") }}</span>
@@ -110,15 +111,14 @@ import Listbox from "primevue/listbox";
 import SharingService from "@/services/sharing-service";
 import { useToast } from "primevue/usetoast";
 import { trans } from "laravel-vue-i18n";
-import { type UserOrGroup, useSearchUserGroupComputed } from "@/composables/search/searchUserGroupComputed";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
+import { UserOrGroup, useUsersAndGroupStore } from "@/stores/UsersAndGroupsState";
 
 const visible = defineModel("visible", { default: false });
 const lycheeStore = useLycheeStateStore();
-lycheeStore.init();
-const { is_se_enabled } = storeToRefs(lycheeStore);
-
+const usersAndGroupsStore = useUsersAndGroupStore();
+const { usersGroupsList } = storeToRefs(usersAndGroupsStore);
 const toast = useToast();
 const emits = defineEmits<{
 	createdPermission: [];
@@ -171,8 +171,6 @@ function loadAlbums() {
 	});
 }
 
-const { usersGroupsList, load } = useSearchUserGroupComputed(is_se_enabled, undefined);
-
 function create() {
 	if (selectedUsersOrGroups.value === undefined || selectedUsersOrGroups.value.length === 0) {
 		return;
@@ -202,8 +200,9 @@ function create() {
 	});
 }
 
-onMounted(() => {
+onMounted(async () => {
+	await lycheeStore.load();
+	await usersAndGroupsStore.load();
 	loadAlbums();
-	load();
 });
 </script>

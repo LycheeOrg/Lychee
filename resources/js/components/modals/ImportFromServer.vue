@@ -11,7 +11,7 @@
 						{{ $t("dialogs.button.close") }}
 					</Button>
 				</div>
-				<div class="p-9 flex flex-col" v-else-if="options">
+				<div class="p-9 flex flex-col" v-else-if="importState.options">
 					<h2 class="text-muted-color-emphasis font-bold text-lg mb-2">{{ $t("import_from_server.title") }}</h2>
 					<p class="mb-5 text-base">
 						{{ $t("import_from_server.description") }}
@@ -35,35 +35,38 @@
 							<div class="flex items-center gap-2">
 								<ToggleSwitch
 									inputId="delete_imported"
-									v-model="options.delete_imported"
+									v-model="importState.options.delete_imported"
 									class="cursor-pointer"
 									:style="danger_style"
 								/>
-								<span v-if="options.delete_imported" class="pi pi-exclamation-triangle text-danger-600 text-xs"></span>
+								<span v-if="importState.options.delete_imported" class="pi pi-exclamation-triangle text-danger-600 text-xs"></span>
 								<label for="delete_imported" class="cursor-pointer text-sm">{{ $t("import_from_server.delete_imported") }}</label>
 							</div>
 							<div class="flex items-center gap-2">
-								<ToggleSwitch inputId="import_via_symlink" v-model="options.import_via_symlink" class="cursor-pointer" />
+								<ToggleSwitch inputId="import_via_symlink" v-model="importState.options.import_via_symlink" class="cursor-pointer" />
 								<label for="import_via_symlink" class="cursor-pointer text-sm">{{
 									$t("import_from_server.import_via_symlink")
 								}}</label>
 							</div>
 							<div class="flex items-center gap-2">
-								<ToggleSwitch inputId="skip_duplicates" v-model="options.skip_duplicates" class="cursor-pointer" />
+								<ToggleSwitch inputId="skip_duplicates" v-model="importState.options.skip_duplicates" class="cursor-pointer" />
 								<label for="skip_duplicates" class="cursor-pointer text-sm">{{ $t("import_from_server.skip_duplicates") }}</label>
 							</div>
 							<div class="flex items-center gap-2">
-								<ToggleSwitch inputId="resync_metadata" v-model="options.resync_metadata" class="cursor-pointer" />
+								<ToggleSwitch inputId="resync_metadata" v-model="importState.options.resync_metadata" class="cursor-pointer" />
 								<label for="resync_metadata" class="cursor-pointer text-sm">{{ $t("import_from_server.resync_metadata") }}</label>
 							</div>
 							<div class="flex items-center gap-2">
 								<ToggleSwitch
 									inputId="delete_missing_photos"
-									v-model="options.delete_missing_photos"
+									v-model="importState.options.delete_missing_photos"
 									class="cursor-pointer"
 									:style="warning_style"
 								/>
-								<span v-if="options.delete_missing_photos" class="pi pi-exclamation-triangle text-orange-600 text-xs"></span>
+								<span
+									v-if="importState.options.delete_missing_photos"
+									class="pi pi-exclamation-triangle text-orange-600 text-xs"
+								></span>
 								<label for="delete_missing_photos" class="cursor-pointer text-sm">{{
 									$t("import_from_server.delete_missing_photos")
 								}}</label>
@@ -71,11 +74,14 @@
 							<div class="flex items-center gap-2">
 								<ToggleSwitch
 									inputId="delete_missing_albums"
-									v-model="options.delete_missing_albums"
+									v-model="importState.options.delete_missing_albums"
 									class="cursor-pointer"
 									:style="warning_style"
 								/>
-								<span v-if="options.delete_missing_albums" class="pi pi-exclamation-triangle text-orange-600 text-xs"></span>
+								<span
+									v-if="importState.options.delete_missing_albums"
+									class="pi pi-exclamation-triangle text-orange-600 text-xs"
+								></span>
 								<label for="delete_missing_albums" class="cursor-pointer text-sm">{{
 									$t("import_from_server.delete_missing_albums")
 								}}</label>
@@ -86,7 +92,7 @@
 				<div v-else class="p-9">
 					{{ $t("import_from_server.loading") }}
 				</div>
-				<div class="flex justify-center" v-if="!importing && options">
+				<div class="flex justify-center" v-if="!importing && importState.options">
 					<Button
 						severity="secondary"
 						class="w-full font-bold border-none rounded-none ltr:rounded-bl-xl rtl:rounded-br-xl"
@@ -105,13 +111,14 @@
 <script setup lang="ts">
 import { useRouter } from "vue-router";
 import { usePhotoRoute } from "@/composables/photo/photoRoute";
-import { onMounted, Ref, ref } from "vue";
+import { onMounted, Ref, ref, watch } from "vue";
 import ImportService, { ImportFromServerRequest } from "@/services/import-service";
 import AlbumService from "@/services/album-service";
 import Dialog from "primevue/dialog";
 import Button from "primevue/button";
 import { useToast } from "primevue/usetoast";
 import ToggleSwitch from "primevue/toggleswitch";
+import { useImportState } from "@/stores/ImportState";
 
 const visible = defineModel("visible", { default: false }) as Ref<boolean>;
 const emits = defineEmits<{ refresh: [] }>();
@@ -120,7 +127,7 @@ const toast = useToast();
 const router = useRouter();
 const { getParentId } = usePhotoRoute(router);
 
-const options = ref<App.Http.Resources.Admin.ImportFromServerOptionsResource | undefined>(undefined);
+const importState = useImportState();
 const directory = ref<string>("");
 const importing = ref<boolean>(false);
 
@@ -128,13 +135,6 @@ const directories = ref<string[]>([]);
 
 // We saved previously browsed directories to avoid reloading them
 const browsed = ref<Map<string, string[]>>(new Map<string, string[]>());
-
-function load() {
-	return ImportService.getOptions().then((response) => {
-		options.value = response.data;
-		directory.value = response.data.directory;
-	});
-}
 
 function browse(dir: string) {
 	if (browsed.value.has(dir)) {
@@ -176,19 +176,19 @@ function normalize(path: string): string {
 }
 
 function submit() {
-	if (!options.value) {
+	if (!importState.options) {
 		return;
 	}
 
 	const payload: ImportFromServerRequest = {
 		album_id: getParentId() ?? null,
 		directories: [directory.value],
-		delete_imported: options.value.delete_imported,
-		import_via_symlink: options.value.import_via_symlink,
-		skip_duplicates: options.value.skip_duplicates,
-		resync_metadata: options.value.resync_metadata,
-		delete_missing_photos: options.value.delete_missing_photos,
-		delete_missing_albums: options.value.delete_missing_albums,
+		delete_imported: importState.options.delete_imported,
+		import_via_symlink: importState.options.import_via_symlink,
+		skip_duplicates: importState.options.skip_duplicates,
+		resync_metadata: importState.options.resync_metadata,
+		delete_missing_photos: importState.options.delete_missing_photos,
+		delete_missing_albums: importState.options.delete_missing_albums,
 	};
 
 	importing.value = true;
@@ -208,10 +208,21 @@ function closeCallback() {
 }
 
 onMounted(() => {
-	load().then(() => {
-		browse(directory.value);
-	});
+	importState.load();
 });
+
+watch(
+	() => visible.value,
+	(newVal) => {
+		if (newVal) {
+			importState.load().then(() => {
+				// reset state
+				directory.value = importState.directory;
+				browse(directory.value);
+			});
+		}
+	},
+);
 
 const danger_style =
 	"--p-toggleswitch-checked-background: var(--p-red-800);--p-toggleswitch-checked-hover-background: var(--p-red-900);--p-toggleswitch-hover-background: var(--p-red-900);";

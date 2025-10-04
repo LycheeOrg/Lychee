@@ -201,6 +201,21 @@ final class Renamer
 
 				// Use regular expression for replacement
 				RenamerModeType::REGEX => preg_replace($rule->needle, $rule->replacement, $input),
+
+				// Trim whitespace from the beginning and end of the string
+				RenamerModeType::TRIM => trim($input),
+
+				// Convert the string to lowercase
+				RenamerModeType::LOWER => mb_convert_case($input, MB_CASE_LOWER),
+
+				// Convert the string to uppercase
+				RenamerModeType::UPPER => mb_convert_case($input, MB_CASE_UPPER),
+
+				// Capitalize the first letter of each word in the string
+				RenamerModeType::UCWORDS => mb_convert_case($input, MB_CASE_TITLE),
+
+				// Capitalize the first letter of the string
+				RenamerModeType::UCFIRST => mb_strtoupper(mb_substr($input, 0, 1)) . mb_substr($input, 1),
 			};
 		} catch (\Exception $e) {
 			// Handle any exceptions that may occur during the replacement

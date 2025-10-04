@@ -1,9 +1,9 @@
 <template>
-	<Card class="sm:p-4 xl:px-9 max-w-3xl w-full">
+	<Card class="sm:p-4 xl:px-9 max-w-3xl w-full" :pt:body:class="'p-0'">
 		<template #content>
 			<div v-if="newOwner !== undefined">
 				<p class="w-full mb-4 text-center text-muted-color-emphasis">
-					{{ sprintf($t("dialogs.transfer.confirmation"), newOwner.name, props.album.title) }}<br />
+					{{ sprintf($t("dialogs.transfer.confirmation"), newOwner.name, albumStore.album?.title) }}<br />
 					<span class="text-warning-700">
 						<i class="pi pi-exclamation-triangle ltr:mr-2 rtl:ml-2" />
 						{{ $t("dialogs.transfer.lost_access_warning") }} </span
@@ -16,7 +16,7 @@
 			</div>
 			<div v-else class="text-center w-full">
 				<span class="font-bold">{{ $t("dialogs.transfer.query") }}</span>
-				<SearchTargetUser :album="album" :with-groups="false" @selected="selected" />
+				<SearchTargetUser :with-groups="false" @selected="selected" />
 			</div>
 			<Button
 				class="text-danger-800 font-bold hover:text-white hover:bg-danger-800 w-full bg-transparent border-none"
@@ -37,23 +37,23 @@ import Card from "primevue/card";
 import AlbumService from "@/services/album-service";
 import { sprintf } from "sprintf-js";
 import SearchTargetUser from "@/components/forms/album/SearchTargetUser.vue";
-import { type UserOrGroup } from "@/composables/search/searchUserGroupComputed";
+import { type UserOrGroup } from "@/stores/UsersAndGroupsState";
+import { useAlbumStore } from "@/stores/AlbumState";
 
-const props = defineProps<{
-	album: App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.TagAlbumResource;
-}>();
-
+const albumStore = useAlbumStore();
 const router = useRouter();
 const newOwner = ref<UserOrGroup | undefined>(undefined);
 
 function execute() {
+	if (albumStore.album === undefined) {
+		return;
+	}
 	if (newOwner.value === undefined) {
 		return;
 	}
-	AlbumService.transfer(props.album.id, newOwner.value.id).then(() => {
+	AlbumService.transfer(albumStore.album.id, newOwner.value.id).then(() => {
 		router.push("/gallery");
-		// @ts-expect-error --- IGNORE ---
-		AlbumService.clearCache(props.album?.parent_id);
+		AlbumService.clearCache(albumStore.modelAlbum?.parent_id);
 	});
 }
 

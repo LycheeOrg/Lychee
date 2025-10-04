@@ -60,7 +60,7 @@ import { ref } from "vue";
 import SearchTargetUser from "./SearchTargetUser.vue";
 import Checkbox from "primevue/checkbox";
 import Button from "primevue/button";
-import { UserOrGroup, UserOrGroupId } from "@/composables/search/searchUserGroupComputed";
+import { type UserOrGroup, type UserOrGroupId } from "@/stores/UsersAndGroupsState";
 
 const props = defineProps<{
 	album: App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.TagAlbumResource;

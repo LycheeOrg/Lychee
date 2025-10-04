@@ -3,7 +3,7 @@
 		class=""
 		:class="{
 			'overlay absolute mb-[1px] mx-[1px] p-0 border-0 w-[calc(100%-2px)] bottom-0 bg-gradient-to-t from-[#00000099] text-shadow-sm': true,
-			'opacity-0 group-hover:opacity-100 transition-all ease-out': props.config.display_thumb_album_overlay === 'hover',
+			'opacity-0 group-hover:opacity-100 transition-all ease-out': display_thumb_album_overlay === 'hover',
 		}"
 	>
 		<h1
@@ -23,21 +23,25 @@
 				'ml-0 mr-2 sm:mr-3 md:mr-4': !isLTR(),
 			}"
 		>
-			<i v-if="props.config.album_subtitle_type === 'takedate' || props.config.album_subtitle_type === 'creation'" class="pi pi-pi-camera"></i>
+			<i v-if="album_subtitle_type === 'takedate' || album_subtitle_type === 'creation'" class="pi pi-pi-camera"></i>
 			{{ subtitle }}
 		</span>
 	</div>
 </template>
 <script setup lang="ts">
 import { computed } from "vue";
-import { AlbumThumbConfig } from "./AlbumThumb.vue";
 import { useLtRorRtL } from "@/utils/Helpers";
 import { trans } from "laravel-vue-i18n";
+import { useLycheeStateStore } from "@/stores/LycheeState";
+import { storeToRefs } from "pinia";
 
 const { isLTR } = useLtRorRtL();
 
+const lycheeStore = useLycheeStateStore();
+const { album_subtitle_type, display_thumb_album_overlay } = storeToRefs(lycheeStore);
+
 const subtitle = computed(() => {
-	switch (props.config.album_subtitle_type) {
+	switch (album_subtitle_type.value) {
 		case "description":
 			return props.album.description;
 		case "takedate":
@@ -69,6 +73,5 @@ const subtitle = computed(() => {
 
 const props = defineProps<{
 	album: App.Http.Resources.Models.ThumbAlbumResource;
-	config: AlbumThumbConfig;
 }>();
 </script>

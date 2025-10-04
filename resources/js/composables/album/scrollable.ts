@@ -1,13 +1,21 @@
 import { type TogglablesStateStore } from "@/stores/ModalsState";
 import { type Ref } from "vue";
 
-export function useScrollable(toggleableStore: TogglablesStateStore, path: Ref<string>) {
+export function useScrollable(toggleableStore: TogglablesStateStore, path: Ref<string | undefined>) {
 	function onScroll() {
+		if (path.value === undefined) {
+			return;
+		}
+
 		const e = document.getElementById("galleryView") as HTMLElement;
 		toggleableStore.rememberScrollPage(e, path.value);
 	}
 
 	async function setScroll(_v: void, iter = 0) {
+		if (path.value === undefined) {
+			return;
+		}
+
 		// Abort. We tried 10 times (waited 1s).
 		if (iter == 10) {
 			return;

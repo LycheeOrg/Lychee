@@ -28,6 +28,7 @@
 <script setup lang="ts">
 import { usePreviewData } from "@/composables/preview/getPreviewInfo";
 import StatisticsService from "@/services/statistics-service";
+import { useAlbumStore } from "@/stores/AlbumState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { sizeToUnit, sizeVariantToColour } from "@/utils/StatsSizeVariantToColours";
 import { storeToRefs } from "pinia";
@@ -43,10 +44,7 @@ type SizeVariantData = {
 	icon: string;
 };
 
-const props = defineProps<{
-	albumId: string | null;
-}>();
-
+const albumStore = useAlbumStore();
 const lycheeStore = useLycheeStateStore();
 const sizeVariantSpace = ref<App.Http.Resources.Statistics.Sizes[] | undefined>(undefined);
 const sizeVariantSpaceMeter = ref<SizeVariantData[] | undefined>(undefined);
@@ -54,7 +52,7 @@ const sizeVariantSpaceMeter = ref<SizeVariantData[] | undefined>(undefined);
 const { is_se_preview_enabled } = storeToRefs(lycheeStore);
 
 function loadSizeVariantSpace() {
-	StatisticsService.getSizeVariantSpace(props.albumId).then((response) => {
+	StatisticsService.getSizeVariantSpace(albumStore.albumId).then((response) => {
 		sizeVariantSpace.value = response.data;
 		prepSizeVariantData();
 	});

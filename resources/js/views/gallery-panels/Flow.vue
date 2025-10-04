@@ -22,10 +22,10 @@
 			<div v-if="albums && albums.length === 0" class="h-[70vh] text-muted-color flex items-center">{{ $t("flow.no_content") }}</div>
 			<div v-if="currentPage < lastPage" ref="sentinel" class="sentinel"></div>
 		</div>
-		<LigtBox v-if="selectedPhoto" :photo="selectedPhoto" @go-back="goBack" @next="next" @previous="previous" />
+		<LigtBox @go-back="goBack" @next="next" @previous="previous" />
 		<ProgressSpinner v-if="isLoading && !isTouchDevice()" class="flex justify-center" />
 		<GalleryFooter v-once />
-		<ScrollTop v-if="selectedPhoto" target="parent" />
+		<ScrollTop v-if="photoStore.isLoaded" target="parent" />
 	</div>
 </template>
 <script setup lang="ts">
@@ -34,9 +34,7 @@ import AlbumCard from "@/components/gallery/flowModule/AlbumCard.vue";
 import LigtBox from "@/components/gallery/flowModule/LigtBox.vue";
 import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
 import LoadingProgress from "@/components/loading/LoadingProgress.vue";
-import { useHasNextPreviousPhoto } from "@/composables/photo/hasNextPreviousPhoto";
 import FlowService from "@/services/flow-service";
-import { useAuthStore } from "@/stores/Auth";
 import { useFlowStateStore } from "@/stores/FlowState";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
@@ -51,15 +49,16 @@ import { onUnmounted } from "vue";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { useLtRorRtL } from "@/utils/Helpers";
+import { useUserStore } from "@/stores/UserState";
+import { usePhotoStore } from "@/stores/PhotoState";
 
 const { isLTR } = useLtRorRtL();
 
-const auth = useAuthStore();
+const userStore = useUserStore();
+const photoStore = usePhotoStore();
 const lycheeStore = useLycheeStateStore();
 const flowState = useFlowStateStore();
 const router = useRouter();
-
-lycheeStore.init();
 
 const leftMenuStore = useLeftMenuStateStore();
 const { title, image_overlay_type } = storeToRefs(lycheeStore);
@@ -73,7 +72,6 @@ const lastPage = ref(0);
 const sentinel = ref(null);
 let stopObserver = null;
 
-const selectedPhoto = ref<App.Http.Resources.Models.PhotoResource | undefined>(undefined);
 const selectedAlbum = ref<App.Http.Resources.Flow.FlowItemResource | undefined>(undefined);
 
 function setSelection(album: App.Http.Resources.Flow.FlowItemResource, idxPhoto: number) {
@@ -88,7 +86,7 @@ function setSelection(album: App.Http.Resources.Flow.FlowItemResource, idxPhoto:
 	}
 
 	selectedAlbum.value = album;
-	selectedPhoto.value = album.photos[idxPhoto];
+	photoStore.photo = album.photos[idxPhoto];
 }
 
 function load() {
@@ -125,14 +123,15 @@ onMounted(async () => {
 	are_nsfw_consented.value = false;
 
 	leftMenuStore.left_menu_open = false;
-	const user = await auth.getUser();
+	await userStore.load();
+	lycheeStore.load();
 
 	await FlowService.init().then((response) => {
 		config.value = response.data;
 		are_nsfw_blurred.value = response.data.is_blur_nsfw_enabled;
 	});
 
-	if (user.id === null && !config.value?.is_mod_flow_enabled) {
+	if (userStore.isGuest && !config.value?.is_mod_flow_enabled) {
 		router.push({ name: "gallery" });
 		return;
 	}
@@ -146,10 +145,8 @@ onUnmounted(() => stopObserver());
 
 function goBack() {
 	selectedAlbum.value = undefined;
-	selectedPhoto.value = undefined;
+	photoStore.reset();
 }
-
-const { hasNext, hasPrevious } = useHasNextPreviousPhoto(selectedPhoto);
 
 function rotateOverlay() {
 	const overlays = ["none", "desc", "date", "exif"] as App.Enum.ImageOverlayType[];
@@ -162,26 +159,26 @@ function rotateOverlay() {
 }
 
 function next() {
-	if (!hasNext()) {
+	if (!photoStore.hasNext) {
 		return;
 	}
 
-	selectedPhoto.value = selectedAlbum.value?.photos.find((photo) => photo.id === selectedPhoto.value?.next_photo_id);
+	photoStore.photo = selectedAlbum.value?.photos.find((photo) => photo.id === photoStore.photo?.next_photo_id);
 }
 
 function previous() {
-	if (!hasPrevious()) {
+	if (!photoStore.hasPrevious) {
 		return;
 	}
 
-	selectedPhoto.value = selectedAlbum.value?.photos.find((photo) => photo.id === selectedPhoto.value?.previous_photo_id);
+	photoStore.photo = selectedAlbum.value?.photos.find((photo) => photo.id === photoStore.photo?.previous_photo_id);
 }
 
-onKeyStroke("ArrowLeft", () => !shouldIgnoreKeystroke() && selectedPhoto.value !== undefined && isLTR() && hasPrevious() && previous());
-onKeyStroke("ArrowRight", () => !shouldIgnoreKeystroke() && selectedPhoto.value !== undefined && isLTR() && hasNext() && next());
-onKeyStroke("ArrowLeft", () => !shouldIgnoreKeystroke() && selectedPhoto.value !== undefined && !isLTR() && hasNext() && next());
-onKeyStroke("ArrowRight", () => !shouldIgnoreKeystroke() && selectedPhoto.value !== undefined && !isLTR() && hasPrevious() && previous());
-onKeyStroke("o", () => !shouldIgnoreKeystroke() && selectedPhoto.value !== undefined && rotateOverlay());
+onKeyStroke("ArrowLeft", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && isLTR() && photoStore.hasPrevious && previous());
+onKeyStroke("ArrowRight", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && isLTR() && photoStore.hasNext && next());
+onKeyStroke("ArrowLeft", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && !isLTR() && photoStore.hasNext && next());
+onKeyStroke("ArrowRight", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && !isLTR() && photoStore.hasPrevious && previous());
+onKeyStroke("o", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && rotateOverlay());
 onKeyStroke("Escape", () => {
 	// 1. lose focus
 	if (shouldIgnoreKeystroke() && document.activeElement instanceof HTMLElement) {

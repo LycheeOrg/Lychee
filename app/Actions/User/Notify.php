@@ -54,7 +54,7 @@ class Notify
 				->whereIn(APC::BASE_ALBUM_ID, $albums->pluck('id'))
 				->get();
 			$users->push(...$shared_with->all());
-			$users->push(...$albums->map(fn ($a) => $a->owner)->all());
+			$users->push(...$albums->map(fn (Album $a) => $a->owner)->all());
 		}
 
 		$users = $users

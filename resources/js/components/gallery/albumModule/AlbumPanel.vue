@@ -2,25 +2,22 @@
 	<div class="h-svh overflow-y-hidden flex flex-col">
 		<!-- Trick to avoid the scroll bar to appear on the right when switching to full screen -->
 		<AlbumHeader
-			v-if="album && config && user"
-			:album="album"
-			:config="config"
-			:user="user"
+			v-if="albumStore.isLoaded && userStore.isLoaded"
 			@refresh="emits('refresh')"
 			@toggle-edit="emits('toggleEdit')"
 			@open-search="emits('openSearch')"
 			@go-back="emits('goBack')"
 		/>
-		<template v-if="config && album">
+		<template v-if="albumStore.album && albumStore.config && userStore.isLoaded">
 			<div id="galleryView" class="relative flex flex-wrap content-start w-full justify-start overflow-y-auto h-full select-none">
-				<SelectDrag :photos="photos" :albums="children" :with-scroll="true" />
-				<AlbumEdit v-if="album.rights.can_edit" :album="album" :config="config" />
+				<SelectDrag :with-scroll="true" />
+				<AlbumEdit v-if="albumStore.rights?.can_edit" />
 				<div v-if="noData" class="flex w-full flex-col h-full items-center justify-center text-xl text-muted-color gap-8">
 					<span class="block">
 						{{ $t("gallery.album.no_results") }}
 					</span>
 					<Button
-						v-if="album.rights.can_upload && modelAlbum !== undefined"
+						v-if="albumStore.rights?.can_upload && albumStore.modelAlbum !== undefined"
 						severity="warn"
 						class="rounded max-w-xs w-full border-none font-bold"
 						icon="pi pi-upload"
@@ -30,64 +27,55 @@
 				</div>
 				<AlbumHero
 					v-if="!noData"
-					:album="album"
-					:config="config"
-					:has-hidden="hasHidden"
 					@open-sharing-modal="toggleShareAlbum"
 					@open-statistics="toggleStatistics"
 					@toggle-slide-show="emits('toggleSlideShow')"
 				/>
-				<template v-if="is_se_enabled && user?.id !== null">
+				<template v-if="is_se_enabled && userStore.isLoggedIn">
 					<AlbumStatistics
-						:key="'statistics_' + album.id"
+						v-if="photosStore.photos.length > 0"
+						:key="`statistics_${albumStore.album?.id}`"
 						v-model:visible="areStatisticsOpen"
-						:photos="photos"
-						:config="config"
-						:album="album"
 					/>
 				</template>
 				<AlbumThumbPanel
-					v-if="children !== null && children.length > 0"
+					v-if="albumsStore.albums.length > 0"
 					header="gallery.album.header_albums"
-					:album="modelAlbum"
-					:albums="children"
+					:albums="albumsStore.albums"
 					:config="albumPanelConfig"
-					:is-alone="!photos?.length"
+					:is-alone="photosStore.photos.length === 0"
 					:idx-shift="0"
 					:selected-albums="selectedAlbumsIds"
-					:is-timeline="config.is_album_timeline_enabled"
+					:is-timeline="albumStore.config.is_album_timeline_enabled"
 					@clicked="albumClick"
 					@contexted="albumMenuOpen"
 				/>
 				<PhotoThumbPanel
-					v-if="layoutConfig !== null && photos !== null && photos.length > 0"
+					v-if="layoutStore.config && photosStore.photos.length > 0"
 					header="gallery.album.header_photos"
-					:photos="photos"
-					:photos-timeline="photosTimeline"
-					:gallery-config="layoutConfig"
-					:photo-layout="config.photo_layout"
+					:photos="photosStore.photos"
+					:photos-timeline="photosStore.photosTimeline"
 					:selected-photos="selectedPhotosIds"
-					:is-timeline="config.is_photo_timeline_enabled"
+					:is-timeline="albumStore.config.is_photo_timeline_enabled"
 					:with-control="true"
-					:cover-id="modelAlbum?.cover_id ?? undefined"
-					:header-id="modelAlbum?.header_id ?? undefined"
 					@clicked="photoClick"
 					@selected="photoSelect"
 					@contexted="photoMenuOpen"
 				/>
 				<ScrollTop v-if="!props.isPhotoOpen" target="parent" />
 			</div>
-			<div v-if="photos.length > 0" class="flex justify-center w-full">
+			<div v-if="photosStore.photos.length > 0 && albumStore.has_pagination" class="flex justify-center w-full">
 				<Paginator
 					v-model:first="firstValue"
 					v-model:rows="rowsValue"
 					:total-records="total"
 					:always-show="false"
-					@update:first="emits('refresh')"
+					@update:first="(val) => emits('update:first', val)"
+					@update:rows="(val) => emits('update:rows', val)"
 				/>
 			</div>
 			<GalleryFooter v-once />
-			<ShareAlbum :key="'share_modal_' + album.id" v-model:visible="is_share_album_visible" :title="album.title" />
+			<ShareAlbum :key="`share_modal_${albumStore.album.id}`" v-model:visible="is_share_album_visible" :title="albumStore.album.title" />
 
 			<!-- Dialogs -->
 			<ContextMenu ref="menu" :model="Menu" :class="Menu.length === 0 ? 'hidden' : ''">
@@ -130,51 +118,30 @@ import AlbumStatistics from "@/components/drawers/AlbumStatistics.vue";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { usePhotoRoute } from "@/composables/photo/photoRoute";
 import { useRouter } from "vue-router";
-import { type SplitData } from "@/composables/album/splitter";
 import SelectDrag from "@/components/forms/album/SelectDrag.vue";
 import Paginator from "primevue/paginator";
+import { useAlbumStore } from "@/stores/AlbumState";
+import { usePhotosStore } from "@/stores/PhotosState";
+import { useAlbumsStore } from "@/stores/AlbumsState";
+import { useUserStore } from "@/stores/UserState";
+import { useLayoutStore } from "@/stores/LayoutState";
 
 const router = useRouter();
 
 const props = defineProps<{
-	modelAlbum: App.Http.Resources.Models.AlbumResource | undefined;
-	album:
-		| App.Http.Resources.Models.AlbumResource
-		| App.Http.Resources.Models.TagAlbumResource
-		| App.Http.Resources.Models.SmartAlbumResource
-		| undefined;
-	photos: App.Http.Resources.Models.PhotoResource[];
-	photosTimeline: SplitData<App.Http.Resources.Models.PhotoResource>[] | undefined;
-	config: App.Http.Resources.GalleryConfigs.AlbumConfig | undefined;
-	user: App.Http.Resources.Models.UserResource | undefined;
-	layoutConfig: App.Http.Resources.GalleryConfigs.PhotoLayoutConfig;
 	isPhotoOpen: boolean;
-	total: number;
-	rows: number;
-	first: number;
+	total: number | undefined;
+	rows: number | undefined;
+	first: number | undefined;
 }>();
 
-const modelAlbum = computed(() => props.modelAlbum);
-const album = computed(() => props.album);
-const hasHidden = computed(() => modelAlbum.value !== undefined && modelAlbum.value.albums.filter((album) => album.is_nsfw).length > 0);
-const photos = computed<App.Http.Resources.Models.PhotoResource[]>(() => props.photos);
-const photosTimeline = computed(() => props.photosTimeline);
-
-const firstValue = computed({
-	get: () => props.first,
-	set: (val: number) => emits("update:first", val),
-});
-
-const rowsValue = computed({
-	get: () => props.rows,
-	set: (val: number) => emits("update:rows", val),
-});
-
-const config = ref(props.config);
-
+const userStore = useUserStore();
+const albumStore = useAlbumStore();
+const photosStore = usePhotosStore();
+const albumsStore = useAlbumsStore();
+const layoutStore = useLayoutStore();
 const togglableStore = useTogglablesStateStore();
 const lycheeStore = useLycheeStateStore();
-const layoutConfig = ref(props.layoutConfig);
 
 const emits = defineEmits<{
 	refresh: [];
@@ -188,10 +155,7 @@ const emits = defineEmits<{
 }>();
 
 const { is_se_enabled } = storeToRefs(lycheeStore);
-
-const children = computed<App.Http.Resources.Models.ThumbAlbumResource[]>(() => modelAlbum.value?.albums ?? []);
-const selectableAlbums = computed<App.Http.Resources.Models.ThumbAlbumResource[]>(() => modelAlbum.value?.albums ?? []);
-const noData = computed(() => children.value.length === 0 && (photos.value === null || photos.value.length === 0));
+const noData = computed(() => albumsStore.albums.length === 0 && photosStore.photos.length === 0);
 
 const { is_share_album_visible, toggleDelete, toggleMergeAlbum, toggleMove, toggleRename, toggleShareAlbum, toggleTag, toggleCopy, toggleUpload } =
 	useGalleryModals(togglableStore);
@@ -208,18 +172,12 @@ const {
 	photoSelect,
 	albumClick,
 	unselect,
-} = useSelection(
-	{
-		photos,
-		albums: selectableAlbums,
-	},
-	togglableStore,
-);
+} = useSelection(photosStore, albumsStore, togglableStore);
 
 const { photoRoute, getParentId } = usePhotoRoute(router);
 
 function photoClick(idx: number, _e: MouseEvent) {
-	router.push(photoRoute(photos.value[idx].id));
+	router.push(photoRoute(photosStore.photos[idx].id));
 }
 
 const areStatisticsOpen = ref(false);
@@ -229,8 +187,22 @@ function toggleStatistics() {
 	}
 }
 
+const firstValue = computed({
+	get: () => props.first,
+	set: (val: number) => {
+		albumStore.updateCurrentPage(val);
+		emits("update:first", val);
+	},
+});
+
+const rowsValue = computed({
+	get: () => props.rows,
+	set: (val: number) => emits("update:rows", val),
+});
+
+
 const albumPanelConfig = computed<AlbumThumbConfig>(() => ({
-	album_thumb_css_aspect_ratio: config.value?.album_thumb_css_aspect_ratio ?? "aspect-square",
+	album_thumb_css_aspect_ratio: albumStore.config?.album_thumb_css_aspect_ratio ?? "aspect-square",
 	album_subtitle_type: lycheeStore.album_subtitle_type,
 	display_thumb_album_overlay: lycheeStore.display_thumb_album_overlay,
 	album_decoration: lycheeStore.album_decoration,
@@ -240,24 +212,24 @@ const albumPanelConfig = computed<AlbumThumbConfig>(() => ({
 const photoCallbacks = {
 	star: () => {
 		PhotoService.star(selectedPhotosIds.value, true);
-		AlbumService.clearCache(album.value?.id);
+		AlbumService.clearCache(albumStore.album?.id);
 		emits("refresh");
 	},
 	unstar: () => {
 		PhotoService.star(selectedPhotosIds.value, false);
-		AlbumService.clearCache(album.value?.id);
+		AlbumService.clearCache(albumStore.album?.id);
 		emits("refresh");
 	},
 	setAsCover: () => {
-		if (album.value === undefined) return;
-		PhotoService.setAsCover(selectedPhoto.value!.id, album.value.id);
-		AlbumService.clearCache(album.value.id);
+		if (albumStore.album === undefined) return;
+		PhotoService.setAsCover(selectedPhoto.value!.id, albumStore.album.id);
+		AlbumService.clearCache(albumStore.album.id);
 		emits("refresh");
 	},
 	setAsHeader: () => {
-		if (album.value === undefined) return;
-		PhotoService.setAsHeader(selectedPhoto.value!.id, album.value.id, false);
-		AlbumService.clearCache(album.value.id);
+		if (albumStore.album === undefined) return;
+		PhotoService.setAsHeader(selectedPhoto.value!.id, albumStore.album.id, false);
+		AlbumService.clearCache(albumStore.album.id);
 		emits("refresh");
 	},
 	toggleTag: toggleTag,
@@ -272,13 +244,13 @@ const photoCallbacks = {
 
 function togglePin() {
 	if (!selectedAlbum.value) return;
-	if (!album.value) return;
+	if (!albumStore.album) return;
 
 	AlbumService.setPinned(selectedAlbum.value.id, !selectedAlbum.value.is_pinned).then(() => {
-		if (album.value === undefined) return; // should not happen, but hey...
+		if (albumStore.album === undefined) return; // should not happen, but hey...
 
 		AlbumService.clearAlbums();
-		AlbumService.clearCache(album.value.id);
+		AlbumService.clearCache(albumStore.album.id);
 		emits("refresh");
 		unselect();
 	});
@@ -286,10 +258,10 @@ function togglePin() {
 
 const albumCallbacks = {
 	setAsCover: () => {
-		if (album.value === undefined) return;
+		if (albumStore.album === undefined) return;
 		if (selectedAlbum.value?.thumb?.id === undefined) return;
-		PhotoService.setAsCover(selectedAlbum.value!.thumb?.id, album.value.id);
-		AlbumService.clearCache(album.value.id);
+		PhotoService.setAsCover(selectedAlbum.value!.thumb?.id, albumStore.album.id);
+		AlbumService.clearCache(albumStore.album.id);
 		emits("refresh");
 	},
 	toggleRename: toggleRename,
@@ -302,10 +274,13 @@ const albumCallbacks = {
 	togglePin: togglePin,
 };
 
+const computedAlbum = computed(() => albumStore.album);
+const computedConfig = computed(() => albumStore.config);
+
 const { menu, Menu, photoMenuOpen, albumMenuOpen } = useContextMenu(
 	{
-		config: config,
-		album: album,
+		config: computedConfig,
+		album: computedAlbum,
 		selectedPhoto: selectedPhoto,
 		selectedPhotos: selectedPhotos,
 		selectedPhotosIdx: selectedPhotosIdx,

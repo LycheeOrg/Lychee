@@ -1,24 +1,22 @@
 <template>
 	<a class="px-1 cursor-pointer group hidden sm:inline-block h-8" :title="$t('gallery.layout.squares')" @click="layout = 'square'">
-		<MiniIcon icon="squares" fill="fill-transparent" :class="squareClass" />
+		<MiniIcon icon="squares" fill="fill-transparent" :class="layoutStore.squareClass" />
 	</a>
 	<a class="px-1 cursor-pointer group hidden sm:inline-block h-8" :title="$t('gallery.layout.justified')" @click="layout = 'justified'">
-		<MiniIcon icon="justified" fill="" :class="justifiedClass" />
+		<MiniIcon icon="justified" fill="" :class="layoutStore.justifiedClass" />
 	</a>
 	<a class="px-1 cursor-pointer group hidden sm:inline-block h-8" :title="$t('gallery.layout.masonry')" @click="layout = 'masonry'">
-		<MiniIcon icon="masonry" fill="fill-transparent" :class="masonryClass" />
+		<MiniIcon icon="masonry" fill="fill-transparent" :class="layoutStore.masonryClass" />
 	</a>
 	<a class="px-1 cursor-pointer group hidden sm:inline-block h-8" :title="$t('gallery.layout.grid')" @click="layout = 'grid'">
-		<MiniIcon icon="grid" fill="fill-transparent" :class="gridClass" />
+		<MiniIcon icon="grid" fill="fill-transparent" :class="layoutStore.gridClass" />
 	</a>
 </template>
 <script setup lang="ts">
-import { Ref } from "vue";
 import MiniIcon from "@/components/icons/MiniIcon.vue";
-import { useLayoutClass } from "@/layouts/PhotoLayout";
+import { useLayoutStore } from "@/stores/LayoutState";
+import { storeToRefs } from "pinia";
 
-const layout = defineModel("layout") as Ref<App.Enum.PhotoLayoutType>;
-
-// Layouts stuff
-const { squareClass, justifiedClass, masonryClass, gridClass } = useLayoutClass(layout);
+const layoutStore = useLayoutStore();
+const { layout } = storeToRefs(layoutStore);
 </script>

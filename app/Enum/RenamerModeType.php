@@ -21,4 +21,9 @@ enum RenamerModeType: string
 	case FIRST = 'first';
 	case ALL = 'all';
 	case REGEX = 'regex';
+	case TRIM = 'trim';
+	case LOWER = 'strtolower';
+	case UPPER = 'strtoupper';
+	case UCWORDS = 'ucwords';
+	case UCFIRST = 'ucfirst';
 }

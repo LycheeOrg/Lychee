@@ -1,34 +1,30 @@
 import AlbumService from "@/services/album-service";
 import PhotoService from "@/services/photo-service";
 import { type LycheeStateStore } from "@/stores/LycheeState";
+import { PhotoStore } from "@/stores/PhotoState";
 import { trans } from "laravel-vue-i18n";
 import { type ToastServiceMethods } from "primevue/toastservice";
 import { type Ref } from "vue";
 
-export function usePhotoActions(
-	photo: Ref<App.Http.Resources.Models.PhotoResource | undefined>,
-	albumId: Ref<string | null>,
-	toast: ToastServiceMethods,
-	lycheeStore: LycheeStateStore,
-) {
+export function usePhotoActions(photoStore: PhotoStore, albumId: Ref<string | undefined>, toast: ToastServiceMethods, lycheeStore: LycheeStateStore) {
 	function toggleStar() {
-		if (photo.value === undefined) {
+		if (photoStore.photo === undefined) {
 			return;
 		}
 
-		PhotoService.star([photo.value.id], !photo.value!.is_starred).then(() => {
-			photo.value!.is_starred = !photo.value!.is_starred;
+		PhotoService.star([photoStore.photo.id], !photoStore.photo.is_starred).then(() => {
+			photoStore.photo!.is_starred = !photoStore.photo!.is_starred;
 			AlbumService.clearCache(albumId.value);
 		});
 	}
 
 	// Untested
 	function rotatePhotoCCW() {
-		if (photo.value === undefined) {
+		if (photoStore.photo === undefined) {
 			return;
 		}
 
-		PhotoService.rotate(photo.value.id, "-1", albumId.value).then(() => {
+		PhotoService.rotate(photoStore.photo.id, "-1", albumId.value ?? null).then(() => {
 			AlbumService.clearCache(albumId.value);
 			location.reload();
 		});
@@ -36,26 +32,26 @@ export function usePhotoActions(
 
 	// Untested
 	function rotatePhotoCW() {
-		if (photo.value === undefined) {
+		if (photoStore.photo === undefined) {
 			return;
 		}
 
-		PhotoService.rotate(photo.value.id, "1", albumId.value).then(() => {
+		PhotoService.rotate(photoStore.photo.id, "1", albumId.value ?? null).then(() => {
 			AlbumService.clearCache(albumId.value);
 			location.reload();
 		});
 	}
 
 	function setAlbumHeader() {
-		if (photo.value === undefined) {
+		if (photoStore.photo === undefined) {
 			return;
 		}
 
-		if (albumId.value === null) {
+		if (albumId.value === undefined) {
 			return;
 		}
 
-		PhotoService.setAsHeader(photo.value.id, albumId.value, false).then(() => {
+		PhotoService.setAsHeader(photoStore.photo.id, albumId.value, false).then(() => {
 			toast.add({ severity: "success", summary: trans("toasts.success"), detail: trans("gallery.photo.actions.header_set"), life: 2000 });
 			AlbumService.clearCache(albumId.value);
 			// refresh();

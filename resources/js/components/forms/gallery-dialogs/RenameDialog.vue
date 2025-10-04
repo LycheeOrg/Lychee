@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import Button from "primevue/button";
 import AlbumService from "@/services/album-service";
 import Dialog from "primevue/dialog";
@@ -30,6 +30,7 @@ import PhotoService from "@/services/photo-service";
 import { trans } from "laravel-vue-i18n";
 import InputText from "@/components/forms/basic/InputText.vue";
 import FloatLabel from "primevue/floatlabel";
+import { watch } from "vue";
 
 const props = defineProps<{
 	album?: App.Http.Resources.Models.ThumbAlbumResource;
@@ -84,4 +85,31 @@ function executeAlbum() {
 		AlbumService.clearCache(props.album?.id);
 	});
 }
+
+onMounted(() => {
+	if (props.album) {
+		title.value = props.album.title;
+	}
+	if (props.photo) {
+		title.value = props.photo.title;
+	}
+});
+
+watch(
+	() => props.album,
+	(newAlbum: App.Http.Resources.Models.ThumbAlbumResource | undefined) => {
+		if (newAlbum) {
+			title.value = newAlbum.title;
+		}
+	},
+);
+
+watch(
+	() => props.photo,
+	(newPhoto: App.Http.Resources.Models.PhotoResource | undefined) => {
+		if (newPhoto) {
+			title.value = newPhoto.title;
+		}
+	},
+);
 </script>

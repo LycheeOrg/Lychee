@@ -1,6 +1,6 @@
 <template>
 	<Drawer v-model:visible="isEditOpen" :close-on-esc="false" position="right" pt:root:class="w-full p-card border-transparent">
-		<Card v-if="props.photo" id="lychee_sidebar" class="h-full pr-4 break-words max-w-4xl mx-auto">
+		<Card v-if="photo" id="lychee_sidebar" class="h-full pr-4 break-words max-w-4xl mx-auto">
 			<template #content>
 				<form class="w-full flex flex-col md:gap-y-4 md:grid md:grid-cols-[200px_minmax(auto,_1fr)] justify-center">
 					<label for="title" class="font-bold self-center">{{ $t("gallery.photo.edit.set_title") }}</label>
@@ -97,7 +97,7 @@
 <script setup lang="ts">
 import Card from "primevue/card";
 import Drawer from "primevue/drawer";
-import { ref, Ref, watch } from "vue";
+import { onMounted, ref, Ref, watch } from "vue";
 import InputText from "@/components/forms/basic/InputText.vue";
 import { licenseOptions, SelectOption, SelectBuilders, timeZoneOptions } from "@/config/constants";
 import Select from "primevue/select";
@@ -115,10 +115,12 @@ import { usePhotoRoute } from "@/composables/photo/photoRoute";
 import TagsInput from "@/components/forms/basic/TagsInput.vue";
 import TagsService from "@/services/tags-service";
 import AlbumService from "@/services/album-service";
+import { usePhotoStore } from "@/stores/PhotoState";
+import { storeToRefs } from "pinia";
 
-const props = defineProps<{
-	photo: App.Http.Resources.Models.PhotoResource;
-}>();
+const photoStore = usePhotoStore();
+
+const { photo } = storeToRefs(photoStore);
 
 const toast = useToast();
 const router = useRouter();
@@ -136,27 +138,27 @@ const license = ref<SelectOption<App.Enum.LicenseType> | undefined>(undefined);
 const uploadTz = ref<string | undefined>(undefined);
 const takenAtTz = ref<string | undefined>(undefined);
 
-function load(photo: App.Http.Resources.Models.PhotoResource) {
-	photo_id.value = photo.id;
-	title.value = photo.title;
-	description.value = photo.description;
-	tags.value = photo.tags;
+function load(photoToEdit: App.Http.Resources.Models.PhotoResource) {
+	photo_id.value = photoToEdit.id;
+	title.value = photoToEdit.title;
+	description.value = photoToEdit.description;
+	tags.value = photoToEdit.tags;
 
-	const dataDate = (photo.created_at ?? "").slice(0, 19);
-	uploadTz.value = (photo.created_at ?? "").slice(19);
+	const dataDate = (photoToEdit.created_at ?? "").slice(0, 19);
+	uploadTz.value = (photoToEdit.created_at ?? "").slice(19);
 	uploadDate.value = new Date(dataDate);
-	is_taken_at_modified.value = photo.precomputed.is_taken_at_modified;
+	is_taken_at_modified.value = photoToEdit.precomputed.is_taken_at_modified;
 
-	if (photo.taken_at === null) {
+	if (photoToEdit.taken_at === null) {
 		takenAtDate.value = undefined;
 		takenAtTz.value = undefined;
 	} else {
-		const takenDate = (photo.taken_at ?? "").slice(0, 19);
-		takenAtTz.value = (photo.taken_at ?? "").slice(19);
+		const takenDate = (photoToEdit.taken_at ?? "").slice(0, 19);
+		takenAtTz.value = (photoToEdit.taken_at ?? "").slice(19);
 		takenAtDate.value = new Date(takenDate);
 	}
 
-	license.value = SelectBuilders.buildLicense(photo.license);
+	license.value = SelectBuilders.buildLicense(photoToEdit.license);
 }
 
 function save() {
@@ -188,11 +190,21 @@ function save() {
 	});
 }
 
-load(props.photo);
+onMounted(() => {
+	if (photoStore.photo) {
+		load(photoStore.photo);
+	}
+});
 
 watch(
-	() => props.photo,
-	(newPhoto: App.Http.Resources.Models.PhotoResource, _oldPhoto) => load(newPhoto),
+	() => photo.value,
+	(newPhoto: App.Http.Resources.Models.PhotoResource | undefined, _oldPhoto) => {
+		if (newPhoto) {
+			load(newPhoto);
+		} else {
+			photo_id.value = undefined;
+		}
+	},
 );
 </script>
 <style lang="css">

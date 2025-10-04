@@ -31,7 +31,7 @@ import { useToast } from "primevue/usetoast";
 import SearchTargetUser from "@/components/forms/album/SearchTargetUser.vue";
 import SharingService from "@/services/sharing-service";
 import { trans } from "laravel-vue-i18n";
-import { type UserOrGroup, type UserOrGroupId } from "@/composables/search/searchUserGroupComputed";
+import { type UserOrGroup, type UserOrGroupId } from "@/stores/UsersAndGroupsState";
 
 const props = defineProps<{
 	withAlbum?: boolean;

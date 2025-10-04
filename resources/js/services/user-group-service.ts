@@ -25,7 +25,7 @@ export const UserGroupService = {
 	 * @param description - The new description of the user group.
 	 */
 	updateUserGroup(groupId: number, name: string, description: string): Promise<AxiosResponse<App.Http.Resources.Models.UserGroupResource>> {
-		return axios.patch(`${Constants.getApiUrl()}UserGroups/`, { group_id: groupId, name: name, description: description });
+		return axios.patch(`${Constants.getApiUrl()}UserGroups`, { group_id: groupId, name: name, description: description });
 	},
 
 	/**
@@ -33,14 +33,14 @@ export const UserGroupService = {
 	 * @param groupId - The ID of the user group.
 	 */
 	deleteUserGroup(groupId: number): Promise<AxiosResponse<void>> {
-		return axios.delete(`${Constants.getApiUrl()}UserGroups/`, { data: { group_id: groupId } });
+		return axios.delete(`${Constants.getApiUrl()}UserGroups`, { data: { group_id: groupId } });
 	},
 
 	/**
 	 * Get the details of a user group.
 	 */
 	getUserGroup(groupId: number): Promise<AxiosResponse<App.Http.Resources.Models.UserGroupResource>> {
-		return axios.get(`${Constants.getApiUrl()}UserGroups/`, { data: { group_id: groupId } });
+		return axios.get(`${Constants.getApiUrl()}UserGroups`, { data: { group_id: groupId } });
 	},
 
 	/**
@@ -59,7 +59,7 @@ export const UserGroupService = {
 	 * @param userId - The ID of the user to remove.
 	 */
 	removeUserFromGroup(groupId: number, userId: number): Promise<AxiosResponse<void>> {
-		return axios.delete(`${Constants.getApiUrl()}UserGroups/Users/`, { data: { group_id: groupId, user_id: userId } });
+		return axios.delete(`${Constants.getApiUrl()}UserGroups/Users`, { data: { group_id: groupId, user_id: userId } });
 	},
 
 	/**
@@ -69,6 +69,6 @@ export const UserGroupService = {
 	 * @param role - The new role of the user in the group (e.g., 'member' or 'admin').
 	 */
 	updateUserRole(groupId: number, userId: number, role: string): Promise<AxiosResponse<void>> {
-		return axios.patch(`${Constants.getApiUrl()}UserGroups/Users/`, { group_id: groupId, user_id: userId, role: role });
+		return axios.patch(`${Constants.getApiUrl()}UserGroups/Users`, { group_id: groupId, user_id: userId, role: role });
 	},
 };

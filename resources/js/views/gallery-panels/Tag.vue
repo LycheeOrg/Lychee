@@ -1,27 +1,14 @@
 <template>
-	<LoadingProgress v-model:loading="isLoading" />
-	<LoginModal v-if="user?.id === null" @logged-in="refresh" />
-	<WebauthnModal v-if="user?.id === null" @logged-in="refresh" />
+	<LoadingProgress v-model:loading="tagStore.isLoading" />
+	<LoginModal v-if="userStore.isGuest" @logged-in="refresh" />
+	<WebauthnModal v-if="userStore.isGuest" @logged-in="refresh" />
 
-	<TagPanel
-		v-if="tag && layoutConfig"
-		:tag="tag.name"
-		:photos="photos"
-		:user="user"
-		:photo-layout="photoLayout"
-		:layout-config="layoutConfig"
-		:is-photo-open="false"
-		@refresh="refresh"
-		@go-back="goBack"
-	/>
+	<TagPanel v-if="tagStore.tag !== undefined" @refresh="refresh" @go-back="goBack" />
 
 	<!-- Photo panel -->
 	<PhotoPanel
-		v-if="photo"
-		:photo="photo"
-		:photos="photos"
+		v-if="photoStore.isLoaded"
 		:is-map-visible="false"
-		:transition="transition"
 		@toggle-slide-show="slideshow"
 		@rotate-overlay="rotateOverlay"
 		@rotate-photo-c-w="rotatePhotoCW"
@@ -30,17 +17,17 @@
 		@toggle-star="toggleStar"
 		@toggle-move="toggleMove"
 		@toggle-delete="toggleDelete"
-		@updated="refreshPhoto"
+		@updated="refresh"
 		@go-back="goBack"
 		@next="() => next(true)"
 		@previous="() => previous(true)"
 	/>
 
 	<!-- Dialogs -->
-	<template v-if="photo">
-		<PhotoEdit v-if="photo?.rights.can_edit" v-model:visible="is_photo_edit_open" :photo="photo" />
-		<MoveDialog v-model:visible="is_move_visible" :photo="photo" @moved="refresh" />
-		<DeleteDialog v-model:visible="is_delete_visible" :photo="photo" @deleted="refresh" />
+	<template v-if="photoStore.isLoaded">
+		<PhotoEdit v-if="photoStore.rights?.can_edit" v-model:visible="is_photo_edit_open" />
+		<MoveDialog v-model:visible="is_move_visible" :photo="photoStore.photo" @moved="refresh" />
+		<DeleteDialog v-model:visible="is_delete_visible" :photo="photoStore.photo" @deleted="refresh" />
 	</template>
 	<template v-else>
 		<PhotoTagDialog
@@ -119,15 +106,16 @@ import { useScrollable } from "@/composables/album/scrollable";
 import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
 import { useAlbumRoute } from "@/composables/photo/albumRoute";
 import { getNextPreviousPhoto } from "@/composables/photo/getNextPreviousPhoto";
-import { useHasNextPreviousPhoto } from "@/composables/photo/hasNextPreviousPhoto";
-import { usePhotoRefresher } from "@/composables/photo/hasRefresher";
 import { useSlideshowFunction } from "@/composables/photo/slideshow";
 import { useSelection } from "@/composables/selections/selections";
-import { useTagRefresher } from "@/composables/tags/tagRefresher";
-import { useGetLayoutConfig } from "@/layouts/PhotoLayout";
-import { useAuthStore } from "@/stores/Auth";
+import { useAlbumsStore } from "@/stores/AlbumsState";
+import { useLayoutStore } from "@/stores/LayoutState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
+import { usePhotosStore } from "@/stores/PhotosState";
+import { usePhotoStore } from "@/stores/PhotoState";
+import { useTagStore } from "@/stores/TagState";
+import { useUserStore } from "@/stores/UserState";
 import { useLtRorRtL } from "@/utils/Helpers";
 import { getModKey, shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
 import { onKeyStroke } from "@vueuse/core";
@@ -151,40 +139,35 @@ const props = defineProps<{
 const tagId = ref(props.tagId);
 const tagStringId = computed(() => `tag-${tagId.value}`);
 const photoId = ref(props.photoId);
-const nullId = ref(null);
+const nullId = ref(undefined);
 
 // unused? Hard to say...
 const videoElement = ref<HTMLVideoElement | null>(null);
 
 // flag to open login modal if necessary
-const auth = useAuthStore();
+const userStore = useUserStore();
 const togglableStore = useTogglablesStateStore();
 const lycheeStore = useLycheeStateStore();
+const photoStore = usePhotoStore();
+const photosStore = usePhotosStore();
+const albumsStore = useAlbumsStore();
+const layoutStore = useLayoutStore();
+const tagStore = useTagStore();
 
-lycheeStore.init();
 const { are_nsfw_visible, slideshow_timeout, is_slideshow_enabled } = storeToRefs(lycheeStore);
-const { is_photo_edit_open, are_details_open, is_login_open, is_slideshow_active } = storeToRefs(togglableStore);
+const { is_photo_edit_open, are_details_open, is_slideshow_active } = storeToRefs(togglableStore);
 
 const { setScroll } = useScrollable(togglableStore, tagStringId);
 
 const { is_delete_visible, toggleDelete, is_move_visible, toggleMove, is_rename_visible, is_tag_visible, is_copy_visible } =
 	useGalleryModals(togglableStore);
 
-// Set up Album ID reference. This one is updated at each page change.
-const { isLoading, user, tag, photo, transition, photos, photoLayout, refresh, setTransition } = useTagRefresher(tagId, photoId, auth, is_login_open);
+const { toggleStar, rotatePhotoCCW, rotatePhotoCW, setAlbumHeader, rotateOverlay } = usePhotoActions(photoStore, nullId, toast, lycheeStore);
 
-const { refreshPhoto } = usePhotoRefresher(photo, photos, photoId);
-// const { getParentId } = usePhotoRoute(router);
-
-const { toggleStar, rotatePhotoCCW, rotatePhotoCW, setAlbumHeader, rotateOverlay } = usePhotoActions(photo, nullId, toast, lycheeStore);
-
-const { getNext, getPrevious } = getNextPreviousPhoto(router, photo);
+const { getNext, getPrevious } = getNextPreviousPhoto(router, photoStore);
 const { slideshow, next, previous, stop } = useSlideshowFunction(1000, is_slideshow_active, slideshow_timeout, videoElement, getNext, getPrevious);
-const { hasNext, hasPrevious } = useHasNextPreviousPhoto(photo);
 
-const { layoutConfig, loadLayoutConfig } = useGetLayoutConfig();
-
-const { selectedPhoto, selectedPhotosIds, selectEverything, unselect, hasSelection } = useSelection({ photos }, togglableStore);
+const { selectedPhoto, selectedPhotosIds, selectEverything, unselect, hasSelection } = useSelection(photosStore, albumsStore, togglableStore);
 
 function goBack() {
 	if (is_slideshow_active.value) {
@@ -197,8 +180,7 @@ function goBack() {
 	}
 
 	if (photoId.value !== undefined) {
-		photoId.value = undefined;
-		photo.value = undefined;
+		photoStore.reset();
 
 		router.push({ name: albumRoutes().album, params: { tagId: tagId.value } });
 		return;
@@ -213,7 +195,7 @@ function toggleDetails() {
 }
 
 function toggleEdit() {
-	if (photo.value !== undefined) {
+	if (photoStore.isLoaded) {
 		are_details_open.value = false;
 		is_photo_edit_open.value = !is_photo_edit_open.value;
 		return;
@@ -221,36 +203,36 @@ function toggleEdit() {
 }
 
 // Album operations
-onKeyStroke("h", () => !shouldIgnoreKeystroke() && photo.value === undefined && (are_nsfw_visible.value = !are_nsfw_visible.value));
-onKeyStroke("f", () => !shouldIgnoreKeystroke() && photo.value === undefined && togglableStore.toggleFullScreen());
-onKeyStroke(" ", () => !shouldIgnoreKeystroke() && photo.value === undefined && unselect());
+onKeyStroke("h", () => !shouldIgnoreKeystroke() && !photoStore.isLoaded && (are_nsfw_visible.value = !are_nsfw_visible.value));
+onKeyStroke("f", () => !shouldIgnoreKeystroke() && !photoStore.isLoaded && togglableStore.toggleFullScreen());
+onKeyStroke(" ", () => !shouldIgnoreKeystroke() && !photoStore.isLoaded && unselect());
 onKeyStroke("a", (e) => {
-	if (!shouldIgnoreKeystroke() && photo.value === undefined && e.getModifierState(getModKey()) && !e.shiftKey && !e.altKey) {
+	if (!shouldIgnoreKeystroke() && !photoStore.isLoaded && e.getModifierState(getModKey()) && !e.shiftKey && !e.altKey) {
 		e.preventDefault();
 		selectEverything();
 	}
 });
 
 // Photo operations (note that the arrow keys are flipped for RTL languages)
-onKeyStroke("ArrowLeft", () => !shouldIgnoreKeystroke() && photo.value !== undefined && isLTR() && hasPrevious() && previous(true));
-onKeyStroke("ArrowRight", () => !shouldIgnoreKeystroke() && photo.value !== undefined && isLTR() && hasNext() && next(true));
-onKeyStroke("ArrowLeft", () => !shouldIgnoreKeystroke() && photo.value !== undefined && !isLTR() && hasNext() && next(true));
-onKeyStroke("ArrowRight", () => !shouldIgnoreKeystroke() && photo.value !== undefined && !isLTR() && hasPrevious() && previous(true));
-onKeyStroke("o", () => !shouldIgnoreKeystroke() && photo.value !== undefined && rotateOverlay());
-onKeyStroke(" ", () => !shouldIgnoreKeystroke() && photo.value !== undefined && is_slideshow_enabled.value && slideshow());
-onKeyStroke("i", () => !shouldIgnoreKeystroke() && photo.value !== undefined && toggleDetails());
-onKeyStroke("f", () => !shouldIgnoreKeystroke() && photo.value !== undefined && togglableStore.toggleFullScreen());
-onKeyStroke("Escape", () => !shouldIgnoreKeystroke() && photo.value !== undefined && is_slideshow_active.value && stop());
+onKeyStroke("ArrowLeft", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && isLTR() && photoStore.hasPrevious && previous(true));
+onKeyStroke("ArrowRight", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && isLTR() && photoStore.hasNext && next(true));
+onKeyStroke("ArrowLeft", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && !isLTR() && photoStore.hasNext && next(true));
+onKeyStroke("ArrowRight", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && !isLTR() && photoStore.hasPrevious && previous(true));
+onKeyStroke("o", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && rotateOverlay());
+onKeyStroke(" ", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && is_slideshow_enabled.value && slideshow());
+onKeyStroke("i", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && toggleDetails());
+onKeyStroke("f", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && togglableStore.toggleFullScreen());
+onKeyStroke("Escape", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && is_slideshow_active.value && stop());
 
 // Privileges Photos view operations
-onKeyStroke("m", () => !shouldIgnoreKeystroke() && photo.value === undefined && hasSelection() && toggleMove());
-onKeyStroke(["Delete", "Backspace"], () => !shouldIgnoreKeystroke() && photo.value === undefined && hasSelection() && toggleDelete());
+onKeyStroke("m", () => !shouldIgnoreKeystroke() && !photoStore.isLoaded && hasSelection() && toggleMove());
+onKeyStroke(["Delete", "Backspace"], () => !shouldIgnoreKeystroke() && !photoStore.isLoaded && hasSelection() && toggleDelete());
 
 // Priviledged Photo operations
-onKeyStroke("m", () => !shouldIgnoreKeystroke() && photo.value !== undefined && photo.value.rights.can_edit && toggleMove());
-onKeyStroke("e", () => !shouldIgnoreKeystroke() && photo.value !== undefined && photo.value.rights.can_edit && toggleEdit());
-onKeyStroke("s", () => !shouldIgnoreKeystroke() && photo.value !== undefined && photo.value.rights.can_edit && toggleStar());
-onKeyStroke(["Delete", "Backspace"], () => !shouldIgnoreKeystroke() && photo.value !== undefined && toggleDelete());
+onKeyStroke("m", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && photoStore.rights?.can_edit && toggleMove());
+onKeyStroke("e", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && photoStore.rights?.can_edit && toggleEdit());
+onKeyStroke("s", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && photoStore.rights?.can_edit && toggleStar());
+onKeyStroke(["Delete", "Backspace"], () => !shouldIgnoreKeystroke() && photoStore.isLoaded && toggleDelete());
 
 // on key stroke escape:
 // 1. lose focus
@@ -301,18 +283,19 @@ onKeyStroke("Escape", () => {
 	goBack();
 });
 
+async function refresh() {
+	await Promise.allSettled([userStore.load(), layoutStore.load(), lycheeStore.load(), tagStore.load()]);
+
+	photoStore.load();
+}
+
 onMounted(async () => {
-	const results = await Promise.allSettled([loadLayoutConfig(), refresh()]);
+	photoStore.photoId = props.photoId;
+	tagStore.tagId = props.tagId;
 
-	results.forEach((result, index) => {
-		if (result.status === "rejected") {
-			console.warn(`Promise ${index} reject with reason: ${result.reason}`);
-		}
-	});
+	await refresh();
 
-	if (results.every((result) => result.status === "fulfilled")) {
-		setScroll();
-	}
+	setScroll();
 });
 
 watch(
@@ -320,13 +303,13 @@ watch(
 	(newPhotoId, _) => {
 		unselect();
 
-		setTransition(newPhotoId as string | undefined);
+		photoStore.setTransition(newPhotoId as string | undefined);
 
-		photoId.value = newPhotoId as string;
+		photoStore.photoId = newPhotoId as string;
 		// debouncedPhotoMetrics();
 
-		if (photoId.value !== undefined) {
-			togglableStore.rememberScrollThumb(photoId.value);
+		if (photoStore.photoId !== undefined) {
+			togglableStore.rememberScrollThumb(photoStore.photoId);
 		}
 
 		refresh().then(() => {

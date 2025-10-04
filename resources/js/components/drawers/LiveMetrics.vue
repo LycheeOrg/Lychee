@@ -6,7 +6,11 @@
 			</span>
 		</template>
 		<div class="flex flex-col">
-			<div v-if="is_se_preview_enabled" class="text-sm text-muted-color-emphasis mb-8" v-html="$t('statistics.metrics.preview_text')"></div>
+			<div
+				v-if="lycheeStore.is_se_preview_enabled"
+				class="text-sm text-muted-color-emphasis mb-8"
+				v-html="$t('statistics.metrics.preview_text')"
+			></div>
 			<div v-for="item in prettifiedData" :key="item.action + item.ago" class="flex pt-2 pb-1">
 				<div class="flex flex-col w-full text-sm text-muted-color">
 					<router-link v-if="item.count === 1" v-slot="{ href }" :to="item.link">
@@ -54,7 +58,6 @@ import { watch } from "vue";
 const { getPlaceholderIcon } = useImageHelpers();
 
 const lycheeStore = useLycheeStateStore();
-const { is_se_preview_enabled } = storeToRefs(lycheeStore);
 const togglableStore = useTogglablesStateStore();
 const { is_metrics_open } = storeToRefs(togglableStore);
 
@@ -72,7 +75,7 @@ const data = ref<App.Http.Resources.Models.LiveMetricsResource[] | undefined>(un
 const prettifiedData = ref<LiveMetrics[] | undefined>(undefined);
 
 function load() {
-	if (is_se_preview_enabled.value) {
+	if (lycheeStore.is_se_preview_enabled) {
 		// Do not load, if the preview is enabled
 		data.value = [];
 		AlbumService.getAll()
