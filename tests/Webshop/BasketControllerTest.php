@@ -84,7 +84,7 @@ class BasketControllerTest extends BaseApiWithDataTest
 		$response->assertJsonStructure([
 			'id',
 			'provider',
-			'user_id',
+			'username',
 			'email',
 			'status',
 			'amount',
@@ -96,7 +96,7 @@ class BasketControllerTest extends BaseApiWithDataTest
 
 		$response->assertJson([
 			'status' => PaymentStatusType::PENDING->value,
-			'user_id' => null,
+			'username' => null,
 			'items' => [],
 		]);
 
@@ -116,7 +116,7 @@ class BasketControllerTest extends BaseApiWithDataTest
 		$this->assertOk($response);
 		$response->assertJson([
 			'status' => PaymentStatusType::PENDING->value,
-			'user_id' => $this->userMayUpload1->id,
+			'username' => $this->userMayUpload1->name,
 			'items' => [],
 		]);
 	}
@@ -446,7 +446,7 @@ class BasketControllerTest extends BaseApiWithDataTest
 
 		$this->assertCreated($response);
 		$response->assertJson([
-			'user_id' => $this->userMayUpload1->id,
+			'username' => $this->userMayUpload1->name,
 		]);
 
 		// Verify basket is associated with the user

@@ -51,7 +51,7 @@ class CheckoutCreateSessionControllerTest extends BaseCheckoutControllerTest
 		$response->assertJsonStructure([
 			'id',
 			'provider',
-			'user_id',
+			'username',
 			'email',
 			'status',
 			'amount',
@@ -94,7 +94,7 @@ class CheckoutCreateSessionControllerTest extends BaseCheckoutControllerTest
 		$this->assertCreated($response);
 		$response->assertJson([
 			'provider' => OmnipayProviderType::DUMMY->value,
-			'user_id' => $this->userMayUpload1->id,
+			'username' => $this->userMayUpload1->name,
 		]);
 	}
 
@@ -170,7 +170,7 @@ class CheckoutCreateSessionControllerTest extends BaseCheckoutControllerTest
 		$this->assertCreated($response);
 		$response->assertJson([
 			'provider' => OmnipayProviderType::DUMMY->value,
-			'user_id' => $this->userMayUpload1->id,
+			'username' => $this->userMayUpload1->name,
 			'email' => 'test@example.com',
 		]);
 	}

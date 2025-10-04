@@ -26,7 +26,8 @@ class OrderResource extends Data
 	public function __construct(
 		public int $id,
 		public ?OmnipayProviderType $provider,
-		public ?int $user_id,
+		public string $transaction_id,
+		public ?string $username,
 		public ?string $email,
 		public PaymentStatusType $status,
 		public string $amount,
@@ -36,6 +37,7 @@ class OrderResource extends Data
 		public ?string $comment,
 		#[LiteralTypeScriptType('App.Http.Resources.Shop.OrderItemResource[]|null')]
 		public ?Collection $items,
+		public bool $can_process_payment,
 	) {
 	}
 
@@ -49,14 +51,16 @@ class OrderResource extends Data
 		return new self(
 			id: $order->id,
 			provider: $order->provider,
-			user_id: $order->user_id,
+			transaction_id: $order->transaction_id,
+			username: $order->user?->name,
 			email: $order->email,
 			status: $order->status,
 			amount: $money_service->format($order->amount_cents),
 			paid_at: $order->paid_at?->toIso8601String(),
 			created_at: $order->created_at?->toIso8601String(),
 			comment: $order->comment,
-			items: $order->items === null ? null : OrderItemResource::collect($order->items),
+			items: $order->relationLoaded('items') ? OrderItemResource::collect($order->items) : null,
+			can_process_payment: $order->relationLoaded('items') ? $order->canProcessPayment() : false, // only if items are loaded we are able to check this.
 		);
 	}
 }

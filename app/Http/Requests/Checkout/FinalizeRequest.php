@@ -54,6 +54,7 @@ class FinalizeRequest extends BaseApiRequest implements HasBasket
 
 	protected function prepareForValidation(): void
 	{
+		/** @disregard */
 		$this->merge([
 			RequestAttribute::PROVIDER_ATTRIBUTE => $this->route(RequestAttribute::PROVIDER_ATTRIBUTE),
 			RequestAttribute::TRANSACTION_ID_ATTRIBUTE => $this->route(RequestAttribute::TRANSACTION_ID_ATTRIBUTE),

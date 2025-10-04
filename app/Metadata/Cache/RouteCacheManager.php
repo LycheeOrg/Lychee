@@ -132,11 +132,14 @@ final readonly class RouteCacheManager
 			// Do not cache shop stuff, too much interaction with the user.
 			'api/v2/Shop' => false,
 			'api/v2/Shop/Basket' => false,
+			'api/v2/Shop/Checkout/Finalize/{provider}/{transaction_id}' => false,
 			'api/v2/Shop/Checkout/Cancel/{provider}/{transaction_id}' => false,
 
 			'api/v2/Shop/Checkout/Options' => new RouteCacheConfig(tag: CacheTag::SETTINGS, user_dependant: false),
 			'api/v2/Shop/Management/Options' => new RouteCacheConfig(tag: CacheTag::SETTINGS, user_dependant: true),
 			'api/v2/Shop/Management/List' => false,
+			'api/v2/Shop/Order/List' => false,
+			'api/v2/Shop/Order/{order_id}' => false,
 		];
 	}
 
