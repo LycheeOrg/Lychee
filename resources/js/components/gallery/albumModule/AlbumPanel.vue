@@ -70,8 +70,6 @@
 					v-model:rows="rowsValue"
 					:total-records="total"
 					:always-show="false"
-					@update:first="(val) => emits('update:first', val)"
-					@update:rows="(val) => emits('update:rows', val)"
 				/>
 			</div>
 			<GalleryFooter v-once />
@@ -199,7 +197,6 @@ const rowsValue = computed({
 	get: () => props.rows,
 	set: (val: number) => emits("update:rows", val),
 });
-
 
 const albumPanelConfig = computed<AlbumThumbConfig>(() => ({
 	album_thumb_css_aspect_ratio: albumStore.config?.album_thumb_css_aspect_ratio ?? "aspect-square",

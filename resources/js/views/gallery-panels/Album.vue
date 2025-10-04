@@ -30,6 +30,7 @@
 		@update:rows="(val) => { albumStore.per_page = val; refresh(); }"
 		@update:first="(val) => { albumStore.from = val; refresh(); }"
 	/>
+
 	<!-- Photo panel -->
 	<PhotoPanel
 		v-if="photoStore.isLoaded"
@@ -423,6 +424,7 @@ onMounted(() => {
 onMounted(async () => {
 	albumId.value = props.albumId;
 	photoId.value = props.photoId;
+
 	await load();
 	setScroll();
 
