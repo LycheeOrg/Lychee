@@ -50,7 +50,12 @@ return new class() extends Migration {
 	public function up(): void
 	{
 		DB::table('configs')->where('key', 'version')->update(['value' => '%s']);
-		Artisan::call('cache:clear');
+		try {
+			Artisan::call('cache:clear');
+		} catch (\Throwable \$e) {
+			\$this->msg_section->writeln('<error>Warning:</error> Failed to clear cache for version %s');
+			return;
+		}
 		\$this->msg_section->writeln('<info>Info:</info> Cleared cache for version %s');
 	}
 
@@ -166,7 +171,7 @@ try {
 	does_migration_exists($str_nv);
 
 	$file_name = sprintf('database/migrations/%s_bump_version%s.php', date('Y_m_d_His'), $str_nv);
-	$file_content = sprintf($template, $str_nv, $prty_nv, $str_cv);
+	$file_content = sprintf($template, $str_nv, $prty_nv, $prty_nv, $str_cv);
 
 	file_put_contents($file_name, $file_content);
 	echo "Migration generated!\n";

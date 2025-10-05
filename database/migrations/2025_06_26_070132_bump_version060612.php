@@ -34,7 +34,13 @@ return new class() extends Migration {
 		DB::table('configs')->where('key', 'user_invitation_ttl')->update(['type_range' => 'positive']);
 
 		DB::table('configs')->where('key', 'version')->update(['value' => '060612']);
-		Artisan::call('cache:clear');
+		try {
+			Artisan::call('cache:clear');
+		} catch (\Throwable $e) {
+			$this->msg_section->writeln('<error>Warning:</error> Failed to clear cache for version 6.6.12');
+
+			return;
+		}
 		$this->msg_section->writeln('<info>Info:</info> Cleared cache for version 6.6.12');
 	}
 

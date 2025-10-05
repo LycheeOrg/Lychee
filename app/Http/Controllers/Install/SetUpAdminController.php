@@ -9,7 +9,6 @@
 namespace App\Http\Controllers\Install;
 
 use App\Http\Requests\Install\SetUpAdminRequest;
-use App\Models\Configs;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Routing\Controller;
