@@ -18,7 +18,7 @@ return new class() extends Migration {
 	 */
 	public function down(): void
 	{
-		Schema::table('base_albums', function (Blueprint $table) {
+		Schema::table('renamer_rules', function (Blueprint $table) {
 			$table->dropColumn('is_photo_rule');
 			$table->dropColumn('is_album_rule');
 		});
