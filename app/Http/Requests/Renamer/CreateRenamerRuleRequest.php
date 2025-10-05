@@ -31,6 +31,8 @@ class CreateRenamerRuleRequest extends BaseApiRequest implements HasDescription
 	public RenamerModeType $mode;
 	public int $order;
 	public bool $is_enabled;
+	public bool $is_photo_rule;
+	public bool $is_album_rule;
 
 	/**
 	 * {@inheritDoc}
@@ -55,6 +57,8 @@ class CreateRenamerRuleRequest extends BaseApiRequest implements HasDescription
 			RequestAttribute::MODE_ATTRIBUTE => ['required', new Enum(RenamerModeType::class)],
 			RequestAttribute::ORDER_ATTRIBUTE => ['required', 'integer', 'min:1'],
 			RequestAttribute::IS_ENABLED_ATTRIBUTE => ['required', 'boolean'],
+			RequestAttribute::IS_PHOTO_RULE_ATTRIBUTE => ['required', 'boolean'],
+			RequestAttribute::IS_ALBUM_RULE_ATTRIBUTE => ['required', 'boolean'],
 		];
 	}
 
@@ -70,5 +74,7 @@ class CreateRenamerRuleRequest extends BaseApiRequest implements HasDescription
 		$this->mode = RenamerModeType::from($values[RequestAttribute::MODE_ATTRIBUTE]);
 		$this->order = $values[RequestAttribute::ORDER_ATTRIBUTE];
 		$this->is_enabled = self::toBoolean($values[RequestAttribute::IS_ENABLED_ATTRIBUTE]);
+		$this->is_photo_rule = self::toBoolean($values[RequestAttribute::IS_PHOTO_RULE_ATTRIBUTE]);
+		$this->is_album_rule = self::toBoolean($values[RequestAttribute::IS_ALBUM_RULE_ATTRIBUTE]);
 	}
 }

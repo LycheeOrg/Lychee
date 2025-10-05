@@ -22,6 +22,8 @@ return [
 	'mode' => 'Mode',
 	'order' => 'Order',
 	'enabled' => 'Enabled',
+	'photo_rule' => 'Rule applied to Photos',
+	'album_rule' => 'Rule applied to Albums',
 
 	// Form placeholders and help text
 	'description_placeholder' => 'Optional description of what this rule does',
@@ -81,6 +83,8 @@ return [
 	'loading' => 'Loading renamer rules...',
 	'pattern_label' => 'Pattern',
 	'replace_with_label' => 'Replace with',
+	'photo' => 'Photo',
+	'album' => 'Album',
 
 	// Delete confirmation
 	'confirm_delete_header' => 'Confirm Deletion',

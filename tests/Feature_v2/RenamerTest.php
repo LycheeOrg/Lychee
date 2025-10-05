@@ -19,7 +19,7 @@
 namespace Tests\Feature_v2;
 
 use App\Enum\RenamerModeType;
-use App\Metadata\Renamer;
+use App\Metadata\Renamer\Renamer;
 use App\Models\Configs;
 use App\Models\RenamerRule;
 use Illuminate\Foundation\Testing\DatabaseTransactions;

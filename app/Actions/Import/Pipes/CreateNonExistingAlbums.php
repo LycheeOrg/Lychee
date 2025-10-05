@@ -76,7 +76,7 @@ class CreateNonExistingAlbums implements ImportPipe
 
 		// We do this to keep backward compatibility with previously imported albums.
 		if ($this->state->import_mode->shall_rename_album_title) {
-			$renamer = $this->state->getRenamer();
+			$renamer = $this->state->getAlbumRenamer();
 			$title = $renamer->handle($title);
 		}
 

@@ -50,6 +50,8 @@ class RenamerRulesOrderTest extends BaseApiWithDataTest
 				'mode' => RenamerModeType::ALL,
 				'order' => $i,
 				'is_enabled' => true,
+				'is_photo_rule' => true,
+				'is_album_rule' => true,
 			]);
 		}
 
@@ -64,6 +66,8 @@ class RenamerRulesOrderTest extends BaseApiWithDataTest
 			'mode' => 'all',
 			'order' => 4,
 			'is_enabled' => true,
+			'is_photo_rule' => true,
+			'is_album_rule' => true,
 		]);
 		$this->assertOk($response);
 
@@ -89,6 +93,8 @@ class RenamerRulesOrderTest extends BaseApiWithDataTest
 				'mode' => RenamerModeType::ALL,
 				'order' => $i,
 				'is_enabled' => true,
+				'is_photo_rule' => true,
+				'is_album_rule' => true,
 			]);
 		}
 
@@ -103,6 +109,8 @@ class RenamerRulesOrderTest extends BaseApiWithDataTest
 			'mode' => 'all',
 			'order' => 2,
 			'is_enabled' => true,
+			'is_photo_rule' => true,
+			'is_album_rule' => true,
 		]);
 		$this->assertOk($response);
 
@@ -128,6 +136,8 @@ class RenamerRulesOrderTest extends BaseApiWithDataTest
 				'mode' => RenamerModeType::ALL,
 				'order' => $i,
 				'is_enabled' => true,
+				'is_photo_rule' => true,
+				'is_album_rule' => true,
 			]);
 		}
 
@@ -141,6 +151,8 @@ class RenamerRulesOrderTest extends BaseApiWithDataTest
 			'mode' => 'first',
 			'order' => 2, // Same order
 			'is_enabled' => false,
+			'is_photo_rule' => true,
+			'is_album_rule' => true,
 		]);
 		$this->assertOk($response);
 
@@ -158,6 +170,8 @@ class RenamerRulesOrderTest extends BaseApiWithDataTest
 			'replacement' => 'updated_replacement_2',
 			'mode' => 'first',
 			'is_enabled' => false,
+			'is_photo_rule' => true,
+			'is_album_rule' => true,
 		]);
 	}
 
@@ -175,6 +189,8 @@ class RenamerRulesOrderTest extends BaseApiWithDataTest
 				'mode' => RenamerModeType::ALL,
 				'order' => $i,
 				'is_enabled' => true,
+				'is_photo_rule' => true,
+				'is_album_rule' => true,
 			]);
 		}
 
@@ -189,6 +205,8 @@ class RenamerRulesOrderTest extends BaseApiWithDataTest
 			'mode' => 'all',
 			'order' => 1,
 			'is_enabled' => true,
+			'is_photo_rule' => true,
+			'is_album_rule' => true,
 		]);
 		$this->assertOk($response);
 
@@ -213,6 +231,8 @@ class RenamerRulesOrderTest extends BaseApiWithDataTest
 				'mode' => RenamerModeType::ALL,
 				'order' => $i,
 				'is_enabled' => true,
+				'is_photo_rule' => true,
+				'is_album_rule' => true,
 			]);
 		}
 
@@ -227,6 +247,8 @@ class RenamerRulesOrderTest extends BaseApiWithDataTest
 			'mode' => 'all',
 			'order' => 4,
 			'is_enabled' => true,
+			'is_photo_rule' => true,
+			'is_album_rule' => true,
 		]);
 		$this->assertOk($response);
 
@@ -251,6 +273,8 @@ class RenamerRulesOrderTest extends BaseApiWithDataTest
 				'mode' => RenamerModeType::ALL,
 				'order' => $i,
 				'is_enabled' => true,
+				'is_photo_rule' => true,
+				'is_album_rule' => true,
 			]);
 		}
 
@@ -266,6 +290,8 @@ class RenamerRulesOrderTest extends BaseApiWithDataTest
 				'mode' => RenamerModeType::ALL,
 				'order' => $i,
 				'is_enabled' => true,
+				'is_photo_rule' => true,
+				'is_album_rule' => true,
 			]);
 		}
 
@@ -279,6 +305,8 @@ class RenamerRulesOrderTest extends BaseApiWithDataTest
 			'mode' => 'all',
 			'order' => 3,
 			'is_enabled' => true,
+			'is_photo_rule' => true,
+			'is_album_rule' => true,
 		]);
 		$this->assertOk($response);
 
@@ -307,6 +335,8 @@ class RenamerRulesOrderTest extends BaseApiWithDataTest
 				'mode' => RenamerModeType::ALL,
 				'order' => $i,
 				'is_enabled' => true,
+				'is_photo_rule' => true,
+				'is_album_rule' => true,
 			]);
 		}
 
@@ -320,6 +350,8 @@ class RenamerRulesOrderTest extends BaseApiWithDataTest
 			'mode' => 'all',
 			'order' => 1,
 			'is_enabled' => true,
+			'is_photo_rule' => true,
+			'is_album_rule' => true,
 		]);
 
 		// List rules and verify they're returned in the correct order

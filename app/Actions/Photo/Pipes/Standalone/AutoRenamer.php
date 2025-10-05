@@ -10,7 +10,7 @@ namespace App\Actions\Photo\Pipes\Standalone;
 
 use App\Contracts\PhotoCreate\StandalonePipe;
 use App\DTO\PhotoCreate\StandaloneDTO;
-use App\Metadata\Renamer;
+use App\Metadata\Renamer\PhotoRenamer;
 
 /**
  * Apply renaming rules to the photo title.
@@ -29,7 +29,7 @@ class AutoRenamer implements StandalonePipe
 			return $next($state);
 		}
 
-		$renamer = new Renamer($state->intended_owner_id);
+		$renamer = new PhotoRenamer($state->intended_owner_id);
 		$state->photo->title = $renamer->handle($state->photo->title);
 
 		return $next($state);

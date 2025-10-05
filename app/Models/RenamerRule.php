@@ -32,6 +32,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string          $replacement
  * @property RenamerModeType $mode
  * @property bool            $is_enabled
+ * @property bool            $is_photo_rule
+ * @property bool            $is_album_rule
  * @property User            $owner
  */
 class RenamerRule extends Model
@@ -55,6 +57,8 @@ class RenamerRule extends Model
 		'replacement',
 		'mode',
 		'is_enabled',
+		'is_photo_rule',
+		'is_album_rule',
 	];
 
 	/**
@@ -67,6 +71,8 @@ class RenamerRule extends Model
 		'owner_id' => 'integer',
 		'mode' => RenamerModeType::class,
 		'is_enabled' => 'boolean',
+		'is_photo_rule' => 'boolean',
+		'is_album_rule' => 'boolean',
 	];
 
 	/**

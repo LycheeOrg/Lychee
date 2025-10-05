@@ -124,14 +124,30 @@
 						</div>
 
 						<!-- Enabled -->
-						<div class="flex flex-col">
-							<div class="flex items-center">
-								<ToggleSwitch id="is_enabled" v-model="form.is_enabled" :binary="true" input-id="is_enabled" />
-								<label for="is_enabled" class="ltr:ml-2 rtl:mr-2"
-									><span class="font-semibold">{{ $t("renamer.enabled") }}</span>
-								</label>
+						<div class="grid grid-cols-2">
+							<div class="flex flex-col">
+								<div class="flex items-center">
+									<ToggleSwitch id="is_enabled" v-model="form.is_enabled" :binary="true" input-id="is_enabled" />
+									<label for="is_enabled" class="ltr:ml-2 rtl:mr-2"
+										><span class="font-semibold">{{ $t("renamer.enabled") }}</span>
+									</label>
+								</div>
+								<small class="text-muted-color ltr:text-left rtl:text-right">{{ $t("renamer.enabled_help") }}</small>
 							</div>
-							<small class="text-muted-color ltr:text-left rtl:text-right">{{ $t("renamer.enabled_help") }}</small>
+							<div class="flex flex-col">
+								<div class="flex items-center">
+									<ToggleSwitch id="is_photo_rule" v-model="form.is_photo_rule" :binary="true" input-id="is_photo_rule" />
+									<label for="is_photo_rule" class="ltr:ml-2 rtl:mr-2"
+										><span class="font-semibold">{{ $t("renamer.photo_rule") }}</span>
+									</label>
+								</div>
+								<div class="flex items-center">
+									<ToggleSwitch id="is_album_rule" v-model="form.is_album_rule" :binary="true" input-id="is_album_rule" />
+									<label for="is_album_rule" class="ltr:ml-2 rtl:mr-2"
+										><span class="font-semibold">{{ $t("renamer.album_rule") }}</span>
+									</label>
+								</div>
+							</div>
 						</div>
 					</div>
 				</form>
@@ -212,6 +228,8 @@ const form = ref<CreateRenamerRuleRequest>({
 	mode: "all" as App.Enum.RenamerModeType,
 	order: 1,
 	is_enabled: true,
+	is_photo_rule: true,
+	is_album_rule: true,
 });
 
 const errors = ref<Record<string, string>>({});
@@ -227,6 +245,8 @@ function resetForm() {
 			mode: props.rule.mode,
 			order: props.rule.order,
 			is_enabled: props.rule.is_enabled,
+			is_photo_rule: props.rule.is_photo_rule,
+			is_album_rule: props.rule.is_album_rule,
 		};
 	} else {
 		// Create mode - reset to defaults
@@ -238,6 +258,8 @@ function resetForm() {
 			mode: "all" as App.Enum.RenamerModeType,
 			order: 1,
 			is_enabled: true,
+			is_photo_rule: true,
+			is_album_rule: true,
 		};
 	}
 	errors.value = {};

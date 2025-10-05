@@ -25,6 +25,8 @@ class RenamerRuleResource extends Data
 	public string $replacement;
 	public RenamerModeType $mode;
 	public bool $is_enabled;
+	public bool $is_photo_rule;
+	public bool $is_album_rule;
 
 	public function __construct(RenamerRule $renamer_rule)
 	{
@@ -37,6 +39,8 @@ class RenamerRuleResource extends Data
 		$this->replacement = $renamer_rule->replacement;
 		$this->mode = $renamer_rule->mode;
 		$this->is_enabled = $renamer_rule->is_enabled;
+		$this->is_photo_rule = $renamer_rule->is_photo_rule;
+		$this->is_album_rule = $renamer_rule->is_album_rule;
 	}
 
 	public static function fromModel(RenamerRule $renamer_rule): RenamerRuleResource

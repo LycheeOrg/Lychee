@@ -41,6 +41,8 @@ class RenamerRulesDeleteTest extends BaseApiWithDataTest
 			'mode' => RenamerModeType::ALL,
 			'order' => 1,
 			'is_enabled' => true,
+			'is_photo_rule' => true,
+			'is_album_rule' => true,
 		]);
 
 		// Create a rule for another user
@@ -53,6 +55,8 @@ class RenamerRulesDeleteTest extends BaseApiWithDataTest
 			'mode' => RenamerModeType::FIRST,
 			'order' => 1,
 			'is_enabled' => false,
+			'is_photo_rule' => true,
+			'is_album_rule' => true,
 		]);
 
 		$this->requireSe();
@@ -138,6 +142,8 @@ class RenamerRulesDeleteTest extends BaseApiWithDataTest
 			'mode' => RenamerModeType::ALL,
 			'order' => 1,
 			'is_enabled' => true,
+			'is_photo_rule' => true,
+			'is_album_rule' => true,
 		]);
 
 		// Verify the rule exists
@@ -168,6 +174,8 @@ class RenamerRulesDeleteTest extends BaseApiWithDataTest
 			'mode' => RenamerModeType::FIRST,
 			'order' => 2,
 			'is_enabled' => false,
+			'is_photo_rule' => true,
+			'is_album_rule' => true,
 		]);
 
 		// Delete the first rule
@@ -202,6 +210,8 @@ class RenamerRulesDeleteTest extends BaseApiWithDataTest
 			'mode' => RenamerModeType::ALL,
 			'order' => 1,
 			'is_enabled' => true,
+			'is_photo_rule' => true,
+			'is_album_rule' => true,
 		]);
 
 		$rule2 = RenamerRule::create([
@@ -213,6 +223,8 @@ class RenamerRulesDeleteTest extends BaseApiWithDataTest
 			'mode' => RenamerModeType::FIRST,
 			'order' => 2,
 			'is_enabled' => true,
+			'is_photo_rule' => true,
+			'is_album_rule' => true,
 		]);
 
 		// Delete first rule

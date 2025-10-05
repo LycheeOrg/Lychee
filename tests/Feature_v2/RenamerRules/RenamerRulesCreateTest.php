@@ -46,6 +46,8 @@ class RenamerRulesCreateTest extends BaseApiWithDataTest
 			'mode' => 'all',
 			'order' => 1,
 			'is_enabled' => true,
+			'is_photo_rule' => true,
+			'is_album_rule' => true,
 		]);
 		$this->assertUnauthorized($response);
 	}
@@ -60,6 +62,8 @@ class RenamerRulesCreateTest extends BaseApiWithDataTest
 			'mode' => 'all',
 			'order' => 1,
 			'is_enabled' => true,
+			'is_photo_rule' => true,
+			'is_album_rule' => true,
 		]);
 		$this->assertForbidden($response);
 	}
@@ -79,6 +83,8 @@ class RenamerRulesCreateTest extends BaseApiWithDataTest
 			'mode' => 'invalid_mode',
 			'order' => 1,
 			'is_enabled' => true,
+			'is_photo_rule' => true,
+			'is_album_rule' => true,
 		]);
 		$this->assertUnprocessable($response);
 
@@ -91,6 +97,8 @@ class RenamerRulesCreateTest extends BaseApiWithDataTest
 			'mode' => 'all',
 			'order' => 0,
 			'is_enabled' => true,
+			'is_photo_rule' => true,
+			'is_album_rule' => true,
 		]);
 		$this->assertUnprocessable($response);
 
@@ -103,6 +111,36 @@ class RenamerRulesCreateTest extends BaseApiWithDataTest
 			'mode' => 'all',
 			'order' => 1,
 			'is_enabled' => 'invalid',
+			'is_photo_rule' => true,
+			'is_album_rule' => true,
+		]);
+		$this->assertUnprocessable($response);
+
+		// Test with invalid is_photo_rule (must be boolean)
+		$response = $this->actingAs($this->userMayUpload1)->postJson('Renamer', [
+			'rule' => 'test_rule',
+			'description' => 'Test rule',
+			'needle' => 'old',
+			'replacement' => 'new',
+			'mode' => 'all',
+			'order' => 1,
+			'is_enabled' => true,
+			'is_photo_rule' => 'invalid',
+			'is_album_rule' => true,
+		]);
+		$this->assertUnprocessable($response);
+
+		// Test with invalid is_album_rule (must be boolean)
+		$response = $this->actingAs($this->userMayUpload1)->postJson('Renamer', [
+			'rule' => 'test_rule',
+			'description' => 'Test rule',
+			'needle' => 'old',
+			'replacement' => 'new',
+			'mode' => 'all',
+			'order' => 1,
+			'is_enabled' => true,
+			'is_photo_rule' => true,
+			'is_album_rule' => 'invalid',
 		]);
 		$this->assertUnprocessable($response);
 	}
@@ -118,6 +156,8 @@ class RenamerRulesCreateTest extends BaseApiWithDataTest
 			'mode' => 'all',
 			'order' => 1,
 			'is_enabled' => true,
+			'is_photo_rule' => true,
+			'is_album_rule' => true,
 		]);
 		$this->assertStatus($response, Response::HTTP_CREATED);
 		$response->assertJsonPath('rule', 'test_rule_all');
@@ -138,6 +178,8 @@ class RenamerRulesCreateTest extends BaseApiWithDataTest
 			'mode' => 'first',
 			'order' => 2,
 			'is_enabled' => false,
+			'is_photo_rule' => true,
+			'is_album_rule' => true,
 		]);
 		$this->assertStatus($response, Response::HTTP_CREATED);
 		$response->assertJsonPath('rule', 'test_rule_first');
@@ -154,6 +196,8 @@ class RenamerRulesCreateTest extends BaseApiWithDataTest
 			'mode' => 'regex',
 			'order' => 3,
 			'is_enabled' => true,
+			'is_photo_rule' => true,
+			'is_album_rule' => true,
 		]);
 		$this->assertStatus($response, Response::HTTP_CREATED);
 		$response->assertJsonPath('rule', 'test_rule_regex');
@@ -172,6 +216,8 @@ class RenamerRulesCreateTest extends BaseApiWithDataTest
 			'mode' => 'all',
 			'order' => 1,
 			'is_enabled' => true,
+			'is_photo_rule' => true,
+			'is_album_rule' => true,
 		]);
 		$this->assertStatus($response, Response::HTTP_CREATED);
 		$response->assertJsonPath('rule', 'test_rule_no_desc');
@@ -188,6 +234,8 @@ class RenamerRulesCreateTest extends BaseApiWithDataTest
 			'mode' => 'all',
 			'order' => 1,
 			'is_enabled' => true,
+			'is_photo_rule' => true,
+			'is_album_rule' => true,
 		]);
 		$this->assertStatus($response, Response::HTTP_CREATED);
 		$response->assertJsonPath('rule', 'admin_rule');
@@ -204,6 +252,8 @@ class RenamerRulesCreateTest extends BaseApiWithDataTest
 			'mode' => 'all',
 			'order' => 5,
 			'is_enabled' => true,
+			'is_photo_rule' => true,
+			'is_album_rule' => true,
 		]);
 		$this->assertStatus($response, Response::HTTP_CREATED);
 
@@ -218,6 +268,8 @@ class RenamerRulesCreateTest extends BaseApiWithDataTest
 			'mode' => RenamerModeType::ALL->value,
 			'order' => 5,
 			'is_enabled' => true,
+			'is_photo_rule' => true,
+			'is_album_rule' => true,
 		]);
 	}
 }

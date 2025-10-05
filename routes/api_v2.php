@@ -286,6 +286,7 @@ Route::delete('/Tag', [TagController::class, 'delete']);
  * RENAMER RULES.
  */
 Route::get('/Renamer', [RenamerController::class, 'index'])->middleware(['support:se']);
+Route::patch('/Renamer', [RenamerController::class, 'rename'])->middleware(['support:se']);
 Route::post('/Renamer', [RenamerController::class, 'store'])->middleware(['support:se']);
 Route::put('/Renamer', [RenamerController::class, 'update'])->middleware(['support:se']);
 Route::delete('/Renamer', [RenamerController::class, 'destroy'])->middleware(['support:se']);
