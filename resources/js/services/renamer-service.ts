@@ -15,6 +15,8 @@ export type CreateRenamerRuleRequest = {
 	mode: App.Enum.RenamerModeType;
 	order: number;
 	is_enabled: boolean;
+	is_photo_rule: boolean;
+	is_album_rule: boolean;
 };
 
 export type UpdateRenamerRuleRequest = CreateRenamerRuleRequest & {

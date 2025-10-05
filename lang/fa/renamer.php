@@ -22,6 +22,8 @@ return [
 	'mode' => 'حالت',
 	'order' => 'ترتیب',
 	'enabled' => 'فعال',
+	'photo_rule' => 'Rule applied to Photos',
+	'album_rule' => 'Rule applied to Albums',
 
 	// Form placeholders and help text
 	'description_placeholder' => 'توضیحات اختیاری در مورد عملکرد این قانون',
@@ -81,6 +83,8 @@ return [
 	'loading' => 'در حال بارگیری قوانین تغییر نام...',
 	'pattern_label' => 'الگو',
 	'replace_with_label' => 'جایگزین با',
+	'photo' => 'Photo',
+	'album' => 'Album',
 
 	// Delete confirmation
 	'confirm_delete_header' => 'تایید حذف',
