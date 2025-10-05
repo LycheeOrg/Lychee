@@ -106,7 +106,7 @@ class DeleteMissingAlbums implements ImportPipe
 
 		// get renamed albums
 		if ($this->state->import_mode->shall_rename_album_title) {
-			$renamed_existing_folders = $this->state->getRenamer()->handleMany($existing_folders);
+			$renamed_existing_folders = $this->state->getAlbumRenamer()->handleMany($existing_folders);
 			$existing_folders = array_merge($existing_folders, $renamed_existing_folders);
 		}
 

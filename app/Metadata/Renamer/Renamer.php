@@ -6,7 +6,7 @@
  * Copyright (c) 2018-2025 LycheeOrg.
  */
 
-namespace App\Metadata;
+namespace App\Metadata\Renamer;
 
 use App\Enum\RenamerModeType;
 use App\Models\Configs;
@@ -42,7 +42,7 @@ use function Safe\preg_replace;
  * @see RenamerRule For the model that defines individual rules
  * @see RenamerModeType For the available replacement modes
  */
-final class Renamer
+class Renamer
 {
 	/**
 	 * @var Collection<int,RenamerRule> Colection of RenamerRule models
@@ -61,9 +61,11 @@ final class Renamer
 	 * the user ID with the system owner's ID, ensuring consistent renaming rules
 	 * are applied throughout the system.
 	 *
-	 * @param int $user_id The ID of the user whose rules should be applied
+	 * @param int       $user_id  The ID of the user whose rules should be applied
+	 * @param bool|null $is_photo Whether to include photo rules (default: null)
+	 * @param bool|null $is_album Whether to include album rules (default: null)
 	 */
-	public function __construct(int $user_id)
+	public function __construct(int $user_id, ?bool $is_photo = null, ?bool $is_album = null)
 	{
 		$verifier = resolve(Verify::class);
 		$renamer_enabled = Configs::getValueAsBool('renamer_enabled');
@@ -75,12 +77,17 @@ final class Renamer
 
 		$user_rules = RenamerRule::query()
 			->where('owner_id', $user_id)
+			->when($is_photo !== null, fn ($query) => $query->where('is_photo_rule', $is_photo))
+			->when($is_album !== null, fn ($query) => $query->where('is_album_rule', $is_album))
+			->where('is_enabled', true)
 			->where('is_enabled', true)
 			->orderBy('order', 'asc')
 			->get();
 
 		$owner_rules = RenamerRule::query()
 			->where('owner_id', Configs::getValueAsInt('owner_id'))
+			->when($is_photo !== null, fn ($query) => $query->where('is_photo_rule', $is_photo))
+			->when($is_album !== null, fn ($query) => $query->where('is_album_rule', $is_album))
 			->where('is_enabled', true)
 			->orderBy('order', 'asc')
 			->get();

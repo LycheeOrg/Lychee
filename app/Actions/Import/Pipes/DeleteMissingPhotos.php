@@ -115,7 +115,7 @@ class DeleteMissingPhotos implements ImportPipe
 
 		if ($this->state->import_mode->shall_rename_photo_title) {
 			// Apply renamer rules to the existing filenames
-			$renamed_existing_files = $this->state->getRenamer()->handleMany($existing_files);
+			$renamed_existing_files = $this->state->getPhotoRenamer()->handleMany($existing_files);
 			$existing_files = array_merge($existing_files, $renamed_existing_files);
 		}
 

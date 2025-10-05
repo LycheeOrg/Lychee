@@ -42,6 +42,8 @@ class RenamerRulesTestTest extends BaseApiWithDataTest
 	{
 		$response = $this->postJson('Renamer::test', [
 			'candidate' => 'test_string',
+			'is_photo' => true,
+			'is_album' => true,
 		]);
 		$this->assertUnauthorized($response);
 	}
@@ -50,6 +52,8 @@ class RenamerRulesTestTest extends BaseApiWithDataTest
 	{
 		$response = $this->actingAs($this->userNoUpload)->postJson('Renamer::test', [
 			'candidate' => 'test_string',
+			'is_photo' => true,
+			'is_album' => true,
 		]);
 		$this->assertForbidden($response);
 	}
@@ -63,6 +67,8 @@ class RenamerRulesTestTest extends BaseApiWithDataTest
 		// Test with empty candidate
 		$response = $this->actingAs($this->userMayUpload1)->postJson('Renamer::test', [
 			'candidate' => '',
+			'is_photo' => true,
+			'is_album' => true,
 		]);
 		$this->assertUnprocessable($response);
 	}
@@ -73,6 +79,8 @@ class RenamerRulesTestTest extends BaseApiWithDataTest
 
 		$response = $this->actingAs($this->userMayUpload1)->postJson('Renamer::test', [
 			'candidate' => $candidate,
+			'is_photo' => true,
+			'is_album' => true,
 		]);
 
 		$this->assertOk($response);
@@ -92,6 +100,8 @@ class RenamerRulesTestTest extends BaseApiWithDataTest
 			'mode' => RenamerModeType::ALL,
 			'order' => 1,
 			'is_enabled' => true,
+			'is_photo_rule' => true,
+			'is_album_rule' => true,
 		]);
 
 		$candidate = 'IMG_1234.jpg';
@@ -99,6 +109,8 @@ class RenamerRulesTestTest extends BaseApiWithDataTest
 
 		$response = $this->actingAs($this->userMayUpload1)->postJson('Renamer::test', [
 			'candidate' => $candidate,
+			'is_photo' => true,
+			'is_album' => true,
 		]);
 
 		$this->assertOk($response);
@@ -118,6 +130,8 @@ class RenamerRulesTestTest extends BaseApiWithDataTest
 			'mode' => RenamerModeType::ALL,
 			'order' => 1,
 			'is_enabled' => true,
+			'is_photo_rule' => true,
+			'is_album_rule' => true,
 		]);
 
 		RenamerRule::create([
@@ -129,6 +143,8 @@ class RenamerRulesTestTest extends BaseApiWithDataTest
 			'mode' => RenamerModeType::ALL,
 			'order' => 2,
 			'is_enabled' => true,
+			'is_photo_rule' => true,
+			'is_album_rule' => true,
 		]);
 
 		$candidate = 'IMG_1234.jpg';
@@ -136,6 +152,8 @@ class RenamerRulesTestTest extends BaseApiWithDataTest
 
 		$response = $this->actingAs($this->userMayUpload1)->postJson('Renamer::test', [
 			'candidate' => $candidate,
+			'is_photo' => true,
+			'is_album' => true,
 		]);
 
 		$this->assertOk($response);
@@ -155,6 +173,8 @@ class RenamerRulesTestTest extends BaseApiWithDataTest
 			'mode' => RenamerModeType::ALL,
 			'order' => 1,
 			'is_enabled' => true,
+			'is_photo_rule' => true,
+			'is_album_rule' => true,
 		]);
 
 		RenamerRule::create([
@@ -166,6 +186,8 @@ class RenamerRulesTestTest extends BaseApiWithDataTest
 			'mode' => RenamerModeType::ALL,
 			'order' => 2,
 			'is_enabled' => false, // This rule is disabled
+			'is_photo_rule' => true,
+			'is_album_rule' => true,
 		]);
 
 		$candidate = 'IMG_1234.jpg';
@@ -173,6 +195,8 @@ class RenamerRulesTestTest extends BaseApiWithDataTest
 
 		$response = $this->actingAs($this->userMayUpload1)->postJson('Renamer::test', [
 			'candidate' => $candidate,
+			'is_photo' => true,
+			'is_album' => true,
 		]);
 
 		$this->assertOk($response);
@@ -192,6 +216,8 @@ class RenamerRulesTestTest extends BaseApiWithDataTest
 			'mode' => RenamerModeType::FIRST,
 			'order' => 1,
 			'is_enabled' => true,
+			'is_photo_rule' => true,
+			'is_album_rule' => true,
 		]);
 
 		$candidate = 'banana_apple';
@@ -199,6 +225,8 @@ class RenamerRulesTestTest extends BaseApiWithDataTest
 
 		$response = $this->actingAs($this->userMayUpload1)->postJson('Renamer::test', [
 			'candidate' => $candidate,
+			'is_photo' => true,
+			'is_album' => true,
 		]);
 
 		$this->assertOk($response);
@@ -218,6 +246,8 @@ class RenamerRulesTestTest extends BaseApiWithDataTest
 			'mode' => RenamerModeType::REGEX,
 			'order' => 1,
 			'is_enabled' => true,
+			'is_photo_rule' => true,
+			'is_album_rule' => true,
 		]);
 
 		$candidate = 'IMG_1234_photo_5678.jpg';
@@ -225,6 +255,8 @@ class RenamerRulesTestTest extends BaseApiWithDataTest
 
 		$response = $this->actingAs($this->userMayUpload1)->postJson('Renamer::test', [
 			'candidate' => $candidate,
+			'is_photo' => true,
+			'is_album' => true,
 		]);
 
 		$this->assertOk($response);
@@ -245,12 +277,16 @@ class RenamerRulesTestTest extends BaseApiWithDataTest
 			'mode' => RenamerModeType::REGEX,
 			'order' => 1,
 			'is_enabled' => true,
+			'is_photo_rule' => true,
+			'is_album_rule' => true,
 		]);
 
 		$candidate = 'test_string';
 
 		$response = $this->actingAs($this->userMayUpload1)->postJson('Renamer::test', [
 			'candidate' => $candidate,
+			'is_photo' => true,
+			'is_album' => true,
 		]);
 
 		$this->assertOk($response);
@@ -270,6 +306,8 @@ class RenamerRulesTestTest extends BaseApiWithDataTest
 			'mode' => RenamerModeType::ALL,
 			'order' => 1,
 			'is_enabled' => true,
+			'is_photo_rule' => true,
+			'is_album_rule' => true,
 		]);
 
 		// Create a rule for userMayUpload2
@@ -282,6 +320,8 @@ class RenamerRulesTestTest extends BaseApiWithDataTest
 			'mode' => RenamerModeType::ALL,
 			'order' => 1,
 			'is_enabled' => true,
+			'is_photo_rule' => true,
+			'is_album_rule' => true,
 		]);
 
 		$candidate = 'IMG_1234.jpg';
@@ -289,6 +329,8 @@ class RenamerRulesTestTest extends BaseApiWithDataTest
 		// Test with user1 - should use user1's rule
 		$response = $this->actingAs($this->userMayUpload1)->postJson('Renamer::test', [
 			'candidate' => $candidate,
+			'is_photo' => true,
+			'is_album' => true,
 		]);
 
 		$this->assertOk($response);
@@ -298,6 +340,8 @@ class RenamerRulesTestTest extends BaseApiWithDataTest
 		// Test with user2 - should use user2's rule
 		$response = $this->actingAs($this->userMayUpload2)->postJson('Renamer::test', [
 			'candidate' => $candidate,
+			'is_photo' => true,
+			'is_album' => true,
 		]);
 
 		$this->assertOk($response);
@@ -317,6 +361,8 @@ class RenamerRulesTestTest extends BaseApiWithDataTest
 			'mode' => RenamerModeType::ALL,
 			'order' => 1,
 			'is_enabled' => true,
+			'is_photo_rule' => true,
+			'is_album_rule' => true,
 		]);
 
 		// Admin should be able to test renamer rules (using their own rules)
@@ -324,6 +370,8 @@ class RenamerRulesTestTest extends BaseApiWithDataTest
 
 		$response = $this->actingAs($this->admin)->postJson('Renamer::test', [
 			'candidate' => $candidate,
+			'is_photo' => true,
+			'is_album' => true,
 		]);
 
 		$this->assertOk($response);
@@ -343,6 +391,8 @@ class RenamerRulesTestTest extends BaseApiWithDataTest
 			'mode' => RenamerModeType::ALL,
 			'order' => 1,
 			'is_enabled' => true,
+			'is_photo_rule' => true,
+			'is_album_rule' => true,
 		]);
 
 		// Test with a longer string (within the 1000 character limit)
@@ -351,6 +401,8 @@ class RenamerRulesTestTest extends BaseApiWithDataTest
 
 		$response = $this->actingAs($this->userMayUpload1)->postJson('Renamer::test', [
 			'candidate' => $candidate,
+			'is_photo' => true,
+			'is_album' => true,
 		]);
 
 		$this->assertOk($response);

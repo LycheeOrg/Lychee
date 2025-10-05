@@ -40,6 +40,8 @@ class RenamerRuleFactory extends Factory
 			'replacement' => null,
 			'mode' => null,
 			'is_enabled' => true,
+			'is_photo_rule' => true,
+			'is_album_rule' => true,
 		];
 	}
 
@@ -57,6 +59,24 @@ class RenamerRuleFactory extends Factory
 		return $this->state(function (array $attributes) use ($owner_id) {
 			return [
 				'owner_id' => $owner_id,
+			];
+		});
+	}
+
+	public function is_photo_rule(bool $is_photo_rule): self
+	{
+		return $this->state(function (array $attributes) use ($is_photo_rule) {
+			return [
+				'is_photo_rule' => $is_photo_rule,
+			];
+		});
+	}
+
+	public function is_album_rule(bool $is_album_rule): self
+	{
+		return $this->state(function (array $attributes) use ($is_album_rule) {
+			return [
+				'is_album_rule' => $is_album_rule,
 			];
 		});
 	}

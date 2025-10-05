@@ -19,6 +19,9 @@ class TestRenamerRequest extends BaseApiRequest
 {
 	public string $candidate;
 
+	public bool $is_photo;
+	public bool $is_album;
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -36,6 +39,8 @@ class TestRenamerRequest extends BaseApiRequest
 	{
 		return [
 			'candidate' => ['required', new StringRule(false, 1000)],
+			'is_photo' => ['required', 'boolean'],
+			'is_album' => ['required', 'boolean'],
 		];
 	}
 
@@ -45,5 +50,7 @@ class TestRenamerRequest extends BaseApiRequest
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		$this->candidate = $values['candidate'];
+		$this->is_photo = self::toBoolean($values['is_photo']);
+		$this->is_album = self::toBoolean($values['is_album']);
 	}
 }

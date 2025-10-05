@@ -11,7 +11,8 @@ namespace App\DTO;
 use App\Actions\Album\Create as AlbumCreate;
 use App\Actions\Photo\Create as PhotoCreate;
 use App\Jobs\ImportImageJob;
-use App\Metadata\Renamer;
+use App\Metadata\Renamer\AlbumRenamer;
+use App\Metadata\Renamer\PhotoRenamer;
 use App\Models\Album;
 
 class ImportDTO
@@ -19,7 +20,8 @@ class ImportDTO
 	protected AlbumCreate $album_create;
 	protected PhotoCreate $photo_create;
 	public FolderNode $root_folder;
-	protected Renamer $renamer;
+	protected AlbumRenamer $album_renamer;
+	protected PhotoRenamer $photo_renamer;
 
 	/** @var ImportImageJob[] */
 	public array $job_bus = [];
@@ -36,7 +38,8 @@ class ImportDTO
 	) {
 		$this->album_create = new AlbumCreate($intended_owner_id);
 		$this->photo_create = new PhotoCreate($import_mode, $intended_owner_id);
-		$this->renamer = new Renamer($intended_owner_id);
+		$this->album_renamer = new AlbumRenamer($intended_owner_id);
+		$this->photo_renamer = new PhotoRenamer($intended_owner_id);
 	}
 
 	public function getAlbumCreate(): AlbumCreate
@@ -49,8 +52,13 @@ class ImportDTO
 		return $this->photo_create;
 	}
 
-	public function getRenamer(): Renamer
+	public function getPhotoRenamer(): PhotoRenamer
 	{
-		return $this->renamer;
+		return $this->photo_renamer;
+	}
+
+	public function getAlbumRenamer(): AlbumRenamer
+	{
+		return $this->album_renamer;
 	}
 }

@@ -67,6 +67,8 @@ class RenamerRulesListTest extends BaseApiWithDataTest
 			'mode' => RenamerModeType::ALL,
 			'order' => 1,
 			'is_enabled' => true,
+			'is_photo_rule' => true,
+			'is_album_rule' => true,
 		]);
 
 		$rule2 = RenamerRule::create([
@@ -78,6 +80,8 @@ class RenamerRulesListTest extends BaseApiWithDataTest
 			'mode' => RenamerModeType::FIRST,
 			'order' => 2,
 			'is_enabled' => false,
+			'is_photo_rule' => true,
+			'is_album_rule' => true,
 		]);
 
 		// Create a rule for another user (should not be returned)
@@ -90,6 +94,8 @@ class RenamerRulesListTest extends BaseApiWithDataTest
 			'mode' => RenamerModeType::REGEX,
 			'order' => 1,
 			'is_enabled' => true,
+			'is_photo_rule' => true,
+			'is_album_rule' => true,
 		]);
 
 		$response = $this->actingAs($this->userMayUpload1)->getJson('Renamer');
@@ -131,6 +137,8 @@ class RenamerRulesListTest extends BaseApiWithDataTest
 			'mode' => RenamerModeType::ALL,
 			'order' => 1,
 			'is_enabled' => true,
+			'is_photo_rule' => true,
+			'is_album_rule' => true,
 		]);
 
 		$rule2 = RenamerRule::create([
@@ -142,6 +150,8 @@ class RenamerRulesListTest extends BaseApiWithDataTest
 			'mode' => RenamerModeType::REGEX,
 			'order' => 1,
 			'is_enabled' => true,
+			'is_photo_rule' => true,
+			'is_album_rule' => true,
 		]);
 
 		// Test as admin without 'all' parameter (should return only admin's rules)
@@ -177,6 +187,8 @@ class RenamerRulesListTest extends BaseApiWithDataTest
 			'mode' => RenamerModeType::ALL,
 			'order' => 1,
 			'is_enabled' => true,
+			'is_photo_rule' => true,
+			'is_album_rule' => true,
 		]);
 
 		RenamerRule::create([
@@ -188,6 +200,8 @@ class RenamerRulesListTest extends BaseApiWithDataTest
 			'mode' => RenamerModeType::REGEX,
 			'order' => 1,
 			'is_enabled' => true,
+			'is_photo_rule' => true,
+			'is_album_rule' => true,
 		]);
 
 		// Test as non-admin with 'all=true' (should still return only own rules)

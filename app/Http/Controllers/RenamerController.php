@@ -11,10 +11,16 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Renamer\CreateRenamerRuleRequest;
 use App\Http\Requests\Renamer\DeleteRenamerRuleRequest;
 use App\Http\Requests\Renamer\ListRenamerRulesRequest;
+use App\Http\Requests\Renamer\RenameRequest;
 use App\Http\Requests\Renamer\TestRenamerRequest;
 use App\Http\Requests\Renamer\UpdateRenamerRuleRequest;
 use App\Http\Resources\Models\RenamerRuleResource;
-use App\Metadata\Renamer;
+use App\Metadata\Renamer\AlbumRenamer;
+use App\Metadata\Renamer\PhotoRenamer;
+use App\Metadata\Renamer\Renamer;
+use App\Models\Album;
+use App\Models\BaseAlbumImpl;
+use App\Models\Photo;
 use App\Models\RenamerRule;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
@@ -27,6 +33,8 @@ use Illuminate\Support\Facades\Auth;
  */
 class RenamerController extends Controller
 {
+	private const CHUNK_SIZE = 100;
+
 	/**
 	 * Get all renamer rules owned by the authenticated user.
 	 *
@@ -85,6 +93,8 @@ class RenamerController extends Controller
 			'mode' => $request->mode,
 			'order' => $request->order,
 			'is_enabled' => $request->is_enabled,
+			'is_photo_rule' => $request->is_photo_rule,
+			'is_album_rule' => $request->is_album_rule,
 		]);
 
 		return response()->json(RenamerRuleResource::fromModel($rule), Response::HTTP_CREATED);
@@ -146,6 +156,8 @@ class RenamerController extends Controller
 			'replacement' => $request->replacement,
 			'mode' => $request->mode,
 			'is_enabled' => $request->is_enabled,
+			'is_photo_rule' => $request->is_photo_rule,
+			'is_album_rule' => $request->is_album_rule,
 		]);
 
 		return RenamerRuleResource::fromModel($rule);
@@ -185,5 +197,55 @@ class RenamerController extends Controller
 			'original' => $candidate,
 			'result' => $result,
 		]);
+	}
+
+	/**
+	 * Rename photos and/or albums based on the user's renamer rules.
+	 *
+	 * @param RenameRequest $request
+	 *
+	 * @return void
+	 */
+	public function rename(RenameRequest $request): void
+	{
+		$user_id = Auth::id();
+
+		if (count($request->photoIds()) > 0) {
+			$photo_renamer = new PhotoRenamer($user_id);
+
+			Photo::query()
+				->whereIn('id', $request->photoIds())
+				// Process by chunks of self::CHUNK_SIZE to avoid memory issues
+				->chunkById(self::CHUNK_SIZE, function (Collection $photos) use ($photo_renamer): void {
+					$values = $photos->map(fn (Photo $photo) => [
+						'id' => $photo->id,
+						'title' => $photo_renamer->handle($photo->title),
+					])->all();
+
+					// Make a batch update to update all photo titles at once
+					$photo_instance = new Photo();
+					// https://github.com/mavinoo/laravelBatch
+					batch()->update($photo_instance, $values, 'id');
+				});
+		}
+
+		if (count($request->albumIds()) > 0) {
+			$album_renamer = new AlbumRenamer($user_id);
+
+			Album::query()
+				->whereIn('id', $request->albumIds())
+				// Process by chunks of self::CHUNK_SIZE to avoid memory issues
+				->chunkById(self::CHUNK_SIZE, function (Collection $albums) use ($album_renamer): void {
+					$values = $albums->map(fn (Album $album) => [
+						'id' => $album->id,
+						'title' => $album_renamer->handle($album->title),
+					])->all();
+
+					// Make a batch update to update all photo titles at once
+					$album_instance = new BaseAlbumImpl();
+					// https://github.com/mavinoo/laravelBatch
+					batch()->update($album_instance, $values, 'id');
+				});
+		}
 	}
 }

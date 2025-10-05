@@ -97,8 +97,8 @@ class ImportPhotos implements ImportPipe
 		foreach ($image_paths as $key => $image_path) {
 			$basename = basename($image_path);
 			$filename = pathinfo($image_path, PATHINFO_FILENAME);
-			$renamed_basename = $this->state->getRenamer()->handle($basename);
-			$renamed_filename = $this->state->getRenamer()->handle($filename);
+			$renamed_basename = $this->state->getPhotoRenamer()->handle($basename);
+			$renamed_filename = $this->state->getPhotoRenamer()->handle($filename);
 
 			if (in_array($basename, $already_existing, true) ||
 				in_array($filename, $already_existing, true) ||
@@ -144,7 +144,7 @@ class ImportPhotos implements ImportPipe
 		$candidates = array_merge($base_names, $file_names);
 
 		if ($this->state->import_mode->shall_rename_photo_title) {
-			$candidates_renamed = $this->state->getRenamer()->handleMany($candidates);
+			$candidates_renamed = $this->state->getPhotoRenamer()->handleMany($candidates);
 			$candidates = array_merge($candidates, $candidates_renamed);
 		}
 

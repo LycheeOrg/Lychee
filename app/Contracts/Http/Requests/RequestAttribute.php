@@ -121,6 +121,8 @@ class RequestAttribute
 	public const MODE_ATTRIBUTE = 'mode';
 	public const ORDER_ATTRIBUTE = 'order';
 	public const IS_ENABLED_ATTRIBUTE = 'is_enabled';
+	public const IS_PHOTO_RULE_ATTRIBUTE = 'is_photo_rule';
+	public const IS_ALBUM_RULE_ATTRIBUTE = 'is_album_rule';
 
 	/**
 	 * Shop management attributes.
