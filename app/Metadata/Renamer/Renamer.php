@@ -80,7 +80,6 @@ class Renamer
 			->when($is_photo !== null, fn ($query) => $query->where('is_photo_rule', $is_photo))
 			->when($is_album !== null, fn ($query) => $query->where('is_album_rule', $is_album))
 			->where('is_enabled', true)
-			->where('is_enabled', true)
 			->orderBy('order', 'asc')
 			->get();
 

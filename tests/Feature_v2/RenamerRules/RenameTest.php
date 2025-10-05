@@ -284,13 +284,13 @@ class RenameTest extends BaseApiWithDataTest
 		$album1->refresh();
 		$album2->refresh();
 
-		// photo1: IMG_ -> Photo_, then _old -> _new
+		// photo1: TEST_ -> Photo_, then _old -> _new
 		$this->assertSame('Photo_1234_new', $photo1->title);
-		// photo2: IMG_ -> Photo_ (no _old to replace)
+		// photo2: TEST_ -> Photo_ (no _old to replace)
 		$this->assertSame('Photo_5678', $photo2->title);
-		// album1: Folder_ -> Album_, then _old -> _new
+		// album1: TEST_ -> Album_, then _old -> _new
 		$this->assertSame('Album_vacation_new', $album1->title);
-		// album2: Folder_ -> Album_ (no _old to replace)
+		// album2: TEST_ -> Album_ (no _old to replace)
 		$this->assertSame('Album_work', $album2->title);
 	}
 

@@ -259,7 +259,7 @@ function resetForm() {
 			order: 1,
 			is_enabled: true,
 			is_photo_rule: true,
-			is_album_rule: false,
+			is_album_rule: true,
 		};
 	}
 	errors.value = {};
