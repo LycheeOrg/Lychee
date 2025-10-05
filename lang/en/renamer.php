@@ -85,8 +85,6 @@ return [
 	'replace_with_label' => 'Replace with',
 	'photo' => 'Photo',
 	'album' => 'Album',
-	'photo' => 'Photo',
-	'album' => 'Album',
 
 	// Delete confirmation
 	'confirm_delete_header' => 'Confirm Deletion',
