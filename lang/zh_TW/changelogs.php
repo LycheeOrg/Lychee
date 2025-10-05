@@ -1,11 +1,10 @@
 <?php
-
 return [
-	/*
+    /*
 	|--------------------------------------------------------------------------
 	| Changelogs page
 	|--------------------------------------------------------------------------
 	*/
-	'title' => 'Change logs',
-	'description' => 'This page contains the changelogs up to the latest available version of Lychee. It is voluntarily not limited to the changes on your installed version. With this, we want to give you a better overview of what to expect when you decide to upgrade.',
+    'title' => '變更日誌頁面',
+    'description' => '本頁包含 Lychee 最新可用版本的更新記錄。這並非僅限於您目前安裝版本的變更。我們希望藉此讓您在決定升級時能更清楚了解會有哪些更新內容。',
 ];
