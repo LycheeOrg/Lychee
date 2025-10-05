@@ -9,10 +9,10 @@
 namespace App\Http\Controllers\Install;
 
 use App\Http\Requests\Install\SetUpAdminRequest;
-use App\Models\Configs;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 /**
@@ -52,7 +52,8 @@ class SetUpAdminController extends Controller
 			$user->password = Hash::make($request->password());
 			$user->save();
 
-			Configs::set('owner_id', $user->id);
+			// Set the owner_id config to the new user's id
+			DB::table('configs')->where('key', 'owner_id')->update(['value' => $user->id]);
 		} catch (\Throwable $e) {
 			$error = $e->getMessage();
 			$error .= '<br>' . $e->getPrevious()?->getMessage() ?? '';

@@ -30,7 +30,13 @@ return new class() extends Migration {
 	public function up(): void
 	{
 		DB::table('configs')->where('key', 'version')->update(['value' => '060902']);
-		Artisan::call('cache:clear');
+		try {
+			Artisan::call('cache:clear');
+		} catch (\Throwable $e) {
+			$this->msg_section->writeln('<error>Warning:</error> Failed to clear cache for version 6.9.2');
+
+			return;
+		}
 		$this->msg_section->writeln('<info>Info:</info> Cleared cache for version 6.9.2');
 	}
 
