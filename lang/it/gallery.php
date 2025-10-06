@@ -41,6 +41,8 @@ return [
         'recent' => 'Recent',
         'public' => 'Public',
         'on_this_day' => 'On This Day',
+		'untagged' => 'Untagged',
+
     ],
     'layout' => [
         'squares' => 'Square thumbnails',

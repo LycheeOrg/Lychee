@@ -24,7 +24,7 @@ class UnsortedAlbum extends BaseSmartAlbum
 	 * @throws ConfigurationKeyMissingException
 	 * @throws FrameworkException
 	 */
-	protected function __construct()
+	public function __construct()
 	{
 		parent::__construct(
 			id: SmartAlbumType::UNSORTED,

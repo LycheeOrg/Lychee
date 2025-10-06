@@ -66,7 +66,7 @@ trait HasHeaderUrl
 		}
 		$query_ratio = $query_ratio->where('ratio', '>', 1)->whereIn('type', [SizeVariantType::MEDIUM, SizeVariantType::SMALL2X, SizeVariantType::SMALL]);
 		$num = $query_ratio->count() - 1;
-		$photo = $query_ratio->skip(rand(0, $num))->first();
+		$photo = $num >= 0 ? $query_ratio->skip(rand(0, $num))->first() : null;
 
 		if ($photo === null) {
 			$query = SizeVariant::query()

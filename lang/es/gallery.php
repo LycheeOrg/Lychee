@@ -41,6 +41,7 @@ return [
         'recent' => 'Reciente',
         'public' => 'Público',
         'on_this_day' => 'En este día',
+		'untagged' => 'Untagged',
     ],
     'layout' => [
         'squares' => 'Miniaturas cuadradas',

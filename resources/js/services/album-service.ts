@@ -64,7 +64,10 @@ const AlbumService = {
 			// @ts-expect-error  we now what we are doing here.
 			axiosWithCache.storage.clear();
 		} else {
-			axiosWithCache.storage.remove("album_" + album_id);
+			for (let page = 1; page <= 10; page++) {
+				axiosWithCache.storage.remove(`album_${album_id}_page${page}`); // reasonable limit to 10 pages (5000 photos)
+				// Later we will need to implement a more sophisticated cache clearing strategy.
+			}
 		}
 	},
 
