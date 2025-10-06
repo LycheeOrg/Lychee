@@ -92,7 +92,7 @@ const lycheeStore = useLycheeStateStore();
 
 const { is_timeline_left_border_visible, is_debug_enabled } = storeToRefs(lycheeStore);
 
-const props = withDefaults(defineProps<{
+const props = defineProps<{
 	header: string;
 	photos: App.Http.Resources.Models.PhotoResource[];
 	photosTimeline?: SplitData<App.Http.Resources.Models.PhotoResource>[] | undefined;
@@ -100,9 +100,7 @@ const props = withDefaults(defineProps<{
 	isTimeline?: boolean;
 	withControl: boolean;
 	intersectionAction?: (arg: string | null) => void;
-}>(), {
-	isTimeline: false,
-});
+}>();
 
 // We do not show the left border on touch devices (mostly phones) due to limited real estate.
 const isLeftBorderVisible = computed(() => is_timeline_left_border_visible.value && !isTouchDevice());

@@ -30,6 +30,7 @@ use App\SmartAlbums\Utils\MimicModel;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 /**
  * Class BaseSmartAlbum.
@@ -50,8 +51,8 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	protected string $id;
 	protected string $title;
 	protected ?Thumb $thumb = null;
-	/** @var ?Collection<int,Photo> */
-	protected ?Collection $photos = null;
+	/** @var ?LengthAwarePaginator<int,Photo> */
+	protected ?LengthAwarePaginator $photos = null;
 	protected \Closure $smart_photo_condition;
 	protected AccessPermission|null $public_permissions;
 
@@ -88,9 +89,9 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	}
 
 	/**
-	 * @return Collection<int,Photo>
+	 * @return LengthAwarePaginator<int,Photo>
 	 */
-	public function get_photos(): Collection
+	public function get_photos(): LengthAwarePaginator
 	{
 		return $this->getPhotosAttribute();
 	}
@@ -117,22 +118,22 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	}
 
 	/**
-	 * @return Collection<int,Photo>
+	 * @return LengthAwarePaginator<int,Photo>
 	 *
 	 * @throws InvalidOrderDirectionException
 	 * @throws InvalidQueryModelException
 	 */
-	protected function getPhotosAttribute(): Collection
+	protected function getPhotosAttribute(): LengthAwarePaginator
 	{
 		// Cache query result for later use
 		// (this mimics the behaviour of relations of true Eloquent models)
 		if ($this->photos === null) {
 			$sorting = PhotoSortingCriterion::createDefault();
 
-			/** @var \Illuminate\Database\Eloquent\Collection<int,\App\Models\Photo>&iterable $photos */
+			/** @var \Illuminate\Pagination\LengthAwarePaginator<int,\App\Models\Photo> $photos */
 			$photos = (new SortingDecorator($this->photos()))
 				->orderPhotosBy($sorting->column, $sorting->order)
-				->get();
+				->paginate(Configs::getValueAsInt('photos_pagination_limit'));
 			$this->photos = $photos;
 		}
 
@@ -143,9 +144,9 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	 * Similar to the function above.
 	 * The big difference is that we do not check if it is null or not.
 	 *
-	 * @return Collection<int,Photo>|null
+	 * @return LengthAwarePaginator<int,Photo>|null
 	 */
-	public function getPhotos(): ?Collection
+	public function getPhotos(): ?LengthAwarePaginator
 	{
 		return $this->photos;
 	}

@@ -18,17 +18,23 @@ export const useAlbumStore = defineStore("album-store", {
 		config: undefined as App.Http.Resources.GalleryConfigs.AlbumConfig | undefined,
 		isLoading: false as boolean,
 		_loadingAlbumId: undefined as undefined | string,
+		_loadingPage: undefined as undefined | number,
 
-		current_page: 1 as number,
-		from: 0 as number,
-		per_page: 0 as number,
-		total: 0 as number,
-		has_pagination: false as boolean,
+		current_page: 1,
+		last_page: 0,
+		per_page: 0,
+		total: 0,
 	}),
 	actions: {
 		refresh(): Promise<void> {
 			this.reset();
 			return this.load();
+		},
+		resetPages() {
+			this.current_page = 1;
+			this.last_page = 0;
+			this.per_page = 0;
+			this.total = 0;
 		},
 		reset() {
 			this.modelAlbum = undefined;
@@ -38,16 +44,8 @@ export const useAlbumStore = defineStore("album-store", {
 			this.config = undefined;
 			this.isLoading = false;
 		},
-		hasPagination (
-			resource: App.Http.Resources.Models.AbstractAlbumResource['resource']
-		): resource is App.Http.Resources.Models.UnTaggedSmartAlbumResource {
-			return resource !== null && 'from' in resource && resource.from !== null;
-		},
-		updateCurrentPage (first: number) {
-			if (this.per_page > 0) {
-				this.current_page = Math.floor(first / this.per_page) + 1;
-			}
-			this.from = first;
+		updateCurrentPage(page: number) {
+			this.current_page = page;
 		},
 		load(): Promise<void> {
 			const togglableState = useTogglablesStateStore();
@@ -69,23 +67,23 @@ export const useAlbumStore = defineStore("album-store", {
 			}
 
 			const requestedAlbumId = this.albumId;
+			const requestedPage = this.current_page;
 			this._loadingAlbumId = requestedAlbumId;
+			this._loadingPage = requestedPage;
 			this.isLoading = true;
-			this.isPasswordProtected = false;
-			this.config = undefined;
-			this.modelAlbum = undefined;
-			this.tagAlbum = undefined;
-			this.smartAlbum = undefined;
-			this.has_pagination = false;
 
-			const first = (this.current_page - 1) * this.per_page;
-
-			return AlbumService.get(requestedAlbumId, first, this.per_page)
+			return AlbumService.get(requestedAlbumId, requestedPage)
 				.then((data) => {
+					this.isPasswordProtected = false;
+					this.config = undefined;
+					this.modelAlbum = undefined;
+					this.tagAlbum = undefined;
+					this.smartAlbum = undefined;
+
 					// Exit early if the albumId changed while we were loading
 					// (e.g. user clicked on another album, or went back/forward in history)
 					// In that case, we don't want to override the state with the old album.
-					if (this._loadingAlbumId !== requestedAlbumId) {
+					if (this._loadingAlbumId !== requestedAlbumId || this._loadingPage !== requestedPage) {
 						return;
 					}
 
@@ -100,20 +98,17 @@ export const useAlbumStore = defineStore("album-store", {
 						this.tagAlbum = data.data.resource as App.Http.Resources.Models.TagAlbumResource;
 						albumsStore.albums = []; // Reset to avoid bad surprises.
 					} else {
-						if (this.hasPagination(data.data.resource)) {
-							this.from = Number(data.data.resource.from ?? 0);
-							this.per_page = Number(data.data.resource.per_page ?? 0);
-							this.total = Number(data.data.resource.total ?? 0);
-							this.current_page = Number(data.data.resource.current_page ?? 1);
-							this.has_pagination = true;
-						}
 						this.smartAlbum = data.data.resource as App.Http.Resources.Models.SmartAlbumResource;
+						this.per_page = this.smartAlbum.per_page;
+						this.total = this.smartAlbum.total;
+						this.current_page = this.smartAlbum.current_page;
+						this.last_page = this.smartAlbum.last_page;
 						albumsStore.albums = []; // Reset to avoid bad surprises.
 					}
 					photosState.setPhotos(data.data.resource.photos, data.data.config.is_photo_timeline_enabled);
 				})
 				.catch((error) => {
-					if (this._loadingAlbumId !== requestedAlbumId) {
+					if (this._loadingAlbumId !== requestedAlbumId || this._loadingPage !== requestedPage) {
 						return;
 					}
 					if (error.response && error.response.status === 401 && error.response.data.message === "Password required") {
@@ -152,6 +147,9 @@ export const useAlbumStore = defineStore("album-store", {
 		},
 		isLoaded(): boolean {
 			return this.config !== undefined && this.album !== undefined;
+		},
+		hasPagination(): boolean {
+			return this.smartAlbum !== undefined;
 		},
 	},
 });

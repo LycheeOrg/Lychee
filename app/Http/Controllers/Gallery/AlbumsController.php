@@ -11,7 +11,6 @@ namespace App\Http\Controllers\Gallery;
 use App\Actions\Albums\Top;
 use App\Http\Resources\Collections\RootAlbumResource;
 use App\Http\Resources\GalleryConfigs\RootConfig;
-use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 
 /**
@@ -24,7 +23,7 @@ class AlbumsController extends Controller
 	 *
 	 * @return RootAlbumResource returns the top albums
 	 */
-	public function get(Request $request,Top $top): RootAlbumResource
+	public function get(Top $top): RootAlbumResource
 	{
 		return RootAlbumResource::fromDTO($top->get(), new RootConfig());
 	}

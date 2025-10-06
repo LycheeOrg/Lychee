@@ -14,6 +14,8 @@ use App\Http\Controllers\Gallery\AlbumController;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\SizeVariant;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 
 trait HasHeaderUrl
 {
@@ -52,11 +54,17 @@ trait HasHeaderUrl
 			return $header_size_variant->url;
 		}
 
-		$query_ratio = SizeVariant::query()
-					->select('photo_id')
-					->whereBelongsTo($album->get_photos())
-					->where('ratio', '>', 1) // ! we prefer landscape first.
-					->whereIn('type', [SizeVariantType::MEDIUM, SizeVariantType::SMALL2X, SizeVariantType::SMALL]);
+		$query_ratio = SizeVariant::query()->select('photo_id');
+
+		/** @var Collection<int,Photo>|LengthAwarePaginator<int,Photo> $photos */
+		$photos = $album->get_photos();
+		if ($photos instanceof LengthAwarePaginator) {
+			$photo_ids = collect($photos->items())->pluck('id')->all();
+			$query_ratio = $query_ratio->whereIn('photo_id', $photo_ids);
+		} else {
+			$query_ratio = $query_ratio->whereBelongsTo($photos);
+		}
+		$query_ratio = $query_ratio->where('ratio', '>', 1)->whereIn('type', [SizeVariantType::MEDIUM, SizeVariantType::SMALL2X, SizeVariantType::SMALL]);
 		$num = $query_ratio->count() - 1;
 		$photo = $query_ratio->skip(rand(0, $num))->first();
 

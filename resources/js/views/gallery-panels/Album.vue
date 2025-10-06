@@ -25,10 +25,13 @@
 		@open-search="openSearch"
 		@go-back="goBack"
 		:total="albumStore.total"
-		v-model:rows="albumStore.per_page"
-		v-model:first="albumStore.from"
-		@update:rows="(val) => { albumStore.per_page = val; refresh(); }"
-		@update:first="(val) => { albumStore.from = val; refresh(); }"
+		:first="(albumStore.current_page - 1) * albumStore.per_page"
+		@update:first="
+			(val) => {
+				albumStore.current_page = Math.floor(val / albumStore.per_page) + 1;
+				refresh();
+			}
+		"
 	/>
 
 	<!-- Photo panel -->
@@ -215,7 +218,7 @@ async function refresh() {
 }
 
 // eslint-disable-next-line vue/no-dupe-keys
-const { albumId, isLoading } = storeToRefs(albumStore);
+const { albumId, isLoading, current_page } = storeToRefs(albumStore);
 // eslint-disable-next-line vue/no-dupe-keys
 const { photoId } = storeToRefs(photoStore);
 
@@ -455,6 +458,9 @@ watch(
 
 		photoStore.setTransition(newPhotoId as string | undefined);
 
+		if (newAlbumId !== albumStore.albumId) {
+			current_page.value = 1; // Reset the page if we change album
+		}
 		albumId.value = newAlbumId as string;
 		photoId.value = newPhotoId as string;
 		debouncedPhotoMetrics();

@@ -13,6 +13,7 @@ use App\Enum\OrderSortingType;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 /**
  * @template TModelClass of \Illuminate\Database\Eloquent\Model
@@ -185,5 +186,63 @@ class SortingDecorator
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Paginate the given query.
+	 *
+	 * @param int|null                                 $per_page
+	 * @param array<int, (model-property<TModel>|'*')> $columns
+	 * @param string                                   $page_name
+	 * @param int|null                                 $page
+	 *
+	 * @return \Illuminate\Pagination\LengthAwarePaginator<int,TModelClass>
+	 *
+	 * @throws \InvalidArgumentException
+	 */
+	public function paginate($per_page = null, $columns = ['*'], $page_name = 'page', $page = null)
+	{
+		// Sort as much as we can on the SQL layer, i.e. everything with a
+		// lower significance than the least significant criterion which
+		// requires natural sorting.
+		try {
+			for ($i = $this->pivot_idx + 1; $i < count($this->order_by); $i++) {
+				$this->base_builder->orderBy($this->order_by[$i]['column'], $this->order_by[$i]['direction']);
+			}
+			// @codeCoverageIgnoreStart
+		} catch (\InvalidArgumentException) {
+			// Sic! In theory, `\InvalidArgumentException` should be thrown
+			// if the *type* of argument differs from the expected type
+			// (e.g. a method gets pass an integer, but requires a string).
+			// If the *value* is invalid, the method should throw a
+			// `\InvalidDomainException`.
+			// But Eloquent throws `\InvalidArgumentException` if the
+			// direction does neither equal "asc" nor "desc".
+			throw new InvalidOrderDirectionException();
+		}
+		// @codeCoverageIgnoreEnd
+
+		/** @var \Illuminate\Pagination\LengthAwarePaginator<int,TModelClass> $result */
+		$result = $this->base_builder->paginate($per_page, $columns, $page_name, $page);
+
+		$items = collect($result->items());
+
+		// Sort with PHP for the remaining criteria in reverse order.
+		for ($i = $this->pivot_idx; $i >= 0; $i--) {
+			$column = $this->order_by[$i]['column'];
+
+			// This conversion is necessary
+			$column_sorting_name = str_replace('photos.', '', $column);
+			$column_sorting_type = ColumnSortingType::tryFrom($column_sorting_name) ?? ColumnSortingType::CREATED_AT;
+
+			$options = in_array($column_sorting_type, self::POSTPONE_COLUMNS, true) ? SORT_NATURAL | SORT_FLAG_CASE : SORT_REGULAR;
+			$items = $items->sortBy(
+				$column_sorting_name,
+				$options,
+				$this->order_by[$i]['direction'] === OrderSortingType::DESC->value
+			)->values();
+		}
+
+		return new LengthAwarePaginator($items, $result->total(), $result->perPage(), $result->currentPage(), $result->getOptions());
 	}
 }

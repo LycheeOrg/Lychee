@@ -17,7 +17,6 @@ use App\Http\Resources\Traits\HasHeaderUrl;
 use App\Http\Resources\Traits\HasPrepPhotoCollection;
 use App\Models\Configs;
 use App\SmartAlbums\BaseSmartAlbum;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\LiteralTypeScriptType;
@@ -40,35 +39,26 @@ class SmartAlbumResource extends Data
 	public PreFormattedAlbumData $preFormattedData;
 	public null $statistics = null; // Needed to unify the API response with the AlbumResource and TagAlbumResource.
 
-	public ?int $current_page = null;
-	public ?int $from = null;
-	public ?int $last_page = null;
-	public ?int $per_page = null;
-	public ?int $to = null;
-	public ?int $total = null;
+	public int $current_page = 0;
+	public int $last_page = 0;
+	public int $per_page = 0;
+	public int $total = 0;
 
-	public function __construct(BaseSmartAlbum $smart_album, $paginated_photos = null)
+	public function __construct(BaseSmartAlbum $smart_album)
 	{
 		$this->id = $smart_album->get_id();
 		$this->title = $smart_album->get_title();
 
-		if ($paginated_photos instanceof LengthAwarePaginator) {
-			// Use provided paginated photos
-            $this->photos = collect($paginated_photos->items())->map(fn ($photo) => new PhotoResource($photo, $smart_album));
-			$this->current_page = $paginated_photos->currentPage();
-			$this->from = $paginated_photos->firstItem() ?? 0;
-			$this->last_page = $paginated_photos->lastPage();
-			$this->per_page = $paginated_photos->perPage();
-			$this->to = $paginated_photos->lastItem() ?? 0;
-			$this->total = $paginated_photos->total();
-		} else {
-			// Fallback to non-paginated behavior
-			/** @disregard P1006 */
-			$this->photos = $smart_album->relationLoaded('photos') ? $this->toPhotoResources($smart_album->getPhotos(), $smart_album) : null;
-		}
+		/** @disregard P1006 */
+		$photos = $smart_album->relationLoaded('photos') ? $smart_album->getPhotos() : null;
 
-		$this->prepPhotosCollection();
-		if ($this->photos !== null) {
+		if ($photos !== null) {
+			$this->photos = $this->toPhotoResources(collect($photos->items()), $smart_album);
+			$this->current_page = $photos->currentPage();
+			$this->last_page = $photos->lastPage();
+			$this->per_page = $photos->perPage();
+			$this->total = $photos->total();
+
 			// Prep collection with first and last link + which id is next.
 			$this->prepPhotosCollection();
 

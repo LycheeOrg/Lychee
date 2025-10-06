@@ -50,6 +50,15 @@
 					@clicked="albumClick"
 					@contexted="albumMenuOpen"
 				/>
+				<div v-if="photosStore.photos.length > 0 && albumStore.hasPagination" class="flex justify-center w-full -mb-[100%]">
+					<Paginator
+						v-model:first="firstValue"
+						:rows="albumStore.per_page"
+						:total-records="albumStore.total"
+						:always-show="false"
+						:pt:pcRowPerPageDropdown:class="'hidden'"
+					/>
+				</div>
 				<PhotoThumbPanel
 					v-if="layoutStore.config && photosStore.photos.length > 0"
 					header="gallery.album.header_photos"
@@ -62,17 +71,18 @@
 					@selected="photoSelect"
 					@contexted="photoMenuOpen"
 				/>
+				<div v-if="photosStore.photos.length > 0 && albumStore.hasPagination" class="flex justify-center w-full">
+					<Paginator
+						v-model:first="firstValue"
+						:rows="albumStore.per_page"
+						:total-records="albumStore.total"
+						:always-show="false"
+						:pt:pcRowPerPageDropdown:class="'hidden'"
+					/>
+				</div>
 				<ScrollTop v-if="!props.isPhotoOpen" target="parent" />
+				<GalleryFooter v-once />
 			</div>
-			<div v-if="photosStore.photos.length > 0 && albumStore.has_pagination" class="flex justify-center w-full">
-				<Paginator
-					v-model:first="firstValue"
-					v-model:rows="rowsValue"
-					:total-records="total"
-					:always-show="false"
-				/>
-			</div>
-			<GalleryFooter v-once />
 			<ShareAlbum :key="`share_modal_${albumStore.album.id}`" v-model:visible="is_share_album_visible" :title="albumStore.album.title" />
 
 			<!-- Dialogs -->
@@ -128,8 +138,6 @@ const router = useRouter();
 
 const props = defineProps<{
 	isPhotoOpen: boolean;
-	total: number | undefined;
-	rows: number | undefined;
 	first: number | undefined;
 }>();
 
@@ -148,7 +156,6 @@ const emits = defineEmits<{
 	scrollToTop: [];
 	openSearch: [];
 	goBack: [];
-	"update:rows": [value: number];
 	"update:first": [value: number];
 }>();
 
@@ -191,11 +198,6 @@ const firstValue = computed({
 		albumStore.updateCurrentPage(val);
 		emits("update:first", val);
 	},
-});
-
-const rowsValue = computed({
-	get: () => props.rows,
-	set: (val: number) => emits("update:rows", val),
 });
 
 const albumPanelConfig = computed<AlbumThumbConfig>(() => ({

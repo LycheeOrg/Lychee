@@ -57,12 +57,6 @@ export type UpdateProtectionPolicyData = {
 	grants_upload: boolean;
 };
 
-interface GetAlbumParams {
-    album_id: string;
-    page?: number;
-    per_page?: number;
-};
-
 const AlbumService = {
 	clearCache(album_id: string | null = null): void {
 		const axiosWithCache = axios as unknown as AxiosCacheInstance;
@@ -84,36 +78,17 @@ const AlbumService = {
 		return requester.get(`${Constants.getApiUrl()}Albums`, { data: {}, id: "albums" });
 	},
 
-	get(
-		album_id: string,
-		first?: number,
-		rows?: number
-	): Promise<AxiosResponse<App.Http.Resources.Models.AbstractAlbumResource>> {
-		const params: GetAlbumParams = { album_id: album_id };
+	get(album_id: string, page?: number): Promise<AxiosResponse<App.Http.Resources.Models.AbstractAlbumResource>> {
+		const params = {
+			album_id: album_id,
+			page: page ?? 1,
+		};
 
-		if (first !== undefined && rows !== undefined && rows > 0) {
-			const page = Math.floor(first / rows) + 1;
-			params.page = page;
-			params.per_page = rows;
-
-			if (album_id === 'untagged') {
-
-				return axios.get(`${Constants.getApiUrl()}Album`, {
-					params: {
-						album_id: params.album_id,
-						page: params.page,
-						per_page: params.per_page,
-					},
-					data: {},
-				});
-			}
-		}
 		const requester = axios as unknown as AxiosCacheInstance;
-
 		return requester.get(`${Constants.getApiUrl()}Album`, {
 			params: params,
 			data: {},
-			id: `album_${album_id}`,
+			id: `album_${album_id}_page${page ?? 1}`,
 		});
 	},
 

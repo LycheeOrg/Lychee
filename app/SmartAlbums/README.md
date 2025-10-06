@@ -157,6 +157,7 @@ Smart Albums can be individually enabled/disabled:
 'enable_recent'       => true/false
 'enable_on_this_day'  => true/false
 'enable_untagged'     => true/false
+'enable_untagged'     => true/false
 
 // Additional settings
 'recent_age'                    => 30 (days)

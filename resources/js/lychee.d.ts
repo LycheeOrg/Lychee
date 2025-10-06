@@ -103,9 +103,13 @@ declare namespace App.Enum {
 		| "microsoft"
 		| "nextcloud"
 		| "keycloak";
+	export type OmnipayProviderType = "Dummy" | "Mollie" | "PayPal_Express" | "PayPal_ExpressInContext" | "PayPal_Pro" | "PayPal_Rest" | "Stripe";
 	export type OrderSortingType = "ASC" | "DESC";
+	export type PaymentStatusType = "pending" | "cancelled" | "failed" | "refunded" | "processing" | "completed";
 	export type PhotoLayoutType = "square" | "justified" | "masonry" | "grid";
 	export type PhotoThumbInfoType = "title" | "description";
+	export type PurchasableLicenseType = "personal" | "commercial" | "extended";
+	export type PurchasableSizeVariantType = "medium" | "medium2x" | "original" | "full";
 	export type RenamerModeType = "first" | "all" | "regex" | "trim" | "strtolower" | "strtoupper" | "ucwords" | "ucfirst";
 	export type SeverityType = "emergency" | "alert" | "critical" | "error" | "warning" | "notice" | "info" | "debug";
 	export type ShiftType = "relative" | "absolute";
@@ -113,7 +117,7 @@ declare namespace App.Enum {
 	export type ShiftY = "up" | "down";
 	export type SizeVariantType = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 	export type SmallLargeType = "small" | "large";
-	export type SmartAlbumType = "unsorted" | "starred" | "recent" | "on_this_day";
+	export type SmartAlbumType = "unsorted" | "starred" | "recent" | "on_this_day" | "untagged";
 	export type StorageDiskType = "images" | "s3";
 	export type ThumbAlbumSubtitleType = "description" | "takedate" | "creation" | "oldstyle" | "num_photos" | "num_albums" | "num_photos_albums";
 	export type ThumbOverlayVisibilityType = "never" | "always" | "hover";
@@ -419,7 +423,6 @@ declare namespace App.Http.Resources.Models {
 	export type AbstractAlbumResource = {
 		config: App.Http.Resources.GalleryConfigs.AlbumConfig;
 		resource:
-			| App.Http.Resources.Models.UnTaggedSmartAlbumResource
 			| App.Http.Resources.Models.AlbumResource
 			| App.Http.Resources.Models.SmartAlbumResource
 			| App.Http.Resources.Models.TagAlbumResource
@@ -594,20 +597,10 @@ declare namespace App.Http.Resources.Models {
 		rights: App.Http.Resources.Rights.AlbumRightsResource;
 		preFormattedData: App.Http.Resources.Models.Utils.PreFormattedAlbumData;
 		statistics: null | null;
-	};
-	export type UnTaggedSmartAlbumResource = {
-		id: string;
-		title: string;
-		photos: App.Http.Resources.Models.PhotoResource[];
-		thumb: App.Http.Resources.Models.ThumbResource | null;
-		policy: App.Http.Resources.Models.Utils.AlbumProtectionPolicy;
-		rights: App.Http.Resources.Rights.AlbumRightsResource;
-		preFormattedData: App.Http.Resources.Models.Utils.PreFormattedAlbumData;
-		statistics: null | null;
-		from: number | null,
-		per_page: number | null,
-		total: number | null,
-		current_page: number | null,
+		current_page: number;
+		last_page: number;
+		per_page: number;
+		total: number;
 	};
 	export type TagAlbumResource = {
 		id: string;
@@ -786,6 +779,7 @@ declare namespace App.Http.Resources.Rights {
 		can_access_original: boolean;
 		can_pasword_protect: boolean;
 		can_import_from_server: boolean;
+		can_make_purchasable: boolean;
 	};
 	export type GlobalRightsResource = {
 		root_album: App.Http.Resources.Rights.RootAlbumRightsResource;
@@ -801,6 +795,7 @@ declare namespace App.Http.Resources.Rights {
 		is_watermarker_enabled: boolean;
 		is_photo_timeline_enabled: boolean;
 		is_mod_renamer_enabled: boolean;
+		is_mod_webshop_enabled: boolean;
 	};
 	export type PhotoRightsResource = {
 		can_edit: boolean;
@@ -860,6 +855,85 @@ declare namespace App.Http.Resources.Search {
 		per_page: number;
 		to: number;
 		total: number;
+	};
+}
+declare namespace App.Http.Resources.Shop {
+	export type CatalogResource = {
+		album_purchasable: App.Http.Resources.Shop.PurchasableResource | null;
+		children_purchasables: App.Http.Resources.Shop.PurchasableResource[];
+		photo_purchasables: App.Http.Resources.Shop.PurchasableResource[];
+	};
+	export type CheckoutOptionResource = {
+		currency: string;
+		allow_guest_checkout: boolean;
+		terms_url: string;
+		privacy_url: string;
+		payment_providers: App.Enum.OmnipayProviderType[];
+	};
+	export type CheckoutResource = {
+		is_success: boolean;
+		is_redirect: boolean;
+		redirect_url: string | null;
+		message: string;
+		order: App.Http.Resources.Shop.OrderResource | null;
+	};
+	export type ConfigOptionResource = {
+		currency: string;
+		default_price_cents: number;
+		default_license: App.Enum.PurchasableLicenseType;
+		default_size: App.Enum.PurchasableSizeVariantType;
+	};
+	export type EditablePurchasableResource = {
+		purchasable_id: number;
+		album_id: string | null;
+		album_title: string | null;
+		photo_id: string | null;
+		photo_title: string | null;
+		photo_url: string | null;
+		prices: App.Http.Resources.Shop.PriceResource[] | null;
+		owner_notes: string | null;
+		description: string | null;
+		is_active: boolean;
+	};
+	export type OrderItemResource = {
+		id: number;
+		order_id: number;
+		purchasable_id: number | null;
+		album_id: string | null;
+		photo_id: string | null;
+		title: string;
+		license_type: App.Enum.PurchasableLicenseType;
+		price: string;
+		size_variant_type: App.Enum.PurchasableSizeVariantType;
+		item_notes: string | null;
+	};
+	export type OrderResource = {
+		id: number;
+		provider: App.Enum.OmnipayProviderType | null;
+		transaction_id: string;
+		username: string | null;
+		email: string | null;
+		status: App.Enum.PaymentStatusType;
+		amount: string;
+		paid_at: string | null;
+		created_at: string | null;
+		comment: string | null;
+		items: App.Http.Resources.Shop.OrderItemResource[] | null;
+		can_process_payment: boolean;
+	};
+	export type PriceResource = {
+		size_variant: App.Enum.PurchasableSizeVariantType;
+		license_type: App.Enum.PurchasableLicenseType;
+		price: string;
+		price_cents: number;
+	};
+	export type PurchasableResource = {
+		purchasable_id: number;
+		album_id: string | null;
+		photo_id: string | null;
+		prices: App.Http.Resources.Shop.PriceResource[] | null;
+		description: string;
+		is_active: boolean;
 	};
 }
 declare namespace App.Http.Resources.Statistics {
