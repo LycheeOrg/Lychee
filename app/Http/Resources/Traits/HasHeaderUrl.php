@@ -13,6 +13,7 @@ use App\Enum\SizeVariantType;
 use App\Http\Controllers\Gallery\AlbumController;
 use App\Models\Album;
 use App\Models\Configs;
+use App\Models\Photo;
 use App\Models\SizeVariant;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
@@ -34,7 +35,6 @@ trait HasHeaderUrl
 		}
 
 		// TODO : already use the prefetched data for photos instead of 2 extra queries?
-
 		return $this->getByQuery($album);
 	}
 
