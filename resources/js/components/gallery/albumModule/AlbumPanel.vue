@@ -195,7 +195,7 @@ function toggleStatistics() {
 const firstValue = computed({
 	get: () => props.first,
 	set: (val: number) => {
-		albumStore.updateCurrentPage(val);
+		albumStore.current_page = val;
 		emits("update:first", val);
 	},
 });
