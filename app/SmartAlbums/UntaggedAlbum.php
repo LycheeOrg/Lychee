@@ -50,8 +50,6 @@ class UntaggedAlbum extends BaseSmartAlbum
                 $query->doesntHave('tags');
             }
         );
-        $this->id = SmartAlbumType::UNTAGGED->value;
-        $this->title = SmartAlbumType::UNTAGGED->name;
     }
 
     public static function getInstance(): self
@@ -67,7 +65,7 @@ class UntaggedAlbum extends BaseSmartAlbum
      */
     public function photos(): Builder
     {
-        $user_id = Auth::user()->id;
+        $user_id = Auth::id();
         $query = Photo::where('owner_id', $user_id)
             ->with(['size_variants', 'statistics', 'palette', 'tags'])
             ->where($this->smart_photo_condition);

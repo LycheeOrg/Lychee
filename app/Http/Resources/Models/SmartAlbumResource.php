@@ -40,12 +40,12 @@ class SmartAlbumResource extends Data
 	public PreFormattedAlbumData $preFormattedData;
 	public null $statistics = null; // Needed to unify the API response with the AlbumResource and TagAlbumResource.
 
-	public int $current_page;
-	public int $from;
-	public int $last_page;
-	public int $per_page;
-	public int $to;
-	public int $total;
+	public ?int $current_page = null;
+	public ?int $from = null;
+	public ?int $last_page = null;
+	public ?int $per_page = null;
+	public ?int $to = null;
+	public ?int $total = null;
 
 	public function __construct(BaseSmartAlbum $smart_album, $paginated_photos = null)
 	{

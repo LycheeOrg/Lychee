@@ -14,7 +14,7 @@ return new class() extends BaseConfigMigration {
 				'is_secret' => false,
 				'cat' => self::SMART_ALBUMS,
 				'type_range' => self::BOOL,
-				'description' => 'Enable On this day smart album.',
+				'description' => 'Enable Untagged smart album.',
 			],
 			[
 				'key' => 'untagged_photos_pagination_limit',

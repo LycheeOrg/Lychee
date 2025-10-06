@@ -113,7 +113,7 @@ const AlbumService = {
 		return requester.get(`${Constants.getApiUrl()}Album`, {
 			params: params,
 			data: {},
-			id: "album_" + album_id
+			id: `album_${album_id}`,
 		});
 	},
 

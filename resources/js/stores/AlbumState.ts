@@ -41,7 +41,7 @@ export const useAlbumStore = defineStore("album-store", {
 		hasPagination (
 			resource: App.Http.Resources.Models.AbstractAlbumResource['resource']
 		): resource is App.Http.Resources.Models.UnTaggedSmartAlbumResource {
-			return resource !== null && 'from' in resource;
+			return resource !== null && 'from' in resource && resource.from !== null;
 		},
 		updateCurrentPage (first: number) {
 			if (this.per_page > 0) {
