@@ -30,12 +30,6 @@ export const useAlbumStore = defineStore("album-store", {
 			this.reset();
 			return this.load();
 		},
-		resetPages() {
-			this.current_page = 1;
-			this.last_page = 0;
-			this.per_page = 0;
-			this.total = 0;
-		},
 		reset() {
 			this.modelAlbum = undefined;
 			this.tagAlbum = undefined;
@@ -43,9 +37,6 @@ export const useAlbumStore = defineStore("album-store", {
 			this.isPasswordProtected = false;
 			this.config = undefined;
 			this.isLoading = false;
-		},
-		updateCurrentPage(page: number) {
-			this.current_page = page;
 		},
 		load(): Promise<void> {
 			const togglableState = useTogglablesStateStore();
