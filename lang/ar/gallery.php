@@ -41,6 +41,7 @@ return [
         'recent' => 'الأحدث',
         'public' => 'عام',
         'on_this_day' => 'في هذا اليوم',
+		'untagged' => 'Untagged',
     ],
     'layout' => [
         'squares' => 'مصغرات مربعة',

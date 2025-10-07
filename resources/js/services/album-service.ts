@@ -64,7 +64,10 @@ const AlbumService = {
 			// @ts-expect-error  we now what we are doing here.
 			axiosWithCache.storage.clear();
 		} else {
-			axiosWithCache.storage.remove("album_" + album_id);
+			for (let page = 1; page <= 10; page++) {
+				axiosWithCache.storage.remove(`album_${album_id}_page${page}`); // reasonable limit to 10 pages (5000 photos)
+				// Later we will need to implement a more sophisticated cache clearing strategy.
+			}
 		}
 	},
 
@@ -78,11 +81,18 @@ const AlbumService = {
 		return requester.get(`${Constants.getApiUrl()}Albums`, { data: {}, id: "albums" });
 	},
 
-	get(
-		album_id: string,
-	): Promise<AxiosResponse<App.Http.Resources.Models.AbstractAlbumResource>> | Promise<{ data: App.Http.Resources.Models.AbstractAlbumResource }> {
+	get(album_id: string, page?: number): Promise<AxiosResponse<App.Http.Resources.Models.AbstractAlbumResource>> {
+		const params = {
+			album_id: album_id,
+			page: page ?? 1,
+		};
+
 		const requester = axios as unknown as AxiosCacheInstance;
-		return requester.get(`${Constants.getApiUrl()}Album`, { params: { album_id: album_id }, data: {}, id: "album_" + album_id });
+		return requester.get(`${Constants.getApiUrl()}Album`, {
+			params: params,
+			data: {},
+			id: `album_${album_id}_page${page ?? 1}`,
+		});
 	},
 
 	unlock(album_id: string, password: string): Promise<AxiosResponse> {

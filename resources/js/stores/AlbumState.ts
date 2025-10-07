@@ -18,6 +18,12 @@ export const useAlbumStore = defineStore("album-store", {
 		config: undefined as App.Http.Resources.GalleryConfigs.AlbumConfig | undefined,
 		isLoading: false as boolean,
 		_loadingAlbumId: undefined as undefined | string,
+		_loadingPage: undefined as undefined | number,
+
+		current_page: 1,
+		last_page: 0,
+		per_page: 0,
+		total: 0,
 	}),
 	actions: {
 		refresh(): Promise<void> {
@@ -52,20 +58,23 @@ export const useAlbumStore = defineStore("album-store", {
 			}
 
 			const requestedAlbumId = this.albumId;
+			const requestedPage = this.current_page;
 			this._loadingAlbumId = requestedAlbumId;
+			this._loadingPage = requestedPage;
 			this.isLoading = true;
-			this.isPasswordProtected = false;
-			this.config = undefined;
-			this.modelAlbum = undefined;
-			this.tagAlbum = undefined;
-			this.smartAlbum = undefined;
 
-			return AlbumService.get(requestedAlbumId)
+			return AlbumService.get(requestedAlbumId, requestedPage)
 				.then((data) => {
+					this.isPasswordProtected = false;
+					this.config = undefined;
+					this.modelAlbum = undefined;
+					this.tagAlbum = undefined;
+					this.smartAlbum = undefined;
+
 					// Exit early if the albumId changed while we were loading
 					// (e.g. user clicked on another album, or went back/forward in history)
 					// In that case, we don't want to override the state with the old album.
-					if (this._loadingAlbumId !== requestedAlbumId) {
+					if (this._loadingAlbumId !== requestedAlbumId || this._loadingPage !== requestedPage) {
 						return;
 					}
 
@@ -81,12 +90,16 @@ export const useAlbumStore = defineStore("album-store", {
 						albumsStore.albums = []; // Reset to avoid bad surprises.
 					} else {
 						this.smartAlbum = data.data.resource as App.Http.Resources.Models.SmartAlbumResource;
+						this.per_page = this.smartAlbum.per_page;
+						this.total = this.smartAlbum.total;
+						this.current_page = this.smartAlbum.current_page;
+						this.last_page = this.smartAlbum.last_page;
 						albumsStore.albums = []; // Reset to avoid bad surprises.
 					}
 					photosState.setPhotos(data.data.resource.photos, data.data.config.is_photo_timeline_enabled);
 				})
 				.catch((error) => {
-					if (this._loadingAlbumId !== requestedAlbumId) {
+					if (this._loadingAlbumId !== requestedAlbumId || this._loadingPage !== requestedPage) {
 						return;
 					}
 					if (error.response && error.response.status === 401 && error.response.data.message === "Password required") {
@@ -125,6 +138,9 @@ export const useAlbumStore = defineStore("album-store", {
 		},
 		isLoaded(): boolean {
 			return this.config !== undefined && this.album !== undefined;
+		},
+		hasPagination(): boolean {
+			return this.smartAlbum !== undefined;
 		},
 	},
 });

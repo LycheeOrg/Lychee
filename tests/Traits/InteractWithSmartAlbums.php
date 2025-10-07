@@ -22,6 +22,7 @@ use App\SmartAlbums\OnThisDayAlbum;
 use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\StarredAlbum;
 use App\SmartAlbums\UnsortedAlbum;
+use App\SmartAlbums\UntaggedAlbum;
 
 /**
  * Destroys the singleton of each smart album.
@@ -39,6 +40,7 @@ trait InteractWithSmartAlbums
 			StarredAlbum::class,
 			UnsortedAlbum::class,
 			OnThisDayAlbum::class,
+			UntaggedAlbum::class,
 		] as $smartAlbumClass) {
 			$reflection = new \ReflectionClass($smartAlbumClass);
 			$reflection->setStaticPropertyValue('instance', null);
