@@ -2,7 +2,7 @@ import WebshopService, { CardDetails } from "@/services/webshop-service";
 import { OrderManagementStateStore } from "@/stores/OrderManagement";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { ToastServiceMethods } from "primevue/toastservice";
-import { computed, Ref, ref } from "vue";
+import { Ref, ref } from "vue";
 
 export function useStepTwo(
 	email: Ref<undefined | string>,
@@ -19,10 +19,15 @@ export function useStepTwo(
 		cvv: "",
 	});
 
-	const isStepTwoValid = computed(() => orderManagement.order?.can_process_payment && isCardValid());
+	const isStepTwoValid = ref(false)
+
+	function setStepTwoValid() {
+		isStepTwoValid.value = isCardValid() && canProcessPayment.value === true;
+	}
 
 	function updateCardDetails(details: CardDetails) {
 		cardDetails.value = details;
+		setStepTwoValid();
 	}
 
 	function getFakeNumber() {
@@ -71,6 +76,7 @@ export function useStepTwo(
 		})
 			.then((response) => {
 				console.log("Created session:", response);
+				orderManagement.order = response.data;
 				canProcessPayment.value = response.data.can_process_payment;
 			})
 			.catch((error) => {

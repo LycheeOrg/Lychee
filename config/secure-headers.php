@@ -404,8 +404,9 @@ return [
 		'payment' => [
 			'none' => false,
 			'*' => false,
-			'self' => false,
+			'self' => true,
 			'origins' => [
+				"https://lychee.test",
 				// 'url',
 			],
 		],

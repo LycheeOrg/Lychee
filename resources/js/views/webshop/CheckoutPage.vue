@@ -43,6 +43,10 @@
 									@update:modelValue="createSession"
 								/>
 							</div>
+							<!-- <div v-else-if="selectedProvider === 'Stripe'">
+								<div id="checkout">
+								</div>
+							</div> -->
 							<div v-else class="flex flex-col">
 								<div class="text-lg mb-12 font-bold text-center" @click="getFakeNumber">
 									Enter your info for {{ selectedProvider }}
@@ -100,6 +104,7 @@ import OrderSummary from "@/components/webshop/OrderSummary.vue";
 import InfoSection from "@/components/webshop/InfoSection.vue";
 import { useToast } from "primevue/usetoast";
 import { type CheckoutSteps } from "@/config/constants";
+// import { loadStripe } from '@stripe/stripe-js/pure';
 
 const props = defineProps<{
 	step?: CheckoutSteps;
@@ -135,6 +140,17 @@ const { canProcessPayment, createSession, selectedProvider, processPayment, upda
 	step,
 	toast,
 );
+
+// watch(
+// 	() => selectedProvider.value,
+// 	async (new_val) => {
+// 		if (new_val === "Stripe") {
+// 			const stripe = await loadStripe('pk_test_51SEEjU4JJnbaakESRFeQyoUJKg7tdWidRLjxtK8m8MkWziZY0DIeKGrnzKpp0rWyw6jeXoEoI1gqPmttirEzslal00XSvjGfVW');
+// 			createSession();
+// 		}
+// 	},
+// );
+
 
 onMounted(async () => {
 	await lycheeStateStore.load();
