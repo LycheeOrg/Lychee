@@ -20,6 +20,7 @@
 						date-format=""
 						:show-seconds="true"
 						:invalid="!uploadDate"
+						updateModelType="date"
 						class="border-0 p-0 w-full border-b hover:border-b-primary-400 focus:border-b-primary-400"
 					/>
 
@@ -36,6 +37,7 @@
 							hour-format="24"
 							date-format=""
 							:show-seconds="true"
+							updateModelType="date"
 							:disabled="!is_taken_at_modified"
 							:class="{
 								'border-0 p-0 w-full border-b hover:border-b-primary-400 focus:border-b-primary-400 ltr:rounded-br-none rtl:rounded-bl-none': true,
