@@ -37,7 +37,7 @@ protected function __construct(SmartAlbumType $id, \Closure $smart_condition)
 public function photos(): Builder
 
 // Cached photo retrieval with default sorting
-protected function getPhotosAttribute(): Collection
+protected function getPhotosAttribute(): LengthAwarePaginator
 
 // Thumbnail generation with random or sorted selection
 protected function getThumbAttribute(): ?Thumb
@@ -146,6 +146,20 @@ public function photos(): Builder
 3. **Different Authorization**: Unlike other smart albums that always respect photo ownership, Unsorted can override this when public
 4. **Administrative Feature**: Primarily intended for admin users to see all unorganized content in the system
 
+### 5. Untagged Album (`UntaggedAlbum`)
+
+**Purpose**: Contains photos that are not assigned to any tag.
+
+**Filtering Logic**:
+```php
+$query->whereDoesntHave('tags');
+```
+
+**Configuration**:
+- `enable_untagged`: Enable/disable the Untagged album
+
+**Behavior**: Shows all photos that do not have any tags associated with them.
+
 ## Configuration Settings
 
 Smart Albums can be individually enabled/disabled:
@@ -156,6 +170,7 @@ Smart Albums can be individually enabled/disabled:
 'enable_starred'      => true/false  
 'enable_recent'       => true/false
 'enable_on_this_day'  => true/false
+'enable_untagged'     => true/false
 
 // Additional settings
 'recent_age'                    => 30 (days)
@@ -207,6 +222,7 @@ Translation keys in `lang/{locale}/gallery.php`:
 - `gallery.smart_album.starred`
 - `gallery.smart_album.recent`
 - `gallery.smart_album.on_this_day`
+- `gallery.smart_album.untagged`
 
 ## Usage in Application
 

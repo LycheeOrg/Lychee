@@ -117,7 +117,7 @@ declare namespace App.Enum {
 	export type ShiftY = "up" | "down";
 	export type SizeVariantType = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 	export type SmallLargeType = "small" | "large";
-	export type SmartAlbumType = "unsorted" | "starred" | "recent" | "on_this_day";
+	export type SmartAlbumType = "unsorted" | "starred" | "recent" | "on_this_day" | "untagged";
 	export type StorageDiskType = "images" | "s3";
 	export type ThumbAlbumSubtitleType = "description" | "takedate" | "creation" | "oldstyle" | "num_photos" | "num_albums" | "num_photos_albums";
 	export type ThumbOverlayVisibilityType = "never" | "always" | "hover";
@@ -599,6 +599,10 @@ declare namespace App.Http.Resources.Models {
 		rights: App.Http.Resources.Rights.AlbumRightsResource;
 		preFormattedData: App.Http.Resources.Models.Utils.PreFormattedAlbumData;
 		statistics: null | null;
+		current_page: number;
+		last_page: number;
+		per_page: number;
+		total: number;
 	};
 	export type TagAlbumResource = {
 		id: string;

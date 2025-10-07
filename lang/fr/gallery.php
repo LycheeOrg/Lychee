@@ -41,6 +41,7 @@ return [
         'recent' => 'Récents',
         'public' => 'Publics',
         'on_this_day' => 'Ce jour-là',
+		'untagged' => 'Sans étiquette',
     ],
     'layout' => [
         'squares' => 'Vignettes carrées',

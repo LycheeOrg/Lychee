@@ -39,14 +39,26 @@ class SmartAlbumResource extends Data
 	public PreFormattedAlbumData $preFormattedData;
 	public null $statistics = null; // Needed to unify the API response with the AlbumResource and TagAlbumResource.
 
+	public int $current_page = 0;
+	public int $last_page = 0;
+	public int $per_page = 0;
+	public int $total = 0;
+
 	public function __construct(BaseSmartAlbum $smart_album)
 	{
 		$this->id = $smart_album->get_id();
 		$this->title = $smart_album->get_title();
+
 		/** @disregard P1006 */
-		$this->photos = $smart_album->relationLoaded('photos') ? $this->toPhotoResources($smart_album->getPhotos(), $smart_album) : null;
-		$this->prepPhotosCollection();
-		if ($this->photos !== null) {
+		$photos = $smart_album->relationLoaded('photos') ? $smart_album->getPhotos() : null;
+
+		if ($photos !== null) {
+			$this->photos = $this->toPhotoResources(collect($photos->items()), $smart_album);
+			$this->current_page = $photos->currentPage();
+			$this->last_page = $photos->lastPage();
+			$this->per_page = $photos->perPage();
+			$this->total = $photos->total();
+
 			// Prep collection with first and last link + which id is next.
 			$this->prepPhotosCollection();
 

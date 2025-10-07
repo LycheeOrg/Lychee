@@ -43,12 +43,15 @@ class CoverageTest extends AbstractTestCase
 		self::assertEquals(['UNSORTED',
 			'STARRED',
 			'RECENT',
-			'ON_THIS_DAY', ], SmartAlbumType::names());
+			'ON_THIS_DAY',
+			'UNTAGGED',
+		], SmartAlbumType::names());
 		self::assertEquals([
 			'UNSORTED' => 'unsorted',
 			'STARRED' => 'starred',
 			'RECENT' => 'recent',
 			'ON_THIS_DAY' => 'on_this_day',
+			'UNTAGGED' => 'untagged',
 		], SmartAlbumType::array());
 
 		self::assertEquals('failure', JobStatus::FAILURE->name());

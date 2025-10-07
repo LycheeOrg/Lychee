@@ -92,6 +92,15 @@
 					@clicked="albumClick"
 					@contexted="albumMenuOpen"
 				/>
+				<div v-if="photosStore.photos.length > 0 && albumStore.hasPagination" class="flex justify-center w-full -mb-[100%]">
+					<Paginator
+						v-model:first="firstValue"
+						:rows="albumStore.per_page"
+						:total-records="albumStore.total"
+						:always-show="false"
+						:pt:pcRowPerPageDropdown:class="'hidden'"
+					/>
+				</div>
 				<PhotoThumbPanel
 					v-if="layoutStore.config && photosStore.photos.length > 0"
 					header="gallery.album.header_photos"
@@ -105,8 +114,17 @@
 					@contexted="photoMenuOpen"
 					@toggle-buy-me="toggleBuyMe"
 				/>
-				<GalleryFooter v-once />
+				<div v-if="photosStore.photos.length > 0 && albumStore.hasPagination" class="flex justify-center w-full">
+					<Paginator
+						v-model:first="firstValue"
+						:rows="albumStore.per_page"
+						:total-records="albumStore.total"
+						:always-show="false"
+						:pt:pcRowPerPageDropdown:class="'hidden'"
+					/>
+				</div>
 				<ScrollTop v-if="!props.isPhotoOpen" target="parent" />
+				<GalleryFooter v-once />
 			</div>
 			<ShareAlbum :key="`share_modal_${albumStore.album.id}`" v-model:visible="is_share_album_visible" :title="albumStore.album.title" />
 
@@ -155,6 +173,7 @@ import SelectDrag from "@/components/forms/album/SelectDrag.vue";
 import { useOrderManagementStore } from "@/stores/OrderManagement";
 import { useBuyMeActions } from "@/composables/album/buyMeActions";
 import Dialog from "primevue/dialog";
+import Paginator from "primevue/paginator";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { usePhotosStore } from "@/stores/PhotosState";
 import { useAlbumsStore } from "@/stores/AlbumsState";
@@ -166,6 +185,7 @@ const router = useRouter();
 
 const props = defineProps<{
 	isPhotoOpen: boolean;
+	first: number | undefined;
 }>();
 
 const userStore = useUserStore();
@@ -185,6 +205,7 @@ const emits = defineEmits<{
 	scrollToTop: [];
 	openSearch: [];
 	goBack: [];
+	"update:first": [value: number];
 }>();
 
 const { is_se_enabled } = storeToRefs(lycheeStore);
@@ -221,6 +242,14 @@ function toggleStatistics() {
 		areStatisticsOpen.value = !areStatisticsOpen.value;
 	}
 }
+
+const firstValue = computed({
+	get: () => props.first,
+	set: (val: number) => {
+		albumStore.current_page = val;
+		emits("update:first", val);
+	},
+});
 
 const albumPanelConfig = computed<AlbumThumbConfig>(() => ({
 	album_thumb_css_aspect_ratio: albumStore.config?.album_thumb_css_aspect_ratio ?? "aspect-square",

@@ -41,6 +41,7 @@ return [
         'recent' => 'Недавние',
         'public' => 'Публичные',
         'on_this_day' => 'В этот день',
+		'untagged' => 'Untagged',
     ],
     'layout' => [
         'squares' => 'Квадратные миниатюры',

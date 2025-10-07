@@ -41,6 +41,7 @@ return [
         'recent' => '最近',
         'public' => '公开',
         'on_this_day' => '历史上的今天',
+		'untagged' => 'Untagged',
     ],
     'layout' => [
         'squares' => '方形缩略图',

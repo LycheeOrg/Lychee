@@ -30,7 +30,7 @@ class AlbumIDRuleTest extends AbstractTestCase
 		$msg = '';
 		$rule->validate('attr', null, function ($message) use (&$msg): void { $msg = $message; });
 		$expected = ':attribute must be a string with ' .
-			RandomID::ID_LENGTH . ' characters or one of the built-in IDs unsorted, starred, recent, on_this_day';
+			RandomID::ID_LENGTH . ' characters or one of the built-in IDs unsorted, starred, recent, on_this_day, untagged';
 
 		self::assertEquals($expected, $msg);
 	}

@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 /**
  * Interface AbsractAlbum.
@@ -49,9 +50,9 @@ interface AbstractAlbum
 	/**
 	 * The full list of photos.
 	 *
-	 * @return Collection<int,Photo>
+	 * @return Collection<int,Photo>|LengthAwarePaginator<int,Photo>
 	 */
-	public function get_photos(): Collection;
+	public function get_photos(): Collection|LengthAwarePaginator;
 
 	/**
 	 * The relation or query builder for the photos.

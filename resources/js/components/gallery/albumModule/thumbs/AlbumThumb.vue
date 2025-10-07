@@ -44,6 +44,7 @@
 			<ThumbBadge v-if="props.album.id === 'unsorted'" class="bg-red-700" icon="list" />
 			<ThumbBadge v-if="props.album.id === 'recent'" class="bg-blue-700" icon="clock" />
 			<ThumbBadge v-if="props.album.id === 'on_this_day'" class="bg-green-600" icon="calendar" />
+			<ThumbBadge v-if="props.album.id === 'untagged'" class="bg-gray-500" icon="tags" />
 			<ThumbBadge v-if="props.album.is_public" :class="props.album.is_link_required ? 'bg-orange-400' : 'bg-green-600'" icon="eye" />
 			<ThumbBadge v-if="props.album.is_password_required && props.album.thumb === null" class="bg-orange-400" icon="lock-locked" />
 			<ThumbBadge v-if="props.album.is_password_required && props.album.thumb !== null" class="bg-red-700" icon="lock-unlocked" />
