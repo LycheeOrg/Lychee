@@ -1,5 +1,5 @@
 <template>
-	<div :id="'upload' + index" class="w-full flex flex-col">
+	<div :id="`upload${index}`" class="w-full flex flex-col">
 		<div class="flex gap-x-4 justify-between relative" :class="errorFlexClass">
 			<span class="text-ellipsis min-w-0 w-full overflow-hidden text-nowrap text-muted-color">{{ file.name }}</span>
 			<span v-if="progress < 100 && progress > 0" :class="statusClass">{{ progress }}%</span>
@@ -123,6 +123,11 @@ function process() {
 		.catch((error) => {
 			// prettier-ignore
 			switch (error.response.status) {
+				case 409: errorMessage.value = error.response.data.message;
+					progress.value = 100;
+					status.value = "warning";
+					emits("upload:completed", props.index, "warning");
+					break; // duplicate found
 				case 413: errorMessage.value = error.response.data.message; break;
 				case 422: errorMessage.value = error.response.data.message; break;
 				case 500: errorMessage.value = "Something went wrong, check the logs.";
