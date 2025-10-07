@@ -129,24 +129,23 @@ function translateStatus(status: string): string {
 	return translationMap.get(status) || status;
 }
 
-const intervalId = setInterval(async () => {
+const intervalId = setInterval(() => {
 	const ready_count = jobs.value.filter((j) => j.status === "ready").length;
 	const started_count = jobs.value.filter((j) => j.status === "started").length;
 	if (ready_count > 0 || started_count > 0) {
 		console.log("Reloading jobs...");
-		await load();
-		if (!shouldScroll.value) {
-			return;
-		}
-
-		const idx = jobs.value.findLastIndex((j) => j.status === "started");
-		if (idx !== -1) {
-			const startedJob = document.getElementById(`job${idx}`);
-			if (startedJob) {
-				startedJob.scrollIntoView({ behavior: "smooth", block: "center" });
+		load().then(() => {
+			// Auto-scroll to the latest started job.
+			if (!shouldScroll.value) {
 				return;
 			}
-		}
+
+			const idx = jobs.value.findLastIndex((j) => j.status === "started");
+			if (idx !== -1) {
+				const startedJob = document.getElementById(`job${idx}`);
+				startedJob?.scrollIntoView({ behavior: "smooth", block: "center" });
+			}
+		});
 
 		return;
 	}
@@ -169,5 +168,6 @@ onMounted(() => {
 });
 onUnmounted(() => {
 	removeEventListener("scroll", disableAutoScroll);
+	window.clearInterval(intervalId);
 });
 </script>
