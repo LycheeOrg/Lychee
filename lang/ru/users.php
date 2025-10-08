@@ -29,12 +29,12 @@ return [
         'edit' => 'Изменить',
     ],
     'invite' => [
-        'button' => 'Invite user',
-        'links_are_not_revokable' => 'Invitation links are not revokable.',
-        'link_is_valid_x_days' => 'This link is valid for %d days.',
+        'button' => 'Пригласить пользователя',
+        'links_are_not_revokable' => 'Пригласительные ссылки нельзя отозвать.',
+        'link_is_valid_x_days' => 'Эта ссылка будет действительна %d дней.',
     ],
     'line' => [
-        'owner' => 'Owner',
+        'owner' => 'Владелец',
         'admin' => 'администратор',
         'edit' => 'Изменить',
         'delete' => 'Удалить',
