@@ -58,10 +58,10 @@ return [
         'edit' => 'Редактировать информацию',
         'show_hide_meta' => 'Показать информацию',
         'keep_hidden' => 'Мы оставим это скрытым.',
-        'button_hidden' => 'We will hide the button in the header.',
+        'button_hidden' => 'Мы скроем кнопку в шапке.',
     ],
     'login' => [
-        'auth_with' => 'Authenticate with %s',
+        'auth_with' => 'Авторизация с помощью %s',
         'username' => 'Имя пользователя',
         'password' => 'Пароль',
         'unknown_invalid' => 'Неизвестный пользователь или неверный пароль.',
