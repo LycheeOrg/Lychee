@@ -198,6 +198,17 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 		$this->public_permissions->save();
 	}
 
+	public function setPublicHidden(): void
+	{
+		if ($this->public_permissions !== null) {
+			return;
+		}
+
+		$this->public_permissions = AccessPermission::ofPublicHidden();
+		$this->public_permissions->base_album_id = $this->id;
+		$this->public_permissions->save();
+	}
+
 	public function setPrivate(): void
 	{
 		if ($this->public_permissions === null) {

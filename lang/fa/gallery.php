@@ -234,5 +234,6 @@ return [
         'private' => 'خصوصی',
         'public' => 'عمومی',
         'inherit_from_parent' => 'ارث بری از والد',
+        'public_but_hidden' => 'عمومی اما مخفی',
     ],
 ];

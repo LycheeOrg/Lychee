@@ -235,5 +235,6 @@ return [
         'private' => 'private',
         'public' => 'public',
         'inherit_from_parent' => 'inherit from parent',
+        'public_but_hidden' => 'công khai nhưng ẩn',
     ],
 ];

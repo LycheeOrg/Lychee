@@ -16,4 +16,5 @@ enum DefaultAlbumProtectionType: int
 	case PRIVATE = 1;
 	case PUBLIC = 2;
 	case INHERIT = 3;
+	case PUBLIC_HIDDEN = 4;
 }

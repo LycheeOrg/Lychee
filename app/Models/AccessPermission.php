@@ -162,6 +162,24 @@ class AccessPermission extends Model
 	}
 
 	/**
+	 * Return a new Public hidden sharing permission with defaults.
+	 *
+	 * @throws ConfigurationKeyMissingException
+	 */
+	public static function ofPublicHidden(): self
+	{
+		return new AccessPermission([
+			APC::IS_LINK_REQUIRED => true,
+			APC::GRANTS_FULL_PHOTO_ACCESS => Configs::getValueAsBool('grants_full_photo_access'),
+			APC::GRANTS_DOWNLOAD => Configs::getValueAsBool('grants_download'),
+			APC::GRANTS_UPLOAD => false,
+			APC::GRANTS_EDIT => false,
+			APC::GRANTS_DELETE => false,
+			APC::PASSWORD => null,
+		]);
+	}
+
+	/**
 	 * Return a new permission set associated to a specific userId.
 	 */
 	public static function withGrantFullPermissionsToUser(int $user_id): self

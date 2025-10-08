@@ -234,5 +234,6 @@ return [
         'private' => 'Privat',
         'public' => 'Öffentlich',
         'inherit_from_parent' => 'vom Übergeordneten erben',
+        'public_but_hidden' => 'öffentlich aber versteckt',
     ],
 ];

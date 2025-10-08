@@ -87,6 +87,10 @@ class Create
 			$album->access_permissions()->saveMany([AccessPermission::ofPublic()]);
 		}
 
+		if ($default_protection_type === DefaultAlbumProtectionType::PUBLIC_HIDDEN) {
+			$album->access_permissions()->saveMany([AccessPermission::ofPublicHidden()]);
+		}
+
 		if ($default_protection_type === DefaultAlbumProtectionType::INHERIT && $parent_album !== null) {
 			$album->access_permissions()->saveMany($this->copyPermission($parent_album));
 		}
