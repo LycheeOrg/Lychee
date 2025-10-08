@@ -234,5 +234,6 @@ return [
         'private' => 'Privé',
         'public' => 'Openbaar',
         'inherit_from_parent' => 'Overnemen van ouder',
+        'public_but_hidden' => 'openbaar maar verborgen',
     ],
 ];

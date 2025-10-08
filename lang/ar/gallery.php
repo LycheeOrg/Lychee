@@ -234,5 +234,6 @@ return [
         'private' => 'خاص',
         'public' => 'عام',
         'inherit_from_parent' => 'وراثة من الوالد',
+        'public_but_hidden' => 'عام لكن مخفي',
     ],
 ];

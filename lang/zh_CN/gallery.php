@@ -234,5 +234,6 @@ return [
         'private' => '私密',
         'public' => '公开',
         'inherit_from_parent' => '继承自父级',
+        'public_but_hidden' => '公开但隐藏',
     ],
 ];
