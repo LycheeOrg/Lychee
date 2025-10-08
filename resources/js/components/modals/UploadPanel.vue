@@ -84,7 +84,7 @@
 <script setup lang="ts">
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
-import { computed, Ref, ref, watch } from "vue";
+import { computed, onMounted, onUnmounted, Ref, ref, watch } from "vue";
 import UploadingLine from "@/components/forms/upload/UploadingLine.vue";
 import ScrollPanel from "primevue/scrollpanel";
 import UploadService from "@/services/upload-service";
@@ -105,6 +105,7 @@ const emits = defineEmits<{
 	refresh: [];
 }>();
 
+const shouldScroll = ref(true);
 const isDropping = ref(false);
 const showCancel = computed(() => counts.value.files > 0 && counts.value.completed < counts.value.files);
 const showResume = computed(() => counts.value.waiting > 0 && counts.value.uploading === 0);
@@ -138,10 +139,9 @@ function upload(event: Event) {
 	uploadNext(0);
 }
 
-function uploadNext(searchIndex = 0, max_processing_limit: number | undefined = undefined): boolean {
-	let isUploading = false;
-
+function uploadNext(searchIndex = 0, max_processing_limit: number | undefined = undefined) {
 	let offset = 0;
+	let lastIdx = -1;
 	for (let i = searchIndex; i < list_upload_files.value.length; i++) {
 		if (list_upload_files.value[i].status === "waiting") {
 			offset = i;
@@ -157,19 +157,22 @@ function uploadNext(searchIndex = 0, max_processing_limit: number | undefined = 
 		// only execute if we are waiting.
 		if (list_upload_files.value[i + offset].status === "waiting") {
 			list_upload_files.value[i + offset].status = "uploading";
-			isUploading = true;
+			lastIdx = i + offset;
 		}
 	}
 
-	return isUploading;
+	if (lastIdx !== -1) {
+		document.getElementById(`upload${lastIdx}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+	}
 }
 
 function uploadCompleted(index: number, status: "done" | "error" | "warning") {
 	list_upload_files.value[index].status = status;
 
-	const isUploading = uploadNext(index, 1);
+	uploadNext(index, 1);
 
-	if (isUploading === false) {
+	// Only refresh if all uploads are done.
+	if (counts.value.completed === counts.value.files) {
 		AlbumService.clearCache(albumId.value ?? "unsorted");
 		emits("refresh");
 	}
@@ -186,8 +189,6 @@ function close() {
 	list_upload_files.value = [];
 	is_upload_visible.value = false;
 }
-
-load();
 
 watch(
 	() => is_upload_visible.value,
@@ -207,4 +208,21 @@ watch(
 		}
 	},
 );
+
+function disableAutoScroll() {
+	shouldScroll.value = false;
+
+	// Re-enable auto-scroll after 10 seconds of inactivity
+	setTimeout(() => {
+		shouldScroll.value = true;
+	}, 10000);
+}
+
+onMounted(() => {
+	load();
+	addEventListener("scroll", disableAutoScroll);
+});
+onUnmounted(() => {
+	removeEventListener("scroll", disableAutoScroll);
+});
 </script>
