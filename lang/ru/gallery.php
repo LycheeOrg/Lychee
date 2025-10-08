@@ -10,7 +10,7 @@ return [
     'pinned_albums' => 'Закреплённые альбомы',
     'albums' => 'Альбомы',
     'root' => 'Альбомы',
-    'favourites' => 'Favourites',
+    'favourites' => 'Избранные',
     'original' => 'Оригинал',
     'medium' => 'Средний',
     'medium_hidpi' => 'Средний HiDPI',
