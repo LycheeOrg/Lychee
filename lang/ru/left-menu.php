@@ -7,7 +7,7 @@ return [
 	*/
     'back_to_gallery' => 'Вернуться в галерею',
     'login' => 'Войти',
-    'frame' => 'Frame',
+    'frame' => 'Рамка',
     'map' => 'Карта',
     'admin' => 'Админ',
     'clockwork' => 'Приложение Clockwork',

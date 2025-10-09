@@ -1,7 +1,6 @@
 <?php
-
 return [
-	/*
+    /*
 	|--------------------------------------------------------------------------
 	| Update Page
 	|--------------------------------------------------------------------------
@@ -65,8 +64,8 @@ return [
     ],
     'statistics-check' => [
         'title' => 'Statistics integrity Check',
-        'missing_photos' => '%d photo statistics missing.',
-        'missing_albums' => '%d album statistics missing.',
+        'missing_photos' => 'Для %d фото нет статистики.',
+        'missing_albums' => 'Для %d альбомов нет статистики.',
         'button' => 'Create missing',
     ],
     'flush-cache' => [

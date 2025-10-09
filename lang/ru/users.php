@@ -21,7 +21,7 @@ return [
     'create_edit' => [
         'upload_rights' => 'Пользователь может загружать контент.',
         'edit_rights' => 'Пользователь может изменить свой профиль (имя пользователя, пароль).',
-        'admin_rights' => 'User has admin rights.',
+        'admin_rights' => 'Пользователь имеет права администратора.',
         'quota' => 'Пользователь имеет ограничение по квоте.',
         'quota_kb' => 'квота в кБ (0 по умолчанию)',
         'note' => 'Примечание администратора (не видно публично)',
@@ -29,13 +29,13 @@ return [
         'edit' => 'Изменить',
     ],
     'invite' => [
-        'button' => 'Invite user',
-        'links_are_not_revokable' => 'Invitation links are not revokable.',
-        'link_is_valid_x_days' => 'This link is valid for %d days.',
+        'button' => 'Пригласить пользователя',
+        'links_are_not_revokable' => 'Пригласительные ссылки нельзя отозвать.',
+        'link_is_valid_x_days' => 'Эта ссылка будет действительна %d дней.',
     ],
     'line' => [
-        'owner' => 'Owner',
-        'admin' => 'администратор',
+        'owner' => 'Владелец',
+        'admin' => 'Администратор',
         'edit' => 'Изменить',
         'delete' => 'Удалить',
     ],
