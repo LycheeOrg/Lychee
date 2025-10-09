@@ -32,10 +32,14 @@ class UploadConfig extends Data
 		$size = Configs::getValueAsInt('upload_chunk_size');
 		if ($size === 0) {
 			try {
+				$memory_size = Helpers::convertSize(ini_get('memory_limit')) / 10;
+				if ($memory_size < 0) {
+					$memory_size = INF;
+				}
 				$size = (int) min(
 					Helpers::convertSize(ini_get('upload_max_filesize')),
 					Helpers::convertSize(ini_get('post_max_size')),
-					Helpers::convertSize(ini_get('memory_limit')) / 10
+					$memory_size
 				);
 			} catch (InfoException $e) {
 				return 1024 * 1024;
