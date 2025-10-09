@@ -105,6 +105,12 @@ export function useLeftMenu(
 				route: "/map",
 			},
 			{
+				label: "orders",
+				icon: "pi pi-shopping-cart",
+				route: "/orders",
+				access: (initData.value.modules.is_mod_webshop_enabled ?? false) && user.value?.id !== null,
+			},
+			{
 				label: "left-menu.admin",
 				access: canSeeAdmin.value,
 				items: [
@@ -125,6 +131,12 @@ export function useLeftMenu(
 						icon: "pi pi-users",
 						route: "/user-groups",
 						access: initData.value.settings.can_acess_user_groups ?? false,
+					},
+					{
+						label: "Purchasables",
+						icon: "pi pi-shopping-bag",
+						route: "/purchasables",
+						access: (initData.value.modules.is_mod_webshop_enabled ?? false) && (initData.value.settings.can_edit ?? false),
 					},
 					{
 						label: "diagnostics.title",
