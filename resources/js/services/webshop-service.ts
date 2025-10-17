@@ -30,6 +30,10 @@ export type CreateCheckout = {
 	provider: App.Enum.OmnipayProviderType | undefined;
 };
 
+export type OfflineCheckout = {
+	email: string | undefined;
+};
+
 export type CardDetails = {
 	number: string;
 	expiryMonth: string;
@@ -68,8 +72,13 @@ const CheckoutService = {
 	createSession(data: CreateCheckout): Promise<AxiosResponse<App.Http.Resources.Shop.OrderResource>> {
 		return axios.post(`${Constants.getApiUrl()}Shop/Checkout/Create-session`, data);
 	},
-	processCheckout(data: { additional_data: { card?: CardDetails } }): Promise<AxiosResponse<App.Http.Resources.Shop.CheckoutResource>> {
+	processCheckout(data: {
+		additional_data: { card?: CardDetails; cardToken?: string; paymentToken?: string };
+	}): Promise<AxiosResponse<App.Http.Resources.Shop.CheckoutResource>> {
 		return axios.post(`${Constants.getApiUrl()}Shop/Checkout/Process`, data);
+	},
+	offline(data: OfflineCheckout): Promise<AxiosResponse<App.Http.Resources.Shop.CheckoutResource>> {
+		return axios.post(`${Constants.getApiUrl()}Shop/Checkout/Offline`, data);
 	},
 };
 

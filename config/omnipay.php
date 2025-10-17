@@ -8,6 +8,8 @@ return [
 	*/
 	'gateway' => env('OMNIPAY_GATEWAY', 'Dummy'),
 
+	'testMode' => (bool) env('OMNIPAY_TEST_MODE', false),
+
 	// case DUMMY = 'Dummy';
 	// case MOLLIE = 'Mollie';
 	// case PAYPAL_EXPRESS = 'PayPal_Express';
@@ -20,10 +22,12 @@ return [
 	],
 
 	'Mollie' => [
+		'profileId' => env('MOLLIE_PROFILE_ID', ''),
 		'apiKey' => env('MOLLIE_API_KEY', ''),
 	],
 
 	'Stripe' => [
+		'publishable_key' => env('STRIPE_PUBLISHABLE_KEY', ''),
 		'apiKey' => env('STRIPE_API_KEY', ''),
 	],
 
@@ -31,7 +35,7 @@ return [
 	'PayPal_Rest' => [
 		'clientId' => env('PAYPAL_CLIENT_ID', ''),
 		'secret' => env('PAYPAL_SECRET', ''),
-		'testMode' => (bool) env('PAYPAL_TEST_MODE', false),
+		'testMode' => (bool) env('OMNIPAY_TEST_MODE', false),
 	],
 
 	// https://github.com/thephpleague/omnipay-paypal/blob/master/src/ProGateway.php
@@ -39,7 +43,7 @@ return [
 		'username' => env('PAYPAL_API_USERNAME', ''),
 		'password' => env('PAYPAL_API_PASSWORD', ''),
 		'signature' => env('PAYPAL_API_SIGNATURE', ''),
-		'testMode' => (bool) env('PAYPAL_TEST_MODE', false),
+		'testMode' => (bool) env('OMNIPAY_TEST_MODE', false),
 	],
 
 	// https://github.com/thephpleague/omnipay-paypal/blob/master/src/ExpressGateway.php
@@ -47,7 +51,7 @@ return [
 		'username' => env('PAYPAL_API_USERNAME', ''),
 		'password' => env('PAYPAL_API_PASSWORD', ''),
 		'signature' => env('PAYPAL_API_SIGNATURE', ''),
-		'testMode' => (bool) env('PAYPAL_TEST_MODE', false),
+		'testMode' => (bool) env('OMNIPAY_TEST_MODE', false),
 
 		'solutionType' => 'Sole', // array('Sole', 'Mark'),
 		'landingPage' => 'Billing', // array('Billing', 'Login'),
@@ -62,7 +66,7 @@ return [
 		'username' => env('PAYPAL_API_USERNAME', ''),
 		'password' => env('PAYPAL_API_PASSWORD', ''),
 		'signature' => env('PAYPAL_API_SIGNATURE', ''),
-		'testMode' => (bool) env('PAYPAL_TEST_MODE', false),
+		'testMode' => (bool) env('OMNIPAY_TEST_MODE', false),
 
 		'solutionType' => 'Sole', // array('Sole', 'Mark'),
 		'landingPage' => 'Billing', // array('Billing', 'Login'),

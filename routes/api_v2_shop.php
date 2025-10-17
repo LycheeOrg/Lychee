@@ -30,6 +30,7 @@ Route::middleware('support:se')->group(function (): void {
 	});
 	Route::group(['prefix' => '/Shop/Checkout'], function (): void {
 		Route::get('/Options', [Shop\CheckoutController::class, 'options']);
+		Route::post('/Offline', [Shop\CheckoutController::class, 'offline']);
 		Route::post('/Create-session', [Shop\CheckoutController::class, 'createSession']);
 		Route::post('/Process', [Shop\CheckoutController::class, 'process']);
 		Route::get('/Finalize/{provider}/{transaction_id}', [Shop\CheckoutController::class, 'finalize'])->withoutMiddleware(['content_type:json', 'accept_content_type:json'])->name('shop.checkout.return');

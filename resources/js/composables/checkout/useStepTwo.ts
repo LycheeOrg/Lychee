@@ -9,6 +9,8 @@ export function useStepTwo(
 	orderManagement: OrderManagementStateStore,
 	step: Ref<number>,
 	toast: ToastServiceMethods,
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	mollie: Ref<any | undefined>,
 ) {
 	const selectedProvider = ref<undefined | App.Enum.OmnipayProviderType>(undefined);
 	const canProcessPayment = ref(false);
@@ -19,7 +21,7 @@ export function useStepTwo(
 		cvv: "",
 	});
 
-	const isStepTwoValid = ref(false)
+	const isStepTwoValid = ref(false);
 
 	function setStepTwoValid() {
 		isStepTwoValid.value = isCardValid() && canProcessPayment.value === true;
@@ -43,6 +45,10 @@ export function useStepTwo(
 	}
 
 	function isCardValid(): boolean {
+		if (selectedProvider.value === "Mollie") {
+			return true; // Mollie handles validation internally
+		}
+
 		return (
 			isCardNumberValid() &&
 			cardDetails.value.number.length > 0 &&
@@ -78,13 +84,19 @@ export function useStepTwo(
 				console.log("Created session:", response);
 				orderManagement.order = response.data;
 				canProcessPayment.value = response.data.can_process_payment;
+				setStepTwoValid();
 			})
 			.catch((error) => {
 				console.error("Error creating session:", error);
 			});
 	}
 
-	function processPayment() {
+	async function processPayment() {
+		if (selectedProvider.value === "Mollie") {
+			await processMolliePayment();
+			return;
+		}
+
 		WebshopService.Checkout.processCheckout({
 			additional_data: {
 				card: {
@@ -93,6 +105,22 @@ export function useStepTwo(
 					expiryYear: cardDetails.value.expiryYear,
 					cvv: cardDetails.value.cvv,
 				},
+			},
+		})
+			.then(handleSuccess)
+			.catch(handleError);
+	}
+
+	async function processMolliePayment() {
+		const { token, error } = await mollie.value.createToken();
+		if (error) {
+			// Something wrong happened while creating the token. Handle this situation gracefully.
+			return;
+		}
+
+		WebshopService.Checkout.processCheckout({
+			additional_data: {
+				cardToken: token,
 			},
 		})
 			.then(handleSuccess)

@@ -6,7 +6,7 @@ export type SelectOption<T> = {
 	label: string;
 };
 
-export type CheckoutSteps = "info" | "payment" | "confirm";
+export type CheckoutSteps = "info" | "payment" | "confirm" | "completed";
 
 export const photoSortingColumnsOptions: SelectOption<App.Enum.ColumnSortingPhotoType>[] = [
 	{ value: "created_at", label: "gallery.sort.photo_select_1" },

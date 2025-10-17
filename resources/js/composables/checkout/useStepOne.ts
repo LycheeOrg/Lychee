@@ -8,8 +8,8 @@ const consentGiven = ref(false);
 const errors = ref<Record<string, string | undefined>>({});
 
 export function useStepOne(userStore: UserStore) {
-	function loadCheckoutOptions() {
-		WebshopService.Checkout.getOptions().then((response) => {
+	function loadCheckoutOptions(): Promise<void> {
+		return WebshopService.Checkout.getOptions().then((response) => {
 			options.value = response.data;
 			console.log("Loaded checkout options:", response.data);
 		});

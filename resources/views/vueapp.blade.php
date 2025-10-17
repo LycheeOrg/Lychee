@@ -15,9 +15,6 @@
     <meta charset="UTF-8">
     <x-meta />
     @vite(['resources/js/app.ts','resources/sass/app.css'])
-	@if(config('omnipay.Stripe.apiKey') !== '')
-		<script src="https://js.stripe.com/clover/stripe.js" async></script>
-	@endif
 </head>
 {{-- Dirty work around but hey, backward compatibility... --}}
 @if(Features::active('legacy_v4_redirect'))
@@ -48,5 +45,6 @@
 	<div id="app" class="w-full3">
         <app/>
 	</div>
+	<x-webshop />
 </body>
 </html>
