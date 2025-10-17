@@ -103,9 +103,9 @@ declare namespace App.Enum {
 		| "microsoft"
 		| "nextcloud"
 		| "keycloak";
-	export type OmnipayProviderType = "Dummy" | "Mollie" | "PayPal_Express" | "PayPal_ExpressInContext" | "PayPal_Pro" | "PayPal_Rest" | "Stripe";
+	export type OmnipayProviderType = "Dummy" | "Mollie" | "PayPal_Express" | "PayPal_ExpressInContext" | "PayPal_Pro" | "PayPal_Rest";
 	export type OrderSortingType = "ASC" | "DESC";
-	export type PaymentStatusType = "pending" | "cancelled" | "failed" | "refunded" | "processing" | "completed";
+	export type PaymentStatusType = "pending" | "cancelled" | "failed" | "refunded" | "processing" | "offline" | "completed";
 	export type PhotoLayoutType = "square" | "justified" | "masonry" | "grid";
 	export type PhotoThumbInfoType = "title" | "description";
 	export type PurchasableLicenseType = "personal" | "commercial" | "extended";
@@ -868,9 +868,13 @@ declare namespace App.Http.Resources.Shop {
 	export type CheckoutOptionResource = {
 		currency: string;
 		allow_guest_checkout: boolean;
+		is_offline: boolean;
 		terms_url: string;
 		privacy_url: string;
 		payment_providers: App.Enum.OmnipayProviderType[];
+		mollie_profile_id: string;
+		stripe_public_key: string;
+		is_test_mode: boolean;
 	};
 	export type CheckoutResource = {
 		is_success: boolean;
