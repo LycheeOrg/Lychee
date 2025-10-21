@@ -173,6 +173,7 @@ import { useAlbumsStore } from "@/stores/AlbumsState";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { usePhotoStore } from "@/stores/PhotoState";
 import { usePhotosStore } from "@/stores/PhotosState";
+import { useOrderManagementStore } from "@/stores/OrderManagement";
 
 const userStore = useUserStore();
 const lycheeStore = useLycheeStateStore();
@@ -183,6 +184,7 @@ const albumStore = useAlbumStore();
 const photosStore = usePhotosStore();
 const photoStore = usePhotoStore();
 const router = useRouter();
+const orderManagementStore = useOrderManagementStore();
 
 // Reset!
 albumStore.reset();
@@ -191,9 +193,9 @@ photosStore.reset();
 photoStore.reset();
 
 async function refresh() {
-	await lycheeStore.load();
-	await userStore.refresh();
+	await Promise.allSettled([lycheeStore.load(), userStore.refresh()]);
 	albumsStore.load(router);
+	orderManagementStore.refresh();
 }
 
 const albumId = ref("gallery");

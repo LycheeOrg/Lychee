@@ -30,6 +30,10 @@ enum PaymentStatusType: string
 	// Intermediate state during payment processing
 	case PROCESSING = 'processing';
 
+	// When processing is done ofline.
+	// In such case we do not go through the full flow.
+	case OFFLINE = 'offline';
+
 	// Final state
 	case COMPLETED = 'completed';
 
