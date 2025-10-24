@@ -91,9 +91,10 @@ class Top
 			)
 			->get();
 
-		/** @return AlbumBuilder $query */
+		/** @var \App\Models\Builders\AlbumBuilder|\App\Eloquent\FixedQueryBuilder $query */
 		$query = $this->album_query_policy
-			->applyVisibilityFilter(Album::query()->with(['access_permissions', 'owner'])->whereIsRoot());
+			->applyVisibilityFilter(Album::query()->with(['access_permissions', 'owner'])->whereIsRoot()
+			->joinSub(DB::table('base_albums')->select(['id', 'is_pinned'])->where('is_pinned', '=', false), 'not_pinned', 'not_pinned.id', '=', 'albums.id'));
 
 		$user_id = Auth::id();
 		if ($user_id !== null) {
