@@ -91,7 +91,7 @@ class Top
 			)
 			->get();
 
-		/** @return AlbumBuilder $query */
+		/** @var AlbumBuilder $query */
 		$query = $this->album_query_policy
 			->applyVisibilityFilter(Album::query()->with(['access_permissions', 'owner'])->whereIsRoot()
 			->joinSub(DB::table('base_albums')->select(['id', 'is_pinned'])->where('is_pinned', '=', false), 'not_pinned', 'not_pinned.id', '=', 'albums.id'));
