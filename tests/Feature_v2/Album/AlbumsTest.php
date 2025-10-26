@@ -216,7 +216,7 @@ class AlbumsTest extends BaseApiWithDataTest
 		$pinnedIds = array_column($pinnedAlbums, 'id');
 		self::assertContains($this->album1->id, $pinnedIds, 'Album1 should be in pinned_albums');
 
-		// Verify album1 is NOT in regular albums (deduplicated)
++		// Verify album1 IS in regular albums (not deduplicated when config is false)
 		$albumIds = array_column($albums, 'id');
 		self::assertContains($this->album1->id, $albumIds, 'Album1 should be in regular albums even when pinned');
 
