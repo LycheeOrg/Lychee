@@ -17,6 +17,7 @@ use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Factories\AlbumFactory;
 use App\Models\Album;
+use App\Models\Builders\AlbumBuilder;
 use App\Models\Configs;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\TagAlbum;
@@ -91,10 +92,14 @@ class Top
 			)
 			->get();
 
-		/** @var \App\Models\Builders\AlbumBuilder|\App\Eloquent\FixedQueryBuilder $query */
+		/** @var AlbumBuilder $query */
 		$query = $this->album_query_policy
 			->applyVisibilityFilter(Album::query()->with(['access_permissions', 'owner'])->whereIsRoot()
-			->joinSub(DB::table('base_albums')->select(['id', 'is_pinned'])->where('is_pinned', '=', false), 'not_pinned', 'not_pinned.id', '=', 'albums.id'));
+			->when(
+				Configs::getValueAsBool('deduplicate_pinned_albums'),
+				fn ($q) => $q
+					->joinSub(DB::table('base_albums')->select(['id', 'is_pinned'])->where('is_pinned', '=', false), 'not_pinned', 'not_pinned.id', '=', 'albums.id')
+			));
 
 		$user_id = Auth::id();
 		if ($user_id !== null) {
