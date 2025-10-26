@@ -129,4 +129,14 @@ return [
 	 | read files from the server such as .env, /etc/passwd et al.
 	 */
 	'disable-import-from-server' => (bool) env('DISABLE_IMPORT_FROM_SERVER', false),
+
+	/*
+	 |--------------------------------------------------------------------------
+	 | Enable Webshop
+	 |--------------------------------------------------------------------------
+	 |
+	 | This is a feature flags to avoid shipping webshop related code
+	 | when the webshop is not ready yet.
+	 */
+	'enable-webshop' => (bool) env('WEBSHOP_ENABLED', false),
 ];
