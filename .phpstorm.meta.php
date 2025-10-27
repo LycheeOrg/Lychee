@@ -1335,7 +1335,6 @@ namespace PHPSTORM_META {
             'debugbar.route_domain' => 'NULL',
             'debugbar.theme' => 'string',
             'debugbar.debug_backtrace_limit' => 'integer',
-            'features.vuejs' => 'boolean',
             'features.force_https' => 'boolean',
             'features.legacy_v4_redirect' => 'boolean',
             'features.legacy_v3_db_prefix' => 'boolean',
@@ -2305,7 +2304,6 @@ namespace PHPSTORM_META {
             'debugbar.route_domain' => 'NULL',
             'debugbar.theme' => 'string',
             'debugbar.debug_backtrace_limit' => 'integer',
-            'features.vuejs' => 'boolean',
             'features.force_https' => 'boolean',
             'features.legacy_v4_redirect' => 'boolean',
             'features.legacy_v3_db_prefix' => 'boolean',
@@ -3275,7 +3273,6 @@ namespace PHPSTORM_META {
             'debugbar.route_domain' => 'NULL',
             'debugbar.theme' => 'string',
             'debugbar.debug_backtrace_limit' => 'integer',
-            'features.vuejs' => 'boolean',
             'features.force_https' => 'boolean',
             'features.legacy_v4_redirect' => 'boolean',
             'features.legacy_v3_db_prefix' => 'boolean',
@@ -3957,7 +3954,7 @@ namespace PHPSTORM_META {
     override(\tap(0), type(0));
     override(\optional(0), type(0));
 
-            registerArgumentsSet('auth', 
+            registerArgumentsSet('auth',
 'downloadLogFile','downloadLogFolder','deleteLogFile','deleteLogFolder','canCreateOrEditOrDelete',
 'canList','canEdit','before','denyWithStatus','denyAsNotFound',
 '__construct','isOwner','hasAlbums','canSee','canDownload',
@@ -3967,7 +3964,7 @@ namespace PHPSTORM_META {
 'isUnlocked','getUnlockedAlbumIDs','uniquify','canSeeLogs','canSeeDiagnostics',
 'canSeeStatistics','canUpdate','canAccessDevTools','canSeeLive','canCreateOrDelete',
 'canRead','canAddOrRemoveUser',);
-        registerArgumentsSet('configs', 
+        registerArgumentsSet('configs',
 'app.name','app.env','app.debug','app.url','app.frontend_url',
 'app.asset_url','app.timezone','app.locale','app.fallback_locale','app.faker_locale',
 'app.cipher','app.key','app.previous_keys','app.maintenance.driver','app.providers',
@@ -4032,7 +4029,7 @@ namespace PHPSTORM_META {
 'debugbar.collectors.models','debugbar.options.auth.show_name','debugbar.options.db.with_params','debugbar.options.db.backtrace','debugbar.options.db.timeline',
 'debugbar.options.db.explain.enabled','debugbar.options.db.explain.types','debugbar.options.db.hints','debugbar.options.mail.full_log','debugbar.options.views.data',
 'debugbar.options.route.label','debugbar.options.logs.file','debugbar.options.cache.values','debugbar.inject','debugbar.route_prefix',
-'debugbar.route_middleware','debugbar.route_domain','debugbar.theme','debugbar.debug_backtrace_limit','features.vuejs',
+'debugbar.route_middleware','debugbar.route_domain','debugbar.theme','debugbar.debug_backtrace_limit',
 'features.force_https','features.legacy_v4_redirect','features.legacy_v3_db_prefix','features.log-viewer','features.use-s3',
 'features.disable-basic-auth','features.disable-webauthn','features.hide-lychee-SE','features.latency','features.require-content-type',
 'features.vite-http-proxy','feed.feeds.main.items','feed.feeds.main.url','feed.feeds.main.title','feed.feeds.main.description',
@@ -4162,12 +4159,12 @@ namespace PHPSTORM_META {
 'ide-helper.magic','ide-helper.interfaces','ide-helper.model_camel_case_properties','ide-helper.type_overrides.integer','ide-helper.type_overrides.boolean',
 'ide-helper.include_class_docblocks','ide-helper.force_fqn','ide-helper.use_generics_annotations','ide-helper.macro_default_return_types.Illuminate\\Http\\Client\\Factory','ide-helper.additional_relation_types',
 'ide-helper.additional_relation_return_types','ide-helper.enforce_nullable_relationships','ide-helper.post_migrate',);
-        registerArgumentsSet('middleware', 
+        registerArgumentsSet('middleware',
 'web','web-admin','web-install','api','installation',
 'admin_user','migration','content_type','accept_content_type','throttle',
 'login_required','cache_control','support','config_integrity','unlock_with_password',
 'response_cache','album_cache_refresher',);
-        registerArgumentsSet('routes', 
+        registerArgumentsSet('routes',
 'debugbar.openhandler','debugbar.clockwork','debugbar.assets.css','debugbar.assets.js','debugbar.cache.delete',
 'debugbar.queries.explain','log-viewer.hosts','log-viewer.folders','log-viewer.folders.request-download','log-viewer.folders.clear-cache',
 'log-viewer.folders.delete','log-viewer.files','log-viewer.files.request-download','log-viewer.files.clear-cache','log-viewer.files.delete',
@@ -4178,7 +4175,7 @@ namespace PHPSTORM_META {
 'home','homepage','flow','gallery','frame',
 'map','search','profile','register',
 'migrate','oauth-authenticate','oauth-register','scramble.docs.ui','image','scramble.docs.document',);
-        registerArgumentsSet('views', 
+        registerArgumentsSet('views',
 'components.meta','components.warning-misconfiguration','emails.photos-added','error.error','error.v1-is-dead',
 'feed::atom','feed::json','feed::links','feed::rss','health-up',
 'includes.footer','includes.svg','install.env','install.migrate','install.permissions',
@@ -4193,7 +4190,7 @@ namespace PHPSTORM_META {
 'laravel-exceptions::503','laravel-exceptions::layout','laravel-exceptions::minimal','log-viewer::index','notifications::email',
 'pagination::bootstrap-4','pagination::bootstrap-5','pagination::default','pagination::semantic-ui','pagination::simple-bootstrap-4',
 'pagination::simple-bootstrap-5','pagination::simple-default','pagination::simple-tailwind','pagination::tailwind','scramble::docs',);
-        registerArgumentsSet('translations', 
+        registerArgumentsSet('translations',
 'auth.failed','auth.password','auth.throttle','pagination.previous','pagination.next',
 'passwords.reset','passwords.sent','passwords.throttled','passwords.token','passwords.user',
 'validation.accepted','validation.accepted_if','validation.active_url','validation.after','validation.after_or_equal',
@@ -4366,7 +4363,7 @@ namespace PHPSTORM_META {
 'users.create_edit.admin_rights','users.create_edit.quota','users.create_edit.quota_kb','users.create_edit.note','users.create_edit.create',
 'users.create_edit.edit','users.invite.button','users.invite.links_are_not_revokable','users.invite.link_is_valid_x_days','users.line.owner',
 'users.line.admin','users.line.edit','users.line.delete',);
-        registerArgumentsSet('env', 
+        registerArgumentsSet('env',
 'APP_NAME','APP_ENV','APP_KEY','APP_DEBUG','APP_URL',
 'APP_FORCE_HTTPS','LIVEWIRE_ENABLED','DB_OLD_LYCHEE_PREFIX','DB_CONNECTION','DB_HOST',
 'DB_PORT','DB_DATABASE','DB_USERNAME','DB_PASSWORD','DB_LOG_SQL',
@@ -4374,7 +4371,7 @@ namespace PHPSTORM_META {
 'QUEUE_CONNECTION','SECURITY_HEADER_HSTS_ENABLE','SESSION_SECURE_COOKIE','REDIS_HOST','REDIS_PASSWORD',
 'REDIS_PORT','MAIL_DRIVER','MAIL_HOST','MAIL_PORT','MAIL_USERNAME',
 'MAIL_PASSWORD','MAIL_ENCRYPTION','MAIL_FROM_NAME','MAIL_FROM_ADDRESS','TRUSTED_PROXIES',);
-        
+
                 expectedArguments(\Illuminate\Support\Facades\Gate::has(), 0, argumentsSet('auth'));
     expectedArguments(\Illuminate\Support\Facades\Gate::allows(), 0, argumentsSet('auth'));
     expectedArguments(\Illuminate\Support\Facades\Gate::denies(), 0, argumentsSet('auth'));
@@ -4438,5 +4435,5 @@ namespace PHPSTORM_META {
                 expectedArguments(\Illuminate\Contracts\Translation\Translator::get(), 0, argumentsSet('translations'));
                 expectedArguments(\env(), 0, argumentsSet('env'));
                 expectedArguments(\Illuminate\Support\Env::get(), 0, argumentsSet('env'));
-            
+
 }
