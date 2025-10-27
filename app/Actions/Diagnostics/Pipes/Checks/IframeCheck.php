@@ -27,7 +27,7 @@ class IframeCheck implements DiagnosticPipe
 			return $next($data);
 		}
 
-		$extra = array_map(fn ($allow) => sprintf('Allowing %s to use Lychee in iFrame.', \Helpers::censor($allow)), config('secure-headers.csp.frame-ancestors.allow'));
+		$extra = array_map(fn ($allow) => sprintf('Allowing %s to use Lychee in iFrame.', \Helpers::censor($allow)), config('secure-headers.csp.frame-ancestors.allow', []));
 		$extra[] = 'This allows Lychee to be used in iFrame, which is not recommended as it will lower the security of your session cookies.';
 		$data[] = DiagnosticData::warn('SECURITY_HEADER_CSP_FRAME_ANCESTORS is set.', self::class, $extra);
 
