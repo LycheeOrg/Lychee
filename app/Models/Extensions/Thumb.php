@@ -8,7 +8,6 @@
 
 namespace App\Models\Extensions;
 
-use App\Assets\Features;
 use App\DTO\SortingCriterion;
 use App\Enum\ColumnSortingPhotoType;
 use App\Enum\OrderSortingType;
@@ -48,10 +47,7 @@ class Thumb
 	 */
 	public static function sizeVariantsFilter(HasMany $relation): HasMany
 	{
-		$sv_album_thumbs = [SizeVariantType::THUMB, SizeVariantType::THUMB2X, SizeVariantType::PLACEHOLDER];
-		if (Features::active('vuejs')) {
-			$sv_album_thumbs = [SizeVariantType::SMALL, SizeVariantType::SMALL2X, SizeVariantType::THUMB, SizeVariantType::THUMB2X, SizeVariantType::PLACEHOLDER];
-		}
+		$sv_album_thumbs = [SizeVariantType::SMALL, SizeVariantType::SMALL2X, SizeVariantType::THUMB, SizeVariantType::THUMB2X, SizeVariantType::PLACEHOLDER];
 
 		return $relation->whereIn('type', $sv_album_thumbs);
 	}

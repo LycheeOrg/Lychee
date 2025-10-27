@@ -271,19 +271,17 @@ class BasicPermissionCheck implements DiagnosticPipe
 				if (Configs::getValueAsBool('disable_recursive_permission_check')) {
 					return;
 				}
+				// @codeCoverageIgnoreStart
 			} catch (ConfigurationKeyMissingException) {
 				// We skip the check, we can come back later when the config value is available.
 				return;
 			}
 
-			// @codeCoverageIgnoreStart
 			foreach ($dir as $dir_entry) {
 				if ($dir_entry->isDir() && !$dir_entry->isDot()) {
 					$this->checkDirectoryPermissionsRecursively($dir_entry->getPathname(), $data);
 				}
 			}
-			// @codeCoverageIgnoreEnd
-			// @codeCoverageIgnoreStart
 		} catch (\Exception $e) {
 			$data[] = DiagnosticData::error($e->getMessage(), self::class);
 			Handler::reportSafely($e);

@@ -54,6 +54,7 @@ return new class() extends Migration {
 			Artisan::call('cache:clear');
 		} catch (\Throwable \$e) {
 			\$this->msg_section->writeln('<error>Warning:</error> Failed to clear cache for version %s');
+
 			return;
 		}
 		\$this->msg_section->writeln('<info>Info:</info> Cleared cache for version %s');

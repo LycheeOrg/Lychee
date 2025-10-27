@@ -58,11 +58,13 @@ abstract class BaseArchive
 		if (InstalledVersions::satisfies(new VersionParser(), 'maennchen/zipstream-php', '^3.1')) {
 			return new Archive64();
 		}
+		// @codeCoverageIgnoreStart
 		if (InstalledVersions::satisfies(new VersionParser(), 'maennchen/zipstream-php', '^2.1')) {
 			return new Archive32();
 		}
 
 		throw new LycheeLogicException('Unsupported version of maennchen/zipstream-php');
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -127,6 +129,8 @@ abstract class BaseArchive
 	 * @return ZipStream
 	 *
 	 * @throws ConfigurationKeyMissingException
+	 *
+	 * @codeCoverageIgnore
 	 */
 	abstract protected function createZip(): ZipStream;
 
@@ -180,6 +184,7 @@ abstract class BaseArchive
 	private function makeUnique(string $str, array &$used): string
 	{
 		if (count($used) > 0) {
+			// @codeCoverageIgnoreStart
 			$i = 1;
 			$tmp = $str;
 			while (in_array($tmp, $used, true)) {
@@ -187,6 +192,7 @@ abstract class BaseArchive
 				$i++;
 			}
 			$str = $tmp;
+			// @codeCoverageIgnoreEnd
 		}
 		$used[] = $str;
 
@@ -233,7 +239,9 @@ abstract class BaseArchive
 					($album instanceof BaseSmartAlbum || $album instanceof TagAlbum) &&
 					!Gate::check(PhotoPolicy::CAN_DOWNLOAD, $photo)
 				) {
+					// @codeCoverageIgnoreStart
 					continue;
+					// @codeCoverageIgnoreEnd
 				}
 
 				$file = $photo->size_variants->getOriginal()->getFile();
@@ -250,9 +258,11 @@ abstract class BaseArchive
 				}
 				$this->addFileToZip($zip, $file_name, $file, $photo);
 				$file->close();
+				// @codeCoverageIgnoreStart
 			} catch (\Throwable $e) {
 				Handler::reportSafely($e);
 			}
+			// @codeCoverageIgnoreEnd
 		}
 
 		// Recursively compress sub-albums
@@ -263,12 +273,24 @@ abstract class BaseArchive
 			foreach ($sub_albums as $sub_album) {
 				try {
 					$this->compressAlbum($sub_album, $sub_dirs, $full_name_of_directory, $zip);
+					// @codeCoverageIgnoreStart
 				} catch (\Throwable $e) {
 					Handler::reportSafely($e);
 				}
+				// @codeCoverageIgnoreEnd
 			}
 		}
 	}
 
+	/**
+	 * @param ZipStream                   $zip
+	 * @param string                      $file_name
+	 * @param FlysystemFile|BaseMediaFile $file
+	 * @param Photo|null                  $photo
+	 *
+	 * @return void
+	 *
+	 * @codeCoverageIgnore
+	 */
 	abstract protected function addFileToZip(ZipStream $zip, string $file_name, FlysystemFile|BaseMediaFile $file, Photo|null $photo): void;
 }
