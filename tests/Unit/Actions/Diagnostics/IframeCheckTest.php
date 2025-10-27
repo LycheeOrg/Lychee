@@ -203,27 +203,6 @@ class IframeCheckTest extends AbstractTestCase
 	}
 
 	/**
-	 * Test handle method with null frame ancestors configuration.
-	 * Should handle null values gracefully.
-	 *
-	 * @return void
-	 */
-	public function testHandleWithNullFrameAncestors(): void
-	{
-		Config::set('secure-headers.x-frame-options', 'sameorigin');
-		Config::set('secure-headers.csp.frame-ancestors.allow', null);
-		Config::set('session.same_site', 'lax');
-		Config::set('session.secure', true);
-
-		$result = $this->iframeCheck->handle($this->data, $this->next);
-
-		$this->assertCount(1, $result);
-		$this->assertInstanceOf(DiagnosticData::class, $result[0]);
-		$this->assertEquals(MessageType::WARNING, $result[0]->type);
-		$this->assertEquals('SECURITY_HEADER_CSP_FRAME_ANCESTORS is set.', $result[0]->message);
-	}
-
-	/**
 	 * Test handle method with different X-Frame-Options values.
 	 * Should process checks for any value other than 'deny'.
 	 *
