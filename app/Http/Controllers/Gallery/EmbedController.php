@@ -28,12 +28,12 @@ class EmbedController extends Controller
 	 *
 	 * @param string $albumId The album ID to embed
 	 *
-	 * @return EmbedAlbumResource The album data formatted for embedding
+	 * @return \Illuminate\Http\JsonResponse The album data formatted for embedding
 	 *
 	 * @throws NotFoundHttpException     if album doesn't exist
 	 * @throws AccessDeniedHttpException if album is not publicly accessible
 	 */
-	public function getAlbum(string $albumId): EmbedAlbumResource
+	public function getAlbum(string $albumId): \Illuminate\Http\JsonResponse
 	{
 		$album = $this->findAlbum($albumId);
 
@@ -42,7 +42,11 @@ class EmbedController extends Controller
 			throw new AccessDeniedHttpException('Album must be publicly accessible for embedding');
 		}
 
-		return new EmbedAlbumResource($album);
+		$resource = new EmbedAlbumResource($album);
+
+		// Explicitly return JSON response to ensure proper serialization
+		// when bypassing standard API middleware
+		return response()->json($resource->toArray(request()));
 	}
 
 	/**

@@ -258,16 +258,17 @@ function loadEmbedAssets() {
 		}
 
 		const embedUrl = `${apiUrl.value}/embed`;
+		const cacheKey = Date.now(); // Cache busting
 
 		// Load CSS
 		const link = document.createElement("link");
 		link.rel = "stylesheet";
-		link.href = `${embedUrl}/lychee-embed.css`;
+		link.href = `${embedUrl}/lychee-embed.css?v=${cacheKey}`;
 		document.head.appendChild(link);
 
 		// Load JS
 		const script = document.createElement("script");
-		script.src = `${embedUrl}/lychee-embed.js`;
+		script.src = `${embedUrl}/lychee-embed.js?v=${cacheKey}`;
 		script.onload = () => {
 			previewLoaded.value = true;
 			resolve();
@@ -358,6 +359,7 @@ watch(is_embed_code_visible, (visible) => {
 	} else {
 		copied.value = false;
 		showAdvanced.value = false;
+		previewLoaded.value = false; // Reset to force reload with new cache key
 		// Clear preview on close
 		if (previewContainer.value) {
 			previewContainer.value.innerHTML = "";

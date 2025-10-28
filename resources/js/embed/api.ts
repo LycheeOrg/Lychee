@@ -18,7 +18,7 @@ export class EmbedApiClient {
 	 * @throws Error if fetch fails or album is not accessible
 	 */
 	async fetchAlbum(albumId: string): Promise<EmbedApiResponse> {
-		const url = `${this.apiUrl}/api/Embed/${encodeURIComponent(albumId)}`;
+		const url = `${this.apiUrl}/api/v2/Embed/${encodeURIComponent(albumId)}`;
 
 		try {
 			const response = await fetch(url, {
