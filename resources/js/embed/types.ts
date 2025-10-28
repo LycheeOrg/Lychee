@@ -57,9 +57,13 @@ export interface EmbedConfig {
  * Size variant data from API
  */
 export interface SizeVariantData {
-	url: string;
-	width: number;
+	type: string;
+	locale: string;
+	filesize: string;
 	height: number;
+	width: number;
+	url: string | null;
+	is_watermarked: boolean;
 }
 
 /**

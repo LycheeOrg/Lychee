@@ -263,7 +263,7 @@ declare namespace App.Http.Resources.Embed {
 		id: string;
 		title: string | null;
 		description: string | null;
-		size_variants: { [key: string]: { [key: string]: number | string } | null };
+		size_variants: App.Http.Resources.Models.SizeVariantsResouce;
 		exif: { [key: string]: string | null };
 	};
 }
