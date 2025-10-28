@@ -8,8 +8,9 @@ export const DEFAULT_CONFIG: Partial<EmbedConfig> = {
 	width: "100%",
 	height: "auto",
 	spacing: 8,
-	targetRowHeight: 320,
+	targetRowHeight: 200,
 	targetColumnWidth: 300,
+	maxPhotos: 15,
 	showTitle: true,
 	showDescription: true,
 	showCaptions: true,
@@ -59,6 +60,11 @@ export function validateConfig(config: Partial<EmbedConfig>): EmbedConfig {
 		throw new Error("targetColumnWidth must be between 100 and 800");
 	}
 
+	const maxPhotos = config.maxPhotos ?? DEFAULT_CONFIG.maxPhotos!;
+	if (maxPhotos < 1 || maxPhotos > 100) {
+		throw new Error("maxPhotos must be between 1 and 100");
+	}
+
 	// Validate theme
 	const theme = config.theme ?? DEFAULT_CONFIG.theme!;
 	if (theme !== "light" && theme !== "dark") {
@@ -74,6 +80,7 @@ export function validateConfig(config: Partial<EmbedConfig>): EmbedConfig {
 		spacing,
 		targetRowHeight,
 		targetColumnWidth,
+		maxPhotos,
 		showTitle: config.showTitle ?? DEFAULT_CONFIG.showTitle!,
 		showDescription: config.showDescription ?? DEFAULT_CONFIG.showDescription!,
 		showCaptions: config.showCaptions ?? DEFAULT_CONFIG.showCaptions!,
@@ -122,6 +129,9 @@ export function parseDataAttributes(element: HTMLElement): Partial<EmbedConfig> 
 	}
 	if (element.dataset.targetColumnWidth) {
 		config.targetColumnWidth = parseInt(element.dataset.targetColumnWidth, 10);
+	}
+	if (element.dataset.maxPhotos) {
+		config.maxPhotos = parseInt(element.dataset.maxPhotos, 10);
 	}
 
 	// Boolean options

@@ -140,7 +140,9 @@ function calculateLayout() {
 	}
 
 	const containerWidth = gridContainer.value.clientWidth;
-	const photos = albumData.value.photos;
+	// Limit photos based on maxPhotos config
+	const maxPhotos = props.config.maxPhotos ?? 15;
+	const photos = albumData.value.photos.slice(0, maxPhotos);
 	const spacing = props.config.spacing ?? 8;
 
 	let result;

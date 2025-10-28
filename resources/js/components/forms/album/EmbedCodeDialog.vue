@@ -34,6 +34,12 @@
 						/>
 
 						<div class="grid grid-cols-2 gap-4">
+							<!-- Maximum Photos -->
+							<FloatLabel variant="on">
+								<InputNumber id="maxPhotos" v-model="config.maxPhotos" :min="1" :max="100" />
+								<label for="maxPhotos">{{ $t("dialogs.embed_code.max_photos") }}</label>
+							</FloatLabel>
+
 							<!-- Spacing -->
 							<FloatLabel variant="on">
 								<InputNumber id="spacing" v-model="config.spacing" :min="0" :max="50" suffix=" px" />
@@ -160,8 +166,9 @@ const previewError = ref(false);
 const config = ref({
 	layout: "justified" as "square" | "masonry" | "grid" | "justified" | "filmstrip",
 	spacing: 8,
-	targetRowHeight: 320,
+	targetRowHeight: 200,
 	targetColumnWidth: 200,
+	maxPhotos: 15,
 	showTitle: true,
 	showDescription: true,
 	showCaptions: true,
@@ -209,6 +216,7 @@ const generatedCode = computed(() => {
     data-spacing="${config.value.spacing}"
     data-target-row-height="${config.value.targetRowHeight}"
     data-target-column-width="${config.value.targetColumnWidth}"
+    data-max-photos="${config.value.maxPhotos}"
     data-show-title="${config.value.showTitle}"
     data-show-description="${config.value.showDescription}"
     data-show-captions="${config.value.showCaptions}"
@@ -303,6 +311,7 @@ async function initializePreview() {
 		widgetContainer.setAttribute("data-spacing", String(config.value.spacing));
 		widgetContainer.setAttribute("data-target-row-height", String(config.value.targetRowHeight));
 		widgetContainer.setAttribute("data-target-column-width", String(config.value.targetColumnWidth));
+		widgetContainer.setAttribute("data-max-photos", String(config.value.maxPhotos));
 		widgetContainer.setAttribute("data-show-title", String(config.value.showTitle));
 		widgetContainer.setAttribute("data-show-description", String(config.value.showDescription));
 		widgetContainer.setAttribute("data-show-captions", String(config.value.showCaptions));

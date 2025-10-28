@@ -32,6 +32,8 @@ export interface EmbedConfig {
 	targetRowHeight?: number;
 	/** Target column width for grid/masonry layouts (px) */
 	targetColumnWidth?: number;
+	/** Maximum number of photos to display */
+	maxPhotos?: number;
 	/** Whether to show album title */
 	showTitle?: boolean;
 	/** Whether to show album description */
