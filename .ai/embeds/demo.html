@@ -144,10 +144,11 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="theme">Theme</label>
-                        <select id="theme">
-                            <option value="light" selected>Light</option>
-                            <option value="dark">Dark</option>
+                        <label for="headerPlacement">Header Placement</label>
+                        <select id="headerPlacement">
+                            <option value="top" selected>Top (Full Header)</option>
+                            <option value="bottom">Bottom (Simple Link)</option>
+                            <option value="none">None</option>
                         </select>
                     </div>
                 </div>
@@ -160,6 +161,43 @@
                     <div class="form-group">
                         <label for="maxPhotos">Max Photos</label>
                         <input type="number" id="maxPhotos" value="15" min="1" max="100">
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label for="targetRowHeight">Target Row Height (px)</label>
+                        <input type="number" id="targetRowHeight" value="200" min="100" max="1000">
+                    </div>
+                    <div class="form-group">
+                        <label for="targetColumnWidth">Target Column Width (px)</label>
+                        <input type="number" id="targetColumnWidth" value="300" min="100" max="800">
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="showTitle" checked> Show Album Title
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="showDescription" checked> Show Album Description
+                        </label>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="showCaptions" checked> Show Photo Captions
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="showExif" checked> Show EXIF Data
+                        </label>
                     </div>
                 </div>
 
@@ -203,9 +241,15 @@
             const apiUrl = document.getElementById('apiUrl').value.replace(/\/$/, '');
             const albumId = document.getElementById('albumId').value;
             const layout = document.getElementById('layout').value;
-            const theme = document.getElementById('theme').value;
+            const headerPlacement = document.getElementById('headerPlacement').value;
             const spacing = parseInt(document.getElementById('spacing').value);
             const maxPhotos = parseInt(document.getElementById('maxPhotos').value);
+            const targetRowHeight = parseInt(document.getElementById('targetRowHeight').value);
+            const targetColumnWidth = parseInt(document.getElementById('targetColumnWidth').value);
+            const showTitle = document.getElementById('showTitle').checked;
+            const showDescription = document.getElementById('showDescription').checked;
+            const showCaptions = document.getElementById('showCaptions').checked;
+            const showExif = document.getElementById('showExif').checked;
 
             // Create embed element
             const embedDiv = document.createElement('div');
@@ -213,11 +257,15 @@
             embedDiv.setAttribute('data-api-url', apiUrl);
             embedDiv.setAttribute('data-album-id', albumId);
             embedDiv.setAttribute('data-layout', layout);
-            embedDiv.setAttribute('data-theme', theme);
+            embedDiv.setAttribute('data-header-placement', headerPlacement);
             embedDiv.setAttribute('data-spacing', spacing);
             embedDiv.setAttribute('data-max-photos', maxPhotos);
-            embedDiv.setAttribute('data-target-row-height', '200');
-            embedDiv.setAttribute('data-target-column-width', '200');
+            embedDiv.setAttribute('data-target-row-height', targetRowHeight);
+            embedDiv.setAttribute('data-target-column-width', targetColumnWidth);
+            embedDiv.setAttribute('data-show-title', showTitle);
+            embedDiv.setAttribute('data-show-description', showDescription);
+            embedDiv.setAttribute('data-show-captions', showCaptions);
+            embedDiv.setAttribute('data-show-exif', showExif);
 
             container.appendChild(embedDiv);
 
@@ -227,15 +275,15 @@
                     apiUrl: apiUrl,
                     albumId: albumId,
                     layout: layout,
-                    theme: theme,
+                    headerPlacement: headerPlacement,
                     spacing: spacing,
                     maxPhotos: maxPhotos,
-                    targetRowHeight: 200,
-                    targetColumnWidth: 200,
-                    showTitle: true,
-                    showDescription: true,
-                    showCaptions: true,
-                    showExif: true,
+                    targetRowHeight: targetRowHeight,
+                    targetColumnWidth: targetColumnWidth,
+                    showTitle: showTitle,
+                    showDescription: showDescription,
+                    showCaptions: showCaptions,
+                    showExif: showExif,
                 });
 
                 console.log('Widget loaded successfully');
