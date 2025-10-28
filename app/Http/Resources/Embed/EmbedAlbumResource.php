@@ -9,8 +9,10 @@
 namespace App\Http\Resources\Embed;
 
 use App\Models\Album;
-use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Collection;
+use Spatie\LaravelData\Data;
+use Spatie\TypeScriptTransformer\Attributes\LiteralTypeScriptType;
+use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
 /**
  * Resource for embedding album data on external websites.
@@ -18,30 +20,38 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * Provides minimal album information and photo collection optimized for
  * external embedding. Includes only publicly visible data.
  */
-class EmbedAlbumResource extends JsonResource
+#[TypeScript()]
+class EmbedAlbumResource extends Data
 {
-	/**
-	 * Transform the resource into an array.
-	 *
-	 * @param Request $request The incoming request
-	 *
-	 * @return array<string, mixed> The album data formatted for embedding
-	 */
-	public function toArray(Request $request): array
-	{
-		/** @var Album $album */
-		$album = $this->resource;
+	/** @var array<string, mixed> */
+	public array $album;
+	/** @var Collection<int, EmbedPhotoResource> */
+	#[LiteralTypeScriptType('App.Http.Resources.Embed.EmbedPhotoResource[]')]
+	public Collection $photos;
 
-		return [
-			'album' => [
-				'id' => $album->id,
-				'title' => $album->title,
-				'description' => $album->description,
-				'photo_count' => $album->photos->count(),
-				'copyright' => $album->copyright,
-				'license' => $album->license?->localization(),
-			],
-			'photos' => EmbedPhotoResource::collection($album->photos),
+	public function __construct(Album $album)
+	{
+		$this->album = [
+			'id' => $album->id,
+			'title' => $album->title,
+			'description' => $album->description,
+			'photo_count' => $album->photos->count(),
+			'copyright' => $album->copyright,
+			'license' => $album->license?->localization(),
 		];
+
+		$this->photos = $album->photos->map(fn ($photo) => EmbedPhotoResource::fromModel($photo));
+	}
+
+	/**
+	 * Create resource from Album model.
+	 *
+	 * @param Album $album The album model
+	 *
+	 * @return self
+	 */
+	public static function fromModel(Album $album): self
+	{
+		return new self($album);
 	}
 }
