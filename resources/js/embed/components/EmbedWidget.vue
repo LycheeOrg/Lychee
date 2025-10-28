@@ -153,8 +153,8 @@ function calculateLayout() {
 
 	const containerWidth = gridContainer.value.clientWidth;
 	// Limit photos based on maxPhotos config
-	const maxPhotos = props.config.maxPhotos ?? 15;
-	const photos = albumData.value.photos.slice(0, maxPhotos);
+	const maxPhotos = props.config.maxPhotos ?? 18;
+	const photos = maxPhotos === "none" ? albumData.value.photos : albumData.value.photos.slice(0, maxPhotos);
 	const spacing = props.config.spacing ?? 8;
 
 	let result;
@@ -217,8 +217,9 @@ function closeLightbox() {
 onMounted(async () => {
 	try {
 		const apiClient = createApiClient(props.config.apiUrl);
-		// Use pagination to fetch only the photos we need
-		albumData.value = await apiClient.fetchAlbum(props.config.albumId, props.config.maxPhotos);
+		// Use pagination to fetch only the photos we need (or all if maxPhotos is "none")
+		const limit = props.config.maxPhotos === "none" ? undefined : props.config.maxPhotos;
+		albumData.value = await apiClient.fetchAlbum(props.config.albumId, limit);
 		loading.value = false;
 
 		// Calculate layout after data loads

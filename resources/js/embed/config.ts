@@ -10,7 +10,7 @@ export const DEFAULT_CONFIG: Partial<EmbedConfig> = {
 	spacing: 8,
 	targetRowHeight: 200,
 	targetColumnWidth: 300,
-	maxPhotos: 15,
+	maxPhotos: 18,
 	showTitle: true,
 	showDescription: true,
 	showCaptions: true,
@@ -61,8 +61,8 @@ export function validateConfig(config: Partial<EmbedConfig>): EmbedConfig {
 	}
 
 	const maxPhotos = config.maxPhotos ?? DEFAULT_CONFIG.maxPhotos!;
-	if (maxPhotos < 1 || maxPhotos > 100) {
-		throw new Error("maxPhotos must be between 1 and 100");
+	if (maxPhotos !== "none" && (maxPhotos < 1 || maxPhotos > 100)) {
+		throw new Error("maxPhotos must be between 1 and 100, or 'none'");
 	}
 
 	// Validate header placement
@@ -132,7 +132,7 @@ export function parseDataAttributes(element: HTMLElement): Partial<EmbedConfig> 
 		config.targetColumnWidth = parseInt(element.dataset.targetColumnWidth, 10);
 	}
 	if (element.dataset.maxPhotos) {
-		config.maxPhotos = parseInt(element.dataset.maxPhotos, 10);
+		config.maxPhotos = element.dataset.maxPhotos === "none" ? "none" : parseInt(element.dataset.maxPhotos, 10);
 	}
 
 	// Boolean options

@@ -37,7 +37,13 @@
 							<!-- Maximum Photos -->
 							<div class="flex flex-col gap-2">
 								<label for="maxPhotos" class="font-semibold">{{ $t("dialogs.embed_code.max_photos") }}</label>
-								<InputNumber id="maxPhotos" v-model="config.maxPhotos" :min="1" :max="100" />
+								<Select
+									id="maxPhotos"
+									v-model="config.maxPhotos"
+									:options="maxPhotosOptions"
+									option-label="label"
+									option-value="value"
+								/>
 							</div>
 
 							<!-- Spacing -->
@@ -114,6 +120,7 @@ import Dialog from "primevue/dialog";
 import Button from "primevue/button";
 import SelectButton from "primevue/selectbutton";
 import InputNumber from "primevue/inputnumber";
+import Select from "primevue/select";
 import Textarea from "primevue/textarea";
 import { computed, ref, watch } from "vue";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
@@ -148,7 +155,7 @@ const config = ref({
 	spacing: 8,
 	targetRowHeight: 200,
 	targetColumnWidth: 200,
-	maxPhotos: 15,
+	maxPhotos: 18 as number | "none",
 	showTitle: true,
 	showDescription: true,
 	showCaptions: true,
@@ -170,6 +177,17 @@ const headerPlacementOptions = [
 	{ label: "Top", value: "top" },
 	{ label: "Bottom", value: "bottom" },
 	{ label: "None", value: "none" },
+];
+
+// Max photos options
+const maxPhotosOptions = [
+	{ label: "None (all photos)", value: "none" },
+	{ label: "6 photos", value: 6 },
+	{ label: "12 photos", value: 12 },
+	{ label: "18 photos", value: 18 },
+	{ label: "30 photos", value: 30 },
+	{ label: "60 photos", value: 60 },
+	{ label: "90 photos", value: 90 },
 ];
 
 // Get the base URL for the Lychee instance
@@ -306,6 +324,7 @@ async function initializePreview() {
 				spacing: config.value.spacing,
 				targetRowHeight: config.value.targetRowHeight,
 				targetColumnWidth: config.value.targetColumnWidth,
+				maxPhotos: config.value.maxPhotos,
 				showTitle: config.value.showTitle,
 				showDescription: config.value.showDescription,
 				showCaptions: config.value.showCaptions,
