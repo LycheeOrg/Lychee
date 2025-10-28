@@ -81,7 +81,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from "vue";
-import type { EmbedConfig, EmbedApiResponse, PositionedPhoto, Photo, SizeVariantData } from "../types";
+import type { EmbedConfig, EmbedApiResponse, PositionedPhoto, SizeVariantData } from "../types";
 import { createApiClient } from "../api";
 import { layoutSquare } from "../layouts/square";
 import { layoutMasonry } from "../layouts/masonry";
