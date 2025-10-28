@@ -60,12 +60,7 @@
 
 			<!-- Album link (bottom placement) -->
 			<div v-if="config.headerPlacement === 'bottom'" class="lychee-embed__footer">
-				<a
-					:href="galleryUrl"
-					target="_blank"
-					rel="noopener noreferrer"
-					class="lychee-embed__footer-link"
-				>
+				<a :href="galleryUrl" target="_blank" rel="noopener noreferrer" class="lychee-embed__footer-link">
 					View "{{ albumData.album.title }}" in Lychee Gallery ↗
 				</a>
 			</div>

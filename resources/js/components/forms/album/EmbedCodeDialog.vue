@@ -62,7 +62,12 @@
 						<!-- Header Placement Selection -->
 						<div class="flex flex-col gap-2">
 							<label class="font-semibold">{{ $t("dialogs.embed_code.header_placement") }}</label>
-							<SelectButton v-model="config.headerPlacement" :options="headerPlacementOptions" option-label="label" option-value="value" />
+							<SelectButton
+								v-model="config.headerPlacement"
+								:options="headerPlacementOptions"
+								option-label="label"
+								option-value="value"
+							/>
 						</div>
 					</template>
 				</div>

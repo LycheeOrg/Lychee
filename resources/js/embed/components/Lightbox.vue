@@ -24,7 +24,13 @@
 						</svg>
 					</button>
 
-					<button v-if="canGoNext" class="lychee-lightbox-nav lychee-lightbox-nav--next" @click.stop="next" aria-label="Next photo" title="Next (→)">
+					<button
+						v-if="canGoNext"
+						class="lychee-lightbox-nav lychee-lightbox-nav--next"
+						@click.stop="next"
+						aria-label="Next photo"
+						title="Next (→)"
+					>
 						<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 							<polyline points="9 18 15 12 9 6"></polyline>
 						</svg>
@@ -73,8 +79,12 @@
 
 									<div v-if="currentPhoto.exif.focal" class="lychee-lightbox-exif-item">
 										<span class="lychee-lightbox-exif-label">{{ currentPhoto.exif.focal }}</span>
-										<span v-if="currentPhoto.exif.aperture" class="lychee-lightbox-exif-label">f/{{ currentPhoto.exif.aperture }}</span>
-										<span v-if="currentPhoto.exif.shutter" class="lychee-lightbox-exif-label">{{ currentPhoto.exif.shutter }}</span>
+										<span v-if="currentPhoto.exif.aperture" class="lychee-lightbox-exif-label"
+											>f/{{ currentPhoto.exif.aperture }}</span
+										>
+										<span v-if="currentPhoto.exif.shutter" class="lychee-lightbox-exif-label">{{
+											currentPhoto.exif.shutter
+										}}</span>
 										<span v-if="currentPhoto.exif.iso" class="lychee-lightbox-exif-label">ISO {{ currentPhoto.exif.iso }}</span>
 									</div>
 
