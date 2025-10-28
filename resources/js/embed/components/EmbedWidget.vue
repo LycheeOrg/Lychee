@@ -217,7 +217,8 @@ function closeLightbox() {
 onMounted(async () => {
 	try {
 		const apiClient = createApiClient(props.config.apiUrl);
-		albumData.value = await apiClient.fetchAlbum(props.config.albumId);
+		// Use pagination to fetch only the photos we need
+		albumData.value = await apiClient.fetchAlbum(props.config.albumId, props.config.maxPhotos);
 		loading.value = false;
 
 		// Calculate layout after data loads

@@ -14,14 +14,23 @@ export class EmbedApiClient {
 	 * Fetch album data for embedding
 	 *
 	 * @param albumId Album ID to fetch
+	 * @param limit   Optional maximum number of photos to fetch (1-100)
+	 * @param offset  Optional number of photos to skip (default: 0)
 	 * @returns Album and photos data
 	 * @throws Error if fetch fails or album is not accessible
 	 */
-	async fetchAlbum(albumId: string): Promise<EmbedApiResponse> {
-		const url = `${this.apiUrl}/api/v2/Embed/${encodeURIComponent(albumId)}`;
+	async fetchAlbum(albumId: string, limit?: number, offset?: number): Promise<EmbedApiResponse> {
+		// Build URL with optional pagination parameters
+		const url = new URL(`${this.apiUrl}/api/v2/Embed/${encodeURIComponent(albumId)}`);
+		if (limit !== undefined) {
+			url.searchParams.set("limit", String(limit));
+		}
+		if (offset !== undefined) {
+			url.searchParams.set("offset", String(offset));
+		}
 
 		try {
-			const response = await fetch(url, {
+			const response = await fetch(url.toString(), {
 				method: "GET",
 				headers: {
 					Accept: "application/json",
