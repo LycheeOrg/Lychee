@@ -48,6 +48,14 @@
 							<i class="pi pi-share-alt" />
 						</a>
 						<a
+							v-if="isEmbeddable"
+							v-tooltip.bottom="$t('gallery.album.hero.embed')"
+							class="shrink-0 px-3 cursor-pointer text-muted-color inline-block transform duration-300 hover:scale-150 hover:text-color"
+							@click="openEmbedCode"
+						>
+							<i class="pi pi-code" />
+						</a>
+						<a
 							v-if="is_se_enabled && userStore.isLoggedIn"
 							class="shrink-0 px-3 cursor-pointer inline-block transform duration-300 hover:scale-150 hover:text-color"
 							@click="openStatistics"
@@ -186,7 +194,18 @@ const emits = defineEmits<{
 	openSharingModal: [];
 	openStatistics: [];
 	toggleSlideShow: [];
+	openEmbedCode: [];
 }>();
+
+// Check if album is embeddable (public, no password, no link requirement)
+const isEmbeddable = computed(() => {
+	if (!albumStore.album) {
+		return false;
+	}
+	// Album must be public and not password/link protected for embedding
+	const policy = albumStore.album.policy;
+	return policy.is_public && !policy.is_password_required && !policy.is_link_required;
+});
 
 function openSharingModal() {
 	emits("openSharingModal");
@@ -194,6 +213,10 @@ function openSharingModal() {
 
 function openStatistics() {
 	emits("openStatistics");
+}
+
+function openEmbedCode() {
+	emits("openEmbedCode");
 }
 
 function download() {

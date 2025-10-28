@@ -11,6 +11,7 @@ export function useGalleryModals(togglableStore: TogglablesStateStore) {
 		is_delete_visible,
 		is_merge_album_visible,
 		is_share_album_visible,
+		is_embed_code_visible,
 		is_import_from_link_open,
 		is_tag_visible,
 		is_copy_visible,
@@ -44,6 +45,10 @@ export function useGalleryModals(togglableStore: TogglablesStateStore) {
 
 	function toggleShareAlbum() {
 		is_share_album_visible.value = !is_share_album_visible.value;
+	}
+
+	function toggleEmbedCode() {
+		is_embed_code_visible.value = !is_embed_code_visible.value;
 	}
 
 	function toggleImportFromLink() {
@@ -85,6 +90,8 @@ export function useGalleryModals(togglableStore: TogglablesStateStore) {
 		toggleRename,
 		is_share_album_visible,
 		toggleShareAlbum,
+		is_embed_code_visible,
+		toggleEmbedCode,
 		is_import_from_link_open,
 		toggleImportFromLink,
 		is_import_from_dropbox_open,

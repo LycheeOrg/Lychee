@@ -96,6 +96,7 @@ return [
 			'images' => 'Photos',
 			'download' => 'Download Album',
 			'share' => 'Share Album',
+			'embed' => 'Embed Album',
 			'stats_only_se' => 'Statistics available in the Supporter Edition',
 		],
 
