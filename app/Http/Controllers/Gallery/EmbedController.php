@@ -90,15 +90,20 @@ class EmbedController extends Controller
 			throw new NotFoundHttpException('Album not found');
 		}
 
-		// Load photos with pagination if requested
-		$photosQuery = $album->photos()->with('size_variants');
+		// Build query for photos with size variants
+		$photosQuery = $album->photos()->getQuery();
 
+		// Apply pagination if requested
 		if ($limit !== null) {
 			$photosQuery->skip($offset)->take($limit);
 		}
 
+		// Load photos with size variants
+		$photos = $photosQuery->get();
+		$photos->load('size_variants');
+
 		// Replace the photos relation with the paginated results
-		$album->setRelation('photos', $photosQuery->get());
+		$album->setRelation('photos', $photos);
 
 		return $album;
 	}
