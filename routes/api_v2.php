@@ -103,6 +103,7 @@ Route::match(['GET', 'OPTIONS'], '/Embed/{albumId}', [Gallery\EmbedController::c
 		\Illuminate\Http\Middleware\HandleCors::class,
 		\Illuminate\Routing\Middleware\SubstituteBindings::class,
 		'cache_control',
+		'throttle:60,1', // 60 requests per minute per IP
 	])
 	->name('embed.album');
 
