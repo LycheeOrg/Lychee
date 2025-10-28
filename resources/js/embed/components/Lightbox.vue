@@ -328,10 +328,10 @@ onUnmounted(() => {
 /* Close button */
 .lychee-lightbox-close {
 	position: absolute;
-	top: 1rem;
-	right: 1rem;
-	width: 3rem;
-	height: 3rem;
+	top: 1em;
+	right: 1em;
+	width: 3em;
+	height: 3em;
 	background: rgba(0, 0, 0, 0.5);
 	border: none;
 	border-radius: 50%;
@@ -353,8 +353,8 @@ onUnmounted(() => {
 	position: absolute;
 	top: 50%;
 	transform: translateY(-50%);
-	width: 4rem;
-	height: 4rem;
+	width: 4em;
+	height: 4em;
 	background: rgba(0, 0, 0, 0.5);
 	border: none;
 	border-radius: 50%;
@@ -372,11 +372,11 @@ onUnmounted(() => {
 }
 
 .lychee-lightbox-nav--prev {
-	left: 2rem;
+	left: 2em;
 }
 
 .lychee-lightbox-nav--next {
-	right: 2rem;
+	right: 2em;
 }
 
 /* Content */
@@ -414,7 +414,7 @@ onUnmounted(() => {
 	left: 50%;
 	transform: translate(-50%, -50%);
 	color: white;
-	font-size: 1.2rem;
+	font-size: 1.2em;
 }
 
 .lychee-lightbox-error {
@@ -423,27 +423,27 @@ onUnmounted(() => {
 
 /* Info panel */
 .lychee-lightbox-info {
-	margin-top: 1rem;
+	margin-top: 1em;
 	color: white;
 	max-height: 30%;
 	overflow-y: auto;
 }
 
 .lychee-lightbox-info-content {
-	padding: 1rem;
+	padding: 1em;
 	background: rgba(0, 0, 0, 0.3);
-	border-radius: 0.5rem;
+	border-radius: 0.5em;
 }
 
 .lychee-lightbox-title {
-	margin: 0 0 0.5rem 0;
-	font-size: 1.25rem;
+	margin: 0 0 0.5em 0;
+	font-size: 1.25em;
 	font-weight: 600;
 }
 
 .lychee-lightbox-description {
-	margin: 0 0 1rem 0;
-	font-size: 1rem;
+	margin: 0 0 1em 0;
+	font-size: 1em;
 	opacity: 0.9;
 }
 
@@ -451,35 +451,35 @@ onUnmounted(() => {
 .lychee-lightbox-exif {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 1rem;
-	margin-top: 1rem;
-	padding-top: 1rem;
+	gap: 1em;
+	margin-top: 1em;
+	padding-top: 1em;
 	border-top: 1px solid rgba(255, 255, 255, 0.2);
-	font-size: 0.9rem;
+	font-size: 0.9em;
 	opacity: 0.8;
 }
 
 .lychee-lightbox-exif-item {
 	display: flex;
 	align-items: center;
-	gap: 0.5rem;
+	gap: 0.5em;
 }
 
 .lychee-lightbox-exif-label {
-	margin-right: 0.5rem;
+	margin-right: 0.5em;
 }
 
 .lychee-lightbox-exif-label:not(:last-child)::after {
 	content: "·";
-	margin-left: 0.5rem;
+	margin-left: 0.5em;
 	opacity: 0.5;
 }
 
 /* Counter */
 .lychee-lightbox-counter {
-	margin-top: 1rem;
+	margin-top: 1em;
 	text-align: center;
-	font-size: 0.9rem;
+	font-size: 0.9em;
 	opacity: 0.7;
 }
 
@@ -497,25 +497,25 @@ onUnmounted(() => {
 /* Responsive */
 @media (max-width: 768px) {
 	.lychee-lightbox-nav {
-		width: 3rem;
-		height: 3rem;
+		width: 3em;
+		height: 3em;
 	}
 
 	.lychee-lightbox-nav--prev {
-		left: 1rem;
+		left: 1em;
 	}
 
 	.lychee-lightbox-nav--next {
-		right: 1rem;
+		right: 1em;
 	}
 
 	.lychee-lightbox-close {
-		width: 2.5rem;
-		height: 2.5rem;
+		width: 2.5em;
+		height: 2.5em;
 	}
 
 	.lychee-lightbox-exif {
-		font-size: 0.8rem;
+		font-size: 0.8em;
 	}
 }
 </style>

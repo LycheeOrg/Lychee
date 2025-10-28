@@ -272,26 +272,26 @@ watch(
 
 /* Loading state */
 .lychee-embed__loading {
-	padding: 2rem;
+	padding: 2em;
 	text-align: center;
-	font-size: 1rem;
+	font-size: 1em;
 	opacity: 0.7;
 }
 
 /* Error state */
 .lychee-embed__error {
-	padding: 2rem;
+	padding: 2em;
 	text-align: center;
 	color: #dc2626;
 	background-color: rgba(220, 38, 38, 0.1);
 	border: 1px solid rgba(220, 38, 38, 0.3);
-	border-radius: 0.5rem;
-	margin: 1rem;
+	border-radius: 0.5em;
+	margin: 1em;
 }
 
 /* Header */
 .lychee-embed__header {
-	padding: 1.5rem;
+	padding: 1.5em;
 }
 
 .lychee-embed__header-content {
@@ -299,18 +299,18 @@ watch(
 }
 
 .lychee-embed__title {
-	margin: 0 0 0.5rem 0;
-	font-size: 1.5rem;
+	margin: 0 0 0.5em 0;
+	font-size: 1.5em;
 	font-weight: 600;
 	line-height: 1.3;
 	display: flex;
 	align-items: center;
-	gap: 0.5rem;
+	gap: 0.5em;
 }
 
 .lychee-embed__description {
 	margin: 0;
-	font-size: 1rem;
+	font-size: 1em;
 	opacity: 0.8;
 	line-height: 1.5;
 }
@@ -319,12 +319,12 @@ watch(
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	width: 1.75rem;
-	height: 1.75rem;
-	font-size: 1.25rem;
+	width: 1.75em;
+	height: 1.75em;
+	font-size: 1.25em;
 	color: inherit;
 	text-decoration: none;
-	border-radius: 0.25rem;
+	border-radius: 0.25em;
 	transition:
 		background-color 0.2s ease,
 		opacity 0.2s ease;
@@ -345,7 +345,7 @@ watch(
 
 /* Footer (bottom placement) */
 .lychee-embed__footer {
-	padding: 1rem 1.5rem;
+	padding: 1em 1.5em;
 	text-align: center;
 }
 
@@ -354,7 +354,7 @@ watch(
 	color: inherit;
 	text-decoration: none;
 	opacity: 0.7;
-	font-size: 0.875rem;
+	font-size: 0.875em;
 	transition: opacity 0.2s ease;
 }
 
