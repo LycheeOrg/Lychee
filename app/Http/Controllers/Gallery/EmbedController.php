@@ -39,6 +39,11 @@ class EmbedController extends Controller
 
 		// Verify album is publicly accessible
 		if (!$this->isPubliclyAccessible($album)) {
+			\Log::warning('Embed access denied', [
+				'album_id' => $albumId,
+				'ip' => request()->ip(),
+				'user_agent' => request()->userAgent(),
+			]);
 			throw new AccessDeniedHttpException('Album must be publicly accessible for embedding');
 		}
 
@@ -66,6 +71,10 @@ class EmbedController extends Controller
 			->find($albumId);
 
 		if ($album === null) {
+			\Log::info('Embed album not found', [
+				'album_id' => $albumId,
+				'ip' => request()->ip(),
+			]);
 			throw new NotFoundHttpException('Album not found');
 		}
 
