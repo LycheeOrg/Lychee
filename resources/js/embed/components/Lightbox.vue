@@ -1,10 +1,10 @@
 <template>
 	<Teleport to="body">
-		<Transition name="lightbox-fade">
-			<div v-if="isOpen" ref="overlayRef" class="lightbox-overlay" @click="handleOverlayClick" @keydown="handleKeydown" tabindex="0">
-				<div class="lightbox-container">
+		<Transition name="lychee-lightbox-fade">
+			<div v-if="isOpen" ref="overlayRef" class="lychee-lightbox-overlay" @click="handleOverlayClick" @keydown="handleKeydown" tabindex="0">
+				<div class="lychee-lightbox-container">
 					<!-- Close button -->
-					<button class="lightbox-close" @click="close" aria-label="Close" title="Close (Esc)">
+					<button class="lychee-lightbox-close" @click="close" aria-label="Close" title="Close (Esc)">
 						<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 							<line x1="18" y1="6" x2="6" y2="18"></line>
 							<line x1="6" y1="6" x2="18" y2="18"></line>
@@ -14,7 +14,7 @@
 					<!-- Navigation -->
 					<button
 						v-if="canGoPrevious"
-						class="lightbox-nav lightbox-nav--prev"
+						class="lychee-lightbox-nav lychee-lightbox-nav--prev"
 						@click.stop="previous"
 						aria-label="Previous photo"
 						title="Previous (←)"
@@ -24,38 +24,38 @@
 						</svg>
 					</button>
 
-					<button v-if="canGoNext" class="lightbox-nav lightbox-nav--next" @click.stop="next" aria-label="Next photo" title="Next (→)">
+					<button v-if="canGoNext" class="lychee-lightbox-nav lychee-lightbox-nav--next" @click.stop="next" aria-label="Next photo" title="Next (→)">
 						<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 							<polyline points="9 18 15 12 9 6"></polyline>
 						</svg>
 					</button>
 
 					<!-- Photo display -->
-					<div class="lightbox-content">
-						<div class="lightbox-image-container">
+					<div class="lychee-lightbox-content">
+						<div class="lychee-lightbox-image-container">
 							<img
 								v-if="currentPhoto"
 								:src="getPhotoUrl(currentPhoto)"
 								:alt="currentPhoto.title || 'Photo'"
-								class="lightbox-image"
+								class="lychee-lightbox-image"
 								@load="handleImageLoad"
 								@error="handleImageError"
 								@click.stop="cycleInfoMode"
 								:title="currentPhoto.title || undefined"
 							/>
-							<div v-if="loading" class="lightbox-loading">Loading...</div>
-							<div v-if="error" class="lightbox-error">{{ error }}</div>
+							<div v-if="loading" class="lychee-lightbox-loading">Loading...</div>
+							<div v-if="error" class="lychee-lightbox-error">{{ error }}</div>
 						</div>
 
 						<!-- Photo info -->
-						<div v-if="currentPhoto && showAnyInfo" class="lightbox-info">
-							<div class="lightbox-info-content">
-								<h3 v-if="currentPhoto.title && showTitle" class="lightbox-title">{{ currentPhoto.title }}</h3>
-								<p v-if="currentPhoto.description && showTitle" class="lightbox-description">{{ currentPhoto.description }}</p>
+						<div v-if="currentPhoto && showAnyInfo" class="lychee-lightbox-info">
+							<div class="lychee-lightbox-info-content">
+								<h3 v-if="currentPhoto.title && showTitle" class="lychee-lightbox-title">{{ currentPhoto.title }}</h3>
+								<p v-if="currentPhoto.description && showTitle" class="lychee-lightbox-description">{{ currentPhoto.description }}</p>
 
 								<!-- EXIF data -->
-								<div v-if="showExif" class="lightbox-exif">
-									<div v-if="currentPhoto.exif.make || currentPhoto.exif.model" class="lightbox-exif-item">
+								<div v-if="showExif" class="lychee-lightbox-exif">
+									<div v-if="currentPhoto.exif.make || currentPhoto.exif.model" class="lychee-lightbox-exif-item">
 										<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 											<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
 											<circle cx="12" cy="13" r="4"></circle>
@@ -63,7 +63,7 @@
 										<span>{{ [currentPhoto.exif.make, currentPhoto.exif.model].filter(Boolean).join(" ") }}</span>
 									</div>
 
-									<div v-if="currentPhoto.exif.lens" class="lightbox-exif-item">
+									<div v-if="currentPhoto.exif.lens" class="lychee-lightbox-exif-item">
 										<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 											<circle cx="12" cy="12" r="10"></circle>
 											<circle cx="12" cy="12" r="3"></circle>
@@ -71,14 +71,14 @@
 										<span>{{ currentPhoto.exif.lens }}</span>
 									</div>
 
-									<div v-if="currentPhoto.exif.focal" class="lightbox-exif-item">
-										<span class="lightbox-exif-label">{{ currentPhoto.exif.focal }}</span>
-										<span v-if="currentPhoto.exif.aperture" class="lightbox-exif-label">f/{{ currentPhoto.exif.aperture }}</span>
-										<span v-if="currentPhoto.exif.shutter" class="lightbox-exif-label">{{ currentPhoto.exif.shutter }}</span>
-										<span v-if="currentPhoto.exif.iso" class="lightbox-exif-label">ISO {{ currentPhoto.exif.iso }}</span>
+									<div v-if="currentPhoto.exif.focal" class="lychee-lightbox-exif-item">
+										<span class="lychee-lightbox-exif-label">{{ currentPhoto.exif.focal }}</span>
+										<span v-if="currentPhoto.exif.aperture" class="lychee-lightbox-exif-label">f/{{ currentPhoto.exif.aperture }}</span>
+										<span v-if="currentPhoto.exif.shutter" class="lychee-lightbox-exif-label">{{ currentPhoto.exif.shutter }}</span>
+										<span v-if="currentPhoto.exif.iso" class="lychee-lightbox-exif-label">ISO {{ currentPhoto.exif.iso }}</span>
 									</div>
 
-									<div v-if="currentPhoto.exif.taken_at" class="lightbox-exif-item">
+									<div v-if="currentPhoto.exif.taken_at" class="lychee-lightbox-exif-item">
 										<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 											<circle cx="12" cy="12" r="10"></circle>
 											<polyline points="12 6 12 12 16 14"></polyline>
@@ -88,7 +88,7 @@
 								</div>
 
 								<!-- Photo counter -->
-								<div class="lightbox-counter">{{ currentIndex + 1 }} / {{ photos.length }}</div>
+								<div class="lychee-lightbox-counter">{{ currentIndex + 1 }} / {{ photos.length }}</div>
 							</div>
 						</div>
 					</div>
@@ -216,7 +216,7 @@ function close() {
  * Handle overlay click (close on click outside)
  */
 function handleOverlayClick(event: MouseEvent) {
-	if ((event.target as HTMLElement).classList.contains("lightbox-overlay")) {
+	if ((event.target as HTMLElement).classList.contains("lychee-lightbox-overlay")) {
 		close();
 	}
 }
@@ -301,7 +301,7 @@ onUnmounted(() => {
 
 <style scoped>
 /* Overlay */
-.lightbox-overlay {
+.lychee-lightbox-overlay {
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -316,7 +316,7 @@ onUnmounted(() => {
 }
 
 /* Container */
-.lightbox-container {
+.lychee-lightbox-container {
 	position: relative;
 	width: 100%;
 	height: 100%;
@@ -326,7 +326,7 @@ onUnmounted(() => {
 }
 
 /* Close button */
-.lightbox-close {
+.lychee-lightbox-close {
 	position: absolute;
 	top: 1rem;
 	right: 1rem;
@@ -344,12 +344,12 @@ onUnmounted(() => {
 	transition: background-color 0.2s;
 }
 
-.lightbox-close:hover {
+.lychee-lightbox-close:hover {
 	background: rgba(0, 0, 0, 0.8);
 }
 
 /* Navigation buttons */
-.lightbox-nav {
+.lychee-lightbox-nav {
 	position: absolute;
 	top: 50%;
 	transform: translateY(-50%);
@@ -367,20 +367,20 @@ onUnmounted(() => {
 	transition: background-color 0.2s;
 }
 
-.lightbox-nav:hover {
+.lychee-lightbox-nav:hover {
 	background: rgba(0, 0, 0, 0.8);
 }
 
-.lightbox-nav--prev {
+.lychee-lightbox-nav--prev {
 	left: 2rem;
 }
 
-.lightbox-nav--next {
+.lychee-lightbox-nav--next {
 	right: 2rem;
 }
 
 /* Content */
-.lightbox-content {
+.lychee-lightbox-content {
 	display: flex;
 	flex-direction: column;
 	width: 90%;
@@ -389,7 +389,7 @@ onUnmounted(() => {
 }
 
 /* Image container */
-.lightbox-image-container {
+.lychee-lightbox-image-container {
 	flex: 1;
 	display: flex;
 	align-items: center;
@@ -398,7 +398,7 @@ onUnmounted(() => {
 	min-height: 0;
 }
 
-.lightbox-image {
+.lychee-lightbox-image {
 	max-width: 100%;
 	max-height: 100%;
 	object-fit: contain;
@@ -407,8 +407,8 @@ onUnmounted(() => {
 }
 
 /* Loading/Error states */
-.lightbox-loading,
-.lightbox-error {
+.lychee-lightbox-loading,
+.lychee-lightbox-error {
 	position: absolute;
 	top: 50%;
 	left: 50%;
@@ -417,38 +417,38 @@ onUnmounted(() => {
 	font-size: 1.2rem;
 }
 
-.lightbox-error {
+.lychee-lightbox-error {
 	color: #ff6b6b;
 }
 
 /* Info panel */
-.lightbox-info {
+.lychee-lightbox-info {
 	margin-top: 1rem;
 	color: white;
 	max-height: 30%;
 	overflow-y: auto;
 }
 
-.lightbox-info-content {
+.lychee-lightbox-info-content {
 	padding: 1rem;
 	background: rgba(0, 0, 0, 0.3);
 	border-radius: 0.5rem;
 }
 
-.lightbox-title {
+.lychee-lightbox-title {
 	margin: 0 0 0.5rem 0;
 	font-size: 1.25rem;
 	font-weight: 600;
 }
 
-.lightbox-description {
+.lychee-lightbox-description {
 	margin: 0 0 1rem 0;
 	font-size: 1rem;
 	opacity: 0.9;
 }
 
 /* EXIF data */
-.lightbox-exif {
+.lychee-lightbox-exif {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 1rem;
@@ -459,24 +459,24 @@ onUnmounted(() => {
 	opacity: 0.8;
 }
 
-.lightbox-exif-item {
+.lychee-lightbox-exif-item {
 	display: flex;
 	align-items: center;
 	gap: 0.5rem;
 }
 
-.lightbox-exif-label {
+.lychee-lightbox-exif-label {
 	margin-right: 0.5rem;
 }
 
-.lightbox-exif-label:not(:last-child)::after {
+.lychee-lightbox-exif-label:not(:last-child)::after {
 	content: "·";
 	margin-left: 0.5rem;
 	opacity: 0.5;
 }
 
 /* Counter */
-.lightbox-counter {
+.lychee-lightbox-counter {
 	margin-top: 1rem;
 	text-align: center;
 	font-size: 0.9rem;
@@ -484,37 +484,37 @@ onUnmounted(() => {
 }
 
 /* Transitions */
-.lightbox-fade-enter-active,
-.lightbox-fade-leave-active {
+.lychee-lightbox-fade-enter-active,
+.lychee-lightbox-fade-leave-active {
 	transition: opacity 0.3s ease;
 }
 
-.lightbox-fade-enter-from,
-.lightbox-fade-leave-to {
+.lychee-lightbox-fade-enter-from,
+.lychee-lightbox-fade-leave-to {
 	opacity: 0;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-	.lightbox-nav {
+	.lychee-lightbox-nav {
 		width: 3rem;
 		height: 3rem;
 	}
 
-	.lightbox-nav--prev {
+	.lychee-lightbox-nav--prev {
 		left: 1rem;
 	}
 
-	.lightbox-nav--next {
+	.lychee-lightbox-nav--next {
 		right: 1rem;
 	}
 
-	.lightbox-close {
+	.lychee-lightbox-close {
 		width: 2.5rem;
 		height: 2.5rem;
 	}
 
-	.lightbox-exif {
+	.lychee-lightbox-exif {
 		font-size: 0.8rem;
 	}
 }
