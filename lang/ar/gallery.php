@@ -83,6 +83,7 @@ return [
             'images' => 'الصور',
             'download' => 'تنزيل الألبوم',
             'share' => 'مشاركة الألبوم',
+            'embed' => 'Embed Album',
             'stats_only_se' => 'الإحصائيات متاحة في إصدار الدعم فقط',
         ],
         'stats' => [

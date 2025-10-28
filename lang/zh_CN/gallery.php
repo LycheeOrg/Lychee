@@ -73,6 +73,7 @@ return [
         'tabs' => [
             'about' => '关于相册',
             'share' => '分享相册',
+            'embed' => 'Embed Album',
             'move' => '移动相册',
             'danger' => '危险操作',
         ],
@@ -83,6 +84,7 @@ return [
             'images' => '照片',
             'download' => '下载相册',
             'share' => '分享相册',
+            'embed' => 'Embed Album',
             'stats_only_se' => '统计功能仅在支持者版本中可用',
         ],
         'stats' => [

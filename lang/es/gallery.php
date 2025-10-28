@@ -73,6 +73,7 @@ return [
         'tabs' => [
             'about' => 'Acerca del álbum',
             'share' => 'Compartir álbum',
+            'embed' => 'Embed Album',
             'move' => 'Mover álbum',
             'danger' => 'ZONA DE PELIGRO',
         ],
@@ -83,6 +84,7 @@ return [
             'images' => 'Fotos',
             'download' => 'Descargar Álbum',
             'share' => 'Compartir álbum',
+            'embed' => 'Embed Album',
             'stats_only_se' => 'Estadísticas disponibles en la Supporter Edition',
         ],
         'stats' => [

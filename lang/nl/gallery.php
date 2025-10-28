@@ -73,6 +73,7 @@ return [
         'tabs' => [
             'about' => 'Over Album',
             'share' => 'Deel Album',
+            'embed' => 'Embed Album',
             'move' => 'Verplaats Album',
             'danger' => 'GEVAARZONE',
         ],
@@ -83,6 +84,7 @@ return [
             'images' => 'Foto’s',
             'download' => 'Download Album',
             'share' => 'Deel Album',
+            'embed' => 'Embed Album',
             'stats_only_se' => 'Statistieken beschikbaar in de Supporter Edition',
         ],
         'stats' => [

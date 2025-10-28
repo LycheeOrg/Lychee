@@ -76,6 +76,22 @@ return [
     'share_album' => [
         'url_copied' => 'URL in die Zwischenablage kopiert!',
     ],
+	'embed_code' => [
+		'title' => 'Embed Album',
+		'info' => 'Generate an embed code to display this album on your website.',
+		'layout' => 'Layout',
+		'spacing' => 'Spacing',
+		'row_height' => 'Row Height',
+		'column_width' => 'Column Width',
+		'max_photos' => 'Maximum Photos',
+		'theme' => 'Theme',
+		'preview' => 'Preview',
+		'code' => 'Embed Code',
+		'copy' => 'Copy to Clipboard',
+		'copied' => 'Copied!',
+		'show_advanced' => 'Show advanced options',
+		'hide_advanced' => 'Hide advanced options',
+	],
     'upload' => [
         'completed' => 'Abgeschlossen',
         'uploaded' => 'Hochgeladen:',

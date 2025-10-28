@@ -73,6 +73,7 @@ return [
         'tabs' => [
             'about' => 'Über das Album',
             'share' => 'Album teilen',
+            'embed' => 'Embed Album',
             'move' => 'Album verschieben',
             'danger' => 'GEFAHRENZONE',
         ],
@@ -83,6 +84,7 @@ return [
             'images' => 'Fotos',
             'download' => 'Album herunterladen',
             'share' => 'Album teilen',
+            'embed' => 'Embed Album',
             'stats_only_se' => 'In der Supporter-Edition verfügbare Statistiken',
         ],
         'stats' => [

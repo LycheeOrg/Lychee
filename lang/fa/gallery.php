@@ -73,6 +73,7 @@ return [
         'tabs' => [
             'about' => 'درباره آلبوم',
             'share' => 'اشتراک‌گذاری آلبوم',
+            'embed' => 'Embed Album',
             'move' => 'انتقال آلبوم',
             'danger' => 'منطقه خطر',
         ],
@@ -83,6 +84,7 @@ return [
             'images' => 'عکس‌ها',
             'download' => 'دانلود آلبوم',
             'share' => 'اشتراک‌گذاری آلبوم',
+            'embed' => 'Embed Album',
             'stats_only_se' => 'آمار فقط در نسخه حامیان در دسترس است',
         ],
         'stats' => [
