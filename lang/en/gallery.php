@@ -85,6 +85,7 @@ return [
 		'tabs' => [
 			'about' => 'About Album',
 			'share' => 'Share Album',
+			'embed' => 'Embed Album',
 			'move' => 'Move Album',
 			'danger' => 'DANGER ZONE',
 		],
