@@ -34,6 +34,9 @@
 					v-for="photo in positionedPhotos"
 					:key="photo.id"
 					class="lychee-embed__photo"
+					role="button"
+					tabindex="0"
+					:aria-label="`View ${photo.title || 'photo'} in lightbox`"
 					:style="{
 						position: 'absolute',
 						top: `${photo.position.top}px`,
@@ -42,6 +45,8 @@
 						height: `${photo.position.height}px`,
 					}"
 					@click="openLightbox(photo.id)"
+					@keydown.enter="openLightbox(photo.id)"
+					@keydown.space.prevent="openLightbox(photo.id)"
 				>
 					<img
 						:src="getBestSizeVariant(photo)"
@@ -325,7 +330,9 @@ watch(
 	color: inherit;
 	text-decoration: none;
 	border-radius: 0.25rem;
-	transition: background-color 0.2s ease, opacity 0.2s ease;
+	transition:
+		background-color 0.2s ease,
+		opacity 0.2s ease;
 	opacity: 0.5;
 	flex-shrink: 0;
 }
@@ -350,11 +357,18 @@ watch(
 	overflow: hidden;
 	cursor: pointer;
 	transition: transform 0.2s ease;
+	outline: none;
 }
 
-.lychee-embed__photo:hover {
+.lychee-embed__photo:hover,
+.lychee-embed__photo:focus {
 	transform: scale(1.02);
 	z-index: 1;
+}
+
+.lychee-embed__photo:focus {
+	outline: 2px solid #0066cc;
+	outline-offset: 2px;
 }
 
 /* Photo images */
