@@ -59,10 +59,10 @@
 							</FloatLabel>
 						</div>
 
-						<!-- Theme Selection -->
+						<!-- Header Placement Selection -->
 						<div class="flex flex-col gap-2">
-							<label class="font-semibold">{{ $t("dialogs.embed_code.theme") }}</label>
-							<SelectButton v-model="config.theme" :options="themeOptions" option-label="label" option-value="value" />
+							<label class="font-semibold">{{ $t("dialogs.embed_code.header_placement") }}</label>
+							<SelectButton v-model="config.headerPlacement" :options="headerPlacementOptions" option-label="label" option-value="value" />
 						</div>
 					</template>
 				</div>
@@ -152,7 +152,7 @@ const config = ref({
 	showDescription: true,
 	showCaptions: true,
 	showExif: true,
-	theme: "light" as "light" | "dark",
+	headerPlacement: "top" as "top" | "bottom" | "none",
 });
 
 // Layout options
@@ -164,10 +164,11 @@ const layoutOptions = [
 	{ label: "Filmstrip", value: "filmstrip" },
 ];
 
-// Theme options
-const themeOptions = [
-	{ label: "Light", value: "light" },
-	{ label: "Dark", value: "dark" },
+// Header placement options
+const headerPlacementOptions = [
+	{ label: "Top", value: "top" },
+	{ label: "Bottom", value: "bottom" },
+	{ label: "None", value: "none" },
 ];
 
 // Get the base URL for the Lychee instance
@@ -199,7 +200,7 @@ const generatedCode = computed(() => {
     data-target-row-height="${config.value.targetRowHeight}"
     data-target-column-width="${config.value.targetColumnWidth}"
     data-max-photos="${config.value.maxPhotos}"
-    data-theme="${config.value.theme}"
+    data-header-placement="${config.value.headerPlacement}"
 ></div>`;
 });
 
