@@ -35,28 +35,28 @@
 
 						<div class="grid grid-cols-2 gap-4">
 							<!-- Maximum Photos -->
-							<FloatLabel variant="on">
+							<div class="flex flex-col gap-2">
+								<label for="maxPhotos" class="font-semibold">{{ $t("dialogs.embed_code.max_photos") }}</label>
 								<InputNumber id="maxPhotos" v-model="config.maxPhotos" :min="1" :max="100" />
-								<label for="maxPhotos">{{ $t("dialogs.embed_code.max_photos") }}</label>
-							</FloatLabel>
+							</div>
 
 							<!-- Spacing -->
-							<FloatLabel variant="on">
+							<div class="flex flex-col gap-2">
+								<label for="spacing" class="font-semibold">{{ $t("dialogs.embed_code.spacing") }}</label>
 								<InputNumber id="spacing" v-model="config.spacing" :min="0" :max="50" suffix=" px" />
-								<label for="spacing">{{ $t("dialogs.embed_code.spacing") }}</label>
-							</FloatLabel>
+							</div>
 
 							<!-- Target Row Height (for justified) -->
-							<FloatLabel variant="on" v-if="config.layout === 'justified' || config.layout === 'filmstrip'">
+							<div v-if="config.layout === 'justified' || config.layout === 'filmstrip'" class="flex flex-col gap-2">
+								<label for="rowHeight" class="font-semibold">{{ $t("dialogs.embed_code.row_height") }}</label>
 								<InputNumber id="rowHeight" v-model="config.targetRowHeight" :min="100" :max="800" suffix=" px" />
-								<label for="rowHeight">{{ $t("dialogs.embed_code.row_height") }}</label>
-							</FloatLabel>
+							</div>
 
 							<!-- Target Column Width (for grid/masonry/square) -->
-							<FloatLabel variant="on" v-if="['square', 'masonry', 'grid'].includes(config.layout)">
+							<div v-if="['square', 'masonry', 'grid'].includes(config.layout)" class="flex flex-col gap-2">
+								<label for="columnWidth" class="font-semibold">{{ $t("dialogs.embed_code.column_width") }}</label>
 								<InputNumber id="columnWidth" v-model="config.targetColumnWidth" :min="100" :max="500" suffix=" px" />
-								<label for="columnWidth">{{ $t("dialogs.embed_code.column_width") }}</label>
-							</FloatLabel>
+							</div>
 						</div>
 
 						<!-- Header Placement Selection -->
@@ -114,8 +114,6 @@ import Dialog from "primevue/dialog";
 import Button from "primevue/button";
 import SelectButton from "primevue/selectbutton";
 import InputNumber from "primevue/inputnumber";
-import FloatLabel from "primevue/floatlabel";
-import Checkbox from "primevue/checkbox";
 import Textarea from "primevue/textarea";
 import { computed, ref, watch } from "vue";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
@@ -296,7 +294,7 @@ async function initializePreview() {
 		widgetContainer.setAttribute("data-target-row-height", String(config.value.targetRowHeight));
 		widgetContainer.setAttribute("data-target-column-width", String(config.value.targetColumnWidth));
 		widgetContainer.setAttribute("data-max-photos", String(config.value.maxPhotos));
-		widgetContainer.setAttribute("data-theme", config.value.theme);
+		widgetContainer.setAttribute("data-header-placement", config.value.headerPlacement);
 		widgetContainer.setAttribute("data-height", "200px"); // Fixed height for preview
 
 		previewContainer.value.appendChild(widgetContainer);
@@ -314,7 +312,7 @@ async function initializePreview() {
 				showDescription: config.value.showDescription,
 				showCaptions: config.value.showCaptions,
 				showExif: config.value.showExif,
-				theme: config.value.theme,
+				headerPlacement: config.value.headerPlacement,
 				height: "200px",
 			});
 		}
