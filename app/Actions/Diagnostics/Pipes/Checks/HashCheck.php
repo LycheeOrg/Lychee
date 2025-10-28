@@ -10,10 +10,8 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
-use FilesystemIterator;
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
-use SplFileInfo;
+
+use function Safe\hash_update_file;
 
 /**
  * Calculate the hash of Lychee installation to validate integrity.
@@ -74,10 +72,10 @@ class HashCheck implements DiagnosticPipe
 			}
 
 			if (is_dir($path)) {
-				$directory_iterator = new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS);
-				$iterator = new RecursiveIteratorIterator($directory_iterator);
+				$directory_iterator = new \RecursiveDirectoryIterator($path, \FilesystemIterator::SKIP_DOTS);
+				$iterator = new \RecursiveIteratorIterator($directory_iterator);
 				foreach ($iterator as $file_info) {
-					if ($file_info instanceof SplFileInfo && $file_info->isFile()) {
+					if ($file_info instanceof \SplFileInfo && $file_info->isFile()) {
 						$file_list[] = $file_info->getPathname();
 					}
 				}
@@ -106,10 +104,14 @@ class HashCheck implements DiagnosticPipe
 
 		foreach ($files as $file_path) {
 			// Add the path itself to the stream for extra safety and ordering
-			hash_update($ctx, "PATH::" . $file_path . "\n");
+			hash_update($ctx, 'PATH::' . $file_path . "\n");
 			if (is_readable($file_path) && is_file($file_path)) {
 				// Update with file content; ignore errors silently (e.g., permission changes)
-				hash_update_file($ctx, $file_path);
+				try {
+					hash_update_file($ctx, $file_path);
+				} catch (\Exception $e) {
+					hash_update($ctx, "UNREADABLE\n");
+				}
 			} else {
 				hash_update($ctx, "UNREADABLE\n");
 			}
