@@ -235,6 +235,11 @@ function handleKeydown(event: KeyboardEvent) {
 		case "ArrowRight":
 			next();
 			break;
+		case " ":
+		case "Spacebar": // For older browsers
+			event.preventDefault();
+			cycleInfoMode();
+			break;
 	}
 }
 
