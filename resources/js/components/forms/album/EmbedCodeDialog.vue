@@ -179,13 +179,16 @@ const apiUrl = computed(() => {
 // Get the album ID from the store
 const albumId = computed(() => albumStore.album?.id ?? "");
 
+// Widget version for cache busting and tracking
+const EMBED_VERSION = "1.0.0";
+
 // Generate embed code
 const generatedCode = computed(() => {
 	const embedUrl = `${apiUrl.value}/embed`;
 
-	return `<!-- Lychee Photo Album Embed -->
-<link rel="stylesheet" href="${embedUrl}/lychee-embed.css">
-<script src="${embedUrl}/lychee-embed.js"><\/script>
+	return `<!-- Lychee Photo Album Embed v${EMBED_VERSION} -->
+<link rel="stylesheet" href="${embedUrl}/lychee-embed.css?v=${EMBED_VERSION}">
+<script src="${embedUrl}/lychee-embed.js?v=${EMBED_VERSION}"><\/script>
 
 <div
     data-lychee-embed
