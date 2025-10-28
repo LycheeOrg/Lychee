@@ -96,6 +96,59 @@ class EmbedAlbumTest extends BaseApiWithDataTest
 	}
 
 	/**
+	 * Test that password-protected album cannot be embedded.
+	 */
+	public function testCannotGetPasswordProtectedAlbum(): void
+	{
+		// Make album public but password protected
+		$this->album1->is_public = true;
+		$this->album1->password = 'test123';
+		$this->album1->save();
+
+		$response = $this->getJson('Embed/' . $this->album1->id);
+		$this->assertForbidden($response);
+	}
+
+	/**
+	 * Test that link-required album cannot be embedded.
+	 */
+	public function testCannotGetLinkRequiredAlbum(): void
+	{
+		// Make album public but link-required
+		$this->album1->is_public = true;
+		$this->album1->is_link_required = true;
+		$this->album1->save();
+
+		$response = $this->getJson('Embed/' . $this->album1->id);
+		$this->assertForbidden($response);
+	}
+
+	/**
+	 * Test that album with no photos can be embedded.
+	 */
+	public function testCanGetAlbumWithNoPhotos(): void
+	{
+		// Create a public album with no photos
+		$emptyAlbum = \App\Models\Album::create([
+			'title' => 'Empty Album',
+			'is_public' => true,
+		]);
+
+		$response = $this->getJson('Embed/' . $emptyAlbum->id);
+		$this->assertOk($response);
+
+		$response->assertJson([
+			'album' => [
+				'id' => $emptyAlbum->id,
+				'photo_count' => 0,
+			],
+			'photos' => [],
+		]);
+
+		$emptyAlbum->delete();
+	}
+
+	/**
 	 * Test that non-existent album returns 404.
 	 */
 	public function testGetNonExistentAlbum(): void
@@ -104,16 +157,4 @@ class EmbedAlbumTest extends BaseApiWithDataTest
 		$this->assertNotFound($response);
 	}
 
-	/**
-	 * Test CORS headers are present for cross-origin requests.
-	 *
-	 * Note: CORS middleware doesn't apply headers in test environment the same way
-	 * as in production. CORS is properly configured in config/cors.php.
-	 * This should be manually tested in a browser or with actual HTTP requests.
-	 */
-	public function testCorsConfigurationExists(): void
-	{
-		// Verify CORS config exists and is properly set for embeds
-		$this->assertTrue(true); // Placeholder - CORS config verified in config/cors.php
-	}
 }
