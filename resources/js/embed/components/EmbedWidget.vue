@@ -1,5 +1,5 @@
 <template>
-	<div :class="['lychee-embed', `lychee-embed--${config.theme}`, config.containerClass]" :style="containerStyle">
+	<div :class="['lychee-embed', config.containerClass]" :style="containerStyle">
 		<div v-if="loading" class="lychee-embed__loading">Loading album...</div>
 
 		<div v-else-if="error" class="lychee-embed__error">
@@ -7,8 +7,8 @@
 		</div>
 
 		<div v-else-if="albumData" class="lychee-embed__content">
-			<!-- Album header -->
-			<div v-if="config.showTitle || config.showDescription" class="lychee-embed__header">
+			<!-- Album header (top placement) -->
+			<div v-if="config.headerPlacement === 'top' && (config.showTitle || config.showDescription)" class="lychee-embed__header">
 				<div class="lychee-embed__header-content">
 					<h2 v-if="config.showTitle" class="lychee-embed__title">
 						{{ albumData.album.title }}
@@ -56,6 +56,18 @@
 						class="lychee-embed__photo-img"
 					/>
 				</div>
+			</div>
+
+			<!-- Album link (bottom placement) -->
+			<div v-if="config.headerPlacement === 'bottom'" class="lychee-embed__footer">
+				<a
+					:href="galleryUrl"
+					target="_blank"
+					rel="noopener noreferrer"
+					class="lychee-embed__footer-link"
+				>
+					View "{{ albumData.album.title }}" in Lychee Gallery ↗
+				</a>
 			</div>
 
 			<!-- Lightbox -->
@@ -246,24 +258,16 @@ watch(
 .lychee-embed {
 	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
 	box-sizing: border-box;
+	/* Transparent background - adapts to host page */
+	background-color: transparent;
+	/* Inherit text color from host page */
+	color: inherit;
 }
 
 .lychee-embed *,
 .lychee-embed *::before,
 .lychee-embed *::after {
 	box-sizing: inherit;
-}
-
-/* Light theme */
-.lychee-embed--light {
-	background-color: #ffffff;
-	color: #333333;
-}
-
-/* Dark theme */
-.lychee-embed--dark {
-	background-color: #1a1a1a;
-	color: #e0e0e0;
 }
 
 /* Loading state */
@@ -279,24 +283,15 @@ watch(
 	padding: 2rem;
 	text-align: center;
 	color: #dc2626;
-	background-color: #fee2e2;
+	background-color: rgba(220, 38, 38, 0.1);
+	border: 1px solid rgba(220, 38, 38, 0.3);
 	border-radius: 0.5rem;
 	margin: 1rem;
-}
-
-.lychee-embed--dark .lychee-embed__error {
-	color: #fca5a5;
-	background-color: #7f1d1d;
 }
 
 /* Header */
 .lychee-embed__header {
 	padding: 1.5rem;
-	border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-.lychee-embed--dark .lychee-embed__header {
-	border-bottom-color: rgba(255, 255, 255, 0.1);
 }
 
 .lychee-embed__header-content {
@@ -339,17 +334,33 @@ watch(
 
 .lychee-embed__gallery-link:hover {
 	opacity: 1;
-	background-color: rgba(0, 0, 0, 0.05);
-}
-
-.lychee-embed--dark .lychee-embed__gallery-link:hover {
-	background-color: rgba(255, 255, 255, 0.1);
+	background-color: rgba(128, 128, 128, 0.1);
 }
 
 /* Photo grid */
 .lychee-embed__grid {
 	position: relative;
 	width: 100%;
+}
+
+/* Footer (bottom placement) */
+.lychee-embed__footer {
+	padding: 1rem 1.5rem;
+	text-align: center;
+}
+
+.lychee-embed__footer-link {
+	display: inline-block;
+	color: inherit;
+	text-decoration: none;
+	opacity: 0.7;
+	font-size: 0.875rem;
+	transition: opacity 0.2s ease;
+}
+
+.lychee-embed__footer-link:hover {
+	opacity: 1;
+	text-decoration: underline;
 }
 
 /* Photo containers */
