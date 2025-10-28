@@ -10,23 +10,21 @@
 			<!-- Album header -->
 			<div v-if="config.showTitle || config.showDescription" class="lychee-embed__header">
 				<div class="lychee-embed__header-content">
-					<div class="lychee-embed__header-text">
-						<h2 v-if="config.showTitle" class="lychee-embed__title">
-							{{ albumData.album.title }}
-						</h2>
-						<p v-if="config.showDescription && albumData.album.description" class="lychee-embed__description">
-							{{ albumData.album.description }}
-						</p>
-					</div>
-					<a
-						:href="galleryUrl"
-						target="_blank"
-						rel="noopener noreferrer"
-						class="lychee-embed__gallery-link"
-						title="View in Lychee Gallery"
-					>
-						↗
-					</a>
+					<h2 v-if="config.showTitle" class="lychee-embed__title">
+						{{ albumData.album.title }}
+						<a
+							:href="galleryUrl"
+							target="_blank"
+							rel="noopener noreferrer"
+							class="lychee-embed__gallery-link"
+							title="View in Lychee Gallery"
+						>
+							↗
+						</a>
+					</h2>
+					<p v-if="config.showDescription && albumData.album.description" class="lychee-embed__description">
+						{{ albumData.album.description }}
+					</p>
 				</div>
 			</div>
 
@@ -295,15 +293,7 @@ watch(
 }
 
 .lychee-embed__header-content {
-	display: flex;
-	justify-content: space-between;
-	align-items: flex-start;
-	gap: 1rem;
-}
-
-.lychee-embed__header-text {
-	flex: 1;
-	min-width: 0;
+	/* No special layout needed */
 }
 
 .lychee-embed__title {
@@ -311,6 +301,9 @@ watch(
 	font-size: 1.5rem;
 	font-weight: 600;
 	line-height: 1.3;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
 }
 
 .lychee-embed__description {
@@ -321,18 +314,18 @@ watch(
 }
 
 .lychee-embed__gallery-link {
-	flex-shrink: 0;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	width: 2.5rem;
-	height: 2.5rem;
-	font-size: 1.5rem;
+	width: 1.75rem;
+	height: 1.75rem;
+	font-size: 1.25rem;
 	color: inherit;
 	text-decoration: none;
-	border-radius: 0.375rem;
+	border-radius: 0.25rem;
 	transition: background-color 0.2s ease, opacity 0.2s ease;
-	opacity: 0.6;
+	opacity: 0.5;
+	flex-shrink: 0;
 }
 
 .lychee-embed__gallery-link:hover {
