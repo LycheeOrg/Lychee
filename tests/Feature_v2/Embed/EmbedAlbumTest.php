@@ -156,5 +156,4 @@ class EmbedAlbumTest extends BaseApiWithDataTest
 		$response = $this->getJson('Embed/non-existent-id');
 		$this->assertNotFound($response);
 	}
-
 }

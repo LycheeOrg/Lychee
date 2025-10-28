@@ -120,13 +120,12 @@ import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { storeToRefs } from "pinia";
 import { useToast } from "primevue/usetoast";
 import { useAlbumStore } from "@/stores/AlbumState";
-import { useLycheeStateStore } from "@/stores/LycheeState";
 
 // Type declaration for the embed widget global
 declare global {
 	interface Window {
 		LycheeEmbed?: {
-			createLycheeEmbed: (element: HTMLElement, config: any) => any;
+			createLycheeEmbed: (element: HTMLElement, config: Record<string, unknown>) => { unmount: () => void };
 		};
 	}
 }
@@ -134,7 +133,6 @@ declare global {
 const togglableStore = useTogglablesStateStore();
 const { is_embed_code_visible } = storeToRefs(togglableStore);
 const albumStore = useAlbumStore();
-const lycheeStore = useLycheeStateStore();
 const toast = useToast();
 
 const codeTextarea = ref<InstanceType<typeof Textarea> | null>(null);
@@ -223,7 +221,7 @@ async function copyCode() {
 		setTimeout(() => {
 			copied.value = false;
 		}, 3000);
-	} catch (error) {
+	} catch (_error) {
 		toast.add({
 			severity: "error",
 			summary: "Error",
