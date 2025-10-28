@@ -41,6 +41,17 @@
 					/>
 				</div>
 			</div>
+
+			<!-- Lightbox -->
+			<Lightbox
+				v-if="albumData"
+				:photos="albumData.photos"
+				:initial-index="lightboxPhotoIndex"
+				:is-open="lightboxOpen"
+				:config="config"
+				@close="closeLightbox"
+				@update:current-index="lightboxPhotoIndex = $event"
+			/>
 		</div>
 	</div>
 </template>
@@ -54,6 +65,7 @@ import { layoutMasonry } from '../layouts/masonry';
 import { layoutGrid } from '../layouts/grid';
 import { layoutJustified } from '../layouts/justified';
 import { layoutFilmstrip, filmstripToLayoutResult } from '../layouts/filmstrip';
+import Lightbox from './Lightbox.vue';
 
 interface Props {
 	config: EmbedConfig;
@@ -67,6 +79,10 @@ const albumData = ref<EmbedApiResponse | null>(null);
 const gridContainer = ref<HTMLElement | null>(null);
 const positionedPhotos = ref<PositionedPhoto[]>([]);
 const containerHeight = ref(0);
+
+// Lightbox state
+const lightboxOpen = ref(false);
+const lightboxPhotoIndex = ref(0);
 
 const containerStyle = computed(() => ({
 	width: props.config.width,
@@ -146,11 +162,24 @@ function calculateLayout() {
 }
 
 /**
- * Open lightbox for photo (placeholder)
+ * Open lightbox for photo
  */
 function openLightbox(photoId: string) {
-	// TODO: Implement lightbox in Phase 3
-	console.log('Open lightbox for photo:', photoId);
+	if (!albumData.value) return;
+
+	// Find photo index
+	const index = albumData.value.photos.findIndex((p) => p.id === photoId);
+	if (index !== -1) {
+		lightboxPhotoIndex.value = index;
+		lightboxOpen.value = true;
+	}
+}
+
+/**
+ * Close lightbox
+ */
+function closeLightbox() {
+	lightboxOpen.value = false;
 }
 
 // Fetch album data on mount
