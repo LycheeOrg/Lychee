@@ -59,27 +59,6 @@
 							</FloatLabel>
 						</div>
 
-						<!-- Display Options -->
-						<div class="flex flex-col gap-2">
-							<label class="font-semibold">{{ $t("dialogs.embed_code.display_options") }}</label>
-							<div class="flex items-center gap-2">
-								<Checkbox v-model="config.showTitle" input-id="showTitle" binary />
-								<label for="showTitle">{{ $t("dialogs.embed_code.show_title") }}</label>
-							</div>
-							<div class="flex items-center gap-2">
-								<Checkbox v-model="config.showDescription" input-id="showDescription" binary />
-								<label for="showDescription">{{ $t("dialogs.embed_code.show_description") }}</label>
-							</div>
-							<div class="flex items-center gap-2">
-								<Checkbox v-model="config.showCaptions" input-id="showCaptions" binary />
-								<label for="showCaptions">{{ $t("dialogs.embed_code.show_captions") }}</label>
-							</div>
-							<div class="flex items-center gap-2">
-								<Checkbox v-model="config.showExif" input-id="showExif" binary />
-								<label for="showExif">{{ $t("dialogs.embed_code.show_exif") }}</label>
-							</div>
-						</div>
-
 						<!-- Theme Selection -->
 						<div class="flex flex-col gap-2">
 							<label class="font-semibold">{{ $t("dialogs.embed_code.theme") }}</label>
@@ -217,10 +196,6 @@ const generatedCode = computed(() => {
     data-target-row-height="${config.value.targetRowHeight}"
     data-target-column-width="${config.value.targetColumnWidth}"
     data-max-photos="${config.value.maxPhotos}"
-    data-show-title="${config.value.showTitle}"
-    data-show-description="${config.value.showDescription}"
-    data-show-captions="${config.value.showCaptions}"
-    data-show-exif="${config.value.showExif}"
     data-theme="${config.value.theme}"
 ></div>`;
 });
@@ -312,10 +287,6 @@ async function initializePreview() {
 		widgetContainer.setAttribute("data-target-row-height", String(config.value.targetRowHeight));
 		widgetContainer.setAttribute("data-target-column-width", String(config.value.targetColumnWidth));
 		widgetContainer.setAttribute("data-max-photos", String(config.value.maxPhotos));
-		widgetContainer.setAttribute("data-show-title", String(config.value.showTitle));
-		widgetContainer.setAttribute("data-show-description", String(config.value.showDescription));
-		widgetContainer.setAttribute("data-show-captions", String(config.value.showCaptions));
-		widgetContainer.setAttribute("data-show-exif", String(config.value.showExif));
 		widgetContainer.setAttribute("data-theme", config.value.theme);
 		widgetContainer.setAttribute("data-height", "200px"); // Fixed height for preview
 
