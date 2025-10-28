@@ -85,11 +85,10 @@
 				<!-- Preview -->
 				<div class="px-9 mb-6">
 					<label class="font-semibold block mb-2">{{ $t("dialogs.embed_code.preview") }}</label>
-					<div class="border border-surface-border rounded p-4 bg-surface-50 dark:bg-surface-800 h-64 overflow-auto">
-						<div class="text-xs text-muted-color text-center">
-							{{ $t("dialogs.embed_code.preview_placeholder") }}
-						</div>
-					</div>
+					<div
+						ref="previewContainer"
+						class="border border-surface-border rounded p-4 bg-surface-50 dark:bg-surface-800 h-64 overflow-auto"
+					></div>
 				</div>
 
 				<!-- Generated Code -->
@@ -135,6 +134,15 @@ import { useToast } from "primevue/usetoast";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 
+// Type declaration for the embed widget global
+declare global {
+	interface Window {
+		LycheeEmbed?: {
+			createLycheeEmbed: (element: HTMLElement, config: any) => any;
+		};
+	}
+}
+
 const togglableStore = useTogglablesStateStore();
 const { is_embed_code_visible } = storeToRefs(togglableStore);
 const albumStore = useAlbumStore();
@@ -142,8 +150,11 @@ const lycheeStore = useLycheeStateStore();
 const toast = useToast();
 
 const codeTextarea = ref<InstanceType<typeof Textarea> | null>(null);
+const previewContainer = ref<HTMLElement | null>(null);
 const copied = ref(false);
 const showAdvanced = ref(false);
+const previewLoaded = ref(false);
+const previewError = ref(false);
 
 // Embed configuration
 const config = ref({
@@ -237,11 +248,120 @@ function selectCode(event: Event) {
 	(event.target as HTMLTextAreaElement).select();
 }
 
-// Reset copied state when dialog is closed
+// Load embed widget assets dynamically
+function loadEmbedAssets() {
+	return new Promise<void>((resolve, reject) => {
+		// Check if already loaded
+		if (previewLoaded.value) {
+			resolve();
+			return;
+		}
+
+		const embedUrl = `${apiUrl.value}/embed`;
+
+		// Load CSS
+		const link = document.createElement("link");
+		link.rel = "stylesheet";
+		link.href = `${embedUrl}/lychee-embed.css`;
+		document.head.appendChild(link);
+
+		// Load JS
+		const script = document.createElement("script");
+		script.src = `${embedUrl}/lychee-embed.js`;
+		script.onload = () => {
+			previewLoaded.value = true;
+			resolve();
+		};
+		script.onerror = () => {
+			previewError.value = true;
+			reject(new Error("Failed to load embed widget"));
+		};
+		document.head.appendChild(script);
+	});
+}
+
+// Initialize preview
+async function initializePreview() {
+	if (!previewContainer.value || !albumId.value) {
+		return;
+	}
+
+	try {
+		// Clear previous content
+		previewContainer.value.innerHTML = "";
+
+		// Load assets if needed
+		await loadEmbedAssets();
+
+		// Create a container div for the widget
+		const widgetContainer = document.createElement("div");
+		widgetContainer.setAttribute("data-lychee-embed", "");
+		widgetContainer.setAttribute("data-api-url", apiUrl.value);
+		widgetContainer.setAttribute("data-album-id", albumId.value);
+		widgetContainer.setAttribute("data-layout", config.value.layout);
+		widgetContainer.setAttribute("data-spacing", String(config.value.spacing));
+		widgetContainer.setAttribute("data-target-row-height", String(config.value.targetRowHeight));
+		widgetContainer.setAttribute("data-target-column-width", String(config.value.targetColumnWidth));
+		widgetContainer.setAttribute("data-show-title", String(config.value.showTitle));
+		widgetContainer.setAttribute("data-show-description", String(config.value.showDescription));
+		widgetContainer.setAttribute("data-show-captions", String(config.value.showCaptions));
+		widgetContainer.setAttribute("data-show-exif", String(config.value.showExif));
+		widgetContainer.setAttribute("data-theme", config.value.theme);
+		widgetContainer.setAttribute("data-height", "200px"); // Fixed height for preview
+
+		previewContainer.value.appendChild(widgetContainer);
+
+		// Initialize the widget using the global LycheeEmbed
+		if (window.LycheeEmbed && window.LycheeEmbed.createLycheeEmbed) {
+			window.LycheeEmbed.createLycheeEmbed(widgetContainer, {
+				apiUrl: apiUrl.value,
+				albumId: albumId.value,
+				layout: config.value.layout,
+				spacing: config.value.spacing,
+				targetRowHeight: config.value.targetRowHeight,
+				targetColumnWidth: config.value.targetColumnWidth,
+				showTitle: config.value.showTitle,
+				showDescription: config.value.showDescription,
+				showCaptions: config.value.showCaptions,
+				showExif: config.value.showExif,
+				theme: config.value.theme,
+				height: "200px",
+			});
+		}
+	} catch (error) {
+		console.error("Failed to initialize preview:", error);
+		if (previewContainer.value) {
+			previewContainer.value.innerHTML =
+				'<div class="text-xs text-red-500 text-center p-4">Failed to load preview. The embed widget will work when deployed.</div>';
+		}
+	}
+}
+
+// Watch for config changes and reinitialize preview
+watch(
+	config,
+	() => {
+		if (is_embed_code_visible.value) {
+			initializePreview();
+		}
+	},
+	{ deep: true },
+);
+
+// Initialize preview when dialog opens
 watch(is_embed_code_visible, (visible) => {
-	if (!visible) {
+	if (visible) {
+		// Small delay to ensure DOM is ready
+		setTimeout(() => {
+			initializePreview();
+		}, 100);
+	} else {
 		copied.value = false;
 		showAdvanced.value = false;
+		// Clear preview on close
+		if (previewContainer.value) {
+			previewContainer.value.innerHTML = "";
+		}
 	}
 });
 </script>
