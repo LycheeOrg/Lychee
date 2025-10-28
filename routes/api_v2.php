@@ -93,6 +93,14 @@ Route::get('/Sharing::all', [Gallery\SharingController::class, 'listAll']);
 Route::get('/Sharing::albums', [Gallery\SharingController::class, 'listAlbums']);
 
 /**
+ * Embed.
+ * Public endpoints for embedding albums on external websites.
+ */
+Route::get('/Embed/{albumId}', [Gallery\EmbedController::class, 'getAlbum'])
+	->middleware(['cache_control'])
+	->name('embed.album');
+
+/**
  * IMPORT.
  */
 Route::post('/Import', Admin\ImportFromServerController::class);
