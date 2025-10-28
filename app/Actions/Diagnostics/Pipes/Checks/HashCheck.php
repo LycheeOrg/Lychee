@@ -1,0 +1,120 @@
+<?php
+
+/**
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2017-2018 Tobias Reich
+ * Copyright (c) 2018-2025 LycheeOrg.
+ */
+
+namespace App\Actions\Diagnostics\Pipes\Checks;
+
+use App\Contracts\DiagnosticPipe;
+use App\DTO\DiagnosticData;
+use FilesystemIterator;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use SplFileInfo;
+
+/**
+ * Calculate the hash of Lychee installation to validate integrity.
+ */
+class HashCheck implements DiagnosticPipe
+{
+	/**
+	 * {@inheritDoc}
+	 */
+	public function handle(array &$data, \Closure $next): array
+	{
+		$paths_to_scan = [
+			app_path(),
+			base_path('bootstrap'),
+			config_path(),
+			base_path('database/migrations'),
+			lang_path(),
+			resource_path(),
+			public_path('build'),
+			base_path('routes'),
+			base_path('version.md'),
+			base_path('composer.json'),
+			base_path('composer.lock'),
+		];
+
+		$files = $this->collectFiles($paths_to_scan);
+		$files_hash = $this->computeHash($files, 'xxh3');
+
+		$vendor_files = $this->collectFiles([base_path('vendor')]);
+		$vendor_hash = $this->computeHash($vendor_files, 'xxh3');
+
+		$data[] = DiagnosticData::info('Hash: ' . $files_hash . '—' . $vendor_hash, self::class, [
+			(string) count($files) . ' files and ' . (string) count($vendor_files) . ' vendor files',
+		]);
+
+		return $next($data);
+	}
+
+	/**
+	 * Collect all files from the provided paths (files or directories).
+	 *
+	 * @param string[] $paths
+	 *
+	 * @return string[] absolute, sorted file paths
+	 */
+	private function collectFiles(array $paths): array
+	{
+		$file_list = [];
+
+		foreach ($paths as $path) {
+			if (!is_string($path)) {
+				continue;
+			}
+
+			if (is_file($path)) {
+				$file_list[] = $path;
+				continue;
+			}
+
+			if (is_dir($path)) {
+				$directory_iterator = new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS);
+				$iterator = new RecursiveIteratorIterator($directory_iterator);
+				foreach ($iterator as $file_info) {
+					if ($file_info instanceof SplFileInfo && $file_info->isFile()) {
+						$file_list[] = $file_info->getPathname();
+					}
+				}
+			}
+		}
+
+		// Sort deterministically by path to ensure stable hash
+		sort($file_list, SORT_STRING);
+
+		return $file_list;
+	}
+
+	/**
+	 * Compute a combined hash of the provided files using incremental hashing.
+	 * The file path is included alongside file contents to prevent collisions
+	 * where different files contain identical data.
+	 *
+	 * @param string[] $files
+	 * @param string   $algo
+	 *
+	 * @return string hex-encoded hash
+	 */
+	private function computeHash(array $files, string $algo): string
+	{
+		$ctx = hash_init($algo);
+
+		foreach ($files as $file_path) {
+			// Add the path itself to the stream for extra safety and ordering
+			hash_update($ctx, "PATH::" . $file_path . "\n");
+			if (is_readable($file_path) && is_file($file_path)) {
+				// Update with file content; ignore errors silently (e.g., permission changes)
+				hash_update_file($ctx, $file_path);
+			} else {
+				hash_update($ctx, "UNREADABLE\n");
+			}
+		}
+
+		return hash_final($ctx);
+	}
+}
