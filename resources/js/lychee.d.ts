@@ -256,7 +256,14 @@ declare namespace App.Http.Resources.Editable {
 }
 declare namespace App.Http.Resources.Embed {
 	export type EmbedAlbumResource = {
-		album: { [key: string]: any };
+		album: {
+			id: string;
+			title: string;
+			description: string | null;
+			photo_count: number;
+			copyright: string | null;
+			license: string | null;
+		};
 		photos: App.Http.Resources.Embed.EmbedPhotoResource[];
 	};
 	export type EmbedPhotoResource = {
