@@ -41,7 +41,7 @@
 								@load="handleImageLoad"
 								@error="handleImageError"
 								@click.stop="cycleInfoMode"
-								:title="'Click to cycle info display'"
+								:title="currentPhoto.title || undefined"
 							/>
 							<div v-if="loading" class="lightbox-loading">Loading...</div>
 							<div v-if="error" class="lightbox-error">{{ error }}</div>
