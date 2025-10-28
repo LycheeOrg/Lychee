@@ -40,19 +40,21 @@
 								class="lightbox-image"
 								@load="handleImageLoad"
 								@error="handleImageError"
+								@click.stop="cycleInfoMode"
+								:title="'Click to cycle info display'"
 							/>
 							<div v-if="loading" class="lightbox-loading">Loading...</div>
 							<div v-if="error" class="lightbox-error">{{ error }}</div>
 						</div>
 
 						<!-- Photo info -->
-						<div v-if="currentPhoto && config.showCaptions" class="lightbox-info">
+						<div v-if="currentPhoto && showAnyInfo" class="lightbox-info">
 							<div class="lightbox-info-content">
-								<h3 v-if="currentPhoto.title" class="lightbox-title">{{ currentPhoto.title }}</h3>
-								<p v-if="currentPhoto.description" class="lightbox-description">{{ currentPhoto.description }}</p>
+								<h3 v-if="currentPhoto.title && showTitle" class="lightbox-title">{{ currentPhoto.title }}</h3>
+								<p v-if="currentPhoto.description && showTitle" class="lightbox-description">{{ currentPhoto.description }}</p>
 
 								<!-- EXIF data -->
-								<div v-if="config.showExif && hasExif" class="lightbox-exif">
+								<div v-if="showExif" class="lightbox-exif">
 									<div v-if="currentPhoto.exif.make || currentPhoto.exif.model" class="lightbox-exif-item">
 										<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 											<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
@@ -120,6 +122,9 @@ const loading = ref(false);
 const error = ref<string | null>(null);
 const overlayRef = ref<HTMLElement | null>(null);
 
+// Info display mode: 0 = none, 1 = title only, 2 = title + EXIF
+const infoMode = ref(2); // Start with full info displayed
+
 const currentPhoto = computed(() => props.photos[currentIndex.value] || null);
 const canGoPrevious = computed(() => currentIndex.value > 0);
 const canGoNext = computed(() => currentIndex.value < props.photos.length - 1);
@@ -129,6 +134,19 @@ const hasExif = computed(() => {
 	const exif = currentPhoto.value.exif;
 	return !!(exif.make || exif.model || exif.lens || exif.focal || exif.aperture || exif.shutter || exif.iso || exif.taken_at);
 });
+
+// Computed properties for info display based on mode
+const showAnyInfo = computed(() => infoMode.value > 0 && props.config.showCaptions);
+const showTitle = computed(() => infoMode.value >= 1 && props.config.showCaptions);
+const showExif = computed(() => infoMode.value >= 2 && props.config.showExif && hasExif.value);
+
+/**
+ * Cycle through info display modes
+ */
+function cycleInfoMode() {
+	// Cycle: 0 (none) -> 1 (title) -> 2 (title+exif) -> 0 (none) ...
+	infoMode.value = (infoMode.value + 1) % 3;
+}
 
 /**
  * Get the best photo URL for lightbox display
@@ -380,6 +398,7 @@ onUnmounted(() => {
 	max-height: 100%;
 	object-fit: contain;
 	display: block;
+	cursor: pointer;
 }
 
 /* Loading/Error states */

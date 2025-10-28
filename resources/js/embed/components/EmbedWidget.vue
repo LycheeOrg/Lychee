@@ -9,12 +9,25 @@
 		<div v-else-if="albumData" class="lychee-embed__content">
 			<!-- Album header -->
 			<div v-if="config.showTitle || config.showDescription" class="lychee-embed__header">
-				<h2 v-if="config.showTitle" class="lychee-embed__title">
-					{{ albumData.album.title }}
-				</h2>
-				<p v-if="config.showDescription && albumData.album.description" class="lychee-embed__description">
-					{{ albumData.album.description }}
-				</p>
+				<div class="lychee-embed__header-content">
+					<div class="lychee-embed__header-text">
+						<h2 v-if="config.showTitle" class="lychee-embed__title">
+							{{ albumData.album.title }}
+						</h2>
+						<p v-if="config.showDescription && albumData.album.description" class="lychee-embed__description">
+							{{ albumData.album.description }}
+						</p>
+					</div>
+					<a
+						:href="galleryUrl"
+						target="_blank"
+						rel="noopener noreferrer"
+						class="lychee-embed__gallery-link"
+						title="View in Lychee Gallery"
+					>
+						↗
+					</a>
+				</div>
 			</div>
 
 			<!-- Photo grid with selected layout -->
@@ -88,6 +101,12 @@ const containerStyle = computed(() => ({
 	width: props.config.width,
 	height: props.config.height === "auto" ? undefined : props.config.height,
 }));
+
+// Compute the gallery URL for the album
+const galleryUrl = computed(() => {
+	if (!albumData.value) return "";
+	return `${props.config.apiUrl}/gallery/${albumData.value.album.id}`;
+});
 
 /**
  * Get the best size variant for a photo based on its display size
@@ -275,6 +294,18 @@ watch(
 	border-bottom-color: rgba(255, 255, 255, 0.1);
 }
 
+.lychee-embed__header-content {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	gap: 1rem;
+}
+
+.lychee-embed__header-text {
+	flex: 1;
+	min-width: 0;
+}
+
 .lychee-embed__title {
 	margin: 0 0 0.5rem 0;
 	font-size: 1.5rem;
@@ -287,6 +318,30 @@ watch(
 	font-size: 1rem;
 	opacity: 0.8;
 	line-height: 1.5;
+}
+
+.lychee-embed__gallery-link {
+	flex-shrink: 0;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 2.5rem;
+	height: 2.5rem;
+	font-size: 1.5rem;
+	color: inherit;
+	text-decoration: none;
+	border-radius: 0.375rem;
+	transition: background-color 0.2s ease, opacity 0.2s ease;
+	opacity: 0.6;
+}
+
+.lychee-embed__gallery-link:hover {
+	opacity: 1;
+	background-color: rgba(0, 0, 0, 0.05);
+}
+
+.lychee-embed--dark .lychee-embed__gallery-link:hover {
+	background-color: rgba(255, 255, 255, 0.1);
 }
 
 /* Photo grid */
