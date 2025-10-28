@@ -8,6 +8,11 @@
 export type LayoutType = "square" | "masonry" | "grid" | "justified" | "filmstrip";
 
 /**
+ * Header placement options
+ */
+export type HeaderPlacement = "top" | "bottom" | "none";
+
+/**
  * Size variant types available for photos
  */
 export type SizeVariantType = "placeholder" | "thumb" | "thumb2x" | "small" | "small2x" | "medium" | "medium2x" | "original";
@@ -42,8 +47,8 @@ export interface EmbedConfig {
 	showCaptions?: boolean;
 	/** Whether to show EXIF data in lightbox */
 	showExif?: boolean;
-	/** Theme: 'light' or 'dark' */
-	theme?: "light" | "dark";
+	/** Header placement: 'top' (full header), 'bottom' (simple link), or 'none' */
+	headerPlacement?: HeaderPlacement;
 	/** Custom CSS class for widget container */
 	containerClass?: string;
 }

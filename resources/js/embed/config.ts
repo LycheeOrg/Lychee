@@ -1,4 +1,4 @@
-import type { EmbedConfig, LayoutType } from "./types";
+import type { EmbedConfig, LayoutType, HeaderPlacement } from "./types";
 
 /**
  * Default configuration values for the embed widget
@@ -15,7 +15,7 @@ export const DEFAULT_CONFIG: Partial<EmbedConfig> = {
 	showDescription: true,
 	showCaptions: true,
 	showExif: true,
-	theme: "light",
+	headerPlacement: "top",
 };
 
 /**
@@ -65,10 +65,11 @@ export function validateConfig(config: Partial<EmbedConfig>): EmbedConfig {
 		throw new Error("maxPhotos must be between 1 and 100");
 	}
 
-	// Validate theme
-	const theme = config.theme ?? DEFAULT_CONFIG.theme!;
-	if (theme !== "light" && theme !== "dark") {
-		throw new Error(`Invalid theme: ${theme}. Valid themes: light, dark`);
+	// Validate header placement
+	const validPlacements: HeaderPlacement[] = ["top", "bottom", "none"];
+	const headerPlacement = config.headerPlacement ?? DEFAULT_CONFIG.headerPlacement!;
+	if (!validPlacements.includes(headerPlacement)) {
+		throw new Error(`Invalid headerPlacement: ${headerPlacement}. Valid options: ${validPlacements.join(", ")}`);
 	}
 
 	return {
@@ -85,7 +86,7 @@ export function validateConfig(config: Partial<EmbedConfig>): EmbedConfig {
 		showDescription: config.showDescription ?? DEFAULT_CONFIG.showDescription!,
 		showCaptions: config.showCaptions ?? DEFAULT_CONFIG.showCaptions!,
 		showExif: config.showExif ?? DEFAULT_CONFIG.showExif!,
-		theme,
+		headerPlacement,
 		containerClass: config.containerClass,
 	};
 }
@@ -148,9 +149,9 @@ export function parseDataAttributes(element: HTMLElement): Partial<EmbedConfig> 
 		config.showExif = element.dataset.showExif !== "false";
 	}
 
-	// Theme
-	if (element.dataset.theme) {
-		config.theme = element.dataset.theme as "light" | "dark";
+	// Header placement
+	if (element.dataset.headerPlacement) {
+		config.headerPlacement = element.dataset.headerPlacement as HeaderPlacement;
 	}
 
 	// Custom class
