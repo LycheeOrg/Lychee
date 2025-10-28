@@ -1,4 +1,4 @@
-import { createApp } from "vue";
+import { createApp, type App } from "vue";
 import EmbedWidget from "./components/EmbedWidget.vue";
 import { validateConfig, parseDataAttributes } from "./config";
 import type { EmbedConfig } from "./types";
@@ -46,7 +46,7 @@ export function initLycheeEmbeds() {
 	// Find all embed containers
 	const elements = document.querySelectorAll<HTMLElement>("[data-lychee-embed], .lychee-embed-auto");
 
-	const apps: any[] = [];
+	const apps: App[] = [];
 
 	elements.forEach((element) => {
 		try {
