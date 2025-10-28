@@ -17,18 +17,43 @@
 				</p>
 			</div>
 
-			<!-- Photo grid placeholder -->
-			<div class="lychee-embed__grid">
-				<p>Photo grid will be implemented in next phase ({{ albumData.photos.length }} photos)</p>
+			<!-- Photo grid with selected layout -->
+			<div ref="gridContainer" class="lychee-embed__grid" :style="{ height: `${containerHeight}px` }">
+				<div
+					v-for="photo in positionedPhotos"
+					:key="photo.id"
+					class="lychee-embed__photo"
+					:style="{
+						position: 'absolute',
+						top: `${photo.position.top}px`,
+						left: `${photo.position.left}px`,
+						width: `${photo.position.width}px`,
+						height: `${photo.position.height}px`,
+					}"
+					@click="openLightbox(photo.id)"
+				>
+					<img
+						:src="getBestSizeVariant(photo)"
+						:alt="photo.title || 'Photo'"
+						:title="photo.title || undefined"
+						loading="lazy"
+						class="lychee-embed__photo-img"
+					/>
+				</div>
 			</div>
 		</div>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
-import type { EmbedConfig, EmbedApiResponse } from "../types";
-import { createApiClient } from "../api";
+import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue';
+import type { EmbedConfig, EmbedApiResponse, PositionedPhoto, Photo, SizeVariantData } from '../types';
+import { createApiClient } from '../api';
+import { layoutSquare } from '../layouts/square';
+import { layoutMasonry } from '../layouts/masonry';
+import { layoutGrid } from '../layouts/grid';
+import { layoutJustified } from '../layouts/justified';
+import { layoutFilmstrip, filmstripToLayoutResult } from '../layouts/filmstrip';
 
 interface Props {
 	config: EmbedConfig;
@@ -39,28 +64,134 @@ const props = defineProps<Props>();
 const loading = ref(true);
 const error = ref<string | null>(null);
 const albumData = ref<EmbedApiResponse | null>(null);
+const gridContainer = ref<HTMLElement | null>(null);
+const positionedPhotos = ref<PositionedPhoto[]>([]);
+const containerHeight = ref(0);
 
 const containerStyle = computed(() => ({
 	width: props.config.width,
-	height: props.config.height === "auto" ? undefined : props.config.height,
+	height: props.config.height === 'auto' ? undefined : props.config.height,
 }));
 
+/**
+ * Get the best size variant for a photo based on its display size
+ */
+function getBestSizeVariant(photo: PositionedPhoto): string {
+	const { width, height } = photo.position;
+	const maxDimension = Math.max(width, height);
+
+	// Select appropriate size variant based on display size
+	const variants = photo.size_variants;
+
+	// Helper to get URL from variant
+	const getUrl = (variant: SizeVariantData | null): string | null => variant?.url ?? null;
+
+	// Choose variant based on size (prefer 2x for retina displays)
+	if (maxDimension <= 200) {
+		return getUrl(variants.thumb2x) ?? getUrl(variants.thumb) ?? getUrl(variants.small) ?? '';
+	} else if (maxDimension <= 400) {
+		return getUrl(variants.small2x) ?? getUrl(variants.small) ?? getUrl(variants.medium) ?? '';
+	} else if (maxDimension <= 600) {
+		return getUrl(variants.medium2x) ?? getUrl(variants.medium) ?? getUrl(variants.small2x) ?? '';
+	} else {
+		return getUrl(variants.medium2x) ?? getUrl(variants.medium) ?? '';
+	}
+}
+
+/**
+ * Calculate layout based on selected algorithm
+ */
+function calculateLayout() {
+	if (!albumData.value || !gridContainer.value) {
+		return;
+	}
+
+	const containerWidth = gridContainer.value.clientWidth;
+	const photos = albumData.value.photos;
+	const spacing = props.config.spacing ?? 8;
+
+	let result;
+
+	switch (props.config.layout) {
+		case 'square':
+			result = layoutSquare(photos, containerWidth, props.config.targetColumnWidth ?? 200, spacing);
+			break;
+
+		case 'masonry':
+			result = layoutMasonry(photos, containerWidth, props.config.targetColumnWidth ?? 300, spacing);
+			break;
+
+		case 'grid':
+			result = layoutGrid(photos, containerWidth, props.config.targetColumnWidth ?? 250, spacing);
+			break;
+
+		case 'justified':
+			result = layoutJustified(photos, containerWidth, props.config.targetRowHeight ?? 320, spacing);
+			break;
+
+		case 'filmstrip':
+			// Filmstrip needs container height
+			const height = props.config.height === 'auto' ? 600 : parseInt(props.config.height ?? '600');
+			const filmstripResult = layoutFilmstrip(photos, containerWidth, height, 100, spacing);
+			result = filmstripToLayoutResult(filmstripResult);
+			break;
+
+		default:
+			// Default to justified
+			result = layoutJustified(photos, containerWidth, props.config.targetRowHeight ?? 320, spacing);
+	}
+
+	positionedPhotos.value = result.photos;
+	containerHeight.value = result.containerHeight;
+}
+
+/**
+ * Open lightbox for photo (placeholder)
+ */
+function openLightbox(photoId: string) {
+	// TODO: Implement lightbox in Phase 3
+	console.log('Open lightbox for photo:', photoId);
+}
+
+// Fetch album data on mount
 onMounted(async () => {
 	try {
 		const apiClient = createApiClient(props.config.apiUrl);
 		albumData.value = await apiClient.fetchAlbum(props.config.albumId);
 		loading.value = false;
+
+		// Calculate layout after data loads
+		await nextTick();
+		calculateLayout();
+
+		// Recalculate on window resize
+		window.addEventListener('resize', calculateLayout);
 	} catch (err) {
-		error.value = err instanceof Error ? err.message : "Failed to load album";
+		error.value = err instanceof Error ? err.message : 'Failed to load album';
 		loading.value = false;
 	}
 });
+
+// Cleanup on unmount
+onUnmounted(() => {
+	window.removeEventListener('resize', calculateLayout);
+});
+
+// Recalculate layout when config changes
+watch(
+	() => [props.config.layout, props.config.spacing, props.config.targetRowHeight, props.config.targetColumnWidth],
+	() => {
+		if (albumData.value) {
+			nextTick(() => calculateLayout());
+		}
+	},
+);
 </script>
 
 <style scoped>
 /* Base styles */
 .lychee-embed {
-	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
 	box-sizing: border-box;
 }
 
@@ -129,8 +260,29 @@ onMounted(async () => {
 	line-height: 1.5;
 }
 
-/* Grid placeholder */
+/* Photo grid */
 .lychee-embed__grid {
-	padding: 2rem;
+	position: relative;
+	width: 100%;
+}
+
+/* Photo containers */
+.lychee-embed__photo {
+	overflow: hidden;
+	cursor: pointer;
+	transition: transform 0.2s ease;
+}
+
+.lychee-embed__photo:hover {
+	transform: scale(1.02);
+	z-index: 1;
+}
+
+/* Photo images */
+.lychee-embed__photo-img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
 }
 </style>
