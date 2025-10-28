@@ -160,7 +160,15 @@
                     </div>
                     <div class="form-group">
                         <label for="maxPhotos">Max Photos</label>
-                        <input type="number" id="maxPhotos" value="15" min="1" max="100">
+                        <select id="maxPhotos">
+                            <option value="none">None (all photos)</option>
+                            <option value="6">6 photos</option>
+                            <option value="12">12 photos</option>
+                            <option value="18" selected>18 photos</option>
+                            <option value="30">30 photos</option>
+                            <option value="60">60 photos</option>
+                            <option value="90">90 photos</option>
+                        </select>
                     </div>
                 </div>
 
@@ -243,7 +251,8 @@
             const layout = document.getElementById('layout').value;
             const headerPlacement = document.getElementById('headerPlacement').value;
             const spacing = parseInt(document.getElementById('spacing').value);
-            const maxPhotos = parseInt(document.getElementById('maxPhotos').value);
+            const maxPhotosValue = document.getElementById('maxPhotos').value;
+            const maxPhotos = maxPhotosValue === 'none' ? 'none' : parseInt(maxPhotosValue);
             const targetRowHeight = parseInt(document.getElementById('targetRowHeight').value);
             const targetColumnWidth = parseInt(document.getElementById('targetColumnWidth').value);
             const showTitle = document.getElementById('showTitle').checked;
