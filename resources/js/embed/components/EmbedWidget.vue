@@ -57,15 +57,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue';
-import type { EmbedConfig, EmbedApiResponse, PositionedPhoto, Photo, SizeVariantData } from '../types';
-import { createApiClient } from '../api';
-import { layoutSquare } from '../layouts/square';
-import { layoutMasonry } from '../layouts/masonry';
-import { layoutGrid } from '../layouts/grid';
-import { layoutJustified } from '../layouts/justified';
-import { layoutFilmstrip, filmstripToLayoutResult } from '../layouts/filmstrip';
-import Lightbox from './Lightbox.vue';
+import { ref, computed, onMounted, onUnmounted, watch, nextTick } from "vue";
+import type { EmbedConfig, EmbedApiResponse, PositionedPhoto, Photo, SizeVariantData } from "../types";
+import { createApiClient } from "../api";
+import { layoutSquare } from "../layouts/square";
+import { layoutMasonry } from "../layouts/masonry";
+import { layoutGrid } from "../layouts/grid";
+import { layoutJustified } from "../layouts/justified";
+import { layoutFilmstrip, filmstripToLayoutResult } from "../layouts/filmstrip";
+import Lightbox from "./Lightbox.vue";
 
 interface Props {
 	config: EmbedConfig;
@@ -86,7 +86,7 @@ const lightboxPhotoIndex = ref(0);
 
 const containerStyle = computed(() => ({
 	width: props.config.width,
-	height: props.config.height === 'auto' ? undefined : props.config.height,
+	height: props.config.height === "auto" ? undefined : props.config.height,
 }));
 
 /**
@@ -104,13 +104,13 @@ function getBestSizeVariant(photo: PositionedPhoto): string {
 
 	// Choose variant based on size (prefer 2x for retina displays)
 	if (maxDimension <= 200) {
-		return getUrl(variants.thumb2x) ?? getUrl(variants.thumb) ?? getUrl(variants.small) ?? '';
+		return getUrl(variants.thumb2x) ?? getUrl(variants.thumb) ?? getUrl(variants.small) ?? "";
 	} else if (maxDimension <= 400) {
-		return getUrl(variants.small2x) ?? getUrl(variants.small) ?? getUrl(variants.medium) ?? '';
+		return getUrl(variants.small2x) ?? getUrl(variants.small) ?? getUrl(variants.medium) ?? "";
 	} else if (maxDimension <= 600) {
-		return getUrl(variants.medium2x) ?? getUrl(variants.medium) ?? getUrl(variants.small2x) ?? '';
+		return getUrl(variants.medium2x) ?? getUrl(variants.medium) ?? getUrl(variants.small2x) ?? "";
 	} else {
-		return getUrl(variants.medium2x) ?? getUrl(variants.medium) ?? '';
+		return getUrl(variants.medium2x) ?? getUrl(variants.medium) ?? "";
 	}
 }
 
@@ -129,25 +129,25 @@ function calculateLayout() {
 	let result;
 
 	switch (props.config.layout) {
-		case 'square':
+		case "square":
 			result = layoutSquare(photos, containerWidth, props.config.targetColumnWidth ?? 200, spacing);
 			break;
 
-		case 'masonry':
+		case "masonry":
 			result = layoutMasonry(photos, containerWidth, props.config.targetColumnWidth ?? 300, spacing);
 			break;
 
-		case 'grid':
+		case "grid":
 			result = layoutGrid(photos, containerWidth, props.config.targetColumnWidth ?? 250, spacing);
 			break;
 
-		case 'justified':
+		case "justified":
 			result = layoutJustified(photos, containerWidth, props.config.targetRowHeight ?? 320, spacing);
 			break;
 
-		case 'filmstrip':
+		case "filmstrip":
 			// Filmstrip needs container height
-			const height = props.config.height === 'auto' ? 600 : parseInt(props.config.height ?? '600');
+			const height = props.config.height === "auto" ? 600 : parseInt(props.config.height ?? "600");
 			const filmstripResult = layoutFilmstrip(photos, containerWidth, height, 100, spacing);
 			result = filmstripToLayoutResult(filmstripResult);
 			break;
@@ -194,16 +194,16 @@ onMounted(async () => {
 		calculateLayout();
 
 		// Recalculate on window resize
-		window.addEventListener('resize', calculateLayout);
+		window.addEventListener("resize", calculateLayout);
 	} catch (err) {
-		error.value = err instanceof Error ? err.message : 'Failed to load album';
+		error.value = err instanceof Error ? err.message : "Failed to load album";
 		loading.value = false;
 	}
 });
 
 // Cleanup on unmount
 onUnmounted(() => {
-	window.removeEventListener('resize', calculateLayout);
+	window.removeEventListener("resize", calculateLayout);
 });
 
 // Recalculate layout when config changes
@@ -220,7 +220,7 @@ watch(
 <style scoped>
 /* Base styles */
 .lychee-embed {
-	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
 	box-sizing: border-box;
 }
 

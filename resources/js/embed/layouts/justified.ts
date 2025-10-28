@@ -1,6 +1,6 @@
-import justifiedLayout from 'justified-layout';
-import type { Photo, PositionedPhoto, LayoutResult } from '../types';
-import { getAspectRatio } from '../utils/columns';
+import justifiedLayout from "justified-layout";
+import type { Photo, PositionedPhoto, LayoutResult } from "../types";
+import { getAspectRatio } from "../utils/columns";
 
 /**
  * Justified Layout Algorithm (Flickr-style)
@@ -20,20 +20,13 @@ import { getAspectRatio } from '../utils/columns';
  * @param gap Gap between items (default: 8px)
  * @returns Layout result with positioned photos and container height
  */
-export function layoutJustified(
-	photos: Photo[],
-	containerWidth: number,
-	targetRowHeight: number = 320,
-	gap: number = 8,
-): LayoutResult {
+export function layoutJustified(photos: Photo[], containerWidth: number, targetRowHeight: number = 320, gap: number = 8): LayoutResult {
 	if (photos.length === 0) {
 		return { photos: [], containerHeight: 0 };
 	}
 
 	// Extract aspect ratios from photos
-	const aspectRatios = photos.map((photo) =>
-		getAspectRatio(photo.size_variants.original.width, photo.size_variants.original.height),
-	);
+	const aspectRatios = photos.map((photo) => getAspectRatio(photo.size_variants.original.width, photo.size_variants.original.height));
 
 	// Calculate layout geometry using justified-layout library
 	const geometry = justifiedLayout(aspectRatios, {

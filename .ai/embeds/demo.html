@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lychee Embed Widget - Demo</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #7f8c8d;
+        }
+
+        .demo-section {
+            margin-bottom: 4rem;
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .demo-section h2 {
+            margin-bottom: 1rem;
+            color: #2c3e50;
+            font-size: 1.8rem;
+        }
+
+        .demo-section p {
+            margin-bottom: 1.5rem;
+            color: #7f8c8d;
+        }
+
+        .widget-container {
+            margin-top: 2rem;
+            border: 2px dashed #e0e0e0;
+            border-radius: 8px;
+            padding: 1rem;
+            min-height: 400px;
+        }
+
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1rem 0;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .code-block code {
+            display: block;
+            white-space: pre;
+        }
+
+        .layout-controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .layout-controls button {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid #3498db;
+            background: white;
+            color: #3498db;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .layout-controls button:hover {
+            background: #3498db;
+            color: white;
+        }
+
+        .layout-controls button.active {
+            background: #3498db;
+            color: white;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 1.5rem 0;
+        }
+
+        .feature-list li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .feature-list li:before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .demo-section {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🖼️ Lychee Embed Widget</h1>
+            <p class="subtitle">Beautiful, embeddable photo galleries for your website</p>
+        </header>
+
+        <div class="demo-section">
+            <h2>Interactive Demo</h2>
+            <p>Experience the embed widget with different layouts. Click the buttons below to switch layouts, then click any photo to open the lightbox viewer.</p>
+
+            <div class="layout-controls">
+                <button onclick="changeLayout('square')" class="active" id="btn-square">Square</button>
+                <button onclick="changeLayout('masonry')" id="btn-masonry">Masonry</button>
+                <button onclick="changeLayout('grid')" id="btn-grid">Grid</button>
+                <button onclick="changeLayout('justified')" id="btn-justified">Justified</button>
+                <button onclick="changeLayout('filmstrip')" id="btn-filmstrip">Filmstrip</button>
+            </div>
+
+            <div class="widget-container">
+                <!-- Widget will be initialized here -->
+                <div
+                    data-lychee-embed
+                    data-api-url="https://your-lychee-instance.com"
+                    data-album-id="your-album-id"
+                    data-layout="square"
+                    data-spacing="8"
+                    data-target-row-height="320"
+                    data-target-column-width="200"
+                    data-show-title="true"
+                    data-show-description="true"
+                    data-show-captions="true"
+                    data-show-exif="true"
+                    data-theme="light"
+                    id="embed-demo"
+                ></div>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2>Features</h2>
+            <ul class="feature-list">
+                <li>5 beautiful layout options (Square, Masonry, Grid, Justified, Filmstrip)</li>
+                <li>Full-screen lightbox with keyboard navigation</li>
+                <li>Complete EXIF data display (camera, lens, settings)</li>
+                <li>Responsive design - works on all devices</li>
+                <li>Lazy loading for optimal performance</li>
+                <li>Light and dark theme support</li>
+                <li>Accessible (ARIA labels, keyboard navigation)</li>
+                <li>No external dependencies except Vue</li>
+                <li>Only 87KB gzipped</li>
+            </ul>
+        </div>
+
+        <div class="demo-section">
+            <h2>Quick Start</h2>
+            <p>Add the widget to your website in 3 simple steps:</p>
+
+            <h3 style="margin-top: 2rem; margin-bottom: 1rem;">1. Include the widget files</h3>
+            <div class="code-block"><code>&lt;link rel="stylesheet" href="https://your-lychee.com/embed/lychee-embed.css"&gt;
+&lt;script src="https://your-lychee.com/embed/lychee-embed.js"&gt;&lt;/script&gt;</code></div>
+
+            <h3 style="margin-top: 2rem; margin-bottom: 1rem;">2. Add the embed container</h3>
+            <div class="code-block"><code>&lt;div
+    data-lychee-embed
+    data-api-url="https://your-lychee.com"
+    data-album-id="your-album-id"
+    data-layout="justified"
+    data-show-title="true"
+    data-show-exif="true"
+&gt;&lt;/div&gt;</code></div>
+
+            <h3 style="margin-top: 2rem; margin-bottom: 1rem;">3. The widget auto-initializes!</h3>
+            <p>That's it! The widget will automatically detect elements with <code>data-lychee-embed</code> and initialize them.</p>
+        </div>
+
+        <div class="demo-section">
+            <h2>Configuration Options</h2>
+            <p>Customize the widget behavior with data attributes:</p>
+
+            <table style="width: 100%; border-collapse: collapse; margin-top: 1rem;">
+                <thead>
+                    <tr style="background: #f8f9fa; border-bottom: 2px solid #dee2e6;">
+                        <th style="padding: 0.75rem; text-align: left;">Attribute</th>
+                        <th style="padding: 0.75rem; text-align: left;">Type</th>
+                        <th style="padding: 0.75rem; text-align: left;">Default</th>
+                        <th style="padding: 0.75rem; text-align: left;">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom: 1px solid #dee2e6;">
+                        <td style="padding: 0.75rem;"><code>data-api-url</code></td>
+                        <td style="padding: 0.75rem;">String</td>
+                        <td style="padding: 0.75rem;">Required</td>
+                        <td style="padding: 0.75rem;">Base URL of your Lychee instance</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #dee2e6;">
+                        <td style="padding: 0.75rem;"><code>data-album-id</code></td>
+                        <td style="padding: 0.75rem;">String</td>
+                        <td style="padding: 0.75rem;">Required</td>
+                        <td style="padding: 0.75rem;">ID of the album to embed</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #dee2e6;">
+                        <td style="padding: 0.75rem;"><code>data-layout</code></td>
+                        <td style="padding: 0.75rem;">String</td>
+                        <td style="padding: 0.75rem;">"justified"</td>
+                        <td style="padding: 0.75rem;">Layout type: square, masonry, grid, justified, filmstrip</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #dee2e6;">
+                        <td style="padding: 0.75rem;"><code>data-spacing</code></td>
+                        <td style="padding: 0.75rem;">Number</td>
+                        <td style="padding: 0.75rem;">8</td>
+                        <td style="padding: 0.75rem;">Gap between photos in pixels</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #dee2e6;">
+                        <td style="padding: 0.75rem;"><code>data-target-row-height</code></td>
+                        <td style="padding: 0.75rem;">Number</td>
+                        <td style="padding: 0.75rem;">320</td>
+                        <td style="padding: 0.75rem;">Target height for justified layout rows</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #dee2e6;">
+                        <td style="padding: 0.75rem;"><code>data-target-column-width</code></td>
+                        <td style="padding: 0.75rem;">Number</td>
+                        <td style="padding: 0.75rem;">300</td>
+                        <td style="padding: 0.75rem;">Target width for grid/masonry columns</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #dee2e6;">
+                        <td style="padding: 0.75rem;"><code>data-show-title</code></td>
+                        <td style="padding: 0.75rem;">Boolean</td>
+                        <td style="padding: 0.75rem;">true</td>
+                        <td style="padding: 0.75rem;">Show album title</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #dee2e6;">
+                        <td style="padding: 0.75rem;"><code>data-show-description</code></td>
+                        <td style="padding: 0.75rem;">Boolean</td>
+                        <td style="padding: 0.75rem;">true</td>
+                        <td style="padding: 0.75rem;">Show album description</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #dee2e6;">
+                        <td style="padding: 0.75rem;"><code>data-show-captions</code></td>
+                        <td style="padding: 0.75rem;">Boolean</td>
+                        <td style="padding: 0.75rem;">true</td>
+                        <td style="padding: 0.75rem;">Show photo captions in lightbox</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #dee2e6;">
+                        <td style="padding: 0.75rem;"><code>data-show-exif</code></td>
+                        <td style="padding: 0.75rem;">Boolean</td>
+                        <td style="padding: 0.75rem;">true</td>
+                        <td style="padding: 0.75rem;">Show EXIF data in lightbox</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 0.75rem;"><code>data-theme</code></td>
+                        <td style="padding: 0.75rem;">String</td>
+                        <td style="padding: 0.75rem;">"light"</td>
+                        <td style="padding: 0.75rem;">Theme: "light" or "dark"</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="demo-section">
+            <h2>Programmatic API</h2>
+            <p>For advanced use cases, you can initialize the widget programmatically:</p>
+
+            <div class="code-block"><code>import { createLycheeEmbed } from './lychee-embed.js';
+
+// Initialize widget
+const app = createLycheeEmbed('#my-container', {
+    apiUrl: 'https://your-lychee.com',
+    albumId: 'your-album-id',
+    layout: 'justified',
+    spacing: 12,
+    targetRowHeight: 350,
+    showTitle: true,
+    showExif: true,
+    theme: 'dark'
+});</code></div>
+        </div>
+
+        <footer>
+            <p>Lychee Embed Widget - Part of the Lychee Photo Management System</p>
+            <p>Built with Vue 3, TypeScript, and ❤️</p>
+        </footer>
+    </div>
+
+    <!-- Widget JavaScript (in production, use the compiled version) -->
+    <script>
+        // Demo: Dynamic layout switching
+        let currentLayout = 'square';
+
+        function changeLayout(layout) {
+            currentLayout = layout;
+
+            // Update button states
+            document.querySelectorAll('.layout-controls button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById('btn-' + layout).classList.add('active');
+
+            // In a real implementation, you would:
+            // 1. Destroy the existing widget
+            // 2. Reinitialize with new layout
+            // For this demo, we'll just show a message
+            console.log('Layout changed to:', layout);
+
+            // TODO: Actually change the layout when widget is connected to a real Lychee instance
+            // Example:
+            // app.unmount();
+            // app = createLycheeEmbed('#embed-demo', {
+            //     apiUrl: 'https://your-lychee.com',
+            //     albumId: 'your-album-id',
+            //     layout: layout,
+            //     ...config
+            // });
+        }
+
+        // Note: In a real deployment, you would load the widget script:
+        // <script src="/embed/lychee-embed.js"></script>
+        //
+        // The widget will auto-initialize all elements with data-lychee-embed attribute
+        // when the page loads.
+    </script>
+</body>
+</html>

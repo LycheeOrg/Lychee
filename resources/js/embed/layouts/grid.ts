@@ -1,5 +1,5 @@
-import type { Photo, PositionedPhoto, LayoutResult } from '../types';
-import { getAspectRatio } from '../utils/columns';
+import type { Photo, PositionedPhoto, LayoutResult } from "../types";
+import { getAspectRatio } from "../utils/columns";
 
 /**
  * Grid Layout Algorithm
@@ -23,11 +23,7 @@ interface ColumnData {
  * @param gap Gap between columns
  * @returns Column count and adjusted width
  */
-function calculateGridColumns(
-	containerWidth: number,
-	targetWidth: number,
-	gap: number,
-): { columns: number; finalWidth: number } {
+function calculateGridColumns(containerWidth: number, targetWidth: number, gap: number): { columns: number; finalWidth: number } {
 	// How many columns fit?
 	const columns = Math.max(1, Math.floor((containerWidth + gap) / (targetWidth + gap)));
 
@@ -53,12 +49,7 @@ function calculateGridColumns(
  * @param gap Gap between items (default: 8px)
  * @returns Layout result with positioned photos and container height
  */
-export function layoutGrid(
-	photos: Photo[],
-	containerWidth: number,
-	targetColumnWidth: number = 250,
-	gap: number = 8,
-): LayoutResult {
+export function layoutGrid(photos: Photo[], containerWidth: number, targetColumnWidth: number = 250, gap: number = 8): LayoutResult {
 	if (photos.length === 0) {
 		return { photos: [], containerHeight: 0 };
 	}
@@ -84,10 +75,7 @@ export function layoutGrid(
 		}
 
 		// Calculate height maintaining aspect ratio
-		const aspectRatio = getAspectRatio(
-			photo.size_variants.original.width,
-			photo.size_variants.original.height,
-		);
+		const aspectRatio = getAspectRatio(photo.size_variants.original.width, photo.size_variants.original.height);
 		const height = Math.floor(finalWidth / aspectRatio);
 
 		// Create positioned photo

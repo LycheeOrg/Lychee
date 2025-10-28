@@ -1,7 +1,7 @@
 <template>
 	<Teleport to="body">
 		<Transition name="lightbox-fade">
-			<div v-if="isOpen" class="lightbox-overlay" @click="handleOverlayClick" @keydown="handleKeydown" tabindex="0">
+			<div v-if="isOpen" ref="overlayRef" class="lightbox-overlay" @click="handleOverlayClick" @keydown="handleKeydown" tabindex="0">
 				<div class="lightbox-container">
 					<!-- Close button -->
 					<button class="lightbox-close" @click="close" aria-label="Close" title="Close (Esc)">
@@ -24,13 +24,7 @@
 						</svg>
 					</button>
 
-					<button
-						v-if="canGoNext"
-						class="lightbox-nav lightbox-nav--next"
-						@click.stop="next"
-						aria-label="Next photo"
-						title="Next (→)"
-					>
+					<button v-if="canGoNext" class="lightbox-nav lightbox-nav--next" @click.stop="next" aria-label="Next photo" title="Next (→)">
 						<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 							<polyline points="9 18 15 12 9 6"></polyline>
 						</svg>
@@ -64,7 +58,7 @@
 											<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
 											<circle cx="12" cy="13" r="4"></circle>
 										</svg>
-										<span>{{ [currentPhoto.exif.make, currentPhoto.exif.model].filter(Boolean).join(' ') }}</span>
+										<span>{{ [currentPhoto.exif.make, currentPhoto.exif.model].filter(Boolean).join(" ") }}</span>
 									</div>
 
 									<div v-if="currentPhoto.exif.lens" class="lightbox-exif-item">
@@ -103,8 +97,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
-import type { Photo, EmbedConfig } from '../types';
+import { ref, computed, watch, onMounted, onUnmounted } from "vue";
+import type { Photo, EmbedConfig } from "../types";
 
 interface Props {
 	photos: Photo[];
@@ -114,8 +108,8 @@ interface Props {
 }
 
 interface Emits {
-	(e: 'close'): void;
-	(e: 'update:currentIndex', index: number): void;
+	(e: "close"): void;
+	(e: "update:currentIndex", index: number): void;
 }
 
 const props = defineProps<Props>();
@@ -124,6 +118,7 @@ const emit = defineEmits<Emits>();
 const currentIndex = ref(props.initialIndex);
 const loading = ref(false);
 const error = ref<string | null>(null);
+const overlayRef = ref<HTMLElement | null>(null);
 
 const currentPhoto = computed(() => props.photos[currentIndex.value] || null);
 const canGoPrevious = computed(() => currentIndex.value > 0);
@@ -142,7 +137,13 @@ function getPhotoUrl(photo: Photo): string {
 	const variants = photo.size_variants;
 	// Prefer medium2x or medium for lightbox
 	return (
-		variants.medium2x?.url || variants.medium?.url || variants.small2x?.url || variants.small?.url || variants.thumb2x?.url || variants.thumb?.url || ''
+		variants.medium2x?.url ||
+		variants.medium?.url ||
+		variants.small2x?.url ||
+		variants.small?.url ||
+		variants.thumb2x?.url ||
+		variants.thumb?.url ||
+		""
 	);
 }
 
@@ -153,11 +154,11 @@ function formatDate(dateString: string): string {
 	try {
 		const date = new Date(dateString);
 		return date.toLocaleDateString(undefined, {
-			year: 'numeric',
-			month: 'long',
-			day: 'numeric',
-			hour: '2-digit',
-			minute: '2-digit',
+			year: "numeric",
+			month: "long",
+			day: "numeric",
+			hour: "2-digit",
+			minute: "2-digit",
 		});
 	} catch {
 		return dateString;
@@ -190,14 +191,14 @@ function next() {
  * Close lightbox
  */
 function close() {
-	emit('close');
+	emit("close");
 }
 
 /**
  * Handle overlay click (close on click outside)
  */
 function handleOverlayClick(event: MouseEvent) {
-	if ((event.target as HTMLElement).classList.contains('lightbox-overlay')) {
+	if ((event.target as HTMLElement).classList.contains("lightbox-overlay")) {
 		close();
 	}
 }
@@ -207,13 +208,13 @@ function handleOverlayClick(event: MouseEvent) {
  */
 function handleKeydown(event: KeyboardEvent) {
 	switch (event.key) {
-		case 'Escape':
+		case "Escape":
 			close();
 			break;
-		case 'ArrowLeft':
+		case "ArrowLeft":
 			previous();
 			break;
-		case 'ArrowRight':
+		case "ArrowRight":
 			next();
 			break;
 	}
@@ -232,7 +233,7 @@ function handleImageLoad() {
  */
 function handleImageError() {
 	loading.value = false;
-	error.value = 'Failed to load image';
+	error.value = "Failed to load image";
 }
 
 // Watch for index changes from props
@@ -247,7 +248,7 @@ watch(
 
 // Emit index changes
 watch(currentIndex, (newIndex) => {
-	emit('update:currentIndex', newIndex);
+	emit("update:currentIndex", newIndex);
 });
 
 // Focus overlay when opened
@@ -256,23 +257,22 @@ watch(
 	(isOpen) => {
 		if (isOpen) {
 			// Prevent body scroll
-			document.body.style.overflow = 'hidden';
+			document.body.style.overflow = "hidden";
 
 			// Focus overlay for keyboard navigation
 			setTimeout(() => {
-				const overlay = document.querySelector('.lightbox-overlay') as HTMLElement;
-				overlay?.focus();
+				overlayRef.value?.focus();
 			}, 100);
 		} else {
 			// Restore body scroll
-			document.body.style.overflow = '';
+			document.body.style.overflow = "";
 		}
 	},
 );
 
 // Cleanup on unmount
 onUnmounted(() => {
-	document.body.style.overflow = '';
+	document.body.style.overflow = "";
 });
 </script>
 
@@ -446,7 +446,7 @@ onUnmounted(() => {
 }
 
 .lightbox-exif-label:not(:last-child)::after {
-	content: '·';
+	content: "·";
 	margin-left: 0.5rem;
 	opacity: 0.5;
 }

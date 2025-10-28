@@ -1,5 +1,5 @@
-import type { Photo, PositionedPhoto, LayoutResult } from '../types';
-import { getAspectRatio } from '../utils/columns';
+import type { Photo, PositionedPhoto, LayoutResult } from "../types";
+import { getAspectRatio } from "../utils/columns";
 
 /**
  * Square Layout Algorithm
@@ -21,11 +21,7 @@ interface ColumnData {
  * @param gap Gap between squares
  * @returns Column count and adjusted square size
  */
-function calculateSquareColumns(
-	containerWidth: number,
-	targetSize: number,
-	gap: number,
-): { columns: number; finalSquareSize: number } {
+function calculateSquareColumns(containerWidth: number, targetSize: number, gap: number): { columns: number; finalSquareSize: number } {
 	// How many squares fit?
 	const columns = Math.max(1, Math.floor((containerWidth + gap) / (targetSize + gap)));
 
@@ -51,12 +47,7 @@ function calculateSquareColumns(
  * @param gap Gap between squares (default: 8px)
  * @returns Layout result with positioned photos and container height
  */
-export function layoutSquare(
-	photos: Photo[],
-	containerWidth: number,
-	targetSize: number = 200,
-	gap: number = 8,
-): LayoutResult {
+export function layoutSquare(photos: Photo[], containerWidth: number, targetSize: number = 200, gap: number = 8): LayoutResult {
 	if (photos.length === 0) {
 		return { photos: [], containerHeight: 0 };
 	}

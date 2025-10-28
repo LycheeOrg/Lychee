@@ -1,5 +1,5 @@
-import type { Photo, PositionedPhoto, LayoutResult } from '../types';
-import { getAspectRatio } from '../utils/columns';
+import type { Photo, PositionedPhoto, LayoutResult } from "../types";
+import { getAspectRatio } from "../utils/columns";
 
 /**
  * Filmstrip Layout Algorithm
@@ -100,10 +100,7 @@ export function layoutFilmstrip(
 	// Position thumbnails within the strip
 	// Each thumbnail maintains aspect ratio and fits within thumbnailHeight
 	const thumbnails = photos.map((photo, index) => {
-		const aspectRatio = getAspectRatio(
-			photo.size_variants.original.width,
-			photo.size_variants.original.height,
-		);
+		const aspectRatio = getAspectRatio(photo.size_variants.original.width, photo.size_variants.original.height);
 
 		// Calculate thumbnail width maintaining aspect ratio
 		const thumbWidth = Math.floor(thumbnailHeight * aspectRatio);
@@ -113,10 +110,7 @@ export function layoutFilmstrip(
 		// Position is calculated based on sum of previous thumbnail widths + gaps
 		let left = 0;
 		for (let i = 0; i < index; i++) {
-			const prevAspectRatio = getAspectRatio(
-				photos[i].size_variants.original.width,
-				photos[i].size_variants.original.height,
-			);
+			const prevAspectRatio = getAspectRatio(photos[i].size_variants.original.width, photos[i].size_variants.original.height);
 			left += Math.floor(thumbnailHeight * prevAspectRatio) + gap;
 		}
 
