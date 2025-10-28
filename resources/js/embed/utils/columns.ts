@@ -139,6 +139,11 @@ export function calculateJustifiedRowHeight(aspectRatios: number[], availableWid
 	const totalAspectRatio = aspectRatios.reduce((sum, ar) => sum + ar, 0);
 
 	// Solve for height: availableForPhotos = height * totalAspectRatio
+	// Guard against division by zero (shouldn't happen with valid photos)
+	if (totalAspectRatio === 0) {
+		return targetHeight;
+	}
+
 	const height = availableForPhotos / totalAspectRatio;
 
 	// Return the calculated height, bounded to reasonable limits
