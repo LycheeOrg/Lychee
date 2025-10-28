@@ -39,7 +39,7 @@ class EmbedAlbumResource extends JsonResource
 				'description' => $album->description,
 				'photo_count' => $album->photos->count(),
 				'copyright' => $album->copyright,
-				'license' => $album->license->localization(),
+				'license' => $album->license?->localization(),
 			],
 			'photos' => EmbedPhotoResource::collection($album->photos),
 		];
