@@ -198,7 +198,12 @@ const emits = defineEmits<{
 }>();
 
 // Check if album is embeddable (public, no password, no link requirement)
+// and if user is logged in
 const isEmbeddable = computed(() => {
+	// Only show embed button to logged-in users
+	if (!userStore.isLoggedIn) {
+		return false;
+	}
 	if (!albumStore.album) {
 		return false;
 	}
