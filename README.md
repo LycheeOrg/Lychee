@@ -50,7 +50,9 @@ An official Docker image can be found at [LycheeOrg/Lychee-Docker](https://githu
 
 ### File-based deployment
 
-Copy the extracted Zip file from https://github.com/LycheeOrg/Lychee/releases to your webserver
+Copy the extracted Zip file from https://github.com/LycheeOrg/Lychee/releases to your webserver.
+
+If you feel like checking the authenticity of our releases, we advise you to read our [Code signing documentation](docs/Code-signing.md).
 
 ### Build from Source deployment
 
