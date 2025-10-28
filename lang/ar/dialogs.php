@@ -89,7 +89,7 @@ return [
 		'row_height' => 'Row Height',
 		'column_width' => 'Column Width',
 		'max_photos' => 'Maximum Photos',
-		'theme' => 'Theme',
+		'header_placement' => 'Header Placement',
 		'preview' => 'Preview',
 		'code' => 'Embed Code',
 		'copy' => 'Copy to Clipboard',
