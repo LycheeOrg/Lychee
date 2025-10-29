@@ -175,11 +175,9 @@ class EmbedController extends Controller
 			throw new NotFoundHttpException('Album not found');
 		}
 
-		// Load total photo count before pagination
-		$album->loadCount('photos');
-
-		// Build query for photos with size variants
+		// Calculate total number of photos before pagination is applied
 		$photosQuery = $album->photos()->getQuery();
+		$totalPhotos = (clone $photosQuery)->count();
 
 		// Apply pagination if requested
 		if ($limit !== null) {
@@ -191,6 +189,7 @@ class EmbedController extends Controller
 
 		// Replace the photos relation with the paginated results
 		$album->setRelation('photos', $photos);
+		$album->setAttribute('photos_count', $totalPhotos);
 
 		return $album;
 	}

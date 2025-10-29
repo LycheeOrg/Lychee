@@ -19,6 +19,7 @@
 namespace Tests\Feature_v2\Embed;
 
 use App\Models\AccessPermission;
+use App\Models\Album;
 use Illuminate\Support\Facades\Hash;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
@@ -138,10 +139,18 @@ class EmbedAlbumTest extends BaseApiWithDataTest
 	public function testCanGetAlbumWithNoPhotos(): void
 	{
 		// Create a public album with no photos
-		$emptyAlbum = \App\Models\Album::create([
-			'title' => 'Empty Album',
-			'is_public' => true,
-		]);
+		$emptyAlbum = Album::factory()
+			->as_root()
+			->owned_by($this->userMayUpload1)
+			->create([
+				'title' => 'Empty Album',
+			]);
+
+		AccessPermission::factory()
+			->public()
+			->visible()
+			->for_album($emptyAlbum)
+			->create();
 
 		$response = $this->getJson('Embed/' . $emptyAlbum->id);
 		$this->assertOk($response);
