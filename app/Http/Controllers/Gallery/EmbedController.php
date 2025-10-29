@@ -196,8 +196,7 @@ class EmbedController extends Controller
 			throw new NotFoundHttpException('Album not found');
 		}
 
-		$photosRelation = $album->photos();
-		$totalPhotos = $photosRelation->count();
+		$totalPhotos = $album->photos()->getQuery()->count();
 
 		$photosQuery = $album->photos()->getQuery();
 
