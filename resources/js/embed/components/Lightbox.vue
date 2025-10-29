@@ -5,10 +5,7 @@
 				<div class="lychee-lightbox-container">
 					<!-- Close button -->
 					<button class="lychee-lightbox-close" @click="close" aria-label="Close" title="Close (Esc)">
-						<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-							<line x1="18" y1="6" x2="6" y2="18"></line>
-							<line x1="6" y1="6" x2="18" y2="18"></line>
-						</svg>
+						<span class="lychee-lightbox-close-icon">×</span>
 					</button>
 
 					<!-- Navigation -->
@@ -19,7 +16,7 @@
 						aria-label="Previous photo"
 						title="Previous (←)"
 					>
-						<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
 							<polyline points="15 18 9 12 15 6"></polyline>
 						</svg>
 					</button>
@@ -31,7 +28,7 @@
 						aria-label="Next photo"
 						title="Next (→)"
 					>
-						<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
 							<polyline points="9 18 15 12 9 6"></polyline>
 						</svg>
 					</button>
@@ -350,8 +347,15 @@ onUnmounted(() => {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	z-index: 10;
+	z-index: 10001;
 	transition: background-color 0.2s;
+}
+
+.lychee-lightbox-close-icon {
+	font-size: 2em;
+	line-height: 1;
+	color: white;
+	font-weight: 300;
 }
 
 .lychee-lightbox-close:hover {
@@ -373,7 +377,7 @@ onUnmounted(() => {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	z-index: 10;
+	z-index: 10001;
 	transition: background-color 0.2s;
 }
 
