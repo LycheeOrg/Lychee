@@ -7,7 +7,6 @@ return [
 	|--------------------------------------------------------------------------
 	*/
 	'back_to_gallery' => '返回相册',
-
 	'login' => 'Login',
 	'frame' => 'Frame',
 	'map' => 'Map',
@@ -16,9 +15,7 @@ return [
 	'logs' => '查看日志',
 	'jobs' => '查看任务历史',
 	'user' => '用户',
-
 	'sign_out' => '退出登录',
-
 	'about' => '关于',
 	'changelog' => 'Changelog',
 	'api' => 'API 文档',

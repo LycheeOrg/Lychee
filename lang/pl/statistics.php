@@ -7,11 +7,9 @@ return [
 	|--------------------------------------------------------------------------
 	*/
 	'title' => 'Statystyki',
-
 	'preview_text' => 'To jest podgląd strony statystyk dostępnej w Lychee <span class="text-primary-emphasis font-bold">SE</span>.<br />Pokazane tutaj dane są generowane losowo i nie odzwierciedlają twojego serwera.',
 	'no_data' => 'Użytkownik nie posiada danych na serwerze.',
 	'collapse' => 'Zwiń rozmiary albumów',
-
 	'total' => [
 		'total' => 'Łącznie',
 		'albums' => 'Albumy',

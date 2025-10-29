@@ -8,7 +8,6 @@
 
 namespace App\Http\Middleware;
 
-use App\Assets\Features;
 use App\Contracts\Exceptions\LycheeException;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Http\Request;
@@ -56,9 +55,7 @@ class DisableCSP
 		}
 
 		// disable unsafe-eval if we are on a VueJS page
-		if (Features::active('vuejs')) {
-			$this->handleVueJS();
-		}
+		$this->handleVueJS();
 
 		return $next($request);
 	}

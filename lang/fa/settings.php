@@ -81,13 +81,11 @@ return [
 		'save' => 'ذخیره',
 		'back_to_settings' => 'بازگشت به تنظیمات گروه‌بندی‌شده',
 	],
-
 	'tool_option' => [
 		'disabled' => 'غیرفعال',
 		'enabled' => 'فعال',
 		'discover' => 'کشف',
 	],
-
 	'groups' => [
 		'general' => 'عمومی',
 		'system' => 'سیستم',

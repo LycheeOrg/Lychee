@@ -59,17 +59,17 @@ return [
 		'update-button' => 'Update',
 		'no-pending-updates' => 'No pending update.',
 	],
-    'missing-palettes' => [
-        'title' => 'Missing Palettes',
-        'description' => 'Found %d missing palettes.',
-        'button' => 'Create missing',
-    ],
-    'statistics-check' => [
-        'title' => 'Statistics integrity Check',
-        'missing_photos' => '%d photo statistics missing.',
-        'missing_albums' => '%d album statistics missing.',
-        'button' => 'Create missing',
-    ],
+	'missing-palettes' => [
+		'title' => 'Missing Palettes',
+		'description' => 'Found %d missing palettes.',
+		'button' => 'Create missing',
+	],
+	'statistics-check' => [
+		'title' => 'Statistics integrity Check',
+		'missing_photos' => '%d photo statistics missing.',
+		'missing_albums' => '%d album statistics missing.',
+		'button' => 'Create missing',
+	],
 	'flush-cache' => [
 		'title' => 'Flush Cache',
 		'description' => 'Flush the cache of every user to solve invalidation problems.',

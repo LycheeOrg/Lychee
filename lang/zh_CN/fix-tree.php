@@ -9,7 +9,6 @@ return [
 	'title' => '维护',
 	'intro' => '此页面允许您手动重新排序和修复相册。<br />在进行任何修改之前，我们强烈建议您了解嵌套集合树结构的相关知识。',
 	'warning' => '在此页面的操作可能会严重影响您的 Lychee 安装，请自行承担修改值的风险。',
-
 	'help' => [
 		'header' => '帮助',
 		'hover' => '将鼠标悬停在 ID 或标题上可以高亮显示相关相册。',
@@ -20,13 +19,11 @@ return [
 		'parent-marked' => '标记为 <span class="font-bold text-danger-600">父级 ID</span> 表示 %s 和 %s 不符合嵌套集合树结构。请编辑 <span class="font-bold text-danger-600">父级 ID</span> 或 %s/%s 的值。',
 		'slowness' => '当相册数量较多时，此页面的加载速度会较慢。',
 	],
-
 	'buttons' => [
 		'reset' => '重置',
 		'check' => '检查',
 		'apply' => '应用',
 	],
-
 	'table' => [
 		'title' => '标题',
 		'left' => '左值',
@@ -34,7 +31,6 @@ return [
 		'id' => 'ID',
 		'parent' => '父级 ID',
 	],
-
 	'errors' => [
 		'invalid' => '无效的树结构！',
 		'invalid_details' => '我们不会应用这些更改，因为这会导致系统进入错误状态。',

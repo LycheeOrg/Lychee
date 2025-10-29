@@ -7,11 +7,9 @@ return [
 	|--------------------------------------------------------------------------
 	*/
 	'title' => '统计',
-
 	'preview_text' => '这是 Lychee <span class="text-primary-emphasis font-bold">SE</span> 版本中统计页面的预览。<br />此处显示的数据是随机生成的，并不反映您的服务器实际情况。',
 	'no_data' => '用户在服务器上没有数据。',
 	'collapse' => '折叠相册大小',
-
 	'total' => [
 		'total' => '总计',
 		'albums' => '相册',

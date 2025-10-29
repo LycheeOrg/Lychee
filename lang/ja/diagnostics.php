@@ -7,7 +7,6 @@ return [
 	|--------------------------------------------------------------------------
 	*/
 	'title' => 'Diagnostics',
-
 	'copy_to_clipboard' => 'Copy diagnostics to clipboard',
 	'self-diagnosis' => 'Self-diagnosis',
 	'info' => 'Info',
@@ -16,7 +15,6 @@ return [
 	'configuration' => 'Configuration',
 	'loading' => 'Loading...',
 	'identical_content' => 'Identical content',
-
 	'toast' => [
 		'info' => 'Info',
 		'copy' => 'Diagnostics copied to clipboard!',

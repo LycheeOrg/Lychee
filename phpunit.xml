@@ -42,6 +42,7 @@
     <env name="QUEUE_CONNECTION" value="sync"/>
     <env name="MAIL_DRIVER" value="array"/>
     <ini name="memory_limit" value="512M"/>
+	<env name="WEBSHOP_ENABLED" value="true"/>
   </php>
   <source>
     <include>

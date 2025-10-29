@@ -7,7 +7,6 @@ return [
 	|--------------------------------------------------------------------------
 	*/
 	'back_to_gallery' => 'Back to Gallery',
-
 	'login' => 'Login',
 	'frame' => 'Frame',
 	'map' => 'Map',
@@ -17,9 +16,7 @@ return [
 	'logs' => 'Show Logs',
 	'jobs' => 'Show Job History',
 	'user' => 'User',
-
 	'sign_out' => 'Sign Out',
-
 	'about' => 'About',
 	'changelog' => 'Changelog',
 	'api' => 'API Documentation',

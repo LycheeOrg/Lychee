@@ -85,7 +85,9 @@ final class Flow
 
 		$base = $this->album_factory->findNullalbleAbstractAlbumOrFail($flow_base, false);
 		if ($base !== null && !$base instanceof Album) {
+			// @codeCoverageIgnoreStart
 			throw new InvalidAlbumException('Flow base must be null or an Album, got: ' . get_class($base));
+			// @codeCoverageIgnoreEnd
 		}
 
 		return $base;

@@ -81,13 +81,11 @@ return [
 		'save' => '保存',
 		'back_to_settings' => 'Back to grouped settings',
 	],
-
 	'tool_option' => [
 		'disabled' => '已禁用',
 		'enabled' => '已启用',
 		'discover' => '发现',
 	],
-
 	'groups' => [
 		'general' => 'General',
 		'system' => 'System',

@@ -9,7 +9,6 @@ return [
 	'title' => 'Konserwacja',
 	'intro' => 'Ta strona umożliwia ręczną zmianę kolejności i poprawianie albumów.<br />Przed dokonaniem jakichkolwiek modyfikacji zdecydowanie zalecamy zapoznanie się ze strukturami drzew zagnieżdżonych zestawów.',
 	'warning' => 'Możesz naprawdę zepsuć swoją instalację Lychee, modyfikuj wartości na własne ryzyko.',
-
 	'help' => [
 		'header' => 'Pomoc',
 		'hover' => 'Najedź kursorem na identyfikatory lub tytuły, aby podświetlić powiązane albumy.',
@@ -20,13 +19,11 @@ return [
 		'parent-marked' => 'Oznaczenie <span class="font-bold text-danger-600">Parent Id</span> wskazuje, że %s i %s nie spełniają struktury drzewa Nest Set. Należy edytować wartości <span class="font-bold text-danger-600">Parent Id</span> lub %s/%s.',
 		'slowness' => 'W przypadku dużej liczby albumów ta strona będzie działać wolno.',
 	],
-
 	'buttons' => [
 		'reset' => 'Reset',
 		'check' => 'Sprawdź',
 		'apply' => 'Zastosuj',
 	],
-
 	'table' => [
 		'title' => 'Tytuł',
 		'left' => 'Lewa',
@@ -34,7 +31,6 @@ return [
 		'id' => 'Id',
 		'parent' => 'Identyfikator rodzica',
 	],
-
 	'errors' => [
 		'invalid' => 'Nieprawidłowe drzewo!',
 		'invalid_details' => 'Nie stosujemy tego rozwiązania, ponieważ gwarantuje ono uszkodzenie stanu.',

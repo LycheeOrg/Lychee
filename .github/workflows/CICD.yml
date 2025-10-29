@@ -193,7 +193,7 @@ jobs:
           coverage: none
 
       - name: Use Node.js 20
-        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+        uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
         with:
             node-version: 20
 
@@ -202,7 +202,7 @@ jobs:
           make clean dist
 
       - name: Upload build artifact
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         with:
           name: Lychee.zip
           path: Lychee.zip
@@ -254,17 +254,17 @@ jobs:
 
     steps:
       - name: Install Cosign
-        uses: sigstore/cosign-installer@d7543c93d881b35a8faa02e8e3605f69b7a1ce62 # v3.10.0
+        uses: sigstore/cosign-installer@faadad0cce49287aee09b3a48701e75088a2c6ad # v4.0.0
 
       - name: Download generated artifact
-        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
+        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
         with:
           name: Lychee.zip
 
       # https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#using-an-intermediate-environment-variable
       - name: Sign release with a key
         run: |
-          cosign sign-blob --yes --key env://COSIGN_PRIVATE_KEY --output-signature Lychee.zip.asc Lychee.zip
+          cosign sign-blob --yes --key env://COSIGN_PRIVATE_KEY --bundle Lychee.zip.sigstore.json Lychee.zip
         env:
           COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
           COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
@@ -273,7 +273,7 @@ jobs:
         uses: softprops/action-gh-release@6da8fa9354ddfdc4aeace5fc48d7f679b5214090 # v2.4.1
         with:
           files: |
-            Lychee.zip.asc
+            Lychee.zip.sigstore.json
             Lychee.zip
           token: ${{ secrets.GITHUB_TOKEN }}
           generate_release_notes: true

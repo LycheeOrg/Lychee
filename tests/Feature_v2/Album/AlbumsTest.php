@@ -18,6 +18,7 @@
 
 namespace Tests\Feature_v2\Album;
 
+use App\Models\Configs;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 class AlbumsTest extends BaseApiWithDataTest
@@ -161,5 +162,65 @@ class AlbumsTest extends BaseApiWithDataTest
 				'album_thumb_css_aspect_ratio' => 'aspect-square',
 			],
 		]);
+	}
+
+	public function testPinnedAlbumsDeduplicationTrue(): void
+	{
+		Configs::set('deduplicate_pinned_albums', true);
+		Configs::invalidateCache();
+
+		// Pin album1
+		$this->actingAs($this->userMayUpload1)->patchJson('Album::setPinned', [
+			'album_id' => $this->album1->id,
+			'is_pinned' => true,
+		]);
+
+		// Get albums as the owner
+		$response = $this->actingAs($this->userMayUpload1)->getJson('Albums');
+		$this->assertOk($response);
+
+		$pinnedAlbums = $response->json('pinned_albums');
+		$albums = $response->json('albums');
+
+		// Verify album1 is in pinned_albums
+		$pinnedIds = array_column($pinnedAlbums, 'id');
+		self::assertContains($this->album1->id, $pinnedIds, 'Album1 should be in pinned_albums');
+
+		// Verify album1 is NOT in regular albums (deduplicated)
+		$albumIds = array_column($albums, 'id');
+		self::assertNotContains($this->album1->id, $albumIds, 'Album1 should NOT be in regular albums when pinned');
+
+		Configs::set('deduplicate_pinned_albums', false);
+		Configs::invalidateCache();
+	}
+
+	public function testPinnedAlbumsDeduplicationFalse(): void
+	{
+		Configs::set('deduplicate_pinned_albums', false);
+		Configs::invalidateCache();
+
+		// Pin album1
+		$this->actingAs($this->userMayUpload1)->patchJson('Album::setPinned', [
+			'album_id' => $this->album1->id,
+			'is_pinned' => true,
+		]);
+
+		// Get albums as the owner
+		$response = $this->actingAs($this->userMayUpload1)->getJson('Albums');
+		$this->assertOk($response);
+
+		$pinnedAlbums = $response->json('pinned_albums');
+		$albums = $response->json('albums');
+
+		// Verify album1 is in pinned_albums
+		$pinnedIds = array_column($pinnedAlbums, 'id');
+		self::assertContains($this->album1->id, $pinnedIds, 'Album1 should be in pinned_albums');
+
+		// Verify album1 IS in regular albums (not deduplicated when config is false)
+		$albumIds = array_column($albums, 'id');
+		self::assertContains($this->album1->id, $albumIds, 'Album1 should be in regular albums even when pinned');
+
+		Configs::set('deduplicate_pinned_albums', false);
+		Configs::invalidateCache();
 	}
 }

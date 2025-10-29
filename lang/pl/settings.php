@@ -81,13 +81,11 @@ return [
 		'save' => 'Zapisz',
 		'back_to_settings' => 'Back to grouped settings',
 	],
-
 	'tool_option' => [
 		'disabled' => 'wyłączony',
 		'enabled' => 'włączony',
 		'discover' => 'odkryj',
 	],
-
 	'groups' => [
 		'general' => 'General',
 		'system' => 'System',

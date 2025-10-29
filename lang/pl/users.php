@@ -15,12 +15,10 @@ return [
 	'upload_rights' => 'Po wybraniu tej opcji użytkownik może przesyłać zawartość.',
 	'edit_rights' => 'Po wybraniu tej opcji użytkownik może zmodyfikować swój profil (nazwa użytkownika, hasło).',
 	'quota' => 'Po ustawieniu użytkownik ma limit miejsca na zdjęcia (w kB).',
-
 	'user_deleted' => 'Użytkownik usunięty',
 	'user_created' => 'Uzytkownik utworzony',
 	'user_updated' => 'Aktualizacja użytkownika',
 	'change_saved' => 'Zmiana zapisana!',
-
 	'create_edit' => [
 		'upload_rights' => 'Użytkownik może przesyłać treści.',
 		'edit_rights' => 'Użytkownik może modyfikować swój profil (nazwa użytkownika, hasło).',

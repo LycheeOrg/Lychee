@@ -7,13 +7,11 @@ return [
 	|--------------------------------------------------------------------------
 	*/
 	'title' => 'Gallery',
-
 	'smart_albums' => 'Smart Albums',
 	'pinned_albums' => 'Featured Albums',
 	'albums' => 'Albums',
 	'root' => 'Albums',
 	'favourites' => 'Favourites',
-
 	'original' => 'Original',
 	'medium' => 'Medium',
 	'medium_hidpi' => 'Medium HiDPI',
@@ -24,15 +22,12 @@ return [
 	'placeholder' => 'Low Quality Image Placeholder',
 	'thumbnail' => 'Photo thumbnail',
 	'live_video' => 'Video part of live-photo',
-
 	'camera_data' => 'Camera date',
 	'album_reserved' => 'All Rights Reserved',
-
 	'map' => [
 		'error_gpx' => 'Error loading GPX file',
 		'osm_contributors' => 'OpenStreetMap contributors',
 	],
-
 	'search' => [
 		'title' => 'Search',
 		'no_results' => 'Nothing matches your search query.',
@@ -41,7 +36,6 @@ return [
 		'photos' => 'Photos (%s)',
 		'albums' => 'Albums (%s)',
 	],
-
 	'smart_album' => [
 		'unsorted' => 'Unsorted',
 		'starred' => 'Starred',
@@ -50,21 +44,18 @@ return [
 		'on_this_day' => 'On This Day',
 		'untagged' => 'Untagged',
 	],
-
 	'layout' => [
 		'squares' => 'Square thumbnails',
 		'justified' => 'With aspect, justified',
 		'masonry' => 'With aspect, masonry',
 		'grid' => 'With aspect, grid',
 	],
-
 	'overlay' => [
 		'none' => 'None',
 		'exif' => 'EXIF data',
 		'description' => 'Description',
 		'date' => 'Date taken',
 	],
-
 	'timeline' => [
 		'title' => 'Timelime',
 		'load_previous' => 'Load previous',
@@ -75,13 +66,11 @@ return [
 		'day' => 'Day',
 		'hour' => 'Hour',
 	],
-
 	'album' => [
 		'header_albums' => 'Albums',
 		'header_photos' => 'Photos',
 		'no_results' => 'Nothing to see here',
 		'upload' => 'Upload photos',
-
 		'tabs' => [
 			'about' => 'About Album',
 			'share' => 'Share Album',
@@ -89,7 +78,6 @@ return [
 			'move' => 'Move Album',
 			'danger' => 'DANGER ZONE',
 		],
-
 		'hero' => [
 			'created' => 'Created',
 			'copyright' => 'Copyright',
@@ -100,7 +88,6 @@ return [
 			'embed' => 'Embed Album',
 			'stats_only_se' => 'Statistics available in the Supporter Edition',
 		],
-
 		'stats' => [
 			'number_of_visits' => 'Number of visits',
 			'number_of_downloads' => 'Number of downloads',
@@ -112,7 +99,6 @@ return [
 			'aperture' => 'Aperture',
 			'no_data' => 'No data',
 		],
-
 		'properties' => [
 			'title' => 'Title',
 			'description' => 'Description',
@@ -132,7 +118,6 @@ return [
 			'all_tags_must_match' => 'All tags must match.',
 		],
 	],
-
 	'photo' => [
 		'actions' => [
 			'star' => 'Star',
@@ -142,7 +127,6 @@ return [
 			'delete' => 'Delete',
 			'header_set' => 'Header set',
 		],
-
 		'details' => [
 			'exif_data' => 'EXIF data',
 			'about' => 'About',
@@ -186,7 +170,6 @@ return [
 				'copy_success' => 'Link copied to clipboard.',
 			],
 		],
-
 		'edit' => [
 			'set_title' => 'Set Title',
 			'set_description' => 'Set Description',
@@ -198,13 +181,11 @@ return [
 			'set_taken_at_info' => 'When set, a star %s will be displayed to indicate that this date is not the original EXIF date.<br>Untick the checkbox and save to reset to the original date.',
 		],
 	],
-
 	'nsfw' => [
 		'header' => 'Sensitive content',
 		'description' => 'This album contains sensitive content which some people may find offensive or disturbing.',
 		'consent' => 'Tap to consent.',
 	],
-
 	'menus' => [
 		'star' => 'Star',
 		'unstar' => 'Unstar',
@@ -228,7 +209,6 @@ return [
 		'download_all' => 'Download Selected',
 		'merge' => 'Merge',
 		'merge_all' => 'Merge Selected',
-
 		'upload_photo' => 'Upload Photo',
 		'import_link' => 'Import from Link',
 		'import_server' => 'Import from Server',
@@ -238,7 +218,6 @@ return [
 		'upload_track' => 'Upload track',
 		'delete_track' => 'Delete track',
 	],
-
 	'sort' => [
 		'photo_select_1' => 'Upload Time',
 		'photo_select_2' => 'Take Date',
@@ -254,7 +233,6 @@ return [
 		'album_select_5' => 'Latest Take Date',
 		'album_select_6' => 'Oldest Take Date',
 	],
-
 	'albums_protection' => [
 		'private' => 'private',
 		'public' => 'public',

@@ -81,13 +81,11 @@ return [
 		'save' => 'حفظ',
 		'back_to_settings' => 'العودة إلى الإعدادات المجمعة',
 	],
-
 	'tool_option' => [
 		'disabled' => 'معطل',
 		'enabled' => 'مفعل',
 		'discover' => 'اكتشاف',
 	],
-
 	'groups' => [
 		'general' => 'عام',
 		'system' => 'النظام',

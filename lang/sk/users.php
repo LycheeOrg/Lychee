@@ -15,12 +15,10 @@ return [
 	'upload_rights' => 'When selected, the user can upload content.',
 	'edit_rights' => 'When selected, the user can modify their profile (username, password).',
 	'quota' => 'When set, the user has a space quota for pictures (in kB).',
-
 	'user_deleted' => 'User deleted',
 	'user_created' => 'User created',
 	'user_updated' => 'User updated',
 	'change_saved' => 'Change saved!',
-
 	'create_edit' => [
 		'upload_rights' => 'User can upload content.',
 		'edit_rights' => 'User can modify their profile (username, password).',

@@ -27,30 +27,30 @@ class FeaturesUnitTest extends AbstractTestCase
 	public function testAllAreActive(): void
 	{
 		self::assertFalse(Features::allAreActive(['use-s3']));
-		self::assertTrue(Features::allAreActive(['vuejs']));
+		self::assertTrue(Features::allAreActive(['require-content-type']));
 	}
 
 	public function testSomeAreActive(): void
 	{
 		self::assertFalse(Features::someAreActive(['use-s3']));
-		self::assertTrue(Features::someAreActive(['vuejs', 'use-s3']));
+		self::assertTrue(Features::someAreActive(['require-content-type', 'use-s3']));
 	}
 
 	public function testAllAreInactive(): void
 	{
 		self::assertTrue(Features::allAreInactive(['use-s3']));
-		self::assertFalse(Features::allAreInactive(['vuejs']));
+		self::assertFalse(Features::allAreInactive(['require-content-type']));
 	}
 
 	public function testSomeAreInactive(): void
 	{
-		self::assertFalse(Features::someAreInactive(['vuejs']));
-		self::assertTrue(Features::someAreInactive(['vuejs', 'use-s3']));
+		self::assertFalse(Features::someAreInactive(['require-content-type']));
+		self::assertTrue(Features::someAreInactive(['require-content-type', 'use-s3']));
 	}
 
 	public function testWhenArray(): void
 	{
-		self::assertTrue(Features::when(['vuejs'], fn () => true, fn () => false));
+		self::assertTrue(Features::when(['require-content-type'], fn () => true, fn () => false));
 	}
 
 	public function testThrow(): void

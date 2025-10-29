@@ -38,7 +38,6 @@ return [
 		'login' => 'Login',
 		'toggle_full_screen' => 'Toggle Full Screen',
 		'toggle_sensitive_albums' => 'Toggle Sensitive Albums',
-
 		'albums' => 'Albums Shortcuts',
 		'new_album' => 'New Album',
 		'upload_photos' => 'Upload Photos',
@@ -47,11 +46,9 @@ return [
 		'select_all' => 'Select All',
 		'move_selection' => 'Move Selection',
 		'delete_selection' => 'Delete Selection',
-
 		'album' => 'Album Shortcuts',
 		'slideshow' => 'Start/Stop Slideshow',
 		'toggle' => 'Toggle panel',
-
 		'photo' => 'Photo Shortcuts',
 		'previous' => 'Previous photo',
 		'next' => 'Next photo',
@@ -61,7 +58,6 @@ return [
 		'delete' => 'Delete the photo',
 		'edit' => 'Edit information',
 		'show_hide_meta' => 'Show information',
-
 		'keep_hidden' => 'We will keep it hidden.',
 		'button_hidden' => 'We will hide the button in the header.',
 	],
@@ -133,8 +129,8 @@ return [
 		'visibility_updated' => 'Visibility updated.',
 	],
 	'move_album' => [
-		'confirm_single' => 'Are you sure you want to move the album “%1$s” into the album “%2$s”?',
-		'confirm_multiple' => 'Are you sure you want to move all selected albums into the album “%s”?',
+		'confirm_single' => 'Are you sure you want to move the album "%1$s" into the album "%2$s"?',
+		'confirm_multiple' => 'Are you sure you want to move all selected albums into the album "%s"?',
 		'move_single' => 'Move Album',
 		'move_to' => 'Move to',
 		'move_to_single' => 'Move %s to:',
@@ -158,14 +154,14 @@ return [
 		'create' => 'Create Tag Album',
 	],
 	'delete_album' => [
-		'confirmation' => 'Are you sure you want to delete the album “%s” and all of the photos it contains?',
+		'confirmation' => 'Are you sure you want to delete the album "%s" and all of the photos it contains?',
 		'confirmation_multiple' => 'Are you sure you want to delete all %d selected albums and all of the photos they contain?',
 		'warning' => 'This action can not be undone!',
 		'delete' => 'Delete Album and Photos',
 	],
 	'transfer' => [
 		'query' => 'Transfer ownership of album to',
-		'confirmation' => 'Are you sure you want to transfer the ownership of album “%s” and all the photos it contains to "%s"?',
+		'confirmation' => 'Are you sure you want to transfer the ownership of album "%s" and all the photos it contains to "%s"?',
 		'lost_access_warning' => 'Your access to this album will be lost.',
 		'warning' => 'This action can not be undone!',
 		'transfer' => 'Transfer ownership of album and photos',
@@ -179,8 +175,8 @@ return [
 		'merge_to' => 'Merge %s to:',
 		'merge_to_multiple' => 'Merge %d albums to:',
 		'no_albums' => 'No albums to merge to.',
-		'confirm' => 'Are you sure you want to merge the album “%1$s” into the album “%2$s”?',
-		'confirm_multiple' => 'Are you sure you want to merge all selected albums into the album “%s”?',
+		'confirm' => 'Are you sure you want to merge the album "%1$s" into the album "%2$s"?',
+		'confirm_multiple' => 'Are you sure you want to merge all selected albums into the album "%s"?',
 		'merge' => 'Merge Albums',
 		'merged' => 'Album(s) merged to %s!',
 	],
@@ -207,7 +203,7 @@ return [
 		'copied' => 'Photo(s) copied!',
 	],
 	'photo_delete' => [
-		'confirm' => 'Are you sure you want to delete the photo “%s”?',
+		'confirm' => 'Are you sure you want to delete the photo "%s"?',
 		'confirm_multiple' => 'Are you sure you want to delete all %d selected photos?',
 		'deleted' => 'Photo(s) deleted!',
 	],
