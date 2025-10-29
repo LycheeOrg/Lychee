@@ -106,12 +106,6 @@ export function useLeftMenu(
 				route: "/map",
 			},
 			{
-				label: "gallery.favourites",
-				icon: "pi pi-heart",
-				access: (favourites.photos?.length ?? 0) > 0,
-				route: "/gallery/favourites",
-			},
-			{
 				label: "left-menu.embed_stream",
 				icon: "pi pi-code",
 				access: user.value?.id !== null,
