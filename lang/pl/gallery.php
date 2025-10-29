@@ -41,7 +41,7 @@ return [
         'recent' => 'Najnowsze',
         'public' => 'Publiczny',
         'on_this_day' => 'W tym dniu',
-		'untagged' => 'Untagged',
+        'untagged' => 'Untagged',
     ],
     'layout' => [
         'squares' => 'Miniatury kwadratowe',
@@ -208,7 +208,7 @@ return [
         'merge_all' => 'Scal wybrane',
         'upload_photo' => 'Prześlij zdjęcie',
         'import_link' => 'Import z łącza',
-		'import_server' => 'Import from Server',
+        'import_server' => 'Import from Server',
         'import_dropbox' => 'Import z Dropbox',
         'new_album' => 'Nowy album',
         'new_tag_album' => 'Nowy album z tagami',
