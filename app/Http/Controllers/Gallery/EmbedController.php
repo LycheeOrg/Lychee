@@ -8,6 +8,8 @@
 
 namespace App\Http\Controllers\Gallery;
 
+use App\Enum\ColumnSortingType;
+use App\Enum\OrderSortingType;
 use App\Http\Resources\Embed\EmbedAlbumResource;
 use App\Http\Resources\Embed\EmbedStreamResource;
 use App\Http\Resources\Models\Utils\AlbumProtectionPolicy;
@@ -156,7 +158,9 @@ class EmbedController extends Controller
 		);
 
 		// Order by creation date with specified sort order
-		$photosQuery->orderBy('created_at', $sort);
+		// Convert string to enum
+		$orderEnum = $sort === 'asc' ? OrderSortingType::ASC : OrderSortingType::DESC;
+		$photosQuery->orderBy('created_at', $orderEnum->value);
 
 		// Apply pagination
 		$photosQuery->skip($offset)->take($limit);
@@ -206,8 +210,10 @@ class EmbedController extends Controller
 		// Use custom sort order if provided, otherwise use album's default sorting
 		if ($sort !== null) {
 			// Override with custom sort by creation date
+			// Convert string to enum
+			$orderEnum = $sort === 'asc' ? OrderSortingType::ASC : OrderSortingType::DESC;
 			$photos = (new SortingDecorator($photosQuery))
-				->orderPhotosBy('created_at', $sort)
+				->orderPhotosBy(ColumnSortingType::CREATED_AT, $orderEnum)
 				->get();
 		} else {
 			// Use album's configured sorting
