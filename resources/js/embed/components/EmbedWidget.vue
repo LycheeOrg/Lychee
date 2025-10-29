@@ -525,10 +525,11 @@ watch(
 .lychee-embed__filmstrip-thumb {
 	cursor: pointer;
 	outline: none;
+	border: 2px solid transparent;
 }
 
 .lychee-embed__filmstrip-thumb--active {
-	border: 2px solid #38bdf8;
+	border-color: #38bdf8;
 }
 
 /* Footer (bottom placement) */
