@@ -84,6 +84,9 @@ return [
 	'embed_code' => [
 		'title' => 'Embed Album',
 		'info' => 'Generate an embed code to display this album on your website.',
+		'mode' => 'Mode',
+		'mode_album_help' => 'Embed photos from this specific album.',
+		'mode_stream_help' => 'Embed all your public photos as a chronological stream (most recent first).',
 		'layout' => 'Layout',
 		'spacing' => 'Spacing',
 		'row_height' => 'Row Height',

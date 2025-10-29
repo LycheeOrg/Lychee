@@ -7,6 +7,18 @@
 
 				<!-- Configuration Options -->
 				<div class="inline-flex flex-col gap-4 px-9 mb-6">
+					<!-- Mode Selection -->
+					<div class="flex flex-col gap-2">
+						<label class="font-semibold">{{ $t("dialogs.embed_code.mode") }}</label>
+						<SelectButton v-model="config.mode" :options="modeOptions" option-label="label" option-value="value" />
+						<small v-if="config.mode === 'album'" class="text-muted-color">
+							{{ $t("dialogs.embed_code.mode_album_help") }}
+						</small>
+						<small v-else class="text-muted-color">
+							{{ $t("dialogs.embed_code.mode_stream_help") }}
+						</small>
+					</div>
+
 					<!-- Layout Selection -->
 					<div class="flex flex-col gap-2">
 						<label class="font-semibold">{{ $t("dialogs.embed_code.layout") }}</label>
@@ -151,6 +163,7 @@ const previewError = ref(false);
 
 // Embed configuration
 const config = ref({
+	mode: "album" as "album" | "stream",
 	layout: "justified" as "square" | "masonry" | "grid" | "justified" | "filmstrip",
 	spacing: 8,
 	targetRowHeight: 200,
@@ -162,6 +175,12 @@ const config = ref({
 	showExif: true,
 	headerPlacement: "top" as "top" | "bottom" | "none",
 });
+
+// Mode options
+const modeOptions = [
+	{ label: "Album", value: "album" },
+	{ label: "Stream", value: "stream" },
+];
 
 // Layout options
 const layoutOptions = [
@@ -205,15 +224,17 @@ const EMBED_VERSION = "1.0.0";
 // Generate embed code
 const generatedCode = computed(() => {
 	const embedUrl = `${apiUrl.value}/embed`;
+	const albumIdAttr = config.value.mode === "album" ? `\n    data-album-id="${albumId.value}"` : "";
+	const modeTitle = config.value.mode === "album" ? "Photo Album" : "Photo Stream";
 
-	return `<!-- Lychee Photo Album Embed v${EMBED_VERSION} -->
+	return `<!-- Lychee ${modeTitle} Embed v${EMBED_VERSION} -->
 <link rel="stylesheet" href="${embedUrl}/lychee-embed.css?v=${EMBED_VERSION}">
 <script src="${embedUrl}/lychee-embed.js?v=${EMBED_VERSION}"><\/script>
 
 <div
     data-lychee-embed
     data-api-url="${apiUrl.value}"
-    data-album-id="${albumId.value}"
+    data-mode="${config.value.mode}"${albumIdAttr}
     data-layout="${config.value.layout}"
     data-spacing="${config.value.spacing}"
     data-target-row-height="${config.value.targetRowHeight}"
@@ -289,7 +310,8 @@ function loadEmbedAssets() {
 
 // Initialize preview
 async function initializePreview() {
-	if (!previewContainer.value || !albumId.value) {
+	// For album mode, we need an albumId. For stream mode, we don't.
+	if (!previewContainer.value || (config.value.mode === "album" && !albumId.value)) {
 		return;
 	}
 
@@ -304,7 +326,10 @@ async function initializePreview() {
 		const widgetContainer = document.createElement("div");
 		widgetContainer.setAttribute("data-lychee-embed", "");
 		widgetContainer.setAttribute("data-api-url", apiUrl.value);
-		widgetContainer.setAttribute("data-album-id", albumId.value);
+		widgetContainer.setAttribute("data-mode", config.value.mode);
+		if (config.value.mode === "album") {
+			widgetContainer.setAttribute("data-album-id", albumId.value);
+		}
 		widgetContainer.setAttribute("data-layout", config.value.layout);
 		widgetContainer.setAttribute("data-spacing", String(config.value.spacing));
 		widgetContainer.setAttribute("data-target-row-height", String(config.value.targetRowHeight));
@@ -317,9 +342,9 @@ async function initializePreview() {
 
 		// Initialize the widget using the global LycheeEmbed
 		if (window.LycheeEmbed && window.LycheeEmbed.createLycheeEmbed) {
-			window.LycheeEmbed.createLycheeEmbed(widgetContainer, {
+			const widgetConfig: Record<string, unknown> = {
 				apiUrl: apiUrl.value,
-				albumId: albumId.value,
+				mode: config.value.mode,
 				layout: config.value.layout,
 				spacing: config.value.spacing,
 				targetRowHeight: config.value.targetRowHeight,
@@ -331,7 +356,14 @@ async function initializePreview() {
 				showExif: config.value.showExif,
 				headerPlacement: config.value.headerPlacement,
 				height: "200px",
-			});
+			};
+
+			// Only add albumId for album mode
+			if (config.value.mode === "album") {
+				widgetConfig.albumId = albumId.value;
+			}
+
+			window.LycheeEmbed.createLycheeEmbed(widgetContainer, widgetConfig);
 		}
 	} catch (error) {
 		console.error("Failed to initialize preview:", error);
