@@ -1,5 +1,5 @@
 import type { Photo, PositionedPhoto, LayoutResult } from "@/embed/types";
-import { getAspectRatio } from "@/embed/utils/columns";
+import { getAspectRatio, getSafeDimensions } from "@/embed/utils/columns";
 
 /**
  * Masonry Layout Algorithm (Pinterest-style)
@@ -31,7 +31,8 @@ function calculateMasonryColumns(containerWidth: number, targetWidth: number, ga
 	const remainingSpace = containerWidth - usedSpace;
 
 	// Distribute remaining space evenly across all columns
-	const spread = Math.ceil(remainingSpace / columns);
+	// Use Math.floor to prevent width overflow
+	const spread = Math.floor(remainingSpace / columns);
 
 	// Final column width after distributing extra space
 	const finalWidth = targetWidth + spread;
@@ -89,7 +90,8 @@ export function layoutMasonry(photos: Photo[], containerWidth: number, targetCol
 		const column = columnData[columnIndex];
 
 		// Calculate height maintaining aspect ratio
-		const aspectRatio = getAspectRatio(photo.size_variants.original.width, photo.size_variants.original.height);
+		const { width, height: photoHeight } = getSafeDimensions(photo.size_variants);
+		const aspectRatio = getAspectRatio(width, photoHeight);
 		const height = Math.floor(finalWidth / aspectRatio);
 
 		// Create positioned photo

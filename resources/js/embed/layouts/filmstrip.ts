@@ -1,5 +1,5 @@
 import type { Photo, PositionedPhoto, LayoutResult } from "@/embed/types";
-import { getAspectRatio } from "@/embed/utils/columns";
+import { getAspectRatio, getSafeDimensions } from "@/embed/utils/columns";
 
 /**
  * Filmstrip Layout Algorithm
@@ -99,29 +99,30 @@ export function layoutFilmstrip(
 
 	// Position thumbnails within the strip
 	// Each thumbnail maintains aspect ratio and fits within thumbnailHeight
+	// Precompute thumbnail widths to avoid O(n²) complexity
+	const thumbWidths = photos.map((photo) => {
+		const { width, height } = getSafeDimensions(photo.size_variants);
+		const aspectRatio = getAspectRatio(width, height);
+		return Math.floor(thumbnailHeight * aspectRatio);
+	});
+
+	// Calculate positions by accumulating left offset in O(n)
+	let leftAcc = 0;
 	const thumbnails = photos.map((photo, index) => {
-		const aspectRatio = getAspectRatio(photo.size_variants.original.width, photo.size_variants.original.height);
+		const thumbWidth = thumbWidths[index];
+		const position = {
+			width: thumbWidth,
+			height: thumbnailHeight,
+			left: leftAcc,
+			top: 0, // Relative to thumbnail strip
+		};
 
-		// Calculate thumbnail width maintaining aspect ratio
-		const thumbWidth = Math.floor(thumbnailHeight * aspectRatio);
-		const thumbHeight = thumbnailHeight;
-
-		// Calculate left position (horizontal layout)
-		// Position is calculated based on sum of previous thumbnail widths + gaps
-		let left = 0;
-		for (let i = 0; i < index; i++) {
-			const prevAspectRatio = getAspectRatio(photos[i].size_variants.original.width, photos[i].size_variants.original.height);
-			left += Math.floor(thumbnailHeight * prevAspectRatio) + gap;
-		}
+		// Update accumulated left position for next thumbnail
+		leftAcc += thumbWidth + gap;
 
 		return {
 			photo,
-			position: {
-				width: thumbWidth,
-				height: thumbHeight,
-				left: left,
-				top: 0, // Relative to thumbnail strip
-			},
+			position,
 		};
 	});
 

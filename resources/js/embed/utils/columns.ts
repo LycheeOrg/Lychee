@@ -163,3 +163,34 @@ export function getAspectRatio(width: number, height: number): number {
 	}
 	return width / height;
 }
+
+/**
+ * Safely get dimensions from photo size variants
+ * Falls back through size variants in order: original → medium → small → thumb
+ *
+ * @param sizeVariants Photo size variants object
+ * @returns Object with width and height, defaults to { width: 1, height: 1 } if all variants are null
+ */
+export function getSafeDimensions(sizeVariants: App.Http.Resources.Models.SizeVariantsResouce): { width: number; height: number } {
+	const original = sizeVariants.original;
+	const medium = sizeVariants.medium;
+	const small = sizeVariants.small;
+	const thumb = sizeVariants.thumb;
+
+	// Try each size variant in order of preference
+	if (original?.width && original?.height) {
+		return { width: original.width, height: original.height };
+	}
+	if (medium?.width && medium?.height) {
+		return { width: medium.width, height: medium.height };
+	}
+	if (small?.width && small?.height) {
+		return { width: small.width, height: small.height };
+	}
+	if (thumb?.width && thumb?.height) {
+		return { width: thumb.width, height: thumb.height };
+	}
+
+	// Fallback to square if no size variants have dimensions
+	return { width: 1, height: 1 };
+}

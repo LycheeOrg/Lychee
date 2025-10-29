@@ -1,6 +1,6 @@
 import justifiedLayout from "justified-layout";
 import type { Photo, PositionedPhoto, LayoutResult } from "@/embed/types";
-import { getAspectRatio } from "@/embed/utils/columns";
+import { getAspectRatio, getSafeDimensions } from "@/embed/utils/columns";
 
 /**
  * Justified Layout Algorithm (Flickr-style)
@@ -26,7 +26,10 @@ export function layoutJustified(photos: Photo[], containerWidth: number, targetR
 	}
 
 	// Extract aspect ratios from photos
-	const aspectRatios = photos.map((photo) => getAspectRatio(photo.size_variants.original.width, photo.size_variants.original.height));
+	const aspectRatios = photos.map((photo) => {
+		const { width, height } = getSafeDimensions(photo.size_variants);
+		return getAspectRatio(width, height);
+	});
 
 	// Calculate layout geometry using justified-layout library
 	const geometry = justifiedLayout(aspectRatios, {

@@ -19,7 +19,7 @@ export class EmbedApiClient {
 	 * @returns Album and photos data
 	 * @throws Error if fetch fails or album is not accessible
 	 */
-	async fetchAlbum(albumId: string, limit?: number, offset?: number): Promise<EmbedApiResponse> {
+	fetchAlbum(albumId: string, limit?: number, offset?: number): Promise<EmbedApiResponse> {
 		// Build URL with optional pagination parameters
 		const url = new URL(`${this.apiUrl}/api/v2/Embed/${encodeURIComponent(albumId)}`);
 		if (limit !== undefined) {
@@ -29,29 +29,30 @@ export class EmbedApiClient {
 			url.searchParams.set("offset", String(offset));
 		}
 
-		try {
-			const response = await fetch(url.toString(), {
-				method: "GET",
-				headers: {
-					Accept: "application/json",
-					"Content-Type": "application/json",
-				},
-				mode: "cors",
-				credentials: "omit", // Don't send cookies for embed requests
+		return fetch(url.toString(), {
+			method: "GET",
+			headers: {
+				Accept: "application/json",
+				"Content-Type": "application/json",
+			},
+			mode: "cors",
+			credentials: "omit", // Don't send cookies for embed requests
+		})
+			.then((response) => {
+				if (!response.ok) {
+					return this.handleErrorResponse(response);
+				}
+				return response.json();
+			})
+			.then((data) => {
+				return this.validateApiResponse(data);
+			})
+			.catch((error) => {
+				if (error instanceof Error) {
+					throw new Error(`Failed to fetch album: ${error.message}`);
+				}
+				throw new Error("Failed to fetch album: Unknown error");
 			});
-
-			if (!response.ok) {
-				await this.handleErrorResponse(response);
-			}
-
-			const data = await response.json();
-			return this.validateApiResponse(data);
-		} catch (error) {
-			if (error instanceof Error) {
-				throw new Error(`Failed to fetch album: ${error.message}`);
-			}
-			throw new Error("Failed to fetch album: Unknown error");
-		}
 	}
 
 	/**
@@ -62,7 +63,7 @@ export class EmbedApiClient {
 	 * @returns Public photos data
 	 * @throws Error if fetch fails
 	 */
-	async fetchStream(limit?: number, offset?: number): Promise<EmbedStreamApiResponse> {
+	fetchStream(limit?: number, offset?: number): Promise<EmbedStreamApiResponse> {
 		// Build URL with optional pagination parameters
 		const url = new URL(`${this.apiUrl}/api/v2/Embed/stream`);
 		if (limit !== undefined) {
@@ -72,29 +73,30 @@ export class EmbedApiClient {
 			url.searchParams.set("offset", String(offset));
 		}
 
-		try {
-			const response = await fetch(url.toString(), {
-				method: "GET",
-				headers: {
-					Accept: "application/json",
-					"Content-Type": "application/json",
-				},
-				mode: "cors",
-				credentials: "omit", // Don't send cookies for embed requests
+		return fetch(url.toString(), {
+			method: "GET",
+			headers: {
+				Accept: "application/json",
+				"Content-Type": "application/json",
+			},
+			mode: "cors",
+			credentials: "omit", // Don't send cookies for embed requests
+		})
+			.then((response) => {
+				if (!response.ok) {
+					return this.handleStreamErrorResponse(response);
+				}
+				return response.json();
+			})
+			.then((data) => {
+				return this.validateStreamApiResponse(data);
+			})
+			.catch((error) => {
+				if (error instanceof Error) {
+					throw new Error(`Failed to fetch public stream: ${error.message}`);
+				}
+				throw new Error("Failed to fetch public stream: Unknown error");
 			});
-
-			if (!response.ok) {
-				await this.handleStreamErrorResponse(response);
-			}
-
-			const data = await response.json();
-			return this.validateStreamApiResponse(data);
-		} catch (error) {
-			if (error instanceof Error) {
-				throw new Error(`Failed to fetch public stream: ${error.message}`);
-			}
-			throw new Error("Failed to fetch public stream: Unknown error");
-		}
 	}
 
 	/**
@@ -103,7 +105,7 @@ export class EmbedApiClient {
 	 * @param response HTTP response object
 	 * @throws Error with appropriate message based on status code
 	 */
-	private async handleErrorResponse(response: Response): Promise<never> {
+	private handleErrorResponse(response: Response): Promise<never> {
 		const status = response.status;
 
 		switch (status) {
@@ -159,7 +161,7 @@ export class EmbedApiClient {
 	 * @param response HTTP response object
 	 * @throws Error with appropriate message based on status code
 	 */
-	private async handleStreamErrorResponse(response: Response): Promise<never> {
+	private handleStreamErrorResponse(response: Response): Promise<never> {
 		const status = response.status;
 
 		switch (status) {

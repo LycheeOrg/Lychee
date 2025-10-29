@@ -29,7 +29,8 @@ function calculateSquareColumns(containerWidth: number, targetSize: number, gap:
 	const remainingSpace = containerWidth - usedSpace;
 
 	// Distribute remaining space evenly across all squares
-	const spread = Math.ceil(remainingSpace / columns);
+	// Use Math.floor to prevent width overflow
+	const spread = Math.floor(remainingSpace / columns);
 
 	// Final square size after distributing extra space
 	const finalSquareSize = targetSize + spread;
