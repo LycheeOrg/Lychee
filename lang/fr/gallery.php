@@ -41,7 +41,7 @@ return [
         'recent' => 'Récents',
         'public' => 'Publics',
         'on_this_day' => 'Ce jour-là',
-		'untagged' => 'Sans étiquette',
+        'untagged' => 'Sans étiquette',
     ],
     'layout' => [
         'squares' => 'Vignettes carrées',
@@ -234,6 +234,6 @@ return [
         'private' => 'privé',
         'public' => 'public',
         'inherit_from_parent' => 'hériter du parent',
-		'public_but_hidden' => 'public mais caché',
+        'public_but_hidden' => 'public mais caché',
     ],
 ];
