@@ -99,11 +99,13 @@ class HashCheck implements DiagnosticPipe
 	 */
 	private function computeHash(array $files, string $algo): string
 	{
-		$ctx = hash_init($algo);
+		$selected_algo = in_array($algo, hash_algos(), true) ? $algo : 'sha256';
+		$ctx = hash_init($selected_algo);
 
 		foreach ($files as $file_path) {
 			// Add the path itself to the stream for extra safety and ordering
-			hash_update($ctx, 'PATH::' . $file_path . "\n");
+			$rel = $this->normalizePath($file_path);
+			hash_update($ctx, 'PATH::' . $rel . "\n");
 			if (is_readable($file_path) && is_file($file_path)) {
 				// Update with file content; ignore errors silently (e.g., permission changes)
 				try {
@@ -117,5 +119,22 @@ class HashCheck implements DiagnosticPipe
 		}
 
 		return hash_final($ctx);
+	}
+
+	/**
+	 * Normalize absolute path to a base-relative, forward‑slash path for stable hashing.
+	 */
+	private function normalizePath(string $abs_path): string
+	{
+		$base = rtrim(base_path(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+		if (strncmp($abs_path, $base, strlen($base)) === 0) {
+			$rel = substr($abs_path, strlen($base));
+		} else {
+			$rel = $abs_path;
+		}
+		// Normalize separators for cross‑platform stability
+		$rel = str_replace('\\', '/', $rel);
+
+		return ltrim($rel, '/');
 	}
 }
