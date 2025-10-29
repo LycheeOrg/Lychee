@@ -14,12 +14,13 @@ export class EmbedApiClient {
 	 * Fetch album data for embedding
 	 *
 	 * @param albumId Album ID to fetch
-	 * @param limit   Optional maximum number of photos to fetch (1-100)
+	 * @param limit   Optional maximum number of photos to fetch (1-500)
 	 * @param offset  Optional number of photos to skip (default: 0)
+	 * @param sort    Optional sort order ('asc' or 'desc')
 	 * @returns Album and photos data
 	 * @throws Error if fetch fails or album is not accessible
 	 */
-	fetchAlbum(albumId: string, limit?: number, offset?: number): Promise<EmbedApiResponse> {
+	fetchAlbum(albumId: string, limit?: number, offset?: number, sort?: "asc" | "desc"): Promise<EmbedApiResponse> {
 		// Build URL with optional pagination parameters
 		const url = new URL(`${this.apiUrl}/api/v2/Embed/${encodeURIComponent(albumId)}`);
 		if (limit !== undefined) {
@@ -27,6 +28,9 @@ export class EmbedApiClient {
 		}
 		if (offset !== undefined) {
 			url.searchParams.set("offset", String(offset));
+		}
+		if (sort !== undefined) {
+			url.searchParams.set("sort", sort);
 		}
 
 		return fetch(url.toString(), {
@@ -58,12 +62,13 @@ export class EmbedApiClient {
 	/**
 	 * Fetch public photo stream for embedding
 	 *
-	 * @param limit  Optional maximum number of photos to fetch (1-100, default: 100)
+	 * @param limit  Optional maximum number of photos to fetch (1-500, default: 100)
 	 * @param offset Optional number of photos to skip (default: 0)
+	 * @param sort   Optional sort order ('asc' or 'desc', default: 'desc')
 	 * @returns Public photos data
 	 * @throws Error if fetch fails
 	 */
-	fetchStream(limit?: number, offset?: number): Promise<EmbedStreamApiResponse> {
+	fetchStream(limit?: number, offset?: number, sort?: "asc" | "desc"): Promise<EmbedStreamApiResponse> {
 		// Build URL with optional pagination parameters
 		const url = new URL(`${this.apiUrl}/api/v2/Embed/stream`);
 		if (limit !== undefined) {
@@ -71,6 +76,9 @@ export class EmbedApiClient {
 		}
 		if (offset !== undefined) {
 			url.searchParams.set("offset", String(offset));
+		}
+		if (sort !== undefined) {
+			url.searchParams.set("sort", sort);
 		}
 
 		return fetch(url.toString(), {

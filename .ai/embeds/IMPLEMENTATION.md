@@ -496,6 +496,9 @@ export interface LycheeEmbedConfig {
   showCaptions?: boolean;
   showExif?: boolean;
 
+  // Sort
+  sortOrder?: 'asc' | 'desc'; // 'desc' = newest first (default), 'asc' = oldest first
+
   // Callbacks
   onLoad?: () => void;
   onError?: (error: Error) => void;

@@ -40,8 +40,9 @@ class EmbedController extends Controller
 	 * Only public albums that don't require authentication can be embedded.
 	 *
 	 * Supports optional pagination via query parameters:
-	 * - limit: Maximum number of photos to return (default: all, max: 100)
+	 * - limit: Maximum number of photos to return (default: all, max: 500)
 	 * - offset: Number of photos to skip (default: 0)
+	 * - sort: Sort order for photos ('asc' = oldest first, 'desc' = newest first, default: album setting)
 	 *
 	 * @param Request $request The HTTP request
 	 * @param string  $albumId The album ID to embed
@@ -56,14 +57,20 @@ class EmbedController extends Controller
 		// Parse pagination parameters
 		$limit = $request->query('limit', null);
 		$offset = $request->query('offset', 0);
+		$sort = $request->query('sort', null);
 
-		// Validate and cap limit to 100 max
+		// Validate and cap limit to 500 max
 		if ($limit !== null) {
-			$limit = max(1, min((int) $limit, 100));
+			$limit = max(1, min((int) $limit, 500));
 		}
 		$offset = max(0, (int) $offset);
 
-		$album = $this->findAlbum($albumId, $limit, $offset);
+		// Validate sort order
+		if ($sort !== null && !in_array($sort, ['asc', 'desc'], true)) {
+			$sort = null; // Invalid value, use default
+		}
+
+		$album = $this->findAlbum($albumId, $limit, $offset, $sort);
 
 		// Verify album is publicly accessible
 		if (!$this->isPubliclyAccessible($album)) {
@@ -87,11 +94,12 @@ class EmbedController extends Controller
 	 * - Not password protected
 	 * - Not link-required only
 	 *
-	 * Photos are ordered by creation date (most recent first).
+	 * Photos are ordered by creation date (most recent first by default).
 	 *
 	 * Supports optional pagination via query parameters:
-	 * - limit: Maximum number of photos to return (default: 100, max: 100)
+	 * - limit: Maximum number of photos to return (default: 100, max: 500)
 	 * - offset: Number of photos to skip (default: 0)
+	 * - sort: Sort order for photos ('asc' = oldest first, 'desc' = newest first, default: 'desc')
 	 *
 	 * @param Request $request The HTTP request
 	 *
@@ -102,12 +110,18 @@ class EmbedController extends Controller
 		// Parse pagination parameters
 		$limit = $request->query('limit', 100);
 		$offset = $request->query('offset', 0);
+		$sort = $request->query('sort', 'desc');
 
-		// Validate and cap limit to 100 max
-		$limit = max(1, min((int) $limit, 100));
+		// Validate and cap limit to 500 max
+		$limit = max(1, min((int) $limit, 500));
 		$offset = max(0, (int) $offset);
 
-		$photos = $this->findPublicPhotos($limit, $offset);
+		// Validate sort order, default to 'desc' (newest first)
+		if (!in_array($sort, ['asc', 'desc'], true)) {
+			$sort = 'desc';
+		}
+
+		$photos = $this->findPublicPhotos($limit, $offset, $sort);
 
 		// Get site title from configuration
 		$siteTitle = strval(Configs::getValue('site_title') ?? 'Lychee');
@@ -121,12 +135,13 @@ class EmbedController extends Controller
 	 * Uses PhotoQueryPolicy to filter photos based on public accessibility.
 	 * Only includes photos from albums that are browsable without authentication.
 	 *
-	 * @param int $limit  Maximum number of photos to return
-	 * @param int $offset Number of photos to skip
+	 * @param int    $limit  Maximum number of photos to return
+	 * @param int    $offset Number of photos to skip
+	 * @param string $sort   Sort order ('asc' or 'desc')
 	 *
 	 * @return \Illuminate\Support\Collection Collection of Photo models with size_variants loaded
 	 */
-	private function findPublicPhotos(int $limit, int $offset): \Illuminate\Support\Collection
+	private function findPublicPhotos(int $limit, int $offset, string $sort): \Illuminate\Support\Collection
 	{
 		// Start with base photo query
 		$photosQuery = Photo::query();
@@ -140,8 +155,8 @@ class EmbedController extends Controller
 			include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_rss')
 		);
 
-		// Order by most recent first
-		$photosQuery->orderBy('created_at', 'desc');
+		// Order by creation date with specified sort order
+		$photosQuery->orderBy('created_at', $sort);
 
 		// Apply pagination
 		$photosQuery->skip($offset)->take($limit);
@@ -155,15 +170,16 @@ class EmbedController extends Controller
 	/**
 	 * Find album by ID with photos and size variants loaded.
 	 *
-	 * @param string   $albumId The album ID
-	 * @param int|null $limit   Maximum number of photos to load (null = all)
-	 * @param int      $offset  Number of photos to skip
+	 * @param string      $albumId The album ID
+	 * @param int|null    $limit   Maximum number of photos to load (null = all)
+	 * @param int         $offset  Number of photos to skip
+	 * @param string|null $sort    Sort order override ('asc' or 'desc', null = use album default)
 	 *
 	 * @return BaseAlbum The album instance
 	 *
 	 * @throws NotFoundHttpException if album doesn't exist
 	 */
-	private function findAlbum(string $albumId, ?int $limit = null, int $offset = 0): BaseAlbum
+	private function findAlbum(string $albumId, ?int $limit = null, int $offset = 0, ?string $sort = null): BaseAlbum
 	{
 		/** @var Album|null $album */
 		$album = Album::query()->find($albumId);
@@ -187,10 +203,19 @@ class EmbedController extends Controller
 		}
 		$photosQuery->with('size_variants');
 
-		$sorting = $album->getEffectivePhotoSorting();
-		$photos = (new SortingDecorator($photosQuery))
-			->orderPhotosBy($sorting->column, $sorting->order)
-			->get();
+		// Use custom sort order if provided, otherwise use album's default sorting
+		if ($sort !== null) {
+			// Override with custom sort by creation date
+			$photos = (new SortingDecorator($photosQuery))
+				->orderPhotosBy('created_at', $sort)
+				->get();
+		} else {
+			// Use album's configured sorting
+			$sorting = $album->getEffectivePhotoSorting();
+			$photos = (new SortingDecorator($photosQuery))
+				->orderPhotosBy($sorting->column, $sorting->order)
+				->get();
+		}
 
 		// Replace the photos relation with the paginated results
 		$album->setRelation('photos', $photos);

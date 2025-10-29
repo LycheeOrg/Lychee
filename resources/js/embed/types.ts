@@ -46,6 +46,8 @@ export interface EmbedConfig {
 	targetColumnWidth?: number;
 	/** Maximum number of photos to display, or 'none' for all photos */
 	maxPhotos?: number | "none";
+	/** Sort order: 'desc' (newest first, default) or 'asc' (oldest first) */
+	sortOrder?: "asc" | "desc";
 	/** Whether to show album title */
 	showTitle?: boolean;
 	/** Whether to show album description */

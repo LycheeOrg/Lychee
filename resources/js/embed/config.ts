@@ -12,6 +12,7 @@ export const DEFAULT_CONFIG: Partial<EmbedConfig> = {
 	targetRowHeight: 200,
 	targetColumnWidth: 300,
 	maxPhotos: 18,
+	sortOrder: "desc",
 	showTitle: true,
 	showDescription: true,
 	showCaptions: true,
@@ -81,8 +82,15 @@ export function validateConfig(config: Partial<EmbedConfig>): EmbedConfig {
 			: typeof config.maxPhotos === "number" && Number.isFinite(config.maxPhotos)
 				? config.maxPhotos
 				: (DEFAULT_CONFIG.maxPhotos as number);
-	if (maxPhotos !== "none" && (maxPhotos < 1 || maxPhotos > 100)) {
-		throw new Error("maxPhotos must be between 1 and 100, or 'none'");
+	if (maxPhotos !== "none" && (maxPhotos < 1 || maxPhotos > 500)) {
+		throw new Error("maxPhotos must be between 1 and 500, or 'none'");
+	}
+
+	// Validate sort order
+	const validSortOrders = ["asc", "desc"] as const;
+	const sortOrder = config.sortOrder ?? DEFAULT_CONFIG.sortOrder!;
+	if (!validSortOrders.includes(sortOrder as any)) {
+		throw new Error(`Invalid sortOrder: ${sortOrder}. Valid options: ${validSortOrders.join(", ")}`);
 	}
 
 	// Validate header placement
@@ -103,6 +111,7 @@ export function validateConfig(config: Partial<EmbedConfig>): EmbedConfig {
 		targetRowHeight,
 		targetColumnWidth,
 		maxPhotos,
+		sortOrder,
 		showTitle: config.showTitle ?? DEFAULT_CONFIG.showTitle!,
 		showDescription: config.showDescription ?? DEFAULT_CONFIG.showDescription!,
 		showCaptions: config.showCaptions ?? DEFAULT_CONFIG.showCaptions!,
@@ -177,6 +186,11 @@ export function parseDataAttributes(element: HTMLElement): Partial<EmbedConfig> 
 				config.maxPhotos = parsed;
 			}
 		}
+	}
+
+	// Sort order
+	if (element.dataset.sortOrder) {
+		config.sortOrder = element.dataset.sortOrder as "asc" | "desc";
 	}
 
 	// Boolean options

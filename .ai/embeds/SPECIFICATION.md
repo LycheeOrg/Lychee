@@ -181,8 +181,13 @@ Users can customize the embedded gallery:
 - Show/hide EXIF data
 - Header placement (top, bottom, none)
 
+#### Sort Options
+- Photo sort order: "newest first" (default) or "oldest first"
+- Applies to both album and stream modes
+- Sorted by photo taken date (if available) or upload date
+
 #### Stream-Specific Options
-- Maximum photos to display (6, 12, 18, 30, 60, 90, or "none" for all)
+- Maximum photos to display (6, 12, 18, 30, 60, 90, 120, 180, 300, 500, or "none" for all, max: 500)
 - Automatically updates when new photos are added to public albums
 
 #### Dimensions
@@ -310,9 +315,12 @@ The modal for generating embed code includes:
 
 **Endpoint**: `GET /api/v2/Embed/{albumId}`
 
+**Query Parameters**:
+- `sort` (optional): Sort order for photos. Values: `desc` (newest first, default) or `asc` (oldest first)
+
 **Request**:
 ```http
-GET /api/v2/Embed/abc123
+GET /api/v2/Embed/abc123?sort=desc
 Host: photos.example.com
 Origin: https://blog.example.com
 ```
@@ -410,11 +418,12 @@ Origin: https://blog.example.com
 **Endpoint**: `GET /api/v2/Embed/stream`
 
 **Query Parameters**:
-- `limit` (optional): Maximum number of photos to return (default: 18, max: 100)
+- `limit` (optional): Maximum number of photos to return (default: 18, max: 500)
+- `sort` (optional): Sort order for photos. Values: `desc` (newest first, default) or `asc` (oldest first)
 
 **Request**:
 ```http
-GET /api/v2/Embed/stream?limit=30
+GET /api/v2/Embed/stream?limit=30&sort=desc
 Host: photos.example.com
 Origin: https://blog.example.com
 ```
@@ -516,6 +525,9 @@ new LycheeEmbed.createLycheeEmbed(
 		showExif: true,
 		headerPlacement: 'top', // 'top' | 'bottom' | 'none'
 
+		// Sort options
+		sortOrder: 'desc', // 'desc' (newest first) | 'asc' (oldest first)
+
 		// Callbacks
 		onLoad: function() {
 			console.log('Gallery loaded');
@@ -547,6 +559,9 @@ new LycheeEmbed.createLycheeEmbed(
 		showCaptions: true,
 		showExif: true,
 		headerPlacement: 'bottom',
+
+		// Sort options
+		sortOrder: 'desc', // 'desc' (newest first) | 'asc' (oldest first)
 
 		// Callbacks
 		onLoad: function() {

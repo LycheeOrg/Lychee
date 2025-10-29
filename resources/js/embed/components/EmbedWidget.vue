@@ -338,8 +338,9 @@ onMounted(() => {
 
 	if (mode === "stream") {
 		// Fetch public stream
-		const limit = props.config.maxPhotos === "none" ? 100 : props.config.maxPhotos;
-		loadPromise = apiClient.fetchStream(limit).then((streamData) => ({
+		const limit = props.config.maxPhotos === "none" ? 500 : props.config.maxPhotos;
+		const sort = props.config.sortOrder ?? "desc";
+		loadPromise = apiClient.fetchStream(limit, 0, sort).then((streamData) => ({
 			album: {
 				id: "",
 				title: "Public Photo Stream",
@@ -355,7 +356,8 @@ onMounted(() => {
 			loadPromise = Promise.reject(new Error("Album ID is required for album mode"));
 		} else {
 			const limit = props.config.maxPhotos === "none" ? undefined : props.config.maxPhotos;
-			loadPromise = apiClient.fetchAlbum(props.config.albumId, limit);
+			const sort = props.config.sortOrder; // Pass undefined if not set (use album default)
+			loadPromise = apiClient.fetchAlbum(props.config.albumId, limit, 0, sort);
 		}
 	}
 
