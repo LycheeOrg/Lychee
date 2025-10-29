@@ -96,7 +96,7 @@ class EmbedController extends Controller
 	 * - Not password protected
 	 * - Not link-required only
 	 *
-	 * Photos are ordered by creation date (most recent first by default).
+	 * Photos are ordered by EXIF taken_at (with fallback to created_at), most recent first by default.
 	 *
 	 * Supports optional pagination via query parameters:
 	 * - limit: Maximum number of photos to return (default: 100, max: 500)
@@ -157,10 +157,10 @@ class EmbedController extends Controller
 			include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_rss')
 		);
 
-		// Order by creation date with specified sort order
+		// Order by EXIF taken_at (with fallback to created_at) with specified sort order
 		// Convert string to enum
 		$orderEnum = $sort === 'asc' ? OrderSortingType::ASC : OrderSortingType::DESC;
-		$photosQuery->orderBy('created_at', $orderEnum->value);
+		$photosQuery->orderByRaw('COALESCE(taken_at, created_at) ' . $orderEnum->value);
 
 		// Apply pagination
 		$photosQuery->skip($offset)->take($limit);
@@ -208,11 +208,11 @@ class EmbedController extends Controller
 
 		// Use custom sort order if provided, otherwise use album's default sorting
 		if ($sort !== null) {
-			// Override with custom sort by creation date
+			// Override with custom sort by EXIF taken_at (with fallback to created_at)
 			// Convert string to enum
 			$orderEnum = $sort === 'asc' ? OrderSortingType::ASC : OrderSortingType::DESC;
 			$photos = (new SortingDecorator($photosQuery))
-				->orderPhotosBy(ColumnSortingType::CREATED_AT, $orderEnum)
+				->orderPhotosBy(ColumnSortingType::TAKEN_AT, $orderEnum)
 				->get();
 		} else {
 			// Use album's configured sorting
