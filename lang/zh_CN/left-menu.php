@@ -10,6 +10,7 @@ return [
 	'login' => 'Login',
 	'frame' => 'Frame',
 	'map' => 'Map',
+	'embed_stream' => '嵌入照片流',
 	'admin' => '管理',
 	'clockwork' => 'Clockwork 应用',
 	'logs' => '查看日志',

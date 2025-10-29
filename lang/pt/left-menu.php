@@ -10,6 +10,7 @@ return [
 	'login' => 'Login',
 	'frame' => 'Frame',
 	'map' => 'Map',
+	'embed_stream' => 'Incorporar Fluxo de Fotos',
 	'admin' => 'Admin',
 	'clockwork' => 'Clockwork App',
 	'logs' => 'Show Logs',

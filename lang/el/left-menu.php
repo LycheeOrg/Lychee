@@ -10,6 +10,7 @@ return [
 	'login' => 'Login',
 	'frame' => 'Frame',
 	'map' => 'Map',
+	'embed_stream' => 'Ενσωμάτωση Ροής Φωτογραφιών',
 	'admin' => 'Admin',
 	'clockwork' => 'Clockwork App',
 	'logs' => 'Show Logs',

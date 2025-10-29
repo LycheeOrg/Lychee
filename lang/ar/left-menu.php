@@ -10,6 +10,7 @@ return [
 	'login' => 'تسجيل الدخول',
 	'frame' => 'الإطار',
 	'map' => 'الخريطة',
+	'embed_stream' => 'تضمين دفق الصور',
 	'admin' => 'الإدارة',
 	'clockwork' => 'تطبيق Clockwork',
 	'logs' => 'عرض السجلات',

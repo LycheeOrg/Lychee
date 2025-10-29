@@ -10,6 +10,7 @@ return [
 	'login' => 'Login',
 	'frame' => 'Frame',
 	'map' => 'Map',
+	'embed_stream' => 'Incorpora Flusso Foto',
 	'admin' => 'Admin',
 	'clockwork' => 'Clockwork App',
 	'logs' => 'Show Logs',

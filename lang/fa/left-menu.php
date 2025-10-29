@@ -10,6 +10,7 @@ return [
 	'login' => 'ورود',
 	'frame' => 'قاب',
 	'map' => 'نقشه',
+	'embed_stream' => 'جاسازی جریان عکس',
 	'admin' => 'مدیر',
 	'clockwork' => 'برنامه Clockwork',
 	'logs' => 'نمایش گزارش‌ها',

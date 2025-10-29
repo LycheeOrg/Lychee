@@ -10,6 +10,7 @@ return [
 	'login' => 'Login',
 	'frame' => 'Frame',
 	'map' => 'Map',
+	'embed_stream' => '写真ストリームを埋め込む',
 	'admin' => 'Admin',
 	'clockwork' => 'Clockwork App',
 	'logs' => 'Show Logs',

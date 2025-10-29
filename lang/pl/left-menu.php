@@ -10,6 +10,7 @@ return [
 	'login' => 'Login',
 	'frame' => 'Frame',
 	'map' => 'Map',
+	'embed_stream' => 'Osadź Strumień Zdjęć',
 	'admin' => 'Administrator',
 	'clockwork' => 'clockwork',
 	'logs' => 'Pokaż dzienniki',
