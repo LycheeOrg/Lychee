@@ -165,7 +165,6 @@ const noData = computed(() => albumsStore.albums.length === 0 && photosStore.pho
 
 const {
 	is_share_album_visible,
-	is_embed_code_visible,
 	toggleDelete,
 	toggleMergeAlbum,
 	toggleMove,
