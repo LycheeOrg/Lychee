@@ -7,15 +7,16 @@
 
 ## Executive Summary
 
-This specification describes a new feature that allows Lychee users to embed their photo albums on external websites using a simple JavaScript widget. Users can copy/paste HTML code to display a beautiful, interactive photo gallery on any website, similar to how Flickr and other photo services offer embeddable galleries.
+This specification describes a new feature that allows Lychee users to embed their photo content on external websites using a simple JavaScript widget. Users can embed either specific photo albums or a chronological stream of all their public photos. They can copy/paste HTML code to display a beautiful, interactive photo gallery on any website, similar to how Flickr and other photo services offer embeddable galleries.
 
 ## Goals
 
 ### Primary Goals
-1. Enable users to share their Lychee photo albums on external websites
+1. Enable users to share their Lychee photo albums and photo streams on external websites
 2. Provide a rich, interactive viewing experience that matches Lychee's native gallery
 3. Support all of Lychee's existing gallery layout types
 4. Make embedding simple for non-technical users
+5. Support both album-specific and stream-based embedding modes
 
 ### Secondary Goals
 1. Maintain performance with optimized loading and rendering
@@ -27,8 +28,10 @@ This specification describes a new feature that allows Lychee users to embed the
 
 ### Album Owner
 - As a Lychee user, I want to embed my public album on my blog so visitors can view my photos without leaving my site
+- As a photographer, I want to embed all my public photos as a dynamic stream on my portfolio website
 - As a photographer, I want to customize the layout and appearance of the embedded gallery to match my website's design
 - As a content creator, I want to easily copy/paste embed code without technical knowledge
+- As a blogger, I want to embed my latest photos automatically without updating the embed code
 
 ### Website Visitor
 - As a website visitor, I want to view photos in a beautiful gallery without being redirected
@@ -37,14 +40,46 @@ This specification describes a new feature that allows Lychee users to embed the
 
 ## Feature Description
 
+### Embed Modes
+
+The widget supports two embedding modes:
+
+#### Album Mode
+Embeds photos from a specific album:
+- Shows only photos from the selected album
+- Album must be public (no password, not link-only)
+- Album metadata can be displayed (title, description, etc.)
+- Ideal for showcasing specific collections (vacation, events, projects)
+
+#### Stream Mode
+Embeds all public photos as a chronological feed:
+- Shows all photos from public albums (most recent first)
+- Automatically includes new photos as they're added to public albums
+- Respects the same visibility rules as RSS feeds
+- NSFW filtering follows RSS settings
+- Limited to a maximum number of photos (configurable)
+- Ideal for portfolio sites, blogs, or dynamic photo feeds
+
 ### Embed Code Generation
 
-Users can generate embed code from any public album in their Lychee installation:
+#### From Album View
+Users can generate embed code from any public album:
 
 1. Open a public album in Lychee
-2. Click the "Embed" button in the album toolbar
-3. Configure display options (layout, size, theme, etc.)
-4. Preview the embedded gallery
+2. Click the "Embed" button (code icon) in the album toolbar
+3. Dialog opens automatically in **Album Mode**
+4. Configure display options (layout, spacing, etc.)
+5. Preview the embedded gallery
+6. Copy the generated HTML/JavaScript code
+7. Paste the code into their website
+
+#### From Sidebar Menu
+Users can generate stream embed code from the sidebar:
+
+1. Click "Embed Photo Stream" in the left sidebar menu (below Map)
+2. Dialog opens automatically in **Stream Mode**
+3. Configure display options (layout, spacing, max photos, etc.)
+4. Preview the embedded stream
 5. Copy the generated HTML/JavaScript code
 6. Paste the code into their website
 
@@ -128,16 +163,27 @@ The embedded gallery automatically adapts to:
 
 Users can customize the embedded gallery:
 
+#### Mode Selection (Automatic)
+- **Album Mode**: Automatically selected when opened from an album
+- **Stream Mode**: Automatically selected when opened from sidebar menu
+- Mode cannot be changed after dialog opens (determined by context)
+
 #### Layout Options
 - Layout type (square, justified, masonry, grid, filmstrip)
 - Thumbnail sizes (varies by layout)
-- Gap between items (0-30px)
+- Gap between items (0-50px)
+- Target row height (100-1000px) for justified/filmstrip layouts
+- Target column width (100-800px) for grid/masonry/square layouts
 
 #### Display Options
-- Show/hide album information
+- Show/hide album information (album mode only)
 - Show/hide photo captions
 - Show/hide EXIF data
-- Theme (light, dark, auto)
+- Header placement (top, bottom, none)
+
+#### Stream-Specific Options
+- Maximum photos to display (6, 12, 18, 30, 60, 90, or "none" for all)
+- Automatically updates when new photos are added to public albums
 
 #### Dimensions
 - Responsive (100% width) or fixed dimensions
@@ -145,18 +191,29 @@ Users can customize the embedded gallery:
 
 ## Access Control
 
-### Album Requirements
+### Album Mode Requirements
 Only **public albums** can be embedded:
 
 - Album must have public access permissions
 - No password protection
-- Not link-required only (may be configurable)
+- Not link-required only
+
+### Stream Mode Requirements
+Only **photos from public albums** appear in streams:
+
+- Photos must be in albums marked as public
+- No password protection on albums
+- Not link-required only
+- Respects the same visibility rules as RSS feeds
+- NSFW albums may be filtered based on RSS settings
 
 ### Security Considerations
 - Signed URLs for photos (with appropriate expiration)
 - CORS properly configured for cross-origin access
-- No authentication required for public albums
+- No authentication required for public content
 - No exposure of private album data
+- Rate limiting: Stream mode (30 req/min) vs Album mode (120 req/min)
+- Caching: Stream mode (15 min) vs Album mode (5 min)
 
 ## Technical Requirements
 
@@ -249,7 +306,7 @@ The modal for generating embed code includes:
 
 ## API Specifications
 
-### Embed API Endpoint
+### Album Embed API Endpoint
 
 **Endpoint**: `GET /api/v2/Embed/{albumId}`
 
@@ -348,39 +405,158 @@ Origin: https://blog.example.com
 }
 ```
 
+### Stream Embed API Endpoint
+
+**Endpoint**: `GET /api/v2/Embed/stream`
+
+**Query Parameters**:
+- `limit` (optional): Maximum number of photos to return (default: 18, max: 100)
+
+**Request**:
+```http
+GET /api/v2/Embed/stream?limit=30
+Host: photos.example.com
+Origin: https://blog.example.com
+```
+
+**Response** (Success):
+```json
+{
+	"photos": [
+		{
+			"id": "xyz789",
+			"title": "Mountain Sunrise",
+			"description": "Beautiful sunrise over the peaks",
+			"taken_at": "2024-07-15T06:30:00Z",
+			"size_variants": {
+				"placeholder": {
+					"url": "https://photos.example.com/image/...",
+					"width": 10,
+					"height": 10
+				},
+				"thumb": {
+					"url": "https://photos.example.com/image/...",
+					"width": 200,
+					"height": 133
+				},
+				"thumb2x": {
+					"url": "https://photos.example.com/image/...",
+					"width": 400,
+					"height": 266
+				},
+				"small": {
+					"url": "https://photos.example.com/image/...",
+					"width": 720,
+					"height": 480
+				},
+				"small2x": {
+					"url": "https://photos.example.com/image/...",
+					"width": 1440,
+					"height": 960
+				},
+				"medium": {
+					"url": "https://photos.example.com/image/...",
+					"width": 1920,
+					"height": 1280
+				},
+				"medium2x": {
+					"url": "https://photos.example.com/image/...",
+					"width": 3840,
+					"height": 2560
+				},
+				"original": {
+					"width": 6000,
+					"height": 4000
+				}
+			},
+			"exif": {
+				"make": "Canon",
+				"model": "EOS R5",
+				"lens": "RF 24-70mm F2.8 L IS USM",
+				"iso": "400",
+				"aperture": "f/2.8",
+				"shutter": "1/250s",
+				"focal": "50mm",
+				"taken_at": "2024-07-15T06:30:00Z"
+			}
+		}
+	]
+}
+```
+
+**Response** (No Public Photos):
+```json
+{
+	"photos": []
+}
+```
+
 ### JavaScript Widget API
 
-**Initialization**:
+**Album Mode Initialization**:
 ```javascript
-new LycheeEmbed({
-	// Required
-	containerId: 'lychee-embed-container',
-	albumId: 'abc123',
-	baseUrl: 'https://photos.example.com',
+new LycheeEmbed.createLycheeEmbed(
+	document.getElementById('lychee-embed-container'),
+	{
+		// Required
+		apiUrl: 'https://photos.example.com',
+		mode: 'album',
+		albumId: 'abc123',
 
-	// Layout options
-	layout: 'justified', // 'square' | 'justified' | 'masonry' | 'grid' | 'filmstrip'
-	squareSize: 200,
-	masonryColumnWidth: 300,
-	gridColumnWidth: 250,
-	justifiedRowHeight: 320,
-	filmstripThumbnailHeight: 100,
-	layoutGap: 12,
+		// Layout options
+		layout: 'justified', // 'square' | 'justified' | 'masonry' | 'grid' | 'filmstrip'
+		spacing: 8,
+		targetRowHeight: 200,
+		targetColumnWidth: 300,
 
-	// Display options
-	theme: 'auto', // 'light' | 'dark' | 'auto'
-	showAlbumInfo: true,
-	showCaptions: true,
-	showExif: true,
+		// Display options
+		showTitle: true,
+		showDescription: true,
+		showCaptions: true,
+		showExif: true,
+		headerPlacement: 'top', // 'top' | 'bottom' | 'none'
 
-	// Callbacks
-	onLoad: function() {
-		console.log('Gallery loaded');
-	},
-	onError: function(error) {
-		console.error('Gallery error:', error);
+		// Callbacks
+		onLoad: function() {
+			console.log('Gallery loaded');
+		},
+		onError: function(error) {
+			console.error('Gallery error:', error);
+		}
 	}
-});
+);
+```
+
+**Stream Mode Initialization**:
+```javascript
+new LycheeEmbed.createLycheeEmbed(
+	document.getElementById('lychee-stream-container'),
+	{
+		// Required
+		apiUrl: 'https://photos.example.com',
+		mode: 'stream',
+
+		// Layout options
+		layout: 'justified',
+		spacing: 8,
+		targetRowHeight: 200,
+		targetColumnWidth: 300,
+		maxPhotos: 30, // or 'none' for all
+
+		// Display options
+		showCaptions: true,
+		showExif: true,
+		headerPlacement: 'bottom',
+
+		// Callbacks
+		onLoad: function() {
+			console.log('Stream loaded');
+		},
+		onError: function(error) {
+			console.error('Stream error:', error);
+		}
+	}
+);
 ```
 
 ## Implementation Phases
