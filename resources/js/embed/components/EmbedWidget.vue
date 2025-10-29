@@ -502,7 +502,14 @@ watch(
 	color: white;
 	font-weight: 300;
 	display: block;
-	transform: translate(0.03em, -0.08em);
+}
+
+.lychee-embed__filmstrip-nav--prev .lychee-embed__filmstrip-nav-icon {
+	transform: translate(-0.03em, -0.08em);
+}
+
+.lychee-embed__filmstrip-nav--next .lychee-embed__filmstrip-nav-icon {
+	transform: translate(0.05em, -0.08em);
 }
 
 .lychee-embed__filmstrip-nav:hover {
