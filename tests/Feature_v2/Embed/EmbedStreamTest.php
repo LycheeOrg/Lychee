@@ -192,7 +192,7 @@ class EmbedStreamTest extends BaseApiWithDataTest
 		$nsfwPhoto = \App\Models\Photo::factory()->owned_by($this->userLocked)->with_GPS_coordinates()->in($nsfwAlbum)->create();
 
 		// Enable NSFW hiding in RSS
-		$originalHideNsfw = Configs::getValueAsString('hide_nsfw_in_rss', '0');
+		$originalHideNsfw = Configs::getValueAsBool('hide_nsfw_in_rss');
 		Configs::set('hide_nsfw_in_rss', '1');
 
 		$response = $this->getJson('Embed/stream');
