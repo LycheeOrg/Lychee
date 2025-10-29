@@ -35,7 +35,7 @@ class EmbedAlbumResource extends Data
 			'id' => $album->id,
 			'title' => $album->title,
 			'description' => $album->description,
-			'photo_count' => $album->photos->count(),
+			'photo_count' => $album->photos_count ?? $album->photos->count(),
 			'copyright' => $album->copyright,
 			'license' => $album->license?->localization(),
 		];

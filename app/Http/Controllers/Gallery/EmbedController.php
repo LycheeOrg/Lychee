@@ -176,6 +176,9 @@ class EmbedController extends Controller
 			throw new NotFoundHttpException('Album not found');
 		}
 
+		// Load total photo count before pagination
+		$album->loadCount('photos');
+
 		// Build query for photos with size variants
 		$photosQuery = $album->photos()->getQuery();
 
