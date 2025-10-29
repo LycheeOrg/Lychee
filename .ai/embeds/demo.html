@@ -39,6 +39,39 @@
             margin-bottom: 0.5rem;
         }
 
+        h2 {
+            margin-bottom: 1rem;
+        }
+
+        h3 {
+            margin-bottom: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 4px;
+        }
+
+        .info-box.warning {
+            background: #fff3e0;
+            border-left-color: #ff9800;
+        }
+
+        .code-block {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 1rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
         .config-section {
             background: white;
             padding: 1.5rem;
@@ -117,6 +150,28 @@
             <h1>🖼️ Lychee Embed Widget - Interactive Demo</h1>
             <p>Test the embed widget with your own Lychee instance</p>
         </header>
+
+        <div class="config-section">
+            <h2>About Embed Modes</h2>
+
+            <div class="info-box">
+                <h3>📁 Album Mode</h3>
+                <p><strong>What it does:</strong> Embeds photos from a specific album on your website.</p>
+                <p><strong>When to use:</strong> When you want to showcase a particular album (vacation photos, portfolio, event coverage, etc.)</p>
+                <p><strong>Requirements:</strong> Album must be public (no password, not link-only)</p>
+            </div>
+
+            <div class="info-box">
+                <h3>🌊 Stream Mode</h3>
+                <p><strong>What it does:</strong> Embeds all your public photos in chronological order (most recent first)</p>
+                <p><strong>When to use:</strong> When you want a dynamic feed of all your public uploads (similar to an RSS feed)</p>
+                <p><strong>Requirements:</strong> Photos must be in public albums</p>
+            </div>
+
+            <div class="info-box warning">
+                <strong>⚠️ Note:</strong> Only photos from public albums (no password protection, not link-required) will appear in both modes. NSFW filtering respects your RSS settings.
+            </div>
+        </div>
 
         <div class="config-section">
             <h2>Configuration</h2>
@@ -226,6 +281,75 @@
             <p style="text-align: center; padding: 2rem; color: #999;">
                 Configure your Lychee instance above and click "Load Widget" to see the embed in action.
             </p>
+        </div>
+
+        <div class="config-section">
+            <h2>Code Examples</h2>
+            <p>Copy these examples to embed the widget on your website:</p>
+
+            <h3>Album Mode Example</h3>
+            <p>Embed a specific album:</p>
+            <div class="code-block">&lt;!-- Include CSS --&gt;
+&lt;link rel="stylesheet" href="https://your-lychee.com/embed/lychee-embed.css"&gt;
+
+&lt;!-- Widget container --&gt;
+&lt;div id="lychee-embed"&gt;&lt;/div&gt;
+
+&lt;!-- Include JS --&gt;
+&lt;script src="https://your-lychee.com/embed/lychee-embed.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+  new LycheeEmbed.createLycheeEmbed(
+    document.getElementById('lychee-embed'),
+    {
+      apiUrl: 'https://your-lychee.com',
+      mode: 'album',
+      albumId: 'YOUR_ALBUM_ID',
+      layout: 'justified',
+      maxPhotos: 18
+    }
+  );
+&lt;/script&gt;</div>
+
+            <h3>Stream Mode Example</h3>
+            <p>Embed all public photos as a stream:</p>
+            <div class="code-block">&lt;!-- Include CSS --&gt;
+&lt;link rel="stylesheet" href="https://your-lychee.com/embed/lychee-embed.css"&gt;
+
+&lt;!-- Widget container --&gt;
+&lt;div id="lychee-stream"&gt;&lt;/div&gt;
+
+&lt;!-- Include JS --&gt;
+&lt;script src="https://your-lychee.com/embed/lychee-embed.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+  new LycheeEmbed.createLycheeEmbed(
+    document.getElementById('lychee-stream'),
+    {
+      apiUrl: 'https://your-lychee.com',
+      mode: 'stream',
+      layout: 'justified',
+      maxPhotos: 50
+    }
+  );
+&lt;/script&gt;</div>
+
+            <h3>Using Data Attributes</h3>
+            <p>Alternatively, configure using HTML data attributes:</p>
+            <div class="code-block">&lt;!-- Album Mode --&gt;
+&lt;div data-lychee-embed
+     data-api-url="https://your-lychee.com"
+     data-mode="album"
+     data-album-id="YOUR_ALBUM_ID"
+     data-layout="justified"
+     data-max-photos="18"&gt;
+&lt;/div&gt;
+
+&lt;!-- Stream Mode --&gt;
+&lt;div data-lychee-embed
+     data-api-url="https://your-lychee.com"
+     data-mode="stream"
+     data-layout="masonry"
+     data-max-photos="50"&gt;
+&lt;/div&gt;</div>
         </div>
     </div>
 
