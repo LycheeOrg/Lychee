@@ -126,9 +126,9 @@ class EmbedController extends Controller
 		$photos = $this->findPublicPhotos($limit, $offset, $sort);
 
 		// Get site title from configuration
-		$siteTitle = strval(Configs::getValue('site_title') ?? 'Lychee');
+		$site_title = strval(Configs::getValue('site_title') ?? 'Lychee');
 
-		return EmbedStreamResource::fromPhotos($siteTitle, $photos);
+		return EmbedStreamResource::fromPhotos($site_title, $photos);
 	}
 
 	/**

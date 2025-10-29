@@ -29,25 +29,25 @@ class EmbedStreamResource extends Data
 	public Collection $photos;
 
 	/**
-	 * @param string     $siteTitle The site title to display
-	 * @param Collection $photos    Collection of Photo models
+	 * @param string     $site_title The site title to display
+	 * @param Collection $photos     Collection of Photo models
 	 */
-	public function __construct(string $siteTitle, Collection $photos)
+	public function __construct(string $site_title, Collection $photos)
 	{
-		$this->site_title = $siteTitle;
+		$this->site_title = $site_title;
 		$this->photos = $photos->map(fn ($photo) => EmbedPhotoResource::fromModel($photo));
 	}
 
 	/**
 	 * Create resource from photo collection.
 	 *
-	 * @param string     $siteTitle The site title to display
-	 * @param Collection $photos    Collection of Photo models
+	 * @param string     $site_title The site title to display
+	 * @param Collection $photos     Collection of Photo models
 	 *
 	 * @return self
 	 */
-	public static function fromPhotos(string $siteTitle, Collection $photos): self
+	public static function fromPhotos(string $site_title, Collection $photos): self
 	{
-		return new self($siteTitle, $photos);
+		return new self($site_title, $photos);
 	}
 }
