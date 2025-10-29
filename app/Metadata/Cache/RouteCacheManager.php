@@ -53,6 +53,10 @@ final readonly class RouteCacheManager
 			// We can cache the space computation because it is not changing often and very computationally heavy.
 			'api/v2/Diagnostics::space' => new RouteCacheConfig(tag: CacheTag::SETTINGS, user_dependant: true),
 
+			// Embed endpoints are public and cacheable with 15-minute TTL
+			'api/v2/Embed/stream' => new RouteCacheConfig(tag: CacheTag::GALLERY, user_dependant: false),
+			'api/v2/Embed/{albumId}' => new RouteCacheConfig(tag: CacheTag::GALLERY, user_dependant: false),
+
 			// Response must be different for each call.
 			'api/v2/Frame' => false,
 
