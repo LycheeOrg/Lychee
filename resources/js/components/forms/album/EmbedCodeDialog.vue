@@ -228,29 +228,31 @@ const generatedCode = computed(() => {
 });
 
 // Copy code to clipboard
-async function copyCode() {
-	try {
-		await navigator.clipboard.writeText(generatedCode.value);
-		copied.value = true;
-		toast.add({
-			severity: "success",
-			summary: "Copied",
-			detail: "Embed code copied to clipboard",
-			life: 3000,
-		});
+function copyCode() {
+	navigator.clipboard
+		.writeText(generatedCode.value)
+		.then(() => {
+			copied.value = true;
+			toast.add({
+				severity: "success",
+				summary: "Copied",
+				detail: "Embed code copied to clipboard",
+				life: 3000,
+			});
 
-		// Reset copied state after 3 seconds
-		setTimeout(() => {
-			copied.value = false;
-		}, 3000);
-	} catch (_error) {
-		toast.add({
-			severity: "error",
-			summary: "Error",
-			detail: "Failed to copy to clipboard",
-			life: 3000,
+			// Reset copied state after 3 seconds
+			setTimeout(() => {
+				copied.value = false;
+			}, 3000);
+		})
+		.catch(() => {
+			toast.add({
+				severity: "error",
+				summary: "Error",
+				detail: "Failed to copy to clipboard",
+				life: 3000,
+			});
 		});
-	}
 }
 
 // Select all code when textarea is focused
@@ -292,69 +294,73 @@ function loadEmbedAssets() {
 }
 
 // Initialize preview
-async function initializePreview() {
+function initializePreview() {
 	// For album mode, we need an albumId. For stream mode, we don't.
 	if (!previewContainer.value || (config.value.mode === "album" && !albumId.value)) {
 		return;
 	}
 
-	try {
-		// Clear previous content
-		previewContainer.value.innerHTML = "";
+	// Clear previous content
+	previewContainer.value.innerHTML = "";
 
-		// Load assets if needed
-		await loadEmbedAssets();
-
-		// Create a container div for the widget
-		const widgetContainer = document.createElement("div");
-		widgetContainer.setAttribute("data-lychee-embed", "");
-		widgetContainer.setAttribute("data-api-url", apiUrl.value);
-		widgetContainer.setAttribute("data-mode", config.value.mode);
-		if (config.value.mode === "album") {
-			widgetContainer.setAttribute("data-album-id", albumId.value);
-		}
-		widgetContainer.setAttribute("data-layout", config.value.layout);
-		widgetContainer.setAttribute("data-spacing", String(config.value.spacing));
-		widgetContainer.setAttribute("data-target-row-height", String(config.value.targetRowHeight));
-		widgetContainer.setAttribute("data-target-column-width", String(config.value.targetColumnWidth));
-		widgetContainer.setAttribute("data-max-photos", String(config.value.maxPhotos));
-		widgetContainer.setAttribute("data-header-placement", config.value.headerPlacement);
-		widgetContainer.setAttribute("data-height", "200px"); // Fixed height for preview
-
-		previewContainer.value.appendChild(widgetContainer);
-
-		// Initialize the widget using the global LycheeEmbed
-		if (window.LycheeEmbed && window.LycheeEmbed.createLycheeEmbed) {
-			const widgetConfig: Record<string, unknown> = {
-				apiUrl: apiUrl.value,
-				mode: config.value.mode,
-				layout: config.value.layout,
-				spacing: config.value.spacing,
-				targetRowHeight: config.value.targetRowHeight,
-				targetColumnWidth: config.value.targetColumnWidth,
-				maxPhotos: config.value.maxPhotos,
-				showTitle: config.value.showTitle,
-				showDescription: config.value.showDescription,
-				showCaptions: config.value.showCaptions,
-				showExif: config.value.showExif,
-				headerPlacement: config.value.headerPlacement,
-				height: "200px",
-			};
-
-			// Only add albumId for album mode
-			if (config.value.mode === "album") {
-				widgetConfig.albumId = albumId.value;
+	// Load assets if needed
+	loadEmbedAssets()
+		.then(() => {
+			if (!previewContainer.value) {
+				return;
 			}
 
-			window.LycheeEmbed.createLycheeEmbed(widgetContainer, widgetConfig);
-		}
-	} catch (error) {
-		console.error("Failed to initialize preview:", error);
-		if (previewContainer.value) {
-			previewContainer.value.innerHTML =
-				'<div class="text-xs text-red-500 text-center p-4">Failed to load preview. The embed widget will work when deployed.</div>';
-		}
-	}
+			// Create a container div for the widget
+			const widgetContainer = document.createElement("div");
+			widgetContainer.setAttribute("data-lychee-embed", "");
+			widgetContainer.setAttribute("data-api-url", apiUrl.value);
+			widgetContainer.setAttribute("data-mode", config.value.mode);
+			if (config.value.mode === "album") {
+				widgetContainer.setAttribute("data-album-id", albumId.value);
+			}
+			widgetContainer.setAttribute("data-layout", config.value.layout);
+			widgetContainer.setAttribute("data-spacing", String(config.value.spacing));
+			widgetContainer.setAttribute("data-target-row-height", String(config.value.targetRowHeight));
+			widgetContainer.setAttribute("data-target-column-width", String(config.value.targetColumnWidth));
+			widgetContainer.setAttribute("data-max-photos", String(config.value.maxPhotos));
+			widgetContainer.setAttribute("data-header-placement", config.value.headerPlacement);
+			widgetContainer.setAttribute("data-height", "200px"); // Fixed height for preview
+
+			previewContainer.value.appendChild(widgetContainer);
+
+			// Initialize the widget using the global LycheeEmbed
+			if (window.LycheeEmbed && window.LycheeEmbed.createLycheeEmbed) {
+				const widgetConfig: Record<string, unknown> = {
+					apiUrl: apiUrl.value,
+					mode: config.value.mode,
+					layout: config.value.layout,
+					spacing: config.value.spacing,
+					targetRowHeight: config.value.targetRowHeight,
+					targetColumnWidth: config.value.targetColumnWidth,
+					maxPhotos: config.value.maxPhotos,
+					showTitle: config.value.showTitle,
+					showDescription: config.value.showDescription,
+					showCaptions: config.value.showCaptions,
+					showExif: config.value.showExif,
+					headerPlacement: config.value.headerPlacement,
+					height: "200px",
+				};
+
+				// Only add albumId for album mode
+				if (config.value.mode === "album") {
+					widgetConfig.albumId = albumId.value;
+				}
+
+				window.LycheeEmbed.createLycheeEmbed(widgetContainer, widgetConfig);
+			}
+		})
+		.catch((error) => {
+			console.error("Failed to initialize preview:", error);
+			if (previewContainer.value) {
+				previewContainer.value.innerHTML =
+					'<div class="text-xs text-red-500 text-center p-4">Failed to load preview. The embed widget will work when deployed.</div>';
+			}
+		});
 }
 
 // Watch for config changes and reinitialize preview
