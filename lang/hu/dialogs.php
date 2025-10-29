@@ -93,6 +93,7 @@ return [
 		'row_height' => 'Row Height',
 		'column_width' => 'Column Width',
 		'max_photos' => 'Maximum Photos',
+		'sort_order' => 'Sort Order',
 		'header_placement' => 'Header Placement',
 		'preview' => 'Preview',
 		'code' => 'Embed Code',
