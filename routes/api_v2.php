@@ -95,18 +95,9 @@ Route::get('/Sharing::albums', [Gallery\SharingController::class, 'listAlbums'])
 /**
  * Embed.
  * Public endpoints for embedding albums on external websites.
- * Note: This route intentionally has minimal middleware to allow cross-origin embedding.
+ * Note: These routes intentionally have minimal middleware to allow cross-origin embedding.
+ * IMPORTANT: More specific routes (stream) must come before generic routes ({albumId}) to avoid conflicts.
  */
-Route::match(['GET', 'OPTIONS'], '/Embed/{albumId}', [Gallery\EmbedController::class, 'getAlbum'])
-	->withoutMiddleware('api')
-	->middleware([
-		\Illuminate\Http\Middleware\HandleCors::class,
-		\Illuminate\Routing\Middleware\SubstituteBindings::class,
-		'cache_control:300', // 5 minutes cache (reduced from 1 hour for more frequent updates)
-		'throttle:120,1', // 120 requests per minute per IP
-	])
-	->name('embed.album');
-
 Route::match(['GET', 'OPTIONS'], '/Embed/stream', [Gallery\EmbedController::class, 'getPublicStream'])
 	->withoutMiddleware('api')
 	->middleware([
@@ -116,6 +107,16 @@ Route::match(['GET', 'OPTIONS'], '/Embed/stream', [Gallery\EmbedController::clas
 		'throttle:30,1', // 30 requests per minute per IP (more restrictive)
 	])
 	->name('embed.stream');
+
+Route::match(['GET', 'OPTIONS'], '/Embed/{albumId}', [Gallery\EmbedController::class, 'getAlbum'])
+	->withoutMiddleware('api')
+	->middleware([
+		\Illuminate\Http\Middleware\HandleCors::class,
+		\Illuminate\Routing\Middleware\SubstituteBindings::class,
+		'cache_control:300', // 5 minutes cache (reduced from 1 hour for more frequent updates)
+		'throttle:120,1', // 120 requests per minute per IP
+	])
+	->name('embed.album');
 
 /**
  * IMPORT.
