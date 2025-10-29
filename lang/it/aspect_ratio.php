@@ -11,5 +11,5 @@ return [
 	'2by3' => '2/3 (portrait)',
 	'3by2' => '3/2 (landscape)',
 	'1by1' => 'square',
-	'1byx9' => '16/9 (landscape)',
+	'16by9' => '16/9 (landscape)',
 ];
