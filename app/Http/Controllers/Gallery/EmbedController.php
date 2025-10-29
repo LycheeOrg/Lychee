@@ -8,11 +8,11 @@
 
 namespace App\Http\Controllers\Gallery;
 
-use App\Configs;
 use App\Http\Resources\Embed\EmbedAlbumResource;
 use App\Http\Resources\Embed\EmbedStreamResource;
 use App\Http\Resources\Models\Utils\AlbumProtectionPolicy;
 use App\Models\Album;
+use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Photo;
 use App\Policies\PhotoQueryPolicy;
