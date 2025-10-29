@@ -345,11 +345,11 @@ onMounted(async () => {
 			// Fetch public stream
 			const limit = props.config.maxPhotos === "none" ? 100 : props.config.maxPhotos;
 			const streamData = await apiClient.fetchStream(limit);
-			// Convert stream response to album response format with empty album metadata
+			// Convert stream response to album response format with site title
 			albumData.value = {
 				album: {
 					id: "",
-					title: "Public Photo Stream",
+					title: streamData.site_title,
 					description: null,
 					photo_count: streamData.photos.length,
 					copyright: null,

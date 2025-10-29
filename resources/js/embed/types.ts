@@ -134,6 +134,7 @@ export interface EmbedApiResponse {
  * API response for stream embed endpoint
  */
 export interface EmbedStreamApiResponse {
+	site_title: string;
 	photos: Photo[];
 }
 
