@@ -18,6 +18,8 @@
 
 namespace Tests\Feature_v2\Embed;
 
+use App\Models\AccessPermission;
+use Illuminate\Support\Facades\Hash;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 /**
@@ -100,10 +102,14 @@ class EmbedAlbumTest extends BaseApiWithDataTest
 	 */
 	public function testCannotGetPasswordProtectedAlbum(): void
 	{
-		// Make album public but password protected
-		$this->album1->is_public = true;
-		$this->album1->password = 'test123';
-		$this->album1->save();
+		// Make album public but password protected via access permission
+		AccessPermission::factory()
+			->public()
+			->visible()
+			->for_album($this->album1)
+			->create([
+				'password' => Hash::make('test123'),
+			]);
 
 		$response = $this->getJson('Embed/' . $this->album1->id);
 		$this->assertForbidden($response);
@@ -114,10 +120,13 @@ class EmbedAlbumTest extends BaseApiWithDataTest
 	 */
 	public function testCannotGetLinkRequiredAlbum(): void
 	{
-		// Make album public but link-required
-		$this->album1->is_public = true;
-		$this->album1->is_link_required = true;
-		$this->album1->save();
+		// Make album public but link-required via access permission
+		AccessPermission::factory()
+			->public()
+			->for_album($this->album1)
+			->create([
+				'is_link_required' => true,
+			]);
 
 		$response = $this->getJson('Embed/' . $this->album1->id);
 		$this->assertForbidden($response);
