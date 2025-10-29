@@ -171,7 +171,12 @@ export function getAspectRatio(width: number, height: number): number {
  * @param sizeVariants Photo size variants object
  * @returns Object with width and height, defaults to { width: 1, height: 1 } if all variants are null
  */
-export function getSafeDimensions(sizeVariants: App.Http.Resources.Models.SizeVariantsResouce): { width: number; height: number } {
+export function getSafeDimensions(sizeVariants: {
+	original: { width: number; height: number };
+	medium: { width?: number; height?: number } | null;
+	small: { width?: number; height?: number } | null;
+	thumb: { width?: number; height?: number } | null;
+}): { width: number; height: number } {
 	const original = sizeVariants.original;
 	const medium = sizeVariants.medium;
 	const small = sizeVariants.small;
