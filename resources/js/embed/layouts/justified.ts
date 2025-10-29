@@ -1,6 +1,6 @@
 import justifiedLayout from "justified-layout";
-import type { Photo, PositionedPhoto, LayoutResult } from "../types";
-import { getAspectRatio } from "../utils/columns";
+import type { Photo, PositionedPhoto, LayoutResult } from "@/embed/types";
+import { getAspectRatio } from "@/embed/utils/columns";
 
 /**
  * Justified Layout Algorithm (Flickr-style)

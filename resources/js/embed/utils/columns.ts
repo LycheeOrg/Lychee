@@ -1,4 +1,4 @@
-import type { Breakpoint } from "../types";
+import type { Breakpoint } from "@/embed/types";
 
 /**
  * Default responsive breakpoints for column calculation

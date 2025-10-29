@@ -1,4 +1,4 @@
-import type { Photo, PositionedPhoto, LayoutResult } from "../types";
+import type { Photo, PositionedPhoto, LayoutResult } from "@/embed/types";
 
 /**
  * Square Layout Algorithm

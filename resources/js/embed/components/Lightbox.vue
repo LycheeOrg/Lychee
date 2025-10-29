@@ -107,7 +107,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onUnmounted } from "vue";
-import type { Photo, EmbedConfig } from "../types";
+import type { Photo, EmbedConfig } from "@/embed/types";
 
 interface Props {
 	photos: Photo[];

@@ -174,14 +174,14 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from "vue";
-import type { EmbedConfig, EmbedApiResponse, PositionedPhoto, SizeVariantData } from "../types";
-import type { FilmstripLayoutResult } from "../layouts/filmstrip";
-import { createApiClient } from "../api";
-import { layoutSquare } from "../layouts/square";
-import { layoutMasonry } from "../layouts/masonry";
-import { layoutGrid } from "../layouts/grid";
-import { layoutJustified } from "../layouts/justified";
-import { layoutFilmstrip, filmstripToLayoutResult } from "../layouts/filmstrip";
+import type { EmbedConfig, EmbedApiResponse, PositionedPhoto, SizeVariantData } from "@/embed/types";
+import type { FilmstripLayoutResult } from "@/embed/layouts/filmstrip";
+import { createApiClient } from "@/embed/api";
+import { layoutSquare } from "@/embed/layouts/square";
+import { layoutMasonry } from "@/embed/layouts/masonry";
+import { layoutGrid } from "@/embed/layouts/grid";
+import { layoutJustified } from "@/embed/layouts/justified";
+import { layoutFilmstrip, filmstripToLayoutResult } from "@/embed/layouts/filmstrip";
 import Lightbox from "./Lightbox.vue";
 
 interface Props {
