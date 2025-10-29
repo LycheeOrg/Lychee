@@ -2,24 +2,12 @@
 	<Dialog v-model:visible="is_embed_code_visible" pt:root:class="border-none" modal :dismissable-mask="true" @close="is_embed_code_visible = false">
 		<template #container="{ closeCallback }">
 			<div v-focustrap class="flex flex-col relative text-sm w-full md:w-2xl rounded-md pt-9">
-				<h2 class="mb-5 px-9 text-2xl font-bold">{{ $t("dialogs.embed_code.title") }}</h2>
-				<p class="mb-5 px-9 text-muted-color">{{ $t("dialogs.embed_code.info") }}</p>
+				<h2 class="mb-5 px-9 text-2xl font-bold">
+					{{ config.mode === "stream" ? $t("dialogs.embed_code.title_stream") : $t("dialogs.embed_code.title") }}
+				</h2>
 
 				<!-- Configuration Options -->
 				<div class="inline-flex flex-col gap-4 px-9 mb-6">
-					<!-- Mode Info (read-only) -->
-					<div class="flex flex-col gap-2">
-						<div class="p-3 bg-surface-100 dark:bg-surface-800 rounded-md border border-surface-200 dark:border-surface-700">
-							<div class="flex items-center gap-2 mb-2">
-								<i :class="config.mode === 'album' ? 'pi pi-folder' : 'pi pi-stream'" class="text-primary-500" />
-								<span class="font-semibold">{{ config.mode === "album" ? "Album Mode" : "Stream Mode" }}</span>
-							</div>
-							<small class="text-muted-color">
-								{{ config.mode === "album" ? $t("dialogs.embed_code.mode_album_help") : $t("dialogs.embed_code.mode_stream_help") }}
-							</small>
-						</div>
-					</div>
-
 					<!-- Layout Selection -->
 					<div class="flex flex-col gap-2">
 						<label class="font-semibold">{{ $t("dialogs.embed_code.layout") }}</label>

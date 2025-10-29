@@ -83,6 +83,7 @@ return [
 	],
 	'embed_code' => [
 		'title' => 'Embed Album',
+		'title_stream' => 'Embed Photo Stream',
 		'info' => 'Generate an embed code to display this album on your website.',
 		'mode' => 'Mode',
 		'mode_album_help' => 'Embed photos from this specific album.',
