@@ -330,48 +330,49 @@ function closeLightbox() {
 }
 
 // Fetch album data on mount
-onMounted(async () => {
-	try {
-		const apiClient = createApiClient(props.config.apiUrl);
-		const mode = props.config.mode ?? "album";
+onMounted(() => {
+	const apiClient = createApiClient(props.config.apiUrl);
+	const mode = props.config.mode ?? "album";
 
-		if (mode === "stream") {
-			// Fetch public stream
-			const limit = props.config.maxPhotos === "none" ? 100 : props.config.maxPhotos;
-			const streamData = await apiClient.fetchStream(limit);
-			// Convert stream response to album response format with empty album metadata
-			albumData.value = {
-				album: {
-					id: "",
-					title: "Public Photo Stream",
-					description: null,
-					photo_count: streamData.photos.length,
-					copyright: null,
-					license: null,
-				},
-				photos: streamData.photos,
-			};
+	let loadPromise: Promise<EmbedApiResponse>;
+
+	if (mode === "stream") {
+		// Fetch public stream
+		const limit = props.config.maxPhotos === "none" ? 100 : props.config.maxPhotos;
+		loadPromise = apiClient.fetchStream(limit).then((streamData) => ({
+			album: {
+				id: "",
+				title: "Public Photo Stream",
+				description: null,
+				photo_count: streamData.photos.length,
+				copyright: null,
+				license: null,
+			},
+			photos: streamData.photos,
+		}));
+	} else {
+		if (!props.config.albumId) {
+			loadPromise = Promise.reject(new Error("Album ID is required for album mode"));
 		} else {
-			// Fetch specific album
-			if (!props.config.albumId) {
-				throw new Error("Album ID is required for album mode");
-			}
 			const limit = props.config.maxPhotos === "none" ? undefined : props.config.maxPhotos;
-			albumData.value = await apiClient.fetchAlbum(props.config.albumId, limit);
+			loadPromise = apiClient.fetchAlbum(props.config.albumId, limit);
 		}
-
-		loading.value = false;
-
-		// Calculate layout after data loads
-		await nextTick();
-		calculateLayout();
-
-		// Recalculate on window resize
-		window.addEventListener("resize", calculateLayout);
-	} catch (err) {
-		error.value = err instanceof Error ? err.message : "Failed to load album";
-		loading.value = false;
 	}
+
+	loadPromise
+		.then((data) => {
+			albumData.value = data;
+			loading.value = false;
+			return nextTick();
+		})
+		.then(() => {
+			calculateLayout();
+			window.addEventListener("resize", calculateLayout);
+		})
+		.catch((err) => {
+			error.value = err instanceof Error ? err.message : "Failed to load album";
+			loading.value = false;
+		});
 });
 
 // Cleanup on unmount
