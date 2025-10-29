@@ -53,9 +53,13 @@ export function initLycheeEmbeds() {
 			// Parse configuration from data attributes
 			const config = parseDataAttributes(element);
 
-			// Skip if required attributes are missing
-			if (!config.apiUrl || !config.albumId) {
-				console.error("Lychee Embed: Missing required data attributes (data-api-url and data-album-id)", element);
+			// Skip if required attributes are missing (albumId only required for album mode)
+			const mode = config.mode ?? "album";
+			if (!config.apiUrl || (mode === "album" && !config.albumId)) {
+				console.error(
+					"Lychee Embed: Missing required data attributes (data-api-url" + (mode === "album" ? " and data-album-id" : "") + ")",
+					element,
+				);
 				return;
 			}
 
