@@ -145,9 +145,8 @@ class EmbedController extends Controller
 		// Apply pagination
 		$photosQuery->skip($offset)->take($limit);
 
-		// Load photos with size variants
-		$photos = $photosQuery->get();
-		$photos->load('size_variants');
+		// Eager load photos with size variants (avoids N+1 query problem)
+		$photos = $photosQuery->with('size_variants')->get();
 
 		return $photos;
 	}
@@ -187,9 +186,8 @@ class EmbedController extends Controller
 			$photosQuery->skip($offset)->take($limit);
 		}
 
-		// Load photos with size variants
-		$photos = $photosQuery->get();
-		$photos->load('size_variants');
+		// Eager load photos with size variants (avoids N+1 query problem)
+		$photos = $photosQuery->with('size_variants')->get();
 
 		// Replace the photos relation with the paginated results
 		$album->setRelation('photos', $photos);
