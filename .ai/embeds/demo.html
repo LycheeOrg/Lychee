@@ -121,15 +121,22 @@
         <div class="config-section">
             <h2>Configuration</h2>
             <form id="configForm" onsubmit="loadWidget(event)">
-                <div class="grid-2">
-                    <div class="form-group">
-                        <label for="apiUrl">Lychee API URL *</label>
-                        <input type="url" id="apiUrl" placeholder="https://your-lychee.com" required value="http://localhost:90">
-                    </div>
-                    <div class="form-group">
-                        <label for="albumId">Album ID *</label>
-                        <input type="text" id="albumId" placeholder="abc123" required>
-                    </div>
+                <div class="form-group">
+                    <label for="apiUrl">Lychee API URL *</label>
+                    <input type="url" id="apiUrl" placeholder="https://your-lychee.com" required value="http://localhost:90">
+                </div>
+
+                <div class="form-group">
+                    <label for="mode">Embed Mode</label>
+                    <select id="mode" onchange="toggleAlbumId()">
+                        <option value="album" selected>Album (specific album)</option>
+                        <option value="stream">Stream (all public photos)</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="albumIdGroup">
+                    <label for="albumId">Album ID *</label>
+                    <input type="text" id="albumId" placeholder="abc123">
                 </div>
 
                 <div class="grid-2">
@@ -226,6 +233,24 @@
     <script>
         let currentApp = null;
 
+        // Toggle albumId field visibility and requirement based on mode
+        function toggleAlbumId() {
+            const mode = document.getElementById('mode').value;
+            const albumIdGroup = document.getElementById('albumIdGroup');
+            const albumIdInput = document.getElementById('albumId');
+
+            if (mode === 'stream') {
+                albumIdGroup.style.display = 'none';
+                albumIdInput.removeAttribute('required');
+            } else {
+                albumIdGroup.style.display = 'block';
+                albumIdInput.setAttribute('required', 'required');
+            }
+        }
+
+        // Initialize form state on load
+        window.addEventListener('DOMContentLoaded', toggleAlbumId);
+
         function loadWidget(event) {
             event.preventDefault();
 
@@ -247,6 +272,7 @@
 
             // Get form values
             const apiUrl = document.getElementById('apiUrl').value.replace(/\/$/, '');
+            const mode = document.getElementById('mode').value;
             const albumId = document.getElementById('albumId').value;
             const layout = document.getElementById('layout').value;
             const headerPlacement = document.getElementById('headerPlacement').value;
@@ -264,7 +290,10 @@
             const embedDiv = document.createElement('div');
             embedDiv.setAttribute('data-lychee-embed', '');
             embedDiv.setAttribute('data-api-url', apiUrl);
-            embedDiv.setAttribute('data-album-id', albumId);
+            embedDiv.setAttribute('data-mode', mode);
+            if (mode === 'album') {
+                embedDiv.setAttribute('data-album-id', albumId);
+            }
             embedDiv.setAttribute('data-layout', layout);
             embedDiv.setAttribute('data-header-placement', headerPlacement);
             embedDiv.setAttribute('data-spacing', spacing);
@@ -278,22 +307,30 @@
 
             container.appendChild(embedDiv);
 
+            // Build config object
+            const widgetConfig = {
+                apiUrl: apiUrl,
+                mode: mode,
+                layout: layout,
+                headerPlacement: headerPlacement,
+                spacing: spacing,
+                maxPhotos: maxPhotos,
+                targetRowHeight: targetRowHeight,
+                targetColumnWidth: targetColumnWidth,
+                showTitle: showTitle,
+                showDescription: showDescription,
+                showCaptions: showCaptions,
+                showExif: showExif,
+            };
+
+            // Add albumId only for album mode
+            if (mode === 'album') {
+                widgetConfig.albumId = albumId;
+            }
+
             // Initialize widget
             try {
-                currentApp = window.LycheeEmbed.createLycheeEmbed(embedDiv, {
-                    apiUrl: apiUrl,
-                    albumId: albumId,
-                    layout: layout,
-                    headerPlacement: headerPlacement,
-                    spacing: spacing,
-                    maxPhotos: maxPhotos,
-                    targetRowHeight: targetRowHeight,
-                    targetColumnWidth: targetColumnWidth,
-                    showTitle: showTitle,
-                    showDescription: showDescription,
-                    showCaptions: showCaptions,
-                    showExif: showExif,
-                });
+                currentApp = window.LycheeEmbed.createLycheeEmbed(embedDiv, widgetConfig);
 
                 console.log('Widget loaded successfully');
             } catch (error) {

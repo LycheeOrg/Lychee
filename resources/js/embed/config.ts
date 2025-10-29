@@ -1,9 +1,10 @@
-import type { EmbedConfig, LayoutType, HeaderPlacement } from "./types";
+import type { EmbedConfig, LayoutType, HeaderPlacement, EmbedMode } from "./types";
 
 /**
  * Default configuration values for the embed widget
  */
 export const DEFAULT_CONFIG: Partial<EmbedConfig> = {
+	mode: "album",
 	layout: "justified",
 	width: "100%",
 	height: "auto",
@@ -30,8 +31,16 @@ export function validateConfig(config: Partial<EmbedConfig>): EmbedConfig {
 		throw new Error("apiUrl is required");
 	}
 
-	if (!config.albumId) {
-		throw new Error("albumId is required");
+	// Validate mode
+	const validModes: EmbedMode[] = ["album", "stream"];
+	const mode = config.mode ?? DEFAULT_CONFIG.mode!;
+	if (!validModes.includes(mode)) {
+		throw new Error(`Invalid mode: ${mode}. Valid modes: ${validModes.join(", ")}`);
+	}
+
+	// albumId is required only for album mode
+	if (mode === "album" && !config.albumId) {
+		throw new Error("albumId is required for album mode");
 	}
 
 	// Remove trailing slash from API URL
@@ -74,6 +83,7 @@ export function validateConfig(config: Partial<EmbedConfig>): EmbedConfig {
 
 	return {
 		apiUrl,
+		mode,
 		albumId: config.albumId,
 		layout,
 		width: config.width ?? DEFAULT_CONFIG.width!,
@@ -104,6 +114,13 @@ export function parseDataAttributes(element: HTMLElement): Partial<EmbedConfig> 
 	if (element.dataset.apiUrl) {
 		config.apiUrl = element.dataset.apiUrl;
 	}
+
+	// Mode (optional, defaults to "album")
+	if (element.dataset.mode) {
+		config.mode = element.dataset.mode as EmbedMode;
+	}
+
+	// Album ID (required for album mode, optional for stream mode)
 	if (element.dataset.albumId) {
 		config.albumId = element.dataset.albumId;
 	}

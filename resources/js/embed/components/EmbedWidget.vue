@@ -1,6 +1,6 @@
 <template>
 	<div :class="['lychee-embed', config.containerClass]" :style="containerStyle">
-		<div v-if="loading" class="lychee-embed__loading">Loading album...</div>
+		<div v-if="loading" class="lychee-embed__loading">Loading...</div>
 
 		<div v-else-if="error" class="lychee-embed__error">
 			{{ error }}
@@ -222,6 +222,11 @@ const containerStyle = computed(() => ({
 // Compute the gallery URL for the album
 const galleryUrl = computed(() => {
 	if (!albumData.value) return "";
+	const mode = props.config.mode ?? "album";
+	// For stream mode, link to the main gallery instead of a specific album
+	if (mode === "stream") {
+		return `${props.config.apiUrl}/gallery`;
+	}
 	return `${props.config.apiUrl}/gallery/${albumData.value.album.id}`;
 });
 
@@ -334,9 +339,33 @@ function closeLightbox() {
 onMounted(async () => {
 	try {
 		const apiClient = createApiClient(props.config.apiUrl);
-		// Use pagination to fetch only the photos we need (or all if maxPhotos is "none")
-		const limit = props.config.maxPhotos === "none" ? undefined : props.config.maxPhotos;
-		albumData.value = await apiClient.fetchAlbum(props.config.albumId, limit);
+		const mode = props.config.mode ?? "album";
+
+		if (mode === "stream") {
+			// Fetch public stream
+			const limit = props.config.maxPhotos === "none" ? 100 : props.config.maxPhotos;
+			const streamData = await apiClient.fetchStream(limit);
+			// Convert stream response to album response format with empty album metadata
+			albumData.value = {
+				album: {
+					id: "",
+					title: "Public Photo Stream",
+					description: null,
+					photo_count: streamData.photos.length,
+					copyright: null,
+					license: null,
+				},
+				photos: streamData.photos,
+			};
+		} else {
+			// Fetch specific album
+			if (!props.config.albumId) {
+				throw new Error("Album ID is required for album mode");
+			}
+			const limit = props.config.maxPhotos === "none" ? undefined : props.config.maxPhotos;
+			albumData.value = await apiClient.fetchAlbum(props.config.albumId, limit);
+		}
+
 		loading.value = false;
 
 		// Calculate layout after data loads

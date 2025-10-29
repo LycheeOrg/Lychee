@@ -18,13 +18,20 @@ export type HeaderPlacement = "top" | "bottom" | "none";
 export type SizeVariantType = "placeholder" | "thumb" | "thumb2x" | "small" | "small2x" | "medium" | "medium2x" | "original";
 
 /**
+ * Embed mode types
+ */
+export type EmbedMode = "album" | "stream";
+
+/**
  * Widget configuration options
  */
 export interface EmbedConfig {
 	/** The Lychee API base URL */
 	apiUrl: string;
-	/** Album ID to display */
-	albumId: string;
+	/** Embed mode: 'album' for specific album, 'stream' for all public photos */
+	mode?: EmbedMode;
+	/** Album ID to display (required for album mode) */
+	albumId?: string;
 	/** Layout type */
 	layout: LayoutType;
 	/** Widget width (px or %) */
@@ -120,6 +127,13 @@ export interface Album {
  */
 export interface EmbedApiResponse {
 	album: Album;
+	photos: Photo[];
+}
+
+/**
+ * API response for stream embed endpoint
+ */
+export interface EmbedStreamApiResponse {
 	photos: Photo[];
 }
 

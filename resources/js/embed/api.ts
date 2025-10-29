@@ -1,4 +1,4 @@
-import type { EmbedApiResponse } from "./types";
+import type { EmbedApiResponse, EmbedStreamApiResponse } from "./types";
 
 /**
  * API client for fetching album data from Lychee
@@ -51,6 +51,49 @@ export class EmbedApiClient {
 				throw new Error(`Failed to fetch album: ${error.message}`);
 			}
 			throw new Error("Failed to fetch album: Unknown error");
+		}
+	}
+
+	/**
+	 * Fetch public photo stream for embedding
+	 *
+	 * @param limit  Optional maximum number of photos to fetch (1-100, default: 100)
+	 * @param offset Optional number of photos to skip (default: 0)
+	 * @returns Public photos data
+	 * @throws Error if fetch fails
+	 */
+	async fetchStream(limit?: number, offset?: number): Promise<EmbedStreamApiResponse> {
+		// Build URL with optional pagination parameters
+		const url = new URL(`${this.apiUrl}/api/v2/Embed/stream`);
+		if (limit !== undefined) {
+			url.searchParams.set("limit", String(limit));
+		}
+		if (offset !== undefined) {
+			url.searchParams.set("offset", String(offset));
+		}
+
+		try {
+			const response = await fetch(url.toString(), {
+				method: "GET",
+				headers: {
+					Accept: "application/json",
+					"Content-Type": "application/json",
+				},
+				mode: "cors",
+				credentials: "omit", // Don't send cookies for embed requests
+			});
+
+			if (!response.ok) {
+				await this.handleStreamErrorResponse(response);
+			}
+
+			const data = await response.json();
+			return this.validateStreamApiResponse(data);
+		} catch (error) {
+			if (error instanceof Error) {
+				throw new Error(`Failed to fetch public stream: ${error.message}`);
+			}
+			throw new Error("Failed to fetch public stream: Unknown error");
 		}
 	}
 
@@ -108,6 +151,48 @@ export class EmbedApiClient {
 
 		// Basic validation passed, return as typed response
 		return data as EmbedApiResponse;
+	}
+
+	/**
+	 * Handle HTTP error responses for stream endpoint
+	 *
+	 * @param response HTTP response object
+	 * @throws Error with appropriate message based on status code
+	 */
+	private async handleStreamErrorResponse(response: Response): Promise<never> {
+		const status = response.status;
+
+		switch (status) {
+			case 500:
+				throw new Error("Server error. Please try again later.");
+			case 503:
+				throw new Error("Service unavailable. Please try again later.");
+			default:
+				throw new Error(`HTTP ${status}: Failed to fetch public stream data.`);
+		}
+	}
+
+	/**
+	 * Validate stream API response structure
+	 *
+	 * @param data Response data to validate
+	 * @returns Validated stream API response
+	 * @throws Error if response structure is invalid
+	 */
+	private validateStreamApiResponse(data: unknown): EmbedStreamApiResponse {
+		if (!data || typeof data !== "object") {
+			throw new Error("Invalid API response: Expected object");
+		}
+
+		const response = data as Record<string, unknown>;
+
+		// Validate photos array
+		if (!Array.isArray(response.photos)) {
+			throw new Error("Invalid API response: Photos must be an array");
+		}
+
+		// Basic validation passed, return as typed response
+		return data as EmbedStreamApiResponse;
 	}
 }
 
