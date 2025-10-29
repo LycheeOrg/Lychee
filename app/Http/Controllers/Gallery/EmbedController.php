@@ -72,9 +72,10 @@ class EmbedController extends Controller
 			$sort = null; // Invalid value, use default
 		}
 
-		$album = $this->findAlbum($albumId, $limit, $offset, $sort);
+		// Step 1: Get album metadata without photos (lightweight)
+		$album = $this->findAlbumMetadata($albumId);
 
-		// Verify album is publicly accessible
+		// Step 2: Verify album is publicly accessible before loading photos
 		if (!$this->isPubliclyAccessible($album)) {
 			\Log::warning('Embed access denied', [
 				'album_id' => $albumId,
@@ -83,6 +84,9 @@ class EmbedController extends Controller
 			]);
 			throw new AccessDeniedHttpException('Album must be publicly accessible for embedding');
 		}
+
+		// Step 3: Load photos only after access check passes
+		$this->loadAlbumPhotos($album, $limit, $offset, $sort);
 
 		return EmbedAlbumResource::fromModel($album);
 	}
@@ -172,18 +176,19 @@ class EmbedController extends Controller
 	}
 
 	/**
-	 * Find album by ID with photos and size variants loaded.
+	 * Find album metadata by ID without loading photos.
 	 *
-	 * @param string      $albumId The album ID
-	 * @param int|null    $limit   Maximum number of photos to load (null = all)
-	 * @param int         $offset  Number of photos to skip
-	 * @param string|null $sort    Sort order override ('asc' or 'desc', null = use album default)
+	 * This is a lightweight method that only loads the album record itself,
+	 * without hydrating photos or performing expensive operations.
+	 * Use this for access checks before committing to loading photos.
 	 *
-	 * @return BaseAlbum The album instance
+	 * @param string $albumId The album ID
+	 *
+	 * @return BaseAlbum The album instance without photos loaded
 	 *
 	 * @throws NotFoundHttpException if album doesn't exist
 	 */
-	private function findAlbum(string $albumId, ?int $limit = null, int $offset = 0, ?string $sort = null): BaseAlbum
+	private function findAlbumMetadata(string $albumId): BaseAlbum
 	{
 		/** @var Album|null $album */
 		$album = Album::query()->find($albumId);
@@ -196,6 +201,23 @@ class EmbedController extends Controller
 			throw new NotFoundHttpException('Album not found');
 		}
 
+		return $album;
+	}
+
+	/**
+	 * Load photos for an album with pagination and sorting.
+	 *
+	 * This method hydrates the album's photos relation with the requested
+	 * photos, applying pagination and sorting. It also sets the photos_count
+	 * attribute to the total number of photos in the album.
+	 *
+	 * @param BaseAlbum   $album  The album to load photos for
+	 * @param int|null    $limit  Maximum number of photos to load (null = all)
+	 * @param int         $offset Number of photos to skip
+	 * @param string|null $sort   Sort order override ('asc' or 'desc', null = use album default)
+	 */
+	private function loadAlbumPhotos(BaseAlbum $album, ?int $limit = null, int $offset = 0, ?string $sort = null): void
+	{
 		$totalPhotos = $album->photos()->getQuery()->count();
 
 		$photosQuery = $album->photos()->getQuery();
@@ -225,8 +247,6 @@ class EmbedController extends Controller
 		// Replace the photos relation with the paginated results
 		$album->setRelation('photos', $photos);
 		$album->setAttribute('photos_count', $totalPhotos);
-
-		return $album;
 	}
 
 	/**
