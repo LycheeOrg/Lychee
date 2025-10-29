@@ -327,16 +327,41 @@ public function getEmbedUrl(): string
 
 **File**: `routes/api_v2.php` (MODIFY)
 
+**IMPORTANT: Route Order Matters**
+
+The stream route MUST be defined BEFORE the album route. Laravel matches routes in order, and `/Embed/{albumId}` would match `/Embed/stream` if it comes first, treating "stream" as an album ID.
+
 ```php
 use App\Http\Controllers\Gallery\EmbedController;
 
 // Existing routes...
 
 // Embed endpoints
-Route::prefix('Embed')->group(function () {
-    Route::get('/{albumId}', [EmbedController::class, 'getAlbum'])
-        ->name('embed.album');
-});
+// CRITICAL: More specific routes must come before generic routes with parameters
+Route::match(['GET', 'OPTIONS'], '/Embed/stream', [EmbedController::class, 'getPublicStream'])
+    ->withoutMiddleware('api')
+    ->middleware([
+        \Illuminate\Http\Middleware\HandleCors::class,
+        \Illuminate\Routing\Middleware\SubstituteBindings::class,
+        'cache_control:900', // 15 minutes cache
+        'throttle:30,1', // 30 requests per minute per IP
+    ])
+    ->name('embed.stream');
+
+Route::match(['GET', 'OPTIONS'], '/Embed/{albumId}', [EmbedController::class, 'getAlbum'])
+    ->withoutMiddleware('api')
+    ->middleware([
+        \Illuminate\Http\Middleware\HandleCors::class,
+        \Illuminate\Routing\Middleware\SubstituteBindings::class,
+        'cache_control:300', // 5 minutes cache
+        'throttle:120,1', // 120 requests per minute per IP
+    ])
+    ->name('embed.album');
+```
+
+After modifying routes, clear the route cache:
+```bash
+php artisan route:clear
 ```
 
 ---
