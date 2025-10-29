@@ -21,19 +21,14 @@ interface ColumnData {
  * @returns Column count and adjusted square size
  */
 function calculateSquareColumns(containerWidth: number, targetSize: number, gap: number): { columns: number; finalSquareSize: number } {
-	// How many squares fit?
-	const columns = Math.max(1, Math.floor((containerWidth + gap) / (targetSize + gap)));
+	if (containerWidth <= 0) {
+		return { columns: 1, finalSquareSize: 0 };
+	}
 
-	// Remaining space after fitting squares + gaps
-	const usedSpace = columns * targetSize + (columns - 1) * gap;
-	const remainingSpace = containerWidth - usedSpace;
-
-	// Distribute remaining space evenly across all squares
-	// Use Math.floor to prevent width overflow
-	const spread = Math.floor(remainingSpace / columns);
-
-	// Final square size after distributing extra space
-	const finalSquareSize = targetSize + spread;
+	const bucketSize = targetSize + gap;
+	const columns = Math.max(1, Math.floor(containerWidth / bucketSize));
+	const usableWidth = containerWidth - (columns - 1) * gap;
+	const finalSquareSize = Math.max(0, Math.floor(usableWidth / columns));
 
 	return { columns, finalSquareSize };
 }
@@ -48,7 +43,7 @@ function calculateSquareColumns(containerWidth: number, targetSize: number, gap:
  * @returns Layout result with positioned photos and container height
  */
 export function layoutSquare(photos: Photo[], containerWidth: number, targetSize: number = 200, gap: number = 8): LayoutResult {
-	if (photos.length === 0) {
+	if (photos.length === 0 || containerWidth <= 0) {
 		return { photos: [], containerHeight: 0 };
 	}
 
@@ -65,12 +60,6 @@ export function layoutSquare(photos: Photo[], containerWidth: number, targetSize
 	const positionedPhotos: PositionedPhoto[] = photos.map((photo, index) => {
 		const columnIndex = index % columns;
 		const column = columnData[columnIndex];
-
-		// Synchronize row heights at start of each new row
-		if (index % columns === 0 && index > 0) {
-			const maxHeight = Math.max(...columnData.map((c) => c.height));
-			columnData.forEach((c) => (c.height = maxHeight));
-		}
 
 		// Create positioned photo
 		const positioned: PositionedPhoto = {
@@ -90,7 +79,7 @@ export function layoutSquare(photos: Photo[], containerWidth: number, targetSize
 	});
 
 	// Calculate final container height
-	const containerHeight = Math.max(...columnData.map((c) => c.height)) - gap;
+	const containerHeight = Math.max(0, Math.max(...columnData.map((c) => c.height)) - gap);
 
 	return {
 		photos: positionedPhotos,
