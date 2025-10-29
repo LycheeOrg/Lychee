@@ -41,7 +41,7 @@ return [
         'recent' => 'Neueste',
         'public' => 'Öffentlich',
         'on_this_day' => 'An diesem Tag',
-		'untagged' => 'Untagged',
+        'untagged' => 'Untagged',
     ],
     'layout' => [
         'squares' => 'Quadratische Miniaturansichten',

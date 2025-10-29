@@ -41,7 +41,7 @@ return [
         'recent' => 'Recent',
         'public' => 'Openbaar',
         'on_this_day' => 'Op deze dag',
-		'untagged' => 'Untagged',
+        'untagged' => 'Untagged',
     ],
     'layout' => [
         'squares' => 'Vierkante miniaturen',
@@ -208,7 +208,7 @@ return [
         'merge_all' => 'Alles samenvoegen',
         'upload_photo' => 'Foto uploaden',
         'import_link' => 'Importeer van link',
-		'import_server' => 'Import from Server',
+        'import_server' => 'Import from Server',
         'import_dropbox' => 'Importeer van Dropbox',
         'new_album' => 'Nieuw album',
         'new_tag_album' => 'Nieuw tag-album',
