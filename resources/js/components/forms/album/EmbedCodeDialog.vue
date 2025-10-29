@@ -47,6 +47,18 @@
 								/>
 							</div>
 
+							<!-- Sort Order -->
+							<div class="flex flex-col gap-2">
+								<label for="sortOrder" class="font-semibold">{{ $t("dialogs.embed_code.sort_order") }}</label>
+								<Select
+									id="sortOrder"
+									v-model="config.sortOrder"
+									:options="sortOrderOptions"
+									option-label="label"
+									option-value="value"
+								/>
+							</div>
+
 							<!-- Spacing -->
 							<div class="flex flex-col gap-2">
 								<label for="spacing" class="font-semibold">{{ $t("dialogs.embed_code.spacing") }}</label>
@@ -158,6 +170,7 @@ const config = ref({
 	targetRowHeight: 200,
 	targetColumnWidth: 200,
 	maxPhotos: 18 as number | "none",
+	sortOrder: "desc" as "asc" | "desc",
 	showTitle: true,
 	showDescription: true,
 	showCaptions: true,
@@ -190,6 +203,16 @@ const maxPhotosOptions = [
 	{ label: "30 photos", value: 30 },
 	{ label: "60 photos", value: 60 },
 	{ label: "90 photos", value: 90 },
+	{ label: "120 photos", value: 120 },
+	{ label: "180 photos", value: 180 },
+	{ label: "300 photos", value: 300 },
+	{ label: "500 photos", value: 500 },
+];
+
+// Sort order options
+const sortOrderOptions = [
+	{ label: "Newest first", value: "desc" },
+	{ label: "Oldest first", value: "asc" },
 ];
 
 // Get the base URL for the Lychee instance
@@ -223,6 +246,7 @@ const generatedCode = computed(() => {
     data-target-row-height="${config.value.targetRowHeight}"
     data-target-column-width="${config.value.targetColumnWidth}"
     data-max-photos="${config.value.maxPhotos}"
+    data-sort-order="${config.value.sortOrder}"
     data-header-placement="${config.value.headerPlacement}"
 ></div>`;
 });
@@ -323,6 +347,7 @@ function initializePreview() {
 			widgetContainer.setAttribute("data-target-row-height", String(config.value.targetRowHeight));
 			widgetContainer.setAttribute("data-target-column-width", String(config.value.targetColumnWidth));
 			widgetContainer.setAttribute("data-max-photos", String(config.value.maxPhotos));
+			widgetContainer.setAttribute("data-sort-order", config.value.sortOrder);
 			widgetContainer.setAttribute("data-header-placement", config.value.headerPlacement);
 			widgetContainer.setAttribute("data-height", "200px"); // Fixed height for preview
 
@@ -338,6 +363,7 @@ function initializePreview() {
 					targetRowHeight: config.value.targetRowHeight,
 					targetColumnWidth: config.value.targetColumnWidth,
 					maxPhotos: config.value.maxPhotos,
+					sortOrder: config.value.sortOrder,
 					showTitle: config.value.showTitle,
 					showDescription: config.value.showDescription,
 					showCaptions: config.value.showCaptions,
