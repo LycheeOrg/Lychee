@@ -12,13 +12,7 @@
 				<div class="lychee-embed__header-content">
 					<h2 v-if="config.showTitle" class="lychee-embed__title">
 						{{ albumData.album.title }}
-						<a
-							:href="galleryUrl"
-							target="_blank"
-							rel="noopener noreferrer"
-							class="lychee-embed__gallery-link"
-							title="View in Lychee Gallery"
-						>
+						<a :href="galleryUrl" target="_blank" rel="noopener noreferrer" class="lychee-embed__gallery-link" title="View in Gallery">
 							↗
 						</a>
 					</h2>
@@ -160,7 +154,7 @@
 			<!-- Album link (bottom placement) -->
 			<div v-if="config.headerPlacement === 'bottom'" class="lychee-embed__footer">
 				<a :href="galleryUrl" target="_blank" rel="noopener noreferrer" class="lychee-embed__footer-link">
-					View "{{ albumData.album.title }}" in Lychee Gallery ↗
+					View "{{ albumData.album.title }}" in Gallery ↗
 				</a>
 			</div>
 
@@ -345,11 +339,11 @@ onMounted(async () => {
 			// Fetch public stream
 			const limit = props.config.maxPhotos === "none" ? 100 : props.config.maxPhotos;
 			const streamData = await apiClient.fetchStream(limit);
-			// Convert stream response to album response format with site title
+			// Convert stream response to album response format with empty album metadata
 			albumData.value = {
 				album: {
 					id: "",
-					title: streamData.site_title,
+					title: "Public Photo Stream",
 					description: null,
 					photo_count: streamData.photos.length,
 					copyright: null,
