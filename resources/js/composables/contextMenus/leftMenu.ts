@@ -105,6 +105,25 @@ export function useLeftMenu(
 				route: "/map",
 			},
 			{
+				label: "gallery.favourites",
+				icon: "pi pi-heart",
+				access: (favourites.photos?.length ?? 0) > 0,
+				route: "/gallery/favourites",
+			},
+			{
+				label: "left-menu.embed_stream",
+				icon: "pi pi-code",
+				access: user.value?.id !== null,
+				command: () => {
+					// Import and use the toggleEmbedCode function with stream mode
+					// We'll need to access the modal store here
+					const { useTogglablesStateStore } = require("@/stores/ModalsState");
+					const togglableStore = useTogglablesStateStore();
+					togglableStore.embed_code_mode = "stream";
+					togglableStore.is_embed_code_visible = true;
+				},
+			},
+			{
 				label: "left-menu.admin",
 				access: canSeeAdmin.value,
 				items: [

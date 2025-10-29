@@ -11,6 +11,7 @@ return [
 	'login' => 'Login',
 	'frame' => 'Frame',
 	'map' => 'Map',
+	'embed_stream' => 'Embed Photo Stream',
 	'admin' => 'Admin',
 	'clockwork' => 'Clockwork App',
 	'logs' => 'Show Logs',

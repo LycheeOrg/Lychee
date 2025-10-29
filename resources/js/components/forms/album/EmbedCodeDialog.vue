@@ -7,16 +7,17 @@
 
 				<!-- Configuration Options -->
 				<div class="inline-flex flex-col gap-4 px-9 mb-6">
-					<!-- Mode Selection -->
+					<!-- Mode Info (read-only) -->
 					<div class="flex flex-col gap-2">
-						<label class="font-semibold">{{ $t("dialogs.embed_code.mode") }}</label>
-						<SelectButton v-model="config.mode" :options="modeOptions" option-label="label" option-value="value" />
-						<small v-if="config.mode === 'album'" class="text-muted-color">
-							{{ $t("dialogs.embed_code.mode_album_help") }}
-						</small>
-						<small v-else class="text-muted-color">
-							{{ $t("dialogs.embed_code.mode_stream_help") }}
-						</small>
+						<div class="p-3 bg-surface-100 dark:bg-surface-800 rounded-md border border-surface-200 dark:border-surface-700">
+							<div class="flex items-center gap-2 mb-2">
+								<i :class="config.mode === 'album' ? 'pi pi-folder' : 'pi pi-stream'" class="text-primary-500" />
+								<span class="font-semibold">{{ config.mode === "album" ? "Album Mode" : "Stream Mode" }}</span>
+							</div>
+							<small class="text-muted-color">
+								{{ config.mode === "album" ? $t("dialogs.embed_code.mode_album_help") : $t("dialogs.embed_code.mode_stream_help") }}
+							</small>
+						</div>
 					</div>
 
 					<!-- Layout Selection -->
@@ -150,7 +151,7 @@ declare global {
 }
 
 const togglableStore = useTogglablesStateStore();
-const { is_embed_code_visible } = storeToRefs(togglableStore);
+const { is_embed_code_visible, embed_code_mode } = storeToRefs(togglableStore);
 const albumStore = useAlbumStore();
 const toast = useToast();
 
@@ -163,7 +164,7 @@ const previewError = ref(false);
 
 // Embed configuration
 const config = ref({
-	mode: "album" as "album" | "stream",
+	mode: embed_code_mode.value,
 	layout: "justified" as "square" | "masonry" | "grid" | "justified" | "filmstrip",
 	spacing: 8,
 	targetRowHeight: 200,
@@ -175,12 +176,6 @@ const config = ref({
 	showExif: true,
 	headerPlacement: "top" as "top" | "bottom" | "none",
 });
-
-// Mode options
-const modeOptions = [
-	{ label: "Album", value: "album" },
-	{ label: "Stream", value: "stream" },
-];
 
 // Layout options
 const layoutOptions = [
@@ -388,6 +383,8 @@ watch(
 // Initialize preview when dialog opens
 watch(is_embed_code_visible, (visible) => {
 	if (visible) {
+		// Sync mode from store
+		config.value.mode = embed_code_mode.value;
 		// Small delay to ensure DOM is ready
 		setTimeout(() => {
 			initializePreview();

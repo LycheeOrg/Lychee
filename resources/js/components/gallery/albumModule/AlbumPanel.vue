@@ -85,7 +85,6 @@
 				<GalleryFooter v-once />
 			</div>
 			<ShareAlbum :key="`share_modal_${albumStore.album.id}`" v-model:visible="is_share_album_visible" :title="albumStore.album.title" />
-			<EmbedCodeDialog :key="`embed_modal_${albumStore.album.id}`" v-model:visible="is_embed_code_visible" />
 
 			<!-- Dialogs -->
 			<ContextMenu ref="menu" :model="Menu" :class="Menu.length === 0 ? 'hidden' : ''">
@@ -108,7 +107,6 @@ import { computed, ref } from "vue";
 import AlbumThumbPanel from "@/components/gallery/albumModule/AlbumThumbPanel.vue";
 import PhotoThumbPanel from "@/components/gallery/albumModule/PhotoThumbPanel.vue";
 import ShareAlbum from "@/components/modals/ShareAlbum.vue";
-import EmbedCodeDialog from "@/components/forms/album/EmbedCodeDialog.vue";
 import AlbumHero from "@/components/gallery/albumModule/AlbumHero.vue";
 import AlbumEdit from "@/components/drawers/AlbumEdit.vue";
 import AlbumHeader from "@/components/headers/AlbumHeader.vue";

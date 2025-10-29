@@ -3,6 +3,7 @@
 	<ConfirmDialog />
 	<Error />
 	<LeftMenu />
+	<EmbedCodeDialog />
 	<main>
 		<router-view />
 	</main>
@@ -12,6 +13,7 @@
 import Toast from "primevue/toast";
 import LeftMenu from "@/menus/LeftMenu.vue";
 import Error from "@/views/Error.vue";
+import EmbedCodeDialog from "@/components/forms/album/EmbedCodeDialog.vue";
 import { disableCtrlA } from "@/utils/keybindings-utils";
 import ConfirmDialog from "primevue/confirmdialog";
 
