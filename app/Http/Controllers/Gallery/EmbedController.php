@@ -8,10 +8,14 @@
 
 namespace App\Http\Controllers\Gallery;
 
+use App\Configs;
 use App\Http\Resources\Embed\EmbedAlbumResource;
+use App\Http\Resources\Embed\EmbedStreamResource;
 use App\Http\Resources\Models\Utils\AlbumProtectionPolicy;
 use App\Models\Album;
 use App\Models\Extensions\BaseAlbum;
+use App\Models\Photo;
+use App\Policies\PhotoQueryPolicy;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -22,6 +26,13 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  */
 class EmbedController extends Controller
 {
+	protected PhotoQueryPolicy $photo_query_policy;
+
+	public function __construct(PhotoQueryPolicy $photo_query_policy)
+	{
+		$this->photo_query_policy = $photo_query_policy;
+	}
+
 	/**
 	 * Get album data for embedding on external sites.
 	 *
@@ -64,6 +75,78 @@ class EmbedController extends Controller
 		}
 
 		return EmbedAlbumResource::fromModel($album);
+	}
+
+	/**
+	 * Get public photo stream for embedding on external sites.
+	 *
+	 * Returns all public photos (photos visible in the public RSS feed) for embedding.
+	 * This includes only photos from albums that are:
+	 * - Public (is_public = true)
+	 * - Not password protected
+	 * - Not link-required only
+	 *
+	 * Photos are ordered by creation date (most recent first).
+	 *
+	 * Supports optional pagination via query parameters:
+	 * - limit: Maximum number of photos to return (default: 100, max: 100)
+	 * - offset: Number of photos to skip (default: 0)
+	 *
+	 * @param Request $request The HTTP request
+	 *
+	 * @return EmbedStreamResource The public photos formatted for embedding
+	 */
+	public function getPublicStream(Request $request): EmbedStreamResource
+	{
+		// Parse pagination parameters
+		$limit = $request->query('limit', 100);
+		$offset = $request->query('offset', 0);
+
+		// Validate and cap limit to 100 max
+		$limit = max(1, min((int) $limit, 100));
+		$offset = max(0, (int) $offset);
+
+		$photos = $this->findPublicPhotos($limit, $offset);
+
+		return EmbedStreamResource::fromPhotos($photos);
+	}
+
+	/**
+	 * Find all public photos (photos visible in RSS feed).
+	 *
+	 * Uses PhotoQueryPolicy to filter photos based on public accessibility.
+	 * Only includes photos from albums that are browsable without authentication.
+	 *
+	 * @param int $limit  Maximum number of photos to return
+	 * @param int $offset Number of photos to skip
+	 *
+	 * @return \Illuminate\Support\Collection Collection of Photo models with size_variants loaded
+	 */
+	private function findPublicPhotos(int $limit, int $offset): \Illuminate\Support\Collection
+	{
+		// Start with base photo query
+		$photosQuery = Photo::query();
+
+		// Apply security filter to only include searchable photos
+		// (photos in public albums without password/link restrictions)
+		// No origin album context (null) means search across all albums
+		$this->photo_query_policy->applySearchabilityFilter(
+			query: $photosQuery,
+			origin: null,
+			include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_rss')
+		);
+
+		// Order by most recent first
+		$photosQuery->orderBy('created_at', 'desc');
+
+		// Apply pagination
+		$photosQuery->skip($offset)->take($limit);
+
+		// Load photos with size variants
+		$photos = $photosQuery->get();
+		$photos->load('size_variants');
+
+		return $photos;
 	}
 
 	/**

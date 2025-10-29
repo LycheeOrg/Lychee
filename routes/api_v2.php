@@ -107,6 +107,16 @@ Route::match(['GET', 'OPTIONS'], '/Embed/{albumId}', [Gallery\EmbedController::c
 	])
 	->name('embed.album');
 
+Route::match(['GET', 'OPTIONS'], '/Embed/stream', [Gallery\EmbedController::class, 'getPublicStream'])
+	->withoutMiddleware('api')
+	->middleware([
+		\Illuminate\Http\Middleware\HandleCors::class,
+		\Illuminate\Routing\Middleware\SubstituteBindings::class,
+		'cache_control:900', // 15 minutes cache (longer for stream due to expensive query)
+		'throttle:30,1', // 30 requests per minute per IP (more restrictive)
+	])
+	->name('embed.stream');
+
 /**
  * IMPORT.
  */
