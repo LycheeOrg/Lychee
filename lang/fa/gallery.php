@@ -41,7 +41,7 @@ return [
         'recent' => 'اخیر',
         'public' => 'عمومی',
         'on_this_day' => 'در این روز',
-		'untagged' => 'Untagged',
+        'untagged' => 'Untagged',
     ],
     'layout' => [
         'squares' => 'تصویر کوچک مربعی',
@@ -208,7 +208,7 @@ return [
         'merge_all' => 'ادغام انتخاب شده‌ها',
         'upload_photo' => 'بارگذاری عکس',
         'import_link' => 'وارد کردن از لینک',
-		'import_server' => 'Import from Server',
+        'import_server' => 'Import from Server',
         'import_dropbox' => 'وارد کردن از Dropbox',
         'new_album' => 'آلبوم جدید',
         'new_tag_album' => 'آلبوم برچسب جدید',

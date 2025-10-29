@@ -41,7 +41,7 @@ return [
         'recent' => 'Nylig',
         'public' => 'Offentlig',
         'on_this_day' => 'På denne dagen',
-		'untagged' => 'Untagged',
+        'untagged' => 'Untagged',
     ],
     'layout' => [
         'squares' => 'Kvadrat miniatyrbilder',

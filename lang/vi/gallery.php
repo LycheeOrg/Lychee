@@ -41,8 +41,7 @@ return [
         'recent' => 'Recent',
         'public' => 'Public',
         'on_this_day' => 'On This Day',
-		'untagged' => 'Untagged',
-
+        'untagged' => 'Untagged',
     ],
     'layout' => [
         'squares' => 'Square thumbnails',
@@ -209,7 +208,7 @@ return [
         'merge_all' => 'Merge Selected',
         'upload_photo' => 'Upload Photo',
         'import_link' => 'Import from Link',
-		'import_server' => 'Import from Server',
+        'import_server' => 'Import from Server',
         'import_dropbox' => 'Import from Dropbox',
         'new_album' => 'New Album',
         'new_tag_album' => 'New Tag Album',
