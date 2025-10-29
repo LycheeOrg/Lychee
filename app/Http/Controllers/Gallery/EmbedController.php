@@ -14,6 +14,7 @@ use App\Http\Resources\Models\Utils\AlbumProtectionPolicy;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
+use App\Models\Extensions\SortingDecorator;
 use App\Models\Photo;
 use App\Policies\PhotoQueryPolicy;
 use Illuminate\Http\Request;
@@ -175,17 +176,21 @@ class EmbedController extends Controller
 			throw new NotFoundHttpException('Album not found');
 		}
 
-		// Calculate total number of photos before pagination is applied
+		$photosRelation = $album->photos();
+		$totalPhotos = $photosRelation->count();
+
 		$photosQuery = $album->photos()->getQuery();
-		$totalPhotos = (clone $photosQuery)->count();
 
 		// Apply pagination if requested
 		if ($limit !== null) {
 			$photosQuery->skip($offset)->take($limit);
 		}
+		$photosQuery->with('size_variants');
 
-		// Eager load photos with size variants (avoids N+1 query problem)
-		$photos = $photosQuery->with('size_variants')->get();
+		$sorting = $album->getEffectivePhotoSorting();
+		$photos = (new SortingDecorator($photosQuery))
+			->orderPhotosBy($sorting->column, $sorting->order)
+			->get();
 
 		// Replace the photos relation with the paginated results
 		$album->setRelation('photos', $photos);
