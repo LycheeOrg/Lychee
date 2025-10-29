@@ -144,18 +144,12 @@ return [
 	'new_album' => [
 		'menu' => 'Create Album',
 		'info' => 'Enter a title for the new album:',
-		'mode' => 'Modus',
-		'mode_album_help' => 'Bygg inn bilder fra dette spesifikke albumet.',
-		'mode_stream_help' => 'Bygg inn alle dine offentlige bilder som en kronologisk strøm (nyeste først).',
 		'title' => 'title',
 		'create' => 'Create Album',
 	],
 	'new_tag_album' => [
 		'menu' => 'Create Tag Album',
 		'info' => 'Enter a title for the new tag album:',
-		'mode' => 'Modus',
-		'mode_album_help' => 'Bygg inn bilder fra dette spesifikke albumet.',
-		'mode_stream_help' => 'Bygg inn alle dine offentlige bilder som en kronologisk strøm (nyeste først).',
 		'title' => 'title',
 		'set_tags' => 'Set tags to show',
 		'create' => 'Create Tag Album',

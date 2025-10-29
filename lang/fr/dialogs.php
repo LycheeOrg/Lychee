@@ -144,18 +144,12 @@ return [
 	'new_album' => [
 		'menu' => 'Créer un album',
 		'info' => 'Entrez un titre pour le nouvel album :',
-		'mode' => 'Mode',
-		'mode_album_help' => 'Intégrer les photos de cet album spécifique.',
-		'mode_stream_help' => 'Intégrer toutes vos photos publiques sous forme de flux chronologique (les plus récentes en premier).',
 		'title' => 'titre',
 		'create' => 'Créer l’album',
 	],
 	'new_tag_album' => [
 		'menu' => 'Créer un album par étiquette',
 		'info' => 'Entrez un titre pour le nouvel album par étiquette :',
-		'mode' => 'Mode',
-		'mode_album_help' => 'Intégrer les photos de cet album spécifique.',
-		'mode_stream_help' => 'Intégrer toutes vos photos publiques sous forme de flux chronologique (les plus récentes en premier).',
 		'title' => 'titre',
 		'set_tags' => 'Définir les étiquettes à afficher',
 		'create' => 'Créer l’album par étiquette',

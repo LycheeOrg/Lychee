@@ -148,18 +148,12 @@ return [
 	'new_album' => [
 		'menu' => 'Create Album',
 		'info' => 'Enter a title for the new album:',
-		'mode' => 'Režim',
-		'mode_album_help' => 'Vložiť fotografie z tohto konkrétneho albumu.',
-		'mode_stream_help' => 'Vložiť všetky vaše verejné fotografie ako chronologický prúd (najnovšie prvé).',
 		'title' => 'title',
 		'create' => 'Create Album',
 	],
 	'new_tag_album' => [
 		'menu' => 'Create Tag Album',
 		'info' => 'Enter a title for the new tag album:',
-		'mode' => 'Režim',
-		'mode_album_help' => 'Vložiť fotografie z tohto konkrétneho albumu.',
-		'mode_stream_help' => 'Vložiť všetky vaše verejné fotografie ako chronologický prúd (najnovšie prvé).',
 		'title' => 'title',
 		'set_tags' => 'Set tags to show',
 		'create' => 'Create Tag Album',

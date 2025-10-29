@@ -144,18 +144,12 @@ return [
 	'new_album' => [
 		'menu' => 'Album erstellen',
 		'info' => 'Einen Titel für das neue Album angeben:',
-		'mode' => 'Modus',
-		'mode_album_help' => 'Fotos aus diesem spezifischen Album einbetten.',
-		'mode_stream_help' => 'Alle Ihre öffentlichen Fotos als chronologischen Stream einbetten (neueste zuerst).',
 		'title' => 'Titel',
 		'create' => 'Album erstellen',
 	],
 	'new_tag_album' => [
 		'menu' => 'Tag Album erstellen',
 		'info' => 'Einen Titel für das neue Tag Album angeben:',
-		'mode' => 'Modus',
-		'mode_album_help' => 'Fotos aus diesem spezifischen Album einbetten.',
-		'mode_stream_help' => 'Alle Ihre öffentlichen Fotos als chronologischen Stream einbetten (neueste zuerst).',
 		'title' => 'Titel',
 		'set_tags' => 'Anzuzeigende Tags festlegen',
 		'create' => 'Tag Album erstellen',

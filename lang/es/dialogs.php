@@ -144,18 +144,12 @@ return [
 	'new_album' => [
 		'menu' => 'Crear álbum',
 		'info' => 'Introduzca un título para el nuevo álbum:',
-		'mode' => 'Modo',
-		'mode_album_help' => 'Insertar fotos de este álbum específico.',
-		'mode_stream_help' => 'Insertar todas tus fotos públicas como un flujo cronológico (más recientes primero).',
 		'title' => 'título',
 		'create' => 'Crear álbum',
 	],
 	'new_tag_album' => [
 		'menu' => 'Crear álbum de etiquetas',
 		'info' => 'Introduzca un título para el nuevo álbum de etiquetas:',
-		'mode' => 'Modo',
-		'mode_album_help' => 'Insertar fotos de este álbum específico.',
-		'mode_stream_help' => 'Insertar todas tus fotos públicas como un flujo cronológico (más recientes primero).',
 		'title' => 'título',
 		'set_tags' => 'Establecer etiquetas para mostrar',
 		'create' => 'Crear álbum de etiquetas',

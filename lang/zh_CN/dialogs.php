@@ -144,18 +144,12 @@ return [
 	'new_album' => [
 		'menu' => '创建相册',
 		'info' => '请输入新相册的标题：',
-		'mode' => '模式',
-		'mode_album_help' => '嵌入此特定相册中的照片。',
-		'mode_stream_help' => '将您的所有公共照片作为时间顺序流嵌入（最新的排在前面）。',
 		'title' => '标题',
 		'create' => '创建相册',
 	],
 	'new_tag_album' => [
 		'menu' => '创建标签相册',
 		'info' => '请输入新标签相册的标题：',
-		'mode' => '模式',
-		'mode_album_help' => '嵌入此特定相册中的照片。',
-		'mode_stream_help' => '将您的所有公共照片作为时间顺序流嵌入（最新的排在前面）。',
 		'title' => '标题',
 		'set_tags' => '设置要显示的标签',
 		'create' => '创建标签相册',

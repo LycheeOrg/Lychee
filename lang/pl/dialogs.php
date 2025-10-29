@@ -144,18 +144,12 @@ return [
 	'new_album' => [
 		'menu' => 'Utwórz album',
 		'info' => 'Wprowadź tytuł nowego albumu:',
-		'mode' => 'Tryb',
-		'mode_album_help' => 'Osadź zdjęcia z tego konkretnego albumu.',
-		'mode_stream_help' => 'Osadź wszystkie swoje publiczne zdjęcia jako chronologiczny strumień (najnowsze na początku).',
 		'title' => 'tytuł',
 		'create' => 'Utwórz album',
 	],
 	'new_tag_album' => [
 		'menu' => 'Utwórz album ze znacznikami',
 		'info' => 'Wprowadź tytuł nowego tagu albumu:',
-		'mode' => 'Tryb',
-		'mode_album_help' => 'Osadź zdjęcia z tego konkretnego albumu.',
-		'mode_stream_help' => 'Osadź wszystkie swoje publiczne zdjęcia jako chronologiczny strumień (najnowsze na początku).',
 		'title' => 'tytuł',
 		'set_tags' => 'Ustawianie wyświetlania tagów',
 		'create' => 'Utwórz album ze znacznikami',

@@ -148,18 +148,12 @@ return [
 	'new_album' => [
 		'menu' => 'Create Album',
 		'info' => 'Enter a title for the new album:',
-		'mode' => 'Modalità',
-		'mode_album_help' => 'Incorpora foto da questo album specifico.',
-		'mode_stream_help' => 'Incorpora tutte le tue foto pubbliche come flusso cronologico (più recenti per prime).',
 		'title' => 'title',
 		'create' => 'Create Album',
 	],
 	'new_tag_album' => [
 		'menu' => 'Create Tag Album',
 		'info' => 'Enter a title for the new tag album:',
-		'mode' => 'Modalità',
-		'mode_album_help' => 'Incorpora foto da questo album specifico.',
-		'mode_stream_help' => 'Incorpora tutte le tue foto pubbliche come flusso cronologico (più recenti per prime).',
 		'title' => 'title',
 		'set_tags' => 'Set tags to show',
 		'create' => 'Create Tag Album',

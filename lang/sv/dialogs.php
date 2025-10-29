@@ -148,18 +148,12 @@ return [
 	'new_album' => [
 		'menu' => 'Create Album',
 		'info' => 'Enter a title for the new album:',
-		'mode' => 'Läge',
-		'mode_album_help' => 'Bädda in foton från detta specifika album.',
-		'mode_stream_help' => 'Bädda in alla dina offentliga foton som en kronologisk ström (senaste först).',
 		'title' => 'title',
 		'create' => 'Create Album',
 	],
 	'new_tag_album' => [
 		'menu' => 'Create Tag Album',
 		'info' => 'Enter a title for the new tag album:',
-		'mode' => 'Läge',
-		'mode_album_help' => 'Bädda in foton från detta specifika album.',
-		'mode_stream_help' => 'Bädda in alla dina offentliga foton som en kronologisk ström (senaste först).',
 		'title' => 'title',
 		'set_tags' => 'Set tags to show',
 		'create' => 'Create Tag Album',

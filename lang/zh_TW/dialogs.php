@@ -144,18 +144,12 @@ return [
 	'new_album' => [
 		'menu' => '建立相簿',
 		'info' => '輸入新的相簿標題：',
-		'mode' => '模式',
-		'mode_album_help' => '嵌入此特定相簿中的照片。',
-		'mode_stream_help' => '將您的所有公開照片作為時間順序流嵌入（最新的排在前面）。',
 		'title' => '標題',
 		'create' => '建立相簿',
 	],
 	'new_tag_album' => [
 		'menu' => '建立相簿標籤',
 		'info' => '輸入新的相簿標籤名稱：',
-		'mode' => '模式',
-		'mode_album_help' => '嵌入此特定相簿中的照片。',
-		'mode_stream_help' => '將您的所有公開照片作為時間順序流嵌入（最新的排在前面）。',
 		'title' => '標題',
 		'set_tags' => '設定要顯示的標籤',
 		'create' => '建立標籤相簿',
