@@ -43,8 +43,8 @@ export function validateConfig(config: Partial<EmbedConfig>): EmbedConfig {
 		throw new Error("albumId is required for album mode");
 	}
 
-	// Remove trailing slash from API URL
-	const apiUrl = config.apiUrl.replace(/\/$/, "");
+	// Remove trailing slashes from API URL
+	const apiUrl = config.apiUrl.replace(/\/+$/, "");
 
 	// Validate layout type
 	const validLayouts: LayoutType[] = ["square", "masonry", "grid", "justified", "filmstrip"];
@@ -54,22 +54,33 @@ export function validateConfig(config: Partial<EmbedConfig>): EmbedConfig {
 	}
 
 	// Validate numeric values
-	const spacing = config.spacing ?? DEFAULT_CONFIG.spacing!;
+	const spacing = typeof config.spacing === "number" && Number.isFinite(config.spacing) ? config.spacing : DEFAULT_CONFIG.spacing!;
 	if (spacing < 0) {
 		throw new Error("spacing must be non-negative");
 	}
 
-	const targetRowHeight = config.targetRowHeight ?? DEFAULT_CONFIG.targetRowHeight!;
+	const targetRowHeight =
+		typeof config.targetRowHeight === "number" && Number.isFinite(config.targetRowHeight)
+			? config.targetRowHeight
+			: DEFAULT_CONFIG.targetRowHeight!;
 	if (targetRowHeight < 100 || targetRowHeight > 1000) {
 		throw new Error("targetRowHeight must be between 100 and 1000");
 	}
 
-	const targetColumnWidth = config.targetColumnWidth ?? DEFAULT_CONFIG.targetColumnWidth!;
+	const targetColumnWidth =
+		typeof config.targetColumnWidth === "number" && Number.isFinite(config.targetColumnWidth)
+			? config.targetColumnWidth
+			: DEFAULT_CONFIG.targetColumnWidth!;
 	if (targetColumnWidth < 100 || targetColumnWidth > 800) {
 		throw new Error("targetColumnWidth must be between 100 and 800");
 	}
 
-	const maxPhotos = config.maxPhotos ?? DEFAULT_CONFIG.maxPhotos!;
+	const maxPhotos =
+		config.maxPhotos === "none"
+			? "none"
+			: typeof config.maxPhotos === "number" && Number.isFinite(config.maxPhotos)
+				? config.maxPhotos
+				: (DEFAULT_CONFIG.maxPhotos as number);
 	if (maxPhotos !== "none" && (maxPhotos < 1 || maxPhotos > 100)) {
 		throw new Error("maxPhotos must be between 1 and 100, or 'none'");
 	}
@@ -140,30 +151,50 @@ export function parseDataAttributes(element: HTMLElement): Partial<EmbedConfig> 
 
 	// Numeric options
 	if (element.dataset.spacing) {
-		config.spacing = parseInt(element.dataset.spacing, 10);
+		const parsed = parseInt(element.dataset.spacing, 10);
+		if (!Number.isNaN(parsed)) {
+			config.spacing = parsed;
+		}
 	}
 	if (element.dataset.targetRowHeight) {
-		config.targetRowHeight = parseInt(element.dataset.targetRowHeight, 10);
+		const parsed = parseInt(element.dataset.targetRowHeight, 10);
+		if (!Number.isNaN(parsed)) {
+			config.targetRowHeight = parsed;
+		}
 	}
 	if (element.dataset.targetColumnWidth) {
-		config.targetColumnWidth = parseInt(element.dataset.targetColumnWidth, 10);
+		const parsed = parseInt(element.dataset.targetColumnWidth, 10);
+		if (!Number.isNaN(parsed)) {
+			config.targetColumnWidth = parsed;
+		}
 	}
 	if (element.dataset.maxPhotos) {
-		config.maxPhotos = element.dataset.maxPhotos === "none" ? "none" : parseInt(element.dataset.maxPhotos, 10);
+		if (element.dataset.maxPhotos === "none") {
+			config.maxPhotos = "none";
+		} else {
+			const parsed = parseInt(element.dataset.maxPhotos, 10);
+			if (!Number.isNaN(parsed)) {
+				config.maxPhotos = parsed;
+			}
+		}
 	}
 
 	// Boolean options
 	if (element.dataset.showTitle !== undefined) {
-		config.showTitle = element.dataset.showTitle !== "false";
+		const value = element.dataset.showTitle.trim().toLowerCase();
+		config.showTitle = !(value === "false" || value === "0");
 	}
 	if (element.dataset.showDescription !== undefined) {
-		config.showDescription = element.dataset.showDescription !== "false";
+		const value = element.dataset.showDescription.trim().toLowerCase();
+		config.showDescription = !(value === "false" || value === "0");
 	}
 	if (element.dataset.showCaptions !== undefined) {
-		config.showCaptions = element.dataset.showCaptions !== "false";
+		const value = element.dataset.showCaptions.trim().toLowerCase();
+		config.showCaptions = !(value === "false" || value === "0");
 	}
 	if (element.dataset.showExif !== undefined) {
-		config.showExif = element.dataset.showExif !== "false";
+		const value = element.dataset.showExif.trim().toLowerCase();
+		config.showExif = !(value === "false" || value === "0");
 	}
 
 	// Header placement
