@@ -524,23 +524,11 @@ watch(
 
 .lychee-embed__filmstrip-thumb {
 	cursor: pointer;
-	transition: border-color 0.2s ease;
 	outline: none;
-	border: 2px solid transparent;
-}
-
-.lychee-embed__filmstrip-thumb:hover,
-.lychee-embed__filmstrip-thumb:focus {
-	border-color: rgba(255, 255, 255, 0.5);
 }
 
 .lychee-embed__filmstrip-thumb--active {
-	border-color: #4a5568;
-}
-
-.lychee-embed__filmstrip-thumb:focus {
-	outline: 2px solid #4a5568;
-	outline-offset: 2px;
+	border: 2px solid #38bdf8;
 }
 
 /* Footer (bottom placement) */
