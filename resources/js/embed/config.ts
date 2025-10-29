@@ -89,7 +89,7 @@ export function validateConfig(config: Partial<EmbedConfig>): EmbedConfig {
 	// Validate sort order
 	const validSortOrders = ["asc", "desc"] as const;
 	const sortOrder = config.sortOrder ?? DEFAULT_CONFIG.sortOrder!;
-	if (!validSortOrders.includes(sortOrder as any)) {
+	if (sortOrder !== "asc" && sortOrder !== "desc") {
 		throw new Error(`Invalid sortOrder: ${sortOrder}. Valid options: ${validSortOrders.join(", ")}`);
 	}
 
