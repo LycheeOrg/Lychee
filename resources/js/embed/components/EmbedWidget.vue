@@ -28,8 +28,107 @@
 				</div>
 			</div>
 
-			<!-- Photo grid with selected layout -->
-			<div ref="gridContainer" class="lychee-embed__grid" :style="{ height: `${containerHeight}px` }">
+			<!-- Filmstrip layout -->
+			<div
+				v-if="isFilmstripMode && filmstripLayout"
+				ref="gridContainer"
+				class="lychee-embed__filmstrip"
+				:style="{ height: `${containerHeight}px` }"
+			>
+				<!-- Main viewer -->
+				<div
+					class="lychee-embed__filmstrip-main"
+					:style="{
+						position: 'absolute',
+						top: `${filmstripLayout.mainViewer.top}px`,
+						left: `${filmstripLayout.mainViewer.left}px`,
+						width: `${filmstripLayout.mainViewer.width}px`,
+						height: `${filmstripLayout.mainViewer.height}px`,
+					}"
+				>
+					<img
+						v-if="albumData && albumData.photos[filmstripActiveIndex]"
+						:src="
+							getBestSizeVariant({
+								...albumData.photos[filmstripActiveIndex],
+								position: { top: 0, left: 0, width: filmstripLayout.mainViewer.width, height: filmstripLayout.mainViewer.height },
+							})
+						"
+						:alt="albumData.photos[filmstripActiveIndex].title || 'Photo'"
+						:title="albumData.photos[filmstripActiveIndex].title || undefined"
+						class="lychee-embed__filmstrip-main-img"
+						role="button"
+						tabindex="0"
+						@click="openLightbox(albumData.photos[filmstripActiveIndex].id)"
+						@keydown.enter="openLightbox(albumData.photos[filmstripActiveIndex].id)"
+						@keydown.space.prevent="openLightbox(albumData.photos[filmstripActiveIndex].id)"
+					/>
+
+					<!-- Navigation arrows -->
+					<button
+						v-if="filmstripActiveIndex > 0"
+						class="lychee-embed__filmstrip-nav lychee-embed__filmstrip-nav--prev"
+						@click="selectFilmstripPhoto(filmstripActiveIndex - 1)"
+						aria-label="Previous photo"
+						title="Previous"
+					>
+						<span class="lychee-embed__filmstrip-nav-icon">‹</span>
+					</button>
+
+					<button
+						v-if="albumData && filmstripActiveIndex < albumData.photos.length - 1"
+						class="lychee-embed__filmstrip-nav lychee-embed__filmstrip-nav--next"
+						@click="selectFilmstripPhoto(filmstripActiveIndex + 1)"
+						aria-label="Next photo"
+						title="Next"
+					>
+						<span class="lychee-embed__filmstrip-nav-icon">›</span>
+					</button>
+				</div>
+
+				<!-- Thumbnail strip -->
+				<div
+					class="lychee-embed__filmstrip-thumbnails"
+					:style="{
+						position: 'absolute',
+						top: `${filmstripLayout.thumbnailStrip.top}px`,
+						left: `${filmstripLayout.thumbnailStrip.left}px`,
+						width: `${filmstripLayout.thumbnailStrip.width}px`,
+						height: `${filmstripLayout.thumbnailStrip.height}px`,
+					}"
+				>
+					<div
+						v-for="(thumb, index) in filmstripLayout.thumbnails"
+						:key="thumb.photo.id"
+						class="lychee-embed__filmstrip-thumb"
+						:class="{ 'lychee-embed__filmstrip-thumb--active': index === filmstripActiveIndex }"
+						role="button"
+						tabindex="0"
+						:aria-label="`Select ${thumb.photo.title || 'photo'}`"
+						:style="{
+							position: 'absolute',
+							top: `${thumb.position.top}px`,
+							left: `${thumb.position.left}px`,
+							width: `${thumb.position.width}px`,
+							height: `${thumb.position.height}px`,
+						}"
+						@click="selectFilmstripPhoto(index)"
+						@keydown.enter="selectFilmstripPhoto(index)"
+						@keydown.space.prevent="selectFilmstripPhoto(index)"
+					>
+						<img
+							:src="getBestSizeVariant({ ...thumb.photo, position: thumb.position })"
+							:alt="thumb.photo.title || 'Photo'"
+							:title="thumb.photo.title || undefined"
+							loading="lazy"
+							class="lychee-embed__photo-img"
+						/>
+					</div>
+				</div>
+			</div>
+
+			<!-- Regular photo grid with selected layout -->
+			<div v-else ref="gridContainer" class="lychee-embed__grid" :style="{ height: `${containerHeight}px` }">
 				<div
 					v-for="photo in positionedPhotos"
 					:key="photo.id"
@@ -82,6 +181,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from "vue";
 import type { EmbedConfig, EmbedApiResponse, PositionedPhoto, SizeVariantData } from "../types";
+import type { FilmstripLayoutResult } from "../layouts/filmstrip";
 import { createApiClient } from "../api";
 import { layoutSquare } from "../layouts/square";
 import { layoutMasonry } from "../layouts/masonry";
@@ -103,9 +203,16 @@ const gridContainer = ref<HTMLElement | null>(null);
 const positionedPhotos = ref<PositionedPhoto[]>([]);
 const containerHeight = ref(0);
 
+// Filmstrip-specific state
+const filmstripLayout = ref<FilmstripLayoutResult | null>(null);
+const filmstripActiveIndex = ref(0);
+
 // Lightbox state
 const lightboxOpen = ref(false);
 const lightboxPhotoIndex = ref(0);
+
+// Computed property to check if we're in filmstrip mode
+const isFilmstripMode = computed(() => props.config.layout === "filmstrip");
 
 const containerStyle = computed(() => ({
 	width: props.config.width,
@@ -177,9 +284,11 @@ function calculateLayout() {
 			break;
 
 		case "filmstrip":
-			// Filmstrip needs container height
+			// Filmstrip needs container height and special handling
 			const height = props.config.height === "auto" ? 600 : parseInt(props.config.height ?? "600");
-			const filmstripResult = layoutFilmstrip(photos, containerWidth, height, 100, spacing);
+			const filmstripResult = layoutFilmstrip(photos, containerWidth, height, 100, spacing, filmstripActiveIndex.value);
+			filmstripLayout.value = filmstripResult;
+			// For filmstrip, only set positioned photos to thumbnails for thumbnail strip
 			result = filmstripToLayoutResult(filmstripResult);
 			break;
 
@@ -190,6 +299,14 @@ function calculateLayout() {
 
 	positionedPhotos.value = result.photos;
 	containerHeight.value = result.containerHeight;
+}
+
+/**
+ * Select a photo in filmstrip mode
+ */
+function selectFilmstripPhoto(index: number) {
+	filmstripActiveIndex.value = index;
+	calculateLayout();
 }
 
 /**
@@ -288,7 +405,7 @@ watch(
 
 /* Header */
 .lychee-embed__header {
-	padding: 1.5em;
+	padding: 1em 1.5em 0.5em 1.5em;
 }
 
 .lychee-embed__header-content {
@@ -338,6 +455,92 @@ watch(
 .lychee-embed__grid {
 	position: relative;
 	width: 100%;
+}
+
+/* Filmstrip layout */
+.lychee-embed__filmstrip {
+	position: relative;
+	width: 100%;
+}
+
+.lychee-embed__filmstrip-main {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	overflow: hidden;
+}
+
+.lychee-embed__filmstrip-main-img {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+	cursor: pointer;
+}
+
+.lychee-embed__filmstrip-nav {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 3em;
+	height: 3em;
+	background: rgba(0, 0, 0, 0.5);
+	border: none;
+	border-radius: 50%;
+	color: white;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 10;
+	transition: background-color 0.2s;
+}
+
+.lychee-embed__filmstrip-nav-icon {
+	font-size: 2.5em;
+	line-height: 1;
+	color: white;
+	font-weight: 300;
+	display: block;
+	transform: translate(0.03em, -0.08em);
+}
+
+.lychee-embed__filmstrip-nav:hover {
+	background: rgba(0, 0, 0, 0.8);
+}
+
+.lychee-embed__filmstrip-nav--prev {
+	left: 1em;
+}
+
+.lychee-embed__filmstrip-nav--next {
+	right: 1em;
+}
+
+.lychee-embed__filmstrip-thumbnails {
+	overflow-x: auto;
+	overflow-y: hidden;
+}
+
+.lychee-embed__filmstrip-thumb {
+	cursor: pointer;
+	transition: border-color 0.2s ease;
+	outline: none;
+	border: 2px solid transparent;
+}
+
+.lychee-embed__filmstrip-thumb:hover,
+.lychee-embed__filmstrip-thumb:focus {
+	border-color: rgba(255, 255, 255, 0.5);
+}
+
+.lychee-embed__filmstrip-thumb--active {
+	border-color: #4a5568;
+}
+
+.lychee-embed__filmstrip-thumb:focus {
+	outline: 2px solid #4a5568;
+	outline-offset: 2px;
 }
 
 /* Footer (bottom placement) */
