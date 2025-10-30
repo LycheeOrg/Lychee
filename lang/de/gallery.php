@@ -195,7 +195,7 @@ return [
         'set_header' => 'Album Header festlegen',
         'copy_to' => 'Kopieren nach …',
         'copy_all_to' => 'Ausgewähltes kopieren nach …',
-        'rename' => 'v',
+        'rename' => 'Umbenennen',
         'move' => 'Verschieben',
         'move_all' => 'Ausgewähltes verschieben',
         'pin' => 'Anheften',
