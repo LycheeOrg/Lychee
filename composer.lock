@@ -510,16 +510,16 @@
         },
         {
             "name": "dedoc/scramble",
-            "version": "v0.13.1",
+            "version": "v0.13.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/dedoc/scramble.git",
-                "reference": "1cf25c29ba1059584d9e7b0a31feffadae0db1c0"
+                "reference": "0879b46a2b398e7e55598f5a25e0783c3e3ae43c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dedoc/scramble/zipball/1cf25c29ba1059584d9e7b0a31feffadae0db1c0",
-                "reference": "1cf25c29ba1059584d9e7b0a31feffadae0db1c0",
+                "url": "https://api.github.com/repos/dedoc/scramble/zipball/0879b46a2b398e7e55598f5a25e0783c3e3ae43c",
+                "reference": "0879b46a2b398e7e55598f5a25e0783c3e3ae43c",
                 "shasum": ""
             },
             "require": {
@@ -578,7 +578,7 @@
             ],
             "support": {
                 "issues": "https://github.com/dedoc/scramble/issues",
-                "source": "https://github.com/dedoc/scramble/tree/v0.13.1"
+                "source": "https://github.com/dedoc/scramble/tree/v0.13.2"
             },
             "funding": [
                 {
@@ -586,7 +586,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-10-26T11:36:56+00:00"
+            "time": "2025-10-30T14:12:39+00:00"
         },
         {
             "name": "dflydev/dot-access-data",
@@ -1263,16 +1263,16 @@
         },
         {
             "name": "farzai/color-palette",
-            "version": "1.1.1",
+            "version": "1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/parsilver/color-palette-php.git",
-                "reference": "c07412fc2b51582f130b44b1c206996952d23ab2"
+                "reference": "833de3a95c6796071e6155cbc2cea63e45541930"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/parsilver/color-palette-php/zipball/c07412fc2b51582f130b44b1c206996952d23ab2",
-                "reference": "c07412fc2b51582f130b44b1c206996952d23ab2",
+                "url": "https://api.github.com/repos/parsilver/color-palette-php/zipball/833de3a95c6796071e6155cbc2cea63e45541930",
+                "reference": "833de3a95c6796071e6155cbc2cea63e45541930",
                 "shasum": ""
             },
             "require": {
@@ -1287,6 +1287,7 @@
                 "laravel/pint": "^1.0",
                 "mockery/mockery": "^1.6",
                 "pestphp/pest": "^2.20",
+                "phpstan/phpstan": "^2.0",
                 "spatie/ray": "^1.28"
             },
             "type": "library",
@@ -1308,12 +1309,24 @@
             "description": "A robust PHP library for extracting, analyzing, and managing color palettes from images",
             "homepage": "https://github.com/parsilver/color-palette-php",
             "keywords": [
-                "color-palette",
-                "farzai"
+                "accessibility",
+                "color",
+                "color-analysis",
+                "color-extraction",
+                "contrast-ratio",
+                "gd",
+                "hsl",
+                "hsv",
+                "image-processing",
+                "imagick",
+                "palette",
+                "rgb",
+                "theme-generation",
+                "wcag"
             ],
             "support": {
                 "issues": "https://github.com/parsilver/color-palette-php/issues",
-                "source": "https://github.com/parsilver/color-palette-php/tree/1.1.1"
+                "source": "https://github.com/parsilver/color-palette-php/tree/1.2.0"
             },
             "funding": [
                 {
@@ -1321,7 +1334,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-10-21T04:21:23+00:00"
+            "time": "2025-10-28T19:23:48+00:00"
         },
         {
             "name": "firebase/php-jwt",
@@ -8568,16 +8581,16 @@
         },
         {
             "name": "symfony/cache",
-            "version": "v7.3.4",
+            "version": "v7.3.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/cache.git",
-                "reference": "bf8afc8ffd4bfd3d9c373e417f041d9f1e5b863f"
+                "reference": "4a55feb59664f49042a0824c0f955e2f4c1412ad"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/cache/zipball/bf8afc8ffd4bfd3d9c373e417f041d9f1e5b863f",
-                "reference": "bf8afc8ffd4bfd3d9c373e417f041d9f1e5b863f",
+                "url": "https://api.github.com/repos/symfony/cache/zipball/4a55feb59664f49042a0824c0f955e2f4c1412ad",
+                "reference": "4a55feb59664f49042a0824c0f955e2f4c1412ad",
                 "shasum": ""
             },
             "require": {
@@ -8646,7 +8659,7 @@
                 "psr6"
             ],
             "support": {
-                "source": "https://github.com/symfony/cache/tree/v7.3.4"
+                "source": "https://github.com/symfony/cache/tree/v7.3.5"
             },
             "funding": [
                 {
@@ -8666,7 +8679,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-09-11T10:12:26+00:00"
+            "time": "2025-10-16T13:55:38+00:00"
         },
         {
             "name": "symfony/cache-contracts",
