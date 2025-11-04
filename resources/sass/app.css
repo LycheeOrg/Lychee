@@ -194,6 +194,12 @@ html {
 	outline-offset: 0px;
 }
 
+/* PrimeVue overlays linger briefly during exit animations; disable pointer events
+   so the fading mask no longer swallows the user's next click. */
+.p-component-overlay-leave-active {
+	pointer-events: none;
+}
+
 .filter-shadow {
 	filter: drop-shadow(0 0 0.5rem black);
 }
