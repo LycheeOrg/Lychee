@@ -119,8 +119,16 @@ export function useDragAndSelect(
 		return true;
 	}
 
+	function isInteractiveTarget(target: EventTarget | null): boolean {
+		if (!(target instanceof HTMLElement)) return false;
+		if (target.closest("[data-stop-drag-select='true']")) return true;
+		const interactiveSelectors =
+			"a,button,input,textarea,select,summary,[role='button'],[role='menuitem'],[role='link'],.p-drawer-mask,.p-speeddial,.p-contextmenu,.p-dialog";
+		return target.closest(interactiveSelectors) !== null;
+	}
+
 	function show(e: MouseEvent) {
-		if (!canStart(e)) {
+		if (!canStart(e) || isInteractiveTarget(e.target)) {
 			return;
 		}
 
