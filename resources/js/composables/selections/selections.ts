@@ -1,5 +1,5 @@
 import { TogglablesStateStore } from "@/stores/ModalsState";
-import { modKey, shiftKeyState } from "@/utils/keybindings-utils";
+import { getModKey } from "@/utils/keybindings-utils";
 import { storeToRefs } from "pinia";
 import { computed, ref } from "vue";
 import { useAlbumActions } from "@/composables/album/albumActions";
@@ -60,12 +60,19 @@ export function useSelection(photosStore: PhotosStore, albumsStore: AlbumsStore,
 		selectedAlbumsIdx.value = selectedAlbumsIdx.value.filter((i) => i !== idx);
 	}
 
-	function photoSelect(idx: number, e: Event): void {
+	function getMouseModifiers(e: MouseEvent): { isMod: boolean; isShift: boolean } {
+		const modKey = getModKey();
+		const isMod = modKey === "Meta" ? e.metaKey : e.ctrlKey;
+		return { isMod, isShift: e.shiftKey };
+	}
+
+	function photoSelect(idx: number, e: MouseEvent): void {
 		// clear the Album selection.
 		selectedAlbumsIdx.value = [];
 
 		// we do not support CTRL + SHIFT
-		if (!modKey().value && !shiftKeyState.value) {
+		const { isMod, isShift } = getMouseModifiers(e);
+		if (!isMod && !isShift) {
 			return;
 		}
 
@@ -77,12 +84,12 @@ export function useSelection(photosStore: PhotosStore, albumsStore: AlbumsStore,
 			return;
 		}
 
-		if (modKey().value) {
+		if (isMod) {
 			handlePhotoCtrl(idx, e);
 			return;
 		}
 
-		if (shiftKeyState.value) {
+		if (isShift) {
 			handlePhotoShift(idx, e);
 			return;
 		}
@@ -126,12 +133,13 @@ export function useSelection(photosStore: PhotosStore, albumsStore: AlbumsStore,
 		lastPhotoClicked.value = idx;
 	}
 
-	function albumClick(idx: number, e: Event): void {
+	function albumClick(idx: number, e: MouseEvent): void {
 		// clear the Photo selection.
 		selectedPhotosIdx.value = [];
 
 		// we do not support CTRL + SHIFT
-		if (!modKey().value && !shiftKeyState.value) {
+		const { isMod, isShift } = getMouseModifiers(e);
+		if (!isMod && !isShift) {
 			return;
 		}
 
@@ -143,12 +151,12 @@ export function useSelection(photosStore: PhotosStore, albumsStore: AlbumsStore,
 			return;
 		}
 
-		if (modKey().value) {
+		if (isMod) {
 			handleAlbumCtrl(idx, e);
 			return;
 		}
 
-		if (shiftKeyState.value) {
+		if (isShift) {
 			handleAlbumShift(idx, e);
 			return;
 		}
