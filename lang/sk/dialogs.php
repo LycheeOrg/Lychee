@@ -1,12 +1,11 @@
 <?php
-
 return [
-    /*
+    'button' => [
+        /*
     |--------------------------------------------------------------------------
     | Dialogs
     |--------------------------------------------------------------------------
     */
-    'button' => [
         'close' => 'Close',
         'cancel' => 'Cancel',
         'save' => 'Save',
@@ -38,7 +37,6 @@ return [
         'login' => 'Login',
         'toggle_full_screen' => 'Toggle Full Screen',
         'toggle_sensitive_albums' => 'Toggle Sensitive Albums',
-
         'albums' => 'Albums Shortcuts',
         'new_album' => 'New Album',
         'upload_photos' => 'Upload Photos',
@@ -47,11 +45,9 @@ return [
         'select_all' => 'Select All',
         'move_selection' => 'Move Selection',
         'delete_selection' => 'Delete Selection',
-
         'album' => 'Album Shortcuts',
         'slideshow' => 'Start/Stop Slideshow',
         'toggle' => 'Toggle panel',
-
         'photo' => 'Photo Shortcuts',
         'previous' => 'Previous photo',
         'next' => 'Next photo',
@@ -61,7 +57,6 @@ return [
         'delete' => 'Delete the photo',
         'edit' => 'Edit information',
         'show_hide_meta' => 'Show information',
-
         'keep_hidden' => 'We will keep it hidden.',
         'button_hidden' => 'We will hide the button in the header.',
     ],
