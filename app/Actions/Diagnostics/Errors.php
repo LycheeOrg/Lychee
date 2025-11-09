@@ -20,6 +20,7 @@ use App\Actions\Diagnostics\Pipes\Checks\DBIntegrityCheck;
 use App\Actions\Diagnostics\Pipes\Checks\DBSupportCheck;
 use App\Actions\Diagnostics\Pipes\Checks\ForeignKeyListInfo;
 use App\Actions\Diagnostics\Pipes\Checks\GDSupportCheck;
+use App\Actions\Diagnostics\Pipes\Checks\HashCheck;
 use App\Actions\Diagnostics\Pipes\Checks\IframeCheck;
 use App\Actions\Diagnostics\Pipes\Checks\ImageOptCheck;
 use App\Actions\Diagnostics\Pipes\Checks\ImagickPdfCheck;
@@ -46,6 +47,7 @@ class Errors
 	 * @var array<int,class-string>
 	 */
 	private array $pipes = [
+		HashCheck::class,
 		AdminUserExistsCheck::class,
 		AuthDisabledCheck::class,
 		BasicPermissionCheck::class,
