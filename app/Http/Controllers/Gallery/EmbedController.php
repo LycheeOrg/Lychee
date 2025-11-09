@@ -83,7 +83,7 @@ class EmbedController extends Controller
 	 */
 	public function getPublicStream(EmbededRequest $request): EmbedStreamResource
 	{
-		$photos = $this->findPublicPhotos($request->limit ?? 100, $request->offset, $request->sort);
+		$photos = $this->findPublicPhotos($request->limit ?? 100, $request->offset, $request->sort ?? 'desc');
 
 		// Get site title from configuration
 		$site_title = strval(Configs::getValue('site_title') ?? 'Lychee');
