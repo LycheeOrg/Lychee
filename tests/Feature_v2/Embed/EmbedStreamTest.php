@@ -273,7 +273,7 @@ class EmbedStreamTest extends BaseApiWithDataTest
 		$photoCountBefore = count($responseBefore->json('photos'));
 
 		// Add password to album4's public permission (which has public photos)
-		\App\Models\AccessPermission::where('base_album_id', $this->album4->id)->update(['password' => 'test123']);
+		AccessPermission::where('base_album_id', $this->album4->id)->update(['password' => 'test123']);
 
 		$responseAfter = $this->getJson('Embed/stream');
 		$this->assertOk($responseAfter);
@@ -286,7 +286,7 @@ class EmbedStreamTest extends BaseApiWithDataTest
 		$this->assertLessThan($photoCountBefore, count($data['photos']), 'Photo count should decrease when album is password protected');
 
 		// Clean up
-		\App\Models\AccessPermission::where('base_album_id', $this->album4->id)->update(['password' => null]);
+		AccessPermission::where('base_album_id', $this->album4->id)->update(['password' => null]);
 	}
 
 	/**
@@ -299,7 +299,7 @@ class EmbedStreamTest extends BaseApiWithDataTest
 		$photoCountBefore = count($responseBefore->json('photos'));
 
 		// Make album4's public permission link-required (which has public photos)
-		\App\Models\AccessPermission::where('base_album_id', $this->album4->id)->update(['is_link_required' => true]);
+		AccessPermission::where('base_album_id', $this->album4->id)->update(['is_link_required' => true]);
 
 		$responseAfter = $this->getJson('Embed/stream');
 		$this->assertOk($responseAfter);
@@ -312,7 +312,7 @@ class EmbedStreamTest extends BaseApiWithDataTest
 		$this->assertLessThan($photoCountBefore, count($data['photos']), 'Photo count should decrease when album is link-required');
 
 		// Clean up
-		\App\Models\AccessPermission::where('base_album_id', $this->album4->id)->update(['is_link_required' => false]);
+		AccessPermission::where('base_album_id', $this->album4->id)->update(['is_link_required' => false]);
 	}
 
 	/**

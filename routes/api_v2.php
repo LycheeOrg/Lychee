@@ -96,7 +96,7 @@ Route::get('/Sharing::albums', [Gallery\SharingController::class, 'listAlbums'])
  * Embed.
  * Public endpoints for embedding albums on external websites.
  * Note: These routes intentionally have minimal middleware to allow cross-origin embedding.
- * IMPORTANT: More specific routes (stream) must come before generic routes ({albumId}) to avoid conflicts.
+ * IMPORTANT: More specific routes (stream) must come before generic routes ({album_id}) to avoid conflicts.
  */
 Route::match(['GET', 'OPTIONS'], '/Embed/stream', [Gallery\EmbedController::class, 'getPublicStream'])
 	->withoutMiddleware('api')
@@ -108,7 +108,7 @@ Route::match(['GET', 'OPTIONS'], '/Embed/stream', [Gallery\EmbedController::clas
 	])
 	->name('embed.stream');
 
-Route::match(['GET', 'OPTIONS'], '/Embed/{albumId}', [Gallery\EmbedController::class, 'getAlbum'])
+Route::match(['GET', 'OPTIONS'], '/Embed/{album_id}', [Gallery\EmbedController::class, 'getAlbum'])
 	->withoutMiddleware('api')
 	->middleware([
 		\Illuminate\Http\Middleware\HandleCors::class,
