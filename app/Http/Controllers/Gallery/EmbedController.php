@@ -46,15 +46,15 @@ class EmbedController extends Controller
 	 * - offset: Number of photos to skip (default: 0)
 	 * - sort: Sort order for photos ('asc' = oldest first, 'desc' = newest first, default: album setting)
 	 *
-	 * @param Request $request The HTTP request
-	 * @param string  $albumId The album ID to embed
+	 * @param Request $request  The HTTP request
+	 * @param string  $album_id The album ID to embed
 	 *
 	 * @return EmbedAlbumResource The album data formatted for embedding
 	 *
 	 * @throws NotFoundHttpException     if album doesn't exist
 	 * @throws AccessDeniedHttpException if album is not publicly accessible
 	 */
-	public function getAlbum(Request $request, string $albumId): EmbedAlbumResource
+	public function getAlbum(Request $request, string $album_id): EmbedAlbumResource
 	{
 		// Parse pagination parameters
 		$limit = $request->query('limit', null);
@@ -73,12 +73,12 @@ class EmbedController extends Controller
 		}
 
 		// Step 1: Get album metadata without photos (lightweight)
-		$album = $this->findAlbumMetadata($albumId);
+		$album = $this->findAlbumMetadata($album_id);
 
 		// Step 2: Verify album is publicly accessible before loading photos
 		if (!$this->isPubliclyAccessible($album)) {
 			\Log::warning('Embed access denied', [
-				'album_id' => $albumId,
+				'album_id' => $album_id,
 				'ip' => request()->ip(),
 				'user_agent' => request()->userAgent(),
 			]);
@@ -150,27 +150,27 @@ class EmbedController extends Controller
 	private function findPublicPhotos(int $limit, int $offset, string $sort): \Illuminate\Support\Collection
 	{
 		// Start with base photo query
-		$photosQuery = Photo::query();
+		$photos_query = Photo::query();
 
 		// Apply security filter to only include searchable photos
 		// (photos in public albums without password/link restrictions)
 		// No origin album context (null) means search across all albums
 		$this->photo_query_policy->applySearchabilityFilter(
-			query: $photosQuery,
+			query: $photos_query,
 			origin: null,
 			include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_rss')
 		);
 
 		// Order by EXIF taken_at (with fallback to created_at) with specified sort order
 		// Convert string to enum
-		$orderEnum = $sort === 'asc' ? OrderSortingType::ASC : OrderSortingType::DESC;
-		$photosQuery->orderByRaw('COALESCE(taken_at, created_at) ' . $orderEnum->value);
+		$order_enum = $sort === 'asc' ? OrderSortingType::ASC : OrderSortingType::DESC;
+		$photos_query->orderByRaw('COALESCE(taken_at, created_at) ' . $order_enum->value);
 
 		// Apply pagination
-		$photosQuery->skip($offset)->take($limit);
+		$photos_query->skip($offset)->take($limit);
 
 		// Eager load photos with size variants (avoids N+1 query problem)
-		$photos = $photosQuery->with('size_variants')->get();
+		$photos = $photos_query->with('size_variants')->get();
 
 		return $photos;
 	}
@@ -182,20 +182,20 @@ class EmbedController extends Controller
 	 * without hydrating photos or performing expensive operations.
 	 * Use this for access checks before committing to loading photos.
 	 *
-	 * @param string $albumId The album ID
+	 * @param string $album_id The album ID
 	 *
 	 * @return BaseAlbum The album instance without photos loaded
 	 *
 	 * @throws NotFoundHttpException if album doesn't exist
 	 */
-	private function findAlbumMetadata(string $albumId): BaseAlbum
+	private function findAlbumMetadata(string $album_id): BaseAlbum
 	{
 		/** @var Album|null $album */
-		$album = Album::query()->find($albumId);
+		$album = Album::query()->find($album_id);
 
 		if ($album === null) {
 			\Log::info('Embed album not found', [
-				'album_id' => $albumId,
+				'album_id' => $album_id,
 				'ip' => request()->ip(),
 			]);
 			throw new NotFoundHttpException('Album not found');
@@ -218,35 +218,35 @@ class EmbedController extends Controller
 	 */
 	private function loadAlbumPhotos(BaseAlbum $album, ?int $limit = null, int $offset = 0, ?string $sort = null): void
 	{
-		$totalPhotos = $album->photos()->getQuery()->count();
+		$total_photos = $album->photos()->getQuery()->count();
 
-		$photosQuery = $album->photos()->getQuery();
+		$photos_query = $album->photos()->getQuery();
 
 		// Apply pagination if requested
 		if ($limit !== null) {
-			$photosQuery->skip($offset)->take($limit);
+			$photos_query->skip($offset)->take($limit);
 		}
-		$photosQuery->with('size_variants');
+		$photos_query->with('size_variants');
 
 		// Use custom sort order if provided, otherwise use album's default sorting
 		if ($sort !== null) {
 			// Override with custom sort by EXIF taken_at (with fallback to created_at)
 			// Convert string to enum
-			$orderEnum = $sort === 'asc' ? OrderSortingType::ASC : OrderSortingType::DESC;
-			$photos = (new SortingDecorator($photosQuery))
-				->orderPhotosBy(ColumnSortingType::TAKEN_AT, $orderEnum)
+			$order_enum = $sort === 'asc' ? OrderSortingType::ASC : OrderSortingType::DESC;
+			$photos = (new SortingDecorator($photos_query))
+				->orderPhotosBy(ColumnSortingType::TAKEN_AT, $order_enum)
 				->get();
 		} else {
 			// Use album's configured sorting
 			$sorting = $album->getEffectivePhotoSorting();
-			$photos = (new SortingDecorator($photosQuery))
+			$photos = (new SortingDecorator($photos_query))
 				->orderPhotosBy($sorting->column, $sorting->order)
 				->get();
 		}
 
 		// Replace the photos relation with the paginated results
 		$album->setRelation('photos', $photos);
-		$album->setAttribute('photos_count', $totalPhotos);
+		$album->setAttribute('photos_count', $total_photos);
 	}
 
 	/**
