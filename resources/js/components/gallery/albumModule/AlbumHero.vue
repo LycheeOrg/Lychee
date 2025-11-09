@@ -1,7 +1,7 @@
 <template>
 	<div v-if="albumStore.album && albumStore.album.preFormattedData.url" class="w-full h-1/2 relative">
 		<img class="absolute block top-0 left-0 w-full h-full object-cover object-center z-0" :src="albumStore.album.preFormattedData.url" />
-		<div class="h-full ltr:pl-7 rtl:pr-7 pt-7 relative text-shadow-sm w-full bg-gradient-to-b from-black/20 via-80%">
+		<div class="h-full ltr:pl-7 rtl:pr-7 pt-7 relative text-shadow-sm w-full bg-linear-to-b from-black/20 via-80%">
 			<h1 class="font-bold text-4xl text-surface-0">{{ albumStore.album.title }}</h1>
 			<span v-if="albumStore.album.preFormattedData.min_max_text" class="text-surface-200 text-sm">
 				{{ albumStore.album.preFormattedData.min_max_text }}

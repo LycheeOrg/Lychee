@@ -23,43 +23,43 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                      External Website                        │
+│                      External Website                       │
 │  ┌────────────────────────────────────────────────────────┐ │
 │  │  <div id="lychee-embed">                               │ │
-│  │    ┌──────────────────────────────────────────────┐   │ │
-│  │    │      LycheeEmbed Widget (JavaScript)         │   │ │
-│  │    │  ┌────────────────────────────────────────┐  │   │ │
-│  │    │  │  Layout Manager                        │  │   │ │
-│  │    │  │  (Square/Justified/Masonry/Grid/Film)  │  │   │ │
-│  │    │  └────────────────────────────────────────┘  │   │ │
-│  │    │  ┌────────────────────────────────────────┐  │   │ │
-│  │    │  │  Lightbox Component                    │  │   │ │
-│  │    │  └────────────────────────────────────────┘  │   │ │
-│  │    └──────────────────────────────────────────────┘   │ │
+│  │    ┌──────────────────────────────────────────────┐    │ │
+│  │    │      LycheeEmbed Widget (JavaScript)         │    │ │
+│  │    │  ┌────────────────────────────────────────┐  │    │ │
+│  │    │  │  Layout Manager                        │  │    │ │
+│  │    │  │  (Square/Justified/Masonry/Grid/Film)  │  │    │ │
+│  │    │  └────────────────────────────────────────┘  │    │ │
+│  │    │  ┌────────────────────────────────────────┐  │    │ │
+│  │    │  │  Lightbox Component                    │  │    │ │
+│  │    │  └────────────────────────────────────────┘  │    │ │
+│  │    └──────────────────────────────────────────────┘    │ │
 │  │  </div>                                                │ │
 │  └────────────────────────────────────────────────────────┘ │
-│                          │ │                                 │
-│                          │ │ API Request (CORS)              │
-│                          ▼ ▼                                 │
+│                          │ │                                │
+│                          │ │ API Request (CORS)             │
+│                          ▼ ▼                                │
 └─────────────────────────────────────────────────────────────┘
                            │ │
                            │ │
 ┌─────────────────────────────────────────────────────────────┐
-│                   Lychee Installation                        │
+│                   Lychee Installation                       │
 │  ┌────────────────────────────────────────────────────────┐ │
-│  │  /api/v2/Embed/{albumId}  (EmbedController)           │ │
+│  │  /api/v2/Embed/{albumId}  (EmbedController)            │ │
 │  │      │                                                 │ │
-│  │      ├─→ Validate Album Access (AccessPermission)     │ │
-│  │      ├─→ Fetch Album + Photos                         │ │
-│  │      ├─→ Generate Size Variant URLs (Signed)          │ │
-│  │      └─→ Return JSON Response                         │ │
+│  │      ├─→ Validate Album Access (AccessPermission)      │ │
+│  │      ├─→ Fetch Album + Photos                          │ │
+│  │      ├─→ Generate Size Variant URLs (Signed)           │ │
+│  │      └─→ Return JSON Response                          │ │
 │  └────────────────────────────────────────────────────────┘ │
 │  ┌────────────────────────────────────────────────────────┐ │
 │  │  Embed Code Generator (Vue Component)                  │ │
 │  │      │                                                 │ │
-│  │      ├─→ Configuration Form                           │ │
-│  │      ├─→ Live Preview                                 │ │
-│  │      └─→ Generate HTML/JS Snippet                     │ │
+│  │      ├─→ Configuration Form                            │ │
+│  │      ├─→ Live Preview                                  │ │
+│  │      └─→ Generate HTML/JS Snippet                      │ │
 │  └────────────────────────────────────────────────────────┘ │
 └─────────────────────────────────────────────────────────────┘
 ```
