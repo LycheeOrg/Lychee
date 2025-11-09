@@ -55,7 +55,7 @@ final readonly class RouteCacheManager
 
 			// Embed endpoints are public and cacheable with 15-minute TTL
 			'api/v2/Embed/stream' => new RouteCacheConfig(tag: CacheTag::GALLERY, user_dependant: false),
-			'api/v2/Embed/{albumId}' => new RouteCacheConfig(tag: CacheTag::GALLERY, user_dependant: false),
+			'api/v2/Embed/{album_id}' => new RouteCacheConfig(tag: CacheTag::GALLERY, user_dependant: false),
 
 			// Response must be different for each call.
 			'api/v2/Frame' => false,

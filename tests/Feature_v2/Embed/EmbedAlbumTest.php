@@ -95,7 +95,7 @@ class EmbedAlbumTest extends BaseApiWithDataTest
 	{
 		// album1 is private (owned by user, not public)
 		$response = $this->getJson('Embed/' . $this->album1->id);
-		$this->assertForbidden($response);
+		$this->assertUnauthorized($response);
 	}
 
 	/**
@@ -113,7 +113,7 @@ class EmbedAlbumTest extends BaseApiWithDataTest
 			]);
 
 		$response = $this->getJson('Embed/' . $this->album1->id);
-		$this->assertForbidden($response);
+		$this->assertUnauthorized($response);
 	}
 
 	/**
@@ -130,7 +130,7 @@ class EmbedAlbumTest extends BaseApiWithDataTest
 			]);
 
 		$response = $this->getJson('Embed/' . $this->album1->id);
-		$this->assertForbidden($response);
+		$this->assertUnauthorized($response);
 	}
 
 	/**
