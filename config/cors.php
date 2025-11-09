@@ -14,7 +14,10 @@ return [
 	|
 	*/
 
-	'paths' => ['api/*', 'sanctum/csrf-cookie'],
+	'paths' => [
+		'api/*',
+		'sanctum/csrf-cookie',
+	],
 
 	'allowed_methods' => ['*'],
 
@@ -26,7 +29,7 @@ return [
 
 	'exposed_headers' => [],
 
-	'max_age' => 0,
+	'max_age' => 86400, // 24 hours cache for CORS preflight (embeds benefit from caching)
 
 	'supports_credentials' => false,
 ];

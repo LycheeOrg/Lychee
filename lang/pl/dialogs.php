@@ -1,11 +1,12 @@
 <?php
+
 return [
     'button' => [
         /*
-	|--------------------------------------------------------------------------
-	| Dialogs
-	|--------------------------------------------------------------------------
-	*/
+    |--------------------------------------------------------------------------
+    | Dialogs
+    |--------------------------------------------------------------------------
+    */
         'close' => 'Zamknij',
         'cancel' => 'Anuluj',
         'save' => 'Zapisz',
@@ -75,6 +76,27 @@ return [
     ],
     'share_album' => [
         'url_copied' => 'Skopiowano adres URL do schowka!',
+    ],
+    'embed_code' => [
+        'title' => 'Embed Album',
+        'title_stream' => 'Embed Photo Stream',
+        'info' => 'Generate an embed code to display this album on your website.',
+        'mode' => 'Tryb',
+        'mode_album_help' => 'Osadź zdjęcia z tego konkretnego albumu.',
+        'mode_stream_help' => 'Osadź wszystkie swoje publiczne zdjęcia jako chronologiczny strumień (najnowsze na początku).',
+        'layout' => 'Layout',
+        'spacing' => 'Spacing',
+        'row_height' => 'Row Height',
+        'column_width' => 'Column Width',
+        'max_photos' => 'Maximum Photos',
+        'sort_order' => 'Sort Order',
+        'header_placement' => 'Header Placement',
+        'preview' => 'Preview',
+        'code' => 'Embed Code',
+        'copy' => 'Copy to Clipboard',
+        'copied' => 'Copied!',
+        'show_advanced' => 'Show advanced options',
+        'hide_advanced' => 'Hide advanced options',
     ],
     'upload' => [
         'completed' => 'Zakończono',

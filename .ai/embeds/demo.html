@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lychee Embed Widget - Interactive Demo</title>
+    <link rel="stylesheet" href="../../public/embed/lychee-embed.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 2rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        h2 {
+            margin-bottom: 1rem;
+        }
+
+        h3 {
+            margin-bottom: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 4px;
+        }
+
+        .info-box.warning {
+            background: #fff3e0;
+            border-left-color: #ff9800;
+        }
+
+        .code-block {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 1rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .config-section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        button {
+            padding: 0.75rem 1.5rem;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: #2980b9;
+        }
+
+        .widget-container {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            min-height: 400px;
+        }
+
+        .error {
+            padding: 1rem;
+            background: #fee;
+            border: 1px solid #fcc;
+            border-radius: 4px;
+            color: #c33;
+            margin-top: 1rem;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🖼️ Lychee Embed Widget - Interactive Demo</h1>
+            <p>Test the embed widget with your own Lychee instance</p>
+        </header>
+
+        <div class="config-section">
+            <h2>About Embed Modes</h2>
+
+            <div class="info-box">
+                <h3>📁 Album Mode</h3>
+                <p><strong>What it does:</strong> Embeds photos from a specific album on your website.</p>
+                <p><strong>When to use:</strong> When you want to showcase a particular album (vacation photos, portfolio, event coverage, etc.)</p>
+                <p><strong>Requirements:</strong> Album must be public (no password, not link-only)</p>
+            </div>
+
+            <div class="info-box">
+                <h3>🌊 Stream Mode</h3>
+                <p><strong>What it does:</strong> Embeds all your public photos in chronological order (most recent first)</p>
+                <p><strong>When to use:</strong> When you want a dynamic feed of all your public uploads (similar to an RSS feed)</p>
+                <p><strong>Requirements:</strong> Photos must be in public albums</p>
+            </div>
+
+            <div class="info-box warning">
+                <strong>⚠️ Note:</strong> Only photos from public albums (no password protection, not link-required) will appear in both modes. NSFW filtering respects your RSS settings.
+            </div>
+        </div>
+
+        <div class="config-section">
+            <h2>Configuration</h2>
+            <form id="configForm" onsubmit="loadWidget(event)">
+                <div class="form-group">
+                    <label for="apiUrl">Lychee API URL *</label>
+                    <input type="url" id="apiUrl" placeholder="https://your-lychee.com" required value="http://localhost:90">
+                </div>
+
+                <div class="form-group">
+                    <label for="mode">Embed Mode</label>
+                    <select id="mode" onchange="toggleAlbumId()">
+                        <option value="album" selected>Album (specific album)</option>
+                        <option value="stream">Stream (all public photos)</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="albumIdGroup">
+                    <label for="albumId">Album ID *</label>
+                    <input type="text" id="albumId" placeholder="abc123">
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label for="layout">Layout</label>
+                        <select id="layout">
+                            <option value="square">Square</option>
+                            <option value="masonry">Masonry</option>
+                            <option value="grid">Grid</option>
+                            <option value="justified" selected>Justified</option>
+                            <option value="filmstrip">Filmstrip</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="headerPlacement">Header Placement</label>
+                        <select id="headerPlacement">
+                            <option value="top" selected>Top (Full Header)</option>
+                            <option value="bottom">Bottom (Simple Link)</option>
+                            <option value="none">None</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label for="spacing">Spacing (px)</label>
+                        <input type="number" id="spacing" value="8" min="0" max="50">
+                    </div>
+                    <div class="form-group">
+                        <label for="maxPhotos">Max Photos</label>
+                        <select id="maxPhotos">
+                            <option value="none">None (all photos)</option>
+                            <option value="6">6 photos</option>
+                            <option value="12">12 photos</option>
+                            <option value="18" selected>18 photos</option>
+                            <option value="30">30 photos</option>
+                            <option value="60">60 photos</option>
+                            <option value="90">90 photos</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label for="targetRowHeight">Target Row Height (px)</label>
+                        <input type="number" id="targetRowHeight" value="200" min="100" max="1000">
+                    </div>
+                    <div class="form-group">
+                        <label for="targetColumnWidth">Target Column Width (px)</label>
+                        <input type="number" id="targetColumnWidth" value="300" min="100" max="800">
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="showTitle" checked> Show Album Title
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="showDescription" checked> Show Album Description
+                        </label>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="showCaptions" checked> Show Photo Captions
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="showExif" checked> Show EXIF Data
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit">Load Widget</button>
+            </form>
+
+            <div id="error" class="error" style="display: none;"></div>
+        </div>
+
+        <div class="widget-container" id="widgetContainer">
+            <p style="text-align: center; padding: 2rem; color: #999;">
+                Configure your Lychee instance above and click "Load Widget" to see the embed in action.
+            </p>
+        </div>
+
+        <div class="config-section">
+            <h2>Code Examples</h2>
+            <p>Copy these examples to embed the widget on your website:</p>
+
+            <h3>Album Mode Example</h3>
+            <p>Embed a specific album:</p>
+            <div class="code-block">&lt;!-- Include CSS --&gt;
+&lt;link rel="stylesheet" href="https://your-lychee.com/embed/lychee-embed.css"&gt;
+
+&lt;!-- Widget container --&gt;
+&lt;div id="lychee-embed"&gt;&lt;/div&gt;
+
+&lt;!-- Include JS --&gt;
+&lt;script src="https://your-lychee.com/embed/lychee-embed.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+  new LycheeEmbed.createLycheeEmbed(
+    document.getElementById('lychee-embed'),
+    {
+      apiUrl: 'https://your-lychee.com',
+      mode: 'album',
+      albumId: 'YOUR_ALBUM_ID',
+      layout: 'justified',
+      maxPhotos: 18
+    }
+  );
+&lt;/script&gt;</div>
+
+            <h3>Stream Mode Example</h3>
+            <p>Embed all public photos as a stream:</p>
+            <div class="code-block">&lt;!-- Include CSS --&gt;
+&lt;link rel="stylesheet" href="https://your-lychee.com/embed/lychee-embed.css"&gt;
+
+&lt;!-- Widget container --&gt;
+&lt;div id="lychee-stream"&gt;&lt;/div&gt;
+
+&lt;!-- Include JS --&gt;
+&lt;script src="https://your-lychee.com/embed/lychee-embed.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+  new LycheeEmbed.createLycheeEmbed(
+    document.getElementById('lychee-stream'),
+    {
+      apiUrl: 'https://your-lychee.com',
+      mode: 'stream',
+      layout: 'justified',
+      maxPhotos: 50
+    }
+  );
+&lt;/script&gt;</div>
+
+            <h3>Using Data Attributes</h3>
+            <p>Alternatively, configure using HTML data attributes:</p>
+            <div class="code-block">&lt;!-- Album Mode --&gt;
+&lt;div data-lychee-embed
+     data-api-url="https://your-lychee.com"
+     data-mode="album"
+     data-album-id="YOUR_ALBUM_ID"
+     data-layout="justified"
+     data-max-photos="18"&gt;
+&lt;/div&gt;
+
+&lt;!-- Stream Mode --&gt;
+&lt;div data-lychee-embed
+     data-api-url="https://your-lychee.com"
+     data-mode="stream"
+     data-layout="masonry"
+     data-max-photos="50"&gt;
+&lt;/div&gt;</div>
+        </div>
+    </div>
+
+    <script src="../../public/embed/lychee-embed.js"></script>
+    <script>
+        let currentApp = null;
+
+        // Toggle albumId field visibility and requirement based on mode
+        function toggleAlbumId() {
+            const mode = document.getElementById('mode').value;
+            const albumIdGroup = document.getElementById('albumIdGroup');
+            const albumIdInput = document.getElementById('albumId');
+
+            if (mode === 'stream') {
+                albumIdGroup.style.display = 'none';
+                albumIdInput.removeAttribute('required');
+            } else {
+                albumIdGroup.style.display = 'block';
+                albumIdInput.setAttribute('required', 'required');
+            }
+        }
+
+        // Initialize form state on load
+        window.addEventListener('DOMContentLoaded', toggleAlbumId);
+
+        function loadWidget(event) {
+            event.preventDefault();
+
+            // Hide previous error
+            document.getElementById('error').style.display = 'none';
+
+            // Unmount previous instance
+            if (currentApp) {
+                try {
+                    currentApp.unmount();
+                } catch (e) {
+                    console.error('Error unmounting:', e);
+                }
+            }
+
+            // Clear container
+            const container = document.getElementById('widgetContainer');
+            container.innerHTML = '';
+
+            // Get form values
+            const apiUrl = document.getElementById('apiUrl').value.replace(/\/$/, '');
+            const mode = document.getElementById('mode').value;
+            const albumId = document.getElementById('albumId').value;
+            const layout = document.getElementById('layout').value;
+            const headerPlacement = document.getElementById('headerPlacement').value;
+            const spacing = parseInt(document.getElementById('spacing').value);
+            const maxPhotosValue = document.getElementById('maxPhotos').value;
+            const maxPhotos = maxPhotosValue === 'none' ? 'none' : parseInt(maxPhotosValue);
+            const targetRowHeight = parseInt(document.getElementById('targetRowHeight').value);
+            const targetColumnWidth = parseInt(document.getElementById('targetColumnWidth').value);
+            const showTitle = document.getElementById('showTitle').checked;
+            const showDescription = document.getElementById('showDescription').checked;
+            const showCaptions = document.getElementById('showCaptions').checked;
+            const showExif = document.getElementById('showExif').checked;
+
+            // Create embed element
+            const embedDiv = document.createElement('div');
+            embedDiv.setAttribute('data-lychee-embed', '');
+            embedDiv.setAttribute('data-api-url', apiUrl);
+            embedDiv.setAttribute('data-mode', mode);
+            if (mode === 'album') {
+                embedDiv.setAttribute('data-album-id', albumId);
+            }
+            embedDiv.setAttribute('data-layout', layout);
+            embedDiv.setAttribute('data-header-placement', headerPlacement);
+            embedDiv.setAttribute('data-spacing', spacing);
+            embedDiv.setAttribute('data-max-photos', maxPhotos);
+            embedDiv.setAttribute('data-target-row-height', targetRowHeight);
+            embedDiv.setAttribute('data-target-column-width', targetColumnWidth);
+            embedDiv.setAttribute('data-show-title', showTitle);
+            embedDiv.setAttribute('data-show-description', showDescription);
+            embedDiv.setAttribute('data-show-captions', showCaptions);
+            embedDiv.setAttribute('data-show-exif', showExif);
+
+            container.appendChild(embedDiv);
+
+            // Build config object
+            const widgetConfig = {
+                apiUrl: apiUrl,
+                mode: mode,
+                layout: layout,
+                headerPlacement: headerPlacement,
+                spacing: spacing,
+                maxPhotos: maxPhotos,
+                targetRowHeight: targetRowHeight,
+                targetColumnWidth: targetColumnWidth,
+                showTitle: showTitle,
+                showDescription: showDescription,
+                showCaptions: showCaptions,
+                showExif: showExif,
+            };
+
+            // Add albumId only for album mode
+            if (mode === 'album') {
+                widgetConfig.albumId = albumId;
+            }
+
+            // Initialize widget
+            try {
+                currentApp = window.LycheeEmbed.createLycheeEmbed(embedDiv, widgetConfig);
+
+                console.log('Widget loaded successfully');
+            } catch (error) {
+                document.getElementById('error').textContent = 'Error loading widget: ' + error.message;
+                document.getElementById('error').style.display = 'block';
+                console.error('Error:', error);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,10 +1,10 @@
 <?php
 return [
     /*
-	|--------------------------------------------------------------------------
-	| Fix-tree Page
-	|--------------------------------------------------------------------------
-	*/
+    |--------------------------------------------------------------------------
+    | Fix-tree Page
+    |--------------------------------------------------------------------------
+    */
     'title' => 'Údržba',
     'intro' => 'This page allows you to re-order and fix your albums manually.<br />Before any modifications, we strongly recommend you to read about Nested Set tree structures.',
     'warning' => 'You can really break your Lychee installation here, modify values at your own risks.',

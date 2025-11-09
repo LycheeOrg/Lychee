@@ -1,11 +1,12 @@
 <?php
+
 return [
     'button' => [
         /*
-	|--------------------------------------------------------------------------
-	| Dialogs
-	|--------------------------------------------------------------------------
-	*/
+    |--------------------------------------------------------------------------
+    | Dialogs
+    |--------------------------------------------------------------------------
+    */
         'close' => 'Sluiten',
         'cancel' => 'Annuleren',
         'save' => 'Opslaan',
@@ -75,6 +76,27 @@ return [
     ],
     'share_album' => [
         'url_copied' => 'URL naar klembord gekopieerd!',
+    ],
+    'embed_code' => [
+        'title' => 'Embed Album',
+        'title_stream' => 'Embed Photo Stream',
+        'info' => 'Generate an embed code to display this album on your website.',
+        'mode' => 'Modus',
+        'mode_album_help' => 'Foto\'s van dit specifieke album insluiten.',
+        'mode_stream_help' => 'Al je openbare foto\'s als chronologische stroom insluiten (nieuwste eerst).',
+        'layout' => 'Layout',
+        'spacing' => 'Spacing',
+        'row_height' => 'Row Height',
+        'column_width' => 'Column Width',
+        'max_photos' => 'Maximum Photos',
+        'sort_order' => 'Sort Order',
+        'header_placement' => 'Header Placement',
+        'preview' => 'Preview',
+        'code' => 'Embed Code',
+        'copy' => 'Copy to Clipboard',
+        'copied' => 'Copied!',
+        'show_advanced' => 'Show advanced options',
+        'hide_advanced' => 'Hide advanced options',
     ],
     'upload' => [
         'completed' => 'Voltooid',

@@ -1,11 +1,12 @@
 <?php
+
 return [
+    /*
+    |--------------------------------------------------------------------------
+    | Dialogs
+    |--------------------------------------------------------------------------
+    */
     'button' => [
-        /*
-	|--------------------------------------------------------------------------
-	| Dialogs
-	|--------------------------------------------------------------------------
-	*/
         'close' => 'Close',
         'cancel' => 'Cancel',
         'save' => 'Save',
@@ -76,6 +77,27 @@ return [
     'share_album' => [
         'url_copied' => 'Copied URL to clipboard!',
     ],
+    'embed_code' => [
+        'title' => 'Embed Album',
+        'title_stream' => 'Embed Photo Stream',
+        'info' => 'Generate an embed code to display this album on your website.',
+        'mode' => 'Mode',
+        'mode_album_help' => 'Embed photos from this specific album.',
+        'mode_stream_help' => 'Embed all your public photos as a chronological stream (most recent first).',
+        'layout' => 'Layout',
+        'spacing' => 'Spacing',
+        'row_height' => 'Row Height',
+        'column_width' => 'Column Width',
+        'max_photos' => 'Maximum Photos',
+        'sort_order' => 'Sort Order',
+        'header_placement' => 'Header Placement',
+        'preview' => 'Preview',
+        'code' => 'Embed Code',
+        'copy' => 'Copy to Clipboard',
+        'copied' => 'Copied!',
+        'show_advanced' => 'Show advanced options',
+        'hide_advanced' => 'Hide advanced options',
+    ],
     'upload' => [
         'completed' => 'Completed',
         'uploaded' => 'Uploaded:',
@@ -108,8 +130,8 @@ return [
         'visibility_updated' => 'Visibility updated.',
     ],
     'move_album' => [
-        'confirm_single' => 'Are you sure you want to move the album “%1$s” into the album “%2$s”?',
-        'confirm_multiple' => 'Are you sure you want to move all selected albums into the album “%s”?',
+        'confirm_single' => 'Are you sure you want to move the album "%1$s" into the album "%2$s"?',
+        'confirm_multiple' => 'Are you sure you want to move all selected albums into the album "%s"?',
         'move_single' => 'Move Album',
         'move_to' => 'Move to',
         'move_to_single' => 'Move %s to:',
@@ -133,14 +155,14 @@ return [
         'create' => 'Create Tag Album',
     ],
     'delete_album' => [
-        'confirmation' => 'Are you sure you want to delete the album “%s” and all of the photos it contains?',
+        'confirmation' => 'Are you sure you want to delete the album "%s" and all of the photos it contains?',
         'confirmation_multiple' => 'Are you sure you want to delete all %d selected albums and all of the photos they contain?',
         'warning' => 'This action can not be undone!',
         'delete' => 'Delete Album and Photos',
     ],
     'transfer' => [
         'query' => 'Transfer ownership of album to',
-        'confirmation' => 'Are you sure you want to transfer the ownership of album “%s” and all the photos it contains to "%s"?',
+        'confirmation' => 'Are you sure you want to transfer the ownership of album "%s" and all the photos it contains to "%s"?',
         'lost_access_warning' => 'Your access to this album will be lost.',
         'warning' => 'This action can not be undone!',
         'transfer' => 'Transfer ownership of album and photos',
@@ -154,8 +176,8 @@ return [
         'merge_to' => 'Merge %s to:',
         'merge_to_multiple' => 'Merge %d albums to:',
         'no_albums' => 'No albums to merge to.',
-        'confirm' => 'Are you sure you want to merge the album “%1$s” into the album “%2$s”?',
-        'confirm_multiple' => 'Are you sure you want to merge all selected albums into the album “%s”?',
+        'confirm' => 'Are you sure you want to merge the album "%1$s" into the album "%2$s"?',
+        'confirm_multiple' => 'Are you sure you want to merge all selected albums into the album "%s"?',
         'merge' => 'Merge Albums',
         'merged' => 'Album(s) merged to %s!',
     ],
@@ -182,7 +204,7 @@ return [
         'copied' => 'Photo(s) copied!',
     ],
     'photo_delete' => [
-        'confirm' => 'Are you sure you want to delete the photo “%s”?',
+        'confirm' => 'Are you sure you want to delete the photo "%s"?',
         'confirm_multiple' => 'Are you sure you want to delete all %d selected photos?',
         'deleted' => 'Photo(s) deleted!',
     ],

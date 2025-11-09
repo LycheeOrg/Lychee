@@ -1,11 +1,12 @@
 <?php
+
 return [
+    /*
+    |--------------------------------------------------------------------------
+    | Dialogs
+    |--------------------------------------------------------------------------
+    */
     'button' => [
-        /*
-	|--------------------------------------------------------------------------
-	| Dialogs
-	|--------------------------------------------------------------------------
-	*/
         'close' => 'Close',
         'cancel' => 'Cancel',
         'save' => 'Save',
@@ -37,6 +38,7 @@ return [
         'login' => 'Login',
         'toggle_full_screen' => 'Toggle Full Screen',
         'toggle_sensitive_albums' => 'Toggle Sensitive Albums',
+
         'albums' => 'Albums Shortcuts',
         'new_album' => 'New Album',
         'upload_photos' => 'Upload Photos',
@@ -45,9 +47,11 @@ return [
         'select_all' => 'Select All',
         'move_selection' => 'Move Selection',
         'delete_selection' => 'Delete Selection',
+
         'album' => 'Album Shortcuts',
         'slideshow' => 'Start/Stop Slideshow',
         'toggle' => 'Toggle panel',
+
         'photo' => 'Photo Shortcuts',
         'previous' => 'Previous photo',
         'next' => 'Next photo',
@@ -57,6 +61,7 @@ return [
         'delete' => 'Delete the photo',
         'edit' => 'Edit information',
         'show_hide_meta' => 'Show information',
+
         'keep_hidden' => 'We will keep it hidden.',
         'button_hidden' => 'We will hide the button in the header.',
     ],
@@ -75,6 +80,27 @@ return [
     ],
     'share_album' => [
         'url_copied' => 'Copied URL to clipboard!',
+    ],
+    'embed_code' => [
+        'title' => 'Embed Album',
+        'title_stream' => 'Embed Photo Stream',
+        'info' => 'Generate an embed code to display this album on your website.',
+        'mode' => 'Režim',
+        'mode_album_help' => 'Vložiť fotografie z tohto konkrétneho albumu.',
+        'mode_stream_help' => 'Vložiť všetky vaše verejné fotografie ako chronologický prúd (najnovšie prvé).',
+        'layout' => 'Layout',
+        'spacing' => 'Spacing',
+        'row_height' => 'Row Height',
+        'column_width' => 'Column Width',
+        'max_photos' => 'Maximum Photos',
+        'sort_order' => 'Sort Order',
+        'header_placement' => 'Header Placement',
+        'preview' => 'Preview',
+        'code' => 'Embed Code',
+        'copy' => 'Copy to Clipboard',
+        'copied' => 'Copied!',
+        'show_advanced' => 'Show advanced options',
+        'hide_advanced' => 'Hide advanced options',
     ],
     'upload' => [
         'completed' => 'Completed',

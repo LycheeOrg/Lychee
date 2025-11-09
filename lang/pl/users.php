@@ -1,10 +1,11 @@
 <?php
+
 return [
     /*
-	|--------------------------------------------------------------------------
-	| Users page
-	|--------------------------------------------------------------------------
-	*/
+    |--------------------------------------------------------------------------
+    | Users page
+    |--------------------------------------------------------------------------
+    */
     'title' => 'Użytkownicy',
     'description' => 'Tutaj możesz zarządzać użytkownikami swojej instalacji Lychee. Możesz tworzyć, edytować i usuwać użytkowników.',
     'create' => 'Tworzenie nowego użytkownika',

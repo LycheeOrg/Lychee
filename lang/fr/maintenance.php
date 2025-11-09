@@ -1,10 +1,11 @@
 <?php
+
 return [
     /*
-	|--------------------------------------------------------------------------
-	| Update Page
-	|--------------------------------------------------------------------------
-	*/
+    |--------------------------------------------------------------------------
+    | Update Page
+    |--------------------------------------------------------------------------
+    */
     'title' => 'Maintenance',
     'description' => 'Sur cette page, vous trouverez toutes les actions nécessaires pour que votre installation de Lychee fonctionne de manière fluide et efficace.',
     'cleaning' => [

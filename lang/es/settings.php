@@ -1,10 +1,10 @@
 <?php
 return [
     /*
-	|--------------------------------------------------------------------------
-	| Settings page
-	|--------------------------------------------------------------------------
-	*/
+    |--------------------------------------------------------------------------
+    | Settings page
+    |--------------------------------------------------------------------------
+    */
     'title' => 'Ajustes',
     'small_screen' => 'Para disfrutar de una mejor experiencia en la página de configuración,<br />te recomendamos que utilices una pantalla más grande.',
     'tabs' => [

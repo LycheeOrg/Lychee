@@ -1,10 +1,11 @@
 <?php
+
 return [
     /*
-	|--------------------------------------------------------------------------
-	| Update Page
-	|--------------------------------------------------------------------------
-	*/
+    |--------------------------------------------------------------------------
+    | Update Page
+    |--------------------------------------------------------------------------
+    */
     'title' => 'Konserwacja',
     'description' => 'Na tej stronie znajdziesz wszystkie wymagane czynności, aby instalacja Lychee działała płynnie i przyjemnie.',
     'cleaning' => [
@@ -49,7 +50,7 @@ return [
     'optimize' => [
         'title' => 'Optymalizacja bazy danych',
         'description' => 'Jeśli zauważysz spowolnienie w instalacji, może to być spowodowane tym, że baza danych 
-		nie ma wszystkich potrzebnych indeksów.',
+        nie ma wszystkich potrzebnych indeksów.',
         'button' => 'Optymalizacja bazy danych',
     ],
     'update' => [

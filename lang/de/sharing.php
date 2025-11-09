@@ -1,10 +1,10 @@
 <?php
 return [
     /*
-	|--------------------------------------------------------------------------
-	| Sharing page
-	|--------------------------------------------------------------------------
-	*/
+    |--------------------------------------------------------------------------
+    | Sharing page
+    |--------------------------------------------------------------------------
+    */
     'title' => 'Teilen',
     'info' => 'Diese Seite bietet einen Überblick über die mit den Alben verbundenen Freigabeberechtigungen und die Möglichkeit, diese zu bearbeiten.',
     'album_title' => 'Album Titel',

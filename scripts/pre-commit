@@ -31,9 +31,14 @@ fi
 
 if [ -x "$NPM_FORMAT" ]; then
     npm run format
-    git status --porcelain | grep -e '^[AM]\(.*\).js$' | cut -c 3- | while read line; do
-        git add "$line";
-    done
+    # Stage any JS/TS/Vue files that were modified by prettier:
+    js_files=()
+    while IFS= read -r line; do
+        js_files+=("$line")
+    done < <(git status --porcelain | awk '/^[AM].*\.(js|ts|tsx|jsx|vue)$/ {print substr($0,4)}')
+    if [ "${#js_files[@]}" -gt 0 ]; then
+        git add "${js_files[@]}"
+    fi
 else
     echo ""
     printf "${YELLOW}Please install prettier, e.g.:${NO_COLOR}"

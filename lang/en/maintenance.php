@@ -1,10 +1,10 @@
 <?php
 return [
     /*
-	|--------------------------------------------------------------------------
-	| Maintenance Page
-	|--------------------------------------------------------------------------
-	*/
+    |--------------------------------------------------------------------------
+    | Maintenance Page
+    |--------------------------------------------------------------------------
+    */
     'title' => 'Maintenance',
     'description' => 'On this page you will find, all the required actions to keep your Lychee installation running smooth and nicely.',
     'cleaning' => [

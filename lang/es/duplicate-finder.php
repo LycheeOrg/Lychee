@@ -1,10 +1,10 @@
 <?php
 return [
     /*
-	|--------------------------------------------------------------------------
-	| Duplicate Finder Page
-	|--------------------------------------------------------------------------
-	*/
+    |--------------------------------------------------------------------------
+    | Duplicate Finder Page
+    |--------------------------------------------------------------------------
+    */
     'title' => 'Mantenimiento',
     'intro' => 'En esta página encontrará las imágenes duplicadas que se encuentran en su base de datos.',
     'found' => ' ¡Se han encontrado duplicados!',

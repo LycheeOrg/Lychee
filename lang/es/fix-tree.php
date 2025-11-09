@@ -1,10 +1,10 @@
 <?php
 return [
     /*
-	|--------------------------------------------------------------------------
-	| Fix-tree Page
-	|--------------------------------------------------------------------------
-	*/
+    |--------------------------------------------------------------------------
+    | Fix-tree Page
+    |--------------------------------------------------------------------------
+    */
     'title' => 'Mantenimiento',
     'intro' => 'Esta página le permite reordenar y corregir sus álbumes manualmente.<br />Antes de realizar cualquier modificación, le recomendamos encarecidamente que lea la información sobre las estructuras de árbol Nested Set.',
     'warning' => 'Aquí puedes romper tu instalación de Lychee, modifica los valores bajo tu propia responsabilidad.',

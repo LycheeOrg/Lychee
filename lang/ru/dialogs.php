@@ -1,11 +1,12 @@
 <?php
+
 return [
     'button' => [
         /*
-	|--------------------------------------------------------------------------
-	| Dialogs
-	|--------------------------------------------------------------------------
-	*/
+    |--------------------------------------------------------------------------
+    | Dialogs
+    |--------------------------------------------------------------------------
+    */
         'close' => 'Закрыть',
         'cancel' => 'Отмена',
         'save' => 'Сохранить',
@@ -75,6 +76,27 @@ return [
     ],
     'share_album' => [
         'url_copied' => 'URL скопирован в буфер обмена!',
+    ],
+    'embed_code' => [
+        'title' => 'Embed Album',
+        'title_stream' => 'Embed Photo Stream',
+        'info' => 'Generate an embed code to display this album on your website.',
+        'mode' => 'Режим',
+        'mode_album_help' => 'Встроить фотографии из этого конкретного альбома.',
+        'mode_stream_help' => 'Встроить все ваши публичные фотографии в виде хронологической ленты (сначала последние).',
+        'layout' => 'Layout',
+        'spacing' => 'Spacing',
+        'row_height' => 'Row Height',
+        'column_width' => 'Column Width',
+        'max_photos' => 'Maximum Photos',
+        'sort_order' => 'Sort Order',
+        'header_placement' => 'Header Placement',
+        'preview' => 'Preview',
+        'code' => 'Embed Code',
+        'copy' => 'Copy to Clipboard',
+        'copied' => 'Copied!',
+        'show_advanced' => 'Show advanced options',
+        'hide_advanced' => 'Hide advanced options',
     ],
     'upload' => [
         'completed' => 'Завершено',

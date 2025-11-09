@@ -1,10 +1,11 @@
 <?php
+
 return [
     /*
-	|--------------------------------------------------------------------------
-	| Fix-tree Page
-	|--------------------------------------------------------------------------
-	*/
+    |--------------------------------------------------------------------------
+    | Fix-tree Page
+    |--------------------------------------------------------------------------
+    */
     'title' => 'Konserwacja',
     'intro' => 'Ta strona umożliwia ręczną zmianę kolejności i poprawianie albumów.<br />Przed dokonaniem jakichkolwiek modyfikacji zdecydowanie zalecamy zapoznanie się ze strukturami drzew zagnieżdżonych zestawów.',
     'warning' => 'Możesz naprawdę zepsuć swoją instalację Lychee, modyfikuj wartości na własne ryzyko.',

@@ -1,10 +1,11 @@
 <?php
+
 return [
     /*
-	|--------------------------------------------------------------------------
-	| Duplicate Finder Page
-	|--------------------------------------------------------------------------
-	*/
+    |--------------------------------------------------------------------------
+    | Duplicate Finder Page
+    |--------------------------------------------------------------------------
+    */
     'title' => 'Maintenance',
     'intro' => 'Sur cette page, vous trouverez les photos en double détectées dans votre base de données.',
     'found' => ' doublons trouvés !',

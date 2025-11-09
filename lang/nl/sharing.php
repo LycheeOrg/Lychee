@@ -1,10 +1,10 @@
 <?php
 return [
     /*
-	|--------------------------------------------------------------------------
-	| Sharing page
-	|--------------------------------------------------------------------------
-	*/
+    |--------------------------------------------------------------------------
+    | Sharing page
+    |--------------------------------------------------------------------------
+    */
     'title' => 'Delen',
     'info' => 'Deze pagina geeft een overzicht van en de mogelijkheid om de delingsrechten die aan albums zijn gekoppeld te bewerken.',
     'album_title' => 'Albumtitel',

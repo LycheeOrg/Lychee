@@ -1,10 +1,11 @@
 <?php
+
 return [
     /*
-	|--------------------------------------------------------------------------
-	| Jobs page
-	|--------------------------------------------------------------------------
-	*/
+    |--------------------------------------------------------------------------
+    | Jobs page
+    |--------------------------------------------------------------------------
+    */
     'title' => 'Galerie',
     'smart_albums' => 'Albums intelligents',
     'pinned_albums' => 'Albums épinglés',
@@ -73,6 +74,7 @@ return [
         'tabs' => [
             'about' => 'À propos de l’album',
             'share' => 'Partager l’album',
+            'embed' => 'Embed Album',
             'move' => 'Déplacer l’album',
             'danger' => 'ZONE DANGEREUSE',
         ],
@@ -83,6 +85,7 @@ return [
             'images' => 'Photos',
             'download' => 'Télécharger l’album',
             'share' => 'Partager l’album',
+            'embed' => 'Embed Album',
             'stats_only_se' => 'Statistiques disponibles dans l’édition Supporter',
         ],
         'stats' => [

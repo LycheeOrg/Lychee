@@ -37,6 +37,8 @@ export const useTogglablesStateStore = defineStore("togglables-store", {
 		is_delete_visible: false,
 		is_merge_album_visible: false,
 		is_share_album_visible: false,
+		is_embed_code_visible: false,
+		embed_code_mode: "album" as "album" | "stream", // Mode for embed code dialog
 		is_import_from_link_open: false,
 		is_tag_visible: false,
 		is_copy_visible: false,

@@ -1,10 +1,11 @@
 <?php
+
 return [
     /*
-	|--------------------------------------------------------------------------
-	| Fix-tree Page
-	|--------------------------------------------------------------------------
-	*/
+    |--------------------------------------------------------------------------
+    | Fix-tree Page
+    |--------------------------------------------------------------------------
+    */
     'title' => 'Maintenance',
     'intro' => 'Cette page vous permet de réorganiser et corriger manuellement vos albums.<br />Avant toute modification, nous vous recommandons fortement de lire à propos des structures d’arbre en « Nested Set ».',
     'warning' => 'Vous pouvez réellement casser votre installation Lychee ici, modifiez les valeurs à vos risques et périls.',

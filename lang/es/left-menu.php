@@ -1,14 +1,16 @@
 <?php
+
 return [
     /*
-	|--------------------------------------------------------------------------
-	| Left Menu
-	|--------------------------------------------------------------------------
-	*/
+    |--------------------------------------------------------------------------
+    | Left Menu
+    |--------------------------------------------------------------------------
+    */
     'back_to_gallery' => 'Volver a galería',
     'login' => 'Iniciar sesión',
     'frame' => 'Marco',
     'map' => 'Mapa',
+    'embed_stream' => 'Insertar Flujo de Fotos',
     'admin' => 'Administrador',
     'clockwork' => 'Aplicación Clockwork',
     'logs' => 'Mostrar registros',

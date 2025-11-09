@@ -5,7 +5,8 @@
     "scripts": {
         "check": "vue-tsc --noEmit -p tsconfig.json --composite false --skipLibCheck",
         "dev": "vite",
-        "build": "vite build",
+        "build": "vite build && vite build --config vite.embed.config.ts",
+        "build:embed": "vite build --config vite.embed.config.ts",
         "build-dev": "vite build --mode development",
         "check-formatting": "prettier --check resources/js/ resources/sass/",
         "lint": "eslint resources/js/. --fix",

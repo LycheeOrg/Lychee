@@ -4,6 +4,7 @@ import { UserStore } from "@/stores/UserState";
 import { FavouriteStore } from "@/stores/FavouriteState";
 import { LeftMenuStateStore } from "@/stores/LeftMenuState";
 import { LycheeStateStore } from "@/stores/LycheeState";
+import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { storeToRefs } from "pinia";
 import { computed, ref } from "vue";
 import { RouteLocationNormalizedLoadedGeneric } from "vue-router";
@@ -103,6 +104,16 @@ export function useLeftMenu(
 				icon: "pi pi-map",
 				access: initData.value.modules.is_map_enabled ?? false,
 				route: "/map",
+			},
+			{
+				label: "left-menu.embed_stream",
+				icon: "pi pi-code",
+				access: user.value?.id !== null,
+				command: () => {
+					const togglableStore = useTogglablesStateStore();
+					togglableStore.embed_code_mode = "stream";
+					togglableStore.is_embed_code_visible = true;
+				},
 			},
 			{
 				label: "left-menu.admin",

@@ -28,6 +28,7 @@
 				<AlbumHero
 					v-if="!noData"
 					@open-sharing-modal="toggleShareAlbum"
+					@open-embed-code="toggleEmbedCode"
 					@open-statistics="toggleStatistics"
 					@toggle-slide-show="emits('toggleSlideShow')"
 				/>
@@ -162,8 +163,18 @@ const emits = defineEmits<{
 const { is_se_enabled } = storeToRefs(lycheeStore);
 const noData = computed(() => albumsStore.albums.length === 0 && photosStore.photos.length === 0);
 
-const { is_share_album_visible, toggleDelete, toggleMergeAlbum, toggleMove, toggleRename, toggleShareAlbum, toggleTag, toggleCopy, toggleUpload } =
-	useGalleryModals(togglableStore);
+const {
+	is_share_album_visible,
+	toggleDelete,
+	toggleMergeAlbum,
+	toggleMove,
+	toggleRename,
+	toggleShareAlbum,
+	toggleEmbedCode,
+	toggleTag,
+	toggleCopy,
+	toggleUpload,
+} = useGalleryModals(togglableStore);
 
 const {
 	selectedPhotosIdx,

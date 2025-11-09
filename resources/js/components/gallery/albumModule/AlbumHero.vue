@@ -1,7 +1,7 @@
 <template>
 	<div v-if="albumStore.album && albumStore.album.preFormattedData.url" class="w-full h-1/2 relative">
 		<img class="absolute block top-0 left-0 w-full h-full object-cover object-center z-0" :src="albumStore.album.preFormattedData.url" />
-		<div class="h-full ltr:pl-7 rtl:pr-7 pt-7 relative text-shadow-sm w-full bg-gradient-to-b from-black/20 via-80%">
+		<div class="h-full ltr:pl-7 rtl:pr-7 pt-7 relative text-shadow-sm w-full bg-linear-to-b from-black/20 via-80%">
 			<h1 class="font-bold text-4xl text-surface-0">{{ albumStore.album.title }}</h1>
 			<span v-if="albumStore.album.preFormattedData.min_max_text" class="text-surface-200 text-sm">
 				{{ albumStore.album.preFormattedData.min_max_text }}
@@ -46,6 +46,14 @@
 							@click="openSharingModal"
 						>
 							<i class="pi pi-share-alt" />
+						</a>
+						<a
+							v-if="isEmbeddable"
+							v-tooltip.bottom="$t('gallery.album.hero.embed')"
+							class="shrink-0 px-3 cursor-pointer text-muted-color inline-block transform duration-300 hover:scale-150 hover:text-color"
+							@click="openEmbedCode"
+						>
+							<i class="pi pi-code" />
 						</a>
 						<a
 							v-if="is_se_enabled && userStore.isLoggedIn"
@@ -186,7 +194,23 @@ const emits = defineEmits<{
 	openSharingModal: [];
 	openStatistics: [];
 	toggleSlideShow: [];
+	openEmbedCode: [];
 }>();
+
+// Check if album is embeddable (public, no password, no link requirement)
+// and if user is logged in
+const isEmbeddable = computed(() => {
+	// Only show embed button to logged-in users
+	if (!userStore.isLoggedIn) {
+		return false;
+	}
+	if (!albumStore.album) {
+		return false;
+	}
+	// Album must be public and not password/link protected for embedding
+	const policy = albumStore.album.policy;
+	return policy.is_public && !policy.is_password_required && !policy.is_link_required;
+});
 
 function openSharingModal() {
 	emits("openSharingModal");
@@ -194,6 +218,10 @@ function openSharingModal() {
 
 function openStatistics() {
 	emits("openStatistics");
+}
+
+function openEmbedCode() {
+	emits("openEmbedCode");
 }
 
 function download() {

@@ -7,15 +7,18 @@ composer:
 
 npm-build:
 	rm -r public/build 2> /dev/null || true
+	rm -r public/embed 2> /dev/null || true
 	rm -r node_modules 2> /dev/null || true
 	npm ci
 	npm run build
+	npm run build:embed
 
 dist-gen: clean composer npm-build
 	@echo "packaging..."
 	@mkdir Lychee
 	@mkdir Lychee/public
 	@mkdir Lychee/public/dist
+	@mkdir Lychee/public/embed
 	@mkdir Lychee/public/img
 	@mkdir Lychee/public/uploads
 	@mkdir Lychee/public/uploads/import
@@ -27,6 +30,7 @@ dist-gen: clean composer npm-build
 	@cp -r database                         Lychee
 	@cp -r public/build                     Lychee/public
 	@cp -r public/dist                      Lychee/public
+	@cp -r public/embed                     Lychee/public
 	@cp -r public/vendor                    Lychee/public
 	@cp -r public/installer                 Lychee/public
 	@cp -r public/img/*                     Lychee/public/img

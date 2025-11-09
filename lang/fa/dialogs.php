@@ -1,11 +1,12 @@
 <?php
+
 return [
     'button' => [
         /*
-	|--------------------------------------------------------------------------
-	| Dialogs
-	|--------------------------------------------------------------------------
-	*/
+    |--------------------------------------------------------------------------
+    | Dialogs
+    |--------------------------------------------------------------------------
+    */
         'close' => 'بستن',
         'cancel' => 'انصراف',
         'save' => 'ذخیره',
@@ -75,6 +76,27 @@ return [
     ],
     'share_album' => [
         'url_copied' => 'آدرس URL به کلیپ‌بورد کپی شد!',
+    ],
+    'embed_code' => [
+        'title' => 'Embed Album',
+        'title_stream' => 'Embed Photo Stream',
+        'info' => 'Generate an embed code to display this album on your website.',
+        'mode' => 'حالت',
+        'mode_album_help' => 'جاسازی عکس‌ها از این آلبوم خاص.',
+        'mode_stream_help' => 'جاسازی تمام عکس‌های عمومی شما به عنوان یک جریان زمانی (جدیدترین‌ها اول).',
+        'layout' => 'Layout',
+        'spacing' => 'Spacing',
+        'row_height' => 'Row Height',
+        'column_width' => 'Column Width',
+        'max_photos' => 'Maximum Photos',
+        'sort_order' => 'Sort Order',
+        'header_placement' => 'Header Placement',
+        'preview' => 'Preview',
+        'code' => 'Embed Code',
+        'copy' => 'Copy to Clipboard',
+        'copied' => 'Copied!',
+        'show_advanced' => 'Show advanced options',
+        'hide_advanced' => 'Hide advanced options',
     ],
     'upload' => [
         'completed' => 'تکمیل شد',

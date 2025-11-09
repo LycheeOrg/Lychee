@@ -1,11 +1,12 @@
 <?php
+
 return [
+    /*
+    |--------------------------------------------------------------------------
+    | Dialogs
+    |--------------------------------------------------------------------------
+    */
     'button' => [
-        /*
-	|--------------------------------------------------------------------------
-	| Dialogs
-	|--------------------------------------------------------------------------
-	*/
         'close' => 'إغلاق',
         'cancel' => 'إلغاء',
         'save' => 'حفظ',
@@ -37,6 +38,7 @@ return [
         'login' => 'تسجيل الدخول',
         'toggle_full_screen' => 'تبديل الشاشة الكاملة',
         'toggle_sensitive_albums' => 'تبديل الألبومات الحساسة',
+
         'albums' => 'اختصارات الألبومات',
         'new_album' => 'ألبوم جديد',
         'upload_photos' => 'تحميل الصور',
@@ -45,9 +47,11 @@ return [
         'select_all' => 'تحديد الكل',
         'move_selection' => 'نقل التحديد',
         'delete_selection' => 'حذف التحديد',
+
         'album' => 'اختصارات الألبوم',
         'slideshow' => 'بدء/إيقاف عرض الشرائح',
         'toggle' => 'تبديل اللوحة',
+
         'photo' => 'اختصارات الصورة',
         'previous' => 'الصورة السابقة',
         'next' => 'الصورة التالية',
@@ -57,6 +61,7 @@ return [
         'delete' => 'حذف الصورة',
         'edit' => 'تعديل المعلومات',
         'show_hide_meta' => 'إظهار المعلومات',
+
         'keep_hidden' => 'سنحافظ على إخفائها.',
         'button_hidden' => 'سنخفي الزر في الرأس.',
     ],
@@ -75,6 +80,27 @@ return [
     ],
     'share_album' => [
         'url_copied' => 'تم نسخ عنوان URL إلى الحافظة!',
+    ],
+    'embed_code' => [
+        'title' => 'Embed Album',
+        'title_stream' => 'Embed Photo Stream',
+        'info' => 'Generate an embed code to display this album on your website.',
+        'mode' => 'الوضع',
+        'mode_album_help' => 'تضمين الصور من هذا الألبوم المحدد.',
+        'mode_stream_help' => 'تضمين جميع صورك العامة كتدفق زمني (الأحدث أولاً).',
+        'layout' => 'Layout',
+        'spacing' => 'Spacing',
+        'row_height' => 'Row Height',
+        'column_width' => 'Column Width',
+        'max_photos' => 'Maximum Photos',
+        'sort_order' => 'Sort Order',
+        'header_placement' => 'Header Placement',
+        'preview' => 'Preview',
+        'code' => 'Embed Code',
+        'copy' => 'Copy to Clipboard',
+        'copied' => 'Copied!',
+        'show_advanced' => 'Show advanced options',
+        'hide_advanced' => 'Hide advanced options',
     ],
     'upload' => [
         'completed' => 'اكتمل',

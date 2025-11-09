@@ -46,7 +46,7 @@ declare namespace App.Enum {
 	export type CoverFitType = "cover" | "fit";
 	export type DateOrderingType = "older_younger" | "younger_older";
 	export type DbDriverType = "mysql" | "pgsql" | "sqlite";
-	export type DefaultAlbumProtectionType = 1 | 2 | 3;
+	export type DefaultAlbumProtectionType = 1 | 2 | 3 | 4;
 	export type DownloadVariantType = "LIVEPHOTOVIDEO" | "ORIGINAL" | "MEDIUM2X" | "MEDIUM" | "SMALL2X" | "SMALL" | "THUMB2X" | "THUMB";
 	export type FileStatus = "uploading" | "processing" | "ready" | "skipped" | "done" | "error";
 	export type FlowStrategy = "auto" | "opt-in";
@@ -252,6 +252,26 @@ declare namespace App.Http.Resources.Editable {
 		stage: App.Enum.FileStatus;
 		chunk_number: number;
 		total_chunks: number;
+	};
+}
+declare namespace App.Http.Resources.Embed {
+	export type EmbedAlbumResource = {
+		album: {
+			id: string;
+			title: string;
+			description: string | null;
+			photo_count: number;
+			copyright: string | null;
+			license: string | null;
+		};
+		photos: App.Http.Resources.Embed.EmbedPhotoResource[];
+	};
+	export type EmbedPhotoResource = {
+		id: string;
+		title: string | null;
+		description: string | null;
+		size_variants: App.Http.Resources.Models.SizeVariantsResouce;
+		exif: { [key: string]: string | null };
 	};
 }
 declare namespace App.Http.Resources.Flow {

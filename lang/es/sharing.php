@@ -1,10 +1,10 @@
 <?php
 return [
     /*
-	|--------------------------------------------------------------------------
-	| Sharing page
-	|--------------------------------------------------------------------------
-	*/
+    |--------------------------------------------------------------------------
+    | Sharing page
+    |--------------------------------------------------------------------------
+    */
     'title' => 'Compartir',
     'info' => 'Esta página ofrece una descripción general y la posibilidad de editar los derechos de uso compartido asociados a los álbumes.',
     'album_title' => 'Título del álbum',

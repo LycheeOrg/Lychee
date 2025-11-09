@@ -32,7 +32,7 @@ return [
         'users' => '用户',
         'cancel' => '取消',
         'create' => '创建',
-		'edit' => 'Edit',
+        'edit' => 'Edit',
 
         'error_name_required' => '用户组名称为必填项。',
     ]

@@ -1,10 +1,11 @@
 <?php
+
 return [
     /*
-	|--------------------------------------------------------------------------
-	| Jobs page
-	|--------------------------------------------------------------------------
-	*/
+    |--------------------------------------------------------------------------
+    | Jobs page
+    |--------------------------------------------------------------------------
+    */
     'title' => 'Galerij',
     'smart_albums' => 'Slimme albums',
     'pinned_albums' => 'Vastgepinde albums',
@@ -73,6 +74,7 @@ return [
         'tabs' => [
             'about' => 'Over Album',
             'share' => 'Deel Album',
+            'embed' => 'Embed Album',
             'move' => 'Verplaats Album',
             'danger' => 'GEVAARZONE',
         ],
@@ -83,6 +85,7 @@ return [
             'images' => 'Foto’s',
             'download' => 'Download Album',
             'share' => 'Deel Album',
+            'embed' => 'Embed Album',
             'stats_only_se' => 'Statistieken beschikbaar in de Supporter Edition',
         ],
         'stats' => [

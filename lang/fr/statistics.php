@@ -1,10 +1,11 @@
 <?php
+
 return [
     /*
-	|--------------------------------------------------------------------------
-	| Statistics page
-	|--------------------------------------------------------------------------
-	*/
+    |--------------------------------------------------------------------------
+    | Statistics page
+    |--------------------------------------------------------------------------
+    */
     'title' => 'Statistiques',
     'preview_text' => 'Ceci est un aperçu de la page des statistiques disponible dans Lychee <span class="text-primary-emphasis font-bold">SE</span>.<br />Les données affichées ici sont générées aléatoirement et ne reflètent pas votre serveur.',
     'no_data' => 'L’utilisateur ne possède pas de données sur le serveur.',
