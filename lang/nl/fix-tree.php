@@ -1,10 +1,10 @@
 <?php
 return [
     /*
-	|--------------------------------------------------------------------------
-	| Fix-tree Page
-	|--------------------------------------------------------------------------
-	*/
+    |--------------------------------------------------------------------------
+    | Fix-tree Page
+    |--------------------------------------------------------------------------
+    */
     'title' => 'Onderhoud',
     'intro' => 'Deze pagina stelt u in staat om uw albums handmatig opnieuw te ordenen en te corrigeren.<br />Voor u wijzigingen aanbrengt, raden we u sterk aan om te lezen over Nested Set boomstructuren.',
     'warning' => 'U kunt hier echt uw Lychee-installatie kapot maken, wijzig waarden op eigen risico.',

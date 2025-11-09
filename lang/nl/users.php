@@ -1,10 +1,10 @@
 <?php
 return [
     /*
-	|--------------------------------------------------------------------------
-	| Users page
-	|--------------------------------------------------------------------------
-	*/
+    |--------------------------------------------------------------------------
+    | Users page
+    |--------------------------------------------------------------------------
+    */
     'title' => 'Gebruikers',
     'description' => 'Hier kunt u de gebruikers van uw Lychee-installatie beheren. U kunt gebruikers aanmaken, bewerken en verwijderen.',
     'create' => 'Maak een nieuwe gebruiker aan',

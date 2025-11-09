@@ -32,7 +32,7 @@ return [
         'users' => 'Utilisateurs',
         'cancel' => 'Annuler',
         'create' => 'Créer',
-		'edit' => 'Enregistrer',
+        'edit' => 'Enregistrer',
 
         'error_name_required' => 'Le nom du groupe est requis.',
     ]

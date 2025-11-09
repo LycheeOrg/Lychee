@@ -1,10 +1,10 @@
 <?php
 return [
     /*
-	|--------------------------------------------------------------------------
-	| Fix-tree Page
-	|--------------------------------------------------------------------------
-	*/
+    |--------------------------------------------------------------------------
+    | Fix-tree Page
+    |--------------------------------------------------------------------------
+    */
     'title' => 'Vedlikehold',
     'intro' => 'Denne siden lar deg endre rekkefølgen og fikse albumene dine manuelt.<br />Før du foretar endringer, anbefaler vi på det sterkeste at du leser om trestrukturer for nestede sett.',
     'warning' => 'You can really break your Lychee installation here, modify values at your own risks.',

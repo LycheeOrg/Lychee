@@ -1,10 +1,10 @@
 <?php
 return [
     /*
-	|--------------------------------------------------------------------------
-	| Fix-tree Page
-	|--------------------------------------------------------------------------
-	*/
+    |--------------------------------------------------------------------------
+    | Fix-tree Page
+    |--------------------------------------------------------------------------
+    */
     'title' => 'Wartung',
     'intro' => 'Auf dieser Seite können Alben manuell neu angeordnet und korrigiert werden.<br />Bevor Änderungen vorgenommen werden, empfehlen wir dringend, sich über verschachtelte Baumstruktur zu informieren.',
     'warning' => 'Die Lychee-Installation kann hier wirklich zerstört werden. Ändern der Werte auf eigene Gefahr.',
