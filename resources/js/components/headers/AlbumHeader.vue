@@ -1,7 +1,7 @@
 <template>
 	<Toolbar
 		v-if="albumStore.album"
-		class="w-full border-0 transition-all duration-100 ease-in-out"
+		class="w-full border-0 transition-all duration-100 ease-in-out rounded-none"
 		:class="{
 			'max-h-14': !is_full_screen,
 			'max-h-0': is_full_screen,
@@ -16,6 +16,9 @@
 		</template>
 
 		<template #end>
+			<router-link v-if="orderManagementStore.hasItems" v-tooltip.bottom="'Basket'" :to="{ name: 'basket' }" class="hidden sm:block">
+				<Button icon="pi pi-shopping-cart" class="border-none" severity="secondary" text />
+			</router-link>
 			<router-link
 				v-if="is_favourite_enabled && (favourites.photos?.length ?? 0) > 0"
 				v-tooltip.bottom="'Favourites'"
@@ -73,11 +76,13 @@ import { useFavouriteStore } from "@/stores/FavouriteState";
 import GoBack from "./GoBack.vue";
 import { onMounted } from "vue";
 import { useAlbumStore } from "@/stores/AlbumState";
+import { useOrderManagementStore } from "@/stores/OrderManagement";
 
 const togglableStore = useTogglablesStateStore();
 const lycheeStore = useLycheeStateStore();
 const favourites = useFavouriteStore();
 const albumStore = useAlbumStore();
+const orderManagementStore = useOrderManagementStore();
 
 const { dropbox_api_key, is_favourite_enabled } = storeToRefs(lycheeStore);
 const { is_album_edit_open, is_full_screen } = storeToRefs(togglableStore);

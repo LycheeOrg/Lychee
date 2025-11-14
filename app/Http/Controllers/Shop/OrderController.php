@@ -9,10 +9,13 @@
 namespace App\Http\Controllers\Shop;
 
 use App\Actions\Shop\OrderService;
+use App\Http\Requests\Order\ClearOldOrdersRequest;
 use App\Http\Requests\Order\GetOrderRequest;
 use App\Http\Requests\Order\ListOrderRequest;
+use App\Http\Requests\Order\MarkAsPaidOrderRequest;
 use App\Http\Resources\Shop\OrderResource;
 use Illuminate\Routing\Controller;
+use InvalidArgumentException;
 
 /**
  * Controller responsible for listing the orders.
@@ -43,5 +46,27 @@ class OrderController extends Controller
 	public function get(GetOrderRequest $request): OrderResource
 	{
 		return OrderResource::fromModel($request->order);
+	}
+
+	/**
+	 * Clear old orders that are still pending.
+	 *
+	 * @return void
+	 */
+	public function clearOldOrders(ClearOldOrdersRequest $request): void
+	{
+		$this->order_service->clearOldOrders();
+	}
+
+	/**
+	 * Mark an order as paid.
+	 *
+	 * @param MarkAsPaidOrderRequest $request
+	 * @return void
+	 * @throws InvalidArgumentException
+	 */
+	public function markAsPaid(MarkAsPaidOrderRequest $request): void
+	{
+		$this->order_service->markAsPaid($request->order);
 	}
 }
