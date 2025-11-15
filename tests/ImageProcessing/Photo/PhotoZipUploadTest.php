@@ -16,7 +16,7 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Test\ImageProcessing\Photo;
+namespace Tests\ImageProcessing\Photo;
 
 use App\Exceptions\ZipInvalidException;
 use function Safe\unlink;

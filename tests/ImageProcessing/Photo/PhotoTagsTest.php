@@ -16,7 +16,7 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Test\ImageProcessing\Photo;
+namespace Tests\ImageProcessing\Photo;
 
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
