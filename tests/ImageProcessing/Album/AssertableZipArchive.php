@@ -16,7 +16,7 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Tests\Feature_v2\Album;
+namespace Tests\ImageProcessing\Album;
 
 use App\Image\Files\InMemoryBuffer;
 use App\Image\Files\TemporaryLocalFile;

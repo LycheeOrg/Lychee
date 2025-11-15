@@ -6,11 +6,11 @@
  * Copyright (c) 2018-2025 LycheeOrg.
  */
 
-namespace Tests\Feature_v2\Commands;
+namespace Tests\ImageProcessing\Commands;
 
 use Tests\AbstractTestCase;
 
-class DecodeGpsLocationsTest extends AbstractTestCase
+class ExifLensTest extends AbstractTestCase
 {
 	/**
 	 * Tests some console commands on a basic level.
@@ -25,8 +25,8 @@ class DecodeGpsLocationsTest extends AbstractTestCase
 	 */
 	public function testCommands(): void
 	{
-		$this->artisan('lychee:decode_GPS_locations')
-			->expectsOutput('No photos or videos require processing.')
-			->assertExitCode(0);
+		$this->artisan('lychee:exif_lens')
+			->expectsOutput('No pictures requires EXIF updates.')
+			->assertExitCode(-1);
 	}
 }

@@ -16,7 +16,7 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Tests\Feature_v2\Commands;
+namespace Tests\ImageProcessing\Commands;
 
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;

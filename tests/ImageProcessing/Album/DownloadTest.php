@@ -16,7 +16,7 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Tests\Feature_v2\Album;
+namespace Tests\ImageProcessing\Album;
 
 use App\Enum\DownloadVariantType;
 use App\Image\Files\InMemoryBuffer;
@@ -24,9 +24,6 @@ use App\Image\Files\TemporaryLocalFile;
 use App\Image\Handlers\ImagickHandler;
 use App\Image\Handlers\VideoHandler;
 use App\Models\Album;
-use App\Models\Configs;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
 use function Safe\file_get_contents;
 use function Safe\filesize;
 use function Safe\fwrite;

@@ -6,7 +6,7 @@
  * Copyright (c) 2018-2025 LycheeOrg.
  */
 
-namespace Tests\Feature_v2\Commands;
+namespace Tests\ImageProcessing\Commands;
 
 use Tests\AbstractTestCase;
 
