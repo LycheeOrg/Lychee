@@ -30,7 +30,7 @@ class CheckoutOptionResource extends Data
 
 	public function __construct()
 	{
-		$this->is_offline = Configs::getValueAsString('webshop_offline');
+		$this->is_offline = Configs::getValueAsBool('webshop_offline');
 		$this->currency = Configs::getValueAsString('webshop_currency');
 		$this->allow_guest_checkout = Configs::getValueAsBool('webshop_allow_guest_checkout');
 		$this->terms_url = Configs::getValueAsString('webshop_terms_url');
