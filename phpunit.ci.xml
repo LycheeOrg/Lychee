@@ -38,6 +38,10 @@
     <env name="SESSION_DRIVER" value="array"/>
     <env name="QUEUE_CONNECTION" value="sync"/>
     <env name="MAIL_DRIVER" value="array"/>
+	<env name="STRIPE_API_KEY" value="" />
+	<env name="STRIPE_PUBLISHABLE_KEY" value="" />
+	<env name="MOLLIE_API_KEY" value="" />
+	<env name="MOLLIE_PROFILE_ID" value="" />
 	<env name="WEBSHOP_ENABLED" value="true"/>
   </php>
   <source>

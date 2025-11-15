@@ -123,4 +123,40 @@ class OrderService
 			})
 			->orderBy('id', 'desc')->get()->all();
 	}
+
+	/**
+	 * Clear old orders that are older than 2 weeks, have no items, and have no user_id.
+	 *
+	 * @return int Number of orders deleted
+	 */
+	public function clearOldOrders(): int
+	{
+		$two_weeks_ago = now()->subWeeks(2);
+
+		return Order::where('created_at', '<', $two_weeks_ago)
+			->whereNull('user_id')
+			->whereDoesntHave('items')
+			->delete();
+	}
+
+	/**
+	 * Mark an offline order as paid (completed).
+	 *
+	 * @param Order $order The order to mark as paid
+	 *
+	 * @return Order The updated order
+	 *
+	 * @throws \InvalidArgumentException If the order is not in offline status
+	 */
+	public function markAsPaid(Order $order): Order
+	{
+		if ($order->status !== PaymentStatusType::OFFLINE) {
+			throw new \InvalidArgumentException('Order must be in offline status to be marked as paid');
+		}
+
+		$order->status = PaymentStatusType::COMPLETED;
+		$order->save();
+
+		return $order;
+	}
 }
