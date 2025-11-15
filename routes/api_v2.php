@@ -275,6 +275,8 @@ Route::get('/Maintenance::statisticsIntegrity', [Admin\Maintenance\StatisticsChe
 Route::post('/Maintenance::statisticsIntegrity', [Admin\Maintenance\StatisticsCheck::class, 'do']);
 Route::get('/Maintenance::missingPalettes', [Admin\Maintenance\MissingPalettes::class, 'check']);
 Route::post('/Maintenance::missingPalettes', [Admin\Maintenance\MissingPalettes::class, 'do']);
+Route::get('/Maintenance::oldOrders', [Admin\Maintenance\FlushOldOrders::class, 'check']);
+Route::post('/Maintenance::oldOrders', [Admin\Maintenance\FlushOldOrders::class, 'do']);
 
 /**
  * STATISTICS.

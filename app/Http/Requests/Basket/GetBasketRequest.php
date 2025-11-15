@@ -48,11 +48,11 @@ class GetBasketRequest extends BaseApiRequest implements HasBasket
 			$this->order = Order::find($basket_id);
 		}
 
-		$user_id = Auth::id();
-		if ($user_id === null) {
+		if (Auth::guest()) {
 			return;
 		}
 
+		$user_id = Auth::id();
 		if ($this->order?->user_id !== $user_id) {
 			// If the basket belongs to another user, ignore it.
 			$this->order = null;

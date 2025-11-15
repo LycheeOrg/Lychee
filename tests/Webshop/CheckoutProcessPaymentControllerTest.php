@@ -183,7 +183,7 @@ class CheckoutProcessPaymentControllerTest extends BaseCheckoutControllerTest
 			} else {
 				// Real providers might require different handling
 				// We keep 501 because this is not implemented (in other words, not initialized)
-				$response->assertStatus(501);
+				self::assertEquals(501, $response->getStatusCode(), $provider->value);
 			}
 		}
 	}

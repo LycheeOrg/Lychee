@@ -173,7 +173,7 @@ class ModulesRightsResource extends Data
 	 */
 	private function isWebshopEnabled(): bool
 	{
-		if (config('features.enable-webshop') === false) {
+		if (config('features.webshop') === false) {
 			return false;
 		}
 

@@ -62,7 +62,7 @@ class AlbumRightsResource extends Data
 	 */
 	public function canMakePurchasable(?AbstractAlbum $abstract_album): bool
 	{
-		if (config('features.enable-webshop') === false) {
+		if (config('features.webshop') === false) {
 			return false;
 		}
 

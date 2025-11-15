@@ -404,8 +404,9 @@ return [
 		'payment' => [
 			'none' => false,
 			'*' => false,
-			'self' => false,
+			'self' => true,
 			'origins' => [
+				'https://lychee.test',
 				// 'url',
 			],
 		],
@@ -700,7 +701,7 @@ return [
 			'report-sample' => true,
 
 			'allow' => array_merge(
-				['https://www.dropbox.com/static/api/1/dropins.js'],
+				['https://www.dropbox.com/static/api/1/dropins.js', 'https://js.mollie.com', 'https://js.stripe.com'],
 				explode(',', (string) env('SECURITY_HEADER_SCRIPT_SRC_ALLOW', ''))
 			),
 
