@@ -31,6 +31,7 @@ jobs:
           - Feature_v2
           - Install
           - Webshop
+          - ImageProcessing
         exclude:
         # Some skips to reduce the number of runs
           - php-version: 8.4
@@ -39,6 +40,8 @@ jobs:
             test-suite: Feature_v2
           - php-version: 8.4
             test-suite: Webshop
+          - php-version: 8.4
+            test-suite: ImageProcessing
     # Service containers to run with `container-job`
     services:
       # Label used to access the service container

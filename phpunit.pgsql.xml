@@ -20,6 +20,9 @@
     <testsuite name="Install">
       <directory suffix="Test.php">./tests/Install</directory>
     </testsuite>
+    <testsuite name="ImageProcessing">
+      <directory suffix="Test.php">./tests/ImageProcessing</directory>
+    </testsuite>
     <testsuite name="Webshop">
       <directory suffix="Test.php">./tests/Webshop</directory>
       <exclude>./tests/Webshop/BaseCheckoutControllerTest.php</exclude>
