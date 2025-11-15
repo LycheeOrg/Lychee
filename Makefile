@@ -148,6 +148,9 @@ test_webshop:
 test_install:
 	vendor/bin/phpunit --testsuite Install --stop-on-failure --stop-on-error --no-coverage --log-junit report_install.xml
 
+test_ImageProcessing:
+	vendor/bin/phpunit --testsuite ImageProcessing --stop-on-failure --stop-on-error --no-coverage --log-junit report_imageprocessing.xml
+
 test_v2:
 	vendor/bin/phpunit --testsuite Feature_v2 --stop-on-failure --stop-on-error --no-coverage --log-junit report_v2.xml
 

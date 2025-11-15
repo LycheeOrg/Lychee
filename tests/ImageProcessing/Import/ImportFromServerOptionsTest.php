@@ -6,7 +6,7 @@
  * Copyright (c) 2018-2025 LycheeOrg.
  */
 
-namespace Tests\Feature_v2\Import;
+namespace Tests\ImageProcessing\Import;
 
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 

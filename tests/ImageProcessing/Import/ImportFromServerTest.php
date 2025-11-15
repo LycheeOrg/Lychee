@@ -6,7 +6,7 @@
  * Copyright (c) 2018-2025 LycheeOrg.
  */
 
-namespace Tests\Feature_v2\Import;
+namespace Tests\ImageProcessing\Import;
 
 use Illuminate\Support\Facades\Queue;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;

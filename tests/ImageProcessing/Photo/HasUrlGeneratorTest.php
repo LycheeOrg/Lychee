@@ -16,7 +16,7 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Tests\Feature_v2\Photo;
+namespace Test\ImageProcessing\Photo;
 
 use App\Models\Configs;
 use App\Models\Extensions\HasUrlGenerator;

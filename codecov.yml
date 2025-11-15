@@ -3,7 +3,7 @@ codecov:
   require_ci_to_pass: true
   notify:
     wait_for_ci: true
-    after_n_builds: 15
+    after_n_builds: 18
 comment:
   behavior: default
   require_base: false
@@ -23,7 +23,6 @@ coverage:
 ignore:
 - "^app/Console/.*"
 - "^app/Exceptions/.*"
-- "^app/Http/Middleware/VerifyCsrfToken.*"
 - "^app/Http/Middleware/VerifyCsrfToken.*"
 - "^app/Providers/BroadcastServiceProvider.*"
 - "^app/Jobs/UploadSizeVariantToS3Job.php"

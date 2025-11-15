@@ -16,16 +16,16 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Tests\Feature_v2\Image\Handlers;
+namespace Tests\ImageProcessing\Image\Handlers;
 
 use Tests\Constants\TestConstants;
 use Tests\Traits\InteractsWithRaw;
 use Tests\Traits\RequiresImageHandler;
 
 /**
- * Runs the tests of {@link PhotosAddHandlerTestAbstract} with GD as image handler.
+ * Runs the tests of {@link PhotosAddHandlerTestAbstract} with Imagick as image handler.
  */
-class PhotosAddHandlerGDTest extends BaseImageHandler
+class PhotosAddHandlerImagickTest extends BaseImageHandler
 {
 	use InteractsWithRaw;
 	use RequiresImageHandler;
@@ -33,7 +33,7 @@ class PhotosAddHandlerGDTest extends BaseImageHandler
 	public function setUp(): void
 	{
 		parent::setUp();
-		$this->setUpRequiresGD();
+		$this->setUpRequiresImagick();
 	}
 
 	public function tearDown(): void
@@ -45,8 +45,7 @@ class PhotosAddHandlerGDTest extends BaseImageHandler
 	/**
 	 * Tests uploading of an accepted TIFF.
 	 *
-	 * As GD does not support TIFFs, no thumbnail is generated.
-	 * Nonetheless, the original file should be uploaded without error.
+	 * As Imagick supports TIFFs, we also expect generated thumbnail.
 	 *
 	 * @return void
 	 */
@@ -60,7 +59,8 @@ class PhotosAddHandlerGDTest extends BaseImageHandler
 			$photo = $response->json('resource.photos.0');
 
 			self::assertStringEndsWith('.tif', $photo['size_variants']['original']['url']);
-			self::assertNull($photo['size_variants']['thumb']);
+			self::assertEquals(TestConstants::MIME_TYPE_IMG_TIFF, $photo['type']);
+			self::assertNotNull($photo['size_variants']['thumb']);
 		} finally {
 			static::setAcceptedRawFormats($acceptedRawFormats);
 		}

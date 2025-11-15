@@ -16,7 +16,7 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Tests\Feature_v2\Image\Handlers;
+namespace Tests\ImageProcessing\Image\Handlers;
 
 use App\Facades\Helpers;
 use App\Models\Configs;

@@ -16,7 +16,7 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Tests\Feature_v2\Jobs;
+namespace Tests\ImageProcessing\Jobs;
 
 use App\Exceptions\Internal\InvalidConfigOption;
 use App\Jobs\ExtractColoursJob;
