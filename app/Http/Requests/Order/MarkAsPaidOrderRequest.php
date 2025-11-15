@@ -29,6 +29,14 @@ class MarkAsPaidOrderRequest extends BaseApiRequest
 		return $user?->may_administrate === true;
 	}
 
+	protected function prepareForValidation(): void
+	{
+		/** @disregard */
+		$this->merge([
+			'order_id' => $this->route('order_id'),
+		]);
+	}
+
 	public function rules(): array
 	{
 		return [
