@@ -31,6 +31,7 @@ import Button from "primevue/button";
 import { useToast } from "primevue/usetoast";
 import { useRouter } from "vue-router";
 import { usePhotoRoute } from "@/composables/photo/photoRoute";
+import { usePhotoStore } from "@/stores/PhotoState";
 
 const toast = useToast();
 const props = defineProps<{
@@ -42,6 +43,7 @@ const props = defineProps<{
 
 const router = useRouter();
 const { getParentId } = usePhotoRoute(router);
+const photoStore = usePhotoStore();
 
 const visible = defineModel<boolean>("visible", { default: false });
 const emits = defineEmits<{
@@ -49,7 +51,7 @@ const emits = defineEmits<{
 }>();
 
 const confirmation = computed(() => {
-	if (props.photo || (props.photoIds && props.photoIds?.length > 0)) {
+	if (photoStore.isLoaded || props.photo || (props.photoIds && props.photoIds?.length > 0)) {
 		return deleteConfirmationPhoto();
 	}
 
@@ -57,6 +59,9 @@ const confirmation = computed(() => {
 });
 
 function deleteConfirmationPhoto() {
+	if (photoStore.isLoaded) {
+		return sprintf(trans("dialogs.photo_delete.confirm"), photoStore!.photo!.title);
+	}
 	if (props.photo) {
 		return sprintf(trans("dialogs.photo_delete.confirm"), props.photo.title);
 	}
@@ -73,7 +78,7 @@ function deleteConfirmationAlbum() {
 function execute() {
 	visible.value = false;
 
-	if (props.photo || (props.photoIds && props.photoIds?.length > 0)) {
+	if (photoStore.isLoaded || props.photo || (props.photoIds && props.photoIds?.length > 0)) {
 		return executeDeletePhoto();
 	}
 
@@ -100,7 +105,9 @@ function executeDeleteAlbum() {
 
 function executeDeletePhoto() {
 	let photoDeletedIds = [];
-	if (props.photo) {
+	if (photoStore.isLoaded) {
+		photoDeletedIds.push(photoStore!.photo!.id);
+	} else if (props.photo) {
 		photoDeletedIds.push(props.photo.id);
 	} else {
 		photoDeletedIds = props.photoIds as string[];

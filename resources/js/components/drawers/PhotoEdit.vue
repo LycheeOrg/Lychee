@@ -1,8 +1,8 @@
 <template>
 	<Drawer v-model:visible="isEditOpen" :close-on-esc="false" position="right" pt:root:class="w-full p-card border-transparent">
-		<Card v-if="photo" id="lychee_sidebar" class="h-full pr-4 break-words max-w-4xl mx-auto">
+		<Card v-if="photo" id="lychee_sidebar" class="h-full pr-4 wrap-break-word max-w-4xl mx-auto">
 			<template #content>
-				<form class="w-full flex flex-col md:gap-y-4 md:grid md:grid-cols-[200px_minmax(auto,_1fr)] justify-center">
+				<form class="w-full flex flex-col md:gap-y-4 md:grid md:grid-cols-[200px_minmax(auto,1fr)] justify-center">
 					<label for="title" class="font-bold self-center">{{ $t("gallery.photo.edit.set_title") }}</label>
 					<InputText id="title" v-model="title" type="text" :invalid="!title" />
 
