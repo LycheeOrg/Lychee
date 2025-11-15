@@ -47,6 +47,8 @@ class InitConfig extends Data
 	public bool $is_favourite_enabled;
 	public SmallLargeType $photo_previous_next_size;
 	public bool $is_details_links_enabled;
+	public bool $is_desktop_dock_full_transparency_enabled;
+	public bool $is_mobile_dock_full_transparency_enabled;
 
 	// Thumbs configuration
 	public ThumbOverlayVisibilityType $display_thumb_album_overlay;
@@ -130,6 +132,8 @@ class InitConfig extends Data
 		if (Configs::getValueAsBool('details_links_enabled')) {
 			$this->is_details_links_enabled = !Auth::guest() || Configs::getValueAsBool('details_links_public');
 		}
+		$this->is_desktop_dock_full_transparency_enabled = Configs::getValueAsBool('desktop_dock_full_transparency_enabled');
+		$this->is_mobile_dock_full_transparency_enabled = Configs::getValueAsBool('mobile_dock_full_transparency_enabled');
 
 		// Thumbs configuration
 		$this->display_thumb_album_overlay = Configs::getValueAsEnum('display_thumb_album_overlay', ThumbOverlayVisibilityType::class);
