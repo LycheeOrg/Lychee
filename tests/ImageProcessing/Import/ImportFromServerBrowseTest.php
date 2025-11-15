@@ -6,7 +6,7 @@
  * Copyright (c) 2018-2025 LycheeOrg.
  */
 
-namespace Tests\Feature_v2\Import;
+namespace Tests\ImageProcessing\Import;
 
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
@@ -38,6 +38,6 @@ class ImportFromServerBrowseTest extends BaseApiWithDataTest
 		// We have to sort in order to have a predictable order for the test.
 		// The order returned by the filesystem is not predictable.
 		sort($content);
-		self::assertEquals($content, ['..', 'Constants', 'Feature_v2', 'Install', 'Samples', 'Traits', 'Unit', 'Webshop']);
+		self::assertEquals( ['..', 'Constants', 'Feature_v2',  'ImageProcessing', 'Install', 'Samples', 'Traits', 'Unit', 'Webshop'], $content);
 	}
 }
