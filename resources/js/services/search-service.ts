@@ -20,10 +20,17 @@ const SearchService = {
 
 	search(album_id: string | undefined, terms: string, page: number = 1): Promise<AxiosResponse<App.Http.Resources.Search.ResultsResource>> {
 		return axios.get(`${Constants.getApiUrl()}Search`, {
-			params: { album_id: this.albumId(album_id), terms: btoa(terms), page: page },
+			params: { album_id: this.albumId(album_id), terms: base64encode(terms), page: page },
 			data: {},
 		});
 	},
 };
+
+function base64encode(str: string): string {
+	const bytes = new TextEncoder().encode(str);
+	let binary = "";
+	bytes.forEach((b) => (binary += String.fromCharCode(b)));
+	return btoa(binary);
+}
 
 export default SearchService;
