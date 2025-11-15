@@ -17,14 +17,13 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Photo;
 use App\Models\User;
-use App\Services\MoneyService;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 class OrderService
 {
 	public function __construct(
-		private MoneyService $money_service,
 		private PurchasableService $purchasable_service,
 	) {
 	}
@@ -131,12 +130,41 @@ class OrderService
 	 */
 	public function clearOldOrders(): int
 	{
-		$two_weeks_ago = now()->subWeeks(2);
+		// Delete all the order items first to avoid foreign key constraint issues
+		OrderItem::whereIn('order_id', $this->getQueryOldOrders()->select('id'))->delete();
+		return $this->getQueryOldOrders()->delete();
+	}
 
-		return Order::where('created_at', '<', $two_weeks_ago)
+	/**
+	 * Count the number of old orders.
+	 *
+	 * @return int
+	 */
+	public function countOldOrders(): int
+	{
+		return $this->getQueryOldOrders()->count();
+	}
+
+	/**
+	 * Return the query builder for old orders.
+	 *
+	 * An old order is defined as being older than $weeks weeks,
+	 * - having no user_id,
+	 * - having no items
+	 * - or having items but status is still PENDING
+	 *
+	 * @param int $weeks
+	 * @return Builder
+	 */
+	protected function getQueryOldOrders(int $weeks = 2): Builder {
+		$threshold_date = now()->subWeeks($weeks);
+
+		return Order::where('created_at', '<', $threshold_date)
 			->whereNull('user_id')
-			->whereDoesntHave('items')
-			->delete();
+			->where(function (Builder $query) {
+				$query->where('status', PaymentStatusType::PENDING)
+					->orWhereDoesntHave('items');
+			});
 	}
 
 	/**
@@ -155,6 +183,27 @@ class OrderService
 		}
 
 		$order->status = PaymentStatusType::COMPLETED;
+		$order->save();
+
+		return $order;
+	}
+
+	/**
+	 * Mark a completed order as delivered (closed).
+	 *
+	 * @param Order $order The order to mark as delivered
+	 *
+	 * @return Order The updated order
+	 *
+	 * @throws \InvalidArgumentException If the order is not in completed status
+	 */
+	public function markAsDelivered(Order $order): Order
+	{
+		if ($order->status !== PaymentStatusType::COMPLETED) {
+			throw new \InvalidArgumentException('Order must be in completed status to be marked as delivered');
+		}
+
+		$order->status = PaymentStatusType::CLOSED;
 		$order->save();
 
 		return $order;

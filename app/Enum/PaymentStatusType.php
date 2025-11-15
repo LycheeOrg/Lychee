@@ -34,8 +34,11 @@ enum PaymentStatusType: string
 	// In such case we do not go through the full flow.
 	case OFFLINE = 'offline';
 
-	// Final state
+	// Final payment state
 	case COMPLETED = 'completed';
+
+	// The order is closed for any further action: paid and delivered.
+	case CLOSED = 'closed';
 
 	public function canCheckout()
 	{

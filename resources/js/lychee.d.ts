@@ -105,7 +105,7 @@ declare namespace App.Enum {
 		| "keycloak";
 	export type OmnipayProviderType = "Dummy" | "Mollie" | "PayPal_Express" | "PayPal_ExpressInContext" | "PayPal_Pro" | "PayPal_Rest" | "Stripe";
 	export type OrderSortingType = "ASC" | "DESC";
-	export type PaymentStatusType = "pending" | "cancelled" | "failed" | "refunded" | "processing" | "offline" | "completed";
+	export type PaymentStatusType = "pending" | "cancelled" | "failed" | "refunded" | "processing" | "offline" | "completed" | "closed";
 	export type PhotoLayoutType = "square" | "justified" | "masonry" | "grid";
 	export type PhotoThumbInfoType = "title" | "description";
 	export type PurchasableLicenseType = "personal" | "commercial" | "extended";
@@ -256,14 +256,7 @@ declare namespace App.Http.Resources.Editable {
 }
 declare namespace App.Http.Resources.Embed {
 	export type EmbedAlbumResource = {
-		album: {
-			id: string;
-			title: string;
-			description: string | null;
-			photo_count: number;
-			copyright: string | null;
-			license: string | null;
-		};
+		album: { [key: string]: any };
 		photos: App.Http.Resources.Embed.EmbedPhotoResource[];
 	};
 	export type EmbedPhotoResource = {
@@ -272,6 +265,10 @@ declare namespace App.Http.Resources.Embed {
 		description: string | null;
 		size_variants: App.Http.Resources.Models.SizeVariantsResouce;
 		exif: { [key: string]: string | null };
+	};
+	export type EmbedStreamResource = {
+		site_title: string;
+		photos: App.Http.Resources.Embed.EmbedPhotoResource[];
 	};
 }
 declare namespace App.Http.Resources.Flow {

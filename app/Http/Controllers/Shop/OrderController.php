@@ -12,10 +12,10 @@ use App\Actions\Shop\OrderService;
 use App\Http\Requests\Order\ClearOldOrdersRequest;
 use App\Http\Requests\Order\GetOrderRequest;
 use App\Http\Requests\Order\ListOrderRequest;
+use App\Http\Requests\Order\MarkAsDeliveredOrderRequest;
 use App\Http\Requests\Order\MarkAsPaidOrderRequest;
 use App\Http\Resources\Shop\OrderResource;
 use Illuminate\Routing\Controller;
-use InvalidArgumentException;
 
 /**
  * Controller responsible for listing the orders.
@@ -63,10 +63,20 @@ class OrderController extends Controller
 	 *
 	 * @param MarkAsPaidOrderRequest $request
 	 * @return void
-	 * @throws InvalidArgumentException
 	 */
 	public function markAsPaid(MarkAsPaidOrderRequest $request): void
 	{
 		$this->order_service->markAsPaid($request->order);
+	}
+
+	/**
+	 * Mark an order as delivered.
+	 *
+	 * @param MarkAsDeliveredOrderRequest $request
+	 * @return void
+	 */
+	public function markAsDelivered(MarkAsDeliveredOrderRequest $request): void
+	{
+		$this->order_service->markAsDelivered($request->order);
 	}
 }

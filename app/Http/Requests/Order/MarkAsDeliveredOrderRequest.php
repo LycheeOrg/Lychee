@@ -15,9 +15,9 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 /**
- * Mark an order as paid.
+ * Mark an order as delivered.
  */
-class MarkAsPaidOrderRequest extends BaseApiRequest
+class MarkAsDeliveredOrderRequest extends BaseApiRequest
 {
 	public Order $order;
 
@@ -41,7 +41,7 @@ class MarkAsPaidOrderRequest extends BaseApiRequest
 		/** @var int $order_id */
 		$order_id = intval($values['order_id'] ?? null);
 		$this->order = Order::query()
-			->where('status', '=', PaymentStatusType::OFFLINE)
+			->where('status', '=', PaymentStatusType::COMPLETED)
 			->where('id', '=', $order_id)
 			->firstOrFail();
 	}
