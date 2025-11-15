@@ -173,11 +173,13 @@ import { useLtRorRtL } from "@/utils/Helpers";
 import ImportFromLink from "@/components/modals/ImportFromLink.vue";
 import DropBox from "@/components/modals/DropBox.vue";
 import ImportFromServer from "@/components/modals/ImportFromServer.vue";
+import { useOrderManagementStore } from "@/stores/OrderManagement";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { usePhotoStore } from "@/stores/PhotoState";
 import { usePhotosStore } from "@/stores/PhotosState";
 import { useLayoutStore } from "@/stores/LayoutState";
 import { useAlbumsStore } from "@/stores/AlbumsState";
+import { useCatalogStore } from "@/stores/CatalogState";
 
 const { isLTR } = useLtRorRtL();
 
@@ -200,19 +202,27 @@ const userStore = useUserStore();
 const albumStore = useAlbumStore();
 const togglableStore = useTogglablesStateStore();
 const lycheeStore = useLycheeStateStore();
+const orderManagement = useOrderManagementStore();
 const photoStore = usePhotoStore();
 const albumsStore = useAlbumsStore();
 const photosStore = usePhotosStore();
 const layoutStore = useLayoutStore();
+const catalogStore = useCatalogStore();
 
 async function load() {
 	await Promise.allSettled([layoutStore.load(), lycheeStore.load(), userStore.load(), albumStore.load()]);
+	catalogStore.albumId = albumId.value;
+	catalogStore.load();
+	orderManagement.load();
 	photoStore.photoId = photoId.value;
 	photoStore.load();
 }
 
 async function refresh(isDelete: boolean = false) {
 	await Promise.allSettled([layoutStore.load(), lycheeStore.load(), userStore.refresh(), albumStore.refresh()]);
+	catalogStore.albumId = albumId.value;
+	catalogStore.load();
+	orderManagement.load();
 	if (isDelete) {
 		// If we have deleted a photo, we need to reset the photo store
 		router.push({ name: albumRoutes().album, params: { albumId: albumId.value } });

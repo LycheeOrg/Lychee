@@ -89,7 +89,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		is_swipe_vertically_to_go_back_enabled: true,
 	}),
 	actions: {
-		load(): Promise<void> {
+		async load(): Promise<void> {
 			// Check if already initialized
 			if (this.is_init) {
 				return Promise.resolve();
