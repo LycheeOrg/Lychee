@@ -22,14 +22,13 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 class EmbedAlbumInfo extends Data
 {
 	public function __construct(
-			public string $id,
-			public string $title,
-			public string $description,
-			public int $photo_count,
-			public string $copyright,
-			public string $license,
-	)
-	{
+		public string $id,
+		public string $title,
+		public string $description,
+		public int $photo_count,
+		public string $copyright,
+		public string $license,
+	) {
 	}
 
 	/**
