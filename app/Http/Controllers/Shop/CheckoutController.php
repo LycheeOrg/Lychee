@@ -12,11 +12,13 @@ use App\Actions\Shop\CheckoutService;
 use App\Enum\PaymentStatusType;
 use App\Http\Requests\Checkout\CreateSessionRequest;
 use App\Http\Requests\Checkout\FinalizeRequest;
+use App\Http\Requests\Checkout\OfflineRequest;
 use App\Http\Requests\Checkout\ProcessRequest;
 use App\Http\Resources\Shop\CheckoutOptionResource;
 use App\Http\Resources\Shop\CheckoutResource;
 use App\Http\Resources\Shop\OrderResource;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 
 class CheckoutController extends Controller
@@ -110,7 +112,9 @@ class CheckoutController extends Controller
 	public function finalize(FinalizeRequest $request, string $provider, string $transaction_id): CheckoutResource
 	{
 		/** @disregard P1013 */
-		$order = $this->checkout_service->handlePaymentReturn($request->basket(), $request->all(), $request->provider_type());
+		Log::warning("Finalize payment for provider {$provider} and transaction ID {$transaction_id}", $request->all());
+		/** @disregard P1013 */
+		$order = $this->checkout_service->handlePaymentReturn($request->basket(), $request->provider_type());
 
 		if ($order->status !== PaymentStatusType::COMPLETED) {
 			return new CheckoutResource(
@@ -142,6 +146,41 @@ class CheckoutController extends Controller
 		return new CheckoutResource(
 			is_success: true,
 			message: 'Payment was canceled by the user',
+			order: OrderResource::fromModel($order),
+		);
+	}
+
+	/**
+	 * Handle offline order completion.
+	 *
+	 * @param OfflineRequest $request
+	 *
+	 * @return CheckoutResource
+	 */
+	public function offline(OfflineRequest $request): CheckoutResource
+	{
+		$order = $request->basket();
+
+		// Add email if provided
+		if ($request->email !== null) {
+			$order->email = $request->email;
+		}
+
+		if ($order->email === null || $order->email === '') {
+			return new CheckoutResource(
+				is_success: false,
+				message: 'Email is required for offline orders.',
+				order: OrderResource::fromModel($order),
+			);
+		}
+
+		// Mark the order as completed (offline)
+		$order->status = PaymentStatusType::OFFLINE;
+		$order->save();
+
+		return new CheckoutResource(
+			is_success: true,
+			message: 'Order marked as completed (offline)',
 			order: OrderResource::fromModel($order),
 		);
 	}

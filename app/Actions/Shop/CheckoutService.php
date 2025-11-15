@@ -16,6 +16,7 @@ use App\Factories\OmnipayFactory;
 use App\Models\Order;
 use App\Services\MoneyService;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 use Omnipay\Common\Exception\InvalidCreditCardException;
 use Omnipay\Common\Message\RedirectResponseInterface;
 use Omnipay\Common\Message\ResponseInterface;
@@ -65,6 +66,9 @@ class CheckoutService
 
 		// Prepare the purchase request parameters
 		$params = $this->preparePurchaseParameters($order, $return_url, $cancel_url, $additional_data);
+
+		// Save the parameters.
+		Session::put('processing', $params);
 
 		try {
 			// Update order status to processing
@@ -151,14 +155,14 @@ class CheckoutService
 	/**
 	 * Handle the return from the payment gateway.
 	 *
-	 * @param Order               $order        The order being processed
-	 * @param array               $request_data The request data from the payment gateway
-	 * @param OmnipayProviderType $provider     The payment provider used
+	 * @param Order               $order    The order being processed
+	 * @param OmnipayProviderType $provider The payment provider used
 	 *
 	 * @return Order|null The updated order if found, null otherwise
 	 */
-	public function handlePaymentReturn(Order $order, array $request_data, OmnipayProviderType $provider): ?Order
+	public function handlePaymentReturn(Order $order, OmnipayProviderType $provider): ?Order
 	{
+		$request_data = Session::get('processing', []);
 		$gateway = $this->omnipay_factory->create_gateway($provider);
 
 		try {
