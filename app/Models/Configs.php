@@ -153,20 +153,27 @@ class Configs extends Model
 				}
 				break;
 			case ConfigType::CURRENCY->value:
-				$bundle = \ResourceBundle::create('en', 'ICUDATA-curr');
-				$currencies = $bundle->get('Currencies');
-				$found = false;
-				foreach ($currencies as $code => $data) {
-					$found = ($code === $candidate_value);
-					if ($found) {
-						break; // we found it, stop searching
+				try {
+					$bundle = \ResourceBundle::create('en', 'ICUDATA-curr');
+					$currencies = $bundle->get('Currencies');
+					$found = false;
+					foreach ($currencies as $code => $data) {
+						$found = ($code === $candidate_value);
+						if ($found) {
+							break; // we found it, stop searching
+						}
 					}
-				}
-				if (!$found) {
-					$message = sprintf($message_template, 'a valid ISO 4217 currency code');
+					if (!$found) {
+						$message = sprintf($message_template, 'a valid ISO 4217 currency code');
+						break;
+					}
 					break;
+				} catch (\Throwable) {
+					// @codeCoverageIgnoreStart
+					$message = 'php-intl extension is missing. Cannot validate currency code.';
+					break;
+					// @codeCoverageIgnoreEnd
 				}
-				break;
 			case ConfigType::MAP_PROVIDER->value:
 				if (MapProviders::tryFrom($candidate_value) === null) {
 					$message = sprintf($message_template, 'a valid map provider');
