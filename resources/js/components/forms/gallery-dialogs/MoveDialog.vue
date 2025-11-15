@@ -41,6 +41,7 @@ import Button from "primevue/button";
 import Dialog from "primevue/dialog";
 import { useRouter } from "vue-router";
 import { usePhotoRoute } from "@/composables/photo/photoRoute";
+import { usePhotoStore } from "@/stores/PhotoState";
 
 const props = defineProps<{
 	album?: App.Http.Resources.Models.ThumbAlbumResource;
@@ -52,6 +53,7 @@ const props = defineProps<{
 const router = useRouter();
 const { getParentId } = usePhotoRoute(router);
 const visible = defineModel<boolean>("visible", { default: false });
+const photoStore = usePhotoStore();
 
 const emits = defineEmits<{
 	moved: [];
@@ -95,13 +97,16 @@ const question = computed(() => {
 });
 
 const confirmation = computed(() => {
-	if (props.photo || (props.photoIds && props.photoIds?.length > 0)) {
+	if (photoStore.isLoaded || props.photo || (props.photoIds && props.photoIds?.length > 0)) {
 		return moveConfirmationPhoto();
 	}
 	return moveConfirmationAlbum();
 });
 
 function moveConfirmationPhoto() {
+	if (photoStore.isLoaded) {
+		return sprintf(trans("dialogs.move_photo.confirm"), photoStore!.photo!.title, titleMovedTo.value);
+	}
 	if (props.photo) {
 		return sprintf(trans("dialogs.move_photo.confirm"), props.photo.title, titleMovedTo.value);
 	}
@@ -117,7 +122,7 @@ function moveConfirmationAlbum() {
 
 function execute() {
 	visible.value = false;
-	if (props.photo || (props.photoIds && props.photoIds?.length > 0)) {
+	if (photoStore.isLoaded || props.photo || (props.photoIds && props.photoIds?.length > 0)) {
 		return executeMovePhoto();
 	}
 	executeMoveAlbum();
@@ -160,7 +165,9 @@ function executeMovePhoto() {
 		return;
 	}
 	let photoMovedIds = [];
-	if (props.photo) {
+	if (photoStore.isLoaded) {
+		photoMovedIds.push(photoStore!.photo!.id);
+	} else if (props.photo) {
 		photoMovedIds.push(props.photo.id);
 	} else {
 		photoMovedIds = props.photoIds as string[];

@@ -55,7 +55,7 @@
 	<template v-if="photoStore.isLoaded">
 		<PhotoEdit v-if="photoStore.rights?.can_edit" v-model:visible="is_photo_edit_open" />
 		<MoveDialog v-model:visible="is_move_visible" @moved="refresh" />
-		<DeleteDialog v-model:visible="is_delete_visible" @deleted="refresh" />
+		<DeleteDialog v-model:visible="is_delete_visible" @deleted="refresh(true)" />
 	</template>
 	<template v-else>
 		<PhotoTagDialog
@@ -211,8 +211,13 @@ async function load() {
 	photoStore.load();
 }
 
-async function refresh() {
+async function refresh(isDelete: boolean = false) {
 	await Promise.allSettled([layoutStore.load(), lycheeStore.load(), userStore.refresh(), albumStore.refresh()]);
+	if (isDelete) {
+		// If we have deleted a photo, we need to reset the photo store
+		router.push({ name: albumRoutes().album, params: { albumId: albumId.value } });
+		return;
+	}
 	photoStore.photoId = photoId.value;
 	photoStore.load();
 }
