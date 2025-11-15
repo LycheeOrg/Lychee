@@ -3,8 +3,12 @@
 		v-if="photoStore.photo"
 		:class="{
 			'absolute top-0 w-full sm:w-1/2 left-1/2 -translate-x-1/2': true,
-			'opacity-50 lg:opacity-20 lg:hover:opacity-100 transition-opacity duration-500 ease-in-out': !isTouchDevice(),
-			'opacity-75': isTouchDevice(),
+			'lg:hover:opacity-100 transition-opacity duration-500 ease-in-out': !isTouchDevice(),
+			'opacity-50 lg:opacity-20': !isTouchDevice() && !lycheeStore.is_desktop_dock_full_transparency_enabled,
+			'opacity-75': isTouchDevice() && !lycheeStore.is_mobile_dock_full_transparency_enabled,
+			'opacity-0':
+				(!isTouchDevice() && lycheeStore.is_desktop_dock_full_transparency_enabled) ||
+				(isTouchDevice() && lycheeStore.is_mobile_dock_full_transparency_enabled),
 			'z-20 mt-14 sm:mt-0': true,
 			'sm:h-1/4': !props.isNarrowMenu,
 			'h-14': props.isNarrowMenu,

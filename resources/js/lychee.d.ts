@@ -256,14 +256,7 @@ declare namespace App.Http.Resources.Editable {
 }
 declare namespace App.Http.Resources.Embed {
 	export type EmbedAlbumResource = {
-		album: {
-			id: string;
-			title: string;
-			description: string | null;
-			photo_count: number;
-			copyright: string | null;
-			license: string | null;
-		};
+		album: { [key: string]: any };
 		photos: App.Http.Resources.Embed.EmbedPhotoResource[];
 	};
 	export type EmbedPhotoResource = {
@@ -272,6 +265,10 @@ declare namespace App.Http.Resources.Embed {
 		description: string | null;
 		size_variants: App.Http.Resources.Models.SizeVariantsResouce;
 		exif: { [key: string]: string | null };
+	};
+	export type EmbedStreamResource = {
+		site_title: string;
+		photos: App.Http.Resources.Embed.EmbedPhotoResource[];
 	};
 }
 declare namespace App.Http.Resources.Flow {
@@ -360,6 +357,8 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		is_favourite_enabled: boolean;
 		photo_previous_next_size: App.Enum.SmallLargeType;
 		is_details_links_enabled: boolean;
+		is_desktop_dock_full_transparency_enabled: boolean;
+		is_mobile_dock_full_transparency_enabled: boolean;
 		display_thumb_album_overlay: App.Enum.ThumbOverlayVisibilityType;
 		display_thumb_photo_overlay: App.Enum.ThumbOverlayVisibilityType;
 		album_subtitle_type: App.Enum.ThumbAlbumSubtitleType;
