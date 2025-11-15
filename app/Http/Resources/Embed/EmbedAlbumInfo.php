@@ -27,7 +27,7 @@ class EmbedAlbumInfo extends Data
 		public ?string $description,
 		public int $photo_count,
 		public ?string $copyright,
-		public string $license,
+		public ?string $license,
 	) {
 	}
 
