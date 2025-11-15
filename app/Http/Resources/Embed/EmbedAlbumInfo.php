@@ -9,9 +9,7 @@
 namespace App\Http\Resources\Embed;
 
 use App\Models\Album;
-use Illuminate\Support\Collection;
 use Spatie\LaravelData\Data;
-use Spatie\TypeScriptTransformer\Attributes\LiteralTypeScriptType;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
 /**
@@ -21,17 +19,17 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
  * external embedding. Includes only publicly visible data.
  */
 #[TypeScript()]
-class EmbedAlbumResource extends Data
+class EmbedAlbumInfo extends Data
 {
-	public EmbedAlbumInfo $album;
-	/** @var Collection<int, EmbedPhotoResource> */
-	#[LiteralTypeScriptType('App.Http.Resources.Embed.EmbedPhotoResource[]')]
-	public Collection $photos;
-
-	public function __construct(Album $album)
+	public function __construct(
+			public string $id,
+			public string $title,
+			public string $description,
+			public int $photo_count,
+			public string $copyright,
+			public string $license,
+	)
 	{
-		$this->album = EmbedAlbumInfo::fromModel($album);
-		$this->photos = $album->photos->map(fn ($photo) => EmbedPhotoResource::fromModel($photo));
 	}
 
 	/**
@@ -43,6 +41,13 @@ class EmbedAlbumResource extends Data
 	 */
 	public static function fromModel(Album $album): self
 	{
-		return new self($album);
+		return new self(
+			id: $album->id,
+			title: $album->title,
+			description: $album->description,
+			photo_count: $album->photos_count ?? $album->photos->count(),
+			copyright: $album->copyright,
+			license: $album->license?->localization(),
+		);
 	}
 }
