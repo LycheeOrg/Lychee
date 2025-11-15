@@ -16,7 +16,7 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Tests\Webshop;
+namespace Tests\Webshop\Checkout;
 
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 use Tests\Traits\RequireSE;

@@ -16,10 +16,11 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Tests\Webshop;
+namespace Tests\Webshop\Checkout;
 
 use App\Enum\OmnipayProviderType;
 use App\Enum\PaymentStatusType;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 
 /**
@@ -52,7 +53,7 @@ class CheckoutFinalizeOrCancelControllerTest extends BaseCheckoutControllerTest
 
 		$this->assertDatabaseHas('orders', ['transaction_id' => $transaction_id, 'status' => PaymentStatusType::PROCESSING->value]);
 
-		$response = $this->getJsonWithData('Shop/Checkout/Finalize/' . $provider . '/' . $transaction_id, [
+		Session::put('processing', [
 			'payment_id' => 'dummy-payment-123',
 			'status' => 'completed',
 			'transactionReference' => $this->test_order->transaction_id,
@@ -63,6 +64,8 @@ class CheckoutFinalizeOrCancelControllerTest extends BaseCheckoutControllerTest
 				'cvv' => '123',
 			],
 		]);
+
+		$response = $this->getJsonWithData('Shop/Checkout/Finalize/' . $provider . '/' . $transaction_id);
 
 		$this->assertOk($response);
 		$response->assertJsonStructure([
@@ -224,7 +227,7 @@ class CheckoutFinalizeOrCancelControllerTest extends BaseCheckoutControllerTest
 		$provider = OmnipayProviderType::DUMMY->value;
 		$transaction_id = $this->test_order->transaction_id;
 
-		$response = $this->getJsonWithData('Shop/Checkout/Finalize/' . $provider . '/' . $transaction_id, [
+		Session::put('processing', [
 			'payment_id' => 'dummy-payment-123',
 			'status' => 'completed',
 			'transactionReference' => $this->test_order->transaction_id,
@@ -235,6 +238,8 @@ class CheckoutFinalizeOrCancelControllerTest extends BaseCheckoutControllerTest
 				'cvv' => '123',
 			],
 		]);
+
+		$response = $this->getJsonWithData('Shop/Checkout/Finalize/' . $provider . '/' . $transaction_id);
 
 		$this->assertOk($response);
 		$response->assertJson([

@@ -25,7 +25,7 @@
     </testsuite>
     <testsuite name="Webshop">
       <directory suffix="Test.php">./tests/Webshop</directory>
-      <exclude>./tests/Webshop/BaseCheckoutControllerTest.php</exclude>
+      <exclude>./tests/Webshop/Checkout/BaseCheckoutControllerTest.php</exclude>
     </testsuite>
   </testsuites>
   <extensions>

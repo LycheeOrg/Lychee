@@ -189,7 +189,6 @@ class OrderFactory extends Factory
 			]);
 	}
 
-
 	/**
 	 * Create a failed order.
 	 *

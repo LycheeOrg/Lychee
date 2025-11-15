@@ -16,7 +16,7 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Tests\Webshop;
+namespace Tests\Webshop\Checkout;
 
 use App\Enum\OmnipayProviderType;
 use App\Enum\PaymentStatusType;

@@ -16,7 +16,7 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Tests\Webshop;
+namespace Tests\Webshop\Checkout;
 
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Models\Order;
