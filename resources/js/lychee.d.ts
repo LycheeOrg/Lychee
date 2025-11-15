@@ -258,9 +258,9 @@ declare namespace App.Http.Resources.Embed {
 	export type EmbedAlbumInfo = {
 		id: string;
 		title: string;
-		description: string;
+		description: string | null;
 		photo_count: number;
-		copyright: string;
+		copyright: string | null;
 		license: string;
 	};
 	export type EmbedAlbumResource = {
