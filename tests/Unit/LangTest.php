@@ -48,8 +48,13 @@ class LangTest extends AbstractTestCase
 			$availableDictionaries = collect(array_diff(config('app.supported_locale'), ['en']))->filter(fn ($v) => is_dir(base_path('lang/' . $v)))->all();
 
 			foreach ($availableDictionaries as $locale) {
-				$dictionary = include base_path('lang/' . $locale . '/' . $dictionaryFile);
-				$this->recursiveCheck($englishDictionary, $dictionary, $locale, $dictionaryFile);
+				try {
+					$dictionary = include base_path('lang/' . $locale . '/' . $dictionaryFile);
+					$this->recursiveCheck($englishDictionary, $dictionary, $locale, $dictionaryFile);
+				} catch (\Throwable $e) {
+					$this->msgSection->writeln(sprintf('<comment>Error:</comment> Locale %s is missing file %s', str_pad($locale, 8), $dictionaryFile));
+					$this->failed = true;
+				}
 			}
 		}
 		static::assertFalse($this->failed);
