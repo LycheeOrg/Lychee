@@ -9,7 +9,6 @@
 namespace App\Http\Controllers\Shop;
 
 use App\Actions\Shop\OrderService;
-use App\Http\Requests\Order\ClearOldOrdersRequest;
 use App\Http\Requests\Order\GetOrderRequest;
 use App\Http\Requests\Order\ListOrderRequest;
 use App\Http\Requests\Order\MarkAsDeliveredOrderRequest;

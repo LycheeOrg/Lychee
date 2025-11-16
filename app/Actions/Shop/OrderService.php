@@ -11,6 +11,7 @@ namespace App\Actions\Shop;
 use App\Enum\PaymentStatusType;
 use App\Enum\PurchasableLicenseType;
 use App\Enum\PurchasableSizeVariantType;
+use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\Shop\InvalidPurchaseOptionException;
 use App\Exceptions\Shop\PhotoNotPurchasableException;
 use App\Models\Order;
@@ -182,12 +183,12 @@ class OrderService
 	 *
 	 * @return Order The updated order
 	 *
-	 * @throws \InvalidArgumentException If the order is not in offline status
+	 * @throws LycheeLogicException If the order is not in offline status
 	 */
 	public function markAsPaid(Order $order): Order
 	{
 		if ($order->status !== PaymentStatusType::OFFLINE) {
-			throw new \InvalidArgumentException('Order must be in offline status to be marked as paid');
+			throw new LycheeLogicException('Order must be in offline status to be marked as paid');
 		}
 
 		$order->status = PaymentStatusType::COMPLETED;
@@ -203,12 +204,12 @@ class OrderService
 	 *
 	 * @return Order The updated order
 	 *
-	 * @throws \InvalidArgumentException If the order is not in completed status
+	 * @throws LycheeLogicException If the order is not in completed status
 	 */
 	public function markAsDelivered(Order $order): Order
 	{
 		if ($order->status !== PaymentStatusType::COMPLETED) {
-			throw new \InvalidArgumentException('Order must be in completed status to be marked as delivered');
+			throw new LycheeLogicException('Order must be in completed status to be marked as delivered');
 		}
 
 		$order->status = PaymentStatusType::CLOSED;
