@@ -1,6 +1,7 @@
 import { UserGroupService } from "@/services/user-group-service";
 import UsersService from "@/services/users-service";
 import { defineStore } from "pinia";
+import { useLycheeStateStore } from "./LycheeState";
 
 export type UsersAndGroupStore = ReturnType<typeof useUsersAndGroupStore>;
 
@@ -22,7 +23,6 @@ export type UserOrGroupId = { id: number; type: "user" | "group" };
 export const useUsersAndGroupStore = defineStore("users-and-groups-store", {
 	state: () => ({
 		isLoading: false,
-		isSupporter: false,
 		usersGroupsList: undefined as UserOrGroup[] | undefined,
 	}),
 	actions: {
@@ -52,7 +52,8 @@ export const useUsersAndGroupStore = defineStore("users-and-groups-store", {
 			});
 		},
 		_loadGroups(): Promise<void> {
-			if (!this.isSupporter) {
+			const isSupporter = useLycheeStateStore().is_se_enabled;
+			if (!isSupporter) {
 				return Promise.resolve();
 			}
 

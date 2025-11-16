@@ -40,7 +40,7 @@ const usersAndGroupsStore = useUsersAndGroupStore();
 
 const props = defineProps<{
 	filteredUsersIds?: UserOrGroupId[];
-	withGroups?: boolean; // TODO: check me
+	withGroups?: boolean;
 }>();
 
 const emits = defineEmits<{
@@ -70,7 +70,8 @@ function filterUserGroups(filteredUsersIds: UserOrGroupId[] = []) {
 
 	options.value = usersAndGroupsStore.usersGroupsList.filter(
 		(userGroup) =>
-			(userGroup.type === "user" && !userIds.includes(userGroup.id)) || (userGroup.type === "group" && !groupIds.includes(userGroup.id)),
+			(userGroup.type === "user" && !userIds.includes(userGroup.id)) ||
+			(props.withGroups && userGroup.type === "group" && !groupIds.includes(userGroup.id)),
 	);
 
 	if (options.value.length === 0 && emits !== undefined) {
